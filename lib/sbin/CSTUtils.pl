@@ -262,7 +262,7 @@ sub TestName
 #@@*/
 sub SplitWithStrings
 {
-  my ($expression) = @_;
+  my ($expression, $thorn) = @_;
 
   my $insstring = 0;
   my $indstring = 0;
@@ -338,7 +338,7 @@ sub SplitWithStrings
 
   if($insstring || $indstring)
   {
-    print "Error: Unterminated string\n"
+    print "Error: Unterminated string while parsing interface for thorn : $thorn\n"
   }
 
   if($escaping)

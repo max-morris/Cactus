@@ -844,7 +844,7 @@ sub parse_interface_ccl
       }
 
       # split(/\s*=\s*|\s+/, $options_list);
-      %options = SplitWithStrings($options_list);
+      %options = SplitWithStrings($options_list,$thorn);
 
       # Parse the options
       foreach $option (sort keys %options)
