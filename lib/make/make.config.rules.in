@@ -64,7 +64,7 @@ endef
 #####################################################################
 # Define how to do a C compilation
 define PREPROCESS_C
-cat $< | $(PERL) $(C_FILE_PROCESSOR) $(CONFIG) > $(notdir $<)
+cat $< | $(PERL) -s $(C_FILE_PROCESSOR) -source_file_name=\"$<\" $(CONFIG) > $(notdir $<)
 endef
  
 define COMPILE_C 
@@ -77,7 +77,7 @@ endef
 
 # Define how to do a C++ compilation
 define PREPROCESS_CXX
-cat $< | $(PERL) $(C_FILE_PROCESSOR) $(CONFIG) > $(CXX_WORKING_NAME)
+cat $< | $(PERL) -s $(C_FILE_PROCESSOR) -source_file_name=\"$<\" $(CONFIG) > $(CXX_WORKING_NAME)
 endef
 
 define COMPILE_CXX
