@@ -9,6 +9,7 @@
 
 #include <stdio.h>
 
+#include "Misc.h"
 #include "WarnLevel.h"
 #include "FortranString.h"
 
@@ -55,7 +56,7 @@ int CCTK_SetWarnLevel(int level)
   }
   else if(level == old_level)
   {
-    sprintf(warning_message, "Warning level is already\n", level);
+    sprintf(warning_message, "Warning level is already %d\n", level);
     CCTK_Warn(1, warning_message);
     retval = 0;
   }
