@@ -284,7 +284,7 @@ sub CreateLatexTable
    $len = @conditional_statements > @always_statements ? @conditional_statements : @always_statements;
 
    # print blurb about what this page is about
-   print "\n\n\\noindent This section lists all the variables which are assigned storage by thorn ". ThornUtils::CleanForLatex($thorn_name) . ".  Storage can either last for the duration of the run ({\\bf Always} means that if this thorn is activated storage will be assigned, {\\bf Conditional} means that if this thorn is activated storage will be assigned for the duration of the run is some condition is met), or can be turned on for the duration of a schedule function.\n\n";
+   print "\n\n\\noindent This section lists all the variables which are assigned storage by thorn ". ThornUtils::CleanForLatex($thorn_name) . ".  Storage can either last for the duration of the run ({\\bf Always} means that if this thorn is activated storage will be assigned, {\\bf Conditional} means that if this thorn is activated storage will be assigned for the duration of the run if some condition is met), or can be turned on for the duration of a schedule function.\n\n";
 
    # print out storage allocation at the top
    print "\n\\subsection\*\{Storage\}";
