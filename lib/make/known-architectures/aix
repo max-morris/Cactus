@@ -4,36 +4,48 @@
 #    @date      Wed Jul 14 12:38:45 1999
 #    @author    Tom Goodale
 #    @desc 
-#   
+#               Known-architectures file for IBM AIX systems
 #    @enddesc
-#    @version $Header$
+#    @version   $Header$
 #  @@*/
 
-if test "$CCTK_CONFIG_STAGE" = "preferred-compilers" ; then
+if test "$CCTK_CONFIG_STAGE" = 'preferred-compilers' ; then
+
+  # default to building 64-bit executables using the native AIX compilers
+  if test -z "$AIX_BITS" ; then
+    AIX_BITS=64
+  fi
 
   if test -z "$CC"; then
     echo Setting C compiler to xlc
-    CC="xlc"
+    CC=xlc_r
   fi
 
   if test -z "$CXX"; then
     echo Setting C++ compiler to xlC
-    CXX="xlC"
+    CXX=xlC_r
   fi
 
 else
 
-  : ${F90FLAGS=""}
-  : ${F77FLAGS="-qfixed"}
-  : ${F90_OPTIMISE_FLAGS="-O2"}
-  : ${F77_OPTIMISE_FLAGS="-O2"}
-  : ${F90_DEBUG_FLAGS="-g"}
-  : ${F77_DEBUG_FLAGS="-g"}
+  if test "X$AIX_BITS" != 'X32' -a "X$AIX_BITS" != 'X64' ; then
+    echo "Invalid setting '$AIX_BITS' for AIX_BITS (must be either '32' or '64')"
+    exit 1
+  fi
 
-  : ${F90_SUFFIX="f"}
+  : ${ARFLAGS="-X$AIX_BITS -rucs"}
+
+  : ${F90FLAGS="-q$AIX_BITS"}
+  : ${F77FLAGS="-qfixed -q$AIX_BITS"}
+  : ${F90_OPTIMISE_FLAGS='-O2'}
+  : ${F77_OPTIMISE_FLAGS='-O2'}
+  : ${F90_DEBUG_FLAGS='-g'}
+  : ${F77_DEBUG_FLAGS='-g'}
+
+  : ${F90_SUFFIX='f'}
   CCTK_WriteLine make.arch.defn 'F90FLAGS += $(AIX_$(subst .,,$(suffix $<))_FLAGS)' 
-  CCTK_WriteLine make.arch.defn 'AIX_F90_FLAGS = '
-  CCTK_WriteLine make.arch.defn 'AIX_f90_FLAGS = '
+  CCTK_WriteLine make.arch.defn 'AIX_F90_FLAGS ='
+  CCTK_WriteLine make.arch.defn 'AIX_f90_FLAGS ='
   CCTK_WriteLine make.arch.defn 'AIX_F_FLAGS = -qfixed'
   CCTK_WriteLine make.arch.defn 'AIX_f_FLAGS = -qfixed'
 
@@ -44,20 +56,20 @@ else
     cc|xlc|xlc_r)
      : ${C_DEPEND='$(CPP) -M $(CPPFLAGS)'}
      : ${C_DEPEND_OUT=' > /dev/null ; mv $(basename $(basename $@)).u $@'}
-     : ${CFLAGS='-qspill=10000 -qmaxmem=-1'}
+     : ${CFLAGS="-q$AIX_BITS -qspill=10000 -qmaxmem=-1"}
      ;;
     *)
      ;;
   esac
 
   case "$CXX" in
-    "g++"|"c++")
+    'g++'|'c++')
      : ${CXX_DEPEND_OUT=' > $@'}
      ;;
     xlC|xlC_r)
      : ${CXX_DEPEND='$(CXX) -E -M $(CPPFLAGS)'}
      : ${CXX_DEPEND_OUT=' > /dev/null ; mv $(basename $(basename $@)).u $@'}
-     : ${CXXFLAGS='-qspill=10000 -qmaxmem=-1'}
+     : ${CXXFLAGS="-q$AIX_BITS -qspill=10000 -qmaxmem=-1"}
      ;;
     *)
      ;;
@@ -66,8 +78,8 @@ else
   : ${F_DEPEND_OUT=' > /dev/null ; mv $(basename $(basename $@)).u $@'}
   : ${F77_DEPEND_OUT=' > /dev/null ; mv $(basename $(basename $@)).u $@'}
 
-  if test -z "$LIBS" -a "$LD" != "xlf90" ; then
-    LIBS="xlf90"
+  if test -z "$LIBS" -a "$LD" != 'xlf90' ; then
+    LIBS=xlf90
     if test -r /usr/lib/libxlopt.a ; then
       LIBS="$LIBS xlopt"
     fi
@@ -75,26 +87,32 @@ else
 
   # allow each process to use up to 2 GB of virtual memory (default is 256 MB)
   if test "$LD" != 'g++' -a "$LD" != 'c++'; then
-    : ${LDFLAGS='-bmaxdata:0x80000000'}
+    : ${LDFLAGS="-q$AIX_BITS -bmaxdata:0x80000000"}
   fi
 
   # MPI stuff
  
   if test -n "$MPI" ; then
-    NATIVE_MPI_LIBS="mpi"
-    NATIVE_MPI_LIB_DIRS="/usr/lpp/ppe.poe/lib"
-    NATIVE_MPI_INC_DIRS="/usr/lpp/ppe.poe/include"
-    if test "$MPI" = "NATIVE" ; then
-      case "$CC:$CXX" in 
+    # must not set linker flags for 64-bit configurations
+    # (LD will figure these out)
+    if test "X$AIX_BITS" = "X32" ; then
+      NATIVE_MPI_LIBS='mpi'
+      NATIVE_MPI_LIB_DIRS='/usr/lpp/ppe.poe/lib'
+    else
+      NATIVE_MPI_LIBS=' '
+    fi
+    NATIVE_MPI_INC_DIRS='/usr/lpp/ppe.poe/include'
+    if test "X$MPI" = 'XNATIVE' ; then
+      case "$CC:$CXX" in
         "xlc:xlC"|"cc:xlC")
-          LD=mpCC
+          LD="mpCC -q$AIX_BITS"
           ;;
         "xlc_r:xlC_r")
-          LD=mpCC_r
+          LD="mpCC_r -q$AIX_BITS"
           ;;
          *)
-        echo "NATIVE MPI requires xlc and xlC"
-        echo "Please reconfigure with these compilers"
+        echo 'NATIVE MPI requires xlc and xlC'
+        echo 'Please reconfigure with these compilers'
         exit 1
          ;;
       esac
