@@ -19,7 +19,7 @@ DIVIDER =  $(DIVEL)$(DIVEL)$(DIVEL)$(DIVEL)
 include $(CONFIG)/make.config.defn
 
 # Add appropriate include lines
-INC_DIRS = $(SYS_INC_DIRS) $(SRCDIR) $(SRCDIR)/include $(CONFIG) $(TOP)/bindings/include $(CCTK_HOME)/src/include
+INC_DIRS = $(SYS_INC_DIRS) $(SRCDIR) $(SRCDIR)/include $(CONFIG) $(TOP)/bindings/include $(CCTK_HOME)/src/include $(CCTK_HOME)/packages
 
 # Allow subdirectories to inherit these include directories
 export INC_DIRS
@@ -38,18 +38,22 @@ include $(SRCDIR)/make.code.defn
 # Some extra stuff to allow make to recurse into subdirectories
 CCTK_SRCS += $(SRCS)
 
+# Protect the value of SRCS and SUBDIRS of this directory
 LOCAL_SRCS := $(SRCS)
+LOCAL_SUBDIRS := $(SUBDIRS)
 
 # Include all the make.code.defn files for the subdirectories
 # These have to be wrapped to allow us to concatanate all the
 # SRCS definitions, complete with subdirectory names.
 # Using -include to prevent warnings the first time the make.identity files 
 # need to be made.
-ifneq ($(strip $(SUBDIRS)),)
--include $(foreach DIR,$(SUBDIRS), $(DIR)/make.identity $(MAKE_DIR)/$(PRE_WRAPPER) $(SRCDIR)/$(DIR)/make.code.defn $(MAKE_DIR)/$(POST_WRAPPER))
+ifneq ($(strip $(LOCAL_SUBDIRS)),)
+-include $(foreach DIR,$(LOCAL_SUBDIRS), $(DIR)/make.identity $(MAKE_DIR)/$(PRE_WRAPPER) $(SRCDIR)/$(DIR)/make.code.defn $(MAKE_DIR)/$(POST_WRAPPER))
 endif
 
+# Restore the value of SRCS and SUBDIRS of this directory
 SRCS = $(CCTK_SRCS)
+SUBDIRS = $(LOCAL_SUBDIRS)
 
 # Turn source file names into object file names
 OBJS = $(patsubst %,%.o,$(basename $(SRCS)))
