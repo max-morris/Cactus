@@ -32,14 +32,19 @@
 #define DECLARE_CCTK_C2F 
 #define PASS_CCTK_C2F(xGH) &((xGH)->dim),\
                            (xGH)->local_shape, (xGH)->lower_bound, (xGH)->upper_bound, (xGH)->bbox,\
-                           &((xGH)->levfac),
+                           &((xGH)->levfac),\
                            (xGH)
 #define CCTK_C2F_PROTO     int *,\
                            int *,int *, int *, int *,\
                            int *,\
                            cGH *
 
-#define CCTK_STORAGE_SIZE(xGH, group, dim) (CCTK_QueryGroupStorage(xGH,group) ?\
-                           &(CCTK_ArrayGroupSize(xGH, group, dim) : &(_cctk_one))
+#define CCTK_STORAGESIZE(xGH, group, dim) (CCTK_QueryGroupStorage(xGH,group) ?\
+                           (CCTK_ArrayGroupSize(xGH, group, dim)) : &(_cctk_one))
+
+
+extern int _cctk_one;
 
 #endif /*CCODE*/
+
+#endif
