@@ -95,7 +95,7 @@ void CCTKi_CactusBanner(void)
   printf("--------------------------------------------------------------------------------\n");
   printf("%s\n",string); 
   printf("--------------------------------------------------------------------------------\n");
-  printf("Version:        %s\n",CCTK_FullVersion());
+  printf("Cactus version: %s\n",CCTK_FullVersion());
   printf("Compile date:   %s (%s)\n",CCTK_CompileDate(),CCTK_CompileTime());
   Util_CurrentDate (DATALENGTH, buffer);
   printf("Run date:       %s",buffer);
