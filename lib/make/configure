@@ -3030,19 +3030,149 @@ F_FILE_PROCESSOR='$(CCTK_HOME)/lib/sbin/f_file_processor.pl'
 
 C_FILE_PROCESSOR='$(CCTK_HOME)/lib/sbin/c_file_processor.pl'
 
-
-
-
-
-
 # Put the libraries from the known-architectures onto the LIB variable.
 LIBS="$KNOWN_LIBS $LIBS"
 LDFLAGS="$KNOWN_LDFLAGS $LDFLAGS"
 
 #Set the compileonly flags if they've not been set by now
 
+
+
+
 : ${CCOMPILEONLY="-c -o"}
 : ${FCOMPILEONLY="-c -o"}
+
+# Set the debug flags if they've not been set by now
+
+
+
+if test -n "$DEBUG" ; then
+  DEBUG_MODE=$DEBUG
+else
+  DEBUG_MODE="no"
+fi
+
+
+
+
+if test -z "$C_DEBUG_FLAGS" ; then
+  case "$CC" in
+    gcc) 
+      C_DEBUG_FLAGS="-g"
+      ;;
+    pgcc)
+      C_DEBUG_FLAGS="-g"
+      ;;
+    *)
+#     This should be a reasonable default.
+      C_DEBUG_FLAGS="-g"      
+      ;;
+   esac
+fi
+
+
+
+if test -z "CXX_DEBUG_FLAGS" ; then
+  case "$CXX" in
+    g++) 
+      CXX_DEBUG_FLAGS="-g"
+      ;;
+    pgCC)
+      CXX_DEBUG_FLAGS="-g"
+      ;;
+    *)
+#     This should be a reasonable default.
+      CXX_DEBUG_FLAGS="-g"      
+      ;;
+   esac
+fi
+
+
+
+if test -z "F77_DEBUG_FLAGS" ; then
+  case "$F77" in
+    g77) 
+      F77_DEBUG_FLAGS="-g"
+      ;;
+    pgf77)
+      F77_DEBUG_FLAGS="-g"
+      ;;
+    *)
+#     This should be a reasonable default.
+      F77_DEBUG_FLAGS="-g"      
+      ;;
+   esac
+fi
+
+ 
+
+if test -z "F90_DEBUG_FLAGS" ; then
+  case "$F90" in
+    pgf77)
+      F90_DEBUG_FLAGS="-g"
+      ;;
+    *)
+#     This should be a reasonable default.
+      F90_DEBUG_FLAGS="-g"      
+      ;;
+   esac
+fi
+
+# Set the warning flags if they've not been set by now
+
+
+
+if test -z "C_WARN_FLAGS" ; then
+  case "$CC" in
+    gcc) 
+      C_WARN_FLAGS="-Wall"
+      ;;
+    *)
+#     Not sure what should be a reasonable default.
+      C_WARN_FLAGS=""      
+      ;;
+   esac
+fi
+
+ 
+
+if test -z "CXX_WARN_FLAGS" ; then
+  case "$CXX" in
+    g++) 
+      CXX_WARN_FLAGS="-Wall"
+      ;;
+    *)
+#     Not sure what should be a reasonable default.
+      CXX_WARN_FLAGS=""      
+      ;;
+   esac
+fi
+
+ 
+
+if test -z "F77_WARN_FLAGS" ; then
+  case "$F77" in
+    g77) 
+      F77_WARN_FLAGS="-Wall"
+      ;;
+    *)
+#     Not sure what should be a reasonable default.
+      F77_WARN_FLAGS=""      
+      ;;
+   esac
+fi
+
+ 
+
+if test -z "F90_WARN_FLAGS" ; then
+  case "$F90" in
+    *)
+#     Not sure what should be a reasonable default.
+      F90_WARN_FLAGS=""      
+      ;;
+   esac
+fi
+
 
 #Set the createexe flag if it's not been set by now
 
@@ -3301,6 +3431,15 @@ s%@F_FILE_PROCESSOR@%$F_FILE_PROCESSOR%g
 s%@C_FILE_PROCESSOR@%$C_FILE_PROCESSOR%g
 s%@CCOMPILEONLY@%$CCOMPILEONLY%g
 s%@FCOMPILEONLY@%$FCOMPILEONLY%g
+s%@DEBUG_MODE@%$DEBUG_MODE%g
+s%@C_DEBUG_FLAGS@%$C_DEBUG_FLAGS%g
+s%@CXX_DEBUG_FLAGS@%$CXX_DEBUG_FLAGS%g
+s%@F77_DEBUG_FLAGS@%$F77_DEBUG_FLAGS%g
+s%@F90_DEBUG_FLAGS@%$F90_DEBUG_FLAGS%g
+s%@C_WARN_FLAGS@%$C_WARN_FLAGS%g
+s%@CXX_WARN_FLAGS@%$CXX_WARN_FLAGS%g
+s%@F77_WARN_FLAGS@%$F77_WARN_FLAGS%g
+s%@F90_WARN_FLAGS@%$F90_WARN_FLAGS%g
 s%@CREATEEXE@%$CREATEEXE%g
 s%@DIRSEP@%$DIRSEP%g
 s%@OPTIONSEP@%$OPTIONSEP%g

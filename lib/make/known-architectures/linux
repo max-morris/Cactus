@@ -62,6 +62,10 @@ else
        if test "$LINUX_F77" = "noegcs" ; then
          : ${LIBS="vast90 f2c m"} 
        fi
+       : ${F77_DEBUG_FLAGS="-g"}
+       : ${F90_DEBUG_FLAGS="-g"}
+       : ${F77_WARN_FLAGS="-Wall"}
+       : ${F90_WARN_FLAGS="-Wall"}
        ;;
      absoft)
        : ${LIBS="f90math fio f77math m"} 
@@ -70,6 +74,10 @@ else
        if test -n "$ABSOFT" ; then
          : ${LIBDIRS='$(ABSOFT)/lib'}
        fi 
+       : ${F77_DEBUG_FLAGS="-g"}
+       : ${F90_DEBUG_FLAGS="-g"}
+       : ${F77_WARN_FLAGS="-m0"}
+       : ${F90_WARN_FLAGS="-m0"}
        ;;
      absoft77)
        : ${LIBS="fio f77math m"}
@@ -78,6 +86,10 @@ else
        if test -n "$ABSOFT" ; then
          : ${LIBDIRS='$(ABSOFT)/lib'}
        fi 
+       : ${F77_DEBUG_FLAGS="-g"}
+       : ${F90_DEBUG_FLAGS="-g"}
+       : ${F77_WARN_FLAGS="-m0"}
+       : ${F90_WARN_FLAGS="-m0"}
        ;;
      nag)
        : ${LIBS="f90 nagfl90 nag m"} 
@@ -86,6 +98,8 @@ else
      portland)
        : ${LIBS="pgf90 pgf90_rpm1 pghpf2 pgf90rtl pgc m"}
        : ${LIBDIRS='$(PGI)/linux86/lib'} 
+       : ${F77_DEBUG_FLAGS="-g"}
+       : ${F90_DEBUG_FLAGS="-g"}
        ;;
      fujitsu)
        : ${LIBS="fj9i6 fj9e6 fj9f6"} 
@@ -101,6 +115,29 @@ else
        echo We will try anyway ...
        ;;
   esac    
+
+#Set the appropriate warning and debugging flags
+  case "$CC" in
+    gcc)
+      : ${C_DEBUG_FLAGS="-g"}
+      : ${C_WARN_FLAGS="-Wall"}
+      ;;
+      *)
+      : ${C_DEBUG_FLAGS="-g"}
+#      : ${C_WARN_FLAGS="-Wall"}
+      ;;
+  esac
+
+  case "$CXX" in
+    [cg]++)
+      : ${CXX_DEBUG_FLAGS="-g"}
+      : ${CXX_WARN_FLAGS="-Wall"}
+      ;;
+      *)
+      : ${CXX_DEBUG_FLAGS="-g"}
+#      : ${C_WARN_FLAGS="-Wall"}
+      ;;
+  esac
 
 # Cache stuff
   if test -z "$L2_CACHELINE_BYTES" ; then

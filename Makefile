@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.70 2000-02-08 17:43:58 goodale Exp $
+#   @version $Id: Makefile,v 1.71 2000-02-17 13:15:43 goodale Exp $
 # @@*/
 
 ##################################################################################
@@ -144,7 +144,16 @@ SETUP_ENV += DEBUG=$(DEBUG) ; export DEBUG ;
 endif
 endif
 
+# Compile-time options
 
+# Warning options
+ifdef WARNINGS
+CCTK_WARN_MODE=$(WARNINGS)
+else
+CCTK_WARN_MODE=no
+endif
+
+export CCTK_WARN_MODE
 
 # Various auxilary programs
 PERL = perl

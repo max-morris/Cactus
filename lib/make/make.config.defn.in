@@ -41,6 +41,20 @@ LDFLAGS           = @LDFLAGS@
 
 ARFLAGS           = @ARFLAGS@
 
+# Debug flags
+
+C_DEBUG_FLAGS            = @C_DEBUG_FLAGS@
+CXX_DEBUG_FLAGS          = @CXX_DEBUG_FLAGS@
+F90_DEBUG_FLAGS          = @F90_DEBUG_FLAGS@
+F77_DEBUG_FLAGS          = @F77_DEBUG_FLAGS@
+
+# Warning flags
+
+C_WARN_FLAGS            = @C_WARN_FLAGS@
+CXX_WARN_FLAGS          = @CXX_WARN_FLAGS@
+F90_WARN_FLAGS          = @F90_WARN_FLAGS@
+F77_WARN_FLAGS          = @F77_WARN_FLAGS@
+
 # Most compilers use -c -o to compile only, some do something different
 CCOMPILEONLY = @CCOMPILEONLY@
 FCOMPILEONLY = @FCOMPILEONLY@
@@ -122,4 +136,25 @@ EXEDIR = @EXEDIR@
 
 # The name of the executable
 EXE    = @EXE@
+
+
+# Is this a debug configuration ?
+
+CCTK_DEBUG_MODE = @DEBUG_MODE@
+
+ifeq ($(strip $(CCTK_DEBUG_MODE)),yes)
+  CFLAGS   += $(C_DEBUG_FLAGS)
+  CXXFLAGS += $(CXX_DEBUG_FLAGS)
+  F77FLAGS += $(F77_DEBUG_FLAGS)
+  F90FLAGS += $(F90_DEBUG_FLAGS)
+endif
+
+# Are we building with all warnings switched on ?
+
+ifeq ($(strip $(CCTK_WARN_MODE)),yes)
+  CFLAGS   += $(C_WARN_FLAGS)
+  CXXFLAGS += $(CXX_WARN_FLAGS)
+  F77FLAGS += $(F77_WARN_FLAGS)
+  F90FLAGS += $(F90_WARN_FLAGS)
+endif
 
