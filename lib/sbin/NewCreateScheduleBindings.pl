@@ -251,7 +251,7 @@ sub ScheduleCreateBindings
   $outbuf .=  "  \@endhistory\n"; 
   $outbuf .=  "\n";
   $outbuf .=  "\@\@*/\n";
-  $outbuf .=  "void CCTKi_BindingsScheduleInitialise(void)\n";
+  $outbuf .=  "int CCTKi_BindingsScheduleInitialise(void)\n";
   $outbuf .=  "{\n";
   foreach $thorn (sort split(" ", $interface_database{"THORNS"}))
   {
@@ -260,6 +260,7 @@ sub ScheduleCreateBindings
     $outbuf .= "    CCTKi_BindingsSchedule_$thorn();\n";
     $outbuf .= "  }\n";
   }
+  $outbuf .=  "  return 0;\n";
   $outbuf .=  "}\n";
   $outbuf .=  "\n";
 
