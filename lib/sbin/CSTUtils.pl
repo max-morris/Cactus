@@ -110,7 +110,8 @@ sub read_file
     chomp;
 
     # Remove comments.
-    $_ =~ s/\#.*//;
+    $_ = &RemoveComments($_);
+#    $_ =~ s/\#.*//;
     
     # Ignore empty lines.
     next if(m/^\s*$/);
@@ -353,6 +354,99 @@ sub SplitWithStrings
   
   return @tokens;
 
+}
+
+#/*@@
+#  @routine    RemoveComments
+#  @date       
+#  @author     Tom Goodale, Yaakoub El Khamra
+#  @desc 
+#  Removes comments from lines
+#  @enddesc 
+#  @calls     
+#  @calledby   
+#  @history 
+#
+#  @endhistory 
+#
+#  @var     line
+#  @vdesc   line to remove comments from
+#  @vtype   string
+#  @vio     in
+#  @endvar 
+#
+#  @returntype line
+#  @returndesc
+#    line without comments
+#  @endreturndesc
+#@@*/
+sub RemoveComments
+{
+  my ($line) = @_;
+  my $nocomment = $line;
+  my $insstring = 0;
+  my $indstring = 0;
+  my $escaping = 0;
+  my $token="";
+
+  for $i (split(//,$line))
+  {
+
+    if($i eq '\\')
+    {
+      if($escaping)
+      {
+        $token .= $i;
+      }
+      
+      $escaping = 1 - $escaping;
+    }
+    elsif($i eq '"' && ! $insstring && ! $escaping)
+    {
+      $token = "";
+      $indstring = 1 - $indstring;
+    }
+    elsif($i eq "'" && ! $indstring && ! $escaping)
+    {
+      $token = "";
+      $insstring = 1 - $insstring;
+    }
+    elsif($i =~ /^\s+$/ && ! $insstring && ! $indstring && ! $escaping)
+    {
+      $token = "";
+    }
+    elsif($i eq '=' && ! $insstring && ! $indstring && ! $escaping)
+    {
+      $token = "";
+    }
+    elsif($i eq '#' && ! $insstring && ! $indstring && ! $escaping)
+    {
+      $nocomment =~ s/\#.*//;
+      return $nocomment;
+    }
+    else
+    {
+      if($escaping)
+      {
+        $token .= "\\";
+        $escaping = 0; 
+      }
+      $token .= "$i";
+    }
+  }
+
+  if($insstring || $indstring)
+  {
+    print "Error: Unterminated string while parsing interface for thorn : $thorn\n";
+    print $nocomment;
+  }
+
+  if($escaping)
+  {
+    $token .= '\\';
+  }
+  
+  return $nocomment;
 }
 
 1;
