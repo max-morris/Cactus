@@ -183,6 +183,7 @@ sub Read_New_Thorn_Doc
 
    open (DOC, "<$pathandfile") || print STDERR "\nCould not find documentation in $path";
 
+   
    while (<DOC>)                            # loop through thorn doc.
    {
       if (/\\title\{(.*?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?.*?)\}/) { $title = $1; if ($title !~ /\w/) { close DOC; return 0;} }
@@ -623,6 +624,7 @@ print OUT  <<EOC;
 % Table of contents
 \\pagenumbering{roman}
 
+\\setcounter{tocdepth}{1}
 \\tableofcontents
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
