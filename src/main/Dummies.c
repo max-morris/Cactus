@@ -47,16 +47,3 @@ int CCTKi_DummyTriggerAction(void *GH, int group)
 }
 
 
-int CCTK_CallFunc(void *GH, int language, void *function)
-{
-
-  void (*calledfunc)(void *);
-
-  calledfunc = (void (*)(void *))function;
-
-  /* Call the function. */
-  
-  calledfunc(GH);
-
-  return 0;
-}
