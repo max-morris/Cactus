@@ -169,7 +169,7 @@ from Fortran.
 
 \item[CCTK\_Equals]
   [\pageref{CCTK-Equals}]
-  Check a STRING or KEYWORD parameter for equality with a given string
+  Check a STRING or KEYWORD parameter for equality equality with a given string
 
 \item[CCTK\_Exit]
   [\pageref{CCTK-Exit}]
@@ -2666,8 +2666,8 @@ No Fortran routine exists at the moment.
 \end{errorcodes}
 \end{CCTKFunc}
 
-%main/Groups.c
-% Please document CCTK_GroupTagsTableI and CCTK_GroupTagsTable.
+
+
 
 % Groups.c
 \begin{CCTKFunc}{CCTK\_GroupTypeFromVarI}{Provides a group's group type
@@ -3073,6 +3073,16 @@ interpolation thorn) you use.  See the documentation on individual interpolator
 thorns (eg. {\tt PUGHInterp} in the {\tt CactusPUGH} arrangement and
 {\tt LocalInterp} in the {\tt CactusBase} arrangement) for details.
 
+Note that in a multiprocessor Cactus run, it's the user's responsibility
+to choose the interprocessor ghost-zone size (\verb|driver::ghost_size|)
+large enough so that the local interpolator never has to off-center
+its molecules near interprocessor boundaries.  (This ensures that the
+interpolation results are independent of the interprocessor decomposition,
+at least up to floating-point roundoff errors.)
+If the ghost-zone size is too small, the interpolator should return
+some error code, possibly
+\verb|CCTK_ERROR_INTERP_POINT_OUTSIDE| and/or
+\verb|CCTK_ERROR_INTEPR_GRID_TOO_TINY|.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
@@ -3106,6 +3116,18 @@ codes indicates specific error conditions. For the complete list of possible
 error return codes you should refer to the ThornGuide's chapter of the
 corresponding interpolation thorn(s) you are using.
 \end{Error}
+\begin{Error}{CCTK\_ERROR\_INTERP\_POINT\_OUTSIDE}
+one or more of the interpolation points is out of range
+(in this case additional information about the out-of-range point
+may be reported through the parameter table; see the Thorn Guide for
+whatever thorn provides the local interpolation operator for further
+details)
+\end{Error}
+\begin{Error}{CCTK\_ERROR\_INTERP\_GRID\_TOO\_TINY}
+one or more of the dimensions of the input arrays is/are smaller than
+the molecule size chosen by the interpolator (based on the parameter-table
+options, e.g.\hbox{} the interpolation order)
+\end{Error}
 \begin{Error}{UTIL\_ERROR\_BAD\_INPUT}
 one or more of the input arguments is invalid (eg.~\verb|NULL| pointer)
 \end{Error}
@@ -3114,6 +3136,11 @@ unable to allocate memory
 \end{Error}
 \begin{Error}{UTIL\_ERROR\_BAD\_HANDLE}
 parameter table handle is invalid
+\end{Error}
+\begin{Error}{other error codes}
+this function may also return any error codes returned by the
+\verb|Util_Table*()| routines used to get parameters from
+(and/or set results in) the parameter table
 \end{Error}
 \end{ErrorSection}
 
@@ -3631,7 +3658,7 @@ A negative return code indicates an error condition:
 %notyet	\end{SeeAlsoSection}
 %notyet	
 %notyet	\begin{ErrorSection}
-%notyet	\begin{Error}{CCTK\_ERROR\_INTERP\_POINT\_X\_RANGE}
+%notyet	\begin{Error}{CCTK\_ERROR\_INTERP\_POINT\_OUTSIDE}
 %notyet	one or more of the interpolation points is out of range
 %notyet	(in this case additional information about the out-of-range point
 %notyet	may be reported through the parameter table; see the Thorn Guide for
@@ -3921,7 +3948,7 @@ with non-uniformly spaced data points.
 \end{SeeAlsoSection}
 
 \begin{ErrorSection}
-\begin{Error}{CCTK\_ERROR\_INTERP\_POINT\_X\_RANGE}
+\begin{Error}{CCTK\_ERROR\_INTERP\_POINT\_OUTSIDE}
 one or more of the interpolation points is out of range
 (in this case additional information about the out-of-range point
 may be reported through the parameter table; see the Thorn Guide for
@@ -4249,7 +4276,7 @@ if (CCTK_InterpLocalUniform(N_DIMS,
 %notyet	\end{SeeAlsoSection}
 %notyet	
 %notyet	\begin{ErrorSection}
-%notyet	\begin{Error}{CCTK\_ERROR\_INTERP\_POINT\_X\_RANGE}
+%notyet	\begin{Error}{CCTK\_ERROR\_INTERP\_POINT\_OUTSIDE}
 %notyet	one or more of the interpolation points is out of range
 %notyet	(in this case additional information about the out-of-range point
 %notyet	may be reported through the parameter table; see the Thorn Guide for
@@ -6685,7 +6712,7 @@ functions can distinguish flags from (negative) error codes.
 
 Any User-defined flag words should use only bit positions at or above\\
 \verb|UTIL_TABLE_FLAGS_USER_DEFINED_BASE|, i.e. all bit positions
-below this are reserved for present or future Cactus use.
+below this are reserved for present of future Cactus use.
 
 At present there is only a single flags-word bit mask defined
 in \verb|"util_Table.h"|:
