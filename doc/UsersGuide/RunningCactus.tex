@@ -1,10 +1,11 @@
 % /*@@
 %   @file      RunningCactus.tex
 %   @date      27 Jan 1999
-%   @author    Tom Goodale, Gabrielle Allen, Gerd Lanferman
-%   @desc 
-%   How to run Cactus part of the Cactus User's Guide
-%   @enddesc %   @version $Header$      
+%   @author    Tom Goodale, Gabrielle Allen, Gerd Lanferman, Thomas Radke
+%   @desc
+%              How to run Cactus part of the Cactus User's Guide
+%   @enddesc
+%   @version   $Header$
 % @@*/
 \begin{cactuspart}{1}{Installation and Running}{$RCSfile$}{$Revision$}
 \renewcommand{\thepage}{\Alph{part}\arabic{page}}
@@ -14,7 +15,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\chapter{Installation} 
+\chapter{Installation}
 \label{cha:in}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -31,13 +32,13 @@ in single processor mode. Please refer to the architecture section
   operating systems known to man and can be obtained at
   {\tt http://www.perl.org}
 \item[{\tt GNU make}] The make
-  process works with the GNU make utility (referred to as {\bf gmake} 
-  henceforth). While other make utilities may also work, this is not 
+  process works with the GNU make utility (referred to as {\bf gmake}
+  henceforth). While other make utilities may also work, this is not
   guaranteed. Gmake can be obtained from your favorite GNU site or
   from {\tt www.gnu.org}
 \item[{\tt C}] C compiler. For example, the GNU compiler. This
- is available for most supported platforms.  Platform specific compilers 
- should also work. 
+ is available for most supported platforms.  Platform specific compilers
+ should also work.
 \item[{\tt CPP}] C Pre-processor. For example, the GNU CPP.  These are
 normally provided on most platforms, and many C compilers have an option
 to just run as a preprocessor.
@@ -52,28 +53,28 @@ to just run as a preprocessor.
 To use Cactus, with the default driver\footnote{For help with unfamiliar terms, please consult the glossary, Appendix \ref{sec:glossary}.} ({\tt CactusPUGH/PUGH}) on multiple
 processors you also need:
 \begin{Lentry}
-\item[{\tt MPI}] the {\it Message Passing Interface (MPI)} 
-which provides inter-processor communication. 
+\item[{\tt MPI}] the {\it Message Passing Interface (MPI)}
+which provides inter-processor communication.
 Supercomputing sites often supply a native {\tt MPI} implementation with
 which Cactus is very likely to be compatible. Otherwise there are
 various freely available ones available, e.g. the {\tt MPICH}
 version of {\tt MPI} is available for various architectures and operating
-systems at {\tt http://www-unix.mcs.anl.gov/mpi/}. 
+systems at {\tt http://www-unix.mcs.anl.gov/mpi/}.
 \end{Lentry}
 
 \noindent
-If you are using any thorns containing routines 
+If you are using any thorns containing routines
 written in {\tt C++} you also need
 \begin{Lentry}
 \item[{\tt C++}] C++ compiler. For example, the GNU compiler. This
- is available for most supported platforms.  Platform specific compilers 
+ is available for most supported platforms.  Platform specific compilers
  should also work.  Note that if a C++ compiler is available then the
  {\em main} routine in the flesh is compiled with C++ to allow static
  class initialisations.
 \end{Lentry}
 
 \noindent
-If you are using any thorns containing routines 
+If you are using any thorns containing routines
 written in {\tt FORTRAN} you also need
 \begin{Lentry}
 \item[{\tt F90/F77}] For routines written in F77, either an F90 or an F77
@@ -107,7 +108,7 @@ be found at
 {\tt http://www.cactuscode.org/Documentation/Architectures.html}.
 \end{center}
 
-\begin{Lentry} 
+\begin{Lentry}
 \item[{\bf SGI}] 32 or 64 bit running Irix.
 \item[{\bf Cray T3E}]
 \item[{\bf Compaq Alpha}]  Compaq operating system and Linux.  Single processor
@@ -126,30 +127,30 @@ doc/README.NT for details.
 \item[{\bf Fujitsu}]
 \end{Lentry}
 
-%\begin{Lentry} 
+%\begin{Lentry}
 %\item[{\bf SGI Origin 2000} running Irix]
 %\item[{\bf SGI} 32 or 64 bit running Irix]
-%\item[{\bf Cray T3E}] 
+%\item[{\bf Cray T3E}]
 %\item[{\bf Dec Alpha}]  Dec operating system and Linux. Single processor
-%  mode and {\tt MPI} supported. The Decs need to have the GNU {\tt C/C++} 
-%  compilers installed 
+%  mode and {\tt MPI} supported. The Decs need to have the GNU {\tt C/C++}
+%  compilers installed
 %\item[{\bf Linux (ia32, ia64, ppc, alpha)}] There is a
 %  free Linux F90 compiler available from  {\tt http://www.psrv.com}
-%  -- the only free we know of; please note the comment about installing this in 
+%  -- the only free we know of; please note the comment about installing this in
 %the FAQ.
 %  Single processor mode and MPI ({\tt MPICH} and {\tt LAM}) supported.
 %\item[{\bf Windows NT}] Compiles with Cygwin. Single processor mode and MPI ({\t
-%t WMPI}, 
+%t WMPI},
 %{\tt HPVM}, and {\tt MPIPro}) supported.  Please read doc/README.NT for details.
 %\item[{\bf Macintosh PowerPC (MacOS X)}]
 %\item[{\bf IBM SP2}]
 %\item[{\bf Hitachi SR8000-F1}]
-%\item[{\bf Sun Solaris}]  
+%\item[{\bf Sun Solaris}]
 %\end{Lentry}
 
 The following machines are only partially supported
 \begin{Lentry}
-\item[{\bf HP Exemplar}] 
+\item[{\bf HP Exemplar}]
 \item[{\bf NEC SX-5}]
 \end{Lentry}
 
@@ -159,9 +160,9 @@ The following machines are only partially supported
 \label{sec:chpr}
 
 Cactus is distributed, extended, and maintained using the free CVS
-software ({\it Concurrent Versioning System}: {\tt http://www.cvshome.org}). 
-CVS  allows many people to work on a large software project 
-together without getting into a tangle. 
+software ({\it Concurrent Versioning System}: {\tt http://www.cvshome.org}).
+CVS  allows many people to work on a large software project
+together without getting into a tangle.
 Since Cactus thorns are distributed from several repositories on the
 main CVS site, and from a growing number of user sites, we provide a
 script, described below,  on our website for checking out the flesh and thorns.
@@ -174,21 +175,21 @@ appendix basic CVS commands.
 The space required for an installation depends on the arrangements and
 thorns used. The flesh on its own requires less than 5 MB.
 
-The script for checking out the flesh and thorns, {\tt GetCactus}, is available 
-from the website at 
+The script for checking out the flesh and thorns, {\tt GetCactus}, is available
+from the website at
 
 {\tt http://www.cactuscode.org/Download/GetCactus}
 
-The 
+The
 script takes as an argument the name of a file containing a {\it ThornList},
-that is a list of thorns with the syntax 
+that is a list of thorns with the syntax
 {\tt
 \begin{verbatim}
 <arrangement name>/<thorn name>
 \end{verbatim}
 }
 If no filename is given, only the flesh is checked out.
-Optional directives in the ThornList indicate which CVS repository to fetch 
+Optional directives in the ThornList indicate which CVS repository to fetch
 thorns from. The default is to take the thorns from the same repository as
 the flesh. A full description of ThornList syntax is provided in Appendix~\ref{chap:th}.
 ThornLists for example applications are provided on the Cactus website.
@@ -214,22 +215,22 @@ following subdirectories:
 \item[{\tt src}] contains the source code for Cactus
 
 \item [{\tt arrangements}] contains the Cactus arrangements. The arrangements
-  (the actual ``physics'') are not supplied by checking out just Cactus. 
+  (the actual ``physics'') are not supplied by checking out just Cactus.
   If the arrangements you want to use are standard Cactus arrangements, or
-  reside on our CVS repository ({\tt cvs.cactuscode.org}), 
-  they can be checked out in similar way to the Flesh. 
+  reside on our CVS repository ({\tt cvs.cactuscode.org}),
+  they can be checked out in similar way to the Flesh.
 \end{Lentry}
 
 When Cactus is first compiled it creates a new directory {\tt
 Cactus/configs}, which will contain all the source code, object files and
-libraries created during the build process.  Disk space may be a problem 
-on supercomputers where home directories are small. 
+libraries created during the build process.  Disk space may be a problem
+on supercomputers where home directories are small.
 
 A workaround is to first create a
 configs directory on scratch space, say {\tt scratch/cactus\_configs/} (where
 {\tt scratch/} is your scratch directory), and then either
 \begin{itemize}
-\item{} set the environment variable {\tt CACTUS\_CONFIGS\_DIR} to point to 
+\item{} set the environment variable {\tt CACTUS\_CONFIGS\_DIR} to point to
 this directory
 \end{itemize}
 or
@@ -246,16 +247,16 @@ Configurations are described in detail in section \ref{sec:coaco}.
 \section{Getting help}
 \label{sec:gehe}
 
-For tracking problem reports and bugs we use GNATS, which is a bugtracking 
-system published under the GNU license. We have set up a web interface at 
-{\tt http://www.cactuscode.org} which allows easy submission and browsing 
-of problem reports.    
+For tracking problem reports and bugs we use GNATS, which is a bugtracking
+system published under the GNU license. We have set up a web interface at
+{\tt http://www.cactuscode.org} which allows easy submission and browsing
+of problem reports.
 
-A description of the GNATS categories which we use is provided in the appendix 
+A description of the GNATS categories which we use is provided in the appendix
 \ref{sec:usgn}.
 
 % OK, there is NO emacs at the moment, because the GNATS setup is really stupid
-% and sendpr handles like c.... besides the fact, that the user has to go 
+% and sendpr handles like c.... besides the fact, that the user has to go
 % through a make-process which installs stuff somewhere on his HD. gerd.
 % BUT, we could distribute our own, either copy cvsbug, or write a perl
 % version.  Tom
@@ -268,7 +269,7 @@ A description of the GNATS categories which we use is provided in the appendix
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\chapter{Compilation} 
+\chapter{Compilation}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -292,7 +293,7 @@ system.
 
 Once a configuration has been created, by {\tt gmake <config>} as described
 in detail in the next section, a single call to {\tt gmake <config>}
-will compile the code.  The first time it generates a compile 
+will compile the code.  The first time it generates a compile
 {\tt ThornList},  and gives you the chance to edit it before continuing.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -310,13 +311,13 @@ configuration with the name {\tt config}, doing its best to
 automatically determine the default compilers and compilation flags
 suitable for the current architecture.
 
-There are a number of additional command line arguments which may be supplied 
+There are a number of additional command line arguments which may be supplied
 to override some parts of the procedure.
 
 \subsection{Configuration options}
 
 There are three ways to pass options to the configuration process.
-% from the gmake command line.  
+% from the gmake command line.
 \begin{enumerate}
 \item{} Create a file \texttt{\~{ }/.cactus/config}.
 
@@ -348,7 +349,7 @@ conflicting) options set in \texttt{\~{ }/.cactus/config}.
 
 It is important to note that these methods cannot be used to, for example, add
 options to the default values for {\tt CFLAGS}.  Setting any variable in the
-configuration file or the command line will overwrite completely the 
+configuration file or the command line will overwrite completely the
 default values.
 
 \subsection{Available options}
@@ -372,7 +373,7 @@ the syntax {\tt <arrangement name>/<thorn name>}, lines beginning with
 
 \item [{\tt THORNLIST\_DIR}] Location of directory containing {\tt THORNLIST}.
 
-%\item [{\tt THORNS}] List of thorns to use for compilation. This option can be used in 
+%\item [{\tt THORNS}] List of thorns to use for compilation. This option can be used in
 % 	conjunction with {\tt THORNLIST}. NOTE: In Beta 10 this will change to {\tt THORNLIST}.
 
 \end{Lentry}
@@ -383,27 +384,16 @@ These are used to specify which compilers and other tools to use. Entries follow
 by * may be specified on the command line.
 
 \begin{Lentry}
-\item [{\tt CC}]
-* The C compiler.
-\item [{\tt CXX}]
-The C++ compiler.
-\item [{\tt F90}]
-* The Fortran 90 compiler.
-\item [{\tt F77}]
-* The FORTRAN 77 compiler.
-\item [{\tt CPP}]
-  The preprocessor used to generate dependencies and to preprocess Fortran code.
-\item [{\tt LD}]
-* The linker.
-\item [{\tt AR}]
-The archiver used for generating libraries.
-\item [{\tt RANLIB}]
-The archive indexer to use.
-\item [{\tt MKDIR}]
-The program to use to create a directory.
-\item [{\tt PERL}]
-The name of the perl executable.
-
+\item [{\tt CC}]   * The C compiler.
+\item [{\tt CXX}]    The C++ compiler.
+\item [{\tt F90}]  * The Fortran 90 compiler.
+\item [{\tt F77}]  * The FORTRAN 77 compiler.
+\item [{\tt CPP}]    The preprocessor used to generate dependencies and to preprocess Fortran code.
+\item [{\tt LD}]   * The linker.
+\item [{\tt AR}]     The archiver used for generating libraries.
+\item [{\tt RANLIB}] The archive indexer to use.
+\item [{\tt MKDIR}]  The program to use to create a directory.
+\item [{\tt PERL}]   The name of the perl executable.
 \end{Lentry}
 
 \item {\tt Compilation and tool flags}
@@ -432,10 +422,10 @@ Flags for the C++ compiler.
 Flags for the archiver.
 
 \item [{\tt DEBUG}]
-* Specifies what type of debug mode should be used, 
+* Specifies what type of debug mode should be used,
 the default is no debugging.
-Current options are {\tt yes}, {\tt no}, or {\tt memory}. The option 
-{\tt yes} switches on all debugging features, whereas {\tt memory} just 
+Current options are {\tt yes}, {\tt no}, or {\tt memory}. The option
+{\tt yes} switches on all debugging features, whereas {\tt memory} just
 employs memory tracing (\ref{sec:metr}).
 
 
@@ -454,11 +444,11 @@ Optimisation flags for the C++ compiler, their use depends on the type of
 optimisation being used.
 
 \item [{\tt F90\_OPTIMISE\_FLAGS}]
-Optimisation flags for the FORTRAN 90 compiler, their use depends on the 
+Optimisation flags for the FORTRAN 90 compiler, their use depends on the
 type of optimisation being used.
 
 \item [{\tt F77\_OPTIMISE\_FLAGS}]
-Optimisation flags for the FORTRAN 77 compiler, their use depends on the 
+Optimisation flags for the FORTRAN 77 compiler, their use depends on the
 type of optimisation being used.
 
 \item [{\tt C\_WARN\_FLAGS}]
@@ -527,7 +517,7 @@ values will be valid on all architectures.
 
 \item{\tt Extra packages}
 
-Compiling with extra packages is described fully in 
+Compiling with extra packages is described fully in
 Section \ref{sec:cowiexpa},
 which should be consulted for the full range of configuration options.
 
@@ -555,16 +545,16 @@ Supported values are {\it yes}.
 
 \subsubsection{MPI: Message Passing Interface}
 
-{\tt MPI} (the {\it Message Passing Interface}) provides inter-processor 
+{\tt MPI} (the {\it Message Passing Interface}) provides inter-processor
 communication. It can either be implemented natively on a machine
 (this is usual on most supercomputers), or through a standard package
-such as {\tt MPICH}, {\tt LAM}, {WMPI}, or {PACX}.  
+such as {\tt MPICH}, {\tt LAM}, {WMPI}, or {PACX}.
 
 To compile with MPI, the configure option is
 
 {\tt MPI = <MPI\_TYPE>}
 
-where {\tt <MPI\_TYPE>} can take the values (entries followed by * 
+where {\tt <MPI\_TYPE>} can take the values (entries followed by *
 may be specified on the configuration command line):
 
 \begin{Lentry}
@@ -577,69 +567,69 @@ may be specified on the configuration command line):
   \end{Lentry}
 
 \item[{\tt NATIVE}] Use the native {\tt MPI} for this machine, as indicated in
-        the {\tt known-architectures} directory 
+        the {\tt known-architectures} directory
 	({\tt lib/make/known-architectures}).
 
-\item[{\tt MPICH}] 
+\item[{\tt MPICH}]
 Use MPICH ({\tt http://www-unix.mcs.anl.gov/mpi/mpich}). This is controlled
 by the options
   \begin{Lentry}
   \item [{\tt MPICH\_ARCH} *] machine architecture.
   \item [{\tt MPICH\_DIR} *] directory in which {\tt MPICH} is installed.
         If this option is not defined it will be searched for.
-  \item [{\tt MPICH\_DEVICE} *] the device used by {\tt MPICH}. If not 
-        defined, the configuration process will search for this in a 
+  \item [{\tt MPICH\_DEVICE} *] the device used by {\tt MPICH}. If not
+        defined, the configuration process will search for this in a
         few defined places.
-        Supported devices are currently {\tt ch\_p4}, {\tt ch\_shmem}, 
+        Supported devices are currently {\tt ch\_p4}, {\tt ch\_shmem},
 	{\tt globus} and {\tt myrinet}.
 	For versions of MPICH prior to 1.2.0 the devices are searched for
  	in this order, for 1.2.0 you may need to specify {\tt MPICH\_DEVICE},
 	depending on the installation.
   \end{Lentry}
 
-If {\tt MPICH\_DEVICE} is chosen to be {\tt globus}, ({\tt www.globus.org}), 
+If {\tt MPICH\_DEVICE} is chosen to be {\tt globus}, ({\tt www.globus.org}),
 an additional variable must be set
   \begin{Lentry}
   \item[{\tt GLOBUS\_LIB\_DIR} *] directory in which Globus libraries are installed.
   \end{Lentry}
 
-If {\tt MPICH\_DEVICE} is chosen to be {\tt ch\_gm}, ({\tt www.myri.com}), 
+If {\tt MPICH\_DEVICE} is chosen to be {\tt ch\_gm}, ({\tt www.myri.com}),
 an additional variable must be set
   \begin{Lentry}
   \item[{\tt MYRINET\_DIR} *] directory in which Myrinet libraries are installed.
   \end{Lentry}
 
 \item[{\tt LAM}]
-Use {\tt LAM} (Local Area Multicomputer, {\tt http://www.lam-mpi.org/}). This is 
-controlled by the variables 
+Use {\tt LAM} (Local Area Multicomputer, {\tt http://www.lam-mpi.org/}). This is
+controlled by the variables
   \begin{Lentry}
-  \item[{\tt LAM\_DIR} *] directory in which {\tt LAM} is installed. This 
+  \item[{\tt LAM\_DIR} *] directory in which {\tt LAM} is installed. This
      will be searched for in a few provided places if not given.
   \end{Lentry}
 if the {\tt LAM} installation splits libraries and include files into different
 directories, instead of setting {\tt LAM\_DIR} set the two variables
   \begin{Lentry}
-  \item[{\tt LAM\_LIB\_DIR} *] directory in which {\tt LAM} libraries are installed. 
-  \item[{\tt LAM\_INC\_DIR} *] directory in which {\tt LAM} include files are installed. 
+  \item[{\tt LAM\_LIB\_DIR} *] directory in which {\tt LAM} libraries are installed.
+  \item[{\tt LAM\_INC\_DIR} *] directory in which {\tt LAM} include files are installed.
   \end{Lentry}
 
 
-\item[{\tt WMPI}] 
+\item[{\tt WMPI}]
 Use WMPI (Win32 Message Passing Interface, {\tt http://dsg.dei.uc.pt/w32mpi/intro.html}). This is controlled by the variable
   \begin{Lentry}
   \item[{\tt WMPI\_DIR} *] directory in which {\tt WMPI} is installed.
   \end{Lentry}
 
-\item[{\tt HPVM}] 
+\item[{\tt HPVM}]
 Use HPVM (High Performance Virtual Machine,\\{\tt http://www-csag.ucsd.edu/projects/hpvm.html}). This is controlled by the variable
   \begin{Lentry}
   \item[{\tt HPVM\_DIR} *] directory in which {\tt HPVM} is installed.
   \end{Lentry}
 
-\item[{\tt MPIPro}] 
+\item[{\tt MPIPro}]
 Use MPIPro ({\tt http://www.mpi-softtech.com/}).
 
-\item[{\tt PACX}] 
+\item[{\tt PACX}]
 Use the PACX Metacomputing package (PArallel Computer eXtension,\\
 {\tt http://www.hlrs.de/structure/organisation/par/projects/pacx-mpi/}). This is controlled by the variables
   \begin{Lentry}
@@ -651,7 +641,7 @@ Use the PACX Metacomputing package (PArallel Computer eXtension,\\
 
 \end{Lentry}
 
-Note that the searches for libraries etc. mentioned above use the 
+Note that the searches for libraries etc. mentioned above use the
 locations given in the files in {\tt lib/make/extras/MPI}.
 
 \subsubsection{HDF5: Hierarchical Data Format version 5}
@@ -664,14 +654,14 @@ the configure options are
 If HDF5\_DIR is not given the configuration process will search for an
 installed HDF5 package in some standard places (defined in
 {\tt lib/make/extras/HDF5}). If the found HDF5 library was compiled with
-libz.a, the configuration process also searches for that library and adds it 
+libz.a, the configuration process also searches for that library and adds it
 to the linker flags. You may also point directly to an installation of libz.a
 by setting LIBZ\_DIR.\\
 
 
 \subsubsection{PTHREADS: POSIX threads}
 
-To enable multithreading support within Cactus using POSIX threads 
+To enable multithreading support within Cactus using POSIX threads
 the configure option is
 
 {\tt PTHREADS = yes}
@@ -684,7 +674,7 @@ defines necessary for compiling multithreaded code.
 
 \subsection{File layout}
 
-The configuration process sets up various subdirectories and files in the 
+The configuration process sets up various subdirectories and files in the
 {\tt configs} directory to contain the configuration specific files, these
 are placed in a directory with the name of the configuration.
 
@@ -697,8 +687,8 @@ The most important ones are
 
 \begin{Lentry}
 
-\item [{\tt make.config.defn}] 
-contains compilers and compilation flags for a configuration.  
+\item [{\tt make.config.defn}]
+contains compilers and compilation flags for a configuration.
 
 \item [{\tt make.extra.defn}]
 contains details about extra packages used in the configuration.
@@ -718,16 +708,16 @@ peculiarities of this configuration.
 In addition the following files may be informative:
 
 \begin{Lentry}
-\item [{\tt fortran\_name.pl}] 
-A perl script used to determine how the Fortran compiler names subroutines.  
-This is used to make some C routines callable from Fortran, and Fortran 
+\item [{\tt fortran\_name.pl}]
+A perl script used to determine how the Fortran compiler names subroutines.
+This is used to make some C routines callable from Fortran, and Fortran
 routines callable from C.
 
 \item [{\tt make.config.deps}]
 Initially empty.  Can be edited to add extra architecture specific dependencies
 needed to generate the executable.
 
-\item [{\tt make.config.rule}] 
+\item [{\tt make.config.rule}]
 Make rules for generating object files from source files.
 
 \end{Lentry}
@@ -747,11 +737,11 @@ An internal file used by autoconf.
 
 \end{Lentry}
 
-\item [{\tt lib}] 
+\item [{\tt lib}]
 An empty directory which will contain the libraries created for each thorn.
 
-\item [{\tt build}] 
-An empty directory which will contain the object files generated for this 
+\item [{\tt build}]
+An empty directory which will contain the object files generated for this
 configuration, and preprocessed source files.
 
 \item [{\tt config-info}]
@@ -770,11 +760,11 @@ A scratch directory which is used to accomodate Fortran 90 modules.
 \label{sec:buanadaco}
 
 Once you have created a new configuration, the command
-\\ \\ 
+\\ \\
 {\tt gmake <configuration name>}
 \\ \\
-will build an executable, prompting you along the way for the 
-thorns which should be included. There is a range of  gmake 
+will build an executable, prompting you along the way for the
+thorns which should be included. There is a range of  gmake
 targets and options which are detailed in the following sections.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -788,18 +778,18 @@ is to do. The command {\tt gmake help} lists all gmake targets:
 
 \begin{Lentry}
 
-\item [{\tt gmake <config>}] 
+\item [{\tt gmake <config>}]
 	builds a configuration. If the configuration doesn't exist
         it will create it.
 
 \item [{\tt gmake <config>-clean}] removes all object and dependency files from
-  a configuration. 
+  a configuration.
 
 \item [{\tt gmake <config>-cleandeps}] removes all dependency files from
-  a configuration. 
+  a configuration.
 
 \item [{\tt gmake <config>-cleanobjs}] removes all object files from
-  a configuration. 
+  a configuration.
 
 \item [{\tt gmake <config>-config}] creates a new configuration or reconfigures an old one.
 
@@ -820,14 +810,14 @@ by configure and the ThornList file remain.
 \item [{\tt gmake <config>-rebuild}] rebuilds a configuration (reruns the CST).
 
 \item [{\tt gmake <config>-testsuite}] runs the test programs associated with
- each thorn in the configuration. See section \ref{sec:te} for information about the 
+ each thorn in the configuration. See section \ref{sec:te} for information about the
  testsuite mechanism.
 
 \item [{\tt gmake <config>-thornlist}] regenerates the ThornList for a configuration.
 
 \item [{\tt gmake <config>-utils [UTILS$=$<list>]}] builds all utility programs provided by the thorns of a configuration. Individual utilities can be selected by giving their names in the {\tt UTILS} variable.
 
-\item[{\tt gmake <config>-ThornGuide}] builds documentation for the thorns 
+\item[{\tt gmake <config>-ThornGuide}] builds documentation for the thorns
 in this configuration.
 
 \item[{\tt gmake <config>-configinfo}] displays the options used to build the configuration.
@@ -841,13 +831,13 @@ in this configuration.
 \subsection{Compiling in thorns}
 \label{sec:cointh}
 
-Cactus will try to compile all thorns listed in 
+Cactus will try to compile all thorns listed in
 {\tt configs/<config>/ThornList}.
 The {\tt ThornList} file is simply a list of the form
 {\t <arrangement>/<thorn>}.  All text after a \# or ! sign
 on a line is treated as a comment and ignored.
-The first time that you compile a configuration, if you did 
-not specify a ThornList already during configuration, 
+The first time that you compile a configuration, if you did
+not specify a ThornList already during configuration,
 you will be shown a list of all the thorns in your arrangement
 directory, and asked if you with to edit them. You can regenerate
 this list at anytime by typing
@@ -872,7 +862,7 @@ Instead of using the editor to specify the thorns you want to
 \subsection{Notes and Caveats}
 \begin{itemize}
 \item{} If during the build you see the error ``{\tt missing
-    separator}'' you are probably not using GNU make. 
+    separator}'' you are probably not using GNU make.
 \item{} {\em The EDITOR environment variable}. You may not be aware of
   this, but this thing very often exists and may be set  by default to
   something scary like {\tt vi}. If you don't know how to use {\tt vi}
@@ -902,7 +892,7 @@ make system.
 \end{Lentry}
 
 Note that with more modern versions of gmake, it is sufficient to pass the normal
- {\tt -j <number>} flag to gmake to get parallel compilation. 
+ {\tt -j <number>} flag to gmake to get parallel compilation.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
@@ -934,7 +924,7 @@ the Cactus root directory. % (usually \texttt{Cactus}).
 \item [{\tt gmake downsize}] removes non-essential files as documents
   and testsuites to allow for minimal installation size.
 
-\item [{\tt gmake newthorn}] creates a new thorn, prompting for the necessary 
+\item [{\tt gmake newthorn}] creates a new thorn, prompting for the necessary
   information and creating template files.
 
 \item [{\tt gmake TAGS}] creates an Emacs style TAGS file. See section
@@ -955,7 +945,7 @@ configuration found in user's \texttt{configs} subdirectory.
 \end{Lentry}
 
 
-\section{Testing} 
+\section{Testing}
 \label{sec:te}
 
 Some thorns come with a testsuite, consisting of example parameter files
@@ -1044,35 +1034,35 @@ Produces a full list of all parameters from all thorns which were compiled,
 along with descriptions and allowed values.  This can take an optional extra
 parameter {\tt v}  (i.e. {\tt -Ov} to give verbose information about
 all parameters).
-\item [{\tt -o <param>} or {\tt -describe-parameter <param>}] 
+\item [{\tt -o <param>} or {\tt -describe-parameter <param>}]
 Produces the description and allowed values for a given parameter --- takes one
 argument.
-\item [{\tt -T} or {\tt -list-thorns}] 
+\item [{\tt -T} or {\tt -list-thorns}]
 Produces a list of all the thorns which were compiled in.
-\item [{\tt -t <arrangement or thorn>} or {\tt -test-thorn-compiled <arrangement or thorn>} ] 
+\item [{\tt -t <arrangement or thorn>} or {\tt -test-thorn-compiled <arrangement or thorn>} ]
 Checks if a given thorn was compiled in - takes one argument.
 \item [{\tt -h}, {\tt -?} or {\tt -help}]
 Produces a help message.
-\item [{\tt -v} or {\tt -version}] 
+\item [{\tt -v} or {\tt -version}]
 Produces version information of the code.
-\item [{\tt -x <nprocs>} or {\tt -test-parameters <nprocs>}] 
+\item [{\tt -x <nprocs>} or {\tt -test-parameters <nprocs>}]
 Runs the code far enough to check the consistency of the parameters.  If
-given a numeric argument it will attempt to simulate being on that number 
+given a numeric argument it will attempt to simulate being on that number
 of processors. [To be implemented.]
 \item [{\tt -W <level>} or {\tt -waring-level <level>}]
 Sets the warning level of the code.  All warning messages are given a level ---
 the lower the level the greater the severity.  This parameter controls the
-level of messages to be seen.  The default is a warning level of 1, with 
-0 indicating that only those messages which are (by default) fatal should 
+level of messages to be seen.  The default is a warning level of 1, with
+0 indicating that only those messages which are (by default) fatal should
 be seen.
 \item [{\tt -E <level} or {\tt -error-level <level>}]
 This works in concert with {\tt -W} --- it controls which warning level is
-treated as a fatal error.  This cannot be set to a higher value than 
+treated as a fatal error.  This cannot be set to a higher value than
 {\tt -W}. The default value is zero.
 \item [{\tt -r} or {\tt -redirect-stout}]
 This redirects the standard output of each processor to a file.  By default
 the output from processors other than processor 0 is discarded.
-\item [{\tt -i} or {\tt -ignore-next}] 
+\item [{\tt -i} or {\tt -ignore-next}]
 Ignore the next argument on the command line.
 \item [{\tt -parameter-level}]
 Set the level of parameter checking to be used, either {\tt strict}, {\tt normal} (the default), or {\tt relaxed}. See Section~\ref{sec:pafisy}.
@@ -1086,17 +1076,17 @@ Set the level of parameter checking to be used, either {\tt strict}, {\tt normal
 
 The parameter file is used to control the behaviour of the code at runtime.
 It is a text file with lines which are either comments, denoted
-by a `\#' or `!', or parameter statements. A parameter statement consists 
+by a `\#' or `!', or parameter statements. A parameter statement consists
 of one or more parameter names, followed by
-an `=', followed by the value(s) for this (these) parameter(s). 
+an `=', followed by the value(s) for this (these) parameter(s).
 Note that all string parameters are case insensitive.
 
 The {\tt first parameter} in any parameter file should be {\tt ActiveThorns}.
-This is a special parameter  which tells the 
-code which {\em thorns} are to be activated.  Only parameters from active 
-thorns can be set  (and only those routines {\it scheduled} by active thorns 
-are run).  By default all thorns are inactive. For example, the first 
-entry in a parameter file which is using just the two thorns 
+This is a special parameter  which tells the
+code which {\em thorns} are to be activated.  Only parameters from active
+thorns can be set  (and only those routines {\it scheduled} by active thorns
+are run).  By default all thorns are inactive. For example, the first
+entry in a parameter file which is using just the two thorns
 {\tt CactusPUGH/PUGH} and {\tt CactusBase/CartGrid3D} should be
 
 {\tt ActiveThorns = ``PUGH CartGrid3D''}
@@ -1105,8 +1095,8 @@ Parameters following the {\tt ActiveThorns} parameter all have names
 whose syntax depends on the scope of the parameter:
 \begin{Lentry}
 \item [{\tt Global parameters}]
-Just the name of the parameter itself. Global parameters are avoided, and 
-there are none in the Flesh and Cactus Toolkits. 
+Just the name of the parameter itself. Global parameters are avoided, and
+there are none in the Flesh and Cactus Toolkits.
 \item [{\tt Restricted parameters}]
 The name of the {\em implementation} which defined the parameter, two colons,
 and the name of the parameter --- e.g. {\tt driver::global\_nx}.
@@ -1115,9 +1105,9 @@ The name of the {\em thorn} which defined the parameter, two colons,
 and the name of the parameter --- e.g. {\tt wavetoyF77::amplitude}.
 \end{Lentry}
 
-This notation is not strictly enforced currently in the code. It is 
+This notation is not strictly enforced currently in the code. It is
 sufficient to specify the first part of the parameter name using either
-the implementation name, or the thorn name. However, it is suggested 
+the implementation name, or the thorn name. However, it is suggested
 that the convention above is followed.
 
 The Cactus Flesh performs checks for consistency and range of parameters,
@@ -1130,19 +1120,19 @@ default behaviour will be to terminate) if
 \item{} The specified parameter value is outside of the allowed range.
 \end{itemize}
 
-\item [{\tt normal}] 
-This is the default, and provides the same warnings as the 
+\item [{\tt normal}]
+This is the default, and provides the same warnings as the
 {\tt relaxed} level, with in addition a level 0 warning issued for
 \begin{itemize}
-\item{} An implementation and/or thorn {\tt foo} is active, but the 
+\item{} An implementation and/or thorn {\tt foo} is active, but the
 	parameter {\tt foo::bar} was not defined.
-\item{} The parameter {\tt foo::bar} was successfully set for both an 
-	active implementation {\tt foo} not implemented by a thorn {\tt foo}, 
+\item{} The parameter {\tt foo::bar} was successfully set for both an
+	active implementation {\tt foo} not implemented by a thorn {\tt foo},
 	and to a thorn {\tt foo}.
 \end{itemize}
 
 \item [{\tt strict}]
-This provides the same warnings as the {\tt normal} level, with in 
+This provides the same warnings as the {\tt normal} level, with in
 addition a level 0 warning issued for
 \begin{itemize}
 \item{} The parameter {\tt foo::bar} is specified in the parameter file,		but no implementation or thorn with the name {\tt bar} is active.
@@ -1158,14 +1148,14 @@ each thorn using the command line options {\tt -o} and {\tt -O}
 (Section~\ref{sec:coliop}).
 
 \item{} The parameter file is read {\it sequentially} from top to bottom,
-	this means that if you set the value of a parameter twice in 
-	the parameter file, the second value will be used. (This is 
+	this means that if you set the value of a parameter twice in
+	the parameter file, the second value will be used. (This is
 	why the {\tt ActiveThorns} parameter is always first in the file).
 
-\item{} Some parameters are {\it steerable} and can be changed during 
-	the execution of a code using parameter steering interfaces 
-	(for example, thorn {\tt CactusConnect/HTTPD}, or using a 
-	parameter file when recovering from a checkpoint file. 
+\item{} Some parameters are {\it steerable} and can be changed during
+	the execution of a code using parameter steering interfaces
+	(for example, thorn {\tt CactusConnect/HTTPD}, or using a
+	parameter file when recovering from a checkpoint file.
 
 \item{} For examples of parameter files, look in the {\tt par} directory
 	which can be found in most thorns.
@@ -1191,8 +1181,8 @@ As the program runs, the normal output provides the following information:
 \begin{Lentry}
 
 \item [Active thorns]
-	A report is made as each of the thorns in the {\tt ActiveThorns} parameters from the parameter file is attempted to be activated. This report 
-shows whether the activation was successful, and if successful gives the 
+	A report is made as each of the thorns in the {\tt ActiveThorns} parameters from the parameter file is attempted to be activated. This report
+shows whether the activation was successful, and if successful gives the
 thorn's implementation. For example
 
 {\tt
@@ -1201,7 +1191,7 @@ Activating thorn idscalarwave...Success -> active implementation idscalarwave
 \end{verbatim}
 }
 
-\item [Failed parameters] 
+\item [Failed parameters]
  	If any of the parameters in the parameter file does not belong to any of the active thorns, or if the parameter value is not in the allowed range, an
 error is registered. For example, if the parameter is not recognised
 
@@ -1219,7 +1209,7 @@ Unable to set keyword CartGrid3D::type - ByMouth not in any active range
 }
 
 \item [Scheduling information]
-	A complete list of all scheduled routines is given, in the 
+	A complete list of all scheduled routines is given, in the
 order that they will be executed. For example
 
 {\tt
@@ -1263,29 +1253,36 @@ order that they will be executed. For example
 
 
 \section{Output}
-Output methods in Cactus are all provided by thorns. Any number
-of output methods can be used for each run. The behaviour of 
-the output thorns in the standard arrangements are described in
-those thorns' documentation. In general, these thorns decide
-what to output by parsing a string parameter containing the 
-names of those grid variables, or groups of variables, for 
-which output is required. The names should be fully qualified
-with the {\tt implementation} and {\tt group} or {\tt variable} names. 
+Output methods in Cactus are all provided by thorns. Any number of output
+methods can be used for each run. The behaviour of the output thorns in the
+standard arrangements are described in those thorns' documentation.
+
+In general, these thorns decide what to output by parsing a string parameter
+containing the names of those grid variables, or groups of variables, for which
+output is required. The names should be fully qualified with the {\tt
+implementation} and {\tt group} or {\tt variable} names.
+
 There is usually a parameter for each method to denote how often, in evolution
-iterations, this output should be performed.  There is also usually
-a parameter to define the directory in which the output should be
-placed, defaulting to the directory from which the executable is 
-run.
+iterations, this output should be performed.  There is also usually a parameter
+to define the directory in which the output should be placed, defaulting to the
+directory from which the executable is run.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Checkpointing}
+\section{Checkpointing/Recovery}
 
-Checkpointing is defined as writing all data from a run to a file,
-so that the run can be restarted from reading all the data from the
-file. Checkpointing methods in Cactus are provided by thorns.
+Checkpointing is defined as saving the current state of a run (parameter
+settings, contents of grid variables, and other relevant information) to a file.
+At a later time, this run can then be restarted from that state by recovering
+all the data from the checkpoint file.
 
+Checkpointing/recovery methods in Cactus are provided by thorns.
+
+In general, these thorns decide how often to generate a checkpoint. They also
+register their recovery routines with the flesh which then get called during
+initialization to perform the recovery of parameters and grid variables if
+requested in the parameter file.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \end{cactuspart}
