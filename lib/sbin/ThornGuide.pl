@@ -78,12 +78,12 @@ if (! $outdir) {
 } else {
    if ($outdir =~ /^\//) {
       if (! -d "$outdir") {
-         mkdir($outdir, 0666);
+         mkdir($outdir, 0755);
          print STDERR "\nCreating directory: $outdir" if ($verbose);
       }
    } else {
       if (! -d "$start_directory/$outdir") {
-         mkdir("$start_directory/$outdir", 0666);
+         mkdir("$start_directory/$outdir", 0755);
          print STDERR "\nCreating directory: $start_directory/$outdir" if ($verbose);
       }
    }
