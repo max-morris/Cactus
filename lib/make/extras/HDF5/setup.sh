@@ -47,15 +47,22 @@ fi
 
 # Set the HDF5 libs, libdirs and includedirs
 
-HDF5_LIBS=hdf5
+HDF5_LIBS=hdf5 
 HDF5_LIB_DIRS="$HDF5_DIR/lib"
 HDF5_INC_DIRS="$HDF5_DIR/include"
 
 
 # Check whether we have to link with libz.a
 
-grep -qe '#define HAVE_COMPRESS2 1' ${HDF5_DIR}/include/H5config.h 2> /dev/null
+# this is for 1.3.x versions of HDF5
+grep -qe '#define H5_HAVE_COMPRESS2 1' ${HDF5_DIR}/include/H5pubconf.h 2> /dev/null
 test_compress2=$?
+
+# this is for 1.2.x versions of HDF5
+if [ $test_compress2 -ne 0 ] ; then
+  grep -qe '#define HAVE_COMPRESS2 1' ${HDF5_DIR}/include/H5config.h 2> /dev/null
+  test_compress2=$?
+fi
 
 # this is for old 1.0.x versions of HDF5 where they used different defines for zlib
 grep -qe '#define HAVE_LIBZ 1' ${HDF5_DIR}/include/H5config.h 2> /dev/null
