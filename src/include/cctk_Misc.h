@@ -39,6 +39,7 @@ int CCTK_SetBoolean(CCTK_INT *data, const char *value);
 
 int CCTK_RunTime(void);
 int Util_CurrentTime(int len, char *now);
+int Util_CurrentDate(int len, char *now);
 
 #ifdef __cplusplus
 }   
