@@ -50,7 +50,7 @@ endif
 # (Use -include to prevent warnings messages, as the file will be built if
 # it is missing .)
 # We don't want to include this file if doing something like a make clean
-# as, if the file didn't exist, it would first be made, which would be
+# because if the file didn't exist, it would first be made, which would be
 # pretty confusing during a make clean !
 
 ifeq ($(strip $(MAKECMDGOALS)),)
@@ -76,10 +76,6 @@ endif
 
 UTIL_DIR=$(EXEDIR)$(DIRSEP)$(CONFIG_NAME)
 
-# REMOVE IN BETA 12
-ifeq ($(strip $(THORN_LINKLIST)),)
-THORN_LINKLIST = $(THORNS) $(THORNS)
-endif
 
 # Build the list of all libraries
 ALLCACTUSLIBS = $(notdir $(CACTUSLIBS) $(THORN_LINKLIST) $(CACTUSLIBS))
