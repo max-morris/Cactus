@@ -199,7 +199,7 @@ sub CreateCStructureParameterHeader
     my $realname = $rhparameter_db->{"\U$rhparameters->{$parameter} $parameter\E realname"};
 
     push(@data, "  $type_string $realname$suffix;");
-    push(@definition, "  const $type_string $varprefix$parameter = $structure.$realname; \\");
+    push(@definition, "  const $type_string $varprefix$parameter = (const $type_string $varprefix)$structure.$realname; \\");
     push(@use, "  (void) ($parameter + 0); \\");
   }
 
