@@ -1530,9 +1530,9 @@ sub IsFunctionAliased
   push(@data,"  (void) (function + 0);");
   push(@data,"");
 
+  my $else = "";
   foreach my $name (sort keys %names)
   {
-    my $else = "";
     push(@data, "  ${else}if (! strcmp(function, \"$name\"))");
     push(@data, "  {");
     push(@data, "    retval = IsAliased".$name."();");
