@@ -13,7 +13,7 @@
 #ifndef _CACTUSMAINDEFAULTS_H_
 #define _CACTUSMAINDEFAULTS_H_
 
-#ifdef _cplusplus
+#ifdef __cplusplus
 extern "C" {
 #endif
 
@@ -21,7 +21,7 @@ int CactusDefaultInitialise(tFleshConfig *);
 int CactusDefaultEvolve(tFleshConfig *);
 int CactusDefaultShutdown(tFleshConfig *);
 
-#ifdef _cplusplus
+#ifdef __cplusplus
 	   }
 #endif
 

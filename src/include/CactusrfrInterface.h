@@ -10,7 +10,7 @@
 #ifndef _CACTUSRFRINTERFACE_H_
 #define _CACTUSRFRINTERFACE_H_
 
-#ifdef _cplusplus
+#ifdef __cplusplus
 extern "C" {
 #endif
 
@@ -31,7 +31,7 @@ int CCTK_rfrTriggerAction(void *GH, int group);
 int CCTK_rfrCallFunc(void *GH, int language, void *function);
 
 
-#ifdef _cplusplus
+#ifdef __cplusplus
 }
 #endif
 

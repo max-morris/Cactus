@@ -93,6 +93,8 @@ typedef struct
 
   int dim;
 
+  int n_timelevels;
+
   int n_variables;
 
   /* variables[n_variables] */
@@ -144,7 +146,7 @@ int CCTK_VTypeNumber(const char *type);
 int CCTK_GTypeNumber(const char *type);
 
 #ifdef __cplusplus
-	   }
+}
 #endif
 
 #endif

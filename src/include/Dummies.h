@@ -11,7 +11,7 @@
 #ifndef _DUMMIES_H_
 #define _DUMMIES_H_
 
-#ifdef _cplusplus
+#ifdef __cplusplus
 extern "C" {
 #endif
 
@@ -32,7 +32,7 @@ int CCTK_DummyTriggerAction(void *GH, int group);
 int CCTK_DummyCallFunc(void *GH, int language, void *function);
 
 
-#ifdef _cplusplus
+#ifdef __cplusplus
 }
 #endif
 

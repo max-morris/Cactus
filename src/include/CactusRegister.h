@@ -12,7 +12,7 @@
 #ifndef _CACTUS_REGISTRY_H_
 #define _CACTUS_REGISTRY_H_
 
-#ifdef _cplusplus
+#ifdef __cplusplus
 extern "C" {
 #endif
 
@@ -20,7 +20,7 @@ int RegisterMainFunction(int key, int (*func)(tFleshConfig *));
 
 int SetupMainFunctions(void);
 
-#ifdef _cplusplus
+#ifdef __cplusplus
 	   }
 #endif
 

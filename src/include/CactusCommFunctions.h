@@ -16,7 +16,7 @@
 
 #include "OverloadMacros.h"
 
-#ifdef _cplusplus
+#ifdef __cplusplus
 extern "C" {
 #endif
 
@@ -28,7 +28,7 @@ extern "C" {
 
 #undef OVERLOADABLE(name)
 
-#ifdef _cplusplus
+#ifdef __cplusplus
 	   }
 #endif
 

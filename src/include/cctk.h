@@ -53,8 +53,8 @@
 
 typedef struct
 {
-  Double r;
-  Double i;
+  Double Re;
+  Double Im;
 } Complex;
 
 extern int _cctk_one;

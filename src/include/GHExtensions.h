@@ -11,7 +11,7 @@
 #ifndef _GHEXTENSIONS_H_
 #define _GHEXTENSIONS_H_
 
-#ifdef _cplusplus
+#ifdef __cplusplus
 extern "C" {
 #endif
 
@@ -35,7 +35,7 @@ int CCTK_rfrTraverseGHExtensions(cGH *GH, int rfrpoint);
 int CCTK_GetGHExtensionHandle(const char *name);
 
 
-#ifdef _cplusplus
+#ifdef __cplusplus
 }
 #endif
 

@@ -16,7 +16,7 @@
 /*****************************************************/
 /* Function prototypes. */
 
-#ifdef _cplusplus
+#ifdef __cplusplus
 extern "C" {
 #endif
 
@@ -26,7 +26,7 @@ int RegisterKeyedFunction(void (*array[])(),
 
 void  (**(CreateKeyedFunctionArray(int size)))();
 
-#ifdef _cplusplus
+#ifdef __cplusplus
 	   }
 #endif
 
