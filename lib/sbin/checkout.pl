@@ -24,7 +24,8 @@ $finish = 0;
 while (!$finish)
 {   
     
-  print "\nCheckout applications, arrangements, thorns or quit? [arrangements] : ";
+  print "\nCheckout applications, arrangements or individual thorns.\n ";
+  print "app)lications, arr)angements, t)horns, q)uit, h)elp : [arr] ";
     
   $which = <STDIN>;
 
@@ -66,10 +67,10 @@ sub get_arrangements
     
     foreach $arrangement (sort keys %info)
     {
-      print "$arrangement\n";
+      print "$arrangement ";
     }
 
-    print "\nAvailable arrangements: \n";
+    print "\n\nAvailable arrangements: \n";
 
     open(MODULES,"cvs -d $repository co -s | ");
     
@@ -146,10 +147,10 @@ sub get_thorns
     
     foreach $thorn (sort keys %info)
     {
-      print "$thorn\n";
+      print "$thorn ";
     }
 
-    print "\nAvailable thorns: \n";
+    print "\n\nAvailable thorns: \n";
 
     open(MODULES,"cvs -q co -s | ");
     
@@ -177,7 +178,7 @@ sub get_thorns
     
     print "\n";
     
-    print "Checkout thorns [1-$count] : ";
+    print "Checkout thorns h)elp, q)uit, range [1-$count] : ";
     
     # Goto target arrangement directory 
     chdir arrangements || die "Could not find arrangements directory\n";
@@ -186,6 +187,11 @@ sub get_thorns
     if ($range =~ /^h/i)
     {
 	&print_help();
+    }
+    elsif ($range =~ /^q$/)
+    {
+      print "\n\n";
+      exit(0);
     }
     elsif ($range =~ /^\s*$/)
     {
@@ -373,12 +379,12 @@ sub choose_repository
 
   if (open(CVSPASS,"<$file"))
   {
-    $numinpass=0;
+    $numinpass=2;
     while (<CVSPASS>)
     {
       $numinpass++;
       /^([^\s]*)\s[^\s]*/;
-      $rep[2+$numinpass] = $1;
+      $rep[$numinpass] = $1;
     }
   }
   else
@@ -391,11 +397,12 @@ sub choose_repository
   print "Choose CVS repository ? \n";
   print "  [1] This flesh repository $rep[1]\n";
   print "  [2] $rep[2]\n";
-  for ($i=3;$i<=$numinpass+2;$i++)
+  for ($i=3;$i<=$numinpass;$i++)
   {
     print "  [$i] $rep[$i]\n";
   }
-  print "\nRepository choice [1] : ";
+  
+  print "\nRepository choice 1-$numinpass, h)elp, q)uit : [1] ";
   
   $dowhat = <STDIN>;
   
@@ -403,6 +410,11 @@ sub choose_repository
   {
     $dowhat = 1;
   } 
+  elsif ($dowhat =~ /^q/i)
+  {
+    print "\n\n";
+    exit(0);
+  }
   elsif ($dowhat =~ /^h/i)
   {
 
@@ -450,7 +462,7 @@ sub PrintInfo
 {
   print "\n";
   print "Type \"help\" at any prompt for a description on how\nto use this script\n\n";
-  print "Developmental thorns/arrangements are labelled (dev)\n\n";
+  print "Developmental thorns/arrangements are labelled (dev)\n";
   print "________________________________________________________________________\n\n";
 }    
 
