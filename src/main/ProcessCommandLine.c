@@ -14,6 +14,7 @@
 #include "cctk_Flesh.h"
 #include "cctk_GNU.h"
 #include "cctk_Misc.h"
+#include "cctk_CommandLine.h"
 
 #include "CommandLine.h"
 
@@ -32,6 +33,9 @@ CCTK_FILEVERSION(main_ProcessCommandLine_c)
 /********************************************************************
  ********************* Other Routine Prototypes *********************
  ********************************************************************/
+
+void CCTK_FCALL CCTK_FNAME(CCTK_ParameterFilename)
+     (int *retval, int *len, char *name);
 
 /********************************************************************
  *********************     Local Data   *****************************
