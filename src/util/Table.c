@@ -4834,6 +4834,12 @@ static
                    int type_code, int N_elements, const void *value,
                    const char *key)
 {
+  #ifdef UTIL_TABLE_DEBUG
+  printf("internal_set(handle=%d, type_code=%d, N_elements=%d, key=\"%s\")\n",
+         handle, type_code, N_elements, key);
+  #endif
+
+    {
   struct table_header *const thp = get_table_header_ptr(handle);
   if (thp == NULL)
   {
@@ -4848,11 +4854,6 @@ static
   {
     return UTIL_ERROR_BAD_INPUT;
   }
-
-  #ifdef UTIL_TABLE_DEBUG
-  printf("internal_set(handle=%d, type_code=%d, N_elements=%d, key=\"%s\")\n",
-         handle, type_code, N_elements, key);
-  #endif
 
   /* if key is already in table, delete it */
   /* ... this is a harmless no-op if it's not already in the table */
@@ -4885,6 +4886,7 @@ static
   }
 
   return return_value;
+    }
     }
     }
 }
@@ -4961,6 +4963,13 @@ static
                    int type_code, int N_value_buffer, void *value_buffer,
                    const char *key)
 {
+  #ifdef UTIL_TABLE_DEBUG
+  printf(
+     "internal_get(handle=%d, type_code=%d, N_value_buffer=%d, key=\"%s\")\n",
+         handle, type_code, N_value_buffer, key);
+  #endif
+
+    {
   const struct table_header *const thp = get_table_header_ptr(handle);
   if (thp == NULL)
   {
@@ -4971,12 +4980,6 @@ static
   {
     return UTIL_ERROR_TABLE_BAD_KEY;
   }
-
-  #ifdef UTIL_TABLE_DEBUG
-  printf(
-     "internal_get(handle=%d, type_code=%d, N_value_buffer=%d, key=\"%s\")\n",
-         handle, type_code, N_value_buffer, key);
-  #endif
 
     {
   const struct table_entry *const tep = find_table_entry(thp, key, NULL);
@@ -5009,6 +5012,7 @@ static
   }
 
   return tep->N_elements;
+    }
     }
 }
 
@@ -5163,17 +5167,18 @@ static
                          const char *key,
                          int type_code, int N_elements, const void *value)
 {
+  #ifdef UTIL_TABLE_DEBUG
+  printf("insert_table_entry(type_code=%d, N_elements=%d, key=\"%s\")...\n",
+         type_code, N_elements, key);
+  #endif
+
+    {
   struct table_entry *tep = (struct table_entry *)
                             malloc(sizeof(struct table_entry));
   if (tep == NULL)
   {
     return UTIL_ERROR_NO_MEMORY;            /* can't allocate new table entry */
   }
-
-  #ifdef UTIL_TABLE_DEBUG
-  printf("insert_table_entry(type_code=%d, N_elements=%d, key=\"%s\")...\n",
-         type_code, N_elements, key);
-  #endif
 
   tep->key = Util_Strdup(key);
   if (tep->key == NULL)
@@ -5223,6 +5228,7 @@ static
   thp->head = tep;
 
   return 0;
+    }
     }
     }
 }
