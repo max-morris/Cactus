@@ -90,8 +90,6 @@ else
      ;;
   esac
 
-  SYS_INC_DIRS="/PROGRA~/MICROS~1/VC98/INCLUDE"
-
   DIRSEP="\\\\"
 
   OPTIONSEP="# not even a single a single space under cygwin"
@@ -99,10 +97,16 @@ else
 # Convert //a to a: 
   GET_WD="pwd | sed 's,^/cygdrive/\(.\)/,\1:/,' | sed 's,^//\(.\)/,\1:/,' | sed 's,/,\\\\\\,g' "
 
+# The -nostdinc stops it picking stdio.h, etc, from the GNU headers.
   C_DEPEND='$(CPP) -E -MM -nostdinc $(CPPFLAGS) '
-  C_DEPEND_OUT='-I"$(strip $(subst ;," -I",$(INCLUDE)))" > $@'
   CXX_DEPEND='$(CPP) -E -MM -nostdinc $(CPPFLAGS) '
-  CXX_DEPEND_OUT='-I"$(strip $(subst ;," -I",$(INCLUDE)))" > $@'
+
+# Add in system include dirs from $(INCLUDE).  These may contain spaces.
+# The -D_M_IX86 is necessary for things like winnt.h.  Since this is
+# only used for generating dependencies, it shouldn't make a difference
+# if we use this same flag on ia64.
+  C_DEPEND_OUT='-D_M_IX86 -I"$(strip $(subst ;," -I",$(INCLUDE)))" > $@'
+  CXX_DEPEND_OUT='-D_M_IX86 -I"$(strip $(subst ;," -I",$(INCLUDE)))" > $@'
 
   MKDIR="mkdir "
   MKDIRFLAGS=" -p "
@@ -113,10 +117,10 @@ else
 
   GENERAL_LIBRARIES='$(LIBDIRS:%=/link /libpath:$(subst /,$(DIRSEP),%)) $(LIBS:%=%.lib)' 
 
-  : $(LIBS="$F90_LIBS wsock32")
+  : ${LIBS="$F90_LIBS wsock32"}
 
 # The Windows file system requires perl backup files to be made when
-# doing inplace editing
+# doing in place editing
   PERL_BACKUP_NECESSARY='yes'
 
   if test "x$cross_compiling" = "xyes" ; then
@@ -154,7 +158,7 @@ else
 
 # MPI stuff
 #
-# Linux has no native MPI, so we don't set any NATIVE_MPI_XXX variables.
+# Windows has no native MPI, so we don't set any NATIVE_MPI_XXX variables.
 # This is caught by lib/make/extras/MPI/NATIVE then.
 
 fi
