@@ -322,6 +322,14 @@ variable in each dimension
 %notyet	  Registers a routine as a \verb|CCTK_InterpLocalWarped()|
 %notyet	  interpolation operator
 
+\item[CCTK\_IsImplementationActive]
+  [\pageref{CCTK-IsImplementationActive}]
+  Reports whether an implementation was activated in a parameter file
+
+\item[CCTK\_IsImplementationCompiled]
+  [\pageref{CCTK-IsImplementationCompiled}]
+  Reports whether an implementation was compiled into a configuration
+
 \item[CCTK\_IsThornActive]
   [\pageref{CCTK-IsThornActive}]
   Reports whether a thorn was activated in a parameter file
@@ -3921,6 +3929,41 @@ CCTK_InterpRegisterOpLocalUniform(LocalInterp_InterpLocalUniform,
 % CCTK\_InterpRegisterOpLocalWarped here
 
 % ActiveThorns.c
+\begin{CCTKFunc}{CCTK\_IsImplementationActive}{Reports whether an implementation was activated in a parameter file}
+\label{CCTK-IsImplementationActive}
+\function{int}{integer}{istat}
+\argument{const char *}{character*(*)}{implementationname}
+\showargs
+\begin{params}
+\parameter{istat}{the return status}
+\parameter{implementationname}{the name of the implementation to check}
+\end{params}
+\begin{discussion}
+This function returns a non-zero value if the implementation given by
+{\tt implementationname} was activated in a parameter file, and zero
+otherwise.
+\end{discussion}
+\end{CCTKFunc}
+
+% ActiveThorns.c
+\begin{CCTKFunc}{CCTK\_IsImplementationCompiled}{Reports whether an
+implementation was compiled into the configuration}
+\label{CCTK-IsImplementationCompiled}
+\function{int}{integer}{istat}
+\argument{const char *}{character*(*)}{implementationname}
+\showargs
+\begin{params}
+\parameter{istat}{the return status}
+\parameter{implementationname}{the name of the implementation to check}
+\end{params}
+\begin{discussion}
+This function returns a non-zero value if the implementation given by
+{\tt implementationname} was compiled into the configuration, and zero
+otherwise.
+\end{discussion}
+\end{CCTKFunc}
+
+% ActiveThorns.c
 \begin{CCTKFunc}{CCTK\_IsThornActive}{Reports whether a thorn was activated in a parameter file}
 \label{CCTK-IsThornActive}
 \function{int}{integer}{istat}
@@ -3931,7 +3974,7 @@ CCTK_InterpRegisterOpLocalUniform(LocalInterp_InterpLocalUniform,
 \parameter{thorname}{the name of the thorn to check}
 \end{params}
 \begin{discussion}
-This function returns a non-zero value if the thorn given by {\it thornname}
+This function returns a non-zero value if the thorn given by {\tt thornname}
 was activated in a parameter file, and zero otherwise.
 \end{discussion}
 \end{CCTKFunc}
@@ -4143,7 +4186,7 @@ The variable name should be in the form {\t <implementation>::<variable>}
 \subroutine{int}{integer}{number}
 \showargs
 \begin{params}
-\parameter{number}{The number of grid variables compiled from the thorns {\t interface.ccl} files}
+\parameter{number}{The number of grid variables compiled from the thorn's {\t interface.ccl} files}
 \end{params}
 \begin{discussion}
 \end{discussion}
@@ -5062,30 +5105,66 @@ If the name if {\t NULL} the index will be used, if the index is negative the na
 
 
 % Groups.c
-\begin{CCTKFunc}{CCTK\_VarIndex}{Get the index for a variable}
+\begin{FunctionDescription}{CCTK\_VarIndex}{}
 \label{CCTK-VarIndex}
-\subroutine{int}{integer}{index}
-\argument{const char *}{character*(*)}{varname}
-\showargs
-\begin{params}
-\parameter{varname}{The name of the variable}
-\end{params}
-\begin{discussion}
-The variable name should be the given in its fully qualified form, that is {\t <implementation>::<variable>} for a public or protected variabe, and {\t <thornname>::<variable>} for a private variable.
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t index = CCTK\_VarIndex("evolve::phi") };
-\\
-\hfill {\bf Fortran} && {\t call CCTK\_VarIndex(index,"evolve::phi")}
-\\
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
+Get the index for a variable.
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+#include "cctk.h"
+int index = CCTK_VarIndex(const char *varname);
+\end{verbatim}
+\end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}
+call CCTK_VarIndex(index, varname)
+                   integer index
+                   character*(*) varname
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
 
+\begin{ParameterSection}
+\begin{Parameter}{varname}
+The name of the variable.
+\end{Parameter}
+\end{ParameterSection}
 
+\begin{Discussion}
+The variable name should be the given in its fully qualified form,
+that is\\ {\t <implementation>::<variable>} for a public or protected
+variable, and\\ {\t <thornname>::<variable>} for a private variable.
+\end{Discussion}
+
+%\begin{SeeAlsoSection}
+%\end{SeeAlsoSection}
+\begin{ErrorSection}
+\begin{Error}{-1}
+no variable of this name exists
+\end{Error}
+\begin{Error}{-2}
+failed to catch error code from \texttt{Util\_SplitString}
+\end{Error}
+\begin{Error}{-3}
+given full name is in wrong format
+\end{Error}
+\begin{Error}{-4}
+memory allocation failed
+\end{Error}
+\end{ErrorSection}
+\begin{ExampleSection}
+\begin{Example}{C}
+\begin{verbatim}
+index = CCTK_VarIndex("evolve::phi");
+\end{verbatim}
+\end{Example}
+\begin{Example}{Fortran}
+\begin{verbatim}
+call CCTK_VarIndex(index,"evolve::phi")
+\end{verbatim}
+\end{Example}
+\end{ExampleSection}
+\end{FunctionDescription}
 
 
 % Groups.c
@@ -5095,7 +5174,7 @@ The variable name should be the given in its fully qualified form, that is {\t <
 \argument{int}{integer}{index}
 \showcargs
 \begin{params}
-\parameter{name}{The  variable name}
+\parameter{name}{The variable name}
 \parameter{index}{The variable index}
 \end{params}
 \begin{discussion}
@@ -5111,8 +5190,6 @@ No Fortran routine exists at the moment.
 \begin{errorcodes}
 \end{errorcodes}
 \end{CCTKFunc}
-
-
 
 
 % Groups.c
@@ -5651,7 +5728,7 @@ Set a key/value iterator to point to a specified entry in the table.
 
 \item[Util\_TableItSetToNull]
      [\pageref{Util-TableItSetToNull}]
-Set a key/value iterator to the "null-pointer" state.
+Set a key/value iterator to the ``null-pointer'' state.
 
 \item[Util\_TableQueryFlags]
      [\pageref{Util-TableQueryFlags}]
@@ -5870,19 +5947,6 @@ in \verb|"util_Table.h"|:
 	bit in the flags word, this table's keys may be made
 	case-insensitive, \ie{} the table routines then compare
 	this table's keys with \verb|Util_StrCmpi()|.%%%
-\footnote{%%%
- 	 It's not entirely clear how non-ASCII characters
-	 like \c{c}, \'{e}, \ss, \dots should be handled
-	 here, since the whole notion of ``case'' starts to
-	 blur once we leave ASCII-land.  For example, should
-	 {\t "stra\ss{}e"} compare equal to {\t "strasse"}?
-	 What about a case-insensitive comparison of
-	 {\t "stra\ss{}e"} and {\t "STRASSE"}?  And what
-	 about the 16-bit character sets used for Chinese,
-	 Japanese, and Korean?  In general, Cactus basically
-	 just ignores internationalization issues.  Sigh\dots
-	 }%%%
-{}
 	Note that keys are still {\em stored\/} exactly as
 	the caller specifies them (\ie{} they are {\em not\/}
 	forced into a canonical case); it's only their
@@ -6168,7 +6232,9 @@ int N_elements = Util_TableGetXxx(int handle,
                                   const char *key);
 \end{verbatim}
 where \verb|XXX| is one of
-   \verb|POINTER|, \verb|FPOINTER|,
+   \verb|POINTER|, \verb|FPOINTER|\footnote{For historical reasons the
+   corresponding function is called \texttt{Util\_TableGetFnPointer}.
+   This should be changed soon.},
    \verb|CHAR|,
    \verb|INT|, \verb|INT2|, \verb|INT4|, \verb|INT8|,
    \verb|REAL|, \verb|REAL4|, \verb|REAL8|, \verb|REAL16|,
@@ -6311,7 +6377,9 @@ int N_elements = Util_TableGetXxxArray(int handle,
                                        const char *key);
 \end{verbatim}
 where \verb|XXX| is one of
-   \verb|POINTER|, \verb|FPOINTER|,
+   \verb|POINTER|, \verb|FNPOINTER|
+	\footnote{Use \texttt{Util\_TableGetFnPointer}, for historical
+   reasons.},
    \verb|CHAR|,
    \verb|INT|, \verb|INT2|, \verb|INT4|, \verb|INT8|,
    \verb|REAL|, \verb|REAL4|, \verb|REAL8|, \verb|REAL16|,
@@ -7287,7 +7355,7 @@ handle to the iterator
 \begin{Discussion}
 If no errors occur,
 \verb|Util_TableItQueryIsNonNull(ihandle)|
-is the same as
+is the same as\\
 \verb|1 - Util_TableItQueryIsNull(ihandle)|.
 
 Note that bad things (garbage results, core dumps) may happen if
@@ -7928,7 +7996,7 @@ of elements, but using an iterator instead of the key
 handle is invalid
 \end{Error}
 \begin{Error}{UTIL\_ERROR\_TABLE\_BAD\_KEY}
-key contains '/' character
+key contains `/' character
 \end{Error}
 \end{ErrorSection}
 
