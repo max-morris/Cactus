@@ -16,7 +16,7 @@
 #
 #
 #   @enddesc
-#   @version $Id: Makefile,v 1.126 2002-01-03 22:41:56 tradke Exp $
+#   @version $Id: Makefile,v 1.127 2002-01-09 11:59:36 tradke Exp $
 # @@*/
 
 ##################################################################################
@@ -329,6 +329,7 @@ else
 	@echo "                   and the ThornList file)."
 	@echo "  -rebuild       : to rebuild a configuration."
 	@echo "                  (forces the CST to be rerun)."
+	@echo "  -utils         : to build a configuration's utility programs."
 	@echo "  -testsuite     : run the test program."
 	@echo "  -thornlist     : regenerates the ThornList file. "
 	@echo "  -ThornGuide    : creates the thorn manual for a specific configuration. "
