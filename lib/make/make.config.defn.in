@@ -41,6 +41,18 @@ FCOMPILEONLY = @FCOMPILEONLY@
 # Most compilers use -o for naming the executable, alas some don't
 CREATEEXE = @CREATEEXE@
 
+# On Unix a / 
+DIRSEP = @DIRSEP@
+
+# Mostly a single space, sometimes nothing at all
+OPTIONSEP = @OPTIONSEP@
+
+C_DEPEND = @C_DEPEND@
+CXX_DEPEND = @CXX_DEPEND@
+
+# Command used to get the working directory
+GET_WD = @GET_WD@
+
 # Library info
 
 LIBS    = @LIBS@
@@ -48,7 +60,7 @@ LIBDIRS = @LIBDIRS@
 
 # System include directories
 
-SYS_INC_DIRS = 
+SYS_INC_DIRS = @SYS_INC_DIRS@
 
 # Stuff for the architecture
 

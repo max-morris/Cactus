@@ -49,8 +49,8 @@ endif
 $(EXE): $(CONFIG)/make.thornlist $(patsubst %,$(CCTK_LIBDIR)/lib%.a,$(notdir $(THORNS))) $(CCTK_LIBDIR)/libCactus.a $(CCTK_LIBDIR)/libCactusBindings.a
 	@echo $(DIVIDER)
 	@echo Creating $(EXE) from $(THORNS)
-	$(CC) $(CFLAGS) $(CCOMPILEONLY) $(TOP)/datestamp.o $(DATESTAMP)
-	$(LD) $(CREATEEXE)$@ $(LDFLAGS) $(EXTRAFLAGS) $(TOP)/datestamp.o -L$(CCTK_LIBDIR) -lCactus -lCactusBindings  $(addprefix -l,$(notdir $(THORNS))) $(addprefix -l,$(notdir $(THORNS))) -lCactus $(LIBDIRS:%=-L%) $(LIBS:%=-l%)
+	$(CC) $(CFLAGS) $(CCOMPILEONLY)$(OPTIONSEP)$(TOP)$(DIRSEP)datestamp.o $(DATESTAMP)
+	$(LD) $(CREATEEXE)$(OPTIONSEP)$(subst /,$(DIRSEP),$@) $(LDFLAGS) $(EXTRAFLAGS) $(subst /,$(DIRSEP), $(TOP)/datestamp.o) -L$(CCTK_LIBDIR) -lCactus -lCactusBindings  $(addprefix -l,$(notdir $(THORNS))) $(addprefix -l,$(notdir $(THORNS))) -lCactus $(LIBDIRS:%=-L%) $(LIBS:%=-l%)
 	@echo $(DIVIDER)
 	@echo All done !
 	@echo $(DIVIDER)

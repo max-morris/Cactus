@@ -2310,7 +2310,29 @@ LDFLAGS="$KNOWN_LDFLAGS $LDFLAGS"
 
 
 
-: ${CREATEEXE="-o # Please leave the space, it's important !"}
+: ${CREATEEXE="-o"}
+
+
+
+: ${DIRSEP="/"}
+
+
+
+: ${OPTIONSEP=" # a single space"}
+
+
+
+: ${C_DEPEND='$(CC) -E -M $(CPPFLAGS)'}
+
+
+
+: ${CXX_DEPEND='$(CXX) -E -M $(CPPFLAGS)'}
+
+
+: ${GET_WD="pwd"}
+
+
+: ${SYS_INC_DIRS=" "}
 
 
  
@@ -2489,6 +2511,12 @@ s%@C_FILE_PROCESSOR@%$C_FILE_PROCESSOR%g
 s%@CCOMPILEONLY@%$CCOMPILEONLY%g
 s%@FCOMPILEONLY@%$FCOMPILEONLY%g
 s%@CREATEEXE@%$CREATEEXE%g
+s%@DIRSEP@%$DIRSEP%g
+s%@OPTIONSEP@%$OPTIONSEP%g
+s%@C_DEPEND@%$C_DEPEND%g
+s%@CXX_DEPEND@%$CXX_DEPEND%g
+s%@GET_WD@%$GET_WD%g
+s%@SYS_INC_DIRS@%$SYS_INC_DIRS%g
 
 CEOF
 EOF

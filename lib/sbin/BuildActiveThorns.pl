@@ -11,7 +11,7 @@
 
 $package_dir = shift(@ARGV);
 
-chdir $package_dir;
+chdir $package_dir || die "Can't change directory to $package_dir";
 
 open(PACKAGES, "ls|");
 

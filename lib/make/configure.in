@@ -306,7 +306,29 @@ LDFLAGS="$KNOWN_LDFLAGS $LDFLAGS"
 
 AC_SUBST(CREATEEXE)
 
-: ${CREATEEXE="-o # Please leave the space, it's important !"}
+: ${CREATEEXE="-o"}
+
+AC_SUBST(DIRSEP)
+
+: ${DIRSEP="/"}
+
+AC_SUBST(OPTIONSEP)
+
+: ${OPTIONSEP=" # a single space"}
+
+AC_SUBST(C_DEPEND)
+
+: ${C_DEPEND='$(CC) -E -M $(CPPFLAGS)'}
+
+AC_SUBST(CXX_DEPEND)
+
+: ${CXX_DEPEND='$(CXX) -E -M $(CPPFLAGS)'}
+
+AC_SUBST(GET_WD)
+: ${GET_WD="pwd"}
+
+AC_SUBST(SYS_INC_DIRS)
+: ${SYS_INC_DIRS=" "}
 
 dnl Run any other scripts necessary
 

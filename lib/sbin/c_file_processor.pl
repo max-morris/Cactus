@@ -11,12 +11,14 @@
 
 $home = shift(@ARGV);
 
-if (! -e "$home/fortran_name.pl" ) 
+$fortran_name_file = "$home/fortran_name.pl";
+
+if (! -e "$fortran_name_file" ) 
 {
-    die "Unable to get fortran name file!";
+    die "Unable to get fortran name file $fortran_name_file!";
 }
 
-require "$home/fortran_name.pl";
+require "$fortran_name_file";
 
 $/ = ";";
 $*=1;
