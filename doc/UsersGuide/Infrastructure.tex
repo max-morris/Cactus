@@ -35,24 +35,24 @@
 
 \section{Overloading and Registration}
 
-The flesh defines a core API which guarantees the presence of a set of
-functions.  Although the flesh guarantees the presence of these functions,
-they can be provided by thorns.  Thorns do this either by the {\em overloading}
-or the {\em registration} of functions.
+The Flesh defines a core API which guarantees the presence of a set of
+functions.  Although the Flesh guarantees the presence of these functions,
+they can be provided by thorns.  Thorns do this either by the \textit{overloading}
+or the \textit{registration} of functions.
 
 \subsection{Overloading}
 
 Some functions can only be provided by one thorn.  The first thorn to
-{\em overload} this function succeeds, and any later attempt to overload
+\textit{overload} this function succeeds, and any later attempt to overload
 the function fails.  For each overloadable function there is a function
 with a name something like {\tt CCTK\_Overload...} which is passed the
 function pointer.
 
 \subsection{Registration}
 
-Some functions may be provided by several thorns.  The thorns {\em register}
-their function with the flesh, and when the flesh-provided function is called,
-the flesh calls all the registered functions.
+Some functions may be provided by several thorns.  The thorns \textit{register}
+their function with the Flesh, and when the Flesh-provided function is called,
+the Flesh calls all the registered functions.
 
 \section{GH Extensions}
 
@@ -64,7 +64,7 @@ Each GH extension is given a unique handle.
 \section{IO Methods}
 
 An IO method is a distinct way to output data.  Each IO method has a unique name,
-and the flesh-provided IO functions operate on all registered IO methods.
+and the Flesh-provided IO functions operate on all registered IO methods.
 
 \chapter{GH Extensions}
 
@@ -75,13 +75,13 @@ name of the extension.  This returns a unique handle that identifies the extensi
 Associated with a GH extension are three functions
 
 \begin{Lentry}
-\item[SetupGH]
+\item[{\tt SetupGH}]
 this is used to actually create the data structure holding the extension.  It
 is called when a new cGH is created.
-\item[InitGH]
+\item[{\tt InitGH}]
 this is used to initialise the extension.  It is called after the scheduler has
 been initialised on the cGH.
-\item[ScheduleTraverseGH]
+\item[{\tt ScheduleTraverseGH}]
 this is called whenever the schedule tree is due to be traversed on the GH.  It
 should initialise the data on the cGH and the call {\tt CCTK\_ScheduleTraverse} to traverse
 the schedule tree.
@@ -124,7 +124,7 @@ the schedule tree.
 
 \chapter{Adding a Driver}
 
-The flesh knows nothing about memory allocation for grid variables, or about how
+The Flesh knows nothing about memory allocation for grid variables, or about how
 to communicate data when synchronisation is called for.  It knows nothing about
 multiple patches or adaptive mesh refinement.  All this is the job of a driver.
 
@@ -135,7 +135,7 @@ registers its associated functions, and overloads the communication functions.
 It may optionally register interpolation, reduction, and IO methods.
 
 A driver may also overload the default Initialisation and Evolution routines,
-although a simple unigrid evolver is supplied in the flesh.
+although a simple unigrid evolver is supplied in the Flesh.
 
 \section{Startup}
 
@@ -143,19 +143,19 @@ A driver consists of a GH extension, and the following overloaded
 functions.
 
 \begin{enumerate}
-\item{} CCTK\_EnableGroupStorage
-\item{} CCTK\_DisableGroupStorage
-\item{} CCTK\_ArrayGroupSizeB
-\item{} CCTK\_QueryGroupStorageB
-\item{} CCTK\_SyncGroup
-\item{} CCTK\_EnableGroupComm
-\item{} CCTK\_DisableGroupComm
-\item{} CCTK\_Barrier
-\item{} CCTK\_OverloadParallelInit
-\item{} CCTK\_OverloadExit
-\item{} CCTK\_OverloadAbort
-\item{} CCTK\_OverloadMyProc
-\item{} CCTK\_OverloadnProcs
+\item{} {\tt CCTK\_EnableGroupStorage}
+\item{} {\tt CCTK\_DisableGroupStorage}
+\item{} {\tt CCTK\_ArrayGroupSizeB}
+\item{} {\tt CCTK\_QueryGroupStorageB}
+\item{} {\tt CCTK\_SyncGroup}
+\item{} {\tt CCTK\_EnableGroupComm}
+\item{} {\tt CCTK\_DisableGroupComm}
+\item{} {\tt CCTK\_Barrier}
+\item{} {\tt CCTK\_OverloadParallelInit}
+\item{} {\tt CCTK\_OverloadExit}
+\item{} {\tt CCTK\_OverloadAbort}
+\item{} {\tt CCTK\_OverloadMyProc}
+\item{} {\tt CCTK\_OverloadnProcs}
 \end{enumerate}
 
 \section{The GH Extension}
@@ -213,7 +213,7 @@ struct SimpleExtension *SimpleSetupGH(tFleshConfig *config, int conv_level, cGH 
 \end{verbatim}
 
 Basically all this example is doing is preparing a data array for use.  The
-function can query the flesh for information on every variable.  Note that
+function can query the Flesh for information on every variable.  Note that
 scalars should always have memory actually assigned to them.
 
 An {\tt InitGH} function isn't strictly necessary, and in this case it could just
@@ -285,7 +285,7 @@ int SimpleScheduleTraversGH(cGH *GH, const char *where)
 \end{verbatim}
 
 The third argument to {\tt CCTK\_ScheduleTraverse} is actually a function
-which will be called by the schedular when it wants to call a function
+which will be called by the scheduler when it wants to call a function
 scheduled by a thorn.  This function is given some information about
 the function to call, and is an alternative place where the cGH can be setup.
 
@@ -334,7 +334,7 @@ int SimpleCallFunction(void *function,
 The return code of the function signifies whether or not the function
 synchronised the groups in this functions synchronisation list of not.
 
-The flesh will synchronise them if the function returns false.
+The Flesh will synchronise them if the function returns false.
 
 Providing this function is probably the easiest way to do multi-patch or
 AMR drivers.
@@ -343,10 +343,10 @@ AMR drivers.
 
 These consist of
 \begin{enumerate}
-\item{} CCTK\_EnableGroupStorage
-\item{} CCTK\_DisableGroupStorage
-\item{} CCTK\_QueryGroupStorageB
-\item{} CCTK\_ArrayGroupSizeB
+\item{} {\tt CCTK\_EnableGroupStorage}
+\item{} {\tt CCTK\_DisableGroupStorage}
+\item{} {\tt CCTK\_QueryGroupStorageB}
+\item{} {\tt CCTK\_ArrayGroupSizeB}
 \end{enumerate}
 
 \subsection{En/Disable Group Storage}
@@ -385,8 +385,8 @@ int SimpleEnableGroupStorage(cGH *GH, const char *groupname)
 
 The disable function is basically the reverse of the enable one.
 
-The QueryGroupStorage function basically returns true or false if there is storage
-for the group, and the ArrayGroupSize returns the size of the grid function or array
+The {\tt QueryGroupStorage} function basically returns true or false if there is storage
+for the group, and the {\tt ArrayGroupSize} returns the size of the grid function or array
 group in a particular direction.
 
 \subsection{En/Disable Group Comm}
@@ -400,23 +400,23 @@ structures for the communication.
 \chapter{Adding an I/O Method}
 \label{chap:io_methods}
 %
-The flesh does not implement output for grid variables and other data by itself.
+The Flesh does not implement output for grid variables and other data by itself.
 Instead it provides a mechanism for thorns to register their own
 routines as I/O methods, and to invoke these I/O methods by either the
-flesh scheduler or by other thorn routines.
+Flesh scheduler or by other thorn routines.
 %
 \section{I/O Method Registration}
 %
-All I/O methods have to be registered with the flesh before they can be used.\\
-The flesh I/O registration API provides a routine {\t CCTK\_RegisterIOMethod()}
+All I/O methods have to be registered with the Flesh before they can be used.\\
+The Flesh I/O registration API provides a routine {\t CCTK\_RegisterIOMethod()}
 to create a handle for a new I/O method which is identified by its name
 (this name must be unique for all I/O methods).
 With such a handle, a thorn can then register a set of functions (using the
-{\t CCTK\_RegisterIOMethod*()} routines from the flesh) for doing
+{\t CCTK\_RegisterIOMethod*()} routines from the Flesh) for doing
 periodic, triggered, and/or unconditional output.
 
-The following example shows how a thorn would register an I/O method {\it
-"SimpleIO"} with routines to provide all these different types of output.
+The following example shows how a thorn would register an I/O method
+{\tt SimpleIO} with routines to provide all these different types of output.
 %
 \begin{verbatim}
   void SimpleIO_Startup (void)
@@ -440,8 +440,8 @@ The following example shows how a thorn would register an I/O method {\it
 %
 \section{Periodic Output of Grid Variables}
 %
-The flesh scheduler will automatically call {\t CCTK\_OutputGH()} at every
-iteration after the CCTK\_ANALYSIS time bin. This function loops over all I/O
+The Flesh scheduler will automatically call {\t CCTK\_OutputGH()} at every
+iteration after the {\tt CCTK\_ANALYSIS} time bin. This function loops over all I/O
 methods and calls their routines registered as {\t OutputGH()} (see also
 \ref{subsec:schedule_ccl}).
 %
@@ -450,7 +450,7 @@ methods and calls their routines registered as {\t OutputGH()} (see also
 \end{verbatim}
 %
 The {\t OutputGH()} routine itself should loop over all variables living on the
-{\t GH} grid hierarchy, and do all neccessary output if requested (this is
+{\t GH} grid hierarchy, and do all necessary output if requested (this is
 usually determined by I/O parameter settings).
 
 As its return code it should pass back the number of variables which were output
@@ -462,12 +462,12 @@ at the current iteration, or zero if no output was done by this I/O method.
 Besides the periodic output at every so many iterations using {\t OutputGH()},
 analysis and output of grid variables can also be done via triggers. For this,
 a {\t TimeToOutput()} routine is registered with an I/O method.
-This routine will be called by the flesh scheduler at every iteration before
-CCTK\_ANALYSIS with the triggering variable(s) as defined in the schedule
-block for all CCTK\_ANALYSIS routines (see \ref{scheduling:schedule_block}).
+This routine will be called by the Flesh scheduler at every iteration before
+{\tt CCTK\_ANALYSIS} with the triggering variable(s) as defined in the schedule
+block for all {\tt CCTK\_ANALYSIS} routines (see \ref{scheduling:schedule_block}).
 
 If the {\t TimeToOutput()} routine decides that it is now time to do output, the
-flesh scheduler will invoke the corresponding analysis routine and also request
+Flesh scheduler will invoke the corresponding analysis routine and also request
 output of the triggering variable(s) using {\t TriggerOutput()}.
 %
 \begin{verbatim}
@@ -478,16 +478,16 @@ output of the triggering variable(s) using {\t TriggerOutput()}.
 Both routines get passed the index of a possible triggering grid variable.
 
 {\t TimeToOutput()} should return true (a non-zero value) if analysis and output
-for {\it varindex} should take place at the current iteration, and false (zero)
+for \textit{varindex} should take place at the current iteration, and false (zero)
 otherwise.\\
 {\t TriggerOutput()} should return zero for successful output of variable
-{\it varindex}, and a negative value in case of an error.
+\textit{varindex}, and a negative value in case of an error.
 %
 %
 \section{Unconditional Output of Grid Variables}
 
 An I/O method's {\t OutputVarAs()} routine is supposed to do output for a
-specific grid variable if ever possible. It will be invoked by the flesh I/O API
+specific grid variable if ever possible. It will be invoked by the Flesh I/O API
 routines {\t CCTK\_OutputVar*()} for unconditional, non-triggered output of
 grid variables (see also \ref{sec:io}).
 
@@ -498,11 +498,11 @@ prototype:
   int SimpleIO_OutputVarAs (const cGH *GH, const char *varname, const char *alias);
 \end{verbatim}
 %
-The variable to output, {\it varname}, is given by its full name.
-In addition to that, an {\it alias} string can be passed which then serves
+The variable to output, \textit{varname}, is given by its full name.
+In addition to that, an \textit{alias} string can be passed which then serves
 the purpose of constructing a unique name for the output file.
 
-The {\t OutputVarAs()} routine should return zero if output for {\it varname}
+The {\t OutputVarAs()} routine should return zero if output for \textit{varname}
 was done successfully, or a negative error code otherwise.
 
 
@@ -511,20 +511,20 @@ was done successfully, or a negative error code otherwise.
 \label{chap:cp_recovery_methods}
 
 Like for I/O methods, checkpointing/recovery functionality must be implemented
-by thorns. The flesh only provides specific time bins at which the scheduler
+by thorns. The Flesh only provides specific time bins at which the scheduler
 will call thorns' routines in order to perform checkpointing and/or recovery.
 
 \section{Invocation of Checkpointing Routines}
 
 Thorns register their checkpointing routines at {\t CCTK\_CPINITIAL} and/or
 {\t CCTK\_CHECKPOINT}. These time bins are scheduled right after all initial
-data has been set up and after every evolution timestep resp. (see
+data has been set up and after every evolution timestep, respectively. (see
 \ref{subsec:schedule_ccl} for a description of all timebins). Depending on
 parameter settings, the checkpoint routines decide whether to write an initial
 data checkpoint, and when to write an evolution checkpoint.
 
 Each checkpoint routine should save all information to persistent storage which
-is neccessary to restart the simulation at a later time from exactly the same
+is necessary to restart the simulation at a later time from exactly the same
 state. Such information would include
 %
 \begin{itemize}
@@ -538,7 +538,7 @@ state. Such information would include
 
 \section{Invocation of Recovery Routines}
 
-Recovering from a checkpoint is a two-phase operation for which the flesh
+Recovering from a checkpoint is a two-phase operation for which the Flesh
 provides distinct timebins for recovery routines to be scheduled at:
 %
 \begin{Lentry}
@@ -547,13 +547,13 @@ provides distinct timebins for recovery routines to be scheduled at:
     settings, the recovery routines should decided whether recovery was
     requested, and if so, restore all parameters the checkpoint file and
     overwrite those which aren't steerable.\\
-    The flesh scheduler loops over all registered recovery routines to find out
+    The Flesh scheduler loops over all registered recovery routines to find out
     whether recovery was requested. Each recovery routine should therefore
     return a positive integer value for successful parameter recovery (causing
     the scheduler to shortcut its loop over all registered recovery routines),
     zero for no recovery, or a negative value to flag an error.\\
     If recovery was requested but no routine could successfully recover
-    parameters, the flesh will abort the run with an error message.\\
+    parameters, the Flesh will abort the run with an error message.\\
     If parameter recovery was performed successfully, the scheduler will set the
     {\tt recovered} flag which -- in combination with the setting of the {\tt
     Cactus::recovery\_mode} parameter -- decides whether any thorn routine
@@ -569,7 +569,7 @@ provides distinct timebins for recovery routines to be scheduled at:
     decide how to treat errors in recovering individual grid variables. Strict
     recovery (which is the default) requires all variables to be restored
     successfully (and should stop the code if not) whereas a relaxed mode
-    could eg. allow for grid variables which are not found in the checkpoint
+    could e.g. allow for grid variables which are not found in the checkpoint
     file to be gracefully ignored during recovery.
 \end{Lentry}
 
@@ -578,7 +578,7 @@ provides distinct timebins for recovery routines to be scheduled at:
 \chapter{Adding a timer}
 
 To add a Cactus timer you need to write several functions to provide the
-timer functionality, and then register these functions with the flesh, with a name for the timer using {\t CCTK\_TimerRegister}.
+timer functionality, and then register these functions with the Flesh, with a name for the timer using {\t CCTK\_TimerRegister}.
 
 The functions are registered using a structure {\t cTimerFuncs} which
 contains the function pointers. The required functions are:

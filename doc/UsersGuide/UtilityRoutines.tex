@@ -31,17 +31,17 @@ general overview of programming with these utility routines.
 
 \section{Motivation}
 
-Various Cactus functions need to pass information through a generic
-interface.  In the past we have used various ad-hoc means to do this,
+Cactus functions may need to pass information through a generic
+interface.  In the past we have used various ad hoc means to do this,
 and we often had trouble passing "extra" information that wasn't
 anticipated in the original design.  For example, for interpolation
 \verb|CCTK_InterpLocal()| and \verb|CCTK_InterpGV()| require that
 any parameters (such as the order of the interpolant) be encoded
 into the interpolator's character string name.  Similarly, elliptic
-solvers often need to pass various parameters, but we don't have a
+solvers often need to pass various parameters, but we haven't had a
 good way to do this.
 
-Key/value tables (``tables'' for short) provide a clean solution
+Key/value tables (\textit{tables} for short) provide a clean solution
 to these problems.  They're implemented by the \verb|Util_Table|*
 functions (described in detail in the Reference Manual).
 
@@ -49,23 +49,23 @@ functions (described in detail in the Reference Manual).
 
 \section{The Basic Idea}
 
-Basically, a table is an object which maps strings to almost-arbitrary
+Basically, a table is an object which maps strings to almost arbitrary
 user-defined data.  (If you know Perl, a table is very much like a
 Perl hash table.)%%%
 \footnote{%%%
 	 However, the present Cactus tables implementation
 	 is optimized for a relatively small number of
 	 distinct keys in any one table.  It will still
-	 work ok for huge numbers of keys, but it will be
+	 work OK for huge numbers of keys, but it will be
 	 slow.
 	 }%%%
 
-More formally, a table is an object which stores a set of ``keys''
-and a corresponding set of ``values''.  We refer to a (key,value)
-pair as a table ``entry''.
+More formally, a table is an object which stores a set of \textit{keys}
+and a corresponding set of \textit{values}.  We refer to a (key,value)
+pair as a table \textit{entry}.
 
 Keys are C-style null-terminated character strings, with the slash
-character \verb|'/'| reserved for future expansion.%%%
+character `{\tt /}' reserved for future expansion.%%%
 \footnote{%%%
 	 Think of hierarchical tables for storing
 	 tree-like data structures.%%%
@@ -89,17 +89,17 @@ and/or \verb|Util_TableGetString()| functions.  Finally, when you're
 through with a table you destroy it with \verb|Util_TableDestroy()|.
 
 There are also convenience functions \verb|Util_TableSetFromString()|
-to set entries in a table based on a parameter-file--style string,
+to set entries in a table based on a parameter-file-style string,
 and \verb|Util_TableCreateFromString()| to create a table and then
-set entries in it based on a parameter-file--style string.
+set entries in it based on a parameter-file-style string.
 
 As well, there are ``table iterator'' functions \verb|Util_TableIt*()|
 to allow manipulation of a table even if you don't know its keys.
 
 A table has an integer ``flags word'' which may be used to specify
-various options, via bit flags defined in \verb|"util_Table.h"|.
+various options, via bit flags defined in \verb|util_Table.h|.
 For example, the flags word can be used to control whether keys
-should be compared as case-sensitive or case-insensitive strings.
+should be compared as case sensitive or case insensitive strings.
 See the detailed function description of \verb|Util_TableCreate()|
 in the Reference Manual for a list
 of the possible bit flags and their semantics.  
@@ -135,18 +135,18 @@ Util_TableGetInt(handle, &two_value, "two");    /* sets two_value = 2 */
 Util_TableGetReal(handle, &pi_value, "pi");     /* sets pi_value = 3.14 */
 \end{verbatim}
 
-Actually, you shouldn't write code like this -- in the real world
+Actually, you shouldn't write code like this --- in the real world
 errors sometimes happen, and it's much better to catch them close to
-their point of occurence rather than silently produce garbage results
-or crash your program.  So, the {\em right\/} thing to do is to always
+their point of occurrence rather than silently produce garbage results
+or crash your program.  So, the \emph{right} thing to do is to always
 check for errors.  To allow this, all the table routines return a status,
 which is zero or positive for a successful return, but negative if
-and only if some sort of error has occured.%%%
+and only if some sort of error has occurred.%%%
 \footnote{%%%
 	 Often (as in the examples here) you don't care
-	 about the details of which error occured.  But if
+	 about the details of which error occurred.  But if
 	 you do, there are various error codes defined in
-	 {\t "util\_Table.h"} and {\t "util\_ErrorCodes.h"};
+	 {\t util\_Table.h} and {\t util\_ErrorCodes.h};
 	 the detailed function descriptions in
 	 the Reference Manual
 	 say which error codes each function can return.
@@ -187,7 +187,7 @@ if (Util_TableGetReal(handle, &pi_value, "pi") < 0)
 As well as a single numbers (or characters or pointers), tables can
 also store 1-dimensional arrays of numbers (or characters or pointers).%%%
 \footnote{%%%
-	 The table makes (stores) a {\em copy\/} of the array
+	 The table makes (stores) a \emph{copy} of the array
 	 you pass in, so you probably shouldn't use tables to
 	 store really big arrays like grid functions.  But it's
 	 fine to store things like parameters and coefficients.
@@ -213,15 +213,15 @@ if (count < 0)
 As you can see, a table entry remembers the length of any array
 value that has been stored in it.%%%
 \footnote{%%%
-	 In fact, actually {\em all\/} table values are
-	 arrays -- setting or getting a single value is
+	 In fact, actually \emph{all} table values are
+	 arrays --- setting or getting a single value is
 	 just the special case where the array length is 1.
 	 }%%%
 {}
 
 If you only want the first few values of a larger array, just pass
 in the appropriate length of your array,
-that's ok:
+that's OK:
 \begin{verbatim}
 CCTK_INT blah2[2];
 int count = Util_TableGetIntArray(handle, 2, blah2, "my array");
@@ -244,8 +244,8 @@ if (count < 0)
 
 One very common thing you might want to store in a table is a
 character string.  While you could do this by explicitly storing
-an array of \verb|CCTK_CHAR|, there are also more-convenient routines
-specially for setting and getting strings:
+an array of \verb|CCTK_CHAR|, there are also routines
+specially for conveniently setting and getting strings:
 \begin{verbatim}
 if (Util_TableSetString(handle, "black holes are fun", "bh") < 0)
         CCTK_WARN(-1, "couldn't set string value in table!");
@@ -259,7 +259,7 @@ if (Util_TableGetString(handle, 50, buffer, "bh") < 0)
 \end{verbatim}
 
 \verb|Util_TableGetString()| guarantees that the string is
-terminated by a null character (\verb|'\0'|), and also returns an
+terminated by a null character (`\verb|\0|'), and also returns an
 error if the string is too long for the buffer.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -287,11 +287,11 @@ if (Util_TableSetFromString(handle, "two=2 pi=3.14") != 2)
 
 There is also an even higher-level convenience function
 \verb|Util_TableCreateFromString()|: this creates a table with the
-case-insensitive flag set (to match Cactus parameter-file semantics),
-then (assuming no errors occured) calls \verb|Util_TableSetFromString()|
+case insensitive flag set (to match Cactus parameter file semantics),
+then (assuming no errors occurred) calls \verb|Util_TableSetFromString()|
 to set values in the table.
 
-For example the following code sets up a table (with the case-insensitive flag
+For example the following code sets up a table (with the case insensitive flag
 set) with four entries: an integer number ({\tt two}), a real number ({\tt
 pi}), a string ({\tt buffer}), and an integer array with three elements ({\tt
 array}):
@@ -310,7 +310,7 @@ if (handle < 0)
 Note that this code passes a single string to
 \verb|Util_TableCreateFromString()|%%%
 \footnote{C automatically concatenates
-adjacent character string constants separated only by whitespaces.}
+adjacent character string constants separated only by whitespace.}
 {} which then gets parsed into key/value pairs, with the key separated from its
 corresponding value by an equals sign.
 
@@ -373,7 +373,7 @@ using an iterator to print out all the entries in a table.
 
 \section{Multithreading and Multiprocessor Issues}
 
-{\bf At the moment, the table functions are {\em not\/} thread-safe
+{\bf At the moment, the table functions are \emph{not} thread-safe
 in a multithreaded environment!}  However, this should change in
 the not-too-distant future: then all the table functions will default
 to being thread-safe.  That is, user code will be able call these
@@ -402,7 +402,7 @@ In a multiprocessor environment, tables are always processor-local.
 
 \section{Metadata about All Tables}
 
-We have decided that tables do not {\em themselves\/} have names or other
+We have decided that tables do not \emph{themselves} have names or other
 attributes.  However, at some time in the future we may add some special
 ``system tables'' to be used by Cactus itself to store this sort of
 information for those cases where it's needed.
@@ -410,11 +410,11 @@ information for those cases where it's needed.
 For example, at some time in the future we may add support for a
 ``checkpoint me'' bit in a table's flags word, so that if you want a
 table to be checkpointed, you just need to set this bit.
-In this case the table will probably get a system-generated name in
+In this case the table will probably get a system generated name in
 the checkpoint dump file.  But if you want the table to have some
 other name in the dump file, then you need to tell the checkpointing
 code that by setting an appropriate entry in a checkpoint table.
-(You would find the checkpoing table by looking in a special
+(You would find the checkpoint table by looking in a special
 ``master system table'' that records handles of other interesting tables.)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
