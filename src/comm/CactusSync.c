@@ -31,11 +31,11 @@ CCTK_FILEVERSION(comm_CactusSync_c)
 /* prototypes for external C routines are declared in header cctk_Groups.h
    here only follow the fortran wrapper prototypes */
 void CCTK_FCALL CCTK_FNAME (CCTK_SyncGroupI)
-                           (cGH *GH, const int *group);
+                           (int *ierror, cGH *GH, const int *group);
 void CCTK_FCALL CCTK_FNAME (CCTK_SyncGroupWithVar)
-                           (cGH *GH, ONE_FORTSTRING_ARG);
+                           (int *ierror, cGH *GH, ONE_FORTSTRING_ARG);
 void CCTK_FCALL CCTK_FNAME (CCTK_SyncGroupWithVarI)
-                           (cGH *GH, const int *var);
+                           (int *ierror, cGH *GH, const int *var);
 
 
  /*@@
@@ -58,27 +58,40 @@ void CCTK_FCALL CCTK_FNAME (CCTK_SyncGroupWithVarI)
    @vtype      int
    @vio        in
    @endvar
+
+   @returntype int
+   @returndesc
+                0 for success, or<BR>
+               -1 if an invalid group was given,<BR>
+               -2 if driver returned an error on syncing the group
+   @endreturndesc
 @@*/
-void CCTK_SyncGroupI (cGH *GH,
-                      int group)
+int CCTK_SyncGroupI (cGH *GH, int group)
 {
+  int retval;
   char *groupname;
 
 
+  retval = -1;
   groupname = CCTK_GroupName (group);
-
   if (groupname)
   {
-    CCTK_SyncGroup (GH, groupname);
-
+    retval = CCTK_SyncGroup (GH, groupname);
+    if (retval)
+    {
+      retval = -2;
+    }
     free (groupname);
   }
+
+  return (retval);
 }
 
 void CCTK_FCALL CCTK_FNAME (CCTK_SyncGroupI)
-                           (cGH *GH, const int *group)
+                           (int *ierror, cGH *GH, const int *group)
 {
   CCTK_SyncGroupI (GH, *group);
+  *ierror = 0;
 }
 
 
@@ -104,18 +117,27 @@ void CCTK_FCALL CCTK_FNAME (CCTK_SyncGroupI)
    @vtype      const char *
    @vio        in
    @endvar
+
+   @returntype int
+   @returndesc
+               return code of @seeroutine CCTK_SyncGroupI
+   @endreturndesc
 @@*/
-void CCTK_SyncGroupWithVar (cGH *GH,
-                            const char *varname)
+int CCTK_SyncGroupWithVar (cGH *GH, const char *varname)
 {
-  CCTK_SyncGroupI (GH, CCTK_GroupIndexFromVarI (CCTK_VarIndex (varname)));
+  int idx;
+
+
+  idx = CCTK_VarIndex (varname);
+  idx = CCTK_GroupIndexFromVarI (idx);
+  return (CCTK_SyncGroupI (GH, idx));
 }
 
 void CCTK_FCALL CCTK_FNAME (CCTK_SyncGroupWithVar)
-                           (cGH *GH, ONE_FORTSTRING_ARG)
+                           (int *ierror, cGH *GH, ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_CREATE (varname);
-  CCTK_SyncGroupWithVar (GH, varname);
+  *ierror = CCTK_SyncGroupWithVar (GH, varname);
   free (varname);
 }
 
@@ -141,17 +163,25 @@ void CCTK_FCALL CCTK_FNAME (CCTK_SyncGroupWithVar)
    @vtype      int
    @vio        in
    @endvar
+
+   @returntype int
+   @returndesc
+               return code of @seeroutine CCTK_SyncGroupI
+   @endreturndesc
 @@*/
-void CCTK_SyncGroupWithVarI (cGH *GH,
-                             int var)
+int CCTK_SyncGroupWithVarI (cGH *GH, int var)
 {
-  CCTK_SyncGroupI (GH, CCTK_GroupIndexFromVarI (var));
+  int idx;
+
+
+  idx = CCTK_GroupIndexFromVarI (var);
+  return (CCTK_SyncGroupI (GH, idx));
 }
 
 void CCTK_FCALL CCTK_FNAME (CCTK_SyncGroupWithVarI)
-                           (cGH *GH, const int *var)
+                           (int *ierror, cGH *GH, const int *var)
 {
-  CCTK_SyncGroupWithVarI (GH, *var);
+  *ierror = CCTK_SyncGroupWithVarI (GH, *var);
 }
 
 
@@ -182,20 +212,24 @@ void CCTK_FCALL CCTK_FNAME (CCTK_SyncGroupWithVarI)
 
    @returntype int
    @returndesc
-               0
+               the total number of groups synchronized
    @endreturndesc
 @@*/
 int CCTK_SyncGroupsI (cGH *GH,
                       int n_groups,
                       const int *groups)
 {
-  int i;
+  int i, retval;
 
 
+  retval = 0;
   for (i = 0; i < n_groups; i++)
   {
-    CCTK_SyncGroupI (GH, groups[i]);
+    if (CCTK_SyncGroupI (GH, groups[i]) == 0)
+    {
+      retval++;
+    }
   }
 
-  return (0);
+  return (retval);
 }
