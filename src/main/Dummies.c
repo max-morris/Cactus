@@ -36,7 +36,7 @@ int CCTK_DummyTriggerable(int variable)
   return 0;
 }
 
-int CCTK_DummyTriggerSaysGo(int variable)
+int CCTK_DummyTriggerSaysGo(void *GH, int variable)
 {
   return 1;
 }
