@@ -16,6 +16,7 @@
 #include "CactusCommFunctions.h"
 #include "parameters.h"
 #include "rfr_constants.h"
+#include "Dummies.h"
 
 static char *rcsid = "$Id$";
 
@@ -104,31 +105,49 @@ int Cactus_InitialiseGH(cGH *GH)
   /*
   SetupFortranArrays(GH);
   */
+  
+  
+  /* Setup the rfr_top on this GH */
 
-  CCTK_TraverseGHExtensions(GH, "INITIALISE");
+  GH->rfr_top = NULL;
 
+  rfrInitTree(&(GH->rfr_top), 
+	      CCTK_DummyStorageOn,
+	      CCTK_DummyStorageOff,
+	      CCTK_DummyCommunicationOn,
+	      CCTK_DummyCommunicationOff,
+	      CCTK_DummyTriggerable,
+	      CCTK_DummyTriggerSaysGo,
+	      CCTK_DummyTriggerAction,
+	      CCTK_DummyCallFunc);
+
+  /* Do the rfr initialisation on this GH */
   CCTK_BindingsScheduleRegister("RFRINIT", (void *)GH);
+
+
+  /* Traverse all the extensions. */
+  CCTK_TraverseGHExtensions(GH, "INITIALISE");
 
 
   /* Do various rfr traversals.  Will tidy up later. */
 
-  rfrTraverse(GH, CACTUS_BASEGRID); 
-  rfrTraverse(GH,CACTUS_INITIAL0);
+  rfrTraverse(GH->rfr_top,GH, CACTUS_BASEGRID); 
+  rfrTraverse(GH->rfr_top,GH,CACTUS_INITIAL0);
 
   /* Loops like this should go eventually... */
   for (Rstep = CACTUS_INITIAL; Rstep <= CACTUS_INITIAL9; Rstep++)
   {
-    rfrTraverse(GH,Rstep);
+    rfrTraverse(GH->rfr_top,GH,Rstep);
   }
 
   /* Ignore checkpointing for now.
-   * rfrTraverse(GH,CACTUS_RECOVER);
-   * rfrTraverse(GH,CACTUS_CPINITIAL);
+   * rfrTraverse(GH->rfr_top,GH,CACTUS_RECOVER);
+   * rfrTraverse(GH->rfr_top,GH,CACTUS_CPINITIAL);
    */
 
   for (Rstep = CACTUS_POSTSTEP; Rstep <= CACTUS_POSTSTEP10; Rstep++)
   {
-    rfrTraverse(GH,Rstep);
+    rfrTraverse(GH->rfr_top,GH,Rstep);
   }
 
 }

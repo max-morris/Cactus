@@ -83,7 +83,7 @@ int CactusDefaultEvolve(tFleshConfig *config)
     /* Dump out checkpoint data on all levels */
     ForallConvLevels(iteration, convergence_level)
     {
-      rfrTraverse(config->GH[convergence_level],CACTUS_CHECKPOINT);
+      rfrTraverse(config->GH[convergence_level]->rfr_top,config->GH[convergence_level],CACTUS_CHECKPOINT);
     }
     EndForallConvLevels;
 
@@ -170,7 +170,7 @@ void PreStepper(cGH *GH) {
 
   /* Call the rfr with CACTUS_PRESTEP */
   for (Rstep = CACTUS_PRESTEP;Rstep <= CACTUS_PRESTEP5; Rstep++)
-    rfrTraverse(GH, Rstep);
+    rfrTraverse(GH->rfr_top,GH, Rstep);
 }
  /*@@
    @routine    EvolStepper
@@ -189,7 +189,7 @@ void PreStepper(cGH *GH) {
 
 void EvolStepper(cGH *GH) {
   /* Call the rfr with Evolution */
-  rfrTraverse(GH, CACTUS_EVOL);
+  rfrTraverse(GH->rfr_top,GH, CACTUS_EVOL);
   /* after Evolution check for NANs */
 
 #ifdef 0
@@ -217,7 +217,7 @@ void EvolStepper(cGH *GH) {
 @@*/
 
 void BoundStepper(cGH *GH) {
-  rfrTraverse(GH,CACTUS_BOUND);
+  rfrTraverse(GH->rfr_top,GH,CACTUS_BOUND);
 }
 
  /*@@
@@ -238,7 +238,7 @@ void PostStepper(cGH *GH) {
   int Rstep;  
    /* Call the rfr with post step */
   for (Rstep = CACTUS_POSTSTEP; Rstep <= CACTUS_POSTSTEP10; Rstep++)
-    rfrTraverse(GH, Rstep); 
+    rfrTraverse(GH->rfr_top,GH, Rstep); 
 }
  /*@@
    @routine    TerminationStepper
@@ -274,5 +274,5 @@ void TerminationStepper(cGH *GH) {
     cactus_terminate=TERMINATION_RAISED_BRDCAST;
     printf("RECEIVED GLOBAL TERMINATION SIGNAL \n");
   }
-  rfrTraverse(GH,CACTUS_TERMINATE);
+  rfrTraverse(GH->rfr_top,GH,CACTUS_TERMINATE);
 }
