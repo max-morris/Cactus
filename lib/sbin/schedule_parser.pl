@@ -89,6 +89,7 @@ sub write_rfr_header {
   $header .= "#include \"Groups.h\"\n";
   $header .= "#include \"rfr_constants.h\"\n";
   $header .= "#include \"declare_parameters.h\"\n";
+  $header .= "#include \"declare_arguments.h\"\n";
   $header .= "\n";
   $header .= "$routine (cGH *GH)\n";
   $header .= "{\n";
@@ -448,7 +449,7 @@ sub parse_schedule_at_RFR {
 #  Writes C wrapper for a fortran routine which is called
 #  by the RFR. Note that this is done because of the arguement
 #  lists. It is assumed that we are in the correct directory 
-#  for writing ( build/<config>/build/bindings/Scheduler/ )
+#  for writing ( configs/<config>/build/bindings/Scheduler/ )
 #  @enddesc 
 #  @calls     
 #  @calledby   

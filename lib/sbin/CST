@@ -1,12 +1,12 @@
 #! /usr/bin/perl -s
 #/*@@
-#  @file      config_parser.pl
+#  @file      CST
 #  @date      Sep 1998
 #  @author    Tom Goodale
 #  @desc 
 #  Parses the the configuration files for thorns.
 #  @enddesc 
-#  @version $Id$
+#  @version $Header $
 #@@*/
 
 ##########################################################################
@@ -16,7 +16,7 @@ $activethorns = shift(@ARGV);
 
 if (! $activethorns) 
 {
-    printf "Usage: config_parser [-top=<TOP>] [-config_dir=<config directory>] [-cctk_home=<CCTK home dir>] -bindings_dir=<CCTK bindings directory> ActiveThornList";
+    printf "Usage: CST [-top=<TOP>] [-config_dir=<config directory>] [-cctk_home=<CCTK home dir>] -bindings_dir=<CCTK bindings directory> ActiveThornList";
     exit;
 }
 
