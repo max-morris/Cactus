@@ -1,0 +1,151 @@
+#! /bin/sh
+# /*@@
+#   @file    darwin6.8
+#   @date    Mon 6 Oct 2003
+#   @author  John Shalf
+#   @desc
+#            Known architecture stuff for MacOS X (Darwin) release 6.8
+#   @enddesc
+#   @version $Header$
+# @@*/
+
+if test "$CCTK_CONFIG_STAGE" = 'preferred-compilers' ; then
+
+  :
+
+elif test -n "$IBMXL" && test "$IBMXL" = 'yes' ; then
+  echo "Configuring environment for IBM XL compilers"
+  CC=xlc
+  CXX=xlC
+  F90=xlf
+  F90=xlf
+  LD=xlC
+  : ${ARFLAGS='-rucs'}
+  : ${F90FLAGS='-qspill=10000 -qmaxmem=-1 -qnullterm'}
+  : ${F77FLAGS='-qfixed -qmaxmem=-1 -qnullterm'}
+  : ${F90_OPTIMISE_FLAGS='-O5'}
+  : ${F77_OPTIMISE_FLAGS='-O5'}
+  : ${F90_DEBUG_FLAGS='-g'}
+  : ${F77_DEBUG_FLAGS='-g'}
+  : ${CFLAGS='-qspill=17000 -qmaxmem=-1'}
+  : ${CXXFLAGS='-qspill=10000 -qmaxmem=-1'}
+  : ${C_OPTIMISE_FLAGS='-O5'}
+  : ${CXX_OPTIMISE_FLAGS='-O5'}
+# : ${F90_SUFFIX='f'}
+  if test -e '/usr/lib/gcc/darwin/3.3' ; then
+    C_DEPEND='gcc -M -no-cpp-precomp $(CPPFLAGS)'
+    CXX_DEPEND='g++ -E -M $(CPPFLAGS)'
+    F_DEPEND='$(CPP) -M $(CPPFLAGS)'
+    F77_DEPEND='$(CPP) -M $(CPPFLAGS)'
+  else
+    echo "Yo buddy.  You need to go to the ADC website and"
+    echo "update to gcc 3.3 "
+    C_DEPEND='$(PERL) $(CCTK_HOME)/lib/sbin/cpp.pl -M $(CPPFLAGS)'
+    F_DEPEND='$(PERL) $(CCTK_HOME)/lib/sbin/cpp.pl -M $(CPPFLAGS)'
+  fi
+  : ${LD='xlC'}
+  : ${LIBS='xlf90 xlfmath m'}
+  : ${LIBDIRS='/opt/ibmcmp/lib'}
+
+else
+
+  # this fixes some darwin-specific preprocessor bugs (?)
+  CFLAGS='-no-cpp-precomp'
+  # C_DEPEND='$(CC) -M $(CFLAGS) $(CPPFLAGS)'
+  if test -e '/usr/lib/gcc/darwin/3.3' ; then
+    C_DEPEND='gcc -M -no-cpp-precomp $(CPPFLAGS)'
+    CXX_DEPEND='g++ -E -M $(CPPFLAGS)'
+    F_DEPEND='$(CPP) -M $(CPPFLAGS)'
+    F77_DEPEND='$(CPP) -M $(CPPFLAGS)'
+  else
+    echo "Yo buddy.  You need to go to the ADC website and"
+    echo "update to gcc 3.3 "
+    C_DEPEND='$(PERL) $(CCTK_HOME)/lib/sbin/cpp.pl -M $(CPPFLAGS)'
+    F_DEPEND='$(PERL) $(CCTK_HOME)/lib/sbin/cpp.pl -M $(CPPFLAGS)'
+  fi
+  # Determine which Fortran 90 compiler is in use
+  MAC_F90_COMP=none
+
+  if test -n "$F90" && test "$F90" != 'none' ; then
+# this should really check the path of the IBM compiler
+# to make sure it is the default
+# should use a regexp to match the compiler path
+    if test `which f90` = '/opt/ibmcmp/xlf/8.1/bin/f90' ; then
+      MAC_F90_COMP=ibm
+      F90=xlf
+      F77=xlf
+    else
+      MAC_F90_COMP=absoft
+    fi
+  elif test -n "$F77" ; then
+    if test "`$F77 -? 2>&1 | grep -i absoft`" ; then
+      MAC_F77_COMP=absoft77
+    else
+      echo Unknown MacOS X f77 compiler.
+      echo Please add appropriate information to
+      echo $srcdir/known-architectures/darwin
+      echo ad send the updated file to CactusMaint
+      echo We will try anyway ...
+    fi
+  fi
+
+  #Set the appropriate flags
+  case "$MAC_F90_COMP" in
+    absoft)
+      : ${LIBS='f90math fio f77math m'}
+      : ${F90_OPTIMISE_FLAGS='-s -O'}
+      : ${F77_OPTIMISE_FLAGS='-s -O'}
+      # Test if it is a version of the absoft compiler which has the library in a custom place.
+      if test -n "$ABSOFT" ; then
+        : ${LIBDIRS='$(ABSOFT)/lib'}
+      fi
+      : ${F77_DEBUG_FLAGS='-g'}
+      : ${F90_DEBUG_FLAGS='-g'}
+      : ${F77_WARN_FLAGS='-m0'}
+      : ${F90_WARN_FLAGS='-m0'}
+      ;;
+    absoft77)
+      : ${LIBS='fio f77math m'}
+      F90FLAGS='-f'
+      # Test if it is a version of the absoft compiler which has the library in a custom place.
+      if test -n "$ABSOFT" ; then
+        : ${LIBDIRS='$(ABSOFT)/lib'}
+      fi
+      : ${F77_DEBUG_FLAGS='-g'}
+      : ${F90_DEBUG_FLAGS='-g'}
+      : ${F77_WARN_FLAGS='-m0'}
+      : ${F90_WARN_FLAGS='-m0'}
+      ;;
+    ibm)
+      : ${LD='xlC'}
+      : ${LIBS='xlf90 xlfmath m'}
+      : ${LIBDIRS='/opt/ibmcmp/lib'}
+      : ${ARFLAGS='-rucs'}
+      : ${F90FLAGS='-qspill=10000 -qmaxmem=-1 -qnullterm'}
+      : ${F77FLAGS='-qfixed -qmaxmem=-1 -qnullterm'}
+      : ${F90_OPTIMISE_FLAGS='-O5'}
+      : ${F77_OPTIMISE_FLAGS='-O5'}
+      ;;
+    none)
+      : ${LIBS='m'}
+      ;;
+    *)
+      echo Unknown Darwin f90 compiler.
+      echo Please add appropriate information to
+      echo $srcdir/known-architectures/darwin
+      echo and send the updated file to CactusMaint
+      echo We will try anyway ...
+      ;;
+  esac
+
+  # Darwin's ar command doesn't understand the '-s' flag
+  # so we have to use ranlib to add a table of contents to libraries
+  : ${ARFLAGS='ruc'}
+  : ${USE_RANLIB='yes'}
+
+  # MPI stuff
+  #
+  # Darwin has no native MPI, so we don't set any NATIVE_MPI_XXX variables.
+  # This is caught later on by lib/make/extras/MPI/NATIVE.
+
+fi
