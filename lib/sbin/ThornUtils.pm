@@ -344,6 +344,8 @@ sub EndDocument
 #  @desc
 #  Cleans up our values so that latex will not give us errors.
 #     $val = &CleanForLatex($val);
+#  Note: Do not call ToLower or ToUpper on the result; instead,
+#        transform before you clean for Latex.
 #  @enddesc 
 #  @calls     
 #  @calledby   
@@ -383,11 +385,8 @@ sub CleanForLatex
    # escape &
    $val =~ s/\&/\\\&/g;
 
-
-   # UNescape "
-   # latex gets very angry when it sees: \"
-   # so we are replacing it with: "
-   $val =~ s/\\\"/\"/g;
+   # escape %
+   $val =~ s/%/\\%/g;
 
    return $val;
 }
@@ -399,6 +398,8 @@ sub CleanForLatex
 #  @desc
 #  Takes a value, uppercases the first letter and lowercases all others
 #     $val = &Translate($val); 
+#  Note: Do not call this routine on a result of CleanForLatex; instead,
+#        transform before you clean for Latex.
 #  @enddesc 
 #  @calls     
 #  @calledby   
@@ -428,6 +429,8 @@ sub Translate
 #  @desc
 #  Translates values passed in to upper case and returns it
 #     $val = &ToUpper($val);
+#  Note: Do not call this routine on a result of CleanForLatex; instead,
+#        transform before you clean for Latex.
 #  @enddesc 
 #  @calls     
 #  @calledby   
@@ -451,6 +454,8 @@ sub ToUpper
 #  @desc
 #  Translates values passed in to lower case and returns it
 #     $val = &ToLower($val);
+#  Note: Do not call this routine on a result of CleanForLatex; instead,
+#        transform before you clean for Latex.
 #  @enddesc 
 #  @calls     
 #  @calledby   
