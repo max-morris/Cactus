@@ -24,7 +24,7 @@ sub CreateFortranThornParameterBindings
   %parameter_database = @rest[0..(2*$n_param_database)-1];
   %interface_database = @rest[2*$n_param_database..$#rest];
 
-  push(@file, "#define DECLARE_PARAMETERS\\");
+  push(@file, "#define DECLARE_PARAMETERS \\");
 
   # Generate all public parameters
   %these_parameters = &get_public_parameters(%parameter_database);
