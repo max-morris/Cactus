@@ -392,22 +392,35 @@ int CCTKi_ParseStaggerString(int dim,
   int i,m;
   int base  = 1;
   int scode = 0;
-  char hs[7]="MMMMMM", *info;
+  char *hs, *info;
 
-  /* change possible SHORTCUTS into the official notation, allow for dim=6 */
+  if (dim>10) CCTK_Warn(0,__LINE__,__FILE__,"Cactus","Staggering does not support dim>10");
+
+  hs = (char*)malloc(11*sizeof(char));
+  
+  /* change possible SHORTCUTS into the official notation*/
   if (CCTK_Equals(stype,"NONE"))
   {
-    strncpy(hs,"MMMMMM",dim);
+    sprintf(hs,"MMMMMMMMMM");
   }
   else if (CCTK_Equals(stype,"CELL")==0) 
   {
-    strncpy(hs,"CCCCCC",dim);
+    sprintf(hs,"CCCCCCCCCC");
   }
   else 
-  {
+  {  
+    if (strlen(stype)!=dim) 
+    {  
+      info   = (char*)malloc (256*sizeof(char));   
+      sprintf(info,"staggering >%s< for group >%s< not equal to group dimension: %d \n",
+	      stype,gname,dim);
+      CCTK_Warn(1,__LINE__,__FILE__,"Cactus",info);
+      free(info);
+    }
+
     sprintf(hs,"%s",stype);
   }
-
+  
   for (i=0;i<dim;i++) 
   {
     switch (toupper(hs[i]))
@@ -427,6 +440,5 @@ int CCTKi_ParseStaggerString(int dim,
     scode+= m*base;
     base  = 3 * base;
   }
-
   return(scode);
 }
