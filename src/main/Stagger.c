@@ -13,12 +13,13 @@
 #include <string.h>
 #include <ctype.h>
 
+#include "cctk_Flesh.h"
+#include "cctk_FortranString.h"
 #include "cctk_Groups.h"
 #include "cctk_Types.h"
-#include "cctk_FortranString.h"
 #include "cctk_WarnLevel.h"
+
 #include "cctki_Stagger.h"
-#include "cctk_Flesh.h"
 
 static char *rcsid = "$Header$";
 
@@ -132,10 +133,8 @@ int CCTK_StaggerIndex(const char *stype)
       case 'C':m=1; break;
       case 'P':m=2; break;
       default:
-        info   = (char*)malloc (256*sizeof(char));
-        sprintf(info,"Unknown stagger type: >%s< \n", stype);
-        CCTK_Warn(1,__LINE__,__FILE__,"Cactus",info);
-        free(info);
+        CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
+		   "CCTK_StaggerIndex: Unknown stagger type %s",stype);
         return(-1);
     }
     scode+= m*base;
@@ -238,8 +237,10 @@ int CCTK_StaggerDirArray(int *dindex , int dim, int sindex)
     hashed = 1;
   }
 
-  if (dim>4) {
-    CCTK_Warn(1,__LINE__,__FILE__,"Cactus", "Max. Staggerdims: 4");
+  if (dim>4) 
+  {
+    CCTK_VWarn(1,__LINE__,__FILE__,"Cactus", 
+	      "CCTK_StaggerDirArray: Dimension %d exceeds maximum of 4",dim);
     return(-1);
   }
 
@@ -318,7 +319,9 @@ int CCTK_StaggerDirName(int dir, const char *stype)
 
   if (dir>strlen(hs)) 
   {
-    CCTK_Warn(1,__LINE__,__FILE__,"Cactus","Stagger name too short for requested direction");
+    CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
+	      "CCTK_StaggerDirName: Stagger name too short for direction %d",
+	      dir);
   }
 
   switch (toupper(hs[dir]))
@@ -327,10 +330,8 @@ int CCTK_StaggerDirName(int dir, const char *stype)
     case 'C': scode = 1; break;
     case 'P': scode = 2; break;
     default:
-      info   = (char*)malloc (256*sizeof(char));
-      sprintf(info,"Unknown stagger type: >%s< \n", hs);
-      CCTK_Warn(1,__LINE__,__FILE__,"Cactus",info);
-      free(info);
+      CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
+		"CCTK_StaggerDirName: Unknown stagger type %s",hs);
       return(-1);
   }
   return(scode);
@@ -379,7 +380,12 @@ int CCTKi_ParseStaggerString(int dim,
   int scode = 0;
   char *hs, *info;
 
-  if (dim>10) CCTK_Warn(0,__LINE__,__FILE__,"Cactus","Staggering does not support dim>10");
+  if (dim>10) 
+  {
+    CCTK_VWarn(0,__LINE__,__FILE__,"Cactus",
+	       "CCTKi_ParseStaggerString: Dimension %d exceeds maximum of 10",
+	       dim);
+  }
 
   hs = (char*)malloc(11*sizeof(char));
   
@@ -396,11 +402,9 @@ int CCTKi_ParseStaggerString(int dim,
   {  
     if (strlen(stype)!=dim) 
     {  
-      info   = (char*)malloc (256*sizeof(char));   
-      sprintf(info,"staggering >%s< for group >%s< not equal to group dimension: %d \n",
-	      stype,gname,dim);
-      CCTK_Warn(1,__LINE__,__FILE__,"Cactus",info);
-      free(info);
+      CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
+		"CCTKi_ParseStaggerString: Staggering %s for %s unequal to group dimension %d",
+		stype,gname,dim);
     }
 
     sprintf(hs,"%s",stype);
@@ -414,12 +418,9 @@ int CCTKi_ParseStaggerString(int dim,
       case 'C':m=1; break;
       case 'P':m=2; break;
       default:
-        info   = (char*)malloc (256*sizeof(char));
-        sprintf(info,
-              "Unknown stagger type: >%s< for group: >%s::%s< \n",
-              stype,imp,gname);
-        CCTK_Warn(1,__LINE__,__FILE__,"Cactus",info);
-        free(info);
+        CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
+		   "CCTKi_ParseStaggerString: Unknown stagger type %s for %s::%s",
+		   stype,imp,gname);
         return(-1);
     }
     scode+= m*base;
