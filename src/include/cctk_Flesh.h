@@ -30,11 +30,11 @@ typedef struct
 
 #ifdef __cplusplus
 
-#define CCTK_FILEVERSION(file) extern "C" const char *CCTKi_version_##file(void) { return rcsid; }
+#define CCTK_FILEVERSION(file) extern "C" const char *CCTKi_version_##file(void);  const char *CCTKi_version_##file(void){ return rcsid; }
 
 #else
 
-#define CCTK_FILEVERSION(file) const char *CCTKi_version_##file(void) { return rcsid; }
+#define CCTK_FILEVERSION(file) const char *CCTKi_version_##file(void); const char *CCTKi_version_##file(void) { return rcsid; }
 
 #endif
 
