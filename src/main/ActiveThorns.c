@@ -447,6 +447,20 @@ int CCTKi_ListImplementations(FILE *file, const char *format, int active)
   return retval;
 }
 
+ /*@@
+   @routine    CCTK_ImpList
+   @date       Thu Oct 14 16:14:22 1999
+   @author     Tom Goodale
+   @desc 
+   Returns the list of implementations.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
 int CCTK_ImpList(int active, char ***list, int *n_implementations)
 {
   int retval;
@@ -476,6 +490,108 @@ int CCTK_ImpList(int active, char ***list, int *n_implementations)
   return retval;
 }
 
+
+
+ /*@@
+   @routine    CCTK_ThornList
+   @date       Thu Oct 14 16:04:59 1999
+   @author     Andre Merzky
+   @desc 
+   Returns a list of thorns.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+
+   @endhistory 
+
+@@*/
+int CCTK_ThornList (const char* imp, char ***list, int *n_thorns)
+{
+  int       retval;
+  t_sktree *node;
+  t_sktree *thornlist;
+  int	    alloc_size = 0;
+    
+  /* FIXME */
+#define _MY_THORN_JUNK_SIZE 10
+
+  /* find all thorns for implementation */
+  thornlist = (t_sktree*) CCTK_ImpThornList (imp);
+    
+    
+  /* got thornlist? */	
+  if (thornlist)
+  {
+    /* then we can start allocatin list */
+    alloc_size += _MY_THORN_JUNK_SIZE;
+    *list = (char **) malloc (alloc_size * sizeof (char *));
+	
+    /* success? */
+    if (! (*list)) 
+    {
+      fprintf (stderr, "Cannot malloc paramlist*\n");
+      return (-1);
+    }
+    /* recourse thorn tree */
+    for (node = SKTreeFindFirst (thornlist), *n_thorns = 0;
+         node; 
+         node = node->next, retval++)
+    {
+      /* list long enough? */
+      if ((*n_thorns) >= alloc_size)
+      {
+        /* no: realloc! */
+        alloc_size += _MY_THORN_JUNK_SIZE;
+        *list = (char **) realloc ((*list), alloc_size);
+
+        /* success? */
+        if (! (*list)) {
+          fprintf (stderr, "Cannot realloc paramlist*\n");
+          return (-1);
+        }
+          
+      } 
+
+      /* store thorn */
+      (*list)[*n_thorns] = (char *) malloc ((strlen (node->key) + 1) * sizeof (char));
+      strcpy ((*list)[*n_thorns], node->key);
+      (*n_thorns)++;
+    }
+  }
+
+  /* if necessary, shrink paramlist again. */
+  if ((*n_thorns) < alloc_size)
+  {
+    alloc_size += (*n_thorns);
+    *list = (char **) realloc ((*list), alloc_size);
+    
+    if (! (*list)) 
+    {
+      fprintf (stderr, "Cannot realloc list*\n");
+      return (-1);
+    }
+  } 
+
+  /* done */
+  return retval;
+}
+
+
+ /*@@
+   @routine    CCTK_ActivatingThorn
+   @date       Thu Oct 14 16:08:42 1999
+   @author     Tom Goodale
+   @desc 
+   Finds the thorn which activated a particular implementation 
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
 const char *CCTK_ActivatingThorn(const char *name)
 {
   const char *retval;
