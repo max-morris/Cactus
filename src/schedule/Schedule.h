@@ -34,6 +34,8 @@ int CCTKi_ScheduleSort(int size, signed char **array, int *order);
 
 cHandledData *CCTKi_ScheduleGetGroups(void);
 
+cHandledData *CCTKi_DoScheduleGetGroups(void);
+
 #ifdef __cplusplus
 }
 #endif
