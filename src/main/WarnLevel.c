@@ -337,9 +337,7 @@ void CCTKi_FinaliseParamWarn(void)
 void CCTKi_NotYetImplemented(void)
 {
 
-printf("\n\n This planned feature is not yet implemented in the code.
-          \n If you need this feature please contact the Cactus 
-             maintainers.\n");
+printf("\n\n This planned feature is not yet implemented in the code.\n If you need this feature please contact the Cactus maintainers.\n");
 
 CCTK_Warn(0,__LINE__,__FILE__,"Cactus","Feature not implemented");
 
