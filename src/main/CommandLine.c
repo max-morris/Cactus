@@ -59,10 +59,13 @@ void CCTK_CommandLineDescribeAllParameters(void)
 {
 
 }
+
 void CCTK_CommandLineDescribeParameter(const char *optarg)
 {
-
+  CCTK_BindingsParameterHelp(optarg,NULL,NULL);
+  exit();
 }
+
 void CCTK_CommandLineTestParameters(const char *optarg)
 {
   int nprocs;
