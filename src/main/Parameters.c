@@ -447,10 +447,10 @@ int CCTK_ParameterSet (const char *name, const char *thorn, const char *value)
    @vio        in
    @endvar
    @var        type
-   @vdesc      The type of the parameter
+   @vdesc      If not NULL, a pointer to an integer which will hold the type
+               of the parameter
    @vtype      int *
    @vio        out
-   @vcomment   An integer representing the type of the parameter
    @endvar
 
    @returntype const void *
@@ -1103,7 +1103,10 @@ static int ParameterInsert (t_sktree **tree, t_param *newparam)
 @@*/
 static const void *ParameterGetSimple (const t_param *param, int *type)
 {
-  *type = param->props->type;
+  if (type)
+  {
+    *type = param->props->type;
+  }
 
   return (param->data);
 }
