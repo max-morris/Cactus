@@ -102,4 +102,9 @@ int        CCTK_VarTypeSize(int vtype);
 #define CCTK_PROTECTED 2
 #define CCTK_PUBLIC    3
 
+/* constants for CCTK_TraverseString() */
+#define CCTK_VAR          1
+#define CCTK_GROUP        2
+#define CCTK_GROUP_OR_VAR 3
+
 #endif /* _CCTK_GROUPS_H_ */
