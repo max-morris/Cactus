@@ -375,30 +375,30 @@ int Util_StrCmpi(const char *string1, const char *string2)
    -1 - out of memory
    @endreturndesc
 @@*/
-int Util_SplitFilename(char **dir, char **file, const char *string)
+int Util_SplitFilename (char **dir, char **file, const char *string)
 {
-  int retval=-1;
-  char *position=NULL;
-  char *copy;
+  char *position;
 
-  copy = Util_Strdup(string);
 
-  /* Find location of the seperator */
-  position = strrchr(copy, '/');
-  if(position)
+  *file = Util_Strdup (string);
+
+  if (*file)
   {
-    retval = 0;
-    *file = position+1;
-    *dir = copy;
-    strcpy(position,"");
-  }
-  else
-  {
-    *file = copy;
-    *dir = NULL;
+    /* Find location of the seperator */
+    position = strrchr (*file, '/');
+    if (position)
+    {
+      *dir = *file;
+      *position = 0;
+      *file = Util_Strdup (position + 1);
+    }
+    else
+    {
+      *dir = NULL;
+    }
   }
   
-  return retval;
+  return (*file ? 0 : -1);
 }
 
  /*@@
