@@ -2865,6 +2865,7 @@ Note that:
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Error handling, warnings and code termination}
+\sectionmark{Error handling, ...}
 \label{sec:erhawancote}
 The Cactus function {\tt CCTK\_VWarn()} and its accompanying {\tt CCTK\_WARN}
 macro should be used to issue warning messages during code execution.
@@ -2874,7 +2875,7 @@ printed to standard error and whether the code should be stopped. A level 0
 warning indicates the highest severity, with higher numbers indicating lower
 severity.
 
-By default, a Cactus run will abort on a level 0 warning
+By default, a Cactus run will abort on a level 0 warning 
 and will report level 1 and severer warnings to screen.
 This behaviour can be amended using command line arguments,
 as described in Section~\ref{sec:coliop}.
@@ -2939,40 +2940,135 @@ used.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Adding documentation}
+\label{sec:addo}
 
-To include documentation from your thorn into the {\tt ThornGuide}
-(obtained from using {\tt gmake <config>-ThornGuide} or
-{\tt gmake ThornGuide}), include a {\tt LaTeX} file called {\tt documentation.tex}
-in the {\tt doc} directory of your thorn. Your thorn configuration
-files will be automatically parsed to create documentation for
-Cactus parameters, variables and scheduling. The format
-for the thorn documentation isn't finalized yet, for now please use
-the following format:
+Documentation is a vital part of your thorn, helping to ensure it's
+ease of use and longevity, not only for others but also for the thorn
+authors.  Although any kind of independent documentation can be added
+to a thorn (ideally in the {\tt doc} directory), there are two
+standard places for adding thorn documentation, a {\tt README} and a
+file {\tt doc/documentation.tex} for including in Thorn Guides.
+
+\subsection{\tt README}
+
+The {\tt README}, in the top level of a thorn, should contain brief
+and essential details about the thorn, such as the authors, any
+copyright details, and a synopsis of what the thorn does. 
+
+\subsection{\tt Contribution to ThornGuide}
+
+The latex file {\tt doc/documentation.tex} is included in Thorn Guides
+built by the Cactus make system. (e.g. by {\tt gmake
+$<$config$>$-ThornGuide}). Ideally this file should contain complete
+(and {\it up-to-date}) details about the thorn, exactly what is
+relevent is for the authors to decide, but remember that the Cactus
+make system automically parses the thorn {\tt CCL} files to include
+information about all parameters, variables and scheduling. Suggested
+sections include:
+
+\begin{itemize}
+
+  \item{\bf model} A description of the system which the thorn is modelling,
+    including the equations etc. which are being solved or implemented. 
+
+  \item{\bf numerical implementation} Details about how the model is 
+    numerically implemented in the thorn.
+
+  \item{\bf using the thorn} Any special details needed for using the 
+    thorn, tricky parameters, particular operating systems or additional
+    required software, interactions with other thorns.
+
+  \item{\bf history} Here is where you should describe why the thorn 
+    was written, any previous software or experience which was made use of,
+    the authors of the thorn sourcecode and documentation, how to get
+    hold of the thorn etc.
+
+  \item{\bf references} A bibliography can be included, referencing papers
+    published using or about this thorn, or additional information about 
+    the model or numerics used.
+
+\end{itemize}
+
+A latex template for the Thorn Guide documentation can be found in the
+Flesh distribution at 
+
+{\tt doc/ThornGuide/template.tex}, 
+
+this file is
+automatically copied to the correct location in a new thorn which is
+created with {\tt gmake newthorn}.
+
+Since Cactus scripts need to parse this documentation, and since the
+latex document should be consistent across all thorns included in a 
+Thorn Guide, please follow the guidelines below when filling in the
+documentation:
+
+\begin{itemize}
+
+  \item Use the Cactus Thorn Guide style file, located in the Flesh
+    distribution at {\tt doc/ThornGuide/cactus.sty}. This should be 
+    included using a relative link, so that updates to the style file
+    are applied to all thorns.
+
+{\tt
 \begin{verbatim}
-\documentclass{article}
-
-\begin{document}
-
-\title{<Thorn Name>}
-\author{<Authors>}
-\date{<Date>}
-\maketitle
-
-\abstract{<The Abstract>}
-
-\section{Purpose}
-
-\section{<Whatever You Want}
-
-<Thorn Documentation>
-
-% Automatically created from the ccl files by using gmake ThornGuide
-\include{interface}
-\include{param}
-\include{schedule}
-
-\end{document}
+\usepackage{../../../../doc/ThornGuide/cactus}
 \end{verbatim}
+}
+
+  \item Aside from the {\tt date}, {\tt author}, and {\tt title} fields,
+    all of the documentation to be included in a Thorn Guide should be
+    placed between the lines
+
+
+ {\tt \% START CACTUS THORNGUIDE} 
+
+and
+
+ {\tt \% END CACTUS THORNGUIDE}
+
+ \item The command {\tt $\backslash$def} can be used to define macros, but all
+   such definitions must lie between the {\tt START} and {\tt END}
+   line. Do not redefine any standard latex command
+
+ \item Currently we only support postscript ({\tt .eps or .ps}) figures.
+   Graphics figures should be included using the {\tt includegraphics}
+   command (not {\tt epsffig}), with no file extension specified. For example,
+
+{\tt
+\begin{verbatim}
+\begin{figure}[ht]
+  \begin{center}
+    \includegraphics[width=6cm]{MyArrangement_MyThorn_MyFigure}
+  \end{center}
+  \caption{Illustration of this and that}
+  \label{MyArrangement_MyThorn_MyLabel}
+\end{figure}
+\end{verbatim}
+}
+
+ \item All {\bf labels}, {\bf citations}, {\bf references}, and {\bf
+   graphic images} names should conform to the following guidelines:
+   {\tt ARRANGEMENT\_THORN\_LABEL}.  For instance, if you arrangement is
+   called CactusWave, your thorn WaveToyC, and your original image
+   blackhole.eps, you should rename your image to be {\tt
+     CactusWave\_WaveToyC\_blackhole.eps}
+
+ \item References should be formatted with the standard latex {\bf
+	bibitem} command, for example, a bibliography section should
+	look like:
+
+{\tt 
+\begin{verbatim}
+\begin{thebibliography}{9}
+  \bibitem{MyArrangement_MyThorn_Author99}
+  {J. Author, {\em The Title of the Book, Journal, or periodical}, 1 (1999), 
+  1--16. {\tt http://www.nowhere.com/}}
+\end{thebibliography}
+\end{verbatim}
+}
+
+\end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
