@@ -303,12 +303,12 @@ int CCTK_GetVarNum(const char *implementation,
     for (gnum = 0; gnum < n_groups; gnum++)
     {			
       
-      for(variable=0; variable<groups[group_num].n_variables;variable++)
+      for(variable=0; variable<groups[gnum].n_variables;variable++)
       {
-	if(CCTK_Equals(variable_name, groups[group_num].variables[variable].name)
-	   && CCTK_Equals(implementation,groups[group_num].implementation))
+	if(CCTK_Equals(variable_name, groups[gnum].variables[variable].name)
+	   && CCTK_Equals(implementation,groups[gnum].implementation))
 	{
-	  retval  = groups[group_num].variables[variable].number;
+	  retval  = groups[gnum].variables[variable].number;
 	  break;
 	}
       }
