@@ -72,6 +72,15 @@ AC_SUBST(EXE)
 : ${BUILD_DIR=build}
 : ${CCTK_LIBDIR=lib}
 
+if test $ac_cv_sizeof_int -eq 4 ; then
+INTEGER4=int
+else if test $ac_cv_sizeof_short_int -eq 4 ; then
+INTEGER4="short int"
+fi
+fi
+
+AC_DEFINE_UNQUOTED(INTEGER4, $INTEGER4)
+
 # The perl scripts run by the make system need to have their names
 # changed if under cygwin - e.g. //d/foo needs to be d:/foo
 

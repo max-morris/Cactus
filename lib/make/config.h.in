@@ -1,4 +1,5 @@
-/* config.h.in.  Generated automatically from configure.in by autoheader.  */
+#ifndef _CONFIG_H_
+#define _CONFIG_H_
 
 /* Define to empty if the keyword does not work.  */
 #undef const
@@ -22,12 +23,15 @@
 /* The number of bytes in a short int.  */
 #undef SIZEOF_SHORT_INT
 
-#if SIZEOF_INT==4
-#define Int int
-#elif SIZEOF_SHORT_INT==4
-#define Int short int
-#else
-#error "Unable to find a 4 byte integer type. "
+#ifdef CCODE
+
+/* Define the size of an integer */
+#undef INTEGER4
+
+typedef INTEGER4 Int;
+
+#define Double double
+
 #endif
 
 #ifdef FCODE
@@ -40,4 +44,4 @@
 
 #endif
 
-#define Double double
+#endif
