@@ -5,6 +5,7 @@
    @desc 
    Routines to interface the main part of Cactus to the schedular.
    @enddesc 
+   @version $Header$
  @@*/
 
 static char *rcsid = "$Header$";
@@ -34,8 +35,8 @@ static char *rcsid = "$Header$";
  *********************     Local Data Types   ***********************
  ********************************************************************/
 
-typedef enum {sched_none, sched_group, sched_function} t_sched_type;
-typedef enum {schedpoint_misc, schedpoint_analysis} t_schedpoint;
+typedef enum {sched_none, sched_group, sched_function} iSchedType;
+typedef enum {schedpoint_misc, schedpoint_analysis} iSchedPoint;
 
 typedef struct 
 {
@@ -45,7 +46,7 @@ typedef struct
   char *thorn;
   char *implementation;
 
-  t_sched_type type;
+  iSchedType type;
 
   cFunctionData FunctionData;
 
@@ -73,7 +74,7 @@ typedef struct
 typedef struct
 {
   cGH *GH;
-  t_schedpoint schedpoint;
+  iSchedPoint schedpoint;
 
   int whiling;
 
@@ -420,7 +421,7 @@ int CCTKi_ScheduleGroupComm(const char *group)
 
 
 /*@@
-   @routine    CCTKi_ScheduleTraverse
+   @routine    CCTK_ScheduleTraverse
    @date       Fri Sep 17 21:52:44 1999
    @author     Tom Goodale
    @desc 
@@ -434,9 +435,9 @@ int CCTKi_ScheduleGroupComm(const char *group)
 
 @@*/
 
-int CCTKi_ScheduleTraverse(const char *where, 
-                           void *GH,   
-                           int (*CallFunction)(void *, cFunctionData *, void *))
+int CCTK_ScheduleTraverse(const char *where, 
+                          void *GH,   
+                          int (*CallFunction)(void *, cFunctionData *, void *))
 {
   t_sched_data data;
 
@@ -453,15 +454,6 @@ int CCTKi_ScheduleTraverse(const char *where,
     data.CallFunction = CCTK_CallFunction;
   }
 
-  if(CCTK_Equals(where, "CCTK_STARTUP"))
-  {
-    calling_function = CCTKi_ScheduleStartupFunction;
-  }
-  else
-  {
-    calling_function = CCTKi_ScheduleCallFunction;
-  }
-
   if(CCTK_Equals(where, "CCTK_ANALYSIS"))
   {
     data.schedpoint = schedpoint_analysis;
@@ -470,6 +462,8 @@ int CCTKi_ScheduleTraverse(const char *where,
   {
     data.schedpoint = schedpoint_misc;
   }
+
+  calling_function = CCTKi_ScheduleCallFunction;
   
   CCTKi_DoScheduleTraverse
     (
@@ -849,8 +843,6 @@ static cFunctionType TranslateFunctionType(const char *where)
   {
     retcode = FunctionStandard;
   }
-
-  printf("I've been called, where is %s\n", where);
 
   return retcode;
 }
@@ -1243,26 +1235,7 @@ static int CCTKi_ScheduleCallFunction(void *function,
                                       t_attribute *attribute, 
                                       t_sched_data *data)
 {
-
-  void (*calledfunc)(void *);
-
   CCTK_TimerStartI(attribute->timer_handle);
-
-#if 0
-  if(attribute->FunctionData.language == LangFortran)
-  {
-    /* Call the fortran wrapper. */
-    attribute->FunctionData.FortranCaller(data->GH, function);
-  }
-  else
-  {
-    calledfunc = (void (*)(void *))function;
-
-    /* Call the function. */
-  
-    calledfunc(data->GH);
-  }
-#endif
 
   /* Use whatever has been chosen as the calling function for this 
    * function. 
@@ -1273,42 +1246,6 @@ static int CCTKi_ScheduleCallFunction(void *function,
 
   return 1;
 }
-
-/********************************************************************
- ***************  Specialised Startup Routines   ********************
- ********************************************************************/
-
- /*@@
-   @routine    CCTKi_ScheduleStartupFunction
-   @date       Sun Sep 19 13:30:00 1999
-   @author     Tom Goodale
-   @desc 
-   Startup routines take no arguments, so use this calling function instead
-   of the one generally used.
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
-
-@@*/
-static int CCTKi_ScheduleStartupFunction(void *function, 
-                                         t_attribute *attribute, 
-                                         t_sched_data *data)
-{
-
-  int (*calledfunc)(void);
-
-  calledfunc = (int (*)(void))function;
-
-  /* Call the function. */
-  
-  calledfunc();
-
-  return 1;
-}
-
 
 /********************************************************************
  ****************     Timer Printing Routines   *********************

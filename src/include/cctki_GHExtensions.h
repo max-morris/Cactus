@@ -12,7 +12,8 @@
 #define _CCTKI_GHEXTENSIONS_H_
 
 #ifdef __cplusplus
-extern "C" {
+extern "C" 
+{
 #endif
 
 int CCTKi_SetupGHExtensions(tFleshConfig *config, 
@@ -23,9 +24,11 @@ int CCTKi_InitGHExtensions(cGH *GH);
 
 int CCTKi_rfrTraverseGHExtensions(cGH *GH, int rfrpoint);
 
+int CCTKi_ScheduleTraverseGHExtensions(cGH *GH, const char *where);
+
 #ifdef __cplusplus
 }
 #endif
 
-#endif
+#endif /* _CCTKI_GHEXTENSIONS_H_ */
 

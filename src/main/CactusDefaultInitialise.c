@@ -20,14 +20,11 @@
 #include "CactusrfrInterface.h"
 #include "CactusMainDefaults.h"
 #include "CactusCommFunctions.h"
-#include "rfrConstants.h"
-#include "rfrInterface.h"
 
 static char *rcsid = "$Id$";
 
 /* Local function prototypes */
 int CactusInitialiseGH(cGH *GH);
-
 
  /*@@
    @routine    CactusDefaultInitialise
@@ -113,10 +110,6 @@ int CactusInitialiseGH(cGH *GH)
   CCTK_PRINTSEPARATOR
 #endif
   
-  /* Setup the rfr_top on this GH */
-
-  GH->rfr_top = NULL;
-
   /* Do the rfr initialisation on this GH */
   CCTKi_ScheduleGHInit((void *)GH);
 
@@ -126,25 +119,25 @@ int CactusInitialiseGH(cGH *GH)
 #define PUGH
 
 #ifdef PUGH
-  /* Do various rfr traversals.  Will tidy up later. */
+  /* Do various schedule traversals.  Will tidy up later. */
 
   /* FIXME : PARAM_CHECK SHOULD BE BEFORE HERE */
-  CCTK_rfrTraverse(GH, CCTK_PARAMCHECK);
+  CCTK_Traverse(GH, "CCTK_PARAMCHECK");
   CCTKi_FinaliseParamWarn();
 
-  CCTK_rfrTraverse(GH, CCTK_BASEGRID); 
+  CCTK_Traverse(GH, "CCTK_BASEGRID"); 
 
   /* Traverse routines setting up initial data */
-  CCTK_rfrTraverse(GH,CCTK_INITIAL);
+  CCTK_Traverse(GH, "CCTK_INITIAL");
 
   /* Traverse poststep initial routines which should only be done once */
-  CCTK_rfrTraverse(GH,CCTK_POSTINITIAL);
+  CCTK_Traverse(GH, "CCTK_POSTINITIAL");
 
   /* Traverse recovery and ID checkpoint routines */
-  CCTK_rfrTraverse(GH,CCTK_RECOVER_VARIABLES);
-  CCTK_rfrTraverse(GH,CCTK_CPINITIAL);
+  CCTK_Traverse(GH, "CCTK_RECOVER_VARIABLES");
+  CCTK_Traverse(GH, "CCTK_CPINITIAL");
 
-  CCTK_rfrTraverse(GH,CCTK_POSTSTEP);
+  CCTK_Traverse(GH, "CCTK_POSTSTEP");
 
 #endif
 

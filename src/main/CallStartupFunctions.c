@@ -13,7 +13,7 @@ static char *rcsid = "$Header$";
 #include <stdio.h>
 
 #include "cctk_Flesh.h"
-#include "cctki_Schedule.h"
+#include "cctk_Schedule.h"
 
 
  /*@@
@@ -34,7 +34,7 @@ static char *rcsid = "$Header$";
 int CCTKi_CallStartupFunctions(tFleshConfig *ConfigData)
 {
 
-  CCTKi_ScheduleTraverse("CCTK_STARTUP", NULL, NULL);
+  CCTK_ScheduleTraverse("CCTK_STARTUP", NULL, NULL);
 
   return 0;
 }

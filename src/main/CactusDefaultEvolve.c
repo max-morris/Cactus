@@ -13,8 +13,6 @@
 
 #include "cctk_Flesh.h"
 #include "cctk_Parameters.h"
-#include "rfrConstants.h"
-#include "rfrInterface.h"
 
 #include "CactusIOFunctions.h"
 
@@ -124,10 +122,10 @@ int CactusDefaultEvolve(tFleshConfig *config)
 
   /*** Call OUTPUT for this GH (this routine    ***/
   /*** checks if output is necessary) and makes ***/
-  /*** an rfrTraverse with CCTK_ANALYSIS      ***/
+  /*** a Traverse with CCTK_ANALYSIS      ***/
   ForallConvLevels(iteration, convergence_level)
   {
-      CCTK_rfrTraverse(config->GH[convergence_level],CCTK_ANALYSIS);
+      CCTK_Traverse(config->GH[convergence_level], "CCTK_ANALYSIS");
       CCTK_OutputGH(config->GH[convergence_level]);
   }
   EndForallConvLevels;
@@ -171,7 +169,7 @@ int CactusDefaultEvolve(tFleshConfig *config)
     /* Dump out checkpoint data on all levels */
     ForallConvLevels(iteration, convergence_level)
     {
-      CCTK_rfrTraverse(config->GH[convergence_level],CCTK_CHECKPOINT);
+      CCTK_Traverse(config->GH[convergence_level], "CCTK_CHECKPOINT");
     }
     EndForallConvLevels;
 
@@ -181,10 +179,10 @@ int CactusDefaultEvolve(tFleshConfig *config)
 #endif
     /*** Call OUTPUT for this GH (this routine    ***/
     /*** checks if output is necessary) and makes ***/
-    /*** an rfrTraverse with CCTK_ANALYSIS      ***/
+    /*** an Traverse with CCTK_ANALYSIS      ***/
     ForallConvLevels(iteration, convergence_level)
     {
-        CCTK_rfrTraverse(config->GH[convergence_level],CCTK_ANALYSIS);
+        CCTK_Traverse(config->GH[convergence_level], "CCTK_ANALYSIS");
         CCTK_OutputGH(config->GH[convergence_level]);
     }
     EndForallConvLevels;
@@ -221,9 +219,9 @@ int CactusDefaultEvolve(tFleshConfig *config)
    @date       Fri Aug 14 12:39:49 1998
    @author     Gerd Lanfermann
    @desc 
-     The full set of routines used to execute all rfr steps 
+     The full set of routines used to execute all schedule point 
      int the main iteration loop. Makes calls to the individual 
-     routines for each rfr step.
+     routines for each schedule point.
    @enddesc 
    @calls  PreStepper, EvolStepper, PostStepper
    @calledby main   
@@ -272,7 +270,7 @@ int StepGH(cGH *GH)
    @date       Fri Aug 14 12:43:20 1998
    @author     Gerd Lanfermann
    @desc 
-     calls RFR-PRESTEP
+     calls PRESTEP
    @enddesc 
    @calls     
    @calledby   
@@ -282,18 +280,19 @@ int StepGH(cGH *GH)
 
 @@*/
 
-void PreStepper(cGH *GH) {
+void PreStepper(cGH *GH) 
+{
   int Rstep;  
 
-  /* Call the rfr with CCTK_PRESTEP */
-  CCTK_rfrTraverse(GH, CCTK_PRESTEP);
+  /* Call the schedular with CCTK_PRESTEP */
+  CCTK_Traverse(GH, "CCTK_PRESTEP");
 }
  /*@@
    @routine    EvolStepper
    @date       Fri Aug 14 12:44:00 1998
    @author     Gerd Lanfermann
    @desc 
-     calls RFR-EVOLUTION, checks for nans, increases physical time
+     calls EVOLUTION, checks for nans, increases physical time
    @enddesc 
    @calls     
    @calledby   
@@ -305,8 +304,8 @@ void PreStepper(cGH *GH) {
 void EvolStepper(cGH *GH) 
 {
 
-  /* Call the rfr with Evolution */
-  CCTK_rfrTraverse(GH, CCTK_EVOL);
+  /* Call the schedular with Evolution */
+  CCTK_Traverse(GH, "CCTK_EVOL");
   /* after Evolution check for NANs */
 
 }
@@ -325,10 +324,10 @@ void EvolStepper(cGH *GH)
    @endhistory 
 
 @@*/
-void PostStepper(cGH *GH) {
-  int Rstep;  
-   /* Call the rfr with post step */
-    CCTK_rfrTraverse(GH, CCTK_POSTSTEP); 
+void PostStepper(cGH *GH) 
+{
+  /* Call the scheduler with post step */
+  CCTK_Traverse(GH, "CCTK_POSTSTEP"); 
 }
 
  /*@@
@@ -341,7 +340,7 @@ void PostStepper(cGH *GH) {
      TERMINATION_RAISED_LOCAL  : signaled on one PE, not reduced (MPI_LOR) 
                                  to all PEs yet (main.c)
      TERMINATION_RAISED_BRDCAST: reduced -> can now be used to terminate 
-                                 (chkpnt_terminate.c) by RFR 
+                                 (chkpnt_terminate.c) by the scheduler 
      the raised termiantion signal is caught on 1 PE only and has to be recduced
      on all PEs before a termination sequenced can be launched (I like that)
    @enddesc 
@@ -353,7 +352,8 @@ void PostStepper(cGH *GH) {
 
 @@*/
 
-void TerminationStepper(cGH *GH) {
+void TerminationStepper(cGH *GH) 
+{
   int cactus_terminate_global; 
   
   cactus_terminate_global=cactus_terminate;
@@ -369,5 +369,5 @@ void TerminationStepper(cGH *GH) {
     cactus_terminate=TERMINATION_RAISED_BRDCAST;
     printf("RECEIVED GLOBAL TERMINATION SIGNAL \n");
   }
-  CCTK_rfrTraverse(GH,CCTK_TERMINATE);
+  CCTK_Traverse(GH, "CCTK_TERMINATE");
 }

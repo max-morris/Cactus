@@ -5,6 +5,7 @@
    @desc 
    Routine used by cactus to talk to the rfr.
    @enddesc 
+   @version $Header$
  @@*/
 
 /*#define RFRDEBUG*/
@@ -12,17 +13,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "cctk.h"
+#include "cctk_WarnLevel.h"
 #include "cctk_Flesh.h"
 #include "cctk_GHExtensions.h"
-#include "cctk_Groups.h"
-#include "cctk_WarnLevel.h"
-#include "cctk_IOMethods.h"
-#include "cctk_Parameters.h"
-
-#include "CactusCommFunctions.h"
 #include "CactusrfrInterface.h"
 #include "rfrConstants.h"
 #include "rfrInterface.h"
+#include "cctk_Schedule.h"
 
 static char *rcsid = "$Header$";
 
@@ -43,6 +41,8 @@ static char *rcsid = "$Header$";
 @@*/
 int CCTK_rfrTraverse(cGH *GH, int rfrpoint)
 {
+
+  CCTK_WARN(1, "CCTK_rfrTraverse is deprecated, please use CCTK_Traverse");
   
   CCTKi_rfrTraverseGHExtensions(GH, rfrpoint);
 
@@ -51,12 +51,13 @@ int CCTK_rfrTraverse(cGH *GH, int rfrpoint)
 
 #include "cctki_Schedule.h"
 
-/*#define SCHEDULE(x) case CCTK_ ## x : CCTKi_ScheduleTraverse("CCTK_" #x, data); break*/
-
-#define SCHEDULE(x) case CCTK_ ## x : CCTKi_ScheduleTraverse("CCTK_" #x, data, NULL); break
+#define SCHEDULE(x) case CCTK_ ## x : CCTK_ScheduleTraverse("CCTK_" #x, data, NULL); break
 
 void rfrTraverse(void *rfr_top, void *data, int when) 
 {
+
+  CCTK_WARN(1, "rfrTraverse is deprecated, please use CCTK_ScheduleTraverse");
+
   switch(when)
   {
     SCHEDULE(PARAMCHECK);
@@ -79,4 +80,27 @@ void rfrTraverse(void *rfr_top, void *data, int when)
   }
 
   return;
+}
+
+ /*@@
+   @routine    CCTK_Traverse
+   @date       Thu Jan 27 14:42:16 2000
+   @author     Tom Goodale
+   @desc 
+   Routine called to traverse functions 
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+int CCTK_Traverse(cGH *GH, const char *where)
+{
+  int retcode;
+
+  retcode = CCTKi_ScheduleTraverseGHExtensions(GH, where);
+
+  return retcode;
 }

@@ -12,40 +12,29 @@
 #define _CCTK_GHEXTENSIONS_H_
 
 #ifdef __cplusplus
-extern "C" {
+extern "C" 
+{
 #endif
 
-int CCTK_RegisterGHExtension
-  (
-   const char *name
-  );
+int CCTK_RegisterGHExtension(const char *name);
 
-int CCTK_RegisterGHExtensionSetupGH
-  (
-   int handle, 
-   void *(*func)(tFleshConfig *, int, cGH *)
-  );
+int CCTK_RegisterGHExtensionSetupGH(int handle, 
+                                    void *(*func)(tFleshConfig *, int, cGH *));
 
-int CCTK_RegisterGHExtensionInitGH
-  (
-   int handle, 
-   int (*func)(cGH *)
-  );
+int CCTK_RegisterGHExtensionInitGH(int handle, 
+                                   int (*func)(cGH *));
 
-int CCTK_RegisterGHExtensionrfrTraverseGH
-  (
-   int handle, 
-   int (*func)(cGH *, int)
-  );
+int CCTK_RegisterGHExtensionrfrTraverseGH(int handle, 
+                                          int (*func)(cGH *, int));
 
-int CCTK_GHExtensionHandle
-  (
-   const char *name
-   );
+int CCTK_RegisterGHExtensionScheduleTraverseGH(int handle, 
+                                               int (*func)(cGH *, const char *));
+
+int CCTK_GHExtensionHandle(const char *name);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif
+#endif /* _CCTK_GHEXTENSIONS_H_ */
 

@@ -36,6 +36,8 @@ extern "C"
 {
 #endif
 
+int CCTK_Traverse(cGH *GH, const char *where);
+
 int CCTKi_SetParameter(const char *parameter, const char *value);
 
 int CCTKi_ProcessCommandLine(int *argc, char ***argv, tFleshConfig *ConfigData);

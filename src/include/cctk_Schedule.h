@@ -30,8 +30,18 @@ typedef struct
 } cFunctionData;
 
 #ifdef __cplusplus
-extern "C" {
+extern "C" 
+{
 #endif
+
+int CCTK_ScheduleTraverse(const char *where, 
+                           void *GH,   
+                           int (*CallFunction)(void *, cFunctionData *, void *));
+
+int CCTK_SchedulePrint(const char *where);
+int CCTK_SchedulePrintTimes(const char *where);
+
+cLanguage CCTK_TranslateLanguage(const char *sval);
 
   /*int CCTK_ScheduleFunction(void *function,
                           const char *name,
@@ -72,10 +82,6 @@ int CCTK_ScheduleTraverse(const char *where,
 int CCTK_ScheduleGHInit(void *GH);
   */
 
-int CCTK_SchedulePrint(const char *where);
-int CCTK_SchedulePrintTimes(const char *where);
-
-cLanguage CCTK_TranslateLanguage(const char *sval);
 
 #ifdef __cplusplus
 }
