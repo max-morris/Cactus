@@ -12,7 +12,7 @@
 #define _CCTK_CONSTANTS_H_
 
 #define CCTK_VARIABLE_VOID       0
-#define CCTK_VARIABLE_CHAR       1
+#define CCTK_VARIABLE_BYTE       1
 #define CCTK_VARIABLE_INT        2
 #define CCTK_VARIABLE_INT2       3
 #define CCTK_VARIABLE_INT4       4
@@ -26,6 +26,10 @@
 #define CCTK_VARIABLE_COMPLEX16 12
 #define CCTK_VARIABLE_COMPLEX32 13
 #define CCTK_VARIABLE_STRING    14
+
+/* DEPRECATED IN BETA 10 */
+#define CCTK_VARIABLE_CHAR       15
+
 
 /* steerable status of parameters */
 #define CCTK_STEERABLE_NEVER   0
