@@ -36,7 +36,7 @@ include $(CONFIG)/make.config.defn
 # as if the file didn't exist it would first be made, which would be
 # pretty confusing during a make clean !
 
-ifeq ($strip($(MAKECMDGOALS)),)
+ifeq ($(strip $(MAKECMDGOALS)),)
 -include $(CONFIG)/make.thornlist
 endif
 
@@ -141,5 +141,6 @@ realclean:
 	@echo Deleting all built files in $(TOP)
 	rm -rf $(TOP)/build
 	rm -rf $(TOP)/bindings
+	rm -rf $(TOP)/config-data/make.thornlist
 	rm -rf $(TOP)/lib/*
 	rm -f datestamp.o
