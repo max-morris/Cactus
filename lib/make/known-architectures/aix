@@ -44,7 +44,7 @@ else
     cc|xlc|xlc_r)
      : ${C_DEPEND='$(CPP) -M $(CPPFLAGS)'}
      : ${C_DEPEND_OUT=' > /dev/null ; mv $(basename $(basename $@)).u $@'}
-     : ${CFLAGS="-qspill=10000"}
+     : ${CFLAGS='-qspill=10000 -qmaxmem=-1'}
      ;;
     *)
      ;;
@@ -57,7 +57,7 @@ else
     xlC|xlC_r)
      : ${CXX_DEPEND='$(CXX) -E -M $(CPPFLAGS)'}
      : ${CXX_DEPEND_OUT=' > /dev/null ; mv $(basename $(basename $@)).u $@'}
-     : ${CXXFLAGS="-qspill=10000"}
+     : ${CXXFLAGS='-qspill=10000 -qmaxmem=-1'}
      ;;
     *)
      ;;
@@ -73,6 +73,10 @@ else
     fi
   fi
 
+  # allow each process to use up to 2 GB of virtual memory (default is 256 MB)
+  if test "$LD" != 'g++' -a "$LD" != 'c++'; then
+    : ${LDFLAGS='-bmaxdata:0x80000000'}
+  fi
 
   # MPI stuff
  
