@@ -155,15 +155,31 @@ from Fortran.
   [\pageref{CCTK-DisableGroupComm}]
   Disable the communication for a group
 
+\item[CCTK\_DisableGroupCommI]
+  [\pageref{CCTK-DisableGroupCommI}]
+  Disable the communication for a group
+
 \item[CCTK\_DisableGroupStorage]
   [\pageref{CCTK-DisableGroupStorage}]
+  Disable the storage for a group
+
+\item[CCTK\_DisableGroupStorageI]
+  [\pageref{CCTK-DisableGroupStorageI}]
   Disable the storage for a group
 
 \item[CCTK\_EnableGroupComm]
   [\pageref{CCTK-EnableGroupComm}]
   Enable the communication for a group
 
+\item[CCTK\_EnableGroupCommI]
+  [\pageref{CCTK-EnableGroupComm}]
+  Enable the communication for a group
+
 \item[CCTK\_EnableGroupStorage]
+  [\pageref{CCTK-EnableGroupStorage}]
+  Enable the storage for a group
+
+\item[CCTK\_EnableGroupStorageI]
   [\pageref{CCTK-EnableGroupStorage}]
   Enable the storage for a group
 
@@ -393,6 +409,26 @@ from Fortran.
   [\pageref{CCTK-MaxDim}]
   Get the maximum dimension of any grid variable
 
+\item[CCTK\_MaxTimeLevels]
+  [\pageref{CCTK-MaxTimeLevels}]
+  Gives the maximum number of timelevels for a group
+
+\item[CCTK\_MaxTimeLevelsGI]
+  [\pageref{CCTK-MaxTimeLevelsGI}]
+  Gives the maximum number of timelevels for a group
+
+\item[CCTK\_MaxTimeLevelsGN]
+  [\pageref{CCTK-MaxTimeLevelsGN}]
+  Gives the maximum number of timelevels for a group
+
+\item[CCTK\_MaxTimeLevelsVI]
+  [\pageref{CCTK-MaxTimeLevelsVarI}]
+  Gives the maximum number of timelevels for a variable
+
+\item[CCTK\_MaxTimeLevelsVN]
+  [\pageref{CCTK-MaxTimeLevelsVN}]
+  Gives the maximum number of timelevels for a variable
+
 \item[CCTK\_MyProc]
   [\pageref{CCTK-MyProc}]
   Get the local processor number
@@ -412,22 +448,6 @@ from Fortran.
 \item[CCTK\_NumIOMethods]
   [\pageref{CCTK-NumIOMethods}]
   Returns the total number of I/O methods registered with the flesh
-
-\item[CCTK\_NumTimeLevels]
-  [\pageref{CCTK-NumTimeLevels}]
-  Gives the number of timelevels for a group
-
-\item[CCTK\_NumTimeLevelsFromVar]
-  [\pageref{CCTK-NumTimeLevelsFromVar}]
-  Gives the number of timelevels for a variable
-
-\item[CCTK\_NumTimeLevelsFromVarI]
-  [\pageref{CCTK-NumTimeLevelsFromVarI}]
-  Gives the number of timelevels for a variable
-
-\item[CCTK\_NumTimeLevelsI]
-  [\pageref{CCTK-NumTimeLevelsI}]
-  Gives the number of timelevels for a group
 
 \item[CCTK\_NumVars]
   [\pageref{CCTK-NumVars}]
@@ -4888,6 +4908,106 @@ runs, this call will return $0\leq myproc < {\t CCTK\_nProcs(cctkGH)}$.
 
 
 
+\begin{CCTKFunc}{CCTK\_MaxTimeLevels}{Gives the number of timelevels for a group}
+\label{CCTK-MaxTimeLevels}
+\subroutine{int}{integer}{numlevels}
+\argument{const char *}{character*(*)}{name}
+\showargs
+\begin{params}
+\parameter{name}{The full group name}
+\parameter{numlevels}{The number of timelevels}
+\end{params}
+\begin{discussion}
+The group name should be in the form {\t <implementation>::<group>}
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\hfill {\bf C} && {\t numlevels = CCTK\_MaxTimeLevels("evolve::phivars") ;}
+\\
+\hfill {\bf Fortran} && {\t call CCTK\_MAXTIMELEVELS(numlevels,"evolve::phivars")}\\
+\\
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
+\begin{CCTKFunc}{CCTK\_MaxTimeLevelsVN}{Gives the number of timelevels for a variable}
+\label{CCTK-MaxTimeLevelsVN}
+\subroutine{int}{integer}{numlevels}
+\argument{const char *}{character*(*)}{name}
+\showargs
+\begin{params}
+\parameter{name}{The full variable name}
+\parameter{numlevels}{The number of timelevels}
+\end{params}
+\begin{discussion}
+The variable name should be in the form {\t <implementation>::<variable>}
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\hfill {\bf C} && {\t numlevels = CCTK\_MaxTimeLevelsVN("evolve::phi") ;}
+\\
+\hfill {\bf Fortran} && {\t call CCTK\_MAXTIMELEVELSVN(numlevels,"evolve::phi")}\\
+\\
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
+
+% Groups.c
+\begin{CCTKFunc}{CCTK\_MaxTimeLevelsVI}{Gives the number of timelevels for a variable}
+\label{CCTK-MaxTimeLevelsVI}
+\subroutine{int}{integer}{numlevels}
+\argument{int}{integer}{index}
+\showargs
+\begin{params}
+\parameter{numlevels}{The number of timelevels}
+\parameter{index}{The variable index}
+\end{params}
+\begin{discussion}
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\hfill {\bf C} && {\t index = CCTK\_VarIndex("evolve::phi")}\\
+               &&{\t numlevels = CCTK\_MaxTimeLevelsVI(index) ;}
+\\
+\hfill {\bf Fortran} && {\t call CCTK\_MAXTIMELEVELSVI(numlevels,3)}\\
+\\
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
+
+% Groups.c
+\begin{CCTKFunc}{CCTK\_MaxTimeLevelsGI}{Gives the number of timelevels for a group}
+\label{CCTK-MaxTimeLevelsGI}
+\subroutine{int}{integer}{numlevels}
+\argument{int}{integer}{index}
+\showargs
+\begin{params}
+\parameter{numlevels}{The number of timelevels}
+\parameter{index}{The group index}
+\end{params}
+\begin{discussion}
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\hfill {\bf C} && {\t index = CCTK\_GroupIndex("evolve::phivars")}\\
+               &&{\t numlevels = CCTK\_MaxTimeLevelsGI(index) ;}
+\\
+\hfill {\bf Fortran} && {\t call CCTK\_MAXTIMELEVELSGI(numlevels,3)}\\
+\\
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
 
 
 %%%%%
@@ -5027,106 +5147,6 @@ Returns the total number of IO methods registered with the flesh.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Groups.c
-
-\begin{CCTKFunc}{CCTK\_NumTimeLevels}{Gives the number of timelevels for a group}
-\label{CCTK-NumTimeLevels}
-\subroutine{int}{integer}{numlevels}
-\argument{const char *}{character*(*)}{name}
-\showargs
-\begin{params}
-\parameter{name}{The full group name}
-\parameter{numlevels}{The number of timelevels}
-\end{params}
-\begin{discussion}
-The group name should be in the form {\t <implementation>::<group>}
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t numlevels = CCTK\_NumTimeLevels("evolve::phivars") ;}
-\\
-\hfill {\bf Fortran} && {\t call CCTK\_NUMTIMELEVELS(numlevels,"evolve::phivars")}\\
-\\
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
-
-\begin{CCTKFunc}{CCTK\_NumTimeLevelsFromVar}{Gives the number of timelevels for a variable}
-\label{CCTK-NumTimeLevelsFromVar}
-\subroutine{int}{integer}{numlevels}
-\argument{const char *}{character*(*)}{name}
-\showargs
-\begin{params}
-\parameter{name}{The full variable name}
-\parameter{numlevels}{The number of timelevels}
-\end{params}
-\begin{discussion}
-The variable name should be in the form {\t <implementation>::<variable>}
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t numlevels = CCTK\_NumTimeLevelsFromVar("evolve::phi") ;}
-\\
-\hfill {\bf Fortran} && {\t call CCTK\_NUMTIMELEVELSFROMVAR(numlevels,"evolve::phi")}\\
-\\
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
-
-
-% Groups.c
-\begin{CCTKFunc}{CCTK\_NumTimeLevelsFromVarI}{Gives the number of timelevels for a variable}
-\label{CCTK-NumTimeLevelsFromVarI}
-\subroutine{int}{integer}{numlevels}
-\argument{int}{integer}{index}
-\showargs
-\begin{params}
-\parameter{numlevels}{The number of timelevels}
-\parameter{index}{The variable index}
-\end{params}
-\begin{discussion}
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t index = CCTK\_VarIndex("evolve::phi")}\\
-               &&{\t numlevels = CCTK\_NumTimeLevelsFromVarI(index) ;}
-\\
-\hfill {\bf Fortran} && {\t call CCTK\_NUMTIMELEVELSFROMVARI(numlevels,3)}\\
-\\
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
-
-
-% Groups.c
-\begin{CCTKFunc}{CCTK\_NumTimeLevelsI}{Gives the number of timelevels for a group}
-\label{CCTK-NumTimeLevelsI}
-\subroutine{int}{integer}{numlevels}
-\argument{int}{integer}{index}
-\showargs
-\begin{params}
-\parameter{numlevels}{The number of timelevels}
-\parameter{index}{The group index}
-\end{params}
-\begin{discussion}
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t index = CCTK\_GroupIndex("evolve::phivars")}\\
-               &&{\t numlevels = CCTK\_NumTimeLevelsI(index) ;}
-\\
-\hfill {\bf Fortran} && {\t call CCTK\_NUMTIMELEVELSI(numlevels,3)}\\
-\\
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
 
 
 
