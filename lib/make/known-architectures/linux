@@ -208,7 +208,7 @@ else
   case "$CC" in
     [ei]cc)
       : ${C_OPTIMISE_FLAGS='-O3'}
-      : ${C_DEPEND='$(CPP) -M $(CPPFLAGS)'}
+      : ${C_DEPEND='$(CC) -M $(CPPFLAGS)'}
       : ${C_WARN_FLAGS="-w2"}
       ;;
     pgcc)
@@ -221,7 +221,7 @@ else
   case "$CXX" in
     [ei]cc)
       : ${CXX_OPTIMISE_FLAGS='-O3'}
-      : ${CXX_DEPEND='$(CPP) -M $(CPPFLAGS)'}
+      : ${CXX_DEPEND='$(CXX) -M $(CPPFLAGS)'}
       ;;
   esac
 
