@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.71 2000-02-17 13:15:43 goodale Exp $
+#   @version $Id: Makefile,v 1.72 2000-02-19 20:08:24 allen Exp $
 # @@*/
 
 ##################################################################################
@@ -141,6 +141,13 @@ endif
 ifdef DEBUG
 ifneq ($(strip $(origin DEBUG)), default)
 SETUP_ENV += DEBUG=$(DEBUG) ; export DEBUG ;
+endif
+endif
+
+# Optimisation options
+ifdef OPTIMISE
+ifneq ($(strip $(origin OPTIMISE)), default)
+SETUP_ENV += OPTIMISE=$(OPTIMISE) ; export OPTIMISE ;
 endif
 endif
 
