@@ -410,7 +410,7 @@ sub ScheduleBlock
   if($rhschedule_db->{"\U$thorn\E BLOCK_$block TYPE"} eq "GROUP")
   {
     $prototype = '';
-    $buffer .= '    CCTKi_ScheduleGroup(';
+    $buffer .= '    CCTKi_ScheduleGroup("' . $rhschedule_db->{"\U$thorn\E BLOCK_$block NAME"} . "\",\n";
     $indent  = '                        ';
     $language = '';
   }

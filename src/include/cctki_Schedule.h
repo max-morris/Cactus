@@ -45,13 +45,11 @@ int CCTKi_DoScheduleFunction(const char *gname,
                              t_sched_modifier *modifiers, 
                              void *attributes);
 
-int CCTKi_DoScheduleGroup
-  (
-   const char *gname, 
-   const char *thisname, 
-   t_sched_modifier *modifiers, 
-   void *attributes
-  );
+int CCTKi_DoScheduleGroup(const char *gname, 
+                          const char *thisname,
+                          const char *realname,
+                          t_sched_modifier *modifiers, 
+                          void *attributes);
 
 /* Routine to sort the groups - must be called before traversal. */
 int CCTKi_DoScheduleSortAllGroups(void);

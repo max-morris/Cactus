@@ -289,7 +289,7 @@ int CCTK_CallFunction(void *function,
    @vio     in
    @endvar
    @var     name
-   @vdesc   name of function to be scheduled
+   @vdesc   working name of function to be scheduled
    @vtype   const char *
    @vio     in
    @endvar
@@ -438,8 +438,13 @@ int CCTKi_ScheduleFunction(void *function,
    @enddesc
    @calls
 
+   @var     realname
+   @vdesc   real name of group to be scheduled
+   @vtype   const char *
+   @vio     in
+   @endvar
    @var     name
-   @vdesc   name of group to be scheduled
+   @vdesc   working name of group to be scheduled
    @vtype   const char *
    @vio     in
    @endvar
@@ -518,7 +523,8 @@ int CCTKi_ScheduleFunction(void *function,
    -1 - memory failure
    @endreturndesc
 @@*/
-int CCTKi_ScheduleGroup(const char *name,
+int CCTKi_ScheduleGroup(const char *realname,
+                        const char *name,
                         const char *thorn,
                         const char *implementation,
                         const char *description,
@@ -553,7 +559,7 @@ int CCTKi_ScheduleGroup(const char *name,
 
   if(attribute && (modifier || (n_before == 0 && n_after == 0 && n_while == 0)))
   {
-    retcode = CCTKi_DoScheduleGroup(where, name, modifier, (void *)attribute);
+    retcode = CCTKi_DoScheduleGroup(where, name, realname, modifier, (void *)attribute);
 #ifdef DEBUG
     fprintf(stderr, "Scheduled %s at %s\n", name, where);
 #endif

@@ -148,7 +148,7 @@ t_sched_modifier *CCTKi_ScheduleAddModifier(t_sched_modifier *orig,
    @vio     in
    @vcomment 
    @var     fname
-   @vdesc   name of function to be scheduled
+   @vdesc   name of function to be scheduled (may be aliased)
    @vtype   const char *
    @vio     in
    @vcomment 
@@ -237,25 +237,25 @@ int CCTKi_DoScheduleFunction(const char *gname,
    @vdesc   name of group to schedule group in
    @vtype   const char *
    @vio     in
-   @vcomment 
    @var     thisname
-   @vdesc   name of group to be scheduled
+   @vdesc   name of group to be scheduled (possibly an alias)
    @vtype   const char *
    @vio     in
-   @vcomment 
+   @endvar 
+   @var     realname
+   @vdesc   actual name of group to be scheduled
+   @vtype   const char *
+   @vio     in
+   @endvar 
    @var     modifiers
    @vdesc   moodifier list
    @vtype   t_sched_modifier *
    @vio     in
-   @vcomment 
- 
    @endvar 
    @var     attributes
    @vdesc   function attributes
    @vtype   void *
    @vio     in
-   @vcomment 
- 
    @endvar 
 
    @returntype int
@@ -265,7 +265,8 @@ int CCTKi_DoScheduleFunction(const char *gname,
    @endreturndesc
 @@*/
 int CCTKi_DoScheduleGroup(const char *gname, 
-                          const char *thisname, 
+                          const char *thisname,
+                          const char *realname,
                           t_sched_modifier *modifiers, 
                           void *attributes)
 {
@@ -284,11 +285,11 @@ int CCTKi_DoScheduleGroup(const char *gname,
   }
 
   /* Find this group */
-  thishandle = Util_GetHandle(schedule_groups, thisname, (void **)&this_group);
+  thishandle = Util_GetHandle(schedule_groups, realname, (void **)&this_group);
 
   if(thishandle < 0)
   {
-    thishandle = ScheduleCreateGroup(thisname);
+    thishandle = ScheduleCreateGroup(realname);
   }
 
   if(handle < 0 || thishandle < 0)
