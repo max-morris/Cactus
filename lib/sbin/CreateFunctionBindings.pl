@@ -351,8 +351,7 @@ sub FunctionDatabase
       my ($ReturnType,$Arguments,@arglist);
       $Arguments = $interface_db->{"\U${thorn} FUNCTION\E $FunctionName ARGS"};
 
-      &debug_print("FunctionDatabase: calling ParseArgumentsList with thorn=[$thorn] FunctionName=[$FunctionName] Arguments=[$Arguments]\n");
-
+#      &debug_print("FunctionDatabase: calling ParseArgumentsList with thorn=[$thorn] FunctionName=[$FunctionName] Arguments=[$Arguments]\n");
       ($warnings,$nstrings,$nstringptrs,@arglist)=&ParseArgumentsList($Arguments, $thorn, $FunctionName);
       $Function->{"Strings"} = $nstrings;
       $Function->{"String pointers"} = $nstringptrs;
@@ -460,7 +459,7 @@ sub ParseArgumentsList
   my($Thorn) = shift;
   my($Function) = shift;
 
-  &debug_print("ParseArgumentsList: Arguments=[$Arguments] Thorn=[$Thorn] Function=[$Function]");
+#  &debug_print("ParseArgumentsList: Arguments=[$Arguments] Thorn=[$Thorn] Function=[$Function]");
 
   my @ArgList=();
 
@@ -469,12 +468,12 @@ sub ParseArgumentsList
   my @fptrargs = ();
   if ($Arguments =~ s/CCTK_FPOINTER//)
   {
-    while ($Arguments =~ s/(.*)(\(.*\s.*?\))(.*)/\1FPTRARGS\3/g)
+    while ($Arguments =~ s/(.*?)\s*(\(.*\s.*?\))(.*)/\1FPTRARGS\3/g)
     {
       my $tempargs = $2;
       $tempargs =~ s/\((.*)\)/\1/;
       push(@fptrargs,$tempargs);
-      $nfptrs++;
+      $nfptrs++; # QUERY: This is set but never used.
     }
   }
 
@@ -524,15 +523,15 @@ sub ParseArgumentsList
     }
   }
 
-  if ($debug) 
-  {
-    print "ArgList is:\n";
-    foreach $DummyArg (@ArgList)
-    {
-      print $DummyArg->{"Type"}." ".$DummyArg->{"Name"}." ";
-    }
-    print "\n";
-  }
+#  if ($debug) 
+#  {
+#    print "ArgList is:\n";
+#    foreach $DummyArg (@ArgList)
+#    {
+#      print $DummyArg->{"Type"}." ".$DummyArg->{"Name"}." ";
+#    }
+#    print "\n";
+#  }
 
   if ( ($nstrings > 3) || ($nstringptrs > 3) )
   {
@@ -568,6 +567,8 @@ sub ParseArgument
 {
   use strict;
 
+  $debug and $indent_level = 4;
+
   my($DummyArgument) = shift;
   my($Thorn) = shift;
   my($Function) = shift;
@@ -580,11 +581,15 @@ sub ParseArgument
   {
     ($type,$name) = split(' ',$DummyArgument);
     $intent = "IN";
+    # QUERY: is $fpointer supposed to be set here?
+    $fpointer = 1;
+    &debug_print("$Thorn--ParseArgument: (fn pointer) type=$type name=$name");
   }
   elsif ($DummyArgument =~ s/\bARRAY\b//)
   {
     ($type,$intent,$name) = split(' ',$DummyArgument);
     $Argument->{"Is Array"} = 1;
+    &debug_print("$Thorn--ParseArgument: $name is ARRAY");
   }
   else
   {
@@ -2434,11 +2439,19 @@ sub printArg
     if ( (($type eq "Fortran")&&(!$Arg{"Function"})) ||
          (($type eq "C")&&(($Arg{"Is Array"})||($Arg{"Intent"}=~/OUT/))) )
     {
+      &debug_print($Arg{"Name"}." needs a *");
       $suffix = "*";
     }
     if ( ($Arg{"Intent"}=~/IN/) && (!($Arg{"Intent"}=~/OUT/)) )
     {
       $prefix = "const ";
+      # const CCTK_POINTER is read by C as a constant pointer, rather
+      # that a pointer to constant data, so treat this case separately:
+      if ($vartype eq "CCTK_POINTER")
+      {
+	$prefix = "";
+	$vartype = "CCTK_POINTER_TO_CONST";
+      }
     }
 
     push(@data,$prefix.$vartype.$suffix);
