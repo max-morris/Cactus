@@ -1929,7 +1929,14 @@ sub ProvidedFunctions
             push(@data,@FnPtrSets);
             push(@data,"");
           }
-          push(@data,"  return (${provider})(@{cseq});");
+	  if ($rettype ne 'void')
+	  {
+	    push(@data,"  return (${provider})(@{cseq});");
+	  }
+	  else
+	  {
+	    push(@data,"  ${provider}(@{cseq});");
+	  }
           push(@data,"}");
         }
 #            print $WrapperFunctionList{$nameF}{"Provider"};
