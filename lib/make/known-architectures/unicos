@@ -6,7 +6,7 @@
 #   @desc 
 #   
 #   @enddesc 
-#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/unicos,v 1.7 2000-02-16 18:27:50 goodale Exp $
+#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/unicos,v 1.8 2000-02-16 18:48:54 goodale Exp $
 # @@*/
 
 if test "$CCTK_CONFIG_STAGE" = "preferred-compilers" ; then
@@ -50,7 +50,8 @@ EOF
 
   if test -n "$MPI" ; then
     if test "$MPI" = "NATIVE" ; then
-#   Don't need to do anything for the T3E
+#     Don't need to do anything for the T3E
+      : 
     fi
   fi
 
