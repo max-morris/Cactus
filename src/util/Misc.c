@@ -111,17 +111,17 @@ int CCTK_Equals(const char *string1, const char *string2)
     {
       message = (char *)malloc((100+sizeof(string2))*sizeof(char));
       sprintf(message,"First string null in CCTK_Equals (2nd is %s)",string2); 
-      CCTK_Warn(0,message);
+      CCTK_WARN(0,"CCTK",message);
     }
     else if (string1 && !string2)
     { 
       message = (char *)malloc((100+sizeof(string1))*sizeof(char));
       sprintf(message,"Second string null in CCTK_Equals (1st is %s)",string1); 
-      CCTK_Warn(0,message);
+      CCTK_Warn(0,"CCTK",message);
     }     
     else
     {
-      CCTK_Warn(0,"Both strings null in CCTK_Equals");
+      CCTK_Warn(0,"CCTK","Both strings null in CCTK_Equals");
     }
   }
 
@@ -672,7 +672,7 @@ int CCTK_SetLogical(int *data, const char *value)
   }
   else
   {
-    CCTK_Warn(1,"Logical not set in CCTK_SetLogical");
+    CCTK_Warn(1,"CCTK","Logical not set in CCTK_SetLogical");
     retval = -1;
   }
 
