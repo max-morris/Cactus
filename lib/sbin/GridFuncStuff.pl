@@ -1015,7 +1015,7 @@ sub CreateThornGroupInitialisers
       $dim = $rhinterface_db->{"\U$thorn GROUP $group\E DIM"};
       $string = $rhinterface_db->{"\U$thorn GROUP $group\E SIZE"};
       &CheckArraySizes($string,$thorn,$rhparameter_db,$rhinterface_db);
-      if ($string !~ /,/)
+      if ($string =~ /^\s*$/)
       {
 	$numsize = 0;
       }
@@ -1027,7 +1027,7 @@ sub CreateThornGroupInitialisers
       {
 	if ($numsize == 0)
 	{
-	  $message = "Array sizes not provided for $group in $thorn";
+	  $message = "Array sizes not provided for group $group in $thorn";
 	}
 	else
 	{
