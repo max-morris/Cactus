@@ -79,7 +79,7 @@ void CCTKi_CactusBanner(void)
    @endvar 
 @@*/
 
-void CCTK_RegisterBanner(const char *string)
+int CCTK_RegisterBanner(const char *string)
 {
   char **temp = NULL;
   char *newstring;
@@ -124,12 +124,14 @@ void CCTK_RegisterBanner(const char *string)
   printf("Registering banner .... \n%s\n",banner_strings[number_banners-1]);
 #endif
 
+  return 0;
+
 }
 
-void  FMODIFIER FORTRAN_NAME(CCTK_RegisterBanner)(ONE_FORTSTRING_ARG)
+void  FMODIFIER FORTRAN_NAME(CCTK_RegisterBanner)(int *ierr,ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_CREATE(message)
-  CCTK_RegisterBanner(message);
+  *ierr=CCTK_RegisterBanner(message);
   free(message);
 }
 

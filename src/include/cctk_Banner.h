@@ -17,7 +17,7 @@
 extern "C" {
 #endif
 
-void CCTK_RegisterBanner(const char *banner);
+int CCTK_RegisterBanner(const char *banner);
 
 #ifdef __cplusplus 
 }
