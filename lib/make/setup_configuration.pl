@@ -133,7 +133,11 @@ sub SetConfigureEnv
     # The user has specified a configuration file
 
     print "Using configuration options from $config_file...\n";
-    open(INFILE, "<$top/$config_file") || die "Cannot open configuration file $config_file";
+    if($config_file !~ m:^/:)
+    {
+      $config_file = "$top/$config_file";
+    }
+    open(INFILE, "<$config_file") || die "Cannot open configuration file $config_file";
     
     while(<INFILE>)
     {
