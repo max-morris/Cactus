@@ -7,8 +7,6 @@
    @enddesc 
  @@*/
 
-static char *rcsid = "$Id$";
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -21,6 +19,9 @@ static char *rcsid = "$Id$";
 /* FIXME - remove this when ActiveThorns doesn't need it */
 #include "SKBinTree.h"
 
+static char *rcsid = "$Header$";
+
+CCTK_FILEVERSION(main_InitialiseDataStructures_c)
 
  /*@@
    @routine    CCTKi_InitialiseDataStructures

@@ -15,6 +15,8 @@
 
 static char *rcsid = "$Header$";
 
+CCTK_FILEVERSION(main_ProcessParameterDatabase_c)
+
 int ParseFile(FILE *ifp, 
               int (*set_function)(const char *, const char *));
 

@@ -14,6 +14,7 @@
 
 #include "cctk_WarnLevel.h"
 #include "cctk_Config.h"
+#include "cctk_Flesh.h"
 #include "cctk_Groups.h"
 #include "cctk_Types.h"
 #include "cctk_Constants.h"
@@ -24,6 +25,8 @@
 /*#define DEBUG_GROUPS*/
 
 static char *rcsid = "$Header$";
+
+CCTK_FILEVERSION(main_Groups_c)
 
 /* Typedefs. */
 typedef struct 

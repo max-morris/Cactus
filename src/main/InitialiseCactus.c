@@ -7,8 +7,6 @@
    @enddesc 
  @@*/
 
-static char *rcsid = "$Header$";
-
 #include <stdio.h>
 
 #include "cctk.h"
@@ -16,6 +14,10 @@ static char *rcsid = "$Header$";
 
 #include "cctk_Schedule.h"
 #include "cctki_Schedule.h"
+
+static char *rcsid = "$Header$";
+
+CCTK_FILEVERSION(main_InitialiseCactus_c)
 
 int ProcessCommandLine(int *inargc, char ***inargv, tFleshConfig *ConfigData);
 int ProcessEnvironment(int *argc, char ***argv,tFleshConfig *ConfigData);

@@ -7,6 +7,12 @@
    @enddesc 
  @@*/
 
+#include "cctk_Flesh.h"
+
+static char *rcsid = "$Header$";
+
+CCTK_FILEVERSION(main_Startup_c)
+
 int CactusStartup(void)
 {
   

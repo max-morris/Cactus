@@ -19,6 +19,8 @@
 
 static char *rcsid="$Header$";
 
+CCTK_FILEVERSION(main_CactusDefaultEvolve_c)
+
 /* Define some macros for convenience. */
 
 #define ForallConvLevels(iteration, conv_level)  {                     \

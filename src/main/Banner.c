@@ -14,11 +14,14 @@
 #include <string.h>
 
 #include "cctk_Config.h"
+#include "cctk_Flesh.h"
 #include "cctk_Parameters.h"
 #include "cctk_Banner.h"
 #include "cctk_FortranString.h"
 
 static char *rcsid = "$Header$";
+
+CCTK_FILEVERSION(main_Banner_c)
 
 static int number_banners = 0;
 static char **banner_strings = NULL;

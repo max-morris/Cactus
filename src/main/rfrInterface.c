@@ -21,10 +21,11 @@
 #include "rfrInterface.h"
 #include "cctk_Schedule.h"
 #include "cctki_GHExtensions.h"
+#include "cctki_Schedule.h"
 
 static char *rcsid = "$Header$";
 
-#include "cctki_Schedule.h"
+CCTK_FILEVERSION(main_rfrInterface_c)
 
 #define SCHEDULE(x) case CCTK_ ## x : CCTK_ScheduleTraverse("CCTK_" #x, data, NULL); break
 

@@ -23,6 +23,7 @@
 
 static char *rcsid = "$Header$";
 
+CCTK_FILEVERSION(main_GroupsOnGH_c)
 
  /*@@
    @routine    CCTK_VarDataPtr

@@ -7,13 +7,16 @@
    @enddesc 
  @@*/
 
-static char *rcsid = "$Header$";
-
 #include <stdlib.h>
 
 #include "cctk_Config.h"
+#include "cctk_Flesh.h"
 #include "cctki_Cache.h"
 #include "cctk_Parameters.h"
+
+static char *rcsid = "$Header$";
+
+CCTK_FILEVERSION(main_SetupCache_c)
 
 /********************************************************************
  *********************   CCTK Local Routines   **********************

@@ -15,6 +15,8 @@
 
 static char *rcsid = "$Header$";
 
+CCTK_FILEVERSION(main_RecordImplementation_c)
+
 typedef struct 
 {
   int n_thorns;

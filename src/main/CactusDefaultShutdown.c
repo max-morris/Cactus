@@ -21,6 +21,8 @@
 
 static char *rcsid = "$Header$";
 
+CCTK_FILEVERSION(main_CactusDefaultShutdown_c)
+
 #ifdef MPI
 extern char MPI_Active;
 #endif

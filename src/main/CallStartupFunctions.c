@@ -8,13 +8,14 @@
    @version $Header$
  @@*/
 
-static char *rcsid = "$Header$";
-
 #include <stdio.h>
 
 #include "cctk_Flesh.h"
 #include "cctk_Schedule.h"
 
+static char *rcsid = "$Header$";
+
+CCTK_FILEVERSION(main_CallStartupFunctions_c)
 
  /*@@
    @routine    CCTKi_CallStartupFunctions

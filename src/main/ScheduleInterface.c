@@ -8,8 +8,6 @@
    @version $Header$
  @@*/
 
-static char *rcsid = "$Header$";
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
@@ -34,6 +32,11 @@ static char *rcsid = "$Header$";
 #include "cctki_FortranWrappers.h"
 
 #include "CactusTimers.h"
+
+static char *rcsid = "$Header$";
+
+CCTK_FILEVERSION(main_ScheduleImplementation_c)
+
 
 /********************************************************************
  *********************     Local Data Types   ***********************

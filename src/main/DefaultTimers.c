@@ -7,12 +7,11 @@
    @enddesc 
  @@*/
 
-static char *rcsid = "$Header$";
-
 #include <stdio.h>
 #include <stdlib.h>
 
 #include "cctk_Config.h"
+#include "cctk_Flesh.h"
 
 #if TIME_WITH_SYS_TIME
 # include <sys/time.h>
@@ -26,6 +25,10 @@ static char *rcsid = "$Header$";
 #endif
 
 #include "CactusTimers.h"
+
+static char *rcsid = "$Header$";
+
+CCTK_FILEVERSION(main_DefaultTimers_c)
 
 /* Prototypes for registration functions */
 

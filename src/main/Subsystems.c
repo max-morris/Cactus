@@ -7,10 +7,11 @@
    @enddesc 
  @@*/
 
-static char *rcsid = "$Header$";
-
 #include "cctk_Flesh.h"
 
+static char *rcsid = "$Header$";
+
+CCTK_FILEVERSION(main_Subsystems_c)
 
  /*@@
    @routine    CCTKi_InitialiseSubsystemDefaults

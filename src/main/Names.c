@@ -13,10 +13,12 @@
 #include <ctype.h>
 
 #include "cctki_Names.h"
-
+#include "cctk_Flesh.h"
 #include "util_Hash.h"
 
 static char *rcsid="$Header$";
+
+CCTK_FILEVERSION(main_Names_c)
 
 /********************************************************************
  *********************     Local Data Types   ***********************

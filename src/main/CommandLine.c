@@ -30,6 +30,8 @@
 
 static char *rcsid = "$Header$";
 
+CCTK_FILEVERSION(main_CommandLine_c)
+
 /*Prototypes for some functions */
 
 char *compileTime(void);

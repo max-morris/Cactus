@@ -26,6 +26,8 @@
 
 static char *rcsid = "$Id$";
 
+CCTK_FILEVERSION(main_CactusDefaultInitialise_c)
+
 /* Local function prototypes */
 int CactusInitialiseGH(cGH *GH);
 

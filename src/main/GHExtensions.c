@@ -20,6 +20,7 @@
 
 static char *rcsid = "$Header$";
 
+CCTK_FILEVERSION(main_GHExtensions_c)
 
 /* Local data holding info on extensions..*/
 

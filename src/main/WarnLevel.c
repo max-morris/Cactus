@@ -22,10 +22,13 @@
 #include "cctk_FortranString.h"
 #include "cctk_Parameters.h"
 #include "cctk_Comm.h"
+#include "cctk_Flesh.h"
 
 int CactusDefaultMyProc(void *GH);
 
 static char *rcsid = "$Header$";
+
+CCTK_FILEVERSION(main_WarnLevel_c)
 
 /* Store the number of parameter errors */
 

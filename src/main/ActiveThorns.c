@@ -13,11 +13,14 @@
 
 #include "SKBinTree.h"
 
+#include "cctk_Flesh.h"
 #include "cctk_Config.h"
 #include "cctk_ActiveThorns.h"
 #include "cctk_FortranString.h"
 
 static char *rcsid = "$Header$";
+
+CCTK_FILEVERSION(main_ActiveThorns_c)
 
 /* Local routine */
 static int RegisterImp(const char *name, const char *thorn);

@@ -7,13 +7,16 @@
    @enddesc 
  @@*/
 
-static char *rcsid = "$Header$";
-
 #include <stdlib.h>
 
 #include "cctki_FortranWrappers.h"
+#include "cctk_Flesh.h"
 
 #include "StoreNamedData.h"
+
+static char *rcsid = "$Header$";
+
+CCTK_FILEVERSION(main_FortranWrappers_c)
 
 static pNamedData *registry = NULL;
 

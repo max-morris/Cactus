@@ -18,6 +18,8 @@
 
 static char *rcsid="$Header$";
 
+CCTK_FILEVERSION(main_OverloadMain_c)
+
 /* Define the prototypes for the dummy functions. */
 #define OVERLOADABLE(name) OVERLOADABLE_DUMMYPROTOTYPE(name)
 

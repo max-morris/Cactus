@@ -9,15 +9,20 @@
 
 /*#define DEBUG_COORD*/
 
-static char *rcsid = "$Header$";
-
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "cctk.h"
+#include "cctk_Flesh.h"
+#include "cctk_Coord.h"
+#include "cctk_WarnLevel.h"
+#include "cctk_Groups.h"
 #include "StoreHandledData.h"
 #include "ErrorCodes.h"
 #include "cctk_FortranString.h"
+
+static char *rcsid = "$Header$";
+
+CCTK_FILEVERSION(main_Coord_c)
 
 struct Coordprops
 { 

@@ -15,6 +15,8 @@
 
 static char *rcsid = "$Header$";
 
+CCTK_FILEVERSION(main_ProcessCommandLine_c)
+
 static int argc;
 
 static char **argv;

@@ -14,6 +14,8 @@
 
 static char *rcsid = "$Header$";
 
+CCTK_FILEVERSION(main_ConfigData_c)
+
  /*@@
    @routine    CCTKi_AddGH
    @date       Fri Jan 15 13:43:11 1999

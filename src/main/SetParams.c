@@ -18,6 +18,7 @@
 #include "cctk_ActiveThorns.h"
 #include "cctk_WarnLevel.h"
 #include "cctk_Misc.h"
+#include "cctk_Flesh.h"
 
 #include "ParameterBindings.h"
 
@@ -31,7 +32,9 @@ int CCTK_ParameterSet(
    const char *value
    );
        
-static char *rcsid = "$Id$";
+static char *rcsid = "$Header$";
+
+CCTK_FILEVERSION(main_SetParams_c)
 
  /*@@
    @routine    CCTKi_SetParameter

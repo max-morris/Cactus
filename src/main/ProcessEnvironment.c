@@ -10,7 +10,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "cctk.h"
+#include "cctk_Flesh.h"
 
 #ifdef MPI
 #include "mpi.h"
@@ -34,6 +34,8 @@
 #include "cctk_Flesh.h"
 
 static char *rcsid = "$Header$";
+
+CCTK_FILEVERSION(main_ProcessEnvironment_c)
 
 #ifdef MPI
 char MPI_Active = 0;

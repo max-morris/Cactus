@@ -15,18 +15,24 @@
 #include <string.h>
 #include <stdarg.h>
 
-#include "cctk.h"
+#include "cctk_Flesh.h"
 
 #include "SKBinTree.h"
 
 #include "cctk_ActiveThorns.h"
 
 #include "ParameterBindings.h"
+#include "cctk_Parameters.h"
+#include "cctk_WarnLevel.h"
+#include "cctk_Misc.h"
+
 #include "cctk_Parameter.h"
 
 #include "cctk_GNU.h"
 
 static char *rcsid="$Header$";
+
+CCTK_FILEVERSION(main_Parameters_c)
 
 /********************************************************************
  *********************     Local Data Types   ***********************
@@ -675,7 +681,7 @@ char *CCTK_ParameterValString (const char *param_name,
       break;
 
     default:
-      CCTK_VWarn (3, __LINE__, __FILE__, CCTK_THORNSTRING,
+      CCTK_VWarn (3, __LINE__, __FILE__, "Cactus",
                   "Unknown type %d for parameter '%s::%s'",
                   param_type, thorn, param_name);
       retval = NULL;

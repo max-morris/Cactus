@@ -18,9 +18,11 @@
 #include "cctk_FortranString.h"
 #include "cctk_WarnLevel.h"
 #include "cctki_Stagger.h"
+#include "cctk_Flesh.h"
 
 static char *rcsid = "$Header$";
 
+CCTK_FILEVERSION(main_Stagger_c)
 
 /********************************************************************
  *********************     Local Data   *****************************
