@@ -1,7 +1,7 @@
 
 Cactus Code Frequently Asked Questions
 
-$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.63 2003-03-19 12:30:26 allen Exp $
+$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.64 2003-03-24 17:49:00 allen Exp $
 
 Also available at http://www.cactuscode.org/Documentation/FAQ
 
@@ -256,10 +256,16 @@ E12 I'm getting wierd syntax errors in Fortran code, with an extra
 E13 I want to write the value of a KEYWORD parameter in Fortran code to 
     a file, but nothing I try works.
  
-E14 I write my thorns with Fortran, do you have any general advice.
+E14 I write my thorns with Fortran, do you have any general advice?
 
 E15 In my Fortran thorn the value of a Cactus integer parameter is totally 
     wrong when I print it, but when I print it from C it is fine. 
+
+E16 I write my thorns with C, do you have any general advice?
+
+E17 Why is it that when I schedule more than one routine in the same thorn 
+    at ANALYSIS only the first routine is executed and the second one is 
+    ignored?
 
 
 ------------------------------------------------------------------------------
@@ -1271,7 +1277,7 @@ E13 I want to write the value of a KEYWORD parameter in Fortran code to
     want to print the value to the standard output there is also the 
     routine CCTK_PrintString.
 
-E14 I write my thorns with Fortran, do you have any general advice.
+E14 I write my thorns with Fortran, do you have any general advice?
 
     Yes. Read the section "Fortran Thorn Writers" in the Users Guide, and 
     follow these general recommendations
@@ -1284,6 +1290,22 @@ E15 In my Fortran thorn the value of a Cactus integer parameter is totally
 
     Check that you remembered to add DECLARE_CCTK_PARAMETERS to the 
     declaration area of the subroutine. 
+
+E16 I write my thorns with C, do you have any general advice?
+
+    Yes, hopefully this list will grow, but for now
+
+    - don't use C++ comments (//) in C code this will cause difficulties
+      on some platforms
+
+E17 Why is it that when I schedule more than one routine in the same thorn 
+    at ANALYSIS only the first routine is executed and the second one is 
+    ignored?
+   
+    Are you triggering on different variables with the two routines?  If 
+    not, it doesn't matter which thorns they come from, only the first 
+    scheduled routine will be called. This is part of the special design of 
+    the ANALYSIS bin.
 
 
 ------------------------------------------------------------------------------
