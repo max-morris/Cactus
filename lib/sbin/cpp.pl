@@ -1,4 +1,3 @@
-#! /usr/bin/perl 
 #/*@@
 #  @file      cpp.pl
 #  @date      Wed Sep 15 14:21:53 1999
@@ -9,25 +8,109 @@
 #  @version $Header$
 #@@*/
 
+###############################################################################
+###############################################################################
+# Setup some global variables.
+
+# Symbol table
 %defines = ();
+
+#Initial symbols
+
+&Define("__FILE__", "\"replace-me\"", "<main>",__LINE__);
+&Define("__LINE__", "\"replace-me\"", "<main>",__LINE__);
+
+# Current working directory for opening files.
+$current_wd = ".";
+
+# Include path
+@include_path = ();
+
+# Filename and linenumber stacks for error traces.
 @filelist = ();
 @linelist = ();
-@dirlist = ();
-$current_wdir = ".";
-$cxx = 0;
 
+# Complete list of included files for generating dependencies
+%complete_file_list = ();
+
+# Are we in the middle of a comment ?
+$incomment = 0;
+
+###############################################################################
+###############################################################################
+
+# Parse the command line
 ($source_file, $output_file, $do_deps, @include_path) = &ParseCommandLine(@ARGV);
 
-if($do_deps)
+###############################################################################
+###############################################################################
+
+#If no source file given, choose stdin
+if(! $source_file)
 {
-  print "$source_file.o $source_file.d :";
+  $source_file = "-"
 }
 
-&ProcessFile($source_file, $output_file, $do_deps, @include_path);
+# Setup output stream
+if($output_file && $output_file ne "-")
+{
+  open(OUTSTREAM,">$output_file") || die "Unable to open output file";
+}
+else
+{
+  *OUTSTREAM = STDOUT;
+}
 
-print "\n";
+###############################################################################
+###############################################################################
+
+# Parse the input.
+&ProcessFile($source_file, "-", -1, 1-$do_deps);
+
+###############################################################################
+###############################################################################
+
+# Do Dependency generation if requested
+if($do_deps)
+{
+  my $file;
+
+  my $depend_target;
+
+  $source_file =~ m,^.+/([^/]+)$,;
+
+  if($1)
+  {
+    $depend_target = "$1.o";
+  }
+  else
+  {
+    $depend_target = "$source_file.o";
+  }
+
+  foreach $file (sort keys %complete_file_list)
+  {
+    # Ignore any empry entries
+    next if($file =~ m/^\s*$/);    
+    # The source file depends upon this file
+    print OUTSTREAM "$depend_target : $file\n";
+  }
+
+  foreach $file (sort keys %complete_file_list)
+  {
+    # Ignore any empry entries
+    next if($file =~ m/^\s*$/);
+    # Generate empty rule for file so can delete header files without problems
+    print OUTSTREAM "$file :\n";
+  }
+}
 
 exit;
+
+###############################################################################
+###############################################################################
+###############################################################################
+###############################################################################
 
 #/*@@
 #  @routine    ParseCommandLine
@@ -46,7 +129,7 @@ exit;
 sub ParseCommandLine
 {
   my(@args) = @_;
-  my($source_file, $output_file, $do_deps, @include_path) = (0,0,0,("."));
+  my($source_file, $output_file, $do_deps, @include_path) = (0,0,0,());
 
   while($arg = shift(@args))
   {
@@ -56,69 +139,41 @@ sub ParseCommandLine
     }
     elsif($arg =~ m:^-D([^=]+)(=)?(.*):)
     {
-      &define($1, $3);
+      &Define($1, $3,"command-line",0);
     }
     elsif($arg =~ m:^-M(.*):)
     {
       $do_deps = 1;
     }
-    elsif($arg =~ m:^-C\+\+:)
-    {
-      $cxx = 1;
-    }
-    elsif($arg =~ m:^-:)
+    elsif($arg =~ m:^-.+:)
     {
       die("Unknown preprocessor option '$arg'");
     }
+    elsif($source_file && $output_file)
+    {
+      die("Source and output files already set");
+    }
     elsif($source_file)
     {
-      die("Source file already set");
+      $output_file = $arg;
     }
     else
     {
-      $arg =~ m:(.*/)?(.*):;
-
-      $source_file = $2;
-      $current_wdir = $1 if($1);
+      $source_file = $arg;
     }
   }
   
   return ($source_file, $output_file, $do_deps, @include_path);
 }
 
-
-#/*@@
-#  @routine    define
-#  @date       Wed Sep 15 14:22:58 1999
-#  @author     Tom Goodale
-#  @desc 
-#  Defines a macro
-#  @enddesc 
-#  @calls     
-#  @calledby   
-#  @history 
-#
-#  @endhistory 
-#
-#@@*/
-sub define
-{
-  local($what, $value);
-
-  if($defines{$what})
-  {
-    print STDERR "Redefining $defines{$what}\n";
-  }
-
-  $defines{$what} = $value;
-}
+###############################################################################
 
 #/*@@
 #  @routine    ProcessFile
-#  @date       Wed Sep 15 14:23:16 1999
+#  @date       Mon Nov 19 23:51:03 2001
 #  @author     Tom Goodale
 #  @desc 
-#  Opens a file and calls the routine to process it.  
+#  Open a file and parse its contents.
 #  @enddesc 
 #  @calls     
 #  @calledby   
@@ -129,61 +184,124 @@ sub define
 #@@*/
 sub ProcessFile
 {
-  my($source_file, $output_file, $do_deps, @include_path) = @_;
-  my($line, $found, $path);
-  local(*F);
+  my ($newfilename, $oldfilename, $oldlinenumber, $printline) = @_;
+  local *FILEDESC;
+  my $fullpath;
+  my $new_current_wd;
 
-  $found = "";
+  ($new_current_wd,$fullpath) = &FindFile($newfilename,$current_wd,\@include_path);
 
-  for $path ($current_wdir, @include_path)
+  # Override this variable on the stack
+  local $current_wd = $new_current_wd;
+
+  if($newfilename ne "-" && !$fullpath)
   {
-    if (-r "$path/$source_file")
+    die "Unable to find $newfilename included at $oldfilename:$oldlinenumber";
+  }
+
+  if($newfilename ne "-")
+  {
+    if($debug)
     {
-      $found = $path;
-      last;
+      print "Opening $newfilename\n";
+    }
+
+    open(FILEDESC, "< $fullpath") || die "Unable to open file $fullpath";
+    push(@filelist, $oldfilename);
+    push(@linelist, $oldlinenumber);
+  }
+  else
+  {
+    $newfilename = "<STDIN>";
+    $current_wd = ".";
+    *FILEDESC = STDIN;
+  }
+
+  # If we are not printing lines, must being doing deps, so save file name
+  if($newfilename ne "-" && ! $printline )
+  {
+    $complete_file_list{"$fullpath"} = 1;
+  }
+
+  &ParseFile(FILEDESC,$newfilename,0,1,$printline);
+
+  if($newfilename ne "-")
+  {
+    if($debug)
+    {
+      print "Closing $newfilename\n";
+    }
+    close(FILEDESC);
+    pop(@filelist);
+    pop(@linelist);
+  }
+}
+
+###############################################################################
+
+#/*@@
+#  @routine    FindFile
+#  @date       Mon Nov 19 23:51:03 2001
+#  @author     Tom Goodale
+#  @desc 
+#  Finds a file and works out its full name and the directory its in.
+#  @enddesc 
+#  @calls     
+#  @calledby   
+#  @history 
+#
+#  @endhistory 
+#
+#@@*/
+sub FindFile
+{
+  my($newfilename,$old_current_wd,$ra_include_path) = @_;
+
+  my $fullpath;
+  my $new_current_wd;
+
+  if($newfilename =~ m,^/,)
+  {
+    #absolute path
+    $fullpath = $newfilename;
+  }
+  elsif($old_current_wd && -r "$old_current_wd/$newfilename")
+  {
+    $fullpath = "$old_current_wd/$newfilename";
+  }
+  else
+  {
+    for(my $dir=0; $dir < @$ra_include_path; $dir++)
+    {
+      if(-r "$ra_include_path->[$dir]/$newfilename")
+      {
+        $fullpath = "$ra_include_path->[$dir]/$newfilename";
+        last;
+      }
     }
   }
-  if($found eq "")
+
+  # Tidy up the path a bit
+  $fullpath =~ s,/./,/,g;
+
+  if($fullpath)
   {
-    &Warning("Error: Cannot find $source_file in " . join(":", @include_path));
-    exit 2;
+    $fullpath =~ m,^(.+)/[^/]+$,;
+    $new_current_wd = $1;
   }
 
-  $path = $found;
-
-  $path =~ s:/*$::;
-
-  push(@dirlist, $current_wdir);
-
-  "$path/$source_file" =~ m:(.*/)?(.*):;
-
-  $current_wdir = $1;
-
-  open(F, "$path/$source_file") || &Warning("Error: Unable to open $path/$source_file") || exit 2;
-
-  push(@filelist, "$path/$source_file");
-
-
-  if($do_deps)
-  {
-    printf("\\\n      %-40s","$path/$source_file");
-  }
-
-
-  &ParseFile(*F, $output_file, $do_deps, @include_path);
-  close(F);
-
-  pop(@filelist);
-  $current_wdir = pop(@dirlist);
-
+  $fullpath =~ s,^./,,;
+  return ($new_current_wd, $fullpath);
 }
+  
+###############################################################################
 
 #/*@@
 #  @routine    ParseFile
-#  @date       Wed Sep 15 14:24:11 1999
+#  @date       Mon Nov 19 23:51:03 2001
 #  @author     Tom Goodale
 #  @desc 
-#  The meat of the program - this actually tries to make sense of the input file  
+#  Parse part or all of a file.
 #  @enddesc 
 #  @calls     
 #  @calledby   
@@ -194,129 +312,210 @@ sub ProcessFile
 #@@*/
 sub ParseFile
 {
-  local(*F, $output_file, $do_deps, @include_path) = @_;
-    
-  while($line = <F>)
+  local *INFILE  = $_[0];
+  my $filename   = $_[1];
+  my $linenumber = $_[2];
+  my $active     = $_[3];
+  my $printline  = $_[4];
+
+  my $firstline = $linenumber;
+
+  my $retcode = 0;
+
+  my $line;
+  my $currentline;
+
+  if($debug)
   {
-    chomp($line);
+    print "Entered ParseFile: $filename:$linenumber, active=$active\n";
+  }
 
-    # Strip off C++ comments
-    $line =~ s://.*:: if($cxx); 
+  while(1)
+  {
+    ($line, $linenumber) = &ReadLine(*INFILE,$linenumber);
 
-    # Strip off C comments
-    if($line =~ m:/\*:)
+    $currentline = $line;
+
+    # Exit loop if file is finished
+    last if(! defined($line));
+    
+    # If it isn't a preprocessor command, just process it
+    if($line !~ m/^\#/)
     {
-      $line = &StripComments(*F, $line);
-    }     
+      if($active)
+      {
+        my $retval;
+        ($expanded,$retval) = &ParseAndExpand($line, "STDIN", $linenumber);
+        print OUTSTREAM "$expanded\n" if $printline;
+        $retcode += $retval;
+      }
+      next;
+    }
 
-    if($line =~ m:^\#:)
+    if($line =~ m/^#define\s+([^\s]+)(\s+(.*))?/)
     {
-      if($line =~ m:\#include\s+<:)
+      # Define a macro
+      &Define($1,$3,$filename, $linenumber) if($active);
+      next;
+    }
+    elsif($line =~ m/^#undef\s+([^\s]+)/)
+    {
+      # Undefine a macro
+      &UnDefine($1,$filename,$linenumber) if($active);
+      next;
+    }
+    elsif($line =~ m/^#if(.+)/)
+    {
+      #Deal with a #if clause - do it recursively
+      my $newactive;
+
+      # Parse the if statement and see if the first clause is active
+      if($active)
       {
-	# Ignore standard includes
-      }
-      elsif($line =~ m:^\#include\s+\"([^\"]+)\":)
-      {
-	push(@linelist, $.);
-	&ProcessFile($1, $output_file, $do_deps, @include_path);
-	pop(@linelist);
-      }
-      elsif($line =~ m:^\#define:)
-      {
-	&CreateDefine(*F, $line);
-      }
-      elsif($line =~ m:^\#ifdef\s+(.+):)
-      {
-	if(! &defined($1))
-	{
-	  if(&FindMatchingEndifOrElse(*F, $line))
-	  {
-	    # Found an else, so go down a level
-	    &ParseFile(*F, $output_file, $do_deps, @include_path);
-	  }
-	}
-	else
-	{
-	  # Go down a level to process this block.
-	  &ParseFile(*F, $output_file, $do_deps, @include_path);
-	}
-      }
-      elsif($line =~ m:^\#ifndef\s+(.+):)
-      {
-	if(&defined($1))
-	{
-	  if(&FindMatchingEndifOrElse(*F, $line))
-	  {
-	    # Found an else, so go down a level
-	    &ParseFile(*F, $output_file, $do_deps, @include_path);
-	  }
-	}
-	else
-	{
-	  # Go down a level to process this block.
-	  &ParseFile(*F, $output_file, $do_deps, @include_path);
-	}
-      }
-      elsif($line =~ m:^\#if\s+(.+):)
-      {
-	if(! &IfLine($1))
-	{
-	  if(&FindMatchingEndifOrElse(*F, $line))
-	  {
-	    # Found an else, so go down a level
-	    &ParseFile(*F, $output_file, $do_deps, @include_path);
-	  }
-	}
-	else
-	{
-	  # Go down a level to process this block.
-	  &ParseFile(*F, $output_file, $do_deps, @include_path);
-	}
-      }
-      elsif($line =~ m:^\#else:)
-      {
-	if(&FindMatchingEndifOrElse(*F, $line))
-	{
-	  &Warning("Error: Syntax error - only one else allowed.");
-	  exit 2;
-	}
-	# Return to previous level at an endif
-	return;
-      }
-      elsif($line =~ m:^\#endif:)
-      {
-	# Return to previous level at an endif
-	return;
-      }
-      elsif($line =~ m:^\#undef:)
-      {
-	&UnDefine($line);
+        $newactive = &ProcessIf($1, $filename, $linumber,$printline);
       }
       else
       {
-	&Warning("Warning: Unknown preprocessor directive $line");
+        #If not active before, still inactive
+        $newactive = 0;
+      }
+      my $beenactive = $newactive;
+      my $foundelse = 0;
+
+      # Now process first clause and any #elif or #else clauses
+      while(1)
+      {
+        # Parse the clause
+        ($currentline, $linenumber) = &ParseFile(*INFILE,$filename,$linenumber,$newactive && $active,$printline);
+        if(! $currentline)
+        {
+          # Got EOF !
+          die "Unexpected EOF when parsing $filename";
+        }
+        elsif($currentline && $currentline =~ /\#endif\s*/)
+        {
+          # Finished
+          last;
+        }
+        elsif($currentline =~ m/^#elif\s+(.+)/ && ! $foundelse)
+        {
+          # Got #elif, is this next clause active ?
+          if(! $beenactive)
+          {
+            if($active)
+            {
+              $newactive = &ProcessIf($1, $filename, $linumber);
+            }
+            else
+            {
+              $newactive = 0;
+            }
+            $beenactive = $newactive;
+          }
+          else
+          {
+            $newactive = 0;
+          }
+        }
+        elsif($currentline =~ m/^#else\s*$/ && ! $foundelse)
+        {
+          # Got #else, have any of the clauses been active ?
+          if($active)
+          {
+            $newactive = 1 - $beenactive
+          }
+          else
+          {
+            $newactive = 0;
+          }
+          
+          $foundelse = 1;
+        }
+        else
+        {
+          if($currentline =~ m/^#else/ || $currentline =~ m/^#elsif/)
+          {
+            print STDERR "Extraneous #else of #elsif found at $filename:$linenumber\n";
+            $newactive = 0;
+          }
+          else
+          {
+            die "Unexpected line '$currentline' at $filename:$linenumber";
+          }
+        }
+      }
+    }
+    elsif($line =~ m/^\#elif/ || $line =~ m/^\#else/ || $line =~ m/^\#endif/)
+    {
+      if($firstline > 0)
+      {
+      # If we are processing just part of the file, ok
+        last;
+      }
+      else
+      {
+        # Otherwise there's an extra one here 
+        die "Unexpected #elif/#else/#endif at $filename:$linenumber";
+      }
+    }
+    elsif($line =~ m/^#include\s+(.+)?/)
+    {
+      # Now to include files.
+      if(! defined($1))
+      {
+        print STDERR "Missing argument to #include directive at $filename:$linenumber\n";
+      }
+      else
+      {
+        if($active)
+        {
+          my $argument = $1;
+          if($argument =~ m/<[^>]*>\s*/)
+          {
+            # Ignore system includes
+            print OUTSTREAM "$line\n" if $printline;
+          }
+          else
+          {
+            # Allow people to use macros to define name of include file
+            ($argument,undef) = &ParseAndExpand($argument,$filename,$linenumber);
+            
+            if($argument !~ m/\s*\"(.+)\"\s*$/)
+            {
+              print STDERR "Invalid filename $argument in #include directive at $filename:$linenumber\n";
+            }
+            else
+            {
+              # Process the new file.  Don't need to pass $active since wouldn't be here if inactive.
+              &ProcessFile($1,$filename,$linenumber,$printline);
+            }
+          }
+        }
       }
     }
     else
     {
-      if(! $do_deps)
-      {
-	$line = &ExpandLine($line);
-	
-	print "$line\n";
-      }
+      print STDERR "Unrecognised # directive at $filename:$linenumber\n"
     }
   }
 
-  return;
+  if($debug)
+  {
+    print "Leaving ParseFile : currentline = '$currentline', linenumber = $linenumber\n";
+  }
+
+  return ($currentline,$linenumber);
 }
 
+###############################################################################
+
 #/*@@
-#  @routine    CreateDefine
-#  @date       Wed Sep 15 14:24:51 1999
+#  @routine    ReadLine
+#  @date       Mon Nov 19 23:51:03 2001
 #  @author     Tom Goodale
 #  @desc 
-#  Takes a line with #define on it and creates the appropriate macro
+#  Read a line from the current file descriptor.
+#  Deals with comments and continuation lines
 #  @enddesc 
 #  @calls     
 #  @calledby   
@@ -325,43 +524,191 @@ sub ParseFile
 #  @endhistory 
 #
 #@@*/
-sub CreateDefine
+sub ReadLine
 {
-  local(*F, $line) = @_;
-  my($var, $val);
+  local *INFILE = $_[0];
+  my $linenumber = $_[1];
+  my $line;
 
-  $line =~ m:\#define\s+([^\s]+)\s*(.*):;
-  
-  $var = $1;
-  $val = $2;
+  ($line,$linenumber) = &GetNextLine(*INFILE,$linenumber);
 
-  if($val =~ m:\\$:)
+  # Deal with C-style comments
+
+  # Deal with completely enclosed comments
+  $line =~ s,/\*.*\*/, ,g;
+
+  # Are we already processing a comment ?
+  if($incomment)
   {
-    while($val =~ m:\\$:)
+    if($line =~ m,\*/,)
     {
-      $val =~ s:\\$::;
-      $line = <F>;
-      chomp($line);
-
-      $val .= $line;
+      # Get rid of line up to end of comment
+      $line =~ s,^.*\*/, ,;
+      # Line finished the comment
+      $incomment = 0;
+    }
+    else
+    {
+      # Line doesn't finish the comment
+      $line = " ";
     }
   }
 
-  if($val eq "")
+  if(! $incomment)
   {
-    $val = "__cctk__internal_val__%%%%";
+    if($line =~ m,/\*,)
+    {
+      # Get rid of line after beginning of comment
+      $line =~ s,/\*.*$, ,;
+      # Line starts the comment
+      $incomment = 1;
+    }
   }
-  $defines{$var} = $val;
-  
+
+  # Get rid of C++ comments too
+  if(! $incomment)
+  {
+    $line =~ s,//.*$, ,;
+  }
+
+  return ($line, $linenumber);
 }
 
+###############################################################################
 
 #/*@@
-#  @routine    UnDefine
-#  @date       Wed Sep 15 14:25:27 1999
+#  @routine    Get next line
+#  @date       Mon Nov 19 23:51:03 2001
 #  @author     Tom Goodale
 #  @desc 
-#  Undefines a macro given a line with #undef on it.
+#  Read a line from the current file descriptor.
+#  Dealing with continuation lines.
+#  @enddesc 
+#  @calls     
+#  @calledby   
+#  @history 
+#
+#  @endhistory 
+#
+#@@*/
+sub GetNextLine
+{
+  local *INFILE = $_[0];
+  my $linenumber = $_[1];
+
+  my $line = <INFILE>;
+  $linenumber++;
+
+  # Deal with continuation lines
+  while($line =~ m/\\\n$/)
+  {
+    chop($line);
+    chop($line);
+    $line .= <INFILE>;
+    $linenumber++;
+  }
+  chop($line);
+
+  return ($line, $linenumber);
+}
+###############################################################################
+
+#/*@@
+#  @routine    ProcessIf
+#  @date       Mon Nov 19 23:51:03 2001
+#  @author     Tom Goodale
+#  @desc 
+#  Parse an #if statement and return true or false.
+#  @enddesc 
+#  @calls     
+#  @calledby   
+#  @history 
+#
+#  @endhistory 
+#
+#@@*/
+sub ProcessIf
+{
+  my($line,$filename,$linenumber) = @_;
+
+  my $retval = 0;
+
+  if($line =~ m/^def\s+(.+)/)
+  {
+    $retval = defined($defines{$1});
+  }
+  elsif($line =~ m/^ndef\s+(.+)/)
+  {
+    $retval = ! defined($defines{$1});
+  }
+  else
+  {
+    print STDERR "#if can currently to #ifdef and #ifndef, sorry !\n";
+    $retval = 0;
+  }
+
+  return $retval;
+}
+
+###############################################################################
+
+#/*@@
+#  @routine    Define
+#  @date       Mon Nov 19 23:51:03 2001
+#  @author     Tom Goodale
+#  @desc 
+#  Define a macro.
+#  @enddesc 
+#  @calls     
+#  @calledby   
+#  @history 
+#
+#  @endhistory 
+#
+#@@*/
+sub Define
+{
+  my ($arg1,$arg2,$filename,$linenumber) = @_;
+
+  $arg1 =~ m:^([a-zA-Z_][a-zA-Z0-9_]*)(\(([a-zA-Z0-9_,]+)\))?$:;
+  
+  my $defname = $1;
+  my $defargs = $3;
+
+  my @args = split(/,/, $defargs);
+
+  if($debug)
+  {
+    print "Defining '$defname'\n";
+  }
+
+  if($defines{$defname})
+  {
+    print STDERR "Redefining $defname at $filename:$linenumber\n";
+  }
+
+  # Translate argument names just once at original definition.
+  my @transargs = ();
+  for(my $arg = 0; $arg < @args; $arg++)
+  {
+    $transargs[$arg] = "__^CCTK_INTERNAL${arg}__";
+  }
+
+  my $newbody = &ArgumentSubstitute($arg2, scalar(@args), @args, @transargs);
+
+  $defines{$defname}{"ARGS"} = \@transargs;
+
+  $defines{$defname}{"BODY"} = $newbody;
+}
+
+###############################################################################
+
+#/*@@
+#  @routine    Undefine
+#  @date       Mon Nov 19 23:51:03 2001
+#  @author     Tom Goodale
+#  @desc 
+#  Undefine a macro.
 #  @enddesc 
 #  @calls     
 #  @calledby   
@@ -372,24 +719,19 @@ sub CreateDefine
 #@@*/
 sub UnDefine
 {
-  my($line) = @_;
-  my($var);
+  my ($def,$filename,$linenumber) = @_;
 
-  $line =~ m:\#undef\s+([^\s]+):;
-  
-  $var = $1;
-
-  delete $defines{$var};
-  
+  delete $defines{$def};
 }
 
+###############################################################################
 
 #/*@@
-#  @routine    defined
-#  @date       Wed Sep 15 14:25:55 1999
+#  @routine    ExpandMacro
+#  @date       Mon Nov 19 23:51:03 2001
 #  @author     Tom Goodale
 #  @desc 
-#  Checks to see if a macros is defined.  
+#  Expand a macro recursively.
 #  @enddesc 
 #  @calls     
 #  @calledby   
@@ -398,70 +740,152 @@ sub UnDefine
 #  @endhistory 
 #
 #@@*/
-sub defined
+sub ExpandMacro
 {
-  my($var) = @_;
-
-  return 1 if defined $defines{$var};
+  my ($macro, $args, $filename, $linenumber) = @_;
   
-  return 0;
-}
+  my $retcode = 0;
+  my @arguments = &SplitArgs($args);
 
+  my $outstring = $defines{$macro}{"BODY"};
 
-#/*@@
-#  @routine    FindMatchingEndifOrElse
-#  @date       Wed Sep 15 14:26:23 1999
-#  @author     Tom Goodale
-#  @desc 
-#  Skips through a file until there is an else or an endif without a matching if.
-#  Return 1 if it is an else, 0 if it is an endif.  
-#  @enddesc 
-#  @calls     
-#  @calledby   
-#  @history 
-#
-#  @endhistory 
-#
-#@@*/
-sub FindMatchingEndifOrElse
-{
-  local(*F, $line) = @_;
-  my($if_count,$retval) = (0,0);
-
-  while(<F>)
+  if($macro eq "__FILE__")
   {
-    if(m:^\#ifdef:)
+    $outstring = "\"$filename\"";
+  }
+  elsif($macro eq "__LINE__")
+  {
+    $outstring = "$linenumber";
+  }
+
+  if(@arguments != @{$defines{$macro}{"ARGS"}})
+  {
+    my $expected = @{$defines{$macro}{"ARGS"}};
+    my $got      = @arguments;
+    print STDERR "Error expanding macro '$macro' at $filename:$linenumber\n";
+    print STDERR "      Expected $expected arguments\n";
+    print STDERR "      Got      $got arguments\n";
+    $outstring = $macro;
+    $retcode--;
+  }
+  else
+  {
+    my @prescanned_args;
+
+    # Argument prescan
+    for(my $arg = 0; $arg < @arguments; $arg++)
     {
-      $if_count++;
+      my $retval;
+      ($prescanned_args[$arg],$retval) = &ParseAndExpand($arguments[$arg], $filename, $linenumber);
+      $retcode += $retval;
+    }
+
+    # Argument substitution
+    for(my $arg = 0; $arg < @arguments; $arg++)
+    {
+      if($debug)
+      {
+        print "Outstring is '$outstring'\n";
+        print "Arg $arg: '$defines{$macro}{\"ARGS\"}[$arg]', '$arguments[$arg]', '$prescanned_args[$arg]'\n";
+      }
+
+      my $tobesubsted = quotemeta($defines{$macro}{"ARGS"}[$arg]);
+
+      # Concatenation takes non-prescanned argument 
+      $outstring =~ s/##\s*$tobesubsted\b/##$arguments[$arg]/g;
+
+      # Stringification takes non-prescanned argument and stringifies it
+      $outstring =~ s/#\s*$tobesubsted\b/\"$arguments[$arg]\"/g;
+
+      $outstring =~ s/\b$tobesubsted\b/$prescanned_args[$arg]/g;
+    }
+
+    # Now recurse
+
+    ($outstring,$retval) = &ParseAndExpand($outstring, $filename, $linenumber);
+    $retcode += $retval;
+
+    # Final Concatenation
+    $outstring =~ s/\s*##\s*//g;
+
+    # Now get rid of repeated ""
+
+    $outstring =~ s/\\\"/__CCTK_STRINGPROTECT__/g;
+    $outstring =~ s/\"\"//g;
+    $outstring =~ s/__CCTK_STRINGPROTECT__/\\\"/g;
+  }
+
+  return ($outstring,$retcode);
+}
+
+###############################################################################
+
+#/*@@
+#  @routine    SplitArgs
+#  @date       Mon Nov 19 23:51:03 2001
+#  @author     Tom Goodale
+#  @desc 
+#  Split the arguments given to a macro into an array.
+#  @enddesc 
+#  @calls     
+#  @calledby   
+#  @history 
+#
+#  @endhistory 
+#
+#@@*/
+sub SplitArgs
+{
+  my ($args) = @_;
+  my @outargs;
+
+  # Split the input into individual chars
+  my @splitargs = split(//, $args);
+
+  my $nestlevel = 0;
+  
+  my @thistoken = ();
+
+  for(my $pos = 0; $pos < @splitargs; $pos++)
+  {
+    # Now split at , at the top level
+    if($splitargs[$pos] eq "(")
+    {
+      $nestlevel++;
+    }
+    elsif($splitargs[$pos] eq ")")
+    {
+      $nestlevel++;
+    }
+    elsif($splitargs[$pos] eq "," && $nestlevel == 0)
+    {
+      push(@outargs, join("",@thistoken));
+      @thistoken = ();
       next;
     }
-    elsif(m:\#endif:)
+    else
     {
-       last if($ifcount == 0);
- 
-      $if_count--;
-    }
-    elsif(m:\#else:)
-    {
-      if($ifcount == 0)
-      {
-	$retval = 1;
-	last;
-      }
-	  
-      $if_count--;
+      push(@thistoken, $splitargs[$pos]);
     }
   }
 
-  return $retval;
+  # Push any remaining token
+  if(@thistoken > 0)
+  {
+    push(@outargs, join("",@thistoken));
+  }
+
+  return @outargs;
 }
 
+###############################################################################
+
 #/*@@
-#  @routine    ExpandLine
-#  @date       Wed Sep 15 14:27:18 1999
+#  @routine    ParseAndExpand
+#  @date       Mon Nov 19 23:51:03 2001
 #  @author     Tom Goodale
 #  @desc 
-#  Expands all macros in a line.  
+#  Parse a string and expand any macros in it.
 #  @enddesc 
 #  @calls     
 #  @calledby   
@@ -470,52 +894,167 @@ sub FindMatchingEndifOrElse
 #  @endhistory 
 #
 #@@*/
-sub ExpandLine
+sub ParseAndExpand
 {
-  my($line) = @_;
-  my(@tokens);
-  my($stringify);
+  my ($line,$filename, $linenumber) = @_;
 
-  @tokens = split(/(\W+)/, $line);
+  # Split the line into individual characters.
+  my @splitline = split(//, $line);
 
-  $line = "";
+  my @outline = ();
+  my $retcode = 0;
 
-  $stringify = 0;
-  for $token (@tokens)
+  for(my $pos = 0 ; $pos < @splitline; $pos++)
   {
-    if($token =~ m:\w:&& $stringify == 0 && defined $defines{$token})
+    if($splitline[$pos] !~ m/[A-Za-z_]/)
     {
-      $line .= &ExpandLine($defined{$token});
+      push(@outline, $splitline[$pos]);
+      next;
     }
-    elsif($stringify == 1)
+    
+    # Ok, should be at the beginning of a token
+
+    my $token = $splitline[$pos];
+    
+    while($pos+1 < @splitline && $splitline[$pos+1] =~ m:[A-Za-z0-9_]:)
     {
-      $line .= "\"$token\"";
-      $stringify = 0;
+      $pos++;
+      $token .= $splitline[$pos];
+    }
+
+    # Is this token a macro ?
+    if($defines{$token})
+    {
+      my $arg = "";
+      if($pos+1 < @splitline)
+      {
+        # Find any arguments
+        if($splitline[$pos+1] eq "(")
+        {
+          $pos++;
+          my $depth = 1;
+          $pos++;
+          while($pos < @splitline && $depth > 0)
+          {
+            if($splitline[$pos] eq "(")
+            {
+              $depth++;
+            }
+            elsif($splitline[$pos] eq ")")
+            {
+              $depth--;
+            }
+            if($depth > 0)
+            {
+              $arg .= $splitline[$pos];
+              $pos++;
+            }
+          }
+        }
+      }
+      if($debug)
+      {
+        print "Token is '$token', arguments are '$arg'\n";
+      }
+      # Expand the macro
+      my($expanded,$retval) = &ExpandMacro($token,$arg,$filename,$linenumber);
+      $retcode += $retval;
+      if($debug)
+      {
+        print "Expanded version is '$expanded'\n";
+      }
+      #Put the final expanded version into output.
+      push(@outline, $expanded);
     }
     else
     {
-      # Concatanation character
-      $token =~ s:\s*\#\#\s*::;
+      push(@outline, $token);
+    }
+  }
 
-      # Check for stringification.
-      if($token =~ m:\#$:)
+  return (join("",@outline),$retcode);
+}
+
+###############################################################################
+
+#/*@@
+#  @routine    ArgumentSubstitute
+#  @date       Mon Nov 19 23:51:03 2001
+#  @author     Tom Goodale
+#  @desc 
+#  Substitute all non-string-enclosed arguments with replacement values.
+#  @enddesc 
+#  @calls     
+#  @calledby   
+#  @history 
+#
+#  @endhistory 
+#
+#@@*/
+sub ArgumentSubstitute
+{
+  my ($body, $nargs, @args) = @_;
+
+  my @splitbody = split(//,$body);
+  my @outbody = ();
+
+  my $instring = 0;
+
+  for(my $pos = 0 ; $pos < @splitbody; $pos++)
+  {
+    
+    # Just pass through all non-tokens and all tokens in a string.
+    if($splitbody[$pos] !~ m/[A-Za-z_]/ || $instring == 1)
+    {
+      if($splitbody[$pos] eq '"')
       {
-	$stringify = 1;
-	$token =~ s:\#$::;
+        if($pos == 0 || ($pos > 0 && $splitbody[$pos-1] ne '\\'))
+        {
+          $instring = 1 - $instring;
+        }
       }
-      $line .= $token;
+      push(@outbody, $splitbody[$pos]);
+      next;
     }
+    
+    # Ok, should be at the beginning of a token
+
+    my $token = $splitbody[$pos];
+    
+    while($pos+1 < @splitbody && $splitbody[$pos+1] =~ m:[A-Za-z0-9_]:)
+    {
+      $pos++;
+      $token .= $splitbody[$pos];
+    }
+    
+    if($debug)
+    {
+      print "Token is '$token'\n";
+    }
+
+    for(my $arg = 0; $arg < $nargs; $arg++)
+    {
+      if($token =~ m/^$args[$arg]$/)
+      {
+        $token = $args[$arg+$nargs];
+        last;
+      }
+    }
+
+    push(@outbody, $token);
   }
 
-  return $line;
+  return join("", @outbody);
 }
 
+###############################################################################
+
 #/*@@
-#  @routine    StripComments
-#  @date       Wed Sep 15 14:27:49 1999
+#  @routine    Print Defines
+#  @date       Mon Nov 19 23:51:03 2001
 #  @author     Tom Goodale
 #  @desc 
-#  Strips out C comments  
+#  Print all the macros in the symbol table.
 #  @enddesc 
 #  @calls     
 #  @calledby   
@@ -524,115 +1063,22 @@ sub ExpandLine
 #  @endhistory 
 #
 #@@*/
-sub StripComments
+sub PrintDefines
 {
-  local(*F, $line) = @_;
-  my($var, $val);
-  
+  my $def;
 
-  if($line !~ m:\*/:)
+  foreach $def (sort keys %defines)
   {
-    while($line !~ m:\*/:)
+    print "Macro '$def'\n";
+    print @{$defines{$def}{"ARGS"}} . " arguments\n";
+    if (@{$defines{$def}{"ARGS"}})
     {
-      $line .= <F>;
-      chomp($line);
+      for (my $arg = 0 ; $arg < @{$defines{$def}{"ARGS"}}; $arg++)
+      {
+        print "$arg: $defines{$def}{\"ARGS\"}[$arg]\n";
+      }
     }
-  }
+    print "Body '$defines{$def}{\"BODY\"}'\n";
 
-  # Strip off comments
-  if($line =~ m:\*/:)
-  {
-    $line =~ s:/\*.*\*/::g;
-    return $line;
   }
-
-  return $line;
 }
-
-
-#/*@@
-#  @routine    Warning
-#  @date       Wed Sep 15 14:28:11 1999
-#  @author     Tom Goodale
-#  @desc 
-#  Prints a warning to stderr.
-#  @enddesc 
-#  @calls     
-#  @calledby   
-#  @history 
-#
-#  @endhistory 
-#
-#@@*/
-
-sub Warning
-{
-  my($message) = @_;
-  my($number);
-  
-  print STDERR "$message at " . $filelist[$#filelist] . " line $.\n";
-
-  for($number = $#filelist -1; $number >= 0; $number--)
-  {
-    print STDERR "   opened from $filelist[$number] line $linelist[$number]\n";
-  }
-
-  return 0;
-}
-
-#/*@@
-#  @routine    IfLine
-#  @date       Wed Sep 15 14:57:22 1999
-#  @author     Tom Goodale
-#  @desc 
-#  Parses a #if line  
-#  @enddesc 
-#  @calls     
-#  @calledby   
-#  @history 
-#
-#  @endhistory 
-#
-#@@*/
-sub IfLine
-{
-  my($statements) = @_;
-  my(@tokens);
-  my($toknum);
-  my($state);
-
-  @tokens = split(/(\W+)/, $statements);
-
-  $state = 0;
-  $toknum = 0;
-  $lastop = "||";
-
-  while($toknum <= $#tokens)
-  {
-    if($tokens[$toknum] =~ m:^defined$:)
-    {
-      $currstate = &defined($tokens[$toknum+2]);
-
-      eval "$state = $state $lastop $currstate";
-      $toknum +=4
-    }
-    elsif($tokens[$toknum] =~ m:\|\||\&\&:)
-    {
-      $lastop = $token[$toknum];
-      $token++;
-    }
-    else
-    {
-      $currstate = &defined($tokens[$toknum]);
-
-      eval "$state = $state $lastop $currstate";
-      $toknum ++;
-    }
-      
-  }
-
-  return $state;
-}
-
-
-       
