@@ -345,8 +345,15 @@ sub CreateFortranArgumentDeclarations
 	  $suffix .= "_p";
 	}
 
-	if($1 eq CHAR)
+	if($1 eq BYTE)
 	{
+	  push(@declarations, "CCTK_BYTE $argument$suffix$2");
+	}
+	elsif($1 eq CHAR)
+	{
+	  # DEPRECATED IN BETA 10
+	  $message = "CCTK_CHAR is replaced by CCTK_BYTE, please change your coe";
+	  &CST_error(1,$message,__LINE__,__FILE__);
 	  push(@declarations, "CCTK_CHAR $argument$suffix$2");
 	}
 	elsif ($1 eq REAL)
@@ -454,8 +461,15 @@ sub CreateCArgumentDeclarations
 	}
 
         $levelmone=$level-1;  
-	if($1 eq "CHAR")
+	if($1 eq "BYTE")
 	{
+	  push(@declarations, "CCTK_BYTE *$argument$suffix=(CCTK_BYTE *)(cctkGH->data[CCTK_VarIndex(\"$3::$argument\")][$levelmone]);");
+	}
+	elsif($1 eq "CHAR")
+	{
+	  # DEPRECATED IN BETA 10 */
+	  $message = "CCTK_CHAR is replaced by CCTK_BYTE, please change your coe";
+	  &CST_error(1,$message,__LINE__,__FILE__);
 	  push(@declarations, "CCTK_CHAR *$argument$suffix=(CCTK_CHAR *)(cctkGH->data[CCTK_VarIndex(\"$3::$argument\")][$levelmone]);");
 	}
 	elsif ($1 eq REAL)
@@ -899,8 +913,16 @@ sub CreateCArgumentList
 	
 	for($level = $ntimelevels; $level > 0; $level--)
 	{
-	  if($1 eq "CHAR")
+	  if($1 eq "BYTE")
 	  {
+	    $arglist .= "$sep"."(CCTK_BYTE *)(CCTKARGNUM_$argument<0 ? NULL : (xGH)->data[CCTKARGNUM_$argument][$level-1])";
+	    $sep = ",";
+	  }
+	  elsif($1 eq "CHAR")
+	  {
+	    # DEPRECATED IN BETA 10
+	    $message = "CCTK_CHAR is replaced by CCTK_BYTE, please change your coe";
+	    &CST_error(1,$message,__LINE__,__FILE__);
 	    $arglist .= "$sep"."(CCTK_CHAR *)(CCTKARGNUM_$argument<0 ? NULL : (xGH)->data[CCTKARGNUM_$argument][$level-1])";
 	    $sep = ",";
 	  }
