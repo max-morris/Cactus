@@ -1,7 +1,7 @@
 
 Cactus Code Frequently Asked Questions
 
-$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.31 2002-05-09 11:40:44 allen Exp $
+$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.32 2002-05-09 11:41:24 allen Exp $
 
 Also available at http://www.cactuscode.org/Documentation/FAQ
 
@@ -479,7 +479,7 @@ Also available at http://www.cactuscode.org/Documentation/FAQ
     CactusBase/CartGrid3D CactusEinstein/StaticConformal CactusPUGH/PUGHReduce
     CactusEinstein/ADMBase CactusBase/Time CactusPUGH/PUGH CactusPUGH/PUGHSlab     CactusBase/IOUtil CactusElliptic/EllBase CactusBase/IOBasic
     ld64: ERROR   33 : Unresolved text symbol "SetCartSymVN" -- 1st referenced 
-    by /data2/wolf/convCactus/configs/Fish_origin/lib/libADMBase.a\
+    by /data2/Cactus/configs/origin/lib/libADMBase.a\
     (InitSymBound.c.o)
 
     Probably ADMBase is not inheriting from the thorn which contains the
