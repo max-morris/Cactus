@@ -649,8 +649,11 @@ simple make and test suite
 {\t -A, -list-active-thorns}& List all compiled thorns\\
 {\t -a, -test-thorn-active <package/thorn>}& Query presence of a thorn\\
 {\t -h, -help, -?} & Provide help on command line options\\
-{\t -v, -version} & Compilation date of code
-
+{\t -v, -version} & Compilation date of code\\
+{\t -x, -test-parameters [<nprocs>]} & Run code as far a parameter checking, simulating being on {\t nprocs} processors\\
+{\t -W, -warning-level <level>} & Set warning level to {\t level} (default is 1)\\
+{\t -E, -error-level <level>} & Set error level to {\t level}, warnings of this level and above will stop the code (default is 0)\\
+{\t -r, -redirect-stderr} & Redirect standard output to file on all processors\\
 \end{tabular}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
