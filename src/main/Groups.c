@@ -147,7 +147,7 @@ int CCTK_CreateGroup(const char *gname, const char *thorn, const char *imp,
   va_list ap;
   char *variable_name;
 
-  cGroupDefinition *group;
+  cGroupDefinition *group=NULL;
 
   int variable;
 
@@ -264,7 +264,7 @@ cGroupDefinition *CCTK_SetupGroup(const char *implementation,
   if((group_num = CCTK_GetGroupIndex(fullname1)) == -1)
   {
     /* Resize the array of groups */
-    if(temp = (cGroupDefinition *)realloc(groups, (n_groups+1)*sizeof(cGroupDefinition)))
+    if(temp = ((cGroupDefinition *)realloc(groups, (n_groups+1)*sizeof(cGroupDefinition))))
     {
       groups = temp;
       
@@ -362,9 +362,8 @@ cGroupDefinition *CCTK_SetupGroup(const char *implementation,
 int CCTK_GetVarIndex(const char *variable_name)
 {
   int retval;
-  int gnum,group_num;
+  int gnum;
   int variable;
-  int fullname = 0;
   int ierr;
   char *message;
   char *realimpname;
@@ -638,7 +637,7 @@ char *CCTK_GetFullName(int var)
 @@*/
 int CCTK_GTypeNumber(const char *type)
 {
-  int retval;
+  int retval=-1;
 
   if(!strcmp(type, "SCALAR"))
   {
@@ -674,7 +673,7 @@ int CCTK_GTypeNumber(const char *type)
 @@*/
 int CCTK_VTypeNumber(const char *type)
 {
-  int retval;
+  int retval=-1;
 
   if(!strcmp(type, "INTEGER"))
   {
@@ -715,7 +714,7 @@ int CCTK_VTypeNumber(const char *type)
 @@*/
 int CCTK_GScopeNumber(const char *type)
 {
-  int retval;
+  int retval=-1;
 
   if(!strcmp(type, "PRIVATE"))
   {
