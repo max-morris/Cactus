@@ -21,11 +21,13 @@ if test -n "$F90" ; then
 	LINUX_F90_COMP=portland
     elif test "`$F90 -v 2>&1 | grep -i g77`" ; then
 	LINUX_F90_COMP=gnu77
+    elif test "`$F90 -? 2>&1 | grep -i absoft`" ; then
+	LINUX_F90_COMP=absoft77
     else
 	echo Unknown Linux f90 compiler.
 	echo Please add appropriate information to 
 	echo $srcdir/known-architectures/linux-gnu
-	echo and send the updated file to CactusMaint
+	echo ad send the updated file to CactusMaint
         echo We will try anyway ...
     fi
 else
@@ -44,6 +46,13 @@ case "$LINUX_F90_COMP" in
      if test -n "$ABSOFT" ; then
        : ${LIBDIRS='$(ABSOFT)/lib'}
      fi ;;
+     absoft77)
+     : ${LIBS="fio f77math m"}
+     F90FLAGS="-f"
+     # Test if it is a version of the absoft compiler which has the library in a custom place.
+     if test -n "$ABSOFT" ; then
+       : ${LIBDIRS='$(ABSOFT)/lib'}
+     fi ;;
      nag)
      : ${LIBS="f90 nagfl90 nag m"} 
      F90FLAGS="$F90FLAGS -N140" ;;
@@ -56,5 +65,6 @@ case "$LINUX_F90_COMP" in
     echo Please add appropriate information to 
     echo $srcdir/known-architectures/linux-gnu
     echo and send the updated file to CactusMaint
-    exit 2 ;;
+    echo We will try anyway ...
+    ;;
 esac    
