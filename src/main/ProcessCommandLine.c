@@ -59,7 +59,7 @@ int ProcessCommandLine(int *inargc, char ***inargv, tFleshConfig *ConfigData)
 	{"test-parameters", optional_argument, NULL, 'x'},
 	{"warning-level", required_argument, NULL, 'W'},
 	{"error-level", required_argument, NULL, 'E'},
-	{"redirect-stderr", no_argument, NULL, 'r'},
+	{"redirect-stdout", no_argument, NULL, 'r'},
 	{"list-thorns", no_argument, NULL, 'T'},
 	{"test-thorn-compiled", required_argument, NULL, 't'},
 	{"version", no_argument, NULL, 'v'},
