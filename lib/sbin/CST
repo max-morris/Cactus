@@ -107,6 +107,10 @@ if($debug_parameters)
 @activethornsheader = &CreateActiveThornsHeader(%thorns);
 &OutputFile("$bindings_dir/include/", "thornlist.h", @activethornsheader);
 
+# Create define file of active thorns
+@definethornsheader = &CreateDefineThornsHeader(%thorns);
+&OutputFile("$bindings_dir/include/", "definethorn.h", @definethornsheader);
+
 # Finally (must be last), create the make.thornlist file.
 @make_thornlist = &CreateMakeThornlist(%thorns);
 
@@ -286,7 +290,6 @@ sub CreateMakeThornlist
   return ("$thornlist", "");
 }
 
-
 #/*@@
 #  @routine    CreateActiveThornsHeader
 #  @date       Wed Feb 17 16:06:20 1999
@@ -326,6 +329,47 @@ sub CreateActiveThornsHeader
 
   $header .= "\"\"};\n\n";
   $header .= "static int nthorns = $nthorns;\n\n";
+
+  return ("$header", ""); 
+}
+
+
+#/*@@
+#  @routine    CreateDefineThornsHeader
+#  @date       Wed April 6 16:06:20 1999
+#  @author     Gabrielle Allen
+#  @desc 
+#  Creates the lines which should be placed in the definethorn.h
+#  which contains a #define <THORNNAME> for each thorn.
+#  @enddesc 
+#  @calls     
+#  @calledby   
+#  @history 
+#
+#  @endhistory 
+#
+#@@*/
+
+sub CreateDefineThornsHeader
+{
+  local(%thorns) = @_;
+  local($header,$thorn,$nthorns);
+
+  $nthorns = 0;
+
+  $header = "\/* Defines for active thorns in the code. *\/\n\n";
+
+  foreach $thorn (keys %thorns)
+  {
+    # Ignore the main sources - they may confuse
+    next if ($thorn =~ m:Cactus:);
+
+    $thorns{$thorn} =~ m:(.*)/(.*)/(.*):;
+    $nthorns++;
+
+    # Only place package_name/thorn_name in the file.
+    $header .= "#define \U$2"."_"."\U$3\E\n"; 
+  }
 
   return ("$header", ""); 
 }
