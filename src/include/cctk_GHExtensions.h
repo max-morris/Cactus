@@ -17,6 +17,7 @@ extern "C"
 #endif
 
 int CCTK_RegisterGHExtension(const char *name);
+int CCTK_UnregisterGHExtension(const char *name);
 
 int CCTK_RegisterGHExtensionSetupGH(int handle, 
                                     void *(*func)(tFleshConfig *, int, cGH *));
