@@ -76,7 +76,8 @@ my $bibliography = "";
 $outfile ||= "ThornGuide.tex";
 
 # table of contents depth
-$tocdepth = 1 if (! defined $tocdepth);
+$tocdepth = 1 if ((! defined $tocdepth) || ($tocdepth =~ /^$/) );
+
 
 my $configname = "";
 
