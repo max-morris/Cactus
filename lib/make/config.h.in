@@ -55,7 +55,7 @@
 
 /* Modifier for Fortran function definitions. */
 
-#define FMODIFIER
+#undef FMODIFIER
 
 #ifdef CCODE
 
