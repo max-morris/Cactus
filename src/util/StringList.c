@@ -83,7 +83,7 @@ uStringList *Util_StringListCreate(int size)
   }
 
   return this;
-};
+}
 
  /*@@
    @routine    Util_StringListAdd
