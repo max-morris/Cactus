@@ -73,6 +73,24 @@ sub NewCreateScheduleBindings
     $file_list .= " Schedule$thorn.c";
   }
 
+  $buffer = ScheduleCreateBindings(scalar(keys %interface_database), 
+				  %interface_database, %schedule_database);
+
+
+  open(OUT, ">BindingsSchedule.c") || die "Unable to open BindingsSchedule.c";
+
+  print OUT $buffer;
+
+  close OUT;
+
+  $file_list .= " BindingsSchedule.c";
+
+  open(OUT, ">make.code.defn") || die "Unable to open make.code.defn";
+
+  print OUT "SRCS = $file_list\n";
+
+  close OUT;
+  
   chdir "$start_dir";
 }  
 
@@ -149,13 +167,14 @@ sub ScheduleCreateFile
   $outbuf .=  "\#include \"cctk.h\"\n";
   $outbuf .=  "\#include \"cctk_parameters.h\"\n";
   $outbuf .=  "\#include \"cctk_schedule.h\"\n";
+  $outbuf .=  "\#include \"cctk_Flesh.h\"\n";
   $outbuf .=  "\#include \"cctk_Comm.h\"\n";
   $outbuf .=  "\n";
   $outbuf .=  "/* Prototypes for functions to be registered. */";
   $outbuf .=  "$prototypes\n";
   $outbuf .=  "\n";
   $outbuf .=  "/*\@\@\n";
-  $outbuf .=  "  \@routine    CCTK_BindingsSchedule$thorn\n";
+  $outbuf .=  "  \@routine    CCTKi_BindingsSchedule_$thorn\n";
   $outbuf .=  "  \@date       \n";
   $outbuf .=  "  \@author     \n";
   $outbuf .=  "  \@desc \n";
@@ -168,7 +187,7 @@ sub ScheduleCreateFile
   $outbuf .=  "  \@endhistory\n"; 
   $outbuf .=  "\n";
   $outbuf .=  "\@\@*/\n";
-  $outbuf .=  "void CCTK_BindingsSchedule$thorn(cGH *GH)\n";
+  $outbuf .=  "void CCTKi_BindingsSchedule_$thorn(void)\n";
   $outbuf .=  "{\n";
   $outbuf .=  "  DECLARE_CCTK_PARAMETERS\n";
   $outbuf .=  "$buffer\n";
@@ -179,6 +198,73 @@ sub ScheduleCreateFile
 
 }
 
+#/*@@
+#  @routine    ScheduleCreateBindings
+#  @date       Fri Sep 17 18:17:13 1999
+#  @author     Tom Goodale
+#  @desc 
+#  Creates a string containing all the data which should go into the master 
+#  schedule bindings file.
+#  @enddesc 
+#  @calls     
+#  @calledby   
+#  @history 
+#
+#  @endhistory 
+#
+#@@*/
+sub ScheduleCreateBindings
+{
+  local($n_interface_database, @rest) = @_;
+  local(%interface_database);
+  local(%schedule_database);
+
+  local($outbuf);
+
+  # Extract the interface, and schedule databases from the arguments.
+  %interface_database = @rest[0..2*$n_interface_database-1];
+  %schedule_database = @rest[2*$n_interface_database..$#rest];
+
+  
+  $outbuf = "";
+  $outbuf .=  "\#include \"SKBinTree.h\"\n";
+  $outbuf .=  "\#include \"cctk_ActiveThorns.h\"\n";
+  $outbuf =   "\n";
+  $outbuf .=  "/* Prototypes for functions to be registered. */";
+
+  foreach $thorn (sort split(" ", $interface_database{"THORNS"}))
+  {
+    $outbuf .= "void CCTKi_BindingsSchedule_$thorn(void);\n";
+  }
+
+  $outbuf .=  "/*\@\@\n";
+  $outbuf .=  "  \@routine    CCTKi_BindingsScheduleInitialise\n";
+  $outbuf .=  "  \@date       \n";
+  $outbuf .=  "  \@author     \n";
+  $outbuf .=  "  \@desc \n";
+  $outbuf .=  "  Calls all the thorn schedule bindings file if the thorns are active.\n";
+  $outbuf .=  "  \@enddesc \n";
+  $outbuf .=  "  \@calls     \n";
+  $outbuf .=  "  \@calledby   \n";
+  $outbuf .=  "  \@history \n";
+  $outbuf .=  "\n";
+  $outbuf .=  "  \@endhistory\n"; 
+  $outbuf .=  "\n";
+  $outbuf .=  "\@\@*/\n";
+  $outbuf .=  "void CCTKi_BindingsScheduleInitialise(void)\n";
+  $outbuf .=  "{\n";
+  foreach $thorn (sort split(" ", $interface_database{"THORNS"}))
+  {
+    $outbuf .= "  if(CCTK_IsThornActive(\"$thorn\"))\n";
+    $outbuf .= "  {\n";
+    $outbuf .= "    CCTKi_BindingsSchedule_$thorn();\n";
+    $outbuf .= "  }\n";
+  }
+  $outbuf .=  "}\n";
+  $outbuf .=  "\n";
+
+  return $outbuf;
+}
 #/*@@
 #  @routine    ScheduleBlock
 #  @date       Fri Sep 17 17:37:59 1999
@@ -340,11 +426,11 @@ sub ScheduleStatement
 
   if($schedule_database{"\U$thorn\E STATEMENT_$statement TYPE"} eq "STORAGE")
   {
-    $function = "CCTK_EnableGroupStorage(GH,";
+    $function = "CCTK_ScheduleGroupStorage(";
   }
   elsif($schedule_database{"\U$thorn\E STATEMENT_$statement TYPE"} eq "COMMUNICATION")
   {
-    $function = "CCTK_EnableGroupComm(GH,";
+    $function = "CCTK_ScheduleGroupComm(";
   }
   else
   {
