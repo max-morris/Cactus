@@ -63,6 +63,7 @@ require "$sbin_dir/create_fortran_stuff.pl";
 require "$sbin_dir/GridFuncStuff.pl";
 require "$sbin_dir/output_config.pl";
 require "$sbin_dir/Orderer.pl";
+require "$sbin_dir/ImpParamConsistency.pl";
 
 
 #######################################################################
@@ -84,6 +85,10 @@ if($debug_interface)
 
 # Parse the parameter.ccl files
 %parameter_database = &create_parameter_database(%thorns);
+
+%parameter_database = &CheckImpParamConsistency(scalar(keys %interface_database), %interface_database, %parameter_database);
+
+#$debug_parameters = 1;
 
 if($debug_parameters)
 {
