@@ -21,7 +21,8 @@
 #include <malloc.h>
 #include <stdarg.h>
 
-#include "cctk.h"
+#include "cctk_Types.h"
+#include "cctk_Constants.h"
 #include "cctk_Flesh.h"
 #include "cctk_FortranString.h"
 #include "cctk_Groups.h"
@@ -75,7 +76,7 @@ int CCTK_RegisterInterpOperator(int (*function)(REGISTER_INTERP_ARGLIST),
   else
   {
     /* Interpolation operator with this name already exists. */
-    CCTK_WARN(1,"Interpolation operator with this name already exists");
+    CCTK_Warn(1,__LINE__,__FILE__,"Cactus","Interpolation operator with this name already exists");
     handle = -1;
   }
 
@@ -124,7 +125,7 @@ int CCTK_GetInterpHandle(const char *interp)
 #endif
 
   if (handle < 0)
-    CCTK_WARN(1,"No handle found for this interpolation operator");
+    CCTK_Warn(1,__LINE__,__FILE__,"Cactus","No handle found for this interpolation operator");
 
   return handle;
 
@@ -230,7 +231,7 @@ int CCTK_InterpGF (cGH *GH,
   /* Get the pointer to the interpolation operator */
   if (operation_handle < 0)
 
-    CCTK_WARN(3,"Invalid handle passed to CCTK_Interp");
+    CCTK_Warn(3,__LINE__,__FILE__,"Cactus","Invalid handle passed to CCTK_Interp");
 
   else
   {
@@ -259,7 +260,7 @@ int CCTK_InterpGF (cGH *GH,
         timelevel = CCTK_NumTimeLevelsFromVarI (index);
         retcode = 0;
         if (timelevel < 0) {
-          CCTK_WARN (1, "Invalid variable index in CCTK_InterpGF()");
+          CCTK_Warn (1, __LINE__,__FILE__,"Cactus","Invalid variable index in CCTK_InterpGF()");
           retcode = -1;
         } else {
           if (--timelevel > 0)
@@ -295,7 +296,7 @@ int CCTK_InterpGF (cGH *GH,
       
     }
     else
-      CCTK_WARN(3,"Interpolation operation is not registered and cannot be called");
+      CCTK_Warn(3,__LINE__,__FILE__,"Cactus","Interpolation operation is not registered and cannot be called");
   }
 
   return retcode;
@@ -327,7 +328,7 @@ void FMODIFIER FORTRAN_NAME(CCTK_InterpGF)(int *fortranreturn,
 
   if (*operation_handle < 0)
 
-    CCTK_WARN(3,"Invalid handle passed to CCTK_Interp");
+    CCTK_Warn(3,__LINE__,__FILE__,"Cactus","Invalid handle passed to CCTK_Interp");
 
   else
   {
@@ -356,7 +357,7 @@ void FMODIFIER FORTRAN_NAME(CCTK_InterpGF)(int *fortranreturn,
         timelevel = CCTK_NumTimeLevelsFromVarI (index);
         retcode = 0;
         if (timelevel < 0) {
-          CCTK_WARN (1, "Invalid variable index in CCTK_InterpGF()");
+          CCTK_Warn (1,__LINE__,__FILE__,"Cactus", "Invalid variable index in CCTK_InterpGF()");
           retcode = -1;
         } else {
           if (--timelevel > 0)
@@ -392,7 +393,7 @@ void FMODIFIER FORTRAN_NAME(CCTK_InterpGF)(int *fortranreturn,
 
     }
     else
-      CCTK_WARN(3,"Interpolation operation is not registered and cannot be called");
+      CCTK_Warn(3,__LINE__,__FILE__,"Cactus","Interpolation operation is not registered and cannot be called");
   }
 
   *fortranreturn = retcode;
@@ -510,7 +511,7 @@ int CCTK_Interp (cGH *GH,
   /* Get the pointer to the interpolation operator */
   if (operation_handle < 0)
 
-    CCTK_WARN(3,"Invalid handle passed to CCTK_Interp");
+    CCTK_Warn(3,__LINE__,__FILE__,"Cactus","Invalid handle passed to CCTK_Interp");
 
   else
   {
@@ -565,7 +566,7 @@ int CCTK_Interp (cGH *GH,
             break;
 
           default:
-            CCTK_WARN (1, "Invalid variable type for coordinates");
+            CCTK_Warn(1,__LINE__,__FILE__,"Cactus", "Invalid variable type for coordinates");
             retcode = -1;
             break;
         }
@@ -597,7 +598,7 @@ int CCTK_Interp (cGH *GH,
             break;
 
           default:
-            CCTK_WARN (1, "Invalid variable type for coordinates");
+            CCTK_Warn (1,__LINE__,__FILE__,"Cactus", "Invalid variable type for coordinates");
             retcode = -1;
             break;
         }
@@ -629,7 +630,7 @@ int CCTK_Interp (cGH *GH,
       
     }
     else
-      CCTK_WARN(3,"Interpolation operation is not registered and cannot be called");
+      CCTK_Warn(3,__LINE__,__FILE__,"Cactus","Interpolation operation is not registered and cannot be called");
   }
 
   return retcode;
@@ -661,7 +662,7 @@ void FMODIFIER FORTRAN_NAME(CCTK_Interp)(int *fortranreturn,
 
   if (*operation_handle < 0)
 
-    CCTK_WARN(3,"Invalid handle passed to CCTK_Interp");
+    CCTK_Warn(3,__LINE__,__FILE__,"Cactus","Invalid handle passed to CCTK_Interp");
 
   else
   {
@@ -748,7 +749,7 @@ void FMODIFIER FORTRAN_NAME(CCTK_Interp)(int *fortranreturn,
             break;
 
           default:
-            CCTK_WARN (1, "Invalid variable type for coordinates");
+            CCTK_Warn (1,__LINE__,__FILE__,"Cactus", "Invalid variable type for coordinates");
             retcode = -1;
             break;
         }
@@ -779,7 +780,7 @@ void FMODIFIER FORTRAN_NAME(CCTK_Interp)(int *fortranreturn,
       free (dims);
     }
     else
-      CCTK_WARN(3,"Interpolation operation is not registered and cannot be called");
+      CCTK_Warn(3,__LINE__,__FILE__,"Cactus","Interpolation operation is not registered and cannot be called");
   }
 
   *fortranreturn = retcode;
