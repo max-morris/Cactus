@@ -66,6 +66,8 @@ typedef unsigned char CCTK_BYTE;
 
 #define CCTK_POINTER          integer*SIZEOF_CHAR_P
 #define CCTK_POINTER_TO_CONST integer*SIZEOF_CHAR_P
+/* TODO: add autoconf for determining the size of function pointers */
+#define CCTK_FPOINTER         integer*SIZEOF_CHAR_P
 
 #define CCTK_STRING CCTK_POINTER
 
