@@ -3,6 +3,13 @@
 
 public:
  
+public:
+
+REAL cctk_initial_time "Initial time for evolution"
+{
+ : :: "Anything"
+} 0.0
+ 
 INTEGER cctk_itfirst "Initial iteration number"
 {
 : :: "Any integer"
@@ -12,3 +19,4 @@ INTEGER cctk_itlast "Final iteration number"
 {
 : :: "Any integer"
 } 10
+
