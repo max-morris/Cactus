@@ -1319,11 +1319,11 @@ static void CCTKi_SchedulePrintTimerInfo(t_TimerInfo *info)
   switch(info->vals[0].type)
   {
     case val_int:
-      printf("%d", info->vals[0].val.i);
+      printf("%d", info->vals[0].val.i); break;
     case val_long:
-      printf("%ld", info->vals[0].val.l);
+      printf("%ld", info->vals[0].val.l); break;
     case val_double:
-      printf("%g", info->vals[0].val.d);
+      printf("%g", info->vals[0].val.d); break;
     default:
       printf("Unknown value type at line %d of %s\n", __LINE__, __FILE__);
   }
@@ -1333,11 +1333,11 @@ static void CCTKi_SchedulePrintTimerInfo(t_TimerInfo *info)
     switch(info->vals[i].type)
     {
       case val_int:
-        printf("\t%d", info->vals[i].val.i);
+        printf("\t%d", info->vals[i].val.i); break;
       case val_long:
-        printf("\t%ld", info->vals[i].val.l);
+        printf("\t%ld", info->vals[i].val.l); break;
       case val_double:
-        printf("\t%g", info->vals[i].val.d);
+        printf("\t%g", info->vals[i].val.d); break;
     default:
       printf("Unknown value type at line %d of %s\n", __LINE__, __FILE__);
     }
