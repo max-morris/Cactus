@@ -188,6 +188,12 @@ sub get_implementation_friends
     if(! $friends{"\U$friend\E"})
     {
       $friends{"\U$friend\E"} = 1;
+      if(! $interface_data{"IMPLEMENTATION \U$friend\E THORNS"})
+      {
+	print "$implementation is friends with $friend - non-existent implementation\n";
+	$CST_errors++;
+	next;
+      }
       %friends = &get_implementation_friends($friend, scalar(keys %friends), %friends,%interface_data);
     }
   }
@@ -225,6 +231,12 @@ sub get_implementation_ancestors
     if(! $ancestors{"\U$ancestor\E"})
     {
       $ancestors{"\U$ancestor\E"} = 1;
+      if(! $interface_data{"IMPLEMENTATION \U$ancestor\E THORNS"})
+      {
+	print "$implementation inherits from $ancestor - non-existent implementation\n";
+	$CST_errors++;
+	next;
+      }
       %ancestors = &get_implementation_ancestors($ancestor, scalar(keys %ancestors), %ancestors,%interface_data);
     }
   }
@@ -488,6 +500,24 @@ sub check_interface_consistency
 	{
 	  $attributes{"DIM"} = $interface_data{"\U$thorn GROUP $group\E DIM"};
 	}
+	# Check the staggering are consistant
+	if($attributes{"STYPE"})
+	{
+	  if($attributes{"STYPE"} ne $interface_data{"\U$thorn GROUP $group\E STYPE"})
+	  {
+	    if(!$n_errors)
+	    {
+	      print STDERR "Inconsistent implementations of $implementation\n";
+	      print STDERR "    Implemented by thorns " . join(" ", @thorns) . "\n";
+	    }
+	    print STDERR "      Group $group has inconsistent staggering type.\n";
+	    $n_errors++;
+	  }
+	}	  
+	else
+	{
+	  $attributes{"STYPE"} = $interface_data{"\U$thorn GROUP $group\E STYPE"};
+	}
       }
     }
   }
@@ -606,6 +636,10 @@ sub parse_interface_ccl
 	{
 	  $interface_db{"\U$thorn GROUP $current_group\E DIM"} = $options{$option};
 	}
+	elsif($option =~ m:STAGGER:i)
+	{
+	  $interface_db{"\U$thorn GROUP $current_group\E STYPE"} = "\U$options{$option}\E";
+	}
 	elsif($option =~ m:TYPE:i)
 	{
 	  $interface_db{"\U$thorn GROUP $current_group\E GTYPE"} = "\U$options{$option}\E";
@@ -640,6 +674,11 @@ sub parse_interface_ccl
       if(! $interface_db{"\U$thorn GROUP $current_group\E TIMELEVELS"})
       {
 	$interface_db{"\U$thorn GROUP $current_group\E TIMELEVELS"} = 1;
+      }
+
+      if(! $interface_db{"\U$thorn GROUP $current_group\E STYPE"})
+      {
+	$interface_db{"\U$thorn GROUP $current_group\E STYPE"} = "NONE";
       }
       
       # Check that it is a known group type

@@ -32,6 +32,16 @@ sub CheckImpParamConsistency
       # Find a thorn providing this implementation
       ($other_thorn) = split(" ", $interface_database{"IMPLEMENTATION \U$friend\E THORNS"});
 
+      # Check the other implementation exists.
+      if($other_thorn =~ m:^\s*$:)
+      {
+	print "$thorn SHARES from implementation $friend - no such implementation\n";
+	
+	$CST_errors++;
+	
+	next;
+      }
+
 #      print "Other thorn is $other_thorn\n";
 
       foreach $parameter (split(" ", $parameter_database{"\U$thorn SHARES $friend\E variables"}))
