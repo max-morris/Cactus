@@ -69,14 +69,6 @@ sub BuildHeaders
 	$inc_file1 =~ s/ //g;
 	$inc_file2 = $interface_database{"\U$thorn ADD HEADER $inc_file1 TO"};
 
-	# Check the global include file is already there
-	if (! -e $inc_file2)
-	{
-	  $message = "No thorn requires $inc_file2 written to by $thorn\n";
-	  &CST_error(2,$message,__LINE__,__FILE__);
-	}
-	else
-	{
 	  # Write information to the global include file
 	  open(OUT,">>$inc_file2") || die "Cannot open $inc_dir2";
 	  print OUT "/* Including file $inc_file1 from $thorn */\n";
@@ -109,7 +101,6 @@ sub BuildHeaders
 	  }
 	  print OUT "/* End of include file $inc_file1 from $thorn */\n";
 	  close OUT;
-	}
       }
     }
   }
