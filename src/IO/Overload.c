@@ -21,8 +21,14 @@ static char *rcsid="$Header$";
 /* Define the prototypes for the dummy functions. */
 #define OVERLOADABLE(name) OVERLOADABLE_DUMMYPROTOTYPE(name)
 
+/* There are default versions for all overloadable IO functions */
+#define CCTK_DummyOutputGH    CactusDefaultOutputGH
+#define CCTK_DummyOutputVarAs CactusDefaultOutputVarAs
+
 #include "IOOverloadables.h"
 
+#undef CCTK_DummyOutputGH
+#undef CCTK_DummyOutputVarAs
 #undef OVERLOADABLE(name)
 
 /* Create the overloadable function variables and the 
@@ -53,23 +59,23 @@ int SetupIOFunctions(void)
 
 #define OVERLOADABLE(name) OVERLOADABLE_CHECK(name)
 
-  /* Deal seperately with the SetupGH routine */
-#define CCTK_DummySetupGH  CactusDefaultSetupGH
+  /* There are default versions for all overloadable IO functions */
+#define CCTK_DummyOutputGH     CactusDefaultOutputGH
+#define CCTK_DummyOutputVarAs  CactusDefaultOutputVarAs
 
 #include "IOOverloadables.h"
 
   /* Reset the #define to prevent complications. */
-#undef CCTK_DummySetupGH  
+#undef CCTK_DummyOutputGH
+#undef CCTK_DummyOutputVarAs
 
 #undef OVERLOADABLE(name)
 
   return 0;
 }
 
-/* Create the dummy functions. */
+/* Don't need dummy functions since we have defaults.
 #define OVERLOADABLE(name) OVERLOADABLE_DUMMY(name)
-
 #include "IOOverloadables.h"
-
 #undef OVERLOADABLE(name)
-
+*/
