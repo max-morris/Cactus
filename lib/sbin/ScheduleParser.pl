@@ -222,7 +222,7 @@ sub ParseScheduleBlock
       }
 
       # check that the given schedule bin is recognized
-      if ($where !~ m:CCTK_(STARTUP|PARAMCHECK|BASEGRID|INITIAL|POSTINITIAL|RECOVER_VARIABLES|RECOVER_PARAMETERS|CHECKPOINT|CPINITIAL|PRESTEP|EVOL|POSTSTEP|ANALYSIS|TERMINATE|SHUTDOWN):)
+      if ($where !~ m:CCTK_(STARTUP|PARAMCHECK|BASEGRID|INITIAL|POSTINITIAL|RECOVER_VARIABLES|POST_RECOVER_VARIABLES|RECOVER_PARAMETERS|CHECKPOINT|CPINITIAL|PRESTEP|EVOL|POSTSTEP|ANALYSIS|TERMINATE|SHUTDOWN):)
       {
         &CST_error(0,"Schedule bin \'$where\' not recognised in schedule.ccl " .
                    "file of thorn $thorn","",__LINE__,__FILE__);
