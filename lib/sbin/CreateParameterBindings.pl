@@ -358,7 +358,7 @@ sub CreateParameterBindings
 # Write this one to a temporary file and read it back in
 # Can probably do this better
 
-  open(OUT, "| $PERL $cctk_home/lib/sbin/c_file_processor.pl $top/config-data > CParameterStructNames_temp.h") || die "Cannot create CParameterStructNames.h by running c_file_processor.pl";
+  open(OUT, "| perl $cctk_home/lib/sbin/c_file_processor.pl $top/config-data > CParameterStructNames_temp.h") || die "Cannot create CParameterStructNames.h by running c_file_processor.pl";
 
   foreach $structure (keys %structures)
   {
