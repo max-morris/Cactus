@@ -27,11 +27,11 @@ Thorns are grouped into {\em arrangements}.  This is a logical grouping of
 thorns which is purely for organisational purposes. For example, 
 you might wish to keep all your initial data thorns in one arrangement,
 and all your evolution thorns in another arrangement, or you may want 
-to have separate arrangements for your developmentsl, private and shared 
+to have separate arrangements for your developments, private and shared 
 thorns. 
 
 The arrangements live in the {\tt arrangements} directory off the main 
-Cactus directory.  Arrangement names must be unique, and cannot sta 
+Cactus directory.  Arrangement names must be unique, and cannot start 
 with a `\#', or finish
 with `\~{}' or `.bak'.
 
@@ -138,7 +138,7 @@ with their visibility to other implementations.
 
 \item [{\tt schedule.ccl}]
 This defines which functions from the thorn are called and when they are 
-called. It also handles memory and communication assigment for grid variables.
+called. It also handles memory and communication assignment for grid variables.
 
 \end{Lentry}
 
@@ -209,7 +209,7 @@ attributes:
 \begin{Lentry}
 
 \item [{\tt variable type}]
-e.g. REAL, INT, COMPLEX
+e.g. REAL, INT, COMPLEX. The prefix ``CCTK\_'' is optional.
 
 \item [{\tt name}]
 The name of the group
@@ -233,12 +233,14 @@ This defaults to 3
 
 \item [{\tt Size}]
 This is the grid size of the arrays in a group, which must be a 
-comma-separated list
-of {\tt Dim} parameters. The grid size cannot be specified for grid functions, which take the default grid size.
+comma-separated list of {\tt Dim} parameters. The grid size cannot be
+ specified for grid functions, which take the default grid size.
 
 \item [{\tt Ghostsize}]
 This is the number of ghostzones used for the arrays in a group, which must 
-be a comma-separated list of {\tt Dim} parameters. The ghostsize cannot be specified for grid functions, whose ghostsize is specified by a driver thorn.
+be a comma-separated list of {\tt Dim} parameters. The ghostsize
+cannot be specified for grid functions, whose ghostsize is specified 
+by a driver thorn.
 
 \item [{\tt TimeLevels}]
 This is the number of timelevels the group has. This defaults to 1.
@@ -406,7 +408,7 @@ KEYWORD initial_data ""
 {
   "bl_bh"         :: "Brill Lindquist black holes"
   "misner_bh"     :: "Misner black holes"
-  "schwarzschild" :: "One Schwarzshild black hole"
+  "schwarzschild" :: "One Schwarzschild black hole"
 }
 
 \end{verbatim}
@@ -506,17 +508,20 @@ the variables from a group in {\tt TRIGGERS} is due for output.
 
 The `other options' allow finer grained control of the scheduling.  It is
 possible to state that the routine must run {\tt BEFORE} or {\tt AFTER} 
-another routine.
+another routine. It is also possible to schedule the routine under an
+alias name by using {\tt AS <alias\_name>}.
 
 As well as schedule blocks it's possible to embed C style {\tt if/else} 
 statements in the schedule.ccl.
 These can be used to schedule things based upon the value of a parameter.
 
-E.g.
-
+{\bf Example I:}\\
+The routine {\tt hydro\_predictor} is scheduled at {\em evolution}, after the 
+routine {\tt metric\_predictor} and before {\tt metric\_corrector}, if
+the parameter {\tt evolve\_hydro} has been set.
 \begin{verbatim}
 
-if(evolve_hydro)
+if(CCTK_Equals(evolve_hydro,''yes''))
 {
   SCHEDULE hydro_predictor AT evol AFTER metric_predictor BEFORE metric_corrector 
   {
@@ -525,6 +530,48 @@ if(evolve_hydro)
     COMM:     hydro_variables
   } "Do a predictor step on the hydro variables"
 }
+\end{verbatim}
+
+{\bf Example II:}\\
+The thorns {\tt WaveToy77} and {\tt WaveToyC} each provide an
+routine to evolve the 3D wave equation: {\tt WaveToyF77\_Evolution} and
+{\tt WaveToyC\_Evolution}. The routine names have to be different, so
+that both thorns can be compiled at the same time, their functionlity
+is identical though. Either one of them can then be activated at run
+time  in the parameter file via {\tt ActiveThorns}.  
+
+Since each evolution routine provides the same
+functionality, it makes sense to schedule them under the common alias {\tt
+WaveToy\_Evolution} to allow relative scheduling ({\tt
+BEFORE/AFTER}) independent of the actual routine name (which may
+change depending on the activation in the parameter file).
+
+\begin{verbatim}
+schedule WaveToyF77_Evolution AS WaveToy_Evolution AT evol
+{
+  LANG: Fortran
+  STORAGE: scalartmps
+} "Evolution of 3D wave equation"
+\end{verbatim}
+
+\begin{verbatim}
+schedule WaveToyC_Evolution AS WaveToy_Evolution AT evol
+{
+  LANG: C
+  STORAGE: scalartmps
+} "Evolution of 3D wave equation"
+\end{verbatim}
+
+The thorn {\tt IDScalarWave} schedules the routine {\tt WaveBinary}
+after the alias {\em WaveToy\_Evolution}. It is scheduled independently of
+the C or Fortran routine name.
+
+\begin{verbatim}
+schedule WaveBinary AT evol AFTER WaveToy_Evolution
+{
+  STORAGE: wavetoy::scalarevolve
+  LANG:    Fortran
+} "Provide binary source during evolution" 
 \end{verbatim}
 
 \subsubsection{Storage and Communication Outside of Schedule Blocks}
@@ -1278,8 +1325,110 @@ Notes
        not yet implemented).
 \end{itemize}
 
+\section{Memory Tracing}
+\label{memtracing}
+Cactus allows to override the standard C memory allocation routines
+({\tt malloc, free,} \ldots) with Cactus specific routines, that track 
+the amount of memory allocated and in which routine and line the
+allocation call was made. This data can be accessed by the user to get 
+an understanding of the memory consumption between two instances and
+to track down possible memory leaks. Thsi feature is available in C only.
 
+\subsection{Activating Memory Tracing}
+Memory tracing has to be activated at configure time. It redfines the
+standard malloc statements with the {\tt CCTK\_MALLOC} macros. The
+redefinition, which allows memorytracing can be activated by setting:
 
+\begin{Lentry}
+\item[{\tt DEBUG=all}]  Enables all debug options (compiler debug
+flags, redefines malloc)
+\item[{\tt DEBUG=memory}] Redefined malloc only.
+\end{Lentry}
+
+The {\tt CCTK\_MALLOC} statements can be used directly in the C
+code. But by employing them this way, only a fraction of the total
+memory consumption is traced. Also, they cannot be turned off at
+configure time. (this behavior might change).
+
+Example:
+\begin{verbatim}
+machine> gmake bigbuild DEBUG=yes
+ 
+machine> gmake bigbuild-config DEBUG=memory
+\end{verbatim}
+The new configuration {\tt bigbuild} is configured with all debugging features
+turned on. The already existing configuration {\tt bigbuild} is
+reconfigured with memory tracing only.
+
+\subsection{Using Memory Tracing}
+You can  request Cactus to store the memory consumption at a certain
+instance in the programm flow and return the difference in memory
+allocation some time later.
+
+\begin{Lentry}
+\item[{\tt int CCTK\_MemTicketRequest(void)}]
+	Request a ticket: save the current total memory to a database.
+	Return an integer (ticket). Use the ticket to calculate the
+	difference in memory allocation between the two instances in
+ 	CCTK\_MemTicketCash.	
+ 
+\item[{tt long int CCTK\_MemTicketCash(int your\_ticket)}]
+	Cash in your ticket: return the memory difference between now and the
+     	time the ticket was requested. Tickets can be cashed in
+	several times. See Example below.
+     	This only tracks the real data memory, which is the same as in
+     	undebug mode. It does not keep track of the internal allocations
+     	done to provide the database, motivation is that this is not
+ 	allocated either if you compile undebugged.
+
+\item[{\tt int CCTK\_MemTicketDelete(int your\_ticket)}]
+	Delete the memory ticket. The ticket-id will not be reused, since
+        it's incremented with every ticket request, but the memory of
+	the memory datastructure is deallocated.
+
+\item[{\tt unsigned long int CCTK\_TotalMemory(void)}]
+	Returns the total allocated memory (not including the tracing
+        data structures). 
+
+\item[{\tt void CCTK\_MemStat}] Prints an info string, stating the current, 
+ 	past and total memory (in bytes) allocation between two
+	successive calls to this routine, as well as the difference. 
+\end{Lentry}
+
+Sample C Code demonstrting the ticket handling. Two tickets are
+requested during malloc operations. Teh {\tt CCTK\_MALLOC} statement is 
+used directly. They are cashed in and the memory
+difference is printed. Ticket 1 is cashed twice. The tickets are
+deleted at the end.
+\begin{verbatim}
+
+	int ticket1;
+	int ticket2;
+
+        /* store current memstate, ticket: t1*/
+	t1= CCTK_MemTicketRequest();
+
+	/* allocate data */	
+	hi= (int*) CCTK_MALLOC(10*sizeof(int));
+
+        /* store current memstate, ticket: t2*/
+	t2= CCTK_MemTicketRequest();      
+	
+	/* cash ticket t1, print mem difference */	
+	printf("NOW1a: %+d \n",CCTK_MemTicketCash(t1)); 
+
+	/* allocte some more data */
+	wo= (CCTK_REAL*)CCTK_MALLOC(10*sizeof(CCTK_REAL));
+	
+	/* cash ticket t1 and t2, print mem difference */	
+	printf("NOW1b: %+d \n",CCTK_MemTicketCash(t1));  
+	printf("NOW2 : %+d \n",CCTK_MemTicketCash(t2));    
+
+	/* delete the tickets from the database */
+	CCTK_MemTicketDelete(t1);
+	CCTK_MemTicketDelete(t2);
+
+\end{verbatim}
 
 \section{Error handling, Warnings and Code Termination}
 \label{sec:erhawancote}
