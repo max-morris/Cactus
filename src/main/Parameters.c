@@ -1539,10 +1539,10 @@ static int ParameterSetString(t_param *param, const char *value)
       {
 #endif
         retval = CCTK_SetString(param->data, value);
+        break;
 #ifndef CCTK_PARAMUNCHECKED
       }
 #endif
-      break;
     }
   }
 
@@ -1581,10 +1581,10 @@ static int ParameterSetSentence(t_param *param, const char *value)
       {
 #endif
         retval = CCTK_SetString(param->data, value);
+        break;
 #ifndef CCTK_PARAMUNCHECKED
       }
 #endif
-      break;
     }
   }
 
@@ -1627,10 +1627,10 @@ static int ParameterSetInteger(t_param *param, const char *value)
 #endif
         *val = inval;
         retval = 0;
+        break;
 #ifndef CCTK_PARAMUNCHECKED
       }
 #endif
-      break;
     }
   }
 
@@ -1682,10 +1682,10 @@ static int ParameterSetReal(t_param *param, const char *value)
 #endif
         *val = inval;
         retval = 0;
+        break;
 #ifndef CCTK_PARAMUNCHECKED
       }
 #endif
-      break;
     }
   }
 
