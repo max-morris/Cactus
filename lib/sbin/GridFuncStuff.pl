@@ -1277,12 +1277,28 @@ sub CreateThornGroupInitialisers
   my($group, @variables);
   my($line);
   my(@definitions);
-
+  my ($dim,$string,$numsize,$message,$type);
 
   $imp = $rhinterface_db->{"\U$thorn\E IMPLEMENTS"};
 
   foreach $group (split(" ", $rhinterface_db->{"\U$thorn $block GROUPS"}))
   {
+
+    $type = $rhinterface_db->{"\U$thorn GROUP $group\E GTYPE"};
+
+    # Check consistency for arrays
+    if ($type eq "ARRAY")
+    {
+      $dim = $rhinterface_db->{"\U$thorn GROUP $group\E DIM"};
+      $string = $rhinterface_db->{"\U$thorn GROUP $group\E SIZE"};
+      $numsize = ($string =~ s/,//g)+1;
+      if ($dim != $numsize)
+      {
+	$message = "Array dimension $dim doesn't match array sizes for $group in $thorn";
+	&CST_error(0,$message,__LINE__,__FILE__);
+      }
+    }
+
     @variables = split(" ", $rhinterface_db->{"\U$thorn GROUP $group\E"});
 
     $line  = "  CCTKi_CreateGroup(\"\U$group\",\"$thorn\",\"$imp\",\n" 
