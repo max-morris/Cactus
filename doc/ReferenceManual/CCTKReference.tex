@@ -1565,8 +1565,10 @@ A NULL pointer is returned if an invalid handle was given.
 \begin{discussion}
 To create a directory readable by everyone, but writeable only by the user runnning the code, the permission mode would be 0755.
 
-Note that (for historical reasons) the order of the arguments is
-the opposite of that of the usual Unix \verb|mkdir(2)| system call.
+Note that
+(partly for historical reasons and partly for Fortran~77 compatability)
+the order of the arguments is the opposite of that of the usual Unix
+\verb|mkdir(2)| system call.
 \end{discussion}
 \begin{examples}
 \begin{tabular}{@{}p{3cm}cp{11cm}}
