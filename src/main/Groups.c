@@ -1787,6 +1787,24 @@ int CCTK_VarTypeSize(int vtype)
       var_size = sizeof(CCTK_COMPLEX); 
       break;
 
+#ifdef CCTK_REAL4
+    case CCTK_VARIABLE_COMPLEX8: 
+      var_size = sizeof(CCTK_COMPLEX8); 
+      break;
+#endif
+
+#ifdef CCTK_REAL8
+    case CCTK_VARIABLE_COMPLEX16: 
+      var_size = sizeof(CCTK_COMPLEX16); 
+      break;
+#endif
+
+#ifdef CCTK_REAL16
+    case CCTK_VARIABLE_COMPLEX32: 
+      var_size = sizeof(CCTK_COMPLEX32); 
+      break;
+#endif
+
     default:
       CCTK_VWarn(0,__LINE__,__FILE__,
 		 "Cactus",
