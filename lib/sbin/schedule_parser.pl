@@ -204,7 +204,7 @@ sub parse_schedule_ccl
         @list = split(",",$1);
         foreach $group (@list) 
         {
-          print $out "StorageOn(\"$group\");\n";
+          print $out "CCTK_EnableGroupStorage(\"$group\");\n";
         }
       }
     }
@@ -217,7 +217,7 @@ sub parse_schedule_ccl
         @list = split(",",$1);
         foreach $group (@list) 
         {
-          print $out "CommunicationOn(\"$group\");\n";
+          print $out "CCTK_EnableGroupCommunication(\"$group\");\n";
         }
       }
     }
