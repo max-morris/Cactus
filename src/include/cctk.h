@@ -15,10 +15,6 @@
 
 #include "config.h"
 
-/* The thorn definitions #define <PACKAGE>_<THORN> */
-
-#include "definethorn.h"
-
 /* Define which thorn the file is in */
 
 #include "definethisthorn.h"
@@ -113,6 +109,24 @@
             int *cctk_nghostzones=cctkGH->cctk_nghostzones;\
             int cctk_iteration=cctkGH->cctk_iteration;
 
+
+#define _USE_CCTK_CARGUMENTS\
+            (void *)cctk_dim;\
+            (void *)cctk_gsh;\
+            (void *)cctk_lsh;\
+            (void *)cctk_lbnd;\
+            (void *)cctk_ubnd;\
+            (void *)cctk_from;\
+            (void *)cctk_to;\
+            (void *)cctk_bbox;\
+            (void )cctk_delta_time;\
+            (void )cctk_time;\
+            (void *)cctk_delta_space;\
+            (void *)cctk_origin_space;\
+            (void *)cctk_levfac;\
+            (void *)cctk_convlevel;\
+            (void *)cctk_nghostzones;\
+            (void *)cctk_iteration;
 
 #define _INITIALISE_CCTK_C2F
 #define _DECLARE_CCTK_C2F 
