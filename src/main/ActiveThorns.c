@@ -105,7 +105,7 @@ static int n_imps   = 0;
 
    @var     attributes
    @vdesc   Thorn attributes
-   @vtype   const struct iAttrributeList
+   @vtype   const struct iAttributeList
    @vio     in
    @endvar
 
