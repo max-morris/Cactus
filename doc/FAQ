@@ -1,7 +1,7 @@
 
 Cactus Code Frequently Asked Questions
 
-$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.29 2002-04-27 11:55:36 allen Exp $
+$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.30 2002-04-27 15:57:39 allen Exp $
 
 Also available at http://www.cactuscode.org/Documentation/FAQ
 
@@ -439,5 +439,35 @@ Also available at http://www.cactuscode.org/Documentation/FAQ
 
     If you add e.g. CactusPUGH/PUGH to your ActiveThorns parameter things 
     should work as you expect.
+
+-------------------------------------------------------------------------------
+
+32. Compiling files in Cactus seems to involve three steps, preprocessing,
+    compiling, and then postprocessing. What is the postprocessing step
+    for? 
+
+    This is for architecture dependent things which come up. For example,
+    some machines don't allow using a "-o" flag for naming the resulting
+    object file, in which case part of postprocessing would involve
+    renaming and moving the file.
+
+-------------------------------------------------------------------------------
+
+33. How does Cactus manage to so seamlessly call Fortran routines from 
+    C, and vice versa?
+
+    Part of the configuration step on a machine involves automatically 
+    deducing the convention which the fortran compiler uses for its symbols 
+    (for example, upper or lower case and the addition of underscores). 
+
+    This information is then used to construct the macros which are used 
+    at preprocessing to translate Fortran names to C-callable routines. 
+
+    We also use macros to facilitate passing strings from Fortran into
+    C. Strings must always be at the end of argument lists for this
+    (which is why some of our choices of order in argument lists may
+    seem strange), and the architecture details of string passing are
+    maintained in the file src/include/cctk_FortranString.h. At the moment
+    we have macros for one, two or three strings in an argument list.
 
 -------------------------------------------------------------------------------
