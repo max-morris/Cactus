@@ -71,7 +71,6 @@ while ($choice !~ /^Q/i)
 	    $testdata = &RunTest($test,$thorn,$config_data,$testdata);
 	  }
 	  $rundata = &CompareTestFiles($test,$thorn,\%runconfig,$rundata,$config_data,$testdata);
-	  print "fff $thorn $test: $rundata->{\"$thorn $test NFAILWEAK\"}\n";
 
 	  $rundata = &ReportOnTest($test,$thorn,$rundata,$testdata);
 	  if ($choice =~ /^I/i)
