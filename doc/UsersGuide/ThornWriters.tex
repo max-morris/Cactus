@@ -206,6 +206,7 @@ The name of the group
 \item [{\tt group type}]
 This indicates the kind of variables help by the group (each group can
 only hold one kind of variable).
+
 \begin{Lentry}
 \item [{\tt SCALAR}]
 This is a single number.
@@ -226,11 +227,24 @@ of {\tt Dim} parameters. The grid size cannot be specified for grid functions, w
 
 \item [{\tt Ghostsize}]
 This is the number of ghostzones used for the arrays in a group, which must 
-be a comma-separated list of {\tt Dim{ parameters. The ghostsize cannot be specified for grid functions, whose ghostsize is specified by a driver thorn.
+be a comma-separated list of {\tt Dim} parameters. The ghostsize cannot be specified for grid functions, whose ghostsize is specified by a driver thorn.
 
-\item [{TimeLevels}]
+\item [{\tt TimeLevels}]
 This is the number of timelevels the group has. This defaults to 1.
+
+\item [{\tt stagger}]
+This attribute defines the stagger for a grid function. Specify a
+string of length {\tt Dim}, where each character indicates the type of 
+staggering in that direction (yxz ordered):
+\begin{Lentry}
+\item[{\tt M}] no staggerign (``minus'' face, relative to default gridpoint).
+\item[{\tt C}] center staggering
+\item[{\tt P}] full staggering by one grid spacing (``plus'' face,
+relative to default)
 \end{Lentry}
+For a full discussion on staggering refer to \ref{sec:staggercode}.
+\end{Lentry}
+
 
 A group specification consists of the variable type, followed by
 the name of the group, then a space separated list of the form
@@ -243,7 +257,7 @@ For example
 
 \begin{verbatim}
 
-REAL fields type=GF TimeLevels=3 Dim=3
+REAL fields type=GF TimeLevels=3 Dim=3 stagger=MCM
 {
   phi
   a,b,c,d
@@ -252,7 +266,9 @@ REAL fields type=GF TimeLevels=3 Dim=3
 \end{verbatim}
 
 defines a group of real grid functions of dimension 3 each of which exists on
-three time levels.
+three time levels. The staggering of this group is of type {\tt MCM}:
+no staggering {\tt M} in the first and third dimension, center
+staggering {\tt C} for the second dimension.
 
 By default all groups are {\tt private}, to change this an access
 specification of the form {\tt public:} or {\tt protected:} (or 
@@ -974,6 +990,75 @@ Declaring {\tt local\_var} to have a non-Cactus data type, e.g.
 {\tt REAL*4}, or using one of the other Cactus real data types
 described in Section~\ref{sec:datyansi} could give problems for 
 different architectures or configurations.
+
+\subsection{Staggering}
+The staggering of a gridfunction or array describes the {\em physical} 
+placement of that gridfunctions relative to the supporting grid
+structure.  A gridfunction e.g. does not be placed at the intersection 
+of the ``grid lines''. They could moved by half a grid spacing in
+either or each direction. In the latter case, they will be placed in
+the center of a cell.  
+
+The staggering of grid function is a pure {\em physical} property: 
+the values will be calculated at a different position in physical
+space. Still the indexing (or bookeeping)  is kept the same for all
+types of staggerings: the indexing of the default unstaggered grids is 
+used.
+
+{\bf Specifying the staggertype}
+
+The type of staggering applied to a gridfunction can be specified in
+the {\tt interface.ccl} file by the attribute {\tt stagger} (see
+\ref{sec:interface.ccl}). Cactus supports three kind of staggering
+per dimension. The physical location of a gridfunction is shifted 
+relative to the default position by adding the following values to the 
+stagger attribute:
+\begin{Lentry}
+\item[{\tt M}] no staggering, default. M refers to minus. 
+\item[{\tt C}] center staggering. The physical location is offset by
+half of the grid spacing in the positive direction (or to the right).
+\item[{\tt P}] full staggerd. P refers to plus. The physical location
+is offset by a full gridspacing in the positive direction (or the
+right).
+\end{Lentry}
+For multi dimensional gridfunctions you concatenate the code
+characters in xyz order. In picture xy we show four different
+staggerings of a two dimensional grid functions. The solid black grid
+circles show the default location of the grid functions at the
+intersections of the grid lines. In (A) we show an additional grid
+function of type {\tt stagger=MC}: no staggering in x direction,
+center staggered in y direction. In (B) we have  {\tt stagger=CM} and
+staggering each direction ({\tt stagger=CC}) is shown in (C). The full
+staggering in (D) ({\tt stagger=PP}) obeyes the same rules, but is
+rather unusual; included here for completeness. 
+
+{\bf Indexing, ghostzones, etc.}
+Note that staggering does not make any changes to the indexing of a
+gridfunction: the black solid circles in diagramm XX and their
+associated staggered gridfunctions (connected by arrows) have the same index!
+
+Since the gridfunction does not ``know'' anything about the physical
+location (it's only addressed by indeces) why add staggering if the
+indexing is the same ?  
+
+Indeed, you could roll your own, but there compelling reasons:
+Readabilty and you are eable to query the staggertype of a
+gridfunction. More important: in the way the grid is laid out, there is one grid
+point {\em less} for {\tt M} and {\tt P} staggered grid functions. This is
+illustrated in picture YY, which shows 15 gridpoints distributed
+across 3 processors. The solid black cirlces show the default
+location of the gridfunctions, the grey circles depict the ghostzones.
+Note that the number of center staggered gridpoints (fat crosses)
+corresponds to the number of default gridpoint on all processors but
+the last one. (Same is true for full staggered gridpoints).
+
+When a thorn programmer uses staggered gridpoints, he has to be aware
+of this gridpoint anomaly. This can be done easiest by using the {\tt
+cctk\_lssh[staggertype][direction]} variable. For a given staggertype
+and direction, this 2d array returns the local number of gridpoints,
+including  ghostzones and the necessary change for the staggering on
+the outermost processor.
+
 
 
 \subsection{Providing Run Time Information}
