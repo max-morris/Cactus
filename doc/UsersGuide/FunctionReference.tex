@@ -199,7 +199,19 @@ from Fortran.
   [\pageref{CCTK-GHExtensionHandle}]
   Get the handle associated with a extension to the Cactus GH structure
 
-\item[CCTK\_GroupgshGI] [see similar function \pageref{CCTK-GroupgshGI}]
+\item[CCTK\_GroupbboxGI] [\pageref{CCTK-GroupbboxGI}]
+  Given a group index, return an array of the bounding box of the group
+
+\item[CCTK\_GroupbboxGN] [\pageref{CCTK-GroupbboxGN}]
+  Given a group name, return an array of the bounding box of the group
+
+\item[CCTK\_GroupbboxVI] [\pageref{CCTK-GroupbboxVI}]
+  Given a variable index, return an array of the bounding box of the variable
+
+\item[CCTK\_GroupbboxVN] [\pageref{CCTK-GroupbboxVN}]
+  Given a variable name, return an array of the bounding box of the variable
+
+\item[CCTK\_GroupgshGI] [\pageref{CCTK-GroupgshGI}]
   Given a group index, return an array of the global size of the group in each dimension
 
 \item[CCTK\_GroupgshGN] [\pageref{CCTK-GroupgshGN}]
@@ -208,15 +220,44 @@ from Fortran.
 \item[CCTK\_GroupgshVI] [\pageref{CCTK-GroupgshVI}]
   Given a variable index, return an array of the global size of the variable in each dimension
 
-\item[CCTK\_GroupgshVN] [see similar function \pageref{CCTK-GroupgshVN}]
-  Given a variable name, return an array of the global size of the
-variable in each dimension
+\item[CCTK\_GroupgshVN] [\pageref{CCTK-GroupgshVN}]
+  Given a variable name, return an array of the global size of the variable in each dimension
+
+\item[CCTK\_GrouplbndGI] [\pageref{CCTK-GrouplbndGI}]
+  Given a group index, return an array of the lower bounds of the group in rach dimension
+
+\item[CCTK\_GrouplbndGN] [\pageref{CCTK-GrouplbndGN}]
+  Given a group name, return an array of the lower bounds of the group in rach dimension
+
+\item[CCTK\_GrouplbndVI] [\pageref{CCTK-GrouplbndVI}]
+  Given a variable index, return an array of the lower bounds of the variable in rach dimension
+
+\item[CCTK\_GrouplbndVN] [\pageref{CCTK-GrouplbndVN}]
+  Given a variable name, return an array of the lower bounds of the variable in rach dimension
 
 \item[CCTK\_GrouplshVI] [\pageref{CCTK-GrouplshVI}]
   Given a variable index, return an array of the local size of the variable in each dimension
 
+\item[CCTK\_GrouplshVN] [\pageref{CCTK-GrouplshVN}]
+  Given a variable name, return an array of the local size of the variable in each dimension
+
 \item[CCTK\_GroupnghostzonesGI] [\pageref{CCTK-GroupnghostzonesGI}]
   Given a group index, return an array with the number of ghostzones in each dimension of the group
+
+\item[CCTK\_GroupnghostzonesGN] [\pageref{CCTK-GroupnghostzonesGN}]
+  Given a group name, return an array with the number of ghostzones in each dimension of the group
+
+\item[CCTK\_GroupubndGI] [\pageref{CCTK-GroupubndGI}]
+  Given a group index, return an array of the upper bounds of the group in rach dimension
+
+\item[CCTK\_GroupubndGN] [\pageref{CCTK-GroupubndGN}]
+  Given a group name, return an array of the upper bounds of the group in rach dimension
+
+\item[CCTK\_GroupubndVI] [\pageref{CCTK-GroupubndVI}]
+  Given a variable index, return an array of the upper bounds of the variable in rach dimension
+
+\item[CCTK\_GroupubndVN] [\pageref{CCTK-GroupubndVN}]
+  Given a variable name, return an array of the upper bounds of the variable in rach dimension
 
 \item[CCTK\_GroupData]
   [\pageref{CCTK-GroupData}]
@@ -573,7 +614,7 @@ group, specified by its name, in a given dimension.
 \begin{Synopsis}{C}
 \begin{verbatim}
 #include "cctk.h"
-int *size = CCTK_ArrayGroupSize(const cGH *cctkGH, 
+int *size = CCTK_ArrayGroupSize(const cGH *cctkGH,
                                 int dir,
                                 const char *groupname);
 \end{verbatim}
@@ -634,7 +675,7 @@ group, specified by its index, in a given dimension.
 \begin{Synopsis}{C}
 \begin{verbatim}
 #include "cctk.h"
-int *size = CCTK_ArrayGroupSizeI(const cGH *cctkGH, 
+int *size = CCTK_ArrayGroupSizeI(const cGH *cctkGH,
                                  int dir,
                                  int groupi);
 \end{verbatim}
@@ -1677,297 +1718,777 @@ NULL	& A NULL pointer is returned if an invalid extension name was given.
 \end{errorcodes}
 \end{CCTKFunc}
 
+
 % GroupsOnGH.h
-\begin{FunctionDescription}{CCTK\_GroupgshGN}
-\label{CCTK-GroupgshGN}
-Given a group name, return an array of the global size of the group in each dimension
+\begin{FunctionDescription}{CCTK\_GroupbboxGI, CCTK\_GroupbboxGN}
+\label{CCTK-GroupbboxGI}
+\label{CCTK-GroupbboxGN}
+Given a group index or name, return an array of the bounding box of the group
 
 \begin{SynopsisSection}
 \begin{Synopsis}{C}
 \begin{verbatim}
 #include "cctk.h"
-int status = CCTK_GroupgshGN(const cGH *cctkGH, 
+
+int status = CCTK_GroupbboxGI(const cGH *cctkGH,
+                              int dim,
+                              int *bbox,
+                              int groupindex);
+
+int status = CCTK_GroupbboxGN(const cGH *cctkGH,
+                              int dim,
+                              int *bbox,
+                              const char *groupname);
+\end{verbatim}
+\end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}
+call CCTK_GroupbboxGI(status, cctkGH, dim, bbox, groupindex)
+
+call CCTK_GroupbboxGN(status, cctkGH, dim, bbox, groupname)
+
+integer       status
+CCTK_POINTER  cctkGH
+integer       dim
+integer       bbox(dim)
+integer       groupindex
+character*(*) groupname
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ResultSection}
+\begin{Result}{\rm 0} success \end{Result}
+\begin{Result}{\rm -1} incorrect dimension supplied \end{Result}
+\begin{Result}{\rm -2} data not available from driver \end{Result}
+\begin{Result}{\rm -3} called on a scalar group \end{Result}
+\begin{Result}{\rm -4} invalid group index \end{Result}
+\end{ResultSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{status} Return value. \end{Parameter}
+\begin{Parameter}{cctkGH ($\ne$ NULL)} Pointer to a valid Cactus grid hierarchy. \end{Parameter}
+\begin{Parameter}{dim ($\ge 1$)} Number of dimensions of group. \end{Parameter}
+\begin{Parameter}{bbox ($\ne$ NULL)} Pointer to array which will hold the return values. \end{Parameter}
+\begin{Parameter}{groupindex} Group index. \end{Parameter}
+\begin{Parameter}{groupname} Group's full name. \end{Parameter}
+\end{ParameterSection}
+
+\begin{Discussion}
+The bounding box for a given group is returned in a user-supplied array buffer.
+\end{Discussion}
+
+\begin{SeeAlsoSection}
+\begin{SeeAlso}{CCTK\_GroupbboxVI, CCTK\_GroupbboxVN}
+Returns the lower bounds for a given variable.
+\end{SeeAlso}
+\end{SeeAlsoSection}
+
+\end{FunctionDescription}
+
+
+\begin{FunctionDescription}{CCTK\_GroupbboxVI, CCTK\_GroupbboxVN}
+\label{CCTK-GroupbboxVI}
+\label{CCTK-GroupbboxVN}
+Given a variable index or name, return an array of the bounding box of the variable
+
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+#include "cctk.h"
+
+int status = CCTK_GroupbboxVI(const cGH *cctkGH,
+                              int dim,
+                              int *bbox,
+                              int varindex);
+
+int status = CCTK_GroupbboxVN(const cGH *cctkGH,
+                              int dim,
+                              int *bbox,
+                              const char *varname);
+\end{verbatim}
+\end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}
+call CCTK_GroupbboxVI(status, cctkGH, dim, bbox, varindex)
+
+call CCTK_GroupbboxVN(status, cctkGH, dim, bbox, varname)
+
+integer       status
+CCTK_POINTER  cctkGH
+integer       dim
+integer       bbox(dim)
+integer       varindex
+character*(*) varname
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ResultSection}
+\begin{Result}{\rm 0} success \end{Result}
+\begin{Result}{\rm -1} incorrect dimension supplied \end{Result}
+\begin{Result}{\rm -2} data not available from driver \end{Result}
+\begin{Result}{\rm -3} called on a scalar group \end{Result}
+\begin{Result}{\rm -4} invalid variable index \end{Result}
+\end{ResultSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{status} Return value. \end{Parameter}
+\begin{Parameter}{cctkGH ($\ne$ NULL)} Pointer to a valid Cactus grid hierarchy. \end{Parameter}
+\begin{Parameter}{dim ($\ge 1$)} Number of dimensions of variable. \end{Parameter}
+\begin{Parameter}{bbox ($\ne$ NULL)} Pointer to array which will hold the return values. \end{Parameter}
+\begin{Parameter}{varindex} Group index. \end{Parameter}
+\begin{Parameter}{varname} Group's full name. \end{Parameter}
+\end{ParameterSection}
+
+\begin{Discussion}
+The bounding box for a given variable is returned in a user-supplied array buffer.
+\end{Discussion}
+
+\begin{SeeAlsoSection}
+\begin{SeeAlso}{CCTK\_GroupbboxGI, CCTK\_GroupbboxGN}
+Returns the upper bounds for a given group.
+\end{SeeAlso}
+\end{SeeAlsoSection}
+
+\end{FunctionDescription}
+
+
+\begin{FunctionDescription}{CCTK\_GroupgshGI, CCTK\_GroupgshGN}
+\label{CCTK-GroupgshGI}
+\label{CCTK-GroupgshGN}
+Given a group index or name, return an array of the global size of the group in each dimension
+
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+#include "cctk.h"
+
+int status = CCTK_GroupgshGI(const cGH *cctkGH,
+                             int dim,
+                             int *gsh,
+                             int groupindex);
+
+int status = CCTK_GroupgshGN(const cGH *cctkGH,
                              int dim,
                              int *gsh,
                              const char *groupname);
 \end{verbatim}
 \end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}
+call CCTK_GroupgshGI(status, cctkGH, dim, gsh, groupindex)
+
+call CCTK_GroupgshGN(status, cctkGH, dim, gsh, groupname)
+
+integer       status
+CCTK_POINTER  cctkGH
+integer       dim
+integer       gsh(dim)
+integer       groupindex
+character*(*) groupname
+\end{verbatim}
+\end{Synopsis}
 \end{SynopsisSection}
 
 \begin{ResultSection}
-\begin{Result}{\rm 0}
-success
-\end{Result}
-\begin{Result}{\rm -1}
-incorrect dimension supplied
-\end{Result}
-\begin{Result}{\rm -2}
-data not available from driver
-\end{Result}
-\begin{Result}{\rm -3}
-called on a scalar group
-\end{Result}
-\begin{Result}{\rm -4}
-invalid group name
-\end{Result}
+\begin{Result}{\rm 0} success \end{Result}
+\begin{Result}{\rm -1} incorrect dimension supplied \end{Result}
+\begin{Result}{\rm -2} data not available from driver \end{Result}
+\begin{Result}{\rm -3} called on a scalar group \end{Result}
+\begin{Result}{\rm -4} invalid group name \end{Result}
 \end{ResultSection}
 
 \begin{ParameterSection}
-\begin{Parameter}{cctkGH ($\ne$ NULL)}
-Pointer to a valid Cactus grid hierarchy.
-\end{Parameter}
-\begin{Parameter}{dim ($\ge 1$)}
-Number of dimensions of group.
-\end{Parameter}
-\begin{Parameter}{gsh ($\ne$ NULL)}
-Pointer to array which will hold the return values.
-\end{Parameter}
-\begin{Parameter}{groupname}
-Name of the group.
-\end{Parameter}
+\begin{Parameter}{cctkGH ($\ne$ NULL)} Pointer to a valid Cactus grid hierarchy. \end{Parameter}
+\begin{Parameter}{dim ($\ge 1$)} Number of dimensions of group. \end{Parameter}
+\begin{Parameter}{gsh ($\ne$ NULL)} Pointer to array which will hold the return values. \end{Parameter}
+\begin{Parameter}{groupindex} Index of the group. \end{Parameter}
+\begin{Parameter}{groupname} Name of the group. \end{Parameter}
 \end{ParameterSection}
 
 \begin{Discussion}
+The global size in each dimension for a given group is returned in a user-supplied array buffer.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{CCTK\_ArrayGroupSize}
-Returns a pointer to the local array size in one specified dimension.
+\begin{SeeAlso}{CCTK\_GroupgshVI, CCTK\_GroupgshVN}
+Returns the global size for a given variable.
 \end{SeeAlso}
-\begin{SeeAlso}{...}
-There are many related functions which grab information from the GH,
-but many are not yet documented.
+\begin{SeeAlso}{CCTK\_GrouplshGI, CCTK\_GrouplshGN}
+Returns the local size for a given group.
+\end{SeeAlso}
+\begin{SeeAlso}{CCTK\_GrouplshVI, CCTK\_GrouplshVN}
+Returns the local size for a given variable.
 \end{SeeAlso}
 \end{SeeAlsoSection}
 
 \end{FunctionDescription}
 
 
-\begin{FunctionDescription}{CCTK\_GroupgshVI}
+\begin{FunctionDescription}{CCTK\_GroupgshVI, CCTK\_GroupgshVN}
 \label{CCTK-GroupgshVI}
-Given a variable index, return an array of the global size of the variable in each dimension
+\label{CCTK-GroupgshVN}
+Given a variable index or its full name, return an array of the global size of the variable in each dimension
 
 \begin{SynopsisSection}
 \begin{Synopsis}{C}
 \begin{verbatim}
 #include "cctk.h"
-int status = CCTK_GroupgshVI(const cGH *cctkGH, 
+
+int status = CCTK_GroupgshVI(const cGH *cctkGH,
                              int dim,
                              int *gsh,
                              int varindex);
+
+int status = CCTK_GroupgshVN(const cGH *cctkGH,
+                             int dim,
+                             int *gsh,
+                             const char *varname);
 \end{verbatim}
 \end{Synopsis}
 \begin{Synopsis}{Fortran}
 \begin{verbatim}
 call CCTK_GroupgshVI(status, cctkGH, dim, gsh, varindex)
-integer status
-CCTK_POINTER cctkGH
-integer dim
-integer gsh(dim)
-integer varindex
+
+call CCTK_GroupgshVN(status, cctkGH, dim, gsh, varname)
+
+integer         status
+CCTK_POINTER    cctkGH
+integer         dim
+integer         gsh(dim)
+integer         varindex
+chararacter*(*) varname
 \end{verbatim}
 \end{Synopsis}
 \end{SynopsisSection}
 
 \begin{ResultSection}
-\begin{Result}{\rm 0}
-success
-\end{Result}
-\begin{Result}{\rm -1}
-incorrect dimension supplied
-\end{Result}
-\begin{Result}{\rm -2}
-data not available from driver
-\end{Result}
-\begin{Result}{\rm -3}
-called on a scalar group
-\end{Result}
-\begin{Result}{\rm -4}
-invalid variable index
-\end{Result}
+\begin{Result}{\rm 0} success \end{Result}
+\begin{Result}{\rm -1} incorrect dimension supplied \end{Result}
+\begin{Result}{\rm -2} data not available from driver \end{Result}
+\begin{Result}{\rm -3} called on a scalar group \end{Result}
+\begin{Result}{\rm -4} invalid variable index \end{Result}
 \end{ResultSection}
 
 \begin{ParameterSection}
-\begin{Parameter}{status}
-Return value.
-\end{Parameter}
-\begin{Parameter}{cctkGH ($\ne$ NULL)}
-Pointer to a valid Cactus grid hierarchy.
-\end{Parameter}
-\begin{Parameter}{dim ($\ge 1$)}
-Number of dimensions of variable.
-\end{Parameter}
-\begin{Parameter}{gsh ($\ne$ NULL)}
-Pointer to array which will hold the return values.
-\end{Parameter}
-\begin{Parameter}{varindex}
-Variable index.
-\end{Parameter}
+\begin{Parameter}{status} Return value. \end{Parameter}
+\begin{Parameter}{cctkGH ($\ne$ NULL)} Pointer to a valid Cactus grid hierarchy. \end{Parameter}
+\begin{Parameter}{dim ($\ge 1$)} Number of dimensions of variable. \end{Parameter}
+\begin{Parameter}{gsh ($\ne$ NULL)} Pointer to array which will hold the return values. \end{Parameter}
+\begin{Parameter}{varindex} Variable index. \end{Parameter}
+\begin{Parameter}{varname} Variable's full name. \end{Parameter}
 \end{ParameterSection}
 
 \begin{Discussion}
+The global size in each dimension for a given variable is returned in a user-supplied array buffer.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{CCTK\_GroupgshGN}
-Returns gsh using the group name rather than the variable index.
+\begin{SeeAlso}{CCTK\_GroupgshGI, CCTK\_GroupgshGN}
+Returns the global size for a given group.
 \end{SeeAlso}
-\begin{SeeAlso}{CCTK\_ArrayGroupSize}
-Returns a pointer to the local array size in one specified dimension.
+\begin{SeeAlso}{CCTK\_GrouplshGI, CCTK\_GrouplshGN}
+Returns the local size for a given group.
 \end{SeeAlso}
-\begin{SeeAlso}{...}
-There are many related functions which grab information from the GH,
-but many are not yet documented.
+\begin{SeeAlso}{CCTK\_GrouplshVI, CCTK\_GrouplshVN}
+Returns the local size for a given variable.
 \end{SeeAlso}
 \end{SeeAlsoSection}
 
 \end{FunctionDescription}
 
 
-\begin{FunctionDescription}{CCTK\_GrouplshVI}
-\label{CCTK-GrouplshVI}
-Given a variable index, return an array of the local size of the variable in each dimension
+\begin{FunctionDescription}{CCTK\_GrouplbndGI, CCTK\_GrouplbndGN}
+\label{CCTK-GrouplbndGI}
+\label{CCTK-GrouplbndGN}
+Given a group index or name, return an array of the lower bounds of the group in each dimension
 
 \begin{SynopsisSection}
 \begin{Synopsis}{C}
 \begin{verbatim}
 #include "cctk.h"
-int status = CCTK_GrouplshVI(const cGH *cctkGH, 
+
+int status = CCTK_GrouplbndGI(const cGH *cctkGH,
+                              int dim,
+                              int *lbnd,
+                              int groupindex);
+
+int status = CCTK_GrouplbndGN(const cGH *cctkGH,
+                              int dim,
+                              int *lbnd,
+                              const char *groupname);
+\end{verbatim}
+\end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}
+call CCTK_GrouplbndGI(status, cctkGH, dim, lbnd, groupindex)
+
+call CCTK_GrouplbndGN(status, cctkGH, dim, lbnd, groupname)
+
+integer       status
+CCTK_POINTER  cctkGH
+integer       dim
+integer       lbnd(dim)
+integer       groupindex
+character*(*) groupname
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ResultSection}
+\begin{Result}{\rm 0} success \end{Result}
+\begin{Result}{\rm -1} incorrect dimension supplied \end{Result}
+\begin{Result}{\rm -2} data not available from driver \end{Result}
+\begin{Result}{\rm -3} called on a scalar group \end{Result}
+\begin{Result}{\rm -4} invalid group index \end{Result}
+\end{ResultSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{status} Return value. \end{Parameter}
+\begin{Parameter}{cctkGH ($\ne$ NULL)} Pointer to a valid Cactus grid hierarchy. \end{Parameter}
+\begin{Parameter}{dim ($\ge 1$)} Number of dimensions of group. \end{Parameter}
+\begin{Parameter}{lbnd ($\ne$ NULL)} Pointer to array which will hold the return values. \end{Parameter}
+\begin{Parameter}{groupindex} Group index. \end{Parameter}
+\begin{Parameter}{groupname} Group's full name. \end{Parameter}
+\end{ParameterSection}
+
+\begin{Discussion}
+The lower bounds in each dimension for a given group is returned in a user-supplied array buffer.
+\end{Discussion}
+
+\begin{SeeAlsoSection}
+\begin{SeeAlso}{CCTK\_GrouplbndVI, CCTK\_GrouplbndVN}
+Returns the lower bounds for a given variable.
+\end{SeeAlso}
+\begin{SeeAlso}{CCTK\_GroupubndGI, CCTK\_GroupubndGN}
+Returns the upper bounds for a given group.
+\end{SeeAlso}
+\begin{SeeAlso}{CCTK\_GroupubndVI, CCTK\_GroupubndVN}
+Returns the upper bounds for a given variable.
+\end{SeeAlso}
+\end{SeeAlsoSection}
+
+\end{FunctionDescription}
+
+
+\begin{FunctionDescription}{CCTK\_GrouplbndVI, CCTK\_GrouplbndVN}
+\label{CCTK-GrouplbndVI}
+\label{CCTK-GrouplbndVN}
+Given a variable index or name, return an array of the lower bounds of the variable in each dimension
+
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+#include "cctk.h"
+
+int status = CCTK_GrouplbndVI(const cGH *cctkGH,
+                              int dim,
+                              int *lbnd,
+                              int varindex);
+
+int status = CCTK_GrouplbndVN(const cGH *cctkGH,
+                              int dim,
+                              int *lbnd,
+                              const char *varname);
+\end{verbatim}
+\end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}
+call CCTK_GrouplbndVI(status, cctkGH, dim, lbnd, varindex)
+
+call CCTK_GrouplbndVN(status, cctkGH, dim, lbnd, varname)
+
+integer       status
+CCTK_POINTER  cctkGH
+integer       dim
+integer       lbnd(dim)
+integer       varindex
+character*(*) varname
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ResultSection}
+\begin{Result}{\rm 0} success \end{Result}
+\begin{Result}{\rm -1} incorrect dimension supplied \end{Result}
+\begin{Result}{\rm -2} data not available from driver \end{Result}
+\begin{Result}{\rm -3} called on a scalar group \end{Result}
+\begin{Result}{\rm -4} invalid variable index \end{Result}
+\end{ResultSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{status} Return value. \end{Parameter}
+\begin{Parameter}{cctkGH ($\ne$ NULL)} Pointer to a valid Cactus grid hierarchy. \end{Parameter}
+\begin{Parameter}{dim ($\ge 1$)} Number of dimensions of variable. \end{Parameter}
+\begin{Parameter}{lbnd ($\ne$ NULL)} Pointer to array which will hold the return values. \end{Parameter}
+\begin{Parameter}{varindex} Group index. \end{Parameter}
+\begin{Parameter}{varname} Group's full name. \end{Parameter}
+\end{ParameterSection}
+
+\begin{Discussion}
+The lower bounds in each dimension for a given variable is returned in a user-supplied array buffer.
+\end{Discussion}
+
+\begin{SeeAlsoSection}
+\begin{SeeAlso}{CCTK\_GrouplbndGI, CCTK\_GrouplbndGN}
+Returns the lower bounds for a given group.
+\end{SeeAlso}
+\begin{SeeAlso}{CCTK\_GroupubndGI, CCTK\_GroupubndGN}
+Returns the upper bounds for a given group.
+\end{SeeAlso}
+\begin{SeeAlso}{CCTK\_GroupubndVI, CCTK\_GroupubndVN}
+Returns the upper bounds for a given variable.
+\end{SeeAlso}
+\end{SeeAlsoSection}
+
+\end{FunctionDescription}
+
+
+\begin{FunctionDescription}{CCTK\_GroupubndGI, CCTK\_GroupubndGN}
+\label{CCTK-GroupubndGI}
+\label{CCTK-GroupubndGN}
+Given a group index or name, return an array of the upper bounds of the group in each dimension
+
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+#include "cctk.h"
+
+int status = CCTK_GroupubndGI(const cGH *cctkGH,
+                              int dim,
+                              int *ubnd,
+                              int groupindex);
+
+int status = CCTK_GroupubndGN(const cGH *cctkGH,
+                              int dim,
+                              int *ubnd,
+                              const char *groupname);
+\end{verbatim}
+\end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}
+call CCTK_GroupubndGI(status, cctkGH, dim, ubnd, groupindex)
+
+call CCTK_GroupubndGN(status, cctkGH, dim, ubnd, groupname)
+
+integer       status
+CCTK_POINTER  cctkGH
+integer       dim
+integer       ubnd(dim)
+integer       groupindex
+character*(*) groupname
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ResultSection}
+\begin{Result}{\rm 0} success \end{Result}
+\begin{Result}{\rm -1} incorrect dimension supplied \end{Result}
+\begin{Result}{\rm -2} data not available from driver \end{Result}
+\begin{Result}{\rm -3} called on a scalar group \end{Result}
+\begin{Result}{\rm -4} invalid group index \end{Result}
+\end{ResultSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{status} Return value. \end{Parameter}
+\begin{Parameter}{cctkGH ($\ne$ NULL)} Pointer to a valid Cactus grid hierarchy. \end{Parameter}
+\begin{Parameter}{dim ($\ge 1$)} Number of dimensions of group. \end{Parameter}
+\begin{Parameter}{ubnd ($\ne$ NULL)} Pointer to array which will hold the return values. \end{Parameter}
+\begin{Parameter}{groupindex} Group index. \end{Parameter}
+\begin{Parameter}{groupname} Group's full name. \end{Parameter}
+\end{ParameterSection}
+
+\begin{Discussion}
+The upper bounds in each dimension for a given group is returned in a user-supplied array buffer.
+\end{Discussion}
+
+\begin{SeeAlsoSection}
+\begin{SeeAlso}{CCTK\_GrouplbndGI, CCTK\_GrouplbndGN}
+Returns the lower bounds for a given group.
+\end{SeeAlso}
+\begin{SeeAlso}{CCTK\_GrouplbndVI, CCTK\_GrouplbndVN}
+Returns the lower bounds for a given variable.
+\end{SeeAlso}
+\begin{SeeAlso}{CCTK\_GroupubndVI, CCTK\_GroupubndVN}
+Returns the upper bounds for a given variable.
+\end{SeeAlso}
+\end{SeeAlsoSection}
+
+\end{FunctionDescription}
+
+
+\begin{FunctionDescription}{CCTK\_GroupubndVI, CCTK\_GroupubndVN}
+\label{CCTK-GroupubndVI}
+\label{CCTK-GroupubndVN}
+Given a variable index or name, return an array of the upper bounds of the variable in each dimension
+
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+#include "cctk.h"
+
+int status = CCTK_GroupubndVI(const cGH *cctkGH,
+                              int dim,
+                              int *ubnd,
+                              int varindex);
+
+int status = CCTK_GroupubndVN(const cGH *cctkGH,
+                              int dim,
+                              int *ubnd,
+                              const char *varname);
+\end{verbatim}
+\end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}
+call CCTK_GroupubndVI(status, cctkGH, dim, ubnd, varindex)
+
+call CCTK_GroupubndVN(status, cctkGH, dim, ubnd, varname)
+
+integer       status
+CCTK_POINTER  cctkGH
+integer       dim
+integer       ubnd(dim)
+integer       varindex
+character*(*) varname
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ResultSection}
+\begin{Result}{\rm 0} success \end{Result}
+\begin{Result}{\rm -1} incorrect dimension supplied \end{Result}
+\begin{Result}{\rm -2} data not available from driver \end{Result}
+\begin{Result}{\rm -3} called on a scalar group \end{Result}
+\begin{Result}{\rm -4} invalid variable index \end{Result}
+\end{ResultSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{status} Return value. \end{Parameter}
+\begin{Parameter}{cctkGH ($\ne$ NULL)} Pointer to a valid Cactus grid hierarchy. \end{Parameter}
+\begin{Parameter}{dim ($\ge 1$)} Number of dimensions of variable. \end{Parameter}
+\begin{Parameter}{ubnd ($\ne$ NULL)} Pointer to array which will hold the return values. \end{Parameter}
+\begin{Parameter}{varindex} Group index. \end{Parameter}
+\begin{Parameter}{varname} Group's full name. \end{Parameter}
+\end{ParameterSection}
+
+\begin{Discussion}
+The upper bounds in each dimension for a given variable is returned in a user-supplied array buffer.
+\end{Discussion}
+
+\begin{SeeAlsoSection}
+\begin{SeeAlso}{CCTK\_GrouplbndGI, CCTK\_GrouplbndGN}
+Returns the lower bounds for a given group.
+\end{SeeAlso}
+\begin{SeeAlso}{CCTK\_GrouplbndVI, CCTK\_GrouplbndVN}
+Returns the lower bounds for a given variable.
+\end{SeeAlso}
+\begin{SeeAlso}{CCTK\_GroupubndGI, CCTK\_GroupubndGN}
+Returns the upper bounds for a given group.
+\end{SeeAlso}
+\end{SeeAlsoSection}
+
+\end{FunctionDescription}
+
+
+\begin{FunctionDescription}{CCTK\_GrouplshVI, CCTK\_GrouplshVN}
+\label{CCTK-GrouplshVI}
+\label{CCTK-GrouplshVN}
+Given a variable index or its full name, return an array of the local size of the variable in each dimension
+
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+#include "cctk.h"
+
+int status = CCTK_GrouplshVI(const cGH *cctkGH,
                              int dim,
                              int *lsh,
                              int varindex);
+
+int status = CCTK_GrouplshVN(const cGH *cctkGH,
+                             int dim,
+                             int *lsh,
+                             const char *varname);
 \end{verbatim}
 \end{Synopsis}
 \begin{Synopsis}{Fortran}
 \begin{verbatim}
 call CCTK_GrouplshVI(status, cctkGH, dim, lsh, varindex)
-integer status
-CCTK_POINTER cctkGH
-integer dim
-integer lsh(dim)
-integer varindex
+
+call CCTK_GrouplshVN(status, cctkGH, dim, lsh, varname)
+
+integer       status
+CCTK_POINTER  cctkGH
+integer       dim
+integer       lsh(dim)
+integer       varindex
+character*(*) varname
 \end{verbatim}
 \end{Synopsis}
 \end{SynopsisSection}
 
 \begin{ResultSection}
-\begin{Result}{\rm 0}
-success
-\end{Result}
-\begin{Result}{\rm -1}
-incorrect dimension supplied
-\end{Result}
-\begin{Result}{\rm -2}
-data not available from driver
-\end{Result}
-\begin{Result}{\rm -3}
-called on a scalar group
-\end{Result}
-\begin{Result}{\rm -4}
-invalid variable index
-\end{Result}
+\begin{Result}{\rm 0} success \end{Result}
+\begin{Result}{\rm -1} incorrect dimension supplied \end{Result}
+\begin{Result}{\rm -2} data not available from driver \end{Result}
+\begin{Result}{\rm -3} called on a scalar group \end{Result}
+\begin{Result}{\rm -4} invalid variable index \end{Result}
 \end{ResultSection}
 
 \begin{ParameterSection}
-\begin{Parameter}{status}
-Return value.
-\end{Parameter}
-\begin{Parameter}{cctkGH ($\ne$ NULL)}
-Pointer to a valid Cactus grid hierarchy.
-\end{Parameter}
-\begin{Parameter}{dim ($\ge 1$)}
-Number of dimensions of variable.
-\end{Parameter}
-\begin{Parameter}{lsh ($\ne$ NULL)}
-Pointer to array which will hold the return values.
-\end{Parameter}
-\begin{Parameter}{varindex}
-Variable index.
-\end{Parameter}
+\begin{Parameter}{status} Return value. \end{Parameter}
+\begin{Parameter}{cctkGH ($\ne$ NULL)} Pointer to a valid Cactus grid hierarchy. \end{Parameter}
+\begin{Parameter}{dim ($\ge 1$)} Number of dimensions of variable. \end{Parameter}
+\begin{Parameter}{lsh ($\ne$ NULL)} Pointer to array which will hold the return values. \end{Parameter}
+\begin{Parameter}{varindex} Variable index. \end{Parameter}
+\begin{Parameter}{varname} Variable's full name. \end{Parameter}
 \end{ParameterSection}
 
 \begin{Discussion}
+The local size in each dimension for a given variable is returned in a user-supplied array buffer.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{CCTK\_GroupgshGN}
-Returns gsh using the group name.
+\begin{SeeAlso}{CCTK\_GroupgshGI, CCTK\_GroupgshGN}
+Returns the global size for a given group.
 \end{SeeAlso}
-\begin{SeeAlso}{CCTK\_GroupgshVI}
-Returns lsh using the variable index.
+\begin{SeeAlso}{CCTK\_GroupgshVI, CCTK\_GroupgshVN}
+Returns the global size for a given variable.
 \end{SeeAlso}
-\begin{SeeAlso}{CCTK\_ArrayGroupSize}
-Returns a pointer to the local array size in one specified dimension.
-\end{SeeAlso}
-\begin{SeeAlso}{...}
-There are many related functions which grab information from the GH,
-but many are not yet documented.
+\begin{SeeAlso}{CCTK\_GrouplshGI, CCTK\_GrouplshGN}
+Returns the local size for a given group.
 \end{SeeAlso}
 \end{SeeAlsoSection}
 
 \end{FunctionDescription}
 
 
-\begin{FunctionDescription}{CCTK\_GroupnghostzonesGI}
+\begin{FunctionDescription}{CCTK\_GroupnghostzonesGI, CCTK\_GroupnghostzonesGN}
 \label{CCTK-GroupnghostzonesGI}
-  Given a group index, return an array with the number of ghostzones in each dimension of the group
+\label{CCTK-GroupnghostzonesGN}
+  Given a group index or name, return an array with the number of ghostzones in each dimension of the group
 \begin{SynopsisSection}
 \begin{Synopsis}{C}
 \begin{verbatim}
 #include "cctk.h"
+
 int status = CCTK_GroupnghostzonesGI(const cGH *cctkGH,
 	                             int dim,
         	                     int *nghostzones,
                 	             int groupindex)
+
+int status = CCTK_GroupnghostzonesGN(const cGH *cctkGH,
+	                             int dim,
+        	                     int *nghostzones,
+                	             const char *groupname)
 \end{verbatim}
 \end{Synopsis}
 \begin{Synopsis}{Fortran}
 \begin{verbatim}
 call CCTK_GroupnghostzonesGI(status, cctkGH, dim, nghostzones, groupindex)
+
+call CCTK_GroupnghostzonesGN(status, cctkGH, dim, nghostzones, groupname)
+
+integer       status
+CCTK_POINTER  cctkGH
+integer       dim
+integer       nghostzones(dim)
+integer       groupindex
+character*(*) groupname
 \end{verbatim}
 \end{Synopsis}
 \end{SynopsisSection}
 
 \begin{ResultSection}
-\begin{Result}{\rm 0}
-success
-\end{Result}
-\begin{Result}{\rm -1}
-incorrect dimension supplied
-\end{Result}
-\begin{Result}{\rm -2}
-data not available from driver
-\end{Result}
-\begin{Result}{\rm -3}
-called on a scalar group
-\end{Result}
+\begin{Result}{\rm 0} success \end{Result}
+\begin{Result}{\rm -1} incorrect dimension supplied \end{Result}
+\begin{Result}{\rm -2} data not available from driver \end{Result}
+\begin{Result}{\rm -3} called on a scalar group \end{Result}
 \end{ResultSection}
 
 \begin{ParameterSection}
-\begin{Parameter}{status}
-Return value.
-\end{Parameter}
-\begin{Parameter}{cctkGH ($\ne$ NULL)}
-Pointer to a valid Cactus grid hierarchy.
-\end{Parameter}
-\begin{Parameter}{dim ($\ge 1$)}
-Number of dimensions of group.
-\end{Parameter}
-\begin{Parameter}{nghostzones ($\ne$ NULL)}
-Pointer to array which will hold the return values.
-\end{Parameter}
-\begin{Parameter}{groupindex}
-Group index.
-\end{Parameter}
+\begin{Parameter}{status} Return value. \end{Parameter}
+\begin{Parameter}{cctkGH ($\ne$ NULL)} Pointer to a valid Cactus grid hierarchy. \end{Parameter}
+\begin{Parameter}{dim ($\ge 1$)} Number of dimensions of group. \end{Parameter}
+\begin{Parameter}{nghostzones ($\ne$ NULL)} Pointer to array which will hold the return values. \end{Parameter}
+\begin{Parameter}{groupindex} Group index. \end{Parameter}
+\begin{Parameter}{groupname} Group name. \end{Parameter}
 \end{ParameterSection}
 
 \begin{Discussion}
+The number of ghostzones in each dimension for a given group is returned in a user-supplied array buffer.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{...}
-There are many related functions which grab information from the GH,
-but many are not yet documented.
+\begin{SeeAlso}{CCTK\_GroupnghostzonesVI, CCTK\_GroupnghostzonesVN}
+Returns the number of ghostzones for a given variable.
+\end{SeeAlso}
+\end{SeeAlsoSection}
+
+\end{FunctionDescription}
+
+
+\begin{FunctionDescription}{CCTK\_GroupnghostzonesVI, CCTK\_GroupnghostzonesVN}
+\label{CCTK-GroupnghostzonesVI}
+\label{CCTK-GroupnghostzonesVN}
+  Given a variable index or its full name, return an array with the number of ghostzones in each dimension of the variable
+
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+#include "cctk.h"
+
+int status = CCTK_GroupnghostzonesVI(const cGH *cctkGH,
+	                             int dim,
+        	                     int *nghostzones,
+                	             int varindex)
+
+int status = CCTK_GroupnghostzonesVN(const cGH *cctkGH,
+	                             int dim,
+        	                     int *nghostzones,
+                	             const char *varname)
+\end{verbatim}
+\end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}
+call CCTK_GroupnghostzonesVI(status, cctkGH, dim, nghostzones, varindex)
+
+call CCTK_GroupnghostzonesVN(status, cctkGH, dim, nghostzones, varname)
+
+integer       status
+CCTK_POINTER  cctkGH
+integer       dim
+integer       nghostzones(dim)
+integer       varindex
+character*(*) varname
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ResultSection}
+\begin{Result}{\rm 0} success \end{Result}
+\begin{Result}{\rm -1} incorrect dimension supplied \end{Result}
+\begin{Result}{\rm -2} data not available from driver \end{Result}
+\begin{Result}{\rm -3} called on a scalar group \end{Result}
+\end{ResultSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{status} Return value. \end{Parameter}
+\begin{Parameter}{cctkGH ($\ne$ NULL)} Pointer to a valid Cactus grid hierarchy. \end{Parameter}
+\begin{Parameter}{dim ($\ge 1$)} Number of dimensions of group. \end{Parameter}
+\begin{Parameter}{nghostzones ($\ne$ NULL)} Pointer to array which will hold the return values. \end{Parameter}
+\begin{Parameter}{varindex} Variable index. \end{Parameter}
+\begin{Parameter}{varname} Variable's full name. \end{Parameter}
+\end{ParameterSection}
+
+\begin{Discussion}
+The number of ghostzones in each dimension for a given variable is returned in a user-supplied array buffer.
+\end{Discussion}
+
+\begin{SeeAlsoSection}
+\begin{SeeAlso}{CCTK\_GroupnghostzonesGI, CCTK\_GroupnghostzonesGN}
+Returns the number of ghostzones for a given group.
 \end{SeeAlso}
 \end{SeeAlsoSection}
 
@@ -2355,7 +2876,7 @@ coefficients can be used for all the arrays.
 \begin{verbatim}
 #include "cctk.h"
 int status
-   = CCTK_InterpGridArrays(const cGH *GH,
+   = CCTK_InterpGridArrays(const cGH *cctkGH,
                            int N_dims,
                            int local_interp_handle,
                            int param_table_handle,
@@ -2373,7 +2894,7 @@ int status
 \begin{Synopsis}{Fortran}
 \begin{verbatim}
 call CCTK_InterpGridArrays(status,
-.                          GH, N_dims, local_interp_handle, param_table_handle,
+.                          cctkGH, N_dims, local_interp_handle, param_table_handle,
 .                          coord_system_handle,
 .                          N_interp_points, interp_coords_type_code,
 .                          interp_coords,
@@ -2381,13 +2902,15 @@ call CCTK_InterpGridArrays(status,
 .                          N_output_arrays, output_array_type_codes,
 .                          output_arrays)
 
-integer         status
-CCTK_POINTER    GH
-integer         local_interp_handle, param_table_handle, coord_system_handle
-integer         N_dims, N_interp_points, N_input_arrays, N_output_arrays
-integer         interp_coords_type_code
-integer(*)      input_array_variable_indices, output_array_type_codes
-CCTK_POINTER(*) interp_coords, output_arrays
+integer      status
+CCTK_POINTER cctkGH
+integer      local_interp_handle, param_table_handle, coord_system_handle
+integer      N_dims, N_interp_points, N_input_arrays, N_output_arrays
+CCTK_POINTER interp_coords(N_dims)
+integer      interp_coords_type_code
+integer      input_array_variable_indices(N_input_arrays)
+integer      output_array_type_codes(N_output_arrays)
+CCTK_POINTER output_arrays(N_output_arrays)
 \end{verbatim}
 \end{Synopsis}
 \end{SynopsisSection}
@@ -2399,7 +2922,7 @@ success
 \end{ResultSection}
 
 \begin{ParameterSection}
-\begin{Parameter}{GH ($\ne$ NULL)}
+\begin{Parameter}{cctkGH ($\ne$ NULL)}
 Pointer to a valid Cactus grid hierarchy.
 \end{Parameter}
 \begin{Parameter}{N\_dims ($\ge 1$)}
@@ -8236,7 +8759,7 @@ int max_key_length = Util_TableQueryMaxKeyLength(int handle);
 \begin{verbatim}
 call Util_TableQueryMaxKeyLength(max_key_length, handle)
 
-integer  max_key_length, handle 
+integer  max_key_length, handle
 \end{verbatim}
 \end{Synopsis}
 \end{SynopsisSection}
@@ -8310,7 +8833,7 @@ int N_Keys = Util_TableQueryNKeys(int handle);
 \begin{verbatim}
 call Util_TableQueryNKeys(N_Keys, handle)
 
-integer  N_Keys, handle 
+integer  N_Keys, handle
 \end{verbatim}
 \end{Synopsis}
 \end{SynopsisSection}
