@@ -12,20 +12,8 @@
 #ifndef _CCTK_FACES_H_
 #define _CCTK_FACES_H_ 1
 
-/* Grab the main configuration info. */
-#include "cctk_Config.h"
-
-/* The set of all faces */
-#if defined(CCTK_INTEGER_PRECISION_4) || defined(CCTK_INTEGER_PRECISION_8)
-#define CCTK_ALL_FACES 1073741823
-/* (This is 2^30-1, so it will set the 'last' 30 bits to 1.)
- * (The 'top' two bits are useless because there is no unsigned int in
- * Fortran, and face bits come in pairs.)
- */
-#else
-#define CCTK_ALL_FACES 16383
-/* 2^14-1 */
-#endif
+/* The set of all faces (this is enough for up to 7 dimension) */
+#define CCTK_ALL_FACES 16383    /* 2^14-1 */
 
 /* Here will be placed macros which provide a user friendly interface
  * to a general specification for expressing sets of faces of an
