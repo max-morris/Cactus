@@ -6,7 +6,7 @@
 #  @desc 
 #  Parses the the configuration files for thorns.
 #  @enddesc 
-#  @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.49 2002-04-26 13:47:07 allen Exp $
+#  @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.50 2002-08-20 13:38:41 allen Exp $
 #@@*/
 
 # Global parameter to track the number of errors from the CST
@@ -243,7 +243,7 @@ sub CreateThornList
       if (!TestName(1,$thorn_name))
       {
 	$message = "Thorn name $thorn_name is not valid";
-	$hint = "Thorn names must begin with a letter, and can only contain letters, numbers and underscores\n";
+	$hint = "Thorn names must begin with a letter, can only contain letters, numbers and underscores, and must contain 27 or less\n";
 	&CST_error(0,$message,$hint,__LINE__,__FILE__);
       }
 
