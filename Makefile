@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.74 2000-03-06 12:21:32 allen Exp $
+#   @version $Id: Makefile,v 1.75 2000-03-07 05:05:50 allen Exp $
 # @@*/
 
 ##################################################################################
@@ -154,8 +154,8 @@ endif
 # Compile-time options
 
 # Warning options
-ifdef WARNINGS
-CCTK_WARN_MODE=$(WARNINGS)
+ifdef WARN
+CCTK_WARN_MODE=$(WARN)
 else
 CCTK_WARN_MODE=no
 endif
@@ -316,7 +316,7 @@ endif
 	@echo "  tags             - creates a Vi TAGS file."
 	@echo "  thorninfo        - give information about all available "
 	@echo "                     thorns."
-	@echo "  UsersGuide       - creates users manual UserGuide.ps."
+	@echo "  UsersGuide       - creates users manual UsersGuide.ps."
 	@echo "  <anything else>  - prompts to create such a configuration."
 	@echo $(DIVIDER)
 
