@@ -189,7 +189,7 @@ sub parse_param_ccl
 #               Can only extend a friend variable.
 		print STDERR "Parse error at line $linenum\n";
 		$nerrors++;
-		$linenum++ until ($data[$linenum] !=~ m:\}:);
+		$linenum++ until ($data[$linenum] =~ m:\}:);
 	    }
 	    elsif(! $data[$linenum+1] =~ m:^\s*\{\s*$:)
 	    {
@@ -198,7 +198,7 @@ sub parse_param_ccl
 		print STDERR "Parse error at line $linenum\n";
 		$nerrors++;
 #               Move past the end of this block.
-		$linenum++ until ($data[$linenum] !=~ m:\}:);
+		$linenum++ until ($data[$linenum] =~ m:\}:);
 	    }
 	    else
 	    {
@@ -222,7 +222,7 @@ sub parse_param_ccl
 		    $parameter_db{"\U$implementation $variable\E range $parameter_db{\"\U$implementation $variable\E ranges\"} description"} = $new_desc;
 		    $linenum++;
 		}
-		if(! $block =~ m:FRIEND:)
+		if($block !~ m:FRIEND:)
 		{
 		    if($data[$linenum] =~ m:\s*\}\s*(.+):)
 		    {
