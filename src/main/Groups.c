@@ -30,3 +30,13 @@ int CCTK_DisableGroupCommunication(cGH *GH, const char *group)
 {
   return 0;
 }
+
+int CCTK_GetGroupNum(cGH *GH, const char *group)
+{
+  return 0;
+}
+
+int CCTK_ArrayGroupSize(cGH *GH, const char *group, int dim)
+{
+  return 0;
+}
