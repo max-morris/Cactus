@@ -89,6 +89,11 @@
 #undef HAVE_UNISTD_H
 #undef HAVE_STRING_H
 
+/* Which format does the C++ STL on this machine provide. */
+
+#undef HAVE_VECTOR
+#undef HAVE_VECTOR_H
+
 /* Timing stuff */
 
 #undef HAVE_TIME_GETTIMEOFDAY
