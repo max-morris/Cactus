@@ -24,6 +24,7 @@
 #include "cctk_Comm.h"
 #include "cctk_Sync.h"
 
+#include "cctk_Constants.h"
 #include "cctk_Groups.h"
 #include "cctk_GroupsOnGH.h"
 
@@ -124,6 +125,9 @@ static t_sched_modifier *CreateModifiers(int n_before,
                                          int n_after, 
                                          int n_while, 
                                          va_list *ap);
+
+int ValidateModifiers(t_sched_modifier *modifier);
+
 static int CreateGroupIndexList(int n_items, int *array, va_list *ap);
 static t_sched_modifier *CreateTypedModifier(t_sched_modifier *modifier,
                                              const char *type,
@@ -441,6 +445,8 @@ int CCTKi_ScheduleFunction(void *function,
 
   va_end(ap);
 
+  ValidateModifiers(modifier);
+
   if(attribute && (modifier || (n_before == 0 && n_after == 0 && n_while == 0)))
   {
     attribute->FunctionData.type = TranslateFunctionType(where);
@@ -607,6 +613,8 @@ int CCTKi_ScheduleGroup(const char *name,
   modifier  = CreateModifiers(n_before, n_after, n_while, &ap);
 
   va_end(ap);
+
+  ValidateModifiers(modifier);
 
   if(attribute && (modifier || (n_before == 0 && n_after == 0 && n_while == 0)))
   {
@@ -1400,6 +1408,56 @@ static t_sched_modifier *CreateModifiers(int n_before,
   modifier = CreateTypedModifier(modifier, "while", n_while, ap);
 
   return modifier;
+}
+
+/*@@
+   @routine    ValidateModifier
+   @date       Sat Apr 14 18:28:13 2001
+   @author     Gabrielle Allen
+   @desc 
+   Validates a schedule modifier list. At the moment just check that
+   the while modifier uses a CCTK_INT grid variable.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+   @var     modifier
+   @vdesc   
+   @vtype   t_sched_modifier *
+   @vio     in
+   @vcomment 
+
+   @endvar 
+
+   @returntype int
+   @returndesc 
+   Negative if modifier not valid, zero if modifier is valid.
+   @endreturndesc
+@@*/
+int ValidateModifiers(t_sched_modifier *modifier)
+{
+  int retval = 0;
+  int index;
+  int type;
+
+  for (;modifier;modifier=modifier->next)
+  {
+    if (modifier->type == sched_while)
+    {
+      index = CCTK_VarIndex(modifier->argument);
+      type = CCTK_VarTypeI(index);
+      if (type != CCTK_VARIABLE_INT)
+      {
+	CCTK_VWarn(0,__LINE__,__FILE__,"Cactus",
+		   "While qualifier %s is not a CCTK_INT grid variable",
+		   modifier->argument);
+	retval = -1;
+      }
+    }
+  }
+  return retval;
 }
 
 /*@@
