@@ -5,6 +5,7 @@
    @desc 
    File for dealing with fortran wrapper functions.
    @enddesc 
+   @version $Header$
  @@*/
 
 #include <stdlib.h>
@@ -18,7 +19,27 @@ static char *rcsid = "$Header$";
 
 CCTK_FILEVERSION(main_FortranWrappers_c)
 
+/********************************************************************
+ *********************     Local Data Types   ***********************
+ ********************************************************************/
+
+/********************************************************************
+ ********************* Local Routine Prototypes *********************
+ ********************************************************************/
+
+/********************************************************************
+ ********************* Other Routine Prototypes *********************
+ ********************************************************************/
+
+/********************************************************************
+ *********************     Local Data   *****************************
+ ********************************************************************/
+
 static pNamedData *registry = NULL;
+
+/********************************************************************
+ *********************     External Routines   **********************
+ ********************************************************************/
 
  /*@@
    @routine    CCTKi_RegisterFortranWrapper
@@ -32,9 +53,28 @@ static pNamedData *registry = NULL;
    @history 
  
    @endhistory 
+   @var     name
+   @vdesc   name of the wrapper function
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     function
+   @vdesc   Wrapper function
+   @vtype   int (*)(void *, void *)
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
 
+   @returntype int
+   @returndesc 
+   The return code of StoreNamedData
+   @endreturndesc
 @@*/
-int CCTKi_RegisterFortranWrapper(const char *name, int (*function)(void *, void *))
+int CCTKi_RegisterFortranWrapper(const char *name, 
+                                 int (*function)(void *, void *))
 {
   int retcode;
   retcode = StoreNamedData(&registry, name, (void *)function);
@@ -55,9 +95,25 @@ int CCTKi_RegisterFortranWrapper(const char *name, int (*function)(void *, void 
    @history 
  
    @endhistory 
+   @var     name
+   @vdesc   Name of the wrapper
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
 
+   @returntype int (*)(void *,void *)
+   @returndesc 
+   The wrapper function
+   @endreturndesc
 @@*/
 int (*CCTKi_FortranWrapper(const char *name))(void *, void *)
 {
   return (int (*)(void *,void *))GetNamedData(registry, name);
 }
+
+/********************************************************************
+ *********************     Local Routines   *************************
+ ********************************************************************/
+

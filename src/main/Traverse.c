@@ -17,6 +17,10 @@ static char *rcsid="$Header$";
 
 CCTK_FILEVERSION(main_Traverse_c)
 
+/********************************************************************
+ *********************     External Routines   **********************
+ ********************************************************************/
+
  /*@@
    @routine    CCTK_Traverse
    @date       Thu Jan 27 14:42:16 2000
@@ -29,7 +33,25 @@ CCTK_FILEVERSION(main_Traverse_c)
    @history 
  
    @endhistory 
+   @var     GH
+   @vdesc   The cGH the functions operate on.
+   @vtype   cGH
+   @vio     inout
+   @vcomment 
+ 
+   @endvar 
+   @var     where
+   @vdesc   The schedule group to traverse
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
 
+   @returntype int
+   @returndesc
+   Returns the return value of CCTKi_ScheduleTraverse
+   @endreturndesc
 @@*/
 int CCTK_Traverse(cGH *GH, const char *where)
 {

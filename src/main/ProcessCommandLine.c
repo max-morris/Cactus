@@ -52,7 +52,7 @@ static char **argv = NULL;
    @desc 
    Processes the command line arguments.
    @enddesc 
-   @calls     
+   @calls    CCTKi_CommandLineTestThornCompiled CCTKi_CommandLineDescribeAllParameters CCTKi_CommandLineDescribeParameter CCTKi_CommandLineTestParameters CCTKi_CommandLineWarningLevel CCTKi_CommandLineErrorLevel CCTKi_CommandLineRedirectStdout CCTKi_CommandLineListThorns() CCTKi_CommandLineVersion() CCTKi_CommandLineHelp
    @calledby   
    @history 
  
@@ -202,7 +202,7 @@ int CCTK_CommandLine(char ***outargv)
    @desc 
    Returns the parameter filename
    @enddesc 
-   @calls     
+   @calls    CCTK_Equals 
    @calledby   
    @history 
  

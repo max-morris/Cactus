@@ -67,7 +67,7 @@ static time_t startuptime;
    @desc 
    
    @enddesc 
-   @calls      ProcessCommandLine ProcessParameterDatabase CallStartupFunctions
+   @calls      CCTKi_InitialiseSubsystemDefaults CCTKi_ProcessEnvironment CCTKi_ProcessCommandLine CCTKi_CactusBanner CCTKi_InitialiseDataStructures CCTKi_ProcessParameterDatabase CCTKi_BindingsVariablesInitialise CCTKi_InitialiseScheduler CCTKi_CallStartupFunctions CCTKi_PrintBanners
    @calledby   main  
    @history 
  
@@ -137,7 +137,7 @@ int CCTKi_InitialiseCactus(int *argc, char ***argv, tFleshConfig *ConfigData)
    @desc 
    Initialise all scheduled items
    @enddesc 
-   @calls     
+   @calls    CCTKi_SetParameterSetMask CCTKi_BindingsParameterRecoveryInitialise CCTKi_BindingsScheduleInitialise CCTKi_DoScheduleSortAllGroups CCTK_SchedulePrint 
    @calledby   
    @history 
  

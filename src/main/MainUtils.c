@@ -19,6 +19,28 @@ static char *rcsid = "$Header$";
 
 CCTK_FILEVERSION(main_MainUtils_c)
 
+/********************************************************************
+ *********************     Local Data Types   ***********************
+ ********************************************************************/
+
+/********************************************************************
+ ********************* Local Routine Prototypes *********************
+ ********************************************************************/
+
+/********************************************************************
+ ********************* Other Routine Prototypes *********************
+ ********************************************************************/
+
+/********************************************************************
+ *********************     Local Data   *****************************
+ ********************************************************************/
+
+/* the iteration counter used in the evolution loop */
+static int iteration = 0;
+
+/********************************************************************
+ *********************     External Routines   **********************
+ ********************************************************************/
 
  /*@@
    @routine    CCTK_RunTitle
@@ -29,7 +51,29 @@ CCTK_FILEVERSION(main_MainUtils_c)
    @enddesc 
    @calls     
    @calledby   
+   @history 
+ 
+   @endhistory 
+   @var     len
+   @vdesc   The length of the title buffer
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     title
+   @vdesc   The title buffer
+   @vtype   char *
+   @vio     out
+   @vcomment 
+ 
+   @endvar 
 
+   @returntype int
+   @returndesc 
+   The length of the title
+   - if title is NULL
+   @endreturndesc
 @@*/
 int CCTK_RunTitle(int len, char *title)
 {
@@ -61,4 +105,8 @@ int CCTK_RunTitle(int len, char *title)
   }
   return retval;
 }
+
+/********************************************************************
+ *********************     Local Routines   *************************
+ ********************************************************************/
 

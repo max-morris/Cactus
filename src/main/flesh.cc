@@ -26,7 +26,7 @@ CCTK_FILEVERSION(main_flesh_cc)
    going to be any c++ at all in your program.
    
    @enddesc 
-   @calls     CCTKi_InitialiseCactus Initialise Evolve Shutdown ShutdownCactus
+   @calls     CCTKi_InitialiseCactus CCTKi_ShutdownCactus
    @calledby   
    @history 
  

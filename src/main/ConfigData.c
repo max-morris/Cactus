@@ -5,6 +5,7 @@
    @desc 
    Miscellaneous routines to deal with configuration data
    @enddesc 
+   @version $Header$
  @@*/
 
 #include <stdio.h>
@@ -15,6 +16,26 @@
 static char *rcsid = "$Header$";
 
 CCTK_FILEVERSION(main_ConfigData_c)
+
+/********************************************************************
+ *********************     Local Data Types   ***********************
+ ********************************************************************/
+
+/********************************************************************
+ ********************* Local Routine Prototypes *********************
+ ********************************************************************/
+
+/********************************************************************
+ ********************* Other Routine Prototypes *********************
+ ********************************************************************/
+
+/********************************************************************
+ *********************     Local Data   *****************************
+ ********************************************************************/
+
+/********************************************************************
+ *********************     External Routines   **********************
+ ********************************************************************/
 
  /*@@
    @routine    CCTKi_AddGH
@@ -28,7 +49,34 @@ CCTK_FILEVERSION(main_ConfigData_c)
    @history 
  
    @endhistory 
+   @var     config
+   @vdesc   Flesh config data
+   @vtype   tFleshConfig
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     convergence_level
+   @vdesc   The convergence level
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     GH
+   @vdesc   the cctk GH
+   @vtype   cGH *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
 
+   @returntype int
+   @returndesc 
+   0 - success
+   1 - memory failure
+   2 - duplicate convergence level
+   @endreturndesc
 @@*/
 int CCTKi_AddGH(tFleshConfig *config, int convergence_level, cGH *GH)
 {
@@ -71,3 +119,8 @@ int CCTKi_AddGH(tFleshConfig *config, int convergence_level, cGH *GH)
 
   return retval;
 }
+
+/********************************************************************
+ *********************     Local Routines   *************************
+ ********************************************************************/
+

@@ -5,6 +5,7 @@
    @desc 
    Misc stuff for the subsystems.
    @enddesc 
+   @version $Header$
  @@*/
 
 #include "cctk_Flesh.h"
@@ -14,6 +15,26 @@ static char *rcsid = "$Header$";
 
 CCTK_FILEVERSION(main_Subsystems_c)
 
+/********************************************************************
+ *********************     Local Data Types   ***********************
+ ********************************************************************/
+
+/********************************************************************
+ ********************* Local Routine Prototypes *********************
+ ********************************************************************/
+
+/********************************************************************
+ ********************* Other Routine Prototypes *********************
+ ********************************************************************/
+
+/********************************************************************
+ *********************     Local Data   *****************************
+ ********************************************************************/
+
+/********************************************************************
+ *********************     External Routines   **********************
+ ********************************************************************/
+
  /*@@
    @routine    CCTKi_InitialiseSubsystemDefaults
    @date       Fri Jul 23 14:39:53 1999
@@ -21,7 +42,7 @@ CCTK_FILEVERSION(main_Subsystems_c)
    @desc 
    Sets up the defaults for the overloadable functions in the subsystems.
    @enddesc 
-   @calls     
+   @calls     CCTKi_SetupMainFunctions CCTKi_SetupCommFunctions CCTKi_SetupIOFunctions CCTKi_BindingsImplementationsInitialise CCTKi_BindingsParametersInitialise
    @calledby   
    @history 
  
@@ -45,4 +66,8 @@ int CCTKi_InitialiseSubsystemDefaults(void)
 
   return 0;
 }
+
+/********************************************************************
+ *********************     Local Routines   *************************
+ ********************************************************************/
 

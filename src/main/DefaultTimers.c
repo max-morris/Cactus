@@ -5,6 +5,7 @@
    @desc 
    Default Cactus timers
    @enddesc 
+   @version $Header$
  @@*/
 
 #include <stdio.h>
@@ -32,15 +33,36 @@ static char *rcsid = "$Header$";
 
 CCTK_FILEVERSION(main_DefaultTimers_c)
 
+
+/********************************************************************
+ *********************     Local Data Types   ***********************
+ ********************************************************************/
+
+/********************************************************************
+ ********************* Local Routine Prototypes *********************
+ ********************************************************************/
+
 /* Prototypes for registration functions */
 
 #ifdef HAVE_TIME_GETTIMEOFDAY
-void CCTKi_RegisterTimersGetTimeOfDay(void);
+static void CCTKi_RegisterTimersGetTimeOfDay(void);
 #endif
 
 #ifdef HAVE_TIME_GETRUSAGE
-void CCTKi_RegisterTimersGetrUsage(void);
+static void CCTKi_RegisterTimersGetrUsage(void);
 #endif
+
+/********************************************************************
+ ********************* Other Routine Prototypes *********************
+ ********************************************************************/
+
+/********************************************************************
+ *********************     Local Data   *****************************
+ ********************************************************************/
+
+/********************************************************************
+ *********************     External Routines   **********************
+ ********************************************************************/
 
  /*@@
    @routine    CCTKi_RegisterDefaultTimerFunctions
@@ -57,6 +79,10 @@ void CCTKi_RegisterTimersGetrUsage(void);
  
    @endhistory 
 
+   @returntype int
+   @returndesc 
+   0
+   @endreturndesc
 @@*/
 int CCTKi_RegisterDefaultTimerFunctions(void)
 {
@@ -71,6 +97,11 @@ int CCTKi_RegisterDefaultTimerFunctions(void)
 
   return 0;
 } 
+
+
+/********************************************************************
+ *********************     Local Routines   *************************
+ ********************************************************************/
 
 
 
@@ -110,9 +141,20 @@ static char *GetTimeOfDayUnits   = "secs";
    @history 
  
    @endhistory 
+   @var     timernum
+   @vdesc   timer number
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
 
+   @returntype void *
+   @returndesc 
+   timer structure
+   @endreturndesc
 @@*/
-void *CCTKi_TimerGetTimeOfDayCreate(int timernum)
+static void *CCTKi_TimerGetTimeOfDayCreate(int timernum)
 {
   t_GetTimeOfDayTimer *this;
 
@@ -139,9 +181,23 @@ void *CCTKi_TimerGetTimeOfDayCreate(int timernum)
    @history 
  
    @endhistory 
+   @var     timernum
+   @vdesc   timer number
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     data
+   @vdesc   timer data
+   @vtype   void *
+   @vio     inout
+   @vcomment 
+ 
+   @endvar 
 
 @@*/
-void CCTKi_TimerGetTimeOfDayDestroy(int timernum, void *data)
+static void CCTKi_TimerGetTimeOfDayDestroy(int timernum, void *data)
 {
   if(data)
   {
@@ -162,9 +218,23 @@ void CCTKi_TimerGetTimeOfDayDestroy(int timernum, void *data)
    @history 
  
    @endhistory 
+   @var     timernum
+   @vdesc   timer number
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     idata
+   @vdesc   timer data
+   @vtype   void *
+   @vio     inout
+   @vcomment 
+ 
+   @endvar 
 
 @@*/
-void CCTKi_TimerGetTimeOfDayStart(int timernum, void *idata)
+static void CCTKi_TimerGetTimeOfDayStart(int timernum, void *idata)
 {
   t_GetTimeOfDayTimer *data;
 
@@ -183,7 +253,7 @@ void CCTKi_TimerGetTimeOfDayStart(int timernum, void *idata)
 }
 
  /*@@
-   @routine    CCTKi_TimerGetTimeOfDayStart
+   @routine    CCTKi_TimerGetTimeOfDayStop
    @date       Wed Oct 20 18:28:19 1999
    @author     Tom Goodale
    @desc 
@@ -194,9 +264,23 @@ void CCTKi_TimerGetTimeOfDayStart(int timernum, void *idata)
    @history 
  
    @endhistory 
+   @var     timernum
+   @vdesc   timer number
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     idata
+   @vdesc   timer data
+   @vtype   void *
+   @vio     inout
+   @vcomment 
+ 
+   @endvar 
 
 @@*/
-void CCTKi_TimerGetTimeOfDayStop(int timernum, void *idata)
+static void CCTKi_TimerGetTimeOfDayStop(int timernum, void *idata)
 {
   t_GetTimeOfDayTimer *data;
 
@@ -227,9 +311,23 @@ void CCTKi_TimerGetTimeOfDayStop(int timernum, void *idata)
    @history 
  
    @endhistory 
+   @var     timernum
+   @vdesc   timer number
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     idata
+   @vdesc   timer data
+   @vtype   void *
+   @vio     inout
+   @vcomment 
+ 
+   @endvar 
 
 @@*/
-void CCTKi_TimerGetTimeOfDayReset(int timernum, void *idata)
+static void CCTKi_TimerGetTimeOfDayReset(int timernum, void *idata)
 {
   t_GetTimeOfDayTimer *data;
 
@@ -254,9 +352,30 @@ void CCTKi_TimerGetTimeOfDayReset(int timernum, void *idata)
    @history 
  
    @endhistory 
+   @var     timernum
+   @vdesc   timer number
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     idata
+   @vdesc   timer data
+   @vtype   void *
+   @vio     inout
+   @vcomment 
+ 
+   @endvar 
+   @var     vals
+   @vdesc   Timer value structure
+   @vtype   cTimerVal
+   @vio     out
+   @vcomment 
+ 
+   @endvar 
 
 @@*/
-void CCTKi_TimerGetTimeOfDayGet(int timernum, void *idata, cTimerVal *vals)
+static void CCTKi_TimerGetTimeOfDayGet(int timernum, void *idata, cTimerVal *vals)
 {
   t_GetTimeOfDayTimer *data;
 
@@ -280,9 +399,30 @@ void CCTKi_TimerGetTimeOfDayGet(int timernum, void *idata, cTimerVal *vals)
    @history 
  
    @endhistory 
+   @var     timernum
+   @vdesc   timer number
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     idata
+   @vdesc   timer data
+   @vtype   void *
+   @vio     inout
+   @vcomment 
+ 
+   @endvar 
+   @var     vals
+   @vdesc   Timer value structure
+   @vtype   cTimerVal
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
 
 @@*/
-void CCTKi_TimerGetTimeOfDaySet(int timernum, void *idata, cTimerVal *vals)
+static void CCTKi_TimerGetTimeOfDaySet(int timernum, void *idata, cTimerVal *vals)
 {
   t_GetTimeOfDayTimer *data;
 
@@ -306,7 +446,7 @@ void CCTKi_TimerGetTimeOfDaySet(int timernum, void *idata, cTimerVal *vals)
    @endhistory 
 
 @@*/
-void CCTKi_RegisterTimersGetTimeOfDay(void)
+static void CCTKi_RegisterTimersGetTimeOfDay(void)
 {
   cTimerFuncs functions;
 
@@ -355,9 +495,21 @@ static char *GetrUsageUnits   = "secs";
    @history 
  
    @endhistory 
+   @var     timernum
+   @vdesc   timer number
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+
+   @returntype void *
+   @returndesc 
+   timer structure
+   @endreturndesc
 
 @@*/
-void *CCTKi_TimerGetrUsageCreate(int timernum)
+static void *CCTKi_TimerGetrUsageCreate(int timernum)
 {
   t_GetrUsageTimer *this;
 
@@ -384,9 +536,23 @@ void *CCTKi_TimerGetrUsageCreate(int timernum)
    @history 
  
    @endhistory 
+   @var     timernum
+   @vdesc   timer number
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     data
+   @vdesc   timer data
+   @vtype   void *
+   @vio     inout
+   @vcomment 
+ 
+   @endvar 
 
 @@*/
-void CCTKi_TimerGetrUsageDestroy(int timernum, void *data)
+static void CCTKi_TimerGetrUsageDestroy(int timernum, void *data)
 {
   if(data)
   {
@@ -407,9 +573,23 @@ void CCTKi_TimerGetrUsageDestroy(int timernum, void *data)
    @history 
  
    @endhistory 
+   @var     timernum
+   @vdesc   timer number
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     idata
+   @vdesc   timer data
+   @vtype   void *
+   @vio     inout
+   @vcomment 
+ 
+   @endvar 
 
 @@*/
-void CCTKi_TimerGetrUsageStart(int timernum, void *idata)
+static void CCTKi_TimerGetrUsageStart(int timernum, void *idata)
 {
   t_GetrUsageTimer *data;
 
@@ -427,7 +607,7 @@ void CCTKi_TimerGetrUsageStart(int timernum, void *idata)
 }
 
  /*@@
-   @routine    CCTKi_TimerGetrUsageStart
+   @routine    CCTKi_TimerGetrUsageStop
    @date       Wed Oct 20 18:28:19 1999
    @author     Tom Goodale
    @desc 
@@ -438,9 +618,23 @@ void CCTKi_TimerGetrUsageStart(int timernum, void *idata)
    @history 
  
    @endhistory 
+   @var     timernum
+   @vdesc   timer number
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     idata
+   @vdesc   timer data
+   @vtype   void *
+   @vio     inout
+   @vcomment 
+ 
+   @endvar 
 
 @@*/
-void CCTKi_TimerGetrUsageStop(int timernum, void *idata)
+static void CCTKi_TimerGetrUsageStop(int timernum, void *idata)
 {
   t_GetrUsageTimer *data;
 
@@ -470,9 +664,23 @@ void CCTKi_TimerGetrUsageStop(int timernum, void *idata)
    @history 
  
    @endhistory 
+   @var     timernum
+   @vdesc   timer number
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     idata
+   @vdesc   timer data
+   @vtype   void *
+   @vio     inout
+   @vcomment 
+ 
+   @endvar 
 
 @@*/
-void CCTKi_TimerGetrUsageReset(int timernum, void *idata)
+static void CCTKi_TimerGetrUsageReset(int timernum, void *idata)
 {
   t_GetrUsageTimer *data;
 
@@ -495,9 +703,31 @@ void CCTKi_TimerGetrUsageReset(int timernum, void *idata)
    @history 
  
    @endhistory 
+   @var     timernum
+   @vdesc   timer number
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     idata
+   @vdesc   timer data
+   @vtype   void *
+   @vio     inout
+   @vcomment 
+ 
+   @endvar 
+   @var     vals
+   @vdesc   Timer value structure
+   @vtype   cTimerVal
+   @vio     out
+   @vcomment 
+ 
+   @endvar 
+
 
 @@*/
-void CCTKi_TimerGetrUsageGet(int timernum, void *idata, cTimerVal *vals)
+static void CCTKi_TimerGetrUsageGet(int timernum, void *idata, cTimerVal *vals)
 {
   t_GetrUsageTimer *data;
 
@@ -522,9 +752,30 @@ void CCTKi_TimerGetrUsageGet(int timernum, void *idata, cTimerVal *vals)
    @history 
  
    @endhistory 
+   @var     timernum
+   @vdesc   timer number
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     idata
+   @vdesc   timer data
+   @vtype   void *
+   @vio     inout
+   @vcomment 
+ 
+   @endvar 
+   @var     vals
+   @vdesc   Timer value structure
+   @vtype   cTimerVal
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
 
 @@*/
-void CCTKi_TimerGetrUsageSet(int timernum, void *idata, cTimerVal *vals)
+static void CCTKi_TimerGetrUsageSet(int timernum, void *idata, cTimerVal *vals)
 {
   t_GetrUsageTimer *data;
 
@@ -548,7 +799,7 @@ void CCTKi_TimerGetrUsageSet(int timernum, void *idata, cTimerVal *vals)
    @endhistory 
 
 @@*/
-void CCTKi_RegisterTimersGetrUsage(void)
+static void CCTKi_RegisterTimersGetrUsage(void)
 {
   cTimerFuncs functions;
 

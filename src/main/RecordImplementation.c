@@ -3,8 +3,10 @@
    @date      Wed Jan 13 21:03:55 1999
    @author    Tom Goodale
    @desc 
-   
+   Keeps a register of implementations and thorns associated 
+   with implementations.
    @enddesc 
+   @version $Header$
  @@*/
 
 #include <stdio.h>
@@ -17,14 +19,34 @@ static char *rcsid = "$Header$";
 
 CCTK_FILEVERSION(main_RecordImplementation_c)
 
+/********************************************************************
+ *********************     Local Data Types   ***********************
+ ********************************************************************/
+
 typedef struct 
 {
   int n_thorns;
   char **thornlist;
 } t_ImplementationData;
 
+
+/********************************************************************
+ ********************* Local Routine Prototypes *********************
+ ********************************************************************/
+
+/********************************************************************
+ ********************* Other Routine Prototypes *********************
+ ********************************************************************/
+
+/********************************************************************
+ *********************     Local Data   *****************************
+ ********************************************************************/
+
 static pNamedData *implementation_data = NULL;
 
+/********************************************************************
+ *********************     External Routines   **********************
+ ********************************************************************/
 
  /*@@
    @routine    CCTKi_RegisterImplementation
@@ -38,10 +60,32 @@ static pNamedData *implementation_data = NULL;
    @history 
  
    @endhistory 
+   @var     implementation
+   @vdesc   The implementation to register
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     thorn
+   @vdesc   A thorn providing this implementation
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
 
+   @returntype int
+   @returndesc 
+   0 - success
+   1 - memory failure realloc of thorn list
+   2 - memory failure creating implementation
+   3 - memory failure creating thornlist
+   4 - memory failure malloc of name of thorn
+   @endreturndesc
 @@*/
 int CCTKi_RegisterImplementation(const char *implementation,
-                              const char *thorn)
+                                 const char *thorn)
 {
   int retval;
   char **temp;
@@ -102,7 +146,7 @@ int CCTKi_RegisterImplementation(const char *implementation,
     }
     else
     {
-      fprintf(stderr, "Unable to allocate memory for new thorn %s\n", thorn);
+      fprintf(stderr, "Unable to allocate memory for new implementation %s\n", implementation);
       retval = 2;
     }
 
@@ -123,7 +167,25 @@ int CCTKi_RegisterImplementation(const char *implementation,
    @history 
  
    @endhistory 
+   @var     implementation
+   @vdesc   name of the implementation
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     thornlist
+   @vdesc   Pointer to array holding list of thorns
+   @vtype   char ***
+   @vio     out
+   @vcomment 
+ 
+   @endvar 
 
+   @returntype int
+   @returndesc 
+   Number of thorns providing implementation
+   @endreturndesc
 @@*/
 int GetImplementationThorns(const char *implementation, char ***thornlist)
 {
@@ -143,3 +205,7 @@ int GetImplementationThorns(const char *implementation, char ***thornlist)
 
   return retval;
 }
+
+/********************************************************************
+ *********************     Local Routines   *************************
+ ********************************************************************/

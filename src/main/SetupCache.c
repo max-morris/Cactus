@@ -5,6 +5,7 @@
    @desc 
    Sets up cache stuff for the CCTK
    @enddesc 
+   @version $Header$
  @@*/
 
 #include <stdlib.h>
@@ -38,7 +39,7 @@ CCTK_FILEVERSION(main_SetupCache_c)
 
    @returntype int
    @returndesc
-   0
+   0 - success
    @endreturndesc
 
 @@*/
@@ -62,14 +63,8 @@ int CCTKi_SetupCache(void)
   } 
   else
   {
-    /* FIXME:  Remove this check for release */
-#ifdef CCTK_L2_CACHE_SIZE
     cache_size      = CCTK_L2_CACHE_SIZE;
     cacheline_bytes = CCTK_L2_CACHELINE_BYTES;
-#else
-    cache_size      = 0;
-    cacheline_bytes = 0;
-#endif
   }
 
   Utili_CacheDataSet(cacheline_bytes, cache_size);

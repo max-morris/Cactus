@@ -5,8 +5,8 @@
    @desc 
    Routines to deal with warning levels.
    @enddesc 
+   @version $Header$
  @@*/
-
 
 #include "cctk_Config.h"
 
@@ -24,11 +24,27 @@
 #include "cctk_Comm.h"
 #include "cctk_Flesh.h"
 
-int CactusDefaultMyProc(void *GH);
-
 static char *rcsid = "$Header$";
 
 CCTK_FILEVERSION(main_WarnLevel_c)
+
+/********************************************************************
+ *********************     Local Data Types   ***********************
+ ********************************************************************/
+
+/********************************************************************
+ ********************* Local Routine Prototypes *********************
+ ********************************************************************/
+
+/********************************************************************
+ ********************* Other Routine Prototypes *********************
+ ********************************************************************/
+
+int CactusDefaultMyProc(void *GH);
+
+/********************************************************************
+ *********************     Local Data   *****************************
+ ********************************************************************/
 
 /* Store the number of parameter errors */
 
@@ -54,6 +70,14 @@ static int n_formats = 0;
 static pKeyedData *formatlist = NULL;
 
 
+/********************************************************************
+ *********************     External Routines   **********************
+ ********************************************************************/
+
+/********************************************************************
+ *********************     Local Routines   *************************
+ ********************************************************************/
+
  /*@@
    @routine    CCTKi_SetWarnLevel
    @date       Wed Feb 17 00:42:16 1999
@@ -66,7 +90,20 @@ static pKeyedData *formatlist = NULL;
    @history 
  
    @endhistory 
+   @var     level
+   @vdesc   level to set
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
 
+   @returntype int
+   @returndesc
+   1  - increased warning level
+   0  - warning level unchanged
+   -1 - decreased warning level
+   @endreturndesc
 @@*/
 int CCTKi_SetWarnLevel(int level)
 {
@@ -104,6 +141,7 @@ int CCTKi_SetWarnLevel(int level)
     sprintf(warning_message, "Decreasing error level to warning_level\n");
     CCTK_Warn(2, __LINE__,__FILE__,"Cactus",warning_message);
   }
+
   return retval;
 }
 
@@ -119,7 +157,46 @@ int CCTKi_SetWarnLevel(int level)
    @history 
  
    @endhistory 
+   @var     level
+   @vdesc   The warning level
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     line
+   @vdesc   Line number of warning in originating file
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     file
+   @vdesc   Name of originating file
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     thorn
+   @vdesc   Name of originating thorn
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     message
+   @vdesc   Warning message
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
 
+   @returntype int
+   @returndesc
+   0  - success
+   @endreturndesc
 @@*/
 int CCTK_Warn(int level, int line, const char *file, const char *thorn, const char *message)
 {
@@ -172,21 +249,72 @@ void CCTK_FCALL CCTK_FNAME(CCTK_Warn)
    @desc 
       Used by CCTKi_EXPCTERR macro (src/include/cctk.h)
       allows testing for error return value, will return a 
-      warnign statement if error is found.
+      warning statement if error is found.
    @enddesc 
    @calls     
    @calledby   
    @history 
  
    @endhistory 
-
+   @var     in
+   @vdesc   FIXME
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     err
+   @vdesc   FIXME
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     warnonerr
+   @vdesc   The warning level
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     line
+   @vdesc   Line number of warning in originating file
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     file
+   @vdesc   Name of originating file
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     thorn
+   @vdesc   Name of originating thorn
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     message
+   @vdesc   Warning message
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
 @@*/
 
 void CCTKi_ExpectError(int in, int err, int warnonerr, int line,
                        const char *file, const char *thorn,
                        const char *message) 
 {
-  if (in==err) CCTK_Warn(warnonerr, line, file, thorn, message);
+  if (in==err) 
+  {
+    CCTK_Warn(warnonerr, line, file, thorn, message);
+  }
 }
 
 
@@ -217,14 +345,65 @@ void CCTK_FCALL CCTK_FNAME(CCTKi_ExpectError)
    @history 
  
    @endhistory 
-
+   @var     in
+   @vdesc   FIXME
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     ok
+   @vdesc   FIXME
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     warnonerr
+   @vdesc   The warning level
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     line
+   @vdesc   Line number of warning in originating file
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     file
+   @vdesc   Name of originating file
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     thorn
+   @vdesc   Name of originating thorn
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     message
+   @vdesc   Warning message
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
 @@*/
 
 void CCTKi_ExpectOK(int in, int ok, int warnonerr, int line,
                     const char *file, const char *thorn,
                     const char *message) 
 {
-  if (in!=ok) CCTK_Warn(warnonerr, line, file, thorn, message);
+  if (in != ok) 
+  {
+    CCTK_Warn(warnonerr, line, file, thorn, message);
+  }
 }
 
 void CCTK_FCALL CCTK_FNAME(CCTKi_ExpectOK)
@@ -253,7 +432,53 @@ void CCTK_FCALL CCTK_FNAME(CCTKi_ExpectOK)
    @history 
  
    @endhistory 
+   @var     level
+   @vdesc   The warning level
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     line
+   @vdesc   Line number of warning in originating file
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     file
+   @vdesc   Name of originating file
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     thorn
+   @vdesc   Name of originating thorn
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     format
+   @vdesc   Format string for following arguments
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     ...
+   @vdesc   arguments for format string
+   @vtype   multiple arguments
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
 
+   @returntype int
+   @returndesc
+   0  - success
+   @endreturndesc
 @@*/
 
 int CCTK_VWarn(int level, int line, const char *file, const char *thorn, const char *format, ...)
@@ -311,7 +536,25 @@ int CCTK_VWarn(int level, int line, const char *file, const char *thorn, const c
    @history 
  
    @endhistory 
+   @var     thorn
+   @vdesc   Name of originating thorn
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     message
+   @vdesc   Warning message
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
 
+   @returntype int
+   @returndesc
+   0  - success
+   @endreturndesc
 @@*/
 int CCTK_ParamWarn(const char *thorn, const char *message)
 {
@@ -360,7 +603,25 @@ void CCTK_FCALL CCTK_FNAME(CCTK_ParamWarn)
    @history 
  
    @endhistory 
+   @var     thorn
+   @vdesc   Name of originating thorn
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     message
+   @vdesc   Warning message
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
 
+   @returntype int
+   @returndesc
+   0  - success
+   @endreturndesc
 @@*/
 
 int CCTK_Info(const char *thorn, const char *message)
@@ -394,7 +655,32 @@ void CCTK_FCALL CCTK_FNAME(CCTK_Info)
    @history 
  
    @endhistory 
+   @var     thorn
+   @vdesc   Name of originating thorn
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     format
+   @vdesc   format string for message
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     ...
+   @vdesc   arguments for format string
+   @vtype   multiple arguments
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
 
+   @returntype int
+   @returndesc
+   0  - success
+   @endreturndesc
 @@*/
 
 int CCTK_VInfo (const char *thorn, const char *format, ...)
@@ -426,7 +712,20 @@ int CCTK_VInfo (const char *thorn, const char *format, ...)
    @history 
  
    @endhistory 
+   @var     level
+   @vdesc   New level
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
 
+   @returntype int
+   @returndesc
+   1  - increased error level
+   0  - error error unchanged
+   -1 - decreased error level
+   @endreturndesc
 @@*/
 int CCTKi_SetErrorLevel(int level)
 {
@@ -530,7 +829,18 @@ void CCTKi_FinaliseParamWarn(void)
    @history 
  
    @endhistory 
+   @var     ONE_FORTRSTRING_ARG
+   @vdesc   Format string
+   @vtype   Fortran string macro
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
 
+   @returntype int
+   @returndesc
+   number of previous formats
+   @endreturndesc
 @@*/
 int CCTK_FCALL CCTK_FNAME(CCTK_MessageFormat)
      (ONE_FORTSTRING_ARG)
@@ -542,6 +852,38 @@ int CCTK_FCALL CCTK_FNAME(CCTK_MessageFormat)
   return n_formats-1;
 }
 
+ /*@@
+   @routine    CCTK_VINFO
+   @date       Wed Oct  4 21:03:08 2000
+   @author     Tom Goodale
+   @desc 
+   Fortran version of CCTK_VInfo
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+   @var     format_number
+   @vdesc   format string handle
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     ...
+   @vdesc   arguments for format string
+   @vtype   multiple arguments
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+
+   @returntype int
+   @returndesc
+   FIXME - UNFINISHED
+   @endreturndesc
+@@*/
 void CCTK_FCALL CCTK_FNAME(CCTK_VInfo)
      (int format_number, ...)
 {
@@ -574,7 +916,7 @@ void CCTK_FCALL CCTK_FNAME(CCTK_VInfo)
       }
       else
       {
-        
+        /* FIXME */
       }
     }
 
@@ -595,6 +937,13 @@ void CCTK_FCALL CCTK_FNAME(CCTK_VInfo)
    @history 
  
    @endhistory 
+   @var     message
+   @vdesc   Message to be printed
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
 
 @@*/
 

@@ -7,6 +7,7 @@
    Uses the overload macros to make sure of consistency and
    to save typing !
    @enddesc 
+   @version $Header$
  @@*/
 
 #include <stdio.h>

@@ -5,6 +5,7 @@
    @desc 
    Functions to deal with GH extensions
    @enddesc 
+   @version $Header$
  @@*/
 
 /*#define DEBUG*/
@@ -22,10 +23,9 @@ static char *rcsid = "$Header$";
 
 CCTK_FILEVERSION(main_GHExtensions_c)
 
-/* Local data holding info on extensions..*/
-
-static cHandledData *GHExtensions = NULL;
-static int num_extensions = 0;
+/********************************************************************
+ *********************     Local Data Types   ***********************
+ ********************************************************************/
 
 /* The GH extension structure.
  * This contains pointers to functions which the extension requires.
@@ -47,6 +47,10 @@ struct GHExtension
 };
 
 
+/********************************************************************
+ ********************* Local Routine Prototypes *********************
+ ********************************************************************/
+
 /* Function which checks that all the functions on all extensions have been 
  * filled in.
  */
@@ -60,6 +64,25 @@ static void *DummySetupGH(tFleshConfig *config,
 static int DummyInitGH(cGH *GH);
 static int DummyScheduleTraverseGH(cGH *GH, 
                                    const char *where);
+
+
+/********************************************************************
+ ********************* Other Routine Prototypes *********************
+ ********************************************************************/
+
+/********************************************************************
+ *********************     Local Data   *****************************
+ ********************************************************************/
+
+/* Local data holding info on extensions..*/
+
+static cHandledData *GHExtensions = NULL;
+static int num_extensions = 0;
+
+
+/********************************************************************
+ *********************     External Routines   **********************
+ ********************************************************************/
 
 
 /**************************************************************************
@@ -79,7 +102,20 @@ static int DummyScheduleTraverseGH(cGH *GH,
    @history 
  
    @endhistory 
+   @var     name
+   @vdesc   Name of the extension
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
 
+   @returntype int
+   @returndesc
+   0+ - the handle
+   -1 - extension already exists
+   -2 - out of memory
+   @endreturndesc
 @@*/
 int CCTK_RegisterGHExtension(const char *name)
 {
@@ -137,19 +173,22 @@ int CCTK_RegisterGHExtension(const char *name)
    @enddesc 
    @calls     
    @calledby   
+   @history 
+ 
+   @endhistory 
    @var        name
    @vdesc      The name of the GH extension to unregister
    @vtype      const char *
    @vio        in
    @vcomment
-   @endvar
-   @returntype int
-   @returndesc 0 for success, -1 for failure
-   @endreturndesc
-   @history 
- 
-   @endhistory 
 
+   @endvar
+
+   @returntype int
+   @returndesc 
+   0  - success 
+   -1 - failure
+   @endreturndesc
 @@*/
 int CCTK_UnregisterGHExtension(const char *name)
 {
@@ -199,7 +238,26 @@ int CCTK_UnregisterGHExtension(const char *name)
    @history 
  
    @endhistory 
+   @var     handle
+   @vdesc   The extension handle
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     func
+   @vdesc   the function used to setup the GH extension
+   @vtype   void *(*)(tFleshConfig *, int, cGH *)
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
 
+   @returntype int
+   @returndesc 
+   1 - success 
+   0 - extension doesn't exist
+   @endreturndesc
 @@*/
 int CCTK_RegisterGHExtensionSetupGH(int handle, 
                                     void *(*func)(tFleshConfig *, int, cGH *))
@@ -235,7 +293,26 @@ int CCTK_RegisterGHExtensionSetupGH(int handle,
    @history 
  
    @endhistory 
+   @var     handle
+   @vdesc   The extension handle
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     func
+   @vdesc   the function used to initialise the GH extension
+   @vtype   void *(*)(cGH *)
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
 
+   @returntype int
+   @returndesc 
+   1 - success 
+   0 - extension doesn't exist
+   @endreturndesc
 @@*/
 int CCTK_RegisterGHExtensionInitGH(int handle, 
                                    int (*func)(cGH *))
@@ -271,7 +348,26 @@ int CCTK_RegisterGHExtensionInitGH(int handle,
    @history 
  
    @endhistory 
+   @var     handle
+   @vdesc   The extension handle
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     func
+   @vdesc   the function used to perform a schedule traverse
+   @vtype   void *(*)(cGH *, const char *)
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
 
+   @returntype int
+   @returndesc 
+   1 - success 
+   0 - extension doesn't exist
+   @endreturndesc
 @@*/
 int CCTK_RegisterGHExtensionScheduleTraverseGH(int handle, 
                                                int (*func)(cGH *, const char *))
@@ -314,7 +410,34 @@ int CCTK_RegisterGHExtensionScheduleTraverseGH(int handle,
    @history 
  
    @endhistory 
+   @var     config
+   @vdesc   Flesh config data
+   @vtype   tFleshConfig
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     convergence_level
+   @vdesc   The convergence level
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     GH
+   @vdesc   the cctk GH
+   @vtype   cGH *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
 
+   @returntype int
+   @returndesc 
+   0 - success
+   1 - memory failure
+   2 - not all extensions properly setup
+   @endreturndesc
 @@*/
 int CCTKi_SetupGHExtensions(tFleshConfig *config, 
                            int convergence_level, 
@@ -365,10 +488,6 @@ int CCTKi_SetupGHExtensions(tFleshConfig *config,
   return return_code;
 }
 
-
-
-
-
  /*@@
    @routine    CCTKi_InitGHExtensions
    @date       Wed Feb  3 14:12:18 1999
@@ -381,7 +500,18 @@ int CCTKi_SetupGHExtensions(tFleshConfig *config,
    @history 
  
    @endhistory 
-
+   @var     GH
+   @vdesc   The cctk GH
+   @vtype   cGH *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+ 
+   @returntype int
+   @returndesc 
+   0 - success
+   @endreturndesc
 @@*/
 int CCTKi_InitGHExtensions(cGH *GH)
 {
@@ -412,7 +542,25 @@ int CCTKi_InitGHExtensions(cGH *GH)
    @history 
  
    @endhistory 
-
+   @var     GH
+   @vdesc   The cctk GH
+   @vtype   cGH *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     where
+   @vdesc   Schedule point to traverse
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+ 
+   @returntype int
+   @returndesc 
+   0 - success
+   @endreturndesc
 @@*/
 int CCTKi_ScheduleTraverseGHExtensions(cGH *GH, 
                                        const char *where)
@@ -431,6 +579,54 @@ int CCTKi_ScheduleTraverseGHExtensions(cGH *GH,
 
   return 0;
 }
+
+/************************************************************************
+ *
+ *                      Query functions.
+ *
+ ************************************************************************/
+
+ /*@@
+   @routine    CCTK_GHExtensionHandle
+   @date       Tue Feb  9 18:23:41 1999
+   @author     Tom Goodale
+   @desc 
+   Gets the handle to the GH extension.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+   @var     name
+   @vdesc   Name of the GH extension
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+
+   @returntype int
+   @returndesc 
+   The GH extension handle
+   @endreturndesc
+@@*/
+int CCTK_GHExtensionHandle(const char *name)
+{
+  return Util_GetHandle(GHExtensions, name, NULL);
+}
+
+void  CCTK_FCALL CCTK_FNAME(CCTK_GHExtensionHandle)
+     (int *handle,ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE(name)
+  *handle = CCTK_GHExtensionHandle(name);
+  free(name);
+}
+
+/********************************************************************
+ *********************     Local Routines   *************************
+ ********************************************************************/
 
 /***************************************************************************
  *
@@ -451,7 +647,10 @@ int CCTKi_ScheduleTraverseGHExtensions(cGH *GH,
    @history 
  
    @endhistory 
-
+   @returntype int
+   @returndesc 
+   1 - all ok
+   @endreturndesc
 @@*/
 static int CheckAllExtensionsSetup(void)
 {
@@ -503,38 +702,6 @@ static int CheckAllExtensionsSetup(void)
   return return_code;
 }
 
-/************************************************************************
- *
- *                      Query functions.
- *
- ************************************************************************/
-
- /*@@
-   @routine    CCTK_GHExtensionHandle
-   @date       Tue Feb  9 18:23:41 1999
-   @author     Tom Goodale
-   @desc 
-   Gets the handle to the GH extension.
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
-
-@@*/
-int CCTK_GHExtensionHandle(const char *name)
-{
-  return Util_GetHandle(GHExtensions, name, NULL);
-}
-
-void  CCTK_FCALL CCTK_FNAME(CCTK_GHExtensionHandle)
-     (int *handle,ONE_FORTSTRING_ARG)
-{
-  ONE_FORTSTRING_CREATE(name)
-  *handle = CCTK_GHExtensionHandle(name);
-  free(name);
-}
 
 
 
@@ -557,7 +724,32 @@ void  CCTK_FCALL CCTK_FNAME(CCTK_GHExtensionHandle)
    @history 
  
    @endhistory 
+   @var     config
+   @vdesc   Flesh config data
+   @vtype   tFleshConfig
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     convergence_level
+   @vdesc   The convergence level
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     GH
+   @vdesc   the cctk GH
+   @vtype   cGH *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
 
+   @returntype void *
+   @returndesc 
+   NULL
+   @endreturndesc
 @@*/
 static void *DummySetupGH(tFleshConfig *config, 
                           int convergence_level, 
@@ -579,7 +771,18 @@ static void *DummySetupGH(tFleshConfig *config,
    @history 
  
    @endhistory 
+   @var     GH
+   @vdesc   the cctk GH
+   @vtype   cGH *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
 
+   @returntype int
+   @returndesc 
+   0
+   @endreturndesc
 @@*/
 static int DummyInitGH(cGH *GH)
 {
@@ -599,7 +802,25 @@ static int DummyInitGH(cGH *GH)
    @history 
  
    @endhistory 
+   @var     GH
+   @vdesc   the cctk GH
+   @vtype   cGH *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     where
+   @vdesc   Schedule point to traverse
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
 
+   @returntype int
+   @returndesc 
+   0
+   @endreturndesc
 @@*/
 static int DummyScheduleTraverseGH(cGH *GH, 
                                    const char *where)

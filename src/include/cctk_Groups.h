@@ -9,7 +9,7 @@
  @@*/
 
 #ifndef _CCTK_GROUPS_H_
-#define _CCTK_GROUPS_H_
+#define _CCTK_GROUPS_H_ 1
 
 typedef struct
 {

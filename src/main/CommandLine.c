@@ -5,6 +5,7 @@
    @desc 
    Routines to deal with command line arguments.
    @enddesc 
+   @version $Header$
  @@*/
 
 #include <stdio.h>
@@ -34,7 +35,6 @@
 static char *rcsid = "$Header$";
 
 CCTK_FILEVERSION(main_CommandLine_c)
-
 
 /********************************************************************
  ********************* Local Routine Prototypes *********************
@@ -78,13 +78,20 @@ int cctki_paramcheck_nprocs;
    @desc 
    Tests if a given thorn has been compiled. 
    At the moment the given thorn must be in the format
-   <package name>/<thorn name>
+   <arrangement name>/<thorn name>
    @enddesc 
    @calls      CCTK_IsThornCompiled 
    @calledby   
    @history 
  
    @endhistory 
+   @var     optarg
+   @vdesc   option argument
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
 
 @@*/
 
@@ -112,11 +119,18 @@ void CCTKi_CommandLineTestThornCompiled(const char *optarg)
    @desc 
    Describe all the parameters
    @enddesc 
-   @calls     
+   @calls     CCTK_NumCompiledThorns CCTK_CompiledThorn CCTK_ParameterWalk CommandLinePrintParameter
    @calledby   
    @history 
  
    @endhistory 
+   @var     optarg
+   @vdesc   option argument
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
 
 @@*/
 void CCTKi_CommandLineDescribeAllParameters(const char *optarg)
@@ -161,8 +175,6 @@ void CCTKi_CommandLineDescribeAllParameters(const char *optarg)
     }
   }
 
-  /*  CCTKi_BindingsParameterHelp(NULL,"%s",stdout);*/
- 
   CCTK_Exit(NULL,0);
 }
 
@@ -173,11 +185,18 @@ void CCTKi_CommandLineDescribeAllParameters(const char *optarg)
    @desc 
    Describe a particular parameter.
    @enddesc 
-   @calls     
+   @calls     Util_SplitString CCTK_ParameterData CCTK_ImplementationThorn CommandLinePrintParameter
    @calledby   
    @history 
  
    @endhistory 
+   @var     optarg
+   @vdesc   option argument
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
 
 @@*/
 void CCTKi_CommandLineDescribeParameter(const char *optarg)
@@ -224,6 +243,13 @@ void CCTKi_CommandLineDescribeParameter(const char *optarg)
    @history 
  
    @endhistory 
+   @var     optarg
+   @vdesc   option argument
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
 
 @@*/
 void CCTKi_CommandLineTestParameters(const char *optarg)
@@ -252,11 +278,19 @@ void CCTKi_CommandLineTestParameters(const char *optarg)
    @desc 
    Sets the CCTK warning level from a command line argument. 
    @enddesc 
-   @calls     
+   @calls     CCTKi_SetWarningLevel
    @calledby   
    @history 
  
    @endhistory 
+   @var     optarg
+   @vdesc   option argument
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+
 @@*/
 
 void CCTKi_CommandLineWarningLevel(const char *optarg)
@@ -276,11 +310,18 @@ void CCTKi_CommandLineWarningLevel(const char *optarg)
    @desc 
    Sets the CCTK error level from a command line argument. 
    @enddesc 
-   @calls     
+   @calls     CCTKi_SetErrorLevel
    @calledby   
    @history 
  
    @endhistory 
+   @var     optarg
+   @vdesc   option argument
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
 
 @@*/
 void CCTKi_CommandLineErrorLevel(const char *optarg)
@@ -322,7 +363,7 @@ void CCTKi_CommandLineRedirectStdout(void)
    @desc 
    List the thorns which are compiled in.
    @enddesc 
-   @calls     
+   @calls     CCTKi_PrintThorns
    @calledby   
    @history 
  
@@ -344,7 +385,7 @@ void CCTKi_CommandLineListThorns(void)
    @desc 
    Prints version info
    @enddesc 
-   @calls     
+   @calls     CCTK_FullVersion
    @calledby   
    @history 
  
@@ -374,7 +415,7 @@ void CCTKi_CommandLineVersion(void)
    @desc 
    Prints a help message
    @enddesc 
-   @calls     
+   @calls     CCTK_CommandLine
    @calledby   
    @history 
  
@@ -415,7 +456,7 @@ void CCTKi_CommandLineHelp(void)
    @desc 
    Prints a usage message.
    @enddesc 
-   @calls     
+   @calls     CCTK_CommandLine
    @calledby   
    @history 
  
@@ -468,17 +509,7 @@ void CCTKi_CommandLineFinished(void)
     }
     else
     {
-      /* FIXME:  remove this #ifdef in beta 8 */
-#ifdef NULL_DEVICE
       sprintf(fname,NULL_DEVICE);
-#else
-#ifdef WIN32
-      /* hack for Windows which doesn't know about /dev/null */
-      sprintf(fname,"NUL");
-#else
-      sprintf(fname,"/dev/null");
-#endif
-#endif /* NULL_DEVICE */
     }
 
     freopen(fname,"w",stdout);
@@ -503,6 +534,13 @@ void CCTKi_CommandLineFinished(void)
    @history 
  
    @endhistory 
+   @var     properties
+   @vdesc   Parameter properties
+   @vtype   const cParamData *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
 
 @@*/
 static void CommandLinePrintParameter(const cParamData *properties)

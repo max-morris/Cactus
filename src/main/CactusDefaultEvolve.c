@@ -216,8 +216,11 @@ static int DoneMainLoop (CCTK_REAL cctk_time, int iteration)
      int the main iteration loop. Makes calls to the individual 
      routines for each schedule point.
    @enddesc 
-   @calls  PreStepper, EvolStepper, PostStepper
-   @calledby main   
+   @calls  CCTK_Traverse
+   @calledby 
+   @history 
+ 
+   @endhistory 
  @@*/
 
 static int StepGH(cGH *GH) 

@@ -5,15 +5,16 @@
    @desc 
    Routines dealing with cache alignment.
    @enddesc 
+   @version $Header$
  @@*/
-
-static char *rcsid = "$Header$";
 
 #include <stdlib.h>
 
 #include "cctk_Cache.h"
 #include "cctki_Cache.h"
 #include "cctk_Flesh.h"
+
+static char *rcsid = "$Header$";
 
 CCTK_FILEVERSION(util_Cache_c)
 

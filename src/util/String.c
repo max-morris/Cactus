@@ -15,9 +15,30 @@
 #include "util_String.h"
 
 #include "cctk_Flesh.h"
+
 static char *rcsid = "$Header$";
 
 CCTK_FILEVERSION(util_String_c)
+
+/********************************************************************
+ *********************     Local Data Types   ***********************
+ ********************************************************************/
+
+/********************************************************************
+ ********************* Local Routine Prototypes *********************
+ ********************************************************************/
+
+/********************************************************************
+ ********************* Other Routine Prototypes *********************
+ ********************************************************************/
+
+/********************************************************************
+ *********************     Local Data   *****************************
+ ********************************************************************/
+
+/********************************************************************
+ *********************     External Routines   **********************
+ ********************************************************************/
 
  /*@@
    @routine    CCTK_StrSep
@@ -36,6 +57,25 @@ CCTK_FILEVERSION(util_String_c)
    @history 
  
    @endhistory 
+   @var     stringp
+   @vdesc   The string to search for a token in.
+   @vtype   const char **stringp
+   @vio     inout
+   @vcomment 
+ 
+   @endvar 
+   @var     delim
+   @vdesc   The delimiter
+   @vtype   const char *delim
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+
+   @returntype const char *
+   @returndesc
+   a pointer to the token, or NULL if delim is not found in stringp.
+   @endreturndesc
 
 @@*/
 const char *Util_StrSep(const char **stringp, const char *delim)
@@ -72,7 +112,7 @@ const char *Util_StrSep(const char **stringp, const char *delim)
 
     if(retval)
     {
-      strncpy(retval, start, end-start);
+      strncpy(retval, start, (size_t)(end-start));
       retval[end-start] = '\0';
 
       *stringp = end+strlen(delim);
@@ -103,6 +143,41 @@ const char *Util_StrSep(const char **stringp, const char *delim)
    @history 
  
    @endhistory 
+   @var     before
+   @vdesc   String before seperator
+   @vtype   char **
+   @vio     out
+   @vcomment 
+ 
+   @endvar 
+   @var     after
+   @vdesc   String after seperator
+   @vtype   char **
+   @vio     out
+   @vcomment 
+ 
+   @endvar 
+   @var     string
+   @vdesc   String to seperate
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     sep
+   @vdesc   String seperator
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+
+   @returntype int
+   @returndesc
+   0 - success
+   1 - seperator not found
+   2 - out of memory
+   @endreturndesc
 
 @@*/
 int Util_SplitString(char **before, char **after, const char *string, const char *sep)
@@ -167,7 +242,18 @@ int Util_SplitString(char **before, char **after, const char *string, const char
    @history 
  
    @endhistory 
+   @var     s
+   @vdesc   string to be duplicated
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
 
+   @returntype char *
+   @returndesc
+   the duplicate string.
+   @endreturndesc
 @@*/
 char *Util_Strdup(const char *s) 
 {
@@ -193,7 +279,27 @@ char *Util_Strdup(const char *s)
    @hdate Wed Oct 13 15:30:57 1999 @hauthor Tom Goodale
    @hdesc Checks the length of the two string first. 
    @endhistory 
+   @var     string1
+   @vdesc   First string in comparison
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     string2
+   @vdesc   Second string in comparison
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
 
+   @returntype int
+   @returndesc
+   +ve - string1 > string2
+   0   - string1 = string2
+   -ve - string1 < string2
+   @endreturndesc
 @@*/
 int Util_StrCmpi(const char *string1, const char *string2)
 {
@@ -226,10 +332,10 @@ int Util_StrCmpi(const char *string1, const char *string2)
 
  /*@
    @routine    Util_SplitFilename
-   @date       Wed Jan 20 10:14:00 1999
-   @author     Tom Goodale
+   @date       Wed Oct 4 10:14:00 2000
+   @author     Gabrielle Allen
    @desc 
-   Splits a string into two parts at the given seperator.
+   Splits a filename into its directory and basic filename parts.
    Assigns memory for the two resulting strings, so this should be freed 
    when no longer needed.
    @enddesc 
@@ -238,7 +344,33 @@ int Util_StrCmpi(const char *string1, const char *string2)
    @history 
  
    @endhistory 
+   @var     dir
+   @vdesc   The directory part
+   @vtype   char **
+   @vio     out
+   @vcomment 
+ 
+   @endvar 
+   @var     file
+   @vdesc   The file part
+   @vtype   char **
+   @vio     out
+   @vcomment 
+ 
+   @endvar 
+   @var     string
+   @vdesc   The string to split
+   @vtype   const char *
+   @vio     out
+   @vcomment 
+ 
+   @endvar 
 
+   @returntype int
+   @returndesc
+   0  - success
+   -1 - out of memory
+   @endreturndesc
 @@*/
 int Util_SplitFilename(char **dir, char **file, const char *string)
 {
@@ -268,6 +400,11 @@ int Util_SplitFilename(char **dir, char **file, const char *string)
   
   return retval;
 }
+
+
+/********************************************************************
+ *********************     Local Routines   *************************
+ ********************************************************************/
 
 
 

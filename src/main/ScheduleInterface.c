@@ -196,7 +196,32 @@ static cTimerData *timerinfo = NULL;
    @history 
  
    @endhistory 
+   @var     function
+   @vdesc   pointer to function
+   @vtype   void *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     fdata
+   @vdesc   data about the function
+   @vtype   cFunctionData *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     data
+   @vdesc   Data to be passed to the function
+   @vtype   void *
+   @vio     inout
+   @vcomment 
+ 
+   @endvar 
 
+   @returntype int
+   @returndesc 
+   0 - didn't synchronise
+   @endreturndesc
 @@*/
 int CCTK_CallFunction(void *function, 
                       cFunctionData *fdata, 
@@ -254,7 +279,124 @@ int CCTK_CallFunction(void *function,
    @history 
  
    @endhistory 
+   @var     function
+   @vdesc   function to be scheduled
+   @vtype   void *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     name
+   @vdesc   name of function to be scheduled
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     thorn
+   @vdesc   name of thorn providing function to be scheduled
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     implementation
+   @vdesc   name of implementation thorn belongs to
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     description
+   @vdesc   desciption of function to be scheduled
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     where
+   @vdesc   where to schedule the function
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     language
+   @vdesc   language of function to be scheduled
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     n_mem_groups
+   @vdesc   Number of groups needing memory switched on during this function
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     n_comm_groups
+   @vdesc   Number of groups needing communication switched on during this function
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     n_trigger_groups
+   @vdesc   Number of groups to trigger this function on
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     n_sync_groups
+   @vdesc   Number of groups needing synchronisation after this function
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     n_options
+   @vdesc   Number of options for this schedule block
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     n_before
+   @vdesc   Number of functions/groups to schedule before
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     n_after
+   @vdesc   Number of functions/groups to schedule after
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     n_while
+   @vdesc   Number of vars to schedule while
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar
+   @var     ...
+   @vdesc   remaining options
+   @vtype   multiple const char *
+   @vio     in
+   @vcomment 
+   This should have as many items as the sum of the above n_* options
+   @endvar 
 
+   @returntype int
+   @returndesc 
+   Return val of DoScheduleFunction or
+   -1 - memory failure
+   @endreturndesc
 @@*/
 int CCTKi_ScheduleFunction(void *function,
                            const char *name,
@@ -320,7 +462,110 @@ int CCTKi_ScheduleFunction(void *function,
    @history 
  
    @endhistory 
+   @var     name
+   @vdesc   name of group to be scheduled
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     thorn
+   @vdesc   name of thorn providing group to be scheduled
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     implementation
+   @vdesc   name of implementation group belongs to
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     description
+   @vdesc   desciption of group to be scheduled
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     where
+   @vdesc   where to schedule the group
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     n_mem_groups
+   @vdesc   Number of groups needing memory switched on during this function
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     n_comm_groups
+   @vdesc   Number of groups needing communication switched on during this function
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     n_trigger_groups
+   @vdesc   Number of groups to trigger this function on
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     n_sync_groups
+   @vdesc   Number of groups needing synchronisation after this function
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     n_options
+   @vdesc   Number of options for this schedule block
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     n_before
+   @vdesc   Number of functions/groups to schedule before
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     n_after
+   @vdesc   Number of functions/groups to schedule after
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     n_while
+   @vdesc   Number of vars to schedule while
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar
+   @var     ...
+   @vdesc   remaining options
+   @vtype   multiple const char *
+   @vio     in
+   @vcomment 
+   This should have as many items as the sum of the above n_* options
+   @endvar 
 
+   @returntype int
+   @returndesc 
+   Return val of DoScheduleGroup or
+   -1 - memory failure
+   @endreturndesc
 @@*/
 int CCTKi_ScheduleGroup(const char *name,
                         const char *thorn,
@@ -384,7 +629,18 @@ int CCTKi_ScheduleGroup(const char *name,
    @history 
  
    @endhistory 
-
+   @var     group
+   @vdesc   group name
+   @vtype   const char * 
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @returntype int
+   @returndesc 
+   Group index or
+   -1 - memory failure
+   @endreturndesc
 @@*/
 int CCTKi_ScheduleGroupStorage(const char *group)
 {
@@ -425,7 +681,18 @@ int CCTKi_ScheduleGroupStorage(const char *group)
    @history 
  
    @endhistory 
-
+   @var     group
+   @vdesc   group name
+   @vtype   const char * 
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @returntype int
+   @returndesc 
+   Group index or
+   -1 - memory failure
+   @endreturndesc
 @@*/
 int CCTKi_ScheduleGroupComm(const char *group)
 {
@@ -455,7 +722,7 @@ int CCTKi_ScheduleGroupComm(const char *group)
 
 
  /*@@
-   @routine    CCTK_ScheduleTraveres
+   @routine    CCTK_ScheduleTraverse
    @date       Tue Apr  4 08:05:27 2000
    @author     Tom Goodale
    @desc 
@@ -466,7 +733,33 @@ int CCTKi_ScheduleGroupComm(const char *group)
    @history 
  
    @endhistory 
+   @var     where
+   @vdesc   Schedule point
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     GH
+   @vdesc   GH data
+   @vtype   void *
+   @vio     inout
+   @vcomment 
+ 
+   @endvar 
+   @var     CallFunction
+   @vdesc   Function called to call a function
+   @vtype   int (*)(void *, cFubctionData, void *)
+   @vio     in
+   @vcomment 
+   Set to NULL to use the default
+   @endvar 
 
+   @returntype int
+   @returndesc 
+   0 - success
+   1 - memory failure
+   @endreturndesc
 @@*/
 int CCTK_ScheduleTraverse(const char *where, 
                           void *GH,   
@@ -544,7 +837,18 @@ int CCTK_ScheduleTraverse(const char *where,
    @history 
  
    @endhistory 
+   @var     GH
+   @vdesc   GH data
+   @vtype   void *
+   @vio     inout
+   @vcomment 
+ 
+   @endvar 
 
+   @returntype int
+   @returndesc 
+   0 - success
+   @endreturndesc
 @@*/
 int CCTKi_ScheduleGHInit(void *GH)
 {
@@ -575,7 +879,18 @@ int CCTKi_ScheduleGHInit(void *GH)
    @history 
  
    @endhistory 
+   @var     where
+   @vdesc   Schedule point
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
 
+   @returntype int
+   @returndesc 
+   0 - success
+   @endreturndesc
 @@*/
 int CCTK_SchedulePrint(const char *where)
 {
@@ -633,6 +948,31 @@ int CCTK_SchedulePrint(const char *where)
   return 0;
 }
 
+/*@@
+   @routine    CCTK_SchedulePrintTimes
+   @date       Fri Sep 17 21:52:44 1999
+   @author     Tom Goodale
+   @desc 
+   Prints out the schedule timings.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+   @var     where
+   @vdesc   Schedule point
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+
+   @returntype int
+   @returndesc 
+   0 - success
+   @endreturndesc
+@@*/
 int CCTK_SchedulePrintTimes(const char *where)
 {
   t_sched_data data;
@@ -702,7 +1042,18 @@ int CCTK_SchedulePrintTimes(const char *where)
    @history 
  
    @endhistory 
+   @var     sval
+   @vdesc   Language
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
 
+   @returntype cLanguage
+   @returndesc 
+   The language
+   @endreturndesc
 @@*/
 cLanguage CCTK_TranslateLanguage(const char *sval)
 {
@@ -741,7 +1092,32 @@ cLanguage CCTK_TranslateLanguage(const char *sval)
    @history 
  
    @endhistory 
+   @var     where
+   @vdesc   Schedule point
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     GH
+   @vdesc   GH data
+   @vtype   void *
+   @vio     inout
+   @vcomment 
+ 
+   @endvar 
+   @var     CallFunction
+   @vdesc   Function called to call a function
+   @vtype   int (*)(void *, cFubctionData, void *)
+   @vio     in
+   @vcomment 
+   Set to NULL to use the default
+   @endvar 
 
+   @returntype int
+   @returndesc 
+   0 - success
+   @endreturndesc
 @@*/
 
 static int ScheduleTraverse(const char *where, 
@@ -774,15 +1150,12 @@ static int ScheduleTraverse(const char *where,
 
   calling_function = CCTKi_ScheduleCallFunction;
   
-  CCTKi_DoScheduleTraverse
-    (
-     where,
+  CCTKi_DoScheduleTraverse(where,
      (int (*)(void *, void *))               CCTKi_ScheduleCallEntry, 
      (int (*)(void *, void *))               CCTKi_ScheduleCallExit, 
      (int  (*)(int, char **, void *, void *))CCTKi_ScheduleCallWhile, 
      (int (*)(void *, void *, void *))       calling_function, 
-     (void *)&data
-     );
+     (void *)&data);
 
   return 0;
 }
@@ -799,7 +1172,81 @@ static int ScheduleTraverse(const char *where,
    @history 
  
    @endhistory 
+   @var     description
+   @vdesc   desciption of function to be scheduled
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     language
+   @vdesc   language of function to be scheduled
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     thorn
+   @vdesc   name of thorn providing function to be scheduled
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     implementation
+   @vdesc   name of implementation thorn belongs to
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     n_mem_groups
+   @vdesc   Number of groups needing memory switched on during this function
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     n_comm_groups
+   @vdesc   Number of groups needing communication switched on during this function
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     n_trigger_groups
+   @vdesc   Number of groups to trigger this function on
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     n_sync_groups
+   @vdesc   Number of groups needing synchronisation after this function
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     n_options
+   @vdesc   Number of options for this schedule block
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     ap
+   @vdesc   options
+   @vtype   va_list of multiple const char *
+   @vio     inout
+   @vcomment 
+   This should have as many items as the sum of the above n_* options
+   @endvar 
 
+   @returntype t_attribute
+   @returndesc 
+   The attribute
+   @endreturndesc
 @@*/
 static t_attribute *CreateAttribute(const char *description, 
                                     const char *language, 
@@ -897,7 +1344,39 @@ static t_attribute *CreateAttribute(const char *description,
    @history 
  
    @endhistory 
+   @var     n_before
+   @vdesc   Number of functions/groups to schedule before
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     n_after
+   @vdesc   Number of functions/groups to schedule after
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     n_while
+   @vdesc   Number of vars to schedule while
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar
+   @var     ap
+   @vdesc   options
+   @vtype   va_list of multiple const char *
+   @vio     inout
+   @vcomment 
+   This should have as many items as the sum of the above n_* options
+   @endvar 
 
+   @returntype t_sched_modifier *
+   @returndesc 
+   the schedule modifier
+   @endreturndesc
 @@*/
 static t_sched_modifier *CreateModifiers(int n_before, 
                                          int n_after, 
@@ -926,7 +1405,32 @@ static t_sched_modifier *CreateModifiers(int n_before,
    @history 
  
    @endhistory 
+   @var     n_items
+   @vdesc   number of items on the list
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     array
+   @vdesc   array of indices
+   @vtype   int *
+   @vio     out
+   @vcomment 
+ 
+   @endvar 
+   @var     ap
+   @vdesc   argument list
+   @vtype   va_list of const char *
+   @vio     inout
+   @vcomment 
+ 
+   @endvar 
 
+   @returntype int
+   @returndesc 
+   0 - success
+   @endreturndesc
 @@*/
 static int CreateGroupIndexList(int n_items, int *array, va_list *ap)
 {
@@ -957,7 +1461,32 @@ static int CreateGroupIndexList(int n_items, int *array, va_list *ap)
    @history 
  
    @endhistory 
+   @var     n_items
+   @vdesc   number of items on the list
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     attribute
+   @vdesc   attribute list
+   @vtype   t_attribute *
+   @vio     inout
+   @vcomment 
+ 
+   @endvar 
+   @var     ap
+   @vdesc   argument list
+   @vtype   va_list of const char *
+   @vio     inout
+   @vcomment 
+ 
+   @endvar 
 
+   @returntype int
+   @returndesc 
+   0 - success
+   @endreturndesc
 @@*/
 static int ParseOptionList(int n_items, 
                            t_attribute *attribute, 
@@ -988,7 +1517,18 @@ static int ParseOptionList(int n_items,
    @history 
  
    @endhistory 
+   @var     attribute
+   @vdesc   option attribute
+   @vtype   t_attribute *
+   @vio     out
+   @vcomment 
+ 
+   @endvar 
 
+   @returntype int
+   @returndesc 
+   0 - success
+   @endreturndesc
 @@*/
 int InitialiseOptionList(t_attribute *attribute)
 {
@@ -1009,7 +1549,25 @@ int InitialiseOptionList(t_attribute *attribute)
    @history 
  
    @endhistory 
+   @var     attribute
+   @vdesc   option attribute
+   @vtype   t_attribute *
+   @vio     out
+   @vcomment 
+ 
+   @endvar 
+   @var     option
+   @vdesc   Option
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
 
+   @returntype int
+   @returndesc 
+   0 - success
+   @endreturndesc
 @@*/
 static int ParseOption(t_attribute *attribute, 
                        const char *option)
@@ -1040,6 +1598,39 @@ static int ParseOption(t_attribute *attribute,
    @history 
  
    @endhistory 
+   @var     modifier
+   @vdesc   base schedule modifier
+   @vtype   t_sched_modifier
+   @vio     inout
+   @vcomment 
+   This is a list which gets expanded by this function
+   @endvar 
+   @var     type
+   @vdesc   modifier type
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+   before, after, while 
+   @endvar 
+   @var     n_items
+   @vdesc   Number of items on list
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     ap
+   @vdesc   argument list
+   @vtype   va_list of const char *
+   @vio     inout
+   @vcomment 
+ 
+   @endvar 
+
+   @returntype t_sched_modifier *
+   @returndesc 
+   modifier list
+   @endreturndesc
 
 @@*/
 static t_sched_modifier *CreateTypedModifier(t_sched_modifier *modifier,
@@ -1074,7 +1665,18 @@ static t_sched_modifier *CreateTypedModifier(t_sched_modifier *modifier,
    @history 
  
    @endhistory 
+   @var     where
+   @vdesc   schedule point
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
 
+   @returntype cFunctionType
+   @returndesc 
+   The function type
+   @endreturndesc
 @@*/
 static cFunctionType TranslateFunctionType(const char *where)
 {
@@ -1128,7 +1730,19 @@ static cFunctionType TranslateFunctionType(const char *where)
    @history 
  
    @endhistory 
+   @var     where
+   @vdesc   Schedule point
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
 
+   @returntype int
+   @returndesc 
+   return of DoScheduleTravers or
+   0 - where is NULL
+   @endreturndesc
 @@*/
 static int SchedulePrint(const char *where)
 {
@@ -1141,15 +1755,12 @@ static int SchedulePrint(const char *where)
 
   if(where)
   {
-    retcode = CCTKi_DoScheduleTraverse
-      (
-       where,
+    retcode = CCTKi_DoScheduleTraverse(where,
        (int (*)(void *, void *))               CCTKi_SchedulePrintEntry, 
        (int (*)(void *, void *))               CCTKi_SchedulePrintExit, 
        (int  (*)(int, char **, void *, void *))CCTKi_SchedulePrintWhile, 
        (int (*)(void *, void *, void *))       CCTKi_SchedulePrintFunction, 
-       (void *)&data
-       );
+       (void *)&data);
   }
   else
   {
@@ -1171,7 +1782,26 @@ static int SchedulePrint(const char *where)
    @history 
  
    @endhistory 
+   @var     where
+   @vdesc   Schedule point
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     data
+   @vdesc   schedule data
+   @vtype   t_sched_data
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
 
+   @returntype int
+   @returndesc 
+   return of DoScheduleTravers or
+   0 - where is NULL
+   @endreturndesc
 @@*/
 static int SchedulePrintTimes(const char *where, t_sched_data *data)
 {
@@ -1179,15 +1809,12 @@ static int SchedulePrintTimes(const char *where, t_sched_data *data)
 
   if(where)
   {
-    retcode = CCTKi_DoScheduleTraverse
-      (
-       where,
+    retcode = CCTKi_DoScheduleTraverse(where,
        (int (*)(void *, void *))               CCTKi_SchedulePrintTimesEntry, 
        (int (*)(void *, void *))               CCTKi_SchedulePrintTimesExit, 
        (int  (*)(int, char **, void *, void *))CCTKi_SchedulePrintTimesWhile, 
        (int (*)(void *, void *, void *))       CCTKi_SchedulePrintTimesFunction, 
-       (void *)data
-       );
+       (void *)data);
   }
   else
   {

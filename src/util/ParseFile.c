@@ -7,6 +7,7 @@
    to a user-supplied subroutine.
    Currently taken from the old cactus ones and slightly modifed.
    @enddesc 
+   @version $Header$
  @@*/
 
 /*#define DEBUG*/
@@ -14,15 +15,36 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <assert.h>
 
 #include "cctk_Flesh.h"
+
+#ifdef HAVE_ASSERT_H
+#include <assert.h>
+#endif
 
 static char *rcsid = "$Header$";
 
 CCTK_FILEVERSION(util_ParseFile_c)
 
-/* Local definitions and functions */
+/********************************************************************
+ *********************     Local Data Types   ***********************
+ ********************************************************************/
+
+/********************************************************************
+ ********************* Local Routine Prototypes *********************
+ ********************************************************************/
+
+static void CheckBuf(int, int);
+static void removeSpaces(char *stripMe);
+
+/********************************************************************
+ ********************* Other Routine Prototypes *********************
+ ********************************************************************/
+
+/********************************************************************
+ *********************     Local Data   *****************************
+ ********************************************************************/
+
 #ifndef WIN32
 #define BOLDON   "\033[1m"
 #define BOLDOFF  "\033[0m"
@@ -33,41 +55,63 @@ CCTK_FILEVERSION(util_ParseFile_c)
 
 #define BUF_SZ 1024
 
-static void CheckBuf(int, int);
-static void removeSpaces(char *stripMe);
-
 /* line number */
 static int lineno = 1;
 
+/********************************************************************
+ *********************     External Routines   **********************
+ ********************************************************************/
 
-/*@@
-  @routine ParseFile
-  @author Paul Walker
-  @desc 
-  This routine actually parses the parameter file. The
-  syntax we allow is
-  <ul>
-    <li>a = b
-        <li>a,b,c = d,e,f
-        <li># rest of the line is ignored
-        <li>x = "string value"
-  </ul>
-  So it is easy to parse
-  <p>
-  We go through the file looking for stuff and then set
-  it in the global database using calls to @seeroutine 
-  setIntVal, @seeroutine setFloatVal, @seeroutine setDoubleVal
-  and @seeroutine setStringVal.
-  @enddesc
-  @history
-  @hdate Tue Jan 12 16:41:36 1999 @hauthor Tom Goodale
-  @hdesc Moved to CCTK.
-         Changed to pass data to arbitrary function.
-         Changed to take a file descriptor rather than a filename.
-  @endhistory
-  @@*/
+ /*@@
+   @routine ParseFile
+   @author Paul Walker
+   @desc 
+   This routine actually parses the parameter file. The
+   syntax we allow is
+   <ul>
+     <li>a = b
+         <li>a,b,c = d,e,f
+         <li># rest of the line is ignored
+         <li>x = "string value"
+   </ul>
+   So it is easy to parse
+   <p>
+   We go through the file looking for stuff and then set
+   it in the global database using calls to the passed in set_function.
+   @enddesc
+   @history
+   @hdate Tue Jan 12 16:41:36 1999 @hauthor Tom Goodale
+   @hdesc Moved to CCTK.
+          Changed to pass data to arbitrary function.
+          Changed to take a file descriptor rather than a filename.
+   @endhistory
+   @var     ifp
+   @vdesc   The filestream to parse
+   @vtype   FILE *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     set_function
+   @vdesc   The function to call to set the value of a parameter
+   @vtype   int (*)(const char *, const char *)
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     ConfigData
+   @vdesc   Flesh configuration data
+   @vtype   tFleshConfig *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
 
-
+   @returntype int
+   @returndesc
+   0 - success
+   @endreturndesc
+@@*/
 int ParseFile(FILE *ifp, 
               int (*set_function)(const char *, const char *), 
 	      tFleshConfig *ConfigData) 
@@ -373,7 +417,7 @@ int ParseFile(FILE *ifp,
               printf("Setting sub-token %s -> %s\n",
                      subtoken, subvalue);
 #endif
-              /* Now remeber we are sitting on a comma
+              /* Now remember we are sitting on a comma
                * in both our input strings, so bump by one
                */
               pv ++; pt ++;
@@ -411,18 +455,43 @@ int ParseFile(FILE *ifp,
   return 0;
 }
 
-/*@@
-  @routine CheckBuf
-  @author Paul Walker
-  @desc
-  A simple description and warning message in case of
-  a fixed parse buffer overflow.
-  @enddesc
-  @@*/
+/********************************************************************
+ *********************     Local Routines   *************************
+ ********************************************************************/
+
+ /*@@
+   @routine CheckBuf
+   @author Paul Walker
+   @desc
+   A simple description and warning message in case of
+   a fixed parse buffer overflow.
+   @enddesc
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+   @var     p
+   @vdesc   buffer location
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     l
+   @vdesc   Line number
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+
+@@*/
 
 static void CheckBuf(int p, int l) 
 {
-  if (p >= BUF_SZ) {
+  if (p >= BUF_SZ) 
+  {
     fprintf(stderr,"WARNING: Parser buffer overflow on line %d\n",
             l);
     fprintf(stderr,"This indicates either an incorrect parm file or\n");
@@ -435,27 +504,48 @@ static void CheckBuf(int p, int l)
 }
 
   
-/*@@
-  @routine removeSpaces
-  @author Paul Walker
-  @desc
-  removes the spaces from a char * <b>in place</b>. Beware
-  that this function will change the input value and if you
-  want to keep a copy you have to do so yourself!
-  @enddesc
-  @@*/
+ /*@@
+   @routine removeSpaces
+   @author Paul Walker
+   @desc
+   removes the spaces from a char * <b>in place</b>. Beware
+   that this function will change the input value and if you
+   want to keep a copy you have to do so yourself!
+   @enddesc
+   @calls     
+   @calledby   
+   @history 
+   
+   @endvar 
+   @var     stripMe
+   @vdesc   String to strip
+   @vtype   char *
+   @vio     inout
+   @vcomment 
+ 
+   @endvar 
 
+@@*/
 static void removeSpaces(char *stripMe) 
 {
-        char *s;
-        unsigned int i,j;
-        s = (char *)malloc((strlen(stripMe)+2)*sizeof(char));
-        strcpy(s,stripMe);
-        for (i=0,j=0;i<strlen(s);i++)
-                if (s[i] != ' ' && s[i] != '\t' && s[i] != '\n')
-                        stripMe[j++] = s[i];
-        stripMe[j] = '\0';
-        free(s);
+  char *s;
+  unsigned int i,j;
+  s = (char *)malloc((strlen(stripMe)+2)*sizeof(char));
+
+  if(s)
+  {
+    strcpy(s,stripMe);
+    for (i=0,j=0;i<strlen(s);i++)
+    {
+      if (s[i] != ' ' && s[i] != '\t' && s[i] != '\n')
+      {
+        stripMe[j++] = s[i];
+      }
+      stripMe[j] = '\0';
+    }
+  }
+
+  free(s);
 }
 
 

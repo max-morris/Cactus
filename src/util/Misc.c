@@ -10,12 +10,16 @@
 
 /*#define DEBUG_MISC*/
 
+#include "cctk_Config.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
 #include <stdarg.h>
+#ifdef HAVE_ASSERT_H
 #include <assert.h>
+#endif
 #include <limits.h>
 #include <math.h>
 #include <float.h>
@@ -23,7 +27,6 @@
 #include "cctk_GNU.h"
 
 #include "cctk_Flesh.h"
-#include "cctk_Config.h"
 #include "cctk_Misc.h"
 #include "cctk_FortranString.h"
 #include "cctk_WarnLevel.h"
@@ -33,11 +36,35 @@ static char *rcsid = "$Header$";
 CCTK_FILEVERSION(util_Misc_c)
 
 
+/********************************************************************
+ *********************     Local Data Types   ***********************
+ ********************************************************************/
+
+/********************************************************************
+ ********************* Local Routine Prototypes *********************
+ ********************************************************************/
+
 int CCTK_RegexMatch(const char *string, 
                     const char *pattern, 
                     const int nmatch,
                     regmatch_t *pmatch); 
 
+
+/********************************************************************
+ ********************* Other Routine Prototypes *********************
+ ********************************************************************/
+
+/********************************************************************
+ *********************     Local Data   *****************************
+ ********************************************************************/
+
+/********************************************************************
+ *********************     External Routines   **********************
+ ********************************************************************/
+
+/********************************************************************
+ *********************     Local Routines   *************************
+ ********************************************************************/
 
  /*@@
    @routine    CCTK_Equals
@@ -52,7 +79,26 @@ int CCTK_RegexMatch(const char *string,
    @history 
  
    @endhistory 
+   @var     string1
+   @vdesc   First string in comparison
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     string2
+   @vdesc   Second string in comparison
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
 
+   @returntype int
+   @returndesc
+   1 - equal
+   0 - not equal
+   @endreturndesc
 @@*/
 int CCTK_Equals(const char *string1, const char *string2)
 {
@@ -113,14 +159,37 @@ int CCTK_FCALL CCTK_FNAME(CCTK_Equals)
 }
 
 
-/*@@
-  @routine Util_NullTerminateString
-  @author Paul Walker
-  @desc 
-  Null terminates a fortran string. Remember to free
-  what it returns...
-  @enddesc
+ /*@@
+   @routine Util_NullTerminateString
+   @author Paul Walker
+   @desc 
+   Null terminates a fortran string. Remember to free
+   what it returns...
+   @enddesc
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+   @var     instring
+   @vdesc   String to null terminate
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     len
+   @vdesc   Length of string to be null terminated
+   @vtype   unsigned int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
 
+   @returntype char *
+   @returndesc
+   The null terminated string.
+   @endreturndesc
 @@*/
 
 char *Util_NullTerminateString(const char *instring, unsigned int len) 
@@ -173,7 +242,33 @@ char *Util_NullTerminateString(const char *instring, unsigned int len)
    @history 
  
    @endhistory 
+   @var     string1
+   @vdesc   The string to search for
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     n_elements
+   @vdesc   The number of elements in the list
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     ...
+   @vdesc   List of strings to search.
+   @vtype   multiple const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
 
+   @returntype int
+   @returndesc
+   1 - In list
+   0 - Not in list
+   @endreturndesc
 @@*/
 int Util_InList(const char *string1, int n_elements, ...)
 {
@@ -219,7 +314,26 @@ int Util_InList(const char *string1, int n_elements, ...)
    @history 
  
    @endhistory 
+   @var     inval
+   @vdesc   The value to check
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     range
+   @vdesc   The range to look in
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
 
+   @returntype int
+   @returndesc
+   1 - in range
+   0 - not in range
+   @endreturndesc
 @@*/
 int Util_IntInRange(int inval, const char *range)
 {
@@ -345,7 +459,26 @@ int Util_IntInRange(int inval, const char *range)
    @history 
  
    @endhistory 
+   @var     inval
+   @vdesc   The value to check
+   @vtype   double
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     range
+   @vdesc   The range to look in
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
 
+   @returntype int
+   @returndesc
+   1 - in range
+   0 - not in range
+   @endreturndesc
 @@*/
 int Util_DoubleInRange(double inval, const char *range)
 {
@@ -476,7 +609,34 @@ int Util_DoubleInRange(double inval, const char *range)
    @history 
  
    @endhistory 
+   @var     inval
+   @vdesc   The value to check
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     n_elements
+   @vdesc   The number of elements in the list
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
 
+   @var     ...
+   @vdesc   The list of ranges to look in
+   @vtype   multiple const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+
+   @returntype int
+   @returndesc
+   1 - in range in list
+   0 - not in range in list
+   @endreturndesc
 @@*/
 int Util_IntInRangeList(int inval, int n_elements, ...)
 {
@@ -521,7 +681,34 @@ int Util_IntInRangeList(int inval, int n_elements, ...)
    @history 
  
    @endhistory 
+   @var     inval
+   @vdesc   The value to check
+   @vtype   double
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     n_elements
+   @vdesc   The number of elements in the list
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
 
+   @var     ...
+   @vdesc   The list of ranges to look in
+   @vtype   multiple const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+
+   @returntype int
+   @returndesc
+   1 - in range in list
+   0 - not in range in list
+   @endreturndesc
 @@*/
 int Util_DoubleInRangeList(double inval, int n_elements, ...)
 {
@@ -567,7 +754,41 @@ int Util_DoubleInRangeList(double inval, int n_elements, ...)
    @history 
  
    @endhistory 
+   @var     data
+   @vdesc   Pointer to the value to set
+   @vtype   CCTK_REAL *
+   @vio     out
+   @vcomment 
+ 
+   @endvar 
+   @var     value
+   @vdesc   The value to check
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     n_elements
+   @vdesc   The number of elements in the list
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
 
+   @var     ...
+   @vdesc   The list of ranges to look in
+   @vtype   multiple const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+
+   @returntype int
+   @returndesc
+   1 - in range in list
+   0 - not in range in list
+   @endreturndesc
 @@*/
 int CCTK_SetDoubleInRangeList(CCTK_REAL *data, const char *value, 
                               int n_elements, ...)
@@ -627,7 +848,7 @@ int CCTK_SetDoubleInRangeList(CCTK_REAL *data, const char *value,
    @date       Thu Jan 21 10:27:26 1999
    @author     Tom Goodale
    @desc 
-   Sets the value of a integer if the desired value is in one of
+   Sets the value of an integer if the desired value is in one of
    the specified ranges.   
    @enddesc 
    @calls     
@@ -635,7 +856,41 @@ int CCTK_SetDoubleInRangeList(CCTK_REAL *data, const char *value,
    @history 
  
    @endhistory 
+   @var     data
+   @vdesc   Pointer to the value to set
+   @vtype   CCTK_INT *
+   @vio     out
+   @vcomment 
+ 
+   @endvar 
+   @var     value
+   @vdesc   The value to check
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     n_elements
+   @vdesc   The number of elements in the list
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
 
+   @var     ...
+   @vdesc   The list of ranges to look in
+   @vtype   multiple const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+
+   @returntype int
+   @returndesc
+   1 - in range in list
+   0 - not in range in list
+   @endreturndesc
 @@*/
 int CCTK_SetIntInRangeList(CCTK_INT *data, const char *value, 
                            int n_elements, ...)
@@ -687,7 +942,41 @@ int CCTK_SetIntInRangeList(CCTK_INT *data, const char *value,
    @history 
  
    @endhistory 
+   @var     data
+   @vdesc   Pointer to the value to set
+   @vtype   char **
+   @vio     out
+   @vcomment 
+ 
+   @endvar 
+   @var     value
+   @vdesc   The value to check
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     n_elements
+   @vdesc   The number of elements in the list
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
 
+   @var     ...
+   @vdesc   The list of ranges to look in
+   @vtype   multiple const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+
+   @returntype int
+   @returndesc
+   1 - in range in list
+   0 - not in range in list
+   @endreturndesc
 @@*/
 int CCTK_SetKeywordInRangeList(char **data, const char *value, 
                                int n_elements, ...)
@@ -743,7 +1032,41 @@ int CCTK_SetKeywordInRangeList(char **data, const char *value,
    @history 
  
    @endhistory 
+   @var     data
+   @vdesc   Pointer to the value to set
+   @vtype   char **
+   @vio     out
+   @vcomment 
+ 
+   @endvar 
+   @var     value
+   @vdesc   The value to check
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     n_elements
+   @vdesc   The number of elements in the list
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
 
+   @var     ...
+   @vdesc   The list of ranges to look in
+   @vtype   multiple const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+
+   @returntype int
+   @returndesc
+   1 - in range in list
+   0 - not in range in list
+   @endreturndesc
 @@*/
 int CCTK_SetStringInRegexList(char **data, const char *value, 
                                int n_elements, ...)
@@ -787,7 +1110,26 @@ int CCTK_SetStringInRegexList(char **data, const char *value,
    @history 
  
    @endhistory 
+   @var     data
+   @vdesc   Pointer to the value to set
+   @vtype   char **
+   @vio     out
+   @vcomment 
+ 
+   @endvar 
+   @var     value
+   @vdesc   The value to check
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
 
+   @returntype int
+   @returndesc
+   0  - success
+   -1 - out of memory
+   @endreturndesc
 @@*/
 int CCTK_SetString(char **data, const char *value)
 {
@@ -810,30 +1152,6 @@ int CCTK_SetString(char **data, const char *value)
   return retval;
 }
 
- /*@@
-   @routine    CCTK_PrintString
-   @date       Fri Apr 1 1999
-   @author     Gabrielle Allen
-   @desc
-   Prints the value of a string (this is for fortran)
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
-
-@@*/
-void CCTK_PrintString(char *data)
-{
-  printf("%s\n",data);
-}
-
-void CCTK_FCALL CCTK_FNAME(CCTK_PrintString)
-     (char **arg1)
-{
-  CCTK_PrintString(*arg1);
-}
 
  /*@@
    @routine    CCTK_SetBoolean
@@ -848,7 +1166,26 @@ void CCTK_FCALL CCTK_FNAME(CCTK_PrintString)
    @history 
  
    @endhistory 
+   @var     data
+   @vdesc   Pointer to the value to set
+   @vtype   CCTK_INT *
+   @vio     out
+   @vcomment 
+ 
+   @endvar 
+   @var     value
+   @vdesc   The value to check
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
 
+   @returntype int
+   @returndesc
+   0  - success
+   -1 - out of memory
+   @endreturndesc
 @@*/
 int CCTK_SetBoolean(CCTK_INT *data, const char *value)
 {
@@ -889,7 +1226,40 @@ int CCTK_SetBoolean(CCTK_INT *data, const char *value)
    @history 
  
    @endhistory 
+   @var     string
+   @vdesc   String to match against
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     pattern
+   @vdesc   Regex pattern
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     nmatch
+   @vdesc   The size of the pmatch array
+   @vtype   const int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     pmatch
+   @vdesc   Array in which to place the matches
+   @vtype   regmatch_t
+   @vio     out
+   @vcomment 
+ 
+   @endvar 
 
+   @returntype int
+   @returndesc
+   1 - pattern matches
+   0 - pattern doesn't match
+   @endreturndesc
 @@*/
 
 int CCTK_RegexMatch(const char *string, 
@@ -897,20 +1267,61 @@ int CCTK_RegexMatch(const char *string,
                     const int nmatch,
                     regmatch_t *pmatch) 
 {
+  int retval;
   int status;
   regex_t re;
   
-  if (regcomp(&re, pattern, REG_EXTENDED) != 0) 
+  if (regcomp(&re, pattern, REG_EXTENDED) == 0) 
   {
-    return(0);      /* report error */
+    status = regexec(&re, string, (size_t)nmatch, pmatch, 0);
+    regfree(&re);
+    if (status != 0) 
+    {
+      retval = 0;      /* report error */
+    }
+    else
+    {
+      retval = 1;
+    }
   }
-  status = regexec(&re, string, (size_t)nmatch, pmatch, 0);
-  regfree(&re);
-  if (status != 0) 
+  else
   {
-    return(0);      /* report error */
+    retval = 0;
   }
-  return(1);
+
+  return retval;
+}
+
+ /*@@
+   @routine    CCTK_PrintString
+   @date       Fri Apr 1 1999
+   @author     Gabrielle Allen
+   @desc
+   Prints the value of a string (this is for fortran)
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+   @var     data
+   @vdesc   string to print
+   @vtype   char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+
+@@*/
+void CCTK_PrintString(char *data)
+{
+  printf("%s\n",data);
+}
+
+void CCTK_FCALL CCTK_FNAME(CCTK_PrintString)
+     (char **arg1)
+{
+  CCTK_PrintString(*arg1);
 }
 
 
@@ -921,6 +1332,32 @@ int CCTK_RegexMatch(const char *string,
    @desc
    Change a C string into a Fortran string
    @enddesc
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+   @var     nchar
+   @vdesc   Number of characters in fortran string
+   @vtype   CCTK_INT *
+   @vio     out
+   @vcomment 
+ 
+   @endvar 
+   @var     cstring
+   @vdesc   C string to be converted
+   @vtype   char **
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     ONE_FORTSTRING_ARG
+   @vdesc   Fortran string
+   @vtype   FORTRAN string macro
+   @vio     out
+   @vcomment 
+ 
+   @endvar 
 @@*/
  
  

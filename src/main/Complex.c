@@ -5,6 +5,7 @@
    @desc 
    Complex variable stuff
    @enddesc 
+   @version $Header$
  @@*/
 
 #include <math.h>
@@ -16,6 +17,26 @@
 static char *rcsid = "$Header$";
 
 CCTK_FILEVERSION(main_Complex_c)
+
+/********************************************************************
+ *********************     Local Data Types   ***********************
+ ********************************************************************/
+
+/********************************************************************
+ ********************* Local Routine Prototypes *********************
+ ********************************************************************/
+
+/********************************************************************
+ ********************* Other Routine Prototypes *********************
+ ********************************************************************/
+
+/********************************************************************
+ *********************     Local Data   *****************************
+ ********************************************************************/
+
+/********************************************************************
+ *********************     External Routines   **********************
+ ********************************************************************/
 
  /*@@
    @routine    CCTK_Cmplx
@@ -29,7 +50,25 @@ CCTK_FILEVERSION(main_Complex_c)
    @history 
  
    @endhistory 
+   @var     Re
+   @vdesc   Real part
+   @vtype   CCTK_REAL
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     Im
+   @vdesc   Imaginary part
+   @vtype   CCTK_REAL
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
 
+   @returntype CCTK_COMPLEX
+   @returndesc 
+   The complex number
+   @endreturndesc
 @@*/
 CCTK_COMPLEX CCTK_Cmplx(CCTK_REAL Re, CCTK_REAL Im)
 {
@@ -53,7 +92,18 @@ CCTK_COMPLEX CCTK_Cmplx(CCTK_REAL Re, CCTK_REAL Im)
    @history 
  
    @endhistory 
+   @var     complex_number
+   @vdesc   The complex number
+   @vtype   CCTK_COMPLEX
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
 
+   @returntype CCTK_REAL
+   @returndesc 
+   The real part
+   @endreturndesc
 @@*/
 CCTK_REAL CCTK_CmplxReal(CCTK_COMPLEX complex_number)
 {
@@ -72,7 +122,18 @@ CCTK_REAL CCTK_CmplxReal(CCTK_COMPLEX complex_number)
    @history 
  
    @endhistory 
+   @var     complex_number
+   @vdesc   The complex number
+   @vtype   CCTK_COMPLEX
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
 
+   @returntype CCTK_REAL
+   @returndesc 
+   The imaginary part
+   @endreturndesc
 @@*/
 CCTK_REAL CCTK_CmplxImag(CCTK_COMPLEX complex_number)
 {
@@ -91,7 +152,18 @@ CCTK_REAL CCTK_CmplxImag(CCTK_COMPLEX complex_number)
    @history 
  
    @endhistory 
+   @var     in
+   @vdesc   The complex number
+   @vtype   CCTK_COMPLEX
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
 
+   @returntype CCTK_COMPLEX
+   @returndesc 
+   The complex conjugate
+   @endreturndesc
 @@*/
 CCTK_COMPLEX CCTK_CmplxConjg(CCTK_COMPLEX in)
 {
@@ -115,6 +187,18 @@ CCTK_COMPLEX CCTK_CmplxConjg(CCTK_COMPLEX in)
    @history 
  
    @endhistory 
+   @var     in
+   @vdesc   The complex number
+   @vtype   CCTK_COMPLEX
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+
+   @returntype CCTK_REAL
+   @returndesc 
+   The absolute value of the complex number
+   @endreturndesc
 
 @@*/
 CCTK_REAL CCTK_CmplxAbs(CCTK_COMPLEX in)
@@ -138,7 +222,25 @@ CCTK_REAL CCTK_CmplxAbs(CCTK_COMPLEX in)
    @history 
  
    @endhistory 
+   @var     a
+   @vdesc   First summand
+   @vtype   CCTK_COMPLEX
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     b
+   @vdesc   Second summand
+   @vtype   CCTK_COMPLEX
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
 
+   @returntype CCTK_COMPLEX
+   @returndesc 
+   The sum
+   @endreturndesc
 @@*/
 CCTK_COMPLEX CCTK_CmplxAdd(CCTK_COMPLEX a,CCTK_COMPLEX b)
 {
@@ -160,7 +262,25 @@ CCTK_COMPLEX CCTK_CmplxAdd(CCTK_COMPLEX a,CCTK_COMPLEX b)
    @history 
  
    @endhistory 
+   @var     a
+   @vdesc   First operand
+   @vtype   CCTK_COMPLEX
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     b
+   @vdesc   Second operand
+   @vtype   CCTK_COMPLEX
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
 
+   @returntype CCTK_COMPLEX
+   @returndesc 
+   The difference
+   @endreturndesc
 @@*/
 CCTK_COMPLEX CCTK_CmplxSub(CCTK_COMPLEX a,CCTK_COMPLEX b)
 {
@@ -182,7 +302,25 @@ CCTK_COMPLEX CCTK_CmplxSub(CCTK_COMPLEX a,CCTK_COMPLEX b)
    @history 
  
    @endhistory 
+   @var     a
+   @vdesc   First operand
+   @vtype   CCTK_COMPLEX
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     b
+   @vdesc   Second operand
+   @vtype   CCTK_COMPLEX
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
 
+   @returntype CCTK_COMPLEX
+   @returndesc 
+   The product
+   @endreturndesc
 @@*/
 CCTK_COMPLEX CCTK_CmplxMul(CCTK_COMPLEX a,CCTK_COMPLEX b)
 {
@@ -204,7 +342,25 @@ CCTK_COMPLEX CCTK_CmplxMul(CCTK_COMPLEX a,CCTK_COMPLEX b)
    @history 
  
    @endhistory 
+   @var     a
+   @vdesc   First operand
+   @vtype   CCTK_COMPLEX
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     b
+   @vdesc   Second operand
+   @vtype   CCTK_COMPLEX
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
 
+   @returntype CCTK_COMPLEX
+   @returndesc 
+   The quotient
+   @endreturndesc
 @@*/
 CCTK_COMPLEX CCTK_CmplxDiv(CCTK_COMPLEX a,CCTK_COMPLEX b)
 {
@@ -238,3 +394,8 @@ CCTK_CmplxLog
 CCTK_CmplxExp
 
 */
+
+/********************************************************************
+ *********************     Local Routines   *************************
+ ********************************************************************/
+

@@ -45,7 +45,7 @@ CCTK_FILEVERSION(main_CallStartupFunctions_c)
    @desc 
    
    @enddesc 
-   @calls     
+   @calls     CCTK_ScheduleTraverse
    @calledby   
    @history 
  

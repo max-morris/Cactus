@@ -5,6 +5,7 @@
    @desc 
    Functions to deal with IO registration
    @enddesc 
+   @version    $Header$
  @@*/
 
 /*#define DEBUG_IO*/
@@ -69,7 +70,6 @@ static int DummyTimeToOutput(cGH *GH, int var);
                i>0 = handle for method
    @endreturndesc
 
-   @version    $Header$
 @@*/
 
 int CCTK_RegisterIOMethod(const char *name)
@@ -473,7 +473,6 @@ int CactusDefaultOutputGH(cGH *GH)
    @returndesc
               -1    = No such IO method found
                0    = success
-   @endreturndesc
    @endreturndesc
 
    @version    $Header$
