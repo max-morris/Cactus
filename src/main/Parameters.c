@@ -177,9 +177,6 @@ int CCTK_RegexMatch (const char *string,
                      const int nmatch,
                      regmatch_t *pmatch);
 
-int STR_cmpi (const char *string1, const char *string2);
-#define STR_CMP(a,b) STR_cmpi (a, b)
-
 extern void CCTKi_SetParameterSetMask (int mask);
 
 /********************************************************************
@@ -1134,12 +1131,12 @@ static t_param *ParameterFind (const char *name,
       }
       else if (scope == SCOPE_ANY)
       {
-        if (thorn && ! STR_CMP (thorn, list->param->props->thorn))
+        if (thorn && ! Util_StrCmpi (thorn, list->param->props->thorn))
         {
           break;
         }
       }
-      else if (! STR_CMP (thorn, list->param->props->thorn) &&
+      else if (! Util_StrCmpi (thorn, list->param->props->thorn) &&
                list->param->props->scope == scope)
       {
         break;
@@ -1471,15 +1468,15 @@ static int ParameterGetScope (const char *scope)
   int retval;
 
 
-  if (! STR_CMP (scope, "GLOBAL"))
+  if (! Util_StrCmpi (scope, "GLOBAL"))
   {
     retval = SCOPE_GLOBAL;
   }
-  else if (! STR_CMP(scope, "RESTRICTED"))
+  else if (! Util_StrCmpi(scope, "RESTRICTED"))
   {
     retval = SCOPE_RESTRICTED;
   }
-  else if (! STR_CMP(scope, "PRIVATE"))
+  else if (! Util_StrCmpi(scope, "PRIVATE"))
   {
     retval = SCOPE_PRIVATE;
   }
@@ -1497,27 +1494,27 @@ static int ParameterGetType (const char *type)
   int retval;
 
 
-  if (! STR_CMP (type, "KEYWORD"))
+  if (! Util_StrCmpi (type, "KEYWORD"))
   {
     retval = PARAMETER_KEYWORD;
   }
-  else if (! STR_CMP (type, "STRING"))
+  else if (! Util_StrCmpi (type, "STRING"))
   {
     retval = PARAMETER_STRING;
   }
-  else if (! STR_CMP (type, "SENTENCE"))
+  else if (! Util_StrCmpi (type, "SENTENCE"))
   {
     retval = PARAMETER_SENTENCE;
   }
-  else if (! STR_CMP (type, "INT"))
+  else if (! Util_StrCmpi (type, "INT"))
   {
     retval = PARAMETER_INT;
   }
-  else if (! STR_CMP (type, "REAL"))
+  else if (! Util_StrCmpi (type, "REAL"))
   {
     retval = PARAMETER_REAL;
   }
-  else if (! STR_CMP (type, "BOOLEAN"))
+  else if (! Util_StrCmpi (type, "BOOLEAN"))
   {
     retval = PARAMETER_BOOLEAN;
   }
@@ -1633,7 +1630,7 @@ static int ParameterExtend (t_param *param,
     {
       lastnode = rangenode;
 
-      order = STR_CMP (range_origin, rangenode->origin);
+      order = Util_StrCmpi (range_origin, rangenode->origin);
 
       if (order <= 0)
       {
@@ -1951,7 +1948,7 @@ static int ParameterSetKeyword (t_param *param, const char *value)
     if (CCTK_IsThornActive (range->origin) ||
         CCTK_Equals (param->props->thorn, range->origin))
     {
-      if (!STR_CMP(value, range->range))
+      if (!Util_StrCmpi(value, range->range))
       {
         retval = CCTK_SetString (param->data, value);
         break;
