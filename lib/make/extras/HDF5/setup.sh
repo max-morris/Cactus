@@ -62,9 +62,9 @@ grep -qe '#define HAVE_LIBZ 1' ${HDF5_DIR}/include/H5config.h 2> /dev/null
 test_zlib=$?
 
 if [ $test_compress2 -eq 0 -o $test_zlib -eq 0 ] ; then
-   if test -z "$LIBZ_DIR" ; then
+   if test -z "$LIBZ_DIR" -a test -r /usr/lib/libz.a ; then
       echo "HDF5 library was compiled with libz, searching for libz.a ..."
-      CCTK_Search LIBZ_DIR "/usr/lib /usr/local/lib c:/packages/libz" libz.a
+      CCTK_Search LIBZ_DIR "/usr/local/lib c:/packages/libz" libz.a
       if test -z "$LIBZ_DIR" ; then
           echo "Unable to locate the library libz.a - please set LIBZ_DIR"
           exit 2
