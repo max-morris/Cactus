@@ -202,7 +202,7 @@ else
        fi
        if test "$LD" != "ecc" -a "$LD" != "ecpc" -a -n "$IA64ROOT" ; then
          : ${LIBDIRS='$(IA64ROOT)/lib'}
-         : ${LDFLAGS='-Qy $(IA64ROOT)/lib/icrt.link'}
+         : ${LDFLAGS='-Qy $(IA64ROOT)/../../compiler50/ia64/lib/icrt.link'}
        fi
        ;;
      Compaq)
