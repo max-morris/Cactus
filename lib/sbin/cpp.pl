@@ -15,6 +15,10 @@
 ###############################################################################
 # Setup some global variables.
 
+# Version info
+
+$version = "Cactus CPP 1.0";
+
 # Symbol table
 %defines = ();
 
@@ -147,6 +151,11 @@ sub ParseCommandLine
     elsif($arg =~ m:^-M(.*):)
     {
       $do_deps = 1;
+    }
+    elsif($arg =~ m:^--version:)
+    {
+      print "$version\n";
+      exit 0;
     }
     elsif($arg =~ m:^-.+:)
     {
