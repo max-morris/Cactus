@@ -6,7 +6,7 @@
 #   @desc
 #            Known architecture stuff for the SX-5
 #   @enddesc
-#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/superux,v 1.16 2003-09-29 12:52:49 tradke Exp $
+#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/superux,v 1.17 2003-10-06 14:47:17 tradke Exp $
 # @@*/
 
 if test "$CCTK_CONFIG_STAGE" = 'preferred-compilers' ; then
@@ -16,11 +16,11 @@ if test "$CCTK_CONFIG_STAGE" = 'preferred-compilers' ; then
 else
 
   if test "x$cross_compiling" = 'xyes' ; then
-    : ${C_OPTIMISE_FLAGS='-C hopt'}
+    : ${C_OPTIMISE_FLAGS='-C aopt -pvctl,noassoc'}
   else
     : ${C_OPTIMISE_FLAGS='-O2'}
   fi
-  : ${CXX_OPTIMISE_FLAGS='-C hopt'}
+  : ${CXX_OPTIMISE_FLAGS='-C hopt -pvctl,noassoc'}
   : ${F77_OPTIMISE_FLAGS='-C hopt -Wf,"-pvctl fullmsg loopcnt=100000000 vwork=stack -L fmtlist mrgmsg transform source"'}
   : ${F90_OPTIMISE_FLAGS='$(F77_OPTIMISE_FLAGS)'}
 
