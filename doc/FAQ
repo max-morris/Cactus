@@ -1,7 +1,7 @@
 
 Cactus Code Frequently Asked Questions
 
-$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.58 2003-02-13 16:56:32 allen Exp $
+$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.59 2003-02-19 11:11:16 allen Exp $
 
 Also available at http://www.cactuscode.org/Documentation/FAQ
 
@@ -255,6 +255,9 @@ Documentation:
 
 G1  How can I build the ThornGuide documentation for single thorns or
     arrangements?
+
+G2  I have a configuration with over ten thorns, but when I make the 
+    ThornGuide I only see the first few of them.
 
 
 ------------------------------------------------------------------------------
@@ -1316,6 +1319,13 @@ G1  How can I build the ThornGuide documentation for single thorns or
     gmake ThornGuide THORNS="CactusBase/Boundary"
 
     gmake ThornGuide ARRANGEMENTS="CactusBase"
+
+G2  I have a configuration with over ten thorns, but when I make the 
+    ThornGuide I only see the first few of them.
+
+    It could be that the documentation in one of the thorns is not 
+    following the Cactus ThornGuide coding convention, for example
+    see the file doc/ThornGuide/template.tex. 
 
 
 ------------------------------------------------------------------------------
