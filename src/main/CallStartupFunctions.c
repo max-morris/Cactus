@@ -41,7 +41,7 @@ int CallStartupFunctions(tFleshConfig *ConfigData)
 
   */
   SetupMainFunctions();
-  
+  SetupCommFunctions();
   return 0;
 }
   

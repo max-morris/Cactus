@@ -38,7 +38,7 @@ int CCTK_AddGH(tFleshConfig *config, int convergence_level, cGH *GH)
 
   retval = 0;
 
-  if(convergence_level > config->nGHs-1)
+  if(config->nGHs == 0 || convergence_level > config->nGHs-1)
   {
     temp = (cGH **)realloc(config->GH, (convergence_level+1)*sizeof(cGH *));
 

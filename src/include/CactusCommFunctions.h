@@ -16,17 +16,19 @@
 extern "C" {
 #endif
 
-cGH *SetupGH(tFleshConfig *, int);
-int SetupGF(cGH *, cGF *);
+/* The functions. */
 
-int SyncAllFuncs(cGH *);
-int SyncGroupFuncs(cGH *, const char *group);
-int SyncOneFunc(cGH *, int GF);
+extern cGH * (*SetupGH)(tFleshConfig *, int);
+extern int (*SetupGF)(cGH *, cGF *);
 
-int ParallelInit(tFleshConfig *);
-int ParallelFinalise(tFleshConfig *);
+extern int (*SyncAllFuncs)(cGH *);
+extern int (*SyncGroupFuncs)(cGH *, const char *group);
+extern int (*SyncOneFunc)(cGH*, int );
 
-int Reduce(cGH *, int GF, int operation, void *result);
+extern int (*ParallelInit)(tFleshConfig *);
+extern int (*ParallelFinalise)(tFleshConfig *);
+
+extern int (*Reduce)(cGH *, int , int operation, void *result);
 
 #ifdef _cplusplus
 	   }

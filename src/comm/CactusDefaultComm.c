@@ -30,6 +30,12 @@ cGH *CactusDefaultSetupGH(tFleshConfig *config, int convergence_level)
 
   retval = NULL;
 
+  /* Put this in for the moment until parameter stuff is done. */
+  if(convergence_level > 0)
+  {
+    return retval;
+  }
+
   /* Create a new Grid Hierarchy */
   thisGH = (cGH *)malloc(sizeof(cGH));
 

@@ -12,6 +12,7 @@
 
 #include "flesh.h"
 #include "RegisterKeyedFunction.h"
+#include "CactusCommFunctions.h"
 #include "CactusCommDefaults.h"
 
 static char *rcsid = "$Id$";
@@ -34,6 +35,7 @@ int (*ParallelInit)(tFleshConfig *);
 int (*ParallelFinalise)(tFleshConfig *);
 
 int (*Reduce)(cGH *, int , int operation, void *result);
+
 
 /* Array of functions */
 
