@@ -1047,11 +1047,20 @@ staggering each direction ({\tt stagger=CC}) is shown in (C). The full
 staggering in (D) ({\tt stagger=PP}) obeyes the same rules, but is
 rather unusual; included here for completeness. 
 
-\vskip .25cm
+\begin{figure}[h]
+  \def\epsfsize#1#2{0.45#1}
+  \centerline{\epsfbox{./staggering1.eps}}
+\caption[]{\small {\bf Staggered gridpoints in 2D} for several
+staggerings. (a) : {\tt MC}, (b): {\tt CM}, (c): {\tt CC}, (d): {\tt
+PP}. Note that the staggering of gridfunctions does change its
+index. The staggered gridpoints and the corresponding unstaggered
+points (arrows) are accessed by the same indeces.} 
+\label{fig:stagger2}
+\end{figure}
 
 {\bf Indexing, ghostzones, etc.}
 Note that staggering does not make any changes to the indexing of a
-gridfunction: the black solid circles in diagramm XX and their
+gridfunction: the black solid circles in diagramm \ref{fig:stagger2} and their
 associated staggered gridfunctions (connected by arrows) have the same index!
 
 Since the gridfunction does not ``know'' anything about the physical
@@ -1062,14 +1071,12 @@ Indeed, you could roll your own, but there compelling reasons:
 Readabilty and you are able to query the staggertype of a
 gridfunction. More important: in the way the grid is laid out, there is one grid
 point {\em less} for {\tt M} and {\tt P} staggered grid functions. This is
-illustrated in picture YY, which shows 15 gridpoints distributed
+illustrated in picture \ref{fig:stagger2}, which shows 15 gridpoints distributed
 across 3 processors. The solid black cirlces show the default
 location of the gridfunctions, the grey circles depict the ghostzones.
 Note that the number of center staggered gridpoints (fat crosses)
 corresponds to the number of default gridpoint on all processors but
 the last one. (Same is true for full staggered gridpoints).
-
-\vskip .25cm
 
 {\bf Staggertypes}
 The string specifying the staggering is encoded in a number called
@@ -1090,6 +1097,17 @@ x-direction: {\em directional staggerindex} = CCTK\_STAGGER\_C (value 1).
 \item[{\tt CCTK\_STAGGER\_ERROR}] failed stagger operation , negative
 \end{Lentry}
 
+
+\begin{figure}[h]
+  \def\epsfsize#1#2{0.45#1}
+  \centerline{\epsfbox{./staggering2.eps}}
+\caption[]{\small {\bf Unstaggered and center-staggered gridpoints} with
+ghostzone size of one (above) and two (below). The points are
+distributed across three processors. Note that the number of  
+center staggered gridpoints (fat crosses) is one less on the outermost grid. How to
+treat this case in a easy way is explained below. }
+\label{fig:stagger2}
+\end{figure}
 
 When a thorn programmer uses staggered gridpoints, he has to be aware
 of this gridpoint anomaly. This can be done easiest by using the {\tt
