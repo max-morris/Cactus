@@ -265,7 +265,8 @@ a comma or newline separated list of variables in the group.
 A description of the group may be included on the line with the
 closing brace.
 
-For example
+For example, for a group of 5 grid functions on a 3D grid, with 3
+timelevels:
 
 \begin{verbatim}
 
@@ -275,6 +276,17 @@ REAL fields type=GF TimeLevels=3 Dim=3 stagger=MCM
   a,b,c,d
 } "Wave fields"
 
+\end{verbatim}
+or, for a group consisting of just one 2D array of integers, 
+\begin{verbatim}
+INT afields type=ARRAY size=xsize,ysize ghostsize=gxsize,gysize
+{
+ anarray
+} "My 2D arrays"
+
+where {\tt xsize}, {\tt ysize}, {\tt gxsize}, {\tt gysize} are all 
+parameters defined in the thorns {\tt param.ccl}.
+ 
 \end{verbatim}
 
 defines a group of real grid functions of dimension 3 each of which exists on
