@@ -75,7 +75,7 @@ static int num_methods = 0;
  ************************************************************************/
 
  /*@@
-   @routine    CCTK_RegisterIOMethod
+   @routine    CCTKi_RegisterIOMethod
    @date       Wed Feb  3 13:33:09 1999
    @author     Tom Goodale
    @desc
