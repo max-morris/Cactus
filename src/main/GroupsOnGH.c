@@ -214,7 +214,7 @@ void *CCTK_VarDataPtr(const cGH *GH, int timelevel, const char *varname)
   vindex = CCTK_VarIndex(varname);
   if (vindex >= 0)
   {
-    if (timelevel >= 0 && timelevel < CCTK_NumTimeLevelsFromVarI (vindex))
+    if (timelevel >= 0 && timelevel < CCTK_MaxTimeLevelsVI (vindex))
     {
       retval = GH->data[vindex][timelevel];
     }
@@ -279,7 +279,7 @@ void *CCTK_VarDataPtrI(const cGH *GH, int timelevel, int vindex)
 
 
   retval = NULL;
-  numtimelevels = CCTK_NumTimeLevelsFromVarI (vindex);
+  numtimelevels = CCTK_MaxTimeLevelsVI (vindex);
   if (numtimelevels > 0)
   {
     if (timelevel >= 0 && timelevel < numtimelevels)

@@ -140,7 +140,7 @@ int CactusDefaultEvolve (tFleshConfig *config)
       /* Can only use CactusDefaultEvolve with one timelevel */
       for (var = CCTK_NumVars () - 1; var >= 0; var--)
       {
-        if (CCTK_NumTimeLevelsFromVarI (var) > 1)
+        if (CCTK_MaxTimeLevelsVI (var) > 1)
         {
           CCTK_VWarn (0,__LINE__,__FILE__,"Cactus",
                       "Variable '%s' has multiple timelevels, default Cactus "

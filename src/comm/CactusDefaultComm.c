@@ -106,7 +106,7 @@ int CactusDefaultInterpGridArrays (const cGH *GH, int N_dims,
    @enddesc
    @calls      CCTK_MaxDim
                CCTK_NumVars
-               CCTK_NumTimeLevelsFromVarI
+               CCTK_MaxTimeLevelsVI
                CCTK_NumGroups
                CCTKi_SetupGHExtensions
 
@@ -189,7 +189,7 @@ cGH *CactusDefaultSetupGH(tFleshConfig *config, int convergence_level)
     {
       for(variable = 0; variable < n_variables; variable++)
       {
-        ntimelevels = CCTK_NumTimeLevelsFromVarI(variable);
+        ntimelevels = CCTK_MaxTimeLevelsVI(variable);
 
         thisGH->data[variable] = calloc(ntimelevels, sizeof(void *));
         if(thisGH->data[variable] == NULL)
