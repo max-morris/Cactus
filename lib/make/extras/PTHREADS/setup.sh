@@ -25,7 +25,6 @@ fi
 # the PTHREAD_LIBS variable is set by configure
 CCTK_WriteLine make.extra.defn "PTHREADS_LIBS = $PTHREAD_LIBS"
 CCTK_WriteLine make.extra.defn ""
-CCTK_WriteLine make.extra.defn ""
 CCTK_WriteLine make.extra.defn 'LIBS     += $(PTHREADS_LIBS)'
 
 fi  # if PTHREADS
