@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.86 2000-04-17 20:16:22 goodale Exp $
+#   @version $Id: Makefile,v 1.87 2000-04-18 09:49:48 goodale Exp $
 # @@*/
 
 ##################################################################################
@@ -782,7 +782,7 @@ downsize:
 	  then \
 	  if ($(SETUP_ENV) $(PERL) -s $(SETUP) $(SETUP_OPTIONS) $@) ; then : ; else\
             echo "" ;                                                      \
-            echo "Error creating configuretion $@" ;                       \
+            echo "Error creating configuration $@" ;                       \
             exit 2                                 ;                       \
           fi ;                                                             \
 	  if test -n "$(THORNLIST)" ; \
