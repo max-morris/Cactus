@@ -310,8 +310,8 @@ sub CreateLatexTable
    # get the different properties of the variable, and clean then up so we can output good latex
    my $variable_name = ThornUtils::CleanForLatex($_[1]);
    my $scope         = ThornUtils::CleanForLatex($variable{"scope"});
-   my $default       = ThornUtils::AddQuotes(ThornUtils::CleanForLatex($variable{"default"}));
-   my $description   = ThornUtils::CleanForLatex($variable{"description"});
+   my $default       = ThornUtils::RemoveQuotes(ThornUtils::CleanForLatex($variable{"default"}));
+   my $description   = ThornUtils::RemoveQuotes(ThornUtils::CleanForLatex($variable{"description"}));
 
    # set some vars to hold the output we create
    my $latex_output  = "";
@@ -323,8 +323,8 @@ sub CreateLatexTable
    for (my $i = 1; $i <= $variable{"ranges"}; $i++) 
    {
       my $over_range = 1;
-      my $range      = ThornUtils::AddQuotes(ThornUtils::CleanForLatex($variable{"range $i range"}));
-      my $range_desc = ThornUtils::AddQuotes(ThornUtils::CleanForLatex(ThornUtils::ChopVariable($variable{"range $i description"}, $MAX_VAR_LENGTH)));
+      my $range      = ThornUtils::RemoveQuotes(ThornUtils::CleanForLatex($variable{"range $i range"}));
+      my $range_desc = ThornUtils::RemoveQuotes(ThornUtils::CleanForLatex(ThornUtils::ChopVariable($variable{"range $i description"}, $MAX_VAR_LENGTH)));
 
       # generate latex output for this range
       if (length($range) > $MAX_VAR_LENGTH) 
@@ -334,7 +334,7 @@ sub CreateLatexTable
 
          $over_range++;
       } else {
-         $range_output .= "\\multicolumn{1}{|p{\\maxVarWidth}|}{$range} & \\multicolumn{2}{p{\\paraWidth}|}{$range_desc} \\\\";
+         $range_output .= "\\multicolumn{1}{|p{\\maxVarWidth}|}{\\centering $range} & \\multicolumn{2}{p{\\paraWidth}|}{$range_desc} \\\\";
       }
    }
 
@@ -365,7 +365,7 @@ sub CreateLatexTable
    $latex_output .= $range_output;
 
    # end the table
-   $latex_output .= "\\hline\n\\end{tabular*}\n\n\\vspace{1cm}";
+   $latex_output .= "\\hline\n\\end{tabular*}\n\n\\vspace{0.5cm}";
 
    # return the output, tacking on the $extra_content, which will be any variable ranges that exceeded 
    # the MAX_VAR_LENGTH restriction (for fitting into the boxes correctly)
@@ -406,7 +406,7 @@ sub FindMaxVarLen
          $range =~ s/^\s*(.*?)\s*$/$1/;
 
          # if this new length is greater than the last one, but less than the max allowed
-         # length, then we asign the maximum variable length to this new length
+         # length, then we assign the maximum variable length to this new length
          if ((length($range) > length($max_len)) && (length($range) < $MAX_VAR_LENGTH)) {
             $max_len = $range;
          }
