@@ -27,7 +27,7 @@
 # endif
 #endif
 
-#include "CactusTimers.h"
+#include "cctk_Timers.h"
 
 static const char *rcsid = "$Header$";
 
@@ -459,7 +459,7 @@ static void CCTKi_RegisterTimersGetTimeOfDay(void)
   functions.get     = CCTKi_TimerGetTimeOfDayGet;
   functions.set     = CCTKi_TimerGetTimeOfDaySet;
 
-  CCTK_TimerRegister("GetrUsage", &functions);
+  CCTK_ClockRegister("GetrUsage", &functions);
 }
     
 #endif /* HAVE_TIME_GETTIMEOFDAY */
@@ -812,7 +812,7 @@ static void CCTKi_RegisterTimersGetrUsage(void)
   functions.get     = CCTKi_TimerGetrUsageGet;
   functions.set     = CCTKi_TimerGetrUsageSet;
 
-  CCTK_TimerRegister("GetrUsage", &functions);
+  CCTK_ClockRegister("GetrUsage", &functions);
 
 }
 
