@@ -1,7 +1,7 @@
 
 Cactus Code Frequently Asked Questions
 
-$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.37 2002-07-30 15:11:25 allen Exp $
+$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.38 2002-08-14 08:33:24 allen Exp $
 
 Also available at http://www.cactuscode.org/Documentation/FAQ
 
@@ -527,5 +527,40 @@ Also available at http://www.cactuscode.org/Documentation/FAQ
     Make sure that your thorn inherits from the implementation provided by
     the other thorn. If you don't do this, the end link line may not list
     the libraries in the right order for linking.
+
+-------------------------------------------------------------------------------
+
+37. I writing a thorn, what is the difference between using "const cGH *cctkGH"
+    and "cGH *cctkGH" for arguement declarations? And what about "const cGH* 
+    const cctkGH"?
+
+    'cGH *' is a pointer to a cGH structure which can be modified. This is
+    necessary eg. in routines which initialize a cGH.
+
+    'const cGH *' is a pointer to a cGH structure which is marked as 
+    constant (ie. read-only). The code is not allowed to change the cGH 
+    using such a pointer. The compiler should refuse to compile it otherwise, 
+    or at least print a warning.
+
+    Our policy now is to use "const cGH*" for all CCTK_ calls, and it is
+    recommended that this is also implemented in all thorns. (It is being
+    implemented in all the released Cactus thorns, but you may still find
+    some exceptions).
+
+    [Note: August 2002: We have still to implement const cGH* in a few
+           CCTK_ calls, namely   
+                * calls to CCTK_Sync()
+  	        * calls to CCTK_Reduce()
+  	        * calls to CCTK_Interp() (the old API)
+           and it is still a matter of debate whether the const qualifier
+	   should be used for CCTK_Sync calls.]
+
+    Finally, the additional const qualifier in 'const cGH * const GH' says 
+    that the pointer variable itself cannot be changed (it's just a 
+    one-time-only assignment). For instance, no pointer arithmetic is 
+    allowed on such a pointer. In principle, one could declare all local 
+    variables as const if they aren't changed afterwards. But it's doesn't 
+    have any benefit in writing cleaner code. I think this is just 
+    overkill and using just 'const cGH *' is fine.
 
 -------------------------------------------------------------------------------
