@@ -1237,44 +1237,54 @@ sub CreateThornFortranWrapper
 
 
 #/*@@
-#  @routine    CheckArraySize
+#  @routine    CheckArraySizes
 #  @date       Thu May 10 2001
 #  @author     Gabrielle Allen
 #  @desc
-#  Arrays sizes need to be parameters
+#              Arrays sizes must be given as a comma-separated list of
+#                - integer contants (no sign character)
+#                - parameter names (either fullname or just the basename)
+#                  optionally with a "+/-<integer constant>" postfix
 #  @enddesc
-#  @calls
-#  @calledby
-#  @history
-#
-#  @endhistory
-#
 #@@*/
 
 sub CheckArraySizes
 {
-  my($size,$thorn,$rhparameter_db,$rhinterface_db) = @_;
-  my($gotit,$par,$th,$message);
+  my($size,$thornname,$rhparameter_db,$rhinterface_db) = @_;
+  my($par,$thorn,$base);
 
   foreach $par (split(",",$size))
   {
-    $gotit = 0;
-    # Get the basename
-    $par =~ /([^:]*)$/;
-    $base = $1;
-    foreach $th (split(" ",$rhinterface_db->{"THORNS"}))
+    # check for size to be a constant
+    next if $par =~ /^\d+$/;
+
+    # check for size to be a parameter
+    if ($par =~ /^([A-Za-z]\w*)(::([A-Za-z]\w*))?([+-]\d+)?$/)
     {
-      if ($rhparameter_db->{"\U$th Private\E variables"} =~ m:$base:i ||
-          $rhparameter_db->{"\U$th Global\E variables"} =~ m:$base:i  ||
-          $rhparameter_db->{"\U$th Restricted\E variables"} =~ m:$base:i)
+      if (defined $2)
       {
-        $gotit = 1;
+        $thorn = $1;
+        $base = $3;
+      }
+      else
+      {
+        $thorn = $thornname;
+        $base = $1;
+      }
+
+      # check if the parameter really exists
+      if ($rhparameter_db->{"\U$thorn Private\E variables"} !~ m:$base:i &&
+          $rhparameter_db->{"\U$thorn Global\E variables"} !~ m:$base:i &&
+          $rhparameter_db->{"\U$thorn Restricted\E variables"} !~ m:$base:i)
+      {
+        &CST_error(0,"Array size \'$par\' in $thornname is not a parameter",
+                   "",__LINE__,__FILE__);
       }
     }
-    if ($gotit == 0)
+    else
     {
-      $message = "Array size $par in $thorn is not a parameter";
-      &CST_error(0,$message,"",__LINE__,__FILE__);
+      &CST_error(0,"Array size \'$par\' in $thornname has invalid syntax",
+                 "",__LINE__,__FILE__);
     }
   }
 }
