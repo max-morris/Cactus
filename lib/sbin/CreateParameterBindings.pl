@@ -210,6 +210,7 @@ sub CreateParameterBindings
     $dataout .= "extern int CCTKi_Bindings$thorn"."ParameterExtensions(void);\n\n";
   }
 
+  $dataout .= "int CCTKi_BindingsParametersInitialise(void);\n\n";
   $dataout .= "int CCTKi_BindingsParametersInitialise(void)\n";
   $dataout .= "\{\n\n";
 
