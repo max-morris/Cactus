@@ -72,6 +72,15 @@ static int JustPrintThornName(const char *key,void *input, void *dummy);
  ********************* Other Routine Prototypes *********************
  ********************************************************************/
 
+int CCTK_FCALL CCTK_FNAME (CCTK_IsThornActive)
+                          (ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME(CCTK_IsThornCompiled)
+     (int *retval, ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (CCTK_IsImplementationCompiled)
+                           (int *retval, ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (CCTK_IsImplementationActive)
+                           (int *retval, ONE_FORTSTRING_ARG);
+
 /********************************************************************
  *********************     Local Data   *****************************
  ********************************************************************/
@@ -118,7 +127,7 @@ static int n_imps   = 0;
 int CCTKi_RegisterThorn(const struct iAttributeList *attributes)
 {
   int retval;
-  int i,j;
+  int i;
 
   t_sktree *node;
   t_sktree *temp;
@@ -130,6 +139,10 @@ int CCTKi_RegisterThorn(const struct iAttributeList *attributes)
 
   const char **ancestors;
   const char **friends;
+
+
+  name = imp = NULL;
+  ancestors = friends = NULL;
 
 #if 0
   for(i=0; attributes[i].attribute; i++)
@@ -396,8 +409,8 @@ int CCTK_IsThornActive(const char *name)
   return retval;
 }
 
-int CCTK_FCALL CCTK_FNAME(CCTK_IsThornActive)
-     (ONE_FORTSTRING_ARG)
+int CCTK_FCALL CCTK_FNAME (CCTK_IsThornActive)
+                          (ONE_FORTSTRING_ARG)
 {
   int retval;
   ONE_FORTSTRING_CREATE(name) 
@@ -599,8 +612,8 @@ int CCTK_IsImplementationCompiled(const char *name)
   return retval;
 }
 
-void CCTK_FCALL CCTK_FNAME(CCTK_IsImplementationCompiled)
-     (int *retval, ONE_FORTSTRING_ARG)
+void CCTK_FCALL CCTK_FNAME (CCTK_IsImplementationCompiled)
+                           (int *retval, ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_CREATE(name) 
   *retval = CCTK_IsImplementationCompiled(name);
@@ -660,8 +673,8 @@ int CCTK_IsImplementationActive(const char *name)
   return retval;
 }
 
-void CCTK_FCALL CCTK_FNAME(CCTK_IsImplementationActive)
-     (int *retval, ONE_FORTSTRING_ARG)
+void CCTK_FCALL CCTK_FNAME (CCTK_IsImplementationActive)
+                           (int *retval, ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_CREATE(name) 
   *retval = CCTK_IsImplementationActive(name);
@@ -1024,7 +1037,7 @@ int CCTK_NumCompiledImplementations(void)
    Name of implementation
    @endreturndesc
 @@*/
-const char *CCTK_CompiledImplementation(int index)
+const char *CCTK_CompiledImplementation(int tindex)
 {
   int i;
   t_sktree *node;
@@ -1036,7 +1049,7 @@ const char *CCTK_CompiledImplementation(int index)
       node;
       node = node->next, i++)
   {
-    if (i == index)
+    if (i == tindex)
     {
       ret_val = node->key;
       break;
@@ -1058,7 +1071,7 @@ const char *CCTK_CompiledImplementation(int index)
    @history 
  
    @endhistory 
-   @var     thornlist
+   @var     activethornlist
    @vdesc   The list of thorns to activate.
    @vtype   const char *
    @vio     in
@@ -1071,7 +1084,7 @@ const char *CCTK_CompiledImplementation(int index)
    -ve Number of errors encountered.
    @endreturndesc
 @@*/
-int CCTKi_ActivateThorns(const char *thornlist)
+int CCTKi_ActivateThorns(const char *activethornlist)
 {
   int retval;
   char *local_list;
@@ -1082,9 +1095,7 @@ int CCTKi_ActivateThorns(const char *thornlist)
   const char *this_imp;
   int n_warnings;
   int n_errors;
-  int result;
   t_sktree *impnode;
-  t_sktree *temp;
   t_sktree *impthornlist;
 
   struct IMPLEMENTATION *imp;
@@ -1093,13 +1104,13 @@ int CCTKi_ActivateThorns(const char *thornlist)
   const char *imp1, *imp2;
   const char *thorn;
 
-  local_list = Util_Strdup(thornlist);
+  local_list = Util_Strdup(activethornlist);
 
   required_thorns  = Util_StringListCreate(n_thorns);
   required_imps    = Util_StringListCreate(n_imps);
   requested_imps   = Util_StringListCreate(n_imps);
 
-  printf("Activation requested for \n--->%s<---\n", thornlist);
+  printf("Activation requested for \n--->%s<---\n", activethornlist);
 
   n_errors = 0;
   n_warnings = 0;
@@ -1213,22 +1224,22 @@ int CCTKi_ActivateThorns(const char *thornlist)
                               JustPrintThornName, NULL);
             printf("\n");
           }
-	  else
-	  {
-	    printf("       This implementation is not provided by any "
-		   "compiled thorn\n");
-	  }
+          else
+          {
+            printf("       This implementation is not provided by any "
+                   "compiled thorn\n");
+          }
         }
         else
         {
           break;
         }
-      } while(imp2=Util_StringListNext(required_imps,0));
+      } while((imp2=Util_StringListNext(required_imps,0)));
     }
     /* Since the requested imps is a subset of the required imps, 
      * we may still have some required imps to go through.
      */
-    while(imp2=Util_StringListNext(required_imps,0))
+    while((imp2=Util_StringListNext(required_imps,0)))
     {
       printf("Error: required implementation %s not requested\n", imp2);
       printf("       Add a thorn providing this implementation to ActiveThorns parameter.\n");
@@ -1236,18 +1247,18 @@ int CCTKi_ActivateThorns(const char *thornlist)
       /*  Give some more help */
       if (CCTK_IsImplementationCompiled(imp2))
       {
-	impthornlist = CCTK_ImpThornList(imp2);
-	
-	printf("       This implementation is provided by compiled thorns:\n");
-	printf("          ");
-	SKTreeTraverseInorder(impthornlist, 
+        impthornlist = CCTK_ImpThornList(imp2);
+        
+        printf("       This implementation is provided by compiled thorns:\n");
+        printf("          ");
+        SKTreeTraverseInorder(impthornlist, 
                               JustPrintThornName, NULL);
-	printf("\n");
+        printf("\n");
       }
       else
       {
-	printf("       This implementation is not provided by any "
-	       "compiled thorn\n");
+        printf("       This implementation is not provided by any "
+               "compiled thorn\n");
       }
     }    
   }
@@ -1582,6 +1593,9 @@ static int CompareStrings(const void *string1, const void *string2)
 @@*/
 static int JustPrintThornName(const char *key, void *input, void *dummy)
 {
+  input = input;
+  dummy = dummy;
+
   printf(" %s", key);
 
   return 0;
