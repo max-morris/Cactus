@@ -20,8 +20,9 @@ static char *rcsid = "$Header$";
 /* Local routine prototypes */
 static iHashEntry *HashFind(uHash *hash, 
                             unsigned int klen, 
-                            char *key, 
+                            const char *key, 
                             unsigned int hashval);
+
 static int HashRehash(uHash *hash);
 
 /********************************************************************
@@ -43,7 +44,7 @@ static int HashRehash(uHash *hash);
    @endhistory 
 
 @@*/
-uHash *HashCreate(unsigned int initial_size)
+uHash *Util_HashCreate(unsigned int initial_size)
 {
   uHash *retval;
 
@@ -128,10 +129,10 @@ int Util_HashDestroy(uHash *hash)
 
 @@*/
 int Util_HashStore(uHash *hash, 
-              unsigned int klen, 
-              char *key, 
-              unsigned int hashval,
-              void *data)
+                   unsigned int klen, 
+                   const char *key, 
+                   unsigned int hashval,
+                   void *data)
 {
   int retval;
   iHashEntry *entry;
@@ -166,10 +167,10 @@ int Util_HashStore(uHash *hash,
 
 @@*/
 int Util_HashAdd(uHash *hash, 
-            unsigned int klen, 
-            char *key, 
-            unsigned int hashval, 
-            void *data)
+                 unsigned int klen, 
+                 const char *key, 
+                 unsigned int hashval, 
+                 void *data)
 {
   int retval;
   iHashEntry *entry;
@@ -285,9 +286,9 @@ int Util_HashAdd(uHash *hash,
 
 @@*/
 int Util_HashDelete(uHash *hash, 
-               unsigned int klen, 
-               char *key, 
-               unsigned int hashval)
+                    unsigned int klen, 
+                    const char *key, 
+                    unsigned int hashval)
 {
   iHashEntry *entry;
   unsigned int location;
@@ -361,9 +362,9 @@ int Util_HashDelete(uHash *hash,
 
 @@*/
 void *Util_HashData(uHash *hash, 
-              unsigned int klen, 
-              char *key, 
-              unsigned int hashval)
+                    unsigned int klen, 
+                    const char *key, 
+                    unsigned int hashval)
 {
   void *retval;
   iHashEntry *entry;
@@ -402,11 +403,11 @@ void *Util_HashData(uHash *hash,
 
 @@*/
 unsigned int Util_HashHash(unsigned int klen, 
-                      char *key)
+                           const char *key)
 {
   unsigned int hash;
   int i;
-  char *pos;
+  const char *pos;
 
   i   = klen;  
   pos = key;
@@ -446,7 +447,7 @@ unsigned int Util_HashHash(unsigned int klen,
 @@*/
 static iHashEntry *HashFind(uHash *hash, 
                             unsigned int klen, 
-                            char *key, 
+                            const char *key, 
                             unsigned int hashval)
 {
   iHashEntry *entry;

@@ -8,8 +8,8 @@
    @version $Header$
  @@*/
 
-#ifndef _HASH_H_
-#define _HASH_H_ 1
+#ifndef _UTIL_HASH_H_
+#define _UTIL_HASH_H_ 1
 
 #ifdef __cplusplus
 extern "C" 
@@ -43,31 +43,31 @@ int Util_HashDestroy(uHash *hash);
 
 int Util_HashStore(uHash *hash, 
                    unsigned int klen, 
-                   char *key, 
+                   const char *key, 
                    unsigned int hashval,
                    void *data);
 
 int Util_HashAdd(uHash *hash, 
                  unsigned int klen, 
-                 char *key, 
+                 const char *key, 
                  unsigned int hashval, 
                  void *data);
 
 int Util_HashDelete(uHash *hash, 
                     unsigned int klen, 
-                    char *key, 
+                    const char *key, 
                     unsigned int hashval);
 
 void *Util_HashData(uHash *hash, 
                     unsigned int klen, 
-                    char *key, 
+                    const char *key, 
                     unsigned int hashval);
 
 unsigned int Util_HashHash(unsigned int klen, 
-                           char *key);
+                           const char *key);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* _HASH_H_ */
+#endif /* _UTIL_HASH_H_ */
