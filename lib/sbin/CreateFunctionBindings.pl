@@ -535,7 +535,7 @@ sub DummyThornFunctions
       foreach $arg (split(',',$function_db->{"$function CARGS"}))
       {
         $arg =~ m:.*\s+\**([^\s*\*]+)\s*:;
-        push(@data, "  (void) ($1 + 0)");
+        push(@data, "  (void) ($1 + 0);");
       }
       push(@data, '  CCTK_Warn(1, __LINE__, __FILE__, "Bindings",');
       push(@data, "            \"CCTKBindings_Dummy$function: Calling thorn function $function which has not been overloaded\");");
@@ -689,7 +689,10 @@ sub FortranThornFunctions
 
       # prototype
       push(@data, "$line;");
+
       # call
+      push(@data, "$function_db->{\"$function RET\"} CCTK_FCALL
+CCTK_FNAME($function)");      
       push(@data, $line);
       push(@data, '{');
 
