@@ -10,6 +10,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "cctki_Schedule.h"
+
 #include "StoreHandledData.h"
 #include "Schedule.h"
 

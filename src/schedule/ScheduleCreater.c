@@ -11,6 +11,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "cctki_Schedule.h"
+
 #include "StoreHandledData.h"
 #include "Schedule.h"
 
@@ -46,7 +48,7 @@ static cHandledData *schedule_groups = NULL;
  ********************************************************************/
 
  /*@@
-   @routine    CCTKi_DoScheduleAddModifer
+   @routine    CCTKi_ScheduleAddModifer
    @date       Thu Sep  9 21:45:25 1999
    @author     Tom Goodale
    @desc 
@@ -59,7 +61,7 @@ static cHandledData *schedule_groups = NULL;
    @endhistory 
 
 @@*/
-t_sched_modifier *CCTKi_DoScheduleAddModifier(t_sched_modifier *orig, 
+t_sched_modifier *CCTKi_ScheduleAddModifier(t_sched_modifier *orig, 
                                             const char *modifier, 
                                             const char *argument)
 {
@@ -239,7 +241,7 @@ int CCTKi_DoScheduleSortAllGroups(void)
       if(errcode)
       {
         fprintf(stderr, 
-                "Error while dorting group '%s' - %d remaining unsorted routines.\n", 
+                "Error while sorting group '%s' - %d remaining unsorted routines.\n", 
                 gdata->name,
                 -errcode);
 
@@ -722,8 +724,8 @@ int main(int argc, char *argv[])
 {
   t_sched_modifier *modifier;
 
-  modifier = CCTKi_DoScheduleAddModifier(NULL, "before", "c");
-  modifier = CCTKi_DoScheduleAddModifier(modifier, "after",  "a");
+  modifier = CCTKi_ScheduleAddModifier(NULL, "before", "c");
+  modifier = CCTKi_ScheduleAddModifier(modifier, "after",  "a");
 
   CCTKi_DoScheduleFunction("group_a", "c", func_c, NULL, NULL);
   CCTKi_DoScheduleFunction("group_a", "b", func_b, modifier, NULL);
