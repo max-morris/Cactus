@@ -9,4 +9,14 @@
 #   @version $Header$
 # @@*/
 
+# The preprocessor under Darwin 6.6 doesn't seem to be able to process other
+# languages than C when used to create dependencies.
+# So dependency generation for C++ or Fortran files will be disabled for now.
+: ${CXX_DEPEND='echo'}
+: ${F_DEPEND='echo'}
+: ${F77_DEPEND='echo'}
+: ${CXX_DEPEND_OUT='> /dev/null; touch $@'}
+: ${F_DEPEND_OUT='> /dev/null; touch $@'}
+: ${F77_DEPEND_OUT='> /dev/null; touch $@'}
+
 . $srcdir/known-architectures/darwin
