@@ -1465,11 +1465,22 @@ sub ViewResults
 sub TransformDirs
 {
   my ($in) = @_;
+  my $out;
 
-  $in =~ s,^/cygdrive/(.)/,\1:/,;
-  $in =~ s,^//(.)/,\1:/,;
+  $out = `cygpath -wa $in`;
 
-  return $in;
+  chomp $out;
+
+  if ( ! $out )
+  {
+    $out = $in;
+  }
+  else
+  {
+    $out = '"'.$out.'"';
+  }
+
+  return $out;
 }
 
 1;
