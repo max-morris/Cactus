@@ -34,15 +34,16 @@ OVERLOADABLE(GetMyProc)
 OVERLOADABLE(GetnProcs)
 
 #undef ARGUMENTS
-#define ARGUMENTS cGH *GH,                \
-		   const char *operation, \
-		   int n_infields,        \
-		   int n_outfields,       \
-		   int out_type,          \
-		   void **outarray,       \
-		   ...
 
-
+#define ARGUMENTS  cGH *GH,                \
+                   const char *operation,  \
+                   int n_coords,           \
+                   int n_infields,         \
+                   int n_outfields,        \
+                   int n_points,           \
+                   int type,               \
+                   ...
+ 
 OVERLOADABLE(Interp)
 
 #undef ARGUMENTS
