@@ -388,8 +388,8 @@ static cGroupDefinition *CCTKi_SetupGroup(const char *implementation,
   int group_num;
   char *fullname1;
 
-  fullname1 = (char *) malloc( (strlen(implementation)+strlen(name)+2)
-                                    *sizeof(const char *));
+  fullname1 = (char *) malloc( (strlen(implementation)+strlen(name)+3)
+                                    *sizeof(char));
   sprintf(fullname1,"%s::%s",implementation,name); 
 
   if((group_num = CCTK_GroupIndex(fullname1)) == -1)
