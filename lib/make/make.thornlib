@@ -89,14 +89,3 @@ cctk_Bindings/make.checked: FORCE
 $(addsuffix /make.identity, $(SUBDIRS) $(THORNBINDINGS)):
 	if [ ! -d $(dir $@) ] ; then $(MKDIR) $(MKDIRFLAGS) $(dir $@) ; fi
 	echo CCTK_THIS_SUBDIR := $(dir $@) > $@
-
-
-# Catch people who have not done a -rebuild.  Remove in beta 12
-$(BINDINGS_DIR)/build/$(THORN)/make.code.defn:
-	@echo $(DIVIDER)
-	@echo "************************************************************************"
-	@echo "             Major changes to CST and bindings system."
-	@echo "             Please $(MAKE) $(notdir $(TOP))-rebuild  "
-	@echo "************************************************************************"
-	@echo $(DIVIDER)
-	@exit 1
