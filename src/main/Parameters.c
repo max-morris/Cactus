@@ -405,8 +405,10 @@ int CCTK_ParameterSet (const char *name, const char *thorn, const char *value)
       }
       else
       {
-        /* do not restore the original value */
+        /* do not restore the original value
+           but register another set operation */
         retval = 0;
+        param->props->n_set++;
       }
     }
     else
