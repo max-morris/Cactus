@@ -424,7 +424,7 @@ schedule <name> at <time bin> [other options]
 } "A description"
 \end{verbatim}
 where {\tt <name>} is the name of the routine, and {\tt <time bin>} is the
-name of a schedule bins (the {\tt CCTK\_} prefix is optional). A list of 
+name of a schedule bins (the {\tt CCTK\_} prefix is optional). A list of
 the most useful schedule bins for application thorns is given here, a complete and more descriptive list is provided in Appendix~\ref{sec:scbi}:
 
 \begin{Lentry}
@@ -476,13 +476,13 @@ C and Fortran linkage are possible here. C++ routines should be defined as
 \item[{\tt STORAGE}] The {\tt STORAGE} keyword specifies any groups for
 which memory should be allocated for the duration of the routine.  The
 storage status reverts to its previous status after the routine
-returns. The format of the {\tt STORAGE} statement includes specifying 
+returns. The format of the {\tt STORAGE} statement includes specifying
 the number of timelevels of each group for which storage should be activated.
 
 {\tt STORAGE: <group1>[timelevels1], <group2>[timelevels2]}
 
  This number can range from one to the maximum number of timelevels for the group as specified in the group definition in its {\tt interface.ccl} file. If this maximum number is one, the timelevel specification can be omitted from the
-{\tt STORAGE} statement. 
+{\tt STORAGE} statement.
 
 \item[{\tt TRIGGERS}] {\tt TRIGGERS} is used when the routine is registered at {\tt ANALYSIS} ---
 this is a
@@ -515,7 +515,7 @@ evolution} loop, after the routine {\tt metric\_predictor} and before
 {\tt metric\_corrector}. The routine names {\tt metric\_predictor} and
 {\tt metric\_corrector} may either be real routine names from the same
 or a different thorn, or they may be {\tt aliased} routine names (see the
-next example). 
+next example).
 
 Before entry to {\tt hydro\_predictor}
 storage will be allocated for one timelevel for the group of grid
@@ -621,9 +621,9 @@ Extension & Coding Language \\
 
 The following restrictions apply to file names:
 \begin{itemize}
-\item For portability across all operating systems, the base names 
+\item For portability across all operating systems, the base names
 	for any particular extension should not depend on the operating
-  	system being case sensitive (e.g. having {\tt MyFile.c} and 
+  	system being case sensitive (e.g. having {\tt MyFile.c} and
 	{\tt MYFILE.f77} is alright, but {\tt MyFile.c} and {\tt MYFILE.c} could cause problems).
 \item Currently all source files in different subroutines within a
 thorn must have distinct names.  We hope
@@ -1350,14 +1350,14 @@ using them with the macro {\tt DECLARE\_CCTK\_PARAMETERS}.
 
 In Fortran, special care should be taken with string valued parameters.
 These parameters are passed as C pointers, and can not be treated as
-normal Fortran strings. 
+normal Fortran strings.
 To compare a string valued parameter and Fortran
 string use the macro {\tt CCTK\_EQUALS()} or the function {\tt CCTK\_Equals()}.
 To print the value of a string valued parameter to screen, use the subroutine
-{\tt CCTK\_PrintString()}. A further function {\tt CCTK\_FortranString} 
-provides a mechanism for converting a string parameter to a Fortran string. 
-For example, if {\tt operator} is a Cactus string parameter holding the name of a reduction operator whose handle you need to find, you cannot pass it 
-directly into the subroutine {\tt CCTK\_ReductionHandle} which is expecting 
+{\tt CCTK\_PrintString()}. A further function {\tt CCTK\_FortranString}
+provides a mechanism for converting a string parameter to a Fortran string.
+For example, if {\tt operator} is a Cactus string parameter holding the name of a reduction operator whose handle you need to find, you cannot pass it
+directly into the subroutine {\tt CCTK\_ReductionHandle} which is expecting
 a Fortran string. Instead, the following is needed:
 {\tt
 \begin{verbatim}
@@ -2346,7 +2346,7 @@ CCTK variables (grid functions, arrays, scalars) and arbitrary
 of a one element array).
 
 The reduction interface is currently under revision, and in the future
-should closely resemble that of the new interpolator interface.  
+should closely resemble that of the new interpolator interface.
 See e.g. the description of \verb|CCTK_InterpLocalUniform()| on
 page~\pageref{CCTK-InterpLocalUniform}.
 
@@ -2482,7 +2482,7 @@ the type {\tt CCTK\_VARIABLE\_INT} in the reduction command. These
 types may not be the same on some architectures and will conflict.
 
 \item[{\tt out\_vals}] a pointer to the buffer which will hold the
-output values.
+output values. Note that the input and output buffer must be distinct.
 
 \item[{\tt num\_dims}] (CCTK\_ReduceArray only) the number of dimensions of the input and output arrays.
 
@@ -2559,7 +2559,7 @@ to be reduced.  In Fortran, this can be of any (scalar) data type.
 
 \item[{\tt out\_scalar}] the reduction result: a processor local variable
 with the global value (same on all processors) if {\tt processor} has been
-set to $-1$.  Otherwise processor {\tt processor} will hold the reduction result.
+set to $-1$.  Otherwise only processor {\tt processor} will hold the reduction result. Note that the input and output scalar variable must be distinct.
 
 \item[{\tt data\_type}] specifies the type of the gridfunction you are
 communicating. Use the values as specified in \ref{sec:datyansi}.
@@ -2607,7 +2607,7 @@ processors.
 \item[{\tt in\_array1d}] the one dimensional array to be reduced
 across all processors, element by element.
 \item[{\tt out\_array1d}] the array holding the reduction result. out\_array1d[1]
-= Reduction(in\_array[1]).
+= Reduction(in\_array[1]). Note that the input and output array must be distinct.
 \item[{\tt xsize}] the size of the one dimensional array.
 
 \item[{\tt data\_type}] specifies the type of the gridfunction you are
@@ -2660,7 +2660,7 @@ processors, element by element.
 result. out\_array2d[i,j]= Reduction(in\_array2d[i,j]).
 \item[{\tt xsize}] the size of the two dimensional array in x direction.
 \item[{\tt ysize}] the size of the two dimensional array in y
-direction.
+direction. Note that the input and output array must be distinct.
 
 \item[{\tt data\_type}] specifies the type of the gridfunction you are
 communicating. Use the values as specified in \ref{sec:datyansi}.
@@ -2714,7 +2714,7 @@ result. out\_array3d[i,j,k]= Reduction(in\_array3d[i,j,k]).
 \item[{\tt xsize}] the size of the three dimensional array in x direction.
 \item[{\tt ysize}] the size of the three dimensional array in y direction.
 \item[{\tt ysize}] the size of the three dimensional array in z
-direction.
+direction. Note that the input and output array must be distinct.
 
 \item[{\tt data\_type}] specifies the type of the gridfunction you are
 communicating. Use the values as specified in \ref{sec:datyansi}.
@@ -2836,7 +2836,7 @@ In Fortran 90, you can also do:
 \begin{verbatim}
   integer        myint
   character(200) message
-  
+
   write (message, '("The integer is ",i4)') myint
   call CCTK_INFO (trim(message))
 \end{verbatim}
@@ -2867,7 +2867,7 @@ printed to standard error and whether the code should be stopped. A level 0
 warning indicates the highest severity, with higher numbers indicating lower
 severity.
 
-By default, a Cactus run will abort on a level 0 warning 
+By default, a Cactus run will abort on a level 0 warning
 and will report level 1 and severer warnings to screen.
 This behaviour can be amended using command line arguments,
 as described in Section~\ref{sec:coliop}.
@@ -2927,7 +2927,7 @@ In Fortran 90, you can also do:
   integer myint
   real myreal
   character(200) message
-  
+
   write (message, '("Your warning message, including ",g12.7," and ",i8)') myreal, myint
   call CCTK_WARN (1, trim(message))
 \end{verbatim}
@@ -2954,7 +2954,7 @@ file {\tt doc/documentation.tex} for including in Thorn Guides.
 
 The {\tt README}, in the top level of a thorn, should contain brief
 and essential details about the thorn, such as the authors, any
-copyright details, and a synopsis of what the thorn does. 
+copyright details, and a synopsis of what the thorn does.
 
 \subsection{Contribution to ThornGuide}
 
@@ -2970,44 +2970,44 @@ sections include:
 \begin{itemize}
 
   \item{\bf model} A description of the system which the thorn is modelling,
-    including the equations etc. which are being solved or implemented. 
+    including the equations etc. which are being solved or implemented.
 
-  \item{\bf numerical implementation} Details about how the model is 
+  \item{\bf numerical implementation} Details about how the model is
     numerically implemented in the thorn.
 
-  \item{\bf using the thorn} Any special details needed for using the 
+  \item{\bf using the thorn} Any special details needed for using the
     thorn, tricky parameters, particular operating systems or additional
     required software, interactions with other thorns and examples of use.
 
-  \item{\bf history} Here is where you should describe why the thorn 
+  \item{\bf history} Here is where you should describe why the thorn
     was written, any previous software or experience which was made use of,
     the authors of the thorn sourcecode and documentation, how to get
     hold of the thorn etc.
 
   \item{\bf references} A bibliography can be included, referencing papers
-    published using or about this thorn, or additional information about 
+    published using or about this thorn, or additional information about
     the model or numerics used.
 
 \end{itemize}
 
 A latex template for the Thorn Guide documentation can be found in the
-Flesh distribution at 
+Flesh distribution at
 
-{\tt doc/ThornGuide/template.tex}, 
+{\tt doc/ThornGuide/template.tex},
 
 this file is
 automatically copied to the correct location in a new thorn which is
 created with {\tt gmake newthorn}.
 
 Since Cactus scripts need to parse this documentation, and since the
-latex document should be consistent across all thorns included in a 
+latex document should be consistent across all thorns included in a
 Thorn Guide, please follow the guidelines below when filling in the
 documentation:
 
 \begin{itemize}
 
   \item Use the Cactus Thorn Guide style file, located in the Flesh
-    distribution at {\tt doc/ThornGuide/cactus.sty}. This should be 
+    distribution at {\tt doc/ThornGuide/cactus.sty}. This should be
     included using a relative link, so that updates to the style file
     are applied to all thorns.
 
@@ -3022,7 +3022,7 @@ documentation:
     placed between the lines
 
 
- {\tt \% START CACTUS THORNGUIDE} 
+ {\tt \% START CACTUS THORNGUIDE}
 
 and
 
@@ -3062,11 +3062,11 @@ and
 	bibitem} command, for example, a bibliography section should
 	look like:
 
-{\tt 
+{\tt
 \begin{verbatim}
 \begin{thebibliography}{9}
   \bibitem{MyArrangement_MyThorn_Author99}
-  {J. Author, {\em The Title of the Book, Journal, or periodical}, 1 (1999), 
+  {J. Author, {\em The Title of the Book, Journal, or periodical}, 1 (1999),
   1--16. {\tt http://www.nowhere.com/}}
 \end{thebibliography}
 \end{verbatim}
