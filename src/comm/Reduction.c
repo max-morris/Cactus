@@ -28,14 +28,6 @@ static char *rcsid = "$Header$";
 static cHandledData *ReductionOperators = NULL;
 static int num_reductions = 0;
 
-#define REGISTER_ARGLIST  \
-	  cGH *,  \
-          int,    \
-          int,    \
-          int,    \
-          void *, \
-          int,    \
-          int *    
 
  /*@@
    @routine    CCTK_RegisterReductionOperator
@@ -82,11 +74,11 @@ int CCTK_RegisterReductionOperator(void (*function)(REGISTER_ARGLIST),
   }
 
 #ifdef DEBUG_REDUCTION
-  printf("----------------------------------------------------------------\n");
+  CCTK_PRINTSEPARATOR
   printf("In CCTK_RegisterReductionOperator\n");
   printf("---------------------------------\n");
   printf("  Registering %s with handle %d\n",name,handle);
-  printf("----------------------------------------------------------------\n");
+  CCTK_PRINTSEPARATOR
 #endif
     
   return handle;
@@ -119,46 +111,42 @@ int CCTK_GetReductionHandle(const char *reduction)
 }  
 
 
-int CCTK_Reduce(cGH *GH, int retvartype, int retvarnum, void *retval,
-		int operation_handle, int index, ...)
+int CCTK_Reduce(  cGH *GH, 
+		  int proc,
+		  int operation_handle,
+                  int num_out_vals,
+		  int type_out_vals,
+		  void *out_vals,
+		  int num_in_fields,
+		  ... )
 {
  
   va_list indices;
-  int invarnum;
-  int *index_array;
+  int i;
+  int *in_fields = malloc(num_in_fields*sizeof(int));
   void (*function)(REGISTER_ARGLIST); 
-
-
-  /* Fill in the array of variable indices from the variable argument list */
-  invarnum = 0;
-  index_array = (int *)malloc(sizeof(int));
-  index_array[0] = index;
-
-  va_start(indices, index);
-  invarnum++;
-  index_array = (int *)realloc(index_array,invarnum*sizeof(int));
-  index_array[invarnum-1] = index;
-  va_end(indices);
-
 
   /* Get the pointer to the reduction operator */
   function = (void (*)(REGISTER_ARGLIST))
     CCTK_GetHandledData(ReductionOperators,operation_handle);
 
-
-  /* Call the function providing the reduction, if it exists */
-  /* FIX ME : Generalise (GAB) */
   if (function)
   {
-    function(GH,-1,CCTK_VARIABLE_REAL,retvarnum,retval,invarnum,index_array);
+
+    /* Fill in the array of variable indices from the variable argument list */
+    va_start(indices, num_in_fields);
+    for (i=0; i<num_in_fields; i++)
+      in_fields[i] = va_arg(indices,int);
+    va_end(indices);
+    
+    function(GH,proc,num_out_vals,type_out_vals,out_vals,num_in_fields,in_fields);
+
+    if (in_fields) free(in_fields);
+
   }
   else
-    CCTK_Warn(1,"CCTK","Reduction operation is not registered and cannot be called");
+    CCTK_Warn(3,"CCTK","Reduction operation is not registered and cannot be called");
   
-  if (index_array) free(index_array);
-
-  return 1;
-
 }
 
 
