@@ -74,6 +74,10 @@
  \end{itemize}
 \end{enumerate}
 
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \begin{CCTKroutine}
 
 \CCTKname{CCTK\_EnableGroupStorage}
@@ -81,7 +85,7 @@
 \end{CCTKroutine}
 
 \begin{CCTKsyn}
-\hfill {\bf C} && int storage = {\t CCTK\_EnableGroupStorage( cGH *GH, const char *group )}\\
+\hfill {\bf C} && {\t int storage = CCTK\_EnableGroupStorage( cGH *GH, const char *group )}\\
 \hfill {\bf Fortran} && 
 {\t call CCTK\_EnableGroupStorage( storage, GH, group ) }\\
 && CCTK\_POINTER GH \\
@@ -125,6 +129,43 @@ This routine is overloadable in the flesh, and must be provided by a thorn
 \\
 && {\bf FIXME} here will be stuff like can return CCTK\_ERROR\_STORAGEERROR
 \end{tabular}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\begin{CCTKroutine}
+\CCTKname{CCTK\_RegisterReductionOperator}
+\CCTKdesc{Registers a function as providing a CCTK reduction operator with a given name}
+\end{CCTKroutine}
+
+\begin{CCTKsyn}
+\hfill {\bf C} && {\t int handle = CCTK\_RegisterReductionOperator(void (*function)(cGH *, int, int, int, void *, int, int *), const char *name)}
+\\
+\hfill {\bf Fortran} && Not available. Use a C wrapper function.
+\end{CCTKsyn}
+
+\begin{CCTKpar}
+\hfill {\t handle}&-&integer returning the handle for the function or an error code. 
+\\
+\hfill {\t function}&-&pointer to the reduction operator.
+\\
+\hfill {\t name}&-&the name with which the reduction operator should be called.
+\end{CCTKpar}
+
+\noindent
+\begin{tabular}{p{14cm}}
+\\
+{\bf Discussion} \hfill
+\\
+\end{tabular}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+	
+
+
 
 \section{Group and Variable Utility Routines}
 

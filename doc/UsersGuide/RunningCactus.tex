@@ -208,8 +208,8 @@ in a single processor mode. Please refer to the architecture section
 To use the CCTK, with the default driver (CactusBase/PUGH) on multiple
 processes you also need:
 \begin{itemize}
-\item{\tt MPI} PUGH uses the {\it Message Passing Interface (MPI)} to 
-provide inter-processor communication. {\it (QUERY: Version Number? Gab)} 
+\item{\tt MPI} the {\it Message Passing Interface (MPI)} 
+provides inter-processor communication. 
 Supercomputering sites often supply a native MPI implementation with
 which the CCTK is very likely to be compatible. Otherwise the {\tt MPICH}
 version of MPI is available for various architectures and operating
@@ -299,14 +299,28 @@ thorns used. The flesh on its own requires less than 1 MB.
 
 \noindent
   If you want to compile the CCTK with thorns, you now need to checkout separately 
-  the required packages. These must be checked out in the
-  ./CCTK/packages directory. For a list of available packages check the
-web pages at http://cactus.aei-potsdam.mpg.de . The default package which 
-contains various infrastructure thorns is {\tt CactusBase}, to obtain this
-{\t
-  cd packages
-  cvs checkout CactusBase
+  the required packages into the {\t ./CCTK/packages} directory. To see  the 
+  available Cactus packages and thorns type
+  {\t 
+    cvs -d :pserver:cvs\_anon@cvs.cactuscode.org:/usr/users/cactus checkout -s
+  }
+  To check out a package or thorn type go to the packages directory,  {\t cd ./CCTK/packages},
+  and  for a package type
+{\t 
+  cvs checkout <package\_name>
+  }
+	or for just one thorn
+{\t 
+cvs checkout <package\_name/thorn\_name>
 }
+ 
+  
+
+
+A target of
+  the make system exists to help with checking out packages and thorns, to use this
+type {\t gmake checkout} in the CCTK home directory.
+  
   
 \item{\bf Update}: To update an existing CCTK checkout (to patch in
   possible changes, etc.), do the following {\em within} the {\tt ./CCTK} directory.
@@ -372,7 +386,7 @@ Configurations are descibed in detail in section \ref{sec:coaco}.
 
 %\begin{itemize}
 
-%\item {\tt ActiveThorns} 
+%\item {\tt ThornList} 
 
 %\item {\tt datestamp.o}
 
@@ -445,24 +459,24 @@ Configurations are descibed in detail in section \ref{sec:coaco}.
 
 Cactus can be built in different configurations from the same copy of
 the source files, and these different configurations coexist in the
-{\tt cactus/} directory. Here are several cases, where this can be
+{\tt ./CCTK/} directory. Here are several cases, where this can be
 useful:
 
 \begin{enumerate}
 \item{}Different configurations can be for {\em different
 architectures}. You can keep executables for multiple architecures
-based on a single copy of soiruce code, shared on a common file
+based on a single copy of source code, shared on a common file
 system.
 \item{} You can compare different {\em compiler options, debug-modes}.
-  You migth want to compile different communication protocols
+  You might want to compile different communication protocols
   (MPI/GLOBUS) or leave them out all together.
-\item{} You can have different configuration for {\em different thorns
+\item{} You can have different configurations for {\em different thorns
     collections} compiled into your executable.
 \end{enumerate}
 
-Once a configuration has been created, by {\tt gmake <confname>} as described
+Once a configuration has been created, by {\tt gmake <configuration name>} as described
 in detail in the next section, a single call to {\tt gmake} will compile the 
-code.  The first time will display your ActiveThorns list, and give you the
+code.  The first time will display your compile ThornList, and give you the
 chance to edit it before continuing.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -471,7 +485,7 @@ chance to edit it before continuing.
 
 At its simplest, this is done by {\tt gmake <confname>}.  This will generate
 a configuration with the specified name, doing its best to automatically
-determine the compilers and compilation flags suitable for the current 
+determine the default compilers and compilation flags suitable for the current 
 architecture.
 
 There are a number of additional command line arguments which may be supplied 
@@ -481,9 +495,30 @@ to override some parts of the procedure.
 
 There are two ways to pass options to the configuration process from the
 gmake command line.  
+\begin{enumerate}
+\item{} Add the options to a configuration file and use,
 
-Either you can say {\tt options=<file>} and specify a file containing the 
-options, or you can pass them in individually on the command line.
+{\tt gmake <configuration name>-config  options=<filename>} 
+
+All available configuration options may be set in the file, any
+which are not set will take the default value. The options file
+should contain lines of the form:
+
+{\tt <option> [=] ...}
+
+The equals sign is optional.
+
+\item{} Pass the options individually  on the command line,
+
+{\tt gmake <configuration name>-config  <option name>=<chosen value>, ...}
+Not all configurarion options can be set on the command line. Those than can
+be set are indicated in the table below.
+
+\end{enumerate}
+
+Note that if a configuration file is used, and options are also passed
+on the command line, the configuration file will currently override the command line
+options, although this behaviour will soon change.
 
 All options may be specified in the options file, an a subset of them on
 the command line.
@@ -495,19 +530,20 @@ There are a plethora of available options.
 \begin{itemize}
 \item {\tt Compiler and tool specification}
 
-These are used to specify which compilers and other tools to use:
+These are used to specify which compilers and other tools to use. Entries followed
+by [CL] may be specified on the command line.
 
 \begin{itemize}
 \item {\tt CC}
-The C compiler
+[CL] The C compiler.
 \item {\tt CXX}
 The C++ compiler
 \item {\tt F90}
-The Fortran 90 compiler
+[CL] The Fortran 90 compiler
 \item {\tt F77}
-The FORTRAN 77 compiler.
+[CL] The FORTRAN 77 compiler.
 \item {\tt LD}
-The linker.
+[CL] The linker.
 \item {\tt AR}
 The archiver used for generating libraries.
 \item {\tt Ranlib}
@@ -531,13 +567,13 @@ Flags for the C compiler
 Flags for the C++ compiler
 
 \item {\tt F90FLAGS}
-Flags for the Fortran 90 compiler
+[CL] Flags for the Fortran 90 compiler
 
 \item {\tt F77FLAGS}
-Flags for the FORTRAN 77 compiler
+[CL] Flags for the FORTRAN 77 compiler
 
 \item {\tt LDFLAGS}
-Flags for the linker
+[CL] Flags for the linker
 
 \item {\tt ARLAGS}
 Flags for the archiver
@@ -584,10 +620,10 @@ specified as the number of bytes the data takes up.  Note that not all
 values will be valid on all architectures.
 
 \item {\tt REAL\_PRECISION}
-Allowed values are 16,8,4 .
+[CL] Allowed values are 16,8,4 .
 
 \item {INTEGER\_PRECISION}
-Allowed values are 8,4 and 2 .
+[CL] Allowed values are 8,4 and 2 .
 
 \end{itemize}
 
@@ -599,27 +635,6 @@ The name of the executable.
 \end{itemize}
 
 \end{itemize}
-
-\subsection{The options file}
-
-This file can contain all the above options.  It consists of lines of the form
-\begin{verbatim}
-<option> [=] ...
-\end{verbatim}
-
-where the = sign is optional.
-
-\subsection{Command line configuration options}
-
-The following options may be passed directly on the command line via
-
-\begin{verbatim}
-<option>=...
-\end{verbatim}
-
-CC,F90,F77,LD,CFLAGS,F90FLAGS,F77FLAGS,
-LDFLAGS,REAL\_PRECISION,INTEGER\_PRECISION .
-
 
 \subsection{File layout after a configuration has been created }
 
@@ -695,12 +710,12 @@ configuration, and preprocessed source files.
 \subsection{Notes and Caveats}
 \begin{itemize}
 \item{} Instead of using the editor to specify the thorns you want to
-  have compiled, you can {\em edit} the {\em ActiveThorns List} outside
-  the make process. It is located in {\tt configs/CONF/ActiveThorns},
+  have compiled, you can {\em edit} the {\em ThornList} outside
+  the make process. It is located in {\tt configs/CONF/ThornList},
   wher {\tt CONF} refers to the name of your configuration.
   For a completely new configuration, this directory exists {\em
     after} the first  make phase. 
-\item{} The {\em ActiveThorns List} can also contain the name of a
+\item{} The {\em ThornList} can also contain the name of a
   CACTUS package. In this case all thorns of the package will be
   compiled into the executable.
 \item{} If the CCTK {\em cannot find a thorn} you specified, it will
@@ -731,7 +746,7 @@ is to do.
 \item {\tt gmake <CONF>-realclean} removes from a configuration
   all object and dependency files, 
   as well as files generated from the CST (that is, only the files
-  generated by configure and the ActiveThorns files remain)
+  generated by configure and the ThornList files remain)
 
 \item {\tt gmake <CONF>-cleanobjs} removes all object files from
   a configuration 
@@ -742,11 +757,11 @@ is to do.
 
 \item {\tt gmake <CONF>-rebuild} rebuilds a configuration (reruns the CST)
 
-\item {\tt gmake <CONF>-reconfig} reconfigures a configuration
+\item {\tt gmake <CONF>-config} creates a new configuration or reconfigures an old one
 
 \item {\tt gmake <CONF>-delete} deletes a configuration ({\tt rm -r configs/<CONF>})
 
-\item {\tt gmake <CONF>-activethorns} regenerates the ActiveThorns list for a configuration
+\item {\tt gmake <CONF>-activethorns} regenerates the ThornList for a configuration
 
 \item {\tt gmake help} lists all make options
 
@@ -755,6 +770,10 @@ is to do.
 
 \item {\tt gmake TAGS} creates an Emacs style TAGS file. See section
   \ref{sec:usta} for using TAGS within Cactus.
+
+\item {\tt gmake doc} places a postscript version of the Users Guide documentation in your Cactus home directory.
+
+\item {\tt gmake checkout} allows you to easily checkout Cactus packages and thorns.
 
 \item {\tt gmake distclean} nukes your configs directory.
 
@@ -791,10 +810,10 @@ the same.
 \section{Compiling in thorns}
 \label{sec:cointh}
 
-Cactus compiles in all thorns listed in {\tt configs/CONF/ActiveThorns}, 
+Cactus compiles in all thorns listed in {\tt configs/CONF/ThornList}, 
 if they have been checked out.
 
-The {\tt ActiveThorns} file is simply a list of the form
+The {\tt ThornList} file is simply a list of the form
 <package>/<thorn>.  All text on appearing on a line after a \# sign
 is ignored, so comments can be included.
 
@@ -829,8 +848,8 @@ simple make and test suite
 \begin{tabular}{ll}
 {\t -O, -describe-all-parameters} &List all parameters and their descriptions\\
 {\t -o, -describe-parameter <param>} & List description for one parameter\\
-{\t -A, -list-active-thorns}& List all compiled thorns\\
-{\t -a, -test-thorn-active <package/thorn>}& Query presence of a thorn\\
+{\t -T, -list-active-thorns}& List all compiled thorns\\
+{\t -t, -test-thorn-active <package/thorn>}& Query presence of a thorn\\
 {\t -h, -help, -?} & Provide help on command line options\\
 {\t -v, -version} & Compilation date of code\\
 {\t -x, -test-parameters [<nprocs>]} & Run code as far a parameter checking, simulating being on {\t nprocs} processors\\
