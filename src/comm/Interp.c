@@ -301,8 +301,8 @@ int CCTK_InterpGF (cGH *GH,
 
 }
 
-void FMODIFIER FORTRAN_NAME(CCTK_InterpGF)(cGH *GH,
-                                           int *fortranreturn,
+void FMODIFIER FORTRAN_NAME(CCTK_InterpGF)(int *fortranreturn,
+                                           cGH *GH,
                                            int *operation_handle,
                                            int *nPoints,
                                            int *nDims,
@@ -633,8 +633,8 @@ int CCTK_Interp (cGH *GH,
 
 }
 
-void FMODIFIER FORTRAN_NAME(CCTK_Interp)(cGH *GH,
-                                         int *fortranreturn,
+void FMODIFIER FORTRAN_NAME(CCTK_Interp)(int *fortranreturn,
+                                         cGH *GH,
                                          int *operation_handle,
                                          int *nPoints,
                                          int *nDims,

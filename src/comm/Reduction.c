@@ -236,15 +236,15 @@ int CCTK_Reduce(  cGH *GH,
 
 }
 
-void FMODIFIER FORTRAN_NAME(CCTK_Reduce)(cGH *GH, 
-                  int *fortranreturn,
-                  int *proc,
-                  int *operation_handle,
-                  int *num_out_vals,
-                  int *type_out_vals,
-                  void *out_vals,
-                  int *num_in_fields,
-                  ... )
+void FMODIFIER FORTRAN_NAME(CCTK_Reduce)(int *fortranreturn,
+                                         cGH *GH, 
+                                         int *proc,
+                                         int *operation_handle,
+                                         int *num_out_vals,
+                                         int *type_out_vals,
+                                         void *out_vals,
+                                         int *num_in_fields,
+                                         ... )
 { 
   va_list indices;
   int i;
@@ -518,8 +518,8 @@ int CCTK_ReduceArray(  cGH *GH,
   return 0;
 }
 
-void FMODIFIER FORTRAN_NAME(CCTK_ReduceArray)(cGH *GH, 
-                                              int *fortran_return,
+void FMODIFIER FORTRAN_NAME(CCTK_ReduceArray)(int *fortran_return,
+                                              cGH *GH, 
                                               int *proc,
                                               int *operation_handle,
                                               int *num_out_vals,
@@ -632,8 +632,8 @@ int CCTK_ReduceLocalScalar (cGH *GH, int proc, int operation_handle,
 }
 
 
-void FMODIFIER FORTRAN_NAME(CCTK_ReduceLocalScalar)(cGH *GH, 
-                                                    int *fortran_return,
+void FMODIFIER FORTRAN_NAME(CCTK_ReduceLocalScalar)(int *fortran_return,
+                                                    cGH *GH, 
                                                     int *proc,
                                                     int *operation_handle,
                                                     void *in_scalar,
