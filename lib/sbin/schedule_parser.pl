@@ -204,7 +204,7 @@ sub parse_schedule_ccl
         @list = split(",",$1);
         foreach $group (@list) 
         {
-          print $out "EnableGroupStorage(\"$group\");\n";
+          print $out "StorageOn(\"$group\");\n";
         }
       }
     }
@@ -217,7 +217,7 @@ sub parse_schedule_ccl
         @list = split(",",$1);
         foreach $group (@list) 
         {
-          print $out "EnableGroupCommunication(\"$group\");\n";
+          print $out "CommunicationOn(\"$group\");\n";
         }
       }
     }
@@ -340,7 +340,7 @@ sub parse_schedule_at_RFR {
     $line = @block[$i];
     if ($line =~ m/\s*LANG\s*:\s*FORTRAN\s*$/i)
     {
-      print $out "  rfrRegister(Cactus_data,".$routine."_wrapper,$when,$desc);\n";
+      print $out "  rfrRegisterFunction(Cactus_data,".$routine."_wrapper,$when,$desc);\n";
       $got_it++;
 
       # Write the rfr called fortran wrapper routine
