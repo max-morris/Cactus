@@ -412,9 +412,12 @@ sub parse_param_ccl
         }
         if($block !~ m:SHARES:)
         {
-          if($data[$line_number] =~ m:\s*\}\s*([^\s].*):)
+          if($data[$line_number] =~ m:\s*\}\s*([^\s].*)\s*:)
           {
               $default = $1;
+	      $default =~ m:^(.*[^\s])\s*:;
+	      $default = $1;
+	      
               if ($type =~ m:INT|REAL: && $default =~ m:":)
               {
                   $message = "String default given for $type $variable in $thorn";
