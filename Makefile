@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.94 2000-05-16 09:38:17 goodale Exp $
+#   @version $Id: Makefile,v 1.95 2000-07-19 09:48:24 goodale Exp $
 # @@*/
 
 ##################################################################################
@@ -742,6 +742,21 @@ $(addsuffix -sysinfo,$(CONFIGURATIONS)):
 	$(PERL) ./lib/sbin/SystemInfo.pl $(@:%-sysinfo=%) 
 endif
 
+
+# Create bugreport
+
+.PHONY bugreport:
+
+bugreport:
+	$(SHELL) ./lib/sbin/cctkbug
+
+
+ifneq ($strip($(CONFIGURATIONS)),) 
+.PHONY $(addsuffix -bugreport,$(CONFIGURATIONS)):
+
+$(addsuffix -bugreport,$(CONFIGURATIONS)):
+	$(SHELL) ./lib/sbin/cctkbug -c $(CONFIGS_DIR)/$(@:%-bugreport=%) 
+endif
 
 # Make the users manuals
 
