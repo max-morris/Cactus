@@ -244,7 +244,11 @@ else
           # add the necessary libraries according to the compiler version
           if test "`$F90 -V 2>&1 | grep Version | sed 's/.*Version //' | sed 's/\..*//'`" -ge 8; then
             if test "`$F90 -V 2>&1 | grep EM64T`"; then
-              intel_p4_opt_flag='-xP'
+#              TR: '-xP' only works on Intel EMT64 processors, not on Opterons
+#                  Since they cannot be distinguished, I commented out this
+#                  optimization option for now.
+#              intel_p4_opt_flag='-xP'
+              intel_p4_opt_flag=''
             else
               intel_p4_opt_flag='-xN'
             fi
@@ -330,7 +334,7 @@ else
       else
         : ${CFLAGS='-restrict'}
       fi
-      if test "$host_cpu" = 'ia64'; then
+      if test "$host_cpu" = 'ia64' -o "$host_cpu" = 'x86_64'; then
         : ${C_OPTIMISE_FLAGS='-O2 -ip'}
       else
         : ${C_OPTIMISE_FLAGS='-O3 -ip'}
@@ -362,7 +366,7 @@ else
       else
         : ${CXXFLAGS='-restrict'}
       fi
-      if test "$host_cpu" = 'ia64'; then
+      if test "$host_cpu" = 'ia64' -o "$host_cpu" = 'x86_64'; then
         : ${CXX_OPTIMISE_FLAGS='-O2 -ip'}
       else
         : ${CXX_OPTIMISE_FLAGS='-O3 -ip'}
