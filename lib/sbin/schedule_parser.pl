@@ -218,7 +218,14 @@ sub parse_schedule_ccl
         @list = split(",",$1);
         foreach $group (@list) 
         {
-          $out .= "CCTK_EnableGroupStorage(GH,\"$group\");\n";
+	  $this_imp = $implementation;
+	  $this_group = $group;
+	  if ($group =~ /(.*)::(.*)/)
+       	  {
+	    $this_imp = $1;
+	    $this_group = $2;
+	  }
+          $out .= "CCTK_EnableGroupStorage(GH,\"$this_imp\::$this_group\");\n";
         }
       }
     }
@@ -231,7 +238,14 @@ sub parse_schedule_ccl
         @list = split(",",$1);
         foreach $group (@list) 
         {
-          $out .= "CCTK_EnableGroupComm(GH,\"$implentation\::$group\");\n";
+	  $this_imp = $implementation;
+	  $this_group = $group;
+	  if ($group =~ /(.*)::(.*)/)
+	  {
+	    $this_imp = $1;
+	    $this_group = $2;
+	  }
+          $out .= "CCTK_EnableGroupComm(GH,\"$this_imp\::$this_group\");\n";
         }
       }
     }
@@ -334,9 +348,9 @@ sub parse_schedule_block
   ($routine,$when,$desc,@block) = &find_schedule_block(@data);
 
   # At the moment can schedule at RFR entry points of at STARTUP
-  if ($type eq "startup" && $when eq "STARTUP") {
+  if ($type eq "startup" && $when =~ /\s*STARTUP\s*/i) {
     ($wrapper_file, $proto, $out) = &parse_schedule_at_STARTUP($thorn,$implementation,$routine,$desc,@block);
-  } elsif ($type eq "rfr" && $when ne "STARTUP") {
+  } elsif ($type eq "rfr" && $when !~ /\s*STARTUP\s*/i) {
     ($wrapper_file,$proto,$out) = &parse_schedule_at_RFR($thorn,$implementation,$routine,$when,$desc,@block);
   }
 
@@ -401,12 +415,14 @@ sub parse_schedule_at_RFR {
       foreach $group (@list) 
       {
 	# Take of implementation if it is there
+	$this_imp = $implementation;
+	$this_group = $group;
 	if ($group =~ /(.*)::(.*)/)
 	{
-	  $implementation = $1;
-	  $group = $2;
+	  $this_imp = $1;
+	  $this_group = $2;
 	}
-	$out .= "  index = CCTK_GetGroupNum(\"$implementation\",\"$group\");\n";
+	$out .= "  index = CCTK_GetGroupNum(\"$this_imp\",\"$this_group\");\n";
 	$out .= "  if (index < 0) {\n";
 	$out .= "    printf(\"CCTK_GetGroupNum failed in ".$thorn."_rfr.c\\n\");\n";
         $out .= "  } else {\n"; 
@@ -420,13 +436,24 @@ sub parse_schedule_at_RFR {
   for ($i=0; $i<@block; $i++) 
   {
     $line = @block[$i];
-    if ($line =~ m/\s*COMMUNICATION\s*:\s*(.*)\s*\n/i)
+    if ($line =~ m/\s*COMMUNICATION\s*:\s*(.*)\s*/i)
     {
       @list = split(",",$1);
       foreach $group (@list) 
       {
-        $out .= "  index = CCTK_GetGroupNum(\"$implementation\::$group\");\n";
-        $out .= "  rfrRegisterComm(GH->rfr_top,GH,index,$routine);\n";
+	$this_imp = $implementation;
+	$this_group = $group;
+	if ($group =~ /(.*)::(.*)/)
+	{
+	  $this_imp = $1;
+	  $this_group = $2;
+	}
+	$out .= "  index = CCTK_GetGroupNum(\"$this_imp\",\"$this_group\");\n";
+	$out .= "  if (index < 0) {\n";
+	$out .= "    printf(\"CCTK_GetGroupNum failed in ".$thorn."_rfr.c\\n\");\n";
+        $out .= "  } else {\n";
+        $out .= "    rfrRegisterCommunication(GH->rfr_top,GH,$routine,index);\n";
+        $out .= "  }\n";
       }
     }
   }
@@ -441,7 +468,7 @@ sub parse_schedule_at_RFR {
       foreach $var (@list) 
       {
         $out .= "  index = CCTK_GetVarNum(\"$var\");\n";
-        $out .= "  rfrRegisterTrigger(GH->rfr_top,GH,$implentation\::$group,$routine);\n"
+        $out .= "  rfrRegisterTrigger(GH->rfr_top,GH,$\::$group,$routine);\n"
       }
     }
   }
