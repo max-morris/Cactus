@@ -299,33 +299,51 @@ to override some parts of the procedure.
 There are three ways to pass options to the configuration process.
 % from the gmake command line.
 \begin{enumerate}
-\item{} Create a file \texttt{\~{ }/.cactus/config}.
+  \item[1a]{}
+    Either: create a default configuration file \texttt{\$\{HOME\}/.cactus/config}.
 
-All available configuration options may be set in the file {\tt
-\~{ }/.cactus/config}, any which are not set will take a default value.
-The file should contain lines of the form:
+    All available configuration options may be set in a default options file
+    {\tt \$\{HOME\}/.cactus/config}, any which are not set will take a default
+    value. The file should contain lines of the form:
 
-{\tt <option> [=] ...}
+    {\tt <option> [=] ...}
 
-The equals sign is optional.
+    The equals sign is optional. Spaces are allowed everywhere.
+    Text starting wit a {\tt '\#'} character will be ignored as a comment.
 
-\item{} Add the options to a configuration file and use,
+  \item[1b]{}
+    Or: list your Cactus configuration files in an environment variable
+    {\tt CACTUS\_CONFIG\_FILES}:
 
-{\tt gmake <config>-config  options=<filename>}
+    {\tt gmake <config>-config  CACTUS\_CONFIG\_FILES=$<$list of config files$>$}
 
-The options file has the same format as {\tt \~{ }/.cactus/config}.
+    Multiple configuration files, with their file names separated by a {\tt ':'}
+    character, will be processed in order.
+    Each file should be given by its full path.
+    The options file has the same format as {\tt \$\{HOME\}/.cactus/config}.
 
-\item{} Pass the options individually on the command line,
+  \item[2]{}
+    Add the options to a configuration file and use,
 
-{\tt gmake <configuration name>-config  <option name>=<chosen value>, ...}
+    {\tt gmake <config>-config  options=<filename>}
 
-Not all configuration options can be set on the command line.  Those that can
-be set are indicated in the table below.
+    The options file has the same format as {\tt \$\{HOME\}/.cactus/config}.
+
+  \item[3]{}
+    Pass the options individually on the command line,
+
+    {\tt gmake <configuration name>-config  <option name>=<chosen value>, ...}
+
+    Not all configuration options can be set on the command line.
+    Those that can be set are indicated in the table below.
 \end{enumerate}
 
 They are listed here in order of increasing precedence, e.g. options
 set on the command line will take priority over (potentially
-conflicting) options set in \texttt{\~{ }/.cactus/config}.
+conflicting) options set in \texttt{\$\{HOME\}/.cactus/config} or other
+Cactus configuration files. Default options from
+\texttt{\$\{HOME\}/.cactus/config} will only be read if the
+environment variable {\tt CACTUS\_CONFIG\_FILES} is not set.
 
 It is important to note that these methods cannot be used to, for example, add
 options to the default values for {\tt CFLAGS}.  Setting any variable in the
