@@ -828,7 +828,7 @@ EOT
   open(OUT, "| perl $cctk_home/lib/sbin/c_file_processor.pl $top/config-data > CParameterStructNames.h") || die "Cannot create CParameterStructNames.h by running c_file_procesor.pl";
   foreach $structure (keys %structures)
   {
-    print OUT "#define $structure FORTRAN_NAME($structures{$structure})\n";
+    print OUT "#define $structure FORTRAN_COMMON_NAME($structures{$structure})\n";
   }
 
   print OUT "\n";

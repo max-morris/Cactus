@@ -15,8 +15,8 @@ $tmphome = shift(@ARGV);
 print "Determining number of fortran underscores...\n";
 
 push(@routines, &test_fortran_name); 
-# Comment out this one, as it seems to be the same on all machines.
-#push(@routines, &test_fortran_common_name); 
+# Some compilers do something really strange with common blocks.
+push(@routines, &test_fortran_common_name); 
 push(@routines, "1;");
 
 # Create the perl module to map the fortran names.
@@ -192,10 +192,11 @@ EOT
   while(<IN>)
   {
     $line = $_;
-    if($line =~ m:(TEST_COMMON)(_*):i)
+    if($line =~ m:(_[\w_]*)+(TEST_COMMON)(_*):i)
     {
-      $name = $1;
-      $underscores = $2;
+      $prefix = $1;
+      $name = $2;
+      $underscores = $3;
       
       if($name =~ m:TEST_COMMON:)
       {
@@ -252,7 +253,7 @@ sub fortran_common_name
 	\$new_name = \$new_name.\"$normal_suffix\";
     }
 
-    return \$new_name;
+    return \"$prefix\".\$new_name;
 }
 
 ";
