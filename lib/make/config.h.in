@@ -57,6 +57,9 @@
 
 #undef FMODIFIER
 
+/* How to create a directory */
+
+#undef MKDIR
 
 /******************************************************************************/
 
