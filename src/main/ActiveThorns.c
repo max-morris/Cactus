@@ -313,15 +313,14 @@ int CCTK_IsThornActive(const char *name)
   return retval;
 }
 
-/*int FMODIFIER FORTRAN_NAME(CCTK_IsThornActive)(ONE_FORTSTRING_ARG)
+void FMODIFIER FORTRAN_NAME(CCTK_IsThornActive)(int *retval, ONE_FORTSTRING_ARG)
 {
-  int retval;
   ONE_FORTSTRING_CREATE(name) 
-  retval = CCTK_IsThornActive(name);
+  *retval = CCTK_IsThornActive(name);
   free(name);
-  return retval;
 }
-*/
+
+
 /*@@
    @routine    CCTK_IsImplementationActive
    @date       Sun Jul  4 17:46:56 1999
@@ -360,6 +359,14 @@ int CCTK_IsImplementationActive(const char *name)
   }
 
   return retval;
+}
+
+void FMODIFIER FORTRAN_NAME(CCTK_IsImplementationActive)
+     (int *retval, ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE(name) 
+  *retval = CCTK_IsImplementationActive(name);
+  free(name);
 }
 
  /*@@
