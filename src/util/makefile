@@ -1,5 +1,5 @@
 # Makefile for test drivers in this directory
-# $header$
+# $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/src/util/makefile,v 1.2 2002-01-21 15:03:58 rideout Exp $
 
 EXTRA_GCC_FLAGS := -pipe \
                    -ffast-math \
