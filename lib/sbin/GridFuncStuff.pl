@@ -967,7 +967,7 @@ sub CreateThornGroupInitialisers
     if ($type eq 'ARRAY')
     {
       $string = $rhinterface_db->{"\U$thorn GROUP $group\E SIZE"};
-      &CheckArraySizes($string,$thorn,$rhparameter_db,$rhinterface_db);
+      &CheckArraySizes($string,$thorn,$rhparameter_db,$rhinterface_db,$group);
       $dim = $rhinterface_db->{"\U$thorn GROUP $group\E DIM"};
       $numsize = split (',', $string);
       if ($dim != $numsize)
@@ -1026,7 +1026,7 @@ sub CreateThornGroupInitialisers
     if(defined($rhinterface_db->{"\U$thorn GROUP $group\E VARARRAY_SIZE"}))
     {
       # Check that the size is allowed.
-      &CheckArraySizes($rhinterface_db->{"\U$thorn GROUP $group\E VARARRAY_SIZE"},$thorn,$rhparameter_db,$rhinterface_db);
+      &CheckArraySizes($rhinterface_db->{"\U$thorn GROUP $group\E VARARRAY_SIZE"},$thorn,$rhparameter_db,$rhinterface_db,$group);
       # Pass in the size of the GV array, which may be a valid parameter expression
       $line = '                         "'
             . $rhinterface_db->{"\U$thorn GROUP $group\E VARARRAY_SIZE"}
@@ -1119,7 +1119,7 @@ sub CreateThornGroupInitialisers
 #@@*/
 sub CheckArraySizes
 {
-  my($size,$thornname,$rhparameter_db,$rhinterface_db) = @_;
+  my($size,$thornname,$rhparameter_db,$rhinterface_db,$group) = @_;
   my($par,$thorn,$base);
 
   # append a dummy space character to catch expressions with trailing commas
@@ -1159,7 +1159,7 @@ sub CheckArraySizes
 #                  "",__LINE__,__FILE__);
 #     }
 
-    &VerifyParameterExpression($par,$thornname,$rhparameter_db,$rhinterface_db);
+    &VerifyParameterExpression($par,$thornname,$rhparameter_db,$rhinterface_db,$group);
   }
 
 }
@@ -1178,7 +1178,7 @@ sub CheckArraySizes
 #@@*/
 sub VerifyParameterExpression
 {
-  my($expression,$thornname,$rhparameter_db,$rh_interface_db) = @_;
+  my($expression,$thornname,$rhparameter_db,$rh_interface_db,$group) = @_;
   my($i,$count,@fields);
   my $msg = "Array size in '$thornname' is an invalid arithmetic expression\n"
             . '          ';
@@ -1260,7 +1260,7 @@ sub VerifyParameterExpression
             $rhparameter_db->{"\U$thorn Global\E variables"} !~ m:$base:i &&
             $rhparameter_db->{"\U$thorn Restricted\E variables"} !~ m:$base:i)
         {
-          &CST_error(0,"Array size '$expression' in '$thornname' contains a constant which isn\'t a parameter",
+          &CST_error(0,"Expression '$expression' in group: $group, type: " . $rh_interface_db->{"\U$thorn GROUP ${group}\E GTYPE"} . " and thorn: '$thornname' contains a constant which isn\'t a parameter",
                      '',__LINE__,__FILE__);
         }
       }
