@@ -12,14 +12,15 @@
 #include <string.h>
 #include <stdarg.h>
 
-#include "cctk_WarnLevel.h"
-#include "cctk_Config.h"
-#include "cctk_Flesh.h"
-#include "cctk_Groups.h"
-#include "cctk_Types.h"
 #include "cctk_Constants.h"
+#include "cctk_Config.h"
+#include "cctk_WarnLevel.h"
+#include "cctk_Flesh.h"
 #include "cctk_FortranString.h"
+#include "cctk_Groups.h"
 #include "cctk_Parameter.h"
+#include "cctk_Types.h"
+
 #include "cctki_Stagger.h"
 
 /*#define DEBUG_GROUPS*/
@@ -154,13 +155,15 @@ int CCTK_GroupIndex(const char *fullgroupname)
   {
   case 1:
 
-    CCTK_Warn(2,__LINE__,__FILE__,"Cactus","Group name not in correct format implementation::group");
+    CCTK_VWarn(2,__LINE__,__FILE__,"Cactus",
+	       "CCTK_GroupIndex: Group name %s not in format implementation::group",
+	       fullgroupname);
     retval = -3;
     break;
 
   case 2:
 
-    CCTK_Warn(2,__LINE__,__FILE__,"Cactus","Memory allocation failed");
+    CCTK_Warn(2,__LINE__,__FILE__,"Cactus","CCTK_GroupIndex: Memory allocation failed");
     retval = -4;
     break;
 
@@ -181,11 +184,9 @@ int CCTK_GroupIndex(const char *fullgroupname)
     }
     else
     {
-      /*      char *message;*/
-      /*      message = (char *)malloc( (100+strlen(fullgroupname))*sizeof(char) ); */
-      /*      sprintf(message,"No group found with the name %s",fullgroupname); */
-      CCTK_VWarn(2,__LINE__,__FILE__,"Cactus", "No group found with the name %s", fullgroupname);
-      /*      if (message) free(message); */
+      CCTK_VWarn(2,__LINE__,__FILE__,"Cactus", 
+		 "CCTK_GroupIndex: No group %s found", 
+		 fullgroupname);
       retval = -1;
     }
   }
@@ -294,7 +295,7 @@ int CCTKi_CreateGroup(const char *gname,
   else
   {
     CCTK_Warn(1,__LINE__,__FILE__,"Cactus",
-	      "Unrecognised group scope in CCTK_CreateGroup");
+	      "CCTKi_CreateGroup: Unrecognised group scope");
   }
 
   /* Allocate storage for the group and setup some stuff. */
@@ -355,7 +356,7 @@ int CCTKi_CreateGroup(const char *gname,
 
   if(retval)
   {
-    CCTK_Warn(4,__LINE__,__FILE__,"Cactus","Error in CCTK_CreateGroup");
+    CCTK_Warn(4,__LINE__,__FILE__,"Cactus","CCTK_CreateGroup: Error");
   }
 
   return retval;
@@ -389,7 +390,7 @@ static cGroupDefinition *CCTKi_SetupGroup(const char *implementation,
   char *fullname1;
 
   fullname1 = (char *) malloc( (strlen(implementation)+strlen(name)+3)
-                                    *sizeof(char));
+			       *sizeof(char));
   sprintf(fullname1,"%s::%s",implementation,name); 
 
   if((group_num = CCTK_GroupIndex(fullname1)) == -1)
@@ -534,21 +535,18 @@ int CCTK_VarIndex(const char *variable_name)
   }
   else if (ierr == 1)
   {
-    message = (char *)malloc( (100+strlen(variable_name))*sizeof(char) );
-    sprintf(message,"Full name %s in wrong format in CCTK_VarNum",
-            variable_name);
-    CCTK_Warn(2,__LINE__,__FILE__,"Cactus",message);
-    if (message) free(message);
+    CCTK_VWarn(2,__LINE__,__FILE__,"Cactus",
+            "CCTK_VarIndex: Full name %s in wrong format", variable_name);
     retval = -3; 
   }
   else if (ierr == 2)
   {
-    CCTK_Warn(2,__LINE__,__FILE__,"Cactus","Memory allocation failed");
+    CCTK_Warn(2,__LINE__,__FILE__,"Cactus","CCTK_VarIndex: Memory allocation failed");
     retval = -4;
   }
   else
   {
-    CCTK_Warn(1,__LINE__,__FILE__,"Cactus","Error failed to be caught");
+    CCTK_Warn(1,__LINE__,__FILE__,"Cactus","CCTK_VarIndex: Error failed to be caught");
   }
 
 #ifdef DEBUG_GROUPS
@@ -1382,13 +1380,13 @@ int CCTK_GroupTypeFromVarI(int var)
   }
 
 #ifdef DEBUG_GROUPS
-  CCTK_PRINTSEPARATOR
-  printf("In CCTK_GroupTypeFromVarI\n");
+
+  printf("\nIn CCTK_GroupTypeFromVarI\n");
   printf("-------------------------\n");
   printf("Variable index = %d\n",var);
   printf("Variable name = %s\n",CCTK_FullName(var));
-  printf("Group type = %d\n",gtype);
-  CCTK_PRINTSEPARATOR
+  printf("Group type = %d\n\n",gtype);
+
 #endif
 
   return gtype;
@@ -1792,10 +1790,9 @@ int CCTK_VarTypeSize(int vtype)
       break;
 
     default:
-      msg = malloc( 200*sizeof(char) );
-      sprintf(msg,"Unknown variable type (%d) in CCTK_VarTypeSize",vtype);
-      CCTK_Warn(0,__LINE__,__FILE__,"Cactus",msg);
-      free(msg);
+      CCTK_VWarn(0,__LINE__,__FILE__,
+		 "Cactus",
+		 "CCTK_VarTypeSize: Unknown variable type (%d)",vtype);
       var_size = 1;
 
   }
