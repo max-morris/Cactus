@@ -7,7 +7,7 @@
    @enddesc 
  @@*/
 
-#define DEBUG_CCTK
+/*#define DEBUG_CCTK*/
 
 #include <stdio.h>
 #include <stdlib.h>
