@@ -1584,7 +1584,7 @@ static int ParameterSetReal(t_param *param, const char *value)
     if(CCTK_IsThornActive(range->origin)||CCTK_Equals(param->props->thorn, range->origin))
     {
 #ifndef CCTK_PARAMUNCHECKED
-      if(Util_DoubleInRange(inval, range->range)||CCTK_Equals(param->props->thorn, range->origin))
+      if(Util_DoubleInRange(inval, range->range))
       {
 #endif
         *val = inval;
