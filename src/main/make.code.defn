@@ -12,6 +12,7 @@ CallStartupFunctions.c\
 CommandLine.c\
 ConfigData.c\
 Coord.c\
+DefaultTimers.c\
 Dummies.c\
 flesh.cc\
 FortranWrappers.c\

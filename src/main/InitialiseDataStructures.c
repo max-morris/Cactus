@@ -38,6 +38,9 @@ static char *rcsid = "$Id$";
 
 int InitialiseDataStructures(tFleshConfig *ConfigData)
 {
+
+  CCTKi_RegisterDefaultTimerFunctions();
+
   ConfigData->nGHs = 0;
   ConfigData->GH = NULL;
 

@@ -26,6 +26,18 @@ typedef struct
   cInternalTimer last;  
 } cTimer;
 
+typedef struct
+{
+  void *(*create)(int);
+  void (*destroy)(int, void *);
+  void (*start)(int, void *);
+  void (*stop)(int, void *);
+  void (*reset)(int, void *);
+  double (*get)(int, void *);
+  void (*set)(int, void *, double);
+} t_TimerFuncs;
+
+
 /* Function prototypes */
 
 #ifdef __cplusplus
@@ -37,6 +49,8 @@ cTimer *CactusNewTimer(void);
 void CactusStartTimer(cTimer *timer);
 void CactusStopTimer(cTimer *timer);
 void CactusResetTimer(cTimer *timer);
+
+int CCTK_TimerRegister(const char *name, t_TimerFuncs *functions);
 
 #ifdef __cplusplus
 	   }

@@ -42,18 +42,6 @@ void CactusResetTimer(cTimer *timer)
 {
 }
 
-
-typedef struct
-{
-  void *(*create)(int);
-  void (*destroy)(int, void *);
-  void (*start)(int, void *);
-  void (*stop)(int, void *);
-  void (*reset)(int, void *);
-  char *(*get)(int, void *);
-  void (*set)(int, void *, const char *);
-} t_TimerFuncs;
-
 typedef struct
 {
   void **data;
@@ -338,7 +326,7 @@ char *CCTK_TimerGet(const char *name)
   t_TimerFuncs *funcs;
   int this_timer;
   int handle;
-  char *this_val;
+  char this_val[100];
   char *retval;
   char *temp;
   int retlength;
@@ -355,7 +343,7 @@ char *CCTK_TimerGet(const char *name)
 	for(handle = 0; handle < n_timertypes; handle++)
 	{
 	  funcs = (t_TimerFuncs *)Util_GetHandledData(handles, handle);
-	  this_val = funcs->get(this_timer, timer->data[handle]);
+	  sprintf(this_val, "%lf", funcs->get(this_timer, timer->data[handle]));
 	  retlength += 2+strlen(this_val);
 	  temp = realloc(retval, retlength);
 	  if(temp)
