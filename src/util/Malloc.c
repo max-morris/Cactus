@@ -13,9 +13,11 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "cctk_WarnLevel.h"
-#include "cctk_Malloc.h"
+#include "cctk_Comm.h"
 #include "cctk_Flesh.h"
+#include "cctk_Malloc.h"
+#include "cctk_WarnLevel.h"
+
 #include "StoreHandledData.h"
 
 /*$#define MEMDEBUG$*/
@@ -143,9 +145,12 @@ void *CCTKi_Malloc(size_t size, int line, const char *file)
   totmem += size;
 
   /*$retval = CCTKi_UpdateMemByFile(info->size, line, file);
-  if (retval<0) CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
-			   "CCTKi_UpdateMemByFile failed for malloc in %s, line %d",
-			   file,line);$*/
+  if (retval<0) 
+  {
+    CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
+               "CCTKi_UpdateMemByFile failed for malloc in %s, line %d",
+                file,line);$
+  */
 
 #ifdef MEMDEBUG
   printf("Allocating %lu - by %s in line %d TOTAL: %lu\n",
@@ -179,9 +184,12 @@ void *CCTKi_Realloc(void *pointer, size_t size, int line, const char *file)
  
   /* Realloc called with NULL equiv. to malloc */
   if (pointer==NULL)
+  {
     return(CCTKi_Malloc(size, line, file));
+  }
 
-  if (size==0) {
+  if (size==0) 
+  {
     CCTKi_Free(pointer, line, file);
     return(NULL);
   }
@@ -193,7 +201,8 @@ void *CCTKi_Realloc(void *pointer, size_t size, int line, const char *file)
   if (info->ok!=OK_INTEGRITY)  
   {
     CCTK_VWarn(0,__LINE__,__FILE__,"Cactus",
-	       "CCTKi_Realloc: Malloc database corrupted, Reallocation called from %s, line %d.\n%s", 
+	       "CCTKi_Realloc: Malloc database corrupted, "
+	       "Reallocation called from %s, line %d.\n%s", 
 	       file,line,
 	       "Was this memory allocated with CCTK_[RE/C/M]ALLOC ?\n");
     /*$CCTK_Abort(NULL);$*/
@@ -201,16 +210,15 @@ void *CCTKi_Realloc(void *pointer, size_t size, int line, const char *file)
   }
   else 
   {
-   
     /* reallocate starting at info pointer */
     data = (char*)realloc(info, size+sizeof(t_mallocinfo));
     if (!data)
-      {
-	CCTK_VWarn(0,__LINE__,__FILE__,"Cactus",
-		   "CCTKi_Realloc: Could not reallocate memory.  "
-		   "Reallocation called from %s, line %d. \n",file,line);
-	/*$CCTK_Abort(NULL);$*/
-      }
+    {
+      CCTK_VWarn(0,__LINE__,__FILE__,"Cactus",
+		 "CCTKi_Realloc: Could not reallocate memory.  "
+		 "Reallocation called from %s, line %d. \n",file,line);
+      /*$CCTK_Abort(NULL);$*/
+    }
 
     /* update some static variables */
     pastmem = totmem;
@@ -288,7 +296,8 @@ void CCTKi_Free(void *pointer, int line, const char *file)
   if (info->ok!=OK_INTEGRITY)  
   { 
     CCTK_VWarn(0,__LINE__,__FILE__,"Cactus",
-	       "CCTKi_Free: Malloc database corrupted. Free called from:\n %s, line %d.%s\n",
+	       "CCTKi_Free: Malloc database corrupted. "
+	       "Free called from:\n %s, line %d.%s\n",
 	       file,line,
 	       "Was this memory allocated with CCTK_[RE/C/M]ALLOC ?!\n");
     CCTK_Abort(NULL,0);
@@ -338,26 +347,27 @@ int CCTKi_UpdateMemByFile(int size, int line, const char *file)
       memfile->tsize+=size;
       retval = 0;
     }
-    else {
+    else 
+    {
       retval = -3;
     }
   }
   else
+  {
+    /* Memory entry under <file> has to be created */
+    memfile = (t_memhash*) malloc( sizeof(t_memhash));
+    if (memfile)
     {
-      /* Memory entry under <file> has to be created */
-      memfile = (t_memhash*) malloc( sizeof(t_memhash));
-      if (memfile)
-      {
-	memfile->size += size;
-	memfile->tsize+= size+sizeof(t_memhash);
-	memfile->file  = file;
-	retval = Util_NewHandle(&memfileDB, file, memfile);
-      }
-      else
-      {
-	retval = -1;
-      }
+      memfile->size += size;
+      memfile->tsize+= size+sizeof(t_memhash);
+      memfile->file  = file;
+      retval = Util_NewHandle(&memfileDB, file, memfile);
     }
+    else
+    {
+      retval = -1;
+    }
+  }
   return retval;
 }
 
@@ -396,7 +406,8 @@ int CCTK_MemTicketRequest(void)
   {
     this_ticket=-3;
   }
-  else  {
+  else  
+  {
     tmem =(t_memticket*) malloc(sizeof(t_memticket));
 
     if (tmem) 
@@ -404,7 +415,8 @@ int CCTK_MemTicketRequest(void)
       tmem->size  = CCTK_TotalMemory();
       this_ticket = Util_NewHandle(&ticketDB, tname, tmem);
     }
-    else {
+    else 
+    {
       this_ticket = -2;
     } 
   }
@@ -533,9 +545,6 @@ unsigned long int CCTK_TotalMemory(void)
 
 
 
-
-
-
  /*@@
    @routine    testmalloc
    @date       Sun Mar 12 17:31:44 2000
@@ -556,11 +565,10 @@ unsigned long int CCTK_TotalMemory(void)
 int main(int argc, char *argv[])
 {
   int    *myint;
+  int i,n,ticket[3];
   double *mydouble;
   char   *mychar;
-  
-  int i,n,ticket[3];
-   
+     
   n = 10;
   
   printf("### Start Allocating ...\n");
