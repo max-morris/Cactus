@@ -110,7 +110,7 @@ cGH *CactusDefaultSetupGH(tFleshConfig *config, int convergence_level)
     thisGH->cctk_origin_space = (CCTK_REAL *)malloc(thisGH->cctk_dim*sizeof(CCTK_REAL));
 
     thisGH->cctk_delta_time = 1;
-    thisGH->cctk_convlevel = 1;
+    thisGH->cctk_convlevel = 0;
 
     n_variables = CCTK_NumVars();
 
