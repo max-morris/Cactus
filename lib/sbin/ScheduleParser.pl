@@ -420,7 +420,7 @@ sub ParseScheduleBlock
           $language= $1;
           if ($type eq "GROUP")
           {
-            &CST_error(1, "Scheduling group \"$name\" with LANG specifier in thorn \"$thorn\"");
+            &CST_error(1, "Scheduling group \"$name\" with LANG specifier in thorn \"$thorn\"","Groups should not have a LANG specificier",__LINE__,__FILE__);
           }
         }
       }
