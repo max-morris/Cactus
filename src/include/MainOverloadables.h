@@ -18,7 +18,7 @@
 #endif
 
 #define RETURN_TYPE int
-#define ARGUMENTS tFleshConfig *
+#define ARGUMENTS tFleshConfig *config
 
 OVERLOADABLE(Initialise)
 OVERLOADABLE(Evolve)
