@@ -121,34 +121,37 @@ from Fortran.
   Return the name of the compiled thorn with given index
 
 \item[\code{CCTK\_CoordDir}] [\pageref{CCTK-CoordDir}]
-  Give the direction for a given coordinate name
+  Give the direction for a given coordinate name \textbf{(deprecated)}
 
 \item[\code{CCTK\_CoordIndex}] [\pageref{CCTK-CoordIndex}]
-  Give the grid variable index for a given coordinate
+  Give the grid variable index for a given coordinate \textbf{(deprecated)}
 
 \item[\code{CCTK\_CoordRange}] [\pageref{CCTK-CoordRange}]
   Return the global upper and lower bounds for a given coordinate name
-  on a cctkGH
+  on a cctkGH \textbf{(deprecated)}
 
 \item[\code{CCTK\_CoordRegisterData}] [\pageref{CCTK-CoordRegisterData}]
   Register a coordinate as belonging to a coordinate system,
   with a given name and direction, and optionally with a grid variable
+  \textbf{(deprecated)}
 
 \item[\code{CCTK\_CoordRegisterRange}] [\pageref{CCTK-CoordRegisterRange}]
   Saves the global upper and lower bounds for a given coordinate name
-  on a cctkGH
+  on a cctkGH \textbf{(deprecated)}
 
 \item[\code{CCTK\_CoordRegisterSystem}] [\pageref{CCTK-CoordRegisterSystem}]
-  Registers a coordinate system with a given dimension
+  Registers a coordinate system with a given dimension \textbf{(deprecated)}
 
 \item[\code{CCTK\_CoordSystemDim}] [\pageref{CCTK-CoordDim}]
-  Provides the dimension of a given coordinate system
+  Provides the dimension of a given coordinate system \textbf{(deprecated)}
 
 \item[\code{CCTK\_CoordSystemHandle}] [\pageref{CCTK-CoordSystemHandle}]
   Get the handle associated with a registered coordinate system
+  \textbf{(deprecated)}
 
 \item[\code{CCTK\_CoordSystemName}] [\pageref{CCTK-CoordSystemName}]
   Provides the name of the coordinate system identified by its handle
+  \textbf{(deprecated)}
 
 \item[\code{CCTK\_CreateDirectory}] [\pageref{CCTK-CreateDirectory}]
   Creates a directory
@@ -478,19 +481,24 @@ from Fortran.
   Returns the total number of I/O methods registered with the flesh
 
 \item[\code{CCTK\_NumTimeLevels}] [\pageref{CCTK-NumTimeLevels}]
-  Returns the number of active timelevels from a group name (deprecated)
+  Returns the number of active timelevels from a group name
+  \textbf{(deprecated)}
 
 \item[\code{CCTK\_NumTimeLevelsGI}] [\pageref{CCTK-NumTimeLevels}]
-  Returns the number of active timelevels from a group index (deprecated)
+  Returns the number of active timelevels from a group index
+  \textbf{(deprecated)}
 
 \item[\code{CCTK\_NumTimeLevelsGN}] [\pageref{CCTK-NumTimeLevels}]
-  Returns the number of active timelevels from a group name (deprecated)
+  Returns the number of active timelevels from a group name
+  \textbf{(deprecated)}
 
 \item[\code{CCTK\_NumTimeLevelsVI}] [\pageref{CCTK-NumTimeLevels}]
-  Returns the number of active timelevels from a variable index (deprecated)
+  Returns the number of active timelevels from a variable index
+  \textbf{(deprecated)}
 
 \item[\code{CCTK\_NumTimeLevelsVN}] [\pageref{CCTK-NumTimeLevels}]
-  Returns the number of active timelevels from a variable name (deprecated)
+  Returns the number of active timelevels from a variable name
+  \textbf{(deprecated)}
 
 \item[\code{CCTK\_NumTimerClocks}] [\pageref{CCTK-NumTimerClocks}]
   Returns the number of clocks in a {\t cTimerData} structure.
@@ -1661,9 +1669,16 @@ Error.
 \end{ErrorSection}
 \end{FunctionDescription}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\begin{CCTKFunc}{CCTK\_CoordDir}%%%
+{Give the direction for a given coordinate.
 
-\begin{CCTKFunc}{CCTK\_CoordDir}{Give the direction for a given coordinate.}
+\textbf{All the \texttt{CCTI\_Coord*} APIs are deprecated,
+and will probably be phased out fairly soon.
+New code should use the APIs provided by the \texttt{CoordBase} thorn
+instead (this lives in the \texttt{CactusBase} arrangement).}
+}
 \label{CCTK-CoordDir}
 \subroutine{int}{integer}{dir}
 \argument{const char *}{character*(*)}{coordname}
@@ -1689,7 +1704,16 @@ The coordinate name is independent of the grid function name.
 \end{errorcodes}
 \end{CCTKFunc}
 
-\begin{CCTKFunc}{CCTK\_CoordIndex}{Give the grid variable index for a given coordinate.}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{CCTKFunc}{CCTK\_CoordIndex}%%%
+{Give the grid variable index for a given coordinate.
+
+\textbf{All the \texttt{CCTI\_Coord*} APIs are deprecated,
+and will probably be phased out fairly soon.
+New code should use the APIs provided by the \texttt{CoordBase} thorn
+instead (this lives in the \texttt{CactusBase} arrangement).}
+}
 \label{CCTK-CoordIndex}
 \subroutine{int}{integer}{index}
 \argument{int}{integer}{direction}
@@ -1722,8 +1746,17 @@ will be used if the coordinate direction is given as less than or equal to zero,
 \end{errorcodes}
 \end{CCTKFunc}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 % Coord.c
-\begin{CCTKFunc}{CCTK\_CoordRange}{Return the global upper and lower bounds for a given coordinate}
+\begin{CCTKFunc}{CCTK\_CoordRange}%%%
+{Return the global upper and lower bounds for a given coordinate.
+
+\textbf{All the \texttt{CCTI\_Coord*} APIs are deprecated,
+and will probably be phased out fairly soon.
+New code should use the APIs provided by the \texttt{CoordBase} thorn
+instead (this lives in the \texttt{CactusBase} arrangement).}
+}
 \label{CCTK-CoordRange}
 \subroutine{int}{integer}{ierr}
 \argument{const cGH *}{CCTK\_POINTER}{cctkGH}
@@ -1762,9 +1795,17 @@ name will be used.
 \end{errorcodes}
 \end{CCTKFunc}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 % Coord.c
-\begin{CCTKFunc}{CCTK\_CoordRegisterData}{Define a coordinate in a given coordinate
-system.}
+\begin{CCTKFunc}{CCTK\_CoordRegisterData}%%%
+{Define a coordinate in a given coordinate system.
+
+\textbf{All the \texttt{CCTI\_Coord*} APIs are deprecated,
+and will probably be phased out fairly soon.
+New code should use the APIs provided by the \texttt{CoordBase} thorn
+instead (this lives in the \texttt{CactusBase} arrangement).}
+}
 \label{CCTK-CoordRegisterData}
 \subroutine{int}{integer}{ierr}
 \argument{int}{integer}{direction}
@@ -1797,9 +1838,18 @@ using \code{CCTK\_CoordRegisterSystem}.
 \end{errorcodes}
 \end{CCTKFunc}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 % Coord.c
-\begin{CCTKFunc}{CCTK\_CoordRegisterRange}{Assign the global maximum and minimum
-values of a coordinate on a given grid hierachy}
+\begin{CCTKFunc}{CCTK\_CoordRegisterRange}%%%
+{Assign the global maximum and minimum
+values of a coordinate on a given grid hierachy.
+
+\textbf{All the \texttt{CCTI\_Coord*} APIs are deprecated,
+and will probably be phased out fairly soon.
+New code should use the APIs provided by the \texttt{CoordBase} thorn
+instead (this lives in the \texttt{CactusBase} arrangement).}
+}
 \label{CCTK-CoordRegisterRange}
 \subroutine{int}{integer}{ierr}
 \argument{const cGH *}{CCTK\_POINTER}{cctkGH}
@@ -1843,9 +1893,17 @@ can be accessed by \code{CCTK\_CoordRange}.
 \end{errorcodes}
 \end{CCTKFunc}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 % Coord.c
-\begin{CCTKFunc}{CCTK\_CoordRegisterSystem}{Assigns a coordinate system with
-a chosen name and dimension}
+\begin{CCTKFunc}{CCTK\_CoordRegisterSystem}%%%
+{Assigns a coordinate system with a chosen name and dimension.
+
+\textbf{All the \texttt{CCTI\_Coord*} APIs are deprecated,
+and will probably be phased out fairly soon.
+New code should use the APIs provided by the \texttt{CoordBase} thorn
+instead (this lives in the \texttt{CactusBase} arrangement).}
+}
 \label{CCTK-CoordRegisterSystem}
 \subroutine{int}{integer}{ierr}
 \argument{int}{integer}{dimension}
@@ -1872,7 +1930,16 @@ a chosen name and dimension}
 \end{errorcodes}
 \end{CCTKFunc}
 
-\begin{CCTKFunc}{CCTK\_CoordSystemDim}{Give the dimension for a given coordinate system.}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{CCTKFunc}{CCTK\_CoordSystemDim}%%%
+{Give the dimension for a given coordinate system.
+
+\textbf{All the \texttt{CCTI\_Coord*} APIs are deprecated,
+and will probably be phased out fairly soon.
+New code should use the APIs provided by the \texttt{CoordBase} thorn
+instead (this lives in the \texttt{CactusBase} arrangement).}
+}
 \label{CCTK-CoordDim}
 \subroutine{int}{integer}{dim}
 \argument{const char *}{character*(*)}{systemname}
@@ -1895,8 +1962,17 @@ a chosen name and dimension}
 \end{errorcodes}
 \end{CCTKFunc}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 % Coord.c
-\begin{CCTKFunc}{CCTK\_CoordSystemHandle}{Returns the handle associated with a registered coordinate system}
+\begin{CCTKFunc}{CCTK\_CoordSystemHandle}%%%
+{Returns the handle associated with a registered coordinate system.
+
+\textbf{All the \texttt{CCTI\_Coord*} APIs are deprecated,
+and will probably be phased out fairly soon.
+New code should use the APIs provided by the \texttt{CoordBase} thorn
+instead (this lives in the \texttt{CactusBase} arrangement).}
+}
 \label{CCTK-CoordSystemHandle}
 \subroutine{int}{integer}{handle}
 \argument{const char *}{character*(*)}{systemname}
@@ -1922,8 +1998,17 @@ A negative return code indicates an invalid coordinate system name.
 \end{errorcodes}
 \end{CCTKFunc}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 % Coord.c
-\begin{CCTKFunc}{CCTK\_CoordSystemName}{Returns the name of a registered coordinate system}
+\begin{CCTKFunc}{CCTK\_CoordSystemName}%%%
+{Returns the name of a registered coordinate system.
+
+\textbf{All the \texttt{CCTI\_Coord*} APIs are deprecated,
+and will probably be phased out fairly soon.
+New code should use the APIs provided by the \texttt{CoordBase} thorn
+instead (this lives in the \texttt{CactusBase} arrangement).}
+}
 \label{CCTK-CoordSystemName}
 \subroutine{const char *}{integer}{systemname}
 \argument{int}{integer}{handle}
@@ -1949,6 +2034,7 @@ A NULL pointer is returned if an invalid handle was given.
 \end{errorcodes}
 \end{CCTKFunc}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Coord.c
 \begin{CCTKFunc}{CCTK\_CreateDirectory}{Create a directory with required permissions}
