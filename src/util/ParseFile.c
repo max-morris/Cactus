@@ -51,6 +51,14 @@ int ParseFile(FILE *ifp,
  *********************     Local Data   *****************************
  ********************************************************************/
 
+#ifndef WIN32
+#define BOLDON   "\033[1m"
+#define BOLDOFF  "\033[0m"
+#else
+#define BOLDON   ""
+#define BOLDOFF  ""
+#endif
+
 /* parse buffer size */
 #define BUF_SZ   (8 * 1024)
 
@@ -260,8 +268,8 @@ int ParseFile(FILE *ifp,
             if (c != '\n') value[p++] = c;
             if (c == '\n')
             {
-              printf ("Warning: Quoted string contains newline for token %s\n",
-                      tokens);
+              printf ("%sWarning:%s Quoted string contains newline for token %s\n",
+                      BOLDON, BOLDOFF, tokens);
               printf ("This could indicated a parameter file error or missing quote\n");
 #ifdef DEBUG
               printf ("LINE %d\n",lineno);
@@ -280,52 +288,35 @@ int ParseFile(FILE *ifp,
         else if (c == '$')
         {
           /* We got a define */
-          char buf[1000];
-          char * p = buf;
+          /* FIXME: Assume it is a parameter file for now */
+          char path[500];
+          char *parfile;
 
-          /* read name */
-          do
+          CCTK_ParameterFilename(500,path);
+          parfile = strrchr (path, '/');
+          if (parfile == NULL)
+          {
+            parfile = path;
+          }
+          else
+          {
+            parfile++;
+          }
+          /* skip the parameter file extension */
+          if (strcmp (parfile + strlen (parfile) - 4, ".par") == 0)
+          {
+            parfile[strlen (parfile) - 4] = 0;
+          }
+
+          /* ignore everything else on the line */
+          while (!(c==' ' || c=='\t' || c == '\n' || c == '\r' || c == EOF))
           {
             c = fgetc(ifp);
 #ifdef DEBUG
             printf("%c",c);
 #endif
-            *p++ = c;
           }
-          while (!(c==' ' || c=='\t' || c == '\n' || c == '\r' || c == EOF));
-          *--p = 0;
-
-          if (strcmp (buf, "parfile") == 0)
-          {
-            char path[1000];
-            char *parfile;
-            char *dot;
-  
-            CCTK_ParameterFilename(sizeof path,path);
-            /* remove the leading directory part */
-            parfile = strrchr (path, '/');
-            if (parfile == NULL)
-            {
-              parfile = path;
-            }
-            else
-            {
-              parfile++;
-            }
-            /* skip the parameter file extension */
-            dot = strrchr (parfile, '.');
-            if (dot)
-            {
-              *dot = 0;
-            }
-  
-            set_function(tokens,parfile,lineno);
-          }
-          else
-          {
-            fprintf(stderr, "Error at line %d.  Unknown define '%s'.\n", lineno, buf);
-            num_errors++;
-          }
+          set_function(tokens,parfile,lineno);
         }
         else
         {

@@ -405,13 +405,12 @@ static int CCTKi_TimerCreate (const char *timername)
 {
   int retval;
   t_Timer *timer;
-  void *tmp;
   const cClockFuncs *funcs;
   int this_timer;
   int handle;
 
 
-  if (Util_GetHandle (timers, timername, &tmp) >= 0)
+  if (Util_GetHandle (timers, timername, (void **) &timer) >= 0)
   {
     /* Handle already exists */
     retval = -1;
@@ -477,13 +476,11 @@ static int CCTKi_TimerCreate (const char *timername)
 @@*/
 int CCTK_TimerDestroy (const char *timername)
 {
-  void *tmp;
   t_Timer *timer;
   int this_timer;
 
 
-  this_timer = Util_GetHandle (timers,  timername, &tmp);
-  timer = tmp;
+  this_timer = Util_GetHandle (timers,  timername, (void **) &timer);
   if (this_timer >= 0)
   {
     CCTKi_TimerDestroy (this_timer, timer);
@@ -615,13 +612,11 @@ static void CCTKi_TimerDestroy (int this_timer, t_Timer *timer)
 @@*/
 int CCTK_TimerStart (const char *timername)
 {
-  void *tmp;
   t_Timer *timer;
   int this_timer;
 
 
-  this_timer = Util_GetHandle (timers, timername, &tmp);
-  timer = tmp;
+  this_timer = Util_GetHandle (timers, timername, (void **) &timer);
   if (this_timer >= 0)
   {
     CCTKi_TimerStart (this_timer, timer);
@@ -749,13 +744,11 @@ static void CCTKi_TimerStart (int this_timer, t_Timer *timer)
 @@*/
 int CCTK_TimerStop (const char *timername)
 {
-  void *tmp;
   t_Timer *timer;
   int this_timer;
 
 
-  this_timer = Util_GetHandle (timers, timername, &tmp);
-  timer = tmp;
+  this_timer = Util_GetHandle (timers, timername, (void **)&timer);
   if (this_timer >= 0)
   {
     CCTKi_TimerStop (this_timer, timer);
@@ -882,13 +875,11 @@ static void CCTKi_TimerStop (int this_timer, t_Timer *timer)
 @@*/
 int CCTK_TimerReset (const char *timername)
 {
-  void *tmp;
   t_Timer *timer;
   int this_timer;
 
 
-  this_timer = Util_GetHandle (timers, timername, &tmp);
-  timer = tmp;
+  this_timer = Util_GetHandle (timers, timername, (void **) &timer);
   if (this_timer >= 0)
   {
     CCTKi_TimerReset (this_timer, timer);
@@ -1021,13 +1012,11 @@ static void CCTKi_TimerReset (int this_timer, t_Timer *timer)
 @@*/
 int CCTK_Timer (const char *timername, cTimerData *info)
 {
-  void *tmp;
   t_Timer *timer;
   int this_timer;
 
 
-  this_timer = Util_GetHandle (timers, timername, &tmp);
-  timer = tmp;
+  this_timer = Util_GetHandle (timers, timername, (void **) &timer);
   if (this_timer >= 0)
   {
     CCTKi_Timer (this_timer, timer, info);

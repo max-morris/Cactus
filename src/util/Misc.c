@@ -457,7 +457,7 @@ int Util_IntInRange(int inval, const char *range)
 
     if(inval >= start + !start_closed &&
        inval <= end   - !end_closed   &&
-       ! (((unsigned int)inval - (unsigned int)start) % step))
+       ! ((inval-start) % step))
     {
       retval = 1;
     }
@@ -1221,9 +1221,10 @@ void CCTK_FCALL CCTK_FNAME(CCTK_PrintString)
 @@*/
 int CCTK_FortranString (const char *c_string,
                         char *fortran_string,
-                        int fortran_length)
+                        size_t fortran_length)
 {
-  int nchars, c_strlen;
+  int nchars;
+  size_t c_strlen;
 
 
   nchars = c_strlen = strlen (c_string);
