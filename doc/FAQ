@@ -5,7 +5,7 @@
 #   @desc 
 #   Some useful info.
 #   @enddesc
-#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.4 1999-11-24 11:01:41 allen Exp $ 
+#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.5 1999-11-28 19:57:15 goodale Exp $ 
 # @@*/
 
 
@@ -44,6 +44,16 @@ Alas some MPIs add their own command-line options, so we need to do MPI_Init bef
 parsing the command line, or parse it twice, once before the MPI_Init and once after,
 to detect invalid options.
 
+5) Parallel make sometimes fails.
 
+It seems that the make program sometimes gets confused in parallel makes.
+Just doing gmake <config> again will let it continue.  You should be able
+to continue with another parallel make afterwards.
+
+6) When doing a cvs update I get 'not enough slashes in ...' .
+
+It seems that CVS sometimes gets confused with multiple modules.  Moving into
+the arrangements directory and doing another 'cvs update', followed by a final
+one in the toplevel directory should complete your update.
 
 
