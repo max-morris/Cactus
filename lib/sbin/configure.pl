@@ -1,8 +1,19 @@
 #!/bin/perl
+#/*@@
+#  @file      configure.pl
+#  @date      Fri Jan  8 15:06:22 1999
+#  @author    Tom Goodale
+#  @desc 
+#  Prototype configure script for the CCTK
+#  @enddesc 
+#@@*/
 
 $tmphome = shift(@ARGV);
 
-open(OUT, "fname_test.f") || die "Cannot open fname_test.f\n";
+print "Determining number of fortran underscores...\n";
+
+# Create a test file
+open(OUT, ">fname_test.f") || die "Cannot open fname_test.f\n";
 
 print OUT <<EOT;
       subroutine test_name(a)
@@ -15,6 +26,7 @@ EOT
 
 close OUT;
 
+# Compile the test file
 system("f90 -c fname_test.f");
 
 $retcode = $? >> 8;
@@ -25,6 +37,7 @@ if($retcode > 0)
 }
 
 
+# Search the object file for the appropriate symbols
 open(IN, "<fname_test.o") || die "Cannot open fname_test.o\n";
 
 while(<IN>)
@@ -66,6 +79,10 @@ while(<IN>)
 
 close IN;
 
+# Delete the temporary files
+unlink <fname_test.*>;
+
+# Determine the case and number of underscores
 if($n_underscores == 0)
 {
     $normal_suffix = "";
@@ -94,7 +111,7 @@ if($case = 1)
 }
 
 
-
+# Create the perl module to map the fortran names.
 open(OUT, ">$tmphome/fortran_name.pl") || die "Cannot create fortran_name.pl\n";
 print OUT <<EOT;
 #!/bin/perl
