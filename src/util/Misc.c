@@ -3,23 +3,18 @@
    @date      Wed Jan 20 10:06:35 1999
    @author    Tom Goodale
    @desc
-   Miscellaneuous routines.
+              Miscellaneuous routines.
    @enddesc
-   @version $Header$
+   @version   $Id$
  @@*/
 
 /*#define DEBUG_MISC*/
-
-#include "cctk_Config.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
 #include <stdarg.h>
-#ifdef HAVE_ASSERT_H
-#include <assert.h>
-#endif
 #include <limits.h>
 #include <math.h>
 #include <float.h>
@@ -87,24 +82,16 @@ void CCTK_FCALL CCTK_FNAME (CCTK_FortranString)
    Does a case independent comparison of strings.
    Returns true if they are equal.
    @enddesc
-   @calls
-   @calledby
-   @history
 
-   @endhistory
    @var     string1
    @vdesc   First string in comparison
    @vtype   const char *
    @vio     in
-   @vcomment
-
    @endvar
    @var     string2
    @vdesc   Second string in comparison
    @vtype   const char *
    @vio     in
-   @vcomment
-
    @endvar
 
    @returntype int
@@ -192,24 +179,16 @@ CCTK_POINTER CCTK_FCALL CCTK_FNAME (CCTK_PointerTo) (CCTK_POINTER var)
    Null terminates a fortran string. Need to free the
    string it returns
    @enddesc
-   @calls
-   @calledby
-   @history
 
-   @endhistory
    @var     instring
    @vdesc   String to null terminate
    @vtype   const char *
    @vio     in
-   @vcomment
-
    @endvar
    @var     len
    @vdesc   Length of string to be null terminated
    @vtype   unsigned int
    @vio     in
-   @vcomment
-
    @endvar
 
    @returntype char *
@@ -263,31 +242,21 @@ char *Util_NullTerminateString(const char *instring, unsigned int len)
    @desc
    Determines if a string is in a list of other strings.
    @enddesc
-   @calls
-   @calledby
-   @history
 
-   @endhistory
    @var     string1
    @vdesc   The string to search for
    @vtype   const char *
    @vio     in
-   @vcomment
-
    @endvar
    @var     n_elements
    @vdesc   The number of elements in the list
    @vtype   int
    @vio     in
-   @vcomment
-
    @endvar
    @var     ...
    @vdesc   List of strings to search.
    @vtype   multiple const char *
    @vio     in
-   @vcomment
-
    @endvar
 
    @returntype int
@@ -335,24 +304,16 @@ int Util_InList(const char *string1, int n_elements, ...)
    This routine will determine if an integer is in the range specified
    in the range string.
    @enddesc
-   @calls
-   @calledby
-   @history
 
-   @endhistory
    @var     inval
    @vdesc   The value to check
    @vtype   int
    @vio     in
-   @vcomment
-
    @endvar
    @var     range
    @vdesc   The range to look in
    @vtype   const char *
    @vio     in
-   @vcomment
-
    @endvar
 
    @returntype int
@@ -479,24 +440,16 @@ int Util_IntInRange(int inval, const char *range)
    This routine will determine if a double is in the range specified
    in the range string.
    @enddesc
-   @calls
-   @calledby
-   @history
 
-   @endhistory
    @var     inval
    @vdesc   The value to check
    @vtype   double
    @vio     in
-   @vcomment
-
    @endvar
    @var     range
    @vdesc   The range to look in
    @vtype   const char *
    @vio     in
-   @vcomment
-
    @endvar
 
    @returntype int
@@ -510,10 +463,6 @@ int Util_DoubleInRange(double inval, const char *range)
   int retval;
   regmatch_t pmatch[6];
   double start, end;
-#if 0
-  int start_closed, end_closed;
-  double step;
-#endif
 
   retval = 0;
 
@@ -535,23 +484,6 @@ int Util_DoubleInRange(double inval, const char *range)
                      "(\\[|\\()?([^]):]*):?([^]):]*)?:?([^]):]*)?(\\]|\\))?",
                      6, pmatch) != 0)
   {
-#if 0
-    /* First work out if the range is closed at the lower end. */
-    if(pmatch[1].rm_so != -1)
-    {
-      switch(range[pmatch[1].rm_so])
-      {
-        case '(' : start_closed = 0; break;
-        case '[' :
-        default  : start_closed = 1;
-      }
-    }
-    else
-    {
-      start_closed = 1;
-    }
-#endif
-
     /* Next find the start of the range */
     if(pmatch[2].rm_so != -1 &&
        (pmatch[2].rm_eo-pmatch[2].rm_so > 0) &&
@@ -578,34 +510,6 @@ int Util_DoubleInRange(double inval, const char *range)
       end = DBL_MAX;
     }
 
-#if 0
-    /* Next find the step of the range */
-    if(pmatch[4].rm_so != -1 && (pmatch[4].rm_eo-pmatch[4].rm_so > 0))
-    {
-      step = atof(range+pmatch[4].rm_so);
-    }
-    else
-    {
-      /* No step given, so default to 1. */
-      step = 1;
-    }
-
-    /* Finally work out if the range is closed at the upper end. */
-    if(pmatch[5].rm_so != -1)
-    {
-      switch(range[pmatch[5].rm_so])
-      {
-        case ')' : end_closed = 0; break;
-        case ']' :
-        default  : end_closed = 1;
-      }
-    }
-    else
-    {
-      end_closed = 1;
-    }
-#endif
-
     if(inval >= start /*+ !start_closed */&&
        inval <= end  /* - !end_closed */ /* &&
                                        ! ((inval-start) % step)*/)
@@ -630,32 +534,22 @@ int Util_DoubleInRange(double inval, const char *range)
    @desc
    Determines if an integer is in a given list of ranges.
    @enddesc
-   @calls
-   @calledby
-   @history
 
-   @endhistory
    @var     inval
    @vdesc   The value to check
    @vtype   int
    @vio     in
-   @vcomment
-
    @endvar
    @var     n_elements
    @vdesc   The number of elements in the list
    @vtype   int
    @vio     in
-   @vcomment
-
    @endvar
 
    @var     ...
    @vdesc   The list of ranges to look in
    @vtype   multiple const char *
    @vio     in
-   @vcomment
-
    @endvar
 
    @returntype int
@@ -702,32 +596,22 @@ int Util_IntInRangeList(int inval, int n_elements, ...)
    @desc
    Determines if a double is in a given list of ranges.
    @enddesc
-   @calls
-   @calledby
-   @history
 
-   @endhistory
    @var     inval
    @vdesc   The value to check
    @vtype   double
    @vio     in
-   @vcomment
-
    @endvar
    @var     n_elements
    @vdesc   The number of elements in the list
    @vtype   int
    @vio     in
-   @vcomment
-
    @endvar
 
    @var     ...
    @vdesc   The list of ranges to look in
    @vtype   multiple const char *
    @vio     in
-   @vcomment
-
    @endvar
 
    @returntype int
@@ -775,39 +659,27 @@ int Util_DoubleInRangeList(double inval, int n_elements, ...)
    Sets the value of a double if the desired value is in one of
    the specified ranges.
    @enddesc
-   @calls
-   @calledby
-   @history
 
-   @endhistory
    @var     data
    @vdesc   Pointer to the value to set
    @vtype   CCTK_REAL *
    @vio     out
-   @vcomment
-
    @endvar
    @var     value
    @vdesc   The value to check
    @vtype   const char *
    @vio     in
-   @vcomment
-
    @endvar
    @var     n_elements
    @vdesc   The number of elements in the list
    @vtype   int
    @vio     in
-   @vcomment
-
    @endvar
 
    @var     ...
    @vdesc   The list of ranges to look in
    @vtype   multiple const char *
    @vio     in
-   @vcomment
-
    @endvar
 
    @returntype int
@@ -834,7 +706,8 @@ int CCTK_SetDoubleInRangeList(CCTK_REAL *data, const char *value,
   /* Convert the value string to a double.
    * Allow various formats.
    */
-  strncpy(temp, value, 1000);
+  strncpy(temp, value, sizeof(temp) - 1);
+  temp[sizeof(temp) - 1] = 0;
 
   for (p=0;p<strlen(temp);p++)
   {
@@ -877,39 +750,27 @@ int CCTK_SetDoubleInRangeList(CCTK_REAL *data, const char *value,
    Sets the value of an integer if the desired value is in one of
    the specified ranges.
    @enddesc
-   @calls
-   @calledby
-   @history
 
-   @endhistory
    @var     data
    @vdesc   Pointer to the value to set
    @vtype   CCTK_INT *
    @vio     out
-   @vcomment
-
    @endvar
    @var     value
    @vdesc   The value to check
    @vtype   const char *
    @vio     in
-   @vcomment
-
    @endvar
    @var     n_elements
    @vdesc   The number of elements in the list
    @vtype   int
    @vio     in
-   @vcomment
-
    @endvar
 
    @var     ...
    @vdesc   The list of ranges to look in
    @vtype   multiple const char *
    @vio     in
-   @vcomment
-
    @endvar
 
    @returntype int
@@ -963,39 +824,27 @@ int CCTK_SetIntInRangeList(CCTK_INT *data, const char *value,
    Sets the value of a keyword if the desired value is in one of
    the specified ranges.
    @enddesc
-   @calls
-   @calledby
-   @history
 
-   @endhistory
    @var     data
    @vdesc   Pointer to the value to set
    @vtype   char **
    @vio     out
-   @vcomment
-
    @endvar
    @var     value
    @vdesc   The value to check
    @vtype   const char *
    @vio     in
-   @vcomment
-
    @endvar
    @var     n_elements
    @vdesc   The number of elements in the list
    @vtype   int
    @vio     in
-   @vcomment
-
    @endvar
 
    @var     ...
    @vdesc   The list of ranges to look in
    @vtype   multiple const char *
    @vio     in
-   @vcomment
-
    @endvar
 
    @returntype int
@@ -1053,39 +902,27 @@ int CCTK_SetKeywordInRangeList(char **data, const char *value,
    Sets the value of a string if it matches any of the given regular
    expressions.
    @enddesc
-   @calls
-   @calledby
-   @history
 
-   @endhistory
    @var     data
    @vdesc   Pointer to the value to set
    @vtype   char **
    @vio     out
-   @vcomment
-
    @endvar
    @var     value
    @vdesc   The value to check
    @vtype   const char *
    @vio     in
-   @vcomment
-
    @endvar
    @var     n_elements
    @vdesc   The number of elements in the list
    @vtype   int
    @vio     in
-   @vcomment
-
    @endvar
 
    @var     ...
    @vdesc   The list of ranges to look in
    @vtype   multiple const char *
    @vio     in
-   @vcomment
-
    @endvar
 
    @returntype int
@@ -1131,24 +968,16 @@ int CCTK_SetStringInRegexList(char **data, const char *value,
    @desc
    Sets the value of a string
    @enddesc
-   @calls
-   @calledby
-   @history
 
-   @endhistory
    @var     data
    @vdesc   Pointer to the value to set
    @vtype   char **
    @vio     out
-   @vcomment
-
    @endvar
    @var     value
    @vdesc   The value to check
    @vtype   const char *
    @vio     in
-   @vcomment
-
    @endvar
 
    @returntype int
@@ -1187,24 +1016,16 @@ int CCTK_SetString(char **data, const char *value)
    Sets the value of a boolean to true or false according to
    the value of the value string.
    @enddesc
-   @calls
-   @calledby
-   @history
 
-   @endhistory
    @var     data
    @vdesc   Pointer to the value to set
    @vtype   CCTK_INT *
    @vio     out
-   @vcomment
-
    @endvar
    @var     value
    @vdesc   The value to check
    @vtype   const char *
    @vio     in
-   @vcomment
-
    @endvar
 
    @returntype int
@@ -1215,17 +1036,15 @@ int CCTK_SetString(char **data, const char *value)
 @@*/
 int CCTK_SetBoolean(CCTK_INT *data, const char *value)
 {
-  int retval = 1;
+  int retval = 0;
 
   if(Util_InList(value, 5, "true", "t", "yes", "y", "1"))
   {
     *data = 1;
-    retval = 0;
   }
   else if(Util_InList(value, 5, "false", "f", "no", "n", "0"))
   {
     *data = 0;
-    retval = 0;
   }
   else
   {
@@ -1246,38 +1065,26 @@ int CCTK_SetBoolean(CCTK_INT *data, const char *value)
    This is a modified form of the example routine given in the SGI
    man page for regcomp.
    @enddesc
-   @calls
-   @calledby
-   @history
 
-   @endhistory
    @var     string
    @vdesc   String to match against
    @vtype   const char *
    @vio     in
-   @vcomment
-
    @endvar
    @var     pattern
    @vdesc   Regex pattern
    @vtype   const char *
    @vio     in
-   @vcomment
-
    @endvar
    @var     nmatch
    @vdesc   The size of the pmatch array
    @vtype   const int
    @vio     in
-   @vcomment
-
    @endvar
    @var     pmatch
    @vdesc   Array in which to place the matches
    @vtype   regmatch_t
    @vio     out
-   @vcomment
-
    @endvar
 
    @returntype int
@@ -1324,17 +1131,11 @@ int CCTK_RegexMatch(const char *string,
    @desc
    Prints the value of a string (this is for fortran)
    @enddesc
-   @calls
-   @calledby
-   @history
 
-   @endhistory
    @var     data
    @vdesc   string to print
    @vtype   const char *
    @vio     in
-   @vcomment
-
    @endvar
 
 @@*/
