@@ -93,8 +93,7 @@ INT cctk_itlast "Final iteration number" STEERABLE = ALWAYS
   : :: "Any integer"
 } 10
  
-INT max_runtime "Terminate evolution loop after a certain elapsed runtime (in minutes)" STEERABLE = ALWAYS
+REAL max_runtime "Terminate evolution loop after a certain elapsed runtime (in minutes)" STEERABLE = ALWAYS
 {
-  0:  :: "Zero disables maximum runtime condition"
-  1:* :: "Run evolution loop for so many minutes, then terminate"
-} 0
+  0.0: :: "Zero disables maximum runtime condition"
+} 0.0
