@@ -1,0 +1,20 @@
+#! /bin/sh
+#  /*@@
+#    @file      aix
+#    @date      Wed Jul 14 12:38:45 1999
+#    @author    Tom Goodale
+#    @desc 
+#   
+#    @enddesc
+#    @version $Header$
+#  @@*/
+
+: ${F90FLAGS="-g -O2 -qfixed"}
+: ${F77FLAGS="-g -O2 -qfixed"}
+
+: ${C_DEPEND_OUT=" > $@"}
+: ${CXX_DEPEND_OUT=" > $@"}
+: ${F_DEPEND_OUT=" > /dev/null ; mv $(basename $(@)).u $@"}
+: ${F77_DEPEND_OUT=" > /dev/null ; mv $(basename $(@)).u $@"}
+
+: ${LIBS="xlf990"}
