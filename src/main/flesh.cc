@@ -14,7 +14,7 @@
 
 static char *rcsid = "$Header$";
 
-CCTK_FILEVERSION(main_flesh_cc)
+CCTK_FILEVERSION(main_flesh_cc);
 
  /*@@
    @routine    main
