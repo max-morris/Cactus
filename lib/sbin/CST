@@ -384,6 +384,7 @@ sub CreateParameterBindings
   local($files);
   local(%routines);
   local($structure, %structures);
+  local(%header_files);
 
   %parameter_database = @rest[0..(2*$n_param_database)-1];
   %interface_database = @rest[2*$n_param_database..$#rest];
@@ -442,6 +443,8 @@ sub CreateParameterBindings
 
   close OUT;
 
+  $header_files{"PUBLIC"} = "ParameterCPublic.h";
+
   chdir "..";
   chdir "Parameters";
 
@@ -487,6 +490,8 @@ sub CreateParameterBindings
 
       close OUT;
 
+      $header_files{"\U$implementation\E PROTECTED"} = "ParameterCProtected\U$implementation\E".".h";
+
       chdir "..";
       chdir "Parameters";
 
@@ -531,6 +536,8 @@ sub CreateParameterBindings
       }
 
       close OUT;
+
+      $header_files{"\U$thorn\E PRIVATE"} = "ParameterCPrivate\U$thorn\E".".h";
 
       chdir "..";
       chdir "Parameters";
@@ -746,22 +753,19 @@ EOT
 
 EOT
 
-  $header =  "ParameterCPublic.h";
-  if( -r $header)
+  if($header_files{"PUBLIC"})
   {
-    print OUT "#include \"$header\"\n";
+    print OUT "#include \"". $header_files{"PUBLIC"} ."\"\n";
   }
  
-  $header =  "ParameterCProtected\U$implementation\E.h";
-  if( -r $header)
+  if($header_files{"\U$implementation\E PROTECTED"})
   {
-    print OUT "#include \"$header\"\n";
+    print OUT "#include \"". $header_files{"\U$implementation\E PROTECTED"}."\"\n";
   }
 
-  $header =  "ParameterCPrivate\U$thorn\E.h";
-  if( -r $header)
+  if($header_files{"\U$thorn\E PRIVATE"})
   {
-    print OUT "#include \"$header\"\n";
+    print OUT "#include \"".$header_files{"\U$thorn\E PRIVATE"}."\"\n";
   }
  
   print OUT "\n";
@@ -792,23 +796,20 @@ EOT
 
     print OUT "#define DECLARE_PARAMETERS \\\n";
 
-    $header =  "ParameterCPublic.h";
     $decl =  "DECLARE_PUBLIC_PARAMETER_STRUCT_PARAMS";
-    if( -r $header)
+    if($header_files{"PUBLIC"})
     {
       print OUT "$decl \\\n";
     }
  
-    $header =  "ParameterCProtected\U$implementation\E.h";
     $decl = "DECLARE_PROTECTED_\U$implementation\E_STRUCT_PARAMS";
-    if( -r $header)
+    if($header_files{"\U$implementation\E PROTECTED"})
     {
       print OUT "$decl \\\n";
     }
 
-    $header =  "ParameterCPrivate\U$thorn\E.h";
     $decl = "DECLARE_PRIVATE_\U$thorn\E_STRUCT_PARAMS";
-    if( -r $header)
+    if($header_files{"\U$thorn\E PRIVATE"})
     {
       print OUT "$decl \\\n";
     }
