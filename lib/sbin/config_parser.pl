@@ -815,7 +815,10 @@ EOT
 
   $files = "";
   foreach $file (split(" ",$rfr),split(" ",$startup),split(" ",$wrapper)) {
-    $files = "$files ".$file.".c";
+    if($file)
+    {
+      $files = "$files ".$file.".c";
+    }
   }
 
   print OUT "SRCS = Bindings.c Cactus_RegisterSTARTUP.c Cactus_RegisterRFR.c $files\n";
