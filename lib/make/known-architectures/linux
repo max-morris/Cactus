@@ -34,10 +34,10 @@ fi
 #Set the appropriate flags
 case "$LINUX_F90_COMP" in
      pacific)
-     : ${LIBS="f2c vast90 f2c m"} ;;
+     : ${LIBS="vast90 g2c m"} ;;
      absoft)
      : ${LIBS="f90math fio f77math m"} 
-     F90FLAGS="`echo $F90FLAGS | sed 's/O2/O/'`" 
+     F90FLAGS="-s -O" 
      # Test if it is a version of the absoft compiler which has the library in a custom place.
      if test -n "$ABSOFT" ; then
        : ${LIBDIRS='$(ABSOFT)/lib'}
