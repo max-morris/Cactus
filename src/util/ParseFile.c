@@ -298,6 +298,10 @@ int ParseFile(FILE *ifp,
           {
             parfile = path;
           }
+          else
+          {
+            parfile++;
+          }
           /* skip the parameter file extension */
           if (strcmp (parfile + strlen (parfile) - 4, ".par") == 0)
           {
