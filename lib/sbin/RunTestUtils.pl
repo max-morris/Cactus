@@ -432,7 +432,7 @@ sub FindFiles
 
   foreach $f (@tmp) 
   {
-    if ($f =~ /(xl|yl|zl|dl|tl|gnuplot|asc|gauss|alm|ul)$/)
+    if ($f =~ /(xl|yl|zl|dl|tl|gnuplot|asc|gauss|alm|ul|xg)$/)
     {
       $recognizedfiles .= " $f";
     }
@@ -804,7 +804,6 @@ sub CompareTestFiles
 
 
   # Compare each file in the archived test directory
-
   foreach $file (split(" ",$testdata->{"$inthorn $test DATAFILES"})) 
   {
     $newfile = "$test_dir$sep$file"; 
@@ -984,7 +983,7 @@ sub CompareTestFiles
       print "     TESTSUITE ERROR: $newfile not compared\n";
     }
 
-    for ($count = 0; $count < $nold; $count++)
+    for ($count = 1; $count <= $nold; $count++)
     {
       if ($maxdiff[$count])
       {
@@ -1043,7 +1042,7 @@ sub ReportOnTest
       $rundata->{"$thorn $test NFAILWEAK"}++;
       if ($rundata->{"$thorn $test $file NFAILSTRONG"} == 0) 
       {
-        print "\n  - $file: differences below tolerance on $rundata->{\"$thorn $test $file NFAILWEAK\"} lines\n";
+        print "\n  - $file: differences below tolerance on $rundata->{\"$thorn $test $file NFAILWEAK\"} lines";
       }
       else 
       {
@@ -1089,7 +1088,8 @@ sub ReportOnTest
   # (Note this is not so bad)
   foreach $file (split (" ",$rundata->{"$thorn $test TESTFILES"}))
   {
-    if ($testdata->{"$thorn $test DATAFILES"} !~ m:\b$file\b:)
+    $myfile = quotemeta($file);
+    if ($testdata->{"$thorn $test DATAFILES"} !~ m:\b$myfile\b:)
     {
       print "            $file not in thorn archive\n";
       $rundata->{"$thorn $test NFILEEXTRA"}++;
@@ -1101,7 +1101,8 @@ sub ReportOnTest
   # (Note this is bad)
   foreach $file (split (" ",$testdata->{"$thorn $test DATAFILES"}))
   {
-    if ($rundata->{"$thorn $test TESTFILES"} !~ m:\b$file\b:)
+    $myfile = quotemeta($file);
+    if ($rundata->{"$thorn $test TESTFILES"} !~ m:\b$myfile\b:)
     {
       print "            $file not created in test\n";
       $rundata->{"$thorn $test NFILEMISSING"}++;
