@@ -120,13 +120,37 @@ while ($choice !~ /^Q/i)
       print "  Options for customization\n";
       if ($test)
       {
-	print "    Change tolerance for this run ($test) [R]\n";
+	while ($choice !~ /^[AR]/i)
+	{
+	  print "    Change absolute tolerance for this run ($test) [A]\n";
+	  print "    Change relative tolerance for this run ($test) [R]\n";
+	  $choice = &defprompt("  Select choice: ","");
+	  if ($choice =~ /A/i)
+	  {
+	    $runconfig{"$thorn $test ABSTOL"} = &defprompt("  New absolute tolerance: ","$runconfig{\"$thorn $test ABSTOL\"}");
+	  }
+	  elsif ($choice =~ /R/i)
+	  {
+	    $runconfig{"$thorn $test RELTOL"} = &defprompt("  New relative tolerance: ","$runconfig{\"$thorn $test RELTOL\"}");
+	  }
+	}
       }
-      print "    Change tolerance from $rundata->{\"TOLERANCE\"} for all further runs [T]\n";
-      $choice = &defprompt("  Select choice: ","");
-      if ($choice =~ /T/i)
+      else
       {
-	$rundata->{"TOLERANCE"} = &defprompt("  New tolerance: ","$rundata->{\"TOLERANCE\"}");
+	while ($choice !~ /^[AR]/i)
+	{
+	  print "    Change absolute tolerance from $runconfig{\"ABSTOL\"} for all further runs [A]\n";
+	  print "    Change relative tolerance from $runconfig{\"RELTOL\"} for all further runs [R]\n";
+	  $choice = &defprompt("  Select choice: ","");
+	  if ($choice =~ /^A/i)
+	  {
+	    $runconfig{"ABSTOL"} = &defprompt("  New absolute tolerance: ","$runconfig{\"ABSTOL\"}");
+	  }
+	  elsif ($choice =~ /^R/i)
+	  {
+	    $runconfig{"RELTOL"} = &defprompt("  New relative tolerance: ","$runconfig{\"RELTOL\"}");
+	  }
+	}
       }
     }
     elsif ($choice =~ /^Q/i)
