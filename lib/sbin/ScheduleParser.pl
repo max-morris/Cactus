@@ -265,9 +265,14 @@ sub ParseScheduleBlock
 
       while($fields[$field] !~ m:\s*\)\s*: && $field <= $#fields)
       {
-	next if($fields[$field] =~ m:\s*,\s*:);
+	if($fields[$field] =~ m:\s*,\s*:)
+	{
+	  $field++;
+	  next;
+	}
 
 	push(@current_sched_list, $fields[$field]);
+	$field++;
       }
       
       $field++;
