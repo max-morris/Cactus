@@ -61,6 +61,19 @@ define F90_DEPENDENCIES
 	$(DEPENDENCY_FIXER)
 endef
 
+# No preprocessing, just create empty dependency file
+define f_DEPENDENCIES
+	touch $@
+endef
+
+define f77_DEPENDENCIES
+	touch $@
+endef
+
+define f90_DEPENDENCIES
+	touch $@
+endef
+
 #####################################################################
 # Define how to do a C compilation
 define PREPROCESS_C
@@ -235,7 +248,7 @@ endef
 	$(F77_DEPENDENCIES)
 
 %.f77.d: $(SRCDIR)/%.f77
-	$(F77_DEPENDENCIES)
+	$(f77_DEPENDENCIES)
 
 # Build rules for F90
 
@@ -261,7 +274,7 @@ endef
 	$(F_DEPENDENCIES)
 
 %.f.d: $(SRCDIR)/%.f
-	$(F_DEPENDENCIES)
+	$(f_DEPENDENCIES)
 
 # Build rules for free-format F90
 
@@ -287,4 +300,4 @@ endef
 	$(F90_DEPENDENCIES)
 
 %.f90.d: $(SRCDIR)/%.f90
-	$(F90_DEPENDENCIES)
+	$(f90_DEPENDENCIES)
