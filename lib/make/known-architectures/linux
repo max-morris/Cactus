@@ -144,12 +144,13 @@ else
        : ${F90_WARN_FLAGS="--warn"}
        : ${F77_OPTIMISE_FLAGS="-O"}
        : ${F90_OPTIMISE_FLAGS="-O"}         
-       : ${LIBS="fj9i6 fj9e6 fj9f6"} 
        if test -n "$LAHEY" ; then
          : ${LIBDIRS="$LAHEY/lib"}
        else
          if test -d '/usr/local/lf9555/lib' ; then
 	   : ${LIBDIRS="/usr/local/lf9555/lib"}
+         elif test -d '/usr/local/lf9560/lib' ; then
+	   : ${LIBDIRS="/usr/local/lf9560/lib"}
          fi
        fi
        if test -z "${LIBDIRS}" ; then
@@ -157,6 +158,11 @@ else
          echo "Please configure with LAHEY=... or set LAHEY in your environment"
          exit 2
        fi
+       if test -f "${LIBDIRS}/libfccx86_6a.a" ; then
+         : ${LIBS="fj9i6 fj9f6 fj9e6 fccx86_6a"}
+       else
+         : ${LIBS="fj9i6 fj9e6 fj9f6"} 
+       fi       
        ;;
      SGI)
        : ${LIBS="fortran ffio m"} 
