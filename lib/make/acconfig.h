@@ -8,4 +8,8 @@
 #error "Unable to find a 4 byte integer type. "
 #endif
 
+#define POINTER integer*SIZEOF_CHAR_P
+
+#define CCTK_STRING POINTER
+
 #define Double double

@@ -13,6 +13,9 @@
    byte first (like Motorola and SPARC, unlike Intel and VAX).  */
 #undef WORDS_BIGENDIAN
 
+/* The number of bytes in a char *.  */
+#undef SIZEOF_CHAR_P
+
 /* The number of bytes in a int.  */
 #undef SIZEOF_INT
 
@@ -26,5 +29,9 @@
 #else
 #error "Unable to find a 4 byte integer type. "
 #endif
+
+#define POINTER integer*SIZEOF_CHAR_P
+
+#define CCTK_STRING POINTER
 
 #define Double double
