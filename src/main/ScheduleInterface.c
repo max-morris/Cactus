@@ -440,6 +440,7 @@ int CCTK_SchedulePrint(const char *where)
     SchedulePrint("CCTK_PARAMCHECK");
     printf("\n");
     printf("  Initialisation\n");
+    SchedulePrint("CCTK_BASEGRID");
     SchedulePrint("CCTK_INITIAL");
     SchedulePrint("CCTK_POSTINITIAL");
     SchedulePrint("CCTK_POSTSTEP");
