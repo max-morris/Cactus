@@ -6,7 +6,7 @@
 #   @desc 
 #   
 #   @enddesc 
-#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/hiuxmpp,v 1.1 2000-04-20 11:42:02 goodale Exp $
+#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/hiuxmpp,v 1.2 2000-05-10 13:34:51 goodale Exp $
 # @@*/
 
 if test "$CCTK_CONFIG_STAGE" = "preferred-compilers" ; then
@@ -15,8 +15,13 @@ if test "$CCTK_CONFIG_STAGE" = "preferred-compilers" ; then
 
 else
 
-  : ${F77FLAGS="-conti199 -uinline=2"}
-  : ${F90FLAGS="-conti199 -uinline=2"}
+  CFLAGS="$CFLAGS -64"
+  CXXFLAGS="$CXXFLAGS -64"
+
+  : ${F77FLAGS="-64 -conti199 -uinline=2"}
+  : ${F90FLAGS="-64 -conti199 -uinline=2"}
+
+  LDFLAGS="$LDFLAGS -64"
 
   : ${C_OPTIMISE_FLAGS="-O4 -pvec -pvfunc -predicate"}
 #  : ${CXX_OPTIMISE_FLAGS="-O4 -pvec -pvfunc -predicate"}
@@ -41,6 +46,14 @@ else
   : ${CXX_POSTPROCESSING='cp $(SCRATCH_BUILD)$(DIRSEP)$(basename $(basename $(notdir $@))).o $@'}
 
   : ${LIBS="f90s f90 hf90math hf90pvmath m"}
+
+# MPI stuff
+
+  if test -n "$MPI" ; then
+    NATIVE_MPI_LIBS="mpi"
+    NATIVE_MPI_LIB_DIRS="/usr/mpi/lib/lib64"
+    NATIVE_MPI_INC_DIRS="/usr/mpi/include"
+  fi
 
 fi
 
