@@ -44,11 +44,9 @@ CCTK_FILEVERSION(main_Groups_c)
 /* prototypes for external C routines are declared in header cctk_Groups.h
    here only follow the fortran wrapper prototypes */
 void CCTK_FCALL CCTK_FNAME (CCTK_GroupIndex)
-                           (int *vindex,
-                            ONE_FORTSTRING_ARG);
+                           (int *vindex, ONE_FORTSTRING_ARG);
 void CCTK_FCALL CCTK_FNAME (CCTK_VarIndex)
-                           (int *vindex,
-                            ONE_FORTSTRING_ARG);
+                           (int *vindex, ONE_FORTSTRING_ARG);
 void CCTK_FCALL CCTK_FNAME (CCTK_MaxDim)
                            (int *dim);
 void CCTK_FCALL CCTK_FNAME (CCTK_NumVars)
@@ -56,48 +54,37 @@ void CCTK_FCALL CCTK_FNAME (CCTK_NumVars)
 void CCTK_FCALL CCTK_FNAME (CCTK_NumGroups)
                            (int *num_groups);
 void CCTK_FCALL CCTK_FNAME (CCTK_GroupIndexFromVarI)
-                           (int *gindex,
-                            const int *var);
+                           (int *gindex, const int *var);
 void CCTK_FCALL CCTK_FNAME (CCTK_GroupIndexFromVar)
-                           (int *vindex,
-                            ONE_FORTSTRING_ARG);
+                           (int *vindex, ONE_FORTSTRING_ARG);
 void CCTK_FCALL CCTK_FNAME (CCTK_GroupTypeNumber)
-                           (int *number,
-                            ONE_FORTSTRING_ARG);
+                           (int *number, ONE_FORTSTRING_ARG);
 void CCTK_FCALL CCTK_FNAME (CCTK_VarTypeNumber)
-                           (int *number,
-                            ONE_FORTSTRING_ARG);
+                           (int *number, ONE_FORTSTRING_ARG);
 void CCTK_FCALL CCTK_FNAME (CCTK_GroupScopeNumber)
-                           (int *number,
-                            ONE_FORTSTRING_ARG);
+                           (int *number, ONE_FORTSTRING_ARG);
 void CCTK_FCALL CCTK_FNAME (CCTK_GroupDistribNumber)
-                           (int *number,
-                            ONE_FORTSTRING_ARG);
+                           (int *number, ONE_FORTSTRING_ARG);
 void CCTK_FCALL CCTK_FNAME (CCTK_FirstVarIndexI)
-                           (int *first,
-                            const int *group);
+                           (int *first, const int *group);
+void CCTK_FCALL CCTK_FNAME (CCTK_FirstVarIndex)
+                           (int *first, ONE_FORTSTRING_ARG);
 void CCTK_FCALL CCTK_FNAME (CCTK_NumVarsInGroup)
-                           (int *num,
-                            ONE_FORTSTRING_ARG);
+                           (int *num, ONE_FORTSTRING_ARG);
 void CCTK_FCALL CCTK_FNAME (CCTK_VarTypeI)
-                           (int *type,
-                            const int *var);
+                           (int *type, const int *var);
 void CCTK_FCALL CCTK_FNAME (CCTK_NumTimeLevelsFromVarI)
-                           (int *num,
-                            const int *var);
+                           (int *num, const int *var);
 void CCTK_FCALL CCTK_FNAME (CCTK_NumTimeLevelsFromVar)
-                           (int *num,
-                            ONE_FORTSTRING_ARG);
+                           (int *num, ONE_FORTSTRING_ARG);
 void CCTK_FCALL CCTK_FNAME (CCTK_PrintGroup)
                            (const int *group);
 void CCTK_FCALL CCTK_FNAME (CCTK_PrintVar)
                            (const int *var);
 void CCTK_FCALL CCTK_FNAME (CCTK_GroupDimI)
-                           (int *dim,
-                            const int *group);
+                           (int *dim, const int *group);
 void CCTK_FCALL CCTK_FNAME (CCTK_GroupDimFromVarI)
-                           (int *dim,
-                            const int *vi);
+                           (int *dim, const int *vi);
 
 /* prototype for CCTKi_VarDataPtr() doesn't appear in a header file because it
    is only used in the variable bindings (see grdoc for CCTKi_VarDataPtr()) */
@@ -272,8 +259,7 @@ int CCTK_GroupIndex (const char *fullgroupname)
 }
 
 void CCTK_FCALL CCTK_FNAME (CCTK_GroupIndex)
-                           (int *vindex,
-                            ONE_FORTSTRING_ARG)
+                           (int *vindex, ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_CREATE (name)
   *vindex = CCTK_GroupIndex (name);
@@ -353,8 +339,7 @@ int CCTK_VarIndex (const char *fullvarname)
 }
 
 void CCTK_FCALL CCTK_FNAME (CCTK_VarIndex)
-                           (int *vindex,
-                            ONE_FORTSTRING_ARG)
+                           (int *vindex, ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_CREATE (name)
   *vindex = CCTK_VarIndex (name);
@@ -547,8 +532,7 @@ int CCTK_GroupIndexFromVarI (int var)
 }
 
 void CCTK_FCALL CCTK_FNAME (CCTK_GroupIndexFromVarI)
-                           (int *gindex,
-                            const int *var)
+                           (int *gindex, const int *var)
 {
   *gindex = CCTK_GroupIndexFromVarI (*var);
 }
@@ -575,8 +559,7 @@ int CCTK_GroupIndexFromVar (const char *var)
 }
 
 void CCTK_FCALL CCTK_FNAME (CCTK_GroupIndexFromVar)
-                           (int *vindex,
-                            ONE_FORTSTRING_ARG)
+                           (int *vindex, ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_CREATE (var)
   *vindex = CCTK_GroupIndexFromVar (var);
@@ -687,8 +670,7 @@ int CCTK_GroupTypeNumber (const char *type)
 }
 
 void CCTK_FCALL CCTK_FNAME (CCTK_GroupTypeNumber)
-                           (int *number,
-                            ONE_FORTSTRING_ARG)
+                           (int *number, ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_CREATE (type)
   *number = CCTK_GroupTypeNumber (type);
@@ -781,8 +763,7 @@ int CCTK_VarTypeNumber (const char *type)
 }
 
 void CCTK_FCALL CCTK_FNAME (CCTK_VarTypeNumber)
-                           (int *number,
-                            ONE_FORTSTRING_ARG)
+                           (int *number, ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_CREATE (type)
   *number = CCTK_VarTypeNumber (type);
@@ -912,8 +893,7 @@ int CCTK_GroupScopeNumber (const char *type)
 }
 
 void CCTK_FCALL CCTK_FNAME (CCTK_GroupScopeNumber)
-                           (int *number,
-                            ONE_FORTSTRING_ARG)
+                           (int *number, ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_CREATE (type)
   *number = CCTK_GroupScopeNumber (type);
@@ -957,8 +937,7 @@ int CCTK_GroupDistribNumber (const char *dtype)
 }
 
 void CCTK_FCALL CCTK_FNAME (CCTK_GroupDistribNumber)
-                           (int *number,
-                            ONE_FORTSTRING_ARG)
+                           (int *number, ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_CREATE (type)
   *number = CCTK_GroupDistribNumber (type);
@@ -1228,8 +1207,7 @@ int CCTK_FirstVarIndexI (int group)
 }
 
 void CCTK_FCALL CCTK_FNAME (CCTK_FirstVarIndexI)
-                           (int *first,
-                            const int *group)
+                           (int *first, const int *group)
 {
   *first = CCTK_FirstVarIndexI (*group);
 }
@@ -1252,6 +1230,14 @@ void CCTK_FCALL CCTK_FNAME (CCTK_FirstVarIndexI)
 int CCTK_FirstVarIndex (const char *groupname)
 {
   return CCTK_FirstVarIndexI (CCTK_GroupIndex (groupname));
+}
+
+void CCTK_FCALL CCTK_FNAME (CCTK_FirstVarIndex)
+                           (int *first, ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (groupname)
+  *first = CCTK_FirstVarIndex (groupname);
+  free (groupname);
 }
 
 
@@ -1295,8 +1281,7 @@ int CCTK_NumVarsInGroup (const char *groupname)
 }
 
 void CCTK_FCALL CCTK_FNAME (CCTK_NumVarsInGroup)
-                           (int *num,
-                            ONE_FORTSTRING_ARG)
+                           (int *num, ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_CREATE (groupname)
   *num = CCTK_NumVarsInGroup (groupname);
@@ -1366,8 +1351,7 @@ int CCTK_VarTypeI (int var)
 }
 
 void CCTK_FCALL CCTK_FNAME (CCTK_VarTypeI)
-                           (int *type,
-                            const int *var)
+                           (int *type, const int *var)
 {
   *type = CCTK_VarTypeI (*var);
 }
@@ -1394,8 +1378,7 @@ int CCTK_NumTimeLevelsFromVarI (int var)
 }
 
 void CCTK_FCALL CCTK_FNAME (CCTK_NumTimeLevelsFromVarI)
-                           (int *num,
-                            const int *var)
+                           (int *num, const int *var)
 {
   *num = CCTK_NumTimeLevelsFromVarI (*var);
 }
@@ -1420,8 +1403,7 @@ int CCTK_NumTimeLevelsFromVar (const char *var)
 }
 
 void CCTK_FCALL CCTK_FNAME (CCTK_NumTimeLevelsFromVar)
-                           (int *num,
-                            ONE_FORTSTRING_ARG)
+                           (int *num, ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_CREATE (var)
   *num = CCTK_NumTimeLevelsFromVar (var);
@@ -1625,8 +1607,7 @@ int CCTK_GroupDimI (int group)
 }
 
 void CCTK_FCALL CCTK_FNAME (CCTK_GroupDimI)
-                           (int *dim,
-                            const int *group)
+                           (int *dim, const int *group)
 {
   *dim = CCTK_GroupDimI (*group);
 }
@@ -1653,8 +1634,7 @@ int CCTK_GroupDimFromVarI (int var)
 }
 
 void CCTK_FCALL CCTK_FNAME (CCTK_GroupDimFromVarI)
-                           (int *dim,
-                            const int *var)
+                           (int *dim, const int *var)
 {
   *dim = CCTK_GroupDimFromVarI (*var);
 }
