@@ -26,7 +26,7 @@ extern "C" {
 
 #include "CommOverloadables.h"
 
-#undef OVERLOADABLE(name)
+#undef OVERLOADABLE
 
 #ifdef __cplusplus
 	   }

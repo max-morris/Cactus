@@ -26,7 +26,7 @@ extern "C" {
 
 #include "IOOverloadables.h"
 
-#undef OVERLOADABLE(name)
+#undef OVERLOADABLE
 
 #ifdef __cplusplus
 	   }
