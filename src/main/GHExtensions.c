@@ -237,7 +237,7 @@ int CCTK_RegisterGHExtensionrfrTraverseGH(int handle, int (*func)(cGH *, int))
  ***************************************************************************/
 
  /*@@
-   @routine    CCTK_SetupGHExtensions
+   @routine    CCTKi_SetupGHExtensions
    @date       Wed Feb  3 13:32:26 1999
    @author     Tom Goodale
    @desc 
@@ -250,7 +250,7 @@ int CCTK_RegisterGHExtensionrfrTraverseGH(int handle, int (*func)(cGH *, int))
    @endhistory 
 
 @@*/
-int CCTK_SetupGHExtensions(tFleshConfig *config, 
+int CCTKi_SetupGHExtensions(tFleshConfig *config, 
 			   int convergence_level, 
 			   cGH *GH)
 {
@@ -293,7 +293,7 @@ int CCTK_SetupGHExtensions(tFleshConfig *config,
 
 
  /*@@
-   @routine    CCTK_InitGHExtensions
+   @routine    CCTKi_InitGHExtensions
    @date       Wed Feb  3 14:12:18 1999
    @author     Tom Goodale
    @desc 
@@ -306,7 +306,7 @@ int CCTK_SetupGHExtensions(tFleshConfig *config,
    @endhistory 
 
 @@*/
-int CCTK_InitGHExtensions(cGH *GH)
+int CCTKi_InitGHExtensions(cGH *GH)
 {
   int handle;
   struct GHExtension *extension;
@@ -322,7 +322,7 @@ int CCTK_InitGHExtensions(cGH *GH)
 
 
  /*@@
-   @routine    CCTK_rfrTraverseGHExtensions
+   @routine    CCTKi_rfrTraverseGHExtensions
    @date       Wed Feb  3 14:16:17 1999
    @author     Tom Goodale
    @desc 
@@ -335,7 +335,7 @@ int CCTK_InitGHExtensions(cGH *GH)
    @endhistory 
 
 @@*/
-int CCTK_rfrTraverseGHExtensions(cGH *GH, int rfrpoint)
+int CCTKi_rfrTraverseGHExtensions(cGH *GH, int rfrpoint)
 {
   int handle;
   struct GHExtension *extension;

@@ -19,14 +19,14 @@ int CCTK_SplitString(char **before, char **after, const char *string, const char
 
 int CCTK_Equals(const char *string1, const char *string2);
 
-char *CCTK_NullTerminateString(const char *, unsigned int);
+char *Util_NullTerminateString(const char *, unsigned int);
 
 int CCTK_InList(const char *string1, int n_elements, ...);
 
-int CCTK_IntInRange(int inval, const char *range);
-int CCTK_DoubleInRange(double inval, const char *range);
-int CCTK_IntInRangeList(int inval, int n_elements, ...);
-int CCTK_DoubleInRangeList(double inval, int n_elements, ...);
+int Util_IntInRange(int inval, const char *range);
+int Util_DoubleInRange(double inval, const char *range);
+int Util_IntInRangeList(int inval, int n_elements, ...);
+int Util_DoubleInRangeList(double inval, int n_elements, ...);
 
 int CCTK_SetDoubleInRangeList(CCTK_REAL *data, const char *value, 
 			      int n_elements, ...);

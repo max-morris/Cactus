@@ -15,7 +15,7 @@
 static char *rcsid = "$Id$";
 
  /*@@
-   @routine    CCTK_AddGH
+   @routine    CCTKi_AddGH
    @date       Fri Jan 15 13:43:11 1999
    @author     Tom Goodale
    @desc 
@@ -28,7 +28,7 @@ static char *rcsid = "$Id$";
    @endhistory 
 
 @@*/
-int CCTK_AddGH(tFleshConfig *config, int convergence_level, cGH *GH)
+int CCTKi_AddGH(tFleshConfig *config, int convergence_level, cGH *GH)
 {
   int retval;
 

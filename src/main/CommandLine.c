@@ -54,7 +54,7 @@ int CCTK_IsThornCompiled(const char *thorn) ;
 
 @@*/
 
-void CCTK_CommandLineTestThornCompiled(const char *optarg)
+void CCTKi_CommandLineTestThornCompiled(const char *optarg)
 {
   if(CCTK_IsThornCompiled(optarg))
   {
@@ -67,19 +67,19 @@ void CCTK_CommandLineTestThornCompiled(const char *optarg)
   exit(1);
 }
 
-void CCTK_CommandLineDescribeAllParameters(void)
+void CCTKi_CommandLineDescribeAllParameters(void)
 {
-  CCTK_BindingsParameterHelp(NULL,"%s",stdout);
+  CCTKi_BindingsParameterHelp(NULL,"%s",stdout);
   exit(1);
 }
 
-void CCTK_CommandLineDescribeParameter(const char *optarg)
+void CCTKi_CommandLineDescribeParameter(const char *optarg)
 {
-  CCTK_BindingsParameterHelp(optarg,"%s",stdout);
+  CCTKi_BindingsParameterHelp(optarg,"%s",stdout);
   exit(1);
 }
 
-void CCTK_CommandLineTestParameters(const char *optarg)
+void CCTKi_CommandLineTestParameters(const char *optarg)
 {
   int nprocs;
 
@@ -95,7 +95,7 @@ void CCTK_CommandLineTestParameters(const char *optarg)
 }
 
 /*@@
-   @routine    CCTK_CommandLineWarningLevel
+   @routine    CCTKi_CommandLineWarningLevel
    @date       Wed Feb 17 00:58:56 1999
    @author     Tom Goodale
    @desc 
@@ -108,7 +108,7 @@ void CCTK_CommandLineTestParameters(const char *optarg)
    @endhistory 
 @@*/
 
-void CCTK_CommandLineWarningLevel(const char *optarg)
+void CCTKi_CommandLineWarningLevel(const char *optarg)
 {
   int warninglevel;
 
@@ -119,7 +119,7 @@ void CCTK_CommandLineWarningLevel(const char *optarg)
 }
 
  /*@@
-   @routine    CCTK_CommandLineErrorLevel
+   @routine    CCTKi_CommandLineErrorLevel
    @date       Wed Feb 17 00:58:56 1999
    @author     Tom Goodale
    @desc 
@@ -132,7 +132,7 @@ void CCTK_CommandLineWarningLevel(const char *optarg)
    @endhistory 
 
 @@*/
-void CCTK_CommandLineErrorLevel(const char *optarg)
+void CCTKi_CommandLineErrorLevel(const char *optarg)
 {
   int errorlevel;
 
@@ -143,7 +143,7 @@ void CCTK_CommandLineErrorLevel(const char *optarg)
 }
 
  /*@@
-   @routine    CCTK_CommandLineRedirectStdout
+   @routine    CCTKi_CommandLineRedirectStdout
    @date       Fri Jul 23 11:32:46 1999
    @author     Tom Goodale
    @desc 
@@ -156,7 +156,7 @@ void CCTK_CommandLineErrorLevel(const char *optarg)
    @endhistory 
 
 @@*/
-void CCTK_CommandLineRedirectStdout(void)
+void CCTKi_CommandLineRedirectStdout(void)
 {
   /* Set the flag to say we need to redirect the stdout. */
 
@@ -164,7 +164,7 @@ void CCTK_CommandLineRedirectStdout(void)
 
 }
 
-void CCTK_CommandLineListThorns(void)
+void CCTKi_CommandLineListThorns(void)
 {
   int i;
   printf ("\n---------------Compiled Thorns-------------\n");
@@ -177,7 +177,7 @@ void CCTK_CommandLineListThorns(void)
 }
 
  /*@@
-   @routine    CCTK_CommandLineVersion
+   @routine    CCTKi_CommandLineVersion
    @date       Fri Jul 23 12:57:45 1999
    @author     Tom Goodale
    @desc 
@@ -190,7 +190,7 @@ void CCTK_CommandLineListThorns(void)
    @endhistory 
 
 @@*/
-void CCTK_CommandLineVersion(void)
+void CCTKi_CommandLineVersion(void)
 {
   int argc;
   char **argv;
@@ -203,7 +203,7 @@ void CCTK_CommandLineVersion(void)
 }
 
  /*@@
-   @routine    CCTK_CommandLineHelp
+   @routine    CCTKi_CommandLineHelp
    @date       Fri Jul 23 12:57:23 1999
    @author     Tom Goodale
    @desc 
@@ -216,7 +216,7 @@ void CCTK_CommandLineVersion(void)
    @endhistory 
 
 @@*/
-void CCTK_CommandLineHelp(void)
+void CCTKi_CommandLineHelp(void)
 {
   int argc;
   char **argv;
@@ -245,7 +245,7 @@ void CCTK_CommandLineHelp(void)
 }
 
  /*@@
-   @routine    CCTK_CommandLineUsage
+   @routine    CCTKi_CommandLineUsage
    @date       Fri Jul 23 12:57:04 1999
    @author     Tom Goodale
    @desc 
@@ -258,7 +258,7 @@ void CCTK_CommandLineHelp(void)
    @endhistory 
 
 @@*/
-void CCTK_CommandLineUsage(void)
+void CCTKi_CommandLineUsage(void)
 {
   int argc;
   char **argv;
@@ -270,7 +270,7 @@ void CCTK_CommandLineUsage(void)
 }  
 
  /*@@
-   @routine    CCTK_CommandLineFinished
+   @routine    CCTKi_CommandLineFinished
    @date       Fri Jul 23 12:55:39 1999
    @author     Tom Goodale
    @desc 
@@ -284,7 +284,7 @@ void CCTK_CommandLineUsage(void)
    @endhistory 
 
 @@*/
-void CCTK_CommandLineFinished(void)
+void CCTKi_CommandLineFinished(void)
 {
   int myproc;
 

@@ -92,7 +92,7 @@ int ProcessParameterDatabase(tFleshConfig *ConfigData);
 
 int CallStartupFunctions(tFleshConfig *ConfigData);
 
-int CCTK_AddGH(tFleshConfig *config, int convergence_level, cGH *GH);
+int CCTKi_AddGH(tFleshConfig *config, int convergence_level, cGH *GH);
 
 int CCTK_MaxDim(void);
 
@@ -104,7 +104,7 @@ int CCTK_VarTypeNumber(const char *type);
 
 int CCTK_GroupTypeNumber(const char *type);
 
-int CCTK_BindingsImplementationsInitialise(void);
+int CCTKi_BindingsImplementationsInitialise(void);
 
 #ifdef __cplusplus
 }

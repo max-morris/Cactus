@@ -45,12 +45,12 @@ int InitialiseDataStructures(tFleshConfig *ConfigData)
 
   /* Initialise appropriate subsystems. */
 
-  CCTK_BindingsImplementationsInitialise();
-  CCTK_BindingsParametersInitialise();
-  CCTK_BindingsVariablesInitialise();
-  CCTK_BindingsScheduleInitialise();
+  CCTKi_BindingsImplementationsInitialise();
+  CCTKi_BindingsParametersInitialise();
+  CCTKi_BindingsVariablesInitialise();
+  CCTKi_BindingsScheduleInitialise();
 
-  CCTK_ActivateThorn("Cactus");
+  CCTKi_ActivateThorn("Cactus");
 
   return 0;
 }

@@ -44,11 +44,11 @@ sub CreateImplementationBindings
   push(@data, "#include <stdio.h>\n");
   push(@data, "#include \"ActiveThorns.h\"\n\n");
 
-  push(@data, "int CCTK_BindingsImplementationsInitialise(void)\n{\n");
+  push(@data, "int CCTKi_BindingsImplementationsInitialise(void)\n{\n");
 
   foreach $thorn (sort split(" ", $interface_database{"THORNS"}))
   {
-    push(@data, "  CCTK_RegisterThorn(\"$thorn\",\"" . 
+    push(@data, "  CCTKi_RegisterThorn(\"$thorn\",\"" . 
 	 $interface_database{"\U$thorn\E IMPLEMENTS"} ."\");\n");
   }
 

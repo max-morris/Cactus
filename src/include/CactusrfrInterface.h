@@ -14,21 +14,21 @@
 extern "C" {
 #endif
 
-int CCTK_rfrStorageOn(void *GH, int group);
+int CCTKi_rfrStorageOn(void *GH, int group);
 
-int CCTK_rfrStorageOff(void *GH, int group);
+int CCTKi_rfrStorageOff(void *GH, int group);
 
-int CCTK_rfrCommunicationOn(void *GH, int group);
+int CCTKi_rfrCommunicationOn(void *GH, int group);
 
-int CCTK_rfrCommunicationOff(void *GH, int group);
+int CCTKi_rfrCommunicationOff(void *GH, int group);
 
-int CCTK_rfrTriggerable(int variable);
+int CCTKi_rfrTriggerable(int variable);
 
-int CCTK_rfrTriggerSaysGo(void *GH, int variable);
+int CCTKi_rfrTriggerSaysGo(void *GH, int variable);
 
-int CCTK_rfrTriggerAction(void *GH, int group);
+int CCTKi_rfrTriggerAction(void *GH, int group);
 
-int CCTK_rfrCallFunc(void *GH, int language, void *function);
+int CCTKi_rfrCallFunc(void *GH, int language, void *function);
 
 
 #ifdef __cplusplus

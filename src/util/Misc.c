@@ -161,7 +161,7 @@ int FMODIFIER FORTRAN_NAME(CCTK_Equals)(const char **arg1,ONE_FORTSTRING_ARG)
 
 
 /*@@
-  @routine CCTK_NullTerminateString
+  @routine Util_NullTerminateString
   @author Paul Walker
   @desc 
   Null terminates a fortran string. Remember to free
@@ -170,13 +170,13 @@ int FMODIFIER FORTRAN_NAME(CCTK_Equals)(const char **arg1,ONE_FORTSTRING_ARG)
 
 @@*/
 
-char *CCTK_NullTerminateString(const char *instring, unsigned int len) 
+char *Util_NullTerminateString(const char *instring, unsigned int len) 
 {
   char *outstring;
   unsigned int i;
 
 #ifdef DEBUG_MISC
-  printf("CCTK_NullTerminateString: -%s-, (%u)\n",instring,len);
+  printf("Util_NullTerminateString: -%s-, (%u)\n",instring,len);
 #endif
 
   outstring = (char *)malloc((len+2)*sizeof(char));
@@ -237,7 +237,7 @@ int CCTK_InList(const char *string1, int n_elements, ...)
 	 
 
  /*@@
-   @routine    CCTK_IntInRange
+   @routine    Util_IntInRange
    @date       Wed Jan 20 10:32:36 1999
    @author     Tom Goodale
    @desc 
@@ -251,13 +251,13 @@ int CCTK_InList(const char *string1, int n_elements, ...)
    @endhistory 
 
 @@*/
-int CCTK_IntInRange(int inval, const char *range)
+int Util_IntInRange(int inval, const char *range)
 {
   return 1;
 }
 
  /*@@
-   @routine    CCTK_DoubleInRange
+   @routine    Util_DoubleInRange
    @date       Wed Jan 20 10:32:36 1999
    @author     Tom Goodale
    @desc 
@@ -271,14 +271,14 @@ int CCTK_IntInRange(int inval, const char *range)
    @endhistory 
 
 @@*/
-int CCTK_DoubleInRange(double inval, const char *range)
+int Util_DoubleInRange(double inval, const char *range)
 {
   return 1;
 }
 
 
  /*@@
-   @routine    CCTK_IntInRangeList
+   @routine    Util_IntInRangeList
    @date       Wed Jan 20 10:36:31 1999
    @author     Tom Goodale
    @desc 
@@ -291,7 +291,7 @@ int CCTK_DoubleInRange(double inval, const char *range)
    @endhistory 
 
 @@*/
-int CCTK_IntInRangeList(int inval, int n_elements, ...)
+int Util_IntInRangeList(int inval, int n_elements, ...)
 {
   int retval;
   int arg;
@@ -308,7 +308,7 @@ int CCTK_IntInRangeList(int inval, int n_elements, ...)
   {    
     element = va_arg(ap, char *);
 
-    if(CCTK_IntInRange(inval, element))
+    if(Util_IntInRange(inval, element))
     {
       retval = 1;
       break;
@@ -323,7 +323,7 @@ int CCTK_IntInRangeList(int inval, int n_elements, ...)
 
 
  /*@@
-   @routine    CCTK_DoubleInRangeList
+   @routine    Util_DoubleInRangeList
    @date       Wed Jan 20 10:36:31 1999
    @author     Tom Goodale
    @desc 
@@ -336,7 +336,7 @@ int CCTK_IntInRangeList(int inval, int n_elements, ...)
    @endhistory 
 
 @@*/
-int CCTK_DoubleInRangeList(double inval, int n_elements, ...)
+int Util_DoubleInRangeList(double inval, int n_elements, ...)
 {
   int retval;
   int arg;
@@ -353,7 +353,7 @@ int CCTK_DoubleInRangeList(double inval, int n_elements, ...)
   {    
     element = va_arg(ap, char *);
 
-    if(CCTK_DoubleInRange(inval, element))
+    if(Util_DoubleInRange(inval, element))
     {
       retval = 1;
       break;
@@ -422,7 +422,7 @@ int CCTK_SetDoubleInRangeList(CCTK_REAL *data, const char *value,
   {    
     element = va_arg(ap, char *);
 
-    if(CCTK_DoubleInRange(inval, element))
+    if(Util_DoubleInRange(inval, element))
     {
       retval = 0;
       *data = inval;
@@ -474,7 +474,7 @@ int CCTK_SetIntInRangeList(CCTK_INT *data, const char *value,
   {    
     element = va_arg(ap, char *);
 
-    if(CCTK_IntInRange(inval, element))
+    if(Util_IntInRange(inval, element))
     {
       retval = 0;
       *data = inval;

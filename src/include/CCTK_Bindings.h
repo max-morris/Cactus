@@ -15,13 +15,13 @@
 extern "C" {
 #endif
 
-int CCTK_BindingsParametersInitialise(void);
-int CCTK_BindingsVariablesInitialise(void);
-int CCTK_BindingsScheduleInitialise(void);
+int CCTKi_BindingsParametersInitialise(void);
+int CCTKi_BindingsVariablesInitialise(void);
+int CCTKi_BindingsScheduleInitialise(void);
 
-int CCTK_BindingsScheduleRegister(const char *type, void *data);
+int CCTKi_BindingsScheduleRegister(const char *type, void *data);
 
-int CCTK_BindingsParameterHelp(const char *identifier, const char *format, FILE *file);
+int CCTKi_BindingsParameterHelp(const char *identifier, const char *format, FILE *file);
 
 #ifdef __cplusplus
 }

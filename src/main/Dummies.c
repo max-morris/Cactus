@@ -11,37 +11,37 @@
 
 static char *rcsid = "$Id$";
 
-int CCTK_DummyStorageOn(void *GH, int group)
+int CCTKi_DummyStorageOn(void *GH, int group)
 {
   return 0;
 }
 
-int CCTK_DummyStorageOff(void *GH, int group)
+int CCTKi_DummyStorageOff(void *GH, int group)
 {
   return 0;
 }
 
-int CCTK_DummyCommunicationOn(void *GH, int group)
+int CCTKi_DummyCommunicationOn(void *GH, int group)
 {
   return 0;
 }
 
-int CCTK_DummyCommunicationOff(void *GH, int group)
+int CCTKi_DummyCommunicationOff(void *GH, int group)
 {
   return 0;
 }
 
-int CCTK_DummyTriggerable(int variable)
+int CCTKi_DummyTriggerable(int variable)
 {
   return 0;
 }
 
-int CCTK_DummyTriggerSaysGo(void *GH, int variable)
+int CCTKi_DummyTriggerSaysGo(void *GH, int variable)
 {
   return 1;
 }
 
-int CCTK_DummyTriggerAction(void *GH, int group)
+int CCTKi_DummyTriggerAction(void *GH, int group)
 {
   return 0;
 }

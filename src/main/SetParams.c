@@ -55,7 +55,7 @@ int CCTK_SetParameter(const char *parameter, const char *value)
       }
 
       thornname[length] = '\0';
-      n_errors += CCTK_ActivateThorn(thornname) != 0;
+      n_errors += CCTKi_ActivateThorn(thornname) != 0;
       if(*position) position++;
     }
 

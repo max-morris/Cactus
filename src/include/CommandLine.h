@@ -14,18 +14,18 @@
 extern "C" {
 #endif
 
-void CCTK_CommandLineTestThornCompiled(const char *optarg);
-void CCTK_CommandLineDescribeAllParameters(void);
-void CCTK_CommandLineDescribeParameter(const char *optarg);
-void CCTK_CommandLineTestParameters(const char *optarg);
-void CCTK_CommandLineWarningLevel(const char *optarg);
-void CCTK_CommandLineErrorLevel(const char *optarg);
-void CCTK_CommandLineRedirectStdout(void);
-void CCTK_CommandLineListThorns(void);
-void CCTK_CommandLineVersion(void);
-void CCTK_CommandLineHelp(void);
-void CCTK_CommandLineUsage(void);
-void CCTK_CommandLineFinished(void);
+void CCTKi_CommandLineTestThornCompiled(const char *optarg);
+void CCTKi_CommandLineDescribeAllParameters(void);
+void CCTKi_CommandLineDescribeParameter(const char *optarg);
+void CCTKi_CommandLineTestParameters(const char *optarg);
+void CCTKi_CommandLineWarningLevel(const char *optarg);
+void CCTKi_CommandLineErrorLevel(const char *optarg);
+void CCTKi_CommandLineRedirectStdout(void);
+void CCTKi_CommandLineListThorns(void);
+void CCTKi_CommandLineVersion(void);
+void CCTKi_CommandLineHelp(void);
+void CCTKi_CommandLineUsage(void);
+void CCTKi_CommandLineFinished(void);
 
 #ifdef __cplusplus 
 }

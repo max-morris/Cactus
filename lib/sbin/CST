@@ -6,7 +6,7 @@
 #  @desc 
 #  Parses the the configuration files for thorns.
 #  @enddesc 
-#  @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.22 1999-07-21 08:12:43 allen Exp $
+#  @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.23 1999-07-24 22:43:27 allen Exp $
 #@@*/
 
 # Global parameter to track the number of errors from the CST
@@ -744,7 +744,7 @@ EOT
  
 print OUT <<EOT;
 
-int CCTK_BindingsParametersInitialise(void)
+int CCTKi_BindingsParametersInitialise(void)
 {
 
 EOT
@@ -860,7 +860,7 @@ EOT
   return retval;
 }
  
-int CCTK_BindingsParameterHelp(const char *identifier, const char *format, FILE *file) 
+int CCTKi_BindingsParameterHelp(const char *identifier, const char *format, FILE *file) 
 {   
   int retval = 1;
   int temp_retval;
@@ -1136,12 +1136,12 @@ sub CreateScheduleBindings
   print OUT  <<EOT;
 #include <stdio.h>
  
-  int CCTK_BindingsScheduleInitialise(void)
+  int CCTKi_BindingsScheduleInitialise(void)
   {
     return 0;
   }
 
-  int CCTK_BindingsScheduleRegister(const char *type, void *data)
+  int CCTKi_BindingsScheduleRegister(const char *type, void *data)
   {
     
     if (CCTK_Equals(type,"STARTUP"))
@@ -1152,7 +1152,7 @@ sub CreateScheduleBindings
     {
       Cactus_RegisterRFR(data);
     } else {
-      printf ("Unknown type in CCTK_BindingsScheduleRegister");
+      printf ("Unknown type in CCTKi_BindingsScheduleRegister");
     }
 
     return 0;

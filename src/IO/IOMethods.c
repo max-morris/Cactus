@@ -678,7 +678,7 @@ int CCTK_OutputVarByMethod(cGH *GH, const char *var, const char *method)
  ************************************************************************/
 
  /*@@
-   @routine    CCTK_rfrTriggerSaysGo
+   @routine    CCTKi_rfrTriggerSaysGo
    @date       Sat March 6 1999
    @author     Gabrielle Allen
    @desc 
@@ -713,7 +713,7 @@ int CCTK_OutputVarByMethod(cGH *GH, const char *var, const char *method)
    @version    $Header$
  */
 
-int CCTK_rfrTriggerSaysGo(cGH *GH, int variable)
+int CCTKi_rfrTriggerSaysGo(cGH *GH, int variable)
 {
   int handle;
   int flag;
@@ -741,11 +741,11 @@ int CCTK_rfrTriggerSaysGo(cGH *GH, int variable)
 
 
  /*@@
-   @routine    CCTK_rfrTriggerAction
+   @routine    CCTKi_rfrTriggerAction
    @date       Sat March 6 1999
    @author     Gabrielle Allen
    @desc 
-               Essentially the same as CCTK_rfrTriggerSaysGo, 
+               Essentially the same as CCTKi_rfrTriggerSaysGo, 
                but now calls each IO method for which it is 
                time to output the trigger
    @enddesc 
@@ -775,7 +775,7 @@ int CCTK_rfrTriggerSaysGo(cGH *GH, int variable)
    @returndesc
                0    = This should never happen, since at least
                       one IO method should have been found by
-		      CCTK_rfrTriggerSaysGo
+		      CCTKi_rfrTriggerSaysGo
 	       >0   = Number of IO methods called for output for
                       this variable
    @endreturndesc
@@ -783,7 +783,7 @@ int CCTK_rfrTriggerSaysGo(cGH *GH, int variable)
    @version    $Header$
  */
 
-int CCTK_rfrTriggerAction(void *GH, int variable)
+int CCTKi_rfrTriggerAction(void *GH, int variable)
 {
   char *varname;
   char *fullvarname;

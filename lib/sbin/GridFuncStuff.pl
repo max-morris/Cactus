@@ -95,7 +95,7 @@ sub CreateVariableBindings
 
   print OUT "\n";
  
-  print OUT "int CCTK_BindingsVariablesInitialise(void)\n{\n";
+  print OUT "int CCTKi_BindingsVariablesInitialise(void)\n{\n";
 
   foreach $thorn (split(" ",$interface_database{"THORNS"}))
   {

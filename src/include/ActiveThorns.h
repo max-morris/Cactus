@@ -15,12 +15,12 @@
 extern "C" {
 #endif
 
-int CCTK_RegisterThorn(const char *name, const char *imp);
-int CCTK_ActivateThorn(const char *name);
+int CCTKi_RegisterThorn(const char *name, const char *imp);
+int CCTKi_ActivateThorn(const char *name);
 int CCTK_IsThornActive(const char *name);
 int CCTK_IsImplementationActive(const char *name);
-int CCTK_ListThorns(FILE *file, const char *format, int active);
-int CCTK_ListImplementations(FILE *file, const char *format, int active);
+int CCTKi_ListThorns(FILE *file, const char *format, int active);
+int CCTKi_ListImplementations(FILE *file, const char *format, int active);
 
 #ifdef __cplusplus 
 }

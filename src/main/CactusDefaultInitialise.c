@@ -59,7 +59,7 @@ int CactusDefaultInitialise(tFleshConfig *config)
   convergence_level = 0;
   while((GH = CCTK_SetupGH(config, convergence_level)))
   {
-    CCTK_AddGH(config, convergence_level, GH);
+    CCTKi_AddGH(config, convergence_level, GH);
 
     CactusInitialiseGH(GH);
 
@@ -116,23 +116,23 @@ int CactusInitialiseGH(cGH *GH)
   GH->rfr_top = NULL;
 
   rfrInitTree(&(GH->rfr_top), 
-	      CCTK_rfrStorageOn,
-	      CCTK_rfrStorageOff,
-	      CCTK_rfrCommunicationOn,
-	      CCTK_rfrCommunicationOff,
-	      CCTK_rfrTriggerable,
-	      CCTK_rfrTriggerSaysGo,
-	      CCTK_rfrTriggerAction,
-	      CCTK_rfrCallFunc);
+	      CCTKi_rfrStorageOn,
+	      CCTKi_rfrStorageOff,
+	      CCTKi_rfrCommunicationOn,
+	      CCTKi_rfrCommunicationOff,
+	      CCTKi_rfrTriggerable,
+	      CCTKi_rfrTriggerSaysGo,
+	      CCTKi_rfrTriggerAction,
+	      CCTKi_rfrCallFunc);
 
   /* Do the rfr initialisation on this GH */
-  CCTK_BindingsScheduleRegister("RFRINIT", (void *)GH);
+  CCTKi_BindingsScheduleRegister("RFRINIT", (void *)GH);
 
   /* Report the rfr tree */
-  CCTK_rfrPrintTree(GH,GH->rfr_top);
+  CCTKi_rfrPrintTree(GH,GH->rfr_top);
 
   /* Initialise all the extensions. */
-  CCTK_InitGHExtensions(GH);
+  CCTKi_InitGHExtensions(GH);
 
 #define PUGH
 
@@ -140,23 +140,23 @@ int CactusInitialiseGH(cGH *GH)
   /* Do various rfr traversals.  Will tidy up later. */
 
   /* FIXME : PARAM_CHECK SHOULD BE BEFORE HERE */
-  CCTK_rfrTraverse(GH, CCTK_PARAMCHECK);
+  CCTKi_rfrTraverse(GH, CCTK_PARAMCHECK);
   CCTKi_FinaliseParamWarn();
 
-  CCTK_rfrTraverse(GH, CCTK_BASEGRID); 
+  CCTKi_rfrTraverse(GH, CCTK_BASEGRID); 
 
   /* Traverse routines setting up initial data */
-  CCTK_rfrTraverse(GH,CCTK_INITIAL);
+  CCTKi_rfrTraverse(GH,CCTK_INITIAL);
 
   /* Traverse poststep initial routines which should only be done once */
-  CCTK_rfrTraverse(GH,CCTK_POSTINITIAL);
+  CCTKi_rfrTraverse(GH,CCTK_POSTINITIAL);
 
   /* Ignore checkpointing for now.
-   * CCTK_rfrTraverse(GH,CCTK_RECOVER);
-   * CCTK_rfrTraverse(GH,CCTK_CPINITIAL);
+   * CCTKi_rfrTraverse(GH,CCTK_RECOVER);
+   * CCTKi_rfrTraverse(GH,CCTK_CPINITIAL);
    */
 
-  CCTK_rfrTraverse(GH,CCTK_POSTSTEP);
+  CCTKi_rfrTraverse(GH,CCTK_POSTSTEP);
 
 #endif
 

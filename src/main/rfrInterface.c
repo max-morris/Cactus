@@ -26,7 +26,7 @@ static char *rcsid = "$Header$";
 
 
  /*@@
-   @routine    CCTK_rfrTraverse
+   @routine    CCTKi_rfrTraverse
    @date       Wed Feb  3 14:45:57 1999
    @author     Tom Goodale
    @desc 
@@ -39,10 +39,10 @@ static char *rcsid = "$Header$";
    @endhistory 
 
 @@*/
-int CCTK_rfrTraverse(cGH *GH, int rfrpoint)
+int CCTKi_rfrTraverse(cGH *GH, int rfrpoint)
 {
   
-  CCTK_rfrTraverseGHExtensions(GH, rfrpoint);
+  CCTKi_rfrTraverseGHExtensions(GH, rfrpoint);
 
   return 0;
 }
@@ -75,7 +75,7 @@ int CCTK_rfrTraverse(cGH *GH, int rfrpoint)
    @version    $Header$
 @@*/
 
-int CCTK_rfrPrintTree(cGH *GH,void *rfr_top)
+int CCTKi_rfrPrintTree(cGH *GH,void *rfr_top)
 {
   DECLARE_CCTK_PARAMETERS
 
@@ -117,7 +117,7 @@ int CCTK_rfrPrintTree(cGH *GH,void *rfr_top)
 }
 
  /*@@
-   @routine    CCTK_rfrStorageOn
+   @routine    CCTKi_rfrStorageOn
    @date       Sat Feb 13 17:06:30 1999
    @author     Tom Goodale
    @desc 
@@ -130,7 +130,7 @@ int CCTK_rfrPrintTree(cGH *GH,void *rfr_top)
    @endhistory 
 
 @@*/
-int CCTK_rfrStorageOn(void *GH, int group)
+int CCTKi_rfrStorageOn(void *GH, int group)
 {
   int retcode;
   char *group_name;
@@ -154,7 +154,7 @@ int CCTK_rfrStorageOn(void *GH, int group)
 }
 
  /*@@
-   @routine    CCTK_rfrStorageOff
+   @routine    CCTKi_rfrStorageOff
    @date       Sat Feb 13 17:06:30 1999
    @author     Tom Goodale
    @desc 
@@ -167,7 +167,7 @@ int CCTK_rfrStorageOn(void *GH, int group)
    @endhistory 
 
 @@*/
-int CCTK_rfrStorageOff(void *GH, int group)
+int CCTKi_rfrStorageOff(void *GH, int group)
 {
   int retcode;
   char *group_name;
@@ -191,7 +191,7 @@ int CCTK_rfrStorageOff(void *GH, int group)
 }
 
  /*@@
-   @routine    CCTK_rfrCommunicationOn
+   @routine    CCTKi_rfrCommunicationOn
    @date       Sat Feb 13 17:06:30 1999
    @author     Tom Goodale
    @desc 
@@ -204,7 +204,7 @@ int CCTK_rfrStorageOff(void *GH, int group)
    @endhistory 
 
 @@*/
-int CCTK_rfrCommunicationOn(void *GH, int group)
+int CCTKi_rfrCommunicationOn(void *GH, int group)
 {
   int retcode;
   char *group_name;
@@ -228,7 +228,7 @@ int CCTK_rfrCommunicationOn(void *GH, int group)
 }
 
  /*@@
-   @routine    CCTK_rfrCommunicationOff
+   @routine    CCTKi_rfrCommunicationOff
    @date       Sat Feb 13 17:06:30 1999
    @author     Tom Goodale
    @desc 
@@ -241,7 +241,7 @@ int CCTK_rfrCommunicationOn(void *GH, int group)
    @endhistory 
 
 @@*/
-int CCTK_rfrCommunicationOff(void *GH, int group)
+int CCTKi_rfrCommunicationOff(void *GH, int group)
 {
   int retcode;
   char *group_name;
@@ -265,7 +265,7 @@ int CCTK_rfrCommunicationOff(void *GH, int group)
 }
 
  /*@@
-   @routine    CCTK_rfrTriggerable
+   @routine    CCTKi_rfrTriggerable
    @date       Sat March 6 1999
    @author     Gabrielle Allen
    @desc 
@@ -286,7 +286,7 @@ int CCTK_rfrCommunicationOff(void *GH, int group)
    @endvar 
 @@*/
 
-int CCTK_rfrTriggerable(int entrypoint)
+int CCTKi_rfrTriggerable(int entrypoint)
 {
   if (entrypoint == CCTK_ANALYSIS)
     {
@@ -299,7 +299,7 @@ int CCTK_rfrTriggerable(int entrypoint)
 
 
  /*@@
-   @routine    CCTK_rfrCallFunc
+   @routine    CCTKi_rfrCallFunc
    @date       Sat Feb 13 17:08:39 1999
    @author     Tom Goodale
    @desc 
@@ -312,7 +312,7 @@ int CCTK_rfrTriggerable(int entrypoint)
    @endhistory 
 
 @@*/
-int CCTK_rfrCallFunc(void *GH, int language, void *function)
+int CCTKi_rfrCallFunc(void *GH, int language, void *function)
 {
 
   void (*calledfunc)(void *);

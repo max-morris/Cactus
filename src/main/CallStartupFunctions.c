@@ -35,7 +35,7 @@ int CallStartupFunctions(tFleshConfig *ConfigData)
 {
 
 
-  CCTK_BindingsScheduleRegister("STARTUP", NULL);
+  CCTKi_BindingsScheduleRegister("STARTUP", NULL);
 
   /*  These used to be here to set the defaults afterwards.  Now set the default before. 
    *   SetupMainFunctions();

@@ -15,21 +15,21 @@
 extern "C" {
 #endif
 
-int CCTK_DummyStorageOn(void *GH, int group);
+int CCTKi_DummyStorageOn(void *GH, int group);
 
-int CCTK_DummyStorageOff(void *GH, int group);
+int CCTKi_DummyStorageOff(void *GH, int group);
 
-int CCTK_DummyCommunicationOn(void *GH, int group);
+int CCTKi_DummyCommunicationOn(void *GH, int group);
 
-int CCTK_DummyCommunicationOff(void *GH, int group);
+int CCTKi_DummyCommunicationOff(void *GH, int group);
 
-int CCTK_DummyTriggerable(int variable);
+int CCTKi_DummyTriggerable(int variable);
 
-int CCTK_DummyTriggerSaysGo(void *GH, int variable);
+int CCTKi_DummyTriggerSaysGo(void *GH, int variable);
 
-int CCTK_DummyTriggerAction(void *GH, int group);
+int CCTKi_DummyTriggerAction(void *GH, int group);
 
-int CCTK_DummyCallFunc(void *GH, int language, void *function);
+int CCTKi_DummyCallFunc(void *GH, int language, void *function);
 
 
 #ifdef __cplusplus

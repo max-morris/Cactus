@@ -72,18 +72,18 @@ int ProcessCommandLine(int *inargc, char ***inargv, tFleshConfig *ConfigData)
   
       switch (c)
       {
-	case 't': CCTK_CommandLineTestThornCompiled(optarg); break;
-	case 'O': CCTK_CommandLineDescribeAllParameters(); break;
-	case 'o': CCTK_CommandLineDescribeParameter(optarg); break;
-	case 'x': CCTK_CommandLineTestParameters(optarg); break;
-	case 'W': CCTK_CommandLineWarningLevel(optarg); break;
-	case 'E': CCTK_CommandLineErrorLevel(optarg); break;
-	case 'r': CCTK_CommandLineRedirectStdout(); break;
-	case 'T': CCTK_CommandLineListThorns(); break;
-	case 'v': CCTK_CommandLineVersion(); break;
+	case 't': CCTKi_CommandLineTestThornCompiled(optarg); break;
+	case 'O': CCTKi_CommandLineDescribeAllParameters(); break;
+	case 'o': CCTKi_CommandLineDescribeParameter(optarg); break;
+	case 'x': CCTKi_CommandLineTestParameters(optarg); break;
+	case 'W': CCTKi_CommandLineWarningLevel(optarg); break;
+	case 'E': CCTKi_CommandLineErrorLevel(optarg); break;
+	case 'r': CCTKi_CommandLineRedirectStdout(); break;
+	case 'T': CCTKi_CommandLineListThorns(); break;
+	case 'v': CCTKi_CommandLineVersion(); break;
 	case 'h': 
 	case '?':
-	  CCTK_CommandLineHelp(); break;
+	  CCTKi_CommandLineHelp(); break;
 	default:
 	  printf ("?? getopt returned character code 0%o ??\n", c);
       }
@@ -95,15 +95,15 @@ int ProcessCommandLine(int *inargc, char ***inargv, tFleshConfig *ConfigData)
     }
     else
     {
-      CCTK_CommandLineUsage();
+      CCTKi_CommandLineUsage();
     }
   }
   else
   {
-    CCTK_CommandLineUsage();
+    CCTKi_CommandLineUsage();
   }
 
-  CCTK_CommandLineFinished();
+  CCTKi_CommandLineFinished();
 
   return 0;
 }
