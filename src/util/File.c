@@ -30,7 +30,7 @@ static cHandledData *DirNames = NULL;
    @enddesc
  @@*/             
 
-int CCTK_mkdir(char *dir)
+int CCTK_mkdir(const char *dir)
 {
   int retval=-1;
   int handle;
