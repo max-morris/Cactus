@@ -54,7 +54,7 @@ typedef struct
 
   int n_variables;
 
-  int stagger;
+  int staggertype;
 
   /* *size[dim]  - pointers to parameter data*/
   CCTK_INT **size;
@@ -74,7 +74,7 @@ static int *group_of_variable = NULL;
 
 static int maxdim = 0;
 
-static char staggered = 0;
+static int staggered = 0;
 
 /* When passing to fortran, must pass by reference
  * so need to define the odd global variable to pass 8-(
@@ -85,6 +85,7 @@ int _cctk_one = 1;
 
 static cGroupDefinition *CCTKi_SetupGroup(const char *implementation, 
                                           const char *name, 
+					  int staggercode,
                                           int n_variables);
 
 static CCTK_INT **CCTKi_SetupGroupSize(int dimension, const char *thorn, const char *sizestring);
@@ -189,49 +190,118 @@ void CCTK_DumpGroupInfo(void) {
   int group_num;
 
   for(group_num = 0; group_num < n_groups; group_num++) {
-    printf("GROUP INFO: GrpNo./imp_name/name:  %d   >%s<   >%s<\n",
-           group_num,groups[group_num].implementation,groups[group_num].name);
+    printf("GROUP INFO: GrpNo./imp_name/name/stag %d   >%s<   >%s<  %d\n",
+           group_num,
+	   groups[group_num].implementation,
+	   groups[group_num].name,
+	   groups[group_num].staggertype);
   }
 }
 
- /*@@
-   @routine    CCTKi_StaggerCode
-   @date       Fri Jan  7 15:59:26 2000
-   @author     Gerd Lanfermann
-   @desc 
-      gets the stagger string and returns a number identifying the 
-      staggering. 
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+int CCTK_StaggeredGrids(void) {
+  return(staggered);
+}
 
-@@*/
+int CCTK_StaggerCodeName(const char *stype) {
+  int i,scode,base,dim,m;
+  char *info;
 
-int CCTKi_StaggerCode(int dim, 
-		      const char *imp, const char *gname, 
-		      const char *stype) {
+  base =1;
+  scode=0;
+  dim  =strlen(stype);
+
+  for (i=0;i<dim;i++) {
+
+    switch (stype[i])
+    {
+      case 'M':m=0; break;
+      case 'C':m=1; break;
+      case 'P':m=2; break;
+      default:
+        info   = (char*)malloc (256*sizeof(char));
+        sprintf(info,"Unknown stagger type: >%s< \n", stype);
+        CCTK_WARN(1,info);
+        free(info);
+        return(-1);
+    }
+    scode+= m*base;
+    base  = 3 * base;
+  }
+  return(scode);
+}
+
+int CCTK_DirStaggerCodeVal(int dir, int sc) {
+  int val,b,dsc;
+  static int hash[4],hashed=0;
+
+  if (hashed==0) {
+    hash[0]= 1;
+    hash[1]= 3;
+    hash[2]= 9;
+    hash[3]=27;
+    hashed = 1;
+  }
+
+  for (b=3;b>=0;b--) {
+    val = (int)(sc / hash[b]);
+    sc  = sc % hash[b];
+    /*$printf("DirCode: b %d val %d sc %d hash %d\n",b,val,sc,hash[b]);$*/
+    if (dir==b) {
+      dsc = val;
+      break;
+    }
+  }
+  return(dsc);
+}
+
+int CCTK_DirStaggerCodeName(int dir, const char *stype) {
+  int i,scode,base;
+  char hs[7]="MMMMMM",*info;
+
+  sprintf(hs,"%s",stype);
+
+  if (dir>strlen(hs)) CCTK_WARN(1,"Not enough letters in stagger code");
+
+  switch (hs[dir])
+    {
+    case 'M': scode = 0; break;
+    case 'C': scode = 1; break;
+    case 'P': scode = 2; break;
+    default:
+        info   = (char*)malloc (256*sizeof(char));
+        sprintf(info,"Unknown stagger type: >%s< \n", hs);
+        CCTK_WARN(1,info);
+        free(info);
+        return(-1);
+    }
+  return(scode);
+}
+
+
+int CCTKi_ParseStaggerString(int dim,
+			     const char *imp, 
+			     const char *gname,
+			     const char *stype) 
+{
   int i,m;
   int base  = 1;
   int scode = 0;
-  char *hs, *info;
-  
-  hs     = (char*)malloc ((dim+1) *sizeof (char));
+  char hs[7]="MMMMMM", *info;
 
   /* change possible SHORTCUTS into the official notation, allow for dim=6 */
-  if 
-    (strcmp(stype,"NONE")==0) strncpy(hs,"MMMMMM",dim); 
-  else if 
+  if
+    (strcmp(stype,"NONE")==0) strncpy(hs,"MMMMMM",dim);
+  else if
     (strcmp(stype,"CELL")==0) strncpy(hs,"CCCCCC",dim);
   else {
     sprintf(hs,"%s",stype);
   }
 
+  printf("PARSE: %d %s %s \n",dim, stype,hs);
+
   for (i=0;i<dim;i++) {
 
-    switch (hs[i]) 
+    switch (hs[i])
     {
       case 'M':m=0; break;
       case 'C':m=1; break;
@@ -239,8 +309,8 @@ int CCTKi_StaggerCode(int dim,
       default:
         info   = (char*)malloc (256*sizeof(char));
         sprintf(info,
-      	      "Unknown stagger type: >%s< for group: >%s::%s< \n",
-	      stype,imp,gname);
+              "Unknown stagger type: >%s< for group: >%s::%s< \n",
+              stype,imp,gname);
         CCTK_WARN(1,info);
         free(info);
         return(-1);
@@ -249,10 +319,8 @@ int CCTKi_StaggerCode(int dim,
     base  = 3 * base;
   }
 
-  free(hs);
   return(scode);
 }
-  
 
  /*@@
    @routine    CCTKi_CreateGroup
@@ -292,13 +360,15 @@ int CCTKi_CreateGroup(const char *gname, const char *thorn, const char *imp,
   retval = 0;
 
   /* get the staggercode */
-  staggercode = CCTKi_StaggerCode(dimension, imp, gname, stype);
+  /*$printf("Calling Stagger \n");$*/
+  staggercode = CCTKi_ParseStaggerString(dimension, imp, gname, stype);
+  printf("CG: sc: %d %s \n",staggercode,stype);
 
   /* Allocate storage for the group */
   groupscope = CCTK_GroupScopeNumber(gscope);
   if (groupscope == GROUP_PUBLIC || groupscope == GROUP_PROTECTED)
   {
-    group = CCTKi_SetupGroup(imp, gname, n_variables);
+    group = CCTKi_SetupGroup(imp, gname, staggercode, n_variables);
 
 #ifdef DEBUG_GROUPS
   {
@@ -316,7 +386,7 @@ int CCTKi_CreateGroup(const char *gname, const char *thorn, const char *imp,
   }
   else if (groupscope == GROUP_PRIVATE)
   {
-    group = CCTKi_SetupGroup(thorn, gname, n_variables);
+    group = CCTKi_SetupGroup(thorn, gname, staggercode, n_variables);
 
 #ifdef DEBUG_GROUPS
   {
@@ -340,11 +410,11 @@ int CCTKi_CreateGroup(const char *gname, const char *thorn, const char *imp,
   /* Allocate storage for the group and setup some stuff. */
   if(group)
   {
-    group->dim    = dimension;
-    group->gtype  = CCTK_GroupTypeNumber(gtype);
-    group->vtype  = CCTK_VarTypeNumber(vtype);
-    group->gscope = groupscope;
-    group->stagger= staggercode;
+    group->dim        = dimension;
+    group->gtype      = CCTK_GroupTypeNumber(gtype);
+    group->vtype      = CCTK_VarTypeNumber(vtype);
+    group->gscope     = groupscope;
+    group->staggertype= staggercode;
 
     group->n_timelevels = ntimelevels;
     
@@ -412,6 +482,7 @@ int CCTKi_CreateGroup(const char *gname, const char *thorn, const char *imp,
 @@*/
 static cGroupDefinition *CCTKi_SetupGroup(const char *implementation, 
                                           const char *name,
+					  int staggercode,
                                           int n_variables)
 {
   int *temp_int;
@@ -456,9 +527,9 @@ static cGroupDefinition *CCTKi_SetupGroup(const char *implementation,
         strcpy(groups[n_groups].implementation, implementation);
         strcpy(groups[n_groups].name, name);
         
-        groups[n_groups].number = n_groups;
-        
-        groups[n_groups].n_variables = n_variables;
+        groups[n_groups].number     = n_groups;
+        groups[n_groups].staggertype= staggercode;
+        groups[n_groups].n_variables= n_variables;
         
         /* Fill in global variable numbers. */
         for(variable = 0; variable < n_variables; variable++)
@@ -1123,6 +1194,7 @@ void  FMODIFIER FORTRAN_NAME(CCTK_GroupScopeNumber)(int *number,
 
 @@*/
 
+
 cGroup *CCTK_GroupData(int group)
 {
   cGroup *gp;
@@ -1133,12 +1205,12 @@ cGroup *CCTK_GroupData(int group)
   {
     if(group >=0 && group < n_groups)
     {
-	gp->grouptype = groups[group].gtype;
+	gp->grouptype    = groups[group].gtype;
 	gp->variabletype = groups[group].vtype;
-	gp->dim   = groups[group].dim;
+	gp->dim          = groups[group].dim;
 	gp->numvariables = groups[group].n_variables;
-	gp->numtimelevels = groups[group].n_timelevels;
-	gp->staggertype = 0;
+	gp->numtimelevels= groups[group].n_timelevels;
+	gp->staggertype  = groups[group].staggertype;
     }
     else
     {
