@@ -22,6 +22,7 @@ struct Coordprops
 { 
   char * name;
   int    index;
+  CCTK_REAL origin;
   int    direction;
 };
 
@@ -29,7 +30,7 @@ int CCTK_RegisterCoord(const char *coordname,
 		       const char *gfname, 
 		       int dir);
 
-int CCTK_RegisterCoord_ByIndex(const char *name, int index, int dir);
+int CCTK_RegisterCoordI(const char *name, int index, int dir);
 
 #ifdef __cplusplus 
 }
