@@ -97,6 +97,8 @@ sub CreateVariableBindings
 
   $dataout = "";
 
+  $dataout .= "#include \"cctk_ActiveThorns.h\"\n";
+
   foreach $thorn (split(" ",$rhinterface_db->{"THORNS"}))
   {
     $dataout .= "int CactusBindingsVariables_$thorn"."_Initialise(void);\n";
