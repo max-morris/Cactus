@@ -16,6 +16,7 @@
 #  "CCTK_NO_AUTOUSE_MACRO" somewhere at the top (within a comment). 
 #  Everything after will not be matched.
 #  @enddesc 
+#  @version   $Header$
 #@@*/
 
 $home = shift(@ARGV);
@@ -64,6 +65,12 @@ while(<>)
   {
     $routine.=$mline."\n";
 
+    # skip one-line comments
+    # (note that this is still incomplete for C comments -
+    #  it is not checked if some code follows after the closing '*/')
+    next if ($mline=~m/^\s*\/\//);
+    next if ($mline=~m/^\s*\/\*.*\*\//);
+
     if ($mline=~/$skipstring/)
     {
       $skip = 1;
@@ -89,7 +96,7 @@ while(<>)
         $n_arg_braces--;
       }
       while ($mline=~m/({)/g)  {
-	$n_arg_braces++;
+        $n_arg_braces++;
       }
     }
    
@@ -99,15 +106,15 @@ while(<>)
       if ($domacro1) {
         if (!($routine=~s/([ \t\f]*)(return\s*\S*\s*}\s*)$/$1$addmacro1; $1$2/s))
         {
-	  ($routine=~s/(}\s*$)/  $addmacro1; $1/s)
-	}
+          ($routine=~s/(}\s*$)/  $addmacro1; $1/s)
+        }
         $domacro1=0;  
       }
 ##    Start adding second macro
       if ($domacro2) {
-	if (!($routine=~s/([ \t\f]*)(return\s*\S*\s*}\s*)$/$1$addmacro2 $1$2/s)) 
-	{
-	  ($routine=~s/(}\s*$)/  $addmacro2 $1/s) 
+        if (!($routine=~s/([ \t\f]*)(return\s*\S*\s*}\s*)$/$1$addmacro2 $1$2/s)) 
+        {
+          ($routine=~s/(}\s*$)/  $addmacro2 $1/s) 
         }
         $domacro2=0;
       }  
