@@ -126,8 +126,12 @@ foreach my $arrangement (sort keys %arrangements)
    foreach my $thorn (@{$arrangements{$arrangement}})
    {
       print "\n\t$thorn" if ($debug);
-   
-      &Add_Section($thorn, &Read_Thorn_Doc($arrangements_dir, $arrangement, $thorn));
+ 
+      my $contents = &Read_New_Thorn_Doc($arrangements_dir, $arrangement, $thorn);   
+      if (! $contents) {
+         $contents = &Read_Thorn_Doc($arrangements_dir, $arrangement, $thorn);   
+      }
+      &Add_Section($thorn, $contents); 
    }
    &End_Arr;
    $counter++;
@@ -143,6 +147,113 @@ print "\nFinished.\n";
 ####################################################################
 #                    BEGINNING OF SUB-ROUTINES                     #
 ####################################################################
+
+#/*@@
+#  @routine   Read_New_Thorn_Doc   
+#  @date      Sun Mar  3 01:54:37 CET 2002
+#  @author    Ian Kelley
+#  @desc 
+#     Attempts to read in thorn documentation complying to our template.tex
+#     format as specified in doc/ThornGuide/templatex.tex.
+#
+#     If it fails, it will return 0, and then we will try to do another
+#     parsing of the documentation using &Read_Thorn_Doc()
+#  @enddesc 
+#  @version 
+#@@*/
+sub Read_New_Thorn_Doc 
+{
+   my $arrangements_dir = shift;
+   my $arrangement      = shift;
+   my $thorn            = shift;
+
+   my $contents    = "";
+
+   my $start = 0;
+   my $stop  = 0;
+   my $document_has_begun  = 0;
+
+   my $path = "$arrangements_dir$arrangement/$thorn/doc";
+   my $pathandfile = "$path/$file";
+  
+   my $title = "";
+   my $author = "";
+   my $date = "";
+   my $cnts = "";
+
+   open (DOC, "<$pathandfile") || print STDERR "\nCould not find documentation in $path";
+
+   while (<DOC>)                            # loop through thorn doc.
+   {
+      if (/\\title\{(.*?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?.*?)\}/) { $title = $1; if ($title !~ /\w/) { close DOC; return 0;} }
+      if (/\\author\{(.*?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?.*?)\}/) { $author = $1;}
+      if (/\\date\{(.*?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?.*?)\}/) { $date = $1; $date =~ s/.*Date:(.*?)\$\s*?\$/$1/; }
+      if (/% START CACTUS THORNGUIDE/) {
+         $start = 1;
+
+         while (($_ = <DOC>) && ($_ !~ /% END CACTUS THORNGUIDE/))
+         {
+            if (/(.*)\\begin\{abstract\}(.*)/) {
+               $_ = "$1\\section\{Abstract\}$2";
+            }
+
+            if (/(.*)\\end\{abstract\}(.*)/) {
+               $_ = "$1$2";
+            }
+
+            s/(\\includegraphics.*?\{)\s*?(.*?)\s*?\}/$1$path\/$2\}/g;
+
+            next if (/^\s*?\\tableofcontents\s*?$/);
+
+            if (/\\begin\{thebibliography/) {
+               my $line;
+               while (($line = <DOC>) && ($line !~ /\\end\{thebibliography/)) {
+                  $bibliography .= $line;
+               }
+               next;
+            }
+            $contents .= $_;
+         }
+      }
+   }
+
+      $contents .= "\n\\include{${arrangement}_${thorn}_param}\n";
+      $contents .= "\n\\include{" . ThornUtils::ToLower("${arrangement}_${thorn}_inter") . "\}\n";
+      $contents .= "\n\\include{${arrangement}_${thorn}_schedule}\n";
+
+   # if it never started reading, then we print some error message
+   if (! $start) {
+      close DOC; return 0;
+   }
+   
+   $cnts .= "\n\{\\Large\n";
+   $cnts .= "\n\\begin\{tabbing\}\n";
+   $cnts .= "\n\{\\bf Author(s):\} \\= \\kill \\\\\n";
+   $cnts .= "\n\{\\bf Title:\} \\> $title \\\\\n" if ($title =~ /\w/) && (lc($title) ne lc($thorn));
+
+   # split the authors names up if we can
+   $author =~ s/\\\\/,/g;
+   $author =~ s/\s*?,\s*?,\s*?/,/g;
+   my @authors = split/,/, $author;
+
+   for (my $i = 0; $i < (@authors); $i++) {
+      if ($i eq 0) { $cnts .= "\n\{\\bf Author(s):\} \\>"; 
+      } else {
+         $cnts .= "\n\\\> ";
+      }
+      $cnts .= "$authors[$i] \\\\\n"
+      #$cnts .= "\n\{\\bf Author(s):\} \\> $author \\\\\n" if ($author =~ /\w/);
+   }
+
+   $cnts .= "\n\{\\bf Date:\} \\> $date \\\\\n" if ($date =~ /\w/);
+   $cnts .= "\n\\end\{tabbing\}\n";
+   $cnts .= "\n\}\n";
+   $cnts .= "\n\\minitoc";
+   close DOC;
+
+   return "$cnts\n$contents";
+}
+
 
 #/*@@
 #  @routine   Read_Thorn_Doc   
@@ -182,9 +293,9 @@ sub Read_Thorn_Doc
 
    while (<DOC>)                            # loop through thorn doc.
    {
-      if (/\\title\{(.*?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?.*?)\}/) { $title = $1; }
+      if (/\\title\{(.*?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?.*?)\}/) { $title = $1; if ($title !~ /\w/)  {$start = 0; last;}}
       if (/\\author\{(.*?)\}/) { $author = $1; }
-      if (/\\date\{(.*?)\}/) { $date = $1; }
+      if (/\\date\{(.*?)\}/) { $date = $1; $date =~ s/.*Date:(.*?)\$\s*?\$/$1/; }
       if (/\\begin\{thebibliography/) {
          my $line;
          while (($line = <DOC>) && ($line !~ /\\end\{thebibliography/)) {
@@ -203,7 +314,8 @@ sub Read_Thorn_Doc
       }
 
       if ($start && ! $stop) {              # add to $contents
-         s/(\\includegraphics.*?\{)\s*?(.*\.eps\s*?\})/$1$path\/$2/g;
+         s/(\\includegraphics.*?\{)\s*?(.*?)\s*?\}/$1$path\/$2\}/g;
+        # s/(\\includegraphics.*?\{)\s*?(.*\.eps\s*?\})/$1$path\/$2/g;
          $contents .= $_;
       } elsif (/\\begin\{document\}/) {     # don't begin yet.... 1st flag
          $document_has_begun = 1; 
