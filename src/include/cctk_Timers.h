@@ -37,6 +37,7 @@ typedef struct
 
 typedef struct
 {
+  const char *name;
   int  n_vals;
   void *(*create)(int);
   void (*destroy)(int, void *);
@@ -57,7 +58,10 @@ extern "C" {
 
 int CCTK_ClockRegister(const char *name, const cClockFuncs *functions);
 int CCTK_NumTimers (void);
+int CCTK_NumClocks (void);
 const char *CCTK_TimerName (int timer_handle);
+const char *CCTK_ClockName (int clock_handle);
+int CCTK_ClockHandle(const char *nclock);
 int CCTK_TimerCreate(const char *name);
 int CCTK_TimerCreateI(void);
 int CCTK_TimerDestroy(const char *name);
@@ -74,8 +78,8 @@ int CCTK_TimerI(int this_timer, cTimerData *info);
 cTimerData *CCTK_TimerCreateData(void);
 int CCTK_TimerDestroyData(cTimerData *info);
 
-int CCTK_TimerPrintData (const char *name);
-int CCTK_TimerPrintDataI(int this_timer);
+int CCTK_TimerPrintData (const char *ntimer, const char *nclock);
+int CCTK_TimerPrintDataI(int this_timer, int this_clock);
 
 #ifdef __cplusplus
 }

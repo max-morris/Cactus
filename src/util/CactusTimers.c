@@ -27,6 +27,8 @@ CCTK_FILEVERSION(util_CactusTimers_c)
  ********************************************************************/
 void CCTK_FCALL CCTK_FNAME (CCTK_NumTimers)
                            (int *ierr);
+void CCTK_FCALL CCTK_FNAME (CCTK_NumClocks)
+                           (int *ierr);
 void CCTK_FCALL CCTK_FNAME (CCTK_TimerCreate)
                            (int *timer_index, ONE_FORTSTRING_ARG);
 void CCTK_FCALL CCTK_FNAME (CCTK_TimerCreateI)
@@ -48,9 +50,9 @@ void CCTK_FCALL CCTK_FNAME (CCTK_TimerReset)
 void CCTK_FCALL CCTK_FNAME (CCTK_TimerResetI)
                            (int *ierr, int *this_timer);
 void CCTK_FCALL CCTK_FNAME (CCTK_TimerPrintDataI)
-                           (int *ierr, int *this_timer);
+                           (int *ierr, int *this_timer, int *this_clock);
 void CCTK_FCALL CCTK_FNAME (CCTK_TimerPrintData)
-                           (int *ierr, ONE_FORTSTRING_ARG);
+                           (int *ierr, TWO_FORTSTRING_ARG);
 
 
 /********************************************************************
@@ -111,6 +113,7 @@ int CCTK_ClockRegister(const char *name, const cClockFuncs *functions)
 
   if(newfuncs)
   {
+    newfuncs->name = name;
     newfuncs->n_vals = functions->n_vals;
     newfuncs->create = functions->create;
     newfuncs->destroy = functions->destroy;
@@ -142,7 +145,93 @@ int CCTK_ClockRegister(const char *name, const cClockFuncs *functions)
   return handle;
 }
 
-/* Does CCTK_ClockRegister need a fortran binding?  I'll assume not. */
+
+ /*@@
+   @routine    CCTK_ClockName
+   @date       Sat 29 Dec 2001
+   @author     Gabrielle Allen
+   @desc
+               Return the name of a clock from a handle
+   @enddesc
+
+   @returntype const char *
+   @returndesc
+   Name of clock
+   @endreturndesc
+@@*/
+const char *CCTK_ClockName (int handle)
+{
+  const cClockFuncs *funcs;
+  const char *clock=NULL;
+
+  funcs = (const cClockFuncs *)Util_GetHandledData(clocks, handle);
+  if (funcs)
+  {
+    clock = funcs->name;
+  }
+
+  return (clock);
+}
+
+ /*@@
+   @routine    CCTK_ClockHandle
+   @date       Sat 29 Dec 2001
+   @author     Gabrielle Allen
+   @desc
+               Return the handle of a clock from its name
+   @enddesc
+
+   @returntype int
+   @returndesc
+   Handle of clock, or -1 if the clock wasn't found
+   @endreturndesc
+@@*/
+int CCTK_ClockHandle (const char *clock)
+{
+  int i,handle;
+  const cClockFuncs *funcs;
+
+  handle = -1;
+
+  for (i = 0; i < CCTK_NumClocks(); i++)
+  {
+    funcs = (const cClockFuncs *)Util_GetHandledData(clocks, i);
+    if (funcs)
+    {
+      if (strcmp(funcs->name,clock)==0)
+      {
+	handle = i;
+      }
+    }
+  }
+
+  return (handle);
+}
+
+ 
+ /*@@
+   @routine    CCTK_NumClocks
+   @date       Sat 29 Dec 2001
+   @author     Gabrielle Allen
+   @desc
+               Return the total number of clocks
+   @enddesc
+
+   @returntype int
+   @returndesc
+               the total number of Cactus clocks
+   @endreturndesc
+@@*/
+int CCTK_NumClocks (void)
+{
+  return (n_clocks);
+}
+
+void CCTK_FCALL CCTK_FNAME (CCTK_NumClocks)
+                           (int *nclocks)
+{
+  *nclocks = CCTK_NumClocks();
+}
 
 
  /*@@
@@ -164,9 +253,9 @@ int CCTK_NumTimers (void)
 }
 
 void CCTK_FCALL CCTK_FNAME (CCTK_NumTimers)
-                           (int *ierr)
+                           (int *ntimers)
 {
-  *ierr = n_timers;
+  *ntimers = CCTK_NumTimers();
 }
 
 
@@ -195,12 +284,7 @@ const char *CCTK_TimerName (int timer_handle)
   return (Util_GetHandleName (timers, timer_handle));
 }
 
-/* void CCTK_FCALL CCTK_FNAME(CCTK_TimerName)(int *timer_handle, ONE_FORTSTRING_ARG) {
-  ONE_FORTSTRING_CREATE(name)
-  ONE_FORTSTRING_PTR(pname)
-  pname = Util_GetHandleName(timers, *timer_handle);
-  free(name);
-  } -- gives compiler warning.  What do these macros expand to? */
+
 
  /*@@
    @routine    CCTK_TimerCreate
@@ -224,7 +308,7 @@ void CCTK_FCALL CCTK_FNAME (CCTK_TimerCreate)
                            (int *timer_index, ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_CREATE (name)
-  *timer_index = CCTKi_TimerCreate (name);
+  *timer_index = CCTK_TimerCreate (name);
   free (name);
 }
 
@@ -814,19 +898,70 @@ int CCTK_TimerDestroyData(cTimerData *info)
   return 0;
 }
   
-/* Display timer data  (11 Dec 2001, D. Rideout) */
-int CCTK_TimerPrintDataI(int this_timer)
-{
-  cTimerData *info;
-  int i;
 
-  if (Util_GetHandledData(timers, this_timer)) 
+ /*@@
+   @routine    CCTK_TimerPrintDataI
+   @date       
+   @author     David Rideout
+   @desc 
+   Print the values of a timer for a given clock
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+int CCTK_TimerPrintDataI(int this_timer, int this_clock)
+{
+  int retval;
+  cTimerData *info;
+  int i,timer;
+  int firstclock;
+  int lastclock;
+  int firsttimer;
+  int lasttimer;
+
+  retval = 0;
+
+  if (this_timer == -1)
+  {
+    firsttimer = 0;
+    lasttimer = CCTK_NumTimers();
+  }
+  else
+  {
+    firsttimer = this_timer;
+    lasttimer = firsttimer + 1;
+    if (firsttimer < 0 || firsttimer > CCTK_NumTimers())
+    {
+      CCTK_VWarn(8,__LINE__,__FILE__,"Cactus",
+		 "CCTK_TimerPrintDataI: Timer %d not found",i);
+      retval = -1;
+      lasttimer = firsttimer;
+    }
+  }
+
+  for (timer = firsttimer; timer < lasttimer; timer++)
   {
     info = CCTK_TimerCreateData();
-    CCTK_TimerI(this_timer,info); /* return values are always 0 */
+    CCTK_TimerI(timer,info); /* return values are always 0 */
 
-    printf("Results from timer \"%s\":\n",CCTK_TimerName(this_timer));
-    for (i = 0; i < info->n_vals; i++) 
+    printf("Results from timer \"%s\":\n",CCTK_TimerName(timer));
+
+    if (this_clock == -1)
+    {
+      firstclock = 0;
+      lastclock = info->n_vals;
+    }
+    else
+    {
+      firstclock = this_clock;
+      lastclock = this_clock+1;
+    }
+
+    for (i = firstclock; i < lastclock; i++) 
     {
       switch (info->vals[i].type) 
       {
@@ -852,45 +987,90 @@ int CCTK_TimerPrintDataI(int this_timer)
       }
     }
     CCTK_TimerDestroyData(info);
-    return 0;
-  } else 
-  {
-    CCTK_VWarn(8,__LINE__,__FILE__,"Cactus",
-               "CCTK_TimerPrintDataI: Timer %d not found",this_timer);
-    return -1;
-  }
+  } 
+
+  return retval;
 }
 
 void CCTK_FCALL CCTK_FNAME (CCTK_TimerPrintDataI)
-                           (int *ierr, int *this_timer)
+                           (int *ierr, int *this_timer, int *this_clock)
 {
-  *ierr = CCTK_TimerPrintDataI (*this_timer);
+  *ierr = CCTK_TimerPrintDataI (*this_timer,*this_clock);
 }
 
 
-int CCTK_TimerPrintData (const char *name)
+int CCTK_TimerPrintData (const char *name, const char *clock)
 {
-  int this_timer, retval;
+  int this_timer;
+  int this_clock;
+  int retval;
 
-  this_timer = Util_GetHandle (timers, name, NULL);
-  if (this_timer >= 0)
+  retval = 0;
+
+  if (!clock)
   {
-    retval = CCTK_TimerPrintDataI(this_timer);
+    this_clock = -1;
   }
   else
   {
-    CCTK_VWarn(8,__LINE__,__FILE__,"Cactus",
-               "CCTK_TimerPrintData: Timer %s not found",name);
-    retval = -1;
+    this_clock = CCTK_ClockHandle(clock);
+    if (this_clock == -1)
+    {
+      CCTK_VWarn(8,__LINE__,__FILE__,"Cactus",
+		 "CCTK_TimerPrintData: Clock %s not found",clock);
+      retval = -1;
+    }
+  }
+
+  if (!name)
+  {
+    this_timer = -1;
+  }
+  else
+  {
+    this_timer = Util_GetHandle (timers, name, NULL);
+    if (this_timer == -1)
+    {
+      CCTK_VWarn(8,__LINE__,__FILE__,"Cactus",
+		 "CCTK_TimerPrintData: Timer %s not found",name);
+      retval = -1;
+    }
+  }
+
+  if (retval == 0)
+  {
+    retval = CCTK_TimerPrintDataI(this_timer,this_clock);
   }
 
   return (retval);
 }
 
 void CCTK_FCALL CCTK_FNAME (CCTK_TimerPrintData)
-                           (int *ierr, ONE_FORTSTRING_ARG)
+                           (int *ierr, TWO_FORTSTRING_ARG)
 {
-  ONE_FORTSTRING_CREATE (name)
-  *ierr = CCTK_TimerPrintData (name);
-  free (name);
+  TWO_FORTSTRING_CREATE (timer,clock)
+  const char *newclock;
+  const char *newtimer;
+
+  if (strcmp(clock,"")==0)
+  {
+    newclock = NULL;
+  }
+  else
+  {
+    newclock = clock;
+  }
+
+  if (strcmp(timer,"")==0)
+  {
+    newtimer = NULL;
+  }
+  else
+  {
+    newtimer = timer;
+  }
+
+  *ierr = CCTK_TimerPrintData (newtimer,newclock);
+  free (timer);
+  free (clock);
 }
