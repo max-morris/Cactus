@@ -1,7 +1,7 @@
 
 Cactus Code Frequently Asked Questions
 
-$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.33 2002-05-29 23:16:46 allen Exp $
+$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.34 2002-06-25 13:22:11 allen Exp $
 
 Also available at http://www.cactuscode.org/Documentation/FAQ
 
@@ -507,3 +507,17 @@ Also available at http://www.cactuscode.org/Documentation/FAQ
     for the initial checkout, and then using cvs.cactuscode.org for an update.
 
     To fix this problem, simply be consistent with repository locations.
+
+-------------------------------------------------------------------------------
+
+36. I get a segmentation fault running Cactus, right after the schedule
+    tree is printed to screen?
+
+    Check to see if you are passing CCTK_ARGUMENTS into any routines
+    registered at CCTK_STARTUP, if so these need to be removed and void 
+    used instead. The STARTUP timebin is run before the driver sets up 
+    any grid variables, and the segmentation fault occurs in 
+    CCTK_DECLARE_ARGUMENTS when these undefined variables are accessed. 
+    Parameters can however be used in STARTUP routines.
+
+-------------------------------------------------------------------------------
