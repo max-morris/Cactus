@@ -5107,6 +5107,18 @@ This is a family of functions, one for each Cactus data type,
 to get a copy of the value associated with a specified key, and store
 it (more accurately, as much of it as will fit) in a specified array
 
+\item[Util\_TableGetGeneric]
+     [\pageref{Util-TableGetGeneric}]
+Get the single (1-element array) value, or more generally the
+first array element of the value, associated with a specified key
+in a key/value table; the value's data type is generic
+
+\item[Util\_TableGetGenericArray]
+     [\pageref{Util-TableGetGenericArray}]
+Get a copy of the value associated with a specified key, and store
+it (more accurately, as much of it as will fit) in a specified array;
+the array's data type is generic
+
 \item[Util\_TableGetString]
      [\pageref{Util-TableGetString}]
 Gets a copy of the character-string value associated with a specified
@@ -5187,6 +5199,16 @@ of a specified array
      [\pageref{Util-TableSetFromString}]
 Sets values in a table based on a string argument (interpreted with
 ``parameter-file'' semantics)
+
+\item[Util\_TableSetGeneric]
+     [\pageref{Util-TableSetGeneric}]
+Set the value associated with a specified key to be a specified
+single (1-element array) value, whose data type is generic
+
+\item[Util\_TableSetGenericArray]
+     [\pageref{Util-TableSetGenericArray}]
+Set the value associated with a specified key to be a copy of a
+specified array, whose data type is generic
 
 \item[Util\_TableSetString]
      [\pageref{Util-TableSetString}]
@@ -5537,6 +5559,9 @@ In contrast, it {\em is\/} an error for the value to actually be an
 empty (0-length) array, because then there is no ``first array element''
 to get.
 
+It is also an error for the value to actually have a different type
+than \verb|CCTK_XXX|.
+
 If any error code is returned, the user's value buffer
 (pointed to by \verb|value| if this is non-NULL) is unchanged.
 \end{Discussion}
@@ -5557,6 +5582,12 @@ set a single (1-element array) value
 \end{SeeAlso}
 \begin{SeeAlso}{Util\_TableSet*Array()}
 set an array value
+\end{SeeAlso}
+\begin{SeeAlso}{Util\_TableSetGeneric()}
+set a single (1-element array) value with generic data type
+\end{SeeAlso}
+\begin{SeeAlso}{Util\_TableSetGenericArray()}
+set an array value with generic data type
 \end{SeeAlso}
 \begin{SeeAlso}{Util\_TableSetFromString()}
 convenience routine to set key/value entries in a table based on a
@@ -5676,6 +5707,9 @@ It is also {\em not\/} an error for the value to actually have
 $< \verb|N_array|$ array elements; again the caller can detect this by
 comparing the return value with \verb|N_array|.
 
+It {\em is\/} an error for the value to actually have a different type
+than \verb|CCTK_XXX|.
+
 If any error code is returned, the user's value buffer
 (pointed to by \verb|array| if this is non-NULL) is unchanged.
 \end{Discussion}
@@ -5689,6 +5723,12 @@ in it based on a parameter-file--like character string
 get a single (1-element array) value,
 or more generally the first array element of an array value
 \end{SeeAlso}
+\begin{SeeAlso}{Util\_TableGetGeneric()}
+get a single (1-element array) value with generic data type
+\end{SeeAlso}
+\begin{SeeAlso}{Util\_TableGetGenericArray()}
+get an array value with generic data type
+\end{SeeAlso}
 \begin{SeeAlso}{Util\_TableGet*String()}
 get a character-string value
 \end{SeeAlso}
@@ -5697,6 +5737,12 @@ set a single (1-element array) value
 \end{SeeAlso}
 \begin{SeeAlso}{Util\_TableSet*Array()}
 set an array value
+\end{SeeAlso}
+\begin{SeeAlso}{Util\_TableSetGeneric()}
+set a single (1-element array) value with generic data type
+\end{SeeAlso}
+\begin{SeeAlso}{Util\_TableSetGenericArray()}
+set an array value with generic data type
 \end{SeeAlso}
 \begin{SeeAlso}{Util\_TableSetFromString()}
 convenience routine to set key/value entries in a table based on a
@@ -5740,10 +5786,335 @@ CCTK_INT output[N_OUTPUT];
 int N;
 int handle = Util_TableCreate(UTIL_TABLE_FLAGS_DEFAULT);
 
-Util_TableSetIntArray(handle, N_STUFF, stuff, "stuff");
+Util_TableSetRealArray(handle, N_STUFF, stuff, "blah blah blah");
 
 /* gets N = 3, output[0] = 42.0, output[1] = 69.0 */
-N = Util_TableGetRealArray(handle, N_OUTPUT, output, "stuff");
+N = Util_TableGetRealArray(handle, N_OUTPUT, output, "blah blah blah");
+\end{verbatim}
+\end{Example}
+\end{ExampleSection}
+\end{FunctionDescription}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{FunctionDescription}{Util\_TableGetGeneric}
+\label{Util-TableGetGeneric}
+Get the single (1-element array) value, or more generally the
+first array element of the value, associated with a specified key
+in a key/value table; the value's data type is generic.  That
+is, the value is specified by a \verb|CCTK_VARIABLE_|* type code
+and a \verb|void *| pointer.
+
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+#include "util_ErrorCodes.h"
+#include "util_Table.h"
+int N_elements = Util_TableGetGeneric(int handle,
+                                      int type_code,
+                                      void *value,
+                                      const char *key);
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ResultSection}
+\begin{Result}{N\_elements}
+the number of array elements in the value
+\end{Result}
+\end{ResultSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{handle ($\ge 0$)}
+handle to the table
+\end{Parameter}
+\begin{Parameter}{type\_code}
+the value's type code
+(one of the \verb|CCTK_VARIABLE_|* constants from \verb|"cctk_Constants.h"|)
+\end{Parameter}
+\begin{Parameter}{value}
+a pointer to where this function should store a copy of the value
+(or more generally the first array element of the value) associated
+with the specified key,
+or NULL pointer to skip storing this
+\end{Parameter}
+\begin{Parameter}{key}
+a pointer to the key (a C-style null-terminated string)
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{Discussion}
+Note that it is {\em not\/} an error for the value to actually have
+$> 1$ array elements; in this case only the first element is stored.
+The rationale for this design is that the caller may know or suspect
+that the value is a large array, but may only want the first array
+element; in this case this design avoids the caller having to allocate
+a large buffer unnecessarily.
+
+In contrast, it {\em is\/} an error for the value to actually be an
+empty (0-length) array, because then there is no ``first array element''
+to get.
+
+It is also an error for the value to actually have a different type
+than that specified by \verb|type_code|.
+
+If any error code is returned, the user's value buffer
+(pointed to by \verb|value| if this is non-NULL) is unchanged.
+\end{Discussion}
+
+\begin{SeeAlsoSection}
+\begin{SeeAlso}{Util\_TableCreateFromString()}
+convenience routine to create a table and set key/value entries
+in it based on a parameter-file--like character string
+\end{SeeAlso}
+\begin{SeeAlso}{Util\_TableGet*()}
+get a single (1-element array) value
+\end{SeeAlso}
+\begin{SeeAlso}{Util\_TableGet*Array()}
+get an array value
+\end{SeeAlso}
+\begin{SeeAlso}{Util\_TableGet*String()}
+get a character-string value
+\end{SeeAlso}
+\begin{SeeAlso}{Util\_TableItQueryValueInfo()}
+query key present/absent in table, and optionally type and/or number
+of elements, using an iterator
+\end{SeeAlso}
+\begin{SeeAlso}{Util\_TableQueryValueInfo()}
+query key present/absent in table, and optionally type and/or number
+of elements
+\end{SeeAlso}
+\begin{SeeAlso}{Util\_TableSet*()}
+set a single (1-element array) value
+\end{SeeAlso}
+\begin{SeeAlso}{Util\_TableSet*Array()}
+set an array value
+\end{SeeAlso}
+\begin{SeeAlso}{Util\_TableSetGeneric()}
+set a single (1-element array) value with generic data type
+\end{SeeAlso}
+\begin{SeeAlso}{Util\_TableSetGenericArray()}
+set an array value with generic data type
+\end{SeeAlso}
+\begin{SeeAlso}{Util\_TableSetFromString()}
+convenience routine to set key/value entries in a table based on a
+parameter-file--like character string
+\end{SeeAlso}
+\begin{SeeAlso}{Util\_TableSetString()}
+set a character-string value
+\end{SeeAlso}
+\end{SeeAlsoSection}
+
+\begin{ErrorSection}
+\begin{Error}{UTIL\_ERROR\_BAD\_HANDLE}
+handle is invalid
+\end{Error}
+\begin{Error}{UTIL\_ERROR\_TABLE\_BAD\_KEY}
+key contains '/' character
+\end{Error}
+\begin{Error}{UTIL\_ERROR\_TABLE\_NO\_SUCH\_KEY}
+no such key in table
+\end{Error}
+\begin{Error}{UTIL\_ERROR\_TABLE\_WRONG\_DATA\_TYPE}
+value has data type other than \verb|CCTK_TYPE|
+\end{Error}
+\begin{Error}{UTIL\_ERROR\_TABLE\_VALUE\_IS\_EMPTY}
+value is an empty (0-element) array
+\end{Error}
+\end{ErrorSection}
+
+\begin{ExampleSection}
+\begin{Example}{C}
+\begin{verbatim}
+#include "util_ErrorCodes.h"
+#include "util_Table.h"
+#include "cctk_Constants.h"
+
+#define N_DIGITS        5
+static const CCTK_INT pi_digits[N_DIGITS] = {3, 14, 159, 2653, 58979};
+
+int N;
+CCTK_INT x;
+void *xptr = (void *) &x;
+int handle = Util_TableCreate(UTIL_TABLE_FLAGS_DEFAULT);
+
+Util_TableSetIntArray(handle, N_DIGITS, pi_digits, "digits of pi");
+Util_TableSetIntArray(handle, 0, pi_digits, "empty array");
+
+/* gets N = 5, x = 3 */
+N = Util_TableGetGeneric(handle, CCTK_VARIABLE_INT, &x, "the answer");
+
+/* gets N = UTIL_ERROR_TABLE_VALUE_IS_EMPTY, leaves x unchanged */
+N = Util_TableGetGeneric(handle, CCTK_VARIABLE_INT, &x, "empty array");
+\end{verbatim}
+\end{Example}
+\end{ExampleSection}
+\end{FunctionDescription}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{FunctionDescription}{Util\_TableGetGenericArray}
+\label{Util-TableGetGenericArray}
+Get a copy of the value associated with a specified key, and store
+it (more accurately, as much of it as will fit) in a specified array;
+the array's data type is generic.  That is the array is specified by
+a \verb|CCTK_VARIABLE_|* type code, a count of the number of array
+elements, and a \verb|void *| pointer.
+
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+#include "util_ErrorCodes.h"
+#include "util_Table.h"
+int N_elements = Util_TableGetGenericArray(int handle,
+                                           int type_code,
+                                           int N_array, void *array,
+                                           const char *key);
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ResultSection}
+\begin{Result}{N\_elements}
+the number of array elements in the value
+\end{Result}
+\end{ResultSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{handle ($\ge 0$)}
+handle to the table
+\end{Parameter}
+\begin{Parameter}{type\_code}
+the value's type code
+(one of the \verb|CCTK_VARIABLE_|* constants from \verb|"cctk_Constants.h"|)
+\end{Parameter}
+\begin{Parameter}{N\_array}
+the number of array elements in \verb|array[]|
+(must be $\ge 0$ if \verb|array != NULL|)
+\end{Parameter}
+\begin{Parameter}{array}
+a pointer to where this function should store (up to \verb|N_array|
+elements of) a copy of the value associated with the specified key,
+or NULL pointer to skip storing this
+\end{Parameter}
+\begin{Parameter}{key}
+a pointer to the key (a C-style null-terminated string)
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{Discussion}
+Note that it is {\em not\/} an error for the value to actually have
+$> \verb|N_array|$ array elements; in this case only the first \verb|N_array|
+elements are stored.  The caller can detect this by comparing the
+return value with \verb|N_array|.
+The rationale for this design is that the caller may know or suspect
+that the value is a large array, but may only want the first few array
+elements; in this case this design avoids the caller having to allocate
+a large buffer unnecessarily.
+
+It is also {\em not\/} an error for the value to actually have
+$< \verb|N_array|$ array elements; again the caller can detect this by
+comparing the return value with \verb|N_array|.
+
+It {\em is\/} an error for the value to actually have a different type
+than that specified by \verb|type_code|.
+
+If any error code is returned, the user's value buffer
+(pointed to by \verb|array| if this is non-NULL) is unchanged.
+\end{Discussion}
+
+\begin{SeeAlsoSection}
+\begin{SeeAlso}{Util\_TableCreateFromString()}
+convenience routine to create a table and set key/value entries
+in it based on a parameter-file--like character string
+\end{SeeAlso}
+\begin{SeeAlso}{Util\_TableGet*()}
+get a single (1-element array) value,
+or more generally the first array element of an array value
+\end{SeeAlso}
+\begin{SeeAlso}{Util\_TableGetGeneric()}
+get a single (1-element array) value with generic data type
+\end{SeeAlso}
+\begin{SeeAlso}{Util\_TableGetGenericArray()}
+get an array value with generic data type
+\end{SeeAlso}
+\begin{SeeAlso}{Util\_TableGet*String()}
+get a character-string value
+\end{SeeAlso}
+\begin{SeeAlso}{Util\_TableItQueryValueInfo()}
+query key present/absent in table, and optionally type and/or number
+of elements, using an iterator
+\end{SeeAlso}
+\begin{SeeAlso}{Util\_TableQueryValueInfo()}
+query key present/absent in table, and optionally type and/or number
+of elements
+\end{SeeAlso}
+\begin{SeeAlso}{Util\_TableSet*()}
+set a single (1-element array) value
+\end{SeeAlso}
+\begin{SeeAlso}{Util\_TableSet*Array()}
+set an array value
+\end{SeeAlso}
+\begin{SeeAlso}{Util\_TableSetGeneric()}
+set a single (1-element array) value with generic data type
+\end{SeeAlso}
+\begin{SeeAlso}{Util\_TableSetGenericArray()}
+set an array value with generic data type
+\end{SeeAlso}
+\begin{SeeAlso}{Util\_TableSetFromString()}
+convenience routine to set key/value entries in a table based on a
+parameter-file--like character string
+\end{SeeAlso}
+\begin{SeeAlso}{Util\_TableSetString()}
+set a character-string value
+\end{SeeAlso}
+\end{SeeAlsoSection}
+
+\begin{ErrorSection}
+\begin{Error}{UTIL\_ERROR\_BAD\_HANDLE}
+handle is invalid
+\end{Error}
+\begin{Error}{UTIL\_ERROR\_TABLE\_BAD\_KEY}
+key contains '/' character
+\end{Error}
+\begin{Error}{UTIL\_ERROR\_BAD\_INPUT}
+\verb|array != NULL| and \verb|N_array| $< 0$
+\end{Error}
+\begin{Error}{UTIL\_ERROR\_TABLE\_NO\_SUCH\_KEY}
+no such key in table
+\end{Error}
+\begin{Error}{UTIL\_ERROR\_TABLE\_WRONG\_DATA\_TYPE}
+value has data type other than \verb|CCTK_TYPE|
+\end{Error}
+\end{ErrorSection}
+
+\begin{ExampleSection}
+\begin{Example}{C}
+\begin{verbatim}
+#include "util_ErrorCodes.h"
+#include "util_Table.h"
+
+#define N_STUFF         3
+static const CCTK_REAL stuff[N_STUFF] = {42.0, 69.0, 105.5};
+
+#define N_OUTPUT        2
+CCTK_INT output[N_OUTPUT];
+
+int N;
+int handle = Util_TableCreate(UTIL_TABLE_FLAGS_DEFAULT);
+
+Util_TableSetRealArray(handle, N_STUFF, stuff, "stuff");
+
+/* gets N = UTIL_ERROR_TABLE_WRONG_DATA_TYPE, output[] unchanged */
+N = Util_TableGetGenericArray(handle,
+                              CCTK_VARIABLE_INT,
+                              N_OUTPUT, output,
+                              "stuff");
+/* gets N = 3, output[0] = 42.0, output[1] = 69.0 */
+N = Util_TableGetGenericArray(handle,
+                              CCTK_VARIABLE_REAL,
+                              N_OUTPUT, output,
+                              "stuff");
 \end{verbatim}
 \end{Example}
 \end{ExampleSection}
@@ -5831,11 +6202,23 @@ get an array value
 \begin{SeeAlso}{Util\_TableGetCharArray()}
 get an array-of-\verb|CCTK_CHAR| value
 \end{SeeAlso}
+\begin{SeeAlso}{Util\_TableGetGeneric()}
+get a single (1-element array) value with generic data type
+\end{SeeAlso}
+\begin{SeeAlso}{Util\_TableGetGenericArray()}
+get an array value with generic data type
+\end{SeeAlso}
 \begin{SeeAlso}{Util\_TableSet*()}
 set a single (1-element array) value
 \end{SeeAlso}
 \begin{SeeAlso}{Util\_TableSet*Array()}
 set an array value
+\end{SeeAlso}
+\begin{SeeAlso}{Util\_TableSetGeneric()}
+set a single (1-element array) value with generic data type
+\end{SeeAlso}
+\begin{SeeAlso}{Util\_TableSetGenericArray()}
+set an array value with generic data type
 \end{SeeAlso}
 \begin{SeeAlso}{Util\_TableSetString()}
 set a character-string value
@@ -6316,7 +6699,8 @@ buffer.  If any other error code is returned, the user's key buffer
 
 \begin{SeeAlsoSection}
 \begin{SeeAlso}{Util\_TableQueryValueInfo()}
-perform a similar query using the key instead of an iterator
+query key present/absent in table, and optionally type and/or number
+of elements, but using the key instead of an iterator
 \end{SeeAlso}
 \end{SeeAlsoSection}
 
@@ -6754,7 +7138,8 @@ unchanged.
 
 \begin{SeeAlsoSection}
 \begin{SeeAlso}{Util\_TableItQueryKeyValueInfo()}
-perform a similar query using an iterator instead of the key
+query key present/absent in table, and optionally type and/or number
+of elements, but using an iterator instead of the key
 \end{SeeAlso}
 \end{SeeAlsoSection}
 
@@ -6978,11 +7363,23 @@ or more generally the first array element of an array value
 \begin{SeeAlso}{Util\_TableGet*Array()}
 get an array value
 \end{SeeAlso}
+\begin{SeeAlso}{Util\_TableGetGeneric()}
+get a single (1-element array) value with generic data type
+\end{SeeAlso}
+\begin{SeeAlso}{Util\_TableGetGenericArray()}
+get an array value with generic data type
+\end{SeeAlso}
 \begin{SeeAlso}{Util\_TableGet*String()}
 get a character-string value
 \end{SeeAlso}
 \begin{SeeAlso}{Util\_TableSet*Array()}
 set an array value
+\end{SeeAlso}
+\begin{SeeAlso}{Util\_TableSetGeneric()}
+set a single (1-element array) value with generic data type
+\end{SeeAlso}
+\begin{SeeAlso}{Util\_TableSetGenericArray()}
+set an array value with generic data type
 \end{SeeAlso}
 \begin{SeeAlso}{Util\_TableSetFromString()}
 convenience routine to set key/value entries in a table based on a
@@ -7102,11 +7499,23 @@ or more generally the first array element of an array value
 \begin{SeeAlso}{Util\_TableGet*Array()}
 get an array value
 \end{SeeAlso}
+\begin{SeeAlso}{Util\_TableGetGeneric()}
+get a single (1-element array) value with generic data type
+\end{SeeAlso}
+\begin{SeeAlso}{Util\_TableGetGenericArray()}
+get an array value with generic data type
+\end{SeeAlso}
 \begin{SeeAlso}{Util\_TableGet*String()}
 get a character-string value
 \end{SeeAlso}
 \begin{SeeAlso}{Util\_TableSet*()}
 set a single (1-element array) value
+\end{SeeAlso}
+\begin{SeeAlso}{Util\_TableSetGeneric()}
+set a single (1-element array) value with generic data type
+\end{SeeAlso}
+\begin{SeeAlso}{Util\_TableSetGenericArray()}
+set an array value with generic data type
 \end{SeeAlso}
 \begin{SeeAlso}{Util\_TableSetFromString()}
 convenience routine to set key/value entries in a table based on a
@@ -7237,6 +7646,12 @@ or more generally the first array element of an array value
 \begin{SeeAlso}{Util\_TableGet*Array()}
 get an array value
 \end{SeeAlso}
+\begin{SeeAlso}{Util\_TableGetGeneric()}
+get a single (1-element array) value with generic data type
+\end{SeeAlso}
+\begin{SeeAlso}{Util\_TableGetGenericArray()}
+get an array value with generic data type
+\end{SeeAlso}
 \begin{SeeAlso}{Util\_TableGet*String()}
 get a character-string value
 \end{SeeAlso}
@@ -7245,6 +7660,12 @@ set a single (1-element array) value
 \end{SeeAlso}
 \begin{SeeAlso}{Util\_TableSet*Array()}
 set an array value
+\end{SeeAlso}
+\begin{SeeAlso}{Util\_TableSetGeneric()}
+set a single (1-element array) value with generic data type
+\end{SeeAlso}
+\begin{SeeAlso}{Util\_TableSetGenericArray()}
+set an array value with generic data type
 \end{SeeAlso}
 \begin{SeeAlso}{Util\_TableSetFromString()}
 convenience routine to set key/value entries in a table based on a
@@ -7287,6 +7708,299 @@ int count = Util_TableSetFromString(handle, "n=6 dx=4.0e-5 pi=3.1");
 Util_TableSetInt(handle, 6, "n");
 Util_TableSetReal(handle, 4.0e-5, "dx");
 Util_TableSetReal(handle, 3.1, "pi");
+\end{verbatim}
+\end{Example}
+\end{ExampleSection}
+\end{FunctionDescription}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{FunctionDescription}{Util\_TableSetGeneric}
+\label{Util-TableSetGeneric}
+Set the value associated with a specified key to be a specified
+single (1-element array) value, whose data type is generic.  That
+is, the value is specified by a \verb|CCTK_VARIABLE_|* type code
+and a \verb|void *| pointer.
+
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+#include "util_ErrorCodes.h"
+#include "util_Table.h"
+int status = Util_TableSetGeneric(int handle,
+                                  int type_code, const void *value,
+                                  const char *key);
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ResultSection}
+\begin{Result}{\rm 1}
+ok (key was already in table before this call, old value was replaced)\\
+   (it doesn't matter what the old value's \verb|type_code| and
+    \verb|N_elements| were, \ie{} these do {\em not\/} have to match
+    the new value)
+\end{Result}
+\begin{Result}{\rm 0}
+ok (key was not in table before this call)
+\end{Result}
+\end{ResultSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{handle ($\ge 0$)}
+handle to the table
+\end{Parameter}
+\begin{Parameter}{type\_code}
+the array elements' type code
+(one of the \verb|CCTK_VARIABLE_|* constants from \verb|"cctk_Constants.h"|)
+\end{Parameter}
+\begin{Parameter}{value\_ptr}
+a pointer to the value to be associated with the key
+\end{Parameter}
+\begin{Parameter}{key}
+a pointer to the key (a C-style null-terminated string)
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{Discussion}
+The key may be any C character string which does not contain a slash
+character (\verb|'/'|).
+
+The value is stored as a 1-element array.
+
+This function invalidates any iterators for the table which are
+not in the ``null-pointer'' state.
+\end{Discussion}
+
+\begin{SeeAlsoSection}
+\begin{SeeAlso}{Util\_TableCreateFromString()}
+convenience routine to create a table and set key/value entries
+in it based on a parameter-file--like character string
+\end{SeeAlso}
+\begin{SeeAlso}{Util\_TableGet*()}
+get a single (1-element array) value,
+or more generally the first array element of an array value
+\end{SeeAlso}
+\begin{SeeAlso}{Util\_TableGet*Array()}
+get an array value
+\end{SeeAlso}
+\begin{SeeAlso}{Util\_TableGetGeneric()}
+get a single (1-element array) value with generic data type
+\end{SeeAlso}
+\begin{SeeAlso}{Util\_TableGetGenericArray()}
+get an array value with generic data type
+\end{SeeAlso}
+\begin{SeeAlso}{Util\_TableGet*String()}
+get a character-string value
+\end{SeeAlso}
+\begin{SeeAlso}{Util\_TableSet*()}
+set a single (1-element array) value
+\end{SeeAlso}
+\begin{SeeAlso}{Util\_TableSet*Array()}
+set an array value
+\end{SeeAlso}
+\begin{SeeAlso}{Util\_TableSetGeneric()}
+set a single (1-element array) value with generic data type
+\end{SeeAlso}
+\begin{SeeAlso}{Util\_TableSetGenericArray()}
+set an array value with generic data type
+\end{SeeAlso}
+\begin{SeeAlso}{Util\_TableSetFromString()}
+convenience routine to set key/value entries in a table based on a
+parameter-file--like character string
+\end{SeeAlso}
+\begin{SeeAlso}{Util\_TableSetString()}
+set a character-string value
+\end{SeeAlso}
+\end{SeeAlsoSection}
+
+\begin{ErrorSection}
+\begin{Error}{UTIL\_ERROR\_BAD\_HANDLE}
+handle is invalid
+\end{Error}
+\begin{Error}{UTIL\_ERROR\_TABLE\_BAD\_KEY}
+key contains '/' character
+\end{Error}
+\begin{Error}{UTIL\_ERROR\_NO\_MEMORY}
+unable to allocate memory
+\end{Error}
+\end{ErrorSection}
+
+\begin{ExampleSection}
+\begin{Example}{C}
+\begin{verbatim}
+#include "util_Table.h"
+#include "cctk_Constants.h"
+
+const CCTK_INT i = 42;
+const void *iptr = (void *) &i;
+CCTK_INT icopy;
+
+const CCTK_REAL x = 299792458.0;
+const void *xptr = (void *) &x;
+CCTK_REAL xcopy;
+
+const int handle = Util_TableCreate(UTIL_TABLE_FLAGS_DEFAULT);
+
+Util_TableSetGeneric(handle, CCTK_VARIABLE_INT, iptr, "the answer");
+Util_TableSetGeneric(handle, CCTK_VARIABLE_REAL, xptr, "speed of light");
+
+/* gets icopy to 42 */
+Util_TableGetInt(handle, &icopy, "the answer");
+
+/* gets xcopy to 299792458.0 */
+Util_TableGetReal(handle, &xcopy, "speed of light");
+\end{verbatim}
+\end{Example}
+\end{ExampleSection}
+\end{FunctionDescription}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{FunctionDescription}{Util\_TableSetGenericArray}
+\label{Util-TableSetGenericArray}
+Set the value associated with a specified key to be a copy of a
+specified array, whose data type is generic.  That is, the array
+is specified by a \verb|CCTK_VARIABLE_|* type code, a count of
+the number of array elements, and a \verb|void *| pointer.
+
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+#include "util_ErrorCodes.h"
+#include "util_Table.h"
+int status = Util_TableSetGenericArray(int handle,
+                                       int type_code,
+                                       int N_elements, const void *array,
+                                       const char *key);
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ResultSection}
+\begin{Result}{\rm 1}
+ok (key was already in table before this call, old value was replaced)\\
+   (it doesn't matter what the old value's \verb|type_code| and
+    \verb|N_elements| were, \ie{} these do {\em not\/} have to match
+    the new value)
+\end{Result}
+\begin{Result}{\rm 0}
+ok (key was not in table before this call)
+\end{Result}
+\end{ResultSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{handle ($\ge 0$)}
+handle to the table
+\end{Parameter}
+\begin{Parameter}{type\_code}
+the array elements' type code
+(one of the \verb|CCTK_VARIABLE_|* constants from \verb|"cctk_Constants.h"|)
+\end{Parameter}
+\begin{Parameter}{N\_elements ($\ge 0$)}
+the number of array elements in \verb|array[]|
+\end{Parameter}
+\begin{Parameter}{value\_ptr}
+a pointer to the value to be associated with the key
+\end{Parameter}
+\begin{Parameter}{key}
+a pointer to the key (a C-style null-terminated string)
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{Discussion}
+The key may be any C character string which does not contain a slash
+character (\verb|'/'|).
+
+The value is stored as a 1-element array.
+
+This function invalidates any iterators for the table which are
+not in the ``null-pointer'' state.
+\end{Discussion}
+
+\begin{SeeAlsoSection}
+\begin{SeeAlso}{Util\_TableCreateFromString()}
+convenience routine to create a table and set key/value entries
+in it based on a parameter-file--like character string
+\end{SeeAlso}
+\begin{SeeAlso}{Util\_TableGet*()}
+get a single (1-element array) value,
+or more generally the first array element of an array value
+\end{SeeAlso}
+\begin{SeeAlso}{Util\_TableGet*Array()}
+get an array value
+\end{SeeAlso}
+\begin{SeeAlso}{Util\_TableGetGeneric()}
+get a single (1-element array) value with generic data type
+\end{SeeAlso}
+\begin{SeeAlso}{Util\_TableGetGenericArray()}
+get an array value with generic data type
+\end{SeeAlso}
+\begin{SeeAlso}{Util\_TableGet*String()}
+get a character-string value
+\end{SeeAlso}
+\begin{SeeAlso}{Util\_TableSet*()}
+set a single (1-element array) value
+\end{SeeAlso}
+\begin{SeeAlso}{Util\_TableSet*Array()}
+set an array value
+\end{SeeAlso}
+\begin{SeeAlso}{Util\_TableSetGeneric()}
+set a single (1-element array) value with generic data type
+\end{SeeAlso}
+\begin{SeeAlso}{Util\_TableSetFromString()}
+convenience routine to set key/value entries in a table based on a
+parameter-file--like character string
+\end{SeeAlso}
+\begin{SeeAlso}{Util\_TableSetString()}
+set a character-string value
+\end{SeeAlso}
+\end{SeeAlsoSection}
+
+\begin{ErrorSection}
+\begin{Error}{UTIL\_ERROR\_BAD\_HANDLE}
+handle is invalid
+\end{Error}
+\begin{Error}{UTIL\_ERROR\_TABLE\_BAD\_KEY}
+key contains '/' character
+\end{Error}
+\begin{Error}{UTIL\_ERROR\_NO\_MEMORY}
+unable to allocate memory
+\end{Error}
+\end{ErrorSection}
+
+\begin{ExampleSection}
+\begin{Example}{C}
+\begin{verbatim}
+#include "util_Table.h"
+#include "cctk_Constants.h"
+
+#define N_IARRAY    3
+const CCTK_INT iarray[N_IARRAY] = {42, 69, 105};
+const void *iarray_ptr = (void *) iarray;
+CCTK_INT iarray2[N_IARRAY];
+
+#define N_XARRAY    2
+const CCTK_REAL xarray[N_XARRAY] = {6.67e-11, 299792458.0};
+const void *xarray_ptr = (void *) xarray;
+CCTK_REAL xarray2[N_XARRAY];
+
+const int handle = Util_TableCreate(UTIL_TABLE_FLAGS_DEFAULT);
+
+Util_TableSetGenericArray(handle,
+                          CCTK_VARIABLE_INT,
+                          N_IARRAY, iarray_ptr,
+                          "my integer array");
+Util_TableSetGenericArray(handle,
+                          CCTK_VARIABLE_REAL,
+                          N_XARRAY, xarray_ptr,
+                          "my real array");
+
+/* gets iarray2[0] = 42, iarray2[1] = 69, iarray2[2] = 105 */
+Util_TableGetIntArray(handle, N_IARRAY, iarray2, "my integer array");
+
+/* gets xarray2[0] = 6.67e-11, xarray2[1] = 299792458.0 */
+Util_TableGetRealArray(handle, N_XARRAY, xarray2, "my real array");
 \end{verbatim}
 \end{Example}
 \end{ExampleSection}
@@ -7364,6 +8078,12 @@ or more generally the first array element of an array value
 \begin{SeeAlso}{Util\_TableGet*Array()}
 get an array value
 \end{SeeAlso}
+\begin{SeeAlso}{Util\_TableGetGeneric()}
+get a single (1-element array) value with generic data type
+\end{SeeAlso}
+\begin{SeeAlso}{Util\_TableGetGenericArray()}
+get an array value with generic data type
+\end{SeeAlso}
 \begin{SeeAlso}{Util\_TableGet*String()}
 get a character-string value
 \end{SeeAlso}
@@ -7375,6 +8095,12 @@ set a single (1-element array) value
 \end{SeeAlso}
 \begin{SeeAlso}{Util\_TableSet*Array()}
 set an array value
+\end{SeeAlso}
+\begin{SeeAlso}{Util\_TableSetGeneric()}
+set a single (1-element array) value with generic data type
+\end{SeeAlso}
+\begin{SeeAlso}{Util\_TableSetGenericArray()}
+set an array value with generic data type
 \end{SeeAlso}
 \begin{SeeAlso}{Util\_TableSetCharArray()}
 set an array-of-\verb|CCTK_CHAR| value

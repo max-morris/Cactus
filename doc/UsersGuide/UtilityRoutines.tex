@@ -74,14 +74,16 @@ A string can be stored by treating it as a 1-dimensional array of
 \verb|CCTK_CHAR| (there's an example of this below).
 
 The basic ``life cycle'' of a table is that you first create it
-with \verb|Util_TableCreate()|, then set entries in it with one or
-more of the \verb|Util_TableSet*()|, \verb|Util_TableSet*Array()|,
-and/or \verb|Util_TableSetString()| functions, then later on some
-other piece of code can get (copies of) the values you set from the
-table with one or more of the \verb|Util_TableGet*()|,
-\verb|Util_TableGet*Array()|, and/or \verb|Util_TableGetString()|
-functions.  Finally, when you're through with a table you destroy
-it with \verb|Util_TableDestroy()|.
+with \verb|Util_TableCreate()| or \verb|Util_TableClone()|, then
+set entries in it using one or more of the \verb|Util_TableSet*()|,
+\verb|Util_TableSet*Array()|, \verb|Util_TableSetGeneric()|,
+\verb|Util_TableSetGenericArray()|, and/or \verb|Util_TableSetString()|
+functions.  Then, at a later time some other piece of code can get
+(copies of) the values you set, using one or more of the
+\verb|Util_TableGet*()|, \verb|Util_TableGet*Array()|,
+\verb|Util_TableGetGeneric()|, \verb|Util_TableGetGenericArray()|,
+and/or \verb|Util_TableGetString()| functions.  Finally, when you're
+through with a table you destroy it with \verb|Util_TableDestroy()|.
 
 There are also convenience functions \verb|Util_TableSetFromString()|
 to sets entries in a table based on a parameter-file--style string,
@@ -340,11 +342,12 @@ walk through some or all of the table entries in this order.  This
 order is guaranteed to remain unchanged for any given table so long
 as no changes are made to that table, \ie{} so long as no
 \verb|Util_TableSet*()|, \verb|Util_TableSet*Array()|,
+\verb|Util_TableSetGeneric()|, \verb|Util_TableSetGenericArray()|,
 \verb|Util_TableSetString()|, or \verb|Util_TableDeleteKey()| calls
-are made on that table (making such calls on other tables doesn't matter).
-The order may change if there is any change in the table, and it
-may differ even between different tables with identical key/value
-contents.%%%
+are made on that table (making such calls on other tables doesn't
+matter).  The order may change if there is any change in the table,
+and it may differ even between different tables with identical key/value
+contents (including those produced by \verb|Util_TableClone()|).%%%
 \footnote{%%%
 	 For example, if tables were implemented by hashing,
 	 the internal order could be that of the hash buckets,
