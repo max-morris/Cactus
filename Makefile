@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.64 2000-01-16 10:55:55 allen Exp $
+#   @version $Id: Makefile,v 1.65 2000-01-17 09:33:39 allen Exp $
 # @@*/
 
 ##################################################################################
@@ -54,7 +54,7 @@ export TJOBS FJOBS
 
 # Set the options to pass to the setup script
 ifneq ($(strip $(options)),)
-SETUP_OPTIONS = -config_file=$(options)
+SETUP_OPTIONS = -configfile=$(options)
 else
 SETUP_OPTIONS = 
 endif
@@ -520,15 +520,14 @@ ifneq ($strip($(CONFIGURATIONS)),)
 $(addsuffix -config,$(CONFIGURATIONS)):
 	echo $(DIVIDER)
 	$(SETUP_ENV) $(PERL) -s $(SETUP) -reconfig=1 $(SETUP_OPTIONS) $(@:%-config=%); 
-	@echo $(DIVIDER);
+	if test -n "$(THORNLIST)"; \
+	then \
+	cp $(THORNLIST) $(CONFIGS_DIR)/$(@:%-config=%)/ThornList;\
+	fi ;\
+	echo $(DIVIDER);
 	@echo Use $(MAKE) $(@:%-config=%) to build the configuration.
 	@echo $(DIVIDER)
-ifneq ($(strip $(THORNLIST)),)
-	cp $(THORNLIST) $(CONFIGS_DIR)/$(@:%-config=%)/ThornList
 endif
-endif
-
-# FIXME: What is this bit? Is it used? 
 
 %-config:
 	@echo $(DIVIDER)
@@ -536,18 +535,19 @@ endif
 	echo Setup configuration $(@:%-config=%) \(yes\)?
 	read yesno rest ;\
 	if [ "x$$yesno" = "xno" -o "x$$yesno" = "xn" -o "x$$yesno" = "xNO" -o "x$$yesno" = "xN" ] ;\
-	then  \
+	then \
 	echo Setup cancelled ;     \
 	else \
 	echo Setting up new configuration $(@:%-config=%); \
 	$(SETUP_ENV) $(PERL) -s $(SETUP) $(SETUP_OPTIONS) $(@:%-config=%); \
+	if test -n "$(THORNLIST)"; \
+	then \
+	cp $(THORNLIST) $(CONFIGS_DIR)/$(@:%-config=%)/ThornList;\
+	fi ;\
 	echo $(DIVIDER)   ;  \
 	echo Use $(MAKE) $(@:%-config=%) to build the configuration.; \
 	fi 
 	@echo $(DIVIDER)
-ifneq ($(strip $(THORNLIST)),)
-	cp $(THORNLIST) $(CONFIGS_DIR)/$@/ThornList
-endif
 
 
 # Make a new thorn
@@ -694,11 +694,14 @@ downsize:
 	else \
 	echo Setting up new configuration $@; \
 	$(SETUP_ENV) $(PERL) -s $(SETUP) $(SETUP_OPTIONS) $@; \
+	if test -n "$(THORNLIST)"; \
+	then \
+	cp $(THORNLIST) $(CONFIGS_DIR)/$@/ThornList;\
+	fi ;\
 	echo $(DIVIDER)   ;  \
 	echo Use $(MAKE) $@ to build the configuration.; \
 	fi 
-	@echo $(DIVIDER)
-ifneq ($(strip $(THORNLIST)),)
-	@cp $(THORNLIST) $(CONFIGS_DIR)/$@/ThornList
-endif
+	echo $(DIVIDER)
 
+# if -n $THORNLIST
+# look for THORNLIST_DIR
