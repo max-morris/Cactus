@@ -1,0 +1,9 @@
+# Source files for the src/gnu	 directory.
+#
+# $Header$
+
+SRCS=\
+getopt.c\
+getopt1.c\
+gnu_regex.c
+
