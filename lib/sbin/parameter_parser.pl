@@ -185,7 +185,7 @@ sub parse_param_ccl
     elsif($line =~ m:(EXTENDS )?\s*(INTEGER|REAL|LOGICAL|KEYWORD|STRING)\s*([a-zA-Z]+[a-zA-Z0-9_]*) \s*(\"[^\"]*\"):i)
     {
 
-      #           This is a parameter definition.
+      # This is a parameter definition.
       $type = "\U$2\E";
       $variable = $3;
       $description = $4;
@@ -199,27 +199,27 @@ sub parse_param_ccl
       }
       elsif($1 && $1 =~ m:EXTENDS:i && $block !~ m:FRIEND\s*\S:)
       {
-	#               Can only extend a friend variable.
+	# Can only extend a friend variable.
 	print STDERR "Parse error at line $line_number\n";
 	$nerrors++;
 	$line_number++ until ($data[$line_number] =~ m:\}:);
       }
       elsif(! $data[$line_number+1] =~ m:^\s*\{\s*$:)
       {
-	#               Since the data should have no blank lines, the next
-	#               line should have { on it.
+	# Since the data should have no blank lines, the next
+	# line should have { on it.
 	print STDERR "Parse error at line $line_number\n";
 	$nerrors++;
-	#               Move past the end of this block.
+	# Move past the end of this block.
 	$line_number++ until ($data[$line_number] =~ m:\}:);
       }
       else
       {
-	#               Move past {
+	# Move past {
 	$line_number++;
 	$line_number++;
 	
-	#               Store data about this variable.
+	# Store data about this variable.
 	$defined_parameters{"\U$variable\E"} = 1;
 	
 	$parameter_db{"\U$thorn $block\E variables"} .= $variable." ";
@@ -227,11 +227,23 @@ sub parse_param_ccl
 	$parameter_db{"\U$thorn $variable\E description"} = $description;
 	$parameter_db{"\U$thorn $variable\E ranges"} = 0;
 	
-	#               Parse the allowed values and their descriptions.
-	while(($new_ranges, $new_desc) = $data[$line_number] =~ m/(.*)::(.*)/)
+	# Parse the allowed values and their descriptions.
+        # The (optional) description is seperated by ::
+	while($data[$line_number] !~ m:\s*\}:)
 	{
+	  ($new_ranges, $delim, $new_desc) = $data[$line_number] =~ m/(.*)(::)(.*)/;
 	  $parameter_db{"\U$thorn $variable\E ranges"}++;
+	  # Strip out any spaces in the range for a numeric parameter.
+	  if($type =~ m:INTEGER|REAL:g)
+	  {
+	    $new_ranges =~ s/[ \t]+/ /g;
+	  }
 	  $parameter_db{"\U$thorn $variable\E range $parameter_db{\"\U$thorn $variable\E ranges\"} range"} = $new_ranges;
+	  # Give a warning if no description has been given
+	  if(! $delim)
+	  {
+	    print STDERR "Missing description of range '$new_ranges' for parameter $thorn\::$variable\n";
+	  }
 	  $parameter_db{"\U$thorn $variable\E range $parameter_db{\"\U$thorn $variable\E ranges\"} description"} = $new_desc;
 	  $line_number++;
 	}
