@@ -178,6 +178,16 @@ char *Util_NullTerminateString(const char *instring, unsigned int len)
   char *outstring;
   unsigned int i;
 
+  if (len > 100000)
+  {
+    char *message;
+    message = malloc(1024*sizeof(char));
+    sprintf(message,"You are Null Terminating a string with length %d !!\n"
+                    "This is probably an error in calling a C routine from Fortran",len);
+    CCTK_Warn(1,__LINE__,__FILE__,"Cactus",message);
+    free(message);
+  }
+
 #ifdef DEBUG_MISC
   printf("Util_NullTerminateString: -%s-, (%u)\n",instring,len);
 #endif
