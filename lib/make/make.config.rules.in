@@ -76,11 +76,11 @@ endef
 
 # Define how to do a C++ compilation
 define PREPROCESS_CXX
-cat $< | $(PERL) $(C_FILE_PROCESSOR) $(CONFIG) > $(notdir $<)
+cat $< | $(PERL) $(C_FILE_PROCESSOR) $(CONFIG) > $(CXX_WORKING_NAME)
 endef
 
 define COMPILE_CXX
-current_wd=`$(GET_WD)` ; cd $(SCRATCH_BUILD) ; $(CXX) $(CXXFLAGS) $(CCOMPILEONLY)$(OPTIONSEP)$$current_wd$(DIRSEP)$@ $$current_wd$(DIRSEP)$(notdir $<) $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DCCODE
+current_wd=`$(GET_WD)` ; cd $(SCRATCH_BUILD) ; $(CXX) $(CXXFLAGS) $(CCOMPILEONLY)$(OPTIONSEP)$$current_wd$(DIRSEP)$@ $$current_wd$(DIRSEP)$(CXX_WORKING_NAME) $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DCCODE
 endef
 
 define POSTPROCESS_CXX

@@ -91,6 +91,10 @@ CXX_DEPEND_OUT = @CXX_DEPEND_OUT@
 F_DEPEND_OUT   = @F_DEPEND_OUT@
 F77_DEPEND_OUT = @F77_DEPEND_OUT@
 
+# Some compilers are very picky about the names of C++ files
+
+CXX_WORKING_NAME = @CXX_WORKING_NAME@
+
 # Exclude some files from the dependency lists
 
 DEP_EXCLUDE_FILES = CParameterStructNames\.h|cctk_Arguments\.h|definethisthorn\.h|FParameters.h|CParameters\.h

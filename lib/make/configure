@@ -3238,24 +3238,28 @@ if test -z "F90_WARN_FLAGS" ; then
 fi
 
 
-#Set the createexe flag if it's not been set by now
+# Set the createexe flag if it's not been set by now
 
 
 
 : ${CREATEEXE="-o"}
 
+# Set the directory seperator for this architecture
 
 
 : ${DIRSEP="/"}
 
+# Set the option seperator for this architecture.  Hopefully it is the same for all compilers.
 
 
 : ${OPTIONSEP='$(EMPTY_VAR) # a single space'}
 
+# How to link the cactus libraries
 
 
 : ${CACTUSLIBLINKLINE='-L$(CCTK_LIBDIR) $(addprefix -l, $(ALLCACTUSLIBS))'}
 
+# How to generate C dependency info
 
 
 : ${C_DEPEND='$(CC) -E -M $(CPPFLAGS)'}
@@ -3264,6 +3268,7 @@ fi
 
 : ${C_DEPEND_OUT=' > $@'}
 
+# How to generate C++ dependency info
 
 
 : ${CXX_DEPEND='$(CXX) -E -M $(CPPFLAGS)'}
@@ -3272,6 +3277,7 @@ fi
 
 : ${CXX_DEPEND_OUT=' > $@'}
 
+# How to generate F77 dependency info
 
 
 : ${F77_DEPEND='$(CPP) -M $(CPPFLAGS)'}
@@ -3280,6 +3286,7 @@ fi
 
 : ${F77_DEPEND_OUT=' > $@'}
 
+# How to generate F90 dependency info
 
 
 : ${F_DEPEND='$(CPP) -M $(CPPFLAGS)'}
@@ -3288,21 +3295,32 @@ fi
 
 : ${F_DEPEND_OUT=' > $@'}
 
+# How to generate an intermediate C++ name (some compilers are very picky).
+
+
+
+: ${CXX_WORKING_NAME='$(notdir $<)'}
+
+# How to get the current working directory when in the shell
 
 : ${GET_WD="pwd"}
 
+# Any additional system include directories.
 
 : ${SYS_INC_DIRS=" "}
 
+# How to link in the non-Cactus libraries
 
 : ${GENERAL_LIBRARIES='$(LIBDIRS:%=-L%) $(LIBS:%=-l%)'}
 
+# Do we need to make sure Perl makes a backup when editting in place ?
 
 
 : ${PERL_BACKUP_NECESSARY=""}
 
 # Cache stuff - this will probably change 
 
+# L2 Cache
 : ${L2_CACHELINE_BYTES="0"}
 : ${L2_CACHE_SIZE="0"}
 
@@ -3521,6 +3539,7 @@ s%@F77_DEPEND@%$F77_DEPEND%g
 s%@F77_DEPEND_OUT@%$F77_DEPEND_OUT%g
 s%@F_DEPEND@%$F_DEPEND%g
 s%@F_DEPEND_OUT@%$F_DEPEND_OUT%g
+s%@CXX_WORKING_NAME@%$CXX_WORKING_NAME%g
 s%@GET_WD@%$GET_WD%g
 s%@SYS_INC_DIRS@%$SYS_INC_DIRS%g
 s%@GENERAL_LIBRARIES@%$GENERAL_LIBRARIES%g

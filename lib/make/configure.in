@@ -602,24 +602,28 @@ if test -z "F90_WARN_FLAGS" ; then
 fi
 
 
-#Set the createexe flag if it's not been set by now
+# Set the createexe flag if it's not been set by now
 
 AC_SUBST(CREATEEXE)
 
 : ${CREATEEXE="-o"}
 
+# Set the directory seperator for this architecture
 AC_SUBST(DIRSEP)
 
 : ${DIRSEP="/"}
 
+# Set the option seperator for this architecture.  Hopefully it is the same for all compilers.
 AC_SUBST(OPTIONSEP)
 
 : ${OPTIONSEP='$(EMPTY_VAR) # a single space'}
 
+# How to link the cactus libraries
 AC_SUBST(CACTUSLIBLINKLINE)
 
 : ${CACTUSLIBLINKLINE='-L$(CCTK_LIBDIR) $(addprefix -l, $(ALLCACTUSLIBS))'}
 
+# How to generate C dependency info
 AC_SUBST(C_DEPEND)
 
 : ${C_DEPEND='$(CC) -E -M $(CPPFLAGS)'}
@@ -628,6 +632,7 @@ AC_SUBST(C_DEPEND_OUT)
 
 : ${C_DEPEND_OUT=' > $@'}
 
+# How to generate C++ dependency info
 AC_SUBST(CXX_DEPEND)
 
 : ${CXX_DEPEND='$(CXX) -E -M $(CPPFLAGS)'}
@@ -636,6 +641,7 @@ AC_SUBST(CXX_DEPEND_OUT)
 
 : ${CXX_DEPEND_OUT=' > $@'}
 
+# How to generate F77 dependency info
 AC_SUBST(F77_DEPEND)
 
 : ${F77_DEPEND='$(CPP) -M $(CPPFLAGS)'}
@@ -644,6 +650,7 @@ AC_SUBST(F77_DEPEND_OUT)
 
 : ${F77_DEPEND_OUT=' > $@'}
 
+# How to generate F90 dependency info
 AC_SUBST(F_DEPEND)
 
 : ${F_DEPEND='$(CPP) -M $(CPPFLAGS)'}
@@ -652,21 +659,32 @@ AC_SUBST(F_DEPEND_OUT)
 
 : ${F_DEPEND_OUT=' > $@'}
 
+# How to generate an intermediate C++ name (some compilers are very picky).
+
+AC_SUBST(CXX_WORKING_NAME)
+
+: ${CXX_WORKING_NAME='$(notdir $<)'}
+
+# How to get the current working directory when in the shell
 AC_SUBST(GET_WD)
 : ${GET_WD="pwd"}
 
+# Any additional system include directories.
 AC_SUBST(SYS_INC_DIRS)
 : ${SYS_INC_DIRS=" "}
 
+# How to link in the non-Cactus libraries
 AC_SUBST(GENERAL_LIBRARIES)
 : ${GENERAL_LIBRARIES='$(LIBDIRS:%=-L%) $(LIBS:%=-l%)'}
 
+# Do we need to make sure Perl makes a backup when editting in place ?
 AC_SUBST(PERL_BACKUP_NECESSARY)
 
 : ${PERL_BACKUP_NECESSARY=""}
 
 # Cache stuff - this will probably change 
 
+# L2 Cache
 : ${L2_CACHELINE_BYTES="0"}
 : ${L2_CACHE_SIZE="0"}
 
