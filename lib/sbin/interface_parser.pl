@@ -26,10 +26,15 @@
 
 sub create_interface_database
 {
-  my(%thorns) = @_;
+  my($n_system,@inargs) = @_;
+  my(%thorns);
+  my(%system_database);
   my($thorn, @indata);
   my(@new_interface_data);
   my(@interface_data);
+  
+  %system_database = @inargs[0..2*$n_system-1];
+  %thorns = @inargs[2*$n_system..$#inargs];
   
   #  Loop through each  thorn's interface file.
   foreach $thorn (keys %thorns)
@@ -52,9 +57,8 @@ sub create_interface_database
     
   }
 
-  @interface_data = &cross_index_interface_data(scalar(keys %thorns), (keys %thorns), @interface_data);
+  @interface_data = &cross_index_interface_data(scalar(keys %thorns), scalar(keys %system_database), (keys %thorns), %system_database, @interface_data);
 
-  
   return @interface_data;
 }
 
@@ -62,16 +66,18 @@ sub create_interface_database
 
 sub cross_index_interface_data
 {
-  my($n_thorns, @indata) = @_;
+  my($n_thorns, $n_system, @indata) = @_;
   my(@thorns);
   my(%interface_data);
   my(%implementations);
+  my(%system_database);
   my($implementation);
   my(%ancestors);
   my(%friends);
 
   @thorns = @indata[0..$n_thorns-1];
-  %interface_data = @indata[$n_thorns..$#indata];
+  %system_database = @indata[$n_thorns..$n_thorns+2*$n_system-1];
+  %interface_data = @indata[$n_thorns+2*$n_system..$#indata];
 
   foreach $thorn (@thorns)
   {
@@ -100,6 +106,7 @@ sub cross_index_interface_data
 
   foreach $implementation (keys %implementations)
   {
+
     # Put if statement around this to prevent perl -w from complaining.
     if($interface_data{"IMPLEMENTATIONS"})
     {
@@ -110,15 +117,19 @@ sub cross_index_interface_data
       $interface_data{"IMPLEMENTATIONS"} = $implementations{"\U$implementation\E"} . " ";
     }
 
-    &check_interface_consistency($implementation, %interface_data);
+    &check_implementation_consistency($implementation, %interface_data);
 
-    %ancestors = &get_implementation_ancestors($implementation, 0, %interface_data);
+    %ancestors = &get_implementation_ancestors($implementation, 0,  scalar(keys %system_database), %system_database, %interface_data);
 
     $interface_data{"IMPLEMENTATION \U$implementation\E ANCESTORS"} = join(" ",( keys %ancestors));
 
-
     $interface_data{"IMPLEMENTATION \U$implementation\E FRIENDS"} = &get_friends_of_me($implementation, scalar(keys %implementations), (keys %implementations),%interface_data);
 
+  }
+
+  foreach $thorn (@thorns)
+  {
+    &check_interface_consistency($thorn, %interface_data);
   }
 
   foreach $implementation (keys %implementations)
@@ -214,7 +225,7 @@ sub get_implementation_friends
 
 sub get_implementation_ancestors
 {
-  my($implementation, $n_ancestors, @indata) = @_;
+  my($implementation, $n_ancestors, $n_system, @indata) = @_;
   my(%ancestors);
   my(%interface_data);
   my($thorn);
@@ -223,12 +234,14 @@ sub get_implementation_ancestors
   if($n_ancestors > 0)
   {
     %ancestors = @indata[0..2*$n_ancestors-1];
-    %interface_data = @indata[2*$n_ancestors..$#indata];
+    %system_database = @indata[2*$n_ancestors..2*($n_ancestors+$n_system)-1];
+    %interface_data = @indata[2*($n_ancestors+$n_system)..$#indata];
   }
   else
   {
     %ancestors = ();
-    %interface_data = @indata;
+    %system_database = [0..2*$n_system-1];
+    %interface_data = @indata[2*$n_system..$#indata];
   }
 
   $interface_data{"IMPLEMENTATION \U$implementation\E THORNS"} =~ m:(\w+):;
@@ -243,19 +256,44 @@ sub get_implementation_ancestors
       $ancestors{"\U$ancestor\E"} = 1;
       if(! $interface_data{"IMPLEMENTATION \U$ancestor\E THORNS"})
       {
-	$message = "$implementation (thorn $thorn) inherits from $ancestor - non-existent implementation. Remove $thorn or add a thorn implementing $ancestor";
+	# Implementation not found give extensive information
+	%info = &buildthorns("$cctk_home/arrangements","thorns");
+	$suggest_thorns = "";
+	foreach $thorninfo (keys %info)
+	{
+	 $info{"$thorninfo"} =~ /^([^\s]+)/;
+	 $testimp = $1;
+	 if ($testimp =~ m:^$ancestor$:i)
+	 {
+	   $suggest_thorns .= "\n        $thorninfo";
+	 }
+	}
+	$message = "$implementation (thorn $thorn) inherits from $ancestor\n";
+	$message .= "     No thorn in your current ThornList implements $ancestor\n";
+	$message .= "     Either remove $thorn, or add a thorn to your\n";
+	$message .= "      ThornList implementing $ancestor\n";
+	if ($suggest_thorns !~ m:^$:)
+	{
+	  $message .= "     Available thorns in arrangements directory implementing $ancestor:";
+          $message .= "$suggest_thorns";
+	}
+	else
+	{
+	  $message .= "     No thorns in arrangements directory implement $ancestor";
+	}
 	&CST_error(0,$message,__LINE,__FILE__);
 
 	next;
       }
-      %ancestors = &get_implementation_ancestors($ancestor, scalar(keys %ancestors), %ancestors,%interface_data);
+
+      %ancestors = &get_implementation_ancestors($ancestor, scalar(keys %ancestors), scalar(keys %system_database), %ancestors,%system_database, %interface_data);
     }
   }
   
   return %ancestors;
 }
 
-sub check_interface_consistency
+sub check_implementation_consistency
 {
   my($implementation, %interface_data) = @_;
   my(@thorns);
@@ -567,6 +605,52 @@ sub check_interface_consistency
 
   }
 
+}
+
+  
+#/*@@
+#  @routine    check_interface_consistency
+#  @date       Sun Jun 3 2001
+#  @author     Gabrielle Allen
+#  @desc 
+#  Check consistency of the interfaces files
+#  @enddesc 
+#  @calls     
+#  @calledby   
+#  @history 
+#
+#  @endhistory 
+#@@*/
+
+sub check_interface_consistency
+{
+  my($thorn, %interface_data) = @_;
+  my($implementation);
+  my($private_group);
+  my($ancestor_imp,$ancestor_thorn);
+  my($message);
+
+  # Find implementation 
+  $implementation =  $interface_data{"\U$thorn\E IMPLEMENTS"};
+
+  # Loop over ancestors 
+  foreach $ancestor_imp (split " ",$interface_data{"IMPLEMENTATION \U$implementation\E ANCESTORS"})
+  {
+    # Need one thorn which implements this ancestor (we already have checked consistency)
+    $ancestor_thorn = $interface_data{"IMPLEMENTATION \U$ancestor_imp\E THORNS"};
+    if ($ancestor_thorn =~ m:(\w+)[^\w]*:)
+    {
+      $ancestor_thorn = $1;
+    }
+    foreach $private_group (split " ",$interface_data{"\U$thorn\E PRIVATE GROUPS"})
+    {
+      if ($interface_data{"\U$ancestor_thorn\E PUBLIC GROUPS"} =~ $private_group)
+      {
+	$message = "Private group $private_group in thorn $thorn has same name as \n     public group in ancestor implementation $ancestor_imp (e.g. thorn $ancestor_thorn)";
+	&CST_error(0,$message,__LINE__,__FILE__);
+      }
+    }    
+  }
 }
 
   
