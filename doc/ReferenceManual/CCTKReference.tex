@@ -1554,31 +1554,35 @@ A NULL pointer is returned if an invalid handle was given.
 \begin{CCTKFunc}{CCTK\_CreateDirectory}{Create a directory with required permissions}
 \label{CCTK-CreateDirectory}
 \subroutine{int}{integer}{ierr}
-\argument{const char *}{character*(*)}{pathname}
 \argument{int}{integer}{mode}
+\argument{const char *}{character*(*)}{pathname}
 \showargs
 \begin{params}
 \parameter{ierr}{Error code}
-\parameter{pathname}{Directory to create}
 \parameter{mode}{Permission mode for new directory as an octal number}
+\parameter{pathname}{Directory to create}
 \end{params}
 \begin{discussion}
 To create a directory readable by everyone, but writeable only by the user runnning the code, the permission mode would be 0755.
+
+Note that (for historical reasons) the order of the arguments is
+the opposite of that of the usual Unix \verb|mkdir(2)| system call.
 \end{discussion}
 \begin{examples}
 \begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t ierr = CCTK\_CreateDirectory("Results/New",0755) };
+\hfill {\bf C} && {\t ierr = CCTK\_CreateDirectory(0755, "Results/New") };
 \\
-\hfill {\bf Fortran} && {\t call CCTK\_CREATEDIRECTORY(ierr,"Results/New",0755)}
+\hfill {\bf Fortran} && {\t call CCTK\_CREATEDIRECTORY(ierr,0755, "Results/New")}
 \\
 \end{tabular}
 \end{examples}
 \begin{errorcodes}
 \begin{tabular}{ll}
+1 & Directory already exists\\
 0 & Directory successfully created\\
 -1 & Memory allocation failed\\
 -2 & Failed to create directory\\
--3 & pathname exists but is not a directory\\
+-3 & Some component of \code{pathname} already exists but is not a directory\\
 \end{tabular}
 \end{errorcodes}
 \end{CCTKFunc}
