@@ -423,5 +423,8 @@ int CCTKi_ParseStaggerString(int dim,
     scode+= m*base;
     base  = 3 * base;
   }
+
+  free(hs);
+
   return(scode);
 }
