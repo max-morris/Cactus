@@ -1076,7 +1076,8 @@ int ActivateThorns(const char *thornlist)
     }
     else
     {
-      CCTK_WARN(0, "Internal error :- please report this to cactusmaint@cactuscode.org");
+      CCTK_VWarn(0, __LINE__, __FILE__, "Cactus",
+                 "Internal error :- please report this to cactusmaint@cactuscode.org");
     }   
   }
 
