@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.50 1999-09-25 10:50:56 allen Exp $
+#   @version $Id: Makefile,v 1.51 1999-09-27 21:12:35 allen Exp $
 # @@*/
 
 ##################################################################################
@@ -585,7 +585,7 @@ checkout:
 doc:
 	@echo $(DIVIDER)
 	@echo Creating user documentation UsersGuide.ps
-	(cd doc/UsersGuide; latex UsersGuide.tex; cd $(CCTK_HOME); dvips doc/UsersGuide/UsersGuide.dvi -o UsersGuide.ps) ;
+	(cd doc/UsersGuide; latex UsersGuide.tex; dvips ./UsersGuide.dvi -o $(CCTK_HOME)/UsersGuide.ps) ; cd $(CCTK_HOME);
 	@echo $(DIVIDER)
 
 # Remove non-essential files
