@@ -202,5 +202,50 @@ sub WriteFile
 
 }
 
+#/*@@
+#  @routine    TestName
+#  @date       Sat Dec 16 1.48
+#  @author     Gabrielle Allen
+#  @desc 
+#  Check thorn/arrangement name is valid
+#  @enddesc 
+#  @calls     
+#  @calledby   
+#  @history 
+#
+#  @endhistory 
+#@@*/
+
+sub TestName
+{
+  local($thorn,$name) = @_;
+  local($valid);
+
+  $valid = 1;
+
+  if (!$name)
+  {
+    $valid = 0;
+  }
+  elsif ($name !~ /^[a-zA-Z]/)
+  {
+    print STDERR "Name must begin with a letter!\n\n";
+    $valid = 0;
+  }
+  elsif ($name !~ /^[a-zA-Z0-9_]*$/)
+  {
+    print STDERR "Name can only contain letters, numbers or underscores!\n\n";
+    $valid = 0;
+  }
+
+  if ($thorn && $name eq "doc")
+  {
+    print STDERR "Thorn name doc is not allowed!\n\n";
+    $valid = 0;
+  }
+
+  return $valid;
+}
+
 1;
 

@@ -6,7 +6,7 @@
 #  @desc 
 #  Parses the the configuration files for thorns.
 #  @enddesc 
-#  @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.46 2001-09-03 21:48:51 allen Exp $
+#  @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.47 2001-09-16 15:35:22 allen Exp $
 #@@*/
 
 # Global parameter to track the number of errors from the CST
@@ -247,6 +247,16 @@ sub CreateThornList
 
       $package = $1;
       $thorn_name = $2;
+      
+      # Check valid thornname
+      
+      if (!TestName(1,$thorn_name))
+      {
+	$message = "Thorn name $thorn_name is not valid";
+	$hint = "Thorn names must begin with a letter, and can only contain letters, numbers and underscores\n";
+	&CST_error(0,$message,$hint,__LINE__,__FILE__);
+      }
+
       # No longer strip thorn_ off the beginning of a thorn name.
       #      $thorn_name =~ s/thorn_//;
 
