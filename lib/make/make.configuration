@@ -96,7 +96,7 @@ endif
 # generated from a thorn's configuration.ccl
 ifeq ($(strip $(UTILS)),)
 ifneq ($(strip $(THORN_LINKLIST)),)
--include $(THORN_LINKLIST:%=$(BINDINGS_DIR)/Configuration/Thorns/make.%.defn)
+-include $(THORN_LINKLIST:%=$(BINDINGS_DIR)/Configuration/%/make.configuration.defn)
 endif
 endif
 
@@ -232,7 +232,7 @@ $(TOP)/ThornList:
 
 # Allow each thorn to include some global dependencies
 ifneq ($(strip $(THORNS)),)
--include $(THORNS:%=$(PACKAGE_DIR)/%/src/make.configuration.deps) $(THORNS:%=$(BINDINGS_DIR)/Configuration/Thorns/make.%.deps)
+-include $(THORNS:%=$(PACKAGE_DIR)/%/src/make.configuration.deps) $(THORNS:%=$(BINDINGS_DIR)/Configuration/%/make.configuration.deps)
 endif
 
 # Catch the special case of a thorn being removed from the disk entirely.
