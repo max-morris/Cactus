@@ -683,14 +683,14 @@ if test -n "$C_LINE_DIRECTIVES" ; then
     AC_ERROR(Didn't recognize setting of C_LINE_DIRECTIVES=\"$C_LINE_DIRECTIVES\" (should be either \"yes\" or \"no\"))
   fi
 else
-  C_LINE_DIRECTIVES='yes'
+  C_LINE_DIRECTIVES='no'
 fi
 if test -n "$F_LINE_DIRECTIVES" ; then
   if test "$F_LINE_DIRECTIVES" != "yes" -a "$F_LINE_DIRECTIVES" != "no" ; then
     AC_ERROR(Didn't recognize setting of F_LINE_DIRECTIVES=\"$F_LINE_DIRECTIVES\" (should be either \"yes\" or \"no\"))
   fi
 else
-  F_LINE_DIRECTIVES='yes'
+  F_LINE_DIRECTIVES='no'
 fi
 
 
