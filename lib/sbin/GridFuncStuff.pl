@@ -1199,13 +1199,15 @@ sub CreateThornGroupInitialisers
   {
     @variables = split(" ", $rhinterface_db->{"\U$thorn GROUP $group\E"});
 
-    $line  = "  CCTK_CreateGroup(\"\U$group\",\"$thorn\",\"$imp\",\n" 
-           . "                   \"" . $rhinterface_db->{"\U$thorn GROUP $group\E GTYPE"} . "\",\n"
-	   . "                   \"" . $rhinterface_db->{"\U$thorn GROUP $group\E VTYPE"} . "\",\n"
-	   . "                   \"" . $block . "\",\n"
-	   . "                   " . $rhinterface_db->{"\U$thorn GROUP $group\E DIM"} . ",\n"
-	   . "                   " . $rhinterface_db->{"\U$thorn GROUP $group\E TIMELEVELS"} . ",\n"
-           . "                   ". scalar(@variables);
+    $line  = "  CCTKi_CreateGroup(\"\U$group\",\"$thorn\",\"$imp\",\n" 
+           . "                    \"" . $rhinterface_db->{"\U$thorn GROUP $group\E GTYPE"} . "\",\n"
+	   . "                    \"" . $rhinterface_db->{"\U$thorn GROUP $group\E VTYPE"} . "\",\n"
+	   . "                    \"" . $block . "\",\n"
+	   . "                    " . $rhinterface_db->{"\U$thorn GROUP $group\E DIM"} . ",\n"
+	   . "                    " . $rhinterface_db->{"\U$thorn GROUP $group\E TIMELEVELS"} . ",\n"
+	   . "                    \"" . $rhinterface_db->{"\U$thorn GROUP $group\E STYPE"} . "\",\n"
+	   . "                    \"" . $rhinterface_db->{"\U$thorn GROUP $group\E SIZE"} . "\",\n"
+           . "                    ". scalar(@variables);
     foreach $variable (@variables)
     {
       $line .= ",\n                   \"$variable\"";

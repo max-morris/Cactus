@@ -167,14 +167,16 @@ void CCTK_DumpGroupInfo(void) {
    @endhistory 
 
 @@*/
-int CCTK_CreateGroup(const char *gname, const char *thorn, const char *imp,
-		     const char *gtype,
-		     const char *vtype,
-		     const char *gscope,
-		     int dimension,
-		     int ntimelevels,
-		     int n_variables,
-		     ...)
+int CCTKi_CreateGroup(const char *gname, const char *thorn, const char *imp,
+                      const char *gtype,
+                      const char *vtype,
+                      const char *gscope,
+                      int dimension,
+                      int ntimelevels,
+                      const char *stype,
+                      const char *size,
+                      int n_variables,
+                      ...)
 {
   int retval;
   int groupscope;

@@ -482,6 +482,25 @@ sub check_interface_consistency
 	  $attributes{"TIMELEVELS"} = $interface_data{"\U$thorn GROUP $group\E TIMELEVELS"};
 	}
 
+	# Check the size array sizes are consustent.
+	if($attributes{"SIZE"})
+	{
+	  if($attributes{"SIZE"} ne $interface_data{"\U$thorn GROUP $group\E SIZE"})
+	  {
+	    if(!$n_errors)
+	    {
+	      print STDERR "Inconsistent implementations of $implementation\n";
+	      print STDERR "    Implemented by thorns " . join(" ", @thorns) . "\n";
+	    }
+	    print STDERR "      Group $group has inconsistent size.\n";
+	    $n_errors++;
+	  }
+	}
+	else
+	{
+	  $attributes{"SIZE"} = $interface_data{"\U$thorn GROUP $group\E SIZE"};
+	}
+
 	# Check the dimensions are consistant
 	if($attributes{"DIM"} && $attributes{"GTYPE"} ne "SCALAR")
 	{
@@ -647,6 +666,10 @@ sub parse_interface_ccl
 	elsif($option =~ m:TIMELEVELS:i)
 	{
 	  $interface_db{"\U$thorn GROUP $current_group\E TIMELEVELS"} = "\U$options{$option}\E";
+	}
+	elsif($option =~ m:SIZE:i)
+	{
+	  $interface_db{"\U$thorn GROUP $current_group\E SIZE"} = "\U$options{$option}\E";
 	}
 	else
 	{
