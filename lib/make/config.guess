@@ -696,7 +696,7 @@ EOF
     CRAY-2:*:*:*)
 	echo cray2-cray-unicos
         exit 0 ;;
-    F30[01]:UNIX_System_V:*:* | F700:UNIX_System_V:*:*)
+    F30[01]:UNIX_System_V:*:* | F700:UNIX_System_V:*:* | 5000:UNIX_System_V:*:*)
 	FUJITSU_PROC=`uname -m | tr 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' 'abcdefghijklmnopqrstuvwxyz'`
         FUJITSU_SYS=`uname -p | tr 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' 'abcdefghijklmnopqrstuvwxyz' | sed -e 's/\///'`
         FUJITSU_REL=`echo ${UNAME_RELEASE} | sed -e 's/ /_/'`

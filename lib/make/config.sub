@@ -1,6 +1,7 @@
 #! /bin/sh
 #
 # CCTK_MODIFICATION:  11/5/2001 Added info for sx5-nec.  Tom Goodale
+# CCTK_MODIFICATION:  13/3/2002 Added info for Fujitsu VPP5000. Thomas Radke
 #
 #
 # Configuration validation subroutine script.
@@ -278,7 +279,7 @@ case $basic_machine in
 	      | mips64el-* | mips64orion-* | mips64orionel-* \
 	      | mips64vr4100-* | mips64vr4100el-* | mips64vr4300-* | mips64vr4300el-* \
 	      | mipstx39-* | mipstx39el-* | mcore-* \
-	      | f30[01]-* | f700-* | s390-* | s390x-* | sv1-* | t3e-* \
+	      | f30[01]-* | f700-*  | 5000-* | s390-* | s390x-* | sv1-* | t3e-* \
 	      | [cjt]90-* \
 	      | m88110-* | m680[01234]0-* | m683?2-* | m68360-* | z8k-* | d10v-* \
 	      | thumb-* | v850-* | d30v-* | tic30-* | c30-* | fr30-* \
@@ -1270,7 +1271,7 @@ case $basic_machine in
 	*-masscomp)
 		os=-rtu
 		;;
-	f30[01]-fujitsu | f700-fujitsu)
+	f30[01]-fujitsu | f700-fujitsu | 5000-fujitsu)
 		os=-uxpv
 		;;
 	*-rom68k)
