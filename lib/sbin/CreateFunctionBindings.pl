@@ -1604,21 +1604,12 @@ sub ThornMasterIncludes
 
   foreach $thorn (sort keys %function_db)
   {
-    my $localfns = keys %{$function_db{$thorn}};
-    if ($localfns)
-    {
-      push(@data, "#ifdef THORN_IS_$thorn");
-      push(@data, "#include \"${thorn}_Prototypes.h\"");
-      push(@data, "#define DECLARE_CCTK_FUNCTIONS DECLARE_\U$thorn\E_FUNCTIONS");
-      push(@data, '#endif');
-      push(@data, '');
-    }
+    push(@data, "#ifdef THORN_IS_$thorn");
+    push(@data, "#include \"${thorn}_Prototypes.h\"");
+    push(@data, "#define DECLARE_CCTK_FUNCTIONS DECLARE_\U$thorn\E_FUNCTIONS");
+    push(@data, '#endif');
+    push(@data, '');
   }
-
-  push(@data, '#ifndef DECLARE_CCTK_FUNCTIONS');
-  push(@data, '#define DECLARE_CCTK_FUNCTIONS _DECLARE_CCTK_FUNCTIONS');
-  push(@data, '#endif');
-  push(@data, '');
 
   push(@data, '#endif  /* _CCTK_FUNCTIONALIASES_H_ */');
   push(@data, "\n");   # workaround for perl 5.004_04 to add a trailing newline
