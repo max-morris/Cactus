@@ -50,7 +50,10 @@ typedef struct
 #endif
 
 /* Character type */
+/* DEPRECATED IN BETA 10 */
 typedef unsigned char CCTK_CHAR;
+
+typedef unsigned char CCTK_BYTE;
 
 #endif /* CCODE */
 
@@ -73,7 +76,10 @@ typedef unsigned char CCTK_CHAR;
 #define CCTK_COMPLEX16  COMPLEX*16
 #define CCTK_COMPLEX8   COMPLEX*8
 
+/* DEPRECATED IN BETA 10 */
 #define CCTK_CHAR CHARACTER
+
+#define CCTK_BYTE INTEGER*1
 
 #endif /*FCODE */
 
