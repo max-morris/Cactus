@@ -4,8 +4,7 @@
 #   @date      Thu Jun 24 22:56:51 1999
 #   @author    Tom Goodale
 #   @desc 
-#   First stab at a know architecture file for cygwin from
-#   examination of Joan's changes.
+#   Known architecture file for Windows using cygwin.
 #   @enddesc 
 #   @version $Header$
 # @@*/
@@ -38,30 +37,32 @@ else
   CCTK_WriteLine cctk_Archdefs.h '/* WIN stuff */'
   CCTK_WriteLine cctk_Archdefs.h '#define WIN32'
 
-
 # /Gd means use __cdecl, it's /Gz for __stdcall
 
-  if test "$CC" = "cl"; then
-    CFLAGS="/nologo /Gd"
-  fi
+  case "$CC" in
+    cl|icl)
+      : ${CFLAGS="/nologo /Gd"}
+      : ${C_OPTIMISE_FLAGS="/Oxy-"}
+      : ${CCOMPILEONLY="/c /Fo"}
+      : ${OPTIONSEP="# not even a single a single space under cygwin"}
+      ;;
+    *)
+      ;;
+  esac
 
-  if test "$CXX" = "cl /TP"; then 
-    CXXFLAGS="/nologo /Gd"
-  fi
-
-# Set the optimization flags
-  if test "$CC" = "cl"; then
-    C_OPTIMISE_FLAGS="/Oxy-"
-  fi
-
-  if test "$CXX" = "cl /TP"; then
-    CXX_OPTIMISE_FLAGS="/Oxy-"
-  fi
-
-  if test "$CC" = "cl"; then
-    CREATEEXE="/Fe"
-    CCOMPILEONLY="/c /Fo"
-  fi
+  case "$CXX" in
+    "cl /TP"|"icl /TP")
+      : ${CXXFLAGS="/nologo /Gd"}
+      : ${CXX_OPTIMISE_FLAGS="/Oxy-"}
+      : ${CREATEEXE="/Fe"}
+      : ${CCOMPILEONLY="/c /Fo"}
+      : ${CACTUSLIBLINKLINE='/link /libpath:"$(call TRANSFORM_DIRS,$(CCTK_LIBDIR))" $(foreach lib,$(ALLCACTUSLIBS), $(LIBNAME_PREFIX)$(lib)$(LIBNAME_SUFFIX))'}
+      GENERAL_LIBRARIES='$(LIBDIRS:%=/libpath:"$(call TRANSFORM_DIRS,%)") $(LIBS:%=%.lib) /NODEFAULTLIB:libcd /NODEFAULTLIB:libcmt'
+      : ${OPTIONSEP="# not even a single a single space under cygwin"}
+      ;;
+    *)
+      ;;
+  esac
 
 # Determine which Fortran 90 compiler is in use
   CYGWIN_F90_COMP=
@@ -121,22 +122,16 @@ else
 
   DIRSEP="\\\\"
 
-  if test "$CC" = "cl"; then
-    OPTIONSEP="# not even a single a single space under cygwin"
-  fi
-
 # Convert //a to a: 
-  if test "$CC" = "cl"; then
-    GET_WD="cygpath -wa ."
-  else
-    GET_WD="pwd | sed 's,^/cygdrive/\(.\)/,\1:/,' | sed 's,^//\(.\)/,\1:/,' "
-  fi
+
+  GET_WD="cygpath -wa ."
 
   TRANSFORM_DIRS='$(shell cygpath -wa $(1))'
 
 # The -nostdinc stops it picking stdio.h, etc, from the GNU headers.
-  C_DEPEND='$(CPP) -E -MM -nostdinc -D_WIN32 $(CPPFLAGS) '
-  CXX_DEPEND='$(CPP) -E -MM -nostdinc -D_WIN32 $(CPPFLAGS) '
+# The -x c++ is because some of the Windows headers contain C++ comments
+  C_DEPEND='$(CPP) -x c++ -E -MM -nostdinc -D_WIN32 $(CPPFLAGS) '
+  CXX_DEPEND='$(CPP) -x c++ -E -MM -nostdinc -D_WIN32 $(CPPFLAGS) '
 
 # Add in system include dirs from $(INCLUDE).  These may contain spaces.
 # The -D_M_IX86 is necessary for things like winnt.h.  Since this is
@@ -150,16 +145,6 @@ else
 
   LIBNAME_PREFIX=""
   LIBNAME_SUFFIX=".lib"
-  if test "$CC" = "cl"; then
-    CACTUSLIBLINKLINE='/link /libpath:"$(call TRANSFORM_DIRS,$(CCTK_LIBDIR))" $(foreach lib,$(ALLCACTUSLIBS), $(LIBNAME_PREFIX)$(lib)$(LIBNAME_SUFFIX))'
-  fi
-
-# Don't need the /link here since it's already in CACTUSLIBLINKLINE
-  if test "$CC" = "cl"; then
-    GENERAL_LIBRARIES='$(LIBDIRS:%=/libpath:"$(call TRANSFORM_DIRS,%)") $(LIBS:%=%.lib) /NODEFAULTLIB:libcd /NODEFAULTLIB:libcmt'
-  else
-    GENERAL_LIBRARIES='$(LIBDIRS:%=-L%) $(LIBS:%=-l%)'
-  fi
 
   LIBS="$F90_LIBS wsock32"
 
@@ -206,7 +191,3 @@ else
 # This is caught by lib/make/extras/MPI/NATIVE then.
 
 fi
-
-
-
-
