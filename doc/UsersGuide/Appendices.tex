@@ -199,7 +199,7 @@ carriage return.
 group.  Supported data types are {\t INT}, {\t CHAR}, {\t REAL} and
 {\t COMPLEX}.
 \item{} {\t group\_name} must be an alpha-numeric name (which may also
-contain underscores) which is unique
+contain underscores) which is unique across group and variable names
 within the scope of the thorn. A group name is compulsory.
 \item{} {\t [number]}, if present, indicates that this is a {\bf vector}
 group.  Such a group does not have named variables (so the \{\} block
@@ -234,12 +234,13 @@ optional, with the default variable type being {\t SCALAR}.
 \item{} The (optional) block following the group declaration line
 contains a list of variables contained in the group. All variables in
 a group have the same data type, variable type, dimension and
-distrubution. The list
+distribution. The list
 can be separated by spaces, commas, or new lines. The variable names
 must be unique within the scope of the thorn.  A variable can only be
 a member of one group. The block must be delimited by brackets on new
 lines.  If no block is given after a group declaration line, a
-variable with the same name as the group is created.
+variable with the same name as the group is created. Apart from this case, 
+a group name cannot be the same as the name of any variable seen by this thorn.
 \item{} An optional description of the group can be given on the last
 line, at the moment this description is not used for any purpose. (Note that
 the variable block is required if you want to give a group description.)
