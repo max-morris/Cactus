@@ -164,7 +164,7 @@
                             (xGH)
 #define _CCTK_C2F_PROTO     int *,\
                             int *,\
-                            int *,int *, int *, int *, int *,int *,int *,\
+                            int *,int *, int *, int **, int *,int *,int *,\
                             CCTK_REAL *, CCTK_REAL *, CCTK_REAL *,\
                             CCTK_REAL *,\
                             int *,\
