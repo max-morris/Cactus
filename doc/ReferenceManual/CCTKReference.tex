@@ -2595,85 +2595,143 @@ Returns the upper bounds for a given group.
 
 \end{FunctionDescription}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Groups.c
-\begin{CCTKFunc}{CCTK\_GroupData}{Given a group index, returns information about the variables held in the group.}
+\begin{FunctionDescription}{CCTK\_GroupData}
 \label{CCTK-GroupData}
-\function{int}{}{ierr}
-\argument{int}{}{group}
-\argument{cGroup *}{}{pgroup}
-\showcargs
-\begin{params}
-\parameter{ierr}{0 for success, negative for failure}
-\parameter{group}{group index}
-\parameter{pgroup}{returns a pointer to a structure containing group information}
-\end{params}
-\begin{discussion}
-The cGroup structure contains the information
-\begin{itemize}
-\item grouptype: The group type
-\item vartype: The type of variables in the group
-\item stagtype: The type of grid staggering for arrays
-\item dim: The dimension of variables in the group
-\item numvars: The number of variables in the group
-\item ntimelevels: The number of timelevels for variables in the group
-\end{itemize}
-No Fortran routine exists at the moment.
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t cGroup pgroup;}\\
-               && {\t index = CCTK\_GroupIndex("evolve::scalars");}\\
-               &&{\t ierr = CCTK\_GroupData(index,\&pgroup);}\\
-               && {\t vtype = pgroup.vartype;}
-\\
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
+Given a group index, returns information about the group and its variables.
 
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+#include "cctk.h"
+int status = CCTK_GroupData(int group_index, cGroup* group_data_buffer);
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
 
-% Groups.c
-\begin{CCTKFunc}{CCTK\_GroupDynamicData}{Given a group index, returns information about the variables held in the group.}
-\label{CCTK-GroupDynamicData}
-\function{int}{}{ierr}
-\argument{const cGH *}{}{cctkGH}
-\argument{int}{}{group}
-\argument{cGroupDynamicData *}{}{pdata}
-\showcargs
-\begin{params}
-\parameter{ierr}{0 for success, negative for failure}
-\parameter{cctkGH}{pointer to CCTK grid hierarchy}
-\parameter{group}{group index}
-\parameter{pdata}{returns a pointer to a structure containing group information}
-\end{params}
-\begin{discussion}
-The cGroupDynamicData structure contains the information
-\begin{itemize}
-\item dim: The dimension of variables in the group
-\item gsh[dim]: The global size of the group in each dimension
-\item lsh[dim]: The local size of the group in each dimension
-\item lbnd[dim]: The lower bounds of the group in each dimension
-\item ubnd[dim]: The upper bounds of the group in each dimension
-\item bbox[2*dim]: The bounding box of the group for each face
-\item nghostzones[dim]: The number of ghostzones in each dimension of the group
-\end{itemize}
-No Fortran routine exists at the moment.
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t cGroupDynamicData pdata;}\\
-               && {\t index = CCTK\_GroupIndex("evolve::scalars");}\\
-               &&{\t ierr = CCTK\_GroupDynamicData(cctkGH,index,\&pgroup);}\\
-               && {\t vdim = pdata.dim;}
-\\
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
+\begin{ResultSection}
+\begin{Result}{0}
+success
+\end{Result}
+\end{ResultSection}
 
+\begin{ParameterSection}
+\begin{Parameter}{group\_index}
+The group index for which the information is desired.
+\end{Parameter}
+\begin{Parameter}{group\_data\_buffer ($\ne$ NULL)}
+Pointer to a {\t cGroup} structure in which the information should be
+stored.  See the "Discussion" section below for more information about
+this structure.
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{Discussion}
+The {\t cGroup} structure%%%
+\footnote{%%%
+	 {\t cGroup} is is a {\t typedef} for a structure.
+	 It's defined in {\t "cctk\_Group.h"}, which is
+	 {\t #include}d by {\t "cctk.h"}.
+	 }%%%
+{} contains (at least) the following members:%%%
+\footnote{%%%
+	 Note that the members are {\bf not\/}
+	 guaranteed to be declared in the order
+	 listed here.
+	 }%%%
+\begin{verbatim}
+  int grouptype;      /* group type, as returned by CCTK_GroupTypeNumber() */
+  int vartype;        /* variable type, as returned by CCTK_VarTypeNumber() */
+  int disttype;       /* distribution type, */
+                      /* as returned by CCTK_GroupDistribNumber() */
+  int stagtype;       /* an internal code representing the type of */
+                      /* grid staggering for this group's arrays (if any) */
+                      /* FIXME: what are the precise semantics of this? */
+  int dim;            /* dimensionality of the group */
+                      /* eg 3 for a group of 3-D variables */
+  int numvars;        /* number of variables in the group */
+  int numtimelevels;  /* number of time levels for this group's variables */
+                      /* FIXME: is this the max number of time levels */
+                      /*        allocated, or the current number? */
+  int vectorgroup;    /* 1 if this is a vector group, 0 if it's not */
+  int vectorlength;   /* length of vector group */
+                      /* (i.e. number of grid variables in the group), */
+                      /* or unused if this isn't a vector group */
+  int tagstable;      /* handle to the group's tags table; */
+                      /* this is a Cactus key-value table used to store */
+                      /* metadata about the group and its variables, */
+                      /* such as the variables' tensor types */
+\end{verbatim}
+\end{Discussion}
+
+\begin{SeeAlsoSection}
+\begin{SeeAlso}{"interface.ccl"}
+Defines variables, groups, tags tables, and lots of other things.
+\end{SeeAlso}
+\begin{SeeAlso}{CCTK\_GroupDynamicData}
+Gets grid-size information for a group's variables.
+\end{SeeAlso}
+\begin{SeeAlso}{CCTK\_GroupIndex}
+Gets the group index for a given group name.
+\end{SeeAlso}
+\begin{SeeAlso}{CCTK\_GroupIndexFromVar}
+Gets the group index for a given variable name.
+\end{SeeAlso}
+\begin{SeeAlso}{CCTK\_GroupName}
+Gets the group name for a given group index.
+\end{SeeAlso}
+\begin{SeeAlso}{CCTK\_GroupNameFromVar}
+Gets the group name for a given variable name.
+\end{SeeAlso}
+\begin{SeeAlso}{CCTK\_GroupTypeI}
+Gets a group type index for a given group index.
+\end{SeeAlso}
+\begin{SeeAlso}{CCTK\_GroupTypeFromVarI}
+Gets a group type index for a given variable index.
+\end{SeeAlso}
+\end{SeeAlsoSection}
+
+\begin{ErrorSection}
+\begin{Error}{\rm -1}
+{\t group\_index} is invalid.
+\end{Error}
+\begin{Error}{\rm -2}
+{\t group\_data\_buffer} is {\t NULL}.
+\end{Error}
+\end{ErrorSection}
+
+\begin{ExampleSection}
+\begin{Example}{C}
+\begin{verbatim}
+#include <stdio.h>
+#include "cctk.h"
+
+cGroup group_info;
+int group_index, status;
+
+group_index = CCTK_GroupIndex("BSSN_MoL::ADM_BSSN_metric");
+if (group_index < 0)
+        CCTK_VWarn(0,
+"error return %d trying to get BSSN metric's group index!",
+                   group_index);                                /*NOTREACHED*/
+
+status = CCTK_GroupData(group_index, &group_info);
+if (status < 0)
+        CCTK_VWarn(0,
+"error return %d trying to get BSSN metric's group information!",
+                   status);                                     /*NOTREACHED*/
+
+printf("this group's arrays are %-dimensional and have %d time levels\n",
+       group_info.dim, group_info.numtimelevels);
+\end{verbatim}
+\end{Example}
+\end{ExampleSection}
+
+\end{FunctionDescription}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{FunctionDescription}{CCTK\_GroupgshGI, CCTK\_GroupgshGN}
 \label{CCTK-GroupgshGI}
