@@ -71,7 +71,7 @@ words separate by blank
 - nx,ny,nz has died, changed to the more general cctk_lsh(DIM), so do 
 
       nx = cctk_lsh(1)
-      ny = cctk_sh(2)
+      ny = cctk_lsh(2)
       nz = cctk_lsh(3)
   if you are so lazy...
 
