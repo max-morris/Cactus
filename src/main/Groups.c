@@ -829,7 +829,7 @@ int CCTK_VarTypeNumber (const char *type)
   {
     retval = CCTK_VARIABLE_BYTE;
   }
-  /* DEPRECATED IN BETA 10 */
+  /* UNDER CONSIDERATION WHETHER OR NOT TO DEPRECATE CHAR */
   else if (! strcmp (type, "CHAR"))
   {
     retval = CCTK_VARIABLE_CHAR;
@@ -925,7 +925,7 @@ const char *CCTK_VarTypeName (int vtype)
       break;
 
 #if 0
-    /* DEPRECATED IN BETA 10 */
+    /* UNDER CONSIDERATION WHETHER OR NOT TO DEPRECATE CHAR */
     case CCTK_VARIABLE_CHAR:
       retval = "CCTK_VARIABLE_CHAR";
       break;
