@@ -35,7 +35,7 @@ else
 
   : ${ARFLAGS="-X$AIX_BITS -rucs"}
 
-  : ${F90FLAGS="-q$AIX_BITS"}
+  : ${F90FLAGS="-q$AIX_BITS -qspill=10000"}
   : ${F77FLAGS="-qfixed -q$AIX_BITS"}
   : ${F90_OPTIMISE_FLAGS='-O2'}
   : ${F77_OPTIMISE_FLAGS='-O2'}
