@@ -6,32 +6,38 @@
 
 \chapter{Thorn concepts} 
 
-
-
-
-
       (This section has to contain enough explanation to make the rest of
        the writers guide readable the first time through)
 (The hardest bugs to find are
 those arising from plausible but incorrect assumptions about the
 behavior of someone else's thorn.)
-      a) Again probably emphasize collaboration, what are thorns,
-         packages, how to share them.
-      b) Things to think about before you start programming:
+
+\begin{itemize}
+
+\item 
+Again probably emphasize collaboration, what are thorns, packages, 
+how to share them.
+\item 
+Things to think about before you start programming:
              Language, read all the documentation, emphasize use of
              standard supported Cactus infrastructure
-      c) Available data types
-         i)   Scalars
-         ii)  Arrays and GFs
-         iii) Groups
-      d) Ghost zones and parallelism
-      e) Understanding the RFR concept
-      f) Understanding the GH concept
+\item  Available data types
+\begin{itemize}
+\item Groups
+\item Scalars
+\item Arrays and GFs
+\end{itemize}
+
+\item  Understanding the RFR concept
+\item  Understanding the GH concept
+\item  Ghost zones and parallelism
+
+\end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{packages}
+\section{Packages}
 
 Thorns are grouped into {\em packages}.  This is a logical grouping of
 thorns which is purely for administrative purposes.  The compiled
@@ -45,6 +51,29 @@ Inside a package directory there is a directory for each thorn belonging
 to the package.  Thorn names have the same restrictions as package names,
 with the addition that a thorn cannot be called `doc'.  This name is
 reserved for package documentation.
+
+\section{Implementations}
+
+One of the key concepts for thorns is the concept of the {\bf implementation}.
+Relationships between thorns are all based upon relationship between
+{\bf implementations} and in principle it should be possible to replace
+one thorn providing an implementation with another thorn providing that
+implementation without affecting any other thorn.
+
+An {\bf implementation} defines a group of variables and parameters which
+are used to implement some functionality.  For example the thorn 
+{\tt CactusPUGH/PUGH} provides the implementation {\tt driver}.  This 
+implementation is responsible for providing memory for grid variables and
+for communication.  Another thorn can also implement {\tt driver}, 
+and both thorns can be compiled in {\em at the same time}.  Then, at runtime,
+the user can decide which thorn providing {\tt driver} is used.  No other
+thorn should be affected by this choice.
+
+When a thorn decides it needs access to a variable or a parameter provided by 
+another thorn, it defines a relationship between itself and the other thorn's
+implementation, not explicitly with the other thorn.  This allows the
+transparent replacement, at compile or runtime, of one thorn with another
+thorn providing the same functionality as seen by the other thorns.
 
 \section{Data Types and Sizes}
 
@@ -115,8 +144,8 @@ Data Type & {\t \#define}\\
 \end{tabular}
 \end{center}
 
-Note that Cactus does not provide integer types, and
-that the corresponding C data types are platform dependent.
+Note that the availability of these types, and the corresponding 
+C data types are platform dependent.
 
 \subsection{Fortran Thorn Writers}
 
@@ -148,10 +177,10 @@ Thorns can also contain
 \begin{itemize}
 \item a subdirectory called {\tt src}, which should hold source files
 \item a subdirectory {\tt src/include} for include files 
-\item a `README' containing a brief description of the thorn
-\item a `doc' directory for documentation
-\item a `par' directory for example parameter files
-\item a `test' subdirectory may also be added.  See \ref{sec:testsuites} for details.
+\item a {\tt README} containing a brief description of the thorn
+\item a {\tt doc} directory for documentation
+\item a {\tt par} directory for example parameter files
+\item a {\tt test} subdirectory may also be added.  See \ref{sec:testsuites} for details.
 \end{itemize}
 
 \section{Creating a thorn}
@@ -172,50 +201,206 @@ one from the list of available packages that are shown.
 
 \section{Configuring your thorn}
 
-\subsection{The {\tt param.ccl}}
-The {\tt param.ccl} defines the parameters your thorn provides. To
-avoid wrong assumptions by other thorns about your parameters, you have 
-to speciy several informations, which we'll motivate here:
-\begin{enumerate}
-\item{} Are you creating a new parameter or are you extending
-the value range of a parameter by a different thorns?
-\item{} Is your parameter public to all other thorns, is it just
-used by your thorn or is it available to a subset of thorns only ?
-\item{} What are possible values your parameter can take: range of
-numerical values or the set of keywords, what do they mean ?  What is
-the parameter's default value ? 
-\end{enumerate}
-The {\em cactus computational language} lets you specify these
-information in a straight forward manner. (For the actual syntax of the 
-{\tt param.ccl} see \ref{sec:pa}.)
-The parameters you define can be grouped in four classes: {\tt
-private}, {\tt public},  {\tt protected} and {\tt friend}:{\em
-thorn\_name}.  We'll go over them one by one: 
+The interaction of a thorn with the flesh and other thorns is controlled
+by various configuration files.
+
+These consist of:
+
 \begin{itemize}
-\item{\tt private} This parameter can only be used by your thorn. It
-it not even visible to other thorns: multiple private parameters of
-the same name may exist in parallel. {\bf IS THIS TRUE ?} We give
-examples of private parameters of type {\em integer}, {\em real}, {\em logical}
-and {\em keyword}, which may have the following form (comments start with
-{\tt \#}):
+
+\item {\tt interface.ccl}
+This defines the {\bf implementation} the thorn provides, and the variables
+the thorn needs, along with their visibility to other implementations.
+
+\item {\tt param.ccl}
+This defines the parameters that are used to control the thorn, along
+with their visibility to other implementations.
+
+\item {\tt schedule.ccl}
+This defines which functions from the thorn are called and when they are 
+called.
+
+\end{itemize}
+
+\subsection{General syntax of CCL files}
+
+CCL {\bf Cactus Configuration Language} files are simple text files
+used to define configuration information for a thorn.  CCL files are
+case independent, and may contain comments introduced by the `\#' character,
+which marks the rest of the line to the right of its appearence as a comment.
+
+\subsection{The {\tt interface.ccl}}
+
+The {\tt interface.ccl} file is used to declare the implementation 
+provided by the thorn, and to define the variables provided by it.
+
+The implementation is declared by a single line
+
+\begin{verbatim}
+implements: <name>
+\end{verbatim}
+
+at the top of the file.  <name> can be any combination of alphanumeric 
+characters and underscores, and is case independent as per everything else
+in a CCL file.
+
+There are three different access levels available for variables
+
+\begin{itemize}
+\item {\tt Public}
+Can be `inherited' by other implementations (see below).
+\item {\tt Protected}
+Can be shared with other implementations which declare themselves to
+be friends of this one (see below).
+\item {\tt Private}
+Can only be seen by this thorn.
+\end{itemize}
+
+Corresponding to the first two access levels there are two relationship
+statements that can be used to get variables from other thorns.
+
+\begin{itemize}
+\item {\tt Inherits: <name>}
+This gets all {\tt Public} variables from implementation <name>, plus all
+variables it has in turn inherited.  An implementation may inherit from as
+many thorns as it likes.
+\item {\tt Friend: <name>}
+This gets all {\tt Protected} variables from implementation <name>, but, 
+unlike {\tt inherits} it pushes this implementations {\tt Protected}
+vaiables onto implementation <name>.  This keyword is used to define
+a group of implementations which all end up with the same {\tt Protected}
+variables.
+\end{itemize}
+
+So, for example, an interface.ccl starting
+
+\begin{verbatim}
+implements: wavetoy
+inherits:   grid
+friend:     wave_extract
+\end{verbatim}
+
+declares that the thorn provides an implementation called `wavetoy', gets
+all {\tt public} variables declared by an implementation called `grid', and
+shares all {\tt protected} variables with `wave\_extract' and its friends.
+
+For convenience variables are placed in groups.  The group has several
+attributes:
+
+\begin{itemize}
+
+\item {\tt variable type}
+e.g. REAL, INT, COMPLEX
+
+\item {\tt name}
+The name of the group
+
+\item {\tt group type}
+\begin{itemize}
+\item {\tt SCALAR}
+This is a single number.
+\item {\tt GF}
+This is an array of the default grid size.
+\item {\tt ARRAY}
+This is an array of any size.
+\end{itemize}
+
+\item {\tt Dim}
+This is the dimension of the group.  (Meaningless for scalars.)
+
+\item {TimeLevels}
+This is the number of timelevels the group has.
+\end{itemize}
+
+A group specification consists of the variable type, followed by
+the name of the group, then a space seperated list of the form
+`attribute = value' .  Then a brace delimited block containing
+a comma or newline seperated list of variables in the group.
+A description of the group may be included on the line with the
+closing brace.
+
+For example
+
+\begin{verbatim}
+
+REAL fields type=GF TimeLevels=3 Dim=3
+{
+  phi
+  a,b,c,d
+} "Wave fields"
+
+\end{verbatim}
+
+defines a group of real GFs of dimension 3 each of which exists on
+three time levels.
+
+By default all groups are {\tt private}, to change this an access
+specification of the form {\tt public:} or {\tt protected:} (or 
+{\tt private:} to change it back) may be placed on a line by itself.  This
+changes the access level for any group defined in the file from that point on.
+
+All variables seen by any one thorn must have distinct names.
+
+\subsection{The {\tt param.ccl}}
+
+Users control the operation of thorns via parameters.  The {\tt param.ccl}
+is used to specify the parameters used to control an individual thorn, and
+to specify the values these parameters are allowed to take.  When the code
+is run it reads a parameter file and sets the parameters if they fall
+within the allowed values.
+
+There are three access levels available for parameters:
+
+\begin{itemize}
+\item {\tt Global}
+These parameters are seen by all thorns.
+\item {\tt Restricted}
+These parameters may be used by other implementations if they so desire.
+\item {\tt Private}
+These are only seen by this thorn.
+\end {itemize}
+
+A parameter specification consists of:
+\begin{itemize}
+
+\item {\tt the parameter type}
+\begin{itemize}
+\item {\tt REAL}
+\item {\tt INT}
+\item {\tt KEYWORD}
+A distinct string with only a few known allowed values.
+\item {\tt STRING}
+An arbitrary string, which must conform to a given regular expression.
+\item {\tt LOGICAL}
+A boolean type which can take values 1, `t', `true', `yes' or 
+0, `f', `false', `no'.
+\end{itemize}
+
+\item {\tt A description of the parameter}
+
+\item {An allowed value block}
+This consists of a brace delimited block of lines
+describing the allowed values of the parameter.  Each range may
+have a description associated with it by placing a :: on the line and
+putting the description afterwards.
+
+\item {\tt The default value}
+This must be one of the allowed values.
+
+\end{itemize}
+
+For the numeric types INT and REAL, a range consists of a string of the
+forms lower-bound:upper-bound:step where a missing number or a \* denotes
+anything (i.e. infinite bounds or an infinitesmal step).
+
+For example 
+
 \begin{verbatim}
 
 REAL Coeff "Important coefficient"
 {
 0:3.14 :: ``Range has to be from zero to Pi, default is zero''
 } 0.0
-
-INT hitch ``The hitch-hiker parameter''
-{
--42:42 :: ``Ranges from -42 to 42, default is zero''
-} 0
-
-#If you omitt the range, it will look a bit strange.
-#better put a range!
-INT hitch_nolimits ``The confusing hitch-hiker parameter''
-{
-: :: ``We are confused, what is the range?''
-} 0
 
 #No need to define a range for LOGICAL
 LOGICAL nice ``Nice weather ?''
@@ -231,176 +416,37 @@ KEYWORD confused "Are we getting confused ?''
   "never"   :: "never''
 } "never''
 \end{verbatim}
-Please consult the syntax for the {\tt param.ccl} for other possible
-combinations.
-\item{\tt public} this class allows parameters to be read by {\em all} 
-thorns a user will possibly compile with. You should make very
-restricted use of the {\tt public} keyword since this can be the cause 
-for incompatabilities and misunderstandings. {\bf CAN I HAVE A SECOND
-(PRIVATE) PARAMETER OF THE SAME NAME ? IN A DIFFERENT THORN ?}
-A typical declaration which further demonstrates the parameter syntax
-could be: 
-\begin{verbatim}
-public:
 
-# grid spacing has to be in the positive range 
-REAL grid_dx "Coarse grid spacing in x-direction"
-{
-  0: :: ``grid spacing has to be positive, default is 0.3''
-} 0.3
-\end{verbatim}
+defines a REAL parameter, a LOGICAL parameter, and a KEYWORD.
 
-\item{\tt protected} a parameter in this class is not only visible by
-its own thorn, but can be {\em inherited} by friend: a different thorn 
-may either check the value of this parameter or may extend its value
-range. A typical application would be the generation of initial data
-by different thorns, where each thorns extends an intial data
-parameter value by a name indicating the type of data it implements.
+By default all paramters are {\tt private}, to change this an access
+specification of the form {\tt global:} or {\tt restricted:} (or 
+{\tt private:} to change it back) may be placed on a line by itself.  This
+changes the access level for any parameter defined in the file from that point on.
+
+To access {\tt restricted} parameters from another implementation, a line
+containing {\tt shares: <name>} declares that all parameters mentioned in
+the file from now until the next access specification originate in 
+implementation <name>.  
+
+In contrast to parameter declarations in other access blocks, the default
+value must be ommitted - it is impossible to set the default value of any
+parameter not originating in this thorn.
+
+For example
 
 \begin{verbatim}
-protected:
-
-KEYWORD initial_data "Physical spacetime model to evolve"
-{
-  "flat" :: "Flat Minkowski space"
-} "flat"
-\end{verbatim}
-
-\item{\tt friend}:{\em thorn\_name} a parameter of type friend has been declared by an
-other thorn and you are extending its value. You have
-to specify which thorn has declared this parameter initially. This
-``parent''-thorn has to identify the parameter as {\tt protected}
-(see above) in order for you to modify its value range. A typical
-delcaration for would look like:
-\begin{verbatim}
-
-#We inherit this parameter form thorn Einstein and add several models
-#Only einstein and our thorn see this parameter. ******TRUE ???
-#BTW: No need to add a new comment 
 
 friend:einstein
-EXTENDS KEYWORD initial_data ""
+
+KEYWORD initial_data ""
 {
   "bl_bh"         :: "Brill Lindquist black holes"
   "misner_bh"     :: "Misner black holes"
   "schwarzschild" :: "One Schwarzshild black hole"
 }
-\end{verbatim}
-Note, that you {\em cannot} reset the default value. The {\em ccl}
-will report this as an error. Also, you cannot extend the default 
-comment, rather document the individual extension in the body.
-\end{itemize}
-
-\subsection{The {\tt interface.ccl}}
-{\bf CAN WE A CONVENTION FOR VARIABLES, GRIDFUNCTION, ...? }
-The interface plays the inportant role of introducing new grid
-function, their storage and communication concepts, new variables,
-etc. to the CCTK infrastructure. While this interface convention looks 
-difficult at first sight, it ensures the proper compatability of
-thorns we can't even imagine at this point. And it is fairly easy to
-learn. The thorn writer should question the impact and scope of his
-implementation in the following way:
-\begin{enumerate}
-\item{What is the name of the implementation, so it can be referenced by other 
-thorns.}
-\item{On which other thorns (implementations) does the thorn depend,
-because of parameter extension, grid functions, etc.}
-\item{What are the grid functions to implement and how are they grouped ? A 
-group should try to collect as many common feature as possible. Some
-common features are mandatory, eg. the storage of the variables
-belonging to the same group has to be equal.{\bf What else ?} That way
-certain operation can be carried out on a group by group basis, instead
-time consuming function by function.}.
-\item{Do functions need to be communicated between different processors 
-or are they local ?}
-\item{Do variables need storage turned on all the time or are they
-just used at a certain instance, for example for analysis.}
-\end{enumerate}
-
-The {\tt interface.ccl} defines all these specific information. The
-syntax is described in appendix \ref{sec:in}, please see 
-there for all possible options. Here we will introduce the general
-idea behind the interface.ccl.
-
-Here we show a sample taken from the thorn {\tt Einstein}, which
-implements the ADM variables:
-\begin{verbatim}
-implements: einstein
-inherits:   grid
-
-public:
-
-integer flags type = SCALAR
-{
-  conformal_state
-  shift_state
-} "State information"
-
-real metric type = GF
-{
-  gxx,gxy,gxz,gyy,gyz,gzz
-} "ADM 3-metric"
 
 \end{verbatim}
-
-The first lines in an {\em interface.ccl} file name the
-implementation, which this thorns adds or expands and declare the
-implementations this thorn depends on. In this case the thorn
-implements {\em ``einstein''} and depends on the public and protected
-variables of the {\em ``grid''} implementation, which add grids
-specific data.
-
-The gridfunctions and scalar variables, which will
-be declared next, can be grouped in three classes -- very
-similiar to the parameter declarations: the classes {\em public}, {\em 
-protected} and {\em private} can be used to inform the system about
-the scope of the individual varibles and gridfunctions:
-\begin{enumerate}
-\item{\tt public} grid functions, arrays or scalars defined in this
-class can be {\em read and written} by all thorns, whitout having to
-declare themselves as friends. This class should be used very
-restrictive since unathourized altering of a varibable can cause sever 
-confusion.
-\item{\tt protected} grid functions of this can class can be read/modified by
-other thorns, if these thorns have registered your implementation in
-the {\tt inherit:} section.  In our example, you would be able to
-access all variables of class protected of the {\tt grid}
-implementation. The {\em heritage}-concept was developed in response
-to the growing naming and access confusion in a growing pool of
-thorns. It was not designed to give the thorn programmer a hard life,
-but to make him think twice about possible sideeffects his
-implementation will bring about.
-\item{\tt private} grid functions in this class can only be
-rad/modified by the {\bf IMPLEMENTATION} or {\bf THORN} itself.
-\end{enumerate}
-
-In this case all variables are of class {\em public} which means that
-{\em all} other thorns can read and modify the values of these grids
-functions/scalars. One should be very restrictive about the use of the 
-{\em public} class. In general, declarations as {\em protected} and/pr 
-{\em private} will serve as well but reduce the confusion on who owns
-which variable significantly.
-
-The variable/grid function can be of the following types: {\tt real}, {\tt
-integer}, {\tt complex}. After the type declaration the {\em groupname} 
-is given, so that certain operation can be carried out on a time
-efficient group by group basis. In our example, the group names are
-{\em ``flags''} and {\em ``metric''}. The next keywords denotes,
-what kind of variable we have: {\tt type = }
-\begin{enumerate}
-\item{\tt SCALAR}: a scalar variable
-\item{\tt GF}: a grid function of the size of the grid.
-\item{\tt ARRAY}: an array of the size \ldots
-{\bf {\tt grace} uses keywords DIM TIMELEVEL, how do they work and are 
-there others ?}
-\end{enumerate}
-
-The actual varibables are declared in the body of the full variable
-statement, enclosed by {\tt ``\{``} / {\tt ``\}''}. In our example,
-for the first group, two scalars are defined ({\tt conformal\_state} and
-{\tt shift\_state}), for the second group, the six components of the
-metric tensor are defined. The declaration of the variables finishes
-with a descriptive comment.
 
 \subsection{The {\tt schedule.ccl}}
 The {\tt schedule.ccl} is used to register the routines of your thorn

@@ -105,7 +105,7 @@ generates C.
 
 The change from Cactus 3.0 to Cactus 4.0 is the largest one yet. The
 new interface forces modifications on all existing thorns, but it is
-intended not to change again. {\q Can we realistically say any more?}
+intended not to change again. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -164,7 +164,7 @@ understand what a given thorn does.
 
 The flesh and many thorns are public and can be used by anyone,
 assuming ethical behavior. Public thorns and the flesh are distributed
-by CVS (see {\q where?} below). Public thorns are checked out in
+by CVS . Public thorns are checked out in
 packages. The flesh may change in the future but this should never
 affect users, as Cactus 4.0 is making every effort to codify and
 freeze the interface. Public thorns should of course not lose
@@ -190,28 +190,31 @@ in a single processor mode. Please refer to the architecture section
   thorn configuration phase. Perl is available for nearly all
   operating systems known to man and can be obtained at
   http://www.perl.org
-\item{\tt gmake} The make
-  process works with the GNU gmake utility. While other make utilities
-  may also work, this is not guaranteed.
-  Gmake can be obtained from your favorite GNU site.
+\item{\tt GNU make} The make
+  process works with the GNU make utility (referred to as {\bf gmake} 
+  henceforth) . While other make utilities may also work, this is not 
+  guaranteed. Gmake can be obtained from your favorite GNU site.
 \item{\tt C/C++} A C and C++ compiler. For example, the GNU compilers. These
- are available for most supported platforms.
- Platform specific compilers should also work.
+ are available for most supported platforms.  Platform specific compilers 
+ should also work. Currently the flesh uses no C++
+ and so it should be possible to work on platforms where no C++ compiler is
+ available.  
 \item{\tt CVS} The {\em ``Concurrent Versioning System''} is not needed
   to run/compile the CCTK, but you are strongly encourage to install
   this software to take advantage of the update procedures. It can be
-  downloaded from your favorite GNU site. {(FIXME: This may need to be
-  changed when we sort out the distribution policy)}
+  downloaded from your favorite GNU site.  Tar files of each release are
+  also available.
 \end{itemize}
 
 \noindent
-To use the CCTK, with the default driver (CactusBase/PUGH) on multiple
+To use the CCTK, with the default driver (CactusPUGH/PUGH) on multiple
 processes you also need:
 \begin{itemize}
 \item{\tt MPI} the {\it Message Passing Interface (MPI)} 
-provides inter-processor communication. 
+which provides inter-processor communication. 
 Supercomputering sites often supply a native MPI implementation with
-which the CCTK is very likely to be compatible. Otherwise the {\tt MPICH}
+which the CCTK is very likely to be compatible. Otherwise there are
+various freely available ones available, e.g. the {\tt MPICH}
 version of MPI is available for various architectures and operating
 systems at {\tt http://www-unix.mcs.anl.gov/mpi/}. 
 \end{itemize}
@@ -230,9 +233,9 @@ written in {\tt FORTRAN} you also need
 While not required for compiling or running the CCTK, for thorn development
 it is useful to install
 \begin{itemize}
-\item{\tt TAGS}: Tags enables you browse through the calling structure
+\item{\tt ctags/etags}: Tags enables you browse through the calling structure
   of a program by help of function call database. Navigating the CCTK and
-  packages becomes very easy. Emacs and vi both support this database. See
+  packages becomes very easy. Emacs and vi both support this method. See
   \ref{sec:usta} for a short guide to ``tags''.
 \end{itemize}
 
@@ -245,12 +248,12 @@ Cactus runs on many machines, under a large number of Unix operating
 systems. Here we list all the machines we have compiled and verified
 Cactus on, including some architecture specific notes. 
 \begin{itemize} 
-\item{\bf SGI Origin 2000}
-\item{\bf SGI}
-\item{\bf Cray T3E}
+\item{\bf SGI Origin 2000} running Irix
+\item{\bf SGI} 32 or 64 bit running Irix
+\item{\bf Cray T3E} 
 \item{\bf Dec Alpha}: Dec operating system and Linux. Single processor
-  mode and MPICH.
-  supported. The Decs need to have the GNU {\tt C/C++} compilers installed.
+  mode and MPI supported. The Decs need to have the GNU {\tt C/C++} 
+  compilers installed {\q Is this really true ?}
 \item{\bf Intel Linux}: There is a
   free Linux F90 compiler available from  {\tt http://www.psrv.com}
   -- the only free we know of. Single processor mode and MPICH
@@ -262,6 +265,7 @@ Cactus on, including some architecture specific notes.
         11.00.7022 for 80x86}
   \item{Cygnus Unix suite version 1.19}
   \end{itemize}
+  {FIXME: update this}
 \item{\bf HP Exemplar} (Soon)
 \end{itemize}
 
@@ -271,14 +275,14 @@ Cactus on, including some architecture specific notes.
 \label{sec:chpr}
 
 The CCTK is distributed, extended, and maintained using the free CVS
-software. CVS ({\em ``Concurrent Versioning System''}) allows many
+software. CVS  allows many
 people to work on a large software project together without getting
 into a tangle. For the beginner, we summarize the basics in appendix
 \ref{sec:uscv}, please refer to this section for a short description of
 the CVS syntax.
 
 The space required for an installation depends on the packages and
-thorns used. The flesh on its own requires less than 1 MB.
+thorns used. The flesh on its own requires less than 5 MB.
 
 \begin{itemize}
 \item{\bf Login}: Prior to any CVS operation, you need to log into the CCTK
@@ -286,24 +290,24 @@ thorns used. The flesh on its own requires less than 1 MB.
   {\tt
     cvs -d :pserver:cvs\_anon@cvs.cactuscode.org:/usr/users/cactus login
     }
-  You will be prompted for a password which is {\tt anon}. 
+  You will be prompted for a password which is {\bf anon}. 
 \item{\bf Checkout}: To obtain a fresh copy of the CCTK, move to a directory
   which does not contain a previously checked out version, and type
   {\t
     cvs -d :pserver:cvs\_anon@cvs.cactuscode.org:/usr/users/cactus checkout CCTK
     }
-  The CVS checkout procedure will create a directory called {\tt
-    ./CCTK} and install the CCTK inside this directory.  From now on we
-  will reference all directory names relative to {\tt ./CCTK}. 
+  The CVS checkout procedure will create a directory called {\bf
+  CCTK} and install the CCTK inside this directory.  From now on we
+  will reference all directory names relative to {\bf CCTK}. 
 
 \noindent
   If you want to compile the CCTK with thorns, you now need to checkout separately 
-  the required packages into the {\t ./CCTK/packages} directory. To see  the 
+  the required packages into the {\bf packages} directory. To see  the 
   available Cactus packages and thorns type
   {\t 
     cvs -d :pserver:cvs\_anon@cvs.cactuscode.org:/usr/users/cactus checkout -s
   }
-  To check out a package or thorn type go to the packages directory,  {\t cd ./CCTK/packages},
+  To check out a package or thorn type go to the packages directory,  {\t cd packages},
   and  for a package type
 {\t 
   cvs checkout <package\_name>
@@ -313,21 +317,17 @@ thorns used. The flesh on its own requires less than 1 MB.
 cvs checkout <package\_name/thorn\_name>
 }
  
-  
-
-
-A target of
-  the make system exists to help with checking out packages and thorns, to use this
-type {\t gmake checkout} in the CCTK home directory.
+To simplify this procedure you may use {\t gmake checkout} in the CCTK
+home directory which provides menus to pick packages and thorns from.
   
   
 \item{\bf Update}: To update an existing CCTK checkout (to patch in
-  possible changes, etc.), do the following {\em within} the {\tt ./CCTK} directory.
+  possible changes, etc.), do the following {\em within} the {\tt CCTK} directory.
   {\t
     cvs update
     }
-  The update process will operate downwards relative to your current position
-  within the CCTK tree. To update only certain directories, change
+  The update process will operate recusrively downwards from your current position
+  within the CCTK tree. To update only on certain directories, change
   into these directories and issue the update command.
 \item{\bf CVS status}: to obtain a status report on the ``age'' of your
   CCTK or package routines (from your current directory position
@@ -353,93 +353,32 @@ For more CVS commands on how to add files, etc. please refer to appendix
 \section{Directory structure}
 \label{sec:dist}
 
-A fresh CCTK checkout creates a directory {\tt ./CCTK} with the
-following files and subdirectories:
+A fresh CCTK checkout creates a directory {\tt CCTK} with the
+following subdirectories:
 \begin{itemize}
 
-\item{\tt ./CVS/} the CVS book-keeping directory, present in every subdirectory.
+\item{\tt CVS} the CVS book-keeping directory, present in every subdirectory.
 
-\item{\tt ./doc/} CCTK documentation
+\item{\tt doc} CCTK documentation
 
-\item{\tt ./lib/} contains libraries.
+\item{\tt lib} contains libraries.
 
-\item{\tt ./src/} contains the source code for the CCTK
+\item{\tt src} contains the source code for the CCTK
 
-\item {\tt ./packages/} contains the Cactus packages. The packages
+\item {\tt packages} contains the Cactus packages. The packages
   (the actual ``physics'') are not supplied by the CCTK. If the packages
   you want to use are part of the central repository, they can be
   checked out in similar way the CCTK. 
 \end{itemize}
 
 When Cactus is first compiled it creates a new directory {\tt
-./CCTK/configs/}. Disk space may be a problem on supercomputers where
+CCTK/configs}. Disk space may be a problem on supercomputers where
 home directories are small. A workaround is to first create a
 configs directory on scratch space, say {\tt scratch/cactus\_configs/} (where
 {\tt scratch/} is your scratch directory), and soft link ({\tt ln -s
-scratch/cactus\_configs cactus/configs/}) it to the Cactus directory.
+scratch/cactus\_configs CCTK/configs/}) it to the Cactus directory.
 
 Configurations are descibed in detail in section \ref{sec:coaco}.
-
-%When the code has been compiled for some configuration CONF, the
-%directory {\tt configs/CONF/} contains the following:
-
-%\begin{itemize}
-
-%\item {\tt ThornList} 
-
-%\item {\tt datestamp.o}
-
-%\item {\tt bindings/} contains all the files created by the perl
-%scripts, sorted into subdirectories {\tt Parameters}, 
-%{\tt Variables}, {\tt Schedule}, {\tt thorn\_***} (one for each thorn).
-
-%\item {\tt build/} contains the post-processed source code, the
-%dependencies and the object files, sorted into the subdirectories {\tt
-%Cactus}, {\tt CactusBindings} and {\tt thorn\_***}.
-
-%\item {\tt config-data} : contains the files created by the configure
-%script:
-
-%\begin{itemize}
-
-%\item {\tt config.cache}
-
-%\item {\tt config.h}
-
-%\item {\tt config.log}
-
-%\item {\tt config.status}
-
-%\item {\tt fortran\_name.pl} (used to determine how fortran routines
-%are called from C) 
-
-%\item {\tt make.config.defn} (contains compilers etc. for a configuration)
-
-%\item {\tt make.config.deps}
-
-%\item {\tt make.config.rule} (rules to generate object files from source files)
-%\end{itemize}
-
-%\item {\tt lib} : contains the libraries built from the object files,
-
-%\begin{itemize}
-
-%\item {\tt libCactus.a} for the flesh
-
-%\item{\tt llibCactusBinding.a} for the Bindings 
-
-%\item {\tt llib***.a} for each thorn
-
-%\end{itemize}
-
-%{\q It might be useful to give a couple of commands like nm for seeing
-%what is in libraries.}
-
-%\item {\tt scratch}: empty at the end.
-
-%\end{itemize}
-
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -447,6 +386,16 @@ Configurations are descibed in detail in section \ref{sec:coaco}.
 \label{sec:gehe}
 
 {\bf FIXME: This is for Gerd to fill in} GNATS
+
+For tracking problem reports and bugs we use GNATS, another GNU package.
+
+There are two ways of interacting with GNATS
+
+\begin{itemize}
+\item {\tt A web interface}
+\item {\tt SendPR}
+{FIXME: Mention the emacs thing here too...}
+\end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -458,7 +407,7 @@ Configurations are descibed in detail in section \ref{sec:coaco}.
 
 Cactus can be built in different configurations from the same copy of
 the source files, and these different configurations coexist in the
-{\tt ./CCTK/} directory. Here are several cases, where this can be
+{\tt CCTK} directory. Here are several cases, where this can be
 useful:
 
 \begin{enumerate}
@@ -468,7 +417,7 @@ based on a single copy of source code, shared on a common file
 system.
 \item{} You can compare different {\em compiler options, debug-modes}.
   You might want to compile different communication protocols
-  (MPI/GLOBUS) or leave them out all together.
+  (e.g. MPI/GLOBUS) or leave them out all together.
 \item{} You can have different configurations for {\em different thorns
     collections} compiled into your executable.
 \end{enumerate}
@@ -510,7 +459,7 @@ The equals sign is optional.
 \item{} Pass the options individually  on the command line,
 
 {\tt gmake <configuration name>-config  <option name>=<chosen value>, ...}
-Not all configurarion options can be set on the command line. Those than can
+Not all configuration options can be set on the command line. Those than can
 be set are indicated in the table below.
 
 \end{enumerate}
@@ -518,9 +467,6 @@ be set are indicated in the table below.
 Note that if a configuration file is used, and options are also passed
 on the command line, the configuration file will currently override the command line
 options, although this behaviour will soon change.
-
-All options may be specified in the options file, an a subset of them on
-the command line.
 
 It is important to note that these methods cannot be used to, for example add
 options to the default values for {\tt CFLAGS}. Setting {\tt CFLAGS} in the
@@ -605,15 +551,6 @@ Any other library directories.
 Used to specify any additional directories for system include files
 \end{itemize}
 
-\item {\tt Compile-only flags}
-
-Used to specify options to compilers to make them only compile.
-
-\begin{itemize}
-\item {\tt CCOMPILEONLY}
-
-\item {\tt FCOMPILEONLY}
-\end{itemize}
 
 \item {\tt Precision options}
 
@@ -638,12 +575,23 @@ values will be valid on all architectures.
 The name of the executable.
 \end{itemize}
 
+\item {\tt Compile-only flags}
+
+Used to specify options to compilers to make them only compile.
+
+\begin{itemize}
+\item {\tt CCOMPILEONLY}
+
+\item {\tt FCOMPILEONLY}
 \end{itemize}
+
+\end{itemize}
+
 
 \subsection{File layout after a configuration has been created }
 
 The configuration process sets up various subdirectories and files in the 
-{\tt ./configs} directory to contain the configuration specific files, these
+{\tt configs} directory to contain the configuration specific files, these
 are placed in a directory with the name of the configuration.
 
 \begin{itemize}
@@ -720,7 +668,7 @@ One you have created a new configuration, the command
 {\tt gmake <configuration name>}
 
 will build an executable, prompting you along the way for the 
-thorns which should be included. There are a range of  gmake 
+thorns which should be included. There is a range of  gmake 
 targets and options which are detailed in the following sections.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -753,13 +701,11 @@ is to do. The command {\tt gmake help} lists all gmake targets.
   a configuration 
 
 
-\item {\tt gmake <CONF>-rebuild} rebuilds a configuration (reruns the CST)
-
-\item {\tt gmake <CONF>-config} creates a new configuration or reconfigures an old one
+\item {\tt gmake <CONF>-rebuild} rebuilds a configuration (reruns the CST -- the perl scripts which parse the thorn configuration files)
 
 \item {\tt gmake <CONF>-delete} deletes a configuration ({\tt rm -r configs/<CONF>})
 
-\item {\tt gmake <CONF>-activethorns} regenerates the ThornList for a configuration
+\item {\tt gmake <CONF>-thornlist} regenerates the ThornList for a configuration
 
 \item {\tt gmake <CONF>-testsuite} runs the test programs associated with
  each thorn. See section \ref{sec:????} for information about the 
@@ -781,8 +727,8 @@ is ignored, so comments can be included.
 
 Instead of using the editor to specify the thorns you want to
   have compiled, you can {\em edit} the {\em ThornList} outside
-  the make process. It is located in {\tt configs/CONF/ThornList},
-  wher {\tt CONF} refers to the name of your configuration.
+  the make process. It is located in {\tt configs/<CONF>/ThornList},
+  wher {\tt <CONF>} refers to the name of your configuration.
   For a completely new configuration, this directory exists {\em
     after} the first  make phase.
 
@@ -807,7 +753,7 @@ the same.
 
 \item {\tt gmake <target> SILENT=no} prints the commands that gmake is executing
 \item {\tt gmake <target> TJOBS=<number>} compile in parallel, across thorns 
-\item {\tt gmake <target> FJOBS=<number>} compile in parallel, across files
+\item {\tt gmake <target> FJOBS=<number>} compile in parallel, across files within each thorn
 
 \end{itemize}
 
@@ -835,7 +781,7 @@ the same.
 
 \item {\tt gmake checkout} allows you to easily checkout Cactus packages and thorns.
 
-\item {\tt gmake distclean} nukes your configs directory.
+\item {\tt gmake distclean} delete your {\tt configs} directory and hence all your configurations.
 
 \item {\tt gmake downsize} removes non essential files as documents
   and testsuites to allow for minimal installation size.
@@ -846,8 +792,19 @@ the same.
 \section{Testing} 
 \label{sec:te}
 
-simple make and test suite
+Some thorns come with a testsuite, consisting of example parameter files
+and the output files generated by running these.
 
+These testsuites serve the dual purpose of
+
+\begin{itemize}
+\item {\tt Regression testing}
+i.e. making sure that changes to the thorn or the flesh don't affect the
+output from a known parameter file.
+\item {\tt Portability testing}
+i.e. checking that the results are independent of the architecture - this
+is also of use when trying to get Cactus to work on a new architecture.
+\end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -880,18 +837,52 @@ Environment variables
 \section{Command Line Options}
 \label{sec:coliop}
 
+The code accepts numerous command line arguments:
+
 \begin{tabular}{ll}
 {\t -O, -describe-all-parameters} &List all parameters and their descriptions\\
 {\t -o, -describe-parameter <param>} & List description for one parameter\\
-{\t -T, -list-active-thorns}& List all compiled thorns\\
-{\t -t, -test-thorn-active <package/thorn>}& Query presence of a thorn\\
+{\t -T, -list-thorns}& List all compiled thorns\\
+{\t -t, -test-thorn-compiled <package/thorn>}& Query presence of a thorn\\
 {\t -h, -help, -?} & Provide help on command line options\\
 {\t -v, -version} & Compilation date of code\\
 {\t -x, -test-parameters [<nprocs>]} & Run code as far a parameter checking, simulating being on {\t nprocs} processors\\
 {\t -W, -warning-level <level>} & Set warning level to {\t level} (default is 1)\\
 {\t -E, -error-level <level>} & Set error level to {\t level}, warnings of this level and above will stop the code (default is 0)\\
-{\t -r, -redirect-stderr} & Redirect standard output to file on all processors\\
+{\t -r, -redirect-stdout} & Redirect standard output to file on all processors\\
 \end{tabular}
+
+\begin{itemize}
+\item {\tt -O}
+Produces a full list of all parameters from all thorns which were compiled,
+along with descriptions and allowed values.
+\item {\tt -o} 
+Produces the description and allowed values for a given parameter - takes one
+argument.
+\item {\tt -T} 
+Produces a list of all the thorns which were compiled in.
+\item {\tt -t} 
+Checks if a given thorn was compiled in - takes one argument.
+\item {\tt -h} or {\tt -?}
+Produces a help message.
+\item {\tt -v} 
+Produces version information of the code.
+\item {\tt -x} 
+Runs the code far enough to check the consistency of the parameters.  If
+given a numeric argument it will attempt to simulate being on that number 
+of processors.
+\item {\tt -W} 
+Sets the warning level of the code.  All warning messages are given a level--
+the lower the level the greater the severity.  This parameter controls the
+level of messages to be seen.  0 indicates only fatal messages.
+\item {\tt -E}
+This works in concert with {\tt -W} - it controls which warning level is
+treated as a fatal error.  This cannot be set to a higher value than 
+{\tt -W}.
+\item {\tt -r}
+This redirects the standard output of each processor to a file.  By default
+the output from processors other than processor 0 is discarded.
+\end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -930,9 +921,51 @@ parameter in your parameter file.}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-\chapter{Looking at output}
+%\chapter{Looking at output}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Checkpointing}
+
+\begin{itemize}
+\item recover directive
+\item parameter clobbering
+\item controlling checkpoint times
+\end{itemize}
+
+
+\section{Screen output}
+
+\begin{itemize}
+
+\item Normal output
+\begin{itemize}
+\item Thorn activation
+\item RFR stuff
+\item Iteration stuff
+\item Recovery stuff
+\item Checkpoint stuff
+\item Timing stuff
+\item End stuff
+\end{itemize}
+
+\item Error outputs
+\begin{itemize}
+\item Thorn activation errors
+\item Parameter error
+\item Parameter file errors
+\item Other errors
+\end{itemize}
+
+\end{itemize}
+
+
+\section{Environment Variables}
+
+\begin{itemize}
+\item MPI ?
+\item Anything else ?
+\end{itemize}
 
