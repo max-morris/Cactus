@@ -70,7 +70,8 @@ sub get_arrangements
       print "$arrangement ";
     }
 
-    print "\n\nAvailable arrangements: \n";
+    print "\n\nRepository: $repository\n";
+    print "Arrangements listed in modules file: \n";
 
     open(MODULES,"cvs -d $repository co -s | ");
     
@@ -98,15 +99,26 @@ sub get_arrangements
     
     print "\n";
     
-    print "Checkout arrangements [1-$count] : ";
-    
+    print "Checkout arrangements h)elp, q)uit, c)ustom, range [1-$count] : ";
+
     # Goto target arrangement directory 
     chdir arrangements || die "Could not find arrangements directory";
 
     $range = <STDIN>;
-    if ($range =~ /^h/i)
+    if ($range =~ /^h/i) 
     {
 	&print_help();
+    }
+    elsif ($range =~ /^q/i)
+    {
+      print "\n\n";
+      exit(0);
+    }
+    elsif ($range =~ /^c/i)
+    {
+      print "Arrangement required: ";
+      $arrname = <STDIN>;
+      &CheckOut($arrname,$repository);
     }
     elsif ($range =~ /^\s*$/)
     {
@@ -164,9 +176,9 @@ sub get_thorns
       $last_arr = $this_arr;
     }
 
-    print "\n\nAvailable thorns: \n";
+    print "\n\nThorns listed in the modules file for $repository: \n";
 
-    open(MODULES,"cvs -q co -s | ");
+    open(MODULES,"cvs -d $repository -q co -s | ");
     
     $count = 0;
     while(<MODULES>)
@@ -192,7 +204,7 @@ sub get_thorns
     
     print "\n";
     
-    print "Checkout thorns h)elp, q)uit, range [1-$count] : ";
+    print "Checkout thorns h)elp, q)uit, c)ustom, range [1-$count] : ";
     
     # Goto target arrangement directory 
     chdir arrangements || die "Could not find arrangements directory\n";
@@ -202,27 +214,33 @@ sub get_thorns
     {
 	&print_help();
     }
-    elsif ($range =~ /^q$/)
+    elsif ($range =~ /^q$/i)
     {
       print "\n\n";
       exit(0);
     }
+    elsif ($range =~ /^c/i)
+    {
+      print "Arrangement/Thorn required: ";
+      $thornname = <STDIN>;
+      &CheckOut($thornname,$repository);
+    }
     elsif ($range =~ /^\s*$/)
     {
-	$range = "1-$count";
+      $range = "1-$count";
     }
 
     while ($range =~/^([0-9]+(?:-[0-9]+)?),?/)
     {
-	$range = $';
-	$1 =~ /^([0-9]*)(-[0-9]*)?$/;
-	$first = $1;
-	if (!$2) 
+      $range = $';
+      $1 =~ /^([0-9]*)(-[0-9]*)?$/;
+      $first = $1;
+      if (!$2) 
 	{$last=$1}
-	else
-        {$2=~/-([0-9]*)/; $last=$1}
-	
-	for ($i=$first; $i<$last+1; $i++)
+      else
+	{$2=~/-([0-9]*)/; $last=$1}
+      
+      for ($i=$first; $i<$last+1; $i++)
 	{
 	  &CheckOut($name{$i},$repository);
 	}
@@ -249,15 +267,20 @@ sub get_applications
   # Put number of applications here
   $count = 5;
 
-  print "Checkout applications [1-$count] : ";
-    
-    # Goto target arrangement directory 
-    chdir arrangements || die "Could not find arrangements directory\n";
+  print "Checkout applications h)elp, q)uit, range [1-$count] : ";
+
+  # Goto target arrangement directory 
+  chdir arrangements || die "Could not find arrangements directory\n";
 
     $range = <STDIN>;
     if ($range =~ /^h/i)
     {
 	&print_help();
+    }
+    elsif ($range =~ /^q/i)
+    {
+      print "\n\n";
+      exit(0);
     }
     elsif ($range =~ /^\s*$/)
     {
@@ -467,11 +490,6 @@ sub choose_repository
     chop($rep[2]);
   }
 
-  if ($dowhat !~ /^h/i)
-  { 
-    print "Using repository $rep[$dowhat]\n";
-  }
-  
   return $rep[$dowhat];
   
 }
