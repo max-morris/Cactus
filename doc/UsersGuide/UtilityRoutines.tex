@@ -168,13 +168,13 @@ and only if some sort of error has occurred.%%%
 /* create a table and set some entries in it */
 int handle = Util_TableCreate(UTIL_TABLE_FLAGS_DEFAULT);
 if (handle < 0)
-        CCTK_WARN(-1, "couldn't create table!");
+        CCTK_WARN(CCTK_WARN_ABORT, "couldn't create table!");
 
 /* try to set some table entries */
 if (Util_TableSetInt(handle, 2, "two") < 0)
-        CCTK_WARN(-1, "couldn't set integer value in table!");
+        CCTK_WARN(CCTK_WARN_ABORT, "couldn't set integer value in table!");
 if (Util_TableSetReal(handle, 3.14, "pi") < 0)
-        CCTK_WARN(-1, "couldn't set real value in table!");
+        CCTK_WARN(CCTK_WARN_ABORT, "couldn't set real value in table!");
 
 ...
 
@@ -182,9 +182,9 @@ if (Util_TableSetReal(handle, 3.14, "pi") < 0)
 CCTK_INT two_value;
 CCTK_REAL pi_value;
 if (Util_TableGetInt(handle, &two_value, "two") < 0)
-        CCTK_WARN(-1, "couldn't get integer value from table!");
+        CCTK_WARN(CCTK_WARN_ABORT, "couldn't get integer value from table!");
 if (Util_TableGetReal(handle, &pi_value, "pi") < 0)
-        CCTK_WARN(-1, "couldn't get integer value from table!");
+        CCTK_WARN(CCTK_WARN_ABORT, "couldn't get integer value from table!");
 
 /* if we get to here, then two_value = 2 and pi_value = 3.14 */
 \end{verbatim}
@@ -208,14 +208,14 @@ For example (continuing the previous example):
 \begin{verbatim}
 static const CCTK_INT a[3] = { 42, 69, 105 };
 if (Util_TableSetIntArray(handle, 3, a, "my array") < 0)
-        CCTK_WARN(-1, "couldn't set integer array value in table!");
+        CCTK_WARN(CCTK_WARN_ABORT, "couldn't set integer array value in table!");
 
 ...
 
 CCTK_INT blah[10];
 int count = Util_TableGetIntArray(handle, 10, blah, "my array");
 if (count < 0)
-        CCTK_WARN(-1, "couldn't get integer array value from table!");
+        CCTK_WARN(CCTK_WARN_ABORT, "couldn't get integer array value from table!");
 /* now count = 3, blah[0] = 42, blah[1] = 69, blah[2] = 105, */
 /*     and all remaining elements of blah[] are unchanged */
 \end{verbatim}
@@ -235,7 +235,7 @@ that's OK:
 CCTK_INT blah2[2];
 int count = Util_TableGetIntArray(handle, 2, blah2, "my array");
 if (count < 0)
-        CCTK_WARN(-1, "couldn't get integer array value from table!");
+        CCTK_WARN(CCTK_WARN_ABORT, "couldn't get integer array value from table!");
 /* now count = 3, blah2[0] = 42, blah2[1] = 69 */
 \end{verbatim}
 You can even ask for just the first value:
@@ -243,7 +243,7 @@ You can even ask for just the first value:
 CCTK_INT blah1;
 int count = Util_TableGetInt(handle, &blah1, "my array");
 if (count < 0)
-        CCTK_WARN(-1, "couldn't get integer array value from table!");
+        CCTK_WARN(CCTK_WARN_ABORT, "couldn't get integer array value from table!");
 /* now count = 3, blah1 = 42 */
 \end{verbatim}
 
@@ -257,12 +257,12 @@ an array of \verb|CCTK_CHAR|, there are also routines
 specially for conveniently setting and getting strings:
 \begin{verbatim}
 if (Util_TableSetString(handle, "black holes are fun", "bh") < 0)
-        CCTK_WARN(-1, "couldn't set string value in table!");
+        CCTK_WARN(CCTK_WARN_ABORT, "couldn't set string value in table!");
 
 ...
 char buffer[50];
 if (Util_TableGetString(handle, 50, buffer, "bh") < 0)
-        CCTK_WARN(-1, "couldn't get string value from table!");
+        CCTK_WARN(CCTK_WARN_ABORT, "couldn't get string value from table!");
 
 /* now buffer[] contains the string "black holes are fun" */
 \end{verbatim}
@@ -287,11 +287,11 @@ example in section \ref{Tables_Simple_Example}:
 /* create a table and set some values in it */
 int handle = Util_TableCreate(UTIL_TABLE_FLAGS_DEFAULT);
 if (handle < 0)
-        CCTK_WARN(-1, "couldn't create table!");
+        CCTK_WARN(CCTK_WARN_ABORT, "couldn't create table!");
 
 /* try to set some table entries */
 if (Util_TableSetFromString(handle, "two=2 pi=3.14") != 2)
-        CCTK_WARN(-1, "couldn't set values in table!");
+        CCTK_WARN(CCTK_WARN_ABORT, "couldn't set values in table!");
 \end{verbatim}
 
 There is also an even higher-level convenience function
@@ -313,7 +313,7 @@ int handle = Util_TableCreateFromString(" two    = 2 "
                                         " buffer = 'Hello World' "
                                         " array  = { 1 2 3 }");
 if (handle < 0)
-        CCTK_WARN(-1, "couldn't create table from string!");
+        CCTK_WARN(CCTK_WARN_ABORT, "couldn't create table from string!");
 \end{verbatim}
 
 Note that this code passes a single string to

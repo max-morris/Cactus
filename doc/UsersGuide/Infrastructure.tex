@@ -273,7 +273,7 @@ int SimpleScheduleTraversGH(cGH *GH, const char *where)
             ((pGA ***)(extension->variables))[var][level]->data;
           break;
         default:
-          CCTK_WARN(1,"Unknown group type in SimpleScheduleTraverse");
+          CCTK_WARN(CCTK_WARN_ALERT,"Unknown group type in SimpleScheduleTraverse");
       }
     }
   }
@@ -320,11 +320,11 @@ int SimpleCallFunction(void *function,
           fdata->FortranCaller(data, function);
           break;
         default :
-          CCTK_WARN(1, "Unknown language.");
+          CCTK_WARN(CCTK_WARN_ALERT, "Unknown language.");
       }
       break;
     default :
-      CCTK_WARN(1, "Unknown function type.");
+      CCTK_WARN(CCTK_WARN_ALERT, "Unknown function type.");
   }
 
   /* Return 0, meaning didn't synchronise */

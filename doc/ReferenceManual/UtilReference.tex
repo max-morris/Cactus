@@ -3263,7 +3263,7 @@ int N_buffer = max_key_length + 1;
 char *const buffer = (char *) malloc(N_buffer);
 if (buffer == NULL)
         {
-        CCTK_WARN(-1, "couldn't allocate memory for table key buffer!");
+        CCTK_WARN(CCTK_WARN_ABORT, "couldn't allocate memory for table key buffer!");
         abort();        /* CCTK_Abort() would be better */
                         /* if we have a cGH* available */
         }
