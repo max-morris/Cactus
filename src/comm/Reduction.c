@@ -130,7 +130,7 @@ int CCTK_Reduce(cGH *GH, int retvartype, int retvarnum, void *retval,
 
 
   /* Fill in the array of variable indices from the variable argument list */
-  invarnum = 1;
+  invarnum = 0;
   index_array = (int *)malloc(sizeof(int));
   index_array[0] = index;
 
