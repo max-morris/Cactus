@@ -5494,16 +5494,26 @@ this function may also return any error codes returned by
 #include "util_ErrorCodes.h"
 #include "util_Table.h"
 
-int handle = Util_TableCreateFromString("order=3 myparam=42.314159");
+int handle = Util_TableCreateFromString("order = 3\t"
+                                        "myreal = 42.314159\t"
+                                        "mystring = 'hello'\t"
+                                        "myarray = { 0 1 2 3 }");
 
 /* equivalent code to the above */
 int handle = Util_TableCreate(UTIL_TABLE_FLAGS_CASE_INSENSITIVE);
-Util_TableSetFromString(handle, "order=3 myparam=42.314159");
+Util_TableSetFromString(handle, "order = 3\t"
+                                "myreal = 42.314159\t"
+                                "mystring = 'hello'"
+                                "myarray = { 0 1 2 3 }");
 
 /* also equivalent to the above */
 int handle = Util_TableCreate(UTIL_TABLE_FLAGS_CASE_INSENSITIVE);
+CCTK_INT array[] = {0, 1, 2, 3};
+
 Util_TableSetInt(handle, 3, "order");
-Util_TableSetReal(handle, 42.314159, "myparam");
+Util_TableSetReal(handle, 42.314159, "myreal");
+Util_TableSetString(handle, "hello", "mystring");
+Util_TableSetIntArray(handle, 4, array, "myarray");
 \end{verbatim}
 \end{Example}
 \end{ExampleSection}
@@ -6465,7 +6475,7 @@ iterator handle is invalid
 int ihandle;
 
         for ( ihandle = Util_TableItCreate(handle) ;
-              Util_TableItQueryIsNull(ihandle) ;
+              Util_TableItQueryIsNonNull(ihandle) > 0 ;
               Util_TableItAdvance(ihandle) )
         {
         /* do something with the table entry */
@@ -6657,7 +6667,7 @@ unable to allocate memory
 int ihandle;
 
         for ( ihandle = Util_TableItCreate(handle) ;
-              Util_TableItQueryIsNull(ihandle) ;
+              Util_TableItQueryIsNonNull(ihandle) > 0 ;
               Util_TableItAdvance(ihandle) )
         {
         /* do something with the table entry */
@@ -6722,7 +6732,7 @@ unable to allocate memory
 int ihandle;
 
         for ( ihandle = Util_TableItCreate(handle) ;
-              Util_TableItQueryIsNull(ihandle) ;
+              Util_TableItQueryIsNonNull(ihandle) > 0 ;
               Util_TableItAdvance(ihandle) )
         {
         /* do something with the table entry */
@@ -6796,7 +6806,7 @@ iterator handle is invalid
 int ihandle;
 
         for ( ihandle = Util_TableItCreate(handle) ;
-              Util_TableItQueryIsNonNull(ihandle) ;
+              Util_TableItQueryIsNonNull(ihandle) > 0 ;
               Util_TableItAdvance(ihandle) )
         {
         /* do something with the table entry */
@@ -6871,7 +6881,7 @@ iterator handle is invalid
 int ihandle;
 
         for ( ihandle = Util_TableItCreate(handle) ;
-              ! Util_TableItQueryIsNull(ihandle) ;
+              Util_TableItQueryIsNull(ihandle) == 0 ;
               Util_TableItAdvance(ihandle) )
         {
         /* do something with the table entry */
@@ -7003,7 +7013,7 @@ if (key_buffer == NULL)
         return UTIL_ERROR_NO_MEMORY;
 
         for ( ihandle = Util_TableItCreate(handle) ;
-              Util_TableItQueryIsNonNull(ihandle) ;
+              Util_TableItQueryIsNonNull(ihandle) > 0 ;
               Util_TableItAdvance(ihandle) )
         {
         CCTK_INT type_code, N_elements;
@@ -7855,24 +7865,34 @@ The string should contain a sequence of zero or more \verb|key=value|
 these assignments in left-to-right order, setting corresponding key/value
 entries in the table.
 
-The present implementation only recognises integer or real values
-(not pointer, complex, character, or string), and only scalars
-(not arrays).  To be precise, the string must match the following BNF:\\
+The present implementation only recognises integer, real, and character-string
+values (not complex), and integer and real arrays.
+To be precise, the string must match the following BNF:\\
 \quad
 \begin{tabular}{l@{\quad$\rightarrow$\quad}p{9cm}}
 string	& assign*							\\
 assign	& whitespace*							\\
-assign	& whitespace* key = value delimiter				\\
-key	& any string not containing \verb|'/'|
-	  or \verb|'='| or \verb|';'| or whitespace			\\
-value	& int\_value $\big|$ real\_value				\\
-int\_value	& contains only characters from \verb|+-0123456789|
-		  and is recognized as valid by \verb|sscanf()|
-		  with a \verb|"%d"| format				\\
-real\_value	& contains one or more characters not in
-		  \verb|+-0123456789| and is recognized as valid
-		  by \verb|sscanf()| with a \verb|"%lf"| format		\\
-delimiter	& end-of-string $\big|$ \verb|';'| $\big|$ whitespace	\\
+assign	& whitespace* key whitespace* = whitespace* value delimiter     \\
+key	& any string not containing \verb|'/'| or \verb|'='| or whitespace\\
+value	& array $\big|$ int\_value $\big|$ real\_value $\big|$ string\_value\\
+array	& { int\_value* } $\big|$ { real\_value }			\\
+int\_value	& anything recognized as a valid integer by strdol(3)
+		  in base 10						\\
+real\_value	& anything not recognized as a valid integer by strtol(3)
+		  but recognized as valid by strdod(3)			\\
+string\_value	& a C-style string enclosed in "double quotes"
+		  (C-style character escape codes are allowed
+		  ie. bell~(\verb|'\a'|), backspace~(\verb|'\b'|),
+		  form-feed~(\verb|'\f'|), newline~(\verb|'\n'|),
+		  carriage-return~(\verb|'\r'|), tab~(\verb|'\t'|),
+		  vertical-tab~(\verb|'\v'|), backslash~(\verb|'\\'|),
+		  single-quote~(\verb|'\''|), double-quote~(\verb|'\"'|),
+		  question-mark~(\verb|'\?'|))				\\
+string\_value	& a C-style string enclosed in 'single quotes'
+		  (C-style character escape codes are {\bf not} allowed,
+		  ie. every character within the string is interpreted
+		  literally)						\\
+delimiter	& end-of-string $\big|$ whitespace			\\
 whitespace	& blank~(\verb|' '|)
 		  $\big|$ tab~(\verb|'\t'|)
 		  $\big|$ newline~(\verb|'\n'|)
@@ -7882,13 +7902,10 @@ whitespace	& blank~(\verb|' '|)
 \end{tabular}\\
 where * denotes 0 or more repetitions and $\big|$ denotes logical or.
 
-Note that no whitespace may appear within a \verb|key=value| assignment.
-In particular, do {\em not\/} put whitespace around the ``\verb|=|''!
-
 Notice also that the keys allowed by this function are somewhat more
 restricted than those allowed by the other \verb|Util_TableSet*()|
-functions, in that this function disallows keys containing \verb|'='|,
-\verb|';'|, and/or whitespace.
+functions, in that this function disallows keys containing \verb|'='|
+and/or whitespace.
 
 If any error code is returned, assignments lexicographically earlier
 in the input string than where the error was detected will already
@@ -7929,10 +7946,6 @@ set a single (1-element array) value with generic data type
 \begin{SeeAlso}{Util\_TableSetGenericArray()}
 set an array value with generic data type
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetFromString()}
-convenience routine to set key/value entries in a table based on a
-parameter-file--like character string
-\end{SeeAlso}
 \begin{SeeAlso}{Util\_TableSetString()}
 set a character-string value
 \end{SeeAlso}
@@ -7948,9 +7961,14 @@ invalid input: key contains invalid character
 \begin{Error}{UTIL\_ERROR\_BAD\_INPUT}
 invalid input: can't parse input string
 \end{Error}
+\begin{Error}{UTIL\_ERROR\_NO\_MIXED\_TYPE\_ARRAY}
+invalid input: different array values have different datatypes
+\end{Error}
 \begin{Error}{\rm other error codes}
 this function may also return any error codes returned by
-\verb|Util_TableSetInt()| or \verb|Util_TableSetReal()|.
+\verb|Util_TableSetString()|, \verb|Util_TableSetInt()|,
+\verb|Util_TableSetReal()|, \verb|Util_TableSetIntArray()|,
+or \verb|Util_TableSetRealArray()|.
 \end{Error}
 \end{ErrorSection}
 
@@ -7963,13 +7981,21 @@ this function may also return any error codes returned by
 /* suppose we have a table referred to by  handle */
 
 /* then the call... */
-int count = Util_TableSetFromString(handle, "n=6 dx=4.0e-5 pi=3.1");
-/* ... will return count=3 ... */
+int count = Util_TableSetFromString(handle, "n = 6\t"
+                                            "dx = 4.0e-5\t"
+                                            "pi = 3.1\t"
+                                            "s = 'my string'\t"
+                                            "array = { 1 2 3 }");
+/* ... will return count=5 ... */
 
-/* ... and is otherwise equivalent to the three calls ... */
+/* ... and is otherwise equivalent to the five calls ... */
+CCTK_INT array[] = {1, 2, 3};
+
 Util_TableSetInt(handle, 6, "n");
 Util_TableSetReal(handle, 4.0e-5, "dx");
 Util_TableSetReal(handle, 3.1, "pi");
+Util_TableSetString(handle, "my string", "s");
+Util_TableSetIntArray(handle, 3, array, "array");
 \end{verbatim}
 \end{Example}
 \end{ExampleSection}
