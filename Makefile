@@ -16,7 +16,7 @@
 #
 #
 #   @enddesc
-#   @version $Id: Makefile,v 1.141 2002-08-21 16:25:30 allen Exp $
+#   @version $Id: Makefile,v 1.142 2002-10-23 22:01:25 allen Exp $
 # @@*/
 
 ##################################################################################
@@ -945,7 +945,7 @@ ThornGuide:
 	mkdir $(CCTK_HOME)/doc/ThornGuide/build; 
 	@echo "  Processing...."
 	cd $(CCTK_HOME)/doc/ThornGuide/build; \
-	$(MAKE) -f $(CCTK_HOME)/doc/ThornGuide/Makefile PERL=$(PERL) CCTK_HOME=$(CCTK_HOME) THORNS=$(THORNS) ARRANGEMENTS=$(ARRANGEMENTS); \
+	$(MAKE) -f $(CCTK_HOME)/doc/ThornGuide/Makefile PERL=$(PERL) CCTK_HOME=$(CCTK_HOME) THORNS=$(THORNS) ARRANGEMENTS=$(ARRANGEMENTS) TOCDEPTH=$(TOCDEPTH); \
 	cp ThornGuide.ps $(CCTK_HOME)/doc/ThornGuide.ps 
 	@echo "  ThornGuide.ps created in doc directory."
 	@echo "  Done."
@@ -959,7 +959,7 @@ ThornGuide.pdf:
 	mkdir $(CCTK_HOME)/doc/ThornGuide/build; 
 	@echo "  Processing...."
 	cd $(CCTK_HOME)/doc/ThornGuide/build; \
-	$(MAKE) -f $(CCTK_HOME)/doc/ThornGuide/Makefile ThornGuide.pdf PERL=$(PERL) CCTK_HOME=$(CCTK_HOME) THORNS=$(THORNS) ARRANGEMENTS=$(ARRANGEMENTS); \
+	$(MAKE) -f $(CCTK_HOME)/doc/ThornGuide/Makefile ThornGuide.pdf PERL=$(PERL) CCTK_HOME=$(CCTK_HOME) THORNS=$(THORNS) ARRANGEMENTS=$(ARRANGEMENTS) TOCDEPTH=$(TOCDEPTH); \
 	cp ThornGuide.pdf $(CCTK_HOME)/doc/ThornGuide.pdf 
 	@echo "  ThornGuide.pdf created in doc directory."
 	@echo "  Done."
@@ -978,7 +978,7 @@ $(addsuffix -ThornGuide,$(CONFIGURATIONS)):
 	mkdir $(CONFIGS_DIR)/$(@:%-ThornGuide=%)/doc/build
 	if test -r $(CONFIGS_DIR)/$(@:%-ThornGuide=%)/ThornList ; then \
 	  cd  $(CONFIGS_DIR)/$(@:%-ThornGuide=%)/doc/build; \
-	  $(MAKE) -f $(CCTK_HOME)/doc/ThornGuide/Makefile THORNLIST=$(CONFIGS_DIR)/$(@:%-ThornGuide=%)/ThornList CCTK_HOME=$(CCTK_HOME) PERL=$(PERL) MASTER_FILE=ThornGuide-$(@:%-ThornGuide=%); \
+	  $(MAKE) -f $(CCTK_HOME)/doc/ThornGuide/Makefile THORNLIST=$(CONFIGS_DIR)/$(@:%-ThornGuide=%)/ThornList CCTK_HOME=$(CCTK_HOME) PERL=$(PERL) MASTER_FILE=ThornGuide-$(@:%-ThornGuide=%) TOCDEPTH=$(TOCDEPTH); \
 	  cp ThornGuide-$(@:%-ThornGuide=%).ps $(CCTK_HOME)/doc/ThornGuide-$(@:%-ThornGuide=%).ps; \
 	fi
 	@echo "  ThornGuide-$(@:%-ThornGuide=%).ps created in doc directory."
@@ -1109,4 +1109,3 @@ downsize:
 	  fi ; \
 	fi
 	@echo $(DIVIDER)
-
