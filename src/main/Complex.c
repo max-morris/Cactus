@@ -2,9 +2,9 @@
    @file      Complex.c
    @date      Tue Dec 14 12:09:43 1999
    @author    Tom Goodale
-   @desc 
-   Complex variable stuff
-   @enddesc 
+   @desc
+              Complex variable stuff
+   @enddesc
    @version $Header$
  @@*/
 
@@ -17,6 +17,7 @@
 static char *rcsid = "$Header$";
 
 CCTK_FILEVERSION(main_Complex_c)
+
 
 /********************************************************************
  *********************     Local Data Types   ***********************
@@ -42,345 +43,301 @@ CCTK_FILEVERSION(main_Complex_c)
    @routine    CCTK_Cmplx
    @date       Tue Dec 14 12:16:01 1999
    @author     Tom Goodale
-   @desc 
-   Turns two reals into a complex number
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
+   @desc
+               Turns two reals into a complex number
+   @enddesc
  
-   @endhistory 
-   @var     Re
-   @vdesc   Real part
-   @vtype   CCTK_REAL
-   @vio     in
-   @vcomment 
- 
-   @endvar 
-   @var     Im
-   @vdesc   Imaginary part
-   @vtype   CCTK_REAL
-   @vio     in
-   @vcomment 
- 
-   @endvar 
+   @var        Re
+   @vdesc      Real part
+   @vtype      CCTK_REAL
+   @vio        in
+   @endvar
+   @var        Im
+   @vdesc      Imaginary part
+   @vtype      CCTK_REAL
+   @vio        in
+   @endvar
 
    @returntype CCTK_COMPLEX
-   @returndesc 
-   The complex number
+   @returndesc
+               The complex number
    @endreturndesc
 @@*/
-CCTK_COMPLEX CCTK_Cmplx(CCTK_REAL Re, CCTK_REAL Im)
-{
-  CCTK_COMPLEX complex_number;
-
-  complex_number.Re = Re;
-  complex_number.Im = Im;
-  
-  return complex_number;
+#define DEFINE_CCTK_CMPLX(CCTK_Cmplx, cctk_real, cctk_complex)                \
+cctk_complex CCTK_Cmplx (cctk_real Re, cctk_real Im)                          \
+{                                                                             \
+  cctk_complex complex_number;                                                \
+                                                                              \
+                                                                              \
+  complex_number.Re = Re;                                                     \
+  complex_number.Im = Im;                                                     \
+                                                                              \
+  return (complex_number);                                                    \
 }
+
 
  /*@@
    @routine    CCTK_CmplxReal
    @date       Tue Dec 14 12:22:41 1999
    @author     Tom Goodale
-   @desc 
-   Returns the real part of a complex number.
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
-   @var     complex_number
-   @vdesc   The complex number
-   @vtype   CCTK_COMPLEX
-   @vio     in
-   @vcomment 
- 
-   @endvar 
+   @desc
+               Returns the real part of a complex number.
+   @enddesc
+
+   @var        complex_number
+   @vdesc      The complex number
+   @vtype      CCTK_COMPLEX
+   @vio        in
+   @endvar
 
    @returntype CCTK_REAL
-   @returndesc 
-   The real part
+   @returndesc
+               The real part
    @endreturndesc
 @@*/
-CCTK_REAL CCTK_CmplxReal(CCTK_COMPLEX complex_number)
-{
-  return complex_number.Re;
+#define DEFINE_CCTK_CMPLX_REAL(CCTK_Cmplx, cctk_real, cctk_complex)           \
+cctk_real CCTK_Cmplx##Real (cctk_complex complex_number)                      \
+{                                                                             \
+  return (complex_number.Re);                                                 \
 }
+
 
  /*@@
    @routine    CCTK_CmplxImag
    @date       Tue Dec 14 12:22:41 1999
    @author     Tom Goodale
-   @desc 
-   Returns the imaginary part of a complex number.
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
-   @var     complex_number
-   @vdesc   The complex number
-   @vtype   CCTK_COMPLEX
-   @vio     in
-   @vcomment 
- 
-   @endvar 
+   @desc
+               Returns the imaginary part of a complex number.
+   @enddesc
+
+   @var        complex_number
+   @vdesc      The complex number
+   @vtype      CCTK_COMPLEX
+   @vio        in
+   @endvar
 
    @returntype CCTK_REAL
-   @returndesc 
-   The imaginary part
+   @returndesc
+               The imaginary part
    @endreturndesc
 @@*/
-CCTK_REAL CCTK_CmplxImag(CCTK_COMPLEX complex_number)
-{
-  return complex_number.Im;
+#define DEFINE_CCTK_CMPLX_IMAG(CCTK_Cmplx, cctk_real, cctk_complex)           \
+cctk_real CCTK_Cmplx##Imag (cctk_complex complex_number)                      \
+{                                                                             \
+  return (complex_number.Im);                                                 \
 }
+
 
  /*@@
    @routine    CCTK_CmplxConjg
    @date       Tue Dec 14 12:22:41 1999
    @author     Tom Goodale
-   @desc 
-   Returns the complex conjugate of a complex number.
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
+   @desc
+               Returns the complex conjugate of a complex number.
+   @enddesc
  
-   @endhistory 
-   @var     in
-   @vdesc   The complex number
-   @vtype   CCTK_COMPLEX
-   @vio     in
-   @vcomment 
- 
-   @endvar 
+   @var       in
+   @vdesc     The complex number
+   @vtype     CCTK_COMPLEX
+   @vio       in
+   @endvar
 
    @returntype CCTK_COMPLEX
-   @returndesc 
-   The complex conjugate
+   @returndesc
+               The complex conjugate
    @endreturndesc
 @@*/
-CCTK_COMPLEX CCTK_CmplxConjg(CCTK_COMPLEX in)
-{
-  CCTK_COMPLEX conjg;
-
-  conjg.Re = in.Re;
-  conjg.Im = -in.Im;
-
-  return conjg;
+#define DEFINE_CCTK_CMPLX_CONJG(CCTK_Cmplx, cctk_real, cctk_complex)          \
+cctk_complex CCTK_Cmplx##Conjg (cctk_complex complex_number)                  \
+{                                                                             \
+  cctk_complex conjg;                                                         \
+                                                                              \
+                                                                              \
+  conjg.Re =  complex_number.Re;                                              \
+  conjg.Im = -complex_number.Im;                                              \
+  return (conjg);                                                             \
 }
+
 
  /*@@
    @routine    CCTK_CmplxAbs
    @date       Tue Dec 14 12:26:33 1999
    @author     Tom Goodale
-   @desc 
-   Return the absolute value of a complex number.
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
+   @desc
+               Return the absolute value of a complex number.
+   @enddesc
  
-   @endhistory 
-   @var     in
-   @vdesc   The complex number
-   @vtype   CCTK_COMPLEX
-   @vio     in
-   @vcomment 
- 
-   @endvar 
+   @var        in
+   @vdesc      The complex number
+   @vtype      CCTK_COMPLEX
+   @vio        in
+   @endvar
 
    @returntype CCTK_REAL
-   @returndesc 
-   The absolute value of the complex number
+   @returndesc
+               The absolute value of the complex number
    @endreturndesc
-
 @@*/
-CCTK_REAL CCTK_CmplxAbs(CCTK_COMPLEX in)
-{
-  CCTK_REAL cabs;
-
-  cabs = sqrt(in.Re*in.Re + in.Im*in.Im);
-
-  return cabs;
+#define DEFINE_CCTK_CMPLX_ABS(CCTK_Cmplx, cctk_real, cctk_complex)            \
+cctk_real CCTK_Cmplx##Abs (cctk_complex complex_number)                       \
+{                                                                             \
+  return (sqrt (complex_number.Re*complex_number.Re +                         \
+                complex_number.Im*complex_number.Im));                        \
 }
+
 
  /*@@
    @routine    CCTK_CmplxAdd
    @date       Sat Dec 4 12:11:04 1999
    @author     Gabrielle Allen
-   @desc 
-   Adds two complex numbers
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
+   @desc
+               Adds two complex numbers
+   @enddesc
  
-   @endhistory 
-   @var     a
-   @vdesc   First summand
-   @vtype   CCTK_COMPLEX
-   @vio     in
-   @vcomment 
- 
-   @endvar 
-   @var     b
-   @vdesc   Second summand
-   @vtype   CCTK_COMPLEX
-   @vio     in
-   @vcomment 
- 
-   @endvar 
+   @var        a
+   @vdesc      First summand
+   @vtype      CCTK_COMPLEX
+   @vio        in
+   @endvar
+   @var        b
+   @vdesc      Second summand
+   @vtype      CCTK_COMPLEX
+   @vio        in
+   @endvar
 
    @returntype CCTK_COMPLEX
-   @returndesc 
-   The sum
+   @returndesc
+               The sum of a and b
    @endreturndesc
 @@*/
-CCTK_COMPLEX CCTK_CmplxAdd(CCTK_COMPLEX a,CCTK_COMPLEX b)
-{
-  CCTK_COMPLEX add_ab;
-  add_ab.Re = a.Re + b.Re;
-  add_ab.Im = a.Im + b.Im;
-  return add_ab;
+#define DEFINE_CCTK_CMPLX_ADD(CCTK_Cmplx, cctk_real, cctk_complex)            \
+cctk_complex CCTK_Cmplx##Add (cctk_complex a, cctk_complex b)                 \
+{                                                                             \
+  cctk_complex sum;                                                           \
+                                                                              \
+                                                                              \
+  sum.Re = a.Re + b.Re;                                                       \
+  sum.Im = a.Im + b.Im;                                                       \
+  return (sum);                                                               \
 }
+
 
  /*@@
    @routine    CCTK_CmplxSub
    @date       Sat Dec 4 12:11:04 1999
    @author     Gabrielle Allen
-   @desc 
-   Subtracts two complex numbers
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
+   @desc
+               Subtracts two complex numbers
+   @enddesc
  
-   @endhistory 
-   @var     a
-   @vdesc   First operand
-   @vtype   CCTK_COMPLEX
-   @vio     in
-   @vcomment 
- 
-   @endvar 
-   @var     b
-   @vdesc   Second operand
-   @vtype   CCTK_COMPLEX
-   @vio     in
-   @vcomment 
- 
-   @endvar 
+   @var        a
+   @vdesc      First operand
+   @vtype      CCTK_COMPLEX
+   @vio        in
+   @endvar
+   @var        b
+   @vdesc      Second operand
+   @vtype      CCTK_COMPLEX
+   @vio        in
+   @endvar
 
    @returntype CCTK_COMPLEX
-   @returndesc 
-   The difference
+   @returndesc
+               The difference
    @endreturndesc
 @@*/
-CCTK_COMPLEX CCTK_CmplxSub(CCTK_COMPLEX a,CCTK_COMPLEX b)
-{
-  CCTK_COMPLEX sub_ab;
-  sub_ab.Re = a.Re - b.Re;
-  sub_ab.Im = a.Im - b.Im;
-  return sub_ab;
+#define DEFINE_CCTK_CMPLX_SUB(CCTK_Cmplx, cctk_real, cctk_complex)            \
+cctk_complex CCTK_Cmplx##Sub (cctk_complex a, cctk_complex b)                 \
+{                                                                             \
+  cctk_complex diff;                                                          \
+                                                                              \
+                                                                              \
+  diff.Re = a.Re - b.Re;                                                      \
+  diff.Im = a.Im - b.Im;                                                      \
+  return (diff);                                                              \
 }
+
 
  /*@@
    @routine    CCTK_CmplxMul
    @date       Sat Dec 4 12:11:04 1999
    @author     Gabrielle Allen
-   @desc 
-   Multiplies two complex numbers
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
+   @desc
+               Multiplies two complex numbers
+   @enddesc
  
-   @endhistory 
-   @var     a
-   @vdesc   First operand
-   @vtype   CCTK_COMPLEX
-   @vio     in
-   @vcomment 
- 
-   @endvar 
-   @var     b
-   @vdesc   Second operand
-   @vtype   CCTK_COMPLEX
-   @vio     in
-   @vcomment 
- 
-   @endvar 
+   @var        a
+   @vdesc      First operand
+   @vtype      CCTK_COMPLEX
+   @vio        in
+   @endvar
+   @var        b
+   @vdesc      Second operand
+   @vtype      CCTK_COMPLEX
+   @vio        in
+   @endvar
 
    @returntype CCTK_COMPLEX
-   @returndesc 
-   The product
+   @returndesc
+               The product
    @endreturndesc
 @@*/
-CCTK_COMPLEX CCTK_CmplxMul(CCTK_COMPLEX a,CCTK_COMPLEX b)
-{
-  CCTK_COMPLEX mult_ab;
-  mult_ab.Re = a.Re*b.Re-a.Im*b.Im;
-  mult_ab.Im = a.Im*b.Re+a.Re*b.Im;
-  return mult_ab;
+#define DEFINE_CCTK_CMPLX_MUL(CCTK_Cmplx, cctk_real, cctk_complex)            \
+cctk_complex CCTK_Cmplx##Mul (cctk_complex a, cctk_complex b)                 \
+{                                                                             \
+  cctk_complex mult;                                                          \
+                                                                              \
+                                                                              \
+  mult.Re = a.Re*b.Re - a.Im*b.Im;                                            \
+  mult.Im = a.Im*b.Re + a.Re*b.Im;                                            \
+  return (mult);                                                              \
 }
+
 
  /*@@
    @routine    CCTK_CmplxDiv
    @date       Sat Dec 4 12:11:04 1999
    @author     Gabrielle Allen
-   @desc 
-   Divides two complex numbers
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
+   @desc
+               Divides two complex numbers
+   @enddesc
  
-   @endhistory 
-   @var     a
-   @vdesc   First operand
-   @vtype   CCTK_COMPLEX
-   @vio     in
-   @vcomment 
- 
-   @endvar 
-   @var     b
-   @vdesc   Second operand
-   @vtype   CCTK_COMPLEX
-   @vio     in
-   @vcomment 
- 
-   @endvar 
+   @var        a
+   @vdesc      First operand
+   @vtype      CCTK_COMPLEX
+   @vio        in
+   @endvar
+   @var        b
+   @vdesc      Second operand
+   @vtype      CCTK_COMPLEX
+   @vio        in
+   @endvar
 
    @returntype CCTK_COMPLEX
-   @returndesc 
-   The quotient
+   @returndesc
+               The quotient
    @endreturndesc
 @@*/
-CCTK_COMPLEX CCTK_CmplxDiv(CCTK_COMPLEX a,CCTK_COMPLEX b)
-{
-  CCTK_COMPLEX div_ab;
-  CCTK_REAL fac;
-
-  fac = b.Re*b.Re+b.Im*b.Im;
-  
-  if (fac != 0)
-  {
-    div_ab.Re = (a.Re*b.Re+a.Im*b.Im)/fac;
-    div_ab.Im = (a.Im*b.Re-a.Re*b.Im)/fac;
-  }
-  else
-  {
-    CCTK_Warn(0,__LINE__,__FILE__,"Cactus","Divide by zero in CCTK_CmplxDiv");
-    div_ab.Re = 0;
-    div_ab.Im = 0;
-  }
-  return div_ab;
+#define DEFINE_CCTK_CMPLX_DIV(CCTK_Cmplx, cctk_real, cctk_complex)            \
+cctk_complex CCTK_Cmplx##Div (cctk_complex a, cctk_complex b)                 \
+{                                                                             \
+  cctk_real factor;                                                           \
+  cctk_complex quot;                                                          \
+                                                                              \
+                                                                              \
+  factor = b.Re*b.Re + b.Im*b.Im;                                             \
+  if (factor != 0)                                                            \
+  {                                                                           \
+    quot.Re = (a.Re*b.Re + a.Im*b.Im) / factor;                               \
+    quot.Im = (a.Im*b.Re - a.Re*b.Im) / factor;                               \
+  }                                                                           \
+  else                                                                        \
+  {                                                                           \
+    CCTK_Warn (0, __LINE__, __FILE__, "Cactus",                               \
+                         "Divide by zero in CCTK_CmplxDiv");                  \
+    quot.Re = quot.Im = 0;                                                    \
+  }                                                                           \
+  return (quot);                                                              \
 }
 
 
@@ -392,10 +349,30 @@ CCTK_CmplxSin
 CCTK_CmplxCos
 CCTK_CmplxLog
 CCTK_CmplxExp
-
 */
 
-/********************************************************************
- *********************     Local Routines   *************************
- ********************************************************************/
 
+/* macro to define a set of complex functions for a given precision */
+#define DEFINE_CMPLX_FUNCTIONS(CCTK_Cmplx, cctk_real, cctk_complex)           \
+          DEFINE_CCTK_CMPLX       (CCTK_Cmplx, cctk_real, cctk_complex)       \
+          DEFINE_CCTK_CMPLX_REAL  (CCTK_Cmplx, cctk_real, cctk_complex)       \
+          DEFINE_CCTK_CMPLX_IMAG  (CCTK_Cmplx, cctk_real, cctk_complex)       \
+          DEFINE_CCTK_CMPLX_CONJG (CCTK_Cmplx, cctk_real, cctk_complex)       \
+          DEFINE_CCTK_CMPLX_ABS   (CCTK_Cmplx, cctk_real, cctk_complex)       \
+          DEFINE_CCTK_CMPLX_ADD   (CCTK_Cmplx, cctk_real, cctk_complex)       \
+          DEFINE_CCTK_CMPLX_SUB   (CCTK_Cmplx, cctk_real, cctk_complex)       \
+          DEFINE_CCTK_CMPLX_MUL   (CCTK_Cmplx, cctk_real, cctk_complex)       \
+          DEFINE_CCTK_CMPLX_DIV   (CCTK_Cmplx, cctk_real, cctk_complex)
+
+/* define complex functions for all available precisions */
+#ifdef CCTK_REAL4
+  DEFINE_CMPLX_FUNCTIONS (CCTK_Cmplx8, CCTK_REAL4, CCTK_COMPLEX8)
+#endif
+
+#ifdef CCTK_REAL8
+  DEFINE_CMPLX_FUNCTIONS (CCTK_Cmplx16, CCTK_REAL8, CCTK_COMPLEX16)
+#endif
+
+#ifdef CCTK_REAL16
+  DEFINE_CMPLX_FUNCTIONS (CCTK_Cmplx32, CCTK_REAL16, CCTK_COMPLEX32)
+#endif
