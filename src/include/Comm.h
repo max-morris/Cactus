@@ -23,6 +23,13 @@ extern "C" {
 
 #undef OVERLOADABLE
 
+/* Define the prototypes for the overloading functions. */
+#define OVERLOADABLE(name) OVERLOADABLE_OVERLOADPROTO(name)
+
+#include "CommOverloadables.h"
+
+#undef OVERLOADABLE
+
 int CCTK_QueryGroupStorage(cGH *,const char *);
 int CCTK_QueryGroupStorage_ByIndex(cGH *,int);
 int *CCTK_ArrayGroupSize(cGH *,const char *,int);
