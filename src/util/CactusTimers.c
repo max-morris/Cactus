@@ -214,7 +214,7 @@ void CCTK_TimerDestroyI(int this_timer)
 {
   t_Timer *timer;
 
-  if((timer = Util_GetHandledData(timers, this_timer)) > -1)
+  if((timer = Util_GetHandledData(timers, this_timer)))
   {
     CCTKi_TimerDestroy(this_timer, timer);
   }
@@ -285,7 +285,7 @@ void CCTK_TimerStartI(int this_timer)
 {
   t_Timer *timer;
 
-  if((timer = Util_GetHandledData(timers, this_timer)) > -1)
+  if((timer = Util_GetHandledData(timers, this_timer)))
   {
     CCTKi_TimerStart(this_timer, timer);
   }
@@ -339,7 +339,7 @@ void CCTK_TimerStopI(int this_timer)
 {
   t_Timer *timer;
 
-  if((timer = Util_GetHandledData(timers, this_timer)) > -1)
+  if((timer = Util_GetHandledData(timers, this_timer)))
   {
     CCTKi_TimerStop(this_timer, timer);
   }
@@ -393,7 +393,7 @@ void CCTK_TimerResetI(int this_timer)
 {
   t_Timer *timer;
 
-  if((timer = Util_GetHandledData(timers, this_timer)) > -1)
+  if((timer = Util_GetHandledData(timers, this_timer)))
   {
     CCTKi_TimerReset(this_timer, timer);
   }
@@ -450,7 +450,7 @@ void CCTK_TimerGetI(int this_timer, t_TimerInfo *info)
 {
   t_Timer *timer;
 
-  if((timer = Util_GetHandledData(timers, this_timer)) > -1)
+  if((timer = Util_GetHandledData(timers, this_timer)))
   {
     CCTKi_TimerGet(this_timer, timer, info);
   }
