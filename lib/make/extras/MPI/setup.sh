@@ -13,8 +13,6 @@ if test -n "$MPI" ; then
 
 echo "Configuring with MPI"
 
-CCTK_WriteLine cctk_Extradefs.h "#define CCTK_MPI CCTK_MPI"
-
 # Work out which variation of MPI is installed
 
 if test -r $srcdir/extras/MPI/$MPI ; then
@@ -25,6 +23,12 @@ else
 fi
 
 # Write the data out to the header and make files.
+
+if test -n "$MPI_VERSION" ; then
+  CCTK_WriteLine cctk_Extradefs.h "#define CCTK_MPI $MPI_VERSION"
+else
+  CCTK_WriteLine cctk_Extradefs.h "#define CCTK_MPI $MPI"
+fi
 
 CCTK_WriteLine make.extra.defn "MPI_LIBS     = $MPI_LIBS"
 CCTK_WriteLine make.extra.defn "MPI_LIB_DIRS = $MPI_LIB_DIRS"

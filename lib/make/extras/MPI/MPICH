@@ -6,7 +6,7 @@
 #   @desc 
 #   
 #   @enddesc
-#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/extras/MPI/MPICH,v 1.12 2001-01-19 13:30:05 tradke Exp $
+#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/extras/MPI/MPICH,v 1.13 2001-08-27 16:22:11 tradke Exp $
 # @@*/
 
 
@@ -131,6 +131,9 @@ if test -r "$MPICH_LIB_DIRS/libmpi.a" ; then
 else
    MPICH_LIB=mpich
 fi
+
+# Set the MPI version name
+MPI_VERSION="MPICH_$MPICH_DEVICE"
 
 # Finally set the library lines.
 
