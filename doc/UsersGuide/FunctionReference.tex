@@ -301,13 +301,13 @@ from Fortran.
 
 \item[CCTK\_InterpGridArrays]
   [\pageref{CCTK-InterpGridArrays}]
-  Performs an interpolation on a list of distributed arrays,
-  using a chosen interpolation operator
+  Performs an interpolation on a list of CCTK grid arrays,
+  using a chosen external local interpolation operator
 
 \item[CCTK\_InterpGV]
   [\pageref{CCTK-InterpGV}]
-  Performs an interpolation on a list of distributed CCTK grid variables,
-  using a chosen interpolation operator
+  Performs an interpolation on a list of CCTK grid arrays,
+  using a chosen build-in local interpolation operator
   (this function is being phased out;
   it will eventually be replaced by \verb|CCTK_InterpGridArrays()|)
 
@@ -2867,7 +2867,7 @@ Interpolate a list of distributed grid arrays
 see the Cactus web pages ``Development'' section for further details.)
 
 The computation is optimized for the case of interpolating a
-number of arrays at a time; in this case all the interprocessor
+number of grid arrays at a time; in this case all the interprocessor
 communication can be done together, and the same interpolation
 coefficients can be used for all the arrays.
 
@@ -2875,8 +2875,9 @@ coefficients can be used for all the arrays.
 \begin{Synopsis}{C}
 \begin{verbatim}
 #include "cctk.h"
-int status
-   = CCTK_InterpGridArrays(const cGH *cctkGH,
+
+int status =
+     CCTK_InterpGridArrays(const cGH *cctkGH,
                            int N_dims,
                            int local_interp_handle,
                            int param_table_handle,
@@ -2916,9 +2917,8 @@ CCTK_POINTER output_arrays(N_output_arrays)
 \end{SynopsisSection}
 
 \begin{ResultSection}
-\begin{Result}{\rm 0}
-success
-\end{Result}
+\begin{Result}{\rm 0} success \end{Result}
+\begin{Result}{$< 0$} indicates an error condition (see {\bf Errors}) \end{Result}
 \end{ResultSection}
 
 \begin{ParameterSection}
@@ -2933,77 +2933,118 @@ the discussion of the \verb|interpolation_hyperslab_handle| parameter-table
 entry for the $<$ case.
 \end{Parameter}
 \begin{Parameter}{local\_interp\_handle ($\ge 0$)}
-\hbox{}
 Handle to the local interpolation operator as returned by
 \verb|CCTK_InterpHandle()|.
 \end{Parameter}
 \begin{Parameter}{param\_table\_handle ($\ge 0$)}
-Handle to a key-value table containing additional parameters for the
-interpolation operation.  For example, this could be used to specify
-that the local interpolator should take derivatives, by specifying
-\begin{verbatim}
-const CCTK_INT operand_indices[N_output_arrays];
-const CCTK_INT operation_codes[N_output_arrays];
-\end{verbatim}
+Handle to a key-value table containing zero or more additional parameters
+for the interpolation operation. The table is allowed to be modified by the
+local and/or global interpolation routine(s).
 \end{Parameter}
 \begin{Parameter}{coord\_system\_handle ($\ge 0$)}
-\hbox{}
 Cactus coordinate system handle defining the mapping between
-coordinates and integer grid subscripts, as returned by
+(usually floating-point) coordinates and integer grid subscripts, as returned by
 \verb|CCTK_CoordSystemHandle()|.
 \end{Parameter}
 \begin{Parameter}{N\_interp\_points ($\ge 0$)}
-\hbox{}
-The number of points at which interpolation is to be done.
+The number of interpolation points requested by this processor.
 \end{Parameter}
 \begin{Parameter}{interp\_coords\_type\_code}
-\hbox{}
 One of the \verb|CCTK_VARIABLE_|* type codes, giving the data type of the
 interpolation-point coordinate arrays pointed to by \verb|interp_coords[]|.
+All interpolation-point coordinate arrays must be of the same data type.
 \end{Parameter}
 \begin{Parameter}{interp\_coords ($\ne$ NULL)}
-\hbox{}
 (Pointer to) an array of \verb|N_dims| pointers to 1-D arrays giving the
-coordinates of the interpolation points.  These coordinates are with
-respect to the coordinate system defined by \verb|coord_system_handle|.
+coordinates of the interpolation points requested by this processor.
+These coordinates are with respect to the coordinate system defined by
+\verb|coord_system_handle|.
 \end{Parameter}
 \begin{Parameter}{N\_input\_arrays ($\ge 0$)}
-\hbox{}The number of input arrays to be interpolated.
-Note that if the parameter table entry \verb|operand_indices|
-is used to specify a 1-to-many mapping of input arrays to output arrays,
-only the unique set of input arrays should be given here.
+The number of input arrays to be interpolated.
+If {\tt N\_input\_arrays} is zero then no interpolation is done; such a call
+may be useful for setup, interpolator querying, etc.
+Note that if the parameter table entry \verb|operand_indices| is used to specify
+a nontrivial (eg. 1-to-many) mapping of input arrays to output arrays, only the
+unique set of input arrays should be given here.
 \end{Parameter}
 \begin{Parameter}{input\_array\_variable\_indices ($\ne$ NULL)}
-\hbox{}
-(Pointer to) an array of \verb|N_input_arrays| Cactus variable
-indices (as returned by \verb|CCTK_VarIndex()|) specifying the
-input grid arrays for the interpolation.
+(Pointer to) an array of \verb|N_input_arrays| CCTK grid array indices (as
+returned by \verb|CCTK_VarIndex()|) specifying the input grid arrays for the
+interpolation. For any element with an index value of -1 in the grid array
+indices array, that interpolation is skipped. This may be useful if the main
+purpose of the call is eg. to do some query or setup computation.
 \end{Parameter}
 \begin{Parameter}{N\_output\_arrays ($\ge 0$)}
-\hbox{}
 The number of output arrays to be returned from the interpolation.
+If {\tt N\_output\_arrays} is zero then no interpolation is done; such a call
+may be useful for setup, interpolator querying, etc.
+Note that {\tt N\_output\_arrays} may differ from {\tt N\_input\_arrays}, eg.
+if the {\tt operand\_indices} parameter-table entry is used to specify a
+nontrivial (eg. many-to-1) mapping of input arrays to output arrays.
+If such a mapping is specified, only the unique set of output arrays
+should be given in the {\tt output\_arrays} argument.
 \end{Parameter}
 \begin{Parameter}{output\_array\_type\_codes ($\ne$ NULL)}
-\hbox{}
 (Pointer to) an array of \verb|N_output_arrays| \verb|CCTK_VARIABLE_|*
 type codes giving the data types of the 1-D output arrays pointed to by
 \verb|output_arrays[]|.
 \end{Parameter}
 \begin{Parameter}{output\_arrays ($\ne$ NULL)}
-\hbox{}
 (Pointer to) an array of \verb|N_output_arrays| pointers to the
 (user-supplied) 1-D output arrays for the interpolation.
+If any of the pointers in the {\tt output\_arrays} array is NULL, then that
+interpolation is skipped. This may be useful if the main purpose of the call
+is eg. to do some query or setup computation.
 \end{Parameter}
 \end{ParameterSection}
 
 \begin{Discussion}
-This function interpolates a list of distributed grid arrays.
-The grid topology and coordinates are implicitly specified via a
-Cactus coordinate system.
+This function interpolates a list of CCTK grid arrays (in a multiprocessor run
+these are generally distributed over processors) on a list of interpolation
+points. The grid topology and coordinates are implicitly specified via a Cactus
+coordinate system.
+The interpolation points may be anywhere in the global Cactus grid.
+In a multiprocessor run they may vary from processor to processor;
+each processor will get whatever interpolated data it asks for.
+The routine {\tt CCTK\_InterpGridArrays()} does not do the actual interpolation
+itself but rather takes care of whatever interprocessor communication may be
+necessary, and -- for each processor's local patch of the domain-decomposed grid
+arrays -- calls {\tt CCTK\_InterpLocalUniform()} to invoke an external
+local interpolation operator (as identified by an interpolation handle).
 
-This is a collective operation, so in the multiprocessor case you
-{\em must\/} call this function in parallel on {\em each\/} processor.
-However, you may (and typically will) specify a different set of
+Additional parameters for the interpolation operation of both
+{\tt CCTK\_InterpGridArrays()} and {\tt CCTK\_InterpLocalUniform()} can be
+passed in via a handle to a key/value options table.
+One common parameter-table option, which a number of interpolation
+operators are likely to support, is \verb|order|, a \verb|CCTK_INT|
+specifying the order of the (presumably polynomial) interpolation
+(1=linear, 2=quadratic, 3=cubic, etc).
+As another example, a table might be used to specify that the local interpolator
+should take derivatives, by specifying
+\begin{verbatim}
+const CCTK_INT operand_indices[N_output_arrays];
+const CCTK_INT operation_codes[N_output_arrays];
+\end{verbatim}
+Also, the global interpolator will typically need to specify some options
+of its own for the local interpolator.\footnote{
+It is the caller's responsibility to ensure that the specified local
+interpolator supports any optional parameter-table entries that
+{\tt CCTK\_InterpGridArrays()} passes to it. Each thorn providing a
+{\tt CCTK\_InterpLocalUniform()} interpolator should document what options it
+requires from the global interpolator.
+}
+These will overwrite any entries
+with the same keys in the \verb|param_table_handle| table.
+Finally, the parameter table can be used to pass back arbitrary information by the local
+and/or global interpolation routine(s) by adding/modifying appropriate
+key/value pairs.
+
+Note that {\tt CCTK\_InterpGridArrays()} is a collective operation, so in the
+multiprocessor case you {\em must\/} call this function in parallel on
+{\em each\/} processor, passing identical arguments except for the number of
+interpolation points, the interpolation coordinates, and the output array pointers.
+You may (and typically will) specify a different set of
 interpolation points on each processor's call -- you may even specify
 an empty set on some processors.  The interpolation points may be
 ``owned'' by any processors (this function takes care of all
@@ -3011,47 +3052,58 @@ interprocessor-communication issues), though it may be more efficient
 to have most or all of the interpolation points ``owned'' by the
 current processor.
 
-Details of the operation performed, and what (if any) inputs and/or
-outputs are specified in the parameter table, depend on which driver
-thorn and interpolation operator you use.  See the documentation on
-individual interpolator thorns (eg.~\verb|PUGHInterp|) for details.
+The semantics of {\tt CCTK\_InterpGridArrays()} are mostly independent of
+which Cactus driver is being used, but an implementation will most likely depend
+on, and make use of, driver-specific internals. For that reason,
+{\tt CCTK\_InterpGridArrays()} is made an overloadable function. The Cactus
+flesh will supply only a dummy routine for it which -- if called -- does nothing
+but print a warning message saying that it wasn't overloaded by another thorn,
+and stop the code. So one will always need to compile in and activate
+a driver-specific thorn which provides an interpolation routine for CCTK grid
+arrays and properly overloads {\tt CCTK\_InterpGridArrays()} with it at startup.
 
-One common parameter-table option, which a number of interpolation
-operators are likely to support, is \verb|order|, a \verb|CCTK_INT|
-specifying the order of the (presumably polynomial) interpolation
-(1=linear, 2=quadratic, 3=cubic, etc).
+Details of the operation performed, and what (if any) inputs and/or
+outputs are specified in the parameter table, depend on which driver-specific
+interpolation thorn and interpolation operator (provided by a local
+interpolation thorn) you use.  See the documentation on individual interpolator
+thorns (eg. {\tt PUGHInterp} in the {\tt CactusPUGH} arrangement and
+{\tt LocalInterp} in the {\tt CactusBase} arrangement) for details.
+
 \end{Discussion}
 
 \begin{SeeAlsoSection}
 \begin{SeeAlso}{CCTK\_InterpHandle()}
 Get the interpolator handle for a given character-string name.
 \end{SeeAlso}
+%notyet \begin{SeeAlso}{CCTK\_InterpLocalNonUniform()}
+%notyet Interpolate a list of processor-local arrays
+%notyet which define a nonuniformly spaced data grid (not implemented yet)
+%notyet \end{SeeAlso}
+\begin{SeeAlso}{CCTK\_InterpLocalUniform()}
+Interpolate a list of processor-local arrays
+which define a uniformly-spaced data grid
+\end{SeeAlso}
+%notyet \begin{SeeAlso}{CCTK\_InterpLocalWarped()}
+%notyet Interpolate a list of processor-local arrays
+%notyet which define a curvilinearly-warped data grid (not implemented yet)
+%notyet \end{SeeAlso}
 \begin{SeeAlso}{CCTK\_InterpGV()}
 Older API to interpolate a list of Cactus grid arrays.
 \end{SeeAlso}
 \begin{SeeAlso}{CCTK\_InterpLocal()}
 Older API to interpolate a list of processor-local arrays.
 \end{SeeAlso}
-\begin{SeeAlso}{CCTK\_InterpLocalNonUniform()}
-Interpolate a list of processor-local arrays
-which define a nonuniformly spaced data grid (not implemented yet)
-\end{SeeAlso}
-\begin{SeeAlso}{CCTK\_InterpLocalUniform()}
-Interpolate a list of processor-local arrays
-which define a uniformly-spaced data grid
-\end{SeeAlso}
-\begin{SeeAlso}{CCTK\_InterpLocalWarped()}
-Interpolate a list of processor-local arrays
-which define a curvilinearly-warped data grid (not implemented yet)
-\end{SeeAlso}
-\begin{SeeAlso}{CCTK\_InterpRegisterOpGrid()}
-Register a \verb|CCTK_InterpGridArrays()| interpolation operator.
-\end{SeeAlso}
 \end{SeeAlsoSection}
 
 \begin{ErrorSection}
+\begin{Error}{}
+The following list of error
+codes indicates specific error conditions. For the complete list of possible
+error return codes you should refer to the ThornGuide's chapter of the
+corresponding interpolation thorn(s) you are using.
+\end{Error}
 \begin{Error}{UTIL\_ERROR\_BAD\_INPUT}
-one or more of the inputs is invalid (eg.~\verb|NULL| pointer)
+one or more of the input arguments is invalid (eg.~\verb|NULL| pointer)
 \end{Error}
 \begin{Error}{UTIL\_ERROR\_NO\_MEMORY}
 unable to allocate memory
@@ -3073,6 +3125,7 @@ and a complex grid array, at 1000 interpolation points:
 #define N_INTERP_POINTS 1000
 #define N_INPUT_ARRAYS  2
 #define N_OUTPUT_ARRAYS 2
+
 const cGH *GH;
 int operator_handle, coord_system_handle;
 
@@ -3094,11 +3147,15 @@ CCTK_COMPLEX output_for_complex_array[N_INTERP_POINTS];
 
 operator_handle = CCTK_InterpHandle("generalized polynomial interpolation");
 if (operator_handle < 0)
-        CCTK_WARN(-1, "can't get operator handle!");
+{
+  CCTK_WARN(-1, "can't get operator handle!");
+}
 
 coord_system_handle = CCTK_CoordSystemHandle("cart3d");
 if (coord_system_handle < 0)
-        CCTK_WARN(-1, "can't get coordinate-system handle!");
+{
+  CCTK_WARN(-1, "can't get coordinate-system handle!");
+}
 
 interp_coords[0] = (const void *) interp_x;
 interp_coords[1] = (const void *) interp_y;
@@ -3117,7 +3174,9 @@ if (CCTK_InterpGridArrays(GH, N_DIMS,
                           N_INPUT_ARRAYS, input_array_variable_indices,
                           N_OUTPUT_ARRAYS, output_array_type_codes,
                                            output_arrays) < 0)
-        CCTK_WARN(-1, "error return from interpolator!");
+{
+  CCTK_WARN(-1, "error return from interpolator!");
+}
 \end{verbatim}
 \end{Example}
 \end{ExampleSection}
