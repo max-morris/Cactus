@@ -15,5 +15,6 @@ SetParams.c\
 ShutdownCactus.c\
 StoreVariableData.c\
 flesh.cc\
-Groups.c
+Groups.c\
+Variables.c
 
