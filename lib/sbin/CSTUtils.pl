@@ -296,7 +296,7 @@ sub SplitWithStrings
       $token = "";
       $indstring = 1 - $indstring;
     }
-    elsif($i eq "'" && ~ $indstring && ! $escaping)
+    elsif($i eq "'" && ! $indstring && ! $escaping)
     {
       if(length $token > 0 || $insstring)
       {
