@@ -138,6 +138,8 @@ static void CactusInitialiseGH (const tFleshConfig *config, cGH *GH)
   /* Initialise all the extensions. */
   CCTKi_InitGHExtensions (GH);
 
+  CCTK_Traverse (GH, "CCTK_WRAGH");
+
   /* FIXME : PARAM_CHECK SHOULD BE BEFORE HERE */
   CCTK_Traverse (GH, "CCTK_PARAMCHECK");
   CCTKi_FinaliseParamWarn ();

@@ -229,7 +229,7 @@ sub ParseScheduleBlock
       }
 
       # check that the given schedule bin is recognized
-      if ($where !~ m:CCTK_(STARTUP|PARAMCHECK|BASEGRID|INITIAL|POSTINITIAL|RECOVER_VARIABLES|POST_RECOVER_VARIABLES|RECOVER_PARAMETERS|CHECKPOINT|CPINITIAL|PRESTEP|EVOL|POSTSTEP|ANALYSIS|TERMINATE|SHUTDOWN):)
+      if ($where !~ m:CCTK_(STARTUP|WRAGH|PARAMCHECK|BASEGRID|INITIAL|POSTINITIAL|RECOVER_VARIABLES|POST_RECOVER_VARIABLES|RECOVER_PARAMETERS|CHECKPOINT|CPINITIAL|PRESTEP|EVOL|POSTSTEP|ANALYSIS|TERMINATE|SHUTDOWN):)
       {
         &CST_error(0,"Schedule bin \'$where\' not recognised in schedule.ccl " .
                    "file of thorn $thorn","",__LINE__,__FILE__);
@@ -576,7 +576,7 @@ sub check_schedule_database
       if ($allgroups !~ /$rhschedule_db->{"\U$thorn\E BLOCK_$block WHERE"}/)
       {
  
-	if ($rhschedule_db->{"\U$thorn\E BLOCK_$block WHERE"} !~ m:CCTK_(STARTUP|PARAMCHECK|BASEGRID|INITIAL|POSTINITIAL|RECOVER_VARIABLES|POST_RECOVER_VARIABLES|RECOVER_PARAMETERS|CHECKPOINT|CPINITIAL|PRESTEP|EVOL|POSTSTEP|ANALYSIS|TERMINATE|SHUTDOWN):)
+	if ($rhschedule_db->{"\U$thorn\E BLOCK_$block WHERE"} !~ m:CCTK_(STARTUP|WRAGH|PARAMCHECK|BASEGRID|INITIAL|POSTINITIAL|RECOVER_VARIABLES|POST_RECOVER_VARIABLES|RECOVER_PARAMETERS|CHECKPOINT|CPINITIAL|PRESTEP|EVOL|POSTSTEP|ANALYSIS|TERMINATE|SHUTDOWN):)
 	{
 	  $message = "Scheduling routine $rhschedule_db->{\"\U$thorn\E BLOCK_$block NAME\"} from thorn $thorn in non-existent group or timebin $rhschedule_db->{\"\U$thorn\E BLOCK_$block WHERE\"}";
 	  $hint = "If this routine should be scheduled check the spelling of the group or timebin name. Note that scheduling IN must be used to schedule a routine to run in a thorn-defined schedule group, whereas scheduling AT is used for a usual timebin. (Schedule IN may also be used with the usual timebins, but in this case the full name of the bin must be used, e.g. CCTK_EVOL and not EVOL)";

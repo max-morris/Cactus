@@ -859,6 +859,8 @@ int CCTK_SchedulePrint(const char *where)
     puts ("  Startup routines");
     SchedulePrint("CCTK_STARTUP");
     putchar ('\n');
+    puts ("  Startup routines which need an existing GH");
+    SchedulePrint("CCTK_WRAGH");
     puts ("  Parameter checking routines");
     SchedulePrint("CCTK_PARAMCHECK");
     putchar ('\n');
@@ -975,6 +977,8 @@ int CCTK_SchedulePrintTimes(const char *where)
     SchedulePrintTimes("CCTK_CHECKPOINT", &data);
 /*  printf("\n"); */
     SchedulePrintTimes("CCTK_STARTUP", &data);
+/*  printf("\n"); */
+    SchedulePrintTimes("CCTK_WRAGH", &data);
 /*  printf("\n"); */
     SchedulePrintTimes("CCTK_PARAMCHECK", &data);
 /*  printf("\n"); */
