@@ -1,6 +1,6 @@
 #! /bin/sh
 
-# From configure.in Header: configure.in
+# From configure.in Header: /cactusdevcvs/Cactus/lib/make/configure.in
 
 
 
@@ -4310,7 +4310,7 @@ LDFLAGS="$LDFLAGS $KNOWN_LDFLAGS"
 
 # Define the type of debugging to use
 
-if test -n  "$DEBUG" ; then
+if test -n "$DEBUG" -a "x$DEBUG" != 'xno' ; then
   case "$DEBUG" in
      MEMORY) 
        cat >> confdefs.h <<\EOF

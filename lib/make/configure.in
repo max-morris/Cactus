@@ -692,7 +692,7 @@ AC_SUBST(FCOMPILEONLY)
 
 # Define the type of debugging to use
 
-if test -n  "$DEBUG" ; then
+if test -n "$DEBUG" -a "x$DEBUG" != 'xno' ; then
   case "$DEBUG" in
      MEMORY) 
        AC_DEFINE(CCTK_TRACEMEMORY)
