@@ -24,7 +24,7 @@ sub CreateParameterBindingFile
   my($prefix, $structure, $rhparameters, $rhparameter_db) = @_;
   my($line,@data);
   my(%parameters);
-  my($type, $type_string);
+  my($type);
 
   # Header Data
   push(@data, '#include "cctk_Config.h"');
@@ -38,7 +38,7 @@ sub CreateParameterBindingFile
   foreach $parameter (&order_params($rhparameters,$rhparameter_db))
   {
     my $type = $rhparameter_db->{"\U$rhparameters->{$parameter} $parameter\E type"};
-    my $type_string = &get_c_type_string($type);
+    my ($type_string) = &get_c_type_string($type);
 
     my $realname = $rhparameter_db->{"\U$rhparameters->{$parameter} $parameter\E realname"};
 
@@ -51,7 +51,7 @@ sub CreateParameterBindingFile
       $suffix = "[$array_size]";
     }
 
-    push(@data, "  $type_string$realname$suffix;");
+    push(@data, "  $type_string $realname$suffix;");
   }
 
   # Some compilers don't like an empty structure.
@@ -72,64 +72,73 @@ sub CreateParameterBindingFile
 #  @date       Mon Jan 11 15:33:50 1999
 #  @author     Tom Goodale
 #  @desc
-#  Returns the correct type string for a parameter
+#  Returns the correct type string for a parameter, both for declaring it
+#  as modifiable member of a structure as well as a assign-once local variable
 #  @enddesc
 #@@*/
 
 sub get_c_type_string
 {
   my($type) = @_;
-  my($type_string);
+  my($type_string, $decl_type_string);
 
 
+  $decl_type_string = '';
   if($type eq 'KEYWORD' ||
      $type eq 'STRING'  ||
      $type eq 'SENTENCE')
   {
     $type_string = 'char *';
+    $decl_type_string = 'char *const';
   }
   elsif($type eq 'BOOLEAN')
   {
-    $type_string = 'CCTK_INT ';
+    $type_string = 'CCTK_INT';
   }
   elsif($type eq 'INT')
   {
-    $type_string = 'CCTK_INT ';
+    $type_string = 'CCTK_INT';
   }
   elsif($type eq 'INT2')
   {
-    $type_string = 'CCTK_INT2 ';
+    $type_string = 'CCTK_INT2';
   }
   elsif($type eq 'INT4')
   {
-    $type_string = 'CCTK_INT4 ';
+    $type_string = 'CCTK_INT4';
   }
   elsif($type eq 'INT8')
   {
-    $type_string = 'CCTK_INT8 ';
+    $type_string = 'CCTK_INT8';
   }
   elsif($type eq 'REAL')
   {
-    $type_string = 'CCTK_REAL ';
+    $type_string = 'CCTK_REAL';
   }
   elsif($type eq 'REAL4')
   {
-    $type_string = 'CCTK_REAL4 ';
+    $type_string = 'CCTK_REAL4';
   }
   elsif($type eq 'REAL8')
   {
-    $type_string = 'CCTK_REAL8 ';
+    $type_string = 'CCTK_REAL8';
   }
   elsif($type eq 'REAL16')
   {
-    $type_string = 'CCTK_REAL16 ';
+    $type_string = 'CCTK_REAL16';
   }
   else
   {
     &CST_error(0,"Unknown parameter type '$type'",'',__LINE__,__FILE__);
   }
+  if (! $decl_type_string)
+  {
+    $decl_type_string = $type_string;
+  }
+  # add the const qualifier for assign-once local variables
+  $decl_type_string = "const $decl_type_string";
 
-  return $type_string;
+  return ($type_string, $decl_type_string);
 }
 
 
@@ -183,7 +192,7 @@ sub CreateCStructureParameterHeader
   foreach $parameter (&order_params($rhparameters, $rhparameter_db))
   {
     my $type = $rhparameter_db->{"\U$rhparameters->{$parameter} $parameter\E type"};
-    my $type_string = &get_c_type_string($type);
+    my ($type_string, $decl_type_string) = &get_c_type_string($type);
 
     my $array_size = $rhparameter_db->{"\U$rhparameters->{$parameter} $parameter\E array_size"};
 
@@ -192,14 +201,14 @@ sub CreateCStructureParameterHeader
 
     if($array_size)
     {
-      $varprefix = '*';
+      $varprefix = '*const ';
       $suffix = "[$array_size]";
     }
 
     my $realname = $rhparameter_db->{"\U$rhparameters->{$parameter} $parameter\E realname"};
 
     push(@data, "  $type_string $realname$suffix;");
-    push(@definition, "  const $type_string $varprefix$parameter = (const $type_string $varprefix)$structure.$realname; \\");
+    push(@definition, "  $decl_type_string $varprefix$parameter = $structure.$realname; \\");
     push(@use, "  (void) ($parameter + 0); \\");
   }
 
@@ -260,7 +269,7 @@ sub order_params
       &CST_error(0,$message,__LINE__,__FILE__);
     }
   }
- 
+
   return (@float_params, @string_params, @int_params);
 }
 
