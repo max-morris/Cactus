@@ -37,6 +37,9 @@ size_t Util_Strlcat(char* dst, const char* src, size_t dst_size);
 
 int Util_StrCmpi(const char *string1, 
                  const char *string2);
+int Util_StrMemCmpi(const char *string1, 
+                    const char *string2,
+                    size_t len2);
 
 int Util_vsnprintf (char *str, size_t count, const char *fmt, va_list args);
 int Util_snprintf (char *str,size_t count,const char *fmt,...);

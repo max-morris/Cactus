@@ -433,6 +433,60 @@ int Util_StrCmpi (const char *string1, const char *string2)
   return (retval);
 }
 
+ /*@@
+   @routine    Util_StrMemCmpi
+   @date       Tue Apr 06 2004
+   @author     Erik Schnetter
+   @desc
+   Case independent strmemcmp: Compare a string against a memory region,
+   i.e. a C string against a Fortran string
+   @enddesc
+   @calls
+   @calledby
+   @history
+   @endhistory
+   @var     string1
+   @vdesc   First string in comparison (nul-terminated)
+   @vtype   const char *
+   @vio     in
+   @vcomment
+
+   @endvar
+   @var     string2
+   @vdesc   Second string in comparison (not nul-terminated)
+   @vtype   const char *
+   @vio     in
+   @vcomment
+
+   @endvar
+   @var     len2
+   @vdesc   Length of the second string
+   @vtype   size_t
+   @vio     in
+   @vcomment
+
+   @endvar
+
+   @returntype int
+   @returndesc
+   +ve - string1 > string2
+   0   - string1 = string2
+   -ve - string1 < string2
+   @endreturndesc
+@@*/
+int Util_StrMemCmpi (const char *string1, const char *string2, size_t length2)
+{
+  int retval;
+
+
+  do
+  {
+    retval = tolower (*string1) - (length2 ? tolower (*string2) : '\0');
+  } while (! retval && *string1++ && (string2++, length2--));
+
+  return (retval);
+}
+
  /*@
    @routine    Util_SplitFilename
    @date       Wed Oct 4 10:14:00 2000
