@@ -421,26 +421,26 @@ sub FunctionDatabase
       my $KnownThorn;
       foreach $KnownThorn (sort keys %{$FunctionDatabase})
       {
-	my $KnownList = $FunctionDatabase->{"$KnownThorn"};
-	my $KnownFunctionName;
-	foreach $KnownFunctionName (sort keys %{$KnownList})
-	{
-	  my %KnownFunction = %{$KnownList->{$KnownFunctionName}};
-	  if ($KnownFunction{"Name"} eq $Function->{"Name"})
-	  {
-	    if (!($KnownFunction{"Return Type"} eq
-		  $Function->{"Return Type"}))
-	    {
-	      &CST_error(0,"The prototypes for the aliased function \'".$KnownFunction{"Name"}."\'\n     given by thorns \' ".$thorn."\' and \'".$KnownThorn."\' are inconsistent.\n     The return types disagree.");
-	    }
-	    if (&CompareArguments($KnownFunction{"Arguments"},
-				 $Function->{"Arguments"}))
-	    {
+        my $KnownList = $FunctionDatabase->{"$KnownThorn"};
+        my $KnownFunctionName;
+        foreach $KnownFunctionName (sort keys %{$KnownList})
+        {
+          my %KnownFunction = %{$KnownList->{$KnownFunctionName}};
+          if ($KnownFunction{"Name"} eq $Function->{"Name"})
+          {
+            if (!($KnownFunction{"Return Type"} eq
+                  $Function->{"Return Type"}))
+            {
+              &CST_error(0,"The prototypes for the aliased function \'".$KnownFunction{"Name"}."\'\n     given by thorns \' ".$thorn."\' and \'".$KnownThorn."\' are inconsistent.\n     The return types disagree.");
+            }
+            if (&CompareArguments($KnownFunction{"Arguments"},
+                                 $Function->{"Arguments"}))
+            {
               &debug_print("The prototypes for the aliased function \'".$KnownFunction{"Name"}."\'\n     given by thorns \'".$thorn."\' and \'".$KnownThorn."\' are inconsistent.\n     The argument lists disagree.");
-	      &CST_error(0,"The prototypes for the aliased function \'".$KnownFunction{"Name"}."\'\n     given by thorns \'".$thorn."\' and \'".$KnownThorn."\' are inconsistent.\n     The argument lists disagree.");
-	    }
-	  }
-	}
+              &CST_error(0,"The prototypes for the aliased function \'".$KnownFunction{"Name"}."\'\n     given by thorns \'".$thorn."\' and \'".$KnownThorn."\' are inconsistent.\n     The argument lists disagree.");
+            }
+          }
+        }
       }
       $FunctionList->{$FunctionName}=$Function;
     }
@@ -488,8 +488,8 @@ sub CheckRequiredFunctions
           last if ($is_provided);
         }
         &CST_error(0,"Aliased function \'$Function->{'Name'}\' required " .
-                   "by thorn '$thorn' is not provided by any thorn\n",
-                   '',__LINE__,__FILE__)
+                   "by thorn '$thorn' is not provided by any thorn in your " .
+                   "thornlist\n", '',__LINE__,__FILE__)
           if (! $is_provided);
       }
     }
@@ -769,21 +769,21 @@ sub CompareArguments
       my $Arg2 = $Arguments2[$argnum];
       if ($Arg1->{"Function pointer"})
       {
-	$num_errors++ if (! $Arg2->{"Function pointer"});
+        $num_errors++ if (! $Arg2->{"Function pointer"});
       }
       elsif (
-	     (!($Arg1->{"Type"} eq $Arg2->{"Type"})) ||
-	     (!($Arg1->{"Intent"} eq $Arg2->{"Intent"}))
-	    )
+             (!($Arg1->{"Type"} eq $Arg2->{"Type"})) ||
+             (!($Arg1->{"Intent"} eq $Arg2->{"Intent"}))
+            )
       {
 
-	&debug_print("Errors in arguments:\n".
-	  $Arg1->{"Type"}." ".$Arg2->{"Type"}."\n".
-	  $Arg1->{"Intent"}." ".$Arg2->{"Intent"}."\n".
-	  $Arg1->{"Function pointer"}." ".$Arg2->{"Function pointer"}
-		    );
+        &debug_print("Errors in arguments:\n".
+          $Arg1->{"Type"}." ".$Arg2->{"Type"}."\n".
+          $Arg1->{"Intent"}." ".$Arg2->{"Intent"}."\n".
+          $Arg1->{"Function pointer"}." ".$Arg2->{"Function pointer"}
+                    );
 
-	$num_errors++;
+        $num_errors++;
       }
     }
   }
@@ -1396,7 +1396,7 @@ sub printAliasToWrapper
 
   push(@data,"  if (!${callname})");
   push(@data,"  {");
-  push(@data,"    CCTK_Warn(0, __LINE__, __FILE__, \"Bindings\",\"The function ${Function{\"Name\"}} has not been provided by any thorn\");");
+  push(@data,"    CCTK_Warn(0, __LINE__, __FILE__, \"Bindings\",\"The function ${Function{\"Name\"}} has not been provided by any thorn in your thornlist\");");
   push(@data,"  }");
   push(@data,"");
 
