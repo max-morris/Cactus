@@ -78,7 +78,7 @@ UTIL_DIR=$(EXEDIR)$(DIRSEP)$(CONFIG_NAME)
 $(EXEDIR)$(DIRSEP)$(EXE): $(CONFIG)/make.thornlist $(CONFIG)/cctki_version.h $(patsubst %,$(CCTK_LIBDIR)/$(LIBNAME_PREFIX)%$(LIBNAME_SUFFIX),$(notdir $(THORNS) $(CACTUSLIBS))) 
 	@echo $(DIVIDER)
 	@echo Creating $(EXE) in $(EXEDIR) from $(THORNS)
-	$(CC) $(OPTIMISE_C) $(DEBUG_C) $(CFLAGS) $(CCOMPILEONLY)$(OPTIONSEP)$(TOP)$(DIRSEP)datestamp.o -I$(subst /,$(DIRSEP), $(CCTK_HOME)/src/include) -I$(CONFIG) $(subst /,$(DIRSEP),$(DATESTAMP))
+	$(CC) $(OPTIMISE_C) $(DEBUG_C) $(CFLAGS) $(CCOMPILEONLY)$(OPTIONSEP)$(TOP)$(DIRSEP)datestamp.o -I$(subst /,$(DIRSEP),$(CCTK_HOME)/src/include) -I$(CONFIG) $(subst /,$(DIRSEP),$(DATESTAMP))
 	if [ ! -d $(EXEDIR) ]; then $(MKDIR) $(MKDIRFLAGS) $(EXEDIR) ; fi
 	$(LD) $(CREATEEXE)$(OPTIONSEP)$(subst /,$(DIRSEP),$@) $(DEBUG_LD) $(LDFLAGS) $(EXTRAFLAGS) $(subst /,$(DIRSEP), $(TOP)/datestamp.o) $(CACTUSLIBLINKLINE) $(GENERAL_LIBRARIES) 
 	@echo $(DIVIDER)
