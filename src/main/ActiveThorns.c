@@ -1084,7 +1084,6 @@ uStringList *CCTK_ImplementationRequires(const char *imp)
   t_sktree *impnode;
   struct IMPLEMENTATION *impdata;
   uStringList *ancestors;
-  const char *addthorn=NULL;
 
   impnode = SKTreeFindNode(implist, imp);
   impdata = (struct IMPLEMENTATION *)(impnode->data);
@@ -1094,14 +1093,14 @@ uStringList *CCTK_ImplementationRequires(const char *imp)
   /* Get ancestors */
   for(i=0; impdata->ancestors[i]; i++)
   {
-    addthorn = CCTK_ImplementationThorn(impdata->ancestors[i]);
+    CCTK_ImplementationThorn(impdata->ancestors[i]);
     Util_StringListAdd(ancestors,impdata->ancestors[i]);
   }
       
   /* Get friends */
   for(i=0; impdata->friends[i]; i++)
   {
-    addthorn = CCTK_ImplementationThorn(impdata->friends[i]);
+    CCTK_ImplementationThorn(impdata->friends[i]);
     Util_StringListAdd(ancestors,impdata->ancestors[i]);
   }
 
