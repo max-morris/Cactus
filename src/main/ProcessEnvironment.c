@@ -124,6 +124,9 @@ int CCTKi_ProcessEnvironment(int *argc, char ***argv,tFleshConfig *ConfigData)
     CACTUS_MPI_ERROR(MPI_Init(argc, argv));
       
   }
+#else
+  argc = argc;
+  argv = argv;
 #endif
 
   return 0;

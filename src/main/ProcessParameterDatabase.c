@@ -3,9 +3,9 @@
    @date      Thu Sep 24 10:34:46 1998
    @author    Tom Goodale
    @desc 
-   Routines to determine the parameters and store them.
+              Routines to determine the parameters and store them.
    @enddesc 
-   @version $Header$
+   @version   $Id$
  @@*/
 
 #include <stdio.h>
@@ -13,34 +13,22 @@
 
 #include "cctk_Flesh.h"
 #include "cctk_Parameter.h"
+#include "cctk_WarnLevel.h"
 
 #include "cctki_Parameter.h"
-#include "ParameterData.h"
 
 static const char *rcsid = "$Header$";
 
 CCTK_FILEVERSION(main_ProcessParameterDatabase_c)
 
 /********************************************************************
- *********************     Local Data Types   ***********************
- ********************************************************************/
-
-/********************************************************************
- ********************* Local Routine Prototypes *********************
- ********************************************************************/
-
-/********************************************************************
  ********************* Other Routine Prototypes *********************
  ********************************************************************/
+int ParseFile (FILE *ifp, 
+               int (*set_function) (const char *, const char *),
+               tFleshConfig *ConfigData);
+void CCTKi_SetParameterSetMask (int mask);
 
-int ParseFile(FILE *ifp, 
-              int (*set_function)(const char *, const char *),tFleshConfig *ConfigData);
-
-void CCTKi_SetParameterSetMask(int mask);
-
-/********************************************************************
- *********************     Local Data   *****************************
- ********************************************************************/
 
 /********************************************************************
  *********************     External Routines   **********************
@@ -53,88 +41,74 @@ void CCTKi_SetParameterSetMask(int mask);
    @desc 
    
    @enddesc 
-   @calls     CCTKi_SetParameterSetMask ParseFile
-   @calledby   
-   @history 
+   @calls      CCTKi_SetParameterSetMask
+               CCTKi_NumParameterFileErrors
+               ParseFile
  
-   @endhistory 
-   @var     ConfigData
-   @vdesc   Flesh configuration data
-   @vtype   tFleshConfig
-   @vio     inout
-   @vcomment 
- 
+   @var        ConfigData
+   @vdesc      Flesh configuration data
+   @vtype      tFleshConfig *
+   @vio        inout
    @endvar 
 
    @returntype int
    @returndesc
-   0  - success
-   1  - unable to open parameter file
+                0 - success, or<BR>
+               -1 - unable to open parameter file
    @endreturndesc
 @@*/
-int CCTKi_ProcessParameterDatabase(tFleshConfig *ConfigData)
+int CCTKi_ProcessParameterDatabase (tFleshConfig *ConfigData)
 {
-  int retval;
   int parse_errors;
   FILE *parameter_file;
 
-  parse_errors = 0;
 
-  CCTKi_SetParameterSetMask(PARAMETER_RECOVERY_PRE);
+  CCTKi_SetParameterSetMask (PARAMETER_RECOVERY_PRE);
 
-  if(!strcmp(ConfigData->parameter_file_name,"-"))
+  if (! strcmp (ConfigData->parameter_file_name, "-"))
   {
     parameter_file = stdin;
   }
   else
   {
-    parameter_file = fopen(ConfigData->parameter_file_name, "r");
+    parameter_file = fopen (ConfigData->parameter_file_name, "r");
   }
 
-  if(parameter_file)
+  if (parameter_file)
   {
-    parse_errors = ParseFile(parameter_file, CCTKi_SetParameter, ConfigData);
+    parse_errors = ParseFile (parameter_file, CCTKi_SetParameter, ConfigData);
 
-    if(strcmp(ConfigData->parameter_file_name,"-"))
+    if (strcmp (ConfigData->parameter_file_name, "-"))
     {
-      fclose(parameter_file);
+      fclose (parameter_file);
     }
 
     if (parse_errors)
     {
-	CCTK_VWarn(0,__LINE__,__FILE__,"Cactus",
-		   "CCTKi_SetParameterSetMask: %d parsing errors in "
-		   "parameter file",parse_errors);
+      CCTK_VWarn (0, __LINE__, __FILE__, "Cactus",
+                  "CCTKi_SetParameterSetMask: %d parsing errors in "
+                  "parameter file", parse_errors);
     }      
 
-    if (CCTKi_NumParameterFileErrors(1))
+    if (CCTKi_NumParameterFileErrors (1))
     {
-	CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
-		   "CCTKi_SetParameterSetMask: %d level 1 errors in "
-		   "parameter file",CCTKi_NumParameterFileErrors(1));
+      CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
+                  "CCTKi_SetParameterSetMask: %d level 1 errors in "
+                  "parameter file", CCTKi_NumParameterFileErrors (1));
     }
 
-    if (CCTKi_NumParameterFileErrors(0))
+    if (CCTKi_NumParameterFileErrors (0))
     {
-      CCTK_VWarn(0,__LINE__,__FILE__,"Cactus",
-		"CCTKi_SetParameterSetMask: %d level 0 errors in "
-		 "parameter file",CCTKi_NumParameterFileErrors(0));
+      CCTK_VWarn (0, __LINE__, __FILE__, "Cactus",
+                  "CCTKi_SetParameterSetMask: %d level 0 errors in "
+                  "parameter file", CCTKi_NumParameterFileErrors (0));
     }
-
-    retval = 0;
   }
   else
   {
-    fprintf(stderr, "Unable to open parameter file '%s'\n", 
-                    ConfigData->parameter_file_name);
-    retval = 1;
+    fprintf (stderr, "Unable to open parameter file '%s'\n", 
+             ConfigData->parameter_file_name);
   }
       
-  return retval;
+  return (parameter_file ? 0 : -1);
 }
-
-/********************************************************************
- *********************     Local Routines   *************************
- ********************************************************************/
-
-
