@@ -36,7 +36,7 @@ static int ScheduleTraverseGroup(cHandledData *schedule_groups,
                                  char **whiles,
                                  int (*item_entry)(void *, void *),
                                  int (*item_exit)(void *, void *),
-                                 int  (*while_check)(int, char **, void *, void *),
+                                 int  (*while_check)(int, char **, void *, void *, int),
                                  int (*function_process)(void *, void *, void *),
                                  void *data);
 
@@ -46,7 +46,7 @@ static int ScheduleTraverseFunction(void *function,
                                     char **whiles,
                                     int (*item_entry)(void *, void *),
                                     int (*item_exit)(void *, void *),
-                                    int  (*while_check)(int, char **, void *, void *),
+                                    int  (*while_check)(int, char **, void *, void *, int),
                                     int (*function_process)(void *, void *, void *),
                                     void *data);
 
@@ -97,7 +97,7 @@ static int ScheduleTraverseFunction(void *function,
    @endvar 
    @var     while_check
    @vdesc   function to be called to check a while statement
-   @vtype   int (*)(int, char **, void *, void *)
+   @vtype   int (*)(int, char **, void *, void *, int)
    @vio     in
    @vcomment 
  
@@ -126,7 +126,7 @@ static int ScheduleTraverseFunction(void *function,
 int CCTKi_DoScheduleTraverse(const char *group_name,
                              int (*item_entry)(void *, void *),
                              int (*item_exit)(void *, void *),
-                             int  (*while_check)(int, char **, void *, void *),
+                             int  (*while_check)(int, char **, void *, void *, int),
                              int (*function_process)(void *, void *, void *),
                              void *data)
 {
@@ -227,7 +227,7 @@ int CCTKi_DoScheduleTraverse(const char *group_name,
    @endvar 
    @var     while_check
    @vdesc   function to be called to check a while statement
-   @vtype   int (*)(int, char **, void *, void *)
+   @vtype   int (*)(int, char **, void *, void *, int)
    @vio     in
    @vcomment 
  
@@ -259,7 +259,7 @@ static int ScheduleTraverseGroup(cHandledData *schedule_groups,
                                  char **whiles,
                                  int (*item_entry)(void *, void *),
                                  int (*item_exit)(void *, void *),
-                                 int  (*while_check)(int, char **, void *, void *),
+                                 int  (*while_check)(int, char **, void *, void *, int),
                                  int (*function_process)(void *, void *, void *),
                                  void *data)
 {
@@ -274,7 +274,7 @@ static int ScheduleTraverseGroup(cHandledData *schedule_groups,
 
   if(n_whiles > 0 && while_check)
   {
-    doit = while_check(n_whiles, whiles, attributes, data);
+    doit = while_check(n_whiles, whiles, attributes, data,1);
   }
   else
   {
@@ -338,7 +338,7 @@ static int ScheduleTraverseGroup(cHandledData *schedule_groups,
     /* Check the while_list again. */
     if(n_whiles > 0 && while_check)
     {
-      doit = while_check(n_whiles, whiles, attributes, data) ;
+      doit = while_check(n_whiles, whiles, attributes, data,0);
     }
     else
     {
@@ -414,7 +414,7 @@ static int ScheduleTraverseGroup(cHandledData *schedule_groups,
    @endvar 
    @var     while_check
    @vdesc   function to be called to check a while statement
-   @vtype   int (*)(int, char **, void *, void *)
+   @vtype   int (*)(int, char **, void *, void *, int)
    @vio     in
    @vcomment 
  
@@ -445,7 +445,7 @@ static int ScheduleTraverseFunction(void *function,
                                     char **whiles,
                                     int (*item_entry)(void *, void *),
                                     int (*item_exit)(void *, void *),
-                                    int  (*while_check)(int, char **, void *, void *),
+                                    int  (*while_check)(int, char **, void *, void *, int),
                                     int (*function_process)(void *, void *, void *),
                                     void *data)
 {
@@ -458,7 +458,7 @@ static int ScheduleTraverseFunction(void *function,
 
   if(n_whiles > 0 && while_check)
   {
-    doit = while_check(n_whiles, whiles, attributes, data);
+    doit = while_check(n_whiles, whiles, attributes, data,1);
   }
   else
   {
@@ -490,7 +490,7 @@ static int ScheduleTraverseFunction(void *function,
     /* Check the while_list again. */
     if(n_whiles > 0 && while_check)
     {
-      doit = while_check(n_whiles, whiles, attributes, data) ;
+      doit = while_check(n_whiles, whiles, attributes, data,0) ;
     }
     else
 

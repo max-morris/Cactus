@@ -81,8 +81,6 @@ typedef struct
   cGH *GH;
   iSchedPoint schedpoint;
 
-  int whiling;
-
   cTimerData *info;
   int print_headers;
 
@@ -136,19 +134,31 @@ static int SchedulePrint(const char *where);
 
 static int CCTKi_SchedulePrintEntry(t_attribute *attribute, t_sched_data *data);
 static int CCTKi_SchedulePrintExit(t_attribute *attribute, t_sched_data *data);
-static int CCTKi_SchedulePrintWhile(int n_whiles, char **whiles, t_attribute *attribute, t_sched_data *data);
+static int CCTKi_SchedulePrintWhile(int n_whiles, 
+                                    char **whiles, 
+                                    t_attribute *attribute, 
+                                    t_sched_data *data, 
+                                    int first);
 static int CCTKi_SchedulePrintFunction(void *function, t_attribute *attribute, t_sched_data *data);
 
 static int CCTKi_ScheduleCallEntry(t_attribute *attribute, t_sched_data *data);
 static int CCTKi_ScheduleCallExit(t_attribute *attribute, t_sched_data *data);
-static int CCTKi_ScheduleCallWhile(int n_whiles, char **whiles, t_attribute *attribute, t_sched_data *data);
+static int CCTKi_ScheduleCallWhile(int n_whiles, 
+                                   char **whiles, 
+                                   t_attribute *attribute, 
+                                   t_sched_data *data, 
+                                   int first);
 static int CCTKi_ScheduleCallFunction(void *function, t_attribute *attribute, t_sched_data *data);
 
 static int SchedulePrintTimes(const char *where, t_sched_data *data);
 
 static int CCTKi_SchedulePrintTimesEntry(t_attribute *attribute, t_sched_data *data);
 static int CCTKi_SchedulePrintTimesExit(t_attribute *attribute, t_sched_data *data);
-static int CCTKi_SchedulePrintTimesWhile(int n_whiles, char **whiles, t_attribute *attribute, t_sched_data *data);
+static int CCTKi_SchedulePrintTimesWhile(int n_whiles, 
+                                         char **whiles, 
+                                         t_attribute *attribute, 
+                                         t_sched_data *data, 
+                                         int first);
 static int CCTKi_SchedulePrintTimesFunction(void *function, t_attribute *attribute, t_sched_data *data);
 static void CCTKi_SchedulePrintTimerInfo(cTimerData *info);
 static void CCTKi_SchedulePrintTimerHeaders(cTimerData *info);
@@ -979,7 +989,6 @@ int CCTK_SchedulePrintTimes(const char *where)
 
   data.GH = NULL;
   data.schedpoint = schedpoint_misc;
-  data.whiling = 0;
   data.print_headers = 1;
 
   if(!timerinfo)
@@ -1151,10 +1160,10 @@ static int ScheduleTraverse(const char *where,
   calling_function = CCTKi_ScheduleCallFunction;
   
   CCTKi_DoScheduleTraverse(where,
-     (int (*)(void *, void *))               CCTKi_ScheduleCallEntry, 
-     (int (*)(void *, void *))               CCTKi_ScheduleCallExit, 
-     (int  (*)(int, char **, void *, void *))CCTKi_ScheduleCallWhile, 
-     (int (*)(void *, void *, void *))       calling_function, 
+     (int (*)(void *, void *))                    CCTKi_ScheduleCallEntry, 
+     (int (*)(void *, void *))                    CCTKi_ScheduleCallExit, 
+     (int  (*)(int, char **, void *, void *, int))CCTKi_ScheduleCallWhile, 
+     (int (*)(void *, void *, void *))            calling_function, 
      (void *)&data);
 
   return 0;
@@ -1751,15 +1760,14 @@ static int SchedulePrint(const char *where)
 
   data.GH = NULL;
   data.schedpoint = schedpoint_misc;
-  data.whiling = 0;
 
   if(where)
   {
     retcode = CCTKi_DoScheduleTraverse(where,
-       (int (*)(void *, void *))               CCTKi_SchedulePrintEntry, 
-       (int (*)(void *, void *))               CCTKi_SchedulePrintExit, 
-       (int  (*)(int, char **, void *, void *))CCTKi_SchedulePrintWhile, 
-       (int (*)(void *, void *, void *))       CCTKi_SchedulePrintFunction, 
+       (int (*)(void *, void *))                    CCTKi_SchedulePrintEntry, 
+       (int (*)(void *, void *))                    CCTKi_SchedulePrintExit, 
+       (int  (*)(int, char **, void *, void *, int))CCTKi_SchedulePrintWhile, 
+       (int (*)(void *, void *, void *))            CCTKi_SchedulePrintFunction, 
        (void *)&data);
   }
   else
@@ -1810,10 +1818,10 @@ static int SchedulePrintTimes(const char *where, t_sched_data *data)
   if(where)
   {
     retcode = CCTKi_DoScheduleTraverse(where,
-       (int (*)(void *, void *))               CCTKi_SchedulePrintTimesEntry, 
-       (int (*)(void *, void *))               CCTKi_SchedulePrintTimesExit, 
-       (int  (*)(int, char **, void *, void *))CCTKi_SchedulePrintTimesWhile, 
-       (int (*)(void *, void *, void *))       CCTKi_SchedulePrintTimesFunction, 
+       (int (*)(void *, void *))                    CCTKi_SchedulePrintTimesEntry, 
+       (int (*)(void *, void *))                    CCTKi_SchedulePrintTimesExit, 
+       (int  (*)(int, char **, void *, void *, int))CCTKi_SchedulePrintTimesWhile, 
+       (int (*)(void *, void *, void *))            CCTKi_SchedulePrintTimesFunction, 
        (void *)data);
   }
   else
@@ -1841,12 +1849,32 @@ static int SchedulePrintTimes(const char *where, t_sched_data *data)
    @history 
  
    @endhistory 
+   @var     attribute
+   @vdesc   schedule item attributes
+   @vtype   t_attribute *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     data
+   @vdesc   data associated with schedule item
+   @vtype   t_sched_data
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
 
+   @returntype int
+   @returndesc 
+   0 - schedule item is inactive
+   1 - schedule item is active
+   @endreturndesc
 @@*/
 static int CCTKi_SchedulePrintEntry(t_attribute *attribute, 
                                     t_sched_data *data)
 {
   indent_level += 2;
+
   return 1;
 }
 
@@ -1862,12 +1890,31 @@ static int CCTKi_SchedulePrintEntry(t_attribute *attribute,
    @history 
  
    @endhistory 
+   @var     attribute
+   @vdesc   schedule item attributes
+   @vtype   t_attribute *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     data
+   @vdesc   data associated with schedule item
+   @vtype   t_sched_data
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
 
+   @returntype int
+   @returndesc 
+   1 - this has no meaning
+   @endreturndesc
 @@*/
 static int CCTKi_SchedulePrintExit(t_attribute *attribute, 
                                    t_sched_data *data)
 {
   indent_level -=2;
+
   return 1;
 }
 
@@ -1876,23 +1923,64 @@ static int CCTKi_SchedulePrintExit(t_attribute *attribute,
    @date       Sun Sep 19 13:31:23 1999
    @author     Tom Goodale
    @desc 
-   Routine called for while ofo a group when traversing for printing.
+   Routine called for while of a group when traversing for printing.
    @enddesc 
    @calls     
    @calledby   
    @history 
  
    @endhistory 
+   @var     n_whiles
+   @vdesc   number of while statements
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     whiles
+   @vdesc   while statements
+   @vtype   char **
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     attribute
+   @vdesc   schedule item attributes
+   @vtype   t_attribute *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     data
+   @vdesc   data associated with schedule item
+   @vtype   t_sched_data
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     first
+   @vdesc   flag - is this the first time we are checking while on this schedule item
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
 
+   @returntype int
+   @returndesc 
+   0 - schedule item is inactive
+   1 - schedule item is active
+   @endreturndesc
 @@*/
 static int CCTKi_SchedulePrintWhile(int n_whiles, 
                                     char **whiles, 
                                     t_attribute *attribute, 
-                                    t_sched_data *data)
+                                    t_sched_data *data,
+                                    int first)
 {
   int i;
 
-  if(!data->whiling)
+  if(first)
   {
     for(i=0; i < indent_level+2; i++) printf(" ");
 
@@ -1917,9 +2005,7 @@ static int CCTKi_SchedulePrintWhile(int n_whiles,
     printf("end while\n");
   }
 
-  data->whiling = !data->whiling;
-
-  return data->whiling;
+  return first;
 }
 
 /*@@
@@ -1934,7 +2020,32 @@ static int CCTKi_SchedulePrintWhile(int n_whiles,
    @history 
  
    @endhistory 
+   @var     function
+   @vdesc   the function to be called
+   @vtype   void *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     attribute
+   @vdesc   schedule item attributes
+   @vtype   t_attribute *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     data
+   @vdesc   data associated with schedule item
+   @vtype   t_sched_data
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
 
+   @returntype int
+   @returndesc 
+   1 - this has no meaning
+   @endreturndesc
 @@*/
 static int CCTKi_SchedulePrintFunction(void *function, 
                                        t_attribute *attribute, 
@@ -1966,7 +2077,26 @@ static int CCTKi_SchedulePrintFunction(void *function,
    @history 
  
    @endhistory 
+   @var     attribute
+   @vdesc   schedule item attributes
+   @vtype   t_attribute *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     data
+   @vdesc   data associated with schedule item
+   @vtype   t_sched_data
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
 
+   @returntype int
+   @returndesc 
+   0 - schedule item is inactive
+   1 - schedule item is active
+   @endreturndesc
 @@*/
 static int CCTKi_ScheduleCallEntry(t_attribute *attribute, 
                                    t_sched_data *data)
@@ -2036,13 +2166,31 @@ static int CCTKi_ScheduleCallEntry(t_attribute *attribute,
    @history 
  
    @endhistory 
+   @var     attribute
+   @vdesc   schedule item attributes
+   @vtype   t_attribute *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     data
+   @vdesc   data associated with schedule item
+   @vtype   t_sched_data
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
 
+   @returntype int
+   @returndesc 
+   1 - this has no meaning
+   @endreturndesc
 @@*/
 static int CCTKi_ScheduleCallExit(t_attribute *attribute, 
                                   t_sched_data *data)
 {
   int i;
-  int index;
+  int vindex;
   int last;
 
   /* Only do this if the entry routine did stuff. */
@@ -2054,11 +2202,11 @@ static int CCTKi_ScheduleCallExit(t_attribute *attribute,
       /* In analysis, so do any trigger actions. */
       for (i = 0; i < attribute->n_trigger_groups ; i++) 
       { 
-        index = CCTK_FirstVarIndexI(attribute->trigger_groups[i]);
-        last  = index + CCTK_NumVarsInGroupI(attribute->trigger_groups[i]) - 1;
-        for(; index <= last ; index++)
+        vindex = CCTK_FirstVarIndexI(attribute->trigger_groups[i]);
+        last  = vindex + CCTK_NumVarsInGroupI(attribute->trigger_groups[i]) - 1;
+        for(; vindex <= last ; vindex++)
         {
-          CCTKi_TriggerAction(data->GH, index);
+          CCTKi_TriggerAction(data->GH, vindex);
         }
       }
     }
@@ -2096,12 +2244,53 @@ static int CCTKi_ScheduleCallExit(t_attribute *attribute,
    @history 
  
    @endhistory 
+   @var     n_whiles
+   @vdesc   number of while statements
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     whiles
+   @vdesc   while statements
+   @vtype   char **
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     attribute
+   @vdesc   schedule item attributes
+   @vtype   t_attribute *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     data
+   @vdesc   data associated with schedule item
+   @vtype   t_sched_data
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     first
+   @vdesc   flag - is this the first time we are checking while on this schedule item
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
 
+   @returntype int
+   @returndesc 
+   0 - schedule item is inactive
+   1 - schedule item is active
+   @endreturndesc
 @@*/
 static int CCTKi_ScheduleCallWhile(int n_whiles, 
                                    char **whiles, 
                                    t_attribute *attribute, 
-                                   t_sched_data *data)
+                                   t_sched_data *data,
+                                   int first)
 {
   int i;
   int retcode;
@@ -2129,7 +2318,32 @@ static int CCTKi_ScheduleCallWhile(int n_whiles,
    @history 
  
    @endhistory 
+   @var     function
+   @vdesc   the function to be called
+   @vtype   void *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     attribute
+   @vdesc   schedule item attributes
+   @vtype   t_attribute *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     data
+   @vdesc   data associated with schedule item
+   @vtype   t_sched_data
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
 
+   @returntype int
+   @returndesc 
+   1 - this has no meaning
+   @endreturndesc
 @@*/
 static int CCTKi_ScheduleCallFunction(void *function, 
                                       t_attribute *attribute, 
@@ -2173,12 +2387,30 @@ static int CCTKi_ScheduleCallFunction(void *function,
    @history 
  
    @endhistory 
+   @var     attribute
+   @vdesc   schedule item attributes
+   @vtype   t_attribute *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     data
+   @vdesc   data associated with schedule item
+   @vtype   t_sched_data
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
 
+   @returntype int
+   @returndesc 
+   0 - schedule item is inactive
+   1 - schedule item is active
+   @endreturndesc
 @@*/
 static int CCTKi_SchedulePrintTimesEntry(t_attribute *attribute, 
                                          t_sched_data *data)
 {
-  /*  indent_level += 2;*/
   return 1;
 }
 
@@ -2194,12 +2426,29 @@ static int CCTKi_SchedulePrintTimesEntry(t_attribute *attribute,
    @history 
  
    @endhistory 
+   @var     attribute
+   @vdesc   schedule item attributes
+   @vtype   t_attribute *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     data
+   @vdesc   data associated with schedule item
+   @vtype   t_sched_data
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
 
+   @returntype int
+   @returndesc 
+   1 - this has no meaning
+   @endreturndesc
 @@*/
 static int CCTKi_SchedulePrintTimesExit(t_attribute *attribute, 
                                         t_sched_data *data)
 {
-  /*  indent_level -=2; */
   return 1;
 }
 
@@ -2215,45 +2464,55 @@ static int CCTKi_SchedulePrintTimesExit(t_attribute *attribute,
    @history 
  
    @endhistory 
+   @var     n_whiles
+   @vdesc   number of while statements
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     whiles
+   @vdesc   while statements
+   @vtype   char **
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     attribute
+   @vdesc   schedule item attributes
+   @vtype   t_attribute *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     data
+   @vdesc   data associated with schedule item
+   @vtype   t_sched_data
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     first
+   @vdesc   flag - is this the first time we are checking while on this schedule item
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
 
+   @returntype int
+   @returndesc 
+   0 - schedule item is inactive
+   1 - schedule item is active
+   @endreturndesc
 @@*/
 static int CCTKi_SchedulePrintTimesWhile(int n_whiles, 
                                          char **whiles, 
                                          t_attribute *attribute, 
-                                         t_sched_data *data)
+                                         t_sched_data *data,
+                                         int first)
 {
-
-#if 0
-  int i;
-  if(!data->whiling)
-  {
-    for(i=0; i < indent_level+2; i++) printf(" ");
-
-    printf("while (");
-  
-    for(i = 0; i < n_whiles; i++)
-    {
-      if(i > 0)
-      {
-        printf(" && ");
-      }
-
-      printf("%s", whiles[i]);
-    }
-    
-    printf(")\n");
-  }
-  else
-  {
-    for(i=0; i < indent_level; i++) printf(" ");
-
-    printf("end while\n");
-  }
-#endif
-
-  data->whiling = !data->whiling;
-
-  return data->whiling;
+  return first;
 }
 
 /*@@
@@ -2268,7 +2527,32 @@ static int CCTKi_SchedulePrintTimesWhile(int n_whiles,
    @history 
  
    @endhistory 
+   @var     function
+   @vdesc   the function to be called
+   @vtype   void *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     attribute
+   @vdesc   schedule item attributes
+   @vtype   t_attribute *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     data
+   @vdesc   data associated with schedule item
+   @vtype   t_sched_data
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
 
+   @returntype int
+   @returndesc 
+   1 - this has no meaning
+   @endreturndesc
 @@*/
 static int CCTKi_SchedulePrintTimesFunction(void *function, 
                                             t_attribute *attribute, 

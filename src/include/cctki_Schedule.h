@@ -10,7 +10,7 @@
  @@*/
 
 #ifndef _CCTKI_SCHEDULE_H_
-#define _CCTKI_SCHEDULE_H_
+#define _CCTKI_SCHEDULE_H_ 1
 
 /* Types needed by other routines. */
 
@@ -57,15 +57,12 @@ int CCTKi_DoScheduleGroup
 int CCTKi_DoScheduleSortAllGroups(void);
 
 /* Traversal routine */
-int CCTKi_DoScheduleTraverse
-  (
-   const char *group_name,
-   int (*item_entry)(void *, void *),
-   int (*item_exit)(void *, void *),
-   int  (*while_check)(int, char **, void *, void *),
-   int (*function_process)(void *, void *, void *),
-   void *data
-  );
+int CCTKi_DoScheduleTraverse(const char *group_name,
+                             int (*item_entry)(void *, void *),
+                             int (*item_exit)(void *, void *),
+                             int  (*while_check)(int, char **, void *, void *, int),
+                             int (*function_process)(void *, void *, void *),
+                             void *data);
 
 #ifdef __cplusplus
 }
