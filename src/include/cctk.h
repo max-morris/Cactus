@@ -100,6 +100,7 @@
 #include "cctk_Reduction.h"
 #include "cctk_Stagger.h"
 #include "cctk_Sync.h"
+#include "cctk_Timers.h"
 #include "cctk_WarnLevel.h"
 
 

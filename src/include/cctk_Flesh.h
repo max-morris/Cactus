@@ -8,7 +8,6 @@
    @version $Header$
  @@*/
 
-#include "CactusTimers.h"
 #include "cGH.h"
 
 
