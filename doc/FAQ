@@ -1,7 +1,7 @@
 
 Cactus Code Frequently Asked Questions
 
-$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.45 2002-09-08 14:05:33 allen Exp $
+$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.46 2002-09-22 13:35:52 allen Exp $
 
 Also available at http://www.cactuscode.org/Documentation/FAQ
 
@@ -280,7 +280,7 @@ B2  I want to recreate a Cactus executable from last year, I have a thorn list
     repository I don't get some of the thorns.
 
     This is probably because the thorns moved arrangement, or were rewritten. 
-    To checkout the right code, look at the Release web pages to decide which 
+    To checkout the right code, look in doc/ReleaseNotes to decide which 
     release the thorn was in, and then checkout the thorn from the /cactus 
     repository, eg. if the thorn "OldThorn" was last in the Beta 7 release use:
 
