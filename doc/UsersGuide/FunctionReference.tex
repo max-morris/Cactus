@@ -3468,15 +3468,15 @@ A negative return code indicates an error condition:
 %notyet \label{CCTK-InterpLocalNonUniform}
 %notyet Interpolate a list of processor-local arrays
 %notyet which define a nonuniformly spaced data grid (not implemented yet)
-%notyet 
+%notyet
 %notyet (\verb|CCTK_InterpLocalNonUniform()|, \verb|CCTK_InterpLocalUniform()|,
 %notyet and \verb|CCTK_InterpLocalWarped()| will eventually replace
 %notyet \verb|CCTK_InterpLocal()|.)
-%notyet 
+%notyet
 %notyet The computation is optimized for the case of interpolating a
 %notyet number of arrays at a time; in this case the same interpolation
 %notyet coefficients can be used for all the arrays.
-%notyet 
+%notyet
 %notyet \begin{SynopsisSection}
 %notyet \begin{Synopsis}{C}
 %notyet \begin{verbatim}
@@ -3502,13 +3502,13 @@ A negative return code indicates an error condition:
 %notyet \end{verbatim}
 %notyet \end{Synopsis}
 %notyet \end{SynopsisSection}
-%notyet 
+%notyet
 %notyet \begin{ResultSection}
 %notyet \begin{Result}{\rm 0}
 %notyet success
 %notyet \end{Result}
 %notyet \end{ResultSection}
-%notyet 
+%notyet
 %notyet \begin{ParameterSection}
 %notyet \begin{Parameter}{N\_dims ($\ge 1$)}
 %notyet Number of dimensions in which to interpolate.
@@ -3525,15 +3525,15 @@ A negative return code indicates an error condition:
 %notyet \verb|CCTK_InterpHandle()|.
 %notyet \end{Parameter}
 %notyet \begin{Parameter}{param\_table\_handle ($\ge 0$)}
-%notyet 
+%notyet
 %notyet Handle to a key-value table containing additional parameters for
 %notyet the interpolator.
-%notyet 
+%notyet
 %notyet One common parameter-table option, which a number of interpolation
 %notyet operators are likely to support, is \verb|order|, a \verb|CCTK_INT|
 %notyet specifying the order of the (presumably polynomial) interpolation
 %notyet (1=linear, 2=quadratic, 3=cubic, etc).
-%notyet 
+%notyet
 %notyet See the Thorn Guide for the LocalInterp thorn for other parameters.
 %notyet \end{Parameter}
 %notyet \begin{Parameter}{coord\_arrays\_type\_code}
@@ -3612,7 +3612,7 @@ A negative return code indicates an error condition:
 %notyet (user-supplied) 1-D output arrays for the interpolation.
 %notyet \end{Parameter}
 %notyet \end{ParameterSection}
-%notyet 
+%notyet
 %notyet \begin{Discussion}
 %notyet \verb|CCTK_InterpLocalNonUniform()| is a generic API for interpolating
 %notyet processor-local arrays when the data points' coordinates~$xyz$ are
@@ -3632,23 +3632,23 @@ A negative return code indicates an error condition:
 %notyet $y = \verb|coord_arrays[1][j]|$ \\
 %notyet $z = \verb|coord_arrays[2][k]|$ \\
 %notyet \end{flushleft}
-%notyet 
+%notyet
 %notyet [If these nonlinear functions are known analytically, then it's
 %notyet probably more efficient to analytically transform to coordinates
 %notyet which are linear functions of the subscripts, then use
 %notyet \verb|CCTK_InterpLocalUniform()|.]
-%notyet 
+%notyet
 %notyet The $(x,y,z)$ coordinates are used for the interpolation
 %notyet (\ie{}~the interpolator may internally use polynomials in these
 %notyet coordinates); \verb|interp_coords[]| specifies coordinates in this
 %notyet same coordinate system.
-%notyet 
+%notyet
 %notyet Details of the operation performed, and what (if any) inputs and/or
 %notyet outputs are specified in the parameter table, depend on which interpolation
 %notyet operator you use.  See the Thorn Guide for the LocalInterp thorn for
 %notyet further discussion.
 %notyet \end{Discussion}
-%notyet 
+%notyet
 %notyet \begin{SeeAlsoSection}
 %notyet \begin{SeeAlso}{CCTK\_InterpHandle()}
 %notyet Get the interpolator handle for a given character-string name.
@@ -3668,13 +3668,13 @@ A negative return code indicates an error condition:
 %notyet Register a \verb|CCTK_InterpLocalNonUniform()| interpolation operator.
 %notyet \end{SeeAlso}
 %notyet \end{SeeAlsoSection}
-%notyet 
+%notyet
 %notyet \begin{ErrorSection}
 %notyet	\begin{Error}{}
 %notyet	To find the numerical
 %notyet	values of the error codes (or more commonly, to find which error code
-%notyet	corresponds to a given numerical value), look in the files                   
-%notyet	\verb|cctk_Interp.h|, \verb|util_ErrorCodes.h|, and/or \verb|util_Table.h|      
+%notyet	corresponds to a given numerical value), look in the files
+%notyet	\verb|cctk_Interp.h|, \verb|util_ErrorCodes.h|, and/or \verb|util_Table.h|
 in the \verb|src/include/| directory in the Cactus flesh.
 %notyet	\end{Error}
 %notyet \begin{Error}{CCTK\_ERROR\_INTERP\_POINT\_OUTSIDE}
@@ -3698,19 +3698,19 @@ in the \verb|src/include/| directory in the Cactus flesh.
 %notyet (and/or set results in) the parameter table
 %notyet \end{Error}
 %notyet \end{ErrorSection}
-%notyet 
+%notyet
 %notyet \begin{ExampleSection}
 %notyet \begin{Example}{C}
 %notyet Here's a simple example of interpolating a \verb|CCTK_REAL| and a
 %notyet \verb|CCTK_COMPLEX| $10 \times 20$ 2-D array, at 5 interpolation points,
 %notyet using cubic interpolation.
-%notyet 
+%notyet
 %notyet \begin{verbatim}
 %notyet #define N_DIMS   2
 %notyet #define N_INTERP_POINTS   5
 %notyet #define N_INPUT_ARRAYS    2
 %notyet #define N_OUTPUT_ARRAYS   2
-%notyet 
+%notyet
 %notyet /* (x,y) coordinates of data grid points */
 %notyet #define NX   10
 %notyet #define NY   20
@@ -3718,13 +3718,13 @@ in the \verb|src/include/| directory in the Cactus flesh.
 %notyet const CCTK_REAL y_coords[NY];
 %notyet const void *const coord_arrays[N_DIMS]
 %notyet         = { (const void *) x_coords, (const void *) y_coords };
-%notyet 
+%notyet
 %notyet /* (x,y) coordinates of interpolation points */
 %notyet const CCTK_REAL interp_x[N_INTERP_POINTS];
 %notyet const CCTK_REAL interp_y[N_INTERP_POINTS];
 %notyet const void *const interp_coords[N_DIMS]
 %notyet         = { (const void *) interp_x, (const void *) interp_y };
-%notyet 
+%notyet
 %notyet /* input arrays */
 %notyet /* ... note Cactus uses Fortran storage ordering, i.e. X is contiguous */
 %notyet const CCTK_REAL    input_real   [NY][NX];
@@ -3734,7 +3734,7 @@ in the \verb|src/include/| directory in the Cactus flesh.
 %notyet         = { CCTK_VARIABLE_REAL, CCTK_VARIABLE_COMPLEX };
 %notyet const void *const input_arrays[N_INPUT_ARRAYS]
 %notyet         = { (const void *) input_real, (const void *) input_complex };
-%notyet 
+%notyet
 %notyet /* output arrays */
 %notyet CCTK_REAL    output_real   [N_INTERP_POINTS];
 %notyet CCTK_COMPLEX output_complex[N_INTERP_POINTS];
@@ -3742,7 +3742,7 @@ in the \verb|src/include/| directory in the Cactus flesh.
 %notyet         = { CCTK_VARIABLE_REAL, CCTK_VARIABLE_COMPLEX };
 %notyet void *const output_arrays[N_OUTPUT_ARRAYS]
 %notyet         = { (void *) output_real, (void *) output_complex };
-%notyet 
+%notyet
 %notyet int operator_handle, param_table_handle;
 %notyet operator_handle = CCTK_InterpHandle("my interpolation operator");
 %notyet if (operator_handle < 0)
@@ -3970,8 +3970,8 @@ with non-uniformly spaced data points.
 \begin{Error}{}
 To find the numerical
 values of the error codes (or more commonly, to find which error code
-corresponds to a given numerical value), look in the files                   
-\verb|cctk_Interp.h|, \verb|util_ErrorCodes.h|, and/or \verb|util_Table.h|      
+corresponds to a given numerical value), look in the files
+\verb|cctk_Interp.h|, \verb|util_ErrorCodes.h|, and/or \verb|util_Table.h|
 in the \verb|src/include/| directory in the Cactus flesh.
 \end{Error}
 \begin{Error}{CCTK\_ERROR\_INTERP\_POINT\_OUTSIDE}
@@ -4095,15 +4095,15 @@ if (CCTK_InterpLocalUniform(N_DIMS,
 %notyet \label{CCTK-InterpLocalWarped}
 %notyet Interpolate a list of processor-local arrays
 %notyet which define a curvilinearly-warped data grid
-%notyet 
+%notyet
 %notyet (\verb|CCTK_InterpLocalWarped()|, \verb|CCTK_InterpLocalUniform()|,
 %notyet and \verb|CCTK_InterpLocalWarped()| will eventually replace
 %notyet \verb|CCTK_InterpLocal()|.)
-%notyet 
+%notyet
 %notyet The computation is optimized for the case of interpolating a
 %notyet number of arrays at a time; in this case the same interpolation
 %notyet coefficients can be used for all the arrays.
-%notyet 
+%notyet
 %notyet \begin{SynopsisSection}
 %notyet \begin{Synopsis}{C}
 %notyet \begin{verbatim}
@@ -4128,13 +4128,13 @@ if (CCTK_InterpLocalUniform(N_DIMS,
 %notyet \end{verbatim}
 %notyet \end{Synopsis}
 %notyet \end{SynopsisSection}
-%notyet 
+%notyet
 %notyet \begin{ResultSection}
 %notyet \begin{Result}{\rm 0}
 %notyet success
 %notyet \end{Result}
 %notyet \end{ResultSection}
-%notyet 
+%notyet
 %notyet \begin{ParameterSection}
 %notyet \begin{Parameter}{N\_dims ($\ge 1$)}
 %notyet Number of dimensions in which to interpolate.
@@ -4151,15 +4151,15 @@ if (CCTK_InterpLocalUniform(N_DIMS,
 %notyet \verb|CCTK_InterpHandle()|.
 %notyet \end{Parameter}
 %notyet \begin{Parameter}{param\_table\_handle ($\ge 0$)}
-%notyet 
+%notyet
 %notyet Handle to a key-value table containing additional parameters for
 %notyet the interpolator.
-%notyet 
+%notyet
 %notyet One common parameter-table option, which a number of interpolation
 %notyet operators are likely to support, is \verb|order|, a \verb|CCTK_INT|
 %notyet specifying the order of the (presumably polynomial) interpolation
 %notyet (1=linear, 2=quadratic, 3=cubic, etc).
-%notyet 
+%notyet
 %notyet See the Thorn Guide for the LocalInterp thorn for other parameters.
 %notyet \end{Parameter}
 %notyet \begin{Parameter}{coord\_arrays\_type\_code}
@@ -4243,7 +4243,7 @@ if (CCTK_InterpLocalUniform(N_DIMS,
 %notyet (user-supplied) 1-D output arrays for the interpolation.
 %notyet \end{Parameter}
 %notyet \end{ParameterSection}
-%notyet 
+%notyet
 %notyet \begin{Discussion}
 %notyet This function is a generic API for interpolating processor-local arrays
 %notyet when the data points' coordinates~$xyz$ are generic {\em multivariable
@@ -4264,23 +4264,23 @@ if (CCTK_InterpLocalUniform(N_DIMS,
 %notyet $z = \verb|coord_arrays[2][i,j,k]|$     \\
 %notyet \end{flushleft}
 %notyet where \verb|[i,j,k]| refers to \verb|N_dims|-D array subscripting.
-%notyet 
+%notyet
 %notyet [If these nonlinear functions are known analytically, then it's
 %notyet probably more efficient to analytically transform to coordinates
 %notyet which are linear functions of the subscripts, then use
 %notyet \verb|CCTK_InterpLocalUniform()|.]
-%notyet 
+%notyet
 %notyet The $(x,y,z)$ coordinates are used for the interpolation
 %notyet (\ie{}~the interpolator may internally use polynomials in these
 %notyet coordinates); \verb|interp_coords| specifies coordinates in this
 %notyet same coordinate system.
-%notyet 
+%notyet
 %notyet Details of the operation performed, and what (if any) inputs and/or
 %notyet outputs are specified in the parameter table, depend on which interpolation
 %notyet operator you use.  See the Thorn Guide for the LocalInterp thorn for
 %notyet further discussion.
 %notyet \end{Discussion}
-%notyet 
+%notyet
 %notyet \begin{SeeAlsoSection}
 %notyet \begin{SeeAlso}{CCTK\_InterpHandle()}
 %notyet Get the interpolator handle for a given character-string name.
@@ -4300,13 +4300,13 @@ if (CCTK_InterpLocalUniform(N_DIMS,
 %notyet Register a \verb|CCTK_InterpLocalWarped()| interpolation operator.
 %notyet \end{SeeAlso}
 %notyet \end{SeeAlsoSection}
-%notyet 
+%notyet
 %notyet \begin{ErrorSection}
 %notyet	\begin{Error}{}
 %notyet	To find the numerical
 %notyet	values of the error codes (or more commonly, to find which error code
-%notyet	corresponds to a given numerical value), look in the files                   
-%notyet	\verb|cctk_Interp.h|, \verb|util_ErrorCodes.h|, and/or \verb|util_Table.h|      
+%notyet	corresponds to a given numerical value), look in the files
+%notyet	\verb|cctk_Interp.h|, \verb|util_ErrorCodes.h|, and/or \verb|util_Table.h|
 in the \verb|src/include/| directory in the Cactus flesh.
 %notyet	\end{Error}
 %notyet \begin{Error}{CCTK\_ERROR\_INTERP\_POINT\_OUTSIDE}
@@ -4330,19 +4330,19 @@ in the \verb|src/include/| directory in the Cactus flesh.
 %notyet (and/or set results in) the parameter table
 %notyet \end{Error}
 %notyet \end{ErrorSection}
-%notyet 
+%notyet
 %notyet \begin{ExampleSection}
 %notyet \begin{Example}{C}
 %notyet Here's a simple example of interpolating a \verb|CCTK_REAL| and a
 %notyet \verb|CCTK_COMPLEX| $10 \times 20$ 2-D array, at 5 interpolation points,
 %notyet using cubic interpolation.
-%notyet 
+%notyet
 %notyet \begin{verbatim}
 %notyet #define N_DIMS   2
 %notyet #define N_INTERP_POINTS   5
 %notyet #define N_INPUT_ARRAYS    2
 %notyet #define N_OUTPUT_ARRAYS   2
-%notyet 
+%notyet
 %notyet /* (x,y) coordinates of data grid points */
 %notyet /* ... note Cactus uses Fortran storage ordering, i.e. X is contiguous */
 %notyet #define NX   10
@@ -4352,13 +4352,13 @@ in the \verb|src/include/| directory in the Cactus flesh.
 %notyet const CCTK_REAL y_coords[NY][NX];
 %notyet const void *const coord_arrays[N_DIMS]
 %notyet         = { (const void *) x_coords, (const void *) y_coords };
-%notyet 
+%notyet
 %notyet /* (x,y) coordinates of interpolation points */
 %notyet const CCTK_REAL interp_x[N_INTERP_POINTS];
 %notyet const CCTK_REAL interp_y[N_INTERP_POINTS];
 %notyet const void *const interp_coords[N_DIMS]
 %notyet         = { (const void *) interp_x, (const void *) interp_y };
-%notyet 
+%notyet
 %notyet /* input arrays */
 %notyet /* ... note Cactus uses Fortran storage ordering, i.e. X is contiguous */
 %notyet const CCTK_REAL    input_real   [NY][NX];
@@ -4368,7 +4368,7 @@ in the \verb|src/include/| directory in the Cactus flesh.
 %notyet         = { CCTK_VARIABLE_REAL, CCTK_VARIABLE_COMPLEX };
 %notyet const void *const input_arrays[N_INPUT_ARRAYS]
 %notyet         = { (const void *) input_real, (const void *) input_complex };
-%notyet 
+%notyet
 %notyet /* output arrays */
 %notyet CCTK_REAL    output_real   [N_INTERP_POINTS];
 %notyet CCTK_COMPLEX output_complex[N_INTERP_POINTS];
@@ -4376,7 +4376,7 @@ in the \verb|src/include/| directory in the Cactus flesh.
 %notyet         = { CCTK_VARIABLE_REAL, CCTK_VARIABLE_COMPLEX };
 %notyet void *const output_arrays[N_OUTPUT_ARRAYS]
 %notyet         = { (void *) output_real, (void *) output_complex };
-%notyet 
+%notyet
 %notyet int operator_handle, param_table_handle;
 %notyet operator_handle = CCTK_InterpHandle("my interpolation operator");
 %notyet if (operator_handle < 0)
@@ -6852,7 +6852,7 @@ return 42;
 
 \begin{FunctionDescription}{Util\_Strlcat}
 \label{Util-Strlcat}
-Concatenate strings safely. 
+Concatenate strings safely.
 
 \begin{SynopsisSection}
 \begin{Synopsis}{C}
@@ -6984,7 +6984,7 @@ return OK;                                    /*** NORMAL RETURN ***/
 
 \begin{FunctionDescription}{Util\_Strlcpy}
 \label{Util-Strlcpy}
-Copies a string safely. 
+Copies a string safely.
 
 \begin{SynopsisSection}
 \begin{Synopsis}{C}
