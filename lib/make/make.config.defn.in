@@ -120,6 +120,11 @@ DEP_EXCLUDE_FILES = cctk_Functions\.h|CParameterStructNames\.h|cctk_Arguments\.h
 # Command used to get the working directory
 GET_WD = @GET_WD@
 
+# Way for Make to transofrm things like include directories
+# into a form suitable for the compiler.
+
+TRANSFORM_DIRS = @TRANSFORM_DIRS@
+
 # Library info
 LIBS    += @LIBS@
 LIBDIRS += @LIBDIRS@

@@ -22,6 +22,11 @@ DIVEL   =  __________________
 DIVIDER =  $(DIVEL)$(DIVEL)$(DIVEL)$(DIVEL)
 
 #####################################################################
+# Shortcuts.
+
+INCLUDE_LINE = $(patsubst %,-I"%",$(call TRANSFORM_DIRS,$(INC_DIRS)))
+
+#####################################################################
 # Define how to do dependencies
 
 ifeq ($(strip $(PERL_BACKUP_NECESSARY)),)
@@ -37,30 +42,30 @@ endef
 endif
 
 define C_DEPENDENCIES
-	$(C_DEPEND) $< $(INC_DIRS:%=-I%) $(SYS_INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DCCODE $(C_DEPEND_OUT)
+	$(C_DEPEND) $< $(INCLUDE_LINE) $(EXTRA_DEFINES:%=-D%) -DCCODE $(C_DEPEND_OUT)
 	$(DEPENDENCY_FIXER)
 endef
 
 define CXX_DEPENDENCIES
-	$(CXX_DEPEND) $< $(INC_DIRS:%=-I%) $(SYS_INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DCCODE $(CXX_DEPEND_OUT)
+	$(CXX_DEPEND) $< $(INCLUDE_LINE) $(EXTRA_DEFINES:%=-D%) -DCCODE $(CXX_DEPEND_OUT)
 	$(DEPENDENCY_FIXER)
 endef
 
 define F77_DEPENDENCIES
-	$(F77_DEPEND) $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DFCODE $< $(F77_DEPEND_OUT)
+	$(F77_DEPEND) $(INCLUDE_LINE) $(EXTRA_DEFINES:%=-D%) -DFCODE $< $(F77_DEPEND_OUT)
 	$(DEPENDENCY_FIXER)
 endef
 
 define F_DEPENDENCIES
-	$(F_DEPEND) $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DFCODE -DF90CODE $< $(F_DEPEND_OUT)
+	$(F_DEPEND) $(INCLUDE_LINE) $(EXTRA_DEFINES:%=-D%) -DFCODE -DF90CODE $< $(F_DEPEND_OUT)
 	$(DEPENDENCY_FIXER)
-	current_wd=`$(GET_WD)` ; { if test $(F_LINE_DIRECTIVES) = 'yes'; then echo '#line 1 "'$<'"'; fi; cat $<; } | $(PERL) -p -e 's.//.CCTK_AUTOMATICALLY_GENERATED_CONCATENATION_PROTECTION.g' | $(FPP) $(FPPFLAGS) $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DFCODE -DF90CODE | $(PERL) -p -e 's.CCTK_AUTOMATICALLY_GENERATED_CONCATENATION_PROTECTION.//.g' | $(PERL) $(F_DEPEND_MODULES) $< $(basename $(notdir $<)).F.o $(SRCDIR) $(USESTHORNS:%=$$current_wd/../%) $(F_DEPEND_MODULES_OUT) || { rm $@; exit 1; }
+	current_wd=`$(GET_WD)` ; { if test $(F_LINE_DIRECTIVES) = 'yes'; then echo '#line 1 "'$<'"'; fi; cat $<; } | $(PERL) -p -e 's.//.CCTK_AUTOMATICALLY_GENERATED_CONCATENATION_PROTECTION.g' | $(FPP) $(FPPFLAGS) $(INCLUDE_LINE) $(EXTRA_DEFINES:%=-D%) -DFCODE -DF90CODE | $(PERL) -p -e 's.CCTK_AUTOMATICALLY_GENERATED_CONCATENATION_PROTECTION.//.g' | $(PERL) $(F_DEPEND_MODULES) $< $(basename $(notdir $<)).F.o $(SRCDIR) $(USESTHORNS:%=$$current_wd/../%) $(F_DEPEND_MODULES_OUT) || { rm $@; exit 1; }
 endef
 
 define F90_DEPENDENCIES
-	$(F_DEPEND) $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DFCODE -DF90CODE $< $(F_DEPEND_OUT)
+	$(F_DEPEND) $(INCLUDE_LINE) $(EXTRA_DEFINES:%=-D%) -DFCODE -DF90CODE $< $(F_DEPEND_OUT)
 	$(DEPENDENCY_FIXER)
-	current_wd=`$(GET_WD)` ; { if test $(F_LINE_DIRECTIVES) = 'yes'; then echo '#line 1 "'$<'"'; fi; cat $<; } | $(PERL) -p -e 's.//.CCTK_AUTOMATICALLY_GENERATED_CONCATENATION_PROTECTION.g' | $(FPP) $(FPPFLAGS) $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DFCODE -DF90CODE | $(PERL) -p -e 's.CCTK_AUTOMATICALLY_GENERATED_CONCATENATION_PROTECTION.//.g' | $(PERL) $(F_DEPEND_MODULES) $< $(basename $(notdir $<)).F90.o $(SRCDIR) $(USESTHORNS:%=$$current_wd/../%) $(F_DEPEND_MODULES_OUT) || { rm $@; exit 1; }
+	current_wd=`$(GET_WD)` ; { if test $(F_LINE_DIRECTIVES) = 'yes'; then echo '#line 1 "'$<'"'; fi; cat $<; } | $(PERL) -p -e 's.//.CCTK_AUTOMATICALLY_GENERATED_CONCATENATION_PROTECTION.g' | $(FPP) $(FPPFLAGS) $(INCLUDE_LINE) $(EXTRA_DEFINES:%=-D%) -DFCODE -DF90CODE | $(PERL) -p -e 's.CCTK_AUTOMATICALLY_GENERATED_CONCATENATION_PROTECTION.//.g' | $(PERL) $(F_DEPEND_MODULES) $< $(basename $(notdir $<)).F90.o $(SRCDIR) $(USESTHORNS:%=$$current_wd/../%) $(F_DEPEND_MODULES_OUT) || { rm $@; exit 1; }
 endef
 
 # No preprocessing, just create empty dependency file
@@ -86,7 +91,7 @@ define PREPROCESS_C
 endef
 
 define COMPILE_C
-current_wd=`$(GET_WD)` ; cd $(SCRATCH_BUILD) ; $(CC) $(CFLAGS) $(CCOMPILEONLY)$(OPTIONSEP)$$current_wd$(DIRSEP)$@ $$current_wd$(DIRSEP)$(notdir $<) $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DCCODE
+current_wd=`$(GET_WD)` ; cd $(SCRATCH_BUILD) ; $(CC) $(CFLAGS) $(CCOMPILEONLY)$(OPTIONSEP)$$current_wd$(DIRSEP)$@ $$current_wd$(DIRSEP)$(notdir $<) $(INCLUDE_LINE) $(EXTRA_DEFINES:%=-D%) -DCCODE
 endef
 
 define POSTPROCESS_C
@@ -99,7 +104,7 @@ define PREPROCESS_CXX
 endef
 
 define COMPILE_CXX
-current_wd=`$(GET_WD)` ; cd $(SCRATCH_BUILD) ; $(CXX) $(CXXFLAGS) $(CCOMPILEONLY)$(OPTIONSEP)$$current_wd$(DIRSEP)$@ $$current_wd$(DIRSEP)$(CXX_WORKING_NAME) $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DCCODE
+current_wd=`$(GET_WD)` ; cd $(SCRATCH_BUILD) ; $(CXX) $(CXXFLAGS) $(CCOMPILEONLY)$(OPTIONSEP)$$current_wd$(DIRSEP)$@ $$current_wd$(DIRSEP)$(CXX_WORKING_NAME) $(INCLUDE_LINE) $(EXTRA_DEFINES:%=-D%) -DCCODE
 endef
 
 define POSTPROCESS_CXX
@@ -108,7 +113,7 @@ endef
 
 # Define how to do a F77 compilation
 define PREPROCESS_F77
-{ if test $(F_LINE_DIRECTIVES) = 'yes'; then echo '#line 1 "'$<'"'; fi; cat $<; } | $(PERL) -p -e 's.//.CCTK_AUTOMATICALLY_GENERATED_CONCATENATION_PROTECTION.g' | $(FPP) $(FPPFLAGS) $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DFCODE | $(PERL) -p -e 's.CCTK_AUTOMATICALLY_GENERATED_CONCATENATION_PROTECTION.//.g' | $(PERL) -p -e 's/__FORTRANFILE__/\"$(basename $(notdir $<)).F77\"/g' | $(PERL) -s $(F_FILE_PROCESSOR) -line_directives=$(F_LINE_DIRECTIVES) -source_file_name=$< > $(basename $(notdir $<)).f
+{ if test $(F_LINE_DIRECTIVES) = 'yes'; then echo '#line 1 "'$<'"'; fi; cat $<; } | $(PERL) -p -e 's.//.CCTK_AUTOMATICALLY_GENERATED_CONCATENATION_PROTECTION.g' | $(FPP) $(FPPFLAGS) $(INCLUDE_LINE) $(EXTRA_DEFINES:%=-D%) -DFCODE | $(PERL) -p -e 's.CCTK_AUTOMATICALLY_GENERATED_CONCATENATION_PROTECTION.//.g' | $(PERL) -p -e 's/__FORTRANFILE__/\"$(basename $(notdir $<)).F77\"/g' | $(PERL) -s $(F_FILE_PROCESSOR) -line_directives=$(F_LINE_DIRECTIVES) -source_file_name=$< > $(basename $(notdir $<)).f
 endef
 
 define COMPILE_F77
@@ -121,7 +126,7 @@ endef
 
 # Define how to do a fixed-format F90 compilation
 define PREPROCESS_F
-{ if test $(F_LINE_DIRECTIVES) = 'yes'; then echo '#line 1 "'$<'"'; fi; cat $<; } | $(PERL) -p -e 's.//.CCTK_AUTOMATICALLY_GENERATED_CONCATENATION_PROTECTION.g' | $(FPP) $(FPPFLAGS) $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DFCODE -DF90CODE | $(PERL) -p -e 's.CCTK_AUTOMATICALLY_GENERATED_CONCATENATION_PROTECTION.//.g' | $(PERL) -p -e 's/__FORTRANFILE__/\"$(basename $(notdir $<)).F\"/g' | $(PERL) -s $(F_FILE_PROCESSOR) -line_directives=$(F_LINE_DIRECTIVES) -source_file_name=$< > $(basename $(notdir $<)).f
+{ if test $(F_LINE_DIRECTIVES) = 'yes'; then echo '#line 1 "'$<'"'; fi; cat $<; } | $(PERL) -p -e 's.//.CCTK_AUTOMATICALLY_GENERATED_CONCATENATION_PROTECTION.g' | $(FPP) $(FPPFLAGS) $(INCLUDE_LINE) $(EXTRA_DEFINES:%=-D%) -DFCODE -DF90CODE | $(PERL) -p -e 's.CCTK_AUTOMATICALLY_GENERATED_CONCATENATION_PROTECTION.//.g' | $(PERL) -p -e 's/__FORTRANFILE__/\"$(basename $(notdir $<)).F\"/g' | $(PERL) -s $(F_FILE_PROCESSOR) -line_directives=$(F_LINE_DIRECTIVES) -source_file_name=$< > $(basename $(notdir $<)).f
 endef
 
 define COMPILE_F
@@ -134,7 +139,7 @@ endef
 
 # Define how to do a free-format F90 compilation
 define PREPROCESS_F90
-{ if test $(F_LINE_DIRECTIVES) = 'yes'; then echo '#line 1 "'$<'"'; fi; cat $<; } | $(PERL) -p -e 's.//.CCTK_AUTOMATICALLY_GENERATED_CONCATENATION_PROTECTION.g' | $(FPP) $(FPPFLAGS) $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DFCODE -DF90CODE | $(PERL) -p -e 's.CCTK_AUTOMATICALLY_GENERATED_CONCATENATION_PROTECTION.//.g' | $(PERL) -p -e 's/__FORTRANFILE__/\"$(basename $(notdir $<)).F90\"/g' | $(PERL) -s $(F_FILE_PROCESSOR) -free_format -line_directives=$(F_LINE_DIRECTIVES) -source_file_name=$< > $(basename $(notdir $<)).$(F90_SUFFIX)
+{ if test $(F_LINE_DIRECTIVES) = 'yes'; then echo '#line 1 "'$<'"'; fi; cat $<; } | $(PERL) -p -e 's.//.CCTK_AUTOMATICALLY_GENERATED_CONCATENATION_PROTECTION.g' | $(FPP) $(FPPFLAGS) $(INCLUDE_LINE) $(EXTRA_DEFINES:%=-D%) -DFCODE -DF90CODE | $(PERL) -p -e 's.CCTK_AUTOMATICALLY_GENERATED_CONCATENATION_PROTECTION.//.g' | $(PERL) -p -e 's/__FORTRANFILE__/\"$(basename $(notdir $<)).F90\"/g' | $(PERL) -s $(F_FILE_PROCESSOR) -free_format -line_directives=$(F_LINE_DIRECTIVES) -source_file_name=$< > $(basename $(notdir $<)).$(F90_SUFFIX)
 endef
 
 define COMPILE_F90

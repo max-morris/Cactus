@@ -1063,6 +1063,11 @@ AC_SUBST(F90_SUFFIX)
 AC_SUBST(GET_WD)
 : ${GET_WD="pwd"}
 
+# Way for Make to transofrm things like include directories
+# into a form suitable for the compiler.
+AC_SUBST(TRANSFORM_DIRS)
+: ${TRANSFORM_DIRS='$(1)'}
+
 # Any additional system include directories.
 AC_SUBST(SYS_INC_DIRS)
 : ${SYS_INC_DIRS=" "}

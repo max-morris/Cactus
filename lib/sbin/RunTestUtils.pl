@@ -843,7 +843,7 @@ sub RunTest
   my ($test_dir,$config);
   my ($retcode);
 
-  $arrangement = $testdata->{"$thorn ARRANGEMENT"};
+  my $arrangement = $testdata->{"$thorn ARRANGEMENT"};
 
   $testdata->{"$thorn $test TESTRUNDIR"} = $config_data->{"TESTS_DIR"}.$sep.$config_data->{"CONFIG"}.$sep.$thorn;
 
@@ -852,7 +852,7 @@ sub RunTest
   # Make any necessary directories
   &MakeTestRunDir($testdata->{"$thorn $test TESTRUNDIR"});
 
-  $parfile = $test.".par";
+  my $parfile = TransformDirs($testdata->{"$thorn TESTSDIR"}. "/" . $test . ".par");
 
   # Clean the output directory for this test
   &CleanDir($testdata->{"$thorn $test TESTOUTPUTDIR"});
@@ -860,7 +860,8 @@ sub RunTest
   # Run the test from the test thorn directory
   chdir ($testdata->{"$thorn $test TESTRUNDIR"}) ;
 
-  $cmd = "$config_data->{\"COMMAND\"} $config_data->{\"EXE\"} $testdata->{\"$thorn TESTSDIR\"}${sep}$parfile";
+  
+  $cmd = "$config_data->{\"COMMAND\"} $config_data->{\"EXE\"} $parfile";
   $retcode = &RunCactus($output,$test,$cmd);
   chdir $config_data->{"CCTK_DIR"};
 
@@ -1459,6 +1460,16 @@ sub ViewResults
 
   return;
 
+}
+
+sub TransformDirs
+{
+  my ($in) = @_;
+
+  $in =~ s,^/cygdrive/(.)/,\1:/,;
+  $in =~ s,^//(.)/,\1:/,;
+
+  return $in;
 }
 
 1;

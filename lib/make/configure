@@ -1670,12 +1670,12 @@ else
 #line 1671 "configure"
 #include "confdefs.h"
 #include <stdio.h>
-main()
+int main()
 {
   FILE *f=fopen("conftestval", "w");
-  if (!f) exit(1);
+  if (!f) return(1);
   fprintf(f, "%d\n", sizeof(long long));
-  exit(0);
+  return(0);
 }
 EOF
 if { (eval echo configure:1682: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
@@ -1714,12 +1714,12 @@ else
 #line 1715 "configure"
 #include "confdefs.h"
 #include <stdio.h>
-main()
+int main()
 {
   FILE *f=fopen("conftestval", "w");
-  if (!f) exit(1);
+  if (!f) return(1);
   fprintf(f, "%d\n", sizeof(long int));
-  exit(0);
+  return(0);
 }
 EOF
 if { (eval echo configure:1726: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
@@ -1758,12 +1758,12 @@ else
 #line 1759 "configure"
 #include "confdefs.h"
 #include <stdio.h>
-main()
+int main()
 {
   FILE *f=fopen("conftestval", "w");
-  if (!f) exit(1);
+  if (!f) return(1);
   fprintf(f, "%d\n", sizeof(int));
-  exit(0);
+  return(0);
 }
 EOF
 if { (eval echo configure:1770: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
@@ -1802,12 +1802,12 @@ else
 #line 1803 "configure"
 #include "confdefs.h"
 #include <stdio.h>
-main()
+int main()
 {
   FILE *f=fopen("conftestval", "w");
-  if (!f) exit(1);
+  if (!f) return(1);
   fprintf(f, "%d\n", sizeof(short int));
-  exit(0);
+  return(0);
 }
 EOF
 if { (eval echo configure:1814: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
@@ -1848,12 +1848,12 @@ else
 #line 1849 "configure"
 #include "confdefs.h"
 #include <stdio.h>
-main()
+int main()
 {
   FILE *f=fopen("conftestval", "w");
-  if (!f) exit(1);
+  if (!f) return(1);
   fprintf(f, "%d\n", sizeof(long double));
-  exit(0);
+  return(0);
 }
 EOF
 if { (eval echo configure:1860: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
@@ -1892,12 +1892,12 @@ else
 #line 1893 "configure"
 #include "confdefs.h"
 #include <stdio.h>
-main()
+int main()
 {
   FILE *f=fopen("conftestval", "w");
-  if (!f) exit(1);
+  if (!f) return(1);
   fprintf(f, "%d\n", sizeof(double));
-  exit(0);
+  return(0);
 }
 EOF
 if { (eval echo configure:1904: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
@@ -1937,12 +1937,12 @@ else
 #line 1938 "configure"
 #include "confdefs.h"
 #include <stdio.h>
-main()
+int main()
 {
   FILE *f=fopen("conftestval", "w");
-  if (!f) exit(1);
+  if (!f) return(1);
   fprintf(f, "%d\n", sizeof(float));
-  exit(0);
+  return(0);
 }
 EOF
 if { (eval echo configure:1949: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
@@ -1983,12 +1983,12 @@ else
 #line 1984 "configure"
 #include "confdefs.h"
 #include <stdio.h>
-main()
+int main()
 {
   FILE *f=fopen("conftestval", "w");
-  if (!f) exit(1);
+  if (!f) return(1);
   fprintf(f, "%d\n", sizeof(char *));
-  exit(0);
+  return(0);
 }
 EOF
 if { (eval echo configure:1995: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
@@ -5021,6 +5021,11 @@ fi
 
 : ${GET_WD="pwd"}
 
+# Way for Make to transofrm things like include directories
+# into a form suitable for the compiler.
+
+: ${TRANSFORM_DIRS='$(1)'}
+
 # Any additional system include directories.
 
 : ${SYS_INC_DIRS=" "}
@@ -5318,6 +5323,7 @@ s%@F90_POSTPROCESSING@%$F90_POSTPROCESSING%g
 s%@CXX_WORKING_NAME@%$CXX_WORKING_NAME%g
 s%@F90_SUFFIX@%$F90_SUFFIX%g
 s%@GET_WD@%$GET_WD%g
+s%@TRANSFORM_DIRS@%$TRANSFORM_DIRS%g
 s%@SYS_INC_DIRS@%$SYS_INC_DIRS%g
 s%@GENERAL_LIBRARIES@%$GENERAL_LIBRARIES%g
 s%@PERL_BACKUP_NECESSARY@%$PERL_BACKUP_NECESSARY%g

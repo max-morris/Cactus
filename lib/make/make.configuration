@@ -38,9 +38,6 @@ ifneq ($(strip $(OPTIMIZE)), )
   $(warning "You specified 'OPTIMIZE=$(OPTIMIZE)'. This option is evaluated only at configuration time and will be ignored at compile time.")
 endif
 
-
-DATESTAMP = $(CCTK_HOME)/src/datestamp.c
-
 export MAKE_DIR  = $(CCTK_HOME)/lib/make
 
 FLESHLIB = Cactus
@@ -54,6 +51,15 @@ DIVIDER =  $(DIVEL)$(DIVEL)$(DIVEL)$(DIVEL)
 
 # Include the definitions for this configuration
 include $(CONFIG)/make.config.defn
+
+# Remove this line in 4.0 beta 16, by which all configs should have this defined
+ifndef TRANSFORM_DIRS
+TRANSFORM_DIRS = $(1)
+endif
+
+# Define the name of the source file which is the one object on the linkline
+
+DATESTAMP = $(CCTK_HOME)/src/datestamp.c
 
 export PERLINTERP = $(shell echo $(PERL) | sed 's,^/cygdrive/\(.\)/,\1:/,' | sed 's,^//\(.\)/,\1:/,' )
 
@@ -129,9 +135,9 @@ ALLCACTUSLIBS = $(notdir $(CACTUSLIBS) $(THORN_LINKLIST) $(CACTUSLIBS))
 # Build the executable
 $(EXEDIR)$(DIRSEP)$(EXE): $(CONFIG)/make.thornlist $(CONFIG)/cctki_version.h $(patsubst %,$(CCTK_LIBDIR)/$(LIBNAME_PREFIX)%$(LIBNAME_SUFFIX),$(notdir $(THORNS) $(CACTUSLIBS)))
 	@echo Creating $(EXE) in $(EXEDIR) from $(THORNS)
-	$(CC) $(OPTIMISE_C) $(DEBUG_C) $(CFLAGS) $(CCOMPILEONLY)$(OPTIONSEP)$(TOP)$(DIRSEP)datestamp.o -I$(subst /,$(DIRSEP),$(CCTK_HOME)/src/include) -I$(CONFIG) $(subst /,$(DIRSEP),$(DATESTAMP))
+	$(CC) $(OPTIMISE_C) $(DEBUG_C) $(CFLAGS) $(CCOMPILEONLY)$(OPTIONSEP)"$(call TRANSFORM_DIRS,$(TOP)/datestamp.o)" -I"$(call TRANSFORM_DIRS,$(CCTK_HOME)/src/include)" -I"$(call TRANSFORM_DIRS,$(CONFIG))" "$(call TRANSFORM_DIRS,$(DATESTAMP))"
 	if [ ! -d $(EXEDIR) ]; then $(MKDIR) $(MKDIRFLAGS) $(EXEDIR) ; fi
-	$(LD) $(CREATEEXE)$(OPTIONSEP)$(subst /,$(DIRSEP),$@) $(DEBUG_LD) $(LDFLAGS) $(EXTRAFLAGS) $(subst /,$(DIRSEP), $(TOP)/datestamp.o) $(CACTUSLIBLINKLINE) $(GENERAL_LIBRARIES)
+	$(LD) $(CREATEEXE)$(OPTIONSEP)"$(call TRANSFORM_DIRS,$@)" $(DEBUG_LD) $(LDFLAGS) $(EXTRAFLAGS) "$(call TRANSFORM_DIRS,$(TOP)/datestamp.o)" $(CACTUSLIBLINKLINE) $(GENERAL_LIBRARIES)
 	@echo $(DIVIDER)
 
 # Version file

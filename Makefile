@@ -16,7 +16,7 @@
 #
 #
 #   @enddesc
-#   @version $Id: Makefile,v 1.153 2004-05-13 21:11:47 goodale Exp $
+#   @version $Id: Makefile,v 1.154 2004-05-19 09:53:23 goodale Exp $
 # @@*/
 
 ##################################################################################
@@ -187,7 +187,7 @@ DIVEL   =  __________________
 DIVIDER =  $(DIVEL)$(DIVEL)$(DIVEL)$(DIVEL)
 
 # Work out where we are
-export CCTK_HOME := $(shell pwd | sed 's,^/cygdrive/\(.\)/,\1:/,' | sed 's,^//\(.\)/,\1:/,' )
+export CCTK_HOME := $(shell pwd)
 
 
 # Work out where the configuration directory is

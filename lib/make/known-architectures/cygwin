@@ -132,6 +132,8 @@ else
     GET_WD="pwd | sed 's,^/cygdrive/\(.\)/,\1:/,' | sed 's,^//\(.\)/,\1:/,' "
   fi
 
+  TRANSFORM_DIRS='$(shell cygpath -wa $(1))'
+
 # The -nostdinc stops it picking stdio.h, etc, from the GNU headers.
   C_DEPEND='$(CPP) -E -MM -nostdinc -D_WIN32 $(CPPFLAGS) '
   CXX_DEPEND='$(CPP) -E -MM -nostdinc -D_WIN32 $(CPPFLAGS) '
@@ -149,12 +151,12 @@ else
   LIBNAME_PREFIX=""
   LIBNAME_SUFFIX=".lib"
   if test "$CC" = "cl"; then
-    CACTUSLIBLINKLINE='/link /libpath:$(subst /,$(DIRSEP),$(CCTK_LIBDIR)) $(foreach lib,$(ALLCACTUSLIBS), $(LIBNAME_PREFIX)$(lib)$(LIBNAME_SUFFIX))'
+    CACTUSLIBLINKLINE='/link /libpath:"$(call TRANSFORM_DIRS,$(CCTK_LIBDIR))" $(foreach lib,$(ALLCACTUSLIBS), $(LIBNAME_PREFIX)$(lib)$(LIBNAME_SUFFIX))'
   fi
 
 # Don't need the /link here since it's already in CACTUSLIBLINKLINE
   if test "$CC" = "cl"; then
-    GENERAL_LIBRARIES='$(LIBDIRS:%=/libpath:$(subst /,$(DIRSEP),%)) $(LIBS:%=%.lib) /NODEFAULTLIB:libcd /NODEFAULTLIB:libcmt' 
+    GENERAL_LIBRARIES='$(LIBDIRS:%=/libpath:"$(call TRANSFORM_DIRS,%)") $(LIBS:%=%.lib) /NODEFAULTLIB:libcd /NODEFAULTLIB:libcmt'
   else
     GENERAL_LIBRARIES='$(LIBDIRS:%=-L%) $(LIBS:%=-l%)'
   fi
