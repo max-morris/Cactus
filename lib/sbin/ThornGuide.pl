@@ -225,9 +225,14 @@ sub Read_Thorn_Doc
    close DOC;
 
    my $cnts = "";
-   $cnts .= "\n\{\\bf Title:\} $title\n" if ($title =~ /\w/) && (lc($title) ne lc($thorn));
-   $cnts .= "\n\{\\bf Author(s):\} $author\n" if ($author =~ /\w/);
-   $cnts .= "\n\{\\bf Date:\} $date\n" if ($date =~ /\w/);
+   $cnts .= "\n\{\\Large\n";
+   $cnts .= "\n\\begin\{tabbing\}\n";
+   $cnts .= "\n\{\\bf Author(s):\} \\= \\kill \\\\\n";
+   $cnts .= "\n\{\\bf Title:\} \\> $title \\\\\n" if ($title =~ /\w/) && (lc($title) ne lc($thorn));
+   $cnts .= "\n\{\\bf Author(s):\} \\> $author \\\\\n" if ($author =~ /\w/);
+   $cnts .= "\n\{\\bf Date:\} \\> $date \\\\\n" if ($date =~ /\w/);
+   $cnts .= "\n\\end\{tabbing\}\n";
+   $cnts .= "\n\}\n";
    $cnts .= "\n\\minitoc";
 
    return "$cnts\n$contents";
