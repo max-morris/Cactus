@@ -1,7 +1,7 @@
 
 Cactus Code Frequently Asked Questions
 
-$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.60 2003-03-04 08:07:29 allen Exp $
+$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.61 2003-03-11 07:58:44 allen Exp $
 
 Also available at http://www.cactuscode.org/Documentation/FAQ
 
@@ -221,6 +221,9 @@ E12 I'm getting wierd syntax errors in Fortran code, with an extra
     garbage character (often $ or &) stuck in the middle of a CCTK_INFO()
     or CCTK_WARN() or CCTK_EQUALS() call after it has been processed.  
 
+E13 I want to write the value of a KEYWORD parameter in Fortran code to 
+    a file, but nothing I try works.
+ 
 
 ------------------------------------------------------------------------------
 General
@@ -1199,6 +1202,16 @@ E12 I'm getting wierd syntax errors in Fortran code, with an extra
                              "off")) then
            test_state = 0
         end if
+
+E13 I want to write the value of a KEYWORD parameter in Fortran code to 
+    a file, but nothing I try works.
+ 
+    Cactus KEYWORD and STRING parameters are not stored as Fortran strings
+    (they are pointers to C strings) so you need to convert them first. 
+    Use the routine CCTK_FortranString to copy them to a locally defined
+    Fortran string, then you can manipulate them as usual. If you just 
+    want to print the value to the standard output there is also the 
+    routine CCTK_PrintString.
 
 
 ------------------------------------------------------------------------------
