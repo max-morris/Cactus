@@ -3,6 +3,28 @@
 # Test Suite tool
 # Version: $Header$
 
+# For debugging:
+my $debug = 0;
+my $debug_indent_level = 0;
+sub debug_print
+{
+  # debug statements are prefixed by a '#', to make them stand out from 
+  # ordinary output
+  $debug and print '#'.' 'x$debug_indent_level."@_\n";
+}
+sub debug
+{
+  $debug;
+}
+sub debug_indent
+{
+  $debug_indent_level++;
+}
+sub debug_dedent
+{
+  $debug_indent_level--;
+}
+
 require "lib/sbin/RunTestUtils.pl";
 
 # Read options from command line
@@ -191,7 +213,7 @@ while ($choice !~ /^Q/i)
     }
     elsif ($choice =~ /^Q/i)
     {
-      $loop = 0;
+#      $loop = 0;
     }
     else
     {
@@ -200,4 +222,3 @@ while ($choice !~ /^Q/i)
   }
   print "\n";
 }
-

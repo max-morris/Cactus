@@ -917,11 +917,11 @@ sub CompareTestFiles
           $rundata->{"$thorn $test $file NFAILSTRONG"}=0;
           $rundata->{"$thorn $test $file NFAILWEAK"}=0;
 
-          if ( -e $newfile && -s $newfile && -s $oldfile)
+          if ( -s $newfile && -s $oldfile)
           {
               open (INORIG, "<$oldfile") || print "Warning: Archive file $oldfile not found";
               open (INNEW,  "<$newfile") || print "Warning: Test file $newfile not found";
-                      
+
               undef(@maxdiff);
               undef(@diffvals);
               undef(@oldvals);
@@ -991,19 +991,15 @@ sub CompareTestFiles
                               }
                         
                               $allunder = 1;
-                              for ($count = 0; $count < $nold; $count++)
+                              for ($count = 0; $allunder and $count < $nold; $count++)
                               {
-                                  $vreltol[$count] = $reltol*&max(abs($oldvals[$count]),abs($newvals[$count]));
-                                  $vtol[$count] = &max($abstol,$vreltol[$count]);
-                                  if ($allunder == 1)
-                                  {
-                                      if ($diffvals[$count] >= $vtol[$count])
-                                      {
-                                          $allunder = 0;
-                                      }
-                                
-                                  }
-                              }
+				$vreltol[$count] = $reltol*&max(abs($oldvals[$count]),abs($newvals[$count]));
+				$vtol[$count] = &max($abstol,$vreltol[$count]);
+				if ($diffvals[$count] >= $vtol[$count])
+				{
+				  $allunder = 0;
+				}
+			      }
                         
                               unless ($allunder == 1)
                               {
@@ -1057,6 +1053,7 @@ sub CompareTestFiles
               print "     $file in archive but not created in test\n";
               $rundata->{"$thorn $test NFAILWEAK"}++;
               $rundata->{"$thorn $test NFAILSTRONG"}++;
+              $rundata->{"$thorn $test $file NFAILSTRONG"}++;
           }
           elsif (!-e $newfile && -z $oldfile)
           {
@@ -1070,6 +1067,7 @@ sub CompareTestFiles
               print "     $file is empty in test\n";
               $rundata->{"$thorn $test NFAILWEAK"}++;
               $rundata->{"$thorn $test NFAILSTRONG"}++;
+              $rundata->{"$thorn $test $file NFAILSTRONG"}++;
           }
           elsif (-e $newfile && -z $oldfile && -z $newfile)
           {
@@ -1080,6 +1078,7 @@ sub CompareTestFiles
               print "     $file is empty in archive but not in test\n";
               $rundata->{"$thorn $test NFAILWEAK"}++;
               $rundata->{"$thorn $test NFAILSTRONG"}++;
+              $rundata->{"$thorn $test $file NFAILSTRONG"}++;
           }
           else
           {
@@ -1370,77 +1369,123 @@ sub ViewResults
 
   if ($rundata->{"$thorn $test NTESTFILES"} && $rundata->{"$thorn $test NFAILSTRONG"})
   {
+    $myfile = 1; # fixes uninitialized variable warning below
+    &debug_print("thorn is '$thorn'");
+    &debug_print("test is '$test'");
+    &debug and $datafiles = $testdata->{"$thorn $test DATAFILES"};
+    &debug_print("DATAFILES are '$datafiles'");
+    &debug and my $nfailstrong = $rundata->{"$thorn $test NFAILSTRONG"};
+    &debug_print("NFAILSTRING is '$nfailstrong'");
     while ($myfile !~ /^c/i)
     {
-      undef ($choice);
-      print "  Files which differ strongly:\n";
+      $choice = 1;
       $count = 1;
+      &debug_indent;
       foreach $file (split(" ",$testdata->{"$thorn $test DATAFILES"}))
       {
+	&debug_print("considering file '$file'");
         if ($rundata->{"$thorn $test $file NFAILSTRONG"})
         {
+	  $count==1 and print "  Files which differ strongly:\n";
           print "    [$count] $file\n";
           $myfiles[$count] = $file;
           $count++;
         }
       }
+      &debug_dedent;
 
-      $myfile = &defprompt("  Choose file by number or [c]ontinue","c");
+      if ($count>1) {
+	$myfile = &defprompt("  Choose file by number or [c]ontinue","c");
+      } else {
+	$myfile = 'c';
+      }
 
       while ($myfile !~ /^[c]/i && $choice !~ /^[c]/i)
       {
 	print "  File $myfiles[$myfile] of test $test for thorn $thorn\n";
-        $choice = &defprompt("  Choose action [l]ist, [d]iff, [x]graph, [y]graph, [g]nuplot, [c]ontinue","c");
+	my $oldfile = "$testdata->{\"$thorn TESTSDIR\"}/$test/$myfiles[$myfile]";
+	my $newfile = "$testdata->{\"$thorn $test TESTOUTPUTDIR\"}/$myfiles[$myfile]";
+	if (-e $oldfile and -e $newfile)
+	{
+	  $choice = &defprompt("  Choose action [l]ist, [d]iff, [x]graph, [y]graph, [g]nuplot, [c]ontinue","c");
+	} else
+	{
+	  $choice = &defprompt("  Choose action [l]ist, [x]graph, [y]graph, [g]nuplot, [c]ontinue","c");
+	}
 
         if ($choice =~ /^l/i)
         {
-          print "Archived file: $myfiles[$myfile]\n\n";
-          open (ARCHIVE, "<$testdata->{\"$thorn TESTSDIR\"}/$test/$myfiles[$myfile]");
-          while (<ARCHIVE>)
-          {
-            print;
-          }
-          close (ARCHIVE);
+	  if (-s $oldfile)
+	  {
+	    print "Archived file: $myfiles[$myfile]\n\n";
+	    open (ARCHIVE, "<$oldfile");
+	    while (<ARCHIVE>)
+	    {
+	      print;
+	    }
+	    close (ARCHIVE);
+	  }
 
-          print "\n\nNew file: $myfiles[$myfile]\n\n";
+	  if (-s $newfile)
+	  {
+	    print "\n\nNew file: $myfiles[$myfile]\n\n";
 
-          open (TEST, "<$testdata->{\"$thorn $test TESTOUTPUTDIR\"}/$myfiles[$myfile]");
-          while (<TEST>)
-          {
-            print;
-          }
-          close (TEST);
-          print "\n";
+	    open (TEST, "<$newfile");
+	    while (<TEST>)
+	    {
+	      print;
+	    }
+	    close (TEST);
+	    print "\n";
+	  }
         }
         elsif ($choice =~ /^d/i)
         {
-          print "\n  Performing diff on  <archive> <test>\n\n";
-          $command = "diff $testdata->{\"$thorn TESTSDIR\"}/$test/$myfiles[$myfile] $testdata->{\"$thorn $test TESTOUTPUTDIR\"}/$myfiles[$myfile]\n";
-          print "$command\n\n";
-          system($command);
-          print "\n";
+	  &debug_print("oldfile is '$oldfile'");
+	  if (-e $oldfile and -e $newfile)
+	  {
+	    print "\n  Performing diff on  <archive> <test>\n\n";
+	    $command = "diff $oldfile $newfile\n";
+	    print "$command\n\n";
+	    system($command);
+	  } else {
+	    print "\n  Both versions of this file do not exist.  Please choose a different option.\n";
+	  }
+	  print "\n";
         }
         elsif ($choice =~ /^x/i)
         {
-          print "  xgraph <archive> <test>\n\n";
-          $command = "xgraph $testdata->{\"$thorn TESTSDIR\"}/$test/$myfiles[$myfile] $testdata->{\"$thorn $test TESTOUTPUTDIR\"}/$myfiles[$myfile] &\n";
+          print "  xgraph <archive> <test>\n\n"; # Should this be changed?
+	  $command = "xgraph ";
+	  -e $oldfile and $command .= "$oldfile ";
+	  -e $newfile and $command .= "$newfile ";
+          $command .= "&\n";
           print "  $command\n";
           system($command);
         }
         elsif ($choice =~ /^y/i)
         {
-          print "  ygraph <archive> <test>\n\n";
-          $command = "ygraph $testdata->{\"$thorn TESTSDIR\"}/$test/$myfiles[$myfile] $testdata->{\"$thorn $test TESTOUTPUTDIR\"}/$myfiles[$myfile] &\n";
+          print "  ygraph <archive> <test>\n\n"; # Should this be changed?
+	  $command = "ygraph ";
+	  -e $oldfile and $command .= "$oldfile ";
+	  -e $newfile and $command .= "$newfile ";
+          $command .= "&\n";
           print "  $command\n";
           system($command);
         }
         elsif ($choice =~ /^g/i)
         {
-          print "  gnuplot <archive> <test>\n\n";
+          print "  gnuplot <archive> <test>\n\n"; # Should this be changed?
 	  $command = ("gnuplot -persist <<EOF\n"
 		      . "set grid\n"
-		      . "plot \"$testdata->{\"$thorn TESTSDIR\"}/$test/$myfiles[$myfile]\" w lp, \"$testdata->{\"$thorn $test TESTOUTPUTDIR\"}/$myfiles[$myfile]\" w lp\n"
-		      . "EOF");
+		      . "plot ");
+	  -e $oldfile and $command .= "\"$oldfile\" w lp";
+	  if (-e $oldfile and -e $newfile)
+	  {
+	    $command .= ", ";
+	  }	    
+	  -e $newfile and $command .= "\"$newfile\" w lp ";
+	  $command .= "\nEOF";
           print "  $command\n";
           system($command);
         }
