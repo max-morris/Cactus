@@ -284,11 +284,11 @@ int CCTKi_CreateGroup(const char *gname,
 
   /* Allocate storage for the group */
   groupscope = CCTK_GroupScopeNumber(gscope);
-  if (groupscope == GROUP_PUBLIC || groupscope == GROUP_PROTECTED)
+  if (groupscope == CCTK_PUBLIC || groupscope == CCTK_PROTECTED)
   {
     group = CCTKi_SetupGroup(imp, gname, staggercode, n_variables);
   }
-  else if (groupscope == GROUP_PRIVATE)
+  else if (groupscope == CCTK_PRIVATE)
   {
     group = CCTKi_SetupGroup(thorn, gname, staggercode, n_variables);
   }
@@ -1053,17 +1053,17 @@ int CCTK_GroupScopeNumber(const char *type)
  
   if(!strcmp(type, "PRIVATE"))
   {
-    retval = GROUP_PRIVATE;
+    retval = CCTK_PRIVATE;
   }
 
   if(!strcmp(type, "PROTECTED"))
   {
-    retval = GROUP_PROTECTED;
+    retval = CCTK_PROTECTED;
   }
 
   if(!strcmp(type, "PUBLIC"))
   {
-    retval = GROUP_PUBLIC;
+    retval = CCTK_PUBLIC;
   }
 
   return retval;
@@ -1100,12 +1100,12 @@ int CCTK_GroupDistribNumber(const char *dtype)
  
   if(!strcmp(dtype, "CONSTANT"))
   {
-    retval = DISTRIB_CONSTANT;
+    retval = CCTK_DISTRIB_CONSTANT;
   }
 
   if(!strcmp(dtype, "DEFAULT"))
   {
-    retval = DISTRIB_DEFAULT;
+    retval = CCTK_DISTRIB_DEFAULT;
   }
 
   return retval;

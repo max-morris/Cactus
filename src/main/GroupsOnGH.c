@@ -390,7 +390,7 @@ int CCTK_GrouplbndGI(cGH *cctkGH,
   int usedim = dim;  /* Actual number of integers copied */
   cGroupDynamicData data;
 
-  if (CCTK_GroupTypeI(groupindex) == GROUP_SCALAR)
+  if (CCTK_GroupTypeI(groupindex) == CCTK_SCALAR)
   {
     retval = -3;
     CCTK_VWarn(2,__LINE__,__FILE__,"Cactus",
@@ -555,7 +555,7 @@ int CCTK_GroupubndGI(cGH *cctkGH,
   int usedim = dim;  /* Actual number of integers copied */
   cGroupDynamicData data;
 
-  if (CCTK_GroupTypeI(groupindex) == GROUP_SCALAR)
+  if (CCTK_GroupTypeI(groupindex) == CCTK_SCALAR)
   {
     retval = -3;
     CCTK_VWarn(2,__LINE__,__FILE__,"Cactus",
@@ -720,7 +720,7 @@ int CCTK_GrouplshGI(cGH *cctkGH,
   int usedim = dim;  /* Actual number of integers copied */
   cGroupDynamicData data;
 
-  if (CCTK_GroupTypeI(groupindex) == GROUP_SCALAR)
+  if (CCTK_GroupTypeI(groupindex) == CCTK_SCALAR)
   {
     retval = -3;
     CCTK_VWarn(2,__LINE__,__FILE__,"Cactus",
@@ -885,7 +885,7 @@ int CCTK_GroupgshGI(cGH *cctkGH,
   int usedim = dim;  /* Actual number of integers copied */
   cGroupDynamicData data;
 
-  if (CCTK_GroupTypeI(groupindex) == GROUP_SCALAR)
+  if (CCTK_GroupTypeI(groupindex) == CCTK_SCALAR)
   {
     retval = -3;
     CCTK_VWarn(2,__LINE__,__FILE__,"Cactus",
@@ -1050,7 +1050,7 @@ int CCTK_GroupnghostzonesGI(cGH *cctkGH,
   int usedim = dim;  /* Actual number of integers copied */
   cGroupDynamicData data;
 
-  if (CCTK_GroupTypeI(groupindex) == GROUP_SCALAR)
+  if (CCTK_GroupTypeI(groupindex) == CCTK_SCALAR)
   {
     retval = -3;
     CCTK_VWarn(2,__LINE__,__FILE__,"Cactus",
@@ -1214,7 +1214,7 @@ int CCTK_GroupbboxGI(cGH *cctkGH,
   int usesize = size;  /* Actual number of integers copied */
   cGroupDynamicData data;
 
-  if (CCTK_GroupTypeI(groupindex) == GROUP_SCALAR)
+  if (CCTK_GroupTypeI(groupindex) == CCTK_SCALAR)
   {
     retval = -3;
     CCTK_VWarn(2,__LINE__,__FILE__,"Cactus",
