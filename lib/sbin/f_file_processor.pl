@@ -1,11 +1,11 @@
-#!/usr/bin/perl -s
+#!/usr/bin/perl -sw
 #/*@@
 #  @file      f_file_processor.pl
 #  @date      Jan 22 1995
 #  @author    Paul Walker
 #  @desc
 #  Postprocessor for Fortran files.
-#   
+#
 #  Reads STDIN, writes to STDOUT.
 #
 #  removes all comments
@@ -15,12 +15,12 @@
 #      (depending on -free_format)
 #  Breaks lines greater than 72 cols
 #  Does this using multi-line matching!
-#  
-#  If run with -free_format, chooses free-format 
+#
+#  If run with -free_format, chooses free-format
 #  line splitting.
-#  
-#  @enddesc 
-#  @history 
+#
+#  @enddesc
+#  @history
 #  @hdate Wed Apr 21 1997 @hauthor Joan Masso
 #  @hdesc get rid of cC comments and handle ! comments properly
 #         and fix it so now it is really 72 and we do not get
@@ -29,11 +29,16 @@
 #  @hdesc Added in Erik Schnetters free-format stuff
 #         grdoc-ed
 #         reformated as per rest of perl code in Cactus.
-#  @endhistory 
+#  @endhistory
+#  @hdate Fri 5 December 2003
+#  @hauthor Thomas Radke
+#  @hdesc Added Fokke Dijkstra's patch to properly deal with comments in lines
+#         with strings
+#  @endhistory
 #  @version $Header$
 #@@*/
 
-$* = 1;                         # Multi-line is on!
+$MULTILINE_MATCHING = 1;                         # Multi-line is on!
 
 # Pick the correct set of comments to remove.
 if ($free_format)
@@ -46,7 +51,7 @@ else
 }
 
 # Loop over all lines.
-while (<>) 
+while (<>)
 {
   # Get rid of final \n
   chomp;
@@ -65,28 +70,68 @@ while (<>)
 
   # Get rid of any tabs
   s/\t/        /g;
-  
+
   # Chop fortran comments to 72 columns (they stay in code)
   # removing any quotes
   # (standard c C, or even ! comments)
-  if (/^$standard_comments.*$/ || /(.)![^'"]*$/)
+  if (/^$standard_comments.*$/)
   {
     # Remove quotes
     s/['"]//g;
-    if (/(.{132,132}).*/) 
+    if (/(.{132,132}).*/)
     {
       print $1;
     }
     else
-    { 
+    {
       print;
     }
-    print "\n";      
+    print "\n";
   }
-  else 
+  else
   {
     # Get rid of ! comments : a bit tricky as ! may appear inside strings
-    s/(.)![^'"]*$/\1\n/g;
+
+    # the following code by Fokke Dijkstra also checks for comments
+    # on a line with a string
+    # Search for possible comment
+    if (/!/)
+    {
+      # find all ! " and ' and check for strings or comments
+      $string = 0;
+      while (m/([!"'])/g)
+      {
+        # keep track of position for substr include last character
+        $position = (pos) - 1;
+
+        # check if we are currently in a string and possibly end it,
+        # or check for a new string or a comment
+        if ($string)
+        {
+          if ($1 eq "\'" && $string == 1)
+          {
+            $string = 0;
+          }
+          if ($1 eq "\"" && $string == 2)
+          {
+            $string = 0;
+          }
+        }
+        elsif ($1 eq "\'")
+        {
+          $string = 1;
+        }
+        elsif ($1 eq "\"")
+        {
+          $string = 2;
+        }
+        elsif ($1 eq "!")
+        {
+          $_ = substr ($_, 0, $position);
+          last;
+        }
+      }
+    }
 
     # OK, now put in the line breaks (&& or &!)
     s/\&\&\s*/\n      /g;
@@ -100,7 +145,7 @@ while (<>)
     # than if it doesn't.
     if (/\n/)
     {
-      foreach $LINE (split('\n',$_)) 
+      foreach $LINE (split('\n',$_))
       {
         &splitline($LINE);
       }
@@ -116,15 +161,9 @@ while (<>)
 #  @routine    splitline
 #  @date       Wed Nov 24 12:14:55 1999
 #  @author     Tom Goodale
-#  @desc 
-#  Chooses the correct routine to split lines.  
-#  @enddesc 
-#  @calls     
-#  @calledby   
-#  @history 
-#
-#  @endhistory 
-#
+#  @desc
+#  Chooses the correct routine to split lines.
+#  @enddesc
 #@@*/
 sub splitline
 {
@@ -145,17 +184,11 @@ sub splitline
 #  @routine    fixed_format_splitline
 #  @date       1995
 #  @author     Paul Walker
-#  @desc 
+#  @desc
 #  Splits lines for F77 or fixed-format F90
-#  @enddesc 
-#  @calls     
-#  @calledby   
-#  @history 
-#
-#  @endhistory 
-#
+#  @enddesc
 #@@*/
-sub fixed_format_splitline 
+sub fixed_format_splitline
 {
   my ($LINE) = @_;
 
@@ -166,18 +199,18 @@ sub fixed_format_splitline
   # Strip out leading spaces in favor of 7 spaces
   # $LINE =~ s/^\s+/       /;
   # Note the new treatement of comments with \S
-  if ($LINE =~ /^([^\S].{71,71}).*/) 
+  if ($LINE =~ /^([^\S].{71,71}).*/)
   {
     print "$1\n";
     $LINE =~ s/.{72,72}//;
-    while ($LINE =~ /^(.{66,66}).*/) 
+    while ($LINE =~ /^(.{66,66}).*/)
     {
       print "     &$1\n";
       $LINE =~ s/.{66,66}//;
     }
     print "     &$LINE\n";
-  } 
-  else 
+  }
+  else
   {
     print "$LINE\n";
   }
@@ -188,17 +221,11 @@ sub fixed_format_splitline
 #  @routine    free_format_splitline
 #  @date       Thu Sep 30 12:05:36 1999
 #  @author     Erik Schnetter
-#  @desc 
-#  Splits lines for freeformat fortran 90.  
-#  @enddesc 
-#  @calls     
-#  @calledby   
-#  @history 
-#
-#  @endhistory 
-#
+#  @desc
+#  Splits lines for freeformat fortran 90.
+#  @enddesc
 #@@*/
-sub free_format_splitline 
+sub free_format_splitline
 {
   my ($LINE) = @_;
   my $OUT;
@@ -216,7 +243,7 @@ sub free_format_splitline
 
   # Strip out leading spaces in favor of 3 spaces
   # $LINE =~ s/^\s+/   /;
-  if ($LINE =~ /^(.{78,78})...*/) 
+  if ($LINE =~ /^(.{78,78})...*/)
   {
     $OUT = $1;
     print "$OUT";
@@ -225,7 +252,7 @@ sub free_format_splitline
     print "\n";
     $LINE =~ s/.{78,78}//;
 
-    while ($LINE =~ /^(.{75,75}).*/) 
+    while ($LINE =~ /^(.{75,75}).*/)
     {
       $LINE =~ /^(.{74,74}).*/;
       $OUT = $1;
@@ -236,18 +263,10 @@ sub free_format_splitline
       $LINE =~ s/.{74,74}//;
     }
     print "   &" if (! ($LINE =~ /^[\s]*\&/));
-    print "$LINE\n";
-  } 
-  else 
+    print "$LINE\n" if (! ($LINE =~ /^[\s]*\&[\s]*$/));
+  }
+  else
   {
     print "$LINE\n";
   }
-
 }
-
-
-
-
-
-
-
