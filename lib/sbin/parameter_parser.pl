@@ -199,7 +199,6 @@ sub parse_param_ccl
 	  if($option =~ m:STEERABLE:i)
 	  {
 	    $parameter_db{"\U$thorn $variable\E steerable"} = $options{$option};
-	    print "Got STEERABLE <$options{$option}> for $variable in $thorn\n";
 	  }
 	  else
 	  {
