@@ -132,7 +132,7 @@ sub parse_param_ccl
     $line = $data[$line_number];
     
     #       Parse the line
-    if($line =~ m/(GLOBAL|RESTRICTED|PRIVATE|SHARES)\s*:(.*)/i)
+    if($line =~ m/(GLOBAL|RESTRICTED|PRIVATE|SHARES)\s*:\s*(\S*)\s*(.*)$/i)
     {
       #           It's a new block.
       $block = "\U$1\E";
@@ -142,6 +142,12 @@ sub parse_param_ccl
         $current_friend = $2;
         $current_friend =~ s:\s::;
         
+	if ($3 !~ /^\s*$/)
+	{
+	  $mess = "More than one implementation on SHARES line in thorn $thorn";
+	  &CST_error(0,$mess,"",__LINE__,__FILE__);
+	}
+	  
         #               It's a friend block.
         $block .= " \U$current_friend\E";
         #               Remember this friend, but make the memory unique.
