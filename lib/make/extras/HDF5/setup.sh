@@ -32,9 +32,9 @@ test_phdf5=$?
 
 if [ -n "$MPI" ] ; then
   if [ $test_phdf5 -eq 0 ] ; then
-    echo "Found parallel HDF5 library, so Cactus will make use of PHDF5 support."
+    echo "Found parallel HDF5 library, so Cactus will make use of parallel HDF5 support."
   else
-    echo "Found serial HDF5 library, so Cactus can't make use of PHDF5 support."
+    echo "Found serial HDF5 library, so Cactus can't make use of parallel HDF5 support."
   fi
 else
   if [ $test_phdf5 -eq 0 ] ; then
@@ -68,9 +68,11 @@ fi
 grep -qe '#define HAVE_LIBZ 1' ${HDF5_DIR}/include/H5config.h 2> /dev/null
 test_zlib=$?
 
+# check whether we run Windows or not
+$PERL -we 'exit (`uname` =~ /^CYGWIN/)'
+is_windows=$?
+
 if [ $test_compress2 -eq 0 -o $test_zlib -eq 0 ] ; then
-  $PERL -we 'exit (`uname` =~ /^CYGWIN/)'
-  is_windows=$?
   if [ $is_windows -eq 0 ] ; then
     libz='libz.a'
   else
