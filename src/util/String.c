@@ -52,7 +52,7 @@ static const char *rcsid = "$Header$";
  ********************************************************************/
 
  /*@@
-   @routine    CCTK_StrSep
+   @routine    Util_StrSep
    @date       Tue May  2 10:29:07 2000
    @author     Tom Goodale
    @desc
