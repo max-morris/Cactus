@@ -150,7 +150,7 @@ int Util_DeleteHandle(cHandledData *storage, int handle)
 {
   int return_code;
 
-  if((handle < storage->first_unused)&&(handle >= 0))
+  if((handle < storage->array_size)&&(handle >= 0))
   {
     /* It's a valid handle. */
     storage->array[handle].in_use = FALSE;
