@@ -1194,47 +1194,281 @@ file is created.
 \subsection{Reduction Operators}
 \label{sec:reop}
 
-Reduction operators are operators which process grid functions
-and return, either on just one processor or on each processor,
-a 1-Dimensional array of scalars. Examples of reduction operators
-could include simple operations such as the maximum value of a 
-grid function across the grid, or more complex operations
+A reduction operation can be defined as an operation on variables
+distributed  across multiple processor resulting in a single number.
+Typical reduction operations are: sum, minimum/maximum value, boolean
+operations. A typical applications is e.g. the maximum reduction on
+a processor local error estimates, therefor making the previous
+processor local error known to all processors. 
 
-The flesh itself does not provide any reduction operators,
-instead providing a mechanism for thorns to register their
-own routines as reduction operators, labelled by a given name.
-For details of writing reduction operators see ????. Application
-thorns can interact with the different registered reduction 
-operators through the following function calls:
+The exchange of
+information across processors needs the functionality of a
+communication layer eg. PUGH. For this reason, the
+reduction operation itself is not part of the flesh, instead Cactus (again)
+provides a registration mechanism for thorns to register routines they 
+provide as reduction operators. The different operators are
+identified by their name and a unique number, called a {\em handle}.
+
+The registration mechanism gives the advantage of a common
+interface while hiding the individual communication calls in the
+layer.
+
+In Cactus, reduction operators can be applied to gridfunctions, grid
+scalars and distributed arrays, as well as local variables/arrays. 
+There is a fundamental difference between the reduction operation on
+grid functions and quantities as arrays {\bf FIXME WHY??}.
+
+The syntax of the reduction in C / Fortran, for examples see below.
 
 {\t
 \begin{verbatim}
 
-#include "cctk_Reduction.h"
-int CCTK_GetReductionHandle(const char *reduction);
+int CCTK_GetReductionHandle(const char *reduction_name);
+
+call CCTK_ReductionHandle(int reduction_handle, character reduction_name)
 
 \end{verbatim}
 }
+
+{\t
+\begin{verbatim}
+
+int CCTK_GetReductionArrayHandle(const char *reduction_name);
+
+call CCTK_ReductionArrayHandle(int reduction_handle, character reduction_name)
+
+\end{verbatim}
+}
+
 \vskip .25cm
 
-Get a integer handle corresponding to a given reduction operator. 
+\begin{Lentry}
+\item{\tt reduction\_handle}: In Fortran the name of the variable will
+contain the handle value after the call. In C this value is the
+function value.
+\item{\tt reduction\_name}: is the name under which the operator has
+been registered by the providor. This name can be looked up {\bf FIXME 
+WHERE ?} in PUGH, since this is the only communication layer at this
+point.
+\item{\tt Error checking}: negative handle value indicates failure to
+identify the correct operator. Possible causes: misspelled operator
+name, operator not registered properly.
+\end{Lentry}
+
+Get a integer handle corresponding to a given reduction operator.
+The operator is identified by the name it was registered with.
 (Note that although it would appear to be far more convenient to 
 pass the name of the reduction operator directly to the following
 function call to {\t CCTK\_Reduce} this causes problems with the
 translation of strings from {\t FORTRAN} to {\t C} with variable
 argument lists).
 
+\vskip 0.25cm
+
+The main interfaces for reduction operations are quite powerful (and
+hence rather complicated) To ease the use of these main interfaces, wrappers
+designed for specific and more restricted use are described below. If 
+uncertain, you should use these.
+
 {\t
 \begin{verbatim}
 
-#include "cctk_Reduction.h"
-int CCTK_Reduce(cGH *GH, int retvaltype, int retvalnum, void *retval, int handle, int index, ...);
+int CCTK_Reduce( cGH *GH, 
+	 	 int retvaltype, 
+		 int retvalnum, 
+		 void *retval, 
+		 int handle, 
+		 int index, 
+		 ...);
 
+
+call CCTK_Reduce( int returnvalue, 
+		  cctkGH, 
+		  int processor,
+                  int operation_handle,
+                  int num_out_vals,
+                  int type_out_vals,
+                  out_vals,
+                  int num_in_fields,
+                  ... )
+
+int CCTK_ReduceArray(  cGH *GH,
+                       int proc,
+                       int operation_handle,
+                       int num_out_vals,
+                       int type_out_vals,
+                       void *out_vals,
+                       int num_dims,
+                       int num_in_arrays,
+                       int type_in_arrays,
+                       ... )
+
+call CCTK_ReduceArray(int returnvalue,
+                      cctkGH,
+                      int processor,
+                      int operation_handle,
+                      int num_out_vals,
+                      int type_out_vals,
+                      void out_vals,
+                      int num_dims,
+                      int num_in_arrays,
+                      int type_in_arrays,
+                      ... )
 \end{verbatim}
 }
+
+\begin{Lentry}
+\item{\tt int returnvalue} the return value of the operation. negative
+			value indicates failure to perform reduction.
+\item{\tt cctkGH}	in fortran the pointer to the grid hierachy
+			structure. Cannot be used within Fortran but
+			can be used from within	
+			C. Since this name is fixed write it out shown
+			above.
+\item{\tt cGH *GH} in the C the pointer to the grid hierarchy.
+\item{\tt int processor} the processor which collects the
+			information, negative value (-1) will distribute the data to all
+			processors.
+\item{\tt int operation\_handle} the number of the reduction operation
+		handle, needs to be found by calling {\tt CCTK\_ReductionHandle} or
+		{\tt CCTK\_ReductionArrayHandle}.
+\item{\tt int num\_out\_vals} integer defining the number of ??
+\item{\tt int type\_out\_values} specifies the type of the gridfunction 
+you are communicating. Use the values as specified in
+\ref{sec:cctk_datatypes}. Note: do not {\em mix} datatypes: e.g. in
+fortran do not declare a variable as {\tt integer} and then specify
+the type {\tt CCTK\_VARIABLE\_INT}. These types need not be the same on
+some architectures.
+\item{\tt out\_vals}
+\item{\tt int num\_in\_fields} specifies the number of  to follow
+\item{\tt ...} A varible argument list: specify x and xx, see examples 
+below. A note on variable arguments lists: A  function  may  be called
+with a varying number of arguments of varying types.
+\item{em error checking} a return value other than zero indicates
+failure to perform the operation.
+\end{Lentry}
+
+\vskip 0.25cm
+
+
+The routines are designed for the purpose of reducing scalars, arrays
+and grid functions. They hide many of the options of the generic
+interface described above. 
+{\t
+\begin{verbatim}
+int CCTK_ReduceLocScalar (cGH *GH, 
+			  int processor, 
+			  int operation_handle,
+                          void *in_scalar, 
+			  void *out_scalar, 
+			  int data_type)
+\end{verbatim}
+}
+
+{\t
+\begin{verbatim}
+call CCTK_ReduceLocScalar(int returnvalue,
+                          cctkGH,
+			  int processor,
+                          int operation_handle,
+                          in_scalar,
+                          out_scalar,
+                          int data_type)
+\end{verbatim}
+}
+
+
+
+{\t
+\begin{verbatim}
+int CCTK_ReduceLocArrayToScalar1D()
+\end{verbatim}
+}
+
+{\t
+\begin{verbatim}
+call CCTK_ReduceLocArrayToScalar1D()
+\end{verbatim}
+}
+
+{\t
+\begin{verbatim}
+int CCTK_ReduceLocArrayToArray1D( cGH *GH, 
+		                  int processor,
+				  int operation_handle,
+                                  void *in_array1d, 
+	                          void *out_array1d, 
+			          int elements_in_array1d)
+			          int data_type)
+\end{verbatim}
+}
+
+{\t
+\begin{verbatim}
+call CCTK_ReduceLocArrayToArray1D( int returnvalue
+			           cctkGH,
+                                   int processor,
+                                   int operation_handle,
+                                   in_array1d,
+                                   out_array1d,
+                                   int elements_in_array1d,
+                                   int data_type)
+\end{verbatim}
+}
+
+
+
+{\t
+\begin{verbatim}
+int CCTK_ReduceLocArrayToScalar2D()
+\end{verbatim}
+}
+
+{\t
+\begin{verbatim}
+call CCTK_ReduceLocArrayToScalar2D()
+\end{verbatim}
+}
+
+{\t
+\begin{verbatim}
+int CCTK_ReduceLocArrayToArray2D()
+\end{verbatim}
+}
+
+{\t
+\begin{verbatim}
+call CCTK_ReduceLocArrayToArray2D()
+\end{verbatim}
+}
+
+{\t
+\begin{verbatim}
+int CCTK_ReduceLocArrayToScalar3D()
+\end{verbatim}
+}
+
+{\t
+\begin{verbatim}
+call CCTK_ReduceLocArrayToScalar3D()
+\end{verbatim}
+}
+
+{\t
+\begin{verbatim}
+int CCTK_ReduceLocArrayToArray3D()
+\end{verbatim}
+}
+
+{\t
+\begin{verbatim}
+call CCTK_ReduceLocArrayToArray3D()
+\end{verbatim}
+}
+
 \vskip .25cm
-Note that the memory for {\t retval} must be assigned before the reduction
-call is made.
+Note that the memory for the returned values must be allocated before
+the reduction call is made.
 
 \section{Calls between different programming languages}
 \label{sec:cabedipr}
