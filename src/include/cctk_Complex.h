@@ -31,7 +31,8 @@ cctk_complex CCTK_Cmplx##Div   (cctk_complex a, cctk_complex b);              \
 cctk_complex CCTK_Cmplx##Sin   (cctk_complex complex_number);                 \
 cctk_complex CCTK_Cmplx##Cos   (cctk_complex complex_number);                 \
 cctk_complex CCTK_Cmplx##Exp   (cctk_complex complex_number);                 \
-cctk_complex CCTK_Cmplx##Sqrt  (cctk_complex complex_number);
+cctk_complex CCTK_Cmplx##Sqrt  (cctk_complex complex_number);                 \
+cctk_complex CCTK_Cmplx##Pow   (cctk_complex complex_number, cctk_real w);
 
 
 /* declare complex functions for all available precisions */
@@ -63,6 +64,7 @@ DECLARE_CMPLX_FUNCTIONS (CCTK_Cmplx32, CCTK_REAL16, CCTK_COMPLEX32)
 #define CCTK_CmplxCos   CCTK_Cmplx8Cos
 #define CCTK_CmplxExp   CCTK_Cmplx8Exp
 #define CCTK_CmplxSqrt  CCTK_Cmplx8Sqrt
+#define CCTK_CmplxPow   CCTK_Cmplx8Pow
 #elif CCTK_REAL_PRECISION_8
 #define CCTK_Cmplx      CCTK_Cmplx16
 #define CCTK_CmplxReal  CCTK_Cmplx16Real
@@ -77,6 +79,7 @@ DECLARE_CMPLX_FUNCTIONS (CCTK_Cmplx32, CCTK_REAL16, CCTK_COMPLEX32)
 #define CCTK_CmplxCos   CCTK_Cmplx16Cos
 #define CCTK_CmplxExp   CCTK_Cmplx16Exp
 #define CCTK_CmplxSqrt  CCTK_Cmplx16Sqrt
+#define CCTK_CmplxPow   CCTK_Cmplx16Pow
 #elif CCTK_REAL_PRECISION_16
 #define CCTK_Cmplx      CCTK_Cmplx32
 #define CCTK_CmplxReal  CCTK_Cmplx32Real
@@ -91,6 +94,7 @@ DECLARE_CMPLX_FUNCTIONS (CCTK_Cmplx32, CCTK_REAL16, CCTK_COMPLEX32)
 #define CCTK_CmplxCos   CCTK_Cmplx32Cos
 #define CCTK_CmplxExp   CCTK_Cmplx32Exp
 #define CCTK_CmplxSqrt  CCTK_Cmplx32Sqrt
+#define CCTK_CmplxPow   CCTK_Cmplx32Pow
 #endif
 
 #ifdef __cplusplus
