@@ -5,7 +5,7 @@
 #   @desc 
 #   Some useful info.
 #   @enddesc
-#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.3 1999-08-24 15:47:22 goodale Exp $ 
+#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.4 1999-11-24 11:01:41 allen Exp $ 
 # @@*/
 
 
@@ -36,6 +36,13 @@ the Pacific VAST90 compiler.
 If the libvast90.a library is in the same directory as your F90 script, F90 passes -lvast90 to
 the underlying G77 compile, which is of course only a valid switch when linking.  The solution
 is to seperate these files, e.g. into bin and lib directories.
+
+4) Why do I have to use e.g. "mpirun -np 1 ./exe/cactus_myconfig -O" to see the compiled
+   parameters, can't the parameters be output before MPI is initialised?
+
+Alas some MPIs add their own command-line options, so we need to do MPI_Init before
+parsing the command line, or parse it twice, once before the MPI_Init and once after,
+to detect invalid options.
 
 
 
