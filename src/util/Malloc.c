@@ -8,7 +8,6 @@
    @enddesc 
    @version $Header$
  @@*/
-static char *rcsid = "$Header$";
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -16,7 +15,12 @@ static char *rcsid = "$Header$";
 
 #include "cctk_WarnLevel.h"
 #include "cctk_Malloc.h"
+#include "cctk_Flesh.h"
 #include "StoreHandledData.h"
+
+static char *rcsid = "$Header$";
+
+CCTK_FILEVERSION(util_Malloc_c)
 
 int CCTK_Abort(void *GH);
 

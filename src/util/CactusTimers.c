@@ -11,11 +11,14 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "cctk_Flesh.h"
 #include "CactusTimers.h"
 #include "StoreHandledData.h"
 
 
 static char *rcsid = "$Header$";
+
+CCTK_FILEVERSION(util_CactusTimers_c)
 
 typedef struct
 {

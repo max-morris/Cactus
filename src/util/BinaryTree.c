@@ -12,9 +12,12 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "cctk_Flesh.h"
 #include "util_BinaryTree.h"
 
 static char *rcsid = "$Header$";
+
+CCTK_FILEVERSION(util_BinaryTree_c)
 
 /********************************************************************
  ********************    External Routines   ************************

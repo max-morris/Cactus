@@ -11,9 +11,12 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "cctk_Flesh.h"
 #include "StoreHandledData.h"
 
 static char *rcsid="$Header$";
+
+CCTK_FILEVERSION(util_StoreHandledData_c)
 
 /* Purely internal definitions. */
 

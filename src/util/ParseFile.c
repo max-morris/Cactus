@@ -16,7 +16,11 @@
 #include <stdlib.h>
 #include <assert.h>
 
+#include "cctk_Flesh.h"
+
 static char *rcsid = "$Header$";
+
+CCTK_FILEVERSION(util_ParseFile_c)
 
 /* Local definitions and functions */
 #ifndef WIN32

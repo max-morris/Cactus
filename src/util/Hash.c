@@ -13,9 +13,11 @@
 #include <string.h>
 
 #include "util_Hash.h"
+#include "cctk_Flesh.h"
 
 static char *rcsid = "$Header$";
 
+CCTK_FILEVERSION(util_Hash_c)
 
 /* Local routine prototypes */
 static iHashEntry *HashFind(uHash *hash, 

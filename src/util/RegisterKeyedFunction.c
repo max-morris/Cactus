@@ -8,9 +8,12 @@
  @@*/
 #include <stdio.h>
 #include <stdlib.h>
+#include "cctk_Flesh.h"
 #include "RegisterKeyedFunction.h"
 
 static char *rcsid = "$Header$";
+
+CCTK_FILEVERSION(util_RegisterKeyedFunction_c)
 
  /*@@
    @routine    RegisterKeyedFunction

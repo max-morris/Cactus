@@ -10,8 +10,6 @@
 
 /*#define DEBUG_MISC*/
 
-/*#include "cctk.h"*/
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -24,12 +22,16 @@
 
 #include "cctk_GNU.h"
 
+#include "cctk_Flesh.h"
 #include "cctk_Config.h"
 #include "cctk_Misc.h"
 #include "cctk_FortranString.h"
 #include "cctk_WarnLevel.h"
 
 static char *rcsid = "$Header$";
+
+CCTK_FILEVERSION(util_Misc_c)
+
 
 int CCTK_RegexMatch(const char *string, 
                     const char *pattern, 

@@ -13,6 +13,9 @@ static char *rcsid = "$Header$";
 
 #include "cctk_Cache.h"
 #include "cctki_Cache.h"
+#include "cctk_Flesh.h"
+
+CCTK_FILEVERSION(util_Cache_c)
 
 /********************************************************************
  *********************     Local Data   *****************************

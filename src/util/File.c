@@ -18,6 +18,8 @@
 
 static char *rcsid = "$Header$";
 
+CCTK_FILEVERSION(util_File_c)
+
 static cHandledData *DirNames = NULL;   
 
  /*@@
