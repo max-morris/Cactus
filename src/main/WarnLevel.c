@@ -39,6 +39,18 @@ CCTK_FILEVERSION(main_WarnLevel_c);
 
 
 /********************************************************************
+ *********************        Macros           **********************
+ ********************************************************************/
+/* warning messages are printed hightlighted if possible */
+#ifndef WIN32
+#define BOLDON   "\033[1m"
+#define BOLDOFF  "\033[0m"
+#else
+#define BOLDON   ""
+#define BOLDOFF  ""
+#endif
+
+/********************************************************************
  *********************     External Routines   **********************
  ********************************************************************/
 /* prototypes for external C routines are declared in headers
@@ -174,8 +186,8 @@ int CCTK_VInfo (const char *thorn, const char *format, ...)
   {
     /* get cactus::info_format  and decode it into Boolean flags */
     const char* const info_format =
-	* ( (const char*const *)
-	    CCTK_ParameterGet("info_format", "Cactus", NULL) );
+      * ( (const char*const *)
+          CCTK_ParameterGet("info_format", "Cactus", NULL) );
 
     if      (CCTK_Equals(info_format, "basic"))
     {
@@ -382,18 +394,23 @@ int CCTK_VWarn (int level,
     fflush(stdout);
     myproc = CCTK_MyProc(NULL);
 
-    cctk_full_warnings = (const CCTK_INT *)
-                         CCTK_ParameterGet ("cctk_full_warnings", "Cactus",
+    cctk_full_warnings = CCTK_ParameterGet ("cctk_full_warnings", "Cactus",
                                             &param_type);
     if ((level <= error_level) || (cctk_full_warnings && *cctk_full_warnings))
     {
-      fprintf (stderr, "WARNING level %d in thorn %s processor %d\n"
+      fprintf (stderr, BOLDON
+                       "WARNING level %d in thorn %s processor %d"
+                       BOLDOFF
+                       "\n"
                        "  (line %d of %s): \n"
                        "  -> ",
                level, thorn, myproc, line, file);
       if (myproc)
       {
-        fprintf (stdout, "WARNING level %d in thorn %s processor %d\n"
+        fprintf (stdout, BOLDON
+                         "WARNING level %d in thorn %s processor %d"
+                         BOLDOFF
+                         "\n"
                          "  (line %d of %s): \n"
                          "  -> ",
                  level, thorn, myproc, line, file);
@@ -401,10 +418,12 @@ int CCTK_VWarn (int level,
     }
     else
     {
-      fprintf (stderr, "WARNING[L%d,P%d] (%s): ", level, myproc, thorn);
+      fprintf (stderr, BOLDON "WARNING[L%d,P%d] (%s):" BOLDOFF " ",
+               level, myproc, thorn);
       if (myproc)
       {
-        fprintf (stdout, "WARNING[L%d,P%d] (%s): ", level, myproc, thorn);
+        fprintf (stdout, BOLDON "WARNING[L%d,P%d] (%s):" BOLDOFF " ",
+                 level, myproc, thorn);
       }
     }
 
@@ -479,11 +498,10 @@ int CCTK_ParamWarn (const char *thorn, const char *message)
   const CCTK_INT *cctk_strong_param_check;
   int param_type;
 
-  cctk_strong_param_check = (const CCTK_INT *)
-                              CCTK_ParameterGet ("cctk_strong_param_check",
-                                                 "Cactus", &param_type);
+  cctk_strong_param_check = CCTK_ParameterGet ("cctk_strong_param_check",
+                                               "Cactus", &param_type);
   fflush (stdout);
-  fprintf (stderr, "PARAM %s (%s): %s\n",
+  fprintf (stderr, BOLDON "PARAM %s (%s):" BOLDOFF " %s\n",
            *cctk_strong_param_check ? "ERROR" : "WARNING", thorn, message);
   fflush (stderr);
   param_errors++;
@@ -540,11 +558,10 @@ int CCTK_VParamWarn (const char *thorn,
   const CCTK_INT *cctk_strong_param_check;
   int param_type;
 
-  cctk_strong_param_check = (const CCTK_INT *)
-                              CCTK_ParameterGet ("cctk_strong_param_check",
-                                                 "Cactus", &param_type);
+  cctk_strong_param_check = CCTK_ParameterGet ("cctk_strong_param_check",
+                                               "Cactus", &param_type);
   fflush (stdout);
-  fprintf (stderr, "PARAM %s (%s): ",
+  fprintf (stderr, BOLDON "PARAM %s (%s)" BOLDOFF ": ",
            *cctk_strong_param_check ? "ERROR" : "WARNING", thorn);
 
   va_start (ap, format);
@@ -761,9 +778,8 @@ void CCTKi_FinaliseParamWarn (void)
 
   if (param_errors)
   {
-    cctk_strong_param_check = (const CCTK_INT *)
-                                CCTK_ParameterGet ("cctk_strong_param_check",
-                                                   "Cactus", &param_type);
+    cctk_strong_param_check = CCTK_ParameterGet ("cctk_strong_param_check",
+                                                 "Cactus", &param_type);
     fflush (stdout);
     if (*cctk_strong_param_check)
     {
