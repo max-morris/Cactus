@@ -634,6 +634,9 @@ sub parse_interface_ccl
   $interface_db{"\U$thorn PROTECTED GROUPS\E"} = "";
   $interface_db{"\U$thorn PRIVATE GROUPS\E"} = "";
   $interface_db{"\U$thorn USES HEADER\E"} = "";
+  $interface_db{"\U$thorn FUNCTIONS\E"} = "";
+  $interface_db{"\U$thorn PROVIDES FUNCTION\E"} = "";
+  $interface_db{"\U$thorn USES FUNCTION\E"} = "";
   $interface_db{"\U$thorn ARRANGEMENT\E"} = "$arrangement";
   
   #   The default block is private.
@@ -875,6 +878,68 @@ sub parse_interface_ccl
       $interface_db{"\U$thorn ADD HEADER\E"} .= " $header";      
 #      print "Adding $header to $4\n";
       $interface_db{"\U$thorn ADD HEADER $header TO\E"} = $4;      
+    }
+    elsif ($line =~ m/^\s*PROVIDE\s*FUNCTION\s*([a-zA-Z_0-9]+)\s*WITH\s*(.+)\s*$/i)
+    {
+      $funcname = $1;
+      $provided_by = $2;
+
+      if($provided_by =~ m/(.*)\s*LANGUAGE\s*(.+)/i)
+      {
+	$provided_by          = $1;
+	$provided_by_language = $2;
+      }
+      else
+      {
+	$provided_by_language = "Fortran";
+      }
+
+      $interface_db{"\U$thorn PROVIDES FUNCTION\E"} .= "$funcname";
+      $interface_db{"\U$thorn PROVIDES FUNCTION\E $funcname WITH"} .= "$provided_by";
+      $interface_db{"\U$thorn PROVIDES FUNCTION\E $funcname LANG"} .= "$provided_by_language";
+
+    }
+    elsif ($line =~ m/^\s*USES\s*FUNCTION\s*([a-zA-Z_0-9]+)\s*$/i)
+    {
+      $funcname = $1;
+      $interface_db{"\U$thorn USES FUNCTION\E"} .= "$funcname";
+    }
+    elsif ($line =~ m/^\s*([a-zA-Z_0-9]+)\s*FUNCTION\s*([a-zA-Z_0-9]+)\s*(.*)\s*$/i)
+    {
+      $rettype  = $1;
+      $funcname = $2;
+      $rest     = $3;
+      if($rest =~ m/(.*)\s*PROVIDED-BY\s*(.+)/i)
+      {
+	$funcargs = $1;
+	$provided_by = $2;
+
+	if($provided_by =~ m/(.*)\s*LANGUAGE\s*(.+)/i)
+	{
+	  $provided_by          = $1;
+	  $provided_by_language = $2;
+	}
+	else
+	{
+	  $provided_by_language = "Fortran";
+	}
+      }
+      else
+      {
+	$funcargs = $rest;
+	$provided_by = "";
+      }
+
+      $interface_db{"\U$thorn FUNCTIONS\E"} .= "$funcname";
+      $interface_db{"\U$thorn FUNCTION\E $funcname ARGS"} .= "$funcargs";
+      $interface_db{"\U$thorn FUNCTION\E $funcname RET"} .= "$rettype";
+      
+      if($provided_by ne "")
+      {
+	$interface_db{"\U$thorn PROVIDES FUNCTION\E"} .= "$funcname";
+	$interface_db{"\U$thorn PROVIDES FUNCTION\E $funcname WITH"} .= "$provided_by";
+	$interface_db{"\U$thorn PROVIDES FUNCTION\E $funcname LANG"} .= "$provided_by_language";
+      }
     }
     else
     {
