@@ -49,6 +49,8 @@
 #define CCTK_WARN(a,b) CCTK_Warn(a,__LINE__,__FORTRANFILE__,CCTK_THORNSTRING,b)
 #define CCTK_EQUALS(a,b) (CCTK_Equals(a,b).eq.1)
 
+#define CCTK_PASS_FTOF CCTK_FARGUMENTS
+
 #endif /*FCODE*/
 
 #ifdef CCODE
@@ -116,6 +118,7 @@ extern int _cctk_one;
 #define CCTK_WARN(a,b) CCTK_Warn(a,__LINE__,__FILE__,CCTK_THORNSTRING,b)
 #define CCTK_EQUALS(a,b) (CCTK_Equals(a,b)==1)
 
+#define CCTK_PASS_CTOC cGH *cctkGH
 
 #endif /*CCODE*/
 
