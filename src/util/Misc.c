@@ -102,12 +102,27 @@ int Util_SplitString(char **before, char **after, const char *string, const char
   return retval;
 }
 
+ /*@@
+   @routine    CCTK_Strdup
+   @date       Thu Mar 28 11:20:27 2000
+   @author     Gerd Lanfermann
+   @desc 
+   CCTK version of strdup, since it's not guaranteed to be there.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
 char *CCTK_Strdup(const char *s) 
 {
   char *retstr;
   
-  retstr = (char*) malloc(strlen(s)*sizeof(char));
+  retstr = (char*) malloc((strlen(s)+1)*sizeof(char));
   sprintf(retstr,"%s",s);
+
   return(retstr);
 }
 
