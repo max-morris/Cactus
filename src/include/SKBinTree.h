@@ -15,7 +15,7 @@ typedef struct T_SKTREE
   struct T_SKTREE *left;
   struct T_SKTREE *right;
   struct T_SKTREE *next;
-
+  struct T_SKTREE *last;
   char *key;
 
   void *data;
