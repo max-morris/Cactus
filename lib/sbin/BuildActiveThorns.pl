@@ -23,6 +23,8 @@ while(<PACKAGES>)
   next if (m:^CVS$:);
   next if (m:^\#:);
   next if (m:~$:);
+  next if (m:\.bak$:i);
+  next if (m:^\.:);
 
   # Just pick directories
   if( -d $_)
@@ -47,6 +49,8 @@ foreach $package (@packages)
     next if (m:^CVS$:);
     next if (m:^\#:);
     next if (m:~$:);
+    next if (m:\.bak$:i);
+    next if (m:^\.:);
     
     # Allow each package to have a documentation directory.
     next if (m:^doc$:);
