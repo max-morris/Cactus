@@ -311,67 +311,6 @@ sub GetThornParameterList
   return %parameter_list;
 }
 
-
-#/*@@
-#  @routine    create_c_parameter_type_declaration
-#  @date       Mon Jan 11 15:32:59 1999
-#  @author     Tom Goodale
-#  @desc 
-#  Create the c parameter type declarations
-#  @enddesc 
-#  @calls     
-#  @calledby   
-#  @history 
-#
-#  @endhistory 
-#@@*/
-
-sub create_c_parameter_type_declaration
-{
-  local($implementation,%parameter_database) = @_;
-  local(@type_declaration);
-  local($line);
-  local($type, $type_string, $friend, $block, $parameter);
-  
-  $line = "struct CCTK_\U$implementation\E_PARAM_TYPE {";
-  push(@type_declaration, $line);
- 
-  # Deal with variables defined in this thorn. 
-  foreach $block ("PUBLIC", "PRIVATE", "PROTECTED")
-  {
-    $entry = "\U$implementation $block\E variables";
-    foreach $parameter (split(/ /, $parameter_database{$entry}))
-    {
-      $type = $parameter_database{"\U$implementation $parameter\E type"};
-      
-      $type_string = &get_c_type_string($type);
-      
-      $line = $type_string ." " .$parameter . ";";
-      push(@type_declaration, $line);
-    }
-  }
-
-  $line = "} ;";
-  push(@type_declaration, $line);
-
-  return @type_declaration;
-}
-
-
-sub CreateThornCParameterHeaders
-{
-  local($thorn, %parameter_database);
-  local(@header);
-
-#
-#  &getpublicparameters();
-#  
-#  generatestructure, getinteface_protected_params, generate structure, get private params, make structure, foreach friend get structure
-#
-#  for each param, point at the appropriate structure
-
-}
-
 sub CreateCStructureParameterHeader
 {
   local($prefix, $structure, $n_parameters, @rest) = @_;
