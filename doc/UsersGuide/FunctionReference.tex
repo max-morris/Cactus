@@ -228,7 +228,11 @@ from Fortran.
 
 \item[CCTK\_GroupTypeFromVarI]
   [\pageref{CCTK-GroupTypeFromVarI}]
-  Provides group type index from the group index
+  Provides a group's group type index given a variable index
+
+\item[CCTK\_GroupTypeI]
+  [\pageref{CCTK-GroupTypeI}]
+  Provides a group's group type index given a group index
 
 \item[CCTK\_ImpFromVarI]
   [\pageref{CCTK-ImpFromVarI}]
@@ -484,6 +488,10 @@ from Fortran.
 \item[CCTK\_VarTypeI]
   [\pageref{CCTK-VarTypeI}]
   Provides variable type index from the variable index
+
+\item[CCTK\_VarTypeSize]
+  [\pageref{CCTK-VarTypeSize}]
+  Provides variable type size in bytes from the variable type index
 
 \item[CCTK\_VInfo]
   [\pageref{CCTK-VInfo}]
@@ -1882,17 +1890,18 @@ No Fortran routine exists at the moment.
 
 
 % Groups.c
-\begin{CCTKFunc}{CCTK\_GroupTypeFromVarI}{Provides group type index from the group index}
+\begin{CCTKFunc}{CCTK\_GroupTypeFromVarI}{Provides a group's group type
+               index given a variable index}
 \label{CCTK-GroupTypeFromVarI}
 \subroutine{int}{integer}{type}
 \argument{int}{integer}{index}
 \showargs
 \begin{params}
-\parameter{type}{The group type index}
-\parameter{group}{The group index}
+\parameter{type}{The group's group type index}
+\parameter{group}{The variable index}
 \end{params}
 \begin{discussion}
-The group type index indicates the type of variables in the group.
+The group's group type index indicates the type of variables in the group.
 Either scalars, grid functions or arrays. The group type can be checked
 with the Cactus provided macros for {\t GROUP\_SCALAR}, {\t GROUP\_GF}, {\t GROUP\_ARRAY}.
 \end{discussion}
@@ -1908,6 +1917,49 @@ with the Cactus provided macros for {\t GROUP\_SCALAR}, {\t GROUP\_GF}, {\t GROU
 \begin{errorcodes}
 \end{errorcodes}
 \end{CCTKFunc}
+
+\begin{FunctionDescription}{CCTK\_GroupTypeI}{}
+\label{CCTK-GroupTypeI}
+Provides a group's group type index given a group index
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+#include "cctk.h"
+int group_type = CCTK_GroupTypeI(int group);
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ResultSection}
+\begin{Result}{-1}
+-1 is returned if the given group index is invalid.
+\end{Result}
+\end{ResultSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{group}
+Group index.
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{Discussion}
+A group's group type index indicates the type of variables in the
+group.  The three group types are scalars, grid functions, and grid
+arrays. The group type can be checked with the Cactus provided macros
+for {\t GROUP\_SCALAR}, {\t GROUP\_GF}, {\t GROUP\_ARRAY}.
+\end{Discussion}
+
+\begin{SeeAlsoSection}
+\begin{SeeAlso}{CCTK\_GroupTypeFromVarI}
+This function takes a variable index rather than a group index as its argument.
+\end{SeeAlso}
+\end{SeeAlsoSection}
+%\begin{ErrorSection}
+%\end{ErrorSection}
+%\begin{ExampleSection}
+%\end{ExampleSection}
+\end{FunctionDescription}
+
 
 %%%%%
 % HHH
@@ -4847,6 +4899,40 @@ with the Cactus provided macros for {\t CCTK\_VARIABLE\_INT}, {\t CCTK\_VARIABLE
 \begin{errorcodes}
 \end{errorcodes}
 \end{CCTKFunc}
+
+\begin{FunctionDescription}{CCTK\_VarTypeSize}
+\label{CCTK-VarTypeSize}
+Provides variable type size in bytes from the variable type index
+
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+#include "cctk.h"
+
+int CCTK_VarTypeSize (int vtype);
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{vtype}
+Variable type index.
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{Discussion}
+This function returns the size in bytes of any of the Cactus variable
+types {\t CCTK\_INT}, {\t CCTK\_REAL}, {\t CCTK\_COMPLEX}, etc.
+\end{Discussion}
+
+%\begin{SeeAlsoSection}
+%\end{SeeAlsoSection}
+
+%\begin{ExampleSection}
+%\begin{Example}{C}
+%\end{Example}
+%\end{ExampleSection}
+\end{FunctionDescription}
 
 
 \begin{FunctionDescription}{CCTK\_VInfo}
