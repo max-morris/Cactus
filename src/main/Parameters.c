@@ -1097,6 +1097,7 @@ static t_param *ParameterFind (const char *name,
   t_param *retval;
   t_paramtreenode *node;
   t_paramlist *list;
+
   char *basename;
   int   array_index;
 
@@ -1962,8 +1963,8 @@ static int ParameterSetKeyword (t_param *param, const char *value)
   if (retval == -1)
   {
     CCTK_VWarn (2, __LINE__, __FILE__, "Cactus",
-                "ParameterSetKeyword: Unable to set keyword %s::%s - '%s' not "
-                "in any active range",
+                "ParameterSetKeyword: Unable to set keyword '%s::%s', "
+		"new value '%s' is not in any active range",
                 param->props->thorn, param->props->name, value);
 
     if (*(char **) param->data == NULL)
@@ -2005,8 +2006,8 @@ static int ParameterSetString (t_param *param, const char *value)
   if (retval == -1)
   {
     CCTK_VWarn (2, __LINE__, __FILE__, "Cactus",
-                "ParameterSetString: Unable to set string '%s::%s' - '%s' not "
-                "in any active range",
+                "ParameterSetString: Unable to set string '%s::%s', "
+		"new value '%s' is not in any active range",
                 param->props->thorn, param->props->name, value);
 
     if (*(char **) param->data == NULL)
@@ -2048,7 +2049,7 @@ static int ParameterSetSentence (t_param *param, const char *value)
   if (retval == -1)
   {
     CCTK_VWarn (2, __LINE__, __FILE__, "Cactus",
-                "ParameterSetSentance: Unable to set sentance '%s::%s' - '%s' "
+                "ParameterSetSentence: Unable to set sentence '%s::%s' = '%s' "
                 "not in any active range",
                 param->props->thorn, param->props->name, value);
 
@@ -2101,7 +2102,7 @@ static int ParameterSetInteger (t_param *param, const char *value)
   if (retval == -1)
   {
     CCTK_VWarn (2, __LINE__, __FILE__, "Cactus",
-                "ParameterSetInteger: Unable to set integer '%s::%s' - '%s' "
+                "ParameterSetInteger: Unable to set integer '%s::%s' = '%s' "
                 "not in any active range",
                 param->props->thorn, param->props->name, value);
   }
@@ -2171,7 +2172,7 @@ static int ParameterSetReal (t_param *param, const char *value)
   if (retval == -1)
   {
     CCTK_VWarn (2, __LINE__, __FILE__, "Cactus",
-                "ParameterSetReal: Unable to set real '%s:%s' - '%s' not in "
+                "ParameterSetReal: Unable to set real '%s::%s' = '%s' not in "
                 "any active range",
                 param->props->thorn, param->props->name, value);
   }
@@ -2196,7 +2197,7 @@ static int ParameterSetBoolean (t_param *param, const char *value)
   if (retval == -1)
   {
     CCTK_VWarn (2, __LINE__, __FILE__, "Cactus",
-                "ParameterSetBoolean: Unable to set boolean '%s::%s' - '%s' "
+                "ParameterSetBoolean: Unable to set boolean '%s::%s' = '%s' "
                 "not recognised",
                 param->props->thorn, param->props->name, value);
   }
