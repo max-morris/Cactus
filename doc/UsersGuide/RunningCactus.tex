@@ -394,15 +394,48 @@ Flags for the C++ compiler
 Flags for the archiver
 
 \item [{\tt DEBUG}]
-Specifies what type of debug mode should be used, the default is no debugging.
+* Specifies what type of debug mode should be used, 
+the default is no debugging.
 Current options are {\tt yes}, {\tt no}, or {\tt memory}. The option 
 {\tt yes} switches on all debugging features, whereas {\tt memory} just 
 employs memory tracing (\ref{sec:metr}).
 
 
 \item [{\tt OPTIMISE}]
-Specifies what type of optimisation should be used. The only option
+* Specifies what type of optimisation should be used. The only option
 currently available is {\tt no}. The default is to use optimisation.
+
+\item [{\tt C\_OPTIMISE\_FLAGS}]
+Optimisation flags for the C compiler, their use depends on the type of
+optimisation being used.
+
+\item [{\tt CXX\_OPTIMISE\_FLAGS}]
+Optimisation flags for the C++ compiler, their use depends on the type of
+optimisation being used.
+
+\item [{\tt F90\_OPTIMISE\_FLAGS}]
+Optimisation flags for the FORTRAN 90 compiler, their use depends on the 
+type of optimisation being used.
+
+\item [{\tt F77\_OPTIMISE\_FLAGS}]
+Optimisation flags for the FORTRAN 77 compiler, their use depends on the 
+type of optimisation being used.
+
+\item [{\tt C\_WARN\_FLAGS}]
+Warning flags for the C compiler, their use depends on the type of
+warnings used during compilation (\ref{sec:gmopfobuco}).
+
+\item [{\tt CXX\_WARN\_FLAGS}]
+Warning flags for the C++ compiler, their use depends on the type of
+warnings used during compilation (\ref{sec:gmopfobuco}).
+
+\item [{\tt F90\_WARN\_FLAGS}]
+Warning flags for the FORTRAN 90 compiler, their use depends on the type of
+warnings used during compilation (\ref{sec:gmopfobuco}).
+
+\item [{\tt F77\_WARN\_FLAGS}]
+Warning flags for the Fortran 77 compiler, their use depends on the type of
+warnings used during compilation (\ref{sec:gmopfobuco}).
 
 \end{Lentry}
 
@@ -437,10 +470,10 @@ values will be valid on all architectures.
 \begin{Lentry}
 
 \item [{\tt REAL\_PRECISION}]
-* Allowed values are 16,8,4 .
+* Allowed values are 16, 8, 4 .
 
 \item [{\tt INTEGER\_PRECISION}]
-* Allowed values are 8,4 and 2 .
+* Allowed values are 8, 4 and 2 .
 
 \end{Lentry}
 

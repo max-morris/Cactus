@@ -189,7 +189,7 @@ a group of implementations which all end up with the same {\tt Protected}
 variables.
 \end{Lentry}
 
-So, for example, an interface.ccl starting
+So, for example, an {\tt interface.ccl} starting
 
 \begin{verbatim}
 implements: wavetoy
@@ -256,7 +256,7 @@ staggering ({\tt MMM}), you can omit this attribute.
 \item[{\tt P}] full staggering by one grid spacing (``plus'' face,
 relative to default)
 \end{Lentry}
-For a full discussion on staggering refer to \ref{sec:staggercode}.
+For a full discussion on staggering refer to \ref{sec:st}.
 
 \item [{\tt Distrib}]
 This attribute describes how an array should be distributed across 
@@ -1006,11 +1006,15 @@ the global grid.
 \item {\tt cctk\_lbnd} 
       An array of {\tt cctk\_dim} integers 
       containing the lowest index (in each direction) 
-      of the local grid, as seen on the global grid 
+      of the local grid, as seen on the global grid. Note that these indices
+      start from zero, so you need to add one when using them in
+      Fortran thorns.
 \item {\tt cctk\_ubnd} 
       An array of {\tt cctk\_dim} integers 
       containing the largest index (in each direction) 
-      of the local grid, as seen on the global grid 
+      of the local grid, as seen on the global grid.  Note that these indices
+      start from zero, so you need to add one when using them in
+      Fortran thorns.
 \item {\tt cctk\_bbox} 
       An array of 2*{\tt cctk\_dim} integers 
       which indicate whether the boundaries are internal boundaries
@@ -1080,6 +1084,8 @@ described in Section~\ref{sec:datyansi} could give problems for
 different architectures or configurations.
 
 \subsection{Staggering}
+\label{sec:st}
+
 The staggering of a gridfunction or array describes the {\em physical} 
 placement of that gridfunction relative to the supporting grid
 structure. For example, a gridfunction does not have to 
@@ -1100,7 +1106,7 @@ used.
 
 The type of staggering applied to a gridfunction can be specified in
 the {\tt interface.ccl} file by the attribute {\tt stagger} (see
-\ref{sec:interface.ccl}). Cactus supports three kind of staggering
+\ref{sec:in}). Cactus supports three kind of staggering
 per dimension. The physical location of a gridfunction is shifted 
 relative to the default position by adding the following values to the 
 stagger attribute:
@@ -1500,28 +1506,32 @@ is a parallel unigrid driver.
 \subsection{Building Include Files}
 
 Cactus provides a mechanism for thorns to add code to 
-include files which can be used by any thorn. Any thorn 
+include files which can be used by any other thorn.
+Such include files can contain executable source code, or header/declaration
+information. A difference is made between these two cases, since included
+executable code is protected from being run if a thorn is compiled but
+not active by being wrapped by a call to {\tt CCTK\_IsThornActive}. 
+
+
+Any thorn 
 which uses the include file must declare this in its 
 {\tt interface.ccl} with the line
 
 \begin{verbatim}
-USES INCLUDE: <file_name>
+USES INCLUDE [SOURCE|HEADER]: <file_name>
 \end{verbatim}
 
 Any thorn which wishes to add to this include file, 
 declares in its own {\tt interface.ccl}
 
 \begin{verbatim}
-INCLUDES: <file_to_include> in <file_name>
+INCLUDE [SOURCE|HEADER]: <file_to_include> in <file_name>
 \end{verbatim}
-
-The code added in this way should only be 
-{\em executable} code, since it is automatically
-protected by a call to {\tt CCTK\_IsThornActive}.
 
 \subsubsection{Example}
 
-For an example of this in practice, consider thorn A which
+For an example of this in practice, for the case of Fortran code, 
+consider thorn A which
 wants to gather terms for a calculation from any thorn
 which wishes to provide them. Thorn A could have
 the lines in its source code
@@ -1533,7 +1543,7 @@ c Get source code from other thorns
 \end{verbatim}
 and would then add to {\tt interface.ccl} the line
 \begin{verbatim}
-USES INCLUDE: AllSources.inc
+USES INCLUDE SOURCE: AllSources.inc
 \end{verbatim}
 
 If thorn B wants to add terms for the calculation, it would
@@ -1545,18 +1555,21 @@ c Add this to AllSources.inc
 and would add to its own {\tt interface.ccl}
 
 \begin{verbatim}
-INCLUDES: Bterms.inc in AllSources.inc
+INCLUDE SOURCE: Bterms.inc in AllSources.inc
 \end{verbatim}
 
 The final file for thorn A  which is compiled will contain the code
 \begin{verbatim}
 c Get source code from other thorns
       allterms = 0d0
-      if (CCTK_IsThornActive("B") then
+      if (CCTK_IsThornActive("B").eq.0) then
 c Add this to AllSources.inc
         allterms = allterms + 1d0       
       end if
 \end{verbatim}
+
+Any Fortran thorn routines which include source code must include 
+the declaration {\tt DECLARE\_CCTK\_FUNCTIONS}.
 
 \subsection{Commenting Source Code}
 
@@ -1570,16 +1583,37 @@ The Flesh and the Cactus thorns use {\tt grdoc} to document the code.
 \subsection{Coordinates}
 \label{sec:co}
 
-The flesh provides utility routines for handling coordinates.
-The utilities for thorns providing coordinates are:
+The flesh provides utility routines for registering and querying coordinate information. 
+The flesh does not provide any coordinates itself, these must be supplied by a thorn. 
+Thorns are not required to register coordinates to the flesh, but registering coordinates provides a means 
+for infrastructure thorns, to make use of coordinate information.
+
+Coordinate support is still being developed in the Cactus flesh. At the moment, it is assumed that 
+coordinates will usually be grid functions. 
+
+Coordinates are grouped into {\it coordinate systems}, which have a specified dimension. Any number of 
+coordinate systems can be registered with the flesh, and a coordinate system must be registered before
+any coordinates can be registered, since they must be associated with their corresponding system. 
+Coordinates can be registered, with any chosen name, with an existing coordinate system, along with
+their direction or index in the coordinate system. Optionally, the coordinate can also be associated with
+a given grid variable. A separate call can register the global range for a coordinate on a given grid hierachy. 
+
+The registration utilities for thorns providing coordinates are:
 \begin{Lentry}
-\item[{\bf Coordinate registration:} {\tt CCTK\_RegisterCoord} or {\tt CCTK\_RegisterCoordI}]
 
-allows one to associate a given grid variable with with a coordinate name
+\item[{\tt CCTK\_CoordRegisterSystem}]
 
-\item[{\bf Coordinate range registration:} {\tt CCTK\_RegisterCoordRange}]
+Assigns a coordinate system with a chosen name and dimension
 
-allows one to register the upper and lower bound of a coordinate with a coordinate name
+\item[{\tt CCTK\_CoordRegisterData}]
+
+Defines a coordinate in a given coordinate system, with a given 
+	direction and name, and optionally associates it to a grid variable.
+
+\item[{\tt CCTK\_CoordRegisterRange}]
+
+Assigns the global maximum and minimum for a coordinate 
+            	on a grid hierachy, that is in a {\tt cctkGH}.
 
 \end{Lentry}
 
@@ -1587,14 +1621,26 @@ The utilities for thorns using coordinates are:
 
 \begin{Lentry}
 
-\item[{\bf Coordinate identification:} {\tt CCTK\_CoordIndex}]
+\item[{\tt CCTK\_CoordSystemDim}]
 
-Returns the grid variable index for a given coordinate name
+Provides the dimension of a coordinate system
 
-\item[{\bf Coordinate range identification:} {\tt CCTK\_CoordRange}] 
+\item[{\tt CCTK\_CoordIndex}]
 
-Returns the lower and upper bound of a coordinate for a given coordinate name
+Provides the grid variable index for a given coordinate
 
+\item[{\tt CCTK\_CoordDir}]
+
+Provides the direction for a given coordinate
+
+\item[{\tt CCTK\_CoordRange}]
+
+Provides the global range of a coordinate on a given grid hierachy
+
+\item[{\tt CCTK\_CoordLocalRange}]
+
+Provides the local range of a coordinate on a processor for 
+	a given grid hierachy. WARNING: This utility only currently works for regular cartesian grids!!
 
 \end{Lentry}
 

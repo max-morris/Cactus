@@ -94,17 +94,34 @@ available from C, not all are currently available from Fortran.
   [\pageref{CmplxSqrt}]
   Returns the square root of a complex number (only C) [not yet available]
 
+\item[CCTK\_CoordDim] 
+  [\pageref{CoordDim}] 
+  Provides the dimension of a given coordinate system
+
 \item[CCTK\_CoordDir] 
   [\pageref{CoordDir}] 
   Give the direction for a given coordinate name.
 
 \item[CCTK\_CoordIndex] 
   [\pageref{CoordIndex}] 
-  Give the GF index for a given coordinate name.
+  Give the grid variable index for a given coordinate name.
 
 \item[CCTK\_CoordRange] 
   [\pageref{CoordRange}] 
-  Return the global upper and lower bounds for a given coordinate name
+  Return the global upper and lower bounds for a given coordinate name on a cctkGH
+
+\item[CCTK\_CoordRegisterData] 
+  [\pageref{CoordRegisterData}] 
+  Register a coordinate as belonging to a coordinate system, with a given name and direction, and
+  optionally with a grid variable
+
+\item[CCTK\_CoordRegisterRange] 
+  [\pageref{CoordRegisterRange}] 
+  Saves the global upper and lower bounds for a given coordinate name on a cctkGH
+
+\item[CCTK\_CoordRegisterSystem] 
+  [\pageref{CoordRegisterSystem}] 
+  Registers a coordinate system with a given dimension
 
 \item[CCTK\_CreateDirectory]   
   [\pageref{CreateDirectory}] 
@@ -273,18 +290,6 @@ available from C, not all are currently available from Fortran.
   [\pageref{RegisterBanner}] 
   Register a banner for a thorn
 
-\item[CCTK\_RegisterCoord] 
-  [\pageref{RegisterCoord}] 
-  Register a grid function name as identifying a coordinate with a given coordinate name and direction.
-
-\item[CCTK\_RegisterCoordI] 
-  [\pageref{RegisterCoordI}] 
-  Register a grid function index as identifying a coordinate with a given coordinate name and direction.
-
-\item[CCTK\_RegisterCoordRange] 
-  [\pageref{RegisterCoordRange}] 
-  Saves the global upper and lower bounds for a given coordinate name
-
 \item[CCTK\_RegisterGHExtension] 
   [\pageref{RegisterGHExtension}] 
   Register the name of an extension to the Cactus GH.
@@ -373,9 +378,11 @@ available from C, not all are currently available from Fortran.
 \label{Abort}
 \subroutine{int}{integer}{istat}
 \argument{cGH *}{CCTK\_POINTER}{cctkGH}
+\argument{int}{integer}{value}
 \showargs
 \begin{params}
 \parameter{cctkGH}{pointer to CCTK grid hierarchy}
+\parameter{value}{error code}
 \end{params}
 \begin{discussion}
 \end{discussion}
@@ -387,28 +394,6 @@ available from C, not all are currently available from Fortran.
 \end{errorcodes}
 \end{CCTKFunc}
 
-
-
-% cctk_Comm.h
-\begin{CCTKFunc}{CCTK\_ArrayGroupSize}{}
-\label{ArrayGroupSize}
-\subroutine{int *}{}{size}
-\argument{cGH *}{}{cctkGH}
-\argument{int}{}{groupindex}
-\argument{int}{}{dir}
-\showcargs
-\begin{params}
-\parameter{cctkGH}{pointer to CCTK grid hierarchy}
-\end{params}
-\begin{discussion}
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
 
 
 
@@ -455,6 +440,7 @@ available from C, not all are currently available from Fortran.
 \begin{errorcodes}
 \end{errorcodes}
 \end{CCTKFunc}
+
 
 % CommOverloadables.c
 \begin{CCTKFunc}{CCTK\_ArrayGroupSizeI}{}
@@ -508,23 +494,22 @@ available from C, not all are currently available from Fortran.
 % CCC
 %%%%%
 
-\begin{CCTKFunc}{CCTK\_CoordDir}{Give the direction for a given coordinate name.}
-\label{CoordIndex}
-\subroutine{int}{integer}{dir}
-\argument{const char *}{character*(*)}{coordname}
+\begin{CCTKFunc}{CCTK\_CoordDim}{Give the dimension for a given coordinate system.}
+\label{CoordDim}
+\subroutine{int}{integer}{dim}
+\argument{const char *}{character*(*)}{systemname}
 \showargs
 \begin{params}
-\parameter{dir}{The direction of the coordinate}
-\parameter{coordname}{The name assigned to this coordinate}
+\parameter{dim}{The dimension of the coordinate system}
+\parameter{systemname}{The name of the coordinate system}
 \end{params}
 \begin{discussion}
-The coordinate name is independent of the grid function name. 
 \end{discussion}
 \begin{examples}
 \begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t direction = CCTK\_CoordDir(`xdir')};
+\hfill {\bf C} && {\t dim = CCTK\_CoordDim("cart3d")};
 \\
-\hfill {\bf Fortran} && {\t call  CCTK\_COORDDIR(direction,`radius')};
+\hfill {\bf Fortran} && {\t call  CCTK\_COORDDIM(dim,"spher3d")};
 \\
 \end{tabular}
 \end{examples}
@@ -533,23 +518,52 @@ The coordinate name is independent of the grid function name.
 \end{CCTKFunc}
 
 
-\begin{CCTKFunc}{CCTK\_CoordIndex}{Give the GF index for a given coordinate name.}
-\label{CoordIndex}
-\subroutine{int}{integer}{index}
+\begin{CCTKFunc}{CCTK\_CoordDir}{Give the direction for a given coordinate.}
+\label{CoordDir}
+\subroutine{int}{integer}{dir}
 \argument{const char *}{character*(*)}{coordname}
+\argument{const char *}{character*(*)}{systemname}
 \showargs
 \begin{params}
-\parameter{index}{The coordinates associated GF index}
+\parameter{dir}{The direction of the coordinate}
 \parameter{coordname}{The name assigned to this coordinate}
+\parameter{systemname}{The name of the coordinate system}
 \end{params}
 \begin{discussion}
 The coordinate name is independent of the grid function name. 
 \end{discussion}
 \begin{examples}
 \begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t index = CCTK\_CoordIndex(`xdir')};
+\hfill {\bf C} && {\t direction = CCTK\_CoordDir("xdir","cart3d")};
 \\
-\hfill {\bf Fortran} && {\t call  CCTK\_COORDINDEX(index,`radius')};
+\hfill {\bf Fortran} && {\t call  CCTK\_COORDDIR(direction,"radius","spher3d")};
+\\
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
+
+\begin{CCTKFunc}{CCTK\_CoordIndex}{Give the grid variable index for a given coordinate.}
+\label{CoordIndex}
+\subroutine{int}{integer}{index}
+\argument{const char *}{character*(*)}{coordname}
+\argument{const char *}{character*(*)}{systemname}
+\showargs
+\begin{params}
+\parameter{index}{The coordinates associated grid variable index}
+\parameter{coordname}{The name assigned to this coordinate}
+\parameter{systemname}{The coordinate system for this coordinate}
+\end{params}
+\begin{discussion}
+The coordinate name is independent of the grid variable name. 
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\hfill {\bf C} && {\t index = CCTK\_CoordIndex("xdir","cart3d")};
+\\
+\hfill {\bf Fortran} && {\t call  CCTK\_COORDINDEX(index,"radius","spher2d")};
 \\
 \end{tabular}
 \end{examples}
@@ -560,13 +574,14 @@ The coordinate name is independent of the grid function name.
 
 
 % Coord.c
-\begin{CCTKFunc}{CCTK\_CoordRange}{Return the global upper and lower bounds for a given coordinate name}
+\begin{CCTKFunc}{CCTK\_CoordRange}{Return the global upper and lower bounds for a given coordinate}
 \label{CoordRange}
 \subroutine{int}{integer}{ierr}
 \argument{cGH *}{CCTK\_POINTER}{cctkGH}
 \argument{CCTK\_REAL}{CCTK\_REAL}{lower}
 \argument{CCTK\_REAL}{CCTK\_REAL}{upper}
 \argument{const char *}{character*(*)}{coordname}
+\argument{const char *}{character*(*)}{systemname}
 \showargs
 \begin{params}
 \parameter{ierr}{Error code}
@@ -574,6 +589,7 @@ The coordinate name is independent of the grid function name.
 \parameter{lower}{Global lower bound of the coordinate (POINTER in C)}
 \parameter{upper}{Global upper bound of the coordinate (POINTER in C)}
 \parameter{coordname}{Coordinate name}
+\parameter{systemname}{Coordinate system name}
 \end{params}
 \begin{discussion}
 The coordinate name is independent of the grid function name. The coordinate range
@@ -581,9 +597,9 @@ is registered by {\t CCTK\_RegisterCoordRange}.
 \end{discussion}
 \begin{examples}
 \begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t ierr = CCTK\_CoordRange(cctkGH,*xmin,*xmax,`xdir') };
+\hfill {\bf C} && {\t ierr = CCTK\_CoordRange(cctkGH,*xmin,*xmax,"xdir") };
 \\
-\hfill {\bf Fortran} && {\t call CCTK\_COORDRANGE(ierr,cctkGH,Rmin,Rmax,`radius')};
+\hfill {\bf Fortran} && {\t call CCTK\_COORDRANGE(ierr,cctkGH,Rmin,Rmax,"radius")};
 \\
 \end{tabular}
 \end{examples}
@@ -609,9 +625,9 @@ To create a directory readable by everyone, but writeable only by the user runnn
 \end{discussion}
 \begin{examples}
 \begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t ierr = CCTK\_CreateDirectory(`Results/New`,0755) };
+\hfill {\bf C} && {\t ierr = CCTK\_CreateDirectory("Results/New",0755) };
 \\
-\hfill {\bf Fortran} && {\t call CCTK\_CREATEDIRECTORY(ierr,`Results/New`,0755)};
+\hfill {\bf Fortran} && {\t call CCTK\_CREATEDIRECTORY(ierr,"Results/New",0755)};
 \\
 \end{tabular}
 \end{examples}
@@ -697,7 +713,7 @@ No Fortran routine exists at the moment.
 \end{discussion}
 \begin{examples}
 \begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t istat = CCTK\_DecomposeName(`evolve::scalars',imp,name)}\\
+\hfill {\bf C} && {\t istat = CCTK\_DecomposeName("evolve::scalars",imp,name)}\\
 \end{tabular}
 \end{examples}
 \begin{errorcodes}
@@ -724,8 +740,10 @@ No Fortran routine exists at the moment.
 \parameter{cctkGH}{pointer to CCTK grid hierarchy}
 \end{params}
 \begin{discussion}
-Turning on communications means that ghost zones will be communicated during
-a call to {\tt CCTK\_SyncGroup}.
+Grid variables with communication enabled will have their ghost zones communicated during a call
+to {\tt CCTK\_SyncGroup}. In general, this function does not need to be used, since communication
+is automatically enabled for grid variables who have assigned storage via the {\tt schedule.ccl} 
+file.
 \end{discussion}
 \begin{examples}
 \begin{tabular}{@{}p{3cm}cp{11cm}}
@@ -748,6 +766,8 @@ a call to {\tt CCTK\_SyncGroup}.
 \parameter{cctkGH}{pointer to CCTK grid hierarchy}
 \end{params}
 \begin{discussion}
+In general this function does not need to be used, since storage assignment is best handled by
+the Cactus scheduler via a thorn's {\tt schedule.ccl} file.
 \end{discussion}
 \begin{examples}
 \begin{tabular}{@{}p{3cm}cp{11cm}}
@@ -763,9 +783,11 @@ a call to {\tt CCTK\_SyncGroup}.
 \label{Exit}
 \subroutine{int}{integer}{istat}
 \argument{cGH *}{CCTK\_POINTER}{cctkGH}
+\argument{int}{integer}{value}
 \showargs
 \begin{params}
 \parameter{cctkGH}{pointer to CCTK grid hierarchy}
+\parameter{value}{error code}
 \end{params}
 \begin{discussion}
 \end{discussion}
@@ -791,10 +813,9 @@ a call to {\tt CCTK\_SyncGroup}.
 \parameter{string2}{second string to be compared}
 \end{params}
 \begin{discussion}
-This function returns one if the strings are equals, for all other
-values the strings are not equals. Note that the input strings in fortran
-can be either string literals (`mystring') or CCTK string parameters
-(defined by the macro {\tt CCTK\_DECLARE\_PARAMETERS} to be {\t CCTK\_POINTER}.
+This function compares a Cactus parameter with a string, and performs a 
+case-independent comparison, returning one if the strings are the same, 
+and zero if they differ. 
 \end{discussion}
 \begin{examples}
 \begin{tabular}{@{}p{3cm}cp{11cm}}
@@ -853,9 +874,9 @@ strings. This routine allows a Fortran string to be created from such a C string
 \end{discussion}
 \begin{examples}
 \begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t firstvar = CCTK\_FirstVarIndex(`evolve::scalars') ;}
+\hfill {\bf C} && {\t firstvar = CCTK\_FirstVarIndex("evolve::scalars") ;}
 \\
-\hfill {\bf Fortran} && {\t call CCTK\_GroupIndex(index,`evolve::scalars')}\\
+\hfill {\bf Fortran} && {\t call CCTK\_GroupIndex(index,"evolve::scalars")}\\
 \\
 \end{tabular}
 \end{examples}
@@ -878,7 +899,7 @@ strings. This routine allows a Fortran string to be created from such a C string
 \end{discussion}
 \begin{examples}
 \begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t index = CCTK\_GroupIndex(`evolve::scalars')}\\
+\hfill {\bf C} && {\t index = CCTK\_GroupIndex("evolve::scalars")}\\
                &&{\t firstvar = CCTK\_FirstVarIndexI(index) ;}
 \\
 \hfill {\bf Fortran} && {\t call CCTK\_GroupIndex(index,3)}\\
@@ -908,7 +929,7 @@ the form {\t <implementation>::<variable>}
 \end{discussion}
 \begin{examples}
 \begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t index = CCTK\_VarIndex(`evolve::phi')}\\
+\hfill {\bf C} && {\t index = CCTK\_VarIndex("evolve::phi")}\\
                &&{\t fullname = CCTK\_FullName(index) ;}
 \\
 \end{tabular}
@@ -938,9 +959,9 @@ the form {\t <implementation>::<variable>}
 \end{discussion}
 \begin{examples}
 \begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t handle =  CCTK\_GHExtension(`myExtension') ;}
+\hfill {\bf C} && {\t handle =  CCTK\_GHExtension("myExtension") ;}
 \\
-\hfill {\bf Fortran} && {\t call CCTK\_GHExtension(handle,`myExtension')}\\
+\hfill {\bf Fortran} && {\t call CCTK\_GHExtension(handle,"myExtension")}\\
 \\
 \end{tabular}
 \end{examples}
@@ -967,7 +988,7 @@ with the Cactus provided macros for {\t GROUP\_SCALAR}, {\t GROUP\_GF}, {\t GROU
 \end{discussion}
 \begin{examples}
 \begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t index = CCTK\_GroupIndex(`evolve::scalars')}\\
+\hfill {\bf C} && {\t index = CCTK\_GroupIndex("evolve::scalars")}\\
                &&{\t array = (GROUP\_ARRAY == CCTK\_GroupTypeFromVarI(index)) ;}
 \\
 \hfill {\bf Fortran} && {\t call CCTK\_GROUPTYPEFROMVARI(type,3)}\\
@@ -996,7 +1017,7 @@ No Fortran routine exists at the moment.
 \end{discussion}
 \begin{examples}
 \begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t index = CCTK\_GroupIndex(`evolve::scalars')}\\
+\hfill {\bf C} && {\t index = CCTK\_GroupIndex("evolve::scalars")}\\
                &&{\t name = CCTK\_GroupName(index) ;}
 \\
 \end{tabular}
@@ -1036,7 +1057,7 @@ No Fortran routine exists at the moment.
 \begin{examples}
 \begin{tabular}{@{}p{3cm}cp{11cm}}
 \hfill {\bf C} && {\t cGroup pgroup;}\\
-	       && {\t index = CCTK\_GroupIndex(`evolve::scalars')}\\
+	       && {\t index = CCTK\_GroupIndex("evolve::scalars")}\\
                &&{\t ierr = CCTK\_GroupData(index,\&pgroup);}\\
                && {\t vtype = pgroup.vartype;}
 \\
@@ -1062,7 +1083,7 @@ No Fortran routine exists at the moment.
 \end{discussion}
 \begin{examples}
 \begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t index = CCTK\_VarIndex(`evolve::phi');} \\
+\hfill {\bf C} && {\t index = CCTK\_VarIndex("evolve::phi");} \\
                && {\t group = CCTK\_GroupNameFromVarI(index) ;}
 \\
 \end{tabular}
@@ -1087,10 +1108,10 @@ No Fortran routine exists at the moment.
 \end{discussion}
 \begin{examples}
 \begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t index = CCTK\_VarIndex(`evolve::phi');} \\
+\hfill {\bf C} && {\t index = CCTK\_VarIndex("evolve::phi");} \\
                && {\t groupindex = CCTK\_GroupIndexFromVarI(index) ;}
 \\
-\hfill {\bf Fortran} && {\t call CCTK\_VARINDEX(`evolve::phi')}\\
+\hfill {\bf Fortran} && {\t call CCTK\_VARINDEX("evolve::phi")}\\
                      &&call {\t CCTK\_GROUPINDEXFROMVARI(groupindex,index)};
 \\
 \end{tabular}
@@ -1116,9 +1137,9 @@ The variable name should be in the form {\t <implementation>::<variable>}
 \end{discussion}
 \begin{examples}
 \begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t groupindex = CCTK\_GroupIndexFromVar(`evolve::phi') ;}
+\hfill {\bf C} && {\t groupindex = CCTK\_GroupIndexFromVar("evolve::phi") ;}
 \\
-\hfill {\bf Fortran} && {\t call CCTK\_GROUPINDEXFROMVAR(groupindex,`evolve::phi')};
+\hfill {\bf Fortran} && {\t call CCTK\_GROUPINDEXFROMVAR(groupindex,"evolve::phi")};
 \\
 \end{tabular}
 \end{examples}
@@ -1143,9 +1164,9 @@ The group name should be given in the form {\t <implementation>::<group>}
 \end{discussion}
 \begin{examples}
 \begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t index = CCTK\_GroupIndex(`evolve::scalars') };
+\hfill {\bf C} && {\t index = CCTK\_GroupIndex("evolve::scalars") };
 \\
-\hfill {\bf Fortran} && call {\t CCTK\_GroupIndex(index,`evolve::scalars')};
+\hfill {\bf Fortran} && call {\t CCTK\_GroupIndex(index,"evolve::scalars")};
 \\
 \end{tabular}
 \end{examples}
@@ -1181,7 +1202,7 @@ No Fortran routine exists at the moment
 \end{discussion}
 \begin{examples}
 \begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t index = CCTK\_VarIndex(`evolve::phi')}\\
+\hfill {\bf C} && {\t index = CCTK\_VarIndex("evolve::phi")}\\
                &&{\t implementation = CCTK\_ImpFromVarI(index) ;}
 \\
 \end{tabular}
@@ -1207,9 +1228,9 @@ No Fortran routine exists at the moment
 \end{discussion}
 \begin{examples}
 \begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t CCTK\_INFO(`Entering interpolator') };
+\hfill {\bf C} && {\t CCTK\_INFO("Entering interpolator") };
 \\
-\hfill {\bf Fortran} && {\t call CCTK\_INFO(`Inside interpolator')};
+\hfill {\bf Fortran} && {\t call CCTK\_INFO("Inside interpolator")};
 \\
 \end{tabular}
 \end{examples}
@@ -1397,7 +1418,7 @@ For a single processor run this call will return one.
 \end{discussion}
 \begin{examples}
 \begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t index = CCTK\_VarIndex(`evolve::phi')}\\
+\hfill {\bf C} && {\t index = CCTK\_VarIndex("evolve::phi")}\\
                &&{\t numlevels = CCTK\_NumTimeLevelsFromVarI(index) ;}
 \\
 \hfill {\bf Fortran} && {\t call CCTK\_NUMTIMELEVELSFROMVARI(numlevels,3)}\\
@@ -1426,9 +1447,9 @@ The variable name should be in the form {\t <implementation>::<variable>}
 \end{discussion}
 \begin{examples}
 \begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t numlevels = CCTK\_NumTimeLevelsFromVar(`evolve::phi') ;}
+\hfill {\bf C} && {\t numlevels = CCTK\_NumTimeLevelsFromVar("evolve::phi") ;}
 \\
-\hfill {\bf Fortran} && {\t call CCTK\_NUMTIMELEVELSFROMVAR(numlevels,`evolve::phi')}\\
+\hfill {\bf Fortran} && {\t call CCTK\_NUMTIMELEVELSFROMVAR(numlevels,"evolve::phi")}\\
 \\
 \end{tabular}
 \end{examples}
@@ -1454,7 +1475,7 @@ The variable name should be in the form {\t <implementation>::<variable>}
 \end{discussion}
 \begin{examples}
 \begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t index = CCTK\_GroupIndex(`evolve::scalars')}\\
+\hfill {\bf C} && {\t index = CCTK\_GroupIndex("evolve::scalars")}\\
                &&{\t firstvar = CCTK\_NumVarsInGroupI(index) ;}
 \\
 \hfill {\bf Fortran} && {\t call CCTK\_NUMVARSINGROUPI(firstvar,3)}\\
@@ -1483,9 +1504,9 @@ The group name should be given in the form {\t <implementation>::<group>}
 \end{discussion}
 \begin{examples}
 \begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t numvars = CCTK\_NumVarsInGroup(`evolve::scalars') ;}
+\hfill {\bf C} && {\t numvars = CCTK\_NumVarsInGroup("evolve::scalars") ;}
 \\
-\hfill {\bf Fortran} && {\t call CCTK\_NUMVARSINGROUP(numvars,`evolve::scalars')}\\
+\hfill {\bf Fortran} && {\t call CCTK\_NUMVARSINGROUP(numvars,"evolve::scalars")}\\
 \\
 \end{tabular}
 \end{examples}
@@ -1715,9 +1736,9 @@ checked.
 \end{discussion}
 \begin{examples}
 \begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t CCTK\_PARAMWARN(`Mass cannot be negative') };
+\hfill {\bf C} && {\t CCTK\_PARAMWARN("Mass cannot be negative") };
 \\
-\hfill {\bf Fortran} && {\t call  CCTK\_PARAMWARN(`Inside interpolator')};
+\hfill {\bf Fortran} && {\t call  CCTK\_PARAMWARN("Inside interpolator")};
 \\
 \end{tabular}
 \end{examples}
@@ -2061,10 +2082,10 @@ as coordinates.
 \end{discussion}
 \begin{examples}
 \begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t index = CCTK\_VarIndex(``MyImp::MyGF'');} \\
-               && {\t handle = CCTK\_RegisterCoordI(1,index,`xdir')};
+\hfill {\bf C} && {\t index = CCTK\_VarIndex(""MyImp::MyGF"");} \\
+               && {\t handle = CCTK\_RegisterCoordI(1,index,"xdir")};
 \\
-\hfill {\bf Fortran} && {\t call  CCTK\_REGISTERCOORDI(handle,0,14,`radius')};
+\hfill {\bf Fortran} && {\t call  CCTK\_REGISTERCOORDI(handle,0,14,"radius")};
 \\
 \end{tabular}
 \end{examples}
@@ -2094,9 +2115,9 @@ as coordinates.
 \end{discussion}
 \begin{examples}
 \begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t handle = CCTK\_RegisterCoord(1,`MyImp::MyGF',`xdir')};
+\hfill {\bf C} && {\t handle = CCTK\_RegisterCoord(1,"MyImp::MyGF","xdir")};
 \\
-\hfill {\bf Fortran} && {\t call  CCTK\_REGISTERCOORD(handle,0,`MyImp::MyGF',`radius')};
+\hfill {\bf Fortran} && {\t call  CCTK\_REGISTERCOORD(handle,0,"MyImp::MyGF","radius")};
 \\
 \end{tabular}
 \end{examples}
@@ -2120,9 +2141,9 @@ displayed in the order in which they are registered.
 \end{discussion}
 \begin{examples}
 \begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t CCTK\_RegisterBanner(`My Thorn: Does Something Useful')};
+\hfill {\bf C} && {\t CCTK\_RegisterBanner("My Thorn: Does Something Useful")};
 \\
-\hfill {\bf Fortran} && {\t call CCTK\_REGISTERBANNER(`*** MY THORN ***')};
+\hfill {\bf Fortran} && {\t call CCTK\_REGISTERBANNER("*** MY THORN ***")};
 \\
 \end{tabular}
 \end{examples}
@@ -2156,9 +2177,9 @@ can be accessed by {\t CCTK\_CoordRange}.
 \end{discussion}
 \begin{examples}
 \begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t ierr = CCTK\_RegisterCoordRange(xmin,xmax,`xdir') };
+\hfill {\bf C} && {\t ierr = CCTK\_RegisterCoordRange(xmin,xmax,"xdir") };
 \\
-\hfill {\bf Fortran} && {\t call CCTK\_REGISTERCOORDRANGE(ierr,Rmin,Rmax,`radius')};
+\hfill {\bf Fortran} && {\t call CCTK\_REGISTERCOORDRANGE(ierr,Rmin,Rmax,"radius")};
 \\
 \end{tabular}
 \end{examples}
@@ -2245,9 +2266,9 @@ The variable name should be given in the form {\t <implementation>::<variable>}
 \end{discussion}
 \begin{examples}
 \begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t index = CCTK\_VarIndex(`evolve::phi') };
+\hfill {\bf C} && {\t index = CCTK\_VarIndex("evolve::phi") };
 \\
-\hfill {\bf Fortran} && {\t call CCTK\_VarIndex(index,`evolve::phi')};
+\hfill {\bf Fortran} && {\t call CCTK\_VarIndex(index,"evolve::phi")};
 \\
 \end{tabular}
 \end{examples}
@@ -2273,7 +2294,7 @@ No Fortran routine exists at the moment.
 \end{discussion}
 \begin{examples}
 \begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t index = CCTK\_VarIndex(`evolve::phi')}\\
+\hfill {\bf C} && {\t index = CCTK\_VarIndex("evolve::phi")}\\
                &&{\t name = CCTK\_VarName(index) ;}
 \\
 \end{tabular}
@@ -2302,7 +2323,7 @@ with the Cactus provided macros for {\t CCTK\_VARIABLE\_INT}, {\t CCTK\_VARIABLE
 \end{discussion}
 \begin{examples}
 \begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t index = CCTK\_VarIndex(`evolve::phi')}\\
+\hfill {\bf C} && {\t index = CCTK\_VarIndex("evolve::phi")}\\
                &&{\t real = (CCTK\_VARIABLE\_REAL == CCTK\_VarTypeI(index)) ;}
 \\
 \hfill {\bf Fortran} && {\t call CCTK\_VARTYPEI(type,3)}\\
@@ -2331,7 +2352,7 @@ The variable name should be in the form {\t <implementation>::<variable>}.
 \end{discussion}
 \begin{examples}
 \begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t myVar = (CCTK\_REAL *)(CCTK\_VarDataPtr(GH,0,`imp::realvar'))}\\
+\hfill {\bf C} && {\t myVar = (CCTK\_REAL *)(CCTK\_VarDataPtr(GH,0,"imp::realvar"))}\\
 \\
 \end{tabular}
 \end{examples}
@@ -2355,7 +2376,7 @@ The variable name should be in the form {\t <implementation>::<variable>}.
 \end{discussion}
 \begin{examples}
 \begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t myVar = (CCTK\_REAL *)(CCTK\_VarDataPtr(GH,0,CCTK\_VarIndex(`imp::realvar')))}\\
+\hfill {\bf C} && {\t myVar = (CCTK\_REAL *)(CCTK\_VarDataPtr(GH,0,CCTK\_VarIndex("imp::realvar")))}\\
 \\
 \end{tabular}
 \end{examples}
@@ -2384,7 +2405,7 @@ If the name if {\t NULL} the index will be used, if the index is negative the na
 \end{discussion}
 \begin{examples}
 \begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t myVar = (CCTK\_REAL *)(CCTK\_VarDataPtrB(GH,0,CCTK\_VarIndex(`imp::realvar'),NULL))}\\
+\hfill {\bf C} && {\t myVar = (CCTK\_REAL *)(CCTK\_VarDataPtrB(GH,0,CCTK\_VarIndex("imp::realvar"),NULL))}\\
 \\
 \end{tabular}
 \end{examples}
@@ -2417,9 +2438,9 @@ This behavious can be changed on the command line.
 \end{discussion}
 \begin{examples}
 \begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t CCTK\_WARN(1,`This is not a good idea') };
+\hfill {\bf C} && {\t CCTK\_WARN(1,"This is not a good idea") };
 \\
-\hfill {\bf Fortran} && {\t call CCTK\_WARN(0,`Divide by zero')};
+\hfill {\bf Fortran} && {\t call CCTK\_WARN(0,"Divide by zero")};
 \\
 \end{tabular}
 \end{examples}
