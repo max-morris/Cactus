@@ -55,6 +55,9 @@ cGH *CactusDefaultSetupGH(tFleshConfig *config, int convergence_level)
   if(thisGH)
   {
     thisGH->dim = CCTK_GetMaxDim();
+
+    /* Need this to be at least one otherwise the memory allocation will fail. */
+    if(thisGH->dim == 0) thisGH->dim = 1;
     thisGH->iteration = 0;
     thisGH->local_shape = (int *)malloc(thisGH->dim*sizeof(int));
     thisGH->lower_bound = (int *)malloc(thisGH->dim*sizeof(int));
@@ -65,7 +68,10 @@ cGH *CactusDefaultSetupGH(tFleshConfig *config, int convergence_level)
 
     n_variables = CCTK_GetNumVars();
 
-    thisGH->data = (void **)malloc(n_variables*sizeof(void *));
+    /* Allocate memory for the variable data pointers.
+     * Note we want at least one to prevent memory allocattion from failing !
+     */
+    thisGH->data = (void **)malloc((n_variables||1)*sizeof(void *));
 
     if(thisGH->data)
     {
@@ -77,7 +83,10 @@ cGH *CactusDefaultSetupGH(tFleshConfig *config, int convergence_level)
 
     thisGH->extensions = NULL;
 
-    thisGH->GroupData = (cGHGroupData *)malloc(CCTK_GetNumGroups()*sizeof(cGHGroupData));
+    /* Allocate memory for the group data pointers.
+     * Note we want at least one to prevent memory allocattion from failing !
+     */
+    thisGH->GroupData = (cGHGroupData *)malloc((CCTK_GetNumGroups()||1)*sizeof(cGHGroupData));
 
   }
   
@@ -95,7 +104,7 @@ cGH *CactusDefaultSetupGH(tFleshConfig *config, int convergence_level)
     retval = thisGH;
   }
 
-  return thisGH;
+  return retval;
 }
 
 
