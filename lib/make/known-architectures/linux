@@ -31,6 +31,8 @@ else
 	LINUX_F90_COMP=gnu77
     elif test "`$F90 -? 2>&1 | grep -i absoft`" ; then
 	LINUX_F90_COMP=absoft77
+    elif test "`$F90 --version 2>&1 | grep -i lahey/fujitsu`" ; then
+       LINUX_F90_COMP=lahey          
     else
 	echo Unknown Linux f90 compiler.
 	echo Please add appropriate information to 
@@ -128,6 +130,14 @@ else
        ;;
      fujitsu)
        : ${LIBS="fj9i6 fj9e6 fj9f6"} 
+       ;;
+     lahey)
+       : ${F77_DEBUG_FLAGS="-g --chk"}
+       : ${F90_DEBUG_FLAGS="-g --chk"}
+       : ${F77_WARN_FLAGS="--warn"}
+       : ${F90_WARN_FLAGS="--warn"}
+       : ${F77_OPTIMISE_FLAGS="-O"}
+       : ${F90_OPTIMISE_FLAGS="-O"}         
        ;;
      none)
        : ${LIBS="m"} 
