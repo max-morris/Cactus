@@ -6,7 +6,7 @@
 #  @desc
 #             Parses the the configuration files for thorns.
 #  @enddesc
-#  @version   $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.66 2004-05-03 16:38:41 goodale Exp $
+#  @version   $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.67 2004-05-09 21:43:45 tradke Exp $
 #@@*/
 
 # Global parameter to track the number of errors from the CST
@@ -548,7 +548,7 @@ sub CreateBindings
 
 #/*@@
 #  @routine    TopoSort
-#  @date       20 Apr 2004       
+#  @date       20 Apr 2004
 #  @author     Yaakoub Y El-Khamra
 #  @desc
 #  Here we perform a topological sort of thorns.
@@ -561,7 +561,7 @@ sub TopoSort
   my($nouse) = '';
   my $thorn;
   my($exit_value, $signal_num, $dumped_core);
-  
+
   foreach $thorn (sort keys %thorns)
   {
     next if ("\U$thorn\E" eq "CACTUS");
@@ -580,26 +580,26 @@ sub TopoSort
     }
   }
 
-  &WriteFile("$bindings_dir/linklist", \$data);
-
-  $data = `perl $sbin_dir/tsort $bindings_dir/linklist`;
-
-  if ($data eq "cycle deteced")
+  if (@data)
   {
-    &CST_error (0,  "Cyclic dependency detected");
+    &WriteFile("$bindings_dir/linklist", \$data);
+
+    $data = `perl $sbin_dir/tsort $bindings_dir/linklist`;
+
+    &CST_error (0,  "Cyclic dependency detected") if ($data eq "cycle deteced");
+
+    $exit_value  = $? >> 8;
+    $signal_num  = $? & 127;
+    $dumped_core = $? & 128;
+
+    &CST_error (0,  "Tsort script returned $exit_value\n") if $exit_value;
+    &CST_error (0,  "Tsort script received signal $signal_num\n") if $signal_num;
+    &CST_error (0,  "Tsort script dumped core\n" ) if $dumped_core;
+
+    $data =  join(' ', split("\n", $data));
+    $data =~ s/dummy//;
+    $data =~ s/  / /;
   }
-
-  $exit_value  = $? >> 8;
-  $signal_num  = $? & 127;
-  $dumped_core = $? & 128;
-
-  &CST_error (0,  "Tsort script returned $exit_value\n") if $exit_value;
-  &CST_error (0,  "Tsort script received signal $signal_num\n") if $signal_num;
-  &CST_error (0,  "Tsort script dumped core\n" ) if $dumped_core;
- 
-  $data =  join(' ', split("\n", $data));
-  $data =~ s/dummy//;
-  $data =~ s/  / /;
 
   return $data;
 }
