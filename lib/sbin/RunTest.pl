@@ -6,12 +6,14 @@
 require "lib/sbin/RunTestUtils.pl";
 
 $prompt = shift;
+$home_dir = shift;
+
 $prompt =~ tr/A-Z/a-z/;
 
 $config = shift;;
 
 # Set up RunTest configuration
-%config_data = &Configure($config);
+%config_data = &Configure($config,$home_dir);
 $sep= "/";
 
 &PrintHeader;

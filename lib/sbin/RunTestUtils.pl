@@ -1,16 +1,12 @@
 sub Configure
 {
-  my($config) = @_;
-  my($configs_dir);
+  my($config,$home_dir) = @_;
+  my($configs_dir,$tests_dir);
 
-  # Find Cactus home directory
-  $home_dir = `pwd`;
-  chomp($home_dir);
-  $home_dir =~ s,^/cygdrive/(.)/,$1:/,;
-  $home_dir =~ s,^//(.)/,$1:/,;
-  $config_data{"HOMEDIR"} = $home_dir;
+  # Cactus home directory
+  $config_data{"CCTK_DIR"} = $home_dir;
 
-  # Find config directory is
+  # Cactus configurations directory
   if($ENV{"CONFIGS_DIR"})
   {
     $configs_dir = $ENV{"CONFIGS_DIR"};
@@ -21,17 +17,19 @@ sub Configure
   }
   $config_data{"CONFIGSDIR"} = $configs_dir;
 
-  # Work out the current directory
-  $current_directory = `pwd`;
-  chop($current_directory);
-  # Stuff necessary for cygwin
-  $current_directory =~ s,^/cygdrive/(.)/,$1:/,;
-  $current_directory =~ s,^//(.)/,$1:/,;
-  $config_data{"THISDIR"} = $current_directory;
+  # Cactus test directory
+  if ($ENV{"TESTS_DIR"})
+  {
+    $tests_dir = $ENV{"TESTS_DIR"};
+  }
+  else
+  {
+    $tests_dir = $home_dir."/TEST";
+  }
+  $config_data{"TESTS_DIR"} = $tests_dir;
 
   $config_data{"SEPARATOR"} = "/";
   $config_data{"CONFIG"} = $config;
-#  $config_data{"TOLERANCE"} = 13;
 
   return %config_data;
 }
@@ -123,7 +121,8 @@ sub ParseParFile($thorn,$parfile,%config_data)
 sub ParseTests
 {
   my(%config_data) = @_;
-  my($stratch_dir);
+  my($scratch_dir);
+  my($thorn);
 
   $config      = $config_data{"CONFIG"};
   $configs_dir = $config_data{"CONFIGSDIR"};
@@ -135,10 +134,6 @@ sub ParseTests
   } 
   else 
   {
-    chdir "arrangements";
-  
-    $testdata{"FULL"} = "";
-
     while (<AT>) 
     {
       next if (m:^\s*$:);
@@ -148,43 +143,40 @@ sub ParseTests
       $name = $_;
       $name =~ s/\#(.*)$//g;
       $name =~ /^\s*([^\s]*)\s*/;
-      $T = $1;
-      $testdata{"FULL"} .= "$T ";
+      $thorn = $1;
+      $testdata{"FULL"} .= "$thorn ";
       
-      $T =~ m:^.*/([^\s]*)\s*:;
+      $thorn =~ m:^.*/([^\s]*)\s*:;
       $testdata{"THORNS"} .= "$1 ";
-      $T =~ m:^\s*([^\s]*)/:;
+      $thorn =~ m:^\s*([^\s]*)/:;
       if ($testdata{"ARRANGEMENTS"} !~ m:\s$1\s:)
       {
 	$testdata{"ARRANGEMENTS"} .= "$1 ";
       }
-      $number = 0;
-      if (-d "$T${sep}test") 
+
+      $thorntestdir = "$config_data{\"CCTK_DIR\"}${sep}arrangements${sep}$thorn${sep}test";
+
+      if (-d $thorntestdir) 
       {
-	$testdata{"$T PARFILESDIR"} = $config_data{"HOMEDIR"}.${sep}."arrangements/$T/test";
-	$thisdir = `pwd`;
-	chop($thisdir);
-	chdir "$T${sep}test" || die "Unable to chdir to $T${sep}test";
+	$testdata{"$thorn PARFILESDIR"} = $thorntestdir;
+
+	chdir $thorntestdir;
+
 	while ($file=<*.par>)
 	{
 	  $file =~ m:^(.*)\.par$:;
 	  $filedir = $1;
 	  if (-d $filedir)
 	  {
-	    $testdata{"$T $filedir DATAFILES"} .= &FindFiles($filedir);
-	    $testdata{"$T $filedir NDATAFILES"} = scalar(split(" ",$testdata{"$T $filedir DATAFILES"}));
-	    $testdata{"$T PARFILES"} .= "$file ";
-	    $testdata{"$T NUMBER"}++;
+	    $testdata{"$thorn $filedir DATAFILES"} .= &FindFiles($filedir);
+	    $testdata{"$thorn $filedir NDATAFILES"} = scalar(split(" ",$testdata{"$thorn $filedir DATAFILES"}));
+	    $testdata{"$thorn PARFILES"} .= "$file ";
+	    $testdata{"$thorn NUMBER"}++;
 	  }
 	}
-	chdir "../../.." || die "Unable to chdir to $thisdir";
-      }
-      else
-      {
-#	print "No tests for $T\n";
       }
     }
-    chdir "..";
+    chdir $config_data{"CCTK_DIR"};
   }
 
   return %testdata;
@@ -224,9 +216,9 @@ sub ParseExecutable
 
   $executable = &defprompt("  Enter executable name (relative to Cactus home dir)","exe$sep$defexename");
 
-  if (! (-e $config_data{"HOMEDIR"}.${sep}.$executable))
+  if (! (-e $config_data{"CCTK_DIR"}.${sep}.$executable))
   {
-    if (-e $config_data{"HOMEDIR"}.${sep}.${executable}.".exe")
+    if (-e $config_data{"CCTK_DIR"}.${sep}.${executable}.".exe")
     {
       $executable .= ".exe";
     }
@@ -236,7 +228,7 @@ sub ParseExecutable
     }
   }
 
-  return $config_data{"HOMEDIR"}.${sep}.$executable;
+  return $config_data{"CCTK_DIR"}.${sep}.$executable;
 }
 
 
@@ -267,7 +259,7 @@ sub ParseExtras
   my(%config_data) = @_;
   my($mpi,$dir,$sep,$extradir);
 
-  $dir = $config_data{"THISDIR"};
+  $dir = $config_data{"CCTK_DIR"};
   $sep = $config_data{"SEPARATOR"};
   $config = $config_data{"CONFIG"};
 
@@ -294,6 +286,9 @@ sub ParseExtras
 sub InitialiseTestData
 {
   my(%testdata);
+
+  # Complete list of thorns: arrangement/thorn
+  $testdata{"FULL"} = "";
 
   $testdata{"TOLERANCE"} = 13;
   $testdata{"NFAILED"} = 0;
@@ -653,14 +648,11 @@ sub RunTest
   $inthorn =~ m:/(.*)$:;
   $mythorn = $1;
 
-  $current = `pwd`;
-  chop($current);
-
   # Directory for output
-  
-  $test_dir = "$current${sep}TEST${sep}$config${sep}${mythorn}";
-  mkdir (TEST,0755);
-  mkdir ("TEST${sep}$config",0755);
+  $test_dir = "$config_data{\"TESTS_DIR\"}${sep}$config${sep}${mythorn}";
+
+  mkdir ($config_data{"TESTS_DIR"},0755);
+  mkdir ("$config_data{\"TESTS_DIR\"}${sep}$config",0755);
   mkdir ($test_dir,0755);
 
   $parfile = $test.".par";
@@ -669,10 +661,11 @@ sub RunTest
   &CleanDir("$test_dir${sep}$test");
 
   # Run the test from the test thorn directory
-  chdir ($test_dir);
+  chdir ($test_dir) || print "Error: $test_dir not found\n";
+
   $cmd = "$command $executable $testdata{\"$inthorn PARFILESDIR\"}${sep}$parfile";
   $retcode = &RunCactus($test,$cmd);
-  chdir $current;
+  chdir $config_data{"CCTK_DIR"};
 
   # Deal with the error code
   if($retcode != 0)
@@ -694,9 +687,7 @@ sub CompareTestFiles
   $inthorn =~ m:/(.*)$:;
   $mythorn = $1;
 
-  $current = `pwd`;
-  chop($current);
-  $test_dir = "$current${sep}TEST${sep}$config${sep}${mythorn}";
+  $test_dir = "$config_data{\"TESTS_DIR\"}${sep}$config${sep}${mythorn}";
   
   # Add output files to database
   $testdata{"$inthorn $test TESTFILES"} = &FindFiles("$test_dir${sep}$test");
