@@ -60,6 +60,8 @@ int CactusDefaultShutdown(tFleshConfig *config)
 {
   int myproc,conv_level;
 
+  myproc = CCTK_MyProc(config->GH[0]);
+
   /* Execute termination for all convergence levels */
   for(conv_level = 0 ; conv_level < config->nGHs;  conv_level++) 
   {    
@@ -72,8 +74,6 @@ int CactusDefaultShutdown(tFleshConfig *config)
     CCTK_Traverse(config->GH[conv_level], "CCTK_SHUTDOWN"); 
   }
  
-  myproc = CCTK_MyProc(config->GH[0]);
-
 #ifdef MPI
   if(MPI_Active)
   {
