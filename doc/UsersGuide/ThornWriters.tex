@@ -4113,7 +4113,7 @@ allow for a homogeneous code.
 \label{sect-ThornWriting/DataTypes}
 \label{sec:datyansi}
 
-Cactus supports the following fixed size data types:
+Cactus knows about the following fixed size data types:
 
 \begin{center}
 \begin{tabular}{|l|l|l|l|}
@@ -4133,6 +4133,21 @@ Data Type & Size (bytes) & Variable Type & Fortran Equivalent\\
 {\t CCTK\_CHAR}      & 1  & {\t CCTK\_VARIABLE\_CHAR}      & {\t character} \\ \hline
 \end{tabular}
 \end{center}
+
+The availability of these types, and the corresponding
+C data types are platform-dependent. For each fixed-size data type there exists
+a corresponding preprocessor macro {\t HAVE\_<data type>} which should be used
+to check whether the given CCTK data type is supported, eg.
+
+\begin{verbatim}
+  /* declare variable with extended-precision complex data type if available
+     otherwise with default CCTK precision */
+  #ifdef HAVE_CCTK_COMPLEX32
+  CCTK_COMPLEX32 var;
+  #else
+  CCTK_COMPLEX   var;
+  #endif
+\end{verbatim}
 
 In addition Cactus provides three generic numeric data types which map onto
 the compilers' native data types used to represent integer, real, and complex
@@ -4161,23 +4176,6 @@ variables in the thorn routines. Note that variable declarations in
 thorns should obviously match with definitions in the interface files
 where appropriate.
 
-Cactus also provides generic data and function pointers, which can
-be used from either C or Fortran (these may not work yet for thorn interface
-files):
-
-\begin{center}
-\begin{tabular}{|l|l|l|}
-\hline
-Data Type               & Variable Type & C equivalent                  \\
-\hline
-{\t CCTK\_POINTER}      & {\t CCTK\_VARIABLE\_POINTER}
-                                        & {\t void *data\_ptr}          \\
-{\t CCTK\_FPOINTER}     & {\t CCTK\_VARIABLE\_FPOINTER}
-                                        & {\t void (*fn\_ptr)(void)}    \\
-\hline
-\end{tabular}
-\end{center}
-
 Also provided, are a set of macros which
 are interpreted by the preprocessor at compile time to signify which
 data size is being used:
@@ -4201,8 +4199,25 @@ Data Type & {\t \#define}\\
 \end{tabular}
 \end{center}
 
-Note that the availability of these types, and the corresponding
-C data types are platform dependent.
+Cactus also provides generic data and function pointers, which can
+be used from either C or Fortran (these may not work yet for thorn interface
+files):
+
+\begin{center}
+\begin{tabular}{|l|l|l|}
+\hline
+Data Type               & Variable Type & C equivalent                  \\
+\hline
+{\t CCTK\_POINTER}      & {\t CCTK\_VARIABLE\_POINTER}
+                                        & {\t void *data\_ptr}          \\
+{\t CCTK\_POINTER\_TO\_CONST}      & {\t CCTK\_VARIABLE\_POINTER}
+                                        & {\t const void *data\_ptr}          \\
+{\t CCTK\_FPOINTER}     & {\t CCTK\_VARIABLE\_FPOINTER}
+                                        & {\t void (*fn\_ptr)(void)}    \\
+\hline
+\end{tabular}
+\end{center}
+
 
 \subsection{Fortran Thorn Writers}
 
