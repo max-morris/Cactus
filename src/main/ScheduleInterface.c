@@ -188,6 +188,7 @@ static int *scheduled_comm_groups = NULL;
 
 static int n_scheduled_storage_groups = 0;
 static int *scheduled_storage_groups = NULL;
+static int *scheduled_storage_groups_timelevels = NULL;
 
 static cTimerData *timerinfo = NULL;
 static int total_timer = -1;
@@ -574,6 +575,7 @@ int CCTKi_ScheduleGroup(const char *name,
    @vtype   const char *
    @vio     in
    @endvar
+
    @returntype int
    @returndesc
    Group index or
@@ -583,16 +585,24 @@ int CCTKi_ScheduleGroup(const char *name,
 int CCTKi_ScheduleGroupStorage(const char *group)
 {
   int *temp;
+  int *temp2;
 
   temp = (int *) realloc(scheduled_storage_groups,
                          (n_scheduled_storage_groups+1) * sizeof(int));
-  if(temp)
+  temp2 = (int *) realloc(scheduled_storage_groups_timelevels,
+                         (n_scheduled_storage_groups+1) * sizeof(int));
+
+  if(temp && temp2)
   {
     temp[n_scheduled_storage_groups++] = CCTK_GroupIndex(group);
     scheduled_storage_groups = temp;
+    scheduled_storage_groups_timelevels = temp2;
+
+    /* FIXME: set to -1 (enable all) until the info is passed in from the ccl*/
+    scheduled_storage_groups_timelevels[n_scheduled_storage_groups-1] = -1;    
   }
 
-  return (temp ? temp[n_scheduled_storage_groups-1] : -1);
+  return (temp && temp2  ? temp[n_scheduled_storage_groups-1] : -1);
 }
 
 
@@ -767,10 +777,11 @@ int CCTKi_ScheduleGHInit(void *GH)
                 "No timing information will be available.");
   }
 
-  for(i = 0; i < n_scheduled_storage_groups; i++)
-  {
-    CCTK_EnableGroupStorageI(GH,scheduled_storage_groups[i]);
-  }
+  CCTK_GroupStorageIncrease(GH,
+                            n_scheduled_storage_groups,
+                            scheduled_storage_groups,
+                            scheduled_storage_groups_timelevels,
+                            NULL);
 
   for(i = 0; i < n_scheduled_comm_groups; i++)
   {
