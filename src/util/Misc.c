@@ -53,7 +53,7 @@ int CCTK_FCALL CCTK_FNAME(CCTK_Equals)
 
 CCTK_POINTER CCTK_FCALL CCTK_FNAME(CCTK_PointerTo)
                                   (CCTK_POINTER var);
-CCTK_POINTER CCTK_FCALL CCTK_FNAME(CCTK_NULLPointer)
+CCTK_POINTER CCTK_FCALL CCTK_FNAME(CCTK_NullPointer)
                                   (void);
 
 void CCTK_FCALL CCTK_FNAME(CCTK_PrintString)
@@ -175,7 +175,7 @@ CCTK_POINTER CCTK_FCALL CCTK_FNAME (CCTK_PointerTo) (CCTK_POINTER var)
 }
 
  /*@@
-   @routine    CCTK_NULLPointer
+   @routine    CCTK_NullPointer
    @date       Wed 12 Feb 2003
    @author     Thomas Radke
    @desc
@@ -188,7 +188,7 @@ CCTK_POINTER CCTK_FCALL CCTK_FNAME (CCTK_PointerTo) (CCTK_POINTER var)
                a C NULL pointer
    @endreturndesc
 @@*/
-CCTK_POINTER CCTK_FCALL CCTK_FNAME (CCTK_NULLPointer) (void)
+CCTK_POINTER CCTK_FCALL CCTK_FNAME (CCTK_NullPointer) (void)
 {
   return (NULL);
 }

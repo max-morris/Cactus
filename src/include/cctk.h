@@ -71,8 +71,8 @@
 #define DECLARE_CCTK_FUNCTIONS &&\
         integer  CCTK_Equals, CCTK_MyProc, CCTK_nProcs, CCTK_IsThornActive&&\
         external CCTK_Equals, CCTK_MyProc, CCTK_nProcs, CCTK_IsThornActive&&\
-        CCTK_POINTER  CCTK_PointerTo, CCTK_NULLPointer&&\
-        external CCTK_PointerTo, CCTK_NULLPointer
+        CCTK_POINTER  CCTK_PointerTo, CCTK_NullPointer&&\
+        external CCTK_PointerTo, CCTK_NullPointer
 
 
 #endif /*FCODE*/
