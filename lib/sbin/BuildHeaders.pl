@@ -30,11 +30,11 @@ sub BuildHeaders
   {
     foreach $inc_file (split(" ",$interface_database{"\U$thorn USES HEADER"}))
     {
-      $data{"$inc_file"} = "/* Include file $inc_file used by $thorn */\n";
+      $data{"$inc_file"} = "/* Include file $inc_file used by $thorn */\n\n";
     }
   }
 
-# Add the my headers from thorns
+# Add the headers from thorns
   foreach $thorn (split(" ",$interface_database{"THORNS"}))
   {
 
@@ -53,23 +53,11 @@ sub BuildHeaders
 	# Now have to find the include file and copy it
 	if (-e "$cctk_home/arrangements/$arrangement/$thorn/src/$inc_file1")
 	{
-	  open(HEADER,"<$cctk_home/arrangements/$arrangement/$thorn/src/$inc_file1");
-	  while (<HEADER>)
-	  {
-	    $data{"$inc_file2"} .= $_;
-	  }
-	  $data{"$inc_file2"} .= "\n\n\n";
-	  close HEADER;
+	  $data{"$inc_file2"} .= "#include \"$arrangement/$thorn/src/$inc_file1\"\n\n";
 	}
 	elsif (-e "$cctk_home/arrangements/$arrangement/$thorn/src/include/$inc_file1")
 	{
-	  open(HEADER,"<$cctk_home/arrangements/$arrangement/$thorn/src/include/$inc_file1");
-	  while (<HEADER>)
-	  {
-	    $data{"$inc_file2"} .= $_;
-	  }
-	  $data{"$inc_file2"} .= "\n\n\n";
-	  close HEADER;
+	  $data{"$inc_file2"} .= "#include \"$arrangement/$thorn/src/include/$inc_file1\"\n\n";
 	}
 	else
 	{
