@@ -1,5 +1,7 @@
 #!/usr/bin/perl
 
+# use vars qw($arrangements_dir $arrangements $thorns $h $help $thornlist);
+
 #/*@@
 #  @file      ThornList.pl 
 #  @date      March 2001
@@ -18,32 +20,65 @@ if ($h || $help) {
    print <<EOC;
 --> ThornList.pl <--
 
-Either creates a stripped down thornlist of all thorns in the arrangments directory, or prints out the full paths to each thorn on a single line
+Either creates a stripped down thornlist of all thorns in the arrangments directory, or prints out the full paths to each thorn on a single line.  It can also take a combination of arrangements and thorns and will print them all out as a thornlist.
 
 Usage:
-\t\$ perl -s ThornList.pl -arrangements_dir=/home/ikelley/Cactus/WaveToyC_Dev/arrangements > allthorns.th
-\t\$ perl -s ThornList.pl -arrangements_dir=/home/ikelley/Cactus/WaveToyC_Dev/arrangements -thornlist=allthorns.th
+\t\$ perl -s ThornList.pl -arrangements_dir=/tmp/Cactus/arrangements > allthorns.th
+\t\$ perl -s ThornList.pl -arrangements_dir=/tmp/Cactus/arrangements -thornlist=allthorns.th
+\t\$ perl -s ThornList.pl -arrangements_dir=/tmp/Cactus/arrangements -thorns="CactusBase/Boundary CactusBase/IOBasic" -arrangements="CactusTest"
 EOC
 
 exit 0;
 }
 
+my $start_directory = `pwd`;
+chomp ($start_directory);
+
+my @thorns;
+my @arrangements;
+
+
 if (! defined $arrangements_dir) {
    die "\nArrangements directory not defined (-arrangments_dir)";
-} elsif ($arrangments_dir !~ /\/$/) {
+} elsif ($arrangements_dir !~ /\/$/) {
    $arrangements_dir .= '/';
 }
 
+
+# if we are being passed in the arrangements or thorns manually
+if ($arrangements =~ /\w/ || $thorns =~ /\w/) {
+   if (defined $arrangements) {
+      @arrangements = split/,/, $arrangements;
+
+      foreach my $arrangement (@arrangements) 
+      { 
+         @thorns = &FindDirectories("$arrangements_dir$arrangement");
+
+         foreach my $thorn (@thorns) {
+            print "\n$arrangement/$thorn" if ($thorn ne "doc");
+         }
+      }
+   }
+
+   if (defined $thorns) {
+      @thorns = split/,/, $thorns;
+
+      foreach my $thorn (@thorns) {
+          print "\n$thorn";
+      }
+   }
+
+}
 # if we are building a thornlist from thorns in $arrangements_dir
-if (! defined $thornlist) 
+elsif (! defined $thornlist) 
 {
    @arrangements = &FindDirectories($arrangements_dir);
 
-   foreach $arrangement (@arrangements) 
+   foreach my $arrangement (@arrangements) 
    {
       @thorns = &FindDirectories("$arrangements_dir$arrangement");
 
-      foreach $thorn (@thorns) {
+      foreach my $thorn (@thorns) {
          print "\n$arrangement/$thorn" if ($thorn ne "doc");
       }
    }
@@ -52,7 +87,7 @@ if (! defined $thornlist)
 # for use by the ThornGuide makefile
 else 
 {
-   $thorn_paths = "";
+   my $thorn_paths = "";
 
    open (THORNLIST, "<$thornlist") || die "\nCannot open thornlist ($thornlist): $!";
 
@@ -87,6 +122,7 @@ else
 sub FindDirectories 
 {
    my (@good_directories);
+   my $name;
 
    chdir ("$start_directory") || die "\nCannot chdir to $start_directory: $!";
 
