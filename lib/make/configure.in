@@ -908,7 +908,11 @@ AC_SUBST(CXX_WARN_FLAGS)
 if test -z "$CXX_WARN_FLAGS" ; then
   case "$CXX" in
     c++ | g++) 
-      CXX_WARN_FLAGS="\$(C_WARN_FLAGS) -Woverloaded-virtual"
+      if test "$CC" = "gcc"; then
+        CXX_WARN_FLAGS="\$(C_WARN_FLAGS) -Woverloaded-virtual"
+      else
+        CXX_WARN_FLAGS="-Wall -W -Wshadow -Wpointer-arith -Wbad-function-cast -Wcast-qual -Wcast-align -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Winline -Woverloaded-virtual"
+      fi
       ;;
     *)
 #     Not sure what should be a reasonable default.
