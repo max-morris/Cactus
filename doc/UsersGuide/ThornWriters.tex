@@ -1664,16 +1664,23 @@ DECLARE_CCTK_FUNCTIONS
 to a module or a subroutine after the \texttt{implicit none}
 statement, but before any executable code.
 
-\subsubsection{Fortran 90 Modules}
+\subsubsection{Fortran Modules}
 
-Fortran 90 modules should be included in a thorn's {\tt make.code.deps} file
-(\ref{sec:mabathbu}) to ensure they are compiled before the
-routines which use them. This is especially important for parallel
-building. For example, if a routine in {\tt MyRoutine.F} uses a module
-in {\tt MyModule.F} add the line:
+Fortran modules should be placed into source files that have the same
+name as the module, followed by the corresponding file name suffix.  A
+module \texttt{metric} should thus be placed e.g.\ into a file
+\texttt{metric.F90}.  This convention allows the Cactus build system
+to automatically deduce the compile time dependencies.
+
+If you do not follow this convention, then you have to include the
+modules into the thorn's {\tt make.code.deps} file
+(\ref{sec:mabathbu}) to ensure they are compiled before the routines
+which use them.  This is especially important for parallel building.
+For example, if a routine in {\tt MyRoutine.F90} uses a module in {\tt
+MyModule.F90}, then add the line:
 %
 \begin{verbatim}
-$(SYS_OBJD)/MyRoutine.F.o:         $(SYS_OBJD)/MyModule.F.o
+$(SYS_OBJD)/MyRoutine.F90.o:         $(SYS_OBJD)/MyModule.F90.o
 \end{verbatim}
 
 \subsubsection{The {\tt MOD} function}
@@ -3065,7 +3072,7 @@ But in Fortran you have to do the following:
   character*200 message
 
   write (message, '("The integer is ",i4)') myint
-  call CCTK_INFO (message(1:len_trim(message)))
+  call CCTK_INFO (message)
 \end{verbatim}
 
 In Fortran 90, you can also do:
@@ -3074,7 +3081,7 @@ In Fortran 90, you can also do:
   character(200) message
 
   write (message, '("The integer is ",i4)') myint
-  call CCTK_INFO (trim(message))
+  call CCTK_INFO (message)
 \end{verbatim}
 
 Note that:
@@ -3155,7 +3162,7 @@ But in Fortran you have to do the following:
   character*200 message
 
   write (message, '("Your warning message, including ",g12.7," and ",i8)') myreal, myint
-  call CCTK_WARN (1, message(1:len_trim(message)))
+  call CCTK_WARN (1, message)
 \end{verbatim}
 
 In Fortran 90, you can also do:
@@ -3165,7 +3172,7 @@ In Fortran 90, you can also do:
   character(200) message
 
   write (message, '("Your warning message, including ",g12.7," and ",i8)') myreal, myint
-  call CCTK_WARN (1, trim(message))
+  call CCTK_WARN (1, message)
 \end{verbatim}
 
 The Flesh will be implementing standard error return codes
