@@ -1,5 +1,5 @@
  /*@@
-   @header    IO.h
+   @header    cctk_IO.h
    @date      
    @author    Tom Goodale
    @desc 
@@ -8,8 +8,8 @@
    @version $Header$
  @@*/
 
-#ifndef _IO_H_
-#define _IO_H_
+#ifndef _CCTK_IO_H_
+#define _CCTK_IO_H_
 
 #include "OverloadMacros.h"
 
