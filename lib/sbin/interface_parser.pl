@@ -647,7 +647,7 @@ sub check_interface_consistency
     }
     foreach $private_group (split " ",$interface_data{"\U$thorn\E PRIVATE GROUPS"})
     {
-      if ($interface_data{"\U$ancestor_thorn\E PUBLIC GROUPS"} =~ $private_group)
+      if ($interface_data{"\U$ancestor_thorn\E PUBLIC GROUPS"} =~ m:([\^\s]+$private_group[$\s]+):)
       {
         $message = "Private group $private_group in thorn $thorn has same name as \n     public group in ancestor implementation $ancestor_imp (e.g. thorn $ancestor_thorn)";
         &CST_error(0,$message,"",__LINE__,__FILE__);
