@@ -220,6 +220,7 @@ sub set_parameter_default
   local($type, $type_string);
   local($line, @lines);
   local($default);
+  local($temp_default);
 
   $default = $parameter_database{"\U$implementation $parameter\E default"};
   $type = $parameter_database{"\U$implementation $parameter\E type"};
@@ -236,6 +237,17 @@ sub set_parameter_default
     push(@lines, $line);
 
     $line = "    strcpy($structure.$parameter, $default);";
+    push(@lines, $line);
+  }
+  elsif($type eq "LOGICAL")
+  {
+    # Logicals need to be done specially.
+
+    # Strip out any quote marks.
+    $temp_default = $default;
+    $temp_default =~ s:\"::g;
+
+    $line = "  CCTK_SetLogical(\&($structure.$parameter),\"$temp_default\");";
     push(@lines, $line);
   }
   else
