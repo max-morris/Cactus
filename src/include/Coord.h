@@ -26,6 +26,22 @@ struct Coordprops
   int    direction;
 };
 
+typedef struct COORD_RANGE {
+
+  cGH *GH;
+
+  struct Coordprops *props;	  /* Coordinate data */
+
+  CCTK_REAL lower;                      /* Lower range */
+  CCTK_REAL upper;                      /* Upper range */
+
+  struct COORD_RANGE *next;        /* List */
+
+} coord_range;
+
+
+int CCTK_CoordRange(cGH *GH, CCTK_REAL *lower, CCTK_REAL *upper, const char *name);
+
 int CCTK_RegisterCoord(const char *coordname, 
 		       const char *gfname, 
 		       int dir);

@@ -21,9 +21,12 @@
 #include "Misc.h"
 #include "FortranString.h"
 
-
 static cHandledData *coordinates = NULL;
 static int num_coords = 0;
+static struct COORD_RANGE *first = NULL;
+
+struct Coordprops *CCTKi_CoordData(const char *name);
+int CCTKi_CoordHande(const char *name);
 
  /*@@
    @routine    RegisterCoord_ByIndex
@@ -192,12 +195,87 @@ int CCTK_RegisterCoord(const char *coordname,
 int CCTK_RegisterCoordRange(cGH *GH, CCTK_REAL min, CCTK_REAL max, 
 			    const char *coordname)
 {
-  int retval;
-  
-  return retval;
+  coord_range *newguy;
+
+  /* New coord_range */
+  newguy = (coord_range *)malloc(sizeof(coord_range));
+
+  newguy->GH   = GH;
+
+  newguy->props = CCTKi_CoordData(coordname);
+
+#ifdef DEBUG_COORD
+  printf("Registering range (%f,%f) for %s (on %x)\n",min,max,coordname,newguy);
+#endif
+
+  newguy->lower = min;
+  newguy->upper = max;
+
+  newguy->next = first;
+  first = newguy;
+
+  return 1;
 
 }
 
+void FMODIFIER FORTRAN_NAME(CCTK_RegisterCoordRange)(cGH *GH, CCTK_REAL *lower, CCTK_REAL *upper, ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE(name)
+  CCTK_RegisterCoordRange (GH,*lower,*upper,name);
+  free(name);
+}
+
+int CCTKi_CoordHandle(const char *name)
+{
+  int handle;
+  struct Coordprops *coord;
+
+  for (handle = 0;;handle++)
+  {
+    coord = (struct Coordprops *)Util_GetHandledData(coordinates, handle);
+    if (coord)
+    {
+      if (CCTK_Equals(name,(const char *)coord->name))
+	return handle;
+    }
+    else
+    {
+      char *msg;
+      msg = (char *)malloc( 100*sizeof(char)+sizeof(name) );
+      sprintf(msg,"Could not find registered coordinate %s",name);
+      CCTK_WARN(2,msg);
+      if (msg) free(msg);
+      return ERROR_COORDNOTFOUND;
+    }
+    
+  }
+}                       
+
+struct Coordprops *CCTKi_CoordData(const char *name)
+{
+  int handle;
+  struct Coordprops *coord;
+
+  for (handle = 0;;handle++)
+  {
+    coord = (struct Coordprops *)Util_GetHandledData(coordinates, handle);
+    if (coord)
+    {
+      if (CCTK_Equals(name,(const char *)coord->name))
+	return coord;
+    }
+    else
+    {
+      char *msg;
+      msg = (char *)malloc( 100*sizeof(char)+sizeof(name) );
+      sprintf(msg,"Could not find registered coordinate %s",name);
+      CCTK_WARN(2,msg);
+      if (msg) free(msg);
+      return NULL;
+    }
+    
+  }
+}                       
 
 int CCTK_CoordIndex(const char *name)
 {
@@ -258,4 +336,36 @@ CCTK_REAL CCTK_CoordOrigin(const char *name)
     
   }
 
+}
+
+int CCTK_CoordRange(cGH *GH, CCTK_REAL *lower, CCTK_REAL *upper, const char *name)
+{
+  coord_range *curr;
+
+  for (curr=first;curr;curr=curr->next)
+  {
+
+#ifdef DEBUG_COORD
+    printf("name  = %s, currname = %s\n",name,curr->props->name);
+#endif
+
+    if (curr->GH == GH && CCTK_Equals(name,curr->props->name))
+    {
+      *lower = curr->lower;
+      *upper = curr->upper;
+
+#ifdef DEBUG_COORD
+      printf("Returning range (%f,%f) for %s (from %x)\n",*lower,*upper,name,curr);
+#endif
+
+      return;
+    }
+  }
+}
+
+void FMODIFIER FORTRAN_NAME(CCTK_CoordRange)(cGH *GH, CCTK_REAL *lower, CCTK_REAL *upper, ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE(name)
+  CCTK_CoordRange (GH,lower,upper,name);
+  free(name);
 }
