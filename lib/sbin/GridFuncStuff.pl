@@ -1319,7 +1319,12 @@ sub VerifyParameterExpression
 
         my $implementation = $thorn;
 
-        if($rhparameter_db->{"\U$thornname SHARES\E implementations"} =~ m/\b$implementation\b/i)
+	# Is it a global parameter?
+	if ($rhparameter_db->{"GLOBAL PARAMETERS"} =~ m/$i/i)
+	{
+	  # It is a global parameter, all is o.k.
+	}
+	elsif($rhparameter_db->{"\U$thornname SHARES\E implementations"} =~ m/\b$implementation\b/i)
         {
           # Ok, so it does share from this implementation
           if($rhparameter_db->{"\U$thornname SHARES $implementation\E variables"} !~ m/\b$base\b/i)
@@ -1332,7 +1337,7 @@ sub VerifyParameterExpression
         else
         {
           &CST_error(0,"Array size \'$expression\' in $thornname contains a reference to a parameter from $implementation" .
-                     " which is not shared",
+                     " which is not global nor shared",
                      "",__LINE__,__FILE__);
         }
       }
