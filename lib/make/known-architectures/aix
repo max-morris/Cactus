@@ -26,6 +26,12 @@ if test "$CCTK_CONFIG_STAGE" = 'preferred-compilers' ; then
     CXX=xlC_r
   fi
 
+  # use the Cactus preprocessor for Fortran
+  if test -z "$FPP"; then
+    FPP='$(PERL) $(CCTK_HOME)/lib/sbin/cpp.pl'
+    echo Setting FPP to $FPP
+  fi
+
 else
 
   if test "X$AIX_BITS" != 'X32' -a "X$AIX_BITS" != 'X64' ; then
@@ -48,6 +54,7 @@ else
   CCTK_WriteLine make.arch.defn 'AIX_f90_FLAGS ='
   CCTK_WriteLine make.arch.defn 'AIX_F_FLAGS = -qfixed'
   CCTK_WriteLine make.arch.defn 'AIX_f_FLAGS = -qfixed'
+  FPP='$(PERL) $(CCTK_HOME)/lib/sbin/cpp.pl'
 
   case "$CC" in
     gcc)
