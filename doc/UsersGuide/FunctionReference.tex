@@ -3992,20 +3992,20 @@ Set a key/value iterator to the "null-pointer" state.
 
 \item[Util\_TableQueryFlags]
      [\pageref{Util-TableQueryFlags}]
-Queries a table's flags word
+Query a table's flags word
 
 \item[Util\_TableQueryValueInfo]
      [\pageref{Util-TableQueryValueInfo}]
-Queries whether or not a specified key is in the table, and optionally
+Query whether or not a specified key is in the table, and optionally
 the type and/or number of elements of the value corresponding to this key
 
 \item[Util\_TableQueryMaxKeyLength]
      [\pageref{Util-TableQueryMaxKeyLength}]
-Queries the maximum key length in a table
+Query the maximum key length in a table
 
 \item[Util\_TableQueryNKeys]
      [\pageref{Util-TableQueryNKeys}]
-Queries the number of key/value entries in a table
+Query the number of key/value entries in a table
 
 \item[Util\_TableSet*]
      [\pageref{Util-TableSet*}]
@@ -5174,7 +5174,7 @@ iterator handle is invalid
 
 \begin{FunctionDescription}{Util\_TableItSetToKey}
 \label{Util-TableItSetToKey}
-set a table iterator to point to a specified table entry
+Set a table iterator to point to a specified table entry
 
 \begin{Synopsis}{C}
 \begin{verbatim}
@@ -5227,7 +5227,7 @@ no such key in table
 
 \begin{FunctionDescription}{Util\_TableItSetToNull}
 \label{Util-TableItSetToNull}
-set a table iterator to the "null-pointer" state
+Set a table iterator to the "null-pointer" state
 
 \begin{Synopsis}{C}
 \begin{verbatim}
@@ -5268,7 +5268,7 @@ iterator handle is invalid
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{FunctionDescription}{Util\_TableQueryFlags}
-Queries a table's flags word
+Query a table's flags word
 \label{Util-TableQueryFlags}
 
 \begin{Synopsis}{C}
@@ -5327,7 +5327,7 @@ return (flags & UTIL_TABLE_FLAGS_CASE_INSENSITIVE)
 
 \begin{FunctionDescription}{Util\_TableQueryValueInfo}
 \label{Util-TableQueryValueInfo}
-Queries whether or not a specified key is in the table, and optionally
+Query whether or not a specified key is in the table, and optionally
 the type and/or number of elements of the value corresponding to this key
 
 \begin{Synopsis}{C}
@@ -5426,7 +5426,7 @@ assert( N_elements == N_DATA );
 
 \begin{FunctionDescription}{Util\_TableQueryMaxKeyLength}
 \label{Util-TableQueryMaxKeyLength}
-Queries the maximum key length in a table
+Query the maximum key length in a table
 
 \begin{Synopsis}{C}
 \begin{verbatim}
@@ -5484,7 +5484,7 @@ if (buffer == NULL)
 
 \begin{FunctionDescription}{Util\_TableQueryNKeys}
 \label{Util-TableQueryNKeys}
-Queries the number of key/value entries in a table
+Query the number of key/value entries in a table
 
 \begin{Synopsis}{C}
 \begin{verbatim}
@@ -5556,6 +5556,9 @@ a pointer to the key (a C-style null-terminated string)
 \end{Parameter}
 
 \begin{Discussion}
+The key may be any C character string which does not contain a slash
+character (\verb|'/'|).
+\NewPar
 The value is stored as a 1-element array.
 \NewPar
 This function invalidates any iterators for the table which are
@@ -5665,6 +5668,9 @@ a pointer to the key (a C-style null-terminated string)
 \end{Parameter}
 
 \begin{Discussion}
+The key may be any C character string which does not contain a slash
+character (\verb|'/'|).
+\NewPar
 Note that empty (0-element) arrays are ok.
 \NewPar
 This function invalidates any iterators for the table which are
@@ -5881,6 +5887,9 @@ a pointer to the key (a C-style null-terminated string)
 \end{Parameter}
 
 \begin{Discussion}
+The key may be any C character string which does not contain a slash
+character (\verb|'/'|).
+\NewPar
 The string is stored as an array of \verb|strlen(string)|
 \verb|CCTK_CHAR|s.  It does {\em not\/} include a terminating
 null character.
