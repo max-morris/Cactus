@@ -59,6 +59,30 @@ sub CreateVariableBindings
   push(@data, '#include "cctk_Types.h"');
   push(@data, '');
   push(@data, '#ifdef CCODE');
+
+  # Deprecated in 4.0 beta 17
+  push(@data, '/* Older configurations do not define CCTK_RESTRICT.');
+  push(@data, ' * Remove this section after 4.0 beta 16 has been released');
+  push(@data, ' */');
+
+  push(@data, '#ifndef CCTK_RESTRICT');
+  push(@data,   '#ifdef __cplusplus');
+  push(@data,     '#ifdef CCTK_CXX_RESTRICT');
+  push(@data,       '#define CCTK_RESTRICT CCTK_CXX_RESTRICT');
+  push(@data,     '#else');
+  push(@data,       '#define CCTK_RESTRICT');
+  push(@data,     '#endif');
+  push(@data,   '#else');
+  push(@data,     '#ifdef CCTK_C_RESTRICT');
+  push(@data,       '#define CCTK_RESTRICT CCTK_C_RESTRICT');
+  push(@data,     '#else');
+  push(@data,       '#define CCTK_RESTRICT');
+  push(@data,     '#endif');
+  push(@data,   '#endif');
+  push(@data, '#endif');
+
+  # End deprecated section
+
   push(@data, '/* prototype for CCTKi_VarDataPtr() goes here');
   push(@data, '   because we don\'t want to include another CCTK header file */');
   push(@data, '#ifdef __cplusplus');
@@ -526,7 +550,7 @@ sub CreateCArgumentDeclarations
 
     for($level = 0; $level < $ntimelevels; $level++)
     {
-      push(@declarations, "CCTK_$type *$varname = ($varname = (CCTK_$type *) \&$varname, (CCTK_$type *) CCTKi_VarDataPtr(cctkGH, $level, $implementation, $var));");
+      push(@declarations, "CCTK_$type * CCTK_RESTRICT $varname = ($varname = (CCTK_$type *) \&$varname, (CCTK_$type *) CCTKi_VarDataPtr(cctkGH, $level, $implementation, $var));");
 
       # Modify the name for the time level
       $varname .= '_p';
