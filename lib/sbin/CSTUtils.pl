@@ -455,4 +455,298 @@ sub RemoveComments
   return $nocomment;
 }
 
+#/*@@
+#  @routine    TestConfigEnv
+#  @date       Thu Aug 26 15:59:41 2004
+#  @author     Tom Goodale
+#  @desc 
+#  Tests the routines for finding the new configuration environment
+#  and updating the config-info file.
+#  @enddesc 
+#  @calls     
+#  @calledby   
+#  @history 
+#
+#  @endhistory 
+#
+#@@*/
+sub TestConfigEnv
+{
+  my ($in,$out) = @_;
+
+  my @allowed_opts = ("foo", "bar", "baz");
+
+  my $env;
+  my $optfile;
+  my $configinfo;
+  my $headers;
+
+  ($configinfo,$headers) = ParseConfigInfo($in);
+
+  if($ENV{"options"})
+  {
+    $optfile = ParseOptionsFile($ENV{"options"})
+  }
+  else
+  {
+    $optfile = {};
+  }
+
+  $env = GetOptionsFromEnv(\%ENV, \@allowed_opts);
+
+  my $modified = AmalgamateOptions($env,$optfile,$configinfo,\@allowed_opts);
+
+  if($modified)
+  {
+    print "Configuration was modified\n\n";
+  }
+
+  my $option;
+
+  foreach $option (sort keys %$configinfo)
+  {
+    print "$option=$configinfo->{$option}\n"
+  }
+
+  WriteNewConfigInfo($out,$headers,$configinfo);
+
+}
+  
+
+#/*@@
+#  @routine    WriteNewConfigInfo
+#  @date       Thu Aug 26 15:53:30 2004
+#  @author     Tom Goodale
+#  @desc 
+#  Writes a new configuration file
+#  @enddesc 
+#  @calls     
+#  @calledby   
+#  @history 
+#
+#  @endhistory 
+#
+#@@*/
+sub WriteNewConfigInfo
+{
+  my ($file,$headers,$options) = @_;
+  my $line;
+  my $option;
+
+  open(OUTFILE, "> $file") || CST_error(0,"Cannot open config-info file '$file' for writing\n",
+                                        "",__LINE__,__FILE__);
+  
+  foreach $line (@$headers)
+  {
+    if($line ne "# CONFIG-OPTIONS :")
+    {
+      print OUTFILE "$line\n";
+    }
+  }
+
+  print OUTFILE "# CONFIG-MODIFIED: " . gmtime(time()) . " (GMT)\n";
+  print OUTFILE "# CONFIG-OPTIONS :\n";
+
+  foreach $option (sort keys %$options)
+  {
+    print OUTFILE "$option=$options->{$option}\n";
+  }
+
+  close(OUTFILE);
+}
+
+#/*@@
+#  @routine    AmalgamateOptions
+#  @date       Thu Aug 26 15:53:30 2004
+#  @author     Tom Goodale
+#  @desc 
+#  Creates a hash table of option settings, giving
+#  priority to ones from the environment, then to
+#  ones from an options file, and finally to ones
+#  which already exist in a config-info file.
+#
+#  It only adds or replaces options from a defined list.
+#  @enddesc 
+#  @calls     
+#  @calledby   
+#  @history 
+#
+#  @endhistory 
+#
+#@@*/
+sub AmalgamateOptions
+{
+  my($env,$optfile,$configinfo,$allowed_options) = @_;
+
+  my $option;
+
+  my $modified = 0;
+
+  foreach $option (@$allowed_options)
+  {
+    if($env->{$option})
+    {
+      # Environment (command line) has highest priority
+      $configinfo->{$option} = $env->{$option};
+      $modified = 1;
+    }
+    elsif($optfile->{$option})
+    {
+      # Then a new options file
+      $configinfo->{$option} = $optfile->{$option};
+      $modified = 1;
+    }
+  }
+
+  return $modified;
+}
+
+#/*@@
+#  @routine    ParseConfigInfo
+#  @date       Thu Aug 26 15:56:15 2004
+#  @author     Tom Goodale
+#  @desc 
+#  Parses a config-info file.  Returns a hash of the options
+#  and an array containing pre-existing header lines.
+#  @enddesc 
+#  @calls     
+#  @calledby   
+#  @history 
+#
+#  @endhistory 
+#
+#@@*/
+sub ParseConfigInfo
+{
+  my($file) = @_;
+  my(%options);
+  my @headers = ();
+  my $line_number = 0;
+
+  open(INFILE, "< $file") || CST_error(0,"Cannot open config-info file '$file' for reading\n",
+                                       "",__LINE__,__FILE__);
+
+  while(<INFILE>)
+  {
+    chomp;
+
+    $line_number++;
+
+    if(m/^#/)
+    {
+      push(@headers,$_);
+    }
+    elsif (m/^\s*(\w+)[=\s]+(.*)\s*/)
+    {
+      if(! $options{$1})
+      {
+        $options{$1} = $2;
+      }
+      else
+      {
+        CST_error(0,"corrupt config-info file; duplicate entry on line $line_number",
+                  "",__LINE__,__FILE__);
+      }
+    }
+  }
+
+  close(INFILE);
+
+  return \%options, \@headers;
+}
+
+#/*@@
+#  @routine    ParseOptionsFile
+#  @date       Thu Aug 26 15:57:58 2004
+#  @author     Tom Goodale
+#  @desc 
+#  Parses a configuration options file.
+#  @enddesc 
+#  @calls     
+#  @calledby   
+#  @history 
+#
+#  @endhistory 
+#
+#@@*/
+sub ParseOptionsFile
+{
+  my($file) = @_;
+  my $line_number = 0;
+  my %options;
+
+  open(INFILE, "< $file") || CST_error(0,"Cannot open configuration options file '$file'\n",
+                                       "",__LINE__,__FILE__);
+
+  while(<INFILE>)
+  {
+    $line_number++;
+
+    chomp;
+
+    #Ignore comments.
+    s/\#(.*)$//g;
+
+    #Remove spaces at end of lines
+    s/\s*$//;
+
+    #Ignore blank lines
+    next if (m:^\s*$:);
+
+    # Match lines of the form
+    #     keyword value
+    # or  keyword = value
+    if (/^\s*(\w+)[=\s]+(.*)\s*/)
+    {
+      # only set it if it wasn't already
+      if(! $options{$1})
+      {
+        # Remember it for writing to config-info
+        $options{$1} = $2;
+      }
+    }
+    else
+    {
+      CST_error(0,"Could not parse configuration line $file:$line_number...\n'$_'\n",
+                "",__LINE__,__FILE__);
+     
+    }
+  }
+  close(INFILE);
+
+  return \%options;
+}
+
+#/*@@
+#  @routine    GetOptionsFromEnv
+#  @date       Thu Aug 26 15:58:26 2004
+#  @author     Tom Goodale
+#  @desc 
+#  Gets options from the environment.
+#  @enddesc 
+#  @calls     
+#  @calledby   
+#  @history 
+#
+#  @endhistory 
+#
+#@@*/
+sub GetOptionsFromEnv
+{
+  my($env, $allowed_options) = @_;
+  my %options;
+
+  my $option;
+
+  foreach $option (@$allowed_options)
+  {
+   if($env->{$option})
+   {
+     $options{$option} = $env->{$option};
+   }
+  }
+
+  return \%options;
+}
+
 1;

@@ -6,7 +6,7 @@
 #  @desc
 #             Parses the the configuration files for thorns.
 #  @enddesc
-#  @version   $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.71 2004-08-17 18:38:32 goodale Exp $
+#  @version   $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.72 2004-08-27 03:20:39 goodale Exp $
 #@@*/
 
 # Global parameter to track the number of errors from the CST
@@ -108,6 +108,11 @@ print "Parsing parameter files...\n";
 # Parse the schedule.ccl files
 print "Parsing schedule files...\n";
 %schedule_database = &create_schedule_database(%source_thorns);
+
+# Run any configuration scripts.
+print "Running any thorn-privided configuration scripts...\n";
+
+&ProcessConfiguration($config_dir, $configuration_database,\%thorns,"$top/config-info");
 
 print "Checking consistency...\n";
 &check_schedule_database(\%schedule_database, %source_thorns);

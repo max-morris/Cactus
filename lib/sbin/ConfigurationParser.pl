@@ -44,7 +44,7 @@ sub CreateConfigurationDatabase
 #        if ($cfg{"\U$thorn\E REQUIRES"});
 #    }
 
-    $cfg->{"\U$thorn\E USES THORNS"} = '';
+    $cfg{"\U$thorn\E USES THORNS"} = '';
 
     # verify that all required thorns are there in the ThornList
     next if (! $cfg{"\U$thorn\E REQUIRES THORNS"});
@@ -136,7 +136,7 @@ sub ParseConfigurationCCL
   my($config_dir, $thorn, $cfg, $thorns, $filename) = @_;
   my(@data);
   my($line_number, $line);
-  my($provides, $script, $lang);
+  my($provides, $script, $lang, $options);
   my($optional, $define);
 
   # Initialise some stuff to prevent perl -w from complaining.
@@ -157,19 +157,23 @@ sub ParseConfigurationCCL
     if($line =~ m/^\s*PROVIDES\s*/i)
     {
       $lang = $script = '';
-      ($provides, $script, $lang, $line_number) = &ParseProvidesBlock($line_number, \@data);
+      ($provides, $script, $lang, $options, $line_number) = &ParseProvidesBlock($line_number, \@data);
       $cfg->{"\U$thorn\E PROVIDES"} .= "$provides ";
-      $cfg->{"\U$thorn\E PROVIDES \U$provides\E SCRIPT"} = $script;
-      $cfg->{"\U$thorn\E PROVIDES \U$provides\E LANG"} = $lang;
-
-      if ($script)
+      if($script)
       {
-        print "Running configuration script '$script'\n";
-
-        $cfg = &ParseConfigScript($config_dir, $provides, $lang, $script,
-                                  $thorn, $cfg, $thorns, $filename);
-        print "\n";
+        $cfg->{"\U$thorn\E PROVIDES \U$provides\E SCRIPT"} = "$thorns->{$thorn}/$script";
       }
+      $cfg->{"\U$thorn\E PROVIDES \U$provides\E LANG"} = $lang;
+      $cfg->{"\U$thorn\E PROVIDES \U$provides\E OPTIONS"} = $options;
+
+#      if ($script)
+#      {
+#        print "Running configuration script '$script'\n";
+#
+#        &ParseConfigScript($config_dir, $provides, $lang, $script,
+#                           $thorn, $cfg);
+#        print "\n";
+#      }
 
       next;
     }
@@ -215,11 +219,12 @@ sub ParseConfigurationCCL
 sub ParseProvidesBlock
 {
   my ($line_number, $data) = @_;
-  my ($provides, $script, $lang);
+  my ($provides, $script, $lang, $options);
 
   $provides = "";
   $script   = "";
   $lang     = "";
+  $options  = [];
 
   $data->[$line_number] =~ m/^\s*PROVIDES\s*(.*)/i;
 
@@ -230,7 +235,7 @@ sub ParseProvidesBlock
   {
     &CST_error (0, "Error parsing provides block line '$data->[$line_number]'.".
                    'Missing { at start of block');
-    $line_number++ while($data[$line_number] !~ m:\s*\}\s*:);
+    $line_number++ while($data->[$line_number] !~ m:\s*\}\s*:);
   }
   else
   {
@@ -247,6 +252,11 @@ sub ParseProvidesBlock
         $lang = $1;
         next;
       }
+      elsif($data->[$line_number] =~ m/^\s*OPTIONS[^\s]*\s*(.*)$/i)
+      {
+        push(@$options, split(' ',$1));
+        next;
+      }
       elsif($data->[$line_number] =~ m:\s*\}\s*:)
       {
         # do nothing.
@@ -259,7 +269,7 @@ sub ParseProvidesBlock
     }
   }
 
-  return ($provides, $script, $lang, $line_number);
+  return ($provides, $script, $lang, $options, $line_number);
 }
 
 

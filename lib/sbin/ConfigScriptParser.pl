@@ -19,7 +19,7 @@
 #@@*/
 sub ParseConfigScript
 {
-  my($config_dir, $provides, $lang, $script, $thorn, $cfg, $thorns, $filename)=@_;
+  my($config_dir, $provides, $lang, $script, $thorn, $cfg)=@_;
   my($line_number, $line, $temp);
   my($exit_value, $signal_num, $dumped_core);
 
@@ -29,7 +29,7 @@ sub ParseConfigScript
   # Run the configuration script in the config_dir folder
   if ($lang ne '' && $script ne '')
   {
-    @data=`$lang $thorns->{$thorn}/$script`;
+    @data=`$lang $script`;
   }
   $exit_value  = $? >> 8;
   $signal_num  = $? & 127;
@@ -140,7 +140,6 @@ sub ParseConfigScript
   &CST_error (0, $msg . "dumped core\n$error_msg")
     if ($dumped_core);
 
-  return ($cfg);
 }
 
 1;
