@@ -75,7 +75,7 @@ for ($i=0;$i<$nthorns;$i++)
        }
        else
        {
-	 print "  $parfile: Copying\n";
+	 print "  $parfile: Copying from $thorns[$i]\n";
 	 system("cp $parfile $home/examples/$config/$parfile");
        }
      }
