@@ -102,9 +102,10 @@
 #include "cctk_Sync.h"
 #include "cctk_WarnLevel.h"
 
-#define CCTK_GFINDEX3D(GH,i,j,k) ((i) + (GH)->cctk_lsh[0]*((j)+(GH)->cctk_lsh[1]*(k)))
-#define CCTK_GFINDEX2D(GH,i,j)   ((i) + (GH)->cctk_lsh[0]*((j)))
-#define CCTK_GFINDEX1D(GH,i)      (i)
+#define CCTK_GFINDEX4D(GH,i,j,k,l) ((i) + (GH)->cctk_lsh[0]*( (j)+(GH)->cctk_lsh[1]*( (k)+(GH)->cctk_lsh[2]*(l) ) ) )
+#define CCTK_GFINDEX3D(GH,i,j,k)   ((i) + (GH)->cctk_lsh[0]*((j)+(GH)->cctk_lsh[1]*(k)))
+#define CCTK_GFINDEX2D(GH,i,j)     ((i) + (GH)->cctk_lsh[0]*((j)))
+#define CCTK_GFINDEX1D(GH,i)        (i)
 
 
 #define CCTK_PRINTSEPARATOR \
