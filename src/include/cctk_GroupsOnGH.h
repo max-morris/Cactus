@@ -28,9 +28,9 @@ typedef struct GROUPDYNAMICDATA
 extern "C" {
 #endif
 
-void *CCTK_VarDataPtr(cGH *GH, int timelevel, const char *fullvarname);
-void *CCTK_VarDataPtrI(cGH *GH, int timelevel, int varindex);
-void *CCTK_VarDataPtrB(cGH *GH, int timelevel, int varindex, char *fullvarname);
+void *CCTK_VarDataPtr(const cGH *GH, int timelevel, const char *fullvarname);
+void *CCTK_VarDataPtrI(const cGH *GH, int timelevel, int varindex);
+void *CCTK_VarDataPtrB(const cGH *GH, int timelevel, int varindex, char *fullvarname);
 
 int CCTK_DisableGroupStorageI(void *GH, int group);
 int CCTK_DisableGroupCommI(void *GH, int group);

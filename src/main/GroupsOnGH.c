@@ -186,7 +186,7 @@ void CCTK_FCALL CCTK_FNAME (CCTK_GroupbboxVN)
 
    @var        GH
    @vdesc      Pointer to Grid Hierachy
-   @vtype      cGH *
+   @vtype      const cGH *
    @vio        in
    @vcomment
    @endvar
@@ -210,7 +210,7 @@ void CCTK_FCALL CCTK_FNAME (CCTK_GroupbboxVN)
    @endreturndesc
 @@*/
 
-void *CCTK_VarDataPtr(cGH *GH, int timelevel, const char *varname)
+void *CCTK_VarDataPtr(const cGH *GH, int timelevel, const char *varname)
 {
   int vindex;
   void *retval;
@@ -249,7 +249,7 @@ void *CCTK_VarDataPtr(cGH *GH, int timelevel, const char *varname)
 
    @var        GH
    @vdesc      Pointer to Grid Hierachy
-   @vtype      cGH *
+   @vtype      const cGH *
    @vio        in
    @vcomment
    @endvar
@@ -276,7 +276,7 @@ void *CCTK_VarDataPtr(cGH *GH, int timelevel, const char *varname)
 
 @@*/
 
-void *CCTK_VarDataPtrI(cGH *GH, int timelevel, int vari)
+void *CCTK_VarDataPtrI(const cGH *GH, int timelevel, int vari)
 {
   if (vari < 0)
     CCTK_Warn(1,__LINE__,__FILE__,"Cactus",
@@ -298,7 +298,7 @@ void *CCTK_VarDataPtrI(cGH *GH, int timelevel, int vari)
    @endhistory
    @var        GH
    @vdesc      Pointer to Grid Hierachy
-   @vtype      cGH *
+   @vtype      const cGH *
    @vio        in
    @vcomment
    @endvar
@@ -331,7 +331,7 @@ void *CCTK_VarDataPtrI(cGH *GH, int timelevel, int vari)
    @version    $Header$
 
 @@*/
-void *CCTK_VarDataPtrB(cGH *GH, int timelevel, int vari, char *varn)
+void *CCTK_VarDataPtrB(const cGH *GH, int timelevel, int vari, char *varn)
 {
   if (varn)
   {
