@@ -2,9 +2,9 @@
 %   @file      UtilityRoutines.tex
 %   @date      27 Jan 1999
 %   @author    Jonathan Thornburg
-%   @desc 
+%   @desc
 %   Description of the Util_* utility routines for the Cactus User's Guide.
-%   @enddesc 
+%   @enddesc
 %   @version $Header$
 % @@*/
 
@@ -16,7 +16,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\chapter{Introduction} 
+\chapter{Introduction}
 
 As well as the high-level \verb|CCTK_|* routines, Cactus also
 provides a set of lower-level \verb|Util_|* utility routines, which
@@ -34,10 +34,11 @@ general overview of programming with these utility routines.
 Cactus functions may need to pass information through a generic
 interface.  In the past we have used various ad hoc means to do this,
 and we often had trouble passing "extra" information that wasn't
-anticipated in the original design.  For example, for interpolation
-\verb|CCTK_InterpLocal()| and \verb|CCTK_InterpGV()| require that
-any parameters (such as the order of the interpolant) be encoded
-into the interpolator's character string name.  Similarly, elliptic
+anticipated in the original design.  For example, for periodic output
+of grid variables,
+\verb|CCTK_OutputVarAsByMethod()| requires that
+any parameters (such as hyperslabbing parameters) be appended as an option
+string to the variable's character string name.  Similarly, elliptic
 solvers often need to pass various parameters, but we haven't had a
 good way to do this.
 
@@ -110,7 +111,7 @@ For example, the flags word can be used to control whether keys
 should be compared as case sensitive or case insensitive strings.
 See the detailed function description of \verb|Util_TableCreate()|
 in the Reference Manual for a list
-of the possible bit flags and their semantics.  
+of the possible bit flags and their semantics.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -365,7 +366,7 @@ contents (including those produced by \verb|Util_TableClone()|).%%%
 	 and the hash function could depend on the internal
 	 table address.
 	 }%%%
-{}  
+{}
 
 Any change in the table also invalidates all iterators pointing
 anywhere in the table; using any such iterator is an error.

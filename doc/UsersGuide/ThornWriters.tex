@@ -360,7 +360,7 @@ This must be one of the allowed values.
 
 For the numeric types {\tt INT} and {\tt REAL}, a range consists
 of a string of the
-form lower-bound:upper-bound:step, where a missing number or an asterisk 
+form lower-bound:upper-bound:step, where a missing number or an asterisk
 `{\t *}' denotes anything (i.e.\ infinite bounds or an infinitesimal step).
 
 For example
@@ -528,7 +528,7 @@ The keyword {\tt SYNC} specifies groups of variables which should be
 synchronised (that is, their ghostzones should be exchanged between
 processors) on exit from the routine. Specifying synchronisation of
 grid variables in {\tt schedule.ccl} is an alternative to calling the
-function {\tt CCTK\_SyncGroup()} (see the Reference Manual) from inside a 
+function {\tt CCTK\_SyncGroup()} (see the Reference Manual) from inside a
 routine. Using the {\tt SYNC}
 keyword in the {\tt schedule.ccl} is the preferred method, since it
 provides the Flesh with more information about the behaviour of your code,
@@ -688,7 +688,7 @@ interpreter to invoke the script.
 The example requires a thorn providing \verb|Another_Capability| to be
 in the ThornList, and, if a thorn providing
 \verb|Yet_Another_Capability| is in the ThornList, the preprocessor
-macro \verb|macro| will be defined, and set to 1.  
+macro \verb|macro| will be defined, and set to 1.
 
 As and example a thorn A may be able to use PVM for parallelism if it is
 present, but can still work in the absence of it.  There could be a
@@ -873,8 +873,8 @@ The specification for a group declaration
 (fully described in Appendix~\ref{sec:Appendix.interface}) is,
 
 \begin{alltt}
-<\var{data_type}> <\var{group_name}> [TYPE=<\var{group_type}>] [DIM=<\var{dim}>] [TIMELEVELS=<\var{num}>] 
-   [SIZE=<\var{size in each direction}>] [DISTRIB=<\var{distribution_type}>] 
+<\var{data_type}> <\var{group_name}> [TYPE=<\var{group_type}>] [DIM=<\var{dim}>] [TIMELEVELS=<\var{num}>]
+   [SIZE=<\var{size in each direction}>] [DISTRIB=<\var{distribution_type}>]
    [GHOSTSIZE=<\var{ghostsize}>] [STAGGER=<\var{stagger-specification}>]
 [\{
  [ <\var{variable_name}>[,]<\var{variable_name}>
@@ -1130,7 +1130,7 @@ points (arrows) are accessed by the same indices.}
 
 \section{Information about Grid Variables}
 
-The Flesh holds a database with information related to grid variables, and 
+The Flesh holds a database with information related to grid variables, and
 provides a set of querying APIs.
 
 \subsection{Group Information}
@@ -1141,7 +1141,7 @@ scheduled routines (see~\ref{sec:cactus_variables_c}). To obtain similar informa
 from non-scheduled routines, or for general grid variables, a set of
 functions are provided, the last two letters of which specify whether
 the information is requested using a group name ({\tt GN}) or index
-({\tt GI}), or a variable name ({\tt VN}) or index ({\tt VI}). 
+({\tt GI}), or a variable name ({\tt VN}) or index ({\tt VI}).
 
 \begin{itemize}
 
@@ -1151,12 +1151,12 @@ the information is requested using a group name ({\tt GN}) or index
 \item {\tt CCTK\_Groupgsh[GN|GI|VN|VI]}    An array of integers
       with the global grid size.
 
-\item {\tt CCTK\_Groupbbox[GN|GI|VN|VI]}      An array of  integers 
+\item {\tt CCTK\_Groupbbox[GN|GI|VN|VI]}      An array of  integers
       which indicate whether the boundaries are internal boundaries
-      (e.g.\ between processors), or physical boundaries. 
+      (e.g.\ between processors), or physical boundaries.
         A value of {\tt 1} indicates
       a physical (outer) boundary at the edge of the computational grid,
-      and {\tt 0} indicates an internal boundary.  
+      and {\tt 0} indicates an internal boundary.
 
 \item {\tt CCTK\_Groupnghostzones[GN|GI|VN|VI]}    An array of integers with
          the number of ghostzones used in each direction.
@@ -1182,21 +1182,21 @@ the information is requested using a group name ({\tt GN}) or index
 \label{chap:Cactus_parameters}
 
 Parameters are the means by which the user specifies the runtime behaviour of
-the code.  Each parameter has a data type and a name, as well as a 
+the code.  Each parameter has a data type and a name, as well as a
 range of allowed values and a default value.  These are declared in the thorn's
 {\tt param.ccl} file.
 
 The thorn determines which parameters can be used in other thorns by
-specifying a \textit{scope} for the thorn, as explained in 
+specifying a \textit{scope} for the thorn, as explained in
 \ref{sec:Cactus_parameters.scope}.
 
 The user may specify initial values for parameters in the parameter file
-(see Section~\ref{sec:Parameter_File}); the Flesh validates these values 
+(see Section~\ref{sec:Parameter_File}); the Flesh validates these values
 against the parameters' allowed ranges.
 Otherwise, the initial value of the parameter is taken to be its default.
 Once validated, parameter values are fixed, and cannot be changed,
 unless the parameter is specified to be \textit{steerable}
-(see \ref{sec:Cactus_parameters.steerable}). 
+(see \ref{sec:Cactus_parameters.steerable}).
 For a detailed discussion of the {\tt param.ccl} syntax see
 Appendix~\ref{sec:Appendix.param}.
 
@@ -1229,8 +1229,8 @@ Parameters can be of these types:
 \item[String] Can have any string value
 \end{Lentry}
 
-Each parameter can be validated against a set of allowed 
-\textit{ranges}, each of which has a description associated with it. 
+Each parameter can be validated against a set of allowed
+\textit{ranges}, each of which has a description associated with it.
 The nature
 of the range is determined by the type of parameter, as follows:
 
@@ -1303,7 +1303,7 @@ it.
 \label{sec:Cactus_parameters.steerable}
 A parameter can be changed dynamically if it is specified to be
 \textit{steerable} (see
-Section~\ref{subsec:Appendix.param.specification_items}). 
+Section~\ref{subsec:Appendix.param.specification_items}).
 It can then be changed by a call to the Flesh function
 {\tt CCTK\_ParameterSet} (see the Reference Guide for a description
 of this function).
@@ -1322,8 +1322,8 @@ exist.
 For a detailed discussion of the {\t schedule.ccl} syntax see
 Appendix~\ref{sec:Appendix.schedule}.
 
-A usual simple specification for a schedule declaration is 
-\begin{alltt}schedule <\var{function name}> AT <\var{schedule bin}> 
+A usual simple specification for a schedule declaration is
+\begin{alltt}schedule <\var{function name}> AT <\var{schedule bin}>
 \{
   LANG: <\var{language}>
   [STORAGE:       <\var{group}>,<\var{group}>...]
@@ -1331,7 +1331,7 @@ A usual simple specification for a schedule declaration is
 \end{alltt}
 
 The full specification for a schedule declaration is
-\begin{alltt}schedule [GROUP] <function|\var{schedule group name}> AT|IN <\var{schedule bin}|\var{group name}> 
+\begin{alltt}schedule [GROUP] <function|\var{schedule group name}> AT|IN <\var{schedule bin}|\var{group name}>
          [BEFORE|AFTER <\var{item}>] [WHILE <\var{variable}>] [AS <\var{alias}>]
 \{
   LANG: <\var{language}>
@@ -1360,11 +1360,11 @@ be traversed from any thorn, although this is not usual).  When a
 schedule bin is \textit{traversed}, all the functions scheduled in that
 particular are called, in the manner described in
 \ref{scheduling:calling_scheduled_functions} and respecting the
-requested ordering of functions~\ref{scheduling:schedule_options}. In the absence of any ordering, functions in a particular schedule bin will be called in 
-an undetermined order. 
+requested ordering of functions~\ref{scheduling:schedule_options}. In the absence of any ordering, functions in a particular schedule bin will be called in
+an undetermined order.
 
 The schedule bins are described in \ref{subsec:schedule_ccl}. Note that
-the preceding {\tt CCTK\_} is optional for the use of the bin names 
+the preceding {\tt CCTK\_} is optional for the use of the bin names
 in the {\tt schedule.ccl} file.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1412,7 +1412,7 @@ or group.
 \begin{Lentry}
 \item[\texttt{LANG}]
 This specifies the language of the routine.  Currently this is either
-C or Fortran. C++ routines should be defined as {\tt extern "C"} 
+C or Fortran. C++ routines should be defined as {\tt extern "C"}
 and registered as {\tt LANG: C}.
 \item[\texttt{STORAGE}] The {\tt STORAGE} keyword specifies groups for
 which memory should be allocated for the duration of the routine or
@@ -2493,17 +2493,13 @@ The Flesh does not provide interpolation routines by itself. Instead
 it offers a general function API to thorns for the registration and
 invocation of interpolation operators.
 
-There are several different Flesh APIs for interpolation, depending
+There are two different Flesh APIs for interpolation, depending
 on whether the data arrays are Cactus grid arrays or processor-local,
 programming language built-in arrays, and on what assumptions
 are made about the topology and spacing of the grid (these descriptions
 are for 3-D, but the generalizations to other numbers of dimensions
 should be obvious):
 \begin{Lentry}
-\item[{\tt CCTK\_InterpGV()}]
-        Interpolates Cactus grid arrays, with the topology of the
-        grid implicitly specified by a Cactus coordinate system.
-        (old API, will be phased out soon)
 \item[{\tt CCTK\_InterpGridArrays()}]
         Interpolates Cactus grid arrays, with the topology of the
         grid implicitly specified by a Cactus coordinate system.
@@ -2513,8 +2509,6 @@ should be obvious):
         necessary when interpolating distributed grid arrays, and invokes
         the {\tt CCTK\_InterpLocalUniform()} API on the each processor's
         local patch of the data.
-\item[{\tt CCTK\_InterpLocal()}]
-        Interpolate processor-local arrays (old API, will be phased out soon)
 \item[{\tt CCTK\_InterpLocalUniform()}]
         Interpolates processor-local arrays with \emph{uniformly}
         spaced data points, \ie{} where the coordinates~$xyz$
@@ -2553,16 +2547,10 @@ should be obvious):
 %notyet         by providing 3-D arrays giving their values at the grid points.
 \end{Lentry}
 
-There are separate Flesh routines to register interpolation operators for
-the APIs (note the calling sequences differ slightly from one registration
-routine to another!):
+%notyet There are separate Flesh routines to register interpolation operators for
+%notyet the APIs:
+The Flesh provides an API to register local interpolation operators:
 \begin{Lentry}
-\item[{\tt CCTK\_InterpRegisterOperatorGV()}]
-        Register a \verb|CCTK_InterpGV()| interpolation operator
-        (old API, will be phased out soon)
-\item[{\tt CCTK\_InterpRegisterOperatorLocal()}]
-        Register a \verb|CCTK_InterpLocal()| interpolation operator
-        (old API, will be phased out soon)
 \item[{\tt CCTK\_InterpRegisterOpLocalUniform()}]
         Register a \verb|CCTK_InterpLocalUniform()| interpolation operator
 %notyet \item[{\tt CCTK\_InterpRegisterOpLocalNonUniform()}]
@@ -2570,32 +2558,25 @@ routine to another!):
 %notyet \item[{\tt CCTK\_InterpRegisterOpLocalWarped()}]
 %notyet         Register a \verb|CCTK_InterpLocalWarped()| interpolation operator
 \end{Lentry}
-These are described in detail in the Reference Manual.
+%notyet These are described in detail in the Reference Manual.
+This is described in detail in the Reference Manual.
 
-Each operator is registered under a character string name; at
-registration the name is mapped to a unique integer handle which
+Each local interpolation operator is registered under a character string name;
+at registration the name is mapped to a unique integer handle which
 may be used to refer to the operator.  \verb|CCTK_InterpHandle()|
 is used to get the handle corresponding to a given character string
-name.  In general each name/handle is actually associated with a
-\emph{set} of interpolation operators, one for each of the
-interpolation APIs.%%%
-\footnote{%%%
-         If (as is often the case) an operator
-         doesn't support all the APIs, the unused
-         ones should be be left unregistered.
-         }%%%
-{}  The combination of a name/handle and an API must be globally
-unique with a Cactus binary, and uniquely identifies the interpolation
-operator.
-
-For example, suppose thorn~A registers \verb|CCTK_InterpGV()| and
-\verb|CCTK_InterpLocal()| interpolation operators under the name
-"interpolator A", and thorn~B registers \verb|CCTK_InterpLocal()| and
-\verb|CCTK_InterpLocalUniform()| interpolation operators under the
-name "B's new interpolator".  Then any thorn may still register a
-\verb|CCTK_InterpLocalUniform()| interpolation operator under the
-name "interpolator A", or a \verb|CCTK_InterpGV()| interpolation
-operator under then name "B's new interpolator".
+name.
+%notyet In general each name/handle is actually associated with a
+%notyet \emph{set} of interpolation operators, one for each of the
+%notyet local interpolation APIs.%%%
+%notyet \footnote{%%%
+%notyet          If (as is often the case) an operator
+%notyet          doesn't support all the APIs, the unused
+%notyet          ones should be be left unregistered.
+%notyet          }%%%
+%notyet {}  The combination of a name/handle and an API must be globally
+%notyet unique with a Cactus binary, and uniquely identifies the interpolation
+%notyet operator.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -3683,7 +3664,7 @@ allocation some time later.
         Request a ticket: save the current total memory to a database.
         Return an integer (ticket). Use the ticket to calculate the
         difference in memory allocation between the two instances in
-        {\tt CCTK\_MemTicketCash}.    
+        {\tt CCTK\_MemTicketCash}.
 
 \item[{\tt long int CCTK\_MemTicketCash(int your\_ticket)}]
         Cash in your ticket: return the memory difference between now and the
@@ -3721,19 +3702,19 @@ int ticket2;
 /* store current memstate, ticket: t1*/
 t1 = CCTK_MemTicketRequest();
 
-/* allocate data */     
+/* allocate data */
 hi = (int*) CCTK_MALLOC(10*sizeof(int));
 
 /* store current memstate, ticket: t2*/
 t2 = CCTK_MemTicketRequest();
-        
-/* cash ticket t1, print mem difference */      
+
+/* cash ticket t1, print mem difference */
 printf("NOW1a: %+d \n",CCTK_MemTicketCash(t1));
 
 /* allocte some more data */
 wo = (CCTK_REAL*)CCTK_MALLOC(10*sizeof(CCTK_REAL));
-        
-/* cash ticket t1 and t2, print mem difference */       
+
+/* cash ticket t1 and t2, print mem difference */
 printf("NOW1b: %+d \n",CCTK_MemTicketCash(t1));
 printf("NOW2 : %+d \n",CCTK_MemTicketCash(t2));
 
@@ -3839,7 +3820,7 @@ In more detail:
         \emph{after} the {\tt CREATE} macro,
         should be used if you need to modify one of the passed-in strings.
         They declare and define pointers to the passed-in strings.
-        
+
 \item[{\tt cctk\_strlen<1|2|3>}] these integer variables,
         automatically defined by
         the {\tt CREATE} macro, hold the lengths of the passed in
@@ -3953,7 +3934,7 @@ Function aliasing is quite restrictive because of the problems
 involved in inter-language calling, as seen in the previous
 section. Function aliasing is also comparatively inefficient and
 should not be used in a part of your code where efficiency is
-important. 
+important.
 
 Function aliasing is language neutral, however the syntax is strongly
 based on C.  The API documented here describes the current code,
@@ -3978,7 +3959,7 @@ REQUIRES FUNCTION SumStuff
 USES FUNCTION SumStuff
 \end{verbatim}
 A prototype of this function will be available to any C routine that
-includes the {\tt cctk.h} header file. 
+includes the {\tt cctk.h} header file.
 In a Fortran file, the declaration of the function will be included
 in the {\tt DECLARE\_CCTK\_FUNCTIONS} macro, which is available after
 the statement \texttt{\#include "cctk\_Functions.h"}.
@@ -3999,14 +3980,14 @@ your {\tt interface.ccl} file. A statement containing the name of the
 providing function and the language it is provided in must also be
 given. For example,
 \begin{verbatim}
-CCTK_REAL FUNCTION SumStuff(CCTK_REAL IN x, CCTK_REAL IN y) 
+CCTK_REAL FUNCTION SumStuff(CCTK_REAL IN x, CCTK_REAL IN y)
 PROVIDES FUNCTION SumStuff WITH AddItUp LANGUAGE C
 \end{verbatim}
 The appropriate function must then be provided somewhere in this
 thorn.
 
 It is necessary to specify the language of the providing function; no
-default will be assumed. 
+default will be assumed.
 
 
 \subsection{Conventions and restrictions}
@@ -4032,7 +4013,7 @@ work. These are
   they must be mixed case (that is, contain at least one uppercase and
   one lowercase letter). The names of the aliased and providing
   functions must be distinct.
-\item If an argument is a function pointer then the syntax looks like 
+\item If an argument is a function pointer then the syntax looks like
 \begin{verbatim}
 CCTK_REAL Integrate(CCTK_REAL CCTK_FPOINTER  func(CCTK_REAL IN x), \
                     CCTK_REAL IN xmin, CCTK_REAL IN xmax)
@@ -4055,7 +4036,7 @@ CCTK_REAL Integrate(CCTK_REAL CCTK_FPOINTER  func(CCTK_REAL IN x), \
     interface.ccl} should read
 \begin{verbatim}
     CCTK_REAL FUNCTION SumStuff(CCTK_REAL IN x, CCTK_REAL IN y)
-    PROVIDES FUNCTION SumStuff WITH AddItUp LANGUAGE C 
+    PROVIDES FUNCTION SumStuff WITH AddItUp LANGUAGE C
     USES FUNCTION SumStuff
 \end{verbatim}
 
@@ -4063,18 +4044,18 @@ CCTK_REAL Integrate(CCTK_REAL CCTK_FPOINTER  func(CCTK_REAL IN x), \
     interface.ccl} should read
 \begin{verbatim}
     SUBROUTINE Invert(CCTK_REAL OUT x)
-    PROVIDES FUNCTION Invert WITH FindInverse LANGUAGE Fortran 
+    PROVIDES FUNCTION Invert WITH FindInverse LANGUAGE Fortran
     USES FUNCTION Invert
 \end{verbatim}
 \noindent Note that {\tt SUBROUTINE} has the same meaning as {\tt void
-  FUNCTION}. 
+  FUNCTION}.
 
 \item A Fortran function is provided that integrates any function over
   an interval. The {\tt interface.ccl} should read
 \begin{verbatim}
-    CCTK_REAL Integrate(CCTK_REAL CCTK_FPOINTER  func(CCTK_REAL IN x), \ 
+    CCTK_REAL Integrate(CCTK_REAL CCTK_FPOINTER  func(CCTK_REAL IN x), \
                         CCTK_REAL IN xmin, CCTK_REAL IN xmax)
-    PROVIDES FUNCTION Integrate WITH SimpsonsRule LANGUAGE Fortran 
+    PROVIDES FUNCTION Integrate WITH SimpsonsRule LANGUAGE Fortran
     USES FUNCTION Integrate
 \end{verbatim}
 
