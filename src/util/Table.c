@@ -98,7 +98,9 @@
 #include <assert.h>
 
 /* FIXME: C99 defines <stdbool.h>, we should include that or a fake version */
-typedef enum { false = 0, true = 1 } bool;
+typedef int bool;
+#define true    1
+#define false   0
 
 #ifndef CCODE
   #define CCODE       /* signal Cactus header files that we're C, not Fortran */
@@ -2467,8 +2469,8 @@ int Util_TableItCreate(int handle)
 /*@@
   @routine      Util_TableItClone
   @desc         This function clones (makes an exact copy of) a table
-		iterator.  That is, it creates a new iterator which points
-		to the same table entry as an existing iterator.
+                iterator.  That is, it creates a new iterator which points
+                to the same table entry as an existing iterator.
 
   @var          ihandle
   @vtype        int
