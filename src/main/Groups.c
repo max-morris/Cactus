@@ -235,7 +235,7 @@ int CCTK_GroupIndex (const char *fullgroupname)
 
     if (retval < 0)
     {
-      CCTK_VWarn (2, __LINE__, __FILE__, "Cactus",
+      CCTK_VWarn (6, __LINE__, __FILE__, "Cactus",
                   "CCTK_GroupIndex: No group named '%s' found",
                   fullgroupname);
     }
@@ -310,7 +310,7 @@ int CCTK_VarIndex (const char *fullvarname)
 
     if (retval < 0)
     {
-      CCTK_VWarn (2, __LINE__, __FILE__, "Cactus",
+      CCTK_VWarn (6, __LINE__, __FILE__, "Cactus",
                   "CCTK_VarIndex: No variable named '%s' found",
                   fullvarname);
     }
