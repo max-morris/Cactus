@@ -22,15 +22,61 @@ typedef struct
   char *name;
 } cGF;
 
+typedef struct
+{
+  char storage;
+  char comm;
+} cGHGroupData;
 
 typedef struct
 {
-  int dummy;
+  int dim;
   unsigned long int iteration;
 
-  char *output_prefix;
+  /* ...[dim]*/
+  int *local_shape;
+  int *lower_bound;
+  int *upper_bound;
+
+  /* bbox[2*dim] */
+  int *bbox;
+
+  int levfac;
+
+  /* data[var_num][xyz]*/
+  void **data;
+
+  void *extensions;
+
+  cGHGroupData *GroupData;
 } cGH;
 
+typedef struct 
+{
+  char *name;
+  int number;
+
+  /* dimensional_comm_array[dim] */
+  char *dimensional_comm_array;
+} cVariableDefinition;
+
+typedef struct
+{
+  char *implementation;
+  char *name;
+  int number;
+
+  int gtype;
+  
+  int vtype;
+
+  int dim;
+
+  int n_variables;
+
+  /* variables[n_variables] */
+  cVariableDefinition *variables;
+} cGroupDefinition;
 
 typedef struct
 {
