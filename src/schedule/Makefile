@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -g -DDEBUG_SCHEDULAR -DTEST_SCHEDULECREATOR
+CFLAGS = -g -Wall -DDEBUG_SCHEDULAR -DTEST_SCHEDULECREATOR
 
 SRCS = ScheduleCreater.c ScheduleSorter.c ../util/StoreHandledData.c
 INCDIRS = ../include

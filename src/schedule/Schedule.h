@@ -8,22 +8,31 @@
    @version $Header$
  @@*/
 
+#include "cctki_schedule.h"
+
 #ifndef _SCHEDULE_H_
 #define _SCHEDULE_H_
 
-typedef enum {sched_item_none, sched_group, sched_function} t_sched_item_type;
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-typedef enum {sched_mod_none, sched_before, sched_after, sched_while} t_sched_modifier_type;
 
-typedef struct T_SCHED_MODIFIER
-{
-  struct T_SCHED_MODIFIER *next;
+int *CCTKi_ScheduleCreateIVec(int size);
+void CCTKi_ScheduleDestroyIVec(int size, int *vector);
+signed char **CCTKi_ScheduleCreateArray(int size);
+void CCTKi_ScheduleDestroyArray(int size, signed char **array);
 
-  t_sched_modifier_type type;
-  
-  char *argument;
+int CCTKi_ScheduleAddRow(int size, 
+			 signed char **array, 
+			 int *order, 
+			 int item, 
+			 int *thisorders);
 
-} t_sched_modifier;
+int CCTKi_ScheduleSort(int size, signed char **array, int *order);
 
+#ifdef __cplusplus
+}
+#endif
 
 #endif

@@ -14,6 +14,10 @@
 #include "Schedule.h"
 #include "StoreHandledData.h"
 
+/* Internal type data */
+
+typedef enum {sched_item_none, sched_group, sched_function} t_sched_item_type;
+
 typedef struct
 {
   char *name;
@@ -42,30 +46,239 @@ typedef struct
 
 } t_sched_group;
 
+/* Internal routine prototypes */
+
+static int ScheduleCreateGroup(const char *name);
+
+static t_sched_item *ScheduleCreateItem(const char *name, 
+					t_sched_modifier *modifiers, 
+					void *attributes);
+
+static int ScheduleAddItem(int ghandle, t_sched_item *item);
+
+static int ScheduleSortGroup(t_sched_group *group);
+
+static t_sched_modifier_type ScheduleTranslateModifierType(const char *modifier);
+
+static int ScheduleItemNumber(t_sched_group *group, 
+			      const char *name);
 
 
-t_sched_item *CCTKi_ScheduleCreateItem(const char *name, t_sched_modifier *modifiers, void *attributes);
-t_sched_modifier_type CCTKi_ScheduleTranslateModifierType(const char *modifier);
-int CCTKi_ScheduleItemNumber(t_sched_group *group, const char *name);
+static int ScheduleSetupWhiles(t_sched_item *item);
 
-int *ScheduleCreateIVec(int size);
-void ScheduleDestroyIVec(int size, int *vector);
-signed char **ScheduleCreateArray(int size);
-void ScheduleDestroyArray(int size, signed char **array);
-
-int CCTKi_ScheduleAddRow(int size, 
-			 signed char **array, 
-			 int *order, 
-			 int item, 
-			 int *thisorders);
+/* Local variables. */
 
 static char *rcsid="$Header$";
 
 static int n_schedule_groups = 0;
 static cHandledData *schedule_groups = NULL;
 
+/********************************************************************
+ ********************    External Routines   ************************
+ ********************************************************************/
+
  /*@@
-   @routine    CCTKi_ScheduleCreateGroup
+   @routine    CCTKi_ScheduleAddModifer
+   @date       Thu Sep  9 21:45:25 1999
+   @author     Tom Goodale
+   @desc 
+   Adds a schedule modifier to a modifier list.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+t_sched_modifier *CCTKi_ScheduleAddModifer(t_sched_modifier *orig, 
+					   const char *modifier, 
+					   const char *argument)
+{
+  t_sched_modifier *this;
+
+  this = (t_sched_modifier *)malloc(sizeof(t_sched_modifier));
+
+  if(this)
+  {
+    this->argument = (char *)malloc((strlen(argument)+1)*sizeof(char));
+    if(this->argument)
+    {
+      strcpy(this->argument, argument);
+
+      this->type = ScheduleTranslateModifierType(modifier);
+
+      this->next = orig;
+    }
+    else
+    {
+      free(this);
+      this = NULL;
+    }
+  }
+
+  return this;
+}
+
+ /*@@
+   @routine    CCTKi_ScheduleFunction
+   @date       Thu Sep  9 21:42:58 1999
+   @author     Tom Goodale
+   @desc 
+   Adds a function to a schedule group.  Creates the group if necessary.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+int CCTKi_ScheduleFunction(const char *gname, 
+			   const char *fname, 
+			   void *func, 
+			   t_sched_modifier *modifiers, 
+			   void *attributes)
+{
+  int retcode;
+  int handle;
+  t_sched_group *this_group;
+  t_sched_item *newitem;
+
+  handle = Util_GetHandle(schedule_groups, gname, (void **)&this_group);
+
+  if(handle < 0)
+  {
+    handle = ScheduleCreateGroup(gname);
+  }
+
+  if(handle < 0)
+  {
+    retcode = -1;
+  }
+  else
+  {
+    newitem = ScheduleCreateItem(fname, modifiers, attributes);
+
+    if(newitem)
+    {
+      newitem->type = sched_function;
+      newitem->function = func;
+      retcode = ScheduleAddItem(handle, newitem);
+    }
+    else
+    {
+      retcode = -1;
+    }
+  }
+
+  return retcode;
+}
+    
+ /*@@
+   @routine    CCTKi_ScheduleGroup
+   @date       Thu Sep  9 21:43:44 1999
+   @author     Tom Goodale
+   @desc 
+   Adds a group to a schedule group.  Creates the group if necessary.   
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+int CCTKi_ScheduleGroup(const char *gname, 
+			const char *thisname, 
+			t_sched_modifier *modifiers, 
+			void *attributes)
+{
+  int retcode;
+  int handle;
+  t_sched_group *this_group;
+  t_sched_item *newitem;
+
+  handle = Util_GetHandle(schedule_groups, gname, (void **)&this_group);
+
+  if(handle < 0)
+  {
+    handle = ScheduleCreateGroup(gname);
+  }
+
+  if(handle < 0)
+  {
+    retcode = -1;
+  }
+  else
+  {
+    newitem = ScheduleCreateItem(thisname, modifiers, attributes);
+
+    if(newitem)
+    {
+      newitem->type = sched_group;
+      newitem->group = handle;
+      retcode = ScheduleAddItem(handle, newitem);
+    }
+    else
+    {
+      retcode = -1;
+    }
+  }
+
+  return retcode;
+}
+
+ /*@@
+   @routine    CCTKi_ScheduleSortAllGroups
+   @date       Wed Sep 15 22:37:49 1999
+   @author     Tom Goodale
+   @desc 
+   Sorts all the schedule groups.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+int CCTKi_ScheduleSortAllGroups(void)
+{
+  int group;
+  t_sched_group *gdata;
+  int errcode;
+  int n_errors;
+  
+  n_errors  = 0;
+
+  for(group = 0; group < n_schedule_groups; group++)
+  {
+    if((gdata = (t_sched_group *)Util_GetHandledData(schedule_groups, group)))
+    {
+      errcode = ScheduleSortGroup(gdata);
+
+      if(errcode)
+      {
+	fprintf(stderr, 
+		"Error while dorting group '%s' - %d remaining unsorted routines.\n", 
+		gdata->name,
+		-errcode);
+
+	n_errors += -errcode;
+      }
+    }
+  }
+   
+  return -n_errors;
+}
+
+/********************************************************************
+ *********************     Local Routines   *************************
+ ********************************************************************/
+
+ /*@@
+   @routine    ScheduleCreateGroup
    @date       Wed Sep  8 11:15:32 1999
    @author     Tom Goodale
    @desc 
@@ -78,7 +291,7 @@ static cHandledData *schedule_groups = NULL;
    @endhistory 
 
 @@*/
-int CCTKi_ScheduleCreateGroup(const char *name)
+static int ScheduleCreateGroup(const char *name)
 {
   int retcode;
   int handle;
@@ -127,109 +340,7 @@ int CCTKi_ScheduleCreateGroup(const char *name)
 }
 
  /*@@
-   @routine    CCTK_ScheduleFunction
-   @date       Thu Sep  9 21:42:58 1999
-   @author     Tom Goodale
-   @desc 
-   Adds a function to a schedule group.  Creates the group if necessary.
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
-
-@@*/
-int CCTK_ScheduleFunction(const char *gname, const char *fname, void *func, t_sched_modifier *modifiers, void *attributes)
-{
-  int retcode;
-  int handle;
-  t_sched_group *this_group;
-  t_sched_item *newitem;
-
-  handle = Util_GetHandle(schedule_groups, gname, (void **)&this_group);
-
-  if(handle < 0)
-  {
-    handle = CCTKi_ScheduleCreateGroup(gname);
-  }
-
-  if(handle < 0)
-  {
-    retcode = -1;
-  }
-  else
-  {
-    newitem = CCTKi_ScheduleCreateItem(fname, modifiers, attributes);
-
-    if(newitem)
-    {
-      newitem->type = sched_function;
-      newitem->function = func;
-      retcode = CCTKi_ScheduleAddItem(handle, newitem);
-    }
-    else
-    {
-      retcode = -1;
-    }
-  }
-
-  return retcode;
-}
-    
- /*@@
-   @routine    CCTK_ScheduleGroup
-   @date       Thu Sep  9 21:43:44 1999
-   @author     Tom Goodale
-   @desc 
-   Adds a group to a schedule group.  Creates the group if necessary.   
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
-
-@@*/
-int CCTK_ScheduleGroup(const char *gname, const char *thisname, t_sched_modifier *modifiers, void *attributes)
-{
-  int retcode;
-  int handle;
-  t_sched_group *this_group;
-  t_sched_item *newitem;
-
-  handle = Util_GetHandle(schedule_groups, gname, (void **)&this_group);
-
-  if(handle < 0)
-  {
-    handle = CCTKi_ScheduleCreateGroup(gname);
-  }
-
-  if(handle < 0)
-  {
-    retcode = -1;
-  }
-  else
-  {
-    newitem = CCTKi_ScheduleCreateItem(thisname, modifiers, attributes);
-
-    if(newitem)
-    {
-      newitem->type = sched_group;
-      newitem->group = handle;
-      retcode = CCTKi_ScheduleAddItem(handle, newitem);
-    }
-    else
-    {
-      retcode = -1;
-    }
-  }
-
-  return retcode;
-}
-
- /*@@
-   @routine    CCTKi_ScheduleCreateItem
+   @routine    ScheduleCreateItem
    @date       Thu Sep  9 21:44:17 1999
    @author     Tom Goodale
    @desc 
@@ -242,7 +353,7 @@ int CCTK_ScheduleGroup(const char *gname, const char *thisname, t_sched_modifier
    @endhistory 
 
 @@*/
-t_sched_item *CCTKi_ScheduleCreateItem(const char *name, t_sched_modifier *modifiers, void *attributes)
+static t_sched_item *ScheduleCreateItem(const char *name, t_sched_modifier *modifiers, void *attributes)
 {
   t_sched_item *this;
 
@@ -264,6 +375,8 @@ t_sched_item *CCTKi_ScheduleCreateItem(const char *name, t_sched_modifier *modif
       this->n_whiles = 0;
       this->whiles = NULL;
 
+      ScheduleSetupWhiles(this);
+
       this->attributes = attributes;
 
 #ifdef DEBUG_SCHEDULAR
@@ -282,7 +395,7 @@ t_sched_item *CCTKi_ScheduleCreateItem(const char *name, t_sched_modifier *modif
 }
 
  /*@@
-   @routine    CCTKi_ScheduleAddItem
+   @routine    ScheduleAddItem
    @date       Thu Sep  9 21:45:03 1999
    @author     Tom Goodale
    @desc 
@@ -295,7 +408,7 @@ t_sched_item *CCTKi_ScheduleCreateItem(const char *name, t_sched_modifier *modif
    @endhistory 
 
 @@*/
-int CCTKi_ScheduleAddItem(int ghandle, t_sched_item *item)
+static int ScheduleAddItem(int ghandle, t_sched_item *item)
 {
   int retcode;
   t_sched_group *this_group;
@@ -329,50 +442,10 @@ int CCTKi_ScheduleAddItem(int ghandle, t_sched_item *item)
   return retcode;
 }
   
- /*@@
-   @routine    CCTK_ScheduleAddModifer
-   @date       Thu Sep  9 21:45:25 1999
-   @author     Tom Goodale
-   @desc 
-   Adds a schedule modifier to a modifier list.
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
-
-@@*/
-t_sched_modifier *CCTK_ScheduleAddModifer(t_sched_modifier *orig, const char *modifier, const char *argument)
-{
-  t_sched_modifier *this;
-
-  this = (t_sched_modifier *)malloc(sizeof(t_sched_modifier));
-
-  if(this)
-  {
-    this->argument = (char *)malloc((strlen(argument)+1)*sizeof(char));
-    if(this->argument)
-    {
-      strcpy(this->argument, argument);
-
-      this->type = CCTKi_ScheduleTranslateModifierType(modifier);
-
-      this->next = orig;
-    }
-    else
-    {
-      free(this);
-      this = NULL;
-    }
-  }
-
-  return this;
-}
 
 
  /*@@
-   @routine    CCTKi_ScheduleTranslateModifierType
+   @routine    ScheduleTranslateModifierType
    @date       Thu Sep  9 21:45:56 1999
    @author     Tom Goodale
    @desc 
@@ -385,7 +458,7 @@ t_sched_modifier *CCTK_ScheduleAddModifer(t_sched_modifier *orig, const char *mo
    @endhistory 
 
 @@*/
-t_sched_modifier_type CCTKi_ScheduleTranslateModifierType(const char *modifier)
+static t_sched_modifier_type ScheduleTranslateModifierType(const char *modifier)
 {
   /* FIXME */
   
@@ -414,7 +487,7 @@ t_sched_modifier_type CCTKi_ScheduleTranslateModifierType(const char *modifier)
 }
 
  /*@@
-   @routine    CCTKi_ScheduleSortGroup
+   @routine    ScheduleSortGroup
    @date       Mon Sep 13 11:30:19 1999
    @author     Tom Goodale
    @desc 
@@ -427,7 +500,7 @@ t_sched_modifier_type CCTKi_ScheduleTranslateModifierType(const char *modifier)
    @endhistory 
 
 @@*/
-int CCTKi_ScheduleSortGroup(t_sched_group *group)
+static int ScheduleSortGroup(t_sched_group *group)
 {
   int item;
   int *order;
@@ -440,9 +513,9 @@ int CCTKi_ScheduleSortGroup(t_sched_group *group)
   int errcode;
 
   /* Create the data staructures */
-  array      = ScheduleCreateArray(group->n_scheditems);
-  order      = ScheduleCreateIVec(group->n_scheditems);
-  thisorders = ScheduleCreateIVec(group->n_scheditems);
+  array      = CCTKi_ScheduleCreateArray(group->n_scheditems);
+  order      = CCTKi_ScheduleCreateIVec(group->n_scheditems);
+  thisorders = CCTKi_ScheduleCreateIVec(group->n_scheditems);
   
   for(item=0; item < group->n_scheditems; item++)
   {
@@ -455,7 +528,7 @@ int CCTKi_ScheduleSortGroup(t_sched_group *group)
       {
 	continue;
       }
-      number = CCTKi_ScheduleItemNumber(group, modifier->argument);
+      number = ScheduleItemNumber(group, modifier->argument);
 
 #ifdef DEBUG_SCHEDULAR
       printf("Scheduling against item %d '%s' - mod-type %d\n", number, group->scheditems[number].name, modifier->type);
@@ -517,7 +590,7 @@ int CCTKi_ScheduleSortGroup(t_sched_group *group)
   printf("Sorting array...\n");
 #endif
 
-  errcode = ScheduleSort(group->n_scheditems, array, order);
+  errcode = CCTKi_ScheduleSort(group->n_scheditems, array, order);
 
   if(errcode)
   {
@@ -545,8 +618,8 @@ int CCTKi_ScheduleSortGroup(t_sched_group *group)
 #endif
 
   /* Free memory */
-  ScheduleDestroyIVec(group->n_scheditems,thisorders);
-  ScheduleDestroyArray(group->n_scheditems, array);
+  CCTKi_ScheduleDestroyIVec(group->n_scheditems,thisorders);
+  CCTKi_ScheduleDestroyArray(group->n_scheditems, array);
 
   group->order = order;
 
@@ -554,7 +627,7 @@ int CCTKi_ScheduleSortGroup(t_sched_group *group)
 }
 
  /*@@
-   @routine    CCTKi_ScheduleItemNumber
+   @routine    ScheduleItemNumber
    @date       Mon Sep 13 11:30:49 1999
    @author     Tom Goodale
    @desc 
@@ -567,7 +640,7 @@ int CCTKi_ScheduleSortGroup(t_sched_group *group)
    @endhistory 
 
 @@*/
-int CCTKi_ScheduleItemNumber(t_sched_group *group, const char *name)
+static int ScheduleItemNumber(t_sched_group *group, const char *name)
 {
   int retval;
   int i;
@@ -588,38 +661,9 @@ int CCTKi_ScheduleItemNumber(t_sched_group *group, const char *name)
   return retval;
 }
 
-int CCTKi_ScheduleAllGroups(void)
-{
-  int group;
-  t_sched_group *gdata;
-  int errcode;
-  int n_errors;
-  
-  n_errors  = 0;
-
-  for(group = 0; group < n_schedule_groups; group++)
-  {
-    if(gdata = (t_sched_group *)Util_GetHandledData(schedule_groups, group))
-    {
-      errcode = CCTKi_ScheduleSortGroup(gdata);
-
-      if(errcode)
-      {
-	fprintf(stderr, 
-		"Error while dorting group '%s' - %d remaining unsorted routines.\n", 
-		gdata->name,
-		-errcode);
-
-	n_errors += -errcode;
-      }
-    }
-  }
-   
-  return -n_errors;
-}
 
  /*@@
-   @routine    CCTKi_ScheduleSetupWhiles
+   @routine    ScheduleSetupWhiles
    @date       Wed Sep 15 20:10:28 1999
    @author     Tom Goodale
    @desc 
@@ -632,7 +676,7 @@ int CCTKi_ScheduleAllGroups(void)
    @endhistory 
 
 @@*/
-int CCTKi_ScheduleSetupWhiles(t_sched_item *item)
+static int ScheduleSetupWhiles(t_sched_item *item)
 {
   int retval;
   t_sched_modifier *modifier;
@@ -672,6 +716,10 @@ int CCTKi_ScheduleSetupWhiles(t_sched_item *item)
   return retval;
 }
 
+/********************************************************************
+ ********************************************************************
+ ********************************************************************/
+
 #ifdef TEST_SCHEDULECREATOR
 
 #define func_x(x) \
@@ -685,21 +733,19 @@ func_x(c)
 
 int main(int argc, char *argv[])
 {
-  int handle;
   t_sched_modifier *modifier;
-  t_sched_group *this_group;
 
-  modifier = CCTK_ScheduleAddModifer(NULL, "before", "c");
-  modifier = CCTK_ScheduleAddModifer(modifier, "after",  "a");
+  modifier = CCTKi_ScheduleAddModifer(NULL, "before", "c");
+  modifier = CCTKi_ScheduleAddModifer(modifier, "after",  "a");
 
-  CCTK_ScheduleFunction("group_a", "c", func_c, NULL, NULL);
-  CCTK_ScheduleFunction("group_a", "b", func_b, modifier, NULL);
-  CCTK_ScheduleFunction("group_a", "a", func_a, NULL, NULL);
-  CCTK_ScheduleFunction("group_b", "a", func_a, NULL, NULL);
-  CCTK_ScheduleFunction("group_b", "b", func_a, NULL, NULL);
-  CCTK_ScheduleGroup("group_a", "group_b", modifier, NULL);
+  CCTKi_ScheduleFunction("group_a", "c", func_c, NULL, NULL);
+  CCTKi_ScheduleFunction("group_a", "b", func_b, modifier, NULL);
+  CCTKi_ScheduleFunction("group_a", "a", func_a, NULL, NULL);
+  CCTKi_ScheduleFunction("group_b", "a", func_a, NULL, NULL);
+  CCTKi_ScheduleFunction("group_b", "b", func_a, NULL, NULL);
+  CCTKi_ScheduleGroup("group_a", "group_b", modifier, NULL);
 
-  CCTKi_ScheduleAllGroups();
+  CCTKi_ScheduleSortAllGroups();
 
   return 0;
 }

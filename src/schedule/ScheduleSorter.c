@@ -10,12 +10,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "Schedule.h"
+
 static char *rcsid = "$Header$";
 
 static void ScheduleSwap(int size, signed char **array, int *order, int row, int column);
 
  /*@@
-   @routine    ScheduleSort
+   @routine    CCTKi_ScheduleSort
    @date       Mon Aug 30 11:44:35 1999
    @author     Tom Goodale
    @desc 
@@ -29,7 +31,7 @@ static void ScheduleSwap(int size, signed char **array, int *order, int row, int
 
 @@*/
 
-int ScheduleSort(int size, signed char **array, int *order)
+int CCTKi_ScheduleSort(int size, signed char **array, int *order)
 {
   int iter;
   int row, column;
@@ -70,6 +72,196 @@ int ScheduleSort(int size, signed char **array, int *order)
   return retval;
 }
 
+ /*@@
+   @routine    CCTKi_ScheduleAddRow
+   @date       Wed Sep 15 22:28:09 1999
+   @author     Tom Goodale
+   @desc 
+   Adds a row to the scheduling array, and fills in the corresponding column entries.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+int CCTKi_ScheduleAddRow(int size, 
+			 signed char **array, 
+			 int *order, 
+			 int item, 
+			 int *thisorders)
+{
+  int retval;
+
+  int row;
+  int column;
+
+  retval = 0;
+
+  order[item]=item;
+
+  row = item;
+
+  for(column=0; column < size; column++)
+  {
+    if(thisorders[column])
+    {
+      if(array[row][column] && array[row][column] != thisorders[column]) retval--;
+      array[row][column] =   thisorders[column];
+      array[column][row] = - thisorders[column];
+    }
+  }
+    
+  return retval;
+}
+
+ /*@@
+   @routine    CCTKi_ScheduleCreateArray
+   @date       Wed Sep 15 22:28:50 1999
+   @author     Tom Goodale
+   @desc 
+   Creates a scheduling array.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+signed char **CCTKi_ScheduleCreateArray(int size)
+{
+  int i, j;
+  signed char **array;
+
+  array = (signed char **)malloc(size*sizeof(signed char *));
+
+  if(array)
+  {
+    for(i=0; i < size; i++)
+    {
+      array[i] = (signed char *)malloc(size*sizeof(signed char));
+      if(!array[i]) break;
+    }
+
+    /* Check for errors */
+    if(i < size)
+    {
+      /* Free already allocated memory */
+      for(i--; i >=0; i--)
+      {
+	free(array[i]);
+      }
+      free(array);
+      array = NULL;
+    }
+  }
+
+  /* Initialise all entries to zero. */
+  if(array)
+  {
+    for(i=0; i < size; i++)
+    {
+      for(j=0; j < size; j++)
+      {
+	array[i][j] = 0;
+      }
+    }
+  }
+
+  return array;
+}
+
+ /*@@
+   @routine    CCTKi_ScheduleDestroyArray
+   @date       Wed Sep 15 22:29:10 1999
+   @author     Tom Goodale
+   @desc 
+   Destroys a scheduling array.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+void CCTKi_ScheduleDestroyArray(int size, signed char **array)
+{
+  int i;
+
+  for(i=size-1; i >=0; i--)
+  {
+    free(array[i]);
+  }
+}
+
+ /*@@
+   @routine    CCTKi_ScheduleCreateIVec
+   @date       Wed Sep 15 22:29:57 1999
+   @author     Tom Goodale
+   @desc 
+   Creates a vector of integers.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+int *CCTKi_ScheduleCreateIVec(int size)
+{
+  int i;
+  int *vector;
+
+  vector = (int *)malloc(size*sizeof(int));
+
+  if(vector)
+  {
+    for(i=0; i < size; i++)
+    {
+      vector[i] = 0;
+    }
+  }
+
+  return vector;
+}
+
+ /*@@
+   @routine    CCTKi_ScheduleDestroyIVec
+   @date       Wed Sep 15 22:29:29 1999
+   @author     Tom Goodale
+   @desc 
+   Destroys a vector of integers.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+void CCTKi_ScheduleDestroyIVec(int size, int *vector)
+{
+  free(vector);
+}
+
+ /*@@
+   @routine    ScheduleSwap
+   @date       Wed Sep 15 22:26:50 1999
+   @author     Tom Goodale
+   @desc 
+   Swaps two rows and columns in the scheduling array.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
 static void ScheduleSwap(int size, signed char **array, int *order, int row, int column)
 {
   signed char *tmp;
@@ -97,112 +289,9 @@ static void ScheduleSwap(int size, signed char **array, int *order, int row, int
 
 }
 
-int CCTKi_ScheduleAddRow(int size, 
-			 signed char **array, 
-			 int *order, 
-			 int item, 
-			 int *thisorders)
-{
-  int retval;
-
-  int row;
-  int column;
-  int i;
-
-  retval = 0;
-
-  order[item]=item;
-
-  row = item;
-
-  for(column=0; column < size; column++)
-  {
-    if(thisorders[column])
-    {
-      if(array[row][column] && array[row][column] != thisorders[column]) retval--;
-      array[row][column] =   thisorders[column];
-      array[column][row] = - thisorders[column];
-    }
-  }
-    
-  return retval;
-}
-
-signed char **ScheduleCreateArray(int size)
-{
-  int i, j;
-  signed char **array;
-
-  array = (signed char **)malloc(size*sizeof(signed char *));
-
-  if(array)
-  {
-    for(i=0; i < size; i++)
-    {
-      array[i] = (signed char *)malloc(size*sizeof(signed char));
-      if(!array[i]) break;
-    }
-
-    /* Check for errors */
-    if(i < size)
-    {
-      /* Free already allocated memory */
-      for(i-1; i >=0; i--)
-      {
-	free(array[i]);
-      }
-      free(array);
-      array = NULL;
-    }
-  }
-
-  /* Initialise all entries to zero. */
-  if(array)
-  {
-    for(i=0; i < size; i++)
-    {
-      for(j=0; j < size; j++)
-      {
-	array[i][j] = 0;
-      }
-    }
-  }
-
-  return array;
-}
-
-void ScheduleDestroyArray(int size, signed char **array)
-{
-  int i;
-
-  for(i=size-1; i >=0; i--)
-  {
-    free(array[i]);
-  }
-}
-
-int *ScheduleCreateIVec(int size)
-{
-  int i;
-  int *vector;
-
-  vector = (int *)malloc(size*sizeof(int));
-
-  if(vector)
-  {
-    for(i=0; i < size; i++)
-    {
-      vector[i] = 0;
-    }
-  }
-
-  return vector;
-}
-
-void ScheduleDestroyIVec(int size, int *vector)
-{
-  free(vector);
-}
+/********************************************************************
+ ********************************************************************
+ ********************************************************************/
 
 #ifdef TEST_SORTER
 int main(int argc, char *argv[])
@@ -244,9 +333,9 @@ int main(int argc, char *argv[])
     size = 5;
   }
   
-  order = ScheduleCreateIVec(size);
+  order = CCTKi_ScheduleCreateIVec(size);
 
-  array = ScheduleCreateArray(size);
+  array = CCTKi_ScheduleCreateArray(size);
 
   for(i=0; i < size; i++)
   {
@@ -296,7 +385,7 @@ int main(int argc, char *argv[])
   
   printf("Sorting array...\n");
 
-  errcode = ScheduleSort(size, array, order);
+  errcode = CCTKi_ScheduleSort(size, array, order);
 
   if(errcode)
   {
