@@ -1,5 +1,5 @@
  /*@@
-   @file      Groups.c
+  @file      Groups.c
    @date      Mon Feb  1 12:16:28 1999
    @author    Tom Goodale
    @desc 
@@ -16,7 +16,7 @@
 #include "Misc.h"
 #include "Groups.h"
 
-/*#define GROUPSDEBUG*/
+/* #define DEBUG_GROUPS */
 
 static char *rcsid = "$Header$";
 
@@ -124,7 +124,7 @@ int CCTK_CreateGroup(const char *gname, const char *thorn, const char *imp,
     fprintf(stderr, "Error %d in CCTK_CreateGroup\n", retval);
   }
 
-#ifdef GROUPSDEBUG
+#ifdef DEBUG_GROUPS
   printf("Created group %s\n",gname);
   printf("  CCTK_GetGroupNum(%s,%s) = %d\n",imp,gname,
 	 CCTK_GetGroupNum(imp,gname));
@@ -159,7 +159,7 @@ cGroupDefinition *CCTK_SetupGroup(const char *implementation,
   cGroupDefinition *returndata;
   int variable;
   int group_num;
-
+ 
   if((group_num = CCTK_GetGroupNum(implementation, name)) == -1)
   {
     /* Resize the array of groups */
@@ -238,12 +238,13 @@ cGroupDefinition *CCTK_SetupGroup(const char *implementation,
   return returndata;
 }
 
+
  /*@@
    @routine    CCTK_GetGroupNum
    @date       Fri Jan 29 08:43:48 1999
    @author     Tom Goodale
    @desc 
-   Gets the number for the specified group.
+   Gets the index number for the specified group.
    @enddesc 
    @calls CCTK_Equals   
    @calledby   
@@ -253,14 +254,62 @@ cGroupDefinition *CCTK_SetupGroup(const char *implementation,
 
 @@*/
 int CCTK_GetGroupNum(const char *implementation,
-		     const char *name)
+		     const char *group)
 {
   int group_num;
+  int fullname=0;
+  int retval=-1;
+  int ierr;
+  char *message;
+  char *impname=NULL;
+  char *groupname=NULL;
+  
+  if (!implementation)
+  {
+    if (group) 
+    {
+      ierr = CCTK_DecomposeName(group,&impname,&groupname);
+      if (ierr == 0)
+      {
+	fullname=1; /* Successful decomposition */
+      }
+      else if (ierr == 1)
+      {
+        CCTK_Warn(2,"Full name not in correct format");
+        retval = -3;
+      }
+      else if (ierr == 2)
+      {
+        CCTK_Warn(2,"Memory allocation failed");
+        retval = -4;
+      }
+      else
+      {
+        CCTK_Warn(1,"Error failed to be caught");
+      }
+    } 
+    else
+    {
+      CCTK_Warn(2,"Both implementation and group null in CCTK_GetGroupNum");
+      retval = -2;
+    } 
+  }
+  else
+  {
+    impname = (char *)implementation;
+    groupname = (char *)group;
+  }
 
   for(group_num = 0; group_num < n_groups; group_num++)
   {
     if(CCTK_Equals(implementation, groups[group_num].implementation) &&
-       CCTK_Equals(name, groups[group_num].name)) break;
+       CCTK_Equals(groupname, groups[group_num].name)) break;
+  }
+
+  if (fullname)
+  {
+     if (impname) free(impname);
+     if (groupname) free(groupname);
   }
 
   if (group_num < n_groups)
@@ -269,6 +318,10 @@ int CCTK_GetGroupNum(const char *implementation,
   }
   else
   {
+    message = (char *)malloc( (100+sizeof(group))*sizeof(char) ); 
+    sprintf(message,"No group found with the name %s",groupname);
+    CCTK_Warn(2,message);
+    if (message) free(message);
     return -1;
   }
 }
@@ -288,6 +341,7 @@ int CCTK_GetGroupNum(const char *implementation,
    @endhistory 
 
 @@*/
+
 int CCTK_GetVarNum(const char *implementation,
 	           const char *group_name,
 		   const char *variable_name)
@@ -296,6 +350,8 @@ int CCTK_GetVarNum(const char *implementation,
   int gnum,group_num;
   int variable;
   int fullname = 0;
+  int ierr;
+  char *message;
   char *realimpname;
   char *realvarname;
   const char *impname;
@@ -303,25 +359,60 @@ int CCTK_GetVarNum(const char *implementation,
 
   retval = -1;
 
-  if (group_name == NULL && implementation == NULL)
+  if (!implementation)
   {
-    fullname = 1;
-    /* variable_name must be of the form <implementation>::<variable> */
-    /* FIXME : Error checking */
-    CCTK_DecomposeName(variable_name,&realimpname,&realvarname);
+    if (group_name) 
+    {
+      message = (char *)malloc( (100+sizeof(group_name))*sizeof(char) );
+      sprintf(message,"Ignoring group %s in CCTK_GetVarNum",group_name);
+      CCTK_Warn(2,message);
+      if (message) free(message);
+    }
 
-    /* Store the pointers to these strings in const char *s */
-    impname = realimpname;
-    varname = realvarname;
+    /* variable_name must be of the form <implementation>::<variable> */
+    ierr = CCTK_DecomposeName(variable_name,&realimpname,&realvarname);
+    if (ierr == 0)
+    {
+      fullname = 1;
+      /* Store the pointers to these strings in const char *s */
+      impname = realimpname;
+      varname = realvarname;
+    }
+    else if (ierr == 1)
+    {
+      message = (char *)malloc( (100+sizeof(variable_name))*sizeof(char) );
+      sprintf(message,"Full name %s in wrong format in CCTK_GetVarNum",
+                      variable_name);
+      CCTK_Warn(2,message);
+      if (message) free(message);
+      retval = -3; 
+    }
+    else if (ierr == 2)
+    {
+      CCTK_Warn(2,"Memory allocation failed");
+      retval = -4;
+    }
+    else
+    {
+      CCTK_Warn(1,"Error failed to be caught");
+    }
+
   }
   else
   {
-
+    
     /* Can only assign a const char * to a const char * */
     impname = implementation;
     varname = variable_name;
   }
-      
+
+#ifdef DEBUG_GROUPS
+  printf(" In GetVarNum\n"," ------------\n");
+  printf("   impname -%s-\n",impname);
+  printf("   group_name -%s-\n",group_name);
+  printf("   varname -%s-\n",varname);
+#endif
+    
   if (group_name == NULL)
   {	
     for (gnum = 0; gnum < n_groups; gnum++)
@@ -339,7 +430,6 @@ int CCTK_GetVarNum(const char *implementation,
     }
   } 
   else
-
   {
     group_num = CCTK_GetGroupNum(impname, group_name);
     
@@ -368,6 +458,7 @@ int CCTK_GetVarNum(const char *implementation,
   }
     
   return retval;
+
 }
 
  /*@@
