@@ -19,165 +19,232 @@ if(! $compiler)
 
 print "Determining number of fortran underscores...\n";
 
-# Create a test file
-open(OUT, ">fname_test.f") || die "Cannot open fname_test.f\n";
+push(@routines, &test_fortran_name); 
+# Comment out this one, as it seems to be the same on all machines.
+#push(@routines, &test_fortran_common_name); 
+push(@routines, "1;");
 
-print OUT <<EOT;
+# Create the perl module to map the fortran names.
+open(OUT, ">$tmphome/fortran_name.pl") || die "Cannot create fortran_name.pl\n";
+
+foreach $line (@routines)
+{
+  print OUT "$line\n";
+}
+
+
+sub test_fortran_name
+{
+  local($data);
+  local($retcode, $line, $name, $case, $n_underscores);
+  local($underscore_suffix, $normal_suffix, $case_prefix);
+
+  # Create a test file
+  open(OUT, ">fname_test.f") || die "Cannot open fname_test.f\n";
+
+  print OUT <<EOT;
       subroutine test_name(a)
       integer a
+      a = 1
+      return
+      end
+
+EOT
+
+  close OUT;
+
+  # Compile the test file
+  print "Compiling test file with $compiler...\n";
+  system("$compiler -c fname_test.f");
+
+  $retcode = $? >> 8;
+
+  if($retcode > 0)
+  {
+    print "Failed to compile fname_test.f\n";
+  }
+
+
+  # Search the object file for the appropriate symbols
+  open(IN, "<fname_test.o") || die "Cannot open fname_test.o\n";
+
+  while(<IN>)
+  {
+    $line = $_;
+    if($line =~ m:(TEST_NAME)(_*):i)
+    {
+      $name = $1;
+      $underscores = $2;
+      
+      if($name =~ m:TEST_NAME:)
+      {
+	print "Uppercase - ";
+	$case = 1;
+      }
+      if($name =~ m:test_name:)
+      {
+	print "Lowercase - ";
+	$case = 0;
+      }
+      if($underscores eq "")
+      {
+	print " No trailing underscore\n";
+	$n_underscores = 0;
+      }
+      if($underscores eq "_")
+      {
+	print "One trailing underscore\n";
+	$n_underscores = 1;
+      }
+      if($underscores eq "__")
+      {
+	print "Two trailing underscores\n";
+	$n_underscores = 2;
+      }
+
+      last;
+    }
+  }
+
+  close IN;
+
+  # Delete the temporary files
+  unlink <fname_test.*>;
+
+  # Determine the case and number of underscores
+  ($underscore_suffix, $normal_suffix, $case_prefix) = &determine_transformation($n_underscores, $case);
+
+  $data =  "
+sub fortran_name
+{
+    local(\$old_name) = \@_;
+    local(\$new_name);
+
+    \$new_name = \"$case_prefix\$old_name\\E\";
+
+    if(\$new_name =~ m:_: ) 
+    {
+	\$new_name = \$new_name.\"$underscore_suffix\";
+    }
+    else
+    {
+	\$new_name = \$new_name.\"$normal_suffix\";
+    }
+
+    return \$new_name;
+}
+
+";
+
+  return $data;
+}
+
+sub test_fortran_common_name
+{
+  local($data);
+  local($retcode, $line, $name, $case, $n_underscores);
+  local($underscore_suffix, $normal_suffix, $case_prefix);
+
+  # Create a test file
+  open(OUT, ">fname_test.f") || die "Cannot open fname_test.f\n";
+
+  print OUT <<EOT;
+      subroutine test_name
       real b
       common /test_common/b
-      a = 1
       b = 2.0
       return
       end
 
 EOT
 
-close OUT;
+  close OUT;
 
-# Compile the test file
-print "Compiling test file with $compiler...\n";
-system("$compiler -c fname_test.f");
+  # Compile the test file
+  print "Compiling test file with $compiler...\n";
+  system("$compiler -c fname_test.f");
 
-$retcode = $? >> 8;
+  $retcode = $? >> 8;
 
-if($retcode > 0)
-{
+  if($retcode > 0)
+  {
     print "Failed to compile fname_test.f\n";
-}
+  }
 
 
-# Search the object file for the appropriate symbols
-open(IN, "<fname_test.o") || die "Cannot open fname_test.o\n";
+  # Search the object file for the appropriate symbols
+  open(IN, "<fname_test.o") || die "Cannot open fname_test.o\n";
 
-while(<IN>)
-{
+  while(<IN>)
+  {
     $line = $_;
-    if($line =~ m:(TEST_NAME)(_*):i)
-    {
-	$name = $1;
-	$underscores = $2;
-
-	if($name =~ m:TEST_NAME:)
-	{
-	    print "Uppercase - ";
-	    $case = 1;
-	}
-	if($name =~ m:test_name:)
-	{
-	    print "Lowercase - ";
-	    $case = 0;
-	}
-	if($underscores eq "")
-	{
-	    print " No trailing underscore\n";
-	    $n_underscores = 0;
-	}
-	if($underscores eq "_")
-	{
-	    print "One trailing underscore\n";
-	    $n_underscores = 1;
-	}
-	if($underscores eq "__")
-	{
-	    print "Two trailing underscores\n";
-	    $n_underscores = 2;
-	}
-    }
-
     if($line =~ m:(TEST_COMMON)(_*):i)
     {
-	$common_name = $1;
-	$common_underscores = $2;
+      $name = $1;
+      $underscores = $2;
+      
+      if($name =~ m:TEST_COMMON:)
+      {
+	print "Uppercase - ";
+	$case = 1;
+      }
+      if($name =~ m:test_common:)
+      {
+	print "Lowercase - ";
+	$case = 0;
+      }
+      if($underscores eq "")
+      {
+	print " No trailing underscore\n";
+	$n_underscores = 0;
+      }
+      if($underscores eq "_")
+      {
+	print "One trailing underscore\n";
+	$n_underscores = 1;
+      }
+      if($underscores eq "__")
+      {
+	print "Two trailing underscores\n";
+	$n_underscores = 2;
+      }
 
-	if($common_name =~ m:TEST_COMMON:)
-	{
-#	    print "Common: Uppercase - ";
-	    $common_case = 1;
-	}
-	if($common_name =~ m:test_common:)
-	{
-#	    print "Common: Lowercase - ";
-	    $common_case = 0;
-	}
-	if($common_underscores eq "")
-	{
-#	    print " No trailing underscore\n";
-	    $common_n_underscores = 0;
-	}
-	if($common_underscores eq "_")
-	{
-#	    print "One trailing underscore\n";
-	    $common_n_underscores = 1;
-	}
-	if($underscores eq "__")
-	{
-#	    print "Two trailing underscores\n";
-	    $common_n_underscores = 2;
-	}
+      last;
     }
-    
-}
+  }
 
-close IN;
+  close IN;
 
-# Delete the temporary files
-unlink <fname_test.*>;
+  # Delete the temporary files
+  unlink <fname_test.*>;
 
-# Determine the case and number of underscores
-($underscore_suffix, $normal_suffix, $case_prefix) = &determine_transformation($n_underscores, $case);
+  # Determine the case and number of underscores
+  ($underscore_suffix, $normal_suffix, $case_prefix) = &determine_transformation($n_underscores, $case);
 
-($common_underscore_suffix, $common_normal_suffix, $common_case_prefix) = &determine_transformation($common_n_underscores, $common_case);
-
-# Create the perl module to map the fortran names.
-open(OUT, ">$tmphome/fortran_name.pl") || die "Cannot create fortran_name.pl\n";
-print OUT <<EOT;
-#!/bin/perl
-
-sub fortran_name
-{
-    local(\$old_name) = \@_;
-    local(\$new_name);
-
-    \$new_name = "$case_prefix\$old_name\\E";
-
-    if(\$new_name =~ m:_: ) 
-    {
-	\$new_name = \$new_name."$underscore_suffix";
-    }
-    else
-    {
-	\$new_name = \$new_name."$normal_suffix";
-    }
-
-    return \$new_name;
-}
-
+  $data =  "
 sub fortran_common_name
 {
     local(\$old_name) = \@_;
     local(\$new_name);
 
-    \$new_name = "$common_case_prefix\$old_name\\E";
+    \$new_name = \"$case_prefix\$old_name\\E\";
 
     if(\$new_name =~ m:_: ) 
     {
-	\$new_name = \$new_name."$common_underscore_suffix";
+	\$new_name = \$new_name.\"$underscore_suffix\";
     }
     else
     {
-	\$new_name = \$new_name."$common_normal_suffix";
+	\$new_name = \$new_name.\"$normal_suffix\";
     }
 
     return \$new_name;
 }
 
-1;
-    
-EOT
+";
 
-close OUT;
+  return $data;
+}
 
 sub determine_transformation
 {
