@@ -185,7 +185,7 @@ sub SetConfigureEnv
       if($1 && $2)
       {
 	print "Setting $1 to '$3'\n";
-	$ENV{"$1"} = $3;
+	$ENV{$1} = $3;
 	# Remember it for writing to config-info
 	$option = AddQuotes($3);
 	$CONFIGURED{"$1"} = $option;
@@ -265,7 +265,6 @@ sub SetConfigureEnv
 	print "Using configuration options from configure line\n";
       }
       $used_commandline = 1;
-      $ENV{"$2"} = $3;
       # Remember it for writing to config-info
       $option = AddQuotes($3);
       $CONFIGURED{"$2"} = $option;
