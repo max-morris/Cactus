@@ -967,8 +967,8 @@ will be used if the coordinate direction is given as less than or equal to zero,
 \label{CCTK-CoordRange}
 \subroutine{int}{integer}{ierr}
 \argument{const cGH *}{CCTK\_POINTER}{cctkGH}
-\argument{CCTK\_REAL}{CCTK\_REAL}{lower}
-\argument{CCTK\_REAL}{CCTK\_REAL}{upper}
+\argument{CCTK\_REAL *}{CCTK\_REAL}{lower}
+\argument{CCTK\_REAL *}{CCTK\_REAL}{upper}
 \argument{int}{integer}{direction}
 \argument{const char *}{character*(*)}{coordname}
 \argument{const char *}{character*(*)}{systemname}
