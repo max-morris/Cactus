@@ -52,9 +52,9 @@ the commit message.
 The commit message should explain what has changed and why, for
 details people can use {\tt \verb.cvs diff.}, however the commit
 message should be clear enough for people to have a good idea of what
-is going on.  This is strongly coupled to item about making only one
-change listed above - if two distinct things have been changed, they
-should be committed separately, with relevant commit messages.
+is going on.  This is strongly coupled to the item about making only
+one change listed above - if two distinct things have been changed,
+they should be committed separately, with relevant commit messages.
 If the change resulted from a {\tt Problem Report} (PR) the PR number
 should be noted in the commit message.
 \end{Lentry}
@@ -126,6 +126,9 @@ test-suites run on all suppported architectures.  Problems found
 should be fixed or noted in the release notes.  This is an iterative
 procedure, as any commits made to fix problems need to be checked on
 all other architectures.
+\item[{\em Tag the code}]
+Tag the code with the latest release tag and update the {\tt LATEST}
+and {\tt STABLE} tags. 
 \item[{\em Log into cvs machine as cactus\_admin}]
 All repository maintanence should be done as the cactus admin user.
 \item[{\em Store old module files}]
