@@ -6,6 +6,14 @@
 %   Thorn writer's guide part of the Cactus User's Guide
 %   @enddesc
 %   @version $Header$
+%   @history
+%   @date     Tue Feb 12 14:33:25 CET 2002
+%   @author   Jonathan Thornburg <jthorn@aei.mpg.de>
+%   @desc     Revise section "Interpolation Operators" to cover the
+%             new interpolation API (when we will have multiple APIs
+%             coexisting, eg CCTK_InterpLocalUniform() and
+%             CCTK_InterpLocalNonUniform())
+%   @endhistory
 % @@*/
 
 \begin{cactuspart}{2}{Application thorn writing}{$RCSfile$}{$Revision$}
@@ -14,6 +22,7 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \chapter{Overview}
 
 This chapter goes into the nitty-gritty of writing a thorn.
@@ -24,14 +33,11 @@ step, followed by discussion of code which you must put into your files
 in order to use Cactus functionality, and details of utility functions
 you may use to gain extra functionality.
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \chapter{Thorn concepts}
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Thorns}
@@ -52,7 +58,7 @@ In addition, a thorn cannot have the name {\t doc}, this is reserved
 for arrangement documentation. Arrangement names which start with a
 `\#', or finish with `\~{}' or `.bak' will be ignored.
 
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Arrangements}
 
@@ -72,6 +78,8 @@ letters, numbers or underscores. Arrangement names which start with a
 
 Inside an arrangement directory there are directories for each thorn
 belonging to the arrangement.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Implementations}
 
@@ -100,13 +108,13 @@ This allows the transparent replacement, at compile or runtime, of one
 thorn with another thorn providing the same functionality as seen by
 the other thorns.
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 \chapter{Anatomy of a thorn}
 \label{sec:anofath}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Thorns}
 \label{sec:th}
@@ -136,6 +144,8 @@ Thorns can also contain
     testsuite. See \ref{sec:adatesu} for details.
 \end{itemize}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \section{Creating a thorn}
 
 
@@ -149,6 +159,7 @@ like to include your thorn in. Either enter a new arrangement name or pick
 one from the list of available arrangements that are shown.
 \end{enumerate}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Configuring your thorn}
 
@@ -581,10 +592,6 @@ groups should be switched on at the start of the run. Note that
 the storage is only allocated in this way at the start,
 a thorn could explicitly switch the storage off.
 
-
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Naming Conventions for Source Files}
@@ -620,6 +627,8 @@ The following restrictions apply to file names:
 thorn must have distinct names.  We hope
 to relax this in future.  Different thorns can have files with the same names.
 \end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Adding source files}
 
@@ -735,6 +744,8 @@ The specification for a group declaration
 
 Currently, the names of groups and variables must be distinct.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \section{Data Type}
 
 Cactus supports integer, real, complex and character variables, in
@@ -760,6 +771,8 @@ portability. Also, the defaults can be changed at configuration time (see
 code with different precisions to test for round-off effects, or to run more
 quickly with a lower accuracy.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \section{Group Types}
 
 Groups can be either {\tt scalars}, {\tt grid functions (GFs)}, or {\tt grid arrays}. Different attributes are relevant for the different group types.
@@ -783,6 +796,8 @@ The drawback of using an array over a GF is that a lot of data about the
 array can only be determined by function calls, rather than the
 quicker methods available for GFs.
 \end{Lentry}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Timelevels}
 
@@ -839,7 +854,7 @@ All timelevels, except the current level, should be considered {\bf read-only} d
 The exception to this rule is for function initialisation, when the
 values at the previous timelevels do need to be explicitly filled out.
 
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Size and Distrib}
 
@@ -850,6 +865,8 @@ or, if {\tt DISTRIB=CONSTANT} the specified
 size on {\bf each} processor.
 If the size is split across processors, the driver thorn is
 responsible for assigning the size on each processor.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Ghost Size}
 
@@ -910,6 +927,8 @@ ghostzones as your stencil-size requires.
 \caption{Distributed wave equation with ghostzones}
 \label{fig:withghost}
 \end{figure}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Staggering}
 
@@ -993,6 +1012,8 @@ The full specification for a parameter decalaration is
 } <default value>
 \end{verbatim}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \section{Types and Ranges}
 
 Parameters can be of several types:
@@ -1056,6 +1077,8 @@ The range is a POSIX regular expression.  On some machines you may be
 able to use extended regular expressions, but this is not guaranteed
 to be portable.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \section{Scope}
 
 Parameters can be {\em GLOBAL}, {\em RESTRICTED}, or {\em PRIVATE}.
@@ -1096,11 +1119,15 @@ body, referred to as the {\tt schedule block}.
 Each schedule item is scheduled either {\em AT} a particular {\em
 scheduling bin}, or {\em IN} a schedule {\em group}.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \section{Schedule Bins}
 \label{scheduling:schedule_bins}
 
 These are the main points at which scheduled functions are run.
 These are listed in \ref{subsec:schedule_ccl}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Groups}
 \label{scheduling:groups}
@@ -1110,6 +1137,8 @@ group rather than a normal function.  Schedule groups are effectively
 new, user-defined, schedule bins.  Functions or groups may be
 scheduled {\em IN} these in the same way as they are scheduled {\em
 AT} the main schedule bins.  (I.e. groups may be nested.)
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Schedule Options}
 \label{scheduling:schedule_options}
@@ -1131,6 +1160,8 @@ or after a routine from another implementation;  two thorns providing this
 implementation can schedule a routine {\em AS} the same thing, thus
 allowing other thorns to operate independently of which one is active.
 \end{Lentry}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{The Schedule Block}
 \label{scheduling:schedule_block}
@@ -1161,22 +1192,36 @@ data;  such a routine should only be called once however many
 sub-grids the driver may have broken the problem into.
 \end{Lentry}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \section{How Cactus Calls Scheduled Functions}
 \label{scheduling:calling_scheduled_functions}
 
-For each scheduled function called, the flesh performs a variety of jobs at entry and exit.
+For each scheduled function called, the flesh performs a variety of jobs
+at entry and exit.
 
-On entry to a scheduled routine, if the routine is being called at the ANALYSIS timebin first a check is made to see if the routine should actually be called on this timestep. For this, all grid variables in the trigger groups for the routine are checked with all registered output methods to determine if it is time to output any triggers. The routine will only be called if at least one is due to be output. Routines from all other timebins are always called.
+On entry to a scheduled routine, if the routine is being called at the
+ANALYSIS timebin first a check is made to see if the routine should
+actually be called on this timestep. For this, all grid variables in the
+trigger groups for the routine are checked with all registered output
+methods to determine if it is time to output any triggers. The routine
+will only be called if at least one is due to be output. Routines from
+all other timebins are always called.
 
-Next storage is assigned for any required variables, remembering the original state of storage.
+Next storage is assigned for any required variables, remembering the
+original state of storage.
 
 The routine is then called, and on exit, any required grid variables are
-first synchronised. Following synchronization, any required output methods are called for the triggers. Finally, the storage of grid variables is returned to the original state.
+first synchronised. Following synchronization, any required output methods
+are called for the triggers. Finally, the storage of grid variables is
+returned to the original state.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \chapter{Writing a Thorn}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Thorn Programming Languages}
 
@@ -1205,6 +1250,7 @@ Whatever language you choose, if you want your thorn to be portable, and
 compile and run on multiple platforms, stick to the standards and don't
 use machine dependent extensions.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{What the Flesh provides}
 
@@ -1759,6 +1805,7 @@ staggerindex.
 
 \end{Lentry}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Parallelisation}
 \label{seap}
@@ -1791,8 +1838,12 @@ is a parallel unigrid driver.
   before proceeding
 \end{Lentry}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \chapter{Cactus Application Interfaces}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Coordinates}
 \label{sec:co}
@@ -2064,6 +2115,7 @@ should usually be the case.
 
 \end{Lentry}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{IO}
 \label{sec:io}
@@ -2121,8 +2173,8 @@ name of the variable for the purpose of constructing a filename.
 
 \end{Lentry}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Interpolation Operators}
 \label{sec:inop}
 
@@ -2169,8 +2221,8 @@ The flesh routines for invoking an interpolation operator are:
     for interpolating a list of processor-local arrays
 \end{Lentry}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Reduction Operators}
 \label{sec:reop}
 
@@ -2625,10 +2677,12 @@ some simple error checking with the {\tt CCTKi\_EXPECTOK} macro.
 Note that the memory for the returned values must be allocated before
 the reduction call is made.
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \chapter{Completing a Thorn}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Commenting Source Code}
 
@@ -2641,6 +2695,7 @@ The Flesh and the Cactus thorns use the {\tt grdoc} Code Documenting
 System\\(\texttt{http://jean-luc.aei.mpg.de/Codes/grdoc/}) to document
 source code.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Providing Runtime Information}
 \label{sec:prrutiin}
@@ -2704,7 +2759,7 @@ CCTK\_VInfo(CCTK\_THORNSTRING,"The integer was \%d",inum);
 
 \end{itemize}
 
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Error handling, warnings and code termination}
 \label{sec:erhawancote}
@@ -2772,8 +2827,7 @@ yet ready. In general, thorns should attempt to handle errors
 without terminating, and warning messages should be liberally
 used.
 
-
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Adding documentation}
 
@@ -2811,6 +2865,8 @@ the following format:
 \end{document}
 \end{verbatim}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \section{Adding a test suite}
 \label{sec:adatesu}
 
@@ -2829,10 +2885,12 @@ suite does not give the correct answers.
 
 For details on running the test suites, see Section~\ref{sec:te}.
 
-
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \chapter{Advanced Thorn Writing}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Using Cactus Timers}
 
@@ -3024,6 +3082,7 @@ ierr = CCTK_TimerDestroyData(info);
 \end{verbatim}
 }
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Include Files}
 
@@ -3033,7 +3092,6 @@ Such include files can contain executable source code, or header/declaration
 information. A difference is made between these two cases, since included
 executable code is protected from being run if a thorn is compiled but
 not active by being wrapped by a call to {\tt CCTK\_IsThornActive}.
-
 
 Any thorn
 which uses the include file must declare this in its
@@ -3093,6 +3151,7 @@ c Add this to AllSources.inc
 Any Fortran thorn routines which include source code must include
 the declaration {\tt DECLARE\_CCTK\_FUNCTIONS}.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Memory Tracing}
 \label{sec:metr}
@@ -3203,9 +3262,7 @@ CCTK_MemTicketDelete(t2);
 
 \end{verbatim}
 
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section[Calls to different language]{Calls between different programming languages}
 %\pagestyle{empty}
@@ -3400,6 +3457,7 @@ pointers, so any non-array data should be passed by address.
 Currently we have no support for calling Fortran routines which expect
 strings from C.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Naming conventions}
 
@@ -3415,6 +3473,7 @@ strings from C.
 
 \end{itemize}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{General Naming Conventions}
 
@@ -3432,6 +3491,8 @@ allow for a homogeneous code.
     Examples: {\tt MyThorn\_StartUpRoutine}, {\tt BestSolver\_InitialDataForPDE}.
 
 \end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Data Types and Sizes}
 \label{sect-ThornWriting/DataTypes}
@@ -3532,16 +3593,28 @@ Cactus provides a further data type {\tt CCTK\_POINTER}
 for use in Fortran code to declare a pointer passed from C.
 For example, the variable {\tt cctkGH} is of this type.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \chapter{Telling the makesystem what to do}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \section{Basic Recipe}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Make Concepts}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \section{The Four Files}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \section{How your code is built}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \end{cactuspart}
