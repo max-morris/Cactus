@@ -9,22 +9,34 @@
 % @@*/
 
 \documentclass{report}
-\usepackage{fancyhdr,ifthen,calc}
+
+\usepackage{fancyhdr}
+
+\usepackage[
+pdfauthor={Gabrielle Allen, Tom Goodale, Gerd Lanfermann, Thomas Radke, David Rideout, Jonathan Thornburg},
+pdftitle={Cactus Reference Manual},
+pdfpagelabels,
+pdfstartview=FitV,
+hypertexnames=false,
+plainpages=false,
+colorlinks=true,
+linkcolor=blue,
+citecolor=blue,
+urlcolor=blue
+]{hyperref}
+
+\usepackage{thumbpdf}
+
+
+
+% This must come after most of the other \usepackages, because we
+% might want to pass options to them
 \usepackage{../latex/cactus}
 
-\newif\ifpdf
-\ifx\pdfoutput\undefined
-\pdffalse % we are not running PDFLaTeX
-\else
-\pdfoutput=1 % we are running PDFLaTeX
-\pdftrue
-\fi
 
-\makeatletter
-\@addtoreset{chapter}{part}
-\makeatother
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% This must come after \usepackage{../latex/cactus}, because we
+% want to reset the page size
 \parskip = 0 pt
 \parindent = 0pt
 \oddsidemargin = 0 cm
@@ -38,20 +50,13 @@
 \addtolength{\cftsubsecnumwidth}{0.5em}
 \addtolength{\cftsubsubsecnumwidth}{0.5em}
 
-\ifpdf
-\pdfinfo{ /Author (Gabrielle Allen, Tom Goodale, Gerd Lanfermann, Thomas Radke, David Rideout, Jonathan Thornburg) 
-          /Title (Cactus Reference Manual)
-}
-\usepackage[pdftex,plainpages=false,pdfpagelabels,hypertexnames=false,
-                   colorlinks=true,pdfstartview=FitV,
-                   linkcolor=blue,citecolor=blue,
-                   urlcolor=blue]{hyperref}
-\usepackage{graphicx}
-\usepackage{thumbpdf}
-\else
-\usepackage{graphicx}
-\fi
+\makeatletter
+\@addtoreset{chapter}{part}
+\makeatother
 
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \def\q{\bf QUERY: }
 \def\t{\tt \obeylines }
 \def\ie{\hbox{i.e.\hbox{}}}
@@ -213,10 +218,7 @@
 \rule{\linewidth}{1mm}
 \vspace*{\stretch{2}}
 \begin{center}
-\ifpdf
-\else
-\includegraphics[angle=0,width=5cm]{bincactus2.eps}
-\fi
+\includegraphics[angle=0,width=5cm]{bincactus2}
 \end{center}
 \vspace*{\stretch{2}}
 \begin{center}
@@ -272,12 +274,6 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{document}
-
-\ifpdf
-\DeclareGraphicsExtensions{.pdf, .jpg}
-\else
-\DeclareGraphicsExtensions{.eps, .jpg}
-\fi
 
 \cactustitlepage{Reference Manual}{$ $Revision$ $}{$ $Date$ $}
 
