@@ -491,6 +491,8 @@ int handle;
 /* we should never get to here! */
 assert(false);
 abort();                                /* internal error (core dump) */
+/* prevent compiler warning 'function should return a value' */
+return(0);
   }
 }
 
@@ -2019,6 +2021,7 @@ int ihandle;
 /* we should never get to here! */
 assert(false);
 abort();                                /* internal error (core dump) */
+/* prevent compiler warning 'function should return a value' */
   }
 }
 
