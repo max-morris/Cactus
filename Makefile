@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.114 2001-06-12 05:54:20 allen Exp $
+#   @version $Id: Makefile,v 1.115 2001-07-02 21:35:40 allen Exp $
 # @@*/
 
 ##################################################################################
@@ -806,6 +806,7 @@ UsersGuide:
 	echo "  Running LaTeX....";                 \
 	latex  -interaction=nonstopmode UsersGuide.tex > LATEX_MESSAGES 2>&1; \
 	latex  -interaction=nonstopmode UsersGuide.tex > LATEX_MESSAGES 2>&1; \
+	latex  -interaction=nonstopmode UsersGuide.tex > LATEX_MESSAGES 2>&1; \
 	echo "  Running dvips....";                 \
 	dvips ./UsersGuide.dvi -o $(CCTK_HOME)/UsersGuide.ps > DVIPS_MESSAGES 2>&1
 	@echo "  Done."
@@ -822,6 +823,7 @@ MaintGuide:
 	@echo Creating maintainers documentation MaintGuide.ps
 	cd doc/MaintGuide;                          \
 	echo "  Running LaTeX....";                 \
+	latex MaintGuide.tex > LATEX_MESSAGES 2>&1; \
 	latex MaintGuide.tex > LATEX_MESSAGES 2>&1; \
 	latex MaintGuide.tex > LATEX_MESSAGES 2>&1; \
 	echo "  Running dvips....";                 \
@@ -846,6 +848,7 @@ ThornGuide:
 	echo "  Running LaTeX....";                                          \
 	latex -interaction=nonstopmode ThornGuide.tex > LATEX_MESSAGES 2>&1; \
 	latex -interaction=nonstopmode ThornGuide.tex > LATEX_MESSAGES 2>&1; \
+	latex -interaction=nonstopmode ThornGuide.tex > LATEX_MESSAGES 2>&1; \
 	echo "  Running dvips....";                                          \
 	dvips ./ThornGuide.dvi -o $(CCTK_HOME)/ThornGuide.ps > DVIPS_MESSAGES 2>&1 
 	@echo "  Done."
@@ -867,6 +870,7 @@ $(addsuffix -ThornGuide,$(CONFIGURATIONS)):
 	  cd $(CONFIGS_DIR)/$(@:%-ThornGuide=%)/doc;                                                       \
 	  cp $(CCTK_HOME)/doc/UsersGuide/bincactus2.eps bincactus.eps;                                     \
 	  echo "  Running LaTeX....";                                                                      \
+	  latex -interaction=nonstopmode ThornGuide.tex > LATEX_MESSAGES 2>&1;                             \
 	  latex -interaction=nonstopmode ThornGuide.tex > LATEX_MESSAGES 2>&1;                             \
 	  latex -interaction=nonstopmode ThornGuide.tex > LATEX_MESSAGES 2>&1;                             \
 	  echo "  Running dvips....";                                                                      \
