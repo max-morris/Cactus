@@ -1268,15 +1268,15 @@ sub CreateThornGroupInitialisers
 
     $line  .= "{\n";
     $line  .= "  int param_type;\n";
-    $line  .= "  CCTK_INT *allow_mixeddim_gfs;\n";
-    $line  .= "  allow_mixeddim_gfs = (CCTK_INT *) CCTK_ParameterGet(\"allow_mixeddim_gfs\",\"Cactus\",\&param_type);\n";
+    $line  .= "  const CCTK_INT *allow_mixeddim_gfs;\n";
+    $line  .= "  allow_mixeddim_gfs = (const CCTK_INT *) CCTK_ParameterGet(\"allow_mixeddim_gfs\",\"Cactus\",\&param_type);\n";
     $line  .= "  if (*allow_mixeddim_gfs)\n";
     $line  .= "  {\n";
     $line  .= "    CCTK_VWarn(2,__LINE__,__FILE__,\"Cactus\"\n,";
     $line  .= "    \"CCTKi_CreateGroup: Working dimension already set,\"\n";
     $line  .= "    \" creating GF group $group with different dimension $rhinterface_db->{\"\U$thorn GROUP $group\E DIM\"}\");\n";
     $line  .= "  }\n";
-    $line  .= "  else";
+    $line  .= "  else\n";
     $line  .= "  {\n";
     $line  .= "    CCTK_VWarn(0,__LINE__,__FILE__,\"Cactus\"\n,";
     $line  .= "    \"CCTKi_CreateGroup: Working dimension already set,\"\n";
