@@ -80,7 +80,7 @@ extern "C" {
 
 int InitialiseCactus(int *, char ***, tFleshConfig *);
 
-int CCTK_SetParameter(const char *parameter, const char *value);
+int CCTKi_SetParameter(const char *parameter, const char *value);
 
 int ShutdownCactus(tFleshConfig *);
 

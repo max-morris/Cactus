@@ -40,7 +40,7 @@ int ProcessParameterDatabase(tFleshConfig *ConfigData)
 
   if((parameter_file = fopen(ConfigData->parameter_file_name, "r")))
   {
-    ParseFile(parameter_file, CCTK_SetParameter);
+    ParseFile(parameter_file, CCTKi_SetParameter);
     fclose(parameter_file);
     retval = 0;
   }

@@ -21,7 +21,7 @@ int CCTK_Equals(const char *string1, const char *string2);
 
 char *Util_NullTerminateString(const char *, unsigned int);
 
-int CCTK_InList(const char *string1, int n_elements, ...);
+int Util_InList(const char *string1, int n_elements, ...);
 
 int Util_IntInRange(int inval, const char *range);
 int Util_DoubleInRange(double inval, const char *range);

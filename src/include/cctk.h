@@ -31,7 +31,6 @@
 #define CCTK_PRINTSEPARATOR\
   print *,"----------------------------------------------------------------"
 
-
 #define _CCTK_FARGUMENTS  cctk_dim, cctk_gsh, cctk_lsh, cctk_lbnd, cctk_ubnd, cctk_from, cctk_to, cctk_bbox, cctk_delta_time, cctk_time, cctk_delta_space, cctk_origin_space, cctk_levfac, cctk_convlevel, cctk_nghostzones, cctk_iteration, cctkGH
 #define _DECLARE_CCTK_FARGUMENTS INTEGER cctk_dim&&\
                            INTEGER cctk_gsh(cctk_dim),cctk_lsh(cctk_dim)&&\
@@ -48,13 +47,16 @@
                            CCTK_POINTER cctkGH&&\
 
 #define CCTK_WARN(a,b) CCTK_Warn(a,__LINE__,__FORTRANFILE__,CCTK_THORNSTRING,b)
-
+#define CCTK_EQUALS(a,b) (CCTK_Equals(a,b).eq.1)
 
 #endif /*FCODE*/
 
 #ifdef CCODE
 
 #include "cGH.h"
+
+#define CCTK_GFINDEX3D(GH,i,j,k) ((i) + GH->cctk_lsh[0]*((j)+GH->cctk_lsh[1]*(k)))
+
 
 #define CCTK_PRINTSEPARATOR \
   printf("----------------------------------------------------------------\n");
@@ -104,14 +106,15 @@
                             int *,\
                             cGH *
 
-#define CCTK_STORAGESIZE(xGH, group, cctk_dim) \
+#define CCTK_STORAGESIZE(xGH, cctk_dim, group) \
                   (CCTK_QueryGroupStorage(xGH,group) ?\
-                  (CCTK_ArrayGroupSize(xGH, group, cctk_dim)) : &(_cctk_one))
+                  (CCTK_ArrayGroupSize(xGH, cctk_dim, group)) : &(_cctk_one))
 
 
 extern int _cctk_one;
 
 #define CCTK_WARN(a,b) CCTK_Warn(a,__LINE__,__FILE__,CCTK_THORNSTRING,b)
+#define CCTK_EQUALS(a,b) (CCTK_Equals(a,b)==1)
 
 
 #endif /*CCODE*/

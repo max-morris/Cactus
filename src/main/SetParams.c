@@ -16,7 +16,7 @@
 static char *rcsid = "$Id$";
 
  /*@@
-   @routine    CCTK_SetParameter
+   @routine    CCTKi_SetParameter
    @date       Tue Jan 12 19:25:37 1999
    @author     Tom Goodale
    @desc 
@@ -29,7 +29,7 @@ static char *rcsid = "$Id$";
    @endhistory 
 
 @@*/
-int CCTK_SetParameter(const char *parameter, const char *value)
+int CCTKi_SetParameter(const char *parameter, const char *value)
 {
   int retval;
   char thornname[101];

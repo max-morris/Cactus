@@ -9,8 +9,6 @@
 
 /*#define DEBUG_MISC*/
 
-#include "cctk.h"
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -20,7 +18,7 @@
 
 #include "gnu_regex.h"
 
-
+#include "config.h"
 #include "Misc.h"
 #include "FortranString.h"
 #include "WarnLevel.h"
@@ -117,17 +115,17 @@ int CCTK_Equals(const char *string1, const char *string2)
     {
       message = (char *)malloc((100+sizeof(string2))*sizeof(char));
       sprintf(message,"First string null in CCTK_Equals (2nd is %s)",string2); 
-      CCTK_WARN(0,message);
+      CCTK_Warn(0,__LINE__,__FILE__,"Cactus",message);
     }
     else if (string1 && !string2)
     { 
       message = (char *)malloc((100+sizeof(string1))*sizeof(char));
       sprintf(message,"Second string null in CCTK_Equals (1st is %s)",string1); 
-      CCTK_WARN(0,message);
+      CCTK_Warn(0,__LINE__,__FILE__,"Cactus",message);
     }     
     else
     {
-      CCTK_WARN(0,"Both strings null in CCTK_Equals");
+      CCTK_Warn(0,__LINE__,__FILE__,"Cactus","Both strings null in CCTK_Equals");
     }
   }
 
@@ -192,7 +190,7 @@ char *Util_NullTerminateString(const char *instring, unsigned int len)
 
 
  /*@@
-   @routine    CCTK_InList
+   @routine    Util_InList
    @date       Wed Jan 20 10:31:25 1999
    @author     Tom Goodale
    @desc 
@@ -205,7 +203,7 @@ char *Util_NullTerminateString(const char *instring, unsigned int len)
    @endhistory 
 
 @@*/
-int CCTK_InList(const char *string1, int n_elements, ...)
+int Util_InList(const char *string1, int n_elements, ...)
 {
   int retval;
   int arg;
@@ -670,19 +668,19 @@ int CCTK_SetLogical(CCTK_INT *data, const char *value)
 {
   int retval = 1;
 
-  if(CCTK_InList(value, 5, "true", "t", "yes", "y", "1"))
+  if(Util_InList(value, 5, "true", "t", "yes", "y", "1"))
   {
     *data = 1;
     retval = 0;
   }
-  else if(CCTK_InList(value, 5, "false", "f", "no", "n", "0"))
+  else if(Util_InList(value, 5, "false", "f", "no", "n", "0"))
   {
     *data = 0;
     retval = 0;
   }
   else
   {
-    CCTK_WARN(1,"Logical not set in CCTK_SetLogical");
+    CCTK_Warn(1,__LINE__,__FILE__,"Cactus","Logical not set in CCTK_SetLogical");
     retval = -1;
   }
 

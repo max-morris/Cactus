@@ -7,14 +7,14 @@
 #include "Comm.h"
 #include "GHExtensions.h"
 
-int *CCTK_ArrayGroupSizeI(cGH *GH, int index, int dir)
+int *CCTK_ArrayGroupSizeI(cGH *GH, int dir, int index)
 {
-  return CCTK_ArrayGroupSizeB(GH,index,NULL,dir);
+  return CCTK_ArrayGroupSizeB(GH,dir,index,NULL);
 }
 
-int *CCTK_ArrayGroupSize(cGH *GH, const char *groupname, int dir)
+int *CCTK_ArrayGroupSize(cGH *GH, int dir, const char *groupname)
 {
-  return CCTK_ArrayGroupSizeB(GH,-1,groupname,dir);
+  return CCTK_ArrayGroupSizeB(GH,dir,-1,groupname);
 }
 
 int CCTK_QueryGroupStorageI(cGH *GH, int index)
