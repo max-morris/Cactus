@@ -28,9 +28,9 @@ int CCTK_DoubleInRange(double inval, const char *range);
 int CCTK_IntInRangeList(int inval, int n_elements, ...);
 int CCTK_DoubleInRangeList(double inval, int n_elements, ...);
 
-int CCTK_SetDoubleInRangeList(double *data, const char *value, 
+int CCTK_SetDoubleInRangeList(CCTK_REAL *data, const char *value, 
 			      int n_elements, ...);
-int CCTK_SetIntInRangeList(int *data, const char *value, 
+int CCTK_SetIntInRangeList(CCTK_INT *data, const char *value, 
 			   int n_elements, ...);
 int CCTK_SetKeywordInRangeList(char **data, const char *value, 
 			       int n_elements, ...);

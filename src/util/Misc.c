@@ -382,7 +382,7 @@ int CCTK_DoubleInRangeList(double inval, int n_elements, ...)
    @endhistory 
 
 @@*/
-int CCTK_SetDoubleInRangeList(double *data, const char *value, 
+int CCTK_SetDoubleInRangeList(CCTK_REAL *data, const char *value, 
 			      int n_elements, ...)
 {
   int retval;
@@ -393,7 +393,7 @@ int CCTK_SetDoubleInRangeList(double *data, const char *value,
 
   char *element;
 
-  double inval;
+  CCTK_REAL inval;
 
   retval = 1;
 
@@ -450,7 +450,7 @@ int CCTK_SetDoubleInRangeList(double *data, const char *value,
    @endhistory 
 
 @@*/
-int CCTK_SetIntInRangeList(int *data, const char *value, 
+int CCTK_SetIntInRangeList(CCTK_INT *data, const char *value, 
 			   int n_elements, ...)
 {
   int retval;
@@ -459,7 +459,7 @@ int CCTK_SetIntInRangeList(int *data, const char *value,
 
   char *element;
 
-  int inval;
+  CCTK_INT inval;
 
   retval = 1;
 
