@@ -34,20 +34,27 @@ else
 
 # /Gd means use __cdecl, it's /Gz for __stdcall
 
-  if test -z "$CFLAGS"; then
+  if test "$CC" = "cl"; then
     CFLAGS="/nologo /Gd"
   fi
 
-  if test -z "$CXXFLAGS" ; then 
+  if test "$CXX" = "cl /TP"; then 
     CXXFLAGS="/nologo /Gd"
   fi
 
 # Set the optimization flags
-  C_OPTIMISE_FLAGS="/Oxy-"
-  CXX_OPTIMISE_FLAGS="/Oxy-"
+  if test "$CC" = "cl"; then
+    C_OPTIMISE_FLAGS="/Oxy-"
+  fi
 
-  CREATEEXE="/Fe"
-  CCOMPILEONLY="/c /Fo"
+  if test "$CXX" = "cl /TP"; then
+    CXX_OPTIMISE_FLAGS="/Oxy-"
+  fi
+
+  if test "$CC" = "cl"; then
+    CREATEEXE="/Fe"
+    CCOMPILEONLY="/c /Fo"
+  fi
 
 # Determine which Fortran 90 compiler is in use
   CYGWIN_F90_COMP=
@@ -59,6 +66,8 @@ else
         CYGWIN_F90_COMP=compaq
     elif test "`$F90 2>&1 | grep -i intel`" ; then 
         CYGWIN_F90_COMP=intel
+    elif test "`$F90 2>&1 | grep -i g77`" ; then
+        CYGWIN_F90_COMP=gnu
     else
         echo Unknown Windows f90 compiler.
         echo Please add appropriate information to 
@@ -82,8 +91,8 @@ else
      compaq)
      : ${F90_LIBS="dfor dfconsol dfport"} 
      : ${FCOMPILEONLY="/compile_only /object:"}
-     : ${F90FLAGS="/fast /iface:cref"}
-     : ${F77FLAGS="/fast /iface:cref"}
+     : ${F90FLAGS="/nologo /fast /iface:cref"}
+     : ${F77FLAGS="/nologo /fast /iface:cref"}
      CCTK_WriteLine cctk_Archdefs.h "#define WIN32_DIGITAL_FORTRAN"
      ;;
      intel)
@@ -92,6 +101,12 @@ else
      : ${F90FLAGS="/nologo"}
      : ${F77FLAGS="/nologo"}
      ;;
+     gnu)
+     : ${F90_LIBS="g2c"} 
+     : ${FCOMPILEONLY="-c -o"}
+     : ${F90FLAGS=""}
+     : ${F77FLAGS=""}
+     ;;
      *)
      :
      ;;
@@ -99,10 +114,16 @@ else
 
   DIRSEP="\\\\"
 
-  OPTIONSEP="# not even a single a single space under cygwin"
+  if test "$CC" = "cl"; then
+    OPTIONSEP="# not even a single a single space under cygwin"
+  fi
 
 # Convert //a to a: 
-  GET_WD="pwd | sed 's,^/cygdrive/\(.\)/,\1:/,' | sed 's,^//\(.\)/,\1:/,' | sed 's,/,\\\\\\,g' "
+  if test "$CC" = "cl"; then
+    GET_WD="cygpath -wa ."
+  else
+    GET_WD="pwd | sed 's,^/cygdrive/\(.\)/,\1:/,' | sed 's,^//\(.\)/,\1:/,' "
+  fi
 
 # The -nostdinc stops it picking stdio.h, etc, from the GNU headers.
   C_DEPEND='$(CPP) -E -MM -nostdinc -D_WIN32 $(CPPFLAGS) '
@@ -120,12 +141,18 @@ else
 
   LIBNAME_PREFIX=""
   LIBNAME_SUFFIX=".lib"
-  CACTUSLIBLINKLINE='/link /libpath:$(subst /,$(DIRSEP),$(CCTK_LIBDIR)) $(foreach lib,$(ALLCACTUSLIBS), $(LIBNAME_PREFIX)$(lib)$(LIBNAME_SUFFIX))'
+  if test "$CC" = "cl"; then
+    CACTUSLIBLINKLINE='/link /libpath:$(subst /,$(DIRSEP),$(CCTK_LIBDIR)) $(foreach lib,$(ALLCACTUSLIBS), $(LIBNAME_PREFIX)$(lib)$(LIBNAME_SUFFIX))'
+  fi
 
 # Don't need the /link here since it's already in CACTUSLIBLINKLINE
-  GENERAL_LIBRARIES='$(LIBDIRS:%=/libpath:$(subst /,$(DIRSEP),%)) $(LIBS:%=%.lib) /NODEFAULTLIB:libcd /NODEFAULTLIB:libcmt' 
+  if test "$CC" = "cl"; then
+    GENERAL_LIBRARIES='$(LIBDIRS:%=/libpath:$(subst /,$(DIRSEP),%)) $(LIBS:%=%.lib) /NODEFAULTLIB:libcd /NODEFAULTLIB:libcmt' 
+  else
+    GENERAL_LIBRARIES='$(LIBDIRS:%=-L%) $(LIBS:%=-l%)'
+  fi
 
-  : ${LIBS="$F90_LIBS wsock32"}
+  LIBS="$F90_LIBS wsock32"
 
 # The Windows file system requires perl backup files to be made when
 # doing in place editing
