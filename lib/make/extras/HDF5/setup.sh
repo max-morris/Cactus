@@ -82,6 +82,9 @@ if [ $test_compress2 -eq 0 -o $test_zlib -eq 0 ] ; then
    HDF5_LIB_DIRS="$HDF5_LIB_DIRS $LIBZ_DIR"
 fi
 
+# Finally, add the math lib which might not be linked against by default
+HDF5_LIBS += m
+
 # Write the data out to the header and make files.
 
 CCTK_WriteLine cctk_Extradefs.h "#define HDF5"
