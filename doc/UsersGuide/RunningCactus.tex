@@ -396,7 +396,11 @@ Flags for the archiver
 
 \item [{\tt DEBUG}]
 Specifies what type of debug mode should be used. The only
-option currently available is {\t ALL}.
+option currently available is {\tt yes}. The default is no debugging.
+
+\item [{\tt OPTIMISE}]
+Specifies what type of optimisation should be used. The only option
+currently available is {\tt no}. The default is to use optimisation.
 
 \end{Lentry}
 
@@ -476,7 +480,7 @@ Supported values are YES
 {\tt MPI} (the {\it Message Passing Interface}) can provides inter-processor 
 communication. It can either be implemented natively on a machine
 (this is usual on most supercomputers), or through a standard package
-such as {\tt MPICH}, {\tt MPICH-G}, {\tt LAM}, {WMPI}.  
+such as {\tt MPICH}, {\tt MPICH-G}, {\tt LAM}, or {WMPI}.  
 
 To compile with MPI, the configure option is
 \newline
@@ -742,10 +746,11 @@ the same.
 
 \begin{Lentry}
 
-\item [{\tt gmake <target> THORNLIST=<file> [THORNLIST\_DIR=<dir>]}] uses the file {\tt dir/file} as the ThornList for the configuration. The directory defaults to the current directory
-\item [{\tt gmake <target> SILENT=no}] prints the commands that gmake is executing
-\item [{\tt gmake <target> TJOBS=<number>}] compile in parallel, across thorns 
 \item [{\tt gmake <target> FJOBS=<number>}] compile in parallel, across files within each thorn
+\item [{\tt gmake <target> THORNLIST=<file> [THORNLIST\_DIR=<dir>]}] uses the file {\tt dir/file} as the ThornList for the configuration. The directory defaults to the current directory
+\item [{\tt gmake <target> SILENT=no}] print the commands that gmake is executing
+\item [{\tt gmake <target> TJOBS=<number>}] compile in parallel, across thorns 
+\item [{\tt gmake <target> WARNINGS=yes}] show compiler warnings during compilation.
 
 \end{Lentry}
 
