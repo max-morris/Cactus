@@ -156,7 +156,7 @@ functions.
 \section{The GH Extension}
 
 The GH extension is where the driver stores all its grid-dependent information.
-This is stuff like any data associated with a grid variable (e.g. storage and
+This is stuff like any data associated with a grid variable (e.g.\ storage and
 communication state), how many grids if it is AMR, ...  It is very difficult to
 describe in general, but one simple example might be
 
@@ -248,7 +248,7 @@ int SimpleScheduleTraversGH(cGH *GH, const char *where)
   for(var = 0; var < extension->nvariables; var++)
   {
     gtype = CCTK_GroupTypeFromVarI(var);
-    ntimelevels = CCTK_NumTimeLevelsFromVarI(var);
+    ntimelevels = CCTK_MaxTimeLevelsVI(var);
 
     for(level = 0; level < ntimelevels; level++)
     {
@@ -347,7 +347,7 @@ These consist of
 \subsection{En/Disable Group Storage}
 
 These are responsible for switching the memory for all variables
-in a group on or off.  They should return the former state, e.g.
+in a group on or off.  They should return the former state, e.g.\
 if the group already has storage assigned, they should return 1.
 
 In our simple example above, the enabling routine would look
