@@ -113,7 +113,7 @@ cGH *CactusDefaultSetupGH(tFleshConfig *config, int convergence_level)
     {
       for(variable = 0; variable < n_variables; variable++)
       {
-	ntimelevels = CCTK_GetNumTimeLevels(variable);
+	ntimelevels = CCTK_GetNumTimeLevels_ByIndex(variable);
 
 	thisGH->data[variable] = (void **)malloc(ntimelevels*sizeof(void *));
 	if(thisGH->data[variable])
