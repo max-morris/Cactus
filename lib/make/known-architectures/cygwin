@@ -82,6 +82,42 @@ else
 
 EOF
 
+  if test "x$cross_compiling" = "xyes" ; then
+    case "$host_cpu" in
+      i?86)
+        ENDIAN=little
+        SIZEOF_LONG_INT=8
+        SIZEOF_INT=4
+        SIZEOF_SHORT_INT=2
+
+        SIZEOF_LONG_DOUBLE=8
+        SIZEOF_DOUBLE=8
+        SIZEOF_FLOAT=4
+
+        SIZEOF_POINTER=4
+      ;;
+      ia64)
+        ENDIAN=little
+        SIZEOF_LONG_INT=8
+        SIZEOF_INT=4
+        SIZEOF_SHORT_INT=2
+
+        SIZEOF_LONG_DOUBLE=8
+        SIZEOF_DOUBLE=8
+        SIZEOF_FLOAT=4
+
+        SIZEOF_POINTER=8
+      ;;
+      *)
+        echo "Don't know details for cross-compilation to $host_cpu"
+    esac
+  fi
+
+# MPI stuff
+#
+# Linux has no native MPI, so we don't set any NATIVE_MPI_XXX variables.
+# This is caught by lib/make/extras/MPI/NATIVE then.
+
 fi
 
 
