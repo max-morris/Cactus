@@ -348,7 +348,7 @@ Cactus Users' Guide and the Cactus Reference Manual.
   subdirectory of the Cactus {\tt configs} directory.
 \item[time bin]
   A time interval in the duration of a Cactus run wherein the Flesh 
-  runs specified routines.  See \texit{scheduler}, \textit{schedule bin}.
+  runs specified routines.  See \textit{scheduler}, \textit{schedule bin}.
 \item[time level]
 \item[timer]
   A Cactus API for reporting time.  See Section~\ref{sec:timers}.
@@ -559,8 +559,10 @@ of an {\tt ARRAY}.
         that direction is on the {\tt M}inus face, {\tt C}entre, or {\tt P}lus face
         of the cell in that dimension.
 \item{} {\t TAGS} defines an optional string which is used to create a
-        set of key-value pairs associated with the group.  The keys
-        are case independent.
+	set of key-value pairs associated with the group.  The keys are case
+	independent.  The string (which must be deliminated by single or
+	double quotes) is interpreted by the function
+	Util\_TableSetFromString(), which is described in the ReferenceManual.
 \item{} The (optional) block following the group declaration line
 contains a list of variables contained in the group. All variables in
 a group have the same data type, variable type, dimension and
