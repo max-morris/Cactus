@@ -658,21 +658,73 @@ from Fortran.
 %%%%%
 
 % CommOverloadables.c
-\begin{CCTKFunc}{CCTK\_Abort}{Abnormal Cactus termination}
+\begin{FunctionDescription}{CCTK\_Abort}
 \label{CCTK-Abort}
-\subroutine{int}{integer}{istat}
-\argument{cGH *}{CCTK\_POINTER}{cctkGH}
-\argument{int}{integer}{value}
-\showargs
-\begin{params}
-\parameter{cctkGH}{pointer to CCTK grid hierarchy}
-\parameter{value}{the return code to abort with}
-\end{params}
-\begin{discussion}
+Abnormal Cactus termination
+
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+#include "cctk.h"
+int dummy = CCTK_Abort(const cGH *cctkGH);
+\end{verbatim}
+\end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}
+#include "cctk.h"
+subroutine CCTK_Abort (dummy, cctkGH)
+   integer      dummy
+   CCTK_POINTER cctkGH
+end subroutine CCTK_Abort
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ResultSection}
+The function never returns, and hence never produces a result.
+\end{ResultSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{GH ($\ne$ NULL)}
+Pointer to a valid Cactus grid hierarchy.
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{Discussion}
 This routine causes an immediate, abnormal Cactus termination.
 It never returns to the caller.
-\end{discussion}
-\end{CCTKFunc}
+\end{Discussion}
+
+\begin{SeeAlsoSection}
+\begin{SeeAlso2}{CCTK\_Exit}{CCTK-Exit}
+Exit the code cleanly
+\end{SeeAlso}
+\begin{SeeAlso2}{CCTK\_WARN}{CCTK-WARN}
+Macro to print a single string as a warning message and possibly stop the code
+\end{SeeAlso}
+\end{SeeAlsoSection}
+
+\begin{ErrorSection}
+The function never returns, and hence never reports an error.
+\end{ErrorSection}
+
+\begin{ExampleSection}
+\begin{Example}{C}
+\begin{verbatim}
+#include "cctk.h"
+CCTK_Abort (cctkGH);
+\end{verbatim}
+\end{Example}
+\begin{Example}{Fortran}
+\begin{verbatim}
+#include "cctk.h"
+integer dummy
+call CCTK_Abort (dummy, cctkGH)
+\end{verbatim}
+\end{Example}
+\end{ExampleSection}
+\end{FunctionDescription}
+
 
 
 % cctk_GroupsOnGH.h
