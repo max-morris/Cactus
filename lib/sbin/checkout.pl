@@ -284,6 +284,9 @@ sub get_thorns
       
       for ($i=$first; $i<$last+1; $i++)
 	{
+	  $arrangement = $name{$i};
+	  $arrangement =~ s:/[^/]*$::;
+	  &CheckOutREADME("$arrangement/README");
 	  &CheckOut($name{$i});
 	}
     }
@@ -328,9 +331,10 @@ sub get_thornlist
 	print "  $_";
       }
       close LISTS;
-      print "\n Choose ThornList : ";
+      print "\nChoose ThornList : ";
       
       $thornlist = <>;
+      print "\n";
       chomp($thornlist);
       if (!-e "thornlists/$thornlist")
       {
@@ -397,6 +401,30 @@ sub CheckOut
 }
 
 #/*@@
+#  @routine    CheckoutREADME
+#  @date       Sat Jul  20 16:38:52 2000
+#  @author     Gabrielle Allen
+#  @desc 
+#  
+#  @enddesc 
+#  @calls     
+#  @calledby   
+#  @history 
+#
+#  @endhistory 
+#
+#@@*/
+sub CheckOutREADME
+{
+  my($file) = @_;
+
+  open(MODULES,"cvs -z9 -q checkout $file |");
+  @dummy = <MODULES>;
+  close(MODULES);
+
+}
+
+#/*@@
 #  @routine    PrintInfo
 #  @date       Sat Jul  3 16:38:52 1999
 #  @author     Gabrielle Allen
@@ -414,7 +442,6 @@ sub PrintInfo
 {
   print "\n";
   print "Type \"help\" at any prompt for a description on how\nto use this script\n\n";
-  print "Developmental thorns/arrangements are labelled (dev)\n";
   print "________________________________________________________________________\n\n";
 }    
 
@@ -476,7 +503,6 @@ sub RepositoryExists
   close(MODULES);
 
   return !$?;
-
 
 }
 

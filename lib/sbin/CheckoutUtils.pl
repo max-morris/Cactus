@@ -378,11 +378,21 @@ sub GetThorns
     else
     {
       $command_co = "cvs $cvs_options -d $thorns{\"$th\"} co $tag $th |";
+      #Get arrangements name
+      $arrangement = $th;
+      $arrangement =~ s:/[^/]*$::;
+      $command_co_arr = "cvs $cvs_options -d $thorns{\"$th\"} co $tag $arrangement/README |";
+
       if ($debug != 1)
       {
 	# Check that the repository exists
 	DIE("Repository $thorns{\"$th\"} not found \n Are you connected to the network?\n Is the repository name spelt right in your thornlist file?") if (!&RepositoryExists($thorns{"$th"}));
 	
+	open(CVSCO,$command_co_arr);
+	while (<CVSCO>)
+	{
+	  print $_;  
+	}
 	open(CVSCO,$command_co);
 	while (<CVSCO>)
 	{
