@@ -138,7 +138,7 @@ else
        : ${F90_OPTIMISE_FLAGS='-O4'}
        ;;
      portland)
-       : ${LIBS="pgftnrtl pgf90rtl pgf90 pgf90_rpm1 pghpf2 pgc m"}
+       : ${LIBS="pgf90rtl pgf90 pgftntrl pgf90_rpm1 pghpf2 pgc m"}
        : ${LIBDIRS='$(PGI)/linux86/lib'} 
        : ${F77_OPTIMISE_FLAGS='-fast'}
        : ${F90_OPTIMISE_FLAGS='$(F77_OPTIMISE_FLAGS)'}
