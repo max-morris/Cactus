@@ -1,7 +1,7 @@
 
 Cactus Code Frequently Asked Questions
 
-$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.20 2001-09-11 12:33:42 allen Exp $
+$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.21 2001-09-14 15:17:03 allen Exp $
 
 Also available at http://www.cactuscode.org/Documentation/FAQ
 
@@ -304,4 +304,18 @@ Also available at http://www.cactuscode.org/Documentation/FAQ
     gmake <config> -j <number of processors>
     
 -------------------------------------------------------------------------------
+
+22. Why is the main routine of Cactus written in C++ (src/main/flesh.cc) when 
+    the rest of the flesh is standard ANSI C? More strangely, why does Cactus
+    still compile when I have no C++ compiler on my system?
+
+    The main routine of the flesh is written in C++, since any static C++ 
+    classes need to be initialised before the main routine is called. So if
+    there is a C++ compiler available we use this for compiling flesh.cc.
+    Since we use only ANSI C in flesh.cc, if there is no C++ compiler 
+    available on your machine (and so you are not trying to compile any thorns
+    containing C++), we use the C compiler instead.
+
+--------------------------------------------------------------------------------
+
 
