@@ -720,6 +720,7 @@ the configure options are
 PETSC = yes | no | <blank>
 [ PETSC_DIR = <dir> ]
 [ PETSC_ARCH = <architecture> ]
+[ PETSC_ARCH_LIBS = <architecture-specific libraries> ]
 \end{verbatim}
 
 If {\t PETSC\_DIR} is not given the configuration process will search for an
@@ -727,6 +728,9 @@ installed PETSc package in some standard places (defined in
 {\tt lib/make/extras/PETSC}).
 If {\t PETSC\_ARCH} is not given the configuration process will choose the
 first PETSc configuration found in {\tt \$PETSC\_DIR/lib/libO/}.
+If {\t PETSC\_ARCH\_LIBS} is not given the configuration process will choose
+architecture-specific libraries as required by a PETSc configuration (usually
+PETSc needs the LAPACK library).
 
 
 \subsubsection{PTHREADS: POSIX threads}
