@@ -375,6 +375,38 @@ void FMODIFIER FORTRAN_NAME(CCTK_Info)(TWO_FORTSTRINGS_ARGS)
 
 
 /*@@
+   @routine    CCTK_VInfo
+   @date       Mon Apr 10
+   @author     Thomas Radke
+   @desc 
+   Info routine with variable argument list
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+
+int CCTK_VInfo (const char *thorn, const char *format, ...)
+{
+  va_list ap;
+
+  va_start(ap, format);
+
+  fprintf(stdout, "INFO (%s): ", thorn);
+  vfprintf(stdout, format, ap);
+  fprintf(stdout, "\n");
+  fflush(stdout);
+
+  va_end(ap);
+
+  return 0;
+}  
+
+
+/*@@
    @routine    CCTKi_SetErrorLevel
    @date       Wed Feb 17 00:48:02 1999
    @author     Tom Goodale

@@ -28,6 +28,7 @@ int CCTK_VWarn(int level,
                 const char *format, ...);
 int CCTK_ParamWarn(const char *thorn, const char *message);
 int CCTK_Info(const char *thorn, const char *message);
+int CCTK_VInfo(const char *thorn, const char *format, ...);
 
 #ifdef __cplusplus 
 }
