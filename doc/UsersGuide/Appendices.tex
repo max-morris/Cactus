@@ -419,36 +419,44 @@ Each {\it schedule block} in the file {\t schedule.ccl} must have the syntax:
 \end{verbatim}
 }
 \begin{Lentry}
-  \item[{\tt GROUP}] If one doesn't already exist, create and schedule a
-    schedule group with the same options as a schedule function.
+  \item[{\tt GROUP}] Schedule a schedule group with the same options
+  as a schedule function.  The schedule group will be created if it doesn't exist.
 
-  \item[{\tt <function names>}] Function names are case sensitive
+  \item[{\tt <function name|group name>}] The name of a function or a
+  schedule group to be scheduled.  Function and schedule group names
+  are case sensitive
 
-  \item[{\tt <group>}] Groups inherited from other thorns may be used, but they
-    must then be fully qualified with the implementation name.
+  \item[{\tt <group>}] A group of grid variables. Variable groups
+  inherited from other thorns may be used, but they must then be fully
+  qualified with the implementation name.
 
-  \item[{\tt AT}] Functions can be scheduled to run at the Cactus schedule bins, for example {\tt CCTK\_EVOL}, {\tt CCTK\_STARTUP}. A complete list and description
-	of these is provided in Appendix~\ref{sec:scbi}.
-    The initial letters {\tt CCTK\_} are optional. Grid variables cannot be
-    used in the {\tt CCTK\_STARTUP} and {\tt CCTK\_SHUTDOWN} timebins.
+  \item[{\tt AT}] Functions can be scheduled to run at the Cactus
+  schedule bins, for example {\tt CCTK\_EVOL}, {\tt CCTK\_STARTUP}. A
+  complete list and description of these is provided in
+  Appendix~\ref{sec:scbi}.  The initial letters {\tt CCTK\_} are
+  optional. Grid variables cannot be used in the {\tt CCTK\_STARTUP}
+  and {\tt CCTK\_SHUTDOWN} timebins.
 
-  \item[{IN}] Specifies a function to run in a schedule group rather than in
-    a Cactus timebin.
+  \item[{IN}] Schedules a function or schedule group to run in a
+  schedule group rather than in a Cactus timebin.
 
-  \item[{BEFORE/AFTER}] Takes either a function name, or a function alias.
-    If no function or alias with this name is provided by an activating thorn
-    this directive is ignored.
+  \item[{BEFORE/AFTER}] Takes either a function name, a function
+  alias, or a schedule group name.  If no function, alias or schedule
+  group with this name is provided by an active thorn this directive
+  is ignored.
 
   \item[{\tt WHILE}] Executes a function or schedule group until the given
-    variable (which must be a fully qualified grid scalar) has the value zero.
+    variable (which must be a fully qualified integer grid scalar) has the value zero.
 
-  \item[{\tt AS}] The alias for a function which should be used for functions
-    referenced in the schedule files of other thorns to provide thorn independence.
+  \item[{\tt AS}] Provides an alias for a function or schedule group
+  which should be used for scheduling before, after or in.  This can
+  be used to provide thorn independence for other thorns scheduling
+  functions or schedule groups relative to this one.
 
   \item[{\tt LANG}] The code language for the function (either {\tt C} or {\tt
     FORTRAN}). No language should be specified for a schedule group.
 
-  \item[{\tt STORAGE}] List of groups which should have storage
+  \item[{\tt STORAGE}] List of variable groups which should have storage
   switched on for the duration of the function or schedule group.
   Each group must specify how many timelevels to activate storage for,
   from 1 up to the maximum number for the group as specified in the
@@ -498,10 +506,11 @@ if (CCTK_Equals(<parameter>,<string>))
   [<schedule blocks>]
 }\end{verbatim}
 }
-Conditional constructs cannot be used inside of a schedule block.
+
+Conditional constructs cannot be used inside a schedule block.
 
 \chapter{Schedule bins}
-\label{sec:shbi}
+\label{sec:scbi}
 
 Using the {\tt schedule.ccl} files, thorn functions can be scheduled to run 
 in the different timebins which are executed by the Cactus flesh. This chapter
