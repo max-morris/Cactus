@@ -61,12 +61,14 @@ sub CheckImpParamConsistency
 	  }
 	  else
 	  {
-	    print STDERR "Thorn $thorn attempted to EXTEND non-restricted parameter $parameter from $friend\n";
+	      $message = "Thorn $thorn attempted to EXTEND non-restricted parameter $parameter from $friend";
+	      &CST_error(0,$message,__LINE__,__FILE__);
 	  }
 	}
 	else
 	{
-	  print STDERR "Thorn $thorn attempted to EXTEND non-existant parameter $parameter from $friend\n";
+	  $message = "Thorn $thorn attempted to EXTEND non-existant parameter $parameter from $friend";
+	  &CST_error(0,$message,__LINE__,__FILE__);
 	}
       }
     }
