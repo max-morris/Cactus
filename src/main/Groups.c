@@ -416,7 +416,6 @@ char *CCTK_GetGroupFromVar(int var)
   int group_num;
 
   group_num = group_of_variable[var];
-  retval = malloc((strlen(groups[group_num].name)+1)*sizeof(char));
   retval = groups[group_num].name;
 
   return retval;
@@ -442,7 +441,6 @@ char *CCTK_GetImplementationFromVar(int var)
   int group_num;
 
   group_num = group_of_variable[var];
-  retval = malloc((strlen(groups[group_num].implementation)+1)*sizeof(char));
   retval = groups[group_num].implementation;
 
   return retval;
@@ -633,9 +631,6 @@ char *CCTK_GetVarName(int varnum)
   if(varnum < total_variables)
   {
     group = group_of_variable[varnum];
-    name  = malloc(strlen(groups[group].
-			  variables[varnum-groups[group].variables[0].number].
-			  name+1)*sizeof(char));
     name  = groups[group].variables[varnum-groups[group].variables[0].number].name;
   }
   else
