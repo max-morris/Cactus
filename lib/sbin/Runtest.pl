@@ -251,6 +251,7 @@ if ($tests =~ /All/)
     else
     {
       push(@not_tested, $testnames[$ntested]);
+      push(@not_tested_parfile, $t);
       push(@not_tested_thorns, $thorn);
       print "Ignoring test '$testnames[$ntested]' from thorn '$thorn' - missing thorns.\n";
     }
@@ -308,7 +309,7 @@ if ($tests =~ /All/)
     print "  Tests Missed for lack of thorns:\n";
     for ($i=0; $i<$number_missing;$i++)
     {
-      print "    ". $not_tested[$i]." (from ". $not_tested_thorns[$i].")\n";
+      print "    ". $not_tested[$i]."\n    (".$not_tested_parfile[$i]." from ". $not_tested_thorns[$i].")\n";
     }
     print "\n";
   }
@@ -318,7 +319,7 @@ if ($tests =~ /All/)
     print "  Tests with different numbers of output files:\n";
     for ($i=0; $i<$number_extra;$i++)
     {
-      print "    ". $which_extra[$i]." (from ". $thorn_extra[$i].")\n";
+      print "    ". $thorn_extra_desc[$i]."\n    (".$thorn_extra_parfile[$i]." from ". $thorn_extra[$i].")\n";
     }
     print "\n";
   }
@@ -585,7 +586,8 @@ sub runtest
       }
     }
     $number_extra++;
-    @which_extra = (@which_extra,$tp);
+    @thorn_extra_desc = (@thorn_extra_desc,$testnames[$num]);
+    @thorn_extra_parfile = (@thorn_extra_parfile,$tp);
     @thorn_extra = (@thorn_extra,$inthorn);
   }
 
