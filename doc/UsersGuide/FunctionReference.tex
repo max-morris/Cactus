@@ -3020,6 +3020,10 @@ local interpolation operator (as identified by an interpolation handle).
 Additional parameters for the interpolation operation of both
 {\tt CCTK\_InterpGridArrays()} and {\tt CCTK\_InterpLocalUniform()} can be
 passed in via a handle to a key/value options table.
+All interpolation operators should check for a parameter table entry with the
+key \verb|"suppress_warnings"| which -- if present -- indicates that the
+caller wants the interpolator to be silent in case of an error condition and
+only return an appropriate error code.
 One common parameter-table option, which a number of interpolation
 operators are likely to support, is \verb|order|, a \verb|CCTK_INT|
 specifying the order of the (presumably polynomial) interpolation
