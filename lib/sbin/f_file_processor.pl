@@ -38,6 +38,12 @@ else
   $standard_comments = "[cC!]";
 }
 
+# Maximum line length for free form Fortran
+$max_line_length = 132;
+# Indentation for continued free form Fortran
+$indentation = 2;
+$indent = " " x $indentation;
+
 # Loop over all lines.
 $line = 1;
 $file = "";
@@ -84,7 +90,7 @@ while (<>)
   {
     # Remove quotes
     s/['"]//g;
-    if (/(.{132,132})/)
+    if (/(.{$max_line_length,$max_line_length})/)
     {
       &printline ($1);
     }
@@ -144,7 +150,7 @@ while (<>)
     # Put in the line breaks (&&)
     if($free_format)
     {
-      s/\s*\&\&\s*/\n  /g;
+      s/\s*\&\&\s*/\n$indent/g;
     }
     else
     {
@@ -226,37 +232,40 @@ sub free_format_splitline
 {
   my ($LINE) = @_;
   my $OUT;
+  my $maxlen1 = $max_line_length - 1;
+  my $maxlen1i = $max_line_length - $indentation - 1;
+  my $maxlen2i = $max_line_length - $indentation - 2;
 
-  if ($LINE =~ /^(.{78,78})../)
+  if ($LINE =~ /^(.{$maxlen1,$maxlen1})../)
   {
     $OUT = $1;
     # Check if the line already has a continuation mark.
     $OUT = "$OUT&" if (! ($OUT =~ /\&\s*$/));
     &printline ($OUT);
-    $LINE =~ s/.{78,78}//;
+    $LINE =~ s/.{$maxlen1,$maxlen1}//;
 
-    while ($LINE =~ /^(.{76,76})/)
+    while ($LINE =~ /^(.{$maxlen1i,$maxlen1i})/)
     {
-      $LINE =~ /^(.{75,75})/;
+      $LINE =~ /^(.{$maxlen2i,$maxlen2i})/;
       $OUT = $1;
-      $OUT = "  &$OUT" if (! ($OUT =~ /^\s*\&/));
+      $OUT = "$indent&$OUT" if (! ($OUT =~ /^\s*\&/));
       $OUT = "$OUT&" if (! ($OUT =~ /\&\s*$/));
       &printline ($OUT);
-      $LINE =~ s/.{75,75}//;
+      $LINE =~ s/.{$maxlen2i,$maxlen2i}//;
     }
 
     if ($LINE =~ /^\&\s*$/)
     {
-      &printline ("  & $LINE");
+      &printline ("$indent& $LINE");
     }
     elsif ($LINE =~ /^\s*\&\s*$/)
     {
-      &printline ("  &$LINE");
+      &printline ("$indent&$LINE");
     }
     else
     {
       $OUT = $LINE;
-      $OUT = "  &$OUT" if (! ($LINE =~ /^\s*\&/));
+      $OUT = "$indent&$OUT" if (! ($LINE =~ /^\s*\&/));
       &printline ($OUT);
     }
   }
