@@ -6,7 +6,7 @@
 #   @desc 
 #   Known architecture stuff for the NCSA Exemplar
 #   @enddesc 
-#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/hp-ux,v 1.6 1999-10-11 13:49:08 goodale Exp $
+#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/hp-ux,v 1.7 1999-10-11 15:57:59 goodale Exp $
 # @@*/
 
 if test "$CCTK_CONFIG_STAGE" = "preferred-compilers" ; then
@@ -15,11 +15,14 @@ if test "$CCTK_CONFIG_STAGE" = "preferred-compilers" ; then
 
 else
 
-  : ${LIBS="cl F90 "}
+  : ${LIBS="cl F90 m"}
   : ${LIBDIRS="/opt/fortran90/lib/"}
+  : ${C_DEPEND='$(CPP) -M$@ $(CPPFLAGS)'}
+  : ${CXX_DEPEND='$(CPP) -M$@ $(CPPFLAGS)'}
   : ${F77_DEPEND='$(CPP) -M$@ $(CPPFLAGS)'}
+  : ${C_DEPEND_OUT='> /dev/null'}
+  : ${CXX_DEPEND_OUT='> /dev/null'}
   : ${F_DEPEND='$(CPP) -M$@ $(CPPFLAGS)'}
   : ${F77_DEPEND_OUT="> /dev/null; perl -p -i -e 's/\.F77\.o/\.o/g' $(basename $(@)).d "}
-  : ${F_DEPEND_OUT='> /dev/null'}
 
 fi
