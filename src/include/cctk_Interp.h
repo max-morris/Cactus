@@ -57,29 +57,6 @@ int CCTK_Interp(cGH *GH,
                  int nOutFields,
                  ...);
 
-  /* DEPRECATED IN BETA 9 */
-#define REGISTER_INTERP_ARGLIST  \
-                         cGH *,  \
-                         int,    \
-                         int,    \
-                         int,    \
-                         int,    \
-                         int *,  \
-                         void **,\
-                         int *,  \
-                         void *, \
-                         void *, \
-                         void **,\
-                         int *,  \
-                         void **,\
-                         int *    
-int CCTK_GetInterpHandle(const char *interp);
-int CCTK_RegisterInterpOperator(int (*function)(REGISTER_INTERP_ARGLIST),
-                                const char *name);
-
-
-  /* END DEPRECATED IN BETA 9 */
-
 #ifdef __cplusplus
            }
 #endif
