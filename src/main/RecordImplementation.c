@@ -10,9 +10,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "StoreNamedData.h";
-
-
+#include "StoreNamedData.h"
 
 typedef struct 
 {
@@ -23,6 +21,20 @@ typedef struct
 static pNamedData *implementation_data = NULL;
 
 
+ /*@@
+   @routine    CCTK_RecordImplementation
+   @date       Wed Jan 13 23:23:00 1999
+   @author     Tom Goodale
+   @desc 
+   
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
 int CCTK_RecordImplementation(const char *implementation,
 			      const char *thorn)
 {
@@ -94,3 +106,35 @@ int CCTK_RecordImplementation(const char *implementation,
   return retval;
 }
   
+ /*@@
+   @routine    GetImplementationThorns
+   @date       Wed Jan 13 23:22:43 1999
+   @author     Tom Goodale
+   @desc 
+   
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+int GetImplementationThorns(const char *implementation, char ***thornlist)
+{
+  int retval;
+  t_ImplementationData *data;
+
+  if((data = (t_ImplementationData *)GetNamedData(implementation_data, implementation)))
+  {
+    *thornlist = data->thornlist;
+    retval = data->n_thorns;
+  }
+  else
+  {
+    *thornlist = NULL;
+    retval = 0;
+  }
+
+  return retval;
+}

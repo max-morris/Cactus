@@ -11,6 +11,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "flesh.h"
+
 static char *rcsid = "$Id$";
 
 int CCTK_ExtractImplementation(char **imp, char **name, const char *parameter);
@@ -113,8 +115,8 @@ int CCTK_ExtractImplementation(char **imp, char **name, const char *parameter)
     strncpy(*imp, parameter, (int)(position-parameter));
     (*imp)[(int)(position-parameter)] = '\0';
   
-    strncpy(*name, position+2, strlen(*imp)-(int)(position-parameter)-2);
-    (*name)[strlen(*imp)-(position-parameter)-2] = '\0';
+    strncpy(*name, position+2, strlen(parameter)-(int)(position-parameter)-2);
+    (*name)[strlen(parameter)-(position-parameter)-2] = '\0';
     
     retval = 0;
   }
@@ -164,7 +166,29 @@ int CCTK_SetImplementationParameter(const char *imp,
 				    const char *name, 
 				    const char *value)
 {
+  int n_thorns;
+  int thorn;
 
+  char **thornlist;
+  t_thorndata *thorndata;
 
-  return 1;
+  if((n_thorns = GetImplementationThorns(imp, &thornlist)))
+  {
+    for(thorn = 0; thorn < n_thorns; thorn++)
+    {
+      if(GetThornData(thornlist[thorn], &thorndata))
+      {
+	thorndata->param_set(name, value);
+      }
+    }
+  }
+  else
+  {
+    if(GetThornData(imp, &thorndata))
+    {
+      thorndata->param_set(name, value);
+    }
+  }
+
+  return 0;
 }

@@ -10,13 +10,27 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "flesh.h";
+#include "flesh.h"
 
-#include "StoreNamedData.h";
+#include "StoreNamedData.h"
 
 
 static pNamedData *thorn_data = NULL;
 
+ /*@@
+   @routine    CCTK_RegisterThorn
+   @date       Wed Jan 13 23:26:04 1999
+   @author     Tom Goodale
+   @desc 
+   
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
 int CCTK_RegisterThorn(const char *name, const char *implementation,
 		       const t_thorndata *data)
 {
@@ -46,4 +60,33 @@ int CCTK_RegisterThorn(const char *name, const char *implementation,
 }
   
 
-  
+ /*@@
+   @routine    GetThornData
+   @date       Wed Jan 13 23:25:47 1999
+   @author     Tom Goodale
+   @desc 
+   
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+int GetThornData(const char *thorn, t_thorndata **thorndata)
+{
+  int retval;
+
+  if((*thorndata = (t_thorndata *)GetNamedData(thorn_data, thorn)))
+  {
+    retval = 1;
+  }
+  else
+  {
+    *thorndata = NULL;
+    retval = 0;
+  }
+
+  return retval;
+}

@@ -48,6 +48,8 @@ typedef struct
 {
   char *name;
   char *implementation;
+  int (*startup)();
+  int (*rfr_init)(cGH *);
   int (*param_init)();
   int (*param_set)(const char *, const char *);
   int (*param_get)(const char *, void **);
