@@ -292,14 +292,12 @@ int CCTK_VWarn(int level, int line, const char *file, const char *thorn, const c
  
    @endhistory 
  
-   @endvar 
-
    @returntype int
    @returndesc
    parameter checking level now being used
    @endreturndesc
 @@*/
-int CCTK_ParameterLevel()
+int CCTK_ParameterLevel(void)
 {
   return parameter_level;
 }
