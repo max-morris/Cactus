@@ -1498,3 +1498,91 @@ CCTK_INT **CCTK_GroupSizesI(int group)
 
   return retval;
 }
+
+ /*@@
+   @routine    CCTK_VarTypeSize
+   @date       Sun Dec  5 10:08:05 1999
+   @author     Gabrielle Allen
+   @desc 
+   Returns the size of a given variable type
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+
+int CCTK_VarTypeSize(vtype)
+{
+
+  int var_size=0;
+  char *msg;
+
+  switch(vtype)
+  {
+    case CCTK_VARIABLE_CHAR: 
+      var_size = sizeof(CCTK_CHAR); 
+      break;
+
+    case CCTK_VARIABLE_INT: 
+      var_size = sizeof(CCTK_INT) ; 
+      break;
+
+#ifdef CCTK_INT2
+    case CCTK_VARIABLE_INT2: 
+      var_size = sizeof(CCTK_INT2); 
+      break;
+#endif
+
+#ifdef CCTK_INT4
+    case CCTK_VARIABLE_INT4: 
+      var_size = sizeof(CCTK_INT4); 
+      break;
+#endif
+
+#ifdef CCTK_INT8
+    case CCTK_VARIABLE_INT8: 
+      var_size = sizeof(CCTK_INT8); 
+      break;
+#endif
+
+    case CCTK_VARIABLE_REAL: 
+      var_size = sizeof(CCTK_REAL); 
+      break;
+
+#ifdef CCTK_REAL4
+    case CCTK_VARIABLE_REAL4: 
+      var_size = sizeof(CCTK_REAL4); 
+      break;
+#endif
+
+#ifdef CCTK_REAL8
+    case CCTK_VARIABLE_REAL8: 
+      var_size = sizeof(CCTK_REAL8); 
+      break;
+#endif
+
+#ifdef CCTK_REAL16
+    case CCTK_VARIABLE_REAL16: 
+      var_size = sizeof(CCTK_REAL16); 
+      break;
+#endif
+
+    case CCTK_VARIABLE_COMPLEX: 
+      var_size = sizeof(CCTK_COMPLEX); 
+      break;
+
+    default:
+      msg = malloc( 200*sizeof(char) );
+      sprintf(msg,"Unknown variable type (%d) in CCTK_VarTypeSize",vtype);
+      CCTK_Warn(0,__LINE__,__FILE__,"Cactus",msg);
+      free(msg);
+      var_size = 1;
+
+  }
+
+  return var_size;
+
+}
