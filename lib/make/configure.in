@@ -358,12 +358,30 @@ AC_SUBST(F77FLAGS)
 
 dnl Checks for library functions.
 
+# Do we have mkdir(2) ?
 CCTK_CHECK_FUNCS(mkdir)
-CCTK_CHECK_FUNCS(scandir, ,
-[SAVED_LIBDIRS="$LIBDIRS"
-LIBDIRS="$LIBDIRS /usr/ucblib" 
-CCTK_CHECK_LIB(ucb, scandir, AC_DEFINE(HAVE_SCANDIR), LIBDIRS="$SAVED_LIBDIRS")
-])
+
+# Do we have scandir(3) ?
+# For Solaris we should search in /usr/ucblib/libucb.a
+CCTK_CHECK_FUNCS(scandir,
+                 ,
+                 [SAVED_LIBDIRS="$LIBDIRS"
+                  LIBDIRS="$LIBDIRS /usr/ucblib" 
+                  CCTK_CHECK_LIB(ucb,
+                                 scandir,
+                                 AC_DEFINE(HAVE_SCANDIR),
+                                 LIBDIRS="$SAVED_LIBDIRS")
+                 ]
+)
+
+# Do we have gethostbyname(3) ?
+# For Solaris we should search in libnsl.so
+CCTK_CHECK_FUNCS(gethostbyname,
+                 ,
+                 CCTK_CHECK_LIB(nsl,
+                                gethostbyname,
+                                AC_DEFINE(HAVE_GETHOSTBYNAME))
+)
 
 # Check if we have mode_t available 
 AC_MSG_CHECKING([if mode_t is defined])
@@ -488,9 +506,6 @@ if test "$cctk_cv_have___int64" = "yes"; then
 else
   AC_MSG_RESULT(no)
 fi
-
-# Do we have gethostbyname
-CCTK_CHECK_FUNCS(gethostbyname)
 
 # C++ STL stuff
 
