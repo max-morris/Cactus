@@ -10,6 +10,7 @@
 #include <stdio.h>
 
 #include "WarnLevel.h"
+#include "FortranString.h"
 
 static char *rcsid = "$Header$";
 
@@ -109,6 +110,15 @@ int CCTK_Warn(int level, const char *message)
   }
 
   return retval;
+}
+
+int FORTRAN_NAME(CCTK_Warn)(int *level, ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE(message)
+  int retval;
+  retval = CCTK_Warn(*level,message);
+  free(message); 
+  return(retval);
 }
 
  /*@@
