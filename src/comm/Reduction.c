@@ -470,8 +470,9 @@ int CCTK_RegisterReductionArrayOperator
 
     /* Remember how many reduction operators there are */
     num_reductions_array++;
-  printf ("\n registering handle %s with handle %d \n", name, handle);
-   }
+
+    /* printf ("\n registering handle %s with handle %d \n", name, handle); */
+  }
   else
   {
     /* Reduction operator with this name already exists. */
