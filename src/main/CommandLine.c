@@ -46,7 +46,7 @@ static void CommandLinePrintParameter (const cParamData *properties);
 /********************************************************************
  *********************     Local Data   *****************************
  ********************************************************************/
-static int already_redirected = 0;
+static int already_redirected_stdout = 0;
 static int paramchecking = 0;
 
 
@@ -60,8 +60,8 @@ int cctki_paramcheck_nprocs;
 /********************************************************************
  *********************        Defines          **********************
  ********************************************************************/
-#define CACTUS_COMMANDLINE_OPTIONS                                            \
-        "[-h] [-O] [-o paramname] [-W n] [-E n] [-r] [-T] "     \
+#define CACTUS_COMMANDLINE_OPTIONS                                     \
+        "[-h] [-O] [-o paramname] [-W n] [-E n] [-r[o|e|oe|eo]] [-T] " \
         "[-t name] [-parameter-level <level>] [-v] <parameter_file_name>"
 
 
@@ -391,21 +391,34 @@ void CCTKi_CommandLineParameterLevel (const char *argument)
    @desc
                Redirect standard output on non-root processors into a file
    @enddesc
+
+   @var        argument
+   @vdesc      option argument
+   @vtype      const char *
+   @vio        in
+   @endvar
 @@*/
-void CCTKi_CommandLineRedirectStdout (void)
+void CCTKi_CommandLineRedirect (const char *argument)
 {
   int myproc;
-  char fname[32];
+  char fname[24];
 
 
   myproc = CCTK_MyProc (NULL);
   if (myproc)
   {
-    sprintf (fname, "CCTK_Proc%d.out", myproc);
-    freopen (fname, "w", stdout);
+    if (!argument || strchr(argument,'o')) /* redirect stdout */
+    {
+      sprintf (fname, "CCTK_Proc%d.out", myproc);
+      freopen (fname, "w", stdout);
+      already_redirected_stdout = 1;
+    }
+    if (argument && strchr(argument,'e')) /* redirect stderr */
+    {
+      sprintf (fname, "CCTK_Proc%d.err", myproc);
+      freopen (fname, "w", stderr);
+    }
   }
-
-  already_redirected = 1;
 }
 
 
@@ -477,13 +490,16 @@ void CCTKi_CommandLineHelp (void)
   char **argv;
   const char *commandline_options_description =
     "-h, -help                           : gets this help.\n"
-    "-O, -describe-all-parameters        : describes all the parameters.\n"
+    "-O[v], -describe-all-parameters     : describes all the parameters.\n"
+    "                                      v makes this verbose, i.e. it\n"
+    "                                      gives a verbose description of"
+    "                                      all parameters"
     "-o, -describe-parameter <paramname> : describe the given parameter.\n"
     "                                      pretending to be on nprocs processors, \n"
     "                                      or 1 if not given.\n"
     "-W, -warning-level <n>              : Sets the warning level to n.\n"
     "-E, -error-level <n>                : Sets the error level to n.\n"
-    "-r, -redirect-stdout                : Redirects standard output to files.\n"
+    "-r, -redirect [o|e|oe|eo]           : Redirects standard output and/or standard error to files.\n"
     "-T, -list-thorns                    : Lists the compiled-in thorns.\n"
     "-t, -test-thorn-compiled <name>     : Tests for the presence of thorn <name>.\n"
     "    -parameter-level <level>        : Sets the amount of parameter checking, \n"
@@ -553,7 +569,7 @@ void CCTKi_CommandLineFinished (void)
 
   /* if no redirect was requested on the command line
      send stdout messages on non-root processors to /dev/null */
-  if (! already_redirected && CCTK_MyProc (NULL) != 0)
+  if (! already_redirected_stdout && CCTK_MyProc (NULL) != 0)
   {
     freopen (NULL_DEVICE, "w", stdout);
   }

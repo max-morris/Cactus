@@ -113,14 +113,14 @@ int CCTKi_ProcessCommandLine(int *inargc, char ***inargv, tFleshConfig *ConfigDa
     {
       struct option long_options[] =
       {
-        {"help", no_argument, NULL, 'h'},
+        {"help",                    no_argument,       NULL, 'h'},
         {"describe-all-parameters", optional_argument, NULL, 'O'},
         {"describe-parameter",      required_argument, NULL, 'o'},
         /*{"test-parameters",         optional_argument, NULL, 'x'},*/
         {"warning-level",           required_argument, NULL, 'W'},
         {"error-level",             required_argument, NULL, 'E'},
         {"parameter-level",         required_argument, NULL, 256},
-        {"redirect-stdout",         no_argument,       NULL, 'r'},
+        {"redirect",                optional_argument, NULL, 'r'},
         {"list-thorns",             no_argument,       NULL, 'T'},
         {"test-thorn-compiled",     required_argument, NULL, 't'},
         {"version",                 no_argument,       NULL, 'v'},
@@ -128,7 +128,7 @@ int CCTKi_ProcessCommandLine(int *inargc, char ***inargv, tFleshConfig *ConfigDa
         {0, 0, 0, 0}
       };
       
-      c = getopt_long_only (argc, argv, "hO::o:x::W:E:rTt:vi",
+      c = getopt_long_only (argc, argv, "hO::o:x::W:E:r::Tt:vi",
                             long_options, &option_index);
       if (c == -1)
         break;
@@ -144,7 +144,7 @@ int CCTKi_ProcessCommandLine(int *inargc, char ***inargv, tFleshConfig *ConfigDa
           case 'W': CCTKi_CommandLineWarningLevel(optarg); break;
           case 'E': CCTKi_CommandLineErrorLevel(optarg); break;
           case 256: CCTKi_CommandLineParameterLevel(optarg); break;
-          case 'r': CCTKi_CommandLineRedirectStdout(); break;
+          case 'r': CCTKi_CommandLineRedirect(optarg); break;
           case 'T': CCTKi_CommandLineListThorns(); break;
           case 'v': CCTKi_CommandLineVersion(); break;
           case 'i': ignore = 1; break;
