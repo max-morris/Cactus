@@ -86,7 +86,7 @@ and/or \verb|Util_TableGetString()| functions.  Finally, when you're
 through with a table you destroy it with \verb|Util_TableDestroy()|.
 
 There are also convenience functions \verb|Util_TableSetFromString()|
-to sets entries in a table based on a parameter-file--style string,
+to set entries in a table based on a parameter-file--style string,
 and \verb|Util_TableCreateFromString()| to create a table and then
 set entries in it based on a parameter-file--style string.
 
@@ -216,7 +216,7 @@ value that has been stored in it.%%%
 {}
 
 If you only want the first few values of a larger array, just pass
-in the appropriate length of your array:
+in the appropriate length of your array,
 that's ok:
 \begin{verbatim}
 CCTK_INT blah2[2];
