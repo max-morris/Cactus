@@ -1043,6 +1043,7 @@ int Util_TableCreateFromString(const char string[])
   const int status = Util_TableSetFromString(handle, string);
   if (status < 0)
   {
+    Util_TableDestroy(handle);
     return status;                           /* error setting values in table */
   }
 
