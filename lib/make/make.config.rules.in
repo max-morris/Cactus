@@ -88,6 +88,18 @@ define POSTPROCESS_F90
 endef
 
 
+# Define how to do a f compilation
+define PREPROCESS_f
+cat $< > $(basename $(notdir $<)).f
+endef
+
+
+# Define how to do a f77 compilation
+define PREPROCESS_f77
+cat $< > $(basename $(notdir $<)).f
+endef
+
+
 # Build rules for C
 
 %.o: $(SRCDIR)/%.c
@@ -142,8 +154,8 @@ endef
 
 %.o: $(SRCDIR)/%.f77
 	@echo $(DIVIDER)
-#	@echo Preprocessing $<
-#	$(PREPROCESS_F77)
+	@echo Copying $<
+	$(PREPROCESS_f77)
 	@echo Compiling $<
 	$(COMPILE_F77)
 	@echo Postprocessing $<
@@ -169,8 +181,8 @@ endef
 
 %.o: $(SRCDIR)/%.f
 	@echo $(DIVIDER)
-#	@echo Preprocessing $<
-#	$(PREPROCESS_F90)
+	@echo Copying $<
+	$(PREPROCESS_f)
 	@echo Compiling $<
 	$(COMPILE_F90)
 	@echo Postprocessing $<
