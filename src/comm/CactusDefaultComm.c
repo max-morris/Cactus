@@ -250,3 +250,8 @@ int CactusDefaultExit(int retval, cGH *GH)
 #endif
   exit(retval);
 }
+
+int CactusDefaultBarrier(cGH *GH) 
+{
+  return(0);
+}

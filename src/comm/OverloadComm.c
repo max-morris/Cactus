@@ -27,6 +27,7 @@ static char *rcsid="$Header$";
 #define CCTKi_DummySetupGH  CactusDefaultSetupGH
 #define CCTKi_DummyMyProc  CactusDefaultMyProc
 #define CCTKi_DummynProcs  CactusDefaultnProcs
+#define CCTKi_DummyBarrier CactusDefaultBarrier
 #define CCTKi_DummyExit    CactusDefaultExit
 
 #include "CommOverloadables.h"
@@ -35,6 +36,7 @@ static char *rcsid="$Header$";
 #undef CCTKi_DummySetupGH  
 #undef CCTKi_DummyMyProc  
 #undef CCTKi_DummynProcs
+#undef CCTKi_DummyBarrier
 #undef CCTKi_DummyExit
 
 #undef OVERLOADABLE
@@ -72,6 +74,7 @@ int CCTKi_SetupCommFunctions(void)
 #define CCTKi_DummySetupGH CactusDefaultSetupGH
 #define CCTKi_DummyMyProc  CactusDefaultMyProc
 #define CCTKi_DummynProcs  CactusDefaultnProcs
+#define CCTKi_DummyBarrier CactusDefaultBarrier
 #define CCTKi_DummyExit    CactusDefaultExit
 
 #include "CommOverloadables.h"
@@ -80,6 +83,7 @@ int CCTKi_SetupCommFunctions(void)
 #undef CCTKi_DummySetupGH  
 #undef CCTKi_DummyMyProc  
 #undef CCTKi_DummynProcs
+#undef CCTKi_DummyBarrier
 #undef CCTKi_DummyExit
 
 #undef OVERLOADABLE
