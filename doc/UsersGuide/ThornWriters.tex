@@ -873,9 +873,10 @@ A ghostzone consists of a copy of the whole plane (in 3d, line in 2d, point in 1
 from the adjacent processor.  I.e. the array on each processor is augmented with copies of
 points from the adjacent processors, thus allowing the algorithm to proceed {\tt on the 
 points owned by this processor} without having to worry about copying data.  Once the
-data has been evaolved one step, the data in the ghostzones can be exchanged (or 
+data has been evolved one step, the data in the ghostzones can be exchanged (or 
 {\tt synchronised}) between processors in one fell swoop before the next evolution step.
-(See figure \ref{fig:withghost}.)
+(See figure \ref{fig:withghost}.)  Note that you should have at least as many ghostzones as
+your stencil-size requires.
 
 \section{Staggering}
 
@@ -936,6 +937,87 @@ index. The staggered gridpoints and the corresponding unstaggered
 points (arrows) are accessed by the same indices.} 
 \label{fig:stagger2}
 \end{figure}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\chapter{Cactus Parameters}
+
+Parameters are the means by which the user specifies the run-time behaviour of
+the code.  The user specifies values for parameters in the parameter file, and
+then the flesh validates these values against the ranges the thorn writers have
+specified to be valid.  Once validated, parameters values are fixed, and cannot
+be changed (unless the parameter is specified to be steerable, see below).
+
+The full specification for a parameter decalaration is
+
+\begin{verbatim}
+[EXTENDS|USES] <parameter_type> <parameter name> "<parameter description>" 
+{
+  <PARAMETER_RANGES>
+} <default value>
+\end{verbatim}
+
+\section{Types and Ranges}
+
+Parameters can be of several types:
+
+\begin{Lentry}
+\item[Integer]  Can take any integral value
+\item[Real] Can take any floating point value
+\item[Keyword] Can have a value consisting of one of a choice of strings
+\item[Boolean] Can be true or false
+\item[String] Can have any string value
+\end{Lentry}
+
+Each parameter can be validated against a set of allowed values or ranges, each 
+of which has a description associated with it.  The type of range is determined 
+by the type of parameter.
+
+\subsection{Integer}
+
+\subsection{Real}
+
+\subsection{Keyword}
+
+\subsection{Boolean}
+
+\subsection{String}
+
+
+\section{Scope}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\chapter{Scheduling}
+
+Cactus contains a rule-based scheduling system, which determines which
+routines from which thorn are run in which order.  The scheduler 
+determines if the specifications are inconsistent, but does allow the
+user to schedule a routine with respect to another routine which may not
+exist.
+
+The full specification for a schedule declaration is
+
+\begin{verbatim}
+schedule [GROUP] <function name> AT|IN <time> [BEFORE|AFTER <group>] [WHILE <variable>] [AS <alias>]
+{
+  LANG: <language>
+  [STORAGE:       <group>,<group>...]
+  [TRIGGER:       <group>,<group>...]
+  [SYNCHRONISE:   <group>,<group>...]
+  [OPTIONS:       <option>,<option>...]
+} "Description of function"
+\end{verbatim}
+
+
+This consists of a set of options, and the main body, referred to as the {\tt schedule block}.
+
+\section{Schedule Options}
+
+
+\section{The Schedule Block}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -2403,5 +2485,14 @@ For example, the variable {\tt cctkGH} is of this type.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\chapter{Telling the makesystem what to do}
+
+\section{Basic Recipe}
+
+\section{Make Concepts}
+
+\section{The Four Files}
+
+\section{How your code is built}
 
 \end{cactuspart}
