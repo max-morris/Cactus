@@ -41,7 +41,7 @@
 #endif
 
 #define RETURN_TYPE int
-#define ARGUMENTS cGH *GH, const char *group
+#define ARGUMENTS const cGH *GH, const char *group
 #define USE_ARGUMENTS GH = GH; group = group;
 OVERLOADABLE(SyncGroup)
 
@@ -111,7 +111,7 @@ OVERLOADABLE(GroupDynamicData)
 #undef RETURN_TYPE
 
 #define RETURN_TYPE int
-#define ARGUMENTS cGH *GH, int n_groups,const int *groups,const int *timelevels, int *status
+#define ARGUMENTS const cGH *GH, int n_groups,const int *groups,const int *timelevels, int *status
 #define USE_ARGUMENTS GH = GH; n_groups=n_groups; groups = groups; timelevels = timelevels; status = status;
 OVERLOADABLE(GroupStorageIncrease)
 OVERLOADABLE(GroupStorageDecrease)

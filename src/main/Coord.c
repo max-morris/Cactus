@@ -51,7 +51,7 @@ struct Coordprops
 struct Coordpropslistcomp
 {
 
-  cGH *GH;
+  const cGH *GH;
 
   CCTK_REAL lower;                /* Coord of lower range (computational) */
   CCTK_REAL upper;                /* Coord of upper range (computational) */
@@ -62,7 +62,7 @@ struct Coordpropslistcomp
 struct Coordpropslistphysi
 {
 
-  cGH *GH;
+  const cGH *GH;
 
   int lower;            /* Index of lower range (physical) */
   int upper;            /* Index of upper range (physical) */
@@ -87,14 +87,14 @@ void CCTK_FCALL CCTK_FNAME (CCTK_CoordRegisterData)
                            (int *handle,const int *dir,THREE_FORTSTRING_ARG);
 void CCTK_FCALL CCTK_FNAME (CCTK_CoordRegisterRange)
                            (int *ierr,
-                            cGH *GH,
+                            const cGH *GH,
                             const CCTK_REAL *lower,
                             const CCTK_REAL *upper,
                             const int *dir,
                             TWO_FORTSTRING_ARG);
 void CCTK_FCALL CCTK_FNAME (CCTK_CoordRegisterRangePhysIndex)
                            (int *ierr,
-                            cGH *GH,
+                            const cGH *GH,
                             const int *lower,
                             const int *upper,
                             const int *dir,
@@ -345,7 +345,7 @@ void CCTK_FCALL CCTK_FNAME (CCTK_CoordRegisterData)
 
    @var     GH
    @vdesc   GH data
-   @vtype   cGH *
+   @vtype   const cGH *
    @vio     in
    @endvar
    @var     min
@@ -387,7 +387,7 @@ void CCTK_FCALL CCTK_FNAME (CCTK_CoordRegisterData)
 @@*/
 
 
-int CCTK_CoordRegisterRange (cGH *GH,
+int CCTK_CoordRegisterRange (const cGH *GH,
                              CCTK_REAL min,
                              CCTK_REAL max,
                              int dir,
@@ -494,7 +494,7 @@ int CCTK_CoordRegisterRange (cGH *GH,
 
 void CCTK_FCALL CCTK_FNAME (CCTK_CoordRegisterRange)
                            (int *ierr,
-                            cGH *GH,
+                            const cGH *GH,
                             const CCTK_REAL *lower,
                             const CCTK_REAL *upper,
                             const int *dir,
@@ -519,7 +519,7 @@ void CCTK_FCALL CCTK_FNAME (CCTK_CoordRegisterRange)
 
    @var     GH
    @vdesc   GH data
-   @vtype   cGH *
+   @vtype   const cGH *
    @vio     in
    @endvar
    @var     min
@@ -559,7 +559,7 @@ void CCTK_FCALL CCTK_FNAME (CCTK_CoordRegisterRange)
    -5 = memory allocation failed
    @endreturndesc
 @@*/
-int CCTK_CoordRegisterRangePhysIndex (cGH *GH,
+int CCTK_CoordRegisterRangePhysIndex (const cGH *GH,
                                       int min,
                                       int max,
                                       int dir,
@@ -667,7 +667,7 @@ int CCTK_CoordRegisterRangePhysIndex (cGH *GH,
 
 void CCTK_FCALL CCTK_FNAME (CCTK_CoordRegisterRangePhysIndex)
                            (int *ierr,
-                            cGH *GH,
+                            const cGH *GH,
                             const int *lower,
                             const int *upper,
                             const int *dir,

@@ -63,14 +63,14 @@ int CCTK_CoordLocalRange(const cGH  *GH,
                          const char *coord_name,
                          const char *system_name);
 
-int CCTK_CoordRegisterRange(cGH        *GH,
+int CCTK_CoordRegisterRange(const cGH  *GH,
                             CCTK_REAL   coord_min,
                             CCTK_REAL   coord_max,
                             int         coord_dir,
                             const char *coord_name,
                             const char *system_name);
 
-int CCTK_CoordRegisterRangePhysIndex(cGH        *GH,
+int CCTK_CoordRegisterRangePhysIndex(const cGH  *GH,
                                      int         coord_min,
                                      int         coord_max,
                                      int         coord_dir,

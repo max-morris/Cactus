@@ -359,7 +359,7 @@ void *CCTK_VarDataPtrB(const cGH *GH, int timelevel, int vindex, char *varname)
    Enables communication for a group based upon its name.
    @enddesc
 @@*/
-int CCTK_EnableGroupCommI(cGH *GH, int group)
+int CCTK_EnableGroupCommI(const cGH *GH, int group)
 {
   int retcode;
   char *group_name;
@@ -387,7 +387,7 @@ int CCTK_EnableGroupCommI(cGH *GH, int group)
    Enables storage for a group based upon its name.
    @enddesc
 @@*/
-int CCTK_EnableGroupStorageI(cGH *GH, int group)
+int CCTK_EnableGroupStorageI(const cGH *GH, int group)
 {
   int retcode;
   char *group_name;
@@ -418,7 +418,7 @@ int CCTK_EnableGroupStorageI(cGH *GH, int group)
    Routine to switch communication off for a group based upon its index
    @enddesc
 @@*/
-int CCTK_DisableGroupCommI(cGH *GH, int group)
+int CCTK_DisableGroupCommI(const cGH *GH, int group)
 {
   int retcode;
   char *group_name;
@@ -449,7 +449,7 @@ int CCTK_DisableGroupCommI(cGH *GH, int group)
    Routine to switch storage off for a group based upon its index
    @enddesc
 @@*/
-int CCTK_DisableGroupStorageI(cGH *GH, int group)
+int CCTK_DisableGroupStorageI(const cGH *GH, int group)
 {
   int retcode;
   char *group_name;

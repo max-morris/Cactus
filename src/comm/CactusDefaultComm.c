@@ -76,12 +76,14 @@ int CactusDefaultExit(cGH *GH, int retval);
 int CactusDefaultAbort(cGH *GH, int retval);
 int CactusDefaultBarrier(const cGH *GH);
 
-int CactusDefaultEnableGroupStorage(cGH *GH, const char *group);
-int CactusDefaultDisableGroupStorage(cGH *GH, const char *group);
-int CactusDefaultGroupStorageIncrease(cGH *GH, int n_groups, const int *groups,
-                                      const int *timelevels, int *status);
-int CactusDefaultGroupStorageDecrease(cGH *GH, int n_groups, const int *groups,
-                                      const int *timelevels, int *status);
+int CactusDefaultEnableGroupStorage(const cGH *GH, const char *group);
+int CactusDefaultDisableGroupStorage(const cGH *GH, const char *group);
+int CactusDefaultGroupStorageIncrease(const cGH *GH, int n_groups,
+                                      const int *groups, const int *timelevels,
+                                      int *status);
+int CactusDefaultGroupStorageDecrease(const cGH *GH, int n_groups,
+                                      const int *groups, const int *timelevels,
+                                      int *status);
 int CactusDefaultInterpGridArrays (const cGH *GH, int N_dims,
                                    int local_interp_handle,
                                    int param_table_handle,
@@ -466,7 +468,7 @@ int CactusDefaultBarrier (const cGH *GH)
 
    @var        GH
    @vdesc      Pointer to CCTK grid hierarchy
-   @vtype      cGH *
+   @vtype      const cGH *
    @vio        inout
    @vcomment
                A driver should replace the appropriate GV pointers on this
@@ -484,7 +486,7 @@ int CactusDefaultBarrier (const cGH *GH)
                -1 if group increase storage routine wasn't overloaded
    @endreturndesc
  @@*/
-int CactusDefaultEnableGroupStorage(cGH *GH, const char *groupname)
+int CactusDefaultEnableGroupStorage(const cGH *GH, const char *groupname)
 {
   int group, timelevel, retval;
 
@@ -525,7 +527,7 @@ int CactusDefaultEnableGroupStorage(cGH *GH, const char *groupname)
 
    @var        GH
    @vdesc      Pointer to CCTK grid hierarchy
-   @vtype      cGH *
+   @vtype      const cGH *
    @vio        inout
    @vcomment
                A driver should replace the appropriate GV pointers on this
@@ -543,7 +545,7 @@ int CactusDefaultEnableGroupStorage(cGH *GH, const char *groupname)
                -1 if group decrease storage routine wasn't overloaded
    @endreturndesc
  @@*/
-int CactusDefaultDisableGroupStorage(cGH *GH, const char *groupname)
+int CactusDefaultDisableGroupStorage(const cGH *GH, const char *groupname)
 {
   int group, timelevel, retval;
 
@@ -588,7 +590,7 @@ int CactusDefaultDisableGroupStorage(cGH *GH, const char *groupname)
 
    @var        GH
    @vdesc      Pointer to CCTK grid hierarchy
-   @vtype      cGH *
+   @vtype      const cGH *
    @vio        inout
    @vcomment
                A driver should replace the appropriate GV pointers on this
@@ -623,8 +625,9 @@ int CactusDefaultDisableGroupStorage(cGH *GH, const char *groupname)
                groups queried or modified.
    @endreturndesc
  @@*/
-int CactusDefaultGroupStorageIncrease (cGH *GH, int n_groups, const int *groups,
-                                       const int *timelevels, int *status)
+int CactusDefaultGroupStorageIncrease (const cGH *GH, int n_groups,
+                                       const int *groups, const int *timelevels,
+                                       int *status)
 {
   int i, value, retval;
   char *gname;
@@ -687,7 +690,7 @@ int CactusDefaultGroupStorageIncrease (cGH *GH, int n_groups, const int *groups,
 
    @var        GH
    @vdesc      Pointer to CCTK grid hierarchy
-   @vtype      cGH *
+   @vtype      const cGH *
    @vio        inout
    @endvar
    @var        n_groups
@@ -719,8 +722,9 @@ int CactusDefaultGroupStorageIncrease (cGH *GH, int n_groups, const int *groups,
                for all groups queried or modified.
    @endreturndesc
  @@*/
-int CactusDefaultGroupStorageDecrease (cGH *GH, int n_groups, const int *groups,
-                                       const int *timelevels, int *status)
+int CactusDefaultGroupStorageDecrease (const cGH *GH, int n_groups,
+                                       const int *groups, const int *timelevels,
+                                       int *status)
 {
   int i, value, retval;
 

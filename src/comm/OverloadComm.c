@@ -151,10 +151,10 @@ void CCTK_FCALL CCTK_FNAME (CCTK_Barrier) (int *ierror, const cGH *GH);
 void CCTK_FCALL CCTK_FNAME (CCTK_Exit) (int *ierror, cGH *GH, const int *retval);
 void CCTK_FCALL CCTK_FNAME (CCTK_Abort) (int *ierror, cGH *GH, const int *retval);
 void CCTK_FCALL CCTK_FNAME (CCTK_SyncGroup) (int *ierror, cGH *GH, ONE_FORTSTRING_ARG);
-void CCTK_FCALL CCTK_FNAME (CCTK_EnableGroupComm) (int *ierror, cGH *GH, ONE_FORTSTRING_ARG);
-void CCTK_FCALL CCTK_FNAME (CCTK_DisableGroupComm) (int *ierror, cGH *GH, ONE_FORTSTRING_ARG);
-void CCTK_FCALL CCTK_FNAME (CCTK_EnableGroupStorage) (int *ierror, cGH *GH, ONE_FORTSTRING_ARG);
-void CCTK_FCALL CCTK_FNAME (CCTK_DisableGroupStorage) (int *ierror, cGH *GH, ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (CCTK_EnableGroupComm) (int *ierror, const cGH *GH, ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (CCTK_DisableGroupComm) (int *ierror, const cGH *GH, ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (CCTK_EnableGroupStorage) (int *ierror, const cGH *GH, ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (CCTK_DisableGroupStorage) (int *ierror, const cGH *GH, ONE_FORTSTRING_ARG);
 void CCTK_FCALL CCTK_FNAME (CCTK_QueryGroupStorage) (int *ierror, const cGH *GH, ONE_FORTSTRING_ARG);
 
 
@@ -191,28 +191,28 @@ void CCTK_FCALL CCTK_FNAME (CCTK_SyncGroup) (int *ierror, cGH *GH, ONE_FORTSTRIN
   free (group_name); 
 }
 
-void CCTK_FCALL CCTK_FNAME (CCTK_EnableGroupComm) (int *ierror, cGH *GH, ONE_FORTSTRING_ARG)
+void CCTK_FCALL CCTK_FNAME (CCTK_EnableGroupComm) (int *ierror, const cGH *GH, ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_CREATE (group_name)
   *ierror = CCTK_EnableGroupComm (GH, group_name); 
   free (group_name);
 }
 
-void CCTK_FCALL CCTK_FNAME (CCTK_DisableGroupComm) (int *ierror, cGH *GH, ONE_FORTSTRING_ARG)
+void CCTK_FCALL CCTK_FNAME (CCTK_DisableGroupComm) (int *ierror, const cGH *GH, ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_CREATE (group_name)
   *ierror = CCTK_DisableGroupComm (GH, group_name); 
   free (group_name);
 }
 
-void CCTK_FCALL CCTK_FNAME (CCTK_EnableGroupStorage) (int *ierror, cGH *GH, ONE_FORTSTRING_ARG)
+void CCTK_FCALL CCTK_FNAME (CCTK_EnableGroupStorage) (int *ierror, const cGH *GH, ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_CREATE (group_name)
   *ierror = CCTK_EnableGroupStorage (GH, group_name);
   free (group_name);
 }
 
-void CCTK_FCALL CCTK_FNAME (CCTK_DisableGroupStorage) (int *ierror, cGH *GH, ONE_FORTSTRING_ARG)
+void CCTK_FCALL CCTK_FNAME (CCTK_DisableGroupStorage) (int *ierror, const cGH *GH, ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_CREATE (group_name)
   *ierror = CCTK_DisableGroupStorage (GH, group_name);
