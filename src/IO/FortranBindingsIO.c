@@ -23,11 +23,12 @@ void CCTK_FCALL CCTK_FNAME(CCTK_OutputGH)
   *istat = CCTK_OutputGH(GH);
 }
 
-void CCTK_FCALL CCTK_FNAME(CCTK_RegisterIOMethod)
-     (int *handle, ONE_FORTSTRING_ARG)
+void CCTK_FCALL CCTK_FNAME(CCTKi_RegisterIOMethod)
+     (int *handle, TWO_FORTSTRING_ARG)
 {
-  ONE_FORTSTRING_CREATE(name);
-  *handle = CCTK_RegisterIOMethod(name);
+  TWO_FORTSTRING_CREATE(thorn,name);
+  *handle = CCTKi_RegisterIOMethod(thorn,name);
+  free(thorn);
   free(name);
 }
  

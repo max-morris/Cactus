@@ -15,6 +15,7 @@
 
 #include "cGH.h"
 #include "cctk_Flesh.h"
+#include "cctk_ActiveThorns.h"
 #include "cctk_IOMethods.h"
 #include "cctk_Groups.h"
 #include "StoreHandledData.h"
@@ -25,9 +26,13 @@ static const char *rcsid = "$Header$";
 
 CCTK_FILEVERSION (IO_IOMethods_c)
 
-/* Local data holding info on I/O methods.*/
-static cHandledData *IOMethods = NULL;
-static int num_methods = 0;
+/********************************************************************
+ *********************     Local Data Types   ***********************
+ ********************************************************************/
+
+/********************************************************************
+ ********************* Local Routine Prototypes *********************
+ ********************************************************************/
 
 /* Dummy registerable function prototypes. */
 static int DummyOutputGH(cGH *GH);
@@ -42,16 +47,30 @@ int CactusDefaultOutputVarAsByMethod (cGH *GH,
                                       const char *var,
                                       const char *methodname,
                                       const char *alias);
+
+/********************************************************************
+ ********************* Other Routine Prototypes *********************
+ ********************************************************************/
+
 void CCTK_FCALL CCTK_FNAME (CCTK_OutputVarAsByMethod)
                            (int *ierr, cGH *GH, THREE_FORTSTRING_ARG);
 void CCTK_FCALL CCTK_FNAME (CCTK_OutputVarByMethod)
                            (int *ierr, cGH *GH, TWO_FORTSTRING_ARG);
-int CCTK_OutputVarAs (cGH *GH, const char *var, const char *alias);
-int CCTK_OutputVar (cGH *GH, const char *var);
-int CCTK_OutputVarByMethod (cGH *GH, const char *var, const char *method);
 int CCTKi_TriggerSaysGo (cGH *GH, int variable);
 int CCTKi_TriggerAction (void *GH, int variable);
 
+
+/********************************************************************
+ *********************     Local Data   *****************************
+ ********************************************************************/
+
+/* Local data holding info on I/O methods.*/
+static cHandledData *IOMethods = NULL;
+static int num_methods = 0;
+
+/********************************************************************
+ *********************     External Routines   **********************
+ ********************************************************************/
 
 /************************************************************************
  *
@@ -82,7 +101,7 @@ int CCTKi_TriggerAction (void *GH, int variable);
                -2 if memory allocation failed
    @endreturndesc
 @@*/
-int CCTK_RegisterIOMethod(const char *name)
+int CCTKi_RegisterIOMethod(const char *thorn, const char *name)
 {
   int handle;
   struct IOMethod *new_method;
@@ -102,10 +121,11 @@ int CCTK_RegisterIOMethod(const char *name)
       handle = Util_NewHandle(&IOMethods, name, new_method);
 
       /* Initialise the I/O method structure with dummy routines */
-      new_method->OutputGH      = DummyOutputGH;
-      new_method->OutputVarAs   = DummyOutputVarAs;
-      new_method->TriggerOutput = DummyTriggerOutput;
-      new_method->TimeToOutput  = DummyTimeToOutput;
+      new_method->implementation = CCTK_ThornImplementation(thorn);
+      new_method->OutputGH       = DummyOutputGH;
+      new_method->OutputVarAs    = DummyOutputVarAs;
+      new_method->TriggerOutput  = DummyTriggerOutput;
+      new_method->TimeToOutput   = DummyTimeToOutput;
 
       /* Remember how many methods there are */
       num_methods++;
@@ -268,7 +288,213 @@ int CCTK_RegisterIOMethodTimeToOutput (int handle, int (*func)(cGH *, int))
   return (method ? 0 : -1);
 }
 
+/************************************************************************
+ *
+ *  More I/O functions which perhaps should be overloadable
+ *
+ ************************************************************************/
 
+
+ /*@@
+   @routine    CCTK_OutputVarAs
+   @date       Sat March 6 1999
+   @author     Gabrielle Allen
+   @desc
+               Loops over all methods for a given variable,
+               calling each methods OutputVarAs routine
+   @enddesc
+   @calls      Util_GetHandledData
+               IOMethod->OutputVarAs
+
+   @var        GH
+   @vdesc      Pointer to Grid Hierachy
+   @vtype      cGH *
+   @vio        in
+   @endvar
+   @var        var
+   @vdesc      Name of variable to output
+   @vtype      const char *
+   @vio        in
+   @endvar
+   @var        alias
+   @vdesc      Name variable should be output as
+   @vtype      const char *alias
+   @vio        in
+   @vcomment   Note that the I/O method may not use this feature
+   @endvar
+
+   @returntype int
+   @returndesc
+               logical or'ed return codes of all I/O methods'
+               OutputVarAs() routines, or<BR>
+               -2 if no I/O methods were found
+   @endreturndesc
+@@*/
+int CCTK_OutputVarAs (cGH *GH, const char *var, const char *alias)
+{
+  int handle, retval;
+  struct IOMethod *method;
+
+
+  if (num_methods > 0)
+  {
+    retval = 0;
+    for (handle = 0; handle < num_methods; handle++)
+    {
+      method = (struct IOMethod *) Util_GetHandledData (IOMethods, handle);
+      if (method)
+      {
+        method->OutputVarAs(GH, var, alias);
+      }
+    }
+  }
+  else
+  {
+    retval = -2;
+  }
+
+  return (retval);
+}
+
+
+ /*@@
+   @routine    CCTK_OutputVar
+   @date       Sat March 6 1999
+   @author     Gabrielle Allen
+   @desc
+               Outputs a variable using all methods and no alias
+   @enddesc
+   @calls      CCTK_OutputVarAs
+
+   @var        GH
+   @vdesc      Pointer to Grid Hierachy
+   @vtype      cGH *
+   @vio        in
+   @endvar
+   @var        var
+   @vdesc      Name of variable to output
+   @vtype      const char *
+   @vio        in
+   @endvar
+
+   @returntype int
+   @returndesc
+               return code of @seeroutine CCTK_OutputVarAs
+   @endreturndesc
+@@*/
+int CCTK_OutputVar (cGH *GH, const char *var)
+{
+  int retval;
+
+
+  retval = CCTK_OutputVarAs (GH, var, var);
+
+  return (retval);
+}
+
+
+ /*@@
+   @routine    CCTK_OutputVarByMethod
+   @date       Sat March 6 1999
+   @author     Gabrielle Allen
+   @desc
+               Outputs a variable using one given method and no alias
+   @enddesc
+   @calls      CCTK_OutputVarAsByMethod
+
+   @var        GH
+   @vdesc      Pointer to Grid Hierachy
+   @vtype      cGH *
+   @vio        in
+   @endvar
+   @var        var
+   @vdesc      Name of variable to output
+   @vtype      const char *
+   @vio        in
+   @vcomment   This is also the name the variable will be output as
+   @endvar
+   @var        method
+   @vdesc      Name of method to use for output
+   @vtype      const char *
+   @vio        in
+   @endvar
+
+   @returntype int
+   @returndesc
+               return code of @seeroutine CCTK_OutputVarAsByMethod
+   @endreturndesc
+@@*/
+int CCTK_OutputVarByMethod (cGH *GH, const char *var, const char *method)
+{
+  int retval;
+
+
+  retval = CCTK_OutputVarAsByMethod (GH, var, method, var);
+
+  return (retval);
+}
+
+void CCTK_FCALL CCTK_FNAME (CCTK_OutputVarByMethod)
+                           (int *ierr, cGH *GH, TWO_FORTSTRING_ARG)
+{
+  TWO_FORTSTRING_CREATE(var,method);
+  *ierr = CCTK_OutputVarByMethod(GH, var, method);
+  free(var);
+  free(method);
+}
+
+
+
+ /*@@
+   @routine    CCTK_NumIOMethods
+   @date       Sat Oct 20 2001
+   @author     Gabrielle Allen
+   @desc
+               The number of IO methods registered
+   @enddesc
+   @returntype int
+   @returndesc
+               number of IO methods
+   @endreturndesc
+@@*/
+
+int CCTK_NumIOMethods()
+{
+  return num_methods;
+}
+
+ /*@@
+   @routine    CCTK_IOMethodImplementation
+   @date       Sat Oct 20 2001
+   @author     Gabrielle Allen
+   @desc
+   Provide the implementation which registered a method
+   @enddesc
+   @returntype int
+   @returndesc
+   Implementation which registered this method
+   @endreturndesc
+@@*/
+
+const char *CCTK_IOMethodImplementation(int handle)
+{
+  struct IOMethod *method;
+  const char *implementation=NULL;
+
+  method = (struct IOMethod *) Util_GetHandledData (IOMethods, handle);
+  
+  if (method)
+  {
+    implementation = method->implementation;
+  }
+
+  return implementation;
+}
+
+
+/********************************************************************
+ *********************     Local Routines   *************************
+ ********************************************************************/
 
 /************************************************************************
  *
@@ -466,161 +692,6 @@ void CCTK_FCALL CCTK_FNAME (CCTK_OutputVarAsByMethod)
   free (alias);
 }
 
-
-/************************************************************************
- *
- *  More I/O functions which perhaps should be overloadable
- *
- ************************************************************************/
-
-
- /*@@
-   @routine    CCTK_OutputVarAs
-   @date       Sat March 6 1999
-   @author     Gabrielle Allen
-   @desc
-               Loops over all methods for a given variable,
-               calling each methods OutputVarAs routine
-   @enddesc
-   @calls      Util_GetHandledData
-               IOMethod->OutputVarAs
-
-   @var        GH
-   @vdesc      Pointer to Grid Hierachy
-   @vtype      cGH *
-   @vio        in
-   @endvar
-   @var        var
-   @vdesc      Name of variable to output
-   @vtype      const char *
-   @vio        in
-   @endvar
-   @var        alias
-   @vdesc      Name variable should be output as
-   @vtype      const char *alias
-   @vio        in
-   @vcomment   Note that the I/O method may not use this feature
-   @endvar
-
-   @returntype int
-   @returndesc
-               logical or'ed return codes of all I/O methods'
-               OutputVarAs() routines, or<BR>
-               -2 if no I/O methods were found
-   @endreturndesc
-@@*/
-int CCTK_OutputVarAs (cGH *GH, const char *var, const char *alias)
-{
-  int handle, retval;
-  struct IOMethod *method;
-
-
-  if (num_methods > 0)
-  {
-    retval = 0;
-    for (handle = 0; handle < num_methods; handle++)
-    {
-      method = (struct IOMethod *) Util_GetHandledData (IOMethods, handle);
-      if (method)
-      {
-        method->OutputVarAs(GH, var, alias);
-      }
-    }
-  }
-  else
-  {
-    retval = -2;
-  }
-
-  return (retval);
-}
-
-
- /*@@
-   @routine    CCTK_OutputVar
-   @date       Sat March 6 1999
-   @author     Gabrielle Allen
-   @desc
-               Outputs a variable using all methods and no alias
-   @enddesc
-   @calls      CCTK_OutputVarAs
-
-   @var        GH
-   @vdesc      Pointer to Grid Hierachy
-   @vtype      cGH *
-   @vio        in
-   @endvar
-   @var        var
-   @vdesc      Name of variable to output
-   @vtype      const char *
-   @vio        in
-   @endvar
-
-   @returntype int
-   @returndesc
-               return code of @seeroutine CCTK_OutputVarAs
-   @endreturndesc
-@@*/
-int CCTK_OutputVar (cGH *GH, const char *var)
-{
-  int retval;
-
-
-  retval = CCTK_OutputVarAs (GH, var, var);
-
-  return (retval);
-}
-
-
- /*@@
-   @routine    CCTK_OutputVarByMethod
-   @date       Sat March 6 1999
-   @author     Gabrielle Allen
-   @desc
-               Outputs a variable using one given method and no alias
-   @enddesc
-   @calls      CCTK_OutputVarAsByMethod
-
-   @var        GH
-   @vdesc      Pointer to Grid Hierachy
-   @vtype      cGH *
-   @vio        in
-   @endvar
-   @var        var
-   @vdesc      Name of variable to output
-   @vtype      const char *
-   @vio        in
-   @vcomment   This is also the name the variable will be output as
-   @endvar
-   @var        method
-   @vdesc      Name of method to use for output
-   @vtype      const char *
-   @vio        in
-   @endvar
-
-   @returntype int
-   @returndesc
-               return code of @seeroutine CCTK_OutputVarAsByMethod
-   @endreturndesc
-@@*/
-int CCTK_OutputVarByMethod (cGH *GH, const char *var, const char *method)
-{
-  int retval;
-
-
-  retval = CCTK_OutputVarAsByMethod (GH, var, method, var);
-
-  return (retval);
-}
-
-void CCTK_FCALL CCTK_FNAME (CCTK_OutputVarByMethod)
-                           (int *ierr, cGH *GH, TWO_FORTSTRING_ARG)
-{
-  TWO_FORTSTRING_CREATE(var,method);
-  *ierr = CCTK_OutputVarByMethod(GH, var, method);
-  free(var);
-  free(method);
-}
 
 
 /************************************************************************
