@@ -316,12 +316,14 @@ int CCTK_IsThornActive(const char *name)
   return retval;
 }
 
-void CCTK_FCALL CCTK_FNAME(CCTK_IsThornActive)
-     (int *retval, ONE_FORTSTRING_ARG)
+int CCTK_FCALL CCTK_FNAME(CCTK_IsThornActive)
+     (ONE_FORTSTRING_ARG)
 {
+  int retval;
   ONE_FORTSTRING_CREATE(name) 
-  *retval = CCTK_IsThornActive(name);
+  retval = CCTK_IsThornActive(name);
   free(name);
+  return retval;
 }
 
  /*@@
