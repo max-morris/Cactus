@@ -82,7 +82,7 @@ typedef struct
 
   /* Stuff passed in in user calls */
 
-  int (*CallFunction)(cFunctionData *, void *);
+  int (*CallFunction)(void *, cFunctionData *, void *);
 
 } t_sched_data;
 
@@ -162,6 +162,56 @@ static t_TimerInfo *timerinfo = NULL;
 /********************************************************************
  *********************     External Routines   **********************
  ********************************************************************/
+
+ /*@@
+   @routine    CCTK_CallFunction
+   @date       Thu Jan 27 11:29:47 2000
+   @author     Tom Goodale
+   @desc 
+   Calls a function depending upon the data passed in the the
+   fdata structure.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+int CCTK_CallFunction(void *function, 
+                      cFunctionData *fdata, 
+                      void *data)
+{
+  void (*standardfunc)(void *);
+
+  int (*noargsfunc)(void);
+
+  switch(fdata->type)
+  {
+    case FunctionNoArgs:
+      noargsfunc = (int (*)(void))function;
+      noargsfunc();
+      break;
+    case FunctionStandard:
+      switch(fdata->language)
+      {
+        case LangC:
+          standardfunc = (void (*)(void *))function;
+          standardfunc(data);
+          break;
+        case LangFortran:
+          fdata->FortranCaller(data, function);
+          break;
+        default :
+          CCTK_WARN(1, "Unknown language.");
+      }
+      break;
+    default :
+      CCTK_WARN(1, "Unknown function type.");
+  }
+
+  return 0;
+}
 
  /*@@
    @routine    CCTKi_ScheduleFunction
@@ -386,14 +436,22 @@ int CCTKi_ScheduleGroupComm(const char *group)
 
 int CCTKi_ScheduleTraverse(const char *where, 
 			   void *GH,   
-			   int (*CallFunction)(cFunctionData *, void *))
+			   int (*CallFunction)(void *, cFunctionData *, void *))
 {
   t_sched_data data;
 
   int (*calling_function)(void *, t_attribute *, t_sched_data *);
 
   data.GH = (cGH *)GH;
-  data.CallFunction = CallFunction;
+  
+  if(CallFunction)
+  {
+    data.CallFunction = CallFunction;
+  }
+  else
+  {
+    data.CallFunction = CCTK_CallFunction;
+  }
 
   if(CCTK_Equals(where, "CCTK_STARTUP"))
   {
@@ -792,6 +850,8 @@ static cFunctionType TranslateFunctionType(const char *where)
     retcode = FunctionStandard;
   }
 
+  printf("I've been called, where is %s\n", where);
+
   return retcode;
 }
 
@@ -1187,6 +1247,8 @@ static int CCTKi_ScheduleCallFunction(void *function,
   void (*calledfunc)(void *);
 
   CCTK_TimerStartI(attribute->timer_handle);
+
+#if 0
   if(attribute->FunctionData.language == LangFortran)
   {
     /* Call the fortran wrapper. */
@@ -1200,6 +1262,12 @@ static int CCTKi_ScheduleCallFunction(void *function,
   
     calledfunc(data->GH);
   }
+#endif
+
+  /* Use whatever has been chosen as the calling function for this 
+   * function. 
+   */
+  data->CallFunction(function, &(attribute->FunctionData), data->GH);
 
   CCTK_TimerStopI(attribute->timer_handle);
 
