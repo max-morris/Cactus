@@ -754,7 +754,7 @@ sub CheckExpression
   my ($expression) = @_;
   my $retcode;
 
-  if($expression =~ m,^[-\d/*()+xy^]+$, &&
+  if($expression =~ m,^[-\d/*()+xy^!<>=]+$, &&
      $expression =~ m/\bx\b/            &&
      $expression =~ m/\by\b/            &&
      $expression !~ m/\wx/              &&

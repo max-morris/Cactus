@@ -109,6 +109,7 @@ static struct
   {"*",  binary, 4,OP_TIMES},
   {"^",  binary, 5,OP_POWER},
   /* Unary Operators - these must have the highest precedence. */
+  {"!",     unary, 6, OP_NOT},
   {"acos",  unary, 6, OP_ACOS},
   {"asin",  unary, 6, OP_ASIN},
   {"atan",  unary, 6, OP_ATAN},
@@ -998,6 +999,9 @@ static int EvaluateUnary(uExpressionValue *retval,
   #define EVALUATEUNARY(retval, val)                   \
   switch(opcode)                                       \
   {                                                    \
+    case OP_NOT :                                      \
+      (retval) = !(val);                               \
+      break;                                           \
     case OP_ACOS :                                     \
       (retval) = acos(val);                            \
       break;                                           \
