@@ -116,7 +116,7 @@ USE_RANLIB = @USE_RANLIB@
 
 # Exclude some files from the dependency lists
 
-DEP_EXCLUDE_FILES = cctk_FunctionAliases\.h|CParameterStructNames\.h|cctk_Arguments\.h|definethisthorn\.h|FParameters.h|CParameters\.h
+DEP_EXCLUDE_FILES = cctk_Functions\.h|CParameterStructNames\.h|cctk_Arguments\.h|definethisthorn\.h|FParameters.h|CParameters\.h
 
 # Command used to get the working directory
 GET_WD = @GET_WD@
