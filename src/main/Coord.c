@@ -610,6 +610,12 @@ void CCTK_FCALL CCTK_FNAME(CCTK_CoordDir)
    @author     Gabrielle Allen
    @desc 
                Supplies the global range of the named coordinate.
+	       
+	       You specify the direction (coorddir=-1;1,2,...) 
+	       or the name (coordname). The name will be used 
+	       if coordir==-1
+	       
+
    @enddesc 
    @calls     
 
