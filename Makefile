@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.115 2001-07-02 21:35:40 allen Exp $
+#   @version $Id: Makefile,v 1.116 2001-07-24 15:07:07 goodale Exp $
 # @@*/
 
 ##################################################################################
@@ -82,49 +82,49 @@ SETUP_ENV =
 
 ifdef CC
 ifneq ($(strip $(origin CC)), default)
-SETUP_ENV += CC=$(CC) ; export CC ;
+SETUP_ENV += CC="$(CC)" ; export CC ;
 endif
 endif
 
 ifdef F90
 ifneq ($(strip $(origin F90)), default)
-SETUP_ENV += F90=$(F90) ; export F90 ;
+SETUP_ENV += F90="$(F90)" ; export F90 ;
 endif
 endif
 
 ifdef F77
 ifneq ($(strip $(origin F77)), default)
-SETUP_ENV += F77=$(F77) ; export F77 ;
+SETUP_ENV += F77="$(F77)" ; export F77 ;
 endif
 endif
 
 ifdef LD
 ifneq ($(strip $(origin LD)), default)
-SETUP_ENV += LD=$(LD) ; export LD ;
+SETUP_ENV += LD="$(LD)" ; export LD ;
 endif
 endif
 
 ifdef CFLAGS
 ifneq ($(strip $(origin CFLAGS)), default)
-SETUP_ENV += CFLAGS=$(CFLAGS) ; export CFLAGS;
+SETUP_ENV += CFLAGS="$(CFLAGS)" ; export CFLAGS;
 endif
 endif
 
 ifdef F90FLAGS
 ifneq ($(strip $(origin F90FLAGS)), default)
-SETUP_ENV += F90FLAGS=$(F90FLAGS) ; export F90FLAGS ;
+SETUP_ENV += F90FLAGS="$(F90FLAGS)" ; export F90FLAGS ;
 endif
 endif
 
 ifdef F77FLAGS
 ifneq ($(strip $(origin F77FLAGS)), default)
-SETUP_ENV += F77FLAGS=$(F77FLAGS) ; export F90FLAGS ;
+SETUP_ENV += F77FLAGS="$(F77FLAGS)" ; export F90FLAGS ;
 endif
 endif
 
 ifdef LDFLAGS
 ifneq ($(strip $(origin LDFLAGS)), default)
-SETUP_ENV += LDFLAGS=$(LDFLAGS) ; export LDFLAGS ;
+SETUP_ENV += LDFLAGS="$(LDFLAGS)" ; export LDFLAGS ;
 endif
 endif
 
@@ -144,21 +144,21 @@ endif
 
 ifdef MPI
 ifneq ($(strip $(origin MPI)), default)
-SETUP_ENV += MPI=$(MPI) ; export MPI ;
+SETUP_ENV += MPI="$(MPI)" ; export MPI ;
 endif
 endif
 
 # Debug options
 ifdef DEBUG
 ifneq ($(strip $(origin DEBUG)), default)
-SETUP_ENV += DEBUG=$(DEBUG) ; export DEBUG ;
+SETUP_ENV += DEBUG="$(DEBUG)" ; export DEBUG ;
 endif
 endif
 
 # Optimisation options
 ifdef OPTIMISE
 ifneq ($(strip $(origin OPTIMISE)), default)
-SETUP_ENV += OPTIMISE=$(OPTIMISE) ; export OPTIMISE ;
+SETUP_ENV += OPTIMISE="$(OPTIMISE)" ; export OPTIMISE ;
 endif
 endif
 
