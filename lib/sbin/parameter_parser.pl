@@ -228,7 +228,6 @@ sub parse_param_ccl
 	    {
 	      ($new_ranges, $delim, $new_desc) = ($data[$line_number],"","");
 	    }       
-
 	    # Increment the number of ranges found (ranges)
 	    $parameter_db{"\U$thorn $variable\E ranges"}++;
 	    # Strip out any spaces in the range for a numeric parameter.
@@ -237,11 +236,17 @@ sub parse_param_ccl
 		$new_ranges =~ s/[ \t]+/ /g;
 	    }
 	    $parameter_db{"\U$thorn $variable\E range $parameter_db{\"\U$thorn $variable\E ranges\"} range"} = $new_ranges;
-	    # Give a warning if no description has been given
-	    if($delim eq "")
+ 
+	    # Check description
+	    if($delim eq "" || ($delim =~ /::/ && $new_desc =~ /^\s*$/))
 	    {
 		$message = "Missing description of range '$new_ranges' for parameter $thorn\::$variable";
 		&CST_error(1,$message,__LINE__,__FILE__);
+	    }
+	    elsif ($new_desc !~ /^\s*\".*\"\s*$/)
+	    {
+	      $message = "Description of range for $thorn\::$variable has misplaced quotes ($new_desc)";
+	      &CST_error(0,$message,__LINE__,__FILE__);
 	    }
 	    $parameter_db{"\U$thorn $variable\E range $parameter_db{\"\U$thorn $variable\E ranges\"} description"} = $new_desc;
 	    $line_number++;
