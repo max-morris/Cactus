@@ -1,7 +1,7 @@
 
 Cactus Code Frequently Asked Questions
 
-$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.44 2002-09-02 17:47:56 allen Exp $
+$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.45 2002-09-08 14:05:33 allen Exp $
 
 Also available at http://www.cactuscode.org/Documentation/FAQ
 
@@ -125,6 +125,9 @@ C26 I'm passing arguments to my scheduled routine using CCTK_ARGUMENTS and
 
 C27 (Linux IA64) I get a segmentation violation compiling snprintf.c in
     the Cactus flesh?
+
+C28 On linking I get an "unresolved text symbol" for a scheduled function 
+    called from libCactusBindings.a
 
 ------------------------------------------------------------------------------
 Running:
@@ -741,6 +744,20 @@ C27 (Linux IA64) I get a segmentation violation compiling snprintf.c in
     Alternatively configure with the -O1 option. (Note, so far our benchmarks
     have indicated that -O1 actually executes faster than -O3, although this
     may be just for our particular benchmarks).
+
+C28 On linking I get an "unresolved text symbol" for a scheduled function 
+    called from libCactusBindings.a
+
+    Check the size of the object file which was created for the source 
+    file containing this function in configs/<config>/build/<thorn>. 
+    With some compilers, making object files for complicated source files 
+    can fail because it takes too much memory, and an empty object file 
+    will be created and the make process will fail. If you continue the
+    make process Cactus will not realise that the object file is empty.
+  
+    If this is what happened, touch the relevant source file and try 
+    compiling again. It may be that you will need to switch optimisations off
+    for this file, or split up the troublesome code into smaller components.
 
 
 ------------------------------------------------------------------------------
