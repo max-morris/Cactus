@@ -420,7 +420,11 @@ int CactusDefaultAbort (cGH *GH, int retval)
        call CCTK_Abort() before that those messages wouldn't be seen. */
     fflush (stdout);
     fflush (stderr);
+
+#ifdef HAVE_UNISTD_H
     sleep (5);
+#endif
+
     CACTUS_MPI_ERROR (MPI_Abort (MPI_COMM_WORLD, retval));
   }
 #else
