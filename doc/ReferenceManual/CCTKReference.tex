@@ -4351,6 +4351,8 @@ The number of interpolation points requested by this processor.
 One of the \code{CCTK\_VARIABLE\_*} type codes, giving the data type of the
 interpolation-point coordinate arrays pointed to by \code{interp\_coords[]}.
 All interpolation-point coordinate arrays must be of the same data type.
+(In practice, this data type will almost always be \code{CCTK\_REAL}
+or one of the \code{CCTK\_REAL*} types.)
 \end{Parameter}
 \begin{Parameter}{interp\_coords ($\ne$ NULL)}
 (Pointer to) an array of \code{N\_dims} pointers to 1-D arrays giving the
@@ -5037,8 +5039,8 @@ The number of points at which interpolation is to be done.
 \hbox{}
 One of the \code{CCTK\_VARIABLE\_*} type codes, giving the data type
 of the 1-D interpolation-point-coordinate arrays pointed to by
-\code{interp\_coords[]}.  In practice, this data type will almost
-always be \code{CCTK\_REAL} or one of the \code{CCTK\_REAL*} types.
+\code{interp\_coords[]}.  (In practice, this data type will almost
+always be \code{CCTK\_REAL} or one of the \code{CCTK\_REAL*} types.)
 \end{Parameter}
 \begin{Parameter}{interp\_coords ($\ne$ NULL)}
 \hbox{}
