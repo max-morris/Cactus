@@ -70,7 +70,7 @@ sub cross_index_parameters
     {
       if($public_parameters{"\U$parameter\E"})
       {
-          $message = "Duplicate public parameter $parameter, defined in $imp and ".$public_parameters{"\Uparameter\E"};
+          $message = "Duplicate public parameter $parameter, defined in $thorn and ".$public_parameters{"\Uparameter\E"};
           &CST_error(0,$message,"",__LINE__,__FILE__);
       }
       else
@@ -327,7 +327,7 @@ sub parse_param_ccl
           else
           {
             $message =  "Unable to find default value for parameter $variable";
-	    $hint = "Last line of parameter block should be } <default value>";
+            $hint = "Last line of parameter block should be } <default value>";
             &CST_error(0,$message,$hint,__LINE__,__FILE__);
           }             
         }
@@ -579,6 +579,145 @@ sub CheckParameterDefault
   
   return;
 }
+
+#/*@@
+#  @routine    CheckExpression
+#  @date       Fri May 17 21:26:52 2002
+#  @author     Tom Goodale
+#  @desc 
+#  Checks that an accumulator parameter's expression is valid.
+#  The expression should communte when applied twice
+#  I.e. if a is the original value of the parameter,
+#          b the first value to add
+#          c the second parameter to add
+#      and L(x,y) the operation
+#  The expression
+#      L(L(a,b),c) = L(L(a,c),b)
+#  should be true.
+#  @enddesc 
+#  @calls     
+#  @calledby   
+#  @history 
+#
+#  @endhistory 
+#
+#  @var     expression
+#  @vdesc   The expression to verify
+#  @vtype   string
+#  @vio     in
+#
+#  @returntype int
+#  @returndesc
+#  0 -- success
+#  1 -- expression contains invalid characters
+#  2 -- expression could not be evaluated
+#  3 -- expression can produce infinite result
+#  4 -- expression does not commute
+#  @endreturndesc
+#@@*/
+sub CheckExpression
+{
+  my ($expression) = @_;
+  my $retcode;
+
+  if($expression =~ m,^[-\d/*()+xy^]+$, &&
+     $expression =~ m/\bx\b/            &&
+     $expression =~ m/\by\b/            &&
+     $expression !~ m/\wx/              &&
+     $expression !~ m/x\w/              &&
+     $expression !~ m/\wy/              &&
+     $expression !~ m/y\w/)
+  {
+
+    # Pick some numbers to do the test with.
+    my $a = 37;
+    my $b = 53;
+    my $c = 59;
+ 
+    # Convert to Perl's exponentiation operator syntax.
+    $expression =~ s/\^/**/;
+
+    # Convert x and y to Perl variables.
+    $expression =~ s/x/\$x/g;
+    $expression =~ s/y/\$y/g;
+
+    # Calculate L(L(a,b),c).
+    my $answer1 = &EvalExpression(&EvalExpression($a,$b,"$expression"),$c,$expression);
+    
+    print "$answer1\n" if defined $answer1;
+    
+    # Calculate L(L(a,c),b).
+    my $answer2 = &EvalExpression(&EvalExpression($a,$c,"$expression"),$b,$expression);
+    
+    print "$answer2\n" if defined $answer2;
+    
+    if( !defined $answer1 || ! defined $answer2)
+    {
+      $retval = 2;
+    }
+    elsif($answer1 eq "inf" || $answer2 eq "inf")
+    {
+      $retval = 3;
+    }
+    elsif(abs($answer1 - $answer2) > 1.0e-17)
+    {
+      $retval = 4;
+    }
+    else # if($answer1 == $answer2)
+    {
+      $retval = 0;
+    }
+  }
+  else
+  {
+    $retval = 1;
+  }
+  
+  return $retval;
+}
+
+
+#/*@@
+#  @routine    EvalExpression
+#  @date       Fri May 17 21:34:18 2002
+#  @author     Tom Goodale
+#  @desc 
+#  Takes an expression involving $x and $y
+#  and evaluates it.
+#  @enddesc 
+#  @calls     
+#  @calledby   
+#  @history 
+#
+#  @endhistory 
+#
+#  @var     x
+#  @vdesc   An argument in the expression
+#  @vtype   scalar
+#  @vio     in
+#  @var     y
+#  @vdesc   An argument in the expression
+#  @vtype   scalar
+#  @vio     in
+#  @var     expression
+#  @vdesc   The expression to evaluate
+#  @vtype   string
+#  @vio     in
+#
+#  @returntype scalar
+#  @returndesc
+#    The value of the evaluation.
+#  @endreturndesc
+#@@*/
+sub EvalExpression
+{
+  my ($x, $y, $expression) = @_;
+
+  my $answer = eval "$expression";
+
+  return $answer;
+}
+
 
 1;
 
