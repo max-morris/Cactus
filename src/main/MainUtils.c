@@ -55,7 +55,7 @@ int CCTK_RunTitle(int len, char *title)
 
   retval = -1;
 
-  cctk_title = *(const char **)
+  cctk_title = *(const char *const *)
                CCTK_ParameterGet("cctk_run_title", "Cactus", NULL);
   if (cctk_title)
   {

@@ -742,7 +742,7 @@ char *CCTK_ParameterValString (const char *param_name, const char *thorn)
       case PARAMETER_KEYWORD:
       case PARAMETER_STRING:
       case PARAMETER_SENTENCE:
-        retval = strdup (*(const char **) param_data);
+        retval = strdup (*(const char *const *) param_data);
         break;
 
       case PARAMETER_BOOLEAN:

@@ -114,7 +114,7 @@ static void CactusInitialiseGH (const tFleshConfig *config, cGH *GH)
   const char *recovery_mode;
 
 
-  recovery_mode = *(const char **)
+  recovery_mode = *(const char *const *)
                   CCTK_ParameterGet ("recovery_mode", "Cactus", NULL);
 
   /* Initialise time */

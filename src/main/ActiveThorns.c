@@ -1406,7 +1406,7 @@ static int ActivateImp(const char *implementation, const char *thorn)
 @@*/
 static int CompareStrings(const void *string1, const void *string2)
 {
-  return Util_StrCmpi(*(const char **)string1, *(const char **)string2);
+  return Util_StrCmpi(*(const char *const *)string1, *(const char *const *)string2);
 }
 
  /*@@
