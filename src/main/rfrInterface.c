@@ -7,7 +7,7 @@
    @enddesc 
  @@*/
 
-#define RFRDEBUG
+/*#define RFRDEBUG*/
 
 #include "flesh.h"
 #include "GHExtensions.h"
