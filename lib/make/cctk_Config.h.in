@@ -10,6 +10,9 @@
 /* Define to empty if the keyword does not work.  */
 #undef const
 
+/* Define to empty if the keyword does not work.  */
+#undef restrict
+
 #endif /* ! defined __cplusplus */
 
 /* Define if your processor stores words with the most significant

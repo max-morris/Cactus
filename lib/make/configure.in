@@ -204,6 +204,26 @@ fi
 AC_C_CONST
 AC_C_INLINE
 
+dnl Check for the presence of the restrict keyword
+AC_MSG_CHECKING([for restrict])
+AC_CACHE_VAL(cctk_cv_have_restrict,
+[AC_TRY_COMPILE([
+int foo(double * restrict a, double * restrict b)
+{
+  return 0;
+}],
+, eval "cctk_cv_have_restrict=yes",
+eval "cctk_cv_have_restrict=no")
+])
+if test "$cctk_cv_have_restrict" = "yes"; then
+  AC_DEFINE(restrict,restrict)
+  AC_MSG_RESULT(yes)
+else
+  AC_DEFINE(restrict,)
+  AC_MSG_RESULT(no)
+fi
+
+
 # Check for sizes of integer types
 
 if test "x$cross_compiling" = "xyes" -a -z "$SIZEOF_LONG_LONG" ; then
