@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.63 2000-01-04 11:45:27 allen Exp $
+#   @version $Id: Makefile,v 1.64 2000-01-16 10:55:55 allen Exp $
 # @@*/
 
 ##################################################################################
@@ -518,9 +518,17 @@ ifneq ($strip($(CONFIGURATIONS)),)
 .PHONY $(addsuffix -config,$(CONFIGURATIONS)):
 
 $(addsuffix -config,$(CONFIGURATIONS)):
-	@echo $(DIVIDER)
+	echo $(DIVIDER)
 	$(SETUP_ENV) $(PERL) -s $(SETUP) -reconfig=1 $(SETUP_OPTIONS) $(@:%-config=%); 
+	@echo $(DIVIDER);
+	@echo Use $(MAKE) $(@:%-config=%) to build the configuration.
+	@echo $(DIVIDER)
+ifneq ($(strip $(THORNLIST)),)
+	cp $(THORNLIST) $(CONFIGS_DIR)/$(@:%-config=%)/ThornList
 endif
+endif
+
+# FIXME: What is this bit? Is it used? 
 
 %-config:
 	@echo $(DIVIDER)
@@ -537,6 +545,10 @@ endif
 	echo Use $(MAKE) $(@:%-config=%) to build the configuration.; \
 	fi 
 	@echo $(DIVIDER)
+ifneq ($(strip $(THORNLIST)),)
+	cp $(THORNLIST) $(CONFIGS_DIR)/$@/ThornList
+endif
+
 
 # Make a new thorn
 
@@ -686,4 +698,7 @@ downsize:
 	echo Use $(MAKE) $@ to build the configuration.; \
 	fi 
 	@echo $(DIVIDER)
+ifneq ($(strip $(THORNLIST)),)
+	@cp $(THORNLIST) $(CONFIGS_DIR)/$@/ThornList
+endif
 
