@@ -98,6 +98,10 @@ cat > cctk_Archdefs.h <<EOF
 #define _CCTK_ARCHDEFS_H_
 EOF
 
+cat > make.arch.defn <<EOF
+# Stuff from known architectures 
+EOF
+
 CCTK_CONFIG_STAGE="misc"
 
 if test -r $srcdir/known-architectures/$host_os ; then
@@ -658,6 +662,28 @@ AC_SUBST(F_DEPEND)
 AC_SUBST(F_DEPEND_OUT)
 
 : ${F_DEPEND_OUT=' > $@'}
+
+# Postprocessing of object files.  Most architectures don't need to do this at all.
+
+AC_SUBST(C_POSTPROCESSING)
+
+: ${C_POSTPROCESSING=""}
+
+AC_SUBST(CXX_POSTPROCESSING)
+
+: ${CXX_POSTPROCESSING=""}
+
+AC_SUBST(F77_POSTPROCESSING)
+
+: ${F77_POSTPROCESSING=""}
+
+AC_SUBST(F_POSTPROCESSING)
+
+: ${F_POSTPROCESSING=""}
+
+AC_SUBST(F90_POSTPROCESSING)
+
+: ${F90_POSTPROCESSING=""}
 
 # How to generate an intermediate C++ name (some compilers are very picky).
 

@@ -95,6 +95,13 @@ F77_DEPEND_OUT = @F77_DEPEND_OUT@
 
 CXX_WORKING_NAME = @CXX_WORKING_NAME@
 
+# How to postprocess object files
+C_POSTPROCESSING   = @C_POSTPROCESSING@
+CXX_POSTPROCESSING = @CXX_POSTPROCESSING@
+F77_POSTPROCESSING = @F77_POSTPROCESSING@
+F_POSTPROCESSING   = @F_POSTPROCESSING@
+F90_POSTPROCESSING = @F90_POSTPROCESSING@
+
 # Exclude some files from the dependency lists
 
 DEP_EXCLUDE_FILES = CParameterStructNames\.h|cctk_Arguments\.h|definethisthorn\.h|FParameters.h|CParameters\.h
@@ -180,3 +187,6 @@ ifeq ($(strip $(CCTK_WARN_MODE)),yes)
   F90FLAGS += $(F90_WARN_FLAGS)
 endif
 
+# Stuff specific to an architecture.
+
+include $(TOP)/config-data/make.arch.defn

@@ -72,6 +72,7 @@ current_wd=`$(GET_WD)` ; cd $(SCRATCH_BUILD) ; $(CC) $(CFLAGS) $(CCOMPILEONLY)$(
 endef
 
 define POSTPROCESS_C
+$(C_POSTPROCESSING)
 endef
 
 # Define how to do a C++ compilation
@@ -84,6 +85,7 @@ current_wd=`$(GET_WD)` ; cd $(SCRATCH_BUILD) ; $(CXX) $(CXXFLAGS) $(CCOMPILEONLY
 endef
 
 define POSTPROCESS_CXX
+$(CXX_POSTPROCESSING)
 endef
 
 # Define how to do a F77 compilation
@@ -96,6 +98,7 @@ current_wd=`$(GET_WD)` ; cd $(SCRATCH_BUILD) ; $(F77) $(F77FLAGS) $(FCOMPILEONLY
 endef
 
 define POSTPROCESS_F77
+$(F77_POSTPROCESSING)
 endef
 
 # Define how to do a fixed-format F90 compilation
@@ -108,6 +111,7 @@ current_wd=`$(GET_WD)` ; cd $(SCRATCH_BUILD) ; $(F90) $(F90FLAGS) $(FCOMPILEONLY
 endef
 
 define POSTPROCESS_F
+$(F_POSTPROCESSING)
 endef
 
 # Define how to do a free-format F90 compilation
@@ -120,6 +124,7 @@ current_wd=`$(GET_WD)` ; cd $(SCRATCH_BUILD) ; $(F90) $(F90FLAGS) $(FCOMPILEONLY
 endef
 
 define POSTPROCESS_F90
+$(F90_POSTPROCESSING)
 endef
 
 
