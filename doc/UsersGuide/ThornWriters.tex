@@ -3311,9 +3311,13 @@ which uses the include file must declare this in its
 USES INCLUDE [SOURCE|HEADER]: <file_name>
 \end{verbatim}
 
-(If the optional \verb![SOURCE|HEADER]! is omitted, \verb|HEADER| is assumed.)
-Any thorn which wishes to add to this include file,
-declares in its own {\tt interface.ccl}
+(If the optional \verb![SOURCE|HEADER]! is omitted, \verb|HEADER| is
+assumed.  Note that this can be dangerous, as included \emph{source}
+code which is incorrectly assumed to be \emph{header} code will be
+executed in another thorn \emph{even if the providing thorn is
+inactive}.  Thus it is recommended to always include the optional
+\verb![SOURCE|HEADER]! specification.)  Any thorn which wishes to add
+to this include file, declares in its own {\tt interface.ccl}
 
 \begin{verbatim}
 INCLUDE [SOURCE|HEADER]: <file_to_include> in <file_name>
