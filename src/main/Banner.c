@@ -13,6 +13,8 @@
 #include "config.h"
 #include "cctk_parameters.h"
 
+static char *rcsis = "$Header$";
+
 static int number_banners = 0;
 static const char **banner_strings;
 
