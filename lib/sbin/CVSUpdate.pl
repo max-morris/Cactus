@@ -11,11 +11,41 @@
 
 require "lib/sbin/MakeUtils.pl";
 
-open (CS, "cvs -z 9 -q update -d CONTRIBUTORS COPYRIGHT Makefile lib doc src|");
-while (<CS>) {  
-  print ;
+$network = 1;
+if (!$network)
+{
+  print "DEBUG mode: cvs commands not issued\n\n";
 }
-close (CS);
+$debug = 0;
+
+print("\nUpdating Flesh\n");
+$command = "cvs -z 9 -q update -d CONTRIBUTORS COPYRIGHT Makefile lib doc src";
+if ($debug)
+{
+  $this_dir = `pwd`;
+  chop($this_dir);
+  print "\nIn directory $this_dir\n";
+  print "Issuing command\n  $command\n";
+  foreach $file (`ls CVS`)
+  {
+    chop($file);
+    print "Contents of $file\n";
+    open (FILE, "<CVS/$file") || die "Could not open CVS file";
+    while (<FILE>)
+    {
+      print;
+    }
+  }
+}
+if ($network)
+{
+  open (CS, "$command |");
+  while (<CS>) 
+  {  
+    print ;
+  }
+  close (CS);
+}
 
 $package_dir = shift(@ARGV);
 
@@ -26,12 +56,33 @@ chdir $package_dir;
 foreach $thorn (sort keys %info)
 {
   chdir $thorn;
-  print("Updating $thorn\n");
-  open (CS, "cvs -z 9 -q update -d |");
-  while (<CS>) 
-  {  
-    print ;
-  } 
+  print("\nUpdating $thorn\n");
+  $command = "cvs -z 9 -q update -d";
+  if($debug)
+  {
+    $this_dir = `pwd`;
+    chop($this_dir);
+    print "In directory $this_dir\n";
+    print "Issuing command\n  $command\n";
+    foreach $file (`ls CVS`)
+    {
+      chop($file);
+      print "Contents of $file\n";
+      open (FILE, "<CVS/$file") || die "Could not open CVS file";
+      while (<FILE>)
+      {
+	print;
+      }
+    }
+  }
+  if ($network)
+  {
+    open (CS, "$command |");
+    while (<CS>) 
+    {  
+      print ;
+    } 
+  }
   chdir "../..";
 }
 chdir $current_dir;
