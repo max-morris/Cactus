@@ -175,6 +175,11 @@ sub set_parameter_code
   {
     $line = "    retval = CCTK_SetString(\&($structure.$parameter),value);" ;
   }
+  elsif( $type eq "LOGICAL")
+  {
+    $line = "    retval = CCTK_SetLogical(\&($structure.$parameter), value);" ;
+
+  }
   else
   {
     print "Unknown parameter type $type\n";
@@ -331,7 +336,7 @@ sub CreateCStructureParameterHeader
   foreach $parameter (keys %parameters)
   {
     $type = $parameter_database{"\U$parameters{$parameter} $parameter\E type"};
-      
+
     $type_string = &get_c_type_string($type);
 
     $line = "  ".$type_string ." " .$parameter . ";";
