@@ -52,8 +52,8 @@ ARFLAGS=rucs
 AC_SUBST(F90FLAGS)
 AC_SUBST(F77FLAGS)
 
-F90FLAGS=$CFLAGS
-F77FLAGS=$CFLAGS
+: ${F90FLAGS=$CFLAGS}
+: ${F77FLAGS=$CFLAGS}
 
 dnl Checks for library functions.
 
@@ -66,9 +66,9 @@ AC_SUBST(BUILD_DIR)
 AC_SUBST(CCTK_LIBDIR)
 AC_SUBST(EXE)
 
-PACKAGE_DIR=packages
-BUILD_DIR=build
-CCTK_LIBDIR=lib
+: ${PACKAGE_DIR=packages}
+: ${BUILD_DIR=build}
+: ${CCTK_LIBDIR=lib}
 
 # The perl scripts run by the make system need to have their names
 # changed if under cygwin - e.g. //d/foo needs to be d:/foo
@@ -90,6 +90,13 @@ C_FILE_PROCESSOR=`echo $srcdir/../sbin/c_file_processor.pl | sed 's,^//\(.\)/,\1
 if test "x$F90" != "x" ; then
 F77=$F90 
 F77FLAGS=$F90FLAGS ;
+fi
+
+
+# If this is a known architecture, setup any specific flags
+
+if test -r $srcdir/known-architectures/$host_os ; then
+. $srcdir/known-architectures/$host_os
 fi
 
 dnl Run any other scripts necessary
