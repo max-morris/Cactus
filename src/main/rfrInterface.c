@@ -9,6 +9,9 @@
 
 /*#define RFRDEBUG*/
 
+#include <stdio.h>
+#include <stdlib.h>
+
 #include "flesh.h"
 #include "GHExtensions.h"
 #include "Groups.h"
@@ -17,6 +20,7 @@
 #include "CactusCommFunctions.h"
 #include "IOMethods.h"
 #include "declare_parameters.h"
+#include "rfrInterface.h"
 
 static char *rcsid = "$Header$";
 

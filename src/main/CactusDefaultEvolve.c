@@ -15,6 +15,8 @@
 #include "cctk.h"
 #include "declare_parameters.h"
 #include "rfr_constants.h"
+#include "rfrInterface.h"
+
 #include "CactusIOFunctions.h"
 
 static char *rcsid="$Id$";
@@ -42,6 +44,10 @@ static char *rcsid="$Id$";
 int cactus_terminate;
 static int cactus_terminate_global = 0;
 #define TERMINATION_RAISED_BRDCAST 4
+
+/* Local function prototypes. */
+
+int CCTK_StepGH(cGH *GH);
  
 
  /*@@
@@ -145,7 +151,7 @@ int CactusDefaultEvolve(tFleshConfig *config)
       
     CactusStopTimer(config->timer[OUTPUT]);
 
-#ifdef 0
+#if 0
     ConvergenceReport(config->GH, iteration);
 
     TerminationStepper(config->GH[0]);
@@ -182,7 +188,8 @@ int CactusDefaultEvolve(tFleshConfig *config)
    @calledby main   
  @@*/
 
-int CCTK_StepGH(cGH *GH) {
+int CCTK_StepGH(cGH *GH) 
+{
 
   void PreStepper(cGH *GH);
   void EvolStepper(cGH *GH);
@@ -331,7 +338,7 @@ void TerminationStepper(cGH *GH) {
   int cactus_terminate_global; 
   
   cactus_terminate_global=cactus_terminate;
-#ifdef 0
+#if 0
 #ifdef MPI
   MPI_Allreduce(&cactus_terminate,&cactus_terminate_global,1,
 		MPI_INT,MPI_LOR,GH->PUGH_COMM_WORLD);

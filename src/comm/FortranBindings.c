@@ -7,6 +7,7 @@
    @enddesc 
  @@*/
 
+#include <stdlib.h>
 #include "flesh.h"
 #include "FortranString.h"
 #include "Comm.h"

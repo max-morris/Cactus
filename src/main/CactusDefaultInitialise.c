@@ -15,12 +15,18 @@
 #include "flesh.h"
 #include "CactusMainDefaults.h"
 #include "CactusCommFunctions.h"
-#include "parameters.h"
+#include "GHExtensions.h"
 #include "rfr_constants.h"
 #include "CactusrfrInterface.h"
+#include "CCTK_Bindings.h"
+#include "rfrInterface.h"
+
 #include "declare_parameters.h"
 
 static char *rcsid = "$Id$";
+
+/* Local function prototypes */
+int CactusInitialiseGH(cGH *GH);
 
 
  /*@@
@@ -53,7 +59,7 @@ int CactusDefaultInitialise(tFleshConfig *config)
   {
     CCTK_AddGH(config, convergence_level, GH);
 
-    Cactus_InitialiseGH(GH);
+    CactusInitialiseGH(GH);
 
     convergence_level++;
   };
@@ -65,7 +71,7 @@ int CactusDefaultInitialise(tFleshConfig *config)
 
 
  /*@@
-   @routine    Cactus_InitialiseGH
+   @routine    CactusInitialiseGH
    @date       Mon Feb  1 12:13:09 1999
    @author     Tom Goodale
    @desc 
@@ -78,7 +84,7 @@ int CactusDefaultInitialise(tFleshConfig *config)
    @endhistory 
 
 @@*/
-int Cactus_InitialiseGH(cGH *GH)
+int CactusInitialiseGH(cGH *GH)
 {
   
   DECLARE_PARAMETERS
