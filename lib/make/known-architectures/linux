@@ -268,6 +268,10 @@ else
         L2_CACHELINE_BYTES=32
         echo "Setting L2_CACHELINE_BYTES to $L2_CACHELINE_BYTES"
         ;;
+       ia64)
+        L2_CACHELINE_BYTES=128
+        echo "Setting L2_CACHELINE_BYTES to $L2_CACHELINE_BYTES"
+        ;;
        *)
         echo "Don't know cache size for cpu $host_cpu"
         ;;
@@ -277,9 +281,14 @@ else
   if test -z "$L2_CACHE_SIZE" ; then
 
     if test "x$cross_compiling" = "xno" ; then
-      TEMP_CACHE_SIZE="`cat /proc/cpuinfo | perl -nae 'if(m:cache: && ! $dunnit) {print $F[3]; $dunnit=1}'`"
-      if test -n "$TEMP_CACHE_SIZE" ; then
-        L2_CACHE_SIZE="$TEMP_CACHE_SIZE*1024"
+      if test "$host_cpu" = "ia64"; then
+        # for IA64 set it to 2MB for now (actually it's the L3 cache size)
+        L2_CACHE_SIZE=2*1024
+      else
+        L2_CACHE_SIZE="`cat /proc/cpuinfo | perl -nae 'if(m:cache: && ! $dunnit) {print $F[3]; $dunnit=1}'`"
+      fi
+      if test -n "$L2_CACHE_SIZE" ; then
+        L2_CACHE_SIZE="$L2_CACHE_SIZE*1024"
         echo "Setting L2_CACHE_SIZE to $L2_CACHE_SIZE bytes"
       else
         echo "Unable to determine L2 Cache size on this machine. "
