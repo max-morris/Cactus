@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "cctk_FortranString.h"
 
 #include "cctk_Flesh.h"
 #include "cctk_Timers.h"
@@ -99,6 +100,8 @@ int CCTK_ClockRegister(const char *name, const cClockFuncs *functions)
   return handle;
 }
 
+/* Does CCTK_ClockRegister need a fortran binding?  I'll assume not. */
+
 
  /*@@
    @routine    CCTK_NumTimers
@@ -116,6 +119,10 @@ int CCTK_ClockRegister(const char *name, const cClockFuncs *functions)
 int CCTK_NumTimers (void)
 {
   return (n_timers);
+}
+
+void CCTK_FCALL CCTK_FNAME(CCTK_NumTimers)(int *retval) {
+  *retval = n_timers;
 }
 
 
@@ -144,6 +151,12 @@ const char *CCTK_TimerName (int timer_handle)
   return (Util_GetHandleName (timers, timer_handle));
 }
 
+/* void CCTK_FCALL CCTK_FNAME(CCTK_TimerName)(int *timer_handle, ONE_FORTSTRING_ARG) {
+  ONE_FORTSTRING_CREATE(name)
+  ONE_FORTSTRING_PTR(pname)
+  pname = Util_GetHandleName(timers, *timer_handle);
+  free(name);
+  } -- gives compiler warning.  What do these macros expand to? */
 
  /*@@
    @routine    CCTK_TimerCreate
@@ -158,10 +171,15 @@ int CCTK_TimerCreate (const char *name)
 {
   int retval;
 
-
   retval = CCTKi_TimerCreate (name);
 
   return retval;
+}
+
+void CCTK_FCALL CCTK_FNAME(CCTK_TimerCreate) (int *timer_index,ONE_FORTSTRING_ARG) {
+  ONE_FORTSTRING_CREATE(name)
+  *timer_index = CCTKi_TimerCreate(name);
+  free(name);
 }
 
  /*@@
@@ -183,11 +201,17 @@ int CCTK_TimerCreateI(void)
   int retval;
   char timername[40];
 
-
   sprintf (timername, "UNNAMED TIMER %5d", n_timers);
   retval = CCTKi_TimerCreate(timername);
 
   return retval;
+}
+
+void CCTK_FCALL CCTK_FNAME(CCTK_TimerCreateI)(int *retval) {
+  char timername[40];
+
+  sprintf (timername, "UNNAMED TIMER %5d", n_timers);
+  *retval = CCTKi_TimerCreate(timername);
 }
 
  /*@@
@@ -292,6 +316,12 @@ int CCTK_TimerDestroy(const char *name)
   return retval;
 }
 
+void CCTK_FCALL CCTK_FNAME(CCTK_TimerDestroy)(int *ierr, ONE_FORTSTRING_ARG) {
+  ONE_FORTSTRING_CREATE(name)
+  *ierr = CCTK_TimerDestroy(name);
+  free(name);
+}
+
  /*@@
    @routine    CCTK_TimerDestroyI
    @date       Thu Oct 21 14:12:51 1999
@@ -324,6 +354,10 @@ int CCTK_TimerDestroyI(int this_timer)
   return retval;
 }
       
+void CCTK_FCALL CCTK_FNAME(CCTK_TimerDestroyI)(int *ierr, int *this_timer) {
+  *ierr = CCTK_TimerDestroyI(*this_timer);
+}
+
  /*@@
    @routine    CCTKi_TimerDestroy
    @date       Thu Oct 21 14:14:58 1999
@@ -394,6 +428,13 @@ int CCTK_TimerStart(const char *name)
   return retval;
 }
 
+void CCTK_FCALL CCTK_FNAME(CCTK_TimerStart)(int *retval, ONE_FORTSTRING_ARG) {
+  ONE_FORTSTRING_CREATE(name)
+  *retval = CCTK_TimerStart(name);
+  free(name);
+}
+
+
 int CCTK_TimerStartI(int this_timer)
 {
   t_Timer *timer;
@@ -410,6 +451,10 @@ int CCTK_TimerStartI(int this_timer)
     retval = -1;
   }
   return retval;
+}
+
+void CCTK_FCALL CCTK_FNAME(CCTK_TimerStartI)(int *ierr, int *this_timer) {
+  *ierr = CCTK_TimerStartI(*this_timer);
 }
 
 static void CCTKi_TimerStart(int this_timer, t_Timer *timer)
@@ -464,6 +509,12 @@ int CCTK_TimerStop(const char *name)
   return retval;
 }
 
+void CCTK_FCALL CCTK_FNAME(CCTK_TimerStop)(int *retval, ONE_FORTSTRING_ARG) {
+  ONE_FORTSTRING_CREATE(name)
+  *retval = CCTK_TimerStop(name);
+  free(name);
+}
+
 int CCTK_TimerStopI(int this_timer)
 {
   t_Timer *timer;
@@ -480,6 +531,10 @@ int CCTK_TimerStopI(int this_timer)
     retval = -1;
   }
   return retval;
+}
+
+void CCTK_FCALL CCTK_FNAME(CCTK_TimerStopI)(int *ierr, int *this_timer) {
+  *ierr = CCTK_TimerStopI(*this_timer);
 }
 
 static void CCTKi_TimerStop(int this_timer, t_Timer *timer)
@@ -534,6 +589,12 @@ int CCTK_TimerReset(const char *name)
   return retval;
 }
 
+void CCTK_FCALL CCTK_FNAME(CCTK_TimerReset)(int *retval, ONE_FORTSTRING_ARG) {
+  ONE_FORTSTRING_CREATE(name)
+  *retval = CCTK_TimerReset(name);
+  free(name);
+}
+
 int CCTK_TimerResetI(int this_timer)
 {
   t_Timer *timer;
@@ -550,6 +611,10 @@ int CCTK_TimerResetI(int this_timer)
     retval = -1;
   }
   return retval;
+}
+
+void CCTK_FCALL CCTK_FNAME(CCTK_TimerResetI)(int *ierr, int *this_timer) {
+  *ierr = CCTK_TimerResetI(*this_timer);
 }
 
 static void CCTKi_TimerReset(int this_timer, t_Timer *timer)
@@ -679,3 +744,65 @@ int CCTK_TimerDestroyData(cTimerData *info)
   return 0;
 }
   
+/* Display timer data  (11 Dec 2001, D. Rideout) */
+int CCTK_DisplayTimerDataI(int this_timer) {
+  cTimerData *info;
+  int i;
+
+  if (Util_GetHandledData(timers, this_timer)) {
+    info = CCTK_TimerCreateData();
+    CCTK_TimerI(this_timer,info); /* return values are always 0 */
+
+    printf("Results from timer \"%s\":\n",CCTK_TimerName(this_timer));
+    for (i = 0; i < info->n_vals; i++) {
+      switch (info->vals[i].type) {
+      case val_int:
+	printf("\t%s: %d %s\n", info->vals[i].heading,info->vals[i].val.i, 
+	       info->vals[i].units);
+	break;
+	
+      case val_long:
+	printf("\t%s: %d %s\n", info->vals[i].heading,(int) info->vals[i].val.l, 
+	       info->vals[i].units);
+	break;
+	
+      case val_double:
+	printf("\t%s: %.3f %s\n", info->vals[i].heading,info->vals[i].val.d, 
+	       info->vals[i].units);
+	break;
+	
+      default:
+	CCTK_WARN(1, "\tUnknown data type for timer info");
+	break;
+      }
+    }
+    CCTK_TimerDestroyData(info);
+    return 0;
+  } else {
+    CCTK_VWarn(8,__LINE__,__FILE__,"Cactus",
+	       "CCTK_DisplayTimerDataI: Timer %d not found",this_timer);
+    return -1;
+  }
+}
+
+void CCTK_FCALL CCTK_FNAME(CCTK_DisplayTimerDataI)(int *ierr, int *this_timer) {
+  *ierr = CCTK_DisplayTimerDataI(*this_timer);
+}
+
+int CCTK_DisplayTimerData(const char *name) {
+  int this_timer;
+
+  if ((this_timer = Util_GetHandle(timers, name, NULL)) > -1) 
+    return CCTK_DisplayTimerDataI(this_timer);
+  else {
+    CCTK_VWarn(8,__LINE__,__FILE__,"Cactus",
+	       "CCTK_DisplayTimerData: Timer %s not found",name);
+    return -1;
+  }
+}
+
+void CCTK_FCALL CCTK_FNAME(CCTK_DisplayTimerData)(int *ierr, ONE_FORTSTRING_ARG) {
+  ONE_FORTSTRING_CREATE(name)
+  *ierr = CCTK_DisplayTimerData(name);
+  free(name);
+}
