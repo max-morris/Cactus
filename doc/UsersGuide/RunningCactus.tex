@@ -433,13 +433,26 @@ for and preprocess Fortran code).
 \item [{\tt ARFLAGS}]
 Flags for the archiver.
 
+\item [{\tt C\_LINE\_DIRECTIVES}]
+Whether error messages and debug information in the compiled C and C++
+files should point to the original source file or to an internal file
+created by Cactus.  The only options available are {\tt yes} and {\tt
+no}, the default is {\tt yes}.  Set this to {\tt no} if your compiler
+reports error messages about unrecognised {\tt #} directives.
+
+\item [{\tt F\_LINE\_DIRECTIVES}]
+Whether error messages and debug information in the compiled Fortran
+files should point to the original source file or to an internal file
+created by Cactus.  The only options available are {\tt yes} and {\tt
+no}, the default is {\tt yes}.  Set this to {\tt no} if your compiler
+reports error messages about unrecognised {\tt #} directives.
+
 \item [{\tt DEBUG}]
 * Specifies what type of debug mode should be used,
 the default is no debugging.
 Current options are {\tt yes}, {\tt no}, or {\tt memory}. The option
 {\tt yes} switches on all debugging features, whereas {\tt memory} just
 employs memory tracing (\ref{sec:metr}).
-
 
 \item [{\tt OPTIMISE, OPTIMIZE}]
 * Specifies what type of optimisation should be used. The only options currently

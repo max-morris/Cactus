@@ -16,6 +16,9 @@
 
 $home = shift(@ARGV);
 
+# Do we want line directives?
+$line_directives = $line_directives eq 'yes';
+
 $fortran_name_file = "$home/fortran_name.pl";
 
 if (! -e "$fortran_name_file" )
@@ -25,10 +28,10 @@ if (! -e "$fortran_name_file" )
 
 require "$fortran_name_file";
 
-#if($source_file_name)
-#{
-#  print "# 1 $source_file_name\n";
-#}
+if($source_file_name)
+{
+  print "# 1 \"$source_file_name\"\n" if ($line_directives);
+}
 
 $closing_brackets  = '';
 $routine  = '';

@@ -669,6 +669,31 @@ esac
 AC_DEFINE_UNQUOTED(CCTK_FCALL, $CCTK_FCALL)
 
 
+# Decide whether the preprocessed C and Fortran files should contain
+# C preprocessor line directives to point to the original source file
+
+AC_DEFINE_UNQUOTED(C_LINE_DIRECTIVES, "$C_LINE_DIRECTIVES")
+AC_DEFINE_UNQUOTED(F_LINE_DIRECTIVES, "$F_LINE_DIRECTIVES")
+
+AC_SUBST(C_LINE_DIRECTIVES)
+AC_SUBST(F_LINE_DIRECTIVES)
+
+if test -n "$C_LINE_DIRECTIVES" ; then
+  if test "$C_LINE_DIRECTIVES" != "yes" -a "$C_LINE_DIRECTIVES" != "no" ; then
+    AC_ERROR(Didn't recognize setting of C_LINE_DIRECTIVES=\"$C_LINE_DIRECTIVES\" (should be either \"yes\" or \"no\"))
+  fi
+else
+  C_LINE_DIRECTIVES='yes'
+fi
+if test -n "$F_LINE_DIRECTIVES" ; then
+  if test "$F_LINE_DIRECTIVES" != "yes" -a "$F_LINE_DIRECTIVES" != "no" ; then
+    AC_ERROR(Didn't recognize setting of F_LINE_DIRECTIVES=\"$F_LINE_DIRECTIVES\" (should be either \"yes\" or \"no\"))
+  fi
+else
+  F_LINE_DIRECTIVES='yes'
+fi
+
+
 # Define how to make a directory in the config.h file
 
 AC_DEFINE_UNQUOTED(MKDIR, "$MKDIR")

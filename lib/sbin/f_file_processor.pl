@@ -20,25 +20,13 @@
 #  line splitting.
 #
 #  @enddesc
-#  @history
-#  @hdate Wed Apr 21 1997 @hauthor Joan Masso
-#  @hdesc get rid of cC comments and handle ! comments properly
-#         and fix it so now it is really 72 and we do not get
-#         breaks in the middle of fortran strings!
-#  @hdate Wed Nov 24 12:17:43 1999 @hauthor Tom Goodale
-#  @hdesc Added in Erik Schnetters free-format stuff
-#         grdoc-ed
-#         reformated as per rest of perl code in Cactus.
-#  @endhistory
-#  @hdate Fri 5 December 2003
-#  @hauthor Thomas Radke
-#  @hdesc Added Fokke Dijkstra's patch to properly deal with comments in lines
-#         with strings
-#  @endhistory
 #  @version $Header$
 #@@*/
 
 $MULTILINE_MATCHING = 1;                         # Multi-line is on!
+
+# Do we want line directives?
+$line_directives = $line_directives eq 'yes';
 
 # Pick the correct set of comments to remove.
 if ($free_format)
@@ -51,42 +39,55 @@ else
 }
 
 # Loop over all lines.
+$line = 1;
+$file = "$source_file_name";
+$autoline = 1;
+$autofile = "";
 while (<>)
 {
   # Get rid of final \n
   chomp;
 
-  # concatenate lines if \ at end-of-line
-  while (/\\$/)
+  # Handle directives
+  if (/^\#/)
   {
-    chop;                       # drop the backslash
-    chomp($_ .= <STDIN>);	# concatenate the following line (sans \n)
+    if ($line_directives)
+    {
+      # Handle line directives
+      if (/^\#\s*(\d+)\s*"([^"]*)"/)
+      {
+        $line = $1;
+        $file = $2;
+      } else {
+        ++$line;
+      }
+      next;
+    }
+    else
+    {
+      # Ignore directives
+      next;
+    }
   }
-
-  next if (/^\s*$/);            # Blank lines slow down compilation,
-				# and on some systems cpp makes ++lots of them
-
-  next if (/^\#/);              # Remove any remaining # directives (e.g. line directives).
 
   # Get rid of any tabs
   s/\t/        /g;
 
-  # Chop fortran comments to 72 columns (they stay in code)
+  # Chop Fortran comments to 132 columns (they stay in code)
   # removing any quotes
   # (standard c C, or even ! comments)
   if (/^$standard_comments.*$/)
   {
     # Remove quotes
     s/['"]//g;
-    if (/(.{132,132}).*/)
+    if (/(.{132,132})/)
     {
-      print $1;
+      &printline ($1);
     }
     else
     {
-      print;
+      &printline ($_);
     }
-    print "\n";
   }
   else
   {
@@ -133,28 +134,26 @@ while (<>)
       }
     }
 
-    # OK, now put in the line breaks (&& or &!)
-    s/\&\&\s*/\n      /g;
-    s/\&\!\s*/\n/g;
+    # Get rid of trailing blanks
+    s/\s*$//;
 
-    # Get rid of lonesome semicolons
-    s/\s*\;\s*$//;
-
-    # And now we can fix the lines.  This is actually a little complicated.
-    # since there is a different case if the thing matches a newline
-    # than if it doesn't.
-    if (/\n/)
+    # Put in the line breaks (&&)
+    if($free_format)
     {
-      foreach $LINE (split('\n',$_))
-      {
-        &splitline($LINE);
-      }
+      s/\s*\&\&\s*/\n  /g;
     }
     else
     {
-      &splitline($_);
+      s/\s*\&\&\s*/\n      /g;
+    }
+
+    foreach my $LINE (split('\n',$_))
+    {
+      &splitline($LINE);
     }
   }
+
+  ++$line;
 }
 
 #/*@@
@@ -167,15 +166,15 @@ while (<>)
 #@@*/
 sub splitline
 {
-  my ($line) = @_;
+  my ($LINE) = @_;
 
   if($free_format)
   {
-    &free_format_splitline($line);
+    &free_format_splitline($LINE);
   }
   else
   {
-    &fixed_format_splitline($line);
+    &fixed_format_splitline($LINE);
   }
 
 }
@@ -192,27 +191,21 @@ sub fixed_format_splitline
 {
   my ($LINE) = @_;
 
-  # Remove ,, and , \) from blank thorns
-  while ($LINE =~ s/,\s*,/,/) {};
-  $LINE =~ s/,\s*\)/\)/;
-
-  # Strip out leading spaces in favor of 7 spaces
-  # $LINE =~ s/^\s+/       /;
   # Note the new treatement of comments with \S
-  if ($LINE =~ /^([^\S].{71,71}).*/)
+  if ($LINE =~ /^([^\S].{71,71})/)
   {
-    print "$1\n";
+    &printline ($1);
     $LINE =~ s/.{72,72}//;
-    while ($LINE =~ /^(.{66,66}).*/)
+    while ($LINE =~ /^(.{66,66})/)
     {
-      print "     &$1\n";
+      &printline ("     &$1");
       $LINE =~ s/.{66,66}//;
     }
-    print "     &$LINE\n";
+    &printline ("     &$LINE");
   }
   else
   {
-    print "$LINE\n";
+    &printline ($LINE);
   }
 
 }
@@ -222,7 +215,7 @@ sub fixed_format_splitline
 #  @date       Thu Sep 30 12:05:36 1999
 #  @author     Erik Schnetter
 #  @desc
-#  Splits lines for freeformat fortran 90.
+#  Splits lines for free-format Fortran 90.
 #  @enddesc
 #@@*/
 sub free_format_splitline
@@ -230,43 +223,69 @@ sub free_format_splitline
   my ($LINE) = @_;
   my $OUT;
 
-  # Remove ,, and , \) from blank thorns
-  while ($LINE =~ s/,\s*,/,/) {};
-  $LINE =~ s/,\s*\)/\)/;
-
-  # Remove trailing spaces
-  $LINE =~ s/\s*$//;
-  $LINE =~ s/\s*\&$/\&/;
-
-  # Some preprocessors put extraneous spaces in 8-(
-  $LINE =~ s:\. ([a-zA-Z]+) \.:\.$1\.:ig;
-
-  # Strip out leading spaces in favor of 3 spaces
-  # $LINE =~ s/^\s+/   /;
-  if ($LINE =~ /^(.{78,78})...*/)
+  if ($LINE =~ /^(.{78,78})../)
   {
     $OUT = $1;
-    print "$OUT";
     # Check if the line already has a continuation mark.
-    print "&" if (! ($OUT =~ /\&[\s]*$/));
-    print "\n";
+    $OUT = "$OUT&" if (! ($OUT =~ /\&\s*$/));
+    &printline ($OUT);
     $LINE =~ s/.{78,78}//;
 
-    while ($LINE =~ /^(.{75,75}).*/)
+    while ($LINE =~ /^(.{76,76})/)
     {
-      $LINE =~ /^(.{74,74}).*/;
+      $LINE =~ /^(.{75,75})/;
       $OUT = $1;
-      print "   &" if (! ($OUT =~ /^[\s]*\&/));
-      print "$OUT";
-      print "&" if (! ($OUT =~ /\&[\s]*$/));
-      print "\n";
-      $LINE =~ s/.{74,74}//;
+      $OUT = "  &$OUT" if (! ($OUT =~ /^\s*\&/));
+      $OUT = "$OUT&" if (! ($OUT =~ /\&\s*$/));
+      &printline ($OUT);
+      $LINE =~ s/.{75,75}//;
     }
-    print "   &" if (! ($LINE =~ /^[\s]*\&/));
-    print "$LINE\n" if (! ($LINE =~ /^[\s]*\&[\s]*$/));
+    if ($LINE =~ /^\s*\&\s*$/)
+    {
+      &printline ("  &$LINE");
+    }
+    else
+    {
+      $OUT = $LINE;
+      $OUT = "  &$OUT" if (! ($LINE =~ /^\s*\&/));
+      &printline ($OUT);
+    }
   }
   else
   {
+    &printline ($LINE);
+  }
+}
+
+
+
+# Print a line and append a newline
+# Emit line number and file name directives if necessary
+sub printline
+{
+  my ($LINE) = @_;
+  
+  if ($LINE eq '') {
+    # don't print empty lines
+  } else {
+    if ($line_directives) {
+      if ($file ne $autofile) {
+        print "# $line \"$file\"\n";
+        $autoline = $line;
+        $autofile = $file;
+      } elsif ($line ne $autoline) {
+        if ($line>$autoline && $line<=$autoline+3) {
+          while ($autoline!=$line) {
+            print "\n";
+            ++$autoline;
+          }
+        } else {
+          print "# $line\n";
+          $autoline = $line;
+        }
+      }
+    }
     print "$LINE\n";
+    ++$autoline;
   }
 }

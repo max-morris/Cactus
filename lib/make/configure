@@ -4611,6 +4611,37 @@ EOF
 
 
 
+# Decide whether the preprocessed C and Fortran files should contain
+# C preprocessor line directives to point to the original source file
+
+cat >> confdefs.h <<EOF
+#define C_LINE_DIRECTIVES "$C_LINE_DIRECTIVES"
+EOF
+
+cat >> confdefs.h <<EOF
+#define F_LINE_DIRECTIVES "$F_LINE_DIRECTIVES"
+EOF
+
+
+
+
+
+if test -n "$C_LINE_DIRECTIVES" ; then
+  if test "$C_LINE_DIRECTIVES" != "yes" -a "$C_LINE_DIRECTIVES" != "no" ; then
+    { echo "configure: error: Didn't recognize setting of C_LINE_DIRECTIVES=\"$C_LINE_DIRECTIVES\" (should be either \"yes\" or \"no\")" 1>&2; exit 1; }
+  fi
+else
+  C_LINE_DIRECTIVES='yes'
+fi
+if test -n "$F_LINE_DIRECTIVES" ; then
+  if test "$F_LINE_DIRECTIVES" != "yes" -a "$F_LINE_DIRECTIVES" != "no" ; then
+    { echo "configure: error: Didn't recognize setting of F_LINE_DIRECTIVES=\"$F_LINE_DIRECTIVES\" (should be either \"yes\" or \"no\")" 1>&2; exit 1; }
+  fi
+else
+  F_LINE_DIRECTIVES='yes'
+fi
+
+
 # Define how to make a directory in the config.h file
 
 cat >> confdefs.h <<EOF
@@ -5216,6 +5247,8 @@ s%@BUILD_DIR@%$BUILD_DIR%g
 s%@CCTK_LIBDIR@%$CCTK_LIBDIR%g
 s%@EXEDIR@%$EXEDIR%g
 s%@EXE@%$EXE%g
+s%@C_LINE_DIRECTIVES@%$C_LINE_DIRECTIVES%g
+s%@F_LINE_DIRECTIVES@%$F_LINE_DIRECTIVES%g
 s%@MKDIRFLAGS@%$MKDIRFLAGS%g
 s%@BUILD_ACTIVETHORNS@%$BUILD_ACTIVETHORNS%g
 s%@CST@%$CST%g
