@@ -9515,7 +9515,10 @@ character*(*) message
 
 \begin{ParameterSection}
 \begin{Parameter}{level}
-The warning level to use
+The warning level to use;
+see the description of \verb|CCTK_VWarn()| on page~\pageref{CCTK-VInfo}
+for a detailed discussion of this parameter and the Cactus macros
+for standard warning levels
 \end{Parameter}
 \begin{Parameter}{message}
 The warning message to print
@@ -9526,17 +9529,12 @@ The warning message to print
 This macro can be used by thorns to print a single string as a warning message
 to \code{stderr}.
 
-\code{CCTK\_WARN(level, message)} expands to a call to the underlying function
-\code{CCTK\_Warn}:
-
-\begin{verbatim}
-CCTK_Warn(level, __LINE__, __FILE__, CCTK_THORNSTRING, message)
-\end{verbatim}
-
-So the macro automatically includes details about the origin of the warning
+\code{CCTK\_WARN(level, message)} expands to a call to an internal
+function which is equivalent to \verb|CCTK_VWarn()|, but without the
+variable-number-of-arguments feature (so it can be used from Fortran).
+The macro automatically includes details about the origin of the warning
 (the thorn name, the source code file name and the line number where the macro
-occurs). It is recommended that the macro \code{CCTK\_WARN} is used
-to print a warning message rather than calling \code{CCTK\_Warn} directly.
+occurs).
 
 To include variables in a warning message from C, you can use the routine
 \code{CCTK\_VWarn} which accepts a variable argument list.
@@ -9554,7 +9552,6 @@ prints a warning message with a variable argument list
 \begin{Example}{C}
 \begin{verbatim}
 #include "cctk.h"
-#include "cctk_WarningLevel.h"
 
 CCTK_WARN(CCTK_WARN_ABORT, "Divide by 0");
 \end{verbatim}
