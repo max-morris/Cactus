@@ -152,6 +152,7 @@ static int total_variables = 0;
 static int *group_of_variable = NULL;
 
 static int maxdim = 0;
+static int gfdim = 0;
 
 static int staggered = 0;
 
@@ -1810,6 +1811,23 @@ int CCTKi_CreateGroup (const char *gname,
       group->size      = CCTKi_ExtractSize (dimension, thorn, size);
       group->ghostsize = CCTKi_ExtractSize (dimension, thorn, ghostsize);
     }
+
+    /* Only typically have GFs in a single dimension */
+    if (group->gtype == CCTK_GF)
+    {
+      if (gfdim > 0)
+      {
+	if (group->dim != gfdim)
+	{
+	  retval = 1;
+	}
+      }
+      else
+      {
+	gfdim = group->dim;
+      }
+    }
+   
   }
   else
   {
@@ -1818,7 +1836,7 @@ int CCTKi_CreateGroup (const char *gname,
 
   if (retval)
   {
-    CCTK_Warn (4, __LINE__, __FILE__, "Cactus", "CCTK_CreateGroup: Error");
+    CCTK_Warn (4, __LINE__, __FILE__, "Cactus", "CCTKi_CreateGroup: Error");
   }
 
   return (retval);
