@@ -61,8 +61,9 @@
  *    to reflect this.
  *
  *  Tom Goodale <goodale@cct.lsu.edu> 2004-12-20
- *    Fixes formatting of floating point numbers with zeros
+ *    Fixed formatting of floating point numbers with zeros
  *    immediately after the decimal point.
+ *    Added support for 'e' format.
  *
  **************************************************************/
 
@@ -80,7 +81,7 @@
 
 #if !defined(HAVE_SNPRINTF) || !defined(HAVE_VSNPRINTF) 
 
-
+#include <math.h>
 #include <string.h>
 #include <ctype.h>
 #include <sys/types.h>
@@ -152,7 +153,9 @@ static int dopr_outch (char *buffer, size_t *currlen, size_t maxlen, char c );
 #define DP_F_NUM   	(1 << 3)
 #define DP_F_ZERO  	(1 << 4)
 #define DP_F_UP    	(1 << 5)
-#define DP_F_UNSIGNED 	(1 << 6)
+#define DP_F_UNSIGNED	(1 << 6)
+#define DP_F_EXP 	(1 << 7)
+#define DP_F_G	 	(1 << 8)
 
 /* Conversion Flags */
 #define DP_C_SHORT   1
@@ -343,14 +346,17 @@ static int dopr (char *buffer, size_t maxlen, const char *format, va_list args)
       case 'E':
 	flags |= DP_F_UP;
       case 'e':
+	flags |= DP_F_EXP;
 	if (cflags == DP_C_LDOUBLE)
 	  fvalue = va_arg (args, LDOUBLE);
 	else
 	  fvalue = va_arg (args, double);
+	total += fmtfp(buffer, &currlen, maxlen, fvalue, min, max, flags);
 	break;
       case 'G':
 	flags |= DP_F_UP;
       case 'g':
+	flags |= DP_F_G;
 	if (cflags == DP_C_LDOUBLE)
 	  fvalue = va_arg (args, LDOUBLE);
 	else
@@ -595,10 +601,15 @@ static int fmtfp (char *buffer, size_t *currlen, size_t maxlen,
 {
   int signvalue = 0;
   LDOUBLE ufvalue;
+  LDOUBLE logvalue;
+  long exponent;
+  char expsign;
   char iconvert[20];
   char fconvert[20];
+  char econvert[20];
   int iplace = 0;
   int fplace = 0;
+  int eplace = 0;
   int padlen = 0; /* amount to pad */
   int zpadlen = 0; 
   int caps = 0;
@@ -624,9 +635,27 @@ static int fmtfp (char *buffer, size_t *currlen, size_t maxlen,
       if (flags & DP_F_SPACE)
 	signvalue = ' ';
 
-#if 0
   if (flags & DP_F_UP) caps = 1; /* Should characters be upper case? */
-#endif
+
+  /* Check for an 'e' format */
+  if(flags & DP_F_EXP)
+  {
+    /* Normalise the number to one digit before decimal point*/
+    logvalue = log10(ufvalue);
+    
+    exponent = (long)logvalue;
+
+    ufvalue = pow(10.0,(double)(logvalue-exponent));
+
+    if(exponent < 0)
+    {
+      expsign = '-';
+    }
+    else
+    {
+      expsign = '+';
+    }
+  }
 
   intpart = ufvalue;
 
@@ -676,8 +705,24 @@ static int fmtfp (char *buffer, size_t *currlen, size_t maxlen,
   if (fplace == 20) fplace--;
   fconvert[fplace] = 0;
 
+  /* Convert exponent part */
+  do {
+    econvert[eplace++] =
+      (caps? "0123456789ABCDEF":"0123456789abcdef")[exponent % 10];
+    exponent = (exponent / 10);
+  } while(exponent && (eplace < 20));
+  /* Minimum exponent length is 2. */
+  while(eplace < 2)
+  {
+    econvert[eplace++] = '0';
+  }
+  econvert[eplace++] = expsign;
+  econvert[eplace++] = caps ? 'E' : 'e';
+  if (eplace == 20) eplace--;
+  econvert[eplace] = 0;
+
   /* -1 for decimal point, another -1 if we are printing a sign */
-  padlen = min - iplace - max - 1 - ((signvalue) ? 1 : 0); 
+  padlen = min - iplace - max - 1 - ((signvalue) ? 1 : 0) - eplace;
   zpadlen = max - fplace;
   if (zpadlen < 0)
     zpadlen = 0;
@@ -723,6 +768,13 @@ static int fmtfp (char *buffer, size_t *currlen, size_t maxlen,
       total += dopr_outch (buffer, currlen, maxlen, fconvert[--fplace]);
   }
 
+  /* Now add exponent */
+  if(flags & DP_F_EXP)
+  {
+    while (eplace > 0) 
+      total += dopr_outch (buffer, currlen, maxlen, econvert[--eplace]);
+  }
+    
   while (zpadlen > 0)
   {
     total += dopr_outch (buffer, currlen, maxlen, '0');
