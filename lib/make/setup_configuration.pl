@@ -244,7 +244,7 @@ sub AddQuotes
   if ($arg =~ /\\/)
   {
     $arg =~ s:\\::g;
-    $arg = "\'$arg\'";
+#    $arg = "\'$arg\'";
   }
 
   # When we grab an arg off the MAKEFLAGS it has $s doubled.
