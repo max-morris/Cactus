@@ -3,6 +3,7 @@
 # $Header$
 
 SRCS=\
+Banner.c\
 CactusDefaultInitialise.c\
 CactusDefaultEvolve.c\
 CactusDefaultShutdown.c\
@@ -17,6 +18,7 @@ ProcessParameterDatabase.c\
 RecordImplementation.c\
 SetParams.c\
 ShutdownCactus.c\
+Startup.c\
 flesh.cc\
 Groups.c\
 GroupsOnGH.c\
