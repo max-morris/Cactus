@@ -14,6 +14,7 @@ if ($h || $help) {
    print "\t-arr=       : (semi opt) arrangement to process\n";
    print "\t-processall : (opt) process all arrangements\n";
    print "\t-directory= : (opt) dir. of arrangements (default arrangements/)\n";
+   print "\t-thornlist= : (opt) list specific thorns to process\n";
    print "\t-dump       : (opt) dumps output to screen, not in Latex\n";
    print "\t-scope=     : (opt) restricted/global/private/shares/all (default all)\n";
    print "\t-sort=      : (opt) by: scope, type, name (default name)\n";
@@ -89,6 +90,10 @@ if (! $outdir) {
 
 print STDERR "\nOutput directory is: $outdir" if ($verbose);
 
+if (defined $thornlist) {
+   &Read_ThornList($thornlist);
+ }
+
 #################################################
 # FIND THORN(S)/ARRANGEMENT(S) AND CREATE LATEX #
 #################################################
@@ -101,21 +106,41 @@ foreach $arrangement (sort @arrangements) {
    @thorns = &Find_Directories($directory . $arrangement);
 
    &StartDocument($arrangement) if ((! $dump) && ($grouping eq "byarrangement"));
-   foreach $thorn (@thorns) 
+   THORN: foreach $thorn (@thorns) 
    {
+   #   print STDERR "\nTHORN: $arrangement $thorn";
       if (($processall) || (($thorn eq $th) || ($arr eq $arrangement))) 
       { 
 
-         if (-e "$directory$arrangement/${thorn}/param.ccl") {
-            &StartDocument($thorn) if ((! $dump) && ($grouping eq "bythorn"));
+         ## do not create a file for this thorn if it is not in the THORNLIST (if one is specified)
+	 if ((defined $thornlist) && (! defined $thornlist{"$arrangement/$thorn"})) {
+            next THORN;
+	 }
+
+         if (-e "$directory$arrangement/${thorn}/param.ccl") 
+         {
+            &StartDocument($thorn, $arrangement) if ((! $dump) && ($grouping eq "bythorn"));
 
             $$thorn{$thorn} = "${directory}${arrangement}/${thorn}";
             %parameter_database = &create_parameter_database(%$thorn);
-            $killme = &ReadLatexDatabase(%parameter_database);
+            &ReadLatexDatabase(%parameter_database);
             &FormatTable;
 
-            undef %$killme;
             &EndDocument if ((! $dump) && ($grouping eq "bythorn"));
+
+	    ###################################################
+            # reset the variables in case they are used again #
+            undef %alreadydone;
+
+  	    foreach $group_name (@valid_types) {
+#                print STDERR "\n\t\t-->$group_name";
+      		foreach $table (@$group_name) {
+ #                  print STDERR "[$table]";
+		   undef %$table;
+		}
+	    }
+            # END of reset #
+            ################
          }       
       }
    }
@@ -155,8 +180,10 @@ sub ReadLatexDatabase
   my($field);
   my(@temp) = ();
   my($temp) = "";
+  my($name) = "";
   
-  # reinitialize values
+  #######################
+  # reinitialize values #
   foreach $typ (@valid_types) {
      while (defined pop(@$typ)) {pop @$typ;}
   }
@@ -164,6 +191,7 @@ sub ReadLatexDatabase
 
   foreach $field (sort keys %parameter_database)
   {
+      print STDERR "\n$field --> $parameter_database{$field}" if ($verbose);
 
       &Clean;
          #################
@@ -175,8 +203,9 @@ sub ReadLatexDatabase
         @restricted = split/ /, $parameter_database{$field};
       } elsif ($field =~ /\sSHARES\s+(\w+)\s+var/) {
         @temp = split/ /, $parameter_database{$field};
-     #   print STDERR "\n$field : $parameter_database{$field}";
+ 
         foreach $var (@temp) {
+           $var=~ tr/A-Z/a-z/;
            $$var{"shared"}=$1;
         }
         push @shared, @temp;
@@ -184,15 +213,20 @@ sub ReadLatexDatabase
         #####################
         # ADD VARIABLE HASH #
         #####################
-	$field =~ /(\w+)\s(\w+)\s(.*)/;
-        $name = $2; 
-        $field_des=$3;
-        $temp = $1; 
+
+        if ($field =~ /(.*?)\s(.*?)\s(.*)/) {
+           $name = $2; 
+           $field_des=$3;
+           $temp = $1; 
+        } else {
+   	   #print STDERR "\n\nTHROWNING AWAY: $field $paramater_database{$field}"; 
+        }
 
         $name =~ tr/A-Z/a-z/;
         $$name{$field_des}=$parameter_database{$field};
 
         $$name{"name"} = $name;
+
         $$name{"thorn"} = $temp;
       }
    } #-- foreach
@@ -202,13 +236,19 @@ sub ReadLatexDatabase
    # ADD ELEMENT $$table{"scope"} #
    ################################
 
-   foreach $group_name (@valid_types) {
-      foreach $table (@$group_name) {
+   foreach $group_name (@valid_types) 
+   {
+      foreach $table (@$group_name) 
+      {
+       #  print STDERR "\n\t\t!!!!!!!! $table";
+         $table =~ tr/A-Z/a-z/;
+      # print STDERR "\n$table";
          $$table{"scope"} = $group_name;
          if ($$table{"shared"}) {
             $$table{"scope"} .= " from " . $$table{"shared"};
          } 
       } 
+
    } 
    return $name;
 } ## END :ReadLatexDatabase:
@@ -254,8 +294,6 @@ sub FormatTable {
          @all = sort SortByType @all;
       }
 
-    #  foreach (@all) { print STDERR "\n$thorn $_"; }
-
       if ($dump) {
         &Dump(@all);
       } else {
@@ -278,13 +316,14 @@ sub CreateLatexTable {
 
    foreach $table (@cur_group) 
    {
+      $table =~ tr/A-Z/a-z/;
+
       if (lc($$table{"thorn"}) eq lc($thorn)) {
          if (! defined $alreadydone{"$thorn$table"}) { 
             &LatexTableElement;
             $alreadydone{"$thorn$table"} = 1;   # to try to only print each once.
-            #print STDERR "\ndefining \"$thorn\" : \"$table\"";
-         }
-      }
+          }
+      } 
    }
 } ## END :CreateLatexTable:
 
@@ -298,19 +337,21 @@ sub CreateLatexTable {
 #    function will also print basic LaTeX commands to start a document  #
 #########################################################################
 sub StartDocument {
-   my ($group_name) = $_[0];
+   my ($group_name) = shift;
+   my ($arrangement) = shift;
 
    die "Cannot group tables for output, internal error in &StartDocument" if (! defined $group_name);
 
    chdir ($start_directory);
-   open(OUT, ">$outdir${group_name}_par.tex") || die "cannot open $outdir${group_name}_par.tex for output: $!";
+   open(OUT, ">$outdir${arrangement}_${group_name}_par.tex") || die "cannot open $outdir${group_name}_par.tex for output: $!";
    $oldfilehandle = select OUT;
 
    if ($document) {
       print "\\documentclass[12pt,a4paper]\{article\} \n";
       print "\\begin\{document\} \n\n";
    } elsif ($section) {
-      print "\\section{$group_name param.ccl} \n\n";
+      $group_name =~ s/\_/\\\_/g;
+      print "\\section{Parameters} \n\n";
    }
 
 
@@ -336,30 +377,47 @@ sub EndDocument {
 #    does is NOT print ranges for BOOLEAN and SHARED elements.          #
 #########################################################################
 sub LatexTableElement {
+   $table =~ tr/A-Z/a-z/;
    my ($name) = $table;
    my ($description) = $$table{"description"};
    my ($default) = $$table{"default"};
    $default =~ s/\_/\\\_/g;
 
    $name =~ s/\_/\\\_/g;
-#   print STDERR "$name\n";
+
    $description =~ s/\_/\\\_/g;
    
    # new addition 4/2001
    $description =~ s/\^/\\\^/g;
 
    print "$table{\"thorn\"}";
-   print "\\begin\{tabular*\}\{$width\}\{|c|c|c|\@\{\\extracolsep\{\\fill\}\}r|\} \\hline \n";
-   print "\{\\bf Name\} & \{\\bf Default\} & \{\\bf Scope\} & \{\\bf Type\} \\\\ \n";
-   print "\\hline \n";
-   print "$name & $default & $$table{\"scope\"} & $$table{\"type\"} \\\\ \n";
-   print "\\hline\\hline \n";
-   print "\\multicolumn\{4\}\{|l|\}\{\\rule[-2mm]\{-2mm\}\{0.5cm\}\{\\bf Description\}~\\vline~ \n";
-   print "\{\\it $description\}\} \\\\ \n";
-   print "\\hline \n";
+ 
+   $parawidth = $width;
+   $parawidth =~ /(\d+)(.*)/;
+
+   $parawidth = ($1 - 35) . $2;
+
+   if (! (($$table{"description"} !~ /\w/) && (defined $$table{"shared"}))) {
+      print "\\begin\{tabular*\}\{$width\}\{|c|c|c|\@\{\\extracolsep\{\\fill\}\}r|\} \\hline \n";
+      print "\{\\bf Name\} & \{\\bf Default\} & \{\\bf Scope\} & \{\\bf Type\} \\\\ \n";
+      print "\\hline \n";
+      print "$name & $default & $$table{\"scope\"} & $$table{\"type\"} \\\\ \n";
+      print "\\hline\\hline\n";
+      print "\\multicolumn\{4\}\{|l|\}\{\\rule[-2mm]\{-2mm\}\{0.5cm\}\{\\bf Description\}~\\vline~ \n";
+      print "\\parbox\{${parawidth}\}\{\\it $description\}\} \\\\ \n";
+      print "\\hline \n";
+   } else {
+      print "\\begin\{tabular*\}\{$width\}\{|c|c|\@\{\\extracolsep\{\\fill\}\}r|\} \\hline \n";
+      print "\{\\bf Name\} & \{\\bf Scope\} & \{\\bf Type\} \\\\ \n";
+      print "\\hline \n";
+      print "$name & $$table{\"scope\"} & $$table{\"type\"} \\\\ \n";
+      print "\\hline \n";
+   }
+
    print "\\end\{tabular*\} \n\n";
 
-   if (($$table{"type"} ne "BOOLEAN") && ! $$table{"shared"}) {
+   if ((($$table{"type"} ne "BOOLEAN") && ! $$table{"shared"}) && ($$table{"ranges"} > 0)) {
+
       print "\\vspace\{1mm\} \n\n";
 
       print "\\begin\{tabular*\}\{$width\}\{|c|l@\{\\extracolsep\{\\fill\}\}r|\} \\hline \n";
@@ -475,3 +533,26 @@ sub Dump {
 sub Clean {
 } ## END :Clean:
 
+
+##########################
+# Reads in the thornlist #
+##########################
+sub Read_ThornList 
+{
+   my ($thornlist) = shift;
+
+   chomp($directory);
+
+   open (TL, "$thornlist") 
+      || die "cannot open thornlist ($thornlist) for reading: $!";
+
+   while (<TL>) 
+   {
+      s/(.*?)#.*/\1/;            # read up to the first "#"
+      s/\s+//g;                  # replace any spaces with nothing
+      if (/\w+/) {               
+         $thornlist{$_} = 1;
+      }
+   }
+   close TL;     
+}

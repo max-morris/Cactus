@@ -128,7 +128,7 @@ foreach (@foundfiles)
       $arrangements{$arr} = $1;
    } 
    push @$arr, $thorn;                      # hash of arrangements & thorns
-   print STDERR "\nFound: $_"  if ($verbose);
+ #  print STDERR "\nFound: $_"  if ($verbose);
 }
 #                                                            #
 ##############################################################
@@ -199,13 +199,13 @@ sub Read_Thorn_Doc
 
    $pathandfile .= "/$file";
 
-   open (DOC, "$pathandfile") || print STDERR "\ncannot open $pathandfile: $!";
+   open (DOC, "$pathandfile");
 
    while (<DOC>)                            # loop through thorn doc.
    {
       if (/\\end\{document\}/) {            # stop reading
          $stop = 1;
-         $contents .= "\n\\include{${thorn}_par}\n";
+         $contents .= "\n\\include{${arrangement}_${thorn}_par}\n";
       }
 
       if ($start && ! $stop) {              # add to $contents
@@ -223,7 +223,14 @@ sub Read_Thorn_Doc
 
    # if it never started reading, then we print some error message
    if (! $start) {
-      $contents = "Could not parse/find latex documentation ($file)";
+      $tmp = $thorn;
+      $tmp=~ s/\_/\\\_/g;
+      if (-e $pathandfile) {
+         $contents = "Could not parse latex documentation for $arrangement/$tmp($file)";
+      } else {
+         $contents = "Could not find latex documentation for $arrangement/$tmp ($file)";
+      }
+      $contents .= "\n\n\\include{${arrangement}\_${thorn}\_par}\n";
    }
    
    close DOC;
@@ -240,6 +247,7 @@ sub Add_Section
    my ($thorn) = shift;
    my ($contents) = shift;
 
+$thorn =~ s/\_/\\\_/g;
 print OUT <<EOC;
 
 \\chapter{$thorn}
@@ -314,11 +322,11 @@ sub Read_ThornList
 
    foreach $tempvar (@temp)      # see if docs exist for these thorns
    {
-      if (-e "$directory$tempvar/doc/$file") {
+#      if (-e "$directory$tempvar/doc/$file") {
          push @tl, "$directory$tempvar/doc/$file";
-      } else {
-         print "\nCannot find: $tempvar/doc/$file" if ($verbose);
-      }
+#      } else {
+#         print "\nCannot find: $tempvar/doc/$file" if ($verbose);
+#      }
    }
 
     return @tl;
@@ -332,7 +340,7 @@ sub Recur
    local ($dir) = shift;
    local (@dirs);
 
-   chdir ($dir) || die "cannot chdir to $dir: $!";
+   chdir ($dir) || die "\nFatal Error: cannot chdir to $dir: $!";
 
    open (LS, "ls -p|");
 
@@ -344,13 +352,17 @@ sub Recur
    }
    close (LS);
 
-   if (-e "$file") {                              # we found the file
-      push @foundfiles, $dir; 
-   } elsif ($dir =~ /doc\/$/) {                   # we didn't find the file
-      print STDERR "\n$dir\t\tNo $file" if ($verbose); 
-      push @foundfiles, $dir;
+   if ($dir =~ /arrangements\/(.*?)\/(.*?)\/$/) {
+      if (-e "${dir}/doc/$file") {                              # we found the file
+         push @foundfiles, $dir; 
+         print STDERR "\n$dir\t\tFound $file" if ($verbose);
+      } elsif (-e "${dir}param.ccl") {                   # we didn't find the file
+         print STDERR "\n$dir\t\tNo $file, but param.ccl" if ($verbose); 
+         push @foundfiles, "${dir}/doc";
+      } else {
+        #print STDERR "\n$dir\t\tNo $file, no param.ccl" if ($verbose);
+      }
    }
-
    foreach (@dirs) {                    # look in sub directories
       &Recur("$dir$_");
    }
