@@ -6,7 +6,7 @@
 #  @desc 
 #  Parses the the configuration files for thorns.
 #  @enddesc 
-#  @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.41 2001-05-12 18:33:16 allen Exp $
+#  @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.42 2001-07-11 16:38:40 tradke Exp $
 #@@*/
 
 # Global parameter to track the number of errors from the CST
@@ -161,7 +161,7 @@ print "Creating Thorn-Flesh bindings...\n";
 &BuildHeaders($cctk_home,$bindings_dir,%interface_database);
 
 # Finally (must be last), create the make.thornlist file.
-@make_thornlist = &CreateMakeThornlist(\%thorns);
+@make_thornlist = &CreateMakeThornlist(\%thorns, \%interface_database);
 
 # Stop the make process if there were any errors
 if ($CST_errors)
@@ -342,13 +342,15 @@ sub get_global_parameters
 
 sub CreateMakeThornlist
 {
-  my($thorns) = @_;
+  my($thorns, $interface_database) = @_;
   my($thorn);
   my($thornlist);
+  my($thorn_linklist);
   my($config_thornlist);
 
-  $thornlist        = "THORNS        =";
-  $config_thornlist = "CONFIG_THORNS =";
+  $thornlist        = "THORNS         =";
+  $thorn_linklist   = "THORN_LINKLIST =";
+  $config_thornlist = "CONFIG_THORNS  =";
 
   foreach $thorn (keys %$thorns)
   {
@@ -367,9 +369,91 @@ sub CreateMakeThornlist
       # Only place arrangement_name/thorn_name in the file.
       $config_thornlist .= " $2/$3";
     }
+
   }
 
-  return ("$thornlist", "", "$config_thornlist", "");
+  $thorn_linklist .= ' ' . &CreateThornLinkList($thorns, $interface_database);
+
+  return ("$thornlist", "", "$thorn_linklist", "", "$config_thornlist", "");
+}
+
+
+#/*@@
+#  @routine    CreateThornLinkList
+#  @date       Wed 22 July 2001
+#  @author     Thomas Radke
+#  @desc
+#  Creates the list of all thorns' libraries to link with Cactus
+#  @enddesc
+#@@*/
+sub CreateThornLinkList
+{
+  my($thorns, $interface_database) = @_;
+  my($thorn);
+  my($implementation);
+  my($lib, $liblist, $i, $j);
+  my($cross_inherits);
+  my(@libs, @liblist);
+
+  @libs = ();
+  $cross_inherits = 0;
+  foreach $thorn (keys %$thorns)
+  {
+    next if ($configuration_database->{"\U$thorn OPTIONS\E"} =~ m/NO_SOURCE/i ||
+             $thorn eq "Cactus");
+
+    $implementation = $interface_database->{"\U$thorn\E IMPLEMENTS"};
+    if ($interface_database->{"IMPLEMENTATION \U$implementation\E ANCESTORS"})
+    {
+      push (@libs, split (' ', $interface_database->{"IMPLEMENTATION \U$implementation\E ANCESTORS"}), $implementation);
+    }
+    else
+    {
+      unshift (@libs, $implementation);
+    }
+
+    if ($interface_database->{"IMPLEMENTATION \U$implementation\E FRIENDS"})
+    {
+      $cross_inherits++;
+    }
+  }
+
+  # build the thorn liblist from the implementation list
+  @liblist = ();
+  foreach $lib (@libs)
+  {
+    push (@liblist, split (/\s/, $interface_database->{"IMPLEMENTATION \U$lib\E THORNS"}));
+  }
+
+  if ($cross_inherits == 0)
+  {
+    # remove duplicate thornlibs in the list, keeping the rightmost instance
+    for ($i = 0; $i <= $#liblist; $i++)
+    {
+      for ($j = $i + 1; $j <= $#liblist; )
+      {
+        if ($liblist[$i] eq $liblist[$j])
+        {
+          splice (@liblist, $j, 1);
+        }
+        else
+        {
+          $j++;
+        }
+      }
+    }
+    $liblist = join (' ', reverse @liblist);
+  }
+  else
+  {
+    # FIXME: Don't know how to handle cross-dependent thornlibs.
+    #        For now we just repeat them twice on the linker line
+    #        hoping that this will resolve all external symbols.
+    $liblist = join (' ', @liblist);
+    $liblist .= $liblist;
+  }
+
+  return ($liblist);
 }
 
 #/*@@
