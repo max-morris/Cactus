@@ -113,6 +113,7 @@ typedef int bool;
 #include "cctk_Constants.h"
 #include "cctk_Groups.h"
 #include "cctk_Flesh.h"
+#include "cctk_FortranString.h"
 
 #include "util_ErrorCodes.h"
 #include "util_String.h"
@@ -276,6 +277,14 @@ void **ip_array = NULL;
 /******************************************************************************/
 
 #define min(x,y)        ((x < y) ? (x) : (y))
+
+/******************************************************************************/
+/***** Prototypes for Fortran Wrappers ****************************************/
+/******************************************************************************/
+void CCTK_FCALL CCTK_FNAME (Util_TableCreateFromString)
+                           (int *retval, ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (Util_TableDestroy)
+                           (int *retval, const int *handle);
 
 /******************************************************************************/
 /***** Prototypes for Functions Private to This File **************************/
@@ -650,6 +659,12 @@ int Util_TableDestroy(int handle)
   return 0;
 }
 
+void CCTK_FCALL CCTK_FNAME (Util_TableDestroy)
+                           (int *retval, const int *handle)
+{
+  *retval = Util_TableDestroy (*handle);
+}
+
 /******************************************************************************/
 
 /*@@
@@ -956,6 +971,14 @@ int Util_TableCreateFromString(const char string[])
 
   return handle;
     }
+}
+
+void CCTK_FCALL CCTK_FNAME (Util_TableCreateFromString)
+                           (int *retval, ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (string)
+  *retval = Util_TableCreateFromString (string);
+  free (string);
 }
 
 /******************************************************************************/
