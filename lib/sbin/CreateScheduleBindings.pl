@@ -425,9 +425,18 @@ sub ScheduleBlock
     }
     else
     {
-      $mess = 'Unknown language ' .$rhschedule_db->{"\U$thorn\E BLOCK_$block LANG"};
-      &CST_error(0,$mess,'',__LINE__,__FILE__);
-      return ('', '');
+      if (!$rhschedule_db->{"\U$thorn\E BLOCK_$block LANG"})
+      {
+        $mess = "Language not specified in schedule block: " .$rhschedule_db->{"\U$thorn\E BLOCK_$block NAME"} ." in thorn: $thorn";
+        &CST_error(0,$mess,'',__LINE__,__FILE__);
+        return ('', '');
+      }
+      else
+      { 
+        $mess = 'Unknown language ' .$rhschedule_db->{"\U$thorn\E BLOCK_$block LANG"} ." in schedule block: ".$rhschedule_db->{"\U$thorn\E BLOCK_$block NAME"} ." in thorn: $thorn";
+        &CST_error(0,$mess,'',__LINE__,__FILE__);
+        return ('', '');
+      }
     }
     $prototype = "extern int $function(void);\n";
     $buffer .= "    CCTKi_ScheduleFunction((void *)$function,\n";
