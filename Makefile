@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.106 2000-12-21 15:04:29 goodale Exp $
+#   @version $Id: Makefile,v 1.107 2001-04-09 10:19:12 allen Exp $
 # @@*/
 
 ##################################################################################
@@ -786,18 +786,24 @@ endif
 
 # Make the users manuals
 
+.PHONY: UsersGuide.ps
+UsersGuide.ps: UsersGuide
+
 .PHONY: UsersGuide
-UsersGuide:
+UsersGuide: 
 	@echo $(DIVIDER)
 	@echo Creating user documentation UsersGuide.ps
-	(cd doc/UsersGuide; latex UsersGuide.tex; latex UsersGuide.tex; dvips ./UsersGuide.dvi -o $(CCTK_HOME)/UsersGuide.ps) ; cd $(CCTK_HOME);
+	(cd doc/UsersGuide; latex UsersGuide.tex > $NULL_DEVICE; latex UsersGuide.tex > $NULL_DEVICE; dvips ./UsersGuide.dvi -o $(CCTK_HOME)/UsersGuide.ps >& $NULL_DEVICE) ; cd $(CCTK_HOME);
 	@echo $(DIVIDER)
+
+.PHONY: MaintGuide.ps
+MaintGuide.ps: MaintGuide
 
 .PHONY: MaintGuide
 MaintGuide:
 	@echo $(DIVIDER)
 	@echo Creating maintainers documentation MaintGuide.ps
-	(cd doc/MaintGuide; latex MaintGuide.tex; latex MaintGuide.tex; dvips ./MaintGuide.dvi -o $(CCTK_HOME)/MaintGuide.ps) ; cd $(CCTK_HOME);
+	(cd doc/MaintGuide; latex MaintGuide.tex > $NULL_DEVICE; latex MaintGuide.tex > $NULL_DEVICE; dvips ./MaintGuide.dvi -o $(CCTK_HOME)/MaintGuide.ps >& $NULL_DEVICE) ; cd $(CCTK_HOME); 
 	@echo $(DIVIDER)
 
 # Rule to show thorn information
