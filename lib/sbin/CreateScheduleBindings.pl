@@ -255,6 +255,7 @@ sub ScheduleBlock
   my(@comm_groups);
   my(@trigger_groups);
   my(@sync_groups);
+  my(@options);
   my(@before_list);
   my(@after_list);
   my(@while_list);
@@ -283,6 +284,8 @@ sub ScheduleBlock
   @sync_groups = &ScheduleSelectGroups($thorn, $implementation, 
 					  $rhschedule_db->{"\U$thorn\E BLOCK_$block SYNC"},
 					  $rhinterface_db);
+
+  @options = split(/,/, $rhschedule_db->{"\U$thorn\E BLOCK_$block SYNC"});
 
   @before_list = &ScheduleSelectRoutines($thorn, $implementation, 
 					 $rhschedule_db->{"\U$thorn\E BLOCK_$block BEFORE"},
@@ -345,15 +348,17 @@ sub ScheduleBlock
     $buffer .= $indent . "\"" . $language . "\"" . ",\n";
   }
 
-  $buffer .= $indent . scalar(@mem_groups) . ",                       /* Number of STORAGE  groups */\n";
-  $buffer .= $indent . scalar(@comm_groups) . ",                      /* Number of COMM     groups */\n";
-  $buffer .= $indent . scalar(@trigger_groups) . ",                   /* Number of TRIGGERS groups */\n";
-  $buffer .= $indent . scalar(@sync_groups) . ",                      /* Number of SYNC     groups */\n";
-  $buffer .= $indent . scalar(@before_list) . ",                      /* Number of BEFORE  routines */\n";
-  $buffer .= $indent . scalar(@after_list) . ",                       /* Number of AFTER   routines */\n";
+  $buffer .= $indent . scalar(@mem_groups) . ",                       /* Number of STORAGE  groups   */\n";
+  $buffer .= $indent . scalar(@comm_groups) . ",                      /* Number of COMM     groups   */\n";
+  $buffer .= $indent . scalar(@trigger_groups) . ",                   /* Number of TRIGGERS groups   */\n";
+  $buffer .= $indent . scalar(@sync_groups) . ",                      /* Number of SYNC     groups   */\n";
+  $buffer .= $indent . scalar(@options) . ",                          /* Number of Options           */\n";
+  $buffer .= $indent . scalar(@before_list) . ",                      /* Number of BEFORE  routines  */\n";
+  $buffer .= $indent . scalar(@after_list) . ",                       /* Number of AFTER   routines  */\n";
   $buffer .= $indent . scalar(@while_list) . "                        /* Number of WHILE   variables */";
   
-  foreach $item (@mem_groups, @comm_groups, @trigger_groups, @sync_groups, @before_list, @after_list, @while_list)
+  foreach $item (@mem_groups, @comm_groups, @trigger_groups, @sync_groups, 
+		 @options, @before_list, @after_list, @while_list)
   {
     $buffer .= ",\n" . $indent . "\"" . $item . "\"" ;
   }

@@ -100,8 +100,19 @@ static t_attribute *CreateAttribute(const char *description,
                                     int n_mem_groups, 
                                     int n_comm_groups, 
                                     int n_trigger_groups, 
-                                    int n_sync_groups, 
+                                    int n_sync_groups,
+                                    int n_options,
                                     va_list *ap);
+
+static int ParseOptionList(int n_items, 
+                           t_attribute *attribute, 
+                           va_list *ap);
+
+static int InitialiseOptionList(t_attribute *attribute);
+
+static int ParseOption(t_attribute *attribute, 
+                       const char *option);
+
 static t_sched_modifier *CreateModifiers(int n_before, 
                                          int n_after, 
                                          int n_while, 
@@ -240,6 +251,7 @@ int CCTKi_ScheduleFunction(void *function,
                            int n_comm_groups,
                            int n_trigger_groups,
                            int n_sync_groups,
+                           int n_options,
                            int n_before,
                            int n_after,
                            int n_while,
@@ -255,7 +267,7 @@ int CCTKi_ScheduleFunction(void *function,
   
   attribute = CreateAttribute(description, language, thorn, implementation, 
                               n_mem_groups, n_comm_groups, n_trigger_groups, 
-                              n_sync_groups, &ap);
+                              n_sync_groups, n_options, &ap);
   modifier  = CreateModifiers(n_before, n_after, n_while, &ap);
 
   va_end(ap);
@@ -303,6 +315,7 @@ int CCTKi_ScheduleGroup(const char *name,
                         int n_comm_groups,
                         int n_trigger_groups,
                         int n_sync_groups,
+                        int n_options,
                         int n_before,
                         int n_after,
                         int n_while,
@@ -318,7 +331,7 @@ int CCTKi_ScheduleGroup(const char *name,
   
   attribute = CreateAttribute(description, NULL, thorn, implementation,
                               n_mem_groups, n_comm_groups, n_trigger_groups, 
-                              n_sync_groups, &ap);
+                              n_sync_groups, n_options, &ap);
   modifier  = CreateModifiers(n_before, n_after, n_while, &ap);
 
   va_end(ap);
@@ -665,6 +678,7 @@ static t_attribute *CreateAttribute(const char *description,
                                     int n_comm_groups, 
                                     int n_trigger_groups, 
                                     int n_sync_groups,
+                                    int n_options,
                                     va_list *ap)
 {
   t_attribute *this;
@@ -711,6 +725,11 @@ static t_attribute *CreateAttribute(const char *description,
       CreateGroupIndexList(n_comm_groups,    this->comm_groups, ap);
       CreateGroupIndexList(n_trigger_groups, this->trigger_groups, ap);
       CreateGroupIndexList(n_sync_groups,    this->FunctionData.SyncGroups, ap);
+      
+      /* Check the miscellaneous options */
+
+      InitialiseOptionList(this);
+      ParseOptionList(n_options, this, ap);
 
       this->n_mem_groups     = n_mem_groups;
       this->n_comm_groups    = n_comm_groups;
@@ -788,6 +807,89 @@ static int CreateGroupIndexList(int n_items, int *array, va_list *ap)
     item = va_arg(*ap, const char *);
 
     array[i] = CCTK_GroupIndex(item);
+  }
+
+  return 0;
+}
+
+
+ /*@@
+   @routine    ParseOptionList
+   @date       Thu Jan 27 20:26:42 2000
+   @author     Tom Goodale
+   @desc 
+   Extracts the list of miscellaneous options in a schedule
+   group definition.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+static int ParseOptionList(int n_items, 
+                           t_attribute *attribute, 
+                           va_list *ap)
+{
+  int i;
+  const char *item;
+
+  for(i=0; i < n_items; i++)
+  {
+    item = va_arg(*ap, const char *);
+
+    ParseOption(attribute, item);
+  }
+
+  return 0;
+}
+
+ /*@@
+   @routine    InitialiseOptionList
+   @date       Thu Jan 27 20:36:54 2000
+   @author     Tom Goodale
+   @desc 
+   Initialises the miscellaneous option list for a schedule group. 
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+int InitialiseOptionList(t_attribute *attribute)
+{
+  attribute->FunctionData.global = 0;
+
+  return 0;
+}
+
+ /*@@
+   @routine    ParseOption
+   @date       Thu Jan 27 20:29:36 2000
+   @author     Tom Goodale
+   @desc 
+   Parses an individual option to a schedule group.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+static int ParseOption(t_attribute *attribute, 
+                       const char *option)
+{
+  if(CCTK_Equals(option, "GLOBAL"))
+  {
+    attribute->FunctionData.global = 1;
+  }
+  else
+  {
+    CCTK_WARN(1, "Unknown option for schedule group.\n");
   }
 
   return 0;

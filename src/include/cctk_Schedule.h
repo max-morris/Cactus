@@ -27,6 +27,10 @@ typedef struct
 
   int *SyncGroups;
 
+  /* Option Flags */
+
+  int global;
+
 } cFunctionData;
 
 #ifdef __cplusplus
