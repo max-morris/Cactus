@@ -46,7 +46,8 @@ typedef struct PToken
  ********************************************************************/
 
 static pToken *Tokenise(const char *expression);
-int RPParse(pToken **current,uExpressionInternals *buffer);
+static int RPParse(pToken **current,uExpressionInternals *buffer);
+static int VerifyParsedExpression(const uExpressionInternals *buffer);
 static int EvaluateBinary(uExpressionValue *retval, 
                           const uExpressionValue *val1, 
                           uExpressionOpcode opcode, 
@@ -185,9 +186,23 @@ uExpression Util_ExpressionParse(const char *expression)
     temp = list;
 
     /* Convert the list into a string in RPN order */
-    RPParse(&temp, buffer);
+    if(!RPParse(&temp, buffer))
+    {
+      /* Check if it is a valid expression */
+      if(!VerifyParsedExpression(buffer))
+      {
+        Util_ExpressionFree(buffer);
+        buffer = NULL;
+      }
+    }
+    else
+    {
+      Util_ExpressionFree(buffer);
+      buffer = NULL;
+    }
 
     FreeTokens(list);
+
   }
 
   return buffer;
@@ -238,8 +253,9 @@ uExpression Util_ExpressionParse(const char *expression)
 
    @returntype int
    @returndesc
-   +ve - success but there were this number of remaining operation on the stack.
    0   - success
+   The below used to be returned, but now expression is pre-verified.
+   +ve - success but there were this number of remaining operation on the stack.
    -ve - the number of remaining items on the expression stack when an error was
    encountered
    @endreturndesc
@@ -314,54 +330,32 @@ int Util_ExpressionEvaluate(const uExpression buffer,
       switch(buffer->tokens[position].type)
       {
         case binary:
-          if(stackpointer > 1)
-          {
-            EvaluateBinary(&(stack[stackpointer-2]),
-                           &(stack[stackpointer-2]),
-                           buffer->tokens[position].token.opcode,
-                           &(stack[stackpointer-1]));
-            stackpointer--;
-          }
-          else
-          {
-            retcode = -1;
-          }
+          EvaluateBinary(&(stack[stackpointer-2]),
+                         &(stack[stackpointer-2]),
+                         buffer->tokens[position].token.opcode,
+                         &(stack[stackpointer-1]));
+          stackpointer--;
           break;
         case unary:
-          if(stackpointer > 0)
-          {
             EvaluateUnary(&(stack[stackpointer-1]),
                           buffer->tokens[position].token.opcode,
                           &(stack[stackpointer-1]));
-          }
-          else
-          {
-            retcode = -1;
-          }
           break;
         default :
           ;
       }
 
 #ifdef TEST_EXPRESSION_PARSER
-      if(!retcode)
+      switch(stack[stackpointer-1].type)
       {
-        switch(stack[stackpointer-1].type)
-        {
-          case ival:
-            printf("%d\n" ,stack[stackpointer-1].value.ival); break;
-          case rval:
-            printf("%f\n" ,stack[stackpointer-1].value.rval); break;
-          default:
-            ;
-        }
+        case ival:
+          printf("%d\n" ,stack[stackpointer-1].value.ival); break;
+        case rval:
+          printf("%f\n" ,stack[stackpointer-1].value.rval); break;
+        default:
+          ;
       }
 #endif
-    }
-    if(stackpointer < 0 || stackpointer > MAX_STACK_SIZE || retcode )
-    {
-      retcode = -1;
-      break;
     }
   }
   
@@ -370,15 +364,13 @@ int Util_ExpressionEvaluate(const uExpression buffer,
     free(varvals);
   }
 
-  if(retcode)
-  {
-    retcode = -1-stackpointer;
-  }
-  else
-  {
-    *retval=stack[stackpointer-1];
-    retcode = stackpointer-1;
-  }
+  *retval=stack[0];
+
+  /* stackpointer should be 1 at this point if VerifyExpression
+   * was called on the expression.
+   */
+
+  retcode = stackpointer-1;
 
   return retcode;
 }
@@ -627,7 +619,7 @@ static pToken *Tokenise(const char *expression)
   (stack)->tokens[(stack)->ntokens-1].token.varnum = value;        break;                  \
 } while(0)
 
-int RPParse(pToken **current, uExpressionInternals *buffer)
+static int RPParse(pToken **current, uExpressionInternals *buffer)
 {
   int retcode;
   pToken *this;
@@ -653,8 +645,9 @@ int RPParse(pToken **current, uExpressionInternals *buffer)
       /* This is a sub-group, so parse recursively */
       this = this->next;
       retcode = RPParse(&this, buffer);
-      if(! this)
+      if(retcode || ! this || strcmp(this->token,")"))
       {
+        retcode = -1;
         break;
       }
     }
@@ -723,6 +716,98 @@ int RPParse(pToken **current, uExpressionInternals *buffer)
   return retcode;
 }
 
+ /*@@
+   @routine    VerifyParsedExpression
+   @date       Tue Nov  6 10:53:12 2001
+   @author     Tom Goodale
+   @desc 
+   Verifies that an expression would complete successfully.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+   @var     buffer
+   @vdesc   An expression buffer
+   @vtype   const uExpressionInternals *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+
+   @returntype int
+   @returndesc
+   1 - success
+   0 - invalid expression
+   @endreturndesc
+@@*/
+static int VerifyParsedExpression(const uExpressionInternals *buffer)
+{
+  int retcode;
+  int stackpointer;
+  int position;
+
+  stackpointer = 0;
+
+  retcode = 0;
+
+  for(position = 0; position < buffer->ntokens; position++)
+  {
+    if(buffer->tokens[position].type == val)
+    {
+      stackpointer++;
+    }
+    else
+    {
+      /* Evaluate operation, clear operands from stack and add the result to the stack. */
+      switch(buffer->tokens[position].type)
+      {
+        case binary:
+          if(stackpointer > 1)
+          {
+            stackpointer--;
+          }
+          else
+          {
+            retcode = -1;
+          }
+          break;
+        case unary:
+          if(stackpointer == 0)
+          {
+            retcode = -1;
+          }
+          break;
+        default:
+          ;
+      }
+    }
+    if(stackpointer < 0 || stackpointer > MAX_STACK_SIZE || retcode )
+    {
+      retcode = -1;
+      break;
+    }
+  }
+
+  if(! retcode)
+  {
+    if(stackpointer == 1)
+    {
+      retcode = 1;
+    }
+    else
+    {
+      retcode = 0;
+    }
+  }
+  else
+  {
+    retcode = 0;
+  }
+
+  return retcode;
+}
 
  /*@@
    @routine    EvaluateBinary
@@ -1470,18 +1555,25 @@ int main(int argc, char *argv[])
 
   buffer = Util_ExpressionParse(argv[1]);
 
-  Util_ExpressionEvaluate(buffer, &value,evaluator,NULL);
-
-  if(value.type==ival)
+  if(buffer)
   {
-    printf("Value is %d\n", value.value.ival); 
+    Util_ExpressionEvaluate(buffer, &value,evaluator,NULL);
+
+    if(value.type==ival)
+    {
+      printf("Value is %d\n", value.value.ival); 
+    }
+    else
+    {
+      printf("Value is %f\n", value.value.rval); 
+    }
+    
+    Util_ExpressionFree(buffer);
   }
   else
   {
-    printf("Value is %f\n", value.value.rval); 
+    printf("Invalid expression : '%s'\n", argv[1]);
   }
-
-  Util_ExpressionFree(buffer);
 
   return 0;
 }
