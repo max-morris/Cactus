@@ -33,7 +33,9 @@ else
 
 $current_directory = `pwd`;
 chop($current_directory);
-$current_directory =~ s,^//([^/]+)/,$1:/,;
+# Stuff necessary for cygwin
+$current_directory =~ s,^/cygdrive/(.)/,$1:/,;
+$current_directory =~ s,^//(.)/,$1:/,;
 
 &print_header;
 
