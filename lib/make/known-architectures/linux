@@ -147,8 +147,13 @@ else
   fi
 
   if test -z "$L2_CACHE_SIZE" ; then
-    L2_CACHE_SIZE="`cat /proc/cpuinfo | perl -nae 'print $F[3] if(m:cache:)'`*1024"
-    echo "Setting L2_CACHE_SIZE to $L2_CACHE_SIZE bytes"
+    TEMP_CACHE_SIZE="`cat /proc/cpuinfo | perl -nae 'print $F[3] if(m:cache:)'`"
+    if test -n "$TEMP_CACHE_SIZE" ; then
+      L2_CACHE_SIZE="$TEMP_CACHE_SIZE*1024"
+      echo "Setting L2_CACHE_SIZE to $L2_CACHE_SIZE bytes"
+    else
+      echo "Unable to determine L2 Cache size on this machine. "
+    fi
   fi
 
 # MPI stuff
