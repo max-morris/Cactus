@@ -511,7 +511,7 @@ sub check_interface_consistency
 sub parse_interface_ccl
 {
   local($thorn, @data) = @_;
-  local($line_number, $line, $block, $type, $variable, $description, $nerrors);
+  local($line_number, $line, $block, $type, $variable, $description);
   local($data, %interface_db);
   local($implementation);
   local($option,%options);
@@ -549,7 +549,8 @@ sub parse_interface_ccl
       }
       else
       {
-	print STDERR "Error:  Only one implements line allowed.\n";
+	  $CST_errors++;
+	  print STDERR "Error:  Only one implements line allowed.\n";
       }
     }
     elsif ($line =~ m/^\s*(INHERITS|FRIEND)\s*:((\s*[a-zA-Z]+[a-zA-Z_0-9]*)*\s*)$/i)
@@ -567,6 +568,7 @@ sub parse_interface_ccl
       if($known_groups{"\U$current_group\E"})
       {
 	print STDERR "Duplicate group $2 in thorn $thorn.\n";
+	$CST_errors++;
 	if($data[line_number+1] =~ m:\{:)
 	{
 	  print STDERR "...Skipping interface block ....\n";
@@ -603,6 +605,7 @@ sub parse_interface_ccl
 	}
 	else
 	{
+	  $CST_errors++;
 	  print STDERR "Unknown option $option in group $current_group of thorn $thorn.\n";
 	}
       }
@@ -627,6 +630,7 @@ sub parse_interface_ccl
       # Check that it is a known group type
       if($interface_db{"\U$thorn GROUP $current_group\E GTYPE"} !~ m:SCALAR|GF|ARRAY:)
       {
+	$CST_errors++;
 	print STDERR "Unknown GROUP TYPE " .
 	  $interface_db{"\U$thorn GROUP $current_group\E GTYPE"} .
 	    " for group $current_group of thorn $thorn.\n";
@@ -660,6 +664,7 @@ sub parse_interface_ccl
 	      }	    
 	      else
 	      {
+		$CST_errors++;
 		print STDERR "Duplicate variable $function in thorn $thorn\n";
 	      }
 	    }
@@ -679,6 +684,7 @@ sub parse_interface_ccl
 	}
 	else
 	{
+	  $CST_errors++;
 	  print STDERR "Duplicate variable $function in thorn $thorn\n";
 	}
 	
@@ -691,12 +697,14 @@ sub parse_interface_ccl
     {
       if($line =~ m:\{:)
       {
+	$CST_errors;
 	print STDERR "...Skipping interface block with missing keyword....\n";
 
 	$line_number++ until ($data[$line_number] =~ m:\}:);
       }
       else
       {
+	$CST_errors++;
 	print STDERR "Unknown line $line!!!\n";
       }
     }
