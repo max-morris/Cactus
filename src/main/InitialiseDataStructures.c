@@ -16,9 +16,6 @@
 #include "cctki_ActiveThorns.h"
 #include "cctki_Cache.h"
 
-/* FIXME - remove this when ActiveThorns doesn't need it */
-#include "SKBinTree.h"
-
 static char *rcsid = "$Header$";
 
 CCTK_FILEVERSION(main_InitialiseDataStructures_c)

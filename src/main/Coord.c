@@ -11,6 +11,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "cctk_Flesh.h"
 #include "cctk_Coord.h"

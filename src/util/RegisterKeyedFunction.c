@@ -29,9 +29,9 @@ CCTK_FILEVERSION(util_RegisterKeyedFunction_c)
    @endhistory 
 
 @@*/
-int RegisterKeyedFunction(void (*array[])(), 
+int RegisterKeyedFunction(void (*array[])(void), 
                           int min, int max, 
-                          int key, void (*func)())
+                          int key, void (*func)(void))
 {
   int return_code;
 
@@ -74,13 +74,13 @@ int RegisterKeyedFunction(void (*array[])(),
    @endhistory 
 
 @@*/
-void  (**(CreateKeyedFunctionArray(int size)))()
+void  (**(CreateKeyedFunctionArray(int size)))(void)
 {
-  void (**array)();
+  void (**array)(void);
   int i;
 
   /* Allocate the memory. */
-  array = (void (**)())malloc(size*sizeof(void (*)()));
+  array = (void (**)(void))malloc(size*sizeof(void (*)(void)));
 
   if(array)
   {
@@ -98,9 +98,9 @@ void  (**(CreateKeyedFunctionArray(int size)))()
 
 #ifdef TEST_KEYED_FUNCTIONS
 
-static void (**functions)();
+static void (**functions)(void);
 
-void RegisterTestFunction(int key, void (*func)())
+void RegisterTestFunction(int key, void (*func)(void))
 {
   int retcode;
   if((retcode = RegisterKeyedFunction(functions, 0, 2, key, func)) == 1)

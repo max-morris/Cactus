@@ -9,20 +9,21 @@
  @@*/
 
 #ifndef _REGISTERKEYEDFUNCTION_H_
-#define _REGISTERKEYEDFUNCTION_H_
+#define _REGISTERKEYEDFUNCTION_H_ 1
 
 /*****************************************************/
 /* Function prototypes. */
 
 #ifdef __cplusplus
-extern "C" {
+extern "C" 
+{
 #endif
 
-int RegisterKeyedFunction(void (*array[])(), 
+int RegisterKeyedFunction(void (*array[])(void), 
                           int min, int max, 
-                          int key, void (*func)());
+                          int key, void (*func)(void));
 
-void  (**(CreateKeyedFunctionArray(int size)))();
+void  (**(CreateKeyedFunctionArray(int size)))(void);
 
 #ifdef __cplusplus
 }
