@@ -80,6 +80,8 @@ sub write_rfr_header {
   $header  = "#define THORN_IS_$thorn\n";
   $header .= "#include \"cctk.h\"\n";
   $header .= "#include \"flesh.h\"\n";
+  $header .= "#include \"Comm.h\"\n";
+  $header .= "#include \"Groups.h\"\n";
   $header .= "#include \"rfr_constants.h\"\n";
   $header .= "#include \"declare_parameters.h\"\n";
   $header .= "\n";
@@ -199,7 +201,7 @@ sub parse_schedule_ccl
       ($wrapper_file,$proto_block,$out_block) = &parse_schedule_block($thorn,$type,@data);
       $proto .= "$proto_block"; 
       $out .= "$out_block";
-      push(@compile_files,$wrapper_file);
+      push(@compile_files," $wrapper_file");
     }
 
     # Parse the non-schedule storage line
@@ -223,7 +225,7 @@ sub parse_schedule_ccl
         @list = split(",",$1);
         foreach $group (@list) 
         {
-          $out .= "CCTK_EnableGroupCommunication(GH,\"$group\");\n";
+          $out .= "CCTK_EnableGroupComm(GH,\"$group\");\n";
         }
       }
     }
@@ -392,7 +394,7 @@ sub parse_schedule_at_RFR {
       @list = split(",",$1);
       foreach $group (@list) 
       {
-       $out .= "  index = CCTK_GetGroupNum(GH,\"$group\");\n";
+       $out .= "  index = CCTK_GetGroupNum(\"$group\");\n";
        $out .= "  rfrRegisterStorage(GH->rfr_top,GH,index,$routine);\n";
       }
     }
@@ -407,7 +409,7 @@ sub parse_schedule_at_RFR {
       @list = split(",",$1);
       foreach $group (@list) 
       {
-        $out .= "  index = CCTK_GetGroupNum(GH,\"$group\");\n";
+        $out .= "  index = CCTK_GetGroupNum(\"$group\");\n";
         $out .= "  rfrRegisterComm(GH->rfr_top,GH,index,$routine);\n";
       }
     }
@@ -422,7 +424,7 @@ sub parse_schedule_at_RFR {
       @list = split(",",$1);
       foreach $var (@list) 
       {
-        $out .= "  index = CCTK_GetVarNum(GH,\"$var\");\n";
+        $out .= "  index = CCTK_GetVarNum(\"$var\");\n";
         $out .= "  rfrRegisterTrigger(GH->rfr_top,GH,$group,$routine);\n"
       }
     }
@@ -467,6 +469,7 @@ sub fortran_wrapper {
 #define THORN_IS_$thorn
 #include \"cctk.h\"
 #include \"flesh.h\"
+#include \"Groups.h\"
 #include \"declare_arguments.h\"
 
    void FORTRAN_NAME($routine)($THORN_C2F_PROTO);

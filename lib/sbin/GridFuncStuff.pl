@@ -212,12 +212,26 @@ sub GetThornArguments
 	{
 	  $type .= "$sep$group$dim";
 	  $sep = ",";
-	  $arguments{"$group$dim"} = "STORAGESIZE($thorn:$group, $dim)";
+	  if($block eq "PRIVATE")
+	  {
+	    $arguments{"$group$dim"} = "STORAGESIZE($thorn\::$group, $dim)";
+	  }
+	  else
+	  {
+	    $arguments{"$group$dim"} = "STORAGESIZE($imp\::$group, $dim)";
+	  }
 	}
 	$type .= ")";
       }
 
-      $type .= "!$thorn:$group";
+      if($block eq "PRIVATE")
+      {
+	$type .= "!$thorn\::$group";
+      }
+      else
+      {
+	$type .= "!$imp\::$group";
+      }
 
 #      print "Group is $group, resulting type is $type\n";
 
@@ -401,9 +415,9 @@ sub CreateCArgumentInitialisers
   {
     if($arguments{$argument} !~ m:STORAGESIZE:)
     {
-      $arguments{$argument} =~ m:([^ ]*) ?(.*)?!(.*):;
+      $arguments{$argument} =~ m,([^ ]*) ?(.*)?!(.*)\::(.*),;
 
-      push(@initialisers, "if(CCTKARGNUM_$argument == -1) CCTKARGNUM_$argument = CCTK_GetVarNum(\"$3\")");
+      push(@initialisers, "if(CCTKARGNUM_$argument == -1) CCTKARGNUM_$argument = CCTK_GetVarNum(\"$3\", \"$4\",\"$argument\")");
     }
   }
 

@@ -420,7 +420,7 @@ sub CreateParameterBindings
 
       $files .= " \U$implementation\E". "_protected.c";
       $routines{"CCTK_BindingsParameters$implementation"."_protected"} = "$implementation";
-      $structures{"PROTECTED_\U$implementation\E_STRUCT"} = "cctk_params_$implementation"."_protected";
+      $structures{"PROTECTED_\U$implementation\E_STRUCT"} = "$implementation"."prot";
 
       # Generate the data header file
       
@@ -472,7 +472,7 @@ sub CreateParameterBindings
 
       @data = &CreateCStructureParameterHeader("CCTK_BindingsParameters$thorn"."_private", "PRIVATE_\U$thorn\E_STRUCT", scalar(keys %these_parameters), %these_parameters, %parameter_database);
 
-      $structures{"PRIVATE_\U$thorn\E_STRUCT"} = "cctk_params_$thorn"."_private";
+      $structures{"PRIVATE_\U$thorn\E_STRUCT"} = "$thorn"."priv";
       
       open (OUT, ">ParameterCPrivate\U$thorn\E".".h") || die "Cannot open ParameterCPrivate\U$thorn\E".".h";
 
