@@ -255,7 +255,7 @@ sub parse_param_ccl
 	{
 	  # Parse the allowed values and their descriptions.
 	  # The (optional) description is seperated by ::
-	  while($data[$line_number] !~ m:\s*\}:)
+	  while($data[$line_number] !~ m:^\s*\}:)
 	  {
 	    if($data[$line_number] =~ m/::/)
 	    {
