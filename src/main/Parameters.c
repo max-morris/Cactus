@@ -16,11 +16,9 @@
 #include "cctk_ActiveThorns.h"
 #include "cctk_Constants.h"
 #include "cctk_WarnLevel.h"
-#include "cctk_Misc.h"
 #include "cctk_Parameter.h"
 #include "cctk_GNU.h"
 #include "cctk_FortranString.h"
-#include "SKBinTree.h"
 #include "ParameterBindings.h"
 
 static const char *rcsid="$Header$";
@@ -645,7 +643,7 @@ void CCTK_FCALL CCTK_FNAME (CCTK_ParameterValString)
                   "truncated", c_string, thorn, param);
       c_strlen = (size_t) cctk_strlen3;
     }
-    /* copy up to the size of the fortran string 
+    /* copy up to the size of the fortran string
        and pad remaining chars in the fortran string with spaces */
     memcpy (fortran_string, c_string, c_strlen);
     memset (fortran_string + c_strlen, ' ', (size_t) cctk_strlen3 - c_strlen);
@@ -1265,8 +1263,8 @@ static int ParameterSetKeyword (t_param *param, const char *value)
 
   if (retval == -1)
   {
-    CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
-                "ParameterSetKeyword: Unable to set keyword %s::%s - %s not "
+    CCTK_VWarn (2, __LINE__, __FILE__, "Cactus",
+                "ParameterSetKeyword: Unable to set keyword %s::%s - '%s' not "
                 "in any active range",
                 param->props->thorn, param->props->name, value);
 
@@ -1308,8 +1306,8 @@ static int ParameterSetString (t_param *param, const char *value)
 
   if (retval == -1)
   {
-    CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
-                "ParameterSetString: Unable to set string '%s::%s' - %s not "
+    CCTK_VWarn (2, __LINE__, __FILE__, "Cactus",
+                "ParameterSetString: Unable to set string '%s::%s' - '%s' not "
                 "in any active range",
                 param->props->thorn, param->props->name, value);
 
@@ -1351,8 +1349,8 @@ static int ParameterSetSentence (t_param *param, const char *value)
 
   if (retval == -1)
   {
-    CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
-                "ParameterSetSentance: Unable to set sentance '%s::%s' - %s "
+    CCTK_VWarn (2, __LINE__, __FILE__, "Cactus",
+                "ParameterSetSentance: Unable to set sentance '%s::%s' - '%s' "
                 "not in any active range",
                 param->props->thorn, param->props->name, value);
 
@@ -1397,9 +1395,9 @@ static int ParameterSetInteger (t_param *param, const char *value)
 
   if (retval == -1)
   {
-    CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
-                "ParameterSetInteger: Unable to set integer '%s::%s' - %s not "
-                "in any active range",
+    CCTK_VWarn (2, __LINE__, __FILE__, "Cactus",
+                "ParameterSetInteger: Unable to set integer '%s::%s' - '%s' "
+                "not in any active range",
                 param->props->thorn, param->props->name, value);
   }
 
@@ -1450,9 +1448,10 @@ static int ParameterSetReal (t_param *param, const char *value)
 
   if (retval == -1)
   {
-    CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
-                "ParameterSetReal: Unable to set real '%s:%s' - %s not in any "
-                "active range", param->props->thorn, param->props->name, value);
+    CCTK_VWarn (2, __LINE__, __FILE__, "Cactus",
+                "ParameterSetReal: Unable to set real '%s:%s' - '%s' not in "
+                "any active range",
+                param->props->thorn, param->props->name, value);
   }
 
   return (retval);
@@ -1467,9 +1466,10 @@ static int ParameterSetBoolean (t_param *param, const char *value)
   retval = CCTK_SetBoolean (param->data, value);
   if (retval == -1)
   {
-    CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
-                "ParameterSetBoolean: Unable to set boolean '%s::%s' - %s not "
-                "recognised", param->props->thorn, param->props->name, value);
+    CCTK_VWarn (2, __LINE__, __FILE__, "Cactus",
+                "ParameterSetBoolean: Unable to set boolean '%s::%s' - '%s' "
+                "not recognised",
+                param->props->thorn, param->props->name, value);
   }
 
   return (retval);
