@@ -21,7 +21,6 @@
 #include "cctk_WarnLevel.h"
 
 #include "StoreHandledData.h"
-#include "ErrorCodes.h"
 
 static const char *rcsid = "$Header$";
 
