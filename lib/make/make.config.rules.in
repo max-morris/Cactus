@@ -134,7 +134,7 @@ endef
 
 # Define how to do a free-format F90 compilation
 define PREPROCESS_F90
-{ if test $(F_LINE_DIRECTIVES) = 'yes'; then echo '#line 1 "'$<'"'; fi; cat $<; } | $(PERL) -p -e 's.//.CCTK_AUTOMATICALLY_GENERATED_CONCATENATION_PROTECTION.g' | $(FPP) $(FPPFLAGS) $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DFCODE | $(PERL) -p -e 's.CCTK_AUTOMATICALLY_GENERATED_CONCATENATION_PROTECTION.//.g' | $(PERL) -p -e 's/__FORTRANFILE__/\"$(basename $(notdir $<)).F90\"/g' | $(PERL) -s $(F_FILE_PROCESSOR) -free_format -line_directives=$(F_LINE_DIRECTIVES) -source_file_name=$< > $(basename $(notdir $<)).$(F90_SUFFIX)
+{ if test $(F_LINE_DIRECTIVES) = 'yes'; then echo '#line 1 "'$<'"'; fi; cat $<; } | $(PERL) -p -e 's.//.CCTK_AUTOMATICALLY_GENERATED_CONCATENATION_PROTECTION.g' | $(FPP) $(FPPFLAGS) $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DFCODE -DF90CODE | $(PERL) -p -e 's.CCTK_AUTOMATICALLY_GENERATED_CONCATENATION_PROTECTION.//.g' | $(PERL) -p -e 's/__FORTRANFILE__/\"$(basename $(notdir $<)).F90\"/g' | $(PERL) -s $(F_FILE_PROCESSOR) -free_format -line_directives=$(F_LINE_DIRECTIVES) -source_file_name=$< > $(basename $(notdir $<)).$(F90_SUFFIX)
 endef
 
 define COMPILE_F90
