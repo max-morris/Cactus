@@ -8,9 +8,7 @@
 #   @enddesc 
 # @@*/
     
-if test -z "$HDF5" ; then
-  exit 0
-fi
+if test -n "$HDF5" ; then
 	
 echo "Configuring with HDF5. Blocks with #ifdef HDF5 will be activated"
 
@@ -66,3 +64,5 @@ CCTK_WriteLine make.extra.defn ""
 CCTK_WriteLine make.extra.defn 'LIBS         += $(HDF5_LIBS)'
 CCTK_WriteLine make.extra.defn 'LIBDIRS      += $(HDF5_LIB_DIRS)'
 CCTK_WriteLine make.extra.defn 'SYS_INC_DIRS += $(HDF5_INC_DIRS)'
+
+fi
