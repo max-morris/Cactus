@@ -151,7 +151,7 @@ foreach $t (@testfiles)
 
   $processing_active = 0;
 
-  # Give a default test name in case non is specified in the parameter file.
+  # Give a default test name in case none are specified in the parameter file.
   $testnames{$ntests} = "$testthorns[$ntests]/test/$t";
 
   while (<IN>)
@@ -469,6 +469,9 @@ sub runtest
   $indir =~ s:\.par$:${sep}:g;
   opendir (DIR, $indir);
   @oldout = grep (/\..+l$/, readdir (DIR));
+#print STDERR "\nindir is $indir\n"; #readdir is :",readdir(DIR),":\n";
+#print STDERR "oldout[0] == @oldout[0]\n";
+
   closedir (DIR);
   $blewit = 0;
   $reallyblewit = 0;
@@ -481,26 +484,36 @@ sub runtest
 
   foreach $file (@oldout)
   {
+
+    $file="$indir$file";
+
     $nfiles ++;
     $newfile = $file;
     $newfile =~ s:^.*${sep}([^${sep}]+)$:$1:;
     $newfile = "$tsttop$sep$tp$sep$newfile";
-    #       print "Comparing $file with $newfile\n";
+    #print STDERR "Comparing :${file}: with :${newfile}:\n";
 
     if ( -e $newfile)
     {
+
+	#print STDERR "*************** -e :${newfile}:!\n";
+	#if (-e $file) {print "************** file exists\n";}
+
       open (INORIG, "<$file");
       open (INNEW,  "<$newfile");
       $nblow = 0;
       $nrealblow = 0;
       while ($oline = <INORIG>)
       {
+    #print STDERR "***************** got oline = :${oline}:\n";
+
         $nline = <INNEW>;
         # Now lets see if they differ.
         if (!($nline eq $oline))
         {
 
           # Check against nans
+	  #print STDERR "*************** Looking for nans...........\n\a\a\a";
           if ($nline =~ /nan/i)
           {
             print "****CAUGHT NAN in $newfile****\n";
