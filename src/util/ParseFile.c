@@ -69,7 +69,8 @@ static int lineno = 1;
 
 
 int ParseFile(FILE *ifp, 
-              int (*set_function)(const char *, const char *)) 
+              int (*set_function)(const char *, const char *), 
+	      tFleshConfig *ConfigData) 
 {
   /* Buffers for parsing from the file */
   char tokens[BUF_SZ], value[BUF_SZ];
@@ -212,11 +213,26 @@ int ParseFile(FILE *ifp,
                   tokens,value);
 #endif
           set_function(tokens,value);
-          
-          
         } 
-        else 
+        else if (c == '$')
+	{
+	  /* We got a define */
+	  /* FIXME: Assume it is a parameter file for now */
+	  int lpar=(strlen(ConfigData->parameter_file_name)-4)*sizeof(char);
+
+	  while (!(c==' ' || c=='\t' || c == '\n' || c == EOF)) 
+	  {
+	    c = fgetc(ifp);
+#ifdef DEBUG
+	    printf("%c",c);
+#endif
+	  }
+	  strncpy(value,ConfigData->parameter_file_name,lpar);
+          set_function(tokens,value);
+	}
+	else
         {
+	  
           int p = 0;
           value[p++] = c;
           if (ntokens == 1) 
