@@ -59,9 +59,9 @@ static cHandledData *schedule_groups = NULL;
    @endhistory 
 
 @@*/
-t_sched_modifier *CCTKi_ScheduleAddModifer(t_sched_modifier *orig, 
-					   const char *modifier, 
-					   const char *argument)
+t_sched_modifier *CCTKi_ScheduleAddModifier(t_sched_modifier *orig, 
+                                            const char *modifier, 
+                                            const char *argument)
 {
   t_sched_modifier *this;
 
@@ -718,8 +718,8 @@ int main(int argc, char *argv[])
 {
   t_sched_modifier *modifier;
 
-  modifier = CCTKi_ScheduleAddModifer(NULL, "before", "c");
-  modifier = CCTKi_ScheduleAddModifer(modifier, "after",  "a");
+  modifier = CCTKi_ScheduleAddModifier(NULL, "before", "c");
+  modifier = CCTKi_ScheduleAddModifier(modifier, "after",  "a");
 
   CCTKi_ScheduleFunction("group_a", "c", func_c, NULL, NULL);
   CCTKi_ScheduleFunction("group_a", "b", func_b, modifier, NULL);
