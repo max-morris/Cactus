@@ -790,11 +790,14 @@ int CCTKi_ScheduleGHInit(void *GH)
                 "No timing information will be available.");
   }
 
-  CCTK_GroupStorageIncrease(GH,
-                            n_scheduled_storage_groups,
-                            scheduled_storage_groups,
-                            scheduled_storage_groups_timelevels,
-                            NULL);
+  if (n_scheduled_storage_groups>0)
+  {
+    CCTK_GroupStorageIncrease(GH,
+			      n_scheduled_storage_groups,
+			      scheduled_storage_groups,
+			      scheduled_storage_groups_timelevels,
+			      NULL);
+  }
 
   for(i = 0; i < n_scheduled_comm_groups; i++)
   {
