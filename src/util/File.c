@@ -1,13 +1,14 @@
-#include "cctk.h"
-
  /*@@
    @file      File.c
    @date      September 6th 1999
    @author    Gabrielle Allen
    @desc
-              File Handling routines
+   File Handling routines
    @enddesc
+   @version $Header$
  @@*/             
+
+#include "cctk.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -23,6 +24,22 @@ static char *rcsid = "$Header$";
 
 CCTK_FILEVERSION(util_File_c)
 
+/********************************************************************
+ *********************     Local Data Types   ***********************
+ ********************************************************************/
+
+/********************************************************************
+ ********************* Local Routine Prototypes *********************
+ ********************************************************************/
+
+/********************************************************************
+ ********************* Other Routine Prototypes *********************
+ ********************************************************************/
+
+/********************************************************************
+ *********************     Local Data   *****************************
+ ********************************************************************/
+
 /* some systems (eg. Windows NT) don't define this macro */
 #ifndef S_ISDIR
 #define S_ISDIR(mode)   (((mode) & S_IFMT) == S_IFDIR)
@@ -32,18 +49,12 @@ CCTK_FILEVERSION(util_File_c)
 #ifdef HAVE_MODE_T
 #define MKDIR_WRAPPER(a,b) mkdir(a,b)
 #else
-
-/* FIXME: Temporary kludge until everyone has reconfigured */ 
-#ifdef WIN32
 #define MKDIR_WRAPPER(a,b) mkdir(a)
-#else
-/* Should just be the clause with one argument, this one should go. */
-#endif /* WIN32 */
-
 #endif /* HAVE_MODE_T */
 
-int CCTK_CreateDirectory(int mode,const char *pathname);
-
+/********************************************************************
+ *********************     External Routines   **********************
+ ********************************************************************/
 
  /*@@
    @routine    CCTK_CreateDirectory
@@ -57,7 +68,26 @@ int CCTK_CreateDirectory(int mode,const char *pathname);
    @history 
  
    @endhistory 
+   @var     mode
+   @vdesc   permissions of the directory to be created
+   @vtype   int
+   @vio     in
+   @vcomment 
+   This is the unix mode, e.g. 0755
+   @endvar 
+   @var     pathname
+   @vdesc   Name of directory to create
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
 
+   @returntype int
+   @returndesc
+   0  - success
+   -1 - failure
+   @endreturndesc
 @@*/
 int CCTK_CreateDirectory(int mode, const char *pathname)
 {
@@ -165,3 +195,9 @@ void CCTK_FCALL CCTK_FNAME(CCTK_CreateDirectory)
   *ierr = CCTK_CreateDirectory(*mode,arg1);
   free(arg1); 
 }
+
+/********************************************************************
+ *********************     Local Routines   *************************
+ ********************************************************************/
+
+
