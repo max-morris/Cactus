@@ -118,17 +118,19 @@ module cctk_Coord
        character(*)          system_name
      end subroutine CCTK_CoordRegisterRange
 
-     subroutine CCTK_CoordRegisterRangePhysIndex &
-          (ierr, GH, coord_min, coord_max, coord_dir, coord_name, system_name)
-       implicit none
-       integer               ierr
-       CCTK_POINTER_TO_CONST GH
-       integer               coord_min
-       integer               coord_max
-       integer               coord_dir
-       character(*)          coord_name
-       character(*)          system_name
-     end subroutine CCTK_CoordRegisterRangePhysIndex
+! This routine is commented out because its name is too long.
+! Therefore, it cannot be called from Fortran anyway.
+!     subroutine CCTK_CoordRegisterRangePhysIndex &
+!          (ierr, GH, coord_min, coord_max, coord_dir, coord_name, system_name)
+!       implicit none
+!       integer               ierr
+!       CCTK_POINTER_TO_CONST GH
+!       integer               coord_min
+!       integer               coord_max
+!       integer               coord_dir
+!       character(*)          coord_name
+!       character(*)          system_name
+!     end subroutine CCTK_CoordRegisterRangePhysIndex
 
      subroutine CCTK_NumCoordSystems (num)
        implicit none
