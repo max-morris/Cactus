@@ -256,7 +256,7 @@ sub ParseExtras
   $sep = $config_data{"SEPARATOR"};
   $config = $config_data{"CONFIG"};
 
-  $extradir = "$dir${sep}configs${sep}$config${sep}config_data${sep}cctk_Extradefs.h";
+  $extradir = "$dir${sep}configs${sep}$config${sep}config-data${sep}cctk_Extradefs.h";
 
   $mpi = 0;
 
