@@ -11,6 +11,10 @@
 # Silence all but designated output
 #.SILENT:
 
+# Dividers to make the screen output slightly nicer
+DIVEL   =  __________________
+DIVIDER =  $(DIVEL)$(DIVEL)$(DIVEL)$(DIVEL)
+
 # Include the main make definitions for this configuration
 include $(CONFIG)/make.config.defn
 
@@ -48,6 +52,7 @@ SRCS = $(CCTK_SRCS)
 OBJS = $(patsubst %,%.o,$(basename $(SRCS)))
 
 $(NAME): $(addsuffix .check, $(SUBDIRS)) $(OBJS) $(SRCDIR)/make.code.defn $(foreach DIR,$(SUBDIRS), $(SRCDIR)/$(DIR)/make.code.defn)
+	@echo $(DIVIDER)
 	if [ -r $(NAME) ] ; then echo Updating $(NAME) ; else echo Creating $(NAME) ; fi
 	$(AR) $(ARFLAGS) $@ $(OBJS)
 #	$(RANLIB) $@

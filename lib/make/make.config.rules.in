@@ -12,8 +12,29 @@
 #   @enddesc 
 # @@*/
 
+# Dividers to make the screen output slightly nicer
+DIVEL   =  __________________
+DIVIDER =  $(DIVEL)$(DIVEL)$(DIVEL)$(DIVEL)
+
+define PREPROCESS_C
+cat $< | $(PERL) $(CCTK_HOME)/lib/sbin/c_file_processor.pl $(CONFIG) > $(notdir $<)
+endef
+
+define COMPILE_C 
+current_wd=`pwd` ; cd $(SCRATCH_BUILD) ; $(CC) $(CFLAGS) -c -o $$current_wd/$@ $$current_wd/$(notdir $<) $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DCCODE
+endef
+
+define POSTPROCESS_C
+endef
+
 %.o: $(SRCDIR)/%.c
-	$(CC) $(CFLAGS) -c -o $@ $< $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DCCODE
+	@echo $(DIVIDER)
+	@echo Preprocessing $<
+	$(PREPROCESS_C)
+	@echo Compiling $<
+	$(COMPILE_C)
+	@echo Postprocessing $<
+	$(POSTPROCESS_C)
 
 %.d: $(SRCDIR)/%.c
 	$(CPP) -M $(CFLAGS) $< $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DCCODE > $@

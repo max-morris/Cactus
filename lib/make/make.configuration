@@ -9,12 +9,15 @@
 # @@*/
 
 # Silence all but designated output
-.SILENT: 
+#.SILENT: 
 
 # Some configuration variables
 CONFIG = $(TOP)/config-data
 BINDINGS_DIR = $(TOP)/bindings
 
+# Scratch build area - need this to make sure F90 module files end up all
+# in one directory.
+export SCRATCH_BUILD=$(TOP)/scratch
 
 DATESTAMP = $(CCTK_HOME)/src/datestamp.c
 export MAKE_DIR  = $(CCTK_HOME)/lib/make
@@ -55,6 +58,7 @@ $(EXE): $(CONFIG)/make.thornlist $(patsubst %,$(CCTK_LIBDIR)/lib%.a,$(notdir $(T
 $(CCTK_LIBDIR)/lib%.a: update
 	@echo $(DIVIDER)
 	@echo Checking status of $(notdir $@)
+	if [ ! -d $(SCRATCH_BUILD) ]; then $(MKDIR) $(SCRATCH_BUILD) ; fi
 	if [ ! -d $(BUILD_DIR) ]; then $(MKDIR) $(BUILD_DIR) ; fi
 	thorn_name=$(@:$(CCTK_LIBDIR)/lib%.a=%); \
 	if [ "$$thorn_name" = "Cactus" ] ; then src_dir=$(CCTK_HOME)/src ; \
@@ -106,4 +110,5 @@ $(TOP)/ActiveThorns:
 update:
 
 clean:
-	find $(TOP) -name '*.o' -o -name '*.a' -exec rm {} \;
+	@echo Deleting all object files in $(TOP)
+	find $(TOP) \( -name '*.o' -o -name '*.a' \) -exec rm {} \;
