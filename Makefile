@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.79 2000-03-13 09:26:27 goodale Exp $
+#   @version $Id: Makefile,v 1.80 2000-03-14 00:55:07 allen Exp $
 # @@*/
 
 ##################################################################################
@@ -313,6 +313,10 @@ endif
 	@echo $(MAKE) also knows the following targets
 	@echo
 	@echo "  checkout         - checkout public arrangements/thorns."
+	@echo "  cvsdiff          - differences between installed Cactus and"
+	@echo "	                    version in CVS repository."
+	@echo "  cvsstatus        - reports on status of Cactus when installed"
+	@echo "	                    from CVS."
 	@echo "  default          - creates a new configuration with "
 	@echo "			    a default name."
 	@echo "  distclean        - deletes all existing configurations."
