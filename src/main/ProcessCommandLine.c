@@ -246,17 +246,24 @@ int CCTK_CommandLine(char ***outargv)
 int CCTK_ParameterFilename(int len, char *filename)
 {
   int retval;
+  const char *copy_string;
+
 
   if (CCTK_Equals(parameter_file_name,"-"))
   {
-    strncpy(filename,"STDIN",len-1);
+    copy_string = "STDIN";
   }
   else
   {
-    strncpy(filename,parameter_file_name,strlen(parameter_file_name));
+    copy_string = parameter_file_name;
   }
-  retval = strlen(filename);
-  retval=retval > len ? 0 : retval;
+  retval = strlen (copy_string);
+  if (retval > len - 1)
+  {
+    retval = len - 1;
+  }
+  strncpy (filename, copy_string, retval);
+  filename[retval] = 0;
   return retval;
 }
 
@@ -269,6 +276,3 @@ void CCTK_FCALL CCTK_FNAME(CCTK_ParameterFilename)
 /********************************************************************
  *********************     Local Routines   *************************
  ********************************************************************/
-
-
-
