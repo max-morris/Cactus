@@ -89,11 +89,19 @@ int ParseFile(FILE *ifp,
     }
 
     /* End of line */
-    if (c == '\n') {
+    if (c == '\n') 
+    {
+      if(intoken)
+      {
+	fprintf(stderr, "Parse error at line %d.  No value supplied.\n", lineno);
+	intoken = 0;
+      }
+
       lineno ++;
 #ifdef DEBUG
       printf ("LINE %d\n",lineno);
 #endif
+
     }
 
     /* Token character */
