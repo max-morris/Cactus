@@ -79,6 +79,7 @@ static int *group_of_variable = NULL;
 
 static int maxdim = 0;
 
+static char staggered = 0;
 
 /* When passing to fortran, must pass by reference
  * so need to define the odd global variable to pass 8-(
@@ -198,7 +199,65 @@ void CCTK_DumpGroupInfo(void) {
   }
 }
 
+ /*@@
+   @routine    CCTKi_StaggerCode
+   @date       Fri Jan  7 15:59:26 2000
+   @author     Gerd Lanfermann
+   @desc 
+      gets the stagger string and returns a number identifying the 
+      staggering. 
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
 
+@@*/
+
+int CCTKi_StaggerCode(int dim, 
+		      const char *imp, const char *gname, 
+		      const char *stype) {
+  int i,m;
+  int base  = 1;
+  int scode = 0;
+  char *hs, *info;
+  
+  hs     = (char*)malloc ((dim+1) *sizeof (char));
+
+  /* change possible SHORTCUTS into the official notation, allow for dim=6 */
+  if 
+    (strcmp(stype,"NONE")==0) strncpy(hs,"MMMMMM",dim); 
+  else if 
+    (strcmp(stype,"CELL")==0) strncpy(hs,"CCCCCC",dim);
+  else {
+    sprintf(hs,"%s",stype);
+  }
+
+  for (i=0;i<dim;i++) {
+
+    switch (hs[i]) 
+    {
+      case 'M':m=0; break;
+      case 'C':m=1; break;
+      case 'P':m=2; break;
+      default:
+        info   = (char*)malloc (256*sizeof(char));
+        sprintf(info,
+      	      "Unknown stagger type: >%s< for group: >%s::%s< \n",
+	      stype,imp,gname);
+        CCTK_WARN(1,info);
+        free(info);
+        return(-1);
+    }
+    scode+= m*base;
+    base  = 3 * base;
+  }
+
+  free(hs);
+  return(scode);
+}
+  
 
  /*@@
    @routine    CCTKi_CreateGroup
@@ -227,6 +286,7 @@ int CCTKi_CreateGroup(const char *gname, const char *thorn, const char *imp,
 {
   int retval;
   int groupscope;
+  int staggercode;
   va_list ap;
   char *variable_name;
 
@@ -235,6 +295,9 @@ int CCTKi_CreateGroup(const char *gname, const char *thorn, const char *imp,
   int variable;
 
   retval = 0;
+
+  /* get the staggercode */
+  staggercode = CCTKi_StaggerCode(dimension, imp, gname, stype);
 
   /* Allocate storage for the group */
   groupscope = CCTK_GroupScopeNumber(gscope);
@@ -282,10 +345,11 @@ int CCTKi_CreateGroup(const char *gname, const char *thorn, const char *imp,
   /* Allocate storage for the group and setup some stuff. */
   if(group)
   {
-    group->dim = dimension;
-    group->gtype = CCTK_GroupTypeNumber(gtype);
-    group->vtype = CCTK_VarTypeNumber(vtype);
+    group->dim    = dimension;
+    group->gtype  = CCTK_GroupTypeNumber(gtype);
+    group->vtype  = CCTK_VarTypeNumber(vtype);
     group->gscope = groupscope;
+    group->stagger= staggercode;
 
     group->n_timelevels = ntimelevels;
     
@@ -316,7 +380,8 @@ int CCTKi_CreateGroup(const char *gname, const char *thorn, const char *imp,
     }
     else
     {
-      if (dimension > maxdim) maxdim=dimension;
+      if (dimension > maxdim) maxdim    = dimension;
+      if (staggercode > 0)    staggered = 1;
 
       group->size = CCTKi_SetupGroupSize(dimension, thorn, size);
 
@@ -351,7 +416,7 @@ int CCTKi_CreateGroup(const char *gname, const char *thorn, const char *imp,
 
 @@*/
 static cGroupDefinition *CCTKi_SetupGroup(const char *implementation, 
-                                          const char *name, 
+                                          const char *name,
                                           int n_variables)
 {
   int *temp_int;
@@ -928,77 +993,6 @@ void  FMODIFIER FORTRAN_NAME(CCTK_VarTypeNumber)(int *number,ONE_FORTSTRING_ARG)
   ONE_FORTSTRING_CREATE(type)
   *number = CCTK_VarTypeNumber(type);
   free(type);
-}
-
-
-
- /*@@
-   @routine    CCTK_VarTypeName
-   @date       Mon Jan  3 13:50:56 CET 2000
-   @author     Gabrielle Allen
-   @desc 
-   Gets the variable type name associated with a variable type number.
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
-
-@@*/
-char *CCTK_VarTypeName(int vtype)
-{
-  char *retval;
-
-  switch(vtype)
-  {
-    case CCTK_VARIABLE_INT: 
-      retval = "CCTK_VARIABLE_INT";
-      break;
-
-    case CCTK_VARIABLE_INT2: 
-      retval = "CCTK_VARIABLE_INT2";
-      break;
-
-    case CCTK_VARIABLE_INT4: 
-      retval = "CCTK_VARIABLE_INT4";
-      break;
-
-    case CCTK_VARIABLE_INT8: 
-      retval = "CCTK_VARIABLE_INT8";
-      break;
-
-    case CCTK_VARIABLE_REAL: 
-      retval = "CCTK_VARIABLE_REAL";
-      break;
-
-    case CCTK_VARIABLE_REAL4: 
-      retval = "CCTK_VARIABLE_REAL4";
-      break;
-
-    case CCTK_VARIABLE_REAL8: 
-      retval = "CCTK_VARIABLE_REAL8";
-      break;
-
-    case CCTK_VARIABLE_COMPLEX: 
-      retval = "CCTK_VARIABLE_COMPLEX";
-      break;
-
-    case CCTK_VARIABLE_CHAR: 
-      retval = "CCTK_VARIABLE_CHAR";
-      break;
-
-    case CCTK_VARIABLE_STRING: 
-      retval = "CCTK_VARIABLE_STRING";
-      break;
-
-    default:
-      retval = NULL;
-      break;
-  }
-
-  return retval;
-
 }
 
 
