@@ -16,6 +16,15 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+/* Define the prototypes for the overloading functions. */
+#define OVERLOADABLE(name) OVERLOADABLE_OVERLOADPROTO(name)
+
+#include "IOOverloadables.h"
+
+#undef OVERLOADABLE
+
+
 /* Define the prototypes for the functions. */
 #define OVERLOADABLE(name) OVERLOADABLE_PROTOTYPE(name)
 
