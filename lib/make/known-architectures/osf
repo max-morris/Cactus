@@ -6,7 +6,7 @@
 #    @desc
 #               known-architectures file for OSF systems
 #    @enddesc
-#    @version   $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/osf,v 1.8 2001-11-06 16:55:23 tradke Exp $
+#    @version   $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/osf,v 1.9 2002-04-08 13:37:00 tradke Exp $
 #  @@*/
 
 if test "$CCTK_CONFIG_STAGE" = "preferred-compilers" ; then
@@ -19,14 +19,24 @@ if test "$CCTK_CONFIG_STAGE" = "preferred-compilers" ; then
 else
 
   if test "$CC" = "cc" ; then
-    : ${CFLAGS='-std1'}
+    if test "X$PTHREADS" = "Xyes" ; then
+      : ${CFLAGS='-std1 -pthread'}
+      : ${C_DEPEND='$(CC) -pthread -E -M $(CPPFLAGS)'}
+    else
+      : ${CFLAGS='-std1'}
+    fi
     : ${C_OPTIMISE_FLAGS='-O5 -fast'}
     : ${C_DEBUG_FLAGS='-g3'}
   fi
 
   if test "$CXX" = "cxx" ; then
     : ${CXX_DEPEND='$(CXX) -E -M $(CPPFLAGS) -noimplicit_include'}
-    : ${CXXFLAGS='-std1'}
+    if test "X$PTHREADS" = "Xyes" ; then
+      : ${CXXFLAGS='-std1 -pthread'}
+      : ${CXX_DEPEND='$(CXX) -pthread -E -M $(CPPFLAGS)'}
+    else
+      : ${CXXFLAGS='-std1'}
+    fi
     : ${CXX_OPTIMISE_FLAGS='-O5 -fast'}
     : ${CXX_DEBUG_FLAGS='-g3'}
   fi
