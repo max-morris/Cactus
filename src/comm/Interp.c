@@ -91,6 +91,7 @@ void CCTK_FCALL CCTK_FNAME (CCTK_InterpLocal)
 typedef struct
 {
   const char *implementation;
+  const char *name;
   cInterpOperatorGV interp_operator_GV;
   cInterpOperatorLocal interp_operator_local;
 } t_interp_operator;
@@ -145,7 +146,8 @@ int CCTKi_InterpRegisterOperatorGV (const char *thorn,
   if (operator_GV == NULL)
   {
     CCTK_Warn (1, __LINE__, __FILE__, "Cactus",
-               "NULL pointer passed as interpolation operator routine");
+               "CCTKi_InterpRegisterOperatorGV: "
+	       "NULL pointer passed as interpolation operator routine");
     handle = -1;
   }
   else
@@ -160,6 +162,7 @@ int CCTKi_InterpRegisterOperatorGV (const char *thorn,
       if (operator)
       {
 	operator->implementation = CCTK_ThornImplementation(thorn);
+	operator->name = name;
         operator->interp_operator_GV = operator_GV;
         operator->interp_operator_local = NULL;
         handle = Util_NewHandle (&interp_operators, name, operator);
@@ -170,7 +173,8 @@ int CCTKi_InterpRegisterOperatorGV (const char *thorn,
       else
       {
         CCTK_Warn (1, __LINE__, __FILE__, "Cactus",
-                   "Couldn't allocate interpolation operator handle");
+                   "CCTKi_InterpRegisterOperatorGV: "
+		   "Couldn't allocate interpolation operator handle");
         handle = -2;
       }
     }
@@ -182,7 +186,8 @@ int CCTKi_InterpRegisterOperatorGV (const char *thorn,
     {
       /* Interpolation operator with this name already exists. */
       CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
-                  "Interpolation operator '%s' already exists",
+                  "CCTKi_InterpRegisterOperatorGV: "
+		  "Operator '%s' already exists",
                   name);
       handle = -3;
     }
@@ -232,7 +237,8 @@ int CCTKi_InterpRegisterOperatorLocal (const char *thorn,
   if (operator_local == NULL)
   {
     CCTK_Warn (1, __LINE__, __FILE__, "Cactus",
-               "NULL pointer passed as interpolation operator routine");
+               "CCTKi_InterpRegisterOperatorLocal: "
+	       "NULL pointer passed as interpolation operator routine");
     handle = -1;
   }
   else
@@ -247,6 +253,7 @@ int CCTKi_InterpRegisterOperatorLocal (const char *thorn,
       if (operator)
       {
 	operator->implementation = CCTK_ThornImplementation(thorn);
+	operator->name = name;
         operator->interp_operator_local = operator_local;
         operator->interp_operator_GV = NULL;
         handle = Util_NewHandle (&interp_operators, name, operator);
@@ -257,7 +264,8 @@ int CCTKi_InterpRegisterOperatorLocal (const char *thorn,
       else
       {
         CCTK_Warn (1, __LINE__, __FILE__, "Cactus",
-                   "Couldn't allocate interpolation operator handle");
+                   "CCTKi_InterpRegisterOperatorLocal: "
+		   "Couldn't allocate interpolation operator handle");
         handle = -2;
       }
     }
@@ -269,7 +277,8 @@ int CCTKi_InterpRegisterOperatorLocal (const char *thorn,
     {
       /* Interpolation operator with this name already exists. */
       CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
-                  "Interpolation operator '%s' already exists",
+                  "CCTKi_InterpRegisterOperatorLocal: "
+		  "Operator '%s' already exists",
                   name);
       handle = -3;
     }
@@ -328,6 +337,55 @@ void CCTK_FCALL CCTK_FNAME (CCTK_InterpHandle)
   ONE_FORTSTRING_CREATE (name)
   *handle = CCTK_InterpHandle (name);
   free (name);
+}
+
+
+ /*@@
+   @routine    CCTK_InterpOperator
+   @date       December 27 2001
+   @author     Gabrielle Allen
+   @desc
+               Returns the name of a interpolation operator
+   @enddesc
+   @var        handle
+   @vdesc      Handle for interpolation operator
+   @vtype      int
+   @vio        in
+   @vcomment
+   @endvar
+
+   @returntype const char *
+   @returndesc
+   The name of the interpolation operator, or NULL if the handle 
+   is invalid
+   @endreturndesc
+@@*/
+const char *CCTK_InterpOperator (int handle)
+{
+  const char *name=NULL;
+  t_interp_operator *operator;
+
+  if (handle < 0)
+  {
+    CCTK_VWarn (6, __LINE__, __FILE__, "Cactus",
+                "CCTK_InterpHandle: Handle %d invalid", handle);
+  }
+  else
+  {
+    operator = (t_interp_operator *) Util_GetHandledData (interp_operators,
+							  handle);
+    if (operator)
+    {
+      name = operator->name;
+    }
+    else
+    {
+      CCTK_VWarn (6, __LINE__, __FILE__, "Cactus",
+		  "CCTK_InterpHandle: Handle %d invalid", handle);
+    }
+  }
+
+  return name;
 }
 
 
@@ -430,13 +488,13 @@ int CCTK_InterpGV (cGH *GH,
   if (operator == NULL)
   {
     CCTK_Warn (3, __LINE__, __FILE__, "Cactus",
-               "CCTK_Interp: Invalid interpolation operator handle passed to CCTK_InterpGV");
+               "CCTK_InterpGV: Invalid interpolation operator handle passed to CCTK_InterpGV");
     retcode = -1;
   }
   else if (coord_system == NULL)
   {
     CCTK_Warn (3, __LINE__, __FILE__, "Cactus",
-               "CCTK_Interp: Invalid coordinate system handle passed to CCTK_InterpGV");
+               "CCTK_InterpGV: Invalid coordinate system handle passed to CCTK_InterpGV");
     retcode = -2;
   }
   else
@@ -503,13 +561,14 @@ void CCTK_FCALL CCTK_FNAME (CCTK_InterpGV)
   if (operator == NULL)
   {
     CCTK_Warn (3, __LINE__, __FILE__, "Cactus",
-               "Invalid interpolation operator handle passed to CCTK_InterpGV");
+               "CCTK_InterpGV: "
+	       "Invalid interpolation operator handle passed to CCTK_InterpGV");
     retcode = -1;
   }
   else if (coord_system == NULL)
   {
     CCTK_Warn (3, __LINE__, __FILE__, "Cactus",
-               "Invalid coordinate system handle passed to CCTK_InterpGV");
+               "CCTK_InterpGV: Invalid coordinate system handle passed to CCTK_InterpGV");
     retcode = -1;
   }
   else
@@ -667,8 +726,7 @@ int CCTK_InterpLocal (cGH *GH,
   if (operator == NULL)
   {
     CCTK_Warn (3, __LINE__, __FILE__, "Cactus",
-               "Invalid interpolation operator handle passed to "
-               "CCTK_InterpLocal");
+               "CCTK_InterpLocal: Invalid interpolation operator handle");
     retcode = -1;
   }
   else
@@ -746,8 +804,7 @@ void CCTK_FCALL CCTK_FNAME (CCTK_InterpLocal)
   if (operator == NULL)
   {
     CCTK_Warn (3, __LINE__, __FILE__, "Cactus",
-               "Invalid interpolation operator handle passed to "
-               "CCTK_InterpLocal");
+               "CCTK_InterpLocal: Invalid interpolation operator handle");
     retcode = -1;
   }
   else

@@ -126,6 +126,7 @@ void CCTK_FCALL  CCTK_FNAME(CCTK_ReduceLocArrayToArray3D)
 typedef struct
 {
   const char *implementation;
+  const char *name;
   cReduceOperator reduce_operator;
 } t_reduce_operator;
 
@@ -185,6 +186,7 @@ int CCTKi_RegisterReductionOperator(const char *thorn,
     {
       reduce_operator->implementation = 
 	      CCTK_ThornImplementation(thorn);
+      reduce_operator->name = name;
       reduce_operator->reduce_operator = operator;
       handle = Util_NewHandle(&ReductionOperators, name, reduce_operator);
     
@@ -1063,5 +1065,55 @@ const char *CCTK_ReduceOperatorImplementation(int handle)
   }
 
   return imp;
+}
+
+
+
+ /*@@
+   @routine    CCTK_ReduceOperator
+   @date       December 27 2001
+   @author     Gabrielle Allen
+   @desc
+               Returns the name of a reduction operator
+   @enddesc
+   @var        handle
+   @vdesc      Handle for reduction operator
+   @vtype      int
+   @vio        in
+   @vcomment
+   @endvar
+
+   @returntype const char *
+   @returndesc
+   The name of the reduction operator, or NULL if the handle 
+   is invalid
+   @endreturndesc
+@@*/
+const char *CCTK_ReduceOperator (int handle)
+{
+  const char *name=NULL;
+  t_reduce_operator *operator;
+
+  if (handle < 0)
+  {
+    CCTK_VWarn (6, __LINE__, __FILE__, "Cactus",
+                "CCTK_ReduceOperator: Handle %d invalid", handle);
+  }
+  else
+  {
+    operator = (t_reduce_operator *) Util_GetHandledData (ReductionOperators,
+							  handle);
+    if (operator)
+    {
+      name = operator->name;
+    }
+    else
+    {
+      CCTK_VWarn (6, __LINE__, __FILE__, "Cactus",
+		  "CCTK_ReduceOperator: Handle %d invalid", handle);
+    }
+  }
+
+  return name;
 }
 
