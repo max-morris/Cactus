@@ -1124,13 +1124,22 @@ Produces version information of the code.
 \item [{\tt -W<level>} or {\tt -waring-level=<level>}]
 Sets the warning level of the code.  All warning messages are given a level ---
 the lower the level the greater the severity.  This parameter controls the
-level of messages to be seen, with all warnings of value {\tt <level>} or higher printed to standard out.  The default is a warning level of 1, with
-0 indicating that only those messages which are (by default) fatal should
-be seen.
+level of messages to be seen, with all warnings of level $\le$ {\tt <level>}
+printed to standard output (warnings with level $>$ {\tt <level>} are
+silently discarded).  The default is a warning level of~1,
+meaning that only level~0 and level~1 messages should be printed.
 \item [{\tt -E<level} or {\tt -error-level=<level>}]
-This works in concert with {\tt -W} --- it controls which warning level is
-treated as a fatal error.  This cannot be set to a higher value than
-{\tt -W}. The default value is zero.
+This is similar to {\tt -W}, but for fatal errors:
+Cactus treats all warnings with level $\le$ {\tt <level>} as fatal
+errors, and aborts the Cactus run immediately (after printing the
+warning message%%%
+\footnote{%%%
+	 Cactus imposes the constraints that
+	 $\hbox{the {\tt -W} level} \ge \hbox{the {\tt -E} level} \ge 0$,
+	 so any fatal-error message will always be printed (first).
+	 }%%%
+).  The default value is zero, \ie{} only level~0 warnings
+will abort the Cactus run.
 \item [{\tt -r[o|e|oe|eo]} or {\tt -redirect=[o|e|oe|eo]}]
 This redirects the standard output (`\texttt{o}') and/or standard error
 (`\texttt{e}') of each processor to a file.  By default
