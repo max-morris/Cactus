@@ -247,31 +247,30 @@ static inline int CCTK_GFINDEX4D (const cGH *GH, int i, int j, int k, int l)
             int         cctk_convlevel = cctkGH->cctk_convlevel;\
             int         cctk_convfac = cctkGH->cctk_convfac;\
             int        *cctk_nghostzones = cctkGH->cctk_nghostzones;\
-            int         cctk_iteration = cctkGH->cctk_iteration;
+            int         cctk_iteration = cctkGH->cctk_iteration;\
+            const void *cctki_use = (cctki_use = &cctk_dim,\
+                                     cctki_use = &cctk_gsh,\
+                                     cctki_use = &cctk_lsh,\
+                                     cctki_use = &cctk_lbnd,\
+                                     cctki_use = &cctk_ubnd,\
+                                     cctki_use = &cctk_lssh,\
+                                     cctki_use = &cctk_from,\
+                                     cctki_use = &cctk_to,\
+                                     cctki_use = &cctk_bbox,\
+                                     cctki_use = &cctk_delta_time,\
+                                     cctki_use = &cctk_time,\
+                                     cctki_use = &cctk_delta_space,\
+                                     cctki_use = &cctk_origin_space,\
+                                     cctki_use = &cctk_levfac,\
+                                     cctki_use = &cctk_levoff,\
+                                     cctki_use = &cctk_levoffdenom,\
+                                     cctki_use = &cctk_timefac,\
+                                     cctki_use = &cctk_convlevel,\
+                                     cctki_use = &cctk_convfac,\
+                                     cctki_use = &cctk_nghostzones,\
+                                     cctki_use = &cctk_iteration,\
+                                     cctki_use = &cctki_use);
 
-
-#define _USE_CCTK_CARGUMENTS \
-            (void) (cctk_dim + 0);\
-            (void) (cctk_gsh + 0);\
-            (void) (cctk_lsh + 0);\
-            (void) (cctk_lbnd + 0);\
-            (void) (cctk_ubnd + 0);\
-            (void) (cctk_lssh + 0);\
-            (void) (cctk_from + 0);\
-            (void) (cctk_to + 0);\
-            (void) (cctk_bbox + 0);\
-            (void) (cctk_delta_time + 0);\
-            (void) (cctk_time + 0);\
-            (void) (cctk_delta_space + 0);\
-            (void) (cctk_origin_space + 0);\
-            (void) (cctk_levfac + 0);\
-            (void) (cctk_levoff + 0);\
-            (void) (cctk_levoffdenom + 0);\
-            (void) (cctk_timefac + 0);\
-            (void) (cctk_convlevel + 0);\
-            (void) (cctk_convfac + 0);\
-            (void) (cctk_nghostzones + 0);\
-            (void) (cctk_iteration + 0);
 
 #define _INITIALISE_CCTK_C2F
 #define _DECLARE_CCTK_C2F
