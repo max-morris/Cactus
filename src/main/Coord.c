@@ -432,7 +432,7 @@ int CCTK_CoordIndex(int dir, const char *name, const char *systemname)
         if (dir>data->dimension)
         {
           index = -4;
-          CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
+          CCTK_VWarn(2,__LINE__,__FILE__,"Cactus",
                      "CCTK_CoordIndex: Direction %d outside dimension %d",
                      dir,data->dimension);
         }
@@ -455,7 +455,7 @@ int CCTK_CoordIndex(int dir, const char *name, const char *systemname)
         if (foundit == 0)
         {
           index = -3;
-          CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
+          CCTK_VWarn(4,__LINE__,__FILE__,"Cactus",
                      "CCTK_CoordIndex: Coordinate name %s not found",
                      name);
         }
@@ -464,13 +464,13 @@ int CCTK_CoordIndex(int dir, const char *name, const char *systemname)
     else
     {
       index = -2;
-      CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
+      CCTK_VWarn(4,__LINE__,__FILE__,"Cactus",
                  "CCTK_CoordIndex: System %s not registered",systemname);
     }
   }
   else
   {
-    CCTK_Warn(2,__LINE__,__FILE__,"Cactus",
+    CCTK_Warn(4,__LINE__,__FILE__,"Cactus",
               "CCTK_CoordIndex: No coordinate systems registered");
     index = -1;
   }
