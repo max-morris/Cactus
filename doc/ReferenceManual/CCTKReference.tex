@@ -2407,13 +2407,13 @@ Group has no members.
 \begin{CCTKFunc}{CCTK\_FortranString}{Changes a C string into a Fortran string}
 \label{CCTK-FortranString}
 \subroutine{int}{integer}{nchar}
-\argument{const char *}{character*(*)}{strout}
-\argument{const char *}{CCTK\_STRING}{strin}
+\argument{const char *}{CCTK\_STRING}{c\_string\_in}
+\argument{const char *}{character*(*)}{fortran\_string\_out}
 \showargs
 \begin{params}
 \parameter{nchar}{The number of characters in the C string, not counting the null terminator}
-\parameter{strout}{The Fortran string which on output contains the C string as the first nchar characters}
-\parameter{strin}{The (pointer to the) C string containing the null terminator}
+\parameter{c\_string\_in}{The (pointer to the) C string containing the null terminator}
+\parameter{fortran\_string\_out}{The Fortran string which on output contains the C string as the first nchar characters}
 \end{params}
 \begin{discussion}
 String or keyword parameters in Cactus are passed into Fortran routines as
