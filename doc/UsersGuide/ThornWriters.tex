@@ -638,7 +638,7 @@ The following restrictions apply to file names:
 \begin{itemize}
 \item For portability across all operating systems, the base names
         for any particular extension should not depend on the operating
-        system being case sensitive (e.g. having {\tt MyFile.c} and
+        system being case sensitive (e.g.\ having {\tt MyFile.c} and
         {\tt MYFILE.f77} is alright, but {\tt MyFile.c} and {\tt MYFILE.c} could cause problems).
 \item Currently all source files in different subroutines within a
 thorn must have distinct names.  We hope
@@ -796,7 +796,7 @@ Groups can be either {\tt scalars}, {\tt grid functions (GFs)}, or {\tt grid arr
 
 \begin{Lentry}
 \item[SCALAR]
-This is just a single number, e.g. the total energy of some field.  These
+This is just a single number, e.g.\ the total energy of some field.  These
 variables aren't communicated between processors --- what would be the
 result of such communication?
 \item[GF]
@@ -840,7 +840,7 @@ to the $t$ variable.
 
 To remove this extraneous copy, Cactus allows you to specify the number
 of timelevels used by your numerical scheme.  It then generates variables
-with the base name (e.g. {\tt phi}) suffixed by a qualifier for
+with the base name (e.g.\ {\tt phi}) suffixed by a qualifier for
 which timelevel is being referred to --- no suffix for the
 next timelevel, and {\tt \_p} for each previous timelevel.
 
@@ -1061,7 +1061,7 @@ lower:upper:stride
 \end{verbatim}
 
 where {\em lower} and {\em upper} specify the lower and upper allowed
-range, and {\em stride} allows numbers to be be missed out.  e.g.
+range, and {\em stride} allows numbers to be be missed out.  e.g.\
 \begin{verbatim}
 1:21:2
 \end{verbatim}
@@ -1085,7 +1085,7 @@ end-point.
 
 The numbers written in a param.ccl file are interpreted as C code.
 To express a number in `scientific notation', use
-e.g. ``1e-10'', which is a double precision constant in C.  (If the
+e.g.\ ``1e-10'', which is a double precision constant in C.  (If the
 floating precision of the variable to which it is assigned is not
 double, then C will typecast appropriately.  If you \emph{really} want to
 specify a single precision floating constant, or a long double
@@ -1621,7 +1621,7 @@ to access its elements.
 \end{Lentry}
 
 The following variables describe the location of the local
-grid (e.g. the grid treated on a given processor) within
+grid (e.g.\ the grid treated on a given processor) within
 the global grid.
 \begin{itemize}
 \item {\tt cctk\_lbnd}
@@ -1641,7 +1641,8 @@ the global grid.
         $[{\mbox{dim}}_0^{\mbox{min}}, \mbox{dim}_0^{\mbox{max}},
         {\mbox dim}_1^{\mbox{min}}, {\mbox dim}_1^{\mbox{max}}, \ldots]$),
       which indicate whether the boundaries are internal boundaries
-      (e.g. between processors), or physical boundaries. A value of 1 indicates
+      (e.g.\ between processors), or physical boundaries.
+      A value of 1 indicates
       a physical (outer) boundary at the edge of the computational grid,
       and 0 indicates an internal boundary.
 \end{itemize}
@@ -1718,7 +1719,7 @@ is declared in the {\tt interface.ccl} as {\tt CCTK\_REAL}.
       end
 \end{verbatim}
 
-Declaring {\tt local\_var} to have a non-Cactus data type, e.g.
+Declaring {\tt local\_var} to have a non-Cactus data type, e.g.\
 {\tt REAL*4}, or using one of the other Cactus real data types
 described in Section~\ref{sec:datyansi} could give problems for
 different architectures or configurations.
@@ -1751,8 +1752,9 @@ The string specifying the staggering is encoded in a number called
 the {\em staggerindex}. With the 3 supported staggerings, the string
 is converted into a base-3 number. Several routines exist, to extract the
 staggering in a specific direction, called {\em directional
-staggerindex}. E.g. {\tt stagger = MCM}: {\em staggerindex} = 3, in the
-x-direction: {\em directional staggerindex} = CCTK\_STAGGER\_M (value 0),  in the
+staggerindex}. E.g.\ {\tt stagger = MCM}: {\em staggerindex} = 3, in the
+x-direction: {\em directional staggerindex} = CCTK\_STAGGER\_M (value 0),
+in the
 y-direction: {\em directional staggerindex} = CCTK\_STAGGER\_C (value 1).
 
 \begin{Lentry}
@@ -1876,7 +1878,7 @@ is done by a {\it driver} thorn. To allow the distribution of
 a grid over a number of processors, the driver thorn must
 also provide the grid decomposition, and routines to enable
 parallelisation. The method used to provide this parallelisation
-(e.g. MPI, PVM) is not usually important for the thorn writer since
+(e.g.\ MPI, PVM) is not usually important for the thorn writer since
 the driver thorn provides routines which are called by standard interfaces
 from the flesh. Here we describe briefly the most important of these routines
 for the application thorn writer. A more detailed description
@@ -2360,7 +2362,7 @@ truncation error.
 
 The exchange of
 information across processors needs the functionality of a
-communication layer e.g. {\tt CactusPUGH/PUGH}. For this reason, the
+communication layer e.g.\ {\tt CactusPUGH/PUGH}. For this reason, the
 reduction operation itself is not part of the flesh, instead Cactus (again)
 provides a registration mechanism for thorns to register routines they
 provide as reduction operators. The different operators are
@@ -2380,7 +2382,8 @@ of a one element array).
 
 The reduction interface is currently under revision, and in the future
 should closely resemble that of the new interpolator interface.
-See e.g. the description of \verb|CCTK_InterpLocalUniform()| in the Reference Manual.
+See e.g.\ the description of \verb|CCTK_InterpLocalUniform()| in the
+Reference Manual.
 
 \vskip .24cm
 {\bf Obtaining the reduction handle}
@@ -2991,7 +2994,7 @@ copyright details, and a synopsis of what the thorn does.
 \subsection{Contribution to ThornGuide}
 
 The latex file {\tt doc/documentation.tex} is included in Thorn Guides
-built by the Cactus make system. (e.g. by {\tt gmake
+built by the Cactus make system. (e.g.\ by {\tt gmake
 $<$config$>$-ThornGuide}). Ideally this file should contain complete
 (and {\it up-to-date}) details about the thorn, exactly what is
 relevent is for the authors to decide, but remember that the Cactus
@@ -3540,7 +3543,7 @@ the case and number of underscores of the routine name to match that expected
 by Fortran.
 
 All arguments passed by Fortran to the routine (except strings) are
-pointers in C, e.g. a call from Fortran
+pointers in C, e.g.\ a call from Fortran
 
 \begin{verbatim}
 CCTK_INT arg1
@@ -3685,7 +3688,7 @@ int CCTK_FCALL CCTK_FNAME(CopyStrings)(TWO_FORTSTRING_ARG)
 Note that in the example above two new variables, pointers to the
 Fortran strings, were created.  These are just pointers and {\em
 should not be freed}.  The example also illustrates the
-automatically-created variables (e.g. {\tt cctk\_strlen1}
+automatically-created variables (e.g.\ {\tt cctk\_strlen1}
 which hold the sizes of original Fortran strings.
 When writing to a string its length should never be exceeded.
 
