@@ -6,7 +6,7 @@
 #   @desc
 #            Known architecture stuff for MacOS X (Darwin)
 #   @enddesc
-#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/darwin,v 1.2 2001-09-18 16:37:32 allen Exp $
+#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/darwin,v 1.3 2002-04-18 23:10:15 tradke Exp $
 # @@*/
 
 if test "$CCTK_CONFIG_STAGE" = "preferred-compilers" ; then
@@ -15,7 +15,11 @@ if test "$CCTK_CONFIG_STAGE" = "preferred-compilers" ; then
 
 else
 
-# Determine which Fortran 90 compiler is in use
+  # this fixes some darwin-specific preprocessor bugs (?)
+  CFLAGS='-o-cpp-precomp'
+  C_DEPEND='$(CC) -E -M $(CFLAGS) $(CPPFLAGS)'
+
+  # Determine which Fortran 90 compiler is in use
   MAC_F90_COMP=none
 
   if test -n "$F90" && test "$F90" != "none" ; then 
@@ -32,7 +36,7 @@ else
     fi
   fi
 
-#Set the appropriate flags
+  #Set the appropriate flags
   case "$MAC_F90_COMP" in
      absoft)
        : ${LIBS="f90math fio f77math m"} 
@@ -71,15 +75,15 @@ else
        ;;
   esac    
 
-# Darwin's ar command doesn't understand the '-s' flag
-# so we have to use ranlib to add a table of contents to libraries
+  # Darwin's ar command doesn't understand the '-s' flag
+  # so we have to use ranlib to add a table of contents to libraries
   : ${ARFLAGS='ruc'}
   : ${USE_RANLIB='yes'}
 
-# MPI stuff
-#
-# Darwin has no native MPI, so we don't set any NATIVE_MPI_XXX variables.
-# This is caught later on by lib/make/extras/MPI/NATIVE.
+  # MPI stuff
+  #
+  # Darwin has no native MPI, so we don't set any NATIVE_MPI_XXX variables.
+  # This is caught later on by lib/make/extras/MPI/NATIVE.
 
 fi
 
