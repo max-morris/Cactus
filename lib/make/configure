@@ -1278,8 +1278,8 @@ EOF
 # Deal with the Fortran compiler issues.
 # If there's a Fortran 90 compiler use that for all the Fortran.
 if test "x$F90" != "x" ; then
-F77=$F90 
-F77FLAGS=$F90FLAGS ;
+  F77=$F90 
+  : {F77FLAGS=$F90FLAGS} ;
 fi
 
 # The known architecture stuff has probably set the LIBS variable
