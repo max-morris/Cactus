@@ -16,6 +16,7 @@ CFLAGS := -Wall -W -Wno-unused -Wshadow -Winline -Wpointer-arith \
           -Wbad-function-cast -Wcast-align -Wcast-qual \
           -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations \
           -pedantic -ansi
+EXTRA_CFLAGS :=
 
 CONFIG_DATA_DIR := $(firstword $(wildcard ../../configs/*/config-data))
 LIB_DIR         := $(dir $(CONFIG_DATA_DIR))lib
@@ -26,7 +27,7 @@ MPI_LIBS        := $(shell egrep '^MPI_LIBS'     $(CONFIG_DATA_DIR)/make.extra.d
 # build outside cactus
 .PHONY	: test-table-standalone
 test-table-standalone	:
-	$(CC) $(CFLAGS) -g \
+	$(CC) $(CFLAGS) $(EXTRA_CFLAGS) -g \
               -I. -I../include -I$(CONFIG_DATA_DIR) -L$(LIB_DIR) \
               -DUTIL_TABLE_TEST \
               -o test_Table \
