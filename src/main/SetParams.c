@@ -111,7 +111,7 @@ int CCTKi_SetParameter (const char *parameter, const char *value, int lineno)
   {
     /* Parameter not defined in thorn */
     CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
-                "In parameter file '%s' line %d:: Parameter '%s' not found",
+                "In parameter file '%s' line %d: Parameter '%s' not found",
                 parfile, lineno, parameter);
     if (parameter_check == CCTK_PARAMETER_RELAXED)
     {
