@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.42 1999-07-28 10:15:36 allen Exp $
+#   @version $Id: Makefile,v 1.43 1999-07-29 15:21:19 jmasso Exp $
 # @@*/
 
 ##################################################################################
@@ -128,6 +128,13 @@ endif
 ifdef MPI
 ifneq ($(strip $(origin MPI)), default)
 SETUP_ENV += MPI=$(MPI) ; export MPI ;
+endif
+endif
+
+# Debug options
+ifdef DEBUG
+ifneq ($(strip $(origin DEBUG)), default)
+SETUP_ENV += DEBUG=$(DEBUG) ; export DEBUG ;
 endif
 endif
 
