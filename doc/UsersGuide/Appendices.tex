@@ -100,6 +100,8 @@ listing the thorn's global variables.
 \item building include files
 \end{itemize}
 \end{itemize}
+(For a more extensive discussion of Cactus variables see Chapter
+\ref{chap:cava}.)
 
 The header block has the form:
 {\t
@@ -117,8 +119,7 @@ where
 \item{} Inheriting from another implementation makes all that implementation's
         public variables available to your thorn. At least one thorn
         providing any inherited implementation must be present at compile time.
-        A thorn cannot inherit from itself. Inheritance is associative and
-        recursive, but not commutative.
+        A thorn cannot inherit from itself. Inheritance is transitive, but not commutative.
 \item{} Being a friend of another implementation makes all that
         implementation's
         protected variables available to your thorn. At least one thorn
@@ -201,7 +202,8 @@ The parameter configuration file consists of a list of
 {\it parameter object specification items} (OSIs) giving the type and
 range of the parameter separated by optional
 {\it parameter data scoping items} (DSIs) which detail access to the
-parameter.
+parameter.  (For a more extensive discussion of Cactus parameters see Chapter
+\ref{chap:capa}.)
 
 \subsection{Parameter data scoping items}
 {\tt
@@ -218,10 +220,11 @@ protection or scoping class. {\tt access} can take the values:
                            parameters if they specifically request
                            it in their own param.ccl
 \item[{\tt private}] only your thorn has access to private parameters
-\item[{\tt shares}] in this case an {\t implementation} name must follow
-                        the colon. It declare that all the parameters in
-                        the following scoping block are restricted variables
-                        from the specified {\tt implementation}.
+\item[{\tt shares}] in this case an {\t implementation} name must
+follow the colon. It declares that all the parameters in the following
+scoping block are restricted variables from the specified {\tt
+implementation}.  (Note: only one implementation can be specified
+on this line.)
 \end{Lentry}
 
 
@@ -251,7 +254,10 @@ Where an empty field, or a {\t *} in the place of {\tt low-range} or
 default value for {\t step} is 1. A number by itself denotes that
 this number is the only acceptable value.
      \item[{\t REAL}] The range specification is the same as integers,
-             except that here, no {\t step} implies a continuum of values.
+             except that here, no {\t step} implies a continuum of
+values.  Note that numeric constants should be expressed as in C
+(e.g. {\t 1e-10}).  Note also that one can use the Cactus types such
+as {\t CCTK\_REAL4} to specify the precision of the parameter.
      \item[{\t KEYWORD}] Each entry in the list of acceptable values
              for a keyword has the form
 {\t
@@ -270,10 +276,15 @@ this number is the only acceptable value.
 
 \item{} The {\t parameter name} must be unique within the scope of the thorn.
 
-\item{} A thorn can declare that it {\t EXTENDS} a parameter that it is a
-        friend of. This allows it to declare additional acceptable values.
+\item{} A thorn can declare that it {\t EXTENDS} a parameter of
+another thorn. This allows it to declare additional acceptable values.
         By default it is acceptable for two thorns to declare the same
         value as acceptable.
+
+\item{} If the thorn wants to simply use a parameter from another
+thorn, without declaring additional values, use {\t USES} 
+instead.
+
 \end{itemize}
 
 
@@ -291,6 +302,8 @@ The schedule configuration files consists of
         of variables for the duration that the subroutine is called.
 \item{} Conditional statements
 \end{itemize}
+For a more extensive discussion of Cactus scheduling see Chapter
+\ref{chap:scheduling}.)
 
 {\it Assignment statements} have the form:
 {\t
