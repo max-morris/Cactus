@@ -60,6 +60,10 @@
  *    Short ints get promoted to ints by compiler, so changed args to va_arg
  *    to reflect this.
  *
+ *  Tom Goodale <goodale@cct.lsu.edu> 2004-12-20
+ *    Fixes formatting of floating point numbers with zeros
+ *    immediately after the decimal point.
+ *
  **************************************************************/
 
 
@@ -663,6 +667,12 @@ static int fmtfp (char *buffer, size_t *currlen, size_t maxlen,
       (caps? "0123456789ABCDEF":"0123456789abcdef")[fracpart % 10];
     fracpart = (fracpart / 10);
   } while(fracpart && (fplace < 20));
+  /* Make sure we replace any leading zeros. */
+  while(fplace < max)
+  {
+    fconvert[fplace++] = '0';
+  }
+
   if (fplace == 20) fplace--;
   fconvert[fplace] = 0;
 
