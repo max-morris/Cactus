@@ -25,7 +25,7 @@ int CCTK_DummyCommunicationOff(void *GH, int group);
 
 int CCTK_DummyTriggerable(int variable);
 
-int CCTK_DummyTriggerSaysGo(int variable);
+int CCTK_DummyTriggerSaysGo(void *GH, int variable);
 
 int CCTK_DummyTriggerAction(void *GH, int group);
 
