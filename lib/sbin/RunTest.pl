@@ -78,7 +78,7 @@ while ($choice !~ /^Q/i)
 	{
 	  print "  Test $thorn: $test \n";
 	  print "    \"$testdata{\"$thorn $test DESC\"}\"\n";
-	  if ($choice =~ /^O/i)
+	  if ($choice !~ /^O/i)
 	  {
 	    %testdata = &RunTest($test,$thorn,%testdata);
 	  }
@@ -91,15 +91,22 @@ while ($choice !~ /^Q/i)
     } 
     elsif ($choice =~ /^[AT]/i)
     {
-      ($test,$thorn) = &ChooseTest($choice,%testdata);
-      %testdata = &RunTest($test,$thorn,%testdata);
-      %testdata = &CompareTestFiles($test,$thorn,%testdata);
+      ($ntests,@tests) = &ChooseTest($choice,%testdata);
+      for ($i=0;$i<$ntests;$i++)
+      {
+	$test  = $tests[2*$i];
+	$thorn = $tests[2*$i+1];
+	print "  Test $thorn: $test\n";
+	print "    \"$testdata{\"$thorn $test DESC\"}\"\n";
+	%testdata = &RunTest($tests[2*$i],$tests[2*$i+1],%testdata);
+	%testdata = &CompareTestFiles($tests[2*$i],$tests[2*$i+1],%testdata);
+      }
     }
     elsif ($choice =~ /^R/i)
     {
       if ($thorn && $test)
       {
-	print "  Running $thorn: $test \n";
+	print "  Test $thorn: $test \n";
 	print "    \"$testdata{\"$thorn $test DESC\"}\"\n";
 	%testdata = &RunTest($test,$thorn,%testdata);
 	%testdata = &CompareTestFiles($test,$thorn,%testdata);

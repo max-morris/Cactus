@@ -612,6 +612,9 @@ sub ChooseTest
       $testcount++;
     }
     $testchoice = &defprompt("  Choose test:"," ");      
+    $ntests = 1;
+    $returntests[0] = $mytests[$testchoice];
+    $returntests[1] = $mythorns[$thornchoice];
   }
   elsif ($choice =~ m:^T:i)
   {
@@ -625,18 +628,35 @@ sub ChooseTest
     if ($count > 1)
     {
       $thornchoice = &defprompt("  Choose thorn:"," ");
-      $testcount = 1;
+      $testcount = 0;
+      printf ("  [ 0] All tests\n");
       foreach $test (split(" ",$testdata{"$mythorns[$thornchoice] RUNNABLE"}))
       {
+	$testcount++;
 	printf ("  [%2d] $test\n",$testcount);
 	print "       $testdata{\"$mythorns[$thornchoice] $test DESC\"}\n";
 	$mytests[$testcount] = "$test";
-	$testcount++;
       }
-      $testchoice = &defprompt("  Choose test:"," ");      
+      $testchoice = &defprompt("  Choose test:","0");      
+      if ($testchoice == 0)
+      {
+	$ntests = $testcount;
+	for ($i=0;$i<$testcount;$i++)
+	{
+	  $returntests[2*$i]   = $mytests[$i+1];
+	  $returntests[2*$i+1] = $mythorns[$thornchoice];
+	}
+      }
+      else
+      {
+	$ntests = 1;
+	$returntests[0] = $mytests[$testchoice];
+	$returntests[1] = $mythorns[$thornchoice];
+      }
     }
   }
-  return ($mytests[$testchoice],$mythorns[$thornchoice]);
+
+  return ($ntests,@returntests);
 }
 
 
