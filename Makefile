@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.116 2001-07-24 15:07:07 goodale Exp $
+#   @version $Id: Makefile,v 1.117 2001-08-27 15:52:08 tradke Exp $
 # @@*/
 
 ##################################################################################
@@ -352,7 +352,7 @@ endif
 
 # Clean a configuration
 
-.PHONY clean:
+.PHONY: clean
 
 clean:
 	@echo $(DIVIDER)
@@ -360,7 +360,7 @@ clean:
 	@echo $(DIVIDER)
 
 ifneq ($strip($(CONFIGURATIONS)),)
-.PHONY $(addsuffix -clean,$(CONFIGURATIONS)):
+.PHONY: $(addsuffix -clean,$(CONFIGURATIONS))
 
 $(addsuffix -clean,$(CONFIGURATIONS)):
 	@echo $(DIVIDER)
@@ -379,7 +379,7 @@ endif
 
 # Clean just dependency files
 
-.PHONY cleandeps:
+.PHONY: cleandeps
 
 cleandeps:
 	@echo $(DIVIDER)
@@ -387,7 +387,7 @@ cleandeps:
 	@echo $(DIVIDER)
 
 ifneq ($strip($(CONFIGURATIONS)),)
-.PHONY $(addsuffix -cleandeps,$(CONFIGURATIONS)):
+.PHONY: $(addsuffix -cleandeps,$(CONFIGURATIONS))
 
 $(addsuffix -cleandeps,$(CONFIGURATIONS)):
 	@echo $(DIVIDER)
@@ -406,7 +406,7 @@ endif
 
 # Clean just object files
 
-.PHONY cleanobjs:
+.PHONY: cleanobjs
 
 cleanobjs:
 	@echo $(DIVIDER)
@@ -415,7 +415,7 @@ cleanobjs:
 
 
 ifneq ($strip($(CONFIGURATIONS)),)
-.PHONY $(addsuffix -cleanobjs,$(CONFIGURATIONS)):
+.PHONY: $(addsuffix -cleanobjs,$(CONFIGURATIONS))
 
 $(addsuffix -cleanobjs,$(CONFIGURATIONS)):
 	@echo $(DIVIDER)
@@ -434,7 +434,7 @@ endif
 
 # Clean away all produced files (doesn't delete ThornList)
 
-.PHONY realclean:
+.PHONY: realclean
 
 realclean:
 	@echo $(DIVIDER)
@@ -443,7 +443,7 @@ realclean:
 
 
 ifneq ($strip($(CONFIGURATIONS)),)
-.PHONY $(addsuffix -realclean,$(CONFIGURATIONS)):
+.PHONY: $(addsuffix -realclean,$(CONFIGURATIONS))
 
 $(addsuffix -realclean,$(CONFIGURATIONS)):
 	@echo $(DIVIDER)
@@ -461,7 +461,7 @@ endif
 
 # Delete a configuration
 
-.PHONY delete:
+.PHONY: delete
 
 delete:
 	@echo $(DIVIDER)
@@ -470,7 +470,7 @@ delete:
 
 
 ifneq ($strip($(CONFIGURATIONS)),)
-.PHONY $(addsuffix -delete,$(CONFIGURATIONS)):
+.PHONY: $(addsuffix -delete,$(CONFIGURATIONS))
 
 $(addsuffix -delete,$(CONFIGURATIONS)):
 	@echo $(DIVIDER)
@@ -499,7 +499,7 @@ endif
 
 # Rebuild a configuration
 
-.PHONY rebuild:
+.PHONY: rebuild
 
 rebuild:
 	@echo $(DIVIDER)
@@ -507,7 +507,7 @@ rebuild:
 	@echo $(DIVIDER)
 
 ifneq ($strip($(CONFIGURATIONS)),)
-.PHONY $(addsuffix -rebuild,$(CONFIGURATIONS)):
+.PHONY: $(addsuffix -rebuild,$(CONFIGURATIONS))
 
 $(addsuffix -rebuild,$(CONFIGURATIONS)):
 	@echo $(DIVIDER)
@@ -523,7 +523,7 @@ endif
 
 # Regenerate the compiled thorns list
 
-.PHONY thornlist:
+.PHONY: thornlist
 
 thornlist:
 	@echo $(DIVIDER)
@@ -532,7 +532,7 @@ thornlist:
 
 
 ifneq ($strip($(CONFIGURATIONS)),) 
-.PHONY $(addsuffix -thornlist,$(CONFIGURATIONS)):
+.PHONY: $(addsuffix -thornlist,$(CONFIGURATIONS))
 
 $(addsuffix -thornlist,$(CONFIGURATIONS)):
 	@echo $(DIVIDER)
@@ -548,7 +548,7 @@ endif
 
 # Edit the thornlist
 
-.PHONY editthorn:
+.PHONY: editthorn
 
 editthorns:
 	@echo $(DIVIDER)
@@ -557,7 +557,7 @@ editthorns:
 
 
 ifneq ($strip($(CONFIGURATIONS)),) 
-.PHONY $(addsuffix -editthorns,$(CONFIGURATIONS)):
+.PHONY: $(addsuffix -editthorns,$(CONFIGURATIONS))
 
 $(addsuffix -editthorns,$(CONFIGURATIONS)):
 	@echo $(DIVIDER)
@@ -572,7 +572,7 @@ endif
 
 # Rerun the configuration script
 
-.PHONY config:
+.PHONY: config
 
 config:
 	@echo $(DIVIDER)
@@ -581,7 +581,7 @@ config:
 
 
 ifneq ($strip($(CONFIGURATIONS)),)
-.PHONY $(addsuffix -config,$(CONFIGURATIONS)):
+.PHONY: $(addsuffix -config,$(CONFIGURATIONS))
 
 $(addsuffix -config,$(CONFIGURATIONS)):
 	echo $(DIVIDER)
@@ -650,7 +650,7 @@ endif
 	fi 
 	@echo $(DIVIDER)
 
-.PHONY utils:
+.PHONY: utils
 
 utils:
 	@echo $(DIVIDER)
@@ -659,7 +659,7 @@ utils:
 
 
 ifneq ($strip($(CONFIGURATIONS)),)
-.PHONY $(addsuffix -utils,$(CONFIGURATIONS)):
+.PHONY: $(addsuffix -utils,$(CONFIGURATIONS))
 
 $(addsuffix -utils,$(CONFIGURATIONS)):
 	@echo $(DIVIDER)
@@ -687,7 +687,7 @@ newthorn:
 ###############################
 # Run the testsuite
 
-.PHONY testsuite:
+.PHONY: testsuite
 
 testsuite:
 	@echo $(DIVIDER)
@@ -696,7 +696,7 @@ testsuite:
 
 
 ifneq ($strip($(CONFIGURATIONS)),) 
-.PHONY $(addsuffix -testsuite,$(CONFIGURATIONS)):
+.PHONY: $(addsuffix -testsuite,$(CONFIGURATIONS))
 
 $(addsuffix -testsuite,$(CONFIGURATIONS)):
 	@echo $(DIVIDER)
@@ -714,10 +714,10 @@ endif
 ##########################################
 
 ifneq ($strip($(CONFIGURATIONS)),) 
-.PHONY $(addsuffix -examples,$(CONFIGURATIONS)):
+.PHONY: $(addsuffix -examples,$(CONFIGURATIONS))
 
 # Copy thorn parameter files
-.PHONY examples:
+.PHONY: examples
 
 examples:
 	@echo $(DIVIDER)
@@ -747,7 +747,7 @@ checkout:
 
 # Create sysinfo file
 
-.PHONY sysinfo:
+.PHONY: sysinfo
 
 sysinfo:
 	@echo $(DIVIDER)
@@ -755,7 +755,7 @@ sysinfo:
 	@echo $(DIVIDER)
 
 ifneq ($strip($(CONFIGURATIONS)),) 
-.PHONY $(addsuffix -sysinfo,$(CONFIGURATIONS)):
+.PHONY: $(addsuffix -sysinfo,$(CONFIGURATIONS))
 
 $(addsuffix -sysinfo,$(CONFIGURATIONS)):
 	@echo $(DIVIDER)
@@ -771,14 +771,14 @@ endif
 
 # Create bugreport
 
-.PHONY bugreport:
+.PHONY: bugreport
 
 bugreport:
 	$(SHELL) ./lib/sbin/cctkbug
 
 
 ifneq ($strip($(CONFIGURATIONS)),) 
-.PHONY $(addsuffix -bugreport,$(CONFIGURATIONS)):
+.PHONY: $(addsuffix -bugreport,$(CONFIGURATIONS))
 
 $(addsuffix -bugreport,$(CONFIGURATIONS)):
 	$(SHELL) ./lib/sbin/cctkbug -c $(CONFIGS_DIR)/$(@:%-bugreport=%) 
@@ -858,7 +858,7 @@ ThornGuide:
 # Run ThornGuide on a configuration
 
 ifneq ($strip($(CONFIGURATIONS)),) 
-.PHONY $(addsuffix -ThornGuide,$(CONFIGURATIONS)):
+.PHONY: $(addsuffix -ThornGuide,$(CONFIGURATIONS))
 
 $(addsuffix -ThornGuide,$(CONFIGURATIONS)):
 	@echo $(DIVIDER)
