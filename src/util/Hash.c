@@ -177,7 +177,8 @@ int Util_HashAdd(uHash *hash,
   int retval;
   iHashEntry *entry;
   iHashEntry *lastentry;
-  unsigned int location;
+  /* FIXME: workaround for Hitachi compiler bug */
+  volatile unsigned int location;
   int duplicate;
   int i;
 
@@ -293,7 +294,9 @@ int Util_HashDelete(uHash *hash,
                     unsigned int hashval)
 {
   iHashEntry *entry;
-  unsigned int location;
+  /* FIXME: the volatile qualifier just serves as a workaround
+            for the Hitachi compiler bug */
+  volatile unsigned int location;
 
   /* Calculate the hash value if necessary */
   if(!hashval)
@@ -453,7 +456,9 @@ static iHashEntry *HashFind(uHash *hash,
                             unsigned int hashval)
 {
   iHashEntry *entry;
-  unsigned int location;
+  /* FIXME: the volatile qualifier just serves as a workaround
+            for the Hitachi compiler bug */
+  volatile unsigned int location;
 
   /* Calculate the hash value if necessary */
   if(!hashval)
@@ -468,7 +473,7 @@ static iHashEntry *HashFind(uHash *hash,
   entry = hash->array[location];
 
   /* Find the entry on the list.*/
-  for(entry = hash->array[location]; entry; entry = entry->next)
+  for(; entry; entry = entry->next)
   {
     if(hashval == entry->hash)
     {
@@ -502,7 +507,9 @@ static int HashRehash(uHash *hash)
   unsigned int new_size;
 
   unsigned int old_location;
-  unsigned int location;
+  /* FIXME: the volatile qualifier just serves as a workaround
+            for the Hitachi compiler bug */
+  volatile unsigned int location;
 
   unsigned int new_fill;
 
