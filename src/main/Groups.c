@@ -2010,7 +2010,7 @@ static CCTK_INT **CCTKi_ExtractSize (int dimension,
         {
           CCTK_VWarn (0, __LINE__, __FILE__, "Cactus",
                       "CCTKi_ExtractSize: '%s::%s' is not a parameter",
-                      thorn_impl, param);
+                      thorn, param);
         }
 
         /* check if the parameter is of type INTEGER */
@@ -2018,7 +2018,7 @@ static CCTK_INT **CCTKi_ExtractSize (int dimension,
         {
           CCTK_VWarn (0, __LINE__, __FILE__, "Cactus",
                       "CCTKi_ExtractSize: parameter '%s::%s' is not of type "
-                      "INTEGER", thorn_impl, param);
+                      "INTEGER", thorn, param);
         }
 
         /* okay, store the size value */
