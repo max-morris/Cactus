@@ -17,14 +17,7 @@
 #  @desc
 #  Creates all the binding files for the variables.
 #  @enddesc
-#  @calls
-#  @calledby
-#  @history
-#
-#  @endhistory
-#
 #@@*/
-
 sub CreateVariableBindings
 {
   my($bindings_dir, $rhinterface_db, $rhparameter_db) = @_;
@@ -180,12 +173,6 @@ sub CreateVariableBindings
 #  Gets a list of all the variables available for a thorn in a
 #  particular block.
 #  @enddesc
-#  @calls
-#  @calledby
-#  @history
-#
-#  @endhistory
-#
 #@@*/
 sub GetThornArguments
 {
@@ -338,14 +325,7 @@ sub GetThornArguments
 #  @desc
 #  Creates the requisite argument list declarations for Fortran.
 #  @enddesc
-#  @calls
-#  @calledby
-#  @history
-#
-#  @endhistory
-#
 #@@*/
-
 sub CreateFortranArgumentDeclarations
 {
   my(%arguments) = @_;
@@ -422,14 +402,7 @@ sub CreateFortranArgumentDeclarations
 #  @desc
 #  Creates the requisite argument list declarations for C.
 #  @enddesc
-#  @calls
-#  @calledby
-#  @history
-#
-#  @endhistory
-#
 #@@*/
-
 sub CreateCArgumentDeclarations
 {
   my(%arguments) = @_;
@@ -452,20 +425,16 @@ sub CreateCArgumentDeclarations
       $thorn       = $3;
       $ntimelevels = $5;
       $varsuffix   = $6;
+      $suffix      = '';
 
-      for($level = 1; $level <= $ntimelevels; $level++)
+      for($level = 0; $level < $ntimelevels; $level++)
       {
         # Modify the name for the time level
-        if($level == 1)
+        if($level > 0)
         {
-          $suffix = "";
-        }
-        else
-        {
-          $suffix .= "_p";
+          $suffix .= '_p';
         }
 
-        $levelmone=$level-1;
         if($type =~ /^(CHAR|BYTE|INT|INT2|INT4|INT8|REAL|REAL4|REAL8|REAL16|COMPLEX|COMPLEX8|COMPLEX16|COMPLEX32)$/)
         {
           # DEPRECATED IN BETA 10 */
@@ -474,7 +443,7 @@ sub CreateCArgumentDeclarations
             &CST_error(1,"CCTK_CHAR is replaced by CCTK_BYTE, please change your code","",__LINE__,__FILE__);
           }
 
-          push(@declarations, "CCTK_$type *$argument$suffix=(CCTK_$type *)(cctkGH->data[CCTK_VarIndex(\"$thorn\::$argument$varsuffix\")][$levelmone]);");
+          push(@declarations, "CCTK_$type *$argument$suffix=(CCTK_$type *)CCTK_VarDataPtr(cctkGH,$level,\"$thorn\::$argument$varsuffix\");");
         }
         else
         {
@@ -495,14 +464,7 @@ sub CreateCArgumentDeclarations
 #  @desc
 #  Creates the requisite argument list declarations for C.
 #  @enddesc
-#  @calls
-#  @calledby
-#  @history
-#
-#  @endhistory
-#
 #@@*/
-
 sub CreateCArgumentUses
 {
   my(%arguments) = @_;
@@ -551,14 +513,7 @@ sub CreateCArgumentUses
 #  @desc
 #  Creates the argument list a Fortran subroutine sees.
 #  @enddesc
-#  @calls
-#  @calledby
-#  @history
-#
-#  @endhistory
-#
 #@@*/
-
 sub CreateFortranArgumentList
 {
   my(%arguments) = @_;
@@ -623,14 +578,7 @@ sub CreateFortranArgumentList
 #  Creates the declarations of static variables used to speed up
 #  construction of arguments to pass to Fortran.
 #  @enddesc
-#  @calls
-#  @calledby
-#  @history
-#
-#  @endhistory
-#
 #@@*/
-
 sub CreateCArgumentStatics
 {
   my(%arguments) = @_;
@@ -668,14 +616,7 @@ sub CreateCArgumentStatics
 #  @desc
 #  Creates the code to initialise the statics.
 #  @enddesc
-#  @calls
-#  @calledby
-#  @history
-#
-#  @endhistory
-#
 #@@*/
-
 sub CreateCArgumentInitialisers
 {
   my(%arguments) = @_;
@@ -716,14 +657,7 @@ sub CreateCArgumentInitialisers
 #  @desc
 #  Creates the prototype needed to call a Fortran function from C.
 #  @enddesc
-#  @calls
-#  @calledby
-#  @history
-#
-#  @endhistory
-#
 #@@*/
-
 sub CreateCArgumentPrototype
 {
   my(%arguments) = @_;
@@ -792,14 +726,7 @@ sub CreateCArgumentPrototype
 #  @desc
 #  Creates the argument list used to call a Fortran function from C.
 #  @enddesc
-#  @calls
-#  @calledby
-#  @history
-#
-#  @endhistory
-#
 #@@*/
-
 sub CreateCArgumentList
 {
   my(%arguments) = @_;
@@ -871,14 +798,7 @@ sub CreateCArgumentList
 #  @desc
 #  Creates all the argument list stuff necessary to call Fortran from C
 #  @enddesc
-#  @calls
-#  @calledby
-#  @history
-#
-#  @endhistory
-#
 #@@*/
-
 sub CreateThornArgumentHeaderFile
 {
   my($thorn, $rhinterface_db) = @_;
@@ -1181,14 +1101,7 @@ sub CreateThornArgumentHeaderFile
 #  @desc
 #  Creates the calls used to setup groups for a particular thorn block.
 #  @enddesc
-#  @calls
-#  @calledby
-#  @history
-#
-#  @endhistory
-#
 #@@*/
-
 sub CreateThornGroupInitialisers
 {
   my($thorn, $block, $rhinterface_db, $rhparameter_db) = @_;
@@ -1334,7 +1247,6 @@ sub CreateThornFortranWrapper
 #                  optionally with a "+/-<integer constant>" postfix
 #  @enddesc
 #@@*/
-
 sub CheckArraySizes
 {
   my($size,$thornname,$rhparameter_db,$rhinterface_db) = @_;
@@ -1377,27 +1289,20 @@ sub CheckArraySizes
 
     &VerifyParameterExpression($par,$thornname,$rhparameter_db,$rhinterface_db);
   }
-    
-    
+
 }
 
 #/*@@
 #  @routine    VerifyParameterExpression
 #  @date       Sat Oct 13 16:40:07 2001
 #  @author     Tom Goodale
-#  @desc 
-#  Does some sanity checking on an arithmetic expression 
+#  @desc
+#  Does some sanity checking on an arithmetic expression
 #  involving parameter values.
 #  Parameter names can be bare, in which case they are assumed to be
 #  from the current thorn, or qualified, in which case they should
 #  refer either to the current thorn or a valid shared parameter.
-#  @enddesc 
-#  @calls     
-#  @calledby   
-#  @history 
-#
-#  @endhistory 
-#
+#  @enddesc
 #@@*/
 sub VerifyParameterExpression
 {
@@ -1417,7 +1322,7 @@ sub VerifyParameterExpression
   {
     $count++ if($i eq "(");
     $count-- if($i eq ")");
-    
+
     if($count < 0)
     {
       &CST_error(0, "Array size in $thornname is an invalid arithmatic expression \n"
@@ -1425,14 +1330,14 @@ sub VerifyParameterExpression
                 "",__LINE__,__FILE__);
     }
   }
-  
+
     if($count > 0)
     {
       &CST_error(0, "Array size in $thornname is an invalid arithmatic expression \n"
                  .  "        '$expression' has unmatched parentheses",
                  "",__LINE__,__FILE__);
     }
-  
+
 
   if($expression =~ m:[-+*/]$:)
   {
@@ -1505,7 +1410,7 @@ sub VerifyParameterExpression
           &CST_error(0,"Array size \'$expression\' in $thornname contains a reference to a parameter from $implementation" .
                      " which is not shared",
                      "",__LINE__,__FILE__);
-        }            
+        }
       }
     }
     elsif($i =~ m:^\(\)$:)
