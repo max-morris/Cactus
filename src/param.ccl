@@ -21,6 +21,10 @@ BOOLEAN cctk_full_warnings "Give detailed information for each warning statement
 {
 } "no"
 
+BOOLEAN highlight_warning_messages "Highlight CCTK warning messages ?" STEERABLE=ALWAYS
+{
+} "yes"
+
 KEYWORD info_format "What information do CCTK_INFO() and CCTK_VInfo() print?"
 {
 # This is the traditional Cactus INFO output.
