@@ -110,3 +110,55 @@ cGroupDefinition *CCTK_SetupGroup(const char *implementation,
   }
 
 }
+
+int CCTK_GetGroupNumber(const char *implementation,
+			const char *name)
+{
+  int group_num;
+
+  for(group_num = 0; group_num < n_groups; group_num++)
+  {
+    if(!strcmp(implementation, groups[group_num].implementation) &&
+       !strcmp(name, groups[group_num].name)) break;
+  }
+
+  if (group_num < n_groups)
+  {
+    return group_num;
+  }
+  else
+  {
+    return -1;
+  }
+}
+
+int CCTK_GetVariableNumber(const char *implementation,
+			   const char *group_name,
+			   const char *variable_name)
+{
+  int retval;
+  int group_num;
+  int variable;
+
+  retval = -1;
+
+  group_num = CCTK_GetGroupNumber(implementation, group_name);
+
+  if(group_num > -1)
+  {
+    for(variable=0; variable<groups[group_num].n_variables;variable++)
+    {
+      if(!strcmp(variable_name, groups[group_num].variables[variable].name))
+      {
+	retval  = groups[group_num].variables[variable].number;
+	break;
+      }
+    }
+  }
+  else
+  {
+    retval = -2;
+  }
+
+  return retval;
+}

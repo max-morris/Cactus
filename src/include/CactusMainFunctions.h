@@ -1,0 +1,29 @@
+ /*@@
+   @header    CactusMainFunctions.h
+   @date      Thu Jan 14 18:34:52 1999
+   @author    Tom Goodale
+   @desc 
+   Main registerable functions.
+   @enddesc 
+ @@*/
+
+#ifndef _CACTUSMAINFUNCTIONS_H_
+#define _CACTUSMAINFUNCTIONS_H_
+
+/* Function prototypes */
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+extern int (*Initialise)(tFleshConfig *);
+
+extern int (*Evolve)(tFleshConfig *);
+
+extern int (*Shutdown)(tFleshConfig *);
+
+#ifdef __cplusplus
+	   }
+#endif
+
+#endif
