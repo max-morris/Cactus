@@ -19,7 +19,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-In this chapter all \code{Util\_*} Cactus utility functions are
+In this chapter all \code{Util\_*()} Cactus utility functions are
 described.  These are low-level functions mainly for more complicated
 programming, which are used by the rest of Cactus, but don't depend
 heavily on it.  Some of them are callable from Fortran or C, but
@@ -370,18 +370,18 @@ A non-NULL pointer to a (C-style NUL-terminated) string to be compared.
 \end{ParameterSection}
 
 \begin{Discussion}
-The standard C library \code{strcmp} function does a {\em case-sensitive\/}
+The standard C library \code{strcmp()} function does a {\em case-sensitive\/}
 string comparison, i.e.\ \code{strcmp("cactus", "Cactus")} will find the
 two strings not equal.  Sometimes it's useful to do {\em case-insensitive\/}
 string comparison, where upper/lower case distinctions are ignored.
-Many systems provide a \code{strcasecmp} or \code{strcmpi}
+Many systems provide a \code{strcasecmp()} or \code{strcmpi()}
 function to do this, but some systems don't, and even on those that do,
 the name isn't standardised.  So, Cactus provides its own version,
-\code{Util\_StrCmpi}.
+\code{Util\_StrCmpi()}.
 
-Notice that the return value of \code{Util\_StrCmpi}, like that of
-\code{strcmp}, is zero (logical ``false'' in C) for equal strings,
-and nonzero (logcla ``true'' in C) for non-equal strings.
+Notice that the return value of \code{Util\_StrCmpi()}, like that of
+\code{strcmp()}, is zero (logical ``false'' in C) for equal strings,
+and nonzero (logical ``true'' in C) for non-equal strings.
 Code of the form
 \begin{verbatim}
 if (Util_StrCmpi(str1, str2))
@@ -445,7 +445,7 @@ context-dependent, many-to-one, and/or time-dependent.%%%
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{strcmp}
+\begin{SeeAlso}{strcmp()}
 Standard C library function (prototype in \code{<string.h>})
 to compare two strings.
 \end{SeeAlso}
@@ -484,9 +484,9 @@ char* copy = Util_Strdup(const char *str);
 
 \begin{ResultSection}
 \begin{Result}{copy}
-A pointer to a buffer obtained from \code{malloc},
+A pointer to a buffer obtained from \code{malloc()},
 which this function sets to a copy of the (C-style NUL-terminated)
-string \code{str}.  This buffer should be freed with \code{free}
+string \code{str}.  This buffer should be freed with \code{free()}
 when it's not needed any more.
 \end{Result}
 \end{ResultSection}
@@ -498,32 +498,32 @@ A non-NULL pointer to a (C-style NUL-terminated) string.
 \end{ParameterSection}
 
 \begin{Discussion}
-Many systems have a C library function \code{strdup}, which
+Many systems have a C library function \code{strdup()}, which
 \code{malloc}s sufficient memory for a copy of its argument string,
 does the copy, and returns a pointer to the copy.  However, some
 systems lack this function, so Cactus provides its own version,
-\code{Util\_Strdup}.
+\code{Util\_Strdup()}.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
 \begin{SeeAlso}{<stdlib.h>}
 System header file containing prototypes for
-\code{malloc} and \code{free}.
+\code{malloc()} and \code{free}.
 \end{SeeAlso}
-\begin{SeeAlso}{strcpy}
+\begin{SeeAlso}{strcpy()}
 Standard C library function (prototype in \code{<string.h>})
 to copy a string to a buffer.
 {\em This does not check that the buffer is big enough to hold the string,
-and is thus very dangerous.  Use \code{Util\_Strlcpy} instead!}
+and is thus very dangerous.  Use \code{Util\_Strlcpy()} instead!}
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_Strlcpy}
+\begin{SeeAlso}{Util\_Strlcpy()}
 Safely copy a string.
 \end{SeeAlso}
 \end{SeeAlsoSection}
 
 \begin{ErrorSection}
 \begin{Error}{NULL}
-\code{malloc} was unable to allocate memory for the buffer.
+\code{malloc()} was unable to allocate memory for the buffer.
 \end{Error}
 \end{ErrorSection}
 
@@ -595,10 +595,10 @@ The size of the destination buffer.
 \end{ParameterSection}
 
 \begin{Discussion}
-The standard \code{strcat} and \code{strcpy} functions provide
+The standard \code{strcat()} and \code{strcpy()} functions provide
 no way to specify the size of the destination buffer, so code using
 these functions is often vulnerable to buffer overflows.  The standard
-\code{strncat} and \code{strncpy} functions can be used to write
+\code{strncat()} and \code{strncpy()} functions can be used to write
 safe code, but their API is cumbersome, error-prone, and sometimes
 surprisingly inefficient:
 \begin{itemize}
@@ -606,34 +606,34 @@ surprisingly inefficient:
 	{\em remaining\/} in the destination buffer, which must
 	often be calculated at run-time, and is prone to off-by-one
 	errors.
-\item	\code{strncpy} doesn't always NUL-terminate the destination string.
-\item	\code{strncpy} NUL-fills the remainder of the buffer not
+\item	\code{strncpy()} doesn't always NUL-terminate the destination string.
+\item	\code{strncpy()} NUL-fills the remainder of the buffer not
 	used for the source string; this NUL-filling can be {\em very\/}
 	expensive.
 \end{itemize}
 
 To solve these problems, the OpenBSD project developed the
-\code{strlcat} and \code{strlcpy} functions.  See
-\code{http://www.openbsd.org/papers/strlcpy-paper.ps}
+\code{strlcat()} and \code{strlcpy()} functions.  See
+\url{http://www.openbsd.org/papers/strlcpy-paper.ps}
 for a history and general discussion of these functions.
 Some other Unix systems (notably Solaris) now provide these,
 but many don't, so Cactus provides its own versions,
-\code{Util\_Strlcat} and \code{Util\_Strlcpy}.
+\code{Util\_Strlcat()} and \code{Util\_Strlcpy()}.
 
-\code{Util\_Strlcat} appends the NUL-terminated string \code{src} to the
+\code{Util\_Strlcat()} appends the NUL-terminated string \code{src} to the
 end of the NUL-terminated string \code{dst}.  It will append at most
 \code{size - strlen(dst) - 1} characters (hence it never overflows the
 destination buffer), and it always leaves \code{dst} string NUL-terminated.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{strcat}
+\begin{SeeAlso}{strcat()}
 Standard C library function (prototype in \code{<string.h>})
 to concatenate two strings.
 {\em This does not check that the buffer is big enough to hold the result,
-and is thus very dangerous.  Use \code{Util\_Strlcat} instead!}
+and is thus very dangerous.  Use \code{Util\_Strlcat()} instead!}
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_Strlcpy}
+\begin{SeeAlso}{Util\_Strlcpy()}
 Safely copy a string.
 \end{SeeAlso}
 \end{SeeAlsoSection}
@@ -727,10 +727,10 @@ The size of the destination buffer.
 \end{ParameterSection}
 
 \begin{Discussion}
-The standard \code{strcat} and \code{strcpy} functions provide
+The standard \code{strcat()} and \code{strcpy()} functions provide
 no way to specify the size of the destination buffer, so code using
 these functions is often vulnerable to buffer overflows.  The standard
-\code{strncat} and \code{strncpy} functions can be used to write
+\code{strncat()} and \code{strncpy()} functions can be used to write
 safe code, but their API is cumbersome, error-prone, and sometimes
 surprisingly inefficient:
 \begin{itemize}
@@ -738,38 +738,38 @@ surprisingly inefficient:
 	{\em remaining\/} in the destination buffer, which must
 	often be calculated at run-time, and is prone to off-by-one
 	errors.
-\item	\code{strncpy} doesn't always NUL-terminate the destination string.
-\item	\code{strncpy} NUL-fills the remainder of the buffer not
+\item	\code{strncpy()} doesn't always NUL-terminate the destination string.
+\item	\code{strncpy()} NUL-fills the remainder of the buffer not
 	used for the source string; this NUL-filling can be {\em very\/}
 	expensive.
 \end{itemize}
 
 To solve these problems, the OpenBSD project developed the
-\code{strlcat} and \code{strlcpy} functions.  See
-\code{http://www.openbsd.org/papers/strlcpy-paper.ps}
+\code{strlcat()} and \code{strlcpy()} functions.  See
+\url{http://www.openbsd.org/papers/strlcpy-paper.ps}
 for a history and general discussion of these functions.
 Some other Unix systems (notably Solaris) now provide these,
 but many don't, so Cactus provides its own versions,
-\code{Util\_Strlcat} and \code{Util\_Strlcpy}.
+\code{Util\_Strlcat()} and \code{Util\_Strlcpy()}.
 
-\code{Util\_Strlcpy} copies up to \code{size-1} characters from the
+\code{Util\_Strlcpy()} copies up to \code{size-1} characters from the
 source string to the destination string, followed by a NUL character
-(so \code{dst} is always NUL-terminated).  Unlike \code{strncpy},
-\code{Util\_Strlcpy} does {\em not\/} fill any left-over space at
+(so \code{dst} is always NUL-terminated).  Unlike \code{strncpy()},
+\code{Util\_Strlcpy()} does {\em not\/} fill any left-over space at
 the end of the destination buffer with NUL characters.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{strcpy}
+\begin{SeeAlso}{strcpy()}
 Standard C library function (prototype in \code{<string.h>})
 to copy a string to a buffer.
 {\em This does not check that the buffer is big enough to hold the string,
-and is thus very dangerous.  Use \code{Util\_Strlcpy} instead!}
+and is thus very dangerous.  Use \code{Util\_Strlcpy()} instead!}
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_Strdup}
+\begin{SeeAlso}{Util\_Strdup()}
 ``Duplicate'' a string, i.e.\ copy it to a newly-\code{malloc}ed buffer.
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_Strlcat}
+\begin{SeeAlso}{Util\_Strlcat()}
 Safely concatenates two strings.
 \end{SeeAlso}
 \end{SeeAlsoSection}
@@ -880,7 +880,7 @@ values in the table are copied.  This results in the clone table's
 pointer values pointing to the same places as the original table's
 pointer values.  Be careful with this!  In particular,
 if you're using pointer values in the table to keep track of
-\code{malloc} memory, be careful not to \code{free}
+\code{malloc()} memory, be careful not to \code{free()}
 the same block of memory twice!
 
 Note that table iterators are {\em not\/} guaranteed to sequence
@@ -892,14 +892,14 @@ tables with identical key/value contents.)
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{Util\_TableCreate}
+\begin{SeeAlso}{Util\_TableCreate()}
 create a table
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableCreateFromString}
+\begin{SeeAlso}{Util\_TableCreateFromString()}
 convenience routine to create a table and set key/value entries
 in it based on a parameter-file--like character string
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableDestroy}
+\begin{SeeAlso}{Util\_TableDestroy()}
 destroy a table
 \end{SeeAlso}
 \end{SeeAlsoSection}
@@ -1014,7 +1014,7 @@ in \code{"util\_Table.h"}:
         \code{UTIL\_TABLE\_FLAGS\_CASE\_INSENSITIVE}
         bit in the flags word, this table's keys may be made
         case-insensitive, i.e.\ the table routines then compare
-        this table's keys with \code{Util\_StrCmpi}.%%%
+        this table's keys with \code{Util\_StrCmpi()}.
         Note that keys are still {\em stored\/} exactly as
         the caller specifies them (i.e.\ they are {\em not\/}
         forced into a canonical case); it's only their
@@ -1023,18 +1023,18 @@ in \code{"util\_Table.h"}:
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{Util\_StrCmpi}
+\begin{SeeAlso}{Util\_StrCmpi()}
 compare two strings, ignoring upper/lower case
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableClone}
+\begin{SeeAlso}{Util\_TableClone()}
 create a new table which is a ``clone'' (exact copy) of an existing
 table
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableCreateFromString}
+\begin{SeeAlso}{Util\_TableCreateFromString()}
 convenience routine to create a table and set key/value entries
 in it based on a parameter-file--like character string
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableDestroy}
+\begin{SeeAlso}{Util\_TableDestroy()}
 destroy a table
 \end{SeeAlso}
 \end{SeeAlsoSection}
@@ -1098,26 +1098,26 @@ a handle to the newly-created table
 \begin{ParameterSection}
 \begin{Parameter}{string}
 a pointer to a C-style null-terminated string specifying the table
-contents; see the description for \code{Util\_TableSetFromString}
+contents; see the description for \code{Util\_TableSetFromString()}
 for a full description of the syntax and semantics of this string
 \end{Parameter}
 \end{ParameterSection}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{Util\_TableClone}
+\begin{SeeAlso}{Util\_TableClone()}
 Create a new table which is a ``clone'' (exact copy) of an existing
 table
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableCreate}
+\begin{SeeAlso}{Util\_TableCreate()}
 create a table
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetFromString}
+\begin{SeeAlso}{Util\_TableSetFromString()}
 sets values in a table based on a string argument
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetInt}
+\begin{SeeAlso}{Util\_TableSetInt()}
 store a \code{CCTK\_INT} value in a table
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetReal}
+\begin{SeeAlso}{Util\_TableSetReal()}
 store a \code{CCTK\_REAL} value in a table
 \end{SeeAlso}
 \end{SeeAlsoSection}
@@ -1134,7 +1134,7 @@ invalid input: can't parse input string
 \end{Error}
 \begin{Error}{\rm other error codes}
 this function may also return any error codes returned by
-\code{Util\_TableCreate} or \code{Util\_TableSetFromString}
+\code{Util\_TableCreate()} or \code{Util\_TableSetFromString()}
 \end{Error}
 \end{ErrorSection}
 
@@ -1264,14 +1264,14 @@ Of course, this function invalidates any and all iterators for the table. :)
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{Util\_TableClone}
+\begin{SeeAlso}{Util\_TableClone()}
 Create a new table which is a ``clone'' (exact copy) of an existing
 table
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableCreate}
+\begin{SeeAlso}{Util\_TableCreate()}
 create a table
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableCreateFromString}
+\begin{SeeAlso}{Util\_TableCreateFromString()}
 convenience routine to create a table and set key/value entries
 in it based on a parameter-file--like character string
 \end{SeeAlso}
@@ -1326,8 +1326,8 @@ where \code{XXX} is one of
    \code{POINTER}, \code{FPOINTER}%%%
 \footnote{%%%
 	 For backwards compatability the function
-	 \code{Util\_TableGetFnPointer} is also provided
-	 as an alias for \code{Util\_TableGetFPointer}.
+	 \code{Util\_TableGetFnPointer()} is also provided
+	 as an alias for \code{Util\_TableGetFPointer()}.
 	 This is deprecated as of Cactus 4.0 beta 13.
 	 }%%%
 ,
@@ -1388,33 +1388,33 @@ If any error code is returned, the user's value buffer
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{Util\_TableCreateFromString}
+\begin{SeeAlso}{Util\_TableCreateFromString()}
 convenience routine to create a table and set key/value entries
 in it based on a parameter-file--like character string
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGet*Array}
+\begin{SeeAlso}{Util\_TableGet*Array()}
 get an array value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGet*String}
+\begin{SeeAlso}{Util\_TableGet*String()}
 get a character-string value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSet*}
+\begin{SeeAlso}{Util\_TableSet*()}
 set a single (1-element array) value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSet*Array}
+\begin{SeeAlso}{Util\_TableSet*Array()}
 set an array value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetGeneric}
+\begin{SeeAlso}{Util\_TableSetGeneric()}
 set a single (1-element array) value with generic data type
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetGenericArray}
+\begin{SeeAlso}{Util\_TableSetGenericArray()}
 set an array value with generic data type
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetFromString}
+\begin{SeeAlso}{Util\_TableSetFromString()}
 convenience routine to set key/value entries in a table based on a
 parameter-file--like character string
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetString}
+\begin{SeeAlso}{Util\_TableSetString()}
 set a character-string value
 \end{SeeAlso}
 \end{SeeAlsoSection}
@@ -1484,8 +1484,8 @@ where \code{XXX} is one of
    \code{POINTER}, \code{FPOINTER}%%%
 \footnote{%%%
 	 For backwards compatability the function
-	 \code{Util\_TableGetFnPointerArray} is also provided
-	 as an alias for \code{Util\_TableGetFPointerArray}.
+	 \code{Util\_TableGetFnPointerArray()} is also provided
+	 as an alias for \code{Util\_TableGetFPointerArray()}.
 	 This is deprecated as of Cactus 4.0 beta 13.
 	 }%%%
 ,
@@ -1551,40 +1551,40 @@ If any error code is returned, the user's value buffer
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{Util\_TableCreateFromString}
+\begin{SeeAlso}{Util\_TableCreateFromString()}
 convenience routine to create a table and set key/value entries
 in it based on a parameter-file--like character string
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGet*}
+\begin{SeeAlso}{Util\_TableGet*()}
 get a single (1-element array) value,
 or more generally the first array element of an array value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGetGeneric}
+\begin{SeeAlso}{Util\_TableGetGeneric()}
 get a single (1-element array) value with generic data type
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGetGenericArray}
+\begin{SeeAlso}{Util\_TableGetGenericArray()}
 get an array value with generic data type
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGet*String}
+\begin{SeeAlso}{Util\_TableGet*String()}
 get a character-string value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSet*}
+\begin{SeeAlso}{Util\_TableSet*()}
 set a single (1-element array) value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSet*Array}
+\begin{SeeAlso}{Util\_TableSet*Array()}
 set an array value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetGeneric}
+\begin{SeeAlso}{Util\_TableSetGeneric()}
 set a single (1-element array) value with generic data type
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetGenericArray}
+\begin{SeeAlso}{Util\_TableSetGenericArray()}
 set an array value with generic data type
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetFromString}
+\begin{SeeAlso}{Util\_TableSetFromString()}
 convenience routine to set key/value entries in a table based on a
 parameter-file--like character string
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetString}
+\begin{SeeAlso}{Util\_TableSetString()}
 set a character-string value
 \end{SeeAlso}
 \end{SeeAlsoSection}
@@ -1707,44 +1707,44 @@ If any error code is returned, the user's value buffer
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{Util\_TableCreateFromString}
+\begin{SeeAlso}{Util\_TableCreateFromString()}
 convenience routine to create a table and set key/value entries
 in it based on a parameter-file--like character string
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGet*}
+\begin{SeeAlso}{Util\_TableGet*()}
 get a single (1-element array) value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGet*Array}
+\begin{SeeAlso}{Util\_TableGet*Array()}
 get an array value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGet*String}
+\begin{SeeAlso}{Util\_TableGet*String()}
 get a character-string value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableItQueryValueInfo}
+\begin{SeeAlso}{Util\_TableItQueryValueInfo()}
 query key present/absent in table, and optionally type and/or number
 of elements, using an iterator
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableQueryValueInfo}
+\begin{SeeAlso}{Util\_TableQueryValueInfo()}
 query key present/absent in table, and optionally type and/or number
 of elements
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSet*}
+\begin{SeeAlso}{Util\_TableSet*()}
 set a single (1-element array) value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSet*Array}
+\begin{SeeAlso}{Util\_TableSet*Array()}
 set an array value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetGeneric}
+\begin{SeeAlso}{Util\_TableSetGeneric()}
 set a single (1-element array) value with generic data type
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetGenericArray}
+\begin{SeeAlso}{Util\_TableSetGenericArray()}
 set an array value with generic data type
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetFromString}
+\begin{SeeAlso}{Util\_TableSetFromString()}
 convenience routine to set key/value entries in a table based on a
 parameter-file--like character string
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetString}
+\begin{SeeAlso}{Util\_TableSetString()}
 set a character-string value
 \end{SeeAlso}
 \end{SeeAlsoSection}
@@ -1880,48 +1880,48 @@ If any error code is returned, the user's value buffer
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{Util\_TableCreateFromString}
+\begin{SeeAlso}{Util\_TableCreateFromString()}
 convenience routine to create a table and set key/value entries
 in it based on a parameter-file--like character string
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGet*}
+\begin{SeeAlso}{Util\_TableGet*()}
 get a single (1-element array) value,
 or more generally the first array element of an array value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGetGeneric}
+\begin{SeeAlso}{Util\_TableGetGeneric()}
 get a single (1-element array) value with generic data type
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGetGenericArray}
+\begin{SeeAlso}{Util\_TableGetGenericArray()}
 get an array value with generic data type
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGet*String}
+\begin{SeeAlso}{Util\_TableGet*String()}
 get a character-string value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableItQueryValueInfo}
+\begin{SeeAlso}{Util\_TableItQueryValueInfo()}
 query key present/absent in table, and optionally type and/or number
 of elements, using an iterator
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableQueryValueInfo}
+\begin{SeeAlso}{Util\_TableQueryValueInfo()}
 query key present/absent in table, and optionally type and/or number
 of elements
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSet*}
+\begin{SeeAlso}{Util\_TableSet*()}
 set a single (1-element array) value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSet*Array}
+\begin{SeeAlso}{Util\_TableSet*Array()}
 set an array value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetGeneric}
+\begin{SeeAlso}{Util\_TableSetGeneric()}
 set a single (1-element array) value with generic data type
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetGenericArray}
+\begin{SeeAlso}{Util\_TableSetGenericArray()}
 set an array value with generic data type
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetFromString}
+\begin{SeeAlso}{Util\_TableSetFromString()}
 convenience routine to set key/value entries in a table based on a
 parameter-file--like character string
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetString}
+\begin{SeeAlso}{Util\_TableSetString()}
 set a character-string value
 \end{SeeAlso}
 \end{SeeAlsoSection}
@@ -1998,7 +1998,7 @@ int length = Util_TableGetString(int handle,
 
 \begin{ResultSection}
 \begin{ResultNote}
-Results are the same as all the other \code{Util\_TableGet*} functions:
+Results are the same as all the other \code{Util\_TableGet*()} functions:
 \end{ResultNote}
 \begin{Result}{length}
 the length of the string
@@ -2030,7 +2030,7 @@ a pointer to the key (a C-style null-terminated string)
 This function assumes that the string is stored as an array of
 \code{CCTK\_CHAR}s, {\em not\/} including a terminating null character.
 
-This function differs from \code{Util\_TableGetCharArray} in two ways:
+This function differs from \code{Util\_TableGetCharArray()} in two ways:
 It explicitly provides a terminating null character for C-style strings,
 and it explicitly checks for the string being too long to fit in the buffer
 (in which case it returns \code{UTIL\_ERROR\_TABLE\_STRING\_TRUNCATED}).
@@ -2050,46 +2050,46 @@ string length.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{Util\_TableCreateFromString}
+\begin{SeeAlso}{Util\_TableCreateFromString()}
 convenience routine to create a table and set key/value entries
 in it based on a parameter-file--like character string
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGet*}
+\begin{SeeAlso}{Util\_TableGet*()}
 get a single (1-element array) value,
 or more generally the first array element of an array value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGet*Array}
+\begin{SeeAlso}{Util\_TableGet*Array()}
 get an array value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGetCharArray}
+\begin{SeeAlso}{Util\_TableGetCharArray()}
 get an array-of-\code{CCTK\_CHAR} value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGetGeneric}
+\begin{SeeAlso}{Util\_TableGetGeneric()}
 get a single (1-element array) value with generic data type
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGetGenericArray}
+\begin{SeeAlso}{Util\_TableGetGenericArray()}
 get an array value with generic data type
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSet*}
+\begin{SeeAlso}{Util\_TableSet*()}
 set a single (1-element array) value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSet*Array}
+\begin{SeeAlso}{Util\_TableSet*Array()}
 set an array value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetGeneric}
+\begin{SeeAlso}{Util\_TableSetGeneric()}
 set a single (1-element array) value with generic data type
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetGenericArray}
+\begin{SeeAlso}{Util\_TableSetGenericArray()}
 set an array value with generic data type
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetString}
+\begin{SeeAlso}{Util\_TableSetString()}
 set a character-string value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetFromString}
+\begin{SeeAlso}{Util\_TableSetFromString()}
 convenience routine to set key/value entries in a table based on a
 parameter-file--like character string
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetCharArray}
+\begin{SeeAlso}{Util\_TableSetCharArray()}
 set an array-of-\code{CCTK\_CHAR} value
 \end{SeeAlso}
 \end{SeeAlsoSection}
@@ -2172,9 +2172,10 @@ handle to the iterator
 
 \begin{Discussion}
 If we view an iterator as an abstraction of a pointer into the table,
-then this function is the abstraction of the \Cplusplus\ operation applied
-to the pointer, except that this function automagically sets the iterator
-to the "null-pointer" state when it advances past the last table entry.
+then this function is the abstraction of the C ``\code{++}'' operation
+applied to the pointer, except that this function automagically sets
+the iterator to the "null-pointer" state when it advances past the
+last table entry.
 
 Note that bad things (garbage results, core dumps) may happen if
 you call this function on an iterator which has been invalidated
@@ -2246,14 +2247,14 @@ by a change in the table's contents.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{Util\_TableClone}
+\begin{SeeAlso}{Util\_TableClone()}
 create a new table which is a ``clone'' (exact copy) of an existing
 table
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableItCreate}
+\begin{SeeAlso}{Util\_TableItCreate()}
 create a table iterator
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableItDestroy}
+\begin{SeeAlso}{Util\_TableItDestroy()}
 destroy a table iterator
 \end{SeeAlso}
 \end{SeeAlsoSection}
@@ -2365,7 +2366,7 @@ points at the starting table entry.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{Util\_TableItDestroy}
+\begin{SeeAlso}{Util\_TableItDestroy()}
 destroy a table iterator
 \end{SeeAlso}
 \end{SeeAlsoSection}
@@ -2430,7 +2431,7 @@ handle to the iterator
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{Util\_TableItCreate}
+\begin{SeeAlso}{Util\_TableItCreate()}
 create a table iterator
 \end{SeeAlso}
 \end{SeeAlsoSection}
@@ -2507,7 +2508,7 @@ by a change in the table's contents.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{Util\_TableItQueryIsNull}
+\begin{SeeAlso}{Util\_TableItQueryIsNull()}
 query whether a table iterator is in the ``null-pointer'' state
 \end{SeeAlso}
 \end{SeeAlsoSection}
@@ -2581,7 +2582,7 @@ by a change in the table's contents.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{Util\_TableItQueryIsNonNull}
+\begin{SeeAlso}{Util\_TableItQueryIsNonNull()}
 query whether a table iterator is {\em not\/} in the ``null-pointer'' state,
 i.e.\ whether the iterator points to some table entry
 \end{SeeAlso}
@@ -2685,7 +2686,7 @@ buffer.  If any other error code is returned, the user's key buffer
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{Util\_TableQueryValueInfo}
+\begin{SeeAlso}{Util\_TableQueryValueInfo()}
 query key present/absent in table, and optionally type and/or number
 of elements, but using the key instead of an iterator
 \end{SeeAlso}
@@ -2808,7 +2809,7 @@ invalidated by a change in the table's contents.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{Util\_TableItCreate}
+\begin{SeeAlso}{Util\_TableItCreate()}
 create an iterator (which iterates over a specified table)
 \end{SeeAlso}
 \end{SeeAlsoSection}
@@ -2838,7 +2839,7 @@ int status = Util_TableItResetToStart(int ihandle);
 
 \begin{ResultSection}
 \begin{ResultNote}
-Results are the same as calling \code{Util\_TableItQueryIsNonNull}
+Results are the same as calling \code{Util\_TableItQueryIsNonNull()}
 on the iterator after the reset:
 \end{ResultNote}
 \begin{Result}{\rm 1}
@@ -2866,10 +2867,10 @@ invalidated by a change in the table's contents.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{Util\_TableItSetToNull}
+\begin{SeeAlso}{Util\_TableItSetToNull()}
 set an iterator to the ``null-pointer'' state
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableItSetToKey}
+\begin{SeeAlso}{Util\_TableItSetToKey()}
 set an iterator to point to a specified table entry
 \end{SeeAlso}
 \end{SeeAlsoSection}
@@ -2910,8 +2911,8 @@ handle to the iterator
 \end{ParameterSection}
 
 \begin{Discussion}
-This function has the same effect as calling \code{Util\_TableItResetToStart}
-followed by calling \code{Util\_TableItAdvance} zero or more times
+This function has the same effect as calling \code{Util\_TableItResetToStart()}
+followed by calling \code{Util\_TableItAdvance()} zero or more times
 to make the iterator point to the desired table entry.  However, this
 function will typically be (much) more efficient than that sequence.
 
@@ -2923,10 +2924,10 @@ invalidated by a change in the table's contents.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{Util\_TableItResetToStart}
+\begin{SeeAlso}{Util\_TableItResetToStart()}
 reset an iterator to point to the starting table entry
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableItSetToNull}
+\begin{SeeAlso}{Util\_TableItSetToNull()}
 set a table iterator to the "null-pointer" state
 \end{SeeAlso}
 \end{SeeAlsoSection}
@@ -2981,10 +2982,10 @@ invalidated by a change in the table's contents.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{Util\_TableItResetToStart}
+\begin{SeeAlso}{Util\_TableItResetToStart()}
 reset an iterator to point to the starting table entry
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableItSetToKey}
+\begin{SeeAlso}{Util\_TableItSetToKey()}
 set an iterator to point to a specified table entry
 \end{SeeAlso}
 \end{SeeAlsoSection}
@@ -3031,19 +3032,19 @@ handle to the table
 \end{ParameterSection}
 
 \begin{Discussion}
-See \code{Util\_TableCreate} for further discussion of the semantics
+See \code{Util\_TableCreate()} for further discussion of the semantics
 of flag words.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{Util\_TableClone}
+\begin{SeeAlso}{Util\_TableClone()}
 create a new table which is a ``clone'' (exact copy) of an existing
 table
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableCreate}
+\begin{SeeAlso}{Util\_TableCreate()}
 create a table (flags word specified explicitly)
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableCreateFromString}
+\begin{SeeAlso}{Util\_TableCreateFromString()}
 convenience routine to create a table (with certain default flags)
 and set key/value entries in it based on a parameter-file--like
 character string
@@ -3150,7 +3151,7 @@ unchanged.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{Util\_TableItQueryKeyValueInfo}
+\begin{SeeAlso}{Util\_TableItQueryKeyValueInfo()}
 query key present/absent in table, and optionally type and/or number
 of elements, but using an iterator instead of the key
 \end{SeeAlso}
@@ -3336,8 +3337,8 @@ where \code{XXX} is one of
    \code{POINTER}, \code{FPOINTER}%%%
 \footnote{%%%
 	 For backwards compatability the function
-	 \code{Util\_TableSetFnPointer} is also provided
-	 as an alias for \code{Util\_TableSetFPointer}.
+	 \code{Util\_TableSetFnPointer()} is also provided
+	 as an alias for \code{Util\_TableSetFPointer()}.
 	 This is deprecated as of Cactus 4.0 beta 13.
 	 }%%%
 ,
@@ -3392,40 +3393,40 @@ not in the ``null-pointer'' state.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{Util\_TableCreateFromString}
+\begin{SeeAlso}{Util\_TableCreateFromString()}
 convenience routine to create a table and set key/value entries
 in it based on a parameter-file--like character string
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGet*}
+\begin{SeeAlso}{Util\_TableGet*()}
 get a single (1-element array) value,
 or more generally the first array element of an array value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGet*Array}
+\begin{SeeAlso}{Util\_TableGet*Array()}
 get an array value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGetGeneric}
+\begin{SeeAlso}{Util\_TableGetGeneric()}
 get a single (1-element array) value with generic data type
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGetGenericArray}
+\begin{SeeAlso}{Util\_TableGetGenericArray()}
 get an array value with generic data type
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGet*String}
+\begin{SeeAlso}{Util\_TableGet*String()}
 get a character-string value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSet*Array}
+\begin{SeeAlso}{Util\_TableSet*Array()}
 set an array value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetGeneric}
+\begin{SeeAlso}{Util\_TableSetGeneric()}
 set a single (1-element array) value with generic data type
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetGenericArray}
+\begin{SeeAlso}{Util\_TableSetGenericArray()}
 set an array value with generic data type
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetFromString}
+\begin{SeeAlso}{Util\_TableSetFromString()}
 convenience routine to set key/value entries in a table based on a
 parameter-file--like character string
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetString}
+\begin{SeeAlso}{Util\_TableSetString()}
 set a character-string value
 \end{SeeAlso}
 \end{SeeAlsoSection}
@@ -3484,8 +3485,8 @@ where \code{XXX} is one of
    \code{POINTER}, \code{FPOINTER}%%%
 \footnote{%%%
 	 For backwards compatability the function
-	 \code{Util\_TableSetFnPointerArray} is also provided
-	 as an alias for \code{Util\_TableSetFPointerArray}.
+	 \code{Util\_TableSetFnPointerArray()} is also provided
+	 as an alias for \code{Util\_TableSetFPointerArray()}.
 	 This is deprecated as of Cactus 4.0 beta 13.
 	 }%%%
 ,
@@ -3543,40 +3544,40 @@ not in the ``null-pointer'' state.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{Util\_TableCreateFromString}
+\begin{SeeAlso}{Util\_TableCreateFromString()}
 convenience routine to create a table and set key/value entries
 in it based on a parameter-file--like character string
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGet*}
+\begin{SeeAlso}{Util\_TableGet*()}
 get a single (1-element array) value,
 or more generally the first array element of an array value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGet*Array}
+\begin{SeeAlso}{Util\_TableGet*Array()}
 get an array value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGetGeneric}
+\begin{SeeAlso}{Util\_TableGetGeneric()}
 get a single (1-element array) value with generic data type
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGetGenericArray}
+\begin{SeeAlso}{Util\_TableGetGenericArray()}
 get an array value with generic data type
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGet*String}
+\begin{SeeAlso}{Util\_TableGet*String()}
 get a character-string value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSet*}
+\begin{SeeAlso}{Util\_TableSet*()}
 set a single (1-element array) value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetGeneric}
+\begin{SeeAlso}{Util\_TableSetGeneric()}
 set a single (1-element array) value with generic data type
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetGenericArray}
+\begin{SeeAlso}{Util\_TableSetGenericArray()}
 set an array value with generic data type
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetFromString}
+\begin{SeeAlso}{Util\_TableSetFromString()}
 convenience routine to set key/value entries in a table based on a
 parameter-file--like character string
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetString}
+\begin{SeeAlso}{Util\_TableSetString()}
 set a character-string value
 \end{SeeAlso}
 \end{SeeAlsoSection}
@@ -3698,7 +3699,7 @@ whitespace      & blank~(\code{' '})
 where * denotes 0 or more repetitions and $\big|$ denotes logical or.
 
 Notice also that the keys allowed by this function are somewhat more
-restricted than those allowed by the other \code{Util\_TableSet*}
+restricted than those allowed by the other \code{Util\_TableSet*()}
 functions, in that this function disallows keys containing \code{'='}
 and/or whitespace.
 
@@ -3709,39 +3710,39 @@ find out where the error was detected. :(
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{Util\_TableCreateFromString}
+\begin{SeeAlso}{Util\_TableCreateFromString()}
 convenience routine to create a table and set key/value entries
 in it based on a parameter-file--like character string
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGet*}
+\begin{SeeAlso}{Util\_TableGet*()}
 get a single (1-element array) value,
 or more generally the first array element of an array value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGet*Array}
+\begin{SeeAlso}{Util\_TableGet*Array()}
 get an array value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGetGeneric}
+\begin{SeeAlso}{Util\_TableGetGeneric()}
 get a single (1-element array) value with generic data type
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGetGenericArray}
+\begin{SeeAlso}{Util\_TableGetGenericArray()}
 get an array value with generic data type
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGet*String}
+\begin{SeeAlso}{Util\_TableGet*String()}
 get a character-string value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSet*}
+\begin{SeeAlso}{Util\_TableSet*()}
 set a single (1-element array) value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSet*Array}
+\begin{SeeAlso}{Util\_TableSet*Array()}
 set an array value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetGeneric}
+\begin{SeeAlso}{Util\_TableSetGeneric()}
 set a single (1-element array) value with generic data type
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetGenericArray}
+\begin{SeeAlso}{Util\_TableSetGenericArray()}
 set an array value with generic data type
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetString}
+\begin{SeeAlso}{Util\_TableSetString()}
 set a character-string value
 \end{SeeAlso}
 \end{SeeAlsoSection}
@@ -3761,9 +3762,9 @@ invalid input: different array values have different datatypes
 \end{Error}
 \begin{Error}{\rm other error codes}
 this function may also return any error codes returned by
-\code{Util\_TableSetString}, \code{Util\_TableSetInt},
-\code{Util\_TableSetReal}, \code{Util\_TableSetIntArray},
-or \code{Util\_TableSetRealArray}.
+\code{Util\_TableSetString()}, \code{Util\_TableSetInt()},
+\code{Util\_TableSetReal()}, \code{Util\_TableSetIntArray()},
+or \code{Util\_TableSetRealArray()}.
 \end{Error}
 \end{ErrorSection}
 
@@ -3864,43 +3865,43 @@ not in the ``null-pointer'' state.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{Util\_TableCreateFromString}
+\begin{SeeAlso}{Util\_TableCreateFromString()}
 convenience routine to create a table and set key/value entries
 in it based on a parameter-file--like character string
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGet*}
+\begin{SeeAlso}{Util\_TableGet*()}
 get a single (1-element array) value,
 or more generally the first array element of an array value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGet*Array}
+\begin{SeeAlso}{Util\_TableGet*Array()}
 get an array value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGetGeneric}
+\begin{SeeAlso}{Util\_TableGetGeneric()}
 get a single (1-element array) value with generic data type
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGetGenericArray}
+\begin{SeeAlso}{Util\_TableGetGenericArray()}
 get an array value with generic data type
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGet*String}
+\begin{SeeAlso}{Util\_TableGet*String()}
 get a character-string value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSet*}
+\begin{SeeAlso}{Util\_TableSet*()}
 set a single (1-element array) value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSet*Array}
+\begin{SeeAlso}{Util\_TableSet*Array()}
 set an array value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetGeneric}
+\begin{SeeAlso}{Util\_TableSetGeneric()}
 set a single (1-element array) value with generic data type
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetGenericArray}
+\begin{SeeAlso}{Util\_TableSetGenericArray()}
 set an array value with generic data type
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetFromString}
+\begin{SeeAlso}{Util\_TableSetFromString()}
 convenience routine to set key/value entries in a table based on a
 parameter-file--like character string
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetString}
+\begin{SeeAlso}{Util\_TableSetString()}
 set a character-string value
 \end{SeeAlso}
 \end{SeeAlsoSection}
@@ -4022,40 +4023,40 @@ not in the ``null-pointer'' state.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{Util\_TableCreateFromString}
+\begin{SeeAlso}{Util\_TableCreateFromString()}
 convenience routine to create a table and set key/value entries
 in it based on a parameter-file--like character string
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGet*}
+\begin{SeeAlso}{Util\_TableGet*()}
 get a single (1-element array) value,
 or more generally the first array element of an array value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGet*Array}
+\begin{SeeAlso}{Util\_TableGet*Array()}
 get an array value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGetGeneric}
+\begin{SeeAlso}{Util\_TableGetGeneric()}
 get a single (1-element array) value with generic data type
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGetGenericArray}
+\begin{SeeAlso}{Util\_TableGetGenericArray()}
 get an array value with generic data type
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGet*String}
+\begin{SeeAlso}{Util\_TableGet*String()}
 get a character-string value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSet*}
+\begin{SeeAlso}{Util\_TableSet*()}
 set a single (1-element array) value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSet*Array}
+\begin{SeeAlso}{Util\_TableSet*Array()}
 set an array value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetGeneric}
+\begin{SeeAlso}{Util\_TableSetGeneric()}
 set a single (1-element array) value with generic data type
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetFromString}
+\begin{SeeAlso}{Util\_TableSetFromString()}
 convenience routine to set key/value entries in a table based on a
 parameter-file--like character string
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetString}
+\begin{SeeAlso}{Util\_TableSetString()}
 set a character-string value
 \end{SeeAlso}
 \end{SeeAlsoSection}
@@ -4137,7 +4138,7 @@ character*(*)     string, key
 
 \begin{ResultSection}
 \begin{ResultNote}
-Results are the same as all the other \code{Util\_TableSet*} functions:
+Results are the same as all the other \code{Util\_TableSet*()} functions:
 \end{ResultNote}
 \begin{Result}{\rm 1}
 ok (key was already in table before this call, old value was replaced)\\
@@ -4170,49 +4171,49 @@ The string is stored as an array of \code{strlen(string)}
 \code{CCTK\_CHAR}s.  It does {\em not\/} include a terminating
 null character.
 
-This function is very similar to \code{Util\_TableSetCharArray}.
+This function is very similar to \code{Util\_TableSetCharArray()}.
 
 This function invalidates any iterators for the table which are
 not in the ``null-pointer'' state.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{Util\_TableCreateFromString}
+\begin{SeeAlso}{Util\_TableCreateFromString()}
 convenience routine to create a table and set key/value entries
 in it based on a parameter-file--like character string
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGet*}
+\begin{SeeAlso}{Util\_TableGet*()}
 get a single (1-element array) value,
 or more generally the first array element of an array value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGet*Array}
+\begin{SeeAlso}{Util\_TableGet*Array()}
 get an array value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGetGeneric}
+\begin{SeeAlso}{Util\_TableGetGeneric()}
 get a single (1-element array) value with generic data type
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGetGenericArray}
+\begin{SeeAlso}{Util\_TableGetGenericArray()}
 get an array value with generic data type
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGet*String}
+\begin{SeeAlso}{Util\_TableGet*String()}
 get a character-string value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetCharArray}
+\begin{SeeAlso}{Util\_TableSetCharArray()}
 get an array-of-\code{CCTK\_CHAR} value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSet*}
+\begin{SeeAlso}{Util\_TableSet*()}
 set a single (1-element array) value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSet*Array}
+\begin{SeeAlso}{Util\_TableSet*Array()}
 set an array value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetGeneric}
+\begin{SeeAlso}{Util\_TableSetGeneric()}
 set a single (1-element array) value with generic data type
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetGenericArray}
+\begin{SeeAlso}{Util\_TableSetGenericArray()}
 set an array value with generic data type
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetCharArray}
+\begin{SeeAlso}{Util\_TableSetCharArray()}
 set an array-of-\code{CCTK\_CHAR} value
 \end{SeeAlso}
 \end{SeeAlsoSection}
