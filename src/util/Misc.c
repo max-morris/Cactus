@@ -972,7 +972,7 @@ int CCTK_RegexMatch(const char *string,
 @@*/
  
  
-void FORTRAN_NAME(CCTK_FortranString)(int *nchar, char **cstring,ONE_FORTSTRING_ARG)
+void FORTRAN_NAME(CCTK_FortranString)(CCTK_INT *nchar, char **cstring,ONE_FORTSTRING_ARG)
 {
 
   int i;
