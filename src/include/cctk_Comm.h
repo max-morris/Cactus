@@ -32,8 +32,8 @@ extern "C" {
 
 int CCTK_QueryGroupStorage(cGH *,const char *);
 int CCTK_QueryGroupStorageI(cGH *,int);
-int *CCTK_ArrayGroupSize(cGH *,int, const char *);
-int *CCTK_ArrayGroupSizeI(cGH *,int,int);
+const int *CCTK_ArrayGroupSize(cGH *,int, const char *);
+const int *CCTK_ArrayGroupSizeI(cGH *,int,int);
 
 #ifdef __cplusplus
 }

@@ -344,12 +344,12 @@ int CCTK_DisableGroupStorageI(void *GH, int group)
 }
 
 
-int *CCTK_ArrayGroupSizeI(cGH *GH, int dir, int groupi)
+const int *CCTK_ArrayGroupSizeI(cGH *GH, int dir, int groupi)
 {
   return CCTK_ArrayGroupSizeB(GH,dir,groupi,NULL);
 }
 
-int *CCTK_ArrayGroupSize(cGH *GH, int dir, const char *groupn)
+const int *CCTK_ArrayGroupSize(cGH *GH, int dir, const char *groupn)
 {
   return CCTK_ArrayGroupSizeB(GH,dir,-1,groupn);
 }
