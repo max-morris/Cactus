@@ -181,15 +181,20 @@ sub free_format_splitline
   while ($LINE =~ s/,\s*,/,/) {};
   $LINE =~ s/,\s*\)/\)/;
 
+  # Some preprocessors put extraneous spaces in 8-(
+  $LINE =~ s:\. (eq|le|lt|ge|gt|ne) \.:\.$1\.:ig;
+
   # Strip out leading spaces in favor of 3 spaces
   # $LINE =~ s/^\s+/   /;
-  if ($LINE =~ /^(.{78,78})...*/) {
+  if ($LINE =~ /^(.{78,78})...*/) 
+  {
     $OUT = $1;
     print "$OUT";
     # Check if the line already has a continuation mark.
     print "&" if (! ($OUT =~ /\&[\s]*$/));
     print "\n";
     $LINE =~ s/.{78,78}//;
+
     while ($LINE =~ /^(.{74,74}).*/) 
     {
       $OUT = $1;
@@ -208,3 +213,10 @@ sub free_format_splitline
   }
   
 }
+
+
+
+
+
+
+
