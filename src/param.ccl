@@ -1,9 +1,13 @@
 # Parameter definitions for flesh
 # $Header$
 
-public:
  
-public:
+private:
+
+LOGICAL cctk_strong_param_check "Die on parameter errors in CCTK_PARAMCHECK"
+{
+ : ::
+} "yes"
 
 LOGICAL cctk_show_rfr_tree "Show the order of the calling tree for the RFR"
 {
@@ -14,6 +18,8 @@ LOGICAL cctk_brief_output "Give only brief output"
 {
  : :: 
 } "no"
+
+public:
 
 REAL cctk_initial_time "Initial time for evolution"
 {
