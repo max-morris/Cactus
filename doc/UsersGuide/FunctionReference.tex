@@ -7923,9 +7923,14 @@ int N_elements = Util_TableGetXxx(int handle,
                                   const char *key);
 \end{verbatim}
 where \verb|XXX| is one of
-   \verb|POINTER|, \verb|FPOINTER|\footnote{For historical reasons the
-   corresponding function is called \texttt{Util\_TableGetFnPointer}.
-   This should be changed soon.},
+   \verb|POINTER|, \verb|FPOINTER|%%%
+\footnote{%%%
+	 For backwards compatability the function
+	 {\tt Util\_TableGetFnPointer()} is also provided
+	 as an alias for {\tt Util\_TableGetFPointer()}.
+	 This is deprecated as of Cactus 4.0 beta 13.
+	 }%%%
+,
    \verb|CHAR|,
    \verb|INT|, \verb|INT2|, \verb|INT4|, \verb|INT8|,
    \verb|REAL|, \verb|REAL4|, \verb|REAL8|, \verb|REAL16|,
@@ -8076,9 +8081,14 @@ int N_elements = Util_TableGetXxxArray(int handle,
                                        const char *key);
 \end{verbatim}
 where \verb|XXX| is one of
-   \verb|POINTER|, \verb|FNPOINTER|
-        \footnote{Use \texttt{Util\_TableGetFnPointer}, for historical
-   reasons.},
+   \verb|POINTER|, \verb|FPOINTER|%%%
+\footnote{%%%
+	 For backwards compatability the function
+	 {\tt Util\_TableGetFnPointerArray()} is also provided
+	 as an alias for {\tt Util\_TableGetFPointerArray()}.
+	 This is deprecated as of Cactus 4.0 beta 13.
+	 }%%%
+,
    \verb|CHAR|,
    \verb|INT|, \verb|INT2|, \verb|INT4|, \verb|INT8|,
    \verb|REAL|, \verb|REAL4|, \verb|REAL8|, \verb|REAL16|,
@@ -9923,7 +9933,14 @@ int status = Util_TableSetXxx(int handle,
                               const char *key);
 \end{verbatim}
 where \verb|XXX| is one of
-   \verb|POINTER|, \verb|FPOINTER|,
+   \verb|POINTER|, \verb|FPOINTER|%%%
+\footnote{%%%
+	 For backwards compatability the function
+	 {\tt Util\_TableSetFnPointer()} is also provided
+	 as an alias for {\tt Util\_TableSetFPointer()}.
+	 This is deprecated as of Cactus 4.0 beta 13.
+	 }%%%
+,
    \verb|CHAR|,
    \verb|INT|, \verb|INT2|, \verb|INT4|, \verb|INT8|,
    \verb|REAL|, \verb|REAL4|, \verb|REAL8|, \verb|REAL16|,
@@ -10064,7 +10081,14 @@ int status = Util_TableSetXxxArray(int handle,
                                    const char *key);
 \end{verbatim}
 where \verb|XXX| is one of
-   \verb|POINTER|, \verb|FPOINTER|,
+   \verb|POINTER|, \verb|FPOINTER|%%%
+\footnote{%%%
+	 For backwards compatability the function
+	 {\tt Util\_TableSetFnPointerArray()} is also provided
+	 as an alias for {\tt Util\_TableSetFPointerArray()}.
+	 This is deprecated as of Cactus 4.0 beta 13.
+	 }%%%
+,
    \verb|CHAR|,
    \verb|INT|, \verb|INT2|, \verb|INT4|, \verb|INT8|,
    \verb|REAL|, \verb|REAL4|, \verb|REAL8|, \verb|REAL16|,
