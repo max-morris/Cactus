@@ -16,12 +16,12 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.19 1999-02-27 11:51:14 allen Exp $
+#   @version $Id: Makefile,v 1.20 1999-03-09 14:56:28 goodale Exp $
 # @@*/
 
 # Make quietly unless told not to
 ifneq ($(strip $(SILENT)),no)
-#.SILENT:
+.SILENT:
 endif
 
 # Set the options to pass to the setup script
@@ -102,7 +102,9 @@ TAGS:
 	@echo $(DIVIDER)
 	@echo Updating the Emacs TAGS file
 	find src packages \( -name '*.[chF]' -o -name '*.F77' \) \
-          -exec etags --append --regex '/[a-z A-Z \t]*FORTRAN_NAME[^)]*/' {} \;
+          -exec etags --append {} \;
+#	find src packages \( -name '*.[chF]' -o -name '*.F77' \) \
+#          -exec etags --append --regex '/[a-z A-Z \t]*FORTRAN_NAME[^)]*/' {} \;
 	perl -pi -e 's/(subroutine\s*)([a-zA-Z0-9_]+)/\1\L\2/g;' TAGS
 	@echo $(DIVIDER)
 
