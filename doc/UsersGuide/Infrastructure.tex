@@ -74,6 +74,60 @@
  \end{itemize}
 \end{enumerate}
 
+\noindent 
+{\t CCTK\_EnableGroupStorage} 
+\hrule
+
+\noindent 
+Assigns storage for all grid variables in a given group.
+
+\noindent
+\begin{tabular}{p{3cm}cp{11cm}}
+&&\\
+{\bf Synopis} \hfill&&\\
+\hfill {\bf C} && int storage = {\t CCTK\_EnableGroupStorage( cGH *GH, const char *group )}\\
+\hfill {\bf Fortran} && {\t call CCTK\_EnableGroupStorage( storage, GH, group )}\\
+&& {\t CCTK\_POINTER GH}\\
+&& {\t CCTK\_INTEGER storage}\\
+&& {\t CCTK\_STRING group}\\
+&&\\
+{\bf Parameters}\hfill&&\\
+\hfill {\t storage}&-&integer status code returned by routine:
+\\
+&&
+  \begin{tabular}{ll}
+  -1 & error\\
+  0 & storage toggled from unassigned to assigned\\
+  1 & storage was already assigned
+  \end{tabular}
+\\
+\hfill {\t GH} &-&Pointer to CCTK grid hierachy
+\\
+\hfill {\t group}&-&character string denoting the group to assign storage to, in the format {\t <implementation>::<group>}
+\end{tabular}
+
+\noindent
+\begin{tabular}{p{14cm}}
+\\{\bf Discussion} \hfill\\
+This routine is overloadable in the flesh, and must be provided by a thorn 
+(usually by the thorn implementing the driver, 
+{\it e.g. } the default unigrid driver {\t packages/pugh}).\\
+\end{tabular}
+
+\noindent
+\begin{tabular}{p{3cm}cp{11cm}}
+&&\\
+{\bf Examples} \hfill &&\\
+\hfill {\bf C} && storage = {\t CCTK\_EnableGroupStorage(GH,``imp::group'')};
+\\
+\hfill {\bf Fortran} && call {\t CCTK\_ENABLEGROUPSTORAGE(istorage,GH,``imp::group'')};
+\\
+&\\
+{\bf Errors} \hfill&&
+\\
+&& {\bf FIXME} here will be stuff like can return CCTK_ERROR_STORAGEERROR
+\end{tabular}
+
 \section{Group and Variable Utility Routines}
 
 The CCTK provides a number of utility routines for dealing
