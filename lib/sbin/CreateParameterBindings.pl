@@ -334,7 +334,8 @@ sub CreateParameterBindings
                  cctk_pdummy_int+=0;\\
                  cctk_pdummy_real=0;\\
                  cctk_pdummy_real+=0;\\
-                 cctk_pdummy_pointer=NULL;\\\n";
+                 cctk_pdummy_pointer=NULL;\\
+                 cctk_pdummy_pointer=(CCTK_REAL *)cctk_pdummy_pointer;\\\n";
 
     $decl =  "USE_GLOBAL_PARAMETER_STRUCT_PARAMS";
     if($header_files{"GLOBAL"})
