@@ -2185,43 +2185,75 @@ invocation of interpolation operators.
 There are several different flesh APIs for interpolation, depending
 on whether the data arrays are Cactus grid arrays or processor-local
 ``ordinary programming-language'' arrays, and on what assumptions
-are made about the topology and spacing of the grid:
+are made about the topology and spacing of the grid (these descriptions
+are for 3-D, but the generalizations to other numbers of dimensions
+should be obvious):
 \begin{Lentry}
 \item[{\tt CCTK\_InterpGV()}]
-	Interpolates Cactus grid arrays
+	Interpolates Cactus grid arrays, with the topology of the
+	grid implicitly specified by a Cactus coordinate system.
+	(old API, being phased out as of early 2002)
+%notyet	\item[{\tt CCTK\_InterpGridArrays()}]
+%notyet		Interpolates Cactus grid arrays, with the topology of the
+%notyet		grid implicitly specified by a Cactus coordinate system.
 \item[{\tt CCTK\_InterpLocal()}]
 	Interpolate processor-local arrays
 	(old API, being phased out as of early 2002)
 \item[{\tt CCTK\_InterpLocalUniform()}]
-	Interpolates processor-local arrays,
-	with uniformly spaced data points
-	(new API, just being implemented as of early 2002)
+	Interpolates processor-local arrays with {\em uniformly\/}
+	spaced data points, \ie{} where the coordinates~$xyz$
+	are related to the integer array subscripts~\verb|ijk| by
+	{\em linear\/} functions
+	\begin{flushleft}
+	$x = \verb|origin|_x + \verb|delta|_x \verb|i|$	\\
+	$y = \verb|origin|_y + \verb|delta|_y \verb|j|$	\\
+	$z = \verb|origin|_z + \verb|delta|_z \verb|k|$	%%%\\
+	\end{flushleft}
+	where the caller specifies the \verb|origin| and \verb|delta|
+	values.
+%notyet	\item[{\tt CCTK\_InterpLocalNonUniform()}]
+%notyet		Interpolates processor-local arrays with {\em nonuniformly\/}
+%notyet		spaced data points, \ie{} where the coordinates~$xyz$
+%notyet		are related to the integer array subscripts~\verb|ijk| by
+%notyet		{\em nonlinear\/} (but still single-variable) functions
+%notyet		\begin{flushleft}
+%notyet		$x = x(\verb|i|)$	\\
+%notyet		$y = y(\verb|j|)$	\\
+%notyet		$z = z(\verb|k|)$	%%%\\
+%notyet		\end{flushleft}
+%notyet		where the caller specifies the functions $x$, $y$, and $z$
+%notyet		by providing 1-D arrays giving their values at the grid points.
+%notyet	\item[{\tt CCTK\_InterpLocalWarped()}]
+%notyet		Interpolates processor-local arrays with {\em curvilinearly
+%notyet		warped\/} data points, \ie{} where the coordinates~$xyz$
+%notyet		are related to the integer array subscripts~\verb|ijk| by
+%notyet		generic {\em nonlinear\/} functions
+%notyet		\begin{flushleft}
+%notyet		$x = x(\verb|i|, \verb|j|, \verb|k|)$	\\
+%notyet		$y = y(\verb|i|, \verb|j|, \verb|k|)$	\\
+%notyet		$z = z(\verb|i|, \verb|j|, \verb|k|)$	%%%\\
+%notyet		\end{flushleft}
+%notyet		where the caller specifies the functions $x$, $y$, and $z$
+%notyet		by providing 3-D arrays giving their values at the grid points.
 \end{Lentry}
 
 There are separate flesh routines to register operators for each of
-the APIs:
+the APIs (note the calling sequences differ slightly from one registration
+routine to another!):
 \begin{Lentry}
 \item[{\tt CCTK\_InterpRegisterOperatorGV()}]
 	Register a \verb|CCTK_InterpGV()| interpolation operator
+%notyet	\item[{\tt CCTK\_InterpRegisterOpGridArrays()}]
+%notyet		Register a \verb|CCTK_InterpGridArrays()| interpolation operator
 \item[{\tt CCTK\_InterpRegisterOperatorLocal()}]
 	Register a \verb|CCTK_InterpLocal()| interpolation operator
 	(old API, being phased out as of early 2002)
 \item[{\tt CCTK\_InterpRegisterOpLocalUniform()}]
 	Register a \verb|CCTK_InterpLocalUniform()| interpolation operator
-	(note this has a different calling sequence than the
-	other registration APIs!)
-\end{Lentry}
-and to invoke the operators:
-\begin{Lentry}
-\item[{\tt CCTK\_InterpGV()}]
-	Calls the \verb|CCTK_InterpGV()| interpolation operator
-	associated with the given handle
-\item[{\tt CCTK\_InterpLocal()}]
-	Calls the \verb|CCTK_InterpLocal()| interpolation operator
-	associated with the given handle
-\item[{\tt CCTK\_InterpLocalUniform()}]
-	Calls the \verb|CCTK_InterpLocalUniform()| interpolation operator
-	associated with the given handle
+%notyet	\item[{\tt CCTK\_InterpRegisterOpLocalNonUniform()}]
+%notyet		Register a \verb|CCTK_InterpLocalNonUniform()| interpolation operator
+%notyet	\item[{\tt CCTK\_InterpRegisterOpLocalWarped()}]
+%notyet		Register a \verb|CCTK_InterpLocalWarped()| interpolation operator
 \end{Lentry}
 These are described in detail in part~\ref{part-FunctionReference}
 of this manual.
