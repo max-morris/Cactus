@@ -49,8 +49,8 @@ endif
 $(EXE): $(CONFIG)/make.thornlist $(patsubst %,$(CCTK_LIBDIR)/lib%.a,$(notdir $(THORNS))) $(CCTK_LIBDIR)/libCactus.a $(CCTK_LIBDIR)/libCactusBindings.a
 	@echo $(DIVIDER)
 	@echo Creating $(EXE) from $(THORNS)
-	$(CC) $(CFLAGS) -c $(DATESTAMP) -o $(TOP)/datestamp.o
-	$(LD) -o $@ $(LDFLAGS) $(EXTRAFLAGS) $(TOP)/datestamp.o -L$(CCTK_LIBDIR) -lCactus -lCactusBindings  $(addprefix -l,$(notdir $(THORNS))) $(addprefix -l,$(notdir $(THORNS))) -lCactus $(LIBDIRS:%=-L%) $(LIBS:%=-l%)
+	$(CC) $(CFLAGS) $(CCOMPILEONLY) $(TOP)/datestamp.o $(DATESTAMP)
+	$(LD) $(CREATEEXE)$@ $(LDFLAGS) $(EXTRAFLAGS) $(TOP)/datestamp.o -L$(CCTK_LIBDIR) -lCactus -lCactusBindings  $(addprefix -l,$(notdir $(THORNS))) $(addprefix -l,$(notdir $(THORNS))) -lCactus $(LIBDIRS:%=-L%) $(LIBS:%=-l%)
 	@echo $(DIVIDER)
 	@echo All done !
 	@echo $(DIVIDER)
@@ -64,7 +64,7 @@ $(EXE): $(CONFIG)/make.thornlist $(patsubst %,$(CCTK_LIBDIR)/lib%.a,$(notdir $(T
 # used for making thorn libraries.
 #
 # Checks if the library is Cactus, in which case it uses the main source 
-# directoryory.
+# directory.
 
 $(CCTK_LIBDIR)/lib%.a: update
 	@echo $(DIVIDER)

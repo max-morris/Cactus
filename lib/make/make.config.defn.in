@@ -38,6 +38,9 @@ ARFLAGS           = @ARFLAGS@
 CCOMPILEONLY = @CCOMPILEONLY@
 FCOMPILEONLY = @FCOMPILEONLY@
 
+# Most compilers use -o for naming the executable, alas some don't
+CREATEEXE = @CREATEEXE@
+
 # Library info
 
 LIBS    = @LIBS@
@@ -65,6 +68,9 @@ CST = @CST@
 C_FILE_PROCESSOR = @C_FILE_PROCESSOR@
 F_FILE_PROCESSOR = @F_FILE_PROCESSOR@
 
+# The directory in which to place the executable
+EXEDIR = @EXEDIR@
+
 # The name of the executable
-EXE    = @EXE@
+EXE    = $(EXEDIR)/@EXE@
 

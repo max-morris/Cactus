@@ -151,11 +151,13 @@ AC_SUBST(LIBDIRS)
 AC_SUBST(PACKAGE_DIR)
 AC_SUBST(BUILD_DIR)
 AC_SUBST(CCTK_LIBDIR)
+AC_SUBST(EXEDIR)
 AC_SUBST(EXE)
 
 : ${PACKAGE_DIR=packages}
 : ${BUILD_DIR=build}
 : ${CCTK_LIBDIR=lib}
+: ${EXEDIR='$(CCTK_HOME)'}
 : ${EXE=cactus-unknown}
 
 # Integer types
@@ -300,6 +302,11 @@ LDFLAGS="$KNOWN_LDFLAGS $LDFLAGS"
 : ${CCOMPILEONLY="-c -o"}
 : ${FCOMPILEONLY="-c -o"}
 
+#Set the createexe flag if it's not been set by now
+
+AC_SUBST(CREATEEXE)
+
+: ${CREATEEXE="-o # Please leave the space, it's important !"}
 
 dnl Run any other scripts necessary
 

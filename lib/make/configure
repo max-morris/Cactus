@@ -2034,9 +2034,11 @@ EOF
 
 
 
+
 : ${PACKAGE_DIR=packages}
 : ${BUILD_DIR=build}
 : ${CCTK_LIBDIR=lib}
+: ${EXEDIR='$(CCTK_HOME)'}
 : ${EXE=cactus-unknown}
 
 # Integer types
@@ -2226,6 +2228,11 @@ LDFLAGS="$KNOWN_LDFLAGS $LDFLAGS"
 : ${CCOMPILEONLY="-c -o"}
 : ${FCOMPILEONLY="-c -o"}
 
+#Set the createexe flag if it's not been set by now
+
+
+
+: ${CREATEEXE="-o # Please leave the space, it's important !"}
 
 
  
@@ -2394,6 +2401,7 @@ s%@LIBDIRS@%$LIBDIRS%g
 s%@PACKAGE_DIR@%$PACKAGE_DIR%g
 s%@BUILD_DIR@%$BUILD_DIR%g
 s%@CCTK_LIBDIR@%$CCTK_LIBDIR%g
+s%@EXEDIR@%$EXEDIR%g
 s%@EXE@%$EXE%g
 s%@BUILD_ACTIVETHORNS@%$BUILD_ACTIVETHORNS%g
 s%@CST@%$CST%g
@@ -2401,6 +2409,7 @@ s%@F_FILE_PROCESSOR@%$F_FILE_PROCESSOR%g
 s%@C_FILE_PROCESSOR@%$C_FILE_PROCESSOR%g
 s%@CCOMPILEONLY@%$CCOMPILEONLY%g
 s%@FCOMPILEONLY@%$FCOMPILEONLY%g
+s%@CREATEEXE@%$CREATEEXE%g
 
 CEOF
 EOF
