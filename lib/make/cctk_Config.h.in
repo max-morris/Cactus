@@ -115,6 +115,10 @@
 
 #undef NULL_DEVICE
 
+/* The TYPE of socklen_t if it does not exist */ 
+
+#undef CCTK_SOCKLEN_T
+
 /******************************************************************************/
 
 #ifdef CCODE
