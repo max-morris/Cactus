@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.84 2000-04-17 18:24:53 goodale Exp $
+#   @version $Id: Makefile,v 1.85 2000-04-17 18:33:16 goodale Exp $
 # @@*/
 
 ##################################################################################
@@ -560,7 +560,7 @@ $(addsuffix -config,$(CONFIGURATIONS)):
 	echo $(DIVIDER)
 	if test -z "$(THORNLIST)" || (test -n "$(THORNLIST)" && test -e "$(THORNLIST_DIR)/$(THORNLIST)") ; \
 	then \
-	  if ! $(SETUP_ENV) $(PERL) -s $(SETUP) -reconfig=1 $(SETUP_OPTIONS) $(@:%-config=%) ; then \
+	  if ! ($(SETUP_ENV) $(PERL) -s $(SETUP) -reconfig=1 $(SETUP_OPTIONS) $(@:%-config=%)) ; then \
             echo "" ;                                                      \
             echo "Error reconfiguring $@" ;                                \
             exit 2                                 ;                       \
@@ -595,7 +595,7 @@ endif
 	  echo Setting up new configuration $(@:%-config=%); \
 	  if test -z "$(THORNLIST)" || (test -n "$(THORNLIST)" && test -e "$(THORNLIST_DIR)/$(THORNLIST)") ; \
 	  then \
-	    if ! $(SETUP_ENV) $(PERL) -s $(SETUP) $(SETUP_OPTIONS) $@ ; then \
+	    if ! ($(SETUP_ENV) $(PERL) -s $(SETUP) $(SETUP_OPTIONS) $@) ; then \
               echo "" ;                                                      \
               echo "Error creating configuration $@" ;                       \
               exit 2                                 ;                       \
@@ -780,7 +780,7 @@ downsize:
 	  echo Setting up new configuration $@ ; \
 	  if test -z "$(THORNLIST)" || (test -n "$(THORNLIST)" && test -e "$(THORNLIST_DIR)/$(THORNLIST)") ; \
 	  then \
-	  if ! $(SETUP_ENV) $(PERL) -s $(SETUP) $(SETUP_OPTIONS) $@ ; then \
+	  if ! ($(SETUP_ENV) $(PERL) -s $(SETUP) $(SETUP_OPTIONS) $@) ; then \
             echo "" ;                                                      \
             echo "Error creating configuretion $@" ;                       \
             exit 2                                 ;                       \
