@@ -80,7 +80,7 @@ void CactusBanner(void)
 
 void CCTK_RegisterBanner(const char *string)
 {
-  const char **temp = NULL;
+  char **temp = NULL;
   char *newstring;
   number_banners++;
 
