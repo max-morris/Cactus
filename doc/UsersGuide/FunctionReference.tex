@@ -15,7 +15,7 @@
 % @@*/
 \begin{cactuspart}{5}{FunctionReference}{$RCSfile$}{$Revision$}
 \renewcommand{\thepage}{\Alph{part}\arabic{page}}
-\label{part-FunctionReference}
+\label{part:FunctionReference}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -4229,6 +4229,7 @@ A negative error code is returned for an invalid group name.
 \begin{CCTKFunc}{CCTK\_ReductionHandle}{Handle for given reduction method}
 \label{CCTK-ReductionHandle}
 \function{int}{integer}{handle}
+% This gives the wrong Fortran binding!!
 \argument{const char *}{character*(*)}{reduction}
 \showargs
 \begin{params}
