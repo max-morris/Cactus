@@ -446,6 +446,37 @@ char *CCTK_GetImplementationFromVar(int var)
   return retval;
 }
 
+ /*@@
+   @routine    CCTK_GetFullName(i)
+   @date       Mon Feb 22
+   @author     Gabrielle Allen
+   @desc 
+   Given a variable index return the implementation 
+   and the variable name together.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+char *CCTK_GetFullName(int var)
+{
+  char *impname;
+  char *varname;
+  int group_num;
+  char *fullname;
+
+  varname = CCTK_GetVarName(var);
+  group_num = group_of_variable[var];
+  impname = groups[group_num].implementation;
+
+  fullname = malloc((strlen(varname)+strlen(impname)+3)*sizeof(char));
+  sprintf(fullname,"%s::%s",impname,varname);
+
+  return fullname;
+}
 
 
  /*@@
