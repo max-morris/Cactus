@@ -993,7 +993,8 @@ or if the parameter file should be taken from standard input
 
 The remainder of this chapter covers all aspects for running your
 Cactus executable.  These include: command line options, parameter
-file syntax, understanding screen output, and environment variables.
+file syntax, understanding screen output, environment variables, and
+creating thorn documentation.
 
 \section{Command Line Options}
 \label{sec:coliop}
@@ -1165,6 +1166,25 @@ each thorn using the command line options {\tt -o} and {\tt -O}
 	which can be found in most thorns.
 
 \end{itemize}
+
+\section{Thorn Documentation}
+\label{sec:thdo}
+
+The Cactus make system provides a mechanism for generating a {\it Thorn Guide}
+containing separate chapters for each thorn in your configuration. The
+provided documentation for an individual thorn obviously depends on what
+the thorn authors added, but the Thorn Guide is a good place to first look 
+for special instructions on how to run and interpret the output from a Thorn.
+Details about parameters, grid variables and scheduling are automatically
+included in from a thorns {\tt CCL} files into the Thorn Guide. To construct a 
+Thorn Guide for the configuration {\tt $<$config$>$} use
+
+{\tt gmake $<$config$>$-ThornGuide}
+
+or to make a Thorn Guide for all the thorns in the {\tt arrangements} directory
+
+{\tt gmake $<$config$>$}.
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
