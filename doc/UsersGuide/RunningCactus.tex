@@ -110,10 +110,10 @@ Cactus on, including some architecture specific notes.
   compilers installed 
 \item[{\bf Linux (ia32, ia64, ppc, alpha)}] There is a
   free Linux F90 compiler available from  {\tt http://www.psrv.com}
-  -- the only free we know of. Single processor mode and {\tt MPICH}, {\tt LAM}
-  supported.
-\item[{\bf Windows NT}] Compiles with Cygwin version B20, Digital Fortran Compiler and Microsoft Visual C++ compiler. Single processor mode and {\tt WMPI}, 
-{\tt HPVM} supported.
+  -- the only free we know of; please note the comment about installing this in the FAQ.
+  Single processor mode and MPI ({\tt MPICH} and {\tt LAM}) supported.
+\item[{\bf Windows NT}] Compiles with Cygwin. Single processor mode and MPI ({\tt WMPI}, 
+{\tt HPVM}, and {\tt MPIPro}) supported.  Please read doc/README.NT for details.
 \item[{\bf IBM SP2}]
 \end{Lentry}
 
@@ -560,12 +560,18 @@ an additional variable must be set
   \item[{\tt GLOBUS\_LIB\_DIR} *] directory in which Globus libraries are installed
   \end{Lentry}
 
+If {\tt MPICH\_DEVICE} is chosen to be {\tt ch\_gm}, ({\tt www.myri.com}), 
+an additional variable must be set
+  \begin{Lentry}
+  \item[{\tt MYRINET\_DIR} *] directory in which Myrinet libraries are installed
+  \end{Lentry}
+
 \item[{\tt LAM}]
 Use {\tt LAM} (Local Area Multicomputer, {\tt http://www.mpi.nd.edu/lam/}). This is 
 controlled by the variables 
   \begin{Lentry}
   \item[{\tt LAM\_DIR} *] directory in which {\tt LAM} is installed. This 
-     will be searched for, in a few provided places,  if not given.
+     will be searched for in a few provided places if not given.
   \end{Lentry}
 if the {\tt LAM} installation splits libraries and include files into different
 directories, instead of setting {\tt LAM\_DIR} set the two variables
@@ -581,6 +587,15 @@ Use WMPI (Win32 Message Passing Interface, {\tt http://dsg.dei.uc.pt/w32mpi/intr
   \item[{\tt WMPI\_DIR} *] directory in which {\tt WMPI} is installed.
   \end{Lentry}
 
+\item[{\tt HPVM}] 
+Use HPVM (High Performance Virtual Machine, {\tt http://www-csag.ucsd.edu/projects/hpvm.html}). This is controlled by the variable
+  \begin{Lentry}
+  \item[{\tt HPVM\_DIR} *] directory in which {\tt HPVM} is installed.
+  \end{Lentry}
+
+\item[{\tt MPIPro}] 
+Use MPIPro ({\tt http://www.mpi-softtech.com/}).
+
 \item[{\tt PACX}] 
 Use the PACX Metacomputing package (PArallel Computer eXtension,\\
 {\tt http://www.hlrs.de/structure/organisation/par/projects/pacx-mpi/}). This is controlled by the variables
@@ -595,7 +610,6 @@ Use the PACX Metacomputing package (PArallel Computer eXtension,\\
 
 Note that the searches for libraries etc. mentioned above use the 
 locations given in the files in {\tt lib/make/extras/MPI}.
-
 
 \subsubsection{HDF5: Hierarchical Data Format version 5}
 
