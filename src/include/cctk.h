@@ -191,29 +191,27 @@ inline int CCTK_GFINDEX4D (const cGH *GH, int i, int j, int k, int l)
             int        *cctk_levfac = cctkGH->cctk_levfac;\
             int         cctk_convlevel = cctkGH->cctk_convlevel;\
             int        *cctk_nghostzones = cctkGH->cctk_nghostzones;\
-            int         cctk_iteration = cctkGH->cctk_iteration;\
-            const void *cctk_dummy_pointer;
+            int         cctk_iteration = cctkGH->cctk_iteration;
 
 
 #define _USE_CCTK_CARGUMENTS \
-            cctk_dummy_pointer = &cctk_dim;\
-            cctk_dummy_pointer = &cctk_gsh;\
-            cctk_dummy_pointer = &cctk_lsh;\
-            cctk_dummy_pointer = &cctk_lbnd;\
-            cctk_dummy_pointer = &cctk_ubnd;\
-            cctk_dummy_pointer = &cctk_lssh;\
-            cctk_dummy_pointer = &cctk_from;\
-            cctk_dummy_pointer = &cctk_to;\
-            cctk_dummy_pointer = &cctk_bbox;\
-            cctk_dummy_pointer = &cctk_delta_time;\
-            cctk_dummy_pointer = &cctk_time;\
-            cctk_dummy_pointer = &cctk_delta_space;\
-            cctk_dummy_pointer = &cctk_origin_space;\
-            cctk_dummy_pointer = &cctk_levfac;\
-            cctk_dummy_pointer = &cctk_convlevel;\
-            cctk_dummy_pointer = &cctk_nghostzones;\
-            cctk_dummy_pointer = &cctk_iteration;\
-            cctk_dummy_pointer = cctk_dummy_pointer;
+            (void) (cctk_dim + 0);\
+            (void) (cctk_gsh + 0);\
+            (void) (cctk_lsh + 0);\
+            (void) (cctk_lbnd + 0);\
+            (void) (cctk_ubnd + 0);\
+            (void) (cctk_lssh + 0);\
+            (void) (cctk_from + 0);\
+            (void) (cctk_to + 0);\
+            (void) (cctk_bbox + 0);\
+            (void) (cctk_delta_time + 0);\
+            (void) (cctk_time + 0);\
+            (void) (cctk_delta_space + 0);\
+            (void) (cctk_origin_space + 0);\
+            (void) (cctk_levfac + 0);\
+            (void) (cctk_convlevel + 0);\
+            (void) (cctk_nghostzones + 0);\
+            (void) (cctk_iteration + 0);
 
 #define _INITIALISE_CCTK_C2F
 #define _DECLARE_CCTK_C2F
