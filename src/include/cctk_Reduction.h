@@ -61,6 +61,11 @@ int CCTK_RegisterReductionArrayOperator(
 int CCTK_ReduceLocalScalar (cGH *GH, int proc, int operation_handle,
                             void *inScalar, void *outScalar, int dataType);
 
+int CCTK_ReduceLocalArray1D (cGH *GH, int proc, int operation_handle,
+                            void *in_array1d, void *out_array1d, 
+			    int num_in_array1d, int data_type)
+
+
 int CCTK_ReduceArray(cGH *GH,
                      int proc,
                      int operation_handle,
