@@ -23,25 +23,6 @@ int CCTKi_ActivateThorn(const char *name);
 int CCTKi_PrintThorns(FILE *file, const char *format, int active);
 int CCTKi_PrintImps(FILE *file, const char *format, int active);
 
-int CCTKi_ImplementationList
- (
-  int active,
-  char ***list,
-  int *n_implementations
- );
-int CCTKi_ImplementationThornList 
- (
-  const char *imp, 
-  char ***list, 
-  int *n_thorns
- );
-int CCTKi_ThornList
- (
-  int active, 
-  char ***list, 
-  int *n_items
- );
-
 #ifdef __cplusplus 
 }
 #endif

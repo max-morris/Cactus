@@ -29,6 +29,11 @@ t_sktree *CCTK_ImpThornList (const char *imp);
 const char *CCTK_ThornImplementation(const char *name);
 const char *CCTK_ImplementationThorn(const char *name);
 
+int CCTK_NumCompiledThorns(void);
+int CCTK_NumCompiledImplementations(void);
+const char *CCTK_CompiledThorn(int index);
+const char *CCTK_CompiledImplementation(int index);
+
 #ifdef __cplusplus 
 }
 #endif
