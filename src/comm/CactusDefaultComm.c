@@ -690,7 +690,7 @@ int CactusDefaultGroupStorageIncrease (const cGH *GH, int n_groups,
                it should not change the storage for that group.
 
                This default checks for the presence of the older
-               EnableGroupStorage function, and if that is not available it
+               DisableGroupStorage function, and if that is not available it
                flags an error. If it is available it makes a call to it,
                and puts its return value in the status flag for the group.
 
