@@ -208,7 +208,7 @@ AC_SUBST(CCTK_LIBDIR)
 AC_SUBST(EXEDIR)
 AC_SUBST(EXE)
 
-: ${PACKAGE_DIR=packages}
+: ${PACKAGE_DIR=arrangements}
 : ${BUILD_DIR=build}
 : ${CCTK_LIBDIR=lib}
 : ${EXEDIR='$(CCTK_HOME)/exe'}
