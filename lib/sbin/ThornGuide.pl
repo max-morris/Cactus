@@ -177,9 +177,11 @@ sub Read_Thorn_Doc
 
    while (<DOC>)                            # loop through thorn doc.
    {
-      if (/\\title\{(.*?)\}/) { $title = $1; }
+      if (/\\title\{(.*?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?.*?)\}/) { $title = $1; }
       if (/\\author\{(.*?)\}/) { $author = $1; }
       if (/\\date\{(.*?)\}/) { $date = $1; }
+
+      next if (/^\s*?\\tableofcontents\s*?$/);
 
       if (/\\end\{document\}/) {            # stop reading
          $stop = 1;
@@ -223,7 +225,7 @@ sub Read_Thorn_Doc
    close DOC;
 
    my $cnts = "";
-   $cnts .= "\n\"$title\"\n" if ($title =~ /\w/) && (lc($title) ne lc($thorn));
+   $cnts .= "\n\{\\bf Title:\} $title\n" if ($title =~ /\w/) && (lc($title) ne lc($thorn));
    $cnts .= "\n\{\\bf Author(s):\} $author\n" if ($author =~ /\w/);
    $cnts .= "\n\{\\bf Date:\} $date\n" if ($date =~ /\w/);
    $cnts .= "\n\\minitoc";
