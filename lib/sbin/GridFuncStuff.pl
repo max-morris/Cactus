@@ -247,10 +247,23 @@ sub GetThornArguments
 
       $type = "$vtype";
 
+      my $vararraysize = $rhinterface_db->{"\U$thorn GROUP $group\E VARARRAY_SIZE"};
+      my $compactgroup = $rhinterface_db->{"\U$thorn GROUP $group\E COMPACT"};
+
       if($gtype eq "GF" || $gtype eq "ARRAY")
       {
         $type .= " (";
-        $sep = "";
+
+	if(defined($vararraysize) && $compactgroup == 1)
+	{
+	  $type .= "${group}_length";
+	  $sep = ",";
+	}
+	else
+	{
+	  $sep = "";
+	}
+
         for($dim =0; $dim < $rhinterface_db->{"\U$thorn GROUP $group DIM\E"}; $dim++)
         {
           $type .= "$sep$group$dim";
@@ -264,7 +277,23 @@ sub GetThornArguments
             $arguments{"$group$dim"} = "(STORAGESIZE($imp\::$group, $dim))";
           }
         }
+	if(defined($vararraysize) && $compactgroup == 0)
+	{
+	  $type .= "$sep${group}_length";
+	}
         $type .= ")";
+
+	if(defined($vararraysize))
+	{
+	  if($block eq "PRIVATE")
+	  {
+	    $arguments{"${group}_length"} = "(GROUPLENGTH($thorn\::$group)";
+	  }
+	  else
+	  {
+	    $arguments{"${group}_length"} = "(GROUPLENGTH($imp\::$group)";
+	  }
+	}
       }
 
       if($block eq "PRIVATE")
@@ -278,11 +307,20 @@ sub GetThornArguments
 
       $type .="!$ntimelevels";
 
+      if(defined($vararraysize))
+      {
+        $type .= "![0]";
+      }
+      else
+      {
+        $type .= "!";
+      }
+
 #      print "Group is $group, resulting type is $type\n";
 
       foreach $variable (split(" ", $rhinterface_db->{"\U$thorn GROUP $group\E"}))
       {
-       $arguments{$variable} = $type;
+	$arguments{$variable} = $type;
       }
     }
   }
@@ -320,19 +358,25 @@ sub CreateFortranArgumentDeclarations
     {
       push(@declarations, "INTEGER $argument");
     }
+    if($arguments{$argument} =~ m:GROUPLENGTH:)
+    {
+      push(@declarations, "INTEGER $argument");
+    }
   }
 
   # Now deal with the rest of the arguments
   foreach $argument (sort keys %arguments)
   {
     $suffix = "";
-    if($arguments{$argument} !~ m:STORAGESIZE:)
+    if($arguments{$argument} !~ m:STORAGESIZE|GROUPLENGTH:)
     {
-      $arguments{$argument} =~ m:([^ ]*) ?(.*)?!(.*)!(.*):;
+      $arguments{$argument} =~ m:^([^! ]+) ?([^!]*)?!([^!]*)!([^!]*):;
 
       $type        = $1;
       $dimensions  = $2;
       $ntimelevels = $4;
+
+#     print "var $argument - type \"$arguments{$argument}\" - tl $ntimelevels \n";
 
       for($level = 1; $level <= $ntimelevels; $level++)
       {
@@ -398,13 +442,14 @@ sub CreateCArgumentDeclarations
   foreach $argument (sort keys %arguments)
   {
     $suffix = "";
-    if($arguments{$argument} !~ m:STORAGESIZE:)
+    if($arguments{$argument} !~ m:STORAGESIZE|GROUPLENGTH:)
     {
-      $arguments{$argument} =~ m\([^ ]*) ?(.*)?!(.*)::(.*)!(.*)\;
+      $arguments{$argument} =~ m\^([^! ]+) ?([^!]*)?!([^!]*)::([^!]*)!([^!]*)!([^!]*)\;
 
       $type        = $1;
       $thorn       = $3;
       $ntimelevels = $5;
+      $varsuffix   = $6;
 
       for($level = 1; $level <= $ntimelevels; $level++)
       {
@@ -427,7 +472,7 @@ sub CreateCArgumentDeclarations
             &CST_error(1,"CCTK_CHAR is replaced by CCTK_BYTE, please change your code","",__LINE__,__FILE__);
           }
 
-          push(@declarations, "CCTK_$type *$argument$suffix=(CCTK_$type *)(cctkGH->data[CCTK_VarIndex(\"$thorn\::$argument\")][$levelmone]);");
+          push(@declarations, "CCTK_$type *$argument$suffix=(CCTK_$type *)(cctkGH->data[CCTK_VarIndex(\"$thorn\::$argument$varsuffix\")][$levelmone]);");
         }
         else
         {
@@ -469,9 +514,9 @@ sub CreateCArgumentUses
   foreach $argument (sort keys %arguments)
   {
     $suffix = "";
-    if($arguments{$argument} !~ m:STORAGESIZE:)
+    if($arguments{$argument} !~ m:STORAGESIZE|GROUPLENGTH:)
     {
-      $arguments{$argument} =~ m\([^ ]*) ?(.*)?!(.*)::(.*)!(.*)\;
+      $arguments{$argument} =~ m\^([^! ]+) ?([^!]*)?!([^!]*)::([^!]*)!([^!]*)\;
 
       $ntimelevels = $5;
 
@@ -530,17 +575,22 @@ sub CreateFortranArgumentList
       $argumentlist .= "$sep$argument";
       $sep = ",";
     }
+    if($arguments{$argument} =~ m:GROUPLENGTH:)
+    {
+      $argumentlist .= "$sep$argument";
+      $sep = ",";
+    }
   }
 
   # Now deal with the rest of the arguments
   foreach $argument (sort keys %arguments)
   {
-    if($arguments{$argument} !~ m:STORAGESIZE:)
+    if($arguments{$argument} !~ m:STORAGESIZE|GROUPLENGTH:)
     {
       $suffix = "";
-      if($arguments{$argument} !~ m:STORAGESIZE:)
+      if($arguments{$argument} !~ m:STORAGESIZE|GROUPLENGTH:)
       {
-        $arguments{$argument} =~ m:([^ ]*) ?(.*)?!(.*)!(.*):;
+        $arguments{$argument} =~ m:^([^! ]+) ?([^!]*)?!([^!]*)!([^!]*):;
 
         $ntimelevels = $4;
 
@@ -591,11 +641,14 @@ sub CreateCArgumentStatics
 
   foreach $argument (sort keys %arguments)
   {
-    if($arguments{$argument} !~ m:STORAGESIZE:)
+    if($arguments{$argument} !~ m:STORAGESIZE|GROUPLENGTH:)
     {
       push(@declarations, "static int CCTKARGNUM_$argument = -1");
-      $arguments{$argument} =~ /::(.*)![0-9]*$/;
+      $arguments{$argument} =~ /::([^!]+)![0-9]+/;
       $group = $1;
+
+#      print "ARG is $arguments{$argument}, group is $group\n";
+
       if ($allgroups !~ / $group /)
       {
         $allgroups .= " $group ";
@@ -631,15 +684,19 @@ sub CreateCArgumentInitialisers
   my($allgroups) = "";
   my($group);
   my($qualifier);
+  my($suffix);
 
   foreach $argument (sort keys %arguments)
   {
-    if($arguments{$argument} !~ m:STORAGESIZE:)
+    if($arguments{$argument} !~ m:STORAGESIZE|GROUPLENGTH:)
     {
-      $arguments{$argument} =~ m,([^ ]*) ?(.*)?!(.*)\::(.*)!(.*),;
+      $arguments{$argument} =~ m,^([^! ]+) ?([^!]*)?!([^!]*)\::([^!]*)!([^!]*)!([^!]*),;
       $qualifier = $3;
-      push(@initialisers, "if(CCTKARGNUM_$argument == -1) CCTKARGNUM_$argument = CCTK_VarIndex(\"$qualifier\::$argument\")");
-      $arguments{$argument} =~ /::(.*)![0-9]*$/;
+      $varsuffix = $6;
+
+      push(@initialisers, "if(CCTKARGNUM_$argument == -1) CCTKARGNUM_$argument = CCTK_VarIndex(\"$qualifier\::$argument$varsuffix\")");
+
+      $arguments{$argument} =~ /\::([^!]+)/;
       $group = $1;
       if ($allgroups !~ / $group /)
       {
@@ -685,20 +742,25 @@ sub CreateCArgumentPrototype
       $prototype .= "$sep"."const int *";
       $sep = ",";
     }
+    if($arguments{$argument} =~ m:GROUPLENGTH:)
+    {
+      $prototype .= "$sep"."const int *";
+      $sep = ",";
+    }
   }
 
   # Now deal with the rest of the arguments
   foreach $argument (sort keys %arguments)
   {
 
-    if($arguments{$argument} !~ m:STORAGESIZE:)
+    if($arguments{$argument} !~ m:STORAGESIZE|GROUPLENGTH:)
     {
-      $arguments{$argument} =~ m:([^ ]*) ?(.*)?!(.*):;
+      $arguments{$argument} =~ m:^([^! ]+) ?([^!]*)?!([^!]*):;
 
       $suffix = "";
-      if($arguments{$argument} !~ m:STORAGESIZE:)
+      if($arguments{$argument} !~ m:STORAGESIZE|GROUPLENGTH:)
       {
-        $arguments{$argument} =~ m:([^ ]*) ?(.*)?!(.*)!(.*):;
+        $arguments{$argument} =~ m:^([^! ]+) ?([^!]*)?!([^!]*)!([^!]*):;
 
         $type        = $1;
         $ntimelevels = $4;
@@ -756,19 +818,24 @@ sub CreateCArgumentList
       $arglist .= "$sep"."(const int *)(CCTKGROUPNUM_$2<0 ? &(_cctk_one) : (CCTK_STORAGESIZE(xGH, $3, \"$1::$2\")))";
       $sep = ",";
     }
+    if($arguments{$argument} =~ m/GROUPLENGTH\(([^:]*)::([^)]*)\)/)
+    {
+      $arglist .= "$sep"."(const int *)(CCTKGROUPNUM_$2<0 ? &(_cctk_one) : (CCTK_GROUPLENGTH(xGH, \"$1::$2\")))";
+      $sep = ",";
+    }
   }
 
   # Now deal with the rest of the arguments
   foreach $argument (sort keys %arguments)
   {
-    if($arguments{$argument} !~ m:STORAGESIZE:)
+    if($arguments{$argument} !~ m:STORAGESIZE|GROUPLENGTH:)
     {
-      $arguments{$argument} =~ m:([^ ]*) ?(.*)?!(.*):;
+      $arguments{$argument} =~ m:^([^! ]+) ?([^!]*)?!([^!]*):;
 
       $suffix = "";
-      if($arguments{$argument} !~ m:STORAGESIZE:)
+      if($arguments{$argument} !~ m:STORAGESIZE|GROUPLENGTH:)
       {
-        $arguments{$argument} =~ m:([^ ]*) ?(.*)?!(.*)!(.*):;
+        $arguments{$argument} =~ m:^([^! ]+) ?([^!]*)?!([^!]*)!([^!]*):;
 
         $type        = $1;
         $ntimelevels = $4;
@@ -1165,11 +1232,26 @@ sub CreateThornGroupInitialisers
            . "                    \"" . $rhinterface_db->{"\U$thorn GROUP $group\E STYPE"} . "\",\n"
            . "                    \"" . $rhinterface_db->{"\U$thorn GROUP $group\E DISTRIB"} . "\",\n"
            . "                    \"" . $rhinterface_db->{"\U$thorn GROUP $group\E SIZE"} . "\",\n"
-           . "                    \"" . $rhinterface_db->{"\U$thorn GROUP $group\E GHOSTSIZE"} . "\",\n"
-           . "                    ". scalar(@variables);
+           . "                    \"" . $rhinterface_db->{"\U$thorn GROUP $group\E GHOSTSIZE"} . "\",\n";
+
+    if(defined($rhinterface_db->{"\U$thorn GROUP $group\E VARARRAY_SIZE"}))
+    {
+      $line .= "                    -1";
+    }
+    else
+    {
+      $line .= "                    " . scalar(@variables);
+    }
+
     foreach $variable (@variables)
     {
       $line .= ",\n                   \"$variable\"";
+    }
+
+    # Pass in the size of the GV array, which may be an integer or a parameter
+    if(defined($rhinterface_db->{"\U$thorn GROUP $group\E VARARRAY_SIZE"}))
+    {
+      $line .= ",\n                   \"" . $rhinterface_db->{"\U$thorn GROUP $group\E VARARRAY_SIZE"} . "\"";
     }
 
     $line  .= ")==1)\n";

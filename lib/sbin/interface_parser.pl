@@ -804,13 +804,23 @@ sub parse_interface_ccl
 	$interface_db{"\U$thorn PROVIDES FUNCTION\E $funcname LANG"} .= "$provided_by_language";
       }
     }
-    elsif ($line =~ m/^\s*(CCTK_)?(CHAR|BYTE|INT|INT2|INT4|INT8|REAL|REAL4|REAL8|REAL16|COMPLEX|COMPLEX8|COMPLEX16|COMPLEX32)\s*([a-zA-Z]+[a-zA-Z_0-9]*)\s*(.*)\s*$/i)
+    elsif ($line =~ m/^\s*(CCTK_)?(CHAR|BYTE|INT|INT2|INT4|INT8|REAL|REAL4|REAL8|REAL16|COMPLEX|COMPLEX8|COMPLEX16|COMPLEX32)\s*(([a-zA-Z]+[a-zA-Z_0-9]*)(\[([a-zA-Z]+[a-zA-Z_0-9]*)(::[a-zA-Z]+[a-zA-Z_0-9]*)?\])?)\s*(.*)\s*$/i)
     {
-      $current_group = "$3";
-      
+
+#      for($i = 1; $i < 10; $i++)
+#      {
+#	print "$i is ${$i}\n";
+#      }
+
+      my $vtype = $2;
+      my $current_group = "$4";
+      my $isgrouparray = $5;
+      my $grouparray_size = $6;
+      my $options_list = $8;
+
       if($known_groups{"\U$current_group\E"})
       {
-	$message = "Duplicate group $3 in thorn $thorn";
+	$message = "Duplicate group $current_group in thorn $thorn";
 	&CST_error(0,$message,"",__LINE__,__FILE__);
 	if($data[$line_number+1] =~ m:\{:)
 	{
@@ -828,9 +838,10 @@ sub parse_interface_ccl
 	$interface_db{"\U$thorn GROUP $current_group\E"} = "";
       }
       
-      $interface_db{"\U$thorn $block GROUPS\E"} .= " $3";
-      $interface_db{"\U$thorn GROUP $current_group\E VTYPE"} = "\U$2\E";
-      %options = split(/\s*=\s*|\s+/, $4);
+      $interface_db{"\U$thorn $block GROUPS\E"} .= " $current_group";
+      $interface_db{"\U$thorn GROUP $current_group\E VTYPE"} = "\U$vtype\E";
+      
+      %options = split(/\s*=\s*|\s+/, $options_list);
       
       # Parse the options
       foreach $option (keys %options)
@@ -900,7 +911,12 @@ sub parse_interface_ccl
       {
 	$interface_db{"\U$thorn GROUP $current_group\E DISTRIB"} = "DEFAULT";
       }
-      
+
+      if(! $interface_db{"\U$thorn GROUP $current_group\E COMPACT"})
+      {
+	$interface_db{"\U$thorn GROUP $current_group\E COMPACT"} = 0;
+      }
+
       # Check that it is a known group type
       if($interface_db{"\U$thorn GROUP $current_group\E GTYPE"} !~ m:^\s*(SCALAR|GF|ARRAY)\s*$:)
       {
@@ -934,41 +950,14 @@ sub parse_interface_ccl
 	  }
 	next;
       }	      
-      
-      # Fill in data for the scalars/arrays/functions
-      $line_number++;
-      if($data[$line_number] =~ m/^\s*\{\s*$/)
+
+      # Is it is a vararray ?
+
+      if($isgrouparray)
       {
-	$line_number++;
-	while($data[$line_number] !~ m:\}:i)
-	{
-	  @functions = split(/[^a-zA-Z_0-9]+/, $data[$line_number]);
-	  foreach $function (@functions)
-	  {
-	    $function =~ s:\s*::g;
-	    
-	    if($function =~ m:[^\s]+:)
-	    {
-	      if(! $known_variables{"\U$function\E"})
-	      {
-		$known_variables{"\U$function\E"} = 1;
-		
-		$interface_db{"\U$thorn GROUP $current_group\E"} .= " $function";
-	      }	    
-	      else
-	      {
-		$message = "Duplicate variable $function in thorn $thorn";
-		&CST_error(0,$message,"",__LINE__,__FILE__);
-	      }
-	    }
-	  }
-	  $line_number++;
-	}
-      }
-      else
-      {
-	# If no block, create a variable with the same name as group.
+	# Create a variable with the same name as the group
 	$function = $current_group;
+
 	if(! $known_variables{"\U$function\E"})
 	{
 	  $known_variables{"\U$function\E"} = 1;
@@ -980,10 +969,71 @@ sub parse_interface_ccl
 	  $message = "Duplicate variable $function in thorn $thorn";
 	  &CST_error(0,$message,"",__LINE__,__FILE__);
 	}
+
+        # get its size and, if a parameter, get fullname
+	if($grouparray_size !~ m/::/)
+	{
+	  $grouparray_size = "$thorn\::$grouparray_size";
+	}
+	$interface_db{"\U$thorn GROUP $current_group\E VARARRAY_SIZE"} = $grouparray_size;
+
+	if($data[$line_number+1] =~ m/^\s*\{\s*$/)
+	{
+	  &CST_error(1,"Can't give explicit list of array names with an array group - ignoring list","",__LINE__,__FILE__);
+	  $line_number++ until ($data[$line_number] =~ m:\}:);
+	}
+      }
+      else
+      {
+	# Fill in data for the scalars/arrays/functions
+	$line_number++;
+	if($data[$line_number] =~ m/^\s*\{\s*$/)
+	{
+	  $line_number++;
+	  while($data[$line_number] !~ m:\}:i)
+	  {
+	    @functions = split(/[^a-zA-Z_0-9]+/, $data[$line_number]);
+	    foreach $function (@functions)
+	    {
+	      $function =~ s:\s*::g;
+	      
+	      if($function =~ m:[^\s]+:)
+	      {
+		if(! $known_variables{"\U$function\E"})
+		{
+		  $known_variables{"\U$function\E"} = 1;
+		  
+		  $interface_db{"\U$thorn GROUP $current_group\E"} .= " $function";
+		}	    
+		else
+		{
+		  $message = "Duplicate variable $function in thorn $thorn";
+		  &CST_error(0,$message,"",__LINE__,__FILE__);
+		}
+	      }
+	    }
+	    $line_number++;
+	  }
+	}
+	else
+	{
+	  # If no block, create a variable with the same name as group.
+	  $function = $current_group;
+	  if(! $known_variables{"\U$function\E"})
+	  {
+	    $known_variables{"\U$function\E"} = 1;
+	  
+	    $interface_db{"\U$thorn GROUP $current_group\E"} .= " $function";
+	  }
+	  else
+	  {
+	    $message = "Duplicate variable $function in thorn $thorn";
+	    &CST_error(0,$message,"",__LINE__,__FILE__);
+	  }
 	
-	# Decrement the line number, since the line is the first line of the next CCL statement.
-	$line_number--;
-	
+	  # Decrement the line number, since the line is the first line of the next CCL statement.
+	  $line_number--;
+	}
       }
     }
     elsif ($line =~ m/^\s*(USES\s*INCLUDE)S?\s*(SOURCE)S?\s*:\s*(.*)\s*$/i)
