@@ -6,7 +6,7 @@
 #    @desc 
 #   
 #    @enddesc 
-#    @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/irix,v 1.15 2000-02-19 19:54:49 allen Exp $
+#    @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/irix,v 1.16 2000-03-04 17:10:14 allen Exp $
 #  @@*/
 
 if test "$CCTK_CONFIG_STAGE" = "preferred-compilers" ; then
@@ -63,12 +63,16 @@ else
       CXXFLAGS="$CXXFLAGS -64 -mips4 -r10000"
       C_OPTIMISE_FLAGS="-O3"
       CXX_OPTIMISE_FLAGS="-O3"
+      C_DEBUG_FLAGS="-g"
+      CXX_DEBUG_FLAGS="-g"
       ;;
     32:cc)
       CFLAGS="$CFLAGS -n32 -mips3"
       CXXFLAGS="$CXXFLAGS -n32 -mips3"
       C_OPTIMISE_FLAGS="-O3"
       CXX_OPTIMISE_FLAGS="-O3"
+      C_DEBUG_FLAGS="-g"
+      CXX_DEBUG_FLAGS="-g"
       ;;
     *)
       ;;
@@ -83,6 +87,8 @@ else
       F77FLAGS="$F90FLAGS"
       F90_OPTIMISE_FLAGS="-O3"
       F77_OPTIMISE_FLAGS="-O3"
+      F90_DEBUG_FLAGS="-g"
+      F77_DEBUG_FLAGS="-g"
       ;;
     32)
       F90FLAGS="\
@@ -91,6 +97,8 @@ else
       F77FLAGS="$F90FLAGS" 
       F90_OPTIMISE_FLAGS="-O3"
       F77_OPTIMISE_FLAGS="-O3"
+      F90_DEBUG_FLAGS="-g"
+      F77_DEBUG_FLAGS="-g"
       ;;
     *)
       ;;
