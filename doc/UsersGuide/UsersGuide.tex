@@ -28,11 +28,11 @@
 
 \chapter{A Cactus history}
 
-To begin with a one-phrase summary: Cactus is a numerical toolkit for
-solving partial differential equations (typically in 3-dimensional
-space and time), a versatile and modular code for solving the Einstein
-equations, and an international collaboration in numerical general
-relativity working on, and interchanging ideas through, this code.
+To begin with a one-phrase summary: Cactus is a numerical
+infrastructure for solving partial differential equations (typically
+in 3-dimensional space and time), a modular code for solving the
+Einstein equations, and an international collaboration in numerical
+general relativity pooling ideas in this code.
 
 Cactus 1.0 was written in 1996 by Joan Mass\'o and Paul Walker out of
 frustration with the numerical relativity codes they had been working
@@ -61,17 +61,22 @@ project.
 Other aspects have changed completely since Cactus 1.0. The flesh
 started out as a complete numerical relativity code, using one
 particular formulation of the Einstein equations, with the thorns
-providing initial data, analysis, and other peripheral functions. Now
-the flesh is much smaller, and in 4.0 not only the Einstein equations
-and general relativity basics, but even input/output and parallelism
-are provided by thorns. We now distinguish informally between physics
-thorns and infrastructure thorns. The aim of this radicalism is to
-allow for future growth. The main infrastructure project for now is
-adding different flavors of adaptive mesh refinement -- while the user
-writing a physics thorn can still large she is working a
-single-processor, unigrid code. Similarly, an infrastructure thorn
-could be replaced by one that does the same job, but simply
-better. {\q What the flesh does now.}
+providing only initial data, analysis, and other peripheral
+functions. In 4.0 not only the Einstein equations and general
+relativity basics, but even input/output and parallelism are provided
+by thorns. The only function of the flesh is now to define the
+interface between thorns, to hold varying collections of thorns, and
+to provide an interface between C and Fortran routines. 
+
+The aim of this radicalism is to allow for future growth. We now
+distinguish informally between physics thorns and infrastructure
+thorns. The main infrastructure project for now is adding different
+flavors of adaptive mesh refinement -- while the user writing a
+physics thorn can still large she is working a single-processor,
+unigrid code. Similarly, an infrastructure thorn could be replaced by
+one that does the same job, but simply better. Even the flesh could be
+rewritten in the future, but the interface between the flesh and
+thorns is to remain unchanged.
 
 Cactus thorns can be written in F90, F77 and C (or a mixture). The
 decision to support Fortran was made for the pragmatic reason that
@@ -111,29 +116,31 @@ on a single grid, which in reality is only a chunk of the complete
 numerical domain. This chunk consists of an inner region of points the
 processor ``owns'', and needs to update, surrounded by a ``ghost
 zone'' of points which it can use but doesn't need to update -- they
-are updated by neighboring processors.
+are updated by neighboring processors. Clearly this concept is geared
+towards explicit finite differencing schemes for the time-evolution
+part. {\q Say something about elliptic equations here, and implicit
+schemes}
 
 The notion that we are dealing with a collection of fields that live
 on the same (typically three-dimensional) space, and that evolve
-together in time defines the third basic concept, the grid
-function. Grid functions are grouped together in a ``grid hierarchy'',
-which again many basic physics thorns need not know about. Multiple
+together in time defines the third basic concept, that of ``grid
+functions'' grouped together in a ``grid hierarchy''. Multiple
 grid hierarchies arise, for example, when one wants to cover the
 surface of a sphere with two Cartesian coordinate patches, or in
 adaptive mesh refinement.  Grid functions are defined on Cartesian
 grids that are equally spaced in each of the three coordinates $x$,
 $y$ and $z$. (These could be spherical type coordinates, although that
 was not the original intention.) Grid functions can be two or
-one-dimensional as three dimensional.
+one-dimensional as well as three dimensional.
 
 Routines are grouped in thorns, and thorns informally in toolkits,
-such as the Cactus computational toolkit, and the general relativity
+such as the standard toolkit, and the general relativity
 toolkit. The routines inside a thorn can interact in any way, but
 thorns interact with the flesh and with each other only through a
 well-defined interface. Confirming to this interface guarantees that
 thorns will be compatible with, and useful for, all future extensions
 of the code. The interface also helps users and developers to
-understand what a given thorn does.
+understand what a given thorn does. 
 
 The flesh and many thorns are public and can be used by anyone,
 assuming ethical behavior. Public thorns and the flesh are distributed
@@ -161,6 +168,12 @@ look at output.
 \item How one writes an infrastructure thorn.
 
 \item The standard toolkit.
+
+\end{itemize}
+
+Other topics will be discussed in separate documents:
+
+\begin{itemize}
 
 \item The numerical relativity toolkit.
 
@@ -198,7 +211,7 @@ you need the free CVS software {\q Where does one get it?}.
 \section{Supported architectures}
 
 Cactus runs on many machines, under a large number of Unix operating
-systems. {\q How about non-unix?}. {\q Where} we discuss how to port
+systems. {\q How about non-unix?} {\q Elsewhere} we discuss how to port
 cactus to a new operating system or hardware.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -210,7 +223,7 @@ software. Basically, CVS (Concurrent Versioning System) allows many
 people to work on a large software project together without getting
 into a tangle. For the beginner, we summarize the basics in an
 appendix to this document. To check out the Cactus Computational
-Toolkit, type in
+Toolkit from the central repository, type in
 
 {\t
 cvs -d :pserver:cvs\_anon@hod.aei-potsdam.mpg.de:/usr/users/cactus login
@@ -229,10 +242,11 @@ prompt you for a password, which is {\tt anon}.
 discuss in the section on writing thorns. Then {\tt cvs\_anon} will be
 replaced by your user name, and the password will be different.)
 
-In order to update your checkout later (because someone has changed
-the root version, go to the directory you want to update (eg {\tt
-cactus}) and do {\tt cvs update}. Note the {\tt CVS/} directories at
-each directory level: they tell CVS what you have checked out, and
+In order to update your checkout later (because someone else) has
+changed the repository version), go to the directory you want to
+update (eg {\tt cactus}) and do {\tt cvs update}. To find out if you
+are up to date, do {\tt cvs status}. Note the {\tt CVS/} directories
+at each directory level: they tell CVS what you have checked out, and
 when you last updated it. See the appendix on CVS for more
 information. (Note our typesetting convention: {\tt CVS/} means that
 {\tt CVS} is a directory. Your unix {\tt ls} may or may not show the
@@ -260,10 +274,10 @@ directory inside {\tt toolkits/} contains thorns.
 
 \end{itemize}
 
-When Cactus is first compiled it creates a new directory {\tt build/}
-at this level. Disk space may be a problem on supercomputers where
+When Cactus is first compiled it creates a new directory {\tt
+cactus/build/}. Disk space may be a problem on supercomputers where
 home directories are small. A workaround is to first create a
-directory on scratch space, say {\tt scratch/cactus\_build/} (where
+build directory on scratch space, say {\tt scratch/cactus\_build/} (where
 {\tt scratch/} is your scratch directory), and soft link ({\tt ln -s
 scratch/cactus\_build cactus/build/}) it to the Cactus directory.
 
@@ -300,18 +314,27 @@ script:
 \item {\tt fortran\_name.pl} (used to determine how fortran routines
 are called from C) 
 
-\item {\tt make.config.defn} (contains compilers etc for a configuration)
+\item {\tt make.config.defn} (contains compilers etc. for a configuration)
 
 \item {\tt make.config.deps}
 
-\item {\tt make.config.rule} (rules to generate obj files from source files)
+\item {\tt make.config.rule} (rules to generate object files from source files)
 \end{itemize}
 
-\item {\tt lib} : contains the libraries build from the object files,
-one for the flesh ({\tt libCactus.a}) one for the Bindings ({\tt
-llibCactusBinding.a}) and one for each thorn ({\tt llib***.a}). {\q It
-might be useful to give a couple of commands like nm for seeing what
-is in libraries.}
+\item {\tt lib} : contains the libraries built from the object files,
+
+\begin{itemize}
+
+\item {\tt libCactus.a} for the flesh
+
+\item{\tt llibCactusBinding.a} for the Bindings 
+
+\item {\tt llib***.a} for each thorn
+
+\end{itemize}
+
+{\q It might be useful to give a couple of commands like nm for seeing
+what is in libraries.}
 
 \item {\tt scratch}: empty at the end.
 
@@ -334,20 +357,22 @@ simple make and test suite
 
 \chapter{Compilation} 
 
-(In depth make file stuff)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Compilation of the flesh, and configurations}
 
 Cactus can be built in different configurations from the same copy of
-the source files, and these different configurations happily
-coexist. Different configurations can be for different machines. This
-is useful when your {\tt cactus} directory is mounted on different
-machines in a cluster, and you want to run cactus on all these
-machines while only keeping and updating a single copy of the source
-files. It is also useful if you want to compile cactus with different
-compilers or optimization settings on the same machine, and compare
-one against the other. As a third example, you may want to compile
-with different sets of thorns.  As a final example, you might want to
-build cactus using different multi-processor communication protocols,
-such as MPI (currently the cactus standard) or GLOBUS.
+the source files, and these different configurations coexist in the
+{\tt cactus/} directory. Different configurations can be for different
+machines. This is useful when your {\tt cactus/} directory is mounted
+on different machines in a cluster, and you want to run cactus on all
+these machines while only keeping and updating a single copy of the
+source files. It is also useful if you want to compile cactus with
+different compilers or optimization settings on the same machine, and
+compare one against the other. As a third example, you may want to
+compile with different sets of thorns.  As a final example, you might
+want to build cactus using different multi-processor communication
+protocols, such as MPI (currently the cactus standard) or GLOBUS.
 
 Building the code should be easy. Just type
 
@@ -388,6 +413,69 @@ names of individual thorns or entire toolkits {\q Implement this}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\section{Compiling in thorns}
+
+Cactus compiles in all thorns listed in {\tt
+build/CONF/ActiveThorns}. {\q If the thorn has not been checked
+out...} Cactus looks for source code in a thorn's {\tt src}
+directory. It first looks for a file {\tt make.code.defn} which
+should contain
+
+\begin{itemize}
+
+\item {\t SRCS = <list of all source files in this directory>}
+
+\item {\t SUBDIRS = <list of all subdirectories containing source files>}
+
+\end{itemize}
+
+and each subdirectory mentioned should also contain a {\tt
+make.code.defn} file with a {\tt SRCS} line ({\tt SUBDIRS} in a
+subdirectory {\tt make.code.defn} file will be ignored).
+
+The {\tt make.code.defn} file in a directory is included at the top of
+the makefile {\q where does it sit?}  used to build the sources. If a
+file {\tt make.code.deps} exists in the directory {\q where?} it is
+included at the bottom.
+
+The standard make system may be overridden by placing a makefile
+called {\tt Makefile} in the {\tt src/} directory.  This can do
+whatever it likes, but must create a library called
+
+{\tt \$(NAME)}
+
+(which is actually {\tt \$(CCTK\_LIBDIR)/lib<thorn>.a }). {\q We need more detail here. What does ``is
+actually'' mean?}
+
+{\q Watch for CCTK here and elsewhere. Don't remove this query before
+CCTK is gone.}
+
+A makefile is passed the following variables
+
+{\q How many makefiles are involved? Which are created at runtime etc.}
+
+\begin{itemize}
+
+\item {\tt \$(CCTK\_HOME)} - the main CCTK directory
+
+\item {\tt \$(TOP)}    - the CONF directory
+
+\item {\tt \$(SRCDIR)} - the directory in which the source files can be found
+
+\item {\tt \$(CONFIG)} - the directory containing the configuration files
+
+\item {\tt \$(THORN)}  - the thorn name
+
+\item {\tt \$(SCRATCH\_BUILD)} - the scratch directory where f90 module
+files should end up if they need to be seen by other thorns.
+
+\item {\tt \$(NAME)}.
+
+\end{itemize}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \section {gmake targets}
 
 (A target for {\tt gmake} can be naively thought of as an argument
@@ -396,19 +484,19 @@ is to do.)
 
 \begin{itemize}
 
-\item gmake config will create the default (uname) configuration
+\item {\tt gmake config} will create the default (uname) configuration
 
-\item gmake <config>-clean cleans a configuration (rm -r *.o)
+\item {\tt gmake <config>-clean} cleans a configuration (rm -r *.o)
 
-\item gmake <config>-delete deletes a configuration (rm -r build/<config>)
+\item {\tt gmake <config>-delete} deletes a configuration (rm -r build/<config>)
 
-\item gmake help lists all make options
+\item {\tt gmake help} lists all make options
 
-\item gmake tags will create a Vi style tags file
+\item {\tt gmake tags} creates a {\tt vi} style tags file
 
-\item gmake TAGS will create an Emacs style TAGS file
+\item {\tt gmake TAGS} creates an Emacs style TAGS file
 
-\item gmake distclean will nuke your build directory.
+\item {\tt gmake distclean} nukes your build directory.
 
 \end{itemize}
 
@@ -456,7 +544,9 @@ is to do.)
 
       (This section has to contain enough explanation to make the rest of
        the writers guide readable the first time through)
-
+(The hardest bugs to find are
+those arising from plausible but incorrect assumptions about the
+behavior of someone else's thorn.)
       a) Again probably emphasize collaboration, what are thorns,
          toolkits, how to share them.
       b) Things to think about before you start programming:
@@ -520,6 +610,14 @@ thorn into it.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\end{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% The rest is just odd bits for use in future documents.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \part{Infrastructure Thorn Writing}
 
       a) Adding to the GH structure
@@ -539,7 +637,7 @@ thorn into it.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-\part{Flesh bits and pieces}
+\part{Flesh Maintenance}
 
 Cactus uses GNU autoconf to build the files configure and config.h.in which
 come with the distribution (these files are created by the Cactus
@@ -550,4 +648,4 @@ maintainers by running autoconf and autoheader respectively).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\end{document}
+
