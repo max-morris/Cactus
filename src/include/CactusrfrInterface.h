@@ -24,7 +24,7 @@ int CCTK_rfrCommunicationOff(void *GH, int group);
 
 int CCTK_rfrTriggerable(int variable);
 
-int CCTK_rfrTriggerSaysGo(int variable);
+int CCTK_rfrTriggerSaysGo(void *GH, int variable);
 
 int CCTK_rfrTriggerAction(void *GH, int group);
 
