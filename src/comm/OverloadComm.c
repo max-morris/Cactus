@@ -209,6 +209,7 @@ void CCTK_FCALL CCTK_FNAME (CCTK_DisableGroupStorage) (int *ierr, cGH *GH, ONE_F
 
 void CCTK_FCALL CCTK_FNAME (CCTK_QueryGroupStorage) (int *ierr, const cGH *GH, ONE_FORTSTRING_ARG)
 {
+  extern int CCTK_QueryGroupStorage (const cGH *, const char *);
   ONE_FORTSTRING_CREATE (group_name)
   *ierr = CCTK_QueryGroupStorage (GH, group_name);
   free (group_name);
