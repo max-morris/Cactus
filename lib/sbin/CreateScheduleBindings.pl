@@ -327,7 +327,7 @@ sub ScheduleBlock
       return ("", "");
     }
     $prototype = "extern int $function(void); /* Note that this is a cheat, we just need a function pointer. */\n";
-    $buffer = "  CCTKi_ScheduleFunction($function,\n";
+    $buffer = "  CCTKi_ScheduleFunction((void *)$function,\n";
     $indent = "                        ";
     $buffer .= "$indent";
   }
