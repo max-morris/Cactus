@@ -3209,12 +3209,13 @@ allow for a homogeneous code.
 \end{itemize}
 
 \section{Data Types and Sizes}
+\label{sect-ThornWriting/DataTypes}
 \label{sec:datyansi}
 
 Cactus supports the following fixed size data types:
 
 \begin{center}
-\begin{tabular}{|c|c|c|c|}
+\begin{tabular}{|l|l|l|l|}
 \hline
 Data Type & Size (bytes) & Variable Type & Fortran Equivalent\\
 \hline
@@ -3240,7 +3241,7 @@ of the following data types:
 
 
 \begin{center}
-\begin{tabular}{|c|c|c|c|}
+\begin{tabular}{|l|l|l|l|}
 \hline
 Data Type          & Default Size (bytes) & Variable Type & Configuration Option\\
 \hline
@@ -3251,18 +3252,36 @@ Data Type          & Default Size (bytes) & Variable Type & Configuration Option
 \end{tabular}
 \end{center}
 
+
 These variable types must be used by thorn writers to declare variables
  in the thorn interface files, and may be used to declare
 variables in the thorn routines. Note that variable declarations in 
 thorns should obviously match with definitions in the interface files
 where appropriate.
 
+Cactus also provides generic data and function pointers, which can
+be used from either C or Fortran (these may not work yet for thorn interface
+files):
+
+\begin{center}
+\begin{tabular}{|l|l|l|}
+\hline
+Data Type          	& Variable Type & C equivalent			\\
+\hline
+{\t CCTK\_POINTER}	& {\t CCTK\_VARIABLE\_POINTER}
+					& {\t void *}			\\
+{\t CCTK\_FN\_POINTER}	& {\t CCTK\_VARIABLE\_FN\_POINTER}
+					& {\t void (*)(void)}		\\
+\hline
+\end{tabular}
+\end{center}
+
 Also provided, are a set of macros which
 are interpreted by the preprocessor at compile time to signify which
 data size is being used:
 
 \begin{center}
-\begin{tabular}{|c|c|}
+\begin{tabular}{|l|l|}
 \hline
 Data Type & {\t \#define}\\
 {\t CCTK\_INT2}      & {\t CCTK\_INT\_PRECISION\_2}      \\
