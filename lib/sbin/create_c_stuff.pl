@@ -368,7 +368,7 @@ sub create_parameter_code
     push(@lines, $line);
   }
 
-      $line = "ParameterCreate($parameter, $implementation,
+      $line = "CCTKi_ParameterCreate($parameter, $implementation,
                     \"foobar\",\"" . $rhparameter_db->{"\U$implementation $parameter\E type"}."\"
                     const char *scope,
                     int        steerable,
