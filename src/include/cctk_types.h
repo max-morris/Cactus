@@ -28,7 +28,7 @@ typedef struct
 {
   CCTK_REAL16 Re;
   CCTK_REAL16 Im;
-} CCTK_COMPLEX16;
+} CCTK_COMPLEX32;
 #endif
 
 #ifdef CCTK_REAL8
@@ -36,7 +36,7 @@ typedef struct
 {
   CCTK_REAL8 Re;
   CCTK_REAL8 Im;
-} CCTK_COMPLEX8;
+} CCTK_COMPLEX16;
 #endif
 
 #ifdef CCTK_REAL4
@@ -44,7 +44,7 @@ typedef struct
 {
   CCTK_REAL4 Re;
   CCTK_REAL4 Im;
-} CCTK_COMPLEX4;
+} CCTK_COMPLEX8;
 #endif
 
 /* Character type */
@@ -67,9 +67,9 @@ typedef unsigned char CCTK_CHAR;
 #define CCTK_INT4 INTEGER*4
 #define CCTK_INT2 INTEGER*2
 
-#define CCTK_COMPLEX16 COMPLEX*16
-#define CCTK_COMPLEX8  COMPLEX*8
-#define CCTK_COMPLEX4  COMPLEX*4
+#define CCTK_COMPLEX32  COMPLEX*32
+#define CCTK_COMPLEX16  COMPLEX*16
+#define CCTK_COMPLEX8   COMPLEX*8
 
 #define CCTK_CHAR CHARACTER
 
@@ -106,15 +106,15 @@ typedef unsigned char CCTK_CHAR;
 
 /* Complex precision */
 #ifdef CCTK_REAL_PRECISION_16
-#define CCTK_COMPLEX CCTK_COMPLEX16
+#define CCTK_COMPLEX CCTK_COMPLEX32
 #endif
 
 #ifdef CCTK_REAL_PRECISION_8
-#define CCTK_COMPLEX CCTK_COMPLEX8
+#define CCTK_COMPLEX CCTK_COMPLEX16
 #endif
 
 #ifdef CCTK_REAL_PRECISION_4
-#define CCTK_COMPLEX CCTK_COMPLEX4
+#define CCTK_COMPLEX CCTK_COMPLEX8
 #endif
 
 #endif /*_CCTK_TYPES_H_ */
