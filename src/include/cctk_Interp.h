@@ -81,6 +81,8 @@ int CCTK_InterpLocal (cGH *GH,
 
 const char *CCTK_InterpOperatorImplementation(int handle);
 
+const char *CCTK_InterpOperator(int handle);
+
 int CCTK_NumInterpOperators(void);
 
 #ifdef __cplusplus

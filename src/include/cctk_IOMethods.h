@@ -18,6 +18,7 @@ extern "C" {
 struct IOMethod
 {
   const char *implementation;
+  const char *name;
   int (*OutputGH)      (const cGH *GH);
   int (*OutputVarAs)   (const cGH *GH, const char *vname, const char *alias);
   int (*TriggerOutput) (const cGH *GH, int vindex);
@@ -39,6 +40,9 @@ int CCTK_RegisterIOMethodOutputVarAs (int handle,
                                                           const char *alias));
 
 const char *CCTK_IOMethodImplementation (int handle);
+
+const char *CCTK_IOMethod (int handle);
+
 int CCTK_NumIOMethods (void);
 
 #ifdef __cplusplus

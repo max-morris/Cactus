@@ -72,6 +72,8 @@ int CCTK_RegisterReductionArrayOperator(
 
 const char *CCTK_ReduceOperatorImplementation(int handle);
 
+const char *CCTK_ReduceOperator (int handle);
+
 int CCTK_NumReduceOperators(void);
 
 /* FIXME: old interface - should go */
