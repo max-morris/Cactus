@@ -291,35 +291,44 @@ instead.
 \section{schedule.ccl}
 \label{sec:sc}
 
-The schedule configuration files consists of
+A more extensive discussion of Cactus scheduling is provided in Chapter
+\ref{chap:scheduling}.) A schedule configuration file consists of
 \begin{itemize}
-\item{} assignments to switch on storage and communications
-        for array variables at the start of program execution.
-\item{} {\it schedule blocks} which schedule a subroutine from the
-        thorn to be called at a specified time during program
-        execution. Statements within the schedule block can
-        be used to switch on storage and communication for groups
-        of variables for the duration that the subroutine is called.
-\item{} Conditional statements
-\end{itemize}
-For a more extensive discussion of Cactus scheduling see Chapter
-\ref{chap:scheduling}.)
 
-{\it Assignment statements} have the form:
+\item{} {\it assignment statements} to switch on storage for 
+	grid variables for the entire duration of program execution
+
+\item{} {\it schedule blocks} to schedule a subroutine from a thorn
+	to be called at specific times during program execution in a
+	given manner
+
+\item {} {\it conditional statements} for both assignment statements 
+	and schedule blocks to allow them to be processed depending
+	on parameter values
+
+\end{itemize}
+
+\subsection{Assignment Statements}
+
+{\it Assignment statements}, have the form:
 {\t
-\begin{verbatim}
-[STORAGE: <group>, <group>]
-[COMMUNICATION: <group>, <group>]
+\begin{verbatim}[STORAGE: <group>, <group>]
 \end{verbatim}
 }
 
-Each {\it schedule block} in the file {\t schedule.ccl} must have
-the syntax:
+If the thorn is active, storage will be allocated for the given groups 
+for the duration of program execution (unless storage is explicitly 
+switched off by some call to {\tt CCTK\_DisableGroupStorage} within a thorn). The behaviour of an assignment
+statement is independent of its position in the schedule file (so long as it is outside a schedule block).
+
+\subsection{Schedule Blocks}
+
+Each {\it schedule block} in the file {\t schedule.ccl} must have the syntax:
 {\t
-\begin{verbatim}
-schedule <function name> AT|IN <time> [BEFORE|AFTER <group>] [WHILE <variable>] [AS <alias>]
+\begin{verbatim}schedule [GROUP] <function name|group name> AT|IN <time> \
+     [BEFORE|AFTER <function name>] [WHILE <variable>] [AS <alias>]
 {
-  LANG: <language>
+  [LANG: <language>]
   [STORAGE:       <group>,<group>...]
   [TRIGGER:       <group>,<group>...]
   [SYNCHRONISE:   <group>,<group>...]
@@ -327,32 +336,58 @@ schedule <function name> AT|IN <time> [BEFORE|AFTER <group>] [WHILE <variable>] 
 } "Description of function"
 \end{verbatim}
 }
+\begin{Lentry}
 
-The keywords {\t STORAGE} and {\t COMMUNICATION} as well as the
-options keywords inside of a schedule block are significant to their
-first four letters.
+   \item[{\tt GROUP}] If one doesn't already exist, create and schedule a schedule group 
+	with the same options as a schedule function. 
 
-Any schedule block or assignment statements can be optionally
-surrounded by conditional {\t if-elseif-else}
-constructs using the parameter data base. These can be nested,
-and have the general form:
-{\t
-\begin{verbatim}
-if (CCTK_Equals(<parameter>,<string>))
-{
-  [<assignments>]
-  [<schedule blocks>]
-}
-\end{verbatim}
-}
+  \item[{\tt <function names>}] Function names are case sensitive
 
-Conditional constructs cannot be used inside of a schedule block.
+  \item[{\tt <group>}] Groups inherited from other thorns may be used, but they must 
+	then be fully qualified with the implementation name.
 
-{\tt STORAGE} may also appear as a statement outside a schedule block,
-in which case it switches storage on for the specified groups permanently,
-subject to any conditional statements around the {\tt STORAGE} statement.
+  \item[{\tt AT}] Functions can be scheduled to run at timebins: {\tt
+  CCTK\_STARTUP}, {\tt CCTK\_INITIAL}, {\tt CCTK\_POSTINITIAL}, {\tt
+  CCTK\_RECOVER\_PARAMETERS}, {\tt CCTK\_RECOVER\_VARIABLES}, {\tt
+  CCTK\_CHECKPOINT}, {\tt CCTK\_CPINITIAL}, {\tt CCTK\_PRESTEP}, {\tt
+  CCTK\_EVOL}, {\tt CCTK\_POSTSTEP}, {\tt CCTK\_PARAMCHECK}, {\tt
+  CCTK\_TERMINATE}, {\tt CCTK\_SHUTDOWN}. The initial letters {\tt
+  CCTK\_} are optional. Grid variables cannot be used in the {\tt
+  STARTUP} and {\tt SHUTDOWN} timebins.
 
-\subsection{Allowed Options}
+  \item[{IN}] Specifies a function to run in a schedule group rather than in a Cactus timebin.
+
+  \item[{BEFORE/AFTER}] Takes either a function name, or a function alias. If no function or alias with this name is
+	provided by an activating thorn this directive is ignored.
+
+  \item[{\tt WHILE}] Executes a function or schedule group until the
+  given variable (which must be a fully qualified grid scalar) has the value zero.
+
+  \item[{\tt AS}] The alias for a function which should be used for
+  functions referenced in the schedule files of other thorns to
+  provide thorn independence.
+
+  \item[{\tt LANG}] The code language for the function (either {\tt C}
+  or {\tt FORTRAN}). No language should be specified for a schedule group.
+
+  \item[{\tt STORAGE}] List of groups which should have storage
+  switched on for the duration of the function or schedule group. 
+
+  \item[{\tt TRIGGER}] List of grid variables or groups to be used as
+  triggers for causing an analysis function or analysis group to be
+  executed
+
+  \item[{\tt SYNCHRONISE}] List of groups to be synchronised as soon
+  as the function or schedule group is exited.
+
+  \item[{\tt OPTIONS}] List of additional options (see
+  Section~\ref{app:allopts}) for the scheduled function or group of functions
+
+\end{Lentry} 
+  
+\subsubsection{Allowed Options}
+
+\label{app:allopts}
 
 \begin{Lentry}
 
@@ -364,6 +399,23 @@ rather than the local subgrid passed to them, and hence should only be
 called once.
 
 \end{Lentry}
+
+
+\subsection{Conditional Statements}
+
+Any schedule block or assignment statements can be optionally
+surrounded by conditional {\t if-elseif-else}
+constructs using the parameter data base. These can be nested,
+and have the general form:
+{\t
+\begin{verbatim}
+if (CCTK_Equals(<parameter>,<string>))
+{
+  [<assignments>]
+  [<schedule blocks>]
+}\end{verbatim}
+}
+Conditional constructs cannot be used inside of a schedule block.
 
 \chapter{Flesh parameters}
 \label{sec:ccpa}
