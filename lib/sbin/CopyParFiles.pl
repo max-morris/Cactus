@@ -13,16 +13,16 @@ $config = $ARGV[0];
 
 open(THORNLIST,"<configs/$config/ThornList") || die "ThornList not available";
 
-# Create thornparfiles directory if needed
-if (! -d "thornparfiles")
+# Create examples directory if needed
+if (! -d "examples")
 {
-    mkdir("thornparfiles", 0755) || die "Unable to create thornparfiles directory";
+    mkdir("examples", 0755) || die "Unable to create examples directory";
 }
 
 # Create configuration directory if needed
-if (! -d "thornparfiles/$config")
+if (! -d "examples/$config")
 {
-  mkdir("thornparfiles/$config", 0755) || die "Unable to create thornparfiles/$config directory";
+  mkdir("examples/$config", 0755) || die "Unable to create examples/$config directory";
 }
 
 # Create an array of compiled thorns 
@@ -69,14 +69,14 @@ for ($i=0;$i<$nthorns;$i++)
 
      if ($gotall == 1)
      {
-       if (-e "$home/thornparfiles/$config/$parfile")
+       if (-e "$home/examples/$config/$parfile")
        {
 	 print "  $parfile:  Exists, no overwrite\n";
        }
        else
        {
 	 print "  $parfile: Copying\n";
-	 system("cp $parfile $home/thornparfiles/$config/$parfile");
+	 system("cp $parfile $home/examples/$config/$parfile");
        }
      }
      else

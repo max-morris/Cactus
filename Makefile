@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.81 2000-03-23 14:58:31 allen Exp $
+#   @version $Id: Makefile,v 1.82 2000-04-04 10:05:17 allen Exp $
 # @@*/
 
 ##################################################################################
@@ -311,7 +311,7 @@ else
 	@echo "                  (forces the CST to be rerun)."
 	@echo "  -testsuite     : run the test program."
 	@echo "  -thornlist     : regenerates the ThornList file. "
-	@echo "  -thornparfiles : copies example parameter files to thornparfiles."
+	@echo "  -examples      : copies thorn parameter files to examples directory."
 endif
 	@echo $(DIVIDER)
 	@echo $(MAKE) also knows the following targets
@@ -645,26 +645,26 @@ endif
 
 
 ifneq ($strip($(CONFIGURATIONS)),) 
-.PHONY $(addsuffix -thornparfiles,$(CONFIGURATIONS)):
+.PHONY $(addsuffix -examples,$(CONFIGURATIONS)):
 
 # Copy thorn parameter files
-.PHONY thornparfiles:
+.PHONY examples:
 
-thornparfiles:
+examples:
 	@echo $(DIVIDER)
 	@echo Please specify a configuration.
 	@echo $(DIVIDER)
 
 
-$(addsuffix -thornparfiles,$(CONFIGURATIONS)):
+$(addsuffix -examples,$(CONFIGURATIONS)):
 	@echo $(DIVIDER)
-	@echo Copying parameter files $(@:%-thornparfiles=%)
-	if [ -r $(CONFIGS_DIR)/$(@:%-thornparfiles=%)/ThornList ] ; then $(PERL) lib/sbin/CopyParFiles.pl $(@:%-thornparfiles=%) ; fi
+	@echo Copying parameter files $(@:%-examples=%)
+	if [ -r $(CONFIGS_DIR)/$(@:%-examples=%)/ThornList ] ; then $(PERL) lib/sbin/CopyParFiles.pl $(@:%-examples=%) ; fi
 endif
 
-%-thornparfiles:
+%-examples:
 	@echo $(DIVIDER)
-	@echo Configuration $(@:%-thornparfiles=%) does not exist.
+	@echo Configuration $(@:%-examples=%) does not exist.
 	@echo Parameter file copying aborted.
 
 
