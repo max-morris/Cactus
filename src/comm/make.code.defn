@@ -2,5 +2,6 @@ SRCS=\
 CactusComm.c\
 CactusDefaultComm.c\
 Overload.c\
-FortranBindings.c
+FortranBindings.c\
+Reduction.c
 
