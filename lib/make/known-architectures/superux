@@ -6,7 +6,7 @@
 #   @desc 
 #   Known architecture stuff for the SX-5
 #   @enddesc 
-#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/superux,v 1.3 2000-03-03 15:50:45 goodale Exp $
+#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/superux,v 1.4 2000-03-06 17:56:20 goodale Exp $
 # @@*/
 
 if test "$CCTK_CONFIG_STAGE" = "preferred-compilers" ; then
@@ -21,9 +21,9 @@ else
   : ${CXX_DEPEND='$(CPP) -H$@ $(CPPFLAGS)'}
   : ${F77_DEPEND='$(CPP) -H$@ $(CPPFLAGS)'}
   : ${F_DEPEND='$(CPP) -H$@ $(CPPFLAGS)'}
-  : ${C_DEPEND_OUT='> /dev/null 2>$(basename $(@)).d; $(PERL) -pi -e "s,^,$(basename $(@)).o $(basename $(@)).d : ," $(basename $(@)).d'}
-  : ${CXX_DEPEND_OUT='> /dev/null 2>$(basename $(@)).d; $(PERL) -pi -e "s,^,$(basename $(@)).o $(basename $(@)).d : ," $(basename $(@)).d'}
-  : ${F_DEPEND_OUT='> /dev/null 2>$(basename $(@)).d; $(PERL) -pi -e "s,^,$(basename $(@)).o $(basename $(@)).d : ," $(basename $(@)).d'}
-  : ${F77_DEPEND_OUT='> /dev/null 2> $(basename $(@)).d; $(PERL) -pi -e "s,^,$(basename $(@)).o $(basename $(@)).d : ," $(basename $(@)).d'}
+  : ${C_DEPEND_OUT='>/dev/null 2>$(basename $(@)).d; $(PERL) -ni -e "s,^,$(basename $(@)).o $(basename $(@)).d :,; print $_ if (! m:miscmatch:) " $(basename $(@)).d'}
+  : ${CXX_DEPEND_OUT='>/dev/null 2>$(basename $(@)).d; $(PERL) -pi -e "s,^,$(basename $(@)).o $(basename $(@)).d : ,; print $_ if (! m:miscmatch:) " $(basename $(@)).d'}
+  : ${F_DEPEND_OUT='>/dev/null 2>$(basename $(@)).d; $(PERL) -pi -e "s,^,$(basename $(@)).o $(basename $(@)).d : ,; print $_ if (! m:miscmatch:) " $(basename $(@)).d'}
+  : ${F77_DEPEND_OUT='>/dev/null 2>$(basename $(@)).d; $(PERL) -pi -e "s,^,$(basename $(@)).o $(basename $(@)).d : ,; print $_ if (! m:miscmatch:) " $(basename $(@)).d'}
 
 fi
