@@ -38,6 +38,10 @@ extern "C"
 {
 #endif
 
+int CCTK_CallFunction(void *function, 
+                      cFunctionData *fdata, 
+                      void *data);
+
 int CCTK_ScheduleTraverse(const char *where, 
                            void *GH,   
                            int (*CallFunction)(void *, cFunctionData *, void *));
