@@ -52,12 +52,12 @@ define F77_DEPENDENCIES
 endef
 
 define F_DEPENDENCIES
-	$(F_DEPEND) $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DFCODE $< $(F_DEPEND_OUT)
+	$(F_DEPEND) $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DFCODE -DF90CODE $< $(F_DEPEND_OUT)
 	$(DEPENDENCY_FIXER)
 endef
 
 define F90_DEPENDENCIES
-	$(F_DEPEND) $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DFCODE $< $(F_DEPEND_OUT)
+	$(F_DEPEND) $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DFCODE -DF90CODE $< $(F_DEPEND_OUT)
 	$(DEPENDENCY_FIXER)
 endef
 
@@ -116,7 +116,7 @@ endef
 
 # Define how to do a fixed-format F90 compilation
 define PREPROCESS_F
-cat $< | sed 's.//.AUTOMATICALLY_GENERATED_CONCATENATION_PROTECTION_STRING.g' | $(CPP) $(CPPFLAGS) $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DFCODE - |  $(PERL) -p -e 's/__FORTRANFILE__/\"$(basename $(notdir $<)).F\"/g; s.AUTOMATICALLY_GENERATED_CONCATENATION_PROTECTION_STRING.//.g' - | $(PERL) $(F_FILE_PROCESSOR) > $(basename $(notdir $<)).f
+cat $< | sed 's.//.AUTOMATICALLY_GENERATED_CONCATENATION_PROTECTION_STRING.g' | $(CPP) $(CPPFLAGS) $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DFCODE -DF90CODE - |  $(PERL) -p -e 's/__FORTRANFILE__/\"$(basename $(notdir $<)).F\"/g; s.AUTOMATICALLY_GENERATED_CONCATENATION_PROTECTION_STRING.//.g' - | $(PERL) $(F_FILE_PROCESSOR) > $(basename $(notdir $<)).f
 endef
 
 define COMPILE_F
@@ -129,7 +129,7 @@ endef
 
 # Define how to do a free-format F90 compilation
 define PREPROCESS_F90
-cat $< | sed 's.//.AUTOMATICALLY_GENERATED_CONCATENATION_PROTECTION_STRING.g' | $(CPP) $(CPPFLAGS) $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DFCODE - |  $(PERL) -p -e 's/__FORTRANFILE__/\"$(basename $(notdir $<)).F90\"/g; s.AUTOMATICALLY_GENERATED_CONCATENATION_PROTECTION_STRING.//.g' - | $(PERL) -s $(F_FILE_PROCESSOR) -free_format > $(basename $(notdir $<)).$(F90_SUFFIX)
+cat $< | sed 's.//.AUTOMATICALLY_GENERATED_CONCATENATION_PROTECTION_STRING.g' | $(CPP) $(CPPFLAGS) $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DFCODE -DF90CODE - |  $(PERL) -p -e 's/__FORTRANFILE__/\"$(basename $(notdir $<)).F90\"/g; s.AUTOMATICALLY_GENERATED_CONCATENATION_PROTECTION_STRING.//.g' - | $(PERL) -s $(F_FILE_PROCESSOR) -free_format > $(basename $(notdir $<)).$(F90_SUFFIX)
 endef
 
 define COMPILE_F90
