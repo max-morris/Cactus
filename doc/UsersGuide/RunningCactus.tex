@@ -372,9 +372,8 @@ the syntax {\tt <arrangement name>/<thorn name>}, lines beginning with
 \# or ! are ignored.
 
 \item [{\tt THORNLIST\_DIR}] Location of directory containing {\tt THORNLIST}.
+This defaults to the current working directory.
 
-%\item [{\tt THORNS}] List of thorns to use for compilation. This option can be used in
-% 	conjunction with {\tt THORNLIST}. NOTE: In Beta 10 this will change to {\tt THORNLIST}.
 
 \end{Lentry}
 
@@ -535,6 +534,15 @@ Supported values are {\it yes}.
 \item [{\tt PTHREADS}]
 Supported values are {\it yes}.
 
+\end{Lentry}
+
+\item{\tt Miscellaneous}
+
+\begin{Lentry}
+\item [{\tt PROMPT}] Setting this to 'no' turns off all prompts from the
+make system.
+\item [{\tt SILENT}] Setting this to 'no' instructs {\tt gmake} to print the
+commands that it is executing.
 \end{Lentry}
 
 \end{itemize}
@@ -883,11 +891,8 @@ it how it should make a {\tt target}. Note that the final result is always
 the same.
 
 \begin{Lentry}
-% This works as either a config or a build option:
 \item [{\tt gmake <target> PROMPT=no}] turns off all prompts from the
 make system.
-% This should be a config option:
-%\item [{\tt gmake <target> THORNLIST=<file> [THORNLIST\_DIR=<dir>]}] uses the file {\tt dir/file} as the ThornList for the configuration. The directory defaults to the current directory.
 \item [{\tt gmake <target> SILENT=no}] print the commands that gmake is executing.
 \item [{\tt gmake <target> WARN=yes}] show compiler warnings during compilation.
 \item [{\tt gmake <target> FJOBS=<number>}] compile in parallel, across files within each thorn.
