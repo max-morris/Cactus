@@ -79,7 +79,7 @@ sub CheckImpParamConsistency
         }
         else
         {
-          $message = "Thorn $thorn attempted to EXTEND or USE non-existant parameter $parameter from $friend";
+          $message = "Thorn $thorn attempted to EXTEND or USE non-existent parameter $parameter from $friend";
           &CST_error(0,$message,"",__LINE__,__FILE__);
         }
       }
