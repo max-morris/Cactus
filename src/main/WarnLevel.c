@@ -46,6 +46,11 @@ int CactusDefaultMyProc(void *GH);
  *********************     Local Data   *****************************
  ********************************************************************/
 
+/* Store the parameter checking level */
+
+static int parameter_level = CCTK_PARAMETER_NORMAL;
+
+
 /* Store the number of parameter errors */
 
 static int param_errors = 0;
@@ -73,77 +78,6 @@ static pKeyedData *formatlist = NULL;
 /********************************************************************
  *********************     External Routines   **********************
  ********************************************************************/
-
-/********************************************************************
- *********************     Local Routines   *************************
- ********************************************************************/
-
- /*@@
-   @routine    CCTKi_SetWarnLevel
-   @date       Wed Feb 17 00:42:16 1999
-   @author     Tom Goodale
-   @desc 
-   Sets the warning level
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
-   @var     level
-   @vdesc   level to set
-   @vtype   int
-   @vio     in
-   @vcomment 
- 
-   @endvar 
-
-   @returntype int
-   @returndesc
-   1  - increased warning level
-   0  - warning level unchanged
-   -1 - decreased warning level
-   @endreturndesc
-@@*/
-int CCTKi_SetWarnLevel(int level)
-{
-  int retval;
-  int old_level;
-  char warning_message[1001];
-
-  old_level = warning_level;
-
-  warning_level = level;
-
-  if(level > old_level)
-  {
-    sprintf(warning_message, "Increasing warning level from %d to %d\n", old_level, level);
-    CCTK_Warn(1, __LINE__,__FILE__,"Cactus",warning_message);
-    retval = 1;
-  }
-  else if(level == old_level)
-  {
-    sprintf(warning_message, "Warning level is already %d\n", level);
-    CCTK_Warn(1, __LINE__,__FILE__,"Cactus",warning_message);
-    retval = 0;
-  }
-  else
-  {
-    sprintf(warning_message, "Decreasing warning level from %d to %d\n", old_level, level);
-    CCTK_Warn(1,__LINE__,__FILE__,"Cactus", warning_message);
-    retval = -1;
-  }
-
-  /* FIXME Is this right? Gab. */
-  if(warning_level < error_level)
-  {
-    error_level = warning_level;
-    sprintf(warning_message, "Decreasing error level to warning_level\n");
-    CCTK_Warn(2, __LINE__,__FILE__,"Cactus",warning_message);
-  }
-
-  return retval;
-}
 
 /*@@
    @routine    CCTK_Warn
@@ -216,7 +150,7 @@ int CCTK_Warn(int level, int line, const char *file, const char *thorn, const ch
     }
     else
     {
-      fprintf(stderr, "WARNING (%s): %s\n", thorn, message);
+      fprintf(stderr, "WARNING[%d] (%s): %s\n", level, thorn, message);
       fflush(stderr);
     }
   }
@@ -239,6 +173,248 @@ void CCTK_FCALL CCTK_FNAME(CCTK_Warn)
   free(thorn);
   free(message); 
   free(file);
+}
+
+
+/*@@
+   @routine    CCTK_VWarn
+   @date       Sun Nov 14 00:23:29 1999
+   @author     Tom Goodale
+   @desc 
+   Warning routine with variable argument list
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+   @var     level
+   @vdesc   The warning level
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     line
+   @vdesc   Line number of warning in originating file
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     file
+   @vdesc   Name of originating file
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     thorn
+   @vdesc   Name of originating thorn
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     format
+   @vdesc   Format string for following arguments
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     ...
+   @vdesc   arguments for format string
+   @vtype   multiple arguments
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+
+   @returntype int
+   @returndesc
+   0  - success
+   @endreturndesc
+@@*/
+
+int CCTK_VWarn(int level, int line, const char *file, const char *thorn, const char *format, ...)
+{
+  int cctk_full_warnings;
+  int param_type;
+
+  va_list ap;
+
+  if(level <= warning_level)
+  {
+
+    va_start(ap, format);
+    
+    cctk_full_warnings = *((CCTK_INT *)CCTK_ParameterGet("cctk_full_warnings","Cactus",&param_type));
+
+    if (cctk_full_warnings)
+    {
+      fprintf(stderr, "WARNING level %d in thorn %s \n  (line %d of %s): \n", 
+              level, thorn, line, file);
+      fprintf(stderr, "  -> ");
+      vfprintf(stderr, format, ap);
+      fprintf(stderr, "\n");
+      fflush(stderr);
+    }
+    else
+    {
+      fprintf(stderr, "WARNING[%d] (%s): ", level, thorn);
+      vfprintf(stderr, format, ap);
+      fprintf(stderr, "\n");
+      fflush(stderr);
+    }
+
+    va_end(ap);
+  }
+
+  if(level <= error_level)
+  {
+    CCTK_Abort(NULL,0);
+  }
+
+  return 0;
+}  
+
+ /*@@
+   @routine    CCTK_ParameterLevel
+   @date       Wed Feb 21 2001
+   @author     Gabrielle Allen
+   @desc 
+   Returns the parameter checking level
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+ 
+   @endvar 
+
+   @returntype int
+   @returndesc
+   parameter checking level now being used
+   @endreturndesc
+@@*/
+int CCTK_ParameterLevel()
+{
+  return parameter_level;
+}
+
+/********************************************************************
+ *********************     Local Routines   *************************
+ ********************************************************************/
+
+ /*@@
+   @routine    CCTKi_SetParameterLevel
+   @date       Wed Feb 21 2001
+   @author     Gabrielle Allen
+   @desc 
+   Sets the parameter checking level
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+   @var     level
+   @vdesc   level to set
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+
+   @returntype int
+   @returndesc
+   parameter checking level now being used
+   @endreturndesc
+@@*/
+int CCTKi_SetParameterLevel(int level)
+{
+  if (level == CCTK_PARAMETER_STRICT || level == CCTK_PARAMETER_NORMAL
+      || level == CCTK_PARAMETER_RELAXED)
+  {
+    parameter_level = level;
+  }
+  else
+  {
+    CCTK_VWarn(1,__LINE__,__FILE__,"Cactus","CCTKi_SetParameterLevel: "
+	       "Parameter checking level %d not recognised, level unchanged",
+	       level);
+  }
+
+  return parameter_level;
+}
+
+ /*@@
+   @routine    CCTKi_SetWarnLevel
+   @date       Wed Feb 17 00:42:16 1999
+   @author     Tom Goodale
+   @desc 
+   Sets the warning level
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+   @var     level
+   @vdesc   level to set
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+
+   @returntype int
+   @returndesc
+   1  - increased warning level
+   0  - warning level unchanged
+   -1 - decreased warning level
+   @endreturndesc
+@@*/
+int CCTKi_SetWarnLevel(int level)
+{
+  int retval;
+  int old_level;
+  char warning_message[1001];
+
+  old_level = warning_level;
+
+  warning_level = level;
+
+  if(level > old_level)
+  {
+    sprintf(warning_message, "Increasing warning level from %d to %d\n", old_level, level);
+    CCTK_Warn(1, __LINE__,__FILE__,"Cactus",warning_message);
+    retval = 1;
+  }
+  else if(level == old_level)
+  {
+    sprintf(warning_message, "Warning level is already %d\n", level);
+    CCTK_Warn(1, __LINE__,__FILE__,"Cactus",warning_message);
+    retval = 0;
+  }
+  else
+  {
+    sprintf(warning_message, "Decreasing warning level from %d to %d\n", old_level, level);
+    CCTK_Warn(1,__LINE__,__FILE__,"Cactus", warning_message);
+    retval = -1;
+  }
+
+  /* FIXME Is this right? Gab. */
+  if(warning_level < error_level)
+  {
+    error_level = warning_level;
+    sprintf(warning_message, "Decreasing error level to warning_level\n");
+    CCTK_Warn(2, __LINE__,__FILE__,"Cactus",warning_message);
+  }
+
+  return retval;
 }
 
 
@@ -419,109 +595,6 @@ void CCTK_FCALL CCTK_FNAME(CCTKi_ExpectOK)
   free(message);
 }
 
-
-/*@@
-   @routine    CCTK_VWarn
-   @date       Sun Nov 14 00:23:29 1999
-   @author     Tom Goodale
-   @desc 
-   Warning routine with variable argument list
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
-   @var     level
-   @vdesc   The warning level
-   @vtype   int
-   @vio     in
-   @vcomment 
- 
-   @endvar 
-   @var     line
-   @vdesc   Line number of warning in originating file
-   @vtype   int
-   @vio     in
-   @vcomment 
- 
-   @endvar 
-   @var     file
-   @vdesc   Name of originating file
-   @vtype   const char *
-   @vio     in
-   @vcomment 
- 
-   @endvar 
-   @var     thorn
-   @vdesc   Name of originating thorn
-   @vtype   const char *
-   @vio     in
-   @vcomment 
- 
-   @endvar 
-   @var     format
-   @vdesc   Format string for following arguments
-   @vtype   const char *
-   @vio     in
-   @vcomment 
- 
-   @endvar 
-   @var     ...
-   @vdesc   arguments for format string
-   @vtype   multiple arguments
-   @vio     in
-   @vcomment 
- 
-   @endvar 
-
-   @returntype int
-   @returndesc
-   0  - success
-   @endreturndesc
-@@*/
-
-int CCTK_VWarn(int level, int line, const char *file, const char *thorn, const char *format, ...)
-{
-  int cctk_full_warnings;
-  int param_type;
-
-  va_list ap;
-
-  if(level <= warning_level)
-  {
-
-    va_start(ap, format);
-    
-    cctk_full_warnings = *((CCTK_INT *)CCTK_ParameterGet("cctk_full_warnings","Cactus",&param_type));
-
-    if (cctk_full_warnings)
-    {
-      fprintf(stderr, "WARNING level %d in thorn %s \n  (line %d of %s): \n", 
-              level, thorn, line, file);
-      fprintf(stderr, "  -> ");
-      vfprintf(stderr, format, ap);
-      fprintf(stderr, "\n");
-      fflush(stderr);
-    }
-    else
-    {
-      fprintf(stderr, "WARNING (%s): ", thorn);
-      vfprintf(stderr, format, ap);
-      fprintf(stderr, "\n");
-      fflush(stderr);
-    }
-
-    va_end(ap);
-  }
-
-  if(level <= error_level)
-  {
-    CCTK_Abort(NULL,0);
-  }
-
-  return 0;
-}  
 
 
 /*@@
