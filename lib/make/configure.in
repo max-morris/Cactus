@@ -18,30 +18,74 @@ AC_CANONICAL_SYSTEM
 
 dnl Checks for programs.
 AC_PROG_MAKE_SET
+
+if test -z "$CC" ; then
 AC_PROG_CC
+fi
+
+if test -z "$CXX" ; then
 AC_PROG_CXX
+fi
+
+if test -z "$RANLIB" ; then
 AC_PROG_RANLIB
+fi
+
 dnl Look for a standalone CPP
+
+if test -z "$CPP" ; then
 AC_PATH_PROGS(CPP, cpp, echo, /lib:/usr/lib:/usr/local/lib:$PATH)
+fi
 
+if test -z "$PERL" ; then
 AC_PATH_PROGS(PERL, perl)
-AC_PATH_PROGS(F90, f90 pgf90)
-AC_PATH_PROGS(F77, f77 pgf77 g77 f90 pgf90)
-AC_PATH_PROGS(AR, ar)
-AC_PATH_PROGS(MKDIR, mkdir)
-AC_PATH_PROGS(SHELL, sh bash)
+fi
 
+if test -z "$F90" ; then
+AC_PATH_PROGS(F90, f90 pgf90)
+fi
+
+if test -z "$F77" ; then
+AC_PATH_PROGS(F77, f77 pgf77 g77 f90 pgf90)
+fi
+
+if test -z "$AR" ; then
+AC_PATH_PROGS(AR, ar)
+fi
+
+if test -z "$MKDIR" ; then
+AC_PATH_PROGS(MKDIR, mkdir)
+fi
+
+if test -z "$SHELL" ; then
+AC_PATH_PROGS(SHELL, sh bash)
+fi
+
+if test -z "$LD" ; then
 AC_SUBST(LD)
 LD=$CXX
-
+fi
 
 # If this is a known architecture, setup any specific flags.
 # This has to be done here as flags given to the compiler may
 # change the things detected later.
 
+# Create a file to put any #defines etc needed for this architecture
+# known architecture stuff should use cat >> etc to append to this file.
+cat > cctk_archdefs.h <<EOF
+/* Stuff from known architectures */
+#ifndef _CCTK_ARCHDEFS_H_
+#define _CCTK_ARCHDEFS_H_
+EOF
+
 if test -r $srcdir/known-architectures/$host_os ; then
 . $srcdir/known-architectures/$host_os
 fi
+
+# Finish the architecture stuff
+cat >> cctk_archdefs.h <<EOF
+#endif /* _CCTK_ARCHDEFS_H_ */
+EOF
 
 # Deal with the Fortran compiler issues.
 # If there's a Fortran 90 compiler use that for all the Fortran.
@@ -70,12 +114,25 @@ AC_C_BIGENDIAN
 AC_C_CONST
 AC_C_INLINE
 AC_C_LONG_DOUBLE
+
+# Check for sizes of integer types
+AC_CHECK_SIZEOF(long int)
 AC_CHECK_SIZEOF(int)
 AC_CHECK_SIZEOF(short int)
+
+# Check for sizes of floating point types
+AC_CHECK_SIZEOF(long double)
+AC_CHECK_SIZEOF(double)
+AC_CHECK_SIZEOF(float)
+
+# Check for sizes of pointers.  
 AC_CHECK_SIZEOF(char *)
 
+# Various flags
+
 AC_SUBST(ARFLAGS)
-ARFLAGS=rucs
+: ${ARFLAGS=rucs}
+
 
 AC_SUBST(F90FLAGS)
 AC_SUBST(F77FLAGS)
@@ -97,15 +154,104 @@ AC_SUBST(EXE)
 : ${PACKAGE_DIR=packages}
 : ${BUILD_DIR=build}
 : ${CCTK_LIBDIR=lib}
+: ${EXE=cactus-unknown}
 
-if test $ac_cv_sizeof_int -eq 4 ; then
-INTEGER4=int
-else if test $ac_cv_sizeof_short_int -eq 4 ; then
-INTEGER4="short int"
-fi
-fi
+# Integer types
 
-AC_DEFINE_UNQUOTED(INTEGER4, $INTEGER4)
+CCTK_INT8="no 8 byte integer"
+CCTK_INT4="no 4 byte integer"
+CCTK_INT2="no 2 byte integer"
+
+case "x$ac_cv_sizeof_long_int" in
+    "x8")
+      CCTK_INT8="long int" ;;
+    "x4")
+      CCTK_INT4="long int" ;;
+    "x2")
+      CCTK_INT2="long int" ;;
+esac
+
+case "x$ac_cv_sizeof_int" in
+    "x8")
+      CCTK_INT8="int" ;;
+    "x4")
+      CCTK_INT4="int" ;;
+    "x2")
+      CCTK_INT2="int" ;;
+esac
+
+case "x$ac_cv_sizeof_short_int" in
+    "x8")
+      CCTK_INT8="short int" ;;
+    "x4")
+      CCTK_INT4="short int" ;;
+    "x2")
+      CCTK_INT2="short int" ;;
+esac
+
+AC_DEFINE_UNQUOTED(CCTK_INT8, $CCTK_INT8)
+AC_DEFINE_UNQUOTED(CCTK_INT4, $CCTK_INT4)
+AC_DEFINE_UNQUOTED(CCTK_INT2, $CCTK_INT2)
+
+# Float types
+
+CCTK_REAL16="no 16 byte real"
+CCTK_REAL8="no 8 byte real"
+CCTK_REAL4="no 4 byte real"
+
+case "x$ac_cv_sizeof_long_double" in
+    "x16")
+      CCTK_REAL16="long double" ;;
+    "x8")
+      CCTK_REAL8="long double" ;;
+    "x4")
+      CCTK_REAL4="long double" ;;
+esac
+
+case "x$ac_cv_sizeof_double" in
+    "x16")
+      CCTK_REAL16="double" ;;
+    "x8")
+      CCTK_REAL8="double" ;;
+    "x4")
+      CCTK_REAL4="double" ;;
+esac
+
+case "x$ac_cv_sizeof_float" in
+    "x16")
+      CCTK_REAL16="float" ;;
+    "x8")
+      CCTK_REAL8="float" ;;
+    "x4")
+      CCTK_REAL4="float" ;;
+esac
+
+AC_DEFINE_UNQUOTED(CCTK_REAL16, $CCTK_REAL16)
+AC_DEFINE_UNQUOTED(CCTK_REAL8, $CCTK_REAL8)
+AC_DEFINE_UNQUOTED(CCTK_REAL4, $CCTK_REAL4)
+
+# Define the default floating point and integer precisions
+case "x$PRECISION" in
+    "xQUAD")
+	AC_DEFINE_UNQUOTED(CCTK_PRECISION_QUAD, 1) ;;
+    "xDOUBLE")
+	AC_DEFINE_UNQUOTED(CCTK_PRECISION_DOUBLE, 1) ;;
+    "xSINGLE")
+	AC_DEFINE_UNQUOTED(CCTK_PRECISION_SINGLE, 1) ;;
+    *)
+	AC_DEFINE_UNQUOTED(CCTK_PRECISION_DOUBLE, 1) ;;
+esac
+
+case "x$INTEGER_PRECISION" in
+    "x8")
+	AC_DEFINE_UNQUOTED(CCTK_INTEGER_PRECISION_8, 1) ;;
+    "x4")
+	AC_DEFINE_UNQUOTED(CCTK_INTEGER_PRECISION_4, 1) ;;
+    "x2")
+	AC_DEFINE_UNQUOTED(CCTK_INTEGER_PRECISION_2, 1) ;;
+    *)
+	AC_DEFINE_UNQUOTED(CCTK_INTEGER_PRECISION_4, 1) ;;
+esac
 
 # The perl scripts run by the make system need to have their names
 # changed if under cygwin - e.g. //d/foo needs to be d:/foo

@@ -14,8 +14,10 @@
    byte first (like Motorola and SPARC, unlike Intel and VAX).  */
 #undef WORDS_BIGENDIAN
 
-/* The number of bytes in a char *.  */
-#undef SIZEOF_CHAR_P
+/* Size info for various types */
+
+/* The number of bytes in a long int.  */
+#undef SIZEOF_LONG_INT
 
 /* The number of bytes in a int.  */
 #undef SIZEOF_INT
@@ -23,25 +25,69 @@
 /* The number of bytes in a short int.  */
 #undef SIZEOF_SHORT_INT
 
+
+/* The number of bytes in a long double.  */
+#undef SIZEOF_LONG_DOUBLE
+
+/* The number of bytes in a double.  */
+#undef SIZEOF_DOUBLE
+
+/* The number of bytes in a float.  */
+#undef SIZEOF_FLOAT
+
+/* The number of bytes in a char *.  */
+#undef SIZEOF_CHAR_P
+
+/* The chosen CCTK precision */
+
+/* Floating point precision */
+#undef CCTK_PRECISION_QUAD
+#undef CCTK_PRECISION_DOUBLE
+#undef CCTK_PRECISION_SINGLE
+
+/* Integer precision */
+#undef CCTK_INTEGER_PRECISION_8
+#undef CCTK_INTEGER_PRECISION_4
+#undef CCTK_INTEGER_PRECISION_2
+
+
 #ifdef CCODE
 
-/* Define the size of an integer */
-#undef INTEGER4
+/* Integer sizes */
 
-typedef INTEGER4 Int;
+/* Define the type of an 8 byte integer */
+#undef CCTK_INT8
 
-#define CCTK_REAL double
+/* Define the type of a 4 byte integer */
+#undef CCTK_INT4
 
-#endif
+/* Define the type of a 2 byte integer */
+#undef CCTK_INT2
+
+/* Float sizes */
+
+/* Define the type of a 16 byte float */
+#undef CCTK_REAL16
+
+/* Define the type of an 8 byte float */
+#undef CCTK_REAL8
+
+/* Define the type of a 4 byte float */
+#undef CCTK_REAL4
+
+/* FIXME: this needs to be removed now */
+typedef CCTK_INT4 Int;
+
+#endif /*CCODE */
 
 #ifdef FCODE
 
-#define CCTK_POINTER integer*SIZEOF_CHAR_P
+#endif /*FCODE */
 
-#define CCTK_STRING CCTK_POINTER
+/* Now include the code to pick an appropriate precison for reals and ints */
+#include "cctk_types.h"
 
-#define CCTK_REAL double precision
+/* Include any other stuff which is specific to this architecture */
+#include "cctk_archdefs.h"
 
-#endif
-
-#endif
+#endif /* _CONFIG_H_ */
