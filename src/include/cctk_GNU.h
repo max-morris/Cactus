@@ -13,8 +13,20 @@
 
 #include "cctk_Config.h"
 
+#ifdef HAVE_GETOPT_H
+#ifdef HAVE_GETOPT_LONG_ONLY
+#include <getopt.h>
+#else
 #include "../gnu/getopt.h"
+#endif
+#else
+#include "../gnu/getopt.h"
+#endif
 
+#ifdef HAVE_REGEX_H
+#include <regex.h>
+#else
 #include "../gnu/regex.h"
+#endif
 
 #endif /* _CCTK_GNU_H_ */
