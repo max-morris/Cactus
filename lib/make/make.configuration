@@ -56,13 +56,17 @@ ifeq ($(strip $(MAKECMDGOALS)),)
 -include $(CONFIG)/make.thornlist
 endif
 
+ifeq ($(strip $(MAKECMDGOALS)), utils)
+-include $(CONFIG)/make.thornlist
+endif
+
 # Allow each thorn to include some global definitions
 ifneq ($(strip $(THORNS)),)
 -include $(THORNS:%=$(PACKAGE_DIR)/%/src/make.configuration.defn)
 endif
 
 ifeq ($(strip $(UTILS)),)
-UTILS = $(ALL_UTILS)
+override UTILS = $(ALL_UTILS)
 endif
 
 UTIL_DIR=$(EXEDIR)$(DIRSEP)$(CONFIG_NAME)
