@@ -21,7 +21,7 @@
 #include "CCTK_Bindings.h"
 #include "rfrInterface.h"
 
-#include "declare_parameters.h"
+#include "cctk_parameters.h"
 
 static char *rcsid = "$Id$";
 
@@ -87,7 +87,7 @@ int CactusDefaultInitialise(tFleshConfig *config)
 int CactusInitialiseGH(cGH *GH)
 {
   
-  DECLARE_PARAMETERS
+  DECLARE_CCTK_PARAMETERS
 
   int Rstep;
 

@@ -16,7 +16,7 @@
 #include "Misc.h"
 #include "WarnLevel.h"
 #include "FortranString.h"
-#include "declare_parameters.h"
+#include "cctk_parameters.h"
 
 static char *rcsid = "$Header$";
 
@@ -154,7 +154,7 @@ int FMODIFIER FORTRAN_NAME(CCTK_Warn)(int *level, TWO_FORTSTRINGS_ARGS)
 void CCTK_ParamWarn(const char *thorn, const char *message)
 {
 
-  DECLARE_PARAMETERS
+  DECLARE_CCTK_PARAMETERS
 
   if(cctk_strong_param_check)
   {
@@ -282,7 +282,7 @@ int CCTK_SetErrorLevel(int level)
 void CCTKi_FinaliseParamWarn(void)
 {
 
-  DECLARE_PARAMETERS
+  DECLARE_CCTK_PARAMETERS
 
   if (param_errors)
   {

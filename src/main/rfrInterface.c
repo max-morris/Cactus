@@ -19,7 +19,7 @@
 #include "rfr_constants.h"
 #include "CactusCommFunctions.h"
 #include "IOMethods.h"
-#include "declare_parameters.h"
+#include "cctk_parameters.h"
 #include "rfrInterface.h"
 
 static char *rcsid = "$Header$";
@@ -77,7 +77,7 @@ int CCTK_rfrTraverse(cGH *GH, int rfrpoint)
 
 int CCTK_rfrPrintTree(cGH *GH,void *rfr_top)
 {
-  DECLARE_PARAMETERS
+  DECLARE_CCTK_PARAMETERS
 
   static int showed_tree = 0;
 

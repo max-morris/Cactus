@@ -13,7 +13,7 @@
 
 #include "flesh.h"
 #include "cctk.h"
-#include "declare_parameters.h"
+#include "cctk_parameters.h"
 #include "rfr_constants.h"
 #include "rfrInterface.h"
 
@@ -67,7 +67,7 @@ int CCTK_StepGH(cGH *GH);
 int CactusDefaultEvolve(tFleshConfig *config)
 {
 
-  DECLARE_PARAMETERS
+  DECLARE_CCTK_PARAMETERS
 
   int iteration;
   int convergence_level;
