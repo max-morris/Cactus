@@ -272,7 +272,7 @@ sub CreateCStructureParameterHeader
   
   foreach $line (@definition)
   {
-    push(@data, "  $line \\");
+    push(@data, "  const $line \\");
   }
 
   push(@data, "");
