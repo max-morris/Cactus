@@ -188,7 +188,7 @@ else
        : ${F90FLAGS='-132 -w95'}
        : ${F77_OPTIMISE_FLAGS='-O3'}
        : ${F90_OPTIMISE_FLAGS='-O3'}
-       : ${LIBS="IEPCF90 F90 m"}
+       : ${LIBS="intrins IEPCF90 F90 m"}
 
        # add the libpath if the linker is not Intel
        if test "$LD" != "icc" -a -n "$IA32ROOT" ; then
