@@ -21,15 +21,18 @@
 
 sub CreateParameterBindingFile
 {
-  my($prefix, $structure, $rhparameters, $rhparameter_db) = @_;
+  my($include_headers, $structure, $rhparameters, $rhparameter_db) = @_;
   my($line,@data);
   my(%parameters);
   my($type);
 
   # Header Data
-  push(@data, '#include "cctk_Config.h"');
-  push(@data, '#include "CParameterStructNames.h"');
-  push(@data, '');
+  if ($include_headers)
+  {
+    push(@data, '#include "cctk_Config.h"');
+    push(@data, '#include "CParameterStructNames.h"');
+    push(@data, '');
+  }
 
   # Create the structure
   push(@data, 'struct');
