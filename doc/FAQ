@@ -1,7 +1,7 @@
 
 Cactus Code Frequently Asked Questions
 
-$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.18 2001-07-13 11:32:33 allen Exp $
+$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.19 2001-08-14 12:59:15 allen Exp $
 
 Also available at http://www.cactuscode.org/Documentation/FAQ
 
@@ -243,8 +243,44 @@ Also available at http://www.cactuscode.org/Documentation/FAQ
 -------------------------------------------------------------------------------
 
 18. I want to recreate a Cactus executable from last year, I have a thorn list
-    but when I try and check it out from the /cactus or /cactusdevcvs repository
-    I don't get some of the thorns?
+    but when I try and check it out from the /cactus or /cactusdevcvs 
+    repository I don't get some of the thorns?
 
-    This is probably because the thorns moved arrangement, or were rewritten. To 
-    checkout the right code, look at the Release web pages to decide which release
+    This is probably because the thorns moved arrangement, or were rewritten. 
+    To checkout the right code, look at the Release web pages to decide which 
+    release the thorn was in, and then checkout the thorn from the /cactus 
+    repository, eg. is the thorn "OldThorn" was last in the Beta 7 release use:
+
+    cvs -d :pserver:cvs_anon@cvs.cactuscode.org:/cactus co -d OldThorn \ 
+                                                             beta7/OldThorn
+
+-------------------------------------------------------------------------------
+
+19. How can I communicate the value of a local scalar on one processor to all 
+    processors? There doesn't seem to be an API for this in Cactus.
+
+    There isn't a general broadcast API in Cactus at the moment, this is 
+    planned as part of a new Cactus Communication Interface (CCI) layer
+    in the 4.1 release (see the Specs web page for more information about 
+    this).
+
+    Until then, the best way to communicate your variable is to use the the 
+    CCTK reduction API. For example, make a call to CCTK_ReduceLocalScalar() 
+    with the "sum" reduction operator, and set your local variable to zero 
+    on all processors except for the one with the value you want to have 
+    communicated.
+    
+-------------------------------------------------------------------------------
+
+20. Why can't I make direct calls to MPI from my thorns? Your default driver 
+    uses MPI.
+
+    Keeping all MPI calls in the driver thorn keeps the code modular, allowing
+    for you to use alternate drivers when they become available, for example
+    using PVM or some other communication layer. 
+
+    Also, since not all underlying MPI implementations provide the same 
+    fortran bindings it is best to use a C wrapper for making MPI calls, 
+    and this is automatically done for you if you use the Cactus APIs.
+
+-------------------------------------------------------------------------------
