@@ -118,10 +118,10 @@ from Fortran.
   Return the name of the compiled thorn with given index
 
 \item[\code{CCTK\_CoordDir}] [\pageref{CCTK-CoordDir}]
-  Give the direction for a given coordinate name.
+  Give the direction for a given coordinate name
 
 \item[\code{CCTK\_CoordIndex}] [\pageref{CCTK-CoordIndex}]
-  Give the grid variable index for a given coordinate.
+  Give the grid variable index for a given coordinate
 
 \item[\code{CCTK\_CoordRange}] [\pageref{CCTK-CoordRange}]
   Return the global upper and lower bounds for a given coordinate name
@@ -335,7 +335,7 @@ from Fortran.
 
 \item[\code{CCTK\_ImplementationThorn}]
   [\pageref{CCTK-ImplementationThorn}]
-  Returns the name of one thorn providing an implementation.
+  Returns the name of one thorn providing an implementation
 
 \item[\code{CCTK\_ImpThornList}] [\pageref{CCTK-ImpThornList}]
   Return the thorns for an implementation
@@ -417,8 +417,8 @@ from Fortran.
 \item[\code{CCTK\_IsThornActive}] [\pageref{CCTK-IsThornActive}]
   Reports whether a thorn was activated in a parameter file
 
-\item[\code{CCTK\_IsThornCompiled}] [\pageref{CCTK-IsThornActive}]
-  Reports whether a thorn was activated in a parameter file
+\item[\code{CCTK\_IsThornCompiled}] [\pageref{CCTK-IsThornCompiled}]
+  Reports whether a thorn was compiled into a configuration
 
 \item[\code{CCTK\_MaxDim}] [\pageref{CCTK-MaxDim}]
   Get the maximum dimension of any grid variable
@@ -568,7 +568,7 @@ from Fortran.
 
 \item[\code{CCTK\_RegisterGHExtension}]
   [\pageref{CCTK-RegisterGHExtension}]
-  Register the name of an extension to the Cactus GH.
+  Register the name of an extension to the Cactus GH
 
 \item[\code{CCTK\_RegisterGHExtensionInitGH}]
   [\pageref{CCTK-RegisterGHExtensionInitGH}]
@@ -615,7 +615,7 @@ from Fortran.
 
 \item[\code{CCTK\_ThornImplementation}]
   [\pageref{CCTK-ThornImplementation}]
-  Returns the implementation provided by the thorn.
+  Returns the implementation provided by the thorn
 
 \item[\code{CCTK\_VarDataPtr}] [\pageref{CCTK-VarDataPtr}]
   Returns the data pointer for a grid variable
@@ -740,6 +740,81 @@ call CCTK_Abort (dummy, cctkGH)
 \end{verbatim}
 \end{Example}
 \end{ExampleSection}
+\end{FunctionDescription}
+
+
+
+% ActiveThorns.c
+\begin{FunctionDescription}{CCTK\_ActivatingThorn}
+\label{CCTK-ActivatingThorn}
+Finds the thorn which activated a particular implementation.
+
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+#include "cctk.h"
+
+const char *thorn = CCTK_ActivatingThorn(const char *name);
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ResultSection}
+\begin{Result}{thorn}
+Name of activating thorn, or \code{NULL} if inactive
+\end{Result}
+\end{ResultSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{name}
+Implementation name
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{SeeAlsoSection}
+\begin{SeeAlso2}{CCTK\_CompiledImplementation}{CCTK-CompiledImplementation}
+  Return the name of the compiled implementation with given index
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_CompiledThorn}{CCTK-CompiledThorn}
+  Return the name of the compiled thorn with given index
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_ImplementationRequires}{CCTK-ImplementationRequires}
+  Return the ancestors for an implementation
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_ImplementationThorn}{CCTK-ImplementationThorn}
+  Returns the name of one thorn providing an implementation.
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_ImpThornList}{CCTK-ImpThornList}
+  Return the thorns for an implementation
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_IsImplementationActive}{CCTK-IsImplementationActive}
+  Reports whether an implementation was activated in a parameter file
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_IsImplementationCompiled}{CCTK-IsImplementationCompiled}
+  Reports whether an implementation was compiled into a configuration
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_IsThornActive}{CCTK-IsThornActive}
+  Reports whether a thorn was activated in a parameter file
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_IsThornCompiled}{CCTK-IsThornCompiled}
+  Reports whether a thorn was compiled into a configuration
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_NumCompiledImplementations}{CCTK-NumCompiledImplementations}
+  Return the number of implementations compiled in
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_NumCompiledThorns}{CCTK-NumCompiledThorns}
+  Return the number of thorns compiled in
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_ThornImplementation}{CCTK-ThornImplementation}
+  Returns the implementation provided by the thorn
+\end{SeeAlso2}
+\end{SeeAlsoSection}
+
+\begin{ErrorSection}
+\begin{Error}{NULL}
+The implementation is inactive, or an error occurred.
+\end{Error}
+\end{ErrorSection}
 \end{FunctionDescription}
 
 
@@ -885,7 +960,7 @@ int *size = CCTK_ArrayGroupSize(const cGH *cctkGH,
 
 \begin{ResultSection}
 \begin{Result}{NULL}
-A NULL pointer is returned if the group index or the dimension given are invalid.
+A \code{NULL} pointer is returned if the group index or the dimension given are invalid.
 \end{Result}
 \end{ResultSection}
 
@@ -946,7 +1021,8 @@ int *size = CCTK_ArrayGroupSizeI(const cGH *cctkGH,
 
 \begin{ResultSection}
 \begin{Result}{NULL}
-A NULL pointer is returned if the group index or the dimension given are invalid.
+A \code{NULL} pointer is returned if the group index or the dimension
+given are invalid.
 \end{Result}
 \end{ResultSection}
 
@@ -1324,6 +1400,161 @@ $$
 \begin{errorcodes}
 \end{errorcodes}
 \end{CCTKFunc}
+
+
+
+% cctk_ActiveThorns.c
+\begin{FunctionDescription}{CCTK\_CompiledImplementation}
+\label{CCTK-CompiledImplementation}
+Return the name of the compiled implementation with given index.
+
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+#include "cctk.h"
+
+const char *imp = CCTK_CompiledImplementation(int index);
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ResultSection}
+\begin{Result}{imp}
+Name of the implementation
+\end{Result}
+\end{ResultSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{index}
+Implementation index, with $0 \le \code{index} < \code{numimpls}$,
+where \code{numimpls} is returned by
+\code{CCTK\_NumCompiledImplementations}.
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{SeeAlsoSection}
+\begin{SeeAlso2}{CCTK\_ActivatingThorn}{CCTK-ActivatingThorn}
+  Finds the thorn which activated a particular implementation
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_CompiledThorn}{CCTK-CompiledThorn}
+  Return the name of the compiled thorn with given index
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_ImplementationRequires}{CCTK-ImplementationRequires}
+  Return the ancestors for an implementation
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_ImplementationThorn}{CCTK-ImplementationThorn}
+  Returns the name of one thorn providing an implementation.
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_ImpThornList}{CCTK-ImpThornList}
+  Return the thorns for an implementation
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_IsImplementationActive}{CCTK-IsImplementationActive}
+  Reports whether an implementation was activated in a parameter file
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_IsImplementationCompiled}{CCTK-IsImplementationCompiled}
+  Reports whether an implementation was compiled into a configuration
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_IsThornActive}{CCTK-IsThornActive}
+  Reports whether a thorn was activated in a parameter file
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_IsThornCompiled}{CCTK-IsThornCompiled}
+  Reports whether a thorn was compiled into a configuration
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_NumCompiledImplementations}{CCTK-NumCompiledImplementations}
+  Return the number of implementations compiled in
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_NumCompiledThorns}{CCTK-NumCompiledThorns}
+  Return the number of thorns compiled in
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_ThornImplementation}{CCTK-ThornImplementation}
+  Returns the implementation provided by the thorn
+\end{SeeAlso2}
+\end{SeeAlsoSection}
+
+\begin{ErrorSection}
+\begin{Error}{NULL}
+Error.
+\end{Error}
+\end{ErrorSection}
+\end{FunctionDescription}
+
+
+
+% cctk_ActiveThorns.c
+\begin{FunctionDescription}{CCTK\_CompiledThorn}
+\label{CCTK-CompiledThorn}
+Return the name of the compiled thorn with given index.
+
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+#include "cctk.h"
+
+const char *thorn = CCTK_CompiledThorn(int index);
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ResultSection}
+\begin{Result}{thorn}
+Name of the thorn
+\end{Result}
+\end{ResultSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{index}
+Thorn index, with $0 \le \code{index} < \code{numthorns}$, where
+\code{numthorns} is returned by \code{CCTK\_NumCompiledThorns}.
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{SeeAlsoSection}
+\begin{SeeAlso2}{CCTK\_ActivatingThorn}{CCTK-ActivatingThorn}
+  Finds the thorn which activated a particular implementation
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_CompiledImplementation}{CCTK-CompiledImplementation}
+  Return the name of the compiled implementation with given index
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_ImplementationRequires}{CCTK-ImplementationRequires}
+  Return the ancestors for an implementation
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_ImplementationThorn}{CCTK-ImplementationThorn}
+  Returns the name of one thorn providing an implementation.
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_ImpThornList}{CCTK-ImpThornList}
+  Return the thorns for an implementation
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_IsImplementationActive}{CCTK-IsImplementationActive}
+  Reports whether an implementation was activated in a parameter file
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_IsImplementationCompiled}{CCTK-IsImplementationCompiled}
+  Reports whether an implementation was compiled into a configuration
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_IsThornActive}{CCTK-IsThornActive}
+  Reports whether a thorn was activated in a parameter file
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_IsThornCompiled}{CCTK-IsThornCompiled}
+  Reports whether a thorn was compiled into a configuration
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_NumCompiledImplementations}{CCTK-NumCompiledImplementations}
+  Return the number of implementations compiled in
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_NumCompiledThorns}{CCTK-NumCompiledThorns}
+  Return the number of thorns compiled in
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_ThornImplementation}{CCTK-ThornImplementation}
+  Returns the implementation provided by the thorn
+\end{SeeAlso2}
+\end{SeeAlsoSection}
+
+\begin{ErrorSection}
+\begin{Error}{NULL}
+Error.
+\end{Error}
+\end{ErrorSection}
+\end{FunctionDescription}
+
+
 
 \begin{CCTKFunc}{CCTK\_CoordDir}{Give the direction for a given coordinate.}
 \label{CCTK-CoordDir}
@@ -3166,6 +3397,248 @@ No Fortran routine exists at the moment
 \end{CCTKFunc}
 
 
+
+% cctk_ActiveThorns.c
+\begin{FunctionDescription}{CCTK\_ImplementationRequires}
+\label{CCTK-ImplementationRequires}
+Return the ancestors for an implementation.
+
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+#include "cctk.h"
+
+uStringList *imps = CCTK_ImplementationRequires(const char *imp);
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ResultSection}
+\begin{Result}{imps}
+(not documented)
+\end{Result}
+\end{ResultSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{imp}
+(not documented)
+\end{Parameter}
+\end{ParameterSection}
+
+%\begin{Discussion}
+%\end{Discussion}
+
+\begin{SeeAlsoSection}
+\begin{SeeAlso2}{CCTK\_ActivatingThorn}{CCTK-ActivatingThorn}
+  Finds the thorn which activated a particular implementation
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_CompiledImplementation}{CCTK-CompiledImplementation}
+  Return the name of the compiled implementation with given index
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_CompiledThorn}{CCTK-CompiledThorn}
+  Return the name of the compiled thorn with given index
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_ImplementationThorn}{CCTK-ImplementationThorn}
+  Returns the name of one thorn providing an implementation.
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_ImpThornList}{CCTK-ImpThornList}
+  Return the thorns for an implementation
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_IsImplementationActive}{CCTK-IsImplementationActive}
+  Reports whether an implementation was activated in a parameter file
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_IsImplementationCompiled}{CCTK-IsImplementationCompiled}
+  Reports whether an implementation was compiled into a configuration
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_IsThornActive}{CCTK-IsThornActive}
+  Reports whether a thorn was activated in a parameter file
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_IsThornCompiled}{CCTK-IsThornCompiled}
+  Reports whether a thorn was compiled into a configuration
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_NumCompiledImplementations}{CCTK-NumCompiledImplementations}
+  Return the number of implementations compiled in
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_NumCompiledThorns}{CCTK-NumCompiledThorns}
+  Return the number of thorns compiled in
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_ThornImplementation}{CCTK-ThornImplementation}
+  Returns the implementation provided by the thorn
+\end{SeeAlso2}
+\end{SeeAlsoSection}
+
+\begin{ErrorSection}
+\begin{Error}{}
+(not documented)
+\end{Error}
+\end{ErrorSection}
+
+%\begin{ExampleSection}
+%\end{ExampleSection}
+\end{FunctionDescription}
+
+
+
+% cctk_ActiveThorns.c
+\begin{FunctionDescription}{CCTK\_ImplementationThorn}
+\label{CCTK-ImplementationThorn}
+Returns the name of one thorn providing an implementation.
+
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+#include "cctk.h"
+
+const char *thorn = CCTK_ImplementationThorn(const char *name);
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ResultSection}
+\begin{Result}{thorn}
+Name of the thorn or \code{NULL}
+\end{Result}
+\end{ResultSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{name}
+Name of the implementation
+\end{Parameter}
+\end{ParameterSection}
+
+%\begin{Discussion}
+%\end{Discussion}
+
+\begin{SeeAlsoSection}
+\begin{SeeAlso2}{CCTK\_ActivatingThorn}{CCTK-ActivatingThorn}
+  Finds the thorn which activated a particular implementation
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_CompiledImplementation}{CCTK-CompiledImplementation}
+  Return the name of the compiled implementation with given index
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_CompiledThorn}{CCTK-CompiledThorn}
+  Return the name of the compiled thorn with given index
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_ImplementationRequires}{CCTK-ImplementationRequires}
+  Return the ancestors for an implementation
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_ImpThornList}{CCTK-ImpThornList}
+  Return the thorns for an implementation
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_IsImplementationActive}{CCTK-IsImplementationActive}
+  Reports whether an implementation was activated in a parameter file
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_IsImplementationCompiled}{CCTK-IsImplementationCompiled}
+  Reports whether an implementation was compiled into a configuration
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_IsThornActive}{CCTK-IsThornActive}
+  Reports whether a thorn was activated in a parameter file
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_IsThornCompiled}{CCTK-IsThornCompiled}
+  Reports whether a thorn was compiled into a configuration
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_NumCompiledImplementations}{CCTK-NumCompiledImplementations}
+  Return the number of implementations compiled in
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_NumCompiledThorns}{CCTK-NumCompiledThorns}
+  Return the number of thorns compiled in
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_ThornImplementation}{CCTK-ThornImplementation}
+  Returns the implementation provided by the thorn
+\end{SeeAlso2}
+\end{SeeAlsoSection}
+
+\begin{ErrorSection}
+\begin{Error}{NULL}
+Error.
+\end{Error}
+\end{ErrorSection}
+
+%\begin{ExampleSection}
+%\end{ExampleSection}
+\end{FunctionDescription}
+
+
+
+% cctk_ActiveThorns.c
+\begin{FunctionDescription}{CCTK\_ImpThornList}
+\label{CCTK-ImpThornList}
+Return the thorns for an implementation.
+
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+#include "cctk.h"
+
+t_sktree *thorns = CCTK_ImpThornList(const char *name);
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ResultSection}
+\begin{Result}{thorns}
+(not documented)
+\end{Result}
+\end{ResultSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{name}
+Name of implementation
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{Discussion}
+(not documented)
+\end{Discussion}
+
+\begin{SeeAlsoSection}
+\begin{SeeAlso2}{CCTK\_ActivatingThorn}{CCTK-ActivatingThorn}
+  Finds the thorn which activated a particular implementation
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_CompiledImplementation}{CCTK-CompiledImplementation}
+  Return the name of the compiled implementation with given index
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_CompiledThorn}{CCTK-CompiledThorn}
+  Return the name of the compiled thorn with given index
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_ImplementationRequires}{CCTK-ImplementationRequires}
+  Return the ancestors for an implementation
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_ImplementationThorn}{CCTK-ImplementationThorn}
+  Returns the name of one thorn providing an implementation.
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_IsImplementationActive}{CCTK-IsImplementationActive}
+  Reports whether an implementation was activated in a parameter file
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_IsImplementationCompiled}{CCTK-IsImplementationCompiled}
+  Reports whether an implementation was compiled into a configuration
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_IsThornActive}{CCTK-IsThornActive}
+  Reports whether a thorn was activated in a parameter file
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_IsThornCompiled}{CCTK-IsThornCompiled}
+  Reports whether a thorn was compiled into a configuration
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_NumCompiledImplementations}{CCTK-NumCompiledImplementations}
+  Return the number of implementations compiled in
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_NumCompiledThorns}{CCTK-NumCompiledThorns}
+  Return the number of thorns compiled in
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_ThornImplementation}{CCTK-ThornImplementation}
+  Returns the implementation provided by the thorn
+\end{SeeAlso2}
+\end{SeeAlsoSection}
+
+\begin{ErrorSection}
+\begin{Error}{}
+(not documented)
+\end{Error}
+\end{ErrorSection}
+
+%\begin{ExampleSection}
+%\end{ExampleSection}
+\end{FunctionDescription}
 
 
 
@@ -5036,6 +5509,18 @@ otherwise.
 This function returns a non-zero value if the implementation given by
 \code{implementationname} was activated in a parameter file, and zero
 otherwise.
+See also
+\code{CCTK\_ActivatingThorn} [\pageref{CCTK-ActivatingThorn}],
+\code{CCTK\_CompiledImplementation} [\pageref{CCTK-CompiledImplementation}],
+\code{CCTK\_CompiledThorn} [\pageref{CCTK-CompiledThorn}],
+\code{CCTK\_ImplementationRequires} [\pageref{CCTK-ImplementationRequires}],
+\code{CCTK\_ImplementationThorn} [\pageref{CCTK-ImplementationThorn}],
+\code{CCTK\_ImpThornList} [\pageref{CCTK-ImpThornList}],
+\code{CCTK\_IsImplementationCompiled} [\pageref{CCTK-IsImplementationCompiled}],
+\code{CCTK\_IsThornActive} [\pageref{CCTK-IsThornActive}],
+\code{CCTK\_NumCompiledImplementations} [\pageref{CCTK-NumCompiledImplementations}],
+\code{CCTK\_NumCompiledThorns} [\pageref{CCTK-NumCompiledThorns}],
+\code{CCTK\_ThornImplementation} [\pageref{CCTK-ThornImplementation}].
 \end{discussion}
 \end{CCTKFunc}
 
@@ -5054,6 +5539,19 @@ implementation was compiled into the configuration}
 This function returns a non-zero value if the implementation given by
 \code{implementationname} was compiled into the configuration, and zero
 otherwise.
+See also
+\code{CCTK\_ActivatingThorn} [\pageref{CCTK-ActivatingThorn}],
+\code{CCTK\_CompiledImplementation} [\pageref{CCTK-CompiledImplementation}],
+\code{CCTK\_CompiledThorn} [\pageref{CCTK-CompiledThorn}],
+\code{CCTK\_ImplementationRequires} [\pageref{CCTK-ImplementationRequires}],
+\code{CCTK\_ImplementationThorn} [\pageref{CCTK-ImplementationThorn}],
+\code{CCTK\_ImpThornList} [\pageref{CCTK-ImpThornList}],
+\code{CCTK\_IsImplementationActive} [\pageref{CCTK-IsImplementationActive}],
+\code{CCTK\_IsThornActive} [\pageref{CCTK-IsThornActive}],
+\code{CCTK\_IsThornCompiled} [\pageref{CCTK-IsThornCompiled}],
+\code{CCTK\_NumCompiledImplementations} [\pageref{CCTK-NumCompiledImplementations}],
+\code{CCTK\_NumCompiledThorns} [\pageref{CCTK-NumCompiledThorns}],
+\code{CCTK\_ThornImplementation} [\pageref{CCTK-ThornImplementation}].
 \end{discussion}
 \end{CCTKFunc}
 
@@ -5070,6 +5568,19 @@ otherwise.
 \begin{discussion}
 This function returns a non-zero value if the thorn given by \code{thornname}
 was activated in a parameter file, and zero otherwise.
+See also
+\code{CCTK\_ActivatingThorn} [\pageref{CCTK-ActivatingThorn}],
+\code{CCTK\_CompiledImplementation} [\pageref{CCTK-CompiledImplementation}],
+\code{CCTK\_CompiledThorn} [\pageref{CCTK-CompiledThorn}],
+\code{CCTK\_ImplementationRequires} [\pageref{CCTK-ImplementationRequires}],
+\code{CCTK\_ImplementationThorn} [\pageref{CCTK-ImplementationThorn}],
+\code{CCTK\_ImpThornList} [\pageref{CCTK-ImpThornList}],
+\code{CCTK\_IsImplementationActive} [\pageref{CCTK-IsImplementationActive}],
+\code{CCTK\_IsImplementationCompiled} [\pageref{CCTK-IsImplementationCompiled}],
+\code{CCTK\_IsThornActive} [\pageref{CCTK-IsThornActive}],
+\code{CCTK\_NumCompiledImplementations} [\pageref{CCTK-NumCompiledImplementations}],
+\code{CCTK\_NumCompiledThorns} [\pageref{CCTK-NumCompiledThorns}],
+\code{CCTK\_ThornImplementation} [\pageref{CCTK-ThornImplementation}].
 \end{discussion}
 \end{CCTKFunc}
 
@@ -5338,6 +5849,157 @@ call Util_TableSetPointer(ierror, table_handle, pointer_var, "NULL pointer")
 \end{Example}
 \end{ExampleSection}
 \end{FunctionDescription}
+
+
+
+% cctk_ActiveThorns.c
+\begin{FunctionDescription}{CCTK\_NumCompiledImplementations}
+\label{CCTK-NumCompiledImplementations}
+Return the number of implementations compiled in.
+
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+#include "cctk.h"
+
+int numimpls = CCTK_NumCompiledImplementations();
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ResultSection}
+\begin{Result}{numimpls}
+Number of implementations compiled in.
+\end{Result}
+\end{ResultSection}
+
+%\begin{ParameterSection}
+%\end{ParameterSection}
+
+%\begin{Discussion}
+%\end{Discussion}
+
+\begin{SeeAlsoSection}
+\begin{SeeAlso2}{CCTK\_ActivatingThorn}{CCTK-ActivatingThorn}
+  Finds the thorn which activated a particular implementation
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_CompiledImplementation}{CCTK-CompiledImplementation}
+  Return the name of the compiled implementation with given index
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_CompiledThorn}{CCTK-CompiledThorn}
+  Return the name of the compiled thorn with given index
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_ImplementationRequires}{CCTK-ImplementationRequires}
+  Return the ancestors for an implementation
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_ImplementationThorn}{CCTK-ImplementationThorn}
+  Returns the name of one thorn providing an implementation.
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_ImpThornList}{CCTK-ImpThornList}
+  Return the thorns for an implementation
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_IsImplementationActive}{CCTK-IsImplementationActive}
+  Reports whether an implementation was activated in a parameter file
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_IsImplementationCompiled}{CCTK-IsImplementationCompiled}
+  Reports whether an implementation was compiled into a configuration
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_IsThornActive}{CCTK-IsThornActive}
+  Reports whether a thorn was activated in a parameter file
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_IsThornCompiled}{CCTK-IsThornCompiled}
+  Reports whether a thorn was compiled into a configuration
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_NumCompiledThorns}{CCTK-NumCompiledThorns}
+  Return the number of thorns compiled in
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_ThornImplementation}{CCTK-ThornImplementation}
+  Returns the implementation provided by the thorn
+\end{SeeAlso2}
+\end{SeeAlsoSection}
+
+%\begin{ErrorSection}
+%\end{ErrorSection}
+
+%\begin{ExampleSection}
+%\end{ExampleSection}
+\end{FunctionDescription}
+
+
+
+% cctk_ActiveThorns.c
+\begin{FunctionDescription}{CCTK\_NumCompiledThorns}
+\label{CCTK-NumCompiledThorns}
+Return the number of thorns compiled in.
+
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+#include "cctk.h"
+
+int numthorns = CCTK_NumCompiledThornss();
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ResultSection}
+\begin{Result}{numthorns}
+Number of thorns compiled in.
+\end{Result}
+\end{ResultSection}
+
+%\begin{ParameterSection}
+%\end{ParameterSection}
+
+%\begin{Discussion}
+%\end{Discussion}
+
+\begin{SeeAlsoSection}
+\begin{SeeAlso2}{CCTK\_ActivatingThorn}{CCTK-ActivatingThorn}
+  Finds the thorn which activated a particular implementation
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_CompiledImplementation}{CCTK-CompiledImplementation}
+  Return the name of the compiled implementation with given index
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_CompiledThorn}{CCTK-CompiledThorn}
+  Return the name of the compiled thorn with given index
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_ImplementationRequires}{CCTK-ImplementationRequires}
+  Return the ancestors for an implementation
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_ImplementationThorn}{CCTK-ImplementationThorn}
+  Returns the name of one thorn providing an implementation.
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_ImpThornList}{CCTK-ImpThornList}
+  Return the thorns for an implementation
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_IsImplementationActive}{CCTK-IsImplementationActive}
+  Reports whether an implementation was activated in a parameter file
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_IsImplementationCompiled}{CCTK-IsImplementationCompiled}
+  Reports whether an implementation was compiled into a configuration
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_IsThornActive}{CCTK-IsThornActive}
+  Reports whether a thorn was activated in a parameter file
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_IsThornCompiled}{CCTK-IsThornCompiled}
+  Reports whether a thorn was compiled into a configuration
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_NumCompiledImplementations}{CCTK-NumCompiledImplementations}
+  Return the number of implementations compiled in
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_ThornImplementation}{CCTK-ThornImplementation}
+  Returns the implementation provided by the thorn
+\end{SeeAlso2}
+\end{SeeAlsoSection}
+
+%\begin{ErrorSection}
+%\end{ErrorSection}
+
+%\begin{ExampleSection}
+%\end{ExampleSection}
+\end{FunctionDescription}
+
 
 
 % Groups.c
@@ -6928,6 +7590,87 @@ the preferred method from synchronising variables.
 %%%%%
 % TTT
 %%%%%
+
+% cctk_ActiveThorns.c
+\begin{FunctionDescription}{CCTK\_ThornImplementation}
+\label{CCTK-ThornImplementation}
+Returns the implementation provided by the thorn.
+
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+#include "cctk.h"
+
+const char *imp = CCTK_ThornImplementationThorn(const char *name);
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ResultSection}
+\begin{Result}{imp}
+Name of the implementation or \code{NULL}
+\end{Result}
+\end{ResultSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{name}
+Name of the thorn
+\end{Parameter}
+\end{ParameterSection}
+
+%\begin{Discussion}
+%\end{Discussion}
+
+\begin{SeeAlsoSection}
+\begin{SeeAlso2}{CCTK\_ActivatingThorn}{CCTK-ActivatingThorn}
+  Finds the thorn which activated a particular implementation
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_CompiledImplementation}{CCTK-CompiledImplementation}
+  Return the name of the compiled implementation with given index
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_CompiledThorn}{CCTK-CompiledThorn}
+  Return the name of the compiled thorn with given index
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_ImplementationRequires}{CCTK-ImplementationRequires}
+  Return the ancestors for an implementation
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_ImplementationThorn}{CCTK-ImplementationThorn}
+  Returns the name of one thorn providing an implementation.
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_ImpThornList}{CCTK-ImpThornList}
+  Return the thorns for an implementation
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_IsImplementationActive}{CCTK-IsImplementationActive}
+  Reports whether an implementation was activated in a parameter file
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_IsImplementationCompiled}{CCTK-IsImplementationCompiled}
+  Reports whether an implementation was compiled into a configuration
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_IsThornActive}{CCTK-IsThornActive}
+  Reports whether a thorn was activated in a parameter file
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_IsThornCompiled}{CCTK-IsThornCompiled}
+  Reports whether a thorn was compiled into a configuration
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_NumCompiledImplementations}{CCTK-NumCompiledImplementations}
+  Return the number of implementations compiled in
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_NumCompiledThorns}{CCTK-NumCompiledThorns}
+  Return the number of thorns compiled in
+\end{SeeAlso2}
+\end{SeeAlsoSection}
+
+\begin{ErrorSection}
+\begin{Error}{NULL}
+Error.
+\end{Error}
+\end{ErrorSection}
+
+%\begin{ExampleSection}
+%\end{ExampleSection}
+\end{FunctionDescription}
+
+
 
 %%%%%
 % UUU
