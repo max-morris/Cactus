@@ -74,7 +74,7 @@ static int cctk_parameter_set_mask;
  ********************************************************************/
 
 void CCTK_FCALL CCTK_FNAME (CCTK_ParameterValString)
-                           (CCTK_INT *ierror, THREE_FORTSTRING_ARG);
+                           (CCTK_INT *nchars, THREE_FORTSTRING_ARG);
 
 /********************************************************************
  ********************* Local Routine Prototypes *********************
@@ -593,8 +593,34 @@ char *CCTK_ParameterValString (const char *param_name, const char *thorn)
   return (retval);
 }
 
+/*@@
+   @routine    CCTK_PARAMETERVARSTRING
+   @date       Thu Jan 21 2000
+   @author     Thomas Radke
+   @desc
+               Copies the stringified parameter value into a fortran string.
+   @enddesc
+   @calls      CCTK_ParameterValString
+
+   @var        nchars
+   @vdesc      Number of characters in the stringified parameter value, or<BR>
+               -1 if the parameter doesn't exist
+   @vtype      CCTK_INT *
+   @vio        out
+   @vcomment
+               It will copy only as many characters as fit into the fortran
+               string. You should check for truncation by comparing 'nchars'
+               against the length of your fortran string.
+   @endvar
+   @var        THREE_FORTSTRING_ARG
+   @vdesc      three fortran string arguments denoting parameter name,
+               thorn name, and the string buffer to copy the parameter value to
+   @vtype      FORTRAN string macro
+   @vio        inout
+   @endvar
+@@*/
 void CCTK_FCALL CCTK_FNAME (CCTK_ParameterValString)
-                           (CCTK_INT *ierror, THREE_FORTSTRING_ARG)
+                           (CCTK_INT *nchars, THREE_FORTSTRING_ARG)
 {
   size_t c_strlen;
   char *c_string;
@@ -609,26 +635,24 @@ void CCTK_FCALL CCTK_FNAME (CCTK_ParameterValString)
   c_string = CCTK_ParameterValString (param, thorn);
   if (c_string)
   {
-    c_strlen = strlen (c_string);
-    if (c_strlen > cctk_strlen3)
+    *nchars = c_strlen = strlen (c_string);
+    if (c_strlen > (size_t) cctk_strlen3)
     {
       CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
                   "CCTK_ParameterValString: fortran string buffer is too short "
-                  "to hold value '%s' of parameter '%s::%s'",
-                  c_string, thorn, param);
-      *ierror = -2;
+                  "to hold value '%s' of parameter '%s::%s', string will be "
+                  "truncated", c_string, thorn, param);
+      c_strlen = (size_t) cctk_strlen3;
     }
-    else
-    {
-      memcpy (fortran_string, c_string, c_strlen);
-      memset (fortran_string + c_strlen, ' ', cctk_strlen3 - c_strlen);
-      *ierror = 0;
-    }
+    /* copy up to the size of the fortran string 
+       and pad remaining chars in the fortran string with spaces */
+    memcpy (fortran_string, c_string, c_strlen);
+    memset (fortran_string + c_strlen, ' ', (size_t) cctk_strlen3 - c_strlen);
   }
   else
   {
     /* no such parameter exists */
-    *ierror = -1;
+    *nchars = -1;
   }
 
   free (param);

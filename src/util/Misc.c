@@ -59,8 +59,10 @@ int CCTK_FCALL CCTK_FNAME(CCTK_Equals)
 void CCTK_FCALL CCTK_FNAME(CCTK_PrintString)
      (const char **arg1);
 
-void CCTK_FCALL CCTK_FNAME(CCTK_FortranString)
-     (CCTK_INT *nchar,const char **cstring,ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (CCTK_FortranString)
+                           (CCTK_INT *nchars,
+                            const char *const *cstring,
+                            ONE_FORTSTRING_ARG);
 
 /********************************************************************
  ********************* Other Routine Prototypes *********************
@@ -121,18 +123,18 @@ int CCTK_Equals(const char *string1, const char *string2)
     if (!string1 && string2)
     {
       CCTK_VWarn(0,__LINE__,__FILE__,"Cactus",
-		 "CCTK_Equals: First string null (2nd is %s)",string2);
+                 "CCTK_Equals: First string null (2nd is %s)",string2);
 
     }
     else if (string1 && !string2)
     {
       CCTK_VWarn(0,__LINE__,__FILE__,"Cactus",
-		 "CCTK_Equals: Second string null (1st is %s)",string1);
+                 "CCTK_Equals: Second string null (1st is %s)",string1);
     }
     else
     {
       CCTK_Warn(0,__LINE__,__FILE__,"Cactus",
-		"CCTK_Equals: Both strings null");
+                "CCTK_Equals: Both strings null");
     }
   }
   else
@@ -198,9 +200,9 @@ char *Util_NullTerminateString(const char *instring, unsigned int len)
   if (len > 100000)
   {
     CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
-	       "Null Terminating a string with length %d !!\n"
-	       "This is probably an error in calling a C routine from Fortran",
-	       len);
+               "Null Terminating a string with length %d !!\n"
+               "This is probably an error in calling a C routine from Fortran",
+               len);
   }
 
 #ifdef DEBUG_MISC
@@ -1327,65 +1329,52 @@ void CCTK_FCALL CCTK_FNAME(CCTK_PrintString)
    @date       Thu Jan 22 14:44:39 1998
    @author     Paul Walker
    @desc
-   Change a C string into a Fortran string
+               Copies a C string into a Fortran string.
    @enddesc
-   @calls
-   @calledby
-   @history
 
-   @endhistory
-   @var     nchar
-   @vdesc   Number of characters in fortran string
-   @vtype   CCTK_INT *
-   @vio     out
+   @var        nchars
+   @vdesc      Number of characters in the C string
+   @vtype      CCTK_INT *
+   @vio        out
    @vcomment
-
+               It will copy only as many characters as fit into the fortran
+               string. You should check for truncation by comparing 'nchars'
+               against the length of your fortran string.
    @endvar
-   @var     cstring
-   @vdesc   C string to be converted
-   @vtype   char **
-   @vio     in
-   @vcomment
-
+   @var        c_string
+   @vdesc      C string to be copied
+   @vtype      const char *const *
+   @vio        in
    @endvar
-   @var     ONE_FORTSTRING_ARG
-   @vdesc   Fortran string
-   @vtype   FORTRAN string macro
-   @vio     out
-   @vcomment
-
+   @var        ONE_FORTSTRING_ARG
+   @vdesc      Fortran string
+   @vtype      FORTRAN string macro
+   @vio        out
    @endvar
 @@*/
-
-
-void CCTK_FCALL CCTK_FNAME(CCTK_FortranString)
-     (CCTK_INT *nchar,const char **cstring,ONE_FORTSTRING_ARG)
+void CCTK_FCALL CCTK_FNAME (CCTK_FortranString)
+                           (CCTK_INT *nchars,
+                            const char *const *c_string,
+                            ONE_FORTSTRING_ARG)
 {
-  unsigned int i;
-  ONE_FORTSTRING_CREATE(fstring)
-  ONE_FORTSTRING_PTR(fptr)
+  size_t c_strlen;
+  ONE_FORTSTRING_CREATE (fstring)
+  ONE_FORTSTRING_PTR (fortran_string)
 
-  if (strlen(*cstring) > cctk_strlen1)
+
+  *nchars = c_strlen = strlen (*c_string);
+  if (c_strlen > (size_t) cctk_strlen1)
   {
-    CCTK_VWarn (1,__LINE__,__FILE__,"Cactus",
-	       "CCTK_FortranString: Cannot output %s to char* of length %d",
-	       *cstring,cctk_strlen1);
-    *nchar = -1;
+    CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
+                "CCTK_FortranString: fortran string buffer is too short to "
+                "hold C string '%s, string will be truncated", *c_string);
+    c_strlen = (size_t) cctk_strlen1;
   }
 
-  for (i=0;i<strlen(*cstring);i++)
-  {
-    fptr[i] = (*cstring)[i];
-  }
+  /* copy up to the size of the fortran string
+     and pad remaining chars in the fortran string with spaces */
+  memcpy (fortran_string, *c_string, c_strlen);
+  memset (fortran_string + c_strlen, ' ', (size_t) cctk_strlen1 - c_strlen);
 
-  for (i=strlen(*cstring);i<cctk_strlen1;i++)
-  {
-    fptr[i] = ' ';
-  }
-
-  fptr[strlen(*cstring)] = '\0';
-
-  *nchar = strlen(*cstring);
-
-  free(fstring);
+  free (fstring);
 }
