@@ -771,10 +771,7 @@ sub CompareArguments
       my $Arg2 = $Arguments2[$argnum];
       if ($Arg1->{"Function pointer"})
       {
-	if ($Arg2->{"Function pointer"})
-        {
-	  $num_errors++;
-	}
+	$num_errors++ if (! $Arg2->{"Function pointer"});
       }
       elsif (
 	     (!($Arg1->{"Type"} eq $Arg2->{"Type"})) ||
