@@ -107,23 +107,23 @@ int CCTKi_SetupCommFunctions(void)
 
 
 
-int FMODIFIER FORTRAN_NAME(CCTK_Exit)(int *retval, cGH *GH)
+int CCTK_FCALL CCTK_FNAME(CCTK_Exit)(int *retval, cGH *GH)
 {
   return CCTK_Exit(*retval, GH);
 }
 
-int FMODIFIER FORTRAN_NAME(CCTK_ParallelInit)(cGH *GH)
+int CCTK_FCALL CCTK_FNAME(CCTK_ParallelInit)(cGH *GH)
 {
   return CCTK_ParallelInit(GH);
 }
 
-int FMODIFIER FORTRAN_NAME(CCTK_Abort)(cGH *GH)
+int CCTK_FCALL CCTK_FNAME(CCTK_Abort)(cGH *GH)
 {
   CCTK_Abort(GH);
   return 0;
 }
 
-int FMODIFIER FORTRAN_NAME(CCTK_SyncGroup)(cGH *GH, ONE_FORTSTRING_ARG)
+int CCTK_FCALL CCTK_FNAME(CCTK_SyncGroup)(cGH *GH, ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_CREATE(group_name)
   CCTK_SyncGroup(GH,group_name);
@@ -131,17 +131,17 @@ int FMODIFIER FORTRAN_NAME(CCTK_SyncGroup)(cGH *GH, ONE_FORTSTRING_ARG)
   return 0;
 }
 
-int FMODIFIER FORTRAN_NAME(CCTK_nProcs)(cGH *GH)
+int CCTK_FCALL CCTK_FNAME(CCTK_nProcs)(cGH *GH)
 {
   return CCTK_nProcs(GH);
 }
  
-int FMODIFIER FORTRAN_NAME(CCTK_MyProc)(cGH *GH)
+int CCTK_FCALL CCTK_FNAME(CCTK_MyProc)(cGH *GH)
 {
   return CCTK_MyProc(GH);
 }
  
-int FMODIFIER FORTRAN_NAME(CCTK_Barrier)(cGH *GH)
+int CCTK_FCALL CCTK_FNAME(CCTK_Barrier)(cGH *GH)
 {
   return CCTK_Barrier(GH);
 }

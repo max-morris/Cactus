@@ -13,12 +13,14 @@
 #include "cctk_IO.h"
 #include "cctk_IOMethods.h"
 
-void FMODIFIER FORTRAN_NAME(CCTK_OutputGH)(int *istat,cGH *GH)
+void CCTK_FCALL CCTK_FNAME(CCTK_OutputGH)
+     (int *istat,cGH *GH)
 {
   *istat = CCTK_OutputGH(GH);
 }
 
-void FMODIFIER FORTRAN_NAME(CCTK_RegisterIOMethod)(int *handle, ONE_FORTSTRING_ARG)
+void CCTK_FCALL CCTK_FNAME(CCTK_RegisterIOMethod)
+     (int *handle, ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_CREATE(name);
   *handle = CCTK_RegisterIOMethod(name);

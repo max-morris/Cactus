@@ -49,7 +49,8 @@ void CCTK_SyncGroupI(cGH *GH,
   free(groupname);
 }
 
-void FMODIFIER FORTRAN_NAME(CCTK_SyncGroupI)(cGH *GH, int *groupi) 
+void CCTK_FCALL CCTK_FNAME(CCTK_SyncGroupI)
+     (cGH *GH, int *groupi) 
 {
   CCTK_SyncGroupI(GH, *groupi);
 }
@@ -80,7 +81,8 @@ void CCTK_SyncGroupWithVar(cGH *GH,
   CCTK_SyncGroupI(GH,groupi);
 }
 
-void FMODIFIER FORTRAN_NAME(CCTK_SyncGroupWithVar)(cGH *GH, ONE_FORTSTRING_ARG) 
+void CCTK_FCALL CCTK_FNAME(CCTK_SyncGroupWithVar)
+     (cGH *GH, ONE_FORTSTRING_ARG) 
 {
   ONE_FORTSTRING_CREATE(varn);
   CCTK_SyncGroupWithVar(GH,varn);
@@ -113,7 +115,8 @@ void CCTK_SyncGroupWithVarI(cGH *GH,
   CCTK_SyncGroupI(GH,groupi);
 }
 
-void FMODIFIER FORTRAN_NAME(CCTK_SyncGroupWithVarI)(cGH *GH, int *vari) 
+void CCTK_FCALL CCTK_FNAME(CCTK_SyncGroupWithVarI)
+     (cGH *GH, int *vari) 
 {
   CCTK_SyncGroupWithVarI(GH,*vari);
 }

@@ -75,7 +75,8 @@ int CCTK_RegisterReductionOperator(
   else
   {
     /* Reduction operator with this name already exists. */
-    CCTK_Warn(1,__LINE__,__FILE__,"Cactus","Reduction operator with this name already exists");
+    CCTK_Warn(1,__LINE__,__FILE__,"Cactus",
+	      "Reduction operator with this name already exists");
     handle = -1;
   }
 
@@ -124,13 +125,14 @@ int CCTK_ReductionHandle(const char *reduction)
 #endif
 
   if (handle < 0)
-    CCTK_Warn(1,__LINE__,__FILE__,"Cactus","No handle found for this reduction operator");
+    CCTK_Warn(1,__LINE__,__FILE__,"Cactus",
+	      "No handle found for this reduction operator");
 
   return handle;
 
 }  
 
-void FMODIFIER FORTRAN_NAME(CCTK_ReductionHandle)(int *handle, ONE_FORTSTRING_ARG)
+void CCTK_FCALL CCTK_FNAME(CCTK_ReductionHandle)(int *handle, ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_CREATE(reduction)
   *handle = CCTK_ReductionHandle(reduction);
@@ -207,7 +209,8 @@ int CCTK_Reduce(cGH *GH,
   /* Get the pointer to the reduction operator */
   if (operation_handle < 0)
   {
-    CCTK_Warn(3,__LINE__,__FILE__,"Cactus","Invalid handle passed to CCTK_Reduce");
+    CCTK_Warn(3,__LINE__,__FILE__,"Cactus",
+	      "Invalid handle passed to CCTK_Reduce");
     return (-1);
   }
 
@@ -216,7 +219,8 @@ int CCTK_Reduce(cGH *GH,
     
   if (! function)
   {
-    CCTK_Warn(3,__LINE__,__FILE__,"Cactus","Reduction operation is not registered and cannot be called");
+    CCTK_Warn(3,__LINE__,__FILE__,"Cactus",
+	      "Reduction operation is not registered and cannot be called");
     return (-1);
   }
         
@@ -235,15 +239,16 @@ int CCTK_Reduce(cGH *GH,
   return (0);
 }
 
-void FMODIFIER FORTRAN_NAME(CCTK_Reduce)(int *fortranreturn,
-                                         cGH *GH, 
-                                         int *proc,
-                                         int *operation_handle,
-                                         int *num_out_vals,
-                                         int *type_out_vals,
-                                         void *out_vals,
-                                         int *num_in_fields,
-                                         ... )
+void CCTK_FCALL CCTK_FNAME(CCTK_Reduce)
+     (int *fortranreturn,
+      cGH *GH, 
+      int *proc,
+      int *operation_handle,
+      int *num_out_vals,
+      int *type_out_vals,
+      void *out_vals,
+      int *num_in_fields,
+      ... )
 { 
   va_list indices;
   int i;
@@ -256,7 +261,8 @@ void FMODIFIER FORTRAN_NAME(CCTK_Reduce)(int *fortranreturn,
 
   if (*operation_handle < 0)
   {
-    CCTK_Warn(3,__LINE__,__FILE__,"Cactus","Invalid handle passed to CCTK_Reduce");
+    CCTK_Warn(3,__LINE__,__FILE__,"Cactus",
+	      "Invalid handle passed to CCTK_Reduce");
     return;
   }
 
@@ -266,7 +272,8 @@ void FMODIFIER FORTRAN_NAME(CCTK_Reduce)(int *fortranreturn,
     
   if (! function)
   {
-    CCTK_Warn(3,__LINE__,__FILE__,"Cactus","Reduction operation is not registered and cannot be called");
+    CCTK_Warn(3,__LINE__,__FILE__,"Cactus",
+	      "Reduction operation is not registered and cannot be called");
     return;
   }
       
@@ -327,7 +334,8 @@ int CCTK_RegisterReductionArrayOperator
   else
   {
     /* Reduction operator with this name already exists. */
-    CCTK_Warn(1,__LINE__,__FILE__,"Cactus","Array reduction operator with this name already exists");
+    CCTK_Warn(1,__LINE__,__FILE__,"Cactus",
+	      "Array reduction operator with this name already exists");
     handle = -1;
   }
 
@@ -376,14 +384,15 @@ int CCTK_ReductionArrayHandle(const char *reduction)
 #endif
 
   if (handle < 0)
-    CCTK_Warn(1,__LINE__,__FILE__,"Cactus","No handle found for this array reduction operator");
+    CCTK_Warn(1,__LINE__,__FILE__,"Cactus",
+	      "No handle found for this array reduction operator");
 
   return handle;
 
 }  
 
-void FMODIFIER FORTRAN_NAME(CCTK_ReductionArrayHandle)
-                           (int *operation_handle, ONE_FORTSTRING_ARG)
+void CCTK_FCALL CCTK_FNAME(CCTK_ReductionArrayHandle)
+     (int *operation_handle, ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_CREATE(reduction)
   *operation_handle = CCTK_ReductionArrayHandle(reduction);
@@ -479,7 +488,8 @@ int CCTK_ReduceArray(cGH *GH,
   /* Get the pointer to the reduction operator */
   if (operation_handle < 0)
   {
-    CCTK_Warn(3,__LINE__,__FILE__,"Cactus","Invalid handle passed to CCTK_ReduceArray");
+    CCTK_Warn(3,__LINE__,__FILE__,"Cactus",
+	      "Invalid handle passed to CCTK_ReduceArray");
     return (-1);
   }
 
@@ -488,7 +498,8 @@ int CCTK_ReduceArray(cGH *GH,
     
   if (! function)
   {
-    CCTK_Warn(3,__LINE__,__FILE__,"Cactus","Array reduction operation is not registered "
+    CCTK_Warn(3,__LINE__,__FILE__,"Cactus",
+	      "Array reduction operation is not registered "
                  "and cannot be called");
     return (-1);
   }
@@ -519,17 +530,18 @@ int CCTK_ReduceArray(cGH *GH,
   return (0);
 }
 
-void FMODIFIER FORTRAN_NAME(CCTK_ReduceArray)(int *fortran_return,
-                                              cGH *GH, 
-                                              int *proc,
-                                              int *operation_handle,
-                                              int *num_out_vals,
-                                              int *type_out_vals,
-                                              void *out_vals,
-                                              int *num_dims,
-                                              int *num_in_arrays,
-                                              int *type_in_arrays,
-                                              ... )
+void CCTK_FCALL CCTK_FNAME(CCTK_ReduceArray)
+     (int *fortran_return,
+      cGH *GH, 
+      int *proc,
+      int *operation_handle,
+      int *num_out_vals,
+      int *type_out_vals,
+      void *out_vals,
+      int *num_dims,
+      int *num_in_arrays,
+      int *type_in_arrays,
+      ... )
 {
  
   va_list varargs;
@@ -545,7 +557,8 @@ void FMODIFIER FORTRAN_NAME(CCTK_ReduceArray)(int *fortran_return,
   /* Get the pointer to the reduction operator */
   if (*operation_handle < 0)
   {
-    CCTK_Warn (3,__LINE__,__FILE__,"Cactus","Invalid handle passed to CCTK_ReduceArray");
+    CCTK_Warn (3,__LINE__,__FILE__,"Cactus",
+	       "Invalid handle passed to CCTK_ReduceArray");
     return;
   }
 
@@ -554,7 +567,8 @@ void FMODIFIER FORTRAN_NAME(CCTK_ReduceArray)(int *fortran_return,
     
   if (! function)
   {
-    CCTK_Warn (3,__LINE__,__FILE__,"Cactus", "Array reduction operation is not registered "
+    CCTK_Warn (3,__LINE__,__FILE__,"Cactus", 
+	       "Array reduction operation is not registered "
                   "and cannot be called");
     return;
   }
@@ -636,13 +650,14 @@ int CCTK_ReduceLocalScalar (cGH *GH, int proc, int operation_handle,
 }
 
 /*** FIXME: OLD INTERFACE gerd ***/
-void FMODIFIER FORTRAN_NAME(CCTK_ReduceLocalScalar)(int *fortran_return,
-                                                    cGH *GH, 
-                                                    int *proc,
-                                                    int *operation_handle,
-                                                    void *in_scalar,
-                                                    void *out_scalar,
-                                                    int *data_type)
+void CCTK_FCALL CCTK_FNAME(CCTK_ReduceLocalScalar)
+     (int *fortran_return,
+      cGH *GH, 
+      int *proc,
+      int *operation_handle,
+      void *in_scalar,
+      void *out_scalar,
+      int *data_type)
 {
   *fortran_return = CCTK_ReduceArray (GH, *proc, *operation_handle,
                                       1, *data_type, out_scalar,
@@ -658,13 +673,14 @@ int CCTK_ReduceLocScalar (cGH *GH, int proc, int operation_handle,
                             1, 1, data_type, 1, in_scalar));
 }
 
-void FMODIFIER FORTRAN_NAME(CCTK_ReduceLocScalar)(int *fortran_return,
-                                                  cGH *GH, 
-                                                  int *proc,
-                                                  int *operation_handle,
-                                                  void *in_scalar,
-                                                  void *out_scalar,
-                                                  int *data_type)
+void CCTK_FCALL CCTK_FNAME(CCTK_ReduceLocScalar)
+     (int *fortran_return,
+      cGH *GH, 
+      int *proc,
+      int *operation_handle,
+      void *in_scalar,
+      void *out_scalar,
+      int *data_type)
 {
   *fortran_return = CCTK_ReduceArray (GH, *proc, *operation_handle,
                                       1, *data_type, out_scalar,
@@ -711,14 +727,15 @@ int CCTK_ReduceLocArrayToArray1D(cGH *GH, int proc, int operation_handle,
 }
 
 /*** FIXME: OLD INTERFACE gerd ***/
-void FMODIFIER FORTRAN_NAME(CCTK_ReduceLocalArray1D)(int *fortran_return,
-                                                    cGH *GH,
-                                                    int *proc,
-                                                    int *operation_handle,
-                                                    void *in_array1d,
-                                                    void *out_array1d,
-                                                    int *num_in_array1d,
-                                                    int *data_type)
+void CCTK_FCALL CCTK_FNAME(CCTK_ReduceLocalArray1D)
+     (int *fortran_return,
+      cGH *GH,
+      int *proc,
+      int *operation_handle,
+      void *in_array1d,
+      void *out_array1d,
+      int *num_in_array1d,
+      int *data_type)
 {
   *fortran_return = CCTK_ReduceArray (GH, *proc, *operation_handle,
                                       *num_in_array1d, *data_type, out_array1d,
@@ -744,14 +761,15 @@ void FMODIFIER FORTRAN_NAME(CCTK_ReduceLocalArray1D)(int *fortran_return,
 @@*/
 
 
-void FMODIFIER FORTRAN_NAME(CCTK_ReduceLocArrayToArray1D)(int *fortran_return,
-                                                    cGH *GH, 
-                                                    int *proc,
-                                                    int *operation_handle,
-                                                    void *in_array1d,
-                                                    void *out_array1d,
-                                                    int *num_in_array1d,
-                                                    int *data_type)
+void CCTK_FCALL CCTK_FNAME(CCTK_ReduceLocArrayToArray1D)
+     (int *fortran_return,
+      cGH *GH, 
+      int *proc,
+      int *operation_handle,
+      void *in_array1d,
+      void *out_array1d,
+      int *num_in_array1d,
+      int *data_type)
 {
   *fortran_return = CCTK_ReduceArray (GH, *proc, *operation_handle,
                                       *num_in_array1d, *data_type, out_array1d,
@@ -790,7 +808,7 @@ int CCTK_ReduceLocArrayToArray2D(cGH *GH, int proc, int operation_handle,
                             xsize,ysize, in_array2d));
 }
 
-void FMODIFIER  FORTRAN_NAME(CCTK_ReduceLocArrayToArray2D)
+void CCTK_FCALL  CCTK_FNAME(CCTK_ReduceLocArrayToArray2D)
      (int  *fortran_return, cGH *GH, 
       int  *proc,
       int  *operation_handle,
@@ -839,7 +857,7 @@ int CCTK_ReduceLocArrayToArray3D(cGH *GH, int proc, int operation_handle,
                             in_array3d));
 }
 
-void FMODIFIER  FORTRAN_NAME(CCTK_ReduceLocArrayToArray3D)
+void CCTK_FCALL  CCTK_FNAME(CCTK_ReduceLocArrayToArray3D)
      (int  *fortran_return, cGH *GH, 
       int  *proc,
       int  *operation_handle,
