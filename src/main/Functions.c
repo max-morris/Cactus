@@ -7,6 +7,7 @@
    In principle all should be registered through here, but probably 
    need a bit more functionality first.
    @enddesc 
+   @version $Header$
  @@*/
 
 static char *rcsid = "$Header$";
@@ -20,15 +21,11 @@ static char *rcsid = "$Header$";
 #include "CactusTimers.h"
 #include "StoreHandledData.h"
 
+#include "cctk_Functions.h"
 #include "cctki_Functions.h"
 
 static cHandledData *functions;
 
-typedef struct
-{
-  int n_args;
-  int type;
-} cFunctionType;
 
 struct iFunctionData
 {
@@ -70,36 +67,40 @@ struct iFunctionData
    @endvar 
    @var     ftype
    @vdesc   The type of the function.
-   @vtype   cFunctionType
+   @vtype   cFunctionType *
    @vio     in
    @vcomment 
-   This is a structure which should be filled out with
-       the number of arguments the function takes
-       the return type of the function
+   This is a pointer to a structure which should be 
+   filled out with 
+       the number of arguments 
+       the function takes the return type of the function
    @endvar 
 
-   @returntype int
+   @returntype void *
    @returndesc
-   0  - success
-   -1 - memory failure
-   -2 - too many arguments
+     NULL on failure
+     pointer to data about function on success
    @endreturndesc
 
 @@*/
-int CCTK_FunctionRegister(const char *name, void (*function)(void), cFunctionType ftype)
+void *CCTK_FunctionRegister(const char *name, 
+                            void (*function)(void), 
+                            cFunctionType *ftype)
 {
   int handle;
   struct iFunctionData *fdata;
 
-  if(ftype.n_args <= CCTK_MAX_ARGS)
+  fdata = NULL;
+
+  if(ftype->n_args <= CCTK_MAX_ARGS)
   {
     fdata = (struct iFunctionData *)malloc(sizeof(struct iFunctionData));
 
     if(fdata)
     {
       fdata->function = function;
-      fdata->ftype.n_args   = ftype.n_args;
-      fdata->ftype.type     = ftype.type;
+      fdata->ftype.n_args   = ftype->n_args;
+      fdata->ftype.type     = ftype->type;
       fdata->timer    = CCTK_TimerCreateI();
 
       handle = Util_NewHandle(&functions, name, fdata);
@@ -114,7 +115,7 @@ int CCTK_FunctionRegister(const char *name, void (*function)(void), cFunctionTyp
     handle = -2;
   }
 
-  return handle;
+  return (void *)fdata;
 }
 
  /*@@
@@ -130,12 +131,12 @@ int CCTK_FunctionRegister(const char *name, void (*function)(void), cFunctionTyp
  
    @endhistory 
 
-   @var     handle
-   @vdesc   The function handle
-   @vtype   int
+   @var     fpointer
+   @vdesc   The pointer to the function
+   @vtype   void *
    @vio     in
    @vcomment 
-   This is the handle returned by CCTK_FunctionRegister
+   This is the data returned by CCTK_FunctionRegister
    @endvar 
    @var     ...
    @vdesc   Variable argument list
@@ -148,7 +149,7 @@ int CCTK_FunctionRegister(const char *name, void (*function)(void), cFunctionTyp
    @endvar 
 
 @@*/
-int CCTK_FunctionCall(int handle, ...)
+int CCTK_FunctionCall(void *data, ...)
 {
   int retval;
   int i;
@@ -160,11 +161,11 @@ int CCTK_FunctionCall(int handle, ...)
   
   void *array[CCTK_MAX_ARGS];
   
-  fdata = (struct iFunctionData *)Util_GetHandledData(functions, handle);
+  fdata = (struct iFunctionData *)data;
 
   if(fdata)
   {
-    va_start(ap, handle);
+    va_start(ap, data);
       
     if(fdata->ftype.type != CCTK_VARIABLE_VOID)
     {
@@ -192,9 +193,9 @@ int CCTK_FunctionCall(int handle, ...)
 
     switch(fdata->ftype.type)
     {
-      case CCTK_VARIABLE_VOID : CCTK_CALLVOIDFUNC(handle, array, fdata->function); break;
-      case CCTK_VARIABLE_REAL : CCTK_CALLRETFUNC(*retreal, CCTK_REAL, handle, array, fdata->function); break;
-      case CCTK_VARIABLE_INT  : CCTK_CALLRETFUNC(*retint, CCTK_INT, handle, array, fdata->function); break;
+      case CCTK_VARIABLE_VOID : CCTK_CALLVOIDFUNC(fdata->ftype.n_args, array, fdata->function); break;
+      case CCTK_VARIABLE_REAL : CCTK_CALLRETFUNC(*retreal, CCTK_REAL, fdata->ftype.n_args, array, fdata->function); break;
+      case CCTK_VARIABLE_INT  : CCTK_CALLRETFUNC(*retint, CCTK_INT, fdata->ftype.n_args, array, fdata->function); break;
       default :
         fprintf(stderr, "Unsupported return type for function at line %d of %s", 
                 __LINE__, __FILE__);
@@ -211,6 +212,3 @@ int CCTK_FunctionCall(int handle, ...)
 
   return retval;
 }
-
-
-  
