@@ -25,7 +25,11 @@ int CCTKi_ParseStaggerString(int dim,
 }
 #endif
 
-/* stagger flags: yes/no, number of staggerings: 3 */
+/* number of implemented staggerings */
+#define CCTK_NUM_STAGGER   3
+
+/* number of staggerings (3); stagger flags: yes/no, */
+#define CCTK_NSTAG         3
 #define CCTK_NO_STAGGER    0
 #define CCTK_STAGGER       1
 
