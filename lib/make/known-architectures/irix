@@ -6,22 +6,18 @@
 #    @desc 
 #   
 #    @enddesc 
-#    @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/irix,v 1.8 1999-07-06 16:08:21 goodale Exp $
+#    @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/irix,v 1.9 1999-07-20 23:10:05 goodale Exp $
 #  @@*/
 
 # extract the CPU type from hinv output
 # (assumes all processors are of equal type :-)
 IRIX_CPU="`hinv -t cpu | tail -n 1 | sed 's/^[^R]*R\([01-9]*\).*$/\1/'`"
 
-case $IRIX_CPU in
-    10000)
-    IRIX_BITS=64 
-    ;;
-    *)
-    IRIX_BITS=32
-    ;;
-esac
-
+if test -n "`uname | grep 64`" ; then
+   IRIX_BITS=64
+else
+   IRIX_BITS=32
+fi
 
 case "$IRIX_BITS:$CC" in
     64:gcc)
@@ -84,3 +80,12 @@ case $IRIX_BITS in
     *)
     ;;
 esac
+
+# MPI stuff
+
+if test -n "$with_mpi" ; then
+    if test "$with_mpi" = "NATIVE" ; then
+       MPI_LIBS="mpi"
+    fi
+fi
+

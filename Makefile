@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.39 1999-07-18 19:53:42 goodale Exp $
+#   @version $Id: Makefile,v 1.40 1999-07-20 23:10:02 goodale Exp $
 # @@*/
 
 # Make quietly unless told not to
@@ -110,6 +110,16 @@ ifneq ($(strip $(origin INTEGER_PRECISION)), default)
 SETUP_ENV += INTEGER_PRECISION=$(INTEGER_PRECISION) ; export INTEGER_PRECISION ;
 endif
 endif
+
+# Package options
+
+ifdef MPI
+ifneq ($(strip $(origin MPI)), default)
+SETUP_ENV += MPI=$(MPI) ; export MPI ;
+endif
+endif
+
+
 
 # Various auxilary programs
 PERL = perl

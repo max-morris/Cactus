@@ -66,14 +66,21 @@ F77_DEPEND_OUT = @F77_DEPEND_OUT@
 # Command used to get the working directory
 GET_WD = @GET_WD@
 
+# MPI stuff
+
+MPI_LIBS      = @MPI_LIBS@
+MPI_LIB_DIRS  = @MPI_LIB_DIRS@
+MPI_INC_DIRS  = @MPI_INC_DIRS@
+
+
 # Library info
 
-LIBS    = @LIBS@
-LIBDIRS = @LIBDIRS@
+LIBS    = $(MPI_LIBS) @LIBS@
+LIBDIRS = $(MPI_LIB_DIRS) @LIBDIRS@
 
 # System include directories
 
-SYS_INC_DIRS = @SYS_INC_DIRS@
+SYS_INC_DIRS = $(MPI_INC_DIRS) @SYS_INC_DIRS@
 
 # Stuff for the architecture
 
