@@ -6,7 +6,7 @@
 #   @desc
 #            Configuration options for MPI=MPICH
 #   @enddesc
-#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/extras/MPI/MPICH,v 1.20 2004-12-17 16:29:13 goodale Exp $
+#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/extras/MPI/MPICH,v 1.21 2005-01-13 15:41:13 tradke Exp $
 # @@*/
 
 
@@ -16,28 +16,28 @@ echo '  MPICH selected'
 
 # Find the directory.
 if test -z "$MPICH_DIR" ; then
-   echo '  MPICH selected but no MPICH_DIR set. Checking some places...'
-   CCTK_Search MPICH_DIR "/usr /usr/local /usr/local/mpich /usr/local/packages/mpich /usr/local/apps/mpich /usr/lib/mpich /usr/local/lib/mpich $HOME" include/mpi_errno.h
-   if test -z "$MPICH_DIR" ; then
-     if test -n "$MPICH_ARCH" ; then
-       CCTK_Search MPICH_DIR "/usr/local/mpich/$MPICH_ARCH /usr/local/packages/mpich/$MPICH_ARCH /usr/local/apps/mpich/$MPICH_ARCH /usr/lib/mpich/$MPICH_ARCH /usr/local/lib/mpich/$MPICH_ARCH $HOME/$MPICH_ARCH" include/mpi_errno.h
-       if test -z "$MPICH_DIR" ; then
-         if test -n "$MPICH_DEVICE" ; then
-           CCTK_Search MPICH_DIR "/usr/local/mpich/$MPICH_ARCH/$MPICH_DEVICE /usr/local/packages/mpich/$MPICH_ARCH/$MPICH_DEVICE /usr/local/apps/mpich/$MPICH_ARCH/$MPICH_DEVICE /usr/lib/mpich/$MPICH_ARCH/$MPICH_DEVICE /usr/local/lib/mpich/$MPICH_ARCH/$MPICH_DEVICE $HOME/$MPICH_ARCH/$MPICH_DEVICE" include/mpi_errno.h
-           if test -z "$MPICH_DIR" ; then
-             CCTK_Search MPICH_DIR "/usr/local/mpich/$MPICH_DEVICE /usr/local/packages/mpich/$MPICH_DEVICE /usr/local/apps/mpich/$MPICH_DEVICE /usr/lib/mpich/$MPICH_DEVICE /usr/local/lib/mpich/$MPICH_DEVICE $HOME/$MPICH_DEVICE" include/mpi_errno.h
-           fi
-         fi
-       fi
-     else
-       CCTK_Search MPICH_DIR "/usr/local/mpich/$MPICH_DEVICE /usr/local/packages/mpich/$MPICH_DEVICE /usr/local/apps/mpich/$MPICH_DEVICE /usr/lib/mpich/$MPICH_DEVICE /usr/local/lib/mpich/$MPICH_DEVICE $HOME/$MPICH_DEVICE" include/mpi_errno.h
+  echo '  MPICH selected but no MPICH_DIR set. Checking some places...'
+  CCTK_Search MPICH_DIR "/usr /usr/local /usr/local/mpich /usr/local/packages/mpich /usr/local/apps/mpich /usr/lib/mpich /usr/local/lib/mpich $HOME" include/mpi_errno.h
+  if test -z "$MPICH_DIR" ; then
+    if test -n "$MPICH_ARCH" ; then
+      CCTK_Search MPICH_DIR "/usr/local/mpich/$MPICH_ARCH /usr/local/packages/mpich/$MPICH_ARCH /usr/local/apps/mpich/$MPICH_ARCH /usr/lib/mpich/$MPICH_ARCH /usr/local/lib/mpich/$MPICH_ARCH $HOME/$MPICH_ARCH" include/mpi_errno.h
+      if test -z "$MPICH_DIR" ; then
+        if test -n "$MPICH_DEVICE" ; then
+          CCTK_Search MPICH_DIR "/usr/local/mpich/$MPICH_ARCH/$MPICH_DEVICE /usr/local/packages/mpich/$MPICH_ARCH/$MPICH_DEVICE /usr/local/apps/mpich/$MPICH_ARCH/$MPICH_DEVICE /usr/lib/mpich/$MPICH_ARCH/$MPICH_DEVICE /usr/local/lib/mpich/$MPICH_ARCH/$MPICH_DEVICE $HOME/$MPICH_ARCH/$MPICH_DEVICE" include/mpi_errno.h
+          if test -z "$MPICH_DIR" ; then
+            CCTK_Search MPICH_DIR "/usr/local/mpich/$MPICH_DEVICE /usr/local/packages/mpich/$MPICH_DEVICE /usr/local/apps/mpich/$MPICH_DEVICE /usr/lib/mpich/$MPICH_DEVICE /usr/local/lib/mpich/$MPICH_DEVICE $HOME/$MPICH_DEVICE" include/mpi_errno.h
+          fi
+        fi
+      fi
+    else
+      CCTK_Search MPICH_DIR "/usr/local/mpich/$MPICH_DEVICE /usr/local/packages/mpich/$MPICH_DEVICE /usr/local/apps/mpich/$MPICH_DEVICE /usr/lib/mpich/$MPICH_DEVICE /usr/local/lib/mpich/$MPICH_DEVICE $HOME/$MPICH_DEVICE" include/mpi_errno.h
 
-     fi
-   fi
-   if test -z "$MPICH_DIR" ; then
-       echo '  Unable to locate the MPICH directory - please set MPICH_DIR'
-       exit 2
-   fi
+    fi
+  fi
+  if test -z "$MPICH_DIR" ; then
+    echo '  Unable to locate the MPICH directory - please set MPICH_DIR'
+    exit 2
+  fi
 fi
 
 # Find the MPICH architecture
@@ -88,64 +88,70 @@ case "$MPICH_DEVICE" in
 # We use the Makefile.mpich to obtain the include and library paths and libs
 # for Globus. These are already prefixed by -I, -L, and -l resp. so we have to
 # get rid of these. The Cactus makefile will add them later again.
-   if test -z "$GLOBUS_LIB_DIR" ; then
-     echo '  GLOBUS selected, but GLOBUS_LIB_DIR not set !'
-     exit 2
-   fi
-   GLOBUS_MPICH_MAKEFILE="$GLOBUS_LIB_DIR/../etc/Makefile.mpich"
-   if test ! -r "$GLOBUS_MPICH_MAKEFILE" ; then
-     echo "  No Makefile \"$GLOBUS_MPICH_MAKEFILE\" found !"
-     echo '  Did you set GLOBUS_LIB_DIR correctly ?'
-     exit 2
-   fi
+    if test -z "$GLOBUS_LIB_DIR" ; then
+      echo '  GLOBUS selected, but GLOBUS_LIB_DIR not set !'
+      exit 2
+    fi
+    GLOBUS_MPICH_MAKEFILE="$GLOBUS_LIB_DIR/../etc/Makefile.mpich"
+    if test ! -r "$GLOBUS_MPICH_MAKEFILE" ; then
+      echo "  No Makefile \"$GLOBUS_MPICH_MAKEFILE\" found !"
+      echo '  Did you set GLOBUS_LIB_DIR correctly ?'
+      exit 2
+    fi
 
-   GLOBUS_INC_DIRS=`${MAKE-make} -s -f $GLOBUS_MPICH_MAKEFILE userincdir`
-   GLOBUS_INC_DIRS=`echo " $GLOBUS_INC_DIRS" | sed -e 's/ -I/ /g'`
-   MPICH_INC_DIRS="$MPICH_INC_DIRS $GLOBUS_INC_DIRS"
+    GLOBUS_INC_DIRS=`${MAKE-make} -s -f $GLOBUS_MPICH_MAKEFILE userincdir`
+    GLOBUS_INC_DIRS=`echo " $GLOBUS_INC_DIRS" | sed -e 's/ -I/ /g'`
+    MPICH_INC_DIRS="$MPICH_INC_DIRS $GLOBUS_INC_DIRS"
 
-   GLOBUS_LIB_DIRS=`${MAKE-make} -s -f $GLOBUS_MPICH_MAKEFILE userlibpath`
-   MPICH_DEVICE_LIB_DIR=`echo " $GLOBUS_LIB_DIRS" | sed -e 's/ -L/ /g'`
+    GLOBUS_LIB_DIRS=`${MAKE-make} -s -f $GLOBUS_MPICH_MAKEFILE userlibpath`
+    MPICH_DEVICE_LIB_DIR=`echo " $GLOBUS_LIB_DIRS" | sed -e 's/ -L/ /g'`
 
-   GLOBUS_LIBS=`${MAKE-make} -s -f $GLOBUS_MPICH_MAKEFILE userlib`
-   MPICH_DEVICE_LIBS=`echo " $GLOBUS_LIBS" | sed -e 's/ -l/ /g'`
-   ;;
+    GLOBUS_LIBS=`${MAKE-make} -s -f $GLOBUS_MPICH_MAKEFILE userlib`
+    MPICH_DEVICE_LIBS=`echo " $GLOBUS_LIBS" | sed -e 's/ -l/ /g'`
+    ;;
 
- ch_gm)
+  ch_gm)
 ############################# Myrinet device ##################################
 #
-   if test -z "$MYRINET_DIR" ; then
+    if test -z "$MYRINET_DIR" ; then
       echo '  Myrinet device selected but no MYRINET_DIR set. Checking some places...'
       CCTK_Search MYRINET_DIR '/usr /usr/gm /usr/local /usr/local/gm /usr/local/myrinet /usr/local/packages/myrinet /usr/local/apps/myrinet' lib/libgm.a
       if test -z "$MYRINET_DIR" ; then
-         echo '  Unable to locate the Myrinet directory - please set MYRINET_DIR'
-         exit 2
+        echo '  Unable to locate the Myrinet directory - please set MYRINET_DIR'
+        exit 2
       fi
-   fi
-   MPICH_DEVICE_LIB_DIR="$MYRINET_DIR/lib"
-   MPICH_DEVICE_LIBS='gm'
-   ;;
+    fi
+    MPICH_DEVICE_LIB_DIR="$MYRINET_DIR/lib"
+    MPICH_DEVICE_LIBS='gm'
+    ;;
 
- *)
+  *)
 ############################# other devices ##################################
-#
-   MPICH_DEVICE_LIB_DIR=''
-   MPICH_DEVICE_LIBS=''
-   ;;
+    # if an MPICH config file exists, take device libs and libdirs from there
+    # otherwise leave them empty
+    mpichlib_conf_file="$MPICH_DIR/etc/mpichlib.conf"
+    if test -r "$mpichlib_conf_file" ; then
+      base_lib_list=`grep BASE_LIB_LIST $mpichlib_conf_file | perl -ne 's/BASE_LIB_LIST="(.+)"/\1/; print'`
+      MPICH_DEVICE_LIB_DIR=`echo "$base_lib_list" | perl -nae '@libdirs = (); foreach $libdir (@F) { push (@libdirs, $libdir) if ($libdir =~ s/^-L(.+)/\1/) } print "@libdirs"'`
+      MPICH_DEVICE_LIBS=`echo "$base_lib_list" | perl -nae '@libs = (); foreach $lib (@F) { push (@libs, $lib) if ($lib =~ s/^-l(.+)/\1/) } print "@libs"'`
+    else
+      MPICH_DEVICE_LIB_DIR=''
+      MPICH_DEVICE_LIBS=''
+    fi
+    ;;
 esac
 
 # Work out what the MPICH library is called
-
 if test -r "$MPICH_LIB_DIRS/libmpi.a" ; then
-   MPICH_LIB=mpi
+  MPICH_LIB=mpi
 else
-   MPICH_LIB=mpich
+  MPICH_LIB=mpich
 fi
 
 # Set the MPI version name
 MPI_VERSION="MPICH_$MPICH_DEVICE"
 
 # Finally set the library lines.
-
 MPI_LIBS="$MPICH_LIB $MPICH_DEVICE_LIBS"
 MPI_LIB_DIRS="$MPICH_DEVICE_LIB_DIR $MPICH_LIB_DIR"
 MPI_INC_DIRS="$MPICH_INC_DIRS"
