@@ -1,4 +1,4 @@
-#! /usr/bin/perl
+#! /usr/bin/perl -w
 
 #require "parameter_parser.pl";
 
@@ -90,10 +90,53 @@ sub cross_index_interface_data
 
     $interface_data{"IMPLEMENTATION \U$implementation\E ANCESTORS"} = join(" ",( keys %ancestors));
 
+
+    $interface_data{"IMPLEMENTATION \U$implementation\E FRIENDS"} = &get_friends_of_me($implementation, scalar(keys %implementations), (keys %implementations),%interface_data);
+
+  }
+
+  foreach $implementation (keys %implementations)
+  {
+    %friends = &get_implementation_friends($implementation, 0, %interface_data);
+
+    $interface_data{"IMPLEMENTATION \U$implementation\E FRIENDS"} = join(" ",( keys %friends));
   }
 
   return %interface_data;
 }
+
+
+sub get_friends_of_me
+{
+  local($implementation, $n_implementations,@indata) = @_;
+  local(@implementations);
+  local(%interface_data);
+  local($other_implementation);
+  local($thorn);
+  local($friend,$friends);
+
+  @implementations = @indata[0..$n_implementations-1];
+  %interface_data = @indata[$n_implementations..$#indata];
+  
+  foreach $other_implementation (@implementations)
+  {
+
+    $interface_data{"IMPLEMENTATION \U$other_implementation\E THORNS"} =~ m:(\w+):;
+
+    $thorn = $1;
+
+    foreach $friend (split(" ", $interface_data{"\U$thorn\E FRIEND"}))
+    {
+      if($friend =~ m:$implementation:i)
+      {
+	$friends .= "$other_implementation ";
+      }
+    }
+  }
+
+  return $friends;
+}
+  
 
 sub get_implementation_friends
 {
@@ -122,7 +165,8 @@ sub get_implementation_friends
 
   
   # Recurse
-  foreach $friend (split(" ", $interface_data{"\U$thorn\E FRIEND"}))
+  foreach $friend (split(" ", $interface_data{"\U$thorn\E FRIEND"}), 
+		   split(" ", $interface_data{"IMPLEMENTATION \U$implementation\E FRIENDS"}))
   {
     if(! $friends{"\U$friend\E"})
     {
