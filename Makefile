@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.49 1999-09-14 11:29:56 allen Exp $
+#   @version $Id: Makefile,v 1.50 1999-09-25 10:50:56 allen Exp $
 # @@*/
 
 ##################################################################################
@@ -262,20 +262,21 @@ else
 	@echo There is a range of options available to act on a configuration.
 	@echo These are activated by $(MAKE) \<conf-name\>-\<option\>
 	@echo Valid options are
-	@echo "  -clean       : to clean a configuration."
-	@echo "                 (deletes all object and dependency files in "
-	@echo "                  the configuration)."
-	@echo "  -cleandeps   : to clean a configuration\'s dependency files."
-	@echo "  -cleanobjs   : to clean a configuration\'s object files."
-	@echo "  -realclean   : to restore a configuration to almost a new state. "
-	@echo "                 (deletes all but the config-data directory "
-	@echo "                  and the ThornList file)."
-	@echo "  -delete      : to delete a configuration." 
-	@echo "  -rebuild     : to rebuild a configuration." 
-	@echo "                 (forces the CST to be rerun)."
-	@echo "  -config      : to (re)configure a configuration. "
-	@echo "                 (runs or reruns the configuration scripts)."
-	@echo "  -thornlist   : regenerates the ThornList file. "
+	@echo "  -clean         : to clean a configuration."
+	@echo "                  (deletes all object and dependency files in "
+	@echo "                   the configuration)."
+	@echo "  -cleandeps     : to clean a configuration\'s dependency files."
+	@echo "  -cleanobjs     : to clean a configuration\'s object files."
+	@echo "  -realclean     : to restore a configuration to almost a new state. "
+	@echo "                  (deletes all but the config-data directory "
+	@echo "                   and the ThornList file)."
+	@echo "  -delete        : to delete a configuration." 
+	@echo "  -rebuild       : to rebuild a configuration." 
+	@echo "                  (forces the CST to be rerun)."
+	@echo "  -config        : to (re)configure a configuration. "
+	@echo "                  (runs or reruns the configuration scripts)."
+	@echo "  -thornlist     : regenerates the ThornList file. "
+	@echo "  -thornparfiles : copies example parameter files to thornparfiles."
 endif
 	@echo $(DIVIDER)
 	@echo $(MAKE) also knows the following targets
