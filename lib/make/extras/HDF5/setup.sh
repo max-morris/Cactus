@@ -27,7 +27,7 @@ fi
 
 # Check what version we found
 
-grep -qe '#define HAVE_PARALLEL 1' ${HDF5_DIR}/include/H5config.h 2> /dev/null
+grep -qe '#define H5_HAVE_PARALLEL 1' ${HDF5_DIR}/include/H5pubconf.h 2> /dev/null
 test_phdf5=$?
 
 if [ -n "$MPI" ] ; then
