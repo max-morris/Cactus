@@ -1,7 +1,7 @@
 
 Cactus Code Frequently Asked Questions
 
-$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.14 2001-02-06 15:25:21 allen Exp $
+$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.15 2001-03-01 00:00:49 allen Exp $
 
 Also available at http://www.cactuscode.org/Documentation/FAQ
 
@@ -93,11 +93,12 @@ Also available at http://www.cactuscode.org/Documentation/FAQ
 
    Add a dependency to a ThornB's make.configuration.deps file, for example
 
-   ifeq (,$(findstring ArrangementA/ThornA,$(THORNS)))
+   ifneq (,$(findstring ArrangementA/ThornA,$(THORNS)))
    $(CCTK_LIBDIR)$(DIRSEP)libThornB.a : $(CCTK_LIBDIR)$(DIRSEP)libThornA.a
    endif
 
-   we will try to modify the make system to make more automatic in the future.
+   we will try to modify the make system to make this more automatic in the 
+   future.
 
 -------------------------------------------------------------------------------
 
