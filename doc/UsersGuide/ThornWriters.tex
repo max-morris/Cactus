@@ -207,15 +207,14 @@ which marks the rest of the line to the right of its appearence as a comment.
 The {\tt interface.ccl} file is used to declare the implementation 
 provided by the thorn, and to define the variables provided by it.
 
-The implementation is declared by a single line
+The implementation is declared by a single line at the top of the file
 
 \begin{verbatim}
 implements: <name>
 \end{verbatim}
 
-at the top of the file.  <name> can be any combination of alphanumeric 
-characters and underscores, and is case independent as per everything else
-in a CCL file.
+Where {\tt <name>} can be any combination of alphanumeric 
+characters and underscores, and is case independent (as is everything in a CCL file).
 
 There are three different access levels available for variables
 
@@ -234,13 +233,13 @@ statements that can be used to get variables from other thorns.
 
 \begin{itemize}
 \item {\tt Inherits: <name>}
-This gets all {\tt Public} variables from implementation <name>, plus all
+This gets all {\tt Public} variables from implementation {\tt <name>}, plus all
 variables it has in turn inherited.  An implementation may inherit from as
 many thorns as it likes.
 \item {\tt Friend: <name>}
-This gets all {\tt Protected} variables from implementation <name>, but, 
+This gets all {\tt Protected} variables from implementation {\tt <name>}, but, 
 unlike {\tt inherits} it pushes this implementations {\tt Protected}
-vaiables onto implementation <name>.  This keyword is used to define
+variables onto implementation {\tt <name>}.  This keyword is used to define
 a group of implementations which all end up with the same {\tt Protected}
 variables.
 \end{itemize}
@@ -641,32 +640,341 @@ The flesh provides various things to thorns.
 \begin{itemize}
 \item {\tt Variables}
 \item {\tt Parameters}
+\item {\tt Driver functions}
 \item {\tt IO functions}
 \item {\tt Information functions}
 \item {\tt Reduction}
 \item {\tt Interpolation}
 \end{itemize}
 
-\subsection{Variables}
 
+\subsection{Fortran Routines}
+
+Any source file using Cactus infrastructure should include 
+the header file {\tt cctk.h} using the line
+\begin{verbatim}
+#include ``cctk.h''
+\end{verbatim}
+(Fortran programmers should not be put of by this being a C style
+header file, most Cactus files are run through a C preprocessor
+before compilation)
+
+\subsubsection{Variables}
+
+Any routine using Cactus argument lists (for example all 
+routines called from the scheduler) should include at the
+top of the file the header
+\begin{verbatim}
+#include ``cctk_arguments.h''
+\end{verbatim}
+
+A Cactus macro {\tt CCTK\_FARGUMENTS} is defined for each thorn
+to contain
 \begin{itemize}
-\item {\tt Headers}
-\item {\tt Core things from the GH }
-\item {\tt Grid variables}
+\item General information about the grid hierachy, for example
+      the number of grid points used. See Section \ref{sec:cava} for a 
+      complete list.
+\item All the grid variables defined in the thorns {\tt interface.ccl}
+\item All the grid variables required from other thorns as requested by
+      the {\tt inherits} and {\tt friend} lines in the {\tt interface.ccl}
 \end{itemize}
+These variables must be declared at the start of the routine using
+the macro {\tt DECLARE\_CCTK\_FARGUMENTS}. 
 
-\subsection{Parameters}
+To pass the arguments to another routine in the same thorn use the macro 
+{\tt CCTK\_PASS\_FTOF} in the calling routine, and again the macro 
+{\tt CCTK\_FARGUMENTS} in the receiving routine.
+
+
+\subsubsection{Parameters}
 
 All parameters defined in a thorn's {\tt param.ccl} and all {\tt global} 
 parameters appear as local variables in a thorn.  These variables are 
-{\tt read only} and changes should not be made to them.  The effect of
-changing a parameter is undefined.
+{\tt read only} and {\em changes should not be made to them}.  The effect of
+changing a parameter is undefined (at best).
 
+The parameters should be declared at the start of the routine
+using them with the macro {\tt DECLARE\_PARAMETERS}
+
+Any routine using Cactus parameters should include at
+the top of the file the header
+\begin{verbatim}
+#include ``cctk_parameters.h''
+\end{verbatim}
+
+In Fortran, special care should be taken with string valued parameters.
+This parameters are passed as C pointers, and can not be treated as
+normal Fortran strings. To compare a string valued parameter and Fortran
+string use the function {\tt CCTK\_Equals}. To print the value of a string 
+valued parameter to screen, use the subroutine {\tt CCTK\_PrintString}.
+
+\subsubsection{Fortran Example}
+
+The Fortran routine {\tt MyFRoutine} is scheduled in the {\tt schedule.ccl} file,
+doesn't use Cactus parameters, and calls another routine, in the same thorn,  
+{\tt MyNewRoutine} which does use parameters. 
+This routine needs to be passed an integer flag as 
+well as the standard Cactus The source file should look like
+
+\begin{verbatim}
+#include ``cctk.h''
+#include ``cctk_arguments.h''
+#include ``cctk_parameters.h''
+
+      subroutine MyCRoutine(CCTK_FARGUMENTS)
+
+c     I'm very cautious, so I want to declare all variables
+      implicit none 
+
+      DECLARE_CCTK_FARGUMENTS
+
+      integer flag
+
+      flag = 1
+      call MyNewRoutine(CCTK_PASS_FTO_F,flag)
+
+      return 
+      end
+
+      subroutine MyCRoutine(CCTK_FARGUMENTS,flag)
+
+      implicit none 
+
+      DECLARE_CCTK_FARGUMENTS
+      DECLARE_CCTK_PARAMETERS
+      integer flag
+
+c     Main code goes here
+
+      return
+      end
+      
+\end{verbatim}
+
+
+\subsection{C Routines}
+
+Any source file using Cactus infrastructure should include 
+the header file {\tt cctk.h} using the line
+\begin{verbatim}
+#include ``cctk.h''
+\end{verbatim}
+
+\subsubsection{Variables}
+
+Any routine using Cactus argument lists (for example all 
+routines called from the scheduler) should include at the
+top of the file the header
+\begin{verbatim}
+#include ``cctk_arguments.h''
+\end{verbatim}
+
+A Cactus macro {\tt CCTK\_CARGUMENTS} is defined for each thorn
+to contain
 \begin{itemize}
-\item {\tt Headers}
-\item {\tt Appearence of parameters}
-\item {\tt String valued parameters}
+\item General information about the grid hierachy, for example
+      the number of grid points on the processor. See Section \ref{sec:cava} for a 
+      complete list.
+\item All the grid variables defined in the thorns {\tt interface.ccl}
+\item All the grid variables required from other thorns as requested by
+      the {\tt inherits} and {\tt friend} lines in the {\tt interface.ccl}
 \end{itemize}
+These variables must be declared at the start of the routine using
+the macro {\tt DECLARE\_CCTK\_CARGUMENTS}. 
+
+To pass the arguments to another routine in the same thorn use the macro 
+{\tt CCTK\_PASS\_CTOC} in the calling routine, and again the macro 
+{\tt CCTK\_CARGUMENTS} in the receiving routine.
+
+
+\subsubsection{Parameters}
+
+All parameters defined in a thorn's {\tt param.ccl} and all {\tt global} 
+parameters appear as local variables in a thorn.  These variables are 
+{\tt read only} and {\em changes should not be made to them}.  The effect of
+changing a parameter is undefined (at best).
+
+Any routine using Cactus parameters should include at
+the top of the file the header
+\begin{verbatim}
+#include ``cctk_parameters.h''
+\end{verbatim}
+
+The parameters should be declared at the start of the routine
+using them with the macro {\tt DECLARE\_PARAMETERS}
+
+\subsubsection{Example}
+
+The C routine ``MyCRoutine'' is scheduled in the {\tt schedule.ccl} file,
+and uses Cactus parameters. The source file should look like
+\begin{verbatim}
+#include "cctk.h"
+#include "cctk_arguments.h"
+#include "cctk_parameters.h"
+
+void MyCRoutine(CCTK_CARGUMENTS)
+{
+  DECLARE_CCTK_CARGUMENTS
+  DECLARE_CCTK_PARAMETERS
+
+  /* Here goes your code */
+}
+\end{verbatim}
+
+\subsection{Specifically for C Programmers}
+
+Grid functions are held in memory as 1D C arrays. These are laid
+out in memory as in Fortran. This means that the first index should
+be incremented through most rapidly. As can be seen in the example
+below.
+
+
+Cactus provides
+macros to find the 1D index which is needed from the multidimensional
+indices which are usually used. There is a macro for each dimension of
+grid function.  Below is an articifial example to demonstrate this
+using the 3D macro {\tt CCTK\_GFINDEX3D}:
+\begin{verbatim}
+for (k=0; k<cctk_lsh[2]; k++)
+{
+  for (j=0; j<cctk_lsh[1]; j++)
+  {
+    for (i=0; i<cctk_lsh[0]; i++)
+    {
+      My3DGF [CCTK_GFINDEX3D(cctkGH,i,j,k)] = i*j*k;
+    }
+  }
+}
+\end{verbatim}
+
+Here, CCTK ...
+
+\subsection{Cactus Variables}
+\label{sec:cava}
+
+The Cactus variables which are passed through the macros
+{\tt CCTK\_FARGUMENTS}, {\tt CCTK\_CARGUMENTS}, etc are
+\begin{itemize}
+\item {\tt cctk\_dim} An integer with the number of dimensions
+      used for this grid hierarchy
+\item {\tt cctk\_lsh} An array of {\tt cctk\_dim} integers
+      with the local grid size on this processor
+\item {\tt cctk\_delta\_time} A {\tt CCTK\_REAL} with the timestep
+\item {\tt cctk\_time} A {\tt CCTK\_REAL} with the current time
+\item {\tt cctk\_space} An array of {\tt cctk\_dim} {\tt CCTK\_REAL}s with
+         the grid spacing in each direction
+\item {\tt cctk\_nghostzones} An array of {\tt cctk\_dim} integers with
+         the number of ghostzones used in each direction
+\item {\tt cctk\_iteration} Integer with the current iteration number
+\item {\tt cctkGH} A C pointer identifying the grid hierachy
+\end{itemize}
+
+The following variables describe the location of the local
+grid (e.g. the grid treated on a given processor) within 
+the global grid.
+\begin{itemize}
+\item {\tt cctk\_lbnd} 
+      An array of {\tt cctk\_dim} integers 
+      containing the lowest index (in each direction) 
+      of the local grid, as seen on the global grid 
+\item {\tt cctk\_ubnd} 
+      An array of {\tt cctk\_dim} integers 
+      containing the largest index (in each direction) 
+      of the local grid, as seen on the global grid 
+\item {\tt cctk\_bbox} 
+      An array of 2*{\tt cctk\_dim} integers 
+      which indicate whether the boundaries are internal boundaries
+      (e.g. between processors), or physical boundaries.
+\end{itemize}
+
+The following variable is needed for grid refinement methods
+\begin{itemize}
+\item {\tt cctk\_levfac} The factor by which the local grid is refined
+        with respect to the base grid.
+\end{itemize}
+
+\subsection{Providing Run Time Information}
+
+To write from thorns to standard output ({\it i.e.} the screen) 
+at runtime, use the function {\tt CCTK\_INFO}. 
+For example, from the Fortran thorn {\tt MyThorn},
+
+\begin{verbatim}
+call CCTK\_INFO(``Starting Tricky Calculation'')
+\end{verbatim}
+
+will write the line:
+
+\begin{verbatim}
+INFO (MyThorn): Starting Tricky Calculation
+\end{verbatim}
+
+For a multiprocessor run, only information from processor zero 
+will appear. If the ``{\tt -r''} command line option is used 
+(Section~\ref{sec:coliop}) the output from this command will be redirected.
+
+To output a variable using {\tt CCTK\_INFO} currently requires you
+to use for Fortran something like
+
+\begin{verbatim}
+write(infoline,'(A,1X,I)') 'The integer was ',inum
+call CCTK_INFO(infoline)
+\end{verbatim}
+
+and for C
+
+\begin{verbatim}
+char *infoline;
+infoline = (char *)malloc(18*sizeof(char));
+sprintf(infoline,'The integer was %d',inum);
+CCTK_INFO(infoline);
+free(infoline);
+\end{verbatim}
+
+Notes
+\begin{itemize}
+\item{} {\tt CCTK\_INFO} is actually a macro for the function
+        {\tt CCTK\_Info(<thorn name>,<message>)} which automatically
+        includes the thorn name.
+
+\item{} {\tt CCTK\_INFO} should be used rather than print statements,
+       since it will give consistent behaviour on multiprocessors, and
+       also provides a mechanism for switching the output to screen on 
+       and off, even on a thorn-by-thorn basis. (Although this is 
+       not yet implemented).
+\end{itemize}
+
+
+\subsection{Adding Parallelisation}
+
+The flesh itself does not actually set up grid variables. This 
+is done by a {\it driver} thorn. To allow the distribution of 
+a grid over a number of processors, the driver thorn must 
+also provide the grid decomposition, and routines to enable 
+parallelisation. The method used to provide this parallelisation
+(e.g. MPI, PVM) is not usually important for the thorn writer since
+the driver thorn provides routines which are called by standard interfaces
+from the flesh. Here we describe briefly the most important of these routines
+for the application thorn writer. A more detailed description
+of these interfaces with their arguments, is given in the Function Reference
+Guide.
+A complete description of the
+routines a driver thorn must provide will be provided in the 
+Interface Thorn Writers guide. The standard driver thorn is 
+currently {\tt PUGH} in the {\tt CactusPUGH} package, which 
+is a parallel unigrid driver. 
+
+\begin{Lentry}
+\item[{\tt CCTK\_nProcs}] Returns the number of processors being used
+\item[{\tt CCTK\_MyProc}] Returns the processor number (this starts at
+  processor number zero
+\item[{\tt CCTK\_SyncGroup}] Synchronises a group of variables by 
+  exchanging the values held in each processor ghostzones with the
+  physical values of their neighbours
+\item[{\tt CCTK\_Barrier}] Waits for all processors to reach this point
+  before proceeding
+\end{Lentry}
+
 
 \subsection{IO}
 \label{sec:io}
