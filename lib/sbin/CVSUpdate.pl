@@ -9,6 +9,9 @@
 #  @version $Header$
 #@@*/
 
+$cvs_ops="-z6 -q";
+$cvs_update_ops="-d -P";
+
 require "lib/sbin/MakeUtils.pl";
 
 $debug = 0;
@@ -18,7 +21,7 @@ if ($debug)
 }
 
 print("\nUpdating Flesh\n");
-$command = "cvs -z 3 -q update -d -P CONTRIBUTORS COPYRIGHT Makefile lib doc src";
+$command = "cvs $cvs_ops update $cvs_update_ops CONTRIBUTORS COPYRIGHT Makefile lib doc src";
 if ($debug)
 {
   $this_dir = `pwd`;
@@ -66,7 +69,7 @@ foreach $thorn (sort keys %info)
   }
   chdir $thorn;
   print("\nUpdating $thorn\n");
-  $command = "cvs -z 3 -q update -d -P";
+  $command = "cvs $cvs_ops update $cvs_update_ops";
   if($debug)
   {
     $this_dir = `pwd`;
@@ -98,4 +101,3 @@ chdir $current_dir;
 
 
 exit;
-

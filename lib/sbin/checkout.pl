@@ -8,6 +8,9 @@
 #@@*/
 # /usr/bin/perl -s
 
+$cvs_ops="-z6 -q";
+$cvs_checkout_ops="-P";
+
 # Set debug to 1 for off line checking
 $debug = 0;
 
@@ -389,7 +392,7 @@ sub CheckOut
 
   print("Checking out $file\n");
 
-  open(MODULES,"cvs -z9 -q checkout $file |");
+  open(MODULES,"cvs $cvs_ops checkout $cvs_checkout_ops $file |");
 #  @dummy = <MODULES>;
   while(<MODULES>)
   {
@@ -418,7 +421,7 @@ sub CheckOutREADME
 {
   my($file) = @_;
 
-  open(MODULES,"cvs -z9 -q checkout $file |");
+  open(MODULES,"cvs $cvs_ops checkout $cvs_checkout_ops $file |");
   @dummy = <MODULES>;
   close(MODULES);
 
@@ -505,6 +508,3 @@ sub RepositoryExists
   return !$?;
 
 }
-
-
-
