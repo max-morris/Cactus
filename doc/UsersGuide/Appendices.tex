@@ -623,7 +623,9 @@ directories if they are missing from your local copy. This is normally
 the case if another user has added files or directories to the
 repository. By default the {\bf update} command only acts on files in
 your local copy. Note that omitting this option is a frequent cause of 
-files missing during compilation.
+files missing during compilation.  (You can change this
+default behavior of cvs by putting a .cvsrc in your home directory
+with the contents ``update -d''.)
 
 \end{Lentry}
 
@@ -715,7 +717,7 @@ directory {\em BMod}, and you want to add {\em CMod} inside {\em BMod}, then cha
 \item[{\bf Checkout}] To obtain a fresh copy of Cactus, move to a directory
   which does not contain a previously checked out version, and type
   {\t
-    cvs -z9 -d :pserver:cvs\_anon@cvs.cactuscode.org:/cactus checkout Cactus
+    cvs -d :pserver:cvs\_anon@cvs.cactuscode.org:/cactus checkout Cactus
     }
   The CVS checkout procedure will create a directory called {\bf
   Cactus} and install the code inside this directory.  From now on we
@@ -727,16 +729,16 @@ directory {\em BMod}, and you want to add {\em CMod} inside {\em BMod}, then cha
    into the {\bf arrangements} directory. To see the 
   available Cactus arrangements and thorns type
   {\t 
-    cvs -z9 -d :pserver:cvs\_anon@cvs.cactuscode.org:/cactus checkout -s
+    cvs -d :pserver:cvs\_anon@cvs.cactuscode.org:/cactus checkout -s
   }
   To check out an arrangement or thorn go to the arrangements directory,  {\t cd arrangements},
   and  for an arrangement type
 {\t 
-  cvs -z9 checkout <arrangement\_name>
+  cvs checkout <arrangement\_name>
   }
         or for just one thorn
 {\t 
-cvs -z9 checkout <arrangement\_name/thorn\_name>
+cvs checkout <arrangement\_name/thorn\_name>
 }
  
 To simplify this procedure you may use {\t gmake checkout} in the Cactus
@@ -746,7 +748,7 @@ home directory which provides menus to pick arrangements and thorns from.
 \item[{\bf Update}] To update an existing Cactus checkout (to patch in
   possible changes, etc.), do the following {\em within} the {\tt Cactus} directory.
   {\t
-    cvs -z9 update
+    cvs update
     }
   The update process will operate recursively downwards from your current position
   within the Cactus tree. To update only on certain directories, change
@@ -855,10 +857,3 @@ This section still needs to be written.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \end{cactuspart}
-
-
-
-
-
-
-

@@ -70,7 +70,7 @@ and can only contain
 letters, numbers or underscores. Arrangement names which start with a 
 `\#', or finish with `\~{}' or `.bak' will be ignored.
 
-Inside a arrangement directory there are directories for each thorn 
+Inside an arrangement directory there are directories for each thorn 
 belonging to the arrangement.  
 
 \section{Implementations}
@@ -308,22 +308,24 @@ A boolean type which can take values 1, `t', `true', `yes' or
 0, `f', `false', `no'.
 \end{Lentry}
 
+\item the parameter name
+
 \item a {\tt description} of the parameter
 
-\item an allowed value block
+\item an allowed value block ---
 This consists of a brace delimited block of lines
 describing the allowed values of the parameter.  Each range may
 have a description associated with it by placing a :: on the line and
 putting the description afterwards.
 
-\item the default value
+\item the default value ---
 This must be one of the allowed values.
 
 \end{itemize}
 
 For the numeric types {\tt INT} and {\tt REAL}, a range consists 
 of a string of the
-forms lower-bound:upper-bound:step where a missing number or a \* denotes
+forms lower-bound:upper-bound:step where a missing number or a * denotes
 anything (i.e. infinite bounds or an infinitesimal step).
 
 For example 
@@ -466,8 +468,9 @@ Convergence stuff.
 
 \end{Lentry}
 
-These time bins can be given in the {\tt schedule.ccl} file with
-or without the initial {\tt CCTK\_}, and in any case.
+%These time bins can be given in the {\tt schedule.ccl} file with
+%or without the initial {\tt CCTK\_}, and in any case.
+%[[ This is redundant. ]]
 
 \item[{\tt STORAGE}] The {\tt STORAGE} keyword specifies any groups for 
 which  memory should be
