@@ -50,6 +50,46 @@ static int cactus_terminate_global = 0;
 int CCTK_StepGH(cGH *GH);
  
 
+/* the iteration counter used in the evolution loop */
+static int iteration = 0;
+
+
+ /*@@
+   @routine    CCTK_SetMainLoopIndex
+   @date       Sep 22 1999
+   @author     Thomas Radke
+   @desc 
+               Sets the iteration counter variable of the evolution loop.
+               This is used for recovery.
+   @enddesc 
+   @calls     
+   @calledby   
+
+@@*/
+int CCTK_SetMainLoopIndex (int main_loop_index)
+{
+  iteration = main_loop_index;
+}
+
+
+ /*@@
+   @routine    CCTK_MainLoopIndex
+   @date       Sep 22 1999
+   @author     Thomas Radke
+   @desc 
+               Returns the iteration counter variable of the evolution loop.
+               This is used for checkpointing.
+   @enddesc 
+   @calls     
+   @calledby   
+
+@@*/
+int CCTK_MainLoopIndex (void)
+{
+  return (iteration);
+}
+
+
  /*@@
    @routine    CactusDefaultEvolve
    @date       Thu Oct  8 17:30:15 1998
@@ -69,10 +109,7 @@ int CactusDefaultEvolve(tFleshConfig *config)
 
   DECLARE_CCTK_PARAMETERS
 
-  int iteration;
   int convergence_level;
-
-  iteration = 0;
 
 #ifdef DEBUG_CCTK
   CCTK_PRINTSEPARATOR

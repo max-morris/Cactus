@@ -106,6 +106,10 @@ int CCTK_GroupTypeNumber(const char *type);
 
 int CCTKi_BindingsImplementationsInitialise(void);
 
+int CCTK_MainLoopIndex (void);
+
+int CCTK_SetMainLoopIndex (int main_loop_index);
+
 #ifdef __cplusplus
 }
 #endif
