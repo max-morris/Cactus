@@ -226,7 +226,7 @@ else
 
 # Set the appropriate dependency, warning, and debugging flags
 # Note that the defaults settings are for gcc/g++ and they are set by configure
-  case "$CC" in
+  case `basename $CC` in
     [ei]cc)
       if test "$OPTIMISE" = "no"; then
         : ${CFLAGS='-O0 -restrict'}
@@ -248,7 +248,7 @@ else
       ;;
   esac
 
-  case "$CXX" in
+  case `basename $CXX` in
     [ei]cc | ecpc)
       if test "$OPTIMISE" = "no"; then
         : ${CXXFLAGS='-restrict -O0'}
