@@ -30,6 +30,8 @@ OVERLOADABLE(DisableGroupComm)
 #undef ARGUMENTS
 #define ARGUMENTS cGH *GH
 OVERLOADABLE(Barrier)
+OVERLOADABLE(GetMyProc)
+OVERLOADABLE(GetnProcs)
 
 #undef ARGUMENTS
 #define ARGUMENTS cGH *GH,                \

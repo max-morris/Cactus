@@ -23,11 +23,15 @@ static char *rcsid="$Header$";
 
   /* Deal seperately with the SetupGH routine */
 #define CCTK_DummySetupGH  CactusDefaultSetupGH
+#define CCTK_DummyGetMyProc  CactusDefaultGetMyProc
+#define CCTK_DummyGetnProcs  CactusDefaultGetnProcs
 
 #include "CommOverloadables.h"
 
   /* Reset the #define to prevent complications. */
 #undef CCTK_DummySetupGH  
+#undef CCTK_DummyGetMyProc  
+#undef CCTK_DummySetGetnProcs
 
 #undef OVERLOADABLE(name)
 
@@ -62,11 +66,15 @@ int SetupCommFunctions(void)
 
   /* Deal seperately with the SetupGH routine */
 #define CCTK_DummySetupGH  CactusDefaultSetupGH
+#define CCTK_DummyGetMyProc  CactusDefaultGetMyProc
+#define CCTK_DummyGetnProcs  CactusDefaultGetnProcs
 
 #include "CommOverloadables.h"
 
   /* Reset the #define to prevent complications. */
 #undef CCTK_DummySetupGH  
+#undef CCTK_DummyGetMyProc  
+#undef CCTK_DummyGetnProcs
 
 #undef OVERLOADABLE(name)
 

@@ -129,3 +129,43 @@ cGH *CactusDefaultSetupGH(tFleshConfig *config, int convergence_level)
 
   return retval;
 }
+
+ /*@@
+   @routine    CactusDefaultGetMyProc
+   @date       Tue Jan 23 1999
+   @author     Gabrielle Allen
+   @desc 
+   Default cactus GetMyProc routine.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+
+int CactusDefaultGetMyProc(cGH *GH)
+{
+  return 0;
+}
+
+ /*@@
+   @routine    CactusDefaultGetnProcs
+   @date       Tue Jan 23 1999
+   @author     Gabrielle Allen
+   @desc 
+   Default cactus GetnProcs routine.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+
+int CactusDefaultGetnProcs(cGH *GH)
+{
+  return 1;
+}
