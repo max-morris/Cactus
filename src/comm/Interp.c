@@ -689,15 +689,21 @@ int CCTK_InterpGV (cGH *GH,
   const void **interp_coord_arrays;
   void **out_arrays;
   struct interp_info *operator;
+  static int obsolete_warning_first_time_flag = 1;
 
 
-  /* warn the user that this API is obselete and will disappear soon! */
+  /* warn the user that this API is obsolete and will disappear soon! */
+  /* (but only warn once per processor per API) */
+  if (obsolete_warning_first_time_flag)
+  {
+    obsolete_warning_first_time_flag = 0;
     CCTK_VWarn(1, __LINE__, __FILE__, "Cactus",
 "\n"
 "***\n"
 "*** CCTK_InterpGV()  is obsolescent and will be phased out soon!\n"
 "*** You should convert your code to use CCTK_InterpGridArrays() instead.\n"
 "***\n");
+  }
 
   /* Get the interpolation operator routine and the coordinate system name */
   operator = (struct interp_info *) Util_GetHandledData (interp_operators,
@@ -777,15 +783,21 @@ void CCTK_FCALL CCTK_FNAME (CCTK_InterpGV)
   const void **interp_coord_arrays;
   void **out_arrays;
   struct interp_info *operator;
+  static int obsolete_warning_first_time_flag = 1;
 
 
-  /* warn the user that this API is obselete and will disappear soon! */
+  /* warn the user that this API is obsolete and will disappear soon! */
+  /* (but only warn once per processor per API) */
+  if (obsolete_warning_first_time_flag)
+  {
+    obsolete_warning_first_time_flag = 0;
     CCTK_VWarn(1, __LINE__, __FILE__, "Cactus",
 "\n"
 "***\n"
 "*** CCTK_InterpGV()  is obsolescent and will be phased out soon!\n"
 "*** You should convert your code to use CCTK_InterpGridArrays() instead.\n"
 "***\n");
+  }
 
   /* Get the interpolation operator and the coordinate system name */
   operator = (struct interp_info *) Util_GetHandledData (interp_operators,
@@ -958,14 +970,21 @@ int CCTK_InterpLocal (cGH *GH,
   const void **coord_arrays, **interp_coord_arrays, **in_arrays;
   void **out_arrays;
   struct interp_info *operator;
+  static int obsolete_warning_first_time_flag = 1;
 
-  /* warn the user that this API is obselete and will disappear soon! */
+
+  /* warn the user that this API is obsolete and will disappear soon! */
+  /* (but only warn once per processor per API) */
+  if (obsolete_warning_first_time_flag)
+  {
+    obsolete_warning_first_time_flag = 0;
     CCTK_VWarn(1, __LINE__, __FILE__, "Cactus",
 "\n"
 "***\n"
 "*** CCTK_InterpLocal()  is obsolescent and will be phased out soon!\n"
 "*** You should convert your code to use CCTK_InterpLocalUniform() instead.\n"
 "***\n");
+  }
 
   /* Get the interpolation operator */
   operator = (struct interp_info *) Util_GetHandledData (interp_operators,
@@ -1050,15 +1069,21 @@ void CCTK_FCALL CCTK_FNAME (CCTK_InterpLocal)
   const void **coord_arrays, **interp_coord_arrays, **in_arrays;
   void **out_arrays;
   struct interp_info *operator;
+  static int obsolete_warning_first_time_flag = 1;
 
 
-  /* warn the user that this API is obselete and will disappear soon! */
+  /* warn the user that this API is obsolete and will disappear soon! */
+  /* (but only warn once per processor per API) */
+  if (obsolete_warning_first_time_flag)
+  {
+    obsolete_warning_first_time_flag = 0;
     CCTK_VWarn(1, __LINE__, __FILE__, "Cactus",
 "\n"
 "***\n"
 "*** CCTK_InterpLocal()  is obsolescent and will be phased out soon!\n"
 "*** You should convert your code to use CCTK_InterpLocalUniform() instead.\n"
 "***\n");
+  }
 
   /* Get the interpolation operator */
   operator = (struct interp_info *) Util_GetHandledData (interp_operators,
