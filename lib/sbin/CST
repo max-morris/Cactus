@@ -6,7 +6,7 @@
 #  @desc
 #             Parses the the configuration files for thorns.
 #  @enddesc
-#  @version   $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.54 2003-09-05 13:59:07 tradke Exp $
+#  @version   $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.55 2003-09-08 08:56:29 tradke Exp $
 #@@*/
 
 # Global parameter to track the number of errors from the CST
@@ -20,24 +20,16 @@ $error_string = '';
 ##########################################################################
 # Parse the command line
 
-$activethorns = shift(@ARGV);
+$thornlist = shift(@ARGV);
 
-if (! $activethorns)
+if (! $thornlist)
 {
-    printf 'Usage: CST [-top=<TOP>] [-config_dir=<config directory>] [-cctk_home=<CCTK home dir>] -bindings_dir=<CCTK bindings directory> ActiveThornList';
-    exit;
+  printf 'Usage: CST [-top=<TOP>] [-config_dir=<config directory>] [-cctk_home=<CCTK home dir>] -bindings_dir=<CCTK bindings directory> ThornList';
+  exit;
 }
 
-
-if(! $top)
-{
-  $top = `pwd`;
-}
-
-if(! $config_dir)
-{
-  $config_dir = "$top/config-data";
-}
+$top = `pwd` if (! $top);
+$config_dir = "$top/config-data" if (! $config_dir);
 $system_database{"CONFIG_DIR"} = $config_dir;
 
 # Set up the CCTK home directory
@@ -46,13 +38,10 @@ if(! $cctk_home)
   $cctk_home = $ENV{'CCTK_HOME'} || "$ENV{HOME}/CCTK";
   $cctk_home =~ s:/$::g;
 }
-$system_database{"CCTK_HOME"} = $cctk_home;
+$system_database{'CCTK_HOME'} = $cctk_home;
 
-if(! $bindings_dir)
-{
-  $bindings_dir = "$top/bindings";
-}
-$system_database{"BINDINGS_DIR"} = $bindings_dir;
+$bindings_dir = "$top/bindings" if (! $bindings_dir);
+$system_database{'BINDINGS_DIR'} = $bindings_dir;
 
 
 ########################################################################
@@ -61,10 +50,8 @@ $system_database{"BINDINGS_DIR"} = $bindings_dir;
 
 $sbin_dir = "$cctk_home/lib/sbin";
 
-if (!-e "$sbin_dir/parameter_parser.pl" )
-{
-  die "Unable to find CCTK sbin directory - tried $sbin_dir\n";
-}
+die "Unable to find CCTK sbin directory - tried $sbin_dir\n"
+  if (! -e "$sbin_dir/parameter_parser.pl");
 
 require "$sbin_dir/parameter_parser.pl";
 require "$sbin_dir/interface_parser.pl";
@@ -91,7 +78,7 @@ require "$sbin_dir/BuildHeaders.pl";
 
 # Find out which thorns we have and the location of the ccl files.
 print "Reading ThornList...\n";
-%thorns = &CreateThornList($cctk_home, $activethorns);
+%thorns = &CreateThornList($cctk_home, $thornlist);
 
 # Parse the interface.ccl files
 print "Parsing configuration files...\n";
@@ -133,16 +120,11 @@ print "Checking consistency...\n";
 print "Creating Thorn-Flesh bindings...\n";
 &CreateBindings($bindings_dir, \%parameter_database, \%interface_database, \%schedule_database, $configuration_database);
 
-# Create header file of active thorns for the code
-$activethornsheader = &CreateActiveThornsHeader(%source_thorns);
-&WriteFile("$bindings_dir/include/thornlist.h", \$activethornsheader);
-
-# Create define file of active thorns
-$definethornsheader = &CreateDefineThornsHeader(%source_thorns);
+# Create header files of compiled thorns for the code
+($thornsheader, $definethornsheader, $definethisthornheader) =
+&CreateThornsHeaders(%source_thorns);
+&WriteFile("$bindings_dir/include/thornlist.h", \$thornsheader);
 &WriteFile("$bindings_dir/include/cctk_DefineThorn.h", \$definethornsheader);
-
-# Create define file for this thorn
-$definethisthornheader = &CreateDefineThisThornHeader(%source_thorns);
 &WriteFile("$bindings_dir/include/definethisthorn.h", \$definethisthornheader);
 
 # Create the header files used by the thorns
@@ -154,22 +136,22 @@ $make_thornlist = &CreateMakeThornlist(\%thorns, \%interface_database);
 # Stop the make process if there were any errors
 if ($CST_errors)
 {
-    if ($CST_errors == 1)
-    {
-      $comment1 = "was 1 error";
-      $comment2 = "This";
-    }
-    else
-    {
-      $comment1 = "were $CST_errors errors";
-      $comment2 = "These";
-    }
-    print "\n\n------------------------------------------------------\n";
-    print "There $comment1 during execution of the CST\n";
-    print "$comment2 must be corrected before compilation can proceed\n";
-    print "------------------------------------------------------\n\n";
-    &CST_PrintErrors;
-    exit(1);
+  if ($CST_errors == 1)
+  {
+    $comment1 = 'was 1 error';
+    $comment2 = 'This';
+  }
+  else
+  {
+    $comment1 = "were $CST_errors errors";
+    $comment2 = 'These';
+  }
+  print "\n\n------------------------------------------------------\n";
+  print "There $comment1 during execution of the CST\n";
+  print "$comment2 must be corrected before compilation can proceed\n";
+  print "------------------------------------------------------\n\n";
+  &CST_PrintErrors;
+  exit(1);
 }
 else
 {
@@ -189,34 +171,30 @@ exit;
 #############################################################################
 
 #/*@@
-#  @routine    CreateThornList
-#  @date       Thu Jan 28 15:18:45 1999
-#  @author     Tom Goodale
+#  @routine CreateThornList
+#  @date    Thu Jan 28 15:18:45 1999
+#  @author  Tom Goodale
 #  @desc
-#  Parses the ActiveThorns file and extracts the thorn names.
+#           Parses the ThornList file and extracts the thorn names.
 #  @enddesc
 #@@*/
-
 sub CreateThornList
 {
-  my($cctk_home, $activethorns) = @_;
+  my($cctk_home, $thornlist) = @_;
   my(%thornlist);
   my($thorn, $package, $thorn_name);
 
-  open(ACTIVE, "<$activethorns") || die "Cannot open ActiveThorns file $activethorns !";
+  open(THORNLIST, "<$thornlist") || die "Cannot open ThornList file $thornlist !";
 
   # Put a reference to the main cctk sources in.
-  $thornlist{"Cactus"} = "$cctk_home/src";
-
-#  print "cctk_home is $cctk_home\n";
+  $thornlist{'Cactus'} = "$cctk_home/src";
 
   # Loop through the lines of the file.
-  while(<ACTIVE>)
+  while(<THORNLIST>)
   {
     #Ignore comments.
     s/\#(.*)$//g;
     s/!(.*)$//g;
-
     s/\n//g;                # Different from chop...
 
     #Ignore blank lines
@@ -230,16 +208,13 @@ sub CreateThornList
       $thorn_name = $2;
 
       # Check valid thornname
-
       if (!TestName(1,$thorn_name))
       {
-        $message = "Thorn name $thorn_name is not valid";
-        $hint = "Thorn names must begin with a letter, can only contain letters, numbers and underscores, and must contain 27 or less\n";
-        &CST_error(0,$message,$hint,__LINE__,__FILE__);
+        &CST_error(0, "Thorn name $thorn_name is not valid",
+                   'Thorn names must begin with a letter, can only contain ' .
+                   'letters, numbers and underscores, and must contain 27 ' .
+                   'or less', __LINE__, __FILE__);
       }
-
-      # No longer strip thorn_ off the beginning of a thorn name.
-      #      $thorn_name =~ s/thorn_//;
 
       if( -d "$cctk_home/arrangements/$thorn")
       {
@@ -247,40 +222,37 @@ sub CreateThornList
             -r "$cctk_home/arrangements/$thorn/interface.ccl" &&
             -r "$cctk_home/arrangements/$thorn/schedule.ccl")
         {
-          if( $thornlist{"$thorn_name"} )
+          if($thornlist{$thorn_name})
           {
-            $thornlist{"$thorn_name"} =~ m:.*/(.*)/[^/]*$:;
+            $thornlist{$thorn_name} =~ m:.*/(.*)/[^/]*$:;
             if ($package ne $1)
             {
-              $message = "Duplicate thornname $thorn_name in $1 and $package";
-              &CST_error(0,$message,"",__LINE__,__FILE__);
+              &CST_error(0, "Duplicate thornname $thorn_name in $1 and $package",
+                         '', __LINE__, __FILE__);
             }
             else
             {
-              $message = "Ignoring duplicate thorn $package/$thorn_name";
-              &CST_error(1,$message,"",__LINE__,__FILE__);
+              &CST_error(1, "Ignoring duplicate thorn $package/$thorn_name",
+                         '', __LINE__, __FILE__);
             }
           }
           else
           {
-            $thornlist{"$thorn_name"} = "$cctk_home/arrangements/$thorn";
+            $thornlist{$thorn_name} = "$cctk_home/arrangements/$thorn";
           }
         }
         else
         {
-          $message = "$thorn - missing ccl file(s)";
-          &CST_error(0,$message,"",__LINE__,__FILE__);
-          next;
+          &CST_error(0, "$thorn - missing ccl file(s)", '', __LINE__, __FILE__);
         }
       }
       else
       {
-         $message = "Missing thorn $thorn";
-         &CST_error(0,$message,"",__LINE__,__FILE__);
+         &CST_error(0, "Missing thorn $thorn", '', __LINE__, __FILE__);
       }
     }
   }
-  close ACTIVE;
+  close THORNLIST;
 
   return %thornlist;
 }
@@ -332,26 +304,23 @@ sub CreateMakeThornlist
   my($thorn_linklist);
   my($config_thornlist);
 
-  $thornlist        = "THORNS         =";
-  $thorn_linklist   = "THORN_LINKLIST =";
-  $config_thornlist = "CONFIG_THORNS  =";
+  $thornlist        = 'THORNS         =';
+  $thorn_linklist   = 'THORN_LINKLIST =';
+  $config_thornlist = 'CONFIG_THORNS  =';
 
   foreach $thorn (keys %$thorns)
   {
-    if($configuration_database->{"\U$thorn OPTIONS\E"} !~ m/NO_SOURCE/i &&
-      $thorn ne "Cactus")
+    if($configuration_database->{"\U$thorn\E OPTIONS"} ne 'NO_SOURCE' &&
+      $thorn ne 'Cactus')
     {
-      $thorns->{$thorn} =~ m:(.*)/(.*)/(.*):;
-
-      # Only place arrangement_name/thorn_name in the file.
-      $thornlist .= " $2/$3";
+      $thorns->{$thorn} =~ m:.*/(.*/.*):;
+      $thornlist .= " $1";
     }
 
     if( -r "$thorns->{$thorn}/configuration.ccl")
     {
-      $thorns->{$thorn} =~ m:(.*)/(.*)/(.*):;
-      # Only place arrangement_name/thorn_name in the file.
-      $config_thornlist .= " $2/$3";
+      $thorns->{$thorn} =~ m:.*/(.*/.*):;
+      $config_thornlist .= " $1";
     }
   }
 
@@ -382,12 +351,8 @@ sub CreateThornLinkList
   $cross_inherits = 0;
   foreach $thorn (keys %$thorns)
   {
-    next if ($configuration_database->{"\U$thorn OPTIONS\E"} =~ m/NO_SOURCE/i ||
-             $thorn eq "Cactus");
-
-    # add any thorns which this thorn requires to be compiled
-    @requires = split (' ', $configuration_database->{"\U$thorn\E REQUIRES THORNS"});
-    unshift (@libs, @requires) if (@requires);
+    next if ($configuration_database->{"\U$thorn OPTIONS\E"} eq 'NO_SOURCE' ||
+             $thorn eq 'Cactus');
 
     $implementation = $interface_database->{"\U$thorn\E IMPLEMENTS"};
     @anchestors = split (' ', $interface_database->{"IMPLEMENTATION \U$implementation\E ANCESTORS"});
@@ -409,10 +374,12 @@ sub CreateThornLinkList
       unshift (@libs, $implementation);
     }
 
-    if ($interface_database->{"IMPLEMENTATION \U$implementation\E FRIENDS"})
-    {
-      $cross_inherits++;
-    }
+    # add any thorns which this thorn requires to be compiled
+    @requires = split (' ', $configuration_database->{"\U$thorn\E REQUIRES THORNS"});
+    unshift (@libs, @requires) if (@requires);
+
+    $cross_inherits++
+      if ($interface_database->{"IMPLEMENTATION \U$implementation\E FRIENDS"});
   }
 
   # build the thorn liblist from the implementation list
@@ -451,113 +418,50 @@ sub CreateThornLinkList
 }
 
 #/*@@
-#  @routine    CreateActiveThornsHeader
-#  @date       Wed Feb 17 16:06:20 1999
-#  @author     Gabrielle Allen
+#  @routine CreateThornsHeaders
+#  @date    Wed Feb 17 16:06:20 1999
+#  @author  Gabrielle Allen
 #  @desc
-#  Creates the lines which should be placed in the thornlist.h
+#           Creates the lines which should be placed in the header files
+#           "thornlist.h", "definethorn.h", and "definthisthorn.h"
 #  @enddesc
 #@@*/
-
-sub CreateActiveThornsHeader
+sub CreateThornsHeaders
 {
   my(%thorns) = @_;
-  my($header,$thorn,$nthorns);
+  my($header1,$header2,$header3,$thorn,$nthorns);
+
+  $header1 = "\/* List of compiled thorns in the code. *\/\n\n";
+  $header1 .= "static char *thorn_name[] = {\n";
+  $header2 = "\/* Defines for compiled thorns in the code. *\/\n\n";
+  $header3 = "\/* Defines for thorn this file is part of *\/\n\n";
 
   $nthorns = 0;
-
-  $header = "\/* List of active thorns in the code. *\/\n\n";
-  $header .= "static char *thorn_name[] = {\n";
-
   foreach $thorn (keys %thorns)
   {
-    # Ignore the main sources - they may confuse
-    next if ($thorn =~ m:Cactus:);
-
-    $thorns{$thorn} =~ m:(.*)/(.*)/(.*):;
-    $nthorns++;
-
     # Only place package_name/thorn_name in the file.
-    $header .= "\"$2/$3\",\n";
+    $thorns{$thorn} =~ m:.*/(.*)/(.*):;
+
+    $header3 .= "#ifdef THORN_IS_$thorn\n" .
+                "#define CCTK_THORN   $2\n" .
+                "#define CCTK_THORNSTRING \"$2\"\n" .
+                "#define CCTK_ARRANGEMENT $1\n" .
+                "#define CCTK_ARRANGEMENTSTRING \"$1\"\n" .
+                "#endif\n\n";
+
+    # Ignore the main sources for the other headers - they may confuse
+    next if ($thorn eq 'Cactus');
+
+    $header1 .= "\"$1/$2\",\n";
+    $header2 .= "#define \U$1_$2\E\n";
+
+    $nthorns++;
   }
 
-  $header .= "\"\"};\n\n";
-  $header .= "static int nthorns = $nthorns;\n\n";
+  $header1 .= "\"\"};\n\n";
+  $header1 .= "static int nthorns = $nthorns;\n\n";
 
-  return ($header);
-}
-
-
-#/*@@
-#  @routine    CreateDefineThornsHeader
-#  @date       Wed April 6 16:06:20 1999
-#  @author     Gabrielle Allen
-#  @desc
-#  Creates the lines which should be placed in the definethorn.h
-#  which contains a #define <THORNNAME> for each thorn.
-#  @enddesc
-#@@*/
-
-sub CreateDefineThornsHeader
-{
-  my(%thorns) = @_;
-  my($header,$thorn,$nthorns);
-
-  $nthorns = 0;
-
-  $header = "\/* Defines for active thorns in the code. *\/\n\n";
-
-  foreach $thorn (keys %thorns)
-  {
-    # Ignore the main sources - they may confuse
-    next if ($thorn =~ m:Cactus:);
-
-    $thorns{$thorn} =~ m:(.*)/(.*)/(.*):;
-    $nthorns++;
-
-    # Only place package_name/thorn_name in the file.
-    $header .= "#define \U$2"."_"."\U$3\E\n";
-  }
-
-  return ($header);
-}
-
-
-#/*@@
-#  @routine    CreateDefineThisThornHeader
-#  @date       Thu April 22nd 1999
-#  @author     Gabrielle Allen
-#  @desc
-#  Creates the lines which should be placed in the definethisthorn.h
-#  which contains a #define CCTK_THORN <THORNNAME> and a
-#  #define CCTK_ARRANGEMENT <ARRANGEMENTNAME> for each thorn.
-#  @enddesc
-#@@*/
-
-sub CreateDefineThisThornHeader
-{
-  my(%thorns) = @_;
-  my($header,$thorn,$nthorns);
-
-  $nthorns = 0;
-
-  $header = "\/* Defines for thorn this file is part of *\/\n\n";
-
-  foreach $thorn (keys %thorns)
-  {
-    $thorns{$thorn} =~ m:(.*)/(.*)/(.*):;
-    $nthorns++;
-
-    # Only place package_name/thorn_name in the file.
-    $header .= "#ifdef THORN_IS_$thorn\n";
-    $header .= "#define CCTK_THORN   $3\n";
-    $header .= "#define CCTK_THORNSTRING \"$3\"\n";
-    $header .= "#define CCTK_ARRANGEMENT $2\n";
-    $header .= "#define CCTK_ARRANGEMENTSTRING \"$2\"\n";
-    $header .= "#endif\n\n";
-  }
-
-  return ($header);
+  return ($header1, $header2, $header3);
 }
 
 
@@ -593,6 +497,6 @@ sub CreateBindings
   &CreateFunctionBindings($bindings_dir, $rhinterface_db);
 
   # Place an appropriate make.code.defn in the bindings directory.
-  $dataout = "SUBDIRS = Functions Implementations Parameters Variables Schedule";
-  &WriteFile("$bindings_dir/make.code.defn",\$dataout);
+  $data = 'SUBDIRS = Functions Implementations Parameters Variables Schedule';
+  &WriteFile("$bindings_dir/make.code.defn", \$data);
 }
