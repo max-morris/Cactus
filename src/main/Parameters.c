@@ -1094,12 +1094,9 @@ static t_param *ParameterNew(const char *thorn,
                              const char *defval,
                              void       *data)
 {
-  int retval;
   t_param *newparam;
   char ** stringdata;
   
-  retval = -1;
-
   newparam = (t_param *)malloc(sizeof(t_param));
 
   if(newparam)
@@ -1139,7 +1136,7 @@ static t_param *ParameterNew(const char *thorn,
         strcpy(newparam->props->description, description);
         strcpy(newparam->props->defval, defval);
         
-        retval = ParameterInsert(&paramtree, newparam);
+        ParameterInsert(&paramtree, newparam);
       }
     }
   }
