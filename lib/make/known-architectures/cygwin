@@ -47,6 +47,8 @@ else
   if test -n "$F90" ; then 
     if test "`$F90 | grep -i digital`" ; then 
         CYGWIN_F90_COMP=digital
+    elif test "`$F90 | grep -i compaq`" ; then 
+        CYGWIN_F90_COMP=compaq
     else
         echo Unknown Windows f90 compiler.
         echo Please add appropriate information to 
@@ -61,6 +63,11 @@ else
 
   case "$CYGWIN_F90_COMP" in
      digital)
+     : ${F90_LIBS="dfconsol dfport"} 
+     : ${FCOMPILEONLY="/compile_only /object:"}
+     : ${F90FLAGS="/fast /iface:cref"}
+     ;;
+     compaq)
      : ${F90_LIBS="dfconsol dfport"} 
      : ${FCOMPILEONLY="/compile_only /object:"}
      : ${F90FLAGS="/fast /iface:cref"}
