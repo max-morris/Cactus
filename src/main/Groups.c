@@ -13,6 +13,8 @@
 #include <stdarg.h>
 
 #include "flesh.h"
+#include "FortranString.h"
+
 #include "Misc.h"
 #include "Groups.h"
 #include "WarnLevel.h"
@@ -431,6 +433,14 @@ int CCTK_GetVarIndex(const char *variable_name)
 
 }
 
+void  FMODIFIER FORTRAN_NAME(CCTK_GetVarIndex)(int *index,ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE(name)
+  *index = CCTK_GetVarIndex(name);
+  free(name);
+}
+
+
  /*@@
    @routine    CCTK_GetMaxDim
    @date       Mon Feb  8 12:04:01 1999
@@ -448,6 +458,11 @@ int CCTK_GetVarIndex(const char *variable_name)
 int CCTK_GetMaxDim(void)
 {
   return maxdim;
+}
+
+void  FMODIFIER FORTRAN_NAME(CCTK_GetMaxDim)(int *dim)
+{
+  *dim = CCTK_GetMaxDim();
 }
 
 
@@ -470,6 +485,12 @@ int CCTK_GetNumVars(void)
   return total_variables;
 }
 
+void  FMODIFIER FORTRAN_NAME(CCTK_GetNumVars)(int *total_variables)
+{
+  *total_variables = CCTK_GetNumVars();
+}
+
+
  /*@@
    @routine    CCTK_GetNumGroups
    @date       Mon Feb  8 12:04:50 1999
@@ -489,6 +510,12 @@ int CCTK_GetNumGroups(void)
   return n_groups;
 }
 
+void  FMODIFIER FORTRAN_NAME(CCTK_GetNumGroups)(int *n_groups)
+{
+  *n_groups = CCTK_GetNumGroups();
+}
+
+
  /*@@
    @routine    CCTK_GetGroupNameFromVar_ByIndex
    @date       Mon Feb 22
@@ -503,6 +530,7 @@ int CCTK_GetNumGroups(void)
    @endhistory 
 
 @@*/
+
 char *CCTK_GetGroupNameFromVar_ByIndex(int var)
 {
   char *retval;
@@ -525,9 +553,24 @@ char *CCTK_GetGroupNameFromVar_ByIndex(int var)
   return retval;
 }
 
+
+ /*@@
+   @routine    CCTK_GetGroupIndexFromVar_ByIndex
+   @date       Mon Feb 22
+   @author     Gabrielle Allen
+   @desc 
+   Given a variable index return a group index.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+
 int CCTK_GetGroupIndexFromVar_ByIndex(int var)
 {
-
   int retval;
 
   if (var<0 || var>total_variables-1)
@@ -543,10 +586,40 @@ int CCTK_GetGroupIndexFromVar_ByIndex(int var)
 
 }
 
+void  FMODIFIER FORTRAN_NAME(CCTK_GetGroupIndexFromVar_ByI)(int *gindex,int *var)
+{
+  *gindex = CCTK_GetGroupIndexFromVar_ByIndex(*var);
+}
+
+
+
+ /*@@
+   @routine    CCTK_GetGroupIndexFromVar
+   @date       Mon Feb 22
+   @author     Gabrielle Allen
+   @desc 
+   Given a variable name returns a group index.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+
 int CCTK_GetGroupIndexFromVar(const char *var)
 {
   return CCTK_GetGroupIndexFromVar_ByIndex(CCTK_GetVarIndex(var));
 }
+
+void  FMODIFIER FORTRAN_NAME(CCTK_GetGroupIndexFromVar)(int *index,ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE(var)
+  *index = CCTK_GetGroupIndexFromVar(var);
+  free(var);
+}
+
 
  /*@@
    @routine    CCTK_GetImplementationFromVar
@@ -580,6 +653,7 @@ char *CCTK_GetImplementationFromVar(int var)
   return retval;
 }
 
+
  /*@@
    @routine    CCTK_GetFullName(i)
    @date       Mon Feb 22
@@ -595,6 +669,7 @@ char *CCTK_GetImplementationFromVar(int var)
    @endhistory 
 
 @@*/
+
 char *CCTK_GetFullName(int var)
 {
   char *impname;
@@ -635,6 +710,7 @@ char *CCTK_GetFullName(int var)
    @endhistory 
 
 @@*/
+
 int CCTK_GTypeNumber(const char *type)
 {
   int retval=-1;
@@ -656,6 +732,14 @@ int CCTK_GTypeNumber(const char *type)
 
   return retval;
 }
+
+void  FMODIFIER FORTRAN_NAME(CCTK_GTypeNumber)(int *number,ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE(type)
+  *number = CCTK_GTypeNumber(type);
+  free(type);
+}
+
 
  /*@@
    @routine    CCTK_VTypeNumber
@@ -698,6 +782,14 @@ int CCTK_VTypeNumber(const char *type)
   return retval;
 }
 
+void  FMODIFIER FORTRAN_NAME(CCTK_VTypeNumber)(int *number,ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE(type)
+  *number = CCTK_VTypeNumber(type);
+  free(type);
+}
+
+
  /*@@
    @routine    CCTK_GScopeNumber
    @date       Tuesday June 22 1999
@@ -734,6 +826,12 @@ int CCTK_GScopeNumber(const char *type)
   return retval;
 }
 
+void  FMODIFIER FORTRAN_NAME(CCTK_GScopeNumber)(int *number,ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE(type)
+  *number = CCTK_GScopeNumber(type);
+  free(type);
+}
 
 
  /*@@
@@ -777,6 +875,7 @@ int CCTK_GetGroupData(int group,
   return return_code;
 }
 
+
  /*@@
    @routine    CCTK_GetVarName
    @date       Tue Feb  9 15:34:56 1999
@@ -791,6 +890,7 @@ int CCTK_GetGroupData(int group,
    @endhistory 
 
 @@*/
+
 char *CCTK_GetVarName(int varnum)
 {
   char *name;
@@ -824,12 +924,27 @@ char *CCTK_GetVarName(int varnum)
    @endhistory 
 
 @@*/
+
 int CCTK_DecomposeName(const char *fullname, char **implementation, char **name)
 {
   return CCTK_SplitString(implementation, name, fullname, "::");
 }
 
 
+ /*@@
+   @routine    CCTK_GetGroupName
+   @date       Tue Apr  9 15:39:14 1999
+   @author     Gabrielle Allen
+   @desc 
+   Given a group index returns the group name
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
 
 char *CCTK_GetGroupName(int group)
 {
@@ -841,7 +956,8 @@ char *CCTK_GetGroupName(int group)
   }
   else
   {
-    name = (char *)malloc((strlen(groups[group].implementation)+strlen(groups[group].name)+3)*sizeof(char));
+    name = (char *)malloc((strlen(groups[group].implementation)
+			   +strlen(groups[group].name)+3)*sizeof(char));
     if (name)
     {
       sprintf(name, "%s::%s",groups[group].implementation, groups[group].name);
@@ -856,6 +972,21 @@ char *CCTK_GetGroupName(int group)
 }
 
 
+ /*@@
+   @routine    CCTK_GetFirstVarIndex_ByIndex
+   @date       
+   @author     Gabrielle Allen
+   @desc 
+   Given a group index returns the first variable index in the group
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+
 int CCTK_GetFirstVarIndex_ByIndex(int group)
 {
   if (0 <= group && group<n_groups)
@@ -867,6 +998,12 @@ int CCTK_GetFirstVarIndex_ByIndex(int group)
     return -1;
   }
 }
+
+void  FMODIFIER FORTRAN_NAME(CCTK_GetFirstVarIndex_ByIndex)(int *first, int *group)
+{
+  *first = CCTK_GetFirstVarIndex_ByIndex(*group);
+}
+
 
 int CCTK_GetFirstVarIndex(const char *groupname)
 {
@@ -886,10 +1023,49 @@ int CCTK_GetNumVarsInGroup_ByIndex(int group)
   }
 }
 
+
+ /*@@
+   @routine    CCTK_GetNumVarsInGroup
+   @date       
+   @author     Gabrielle Allen
+   @desc 
+   Given a group name returns the number of variables in the group
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+
 int CCTK_GetNumVarsInGroup(const char *groupname)
 {
   return CCTK_GetNumVarsInGroup_ByIndex(CCTK_GetGroupIndex(groupname));
 }
+
+void  FMODIFIER FORTRAN_NAME(CCTK_GetNumVarsInGroup)(int *num,ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE(groupname)
+  *num = CCTK_GetNumVarsInGroup(groupname);
+  free(groupname);
+}
+
+
+ /*@@
+   @routine    CCTK_GetVarGType
+   @date       
+   @author     
+   @desc 
+   Given a variable index return the type of group
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
 
 int CCTK_GetVarGType(int var)
 {
@@ -910,6 +1086,22 @@ int CCTK_GetVarGType(int var)
   return gtype;
 }
 
+
+ /*@@
+   @routine    CCTK_GetVarVType
+   @date       
+   @author     
+   @desc 
+   Given a variable index return the variable type
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+
 int CCTK_GetVarVType(int var)
 {
   int vtype;
@@ -929,7 +1121,28 @@ int CCTK_GetVarVType(int var)
   return vtype;
 }
 
-int CCTK_GetNumTimeLevels(int var)
+void  FMODIFIER FORTRAN_NAME(CCTK_GetVarVType)(int *type,int *var)
+{
+  *type = CCTK_GetVarVType(*var);
+}
+
+
+ /*@@
+   @routine    CCTK_GetNumTimeLevels_ByIndex
+   @date       
+   @author     
+   @desc 
+   Given a variable index return the number of timelevels
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+
+int CCTK_GetNumTimeLevels_ByIndex(int var)
 {
   int ntimelevels;
   int group;
@@ -947,3 +1160,89 @@ int CCTK_GetNumTimeLevels(int var)
   return ntimelevels;
 }
   
+void  FMODIFIER FORTRAN_NAME(CCTK_GetNumTimeLevels_ByIndex)(int *num,int *var)
+{
+  *num = CCTK_GetNumTimeLevels_ByIndex(*var);
+}
+
+
+ /*@@
+   @routine    CCTK_GetNumTimeLevels
+   @date       
+   @author     
+   @desc 
+   Given a variable name return the number of timelevels
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+
+int CCTK_GetNumTimeLevels(const char *var)
+{
+  return CCTK_GetNumTimeLevels_ByIndex(CCTK_GetVarIndex(var));
+}
+
+void  FMODIFIER FORTRAN_NAME(CCTK_GetNumTimeLevels)(int *num,ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE(var)
+  *num = CCTK_GetNumTimeLevels(var);
+  free(var);
+}
+
+
+ /*@@
+   @routine    CCTK_PrintGroup
+   @date       3 July 1999
+   @author     Gabrielle Allen
+   @desc 
+   Given a group index print the group name. This is for debugging
+   purposes for Fortran routines.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+
+void CCTK_PrintGroup(int group)
+{
+  fprintf(stdout,"Group %d is %s\n",group,CCTK_GetGroupName(group));
+}
+
+void  FMODIFIER FORTRAN_NAME(CCTK_PrintGroup)(int *group)
+{
+  CCTK_PrintGroup(*group);
+}
+
+
+ /*@@
+   @routine    CCTK_PrintVar
+   @date       3 July 1999
+   @author     Gabrielle Allen
+   @desc 
+   Given a group index print the variable name. This is for debugging
+   purposes for Fortran.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+
+void CCTK_PrintVar(int var)
+{
+  fprintf(stdout,"Variable %d is %s\n",var,CCTK_GetVarName(var));
+}
+
+void  FMODIFIER FORTRAN_NAME(CCTK_PrintVar)(int *var)
+{
+  CCTK_PrintGroup(*var);
+}
