@@ -401,12 +401,13 @@ int CCTK_ParameterSet (const char *name, const char *thorn, const char *value)
                     "not set from the parameter file but recovered from the "
                     "checkpoint file",
                     thorn, name);
+        retval = ParameterSetSimple (param, value);
       }
       else
       {
         /* do not restore the original value */
+        retval = 0;
       }
-      retval = 0;
     }
     else
     {
