@@ -51,6 +51,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newenvironment{CCTKroutine}{\newpage}{}
 \newenvironment{CCTKsyn}{\noindent\begin{tabular}{@{}p{3cm}cp{11cm}}&&\\{\bf Synopsis} \hfill&&\\}{\end{tabular}}
+% The above needs to be fixed -- sometimes it runs off the page (e.g. with cctk_complex arguments...)
 \newenvironment{CCTKpar}{\noindent\begin{tabular}{@{}p{3cm}cp{11cm}}&&\\{\bf Parameters} \hfill&&\\}{\end{tabular}}
 \newcommand{\CCTKname}[1]{\noindent{\t #1}\hrule}
 \newcommand{\CCTKdesc}[1]{\vskip .3cm \noindent #1}
@@ -605,5 +606,3 @@ maintainers by running autoconf and autoheader respectively).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-

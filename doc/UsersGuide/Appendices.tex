@@ -11,29 +11,33 @@
 \renewcommand{\thepage}{\Alph{part}\arabic{page}}
 
 \chapter{Glossary}
+\label{sec:glossary}
 
 \begin{Lentry}
 
 \item[{\tt arrangement}] A collection of thorns.
 \item[{\tt autoconf}] A GNU program which builds a configuration 
-   script which can be used to make a Makefile
+   script which can be used to make a Makefile.
 \item[{\tt Cactus}] A green fleshy plant with lots of thorns, usually painful if touched.
 \item[{\tt CCTK}] Cactus Computational Tool Kit (The Cactus flesh and
             computational thorns).
 \item[{\tt CCL}] The {\tt Cactus Configuration Language}, this is the language
 that the thorn configuration files are written in.
 \item[{\tt configuration}] 
-\item[{\tt checkout}] Get a copy of the code or thorns from CVS
-\item[{\tt checkpointing}] Save the entire state of a run to file so that it can be restarted at a later time
+\item[{\tt checkout}] Get a copy of the code or thorns from CVS.
+\item[{\tt checkpointing}] Save the entire state of a run to file so that it can be restarted at a later time.
 \item[{\tt convergence}] 
+\item[{\tt CST}] This stands for Cactus Specification Tool, which is
+the perl scripts which parse the thorns' configuration files (those
+that have a \texttt{.ccl} extension).
 \item[{\tt CVS}] The {\em "Concurrent Versioning System"} is the
   favoured distribution system for Cactus and can be
   downloaded from your favorite GNU site.  
-\item[{\tt driver}] A thorn which creates and handles grid hierachies
+\item[{\tt driver}] A thorn which creates and handles grid hierachies.
 \item[{\tt flesh}] The routines which hold all the thorns together, this 
 is what you get if you check out {\tt Cactus} from our CVS repository.
 \item[{\tt friend}] 
-\item[{\tt GF}] Shorthand for a {\tt grid function}
+\item[{\tt GF}] Shorthand for a {\tt grid function}.
 \item[{\tt gmake}] 
 \item[{\tt ghostzone}]
 \item[{\tt grid function}] 
@@ -42,7 +46,7 @@ is what you get if you check out {\tt Cactus} from our CVS repository.
 \item[{\tt grid variable}]
 \item[{\tt GNATS}] The GNU program we use for reporting and tracking bugs, 
   comments and suggestions.
-\item[{\tt HDF5}] Hierarchical Data Format version 5
+\item[{\tt HDF5}] Hierarchical Data Format version 5.
 \item[{\tt implementation}]
 \item[{\tt inherit}] 
 \item[{\tt interpolation}]
@@ -51,13 +55,13 @@ is what you get if you check out {\tt Cactus} from our CVS repository.
 \item[{\tt processor topology}]
 \item[{\tt PUGH}] The default parallel driver for Cactus which uses MPI.
 \item[{\tt PVM}]  {\tt Parallel Virtual Machine}, provides interprocessor
-  communication
+  communication.
 \item[{\tt reduction}]
 \item[{\tt TAGS}] 
 \item[{\tt target}]
 \item[{\tt thorn}] A collection of subroutines with a definite interface 
              and purpose.
-\item[{\tt WMPI}] Win32 Message Passing Interface
+\item[{\tt WMPI}] Win32 Message Passing Interface.
 
 \end{Lentry}
 
@@ -169,7 +173,7 @@ The default value is {\t DIM=3}.
         of the letters {\tt M}, {\tt C}, {\tt P} depending on whether the layout in
         that direction is on the {\tt M}inus face, {\tt C}entre, or {\tt P}lus face
         of the cell in that dimension.
-\item{} The block following the group declaration line contains a list of
+\item{} The (optional) block following the group declaration line contains a list of
         variables contained in the group. All variables in a group have 
         the same data type, variable type and dimension. The list can be 
         separated by spaces, commas, or new lines. The variable names 
@@ -789,7 +793,7 @@ emacs if you add either of the following lines to your {\tt .emacs} file:\\
 where {\tt CACTUS\_HOME } is your Cactus directory.\\
 
 You can now easily navigate your Cactus Flesh and Toolkits by searching for
-functions or "tags":
+functions or ``tags'':
 \begin{enumerate}
 \item \textbf{ Alt.} will find a tag
 \item \textbf{ Alt,} will find the next matching tag

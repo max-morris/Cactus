@@ -289,7 +289,7 @@ from Fortran.
   Provides the number of variables in a group from the group index
 
 \item[CCTK\_NumVarsInGroup]   
-  [\pageref{CCTK-NumVarsInGroup}] 
+  [\pageref{CCTK-NumVarsInGroup}]
   Provides the number of variables in a group from the group name
 
 \item[CCTK\_nProcs]    
@@ -1004,7 +1004,7 @@ system.}
 \showargs
 \begin{params}
 \parameter{ierr}{Error code}
-\parameter{dimension}{Direction of coordinate in coordinate system}
+\parameter{direction}{Direction of coordinate in coordinate system}
 \parameter{gvname}{Name of grid variable associated with coordinate}
 \parameter{coordname}{Name of this coordinate}
 \parameter{systemname}{Name of this coordinate system}
@@ -2457,7 +2457,7 @@ file is created.
 
 % IOOverloadables.h
 \begin{CCTKFunc}{CCTK\_OutputVarByMethod}{}
-\label{CCTK-OutputVarAsMethod}
+\label{CCTK-OutputVarByMethod}
 \subroutine{int}{}{istat}
 \argument{cGH *}{}{cctkGH}
 \argument{const char *}{character*(*)}{variable}
@@ -2930,7 +2930,7 @@ IO methods should be registered at {\t CCTK\_STARTUP}.
 
 % cctk_GHExtensions.h
 \begin{CCTKFunc}{CCTK\_RegisterGHExtensionScheuldeTraverseGH}{Register a GH extension schedule traversal routine}
-\label{CCTK-RegisterGHExtensionrfrTraverseGH}
+\label{CCTK-RegisterGHExtensionScheduleTraverseGH}
 \function{int}{}{istat}
 \argument{int}{}{handle}
 \argument{int}{}{(*func)(cGH *,const char *)}
