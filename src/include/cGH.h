@@ -62,6 +62,10 @@ typedef struct
   /* The coordinate time */
   CCTK_REAL cctk_time;
 
+  /* An identifier string for this hierarchy
+    (used to construct names for output files) */
+  const char *identity;
+
   /* data[var_num][TIMELEVEL][xyz]*/
   /* TIMELEVEL  I believe, xyz is linear */
   void ***data;
