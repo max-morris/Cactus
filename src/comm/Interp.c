@@ -21,6 +21,7 @@
 #include <malloc.h>
 #include <stdarg.h>
 
+#include "cctk.h"
 #include "cctk_Types.h"
 #include "cctk_Constants.h"
 #include "cctk_Flesh.h"
