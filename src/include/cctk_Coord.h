@@ -16,46 +16,42 @@ extern "C"
 {
 #endif
 
-int CCTK_CoordIndex(const char *name);
+int CCTK_CoordRegisterSystem(int dim, const char *systemname);
 
-int CCTK_CoordDir(const char *name);
+int CCTK_CoordRegisterData(int dir, 
+			   const char *gv, 
+			   const char *name,
+			   const char *systemname);
 
-int CCTK_CoordRange(cGH *GH, 
-                    CCTK_REAL *lower, 
-                    CCTK_REAL *upper, 
-                    const char *name);
+int CCTK_CoordIndex(int dir, 
+		    const char *name, 
+		    const char *systemname);
 
-int CCTK_CoordLocalRange(cGH *GH, 
-                         CCTK_REAL *lower, 
-                         CCTK_REAL *upper, 
-                         const char *name);
+int CCTK_CoordDir(const char *name,
+		  const char *systemname);
 
-int CCTK_CoordRegister(int dir, 
-                       const char *gfname, 
-                       const char *coordname);
+int CCTK_CoordSystemDim(const char *systemname);
 
-int CCTK_CoordRegisterI(int dir, 
-                        int index, 
-                        const char *name);
+int CCTK_CoordRange(cGH        *GH, 
+                    CCTK_REAL  *coord_lower, 
+                    CCTK_REAL  *coord_upper, 
+		    int         coord_dir,
+                    const char *coord_name,
+		    const char *system_name);
 
-int CCTK_CoordRegisterRange(cGH *GH, 
-                            CCTK_REAL min, 
-                            CCTK_REAL max, 
-                            const char *coordname);
+int CCTK_CoordLocalRange(cGH        *GH, 
+                         CCTK_REAL  *lower, 
+                         CCTK_REAL  *upper, 
+			 int         coord_dir,
+                         const char *coord_name,
+			 const char *system_name);
 
-/* BEGIN DEPRECATED 4.0b5 */
-
-int CCTK_RegisterCoord(int dir, const char *gfname, const char *coordname);
-
-int CCTK_RegisterCoordI(int dir, int index, const char *name);
-
-int CCTK_RegisterCoordRange( cGH *GH, CCTK_REAL min, CCTK_REAL max, const char *coordname);
-
-/* END DEPRECATED 4.0b5 */
-
-/* DEPRECATED */
-
-CCTK_REAL CCTK_CoordOrigin(const char *name);
+int CCTK_CoordRegisterRange(cGH        *GH, 
+                            CCTK_REAL   coord_min, 
+                            CCTK_REAL   coord_max, 
+			    int         coord_dir,
+                            const char *coord_name,
+			    const char *system_name);
 
 #ifdef __cplusplus 
 }
