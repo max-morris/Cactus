@@ -202,7 +202,7 @@ else
         echo "Setting L2_CACHELINE_BYTES to $L2_CACHELINE_BYTES"
         ;;
        *)
-        echo "Don\'t know cache size for cpu $host_cpu"
+        echo "Don't know cache size for cpu $host_cpu"
         ;;
      esac
   fi
@@ -249,7 +249,7 @@ else
         SIZEOF_POINTER=8
       ;;
       *)
-        echo "Don\'t know details for cross-compilation to $host_cpu"
+        echo "Don't know details for cross-compilation to $host_cpu"
     esac
   fi
 
