@@ -16,7 +16,7 @@
 #
 #
 #   @enddesc
-#   @version $Id: Makefile,v 1.149 2004-03-30 17:49:46 goodale Exp $
+#   @version $Id: Makefile,v 1.150 2004-04-10 19:57:02 schnetter Exp $
 # @@*/
 
 ##################################################################################
@@ -232,6 +232,15 @@ endif
 .PHONY: $(CONFIGURATIONS)
 
 $(CONFIGURATIONS):
+	if test $(CONFIGS_DIR)/$@/config-info -ot $(CCTK_HOME)/lib/make/force-reconfigure ; then \
+	  echo $(DIVIDER);\
+	  echo "Cactus - version: $(CCTK_VERSION)";\
+	  echo "Error: Configuration $@ is out of date.";\
+	  echo "Re-run your '$(MAKE) $@-config' command with the appropriate options.";\
+	  echo "(It is likely that recent changes to the flesh that require this.)";\
+	  echo $(DIVIDER);\
+	  exit 1;\
+	fi
 	if test "x${MAKELEVEL}" = "x0" ; then \
 	  echo $(DIVIDER);\
 	  echo "Cactus - version: $(CCTK_VERSION)"; \
