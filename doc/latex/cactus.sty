@@ -52,6 +52,7 @@
 % Load in other packages.
 
 \RequirePackage{graphicx}
+\RequirePackage{hyperref}
 \RequirePackage{latexsym}
 \RequirePackage{amssymb}
 \RequirePackage{ifthen}
@@ -85,7 +86,8 @@
 \settowidth{\Mylen}{\textsf{#1}}%
 \ifthenelse{\lengthtest{\Mylen > \labelwidth}}%
 {\parbox[b]{\labelwidth}% term > labelwidth
-{\makebox[0pt][l]{\textsf{#1}}\\}}% {\textsf{#1}}%
+{\makebox[0pt][l]{\textsf{#1}}\\}}%
+{\textsf{#1}}%
 \hfil\relax} \newenvironment{Lentry}
   {\renewcommand{\entrylabel}{\Lentrylabel}
    \begin{entry}}
