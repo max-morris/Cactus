@@ -8631,6 +8631,12 @@ returned in the user's buffer (assuming \verb|buffer| is non-NULL),
 followed by a null character to properly terminate the string in the
 buffer.  If any other error code is returned, the user's value buffer
 (pointed to by \verb|buffer| if this is non-NULL) is unchanged.
+
+To find out how long the string is (and thus how big of a buffer you
+need to allocate to avoid having the string truncated), you can call
+this function with $\verb|buffer_length| = 0$ and $\verb|buffer| = \verb|NULL|$
+(or actually anything you want); the return result will give the
+string length.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
