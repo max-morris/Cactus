@@ -130,13 +130,12 @@ sub CreateFortranCommonDeclaration
 
   # Create the data
 
-  $definition_front = "COMMON /$common_block/";
-  $definition = "";
+  $definition = "COMMON /$common_block/";
 
   $sepchar = "";
 
   $n = 0;
-  foreach $parameter (keys %parameters)
+  foreach $parameter (order_params(scalar(keys %parameters), %parameters,%parameter_database))
   {
     $type = $parameter_database{"\U$parameters{$parameter} $parameter\E type"};
       
@@ -153,36 +152,21 @@ sub CreateFortranCommonDeclaration
 
     push(@data, $line);
 
-    # Make up the common block declaration, putting 
-    # strings at the start to avoid misalignment
     if($aliases == 0)
     {
-      if ($type_string =~ /CCTK_STRING/)
-      {
-        $definition = "$parameter$sepchar$definition";
-      }
-      else
-      {
-        $definition .= "$sepchar$parameter";
-      }	
+      $definition .= "$sepchar$parameter";
     }
     else
     {
-      if ($type_string =~ /CCTK_STRING/)
-      {
-        $definition = "$alias_names[$n]$sepchar$definition";
-      }
-      else
-      {
-        $definition .= "$sepchar$alias_names[$n]";
-      }	
+      $definition .= "$sepchar$alias_names[$n]";
     }
+
 
     $sepchar = ",";
     $n++;
   }
 
-  push(@data, $definition_front.$definition);
+  push(@data, $definition);
 
   return @data;
 }

@@ -511,7 +511,7 @@ int CCTK_BindingsParametersInitialise(void)
 
 EOT
 
-  foreach $routine (keys %routines)
+  foreach $routine (keys %routines, "CCTK_BindingsParametersPublic")
   {
     print OUT "  $routine"."Initialise();\n";
   }
@@ -536,7 +536,7 @@ int CCTK_BindingsParameterSet(const char *identifier, const char *value)
   { 
 EOT
 
-  foreach $routine (keys %routines)
+  foreach $routine (keys %routines, "CCTK_BindingsParametersPublic")
   {
 
     print OUT <<EOT;
@@ -565,6 +565,11 @@ EOT
 }
  
 int CCTK_BindingsParameterGet(const char *identifier, void **value)
+{   
+  return -1;
+}
+ 
+int CCTK_BindingsParameterHelp(const char *identifier, const char *format, FILE *file) 
 {   
   return -1;
 }

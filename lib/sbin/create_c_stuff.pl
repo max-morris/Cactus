@@ -58,7 +58,7 @@ sub CreateParameterBindingFile
 
   push(@data,( "struct ", "{"));
 
-  foreach $parameter (keys %parameters)
+  foreach $parameter (order_params(scalar(keys %parameters), %parameters,%parameter_database))
   {
     $type = $parameter_database{"\U$parameters{$parameter} $parameter\E type"};
       
@@ -353,7 +353,7 @@ sub CreateCStructureParameterHeader
 
   push(@data,( "extern struct ", "{"));
 
-  foreach $parameter (keys %parameters)
+  foreach $parameter (order_params(scalar(keys %parameters), %parameters,%parameter_database))
   {
     $type = $parameter_database{"\U$parameters{$parameter} $parameter\E type"};
 
@@ -391,4 +391,45 @@ sub CreateCStructureParameterHeader
   return @data;
 }
 
+sub order_params
+{
+  local($nparams,  @rest) = @_;
+  local(%parameters);
+  local(%parameter_database);
+  local(@float_params) = ();;
+  local(@int_params)   = ();
+  local(@string_params)= ();
+
+  %parameters = @rest[0..2*$nparams-1];
+  %parameter_database = @rest[2*$nparams..$#rest];
+
+  foreach $parameter (keys %parameters)
+  {
+    $type = $parameter_database{"\U$parameters{$parameter} $parameter\E type"};
+
+    if($type eq "KEYWORD" ||
+       $type eq "STRING"  ||
+       $type eq "SENTENCE")
+    {
+      push(@string_params, $parameter);
+    }
+    elsif($type eq "LOGICAL" ||
+	  $type eq "INTEGER")
+    {
+      push(@int_params, $parameter);
+    }
+    elsif($type eq "REAL")
+    {
+      push(@float_params, $parameter);
+    }
+    else
+    {
+      die("Unknown parameter type '$type'");
+    }
+    
+  }
+  
+  return (@float_params, @string_params, @int_params);
+}
+  
 1;
