@@ -67,8 +67,6 @@ int CCTK_CreateGroup(const char *gname, const char *thorn, const char *imp,
   int retval;
 
   va_list ap;
-  char *position;
-
   char *variable_name;
 
   cGroupDefinition *group;
@@ -291,36 +289,54 @@ int CCTK_GetGroupNum(const char *implementation,
 
 @@*/
 int CCTK_GetVarNum(const char *implementation,
-		   const char *group_name,
+	           const char *group_name,
 		   const char *variable_name)
 {
   int retval;
-  int group_num;
+  int gnum,group_num;
   int variable;
 
   retval = -1;
 
-  group_num = CCTK_GetGroupNum(implementation, group_name);
-
-  if(group_num > -1)
-  {
-    for(variable=0; variable<groups[group_num].n_variables;variable++)
-    {
-      if(CCTK_Equals(variable_name, groups[group_num].variables[variable].name))
+  if (group_name == NULL)
+  {	
+    for (gnum = 0; gnum < n_groups; gnum++)
+    {			
+      
+      for(variable=0; variable<groups[group_num].n_variables;variable++)
       {
-	retval  = groups[group_num].variables[variable].number;
-	break;
+	if(CCTK_Equals(variable_name, groups[group_num].variables[variable].name)
+	   && CCTK_Equals(implementation,groups[group_num].implementation))
+	{
+	  retval  = groups[group_num].variables[variable].number;
+	  break;
+	}
       }
     }
-  }
+  } 
   else
   {
-    retval = -2;
+    group_num = CCTK_GetGroupNum(implementation, group_name);
+    
+    if(group_num > -1)
+    {
+      for(variable=0; variable<groups[group_num].n_variables;variable++)
+      {
+	if(CCTK_Equals(variable_name, groups[group_num].variables[variable].name))
+	{
+	  retval  = groups[group_num].variables[variable].number;
+	  break;
+	}
+      }
+    }
+    else
+    {
+      retval = -2;
+    }
   }
 
   return retval;
 }
-
 
  /*@@
    @routine    CCTK_GetMaxDim
@@ -379,6 +395,57 @@ int CCTK_GetNumGroups(void)
 {
   return n_groups;
 }
+
+ /*@@
+   @routine    CCTK_GetGroupFromVar
+   @date       Mon Feb 22
+   @author     Gabrielle Allen
+   @desc 
+   Given a variable index return a group name.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+const char *CCTK_GetGroupFromVar(int var)
+{
+  const char *retval;
+  int group_num;
+
+  group_num = group_of_variable[var];
+  retval = groups[group_num].name;
+
+  return retval;
+}
+
+ /*@@
+   @routine    CCTK_GetImplementationFromVar
+   @date       Mon Feb 22
+   @author     Gabrielle Allen
+   @desc 
+   Given a variable index return a implementation name.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+const char *CCTK_GetImplementationFromVar(int var)
+{
+  const char *retval;
+  int group_num;
+
+  group_num = group_of_variable[var];
+  retval = groups[group_num].implementation;
+
+  return retval;
+}
+
 
 
  /*@@
