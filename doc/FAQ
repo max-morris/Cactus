@@ -1,7 +1,7 @@
 
 Cactus Code Frequently Asked Questions
 
-$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.16 2001-04-15 08:02:52 allen Exp $
+$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.17 2001-05-05 23:35:06 allen Exp $
 
 Also available at http://www.cactuscode.org/Documentation/FAQ
 
@@ -225,4 +225,19 @@ Also available at http://www.cactuscode.org/Documentation/FAQ
 
 -------------------------------------------------------------------------------
 
-    
+17. Is there anyway to tell what CVS version of individual source files
+    was used to build an executable.
+
+    Actually there is, just issue the Unix command:
+
+    strings cactus_<config> | grep Header
+
+    to see all the version information for all source files, and
+
+    strings cactus_<config> | grep Header | grep <filename>
+
+    to look for a particular file.
+
+    (Note that this only works for files using the CCTK_FILEVERSION macro)
+
+-------------------------------------------------------------------------------
