@@ -17,8 +17,8 @@ AWK               = awk
 
 INC_DIRS         += src/include
 
-CFLAGS           += $(INC_DIRS:%=-I%)
-CXXFLAGS         += $(INC_DIRS:%=-I%)
+CFLAGS           += -g $(INC_DIRS:%=-I%)
+CXXFLAGS         += -g $(INC_DIRS:%=-I%)
 
 
 CSRCS := $(shell find src -name '*.c')
