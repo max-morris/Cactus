@@ -875,9 +875,39 @@ int CCTK_VarTypeNumber(const char *type)
     retval = CCTK_VARIABLE_INT;
   }
 
+  if(!strcmp(type, "INT2"))
+  {
+    retval = CCTK_VARIABLE_INT2;
+  }
+
+  if(!strcmp(type, "INT4"))
+  {
+    retval = CCTK_VARIABLE_INT4;
+  }
+
+  if(!strcmp(type, "INT8"))
+  {
+    retval = CCTK_VARIABLE_INT8;
+  }
+
   if(!strcmp(type, "REAL"))
   {
     retval = CCTK_VARIABLE_REAL;
+  }
+
+  if(!strcmp(type, "REAL4"))
+  {
+    retval = CCTK_VARIABLE_REAL4;
+  }
+
+  if(!strcmp(type, "REAL8"))
+  {
+    retval = CCTK_VARIABLE_REAL8;
+  }
+
+  if(!strcmp(type, "REAL16"))
+  {
+    retval = CCTK_VARIABLE_REAL16;
   }
 
   if(!strcmp(type, "COMPLEX"))
