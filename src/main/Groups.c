@@ -149,7 +149,7 @@ int CCTK_GroupIndex(const char *fullgroupname)
       /*      char *message;*/
       /*      message = (char *)malloc( (100+strlen(fullgroupname))*sizeof(char) ); */
       /*      sprintf(message,"No group found with the name %s",fullgroupname); */
-      CCTK_VWarn(6,__LINE__,__FILE__,CCTK_THORNSTRING, "No group found with the name %s", fullgroupname);
+      CCTK_VWarn(2,__LINE__,__FILE__,CCTK_THORNSTRING, "No group found with the name %s", fullgroupname);
       /*      if (message) free(message); */
       retval = -1;
     }
@@ -196,85 +196,6 @@ void CCTK_DumpGroupInfo(void) {
 	   groups[group_num].name,
 	   groups[group_num].staggertype);
   }
-}
-
-int CCTK_StaggeredGrids(void) {
-  return(staggered);
-}
-
-int CCTK_StaggerCodeName(const char *stype) {
-  int i,scode,base,dim,m;
-  char *info;
-
-  base =1;
-  scode=0;
-  dim  =strlen(stype);
-
-  for (i=0;i<dim;i++) {
-
-    switch (stype[i])
-    {
-      case 'M':m=0; break;
-      case 'C':m=1; break;
-      case 'P':m=2; break;
-      default:
-        info   = (char*)malloc (256*sizeof(char));
-        sprintf(info,"Unknown stagger type: >%s< \n", stype);
-        CCTK_WARN(1,info);
-        free(info);
-        return(-1);
-    }
-    scode+= m*base;
-    base  = 3 * base;
-  }
-  return(scode);
-}
-
-int CCTK_DirStaggerCodeVal(int dir, int sc) {
-  int val,b,dsc;
-  static int hash[4],hashed=0;
-
-  if (hashed==0) {
-    hash[0]= 1;
-    hash[1]= 3;
-    hash[2]= 9;
-    hash[3]=27;
-    hashed = 1;
-  }
-
-  for (b=3;b>=0;b--) {
-    val = (int)(sc / hash[b]);
-    sc  = sc % hash[b];
-    /*$printf("DirCode: b %d val %d sc %d hash %d\n",b,val,sc,hash[b]);$*/
-    if (dir==b) {
-      dsc = val;
-      break;
-    }
-  }
-  return(dsc);
-}
-
-int CCTK_DirStaggerCodeName(int dir, const char *stype) {
-  int i,scode,base;
-  char hs[7]="MMMMMM",*info;
-
-  sprintf(hs,"%s",stype);
-
-  if (dir>strlen(hs)) CCTK_WARN(1,"Not enough letters in stagger code");
-
-  switch (hs[dir])
-    {
-    case 'M': scode = 0; break;
-    case 'C': scode = 1; break;
-    case 'P': scode = 2; break;
-    default:
-        info   = (char*)malloc (256*sizeof(char));
-        sprintf(info,"Unknown stagger type: >%s< \n", hs);
-        CCTK_WARN(1,info);
-        free(info);
-        return(-1);
-    }
-  return(scode);
 }
 
 
