@@ -2141,56 +2141,141 @@ It never returns to the caller.
 % FFF
 %%%%%
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Groups.c
-\begin{CCTKFunc}{CCTK\_FirstVarIndex}{Given a group name returns the first variable index in the group}
+\begin{FunctionDescription}{CCTK\_FirstVarIndex}
 \label{CCTK-FirstVarIndex}
-\subroutine{int}{integer}{firstvar}
-\argument{const char *}{character*(*)}{group}
-\showargs
-\begin{params}
-\parameter{firstvar}{The first variable index in the given group}
-\parameter{group}{The group name}
-\end{params}
-\begin{discussion}
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t firstvar = CCTK\_FirstVarIndex("evolve::scalars") ;}
-\\
-\hfill {\bf Fortran} && {\t call CCTK\_GroupIndex(index,"evolve::scalars")}\\
-\\
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
+Given a group name, returns the first variable index in the group.
 
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+#include "cctk.h"
+int first_varindex = CCTK_FirstVarIndex(const char* group_name);
+\end{verbatim}
+\end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}
+#include "cctk.h"
+        integer first_varindex
+        character*(*) group_name
+        call CCTK_FirstVarIndex(first_varindex, group_name)
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
 
-\begin{CCTKFunc}{CCTK\_FirstVarIndexI}{Given a group index returns the first variable index in the group}
-\label{CCTK-FirstVarIndexI}
-\subroutine{int}{integer}{firstvar}
-\argument{int}{integer}{group}
-\showargs
-\begin{params}
-\parameter{firstvar}{The first variable index in the given group}
-\parameter{group}{The group index}
-\end{params}
-\begin{discussion}
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t index = CCTK\_GroupIndex("evolve::scalars")}\\
-               &&{\t firstvar = CCTK\_FirstVarIndexI(index) ;}
-\\
-\hfill {\bf Fortran} && {\t call CCTK\_GroupIndex(index,3)}\\
-\\
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
+\begin{ResultSection}
+\begin{Result}{first\_varindex \rm ($\ge$ 0)}
+The first variable index in the group.
+\end{Result}
+\end{ResultSection}
 
+\begin{ParameterSection}
+\begin{Parameter}{group\_name \rm ($\ne$ {\t NULL} in C)}
+For C, this is a non-{\t NULL} pointer to the character-string name
+of the group.  For Fortran, this is the character-string name of the
+group.  In both cases this should be of the form
+{\t "implementation::group"}.
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{Discussion}
+If the group contains $N > 0$ variables, and $V$ is the value of
+{\t first\_varindex} returned by this function, then the group's
+variables have variable indices $V$, $V+1$, $V+2$, \dots, $V+N-1$.
+\end{Discussion}
+
+\begin{SeeAlsoSection}
+\begin{SeeAlso}{CCTK\_FirstVarIndexI()}
+Given a group index, returns the first variable index in the group.
+\end{SeeAlso}
+\begin{SeeAlso}{CCTK\_GroupData()}
+Get ``static'' information about a group
+(including the number of variables in the group).
+\end{SeeAlso}
+\begin{SeeAlso}{CCTK\_GroupDynamicData()}
+Get ``dynamic'' information about a group.
+\end{SeeAlso}
+\end{SeeAlsoSection}
+
+\begin{ErrorSection}
+\begin{Error}{\rm -1}
+Group name is invalid.
+\end{Error}
+\begin{Error}{\rm -2}
+Group has no members.
+\end{Error}
+\end{ErrorSection}
+
+\end{FunctionDescription}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Groups.c
+\begin{FunctionDescription}{CCTK\_FirstVarIndexI}
+\label{CCTK-FirstVarIndex}
+Given a group index, returns the first variable index in the group.
+
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+#include "cctk.h"
+int first_varindex = CCTK_FirstVarIndexI(int group_index)
+\end{verbatim}
+\end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}
+#include "cctk.h"
+        integer first_varindex, group_index
+        call CCTK_FirstVarIndexI(first_varindex, group_index)
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ResultSection}
+\begin{Result}{first\_varindex \rm ($\ge$ 0)}
+The first variable index in the group.
+\end{Result}
+\end{ResultSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{group\_index \rm ($\ge$ 0)}
+The group index, \eg{} as returned by {\t CCTK\_GroupIndex()}.
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{Discussion}
+If the group contains $N > 0$ variables, and $V$ is the value of
+{\t first\_varindex} returned by this function, then the group's
+variables have variable indices $V$, $V+1$, $V+2$, \dots, $V+N-1$.
+\end{Discussion}
+
+\begin{SeeAlsoSection}
+\begin{SeeAlso}{CCTK\_FirstVarIndex()}
+Given a group name, returns the first variable index in the group.
+\end{SeeAlso}
+\begin{SeeAlso}{CCTK\_GroupData()}
+Get ``static'' information about a group
+(including the number of variables in the group).
+\end{SeeAlso}
+\begin{SeeAlso}{CCTK\_GroupDynamicData()}
+Get ``dynamic'' information about a group.
+\end{SeeAlso}
+\end{SeeAlsoSection}
+
+\begin{ErrorSection}
+\begin{Error}{\rm -1}
+Group index is invalid.
+\end{Error}
+\begin{Error}{\rm -2}
+Group has no members.
+\end{Error}
+\end{ErrorSection}
+
+\end{FunctionDescription}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{CCTKFunc}{CCTK\_FortranString}{Changes a C string into a Fortran string}
 \label{CCTK-FortranString}
