@@ -550,7 +550,7 @@ sub CreateCArgumentDeclarations
 
     for($level = 0; $level < $ntimelevels; $level++)
     {
-      push(@declarations, "CCTK_$type * CCTK_RESTRICT $varname = ($varname = (CCTK_$type *) \&$varname, (CCTK_$type *) CCTKi_VarDataPtr(cctkGH, $level, $implementation, $var));");
+      push(@declarations, "CCTK_$type * CCTK_RESTRICT $varname = (cctki_dummy_int = \&$varname - \&$varname, (CCTK_$type *) CCTKi_VarDataPtr(cctkGH, $level, $implementation, $var));");
 
       # Modify the name for the time level
       $varname .= '_p';

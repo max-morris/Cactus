@@ -227,6 +227,7 @@ static inline int CCTK_GFINDEX4D (const cGH *GH, int i, int j, int k, int l)
 
 #define _DECLARE_CCTK_ARGUMENTS _DECLARE_CCTK_CARGUMENTS
 #define _DECLARE_CCTK_CARGUMENTS \
+            int         cctki_dummy_int;\
             int         cctk_dim = cctkGH->cctk_dim;\
             int        *cctk_gsh = cctkGH->cctk_gsh;\
             int        *cctk_lsh = cctkGH->cctk_lsh;\
