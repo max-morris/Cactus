@@ -85,7 +85,11 @@ sub get_packages
     chdir packages || die "Could not find packages directory";
 
     $range = <STDIN>;
-    
+    if ($range =~ /^\s*$/)
+    {
+	$range = "1-$count";
+    }
+
     while ($range =~/^([0-9]+(?:-[0-9]+)?),?/)
     {
 	$range = $';
@@ -142,7 +146,11 @@ sub get_thorns
     chdir packages || die "Could not find packages directory\n";
 
     $range = <STDIN>;
-    
+    if ($range =~ /^\s*$/)
+    {
+	$range = "1-$count";
+    }
+
     while ($range =~/^([0-9]+(?:-[0-9]+)?),?/)
     {
 	$range = $';
