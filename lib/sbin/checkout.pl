@@ -18,6 +18,20 @@ $debug = 0;
 
 $sbin_dir = "lib/sbin";
 
+my $home;
+
+if ($ENV{'CCTK_HOME'})
+{
+  $home = $ENV{'CCTK_HOME'}
+}
+else
+{
+  $home = `pwd`;
+  chomp ($home);
+}
+
+my $arrangements_dir = "$home/arrangements";
+
 require "$sbin_dir/MakeUtils.pl";
 require "$sbin_dir/CheckoutUtils.pl";
 
@@ -62,11 +76,11 @@ while (!$finish)
   }
   elsif ($which =~ /^t/i)
   {
-    &get_thorns();
+    &get_thorns($arrangements_dir);
   }
   else
   {
-    &get_arrangements();
+    &get_arrangements($arrangements_dir);
   }
 }
 
@@ -84,12 +98,14 @@ exit;
 #@@*/
 sub get_arrangements
 {
+  my($arrangments_dir) = @_;
+
   my(%info);
   my($arrangement, $home);
 
   print "\n You already have arrangements: \n\n";
 
-  %info = &buildthorns("arrangements/","arrangements");
+  %info = &buildthorns("$arrangements_dir","arrangements");
 
   foreach $arrangement (sort keys %info)
   {
@@ -125,7 +141,7 @@ sub get_arrangements
   # Goto target arrangement directory
   $home = `pwd`;
   chomp $home;
-  chdir ('arrangements') || die "Could not find arrangements directory";
+  chdir ($arrangements_dir) || die "Could not find arrangements directory";
 
   $range = <STDIN>;
   if ($range =~ /^h/i)
@@ -183,12 +199,13 @@ sub get_arrangements
 #@@*/
 sub get_thorns
 {
+  my($arrangments_dir) = @_;
   my(%info);
   my($thorn, $home);
 
   print "\nYou already have thorns: ";
 
-  %info = &buildthorns("arrangements/","thorns");
+  %info = &buildthorns("$arrangements_dir","thorns");
 
   $last_arr = "";
   foreach $thorn (sort keys %info)
@@ -238,7 +255,7 @@ sub get_thorns
   # Goto target arrangement directory
   $home = `pwd`;
   chomp $home;
-  chdir ('arrangements') || die "Could not find arrangements directory\n";
+  chdir ($arrangements_dir) || die "Could not find arrangements directory\n";
 
   $range = <STDIN>;
   print "\n";
@@ -384,7 +401,7 @@ sub CheckOutREADME
   my($file) = @_;
 
   open(MODULES,"cvs $cvs_ops checkout $cvs_checkout_ops $file |");
-  @dummy = <MODULES>;
+  my @dummy = <MODULES>;
   close(MODULES);
 
 }
@@ -414,16 +431,15 @@ sub PrintInfo
 #@@*/
 sub CVSFound
 {
-  my($foundit);
+  my $foundit = 0;
 
-  $foundif = 0;
   open(MODULES,"cvs -v | ");
   while (<MODULES>)
   {
     if (/Concurrent Versions System/)
     {
       $foundit = 1;
-      break;
+      last;
     }
   }
   close(MODULES);
