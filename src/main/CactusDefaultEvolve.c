@@ -157,6 +157,8 @@ int CCTK_StepGH(cGH *GH) {
   BoundStepper(GH);
   PostStepper(GH);
 
+  GH->time = GH->time + GH->delta_time;
+
   return 0;
 }
 
