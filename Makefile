@@ -16,7 +16,7 @@
 #
 #
 #   @enddesc
-#   @version $Id: Makefile,v 1.136 2002-04-27 11:44:46 allen Exp $
+#   @version $Id: Makefile,v 1.137 2002-05-14 14:27:22 tradke Exp $
 # @@*/
 
 ##################################################################################
@@ -939,8 +939,8 @@ ThornGuide.ps: ThornGuide
 ThornGuide:
 	@echo $(DIVIDER)
 	@echo Creating thorn documentation ThornGuide.ps
-	if test ! -d $(CCTK_HOME)/doc/ThornGuide/build ; then mkdir $(CCTK_HOME)/doc/ThornGuide/build ; fi
-	rm -f $(CCTK_HOME)/doc/ThornGuide/build/*;
+	rm -rf $(CCTK_HOME)/doc/ThornGuide/build;
+	mkdir $(CCTK_HOME)/doc/ThornGuide/build; 
 	@echo "  Processing...."
 	cd $(CCTK_HOME)/doc/ThornGuide/build; \
 	$(MAKE) -f $(CCTK_HOME)/doc/ThornGuide/Makefile PERL=$(PERL) CCTK_HOME=$(CCTK_HOME); \
@@ -958,9 +958,9 @@ $(addsuffix -ThornGuide,$(CONFIGURATIONS)):
 	@echo $(DIVIDER)
 	@echo Creating ThornGuide for $(@:%-ThornGuide=%)
 	if test ! -d $(CONFIGS_DIR)/$(@:%-ThornGuide=%)/doc ; then mkdir $(CONFIGS_DIR)/$(@:%-ThornGuide=%)/doc; fi 
-	if test ! -d $(CONFIGS_DIR)/$(@:%-ThornGuide=%)/doc/build ; then mkdir $(CONFIGS_DIR)/$(@:%-ThornGuide=%)/doc/build; fi 
+	rm -rf  $(CONFIGS_DIR)/$(@:%-ThornGuide=%)/doc/build
+	mkdir $(CONFIGS_DIR)/$(@:%-ThornGuide=%)/doc/build
 	if test -r $(CONFIGS_DIR)/$(@:%-ThornGuide=%)/ThornList ; then \
-	  rm -f  $(CONFIGS_DIR)/$(@:%-ThornGuide=%)/doc/build/*.*; \
 	  cd  $(CONFIGS_DIR)/$(@:%-ThornGuide=%)/doc/build; \
 	  $(MAKE) -f $(CCTK_HOME)/doc/ThornGuide/Makefile THORNLIST=$(CONFIGS_DIR)/$(@:%-ThornGuide=%)/ThornList CCTK_HOME=$(CCTK_HOME) PERL=$(PERL) MASTER_FILE=ThornGuide-$(@:%-ThornGuide=%); \
 	  cp ThornGuide-$(@:%-ThornGuide=%).ps $(CCTK_HOME)/ThornGuide-$(@:%-ThornGuide=%).ps; \
