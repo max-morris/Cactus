@@ -824,7 +824,7 @@ sub RunTest
 
   $arrangement = $testdata->{"$thorn ARRANGEMENT"};
 
-  $testdata->{"$thorn $test TESTRUNDIR"} = $config_data->{"TESTS_DIR"}.$sep.$config_data->{"CONFIG"}.$sep.$sep.$arrangement.$thorn;
+  $testdata->{"$thorn $test TESTRUNDIR"} = $config_data->{"TESTS_DIR"}.$sep.$config_data->{"CONFIG"}.$sep.$thorn;
 
   $testdata->{"$thorn $test TESTOUTPUTDIR"} = $testdata->{"$thorn $test TESTRUNDIR"}.$sep.$test;
 
