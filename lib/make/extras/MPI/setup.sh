@@ -30,6 +30,7 @@ fi
 CCTK_WriteLine cctk_Extradefs.h "#define CCTK_MPI_$MPI_VERSION 1"
 CCTK_WriteLine cctk_Extradefs.h "#define CCTK_MPI CCTK_MPI_$MPI_VERSION"
 
+CCTK_WriteLine make.extra.defn "HAVE_MPI     = 1"
 CCTK_WriteLine make.extra.defn "MPI_LIBS     = $MPI_LIBS"
 CCTK_WriteLine make.extra.defn "MPI_LIB_DIRS = $MPI_LIB_DIRS"
 CCTK_WriteLine make.extra.defn "MPI_INC_DIRS = $MPI_INC_DIRS"
