@@ -42,7 +42,7 @@ static int maxdim = 0;
 int _cctk_one = 1;
 
 
-cGroupDefinition *CCTK_SetupGroup(const char *implementation, const char *group_name, int n_variables);
+cGroupDefinition *CCTKi_SetupGroup(const char *implementation, const char *group_name, int n_variables);
 
 
 
@@ -122,7 +122,7 @@ int CCTK_GroupIndex(const char *fullgroupname)
 
 
  /*@@
-   @routine    CCTK_CreateGroup
+   @routine    CCTKi_CreateGroup
    @date       Thu Jan 14 15:25:54 1999
    @author     Tom Goodale
    @desc 
@@ -135,7 +135,7 @@ int CCTK_GroupIndex(const char *fullgroupname)
    @endhistory 
 
 @@*/
-int CCTK_CreateGroup(const char *gname, const char *thorn, const char *imp,
+int CCTKi_CreateGroup(const char *gname, const char *thorn, const char *imp,
 		     const char *gtype,
 		     const char *vtype,
 		     const char *gscope,
@@ -159,15 +159,15 @@ int CCTK_CreateGroup(const char *gname, const char *thorn, const char *imp,
   groupscope = CCTK_GroupScopeNumber(gscope);
   if (groupscope == GROUP_PUBLIC || groupscope == GROUP_PROTECTED)
   {
-    group = CCTK_SetupGroup(imp, gname, n_variables);
+    group = CCTKi_SetupGroup(imp, gname, n_variables);
   }
   else if (groupscope == GROUP_PRIVATE)
   {
-    group = CCTK_SetupGroup(thorn, gname, n_variables);
+    group = CCTKi_SetupGroup(thorn, gname, n_variables);
   }
   else
   {
-    CCTK_WARN(1,"Unrecognised group scope in CCTK_CreateGroup");
+    CCTK_WARN(1,"Unrecognised group scope in CCTKi_CreateGroup");
   }
 
   /* Allocate storage for the group and setup some stuff. */
@@ -217,7 +217,7 @@ int CCTK_CreateGroup(const char *gname, const char *thorn, const char *imp,
 
   if(retval)
   {
-    fprintf(stderr, "Error %d in CCTK_CreateGroup\n", retval);
+    fprintf(stderr, "Error %d in CCTKi_CreateGroup\n", retval);
   }
 
 #ifdef DEBUG_GROUPS
@@ -233,7 +233,7 @@ int CCTK_CreateGroup(const char *gname, const char *thorn, const char *imp,
 }
 
  /*@@
-   @routine    CCTK_SetupGroup
+   @routine    CCTKi_SetupGroup
    @date       Thu Jan 14 16:38:40 1999
    @author     Tom Goodale
    @desc 
@@ -246,7 +246,7 @@ int CCTK_CreateGroup(const char *gname, const char *thorn, const char *imp,
    @endhistory 
 
 @@*/
-cGroupDefinition *CCTK_SetupGroup(const char *implementation, 
+cGroupDefinition *CCTKi_SetupGroup(const char *implementation, 
 				  const char *name, 
 				  int n_variables)
 {

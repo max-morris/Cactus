@@ -38,7 +38,7 @@ static int warning_level = 1;
 static int error_level    = 0;
 
  /*@@
-   @routine    CCTK_SetWarnLevel
+   @routine    CCTKi_SetWarnLevel
    @date       Wed Feb 17 00:42:16 1999
    @author     Tom Goodale
    @desc 
@@ -51,7 +51,7 @@ static int error_level    = 0;
    @endhistory 
 
 @@*/
-int CCTK_SetWarnLevel(int level)
+int CCTKi_SetWarnLevel(int level)
 {
   int retval;
   int old_level;
@@ -104,12 +104,10 @@ int CCTK_SetWarnLevel(int level)
    @endhistory 
 
 @@*/
-int CCTK_Warn(int level, int line, const char *file, const char *thorn, const char *message)
+void CCTK_Warn(int level, int line, const char *file, const char *thorn, const char *message)
 {
 
   DECLARE_CCTK_PARAMETERS
-
-  int retval;
 
   if(level <= warning_level)
   {
@@ -118,18 +116,12 @@ int CCTK_Warn(int level, int line, const char *file, const char *thorn, const ch
       fprintf(stderr, "WARNING level %d in thorn %s (line %d of %s): \n", level, thorn, line, file);
       fprintf(stderr, "  -> %s\n",message);
       fflush(stderr);
-      retval = 1;
     }
     else
     {
       fprintf(stderr, "WARNING (%s): %s\n", thorn, message);
       fflush(stderr);
-      retval = 1;
     }
-  }
-  else
-  {
-    retval = 0;
   }
 
   if(level <= error_level)
@@ -137,18 +129,15 @@ int CCTK_Warn(int level, int line, const char *file, const char *thorn, const ch
     exit(99);
   }
 
-  return retval;
 }
 
-int FMODIFIER FORTRAN_NAME(CCTK_Warn)(int *level, int *line, THREE_FORTSTRINGS_ARGS)
+void FMODIFIER FORTRAN_NAME(CCTK_Warn)(int *level, int *line, THREE_FORTSTRINGS_ARGS)
 {
   THREE_FORTSTRINGS_CREATE(file,thorn,message)
-  int retval;
-  retval = CCTK_Warn(*level,*line,file,thorn,message);
+  CCTK_Warn(*level,*line,file,thorn,message);
   free(thorn);
   free(message); 
   free(file);
-  return(retval);
 }
 
  /*@@
@@ -224,7 +213,7 @@ int FMODIFIER FORTRAN_NAME(CCTK_Info)(TWO_FORTSTRINGS_ARGS)
 
 
  /*@@
-   @routine    CCTK_SetErrorLevel
+   @routine    CCTKi_SetErrorLevel
    @date       Wed Feb 17 00:48:02 1999
    @author     Tom Goodale
    @desc 
@@ -237,7 +226,7 @@ int FMODIFIER FORTRAN_NAME(CCTK_Info)(TWO_FORTSTRINGS_ARGS)
    @endhistory 
 
 @@*/
-int CCTK_SetErrorLevel(int level)
+int CCTKi_SetErrorLevel(int level)
 {
   int retval;
   int old_level;
