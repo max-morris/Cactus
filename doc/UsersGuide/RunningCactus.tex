@@ -854,16 +854,28 @@ simple make and test suite
 
 \chapter{Running Cactus}
 
-      a) Command line options
-      b) Simple parameter file syntax (will be explained fully in thorn
+This chapter covers
+
+\begin{itemize}
+\item
+ Command line options
+\item
+Simple parameter file syntax (will be explained fully in thorn
          writers part)
-      c) Description of standard parameters (although maybe should be an
+\item
+Description of standard parameters (although maybe should be an
          appendix)
-      d) Checkpointing and outputting
-      e) Reference to web pages with machine dependant stuff
-      f) Understanding the screen output (RFR tree, errors and warnings etc)
-      g) Convergence mode
-      h) Environment variables
+\item
+Checkpointing and outputting
+\item
+Reference to web pages with machine dependant stuff
+\item
+Understanding the screen output (RFR tree, errors and warnings etc)
+\item
+Convergence mode
+\item
+Environment variables
+\end{itemize}
 
 \section{Command Line Options}
 \label{sec:coliop}
@@ -883,6 +895,40 @@ simple make and test suite
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Parameter File Syntax}
+
+The parameter file is used to control the behaviour of the code at runtime.
+It consists of a text file the lines of which are either comments, denoted
+by a `\#', or parameter statements.
+
+A parameter statement consists of one or more parameter names, followed by
+and `=', followed by the value(s) for this (these) parameter(s).
+
+The name of a parameter consists of:
+
+\begin{itemize}
+\item {\tt Global parameters}
+Just name of the parameter itself.
+\item {\tt Restricted parameters}
+The name of the {\em implementation} which defined the parameter, two colons,
+and the name of the parameter --- e.g. `driver::global\_nx'.
+\item {\tt Private parameters}
+The name of the {\em thorn} which defined the parameter, two colons,
+and the name of the parameter --- e.g. `wavetoy::amplitude'.
+\end{itemize}
+
+In addition there is a parameter {\em ActiveThorns} which tells the code
+which {\em thorns} are to be used.  Only parameters from active thorns can
+be set, and only active thorns get their {\tt startup} and {\tt RFR} routines
+called.  By default all thorns are inactive.  {\bf This should be the first
+parameter in your parameter file.}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 \chapter{Looking at output}
 
