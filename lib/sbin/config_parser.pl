@@ -407,7 +407,7 @@ sub CreateParameterBindings
     {
       @data = &CreateParameterBindingFile("CCTK_BindingsParameters$implementation"."_protected", "PROTECTED_\U$implementation\E_STRUCT", scalar(keys %these_parameters), %these_parameters, %parameter_database);
 
-      open (OUT, ">$implementation". "_protected.c") || die "Cannot open $implementation"."_protected.c";
+      open (OUT, ">\U$implementation\E". "_protected.c") || die "Cannot open \U$implementation\E"."_protected.c";
       
       foreach $line (@data)
       {
@@ -416,7 +416,7 @@ sub CreateParameterBindings
     
       close OUT;
 
-      $files .= " $implementation". "_protected.c";
+      $files .= " \U$implementation\E". "_protected.c";
       $routines{"CCTK_BindingsParameters$implementation"."_protected"} = "$implementation";
       $structures{"PROTECTED_\U$implementation\E_STRUCT"} = "cctk_params_$implementation"."_protected";
 
@@ -427,7 +427,7 @@ sub CreateParameterBindings
 
       @data = &CreateCStructureParameterHeader("CCTK_BindingsParameters$implementation"."_protected", "PROTECTED_\U$implementation\E_STRUCT", scalar(keys %these_parameters), %these_parameters, %parameter_database);
       
-      open (OUT, ">ParameterCProtected$implementation".".h") || die "Cannot open ParameterCProtected$implementation".".h";
+      open (OUT, ">ParameterCProtected\U$implementation\E".".h") || die "Cannot open ParameterCProtected\U$implementation\E".".h";
 
       foreach $line (@data)
       {
@@ -451,7 +451,7 @@ sub CreateParameterBindings
     {
       @data = &CreateParameterBindingFile("CCTK_BindingsParameters$thorn"."_private", "PRIVATE_\U$thorn\E_STRUCT", scalar(keys %these_parameters), %these_parameters, %parameter_database);
 
-      open (OUT, ">$thorn"."_private.c") || die "Cannot open $thorn"."_private.c";
+      open (OUT, ">\U$thorn\E"."_private.c") || die "Cannot open \U$thorn\E"."_private.c";
 
       foreach $line (@data)
       {
@@ -460,7 +460,7 @@ sub CreateParameterBindings
     
       close OUT;
 
-      $files .= " $thorn". "_private.c";
+      $files .= " \U$thorn\E". "_private.c";
       $routines{"CCTK_BindingsParameters$thorn"."_private"} = "$thorn";
 
       # Generate the data header file
@@ -472,7 +472,7 @@ sub CreateParameterBindings
 
       $structures{"PRIVATE_\U$thorn\E_STRUCT"} = "cctk_params_$thorn"."_private";
       
-      open (OUT, ">ParameterCPrivate$thorn".".h") || die "Cannot open ParameterCPrivate$thorn".".h";
+      open (OUT, ">ParameterCPrivate\U$thorn\E".".h") || die "Cannot open ParameterCPrivate\U$thorn\E".".h";
 
       foreach $line (@data)
       {
@@ -588,7 +588,7 @@ EOT
 
     @data = &CreateFortranThornParameterBindings($thorn, $n_param_database, @rest);
 
-    open(OUT, ">$thorn"."_FParameters.h") || die "Cannot open $thorn"."_FParameters.h";
+    open(OUT, ">\U$thorn\E"."_FParameters.h") || die "Cannot open \U$thorn\E"."_FParameters.h";
 
     foreach $line (@data)
     {
@@ -597,7 +597,7 @@ EOT
 
     close OUT;
 
-    open(OUT, ">$thorn"."_CParameters.h") || die "Cannot open $thorn"."_CParameters.h";
+    open(OUT, ">\U$thorn\E"."_CParameters.h") || die "Cannot open \U$thorn\E"."_CParameters.h";
 
     $implementation = $interface_database{"\U$thorn\E IMPLEMENTS"};
 
@@ -615,13 +615,13 @@ EOT
     print OUT "#include \"$header\"\n";
   }
  
-  $header =  "ParameterCProtected$implementation.h";
+  $header =  "ParameterCProtected\U$implementation\E.h";
   if( -r $header)
   {
     print OUT "#include \"$header\"\n";
   }
 
-  $header =  "ParameterCPrivate$thorn.h";
+  $header =  "ParameterCPrivate\U$thorn\E.h";
   if( -r $header)
   {
     print OUT "#include \"$header\"\n";
@@ -634,7 +634,7 @@ EOT
     {
       $friend_implementation = $interface_database{"\U$friend\E IMPLEMENTS"};
 
-      print OUT "#include \"ParameterCProtected$friend.h\"\n";
+      print OUT "#include \"ParameterCProtected\U$friend\E.h\"\n";
 
       $interface_database{"IMPLEMENTATION \U$friend\E THORNS"} =~ m:([^ ]*):;
  
@@ -705,7 +705,7 @@ EOT
   foreach $thorn (split(" ",$interface_database{"THORNS"}))
   {
     print OUT "#ifdef THORN_IS_$thorn\n";
-    print OUT "#include \"$thorn"."_CParameters.h\"\n";
+    print OUT "#include \"\U$thorn\E"."_CParameters.h\"\n";
     print OUT "#endif\n\n";
   }
 
@@ -716,7 +716,7 @@ EOT
   foreach $thorn (split(" ",$interface_database{"THORNS"}))
   {
     print OUT "#ifdef THORN_IS_$thorn\n";
-    print OUT "#include \"$thorn"."_FParameters.h\"\n";
+    print OUT "#include \"\U$thorn\E"."_FParameters.h\"\n";
     print OUT "#endif\n\n";
   }
 
