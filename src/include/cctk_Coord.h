@@ -32,7 +32,7 @@ int CCTK_CoordDir(const char *name,
 
 int CCTK_CoordSystemDim(const char *systemname);
 
-int CCTK_CoordSystemHande(const char *systemname);
+int CCTK_CoordSystemHandle(const char *systemname);
 
 const char *CCTK_CoordSystemName(int handle);
 
