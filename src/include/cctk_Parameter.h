@@ -109,6 +109,11 @@ typedef struct PARAM_PROPS
   int      n_set;
   int      steerable;
 
+  int      array_size;
+  int      array_index;
+
+  char    *accumulator_expression;
+  
 } cParamData;
 
 #ifdef __cplusplus

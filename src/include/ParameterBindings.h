@@ -17,21 +17,28 @@ extern "C" {
 #endif
 
 int CCTKi_ParameterCreate(const char *name,        /* The parameter name */
-                    const char *thorn,       /* The thorn          */ 
-                    const char *type,       /* The parameter type */
-                    const char *scope,       /* The scoping block  */
-                    int steerable,           /* Is it steerable ?  */
-                    const char *description, /* The description    */ 
-                    const char *defval,      /* The default value  */ 
-                    void *datapointer,       /* The actual data    */
-                    int n_ranges,            /* How many allowed ranges it has */
-                    ...);
+                          const char *thorn,       /* The thorn          */ 
+                          const char *type,        /* The parameter type */
+                          const char *scope,       /* The scoping block  */
+                          int steerable,           /* Is it steerable ?  */
+                          const char *description, /* The description    */ 
+                          const char *defval,      /* The default value  */ 
+                          void *datapointer,       /* The actual data    */
+                          int array,               /* Is it an array, if so what size */ 
+                          const char *accumulator, /* Is it an accumultor parameter */
+                          int n_ranges,            /* How many allowed ranges it has */
+                          ...);
 
 int CCTKi_ParameterAddRange(const char *implementation, 
                       const char *name,
                       const char *range_origin,
                       const char *range,
                       const char *range_description);
+
+void CCTKi_ParameterAccumulatorBase(const char *thorn,
+                                    const char *parameter,
+                                    const char *importhorn,
+                                    const char *acc_base);
 
 #ifdef __cplusplus
 }

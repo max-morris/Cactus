@@ -18,6 +18,7 @@ extern "C"
 
 int CCTKi_SetParameter (const char *parameter, const char *value, int lineno);
 int CCTKi_NumParameterFileErrors (int level);
+void CCTKi_ParameterActivateThornParameters(const char *thorn);
 
 #ifdef __cplusplus
 }
