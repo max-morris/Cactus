@@ -29,7 +29,8 @@ typedef void (*CCTK_FPOINTER)(void);
 
 /* Structures for complex types */
 
-#ifdef CCTK_REAL16
+#if CCTK_HAVE_REAL16
+#define CCTK_HAVE_COMPLEX32 1
 typedef struct
 {
   CCTK_REAL16 Re;
@@ -37,7 +38,8 @@ typedef struct
 } CCTK_COMPLEX32;
 #endif
 
-#ifdef CCTK_REAL8
+#if CCTK_HAVE_REAL8
+#define CCTK_HAVE_COMPLEX16 1
 typedef struct
 {
   CCTK_REAL8 Re;
@@ -45,7 +47,8 @@ typedef struct
 } CCTK_COMPLEX16;
 #endif
 
-#ifdef CCTK_REAL4
+#if CCTK_HAVE_REAL4
+#define CCTK_HAVE_COMPLEX8 1
 typedef struct
 {
   CCTK_REAL4 Re;
@@ -71,18 +74,34 @@ typedef unsigned char CCTK_BYTE;
 
 #define CCTK_STRING CCTK_POINTER
 
-#define CCTK_REAL16 REAL*16
-#define CCTK_REAL8  REAL*8
-#define CCTK_REAL4  REAL*4
-
+#ifdef CCTK_HAVE_INT8
 #define CCTK_INT8 INTEGER*8
+#endif
+#ifdef CCTK_HAVE_INT4
 #define CCTK_INT4 INTEGER*4
+#endif
+#ifdef CCTK_HAVE_INT2
 #define CCTK_INT2 INTEGER*2
+#endif
+#ifdef CCTK_HAVE_INT1
 #define CCTK_INT1 INTEGER*1
+#endif
 
+#ifdef CCTK_HAVE_REAL16
+#define CCTK_REAL16 REAL*16
+#define CCTK_HAVE_COMPLEX32 1
 #define CCTK_COMPLEX32  COMPLEX*32
+#endif
+#ifdef CCTK_HAVE_REAL8
+#define CCTK_REAL8  REAL*8
+#define CCTK_HAVE_COMPLEX16 1
 #define CCTK_COMPLEX16  COMPLEX*16
+#endif
+#ifdef CCTK_HAVE_REAL4
+#define CCTK_REAL4  REAL*4
+#define CCTK_HAVE_COMPLEX8 1
 #define CCTK_COMPLEX8   COMPLEX*8
+#endif
 
 /* DEPRECATED IN BETA 10 */
 #define CCTK_CHAR CHARACTER
