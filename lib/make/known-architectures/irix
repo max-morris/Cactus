@@ -6,7 +6,7 @@
 #    @desc
 #               Known architectures file for SGI Irix systems
 #    @enddesc
-#    @version   $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/irix,v 1.39 2003-05-25 09:28:39 allen Exp $
+#    @version   $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/irix,v 1.40 2004-02-06 05:45:57 goodale Exp $
 #  @@*/
 
 if test "$CCTK_CONFIG_STAGE" = 'preferred-compilers' ; then
@@ -24,9 +24,9 @@ if test "$CCTK_CONFIG_STAGE" = 'preferred-compilers' ; then
   fi
 
   # use the Cactus preprocessor for Fortran
-  if test -z "$CPP"; then
-    CPP='$(PERL) $(CCTK_HOME)/lib/sbin/cpp.pl'
-    echo Setting CPP compiler to $CPP
+  if test -z "$FPP"; then
+    FPP='$(PERL) $(CCTK_HOME)/lib/sbin/cpp.pl'
+    echo Setting FPP to $FPP
   fi
 
   # use the native SGI compilers by default
