@@ -9,8 +9,6 @@
    @version   $Id$
  @@*/
 
-/* #define DEBUG_REDUCTION 1 */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -37,10 +35,8 @@ CCTK_FILEVERSION(comm_Reduction_c);
 
 void CCTK_FCALL CCTK_FNAME(CCTK_ReductionHandle)
      (int *handle, ONE_FORTSTRING_ARG);
-
 void CCTK_FCALL CCTK_FNAME(CCTK_ReductionArrayHandle)
      (int *operation_handle, ONE_FORTSTRING_ARG);
-
 void CCTK_FCALL CCTK_FNAME(CCTK_Reduce)
      (int *fortranreturn,
       const cGH *GH,
@@ -51,7 +47,6 @@ void CCTK_FCALL CCTK_FNAME(CCTK_Reduce)
       void *out_vals,
       const int *num_in_fields,
       ... );
-
 void CCTK_FCALL CCTK_FNAME(CCTK_ReduceArray)
      (int *fortran_return,
       const cGH *GH,
@@ -74,7 +69,6 @@ void CCTK_FCALL CCTK_FNAME(CCTK_ReduceLocalScalar)
       const void *in_scalar,
       void *out_scalar,
       const int *data_type);
-
 void CCTK_FCALL CCTK_FNAME(CCTK_ReduceLocScalar)
      (int *fortran_return,
       const cGH *GH,
@@ -83,7 +77,6 @@ void CCTK_FCALL CCTK_FNAME(CCTK_ReduceLocScalar)
       const void *in_scalar,
       void *out_scalar,
       const int *data_type);
-
 void CCTK_FCALL CCTK_FNAME(CCTK_ReduceLocalArray1D)
      (int *fortran_return,
       const cGH *GH,
@@ -93,7 +86,6 @@ void CCTK_FCALL CCTK_FNAME(CCTK_ReduceLocalArray1D)
       void *out_array1d,
       const int *num_in_array1d,
       const int *data_type);
-
 void CCTK_FCALL CCTK_FNAME(CCTK_ReduceLocArrayToArray1D)
      (int *fortran_return,
       const cGH *GH,
@@ -119,6 +111,8 @@ void CCTK_FCALL  CCTK_FNAME(CCTK_ReduceLocArrayToArray3D)
       void *out_array3d,
       const int  *xsize, const int *ysize, const int *zsize,
       const int  *data_type);
+
+
 /********************************************************************
  ********************    Internal Typedefs   ************************
  ********************************************************************/
@@ -130,11 +124,16 @@ typedef struct
   cReduceOperator reduce_operator;
 } t_reduce_operator;
 
+/* structure holding a function pointer to an array reduction operator */
+typedef struct
+{
+  int (*function) (REDUCTION_ARRAY_OPERATOR_REGISTER_ARGLIST);
+} t_reduction_array_op;
+
 
 /********************************************************************
  ********************    Static Variables   *************************
  ********************************************************************/
-
 static cHandledData *ReductionOperators = NULL;
 static int num_reductions = 0;
 static cHandledData *ReductionArrayOperators = NULL;
@@ -159,8 +158,6 @@ static int num_reductions_array = 0;
    @vio     in
    @endvar
 @@*/
-
-
 int CCTKi_RegisterReductionOperator(const char *thorn,
                                     cReduceOperator operator,
                                     const char *name)
@@ -168,21 +165,16 @@ int CCTKi_RegisterReductionOperator(const char *thorn,
   int handle;
   t_reduce_operator *reduce_operator;
 
-  /* Check arguments */
 
   /* Check that the method hasn't already been registered */
   handle = Util_GetHandle(ReductionOperators, name,
                           (void **) &reduce_operator);
-
   if(handle < 0)
   {
-
     reduce_operator = malloc (sizeof (t_reduce_operator));
-
     if (reduce_operator)
     {
-      reduce_operator->implementation =
-              CCTK_ThornImplementation(thorn);
+      reduce_operator->implementation = CCTK_ThornImplementation(thorn);
       reduce_operator->name = name;
       reduce_operator->reduce_operator = operator;
       handle = Util_NewHandle(&ReductionOperators, name, reduce_operator);
@@ -200,16 +192,7 @@ int CCTKi_RegisterReductionOperator(const char *thorn,
     handle = -1;
   }
 
-#ifdef DEBUG_REDUCTION
-  CCTK_PRINTSEPARATOR
-  printf("In CCTK_RegisterReductionOperator\n");
-  printf("---------------------------------\n");
-  printf("  Registering %s with handle %d\n",name,handle);
-  CCTK_PRINTSEPARATOR
-#endif
-
   return handle;
-
 }
 
 
@@ -226,30 +209,20 @@ int CCTKi_RegisterReductionOperator(const char *thorn,
    @vio     in
    @endvar
 @@*/
-
 int CCTK_ReductionHandle(const char *reduction)
 {
-
   int handle;
-  void **data=NULL; /* isn't used here */
 
-  handle = Util_GetHandle(ReductionOperators, reduction, data);
 
-#ifdef DEBUG_REDUCTION
-  CCTK_PRINTSEPARATOR
-  printf("In CCTK_ReductionHandle\n");
-  printf("-----------------------\n");
-  printf("  Got handle %d for %s\n",handle,reduction);
-  CCTK_PRINTSEPARATOR
-#endif
-
+  handle = Util_GetHandle(ReductionOperators, reduction, NULL);
   if (handle < 0)
+  {
     CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
-              "CCTK_ReductionHandle: No handle found for reduction operator '%s'",
-              reduction);
+               "CCTK_ReductionHandle: No handle found for reduction operator "
+               "'%s'", reduction);
+  }
 
   return handle;
-
 }
 
 void CCTK_FCALL CCTK_FNAME(CCTK_ReductionHandle)(int *handle, ONE_FORTSTRING_ARG)
@@ -310,7 +283,6 @@ void CCTK_FCALL CCTK_FNAME(CCTK_ReductionHandle)(int *handle, ONE_FORTSTRING_ARG
    @vio     in
    @endvar
 @@*/
-
 int CCTK_Reduce(const cGH *GH,
                 int proc,
                 int operation_handle,
@@ -357,8 +329,8 @@ int CCTK_Reduce(const cGH *GH,
       va_end(indices);
 
       retval = operator->reduce_operator (GH, proc, num_out_vals,
-                                        type_out_vals, out_vals,
-                                        num_in_fields, in_fields);
+                                          type_out_vals, out_vals,
+                                          num_in_fields, in_fields);
 
       free(in_fields);
     }
@@ -446,20 +418,24 @@ void CCTK_FCALL CCTK_FNAME(CCTK_Reduce)
    @vio     in
    @endvar
 @@*/
-
 int CCTK_RegisterReductionArrayOperator
          (int (*function)(REDUCTION_ARRAY_OPERATOR_REGISTER_ARGLIST),
          const char *name)
 {
   int handle;
+  t_reduction_array_op *data;
+
 
   /* Check that the method hasn't already been registered */
   handle = Util_GetHandle(ReductionArrayOperators, name, NULL);
 
   if(handle < 0)
   {
+    data = malloc (sizeof (*data));
+    data->function = function;
+
     /* Get a handle for it. */
-    handle = Util_NewHandle(&ReductionArrayOperators, name, (int *)function);
+    handle = Util_NewHandle(&ReductionArrayOperators, name, data);
 
     /* Remember how many reduction operators there are */
     num_reductions_array++;
@@ -473,16 +449,7 @@ int CCTK_RegisterReductionArrayOperator
     handle = -1;
   }
 
-#ifdef DEBUG_REDUCTION
-  CCTK_PRINTSEPARATOR
-  printf("In CCTK_RegisterReductionArrayOperator\n");
-  printf("---------------------------------\n");
-  printf("  Registering %s with handle %d\n",name,handle);
-  CCTK_PRINTSEPARATOR
-#endif
-
   return handle;
-
 }
 
 
@@ -499,23 +466,12 @@ int CCTK_RegisterReductionArrayOperator
    @vio     in
    @endvar
 @@*/
-
 int CCTK_ReductionArrayHandle(const char *reduction)
 {
 
   int handle;
-  void **data=NULL; /* isn't used here */
 
-  handle = Util_GetHandle(ReductionArrayOperators, reduction, data);
-
-#ifdef DEBUG_REDUCTION
-  CCTK_PRINTSEPARATOR
-  printf("In CCTK_ReductionArrayHandle\n");
-  printf("-----------------------\n");
-  printf("  Got handle %d for %s\n",handle,reduction);
-  CCTK_PRINTSEPARATOR
-#endif
-
+  handle = Util_GetHandle(ReductionArrayOperators, reduction, NULL);
   if (handle < 0)
   {
     CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
@@ -601,7 +557,6 @@ void CCTK_FCALL CCTK_FNAME(CCTK_ReductionArrayHandle)
    @vio     in
    @endvar
 @@*/
-
 int CCTK_ReduceArray(const cGH *GH,
                      int proc,
                      int operation_handle,
@@ -613,12 +568,11 @@ int CCTK_ReduceArray(const cGH *GH,
                      int type_in_arrays,
                      ... )
 {
-
   va_list indices;
   int i;
   int *dims;
   const void **in_arrays;
-  int (*function)(REDUCTION_ARRAY_OPERATOR_REGISTER_ARGLIST)=NULL;
+  t_reduction_array_op *data;
 
 
   /* Get the pointer to the reduction operator */
@@ -629,9 +583,8 @@ int CCTK_ReduceArray(const cGH *GH,
     return (-1);
   }
 
-  function = Util_GetHandledData(ReductionArrayOperators,operation_handle);
-
-  if (! function)
+  data = Util_GetHandledData(ReductionArrayOperators,operation_handle);
+  if (! data)
   {
     CCTK_Warn(3,__LINE__,__FILE__,"Cactus",
               "CCTK_ReduceArray: Array reduction operation is not registered "
@@ -659,9 +612,9 @@ int CCTK_ReduceArray(const cGH *GH,
 
   va_end(indices);
 
-  function (GH, proc, num_dims, dims,
-            num_in_arrays, in_arrays, type_in_arrays,
-            num_out_vals, out_vals, type_out_vals);
+  data->function (GH, proc, num_dims, dims,
+                  num_in_arrays, in_arrays, type_in_arrays,
+                  num_out_vals, out_vals, type_out_vals);
 
   free (in_arrays);
   free (dims);
@@ -687,7 +640,7 @@ void CCTK_FCALL CCTK_FNAME(CCTK_ReduceArray)
   int i;
   int *dims;
   const void **in_arrays;
-  int (*function)(REDUCTION_ARRAY_OPERATOR_REGISTER_ARGLIST);
+  t_reduction_array_op *data;
 
 
   /* initialize return code to indicate an error */
@@ -701,9 +654,8 @@ void CCTK_FCALL CCTK_FNAME(CCTK_ReduceArray)
     return;
   }
 
-  function = Util_GetHandledData (ReductionArrayOperators, *operation_handle);
-
-  if (! function)
+  data = Util_GetHandledData (ReductionArrayOperators, *operation_handle);
+  if (! data)
   {
     CCTK_Warn (3,__LINE__,__FILE__,"Cactus",
                "CCTK_ReduceArray: Array reduction operation is not registered "
@@ -731,14 +683,11 @@ void CCTK_FCALL CCTK_FNAME(CCTK_ReduceArray)
 
   va_end (varargs);
 
-  function (GH, *proc, *num_dims, dims,
-            *num_in_arrays, in_arrays, *type_in_arrays,
-            *num_out_vals, out_vals, *type_out_vals);
-
+  *fortran_return = data->function (GH, *proc, *num_dims, dims,
+                                    *num_in_arrays, in_arrays, *type_in_arrays,
+                                    *num_out_vals, out_vals, *type_out_vals);
   free (in_arrays);
   free (dims);
-
-  *fortran_return = 0;
 }
 
 
@@ -1022,20 +971,14 @@ int CCTK_NumReduceOperators()
                Implementation which supplied the interpolation operator
    @endreturndesc
 @@*/
-
 const char *CCTK_ReduceOperatorImplementation(int handle)
 {
   t_reduce_operator *operator;
-  const char *imp=NULL;
+
 
   operator = Util_GetHandledData (ReductionOperators, handle);
 
-  if (operator)
-  {
-    imp = operator->implementation;
-  }
-
-  return imp;
+  return (operator ? operator->implementation : NULL);
 }
 
 
