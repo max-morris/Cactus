@@ -19,6 +19,8 @@
 #include "cctk_GHExtensions.h"
 #include "cctki_GHExtensions.h"
 
+#include "cctk_ParamCheck.h"
+
 #ifdef MPI
 #include "mpi.h"
 #endif
@@ -27,9 +29,18 @@ static char *rcsid = "$Header$";
 
 CCTK_FILEVERSION(comm_CactusDefaultComm_c)
 
+/********************************************************************
+ *********************     Global Data   *****************************
+ ********************************************************************/
+
+/* FIXME:  This should be in a header somewhere */ 
 #ifdef MPI
 extern char MPI_Active;
 #endif
+
+/********************************************************************
+ *********************     Local Definitions   **********************
+ ********************************************************************/
 
 #ifdef MPI
 #define CACTUS_MPI_ERROR(xf)  do {int errcode; \
@@ -45,6 +56,10 @@ extern char MPI_Active;
                                     }                                                     \
                                   } while (0)
 #endif
+
+/********************************************************************
+ *********************     External Routines   **********************
+ ********************************************************************/
 
 
  /*@@
@@ -200,14 +215,21 @@ int CactusDefaultMyProc(cGH *GH)
 {
   int myproc;
 
-#ifdef MPI
-  if(MPI_Active)
+  if(CCTK_ParamChecking())
   {
-    CACTUS_MPI_ERROR(MPI_Comm_rank(MPI_COMM_WORLD, &myproc));
+    myproc = 0;
   }
+  else
+  {
+#ifdef MPI
+    if(MPI_Active)
+    {
+      CACTUS_MPI_ERROR(MPI_Comm_rank(MPI_COMM_WORLD, &myproc));
+    }
 #else
-  myproc = 0;
+    myproc = 0;
 #endif
+  }
 
   return myproc;
 }
@@ -231,18 +253,39 @@ int CactusDefaultnProcs(cGH *GH)
 {
   int nprocs;
 
-#ifdef MPI
-  if(MPI_Active)
+  if(CCTK_ParamChecking())
   {
-    CACTUS_MPI_ERROR(MPI_Comm_size(MPI_COMM_WORLD, &nprocs));
+    nprocs = CCTK_ParamCheckNProcs();
   }
+  else
+  {
+#ifdef MPI
+    if(MPI_Active)
+    {
+      CACTUS_MPI_ERROR(MPI_Comm_size(MPI_COMM_WORLD, &nprocs));
+    }
 #else
-  nprocs = 1;
+    nprocs = 1;
 #endif
-
+  }
+  
   return nprocs;
 }
 
+ /*@@
+   @routine    CactusDefaultExit
+   @date       Tue Apr 18 15:21:15 2000
+   @author     Gerd Lanfermann
+   @desc 
+   The default for when people call CCTK_Exit.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
 int CactusDefaultExit(int retval, cGH *GH)
 {
 #ifdef MPI  
@@ -254,7 +297,21 @@ int CactusDefaultExit(int retval, cGH *GH)
   exit(retval);
 }
 
+ /*@@
+   @routine    CactusDefaultBarrier
+   @date       Tue Apr 18 15:21:42 2000
+   @author     Tom Goodale
+   @desc 
+   The default for when people call CCTK_Barrier
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
 int CactusDefaultBarrier(cGH *GH) 
 {
-  return(0);
+  return 0;
 }

@@ -23,6 +23,8 @@
 #include "cctk_ActiveThorns.h"
 #include "cctki_WarnLevel.h"
 
+#include "cctk_ParamCheck.h"
+
 #define NEED_PARAMETER_SCOPE_STRINGS
 #define NEED_PARAMETER_TYPE_STRINGS
 
@@ -32,18 +34,41 @@ static char *rcsid = "$Header$";
 
 CCTK_FILEVERSION(main_CommandLine_c)
 
-/*Prototypes for some functions */
+
+/********************************************************************
+ ********************* Local Routine Prototypes *********************
+ ********************************************************************/
+
+static void CommandLinePrintParameter(const cParamData *properties);
+
+/********************************************************************
+ ********************* Other Routine Prototypes *********************
+ ********************************************************************/
+
+/* FIXME: these should be put in a header somewhere */
 
 char *compileTime(void);
 char *compileDate(void);
 char *CCTK_FullVersion(void);
 int CCTK_CommandLine(char ***outargv);
 
-static void CommandLinePrintParameter(const cParamData *properties);
+/********************************************************************
+ *********************     Local Data   *****************************
+ ********************************************************************/
 
-static int redirectsubs;
+static int redirectsubs = 0;
+static int paramchecking = 0;
 
-/* The functions used to deal with each option. */
+/********************************************************************
+ *********************     Global Data   *****************************
+ ********************************************************************/
+
+int cctki_paramchecking;
+int cctki_paramcheck_nprocs;
+
+/********************************************************************
+ *********************     External Routines   **********************
+ ********************************************************************/
 
  /*@@
    @routine    CCTK_CommandLineTestThorncompiled
@@ -79,6 +104,20 @@ void CCTKi_CommandLineTestThornCompiled(const char *optarg)
 }
 
 
+ /*@@
+   @routine    CCTKi_CommandLineDescribeAllParameters
+   @date       Tue Apr 18 15:00:12 2000
+   @author     Tom Goodale
+   @desc 
+   Describe all the parameters
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
 void CCTKi_CommandLineDescribeAllParameters(const char *optarg)
 {
   int first;
@@ -126,6 +165,20 @@ void CCTKi_CommandLineDescribeAllParameters(const char *optarg)
   CCTK_Exit(0,NULL);
 }
 
+ /*@@
+   @routine    CCTKi_CommandLineDescribeParameter
+   @date       Tue Apr 18 15:00:33 2000
+   @author     Tom Goodale
+   @desc 
+   Describe a particular parameter.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
 void CCTKi_CommandLineDescribeParameter(const char *optarg)
 {
   char *thorn;
@@ -158,6 +211,20 @@ void CCTKi_CommandLineDescribeParameter(const char *optarg)
   CCTK_Exit(0,NULL);
 }
 
+ /*@@
+   @routine    CCTKi_CommandLineTestParameters
+   @date       Tue Apr 18 15:00:45 2000
+   @author     Tom Goodale
+   @desc 
+   
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
 void CCTKi_CommandLineTestParameters(const char *optarg)
 {
   int nprocs;
@@ -171,6 +238,10 @@ void CCTKi_CommandLineTestParameters(const char *optarg)
     nprocs = atoi(optarg);
   }
 
+  paramchecking = 1;
+
+  cctki_paramchecking = 1;
+  cctki_paramcheck_nprocs = nprocs;
 }
 
 /*@@
@@ -243,6 +314,20 @@ void CCTKi_CommandLineRedirectStdout(void)
 
 }
 
+ /*@@
+   @routine    CCTKi_CommandLineListThorns
+   @date       Tue Apr 18 15:05:00 2000
+   @author     Tom Goodale
+   @desc 
+   List the thorns which are compiled in.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
 void CCTKi_CommandLineListThorns(void)
 {
   printf ("\n---------------Compiled Thorns-------------\n");
@@ -368,7 +453,13 @@ void CCTKi_CommandLineFinished(void)
 {
   int myproc;
 
-    /* Redirect output from sub-processors ... */
+  /* Are we in a paramcheck run ? */
+  if(! paramchecking)
+  {
+    cctki_paramchecking = 0;
+  }
+
+  /* Redirect output from sub-processors ... */
 
   if ((myproc = CCTK_MyProc(NULL)) != 0) 
   {
@@ -394,8 +485,13 @@ void CCTKi_CommandLineFinished(void)
 
     freopen(fname,"w",stdout);
   }
+
+
 }
 
+/********************************************************************
+ *********************     Local Routines   *************************
+ ********************************************************************/
 
  /*@@
    @routine    CommandLinePrintParameter
