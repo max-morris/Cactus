@@ -65,14 +65,17 @@ sub CreateParameterBindings
 
   @data = &CreateParameterBindingFile("CCTK_BindingsParametersGlobal", "GLOBAL_PARAMETER_STRUCT", scalar(keys %these_parameters), %these_parameters, %parameter_database);
 
-  open (OUT, ">Global.c") || die "Cannot open Global.c";
+#  open (OUT, ">Global.c") || die "Cannot open Global.c";
+
+  $dataout = "";
 
   foreach $line (@data)
   {
-    print OUT "$line\n";
+    $dataout .= "$line\n";
   }
 
-  close OUT;
+  &WriteFile("Global.c",$dataout);
+#  close OUT;
 
   $files = "Global.c";
   $structures{"GLOBAL_PARAMETER_STRUCT"} = "cctk_params_global";
@@ -84,14 +87,15 @@ sub CreateParameterBindings
 
   @data = &CreateCStructureParameterHeader("CCTK_BindingsParametersGlobal", "GLOBAL_PARAMETER_STRUCT", scalar(keys %these_parameters), %these_parameters, %parameter_database);
 
-  open (OUT, ">ParameterCGlobal.h") || die "Cannot open ParameterCGlobal.h";
+#  open (OUT, ">ParameterCGlobal.h") || die "Cannot open ParameterCGlobal.h";
 
+  $dataout = "";
   foreach $line (@data)
   {
-    print OUT "$line\n";
+    $dataout .= "$line\n";
   }
-
-  close OUT;
+  &WriteFile("ParameterCGlobal.h",$dataout);
+#  close OUT;
 
   $header_files{"GLOBAL"} = "ParameterCGlobal.h";
 
@@ -111,14 +115,14 @@ sub CreateParameterBindings
     {
       @data = &CreateParameterBindingFile("CCTK_BindingsParameters$implementation"."_restricted", "RESTRICTED_\U$implementation\E_STRUCT", scalar(keys %these_parameters), %these_parameters, %parameter_database);
 
-      open (OUT, ">\U$implementation\E". "_restricted.c") || die "Cannot open \U$implementation\E"."_restricted.c";
-      
+#      open (OUT, ">\U$implementation\E". "_restricted.c") || die "Cannot open \U$implementation\E"."_restricted.c";
+      $dataout = "";
       foreach $line (@data)
       {
-	print OUT "$line\n";
+	$dataout .= "$line\n";
       }
-    
-      close OUT;
+      &WriteFile("\U$implementation\E". "_restricted.c",$dataout);
+#      close OUT;
 
       $files .= " \U$implementation\E". "_restricted.c";
       $routines{"CCTK_BindingsParameters$implementation"."_restricted"} = "$implementation";
@@ -131,14 +135,16 @@ sub CreateParameterBindings
 
       @data = &CreateCStructureParameterHeader("CCTK_BindingsParameters$implementation"."_restricted", "RESTRICTED_\U$implementation\E_STRUCT", scalar(keys %these_parameters), %these_parameters, %parameter_database);
       
-      open (OUT, ">ParameterCRestricted\U$implementation\E".".h") || die "Cannot open ParameterCRestricted\U$implementation\E".".h";
+#      open (OUT, ">ParameterCRestricted\U$implementation\E".".h") || die "Cannot open ParameterCRestricted\U$implementation\E".".h";
 
+      $dataout = "";
       foreach $line (@data)
       {
-	print OUT "$line\n";
+	$dataout .= "$line\n";
       }
 
-      close OUT;
+      &WriteFile("ParameterCRestricted\U$implementation\E".".h",$dataout);
+#      close OUT;
 
       $header_files{"\U$implementation\E RESTRICTED"} = "ParameterCRestricted\U$implementation\E".".h";
 
@@ -157,14 +163,15 @@ sub CreateParameterBindings
     {
       @data = &CreateParameterBindingFile("CCTK_BindingsParameters$thorn"."_private", "PRIVATE_\U$thorn\E_STRUCT", scalar(keys %these_parameters), %these_parameters, %parameter_database);
 
-      open (OUT, ">\U$thorn\E"."_private.c") || die "Cannot open \U$thorn\E"."_private.c";
+#      open (OUT, ">\U$thorn\E"."_private.c") || die "Cannot open \U$thorn\E"."_private.c";
+      $dataout = "";
 
       foreach $line (@data)
       {
-	print OUT "$line\n";
+	$dataout .= "$line\n";
       }
-    
-      close OUT;
+      &WriteFile("\U$thorn\E"."_private.c",$dataout);
+#      close OUT;
 
       $files .= " \U$thorn\E". "_private.c";
       $routines{"CCTK_BindingsParameters$thorn"."_private"} = "$thorn";
@@ -178,14 +185,16 @@ sub CreateParameterBindings
 
       $structures{"PRIVATE_\U$thorn\E_STRUCT"} = "$thorn"."priv";
       
-      open (OUT, ">ParameterCPrivate\U$thorn\E".".h") || die "Cannot open ParameterCPrivate\U$thorn\E".".h";
+#      open (OUT, ">ParameterCPrivate\U$thorn\E".".h") || die "Cannot open ParameterCPrivate\U$thorn\E".".h";
+      $dataout = "";
 
       foreach $line (@data)
       {
-	print OUT "$line\n";
+	$dataout .= "$line\n";
       }
 
-      close OUT;
+      &WriteFile("ParameterCPrivate\U$thorn\E".".h",$dataout);
+#      close OUT;
 
       $header_files{"\U$thorn\E PRIVATE"} = "ParameterCPrivate\U$thorn\E".".h";
 
@@ -195,32 +204,33 @@ sub CreateParameterBindings
     }
   }
 
-  open (OUT, ">BindingsParameters.c") || die "Cannot open BindingsParameters.c";
+#  open (OUT, ">BindingsParameters.c") || die "Cannot open BindingsParameters.c";
+  $dataout = "";
 
-  print OUT  <<EOT;
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include "config.h"
-#include "cctk_Misc.h"
-#include "cctk_WarnLevel.h"
+#  print OUT  <<EOT;
+$dataout .= "\#include <stdio.h>\n";
+$dataout .= "\#include <stdlib.h>\n";
+$dataout .= "\#include <string.h>\n";
+$dataout .= "\#include \"config.h\"\n";
+$dataout .= "\#include \"cctk_Misc.h\"\n";
+$dataout .= "\#include \"cctk_WarnLevel.h\"\n";
 
-EOT
+#EOT
 
   foreach $routine ((keys %routines), "CCTK_BindingsParametersGlobal")
   {
-    print OUT "int $routine"."Initialise(void);\n";
+    $dataout .= "int $routine"."Initialise(void);\n";
 #    print OUT "int $routine"."Set(const char *param, const char *value);\n";
 #    print OUT "int $routine"."Get(const char *param, void **data);\n";
-    print OUT "int $routine"."Help(const char *param, const char *format, FILE *file);\n";
+    $dataout .= "int $routine"."Help(const char *param, const char *format, FILE *file);\n";
   }
  
-print OUT <<EOT;
+#print OUT <<EOT;
 
-int CCTKi_BindingsParametersInitialise(void)
-{
+$dataout .= "int CCTKi_BindingsParametersInitialise(void)\n";
+$dataout .= "\{\n\n";
 
-EOT
+#EOT
 
 #  foreach $routine (keys %routines, "CCTK_BindingsParametersGlobal")
 #  {
@@ -229,20 +239,20 @@ EOT
 
   foreach $thorn (split(" ",$interface_database{"THORNS"}))
   {
-    print OUT "  CCTKi_BindingsCreate$thorn"."Parameters();\n\n";
+    $dataout .= "  CCTKi_BindingsCreate$thorn"."Parameters();\n\n";
   }
 
   foreach $thorn (split(" ",$interface_database{"THORNS"}))
   {
-    print OUT "  CCTKi_Bindings$thorn"."ParameterExtensions();\n\n";
+    $dataout .= "  CCTKi_Bindings$thorn"."ParameterExtensions();\n\n";
   }
 
-  print OUT <<EOT;
+#  print OUT <<EOT;
 
-  return 0;
-}
+$dataout .= "return 0;\n";
+$dataout .= "}\n\n";
  
-EOT
+#EOT
 
 #int CCTKi_BindingsParameterSet(const char *identifier, const char *value)
 #{
@@ -347,88 +357,91 @@ EOT
 #  return retval;
 #}
 
-  print OUT <<EOT;
-int CCTKi_BindingsParameterHelp(const char *identifier, const char *format, FILE *file) 
-{   
-  int retval = 1;
-  int temp_retval;
-  char *implementation = NULL;
-  char *param_name = NULL;
+#  print OUT <<EOT;
+$dataout .= "int CCTKi_BindingsParameterHelp(const char *identifier, const char *format, FILE *file)\n";
+$dataout .= "{\n";   
+$dataout .="  int retval = 1;\n";
+$dataout .="  int temp_retval;\n";
+$dataout .="  char *implementation = NULL;\n";
+$dataout .="  char *param_name = NULL;\n\n";
 
-  if(! identifier )
-  {
-    retval = CCTK_BindingsParametersGlobalHelp(identifier, format, file);
+$dataout .="  if(! identifier )\n";
+$dataout .="  {\n";
+$dataout .="    retval = CCTK_BindingsParametersGlobalHelp(identifier, format, file);\n\n";
 
-EOT
-
-  foreach $routine (keys %routines, "CCTK_BindingsParametersGlobal")
-  {
-
-    print OUT "      temp_retval =  $routine"."Help(param_name, format, file);";
-
-    print OUT <<EOT;
- 
-    if(!temp_retval) 
-    {
-      retval = 0;
-    }
-EOT
-  }
- 
-  print OUT <<EOT;
-
-    return retval;
-  }
-
-  Util_SplitString(&implementation, &param_name, identifier, "::");
-
-  if(!implementation)
-  {
-    retval = CCTK_BindingsParametersGlobalHelp(identifier, format, file);
-  }
-  else
-  { 
-EOT
+#EOT
 
   foreach $routine (keys %routines, "CCTK_BindingsParametersGlobal")
   {
 
-    print OUT <<EOT;
+    $dataout .= "      temp_retval =  $routine"."Help(param_name, format, file);";
 
-      if(CCTK_Equals(implementation, \"$routines{$routine}\"))
-      {
-EOT
-      print OUT "      temp_retval =  $routine"."Help(param_name, format, file);";
-
-    print OUT <<EOT;
- 
-      if(!temp_retval) 
-      {
-        retval = 0;
-      }
-    }
-EOT
+#    print OUT <<EOT;
+$dataout .= "\n";
+$dataout .="    if(!temp_retval)\n";
+$dataout .="    {\n";
+$dataout .="      retval = 0;\n";
+$dataout .="    }\n";
+#EOT
   }
  
-  print OUT <<EOT;
+#  print OUT <<EOT;
+
+#$dataout .="    return retval;\n";
+$dataout .="  }\n\n";
+
+$dataout .="  Util_SplitString(\&implementation, &param_name, identifier, \"::\");\n\n";
+
+$dataout .="  if(!implementation)\n";
+$dataout .="  {\n";
+$dataout .="    retval = CCTK_BindingsParametersGlobalHelp(identifier, format, file);\n";
+$dataout .="  }\n";
+$dataout .="  else\n";
+$dataout .="  { \n";
+#EOT
+
+  foreach $routine (keys %routines, "CCTK_BindingsParametersGlobal")
+  {
+
+#    print OUT <<EOT;
+$dataout .= "\n";
+$dataout .="      if(CCTK_Equals(implementation, \"$routines{$routine}\"))\n";
+$dataout .="      {\n";
+#EOT
+      $dataout .= "      temp_retval =  $routine"."Help(param_name, format, file);";
+
+#    print OUT <<EOT;
+$dataout .= "\n"; 
+$dataout .="      if(!temp_retval) \n";
+$dataout .="      {\n";
+$dataout .="        retval = 0;\n";
+$dataout .="      }\n";
+$dataout .="    }\n";
+#EOT
   }
  
-  free(implementation);
-  free(param_name);
-  return retval;
-}
+#  print OUT <<EOT;
+$dataout .="  }\n";
+$dataout .="\n"; 
+$dataout .="  free(implementation);\n";
+$dataout .="  free(param_name);\n";
+$dataout .="  return retval;\n";
+$dataout .="}\n\n";
 
-EOT
+#EOT
   
-  close OUT;
+  &WriteFile("BindingsParameters.c",$dataout);
+#  close OUT;
 
   $newfilelist = NewParamStuff($n_param_database, @rest);
 
-  open (OUT, ">make.code.defn") || die "Cannot open make.code.defn";
+#  open (OUT, ">make.code.defn") || die "Cannot open make.code.defn";
+  $dataout = "";
 
-  print OUT "SRCS = BindingsParameters.c $files $newfilelist\n";
+  $dataout .= "SRCS = BindingsParameters.c $files $newfilelist\n";
 
-  close OUT;
+  &WriteFile("make.code.defn",$dataout);
+#  close OUT;
 
   # Create the appropriate thorn parameter headers
 
@@ -440,50 +453,53 @@ EOT
 
     @data = &CreateFortranThornParameterBindings($thorn, $n_param_database, @rest);
 
-    open(OUT, ">\U$thorn\E"."_FParameters.h") || die "Cannot open \U$thorn\E"."_FParameters.h";
+#    open(OUT, ">\U$thorn\E"."_FParameters.h") || die "Cannot open \U$thorn\E"."_FParameters.h";
+    $dataout = "";
 
     foreach $line (@data)
     {
-      print OUT "$line\n";
+      $dataout .= "$line\n";
     }
 
-    close OUT;
+    &WriteFile("\U$thorn\E"."_FParameters.h",$dataout);
+#    close OUT;
 
-    open(OUT, ">\U$thorn\E"."_CParameters.h") || die "Cannot open \U$thorn\E"."_CParameters.h";
+#    open(OUT, ">\U$thorn\E"."_CParameters.h") || die "Cannot open \U$thorn\E"."_CParameters.h";
+    $dataout = "";
 
     $implementation = $interface_database{"\U$thorn\E IMPLEMENTS"};
 
-    print OUT <<EOT;
+#    print OUT <<EOT;
  
-\#ifndef _\U$thorn\E_PARAMETERS_H_
+$dataout .= "\#ifndef _\U$thorn\E_PARAMETERS_H_\n\n";
  
-\#define _\U$thorn\E_PARAMETERS_H_
+$dataout .= "\#define _\U$thorn\E_PARAMETERS_H_\n\n";
 
-EOT
+#EOT
 
   if($header_files{"GLOBAL"})
   {
-    print OUT "#include \"". $header_files{"GLOBAL"} ."\"\n";
+    $dataout .= "#include \"". $header_files{"GLOBAL"} ."\"\n";
   }
  
   if($header_files{"\U$implementation\E RESTRICTED"})
   {
-    print OUT "#include \"". $header_files{"\U$implementation\E RESTRICTED"}."\"\n";
+    $dataout .= "#include \"". $header_files{"\U$implementation\E RESTRICTED"}."\"\n";
   }
 
   if($header_files{"\U$thorn\E PRIVATE"})
   {
-    print OUT "#include \"".$header_files{"\U$thorn\E PRIVATE"}."\"\n";
+    $dataout .= "#include \"".$header_files{"\U$thorn\E PRIVATE"}."\"\n";
   }
  
-  print OUT "\n";
+  $dataout .= "\n";
 
     @data = ();
     foreach $friend (split(" ",$parameter_database{"\U$thorn\E SHARES implementations"}))
     {
       $friend_implementation = $interface_database{"\U$friend\E IMPLEMENTS"};
 
-      print OUT "#include \"ParameterCRestricted\U$friend\E.h\"\n";
+      $dataout .= "#include \"ParameterCRestricted\U$friend\E.h\"\n";
 
       $interface_database{"IMPLEMENTATION \U$friend\E THORNS"} =~ m:([^ ]*):;
  
@@ -502,39 +518,41 @@ EOT
       }
     }
 
-    print OUT "#define DECLARE_CCTK_PARAMETERS \\\n";
+    $dataout .= "#define DECLARE_CCTK_PARAMETERS \\\n";
 
     $decl =  "DECLARE_GLOBAL_PARAMETER_STRUCT_PARAMS";
     if($header_files{"GLOBAL"})
     {
-      print OUT "$decl \\\n";
+      $dataout .= "$decl \\\n";
     }
  
     $decl = "DECLARE_RESTRICTED_\U$implementation\E_STRUCT_PARAMS";
     if($header_files{"\U$implementation\E RESTRICTED"})
     {
-      print OUT "$decl \\\n";
+      $dataout .= "$decl \\\n";
     }
 
     $decl = "DECLARE_PRIVATE_\U$thorn\E_STRUCT_PARAMS";
     if($header_files{"\U$thorn\E PRIVATE"})
     {
-      print OUT "$decl \\\n";
+      $dataout .= "$decl \\\n";
     }
 
     foreach $line (@data)
     {
-      print OUT $line . "\\\n";
+      $dataout .= $line . "\\\n";
     }
 
-    print OUT "\n";
+    $dataout .= "\n";
 
-    print OUT "#endif\n";
+    $dataout .= "#endif\n";
 
-    close OUT;
+    &WriteFile("\U$thorn\E"."_CParameters.h",$dataout);
+#    close OUT;
   }   
 
-  open(OUT, "| perl $cctk_home/lib/sbin/c_file_processor.pl $top/config-data > CParameterStructNames.h") || die "Cannot create CParameterStructNames.h by running c_file_procesor.pl";
+  open(OUT, "| perl $cctk_home/lib/sbin/c_file_processor.pl $top/config-data > CParameterStructNames.h") || die "Cannot create CParameterStructNames.h by running c_file_processor.pl";
+
   foreach $structure (keys %structures)
   {
     print OUT "#define $structure FORTRAN_COMMON_NAME($structures{$structure})\n";
@@ -544,42 +562,46 @@ EOT
 
   close OUT;
     
-  open(OUT, ">CParameters.h") || die "Cannot open CParameters.h";
-
-  print OUT "#include \"CParameterStructNames.h\"\n\n";
-
-  foreach $thorn (split(" ",$interface_database{"THORNS"}))
-  {
-    print OUT "#ifdef THORN_IS_$thorn\n";
-    print OUT "#include \"\U$thorn\E"."_CParameters.h\"\n";
-    print OUT "#endif\n\n";
-  }
-
-  close OUT;
-
-  open(OUT, ">FParameters.h") || die "Cannot open FParameters.h";
+#  open(OUT, ">CParameters.h") || die "Cannot open CParameters.h";
+  $dataout = "";
+  $dataout .= "#include \"CParameterStructNames.h\"\n\n";
 
   foreach $thorn (split(" ",$interface_database{"THORNS"}))
   {
-    print OUT "#ifdef THORN_IS_$thorn\n";
-    print OUT "#include \"\U$thorn\E"."_FParameters.h\"\n";
-    print OUT "#endif\n\n";
+    $dataout .= "\#ifdef THORN\_IS\_$thorn\n";
+    $dataout .= "\#include \"\U$thorn\E"."\_CParameters.h\"\n";
+    $dataout .= "\#endif\n\n";
   }
+  &WriteFile("CParameters.h",$dataout);
+#  close OUT;
 
-  close OUT;
+#  open(OUT, ">FParameters.h") || die "Cannot open FParameters.h";
 
-  open(OUT, ">cctk_parameters.h") || die "Cannot open cctk_parameters.h";
+  $dataout = "";
 
-  print OUT "#ifdef CCODE\n";
-  print OUT "#include \"CParameters.h\"\n";
-  print OUT "#endif\n\n";
+  foreach $thorn (split(" ",$interface_database{"THORNS"}))
+  {
+    $dataout .= "\#ifdef THORN_IS\_$thorn\n";
+    $dataout .= "\#include \"\U$thorn\E"."\_FParameters.h\"\n";
+    $dataout .= "\#endif\n\n";
+  }
+  &WriteFile("FParameters.h",$dataout);
+#  close OUT;
+
+#  open(OUT, ">cctk_parameters.h") || die "Cannot open cctk_parameters.h";
+  $dataout = "";
+
+  $dataout .= "#ifdef CCODE\n";
+  $dataout .= "#include \"CParameters.h\"\n";
+  $dataout .= "#endif\n\n";
 
 
-  print OUT "#ifdef FCODE\n";
-  print OUT "#include \"FParameters.h\"\n";
-  print OUT "#endif\n\n";
-
-  close OUT;
+  $dataout .= "#ifdef FCODE\n";
+  $dataout .= "#include \"FParameters.h\"\n";
+  $dataout .= "#endif\n\n";
+  
+  &WriteFile("cctk_parameters.h",$dataout);
+#  close OUT;
 
   chdir $start_dir;
 
@@ -677,14 +699,16 @@ sub NewParamStuff
 
     push(@data, "}");
 
-    open (OUT, ">Create$thorn"."Parameters.c");
+#    open (OUT, ">Create$thorn"."Parameters.c");
+    $dataout = "";
 
     foreach $line (@data)
     {
-      print OUT "$line\n";
+      $dataout .= "$line\n";
     }
     
-    close OUT;
+    &WriteFile("Create$thorn"."Parameters.c",$dataout);
+#    close OUT;
 
     @data=();
     @creationdata=();

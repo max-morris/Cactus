@@ -59,14 +59,16 @@ sub CreateImplementationBindings
   &OutputFile(".", "ImplementationBindings.c", @data);
 
 
-  open (OUT, ">make.code.defn");
-  print OUT <<EOF;
-
-SRCS = ImplementationBindings.c
+#  open (OUT, ">make.code.defn");
+#  print OUT <<EOF;
+$dataout = "";
+$dataout .= "\n";
+$dataout .= "SRCS = ImplementationBindings.c\n\n";
  
-EOF
+  &WriteFile("make.code.defn",$dataout);
+#EOF
 
-  close OUT;
+#  close OUT;
 
   chdir $_start_dir;
 }

@@ -51,30 +51,34 @@ sub CreateVariableBindings
 
     @data = &CreateThornArgumentHeaderFile($thorn, %interface_database);
 
-    open(OUT, ">$thorn"."_arguments.h");
+    $dataout = "";
+#    open(OUT, ">$thorn"."_arguments.h");
 
     foreach $line (@data)
     {
-      print OUT "$line\n";
+      $dataout .= "$line\n";
     }
 
-    close OUT;
+    &WriteFile("$thorn\_arguments.h",$dataout);
+#    close OUT;
   }
 
-  open(OUT, ">cctk_arguments.h");
+#  open(OUT, ">cctk_arguments.h");
     
+  $dataout = "";
   foreach $thorn (split(" ",$interface_database{"THORNS"}))
   {
-    print OUT "#ifdef THORN_IS_$thorn\n";
-    print OUT "#include \"$thorn"."_arguments.h\"\n";
-    print OUT "#define CCTK_FARGUMENTS \U$thorn"."_FARGUMENTS\n";
-    print OUT "#define DECLARE_CCTK_FARGUMENTS DECLARE_\U$thorn"."_FARGUMENTS\n";
-    print OUT "#define CCTK_CARGUMENTS \U$thorn"."_CARGUMENTS\n";
-    print OUT "#define DECLARE_CCTK_CARGUMENTS DECLARE_\U$thorn"."_CARGUMENTS\n";
-    print OUT "#endif\n\n";
+    $dataout .= "#ifdef THORN_IS_$thorn\n";
+    $dataout .= "#include \"$thorn"."_arguments.h\"\n";
+    $dataout .= "#define CCTK_FARGUMENTS \U$thorn"."_FARGUMENTS\n";
+    $dataout .= "#define DECLARE_CCTK_FARGUMENTS DECLARE_\U$thorn"."_FARGUMENTS\n";
+    $dataout .= "#define CCTK_CARGUMENTS \U$thorn"."_CARGUMENTS\n";
+    $dataout .= "#define DECLARE_CCTK_CARGUMENTS DECLARE_\U$thorn"."_CARGUMENTS\n";
+    $dataout .= "#endif\n\n";
   }
 
-  close OUT;
+  &WriteFile("cctk_arguments.h",$dataout);
+#  close OUT;
       
   chdir "..";
 
@@ -84,76 +88,85 @@ sub CreateVariableBindings
   }
   chdir "Variables";
 
-  open (OUT, ">BindingsVariables.c") || die "Cannot open BindingsVariables.c";
+#  open (OUT, ">BindingsVariables.c") || die "Cannot open BindingsVariables.c";
 
   $filelist = "BindingsVariables.c";
 
+  $dataout = "";
+
   foreach $thorn (split(" ",$interface_database{"THORNS"}))
   {
-    print OUT "int CactusBindingsVariables_$thorn"."_Initialise(void);\n";
+    $dataout .= "int CactusBindingsVariables_$thorn"."_Initialise(void);\n";
   }
 
-  print OUT "\n";
+  $dataout .= "\n";
  
-  print OUT "int CCTKi_BindingsVariablesInitialise(void)\n{\n";
+  $dataout .= "int CCTKi_BindingsVariablesInitialise(void)\n{\n";
 
   foreach $thorn (split(" ",$interface_database{"THORNS"}))
   {
-    print OUT "  CactusBindingsVariables_$thorn"."_Initialise();\n";
+    $dataout .= "  CactusBindingsVariables_$thorn"."_Initialise();\n";
   }
  
-  print OUT "  return 0;\n}\n\n";
+  $dataout .= "  return 0;\n}\n\n";
 
-  close OUT;
+  &WriteFile("BindingsVariables.c",$dataout);
+
+#  close OUT;
 
   foreach $thorn (split(" ",$interface_database{"THORNS"}))
   {
-    open(OUT, ">$thorn.c") || die "Cannot create $thorn.c";
+    $dataout = "";
+
+#    open(OUT, ">$thorn.c") || die "Cannot create $thorn.c";
   
-    print OUT "\#include \"cctk_Groups.h\"\n";
-    print OUT "\#include \"cctk_FortranWrappers.h\"\n";
+    $dataout .= "\#include \"cctk_Groups.h\"\n";
+    $dataout .= "\#include \"cctk_FortranWrappers.h\"\n";
 #    print OUT "#include \"cctk_Flesh.h\"\n";
 #    print OUT "#include \"StoreVariableData.h\"\n\n";
-    print OUT "int CCTKi_BindingsFortranWrapper$thorn(void *GH, void *fpointer);";
+    $dataout .= "int CCTKi_BindingsFortranWrapper$thorn(void *GH, void *fpointer);";
 
-    print OUT "int CactusBindingsVariables_$thorn"."_Initialise(void)\n{\n";
+    $dataout .= "int CactusBindingsVariables_$thorn"."_Initialise(void)\n{\n";
     foreach $block ("PUBLIC", "PROTECTED", "PRIVATE")
     {
       @data = &CreateThornGroupInitialisers($thorn, $block, %interface_database);
 
       foreach $line (@data)
       {
-	print OUT "$line\n";
+	$dataout  .= "$line\n";
       }
     }
-    print OUT "  CCTK_RegisterFortranWrapper(\"$thorn\", CCTKi_BindingsFortranWrapper$thorn);\n\n";
+    $dataout .= "  CCTK_RegisterFortranWrapper(\"$thorn\", CCTKi_BindingsFortranWrapper$thorn);\n\n";
 
-    print OUT "  return 0;\n};\n";
-    close OUT;
+    $dataout .= "  return 0;\n};\n";
+ 
+    &WriteFile("$thorn.c",$dataout);
+#    close OUT;
 
     $filelist .= " $thorn.c";
   }
 
   foreach $thorn (split(" ",$interface_database{"THORNS"}))
   {
-    open(OUT, ">$thorn\_FortranWrapper.c") || die "Cannot create $thorn\_FortranWrapper.c";
-  
+#    open(OUT, ">$thorn\_FortranWrapper.c") || die "Cannot create $thorn\_FortranWrapper.c";
+    $dataout = "";
+
     @data = &CreateThornFortranWrapper($thorn);
 
     foreach $line (@data)
     {
-      print OUT "$line\n";
+      $dataout .= "$line\n";
     }
 
-    close OUT;
+    &WriteFile("$thorn\_FortranWrapper.c",$dataout);
+#    close OUT;
     $filelist .= " $thorn\_FortranWrapper.c";
   }
 
-  open (OUT, ">make.code.defn") || die "Cannot open make.code.defn";
-
-  print OUT "SRCS = $filelist\n";
-
-  close OUT;
+#  open (OUT, ">make.code.defn") || die "Cannot open make.code.defn";
+  $dataout = "SRCS = $filelist\n";
+  &WriteFile("make.code.defn",$dataout);
+#  close OUT;
 
   chdir $start_dir;
 }

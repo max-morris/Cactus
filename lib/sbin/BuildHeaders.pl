@@ -14,6 +14,7 @@
 #  @endhistory
 #@@*/
 
+require "$sbin_dir/CSTUtils.pl";
 
 sub BuildHeaders
 {
@@ -24,35 +25,12 @@ sub BuildHeaders
   chdir $bindings_dir;
   chdir include;
 
-# First delete all global include files since we will be appending
+# First set all data strings 
   foreach $thorn (split(" ",$interface_database{"THORNS"}))
   {
     foreach $inc_file (split(" ",$interface_database{"\U$thorn USES HEADER"}))
     {
-      if (-e $inc_file)
-      {
-	system("rm $inc_file");
-      }
-    }
-  }
-
-# Create all the global include files used by thorns
-  foreach $thorn (split(" ",$interface_database{"THORNS"}))
-  {
-    foreach $inc_file (split(" ",$interface_database{"\U$thorn USES HEADER"}))
-    {
-      if (!-e $inc_file)
-      {
-	open(OUT,">$inc_file") || die "Cannot open $inc_dir";
-	print OUT "/* Include file $inc_file used by $thorn */\n";
-	close OUT;
-      }
-      else
-      {
-	open(OUT,">>$inc_file") || die "Cannot open $inc_dir";
-	print OUT "/* Include file $inc_file used by $thorn */\n";
-	close OUT;
-      }
+      $data{"$inc_file"} = "/* Include file $inc_file used by $thorn */\n";
     }
   }
 
@@ -69,39 +47,45 @@ sub BuildHeaders
 	$inc_file1 =~ s/ //g;
 	$inc_file2 = $interface_database{"\U$thorn ADD HEADER $inc_file1 TO"};
 
-	  # Write information to the global include file
-	  open(OUT,">>$inc_file2") || die "Cannot open $inc_dir2";
-	  print OUT "/* Including file $inc_file1 from $thorn */\n";
+	# Write information to the global include file
+	$data{"$inc_file2"} .= "/* Including file $inc_file1 from $thorn */\n";
 	
-	  # Now have to find the include file and copy it
-	  if (-e "$cctk_home/arrangements/$arrangement/$thorn/src/$inc_file1")
+	# Now have to find the include file and copy it
+	if (-e "$cctk_home/arrangements/$arrangement/$thorn/src/$inc_file1")
+	{
+	  open(HEADER,"<$cctk_home/arrangements/$arrangement/$thorn/src/$inc_file1");
+	  while (<HEADER>)
 	  {
-	    open(HEADER,"<$cctk_home/arrangements/$arrangement/$thorn/src/$inc_file1");
-	    while (<HEADER>)
-	    {
-	      print OUT;
-	    }
-	    print OUT "\n\n\n";
-	    close HEADER;
+	    $data{"$inc_file2"} .= $_;
 	  }
-	  elsif (-e "$cctk_home/arrangements/$arrangement/$thorn/src/include/$inc_file1")
+	  $data{"$inc_file2"} .= "\n\n\n";
+	  close HEADER;
+	}
+	elsif (-e "$cctk_home/arrangements/$arrangement/$thorn/src/include/$inc_file1")
+	{
+	  open(HEADER,"<$cctk_home/arrangements/$arrangement/$thorn/src/include/$inc_file1");
+	  while (<HEADER>)
 	  {
-	    open(HEADER,"<$cctk_home/arrangements/$arrangement/$thorn/src/$inc_file1");
-	    while (<HEADER>)
-	    {
-	      print OUT;
-	    }
-	    print OUT "\n\n\n";
-	    close HEADER;
+	    $data{"$inc_file2"} .= $_;
 	  }
-	  else
-	  {
-	    $message = "Include file $inc_file1 not found in $arrangement/$thorn\n";
-	    &CST_error(0,$message,__LINE__,__FILE__);
-	  }
-	  print OUT "/* End of include file $inc_file1 from $thorn */\n";
-	  close OUT;
+	  $data{"$inc_file2"} .= "\n\n\n";
+	  close HEADER;
+	}
+	else
+	{
+	  $message = "Include file $inc_file1 not found in $arrangement/$thorn\n";
+	  &CST_error(0,$message,__LINE__,__FILE__);
+	}
+	$data{"$inc_file2"} .= "/* End of include file $inc_file1 from $thorn */\n";
       }
+    }
+  }
+
+  foreach $thorn (split(" ",$interface_database{"THORNS"}))
+  {
+    foreach $inc_file1 (split(" ",$interface_database{"\U$thorn USES HEADER"}))
+    {
+      &WriteFile($inc_file1,$data{"$inc_file1"});
     }
   }
 

@@ -233,7 +233,7 @@ sub runtest {
     printf "Issuing $cmd\n";
     $retcode = 0;
     open (CMD, "$cmd |");
-    open (LOG, "> ${sep}$tp.log");
+    open (LOG, "> $tp.log");
 
     while (<CMD>) {
         print LOG;

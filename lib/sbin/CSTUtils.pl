@@ -134,6 +134,45 @@ sub chompme
     }
 }
 
+#/*@@
+#  @routine    WriteFile
+#  @date       Tue Oct 19 21:09:12 CEST 1999 
+#  @author     Gabrielle Allen
+#  @desc 
+#  Writes a file only if the contents haven't changed
+#  @enddesc 
+#  @calls     
+#  @calledby   
+#  @history 
+# 
+#  @endhistory 
+#@@*/
+
+sub WriteFile
+{
+  local ($filename,$data) = @_;
+  local ($data_in);
+
+# Read in file
+  $data_in = "";
+  if (-e $filename) 
+  {
+    open(IN, "<$filename");
+    while (<IN>)
+    {
+      $data_in .= $_;
+    }
+  }
+
+  if ($data ne $data_in)   
+  {
+    print "Creating new file $filename\n";
+    open(OUT, ">$filename") || die("Can't open $filename\n");
+    print OUT $data;
+    close OUT;
+  }
+
+}
 
 1;
 

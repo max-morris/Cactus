@@ -12,14 +12,16 @@ sub OutputFile
 {
   local($directory, $file, @data) = @_;
 
-  open(OUT, ">$directory/$file") || die "Can't open $file in $directory\n";
+#  open(OUT, ">$directory/$file") || die "Can't open $file in $directory\n";
+  $dataout = "";
 
   foreach $line (@data)
   {
-    print OUT "$line\n";
+    $dataout .= "$line\n";
   }
 
-  close OUT;
+  &WriteFile("$directory/$file",$dataout);
+#  close OUT;
 
 }
 
