@@ -745,6 +745,20 @@ $(SYS_OBJD)/MyRoutine.F.o:         $(SYS_OBJD)/MyModule.F.o
 \end{verbatim}
 }
 
+\subsubsection{The {\tt MOD} function}
+
+The intrinsic function {\tt MOD} in Fortran takes two integer 
+arguments, which should both be of the same type. This means
+that it may be necessary to cast the arguements to {\it e.g}
+{\tt INT} for some architectures. This can occur in particular
+when a {\tt CCTK\_INT} parameter and the Cactus variable {\tt cctk\_iteration}
+(which is declared to be {\tt INTEGER}) are used, 
+in which case the correct code is
+{\tt
+\begin{verbatim}
+MOD(cctk_iteration,INT(MyParameter))
+\end{verbatim}
+}
 
 \subsection{C Routines}
 
@@ -815,6 +829,18 @@ void MyCRoutine(CCTK_CARGUMENTS)
   /* Here goes your code */
 }
 \end{verbatim}
+
+\subsubsection{Complex variables}
+
+Cactus supports complex grid variables, and since there is no 
+complex data type in C, Cactus provides a number
+of functions for manipulating complex numbers to mirror the 
+functionality available in Fortran. These functions are {\tt CCTK\_Cmplx},
+{\tt CCTK\_CmplxReal}, {\tt CCTK\_CmplxImag}, {\tt CCTK\_CmplxConjg},
+{\tt CCTK\_CmplxAdd}, {\tt CCTK\_CmplxSub}, {\tt CCTK\_CmplxMul},
+{\tt CCTK\_CmplxDiv}, {\tt CCTK\_CmplxExp}, {\tt CCTK\_CmplSin},
+{\tt CCTK\_CmplxAbs}, {\tt CCTK\_CmplxLog}, {\tt CCTK\_CmplSqrt}. 
+
 
 \subsubsection{Specifically for C Programmers}
 

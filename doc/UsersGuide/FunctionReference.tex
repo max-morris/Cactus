@@ -11,12 +11,12 @@ available from C, not all are currently available from Fortran.
 
 \begin{Lentry}
 
+\item[CCTK\_Abort] 
+  [\pageref{Abort}] 
+
 \item[CCTK\_ArrayGroupSize] 
   [\pageref{ArrayGroupSize}]
   Give the size of the variables in a group, from the name
-
-\item[CCTK\_Abort] 
-  [\pageref{Abort}] 
 
 \item[CCTK\_ArrayGroupSizeB] 
   [\pageref{ArrayGroupSizeB}] 
@@ -28,6 +28,62 @@ available from C, not all are currently available from Fortran.
 
 \item[CCTK\_Barrier]
   [\pageref{Barrier}] 
+
+\item[CCTK\_Cmplx]
+  [\pageref{Cmplx}]
+  Turns two real numbers into a complex number (only C)
+
+\item[CCTK\_CmplxAbs]
+  [\pageref{CmplxAbs}]
+  Returns the absolute value of a complex number (only C)
+
+\item[CCTK\_CmplxAdd]
+  [\pageref{CmplxAdd}]
+  Returns the sum of two complex numbers (only C)
+
+\item[CCTK\_CmplxConjg]
+  [\pageref{CmplxConjg}]
+  Returns the complex conjugate of a complex number (only C)
+
+\item[CCTK\_CmplxCos]
+  [\pageref{CmplxCos}]
+  Returns the Cosine of a complex number (only C) [not yet available]
+
+\item[CCTK\_CmplxDiv]
+  [\pageref{CmplxDiv}]
+  Returns the division of two complex numbers (only C)
+
+\item[CCTK\_CmplxExp]
+  [\pageref{CmplxExp}]
+  Returns the Exponentiation of a complex number (only C) [not yet available]
+
+\item[CCTK\_CmplxImag]
+  [\pageref{CmplxReal}]
+  Returns the imaginary part of a complex number (only C)
+
+\item[CCTK\_CmplxLog]
+  [\pageref{CmplxLog}]
+  Returns the Logarithm of a complex number (only C) [not yet available]
+
+\item[CCTK\_CmplxMul]
+  [\pageref{CmplxMul}]
+  Returns the multiplication of two complex numbers (only C)
+
+\item[CCTK\_CmplxReal]
+  [\pageref{CmplxReal}]
+  Returns the real part of a complex number (only C)
+
+\item[CCTK\_CmplxSin]
+  [\pageref{CmplxSin}]
+  Returns the Sine of a complex number (only C) [not yet available]
+
+\item[CCTK\_CmplxSub]
+  [\pageref{CmplxSub}]
+  Returns the subtraction of two complex numbers (only C)
+
+\item[CCTK\_CmplxSqrt]
+  [\pageref{CmplxSqrt}]
+  Returns the square root of a complex number (only C) [not yet available]
 
 \item[CCTK\_CoordIndex] 
   [\pageref{CoordIndex}] 
@@ -65,10 +121,6 @@ available from C, not all are currently available from Fortran.
   [\pageref{Equals}] 
 
 
-\item[CCTK\_FullName] 
-  [\pageref{FullName}] 
-  Given a variable index, returns the full name of the variable
-
 \item[CCTK\_FirstVarIndex]   
   [\pageref{FirstVarIndex}] 
   Given a group name returns the first variable index in the group
@@ -76,6 +128,18 @@ available from C, not all are currently available from Fortran.
 \item[CCTK\_FirstVarIndexI]   
   [\pageref{FirstVarIndexI}] 
   Given a group index returns the first variable index in the group
+
+\item[CCTK\_FortranString]
+  [\pageref{FortranString}]
+  Changes a C string into a Fortran string
+
+\item[CCTK\_FullName] 
+  [\pageref{FullName}] 
+  Given a variable index, returns the full name of the variable
+
+\item[CCTK\_GroupData]   
+  [\pageref{GroupData}] 
+  Given a group index, returns information about the variables held in the group
 
 \item[CCTK\_GHExtensionHandle]   
   [\pageref{GHExtensionHandle}] 
@@ -85,25 +149,21 @@ available from C, not all are currently available from Fortran.
   [\pageref{GroupIndex}] 
   Get the index number for a group name
 
-\item[CCTK\_GroupNameFromVarI]   
-  [\pageref{GroupNameFromVarI}] 
-  Given a variable index, return the name of the associated group
+\item[CCTK\_GroupIndexFromVar]   
+  [\pageref{GroupIndexFromVar}] 
+  Given a variable name, returns the index of the associated group
 
 \item[CCTK\_GroupIndexFromVarI]   
   [\pageref{GroupIndexFromVarI}] 
   Given a variable index, returns the index of the associated group
 
-\item[CCTK\_GroupIndexFromVar]   
-  [\pageref{GroupIndexFromVar}] 
-  Given a variable name, returns the index of the associated group
-
-\item[CCTK\_GroupData]   
-  [\pageref{GroupData}] 
-  Given a group index, returns information about the variables held in the group
-
 \item[CCTK\_GroupName]   
   [\pageref{GroupName}] 
   Given a group index, returns the group name
+
+\item[CCTK\_GroupNameFromVarI]   
+  [\pageref{GroupNameFromVarI}] 
+  Given a variable index, return the name of the associated group
 
 \item[CCTK\_GroupTypeFromVarI]   
   [\pageref{GroupTypeFromVarI}] 
@@ -129,6 +189,14 @@ available from C, not all are currently available from Fortran.
   [\pageref{NumGroups}] 
   Get the number of groups of variables compiled in the code
 
+\item[CCTK\_NumTimeLevelsFromVarI]   
+  [\pageref{NumTimeLevelsFromVarI}] 
+  Gives the number of timelevels for a variable
+
+\item[CCTK\_NumTimeLevelsFromVar]   
+  [\pageref{NumTimeLevelsFromVar}] 
+  Gives the number of timelevels for a variable
+
 \item[CCTK\_NumVars]   
   [\pageref{NumVars}] 
   Get the number of grid variables compiled in the code
@@ -140,14 +208,6 @@ available from C, not all are currently available from Fortran.
 \item[CCTK\_NumVarsInGroup]   
   [\pageref{NumVarsInGroup}] 
   Provides the number of variables in a group from the group name
-
-\item[CCTK\_NumTimeLevelsFromVarI]   
-  [\pageref{NumTimeLevelsFromVarI}] 
-  Gives the number of timelevels for a variable
-
-\item[CCTK\_NumTimeLevelsFromVar]   
-  [\pageref{NumTimeLevelsFromVar}] 
-  Gives the number of timelevels for a variable
 
 \item[CCTK\_nProcs]    
   [\pageref{nProcs}] 
@@ -192,13 +252,13 @@ available from C, not all are currently available from Fortran.
   [\pageref{RegisterBanner}] 
   Register a banner for a thorn
 
-\item[CCTK\_RegisterCoordI] 
-  [\pageref{RegisterCoordI}] 
-  Register a grid function index as identifying a coordinate with a given coordinate name and direction.
-
 \item[CCTK\_RegisterCoord] 
   [\pageref{RegisterCoord}] 
   Register a grid function name as identifying a coordinate with a given coordinate name and direction.
+
+\item[CCTK\_RegisterCoordI] 
+  [\pageref{RegisterCoordI}] 
+  Register a grid function index as identifying a coordinate with a given coordinate name and direction.
 
 \item[CCTK\_RegisterCoordRange] 
   [\pageref{RegisterCoordRange}] 
@@ -220,10 +280,6 @@ available from C, not all are currently available from Fortran.
   [\pageref{RegisterGHExtensionrfrTraverseGH}] 
   Register a routine for an extension to the Cactus GH which is run before any RFR traverse
 
-\item[CCTK\_RegisterReductionOperator] 
-  [\pageref{RegisterReductionOperator}] 
-  Register a function a providing a reduction operation
-
 \item[CCTK\_RegisterIOMethod] 
   [\pageref{RegisterIOMethod}] 
   Register an IO method name
@@ -242,24 +298,16 @@ available from C, not all are currently available from Fortran.
   [\pageref{RegisterIOMethodTriggerOutput}] 
   Register a routine for dealing with trigger output for an IO method
 
+\item[CCTK\_RegisterReductionOperator] 
+  [\pageref{RegisterReductionOperator}] 
+  Register a function as providing a reduction operation
+
 \item[CCTK\_SetupGH] 
   [\pageref{SetupGH}] 
 
 \item[CCTK\_SyncGroup] 
   [\pageref{SyncGroup}] 
   Synchronize the ghost zones for a group of variables
-
-\item[CCTK\_VarIndex]
-   [\pageref{VarIndex}] 
-  Get the index for a variable
-
-\item[CCTK\_VarName] 
-  [\pageref{VarName}] 
-  Given a variable index, returns the variable name
-
-\item[CCTK\_VarTypeI] 
-  [\pageref{VarTypeI}] 
-  Provides variable type index from the variable index
 
 \item[CCTK\_VarDataPtr]
   [\pageref{VarDataPtr}] 
@@ -272,6 +320,18 @@ available from C, not all are currently available from Fortran.
 \item[CCTK\_VarDataPtrI]
   [\pageref{VarDataPtrI}] 
   Returns the data pointer for a grid variable from the variable index
+
+\item[CCTK\_VarIndex]
+   [\pageref{VarIndex}] 
+  Get the index for a variable
+
+\item[CCTK\_VarName] 
+  [\pageref{VarName}] 
+  Given a variable index, returns the variable name
+
+\item[CCTK\_VarTypeI] 
+  [\pageref{VarTypeI}] 
+  Provides variable type index from the variable index
 
 \item[CCTK\_WARN] 
   [\pageref{WARN}] 
@@ -670,6 +730,32 @@ can be either string literals (`mystring') or CCTK string parameters
 %%%%%
 % FFF
 %%%%%
+
+\begin{CCTKFunc}{CCTK\_FortranString}{Changes a C string into a Fortran string}
+\label{FortranString}
+\subroutine{int}{integer}{nchar}
+\argument{const char *}{character*(*)}{strout}
+\argument{const char *}{CCTK\_STRING}{strin}
+\showargs
+\begin{params}
+\parameter{nchar}{The number of characters in the C string, not counting the null terminator}
+\parameter{strout}{The fortran string which on output contains the C string as the first nchar characters}
+\parameter{strin}{The (pointer to the) C string containing the null terminator}
+\end{params}
+\begin{discussion}
+String or keyword parameters in Cactus are passed into Fortran routines as 
+pointers to C strings. This means that they cannot be directly used as Fortran
+strings. This routine allows a Fortran string to be created from such a C string. Note that the Fortran string must be defined to have at least the same expected length as the C string. This routine is only callable from Fortran.
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\hfill {\bf Fortran} && \\
+\\
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
 
 
 
