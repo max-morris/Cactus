@@ -2,11 +2,12 @@
    @file      SKBinTree.c
    @date      Mon Oct  5 11:00:01 1998
    @author    Tom Goodale
-   @desc 
-   Routines to deal with binary trees keyed by strings.
-   The tree is a threaded tree, i.e. it can also be
-   traversed, inorder, like a linked list.
-   @enddesc 
+   @desc
+              Routines to deal with binary trees keyed by strings.
+              The tree is a threaded tree, i.e. it can also be
+              traversed, inorder, like a linked list.
+   @enddesc
+   @version   $Id$
  @@*/
 
 #include <stdio.h>
@@ -15,11 +16,9 @@
 #include <ctype.h>
 
 #include "SKBinTree.h"
+#include "util_String.h"
 #include "cctk_Flesh.h"
 
-int STR_cmpi(const char *string1, const char *string2);
-
-#define STR_CMP(a,b) STR_cmpi(a,b)
 
 static const char *rcsid = "$Header$";
 
@@ -29,17 +28,11 @@ CCTK_FILEVERSION(util_SKBinTree_c);
    @routine    SKTreeStoreData
    @date       Mon Oct  5 11:04:55 1998
    @author     Tom Goodale
-   @desc 
+   @desc
    Stores data in string-keyed binary tree.
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
-
+   @enddesc
 @@*/
-t_sktree *SKTreeStoreData(t_sktree *root, t_sktree *subtree, 
+t_sktree *SKTreeStoreData(t_sktree *root, t_sktree *subtree,
                           const char *key, void *data)
 {
   int order;
@@ -47,7 +40,7 @@ t_sktree *SKTreeStoreData(t_sktree *root, t_sktree *subtree,
 
   if(!subtree)
   {
-    /* Create a new element. */ 
+    /* Create a new element. */
     newsubtree = (t_sktree *)malloc(sizeof(t_sktree));
     if(newsubtree)
     {
@@ -60,9 +53,9 @@ t_sktree *SKTreeStoreData(t_sktree *root, t_sktree *subtree,
 
       newsubtree->key= (char *)malloc(sizeof(char)*(strlen(key)+1));
       strcpy(newsubtree->key, key);
-      if(root) 
+      if(root)
       {
-        if((order = STR_CMP(key, root->key)) < 0)
+        if((order = Util_StrCmpi(key, root->key)) < 0)
         {
           root->left = newsubtree;
           newsubtree->next = root;
@@ -80,7 +73,7 @@ t_sktree *SKTreeStoreData(t_sktree *root, t_sktree *subtree,
           newsubtree->next = root->next;
           newsubtree->last = root;
           root->next = newsubtree;
-          
+
           /*printf("Added %s, NEXT: %s\n", newsubtree->key, newsubtree->next ? newsubtree->next->key : "(none)");*/
           /*printf("Modified %s NEXT\n", root->key);*/
         }
@@ -91,11 +84,11 @@ t_sktree *SKTreeStoreData(t_sktree *root, t_sktree *subtree,
   else
   {
     /* Go down left or right branch. */
-    if((order = STR_CMP(key, subtree->key)) < 0)
+    if((order = Util_StrCmpi(key, subtree->key)) < 0)
     {
-      newsubtree = SKTreeStoreData(subtree, subtree->left, key, data);        
+      newsubtree = SKTreeStoreData(subtree, subtree->left, key, data);
     }
-    else if(order > 0) 
+    else if(order > 0)
     {
       newsubtree = SKTreeStoreData(subtree, subtree->right, key, data);
     }
@@ -119,15 +112,9 @@ t_sktree *SKTreeStoreData(t_sktree *root, t_sktree *subtree,
    @routine    SKTreeTraverseInorder
    @date       Mon Oct  5 11:05:54 1998
    @author     Tom Goodale
-   @desc 
+   @desc
    Traverse a tree 'inorder'
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
-
+   @enddesc
 @@*/
 int SKTreeTraverseInorder(t_sktree *root, int (*process)(const char *, void *, void *), void *info)
 {
@@ -149,15 +136,9 @@ int SKTreeTraverseInorder(t_sktree *root, int (*process)(const char *, void *, v
    @routine    SKTreeTraversePreorder
    @date       Mon Oct  5 11:05:54 1998
    @author     Tom Goodale
-   @desc 
+   @desc
    Traverse a tree 'preorder'
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
-
+   @enddesc
 @@*/
 int SKTreeTraversePreorder(t_sktree *root, int (*process)(const char *,void *, void *), void *info)
 {
@@ -174,20 +155,14 @@ int SKTreeTraversePreorder(t_sktree *root, int (*process)(const char *,void *, v
 
   return terminate;
 }
-                     
+
  /*@@
    @routine    SKTreeTraversePostorder
    @date       Mon Oct  5 11:05:54 1998
    @author     Tom Goodale
-   @desc 
+   @desc
    Traverse a tree 'postorder'
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
-
+   @enddesc
 @@*/
 int SKTreeTraversePostorder(t_sktree *root, int (*process)(const char *, void *, void *), void *info)
 {
@@ -209,15 +184,9 @@ int SKTreeTraversePostorder(t_sktree *root, int (*process)(const char *, void *,
    @routine    SKTreePrintNodes
    @date       Mon Oct  5 11:06:52 1998
    @author     Tom Goodale
-   @desc 
+   @desc
    Allows a binary tree to be printed out.
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
-
+   @enddesc
 @@*/
 void SKTreePrintNodes(t_sktree *root, int depth, void (*print_node)(const char *,void *, int))
 {
@@ -236,9 +205,9 @@ void SKTreeDebugNodes(t_sktree *root, int depth)
     SKTreeDebugNodes(root->left, depth+1);
 
     printf("KEY:   %s\n", root->key);
-    root->left  ? printf("LEFT:  %s\n", root->left->key)  : printf("LEFT:  (none)\n");
-    root->right ? printf("RIGHT: %s\n", root->right->key) : printf("RIGHT: (none)\n");
-    root->next  ? printf("NEXT:  %s\n", root->next->key)  : printf("NEXT: (none)\n");
+    printf("LEFT:  %s\n", root->left  ? root->left->key  : "(none)");
+    printf("RIGHT: %s\n", root->right ? root->right->key : "(none)");
+    printf("NEXT:  %s\n", root->next  ? root->next->key  : "(none)");
 
     SKTreeDebugNodes(root->right, depth+1);
   }
@@ -249,15 +218,9 @@ void SKTreeDebugNodes(t_sktree *root, int depth)
    @routine    SKTreeFindNode
    @date       Mon Jul  5 10:09:30 1999
    @author     Tom Goodale
-   @desc 
+   @desc
    Finds a given node in the tree.
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
-
+   @enddesc
 @@*/
 t_sktree *SKTreeFindNode(t_sktree *root, const char *key)
 {
@@ -268,11 +231,11 @@ t_sktree *SKTreeFindNode(t_sktree *root, const char *key)
   if(root)
   {
     /* Go down left or right branch. */
-    if((order = STR_CMP(key, root->key)) < 0)
+    if((order = Util_StrCmpi(key, root->key)) < 0)
     {
       node = SKTreeFindNode(root->left, key);
     }
-    else if(order > 0) 
+    else if(order > 0)
     {
       node = SKTreeFindNode(root->right, key);
     }
@@ -288,21 +251,15 @@ t_sktree *SKTreeFindNode(t_sktree *root, const char *key)
   }
 
   return node;
-}  
+}
 
  /*@@
    @routine    SKTreeFindFirst
    @date       Mon Jul  5 10:09:57 1999
    @author     Tom Goodale
-   @desc 
+   @desc
    Finds the first node in the tree (the leftmost one).
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
-
+   @enddesc
 @@*/
 t_sktree *SKTreeFindFirst(t_sktree *root)
 {
@@ -310,51 +267,3 @@ t_sktree *SKTreeFindFirst(t_sktree *root)
 
   return root;
 }
-
-
-
-
- /*@@
-   @routine    STR_cmpi
-   @date       Mon Jul  5 01:19:00 1999
-   @author     Tom Goodale
-   @desc 
-   Case independent strcmp
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
-   @hdate Wed Oct 13 15:30:57 1999 @hauthor Tom Goodale
-   @hdesc Checks the length of the two string first. 
-   @endhistory 
-
-@@*/
-int STR_cmpi(const char *string1, const char *string2)
-{
-  int retval;
-  int position;
-
-  retval = 0;
-
-  if(! retval)
-  {
-    for(position = 0; 
-        string1[position] && string2[position];
-        position++)
-    {
-      if((retval = (tolower(string1[position]) - tolower(string2[position]))))
-      {
-        break;
-      }
-    }
-  }
-
-  if(! retval)
-  {
-    retval = strlen(string1) - strlen(string2);
-  }
-
-
-  return retval;
-}
-
