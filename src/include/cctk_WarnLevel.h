@@ -25,10 +25,25 @@ int CCTK_VWarn(int level,
                 int line, 
                 const char *file, 
                 const char *thorn, 
-                const char *format, ...);
+                const char *format, ...)
+#ifdef __GNUC__
+__attribute__ ((format (printf, 5, 6)))
+#endif
+;
+int CCTK_VParamWarn (const char *thorn,
+                     const char *format,
+                     ...)
+#ifdef __GNUC__
+__attribute__ ((format (printf, 2, 3)))
+#endif
+;
 int CCTK_ParamWarn(const char *thorn, const char *message);
 int CCTK_Info(const char *thorn, const char *message);
-int CCTK_VInfo(const char *thorn, const char *format, ...);
+int CCTK_VInfo(const char *thorn, const char *format, ...)
+#ifdef __GNUC__
+__attribute__ ((format (printf, 2, 3)))
+#endif
+;
 
 #ifdef __cplusplus 
 }
