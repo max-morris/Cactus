@@ -58,15 +58,92 @@ else
   cat > NUL <<EOF
 test
 EOF
-  if `cat NUL > /dev/null 2>/dev/null` ; then
+  if eval "`cat NUL > /dev/null 2>/dev/null`" ; then
     eval "cctk_cv_nulldevice=NUL"
   fi
 fi
 ])
 if eval "test -n \"$cctk_cv_nulldevice\"" ; then
-  AC_MSG_RESULT($NULL_DEVICE)
+  AC_MSG_RESULT($cctk_cv_nulldevice)
   AC_DEFINE_UNQUOTED(NULL_DEVICE, "$cctk_cv_nulldevice")
 else
   AC_MSG_RESULT("not found")
 fi
 ])
+
+AC_DEFUN(CCTK_TIME__FTIME,
+[AC_MSG_CHECKING([for availability of _ftime timing])
+AC_CACHE_VAL(cctk_cv_time_ftime,
+[AC_TRY_LINK([#include <stdio.h>
+#include <time.h>
+#include <sys/types.h>
+#include <sys/timeb.h>], 
+[  struct _timeb timebs;
+  _ftime(&timebs);
+  printf("%f\n",(double)(timebs.time + timebs.millitm/1000.0));
+  return 0;], eval "cctk_cv_time_ftime=yes",
+  eval "cctk_cv_time_ftime=no")])dnl
+if eval "test \"`echo '$cctk_cv_time_ftime'`\" = yes"; then
+  AC_MSG_RESULT(yes)
+  AC_DEFINE_UNQUOTED(HAVE_TIME__FTIME)
+else
+  AC_MSG_RESULT(no)
+fi
+])dnl
+
+AC_DEFUN(CCTK_TIME_GETRUSAGE,
+[AC_MSG_CHECKING([for availability of getrusage timing])
+AC_CACHE_VAL(cctk_cv_time_getrusage,
+[AC_TRY_LINK([#include <stdio.h>
+#include <sys/time.h>
+#include <sys/resource.h>
+#include <unistd.h>], 
+[struct rusage ru;
+ getrusage(RUSAGE_SELF, &ru);
+ printf("%f\n",(double)(ru.ru_utime.tv_sec + (double)ru.ru_utime.tv_usec/1000000.0));
+ return 0;], eval "cctk_cv_time_getrusage=yes",
+  eval "cctk_cv_time_getrusage=no")])dnl
+if eval "test \"`echo '$cctk_cv_time_getrusage'`\" = yes"; then
+  AC_MSG_RESULT(yes)
+  AC_DEFINE_UNQUOTED(HAVE_TIME_GETRUSAGE)
+else
+  AC_MSG_RESULT(no)
+fi
+])dnl
+
+AC_DEFUN(CCTK_TIME_GETTIMEOFDAY,
+[AC_MSG_CHECKING([for availability of gettimeofday timing])
+AC_CACHE_VAL(cctk_cv_time_gettimeofday,
+[AC_TRY_LINK([], 
+[gettimeofday();
+ return 0;], eval "cctk_cv_time_gettimeofday=yes",
+  eval "cctk_cv_time_gettimeofday=no")])dnl
+if eval "test \"`echo '$cctk_cv_time_gettimeofday'`\" = yes"; then
+  AC_MSG_RESULT(yes)
+  AC_DEFINE_UNQUOTED(HAVE_TIME_GETTIMEOFDAY)
+else
+  AC_MSG_RESULT(no)
+fi
+]dnl
+if eval "test \"`echo '$cctk_cv_time_gettimeofday'`\" = yes"; then
+[AC_MSG_CHECKING([if gettimeofday needs timezone])
+AC_CACHE_VAL(cctk_cv_time_gettimeofday_timezone,
+[AC_TRY_LINK([#include <stdio.h>
+#include <sys/time.h>
+#include <unistd.h>], 
+[struct timeval tp;
+ struct timezone tzp;
+ gettimeofday(&tp, &tzp);
+ printf("%f\n", (double)(tp.tv_sec + (double)tp.tv_usec/1000000.0));
+ return 0;], eval "cctk_cv_time_gettimeofday_timezone=yes",
+  eval "cctk_cv_time_gettimeofday_timezone=no")])dnl
+if eval "test \"`echo '$cctk_cv_time_gettimeofday_timezone'`\" = yes"; then
+  AC_MSG_RESULT(yes)
+  AC_DEFINE_UNQUOTED(GETTIMEOFDAY_NEEDS_TIMEZONE)
+else
+  AC_MSG_RESULT(no)
+fi
+]dnl
+fi
+)dnl
+

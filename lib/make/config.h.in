@@ -65,14 +65,18 @@
 /* Various library functions */
 
 #undef HAVE_MKDIR
-#undef HAVE_GETTIMEOFDAY
-#undef HAVE_GETRUSAGE
-#undef HAVE__FTIME
 
 /* Some include things */
 #undef TIME_WITH_SYS_TIME
 #undef HAVE_TIME_H
 #undef HAVE_UNISTD_H
+
+/* Timing stuff */
+
+#undef HAVE_TIME_GETTIMEOFDAY
+#undef GETTIMEOFDAY_NEEDS_TIMEZONE
+#undef HAVE_TIME_GETRUSAGE
+#undef HAVE_TIME__FTIME
 
 /******************************************************************************/
 

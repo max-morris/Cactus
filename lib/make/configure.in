@@ -212,7 +212,13 @@ AC_SUBST(F77FLAGS)
 
 dnl Checks for library functions.
 
-AC_CHECK_FUNCS(mkdir gettimeofday getrusage _ftime) 
+AC_CHECK_FUNCS(mkdir) 
+
+dnl Check some timing stuff
+
+CCTK_TIME_GETTIMEOFDAY
+CCTK_TIME_GETRUSAGE
+CCTK_TIME__FTIME
 
 dnl Include file stuff
 
