@@ -96,6 +96,7 @@ to allow manipulation of a table even if you don't know its keys.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{A Simple Example}
+\label{Tables_Simple_Example}
 
 Here's a simple example (in C)%%%
 \footnote{%%%
@@ -165,45 +166,6 @@ if (Util_TableGetReal(handle, &pi_value, "pi") < 0)
         CCTK_WARN(-1, "couldn't get integer value from table!");
 
 /* if we get to here, then two_value = 2 and pi_value = 3.14 */
-\end{verbatim}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\section{Convenience Routines}
-
-There are also convenience routines for the common case of setting
-values in a table based on a string.
-
-For example, the following code sets up exactly the same table as the
-previous example:
-
-\begin{verbatim}
-#include <util_Table.h>
-
-/* create a table and set some values in it */
-int handle = Util_TableCreate(UTIL_TABLE_FLAGS_DEFAULT);
-if (handle < 0)
-        CCTK_WARN(-1, "couldn't create table!");
-
-/* try to set some table entries */
-if (Util_TableSetFromString(handle, "two=2 pi=3.14") != 2)
-        CCTK_WARN(-1, "couldn't set values in table!");
-\end{verbatim}
-
-There is also an even higher-level convenience function
-\verb|Util_TableCreateFromString()|: this creates a table with the
-case-insensitive flag set (to match Cactus parameter-file semantics),
-then (assuming no errors occured) calls \verb|Util_TableSetFromString()|
-to set values in the table.  For example, apart from the case-insensitive
-flag, the following code sets up exactly the same table as the
-previous two examples:
-
-\begin{verbatim}
-#include <util_Table.h>
-
-int handle = Util_TableCreateFromString("two=2 pi=3.14");
-if (handle < 0)
-        CCTK_WARN(-1, "couldn't create table from string!");
 \end{verbatim}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -287,6 +249,66 @@ if (Util_TableGetString(handle, 50, buffer, "bh") < 0)
 \verb|Util_TableGetString()| guarantees that the string is
 terminated by a null character (\verb|'\0'|), and also returns an
 error if the string is too long for the buffer.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Convenience Routines}
+
+There are also convenience routines for the common case of setting
+values in a table based on a string.
+
+For example, the following code sets up exactly the same table as the
+example in section \ref{Tables_Simple_Example}:
+
+\begin{verbatim}
+#include <util_Table.h>
+
+/* create a table and set some values in it */
+int handle = Util_TableCreate(UTIL_TABLE_FLAGS_DEFAULT);
+if (handle < 0)
+        CCTK_WARN(-1, "couldn't create table!");
+
+/* try to set some table entries */
+if (Util_TableSetFromString(handle, "two=2 pi=3.14") != 2)
+        CCTK_WARN(-1, "couldn't set values in table!");
+\end{verbatim}
+
+There is also an even higher-level convenience function
+\verb|Util_TableCreateFromString()|: this creates a table with the
+case-insensitive flag set (to match Cactus parameter-file semantics),
+then (assuming no errors occured) calls \verb|Util_TableSetFromString()|
+to set values in the table.
+
+For example the following code sets up a table (with the case-insensitive flag
+set) with four entries: an integer number ({\tt two}), a real number ({\tt
+pi}), a string ({\tt buffer}), and an integer array with three elements ({\tt
+array}):
+
+\begin{verbatim}
+#include <util_Table.h>
+
+int handle = Util_TableCreateFromString(" two    = 2 "
+                                        " pi     = 3.14 "
+                                        " buffer = 'Hello World' "
+                                        " array  = { 1 2 3 }");
+if (handle < 0)
+        CCTK_WARN(-1, "couldn't create table from string!");
+\end{verbatim}
+
+Note that this code passes a single string to
+\verb|Util_TableCreateFromString()|%%%
+\footnote{C automatically concatenates
+adjacent character string constants separated only by whitespaces.}
+{} which then gets parsed into key/value pairs, with the key separated from its
+corresponding value by an equals sign.
+
+Values for numbers are converted into integers ({\tt CCTK\_INT}) if possible
+(no decimal point appears in the value), otherwise into reals ({\tt CCTK\_REAL}).
+Strings must be enclosed in either single or double quotes. String values in
+single quotes are interpreted literally, strings in double quotes may contain
+character escape codes which then will be interpreted as in C.
+Arrays must be enclosed in curly brackets, array elements must be single numbers
+of the same type (either all integer or all real).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
