@@ -85,7 +85,8 @@
  *   test_delete_table_entry
  *   test_set_create_from_string
  *   test_set_get_string
- *   test_set_get_pointer
+ *   test_set_get_pointers
+ *   test_set_get_fpointers
  *   test_clone
  *   check_table_contents
  *   check_table_contents_ij
@@ -426,7 +427,8 @@ static void test_iterators(int handle);
 static void test_delete_table_entry(int handle, bool case_insensitive);
 static int test_set_create_from_string(void);
 static void test_set_get_string(int handle, bool case_insensitive);
-static void test_set_get_pointer(int handle);
+static void test_set_get_pointers(int handle);
+static void test_set_get_fpointers(int handle);
 static void test_clone(int handle);
 static void check_table_contents(int handle, bool order_up_flag);
 static void check_table_contents_ij(int handle, int ihandle);
@@ -2044,12 +2046,39 @@ void CCTK_FCALL CCTK_FNAME (Util_TableSetPointer)
 }
 #endif	/* !UTIL_TABLE_TEST */
 
+int Util_TableSetFPointer(int handle, CCTK_FPOINTER value, const char *key)
+{
+  return Util_TableSetFPointerArray(handle, 1, &value, key);
+}
+
+/*
+ * ... the following function (an alias for the previous one) is for
+ *     backwards compatability only, and is deprecated as of 4.0beta13
+ */
 int Util_TableSetFnPointer(int handle, CCTK_FPOINTER value, const char *key)
 {
-  return Util_TableSetFnPointerArray(handle, 1, &value, key);
+  return Util_TableSetFPointerArray(handle, 1, &value, key);
 }
 
 #ifndef UTIL_TABLE_TEST
+void CCTK_FCALL CCTK_FNAME (Util_TableSetFPointer)
+                           (int *retval, const int *handle,
+                            const CCTK_FPOINTER *value, ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (Util_TableSetFPointer)
+                           (int *retval, const int *handle,
+                            const CCTK_FPOINTER *value, ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (key)
+  *retval = Util_TableSetFPointer (*handle, *value, key);
+  free (key);
+}
+#endif	/* !UTIL_TABLE_TEST */
+
+#ifndef UTIL_TABLE_TEST
+/*
+ * ... the following function (an alias for the previous one) is for
+ *     backwards compatability only, and is deprecated as of 4.0beta13
+ */
 void CCTK_FCALL CCTK_FNAME (Util_TableSetFnPointer)
                            (int *retval, const int *handle,
                             const CCTK_FPOINTER *value, ONE_FORTSTRING_ARG);
@@ -2058,7 +2087,7 @@ void CCTK_FCALL CCTK_FNAME (Util_TableSetFnPointer)
                             const CCTK_FPOINTER *value, ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_CREATE (key)
-  *retval = Util_TableSetFnPointer (*handle, *value, key);
+  *retval = Util_TableSetFPointer (*handle, *value, key);
   free (key);
 }
 #endif	/* !UTIL_TABLE_TEST */
@@ -2438,6 +2467,20 @@ void CCTK_FCALL CCTK_FNAME (Util_TableSetPointerArray)
 }
 #endif	/* !UTIL_TABLE_TEST */
 
+int Util_TableSetFPointerArray(int handle,
+                               int N_elements, const CCTK_FPOINTER array[],
+                               const char *key)
+{
+  return
+    internal_set(handle,
+                 CCTK_VARIABLE_FPOINTER, N_elements, (const void *) array,
+                 key);
+}
+
+/*
+ * ... the following function (an alias for the previous one) is for
+ *     backwards compatability only, and is deprecated as of 4.0beta13
+ */
 int Util_TableSetFnPointerArray(int handle,
                                 int N_elements, const CCTK_FPOINTER array[],
                                 const char *key)
@@ -2449,6 +2492,26 @@ int Util_TableSetFnPointerArray(int handle,
 }
 
 #ifndef UTIL_TABLE_TEST
+void CCTK_FCALL CCTK_FNAME (Util_TableSetFPointerArray)
+                           (int *retval, const int *handle,
+                            const int *N_elements,
+                            const CCTK_FPOINTER array[], ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (Util_TableSetFPointerArray)
+                           (int *retval, const int *handle,
+                            const int *N_elements,
+                            const CCTK_FPOINTER array[], ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (key)
+  *retval = Util_TableSetFPointerArray (*handle, *N_elements, array, key);
+  free (key);
+}
+#endif	/* !UTIL_TABLE_TEST */
+
+#ifndef UTIL_TABLE_TEST
+/*
+ * ... the following function (an alias for the previous one) is for
+ *     backwards compatability only, and is deprecated as of 4.0beta13
+ */
 void CCTK_FCALL CCTK_FNAME (Util_TableSetFnPointerArray)
                            (int *retval, const int *handle,
                             const int *N_elements,
@@ -2459,7 +2522,7 @@ void CCTK_FCALL CCTK_FNAME (Util_TableSetFnPointerArray)
                             const CCTK_FPOINTER array[], ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_CREATE (key)
-  *retval = Util_TableSetFnPointerArray (*handle, *N_elements, array, key);
+  *retval = Util_TableSetFPointerArray (*handle, *N_elements, array, key);
   free (key);
 }
 #endif	/* !UTIL_TABLE_TEST */
@@ -2920,15 +2983,45 @@ void CCTK_FCALL CCTK_FNAME (Util_TableGetPointer)
 }
 #endif	/* !UTIL_TABLE_TEST */
 
+int Util_TableGetFPointer(int handle, CCTK_FPOINTER *value, const char *key)
+{
+  const int status = Util_TableGetFPointerArray(handle, 1, value, key);
+  return (status == 0)
+         ? UTIL_ERROR_TABLE_VALUE_IS_EMPTY
+         : status;
+}
+
+/*
+ * ... the following function (an alias for the previous one) is for
+ *     backwards compatability only, and is deprecated as of 4.0beta13
+ */
 int Util_TableGetFnPointer(int handle, CCTK_FPOINTER *value, const char *key)
 {
-  const int status = Util_TableGetFnPointerArray(handle, 1, value, key);
+  const int status = Util_TableGetFPointerArray(handle, 1, value, key);
   return (status == 0)
          ? UTIL_ERROR_TABLE_VALUE_IS_EMPTY
          : status;
 }
 
 #ifndef UTIL_TABLE_TEST
+void CCTK_FCALL CCTK_FNAME (Util_TableGetFPointer)
+                           (int *retval, const int *handle,
+                            CCTK_FPOINTER *value, ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (Util_TableGetFPointer)
+                           (int *retval, const int *handle,
+                            CCTK_FPOINTER *value, ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (key)
+  *retval = Util_TableGetFPointer (*handle, value, key);
+  free (key);
+}
+#endif	/* !UTIL_TABLE_TEST */
+
+#ifndef UTIL_TABLE_TEST
+/*
+ * ... the following function (an alias for the previous one) is for
+ *     backwards compatability only, and is deprecated as of 4.0beta13
+ */
 void CCTK_FCALL CCTK_FNAME (Util_TableGetFnPointer)
                            (int *retval, const int *handle,
                             CCTK_FPOINTER *value, ONE_FORTSTRING_ARG);
@@ -2937,7 +3030,7 @@ void CCTK_FCALL CCTK_FNAME (Util_TableGetFnPointer)
                             CCTK_FPOINTER *value, ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_CREATE (key)
-  *retval = Util_TableGetFnPointer (*handle, value, key);
+  *retval = Util_TableGetFPointer (*handle, value, key);
   free (key);
 }
 #endif	/* !UTIL_TABLE_TEST */
@@ -3359,6 +3452,19 @@ void CCTK_FCALL CCTK_FNAME (Util_TableGetPointerArray)
 }
 #endif	/* !UTIL_TABLE_TEST */
 
+int Util_TableGetFPointerArray(int handle,
+                               int N_elements, CCTK_FPOINTER array[],
+                               const char *key)
+{
+  return internal_get(handle,
+                      CCTK_VARIABLE_FPOINTER, N_elements, (void *) array,
+                      key);
+}
+
+/*
+ * ... the following function (an alias for the previous one) is for
+ *     backwards compatability only, and is deprecated as of 4.0beta13
+ */
 int Util_TableGetFnPointerArray(int handle,
                                 int N_elements, CCTK_FPOINTER array[],
                                 const char *key)
@@ -3369,6 +3475,26 @@ int Util_TableGetFnPointerArray(int handle,
 }
 
 #ifndef UTIL_TABLE_TEST
+void CCTK_FCALL CCTK_FNAME (Util_TableGetFPointerArray)
+                           (int *retval, const int *handle,
+                            const int *N_elements, CCTK_FPOINTER array[],
+                            ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (Util_TableGetFPointerArray)
+                           (int *retval, const int *handle,
+                            const int *N_elements, CCTK_FPOINTER array[],
+                            ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (key)
+  *retval = Util_TableGetFPointerArray (*handle, *N_elements, array, key);
+  free (key);
+}
+#endif	/* !UTIL_TABLE_TEST */
+
+#ifndef UTIL_TABLE_TEST
+/*
+ * ... the following function (an alias for the previous one) is for
+ *     backwards compatability only, and is deprecated as of 4.0beta13
+ */
 void CCTK_FCALL CCTK_FNAME (Util_TableGetFnPointerArray)
                            (int *retval, const int *handle,
                             const int *N_elements, CCTK_FPOINTER array[],
@@ -3379,7 +3505,7 @@ void CCTK_FCALL CCTK_FNAME (Util_TableGetFnPointerArray)
                             ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_CREATE (key)
-  *retval = Util_TableGetFnPointerArray (*handle, *N_elements, array, key);
+  *retval = Util_TableGetFPointerArray (*handle, *N_elements, array, key);
   free (key);
 }
 #endif	/* !UTIL_TABLE_TEST */
@@ -5324,7 +5450,8 @@ int main(void)
   test_set_get_array(HANDLE);
 
   test_set_get_string(handle, false);
-  test_set_get_pointer(handle);
+  test_set_get_pointers(handle);
+  test_set_get_fpointers(handle);
 
     {
   const int HANDLE2 = test_set_create_from_string();
@@ -6154,20 +6281,77 @@ static
 
 #ifdef UTIL_TABLE_TEST
 /*
- * This function tests  Util_Table{Set,Get}Pointer()
+ * This function tests
+ *	Util_Table{Set,Get}Pointer()
+ *	Util_Table{Set,Get}PointerArray()
  */
 static
-  void test_set_get_pointer(int handle)
+  void test_set_get_pointers(int handle)
 {
   CCTK_INT i, j;
   assert( Util_TableSetPointer(handle, (CCTK_POINTER) &i, "i_ptr") == 0);
   assert( Util_TableSetPointer(handle, (CCTK_POINTER) &j, "j_ptr") == 0);
+
     {
-    CCTK_POINTER iptr, jptr;
+  CCTK_POINTER iptr, jptr;
   assert( Util_TableGetPointer(handle, &iptr, "i_ptr") == 1 );
   assert( (CCTK_INT*) iptr == &i );
   assert( Util_TableGetPointer(handle, &jptr, "j_ptr") == 1 );
   assert( (CCTK_INT*) jptr == &j );
+
+    {
+  CCTK_POINTER ijptr[2];
+  ijptr[0] = &j;
+  ijptr[1] = &i;
+  assert( Util_TableSetPointerArray(handle, 2, ijptr, "ijptr") == 0 );
+
+    {
+  CCTK_POINTER ijptr_copy[5];
+  assert( Util_TableGetPointerArray(handle, 5, ijptr_copy, "ijptr") == 2 );
+  assert( ijptr_copy[0] = ijptr[0] );
+  assert( ijptr_copy[1] = ijptr[1] );
+    }
+    }
+    }
+}
+#endif	/* UTIL_TABLE_TEST */
+
+/******************************************************************************/
+
+#ifdef UTIL_TABLE_TEST
+/*
+ * This function tests
+ *	Util_Table{Set,Get}FPointer()
+ *	Util_Table{Set,Get}FPointerArray()
+ */
+static
+  void test_set_get_fpointers(int handle)
+{
+  CCTK_FPOINTER dptr = (CCTK_FPOINTER) & test_set_get_pointers;
+  CCTK_FPOINTER fptr = (CCTK_FPOINTER) & test_set_get_fpointers;
+  assert( Util_TableSetFPointer(handle, dptr, "dptr") == 0);
+  assert( Util_TableSetFPointer(handle, fptr, "fptr") == 0);
+
+    {
+  CCTK_FPOINTER dptr_copy, fptr_copy;
+  assert( Util_TableGetFPointer(handle, &dptr_copy, "dptr") == 1 );
+  assert( dptr_copy == dptr );
+  assert( Util_TableGetFPointer(handle, &fptr_copy, "fptr") == 1 );
+  assert( fptr_copy == fptr );
+
+    {
+  CCTK_FPOINTER fdptrs[2];
+  fdptrs[0] = fptr;
+  fdptrs[1] = dptr;
+  assert( Util_TableSetFPointerArray(handle, 2, fdptrs, "fdptrs") == 0 );
+  
+    {
+  CCTK_FPOINTER fdptrs_copy[5];
+  assert( Util_TableGetFPointerArray(handle, 2, fdptrs_copy, "fdptrs") == 2 );
+  assert( fdptrs_copy[0] = fdptrs[0] );
+  assert( fdptrs_copy[1] = fdptrs[1] );
+    }
+    }
     }
 }
 #endif	/* UTIL_TABLE_TEST */
