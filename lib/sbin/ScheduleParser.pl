@@ -211,7 +211,7 @@ sub ParseScheduleBlock
       }
       else
       {
-        if($fields[$field] =~ m:CCTK_:)
+        if($fields[$field] =~ m:CCTK_:i)
         {
           $where = "\U$fields[$field]\E";
         }
