@@ -220,6 +220,11 @@ sub ParseScheduleBlock
           $where = "CCTK_\U$fields[$field]\E";
         }
       }
+      if (&CheckScheduleBin($where)< 0)
+      {
+        $message = "Schedule bin $fields[$field] not recognised in $thorn\n";
+        &CST_error(0,$message,"",__LINE__,__FILE__);	
+      }
       $field+=2;
     }
     elsif($fields[$field] =~ m:^IN$:i)
@@ -520,5 +525,33 @@ sub PrintScheduleStatistics
 
   return;
 }
+
+#/*@@
+#  @routine    CheckScheduleBin
+#  @date       Sun MAr 17 2002
+#  @author     Gabrielle Allen
+#  @desc 
+#  Check if routine scheduled at known schedule bin
+#  @enddesc 
+#  @calls     
+#  @calledby   
+#  @history 
+#
+#  @endhistory 
+#
+#@@*/
+sub CheckScheduleBin
+{
+  my($where) = @_;
+  my($retval)=-1;
+
+  if ($where =~ m:CCTK_(STARTUP|PARAMCHECK|BASEGRID|INITIAL|POSTINITIAL|RECOVER_VARIABLES|RECOVER_PARAMETERS|CHECKPOINT|CPINITIAL|PRESTEP|EVOL|POSTSTEP|TERMINATE|SHUTDOWN):)
+  {
+    $retval = 0;
+  }
+
+  return $retval;
+}
+
 
 1;
