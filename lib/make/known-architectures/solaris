@@ -6,7 +6,7 @@
 #    @desc
 #             General architecture options for Solaris machines
 #    @enddesc
-#    @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/solaris,v 1.11 2004-07-05 15:45:37 tradke Exp $
+#    @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/solaris,v 1.12 2004-07-05 16:11:50 tradke Exp $
 #  @@*/
 
 if test "$CCTK_CONFIG_STAGE" = "preferred-compilers" ; then
@@ -39,8 +39,6 @@ else
     : ${C_OPTIMISE_FLAGS='-fast'}
   fi
   if test "basename $CXX`" = 'CC' ; then
-    # switch off automatic template instantiation
-    : ${CXX_FLAGS='-no_auto_include -ptused'}
     : ${CXX_OPTIMISE_FLAGS='-fast'}
   fi
   : ${F90_OPTIMISE_FLAGS='-fast'}
