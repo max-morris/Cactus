@@ -7,6 +7,7 @@
 #     (avoids problems with different versions of cvs client)
 #     $Header$
 #  @enddesc 
+#  @version $Header$
 #@@*/
 
 require "lib/sbin/MakeUtils.pl";
@@ -55,6 +56,12 @@ $current_dir = `pwd`;
 chdir $package_dir;
 foreach $thorn (sort keys %info)
 {
+
+  if( ! -d "$thorn/CVS")
+  {
+    print "Ignoring $thorn - no CVS directory\n";
+    next;
+  }
   chdir $thorn;
   print("\nUpdating $thorn\n");
   $command = "cvs -z 3 -q update -d -P";
