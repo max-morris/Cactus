@@ -950,15 +950,22 @@ sub CompareTestFiles
       } #while
 
     }
-    elsif (-e $newfile && -z $oldfile && -s $newfile)
+    elsif (!-e $newfile && -s $oldfile)
     {
-      print "     $file in archive but not in test\n";
+      print "     $file in archive but not created in test\n";
+      $rundata->{"$inthorn $test NFAILWEAK"}++;
+      $rundata->{"$inthorn $test NFAILSTRONG"}++;
+    }
+    elsif (!-e $newfile && -z $oldfile)
+    {
+      print "     $file in archive but not created in test\n";
+      print "       ($file empty in archive)\n";
       $rundata->{"$inthorn $test NFAILWEAK"}++;
       $rundata->{"$inthorn $test NFAILSTRONG"}++;
     }
     elsif (-e $newfile && -s $oldfile && -z $newfile)
     {
-      print "     $file is empty\n";
+      print "     $file is empty in test\n";
       $rundata->{"$inthorn $test NFAILWEAK"}++;
       $rundata->{"$inthorn $test NFAILSTRONG"}++;
     }
@@ -966,9 +973,9 @@ sub CompareTestFiles
     {
       print "     $file empty in both test and archive\n";
     }
-    elsif (-e $newfile && -s $oldfile && -s $newfile)      
+    elsif (-e $newfile && -z $oldfile && -s $newfile)      
     {
-      print "     $file not created for comparison\n";
+      print "     $file is empty in archive but not in test\n";
       $rundata->{"$inthorn $test NFAILWEAK"}++;
       $rundata->{"$inthorn $test NFAILSTRONG"}++;
     }
