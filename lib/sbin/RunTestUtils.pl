@@ -128,7 +128,7 @@ sub ParseParFile($thorn,$arrangement,$parfile,$config_data)
 
 sub ParseTestConfigs
 {
-    my($testdata,$config_data) = @_;
+    my($testdata,$config_data,$runconfig) = @_;
 
     foreach $thorn (split(" ",$testdata->{"THORNS"}))
     {
@@ -166,6 +166,16 @@ sub ParseTestConfigs
 		if ($token =~ /EXTENSIONS/)
 		{
 		    $testdata->{"EXTENSIONS"} .= "$value ";
+		}
+                elsif ($token =~ /ABSTOL/)
+		{
+		  $value =~ /^\s*([^\s]*)\s+(.*)$/;
+		  $runconfig->{"$thorn $1 ABSTOL"}=$2;
+		}
+                elsif ($token =~ /RELTOL/)
+		{
+		  $value =~ /^\s*([^\s]*)\s+(.*)$/;
+		  $runconfig->{"$thorn $1 RELTOL"}=$2;
 		}
 		else
 		{
@@ -973,6 +983,7 @@ sub CompareTestFiles
 			      else
 			      {
 				  $abstol = $runconfig->{"$thorn $test ABSTOL"};
+#				  print "  Using absolute tolerance $abstol for this test\n";
 			      }
 			      
 			      if (!$runconfig->{"$thorn $test RELTOL"})
@@ -982,6 +993,7 @@ sub CompareTestFiles
 			      else
 			      {
 				  $reltol = $runconfig->{"$thorn $test RELTOL"};
+#				  print "  Using relative tolerance $reltol for this test\n";
 			      }
 			      
 			      $allunder = 1;

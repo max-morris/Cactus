@@ -29,7 +29,7 @@ $testdata = &InitialiseTestData();
 $testdata = &FindTestParameterFiles($testdata,$config_data);
 
 # Parse test config files
-$testdata = &ParseTestConfigs($testdata,$config_data);
+$testdata = &ParseTestConfigs($testdata,$config_data,\%runconfig);
 
 # Find the Archive Datafiles
 $testdata = &FindTestArchiveFiles($testdata);
@@ -94,6 +94,7 @@ while ($choice !~ /^Q/i)
 	  {
 	    $testdata = &RunTest("log",$test,$thorn,$config_data,$testdata);
 	  }
+
 	  $rundata = &CompareTestFiles($test,$thorn,\%runconfig,$rundata,$config_data,$testdata);
 
 	  $rundata = &ReportOnTest($test,$thorn,$rundata,$testdata);
