@@ -8,7 +8,9 @@
 #  @enddesc
 # @@*/
 
-if [ -n "$HDF5" ] ; then
+choose_hdf5=`echo $HDF5 | tr '[:upper:]' '[:lower:]'`
+
+if test "X$choose_hdf5" = "Xyes" ; then
 
 echo "Configuring with HDF5. Blocks with #ifdef HDF5 will be activated"
 
@@ -51,6 +53,27 @@ HDF5_LIBS=hdf5
 HDF5_LIB_DIRS="$HDF5_DIR/lib"
 HDF5_INC_DIRS="$HDF5_DIR/include"
 
+
+# check that we have the right version of HDF5 under 32/64 bit IRIX
+# This should better be checked by some autoconf script.
+if test -n "$IRIX_BITS"; then
+  if test -r "$HDF5_LIB_DIRS/libhdf5.a"; then
+    hdf5_lib="$HDF5_LIB_DIRS/libhdf5.a"
+  elif test -r "$HDF5_LIB_DIRS/libhdf5.so"; then
+    hdf5_lib="$HDF5_LIB_DIRS/libhdf5.so"
+  else
+    hdf5_lib=
+  fi
+
+  if test -n $hdf5_lib; then
+    file $hdf5_lib | grep -qe $IRIX_BITS 2> /dev/null
+    if test $? -ne 0; then
+      echo "The HDF5 library found in \"$HDF5_LIB_DIRS\" was not compiled as $IRIX_BITS bits !"
+      echo "Please reconfigure Cactus with the correct setting for HDF5_DIR !"
+      exit 1
+    fi
+  fi
+fi
 
 # Check whether we have to link with libz.a
 
@@ -113,5 +136,11 @@ CCTK_WriteLine make.extra.defn ""
 CCTK_WriteLine make.extra.defn 'LIBS         += $(HDF5_LIBS)'
 CCTK_WriteLine make.extra.defn 'LIBDIRS      += $(HDF5_LIB_DIRS)'
 CCTK_WriteLine make.extra.defn 'SYS_INC_DIRS += $(HDF5_INC_DIRS)'
+
+elif test "X$choose_hdf5" != "Xno" -a "X$choose_hdf5" != "X"; then
+
+  echo "Don't understand the setting \"HDF5=$HDF5\" !"
+  echo 'Please set it to either "yes" or "no", or leave it blank (same as "no") !'
+  exit 1
 
 fi
