@@ -11,7 +11,7 @@
 #ifndef _MISC_H_
 #define _MISC_H_
 
-#ifdef _cplusplus
+#ifdef __cplusplus
 extern "C" {
 #endif
 
@@ -37,7 +37,7 @@ int CCTK_SetKeywordInRangeList(char **data, const char *value,
 int CCTK_SetString(char **data, const char *value);
 int CCTK_SetLogical(int *data, const char *value);
 
-#ifdef _cplusplus
+#ifdef __cplusplus
            }   
 #endif
 
