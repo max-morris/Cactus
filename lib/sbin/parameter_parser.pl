@@ -359,7 +359,7 @@ sub print_parameter_database
   
   foreach $field ( sort keys %parameter_database )
   {
-    print "$field has value $parameter_database{$field}";
+    print "$field has value $parameter_database{$field}\n";
   }
 }
 

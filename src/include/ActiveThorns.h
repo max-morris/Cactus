@@ -21,6 +21,11 @@ int CCTK_IsThornActive(const char *name);
 int CCTK_IsImplementationActive(const char *name);
 int CCTKi_ListThorns(FILE *file, const char *format, int active);
 int CCTKi_ListImplementations(FILE *file, const char *format, int active);
+const char *CCTK_ActivatingThorn(const char *imp);
+
+  /* FIXME - should return a list or something */
+t_sktree *CCTK_ImpThornList(const char *imp);
+
 
 #ifdef __cplusplus 
 }

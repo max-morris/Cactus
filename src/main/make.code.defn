@@ -15,7 +15,6 @@ InitialiseDataStructures.c\
 ProcessCommandLine.c\
 ProcessEnvironment.c\
 ProcessParameterDatabase.c\
-RecordImplementation.c\
 SetParams.c\
 ShutdownCactus.c\
 Startup.c\

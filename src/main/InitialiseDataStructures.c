@@ -12,6 +12,10 @@
 #include <string.h>
 
 #include "cctk_Flesh.h"
+
+/* FIXME - remove this when ActiveThorns doesn't need it */
+#include "SKBinTree.h"
+
 #include "cctk_ActiveThorns.h"
 
 static char *rcsid = "$Id$";
@@ -46,7 +50,7 @@ int InitialiseDataStructures(tFleshConfig *ConfigData)
   /* Initialise appropriate subsystems. */
 
   CCTKi_BindingsImplementationsInitialise();
-  CCTKi_BindingsParametersInitialise();
+  /*  CCTKi_BindingsParametersInitialise();*/
   CCTKi_BindingsVariablesInitialise();
   CCTKi_BindingsScheduleInitialise();
 

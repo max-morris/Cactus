@@ -92,6 +92,11 @@ sub CreateParameterBindingFile
     
     push(@data, "");
 
+    push(@data, &create_parameter_code($structure,$parameters{$parameter}, 
+				       $parameter, %parameter_database));
+    
+    push(@data, "");
+
   }
 
   push(@data, "  return 0;");
@@ -217,11 +222,6 @@ sub set_parameter_code
 
     }
     $line .= ");";
-  }
-  elsif( $type eq "KEYWORD")
-  {
-    $line = "    retval = CCTK_SetKeyword(\&($structure.$parameter), value);" ;
-
   }
   elsif( $type eq "STRING" || $type eq "SENTENCE")
   {
@@ -576,5 +576,63 @@ sub help_parameter_code
     
   return @lines;
 }
+
+
+sub create_parameter_code
+{
+  local($structure, $implementation,$parameter, %parameter_database) = @_;
+  local($type, $type_string);
+  local($line, @lines);
+  local($default);
+  local($temp_default);
+
+  $default = $parameter_database{"\U$implementation $parameter\E default"};
+  $type = $parameter_database{"\U$implementation $parameter\E type"};
+
+  $type_string = &get_c_type_string($type);
+
+  if($type_string eq "char *")
+  {
+    $line = "  $structure" .".$parameter = malloc(" 
+      . (length($default)-1). "\*sizeof(char));";
+    push(@lines, $line);
+
+    $line = "  if($structure.$parameter)";
+    push(@lines, $line);
+
+    $line = "    strcpy($structure.$parameter, $default);";
+    push(@lines, $line);
+  }
+  elsif($type eq "LOGICAL")
+  {
+    # Logicals need to be done specially.
+
+    # Strip out any quote marks, and spaces at start and end.
+    $temp_default = $default;
+    $temp_default =~ s:\"::g;
+    $temp_default =~ s:\s*$:: ;
+    $temp_default =~ s:^\s*:: ;
+
+    $line = "  CCTK_SetLogical(\&($structure.$parameter),\"$temp_default\");";
+    push(@lines, $line);
+  }
+  else
+  {
+    $line = "  $structure.$parameter = $default;";
+    push(@lines, $line);
+  }
+
+      $line = "ParameterCreate($parameter, $implementation,
+                    \"foobar\",\"" . $parameter_database{"\U$implementation $parameter\E type"}."\"
+                    const char *scope,
+                    int        steerable,
+                    const char *description,
+                    const char *defval,
+                    void       *data)";
+
+
+  return @lines;
+}
   
 1;
+

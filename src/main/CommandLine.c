@@ -14,9 +14,11 @@
 #include "CommandLine.h"
 #include "cctk_Flesh.h"
 #include "cGH.h"
+
 #include "cctk_Comm.h"
 #include "cctk_WarnLevel.h"
 #include "cctk_Bindings.h"
+#include "cctk_Misc.h"
 
 /* FIXME. This shouldn't be here !*/
 #include "thornlist.h"
@@ -75,7 +77,23 @@ void CCTKi_CommandLineDescribeAllParameters(void)
 
 void CCTKi_CommandLineDescribeParameter(const char *optarg)
 {
+  char *thorn;
+  char *param;
+
+  /*
   CCTKi_BindingsParameterHelp(optarg,"%s",stdout);
+  */
+ 
+  Util_SplitString(&thorn, &param, optarg, "::");
+
+  ParameterPrintDescription(param,
+			    thorn, /*const char *thorn,*/
+                            "..%s..%s\n",/*  const char *format,*/
+                            stdout);
+
+  free(thorn);
+  free(param);
+
   exit(1);
 }
 

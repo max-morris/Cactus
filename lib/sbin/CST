@@ -6,7 +6,7 @@
 #  @desc 
 #  Parses the the configuration files for thorns.
 #  @enddesc 
-#  @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.25 1999-07-30 15:56:42 allen Exp $
+#  @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.26 1999-08-26 15:34:16 goodale Exp $
 #@@*/
 
 # Global parameter to track the number of errors from the CST
@@ -114,6 +114,8 @@ if ($CST_debug)
   print "DEBUG: Checking parameter consistency\n";
 }
 %parameter_database = &CheckImpParamConsistency(scalar(keys %interface_database), %interface_database, %parameter_database);
+
+#$debug_parameters = 1;
 
 if($debug_parameters)
 {

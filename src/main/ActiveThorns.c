@@ -11,12 +11,11 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "cctk_ActiveThorns.h"
 #include "SKBinTree.h"
 
+#include "cctk_ActiveThorns.h"
 
 static char *rcsid = "$Header$";
-
 
 /* Local routine */
 static int CCTK_RegisterImp(const char *name, const char *thorn);
@@ -39,6 +38,8 @@ struct IMPLEMENTATION
 static t_sktree *thornlist = NULL;
 static t_sktree *implist   = NULL;
 
+static int n_thorns = 0;
+static int n_imps   = 0;
 
  /*@@
    @routine    CCTKi_RegisterThorn
@@ -62,14 +63,14 @@ int CCTKi_RegisterThorn(const char *name, const char *imp)
 
   struct THORN *thorn;
 
-  printf("Registering thorn %s, which provides %s\n", name, imp);
+  /*  printf("Registering thorn %s, which provides %s\n", name, imp);*/
 
   /* Does the thorn already exist ? */
   node = SKTreeFindNode(thornlist, name);
 
   if(!node)
   {
-
+    n_thorns++;
     /* Create the structure to hold thorn info. */
     thorn = (struct THORN *)malloc(sizeof(struct THORN));
 
@@ -146,6 +147,8 @@ static int CCTK_RegisterImp(const char *name, const char *thorn)
 
   if(!node)
   {
+    n_imps++;
+
     /* Create the structure to hold info about it. */
     imp = (struct IMPLEMENTATION *)malloc(sizeof(struct IMPLEMENTATION));
 
@@ -421,6 +424,105 @@ int CCTKi_ListImplementations(FILE *file, const char *format, int active)
     {
       fprintf(file, format, node->key);
     }
+  }
+
+  return retval;
+}
+
+int CCTK_ImpList(int active, char ***list, int *n_implementations)
+{
+  int retval;
+  t_sktree *node;
+
+  struct IMPLEMENTATION *imp;
+
+  retval = 0;
+
+
+  *list = (char **)malloc(n_imps*sizeof(char *));
+  
+  for(node= SKTreeFindFirst(implist),   *n_implementations = 0;
+      node; 
+      node = node->next, retval++)
+  {
+    imp = (struct IMPLEMENTATION *)(node->data);
+
+    if(imp->active || !active)
+    {
+      (*list)[*n_implementations] = (char *) malloc(strlen(node->key)+1);
+      strcpy((*list)[*n_implementations], node->key);
+      (*n_implementations)++;
+    }
+  }
+
+  return retval;
+}
+
+const char *CCTK_ActivatingThorn(const char *name)
+{
+  const char *retval;
+
+  t_sktree *node;
+  
+  struct IMPLEMENTATION *imp;
+
+  /* Find the implementation */
+  node = SKTreeFindNode(implist, name);
+
+  retval = NULL;
+
+  if(node)
+  {
+    imp = (struct IMPLEMENTATION *)(node->data);
+
+    if(imp->active)
+    {
+      retval = imp->activating_thorn;
+    }
+  }
+
+  return retval;
+}
+
+
+
+ /*@@
+   @routine    CCTK_ImpThornList
+   @date       Tue Jul 27 09:15:58 1999
+   @author     Tom Goodale
+   @desc 
+   Return the thorns for an implementation.
+   For now return an sktree - FIXME
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+t_sktree *CCTK_ImpThornList(const char *name)
+{
+  t_sktree *retval;
+
+  t_sktree *node;
+  
+  struct IMPLEMENTATION *imp;
+  
+
+  /* Find the implementation */
+  node = SKTreeFindNode(implist, name);
+
+
+  if(node)
+  {
+    imp = (struct IMPLEMENTATION *)(node->data);
+
+    retval = imp->thornlist;
+  }
+  else
+  {
+    retval = NULL;
   }
 
   return retval;

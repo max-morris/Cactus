@@ -12,10 +12,14 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdarg.h>
+
+#include "StoreKeyedData.h"
 
 #include "cctk_Misc.h"
 #include "cctk_WarnLevel.h"
 #include "cctk_FortranString.h"
+
 #include "cctk_parameters.h"
 
 static char *rcsid = "$Header$";
@@ -36,6 +40,13 @@ static int warning_level = 1;
  */
 
 static int error_level    = 0;
+
+
+/* Store a list of format strings */
+
+static n_formats = 0;
+static pKeyedData *formatlist = NULL;
+
 
  /*@@
    @routine    CCTKi_SetWarnLevel
@@ -309,6 +320,71 @@ void CCTKi_FinaliseParamWarn(void)
 }
 
  /*@@
+   @routine    CCTK_MessageFormat
+   @date       Mon Jul 26 19:51:26 1999
+   @author     Tom Goodale
+   @desc 
+   Stores a format for messages from Fortran.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+int FMODIFIER FORTRAN_NAME(CCTK_MessageFormat)(ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE(format)
+  
+  StoreKeyedData(&formatlist, n_formats++ , (void *)format);
+
+  return n_formats-1;
+}
+
+void FMODIFIER FORTRAN_NAME(CCTK_VInfo)(int format_number, ...)
+{
+  char *format_string;
+  char *message;
+  char format[100];
+  int message_length;
+  int current_place;
+  va_list args;
+  
+  if(format_number < n_formats)
+  {
+    format_string = (char *)GetKeyedData(formatlist, format_number);
+
+    /* Pick an aribitrary starting length for the message */
+    message_length=5*strlen(format_string);
+
+    message = (char *)malloc(message_length);
+
+    /* Loop through the format string */
+    for(current_place=0; format_string; format_string++)
+    {
+      if(*format_string != '%')
+      {
+	message[current_place] = *format_string;
+	current_place++;
+	if(current_place >= message_length)
+	{
+	  message = (char *)realloc(message, message_length*2);
+	  message_length *=2;
+	}
+      }
+      else
+      {
+	
+      }
+    }
+
+  }
+
+}
+
+ /*@@
+   @routine    CCTK_NotYetImplemented
    @routine    CCTKi_NotYetImplemented
    @date       July 1999
    @author     Gabrielle Allen

@@ -106,6 +106,8 @@ sub write_rfr_header {
   $header .= "#include \"cctk.h\"\n";
   $header .= "#include \"cctk_Flesh.h\"\n";
   $header .= "#include \"cctk_Comm.h\"\n";
+  $header .= "/* FIXME - remove when ActiveThorns does not need this */\n";
+  $header .= "#include \"SKBinTree.h\"\n\n";
   $header .= "#include \"cctk_ActiveThorns.h\"\n";
   $header .= "#include \"cctk_Groups.h\"\n";
   $header .= "#include \"cctk_GroupsOnGH.h\"\n";
@@ -134,6 +136,8 @@ sub write_startup_header {
   print OUTSTART "#include <stdio.h>\n";
   print OUTSTART "#include \"cctk.h\"\n";
   print OUTSTART "#include \"cctk_Flesh.h\"\n";
+  print OUTSTART "/* FIXME - remove when ActiveThorns does not need this */\n";
+  print OUTSTART "#include \"SKBinTree.h\"\n\n";
   print OUTSTART "#include \"cctk_ActiveThorns.h\"\n";
   print OUTSTART "#include \"rfrConstants.h\"\n";
   print OUTSTART "#include \"cctk_parameters.h\"\n";

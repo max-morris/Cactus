@@ -7,13 +7,19 @@
    @enddesc 
  @@*/
 
+#include "config.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdarg.h>
+
+#include "SKBinTree.h"
+
+#include "ActiveThorns.h"
 
 #include "ParameterBindings.h"
 
-#include "SKBinTree.h"
 
 const char *rcsid="$Header$";
 
@@ -25,6 +31,7 @@ int STR_cmpi(const char *string1, const char *string2);
 #define SCOPE_RESTRICTED    2
 #define SCOPE_PRIVATE       3
 #define SCOPE_NOT_GLOBAL    4
+#define SCOPE_ANY           5
 
 typedef struct RANGE
 {
@@ -40,7 +47,6 @@ typedef struct PARAMETER
 {
   char *name;
   char *thorn;
-  char *implementation;
   int scope;
 
   char *description;
@@ -72,21 +78,18 @@ typedef struct PARAMTREENODE
 
 static t_parameter *ParameterFind(const char *name, 
                                   const char *thorn, 
-                                  const char *implementation, 
                                   int scope);
 
-static int ParameterNew(const char *thorn,
-                        const char *implementation,
-                        const char *name,
-                        const char *type,
-                        const char *scope,
-                        int        steerable,
-                        const char *description,
-                        const char *defval,
-                        void       *data);
+static t_parameter *ParameterNew(const char *thorn,
+				 const char *name,
+				 const char *type,
+				 const char *scope,
+				 int        steerable,
+				 const char *description,
+				 const char *defval,
+				 void       *data);
 
 static int ParameterCheck(const char *thorn,
-                          const char *implementation,
                           const char *name,
                           const char *type,
                           const char *scope,
@@ -125,6 +128,16 @@ static int ParameterExtend(t_parameter *parameter,
 static int ParameterListAddParam(t_paramlist **paramlist,
 				 t_parameter *newparam);
 
+
+static int ParameterSetKeyword(t_parameter *param, const char *value);
+static int ParameterSetString(t_parameter *param, const char *value);
+static int ParameterSetSentence(t_parameter *param, const char *value);
+static int ParameterSetInteger(t_parameter *param, const char *value);
+static int ParameterSetReal(t_parameter *param, const char *value);
+static int ParameterSetLogical(t_parameter *param, const char *value);
+
+
+
 static t_sktree *paramtree=NULL;
 
 
@@ -156,13 +169,7 @@ static t_sktree *paramtree=NULL;
    @vcomment 
  
    @endvar 
-   @var     implementation
-   @vdesc   The originating implementation
-   @vtype   const char *
-   @vio     in
-   @vcomment 
- 
-   @endvar 
+
    @var     scope
    @vdesc   The scope of the parameter
    @vtype   const char *
@@ -209,33 +216,55 @@ static t_sktree *paramtree=NULL;
 @@*/
 int ParameterCreate(const char *name,
 		    const char *thorn,
-                    const char *implementation,
                     const char *type,
                     const char *scope,
                     int        steerable,
                     const char *description,
                     const char *defval,
-                    void       *data)
+                    void       *data,
+		    int n_ranges,
+		    ...)
 {
   int retval;
   int iscope;
+  int i;
   t_parameter *parameter;
+  va_list ranges;
+  const char *rangeval;
+  const char *rangedesc;
 
   iscope = ParameterGetScope(scope);
 
-  parameter = ParameterFind(name, thorn, implementation, iscope);
+  parameter = ParameterFind(name, thorn, iscope);
 
   if(!parameter)
   {
-    retval = ParameterNew(thorn, implementation, name, 
-                          type, scope, steerable, description, defval, data);
+    parameter = ParameterNew(thorn, name, 
+			     type, scope, steerable, description, defval, data);
+
+    if(n_ranges)
+    {
+      va_start(ranges, n_ranges);
+      
+      for(i=0; i < n_ranges; i++)
+      {
+	rangeval = (const char *)va_arg(ranges, const char *);
+	rangedesc = (const char *)va_arg(ranges, const char *);
+	
+	ParameterExtend(parameter, thorn, rangeval, rangedesc);
+      }
+      va_end(ranges);
+
+    }
+
+    retval = ParameterSetSimple(parameter, defval);
+
   }
   else
   {
-    retval = ParameterCheck(thorn, implementation, name, 
+    retval = ParameterCheck(thorn, name, 
                             type, scope, steerable, description, defval, data);
   }
-
 
   return retval;
 }
@@ -295,7 +324,7 @@ int ParameterCreate(const char *name,
    @endreturndesc
 
 @@*/
-int ParameterAddRange(const char *origin, 
+int ParameterAddRange(const char *implementation, 
                       const char *name,
                       const char *range_origin,
                       const char *range,
@@ -304,26 +333,36 @@ int ParameterAddRange(const char *origin,
   int retval;
   t_parameter *parameter;
 
-  if(!STR_CMP(origin, range_origin))
-  {
-    parameter = ParameterFind(name, origin, NULL, SCOPE_PRIVATE);
-    if(!parameter) parameter = ParameterFind(name, origin, NULL, SCOPE_RESTRICTED);
-    if(!parameter) parameter = ParameterFind(name, origin, NULL, SCOPE_GLOBAL);
-  }
-  else
-  {
-    parameter = ParameterFind(name, NULL, origin, SCOPE_RESTRICTED);
-  }
+  /* For the moment do this in the quick and dirty way 8-(  FIXME */
+  t_sktree *thornlist;
 
-  if(parameter)
+  t_sktree *node;
+
+  /*printf("Extending parameter %s::%s from thorn %s\n", implementation, name, range_origin);*/
+
+  thornlist = CCTK_ImpThornList(implementation);
+
+  retval = -1;
+
+  if(thornlist)
   {
-    retval = ParameterExtend(parameter,  range_origin, range, range_description);
+    for(node= SKTreeFindFirst(thornlist);
+	node; 
+	node = node->next)
+    {
+      parameter = ParameterFind(name, node->key, SCOPE_RESTRICTED);
+      
+      if(parameter)
+      {
+	retval = ParameterExtend(parameter,  range_origin, range, range_description);
+      }
+      else
+      {
+	retval = -1;
+      }
+    }
   }
-  else
-  {
-    retval = -1;
-  }
-    
+  
   return retval;
 }
 
@@ -376,44 +415,13 @@ int ParameterAddRange(const char *origin,
 @@*/
 int ParameterSet(const char *name,
 		 const char *thorn,
-		 const char *implementation,
                  const char *value)
 {
   int retval;
   int iscope;
   t_parameter *param;
-  t_parameter *param2;
 
-  param = NULL;
-  param2 = NULL;
-
-  /* See what info we have */
-  if(!thorn && !implementation)
-  {
-    /* No info, so must be a global parameter. */
-    iscope = SCOPE_GLOBAL;
-    param = ParameterFind(name, NULL, NULL, iscope);
-  }
-  else
-  {
-    iscope = SCOPE_NOT_GLOBAL;
-    if(thorn && implementation)
-    {
-      /* Have both thorn and implementation so check both. */
-      param = ParameterFind(name, NULL, implementation, iscope);
-      param2 = ParameterFind(name, thorn, NULL, iscope);
-      if(param2 && ! param)
-      {
-	/* Only one found, so put into primary setting mode */
-	param = param2;
-      }
-    }
-    else
-    {
-      /* Only have one of thorn or imp, so look for it */
-      param = ParameterFind(name, thorn, implementation, iscope);
-    }
-  }
+  param = ParameterFind(name, thorn, SCOPE_ANY);
 
   if(param)
   {
@@ -423,12 +431,6 @@ int ParameterSet(const char *name,
   {
     retval = -1;
   }
-
-  /* Should produce a warning for this case. */
-  if(param2)
-  {
-    retval = ParameterSetSimple(param2, value);
-  }    
 
   return retval;
 }
@@ -492,45 +494,16 @@ int ParameterSet(const char *name,
 @@*/
 int ParameterPrintDescription(const char *name,
 			      const char *thorn,
-			      const char *implementation,
                               const char *format,
                               FILE *file)
 {
   int retval;
   int iscope;
   t_parameter *param;
-  t_parameter *param2;
 
   param = NULL;
-  param2 = NULL;
 
-  /* See what info we have */
-  if(!thorn && !implementation)
-  {
-    /* No info, so must be a global parameter. */
-    iscope = SCOPE_GLOBAL;
-    param = ParameterFind(name, NULL, NULL, iscope);
-  }
-  else
-  {
-    iscope = SCOPE_NOT_GLOBAL;
-    if(thorn && implementation)
-    {
-      /* Have both thorn and implementation so check both. */
-      param = ParameterFind(name, NULL, implementation, iscope);
-      param2 = ParameterFind(name, thorn, NULL, iscope);
-      if(param2 && ! param)
-      {
-	/* Only one found, so put into primary setting mode */
-	param = param2;
-      }
-    }
-    else
-    {
-      /* Only have one of thorn or imp, so look for it */
-      param = ParameterFind(name, thorn, implementation, iscope);
-    }
-  }
+  param = ParameterFind(name, thorn, SCOPE_ANY);
 
   if(param)
   {
@@ -540,12 +513,6 @@ int ParameterPrintDescription(const char *name,
   {
     retval = -1;
   }
-
-  /* Should produce a warning for this case. */
-  if(param2)
-  {
-    retval = ParameterPrintSimple(param2, format, file);
-  }    
 
   return retval;
 }
@@ -600,44 +567,15 @@ int ParameterPrintDescription(const char *name,
 @@*/
 void *ParameterGet(const char *name,
 		   const char *thorn,
-		   const char *implementation,
 		   int *type)
 {
   void *retval;
   int iscope;
   t_parameter *param;
-  t_parameter *param2;
 
   param = NULL;
-  param2 = NULL;
 
-  /* See what info we have */
-  if(!thorn && !implementation)
-  {
-    /* No info, so must be a global parameter. */
-    iscope = SCOPE_GLOBAL;
-    param = ParameterFind(name, NULL, NULL, iscope);
-  }
-  else
-  {
-    iscope = SCOPE_NOT_GLOBAL;
-    if(thorn && implementation)
-    {
-      /* Have both thorn and implementation so check both. */
-      param = ParameterFind(name, NULL, implementation, iscope);
-      param2 = ParameterFind(name, thorn, NULL, iscope);
-      if(param2 && ! param)
-      {
-	/* Only one found, so put into primary setting mode */
-	param = param2;
-      }
-    }
-    else
-    {
-      /* Only have one of thorn or imp, so look for it */
-      param = ParameterFind(name, thorn, implementation, iscope);
-    }
-  }
+  param = ParameterFind(name, thorn, SCOPE_ANY);
 
   if(param)
   {
@@ -648,11 +586,6 @@ void *ParameterGet(const char *name,
     retval = NULL;
   }
 
-  if(param2)
-  {
-    fprintf(stderr, "Ambiguous parameter name %s\n", name);
-    retval = NULL;
-  }    
 
   return retval;
 
@@ -704,7 +637,6 @@ const char *ParameterWalk(int first,
 
 static t_parameter *ParameterFind(const char *name, 
                                   const char *thorn, 
-                                  const char *implementation, 
                                   int scope)
 {
   t_parameter *retval;
@@ -715,40 +647,27 @@ static t_parameter *ParameterFind(const char *name,
   node = NULL;
   list = NULL;
 
-  if(scope == SCOPE_NOT_GLOBAL && thorn && implementation)
-  {
-    fprintf(stderr, "Calling error\n");
-    retval = NULL;
-  }
-  else
-  {
-    node = ParameterPTreeNodeFind(paramtree, name);
+  node = ParameterPTreeNodeFind(paramtree, name);
 
-    if(node)
+  if(node)
+  {
+    for(list = node->paramlist; list; list = list->next)
     {
-      for(list = node->paramlist; list; list = list->next)
+      if(! thorn)
       {
-	if(scope == SCOPE_GLOBAL ) 
+	if(list->param->scope == SCOPE_GLOBAL)
 	{
-	  if(scope == list->param->scope)
-	  {
-	    break;
-	  }	    
+	  break;
 	}
-	else if(scope == SCOPE_NOT_GLOBAL)
-	{
-	  if(thorn && ! STR_CMP(thorn, list->param->thorn)) break;
-	  if(implementation && ! STR_CMP(implementation, list->param->implementation)) break;
-	}
-	else if(scope == SCOPE_RESTRICTED)
-	{
-	  if(implementation && ! STR_CMP(implementation, list->param->implementation) && scope == list->param->scope) break;
-	}	  
-	else
-	{
-	  if(thorn && ! STR_CMP(thorn, list->param->thorn) && scope == list->param->scope) break;
-	}	  
       }
+      else if(scope == SCOPE_ANY)
+      {
+	if(thorn && ! STR_CMP(thorn, list->param->thorn)) break;
+      }
+      else if(!STR_CMP(thorn, list->param->thorn) && list->param->scope == scope)
+      {
+	break;
+      }	  
     }
   }
 
@@ -764,18 +683,32 @@ static t_parameter *ParameterFind(const char *name,
   return retval;
 }
 
-static int ParameterNew(const char *thorn,
-                        const char *implementation,
-                        const char *name,
-                        const char *type,
-                        const char *scope,
-                        int        steerable,
-                        const char *description,
-                        const char *defval,
-                        void       *data)
+ /*@@
+   @routine    ParameterNew
+   @date       Mon Jul 26 10:59:42 1999
+   @author     Tom Goodale
+   @desc 
+   
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+static t_parameter *ParameterNew(const char *thorn,
+				 const char *name,
+				 const char *type,
+				 const char *scope,
+				 int        steerable,
+				 const char *description,
+				 const char *defval,
+				 void       *data)
 {
   int retval;
   t_parameter *newparam;
+  char ** stringdata;
   
   retval = -1;
 
@@ -784,7 +717,6 @@ static int ParameterNew(const char *thorn,
   if(newparam)
   {
     newparam->thorn = (char *)malloc(sizeof(char)*(1+strlen(thorn)));
-    newparam->implementation = (char *)malloc(sizeof(char)*(1+strlen(implementation)));
     newparam->name = (char *)malloc(sizeof(char)*(1+strlen(name)));
     newparam->scope = ParameterGetScope(scope);
     newparam->type = ParameterGetType(type);
@@ -792,16 +724,23 @@ static int ParameterNew(const char *thorn,
     newparam->description = (char *)malloc(sizeof(char)*(1+strlen(description)));
     newparam->defval = (char *)malloc(sizeof(char)*(1+strlen(defval)));
     newparam->data = data;
+    newparam->range = NULL;
+    
+    if(newparam->type == PARAMETER_STRING ||
+       newparam->type == PARAMETER_SENTENCE ||
+       newparam->type == PARAMETER_KEYWORD)
+    {
+      stringdata = (char **)data;
+      *stringdata = NULL;
+    }
 
     if(newparam->thorn &&
-       newparam->implementation &&
        newparam->name &&
        newparam->description &&
        newparam->defval)
     {
       strcpy(newparam->name, name);
       strcpy(newparam->thorn, thorn);
-      strcpy(newparam->implementation, implementation);
       strcpy(newparam->description, description);
       strcpy(newparam->defval, defval);
 
@@ -809,11 +748,10 @@ static int ParameterNew(const char *thorn,
     }
   }
     
-  return retval;
+  return newparam;
 }
 
 static int ParameterCheck(const char *thorn,
-                          const char *implementation,
                           const char *name,
                           const char *type,
                           const char *scope,
@@ -903,11 +841,15 @@ static int ParameterGetType(const char *type)
   PTYPE(KEYWORD);
   PTYPE(STRING);
   PTYPE(SENTENCE);
-  PTYPE(INTEGER);
+  PTYPE(INT);
   PTYPE(REAL);
   PTYPE(LOGICAL);
 
 #undef PTYPE
+  if(retval == -1)
+  {
+    fprintf(stderr, "What on earth kind of a paramter is %s ? \n",type);
+  }
 
   return retval;
 }
@@ -1077,20 +1019,30 @@ static int ParameterExtend(t_parameter *parameter,
 
 static int ParameterSetSimple(t_parameter *param, const char *value)
 {
+  int retval;
+
+  retval = -2;
+
+  /*  fprintf(stdout, "Setting value of parameter %s::%s\n", param->thorn, param->name);*/
   switch(param->type)
   {
     case PARAMETER_KEYWORD  :
+      retval = ParameterSetKeyword(param, value); break;
     case PARAMETER_STRING   :
+      retval = ParameterSetString(param, value); break;
     case PARAMETER_SENTENCE :
-    case PARAMETER_INTEGER  :
+      retval = ParameterSetSentence(param, value); break;
+    case PARAMETER_INT  :
+      retval = ParameterSetInteger(param, value); break;
     case PARAMETER_REAL     :
+      retval = ParameterSetReal(param, value); break;
     case PARAMETER_LOGICAL  :
-      fprintf(stderr, "Setting value of parameter %s::%s", param->thorn, param->name);
+      retval = ParameterSetLogical(param, value); break;
     default            :
       fprintf(stderr, "Unknown parameter type %d\n", param->type);
   }
 
-  return 0;
+  return retval;
 }
 
 static int ParameterPrintSimple(t_parameter *param, 
@@ -1101,7 +1053,6 @@ static int ParameterPrintSimple(t_parameter *param,
 
   fprintf(file, format, "Parameter", param->name);
   fprintf(file, format, "Thorn", param->thorn);
-  fprintf(file, format, "Imp", param->implementation);
   fprintf(file, format, "Desc", param->description);
   fprintf(file, format, "Def", param->defval);
 
@@ -1116,7 +1067,230 @@ static int ParameterPrintSimple(t_parameter *param,
 static int ParameterListAddParam(t_paramlist **paramlist,
 				 t_parameter *newparam)
 {
-  return 0;
+  int retval;
+  t_paramlist *node;
+  node = (t_paramlist *)malloc(sizeof(t_paramlist));
+
+  if(node)
+  {
+    node->param = newparam;
+    
+    /* Place at beginning of list for now. */
+    node->next = *paramlist;
+    node->last = NULL;
+    (*paramlist)->last = node;
+
+    *paramlist = node;
+
+    retval = 0;
+  }
+  else
+  {
+    retval = 1;
+  }
+
+  return retval;
+}
+
+
+static int ParameterSetKeyword(t_parameter *param, const char *value)
+{
+  int retval;
+  t_range *range;
+
+  retval = -1;
+  for(range = param->range; range ; range = range->next)
+  {
+    if(CCTK_IsThornActive(range->origin)||CCTK_Equals(param->thorn, range->origin))
+    {
+      if(!STR_CMP(value, range->range))
+      {
+	retval = CCTK_SetString(param->data, value);
+	break;
+      }
+    }
+  }
+
+  if(retval == -1)
+  {
+    fprintf(stderr, 
+	    "Unable to set keyword %s::%s - %s not in any active range\n", 
+	    param->thorn,
+	    param->name,
+	    value);
+    if(*((char **)param->data) == NULL)
+    {
+      fprintf(stderr, "Since this was the default value, setting anyway - please fix!\n");
+
+      CCTK_SetString(param->data, value);
+    }
+  }
+
+  return retval;
+}
+
+static int ParameterSetString(t_parameter *param, const char *value)
+{
+  int retval;
+  t_range *range;
+
+  retval = -1;
+  for(range = param->range; range ; range = range->next)
+  {
+    if(CCTK_IsThornActive(range->origin)||CCTK_Equals(param->thorn, range->origin))
+    {
+      if(CCTK_RegexMatch(value, range->range, 0, NULL))
+      {
+	retval = CCTK_SetString(param->data, value);
+      }
+      break;
+    }
+  }
+
+  if(retval == -1)
+  {
+    fprintf(stderr, 
+	    "Unable to set string %s::%s - %s not in any active range\n", 
+	    param->thorn,
+	    param->name,
+	    value);
+
+    if(*((char **)param->data) == NULL)
+    {
+      fprintf(stderr, "Since this was the default value, setting anyway - please fix!\n");
+
+      CCTK_SetString(param->data, value);
+    }
+      
+  }
+
+  return retval;
+}
+
+static int ParameterSetSentence(t_parameter *param, const char *value)
+{
+  int retval;
+  t_range *range;
+
+  retval = -1;
+  for(range = param->range; range ; range = range->next)
+  {
+    if(CCTK_IsThornActive(range->origin)||CCTK_Equals(param->thorn, range->origin))
+    {
+      if(CCTK_RegexMatch(value, range->range, 0, NULL))
+      {
+	retval = CCTK_SetString(param->data, value);
+      }
+      break;
+    }
+  }
+
+  if(retval == -1)
+  {
+    fprintf(stderr, 
+	    "Unable to set sentence %s::%s - %s not in any active range\n", 
+	    param->thorn,
+	    param->name,
+	    value);
+
+    if(*((char **)param->data) == NULL)
+    {
+      fprintf(stderr, "Since this was the default value, setting anyway - please fix!\n");
+
+      CCTK_SetString(param->data, value);
+    }
+  }
+
+  return retval;
+}
+
+static int ParameterSetInteger(t_parameter *param, const char *value)
+{
+  int retval;
+  t_range *range;
+  int inval;
+  int *val;
+
+  inval = atoi(value);
+  val = (int *)param->data;
+  retval = -1;
+  for(range = param->range; range ; range = range->next)
+  {
+    if(CCTK_IsThornActive(range->origin)||CCTK_Equals(param->thorn, range->origin))
+    {
+      if(Util_IntInRange(inval, range->range))
+      {
+	*val = inval;
+	retval = 0;
+      }
+      break;
+    }
+  }
+
+  if(retval == -1)
+  {
+    fprintf(stderr, 
+	    "Unable to set integer %s::%s - %s not in any active range\n", 
+	    param->thorn,
+	    param->name,
+	    value);
+  }
+
+  return retval;
+}
+
+static int ParameterSetReal(t_parameter *param, const char *value)
+{
+  int retval;
+  t_range *range;
+  double inval;
+  CCTK_REAL *val;
+
+  inval = atof(value);
+  val = (CCTK_REAL *)param->data;
+  retval = -1;
+  for(range = param->range; range ; range = range->next)
+  {
+    if(CCTK_IsThornActive(range->origin)||CCTK_Equals(param->thorn, range->origin))
+    {
+      if(Util_DoubleInRange(inval, range->range)||CCTK_Equals(param->thorn, range->origin))
+      {
+	*val = inval;
+	retval = 0;
+      }
+      break;
+    }
+  }
+
+  if(retval == -1)
+  {
+    fprintf(stderr, 
+	    "Unable to set real %s::%s - %s not in any active range\n", 
+	    param->thorn,
+	    param->name,
+	    value);
+  }
+
+  return retval;
+}
+
+static int ParameterSetLogical(t_parameter *param, const char *value)
+{
+  int retval;
+
+  retval = -1;
+  retval = CCTK_SetLogical(param->data, value);
+
+  if(retval == -1)
+  {
+    fprintf(stderr, 
+	    "Unable to set logical %s::%s - %s not recognised\n", 
+	    param->thorn,
+	    param->name,
+	    value);
+  }
+
+  return retval;
 }
 
 /*#define TEST_PARAMETERS*/

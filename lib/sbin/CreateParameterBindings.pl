@@ -226,7 +226,19 @@ EOT
   {
     print OUT "  $routine"."Initialise();\n";
   }
+
+  foreach $thorn (split(" ",$interface_database{"THORNS"}))
+  {
+    print OUT "  CCTKi_BindingsCreate$thorn"."Parameters();\n\n";
+  }
+
+  foreach $thorn (split(" ",$interface_database{"THORNS"}))
+  {
+    print OUT "  CCTKi_Bindings$thorn"."ParameterExtensions();\n\n";
+  }
+
   print OUT <<EOT;
+
   return 0;
 }
  
@@ -407,9 +419,11 @@ EOT
   
   close OUT;
 
+  $newfilelist = NewParamStuff($n_param_database, @rest);
+
   open (OUT, ">make.code.defn") || die "Cannot open make.code.defn";
 
-  print OUT "SRCS = BindingsParameters.c $files\n";
+  print OUT "SRCS = BindingsParameters.c $files $newfilelist\n";
 
   close OUT;
 
@@ -565,6 +579,253 @@ EOT
   close OUT;
 
   chdir $start_dir;
+
+
+}
+
+sub NewParamStuff
+{
+  local($n_param_database, @rest) = @_;
+  local(%parameter_database);
+  local(%interface_database);
+  local($line);
+  local(%these_parameters);
+  local($implementation, $thorn);
+  local($files);
+  local(%routines);
+  local($structure, %structures);
+  local(%header_files);
+  local($thorn, $block); 
+  local($filelist);
+  local(@creationdata);
+  local(@extensiondata);
+  local(@data);
+
+  %parameter_database = @rest[0..(2*$n_param_database)-1];
+  %interface_database = @rest[2*$n_param_database..$#rest];
+
+
+  foreach $thorn (split(" ",$interface_database{"THORNS"}))
+  {
+    $imp = $interface_database{"\U$thorn\E IMPLEMENTS"};
+
+    push(@data, "#include <stdarg.h>");
+    push(@data, "");
+    push(@data, "#include \"config.h\"");
+    push(@data, "#include \"ParameterBindings.h\"");
+
+    push(@data, "#include \"CParameterStructNames.h\"");
+
+    foreach $block ("GLOBAL", "RESTRICTED", "PRIVATE")
+    {
+      %these_parameters = &GetThornParameterList($thorn, $block, %parameter_database);
+
+      if((keys %these_parameters > 0))
+      {
+	if($block eq "GLOBAL")
+	{
+	  push(@data, "#include \"ParameterCGlobal.h\"");
+	}
+	elsif($block eq "RESTRICTED")
+	{
+	  push(@data, "#include \"ParameterCRestricted\U$imp\E.h\"");
+	}
+	elsif($block eq "PRIVATE")
+	{
+	  push(@data, "#include \"ParameterCPrivate\U$thorn\E.h\"");
+	}
+	else
+	{
+	  die "Internal error";
+	}
+
+#	print "Generating $block parameters for $thorn, providing $imp\n";
+	push(@creationdata,&CreateParameterRegistrationStuff($block, $thorn, $imp, scalar(keys %these_parameters), %these_parameters, %parameter_database));
+      }
+    }
+
+
+    # Now the parameter extensions
+#    print $parameter_database{"\U$thorn\E SHARES implementations"} . "\n";
+
+    foreach $block (split(" ",$parameter_database{"\U$thorn\E SHARES implementations"}))
+    {
+
+      push(@data, "#include \"ParameterCRestricted\U$block\E.h\"");
+
+#      print "Generating $block extension from $thorn\n";
+      push(@extensiondata,&CreateParameterExtensionStuff($block, $thorn, %parameter_database));
+
+    }
+
+    push(@data, "");
+    push(@data, "int CCTKi_BindingsCreate$thorn"."Parameters(void)");
+    push(@data, "{");
+
+    push(@data, @creationdata);
+
+    push(@data, "}");
+
+    push(@data, "");
+    push(@data, "int CCTKi_Bindings$thorn"."ParameterExtensions(void)");
+    push(@data, "{");
+
+    push(@data, @extensiondata);
+
+    push(@data, "}");
+
+    open (OUT, ">Create$thorn"."Parameters.c");
+
+    foreach $line (@data)
+    {
+      print OUT "$line\n";
+    }
+    
+    close OUT;
+
+    @data=();
+    @creationdata=();
+    @extensiondata=();
+
+    $filelist .= " Create$thorn"."Parameters.c";
+  }
+
+  return $filelist;
+}
+
+sub CreateParameterRegistrationStuff
+{
+  local($block, $thorn, $imp, $n_params, @rest) = @_;
+  local(%these_parameters);
+  local(%parameter_database);
+  local(@data);
+  local($line);
+  local($structure, $type, $n_ranges);
+
+  %these_parameters = @rest[0..(2*$n_params)-1];
+  %parameter_database = @rest[2*$n_params..$#rest];
+
+  if($block eq "GLOBAL")
+  {
+    $structure="GLOBAL_PARAMETER_STRUCT";
+  }
+  elsif($block eq "RESTRICTED")
+  {
+    $structure="RESTRICTED_\U$imp\E_STRUCT";
+  }
+  elsif($block eq "PRIVATE")
+  {
+    $structure = "PRIVATE_\U$thorn\E_STRUCT";
+  }
+  else
+  {
+    die "Internal error";
+  }
+
+#  print "Thorn is $thorn\n";
+#  print "Structure is $structure\n";
+
+  foreach $parameter (sort keys %these_parameters)
+  {
+
+#    print "This param is $parameter\n";
+
+    $type = $parameter_database{"\U$thorn $parameter\E type"};
+    
+#    print "Type is $type\n";
+    
+    $n_ranges = $parameter_database{"\U$thorn $parameter\E ranges"};
+    
+#    print "N_ranges is $n_ranges\n";
+    
+    $quoted_default = $parameter_database{"\U$thorn $parameter\E default"};
+    
+    $quoted_default =~ s:\"::g;
+
+    $line="  ParameterCreate(\"$parameter\", /* The parameter name */\n".
+          "                  \"$thorn\",     /* The thorn          */\n". 
+          "                  \"$type\"       /* The parameter type */,\n".
+          "                  \"$block\",     /* The scoping block  */\n".
+          "                  0,              /* Is it steerable ?  */\n".
+          "                  " . $parameter_database{"\U$thorn $parameter\E description"} . ", /* The description */\n" .
+          "                  \"" . $quoted_default . "\",  /* The default value */\n" .
+          "                  &($structure.$parameter),   /* The actual data pointer */\n".
+          "                  $n_ranges       /* How many allowed ranges it has */";
+    
+    for($range=1; $range <= $n_ranges; $range++)
+    {
+      $quoted_range = $parameter_database{"\U$thorn $parameter\E range $range range"};
+      $range_description = $parameter_database{"\U$thorn $parameter\E range $range description"};
+
+      if($range_description !~ m:\":)
+      {
+	$range_description = "\"$range_description\"";
+      }
+
+      $range_description =~ s:,$::;
+
+      #$quoted_range =~ s:\":\\\":g;
+      $quoted_range =~ s:\"::g;
+      $quoted_range =~ s:^\s*::;
+      $quoted_range =~ s:\s*$::;
+
+      $line .= ",\n                  \"".$quoted_range."\", $range_description";
+
+    }
+
+    $line .=");\n";
+
+    push(@data, $line);
+  }
+
+
+  return @data;
+}
+
+sub CreateParameterExtensionStuff
+{
+  local($block, $thorn, %parameter_database) = @_;
+  local(@data);
+  local($line);
+  local($structure, $type, $n_ranges, $range, $quoted_range, $range_description);
+ 
+#  print "Extending $block from $thorn\n";
+
+  foreach $parameter (split(" ",$parameter_database{"\U$thorn\E SHARES \U$block\E variables"}))
+  {
+    $n_ranges = $parameter_database{"\U$thorn $parameter\E ranges"};
+
+    for($range=1; $range <= $n_ranges; $range++)
+    {
+      $quoted_range = $parameter_database{"\U$thorn $parameter\E range $range range"};
+      $range_description = $parameter_database{"\U$thorn $parameter\E range $range description"};
+
+      if($range_description !~ m:\":)
+      {
+	$range_description = "\"$range_description\"";
+      }
+
+      #$quoted_range =~ s:\":\\\":g;
+      $quoted_range =~ s:\"::g;
+      $quoted_range =~ s:^\s*::;
+      $quoted_range =~ s:\s*$::;
+
+      push(@data, "  ParameterAddRange(\"$block\",");
+      push(@data, "                    \"$parameter\",");
+      push(@data, "                    \"$thorn\",");
+      push(@data, "                    \"$quoted_range\",");
+      push(@data, "                    $range_description);");
+      push(@data, "");
+
+
+#      print "Adding \"$quoted_range\" to $parameter\n";
+
+
+    }
+
+  }
+
+  return @data;
 }
 
 1;

@@ -10,9 +10,30 @@
 #ifndef _PARAMETERBINDINGS_H_
 #define _PARAMETERBINDINGS_H_
 
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+int ParameterCreate(const char *name,        /* The parameter name */
+		    const char *thorn,       /* The thorn          */ 
+		    const char *type,       /* The parameter type */
+                    const char *scope,       /* The scoping block  */
+                    int steerable,           /* Is it steerable ?  */
+                    const char *description, /* The description    */ 
+                    const char *defval,      /* The default value  */ 
+                    void *datapointer,       /* The actual data    */
+                    int n_ranges,            /* How many allowed ranges it has */
+		    ...);
+
+#ifdef __cplusplus
+}
+#endif
+
 #define PARAMETER_KEYWORD  1
 #define PARAMETER_STRING   2
 #define PARAMETER_SENTENCE 3
+#define PARAMETER_INT      4
 #define PARAMETER_INTEGER  4
 #define PARAMETER_REAL     5
 #define PARAMETER_LOGICAL  6

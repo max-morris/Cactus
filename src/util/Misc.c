@@ -9,12 +9,16 @@
 
 /*#define DEBUG_MISC*/
 
-#include <stdlib.h>
+/*#include "cctk.h"*/
+
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
 #include <stdarg.h>
 #include <assert.h>
+#include <limits.h>
+#include <math.h>
 
 #include "gnu_regex.h"
 
@@ -251,7 +255,113 @@ int Util_InList(const char *string1, int n_elements, ...)
 @@*/
 int Util_IntInRange(int inval, const char *range)
 {
-  return 1;
+  int retval;
+  int matched;
+  regmatch_t pmatch[6];
+  int start_closed, end_closed;
+  int start, end, step;
+
+  retval = 0;
+
+  /* Valid ranges are of the form start:end:step 
+   * possibly preceeded by a [ or ( and ended by a ) or ] to indicate
+   * closure.  The end and step are optional.  A * can also be used
+   * to indicate any value.
+   *
+   * The following regular expression may match five substrings:
+   *
+   * 1 - [ or (
+   * 2 - start
+   * 3 - end
+   * 4 - step
+   * 5 - ) or ]
+   */
+
+  if(matched = CCTK_RegexMatch(range, 
+		     "(\\[|\\()?([^]):]*):?([^]):]*)?:?([^]):]*)?(\\]|\\))?", 
+		     6, pmatch))
+  {
+    /* First work out if the range is closed at the lower end. */
+    if(pmatch[1].rm_so != -1)
+    {
+      switch(range[pmatch[1].rm_so])
+      {
+	case '(' : start_closed = 0; break;
+	case '[' : 
+	default  : start_closed = 1;
+      }
+    }
+    else
+    {
+      start_closed = 1;
+    }
+
+    /* Next find the start of the range */
+    if(pmatch[2].rm_so != -1 && 
+       (pmatch[2].rm_eo-pmatch[2].rm_so > 0) &&
+       range[pmatch[2].rm_so] != '*')
+    {
+      start = atoi(range+pmatch[2].rm_so);
+    }
+    else
+    {
+      /* No start range given, so use the smallest integer available. */
+      start = INT_MIN;
+    }
+
+    /* Next find the end of the range */
+    if(pmatch[3].rm_so != -1 && 
+       (pmatch[3].rm_eo-pmatch[3].rm_so > 0) &&
+       range[pmatch[3].rm_so] != '*')
+    {
+      end = atoi(range+pmatch[3].rm_so);
+    }
+    else
+    {
+      /* No end range given, so use the largest integer available. */
+      end = INT_MAX;
+    }
+	  
+    /* Next find the step of the range */
+    if(pmatch[4].rm_so != -1 && (pmatch[4].rm_eo-pmatch[4].rm_so > 0))
+    {
+      step = atoi(range+pmatch[4].rm_so);
+    }
+    else
+    {
+      /* No step given, so default to 1. */
+      step = 1;
+    }
+    
+    /* Finally work out if the range is closed at the upper end. */
+    if(pmatch[5].rm_so != -1)
+    {
+      switch(range[pmatch[5].rm_so])
+      {
+	case ')' : end_closed = 0; break;
+	case ']' : 
+	default  : end_closed = 1;
+      }
+    }
+    else
+    {
+      end_closed = 1;
+    }
+  
+    if(inval >= start + !start_closed && 
+       inval <= end   - !end_closed   &&
+       ! ((inval-start) % step))
+    {
+      retval = 1;
+    }
+
+  } 
+  else
+  {
+    CCTK_Warn(1, __LINE__, __FILE__, "Flesh", "Invalid range");
+  }
+    
+  return retval;
 }
 
  /*@@
@@ -271,7 +381,115 @@ int Util_IntInRange(int inval, const char *range)
 @@*/
 int Util_DoubleInRange(double inval, const char *range)
 {
-  return 1;
+  int retval;
+  int matched;
+  regmatch_t pmatch[6];
+  int start_closed, end_closed;
+  double start, end, step;
+
+  retval = 0;
+
+  /* Valid ranges are of the form start:end:step 
+   * possibly preceeded by a [ or ( and ended by a ) or ] to indicate
+   * closure.  The end and step are optional.  A * can also be used
+   * to indicate any value.
+   *
+   * The following regular expression may match five substrings:
+   *
+   * 1 - [ or (
+   * 2 - start
+   * 3 - end
+   * 4 - step
+   * 5 - ) or ]
+   */
+
+  if(matched = CCTK_RegexMatch(range, 
+		     "(\\[|\\()?([^]):]*):?([^]):]*)?:?([^]):]*)?(\\]|\\))?", 
+		     6, pmatch))
+  {
+    /* First work out if the range is closed at the lower end. */
+    if(pmatch[1].rm_so != -1)
+    {
+      switch(range[pmatch[1].rm_so])
+      {
+	case '(' : start_closed = 0; break;
+	case '[' : 
+	default  : start_closed = 1;
+      }
+    }
+    else
+    {
+      start_closed = 1;
+    }
+
+    /* Next find the start of the range */
+    if(pmatch[2].rm_so != -1 && 
+       (pmatch[2].rm_eo-pmatch[2].rm_so > 0) &&
+       range[pmatch[2].rm_so] != '*')
+    {
+      start = atof(range+pmatch[2].rm_so);
+    }
+    else
+    {
+      /* No start range given, so use the smallest integer available. */
+      start = INT_MIN;
+    }
+
+    /* Next find the end of the range */
+    if(pmatch[3].rm_so != -1 && 
+       (pmatch[3].rm_eo-pmatch[3].rm_so > 0) &&
+       range[pmatch[3].rm_so] != '*')
+    {
+      end = atof(range+pmatch[3].rm_so);
+    }
+    else
+    {
+      /* No end range given, so use the largest integer available. */
+      end = FLT_MAX;
+    }
+
+#if 0	  
+    /* Next find the step of the range */
+    if(pmatch[4].rm_so != -1 && (pmatch[4].rm_eo-pmatch[4].rm_so > 0))
+    {
+      step = atof(range+pmatch[4].rm_so);
+    }
+    else
+    {
+      /* No step given, so default to 1. */
+      step = 1;
+    }
+#endif
+    
+    /* Finally work out if the range is closed at the upper end. */
+    if(pmatch[5].rm_so != -1)
+    {
+      switch(range[pmatch[5].rm_so])
+      {
+	case ')' : end_closed = 0; break;
+	case ']' : 
+	default  : end_closed = 1;
+      }
+    }
+    else
+    {
+      end_closed = 1;
+    }
+  
+    if(inval > start /*+ !start_closed */&& 
+       inval < end  /* - !end_closed */ /* &&
+				       ! ((inval-start) % step)*/)
+    {
+      retval = 1;
+    }
+
+  } 
+  else
+  {
+    CCTK_Warn(1, __LINE__, __FILE__, "Flesh", "Invalid range");
+  }
+    
+  return retval;
 }
 
 
@@ -726,13 +944,4 @@ int CCTK_RegexMatch(const char *string,
   }
   return(1);
 }
-
-
-
-
-
-
-
-
-
 
