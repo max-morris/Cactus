@@ -97,7 +97,7 @@ void *CCTK_VarDataPtr(cGH *GH, int timelevel, char *fullvarname)
    @enddesc 
    @calls     
    @history 
- 
+      A check for a valid index (i>=0) included by Gerd Lanfermann
    @endhistory 
 
    @var        GH 
@@ -130,7 +130,9 @@ void *CCTK_VarDataPtr(cGH *GH, int timelevel, char *fullvarname)
 @@*/
 
 void *CCTK_VarDataPtrI(cGH *GH, int timelevel, int varindex)
-{
+{ 
+  if (varindex < 0) 
+    CCTK_WARN(1,"WARNING: calling CCTK_VarDataPtrI with negative index! Prob. Fatal");
   return GH->data[varindex][timelevel];
 }
 
