@@ -20,38 +20,38 @@ else
 
   if test -n "$F90" ; then 
     if test "`$F90 -V 2>&1 | grep -i f90 | grep -i vast`" ; then 
-	LINUX_F90_COMP=pacific
+        LINUX_F90_COMP=pacific
     elif test "`$F90 -V 2>&1 | grep -i f90 | grep -i absoft`" ; then 
-	LINUX_F90_COMP=absoft
+        LINUX_F90_COMP=absoft
     elif test "`$F90 -V 2>&1 | grep -i fujitsu`" ; then 
-	LINUX_F90_COMP=fujitsu
+        LINUX_F90_COMP=fujitsu
     elif test "`$F90 -V 2>&1 | grep -i f90 | grep -i pgf90`" ; then
-	LINUX_F90_COMP=portland
+        LINUX_F90_COMP=portland
     elif test "`$F90 -v 2>&1 | grep -i g77`" ; then
-	LINUX_F90_COMP=gnu77
+        LINUX_F90_COMP=gnu77
     elif test "`$F90 -? 2>&1 | grep -i absoft`" ; then
-	LINUX_F90_COMP=absoft77
+        LINUX_F90_COMP=absoft77
     elif test "`$F90 --version 2>&1 | grep -i lahey/fujitsu`" ; then
        LINUX_F90_COMP=lahey          
     elif test "`$F90 -v 2>&1 | grep -i SGIcc`" ; then
        LINUX_F90_COMP=SGI          
     else
-	echo Unknown Linux f90 compiler.
-	echo Please add appropriate information to 
-	echo $srcdir/known-architectures/linux-gnu
-	echo ad send the updated file to CactusMaint
+        echo Unknown Linux f90 compiler.
+        echo Please add appropriate information to 
+        echo $srcdir/known-architectures/linux-gnu
+        echo ad send the updated file to CactusMaint
         echo We will try anyway ...
     fi
   elif test -n "$F77" ; then 
     if test "`$F77 -v 2>&1 | grep -i g77`" ; then
-	LINUX_F90_COMP=gnu77
+        LINUX_F90_COMP=gnu77
     elif test "`$F77 -? 2>&1 | grep -i absoft`" ; then
-	LINUX_F90_COMP=absoft77
+        LINUX_F90_COMP=absoft77
     else
-	echo Unknown Linux f77 compiler.
-	echo Please add appropriate information to 
-	echo $srcdir/known-architectures/linux-gnu
-	echo ad send the updated file to CactusMaint
+        echo Unknown Linux f77 compiler.
+        echo Please add appropriate information to 
+        echo $srcdir/known-architectures/linux-gnu
+        echo ad send the updated file to CactusMaint
         echo We will try anyway ...
     fi
   else
@@ -62,7 +62,7 @@ else
   LINUX_F77=
 
   if test -n "$F77" ; then
-    if test -n "`$F77 -v 2>&1 | grep egcs`" ; then
+    if g77 -v 2>&1 | grep 'egcs\|gcc version 2\.95' > /dev/null; then
       LINUX_F77=egcs
     else
       LINUX_F77=noegcs
@@ -141,7 +141,7 @@ else
        : ${F77_OPTIMISE_FLAGS="-O"}
        : ${F90_OPTIMISE_FLAGS="-O"}         
        : ${LIBS="fj9i6 fj9e6 fj9f6"} 
-       : ${LIBDIRS='$(LAHEY)/lib'} 
+       : ${LIBDIRS='$(LAHEY)/lib /usr/local/lf9555/lib'} 
        ;;
      SGI)
        : ${LIBS="fortran ffio m"} 
@@ -248,3 +248,4 @@ else
 # This is caught by lib/make/extras/MPI/NATIVE then.
 
 fi
+
