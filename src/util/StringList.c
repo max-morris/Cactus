@@ -20,7 +20,7 @@
 static const char *rcsid = "$Header$";
 
 #ifndef TEST_STRINGLIST
-CCTK_FILEVERSION(util_StringList_c)
+CCTK_FILEVERSION(util_StringList_c);
 #endif
 
 /********************************************************************

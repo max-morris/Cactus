@@ -23,7 +23,7 @@ int STR_cmpi(const char *string1, const char *string2);
 
 static const char *rcsid = "$Header$";
 
-CCTK_FILEVERSION(util_SKBinTree_c)
+CCTK_FILEVERSION(util_SKBinTree_c);
 
  /*@@
    @routine    SKTreeStoreData

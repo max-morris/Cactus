@@ -16,7 +16,7 @@
 
 static const char *rcsid = "$Header$";
 
-CCTK_FILEVERSION(util_Cache_c)
+CCTK_FILEVERSION(util_Cache_c);
 
 /********************************************************************
  *********************     Local Data   *****************************

@@ -24,7 +24,7 @@
 
 static const char *rcsid = "$Header$";
 
-CCTK_FILEVERSION(util_Network_c)
+CCTK_FILEVERSION(util_Network_c);
 
 /********************************************************************
  *********************     Local Data Types   ***********************

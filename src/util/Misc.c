@@ -34,7 +34,7 @@
 
 static const char *rcsid = "$Header$";
 
-CCTK_FILEVERSION(util_Misc_c)
+CCTK_FILEVERSION(util_Misc_c);
 
 
 /********************************************************************

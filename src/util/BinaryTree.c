@@ -17,7 +17,7 @@
 
 static const char *rcsid = "$Header$";
 
-CCTK_FILEVERSION(util_BinaryTree_c)
+CCTK_FILEVERSION(util_BinaryTree_c);
 
 /********************************************************************
  ********************    External Routines   ************************

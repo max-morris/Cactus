@@ -26,7 +26,7 @@
 
 static const char *rcsid = "$Header$";
 
-CCTK_FILEVERSION(util_ParseFile_c)
+CCTK_FILEVERSION(util_ParseFile_c);
 
 /********************************************************************
  *********************     Local Data Types   ***********************

@@ -21,7 +21,7 @@
 
 static const char *rcsid = "$Header$";
 
-CCTK_FILEVERSION(util_CactusTimers_c)
+CCTK_FILEVERSION(util_CactusTimers_c);
 
 /********************************************************************
  ***************     Fortran Wrapper Prototypes   *******************

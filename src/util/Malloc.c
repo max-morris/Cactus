@@ -46,7 +46,7 @@
 
 static const char *rcsid = "$Header$";
 
-CCTK_FILEVERSION(util_Malloc_c)
+CCTK_FILEVERSION(util_Malloc_c);
 
 
 /********************************************************************

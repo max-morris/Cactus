@@ -27,7 +27,7 @@ static const char *rcsid = "$Header$";
 
 #ifndef TEST_EXPRESSION_PARSER
 #include "util_String.h"
-CCTK_FILEVERSION(util_Expression_c)
+CCTK_FILEVERSION(util_Expression_c);
 #ifdef strdup
 #undef strdup
 #endif

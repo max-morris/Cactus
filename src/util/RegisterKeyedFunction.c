@@ -13,7 +13,7 @@
 
 static const char *rcsid = "$Header$";
 
-CCTK_FILEVERSION(util_RegisterKeyedFunction_c)
+CCTK_FILEVERSION(util_RegisterKeyedFunction_c);
 
  /*@@
    @routine    RegisterKeyedFunction
