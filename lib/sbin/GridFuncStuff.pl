@@ -254,15 +254,15 @@ sub GetThornArguments
       {
         $type .= " (";
 
-	if(defined($vararraysize) && $compactgroup == 1)
-	{
-	  $type .= "${group}_length";
-	  $sep = ",";
-	}
-	else
-	{
-	  $sep = "";
-	}
+        if(defined($vararraysize) && $compactgroup == 1)
+        {
+          $type .= "${group}_length";
+          $sep = ",";
+        }
+        else
+        {
+          $sep = "";
+        }
 
         for($dim =0; $dim < $rhinterface_db->{"\U$thorn GROUP $group DIM\E"}; $dim++)
         {
@@ -277,23 +277,23 @@ sub GetThornArguments
             $arguments{"cctkv$group$dim"} = "(STORAGESIZE($imp\::$group, $dim))";
           }
         }
-	if(defined($vararraysize) && $compactgroup == 0)
-	{
-	  $type .= "$sep${group}_length";
-	}
+        if(defined($vararraysize) && $compactgroup == 0)
+        {
+          $type .= "$sep${group}_length";
+        }
         $type .= ")";
 
-	if(defined($vararraysize))
-	{
-	  if($block eq "PRIVATE")
-	  {
-	    $arguments{"${group}_length"} = "(GROUPLENGTH($thorn\::$group)";
-	  }
-	  else
-	  {
-	    $arguments{"${group}_length"} = "(GROUPLENGTH($imp\::$group)";
-	  }
-	}
+        if(defined($vararraysize))
+        {
+          if($block eq "PRIVATE")
+          {
+            $arguments{"${group}_length"} = "(GROUPLENGTH($thorn\::$group)";
+          }
+          else
+          {
+            $arguments{"${group}_length"} = "(GROUPLENGTH($imp\::$group)";
+          }
+        }
       }
 
       if($block eq "PRIVATE")
@@ -320,7 +320,7 @@ sub GetThornArguments
 
       foreach $variable (split(" ", $rhinterface_db->{"\U$thorn GROUP $group\E"}))
       {
-	$arguments{$variable} = $type;
+        $arguments{$variable} = $type;
       }
     }
   }
@@ -1400,7 +1400,7 @@ sub VerifyParameterExpression
   if($expression !~ m%[-+*/a-zA-Z0-9_()]%)
   {
     &CST_error(0, "Array size in $thornname is an invalid arithmatic expression \n"
-	       .  "      '$expression' contains invalid characters");
+               .  "      '$expression' contains invalid characters");
   }
 
   $count = 0;
@@ -1413,15 +1413,15 @@ sub VerifyParameterExpression
     if($count < 0)
     {
       &CST_error(0, "Array size in $thornname is an invalid arithmatic expression \n"
-		 .  "        '$expression' has too many closing parentheses",
-		"",__LINE__,__FILE__);
+                 .  "        '$expression' has too many closing parentheses",
+                "",__LINE__,__FILE__);
     }
   }
   
     if($count > 0)
     {
       &CST_error(0, "Array size in $thornname is an invalid arithmatic expression \n"
-		 .  "        '$expression' has unmatched parentheses",
+                 .  "        '$expression' has unmatched parentheses",
                  "",__LINE__,__FILE__);
     }
   
@@ -1429,8 +1429,8 @@ sub VerifyParameterExpression
   if($expression =~ m:[-+*/]$:)
   {
     &CST_error(0, "Array size in $thornname is an invalid arithmatic expression \n"
-	       .  "          '$expression' ends with an operator",
-	       "",__LINE__,__FILE__);
+               .  "          '$expression' ends with an operator",
+               "",__LINE__,__FILE__);
 
   }
 
@@ -1477,36 +1477,36 @@ sub VerifyParameterExpression
     {
       # Empty parenthesis - bad
       &CST_error(0, "Array size in $thornname is an invalid arithmatic expression \n"
-	       .  "          '$expression' contains empty parentheses",
-	       "",__LINE__,__FILE__);
+               .  "          '$expression' contains empty parentheses",
+               "",__LINE__,__FILE__);
     }
     elsif($i =~ m:[-+/*]{2,}:)
     {
       # Two operators in a row - bad
       &CST_error(0, "Array size in $thornname is an invalid arithmatic expression \n"
-	       .  "          '$expression' contains two operators in a row",
-	       "",__LINE__,__FILE__);
+               .  "          '$expression' contains two operators in a row",
+               "",__LINE__,__FILE__);
     }
     elsif($i =~ m:[-+/*]\):)
     {
       # Operator followed by closing parenthesis - bad
       &CST_error(0, "Array size in $thornname is an invalid arithmatic expression \n"
-	       .  "          '$expression' has a missing operand",
-	       "",__LINE__,__FILE__);
+               .  "          '$expression' has a missing operand",
+               "",__LINE__,__FILE__);
     }
     elsif($i =~ m:\([-+/*]:)
     {
       # Opening parenthesis followed by operator - bad
       &CST_error(0, "Array size in $thornname is an invalid arithmatic expression \n"
-	       .  "          '$expression' has a missing operand",
-	       "",__LINE__,__FILE__);
+               .  "          '$expression' has a missing operand",
+               "",__LINE__,__FILE__);
     }
     else
     {
       # I've run out of imagination
       &CST_error(0, "Array size in $thornname is an invalid arithmatic expression \n"
-	       .  "          '$expression' contains unrecognised token '$i'",
-	       "",__LINE__,__FILE__);
+               .  "          '$expression' contains unrecognised token '$i'",
+               "",__LINE__,__FILE__);
     }
   }
 
