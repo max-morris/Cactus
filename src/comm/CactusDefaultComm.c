@@ -11,6 +11,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <assert.h>
 
 #include "cctk_Flesh.h"
 #include "cctk_Groups.h"
