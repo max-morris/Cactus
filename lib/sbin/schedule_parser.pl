@@ -39,6 +39,9 @@ sub create_schedule_code
 
     $implementation = $interface_database{"\U$thorn\E IMPLEMENTS"};
 
+#   Private groups for thorn
+    $privategroups = $interface_database{"\U$thorn\E PRIVATE GROUPS"};
+
     $thorn_rfr = $thorn."_rfr";
     $thorn_startup = $thorn."_startup";
 
@@ -53,14 +56,14 @@ sub create_schedule_code
     @indata = &read_file("$thorns{$thorn}/schedule.ccl");
 
     # Parse the data and create rfr and startup subroutines
-    ($proto,$out,$wrapper_files, @retscheduledata) = &parse_schedule_ccl(1,$thorn,$implementation,"rfr",@indata);
+    ($proto,$out,$wrapper_files, @retscheduledata) = &parse_schedule_ccl(1,$privategroups,$thorn,$implementation,"rfr",@indata);
     print OUTRFR $proto;
     print OUTRFR $out; 
     $rfr_files .= " $thorn_rfr";
     $startup_files .= " $thorn_startup";
     push(@schedule_data, @retscheduledata);
 
-    ($proto,$out,$schedule_wrappers) = &parse_schedule_ccl(2,$thorn,$implementation,"startup",@indata);
+    ($proto,$out,$schedule_wrappers) = &parse_schedule_ccl(2,$privategroups,$thorn,$implementation,"startup",@indata);
     print OUTSTART $proto;
     print OUTSTART $out; 
 
@@ -263,7 +266,7 @@ EOT
 
 sub parse_schedule_ccl
 {
-  local($number,$thorn,$implementation,$type,@data) = @_;
+  local($number,$privategroups,$thorn,$implementation,$type,@data) = @_;
   local($proto,$out,$line,$line_number,@compile_files);
   local(%schedule_ordering);
   local($routine);
@@ -281,7 +284,7 @@ sub parse_schedule_ccl
       $routine = $1;
       @options = split(" ", $2);
 
-      ($wrapper_file,$proto_block,$out_block, $routine) = &parse_schedule_block($number,$thorn,$implementation,$type,@data);
+      ($wrapper_file,$proto_block,$out_block, $routine) = &parse_schedule_block($number,$privategroups,$thorn,$implementation,$type,@data);
 
       $proto .= "$proto_block"; 
       $out .= "$out_block";
@@ -326,7 +329,17 @@ sub parse_schedule_ccl
 	    $this_imp = $1;
 	    $this_group = $2;
 	  }
-          $out .= "CCTK_EnableGroupStorage(GH,\"$this_imp\::$this_group\");\n";
+
+	  if ($privategroups =~ /\b$this_group\b/)
+	  {
+	    $use_imp = $thorn;
+	  }
+	  else
+	  {
+	    $use_imp = $this_imp;
+	  }
+
+          $out .= "CCTK_EnableGroupStorage(GH,\"$use_imp\::$this_group\");\n";
         }
       }
     }
@@ -345,7 +358,7 @@ sub parse_schedule_ccl
 
 	  $this_imp = $implementation;
 	  $this_group = $group;
-	  if ($group =~ /(.*)::(.*)/)
+	  if ($this_group =~ /(.*)::(.*)/)
 	  {
 	    $this_imp = $1;
 	    $this_group = $2;
@@ -444,7 +457,7 @@ sub find_schedule_block
 
 sub parse_schedule_block
 {
-  local($number,$thorn,$implementation,$type,@data)=@_;
+  local($number,$privategroups,$thorn,$implementation,$type,@data)=@_;
   local($proto,$out);
   local($wrapper_file, $proto, $out);
 
@@ -456,9 +469,9 @@ sub parse_schedule_block
 
   # At the moment can schedule at RFR entry points of at STARTUP
   if ($type eq "startup" && $when =~ /\s*STARTUP\s*/i) {
-    ($wrapper_file, $proto, $out, $routine) = &parse_schedule_at_STARTUP($thorn,$implementation,$routine,$desc,@block);
+    ($wrapper_file, $proto, $out, $routine) = &parse_schedule_at_STARTUP($thorn,$privategroups,$implementation,$routine,$desc,@block);
   } elsif ($type eq "rfr" && $when !~ /\s*STARTUP\s*/i) {
-    ($wrapper_file,$proto,$out, $routine) = &parse_schedule_at_RFR($thorn,$implementation,$routine,$when,$desc,@block);
+    ($wrapper_file,$proto,$out, $routine) = &parse_schedule_at_RFR($thorn,$privategroups,$implementation,$routine,$when,$desc,@block);
   }
 
   return ($wrapper_file,$proto,$out, $routine);
@@ -467,7 +480,7 @@ sub parse_schedule_block
 
 sub parse_schedule_at_STARTUP {
 
-  local($thorn,$implementation,$routine,$desc,@block) = @_;
+  local($thorn,$privategroups,$implementation,$routine,$desc,@block) = @_;
   local($out);
 
   $out .= "  $routine();\n";
@@ -482,7 +495,7 @@ sub parse_schedule_at_STARTUP {
 
 sub parse_schedule_at_RFR {
 
-  local($thorn,$implementation,$routine,$when,$desc,@block) = @_;
+  local($thorn,$privategroups,$implementation,$routine,$when,$desc,@block) = @_;
   local($proto,$out,$got_it,$i,$line);
 
 # Look for the Language and register routine
@@ -535,7 +548,17 @@ sub parse_schedule_at_RFR {
 	  $this_imp = $1;
 	  $this_group = $2;
 	}
-	$out .= "  index = CCTK_GroupIndex(\"$this_imp\:\:$this_group\");\n";
+
+	if ($privategroups =~ /\b$this_group\b/)
+	{
+	  $use_imp = $thorn;
+	}
+	else
+	{
+	  $use_imp = $this_imp;
+	}
+
+	$out .= "  index = CCTK_GroupIndex(\"$use_imp\:\:$this_group\");\n";
 	$out .= "  if (index < 0) {\n";
 	$out .= "    printf(\"CCTK_GroupIndex failed in ".$thorn."_rfr.c\\n\");\n";
         $out .= "  } else {\n"; 
