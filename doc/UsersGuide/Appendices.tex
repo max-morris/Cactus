@@ -287,11 +287,14 @@ The Key strokes to use when you want to browse in read-only mode are:
 \section{TAGS with vi}
 \label{sec:tawivi}
 
+The commands available are highly dependent upon the version of {\bf vi}, but
+the following is a selection of commands which may work.
+
 
 \begin{enumerate}
 
 \item \textbf{vi -t tag} 
-Start vi and position the cursor at  the  file and line where "tag" is defined.
+Start vi and position the cursor at  the  file and line where `tag' is defined.
 
 \item \textbf{Control-]} 
 Find the tag under the cursor.
@@ -301,6 +304,9 @@ Find a tag.
 
 \item \textbf{:tnext} 
 Find the next matching tag.
+
+\item \textbf{:pop} 
+Return to previous location before jump to tag.
 
 \item \textbf{Control-T} 
 Return to previous location before jump to tag (not widely implemented).
