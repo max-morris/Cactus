@@ -213,8 +213,23 @@ sub CreateCStructureParameterHeader
 
     push(@definition, $line);
 
-    $line = "(void *) $parameter;";
-    
+    if ($type_string =~ /CCTK_REAL/)
+    {
+      $line = "cctk_dummy_real=$parameter;";
+    }
+    elsif ($type_string =~ /CCTK_INT/)
+    {
+      $line = "cctk_dummy_int=$parameter;";
+    }
+    elsif ($type_string =~ /char/)
+    {
+      $line = "cctk_dummy_pointer=(void *)$parameter;";
+    }
+    else
+    {
+      print "missed $type_string\n";
+      exit;
+    }
     push(@use, $line);
      
   }
