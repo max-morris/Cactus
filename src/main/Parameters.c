@@ -464,7 +464,7 @@ int CCTK_ParameterSet(const char *name,
        param->props->steerable != CCTK_STEERABLE_ALWAYS)
     {
       CCTK_VWarn(1, __LINE__, __FILE__, "Cactus",
-                 "Cannot set parameter '%s::%s' (non-steerable)",
+                 "CCTK_ParameterSet: Cannot set parameter '%s::%s' (non-steerable)",
                  thorn, name);
       retval = -2;
     }
@@ -477,7 +477,7 @@ int CCTK_ParameterSet(const char *name,
       if (param->props->steerable == CCTK_STEERABLE_NEVER)
       {
         CCTK_VWarn(1, __LINE__, __FILE__, "Cactus",
-                   "Parameter '%s::%s' is non-steerable and will be "
+                   "CCTK_ParameterSet: Parameter '%s::%s' is non-steerable and will be "
                    "overwritten by its value from the checkpoint file",
                    thorn, name);
       }
@@ -665,6 +665,59 @@ void *CCTK_ParameterGet(const char *name,
 
 }
 
+
+
+/*@@
+   @routine    CCTK_ParameterQueryTimesSet
+   @date       Fri July 7 2000
+   @author     Gabrielle Allen
+   @desc 
+   Returns the number of times that a parameter has been set, that is
+   if it returns 0 the parameter was not set in a parameter file.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+   @var     name
+   @vdesc   The name of the parameter
+   @vtype   const char *
+   @vio     in
+   @endvar
+   @var     thorn
+   @vdesc   The originating thorn
+   @vtype   const char *
+   @vio     in
+   @endvar 
+   @returntype int
+   @returndesc
+   Number of times set, negative for error
+   @endreturndesc
+
+@@*/
+int CCTK_ParameterQueryTimesSet(const char *name,
+				const char *thorn)
+{
+  int nset;
+  const cParamData *param;
+
+  param = CCTK_ParameterData (name, thorn);
+
+  if (param)
+  {
+    nset = param->n_set;
+  }
+  else
+  {
+    nset = -1;
+  }
+
+  return nset;
+
+}
+
+
 /*@@
    @routine    CCTK_ParameterValString
    @date       Thu Jan 21 2000
@@ -729,7 +782,7 @@ char *CCTK_ParameterValString (const char *param_name,
 
     default:
       CCTK_VWarn (3, __LINE__, __FILE__, "Cactus",
-                  "Unknown type %d for parameter '%s::%s'",
+                  "CCTK_ParameterValString: Unknown type %d for parameter '%s::%s'",
                   param_type, thorn, param_name);
       retval = NULL;
       break;
@@ -819,7 +872,8 @@ int CCTK_ParameterWalk(int first,
 
     if (startpoint == NULL)
     {
-      CCTK_Warn(2,__LINE__,__FILE__,"Cactus", "CCTK_ParameterWalk: Cannot walk "
+      CCTK_Warn(2,__LINE__,__FILE__,"Cactus", 
+		"CCTK_ParameterWalk: Cannot walk "
                 "through parameter list without setting a startpoint at first");
       return -1;
     }
@@ -1458,7 +1512,7 @@ static int ParameterSetKeyword(t_param *param, const char *value)
   if(retval == -1)
   {
     CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
-               "Unable to set keyword %s::%s - %s not in any active range",
+               "ParameterSetKeyword: Unable to set keyword %s::%s - %s not in any active range",
                param->props->thorn,
                param->props->name,
                value);
@@ -1498,7 +1552,7 @@ static int ParameterSetString(t_param *param, const char *value)
   if(retval == -1)
   {
     CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
-               "Unable to set string %s::%s - %s not in any active range",
+               "ParameterSetString: Unable to set string %s::%s - %s not in any active range",
                param->props->thorn,
                param->props->name,
                value);
@@ -1540,7 +1594,7 @@ static int ParameterSetSentence(t_param *param, const char *value)
   if(retval == -1)
   {
     CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
-               "Unable to set sentance %s::%s - %s not in any active range",
+               "ParameterSetSentance: Unable to set sentance %s::%s - %s not in any active range",
                param->props->thorn,
                param->props->name,
                value);
@@ -1586,7 +1640,7 @@ static int ParameterSetInteger(t_param *param, const char *value)
   if(retval == -1)
   {
     CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
-               "Unable to set integer %s::%s - %s not in any active range",
+               "ParameterSetInteger: Unable to set integer %s::%s - %s not in any active range",
                param->props->thorn,
                param->props->name,
                value);
@@ -1641,7 +1695,7 @@ static int ParameterSetReal(t_param *param, const char *value)
   if(retval == -1)
   {
     CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
-               "Unable to set real %s::%s - %s not in any active range",
+               "ParameterSetReal: Unable to set real %s::%s - %s not in any active range",
                param->props->thorn,
                param->props->name,
                value);
@@ -1660,7 +1714,7 @@ static int ParameterSetBoolean(t_param *param, const char *value)
   if(retval == -1)
   {
     CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
-               "Unable to set boolean %s::%s - %s not recognised",
+               "ParameterSetBoolean: Unable to set boolean %s::%s - %s not recognised",
                param->props->thorn,
                param->props->name,
                value);
