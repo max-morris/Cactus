@@ -44,54 +44,78 @@ CCTK_FILEVERSION(main_Groups_c);
  ********************************************************************/
 /* prototypes for external C routines are declared in header cctk_Groups.h
    here only follow the fortran wrapper prototypes */
-void CCTK_FCALL CCTK_FNAME (CCTK_GroupIndex)
-                           (int *vindex, ONE_FORTSTRING_ARG);
-void CCTK_FCALL CCTK_FNAME (CCTK_VarIndex)
-                           (int *vindex, ONE_FORTSTRING_ARG);
-void CCTK_FCALL CCTK_FNAME (CCTK_MaxDim)
-                           (int *dim);
-void CCTK_FCALL CCTK_FNAME (CCTK_NumVars)
-                           (int *num_vars);
-void CCTK_FCALL CCTK_FNAME (CCTK_NumGroups)
-                           (int *num_groups);
-void CCTK_FCALL CCTK_FNAME (CCTK_GroupIndexFromVarI)
-                           (int *gindex, const int *var);
-void CCTK_FCALL CCTK_FNAME (CCTK_GroupIndexFromVar)
-                           (int *vindex, ONE_FORTSTRING_ARG);
-void CCTK_FCALL CCTK_FNAME (CCTK_GroupTypeNumber)
-                           (int *number, ONE_FORTSTRING_ARG);
-void CCTK_FCALL CCTK_FNAME (CCTK_VarTypeNumber)
-                           (int *number, ONE_FORTSTRING_ARG);
-void CCTK_FCALL CCTK_FNAME (CCTK_GroupScopeNumber)
-                           (int *number, ONE_FORTSTRING_ARG);
-void CCTK_FCALL CCTK_FNAME (CCTK_GroupDistribNumber)
-                           (int *number, ONE_FORTSTRING_ARG);
-void CCTK_FCALL CCTK_FNAME (CCTK_FirstVarIndexI)
-                           (int *first, const int *group);
 void CCTK_FCALL CCTK_FNAME (CCTK_FirstVarIndex)
                            (int *first, ONE_FORTSTRING_ARG);
-void CCTK_FCALL CCTK_FNAME (CCTK_NumVarsInGroup)
-                           (int *num, ONE_FORTSTRING_ARG);
-void CCTK_FCALL CCTK_FNAME (CCTK_VarTypeI)
-                           (int *type, const int *var);
-void CCTK_FCALL CCTK_FNAME (CCTK_PrintGroup)
-                           (const int *group);
-void CCTK_FCALL CCTK_FNAME (CCTK_PrintVar)
-                           (const int *var);
+void CCTK_FCALL CCTK_FNAME (CCTK_FirstVarIndexI)
+                           (int *first, const int *group);
+void CCTK_FCALL CCTK_FNAME (CCTK_FullName)
+                           (int *nchars, int *var, ONE_FORTSTRING_ARG);
 void CCTK_FCALL CCTK_FNAME (CCTK_GroupDimI)
                            (int *dim, const int *group);
 void CCTK_FCALL CCTK_FNAME (CCTK_GroupDimFromVarI)
                            (int *dim, const int *vi);
-void CCTK_FCALL CCTK_FNAME (CCTK_MaxTimeLevelsVI)
-                           (int *num, const int *var);
-void CCTK_FCALL CCTK_FNAME (CCTK_MaxTimeLevelsVN)
+void CCTK_FCALL CCTK_FNAME (CCTK_GroupDistribNumber)
+                           (int *number, ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (CCTK_GroupIndex)
+                           (int *vindex, ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (CCTK_GroupIndexFromVar)
+                           (int *vindex, ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (CCTK_GroupIndexFromVarI)
+                           (int *gindex, const int *var);
+void CCTK_FCALL CCTK_FNAME (CCTK_GroupName)
+                           (int *nchars, int *var, ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (CCTK_GroupNameFromVarI)
+                           (int *nchars, int *var, ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (CCTK_GroupScopeNumber)
+                           (int *number, ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (CCTK_GroupTagsTable)
+                           (int *table, ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (CCTK_GroupTagsTableI)
+                           (int *table, int *group);
+void CCTK_FCALL CCTK_FNAME (CCTK_GroupTypeFromVarI)
+                           (int *type, const int *var);
+void CCTK_FCALL CCTK_FNAME (CCTK_GroupTypeI)
+                           (int *type, const int *group);
+void CCTK_FCALL CCTK_FNAME (CCTK_GroupTypeNumber)
+                           (int *number, ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (CCTK_ImpFromVarI)
+                           (int *nchars, int *var, ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (CCTK_MaxDim)
+                           (int *dim);
+void CCTK_FCALL CCTK_FNAME (CCTK_MaxTimeLevels)
                            (int *num, ONE_FORTSTRING_ARG);
 void CCTK_FCALL CCTK_FNAME (CCTK_MaxTimeLevelsGI)
                            (int *num, const int *group);
 void CCTK_FCALL CCTK_FNAME (CCTK_MaxTimeLevelsGN)
                            (int *num, ONE_FORTSTRING_ARG);
-void CCTK_FCALL CCTK_FNAME (CCTK_MaxTimeLevels)
+void CCTK_FCALL CCTK_FNAME (CCTK_MaxTimeLevelsVI)
+                           (int *num, const int *var);
+void CCTK_FCALL CCTK_FNAME (CCTK_MaxTimeLevelsVN)
                            (int *num, ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (CCTK_NumGroups)
+                           (int *num_groups);
+void CCTK_FCALL CCTK_FNAME (CCTK_NumVars)
+                           (int *num_vars);
+void CCTK_FCALL CCTK_FNAME (CCTK_NumVarsInGroup)
+                           (int *num, ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (CCTK_NumVarsInGroupI)
+                           (int *numvars, int *group);
+void CCTK_FCALL CCTK_FNAME (CCTK_PrintGroup)
+                           (const int *group);
+void CCTK_FCALL CCTK_FNAME (CCTK_PrintVar)
+                           (const int *var);
+void CCTK_FCALL CCTK_FNAME (CCTK_VarIndex)
+                           (int *vindex, ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (CCTK_VarName)
+                           (int *nchars, int *var, ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (CCTK_VarTypeI)
+                           (int *type, const int *var);
+void CCTK_FCALL CCTK_FNAME (CCTK_VarTypeName)
+                           (int *nchars, int *var, ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (CCTK_VarTypeNumber)
+                           (int *number, ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (CCTK_VarTypeSize)
+                           (int *size, int *vtype);
 
 /* DEPRECATED IN BETA 13 */
 void CCTK_FCALL CCTK_FNAME (CCTK_NumTimeLevelsFromVarI)
@@ -266,14 +290,8 @@ int CCTK_GroupIndex (const char *fullgroupname)
   }
 
   /* Free memory from CCTK_DecomposeName */
-  if (impname)
-  {
-    free (impname);
-  }
-  if (groupname)
-  {
-    free (groupname);
-  }
+  free (impname);
+  free (groupname);
 
   return (retval);
 }
@@ -307,8 +325,8 @@ int CCTK_VarIndex (const char *fullvarname)
   int retval,
       group,
       variable;
-  char *impname,
-       *varname;
+  char *impname = NULL;
+  char *varname = NULL;
 
 
   impname = varname = NULL;
@@ -346,14 +364,8 @@ int CCTK_VarIndex (const char *fullvarname)
 #endif
 
   /* free strings allocated in CCTK_DecomposeName() */
-  if (impname)
-  {
-    free (impname);
-  }
-  if (varname)
-  {
-    free (varname);
-  }
+  free (impname);
+  free (varname);
 
   return (retval);
 }
@@ -515,8 +527,8 @@ char *CCTK_GroupNameFromVarI (int var)
   if (0 <= var && var < total_variables)
   {
     group = group_of_variable[var];
-    fullname = (char *) malloc (strlen (groups[group].name) +
-                                strlen (groups[group].implementation) + 3);
+    fullname = malloc (strlen (groups[group].name) +
+                       strlen (groups[group].implementation) + 3);
     if (fullname)
     {
       sprintf (fullname, "%s::%s",
@@ -539,15 +551,9 @@ void CCTK_FCALL CCTK_FNAME (CCTK_GroupNameFromVarI) (int *nchars, int *var, ONE_
 
 
   groupname = CCTK_GroupNameFromVarI (*var);
-  if (!groupname)
-  {
-    *nchars = CCTK_FortranString ("", groupnameptr, groupnamelen);
-  }
-  else
-  {
-    *nchars = CCTK_FortranString (groupname, groupnameptr, groupnamelen);
-    free (groupname);
-  }
+  *nchars = CCTK_FortranString (groupname ? groupname : "", groupnameptr,
+                                groupnamelen);
+  free (groupname);
 }
 
 
@@ -672,7 +678,7 @@ char *CCTK_FullName (int var)
   if (varname)
   {
     impname = groups[group_of_variable[var]].implementation;
-    fullname = (char *) malloc (strlen (varname) + strlen (impname) + 3);
+    fullname = malloc (strlen (varname) + strlen (impname) + 3);
     if (fullname)
     {
       sprintf (fullname, "%s::%s", impname, varname);
@@ -686,7 +692,7 @@ char *CCTK_FullName (int var)
   return (fullname);
 }
 
-void CCTK_FCALL CCTK_FNAME (CCTK_Full) (int *nchars, int *var, ONE_FORTSTRING_ARG)
+void CCTK_FCALL CCTK_FNAME (CCTK_FullName) (int *nchars, int *var, ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_PTR (fullnameptr)
   ONE_FORTSTRING_LEN (fullnamelen)
@@ -694,15 +700,9 @@ void CCTK_FCALL CCTK_FNAME (CCTK_Full) (int *nchars, int *var, ONE_FORTSTRING_AR
 
 
   fullname = CCTK_FullName (*var);
-  if (!fullname)
-  {
-    *nchars = CCTK_FortranString ("", fullnameptr, fullnamelen);
-  }
-  else
-  {
-    *nchars = CCTK_FortranString (fullname, fullnameptr, fullnamelen);
-    free (fullname);
-  }
+  *nchars = CCTK_FortranString (fullname ? fullname : "", fullnameptr,
+                                fullnamelen);
+  free (fullname);
 }
 
 
@@ -1229,8 +1229,8 @@ char *CCTK_GroupName (int group)
   name = NULL;
   if (0 <= group && group < n_groups)
   {
-    name = (char *) malloc (strlen (groups[group].implementation) +
-                            strlen (groups[group].name) + 3);
+    name = malloc (strlen (groups[group].implementation) +
+                   strlen (groups[group].name) + 3);
     if (name)
     {
       sprintf (name, "%s::%s",
@@ -1249,15 +1249,9 @@ void CCTK_FCALL CCTK_FNAME (CCTK_GroupName) (int *nchars, int *var, ONE_FORTSTRI
 
 
   groupname = CCTK_GroupName (*var);
-  if (!groupname)
-  {
-    *nchars = CCTK_FortranString ("", groupnameptr, groupnamelen);
-  }
-  else
-  {
-    *nchars = CCTK_FortranString (groupname, groupnameptr, groupnamelen);
-    free (groupname);
-  }
+  *nchars = CCTK_FortranString (groupname ? groupname : "", groupnameptr,
+                                groupnamelen);
+  free (groupname);
 }
 
 
@@ -1775,11 +1769,6 @@ void CCTK_FCALL CCTK_FNAME (CCTK_NumTimeLevelsFromVar)
   *num = CCTK_NumTimeLevelsFromVar (var);
   free (var);
 }
-
-
-
-
-
 
 
  /*@@
@@ -2564,17 +2553,16 @@ static cGroupDefinition *CCTKi_SetupGroup (const char *implementation,
       groups = (cGroupDefinition *) temp;
 
       /* Allocate memory to various fields */
-      groups[n_groups].implementation = (char *) malloc (strlen (implementation)+1);
+      groups[n_groups].implementation = malloc (strlen (implementation)+1);
 
-      groups[n_groups].name = (char *) malloc (strlen (name) + 1);
+      groups[n_groups].name = malloc (strlen (name) + 1);
 
-      groups[n_groups].variables = (cVariableDefinition *)
-                                   malloc (n_variables *
+      groups[n_groups].variables = malloc (n_variables *
                                            sizeof (cVariableDefinition));
 
       /* Resize the array holding correspondence between vars and groups. */
-      temp_int = (int *) realloc (group_of_variable,
-                                  (total_variables+n_variables) * sizeof (int));
+      temp_int = realloc (group_of_variable,
+                          (total_variables+n_variables) * sizeof (int));
 
       if ((n_variables==0 || (groups[n_groups].implementation &&
                               groups[n_groups].name &&
@@ -2682,13 +2670,13 @@ static CCTK_INT **CCTKi_ExtractSize (int dimension,
   {
     next_comma = sizestring;
 
-    size_array = (CCTK_INT **) malloc (dimension * sizeof (CCTK_INT *));
+    size_array = malloc (dimension * sizeof (CCTK_INT *));
 
     if (size_array)
     {
       if (dimension > 0)
       {
-        size_array[0] = (CCTK_INT *) malloc (dimension * sizeof (CCTK_INT));
+        size_array[0] = malloc (dimension * sizeof (CCTK_INT));
 
         for (dim = 1; dim < dimension; dim++)
         {
