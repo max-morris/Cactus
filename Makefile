@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.12 1999-02-03 17:00:49 goodale Exp $
+#   @version $Id: Makefile,v 1.13 1999-02-14 20:07:59 allen Exp $
 # @@*/
 
 # Comment this out if you want to see what's going on.
@@ -35,7 +35,7 @@ DIVIDER =  $(DIVEL)$(DIVEL)$(DIVEL)$(DIVEL)
 export CCTK_HOME := $(shell pwd)
 
 # Work out which configurations are available
-CONFIGURATIONS = $(patsubst build/%,%,$(wildcard build/*))
+CONFIGURATIONS = $(patsubst configs/%,%,$(wildcard configs/*))
 
 # Default target does nothing. 
 # In principle should set up a default based upon uname or something.
@@ -72,8 +72,8 @@ endif
 .PHONY: $(CONFIGURATIONS)
 
 $(CONFIGURATIONS):
-	cd build/$@ 
-	$(MAKE) -f $(CCTK_HOME)/lib/make/make.configuration TOP=$(CCTK_HOME)/build/$@ CCTK_HOME=$(CCTK_HOME)
+	cd configs/$@ 
+	$(MAKE) -f $(CCTK_HOME)/lib/make/make.configuration TOP=$(CCTK_HOME)/configs/$@ CCTK_HOME=$(CCTK_HOME)
 
 # Clean target
 .PHONY: distclean
@@ -81,7 +81,7 @@ $(CONFIGURATIONS):
 distclean:
 	@echo $(DIVIDER)
 	@echo Deleting all your configurations !
-	rm -rf build
+	rm -rf configs
 	@echo $(DIVIDER)
 
 # Targets to make tags files
@@ -145,8 +145,8 @@ endif
 $(addsuffix -clean,$(CONFIGURATIONS)):
 	@echo $(DIVIDER)
 	@echo Cleaning configuration $(@:%-clean=%)
-	cd build/$(@:%-clean=%)  
-	$(MAKE) -f $(CCTK_HOME)/lib/make/make.configuration TOP=$(CCTK_HOME)/build/$(@:%-clean=%) CCTK_HOME=$(CCTK_HOME) clean
+	cd configs/$(@:%-clean=%)  
+	$(MAKE) -f $(CCTK_HOME)/lib/make/make.configuration TOP=$(CCTK_HOME)/configs/$(@:%-clean=%) CCTK_HOME=$(CCTK_HOME) clean
 	@echo $(DIVIDER)
 
 %-clean:
@@ -160,7 +160,7 @@ $(addsuffix -clean,$(CONFIGURATIONS)):
 $(addsuffix -delete,$(CONFIGURATIONS)):
 	@echo $(DIVIDER)
 	@echo Deleting configuration $(@:%-delete=%)
-	cd build ; rm -rf $(@:%-delete=%)  
+	cd configs ; rm -rf $(@:%-delete=%)  
 	@echo $(DIVIDER)
 
 %-delete:
