@@ -1,4 +1,4 @@
-#! /usr/bin/perl -s
+#!/usr/bin/perl -s
 
 #########################
 # ->> ParamLatex.pl <<- #
@@ -16,11 +16,14 @@ if ($h || $help) {
    print "\t-directory= : (opt) dir. of arrangements (default arrangements/)\n";
    print "\t-dump       : (opt) dumps output to screen, not in Latex\n";
    print "\t-scope=     : (opt) restricted/global/private/shares/all (default all)\n";
-   print "\t-sort=      : (opt) by: scope, type, name (currently unavail.)\n";
+   print "\t-sort=      : (opt) by: scope, type, name (default name)\n";
+   print "\t\t-reverse    : (opt) reverse whatever the sorting is\n";
    print "\t-grouping=  : (opt) file ouput grouping scope (bythorn/byarrangement/all)\n";
    print "\t-document   : (opt) creates a TeX document, not just a table\n";
-   print "\t-width=     : (opt) fixed width of table (default 150mm)\n";
+   print "\t-width=     : (opt) fixed width of table (default 160mm)\n";
    print "\t-spacing=   : (opt) vertical spacing between elements (default 6mm)\n";
+   print "\t-outdir=    : (opt) directory to dump output files, default is .\n";
+   print "\t-section    : (opt) makes this a section of a greater document\n";
    print "\t-h/-help    : (opt) this screen\n";
    print "Example:\n";
    print "\tperl -s /lib/sbin/ParamLatex.pl -outfile=mytable.tex -width=8.5cm\n";
@@ -46,13 +49,16 @@ require "$sbin_dir/CSTUtils.pl";
 # COMMAND LINE VAR. CHECK #
 ###########################
 
-if (! $width)   {$width="150mm";}
+if (! $width)   {$width="160mm";}
+if (! $sort)   {$sort="name";}
 if (! $spacing) {$spacing="6mm";}
-if (((! $th) && (! $arr)) && ! $processall) {
+if (((! $th) && (! $arr)) && (! defined $processall)) {
    die "\nNo -th= or -arr= (or -processall) specified, nothing to process!\n";
 }
 if (! $directory) {$directory="arrangements/";} 
 if (! $grouping)  {$grouping="bythorn";}
+
+
 ##################
 # INITIALIZATION #
 ##################
@@ -60,7 +66,29 @@ if (! $grouping)  {$grouping="bythorn";}
 @valid_types = qw(restricted global private shared);
 
 $start_directory=`pwd`;
-print $start_directory;
+chomp($start_directory);
+
+if (! $outdir) {
+    $outdir = "./";
+} else {
+   if ($outdir =~ /^\//) {
+      if (! -d "$outdir") {
+         mkdir($outdir, 0666);
+         print STDERR "\nCreating directory: $outdir" if ($verbose);
+      }
+   } else {
+      if (! -d "$start_directory/$outdir") {
+         mkdir("$start_directory/$outdir", 0666);
+         print STDERR "\nCreating directory: $start_directory/$outdir" if ($verbose);
+      }
+   }
+   if (! ($outdir =~ /\/$/)) {
+      $outdir .= "/";
+   }
+}
+
+print STDERR "\nOutput directory is: $outdir" if ($verbose);
+
 #################################################
 # FIND THORN(S)/ARRANGEMENT(S) AND CREATE LATEX #
 #################################################
@@ -69,16 +97,18 @@ print $start_directory;
 
 &StartDocument("MasterTable") if ((! $dump) && ($grouping eq "all"));
 
-foreach $arrangement (@arrangements) {
+foreach $arrangement (sort @arrangements) {
    @thorns = &Find_Directories($directory . $arrangement);
 
    &StartDocument($arrangement) if ((! $dump) && ($grouping eq "byarrangement"));
-   foreach $thorn (@thorns) {
-      if (($processall) || (($thorn eq $th) || ($arr eq $arrangement))) { 
+   foreach $thorn (@thorns) 
+   {
+      if (($processall) || (($thorn eq $th) || ($arr eq $arrangement))) 
+      { 
          &StartDocument($thorn) if ((! $dump) && ($grouping eq "bythorn"));
 
-         $thorn{$thorn} = "${directory}/${arrangement}/${thorn}";
-         %parameter_database = &create_parameter_database(%thorn);
+         $$thorn{$thorn} = "${directory}/${arrangement}/${thorn}";
+         %parameter_database = &create_parameter_database(%$thorn);
          &ReadLatexDatabase(%parameter_database);
          &FormatTable;
 
@@ -89,6 +119,8 @@ foreach $arrangement (@arrangements) {
 }
 
 &EndDocument if ((! $dump) && ($grouping eq "all")); 
+
+print "\n" if ($verbose);
 #########################################################################
 #                 END OF MAIN SECTION OF THE PROGRAM                    # 
 #########################################################################
@@ -120,6 +152,12 @@ sub ReadLatexDatabase
   my(@temp) = ();
   my($temp) = "";
   
+  # reinitialize values
+  foreach $typ (@valid_types) {
+     while (defined pop(@$typ)) {pop @$typ;}
+  }
+                                 # where is global type???
+
   foreach $field (sort keys %parameter_database)
   {
       &Clean;
@@ -132,6 +170,7 @@ sub ReadLatexDatabase
         @restricted = split/ /, $parameter_database{$field};
       } elsif ($field =~ /\sSHARES\s+(\w+)\s+var/) {
         @temp = split/ /, $parameter_database{$field};
+     #   print STDERR "\n$field : $parameter_database{$field}";
         foreach $var (@temp) {
            $$var{"shared"}=$1;
         }
@@ -174,22 +213,51 @@ sub ReadLatexDatabase
 #    sorting or grouping mechanism specified by the user.               #
 #########################################################################
 sub FormatTable {
-   if ($scope) {
-      if ($dump) {
-         &Dump($scope);
+        # sort: scope, type, name
+   my (@all);
+   while (defined pop(@all)) {pop @all;}
+
+   if ($sort eq "scope") {
+      if ((defined $scope) && ($scope ne "all")) {  # only one scope to output
+           if ($dump) {
+               &Dump(sort @$scope);
+            } else {
+               &CreateLatexTable(sort @$scope);
+            }
       } else {
-         &CreateLatexTable($scope);
-      }
-   } else {
-      foreach $type (@valid_types) {
-         if ($dump) {
-            &Dump($type);
-         } else {
-            &CreateLatexTable($type);
+         foreach $type (@valid_types) {
+            if ($dump) {
+               &Dump(sort @$type);
+            } else {
+               &CreateLatexTable(sort @$type);
+            }
          }
       }
-   }
-   print "\n";
+   } else {
+      if ((defined $scope) && ($scope ne "all")) {   # only print one scope
+         @all = @$scope;
+      } else {                                       # print all scopes
+         foreach $type (@valid_types) {
+             push @all, @$type;
+          }   
+      }
+
+      if ($sort eq "name") {
+         @all = sort @all; 
+      } else {
+         @all = sort SortByType @all;
+      }
+
+    #  foreach (@all) { print STDERR "\n$thorn $_"; }
+
+      if ($dump) {
+        &Dump(@all);
+      } else {
+        &CreateLatexTable(@all);
+      }      
+  }
+
+    print "\n" if ($verbose || $dump);
 } ## END :FormatTable:
 
 #########################################################################
@@ -200,14 +268,20 @@ sub FormatTable {
 #    foundation for sorting. :)                                         #
 #########################################################################
 sub CreateLatexTable {
-   my ($group_name) = $_[0];
+   my (@cur_group) = @_;
 
-   foreach $table (@$group_name) {
+   foreach $table (@cur_group) 
+   {
       if (lc($$table{"thorn"}) eq lc($thorn)) {
-         &LatexTableElement;
+         if (! defined $alreadydone{"$thorn$table"}) { 
+            &LatexTableElement;
+            $alreadydone{"$thorn$table"} = 1;   # to try to only print each once.
+            #print STDERR "\ndefining \"$thorn\" : \"$table\"";
+         }
       }
    }
 } ## END :CreateLatexTable:
+
 
 #########################################################################
 # StartDocument                                                         #
@@ -223,13 +297,17 @@ sub StartDocument {
    die "Cannot group tables for output, internal error in &StartDocument" if (! defined $group_name);
 
    chdir ($start_directory);
-   open(OUT, ">${group_name}.tex") || die "cannot open ${group_name}.tex for output: $!";
+   open(OUT, ">$outdir${group_name}_par.tex") || die "cannot open $outdir${group_name}_par.tex for output: $!";
    $oldfilehandle = select OUT;
 
    if ($document) {
       print "\\documentclass[12pt,a4paper]\{article\} \n";
       print "\\begin\{document\} \n\n";
+   } elsif ($section) {
+      print "\\section{$group_name param.ccl} \n\n";
    }
+
+
 } ## :StartDocument:
 
 #########################################################################
@@ -252,13 +330,23 @@ sub EndDocument {
 #    does is NOT print ranges for BOOLEAN and SHARED elements.          #
 #########################################################################
 sub LatexTableElement {
+   my ($name) = $table;
+   my ($description) = $$table{"description"};
+   my ($default) = $$table{"default"};
+   $default =~ s/\_/\\\_/g;
+
+   $name =~ s/\_/\\\_/g;
+#   print STDERR "$name\n";
+   $description =~ s/\_/\\\_/g;
+
+   print "$table{\"thorn\"}";
    print "\\begin\{tabular*\}\{$width\}\{|c|c|c|\@\{\\extracolsep\{\\fill\}\}r|\} \\hline \n";
    print "\{\\bf Name\} & \{\\bf Default\} & \{\\bf Scope\} & \{\\bf Type\} \\\\ \n";
    print "\\hline \n";
-   print "$table & $$table{\"default\"} & $$table{\"scope\"} & $$table{\"type\"} \\\\ \n";
+   print "$name & $default & $$table{\"scope\"} & $$table{\"type\"} \\\\ \n";
    print "\\hline\\hline \n";
    print "\\multicolumn\{4\}\{|l|\}\{\\rule[-2mm]\{-2mm\}\{0.5cm\}\{\\bf Description\}~\\vline~ \n";
-   print "\{\\it $$table{\"description\"}\}\} \\\\ \n";
+   print "\{\\it $description\}\} \\\\ \n";
    print "\\hline \n";
    print "\\end\{tabular*\} \n\n";
 
@@ -270,7 +358,12 @@ sub LatexTableElement {
       print "\\hline\\hline \n";
 
       for ($i=1; $i <= $$table{"ranges"}; $i++) {
-         print "$$table{\"range $i range\"} & $$table{\"range $i description\"} & \\\\ \\hline \n";
+         $tempvar =  $$table{"range $i description"};
+         $tempvar =~  s/\_/\\\_/g;
+
+         $tempvar2 =  $$table{"range $i range"};
+         $tempvar2 =~  s/\_/\\\_/g;
+         print "$tempvar2 & $tempvar & \\\\ \\hline \n";
       }
       print "\\end\{tabular*\} \n\n";
    }
@@ -286,9 +379,8 @@ sub LatexTableElement {
 #########################################################################
 sub Find_Directories {
    my(@good_directories);
-   print "<$start_directory>\n " . "<".`pwd`.">\n";
-   chdir ("$start_directory") || die "DAMN";
-   print "<$start_directory>\n " . "<".`pwd`.">\n";
+   chdir ("$start_directory") || die "cannot chdir to $start_directory: $!";
+
    chdir("$_[0]") || die "cannot change directory to $_[0] : $!";
    open(LS, "ls -p|");
    while(chomp($name = <LS>)) {
@@ -324,12 +416,18 @@ sub SortByType {
 #    have repetitive variable names within different thorns, currently  #
 #    output is restricted to internal (within thorn) sorting.           #
 #########################################################################
-sub SortByType {
-   if (lc($$a{"name"}) cmp lc($$b{"name"}) < 0) {
+sub SortByName {
+   my ($first) = $$a{"name"};
+   my ($second) = $$b{"name"};
+
+   if (lc($first) cmp lc($second) < 0) {
+      print "\n$first : $second -1";
       return -1;
    } elsif (lc($$a{"name"}) cmp lc($$b{"name"}) > 0) {
+      print "\n$$a{\"name\"} : $$b{\"name\"} 0";
       return 1;
    } else {
+      print "\n$$a{\"name\"} : $$b{\"name\"} -1 (2)";
       return -1;
    }
 } ## END :SortByName:
@@ -341,11 +439,11 @@ sub SortByType {
 #    view the variables from the command line without use of Latex.     #
 #########################################################################
 sub Dump {
-  my ($group_name) = $_[0];
+  my (@cur_group) = @_;
  
-  print "\n$thorn $group_name variables:\n";
+  print "\n$thorn variables:\n";
 
-  foreach $value (@$group_name) {
+  foreach $value (@cur_group) {
     if (lc($$value{"thorn"}) eq lc($thorn)) { 
       print "\t$value:\n";
       foreach $key (keys %$value) {
