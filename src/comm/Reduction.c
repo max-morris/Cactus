@@ -25,7 +25,7 @@
 
 static char *rcsid = "$Header$";
 
-CCTK_FILEVERSION(comm_Interp_c)
+CCTK_FILEVERSION(comm_Reduction_c)
 
 static cHandledData *ReductionOperators = NULL;
 static int num_reductions = 0;
