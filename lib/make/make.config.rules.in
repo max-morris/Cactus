@@ -136,6 +136,9 @@ endef
 	@echo Postprocessing $<
 	$(POSTPROCESS_CXX)
 
+%.cc.d: $(SRCDIR)/%.cc
+	$(CXX_DEPENDENCIES)
+
 %.C.o: $(SRCDIR)/%.C 
 	@echo $(DIVIDER)
 	@echo Preprocessing $<
@@ -145,10 +148,34 @@ endef
 	@echo Postprocessing $<
 	$(POSTPROCESS_CXX)
 
-%.cc.d: $(SRCDIR)/%.cc
-	$(CXX_DEPENDENCIES)
 
 %.C.d: $(SRCDIR)/%.C
+	$(CXX_DEPENDENCIES)
+
+%.cpp.o: $(SRCDIR)/%.cpp 
+	@echo $(DIVIDER)
+	@echo Preprocessing $<
+	$(PREPROCESS_CXX)
+	@echo Compiling $(DEBUG_CXX) $<
+	$(COMPILE_CXX)
+	@echo Postprocessing $<
+	$(POSTPROCESS_CXX)
+
+
+%.cpp.d: $(SRCDIR)/%.cpp
+	$(CXX_DEPENDENCIES)
+
+%.cxx.o: $(SRCDIR)/%.cxx 
+	@echo $(DIVIDER)
+	@echo Preprocessing $<
+	$(PREPROCESS_CXX)
+	@echo Compiling $(DEBUG_CXX) $<
+	$(COMPILE_CXX)
+	@echo Postprocessing $<
+	$(POSTPROCESS_CXX)
+
+
+%.cxx.d: $(SRCDIR)/%.cxx
 	$(CXX_DEPENDENCIES)
 
 # Build rules for F77
