@@ -615,6 +615,8 @@ directory:
 \item{} param.ccl
 \item{} schedule.ccl
 \end{itemize}
+These files are written in the {\it Cactus Configuration Language} which is
+case insensitive.
 
 \section{interface.ccl}
 
@@ -631,17 +633,21 @@ implements: <implementation>
 }
 where
 \begin{itemize}
-\item{} The implentation name must be unique among all thorns, unless ????.
-\item{} Inheriting from another implentation makes all that implentations public 
-        variables and parameters available to your thorn. At least one thorn 
+\item{} The implentation name must be unique among all thorns, except between 
+        thorns which have the same public and protected variables and 
+        parameters.
+\item{} Inheriting from another implentation makes all that implentations 
+        public variables available to your thorn. At least one thorn 
         providing any inherited implentation must be present at compile time.
-        A thorn cannot inherit from itself. Inheritance is associative, but not
-        commutative.
-\item{} Being a friend of another implementation makes all that implementations 
-        protected and public (????)
-        variables and parameters available to your thorn. A friend is not required 
-        for compilation. A thorn cannot be its own friend. Friendship is 
-        associative and commutative.
+        A thorn cannot inherit from itself. Inheritance is associative and 
+        recursive, but not commutative.
+\item{} Being a friend of another implementation makes all that 
+        implementations 
+        protected variables available to your thorn. At least one thorn
+        providing an implementation for each friend must be present at
+        compile time. A thorn cannot be its own friend. Friendship is 
+        associative and commutative. Note that your thorn is also a friend
+        of all your thorns friend's friends.
 \end{itemize} 
 
 The thorn's variables are defined by:
@@ -682,6 +688,82 @@ The default value is {\t DIM=3}.
 
 \section{param.ccl}
 
+The parameter configuration file consists of a list of 
+{\it parameter object specification items} (OSIs) giving the type and
+range of the parameter separated by optional
+{\it parameter data scoping items} (DSIs) which detail access to the
+parameter.
+
+\subsection{Parameter Data Scoping Items}
+{\t
+\begin{verbatim}
+<access>:
+\end{verbatim}
+}
+The key word {\t access} designates that all parameter object specification
+items up to the next parameter data scoping item are in the same 
+protection or scoping class. {\t access} can take the values:
+\begin{itemize}
+\item{} {\t public} --- all thorns have access to public parameters
+\item{} {\t protected} --- other thorns can have access to these 
+                           parameters if they specifically request
+                           it in their own param.ccl
+\item{} {\t private} --- only your thorn has access to private parameters
+\item{} {\t friend} --- in this case an {\t implementation} name must follow
+                        the colon. It declare that all the parameters in 
+                        the following scoping block are protected variables
+                        from the specified {\t implementation}.
+\end{itemize}
+
+
+\subsection{Parameter Object Specification Items}
+
+{\t
+\begin{verbatim}
+[EXTENDS] <parameter type> <parameter name> ``<parameter description>'' 
+{
+  <PARAMETER VALUES>
+} <default value>
+\end{verbatim}
+}
+\begin{itemize}
+\item{} Allowed {\t parameter types} are 
+  \begin{itemize}
+     \item{} {\t INTEGER} The specification of parameter values takes 
+     the form or any number of comma-separated blocks of the form:
+{\t
+\begin{verbatim}
+[<low-range>][::][<high-range>][::<step>]
+\end{verbatim}
+}
+Where an empty field, or a {\t *} in the place of {\t low-range} or
+{\t high-range} indicates $-\infty$ and $\infty$ respectively. The 
+default value for {\t step} is 1. A number by itself denotes that
+this number is the only acceptable value.
+     \item{} {\t REAL} The range specification is the same as integers,
+             except that here, no {\t step} implies a continuum of values.
+     \item{} {\t KEYWORD} Each entry in the list of acceptable values 
+             for a keyword has the form 
+{\t
+\begin{verbatim}
+``<keyword value>'', ``<keyword value>'' :: ``<description>''
+\end{verbatim}
+}
+     \item{} {\t STRING}  No allowed values should be specified for a logical 
+             parameter.
+     \item{} {\t LOGICAL} No allowed values should be specified for a logical 
+             parameter.
+  \end{itemize}
+
+\item{} The {\t parameter name} must be unique within the scope of the thorn.
+
+\item{} A thorn can declare that it {\t EXTENDS} a parameter that it is a 
+        friend of. This allows it to declare additional acceptable values.
+        By default it is acceptable for two thorns to declare the same 
+        value as acceptable. 
+\end{itemize}
+
+
 \section{schedule.ccl}
 
 The schedule configuration files consists of 
@@ -708,13 +790,13 @@ Each {\it schedule block} in the file {\t schedule.ccl} must have
 the syntax:
 {\t
 \begin{verbatim}
-schedule [<function name>] at <time>
+schedule <function name> at <time>
 {
-  [LANG: <language>]
+  LANG: <language>
   [STORAGE: <group>,<group>]
   [COMMUNICATION: <group>,<group>]
   [TRIGGER: <grid function>,<grid function>]
-}
+} ``Description of function''
 \end{verbatim}
 }
 
@@ -730,6 +812,8 @@ if (CCTK_Equals(<parameter>,<string>))
   [<schedule blocks>]
 }
 \end{verbatim}
+}
+
 Conditional constructs cannot be used inside of a schedule block.
 
 
