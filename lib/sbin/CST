@@ -6,7 +6,7 @@
 #  @desc 
 #  Parses the the configuration files for thorns.
 #  @enddesc 
-#  @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.50 2002-08-20 13:38:41 allen Exp $
+#  @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.51 2003-01-28 16:15:44 tradke Exp $
 #@@*/
 
 # Global parameter to track the number of errors from the CST
@@ -398,7 +398,7 @@ sub CreateThornLinkList
   my($implementation);
   my($lib, $liblist, $i, $j);
   my($cross_inherits);
-  my(@libs, @liblist);
+  my(@anchestors, @libs, @liblist);
 
   @libs = ();
   $cross_inherits = 0;
@@ -410,7 +410,17 @@ sub CreateThornLinkList
     $implementation = $interface_database->{"\U$thorn\E IMPLEMENTS"};
     if ($interface_database->{"IMPLEMENTATION \U$implementation\E ANCESTORS"})
     {
-      push (@libs, split (' ', $interface_database->{"IMPLEMENTATION \U$implementation\E ANCESTORS"}), $implementation);
+      @anchestors = split (' ', $interface_database->{"IMPLEMENTATION \U$implementation\E ANCESTORS"});
+      for ($i = $j = 0; $i <= $#libs; $i++)
+      {
+        if ($libs[$i] =~ /^$implementation$/i)
+        {
+          splice (@libs, $i, 1, @anchestors, $implementation);
+          $j = 1;
+          last;
+        }
+      }
+      push (@libs, @anchestors, $implementation) if (! $j);
     }
     else
     {
