@@ -388,7 +388,7 @@ sub parse_schedule_ccl
 
 sub find_schedule_block
 {
-  local($number,@data) = @_;
+  local($thorn,$number,@data) = @_;
   local(@block);
   local($i,$line);
 
@@ -408,7 +408,7 @@ sub find_schedule_block
       $line_number = $i;
       if($1)
       {	
-	$desc = "\"$1\"";
+	$desc = "\"$thorn: $1\"";
       }
       else
       {
@@ -452,7 +452,7 @@ sub parse_schedule_block
   $proto = "";
   $out = "";
 
-  ($routine,$when,$desc,@block) = &find_schedule_block($number,@data);
+  ($routine,$when,$desc,@block) = &find_schedule_block($thorn,$number,@data);
 
   # At the moment can schedule at RFR entry points of at STARTUP
   if ($type eq "startup" && $when =~ /\s*STARTUP\s*/i) {
