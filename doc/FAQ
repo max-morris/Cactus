@@ -1,7 +1,7 @@
 
 Cactus Code Frequently Asked Questions
 
-$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.46 2002-09-22 13:35:52 allen Exp $
+$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.47 2002-09-22 13:56:59 allen Exp $
 
 Also available at http://www.cactuscode.org/Documentation/FAQ
 
@@ -33,6 +33,7 @@ B3  How do I checkout an earlier version of Cactus ?
 
 B4  When running GetCactus it tells me it is refusing to update my thorn
     because it is installed from a different repository.
+
 
 ------------------------------------------------------------------------------
 Configuring and Building:
@@ -158,6 +159,8 @@ D8  (Linux) Testsuites for CactusEinstein/AHFinder and CactusBench/BenchADM
 D9  How do I run Cactus until a given coordinate time instead of to a 
     given iteration number? 
 
+D10 Output to screen using the Info IO method of IOBasic doesn't work.
+
 
 ------------------------------------------------------------------------------
 Thorn Writing:
@@ -182,6 +185,12 @@ E5  What is the difference between using "const cGH *cctkGH" and "cGH *cctkGH"
 
 E6  On compiling Fortran code I get errors like "dummy argument CCTK_DIM has 
     not been given a type", but I'm not using CCTK_DIM in the routine? 
+
+E7  If I have two grid array groups with identical sizes (and ghost zones, 
+    distributions, etc.), are they guaranteed to be distributed in the same 
+    way?  That is, can I count on the fact that their local shapes (lsh) 
+    will be the same?  It is true empirically. What if the grid arrays have 
+    different variable types or numbers of time levels?
 
 
 ------------------------------------------------------------------------------
@@ -213,6 +222,11 @@ F8  How does Cactus manage to so seamlessly call Fortran routines from
     C, and vice versa?
 
 
+------------------------------------------------------------------------------
+Documentation:
+
+G1  How can I build the ThornGuide documentation for single thorns or 
+    arrangements?
 
 
 
@@ -857,6 +871,20 @@ D9  How do I run Cactus until a given coordinate time instead of to a
     Instead of setting cactus::cctk_itlast set cactus::cctk_final_time to 
     the required coordinate time, and also set cactus::terminate = "time".
 
+D10 Output to screen using the Info IO method of IOBasic doesn't work.
+
+    I want to watch min/max values for 'wavetoy::phi' during a cactus run 
+    on stdout.  For that, I added
+
+    IOBasic::outInfo_every = 10
+    IOBasic::outInfo_vars  = "wavetoy::phi"
+ 
+    to my parameterfile. Thorn IOBasic is active, but I only get the 
+    iteration number and coordinate time printed to screen.
+
+    You need to activate a thorn which implements the min/max reductions, 
+    for example CactusPUGH/PUGHReduce.
+
 
 ------------------------------------------------------------------------------
 Thorn Writing:
@@ -948,6 +976,23 @@ E5  I am writing a thorn, what is the difference between using
     have any benefit in writing cleaner code. I think this is just 
     overkill and using just 'const cGH *' is fine.
 
+E6  On compiling Fortran code I get errors like "dummy argument CCTK_DIM has 
+    not been given a type", but I'm not using CCTK_DIM in the routine? 
+
+    Check if you have passed CCTK_ARGUMENTS in the argument list for the
+    routine, is do you must have a line
+
+    DECLARE_CCTK_ARGUMENTS 
+
+    in your declarations section.
+
+E7  If I have two grid array groups with identical sizes (and ghost zones, 
+    distributions, etc.), are they guaranteed to be distributed in the same 
+    way?  That is, can I count on the fact that their local shapes (lsh) 
+    will be the same?  It is true empirically. What if the grid arrays have 
+    different variable types or numbers of time levels?
+
+    Yes to all.
  
 ------------------------------------------------------------------------------
 General
@@ -1061,3 +1106,10 @@ F8  How does Cactus manage to so seamlessly call Fortran routines from
     we have macros for one, two or three strings in an argument list.
 
 
+------------------------------------------------------------------------------
+Documentation:
+
+G1  How can I build the ThornGuide documentation for single thorns or 
+    arrangements?
+
+    gmake Thorn
