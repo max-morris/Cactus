@@ -218,7 +218,15 @@ int ParseFile(FILE *ifp,
 	{
 	  /* We got a define */
 	  /* FIXME: Assume it is a parameter file for now */
-	  int lpar=(strlen(ConfigData->parameter_file_name)-4)*sizeof(char);
+	  char filename[500];
+	  char *dir;
+	  char *file;
+	  int lpar;
+
+	  CCTK_ParameterFilename(500,filename);
+	  Util_SplitFilename(&dir,&file,filename);
+
+	  lpar=((strlen(file)-3)*sizeof(char));
 
 	  while (!(c==' ' || c=='\t' || c == '\n' || c == EOF)) 
 	  {
@@ -227,7 +235,8 @@ int ParseFile(FILE *ifp,
 	    printf("%c",c);
 #endif
 	  }
-	  strncpy(value,ConfigData->parameter_file_name,lpar);
+	  strncpy(value,file,lpar);
+	  value[strlen(value)-1] = '\0';
           set_function(tokens,value);
 	}
 	else
