@@ -2215,10 +2215,15 @@ sub printCallingSequence
       my $CallArgName=&printCallArg($providetype,$calltype,$Arg);
       push(@data,$CallArgName);
     }
+
+
+
+
     if ($i < $#ArgList)
     {
       push(@data,",");
     }
+
   }
 
   return @data;
@@ -2261,7 +2266,7 @@ sub printCallArg
   {
     $prefix = "";
   }
-  elsif ( ($calltype eq "Fortran")&&( !(($Arg{"Is Array"})||($Arg{"String"})||($Arg{"Intent"}=~/OUT/)) ) )
+  elsif ( ($calltype eq "Fortran")&&( !(($Arg{"Is Array"})||($Arg{"String"})||($Arg{"Intent"}=~/OUT/)||($Arg{"Type"} =~ /CCTK_POINTER/)) ) )
   {
     $prefix = "*";
   }
@@ -2269,7 +2274,6 @@ sub printCallArg
   {
     $prefix = "&";
   }
-
   $data=$prefix.$varname;
 
 #  print "$varname $providetype $calltype $Arg{\"Is Array\"} $data\n";
