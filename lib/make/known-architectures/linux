@@ -180,7 +180,7 @@ else
       : ${F90_OPTIMISE_FLAGS='-O4'}
       ;;
     portland)
-      : ${LIBS='pgf90rtl pgf90 pgftnrtl pgf90_rpm1 pghpf2 pgc m'}
+      : ${LIBS='pgf90 pgf90rtl pgftnrtl pgf90_rpm1 pghpf2 pgc m'}
       if test -z "$LIBDIRS" ; then
         LIBDIRS="`which $F90 | sed 's,/bin/.*,/lib,'`"
       fi
