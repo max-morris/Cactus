@@ -15,6 +15,7 @@
 #include "cctk.h"
 #include "cctk_FortranString.h"
 #include "cctk_ParameterFunctions.h"
+#include "cctki_Stagger.h"
 
 /*#define DEBUG_GROUPS*/
 
@@ -59,6 +60,9 @@ typedef struct
   /* *size[dim]  - pointers to parameter data*/
   CCTK_INT **size;
 
+  /* *ghostsize[dim]  - pointers to parameter data*/
+  CCTK_INT **ghostsize;
+
   /* variables[n_variables] */
   cVariableDefinition *variables;
 } cGroupDefinition;
@@ -88,7 +92,7 @@ static cGroupDefinition *CCTKi_SetupGroup(const char *implementation,
 					  int staggercode,
                                           int n_variables);
 
-static CCTK_INT **CCTKi_SetupGroupSize(int dimension, const char *thorn, const char *sizestring);
+static CCTK_INT **CCTKi_ExtractSize(int dimension, const char *thorn, const char *sizestring);
 
 
  /*@@
@@ -172,7 +176,7 @@ void  FMODIFIER FORTRAN_NAME(CCTK_GroupIndex)(int *index,ONE_FORTSTRING_ARG)
 }
 
 /*@@
-   @routine    CCTK_DumpGroupInfo
+   @routine    CCTKi_PrintGroupInfo
    @date       Thu Jan 14 15:25:54 1999
    @author     Gerd Lanfermann
    @desc
@@ -186,7 +190,7 @@ void  FMODIFIER FORTRAN_NAME(CCTK_GroupIndex)(int *index,ONE_FORTSTRING_ARG)
 
 @@*/
 
-void CCTK_DumpGroupInfo(void) {
+void CCTKi_PrintGroupInfo(void) {
   int group_num;
 
   for(group_num = 0; group_num < n_groups; group_num++) {
@@ -198,48 +202,6 @@ void CCTK_DumpGroupInfo(void) {
   }
 }
 
-
-int CCTKi_ParseStaggerString(int dim,
-			     const char *imp, 
-			     const char *gname,
-			     const char *stype) 
-{
-  int i,m;
-  int base  = 1;
-  int scode = 0;
-  char hs[7]="MMMMMM", *info;
-
-  /* change possible SHORTCUTS into the official notation, allow for dim=6 */
-  if
-    (strcmp(stype,"NONE")==0) strncpy(hs,"MMMMMM",dim);
-  else if
-    (strcmp(stype,"CELL")==0) strncpy(hs,"CCCCCC",dim);
-  else {
-    sprintf(hs,"%s",stype);
-  }
-
-  for (i=0;i<dim;i++) {
-
-    switch (hs[i])
-    {
-      case 'M':m=0; break;
-      case 'C':m=1; break;
-      case 'P':m=2; break;
-      default:
-        info   = (char*)malloc (256*sizeof(char));
-        sprintf(info,
-              "Unknown stagger type: >%s< for group: >%s::%s< \n",
-              stype,imp,gname);
-        CCTK_WARN(1,info);
-        free(info);
-        return(-1);
-    }
-    scode+= m*base;
-    base  = 3 * base;
-  }
-
-  return(scode);
-}
 
  /*@@
    @routine    CCTKi_CreateGroup
@@ -255,26 +217,33 @@ int CCTKi_ParseStaggerString(int dim,
    @endhistory 
 
 @@*/
-int CCTKi_CreateGroup(const char *gname, const char *thorn, const char *imp,
-                      const char *gtype,
-                      const char *vtype,
-                      const char *gscope,
-                      int dimension,
-                      int ntimelevels,
-                      const char *stype,
-                      const char *size,
-                      int n_variables,
-                      ...)
+int CCTKi_CreateGroup
+  (
+   const char *gname, 
+   const char *thorn, 
+   const char *imp,
+   const char *gtype,
+   const char *vtype,
+   const char *gscope,
+   int         dimension,
+   int         ntimelevels,
+   const char *stype,
+   const char *size,
+   const char *ghostsize,
+   int         n_variables,
+   ...
+  )
 {
-  int retval;
-  int groupscope;
-  int staggercode;
+  int     retval;
+  int     groupscope;
+  int     staggercode;
+  int     variable;
+
   va_list ap;
-  char *variable_name;
 
-  cGroupDefinition *group=NULL;
+  char*   variable_name;
 
-  int variable;
+  cGroupDefinition* group=NULL;
 
   retval = 0;
 
@@ -365,7 +334,8 @@ int CCTKi_CreateGroup(const char *gname, const char *thorn, const char *imp,
       if (dimension > maxdim) maxdim    = dimension;
       if (staggercode > 0)    staggered = 1;
 
-      group->size = CCTKi_SetupGroupSize(dimension, thorn, size);
+      group->size      = CCTKi_ExtractSize(dimension, thorn, size);
+      group->ghostsize = CCTKi_ExtractSize(dimension, thorn, ghostsize);
 
     }
   }
@@ -376,7 +346,7 @@ int CCTKi_CreateGroup(const char *gname, const char *thorn, const char *imp,
 
   if(retval)
   {
-    fprintf(stderr, "Error %d in CCTK_CreateGroup\n", retval);
+    CCTK_Warn(4,__LINE__,__FILE__,"Cactus","Error in CCTK_CreateGroup");
   }
 
   return retval;
@@ -874,17 +844,17 @@ int CCTK_GroupTypeNumber(const char *type)
 
   if(!strcmp(type, "SCALAR"))
   {
-    retval = GROUP_SCALAR;
+    retval = CCTK_SCALAR;
   }
 
   if(!strcmp(type, "GF"))
   {
-    retval = GROUP_GF;
+    retval = CCTK_GF;
   }
 
   if(!strcmp(type, "ARRAY"))
   {
-    retval = GROUP_ARRAY;
+    retval = CCTK_ARRAY;
   }
 
   return retval;
@@ -1364,6 +1334,26 @@ int CCTK_GroupTypeFromVarI(int var)
   return gtype;
 }
 
+ /*@@
+   @routine    CCTK_GroupTypeI
+   @date       
+   @author     
+   @desc 
+   Given a group index return the type of group
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+
+int CCTK_GroupTypeI(int group)
+{
+  return groups[group].gtype;
+}
+
 
  /*@@
    @routine    CCTK_VarTypeI
@@ -1526,11 +1516,11 @@ void  FMODIFIER FORTRAN_NAME(CCTK_PrintVar)(int *var)
 }
 
  /*@@
-   @routine    CCTKi_SetupGroupSize
+   @routine    CCTKi_ExtractSize
    @date       Sun Nov 28 12:38:38 1999
    @author     Tom Goodale
    @desc 
-   Extracts the size of an array group from a comma-seperated list.
+   Extracts the size array from a comma-seperated list.
    @enddesc 
    @calls     
    @calledby   
@@ -1539,17 +1529,18 @@ void  FMODIFIER FORTRAN_NAME(CCTK_PrintVar)(int *var)
    @endhistory 
 
 @@*/
-static CCTK_INT **CCTKi_SetupGroupSize(int dimension, const char *thorn, const char *sizestring)
+static CCTK_INT **CCTKi_ExtractSize(int dimension, const char *thorn, const char *sizestring)
 {
-  int i;
-  CCTK_INT **size_array;
+  int         i;
+  int         type;
+  CCTK_INT  **size_array;
   const char *last_comma;
   const char *next_comma;  
-  char tmp[200];
-  int type;
+  char        tmp[200];
 
   if(strlen(sizestring))
   {
+
     size_array = (CCTK_INT **)malloc(dimension*sizeof(CCTK_INT *));
     
     next_comma = sizestring;
@@ -1586,6 +1577,7 @@ static CCTK_INT **CCTKi_SetupGroupSize(int dimension, const char *thorn, const c
   return size_array;
 }
 
+
  /*@@
    @routine    CCTK_GroupSizesI
    @date       Sun Nov 28 12:56:44 1999
@@ -1602,18 +1594,49 @@ static CCTK_INT **CCTKi_SetupGroupSize(int dimension, const char *thorn, const c
 @@*/
 CCTK_INT **CCTK_GroupSizesI(int group)
 {
-  CCTK_INT **retval;
+  CCTK_INT **sizes;
 
   if (0 <= group && group<n_groups)
   {
-    retval = groups[group].size;
+    sizes = groups[group].size;
   }
   else
   {
-    retval = NULL;
+    sizes = NULL;
   }
 
-  return retval;
+  return sizes;
+}
+
+
+ /*@@
+   @routine    CCTK_GroupGhostsizesI
+   @date       Sun Jan 23 12:56:44 2000
+   @author     Gabrielle Allen
+   @desc 
+   Returns the ghostsize array for a group.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+CCTK_INT **CCTK_GroupGhostsizesI(int group)
+{
+  CCTK_INT **ghostsizes;
+
+  if (0 <= group && group<n_groups)
+  {
+    ghostsizes = groups[group].ghostsize;
+  }
+  else
+  {
+    ghostsizes = NULL;
+  }
+
+  return ghostsizes;
 }
 
  /*@@
