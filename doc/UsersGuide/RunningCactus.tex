@@ -102,8 +102,8 @@ Cactus runs on many machines, under a large number of Unix operating
 systems. Here we list all the machines we have compiled and verified
 Cactus on, including some architecture specific notes. 
 \begin{Lentry} 
-\item[{\bf SGI Origin 2000} running Irix] {}
-\item[{\bf SGI} 32 or 64 bit running Irix] {}
+\item[{\bf SGI Origin 2000} running Irix]
+\item[{\bf SGI} 32 or 64 bit running Irix]
 \item[{\bf Cray T3E}] 
 \item[{\bf Dec Alpha}]  Dec operating system and Linux. Single processor
   mode and {\tt MPI} supported. The Decs need to have the GNU {\tt C/C++} 
@@ -114,15 +114,16 @@ Cactus on, including some architecture specific notes.
   Single processor mode and MPI ({\tt MPICH} and {\tt LAM}) supported.
 \item[{\bf Windows NT}] Compiles with Cygwin. Single processor mode and MPI ({\tt WMPI}, 
 {\tt HPVM}, and {\tt MPIPro}) supported.  Please read doc/README.NT for details.
+\item[{\bf Macintosh PowerPC (MacOS X)}]
 \item[{\bf IBM SP2}]
+\item[{\bf Hitachi SR8000-F1}]
+\item[{\bf Sun Solaris}]  
 \end{Lentry}
 
 The following machines are only partially supported
 \begin{Lentry}
 \item[{\bf HP Exemplar}] 
-\item[{\bf Hitachi SR8000-F1}]
 \item[{\bf NEC SX-5}]
-\item[{\bf Sun Solaris}]  
 \end{Lentry}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -329,13 +330,12 @@ is automatically created, and the users prompted for any changes.
 
 \item [{\tt THORNLIST}] Name of file containing a list of thorns with the syntax
 	{\tt <arrangement name>/<thorn name>}, lines beginning with \# or ! are
-	ignored. NOTE: In Beta 10 this will change to {\tt THORNFILE}.
+	ignored.
 
-\item [{\tt THORNLIST\_DIR}] Location of directory containing {\tt THORNLIST}. NOTE: In Beta 10
-	this will change to {\tt THORNFILE\_DIR}
+\item [{\tt THORNLIST\_DIR}] Location of directory containing {\tt THORNLIST}.
 
-\item [{\tt THORNS}] List of thorns to use for compilation. This option can be used in 
- 	conjunction with {\tt THORNLIST}. NOTE: In Beta 10 this will change to {\tt THORNLIST}.
+%\item [{\tt THORNS}] List of thorns to use for compilation. This option can be used in 
+% 	conjunction with {\tt THORNLIST}. NOTE: In Beta 10 this will change to {\tt THORNLIST}.
 
 \end{Lentry}
 
@@ -439,18 +439,19 @@ warnings used during compilation (\ref{sec:gmopfobuco}).
 
 \end{Lentry}
 
+\item {\tt Architecture-specific flags}
+
+\begin{Lentry}
+\item [{\tt IRIX\_BITS=32|64}] For Irix SGI systems: whether to build a 32- or 64-bit configuration.
+\end{Lentry}
+
 \item {\tt Library flags}
 
 Used to specify auxiliary libraries and directories to find them in.
 
 \begin{Lentry}
-
-\item [{\tt LIBS}]
-The additional libraries.
-
-\item [{\tt LIBDIRS}]
-Any other library directories.
-
+\item [{\tt LIBS}] The additional libraries.
+\item [{\tt LIBDIRS}] Any other library directories.
 \end{Lentry}
 
 \item {\tt Extra include directories}
