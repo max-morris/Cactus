@@ -421,6 +421,31 @@ static int CheckAllExtensionsSetup(void)
   return return_code;
 }
 
+/************************************************************************
+ *
+ *                      Query functions.
+ *
+ ************************************************************************/
+
+ /*@@
+   @routine    CCTK_GetGHExtensionHandle
+   @date       Tue Feb  9 18:23:41 1999
+   @author     Tom Goodale
+   @desc 
+   Gets the handle to the GH extension.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+int CCTK_GetGHExtensionHandle(const char *name)
+{
+  return CCTK_GetHandle(GHExtensions, name, NULL);
+}
+
 
 /************************************************************************
  *
