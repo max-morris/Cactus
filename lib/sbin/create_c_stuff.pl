@@ -41,7 +41,7 @@ sub CreateParameterBindingFile
   push(@data, $line);
   $line = "\#include <stdarg.h>";
   push(@data, $line);
-  $line = "\#include \"cctk_config.h\"";
+  $line = "\#include \"cctk_Config.h\"";
   push(@data, $line);
   $line = "\#include \"CParameterStructNames.h\"";
   push(@data, $line);
@@ -214,22 +214,41 @@ sub CreateCStructureParameterHeader
     push(@definition, $line);
 
     $line = "";
-    if ($type_string =~ /CCTK_REAL/)
+    if ($type_string =~ /CCTK_REAL16/)
+    {
+      $line = "cctk_pdummy_real16=$parameter;";
+    }
+    elsif ($type_string =~ /CCTK_REAL8/)
+    {
+      $line = "cctk_pdummy_real8=$parameter;";
+    }
+    elsif ($type_string =~ /CCTK_REAL4/)
+    {
+      $line = "cctk_pdummy_real4=$parameter;";
+    }
+    elsif ($type_string =~ /CCTK_REAL/)
     {
       $line = "cctk_pdummy_real=$parameter;";
+    }
+    elsif ($type_string =~ /CCTK_INT8/)
+    {
+      $line = "cctk_pdummy_int8=$parameter;";
+    }
+    elsif ($type_string =~ /CCTK_INT4/)
+    {
+      $line = "cctk_pdummy_int4=$parameter;";
+    }
+    elsif ($type_string =~ /CCTK_INT2/)
+    {
+      $line = "cctk_pdummy_int2=$parameter;";
     }
     elsif ($type_string =~ /CCTK_INT/)
     {
       $line = "cctk_pdummy_int=$parameter;";
     }
-    elsif ($type_string =~ /char/)
-    {
-      $line = "cctk_pdummy_pointer=(void *)$parameter;";
-    }
     else
     {
-      print "missed $type_string\n";
-      exit;
+      $line = "cctk_pdummy_pointer=(void *)$parameter;";
     }
 
     push(@use, $line);
