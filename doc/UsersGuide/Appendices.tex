@@ -15,57 +15,73 @@
 
 \begin{Lentry}
 
-\item[{\tt API}] Applications Programming Interface,
-  the externally-visible interface provided by some software component.
-  (An API usually consists of a set of subroutine/function calls, but
-  may also include data passed via Cactus key-value tables, grid arrays,
-  or other means.)  For example, the Reference Manual 
-  documents most of the Cactus flesh APIs.
-\item[{\tt arrangement}] A collection of thorns, normally stored
-  in the Cactus \verb|arrangements| directory.
-\item[{\tt autoconf}] A GNU program which builds a configuration
-  script which can be used to make a Makefile.
-\item[{\tt boundary zone}] A boundary zone is a set of points added to
-the edge of a grid to contain boundary data.  E.g Dirichlet or Von
-Neumann data.  (See also: symmetry zone, ghost zone.)
-\item[{\tt Cactus}] A green fleshy plant with lots of thorns, usually painful if touched.
-\item[{\tt CCTK}] Cactus Computational Tool Kit (The Cactus flesh and
-            computational thorns).
-\item[{\tt CCL}] The {\tt Cactus Configuration Language}, this is the language
-that the thorn configuration files are written in.
-\item[{\tt configuration}] The combination of a set of thorns, and all
-  the Cactus configure options which affect what binary will be produced
-  when compiling Cactus.  For example, the choice of compilers
-  (Cactus \verb|CC|, \verb|CXX|, \verb|F77|, and \verb|F90|
-   configure options)
-  and the compiler optimization settings
-  (\verb|OPTIMISE|/\verb|OPTIMIZE| and \verb|*_OPTIMISE_FLAGS|
-   configure options)
-  are part of a configuration
-  (these flags change what binary is produced),
-  but the Cactus \verb|SILENT| and \verb|WARN| configure options
-  aren't part of a configuration
-  (they don't change what binary will be produced).
-\item[{\tt checkout}] Get a copy of the code or thorns from CVS.
-\item[{\tt checkpointing}] Save the entire state of a run to file so that it can be restarted at a later time.
+\item[{\tt API}]
+  Applications Programming Interface, the externally-visible interface
+  provided by some software component.  (An API usually consists of a
+  set of subroutine/function calls, but may also include data passed
+  via Cactus key-value tables, grid arrays, or other means.)  For
+  example, the Reference Manual documents most of the Cactus flesh
+  APIs.
+\item[{\tt arrangement}]
+  A collection of thorns, normally stored in the Cactus
+  \verb|arrangements| directory.
+\item[{\tt autoconf}]
+  A GNU program which builds a configuration script which can be used
+  to make a Makefile.
+\item[{\tt boundary zone}]
+  A boundary zone is a set of points added to the edge of a grid to
+  contain boundary data.  E.g Dirichlet or Von Neumann data.  (See
+  also: symmetry zone, ghost zone.)
+\item[{\tt Cactus}]
+  A green fleshy plant with lots of thorns, usually painful if
+  touched.
+\item[{\tt CCTK}]
+  Cactus Computational Tool Kit (The Cactus flesh and computational
+  thorns).
+\item[{\tt CCL}]
+  The {\tt Cactus Configuration Language}, this is the language that
+  the thorn configuration files are written in.
+\item[{\tt configuration}]
+  The combination of a set of thorns, and all the Cactus configure
+  options which affect what binary will be produced when compiling
+  Cactus.  For example, the choice of compilers (Cactus \verb|CC|,
+  \verb|CXX|, \verb|F77|, and \verb|F90| configure options) and the
+  compiler optimization settings (\verb|OPTIMISE|/\verb|OPTIMIZE| and
+  \verb|*_OPTIMISE_FLAGS| configure options) are part of a
+  configuration (these flags change what binary is produced), but the
+  Cactus \verb|SILENT| and \verb|WARN| configure options aren't part
+  of a configuration (they don't change what binary will be produced).
+\item[{\tt checkout}]
+  Get a copy of the code or thorns from CVS.
+\item[{\tt checkpointing}]
+  Save the entire state of a run to file so that it can be restarted
+  at a later time.
 \item[{\tt convergence}]
-\item[{\tt CST}] This stands for Cactus Specification Tool, which is
-the perl scripts which parse the thorns' configuration files (those
-that have a \texttt{.ccl} extension).
-\item[{\tt CVS}] The {\em ``Concurrent Versioning System''} is the
-  favoured distribution system for Cactus and can be
-  downloaded from your favorite GNU site.
-\item[{\tt driver}] A thorn which creates and handles grid hierachies.
-\item[{\tt flesh}] The routines which hold all the thorns together, this
-is what you get if you check out {\tt Cactus} from our CVS repository.
+\item[{\tt CST}]
+  This stands for Cactus Specification Tool, which is the perl scripts
+  which parse the thorns' configuration files (those that have a
+  \texttt{.ccl} extension).
+\item[{\tt CVS}]
+  The {\em ``Concurrent Versioning System''} is the favoured
+  distribution system for Cactus and can be downloaded from your
+  favorite GNU site.
+\item[{\tt driver}]
+  A thorn which creates and handles grid hierachies.
+\item[{\tt flesh}]
+  The routines which hold all the thorns together, this is what you
+  get if you check out {\tt Cactus} from our CVS repository.
 \item[{\tt friend}]
-\item[{\tt GF}] Shorthand for a {\tt grid function}.
-\item[{\tt gmake}] GNU version of make utility.
+\item[{\tt GA}]
+  Shorthand for a {\tt grid array}.
+\item[{\tt GF}]
+  Shorthand for a {\tt grid function}.
+\item[{\tt gmake}]
+  GNU version of make utility.
 \item[{\tt ghostzone}] 
-A ghostzone is a set of points added for parallelisation purposes to
-enable inter-processor communication of data from processor
-boundaries.  In single processor runs there are no ghost zones.
-Ghost zones should not be confused with symmetry or boundary zones.
+  A ghostzone is a set of points added for parallelisation purposes to
+  enable inter-processor communication of data from processor
+  boundaries.  In single processor runs there are no ghost zones.
+  Ghost zones should not be confused with symmetry or boundary zones.
 \item[{\tt grid array}]
   A {\it grid variable} whose global size need not be that of the computational
   grid; instead, the size is declared explicitly in an \verb|interface.ccl|
@@ -78,47 +94,60 @@ Ghost zones should not be confused with symmetry or boundary zones.
 \item[{\tt grid scalar}]
   A {\it grid variable\/} which has zero indices,
   i.e.\ it's just a number on each processor.
-\item[{\tt grid variable}] Any variable which can be passed between thorns,
-or routines belonging to the same thorn, but passed through the defined
-flesh interface; implicitly implies it is related to the computational
-grid rather than being an internal variable of the thorn or one of its routines. {\tt grid scalar}, {\tt grid function},
-and {\tt grid array} are all examples of {\tt grid variables}.
-\item[{\tt GNATS}] The GNU program we use for reporting and tracking bugs,
-  comments and suggestions.
-\item[{\tt handle}] A signed integer value $>= 0$. Many Cactus routines return
-  or accept a handle to represent a dynamic data or code object. Handles for
-  the same object class should not be trusted to comprise a consecutive
+\item[{\tt grid variable}]
+  Any variable which can be passed between thorns, or routines
+  belonging to the same thorn, but passed through the defined flesh
+  interface; implicitly implies it is related to the computational
+  grid rather than being an internal variable of the thorn or one of
+  its routines. {\tt grid scalar}, {\tt grid function}, and {\tt grid
+  array} are all examples of {\tt grid variables}.
+\item[{\tt GNATS}]
+  The GNU program we use for reporting and tracking bugs, comments and
+  suggestions.
+\item[{\tt GV}]
+  Shorthand for a {\it grid variable}
+\item[{\tt handle}]
+  A signed integer value $>= 0$. Many Cactus routines return or accept
+  a handle to represent a dynamic data or code object. Handles for the
+  same object class should not be trusted to comprise a consecutive
   sequence of integer values.
-\item[{\tt GV}] Shorthand for a {\it grid variable}
-\item[{\tt HDF5}] Hierarchical Data Format version~5, an API, subroutine
-  library, and file format for storing multimdimensional data.  An HDF5
-  file can store both data (for example Cactus grid variables), and metadata
-  (data describing the other data, for example Cactus coordinate systems).
-\item[{\tt implementation}]  Defines the interface that a thorn presents to
-the outside world.   See Section~\ref{sec:im}.
+\item[{\tt HDF5}]
+  Hierarchical Data Format version~5, an API, subroutine library, and
+  file format for storing multimdimensional data.  An HDF5 file can
+  store both data (for example Cactus grid variables), and metadata
+  (data describing the other data, for example Cactus coordinate
+  systems).
+\item[{\tt implementation}]
+  Defines the interface that a thorn presents to the outside world.
+  See Section~\ref{sec:im}.
 \item[{\tt inherit}]
-\item[{\tt interpolation}] Given $N$ {\it grid arrays}
-  and $C$ interpolation points (in the grid array coordinate space),
-  return $M$ values on each requested processor at each interpolation point.
-  (See also {\it local interpolation})
+\item[{\tt interpolation}]
+  Given $N$ {\it grid arrays} and $C$ interpolation points (in the
+  grid array coordinate space), return $M$ values on each requested
+  processor at each interpolation point.  (See also {\it local
+  interpolation})
 \item[{\tt local interpolation}]
   Given $N$ arrays on the current processor
   with a given coordinate system,
   and $C$ interpolation points (in the array coordinate space)
   return $M$ values at each interpolation point.
   (See also {\it interpolation})
-\item[{\tt MPI}] Message Passing Interface, an API and software library
-  for sending messages between processors in a multiprocessor system.
-\item[{\tt mutual recursion}] See {\it recursion, mutual}.
-\item[{\tt NUL character}] The C programming language uses a ``NUL character''
-  to terminate character strings.  A NUL character has the integer
-  value zero, but it's useful to write it as \verb|'\0'| to emphasize
-  to human readers that this has type \verb|char| rather than \verb|int|.
-\item[{\tt NULL pointer}] C defines a ``NULL pointer'' which is guaranteed not
-  to point to any object.  You get a NULL pointer by converting the integer
-  constant 0 to a pointer type, e.g.\ \verb|int* ptr = 0;|.  Note
-  that if you have an expression which has the value zero, but which isn't
-  an integer constant, converting this to a pointer type is {\em not\/}
+\item[{\tt MPI}]
+  Message Passing Interface, an API and software library for sending
+  messages between processors in a multiprocessor system.
+\item[{\tt mutual recursion}]
+  See {\it recursion, mutual}.
+\item[{\tt NUL character}]
+  The C programming language uses a ``NUL character'' to terminate
+  character strings.  A NUL character has the integer value zero, but
+  it's useful to write it as \verb|'\0'| to emphasize to human readers
+  that this has type \verb|char| rather than \verb|int|.
+\item[{\tt NULL pointer}]
+  C defines a ``NULL pointer'' which is guaranteed not to point to any
+  object.  You get a NULL pointer by converting the integer constant 0
+  to a pointer type, e.g.\ \verb|int* ptr = 0;|.  Note that if you
+  have an expression which has the value zero, but which isn't an
+  integer constant, converting this to a pointer type is {\em not\/}
   guaranteed to give a NULL pointer, e.g.:
 \begin{verbatim}
 int i = 0;
@@ -135,21 +164,31 @@ int* ptr = i;     /* ptr is NOT guaranteed to be a NULL pointer! */
   is represented by a bit pattern of all zero bits -- this varies from
   system to system, and there are real-world systems where NULL pointers
   are in fact {\em not\/} represented this way.
-\item[{\tt parameter}] A variable which remains unchanged throughout the execution of a Cactus executable. Parameters all have default values which can be changed in a parameter file.
+\item[{\tt parameter}]
+  A variable which remains unchanged throughout the execution of a
+  Cactus executable. Parameters all have default values which can be
+  changed in a parameter file.
 \item[{\tt processor topology}]
-\item[{\tt PUGH}] The default parallel driver for Cactus which uses MPI.
-\item[{\tt PVM}]  {\tt Parallel Virtual Machine}, provides interprocessor
+\item[{\tt PUGH}]
+  The default parallel driver for Cactus which uses MPI.
+\item[{\tt PVM}]
+  {\tt Parallel Virtual Machine}, provides interprocessor
   communication.
-\item[{\tt recursion, mutual}] See {\it mutual recursion}.
-\item[{\tt reduction}] Given $N$ grid variables return $M$ output values on each requested processor.
-\item[{\tt symmetry zone}] A symmetry zone is a set of points added to
-the edge of a grid to contain data which is obtained, by some symmetry
-operation, from another part of the grid. (See also: boundary zone, ghost zone.)
+\item[{\tt recursion, mutual}]
+  See {\it mutual recursion}.
+\item[{\tt reduction}]
+  Given $N$ grid variables return $M$ output values on each requested
+  processor.
+\item[{\tt symmetry zone}]
+  A symmetry zone is a set of points added to the edge of a grid to
+  contain data which is obtained, by some symmetry operation, from
+  another part of the grid. (See also: boundary zone, ghost zone.)
 \item[{\tt TAGS}]
 \item[{\tt target}]
-\item[{\tt thorn}] A collection of subroutines with a definite interface
-             and purpose.
-\item[{\tt WMPI}] Win32 Message Passing Interface.
+\item[{\tt thorn}]
+  A collection of subroutines with a definite interface and purpose.
+\item[{\tt WMPI}]
+  Win32 Message Passing Interface.
 
 \end{Lentry}
 
