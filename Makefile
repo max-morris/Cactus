@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.43 1999-07-29 15:21:19 jmasso Exp $
+#   @version $Id: Makefile,v 1.44 1999-07-29 18:36:51 jmasso Exp $
 # @@*/
 
 ##################################################################################
@@ -244,7 +244,9 @@ default:
 
 help:
 	@echo $(DIVIDER)
-	@echo This is the main makefile for the Cactus Computational Toolkit
+	@echo "****************************** "
+	@echo "* Welcome to the Cactus Code *"
+	@echo "******************************"
 ifeq ($(strip $(CONFIGURATIONS)),)
 	@echo There are no configurations currently specified.
 	@echo \'$(MAKE) \<name\>\' will run a setup script to setup a configuration called \'\<name\>\'.

@@ -89,14 +89,14 @@ int CCTKi_rfrPrintTree(cGH *GH,void *rfr_top)
 
     showed_tree = 1;
 
-    printf ("\n-------------------------------------------------------------------------------------\n");
-    printf ("\nEvolution tree from the RFR\n\n");
+    printf ("-------------------------------------------------------------------------------------\n");
+    printf ("Evolution tree from the RFR\n");
 
     rfrPrintDescs(rfr_top,GH,CCTK_BASEGRID,"CCTK_BASEGRID","");
     rfrPrintDescs(rfr_top,GH,CCTK_INITIAL, "CCTK_INITIAL","");
     rfrPrintDescs(rfr_top,GH,CCTK_POSTINITIAL, "CCTK_POSTINITIAL","");
-    printf ("\n  (Don't forget CCTK_POSTSTEP is here too...)\n");
-    printf ("\n  do loop over timesteps\n");
+    rfrPrintDescs(rfr_top,GH,CCTK_POSTSTEP,"CCTK_POSTSTEP","");
+    printf ("\n   do loop over timesteps\n");
     rfrPrintDescs(rfr_top,GH,CCTK_PRESTEP,"CCTK_PRESTEP","   ");
     rfrPrintDescs(rfr_top,GH,CCTK_EVOL,"CCTK_EVOL","   ");
     rfrPrintDescs(rfr_top,GH,CCTK_BOUND,"CCTK_BOUND","   ");
@@ -104,11 +104,11 @@ int CCTKi_rfrPrintTree(cGH *GH,void *rfr_top)
     printf ("     t = t+dt\n");
     rfrPrintDescs(rfr_top,GH,CCTK_POSTSTEP,"CCTK_POSTSTEP","   ");
     
-    printf ("     if (time-for-output)\n");
+    printf ("     if (analysis)\n");
     rfrPrintDescs(rfr_top,GH,CCTK_ANALYSIS,"CCTK_ANALYSIS","      ");
     printf ("     endif\n");
     printf ("   enddo\n");
-    printf ("\n-------------------------------------------------------------------------------------\n");
+    printf ("-------------------------------------------------------------------------------------\n");
 
   }
 
