@@ -225,13 +225,15 @@ sub Read_Thorn_Doc
       $tmp2 =~ s/\_/\\\_/g;
       $tmp = $thorn;
       $tmp=~ s/\_/\\\_/g;
+      my $tmp3 = "${arrangement}_${thorn}_inter";
+      $tmp3 =~ tr/A-Z/a-z/;
       if (-e $pathandfile) {
          $contents = "Could not parse latex documentation for $tmp2/$tmp($file)";
       } else {
          $contents = "Could not find latex documentation for $tmp2/$tmp ($file)";
       }
       $contents .= "\n\n\\include{${arrangement}\_${thorn}\_param}\n";
-      $contents .= "\n\\include{${arrangement}\_${thorn}\_inter}\n";
+      $contents .= "\n\\include{$tmp3}\n";
       $contents .= "\n\\include{${arrangement}\_${thorn}\_schedule}\n";
    }
    

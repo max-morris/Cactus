@@ -1,5 +1,8 @@
 #!/usr/bin/perl -s
 
+use strict;
+use vars qw($h $help $cctk_home $thornlist $outdir $verbose $debug $directory $document_type);
+
 #/*@@
 #  @file      SchedLatex.pl
 #  @date      Sun Mar  3 19:05:41 CET 2002
@@ -20,26 +23,18 @@
 #########################################################################
 if ($h || $help) {
    print "--> SchedLatex.pl <--\n";
+   print "   This program will take as input a thornlist, and outputs a latex table that contains the information in the thorns' schedule.ccl file(s).  This latex table can then be used as a stand-alone document, or as a section of a larger 'ThornGuide'";
    print "Options:\n";
-   print "\t-thornlist= : (opt) list specific thorns to process\n";
-   print "\t-th=        : (semi opt) thorn to process\n";
-   print "\t-arr=       : (semi opt) arrangement to process\n";
-   print "\t-processall : (opt) process all arrangements\n";
+   print "\t-thornlist=     : (req) list specific thorns to process\n";
+   print "\t-directory=     : (opt) dir. of arrangements (default arrangements/)\n";
+   print "\t-outdir=        : (opt) directory to dump output files, default is .\n";
+   print "\t-document_type= : (opt) 'document' or 'section'\n";
    print "\n";
-   print "\t-directory= : (opt) dir. of arrangements (default arrangements/)\n";
-   print "\t-outdir=    : (opt) directory to dump output files, default is .\n";
-   print "\n";
-   print "\t-grouping=  : (opt) file ouput grouping scope (bythorn/byarrangement/all)\n";
-   print "\t-width=     : (opt) fixed width of table (default 160mm)\n";
-   print "\t-document   : (opt) creates a TeX document, not just a table\n";
-   print "\t-section    : (opt) makes this a section of a greater document\n";
-   print "\n";
-   print "\t-debug      : (opt) prints thorn name on each schedule \n";
-   print "\t-verbose    : (opt) gives verbose output to screen\n";
-   print "\t-dump       : (opt) dumps output to screen, not in Latex\n";
-   print "\t-h/-help    : (opt) this screen\n";
+   print "\t-debug          : (opt) prints thorn name on each schedule \n";
+   print "\t-verbose        : (opt) gives verbose output to screen\n";
+   print "\t-h/-help        : (opt) this screen\n";
    print "\nExample:\n";
-   print "\tperl -s /lib/sbin/SchedLatex.pl -processall -outdir=testdirectory -grouping=all -document\n";
+   print "\t\$ perl -s /lib/sbin/SchedLatex.pl -thornlist=WaveToyC.th -outdir=/tmp/ -document_type=document\n";
    exit 0;
 }
 
@@ -55,7 +50,7 @@ if ($h || $help) {
 ##############
 $cctk_home .= '/' if (($cctk_home !~ /\/$/) && defined $cctk_home);
 
-$sbin_dir = "${cctk_home}lib/sbin";
+my $sbin_dir = "${cctk_home}lib/sbin";
 require "$sbin_dir/ScheduleParser.pl";
 require "$sbin_dir/CSTUtils.pl";
 
@@ -65,119 +60,94 @@ require "$sbin_dir/ThornUtils.pm";
 # for reading of the thornlist routine: %thorns = &ReadThornlist($thornlist)
 require "$sbin_dir/MakeUtils.pl";
 
-
-###########################
-# COMMAND LINE VAR. CHECK #
-###########################
-$sort ||= "name";
-$width ||= "160mm";
-
-if (((! $th) && (! $arr)) && ((! defined $processall) && (! defined $thornlist))) {
-   die "\nNo -th= or -arr= (or -processall or -thornlist) specified, nothing to process!\n";
-}
-
-$grouping ||="bythorn";
-
 ##################
 # INITIALIZATION #
 ##################
-$start_directory=`pwd`;
-chomp($start_directory);
+my $TABLE_WIDTH   ||= "160";
+$document_type ||= "section";
+
+my $start_directory = `pwd`;
+chomp ($start_directory);
+
 # set some variables in ThornUtils(.pm) namespace
 $ThornUtils::cctk_home          = $cctk_home;
 $ThornUtils::start_directory    = $start_directory;
 $ThornUtils::verbose            = $verbose;
 $ThornUtils::debug              = $debug;
 
+my $ofh;
+my %arrangements;
+my %thorns;
+my %schedule_database;
+my %pathsToThorns;
+my %arrangements_database;
+
+my @listOfThorns;
+
+my %var_mapping = (
+	'STOR' => 'Storage',
+	'LANG' => 'Language',
+	'AFTER'=> 'After',
+	'TRIG' => 'Triggers',
+	'SYNC' => 'Sync',
+);
 
 # get/setup the output directory and the arrangements directory
 $outdir                 = ThornUtils::SetupOutputDirectory($outdir);
-$arrangements_dir       = ThornUtils::GetArrangementsDir($directory);
+my $arrangements_dir       = ThornUtils::GetArrangementsDir($directory);
 
-if (! $directory) {
-   $directory = $arrangements_dir;
-} elsif ($directory !~ /\/$/) {
-   $directory .= '/';
-}
-
+# determine thornlist, create one if one doesn't exist
 if (defined $thornlist) {
-   %thornlist = &ReadThornlist($thornlist);
-   #&Read_ThornList($thornlist);
-   $processall = 1;
-}
-
-#################################################
-# FIND THORN(S)/ARRANGEMENT(S) AND CREATE LATEX #
-#################################################
-
-if (defined $document) {
-   $document_type = "document";
+   # provided by MakeUtils.pl, returns a hash with a list of the thorns in our thornlist
+   %thorns       = &ReadThornlist($thornlist);
+   @listOfThorns = keys %thorns; 
 } else {
-   $document_type = "section";
-} 
-
-@arrangements = ThornUtils::FindDirectories($directory);
-
-$ofh = ThornUtils::StartDocument("schedule", "MasterTable", $outdir, $arrangement, "Schedule", $document_type) if ((! $dump) && ($grouping eq "all"));
-#&StartDocument("MasterTable") if ((! $dump) && ($grouping eq "all"));
-
-foreach $arrangement (sort @arrangements) 
-{
-   @thorns = ThornUtils::FindDirectories($directory . $arrangement);
-
-   $ofh = ThornUtils::StartDocument("schedule", "", $outdir, $arrangement, "Schedule", $document_type)  if ((! $dump) && ($grouping eq "byarrangement"));
-   #&StartDocument($arrangement) if ((! $dump) && ($grouping eq "byarrangement"));
-   foreach $thorn (@thorns) 
-   {
-      next if ($thorn !~ /\w/);
-
-      if (($processall) || (($thorn eq $th) || ($arr eq $arrangement))) 
-      { 
-         ## do not create a file for this thorn if it is not in the THORNLIST (if one is specified)
-	 next if ((defined $thornlist) && (! defined $thornlist{"$arrangement/$thorn"}));
-
-         if (-e "$directory$arrangement/${thorn}/schedule.ccl") 
-         {
-            $ofh = ThornUtils::StartDocument("schedule", $thorn, $outdir, $arrangement, "Schedule", $document_type)  if ((! $dump) && ($grouping eq "bythorn"));
-            #&StartDocument($thorn, $arrangement) if ((! $dump) && ($grouping eq "bythorn"));
-
-            $$thorn{$thorn} = "${directory}${arrangement}/${thorn}";
-
-            # we are selecting STDOUT so that any junk from the &create_schedule_database won't get in our output
-            $filehandle = select(STDOUT);
-            %parameter_database = &create_schedule_database(%$thorn);
-            select($filehandle);
-
-            &ReadLatexDatabase(%parameter_database);
-            &LatexTableElement;
-            #&EndDocument if ((! $dump) && ($grouping eq "bythorn"));
-            ThornUtils::EndDocument($ofh, $document_type) if ((! $dump) && ($grouping eq "bythorn"));
-            print "\n\\newpage" if ($grouping eq "all");
-
-	    ###################################################
-            # reset the variables in case they are used again #
-            foreach my $b (%statements) {
-               undef %$b;
-            }
-            undef %statements;
-
-            foreach my $b (%blocks) {
-               undef %$b;
-            }
-            undef %blocks;
-            # END of reset #
-            ################
-         }       
-      }
-   }
-   #&EndDocument if ((! $dump) && ($grouping eq "byarrangement")); 
-   ThornUtils::EndDocument($ofh, $document_type) if ((! $dump) && ($grouping eq "byarrangement"));
-
+   # we don't have a thornlist, go find all thorns in arrangements directory
+   @listOfThorns = ThornUtils::CreateThornlist($arrangements_dir);
 }
-#&EndDocument if ((! $dump) && ($grouping eq "all")); 
-ThornUtils::EndDocument($ofh, $document_type) if ((! $dump) && ($grouping eq "all"));
 
-print "\n" if ($verbose);
+# this will return us a hash with keys as thorn names, and values as absolute paths to the 
+# thorn's directory param.ccl can be located in that path.
+#   We need this information to create a schedule database using create_schedule_database
+#
+# We are not doing ''one'' call to schedule_database as we easily could, because there is NO WAY
+# (currently) to distinguish between two identical thorns in different arrangements.  So we
+# would get stuff from Alphathorns/IOHDF5 in CactusBase/IOHDF5, or/and visa-versa. 
+ThornUtils::ClassifyThorns(\%arrangements, @listOfThorns);
+
+# lets go through, one arrangement at a time
+foreach my $arrangement (keys %arrangements) 
+{
+   print "\n$arrangement" if ($debug);
+
+   # now each thorn in the given arrangement
+   foreach my $thorn (@{$arrangements{$arrangement}}) 
+   {
+      print "\n\t$thorn" if ($debug);
+
+      # get the path for this individual thorn
+      %pathsToThorns = ThornUtils::GetThornPaths(["$arrangement/$thorn"], $arrangements_dir, "schedule.ccl");
+
+      # we are selecting STDOUT so that any junk from the &create_schedule_database won't get in our output
+      my $filehandle = select(STDOUT);
+      %schedule_database = &create_schedule_database(%pathsToThorns);
+      select($filehandle);
+
+      $arrangements_database{$arrangement}->{$thorn} = &ReadScheduleDatabase(\%schedule_database);
+   }
+}
+
+# just dump out the data-structure if we are in debug mode, don't create any files 
+if ($debug) { 
+   ThornUtils::Dump(\%arrangements_database);
+   print "\n";
+   exit 0;
+} else {
+   ThornUtils::ProcessAllArrangements(\%arrangements_database);
+}
+
+print "\nFinished.\n";
+
 #########################################################################
 #                 END OF MAIN SECTION OF THE PROGRAM                    # 
 #########################################################################
@@ -186,133 +156,151 @@ print "\n" if ($verbose);
 #                     BEGINNING OF SUB-ROUTINES                         #
 #########################################################################
 
-#########################################################################
-# ReadLatexDataBase                                                     #
-#   Calls schedule_parser.pl, which will read in the schedule.ccl file  #
-#   from a single thorn and return all data as a %hash table, which we  #
-#   will then parse to put into our own %hash tables named according to #
-#   the variable names.                                                 #
-#                                                                       #
-#   %(variable_name)  : any number of hashes created with their names   #
-#                       being the variable names, they then have $keys  #
-#                       (descriptions) with $values (well, values)      #
-#                          (e.g.) $name{"default"} = "Cactus";          #
-#########################################################################
-sub ReadLatexDatabase
+#/*@@
+#  @routine   ReadLatexDatabase
+#  @date      Sun Mar  3 01:54:37 CET 2002
+#  @author    Ian Kelley
+#  @desc 
+#   Calls schedule_parser.pl, which will read in the schedule.ccl file  
+#   from a single thorn and return all data as a %hash table, which we  
+#   will then parse to put into our own %hash tables named according to 
+#   the variable names.                                                 
+#                                                                       
+#   %(variable_name)  : any number of hashes created with their names   
+#                       being the variable names, they then have $keys  
+#                       (descriptions) with $values (well, values)      
+#                          (e.g.) $name{"default"} = "Cactus";          
+#  @enddesc 
+#  @version 
+#@@*/
+sub ReadScheduleDatabase
 {
-  my (%parameter_database) = @_;
-  my ($field);
-  my ($name, $lname, $conditionals) = "";
-  
-  foreach $field (sort keys %parameter_database)
+  my (%schedule_database) = %{$_[0]};
+  my ($name, $block, $var, $conditionals) = "";
+
+  my %thorn;
+
+  foreach (sort keys %schedule_database)
   {
-     print STDERR "\n\"$field --> $parameter_database{$field}\"" if ($verbose);
+     print STDERR "\n[$_] --> [$schedule_database{$_}]" if ($debug || $verbose);
 
-     if ($field =~ /(.*?)\s(.*?)\s(.*)/) 
+     if (/^(.*?)\s(.*?)\s(.*)$/) 
      {
-        ($name,$block,$var) = ($1,$2,$3); 
-        chomp($parameter_database{$field});
+        ($name, $block, $var) = ($1, $2, $3); 
+        chomp($schedule_database{$_});
 
-        $$block{$var} = $parameter_database{$field};
+        $thorn{$block}->{$var} = $schedule_database{$_};
 
-        $$block{"CONDITIONAL"} = "0";
-        $$block{"THORN"}       = $name;
-
-        if ($block =~ /^BLOCK/) {
-           $blocks{$block} = 1;
-        } else {
-           $statements{$block} = 1;
-        }
+        $thorn{$block}->{"CONDITIONAL"} = "0";
+        $thorn{$block}->{"THORN"}       = $name;
+     } else {
+        print STDERR "\n\"$_ --> $schedule_database{$_}\"" if ($verbose || $verbose);
      }
-   } #-- foreach
+   } #-- foreach %schedule_database
 
-   # conditional blocks
-   $conditionals = $parameter_database{"$name FILE"};
-   foreach my $key (keys %blocks) 
+   # conditional blocks/statements
+   $conditionals = $schedule_database{"$name FILE"};
+   foreach my $key (keys %thorn) 
    {
-      $key =~ /BLOCK\_(\d+)/;
-      my $b = "\@BLOCK\@$1";
+      next if ($key !~ /(BLOCK|STATEMENT)\_(\d+)/);
 
-      while ($conditionals =~ /\bif\b.*?\{(.*?)\}/imgs) 
+      my $b = "\@$1\@$2";
+
+      # try to figure out if stuff is conditional storage
+      while ($conditionals =~ /\b(if|else)\b.*?\{\s*?(.*?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?.*?)\}/imgs) 
       {
-          my $if = $1;
-          if ($if =~ /\Q$b\E/) {
-             $$key{"CONDITIONAL"} = "true";
-          }
+         my $if = $2;
+         if ($if =~ /\Q$b\E/) {
+            $thorn{$key}->{"CONDITIONAL"} = 1;
+         }
       }
    }   
 
-   #conditional statements
-   $conditionals = $parameter_database{"$name FILE"};
-   foreach my $key (keys %statements) 
-   {
-      $key  =~ /STATEMENT\_(\d+)/;
-      my $b = "\@STATEMENT\@$1";
+   return \%thorn;
+}
 
-      while ($conditionals =~ /\bif\b.*?\{(.*?)\}/imgs) 
-      {
-          my $if = $1;
-          if ($if =~ /\Q$b\E/) {
-             $$key{"CONDITIONAL"} = "true";
-          }
-      }
-   }   
-
-   print "\n";
-   return $name;
-} ## END :ReadLatexDatabase:
-
-#########################################################################
-# LatexTableElement                                                     #
-#    Takes whatever table element is currently reffered to by $table    #
-#    and prints it out into a LaTeX table.  Only nifty things it curr.  #
-#    does is NOT print ranges for BOOLEAN and SHARED elements.          #
-#########################################################################
-sub LatexTableElement 
+#/*@@
+#  @routine   ProcessOneThorn
+#  @date      Sun Mar  3 01:54:37 CET 2002
+#  @author    Ian Kelley
+#  @desc 
+#
+#  @enddesc 
+#  @version 
+#@@*/
+sub ProcessOneThorn 
 {
-   my $go = 1;
-   my $i  = 0;
+   # get the thorn hash
+   my (%thorn)      = %{$_[0]};
+   my $arrangement  = $_[1];
+   my $thorn        = $_[2];
+ 
+   my $ofh = ThornUtils::StartDocument("schedule", $thorn, $outdir, $arrangement, "Schedule", $document_type);
+
+   # go print out all the good stuff for any given thorn
+   &CreateLatexTable(\%thorn, "$arrangement/$thorn");
+
+   ThornUtils::EndDocument($ofh, $document_type);
+}
+
+#/*@@
+#  @routine   CreateLatexTable                                                     
+#  @date      Sun Mar  3 01:54:37 CET 2002
+#  @author    Ian Kelley
+#  @desc 
+#    Takes whatever table element is currently reffered to by $table    
+#    and prints it out into a LaTeX table.  Only nifty things it curr.  
+#    does is NOT print ranges for BOOLEAN and SHARED elements.          
+#  @enddesc 
+#  @version 
+#@@*/
+#sub LatexTableElement 
+sub CreateLatexTable
+{
+   my %thorn      = %{$_[0]};
+   my $thorn_name = $_[1];
+
    my $printgridtitle = 1;
    my @conditional_statements;
    my @always_statements;
    my %aliases;
+   my $len;
 
-   print "\n\n (For Debug, the thorn is: " . &Clean($thorn) . ")" if ($debug);
- 
-
-   foreach my $st (sort keys %statements) 
+   # categorize the storage types for STATEMENTS into conditional and always on
+   foreach my $key (keys %thorn) 
    {
-      my @groups = split/,/,$$st{"GROUPS"};
-      my $type = $$st{"TYPE"};
- 
-      if ($type eq "STOR") 
+      next if ($key !~ /^STATEMENT/);
+
+      if ($thorn{$key}->{"TYPE"} eq "STOR") 
       {
-         if ($$st{"CONDITIONAL"}) {
-            push @conditional_statements, @groups;
-         } else {
-            push @always_statements, @groups;
+         if ($thorn{$key}->{"CONDITIONAL"} == 1) {
+            push @conditional_statements, split/,/, $thorn{$key}->{"GROUPS"};
+         } elsif ($thorn{$key}->{"CONDITIONAL"} == 0) {
+            push @always_statements, split/,/, $thorn{$key}->{"GROUPS"};
          }
       }
-   }  
-     
-   # who has the most elements?
+   }
+
+   # which storage type has the most elements?
    $len = @conditional_statements > @always_statements ? @conditional_statements : @always_statements;
 
-   print "\n\n\\noindent This section lists all the variables which are assigned storage by thorn ". &Clean($thorn) . ".  Storage can either last for the duration of the run ({\\bf Always} means that if this thorn is activated storage will be assigned, {\\bf Conditional} means that if this thorn is activated storage will be assigned for the duration of the run is some condition is met), or can be turned on for the duration of a schedule function.\n\n";
+   # print blurb about what this page is about
+   print "\n\n\\noindent This section lists all the variables which are assigned storage by thorn ". ThornUtils::CleanForLatex($thorn_name) . ".  Storage can either last for the duration of the run ({\\bf Always} means that if this thorn is activated storage will be assigned, {\\bf Conditional} means that if this thorn is activated storage will be assigned for the duration of the run is some condition is met), or can be turned on for the duration of a schedule function.\n\n";
 
+   # print out storage allocation at the top
    print "\n\\subsection\*\{Storage\}";
    if (@conditional_statements > 0 || @always_statements > 0) 
    {
-      print "\n\n\\hspace\{5mm\}\n\n \\begin\{tabular*\}\{$width\}\{ll\} \n";
+      print "\n\n\\hspace\{5mm\}\n\n \\begin\{tabular*\}\{${TABLE_WIDTH}mm\}\{ll\} \n";
       print @always_statements > 0 ? "\n\{\\bf Always:\}" : "~";
       print "& ";
       print @conditional_statements > 0 ? "\{\\bf Conditional:\} \\\\ \n"  : " ~ \\\\ \n";
-
-      for ($i = 0; $i <= $len; $i++) 
+ 
+      for (my $i = 0; $i <= $len; $i++) 
       {
-         print $always_statements[$i] !~ /^$/ ? &Clean($always_statements[$i]) : "~";
+         print $always_statements[$i] !~ /^$/ ? ThornUtils::CleanForLatex($always_statements[$i]) : "~";
          print " & ";
-         print $conditional_statements[$i] !~ /^$/ ? &Clean($conditional_statements[$i]) : "~";
+         print $conditional_statements[$i] !~ /^$/ ? ThornUtils::CleanForLatex($conditional_statements[$i]) : "~";
          print "\\\\ \n";
       } 
       print "\\end\{tabular*\} \n\n";
@@ -320,102 +308,58 @@ sub LatexTableElement
        print "NONE";
    }
 
-   $printgridtitle = 1;
-   $k = 0;
-
-   foreach $group (sort by_block keys %blocks) 
+   # print out each scheduled block
+   foreach my $block (sort keys %thorn) 
    {
-      next if ($group =~ /^$/);
-
-      print "\n\\subsection\*\{Scheduled Functions\}" if ($printgridtitle); $printgridtitle=0;
-      print "\n \\vspace\{5mm\}\n\n";
-      print "\\noindent \{\\bf " . &Clean($$group{"WHERE"}) . "\} ";
-      print $$group{"CONDITIONAL"} ? "  (conditional) \n\n" : "\n\n";
-      print "\\hspace\{5mm\} ". ThornUtils::ToLower(&Clean($$group{"NAME"})) . " \n";
-      print "\n\\hspace\{5mm\}\{\\it ". ThornUtils::ToLower(&Clean($$group{"DESCRIPTION"})) . " \} \n";
-      print "\n\n\\hspace\{5mm\}\n\n \\begin\{tabular*\}\{$width\}\{cll\} \n";
-
-      print "~& Language: &" . ThornUtils::ToLower(&Clean($$group{"LANG"})) . "\\\\ \n" if ($$group{"LANG"} !~ /^$/);
-      print "~& After:    &" . ThornUtils::ToLower(&Clean($$group{"AFTER"})) . "\\\\ \n" if ($$group{"AFTER"} !~ /^$/);
-
-      if (my @storage = split/,/, ThornUtils::ToLower(&Clean($$group{"STOR"}))  ) {
-         print "~& Storage:  & "; #~ \\\\ \n" if ($$group{"STOR"} !~ /^$/);
-         my $fp = 1;
-         foreach (@storage) {
-            if ($fp) {
-               print "$_ \\\\ \n";
-               $fp = 0;
-            } else {
-               print "~& ~ &" . $_. "\\\\ \n";
-            }
-         }
-      } else {
-         print "~& Storage:  &" . ThornUtils::ToLower(&Clean($$group{"STOR"})) . "\\\\ \n" if ($$group{"STOR"} !~ /^$/);
-      }
-
-      print "~& Triggers: &" . ThornUtils::ToLower(&Clean($$group{"TRIG"})) . "\\\\ \n" if ($$group{"TRIG"} !~ /^$/);
-      print "~& Sync:     &" . ThornUtils::ToLower(&Clean($$group{"SYNC"})) . "\\\\ \n" if ($$group{"SYNC"} !~ /^$/);
+      next if ($block !~ /^BLOCK/);
  
-      $aliases{$$group{"NAME"}} = $$group{"AS"};
-
-      delete $$group{"CONDITIONAL"};
-      delete $$group{"WHERE"};
-      delete $$group{"DESCRIPTION"};
-      delete $$group{"LANG"};
-      delete $$group{"AFTER"};
-      delete $$group{"STOR"};
-      delete $$group{"TRIG"};
-      delete $$group{"SYNC"};
-      delete $$group{"AS"};
-      delete $$group{"NAME"};
-      delete $$group{"THORN"};
-
-      $i = 0;
-      foreach $group_key (sort keys %$group) 
-      {
-         next if ($$group{$group_key} =~ /^$/);
-
-         $clean_name  = ThornUtils::Translate(&Clean($group_key));
-         $clean_var   = &Clean($vars[$i]);
-         $clean_value = ThornUtils::ToLower(&Clean($$group{$group_key}));
-
-         $j = 1;
-         if (@clean_values = split/,/,$clean_value) 
-         {
-            foreach $clean_value (@clean_values) 
-            {
-               next if ($clean_value !~ /\w/);
-               if ($j) {
-                  print $clean_var . "& $clean_name: & $clean_value  \\\\ \n";
-                  $j = 0;
-               } else {
-                  print "~ & ~ & $clean_value \\\\ \n";
-               }
-            }             
-         } else {
-            print $clean_var . "& $clean_name: & $clean_value \\\\ \n"; 
-         }
-
-         $i++;
+      # print the title, but only once
+      if ($printgridtitle) {
+         print "\n\\subsection\*\{Scheduled Functions\}";
+         $printgridtitle = 0;
       }
-      print "\\end\{tabular*\} \n\n";
-   }
+ 
+      print "\n\\vspace\{5mm\}\n";
+      print "\n\\noindent \{\\bf " .     ThornUtils::CleanForLatex($thorn{$block}->{"WHERE"}) . "\} ";
+      print $thorn{$block}->{"CONDITIONAL"} ? "  (conditional) \n" : "\n";
+      print "\n\\hspace\{5mm\} " .       ThornUtils::ToLower(ThornUtils::CleanForLatex($thorn{$block}->{"NAME"})) . " \n";
+      print "\n\\hspace\{5mm\}\{\\it " . ThornUtils::ToLower(ThornUtils::CleanForLatex($thorn{$block}->{"DESCRIPTION"})) . " \} \n\n";
+      print "\n\\hspace\{5mm\}\n\n \\begin\{tabular*\}\{${TABLE_WIDTH}mm\}\{cll\} \n";
+ 
+      $aliases{$thorn{$block}->{"NAME"}} = $thorn{$block}->{"AS"};
+ 
+      # Clean up the hash before we go iterate through and print out the rest
+      delete $thorn{$block}->{"CONDITIONAL"};
+      delete $thorn{$block}->{"WHERE"};
+      delete $thorn{$block}->{"DESCRIPTION"};
+      delete $thorn{$block}->{"AS"};
+      delete $thorn{$block}->{"NAME"};
+      delete $thorn{$block}->{"THORN"};
 
+      # go print out the rest of the key/value pairs
+      foreach my $group_key (sort keys %{$thorn{$block}}) {
+         &OutputVar($group_key, $thorn{$block}->{$group_key});
+      } # foreach keys %{$thorn{$group}}
+ 
+      print "\\end\{tabular*\} \n\n";
+   } # foreach %blocks
+ 
    # delete aliases where they key equals the value
    foreach my $key (keys %aliases) {
       if ($key eq $aliases{$key}) {
          delete $aliases{$key};
       }
    }
-
+ 
+   # print out any Aliased functions in a table
    if (scalar(keys %aliases) > 0) 
    {
       print "\n\\subsection\*\{Aliased Functions\}";
-      print "\n\n\\hspace\{5mm\}\n\n \\begin\{tabular*\}\{$width\}\{ll\} \n";
-      print "\n\{\\bf Alias Name:\} ~~~~~~~& \{\\bf Function Name:\} \\\\ \n";
-
+      print "\n\n\\hspace\{5mm\}\n\n \\begin\{tabular*\}\{${TABLE_WIDTH}mm\}\{ll\} \n";
+      print "\n\{\\bf Alias Name:\} ~~~~~~~ & \{\\bf Function Name:\} \\\\ \n";
+ 
       foreach my $key (sort keys %aliases) {
-         print &Clean($key) ." & ". &Clean($aliases{$key}) ." \\\\ \n";# if ($key ne $aliases{$key});
+         print ThornUtils::CleanForLatex($key) ." & ". ThornUtils::CleanForLatex($aliases{$key}) ." \\\\ \n";
       }
       print "\\end\{tabular*\} \n\n";
    }
@@ -423,118 +367,46 @@ sub LatexTableElement
    print "\n\n\\vspace\{5mm\}"; 
 }
 
-#################################################
-# Cleans up a value, so latex is happy with it. #
-#################################################
-sub Clean 
+#/*@@
+#  @routine   OutputVar
+#  @date      Sun Mar  3 01:54:37 CET 2002
+#  @author    Ian Kelley
+#  @desc 
+#     Prints out a var and description for a table element
+#
+#  @enddesc 
+#  @version 
+#@@*/
+sub OutputVar 
 {
-   my $val = shift;
-
-   $val =~ s/^\s*?\"//;
-   $val =~ s/\"$//;
-   $val =~ s/\_/\\\_/g;
-   $val =~ s/\$/\\\$/g;
-
-   return $val;
-} ## END :Clean:
-
-#########################################################################
-# SortByType                                                            #
-#    Sorts the ouput by "type" within their respective thorns, as we can#
-#    have repetitive variable names within different thorns, currently  #
-#    output is restricted to internal (within thorn) sorting.           #
-#########################################################################
-sub SortByType {
-   if (lc($$a{"type"}) cmp lc($$b{"type"}) < 0) {
-      return -1;
-   } elsif (lc($$a{"type"}) cmp lc($$b{"type"}) > 0) {
-      return 1;
-   } else {
-      return -1;
-   }
-
-} ## END :SortByType:
-
-#########################################################################
-# SortByName                                                            #
-#    Sorts the ouput by "name" within their respective thorns, as we can#
-#    have repetitive variable names within different thorns, currently  #
-#    output is restricted to internal (within thorn) sorting.           #
-#########################################################################
-sub SortByName {
-   my ($first)  = $$a{"name"};
-   my ($second) = $$b{"name"};
-
-   if (lc($first) cmp lc($second) < 0) {
-      print "\n$first : $second -1";
-      return -1;
-   } elsif (lc($$a{"name"}) cmp lc($$b{"name"}) > 0) {
-      print "\n$$a{\"name\"} : $$b{\"name\"} 0";
-      return 1;
-   } else {
-      print "\n$$a{\"name\"} : $$b{\"name\"} -1 (2)";
-      return -1;
-   }
-
-} ## END :SortByName:
-
-#########################################################################
-# Dump                                                                  #
-#    Function to dump output to the screen rather than to a .tex file   #
-#    table, this does NOT create latex, simple provides an easy way to  #
-#    view the variables from the command line without use of Latex.     #
-#########################################################################
-sub Dump {
-  my (@cur_group) = @_;
+   my $description = shift;
+   my $value       = shift;   
  
-  print "\n$thorn variables:\n";
+   # print out the different storage, we split it up, because it can get long
+   return if ($value =~ /^$/);
 
-  foreach $value (@cur_group) 
-  {
-    if (lc($$value{"thorn"}) eq lc($thorn)) { 
-      print "\t$value:\n";
-      foreach $key (keys %$value) {
-	  print "\t\t$key -> $$value{$key}\n";
+   $description = defined $var_mapping{$description} ? $var_mapping{$description} : $description;
+   $description = ThornUtils::Translate($description);
+
+   # go through and print out the values, split them onto new lines if their
+   # are multiple entries separated by comas
+   if (my @temp = split/,/, $value)  
+   {
+      print "~ & ${description}:  & "; 
+ 
+      my $fp = 1;
+      foreach my $t (@temp) 
+      {
+         $t = ThornUtils::ToLower(ThornUtils::CleanForLatex($t));
+ 
+         if ($fp) {
+            print "$t \\\\ \n";
+            $fp = 0;
+         } else {
+            print "~& ~ &" . $t . "\\\\ \n";
+         }
       }
-    }
-  }
-
-} ## END :Dump:
-
-#########################################################################
-# Clean                                                                 #
-#    Function to perform any cleaning that may need to be done to       #
-#    variables before they are put into a hash of their name.           #
-#########################################################################
-sub DUMP {
-   select STDOUT;
-   print "\n$thorn\n";
-   foreach my $b (sort by_block keys %blocks) {
-         print "\n\t$b";
-         foreach my $key (sort keys %$b) {
-            print "\n\t\t$key = $$b{$key}" if ($key ne "THORN");
-         }
-   }
-   foreach my $b (sort by_block keys %statements) {
-         print "\n\t$b";
-         foreach my $key (sort keys %$b) {
-            print "\n\t\t$key = $$b{$key}" if ($key ne "THORN");
-         }
+   } else {
+      print "~ & ${description}:  &" . ThornUtils::ToLower(ThornUtils::CleanForLatex($value)) . "\\\\ \n";
    }
 }
-
-##########################
-# Sorting function       #
-##########################
-sub by_block {
-   my $i,j;
-   $a =~ /\_(.*)/;
-   $i = $1;
-   $b =~ /\_(.*)/;
-   $j = $1;
-   
-   return 1 if ($i > $j);
-   return -1 if ($i < $j);
-   return 0; 
-}
-
