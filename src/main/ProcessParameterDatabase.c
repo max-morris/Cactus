@@ -19,7 +19,7 @@ static char *rcsid = "$Header$";
 CCTK_FILEVERSION(main_ProcessParameterDatabase_c)
 
 int ParseFile(FILE *ifp, 
-              int (*set_function)(const char *, const char *));
+              int (*set_function)(const char *, const char *),tFleshConfig *ConfigData);
 void CCTKi_SetParameterSetMask(int mask);
 
 
@@ -46,7 +46,7 @@ int CCTKi_ProcessParameterDatabase(tFleshConfig *ConfigData)
 
   if((parameter_file = fopen(ConfigData->parameter_file_name, "r")))
   {
-    ParseFile(parameter_file, CCTKi_SetParameter);
+    ParseFile(parameter_file, CCTKi_SetParameter, ConfigData);
     fclose(parameter_file);
     retval = 0;
   }
