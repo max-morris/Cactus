@@ -825,7 +825,7 @@ operators through the following function calls:
 {\t
 \begin{verbatim}
 
-#include ``Reduction.h''
+#include ``cctk_Reduction.h''
 int CCTK_GetReductionHandle(const char *reduction);
 
 \end{verbatim}
@@ -842,7 +842,7 @@ argument lists).
 {\t
 \begin{verbatim}
 
-#include ``Reduction.h''
+#include ``cctk_Reduction.h''
 int CCTK_Reduce(cGH *GH, int retvaltype, int retvalnum, void *retval, int handle, int index, ...);
 
 \end{verbatim}
