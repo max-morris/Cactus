@@ -236,25 +236,36 @@ int CCTK_RegisterCoordRange(cGH *GH, CCTK_REAL min, CCTK_REAL max,
                             const char *coordname)
 {
   coord_range *newguy;
+  int retval = 0;
 
   /* New coord_range */
   newguy = (coord_range *)malloc(sizeof(coord_range));
 
-  newguy->GH   = GH;
+  if (newguy)
+  {
+    newguy->GH   = GH;
 
-  newguy->props = CCTKi_CoordData(coordname);
+    newguy->props = CCTKi_CoordData(coordname);
 
 #ifdef DEBUG_COORD
-  printf("Registering range (%f,%f) for %s (on %x)\n",min,max,coordname,newguy);
+    printf("Registering range (%f,%f) for %s (on %x)\n",min,max,coordname,newguy);
 #endif
 
-  newguy->lower = min;
-  newguy->upper = max;
+    newguy->lower = min;
+    newguy->upper = max;
 
-  newguy->next = first;
-  first = newguy;
+    newguy->next = first;
+    first = newguy;
+  }
+  else
+  {
+    char *msg = (char *) malloc (200*sizeof(char));
+    sprintf (msg, "Cannot allocate data for coordinate range\n");
+    CCTK_Warn (0,__LINE__,__FILE__,"Cactus", msg);
+    free (msg);
+  }
 
-  return 1;
+  return retval;
 
 }
 
