@@ -510,9 +510,9 @@ static t_attribute *CreateAttribute(const char *description,
     if(this->description     && 
        this->thorn           &&
        this->implementation  &&
-       this->mem_groups      &&
-       this->comm_groups     &&
-       this->trigger_groups)
+       (this->mem_groups || n_mem_groups==0)      &&
+       (this->comm_groups || n_comm_groups==0)    &&
+       (this->trigger_groups || n_trigger_groups==0))
     {
       strcpy(this->description,    description);
       strcpy(this->thorn,          thorn);
