@@ -1,10 +1,11 @@
 /*@@
-  @file      Groups.c
+  @file       Groups.c
    @date      Mon Feb  1 12:16:28 1999
    @author    Tom Goodale
-   @desc 
-   Routines to deal with groups.
-   @enddesc 
+   @desc
+              Routines to deal with groups.
+   @enddesc
+   @version   $Id$
  @@*/
 
 #include <stdio.h>
@@ -13,7 +14,6 @@
 #include <stdarg.h>
 
 #include "cctk_Constants.h"
-#include "cctk_Config.h"
 #include "cctk_WarnLevel.h"
 #include "cctk_Flesh.h"
 #include "cctk_FortranString.h"
@@ -22,15 +22,80 @@
 #include "cctk_Types.h"
 
 #include "cctki_Stagger.h"
+#include "cctki_Groups.h"
 
 /*#define DEBUG_GROUPS*/
 
 static char *rcsid = "$Header$";
-
 CCTK_FILEVERSION(main_Groups_c)
 
-/* Typedefs. */
-typedef struct 
+
+/********************************************************************
+ ********************    External Routines   ************************
+ ********************************************************************/
+/* prototypes for external C routines are declared in header cctk_Groups.h
+   here only follow the fortran wrapper prototypes */
+void CCTK_FCALL CCTK_FNAME (CCTK_GroupIndex)
+                           (int *vindex,
+                            ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (CCTK_VarIndex)
+                           (int *vindex,
+                            ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (CCTK_MaxDim)
+                           (int *dim);
+void CCTK_FCALL CCTK_FNAME (CCTK_NumVars)
+                           (int *num_vars);
+void CCTK_FCALL CCTK_FNAME (CCTK_NumGroups)
+                           (int *num_groups);
+void CCTK_FCALL CCTK_FNAME (CCTK_GroupIndexFromVarI)
+                           (int *gindex,
+                            const int *var);
+void CCTK_FCALL CCTK_FNAME (CCTK_GroupIndexFromVar)
+                           (int *vindex,
+                            ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (CCTK_GroupTypeNumber)
+                           (int *number,
+                            ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (CCTK_VarTypeNumber)
+                           (int *number,
+                            ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (CCTK_GroupScopeNumber)
+                           (int *number,
+                            ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (CCTK_GroupDistribNumber)
+                           (int *number,
+                            ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (CCTK_FirstVarIndexI)
+                           (int *first,
+                            const int *group);
+void CCTK_FCALL CCTK_FNAME (CCTK_NumVarsInGroup)
+                           (int *num,
+                            ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (CCTK_VarTypeI)
+                           (int *type,
+                            const int *var);
+void CCTK_FCALL CCTK_FNAME (CCTK_NumTimeLevelsFromVarI)
+                           (int *num,
+                            const int *var);
+void CCTK_FCALL CCTK_FNAME (CCTK_NumTimeLevelsFromVar)
+                           (int *num,
+                            ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (CCTK_PrintGroup)
+                           (const int *group);
+void CCTK_FCALL CCTK_FNAME (CCTK_PrintVar)
+                           (const int *var);
+void CCTK_FCALL CCTK_FNAME (CCTK_GroupDimI)
+                           (int *dim,
+                            const int *group);
+void CCTK_FCALL CCTK_FNAME (CCTK_GroupDimFromVarI)
+                           (int *dim,
+                            const int *vi);
+
+
+/********************************************************************
+ ********************    Internal Typedefs   ************************
+ ********************************************************************/
+typedef struct
 {
   char *name;
   int number;
@@ -42,30 +107,26 @@ typedef struct
 typedef struct
 {
   /* The various names of the thing. */
- 
-  char *thorn;
-  char *implementation;
-  char *name;
+  char *thorn,
+       *implementation,
+       *name;
 
   /* The group number. */
   int number;
 
   /* The types. */
-  int gtype;
-  
-  int vtype;
+  int gtype,
+      vtype,
+      dtype,
+      staggertype;
 
   int gscope;
-
-  int dtype;
 
   int dim;
 
   int n_timelevels;
 
   int n_variables;
-
-  int staggertype;
 
   /* *size[dim]  - pointers to parameter data*/
   CCTK_INT **size;
@@ -77,6 +138,10 @@ typedef struct
   cVariableDefinition *variables;
 } cGroupDefinition;
 
+
+/********************************************************************
+ ********************    Static Variables   *************************
+ ********************************************************************/
 /* Static variables needed to hold group and variable data. */
 
 static int n_groups = 0;
@@ -97,478 +162,184 @@ static int staggered = 0;
 int _cctk_one = 1;
 
 
-static cGroupDefinition *CCTKi_SetupGroup(const char *implementation, 
-                                          const char *name, 
-                                          int staggercode,
-                                          int n_variables);
+/********************************************************************
+ ********************    Internal Routines   ************************
+ ********************************************************************/
+static cGroupDefinition *CCTKi_SetupGroup (const char *implementation,
+                                           const char *name,
+                                           int staggercode,
+                                           int n_variables);
+static CCTK_INT **CCTKi_ExtractSize (int dimension,
+                                     const char *thorn,
+                                     const char *sizestring);
 
-static CCTK_INT **CCTKi_ExtractSize(int dimension, const char *thorn, const char *sizestring);
 
  /*@@
    @routine    CCTK_StaggerVars
-   @date       
+   @date
    @author     Gerd Lanfermann
-   @desc 
+   @desc
+               Checks if staggered group(s) exist
+   @enddesc
 
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
-
+   @returntype int
+   @returndesc
+               0 if no staggered group exists, non-zero otherwise
+   @endreturndesc
 @@*/
-
-int CCTK_StaggerVars(void) 
+int CCTK_StaggerVars (void)
 {
-  return(staggered);
+  return (staggered);
 }
-
-
 
 
  /*@@
    @routine    CCTK_GroupIndex
    @date       Fri Jan 29 08:43:48 1999
    @author     Tom Goodale
-   @desc 
-   Gets the index number for the specified group.
-   @enddesc 
-   @calls CCTK_Equals   
-   @calledby   
-   @history 
- 
-   @endhistory 
-
-@@*/
-
-int CCTK_GroupIndex(const char *fullgroupname)
-{
-  int group_num;
-  int retval=-1;
-  char *imp1         = NULL;
-  char *group1       = NULL;
-  const char *imp2   = NULL;
-  const char *group2 = NULL;
-  
-  switch(CCTK_DecomposeName(fullgroupname,&imp1,&group1))
-  {
-  case 1:
-
-    CCTK_VWarn(2,__LINE__,__FILE__,"Cactus",
-               "CCTK_GroupIndex: Group name %s not in format implementation::group",
-               fullgroupname);
-    retval = -3;
-    break;
-
-  case 2:
-
-    CCTK_Warn(2,__LINE__,__FILE__,"Cactus","CCTK_GroupIndex: Memory allocation failed");
-    retval = -4;
-    break;
-
-  default:
-
-    imp2 = (const char *)imp1;
-    group2 = (const char *)group1;
-
-    for(group_num = 0; group_num < n_groups; group_num++)
-    {
-      if(CCTK_Equals(imp2, groups[group_num].implementation) &&
-         CCTK_Equals(group2, groups[group_num].name)) break;
-    }
-
-    if (group_num < n_groups)
-    {
-      retval = group_num;
-    }
-    else
-    {
-      CCTK_VWarn(9,__LINE__,__FILE__,"Cactus", 
-                 "CCTK_GroupIndex: No group %s found", 
-                 fullgroupname);
-      retval = -1;
-    }
-  }
-
-  /* Free memory from CCTK_DecomposeName */
-  if (imp1) free(imp1);
-  if (group1) free(group1);
- 
-  return retval;
-
-}
-
-
-void  CCTK_FCALL CCTK_FNAME(CCTK_GroupIndex)
-     (int *vindex,ONE_FORTSTRING_ARG)
-{
-  ONE_FORTSTRING_CREATE(name)
-  *vindex = CCTK_GroupIndex(name);
-  free(name);
-}
-
-/*@@
-   @routine    CCTKi_PrintGroupInfo
-   @date       Thu Jan 14 15:25:54 1999
-   @author     Gerd Lanfermann
    @desc
-     Debugging info on the Groups.
+               Gets the global index number for the specified group.
    @enddesc
-   @calls
-   @calledby
-   @history
 
-   @endhistory
-
+   @returntype int
+   @returndesc
+               the index of the given group, or negative for failure:
+               -1 if no group of such name exists, or
+                  error return code of @seeroutine CCTK_DecomposeName
+   @endreturndesc
 @@*/
-
-void CCTKi_PrintGroupInfo(void) {
-  int group_num;
-
-  for(group_num = 0; group_num < n_groups; group_num++) {
-    printf("GROUP INFO: GrpNo./imp_name/name/stag %d   >%s<   >%s<  %d\n",
-           group_num,
-           groups[group_num].implementation,
-           groups[group_num].name,
-           groups[group_num].staggertype);
-  }
-}
-
-
- /*@@
-   @routine    CCTKi_CreateGroup
-   @date       Thu Jan 14 15:25:54 1999
-   @author     Tom Goodale
-   @desc 
-   
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
-
-@@*/
-int CCTKi_CreateGroup(const char *gname, 
-                      const char *thorn, 
-                      const char *imp,
-                      const char *gtype,
-                      const char *vtype,
-                      const char *gscope,
-                      int         dimension,
-                      int         ntimelevels,
-                      const char *stype,
-                      const char *dtype,
-                      const char *size,
-                      const char *ghostsize,
-                      int         n_variables,
-                      ...
-                      )
+int CCTK_GroupIndex (const char *fullgroupname)
 {
-  int     retval;
-  int     groupscope;
-  int     staggercode;
-  int     variable;
+  int group;
+  int retval;
+  char *impname,
+       *groupname;
 
-  va_list ap;
 
-  char*   variable_name;
-
-  cGroupDefinition* group=NULL;
-
-  retval = 0;
-
-  /* get the staggercode */
-  staggercode = CCTKi_ParseStaggerString(dimension, imp, gname, stype);
-
-  /* Allocate storage for the group */
-  groupscope = CCTK_GroupScopeNumber(gscope);
-  if (groupscope == CCTK_PUBLIC || groupscope == CCTK_PROTECTED)
+  impname = groupname = NULL;
+  retval = CCTK_DecomposeName (fullgroupname, &impname, &groupname);
+  if (! retval)
   {
-    group = CCTKi_SetupGroup(imp, gname, staggercode, n_variables);
-  }
-  else if (groupscope == CCTK_PRIVATE)
-  {
-    group = CCTKi_SetupGroup(thorn, gname, staggercode, n_variables);
-  }
-  else
-  {
-    CCTK_Warn(1,__LINE__,__FILE__,"Cactus",
-              "CCTKi_CreateGroup: Unrecognised group scope");
-  }
-
-  /* Allocate storage for the group and setup some stuff. */
-  if(group)
-  {
-    group->dim          = dimension;
-    group->gtype        = CCTK_GroupTypeNumber(gtype);
-    group->vtype        = CCTK_VarTypeNumber(vtype);
-    group->gscope       = groupscope;
-    group->staggertype  = staggercode;
-    group->dtype        = CCTK_GroupDistribNumber(dtype);
-    group->n_timelevels = ntimelevels;
-    
-    /* Extract the variable names from the argument list. */
-    va_start(ap, n_variables);
-
-    for(variable = 0; variable < n_variables; variable++)
+    retval = -1;
+    for (group = 0; group < n_groups; group++)
     {
-      variable_name = va_arg(ap, char *);
-
-      group->variables[variable].name = 
-        (char *)malloc((strlen(variable_name)+1*sizeof(char)));
-      
-      if(group->variables[variable].name)
+      if (CCTK_Equals (impname, groups[group].implementation) &&
+          CCTK_Equals (groupname, groups[group].name))
       {
-        strcpy(group->variables[variable].name, variable_name);
-      }
-      else
-      {
+        retval = group;
         break;
       }
     }
 
-    va_end(ap);
-
-    if(variable < n_variables)
+    if (retval < 0)
     {
-      retval = 3;
-    }
-    else
-    {
-      if (dimension > maxdim) 
-      {
-        maxdim    = dimension;
-      }
-      if (staggercode > 0)    
-      {
-        staggered = 1;
-      }
-      group->size      = CCTKi_ExtractSize(dimension, thorn, size);
-      group->ghostsize = CCTKi_ExtractSize(dimension, thorn, ghostsize);
+      CCTK_VWarn (2, __LINE__, __FILE__, "Cactus",
+                  "CCTK_GroupIndex: No group named '%s' found",
+                  fullgroupname);
     }
   }
-  else
+
+  /* Free memory from CCTK_DecomposeName */
+  if (impname)
   {
-    retval = 2;
+    free (impname);
+  }
+  if (groupname)
+  {
+    free (groupname);
   }
 
-  if(retval)
-  {
-    CCTK_Warn(4,__LINE__,__FILE__,"Cactus","CCTK_CreateGroup: Error");
-  }
-
-  return retval;
-
+  return (retval);
 }
 
- /*@@
-   @routine    CCTKi_SetupGroup
-   @date       Thu Jan 14 16:38:40 1999
-   @author     Tom Goodale
-   @desc 
-   Stores the data associated with a group.
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
-
-@@*/
-static cGroupDefinition *CCTKi_SetupGroup(const char *implementation, 
-                                          const char *name,
-                                          int staggercode,
-                                          int n_variables)
+void CCTK_FCALL CCTK_FNAME (CCTK_GroupIndex)
+                           (int *vindex,
+                            ONE_FORTSTRING_ARG)
 {
-  int *temp_int;
-  cGroupDefinition *temp;
-  cGroupDefinition *returndata;
-  int variable;
-  int group_num;
-  char *fullname1;
-
-  fullname1 = (char *) malloc( (strlen(implementation)+strlen(name)+3)
-                               *sizeof(char));
-  sprintf(fullname1,"%s::%s",implementation,name); 
-
-  if((group_num = CCTK_GroupIndex(fullname1)) == -1)
-  {
-    /* Resize the array of groups */
-    if((temp = (cGroupDefinition *)realloc(groups, (n_groups+1)*sizeof(cGroupDefinition))))
-    {
-      groups = temp;
-      
-      /* Allocate memory to various fields */
-      groups[n_groups].implementation = (char *)malloc((strlen(implementation)+1)*sizeof(char));
-      
-      groups[n_groups].name = (char *)malloc((strlen(name)+1)*sizeof(char));
-      
-      groups[n_groups].variables = (cVariableDefinition *)malloc(n_variables*sizeof(cVariableDefinition));
-      
-      /* Resize the array holding correspondence between variables and groups. */
-
-      temp_int = (int *)realloc(group_of_variable, (total_variables+n_variables)*sizeof(int));
-
-      if(groups[n_groups].implementation && 
-         groups[n_groups].name && 
-         groups[n_groups].variables &&
-         temp_int)
-      {
-        /* Fill in the data structures. */
-        group_of_variable = temp_int;
-        
-        strcpy(groups[n_groups].implementation, implementation);
-        strcpy(groups[n_groups].name, name);
-        
-        groups[n_groups].number     = n_groups;
-        groups[n_groups].staggertype= staggercode;
-        groups[n_groups].n_variables= n_variables;
-        
-        /* Fill in global variable numbers. */
-        for(variable = 0; variable < n_variables; variable++)
-        {
-          groups[n_groups].variables[variable].number = total_variables;
-          
-          group_of_variable[total_variables] = n_groups;
-          
-          total_variables++;
-        }
-        
-        n_groups++;
-      }
-      else
-      {
-        /* Memory allocation failed, so free any which may have been allocated. */
-        free(groups[n_groups].implementation);
-        groups[n_groups].implementation = NULL;
-
-        free(groups[n_groups].name);
-        groups[n_groups].name = NULL;
-    
-        free(groups[n_groups].variables);
-        groups[n_groups].variables = NULL;
-
-      }
-    }
-    
-    /* Return the new group definition structure if successful, otherwise NULL.*/
-    if(temp && groups[n_groups-1].name)
-    {
-      returndata =  &(groups[n_groups-1]);
-    }
-    else
-    {
-      returndata =  NULL;
-    }
-  }
-  else
-  {
-    returndata = &(groups[group_num]);
-  }
-
-#ifdef DEBUG_GROUPS
-  printf("Setting up group %s\n",fullname1);
-#endif 
-
-  if (fullname1) free(fullname1);
-
-  return returndata;
+  ONE_FORTSTRING_CREATE (name)
+  *vindex = CCTK_GroupIndex (name);
+  free (name);
 }
-
-
 
 
  /*@@
    @routine    CCTK_VarIndex
    @date       Mon Feb  8 12:03:22 1999
    @author     Tom Goodale
-   @desc 
-   Gets the global number associated wth a variable.
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   @desc
+               For a given variable name, return its associated global index.
+   @enddesc
 
+   @returntype int
+   @returndesc
+               the index of the given variable, or negative for failure:
+               -1 if no variable of such name exists, or
+                  error return code of @seeroutine CCTK_DecomposeName
+   @endreturndesc
 @@*/
-
-int CCTK_VarIndex(const char *variable_name)
+int CCTK_VarIndex (const char *fullvarname)
 {
-  int retval;
-  int gnum;
-  int variable;
-  int ierr;
-  char *realimpname;
-  char *realvarname;
-  const char *impname;
-  const char *varname;
+  int retval,
+      group,
+      variable;
+  char *impname,
+       *varname;
 
-  retval = -1;
 
-  ierr = CCTK_DecomposeName(variable_name,&realimpname,&realvarname);
-
-  if (ierr == 0)
+  impname = varname = NULL;
+  retval = CCTK_DecomposeName (fullvarname, &impname, &varname);
+  if (! retval)
   {
-
-    /* Store the pointers to these strings in const char *s */
-    impname = realimpname;
-    varname = realvarname;
-
-    for (gnum = 0; gnum < n_groups && retval < 0; gnum++)
-    {                   
-      if (CCTK_Equals(impname,groups[gnum].implementation))
+    retval = -1;
+    for (group = 0; group < n_groups && retval < 0; group++)
+    {
+      if (CCTK_Equals (impname, groups[group].implementation))
       {
-        for(variable=0; variable<groups[gnum].n_variables;variable++)
+        for (variable = 0; variable < groups[group].n_variables; variable++)
         {
-          if(CCTK_Equals(varname, groups[gnum].variables[variable].name))
+          if (CCTK_Equals (varname, groups[group].variables[variable].name))
           {
-            retval  = groups[gnum].variables[variable].number;
+            retval = groups[group].variables[variable].number;
             break;
           }
         }
       }
     }
 
-  }
-  else if (ierr == 1)
-  {
-    CCTK_VWarn(2,__LINE__,__FILE__,"Cactus",
-            "CCTK_VarIndex: Full name %s in wrong format", variable_name);
-    retval = -3; 
-  }
-  else if (ierr == 2)
-  {
-    CCTK_Warn(2,__LINE__,__FILE__,"Cactus","CCTK_VarIndex: Memory allocation failed");
-    retval = -4;
-  }
-  else
-  {
-    CCTK_Warn(1,__LINE__,__FILE__,"Cactus","CCTK_VarIndex: Error failed to be caught");
+    if (retval < 0)
+    {
+      CCTK_VWarn (2, __LINE__, __FILE__, "Cactus",
+                  "CCTK_VarIndex: No variable named '%s' found",
+                  fullvarname);
+    }
   }
 
 #ifdef DEBUG_GROUPS
-  printf(" In VarIndex\n"," ------------\n");
-  printf("   impname -%s-\n",impname);
-  printf("   varname -%s-\n",varname);
+  printf (" In VarIndex\n", " ------------\n");
+  printf ("   impname -%s-\n", impname);
+  printf ("   varname -%s-\n", varname);
 #endif
-    
 
-  if (realimpname) free(realimpname);
-  if (realvarname) free(realvarname);
-    
-  return retval;
+  /* free strings allocated in CCTK_DecomposeName() */
+  if (impname)
+  {
+    free (impname);
+  }
+  if (varname)
+  {
+    free (varname);
+  }
 
+  return (retval);
 }
 
-void  CCTK_FCALL CCTK_FNAME(CCTK_VarIndex)
-     (int *vindex,ONE_FORTSTRING_ARG)
+void CCTK_FCALL CCTK_FNAME (CCTK_VarIndex)
+                           (int *vindex,
+                            ONE_FORTSTRING_ARG)
 {
-  ONE_FORTSTRING_CREATE(name)
-  *vindex = CCTK_VarIndex(name);
-  free(name);
+  ONE_FORTSTRING_CREATE (name)
+  *vindex = CCTK_VarIndex (name);
+  free (name);
 }
 
 
@@ -576,25 +347,24 @@ void  CCTK_FCALL CCTK_FNAME(CCTK_VarIndex)
    @routine    CCTK_MaxDim
    @date       Mon Feb  8 12:04:01 1999
    @author     Tom Goodale
-   @desc 
-   Gets the maximum dimension of all groups.
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   @desc
+               Gets the maximum dimension of all groups.
+   @enddesc
 
+   @returntype int
+   @returndesc
+               the maximum dimension of all groups
+   @endreturndesc
 @@*/
-int CCTK_MaxDim(void)
+int CCTK_MaxDim (void)
 {
-  return maxdim;
+  return (maxdim);
 }
 
-void  CCTK_FCALL CCTK_FNAME(CCTK_MaxDim)
-     (int *dim)
+void CCTK_FCALL CCTK_FNAME (CCTK_MaxDim)
+                           (int *dim)
 {
-  *dim = CCTK_MaxDim();
+  *dim = CCTK_MaxDim ();
 }
 
 
@@ -602,25 +372,24 @@ void  CCTK_FCALL CCTK_FNAME(CCTK_MaxDim)
    @routine    CCTK_NumVars
    @date       Mon Feb  8 12:04:50 1999
    @author     Tom Goodale
-   @desc 
-   Gets the total number of variables.
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   @desc
+               Gets the total number of variables.
+   @enddesc
 
+   @returntype int
+   @returndesc
+               total number of variables created so far
+   @endreturndesc
 @@*/
-int CCTK_NumVars(void)
+int CCTK_NumVars (void)
 {
-  return total_variables;
+  return (total_variables);
 }
 
-void  CCTK_FCALL CCTK_FNAME(CCTK_NumVars)
-     (int *num_vars)
+void CCTK_FCALL CCTK_FNAME (CCTK_NumVars)
+                           (int *num_vars)
 {
-  *num_vars = CCTK_NumVars();
+  *num_vars = CCTK_NumVars ();
 }
 
 
@@ -628,25 +397,24 @@ void  CCTK_FCALL CCTK_FNAME(CCTK_NumVars)
    @routine    CCTK_NumGroups
    @date       Mon Feb  8 12:04:50 1999
    @author     Tom Goodale
-   @desc 
-   Gets the total number of groups.
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   @desc
+               Gets the total number of groups.
+   @enddesc
 
+   @returntype int
+   @returndesc
+               total number of groups created so far
+   @endreturndesc
 @@*/
-int CCTK_NumGroups(void)
+int CCTK_NumGroups (void)
 {
-  return n_groups;
+  return (n_groups);
 }
 
-void  CCTK_FCALL CCTK_FNAME(CCTK_NumGroups)
-     (int *num_groups)
+void CCTK_FCALL CCTK_FNAME (CCTK_NumGroups)
+                           (int *num_groups)
 {
-  *num_groups = CCTK_NumGroups();
+  *num_groups = CCTK_NumGroups ();
 }
 
 
@@ -654,37 +422,40 @@ void  CCTK_FCALL CCTK_FNAME(CCTK_NumGroups)
    @routine    CCTK_GroupNameFromVarI
    @date       Mon Feb 22
    @author     Gabrielle Allen
-   @desc 
-   Given a variable index return a group name.
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   @desc
+               Given a variable index return a group name.
+   @enddesc
 
+   @returntype char *
+   @returndesc
+               the full group name of the given variable (which should be freed
+               if not needed anymore), or
+               NULL if the given variable index is invalid, or out of memory
+   @endreturndesc
 @@*/
-
-char *CCTK_GroupNameFromVarI(int var)
+char *CCTK_GroupNameFromVarI (int var)
 {
-  char *retval;
-  int group_num;
+  int group;
+  char *fullname;
 
-  if (var<0 || var>total_variables-1)
+
+  if (0 <= var && var < total_variables)
   {
-    retval = NULL;
+    group = group_of_variable[var];
+    fullname = (char *) malloc (strlen (groups[group].name) +
+                                strlen (groups[group].implementation) + 3);
+    if (fullname)
+    {
+      sprintf (fullname, "%s::%s",
+               groups[group].implementation, groups[group].name);
+    }
   }
   else
-  {  
-    group_num = group_of_variable[var];
-    retval = (char *)malloc( ( strlen(groups[group_num].name) 
-                             + strlen(groups[group_num].implementation) + 3)
-                             * sizeof(char) );
-    sprintf(retval,"%s::%s",groups[group_num].implementation,
-            groups[group_num].name);
-  } 
+  {
+    fullname = NULL;
+  }
 
-  return retval;
+  return (fullname);
 }
 
 
@@ -692,38 +463,26 @@ char *CCTK_GroupNameFromVarI(int var)
    @routine    CCTK_GroupIndexFromVarI
    @date       Mon Feb 22
    @author     Gabrielle Allen
-   @desc 
-   Given a variable index return a group index.
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   @desc
+               Given a variable index return a group index.
+   @enddesc
 
+   @returntype int
+   @returndesc
+               the group index of the given variable, or
+               -1 if the given variable index is invalid
+   @endreturndesc
 @@*/
-
-int CCTK_GroupIndexFromVarI(int var)
+int CCTK_GroupIndexFromVarI (int var)
 {
-  int retval;
-
-  if (var<0 || var>total_variables-1)
-  {
-    retval = -1;
-  }
-  else
-  {  
-    retval = group_of_variable[var];
-  } 
-
-  return retval;
-
+  return ((0 <= var && var < total_variables) ? group_of_variable[var] : -1);
 }
 
-void  CCTK_FCALL CCTK_FNAME(CCTK_GroupIndexFromVarI)
-     (int *gindex,int *var)
+void CCTK_FCALL CCTK_FNAME (CCTK_GroupIndexFromVarI)
+                           (int *gindex,
+                            const int *var)
 {
-  *gindex = CCTK_GroupIndexFromVarI(*var);
+  *gindex = CCTK_GroupIndexFromVarI (*var);
 }
 
 
@@ -732,28 +491,28 @@ void  CCTK_FCALL CCTK_FNAME(CCTK_GroupIndexFromVarI)
    @routine    CCTK_GroupIndexFromVar
    @date       Mon Feb 22
    @author     Gabrielle Allen
-   @desc 
-   Given a variable name returns a group index.
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   @desc
+               Given a variable name returns a group index.
+   @enddesc
 
+   @returntype int
+   @returndesc
+               return code of @seeroutine CCTK_GroupIndexFromVarI
+               -1 if the given variable index is invalid
+   @endreturndesc
 @@*/
-
-int CCTK_GroupIndexFromVar(const char *var)
+int CCTK_GroupIndexFromVar (const char *var)
 {
-  return CCTK_GroupIndexFromVarI(CCTK_VarIndex(var));
+  return CCTK_GroupIndexFromVarI (CCTK_VarIndex (var));
 }
 
-void  CCTK_FCALL CCTK_FNAME(CCTK_GroupIndexFromVar)
-     (int *vindex,ONE_FORTSTRING_ARG)
+void CCTK_FCALL CCTK_FNAME (CCTK_GroupIndexFromVar)
+                           (int *vindex,
+                            ONE_FORTSTRING_ARG)
 {
-  ONE_FORTSTRING_CREATE(var)
-  *vindex = CCTK_GroupIndexFromVar(var);
-  free(var);
+  ONE_FORTSTRING_CREATE (var)
+  *vindex = CCTK_GroupIndexFromVar (var);
+  free (var);
 }
 
 
@@ -761,32 +520,20 @@ void  CCTK_FCALL CCTK_FNAME(CCTK_GroupIndexFromVar)
    @routine    CCTK_ImpFromVarI
    @date       Mon Feb 22
    @author     Gabrielle Allen
-   @desc 
-   Given a variable index return a implementation name.
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   @desc
+               Given a variable index return the implementation name.
+   @enddesc
 
+   @returntype const char *
+   @returndesc
+               the implementation name of the given variable, or
+               NULL if given variable index is invalid
+   @endreturndesc
 @@*/
-const char *CCTK_ImpFromVarI(int var)
+const char *CCTK_ImpFromVarI (int var)
 {
-  char *retval;
-  int group_num;
-
-  if (var<0 || var>total_variables-1)
-  {
-    retval = NULL;
-  }
-  else
-  {
-    group_num = group_of_variable[var];
-    retval = groups[group_num].implementation;
-  }
-
-  return retval;
+  return ((0 <= var && var < total_variables) ?
+          groups[group_of_variable[var]].implementation : NULL);
 }
 
 
@@ -794,41 +541,41 @@ const char *CCTK_ImpFromVarI(int var)
    @routine    CCTK_FullName
    @date       Mon Feb 22
    @author     Gabrielle Allen
-   @desc 
-   Given a variable index return the implementation 
-   and the variable name together.
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   @desc
+               Given a variable index return the variable's full name,
+               ie. <implementation name>::<variable name>.
+   @enddesc
 
+   @returntype char *
+   @returndesc
+               the full name of the given variable (which should be freed
+               if not needed anymore), or
+               NULL if given variable index is invalid, or out out memory
+   @endreturndesc
 @@*/
-
-char *CCTK_FullName(int var)
+char *CCTK_FullName (int var)
 {
-  char *impname;
-  const char *varname;
-  int group_num;
-  char *fullname=NULL;
+  const char *impname,
+             *varname;
+  char *fullname;
 
-  varname = CCTK_VarName(var);
+
+  varname = CCTK_VarName (var);
   if (varname)
   {
-    group_num = group_of_variable[var];
-    impname = groups[group_num].implementation;
-
-    fullname = malloc((strlen(varname)+strlen(impname)+3)*sizeof(char));
+    impname = groups[group_of_variable[var]].implementation;
+    fullname = (char *) malloc (strlen (varname) + strlen (impname) + 3);
     if (fullname)
-      sprintf(fullname,"%s::%s",impname,varname);
+    {
+      sprintf (fullname, "%s::%s", impname, varname);
+    }
   }
   else
-  {  
+  {
     fullname = NULL;
   }
 
-  return fullname;
+  return (fullname);
 }
 
 
@@ -836,47 +583,48 @@ char *CCTK_FullName(int var)
    @routine    CCTK_GroupTypeNumber
    @date       Mon Feb  8 14:44:45 1999
    @author     Tom Goodale
-   @desc 
-   Gets the type number associated with a group.
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   @desc
+               Gets the type number associated with a group.
+   @enddesc
 
+   @returntype int
+   @returndesc
+                the type number of the given group type, or
+               -1 if given group type is invalid
+   @endreturndesc
 @@*/
-
-int CCTK_GroupTypeNumber(const char *type)
+int CCTK_GroupTypeNumber (const char *type)
 {
   int retval;
 
-  retval = -1;
 
-  if(!strcmp(type, "SCALAR"))
+  if (! strcmp (type, "SCALAR"))
   {
     retval = CCTK_SCALAR;
   }
-
-  if(!strcmp(type, "GF"))
+  else if (! strcmp (type, "GF"))
   {
     retval = CCTK_GF;
   }
-
-  if(!strcmp(type, "ARRAY"))
+  else if (! strcmp (type, "ARRAY"))
   {
     retval = CCTK_ARRAY;
   }
+  else
+  {
+    retval = -1;
+  }
 
-  return retval;
+  return (retval);
 }
 
-void  CCTK_FCALL CCTK_FNAME(CCTK_GroupTypeNumber)
-     (int *number,ONE_FORTSTRING_ARG)
+void CCTK_FCALL CCTK_FNAME (CCTK_GroupTypeNumber)
+                           (int *number,
+                            ONE_FORTSTRING_ARG)
 {
-  ONE_FORTSTRING_CREATE(type)
-  *number = CCTK_GroupTypeNumber(type);
-  free(type);
+  ONE_FORTSTRING_CREATE (type)
+  *number = CCTK_GroupTypeNumber (type);
+  free (type);
 }
 
 
@@ -884,109 +632,104 @@ void  CCTK_FCALL CCTK_FNAME(CCTK_GroupTypeNumber)
    @routine    CCTK_VarTypeNumber
    @date       Mon Feb  8 14:44:45 1999
    @author     Tom Goodale
-   @desc 
-   Gets the type number associated with a variable.
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   @desc
+               Gets the type number associated with a variable.
+   @enddesc
 
+   @returntype int
+   @returndesc
+                the type number of the given variable type, or
+               -1 if given variable type is invalid
+   @endreturndesc
 @@*/
-
-int CCTK_VarTypeNumber(const char *type)
+int CCTK_VarTypeNumber (const char *type)
 {
   int retval;
 
-  retval = -1;
 
-  if(!strcmp(type, "INT"))
+  if (! strcmp (type, "INT"))
   {
     retval = CCTK_VARIABLE_INT;
   }
-
-  if(!strcmp(type, "INT2"))
+  else if (! strcmp (type, "INT2"))
   {
     retval = CCTK_VARIABLE_INT2;
   }
-
-  if(!strcmp(type, "INT4"))
+  else if (! strcmp (type, "INT4"))
   {
     retval = CCTK_VARIABLE_INT4;
   }
-
-  if(!strcmp(type, "INT8"))
+  else if (! strcmp (type, "INT8"))
   {
     retval = CCTK_VARIABLE_INT8;
   }
-
-  if(!strcmp(type, "REAL"))
+  else if (! strcmp (type, "REAL"))
   {
     retval = CCTK_VARIABLE_REAL;
   }
-
-  if(!strcmp(type, "REAL4"))
+  else if (! strcmp (type, "REAL4"))
   {
     retval = CCTK_VARIABLE_REAL4;
   }
-
-  if(!strcmp(type, "REAL8"))
+  else if (! strcmp (type, "REAL8"))
   {
     retval = CCTK_VARIABLE_REAL8;
   }
-
-  if(!strcmp(type, "REAL16"))
+  else if (! strcmp (type, "REAL16"))
   {
     retval = CCTK_VARIABLE_REAL16;
   }
-
-  if(!strcmp(type, "COMPLEX"))
+  else if (! strcmp (type, "COMPLEX"))
   {
     retval = CCTK_VARIABLE_COMPLEX;
   }
-
-  if(!strcmp(type, "BYTE"))
+  else if (! strcmp (type, "BYTE"))
   {
     retval = CCTK_VARIABLE_BYTE;
   }
-
   /* DEPRECATED IN BETA 10 */
-  if(!strcmp(type, "CHAR"))
+  else if (! strcmp (type, "CHAR"))
   {
     retval = CCTK_VARIABLE_CHAR;
+  }
+  else
+  {
+    retval = -1;
   }
 
   return retval;
 }
 
-void  CCTK_FCALL CCTK_FNAME(CCTK_VarTypeNumber)
-     (int *number,ONE_FORTSTRING_ARG)
+void CCTK_FCALL CCTK_FNAME (CCTK_VarTypeNumber)
+                           (int *number,
+                            ONE_FORTSTRING_ARG)
 {
-  ONE_FORTSTRING_CREATE(type)
-  *number = CCTK_VarTypeNumber(type);
-  free(type);
+  ONE_FORTSTRING_CREATE (type)
+  *number = CCTK_VarTypeNumber (type);
+  free (type);
 }
+
 
  /*@@
    @routine    CCTK_VarTypeName
    @date       Mon Jan  3 13:50:56 CET 2000
    @author     Gabrielle Allen
    @desc
-   Gets the variable type name associated with a variable type number.
+               Gets the variable type name associated with a variable type.
    @enddesc
-   @calls
-   @calledby
-   @history
 
-   @endhistory
-
+   @returntype const char *
+   @returndesc
+                the type name of the given variable type, or
+               -1 if given variable type is invalid
+   @endreturndesc
 @@*/
-const char *CCTK_VarTypeName(int vtype)
+const char *CCTK_VarTypeName (int vtype)
 {
-  char *retval;
+  const char *retval;
 
-  switch(vtype)
+
+  switch (vtype)
   {
     case CCTK_VARIABLE_INT:
       retval = "CCTK_VARIABLE_INT";
@@ -1034,7 +777,6 @@ const char *CCTK_VarTypeName(int vtype)
   }
 
   return retval;
-
 }
 
 
@@ -1042,88 +784,93 @@ const char *CCTK_VarTypeName(int vtype)
    @routine    CCTK_GroupScopeNumber
    @date       Tuesday June 22 1999
    @author     Gabrielle Allen
-   @desc 
-   Gets the scope number associated with a group.
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   @desc
+               Gets the scope number associated with a group.
+   @enddesc
 
+   @returntype int
+   @returndesc
+                the scope number of the given scope type, or
+               -1 if given scope type is invalid
+   @endreturndesc
 @@*/
-int CCTK_GroupScopeNumber(const char *type)
+int CCTK_GroupScopeNumber (const char *type)
 {
   int retval;
 
-  retval = -1;
- 
-  if(!strcmp(type, "PRIVATE"))
+
+  if (! strcmp (type, "PRIVATE"))
   {
     retval = CCTK_PRIVATE;
   }
-
-  if(!strcmp(type, "PROTECTED"))
+  else if (! strcmp (type, "PROTECTED"))
   {
     retval = CCTK_PROTECTED;
   }
-
-  if(!strcmp(type, "PUBLIC"))
+  else if (! strcmp (type, "PUBLIC"))
   {
     retval = CCTK_PUBLIC;
   }
+  else
+  {
+    retval = -1;
+  }
 
-  return retval;
+  return (retval);
 }
 
-void  CCTK_FCALL CCTK_FNAME(CCTK_GroupScopeNumber)
-     (int *number,ONE_FORTSTRING_ARG)
+void CCTK_FCALL CCTK_FNAME (CCTK_GroupScopeNumber)
+                           (int *number,
+                            ONE_FORTSTRING_ARG)
 {
-  ONE_FORTSTRING_CREATE(type)
-  *number = CCTK_GroupScopeNumber(type);
-  free(type);
+  ONE_FORTSTRING_CREATE (type)
+  *number = CCTK_GroupScopeNumber (type);
+  free (type);
 }
 
 
  /*@@
-   @routine    CCTK_GroupScopeNumber
+   @routine    CCTK_GroupDistribNumber
    @date       Tuesday June 22 1999
    @author     Gabrielle Allen
-   @desc 
-   Gets the distribution number associated with a group.
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   @desc
+               Gets the distribution number associated with a group.
+   @enddesc
 
+   @returntype int
+   @returndesc
+                the distribution number of the given distribution type, or
+               -1 if given distribution type is invalid
+   @endreturndesc
 @@*/
-int CCTK_GroupDistribNumber(const char *dtype)
+int CCTK_GroupDistribNumber (const char *dtype)
 {
   int retval;
 
-  retval = -1;
- 
-  if(!strcmp(dtype, "CONSTANT"))
+
+  if (! strcmp (dtype, "CONSTANT"))
   {
     retval = CCTK_DISTRIB_CONSTANT;
   }
-
-  if(!strcmp(dtype, "DEFAULT"))
+  else if (! strcmp (dtype, "DEFAULT"))
   {
     retval = CCTK_DISTRIB_DEFAULT;
   }
+  else
+  {
+    retval = -1;
+  }
 
-  return retval;
+  return (retval);
 }
 
-void  CCTK_FCALL CCTK_FNAME(CCTK_GroupDistribNumber)
-     (int *number,ONE_FORTSTRING_ARG)
+void CCTK_FCALL CCTK_FNAME (CCTK_GroupDistribNumber)
+                           (int *number,
+                            ONE_FORTSTRING_ARG)
 {
-  ONE_FORTSTRING_CREATE(type)
-  *number = CCTK_GroupDistribNumber(type);
-  free(type);
+  ONE_FORTSTRING_CREATE (type)
+  *number = CCTK_GroupDistribNumber (type);
+  free (type);
 }
 
 
@@ -1131,24 +878,28 @@ void  CCTK_FCALL CCTK_FNAME(CCTK_GroupDistribNumber)
    @routine    CCTK_GroupData
    @date       Mon Feb  8 15:56:01 1999
    @author     Tom Goodale
-   @desc 
-   Gets the group type, the variable type, and the number of variables
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   @desc
+               For a given group index, gets the group type, variable type,
+               and the number of variables
+   @enddesc
 
+   @returntype int
+   @returndesc
+                0 for success
+               -1 if given group index is invalid
+               -2 if given pointer to store group data is NULL
+   @endreturndesc
 @@*/
-
-
-int CCTK_GroupData(int group, cGroup *gp)
+int CCTK_GroupData (int group, cGroup *gp)
 {
-  int retval=0;
+  int retval;
 
-  if(group >=0 && group < n_groups)
+
+  retval = (0 <= group && group < n_groups) ? 0 : -1;
+  if (! retval)
   {
+    if (gp)
+    {
       gp->grouptype     = groups[group].gtype;
       gp->vartype       = groups[group].vtype;
       gp->disttype      = groups[group].dtype;
@@ -1156,15 +907,14 @@ int CCTK_GroupData(int group, cGroup *gp)
       gp->numvars       = groups[group].n_variables;
       gp->numtimelevels = groups[group].n_timelevels;
       gp->stagtype      = groups[group].staggertype;
-  }
-  else
-  {
-    gp = NULL;
-    retval = -1;
+    }
+    else
+    {
+      retval = -2;
+    }
   }
 
-  return retval;
-
+  return (retval);
 }
 
 
@@ -1172,33 +922,23 @@ int CCTK_GroupData(int group, cGroup *gp)
    @routine    CCTK_VarName
    @date       Tue Feb  9 15:34:56 1999
    @author     Tom Goodale
-   @desc 
-   Gets the name of a variable.
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   @desc
+               Gets the name of a variable.
+   @enddesc
 
+   @returntype const char *
+   @returndesc
+               the name of the given variable, or
+               -1 if given variable index is invalid
+   @endreturndesc
 @@*/
-
-const char *CCTK_VarName(int varnum)
+const char *CCTK_VarName (int var)
 {
-  char *name;
-  int group;
-
-  if (varnum<0 || varnum>total_variables-1)
-  {
-    name = NULL;
-  }
-  else
-  {
-    group = group_of_variable[varnum];
-    name  = groups[group].variables[varnum-groups[group].variables[0].number].name;
-  }
-
-  return name;
+  return ((0 <= var && var < total_variables) ?
+          groups[group_of_variable[var]]
+            .variables[var-groups[group_of_variable[var]].variables[0].number]
+            .name
+          : NULL);
 }
 
 
@@ -1206,20 +946,54 @@ const char *CCTK_VarName(int varnum)
    @routine    CCTK_DecomposeName
    @date       Tue Feb  9 15:39:14 1999
    @author     Tom Goodale
-   @desc 
-   Decomposes a group name of the form imp::name
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   @desc
+               Decomposes a full group or variable name of the form imp::name
+   @enddesc
 
+   @returntype int
+   @returndesc
+                0 for success (implementation and name are set to the
+                  full name's implementation and name), or
+                  negative otherwise (a non-zero error return code of
+                  @seeroutine Util_SplitString is translated into one of the
+                  following error codes:
+               -2 if failed to catch error code from Util_SplitString
+               -3 if given full name is in wrong format
+               -4 if memory allocation failed
+   @endreturndesc
 @@*/
-
-int CCTK_DecomposeName(const char *fullname, char **implementation, char **name)
+int CCTK_DecomposeName (const char *fullname,
+                        char **implementation,
+                        char **name)
 {
-  return Util_SplitString(implementation, name, fullname, "::");
+  int retval;
+
+
+  retval = Util_SplitString (implementation, name, fullname, "::");
+  if (retval)
+  {
+    if (retval == 1)
+    {
+      CCTK_VWarn (2, __LINE__, __FILE__, "Cactus",
+                  "CCTK_DecomposeName: Full name %s in wrong format",
+                  fullname);
+      retval = -3;
+    }
+    else if (retval == 2)
+    {
+      CCTK_Warn (2, __LINE__, __FILE__, "Cactus",
+                 "CCTK_DecomposeName: Memory allocation failed");
+      retval = -4;
+    }
+    else
+    {
+      CCTK_Warn (1, __LINE__, __FILE__, "Cactus",
+                 "CCTK_DecomposeName: Error failed to be caught");
+      retval = -2;
+    }
+  }
+
+  return (retval);
 }
 
 
@@ -1227,193 +1001,171 @@ int CCTK_DecomposeName(const char *fullname, char **implementation, char **name)
    @routine    CCTK_GroupName
    @date       Tue Apr  9 15:39:14 1999
    @author     Gabrielle Allen
-   @desc 
-   Given a group index returns the group name
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   @desc
+               Given a group index returns the group name
+   @enddesc
 
+   @returntype char *
+   @returndesc
+               the full name of the given group (which should be freed
+               if not needed anymore), or
+               -1 if given group index is invalid
+   @endreturndesc
 @@*/
-
-char *CCTK_GroupName(int group)
+char *CCTK_GroupName (int group)
 {
   char *name;
 
-  if (group < 0 || group >= n_groups) 
+
+  name = NULL;
+  if (0 <= group && group < n_groups)
   {
-    name = NULL;
-  }
-  else
-  {
-    name = (char *)malloc((strlen(groups[group].implementation)
-                           +strlen(groups[group].name)+3)*sizeof(char));
+    name = (char *) malloc (strlen (groups[group].implementation) +
+                            strlen (groups[group].name) + 3);
     if (name)
     {
-      sprintf(name, "%s::%s",groups[group].implementation, groups[group].name);
-    }
-    else
-    {
-      name = NULL;
+      sprintf (name, "%s::%s",
+               groups[group].implementation, groups[group].name);
     }
   }
 
-  return name;
+  return (name);
 }
 
 
  /*@@
    @routine    CCTK_FirstVarIndexI
-   @date       
+   @date       3 July 1999
    @author     Gabrielle Allen
-   @desc 
-   Given a group index returns the first variable index in the group
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   @desc
+               Given a group index returns the first variable index in the group
+   @enddesc
 
+   @returntype int
+   @returndesc
+               the index of the first variable in the given group, or
+               -1 if given group index is invalid
+   @endreturndesc
 @@*/
-
-int CCTK_FirstVarIndexI(int group)
+int CCTK_FirstVarIndexI (int group)
 {
-  int retval;
-
-  if (0 <= group && group<n_groups)
-  {
-    retval = groups[group].variables[0].number;
-  }
-  else
-  {
-    retval = -1;
-  }
-
-  return retval;
+  return ((0 <= group && group < n_groups) ?
+          groups[group].variables[0].number : -1);
 }
 
-void  CCTK_FCALL CCTK_FNAME(CCTK_FirstVarIndexI)
-     (int *first, int *group)
+void CCTK_FCALL CCTK_FNAME (CCTK_FirstVarIndexI)
+                           (int *first,
+                            const int *group)
 {
-  *first = CCTK_FirstVarIndexI(*group);
+  *first = CCTK_FirstVarIndexI (*group);
 }
 
 
-int CCTK_FirstVarIndex(const char *groupname)
+ /*@@
+   @routine    CCTK_FirstVarIndex
+   @date       3 July 1999
+   @author     Gabrielle Allen
+   @desc
+               Given a group name returns the first variable index in the group
+   @enddesc
+
+   @returntype int
+   @returndesc
+               the index of the first variable in the given group, or
+               -1 if given group name is invalid
+   @endreturndesc
+@@*/
+int CCTK_FirstVarIndex (const char *groupname)
 {
-  return CCTK_FirstVarIndexI(CCTK_GroupIndex(groupname));
+  return CCTK_FirstVarIndexI (CCTK_GroupIndex (groupname));
 }
 
 
-int CCTK_NumVarsInGroupI(int group)
+ /*@@
+   @routine    CCTK_NumVarsInGroupI
+   @date       3 July 1999
+   @author     Gabrielle Allen
+   @desc
+               Given a group index returns the number of variables in the group
+   @enddesc
+
+   @returntype int
+   @returndesc
+               the number of variables in the given group, or
+               -1 if given group index is invalid
+   @endreturndesc
+@@*/
+int CCTK_NumVarsInGroupI (int group)
 {
-  int retval;
-
-  if (0 <= group && group<n_groups)
-  {
-    retval =  groups[group].n_variables;
-  }
-  else
-  {
-    retval = -1;
-  }
-
-  return retval;
+  return ((0 <= group && group < n_groups) ? groups[group].n_variables : -1);
 }
 
 
  /*@@
    @routine    CCTK_NumVarsInGroup
-   @date       
+   @date       3 July 1999
    @author     Gabrielle Allen
-   @desc 
-   Given a group name returns the number of variables in the group
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   @desc
+               Given a group name returns the number of variables in the group
+   @enddesc
 
+   @returntype int
+   @returndesc
+               return code of @seeroutine CCTK_NumVarsInGroupI
+               -1 if given group name is invalid
+   @endreturndesc
 @@*/
-
-int CCTK_NumVarsInGroup(const char *groupname)
+int CCTK_NumVarsInGroup (const char *groupname)
 {
-  return CCTK_NumVarsInGroupI(CCTK_GroupIndex(groupname));
+  return CCTK_NumVarsInGroupI (CCTK_GroupIndex (groupname));
 }
 
-void  CCTK_FCALL CCTK_FNAME(CCTK_NumVarsInGroup)
-     (int *num,ONE_FORTSTRING_ARG)
+void CCTK_FCALL CCTK_FNAME (CCTK_NumVarsInGroup)
+                           (int *num,
+                            ONE_FORTSTRING_ARG)
 {
-  ONE_FORTSTRING_CREATE(groupname)
-  *num = CCTK_NumVarsInGroup(groupname);
-  free(groupname);
+  ONE_FORTSTRING_CREATE (groupname)
+  *num = CCTK_NumVarsInGroup (groupname);
+  free (groupname);
 }
 
 
  /*@@
    @routine    CCTK_GroupTypeFromVarI
-   @date       
-   @author     
-   @desc 
-   Given a variable index return the type of group
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   @date       3 July 1999
+   @author     Gabrielle Allen
+   @desc
+               Given a variable index return the type of group
+   @enddesc
 
+   @returntype int
+   @returndesc
+               the type of the given group, or
+               -1 if given variable index is invalid
+   @endreturndesc
 @@*/
-
-int CCTK_GroupTypeFromVarI(int var)
+int CCTK_GroupTypeFromVarI (int var)
 {
-  int gtype;
-  int group;
-
-  if (var<0 || var>total_variables-1)
-  {
-    gtype = -1;
-  }
-  else
-  {
-    group = group_of_variable[var];
-
-    gtype = groups[group].gtype;
-  }
-
-#ifdef DEBUG_GROUPS
-
-  printf("\nIn CCTK_GroupTypeFromVarI\n");
-  printf("-------------------------\n");
-  printf("Variable index = %d\n",var);
-  printf("Variable name = %s\n",CCTK_FullName(var));
-  printf("Group type = %d\n\n",gtype);
-
-#endif
-
-  return gtype;
+  return ((0 <= var && var < total_variables) ?
+          groups[group_of_variable[var]].gtype : -1);
 }
+
 
  /*@@
    @routine    CCTK_GroupTypeI
-   @date       
-   @author     
-   @desc 
-   Given a group index return the type of group
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   @date       3 July 1999
+   @author     Gabrielle Allen
+   @desc
+               Given a group index return the type of group
+   @enddesc
 
+   @returntype int
+   @returndesc
+               the type of the given group, or
+               -1 if given group index is invalid
+   @endreturndesc
 @@*/
-
-int CCTK_GroupTypeI(int group)
+int CCTK_GroupTypeI (int group)
 {
   return groups[group].gtype;
 }
@@ -1421,111 +1173,85 @@ int CCTK_GroupTypeI(int group)
 
  /*@@
    @routine    CCTK_VarTypeI
-   @date       
-   @author     
-   @desc 
-   Given a variable index return the variable type
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   @date       3 July 1999
+   @author     Gabrielle Allen
+   @desc
+               Given a variable index return the variable type
+   @enddesc
 
+   @returntype int
+   @returndesc
+               the type of the given variable, or
+               -1 if given variable index is invalid
+   @endreturndesc
 @@*/
-
-int CCTK_VarTypeI(int var)
+int CCTK_VarTypeI (int var)
 {
-  int vtype;
-  int group;
-
-  if (var<0 || var>total_variables-1)
-  {
-    vtype = -1;
-  }
-  else
-  {
-    group = group_of_variable[var];
-
-    vtype = groups[group].vtype;
-  }
-
-  return vtype;
+  return ((0 <= var && var < total_variables) ?
+          groups[group_of_variable[var]].vtype : -1);
 }
 
-void  CCTK_FCALL CCTK_FNAME(CCTK_VarTypeI)
-     (int *type,int *var)
+void CCTK_FCALL CCTK_FNAME (CCTK_VarTypeI)
+                           (int *type,
+                            const int *var)
 {
-  *type = CCTK_VarTypeI(*var);
+  *type = CCTK_VarTypeI (*var);
 }
 
 
  /*@@
    @routine    CCTK_NumTimeLevelsI
-   @date       
-   @author     
-   @desc 
-   Given a variable index return the number of timelevels
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   @date       3 July 1999
+   @author     Gabrielle Allen
+   @desc
+               Given a variable index return the number of timelevels
+   @enddesc
 
+   @returntype int
+   @returndesc
+               the number of timelevels of the given variable, or
+               -1 if given variable index is invalid
+   @endreturndesc
 @@*/
-
-int CCTK_NumTimeLevelsFromVarI(int var)
+int CCTK_NumTimeLevelsFromVarI (int var)
 {
-  int ntimelevels;
-  int group;
-
-  if (var<0 || var>total_variables-1)
-  {
-    ntimelevels = -1;
-  }
-  else
-  {
-    group = group_of_variable[var];
-    ntimelevels = groups[group].n_timelevels;
-  }
-  
-  return ntimelevels;
+  return ((0 <= var && var < total_variables) ?
+          groups[group_of_variable[var]].n_timelevels : -1);
 }
-  
-void  CCTK_FCALL CCTK_FNAME(CCTK_NumTimeLevelsFromVarI)
-     (int *num,int *var)
+
+void CCTK_FCALL CCTK_FNAME (CCTK_NumTimeLevelsFromVarI)
+                           (int *num,
+                            const int *var)
 {
-  *num = CCTK_NumTimeLevelsFromVarI(*var);
+  *num = CCTK_NumTimeLevelsFromVarI (*var);
 }
 
 
  /*@@
    @routine    CCTK_NumTimeLevelsFromVar
-   @date       
-   @author     
-   @desc 
-   Given a variable name return the number of timelevels
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   @date       3 July 1999
+   @author     Gabrielle Allen
+   @desc
+               Given a variable name return the number of timelevels
+   @enddesc
 
+   @returntype int
+   @returndesc
+               return code of @seeroutine CCTK_NumTimeLevelsFromVarI
+   @endreturndesc
 @@*/
-
-int CCTK_NumTimeLevelsFromVar(const char *var)
+int CCTK_NumTimeLevelsFromVar (const char *var)
 {
-  return CCTK_NumTimeLevelsFromVarI(CCTK_VarIndex(var));
+  return CCTK_NumTimeLevelsFromVarI (CCTK_VarIndex (var));
 }
 
-void  CCTK_FCALL CCTK_FNAME(CCTK_NumTimeLevelsFromVar)
-     (int *num,ONE_FORTSTRING_ARG)
+void CCTK_FCALL CCTK_FNAME (CCTK_NumTimeLevelsFromVar)
+                           (int *num,
+                            ONE_FORTSTRING_ARG)
 {
-  ONE_FORTSTRING_CREATE(var)
-  *num = CCTK_NumTimeLevelsFromVar(var);
-  free(var);
+  ONE_FORTSTRING_CREATE (var)
+  *num = CCTK_NumTimeLevelsFromVar (var);
+  free (var);
 }
 
 
@@ -1533,27 +1259,15 @@ void  CCTK_FCALL CCTK_FNAME(CCTK_NumTimeLevelsFromVar)
    @routine    CCTK_PrintGroup
    @date       3 July 1999
    @author     Gabrielle Allen
-   @desc 
-   Given a group index print the group name. This is for debugging
-   purposes for Fortran routines.
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
-
+   @desc
+               Given a group index print the group name.
+               This is for debugging purposes for Fortran routines.
+   @enddesc
 @@*/
-
-void CCTK_PrintGroup(int group)
+void CCTK_FCALL CCTK_FNAME (CCTK_PrintGroup)
+                           (const int *group)
 {
-  fprintf(stdout,"Group %d is %s\n",group,CCTK_GroupName(group));
-}
-
-void  CCTK_FCALL CCTK_FNAME(CCTK_PrintGroup)
-     (int *group)
-{
-  CCTK_PrintGroup(*group);
+  fprintf (stdout, "Group %d is %s\n", *group, CCTK_GroupName (*group));
 }
 
 
@@ -1561,101 +1275,15 @@ void  CCTK_FCALL CCTK_FNAME(CCTK_PrintGroup)
    @routine    CCTK_PrintVar
    @date       3 July 1999
    @author     Gabrielle Allen
-   @desc 
-   Given a group index print the variable name. This is for debugging
-   purposes for Fortran.
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
-
+   @desc
+               Given a group index print the variable name.
+               This is for debugging purposes for Fortran.
+   @enddesc
 @@*/
-
-void CCTK_PrintVar(int var)
+void CCTK_FCALL CCTK_FNAME (CCTK_PrintVar)
+                           (const int *var)
 {
-  fprintf(stdout,"Variable %d is %s\n",var,CCTK_VarName(var));
-}
-
-void  CCTK_FCALL CCTK_FNAME(CCTK_PrintVar)
-     (int *var)
-{
-  CCTK_PrintGroup(*var);
-}
-
- /*@@
-   @routine    CCTKi_ExtractSize
-   @date       Sun Nov 28 12:38:38 1999
-   @author     Tom Goodale
-   @desc 
-   Extracts the size array from a comma-separated list.
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
-
-@@*/
-static CCTK_INT **CCTKi_ExtractSize(int dimension, 
-                                    const char *thorn, 
-                                    const char *sizestring)
-{
-  int         i;
-  int         type;
-  CCTK_INT    *this_size;
-  CCTK_INT  **size_array;
-  const char *last_comma;
-  const char *next_comma;  
-  char        tmp[200];
-
-  if(strlen(sizestring))
-  {
-
-    size_array = (CCTK_INT **)malloc(dimension*sizeof(CCTK_INT *));
-    
-    next_comma = sizestring;
-    
-    if(size_array)
-    {
-      for(i=0; i < dimension; i++)
-      {
-        {
-          last_comma = next_comma[0] == ',' ? next_comma+1 : next_comma;
-          next_comma = strstr(last_comma, ",");
-          
-          if(next_comma)
-          {
-            strncpy(tmp, last_comma, (size_t)(next_comma-last_comma));
-            tmp[next_comma-last_comma] = '\0';
-          }
-          else
-          {
-            strcpy(tmp, last_comma);
-          }
-
-          this_size = (CCTK_INT *)CCTK_ParameterGet(tmp, thorn, &type);
-          if (this_size)
-          {
-            size_array[i] = this_size;
-          }
-          else
-          {
-            CCTK_VWarn(0,__LINE__,__FILE__,"Cactus",
-                      "CCTKi_ExtractSize: %s is not a parameter",tmp);
-          }
-        }
-      }
-    }
-  }
-  else
-  {
-    /* No size specified */
-    size_array = NULL;
-  }
-
-  return size_array;
+  fprintf (stdout, "Variable %d is %s\n", *var, CCTK_VarName (*var));
 }
 
 
@@ -1663,30 +1291,19 @@ static CCTK_INT **CCTKi_ExtractSize(int dimension,
    @routine    CCTK_GroupSizesI
    @date       Sun Nov 28 12:56:44 1999
    @author     Tom Goodale
-   @desc 
-   Returns the size array for a group.
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   @desc
+               Returns the size array for a group.
+   @enddesc
 
+   @returntype CCTK_INT **
+   @returndesc
+               the pointer to the size array of the given group, or
+               -1 if invalid group index was given
+   @endreturndesc
 @@*/
-CCTK_INT **CCTK_GroupSizesI(int group)
+CCTK_INT **CCTK_GroupSizesI (int group)
 {
-  CCTK_INT **sizes;
-
-  if (0 <= group && group<n_groups)
-  {
-    sizes = groups[group].size;
-  }
-  else
-  {
-    sizes = NULL;
-  }
-
-  return sizes;
+  return ((0 <= group && group < n_groups) ? groups[group].size : NULL);
 }
 
 
@@ -1694,164 +1311,114 @@ CCTK_INT **CCTK_GroupSizesI(int group)
    @routine    CCTK_GroupGhostsizesI
    @date       Sun Jan 23 12:56:44 2000
    @author     Gabrielle Allen
-   @desc 
-   Returns the ghostsize array for a group.
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   @desc
+               Returns the ghostsize array for a group.
+   @enddesc
 
+   @returntype CCTK_INT **
+   @returndesc
+               the pointer to the ghostsize array of the given group, or
+               -1 if invalid group index was given
+   @endreturndesc
 @@*/
-CCTK_INT **CCTK_GroupGhostsizesI(int group)
+CCTK_INT **CCTK_GroupGhostsizesI (int group)
 {
-  CCTK_INT **ghostsizes;
-
-  if (0 <= group && group<n_groups)
-  {
-    ghostsizes = groups[group].ghostsize;
-  }
-  else
-  {
-    ghostsizes = NULL;
-  }
-
-  return ghostsizes;
+  return ((0 <= group && group < n_groups) ? groups[group].ghostsize : NULL);
 }
+
 
  /*@@
    @routine    CCTK_VarTypeSize
    @date       Sun Dec  5 10:08:05 1999
    @author     Gabrielle Allen
-   @desc 
-   Returns the size of a given variable type
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   @desc
+               Returns the size of a given variable type
+   @enddesc
 
+   @returntype int
+   @returndesc
+               positive for the variable type's size (in bytes), or
+               -1 if invalid variable type was given
+   @endreturndesc
 @@*/
-
-int CCTK_VarTypeSize(int vtype)
+int CCTK_VarTypeSize (int vtype)
 {
+  int var_size;
 
-  int var_size=0;
 
-  switch(vtype)
+  switch (vtype)
   {
-    case CCTK_VARIABLE_BYTE: 
-      var_size = sizeof(CCTK_BYTE); 
+    case CCTK_VARIABLE_BYTE:
+      var_size = sizeof (CCTK_BYTE);
       break;
 
-    case CCTK_VARIABLE_INT: 
-      var_size = sizeof(CCTK_INT) ; 
+    case CCTK_VARIABLE_INT:
+      var_size = sizeof (CCTK_INT);
+      break;
+
+    case CCTK_VARIABLE_REAL:
+      var_size = sizeof (CCTK_REAL);
+      break;
+
+    case CCTK_VARIABLE_COMPLEX:
+      var_size = sizeof (CCTK_COMPLEX);
       break;
 
 #ifdef CCTK_INT2
-    case CCTK_VARIABLE_INT2: 
-      var_size = sizeof(CCTK_INT2); 
+    case CCTK_VARIABLE_INT2:
+      var_size = sizeof (CCTK_INT2);
       break;
 #endif
 
 #ifdef CCTK_INT4
-    case CCTK_VARIABLE_INT4: 
-      var_size = sizeof(CCTK_INT4); 
+    case CCTK_VARIABLE_INT4:
+      var_size = sizeof (CCTK_INT4);
       break;
 #endif
 
 #ifdef CCTK_INT8
-    case CCTK_VARIABLE_INT8: 
-      var_size = sizeof(CCTK_INT8); 
+    case CCTK_VARIABLE_INT8:
+      var_size = sizeof (CCTK_INT8);
       break;
 #endif
 
-    case CCTK_VARIABLE_REAL: 
-      var_size = sizeof(CCTK_REAL); 
+#ifdef CCTK_REAL4
+    case CCTK_VARIABLE_REAL4:
+      var_size = sizeof (CCTK_REAL4);
       break;
 
-#ifdef CCTK_REAL4
-    case CCTK_VARIABLE_REAL4: 
-      var_size = sizeof(CCTK_REAL4); 
+    case CCTK_VARIABLE_COMPLEX8:
+      var_size = sizeof (CCTK_COMPLEX8);
       break;
 #endif
 
 #ifdef CCTK_REAL8
-    case CCTK_VARIABLE_REAL8: 
-      var_size = sizeof(CCTK_REAL8); 
+    case CCTK_VARIABLE_REAL8:
+      var_size = sizeof (CCTK_REAL8);
+      break;
+
+    case CCTK_VARIABLE_COMPLEX16:
+      var_size = sizeof (CCTK_COMPLEX16);
       break;
 #endif
 
 #ifdef CCTK_REAL16
-    case CCTK_VARIABLE_REAL16: 
-      var_size = sizeof(CCTK_REAL16); 
-      break;
-#endif
-
-    case CCTK_VARIABLE_COMPLEX: 
-      var_size = sizeof(CCTK_COMPLEX); 
+    case CCTK_VARIABLE_REAL16:
+      var_size = sizeof (CCTK_REAL16);
       break;
 
-#ifdef CCTK_REAL4
-    case CCTK_VARIABLE_COMPLEX8: 
-      var_size = sizeof(CCTK_COMPLEX8); 
-      break;
-#endif
-
-#ifdef CCTK_REAL8
-    case CCTK_VARIABLE_COMPLEX16: 
-      var_size = sizeof(CCTK_COMPLEX16); 
-      break;
-#endif
-
-#ifdef CCTK_REAL16
-    case CCTK_VARIABLE_COMPLEX32: 
-      var_size = sizeof(CCTK_COMPLEX32); 
+    case CCTK_VARIABLE_COMPLEX32:
+      var_size = sizeof (CCTK_COMPLEX32);
       break;
 #endif
 
     default:
-      CCTK_VWarn(0,__LINE__,__FILE__,
-                 "Cactus",
-                 "CCTK_VarTypeSize: Unknown variable type (%d)",vtype);
-      var_size = 1;
-
+      CCTK_VWarn (0, __LINE__, __FILE__, "Cactus",
+                  "CCTK_VarTypeSize: Unknown variable type (%d)", vtype);
+      var_size = -1;
   }
 
-  return var_size;
-
-}
-
-
-/* DEPRECATED: 4.0b6 */
-
-int CCTK_OldGroupData(int group, 
-                      int *gtype, 
-                      int *vtype, 
-                      int *dim, 
-                      int *n_variables,
-                      int *n_timelevels)
-{
-  int return_code;
-
-  if(group >=0 && group < n_groups)
-  {
-    *gtype = groups[group].gtype;
-    *vtype = groups[group].vtype;
-    *dim   = groups[group].dim;
-    *n_variables = groups[group].n_variables;
-    *n_timelevels = groups[group].n_timelevels;
-
-    return_code = 1;
-  }
-  else
-  {
-    return_code = 0;
-  }
-
-  return return_code;
+  return (var_size);
 }
 
 
@@ -1859,60 +1426,54 @@ int CCTK_OldGroupData(int group,
    @routine    CCTK_GroupDimI
    @date       Wed Feb 2 2000
    @author     Gabrielle Allen
-   @desc 
-   Given a group index returns the group dimension
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   @desc
+               Given a group index returns the group dimension
+   @enddesc
 
+   @returntype int
+   @returndesc
+               the dimension of the given group, or
+               -1 if given group index is invalid
+   @endreturndesc
 @@*/
-
-int CCTK_GroupDimI(int group)
+int CCTK_GroupDimI (int group)
 {
-  int retval;
-
-  if (0 <= group && group<n_groups)
-  {
-    retval = groups[group].dim;
-  }
-  else
-  {
-    retval = -1;
-  }
-
-  return retval;
+  return ((0 <= group && group < n_groups) ? groups[group].dim : -1);
 }
 
-void  CCTK_FCALL CCTK_FNAME(CCTK_GroupDimI)
-     (int *dim, int *group)
+void CCTK_FCALL CCTK_FNAME (CCTK_GroupDimI)
+                           (int *dim,
+                            const int *group)
 {
-  *dim = CCTK_GroupDimI(*group);
+  *dim = CCTK_GroupDimI (*group);
 }
 
-int CCTK_GroupDimFromVarI(int vi)
+
+ /*@@
+   @routine    CCTK_GroupDimFromVarI
+   @date       Wed Feb 2 2000
+   @author     Gabrielle Allen
+   @desc
+               Given a variable index returns the group dimension
+   @enddesc
+
+   @returntype int
+   @returndesc
+               the dimension of the variable's group, or
+               -1 if given variable index is invalid
+   @endreturndesc
+@@*/
+int CCTK_GroupDimFromVarI (int var)
 {
-  int retval,group;
-  
-  group = CCTK_GroupIndexFromVarI(vi);
-
-  if (0 <= group && group<n_groups)
-  {
-    retval = groups[group].dim;
-  }
-  else
-  {
-    retval = -1;
-  }
-
-  return retval;
+  return ((0 <= var && var < total_variables) ?
+          groups[group_of_variable[var]].dim : -1);
 }
 
-void  CCTK_FCALL CCTK_FNAME(CCTK_GroupDimFromVarI)(int *dim, int *vi)
+void CCTK_FCALL CCTK_FNAME (CCTK_GroupDimFromVarI)
+                           (int *dim,
+                            const int *var)
 {
-  *dim = CCTK_GroupDimFromVarI(*vi);
+  *dim = CCTK_GroupDimFromVarI (*var);
 }
 
 
@@ -1929,8 +1490,6 @@ void  CCTK_FCALL CCTK_FNAME(CCTK_GroupDimFromVarI)(int *dim, int *vi)
                indicate that the callback should be called for all
                variables/groups.
    @enddesc
-   @history
-   @endhistory
    @var        string
    @vdesc      list of variable and/or group names
    @vtype      const char *
@@ -1952,8 +1511,13 @@ void  CCTK_FCALL CCTK_FNAME(CCTK_GroupDimFromVarI)(int *dim, int *vi)
    @vtype      int
    @vio        in
    @endvar
-@@*/
 
+   @returntype int
+   @returndesc
+               positive for the number of traversed variables, or
+               -1 if no callback routine was given
+   @endreturndesc
+@@*/
 int CCTK_TraverseString (const char *parsestring,
                          void (*callback) (int idx,
                                            const char *optstring,
@@ -2088,4 +1652,394 @@ int CCTK_TraverseString (const char *parsestring,
   }
 
   return (retval);
+}
+
+
+#if 0
+/*@@
+   @routine    CCTKi_PrintGroupInfo
+   @date       Thu Jan 14 15:25:54 1999
+   @author     Gerd Lanfermann
+   @desc
+     Debugging info on the Groups.
+   @enddesc
+   @calls
+   @calledby
+   @history
+
+   @endhistory
+
+@@*/
+
+void CCTKi_PrintGroupInfo (void)
+{
+  int group_num;
+
+  for (group_num = 0; group_num < n_groups; group_num++)
+  {
+    printf ("GROUP INFO: GrpNo./imp_name/name/stag %d   >%s<   >%s<  %d\n",
+           group_num,
+           groups[group_num].implementation,
+           groups[group_num].name,
+           groups[group_num].staggertype);
+  }
+}
+#endif
+
+
+ /*@@
+   @routine    CCTKi_CreateGroup
+   @date       Thu Jan 14 15:25:54 1999
+   @author     Tom Goodale
+   @desc
+               Creates a new CCTK group
+   @enddesc
+
+   @returntype int
+   @returndesc
+               0 for success, non-zero otherwise
+   @endreturndesc
+@@*/
+int CCTKi_CreateGroup (const char *gname,
+                       const char *thorn,
+                       const char *imp,
+                       const char *gtype,
+                       const char *vtype,
+                       const char *gscope,
+                       int         dimension,
+                       int         ntimelevels,
+                       const char *stype,
+                       const char *dtype,
+                       const char *size,
+                       const char *ghostsize,
+                       int         n_variables,
+                       ...
+                       )
+{
+  int     retval;
+  int     groupscope;
+  int     staggercode;
+  int     variable;
+
+  va_list ap;
+
+  char*   variable_name;
+
+  cGroupDefinition* group=NULL;
+
+  retval = 0;
+
+  /* get the staggercode */
+  staggercode = CCTKi_ParseStaggerString (dimension, imp, gname, stype);
+
+  /* Allocate storage for the group */
+  groupscope = CCTK_GroupScopeNumber (gscope);
+  if (groupscope == CCTK_PUBLIC || groupscope == CCTK_PROTECTED)
+  {
+    group = CCTKi_SetupGroup (imp, gname, staggercode, n_variables);
+  }
+  else if (groupscope == CCTK_PRIVATE)
+  {
+    group = CCTKi_SetupGroup (thorn, gname, staggercode, n_variables);
+  }
+  else
+  {
+    CCTK_Warn (1, __LINE__, __FILE__, "Cactus",
+              "CCTKi_CreateGroup: Unrecognised group scope");
+  }
+
+  /* Allocate storage for the group and setup some stuff. */
+  if (group)
+  {
+    group->dim          = dimension;
+    group->gtype        = CCTK_GroupTypeNumber (gtype);
+    group->vtype        = CCTK_VarTypeNumber (vtype);
+    group->gscope       = groupscope;
+    group->staggertype  = staggercode;
+    group->dtype        = CCTK_GroupDistribNumber (dtype);
+    group->n_timelevels = ntimelevels;
+
+    /* Extract the variable names from the argument list. */
+    va_start (ap, n_variables);
+
+    for (variable = 0; variable < n_variables; variable++)
+    {
+      variable_name = va_arg (ap, char *);
+
+      group->variables[variable].name =
+        (char *)malloc ((strlen (variable_name)+1*sizeof (char)));
+
+      if (group->variables[variable].name)
+      {
+        strcpy (group->variables[variable].name, variable_name);
+      }
+      else
+      {
+        break;
+      }
+    }
+
+    va_end (ap);
+
+    if (variable < n_variables)
+    {
+      retval = 3;
+    }
+    else
+    {
+      if (dimension > maxdim)
+      {
+        maxdim    = dimension;
+      }
+      if (staggercode > 0)
+      {
+        staggered = 1;
+      }
+      group->size      = CCTKi_ExtractSize (dimension, thorn, size);
+      group->ghostsize = CCTKi_ExtractSize (dimension, thorn, ghostsize);
+    }
+  }
+  else
+  {
+    retval = 2;
+  }
+
+  if (retval)
+  {
+    CCTK_Warn (4, __LINE__, __FILE__, "Cactus", "CCTK_CreateGroup: Error");
+  }
+
+  return (retval);
+}
+
+
+/********************************************************************
+ ********************    Internal Routines   ************************
+ ********************************************************************/
+
+ /*@@
+   @routine    CCTKi_SetupGroup
+   @date       Thu Jan 14 16:38:40 1999
+   @author     Tom Goodale
+   @desc
+               Stores the data associated with a group.
+   @enddesc
+
+   @returntype cGroupDefinition *
+   @returndesc
+               pointer to the associated group data structure, or
+               NULL if out of memory
+   @endreturndesc
+@@*/
+static cGroupDefinition *CCTKi_SetupGroup (const char *implementation,
+                                           const char *name,
+                                           int staggercode,
+                                           int n_variables)
+{
+  int *temp_int;
+  void *temp;
+  cGroupDefinition *returndata;
+  int variable;
+  int group;
+
+
+  for (group = 0; group < n_groups; group++)
+  {
+    if (CCTK_Equals (implementation, groups[group].implementation) &&
+        CCTK_Equals (name, groups[group].name))
+    {
+      break;
+    }
+  }
+
+  if (group >= n_groups)
+  {
+    /* Resize the array of groups */
+    temp = realloc (groups, (n_groups + 1) * sizeof (cGroupDefinition));
+    if (temp)
+    {
+      groups = (cGroupDefinition *) temp;
+
+      /* Allocate memory to various fields */
+      groups[n_groups].implementation = (char *) malloc (strlen (implementation)+1);
+
+      groups[n_groups].name = (char *) malloc (strlen (name) + 1);
+
+      groups[n_groups].variables = (cVariableDefinition *)
+                                   malloc (n_variables *
+                                           sizeof (cVariableDefinition));
+
+      /* Resize the array holding correspondence between vars and groups. */
+      temp_int = (int *) realloc (group_of_variable,
+                                  (total_variables+n_variables) * sizeof (int));
+
+      if (groups[n_groups].implementation &&
+          groups[n_groups].name &&
+          groups[n_groups].variables &&
+          temp_int)
+      {
+        /* Fill in the data structures. */
+        group_of_variable = temp_int;
+
+        strcpy (groups[n_groups].implementation, implementation);
+        strcpy (groups[n_groups].name, name);
+
+        groups[n_groups].number     = n_groups;
+        groups[n_groups].staggertype= staggercode;
+        groups[n_groups].n_variables= n_variables;
+
+        /* Fill in global variable numbers. */
+        for (variable = 0; variable < n_variables; variable++)
+        {
+          groups[n_groups].variables[variable].number = total_variables;
+
+          group_of_variable[total_variables] = n_groups;
+
+          total_variables++;
+        }
+
+        n_groups++;
+      }
+      else
+      {
+        /* Memory allocation failed, so free any which may have been allocated. */
+        free (groups[n_groups].implementation);
+        groups[n_groups].implementation = NULL;
+
+        free (groups[n_groups].name);
+        groups[n_groups].name = NULL;
+
+        free (groups[n_groups].variables);
+        groups[n_groups].variables = NULL;
+
+      }
+    }
+
+    /* Return the new group definition structure if successful, otherwise NULL.*/
+    if (temp && groups[n_groups-1].name)
+    {
+      returndata =  &groups[n_groups-1];
+    }
+    else
+    {
+      returndata = NULL;
+    }
+  }
+  else
+  {
+    returndata = &groups[group];
+  }
+
+#ifdef DEBUG_GROUPS
+  printf ("Setting up group %s::%s\n", implementation, name);
+#endif
+
+  return (returndata);
+}
+
+
+ /*@@
+   @routine    CCTKi_ExtractSize
+   @date       Sun Nov 28 12:38:38 1999
+   @author     Tom Goodale
+   @desc
+               Extracts the size array from a comma-separated list
+               of parameter names.
+   @enddesc
+
+   @returntype CCTK_INT **
+   @returndesc
+               pointer to an allocated array of sizes for the given list, or
+               NULL if no parameter list is given or out of memory
+@@*/
+static CCTK_INT **CCTKi_ExtractSize (int dimension,
+                                     const char *this_thorn,
+                                     const char *sizestring)
+{
+  int         i,
+              type;
+  CCTK_INT   *this_size,
+            **size_array;
+  const char *last_comma,
+             *next_comma,
+             *thorn;
+  char       *thorn_impl,
+             *param,
+              tmp[200];
+
+
+  if (strlen (sizestring))
+  {
+
+    size_array = (CCTK_INT **) malloc (dimension * sizeof (CCTK_INT *));
+
+    next_comma = sizestring;
+
+    if (size_array)
+    {
+      for (i=0; i < dimension; i++)
+      {
+        last_comma = next_comma[0] == ',' ? next_comma+1 : next_comma;
+        next_comma = strstr (last_comma, ",");
+
+        if (next_comma)
+        {
+          strncpy (tmp, last_comma, next_comma-last_comma);
+          tmp[next_comma-last_comma] = '\0';
+        }
+        else
+        {
+          strcpy (tmp, last_comma);
+        }
+
+        /* check whether the parameter was given with its full name */
+        thorn_impl = param = NULL;
+        if (Util_SplitString (&thorn_impl, &param, tmp, "::") == 0)
+        {
+          thorn = thorn_impl;
+        }
+        else
+        {
+          thorn = this_thorn;
+          param = tmp;
+        }
+
+        /* check if such a parameter exists at all */
+        this_size = (CCTK_INT *) CCTK_ParameterGet (param, thorn, &type);
+        if (! this_size)
+        {
+          CCTK_VWarn (0, __LINE__, __FILE__, "Cactus",
+                      "CCTKi_ExtractSize: '%s::%s' is not a parameter",
+                      thorn_impl, param);
+        }
+
+        /* check if the parameter is of type INTEGER */
+        if (type != PARAMETER_INTEGER)
+        {
+          CCTK_VWarn (0, __LINE__, __FILE__, "Cactus",
+                      "CCTKi_ExtractSize: parameter '%s::%s' is not of type "
+                      "INTEGER", thorn_impl, param);
+        }
+
+        /* okay, store the size value */
+        size_array[i] = this_size;
+
+        if (thorn_impl)
+        {
+          free (thorn_impl);
+        }
+        if (param != tmp)
+        {
+          free (param);
+        }
+      }
+    }
+  }
+  else
+  {
+    /* No size specified */
+    size_array = NULL;
+  }
+
+  return (size_array);
 }
