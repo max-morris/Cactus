@@ -732,7 +732,7 @@ sub parse_interface_ccl
         &CST_error(0,$message,$hint,__LINE__,__FILE__);
       }
     }
-    # implementation names can be sepeated by ,\s, where , are stripped out below
+    # implementation names can be separated by ,\s, where , are stripped out below
     elsif ($line =~ m/^\s*(INHERITS|FRIEND)\s*:(([,\s]*[a-zA-Z]+[a-zA-Z_0-9]*)*[,\s]*)$/i)
     {
       $interface_db{"\U$thorn $1\E"} .= $2;
@@ -806,12 +806,10 @@ sub parse_interface_ccl
     }
     elsif ($line =~ m/^\s*(CCTK_)?(CHAR|BYTE|INT|INT2|INT4|INT8|REAL|REAL4|REAL8|REAL16|COMPLEX|COMPLEX8|COMPLEX16|COMPLEX32)\s*(([a-zA-Z]+[a-zA-Z_0-9]*)(\[([^]]+)\])?)\s*(.*)\s*$/i)
     {
-
 #      for($i = 1; $i < 10; $i++)
 #      {
 #        print "$i is ${$i}\n";
 #      }
-
       my $vtype = $2;
       my $current_group = "$4";
       my $isgrouparray = $5;
@@ -840,6 +838,23 @@ sub parse_interface_ccl
       
       $interface_db{"\U$thorn $block GROUPS\E"} .= " $current_group";
       $interface_db{"\U$thorn GROUP $current_group\E VTYPE"} = "\U$vtype\E";
+
+      # Grab optional group description from end of $options_list
+      if ($options_list =~ /(=?)\s*"([^"]*)"\s*$/) #"
+      {
+	if (!$1)
+	{
+	  if ($data[$line_number+1] =~ m/^\s*\{\s*$/) 
+	  {
+	    $message = "Group description for $current_group in thorn $thorn must be placed at end of variable block when variable block present";
+	    &CST_error(1,$message,"",__LINE__,__FILE__);
+	  } else
+	  {
+	    $description = $2;
+	    $options_list =~ s/\s*"$description"//;
+	  }
+	}
+      }
 
       # split(/\s*=\s*|\s+/, $options_list);
       %options = SplitWithStrings($options_list);
@@ -1027,6 +1042,9 @@ sub parse_interface_ccl
             }
             $line_number++;
           }
+          # Grab optional group description
+	  $data[$line_number] =~ m:\}\s*"([^"]*)":;
+          $description = $1;
         }
         else
         {
@@ -1047,6 +1065,7 @@ sub parse_interface_ccl
           # Decrement the line number, since the line is the first line of the next CCL statement.
           $line_number--;
         }
+        $interface_db{"\U$thorn GROUP $current_group\E DESCRIPTION"} = $description;
       }
     }
     elsif ($line =~ m/^\s*(USES\s*INCLUDE)S?\s*(SOURCE)S?\s*:\s*(.*)\s*$/i)
