@@ -6,7 +6,7 @@
 #    @desc 
 #   
 #    @enddesc
-#    @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/solaris,v 1.1 2000-05-08 10:27:54 goodale Exp $
+#    @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/solaris,v 1.2 2000-05-24 17:33:52 lanfer Exp $
 #  @@*/
 
 if test "$CCTK_CONFIG_STAGE" = "preferred-compilers" ; then
@@ -20,5 +20,14 @@ else
 
   : ${C_DEPEND='$(CPP) -M $(CPPFLAGS)'}
   : ${CXX_DEPEND='$(CPP) -M $(CPPFLAGS)'}
+
+
+# MPI stuff
+
+  if test -n "$MPI" ; then
+    NATIVE_MPI_LIBS="mpi"
+    NATIVE_MPI_LIB_DIRS="/opt/SUNWhpc/lib"
+    NATIVE_MPI_INC_DIRS="/opt/SUNWhpc/include"
+  fi
 
 fi
