@@ -111,6 +111,13 @@ extern "C"
   @@*/
 #define UTIL_ERROR_TABLE_ITERATOR_IS_NULL       (-106)
 
+/*@@
+  @defines      UTIL_ERROR_TABLE_NO_MIXED_TYPE_ARRAY
+  @desc         error return code: different array values have different
+                datatypes
+  @@*/
+#define UTIL_ERROR_TABLE_NO_MIXED_TYPE_ARRAY    (-107)
+
 /******************************************************************************/
 /***** Main Table API *********************************************************/
 /******************************************************************************/
