@@ -138,10 +138,9 @@ int CactusInitialiseGH(cGH *GH)
   /* Traverse poststep initial routines which should only be done once */
   CCTK_rfrTraverse(GH,CCTK_POSTINITIAL);
 
-  /* Ignore checkpointing for now.
-   * CCTK_rfrTraverse(GH,CCTK_RECOVER);
-   * CCTK_rfrTraverse(GH,CCTK_CPINITIAL);
-   */
+  /* Traverse recovery and ID checkpoint routines */
+  CCTK_rfrTraverse(GH,CCTK_RECOVER);
+  CCTK_rfrTraverse(GH,CCTK_CPINITIAL);
 
   CCTK_rfrTraverse(GH,CCTK_POSTSTEP);
 
