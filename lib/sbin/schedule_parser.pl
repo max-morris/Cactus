@@ -299,6 +299,10 @@ sub parse_schedule_ccl
         @list = split(",",$1);
         foreach $group (@list) 
         {
+	  # Strip of any spaces 
+	  $group =~ /^\s*(.*)\s*$/;
+	  $group = $1;
+
 	  $this_imp = $implementation;
 	  $this_group = $group;
 	  if ($group =~ /(.*)::(.*)/)
@@ -319,6 +323,10 @@ sub parse_schedule_ccl
         @list = split(",",$1);
         foreach $group (@list) 
         {
+	  # Strip of any spaces 
+	  $group =~ /^\s*(.*)\s*$/;
+	  $group = $1;
+
 	  $this_imp = $implementation;
 	  $this_group = $group;
 	  if ($group =~ /(.*)::(.*)/)
@@ -496,6 +504,11 @@ sub parse_schedule_at_RFR {
       @list = split(",",$1);
       foreach $group (@list) 
       {
+
+	# Strip of any spaces 
+	$group =~ /^\s*(.*)\s*$/;
+	$group = $1;
+
 	# Take of implementation if it is there
 	$this_imp = $implementation;
 	$this_group = $group;
@@ -523,6 +536,11 @@ sub parse_schedule_at_RFR {
       @list = split(",",$1);
       foreach $group (@list) 
       {
+
+	# Strip of any spaces 
+	$group =~ /^\s*(.*)\s*$/;
+	$group = $1;
+
 	$this_imp = $implementation;
 	$this_group = $group;
 	if ($group =~ /(.*)::(.*)/)
