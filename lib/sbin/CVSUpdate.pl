@@ -11,12 +11,11 @@
 
 require "lib/sbin/MakeUtils.pl";
 
-$network = 1;
-if (!$network)
+$debug = 0;
+if ($debug)
 {
   print "DEBUG mode: cvs commands not issued\n\n";
 }
-$debug = 0;
 
 print("\nUpdating Flesh\n");
 $command = "cvs -z 3 -q update -d -P CONTRIBUTORS COPYRIGHT Makefile lib doc src";
@@ -37,7 +36,7 @@ if ($debug)
     }
   }
 }
-if ($network)
+if (!$debug)
 {
   open (CS, "$command |");
   while (<CS>) 
@@ -85,7 +84,7 @@ foreach $thorn (sort keys %info)
       }
     }
   }
-  if ($network)
+  if (!$debug)
   {
     open (CS, "$command |");
     while (<CS>) 
