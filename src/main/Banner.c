@@ -19,6 +19,7 @@
 #include "cctk_Flesh.h"
 #include "cctk_FortranString.h"
 #include "cctk_Parameter.h"
+#include "cctk_Version.h"
 
 static const char *rcsid = "$Header$";
 
@@ -31,6 +32,11 @@ CCTK_FILEVERSION(main_Banner_c)
 /********************************************************************
  ********************* Local Routine Prototypes *********************
  ********************************************************************/
+
+int CCTKi_PrintBanners(void);
+void CCTKi_CactusBanner(void);
+void  CCTK_FCALL CCTK_FNAME(CCTK_RegisterBanner)
+     (int *ierr,ONE_FORTSTRING_ARG);
 
 /********************************************************************
  ********************* Other Routine Prototypes *********************
@@ -66,6 +72,7 @@ void CCTKi_CactusBanner(void)
 {
   
   const char *string;
+  char buffer[128];
 
 #define B_1 "       10                                  "
 #define B_2 "  1   0101       ************************  "
@@ -82,8 +89,13 @@ void CCTKi_CactusBanner(void)
  
 
   string = B_ANNERLINE;
+
+  Util_CurrentDate (sizeof (buffer), buffer);
+
   printf("--------------------------------------------------------------------------------\n");
   printf("%s\n",string); 
+  printf("Version: %s  ",CCTK_FullVersion());
+  printf("Compile Date: %s  Run Date: %s\n",CCTK_CompileDate(),buffer);
   printf("--------------------------------------------------------------------------------\n");
 
 }
