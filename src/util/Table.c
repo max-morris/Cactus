@@ -32,6 +32,7 @@
  *   Util_TableQueryValueInfo
  *   Util_TableDeleteKey
  *   Util_TableCreateFromString
+ *   Util_TableSetFromString
  *   Util_TableSetString
  *   Util_TableGetString
  *   Util_TableSet*
@@ -65,8 +66,11 @@
  *   print_table
  *   print_all_iterators
  * Standalone Test Driver
- *   TEST_SET_GET_{INT,REAL,COMPLEX}
- *   TEST_SET_GET_{INT,REAL,COMPLEX}_ARRAY
+ *   // low-level routines
+ *   CHECK_SET_GET_{INT,REAL,COMPLEX}
+ *   CHECK_SET_GET_{INT,REAL,COMPLEX}_ARRAY
+ *   check_table_contents(int handle)
+ *   // higher-level routines
  *   main
  *   test_nonexistent_tables
  *   test_table_create_destroy
@@ -74,8 +78,9 @@
  *   test_set_get_array
  *   test_iterators
  *   test_delete_key
- *   test_create_from_string
+ *   test_set_create_from_string
  *   test_set_get_string
+ *   test_table_contents
 #endif
  */
 
@@ -373,7 +378,7 @@ static void test_set_get(int handle, bool case_insensitive);
 static void test_set_get_array(int handle);
 static void test_iterators(int handle);
 static void test_delete_key(int handle, bool case_insensitive);
-static int test_create_from_string(void);
+static int test_set_create_from_string(void);
 static void test_set_get_string(int handle, bool case_insensitive);
 #endif
 
@@ -734,9 +739,55 @@ return delete_key(thp, key);
 
 /*@@
   @routine      Util_TableCreateFromString
-  @desc         This function creates a new table based on a string
-                argument, which is interpreted with "parameter-file"
-                semantics.  The table has the case-insensitive flag set.
+  @desc         This function creates a new table (with the case-insensitive
+		flag set), and sets values in it based on a string argument.
+		The string is interpreted with "parameter-file" semantics.
+
+  @comment      The "Implementation Restriction" of Util_TableSetFromString()
+		applies here as well.
+  @endcomment
+
+  @var          string
+  @vtype        const char *
+  @vdesc        C-style null-terminated string specifying table contents;
+                string has parameter-file semantics
+  @endvar
+
+  @returntype   int
+  @returndesc   a handle to the newly-created table,
+                -ve for error, including
+                UTIL_ERROR_NO_MEMORY    unable to allocate memory
+                UTIL_ERROR_BAD_INPUT    invalid input: can't parse input string
+                and any error codes returned by
+                Util_TableCreate() or Util_TableSetFromString()
+  @endreturndesc
+  @@*/
+int Util_TableCreateFromString(const char string[])
+{
+const int handle = Util_TableCreate(UTIL_TABLE_FLAGS_CASE_INSENSITIVE);
+if (handle < 0)
+   then return handle;                  /* error creating table */
+
+  {
+const int status = Util_TableSetFromString(handle, string);
+if (status < 0)
+   then return status;                  /* error setting values in table */
+
+return handle;
+  }
+}
+
+/******************************************************************************/
+
+/*@@
+  @routine      Util_TableSetFromString
+  @desc         This function does a sequence of Util_TableSet*() calls
+		to set table entries based on a parameter-file--like
+		string argument.  For example,
+		   Util_TableSetFromString(handle, "order=3 dx=0.1")
+		is equivalent to
+		   Util_TableSetInt(handle, 3, "order");
+		   Util_TableSetReal(handle, 0.1, "dx");
 
   @comment      Implementation Restriction:
                 The present implementation only recognises integer or
@@ -762,33 +813,38 @@ return delete_key(thp, key);
                 assignment.
   @endcomment
 
+  @var          handle
+  @vtype        int
+  @vdesc        handle to the table
+  @endvar
+
   @var          string
   @vtype        const char *
-  @vdesc        C-style null-terminated string specifying table contents;
-                string has parameter-file semantics
+  @vdesc        C-style null-terminated string which is parsed as
+		described above to determine the keys and values to be
+		set in the table.
   @endvar
 
   @returntype   int
-  @returndesc   a handle to the newly-created table,
+  @returndesc   the number of successful Util_TableSet*() calls made, or
                 -ve for error, including
                 UTIL_ERROR_NO_MEMORY    unable to allocate memory
                 UTIL_ERROR_BAD_INPUT    invalid input: can't parse input string
-                and any error codes returned by
-                Util_TableCreate(), Util_TableSetInt(), or Util_TableSetReal()
+                and any error codes returned by the Util_TableSet*() functions
+		Note that in the event of an error return, assignments
+		lexicographically earlier in the input string than where
+		the error was detected will already have been made in the
+		table.
   @endreturndesc
   @@*/
-int Util_TableCreateFromString(const char string[])
+int Util_TableSetFromString(int handle, const char string[])
 {
 const char *const delimiters = "; \t\n";
 const char *const whitespace =  " \t\n";
 const char *const int_chars  = "-+0123456789";
 
-const int handle = Util_TableCreate(UTIL_TABLE_FLAGS_CASE_INSENSITIVE);
-if (handle < 0)
-   then return handle;                  /* error creating table */
-
 #ifdef UTIL_TABLE_DEBUG
-printf("Util_TableCreateFromString(\"%s\")\n", string);
+printf("Util_TableSetFromString(handle=%d, \"%s\")\n", handle, string);
 #endif
 
 /* make a copy of the string so we can write null characters into it */
@@ -796,12 +852,10 @@ printf("Util_TableCreateFromString(\"%s\")\n", string);
   {
 char *const buffer = Util_Strdup(string);
 if (buffer == NULL)
-   then {
-        Util_TableDestroy(handle);
-        return UTIL_ERROR_NO_MEMORY;
-        }
+   then return UTIL_ERROR_NO_MEMORY;
 
   {
+int Set_count = 0;
 char *p = buffer;
         while (*p != '\0')
         {
@@ -823,9 +877,7 @@ char *p = buffer;
         if (q == NULL)
            then {
                 free(buffer);
-                Util_TableDestroy(handle);
-                return UTIL_ERROR_BAD_INPUT;
-                                        /* no '=" in "key=value" string */
+                return UTIL_ERROR_BAD_INPUT;  /* no '=" in "key=value" string */
                 }
         *q++ = '\0';                    /* key -> "key", q -> "value..." */
           {
@@ -848,7 +900,6 @@ char *p = buffer;
                 if (sscanf(value, "%d", &value_int) != 1)
                    then {
                         free(buffer);
-                        Util_TableDestroy(handle);
                         return UTIL_ERROR_BAD_INPUT;
                                         /* can't parse integer value */
                         }
@@ -861,7 +912,6 @@ char *p = buffer;
                 if (status < 0)
                    then {
                         free(buffer);
-                        Util_TableDestroy(handle);
                         return status;  /* error setting key=integer in table */
                         }
                   }
@@ -873,7 +923,6 @@ char *p = buffer;
                 if (sscanf(value, "%lf", &value_double) != 1)
                    then {
                         free(buffer);
-                        Util_TableDestroy(handle);
                         return UTIL_ERROR_BAD_INPUT;
                                         /* can't parse real value */
                         }
@@ -886,12 +935,12 @@ char *p = buffer;
                 if (status < 0)
                    then {
                         free(buffer);
-                        Util_TableDestroy(handle);
                         return status;  /* error setting key=real in table */
                         }
                   }
                 }
 
+	++Set_count;
         p = q;
         #ifdef UTIL_TABLE_DEBUG2
         printf("   after key=value, advanced p to p-buffer=%d\n",
@@ -902,7 +951,7 @@ char *p = buffer;
         }
 
 free(buffer);
-return handle;
+return Set_count;
   }
   }
 }
@@ -2967,10 +3016,10 @@ printf("N_iterators=%d N_ip_array=%d\n", N_iterators, N_ip_array);
 #ifdef UTIL_TABLE_TEST
 
 /*
- * macros to test set/get of scalars of various types
+ * low-level macros to test set/get of scalars of various types
  */
 
-#define TEST_SET_GET_INT(handle, type,                                  \
+#define CHECK_SET_GET_INT(handle, type,                                  \
                          key_already_exists, case_insensitive,          \
                          set_fn, get_fn)                                \
   {                                                                     \
@@ -2989,7 +3038,9 @@ if (case_insensitive)                                                   \
                 == UTIL_ERROR_TABLE_NO_SUCH_KEY );                      \
   }                                                             /* end macro */
 
-#define TEST_SET_GET_REAL(handle, type,                                 \
+/**************************************/
+
+#define CHECK_SET_GET_REAL(handle, type,                                 \
                           key_already_exists, case_insensitive, \
                           set_fn, get_fn)                               \
   {                                                                     \
@@ -3008,7 +3059,9 @@ if (case_insensitive)                                                   \
                 == UTIL_ERROR_TABLE_NO_SUCH_KEY );                      \
   }                                                             /* end macro */
 
-#define TEST_SET_GET_COMPLEX(handle, type,                              \
+/**************************************/
+
+#define CHECK_SET_GET_COMPLEX(handle, type,                              \
                              key_already_exists, case_insensitive,      \
                              set_fn, get_fn)                            \
   {                                                                     \
@@ -3029,12 +3082,13 @@ if (case_insensitive)                                                   \
                 == UTIL_ERROR_TABLE_NO_SUCH_KEY );                      \
   }                                                             /* end macro */
 
+/******************************************************************************/
 
 /*
- * macros to test set/get of arrays of various types
+ * low-level macros to test set/get of arrays of various types
  */
 
-#define TEST_SET_GET_INT_ARRAY(handle, type, key_already_exists,        \
+#define CHECK_SET_GET_INT_ARRAY(handle, type, key_already_exists,        \
                                set_fn, get_fn)                          \
   {                                                                     \
 static type xx[5] = { 41, 42, 48, 45, 47 };                             \
@@ -3049,7 +3103,9 @@ assert( xx[3] == 17 );                                                  \
 assert( xx[4] == 19 );                                                  \
   }                                                             /* end macro */
 
-#define TEST_SET_GET_REAL_ARRAY(handle, type, key_already_exists,       \
+/**************************************/
+
+#define CHECK_SET_GET_REAL_ARRAY(handle, type, key_already_exists,       \
                                 set_fn, get_fn)                         \
   {                                                                     \
 static type yy[5] = { 41.25, 42.5, 48.0, 45.75, 47.125 };               \
@@ -3065,7 +3121,9 @@ assert( yy[3] == 17.5 );                                                \
 assert( yy[4] == 19.5 );                                                \
   }                                                             /* end macro */
 
-#define TEST_SET_GET_COMPLEX_ARRAY(handle, type, key_already_exists,    \
+/**************************************/
+
+#define CHECK_SET_GET_COMPLEX_ARRAY(handle, type, key_already_exists,    \
                                    set_fn, get_fn)                      \
   {                                                                     \
 static type zz[5]                                                       \
@@ -3087,6 +3145,96 @@ assert( zz[4].Re == -0.25 );    assert( zz[4].Im == -0.75 );            \
 
 #endif  /* UTIL_TABLE_TEST */
 
+/******************************************************************************/
+
+#ifdef UTIL_TABLE_TEST
+/*
+ * This function does a sequence of assert() calls to verify that
+ * a table contains the 3 keys
+ *	ij = 42
+ *	real1 = 3.5
+ *	real_e = 2.75
+ * inserted in that order.
+ *
+ * Bugs:
+ * This test is tied to the present implementation -- it assumes a
+ * specific ordering of table elements returned by an iterator.
+ */
+static
+  void check_table_contents(int handle)
+{
+assert( Util_TableQueryNKeys(handle) == 3 );
+
+/* set up the key buffer */
+  {
+int max_key_length = Util_TableQueryMaxKeyLength(handle);
+assert( max_key_length == (int)strlen("real_e") );
+  {
+const int N_key_buffer = max_key_length + 1;
+char *const key_buffer = malloc(N_key_buffer);
+assert( key_buffer != NULL );
+
+/* walk through the table to verify contents {"real_e", "real1", "ij"} */
+/* n.b. implementation-dependence here for order of table elements */
+  {
+int ihandle = Util_TableItCreate(handle);
+CCTK_INT key_length, type_code, N_elements;
+
+/* real_e = 2.75 */
+type_code = 123456;
+N_elements = 54321;
+assert( Util_TableItQueryKeyValueInfo(ihandle,
+                                      N_key_buffer, key_buffer,
+                                      &type_code, &N_elements)
+        == (int)strlen("real_e") );
+assert( strcmp(key_buffer, "real_e") == 0 );
+assert( type_code = CCTK_VARIABLE_REAL );
+assert( N_elements == 1 );
+  {
+CCTK_REAL value_real;
+assert( Util_TableGetReal(handle, &value_real, key_buffer) == 1 );
+assert( value_real == 2.75 );
+
+/* real1 = 3.5 */
+assert( Util_TableItAdvance(ihandle) == 1 );
+type_code = 123456;
+N_elements = 54321;
+assert( Util_TableItQueryKeyValueInfo(ihandle,
+                                      N_key_buffer, key_buffer,
+                                      &type_code, &N_elements)
+        == (int)strlen("real1") );
+assert( strcmp(key_buffer, "real1") == 0 );
+assert( type_code = CCTK_VARIABLE_REAL );
+assert( N_elements == 1 );
+assert( Util_TableGetReal(handle, &value_real, key_buffer) == 1 );
+assert( value_real == 3.5 );
+
+/* ij = 42 */
+assert( Util_TableItAdvance(ihandle) == 1 );
+type_code = 123456;
+N_elements = 54321;
+assert( Util_TableItQueryKeyValueInfo(ihandle,
+                                      N_key_buffer, key_buffer,
+                                      &type_code, &N_elements)
+        == (int)strlen("ij") );
+assert( strcmp(key_buffer, "ij") == 0 );
+assert( type_code = CCTK_VARIABLE_REAL );
+assert( N_elements == 1 );
+  {
+CCTK_INT value_int;
+assert( Util_TableGetInt(handle, &value_int, key_buffer) == 1 );
+assert( value_int == 42 );
+
+assert( Util_TableItAdvance(ihandle) == 0 );
+  }
+  }
+  }
+  }
+  }
+}
+#endif  /* UTIL_TABLE_TEST */
+
+/******************************************************************************/
 /******************************************************************************/
 
 #ifdef UTIL_TABLE_TEST
@@ -3125,7 +3273,7 @@ test_set_get_array(HANDLE);
 test_set_get_string(handle, false);
 
   {
-int HANDLE2 = test_create_from_string();
+int HANDLE2 = test_set_create_from_string();
 test_set_get_string(HANDLE2, true);
 
 printf("all ok!\n" );
@@ -3136,6 +3284,7 @@ return 0;
 }
 #endif  /* UTIL_TABLE_TEST */
 
+/******************************************************************************/
 /******************************************************************************/
 
 #ifdef UTIL_TABLE_TEST
@@ -3275,61 +3424,61 @@ static
  */
 
 /* integers */
-TEST_SET_GET_INT(handle, CCTK_INT, 0, case_insensitive,
+CHECK_SET_GET_INT(handle, CCTK_INT, 0, case_insensitive,
                  Util_TableSetInt, Util_TableGetInt);
 #ifdef CCTK_INTEGER_PRECISION_2
-TEST_SET_GET_INT(handle, CCTK_INT2, 1, case_insensitive,
+CHECK_SET_GET_INT(handle, CCTK_INT2, 1, case_insensitive,
                  Util_TableSetInt2, Util_TableGetInt2);
 #endif
 #ifdef CCTK_INTEGER_PRECISION_4
-TEST_SET_GET_INT(handle, CCTK_INT4, 1, case_insensitive,
+CHECK_SET_GET_INT(handle, CCTK_INT4, 1, case_insensitive,
                  Util_TableSetInt4, Util_TableGetInt4);
 #endif
 #ifdef CCTK_INTEGER_PRECISION_8
-TEST_SET_GET_INT(handle, CCTK_INT8, 1, case_insensitive,
+CHECK_SET_GET_INT(handle, CCTK_INT8, 1, case_insensitive,
                  Util_TableSetInt8, Util_TableGetInt8);
 #endif
-TEST_SET_GET_INT(handle, CCTK_INT, 1, case_insensitive,
+CHECK_SET_GET_INT(handle, CCTK_INT, 1, case_insensitive,
                  Util_TableSetInt, Util_TableGetInt);
 assert( Util_TableQueryNKeys(handle) == 1 );
 assert( Util_TableQueryMaxKeyLength(handle) == (int)strlen("int_x") );
 
 /* complex numbers */
-TEST_SET_GET_COMPLEX(handle, CCTK_COMPLEX, 0, case_insensitive,
+CHECK_SET_GET_COMPLEX(handle, CCTK_COMPLEX, 0, case_insensitive,
                      Util_TableSetComplex, Util_TableGetComplex);
 #ifdef CCTK_COMPLEX_PRECISION_8
-TEST_SET_GET_COMPLEX(handle, CCTK_COMPLEX8, 1, case_insensitive,
+CHECK_SET_GET_COMPLEX(handle, CCTK_COMPLEX8, 1, case_insensitive,
                      Util_TableSetComplex8, Util_TableGetComplex8);
 #endif
 #ifdef CCTK_COMPLEX_PRECISION_16
-TEST_SET_GET_COMPLEX(handle, CCTK_COMPLEX16, 1, case_insensitive,
+CHECK_SET_GET_COMPLEX(handle, CCTK_COMPLEX16, 1, case_insensitive,
                      Util_TableSetComplex16, Util_TableGetComplex16);
 #endif
 #ifdef CCTK_COMPLEX_PRECISION_32
-TEST_SET_GET_COMPLEX(handle, CCTK_COMPLEX32, 1, case_insensitive,
+CHECK_SET_GET_COMPLEX(handle, CCTK_COMPLEX32, 1, case_insensitive,
                      Util_TableSetComplex32, Util_TableGetComplex32);
 #endif
-TEST_SET_GET_COMPLEX(handle, CCTK_COMPLEX, 1, case_insensitive,
+CHECK_SET_GET_COMPLEX(handle, CCTK_COMPLEX, 1, case_insensitive,
                      Util_TableSetComplex, Util_TableGetComplex);
 assert( Util_TableQueryNKeys(handle) == 2 );
 assert( Util_TableQueryMaxKeyLength(handle) == (int)strlen("COMPlex_Z") );
 
 /* reals */
-TEST_SET_GET_REAL(handle, CCTK_REAL, 0, case_insensitive,
+CHECK_SET_GET_REAL(handle, CCTK_REAL, 0, case_insensitive,
                   Util_TableSetReal, Util_TableGetReal);
 #ifdef CCTK_REAL_PRECISION_4
-TEST_SET_GET_REAL(handle, CCTK_REAL4, 1, case_insensitive,
+CHECK_SET_GET_REAL(handle, CCTK_REAL4, 1, case_insensitive,
                   Util_TableSetReal4, Util_TableGetReal4);
 #endif
 #ifdef CCTK_REAL_PRECISION_8
-TEST_SET_GET_REAL(handle, CCTK_REAL8, 1, case_insensitive,
+CHECK_SET_GET_REAL(handle, CCTK_REAL8, 1, case_insensitive,
                   Util_TableSetReal8, Util_TableGetReal8);
 #endif
 #ifdef CCTK_REAL_PRECISION_16
-TEST_SET_GET_REAL(handle, CCTK_REAL16, 1, case_insensitive,
+CHECK_SET_GET_REAL(handle, CCTK_REAL16, 1, case_insensitive,
                   Util_TableSetReal16, Util_TableGetReal16);
 #endif
-TEST_SET_GET_REAL(handle, CCTK_REAL, 1, case_insensitive,
+CHECK_SET_GET_REAL(handle, CCTK_REAL, 1, case_insensitive,
                   Util_TableSetReal, Util_TableGetReal);
 assert( Util_TableQueryNKeys(handle) == 3 );
 assert( Util_TableQueryMaxKeyLength(handle) == (int)strlen("COMPlex_Z") );
@@ -3368,63 +3517,63 @@ static
 /* the comments of  test_set_get()  about test ordering, also apply here */
 
 /* integers */
-TEST_SET_GET_INT_ARRAY(handle, CCTK_CHAR, 0,
+CHECK_SET_GET_INT_ARRAY(handle, CCTK_CHAR, 0,
                        Util_TableSetCharArray, Util_TableGetCharArray);
-TEST_SET_GET_INT_ARRAY(handle, CCTK_INT, 1,
+CHECK_SET_GET_INT_ARRAY(handle, CCTK_INT, 1,
                        Util_TableSetIntArray, Util_TableGetIntArray);
 #ifdef CCTK_INTEGER_PRECISION_2
-TEST_SET_GET_INT_ARRAY(handle, CCTK_INT2, 1,
+CHECK_SET_GET_INT_ARRAY(handle, CCTK_INT2, 1,
                        Util_TableSetInt2Array, Util_TableGetInt2Array);
 #endif
 #ifdef CCTK_INTEGER_PRECISION_4
-TEST_SET_GET_INT_ARRAY(handle, CCTK_INT4, 1,
+CHECK_SET_GET_INT_ARRAY(handle, CCTK_INT4, 1,
                        Util_TableSetInt4Array, Util_TableGetInt4Array);
 #endif
 #ifdef CCTK_INTEGER_PRECISION_8
-TEST_SET_GET_INT_ARRAY(handle, CCTK_INT8, 1,
+CHECK_SET_GET_INT_ARRAY(handle, CCTK_INT8, 1,
                        Util_TableSetInt8Array, Util_TableGetInt8Array);
 #endif
-TEST_SET_GET_INT_ARRAY(handle, CCTK_INT, 1,
+CHECK_SET_GET_INT_ARRAY(handle, CCTK_INT, 1,
                        Util_TableSetIntArray, Util_TableGetIntArray);
 
 /* reals */
-TEST_SET_GET_REAL_ARRAY(handle, CCTK_REAL, 0,
+CHECK_SET_GET_REAL_ARRAY(handle, CCTK_REAL, 0,
                         Util_TableSetRealArray, Util_TableGetRealArray);
 #ifdef CCTK_REAL_PRECISION_4
-TEST_SET_GET_REAL_ARRAY(handle, CCTK_REAL4, 1,
+CHECK_SET_GET_REAL_ARRAY(handle, CCTK_REAL4, 1,
                         Util_TableSetReal4Array, Util_TableGetReal4Array);
 #endif
 #ifdef CCTK_REAL_PRECISION_8
-TEST_SET_GET_REAL_ARRAY(handle, CCTK_REAL8, 1,
+CHECK_SET_GET_REAL_ARRAY(handle, CCTK_REAL8, 1,
                         Util_TableSetReal8Array, Util_TableGetReal8Array);
 #endif
 #ifdef CCTK_REAL_PRECISION_16
-TEST_SET_GET_REAL_ARRAY(handle, CCTK_REAL16, 1,
+CHECK_SET_GET_REAL_ARRAY(handle, CCTK_REAL16, 1,
                         Util_TableSetReal16Array, Util_TableGetReal16Array);
 #endif
-TEST_SET_GET_REAL_ARRAY(handle, CCTK_REAL, 1,
+CHECK_SET_GET_REAL_ARRAY(handle, CCTK_REAL, 1,
                         Util_TableSetRealArray, Util_TableGetRealArray);
 
 /* complex numbers */
-TEST_SET_GET_COMPLEX_ARRAY(handle, CCTK_COMPLEX, 0,
+CHECK_SET_GET_COMPLEX_ARRAY(handle, CCTK_COMPLEX, 0,
                            Util_TableSetComplexArray,
                            Util_TableGetComplexArray);
 #ifdef CCTK_COMPLEX_PRECISION_8
-TEST_SET_GET_COMPLEX_ARRAY(handle, CCTK_COMPLEX8, 1,
+CHECK_SET_GET_COMPLEX_ARRAY(handle, CCTK_COMPLEX8, 1,
                            Util_TableSetComplex8Array,
                            Util_TableGetComplex8Array);
 #endif
 #ifdef CCTK_COMPLEX_PRECISION_16
-TEST_SET_GET_COMPLEX_ARRAY(handle, CCTK_COMPLEX16, 1,
+CHECK_SET_GET_COMPLEX_ARRAY(handle, CCTK_COMPLEX16, 1,
                            Util_TableSetComplex16Array,
                            Util_TableGetComplex16Array);
 #endif
 #ifdef CCTK_COMPLEX_PRECISION_32
-TEST_SET_GET_COMPLEX_ARRAY(handle, CCTK_COMPLEX32, 1,
+CHECK_SET_GET_COMPLEX_ARRAY(handle, CCTK_COMPLEX32, 1,
                            Util_TableSetComplex32Array,
                            Util_TableGetComplex32Array);
 #endif
-TEST_SET_GET_COMPLEX_ARRAY(handle, CCTK_COMPLEX, 1,
+CHECK_SET_GET_COMPLEX_ARRAY(handle, CCTK_COMPLEX, 1,
                            Util_TableSetComplexArray,
                            Util_TableGetComplexArray);
 }
@@ -3688,108 +3837,58 @@ free(key_buffer);
 
 #ifdef UTIL_TABLE_TEST
 /*
- * This function tests  Util_TableCreateFromString() .
- * It returns the handle of the newly-created table.
+ * This function tests
+ *	Util_TableSetFromSTring()
+ *	Util_TableCreateFromString()
+ * It returns the handle of one of the newly-created tables.
  *
  * Bugs:
  * This test is tied to the present implementation -- it assumes a
  * specific ordering of table elements returned by an iterator.
  */
 static
-  int test_create_from_string(void)
+  int test_set_create_from_string(void)
 {
 /*
  * Test an empty string
  */
-  {
-int handle2 = Util_TableCreateFromString("");
-assert( Util_TableQueryNKeys(handle2) == 0 );
+int handle = Util_TableCreateFromString("");
+assert( Util_TableQueryNKeys(handle) == 0 );
 
 /*
  * Test some error cases
  */
+assert( Util_TableSetFromString(handle, "foo" ) == UTIL_ERROR_BAD_INPUT );
+assert( Util_TableSetFromString(handle, "foo/" ) == UTIL_ERROR_BAD_INPUT );
+assert( Util_TableSetFromString(handle, "foo/=12" )
+	== UTIL_ERROR_TABLE_BAD_KEY );
+assert( Util_TableSetFromString(handle, "foo= 12") == UTIL_ERROR_BAD_INPUT );
 assert( Util_TableCreateFromString("foo" ) == UTIL_ERROR_BAD_INPUT );
 assert( Util_TableCreateFromString("foo/" ) == UTIL_ERROR_BAD_INPUT );
 assert( Util_TableCreateFromString("foo/=12" ) == UTIL_ERROR_TABLE_BAD_KEY );
 assert( Util_TableCreateFromString("foo= 12") == UTIL_ERROR_BAD_INPUT );
 
 /*
- * Test a "good" string
+ * Test some "good" strings
  */
   {
-int handle = Util_TableCreateFromString("ij=42 real1=3.5; real_e=2.75");
-assert( handle >= 0 );
-assert( Util_TableQueryFlags(handle) == UTIL_TABLE_FLAGS_CASE_INSENSITIVE );
-assert( Util_TableQueryNKeys(handle) == 3 );
+int handle2 = Util_TableCreateFromString("ij=42 real1=3.5; real_e=2.75");
+assert( handle2 >= 0 );
+assert( Util_TableQueryFlags(handle2) == UTIL_TABLE_FLAGS_CASE_INSENSITIVE );
+assert( Util_TableQueryNKeys(handle2) == 3 );
+check_table_contents(handle2);
 
-/* set up the key buffer */
   {
-int max_key_length = Util_TableQueryMaxKeyLength(handle);
-assert( max_key_length == (int)strlen("real_e") );
-  {
-const int N_key_buffer = max_key_length + 1;
-char *const key_buffer = malloc(N_key_buffer);
-assert( key_buffer != NULL );
+int handle3 = Util_TableCreate(UTIL_TABLE_FLAGS_DEFAULT);
+assert( Util_TableSetFromString(handle3, "ij=42 real1=3.5;") == 2);
+assert( Util_TableQueryNKeys(handle3) == 2 );
+assert( Util_TableSetFromString(handle3, "real_e=2.75") == 1);
+assert( Util_TableQueryNKeys(handle3) == 3 );
+check_table_contents(handle3);
 
-/* walk through the table to verify contents {"real_e", "real1", "ij"} */
-/* n.b. implementation-dependence here for order of table elements */
-  {
-int ihandle = Util_TableItCreate(handle);
-CCTK_INT key_length, type_code, N_elements;
+assert( Util_TableDestroy(handle3) == 0 );
 
-/* real_e = 2.75 */
-type_code = 123456;
-N_elements = 54321;
-assert( Util_TableItQueryKeyValueInfo(ihandle,
-                                      N_key_buffer, key_buffer,
-                                      &type_code, &N_elements)
-        == (int)strlen("real_e") );
-assert( strcmp(key_buffer, "real_e") == 0 );
-assert( type_code = CCTK_VARIABLE_REAL );
-assert( N_elements == 1 );
-  {
-CCTK_REAL value_real;
-assert( Util_TableGetReal(handle, &value_real, key_buffer) == 1 );
-assert( value_real == 2.75 );
-
-/* real1 = 3.5 */
-assert( Util_TableItAdvance(ihandle) == 1 );
-type_code = 123456;
-N_elements = 54321;
-assert( Util_TableItQueryKeyValueInfo(ihandle,
-                                      N_key_buffer, key_buffer,
-                                      &type_code, &N_elements)
-        == (int)strlen("real1") );
-assert( strcmp(key_buffer, "real1") == 0 );
-assert( type_code = CCTK_VARIABLE_REAL );
-assert( N_elements == 1 );
-assert( Util_TableGetReal(handle, &value_real, key_buffer) == 1 );
-assert( value_real == 3.5 );
-
-/* ij = 42 */
-assert( Util_TableItAdvance(ihandle) == 1 );
-type_code = 123456;
-N_elements = 54321;
-assert( Util_TableItQueryKeyValueInfo(ihandle,
-                                      N_key_buffer, key_buffer,
-                                      &type_code, &N_elements)
-        == (int)strlen("ij") );
-assert( strcmp(key_buffer, "ij") == 0 );
-assert( type_code = CCTK_VARIABLE_REAL );
-assert( N_elements == 1 );
-  {
-CCTK_INT value_int;
-assert( Util_TableGetInt(handle, &value_int, key_buffer) == 1 );
-assert( value_int == 42 );
-
-assert( Util_TableItAdvance(ihandle) == 0 );
-
-return handle;
-  }
-  }
-  }
-  }
-  }
+return handle2;
   }
   }
 }
