@@ -45,3 +45,14 @@ CXX_DEPEND='$(CPP) -E -MM -nostdinc $(CPPFLAGS) '
 MKDIR="mkdir -p"
 
 CACTUSLIBLINKLINE='$(addsuffix .a,$(addprefix $(subst /,$(DIRSEP),$(CCTK_LIBDIR))$(DIRSEP)lib,$(notdir $(ALLCACTUSLIBS))))'
+
+cat >> cctk_archdefs.h <<EOF;
+
+/* WIN stuff */
+#define WIN32
+
+EOF
+
+
+
+
