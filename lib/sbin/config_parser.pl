@@ -64,30 +64,6 @@ require "$sbin_dir/output_config.pl";
 #&print_interface_database(%interface_database);
 
 
-#%public_parameters = &get_public_parameters(%parameter_database);
-
-#foreach $param (keys %public_parameters)
-#{
-#  print "param $param from " . $public_parameters{"$param"}. "\n";
-#}
-
-#@c_structures = &create_c_parameter_structures(scalar(@implementations),@implementations,%parameter_database);
-
-#foreach $line (@c_structures)
-#{
-#  print "$line\n";
-#}
-
-#@subroutine = &create_c_param_init_subroutine("test2", %parameter_database);
-
-
-
-
-#foreach $line (@subroutine)
-#{
-#  print "$line\n";
-#}
-
 #@GFstuff = &CreateGroups(%interface_database);
 
 #foreach $line (@GFstuff)
@@ -625,7 +601,7 @@ EOT
 
   close OUT;
 
-  open(OUT, ">cctk_parameters.h") || die "Cannot open cctk_parameters.h";
+  open(OUT, ">declare_parameters.h") || die "Cannot open declare_parameters.h";
 
   print OUT "#ifdef CCODE\n";
   print OUT "#include \"CParameters.h\"\n";
@@ -652,6 +628,46 @@ sub CreateVariableBindings
   }
   $start_dir = `pwd`;
   chdir $bindings_dir;
+
+  # Create the header files
+  if(! -d "include")
+  {
+    mkdir("include", 0755) || die "Unable to create include directory";
+  }
+  chdir "include";
+
+
+  foreach $thorn (split(" ",$interface_database{"THORNS"}))
+  {
+
+    @data = &CreateThornArgumentHeaderFile($thorn, %interface_database);
+
+    open(OUT, ">$thorn"."_arguments.h");
+
+    foreach $line (@data)
+    {
+      print OUT "$line\n";
+    }
+
+    close OUT;
+  }
+
+  open(OUT, ">declare_arguments.h");
+    
+  foreach $thorn (split(" ",$interface_database{"THORNS"}))
+  {
+    print OUT "#ifdef THORN_IS_$thorn\n";
+    print OUT "#include $thorn"."_arguments.h\n";
+    print OUT "#define CCTK_FARGUMENTS \U$thorn"."_FARGUMENTS\n";
+    print OUT "#define DECLARE_CCTK_FARGUMENTS DECLARE_\U$thorn"."_FARGUMENTS\n";
+    print OUT "#define CCTK_CARGUMENTS \U$thorn"."_CARGUMENTS\n";
+    print OUT "#define DECLARE_CCTK_CARGUMENTS DECLARE_\U$thorn"."_CARGUMENTS\n";
+    print OUT "#endif\n\n";
+  }
+
+  close OUT;
+      
+  chdir "..";
 
   if(! -d "Variables")
   {

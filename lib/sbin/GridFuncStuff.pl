@@ -478,4 +478,220 @@ sub CreateCArgumentList
   return $arglist;
 
 }  
+
+sub CreateThornArgumentHeaderFile
+{
+  local($thorn, %interface_database) = @_;
+  local($line);
+  local(@returndata) = ();
+  local(%hasvars);
+
+  # Create the basic thorn block definitions 
+
+  foreach $block ("PRIVATE", "PROTECTED", "PUBLIC")
+  {
+    
+    %data = &GetThornArguments($thorn, $block, %interface_database);
+
+    # Remember if there actually are any arguments here.
+    $hasvars{$block} = 1 if(keys %data > 0) ;
+
+    # Do the fortran definitions
+    push(@returndata, "#ifdef FCODE");
+
+    # Create the fortran argument declarations
+
+    @data = &CreateFortranArgumentDeclarations(%data);
+   
+    push(@returndata, "#define \UDECLARE_$thorn"."_$block"."_FARGUMENTS \\");
+
+    foreach $line (@data)
+    {
+      push(@returndata, "$line&&\\");
+    }
+
+    push(@returndata, ("",""));
+
+    # Create the fortran argument list 
+
+    push(@returndata, "#define \U$thorn"."_$block"."_FARGUMENTS \\");
+
+    push(@returndata, &CreateFortranArgumentList(%data));
+
+    push(@returndata, ("",""));
+
+    push(@returndata, "#endif /*FCODE*/");
+
+    push(@returndata, ("",""));
+
+
+    ##########################################################
+
+    # Do the C definitions
+    push(@returndata, "#ifdef CCODE");
+
+    # Create the C argument variable number statics
+
+    push(@returndata, "#define \UDECLARE_$thorn"."_$block"."_C2F \\");
+
+    @data = &CreateCArgumentStatics(%data);
+    foreach $line (@data)
+    {
+      push(@returndata, "$line; \\");
+    }
+    push(@returndata, ("",""));
+
+
+    # Create the C argument variable number statics initialisers
+    push(@returndata, "#define \UINITIALISE_$thorn"."_$block"."_C2F \\");
+    @data = &CreateCArgumentInitialisers(%data);
+    foreach $line (@data)
+    {
+      push(@returndata,"$line; \\");
+    }
+
+    push(@returndata, ("",""));
+
+    # Create the C argument prototypes
+    push(@returndata, "#define \U$thorn"."_$block"."_C2F_PROTO \\");
+
+    push(@returndata, &CreateCArgumentPrototype(%data));
+
+    push(@returndata, ("",""));
+
+    # Create the C argument list
+    push(@returndata, "#define \UPASS_$thorn"."_$block"."_C2F(xGH) \\");
+
+    push(@returndata, &CreateCArgumentList(%data));
+
+    push(@returndata, ("",""));
+
+    push(@returndata, "#endif /*CCODE*/");
+
+    push(@returndata, ("",""));
+
+  }
+
+  ################################################################
+
+
+  # Create the final thorn argument macros
+
+  # Do the Fortran argument lists
+  push(@returndata, "#ifdef FCODE");
+
+  $sep = "";
+
+  push(@returndata, "#define \U$thorn"."_FARGUMENTS CCTKARGS\\");
+
+  foreach $block ("PRIVATE", "PROTECTED", "PUBLIC")
+  {
+    if($hasvars{$block})
+    {
+      push(@returndata, "$sep"."\U$thorn"."_$block"."_FARGUMENTS\\");
+      $sep = ",";
+    }
+  }
+
+  push(@returndata, ("",""));
+
+  # Do the fortran declarations
+  push(@returndata, "#define \UDECLARE_$thorn"."_FARGUMENTS DECLARE_CCTKARGS\\");
+
+  foreach $block ("PRIVATE", "PROTECTED", "PUBLIC")
+  {
+    if($hasvars{$block})
+    {
+      push(@returndata, "DECLARE_\U$thorn"."_$block"."_FARGUMENTS\\");
+    }
+  }
+
+  push(@returndata, ("",""));
+
+  push(@returndata, "#endif /*FCODE*/");
+  
+  push(@returndata, ("",""));
+
+
+  ################################################
+  
+  # Do the C definitions
+  push(@returndata, "#ifdef CCODE");
+
+  $sep = "";
+
+  # Argument prototypes
+  push(@returndata, "#define \U$thorn"."_C2F_PROTO CCTKARGS_C2FPROTO\\");
+
+  foreach $block ("PRIVATE", "PROTECTED", "PUBLIC")
+  {
+    if($hasvars{$block})
+    {
+      push(@returndata, "$sep"."\U$thorn"."_$block"."_C2F_PROTO\\");
+      $sep = ",";
+    }
+  }
+
+  push(@returndata, ("",""));
+
+  # Argument lists
+  $sep = "";
+
+  push(@returndata, "#define PASS_\U$thorn"."_C2F(xGH) PASS_CCTKARGS_C2F(xGH)\\");
+
+  foreach $block ("PRIVATE", "PROTECTED", "PUBLIC")
+  {
+    if($hasvars{$block})
+    {
+      push(@returndata, "$sep"."PASS_\U$thorn"."_$block"."_C2F(xGH)\\");
+      $sep = ",";
+    }
+  }
+
+  push(@returndata, ("",""));
+
+  # Declare statics
+
+  push(@returndata, "#define DECLARE_\U$thorn"."_C2F DECLARE_CCTKARGS_C2F \\");
+
+  foreach $block ("PRIVATE", "PROTECTED", "PUBLIC")
+  {
+    if($hasvars{$block})
+    {
+      push(@returndata, "DECLARE_\U$thorn"."_$block"."_C2F\\");
+      $sep = ",";
+    }
+  }
+
+  push(@returndata, ("",""));
+
+  # Initialise statics
+
+  push(@returndata, "#define INITIALISE_\U$thorn"."_C2F INITIALISE_CCTKARGS_C2F \\");
+
+  foreach $block ("PRIVATE", "PROTECTED", "PUBLIC")
+  {
+    if($hasvars{$block})
+    {
+      push(@returndata, "INITIALISE_\U$thorn"."_$block"."_C2F\\");
+      $sep = ",";
+    }
+  }
+
+  push(@returndata, ("",""));
+
+  # Dummy C declarations
+
+  push(@returndata, "#define \U$thorn"."_CARGS cGH *GH");
+
+  push(@returndata, "#define \UDECLARE_$thorn"."_CARGS");
+  
+
+  push(@returndata, "#endif /*CCODE*/");
+  
+  push(@returndata, ("",""));
+  
+  return @returndata;
+}
+  
 1;
