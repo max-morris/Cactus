@@ -289,6 +289,7 @@ if test "x$cross_compiling" = "xyes"; then
      NULL_DEVICE="/dev/null"
   fi
   eval "cctk_cv_nulldevice=$NULL_DEVICE"
+  AC_DEFINE_UNQUOTED(NULL_DEVICE, "$cctk_cv_nulldevice")
 else
   CCTK_FIND_NULLDEVICE
 fi
