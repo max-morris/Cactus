@@ -20,6 +20,10 @@ ifeq ($(strip $(THORNLIST)), )
    THORNLIST=allthorns.th
 endif
 
+ifeq ($(strip $(TOCDEPTH)), )
+   TOCDEPTH=0
+endif
+
 ifeq ($(strip $(PERL)), )
    PERL=/usr/bin/perl
 endif
@@ -82,7 +86,7 @@ $(MASTER_FILE).tex:  $(foreach thorn, $(THORNS), $(thorn)/param.ccl $(thorn)/int
 	@echo "       schedule.ccl ..."
 	$(PERL) -s $(CCTK_HOME)/lib/sbin/SchedLatex.pl -cctk_home=$(CCTK_HOME) -directory=$(ARRANGEMENTS_DIR) -thornlist=$(THORNLIST) -outdir=./ -section > LOG_SCHEDLATEX_MSGS 2>&1
 	@echo "  Creating $@ ..."
-	$(PERL) -s $(CCTK_HOME)/lib/sbin/ThornGuide.pl -cctk_home=$(CCTK_HOME) -directory=$(ARRANGEMENTS_DIR) -thornlist=$(THORNLIST) -outdir=./ -outfile=$(MASTER_FILE).tex > LOG_THORNGUIDE_MSGS 2>&1
+	$(PERL) -s $(CCTK_HOME)/lib/sbin/ThornGuide.pl -cctk_home=$(CCTK_HOME) -directory=$(ARRANGEMENTS_DIR) -thornlist=$(THORNLIST) -outdir=./ -outfile=$(MASTER_FILE).tex -tocdepth=$(TOCDEPTH) > LOG_THORNGUIDE_MSGS 2>&1
 	if test -e $(IMAGE_FILE) && test ! -e "bincactus.eps"; then \
 	   cp $(IMAGE_FILE) bincactus.eps;                          \
 	fi ; 
