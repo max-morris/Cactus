@@ -9,7 +9,7 @@
  @@*/
 
 #ifndef _CGH_H_
-#define _CGH_H_
+#define _CGH_H_ 1
 
 #ifndef _CCTK_TYPES_H
 #include "cctk_Types.h"
@@ -72,9 +72,6 @@ typedef struct
   /* All the group data for this GH (storage, comm, etc. */
   cGHGroupData *GroupData;
 
-  /* Rfr tree for this GH. */
-  void *rfr_top;
-
 } cGH;
 
-#endif
+#endif /* _CGH_H_ */

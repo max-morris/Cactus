@@ -20,7 +20,6 @@
 #include "cctki_GHExtensions.h"
 #include "cctki_WarnLevel.h"
 
-#include "CactusrfrInterface.h"
 #include "CactusMainDefaults.h"
 #include "CactusCommFunctions.h"
 
@@ -114,7 +113,7 @@ int CactusInitialiseGH(cGH *GH)
   CCTK_PRINTSEPARATOR
 #endif
   
-  /* Do the rfr initialisation on this GH */
+  /* Do the schedule initialisation on this GH */
   CCTKi_ScheduleGHInit((void *)GH);
 
   /* Initialise all the extensions. */

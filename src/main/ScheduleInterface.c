@@ -27,8 +27,6 @@
 #include "cctk_Groups.h"
 #include "cctk_GroupsOnGH.h"
 
-#include "rfrInterface.h"
-
 #include "cctki_FortranWrappers.h"
 
 #include "CactusTimers.h"
@@ -160,10 +158,10 @@ static void CCTKi_SchedulePrintTimerHeaders(cTimerData *info);
  ********************* Other Routine Prototypes *********************
  ********************************************************************/
 
-/* FIXME: these should be renamed and put in a header somewhere */
+/* FIXME: these should be put in a header somewhere */
 
-int CCTKi_rfrTriggerSaysGo(cGH *GH, int variable);
-int CCTKi_rfrTriggerAction(void *GH, int variable);
+int CCTKi_TriggerSaysGo(cGH *GH, int variable);
+int CCTKi_TriggerAction(void *GH, int variable);
 
 
 /********************************************************************
@@ -1358,7 +1356,7 @@ static int CCTKi_ScheduleCallEntry(t_attribute *attribute,
         last  = index + CCTK_NumVarsInGroupI(attribute->trigger_groups[i]) -1;
         for(; index <= last ; index++)
         {
-          go = go || CCTKi_rfrTriggerSaysGo(data->GH, index);
+          go = go || CCTKi_TriggerSaysGo(data->GH, index);
         }
       }
     }
@@ -1427,7 +1425,7 @@ static int CCTKi_ScheduleCallExit(t_attribute *attribute,
         last  = index + CCTK_NumVarsInGroupI(attribute->trigger_groups[i]) - 1;
         for(; index <= last ; index++)
         {
-          CCTKi_rfrTriggerAction(data->GH, index);
+          CCTKi_TriggerAction(data->GH, index);
         }
       }
     }

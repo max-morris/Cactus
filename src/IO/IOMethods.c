@@ -688,7 +688,7 @@ void FMODIFIER FORTRAN_NAME(CCTK_OutputVarByMethod)(int *ierr, cGH *GH, TWO_FORT
  ************************************************************************/
 
  /*@@
-   @routine    CCTKi_rfrTriggerSaysGo
+   @routine    CCTKi_TriggerSaysGo
    @date       Sat March 6 1999
    @author     Gabrielle Allen
    @desc 
@@ -723,7 +723,7 @@ void FMODIFIER FORTRAN_NAME(CCTK_OutputVarByMethod)(int *ierr, cGH *GH, TWO_FORT
    @version    $Header$
  */
 
-int CCTKi_rfrTriggerSaysGo(cGH *GH, int variable)
+int CCTKi_TriggerSaysGo(cGH *GH, int variable)
 {
   int handle;
   int flag;
@@ -751,11 +751,11 @@ int CCTKi_rfrTriggerSaysGo(cGH *GH, int variable)
 
 
  /*@@
-   @routine    CCTKi_rfrTriggerAction
+   @routine    CCTKi_TriggerAction
    @date       Sat March 6 1999
    @author     Gabrielle Allen
    @desc 
-               Essentially the same as CCTKi_rfrTriggerSaysGo, 
+               Essentially the same as CCTKi_TriggerSaysGo, 
                but now calls each IO method for which it is 
                time to output the trigger
    @enddesc 
@@ -785,7 +785,7 @@ int CCTKi_rfrTriggerSaysGo(cGH *GH, int variable)
    @returndesc
                0    = This should never happen, since at least
                       one IO method should have been found by
-                      CCTKi_rfrTriggerSaysGo
+                      CCTKi_TriggerSaysGo
                >0   = Number of IO methods called for output for
                       this variable
    @endreturndesc
@@ -793,7 +793,7 @@ int CCTKi_rfrTriggerSaysGo(cGH *GH, int variable)
    @version    $Header$
  */
 
-int CCTKi_rfrTriggerAction(void *GH, int variable)
+int CCTKi_TriggerAction(void *GH, int variable)
 {
   const char *varname;
   char *fullvarname;
