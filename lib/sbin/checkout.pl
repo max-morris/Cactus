@@ -365,7 +365,8 @@ sub CheckOut
 sub choose_repository
 {
   my($login) = @_;
-  my($repository,$dowhat);
+  my $repository,$dowhat;
+  my $home;
 
   open(IN,"<CVS/Root") || die "No file CVS/Root";
   $rep[1] = <IN>;
@@ -374,12 +375,15 @@ sub choose_repository
   $rep[2]  = "Custom repository";
   
   # Get home directory from password file
-  @dirs = getpwuid($<);
-  $file = "@dirs[7]/.cvspass";
-
-  if (open(CVSPASS,"<$file"))
+  $home = $ENV{"HOME"};
+  if ($home =~ /^$/)
   {
-    $numinpass=2;
+    print " Set \$HOME environment variable to home directory\n";
+    die;
+  }
+  if (open(CVSPASS,"<$home/.cvspass"))
+  {
+    $numinpass = 2;
     while (<CVSPASS>)
     {
       $numinpass++;
@@ -387,7 +391,7 @@ sub choose_repository
       $rep[$numinpass] = $1;
     }
   }
-  else
+  else 
   {
     print "Could not find $file/.cvspass containing CVS logins\n";
     print "Perhaps you need to login on this machine? Type \"help\"\n";
