@@ -184,6 +184,9 @@ else
       if test -z "$LIBDIRS" ; then
         LIBDIRS="`which $F90 | sed 's,/bin/.*,/lib,'`"
       fi
+      # workaround for calling C varargs functions from Fortran
+      : ${F77FLAGS='-Mx,125,0x200'}
+      : ${F90FLAGS='-Mx,125,0x200'}
       : ${F77_OPTIMISE_FLAGS='-fast -Minfo -Mneginfo -Mvect=assoc'}
       : ${F90_OPTIMISE_FLAGS='$(F77_OPTIMISE_FLAGS)'}
       : ${F77_DEBUG_FLAGS='-g'}
