@@ -31,7 +31,7 @@ in single processor mode. Please refer to the architecture section
 \item[{\tt Perl5.0}] Perl is used extensively during the Cactus
   thorn configuration phase. Perl is available for nearly all
   operating systems known to man and can be obtained at
-  {\tt http://www.perl.org}
+  \url{http://www.perl.org}
 \item[{\tt GNU make}] The make
   process works with the GNU make utility (referred to as {\bf gmake}
   henceforth). While other make utilities may also work, this is not
@@ -60,7 +60,7 @@ Supercomputing sites often supply a native {\tt MPI} implementation with
 which Cactus is very likely to be compatible. Otherwise there are
 various freely available ones available, e.g. the {\tt MPICH}
 version of {\tt MPI} is available for various architectures and operating
-systems at {\tt http://www-unix.mcs.anl.gov/mpi/}.
+systems at \url{http://www-unix.mcs.anl.gov/mpi/}.
 \end{Lentry}
 
 \noindent
@@ -106,7 +106,7 @@ Cactus on, including some architecture specific notes.  A complete
 list of architectures supported by Cactus, along with more notes, can
 be found at
 \begin{center}
-{\tt http://www.cactuscode.org/Documentation/Architectures.html}.
+\url{http://www.cactuscode.org/Documentation/Architectures.html}.
 \end{center}
 
 \begin{Lentry}
@@ -136,7 +136,7 @@ doc/README.NT for details.
 %  mode and {\tt MPI} supported. The Decs need to have the GNU {\tt C/C++}
 %  compilers installed
 %\item[{\bf Linux (ia32, ia64, ppc, alpha)}] There is a
-%  free Linux F90 compiler available from  {\tt http://www.psrv.com}
+%  free Linux F90 compiler available from  \url{http://www.psrv.com}
 %  -- the only free we know of; please note the comment about installing this in
 %the FAQ.
 %  Single processor mode and MPI ({\tt MPICH} and {\tt LAM}) supported.
@@ -161,7 +161,7 @@ The following machines are only partially supported
 \label{sec:chpr}
 
 Cactus is distributed, extended, and maintained using the free CVS
-software ({\it Concurrent Versioning System}: {\tt http://www.cvshome.org}).
+software ({\it Concurrent Versioning System}: \url{http://www.cvshome.org}).
 CVS  allows many people to work on a large software project
 together without getting into a tangle.
 Since Cactus thorns are distributed from several repositories on the
@@ -179,7 +179,7 @@ thorns used. The flesh on its own requires less than 5 MB.
 The script for checking out the flesh and thorns, {\tt GetCactus}, is available
 from the website at
 
-{\tt http://www.cactuscode.org/Download/GetCactus}
+\url{http://www.cactuscode.org/Download/GetCactus}
 
 The
 script takes as an argument the name of a file containing a {\it ThornList},
@@ -250,7 +250,7 @@ Configurations are described in detail in section \ref{sec:coaco}.
 
 For tracking problem reports and bugs we use GNATS, which is a bugtracking
 system published under the GNU license. We have set up a web interface at
-{\tt http://www.cactuscode.org} which allows easy submission and browsing
+\url{http://www.cactuscode.org} which allows easy submission and browsing
 of problem reports.
 
 A description of the GNATS categories which we use is provided in the appendix
@@ -591,7 +591,7 @@ may be specified on the configuration command line):
 	({\tt lib/make/known-architectures}).
 
 \item[{\tt MPICH}]
-Use MPICH ({\tt http://www-unix.mcs.anl.gov/mpi/mpich}). This is controlled
+Use MPICH (\url{http://www-unix.mcs.anl.gov/mpi/mpich}). This is controlled
 by the options
   \begin{Lentry}
   \item [{\tt MPICH\_ARCH} *] machine architecture.
@@ -620,7 +620,7 @@ an additional variable must be set
   \end{Lentry}
 
 \item[{\tt LAM}]
-Use {\tt LAM} (Local Area Multicomputer, {\tt http://www.lam-mpi.org/}). This is
+Use {\tt LAM} (Local Area Multicomputer, \url{http://www.lam-mpi.org/}). This is
 controlled by the variables
   \begin{Lentry}
   \item[{\tt LAM\_DIR} *] directory in which {\tt LAM} is installed. This
@@ -635,23 +635,23 @@ directories, instead of setting {\tt LAM\_DIR} set the two variables
 
 
 \item[{\tt WMPI}]
-Use WMPI (Win32 Message Passing Interface, {\tt http://dsg.dei.uc.pt/w32mpi/intro.html}). This is controlled by the variable
+Use WMPI (Win32 Message Passing Interface, \url{http://dsg.dei.uc.pt/w32mpi/intro.html}). This is controlled by the variable
   \begin{Lentry}
   \item[{\tt WMPI\_DIR} *] directory in which {\tt WMPI} is installed.
   \end{Lentry}
 
 \item[{\tt HPVM}]
-Use HPVM (High Performance Virtual Machine,\\{\tt http://www-csag.ucsd.edu/projects/hpvm.html}). This is controlled by the variable
+Use HPVM (High Performance Virtual Machine,\\\url{http://www-csag.ucsd.edu/projects/hpvm.html}). This is controlled by the variable
   \begin{Lentry}
   \item[{\tt HPVM\_DIR} *] directory in which {\tt HPVM} is installed.
   \end{Lentry}
 
 \item[{\tt MPIPro}]
-Use MPIPro ({\tt http://www.mpi-softtech.com/}).
+Use MPIPro (\url{http://www.mpi-softtech.com/}).
 
 \item[{\tt PACX}]
 Use the PACX Metacomputing package (PArallel Computer eXtension,\\
-{\tt http://www.hlrs.de/structure/organisation/par/projects/pacx-mpi/}). This is controlled by the variables
+\url{http://www.hlrs.de/structure/organisation/par/projects/pacx-mpi/}). This is controlled by the variables
   \begin{Lentry}
   \item[{\tt PACX\_DIR} *] directory in which {\tt PACX} is installed.
         If this option is not defined it will be searched for.
@@ -666,7 +666,7 @@ locations given in the files in {\tt lib/make/extras/MPI}.
 
 \subsubsection{HDF5: Hierarchical Data Format version 5}
 
-To compile with HDF5 ({\tt http://hdf.ncsa.uiuc.edu/whatishdf5.html}),
+To compile with HDF5 (\url{http://hdf.ncsa.uiuc.edu/whatishdf5.html}),
 the configure options are
 
 {\tt HDF5 = yes/no [HDF5\_DIR = <dir>] [LIBZ\_DIR = <dir>]}
@@ -681,7 +681,7 @@ by setting LIBZ\_DIR.\\
 
 \subsubsection{LAPACK: Linear Algebra PACKage}
 
-To compile with LAPACK ({\tt http://www.netlib.org/lapack/}),
+To compile with LAPACK (\url{http://www.netlib.org/lapack/}),
 the configure options are
 
 \begin{verbatim}
