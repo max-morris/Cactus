@@ -6,7 +6,7 @@
 #   @desc   
 #   Stuff for WMPI - a windows MPI implementation   
 #   @enddesc 
-#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/extras/MPI/WMPI,v 1.1 1999-09-04 19:23:20 goodale Exp $ #   
+#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/extras/MPI/WMPI,v 1.2 2001-05-21 10:26:14 goodale Exp $ #   
 #   @enddesc 
 # @@*/
 
@@ -17,6 +17,6 @@ if test -z "$WMPI_DIR" ; then
    exit 2
 fi
   
-MPI_LIBS='$(addprefix $(MPI_LIB_DIRS)\\\\,cdvlibf.lib cvwmpi.lib)'  
+MPI_LIBS="cdvlibf cvwmpi"  
 MPI_LIB_DIRS="`echo $WMPI_DIR\\\lib\\\Console | sed 's:\\\:\\\\\\\\:g'`"
 MPI_INC_DIRS="`echo $WMPI_DIR\\\include | sed 's:\\\:\\\\\\\\:g'`"
