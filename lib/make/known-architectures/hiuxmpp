@@ -6,12 +6,28 @@
 #   @desc  Optimazations by Peter Diener
 #   Configuration file for the Hitachi SR8000-F1
 #   @enddesc 
-#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/hiuxmpp,v 1.5 2001-02-21 14:18:46 lanfer Exp $
+#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/hiuxmpp,v 1.6 2001-04-05 14:36:15 tradke Exp $
 # @@*/
 
 if test "$CCTK_CONFIG_STAGE" = "preferred-compilers" ; then
 
-  :
+  #
+  # use the native compilers by default
+  #
+  if test -z "$CC"; then
+    echo Setting C compiler to cc
+    CC="cc"
+  fi
+
+  if test -z "$CXX"; then
+    echo Setting C++ compiler to CC
+    CXX="CC"
+  fi
+
+  if test -z "$LD"; then
+    echo Setting linker to CC
+    LD="CC"
+  fi
 
 else
 
@@ -58,4 +74,10 @@ else
     NATIVE_MPI_INC_DIRS="/usr/mpi/include"
   fi
 
+# PTHREADS stuff
+
+  if test "X$PTHREADS" = "Xyes"; then
+    PTHREADS_CFLAGS="-D_PTHREADS_D10"
+    PTHREADS_CXXFLAGS="$PTHREADS_CFLAGS"
+  fi
 fi
