@@ -1,5 +1,5 @@
  /*@@
-   @header    GHExtensions.h
+   @header    cctk_GHExtensions.h
    @date      Fri Jan 15 14:15:20 1999
    @author    Tom Goodale
    @desc 

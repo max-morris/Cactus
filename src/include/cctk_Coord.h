@@ -1,5 +1,5 @@
  /*@@
-   @header    Coord.h
+   @header    cctk_Coord.h
    @date      Mon April 12 1999
    @author    Gabrielle Allen
    @desc 
@@ -16,7 +16,6 @@
 #ifdef __cplusplus 
 extern "C" {
 #endif
-
 
 struct Coordprops
 { 

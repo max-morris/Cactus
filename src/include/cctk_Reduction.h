@@ -1,5 +1,5 @@
  /*@@
-   @header    Reduction.h
+   @header    cctk_Reduction.h
    @date      
    @author    Gabrielle Allen
    @desc 

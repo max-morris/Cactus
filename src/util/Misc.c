@@ -19,9 +19,9 @@
 #include "gnu_regex.h"
 
 #include "config.h"
-#include "Misc.h"
-#include "FortranString.h"
-#include "WarnLevel.h"
+#include "cctk_Misc.h"
+#include "cctk_FortranString.h"
+#include "cctk_WarnLevel.h"
 
  /*@@
    @routine    Util_SplitString

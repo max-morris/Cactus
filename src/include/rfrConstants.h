@@ -1,5 +1,5 @@
  /*@@
-   @file      rfr_constants.h
+   @file      rfrConstants.h
    @date      
    @author   
    @desc 

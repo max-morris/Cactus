@@ -1,5 +1,5 @@
  /*@@
-   @header    FortranString.h
+   @header    cctk_FortranString.h
    @date      Wed Feb  17 12:55 1999
    @author    Gabrielle Allen, Paul Walker
    @desc 
@@ -15,7 +15,7 @@
    @version $Header$
  @@*/
 
-#include "Misc.h"
+#include "cctk_Misc.h"
 
 #if defined T3E
 

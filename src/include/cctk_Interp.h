@@ -1,5 +1,5 @@
  /*@@
-   @header    Interp.h
+   @header    cctk_Interp.h
    @date      July 07 1999
    @author    Thomas Radke
    @desc 
@@ -8,7 +8,7 @@
    @history
    @date      July 07 1999
    @author    Thomas Radke
-   @hdesc     Just copied from Reduction.h
+   @hdesc     Just copied from cctk_Reduction.h
    @endhistory
  @@*/
 

@@ -1,5 +1,5 @@
  /*@@
-   @header    Comm.h
+   @header    cctk_Comm.h
    @date      Sat Feb  13 19:42:29 1999
    @author    Tom Goodale
    @desc 

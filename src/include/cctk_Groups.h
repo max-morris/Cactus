@@ -1,5 +1,5 @@
  /*@@
-   @header    Groups.h
+   @header    cctk_Groups.h
    @date      Mon Feb  8 14:47:10 1999
    @author    Tom Goodale
    @desc 
@@ -27,8 +27,6 @@ int CCTKi_CreateGroup(const char *gname, const char *thorn, const char *imp,
 		     ...);
 
 int CCTK_GroupIndex(const char *groupname);
-
-void CCTK_DumpGroupInfo(void);
 
 int CCTK_VarIndex(const char *variablename);
 

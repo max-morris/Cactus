@@ -1,5 +1,5 @@
  /*@@
-   @header    GroupsOnGH.h
+   @header    cctk_GroupsOnGH.h
    @date      Wed Apr 7 1999
    @author    Gabrielle Allen
    @desc 

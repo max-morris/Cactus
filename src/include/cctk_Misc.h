@@ -1,5 +1,5 @@
  /*@@
-   @header    Misc.h
+   @header    cctk_Misc.h
    @date      Wed Jan 20 10:39:01 1999
    @author    Tom Goodale
    @desc 
