@@ -56,7 +56,7 @@ REAL cctk_final_time "Final time for evolution"
  : :: "Anything"
 } -1.0
  
-INT cctk_itlast "Final iteration number"
+INT cctk_itlast "Final iteration number" STEERABLE = ALWAYS
 {
 : :: "Any integer"
 } 10
