@@ -956,3 +956,47 @@ int CCTK_RegexMatch(const char *string,
   return(1);
 }
 
+
+/*@@
+   @routine    getoutpfx
+   @date       Thu Jan 22 14:44:39 1998
+   @author     Paul Walker
+   @desc
+   Change a C string into a Fortran string
+   @enddesc
+@@*/
+ 
+ 
+void FORTRAN_NAME(CCTK_FortranString)(int *nchar, char **cstring,ONE_FORTSTRING_ARG)
+{
+
+  ONE_FORTSTRING_CREATE(fstring)
+  int i;
+
+  if (strlen(*cstring) > cctk_strlen1) 
+  {
+    char *message;
+    message = (char *)malloc( (200+strlen(*cstring))*sizeof(char) );
+    sprintf(message,"Cannot output %s to char* of length %d",
+	    *cstring,cctk_strlen1);
+    CCTK_Warn (1,__LINE__,__FILE__,"Cactus",message);
+    free(message);
+    *nchar = -1;
+  }
+
+  for (i=0;i<strlen(*cstring);i++) 
+  {
+    cctk_str1[i] = (*cstring)[i];
+  }
+
+  for (i=strlen(*cstring);i<cctk_strlen1;i++)
+  {
+    cctk_str1[i] = ' ';
+  }
+
+  cctk_str1[strlen(*cstring)] = '\0';
+
+  *nchar = strlen(*cstring);
+
+}
+                           
