@@ -69,9 +69,13 @@ if (!open (AT, "< $scratchdir${sep}ThornList")) {
 } 
 else 
 {
+  chdir "arrangements";
+
   while (<AT>) 
   {
+    next if (m:^\#:);
     $name = $_;
+    $name =~ s/\#(.*)$//g;
     $name =~ /^\s*([^\s]*)\s*/;
     $T = $1;
     @allthorns = (@allthorns, $T);
@@ -82,11 +86,11 @@ else
     $database{"\U$T ARRANGEMENT"} = $1; 
     
     $number = 0;
-    if (-e "arrangements${sep}$T${sep}test${sep}") 
+    if (-d "$T${sep}test") 
     {
       $thisdir = `pwd`;
       chop($thisdir);
-      chdir "arrangements${sep}$T${sep}test";
+      chdir "$T${sep}test" || die "Unable to chdir to $T${sep}test";
       while ($file=<*.par>)
       {
 	$database{"\U$T TESTFILE\E"} = $file;
@@ -94,11 +98,14 @@ else
 	@testthorns = (@testthorns, $T);
 	$number++;
       }
-      chdir "$thisdir";
+      chdir "../../.." || die "Unable to chdir to $thisdir";
+
     }
     $ntests{"$T"} = $number;
     $database{"\U$T NTESTS\E"} = $number;
   }
+
+  chdir "..";
 }
 
 # Parse the parameter files for directives
@@ -106,7 +113,7 @@ $ntests = 0;
 foreach $t (@testfiles) 
 {
   $ntests++;
-  $file =  "arrangements/@testthorns[$ntests-1]/test/$t";
+  $file =  "arrangements/$testthorns[$ntests-1]/test/$t";
   open (IN, "<$file") || die "Can not open $file";
   while (<IN>)
   {
@@ -137,7 +144,7 @@ if ($tests =~ /All/) {
   foreach $t (@testfiles) 
   {
     $haveallthorns = 1;
-    $active = @activethorns[$ntests];
+    $active = $activethorns[$ntests];
     @at = split(' ',$active);
     foreach $th (@at)
     {
@@ -158,7 +165,7 @@ if ($tests =~ /All/) {
       }
     }
 
-    $thorn = @testthorns[$ntests];        
+    $thorn = $testthorns[$ntests];        
     $ntests++;
 
     if ($haveallthorns)
@@ -201,7 +208,7 @@ if ($tests =~ /All/) {
     print "\n  Tests failed:\n";
     for ($i=0; $i<$number_failed;$i++)
     {
-      print "    ".@which_failed[$i]." (from ".@thorn_failed[$i].")\n";
+      print "    ". $which_failed[$i]." (from ". $thorn_failed[$i].")\n";
     }
   }
   if ($number_zerofiles > 0)
@@ -232,7 +239,7 @@ else
     print "\n--- Menu ---\n";
     $sp = "     ";
     for ($i=1;$i<$ntests+1;$i++) {
-      print "[$i] ".@testthorns[$i-1]." $testnum{$i}: \n      \"$testnames{$i}\"\n";
+      print "[$i] ".$testthorns[$i-1]." $testnum{$i}: \n      \"$testnames{$i}\"\n";
     }
     print "\n  Enter number of test to run (quit to end) : ";
     $choice = <STDIN>;
@@ -240,7 +247,7 @@ else
     $choice =~ s/\s//;
     print "\n";
     $ip = $inp{$testnum{$choice}};
-    $thorn = @testthorns[$choice-1];
+    $thorn = $testthorns[$choice-1];
     if (!($choice =~ m/^q/i || $choice =~ m/^\s*$/)) 
     {
       &runtest($ip,$thorn,$choice);
@@ -318,7 +325,7 @@ sub runtest {
     foreach $file (@oldout) {
         $nfiles ++;
         $newfile = $file;
-        $newfile =~ s:^.*${sep}([^${sep}]+)$:\1:;
+        $newfile =~ s:^.*${sep}([^${sep}]+)$:$1:;
         $newfile = "$tsttop$sep$tp$sep$newfile"; 
 #       print "Comparing $file with $newfile\n";
 
@@ -341,7 +348,7 @@ sub runtest {
                   $nblow ++;
 
 		  $exp = sprintf("%e",$vdiff);
-		  $exp =~ s/^.*e-(\d+)/\1/;
+		  $exp =~ s/^.*e-(\d+)/$1/;
 		  unless ($exp >= $tolerance) {
                     $nrealblow++;
 		  } 
@@ -351,7 +358,7 @@ sub runtest {
         if ($nblow != 0) {
             $blewit ++;
             $stripfile = $newfile;
-            $stripfile =~ s:^.*${sep}(.*)$:\1:;
+            $stripfile =~ s:^.*${sep}(.*)$:$1:;
             if ($nrealblow == 0) {
                 print "     $stripfile differs at machine precision (which is OK!)\n";
             } else {
@@ -407,7 +414,7 @@ sub defprompt {
 }
 
 sub fpabs {
-    local ($val) = @_[0];
+    local ($val) = $_[0];
     $val > 0 ? $val:-$val;
 }
 
