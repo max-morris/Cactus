@@ -16,7 +16,7 @@
 #
 #
 #   @enddesc
-#   @version $Id: Makefile,v 1.134 2002-04-19 20:37:44 allen Exp $
+#   @version $Id: Makefile,v 1.135 2002-04-26 21:20:17 allen Exp $
 # @@*/
 
 ##################################################################################
@@ -772,7 +772,7 @@ ifneq ($strip($(CONFIGURATIONS)),)
 
 $(addsuffix -testsuite,$(CONFIGURATIONS)):
 	@echo Running test suite $(@:%-thornlist=%)
-	if [ -r $(CONFIGS_DIR)/$(@:%-testsuite=%)/ThornList ] ; then $(PERL) -s lib/sbin/RunTest.pl $(PROMPT) $(CCTK_HOME) $(@:%-testsuite=%) ; fi
+	if [ -r $(CONFIGS_DIR)/$(@:%-testsuite=%)/ThornList ] ; then $(PERL) -s lib/sbin/RunTest.pl $(PROMPT) $(CCTK_HOME) $(@:%-testsuite=%); fi
 endif
 
 %-testsuite:
@@ -957,10 +957,11 @@ ifneq ($strip($(CONFIGURATIONS)),)
 $(addsuffix -ThornGuide,$(CONFIGURATIONS)):
 	@echo $(DIVIDER)
 	@echo Creating ThornGuide for $(@:%-ThornGuide=%)
-	if test ! -d $(CONFIGS_DIR)/$(@:%-ThornGuide=%)/build ; then mkdir $(CONFIGS_DIR)/$(@:%-ThornGuide=%)/build; fi 
+	if test ! -d $(CONFIGS_DIR)/$(@:%-ThornGuide=%)/doc ; then mkdir $(CONFIGS_DIR)/$(@:%-ThornGuide=%)/doc; fi 
+	if test ! -d $(CONFIGS_DIR)/$(@:%-ThornGuide=%)/doc/build ; then mkdir $(CONFIGS_DIR)/$(@:%-ThornGuide=%)/doc/build; fi 
 	if test -r $(CONFIGS_DIR)/$(@:%-ThornGuide=%)/ThornList ; then \
-	  rm -f  $(CONFIGS_DIR)/$(@:%-ThornGuide=%)/build/*.*; \
-	  cd  $(CONFIGS_DIR)/$(@:%-ThornGuide=%)/build; \
+	  rm -f  $(CONFIGS_DIR)/$(@:%-ThornGuide=%)/doc/build/*.*; \
+	  cd  $(CONFIGS_DIR)/$(@:%-ThornGuide=%)/doc/build; \
 	  $(MAKE) -f $(CCTK_HOME)/doc/ThornGuide/Makefile THORNLIST=$(CONFIGS_DIR)/$(@:%-ThornGuide=%)/ThornList CCTK_HOME=$(CCTK_HOME) PERL=$(PERL); \
 	  cp ThornGuide.ps $(CCTK_HOME)/ThornGuide-$(@:%-ThornGuide=%).ps; \
 	fi
