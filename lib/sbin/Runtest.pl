@@ -91,7 +91,7 @@ else
 {
   $command = &defprompt("Enter command to run executable"," ");
 }
-$tests = &defprompt("Run All tests or go to Menu","All");
+$tests = &defprompt("Run (A)ll tests or go to (M)enu","All");
 
 
 
@@ -125,7 +125,7 @@ else
       $thisdir = `pwd`;
       chop($thisdir);
       chdir "$T${sep}test" || die "Unable to chdir to $T${sep}test";
-      while ($file=<*.par>)
+      foreach $file (sort <*.par>)
       {
         $database{"\U$T TESTFILE\E"} = $file;
         push(@testfiles, $file);
