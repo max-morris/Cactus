@@ -503,15 +503,7 @@ sub CreateFortranArgumentDeclarations
       $argument .= '_p';
     }
 
-    if($type =~ /^(CHAR|BYTE|INT|INT1|INT2|INT4|INT8|REAL|REAL4|REAL8|REAL16|COMPLEX|COMPLEX8|COMPLEX16|COMPLEX32)$/)
-    {
-      # DEPRECATED IN BETA 10
-      if($type eq 'CHAR')
-      {
-        &CST_error(1,"CCTK_CHAR is replaced by CCTK_BYTE, please change your code","",__LINE__,__FILE__);
-      }
-    }
-    else
+    if(! $type =~ /^(BYTE|INT|INT1|INT2|INT4|INT8|REAL|REAL4|REAL8|REAL16|COMPLEX|COMPLEX8|COMPLEX16|COMPLEX32)$/)
     {
       &CST_error(0,"Unknown argument type \"$type\"","",__LINE__,__FILE__);
     }
@@ -558,15 +550,7 @@ sub CreateCArgumentDeclarations
       $varname .= '_p';
     }
 
-    if($type =~ /^(CHAR|BYTE|INT|INT1|INT2|INT4|INT8|REAL|REAL4|REAL8|REAL16|COMPLEX|COMPLEX8|COMPLEX16|COMPLEX32)$/)
-    {
-      # DEPRECATED IN BETA 10 */
-      if($type eq 'CHAR')
-      {
-        &CST_error(1,"CCTK_CHAR is replaced by CCTK_BYTE, please change your code","",__LINE__,__FILE__);
-      }
-    }
-    else
+    if(! $type =~ /^(BYTE|INT|INT1|INT2|INT4|INT8|REAL|REAL4|REAL8|REAL16|COMPLEX|COMPLEX8|COMPLEX16|COMPLEX32)$/)
     {
       &CST_error(0,"Unknown argument type $type","",__LINE__,__FILE__);
     }
