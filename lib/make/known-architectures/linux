@@ -141,7 +141,18 @@ else
        : ${F77_OPTIMISE_FLAGS="-O"}
        : ${F90_OPTIMISE_FLAGS="-O"}         
        : ${LIBS="fj9i6 fj9e6 fj9f6"} 
-       : ${LIBDIRS='$(LAHEY)/lib /usr/local/lf9555/lib'} 
+       if test -n "$LAHEY" ; then
+         : ${LIBDIRS=$LAHEY}
+       else
+         if test -d '/usr/local/lf9555/lib' ; then
+	   : ${LIBDIRS="/usr/local/lf9555/lib"}
+         fi
+       fi
+       if test -z "${LIBDIRS}" ; then
+         echo "Unable to locate LAHEY installation directory"
+         echo "Please configure with LAHEY=... or set LAHEY in your environment"
+         exit 2
+       fi
        ;;
      SGI)
        : ${LIBS="fortran ffio m"} 
