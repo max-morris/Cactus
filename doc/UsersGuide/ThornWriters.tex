@@ -2782,75 +2782,68 @@ source code.
 \label{sec:prrutiin}
 
 To write from thorns to standard output ({\it i.e.} the screen)
-at runtime, use the function {\tt CCTK\_INFO}.
-For example, from the Fortran thorn {\tt MyThorn},
+at runtime, use the macro {\tt CCTK\_INFO} or the function {\tt CCTK\_VInfo()}.
 
-{\tt
-call CCTK\_INFO("Starting Tricky Calculation")
-}
+For example, from the Fortran thorn {\tt MyThorn},
+\begin{verbatim}
+  call CCTK_INFO("Starting Tricky Calculation")
+\end{verbatim}
 
 will write the line:
+\begin{verbatim}
+  INFO (MyThorn): Starting Tricky Calculation
+\end{verbatim}
 
-{\tt
-INFO (MyThorn): Starting Tricky Calculation
-}
-
-For a multiprocessor run, only information from processor zero
-will appear, unless the ``{\tt -r}'' command line option is used
+For a multiprocessor run, only runtime information from processor zero
+will be printed to screen by default. The standard output of other processors
+will usually be discarded unless the ``{\tt -r}'' command line option is used
 (Section~\ref{sec:coliop}).
 
-Outputing a variable using {\tt CCTK\_INFO} is currently more tricky,
-since you need to build the string to be output. For example, from Fortran,
+Note that the routine {\tt CCTK\_VInfo()} can only be called from C because
+Fortran doesn't know about variable argument lists. So including variables in
+the info message using {\tt CCTK\_INFO} is currently more tricky, since you
+need to build the string to be output.
 
-{\tt
-character*200 infoline\\
-write(infoline,'(A,1X,I)') 'The integer was ',inum\\
-call CCTK\_INFO(infoline)
-}
+For example, in C you would just write
+\begin{verbatim}
+  int myint;
 
-and from C
+  CCTK_VInfo(CCTK_THORNSTRING, "The integer is %d", myint);
+\end{verbatim}
 
-{\tt
-char *infoline;\\
-infoline = (char *)malloc(18*sizeof(char));\\
-sprintf(infoline,'The integer was \%d',inum);\\
-CCTK\_INFO(infoline);\\
-free(infoline);
-}
+But in Fortran you have to do the following:
+\begin{verbatim}
+  integer       myint
+  character*200 message
+
+  write(infoline, '(A, 1X, I)') 'The integer is ', myint
+  call CCTK_INFO(message)
+\end{verbatim}
 
 Note that:
 \begin{itemize}
-\item{} {\tt CCTK\_INFO} is actually a macro for the function
-        {\tt CCTK\_Info(<thorn name>,<message>)} which automatically
-        includes the thorn name.
+\item{} {\tt CCTK\_INFO} is just a macro which expands to a call to
+        the internal function {\tt CCTK\_Info()} and automatically includes
+        the thorn name in function call.
 
 \item{} {\tt CCTK\_INFO} should be used rather than print statements,
        since it will give consistent behaviour on multiprocessors, and
        also provides a mechanism for switching the output to screen on
        and off, even on a thorn-by-thorn basis. (Although this is
        not yet implemented).
-
-\item{}  The function {\tt CCTK\_VInfo}, available in C only,
-         can be used to output a list of variables, using a C format string.
-         For example, the above example becomes
-
-{\tt
-CCTK\_VInfo(CCTK\_THORNSTRING,"The integer was \%d",inum);
-}
-
 \end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Error handling, warnings and code termination}
 \label{sec:erhawancote}
-The Cactus function {\tt CCTK\_WARN} should be used to provide
-warning messages during code execution. Along with the
-warning message, an integer is given to indicate the severity
-of the warning. The warning severity indicates whether the
-message is printed to standard output and whether the code
-should be stopped. A level 0 warning indicates the highest
-severity, with higher numbers indicating lower severity.
+The Cactus function {\tt CCTK\_VWarn()} and its accompanying {\tt CCTK\_WARN}
+macro should be used to issue warning messages during code execution.
+Along with the warning message, an integer is given to indicate the severity of
+the warning. The warning severity indicates whether the message is actually
+printed to standard error and whether the code should be stopped. A level 0
+warning indicates the highest severity, with higher numbers indicating lower
+severity.
 
 By default, a Cactus run will abort on a level 0 warning
 and will report level 1 and severer warnings to screen.
@@ -2858,49 +2851,55 @@ This behaviour can be amended using command line arguments,
 as described in Section~\ref{sec:coliop}.
 
 For example, to provide a warning which will be printed to standard
-output but which will not terminate the code for a run with default
-options, a level 1 warning should be used. The syntax from Fortran is
-{\tt
-\begin{verbatim}
-call CCTK_WARN(1,"Your warning message")
-\end{verbatim}
-}
-or from C,
-{\tt
-\begin{verbatim}
-CCTK_WARN(1,"Your warning message");
-\end{verbatim}
-}
+error but which will not terminate the code for a run with default
+options, a level 1 warning should be used.
 
-Note that {\tt CCTK\_WARN} is actually a macro which automatically
-expands to include the name of the thorn, the source file name and line
-number of the error. (For this reason it is important that capital letters are
-always used for the function). If the flesh parameter {\tt cctk\_full\_warnings} is
-set to true, then the source file name and line number will be printed to
-standard output along with the thorn name and warning.
+The syntax from Fortran is
+\begin{verbatim}
+  call CCTK_WARN(1, "Your warning message")
+\end{verbatim}
 
-To include variables in warning messages is more troublesome. From C, the
-variable argument list
-function {\tt CCTK\_VWarn} can be used to include variables using standard printf format strings. Unfortunately, a macro can no
-longer be provided to automatically include the origin details of the warning,
-and the syntax is for example,
-{\tt
+and from C
 \begin{verbatim}
-CCTK_VWarn(1,__LINE__,__FILE__,CCTK_THORNNAME,
-  "Your warning message, including %f and %d",
-  myreal,myint);
+  CCTK_WARN(1, "Your warning message");
 \end{verbatim}
-}
-To include variables from Fortran, a string must be constructed and passed
-to the standard function {\tt CCTK\_WARN}, for example
-{\tt
+
+Note that {\tt CCTK\_WARN} is just a macro which expands to a call to the
+internal function {\tt CCTK\_Warn()}. The macro automatically includes the name
+of the thorn, the source file name and line number of the warning in the
+funtion call. (For this reason it is important for Fortran code that capital
+letters are always used in order to expand the macro).
+
+If the flesh parameter {\tt cctk\_full\_warnings} is set to true, then the
+source file name and line number will be printed to standard error along with
+the originating processor number, the thorn name and the warning message.
+The default is to omit the source file name and line number.
+
+Note that the routine {\tt CCTK\_VWarn()} can only be called from C because
+Fortran doesn't know about variable argument lists. So including variables in
+the warning message using {\tt CCTK\_WARN} is currently more tricky, since you
+need to build the string to be output.
+
+For example, in C you would just write
 \begin{verbatim}
- character*200 warnline
- write(warnline,'(A32,G12.7,A5,I8)')
-&  'Your warning message, including ',myreal,' and ',myint
- call CCTK_WARN(1,warnline)
+  int    myint;
+  double myreal;
+
+  CCTK_VWarn(1, __LINE__, __FILE__, CCTK_THORNSTRING,
+             "Your warning message, including %f and %d",
+             myreal, myint);
 \end{verbatim}
-}
+
+But in Fortran you have to do the following:
+\begin{verbatim}
+  integer       myint
+  real          myreal
+  character*200 message
+
+  write(message, '(A32, G12.7, A5, I8)')'
+  &     'Your warning message, including ', myreal, ' and ', myint
+  call CCTK_WARN(message)
+\end{verbatim}
 
 The flesh will be implementing standard error return codes
 which can be used by the thorns, although this is not
