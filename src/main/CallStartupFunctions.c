@@ -34,11 +34,12 @@ int dummy(tFleshConfig *);
 int CallStartupFunctions(tFleshConfig *ConfigData)
 {
 
+  /*
   RegisterMainFunction(0, dummy);
   RegisterMainFunction(1, dummy);
   RegisterMainFunction(2, dummy);
 
-
+  */
   SetupMainFunctions();
   
   return 0;
