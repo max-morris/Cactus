@@ -45,8 +45,6 @@ static char *rcsid = "$Header$";
 
 CCTK_FILEVERSION(util_Malloc_c)
 
-int CCTK_Abort(void *GH);
-
 
 /********************************************************************
  *********************     Local Data Types   ***********************
@@ -128,7 +126,6 @@ void *CCTKi_Malloc(size_t size, int line, const char *file)
 {
   t_mallocinfo *info;
   char *data;
-  int retval;
 
   data = (char*)malloc(size+sizeof(t_mallocinfo));
   if(!data) 
@@ -179,7 +176,6 @@ void *CCTKi_Realloc(void *pointer, size_t size, int line, const char *file)
 {
   t_mallocinfo *info;
   char *data=NULL;
-  char mess[256];
  
   /* Realloc called with NULL equiv. to malloc */
   if (pointer==NULL)
@@ -197,7 +193,7 @@ void *CCTKi_Realloc(void *pointer, size_t size, int line, const char *file)
   if (info->ok!=OK_INTEGRITY)  
   {
     CCTK_VWarn(0,__LINE__,__FILE__,"Cactus",
-	       "Malloc database corrupted, Reallocation called from %s, line %d.\n%s", 
+	       "CCTKi_Realloc: Malloc database corrupted, Reallocation called from %s, line %d.\n%s", 
 	       file,line,
 	       "Was this memory allocated with CCTK_[RE/C/M]ALLOC ?\n");
     /*$CCTK_Abort(NULL);$*/
@@ -211,8 +207,8 @@ void *CCTKi_Realloc(void *pointer, size_t size, int line, const char *file)
     if (!data)
       {
 	CCTK_VWarn(0,__LINE__,__FILE__,"Cactus",
-		   "Could not reallocate memory.  Reallocation called from %s, line %d. \n",
-		   file,line);
+		   "CCTKi_Realloc: Could not reallocate memory.  "
+		   "Reallocation called from %s, line %d. \n",file,line);
 	/*$CCTK_Abort(NULL);$*/
       }
 
@@ -281,24 +277,24 @@ void *CCTKi_Calloc(size_t nmemb, size_t size, int line, const char *file)
 void CCTKi_Free(void *pointer, int line, const char *file)
 {
   t_mallocinfo *info;
-  char mess[256];
 
   if (pointer==NULL)
+  {
     return;
+  }
 
   info = (t_mallocinfo *)((char*)pointer-sizeof(t_mallocinfo));
 
   if (info->ok!=OK_INTEGRITY)  
   { 
     CCTK_VWarn(0,__LINE__,__FILE__,"Cactus",
-	       "Malloc database corrupted. Free called from:\n %s, line %d.%s\n",
+	       "CCTKi_Free: Malloc database corrupted. Free called from:\n %s, line %d.%s\n",
 	       file,line,
 	       "Was this memory allocated with CCTK_[RE/C/M]ALLOC ?!\n");
-    CCTK_Abort(NULL);
+    CCTK_Abort(NULL,0);
   }
   else 
   {
-
       pastmem  = totmem;
       totmem  -= info->size;
         
@@ -447,8 +443,8 @@ long int CCTK_MemTicketCash(int this_ticket)
   }
   else 
   {
-    CCTK_VWarn(1,__LINE__,__FILE__,"Cactus","CCTK_MemTicketCash: Cannot find ticket %d \n",
-	       this_ticket);
+    CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
+	       "CCTK_MemTicketCash: Cannot find ticket %d \n",this_ticket);
     tdiff = 666;
   }
   return(tdiff);
