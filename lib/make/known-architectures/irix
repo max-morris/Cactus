@@ -6,7 +6,7 @@
 #    @desc 
 #   
 #    @enddesc 
-#    @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/irix,v 1.24 2001-02-17 18:35:05 allen Exp $
+#    @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/irix,v 1.25 2001-04-16 11:12:24 allen Exp $
 #  @@*/
 
 if test "$CCTK_CONFIG_STAGE" = "preferred-compilers" ; then
@@ -107,18 +107,18 @@ else
     64:cc)
       : ${CFLAGS="$CFLAGS -64 $IRIX_FLAGS"}
       : ${CXXFLAGS="$CXXFLAGS -64 $IRIX_FLAGS"}
-      : ${C_OPTIMISE_FLAGS="-O3"}
-      : ${CXX_OPTIMISE_FLAGS="-O3"}
-      : ${C_DEBUG_FLAGS="-g"}
-      : ${CXX_DEBUG_FLAGS="-g"}
+      : ${C_OPTIMISE_FLAGS="-O3 -INLINE -LNO -OPT:Olimit=100000"}
+      : ${CXX_OPTIMISE_FLAGS="-O3 -INLINE -LNO -OPT:Olimit=100000"}
+      : ${C_DEBUG_FLAGS="-g3"}
+      : ${CXX_DEBUG_FLAGS="-g3"}
       ;;
     32:cc)
       : ${CFLAGS="$CFLAGS -n32 $IRIX_FLAGS"}
       : ${CXXFLAGS="$CXXFLAGS  -n32 $IRIX_FLAGS"}
-      : ${C_OPTIMISE_FLAGS="-O3"}
-      : ${CXX_OPTIMISE_FLAGS="-O3"}
-      : ${C_DEBUG_FLAGS="-g"}
-      : ${CXX_DEBUG_FLAGS="-g"}
+      : ${C_OPTIMISE_FLAGS="-O3 -INLINE -LNO -OPT:Olimit=100000"}
+      : ${CXX_OPTIMISE_FLAGS="-O3 -INLINE -LNO -OPT:Olimit=100000"}
+      : ${C_DEBUG_FLAGS="-g3"}
+      : ${CXX_DEBUG_FLAGS="-g3"}
       ;;
     *)
       ;;
@@ -126,25 +126,20 @@ else
 
   case "$IRIX_BITS" in
     64)
-      : ${F90FLAGS="$F90FLAGS  \
-	-r10000 -TARG:proc=r10000 \
-	-64 -mips4"}
+      : ${F90FLAGS="$F90FLAGS -r10000 -TARG:proc=r10000 -64 -mips4"}
       : ${F77FLAGS="$F90FLAGS"}
-      : ${F90_OPTIMISE_FLAGS="-O3 \
-	-OPT:roundoff=3:IEEE_arithmetic=3:const_copy_limit=100000"}
+      : ${F90_OPTIMISE_FLAGS="-O3 -OPT:roundoff=3:IEEE_arithmetic=3:const_copy_limit=100000"}
       : ${F77_OPTIMISE_FLAGS="$F90_OPTIMISE_FLAGS"}
-      : ${F90_DEBUG_FLAGS="-g"}
-      : ${F77_DEBUG_FLAGS="-g"}
+      : ${F90_DEBUG_FLAGS="-g3"}
+      : ${F77_DEBUG_FLAGS="-g3"}
       ;;
     32)
-      : ${F90FLAGS="\
-	    -OPT:roundoff=3:IEEE_arithmetic=3:fold_arith_limit=10000:const_copy_limit=100000 \
-	    -n32 -mips3"}
+      : ${F90FLAGS="-n32 -mips3"}
       : ${F77FLAGS="$F90FLAGS"}
-      : ${F90_OPTIMISE_FLAGS="-O3"}
-      : ${F77_OPTIMISE_FLAGS="-O3"}
-      : ${F90_DEBUG_FLAGS="-g"}
-      : ${F77_DEBUG_FLAGS="-g"}
+      : ${F90_OPTIMISE_FLAGS="-O3 -OPT:roundoff=3:IEEE_arithmetic=3:fold_arith_limit=10000:const_copy_limit=100000"}
+      : ${F77_OPTIMISE_FLAGS="-O3 -OPT:roundoff=3:IEEE_arithmetic=3:fold_arith_limit=10000:const_copy_limit=100000"}
+      : ${F90_DEBUG_FLAGS="-g3"}
+      : ${F77_DEBUG_FLAGS="-g3"}
       ;;
     *)
       ;;
