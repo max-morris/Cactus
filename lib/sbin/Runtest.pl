@@ -71,25 +71,33 @@ else
 {
   while (<AT>) 
   {
-    @t = split(' ');
-    foreach $T (@t) 
+    $name = $_;
+    $name =~ /^\s*([^\s]*)\s*/;
+    $T = $1;
+    @allthorns = (@allthorns, $T);
+
+    $T =~ m:^.*/([^\s]*)\s*:;
+    $database{"\U$T THORN\E"} = $1;
+    $T =~ m:^\s*([^\s]*)/:;
+    $database{"\U$T ARRANGEMENT"} = $1; 
+    
+    $number = 0;
+    if (-e "arrangements${sep}$T${sep}test${sep}") 
     {
-      $number = 0;
-      if (-e "arrangements${sep}$T${sep}test${sep}") 
+      $thisdir = `pwd`;
+      chop($thisdir);
+      chdir "arrangements${sep}$T${sep}test";
+      while ($file=<*.par>)
       {
-	$thisdir = `pwd`;
-	chop($thisdir);
-	chdir "arrangements${sep}$T${sep}test";
-	while ($file=<*.par>)
-	{
-	  @testfiles = (@testfiles, $file);
-	  @testthorns = (@testthorns, $T);
-	  $number++;
-	}
-	chdir "$thisdir";
+	$database{"\U$T TESTFILE\E"} = $file;
+	@testfiles = (@testfiles, $file);
+	@testthorns = (@testthorns, $T);
+	$number++;
       }
-      @ntests{"$T"} = $number;
+      chdir "$thisdir";
     }
+    $ntests{"$T"} = $number;
+    $database{"\U$T NTESTS\E"} = $number;
   }
 }
 
@@ -102,9 +110,15 @@ foreach $t (@testfiles)
   open (IN, "<$file") || die "Can not open $file";
   while (<IN>)
   {
-    if (/^\s*\!\s*DESC(RIPTION)?\s*\"(.*)\"\s*$/i)
+    $line = $_;
+
+    if ($line =~ /^\s*\!\s*DESC(RIPTION)?\s*\"(.*)\"\s*$/i)
     {
-      $testnames{$ntests} = $2
+      $testnames{$ntests} = $2;
+    }
+    if ($line =~ /^\s*ActiveThorns\s*=\s*\"(.*)\"/i)
+    {
+      @activethorns = (@activethorns,$1);
     }
   }
   close IN;
@@ -118,11 +132,44 @@ if ($tests =~ /All/) {
   $number_zerofiles=0;
   $number_passed1=0;
   $number_passed2=0;
+  $number_missed=0;
+
   foreach $t (@testfiles) 
   {
-    $thorn = @testthorns[$ntests];
+    $haveallthorns = 1;
+    $active = @activethorns[$ntests];
+    @at = split(' ',$active);
+    foreach $th (@at)
+    {
+      $foundit = 0;
+
+      foreach $tthorn  (@allthorns)
+      {
+        $tthorn =~ m:.*/(.*)$:;
+	$thornpart = $1;  
+	if ($thornpart =~ /$th/i)
+	{
+	  $foundit = 1;
+	}
+      }      
+      if (!$foundit)
+      {
+	$haveallthorns = 0;
+      }
+    }
+
+    $thorn = @testthorns[$ntests];        
     $ntests++;
-    &runtest($t,$thorn,$ntests);
+
+    if ($haveallthorns)
+    {
+      $havethorns{"$t"} = 1;
+      &runtest($t,$thorn,$ntests);
+    }
+    else
+    {
+      $havethorns{"$t"} = 0;
+    }
   }
 
 
@@ -133,6 +180,7 @@ if ($tests =~ /All/) {
   print "Tested: \n";
   foreach $thorn (keys %ntests)
   {
+    
     if ($ntests{"$thorn"} > 0)
     {
       print "  $thorn [$ntests{\"$thorn\"}]\n";
