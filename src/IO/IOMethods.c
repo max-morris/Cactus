@@ -370,7 +370,7 @@ int CCTK_OutputVarAs (const cGH *GH, const char *var, const char *alias)
     for (handle = retval = 0; handle < num_methods; handle++)
     {
       method = (struct IOMethod *) Util_GetHandledData (IOMethods, handle);
-      if (method && method->OutputVarAs (GH, var, alias) > 0)
+      if (method && method->OutputVarAs (GH, var, alias) == 0)
       {
         retval++;
       }
@@ -660,7 +660,7 @@ int CactusDefaultOutputGH (const cGH *GH)
     for (handle = retval = 0; handle < num_methods; handle++)
     {
       method = (struct IOMethod *) Util_GetHandledData (IOMethods, handle);
-      if (method && method->OutputGH (GH) > 0)
+      if (method && method->OutputGH (GH) == 0)
       {
         retval++;
       }
