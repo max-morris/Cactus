@@ -9,17 +9,17 @@
 #   @version $Header$
 # @@*/
 
-if test -n "$MPI" ; then
+if test -n "$MPI" -a "$MPI" != 'none' ; then
 
 echo "Configuring with MPI"
 
 # Work out which variation of MPI is installed
 
 if test -r $srcdir/extras/MPI/$MPI ; then
-    . $srcdir/extras/MPI/$MPI
+  . $srcdir/extras/MPI/$MPI
 else
-    echo "MPI selected, but no known MPI method - what is $MPI ?"
-    exit 2
+  echo "MPI selected, but no known MPI method - what is \"$MPI\" ?"
+  exit 2
 fi
 
 # Write the data out to the header and make files.
