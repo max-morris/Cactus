@@ -286,7 +286,7 @@ int CactusDefaultnProcs(cGH *GH)
    @endhistory 
 
 @@*/
-int CactusDefaultExit(int retval, cGH *GH)
+int CactusDefaultExit(cGH *GH, int retval)
 {
 #ifdef MPI  
   if(MPI_Active)
