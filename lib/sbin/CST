@@ -6,7 +6,7 @@
 #  @desc 
 #  Parses the the configuration files for thorns.
 #  @enddesc 
-#  @version $Header $
+#  @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.14 1999-06-24 15:40:09 goodale Exp $
 #@@*/
 
 # Global parameter to track the number of errors from the CST
