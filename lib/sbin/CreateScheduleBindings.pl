@@ -254,6 +254,7 @@ sub ScheduleBlock
   my(@mem_groups);
   my(@comm_groups);
   my(@trigger_groups);
+  my(@sync_groups);
   my(@before_list);
   my(@after_list);
   my(@while_list);
@@ -279,6 +280,9 @@ sub ScheduleBlock
 					  $rhschedule_db->{"\U$thorn\E BLOCK_$block TRIG"},
 					  $rhinterface_db);
 		
+  @sync_groups = &ScheduleSelectGroups($thorn, $implementation, 
+					  $rhschedule_db->{"\U$thorn\E BLOCK_$block SYNC"},
+					  $rhinterface_db);
 
   @before_list = &ScheduleSelectRoutines($thorn, $implementation, 
 					 $rhschedule_db->{"\U$thorn\E BLOCK_$block BEFORE"},
