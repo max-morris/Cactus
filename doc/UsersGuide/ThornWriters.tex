@@ -14,12 +14,37 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Overview}
+
+This chapter goes into the nitty-gritty of writing a thorn. 
+It introduces key concepts for thorns, then goes on to give
+a brief outline of how to configure a thorn.
+There is then some detail about concepts introduced by the configuration
+step, followed by discussion of code which you must put into your files
+in order to use Cactus functionality, and details of utility functions
+you may use to gain extra functionality.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \chapter{Thorn concepts} 
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Thorns}
+
+A thorn is the basic working module within Cactus.  All user-supplied
+code goes into thorns, which are, by and large, independent of each other.
+Thorns communicate with each other via calls to the flesh API, plus, more
+rarely, custom APIs of other thorns.
+
+The connection from a thorn to the flesh or to other thorns is specified in
+configuration files which are parsed at compile time and used to generate
+glue code which encapsulates the external appearence of a thorn.
+
 
 \section{Arrangements}
 
@@ -79,7 +104,7 @@ the other thorns.
 \section{thorns}
 \label{sec:th}
 
-A thorn consists of a subdirectory of a arrangement containing three 
+A thorn consists of a subdirectory of an arrangement containing three 
 administrative files
 
 \begin{Lentry}
@@ -200,6 +225,7 @@ friend:     wave_extract
 declares that the thorn provides an implementation called `wavetoy', gets
 all the {\tt public} variables declared by an implementation called `grid', and
 shares all {\tt protected} variables with {\tt wave\_extract} and its friends.
+
 
 For convenience variables are placed in groups of homogeneous variables.  
 Currently, names of groups
@@ -704,6 +730,216 @@ and has a working directory of {\tt <config>/build/<thorn\_name>} .
 \item LD
 \end{itemize}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\chapter{Cactus Variables}
+
+Cactus variables are sorted into {\tt groups}.  All variables in a group have
+the same attributes, and most cactus operations act on a group as a whole.
+
+Cactus variables are used instead of local variables for two purposes.  Firstly
+these variables can be made visable to other thorns, thus allowing thorns to
+communicate and chare data, secondly these variables can be communicated and
+shared between processors, thus allowing parallel computation.
+
+The full specification for a group declaration is
+
+\begin{verbatim}
+<data_type> <group_name> [TYPE=<group_type>] [DIM=<dim>] [TIMELEVELS=<num>] [SIZE=<size in each direction>] [DISTRIB=<distribution_type>] [GHOSTSIZE=<ghostsize>] [STAGGER=<stagger-specification>]
+[{
+   <variable_name>[,]<variable_name>
+   <variable_name>
+}] ["<group_description>"]
+\end{verbatim}
+
+\section{Data Type}
+
+Cactus supports integer, real, complex and character variables, in various different
+sizes.  (Sizes in the following refer to the number of bytes the type takes.)
+
+\begin{Lentry}
+\item[Integer]
+CCTK\_INT, CCTK\_INT2, CCTK\_INT4, CCTK\_INT8.  CCTK\_INT defaults to being CCTK\_INT4, but
+this can be changed at configuration time.
+\item[REAL]
+CCTK\_REAL, CCTK\_REAL4, CCTK\_REAL8, CCTK\_INT16.  CCTK\_REAL defaults to being CCTK\_REAL8, but
+this can be changed at configuration time.
+\item[COMPLEX]
+CCTK\_COMPLEX, CCTK\_COMPLEX8, CCTK\_COMPLEX16, CCTK\_COMPLEX32.  CCTK\_COMPLEX defaults to being 
+CCTK\_COMPLEX16, but this can be changed at configuration time.
+\item[CHAR]
+This is a 1 byte data type.
+\end{Lentry}
+
+Normally a thorn should use the default types --- CCTK\_INT, CCTK\_REAL, CCTK\_COMPLEX --- rather
+than explicitly setting the size, as this gives maximum portability, and allows people to
+compile the code in different precisions to test for round-off effects, or to run more
+quickly with a lower accuracy.
+
+\section{Group Types}
+
+Groups can be either {\tt scalars}, {\tt grid functions (GFs)}, or {\tt grid arrays}.
+
+\begin{Lentry}
+\item[SCALAR] 
+This is just a single number, e.g. the total energy of some field.  These
+variables aren't communicated between processors --- what would be the
+result of such communication ?
+\item[GF]
+This is the most common group type.  A GF is a an array with a specific size, set at
+run-time in the parameter file, which is distributed across processors.  All GFs
+have the same size, and the same number of ghostzones.
+\item[ARRAY]
+This is a more general form of the GF.  Each array can have a distinct size and number
+of ghostzones.  The drawback of using an array over a GF is that a lot of data about the
+array can only be determined by function calls, rather than the quicker methods available
+for GFs.
+\end{Lentry}
+
+\section{Timelevels}
+
+These are best introduced by an example.  People familier with
+finite differencing can probably skip the next bit.
+
+Take the 1-D wave equation
+
+\begin{equation}
+\frac{\partial^2 \phi}{\partial t^2} = \frac{\partial^2 \phi}{\partial x^2} 
+\end{equation}
+
+To solve this by partial differences, one discretises the derivatives, to get
+an equation relating the solution at different times.  There are many ways
+to do this, one of which produces the following difference equation
+
+\begin{equation}
+\label{equation:difference}
+\phi(t+\Delta t,x) -2\phi(t,x) +\phi(t-\Delta t,x) = \frac{\Delta t}{\Delta x^2} \lbrace{\phi(t,x+\Delta x) -2\phi(t,x) +\phi(t,x-\Delta x)}\rbrace
+\end{equation}
+
+Which relates the three timelevels $t+\Delta t$, $t$, and $t-\Delta t$.  
+
+Obviously the code could just use three variables, one for each timelevel.  This turns out,
+however, to be inefficient as, as soon as the time is incremented to $t+\Delta t$, it
+would be necessary to copy data from the $t$ variable to the $t-\Delta t$ variable and from
+the $t+\Delta t$ variable to the $t$ variable.
+
+To remove this extraneous copy, Cactus allows you to specify the number of timelevels used by
+your numerical scheme.  It then generate variables with the base name (e.g. {\tt phi}) suffixed
+by a qualifier for which timelevel is referred to --- {\tt \_n} for the {\tt n}ext timelevel, just 
+the base name for the current timelevel, and an {\tt \_p} for each {\tt p}revious timelevel.  E.g.
+a four timelevel scheme would produce phi\_n, phi, phi\_p and phi\_p\_p .  The only exception to this
+is for a two timelevel scheme, which has no previous timelevel, just a current and a next.
+
+\section{Size and Distrib}
+
+A Cactus array can have a size set at runtime by parameters.  This size can either be the
+total size of the array across all processors, or, if {\tt DISTRIB=CONSTANT} the specified
+size on each processor.  If the size is split across processors, the driver thorn is
+responsible for assigning the size on each processor.
+
+\section{Ghost Size}
+
+Cactus is based upon a {\tt distributed computing} paradigm.  I.e. the problem
+domain is split into blocks, each of which is assigned to a processor.  For 
+hyperbolic and parabolic problems the blocks only need to communicate at the edges.
+
+To illustrate this, take the example of the wave equation again, equation \ref{equation:difference}  
+describes a possible time-evolution scheme.  On examination you can see that to
+generate the data at the point ($t+\Delta t$, $x$) we need data from the four points
+($t$, $x$), ($t-\Delta t$, $x$), ($t$, $x+\Delta x$) and ($t$, $x-\Delta x$) only.
+Ignoring the points at $x$, which are obviously always available, you can see that the
+algorithm requires a point on either side of the point $x$, i.e. this algorithm
+has {\tt stencil size} 1.  Similarly algorithms requiring two points on either side
+have stencil size 2, etc.  
+
+Now, if you evolve the above scheme, it becomes apparent that at each iteration the number
+of grid points you can evolve decreases by one at each edge (see figure \ref{fig:noghost}).
+
+\begin{figure}[h]
+\begin{center}
+\includegraphics[angle=0,width=8cm]{1dnoghost.eps}
+\end{center}
+%\caption[]{} 
+% I know this figure is rubbish, but it's after 2am and I'll fix it up later.
+\label{fig:noghost}
+\end{figure}
+
+At the outer boundary of the physical domain the data for the boundary point can be
+generated by the boundary conditions, however at internal boundaries the data has to
+be copied from the adjacent processor.  It would be inefficient to copy each point 
+individually, so instead, a number of {\tt ghostzones} are created at the internal boundaries.
+A ghostzone consists of a copy of the whole plane (in 3d, line in 2d, point in 1d) of the data 
+from the adjacent processor.  I.e. the array on each processor is augmented with copies of
+points from the adjacent processors, thus allowing the algorithm to proceed {\tt on the 
+points owned by this processor} without having to worry about copying data.  Once the
+data has been evaolved one step, the data in the ghostzones can be exchanged (or 
+{\tt synchronised}) between processors in one fell swoop before the next evolution step.
+(See figure \ref{fig:withghost}.)
+
+\section{Staggering}
+
+The staggering of a gridfunction or array describes the {\em physical} 
+placement of that gridfunction relative to the supporting grid
+structure. For example, a gridfunction does not have to 
+be placed at the intersection 
+of the ``grid lines''. It can moved by half a grid spacing in
+any or all dimensions. In the latter case, it will be placed in
+the center of a cell.  
+
+The staggering of grid function is a pure {\em physical} property: 
+the values will be calculated at a different position in physical
+space. Still the indexing (or bookeeping)  is kept the same for all
+types of staggerings: the indexing of the default unstaggered grids is 
+used.
+
+\vskip .25cm
+
+{\bf Specifying the staggertype}
+
+The type of staggering applied to a gridfunction can be specified in
+the {\tt interface.ccl} file by the attribute {\tt stagger} (see
+\ref{sec:in}). Cactus supports three kind of staggering
+per dimension. The physical location of a gridfunction is shifted 
+relative to the default position by adding the following values to the 
+stagger attribute:
+\begin{Lentry}
+\item[{\tt M}] no staggering, default. Refers to the ``minus'' face
+relative to  the default gridpoint. 
+\item[{\tt C}] centre staggering. The physical location is offset by
+half of the grid spacing in the positive direction (or to the right).
+\item[{\tt P}] full staggerd. P refers to plus. The physical location
+is offset by a full gridspacing in the positive direction (or the
+right).
+\end{Lentry}
+For multi dimensional gridfunctions you concatenate the code
+characters in xyz order. In picture xy we show four different
+staggerings of a two dimensional grid functions. The solid black grid
+circles show the default location of the grid functions at the
+intersections of the grid lines. In (A) we show an additional grid
+function of type {\tt stagger=MC}: no staggering in x direction,
+center staggered in y direction. In (B) we have  {\tt stagger=CM} and
+staggering each direction ({\tt stagger=CC}) is shown in (C). The full
+staggering in (D) ({\tt stagger=PP}) obeyes the same rules, but is
+rather unusual; included here for completeness. 
+
+\begin{figure}[h]
+  \def\epsfsize#1#2{0.45#1}
+\begin{center}
+\includegraphics[angle=0,width=8cm]{staggering1.eps}
+%  \centerline{\epsfbox{./staggering1.eps}}
+\end{center}
+\caption[]{\small {\bf Staggered gridpoints in 2D} for several
+staggerings. (a) : {\tt MC}, (b): {\tt CM}, (c): {\tt CC}, (d): {\tt
+PP}. Note that the staggering of gridfunctions does change its
+index. The staggered gridpoints and the corresponding unstaggered
+points (arrows) are accessed by the same indices.} 
+\label{fig:stagger2}
+\end{figure}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \chapter{Putting code into your thorn}
 
@@ -1086,63 +1322,6 @@ different architectures or configurations.
 \subsection{Staggering}
 \label{sec:st}
 
-The staggering of a gridfunction or array describes the {\em physical} 
-placement of that gridfunction relative to the supporting grid
-structure. For example, a gridfunction does not have to 
-be placed at the intersection 
-of the ``grid lines''. It can moved by half a grid spacing in
-any or all dimensions. In the latter case, it will be placed in
-the center of a cell.  
-
-The staggering of grid function is a pure {\em physical} property: 
-the values will be calculated at a different position in physical
-space. Still the indexing (or bookeeping)  is kept the same for all
-types of staggerings: the indexing of the default unstaggered grids is 
-used.
-
-\vskip .25cm
-
-{\bf Specifying the staggertype}
-
-The type of staggering applied to a gridfunction can be specified in
-the {\tt interface.ccl} file by the attribute {\tt stagger} (see
-\ref{sec:in}). Cactus supports three kind of staggering
-per dimension. The physical location of a gridfunction is shifted 
-relative to the default position by adding the following values to the 
-stagger attribute:
-\begin{Lentry}
-\item[{\tt M}] no staggering, default. Refers to the ``minus'' face
-relative to  the default gridpoint. 
-\item[{\tt C}] center staggering. The physical location is offset by
-half of the grid spacing in the positive direction (or to the right).
-\item[{\tt P}] full staggerd. P refers to plus. The physical location
-is offset by a full gridspacing in the positive direction (or the
-right).
-\end{Lentry}
-For multi dimensional gridfunctions you concatenate the code
-characters in xyz order. In picture xy we show four different
-staggerings of a two dimensional grid functions. The solid black grid
-circles show the default location of the grid functions at the
-intersections of the grid lines. In (A) we show an additional grid
-function of type {\tt stagger=MC}: no staggering in x direction,
-center staggered in y direction. In (B) we have  {\tt stagger=CM} and
-staggering each direction ({\tt stagger=CC}) is shown in (C). The full
-staggering in (D) ({\tt stagger=PP}) obeyes the same rules, but is
-rather unusual; included here for completeness. 
-
-\begin{figure}[h]
-  \def\epsfsize#1#2{0.45#1}
-\begin{center}
-\includegraphics[angle=0,width=8cm]{staggering1.eps}
-%  \centerline{\epsfbox{./staggering1.eps}}
-\end{center}
-\caption[]{\small {\bf Staggered gridpoints in 2D} for several
-staggerings. (a) : {\tt MC}, (b): {\tt CM}, (c): {\tt CC}, (d): {\tt
-PP}. Note that the staggering of gridfunctions does change its
-index. The staggered gridpoints and the corresponding unstaggered
-points (arrows) are accessed by the same indeces.} 
-\label{fig:stagger2}
-\end{figure}
 
 {\bf Indexing, ghostzones, etc.}
 Note that staggering does not make any changes to the indexing of a
