@@ -1,7 +1,7 @@
 
 Cactus Code Frequently Asked Questions
 
-$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.9 2000-10-05 08:53:51 allen Exp $
+$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.10 2000-11-30 20:46:36 allen Exp $
 
 The latest version of this FAQ is always available from the main Cactus Code 
 web site at <http://www.cactuscode.org/Documentation/FAQ
@@ -120,5 +120,22 @@ web site at <http://www.cactuscode.org/Documentation/FAQ
 11) How do I compile Cactus in 32 bit mode on a 64 bit irix machine?
 
     gmake <config>-config IRIX_BITS=32
+
+-------------------------------------------------------------------------------
+
+12) What can I do if I don't have enough disk space to compile Cactus?
+
+    If you have access to some scratch space, or temporary space, you can
+    instruct Cactus to put the "configs" directory there (with all the 
+    object files and intermediate files).
+
+    For example, to use the directory /scratch/myconfigs with csh or tcsh,
+
+    setenv CACTUS_CONFIGS_DIR /scratch/myconfigs
+
+    or with bash
+
+    CACTUS_CONFIGS_DIR=/scratch/myconfigs
+    export CACTUS_CONFIGS_DIR
 
 -------------------------------------------------------------------------------
