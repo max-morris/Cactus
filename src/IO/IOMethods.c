@@ -26,7 +26,8 @@ static int DummyOutputGH(cGH *GH);
 static int DummyOutputVarAs(cGH *GH, 
                             const char *var, 
                             const char *alias);
-static int DummyTimeToOutput(cGH *GH, int);
+static int DummyTriggerOutput(cGH *GH, int var);
+static int DummyTimeToOutput(cGH *GH, int var);
 
 
 /************************************************************************
@@ -84,9 +85,10 @@ int CCTK_RegisterIOMethod(const char *name)
       handle = CCTK_NewHandle(&IOMethods, name, new_method);
 
       /* Initialise the IO method structure with dummy routines */
-      new_method->OutputGH     = DummyOutputGH;
-      new_method->OutputVarAs  = DummyOutputVarAs;
-      new_method->TimeToOutput = DummyTimeToOutput;
+      new_method->OutputGH      = DummyOutputGH;
+      new_method->OutputVarAs   = DummyOutputVarAs;
+      new_method->TriggerOutput = DummyTriggerOutput;
+      new_method->TimeToOutput  = DummyTimeToOutput;
 
       /* Remember how many methods there are */
       num_methods++;
@@ -223,9 +225,29 @@ int CCTK_RegisterIOMethodOutputVarAs(int handle, int (*func)(cGH *,
   return return_code;
 }
 
+int CCTK_RegisterIOMethodTriggerOutput(int handle, int (*func)(cGH *, int))
+{
+  int return_code;
+  struct IOMethod *method;
+
+  /* Get the extension. */
+  method = CCTK_GetHandledData(IOMethods, handle);
+
+  if(method)
+  {
+    method->TriggerOutput = func;
+    return_code = 1;
+  }
+  else
+  {
+    return_code = 0;
+  }
+
+  return return_code;
+}
 
  /*@@
-   @routine    CCTK_RegisterIOMethodOutputVarAs
+   @routine    CCTK_RegisterIOMethodTimeToOutput
    @date       Sat March 6 1999
    @author     Gabrielle Allen
    @desc 
@@ -329,6 +351,11 @@ static int DummyTimeToOutput(cGH *GH, int var)
 static int DummyOutputVarAs(cGH *GH, 
                             const char *var, 
                             const char *alias)
+{
+  return 0;
+}
+
+static int DummyTriggerOutput(cGH *GH, int var)
 {
   return 0;
 }
@@ -748,7 +775,7 @@ int CCTK_rfrTriggerAction(void *GH, int variable)
       if (method->TimeToOutput(GH, variable))
       {
 	/* And if so do call the output routine for the method */
-	method->OutputVarAs(GH,fullvarname,varname);
+	method->TriggerOutput(GH,variable);
 	nmethods++;
       }
     }
