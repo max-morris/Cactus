@@ -9,6 +9,8 @@
    @enddesc 
  @@*/
 
+/*#define DEBUG*/
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -30,12 +32,14 @@ static char *rcsid = "$Header$";
 static void CheckBuf(int, int);
 static void removeSpaces(char *stripMe);
 
+/* line number */
+static int lineno = 1;
 
 
 /*@@
   @routine ParseFile
   @author Paul Walker
-  @desc The meat of the matter!
+  @desc 
   This routine actually parses the parameter file. The
   syntax we allow is
   <ul>
@@ -73,19 +77,28 @@ int ParseFile(FILE *ifp,
      EOF. See man 3 fgetc
    */
   int c;
-  /* line number */
-  int lineno = 1;
 
   intoken = 0; inval = 0;
 
   while ((c=fgetc(ifp)) != EOF) 
   {
+#ifdef DEBUG
+    printf("%c",c);
+#endif
     /* Main Loop */
     while (c == '#' || c == '!' ) 
     {
       /* Comment line.  So forget rest of line */
-      while ((c=fgetc(ifp)) != '\n' && c != EOF);
+      while ((c=fgetc(ifp)) != '\n' && c != EOF)
+      {
+#ifdef DEBUG
+	printf("%c",c);
+#endif
+      }
       c = fgetc(ifp);
+#ifdef DEBUG
+      printf("%c",c);
+#endif
     }
 
     /* End of line */
@@ -97,10 +110,10 @@ int ParseFile(FILE *ifp,
         intoken = 0;
       }
 
-      lineno ++;
 #ifdef DEBUG
       printf ("LINE %d\n",lineno);
 #endif
+      lineno ++;
 
     }
 
@@ -113,7 +126,7 @@ int ParseFile(FILE *ifp,
 
                 
     /* Start of a new token */
-    if (c != ' ' && c != '\n' && !inval && !intoken) 
+    if (c != ' ' && c != '\t' && c != '\n' && !inval && !intoken) 
     {
       intoken = 0;
       tokens[intoken++] = c;
@@ -133,20 +146,31 @@ int ParseFile(FILE *ifp,
         for (ll=0;ll < strlen(tokens); ll++)
           if (tokens[ll] == ',') ntokens++;
 #ifdef DEBUG
-        printf ("New token! >>%s<<\n",tokens);
+        printf ("\nNew token! >>%s<<\n",tokens);
         printf ("%d token elements\n",ntokens);
 #endif
 
         /* Scan ahead to the beginning of the value
-         * and check if the value is a string or
-         * not. UNLIKE shalfs parser, this one DOES
-         * strip quotes off of the strings. Bye bye
-         * to StripQuotes routines...
+         * and check if the value is a string or not.
+	 * This parser DOES strip quotes off of the strings. 
          */
-        while ((c = fgetc(ifp)) == ' ' || c == '\n' || c == '\t');
+        while ((c = fgetc(ifp)) == ' ' || c == '\n' || c == '\t')
+	{
+#ifdef DEBUG
+	  printf("%c",c);
+#endif
+	  if (c == '\n')
+	  {
+#ifdef DEBUG
+	    printf ("LINE %d\n",lineno);
+#endif
+	    lineno++;
+	  }
+	}
+
         if (c == '"') 
         {
-          /* Just handle the damn thing. */
+          /* Just handle the thing. */
           int p = 0;
           if (ntokens > 1) 
           {
@@ -159,6 +183,9 @@ int ParseFile(FILE *ifp,
           }
           while ((c = fgetc(ifp)) != '"') 
           {
+#ifdef DEBUG
+	    printf("%c",c);
+#endif
             /* Make an important decision NOT to include 
              * line feeds in the string parameters
              */
@@ -168,12 +195,16 @@ int ParseFile(FILE *ifp,
               printf ("%sWarning:%s Quoted string contains newline for token %s\n",
                       BOLDON, BOLDOFF, tokens);
               printf ("This could indicated a parameter file error or missing quote\n");
+#ifdef DEBUG
+	      printf ("LINE %d\n",lineno);
+#endif
+	      lineno++;
             }
             CheckBuf(p,lineno);
           }
           value[p] = '\0';
 #ifdef DEBUG
-          printf ("String %s -> %s\n",
+          printf ("\nString %s -> %s\n",
                   tokens,value);
 #endif
           set_function(tokens,value);
@@ -190,16 +221,29 @@ int ParseFile(FILE *ifp,
                or a double which contain no
                spaces! */
             c = fgetc(ifp);
+#ifdef DEBUG
+	    printf("%c",c);
+#endif
             while (!(c==' ' || c=='\t' || c == '\n' || c == EOF)) 
             {
               value[p++] = c;
               CheckBuf(p,lineno);
               c = fgetc(ifp);
+#ifdef DEBUG
+	      printf("%c",c);
+#endif
+	      if (c=='\n')
+	      {
+#ifdef DEBUG
+		printf ("LINE %d\n",lineno);
+#endif
+		lineno++;
+	      }
             }
             value[p] = '\0';
 #ifdef DEBUG
             printf ("Parsed %d characters\n", p);
-            printf("Float/Int: %s -> %s\n", tokens,value);
+            printf("\nFloat/Int: %s -> %s\n", tokens,value);
 #endif
             set_function(tokens,value);
 
@@ -219,6 +263,9 @@ int ParseFile(FILE *ifp,
                make a nice little string. 
                */
             c = fgetc(ifp);
+#ifdef DEBUG
+	    printf("%c",c);
+#endif
             while (ncommas < ntokens-1 && c != EOF) 
             {
               if (!(c == ' ' || c == '\t' || c == '\n')) 
@@ -228,11 +275,26 @@ int ParseFile(FILE *ifp,
               }
               if (c == ',') ncommas ++;
               c = fgetc(ifp);
+#ifdef DEBUG
+	      printf("%c",c);
+#endif
             }
             if (c == ' ' || c == '\t')
             {
               /* Great now strip out the spaces */
-              while((c = fgetc(ifp)) == ' ' || c=='\t' || c == '\n');
+              while((c = fgetc(ifp)) == ' ' || c=='\t' || c == '\n')
+	      {
+#ifdef DEBUG
+		printf("%c",c);
+#endif
+		if (c=='\n')
+		{
+#ifdef DEBUG
+		  printf ("LINE %d\n",lineno);
+#endif
+		  lineno++;
+		}
+	      }
             }
             
             /* And tack the rest on */
@@ -240,11 +302,17 @@ int ParseFile(FILE *ifp,
             CheckBuf(p,lineno);
 
             c = fgetc(ifp);
+#ifdef DEBUG
+	    printf("%c",c);
+#endif
             while (c != ' ' && c != '\t' && c != '\n' && c != EOF) 
             {
               value[p++] = c;
               CheckBuf(p,lineno);
               c = fgetc(ifp);
+#ifdef DEBUG
+	      printf("%c",c);
+#endif
             }
             value[p] = '\0';
 #ifdef DEBUG
@@ -346,12 +414,6 @@ static void CheckBuf(int p, int l)
   that this function will change the input value and if you
   want to keep a copy you have to do so yourself!
   @enddesc
-  @comment
-  The silly user (eg, me) may think to call @seeroutine trimString
-  then this routine in order to remove all spaces from a string.
-  But, duh, @seeroutine trimString is a <i>subset</i> of this, you
-  dummy!
-  @endcomment
   @@*/
 
 static void removeSpaces(char *stripMe) 
