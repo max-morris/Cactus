@@ -315,7 +315,7 @@ sub get_thornlist
 {
   if (!-d "thornlists")
   {
-    print "\nThorn List directory not found\n";
+    print "\nThorn List directory \"thornlists\" not found\n\n";
     return;
   } 
   else
