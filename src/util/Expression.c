@@ -667,7 +667,7 @@ static pToken *newtoken(const char *tokenstart, const char *tokenend)
   const char *position;
   char *newpos;
 
-  this = (pToken *)malloc(sizeof(pToken *));
+  this = (pToken *)malloc(sizeof(pToken));
 
   if(this)
   {
