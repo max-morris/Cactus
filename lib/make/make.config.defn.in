@@ -4,7 +4,7 @@
 #   @author    Tom Goodale
 #   @desc 
 #   Make definition file for a configuration
-#   Defines the conpilers, etc.
+#   Defines the compilers, etc.
 #
 #   Should be run through autoconf to produce make.config.defn
 #   @enddesc 
