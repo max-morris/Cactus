@@ -156,6 +156,8 @@ int CCTK_StepGH(cGH *GH) {
   EvolStepper(GH);
   BoundStepper(GH);
   PostStepper(GH);
+
+  return 0;
 }
 
  /*@@
