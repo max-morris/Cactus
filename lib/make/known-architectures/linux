@@ -45,7 +45,7 @@ else
         echo Unknown Linux f90 compiler.
         echo Please add appropriate information to 
         echo $srcdir/known-architectures/linux-gnu
-        echo ad send the updated file to CactusMaint
+        echo and send the updated file to CactusMaint
         echo We will try anyway ...
     fi
   elif test -n "$F77" ; then 
@@ -63,7 +63,7 @@ else
         echo Unknown Linux f77 compiler.
         echo Please add appropriate information to 
         echo $srcdir/known-architectures/linux-gnu
-        echo ad send the updated file to CactusMaint
+        echo and send the updated file to CactusMaint
         echo We will try anyway ...
     fi
   fi
