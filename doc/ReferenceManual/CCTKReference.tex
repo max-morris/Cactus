@@ -5037,7 +5037,8 @@ The number of points at which interpolation is to be done.
 \hbox{}
 One of the \code{CCTK\_VARIABLE\_*} type codes, giving the data type
 of the 1-D interpolation-point-coordinate arrays pointed to by
-\code{interp\_coords[]}.
+\code{interp\_coords[]}.  In practice, this data type will almost
+always be \code{CCTK\_REAL} or one of the \code{CCTK\_REAL*} types.
 \end{Parameter}
 \begin{Parameter}{interp\_coords ($\ne$ NULL)}
 \hbox{}
