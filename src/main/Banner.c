@@ -37,14 +37,28 @@ void CCTKi_PrintBanners(void);
 void CCTK_RegisterBanner(const char *string)
 {
 
+  const char **temp = NULL;
   number_banners++;
 
   if (number_banners == 1)
+  {
     banner_strings = (const char **)malloc( number_banners*sizeof(const char *));  
+    temp = banner_strings;
+  }
   else
-    realloc( banner_strings, number_banners*sizeof(const char *));  
+  {
+    temp = realloc( banner_strings, number_banners*sizeof(const char *));  
 
-  banner_strings[number_banners-1] = string;
+    if(temp)
+    {
+      banner_strings = temp;
+    }
+  }
+
+  if(temp)
+  {
+    banner_strings[number_banners-1] = string;
+  }
 
 }
 
@@ -78,8 +92,7 @@ void CCTKi_PrintBanners(void)
       if (banner_strings[i])
       {
 	printf("-------------------------------------------------------------------------------------\n");
-	printf("Banner\n");
-	/*	printf("%s\n",banner_strings[i]); */
+	printf("%s\n",banner_strings[i]); 
 	printf("-------------------------------------------------------------------------------------\n");
       }
     }
