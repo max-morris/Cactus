@@ -5,7 +5,7 @@
    @desc 
    List of contributors to Cactus   
    @enddesc 
-   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/CONTRIBUTORS,v 1.1 2000-02-08 15:50:08 goodale Exp $
+   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/CONTRIBUTORS,v 1.2 2000-07-07 12:14:41 allen Exp $
  @@*/
 
 These people and organisations have contributed code, ideas 
@@ -18,10 +18,12 @@ People:
 ------
 
 Gabrielle Allen
+Werner Benger
 Bernd Bruegmann
 Tom Goodale
 Gerd Lanfermann
 Joan Masso
+Andre Merzky
 Mark Miller
 Andre Merzky
 Thomas Radke
