@@ -330,7 +330,8 @@ int CactusDefaultAbort(cGH *GH, int retval)
     CACTUS_MPI_ERROR(MPI_Abort(MPI_COMM_WORLD,retval));
   }
 #else
-  assert(0);
+  /* FIXME */
+  /*abort();*/
 #endif
   exit(0);
   return(0);
