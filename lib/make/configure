@@ -1738,8 +1738,8 @@ esac
 
 # Check for sizes of integer types
 
-if test "x$cross_compiling" = "yes"; then
-  if test -z "SIZEOF_LONG_INT" ; then
+if test "x$cross_compiling" = "xyes"; then
+  if test -z "$SIZEOF_LONG_INT" ; then
     { echo "configure: error: Cross-compiling - no value set for sizeof(long int) please set SIZEOF_LONG_INT" 1>&2; exit 1; }
   fi
 fi
@@ -1784,8 +1784,8 @@ EOF
 
 
 
-if test "x$cross_compiling" = "yes"; then
-  if test -z "SIZEOF_INT" ; then
+if test "x$cross_compiling" = "xyes"; then
+  if test -z "$SIZEOF_INT" ; then
     { echo "configure: error: Cross-compiling - no value set for sizeof(int) please set SIZEOF_INT" 1>&2; exit 1; }
   fi
 fi
@@ -1830,8 +1830,8 @@ EOF
 
 
 
-if test "x$cross_compiling" = "yes"; then
-  if test -z "SIZEOF_SHORT_INT" ; then
+if test "x$cross_compiling" = "xyes"; then
+  if test -z "$SIZEOF_SHORT_INT" ; then
     { echo "configure: error: Cross-compiling - no value set for sizeof(short int) please set SIZEOF_SHORT_INT" 1>&2; exit 1; }
   fi
 fi
@@ -1878,8 +1878,8 @@ EOF
 
 # Check for sizes of floating point types
 
-if test "x$cross_compiling" = "yes"; then
-  if test -z "SIZEOF_LONG_DOUBLE" ; then
+if test "x$cross_compiling" = "xyes"; then
+  if test -z "$SIZEOF_LONG_DOUBLE" ; then
     { echo "configure: error: Cross-compiling - no value set for sizeof(long double) please set SIZEOF_LONG_DOUBLE" 1>&2; exit 1; }
   fi
 fi
@@ -1924,8 +1924,8 @@ EOF
 
 
 
-if test "x$cross_compiling" = "yes"; then
-  if test -z "SIZEOF_DOUBLE" ; then
+if test "x$cross_compiling" = "xyes"; then
+  if test -z "$SIZEOF_DOUBLE" ; then
     { echo "configure: error: Cross-compiling - no value set for sizeof(double) please set SIZEOF_DOUBLE" 1>&2; exit 1; }
   fi
 fi
@@ -1971,8 +1971,8 @@ EOF
 
 
 
-if test "x$cross_compiling" = "yes"; then
-  if test -z "SIZEOF_FLOAT" ; then
+if test "x$cross_compiling" = "xyes"; then
+  if test -z "$SIZEOF_FLOAT" ; then
     { echo "configure: error: Cross-compiling - no value set for sizeof(float) please set SIZEOF_FLOAT" 1>&2; exit 1; }
   fi
 fi
@@ -2019,8 +2019,8 @@ EOF
 
 # Check for sizes of pointers.  
 
-if test "x$cross_compiling" = "yes"; then
-  if test -z "SIZEOF_POINTER" ; then
+if test "x$cross_compiling" = "xyes"; then
+  if test -z "$SIZEOF_POINTER" ; then
      { echo "configure: error: Cross-compiling - no value set for sizeof(char *) please set SIZEOF_POINTER" 1>&2; exit 1; }
   fi
 fi
@@ -2068,8 +2068,8 @@ EOF
 
 # See if there's a null device, and what it's called
 
-if test "x$cross_compiling" = "yes"; then
-  if test -z "NULL_DEVICE" ; then
+if test "x$cross_compiling" = "xyes"; then
+  if test -z "$NULL_DEVICE" ; then
      echo "configure: warning: Cross-compiling - no value set for location of null device please set NULL_DEVICE" 1>&2
      echo "configure: warning: Defaulting to /dev/null" 1>&2
      NULL_DEVICE="/dev/null"

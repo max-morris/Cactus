@@ -238,24 +238,24 @@ AC_C_INLINE
 
 # Check for sizes of integer types
 
-if test "x$cross_compiling" = "yes"; then
-  if test -z "SIZEOF_LONG_INT" ; then
+if test "x$cross_compiling" = "xyes"; then
+  if test -z "$SIZEOF_LONG_INT" ; then
     AC_MSG_ERROR(Cross-compiling - no value set for sizeof(long int) please set SIZEOF_LONG_INT)
   fi
 fi
 
 AC_CHECK_SIZEOF(long int, $SIZEOF_LONG_INT)
 
-if test "x$cross_compiling" = "yes"; then
-  if test -z "SIZEOF_INT" ; then
+if test "x$cross_compiling" = "xyes"; then
+  if test -z "$SIZEOF_INT" ; then
     AC_MSG_ERROR(Cross-compiling - no value set for sizeof(int) please set SIZEOF_INT)
   fi
 fi
 
 AC_CHECK_SIZEOF(int, $SIZEOF_INT)
 
-if test "x$cross_compiling" = "yes"; then
-  if test -z "SIZEOF_SHORT_INT" ; then
+if test "x$cross_compiling" = "xyes"; then
+  if test -z "$SIZEOF_SHORT_INT" ; then
     AC_MSG_ERROR(Cross-compiling - no value set for sizeof(short int) please set SIZEOF_SHORT_INT)
   fi
 fi
@@ -264,16 +264,16 @@ AC_CHECK_SIZEOF(short int, $SIZEOF_SHORT_INT)
 
 # Check for sizes of floating point types
 
-if test "x$cross_compiling" = "yes"; then
-  if test -z "SIZEOF_LONG_DOUBLE" ; then
+if test "x$cross_compiling" = "xyes"; then
+  if test -z "$SIZEOF_LONG_DOUBLE" ; then
     AC_MSG_ERROR(Cross-compiling - no value set for sizeof(long double) please set SIZEOF_LONG_DOUBLE)
   fi
 fi
 
 AC_CHECK_SIZEOF(long double, $SIZEOF_LONG_DOUBLE)
 
-if test "x$cross_compiling" = "yes"; then
-  if test -z "SIZEOF_DOUBLE" ; then
+if test "x$cross_compiling" = "xyes"; then
+  if test -z "$SIZEOF_DOUBLE" ; then
     AC_MSG_ERROR(Cross-compiling - no value set for sizeof(double) please set SIZEOF_DOUBLE)
   fi
 fi
@@ -281,8 +281,8 @@ fi
 AC_CHECK_SIZEOF(double, $SIZEOF_DOUBLE)
 
 
-if test "x$cross_compiling" = "yes"; then
-  if test -z "SIZEOF_FLOAT" ; then
+if test "x$cross_compiling" = "xyes"; then
+  if test -z "$SIZEOF_FLOAT" ; then
     AC_MSG_ERROR(Cross-compiling - no value set for sizeof(float) please set SIZEOF_FLOAT)
   fi
 fi
@@ -291,8 +291,8 @@ AC_CHECK_SIZEOF(float, $SIZEOF_FLOAT)
 
 # Check for sizes of pointers.  
 
-if test "x$cross_compiling" = "yes"; then
-  if test -z "SIZEOF_POINTER" ; then
+if test "x$cross_compiling" = "xyes"; then
+  if test -z "$SIZEOF_POINTER" ; then
      AC_MSG_ERROR(Cross-compiling - no value set for sizeof(char *) please set SIZEOF_POINTER)
   fi
 fi
@@ -302,8 +302,8 @@ AC_CHECK_SIZEOF(char *, $SIZEOF_POINTER)
 
 # See if there's a null device, and what it's called
 
-if test "x$cross_compiling" = "yes"; then
-  if test -z "NULL_DEVICE" ; then
+if test "x$cross_compiling" = "xyes"; then
+  if test -z "$NULL_DEVICE" ; then
      AC_MSG_WARN(Cross-compiling - no value set for location of null device please set NULL_DEVICE)
      AC_MSG_WARN(Defaulting to /dev/null)
      NULL_DEVICE="/dev/null"
