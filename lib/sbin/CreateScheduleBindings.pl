@@ -59,6 +59,12 @@ sub CreateScheduleBindings
     &WriteFile("Schedule$thorn.c",$rsbuffer);
 
     $file_list .= " Schedule$thorn.c";
+
+    $rsbuffer = &ParameterRecoveryCreateFile($thorn, $rhinterface_db, $rhschedule_db);
+
+    &WriteFile("ParameterRecovery$thorn.c",$rsbuffer);
+
+    $file_list .= " ParameterRecovery$thorn.c";
   }
 
   $rsbuffer = &ScheduleCreateBindings($rhinterface_db, $rhschedule_db);
@@ -66,6 +72,12 @@ sub CreateScheduleBindings
   &WriteFile("BindingsSchedule.c",$rsbuffer);
 
   $file_list .= " BindingsSchedule.c";
+
+  $rsbuffer = &ParameterRecoveryCreateBindings($rhinterface_db, $rhschedule_db);
+
+  &WriteFile("BindingsParameterRecovery.c",$rsbuffer);
+
+  $file_list .= " BindingsParameterRecovery.c";
 
   $line = "SRCS = $file_list\n";
 
@@ -113,10 +125,17 @@ sub ScheduleCreateFile
   # Process each schedule block
   for($block = 0 ; $block < $rhschedule_db->{"\U$thorn\E N_BLOCKS"}; $block++)
   {
-    ($block_buffer, $block_prototype) = &ScheduleBlock($thorn, $implementation, $block,
-						       $rhinterface_db, $rhschedule_db);
-    $buffer =~ s:\@BLOCK\@$block:$block_buffer:;
-    $prototypes .= "$block_prototype";
+    if ($rhschedule_db->{"\U$thorn\E BLOCK_$block WHERE"} !~ /RECOVER_PARAMETERS/)
+    {
+      ($block_buffer, $block_prototype) = &ScheduleBlock($thorn, $implementation, $block,
+							 $rhinterface_db, $rhschedule_db);
+      $buffer =~ s:\@BLOCK\@$block:$block_buffer:;
+      $prototypes .= "$block_prototype";
+    }
+    else
+    {
+      $buffer =~ s:\@BLOCK\@$block::;
+    }
   }
 
   # Process each schedule statement
@@ -124,7 +143,6 @@ sub ScheduleCreateFile
   {
     ($statement_buffer, $statement_prototype) = &ScheduleStatement($thorn, $implementation, $statement, 
 								   $rhinterface_db, $rhschedule_db);
-
     $buffer =~ s:\@STATEMENT\@$statement:$statement_buffer:;
     $prototypes .= "$statement_prototype";
   }
@@ -169,6 +187,117 @@ sub ScheduleCreateFile
   return \$outbuf;
 
 }
+
+
+#/*@@
+#  @routine    ParameterRecoveryCreateFile
+#  @date       Tue Apr 18 17:34:26 2000
+#  @author     Gabrielle Allen
+#  @desc 
+#  Creates a string containing all the data which should go into a parameter recovery file.
+#  @enddesc 
+#  @calls     
+#  @calledby   
+#  @history 
+#
+#  @endhistory 
+#
+#@@*/
+sub ParameterRecoveryCreateFile
+{
+  my($thorn, $rhinterface_db, $rhschedule_db) = @_;
+
+  my($implementation);
+  my($buffer, $prototypes);
+  my($block, $block_buffer, $block_prototype);
+  my($statement, $statement_buffer, $statement_prototype);
+  my($indent, $language, $function);
+  my(@mem_groups);
+  my(@comm_groups);
+  my(@trigger_groups);
+  my(@before_list);
+  my(@after_list);
+  my(@while_list);
+  my($outfile);
+  my($outbuf);
+
+  $implementation = $rhinterface_db->{"\U$thorn\E IMPLEMENTS"};
+  
+  $buffer = $rhschedule_db->{"\U$thorn\E FILE"};
+  
+  # Process each schedule block
+  for($block = 0 ; $block < $rhschedule_db->{"\U$thorn\E N_BLOCKS"}; $block++)
+  {
+    if ($rhschedule_db->{"\U$thorn\E BLOCK_$block WHERE"} =~ /RECOVER_PARAMETERS/)
+      {
+	if($rhschedule_db->{"\U$thorn\E BLOCK_$block LANG"} =~ m:^\s*C\s*$:i )
+	{
+	  $block_buffer = $rhschedule_db->{"\U$thorn\E BLOCK_$block NAME"};
+	}
+	elsif($rhschedule_db->{"\U$thorn\E BLOCK_$block LANG"} =~ m:^\s*(F|F77|FORTRAN|F90)\s*$:i )
+        {
+	  $block_buffer = "FORTRAN_NAME(".$rhschedule_db->{"\U$thorn\E BLOCK_$block NAME"} .")";
+	}
+
+      $buffer =~ s:\@BLOCK\@$block:result =  $block_buffer();:;
+      $prototypes .= "extern int $block_buffer(void);\n";
+    }
+    else
+    {
+      $buffer =~ s:\@BLOCK\@$block::;
+    }      
+  }
+
+  # Process each schedule statement
+  for($statement = 0 ; $statement < $rhschedule_db->{"\U$thorn\E N_STATEMENTS"}; $statement++)
+  {
+    $buffer =~ s:\@STATEMENT\@$statement::;
+  }
+    
+  # Actually create the string
+
+  # Header stuff
+  $outbuf = "";
+  $outbuf .=  "\#define THORN_IS_$thorn\n";
+  $outbuf .=  "\n";
+  $outbuf .=  "\#include <stdarg.h>\n";
+  $outbuf .=  "\n";
+  $outbuf .=  "\#include \"cctk.h\"\n";
+  $outbuf .=  "\#include \"cctk_Parameters.h\"\n";
+  $outbuf .=  "\#include \"cctki_ScheduleBindings.h\"\n";
+  $outbuf .=  "\n";
+  $outbuf .=  "/* Prototypes for functions to be registered. */\n";
+  $outbuf .=  "$prototypes\n";
+  $outbuf .=  "\n";
+  $outbuf .=  "/*\@\@\n";
+  $outbuf .=  "  \@routine    CCTKi_BindingsParameterRecovery_$thorn\n";
+  $outbuf .=  "  \@date       \n";
+  $outbuf .=  "  \@author     \n";
+  $outbuf .=  "  \@desc \n";
+  $outbuf .=  "  Creates the parameter recovery bindings for thorn $thorn\n";
+  $outbuf .=  "  \@enddesc \n";
+  $outbuf .=  "  \@calls     \n";
+  $outbuf .=  "  \@calledby   \n";
+  $outbuf .=  "  \@history \n";
+  $outbuf .=  "\n";
+  $outbuf .=  "  \@endhistory\n"; 
+  $outbuf .=  "\n";
+  $outbuf .=  "\@\@*/\n";
+  $outbuf .=  "int CCTKi_BindingsParameterRecovery_$thorn(void)\n";
+  $outbuf .=  "{\n";
+  $outbuf .=  "  DECLARE_CCTK_PARAMETERS\n";
+  $outbuf .=  "  int result = 0;\n\n";
+  $outbuf .=  "$buffer\n";
+  $outbuf .=  "  return (result);\n";
+  $outbuf .=  "  USE_CCTK_PARAMETERS\n";
+  $outbuf .=  "}\n";
+  $outbuf .=  "\n";
+
+  return \$outbuf;
+
+}
+
+
 
 #/*@@
 #  @routine    ScheduleCreateBindings
@@ -231,6 +360,79 @@ sub ScheduleCreateBindings
 
   return \$outbuf;
 }
+
+
+#/*@@
+#  @routine    ParameterRecoveryCreateBindings
+#  @date       Tue Apr 18 13:17:13 2000
+#  @author     Gabrielle Allen
+#  @desc 
+#  Creates a string containing all the data which should go into the master 
+#  parameter recovery bindings file.
+#  @enddesc 
+#  @calls     
+#  @calledby   
+#  @history 
+#
+#  @endhistory 
+#
+#@@*/
+sub ParameterRecoveryCreateBindings
+{
+  my($rhinterface_db, $rhschedule_db) = @_;
+
+  my($outbuf);
+
+  $outbuf = "";
+  $outbuf .=  "\#include \"SKBinTree.h\"\n";
+  $outbuf .=  "\#include \"cctk_ActiveThorns.h\"\n";
+  $outbuf .=   "\n";
+  $outbuf .=  "/* Prototypes for functions to be registered. */\n";
+
+  foreach $thorn (sort split(" ", $rhinterface_db->{"THORNS"}))
+  {
+    $outbuf .= "int CCTKi_BindingsParameterRecovery_$thorn(void);\n";
+  }
+
+  $outbuf .=  "/*\@\@\n";
+  $outbuf .=  "  \@routine    CCTKi_BindingsParameterRecoveryInitialise\n";
+  $outbuf .=  "  \@date       \n";
+  $outbuf .=  "  \@author     \n";
+  $outbuf .=  "  \@desc \n";
+  $outbuf .=  "  Calls all the thorn parameter recovery bindings file if the thorns are active.\n";
+  $outbuf .=  "  \@enddesc \n";
+  $outbuf .=  "  \@calls     \n";
+  $outbuf .=  "  \@calledby   \n";
+  $outbuf .=  "  \@history \n";
+  $outbuf .=  "\n";
+  $outbuf .=  "  \@endhistory\n"; 
+  $outbuf .=  "\n";
+  $outbuf .=  "\@\@*/\n";
+  $outbuf .=  "int CCTKi_BindingsParameterRecoveryInitialise(void)\n";
+  $outbuf .=  "{\n";
+
+  $outbuf .= "  int result = 0;\n";
+  $outbuf .= "  do\n";
+  $outbuf .= "  {\n";
+  foreach $thorn (sort split(" ", $rhinterface_db->{"THORNS"}))
+  {
+    $outbuf .= "  if(CCTK_IsThornActive(\"$thorn\"))\n";
+    $outbuf .= "  {\n";
+    $outbuf .= "    result=CCTKi_BindingsParameterRecovery_$thorn();\n";
+    $outbuf .= "    if (result == 0)\n";
+    $outbuf .= "      break;\n";
+    $outbuf .= "  }\n";
+  }
+  $outbuf .=  "  } while (0);\n";
+  $outbuf .=  "  return result;\n";
+  $outbuf .=  "}\n";
+  $outbuf .=  "\n";
+
+  return \$outbuf;
+}
+
+
+
 #/*@@
 #  @routine    ScheduleBlock
 #  @date       Fri Sep 17 17:37:59 1999
@@ -428,6 +630,7 @@ sub ScheduleStatement
 
   return ($buffer, $prototype);
 }
+
 
 #/*@@
 #  @routine    ScheduleSelectGroups
