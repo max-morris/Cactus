@@ -4,9 +4,9 @@
  /*@@
    @file      File.c
    @date      September 6th 1999
-   @author    File handling routines
+   @author    Gabrielle Allen
    @desc
-   Miscellaneuous routines.
+              File Handling routines
    @enddesc
  @@*/             
 
@@ -15,14 +15,38 @@
 
 #include "cctk_WarnLevel.h"
 #include "cctk_FortranString.h"
+#include "StoreHandledData.h"
+
+static cHandledData *DirNames = NULL;   
+
+ /*@@
+   @routine   CCTK_mkdir
+   @date      September 6th 1999
+   @author    Gabrielle Allen
+   @desc
+              Create a directory, if we haven't already tried 
+              to create it.
+   @enddesc
+ @@*/             
 
 int CCTK_mkdir(char *dir)
 {
   int retval;
+  int handle;
   char *command;
   char *message;
  
   command = (char *)malloc(1024*sizeof(char));
+
+  /* Store directory name */
+  handle = Util_GetHandle(DirNames, dir, NULL);
+
+
+  if (handle < 0)
+  {
+
+    /* New directory name */
+    handle = Util_NewHandle(&DirNames, dir, NULL);     
 
   /***
     TR 13/09/99: disabled use of MKDIRFLAGS until it also works for NT
@@ -36,19 +60,21 @@ int CCTK_mkdir(char *dir)
     relative to an existing directory.
    ***/
 #if 0
-  sprintf(command, MKDIR MKDIRFLAGS " %s",dir);
+    sprintf(command, MKDIR MKDIRFLAGS " %s",dir);
 #else
-  sprintf(command, MKDIR " %s",dir);
+    sprintf(command, MKDIR " %s",dir);
 #endif
 
-  message = (char *)malloc(1024*sizeof(char));
-  sprintf(message,"Creating directory: \"%s\"",command);
-  CCTK_Info("Cactus",message);
-  free(message);
+    message = (char *)malloc(1024*sizeof(char));
+    sprintf(message,"Creating directory: \"%s\"",command);
+    CCTK_Info("Cactus",message);
+    free(message);
 
-  retval = system(command);
+    retval = system(command);
 
-  free(command);
+    free(command);
+
+  }
 
   return retval;
 
