@@ -73,6 +73,8 @@ int CCTKi_InitialiseCactus(int *argc, char ***argv, tFleshConfig *ConfigData)
 
   CCTKi_ProcessParameterDatabase(ConfigData);
 
+  CCTKi_BindingsVariablesInitialise();
+
   CCTKi_InitialiseScheduler(ConfigData);
 
   CCTKi_CallStartupFunctions(ConfigData);
