@@ -386,23 +386,23 @@ sub ParseScheduleBlock
       $line_number++;
       if($data[$line_number] =~ m/^\s*STOR[^:]*:\s*(.*)$/i)
       {
-        push(@mem_groups, split(/\s,/, $1));
+        push(@mem_groups, split(/\s+|\s*,\s*/, $1));
       }
       elsif($data[$line_number] =~ m/^\s*COMM[^:]*:\s*(.*)$/i)
       {
-        push(@comm_groups, split(/\s,/, $1));
+        push(@comm_groups, split(/\s+|\s*,\s*/, $1));
       }
       elsif($data[$line_number] =~ m/^\s*TRIG[^:]*:\s*(.*)$/i)
       {
-        push(@trigger_groups, split(/\s,/, $1));
+        push(@trigger_groups, split(/\s+|\s*,\s*/, $1));
       }
       elsif($data[$line_number] =~ m/^\s*SYNC[^:]*:\s*(.*)$/i)
       {
-        push(@sync_groups, split(/\s,/, $1));
+        push(@sync_groups, split(/\s+|\s*,\s*/, $1));
       }
       elsif($data[$line_number] =~ m/^\s*OPTI[^:]*:\s*(.*)$/i)
       {
-        push(@options, split(/\s,/, $1));
+        push(@options, split(/\s+|\s*,\s*/, $1));
       }
       elsif($data[$line_number] =~ m/^\s*LANG[^:]*:\s*(.*)$/i)
       {
