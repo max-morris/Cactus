@@ -1870,6 +1870,8 @@ Note that this may be less than the number of dimensions of the
 input arrays if the storage is set up appropriately.  For example,
 we might want to interpolate along 1-D lines or in 2-D planes of a
 3-D input array; here \verb|N_dims| would be 1 or 2 respectively.
+See the discussion of the \verb|input_array_strides| optional parameter
+(passed in the parameter table) for details.
 \end{Parameter}
 \begin{Parameter}{operator\_handle ($\ge 0$)}
 \hbox{}\\
@@ -1960,16 +1962,15 @@ parameter table handle is invalid
 \end{Error}
 
 \begin{Example}{C}
-Here's a simple example to do quartic interpolation of a real and
-a complex grid array in 3-D, at 1000 interpolation points.
-
+Here's a simple example to do quartic 3-D interpolation of a real
+and a complex grid array, at 1000 interpolation points:
 \begin{verbatim}
 #include "cctk.h"
 #include "util_Table.h"
 
 #define N_DIMS          3
-#define N_INPUT_ARRAYS  2
 #define N_INTERP_POINTS 1000
+#define N_INPUT_ARRAYS  2
 #define N_OUTPUT_ARRAYS 2
 const cGH *GH;
 int operator_handle, coord_system_handle;
@@ -1982,7 +1983,7 @@ static const CCTK_INT interp_coord_type_codes[N_DIMS]
         = { CCTK_VARIABLE_REAL, CCTK_VARIABLE_REAL, CCTK_VARIABLE_REAL };
 const void *interp_coords[N_DIMS];
 
-/* input/output arrays */
+/* input and output arrays */
 CCTK_INT input_array_variable_indices[N_INPUT_ARRAYS];
 static const CCTK_INT output_array_type_codes[N_OUTPUT_ARRAYS]
         = { CCTK_VARIABLE_REAL, CCTK_VARIABLE_COMPLEX };
@@ -2001,10 +2002,8 @@ if (coord_system_handle < 0)
 interp_coords[0] = (const void *) interp_x;
 interp_coords[1] = (const void *) interp_y;
 interp_coords[2] = (const void *) interp_z;
-
 input_array_variable_indices[0] = CCTK_VarIndex("my_thorn::real_array");
 input_array_variable_indices[1] = CCTK_VarIndex("my_thorn::complex_array");
-
 output_arrays[0] = (void *) output_for_real_array;
 output_arrays[1] = (void *) output_for_complex_array;
 
@@ -2297,6 +2296,8 @@ Note that this may be less than the number of dimensions of the
 input arrays if the storage is set up appropriately.  For example,
 we might want to interpolate along 1-D lines or in 2-D planes of a
 3-D input array; here \verb|N_dims| would be 1 or 2 respectively.
+See the discussion of the \verb|input_array_strides| optional parameter
+(passed in the parameter table) for details.
 \end{Parameter}
 \begin{Parameter}{operator\_handle ($\ge 0$)}
 \hbox{}\\
@@ -2310,7 +2311,10 @@ the interpolator.
 \begin{Parameter}{coord\_system\_origin ($\ne$ NULL)}
 \hbox{}\\
 (Pointer to) an array giving the physical coordinates of the grid point
-with integer grid subscripts 0, 0, \dots, 0.
+with integer grid subscripts 0, 0, \dots, 0.  (It doesn't matter whether
+or not this grid point actually exists in the grid.)  See the description
+of \verb|grid_spacing| for more on how \verb|coord_system_origin| is
+actually used.
 \end{Parameter}
 \begin{Parameter}{grid\_spacing ($\ne$ NULL)}
 \hbox{}\\
@@ -2342,6 +2346,16 @@ The number of input arrays to be interpolated.
 Note that if the parameter table entry \verb|operand_indices|
 is used to specify a 1-to-many mapping of input arrays to output arrays,
 only the unique set of input arrays should be given here.
+\end{Parameter}
+\begin{Parameter}{input\_array\_dims ($\ne$ NULL)}
+\hbox{}\\
+(Pointer to) an array of \verb|N_dims| integers giving the dimensions
+of the input array.  By default all the input arrays are taken to have
+these dimensions, with \verb|[0]| the most contiguous axis and
+\verb|[N_dims-1]| the least contiguous axis, and array subscripts in the
+range \verb|0 <= subscript < dims[axis]|.  See the discussion of the
+\verb|input_array_strides| optional parameter (passed in the parameter table)
+for details of how this can be overridden.
 \end{Parameter}
 \begin{Parameter}{input\_array\_type\_codes ($\ne$ NULL)}
 \hbox{}\\
@@ -2400,6 +2414,69 @@ unable to allocate memory
 \begin{Error}{UTIL\_ERROR\_BAD\_HANDLE}
 parameter table handle is invalid
 \end{Error}
+
+\begin{Example}{C}
+Here's a simple example to do quartic 3-D interpolation of a real and
+a complex $20 \times 30 \times 40$ array, at 1000 interpolation points:
+\begin{verbatim}
+#include "cctk.h"
+#include "util_Table.h"
+
+#define N_DIMS          3
+#define NX              20      /* x dimension of input arrays */
+#define NY              30      /* y */
+#define NZ              40      /* z */
+#define N_INTERP_POINTS 1000
+#define N_INPUT_ARRAYS  2
+#define N_OUTPUT_ARRAYS 2
+int operator_handle;
+CCTK_REAL coord_system_origin[N_DIMS], grid_spacing[N_DIMS];
+
+/* interpolation points */
+CCTK_REAL interp_x[N_INTERP_POINTS],
+          interp_y[N_INTERP_POINTS],
+          interp_z[N_INTERP_POINTS];
+static const CCTK_INT interp_coord_type_codes[N_DIMS]
+        = { CCTK_VARIABLE_REAL, CCTK_VARIABLE_REAL, CCTK_VARIABLE_REAL };
+const void *interp_coords[N_DIMS];
+
+/* input and output arrays */
+CCTK_REAL    real_array   [NZ][NY][NX]; /* n.b. x is contiguous */
+CCTK_COMPLEX complex_array[NZ][NY][NX]; /* (Fortran storage order) */
+static const CCTK_INT input_array_dims[N_DIMS] = { NX, NY, NZ };
+static const CCTK_INT input_and_output_array_type_codes[N_OUTPUT_ARRAYS]
+        = { CCTK_VARIABLE_REAL, CCTK_VARIABLE_COMPLEX };
+const void * input_arrays[N_OUTPUT_ARRAYS];
+      void *output_arrays[N_OUTPUT_ARRAYS];
+CCTK_REAL    output_for_real_array   [N_INTERP_POINTS];
+CCTK_COMPLEX output_for_complex_array[N_INTERP_POINTS];
+
+operator_handle = CCTK_InterpHandle("generalized polynomial");
+if (operator_handle < 0)
+        CCTK_WARN(-1, "can't get operator handle!");
+
+interp_coords[0] = (const void *) interp_x;
+interp_coords[1] = (const void *) interp_y;
+interp_coords[2] = (const void *) interp_z;
+input_arrays[0] = (void *) real_array;
+input_arrays[1] = (void *) complex_array;
+output_arrays[0] = (void *) output_for_real_array;
+output_arrays[1] = (void *) output_for_complex_array;
+
+if (CCTK_InterpLocalArrays(N_DIMS,
+                           operator_handle,
+                           Util_TableCreateFromString("order=4"),
+                           coord_system_origin, grid_spacing
+                           N_INTERP_POINTS, interp_coord_type_codes,
+                                            interp_coords,
+                           N_INPUT_ARRAYS, input_array_dims,
+                                           input_array_type_codes,
+                                           input_arrays,
+                           N_OUTPUT_ARRAYS, output_array_type_codes,
+                                            output_arrays) < 0)
+        CCTK_WARN(-1, "error return from interpolator!");
+\end{verbatim}
+\end{Example}
 \end{FunctionDescription}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
