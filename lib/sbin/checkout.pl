@@ -1,3 +1,11 @@
+#/*@@
+#  @file      checkout.pl
+#  @date      Sat Jul  3 16:38:52 1999
+#  @author    Gabrielle Allen
+#  @desc 
+#  
+#  @enddesc 
+#@@*/
 # /usr/bin/perl -s
 
 $sbin_dir = "lib/sbin";
@@ -6,6 +14,10 @@ require "$sbin_dir/MakeUtils.pl";
 
 # First check that CVS works
 die "cvs not found\n" if (!&CVSFound);
+
+# Switch off buffering for STDOUT
+select(STDOUT);
+$| = 1;
 
 # Print info
 &PrintInfo;
@@ -56,6 +68,20 @@ print "\nAll done!\n\n";
 exit;
 
 
+#/*@@
+#  @routine    get_arrangements
+#  @date       Sat Jul  3 16:38:52 1999
+#  @author     Gabrielle Allen
+#  @desc 
+#  
+#  @enddesc 
+#  @calls     
+#  @calledby   
+#  @history 
+#
+#  @endhistory 
+#
+#@@*/
 sub get_arrangements
 {   
     my($repository) = @_;
@@ -147,6 +173,20 @@ sub get_arrangements
 
 
 
+#/*@@
+#  @routine    get_thorns
+#  @date       Sat Jul  3 16:38:52 1999
+#  @author     Gabrielle Allen
+#  @desc 
+#  
+#  @enddesc 
+#  @calls     
+#  @calledby   
+#  @history 
+#
+#  @endhistory 
+#
+#@@*/
 sub get_thorns
 {
     my($repository) = @_;
@@ -254,6 +294,20 @@ sub get_thorns
 
 
 
+#/*@@
+#  @routine    get_applications
+#  @date       Sat Jul  3 16:38:52 1999
+#  @author     Gabrielle Allen
+#  @desc 
+#  
+#  @enddesc 
+#  @calls     
+#  @calledby   
+#  @history 
+#
+#  @endhistory 
+#
+#@@*/
 sub get_applications
 {
   my($repository) = @_;
@@ -383,6 +437,20 @@ sub get_applications
     chdir ("..") || die "Could not return to Cactus home directory\n";
 }
 
+#/*@@
+#  @routine    print_help
+#  @date       Sat Jul  3 16:38:52 1999
+#  @author     Gabrielle Allen
+#  @desc 
+#  
+#  @enddesc 
+#  @calls     
+#  @calledby   
+#  @history 
+#
+#  @endhistory 
+#
+#@@*/
 sub print_help
 { 
 
@@ -393,6 +461,20 @@ sub print_help
     print "   1-2,4,6-7,9\n\n";
 }
 
+#/*@@
+#  @routine    Checkout
+#  @date       Sat Jul  3 16:38:52 1999
+#  @author     Gabrielle Allen
+#  @desc 
+#  
+#  @enddesc 
+#  @calls     
+#  @calledby   
+#  @history 
+#
+#  @endhistory 
+#
+#@@*/
 sub CheckOut
 {
   my($file,$repository) = @_;
@@ -400,13 +482,32 @@ sub CheckOut
   print("Checking out $file\n");
 
   open(MODULES,"cvs -z9 -q -d $repository checkout $file |");
-  @dummy = <MODULES>;
+#  @dummy = <MODULES>;
+  while(<MODULES>)
+  {
+    print ".";
+  }
+  print "\n";
   close(MODULES);
 
 }
 
 
 
+#/*@@
+#  @routine    choos_repository
+#  @date       Sat Jul  3 16:38:52 1999
+#  @author     Gabrielle Allen
+#  @desc 
+#  
+#  @enddesc 
+#  @calls     
+#  @calledby   
+#  @history 
+#
+#  @endhistory 
+#
+#@@*/
 sub choose_repository
 {
   my($login) = @_;
@@ -502,6 +603,20 @@ sub choose_repository
   
 }
 
+#/*@@
+#  @routine    PrintInfo
+#  @date       Sat Jul  3 16:38:52 1999
+#  @author     Gabrielle Allen
+#  @desc 
+#  
+#  @enddesc 
+#  @calls     
+#  @calledby   
+#  @history 
+#
+#  @endhistory 
+#
+#@@*/
 sub PrintInfo
 {
   print "\n";
@@ -510,6 +625,20 @@ sub PrintInfo
   print "________________________________________________________________________\n\n";
 }    
 
+#/*@@
+#  @routine    CVSFound
+#  @date       Sat Jul  3 16:38:52 1999
+#  @author     Gabrielle Allen
+#  @desc 
+#  
+#  @enddesc 
+#  @calls     
+#  @calledby   
+#  @history 
+#
+#  @endhistory 
+#
+#@@*/
 sub CVSFound
 {
 
@@ -530,13 +659,26 @@ sub CVSFound
 
 }
 
+#/*@@
+#  @routine    RepositoryExists
+#  @date       Sat Jul  3 16:38:52 1999
+#  @author     Gabrielle Allen
+#  @desc 
+#  
+#  @enddesc 
+#  @calls     
+#  @calledby   
+#  @history 
+#
+#  @endhistory 
+#
+#@@*/
 sub RepositoryExists
 {
   my($repository) = @_;
   my @dummy;
 
   open(MODULES,"cvs -d $_[0] co -s |");
-#  $dummy = join('', qx {cvs -d $_[0] co -s});
   @dummy = <MODULES>;
   close(MODULES);
 
