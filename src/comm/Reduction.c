@@ -1274,6 +1274,12 @@ int CCTK_NumLocalArrayReduceOperators(void)
   return num_local_array_reductions;
 }
 
+void CCTK_FCALL CCTK_FNAME(CCTK_NumLocalArrayReduceOperators)(int *fortranreturn);
+void CCTK_FCALL CCTK_FNAME(CCTK_NumLocalArrayReduceOperators)(int *fortranreturn)
+{
+  *fortranreturn = CCTK_NumLocalArrayReduceOperators();
+}
+
  /*@@
    @routine    CCTK_ReduceOperatorImplementation
    @date       Mon Oct 22 2001
