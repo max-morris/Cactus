@@ -527,57 +527,128 @@ It never returns to the caller.
 \end{discussion}
 \end{CCTKFunc}
 
-% cctk_Comm.h
-\begin{CCTKFunc}{CCTK\_ArrayGroupSize}{}
-\label{CCTK-ArrayGroupSize}
-\subroutine{const int *}{}{size}
-\argument{const cGH *}{CCTK\_POINTER}{cctkGH}
-\argument{int}{integer}{dir}
-\argument{const char *}{character*(*)}{groupname}
-\showcargs
-\begin{params}
-\parameter{cctkGH}{pointer to CCTK grid hierarchy}
-\parameter{dir}{the direction to query}
-\parameter{groupname}{the group to query given by its full name}
-\parameter{size}{pointer to the size in the given direction}
-\end{params}
-\begin{discussion}
-For a CCTK\_ARRAY or CCTK\_GF group, this routine returns the processor-local
-size for variables in that group in a given direction. The direction is counted
-in C order (zero being the lowest dimension).
-\end{discussion}
-\begin{errorcodes}
-\begin{tabular}{l}
-A NULL pointer is returned if the group name or the direction given are invalid.
-\end{tabular}
-\end{errorcodes}
-\end{CCTKFunc}
 
-% CommOverloadables.c
-\begin{CCTKFunc}{CCTK\_ArrayGroupSizeI}{}
+% cctk_Comm.h
+\begin{FunctionDescription}{CCTK\_ArrayGroupSize}{}
+\label{CCTK-ArrayGroupSize}
+Returns a pointer to the processor-local size for variables in a
+group, specified by its name, in a given dimension.
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+#include "cctk.h"
+int *size = CCTK_ArrayGroupSize(const cGH *cctkGH, 
+                                int dir,
+                                const char *groupname);
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ResultSection}
+\begin{Result}{NULL}
+A NULL pointer is returned if the group index or the dimension given are invalid.
+\end{Result}
+\end{ResultSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{GH ($\ne$ NULL)}
+Pointer to a valid Cactus grid hierarchy.
+\end{Parameter}
+\begin{Parameter}{dir ($\ge$ 0)}
+Which dimension of array to query.
+\end{Parameter}
+\begin{Parameter}{groupname}
+Name of the group.
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{Discussion}
+For a CCTK\_ARRAY or CCTK\_GF group, this routine returns a pointer to
+the processor-local size for variables in that group in a given
+direction. The direction is counted in C order (zero being the lowest
+dimension).
+
+This function returns a pointer to the result for technical reasons;
+so that it will efficiently interface with Fortran.  This may change
+in the future.  Consider using \texttt{CCTK\_GroupgshGN} instead.
+\end{Discussion}
+
+\begin{SeeAlsoSection}
+\begin{SeeAlso}{CCTK\_GroupgshGN}
+Returns an array with the array size in all dimensions.
+\end{SeeAlso}
+\begin{SeeAlso}{...}
+There are many related functions which grab information from the GH,
+but they are not yet documented.
+\end{SeeAlso}
+\end{SeeAlsoSection}
+%\begin{ErrorSection}
+%\end{ErrorSection}
+%\begin{ExampleSection}
+%\end{ExampleSection}
+\end{FunctionDescription}
+
+
+% cctk_Comm.h
+\begin{FunctionDescription}{CCTK\_ArrayGroupSizeI}{}
 \label{CCTK-ArrayGroupSizeI}
-\subroutine{const int *}{}{size}
-\argument{const cGH *}{CCTK\_POINTER}{cctkGH}
-\argument{int}{integer}{dir}
-\argument{int}{integer}{groupindex}
-\showcargs
-\begin{params}
-\parameter{cctkGH}{pointer to CCTK grid hierarchy}
-\parameter{dir}{the direction to query}
-\parameter{groupindex}{the group to query given by its index}
-\parameter{size}{pointer to the size in the given direction}
-\end{params}
-\begin{discussion}
-For a CCTK\_ARRAY or CCTK\_GF group, this routine returns the processor-local
-size for variables in that group in a given direction. The direction is counted
-in C order (zero being the lowest dimension).
-\end{discussion}
-\begin{errorcodes}
-\begin{tabular}{l}
-A NULL pointer is returned if the group name or the direction given are invalid.
-\end{tabular}
-\end{errorcodes}
-\end{CCTKFunc}
+Returns a pointer to the processor-local size for variables in a
+group, specified by its index, in a given dimension.
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+#include "cctk.h"
+int *size = CCTK_ArrayGroupSizeI(const cGH *cctkGH, 
+                                 int dir,
+                                 int groupi);
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ResultSection}
+\begin{Result}{NULL}
+A NULL pointer is returned if the group index or the dimension given are invalid.
+\end{Result}
+\end{ResultSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{GH ($\ne$ NULL)}
+Pointer to a valid Cactus grid hierarchy.
+\end{Parameter}
+\begin{Parameter}{dir ($\ge$ 0)}
+Which dimension of array to query.
+\end{Parameter}
+\begin{Parameter}{groupi}
+The group index.
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{Discussion}
+For a CCTK\_ARRAY or CCTK\_GF group, this routine returns a pointer to
+the processor-local size for variables in that group in a given
+direction. The direction is counted in C order (zero being the lowest
+dimension).
+
+This function returns a pointer to the result for technical reasons;
+so that it will efficiently interface with Fortran.  This may change
+in the future.  Consider using \texttt{CCTK\_GroupgshGI} instead.
+\end{Discussion}
+
+\begin{SeeAlsoSection}
+\begin{SeeAlso}{CCTK\_GroupgshGI}
+Returns an array with the array size in all dimensions.
+\end{SeeAlso}
+\begin{SeeAlso}{...}
+There are many related functions which grab information from the GH,
+but they are not yet documented.
+\end{SeeAlso}
+\end{SeeAlsoSection}
+%\begin{ErrorSection}
+%\end{ErrorSection}
+%\begin{ExampleSection}
+%\end{ExampleSection}
+\end{FunctionDescription}
+
 
 %%%%%
 % BBB
@@ -1569,7 +1640,7 @@ A NULL pointer is returned if an invalid extension name was given.
 \end{errorcodes}
 \end{CCTKFunc}
 
-% GroupsOnGH.c
+% GroupsOnGH.h
 \begin{FunctionDescription}{CCTK\_GroupgshGN}
 \label{CCTK-GroupgshGN}
 Given a group name, return an array of the size of the group in each dimension
@@ -1585,7 +1656,7 @@ int status = CCTK_GroupgshGN(const cGH *cctkGH,
 \end{verbatim}
 \end{Synopsis}
 \end{SynopsisSection}
-	
+
 \begin{ResultSection}
 \begin{Result}{\rm 0}
 success
@@ -1603,7 +1674,7 @@ called on a scalar group
 invalid group name
 \end{Result}
 \end{ResultSection}
-	
+
 \begin{ParameterSection}
 \begin{Parameter}{GH ($\ne$ NULL)}
 Pointer to a valid Cactus grid hierarchy.
@@ -1618,20 +1689,23 @@ Pointer to array which will hold the return values.
 Name of the group.
 \end{Parameter}
 \end{ParameterSection}
-	
+
 \begin{Discussion}
 \end{Discussion}
-	
+
 \begin{SeeAlsoSection}
+\begin{SeeAlso}{CCTK\_ArrayGroupSize}
+Returns a pointer to the array size in one specified dimension.
+\end{SeeAlso}
 \begin{SeeAlso}{...}
-There are many related functions with grab information from the GH,
+There are many related functions which grab information from the GH,
 but they are not yet documented.
 \end{SeeAlso}
 \end{SeeAlsoSection}
-	
+
 %\begin{ErrorSection}
 %\end{ErrorSection}
-	
+
 %\begin{ExampleSection}
 %\end{ExampleSection}
 \end{FunctionDescription}
