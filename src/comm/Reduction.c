@@ -80,14 +80,14 @@ void CCTK_FCALL CCTK_FNAME(CCTK_ReduceLocalArrays)
 void CCTK_FCALL CCTK_FNAME(CCTK_GridArrayReductionParameterHandle)
      (int *parameter_handle, ONE_FORTSTRING_ARG);
 void CCTK_FCALL CCTK_FNAME(CCTK_ReduceGridArrays)
-     (int *fortran_return,
-      const cGH *GH,
-      int dest_proc,
-      int local_reduce_handle,
-      int param_table_handle,
-      int N_input_arrays,
+     (int *fortranreturn,
+      const cGH **GH,
+      int *dest_proc,
+      int *local_reduce_handle,
+      int *param_table_handle,
+      int *N_input_arrays,
       const CCTK_INT input_array_variable_indices[],
-      int M_output_values,
+      int *M_output_values,
       const CCTK_INT output_value_type_codes[],
       void* const output_values[]);
 
