@@ -175,8 +175,10 @@ sub ThornInfo
   {
     $inherits =~ s:^\s*::;
     $inherits =~ s:\s*$::;
+    $inherits =~ s:,:\s:g;
     $inherits =~ s:[\s\t\n]+:,:g;
   }
+
 
   if($friends =~ /^[\s\t\n]*$/)
   {
