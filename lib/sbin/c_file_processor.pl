@@ -29,93 +29,107 @@ if (! -e "$fortran_name_file" )
 
 require "$fortran_name_file";
 
-$/ = ";\n";
-$*=1;
-
 $checkfor1 = "DECLARE_CCTK_PARAMETERS";
 $addmacro1 = "USE_CCTK_PARAMETERS";
 $domacro1  = 0;
 $done1     = 0;
 
-$checkfor2 = "DECLARE_CCTK_CARGUMENTS";
+$checkfor2 = "DECLARE_CCTK_ARGUMENTS";
 $addmacro2 = "USE_CCTK_CARGUMENTS";
 $domacro2  = 0;
 $done2     = 0;
 
+$n_arg_braces = -3;
+$sc =0;
+
 $skip      = 0;
 $skipstring= "CCTK_NO_AUTOUSE_MACRO";
   
+$/ = ";\n";
+$*=1;
+
+## parse the file up to a ";\n"
 while(<>)
-{
-  @lines = split("\n",$_);
+{ 
+
+## split in lines... and collect in routine;
+  $piece = $_;  
+  @lines = split("\n",$piece);
   foreach $mline (@lines) 
   {
-    if ($mline=~/$skipstring/) 
+    $routine.=$mline."\n";
+
+    if ($mline=~/$skipstring/)
     {
-      $skip=1;
+      $skip = 1;
     }
-    if ($skip==0) {
 
-    if ($mline=~/$checkfor1/) {
-      $domacro1 = 1;
-    }
-    if ($mline=~/$checkfor2/) {
-      $domacro2 = 1;
-    }
-     
-    while ($mline=~m/(})/g) {
-      $par  = $par."c";
-    }
-    while ($mline=~m/({)/g)  {
-      $par  = $par."o";
-    }
-    0 while $par =~s/oc//g;
-
-#    print ">>$mline<< $par";
-
-    
-    if (($par eq "o")&&($mline=~m/return.*;/)&&(($domacro1==1)||($domacro2==1)))
+## check if the DECLARE macros are found on a line
+    if($mline=~m/$checkfor2/)
     {
-      $frag1="\nif(1)\n{ \n";
-      $frag2="}";
-      if ($domacro1==1) 
-      {
-        $frag1.="$addmacro1\n";
-	$done1   =1; 
-	$domacro1=0;
-      }
-      if ($domacro2==1)
-      {
-	$frag1.="$addmacro2\n";
-	$done2   =1; 
-	$domacro2=0;
-      }
-      $mline=~s/(return.*)/$frag1$1\n$frag2/;
-
+      $domacro2     = 1;
+      $n_arg_braces = 0;
+      $trigger      = 1;
     }
-    if (($par eq "") &&($mline=~/}/)&&(($domacro1==1)||($domacro2==1))) 
+    if($mline=~m/$checkfor1/)
     {
-      $frag1="/* DUMMY MACROS STARTX */";
-      $frag2="/* DUMMY MACROS ENDX */ ";
-      if ($domacro1==1) 
-      {
-        $frag1.="$addmacro1 ";
-	$done1   =1; 
-	$domacro1=0;
-      }
-      if ($domacro2==1)
-      {
-	$frag1.="$addmacro2 ";
-	$done2   =1; 
-	$domacro2=0;
-      }
-      $mline=~s/(.*)(}.*)/$1$frag1$frag2$2/;
-    } 
+      $domacro1     = 1;
+      $n_arg_braces = 0;
+      $trigger      = 1;
     }
-    $line.=$mline."\n";
-   }
+## start counting braces if there has been a DECLARE_
+    if ($trigger>0) 
+    { 
+      while ($mline=~m/(})/g) {
+        $n_arg_braces--;
+      }
+      while ($mline=~m/({)/g)  {
+	$n_arg_braces++;
+      }
+    }
+   
+    if (($n_arg_braces == -1) && ($skip==0))
+    {
+##    Start adding first macro, deal with "return }"first, "}" after
+      if ($domacro1) {
+        if (!($routine=~s/([ \t\f]*)(return\s*\S*\s*})$/$1$addmacro1\n$1$2/s))
+        {
+	  ($routine=~s/(}$)/  $addmacro1\n$1/s)
+	}
 
-    while($line =~ m:FORTRAN_NAME\s*\(([^\)]*)\):)
+      }
+##    Start adding second macro
+      if ($domacro2) {
+	if ($routine=~s/([ \t\f]*)(return\s*\S*\s*})$/$1$addmacro2\n$1$2/s) 
+	{
+	  ($routine=~s/(}$)/  $addmacro2\n$1/s) 
+        }
+      }  
+      $n_arg_braces = -2; 
+      $sc           =  0;
+
+## call the fortran namefix routine/reset routine
+      fixfnames($routine);
+      $routine      ="";
+    }
+  }
+  
+}
+fixfnames($routine);
+$routine      ="";
+
+
+sub fixfnames {
+
+  my $myroutine=shift(@_); 
+  @flines=split /(;)/,$myroutine;
+
+#  print $myroutine;
+
+  foreach $fline (@flines)
+  {
+  
+    while($fline =~ m:FORTRAN_NAME\s*\(([^\)]*)\):)
     {
         $arglist = $1;
         $arglist =~ s:[\s\n\t]+::g;
@@ -124,9 +138,9 @@ while(<>)
 
         $new = &fortran_name($args[$#args]);
 
-        $line =~ s:FORTRAN_NAME\s*\(([^\)]*)\):$new:;
+        $fline =~ s:FORTRAN_NAME\s*\(([^\)]*)\):$new:;
     }
-    while($line =~ m:FORTRAN_COMMON_NAME\s*\(([^\)]*)\):)
+    while($fline =~ m:FORTRAN_COMMON_NAME\s*\(([^\)]*)\):)
     {
         $arglist = $1;
         $arglist =~ s:[\s\n\t]+::g;
@@ -135,10 +149,14 @@ while(<>)
 
         $new = &fortran_common_name($args[$#args]);
 
-        $line =~ s:FORTRAN_COMMON_NAME\s*\(([^\)]*)\):$new:;
+        $fline =~ s:FORTRAN_COMMON_NAME\s*\(([^\)]*)\):$new:;
     }
 
-    print $line;
-    $line ="";
+    print $fline;
+    
+    
+  }
+
 }
+
 
