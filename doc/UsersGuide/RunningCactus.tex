@@ -35,8 +35,8 @@ in single processor mode. Please refer to the architecture section
   henceforth). While other make utilities may also work, this is not 
   guaranteed. Gmake can be obtained from your favorite GNU site or
   from {\tt www.gnu.org}
-\item[{\tt C/C++}] C and C++ compiler. For example, the GNU compilers. These
- are available for most supported platforms.  Platform specific compilers 
+\item[{\tt C}] C compiler. For example, the GNU compiler. This
+ is available for most supported platforms.  Platform specific compilers 
  should also work. 
 \item[{\tt CPP}] C Pre-processor. For example, the GNU CPP.  These are
 normally provided on most platforms, and many C compilers have an option
@@ -59,6 +59,17 @@ which Cactus is very likely to be compatible. Otherwise there are
 various freely available ones available, e.g. the {\tt MPICH}
 version of {\tt MPI} is available for various architectures and operating
 systems at {\tt http://www-unix.mcs.anl.gov/mpi/}. 
+\end{Lentry}
+
+\noindent
+If you are using any thorns containing routines 
+written in {\tt C++} you also need
+\begin{Lentry}
+\item[{\tt C++}] C++ compiler. For example, the GNU compiler. This
+ is available for most supported platforms.  Platform specific compilers 
+ should also work.  Note that if a C++ compiler is available then the
+ {\em main} routine in the flesh is compiled with C++ to allow static
+ class initialisations.
 \end{Lentry}
 
 \noindent
@@ -97,13 +108,13 @@ Cactus on, including some architecture specific notes.
 \item[{\bf Dec Alpha}]  Dec operating system and Linux. Single processor
   mode and {\tt MPI} supported. The Decs need to have the GNU {\tt C/C++} 
   compilers installed 
-\item[{\bf Intel Linux (ia32, ia64, ppc)}] There is a
+\item[{\bf Linux (ia32, ia64, ppc, alpha)}] There is a
   free Linux F90 compiler available from  {\tt http://www.psrv.com}
   -- the only free we know of. Single processor mode and {\tt MPICH}, {\tt LAM}
   supported.
 \item[{\bf Windows NT}] Compiles with Cygwin version B20, Digital Fortran Compiler and Microsoft Visual C++ compiler. Single processor mode and {\tt WMPI}, 
 {\tt HPVM} supported.
-\item[{\bf SP2}]
+\item[{\bf IBM SP2}]
 \end{Lentry}
 
 The following machines are only partially supported
