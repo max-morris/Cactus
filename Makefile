@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.93 2000-05-16 08:51:35 goodale Exp $
+#   @version $Id: Makefile,v 1.94 2000-05-16 09:38:17 goodale Exp $
 # @@*/
 
 ##################################################################################
@@ -632,6 +632,30 @@ endif
 	fi 
 	@echo $(DIVIDER)
 
+.PHONY utils:
+
+utils:
+	@echo $(DIVIDER)
+	@echo Please specify a configuration to build the utilities of.
+	@echo $(DIVIDER)
+
+
+ifneq ($strip($(CONFIGURATIONS)),)
+.PHONY $(addsuffix -utils,$(CONFIGURATIONS)):
+
+$(addsuffix -utils,$(CONFIGURATIONS)):
+	@echo $(DIVIDER)
+	@echo Building utilities for $(@:%-utils=%)
+	cd $(CONFIGS_DIR)/$(@:%-utils=%)  
+	$(MAKE) -f $(CCTK_HOME)/lib/make/make.configuration TOP=$(CONFIGS_DIR)/$(@:%-utils=%) CCTK_HOME=$(CCTK_HOME) utils UTILS=$(UTILS) CONFIG_NAME=$(@:%-utils=%)
+	@echo $(DIVIDER)
+
+endif
+
+%-utils:
+	@echo $(DIVIDER)
+	@echo Configuration $(@:%-utils=%) does not exist.
+	@echo Building of utilities aborted.
 
 # Make a new thorn
 
