@@ -3,10 +3,10 @@
 #    @file    solaris
 #    @date    Mon May 8 11:56:45 2000
 #    @author  Tom Goodale
-#    @desc 
+#    @desc
 #             General architecture options for Solaris machines
 #    @enddesc
-#    @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/solaris,v 1.10 2003-07-18 14:04:34 tradke Exp $
+#    @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/solaris,v 1.11 2004-07-05 15:45:37 tradke Exp $
 #  @@*/
 
 if test "$CCTK_CONFIG_STAGE" = "preferred-compilers" ; then
@@ -35,10 +35,12 @@ else
   : ${C_DEPEND='$(CPP) -M $(CPPFLAGS)'}
   : ${CXX_DEPEND='$(CPP) -M $(CPPFLAGS)'}
 
-  if test "$CC" = 'cc' ; then
+  if test "`basename $CC`" = 'cc' ; then
     : ${C_OPTIMISE_FLAGS='-fast'}
   fi
-  if test "$CXX" = 'CC' ; then
+  if test "basename $CXX`" = 'CC' ; then
+    # switch off automatic template instantiation
+    : ${CXX_FLAGS='-no_auto_include -ptused'}
     : ${CXX_OPTIMISE_FLAGS='-fast'}
   fi
   : ${F90_OPTIMISE_FLAGS='-fast'}
