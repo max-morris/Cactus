@@ -25,7 +25,7 @@
 #define TWO_FORTSTRINGS_ARGS\
     _fcd fcd_n, _fcd fcd_w
 #define THREE_FORTSTRINGS_ARGS\
-    _fcd fcd_arg1, _fcd fcd_arg2, _fcs fcd_arg3
+    _fcd fcd_arg1, _fcd fcd_arg2, _fcd fcd_arg3
 #define ONE_FORTSTRING_CREATE(argn)\
        int len = _fcdlen(fcdarg); \
        char *argn    = CCTK_NullTerminateString(_fcdtocp(fcdarg),len);;
