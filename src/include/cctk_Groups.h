@@ -37,8 +37,8 @@ extern "C"
 int         CCTK_StaggerVars(void);
 
 int         CCTK_DecomposeName(const char *fullname, 
-                              char **implementation, 
-                              char **name);
+                               char **implementation, 
+                               char **name);
 
 int         CCTK_FirstVarIndex(const char *group);
 int         CCTK_FirstVarIndexI(int group);
@@ -92,7 +92,7 @@ const char *CCTK_VarTypeName(int vartype);
 
 int         CCTK_VarTypeSize(int vtype);
 
-const int *CCTKi_GroupLengthAsPointer(const char *fullgroupname);
+const int * CCTKi_GroupLengthAsPointer(const char *fullgroupname);
 
 /* traverse a string of group and/or variable names */
 int CCTK_TraverseString (const char *parsestring,
