@@ -591,7 +591,7 @@ int CCTK_OutputVar(cGH *GH, const char *var)
 
 
  /*@@
-   @routine    CactusOutputVarByMethods
+   @routine    CactusOutputVarByMethod
    @date       Sat March 6 1999
    @author     Gabrielle Allen
    @desc 
@@ -771,6 +771,7 @@ int CCTK_rfrTriggerAction(void *GH, int variable)
     method = (struct IOMethod *)CCTK_GetHandledData(IOMethods, handle);
     if (method)
     {
+
       /* Check if it is time to output this variable for this method*/
       if (method->TimeToOutput(GH, variable))
       {
