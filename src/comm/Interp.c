@@ -39,7 +39,7 @@ static int num_interps = 0;
 
 
  /*@@
-   @routine    CCTK_RegisterInterpOperator
+   @routine    CCTK_InterpRegisterOperator
    @date       July 07 1999
    @author     Thomas Radke
    @desc 
@@ -59,7 +59,7 @@ static int num_interps = 0;
    @endvar 
 @@*/
  
-int CCTK_RegisterInterpOperator(int (*function)(REGISTER_INTERP_ARGLIST),
+int CCTK_InterpRegisterOperator(int (*function)(INTERP_REGISTER_ARGLIST),
                                 const char *name)
 {
   int handle;
@@ -78,17 +78,16 @@ int CCTK_RegisterInterpOperator(int (*function)(REGISTER_INTERP_ARGLIST),
   else
   {
     /* Interpolation operator with this name already exists. */
-    CCTK_Warn(1,__LINE__,__FILE__,"Cactus",
-	      "Interpolation operator with this name already exists");
+    CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
+	      "Interpolation operator %s already exists",
+	       name);
     handle = -1;
   }
 
 #ifdef DEBUG_INTERP
-  CCTK_PRINTSEPARATOR
-  printf("In CCTK_RegisterInterpOperator\n");
+  printf("In CCTK_InterpRegisterOperator\n");
   printf("---------------------------------\n");
   printf("  Registering %s with handle %d\n",name,handle);
-  CCTK_PRINTSEPARATOR
 #endif
     
   return handle;
@@ -97,7 +96,7 @@ int CCTK_RegisterInterpOperator(int (*function)(REGISTER_INTERP_ARGLIST),
 
 
  /*@@
-   @routine    CCTK_GetInterpHandle
+   @routine    CCTK_InterpHandle
    @date       July 07 1999
    @author     Thomas Radke
    @desc 
@@ -111,7 +110,7 @@ int CCTK_RegisterInterpOperator(int (*function)(REGISTER_INTERP_ARGLIST),
    @endvar 
 @@*/
 
-int CCTK_GetInterpHandle(const char *interp)
+int CCTK_InterpHandle(const char *interp)
 {
 
   int handle;
@@ -120,26 +119,27 @@ int CCTK_GetInterpHandle(const char *interp)
   handle = Util_GetHandle(InterpOperators, interp, data);
 
 #ifdef DEBUG_INTERP
-  CCTK_PRINTSEPARATOR
-  printf("In CCTK_GetInterpHandle\n");
+  printf("In CCTK_InterpHandle\n");
   printf("--------------------------\n");
   printf("  Got handle %d for %s\n",handle,interp);
-  CCTK_PRINTSEPARATOR
 #endif
 
   if (handle < 0)
-    CCTK_Warn(1,__LINE__,__FILE__,"Cactus",
-	      "No handle found for this interpolation operator");
+  {
+    CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
+	      "No handle found for interpolation operator %s",
+	       interp);
+  }
 
   return handle;
 
 }  
 
-void CCTK_FCALL CCTK_FNAME(CCTK_GetInterpHandle)
+void CCTK_FCALL CCTK_FNAME(CCTK_InterpHandle)
      (int *handle, ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_CREATE(interp)
-  *handle = CCTK_GetInterpHandle(interp);
+  *handle = CCTK_InterpHandle(interp);
   free(interp);
 }
 
@@ -546,7 +546,8 @@ int CCTK_Interp (cGH *GH,
   }
   else
   {
-    function = (int (*)(REGISTER_INTERP_ARGLIST))
+
+    function = (int (*)(INTERP_REGISTER_ARGLIST))
       Util_GetHandledData(InterpOperators,operation_handle);
     
     if (function)
@@ -611,6 +612,7 @@ int CCTK_Interp (cGH *GH,
         }
       }
 
+      printf("retcode is %d\n",retcode);
       for (i = 0; i < nDims; i++)
       {
         switch (coordTypes [i]) {
@@ -711,7 +713,7 @@ void CCTK_FCALL CCTK_FNAME(CCTK_Interp)
   void *origin=NULL, *delta=NULL;
   void **inFields, **outFields;
   int *inFieldTypes, *outFieldTypes;
-  int (*function)(REGISTER_INTERP_ARGLIST)=NULL; 
+  int (*function)(INTERP_REGISTER_ARGLIST)=NULL; 
 
   retcode = -1;
 
@@ -730,7 +732,7 @@ void CCTK_FCALL CCTK_FNAME(CCTK_Interp)
     if (function)
     {
       
-      dims = (int *) malloc (*nDims * sizeof (int));
+      dims = (int *) malloc (*nDims * sizeof (CCTK_INT));
       coords = (void **) malloc (*nDims * sizeof (void *));
       coordTypes = (int *) malloc (*nDims * sizeof (int));
       inFields = (void **) malloc (*nInFields * sizeof (void *));
@@ -846,3 +848,114 @@ void CCTK_FCALL CCTK_FNAME(CCTK_Interp)
 
   *fortranreturn = retcode;
 }
+
+
+
+/* DEPRECATED IN BETA 9 */
+
+ /*@@
+   @routine    CCTK_GetInterpHandle
+   @date       July 07 1999
+   @author     Thomas Radke
+   @desc 
+   Returns the handle of a given interpolation operator
+   @enddesc 
+   @var     interp
+   @vdesc   String containing name of interpolation operator
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+   @endvar 
+@@*/
+
+int CCTK_GetInterpHandle(const char *interp)
+{
+
+  int handle;
+  void **data=NULL; /* isn't used here */
+
+  CCTK_WARN(1,"CCTK_GetInterpHandle: ROUTINE DEPRECATED, see Beta8 release notices");
+  handle = Util_GetHandle(InterpOperators, interp, data);
+
+#ifdef DEBUG_INTERP
+  printf("In CCTK_GetInterpHandle\n");
+  printf("--------------------------\n");
+  printf("  Got handle %d for %s\n",handle,interp);
+#endif
+
+  if (handle < 0)
+    CCTK_Warn(1,__LINE__,__FILE__,"Cactus",
+	      "No handle found for this interpolation operator");
+
+  return handle;
+
+}  
+
+void CCTK_FCALL CCTK_FNAME(CCTK_GetInterpHandle)
+     (int *handle, ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE(interp)
+  *handle = CCTK_GetInterpHandle(interp);
+  free(interp);
+}
+
+ /*@@
+   @routine    CCTK_RegisterInterpOperator
+   @date       July 07 1999
+   @author     Thomas Radke
+   @desc 
+   Registers "function" as an interpolation operator called "name"
+   @enddesc 
+   @var     function
+   @vdesc   Routine containing interpolation operator
+   @vtype   (int (*))
+   @vio     
+   @vcomment 
+   @endvar 
+   @var     name
+   @vdesc   String containing name of interpolation operator
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+   @endvar 
+@@*/
+ 
+int CCTK_RegisterInterpOperator(int (*function)(REGISTER_INTERP_ARGLIST),
+                                const char *name)
+{
+  int handle;
+
+
+  CCTK_WARN(1,"CCTK_RegisterInterpOperator: ROUTINE DEPRECATED, see Beta8 release notices");
+
+  /* Check that the method hasn't already been registered */
+  handle = Util_GetHandle(InterpOperators, name, NULL);
+
+  if(handle < 0)
+  {
+    /* Get a handle for it. */
+    handle = Util_NewHandle(&InterpOperators, name, (void *)function);
+    
+    /* Remember how many interpolation operators there are */
+    num_interps++;
+   }
+  else
+  {
+    /* Interpolation operator with this name already exists. */
+    CCTK_Warn(1,__LINE__,__FILE__,"Cactus",
+	      "Interpolation operator with this name already exists");
+    handle = -1;
+  }
+
+#ifdef DEBUG_INTERP
+  printf("In CCTK_RegisterInterpOperator\n");
+  printf("---------------------------------\n");
+  printf("  Registering %s with handle %d\n",name,handle);
+#endif
+    
+  return handle;
+
+}
+
+
+/* END DEPRECATED IN BETA 9 */
