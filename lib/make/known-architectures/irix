@@ -6,7 +6,7 @@
 #    @desc
 #               Known architectures file for SGI Irix systems
 #    @enddesc
-#    @version   $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/irix,v 1.36 2003-02-12 15:24:17 tradke Exp $
+#    @version   $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/irix,v 1.37 2003-02-12 15:33:47 tradke Exp $
 #  @@*/
 
 if test "$CCTK_CONFIG_STAGE" = 'preferred-compilers' ; then
@@ -95,6 +95,7 @@ else
   if test $IRIX_BITS = 64; then
     IRIX_BITS_FLAG='-64'
     : ${F90FLAGS="-r10000 -TARG:proc=r10000 $IRIX_BITS_FLAG -mips4"}
+    : ${LIBS="malloc perfex fpe $IRIX_FLIBS m"}
 
     # Reduce the optimization level for debug configurations down to 1.
     # This is necessary in order to prevent the compiler from generating
@@ -105,12 +106,20 @@ else
     else
       : ${F90_OPTIMISE_FLAGS='-O3 -OPT:roundoff=3:IEEE_arithmetic=3:const_copy_limit=100000'}
     fi
-    : ${LIBS="malloc perfex fpe $IRIX_FLIBS m"}
   else
     IRIX_BITS_FLAG='-n32'
     : ${F90FLAGS="$IRIX_BITS_FLAG -mips3"}
-    : ${F90_OPTIMISE_FLAGS='-O3 -OPT:roundoff=3:IEEE_arithmetic=3:fold_arith_limit=10000:const_copy_limit=100000'}
     : ${LIBS="malloc fpe $IRIX_FLIBS m"}
+
+    # Reduce the optimization level for debug configurations down to 1.
+    # This is necessary in order to prevent the compiler from generating
+    # conditional load/store ops which may cause problems on array accesses
+    # which have been passed in from C to Fortran as a NULL pointer.
+    if test -n "$DEBUG" -a "x$DEBUG" != 'xno' ; then
+      : ${F90_OPTIMISE_FLAGS='-O1 -OPT:roundoff=3:IEEE_arithmetic=3:fold_arith_limit=10000:const_copy_limit=100000'}
+    else
+      : ${F90_OPTIMISE_FLAGS='-O3 -OPT:roundoff=3:IEEE_arithmetic=3:fold_arith_limit=10000:const_copy_limit=100000'}
+    fi
   fi
 
   if test $CC = 'cc'; then
