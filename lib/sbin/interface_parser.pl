@@ -551,7 +551,7 @@ sub parse_interface_ccl
 	print STDERR "Duplicate group $2 in thorn $thorn.\n";
 	if($data[line_number+1] =~ m:\{:)
 	{
-	  print STDERR "...Skipping block ....\n";
+	  print STDERR "...Skipping interface block ....\n";
 	  $line_number++ until ($data[$line_number] =~ m:\}:);
 	}
 	next;
@@ -604,7 +604,7 @@ sub parse_interface_ccl
 	    " for group $current_group of thorn $thorn.\n";
 	if($data[line_number+1] =~ m:\{:)
 	{
-	  print STDERR "...Skipping block ....\n";
+	  print STDERR "...Skipping interface block ....\n";
 	  $line_number++ until ($data[$line_number] =~ m:\}:);
 	}
 	next;
@@ -660,7 +660,7 @@ sub parse_interface_ccl
     {
       if($line =~ m:\{:)
       {
-	print STDERR "...Skipping block with missing keyword....\n";
+	print STDERR "...Skipping interface block with missing keyword....\n";
 	$line_number++ until ($data[$line_number] =~ m:\}:);
       }
       else
