@@ -79,6 +79,7 @@
 #include "cctk_Flesh.h"
 #include "cctk_IO.h"
 #include "cctk_Comm.h"
+#include "cctk_Main.h"
 #include "cctk_GHExtensions.h"
 
 #include "cctk_ActiveThorns.h"
