@@ -90,8 +90,6 @@ sub CreateFortranThornParameterBindings
       }
     }
      
-    printf("friend_thorn = $friend_thorn\n");
-    printf("@alias_names = @alias_names\n");
     @data = &CreateFortranCommonDeclaration("$friend_thorn"."prot", 1, scalar(keys %these_parameters), %these_parameters, @alias_names, %parameter_database);
       
     foreach $line (@data)
