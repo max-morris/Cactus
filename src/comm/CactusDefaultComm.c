@@ -104,7 +104,7 @@ cGH *CactusDefaultSetupGH(tFleshConfig *config, int convergence_level)
     thisGH->cctk_from         = (int *)malloc(thisGH->cctk_dim*sizeof(int));
     thisGH->cctk_bbox         = (int *)malloc(2*thisGH->cctk_dim*sizeof(int));
     thisGH->cctk_nghostzones  = (int *)malloc(2*thisGH->cctk_dim*sizeof(int));
-    thisGH->cctk_levfac       = (int *)malloc(2*thisGH->cctk_dim*sizeof(int));
+    thisGH->cctk_levfac       = (int *)malloc(thisGH->cctk_dim*sizeof(int));
     thisGH->cctk_delta_space  = (CCTK_REAL *)malloc(thisGH->cctk_dim*sizeof(CCTK_REAL));
     /* FIXME : Next line goes when coords are done properly */
     thisGH->cctk_origin_space = (CCTK_REAL *)malloc(thisGH->cctk_dim*sizeof(CCTK_REAL));
