@@ -20,7 +20,7 @@ static char *rcsid = "$Id$";
 
 int CactusDefaultInitialise(tFleshConfig *config)
 {
-  cGH *newGH;
+  cGH *GH;
   int convergence_level;
 
   CactusStartTimer(config->timer[INITIALISATION]);
@@ -30,12 +30,14 @@ int CactusDefaultInitialise(tFleshConfig *config)
   convergence_level = 0;
   while((GH = SetupGH(config, convergence_level)))
   {
+#ifdef 0
     CactusAddGH(config, GH, convergence_level);
+#endif
     Initialise(GH);
     convergence_level++;
   };
 
-  CactusStopTimer(config->timer, INITIALISATION);
+  CactusStopTimer(config->timer[INITIALISATION]);
   
   return 0;
 }

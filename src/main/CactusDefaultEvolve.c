@@ -59,7 +59,10 @@ int CactusDefaultEvolve(tFleshConfig *config)
 
   CactusStartTimer(config->timer[EVOLUTION]);
 
+#ifdef 0
   InfoHeader(config);
+ #endif
+
   while (iteration<itlast) 
   {
     iteration++;
@@ -69,15 +72,19 @@ int CactusDefaultEvolve(tFleshConfig *config)
 
     ForallConvLevels(iteration, convergence_level)
       {
+#ifdef 0
 	StepGH(config->GH[convergence_level]);
 	InfoOutput(config->GH[convergence_level], convergence_level);
+#endif
       }
     EndForallConvLevels;
   
     /* Dump out checkpoint data on all levels */
     ForallConvLevels(iteration, convergence_level)
       {
+#ifdef 0
 	rfrTraverse(config->GH[convergence_level],CACTUS_CHECKPOINT);
+#endif
       }
     EndForallConvLevels;
 
@@ -88,15 +95,20 @@ int CactusDefaultEvolve(tFleshConfig *config)
     /*** an rfrTraverse with CACTUS_ANALYSIS      ***/
     ForallConvLevels(iteration, convergence_level)
       {
+#ifdef 0
 	outputGH(config->GH[convergence_level]);
+#endif
       }
     EndForallConvLevels;
       
     CactusStopTimer(config->timer[OUTPUT]);
 
+#ifdef 0
     ConvergenceReport(config->GH, iteration);
 
     TerminationStepper(config->GH[0]);
+
+#endif
     /* Termination has been raised and broadcasted, exit loop*/
     if (cactus_terminate==TERMINATION_RAISED_BRDCAST) break;
 

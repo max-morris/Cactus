@@ -40,7 +40,7 @@ typedef struct
   cGH **GH;
   unsigned int nGHs;
 
-  cTimers *timer[3];
+  cTimer *timer[3];
 } tFleshConfig;
 
 

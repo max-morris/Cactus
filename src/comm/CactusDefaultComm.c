@@ -19,7 +19,10 @@ static char *rcsid = "$Id$";
 
 cGH *CactusDefaultSetupGH(tFleshConfig *config, int convergence_level)
 {
+
   cGH *thisGH;
+
+#ifdef 0
   
   cGFconfig *GF;
   
@@ -31,7 +34,7 @@ cGH *CactusDefaultSetupGH(tFleshConfig *config, int convergence_level)
 
   if(thisGH)
   {
-    /* Traverse list of GH setup rroutines. */
+    /* Traverse list of GH setup routines. */
     CactusSetupGHTraverse(config, convergence_level, thisGH);
 
     /* Setup GFs */
@@ -48,11 +51,11 @@ cGH *CactusDefaultSetupGH(tFleshConfig *config, int convergence_level)
       }
     }
 
+#endif
   return thisGH;
 }
 
-
-cGF *CactusDefaultSetupGF(cGH *GH, cGFconfig *configdata)
+cGF *CactusDefaultSetupGF(cGH *GH, cGF *configdata)
 {
   
   printf("I'm at line %d of file %s\n", __LINE__, __FILE__);

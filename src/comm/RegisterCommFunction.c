@@ -23,7 +23,7 @@ static char *rcsid = "$Id$";
 
 /* The functions. */
 
-int (*SetupGH)(cGH *);
+cGH * (*SetupGH)(tFleshConfig *, int);
 int (*SetupGF)(cGH *, cGF *);
 
 int (*SyncAllFuncs)(cGH *);
@@ -100,7 +100,7 @@ int SetupCommFunctions(void)
   
   if(functions&&functions[0])
   {
-    SetupGH = (int (*)(cGH *))functions[0];
+    SetupGH = (cGH * (*)(tFleshConfig *, int))functions[0];
   }
   else
   {
