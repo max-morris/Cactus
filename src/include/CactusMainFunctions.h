@@ -10,17 +10,19 @@
 #ifndef _CACTUSMAINFUNCTIONS_H_
 #define _CACTUSMAINFUNCTIONS_H_
 
+#include "OverloadMacros.h"
+
 /* Function prototypes */
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-extern int (*Initialise)(tFleshConfig *);
+#define OVERLOADABLE(name) OVERLOADABLE_PROTOTYPE(name)
 
-extern int (*Evolve)(tFleshConfig *);
+#include "MainOverloadables.h"
 
-extern int (*Shutdown)(tFleshConfig *);
+#undef OVERLOADABLE(name)
 
 #ifdef __cplusplus
 	   }

@@ -13,7 +13,6 @@ InitialiseDataStructures.c\
 ProcessCommandLine.c\
 ProcessParameterDatabase.c\
 RecordImplementation.c\
-RegisterMainFunction.c\
 RegisterThorn.c\
 SetParams.c\
 ShutdownCactus.c\
@@ -22,6 +21,6 @@ flesh.cc\
 Groups.c\
 Variables.c\
 Dummies.c\
-rfrInterface.c
-
+rfrInterface.c\
+Overload.c
 

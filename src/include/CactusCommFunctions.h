@@ -12,23 +12,21 @@
 #ifndef _CACTUSCOMMFUNCTIONS_H_
 #define _CACTUSCOMMFUNCTIONS_H_
 
+#include <stdarg.h>
+
+#include "OverloadMacros.h"
+
 #ifdef _cplusplus
 extern "C" {
 #endif
 
 /* The functions. */
 
-extern cGH * (*SetupGH)(tFleshConfig *, int);
-extern int (*SetupGF)(cGH *, cGF *);
+#define OVERLOADABLE(name) OVERLOADABLE_PROTOTYPE(name)
 
-extern int (*SyncAllFuncs)(cGH *);
-extern int (*SyncGroupFuncs)(cGH *, const char *group);
-extern int (*SyncOneFunc)(cGH*, int );
+#include "CommOverloadables.h"
 
-extern int (*ParallelInit)(tFleshConfig *);
-extern int (*ParallelFinalise)(tFleshConfig *);
-
-extern int (*Reduce)(cGH *, int , int operation, void *result);
+#undef OVERLOADABLE(name)
 
 #ifdef _cplusplus
 	   }

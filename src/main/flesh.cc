@@ -9,6 +9,7 @@
 #include <stdio.h>
 
 #include "flesh.h"
+#include "CactusMainFunctions.h"
 
 static char *rcsid = "$Id$";
 
@@ -53,15 +54,15 @@ int main(int argc, char **argv)
 
   /* This is a (c-linkage) routine which has been registered by a thorn.
    */
-  Initialise(&ConfigData);
+  CCTK_Initialise(&ConfigData);
 
   /* This is a (c-linkage) routine which has been registered by a thorn.
    */
-  Evolve(&ConfigData);
+  CCTK_Evolve(&ConfigData);
 
   /* This is a (c-linkage) routine which has been registered by a thorn.
    */
-  Shutdown(&ConfigData);
+  CCTK_Shutdown(&ConfigData);
 
   /* Shut down any cactus specific stuff.
    */

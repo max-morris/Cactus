@@ -114,12 +114,6 @@ int InitialiseCactus(int *, char ***, tFleshConfig *);
 
 int CCTK_SetParameter(const char *parameter, const char *value);
 
-extern int (*Initialise)(tFleshConfig *);
-
-extern int (*Evolve)(tFleshConfig *);
-
-extern int (*Shutdown)(tFleshConfig *);
-
 int ShutdownCactus(tFleshConfig *);
 
 int ProcessCommandLine(int *argc, char ***argv, tFleshConfig *ConfigData);

@@ -45,7 +45,7 @@ int CactusDefaultInitialise(tFleshConfig *config)
   CactusResetTimer(config->timer[ELLIPTIC]);
 
   convergence_level = 0;
-  while((GH = SetupGH(config, convergence_level)))
+  while((GH = CCTK_SetupGH(config, convergence_level)))
   {
     CCTK_AddGH(config, convergence_level, GH);
 

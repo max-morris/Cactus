@@ -1,0 +1,83 @@
+ /*@@
+   @file      Overload.c
+   @date      Thu Feb  4 09:01:18 1999
+   @author    Tom Goodale
+   @desc 
+   Contains routines to overload the main functions.
+   Uses the overload macros to make sure of consistency and
+   to save typing !
+   @enddesc 
+ @@*/
+
+#include <stdio.h>
+#include <stdlib.h>
+
+#include "flesh.h"
+#include "OverloadMacros.h"
+
+static char *rcsid="$Header$";
+
+/* Define the prototypes for the dummy functions. */
+#define OVERLOADABLE(name) OVERLOADABLE_DUMMYPROTOTYPE(name)
+
+  /* These ones actually have defaults. */
+#define CCTK_DummyInitialise  CactusDefaultInitialise
+#define CCTK_DummyEvolve      CactusDefaultEvolve
+#define CCTK_DummyShutdown    CactusDefaultShutdown
+
+#include "MainOverloadables.h"
+
+  /* Reset the #define to prevent complications. */
+#undef CCTK_DummyInitialise 
+#undef CCTK_DummyEvolve     
+#undef CCTK_DummyShutdown   
+
+#undef OVERLOADABLE(name)
+
+
+/* Create the overloadable function variables and the 
+ * functions allowing the variables to be set.
+ */
+#define OVERLOADABLE(name) OVERLOADABLE_FUNCTION(name)
+
+#include "MainOverloadables.h"
+
+#undef OVERLOADABLE(name)
+
+ /*@@
+   @routine    SetupMainFunctions
+   @date       Thu Feb  4 09:02:49 1999
+   @author     Tom Goodale
+   @desc 
+   Set any main function which hasn't been overloaded to the default.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+int SetupMainFunctions(void)
+{
+
+#define OVERLOADABLE(name) OVERLOADABLE_CHECK(name)
+
+  /* These ones actually have defaults. */
+#define CCTK_DummyInitialise  CactusDefaultInitialise
+#define CCTK_DummyEvolve      CactusDefaultEvolve
+#define CCTK_DummyShutdown    CactusDefaultShutdown
+
+#include "MainOverloadables.h"
+
+  /* Reset the #define to prevent complications. */
+#undef CCTK_DummyInitialise 
+#undef CCTK_DummyEvolve     
+#undef CCTK_DummyShutdown   
+
+#undef OVERLOADABLE(name)
+
+  return 0;
+}
+
+

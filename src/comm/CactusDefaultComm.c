@@ -99,33 +99,4 @@ cGH *CactusDefaultSetupGH(tFleshConfig *config, int convergence_level)
   return thisGH;
 }
 
-int CactusDefaultSyncAllFuncs(cGH *GH)
-{
-  printf("I'm at line %d of file %s\n", __LINE__, __FILE__);
-}
-
-int CactusDefaultSyncGroupFuncs(cGH *GH, const char *group)
-{
-  printf("I'm at line %d of file %s\n", __LINE__, __FILE__);
-}
-
-int CactusDefaultSyncOneFunc(cGH *GH, int GF)
-{
-  printf("I'm at line %d of file %s\n", __LINE__, __FILE__);
-}
-
-int CactusDefaultParallelInit(tFleshConfig *config)
-{
-  printf("I'm at line %d of file %s\n", __LINE__, __FILE__);
-}
-
-int CactusDefaultParallelFinalise(tFleshConfig *config)
-{
-  printf("I'm at line %d of file %s\n", __LINE__, __FILE__);
-}
-
-int CactusDefaultReduce(cGH *GH, int GF, int operation, void *result)
-{
-  printf("I'm at line %d of file %s\n", __LINE__, __FILE__);
-}
 
