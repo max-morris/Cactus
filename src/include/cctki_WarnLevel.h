@@ -5,7 +5,7 @@
    @desc
               Header for the internal warning functions.
    @enddesc
-   @version   $Id$
+   @version   $Header$
  @@*/
 
 #ifndef _CCTKI_WARNLEVEL_H_
@@ -21,23 +21,9 @@ int  CCTKi_SetParameterLevel (int level);
 int  CCTKi_SetErrorLevel (int level);
 void CCTKi_FinaliseParamWarn (void);
 void CCTKi_NotYetImplemented (const char *message);
-void CCTKi_ExpectError (int in,
-                        int err,
-                        int warnonerr,
-                        int line,
-                        const char *file,
-                        const char *thorn,
-                        const char *message);
-void CCTKi_ExpectOK (int in,
-                     int ok,
-                     int warnonerr,
-                     int line,
-                     const char *file,
-                     const char *thorn,
-                     const char *message);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif
+#endif  /* _CCTKI_WARNLEVEL_H_ */
