@@ -29,6 +29,7 @@ static char *rcsid = "$Header$";
 
 char *compileTime(void);
 char *compileDate(void);
+char *CCTK_FullVersion(void);
 int CCTK_GetCommandLine(char ***outargv);
 
 static void CCTKi_CommandLinePrintParameter(t_param_prop *properties);
