@@ -28,17 +28,17 @@ The header block has the form:
 \begin{verbatim}
 implements: <implementation>
 [inherits: <implementation>, <implementation>]
-[friend: <implentation>, <implementation>]
+[friend: <implementation>, <implementation>]
 \end{verbatim}
 }
 where
 \begin{itemize}
-\item{} The implentation name must be unique among all thorns, except between 
+\item{} The implementation name must be unique among all thorns, except between 
         thorns which have the same public and protected variables and 
         parameters.
-\item{} Inheriting from another implentation makes all that implentations 
+\item{} Inheriting from another implementation makes all that implementation 
         public variables available to your thorn. At least one thorn 
-        providing any inherited implentation must be present at compile time.
+        providing any inherited implementation must be present at compile time.
         A thorn cannot inherit from itself. Inheritance is associative and 
         recursive, but not commutative.
 \item{} Being a friend of another implementation makes all that 
@@ -236,6 +236,236 @@ Conditional constructs cannot be used inside of a schedule block.
 
 \chapter{Using CVS}
 \label{sec:uscv}
+CVS is a version control system, which allows you to  keep
+old versions of files (usually source code), keep a log of
+who, when, and why changes occurred,  etc.
+Unlike the simpler systems, CVS does not just operate on one file at a
+time or one directory at a time,  but 
+operates  on  hierarchical collections of directories consisting of
+version controlled files.  CVS helps to  manage 
+releases  and  to control the concurrent editing of source
+files among multiple  authors. CVS can be obtained from 
+{\tt http://www.cyclic.com}. 
+
+A {\em CVS repository}located on a {\em server} may consist of an arbitrary
+number of {\em modules}, which can be checked out independently. The Cactus
+packages are organized as modules, their {\em CVS server} is {\tt cvs.cactuscode.org}.
+
+\subsection{Essential CVS commands}
+
+\begin{Lentry}
+\item[{\bf cvs login}]
+Logs into the repository. You will be prompted for a {\em
+password}. This cvs command leaves a file {\tt .cvs-pass} in your
+home directory. There is no need to login every time you issue a cvs 
+command, as long as this file exists. For a Cactus checkout, you have
+to log into the CVS server, using the cvs option {\bf -d} to specify CVSROOT:\\
+{\tt cvs -d :pserver:cvs\_anon@cvs.cactuscode.org:/usr/users/cactus login}
+
+Note, that there is no ``logout'' command: if you log in with
+administrative rights from an arbitrary account, you should be aware
+that the password file enables subsequent administrative logins from
+that account. {\em Delete the file if necessary}.
+
+\item[{\bf cvs checkout} {\em modules} \ldots]
+This command  creates
+your private copy of the source for {\em modules}. You can work
+with this copy  without  interfering  with  others'
+work.   At  least  one subdirectory level is always created: it does
+not write all files into your current directory but creates a
+directory. For Cactus, you need to include the {\bf -d} options to
+specify the CVSROOT directory and the CVS server (see below). Once you 
+have checked out the repository there is no need to include the {\bf
+-d} option and its rather lengthy argument: the necessary information
+is contained in the local {\tt CVS/} directories.
+
+\item[{\bf cvs update}]
+Execute  this  command  from  {\it within}  your  private
+source  directory  when  you  wish  to  update your
+copies of source  files  from  changes  that  other
+developers have made to the source in the repository.
+Merges are performed automatically when possible, a warning is issued
+if manual  resolution  is  required  for conflicting  changes. If you
+local copy is several version behind the actual repository copy, CVS
+will {\em refetch} the whole file instead of applying multiple
+patches.
+
+\item[{\bf cvs add} {\tt file}]
+Use this command to enroll new files in cvs records
+of your working directory.  The files will be added
+to the  repository  the  next  time  you  run  `cvs
+commit'. 
+
+\item[{\bf cvs commit} {\tt file}]
+Use this command to add your local changes to the source to
+the repository and thereby making it publically available to
+checkouts and updates by other users. You cannot commit a
+newly created file unless you have {\it added} it.
+
+\item[{\bf cvs diff} {\tt file}]
+Show differences between files in working directory
+and  source repository, or between two revisions in
+source repository.  (Does not change either repository or working
+directory.) 
+
+\item[{\bf cvs remove} {\tt file}]
+Remove files from the source repository, pending  a {\tt cvs commit} on
+the same files.  
+
+\item[{\bf cvs status}] 
+This command returns the current status of your local copy relative to 
+the repository: e.g. it indicates local modifications and possible
+updates.
+
+\item[{\bf cvs import} {\tt repository tag1 tag2}]
+Import adds an entire source distribution to the repository directory.
+Use this command to add new packages to the Cactus4.0 repository. The
+{\tt repository} argument gives a directory name (or a path to a
+directory) and the CVS root directory for repositories; to obtain this 
+directory on the CVS server, send a request to {\tt
+cactus@cactuscode.org}. {\tt tag1} and {\tt tag2} are two tags (vendor 
+ and release tags) that have to be supplied.
+
+\end{Lentry}
+
+\subsection{CVS Options}
+The CVS command line can include the following:
+\begin{itemize}
+\item{\bf cvs options}, which apply to the overall cvs program
+\item{\bf a cvs command}, which defines a particular task carried out by
+cvs
+\item{\bf command options} to specify certain working modes for the cvs
+command.
+\item{\bf command arguments} to specify which file to act on.
+\end{itemize}
+
+The options must be put {\em relative} to the {\it cvs command} as the
+same option name can mean different things: {\em cvs options} go to the
+{\em left} of the cvs command, {\em command options} go to the {\em right}
+of the cvs command. Here is a list of essential {\em cvs options}
+
+\begin{Lentry}
+
+\item[{\bf -d} {\em cvs\_root\_directory}]
+Use {\em cvs\_root\_directory} as the root directory  pathname  of
+the  master source repository.  Overrides 
+the setting of the  {\em CVSROOT}  environment  variable.
+This value should be specified as an absolute pathname. 
+In the Cactus4.0 checkout procedure, you specify the Cactus CVS server:\\
+{\tt -d :pserver:cvs\_anon@cvs.cactuscode.org:/usr/users/cactus/}
+
+\item[{\bf -z} {\em compression-level}]
+When transferring files across the network use {\tt gzip}
+with compression level  {\em compression-level}  to  compress  and
+decompress  data as it is transferred. 
+Requires the presence of the GNU gzip  program  in
+the current search path at both ends of the link.
+
+\item[{\bf -n}]
+Do not change any file. Attempt to execute the {\em cvs command} but
+only to issue reports. Does not remove, update, etc. any files. Very
+effective for testing.
+
+\item[{\bf -v}]
+Displays version information of the installed CVS.
+
+\item[{\bf -H} {\em cvs-command}]
+Displays usage information about the specified cvs command. Without
+cvs-command, a list of all available commands is returned. 
+\end{Lentry}
+
+Here is a list of essential {\em command options} with the
+commands they are used with. They go after the cvs command. For a more 
+complete list of all options, please refer to the manual page.
+
+\begin{Lentry}
+
+\item[{\bf -P}]
+Prune  (remove)  directories  that  are empty after being updated, on
+{\bf checkout}, or  {\bf update}.   Normally, an  empty  directory
+(one that is void of revision controlled files) is  left  alone.
+Specifying  {\bf -P} will cause these directories to be silently
+removed from  your  checked-out  sources.   This  does  not  remove
+the directory from the repository, only from your checked out copy.
+
+\item[{\bf -m} {\em "Text"}]
+Specify a logging message explaining changes, etc. on {\bf commit},
+{\bf import}. If you do not specify a message, your default editor
+is invoked to allow you to enter one.
+
+\item[\bf -d]
+Use this option with the {\bf update} command to create any
+directories if they are missing from your local copy. This is normally 
+the case if another user has added files or directories to the
+repository. By default the {\bf update} command only acts on files in
+your local copy. Note that omitting this option is a frequent cause of 
+files missing during compilation.
+
+\end{Lentry}
+
+\subsection{CVS Examples}
+We list some sample CVS commands to treat the most typical Cactus4.0
+CVS situations. 
+\begin{description}
+\item\textbf{Loging into the server}\newline
+{\tt cvs -d :pserver:cvs\_anon@cvs.cactuscode.org:/usr/users/cactus
+login} \\ You will be asked for the password for user {\em cvs\_anon}, which is {\tt anon}.
+
+\item\textbf{Checking out the code}\newline
+{\tt cvs -d :pserver:cvs\_anon@cvs.cactuscode.org:/usr/users/cactus
+checkout CCTK}\\
+check out a CVS module named ``CCTK'', in this case it checks out the
+Cactus Computational Toolkit. A directory {\tt ./CCTK} is created if  
+it doesn't already exits. If you perform a checkout on an already
+existing and locally modified copy of the module, CVS will try to merge the files
+with your local copy. 
+
+\item\textbf{Updating a file or directory}\newline
+Assuming that you have a file {\tt ./foobar} in your checked out
+copy, you may perform a \\
+{\tt cvs status ./foobar}\\
+to inform yourself about the necessary updates, etc. To update the
+file issue \\
+{\tt cvs update ./foobar}\\
+If that was file was locally modified, CVS will try to merge the
+changes.Manual merging might be necessary and will be indicated by a
+CVS warning.
+
+\item\textbf{Updating a directory}\newline
+To recursively update the current directory and all subdirectories,
+type\\
+{\tt cvs update .}\\
+To update a directory {\tt ./mysources}, type\\
+{\tt cvs update ./path/to/mysources}
+
+\item\textbf{Committing a changed file}\newline
+To commit changes you have applied to your local copy, your file must be in
+sync with the repository: your changes must be done to the
+latest version, otherwise CVS will instruct you to perform an {\bf
+update} first. To commit changes made to a file {\tt ./foobar}, type\\
+{\tt cvs commit -m ``Reason for the change'' ./foobar}\\
+You may specify several files to commit.
+
+\item\textbf{Adding and committing a new file}\newline
+Adding a new file to the repository is a two fold procedure you first
+schedule the file for addition, then you commit it:\\
+{\tt cvs add ./newfoo}\\
+{\tt cvs commit -m ``new few message'' ./newfoo}
+
+\item\textbf{Creating a new thorn}\newline
+To add a new module to the Cactus repository, (e.g. an additional Cactus
+package), you have to obtain a directory on the CVS server and a
+login, which gives you administrative rights on your module. Please
+contact the {\tt cactus@cactuscode.org} for details. The following
+CVS steps apply as well to adding to a locally hosted CVS repository (except 
+that the CVSROOT option has to be changed to your local host).
+To perform the addition, type\\
+{\tt cvs -d :pserver:}{\em your\_login}{\tt
+@cvs.cactuscode.org:/usr/users/cactus }{\em package\_name} {\tt start V1}\\
+where {\tt start} and {\tt V1} are the vendor and release tags, which
+have to be supplied. 
+\end{description}
+
 
 \chapter{Using TAGS}
 \label{sec:usta}
