@@ -73,7 +73,7 @@ CCTK_FILEVERSION(comm_OverloadComm_c)
 int CCTKi_SetupCommFunctions(void)
 {
 
-#define OVERLOADABLE(name) OVERLOADABLE_CHECK(name)
+#define OVERLOADABLE(name) OVERLOADABLE_INITIALISE(name)
 
   /* Deal seperately with the SetupGH routine */
 #define CCTKi_DummyAbort   CactusDefaultAbort
