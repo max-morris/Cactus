@@ -58,7 +58,7 @@ endif
 $(EXE): $(CONFIG)/make.thornlist $(patsubst %,$(CCTK_LIBDIR)/lib%.a,$(notdir $(THORNS) $(CACTUSLIBS)))
 	@echo $(DIVIDER)
 	@echo Creating $(EXE) from $(THORNS)
-	$(CC) $(CFLAGS) $(CCOMPILEONLY)$(OPTIONSEP)$(TOP)$(DIRSEP)datestamp.o $(DATESTAMP)
+	$(CC) $(CFLAGS) $(CCOMPILEONLY)$(OPTIONSEP)$(TOP)$(DIRSEP)datestamp.o $(subst /,$(DIRSEP),$(DATESTAMP))
 	$(LD) $(CREATEEXE)$(OPTIONSEP)$(subst /,$(DIRSEP),$@) $(LDFLAGS) $(EXTRAFLAGS) $(subst /,$(DIRSEP), $(TOP)/datestamp.o) $(CACTUSLIBLINKLINE) $(LIBDIRS:%=-L%) $(LIBS:%=-l%)
 	@echo $(DIVIDER)
 	@echo All done !
