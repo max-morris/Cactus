@@ -1,5 +1,6 @@
 #! /bin/sh
 #
+# CCTK_MODIFICATION:  18/4/2000 Added info for powerpc-hitachi-hiuxmpp.  Tom Goodale
 # CCTK_MODIFICATION:  17/4/2000 Added info for sx5-nec.  Tom Goodale
 #
 # Configuration validation subroutine script, version 1.1.
@@ -115,6 +116,8 @@ case $os in
 	-wrs)
 		os=-vxworks
 		basic_machine=$1
+		;;
+	-hiuxmpp)
 		;;
 	-hiux*)
 		os=-hiuxwe2

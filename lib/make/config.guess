@@ -1,4 +1,7 @@
 #! /bin/sh
+#
+# CCTK_MODIFICATION:  19/4/2000 Added info for sr8000.  Tom Goodale
+#
 # Attempt to guess a canonical system name.
 #   Copyright (C) 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000
 #   Free Software Foundation, Inc.
@@ -1027,6 +1030,9 @@ EOF
     *:QNX:*:4*)
 	echo i386-qnx-qnx${UNAME_VERSION}
 	exit 0 ;;
+    SR8000:HI-UX/MPP:*:*)
+        echo powerpc-hitachi-hiuxmpp
+        exit 0 ;;
 esac
 
 #echo '(No uname command or uname output not recognized.)' 1>&2
