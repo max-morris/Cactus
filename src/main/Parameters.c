@@ -414,6 +414,9 @@ int ParameterSet(const char *name,
   if(param)
   {
     retval = ParameterSetSimple(param, value);
+
+    /* register another set operation */
+    param->props->n_set++;
   }
   else
   {
@@ -925,6 +928,7 @@ static t_param *ParameterNew(const char *thorn,
       newparam->props->type       = ParameterGetType(type);
       newparam->props->steerable      = steerable;
       newparam->props->range      = NULL;
+      newparam->props->n_set      = 0;
     
       newparam->data         = data;
     
