@@ -328,14 +328,14 @@ following files substructure:
 \end{itemize}
 
 When Cactus is first compiled it creates a new directory {\tt
-./CCTK/build/}. Disk space may be a problem on supercomputers where
+./CCTK/configs/}. Disk space may be a problem on supercomputers where
 home directories are small. A workaround is to first create a
-build directory on scratch space, say {\tt scratch/cactus\_build/} (where
+configs directory on scratch space, say {\tt scratch/cactus\_configs/} (where
 {\tt scratch/} is your scratch directory), and soft link ({\tt ln -s
-scratch/cactus\_build cactus/build/}) it to the Cactus directory.
+scratch/cactus\_configs cactus/configs/}) it to the Cactus directory.
 
 When the code has been compiled for some configuration CONF, the
-directory {\tt build/CONF/} contains the following:
+directory {\tt configs/CONF/} contains the following:
 
 \begin{itemize}
 
@@ -451,7 +451,7 @@ The gmake-process has to be repeated several times.
 \begin{enumerate}
 \item{}The first gmake-process configures the CCTK system by picking the
 standard compilers, etc and creates a directory tree in {\tt
-  ./build/CONF} which will later contain the configuration specific
+  ./configs/CONF} which will later contain the configuration specific
 files. 
 \item{} You will ask to issue {\tt gmake <CONF>} again and you will be
   presented a list of all thorns the CCTK has found. You will be
@@ -462,7 +462,7 @@ files.
     no} the make process will continue. 
 \end{enumerate}
 
-The make process will set up subdirectories in the {\tt ./build}
+The make process will set up subdirectories in the {\tt ./configs}
 directory that contain the configuration specific files. The directory
 structure is 
 \begin{verbatim}
@@ -472,7 +472,7 @@ structure is
 \begin{itemize}
 \item{} Instead of using the editor to specify the thorns you want to
   have compiled, you can {\em edit} the {\em ActiveThorns List} outside
-  the make process. It is located in {\tt build/CONF/ActiveThorns},
+  the make process. It is located in {\tt configs/CONF/ActiveThorns},
   wher {\tt CONF} refers to the name of your configuration.
   For a completely new configuration, this directory exists {\em
     after} the first  make phase. 
@@ -506,7 +506,7 @@ is to do.
 
 \item {\tt gmake <CONF>-clean} cleans a configuration (rm -r *.o)
 
-\item {\tt gmake <CONF>-delete} deletes a configuration ({\tt rm -r build/<CONF>})
+\item {\tt gmake <CONF>-delete} deletes a configuration ({\tt rm -r configs/<CONF>})
 
 \item {\tt gmake help} lists all make options
 
@@ -516,7 +516,7 @@ is to do.
 \item {\tt gmake TAGS} creates an Emacs style TAGS file. See section
   \ref{sec:TAGS} for using TAGS within Cactus.
 
-\item {\tt gmake distclean} nukes your build directory.
+\item {\tt gmake distclean} nukes your configs directory.
 
 \item {\tt gmake downsize} removes non essential files as documents
   and testsuites to allow for minimal installation size.
@@ -531,7 +531,7 @@ is to do.
 This shoudl go with the thorn writing.}
 
 Cactus compiles in all thorns listed in {\tt
-build/CONF/ActiveThorns}. {\q If the thorn has not been checked
+configs/CONF/ActiveThorns}. {\q If the thorn has not been checked
 out...It IGNORES ?} Cactus looks for source code in a thorn's {\tt src}
 directory. It first looks for a file {\tt make.code.defn} which
 should contain
