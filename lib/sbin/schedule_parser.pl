@@ -646,42 +646,5 @@ EOT
 return ($wrapper);
 
 }
- 
-#/*@@
-#  @routine    read_file
-#  @date       Wed Sep 16 11:54:38 1998
-#  @author     Tom Goodale
-#  @desc 
-#  Reads a file deleting comments and blank lines. 
-#  @enddesc 
-#  @calls     
-#  @calledby   
-#  @history 
-# 
-#  @endhistory 
-#@@*/
-
-sub read_file
-{
-  local($file) = @_;
-  local(@indata);
-  
-  open(IN, "<$file") || die("Can't open $file\n");
-  
-  while(<IN>)
-  {
-    $_ =~ s/\#.*//;
-    
-    next if(m/^\s+$/);
-    
-    chop;
-    
-    push(@indata, $_);
-  }
-  
-  close IN;
-  
-  return @indata;
-}
 
 1;
