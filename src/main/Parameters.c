@@ -23,6 +23,7 @@
 
 #include "ParameterBindings.h"
 #include "cctk_Parameters.h"
+#include "cctk_Constants.h"
 #include "cctk_WarnLevel.h"
 #include "cctk_Misc.h"
 
@@ -75,6 +76,13 @@ typedef struct PARAMTREENODE
     t_paramlist*        paramlist;
     
 } t_paramtreenode;
+
+/********************************************************************
+ ************************* Static Variables *************************
+ ********************************************************************/
+
+/* mask for CCTK_ParameterSet() */
+static int cctk_parameter_set_mask;
 
 /********************************************************************
  ********************* Local Routine Prototypes *********************
@@ -433,7 +441,7 @@ int CCTKi_ParameterAddRange(const char *implementation,
    @endvar
    @returntype int
    @returndesc
-   The number of parameters set
+   negative in case of errors
    @endreturndesc
 
 @@*/
@@ -442,17 +450,51 @@ int CCTK_ParameterSet(const char *name,
                       const char *thorn,
                       const char *value)
 {
-  int retval;
+  int retval = 0;
   t_param *param;
 
   param = ParameterFind(name, thorn, SCOPE_ANY);
 
   if(param)
   {
-    retval = ParameterSetSimple(param, value);
+    /* before parameter recovery (which is while parsing the parameter file)
+       all parameters can be set */
 
-    /* register another set operation */
-    param->props->n_set++;
+    /* after parameter recovery only steerable parameters can be set */
+    if(cctk_parameter_set_mask == PARAMETER_RECOVERY_POST &&
+       param->props->steerable != CCTK_STEERABLE_ALWAYS)
+    {
+      CCTK_VWarn(1, __LINE__, __FILE__, "Cactus",
+                 "Cannot set parameter '%s::%s' (non-steerable)",
+                 thorn, name);
+      retval = -2;
+    }
+
+    /* during parameter recovery STEERABLE_NEVER parameters which were set
+       from the parameter file are overwritten by the checkpoint file */
+    if(cctk_parameter_set_mask == PARAMETER_RECOVERY_IN &&
+       param->props->n_set > 0)
+    {
+      if (param->props->steerable == CCTK_STEERABLE_NEVER)
+      {
+        CCTK_VWarn(1, __LINE__, __FILE__, "Cactus",
+                   "Parameter '%s::%s' is non-steerable and will be "
+                   "overwritten by its value from the checkpoint file",
+                   thorn, name);
+      }
+      else
+      {
+        retval = 1;            /* do not restore the original value */
+      }
+    }
+
+    if (retval == 0)
+    {
+      retval = ParameterSetSimple(param, value);
+
+      /* register another set operation */
+      param->props->n_set++;
+    }
 
   }
   else
@@ -1410,14 +1452,11 @@ static int ParameterSetKeyword(t_param *param, const char *value)
 
   if(retval == -1)
   {
-    char *msg;
-    msg = (char *)malloc( 200*sizeof(char) );
-    sprintf(msg,"Unable to set keyword %s::%s - %s not in any active range",
-            param->props->thorn,
-            param->props->name,
-            value);
-    CCTK_Warn(0,__LINE__,__FILE__,"Cactus",msg);
-    free(msg);
+    CCTK_VWarn(0,__LINE__,__FILE__,"Cactus",
+               "Unable to set keyword %s::%s - %s not in any active range",
+               param->props->thorn,
+               param->props->name,
+               value);
     if(*((char **)param->data) == NULL)
     {
       fprintf(stderr, "Since this was the default value, setting anyway - please fix!\n");
@@ -1453,14 +1492,11 @@ static int ParameterSetString(t_param *param, const char *value)
 
   if(retval == -1)
   {
-    char *msg;
-    msg = (char *)malloc( 200*sizeof(char) );
-    sprintf(msg,"Unable to set string %s::%s - %s not in any active range",
-            param->props->thorn,
-            param->props->name,
-            value);
-    CCTK_Warn(0,__LINE__,__FILE__,"Cactus",msg);
-    free(msg);
+    CCTK_VWarn(0,__LINE__,__FILE__,"Cactus",
+               "Unable to set string %s::%s - %s not in any active range",
+               param->props->thorn,
+               param->props->name,
+               value);
 
     if(*((char **)param->data) == NULL)
     {
@@ -1498,15 +1534,11 @@ static int ParameterSetSentence(t_param *param, const char *value)
 
   if(retval == -1)
   {
-
-    char *msg;
-    msg = (char *)malloc( 200*sizeof(char) );
-    sprintf(msg,"Unable to set sentance %s::%s - %s not in any active range",
-            param->props->thorn,
-            param->props->name,
-            value);
-    CCTK_Warn(0,__LINE__,__FILE__,"Cactus",msg);
-    free(msg);
+    CCTK_VWarn(0,__LINE__,__FILE__,"Cactus",
+               "Unable to set sentance %s::%s - %s not in any active range",
+               param->props->thorn,
+               param->props->name,
+               value);
 
     if(*((char **)param->data) == NULL)
     {
@@ -1548,15 +1580,11 @@ static int ParameterSetInteger(t_param *param, const char *value)
 
   if(retval == -1)
   {
-    char *msg;
-    msg = (char *)malloc( 200*sizeof(char) );
-    sprintf(msg,"Unable to set integer %s::%s - %s not in any active range",
-            param->props->thorn,
-            param->props->name,
-            value);
-    CCTK_Warn(0,__LINE__,__FILE__,"Cactus",msg);
-    free(msg);
-
+    CCTK_VWarn(0,__LINE__,__FILE__,"Cactus",
+               "Unable to set integer %s::%s - %s not in any active range",
+               param->props->thorn,
+               param->props->name,
+               value);
   }
 
   return retval;
@@ -1607,15 +1635,11 @@ static int ParameterSetReal(t_param *param, const char *value)
 
   if(retval == -1)
   {
-    char *msg;
-    msg = (char *)malloc( 200*sizeof(char) );
-    sprintf(msg,"Unable to set real %s::%s - %s not in any active range",
-            param->props->thorn,
-            param->props->name,
-            value);
-    CCTK_Warn(0,__LINE__,__FILE__,"Cactus",msg);
-    free(msg);
-
+    CCTK_VWarn(0,__LINE__,__FILE__,"Cactus",
+               "Unable to set real %s::%s - %s not in any active range",
+               param->props->thorn,
+               param->props->name,
+               value);
   }
 
   return retval;
@@ -1630,17 +1654,19 @@ static int ParameterSetBoolean(t_param *param, const char *value)
 
   if(retval == -1)
   {
-    char *msg;
-    msg = (char *)malloc( 200*sizeof(char) );
-    sprintf(msg,"Unable to set boolean %s::%s - %s not recognised",
-            param->props->thorn,
-            param->props->name,
-            value);
-    CCTK_Warn(0,__LINE__,__FILE__,"Cactus",msg);
-    free(msg);
+    CCTK_VWarn(0,__LINE__,__FILE__,"Cactus",
+               "Unable to set boolean %s::%s - %s not recognised",
+               param->props->thorn,
+               param->props->name,
+               value);
   }
 
   return retval;
+}
+
+void CCTKi_SetParameterSetMask(int mask)
+{
+  cctk_parameter_set_mask = mask;
 }
 
 /*#define TEST_PARAMETERS*/
