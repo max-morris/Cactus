@@ -34,7 +34,6 @@ static char *rcsid = "$Header$";
  ********************************************************************/
 
 typedef enum {sched_none, sched_group, sched_function} t_sched_type;
-typedef enum {lang_none, lang_c, lang_fortran} t_lang_type;
 typedef enum {schedpoint_misc, schedpoint_analysis} t_schedpoint;
 
 typedef struct 
@@ -46,9 +45,8 @@ typedef struct
   char *implementation;
 
   t_sched_type type;
-  t_lang_type language;
 
-  int (*fortran_caller)(cGH *, void *);
+  cFunctionData FunctionData;
 
   int n_mem_groups;
   int *mem_groups;
@@ -69,6 +67,7 @@ typedef struct
 
   int done_entry;
 
+  int func_type;
 } t_attribute;
 
 typedef struct
@@ -104,7 +103,7 @@ static t_sched_modifier *CreateTypedModifier(t_sched_modifier *modifier,
                                              const char *type,
                                              int n_items,
                                              va_list *ap);
-static t_lang_type TranslateLanguage(const char *sval);
+static cFunctionType TranslateFunctionType(const char *where);
 
 static int SchedulePrint(const char *where);
 
@@ -203,6 +202,8 @@ int CCTK_ScheduleFunction(void *function,
 
   if(attribute && (modifier || (n_before == 0 && n_after == 0 && n_while == 0)))
   {
+    attribute->FunctionData.type = TranslateFunctionType(where);
+
     retcode = CCTKi_ScheduleFunction(where, name, function, modifier, (void *)attribute);
 #ifdef DEBUG
     fprintf(stderr, "Scheduled %s at %s\n", name, where);
@@ -371,21 +372,24 @@ int CCTK_ScheduleGroupComm(const char *group)
    @endhistory 
 
 @@*/
-int CCTK_ScheduleTraverse(const char *where, void *GH)
+int CCTK_ScheduleTraverse(const char *where, 
+                          void *GH,   
+                          int (*calling_function)(void *, void *, void *))
 {
   t_sched_data data;
 
-  int (*calling_function)(void *, t_attribute *, t_sched_data *);
-  
   data.GH = (cGH *)GH;
-  
-  if(CCTK_Equals(where, "CCTK_STARTUP"))
+
+  if(!calling_function)
   {
-    calling_function = CCTKi_ScheduleStartupFunction;
-  }
-  else
-  {
-    calling_function = CCTKi_ScheduleCallFunction;
+    if(CCTK_Equals(where, "CCTK_STARTUP"))
+    {
+      calling_function = CCTKi_ScheduleStartupFunction;
+    }
+    else
+    {
+      calling_function = CCTKi_ScheduleCallFunction;
+    }
   }
 
   if(CCTK_Equals(where, "CCTK_ANALYSIS"))
@@ -528,6 +532,41 @@ int CCTK_SchedulePrintTimes(const char *where)
   return 0;
 }
 
+ /*@@
+   @routine    CCTK_TranslateLanguage
+   @date       Thu Sep 16 18:18:31 1999
+   @author     Tom Goodale
+   @desc 
+   Translates a language string into an internal enum.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+cLanguage CCTK_TranslateLanguage(const char *sval)
+{
+  cLanguage retcode;
+
+  if(CCTK_Equals(sval, "C"))
+  {
+    retcode = LangC;
+  }
+  else if(CCTK_Equals(sval, "Fortran"))
+  {
+    retcode = LangFortran;
+  }
+  else
+  {
+    fprintf(stderr, "Unknown language %s\n", sval);
+    retcode = LangNone;
+  }
+
+  return retcode;
+}
+
 /********************************************************************
  *********************     Local Routines   *************************
  ********************************************************************/
@@ -584,13 +623,12 @@ static t_attribute *CreateAttribute(const char *description,
       if(language)
       {
         this->type = sched_function;
-        this->language = TranslateLanguage(language);
-        this->fortran_caller = (int (*)(cGH *,void *))CCTK_FortranWrapper(thorn);
+        this->FunctionData.language = CCTK_TranslateLanguage(language);
+        this->FunctionData.FortranCaller = (int (*)(cGH *,void *))CCTK_FortranWrapper(thorn);
       }
       else
       {
         this->type = sched_group;
-        this->language = lang_none;
       }
       
       /* Create the lists of indices of groups we're interested in. */
@@ -709,12 +747,15 @@ static t_sched_modifier *CreateTypedModifier(t_sched_modifier *modifier,
 
   return modifier;  
 }
+
  /*@@
-   @routine    TranslateLanguage
-   @date       Thu Sep 16 18:18:31 1999
+   @routine    TranslateFunctionType
+   @date       Mon Jan 24 16:52:06 2000
    @author     Tom Goodale
    @desc 
-   Translates a language string into an internal enum.
+   Translates a string saying what schedule point 
+   a function is registered at into the appropriate
+   function type.
    @enddesc 
    @calls     
    @calledby   
@@ -723,22 +764,17 @@ static t_sched_modifier *CreateTypedModifier(t_sched_modifier *modifier,
    @endhistory 
 
 @@*/
-static t_lang_type TranslateLanguage(const char *sval)
+static cFunctionType TranslateFunctionType(const char *where)
 {
-  t_lang_type retcode;
+  cFunctionType retcode;
 
-  if(CCTK_Equals(sval, "C"))
+  if(CCTK_Equals(where, "STARTUP"))
   {
-    retcode = lang_c;
-  }
-  else if(CCTK_Equals(sval, "Fortran"))
-  {
-    retcode = lang_fortran;
+    retcode = FunctionNoArgs;
   }
   else
   {
-    fprintf(stderr, "Unknown language %s\n", sval);
-    retcode = lang_none;
+    retcode = FunctionStandard;
   }
 
   return retcode;
@@ -1130,10 +1166,10 @@ static int CCTKi_ScheduleCallFunction(void *function,
   void (*calledfunc)(void *);
 
   CCTK_TimerStartI(attribute->timer_handle);
-  if(attribute->language == lang_fortran)
+  if(attribute->FunctionData.language == LangFortran)
   {
     /* Call the fortran wrapper. */
-    attribute->fortran_caller(data->GH, function);
+    attribute->FunctionData.FortranCaller(data->GH, function);
   }
   else
   {

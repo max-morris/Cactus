@@ -5,16 +5,15 @@
    @desc 
    Contains routines to deal with thorn startup functions.
    @enddesc 
+   @version $Header$
  @@*/
+
+static char *rcsid = "$Header$";
 
 #include <stdio.h>
 
 #include "cctk_Flesh.h"
 #include "cctk_Schedule.h"
-
-static char *rcsid = "$Id$";
-
-int dummy(tFleshConfig *);
 
  /*@@
    @routine    CallStartupFunctions
@@ -33,7 +32,7 @@ int dummy(tFleshConfig *);
 int CallStartupFunctions(tFleshConfig *ConfigData)
 {
 
-  CCTK_ScheduleTraverse("CCTK_STARTUP", NULL);
+  CCTK_ScheduleTraverse("CCTK_STARTUP", NULL, NULL);
 
   return 0;
 }

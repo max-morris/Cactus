@@ -5,10 +5,29 @@
    @desc 
    Routines for creating schedule stuff.
    @enddesc 
+   @version $Header$
  @@*/
 
 #ifndef _CCTK_SCHEDULE_H_
 #define _CCTK_SCHEDULE_H_
+
+typedef enum {LangNone, LangC, LangFortran} cLanguage;
+
+typedef enum {FunctionNoArgs, FunctionStandard} cFunctionType;
+
+typedef struct
+{
+  cLanguage language;
+
+  int (*FortranCaller)(cGH *, void *);
+
+  cFunctionType type;
+
+  int n_SyncGroups;
+
+  int *SyncGroups;
+
+} cFunctionData;
 
 #ifdef __cplusplus
 extern "C" {
@@ -46,12 +65,16 @@ int CCTK_ScheduleGroupStorage(const char *group);
 
 int CCTK_ScheduleGroupComm(const char *group);
 
-int CCTK_ScheduleTraverse(const char *where, void *GH);
+int CCTK_ScheduleTraverse(const char *where, 
+                          void *GH,   
+                          int (*calling_function)(void *, void *, void *));
 
 int CCTK_ScheduleGHInit(void *GH);
 
 int CCTK_SchedulePrint(const char *where);
 int CCTK_SchedulePrintTimes(const char *where);
+
+cLanguage CCTK_TranslateLanguage(const char *sval);
 
 #ifdef __cplusplus
 }
