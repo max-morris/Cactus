@@ -113,8 +113,9 @@ sub ParseCVSPasswordFile
     $numinpass = 0;
     while (<CVSPASS>)
     {
-      /^([^\s]*)\s[^\s]*/;
-      $rep[$numinpass] = $1;
+      /^(\/\S*\s+)?(\S+)\s\S+/;
+#      print "Found '$1' and '$2' in .cvspass, storing in array at position $numinpass\n";
+      $rep[$numinpass] = $2;
       $numinpass++;
     }
   }
@@ -124,7 +125,6 @@ sub ParseCVSPasswordFile
   }
 
   return @rep;
-
 }
 
 
@@ -312,6 +312,13 @@ sub GetThorns
     if ($thorns{"$th"} =~ /pserver/)
     {
       @rep = &ParseCVSPasswordFile;
+      foreach (@rep)
+      {
+	# Strip optional port specification from entries in .cvspass
+	# assume that user names never have a '/'
+	s|:(\d+)?/|:/|;
+      }
+
       $rep = join(" ",@rep);
       if ($rep !~ $thorns{"$th"})
       {
@@ -388,10 +395,15 @@ sub GetThorns
 	# Check that the repository exists
 	DIE("Repository $thorns{\"$th\"} not found \n Are you connected to the network?\n Is the repository name spelt right in your thornlist file?") if (!&RepositoryExists($thorns{"$th"}));
 	
-	open(CVSCO,$command_co_arr);
-	while (<CVSCO>)
+	# Only look for an arrangement-wide README in arrangements whose names
+	# start with 'Cactus'
+	if ($command_co_arr =~ /Cactus\w+/)
 	{
-	  print $_;  
+	  open(CVSCO,$command_co_arr);
+	  while (<CVSCO>)
+	  {
+	    print $_;
+	  }
 	}
 	open(CVSCO,$command_co);
 	while (<CVSCO>)
@@ -409,7 +421,7 @@ sub GetThorns
 }
 
 #/*@@
-#  @routine   
+#  @routine   CVSOptions
 #  @date      Sat Mar 11 15:31:55 CET 2000   
 #  @author    Gabrielle Allen
 #  @desc 
@@ -458,7 +470,6 @@ sub CVSOptions
   } while ($answer =~ /^h/i);
 
   return $cvs_options;
-
 }
 
 sub VerboseCheckoutHelp 
