@@ -394,7 +394,7 @@ int CCTKi_ParseStaggerString(int dim,
   {
     sprintf(hs,"MMMMMMMMMM");
   }
-  else if (CCTK_Equals(stype,"CELL")==0) 
+  else if (CCTK_Equals(stype,"CELL")) 
   {
     sprintf(hs,"CCCCCCCCCC");
   }
