@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.123 2001-09-23 11:03:05 allen Exp $
+#   @version $Id: Makefile,v 1.124 2001-10-10 07:37:29 goodale Exp $
 # @@*/
 
 ##################################################################################
@@ -942,16 +942,18 @@ thorninfo:
 
 # Processed CVS information
 
-.PHONY: 
+.PHONY: cvsstatus
+
 cvsstatus:
 	$(PERL) -s $(CCTK_HOME)/lib/sbin/CVSStatus.pl     
 
-.PHONY: 
+# run cvsudpate on a configuration
+
+.PHONY cvsupdate:
+
 cvsupdate:
 	$(PERL) -s $(CCTK_HOME)/lib/sbin/CVSUpdate.pl arrangements
 
-# run cvsudpate on a configuration
-.PHONY cvsupdate:
  
 ifneq ($strip($(CONFIGURATIONS)),) 
 .PHONY $(addsuffix -cvsupdate,$(CONFIGURATIONS)):
@@ -971,7 +973,8 @@ endif
 	@echo Configuration $(@:%-cvsupdate=%) does not exist.
 	@echo CVS Update aborted.
 
-.PHONY: 
+.PHONY: cvsdiff
+ 
 cvsdiff:
 	$(PERL) -s $(CCTK_HOME)/lib/sbin/CVSStatus.pl -case=diff
 
