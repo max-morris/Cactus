@@ -2445,6 +2445,140 @@ the reduction call is made.
 \subsection{Calling C routines from FORTRAN}
 \label{sec:cacrofr}
 
+For a C routine to be called from Fortran, the C routine must be
+declared using the {\em CCTK\_FCALL} and {\em CCTK\_FNAME} macros:
+
+{\tt
+void CCTK\_FCALL CCTK\_FNAME(<routine name>)(<argument list>)
+}
+
+The convention used in Cactus is that <routine name> be the same as the
+C-callable routine name, and that this is mixed-case.  The macros change
+the case and number of underscores of the routine name to match that expected
+by Fortran.
+
+All arguments passed by Fortran to the routine (except strings) are
+pointers in C, e.g. a call from Fortran
+
+\begin{verbatim}
+CCTK_INT arg1
+CCTK_REAL arg2
+CCTK_REAL arg3(30,30,30)
+
+...
+
+call MyCRoutine(arg1,arg2,arg3)
+\end{verbatim}
+
+should appear in C as
+
+\begin{verbatim}
+void CCTK_FCALL CCTK_FNAME(MyCRoutine)(CCTK_INT *arg1,
+                                       CCTK_REAL *arg2,
+                                       CCTK_REAL *arg3)
+{
+...
+}
+\end{verbatim}
+
+\subsubsection{String Arguments from Fortran}
+
+Fortran passes string arguments in a special, compiler-dependent, way.
+To facilitate this, the CCTK provides a set of macros to enable the
+translation to C strings.
+
+String arguments {\em must always come last} in the argument list for
+these macros to be effective (some Fortran compilers automatically
+migrate the strings to the end so there is no portable workaround).
+
+The macros are contained defined in {\tt cctk\_FortranString.h} which
+should be included in your C file.
+
+The macro to use depends upon the number of string arguments -- we
+currently support up to three.  The macros are {\tt
+ONE\_FORTSTRING\_ARG}, {\tt TWO\_FORTSTRING\_ARGS} and {\tt
+THREE\_FORTSTRING\_ARGS}.  Corresponding to each of these are two macros 
+{\tt <ONE|TWO|THREE>\_FORTSTRING\[S\]\_CREATE} and {\tt
+<ONE|TWO|THREE>\_FORTSTRING\_PTR} which take one,two,or three arguments 
+depending on the number of strings.  The latter set is only necessary
+if the string is to be modified.
+
+The use of the macros is probably best explained with an example.  For 
+read-only access to the strings, 
+
+\begin{verbatim}
+#include <stdlib.h>
+#include <string.h>
+#include <cctk_FortranString.h>
+
+int CCTK_FCALL CCTK_FNAME(CompareStrings)(TWO_FORTSTRING_ARGS)
+{
+  int retval;
+
+  /* Allocate and create C strings with \0 at end. */
+  /* This makes variable declarations so must be before
+   * any executable statements.
+   */
+  TWO_FORTSTRINGS_CREATE(arg1,arg2)
+
+  /* Do some work with the strings */
+  retval = strcmp(arg1,arg2);
+
+  /* Important, these must be freed after use */
+  free(arg1); 
+  free(arg2); 
+
+  return retval;
+}
+
+\end{verbatim}
+
+Note that the macros allocate memory for the C strings, so the strings 
+must be freed afterwards.  Also the macros create new variables, so
+must appear before in a variable declaration block.
+
+Since the null terminated strings may be copies of the strings passed
+from Fortran, they should be treated as read-only.
+
+To change the data in a string passed from Fortran, you need to use
+the second set of macros, e.g.
+
+\begin{verbatim}
+#include <stdlib.h>
+#include <string.h>
+#include <cctk_FortranString.h>
+
+int CCTK_FCALL CCTK_FNAME(CopyStrings)(TWO_FORTSTRING_ARGS)
+{
+  int retval;
+
+  /* Allocate and create C strings with \0 at end. */
+  /* This makes variable declarations so must be before
+   * any executable statements.
+   */
+  TWO_FORTSTRINGS_CREATE(arg1,arg2)
+  TWO_FORTSTRING_PTR(farg1,farg2)
+
+  /* Do some work with the strings */
+
+  retval = strncpy(farg1,arg2,cctk_strlen1);
+
+  /* Important, these must be freed after use */
+  free(arg1); 
+  free(arg2); 
+
+  return retval;
+}
+
+\end{verbatim}
+
+Note that in the example above two new variables, pointers to the
+Fortran strings, were created.  These are just pointers and {\em
+should not be freed}.  The example also illustrates the
+automatically-created variables which hold the sizes of original
+Fortran strings.  When writing to a string its length should never be
+exceeded.
+
 \subsection{Calling FORTRAN routines from C}
 \label{sec:caforofr}
 
@@ -2454,6 +2588,11 @@ To call a utility Fortran routine from C use
 void CCTK\_FCALL CCTK\_FNAME(<Fortran routine name>)(<argument list>)
 }
 
+Note that Fortran expects all arguments (apart from strings) to be
+pointers, so any non-array data should be passed by address.
+
+Currently we have no support for calling Fortran routines which expect 
+strings from C.
 
 \section{Adding a test suite}
 \label{sec:adatesu}
