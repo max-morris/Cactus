@@ -3,7 +3,7 @@
    @date      Mon Oct  5 11:00:01 1998
    @author    Tom Goodale
    @desc 
-   Routines to deal with binary trees
+   Routines to deal with binary trees keyed by strings.
    @enddesc 
  @@*/
 
@@ -25,7 +25,7 @@ static char *rcsid = "$Id$";
    @date       Mon Oct  5 11:04:55 1998
    @author     Tom Goodale
    @desc 
-   Stores data in a binary tree.
+   Stores data in string-keyed binary tree.
    @enddesc 
    @calls     
    @calledby   
@@ -68,7 +68,7 @@ t_sktree *SKTreeStoreData(t_sktree *root, t_sktree *subtree,
   else
   {
     /* Go down left or right branch. */
-    if((order = STR_CMP(key, root->key)) < 0)
+    if((order = STR_CMP(key, subtree->key)) < 0)
     {
       subtree = SKTreeStoreData(subtree, subtree->left, key, data);
     }
@@ -239,6 +239,20 @@ t_sktree *SKTreeFindNode(t_sktree *root, const char *key)
 
 
 
+ /*@@
+   @routine    STR_cmpi
+   @date       Mon Jul  5 01:19:00 1999
+   @author     Tom Goodale
+   @desc 
+   Case independent strcmp
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
 int STR_cmpi(const char *string1, const char *string2)
 {
   int retval;
@@ -247,109 +261,15 @@ int STR_cmpi(const char *string1, const char *string2)
   retval = 1;
 
   for(position = 0; 
-      position < strlen(string1) && position < strlen(string2);
+      position < strlen(string1)+1 && position < strlen(string2)+1;
       position++)
   {
-    if(tolower(string1[position]) < tolower(string2[position]))
+    if((retval = (tolower(string1[position]) - tolower(string2[position]))))
     {
-      retval = -1;
       break;
     }
-    else if(tolower(string1[position]) > tolower(string2[position]))
-    {
-      retval = 1;
-    }
-    else
-    {
-      retval = 0;
-    }
-  }
-
-  if(retval == 0 && position < strlen(string1))
-  {
-    retval = 1;
-  }
-  else if(retval == 0 && position < strlen(string2))
-  {
-    retval = 1;
   }
 
   return retval;
 }
 
-
-/* Stuff to test the routines. */
-
-/*#define TEST_SKBinTree*/
-#ifdef TEST_SKBinTree
-
-typedef struct 
-{
-  int i;
-} t_infodata ;
-
-int process(char *data, t_infodata *infodata)
-{
-  printf("%d, %s\n", infodata->i, data);
-
-  infodata->i++;
-
-  return 0;
-}
-
-void print_node(char *data, int depth)
-{
-  int i;
-  for(i=0; i < depth; i++) printf("*");
-  printf("%s\n", data);
-}
-
-int main(void)
-{
-  t_sktree *root;
-  t_infodata infodata;
-  char instring[500];
-  char *newstring;
-  t_sktree *node;
-
-  infodata.i=0;
-
-  root = NULL;
-  
-  while(scanf("%s", instring) && strcmp("quit", instring))
-  {
-    newstring = malloc(strlen(instring)*sizeof(char));
-    strcpy(newstring, instring);
-
-    if(!root)
-    {
-      root = SKTreeStoreData(root, root, newstring, (int (*)(const void *, const void *))strcmp);
-    }
-    else
-    {
-      SKTreeStoreData(root, root, newstring, (int (*)(const void *, const void *))strcmp);
-    }  
-  }
-
-  SKTreeTraverseInorder(root, (int (*)(void *, void *))process, (void *)&infodata);
-
-  SKTreePrintNodes(root, 0, (void (*)(void *, int))print_node);
-
-  printf("String to find ? ");
-  scanf("%s", instring);
-
-  node = SKTreeFindNode(root, instring, (int (*)(const void *, const void *))strcmp);
-
-  if(node)
-  {
-    printf("Found a node, node->data is %s\n", node->data);
-  }
-  else
-  {
-    printf("Unable to find node with %s\n", instring);
-  }
-
-  return 0;
-}
-
-#endif
