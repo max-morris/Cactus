@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.5 1999-01-18 13:00:59 goodale Exp $
+#   @version $Id: Makefile,v 1.6 1999-01-19 09:29:36 goodale Exp $
 # @@*/
 
 # Comment this out if you want to see what's going on.
@@ -31,7 +31,7 @@ DIVEL   =  __________________
 DIVIDER =  $(DIVEL)$(DIVEL)$(DIVEL)$(DIVEL)
 
 # Work out where we are
-CCTK_HOME = $(shell pwd)
+export CCTK_HOME := $(shell pwd)
 
 # Work out which configurations are available
 CONFIGURATIONS = $(patsubst build/%,%,$(wildcard build/*))
