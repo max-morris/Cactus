@@ -527,6 +527,7 @@ sub NewParamStuff
     }
 
     push(@data, "");
+    push(@data, "int CCTKi_BindingsCreate$thorn"."Parameters(void);\n");
     push(@data, "int CCTKi_BindingsCreate$thorn"."Parameters(void)");
     push(@data, "{");
 
@@ -536,6 +537,7 @@ sub NewParamStuff
     push(@data, "}");
 
     push(@data, "");
+    push(@data, "int CCTKi_Bindings$thorn"."ParameterExtensions(void);\n");
     push(@data, "int CCTKi_Bindings$thorn"."ParameterExtensions(void)");
     push(@data, "{");
 
