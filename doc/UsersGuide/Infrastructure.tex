@@ -66,9 +66,9 @@ is called when a new cGH is created.
 \item[InitGH]
 this is used to initialise the extension.  It is called after the scheduler has
 been initialised on the cGH.
-\item[rfrTraverse]
+\item[ScheduleTraverseGH]
 this is called whenever the schedule tree is due to be traversed on the GH.  It
-should initialise the data on the cGH and the call {\tt rfrTraverse} to traverse 
+should initialise the data on the cGH and the call {\tt CCTK\_ScheduleTraverse} to traverse 
 the schedule tree.
 \end{itemize}
 
@@ -203,12 +203,128 @@ Basically all this example is doing is preparing a data array for use.  The
 function can query the flesh for information on every variable.  Note that 
 scalars should always have memory actually assigned to them.
 
-An {\tt InitGH} function isn't strictly necessary, and in ths case it could just
+An {\tt InitGH} function isn't strictly necessary, and in this case it could just
 be a dummy function.
 
-The {\tt rfrTravers} function needs to fill out the cGH data and then call 
-{\tt CCTK\_Schedule} to have the functions scheduled at that point executed on the
+The {\tt ScheduleTraverseGH} function needs to fill out the cGH data and then call 
+{\tt CCTK\_ScheduleTraverse} to have the functions scheduled at that point executed on the
 grid.
+
+\begin{verbatim}
+
+int SimpleScheduleTraversGH(cGH *GH, const char *where)
+{
+  int retcode;
+  int  var;
+  int  gtype;
+  int  ntimelevels;
+  int  level;
+  int  idir;
+
+  extension = (struct SimpleExtension *)GH->extensions[SimpleExtension];
+
+  for (idir=0;idir<GH->cctk_dim;idir++)
+  {
+    GH->cctk_levfac[idir] = 1;
+    GH->cctk_nghostzones[idir] = extension->nghostzones[idir];
+    GH->cctk_lsh[idir]         = extension->lnsize[idir];
+    GH->cctk_gsh[idir]         = extension->nsize[idir];
+    GH->cctk_bbox[2*idir]      = extension->lb[extension->myproc][idir] == 0;
+    GH->cctk_bbox[2*idir+1]    = extension->ub[extension->myproc][idir] 
+                              == extension->nsize[idir]-1;
+    GH->cctk_lbnd[idir]        = extension->lb[extension->myproc][idir];
+    GH->cctk_ubnd[idir]        = extension->ub[extension->myproc][idir];
+    
+  }
+
+  for(var = 0; var < extension->nvariables; var++)
+  {
+    gtype = CCTK_GroupTypeFromVarI(var);
+    ntimelevels = CCTK_NumTimeLevelsFromVarI(var);
+
+    for(level = 0; level < ntimelevels; level++)
+    {
+      switch(gtype)
+      {
+	case CCTK_SCALAR :
+	  GH->data[var][level] = extension->variables[var][level]; 
+	  break;
+	case CCTK_GF     :
+	  GH->data[var][level] = 
+	    ((pGF ***)(extension->variables))[var][level]->data; 
+	  break;
+	case CCTK_ARRAY :
+	  GH->data[var][level] = 
+	    ((pGA ***)(extension->variables))[var][level]->data; 
+	  break;
+	default:
+	  CCTK_WARN(1,"Unknown group type in SimpleScheduleTraverse");
+      }
+    }
+  }
+
+  retcode = CCTK_ScheduleTraverse(where, GH, NULL);
+
+  return retcode;
+
+}
+
+\end{verbatim}
+
+The third argument to {\tt CCTK\_ScheduleTraverse} is actually a function
+which will be called by the schedular when it wants to call a function
+scheduled by a thorn.  This function is given some information about
+the function to call, and is an alternative place where the cGH can be setup.
+
+This function is optional, but a simple implementation might be
+
+\begin{verbatim}
+
+int SimpleCallFunction(void *function, 
+                       cFunctionData *fdata, 
+                       void *data)
+{
+  void (*standardfunc)(void *);
+
+  int (*noargsfunc)(void);
+
+  switch(fdata->type)
+  {
+    case FunctionNoArgs:
+      noargsfunc = (int (*)(void))function;
+      noargsfunc();
+      break;
+    case FunctionStandard:
+      switch(fdata->language)
+      {
+        case LangC:
+          standardfunc = (void (*)(void *))function;
+          standardfunc(data);
+          break;
+        case LangFortran:
+          fdata->FortranCaller(data, function);
+          break;
+        default :
+          CCTK_WARN(1, "Unknown language.");
+      }
+      break;
+    default :
+      CCTK_WARN(1, "Unknown function type.");
+  }
+
+  /* Return 0, meaning didn't synchronise */
+  return 0;
+}
+
+\end{verbatim}
+
+The return code of the function signifies whether or not the function
+synchronised the groups in this functions synchronisation list of not.
+
+The flesh will synchronise them if the function returns false.
+
+Providing this function is probably the easiest way to do multi-patch or
+AMR drivers.
 
 \section{Memory Functions}
 

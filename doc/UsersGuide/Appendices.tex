@@ -269,12 +269,13 @@ Each {\it schedule block} in the file {\t schedule.ccl} must have
 the syntax:
 {\t
 \begin{verbatim}
-schedule <function name> at <time>
+schedule [GROUP] <function name> AT|IN <time> [BEFORE|AFTER <group>] [WHILE <variable>] [AS <alias>]
 {
   LANG: <language>
-  [STORAGE: <group>,<group>]
-  [COMMUNICATION: <group>,<group>]
-  [TRIGGER: <grid function>,<grid function>]
+  [STORAGE:       <group>,<group>...]
+  [TRIGGER:       <group>,<group>...]
+  [SYNCHRONISE:   <group>,<group>...]
+  [OPTIONS:       <option>,<option>...]
 } "Description of function"
 \end{verbatim}
 }
@@ -295,6 +296,9 @@ if (CCTK_Equals(<parameter>,<string>))
 
 Conditional constructs cannot be used inside of a schedule block.
 
+{\tt STORAGE} may also appear as a statement outside a schedule block,
+in which case it switches storage on for the specified groups permanently,
+subject to any conditional statements around the {\tt STORAGE} statement.
 
 \chapter{Flesh parameters}
 \label{sec:ccpa}
