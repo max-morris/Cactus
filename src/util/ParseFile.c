@@ -158,7 +158,7 @@ int ParseFile(FILE *ifp,
     while (c == '#' || c == '!' )
     {
       /* Comment line.  So forget rest of line */
-      while ((c=fgetc(ifp)) != '\n' && c != EOF)
+      while ((c=fgetc(ifp)) != '\n' && c != '\r' && c != EOF)
       {
 #ifdef DEBUG
         printf("%c",c);
@@ -200,7 +200,7 @@ int ParseFile(FILE *ifp,
 
 
     /* Start of a new token */
-    if (c != ' ' && c != '\t' && c != '\n' && !inval && !intoken)
+    if (c != ' ' && c != '\t' && c != '\n' && c != '\r' && !inval && !intoken)
     {
       intoken = 0;
       tokens[intoken++] = c;
@@ -228,7 +228,7 @@ int ParseFile(FILE *ifp,
          * and check if the value is a string or not.
          * This parser DOES strip quotes off of the strings.
          */
-        while ((c = fgetc(ifp)) == ' ' || c == '\n' || c == '\t')
+        while ((c = fgetc(ifp)) == ' ' || c == '\n' || c == '\r' || c == '\t')
         {
 #ifdef DEBUG
           printf("%c",c);
@@ -309,7 +309,7 @@ int ParseFile(FILE *ifp,
           }
 
           /* ignore everything else on the line */
-          while (!(c==' ' || c=='\t' || c == '\n' || c == EOF))
+          while (!(c==' ' || c=='\t' || c == '\n' || c == '\r' || c == EOF))
           {
             c = fgetc(ifp);
 #ifdef DEBUG
@@ -332,7 +332,7 @@ int ParseFile(FILE *ifp,
 #ifdef DEBUG
             printf("%c",c);
 #endif
-            while (!(c==' ' || c=='\t' || c == '\n' || c == EOF))
+            while (!(c==' ' || c=='\t' || c == '\n' || c == '\r' || c == EOF))
             {
               value[p++] = c;
               CheckBuf(p,lineno);
@@ -374,7 +374,7 @@ int ParseFile(FILE *ifp,
 #endif
             while (ncommas < ntokens-1 && c != EOF)
             {
-              if (!(c == ' ' || c == '\t' || c == '\n'))
+              if (!(c == ' ' || c == '\t' || c == '\n' || c == '\r'))
               {
                 value[pp++] = c;
                 CheckBuf(pp,lineno);
@@ -388,12 +388,12 @@ int ParseFile(FILE *ifp,
             if (c == ' ' || c == '\t')
             {
               /* Great now strip out the spaces */
-              while((c = fgetc(ifp)) == ' ' || c=='\t' || c == '\n')
+              while((c = fgetc(ifp)) == ' ' || c=='\t' || c == '\n' || c == '\r')
               {
 #ifdef DEBUG
                 printf("%c",c);
 #endif
-                if (c=='\n')
+                if (c =='\n')
                 {
 #ifdef DEBUG
                   printf ("LINE %d\n",lineno);
@@ -411,7 +411,7 @@ int ParseFile(FILE *ifp,
 #ifdef DEBUG
             printf("%c",c);
 #endif
-            while (c != ' ' && c != '\t' && c != '\n' && c != EOF)
+            while (c != ' ' && c != '\t' && c != '\n' && c != '\r' && c != EOF)
             {
               value[pp++] = c;
               CheckBuf(pp,lineno);
@@ -573,7 +573,7 @@ static void removeSpaces(char *stripMe)
     strcpy(s,stripMe);
     for (i=0,j=0;i<strlen(s);i++)
     {
-      if (s[i] != ' ' && s[i] != '\t' && s[i] != '\n')
+      if (s[i] != ' ' && s[i] != '\t' && s[i] != '\n' && s[i] != '\r')
       {
         stripMe[j++] = s[i];
       }
