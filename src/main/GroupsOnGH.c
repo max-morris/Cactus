@@ -357,7 +357,7 @@ void *CCTK_VarDataPtrB(const cGH *GH, int timelevel, int vari, char *varn)
    @endhistory
 
 @@*/
-int CCTK_EnableGroupCommI(void *GH, int group)
+int CCTK_EnableGroupCommI(cGH *GH, int group)
 {
   int retcode;
   char *group_name;
@@ -391,7 +391,7 @@ int CCTK_EnableGroupCommI(void *GH, int group)
    @endhistory
 
 @@*/
-int CCTK_EnableGroupStorageI(void *GH, int group)
+int CCTK_EnableGroupStorageI(cGH *GH, int group)
 {
   int retcode;
   char *group_name;
@@ -428,7 +428,7 @@ int CCTK_EnableGroupStorageI(void *GH, int group)
    @endhistory
 
 @@*/
-int CCTK_DisableGroupCommI(void *GH, int group)
+int CCTK_DisableGroupCommI(cGH *GH, int group)
 {
   int retcode;
   char *group_name;
@@ -465,7 +465,7 @@ int CCTK_DisableGroupCommI(void *GH, int group)
    @endhistory
 
 @@*/
-int CCTK_DisableGroupStorageI(void *GH, int group)
+int CCTK_DisableGroupStorageI(cGH *GH, int group)
 {
   int retcode;
   char *group_name;

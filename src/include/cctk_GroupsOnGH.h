@@ -32,10 +32,10 @@ void *CCTK_VarDataPtr(const cGH *GH, int timelevel, const char *fullvarname);
 void *CCTK_VarDataPtrI(const cGH *GH, int timelevel, int varindex);
 void *CCTK_VarDataPtrB(const cGH *GH, int timelevel, int varindex, char *fullvarname);
 
-int CCTK_DisableGroupStorageI(void *GH, int group);
-int CCTK_DisableGroupCommI(void *GH, int group);
-int CCTK_EnableGroupStorageI(void *GH, int group);
-int CCTK_EnableGroupCommI(void *GH, int group);
+int CCTK_DisableGroupStorageI(cGH *GH, int group);
+int CCTK_DisableGroupCommI(cGH *GH, int group);
+int CCTK_EnableGroupStorageI(cGH *GH, int group);
+int CCTK_EnableGroupCommI(cGH *GH, int group);
 
 int CCTK_GrouplbndGN(const cGH *GH, int dim, int *lbnd, const char *groupname);
 int CCTK_GrouplbndVN(const cGH *GH, int dim, int *lbnd, const char *varname);
