@@ -560,183 +560,6 @@ int CCTKi_PrintImps(FILE *file, const char *format, int active)
   return retval;
 }
 
- /*@@
-   @routine    CCTKi_ImplementationList
-   @date       Thu Oct 14 16:14:22 1999
-   @author     Andre Merzky
-   @desc 
-   Returns the list of implementations.
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
-
-@@*/
-int CCTKi_ImplementationList(int active, char ***list, int *n_implementations)
-{
-  int retval;
-  t_sktree *node;
-
-  struct IMPLEMENTATION *imp;
-
-  retval = 0;
-
-
-  *list = (char **)malloc(n_imps*sizeof(char *));
-  
-  for(node= SKTreeFindFirst(implist),   *n_implementations = 0;
-      node; 
-      node = node->next, retval++)
-  {
-    imp = (struct IMPLEMENTATION *)(node->data);
-
-    if(imp->active || !active)
-    {
-      (*list)[*n_implementations] = (char *) malloc(strlen(node->key)+1);
-      strcpy((*list)[*n_implementations], node->key);
-      (*n_implementations)++;
-    }
-  }
-
-  return retval;
-}
-
-
- /*@@
-   @routine    CCTKi_ThornList
-   @date       Sun Oct 17 17:49:23 1999
-   @author     Tom Goodale
-   @desc 
-   Returns the list of thorns.
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
-
-@@*/
-int CCTKi_ThornList(int active, char ***list, int *n_items)
-{
-  int retval;
-  t_sktree *node;
-
-  struct THORN *thorn;
-
-  retval = 0;
-
-  *list = (char **)malloc(n_thorns*sizeof(char *));
-  
-  for(node= SKTreeFindFirst(thornlist),   
-      *n_items = 0;
-      node; 
-      node = node->next, retval++)
-  {
-    thorn = (struct THORN *)(node->data);
-
-    if(thorn->active || !active)
-    {
-      (*list)[*n_items] = (char *) malloc(strlen(node->key)+1);
-      strcpy((*list)[*n_items], node->key);
-      (*n_items)++;
-    }
-  }
-
-  return retval;
-}
-
-
- /*@@
-   @routine    CCTKi_ImplementationThornList
-   @date       Thu Oct 14 16:04:59 1999
-   @author     Andre Merzky
-   @desc 
-   Returns a list of thorns.
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
-
-   @endhistory 
-
-@@*/
-int CCTKi_ImplementationThornList (const char *imp, char ***list, int *n_items)
-{
-  int       retval;
-  t_sktree *node;
-  t_sktree *thornlist;
-  int       alloc_size = 0;
-    
-  /* FIXME */
-#define _MY_THORN_JUNK_SIZE 10
-
-
-  retval = 0;
-
-  /* find all thorns for implementation */
-  thornlist = (t_sktree*) CCTK_ImpThornList (imp);
-    
-    
-  /* got thornlist? */  
-  if (thornlist)
-  {
-    /* then we can start allocatin list */
-    alloc_size += _MY_THORN_JUNK_SIZE;
-    *list = (char **) malloc (alloc_size * sizeof (char *));
-        
-    /* success? */
-    if (! (*list)) 
-    {
-      fprintf (stderr, "Cannot malloc paramlist*\n");
-      return (-1);
-    }
-    /* recourse thorn tree */
-    for (node = SKTreeFindFirst (thornlist), 
-         *n_items = 0;
-         node; 
-         node = node->next, retval++)
-    {
-      /* list long enough? */
-      if ((*n_items) >= alloc_size)
-      {
-        /* no: realloc! */
-        alloc_size += _MY_THORN_JUNK_SIZE;
-        *list = (char **) realloc ((*list), alloc_size);
-
-        /* success? */
-        if (! (*list)) {
-          fprintf (stderr, "Cannot realloc paramlist*\n");
-          return (-1);
-        }
-          
-      } 
-
-      /* store thorn */
-      (*list)[*n_items] = (char *) malloc ((strlen (node->key) + 1) * sizeof (char));
-      strcpy ((*list)[*n_items], node->key);
-      (*n_items)++;
-    }
-  }
-
-  /* if necessary, shrink paramlist again. */
-  if ((*n_items) < alloc_size)
-  {
-    alloc_size += (*n_items);
-    *list = (char **) realloc ((*list), alloc_size);
-    
-    if (! (*list)) 
-    {
-      fprintf (stderr, "Cannot realloc list*\n");
-      return (-1);
-    }
-  } 
-
-  /* done */
-  return retval;
-}
-
 
  /*@@
    @routine    CCTK_ActivatingThorn
@@ -819,4 +642,118 @@ t_sktree *CCTK_ImpThornList(const char *name)
   }
 
   return retval;
+}
+
+
+ /*@@
+   @routine    CCTK_NumCompiledThorns
+   @date       Tue Feb 02 2000
+   @author     Thomas Radke
+   @desc 
+   Return the number of thorns compiled in.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+int CCTK_NumCompiledThorns(void)
+{
+  return n_thorns;
+}
+
+  
+ /*@@
+   @routine    CCTK_CompiledThorn
+   @date       Tue Feb 02 2000
+   @author     Thomas Radke
+   @desc 
+   Return the name of the compiled thorn with given index.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+const char *CCTK_CompiledThorn(int index)
+{
+  int i;
+  t_sktree *node;
+  const char *ret_val;
+
+  ret_val = NULL;
+
+  for(node = SKTreeFindFirst(thornlist), i = 0;
+      node;
+      node = node->next, i++)
+  {
+    if (i == index)
+    {
+      ret_val = node->key;
+      break;
+    }
+  }
+
+  return ret_val;
+}
+
+  
+ /*@@
+   @routine    CCTK_NumCompiledImplementations
+   @date       Tue Feb 02 2000
+   @author     Thomas Radke
+   @desc 
+   Return the number of implementations compiled in.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+int CCTK_NumCompiledImplementations(void)
+{
+  return n_imps;
+}
+
+  
+ /*@@
+   @routine    CCTK_CompiledImplementation
+   @date       Tue Feb 02 2000
+   @author     Thomas Radke
+   @desc 
+   Return the name of the compiled implementation with given index.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+const char *CCTK_CompiledImplementation(int index)
+{
+  int i;
+  t_sktree *node;
+  const char *ret_val;
+
+  ret_val = NULL;
+
+  for(node = SKTreeFindFirst(implist), i = 0;
+      node;
+      node = node->next, i++)
+  {
+    if (i == index)
+    {
+      ret_val = node->key;
+      break;
+    }
+  }
+
+  return ret_val;
 }
