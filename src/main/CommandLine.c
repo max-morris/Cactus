@@ -12,10 +12,10 @@
 #include <string.h>
 
 #include "CommandLine.h"
-#include "flesh.h"
+#include "cctk_Flesh.h"
 #include "cGH.h"
-#include "Comm.h"
-#include "WarnLevel.h"
+#include "cctk_Comm.h"
+#include "cctk_WarnLevel.h"
 #include "CCTK_Bindings.h"
 
 /* FIXME. This shouldn't be here !*/
@@ -138,7 +138,7 @@ void CCTKi_CommandLineErrorLevel(const char *optarg)
 
   errorlevel = atoi(optarg);
 
-  CCTK_SetErrorLevel(errorlevel);
+  CCTKi_SetErrorLevel(errorlevel);
 
 }
 

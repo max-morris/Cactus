@@ -50,7 +50,7 @@ sub CreateParameterBindingFile
   push(@data, $line);
   $line = "\#include \"CParameterStructNames.h\"";
   push(@data, $line);
-  $line = "\#include \"Misc.h\"";
+  $line = "\#include \"cctk_Misc.h\"";
   push(@data, $line);	
   $line = "\#include \"ParameterBindings.h\"";
   push(@data, $line);

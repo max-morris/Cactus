@@ -11,10 +11,10 @@
 
 #include <stdio.h>
 
-#include "flesh.h"
+#include "cctk_Flesh.h"
 #include "cctk.h"
 #include "cctk_parameters.h"
-#include "rfr_constants.h"
+#include "rfrConstants.h"
 #include "rfrInterface.h"
 
 #include "CactusIOFunctions.h"

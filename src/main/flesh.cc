@@ -8,7 +8,7 @@
  @@*/
 #include <stdio.h>
 
-#include "flesh.h"
+#include "cctk_Flesh.h"
 #include "CactusMainFunctions.h"
 
 static char *rcsid = "$Id$";

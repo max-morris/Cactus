@@ -9,7 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "flesh.h"
+#include "cctk_Flesh.h"
 #include "getopt.h"
 
 static char *rcsid = "$Header$";

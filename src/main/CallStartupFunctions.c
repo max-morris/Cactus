@@ -9,9 +9,7 @@
 
 #include <stdio.h>
 
-#include "flesh.h"
-
-#include "CactusRegister.h"
+#include "cctk_Flesh.h"
 
 static char *rcsid = "$Id$";
 
@@ -34,14 +32,7 @@ int dummy(tFleshConfig *);
 int CallStartupFunctions(tFleshConfig *ConfigData)
 {
 
-
   CCTKi_BindingsScheduleRegister("STARTUP", NULL);
-
-  /*  These used to be here to set the defaults afterwards.  Now set the default before. 
-   *   SetupMainFunctions();
-   *   SetupCommFunctions();
-   *   SetupIOFunctions();
-   */
 
   return 0;
 }

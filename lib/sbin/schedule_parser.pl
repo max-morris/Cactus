@@ -104,12 +104,12 @@ sub write_rfr_header {
   $header  = "#define THORN_IS_$thorn\n";
   $header .= "#include <stdio.h>\n";
   $header .= "#include \"cctk.h\"\n";
-  $header .= "#include \"flesh.h\"\n";
-  $header .= "#include \"Comm.h\"\n";
-  $header .= "#include \"ActiveThorns.h\"\n";
-  $header .= "#include \"Groups.h\"\n";
-  $header .= "#include \"GroupsOnGH.h\"\n";
-  $header .= "#include \"rfr_constants.h\"\n";
+  $header .= "#include \"cctk_Flesh.h\"\n";
+  $header .= "#include \"cctk_Comm.h\"\n";
+  $header .= "#include \"cctk_ActiveThorns.h\"\n";
+  $header .= "#include \"cctk_Groups.h\"\n";
+  $header .= "#include \"cctk_GroupsOnGH.h\"\n";
+  $header .= "#include \"rfrConstants.h\"\n";
   $header .= "#include \"cctk_parameters.h\"\n";
   $header .= "#include \"cctk_arguments.h\"\n";
   $header .= "\n";
@@ -133,9 +133,9 @@ sub write_startup_header {
   print OUTSTART "#define THORN_IS_$thorn\n";
   print OUTSTART "#include <stdio.h>\n";
   print OUTSTART "#include \"cctk.h\"\n";
-  print OUTSTART "#include \"flesh.h\"\n";
-  print OUTSTART "#include \"ActiveThorns.h\"\n";
-  print OUTSTART "#include \"rfr_constants.h\"\n";
+  print OUTSTART "#include \"cctk_Flesh.h\"\n";
+  print OUTSTART "#include \"cctk_ActiveThorns.h\"\n";
+  print OUTSTART "#include \"rfrConstants.h\"\n";
   print OUTSTART "#include \"cctk_parameters.h\"\n";
   print OUTSTART "\n";
   print OUTSTART "void $routine ()\n";
@@ -207,7 +207,7 @@ sub create_RegisterRFR
 
   print OUT <<EOT;
 
-#include "flesh.h"
+#include "cctk_Flesh.h"
 
 $rfr_order_prototypes
 void Cactus_RegisterRFR(void *data)
@@ -663,9 +663,9 @@ sub fortran_wrapper {
 
 #define THORN_IS_$thorn
 #include \"cctk.h\"
-#include \"flesh.h\"
-#include \"Groups.h\"
-#include \"Comm.h\"
+#include \"cctk_Flesh.h\"
+#include \"cctk_Groups.h\"
+#include \"cctk_Comm.h\"
 #include \"cctk_arguments.h\"
 
    void FORTRAN_NAME($routine)($THORN_C2F_PROTO);

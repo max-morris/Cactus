@@ -11,9 +11,9 @@
 
 #include "cctk.h"
 
-#include "flesh.h"
+#include "cctk_Flesh.h"
 
-#include "Comm.h"
+#include "cctk_Comm.h"
 
 #ifdef MPI
 #include "mpi.h"

@@ -11,7 +11,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "ActiveThorns.h"
+#include "cctk_ActiveThorns.h"
 #include "SKBinTree.h"
 
 

@@ -31,7 +31,7 @@
 				  } while (0)
 #endif
 
-#include "flesh.h"
+#include "cctk_Flesh.h"
 
 static char *rcsid = "$Header$";
 

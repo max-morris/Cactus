@@ -13,9 +13,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "Misc.h"
-#include "WarnLevel.h"
-#include "FortranString.h"
+#include "cctk_Misc.h"
+#include "cctk_WarnLevel.h"
+#include "cctk_FortranString.h"
 #include "cctk_parameters.h"
 
 static char *rcsid = "$Header$";
@@ -213,7 +213,7 @@ void FMODIFIER FORTRAN_NAME(CCTK_Info)(TWO_FORTSTRINGS_ARGS)
 
 
  /*@@
-   @routine    CCTK_SetErrorLevel
+   @routine    CCTKi_SetErrorLevel
    @date       Wed Feb 17 00:48:02 1999
    @author     Tom Goodale
    @desc 
@@ -226,7 +226,7 @@ void FMODIFIER FORTRAN_NAME(CCTK_Info)(TWO_FORTSTRINGS_ARGS)
    @endhistory 
 
 @@*/
-int CCTK_SetErrorLevel(int level)
+int CCTKi_SetErrorLevel(int level)
 {
   int retval;
   int old_level;

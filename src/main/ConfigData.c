@@ -10,7 +10,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "flesh.h"
+#include "cctk_Flesh.h"
 
 static char *rcsid = "$Id$";
 

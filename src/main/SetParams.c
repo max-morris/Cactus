@@ -11,7 +11,7 @@
 
 #include "cctk.h"
 
-#include "WarnLevel.h"
+#include "cctk_WarnLevel.h"
 
 static char *rcsid = "$Id$";
 

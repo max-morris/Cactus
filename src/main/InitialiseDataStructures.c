@@ -11,8 +11,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "flesh.h"
-#include "ActiveThorns.h"
+#include "cctk_Flesh.h"
+#include "cctk_ActiveThorns.h"
 
 static char *rcsid = "$Id$";
 

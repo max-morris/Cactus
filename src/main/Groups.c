@@ -12,12 +12,12 @@
 #include <string.h>
 #include <stdarg.h>
 
-#include "flesh.h"
-#include "FortranString.h"
+#include "cctk_Flesh.h"
+#include "cctk_FortranString.h"
 
-#include "Misc.h"
-#include "Groups.h"
-#include "WarnLevel.h"
+#include "cctk_Misc.h"
+#include "cctk_Groups.h"
+#include "cctk_WarnLevel.h"
 
 /*#define DEBUG_GROUPS */
 

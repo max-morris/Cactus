@@ -10,10 +10,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "flesh.h"
-#include "GHExtensions.h"
+#include "cctk_Flesh.h"
+#include "cctk_FortranString.h"
+#include "cctk_GHExtensions.h"
 #include "StoreHandledData.h"
-#include "WarnLevel.h"
+#include "cctk_WarnLevel.h"
 
 static char *rcsid = "$Id$";
 
@@ -33,7 +34,7 @@ static int num_extensions = 0;
  *  c) Check its value in CheckAllExtensionsSetup
  *  d) Provide a dummy function for CheckAllExtensionsSetup to use
  *  e) Provide a registration function.
- *  f) Add a prototype for the registration function to GHExtensions.h
+ *  f) Add a prototype for the registration function to cctk_GHExtensions.h
  */
 struct GHExtension
 {
@@ -450,6 +451,14 @@ int CCTK_GHExtensionHandle(const char *name)
 {
   return Util_GetHandle(GHExtensions, name, NULL);
 }
+
+void  FMODIFIER FORTRAN_NAME(CCTK_GHExtensionHandle)(int *handle,ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE(name)
+  *handle = CCTK_GHExtensionHandle(name);
+  free(name);
+}
+
 
 
 /************************************************************************

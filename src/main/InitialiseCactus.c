@@ -9,7 +9,7 @@
 
 #include <stdio.h>
 
-#include "flesh.h"
+#include "cctk_Flesh.h"
 
 int ProcessCommandLine(int *inargc, char ***inargv, tFleshConfig *ConfigData);
 int ProcessEnvironment(int *argc, char ***argv,tFleshConfig *ConfigData);

@@ -14,12 +14,12 @@
 
 #include "cctk.h"
 #include "StoreHandledData.h"
-#include "WarnLevel.h"
-#include "Coord.h"
+#include "cctk_WarnLevel.h"
+#include "cctk_Coord.h"
 #include "ErrorCodes.h"
-#include "Groups.h"
-#include "Misc.h"
-#include "FortranString.h"
+#include "cctk_Groups.h"
+#include "cctk_Misc.h"
+#include "cctk_FortranString.h"
 
 static cHandledData *coordinates = NULL;
 static int num_coords = 0;

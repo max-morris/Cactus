@@ -202,8 +202,8 @@ sub CreateParameterBindings
 #include <stdlib.h>
 #include <string.h>
 #include "config.h"
-#include "Misc.h"
-#include "WarnLevel.h"
+#include "cctk_Misc.h"
+#include "cctk_WarnLevel.h"
 
 EOT
 

@@ -110,8 +110,8 @@ sub CreateVariableBindings
   {
     open(OUT, ">$thorn.c") || die "Cannot create $thorn.c";
   
-    print OUT "\#include \"Groups.h\"\n";
-#    print OUT "#include \"flesh.h\"\n";
+    print OUT "\#include \"cctk_Groups.h\"\n";
+#    print OUT "#include \"cctk_Flesh.h\"\n";
 #    print OUT "#include \"StoreVariableData.h\"\n\n";
 
     print OUT "int CactusBindingsVariables_$thorn"."_Initialise(void)\n{\n";

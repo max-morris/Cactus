@@ -12,11 +12,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "flesh.h"
+#include "cctk_Flesh.h"
 #include "CactusMainDefaults.h"
 #include "CactusCommFunctions.h"
-#include "GHExtensions.h"
-#include "rfr_constants.h"
+#include "cctk_GHExtensions.h"
+#include "rfrConstants.h"
 #include "CactusrfrInterface.h"
 #include "CCTK_Bindings.h"
 #include "rfrInterface.h"
