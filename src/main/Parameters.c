@@ -666,7 +666,7 @@ char *ParameterValString (const char *param_name,
 
 
 /*@@
-   @routine    ParameterWalk
+   @routine    CCTK_ParameterWalk
    @date       Tue Jun 29 10:30:21 1999
    @author     Tom Goodale
    @desc 
@@ -702,7 +702,7 @@ char *ParameterValString (const char *param_name,
    @endreturndesc
 
 @@*/
-const char *ParameterWalk(int first,
+const char *CCTK_ParameterWalk(int first,
                           const char *origin)
 {
   int             return_found;
@@ -721,7 +721,7 @@ const char *ParameterWalk(int first,
 
     if (startpoint == NULL)
     {
-      CCTK_Warn(2,__LINE__,__FILE__,"Cactus", "ParameterWalk: Cannot walk "
+      CCTK_Warn(2,__LINE__,__FILE__,"Cactus", "CCTK_ParameterWalk: Cannot walk "
                 "through parameter list without setting a startpoint at first");
       return NULL;
     }
