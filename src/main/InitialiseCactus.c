@@ -11,7 +11,10 @@
 
 #include "flesh.h"
 
-static char *rcsid = "$Id$";
+int ProcessCommandLine(int *inargc, char ***inargv, tFleshConfig *ConfigData);
+int ProcessEnvironment(int *argc, char ***argv,tFleshConfig *ConfigData);
+
+static char *rcsid = "$Header$";
 
 
  /*@@

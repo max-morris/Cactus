@@ -25,10 +25,17 @@ struct Coordprops
   int    direction;
 };
 
+int CCTK_RegisterCoord(const char *coordname, 
+		       const char *gfname, 
+		       int dir);
 
+int CCTK_RegisterCoord_ByIndex(const char *name, int index, int dir);
 
 #ifdef __cplusplus 
 }
 #endif
 
 #endif
+
+
+
