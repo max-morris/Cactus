@@ -2,12 +2,15 @@
 #  @file      CVSStatus.pl
 #  @date      Mon Mar  6 01:20:01 CET 2000
 #  @author    Gabrielle Allen
-#  @desc 
+#  @desc
 #     Processes output from cvs status and gives better messages
 #     Original version by Paul Walker
 #     $Header$
-#  @enddesc 
+#  @enddesc
 #@@*/
+
+use IO::Handle;
+STDOUT->autoflush(1);
 
 &writeheader();
 
@@ -24,7 +27,7 @@ while (<CS>) {
 	  $module = $1;
           if ($module ne $module_old) {
             print "\nRepository: $module\n";$module_old=$module;
-          }        
+          }
 	  # Get differences between versions
           if ($case =~ /diff/i)
 	  {
@@ -41,9 +44,9 @@ while (<CS>) {
 	}
 	$gotone = 0;
 	$module="";
-	$file = ""; 
-	$status = ""; 
-	$version=""; 
+	$file = "";
+	$status = "";
+	$version="";
 	$rversion="";
     }
     if (m/File: (\S+)/) {$file = $1;}
@@ -63,8 +66,8 @@ while (<CS>) {
 exit;
 
 format STDOUT =
-@<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< @<<<<<<<<<<<<<<< @<<<<<<</@<<<<<<<
-$file, $status, $version, $rversion
+   @<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<   @<<<<<<<<<<<<<<< @<<<<<<<</@<<<<<<<<
+substr("$dir/$file", -37), $status, $version, $rversion
 .
 
 
@@ -77,9 +80,9 @@ if ($case =~ /diff/)
 {
 print <<EOF;
 
-CVS Diff report 
+CVS Diff report
 
-File                                         Status          Local/Remote ver
+File                                       Status           Local   /Remote ver
 -------------------------------------------------------------------------------
 EOF
 }
@@ -87,9 +90,9 @@ else
 {
 print <<EOF;
 
-CVS Status report 
+CVS Status report
 
-File                                         Status          Local/Remote ver
+File                                       Status           Local   /Remote ver
 -------------------------------------------------------------------------------
 EOF
 }
