@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.75 2000-03-07 05:05:50 allen Exp $
+#   @version $Id: Makefile,v 1.76 2000-03-10 13:30:03 allen Exp $
 # @@*/
 
 ##################################################################################
@@ -30,6 +30,13 @@ CCTK_VERSION=$(CCTK_VERSION_MAJOR).$(CCTK_VERSION_MINOR).$(CCTK_VERSION_OTHER)
 ##################################################################################
 export CCTK_VERSION_MAJOR CCTK_VERSION_MINOR CCTK_VERSION_OTHER CCTK_VERSION
 ##################################################################################
+
+# Stop with prompts unless told not to
+ifeq ($strip $(PROMPT)), )
+PROMPT = "yes"
+endif
+
+export PROMPT
 
 # Make quietly unless told not to
 ifneq ($(strip $(SILENT)),no)
@@ -551,7 +558,11 @@ $(addsuffix -config,$(CONFIGURATIONS)):
 	cp $(THORNLIST_DIR)/$(THORNLIST) $(CONFIGS_DIR)/$(@:%-config=%)/ThornList;\
 	fi ; \
 	echo $(DIVIDER) ; \
+	if test "x$(PROMPT)" = "xno ; then \
+	gmake $(@:%-config=%); \
+	else \
 	echo Use $(MAKE) $(@:%-config=%) to build the configuration. ; \
+	fi; \
 	else \
 	echo "ThornList $(THORNLIST_DIR)/$(THORNLIST) does not exist" ; \
 	fi 
@@ -560,9 +571,11 @@ endif
 
 %-config:
 	@echo $(DIVIDER)
-	@echo Configuration $(@:%-config=%) does not exist.
-	echo Setup configuration $(@:%-config=%) \(yes\)?
-	read yesno rest ;\
+	@echo Configuration $(@:%-config=%) does not exist.; 
+	if test "x$(PROMPT)" = "xyes" ; then \
+	echo Setup configuration $(@:%-config=%) \(yes\)?; \
+	read yesno rest ; \
+	fi; \
 	if [ "x$$yesno" = "xno" -o "x$$yesno" = "xn" -o "x$$yesno" = "xNO" -o "x$$yesno" = "xN" ] ;\
 	then \
 	echo Setup cancelled ;     \
@@ -576,7 +589,11 @@ endif
 	cp $(THORNLIST_DIR)/$(THORNLIST) $(CONFIGS_DIR)/$(@:%-config=%)/ThornList;\
 	fi ;\
 	echo $(DIVIDER)   ;  \
+	if test "x$(PROMPT)" = "xno" ; then \
+	gmake $(@:%-config=%); \
+	else \
 	echo Use $(MAKE) $(@:%-config=%) to build the configuration.; \
+	fi; \
 	else \
 	echo "ThornList $(THORNLIST_DIR)/$(THORNLIST) does not exist" ; \
 	fi ; \
@@ -736,8 +753,10 @@ downsize:
 
 %::
 	@echo $(DIVIDER)
-	@echo Setup configuration $@ \(yes\)?
+	if test "x$(PROMPT)" = "xyes" ; then \
+	@echo Setup configuration $@ \(yes\)?; \
 	read yesno rest ; \
+	fi; \
 	if [ "x$$yesno" = "xno" -o "x$$yesno" = "xn" -o "x$$yesno" = "xNO" -o "x$$yesno" = "xN" ] ; \
 	then  \
 	echo Setup cancelled ; \
@@ -751,7 +770,11 @@ downsize:
 	cp $(THORNLIST_DIR)/$(THORNLIST) $(CONFIGS_DIR)/$@/ThornList ; \
 	fi ; \
 	echo $(DIVIDER) ;  \
+	if test "x$(PROMPT)" = "xno" ; then \
+	gmake $(@:%-config=%); \
+	else \
 	echo Use $(MAKE) $@ to build the configuration. ; \
+	fi; \
 	else \
 	echo "ThornList $(THORNLIST_DIR)/$(THORNLIST) does not exist" ; \
 	fi ; \
