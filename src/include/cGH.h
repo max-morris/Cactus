@@ -21,37 +21,41 @@ typedef struct
 
 typedef struct
 {
-  int dim;
-  int iteration;
+  int cctk_dim;
+  int cctk_iteration;
 
   /* ...[dim]*/
-  int *global_shape;
-  int *local_shape;
-  int *lower_bound;
-  int *upper_bound;
+  int *cctk_gsh;
+  int *cctk_lsh;
+  int *cctk_lbnd;
+  int *cctk_ubnd;
+  
+  /* The physical domain */
+  int *cctk_from;
+  int *cctk_to;
 
   /* The grid spacings */
-  CCTK_REAL delta_time;
-  CCTK_REAL *delta_space;
+  CCTK_REAL cctk_delta_time;
+  CCTK_REAL *cctk_delta_space;
 
   /* FIXME we want coordinate registration instead of this */
-  CCTK_REAL *origin_space;
+  CCTK_REAL *cctk_origin_space;
 
   /* The bounding box - 1 => a real boundary, 0 => a local grid boundary. */
   /* bbox[2*dim] */
-  int *bbox;
+  int *cctk_bbox;
 
   /* The refinement factor over the top level (coarsest) grid. */
-  int levfac;
+  int *cctk_levfac;
 
   /* The convergence level */
-  int convlevel;
+  int cctk_convlevel;
 
   /* The number of ghostzones in each direction */
-  int nghostzones;
+  int *cctk_nghostzones;
 
   /* The coordinate time */
-  CCTK_REAL time;
+  CCTK_REAL cctk_time;
 
   /* data[var_num][TIMELEVEL][xyz]*/
   /* TIMELEVEL  I believe, xyz is linear */
