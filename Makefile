@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.101 2000-12-11 18:22:10 goodale Exp $
+#   @version $Id: Makefile,v 1.102 2000-12-13 12:04:59 goodale Exp $
 # @@*/
 
 ##################################################################################
@@ -248,8 +248,10 @@ TAGS:
 	@echo $(DIVIDER)
 	@echo Updating the Emacs TAGS file
 	rm -f TAGS ; touch TAGS 
-	find src arrangements \( -name '*.[chCF]' -o -name '*.F77' -o -name '*.cc' -o -name '*.[ch]pp' \) \
-          -exec etags -a {} \;
+	find src arrangements \( \
+	  -name '*.[chCfF]' -o -name '*.[fF]77' -o -name '*.[fF]90'\
+	  -o -name '*.cc' -o -name '*.cxx' -o -name '*.hh' -o -name '*.[ch]pp' \
+	  \) -print |  xargs etags -a 
 #	find src arrangements \( -name '*.[cChF]' -o -name '*.F77' -o -name '*.cc'\) \
 #          -exec etags --append --regex '/[a-z A-Z \t]*FORTRAN_NAME[^)]*/' {} \;
 	$(PERL) -pi -e 's/(subroutine\s*)([a-zA-Z0-9_]+)/\1\L\2/g;' TAGS
@@ -259,8 +261,10 @@ tags:
 	@echo $(DIVIDER)
 	@echo Updating the vi tags file
 	rm -f tags ; touch tags 
-	find src arrangements \( -name '*.[cChF]' -o -name '*.F77' -o -name '*.cc' -o -name '*.[ch]pp' \) \
-          -exec ctags -a {} \;
+	find src arrangements \( \
+	  -name '*.[chCfF]' -o -name '*.[fF]77' -o -name '*.[fF]90'\
+	  -o -name '*.cc' -o -name '*.cxx' -o -name '*.hh' -o -name '*.[ch]pp' \
+	  \) -print |  xargs ctags -a 
 	$(PERL) -pi -e 's/(subroutine\s*)([a-zA-Z0-9_]+)/\1\L\2/g;' tags
 	sort tags > sortedtags ; mv sortedtags tags
 	@echo $(DIVIDER)
