@@ -642,10 +642,29 @@ int CCTK_CoordRange(cGH *GH,
   int i;
   int retval=0;
   struct Coordpropslist *curr;
-  struct Coordsystem    *data=NULL;
-  struct Coordprops      coord;
+  struct Coordsystem    *data;
+  struct Coordprops     *coord;
 
-  if (CoordSystemHash)
+
+  if (lower == NULL || upper == NULL)
+  {
+    CCTK_Warn (2, __LINE__, __FILE__, "Cactus",
+               "CCTK_CoordRange: NULL pointer(s) passed for lower/upper");
+    retval = -1;
+  }
+  else if (coorddir <= 0 && coordname == NULL)
+  {
+    CCTK_Warn (2, __LINE__, __FILE__, "Cactus",
+               "CCTK_CoordRange: No coordinate name given");
+    retval = -2;
+  }
+  else if (systemname == NULL)
+  {
+    CCTK_Warn (2, __LINE__, __FILE__, "Cactus",
+               "CCTK_CoordRange: No coordinate system name given");
+    retval = -3;
+  }
+  else if (CoordSystemHash)
   {
     data = (struct Coordsystem *)Util_HashData(CoordSystemHash, 
                                                strlen(systemname),
@@ -656,54 +675,66 @@ int CCTK_CoordRange(cGH *GH,
     {
       if (coorddir>0)
       {
-        coord = data->coords[coorddir-1];
+        coord = &data->coords[coorddir-1];
       }
       else
       {
+        coord = NULL;
         for (i=0;i<data->dimension;i++)
         {
           if (CCTK_Equals(data->coords[i].name,coordname))
           {
-            coord = data->coords[i];
+            coord = &data->coords[i];
+            break;
           }
         }
-      }
-      for (curr=coord.list;curr;curr=coord.list->next)
-      {
-
-#ifdef DEBUG_COORD
-        printf("curr  = %x\n",curr);
-        printf("lower = %f\n",curr->lower);
-        printf("upper = %f\n",curr->upper);
-        printf("next  = %x\n",coord.list->next);
-#endif
-      
-        if (curr->GH == GH)
+        if (coord == NULL)
         {
-          *lower = curr->lower;
-          *upper = curr->upper;
+          CCTK_VWarn(2, __LINE__, __FILE__, "Cactus",
+                     "CCTK_CoordRange: Coordinate name '%s' not registered",
+                     coordname);
+          retval = -4;
+        }
+      }
+      if (coord)
+      {
+        for (curr=coord->list;curr;curr=curr->next)
+        {
 
 #ifdef DEBUG_COORD
-          printf("Returning range (%f,%f) (from %x)\n",
-                 *lower,*upper,curr);
+          printf("curr  = %p\n",curr);
+          printf("lower = %f\n",curr->lower);
+          printf("upper = %f\n",curr->upper);
+          printf("next  = %p\n",curr->next);
 #endif
+
+          if (curr->GH == GH)
+          {
+            *lower = curr->lower;
+            *upper = curr->upper;
+
+#ifdef DEBUG_COORD
+            printf("Returning range (%f,%f) (from %p)\n", *lower,*upper,curr);
+#endif
+          }
         }
       }
     }
     else
     {
-      CCTK_VWarn(2,__LINE__,__FILE__,"Cactus",
-                "CCTK_CoordRange: Coordinate system %s not registered",
+      CCTK_VWarn(2, __LINE__, __FILE__, "Cactus",
+                 "CCTK_CoordRange: Coordinate system '%s' not registered",
                  systemname);
-      retval = -2;
+      retval = -5;
     }
   }
   else
   {
-    CCTK_Warn(2,__LINE__,__FILE__,"Cactus",
+    CCTK_Warn(2, __LINE__, __FILE__, "Cactus",
               "CCTK_CoordRange: No coordinate systems registered");
-    retval = -1;
+    retval = -6;
   }
+
   return retval;
 }
 
