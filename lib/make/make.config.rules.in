@@ -9,6 +9,10 @@
 #   deals with directories in the target names, this will
 #   not work if the target is in a subdirectory.
 #
+#   In order to accomodate Fortran 90 modules, the working directory
+#   for each compilation is set to a scratch directory, so that
+#   all module files end up there.  
+#   
 #   @enddesc 
 # @@*/
 
