@@ -112,14 +112,22 @@ sub CreateImplementationBindings
     push(@data, "    0,");
     push(@data, "  };\n");
 
-    push(@data, "\n  struct iAttributeList attributes[] =");
-    push(@data, "  {");
-    push(@data, "    {\"name\",          {name}},");
-    push(@data, "    {\"implementation\",{implementation}},");
-    push(@data, "    {\"ancestors\",{ancestors}},");
-    push(@data, "    {\"friends\",{friends}},");
-    push(@data, "    {0,{0}},");
-    push(@data, "  };\n");
+    push(@data, "  /* Should be able to do below with a constant initialiser but sr8000 compiler complains");
+    push(@data, "   * So have to laboriously assign values to each member of array.");
+    push(@data, "   */");
+    push(@data, "  struct iAttributeList attributes[5];");
+    push(@data, "");
+    push(@data, "  attributes[0].attribute =              \"name\";");
+    push(@data, "  attributes[0].AttributeData.StringList = name;");
+    push(@data, "  attributes[1].attribute =              \"implementation\";");
+    push(@data, "  attributes[1].AttributeData.StringList = implementation;");
+    push(@data, "  attributes[2].attribute =              \"ancestors\";");
+    push(@data, "  attributes[2].AttributeData.StringList = ancestors;");
+    push(@data, "  attributes[3].attribute =              \"friends\";");
+    push(@data, "  attributes[3].AttributeData.StringList = friends;");
+    push(@data, "  attributes[4].attribute =                0;");
+    push(@data, "  attributes[4].AttributeData.StringList = 0;");
+    push(@data, "\n");
 
     push(@data, "  retval = CCTKi_RegisterThorn(attributes);");
 
