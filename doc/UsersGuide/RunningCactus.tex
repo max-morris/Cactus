@@ -480,7 +480,7 @@ Supported values are YES
 {\tt MPI} (the {\it Message Passing Interface}) can provides inter-processor 
 communication. It can either be implemented natively on a machine
 (this is usual on most supercomputers), or through a standard package
-such as {\tt MPICH}, {\tt MPICH-G}, {\tt LAM}, or {WMPI}.  
+such as {\tt MPICH}, {\tt MPICH-G}, {\tt LAM}, {WMPI}, or {PACX}.  
 
 To compile with MPI, the configure option is
 \newline
@@ -535,6 +535,16 @@ controlled by the variable
 Use WMPI (Win32 Message Passing Interface, {\tt http://dsg.dei.uc.pt/w32mpi/intro.html}). This is controlled by the variable
   \begin{Lentry}
   \item[{\tt WMPI\_DIR} *] directory in which {\tt WMPI} is installed.
+  \end{Lentry}
+
+\item[{\tt PACX}] 
+Use the PACX Metacomputing package (PArallel Computer eXtension,\\
+{\tt http://www.hlrs.de/structure/organisation/par/projects/pacx-mpi/}). This is controlled by the variables
+  \begin{Lentry}
+  \item[{\tt PACX\_DIR} *] directory in which {\tt PACX} is installed.
+        If this option is not defined it will be searched for.
+  \item[{\tt PACX\_MPI} *] the MPI package {\tt PACX} uses for node-local
+        communication. This can be any of the above MPI packages.
   \end{Lentry}
 
 \end{Lentry}
