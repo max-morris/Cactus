@@ -6,7 +6,7 @@
 #   @desc
 #            Known architecture stuff for MacOS X (Darwin)
 #   @enddesc
-#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/darwin,v 1.10 2004-03-29 05:36:49 goodale Exp $
+#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/darwin,v 1.11 2004-03-30 00:07:46 goodale Exp $
 # @@*/
 
 if test "$CCTK_CONFIG_STAGE" = 'preferred-compilers' ; then
@@ -49,8 +49,6 @@ else
       CPP_VERSION_MINOR="`echo $CPP_VERSION | sed 's:\([^. ]*\)\.\([^. ]*\).*:\2:'`"
   fi
 
-  # this fixes some darwin-specific preprocessor bugs (?)
-  CFLAGS='-no-cpp-precomp'
   # C_DEPEND='$(CC) -M $(CFLAGS) $(CPPFLAGS)'
   if test -e '/usr/lib/gcc/darwin/3.3' ; then
     C_DEPEND='gcc -M -no-cpp-precomp $(CPPFLAGS)'
@@ -59,20 +57,47 @@ else
     C_DEPEND='$(PERL) $(CCTK_HOME)/lib/sbin/cpp.pl -M $(CPPFLAGS)'
     CXX_DEPEND='$(PERL) $(CCTK_HOME)/lib/sbin/cpp.pl -M $(CPPFLAGS)'
   fi
+
+  if test "`$CC -version 2>&1 | head -1 | grep -i gcc`" ; then
+      MAC_C_COMP=gcc
+  elif test "`$CC -version 2>&1 | grep xlc`" ; then
+      MAC_C_COMP=ibm
+  else
+      MAC_C_COMP=unknown
+  fi
+
+  if test "`$CXX -version 2>&1 | head -1 | grep -i gcc`" ; then
+      MAC_CXX_COMP=gcc
+  elif test "`$CXX -version 2>&1 | grep xlc`" ; then
+      MAC_CXX_COMP=ibm
+  else
+      MAC_CXX_COMP=unknown
+  fi
+
   # Determine which Fortran 90 compiler is in use
   MAC_F90_COMP=none
-
   if test -n "$F90" && test "$F90" != 'none' ; then
     if test "`$F90 -version 2>&1 | grep xlf`" ; then
 	MAC_F90_COMP=ibm
     elif test "`$F90 -? 2>&1 | grep -i absoft`" ; then
 	MAC_F90_COMP=absoft
     else
-        echo Unknown MacOS X f90 compiler.
-        echo Please add appropriate information to
-        echo $srcdir/known-architectures/darwin
-        echo and send the updated file to CactusMaint
-        echo We will try anyway ...
+      # Ok, those were the easy ones, now try more
+      # obscure things
+
+      echo "      subroutine foo" > foo.f
+      echo "      end subroutine foo" >> foo.f
+
+      if test "`/opt/absoft/bin/f95 -V foo.f 2>&1 | grep -i absoft`" ; then
+        MAC_F90_COMP=absoft
+      else
+	echo Unknown MacOS X f90 compiler.
+	echo Please add appropriate information to
+	echo $srcdir/known-architectures/darwin
+	echo and send the updated file to CactusMaint
+	echo We will try anyway ...
+      fi
+      rm foo.f
     fi
   elif test -n "$F77" ; then
     if test "`$F77 -version 2>&1 | grep xlf`" ; then
@@ -88,20 +113,41 @@ else
     fi
   fi
 
-  #Set the appropriate flags
+  # Set the appropriate flags for C
+ 
+  case "$MAC_C_COMP" in
+      gcc)
+      : ${CFLAGS="-no-cpp-precomp"}
+      ;;
+      *)
+      :
+      ;;
+  esac
+
+  case "$MAC_CXX_COMP" in
+      gcc)
+      : ${CXXFLAGS="-no-cpp-precomp"}
+      ;;
+      *)
+      :
+      ;;
+  esac  
+
+  #Set the appropriate flags for Fortran
   case "$MAC_F90_COMP" in
     absoft)
       : ${LIBS='f90math fio f77math m'}
+      : ${F90FLAGS='-N11'}
+      : ${F77FLAGS='-N11'}
       : ${F90_OPTIMISE_FLAGS='-s -O'}
       : ${F77_OPTIMISE_FLAGS='-s -O'}
-      # Test if it is a version of the absoft compiler which has the library in a custom place.
-      if test -n "$ABSOFT" ; then
-        : ${LIBDIRS='$(ABSOFT)/lib'}
-      fi
       : ${F77_DEBUG_FLAGS='-g'}
       : ${F90_DEBUG_FLAGS='-g'}
       : ${F77_WARN_FLAGS='-m0'}
       : ${F90_WARN_FLAGS='-m0'}
+      if test -z "$LIBDIRS" ; then
+	  LIBDIRS="`which $F90 | sed 's,/bin/.*,/lib,'`"
+      fi
       ;;
     absoft77)
       : ${LIBS='fio f77math m'}
