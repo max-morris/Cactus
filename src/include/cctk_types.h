@@ -18,6 +18,40 @@
 #include "config.h"
 #endif
 
+/* Define stuff for C. */
+#ifdef CCODE
+
+/* Structures for complex types */
+
+#ifdef CCTK_REAL16
+typedef struct
+{
+  CCTK_REAL16 Re;
+  CCTK_REAL16 Im;
+} CCTK_COMPLEX16;
+#endif
+
+#ifdef CCTK_REAL8
+typedef struct
+{
+  CCTK_REAL8 Re;
+  CCTK_REAL8 Im;
+} CCTK_COMPLEX8;
+#endif
+
+#ifdef CCTK_REAL4
+typedef struct
+{
+  CCTK_REAL4 Re;
+  CCTK_REAL4 Im;
+} CCTK_COMPLEX4;
+#endif
+
+/* Character type */
+typedef unsigned char CCTK_CHAR;
+
+#endif /* CCODE */
+
 /* Define stuff for fortran. */
 #ifdef FCODE
 
@@ -33,20 +67,26 @@
 #define CCTK_INT4 INTEGER*4
 #define CCTK_INT2 INTEGER*2
 
+#define CCTK_COMPLEX16 COMPLEX*16
+#define CCTK_COMPLEX8  COMPLEX*8
+#define CCTK_COMPLEX4  COMPLEX*4
+
+#define CCTK_CHAR CHARACTER
+
 #endif /*FCODE */
 
 /* Now pick the types based upon the precision variable. */
 
 /* Floating point precision */
-#ifdef CCTK_PRECISION_QUAD
+#ifdef CCTK_REAL_PRECISION_16
 #define CCTK_REAL CCTK_REAL16
 #endif
 
-#ifdef CCTK_PRECISION_DOUBLE
+#ifdef CCTK_REAL_PRECISION_8
 #define CCTK_REAL CCTK_REAL8
 #endif
 
-#ifdef CCTK_PRECISION_SINGLE
+#ifdef CCTK_REAL_PRECISION_4
 #define CCTK_REAL CCTK_REAL4
 #endif
 
@@ -62,6 +102,19 @@
 
 #ifdef CCTK_INTEGER_PRECISION_2
 #define CCTK_INT CCTK_INT2
+#endif
+
+/* Complex precision */
+#ifdef CCTK_REAL_PRECISION_16
+#define CCTK_COMPLEX CCTK_COMPLEX16
+#endif
+
+#ifdef CCTK_REAL_PRECISION_8
+#define CCTK_COMPLEX CCTK_COMPLEX8
+#endif
+
+#ifdef CCTK_REAL_PRECISION_4
+#define CCTK_COMPLEX CCTK_COMPLEX4
 #endif
 
 #endif /*_CCTK_TYPES_H_ */

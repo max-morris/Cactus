@@ -41,9 +41,9 @@
 /* The chosen CCTK precision */
 
 /* Floating point precision */
-#undef CCTK_PRECISION_QUAD
-#undef CCTK_PRECISION_DOUBLE
-#undef CCTK_PRECISION_SINGLE
+#undef CCTK_REAL_PRECISION_16
+#undef CCTK_REAL_PRECISION_8
+#undef CCTK_REAL_PRECISION_4
 
 /* Integer precision */
 #undef CCTK_INTEGER_PRECISION_8

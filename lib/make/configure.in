@@ -158,10 +158,6 @@ AC_SUBST(EXE)
 
 # Integer types
 
-CCTK_INT8="no 8 byte integer"
-CCTK_INT4="no 4 byte integer"
-CCTK_INT2="no 2 byte integer"
-
 case "x$ac_cv_sizeof_long_int" in
     "x8")
       CCTK_INT8="long int" ;;
@@ -189,15 +185,19 @@ case "x$ac_cv_sizeof_short_int" in
       CCTK_INT2="short int" ;;
 esac
 
+if test -n  "$CCTK_INT8" ; then
 AC_DEFINE_UNQUOTED(CCTK_INT8, $CCTK_INT8)
+fi
+
+if test -n  "$CCTK_INT4" ; then
 AC_DEFINE_UNQUOTED(CCTK_INT4, $CCTK_INT4)
+fi
+
+if test -n  "$CCTK_INT2" ; then
 AC_DEFINE_UNQUOTED(CCTK_INT2, $CCTK_INT2)
+fi
 
 # Float types
-
-CCTK_REAL16="no 16 byte real"
-CCTK_REAL8="no 8 byte real"
-CCTK_REAL4="no 4 byte real"
 
 case "x$ac_cv_sizeof_long_double" in
     "x16")
@@ -226,20 +226,29 @@ case "x$ac_cv_sizeof_float" in
       CCTK_REAL4="float" ;;
 esac
 
+if test -n  "$CCTK_REAL16" ; then
 AC_DEFINE_UNQUOTED(CCTK_REAL16, $CCTK_REAL16)
+fi
+
+if test -n  "$CCTK_REAL8" ; then
 AC_DEFINE_UNQUOTED(CCTK_REAL8, $CCTK_REAL8)
+fi
+
+if test -n  "$CCTK_REAL4" ; then
 AC_DEFINE_UNQUOTED(CCTK_REAL4, $CCTK_REAL4)
+fi
+
 
 # Define the default floating point and integer precisions
-case "x$PRECISION" in
-    "xQUAD")
-	AC_DEFINE_UNQUOTED(CCTK_PRECISION_QUAD, 1) ;;
-    "xDOUBLE")
-	AC_DEFINE_UNQUOTED(CCTK_PRECISION_DOUBLE, 1) ;;
-    "xSINGLE")
-	AC_DEFINE_UNQUOTED(CCTK_PRECISION_SINGLE, 1) ;;
+case "x$REAL_PRECISION" in
+    "x16")
+	AC_DEFINE_UNQUOTED(CCTK_REAL_PRECISION_16, 1) ;;
+    "x8")
+	AC_DEFINE_UNQUOTED(CCTK_REAL_PRECISION_8, 1) ;;
+    "x4")
+	AC_DEFINE_UNQUOTED(CCTK_REAL_PRECISION_4, 1) ;;
     *)
-	AC_DEFINE_UNQUOTED(CCTK_PRECISION_DOUBLE, 1) ;;
+	AC_DEFINE_UNQUOTED(CCTK_REAL_PRECISION_8, 1) ;;
 esac
 
 case "x$INTEGER_PRECISION" in

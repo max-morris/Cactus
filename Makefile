@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.27 1999-06-22 09:09:02 goodale Exp $
+#   @version $Id: Makefile,v 1.28 1999-06-22 11:00:05 goodale Exp $
 # @@*/
 
 # Make quietly unless told not to
@@ -99,9 +99,9 @@ SETUP_ENV += LDFLAGS=$(LDFLAGS) ; export LDFLAGS ;
 endif
 endif
 
-ifdef PRECISION
-ifneq ($(strip $(origin PRECISION)), default)
-SETUP_ENV += PRECISION=$(PRECISION) ; export PRECISION ;
+ifdef REAL_PRECISION
+ifneq ($(strip $(origin REAL_PRECISION)), default)
+SETUP_ENV += REAL_PRECISION=$(REAL_PRECISION) ; export REAL_PRECISION ;
 endif
 endif
 
