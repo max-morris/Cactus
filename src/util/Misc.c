@@ -53,6 +53,8 @@ int CCTK_FCALL CCTK_FNAME(CCTK_Equals)
 
 CCTK_POINTER CCTK_FCALL CCTK_FNAME(CCTK_PointerTo)
                                   (CCTK_POINTER var);
+CCTK_POINTER CCTK_FCALL CCTK_FNAME(CCTK_NULLPointer)
+                                  (void);
 
 void CCTK_FCALL CCTK_FNAME(CCTK_PrintString)
                           (const char **arg1);
@@ -170,6 +172,25 @@ int CCTK_FCALL CCTK_FNAME(CCTK_Equals)
 CCTK_POINTER CCTK_FCALL CCTK_FNAME (CCTK_PointerTo) (CCTK_POINTER var)
 {
   return (var);
+}
+
+ /*@@
+   @routine    CCTK_NULLPointer
+   @date       Wed 12 Feb 2003
+   @author     Thomas Radke
+   @desc
+               Returns a NULL pointer to be used for the initialization of
+               CCTK_POINTER variables in the calling fortran routine.
+   @enddesc
+
+   @returntype CCTK_POINTER
+   @returndesc
+               a C NULL pointer
+   @endreturndesc
+@@*/
+CCTK_POINTER CCTK_FCALL CCTK_FNAME (CCTK_NULLPointer) (void)
+{
+  return (NULL);
 }
 
  /*@@
