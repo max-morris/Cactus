@@ -1930,7 +1930,7 @@ without terminating, and warning messages should be liberally
 used.
       
 
-\subsection{Adding Parallelisation}
+\section{Adding Parallelisation}
 \label{seap}
 
 The flesh itself does not actually set up grid variables. This 
@@ -1961,7 +1961,7 @@ is a parallel unigrid driver.
   before proceeding
 \end{Lentry}
 
-\subsection{Building Include Files}
+\section{Building Include Files}
 
 Cactus provides a mechanism for thorns to add code to 
 include files which can be used by any other thorn.
@@ -2042,7 +2042,7 @@ The Flesh and the Cactus thorns use {\tt grdoc} to document the code.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Coordinates}
+\section{Coordinates}
 \label{sec:co}
 
 The flesh provides utility routines for registering and querying coordinate 
@@ -2124,7 +2124,7 @@ Provides the local range of a coordinate on a processor for
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{IO}
+\section{IO}
 \label{sec:io}
 
 To allow flexible IO, the flesh itself does not provide 
@@ -2186,7 +2186,7 @@ of constructing a filename.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Interpolation Operators}
+\section{Interpolation Operators}
 \label{sec:inop}
 
 The flesh does not provide interpolation routines by itself. Instead it offers
@@ -2233,7 +2233,7 @@ The flesh routines for invoking an interpolation operator are:
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Reduction Operators}
+\section{Reduction Operators}
 \label{sec:reop}
 
 A reduction operation can be defined as an operation on variables
@@ -2618,7 +2618,7 @@ the reduction call is made.
 \section{Calls between different programming languages}
 \label{sec:cabedipr}
 
-\subsection{Calling C routines from FORTRAN}
+\section{Calling C routines from FORTRAN}
 \label{sec:cacrofr}
 
 For a C routine to be called from Fortran, the C routine must be
@@ -2657,45 +2657,73 @@ void CCTK_FCALL CCTK_FNAME(MyCRoutine)(CCTK_INT *arg1,
 }
 \end{verbatim}
 
-\subsubsection{String Arguments from Fortran}
+\subsection{String Arguments from Fortran}
 
 Fortran passes string arguments in a special, compiler-dependent, way.
 To facilitate this, the CCTK provides a set of macros to enable the
 translation to C strings.
+The macros are defined in {\tt cctk\_FortranString.h} which
+should be included in your C file.
 
 String arguments {\em must always come last} in the argument list for
 these macros to be effective (some Fortran compilers automatically
 migrate the strings to the end so there is no portable workaround).
 
-The macros are contained defined in {\tt cctk\_FortranString.h} which
-should be included in your C file.
+The macros to use depends upon the number of string arguments -- we
+currently support up to three.  The macros are 
+{\tt <ONE|TWO|THREE>\_FORTSTRING\_ARG}.  
+Corresponding to each of these are two macros 
+{\tt <ONE|TWO|THREE>\_FORTSTRING\_CREATE} and 
+{\tt <ONE|TWO|THREE>\_FORTSTRING\_PTR} 
+which take one,two,or three arguments depending on the number of strings.  
+The latter set is only necessary if a string is to be modified. 
+In more detail:
 
-The macro to use depends upon the number of string arguments -- we
-currently support up to three.  The macros are {\tt
-ONE\_FORTSTRING\_ARG}, {\tt TWO\_FORTSTRING\_ARGS} and {\tt
-THREE\_FORTSTRING\_ARGS}.  Corresponding to each of these are two macros 
-{\tt <ONE|TWO|THREE>\_FORTSTRING\[S\]\_CREATE} and {\tt
-<ONE|TWO|THREE>\_FORTSTRING\_PTR} which take one,two,or three arguments 
-depending on the number of strings.  The latter set is only necessary
-if the string is to be modified.
+\begin{Lentry}
 
-The use of the macros is probably best explained with an example.  For 
-read-only access to the strings, 
+\item[{\tt <ONE|TWO|THREE>\_FORTSTRING\_ARG}]
+	Used in the argument list of the C routine to which the Fortran
+	strings are passed. 
+
+\item[{\tt <ONE|TWO|THREE>\_FORTSTRING\_CREATE}]
+	Used in the declaration section of the C routine to which the Fortran
+	strings are passed. These macros have one, two or three arguments 
+	which are the variable names you choose to use for the strings in 
+	the C routine, created
+	by null-terminating the passed-in Fortran strings. The {\tt CREATE}
+	macros create new strings with the names you provide, and thus should 
+	be treated as read-only and freed after use.
+
+\item[{\tt <ONE|TWO|THREE>\_FORTSTRING\_PTR}]
+	These macros, used in the declaration section of the C routine 
+	{\em after} the {\tt CREATE} macro,
+	should be used if you need to modify one of the passed-in strings.
+	They declare and define pointers to the passed-in strings.
+	
+\item[{\tt cctk_strlen<1|2|3>}] these integer variables, 
+	automatically defined by
+	the {\tt CREATE} macro, hold the lengths of the passed in 
+	Fortran strings.
+\end{Lentry}
+
+The use of the macros is probably best explained with examples.
+For read-only access to the strings, only the first two macros are needed,
+the following example compares two strings passed in from Fortran. 
 
 \begin{verbatim}
 #include <stdlib.h>
 #include <string.h>
 #include <cctk_FortranString.h>
 
-int CCTK_FCALL CCTK_FNAME(CompareStrings)(TWO_FORTSTRING_ARGS)
+int CCTK_FCALL CCTK_FNAME(CompareStrings)(TWO_FORTSTRING_ARG)
 {
   int retval;
 
   /* Allocate and create C strings with \0 at end. */
   /* This makes variable declarations so must be before
-   * any executable statements.
-   */
-  TWO_FORTSTRINGS_CREATE(arg1,arg2)
+     any executable statements.*/
+
+  TWO_FORTSTRING_CREATE(arg1,arg2)
 
   /* Do some work with the strings */
   retval = strcmp(arg1,arg2);
@@ -2709,30 +2737,30 @@ int CCTK_FCALL CCTK_FNAME(CompareStrings)(TWO_FORTSTRING_ARGS)
 
 \end{verbatim}
 
-Note that the macros allocate memory for the C strings, so the strings 
-must be freed afterwards.  Also the macros create new variables, so
-must appear before in a variable declaration block.
-
 Since the null terminated strings may be copies of the strings passed
 from Fortran, they should be treated as read-only.
 
 To change the data in a string passed from Fortran, you need to use
-the second set of macros, e.g.
+the {\tt FORTSTRING\_PTR} macros, which declare and set up pointers 
+to the strings passed from C. Note that this macro must be used 
+{\em after} the {\tt FORTSTRING\_CREATE} macro. For example, the 
+following routine copies the contents of the second string to the 
+first string. 
 
 \begin{verbatim}
 #include <stdlib.h>
 #include <string.h>
 #include <cctk_FortranString.h>
 
-int CCTK_FCALL CCTK_FNAME(CopyStrings)(TWO_FORTSTRING_ARGS)
+int CCTK_FCALL CCTK_FNAME(CopyStrings)(TWO_FORTSTRING_ARG)
 {
   int retval;
 
   /* Allocate and create C strings with \0 at end. */
   /* This makes variable declarations so must be before
-   * any executable statements.
-   */
-  TWO_FORTSTRINGS_CREATE(arg1,arg2)
+     any executable statements. */
+
+  TWO_FORTSTRING_CREATE(arg1,arg2)
   TWO_FORTSTRING_PTR(farg1,farg2)
 
   /* Do some work with the strings */
@@ -2751,9 +2779,9 @@ int CCTK_FCALL CCTK_FNAME(CopyStrings)(TWO_FORTSTRING_ARGS)
 Note that in the example above two new variables, pointers to the
 Fortran strings, were created.  These are just pointers and {\em
 should not be freed}.  The example also illustrates the
-automatically-created variables which hold the sizes of original
-Fortran strings.  When writing to a string its length should never be
-exceeded.
+automatically-created variables (e.g. {\tt cctk\_strlen1} 
+which hold the sizes of original Fortran strings.  
+When writing to a string its length should never be exceeded.
 
 \subsection{Calling FORTRAN routines from C}
 \label{sec:caforofr}
