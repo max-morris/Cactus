@@ -86,6 +86,7 @@
 #include "cctk_Complex.h"
 #include "cctk_File.h"
 #include "cctk_Flesh.h"
+#include "cctk_FunctionAliases.h"
 #include "cctk_GHExtensions.h"
 #include "cctk_Groups.h"
 #include "cctk_GroupsOnGH.h"

@@ -6,7 +6,7 @@
 #  @desc 
 #  Parses the the configuration files for thorns.
 #  @enddesc 
-#  @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.39 2000-09-17 09:45:45 allen Exp $
+#  @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.40 2001-02-24 17:31:08 allen Exp $
 #@@*/
 
 # Global parameter to track the number of errors from the CST
@@ -76,6 +76,7 @@ require "$sbin_dir/CSTUtils.pl";
 require "$sbin_dir/CreateParameterBindings.pl";
 require "$sbin_dir/CreateImplementationBindings.pl";
 require "$sbin_dir/CreateScheduleBindings.pl";
+require "$sbin_dir/CreateFunctionBindings.pl";
 require "$sbin_dir/BuildHeaders.pl";
 
 #######################################################################
@@ -538,12 +539,14 @@ sub CreateBindings
   &CreateVariableBindings($bindings_dir, $rhinterface_db);
   print "   Creating schedule bindings...\n";
   &CreateScheduleBindings($bindings_dir, $rhinterface_db, $rhschedule_db);
+  print "   Creating function bindings...\n";
+  &CreateFunctionBindings($bindings_dir, $rhinterface_db);
 
   # Place an appropriate make.code.defn in the bindings directory.
   chdir $bindings_dir;
 
   $dataout  = "SRCS = \n";
-  $dataout .= "SUBDIRS = Implementations Parameters Variables Schedule\n";
+  $dataout .= "SUBDIRS = Functions Implementations Parameters Variables Schedule\n";
   &WriteFile("make.code.defn",\$dataout);
     
   # Go back to where we started.

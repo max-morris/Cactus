@@ -60,10 +60,10 @@ int CCTKi_InitialiseSubsystemDefaults(void)
   CCTKi_SetupMainFunctions();
   CCTKi_SetupCommFunctions();
   CCTKi_SetupIOFunctions();
-
+  CCTKBindings_SetupThornFunctions();
   CCTKi_BindingsImplementationsInitialise();
   CCTKi_BindingsParametersInitialise();
-
+  
   return 0;
 }
 

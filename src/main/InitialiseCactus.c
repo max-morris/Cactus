@@ -117,6 +117,8 @@ int CCTKi_InitialiseCactus(int *argc, char ***argv, tFleshConfig *ConfigData)
 
   CCTKi_BindingsVariablesInitialise();
 
+  CCTKBindings_RegisterThornFunctions();
+
   CCTKi_InitialiseScheduler(ConfigData);
 
   CCTKi_CallStartupFunctions(ConfigData);
