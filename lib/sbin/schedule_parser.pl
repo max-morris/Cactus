@@ -323,8 +323,7 @@ sub parse_schedule_ccl
         foreach $group (@list) 
         {
 	  # Strip of any spaces 
-	  $group =~ /^\s*(.*)\s*$/;
-	  $group = $1;
+	  $group =~ s/ //g;
 
 	  $this_imp = $implementation;
 	  $this_group = $group;
@@ -416,6 +415,13 @@ sub find_schedule_block
   $line =~ m/\s*schedule\s*(\w*)\s*at\s*(\w*)/i;
   $routine = $1;
   $rfr_entry = $2;
+ 
+  # Allow entry point with or without the CCTK_
+  if ($rfr_entry !~ /CCTK_/)
+  {
+    $rfr_entry = "CCTK_".$rfr_entry;
+  }
+
   for ($i=$line_number+1; $i<@data; $i++)
   {
     $line = @data[$i];
@@ -564,7 +570,7 @@ sub parse_schedule_at_RFR {
 
 	$out .= "  index = CCTK_GroupIndex(\"$use_imp\:\:$this_group\");\n";
 	$out .= "  if (index < 0) {\n";
-	$out .= "    printf(\"CCTK_GroupIndex(\\\"$use_imp\:\:$this_group\\\") failed in ".$thorn."_rfr.c\\n\");\n";
+	$out .= "    CCTK_WARN(0,\"CCTK_GroupIndex(\\\"$use_imp\:\:$this_group\\\") failed in $thorn rfr file\\n\");\n";
         $out .= "  } else {\n"; 
 	$out .= "    rfrRegisterStorage(GH->rfr_top,GH,$routine,index);\n";
         $out .= "  }\n";
@@ -586,6 +592,7 @@ sub parse_schedule_at_RFR {
 	$group =~ /^\s*(.*)\s*$/;
 	$group = $1;
 
+	# Take of implementation if it is there
 	$this_imp = $implementation;
 	$this_group = $group;
 	if ($group =~ /(.*)::(.*)/)
@@ -593,9 +600,19 @@ sub parse_schedule_at_RFR {
 	  $this_imp = $1;
 	  $this_group = $2;
 	}
-	$out .= "  index = CCTK_GroupIndex(\"$this_imp\:\:$this_group\");\n";
+
+	if ($privategroups =~ /\b$this_group\b/)
+	{
+	  $use_imp = $thorn;
+	}
+	else
+	{
+	  $use_imp = $this_imp;
+	}
+
+	$out .= "  index = CCTK_GroupIndex(\"$use_imp\:\:$this_group\");\n";
 	$out .= "  if (index < 0) {\n";
-	$out .= "    printf(\"CCTK_GroupIndex(\\\"$this_imp\:\:$this_group\\\") failed in ".$thorn."_rfr.c\\n\");\n";
+	$out .= "    CCTK_WARN(0,\"CCTK_GroupIndex(\\\"$use_imp\:\:$this_group\\\") failed in $thorn rfr file\\n\");\n";
         $out .= "  } else {\n";
         $out .= "    rfrRegisterCommunication(GH->rfr_top,GH,$routine,index);\n";
         $out .= "  }\n";
@@ -616,14 +633,25 @@ sub parse_schedule_at_RFR {
 	$var =~ /^\s*(.*)\s*$/;
 	$var = $1;
 
+	# Take of implementation if it is there
 	$this_imp = $implementation;
-	$this_var = $var;
-	if ($var =~ /(.*)::(.*)/)
+	$this_group = $group;
+	if ($group =~ /(.*)::(.*)/)
 	{
 	  $this_imp = $1;
-	  $this_var = $2;
+	  $this_group = $2;
 	}
-        $out .= "  index = CCTK_VarIndex(\"$this_imp\:\:$var\");\n";
+
+	if ($privategroups =~ /\b$this_group\b/)
+	{
+	  $use_imp = $thorn;
+	}
+	else
+	{
+	  $use_imp = $this_imp;
+	}
+
+        $out .= "  index = CCTK_VarIndex(\"$use_imp\:\:$var\");\n";
         $out .= "  rfrRegisterTriggers(GH->rfr_top,GH,$routine,index);\n"
       }
     }
