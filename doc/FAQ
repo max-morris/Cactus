@@ -1,7 +1,7 @@
 
 Cactus Code Frequently Asked Questions
 
-$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.27 2002-04-13 21:16:29 allen Exp $
+$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.28 2002-04-21 15:38:19 allen Exp $
 
 Also available at http://www.cactuscode.org/Documentation/FAQ
 
@@ -407,5 +407,24 @@ Also available at http://www.cactuscode.org/Documentation/FAQ
     You could instead use MPICH on your Irix machine instead of native MPI. 
     Note that native MPI will probably be better optimised for you application
     than  MPICH though.
+
+-------------------------------------------------------------------------------
+
+30. I get the following error when compiling?
+
+    Checking status of libIOJpeg.a
+    gmake[3]: *** No rule to make target `/u1/allen/scratch/Cactus/arrangements/
+         CactusIO/IOJpeg/src/IOJpeg.h', needed by `JPEG.c.d'.  Stop.
+    gmake[2]: *** [make.checked] Error 2
+    gmake[1]: *** [/u1/allen/scratch/Cactus/configs/wave/lib/libIOJpeg.a] Error 2
+    gmake: *** [wave] Error 2
+
+    This is because an include file which was used in your previous compile is
+    no longer there (in this case the file IOJpeg.h was renamed ioJpeg.h). 
+    To solve this, delete the dependency information by issuing
+
+    gmake <config>-cleandeps
+
+    before compiling again.
 
 -------------------------------------------------------------------------------
