@@ -946,6 +946,12 @@ int CCTK_VarTypeNumber(const char *type)
     retval = CCTK_VARIABLE_COMPLEX;
   }
 
+  if(!strcmp(type, "BYTE"))
+  {
+    retval = CCTK_VARIABLE_BYTE;
+  }
+
+  /* DEPRECATED IN BETA 10 */
   if(!strcmp(type, "CHAR"))
   {
     retval = CCTK_VARIABLE_CHAR;
@@ -1736,8 +1742,8 @@ int CCTK_VarTypeSize(int vtype)
 
   switch(vtype)
   {
-    case CCTK_VARIABLE_CHAR: 
-      var_size = sizeof(CCTK_CHAR); 
+    case CCTK_VARIABLE_BYTE: 
+      var_size = sizeof(CCTK_BYTE); 
       break;
 
     case CCTK_VARIABLE_INT: 
