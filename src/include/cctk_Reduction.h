@@ -47,6 +47,7 @@
 
 #define REDUCTION_GRID_ARRAY_OPERATOR_REGISTER_ARGLIST \
   const cGH *GH,  \
+  int dest_proc,  \
   int local_reduce_handle, \
   int param_table_handle,  \
   int N_input_arrays,  \
@@ -81,6 +82,7 @@ typedef int (*cLocalArrayReduceOperator) (int N_dims, int operator_handle,
 
 /* prototype for GA reduction operator routine */
 typedef int (*cGridArrayReduceOperator) (const cGH *GH,
+                                         int dest_proc,
                                          int local_reduce_handle,
                                          int param_table_handle,
                                          int N_input_arrays,
@@ -150,6 +152,7 @@ int CCTK_NumLocalArrayReduceOperators(void);
 
 /* new GA reduction API */
 int CCTK_ReduceGridArrays(const cGH *GH,
+                          int dest_proc,
                           int local_reduce_handle,
                           int param_table_handle,
                           int N_input_arrays,

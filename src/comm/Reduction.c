@@ -82,6 +82,7 @@ void CCTK_FCALL CCTK_FNAME(CCTK_GridArrayReductionParameterHandle)
 void CCTK_FCALL CCTK_FNAME(CCTK_ReduceGridArrays)
      (int *fortran_return,
       const cGH *GH,
+      int dest_proc,
       int local_reduce_handle,
       int param_table_handle,
       int N_input_arrays,
@@ -1470,6 +1471,11 @@ int CCTKi_RegisterGridArrayReductionOperator(const char *thorn,
    @vtype   cGH *
    @vio     in
    @endvar
+   @var     dest_proc
+   @vdesc   the number of the processor to which we want to reduce (-1) for all-reduce
+   @vtype   int
+   @vio     in
+   @endvar
    @var     local_reduce_handle
    @vdesc   the handle specifying the reduction operator
    @vtype   int
@@ -1507,6 +1513,7 @@ int CCTKi_RegisterGridArrayReductionOperator(const char *thorn,
    @endvar
 @@*/
 int CCTK_ReduceGridArrays(const cGH *GH,
+                          int dest_proc,
                           int local_reduce_handle,
                           int param_table_handle,
                           int N_input_arrays,
@@ -1527,6 +1534,7 @@ int CCTK_ReduceGridArrays(const cGH *GH,
   else
   {
     retval = GA_reduc (GH,
+                       dest_proc,
                        local_reduce_handle, param_table_handle,
                        N_input_arrays, input_array_variable_indices,
                        M_output_values, output_value_type_codes,
@@ -1538,6 +1546,7 @@ int CCTK_ReduceGridArrays(const cGH *GH,
 void CCTK_FCALL CCTK_FNAME(CCTK_ReduceGridArrays)
      (int *fortranreturn,
       const cGH *GH,
+      int dest_proc,
       int local_reduce_handle,
       int param_table_handle,
       int N_input_arrays,
@@ -1558,6 +1567,7 @@ void CCTK_FCALL CCTK_FNAME(CCTK_ReduceGridArrays)
   else
   {
     retval = GA_reduc (GH,
+                       dest_proc,
                        local_reduce_handle, param_table_handle,
                        N_input_arrays, input_array_variable_indices,
                        M_output_values, output_value_type_codes,
