@@ -42,17 +42,6 @@ OVERLOADABLE(GetnProcs)
 		   void **outarray,       \
 		   ...
 
-OVERLOADABLE(Reduce)
-
-#undef ARGUMENTS
-#define ARGUMENTS  cGH *GH,                \
-		   const char *operation,  \
-		   int n_coords,           \
-		   int n_infields,         \
-		   int n_outfields,        \
-		   int n_points,           \
-		   int type,               \
-		   ...
 
 OVERLOADABLE(Interp)
 
