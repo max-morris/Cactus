@@ -6,7 +6,7 @@
 #   @desc 
 #   
 #   @enddesc
-#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/extras/MPI/MPICH,v 1.1 1999-07-21 12:25:02 goodale Exp $ 
+#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/extras/MPI/MPICH,v 1.2 1999-07-23 20:46:58 goodale Exp $ 
 # @@*/
 
 
@@ -50,11 +50,11 @@ fi
 
 case "$MPICH_DEVICE" in
   globus)
-   if test -z "$GLOBUS_DIR" ; then
-     echo "GLOBUS selected, but GLOBUS_DIR not set !"
+   if test -z "$GLOBUS_LIB_DIR" ; then
+     echo "GLOBUS selected, but GLOBUS_LIB_DIR not set !"
      exit 2
    fi
-   MPICH_DEVICE_LIB_DIR="$GLOBUS_DIR"
+   MPICH_DEVICE_LIB_DIR="$GLOBUS_LIB_DIR"
    MPICH_DEVICE_LIBS="globus_common globus_dc globus_duct_control \
                       globus_duct_runtime globus_duroc_bootstrap globus_duroc_control\
                       globus_duroc_runtime globus_gass_cache globus_gass_client \
@@ -62,6 +62,9 @@ case "$MPICH_DEVICE" in
                       globus_gram_client globus_gram_myjob globus_gss globus_gss_assist \
                       globus_hbm_client globus_hbm_datacollector globus_mp globus_nexus \
                       globus_rsl globus_utp lber ldap ldif netperf"
+   if test -n "`echo $GLOBUS_LIB_DIR | grep -i pthreads`" ; then
+      MPICH_DEVICE_LIBS="$MPICH_DEVICE_LIBS pthread"
+   fi
    ;;
   *)
    MPICH_DEVICE_LIB_DIR=""
