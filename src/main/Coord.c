@@ -53,7 +53,7 @@ int CCTK_RegisterCoord_ByIndex(const char *name, int index, int dir)
 #ifdef DEBUG_COORDS
      printf(" In RegisterCoord\n ----------------\n");
      printf("   Registering index %d as %s in dir %d\n",
-	    store_name[0],name,store_name[1]); 
+	    store_data[0],name,store_data[1]); 
 #endif
 
   return retval;
@@ -78,7 +78,7 @@ int CCTK_RegisterCoord(const char *coordname,
   
   int retval;
   int index;
-  index = CCTK_GetVarNum(NULL,NULL,gfname);
+  index = CCTK_GetVarIndex(gfname);
   if (index < 0)
   {
     char *msg;
