@@ -588,9 +588,9 @@ void CCTK_PrintString(char *data)
   printf("%s",data);
 }
 
-void FORTRAN_NAME(CCTK_PrintString)(char *arg1)
+void FORTRAN_NAME(CCTK_PrintString)(char **arg1)
 {
-  CCTK_PrintString(arg1);
+  CCTK_PrintString(*arg1);
 }
 
  /*@@
