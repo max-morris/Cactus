@@ -13,6 +13,7 @@
 #include <ctype.h>
 #include <stdarg.h>
 #include <assert.h>
+#include <regex.h>
 
 #include "Misc.h"
 #include "FortranString.h"
@@ -535,6 +536,53 @@ int CCTK_SetKeywordInRangeList(char **data, const char *value,
 
 
  /*@@
+   @routine    CCTK_SetStringInRegexList
+   @date       Fri Apr 16 08:37:02 1999
+   @author     Tom Goodale
+   @desc 
+   Sets the value of a string if it matches any of the given regular
+   expressions.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+int CCTK_SetStringInRegexList(char **data, const char *value, 
+			       int n_elements, ...)
+{
+  int retval;
+  int arg;
+  va_list ap;
+
+  char *element;
+
+  int inval;
+
+  retval = 1;
+
+  /* Walk through the element list. */
+  va_start(ap, n_elements);
+  
+  for(arg = 0; arg < n_elements; arg++)
+  {    
+    element = va_arg(ap, char *);
+
+    if(CCTK_RegexMatch(value, element, 0, NULL))
+    {
+      retval = CCTK_SetString(data, value);
+      break;
+    }
+  }
+  
+  va_end(ap);
+
+  return retval;
+}
+
+ /*@@
    @routine    CCTK_SetString
    @date       Thu Jan 21 10:28:27 1999
    @author     Tom Goodale
@@ -629,4 +677,43 @@ int CCTK_SetLogical(int *data, const char *value)
   }
 
   return retval;
+}
+
+ /*@@
+   @routine    CCTK_RegexMatch
+   @date       Fri Apr 16 08:40:14 1999
+   @author     Tom Goodale
+   @desc 
+   Perform a regular expression match of string against pattern.
+   Also returns the specified number of matched substrings as
+   give by regexec.
+   This is a modified form of the example routine given in the SGI 
+   man page for regcomp.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+int CCTK_RegexMatch(const char *string, 
+		    const char *pattern, 
+		    const int nmatch, 
+		    regmatch_t *pmatch) 
+{
+  int status;
+  regex_t re;
+  
+  if (regcomp(&re, pattern, REG_EXTENDED) != 0)
+  {
+    return(0);      /* report error */
+  }
+  status = regexec(&re, string, (size_t)nmatch, pmatch, 0);
+  regfree(&re);
+  if (status != 0) 
+  {
+    return(0);      /* report error */
+  }
+  return(1);
 }
