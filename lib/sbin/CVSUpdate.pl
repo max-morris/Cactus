@@ -11,7 +11,7 @@
 
 require "lib/sbin/MakeUtils.pl";
 
-open (CS, "cvs -z 9 -q update CONTRIBUTORS COPYRIGHT Makefile lib doc src|");
+open (CS, "cvs -z 9 -q update -d CONTRIBUTORS COPYRIGHT Makefile lib doc src|");
 while (<CS>) {  
   print ;
 }
@@ -21,12 +21,20 @@ $package_dir = shift(@ARGV);
 
 %info = &buildthorns($package_dir,"thorns");
 
-print "dir is $package_dir\n";
-
+$current_dir = `pwd`;
+chdir $package_dir;
 foreach $thorn (sort keys %info)
 {
-  print("$thorn");
+  chdir $thorn;
+  print("Updating $thorn\n");
+  open (CS, "cvs -z 9 -q update -d |");
+  while (<CS>) 
+  {  
+    print ;
+  } 
+  chdir "../..";
 }
+chdir $current_dir;
 
 
 exit;
