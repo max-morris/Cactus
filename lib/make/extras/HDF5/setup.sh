@@ -57,7 +57,11 @@ HDF5_INC_DIRS="$HDF5_DIR/include"
 grep -qe '#define HAVE_COMPRESS2 1' ${HDF5_DIR}/include/H5config.h 2> /dev/null
 test_compress2=$?
 
-if [ $test_compress2 -eq 0 ] ; then
+# this is for old 1.0.x versions of HDF5 where they used different defines for zlib
+grep -qe '#define HAVE_LIBZ 1' ${HDF5_DIR}/include/H5config.h 2> /dev/null
+test_zlib=$?
+
+if [ $test_compress2 -eq 0 -o $test_zlib -eq 0 ] ; then
    if test -z "$LIBZ_DIR" ; then
       echo "HDF5 library was compiled with libz, searching for libz.a ..."
       CCTK_Search LIBZ_DIR "/usr/lib /usr/local/lib c:/packages/libz" libz.a
