@@ -451,16 +451,14 @@ and uses the real parameter {\tt speed}.
 \begin{verbatim}
 shares:einstein
 
-EXTENDS KEYWORD initial_data ""
+EXTENDS KEYWORD initial_data
 {
   "bl_bh"         :: "Brill Lindquist black holes"
   "misner_bh"     :: "Misner black holes"
   "schwarzschild" :: "One Schwarzschild black hole"
 }
 
-USES CCTK_REAL speed ""
-{
-}
+USES CCTK_REAL speed
 
 \end{verbatim}
 
@@ -471,7 +469,7 @@ Note that you must compile at least one thorn which implements {\tt einstein}.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsection{The {\tt schedule.ccl}}
-
+\label{subsec:schedule_ccl}
 By default no routine of a thorn will be run.  The {\tt schedule.ccl} file
 defines those that should be run and when they should be run.
 
@@ -1006,7 +1004,7 @@ Parameters can be of several types:
 \item[Integer]  Can take any integral value
 \item[Real] Can take any floating point value
 \item[Keyword] Can have a value consisting of one of a choice of strings
-\item[Boolean] Can be true or false
+\item[Boolean] Can be true or false (1, `t', `true', or 0, `f', `false').
 \item[String] Can have any string value
 \end{Lentry}
 
@@ -1016,16 +1014,69 @@ by the type of parameter.
 
 \subsection{Integer}
 
+The range specification is of the form 
+
+\begin{verbatim}
+
+lower:upper:stride
+
+\end{verbatim}
+
+where {\em lower} and {\em upper} specify the lower and upper allowed
+range, and {\em stride} allows numbers to be be missed out.
+
+e.g.
+
+\begin{verbatim}
+
+1:21:2
+
+\end{verbatim}
+
+means the value must be between one and twenty-one (inclusive), and
+must be of the form $1+2n$ where $n$ is an integer.
+
+A missing end of range (or a `\*') implies negative or positive
+infinity, and the default stride is one.
+ 
 \subsection{Real}
+
+The range specification is of the form 
+
+\begin{verbatim}
+
+lower:upper
+
+\end{verbatim}
+
+where {\em lower} and {\em upper} specify the lower and upper allowed
+range.  A missing end of range (or a `\*') implies negative or positive
+infinity.  The above is inclusive of the end-points.  A '(' (or ')')
+before (or after) the lower (or upper) range specifies an open end-point.
 
 \subsection{Keyword}
 
+The range specification consists of a string, which will be matched in 
+a case-insensitive manner.
+
 \subsection{Boolean}
+
+There is no range specification for this type of parameter.
 
 \subsection{String}
 
+The range is a POSIX regular expression.  On some machines you may be
+able to use extended regular expressions, but this is not guaranteed
+to be portable.
 
 \section{Scope}
+
+Parameters can be {\em GLOBAL}, {\em RESTRICTED}, or {\em PRIVATE}.
+Global parameters are visible to all thorns.  A restricted parameters
+are visible to any thorn which chooses to {\em USE} or {\em EXTEND}
+it.  A private parameter is only visible to the thorn which declares
+it.
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1041,24 +1092,81 @@ exist.
 The full specification for a schedule declaration is
 
 \begin{verbatim}
-schedule [GROUP] <function name> AT|IN <time> [BEFORE|AFTER <group>] [WHILE <variable>] [AS <alias>]
+schedule [GROUP] <function|group name> AT|IN <time> [BEFORE|AFTER <item>] [WHILE <variable>] [AS <alias>]
 {
   LANG: <language>
   [STORAGE:       <group>,<group>...]
   [TRIGGER:       <group>,<group>...]
   [SYNC:          <group>,<group>...]
   [OPTIONS:       <option>,<option>...]
-} "Description of function"
+} "Description of function|group"
 \end{verbatim}
 
+This consists of a mandatory part, a set of options, and the main
+body, referred to as the {\tt schedule block}.
 
-This consists of a set of options, and the main body, referred to as the {\tt schedule block}.
+Each schedule item is scheduled either {\em AT} a particular {\em
+scheduling bin}, or {\em IN} a schedule {\em group}.
+
+\section{Schedule Bins}
+
+These are the main points at which scheduled functions are run.
+These are listed in \ref{subsec:schedule_ccl}.
+
+\section{Groups}
+
+If the optional {\em GROUP} specifier is used, the item is a schedule
+group rather than a normal function.  Schedule groups are effectively
+new, user-defined, schedule bins.  Functions or groups may be
+scheduled {\em IN} these in the same way as they are scheduled {\em
+AT} the main schedule bins.  (I.e. groups may be nested.)
 
 \section{Schedule Options}
+The options define various charactertics of the schedule item.
 
+\begin{Lentry}
+\item[BEFORE or AFTER]
+These specify a function or group before or after which this item will 
+be scheduled.
+\item[WHILE]
+This specifies a {\em CCTK\_INT} grid scalar which is used to control
+the execution of this item.  If the grid scalar has a non-zero value
+the schedule item will be executed, otherwise the item will be
+ignored.  This allows iteration within the schedular.
+\item[AS]
+This assigns a new name to a function for scheduling purposes.  This
+is used, for instance, to allow a thorn to schedule something before
+or after a routine from another implementation;  two thorns providing this
+implementation can schedule a routine {\em AS} the same thing, thus
+allowing other thorns to operate independently of which one is active.
+\end{Lentry}
 
 \section{The Schedule Block}
 
+The schedule block specifies further details of the scheduled function or group.
+
+\begin{Lentry}
+\item[LANG]
+This specifies the language of the routine.  Currently this is either
+C or Fortran.
+\item[{\tt STORAGE}] The {\tt STORAGE} keyword specifies any groups for 
+which  memory should be
+allocated for the duration of the routine.
+The storage status reverts to its previous status after the 
+\item[TRIGGER]
+This is only used for items scheduled at {\em CCTK\_ANALYSIS}.  The
+item will only be executed if output is due for at least one
+variable in one of the listed groups.
+\item[SYNC]
+On exit from this item the ghost zones of the listed groups will be
+exchanged.
+\item[OPTIONS]
+This is for miscellaneous options.  The only currently supported
+option is {\em GLOBAL} which tells the driver that this routine does
+not use a local grid, but instead uses global operations to process
+data;  such a routine should only be called once however many
+sub-grids the driver may have broken the problem into.
+\end{Lentry}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
