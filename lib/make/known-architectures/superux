@@ -6,7 +6,7 @@
 #   @desc 
 #   Known architecture stuff for the SX-5
 #   @enddesc 
-#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/superux,v 1.5 2000-03-06 18:46:21 goodale Exp $
+#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/superux,v 1.6 2000-03-07 16:25:10 goodale Exp $
 # @@*/
 
 if test "$CCTK_CONFIG_STAGE" = "preferred-compilers" ; then
@@ -25,5 +25,10 @@ else
   : ${CXX_DEPEND_OUT='>/dev/null 2>$(basename $(@)).d; $(PERL) -pi -e "s,^,$(basename $(@)).o $(basename $(@)).d : ,; print $_ if (! m:mismatch:) " $(basename $(@)).d'}
   : ${F_DEPEND_OUT='>/dev/null 2>$(basename $(@)).d; $(PERL) -pi -e "s,^,$(basename $(@)).o $(basename $(@)).d : ,; print $_ if (! m:mismatch:) " $(basename $(@)).d'}
   : ${F77_DEPEND_OUT='>/dev/null 2>$(basename $(@)).d; $(PERL) -pi -e "s,^,$(basename $(@)).o $(basename $(@)).d : ,; print $_ if (! m:mismatch:) " $(basename $(@)).d'}
+
+  : ${CXX_WORKING_NAME='$(notdir $<).C'}
+
+
+  : ${CXX_POSTPROCESSING='cp $(SCRATCH_BUILD)$(DIRSEP)$(notdir $@) .'}
 
 fi
