@@ -53,10 +53,35 @@ if (-e "$extra")
       $mpi = 1
     }
   }
+  close(EXTRA);
 }
 
 
-$executable = &defprompt("Enter executable name (relative to Cactus home dir)","exe${sep}cactus_$config");
+# Check the name and directory of executable
+$defns = "$current_directory${sep}configs${sep}$config${sep}config-data${sep}make.config.defn";
+
+$defexename = "cactus_$config";
+
+if (-e "$defns")
+{
+  open(DEFNS,"<$defns");
+  while(<DEFNS>)
+  {
+    if (/EXE\s*=\s*(\w+)/)
+    {
+      $defexename = $1;
+    }
+    if (/EXEDIR\s*=\s*(\w+)/)
+    {
+      $defexedirname = $1;
+    }
+  }
+  close(DEFNS);
+
+}
+
+
+$executable = &defprompt("Enter executable name (relative to Cactus home dir)","exe$sep$defexename");
 
 if ($mpi)
 {
