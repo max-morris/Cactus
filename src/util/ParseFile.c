@@ -2,11 +2,11 @@
    @file      ParseFile.c
    @date      Tue Jan 12 15:58:31 1999
    @author    Tom Goodale
-   @desc 
+   @desc
    Routines to read in a parameter file and pass the resulting data
    to a user-supplied subroutine.
    Currently taken from the old cactus ones and slightly modifed.
-   @enddesc 
+   @enddesc
    @version $Header$
  @@*/
 
@@ -17,6 +17,7 @@
 #include <stdlib.h>
 
 #include "cctk_Flesh.h"
+#include "cctk_CommandLine.h"
 #include "util_String.h"
 
 #ifdef HAVE_ASSERT_H
@@ -42,9 +43,9 @@ static void removeSpaces(char *stripMe);
  ********************* Other Routine Prototypes *********************
  ********************************************************************/
 
-int ParseFile(FILE *ifp, 
-              int (*set_function)(const char *, const char *), 
-	      tFleshConfig *ConfigData);
+int ParseFile(FILE *ifp,
+              int (*set_function)(const char *, const char *),
+              tFleshConfig *ConfigData);
 
 /********************************************************************
  *********************     Local Data   *****************************
@@ -58,7 +59,8 @@ int ParseFile(FILE *ifp,
 #define BOLDOFF  ""
 #endif
 
-#define BUF_SZ 1024
+/* parse buffer size */
+#define BUF_SZ   (8 * 1024)
 
 /* line number */
 static int lineno = 1;
@@ -70,7 +72,7 @@ static int lineno = 1;
  /*@@
    @routine ParseFile
    @author Paul Walker
-   @desc 
+   @desc
    This routine actually parses the parameter file. The
    syntax we allow is
    <ul>
@@ -94,35 +96,36 @@ static int lineno = 1;
    @vdesc   The filestream to parse
    @vtype   FILE *
    @vio     in
-   @vcomment 
- 
-   @endvar 
+   @vcomment
+
+   @endvar
    @var     set_function
    @vdesc   The function to call to set the value of a parameter
    @vtype   int (*)(const char *, const char *)
    @vio     in
-   @vcomment 
- 
-   @endvar 
+   @vcomment
+
+   @endvar
    @var     ConfigData
    @vdesc   Flesh configuration data
    @vtype   tFleshConfig *
    @vio     in
-   @vcomment 
- 
-   @endvar 
+   @vcomment
+
+   @endvar
 
    @returntype int
    @returndesc
    0 - success
    @endreturndesc
 @@*/
-int ParseFile(FILE *ifp, 
-              int (*set_function)(const char *, const char *), 
-	      tFleshConfig *ConfigData) 
+int ParseFile(FILE *ifp,
+              int (*set_function)(const char *, const char *),
+              tFleshConfig *ConfigData)
 {
   /* Buffers for parsing from the file */
-  char tokens[BUF_SZ], value[BUF_SZ];
+  char *tokens, *value;
+  char *subtoken, *subvalue;
   /* Positions in the buffers */
   int ntokens;
   /* Status flags */
@@ -132,21 +135,31 @@ int ParseFile(FILE *ifp,
    */
   int c;
 
+
+  /* avoid compiler warning about unused parameter */
+  ConfigData = ConfigData;
+
+  /* allocate parse buffers */
+  tokens = (char *) malloc (4 * BUF_SZ);
+  value    = tokens + 1*BUF_SZ;
+  subtoken = tokens + 2*BUF_SZ;
+  subvalue = tokens + 3*BUF_SZ;
+
   intoken = 0; inval = 0;
 
-  while ((c=fgetc(ifp)) != EOF) 
+  while ((c=fgetc(ifp)) != EOF)
   {
 #ifdef DEBUG
     printf("%c",c);
 #endif
     /* Main Loop */
-    while (c == '#' || c == '!' ) 
+    while (c == '#' || c == '!' )
     {
       /* Comment line.  So forget rest of line */
       while ((c=fgetc(ifp)) != '\n' && c != EOF)
       {
 #ifdef DEBUG
-	printf("%c",c);
+        printf("%c",c);
 #endif
       }
       c = fgetc(ifp);
@@ -156,7 +169,7 @@ int ParseFile(FILE *ifp,
     }
 
     /* End of line */
-    if (c == '\n') 
+    if (c == '\n')
     {
       if(intoken)
       {
@@ -172,15 +185,15 @@ int ParseFile(FILE *ifp,
     }
 
     /* Token character */
-    if (intoken && c != '=') 
+    if (intoken && c != '=')
     {
       tokens[intoken++] = c;
       CheckBuf(intoken,lineno);
     }
 
-                
+
     /* Start of a new token */
-    if (c != ' ' && c != '\t' && c != '\n' && !inval && !intoken) 
+    if (c != ' ' && c != '\t' && c != '\n' && !inval && !intoken)
     {
       intoken = 0;
       tokens[intoken++] = c;
@@ -189,7 +202,7 @@ int ParseFile(FILE *ifp,
     /* End of a token signified by an = */
     if (c == '=')
     {
-      if (intoken) 
+      if (intoken)
       {
         unsigned int ll;
         tokens[intoken] = '\0';  /* Very important! */
@@ -206,53 +219,55 @@ int ParseFile(FILE *ifp,
 
         /* Scan ahead to the beginning of the value
          * and check if the value is a string or not.
-	 * This parser DOES strip quotes off of the strings. 
+         * This parser DOES strip quotes off of the strings.
          */
         while ((c = fgetc(ifp)) == ' ' || c == '\n' || c == '\t')
-	{
+        {
 #ifdef DEBUG
-	  printf("%c",c);
+          printf("%c",c);
 #endif
-	  if (c == '\n')
-	  {
+          if (c == '\n')
+          {
 #ifdef DEBUG
-	    printf ("LINE %d\n",lineno);
+            printf ("LINE %d\n",lineno);
 #endif
-	    lineno++;
-	  }
-	}
+            lineno++;
+          }
+        }
 
-        if (c == '"') 
+        if (c == '"')
         {
           /* Just handle the thing. */
           int p = 0;
-          if (ntokens > 1) 
+          if (ntokens > 1)
           {
             fprintf (stderr, "%s%s%s\n",
                      "WARNING: Multiple string ",
                      "tokens not supported for ",
                      tokens);
             fprintf(stderr, "This is a fatal error");
+            /* deallocate parse buffers */
+            free (tokens);
             return 1;
           }
-          while ((c = fgetc(ifp)) != '"') 
+          while ((c = fgetc(ifp)) != '"')
           {
 #ifdef DEBUG
-	    printf("%c",c);
+            printf("%c",c);
 #endif
-            /* Make an important decision NOT to include 
+            /* Make an important decision NOT to include
              * line feeds in the string parameters
              */
             if (c != '\n') value[p++] = c;
-            if (c == '\n') 
+            if (c == '\n')
             {
               printf ("%sWarning:%s Quoted string contains newline for token %s\n",
                       BOLDON, BOLDOFF, tokens);
               printf ("This could indicated a parameter file error or missing quote\n");
 #ifdef DEBUG
-	      printf ("LINE %d\n",lineno);
+              printf ("LINE %d\n",lineno);
 #endif
-	      lineno++;
+              lineno++;
             }
             CheckBuf(p,lineno);
           }
@@ -262,64 +277,64 @@ int ParseFile(FILE *ifp,
                   tokens,value);
 #endif
           set_function(tokens,value);
-        } 
+        }
         else if (c == '$')
-	{
-	  /* We got a define */
-	  /* FIXME: Assume it is a parameter file for now */
-	  char filename[500];
-	  char *dir;
-	  char *file;
-	  int lpar;
-
-	  CCTK_ParameterFilename(500,filename);
-	  Util_SplitFilename(&dir,&file,filename);
-
-	  lpar=((strlen(file)-3)*sizeof(char));
-
-	  /* ignore everything else on the line */
-	  while (!(c==' ' || c=='\t' || c == '\n' || c == EOF)) 
-	  {
-	    c = fgetc(ifp);
-#ifdef DEBUG
-	    printf("%c",c);
-#endif
-	  }
-	  strncpy(value,file,lpar);
-	  free(dir);
-	  free(file);
-	  value[strlen(value)-1] = '\0';
-          set_function(tokens,value);
-	}
-	else
         {
-	  
+          /* We got a define */
+          /* FIXME: Assume it is a parameter file for now */
+          char filename[500];
+          char *dir;
+          char *file;
+          int lpar;
+
+          CCTK_ParameterFilename(500,filename);
+          Util_SplitFilename(&dir,&file,filename);
+
+          lpar=((strlen(file)-3)*sizeof(char));
+
+          /* ignore everything else on the line */
+          while (!(c==' ' || c=='\t' || c == '\n' || c == EOF))
+          {
+            c = fgetc(ifp);
+#ifdef DEBUG
+            printf("%c",c);
+#endif
+          }
+          strncpy(value,file,lpar);
+          free(dir);
+          free(file);
+          value[strlen(value)-1] = '\0';
+          set_function(tokens,value);
+        }
+        else
+        {
+
           int p = 0;
           value[p++] = c;
-          if (ntokens == 1) 
+          if (ntokens == 1)
           {
             /* Simple case. We have an int
                or a double which contain no
                spaces! */
             c = fgetc(ifp);
 #ifdef DEBUG
-	    printf("%c",c);
+            printf("%c",c);
 #endif
-            while (!(c==' ' || c=='\t' || c == '\n' || c == EOF)) 
+            while (!(c==' ' || c=='\t' || c == '\n' || c == EOF))
             {
               value[p++] = c;
               CheckBuf(p,lineno);
               c = fgetc(ifp);
 #ifdef DEBUG
-	      printf("%c",c);
+              printf("%c",c);
 #endif
-	      if (c=='\n')
-	      {
+              if (c=='\n')
+              {
 #ifdef DEBUG
-		printf ("LINE %d\n",lineno);
+                printf ("LINE %d\n",lineno);
 #endif
-		lineno++;
-	      }
+                lineno++;
+              }
             }
             value[p] = '\0';
 #ifdef DEBUG
@@ -328,28 +343,27 @@ int ParseFile(FILE *ifp,
 #endif
             set_function(tokens,value);
 
-          } 
-          else 
+          }
+          else
           {
             /* Harder case of multiple tokens */
             int ncommas = 0;
             int pp=0, i;
-            char subtoken[BUF_SZ], subvalue[BUF_SZ];
             int pt, pv;
 
             value[pp++] = c;
             /* OK, since we only have numbers in the
                old input stream, we can go along getting
                ntokens-1 commas, stripping spaces, and
-               make a nice little string. 
+               make a nice little string.
                */
             c = fgetc(ifp);
 #ifdef DEBUG
-	    printf("%c",c);
+            printf("%c",c);
 #endif
-            while (ncommas < ntokens-1 && c != EOF) 
+            while (ncommas < ntokens-1 && c != EOF)
             {
-              if (!(c == ' ' || c == '\t' || c == '\n')) 
+              if (!(c == ' ' || c == '\t' || c == '\n'))
               {
                 value[pp++] = c;
                 CheckBuf(pp,lineno);
@@ -357,42 +371,42 @@ int ParseFile(FILE *ifp,
               if (c == ',') ncommas ++;
               c = fgetc(ifp);
 #ifdef DEBUG
-	      printf("%c",c);
+              printf("%c",c);
 #endif
             }
             if (c == ' ' || c == '\t')
             {
               /* Great now strip out the spaces */
               while((c = fgetc(ifp)) == ' ' || c=='\t' || c == '\n')
-	      {
+              {
 #ifdef DEBUG
-		printf("%c",c);
+                printf("%c",c);
 #endif
-		if (c=='\n')
-		{
+                if (c=='\n')
+                {
 #ifdef DEBUG
-		  printf ("LINE %d\n",lineno);
+                  printf ("LINE %d\n",lineno);
 #endif
-		  lineno++;
-		}
-	      }
+                  lineno++;
+                }
+              }
             }
-            
+
             /* And tack the rest on */
             value[pp++] = c;
             CheckBuf(p,lineno);
 
             c = fgetc(ifp);
 #ifdef DEBUG
-	    printf("%c",c);
+            printf("%c",c);
 #endif
-            while (c != ' ' && c != '\t' && c != '\n' && c != EOF) 
+            while (c != ' ' && c != '\t' && c != '\n' && c != EOF)
             {
               value[pp++] = c;
               CheckBuf(pp,lineno);
               c = fgetc(ifp);
 #ifdef DEBUG
-	      printf("%c",c);
+              printf("%c",c);
 #endif
             }
             value[pp] = '\0';
@@ -403,17 +417,17 @@ int ParseFile(FILE *ifp,
             /* So parse out the tokens */
             pt = 0;
             pv = 0;
-            for (i=0;i<ncommas;i++) 
+            for (i=0;i<ncommas;i++)
             {
               pp = 0;
-              while (tokens[pt] != ',') 
+              while (tokens[pt] != ',')
               {
                 subtoken[pp++] = tokens[pt++];
                 CheckBuf(p,lineno);
               }
               subtoken[pp] = '\0';
               pp = 0;
-              while (value[pv] != ',') 
+              while (value[pv] != ',')
               {
                 subvalue[pp++] = value[pv++];
                 CheckBuf(pp,lineno);
@@ -431,17 +445,17 @@ int ParseFile(FILE *ifp,
               pv ++; pt ++;
             }
             /* And OK, so now we have one parameter left
-             * so lets handle that 
-             */ 
+             * so lets handle that
+             */
             pp = 0;
-            while (tokens[pt] != '\0') 
+            while (tokens[pt] != '\0')
             {
               subtoken[pp++] = tokens[pt++];
               CheckBuf(pp,lineno);
             }
             subtoken[pp] = '\0';
             pp = 0;
-            while (value[pv] != '\0') 
+            while (value[pv] != '\0')
             {
               subvalue[pp++] = value[pv++];
               CheckBuf(pp,lineno);
@@ -451,14 +465,17 @@ int ParseFile(FILE *ifp,
             set_function(subtoken,subvalue);
           }
         }
-      } 
-      else 
+      }
+      else
       {
         fprintf (stderr, "Parser failed at = on line %d\n",
                  lineno);
       }
     }
   }
+
+  /* deallocate parse buffers */
+  free (tokens);
 
   return 0;
 }
@@ -474,31 +491,31 @@ int ParseFile(FILE *ifp,
    A simple description and warning message in case of
    a fixed parse buffer overflow.
    @enddesc
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   @calls
+   @calledby
+   @history
+
+   @endhistory
    @var     p
    @vdesc   buffer location
    @vtype   int
    @vio     in
-   @vcomment 
- 
-   @endvar 
+   @vcomment
+
+   @endvar
    @var     l
    @vdesc   Line number
    @vtype   int
    @vio     in
-   @vcomment 
- 
-   @endvar 
+   @vcomment
+
+   @endvar
 
 @@*/
 
-static void CheckBuf(int p, int l) 
+static void CheckBuf(int p, int l)
 {
-  if (p >= BUF_SZ) 
+  if (p >= BUF_SZ)
   {
     fprintf(stderr,"WARNING: Parser buffer overflow on line %d\n",
             l);
@@ -511,7 +528,7 @@ static void CheckBuf(int p, int l)
   }
 }
 
-  
+
  /*@@
    @routine removeSpaces
    @author Paul Walker
@@ -520,21 +537,21 @@ static void CheckBuf(int p, int l)
    that this function will change the input value and if you
    want to keep a copy you have to do so yourself!
    @enddesc
-   @calls     
-   @calledby   
-   @history 
-   
-   @endvar 
+   @calls
+   @calledby
+   @history
+
+   @endvar
    @var     stripMe
    @vdesc   String to strip
    @vtype   char *
    @vio     inout
-   @vcomment 
- 
-   @endvar 
+   @vcomment
+
+   @endvar
 
 @@*/
-static void removeSpaces(char *stripMe) 
+static void removeSpaces(char *stripMe)
 {
   char *s;
   unsigned int i,j;
