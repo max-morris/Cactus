@@ -3920,7 +3920,7 @@ Creates a new (empty) table
      [\pageref{Util-TableCreateFromString}]
 Creates a new table based on a string argument, which is interpreted
 with ``parameter-file'' semantics (the table has the case-insensitive
-and auto-destroy flags set)
+flag set)
 
 \item[Util\_TableDeleteKey]
      [\pageref{Util-TableDeleteKey}]
@@ -4086,15 +4086,8 @@ flags word is negative
 /* create a table, simplest case */
 int handle = Util_TableCreate(UTIL_TABLE_FLAGS_DEFAULT);
 
-/* create a table which will be automagically destroyed the next */
-/* time any other table is created, and whose keys will be treated */
-/* as case-insensitive */
-int handle2 = Util_TableCreate(  UTIL_TABLE_FLAGS_AUTO_DESTROY
-                               | UTIL_TABLE_FLAGS_CASE_INSENSITIVE);
-
 /* create a table whose keys will be treated as case-insensitive */
-/* (and implicitly destroy the  handle2  table) */
-int handle3 = Util_TableCreate(UTIL_TABLE_FLAGS_CASE_INSENSITIVE);
+int handle2 = Util_TableCreate(UTIL_TABLE_FLAGS_CASE_INSENSITIVE);
 \end{verbatim}
 \end{Example}
 \end{FunctionDescription}
@@ -4105,7 +4098,7 @@ int handle3 = Util_TableCreate(UTIL_TABLE_FLAGS_CASE_INSENSITIVE);
 \label{Util-TableCreateFromString}
 Creates a new table based on a string argument, which is interpreted
 with ``parameter-file'' semantics (the table has the case-insensitive
-and auto-destroy flags set)
+flag set)
 
 \begin{Synopsis}{C}
 \begin{verbatim}
@@ -4178,25 +4171,17 @@ this function may also return any error codes returned by
 #include "util_Table.h"
 
 /* simple example */
-CCTK_SomeCactusFunction(...,
-                        Util_TableCreateFromString("order=3"),
-                        ...);
+int table_handle = Util_TableCreateFromString("order=3");
+CCTK_SomeCactusFunction(..., table_handle, ...);
+Util_TableDestroy(table_handle);
 
 /* larger example */
-  {
-int handle = Util_TableCreate(  UTIL_TABLE_FLAGS_CASE_INSENSITIVE
-                              | UTIL_TABLE_FLAGS_AUTO_DESTROY );
-Util_TableSetInt(handle, 3, "n");
-Util_TableSetReal(handle, 3.0e-5, "dx");
+int table_handle = Util_TableCreate(UTIL_TABLE_FLAGS_CASE_INSENSITIVE);
+Util_TableSetInt(table_handle, 3, "n");
+Util_TableSetReal(table_handle, 3.0e-5, "dx");
 
-AnotherFunction(..., handle, ...);
-
-/* equivalent call */
-AnotherFunction(..., Util_TableCreateFromString("n=3 dx=3.0e-5"), ...);
-
-/* another equivalent call */
-AnotherFunction(..., Util_TableCreateFromString("N=3 DX=3.0E-5"), ...);
-  }
+/* this is equivalent to the previous 3 lines of code */
+int table_handle = Util_TableCreateFromString("n=3 dx=3.0e-5");
 \end{verbatim}
 \end{Example}
 \end{FunctionDescription}
