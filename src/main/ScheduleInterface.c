@@ -862,6 +862,7 @@ int CCTK_SchedulePrint(const char *where)
     SchedulePrint("CCTK_STARTUP");
     putchar ('\n');
     puts ("  Startup routines which need an existing GH");
+    puts ("    [CCTK_WRAGH]");
     SchedulePrint("CCTK_WRAGH");
     puts ("  Parameter checking routines");
     puts ("    [CCTK_PARAMCHECK]");
