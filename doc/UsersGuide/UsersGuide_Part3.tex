@@ -1,0 +1,206 @@
+\part{Application thorn writing}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\chapter{Thorn concepts} 
+
+      (This section has to contain enough explanation to make the rest of
+       the writers guide readable the first time through)
+(The hardest bugs to find are
+those arising from plausible but incorrect assumptions about the
+behavior of someone else's thorn.)
+      a) Again probably emphasize collaboration, what are thorns,
+         toolkits, how to share them.
+      b) Things to think about before you start programming:
+             Language, read all the documentation, emphasize use of
+             standard supported Cactus infrastructure
+      c) Available data types
+         i)   Scalars
+         ii)  Arrays and GFs
+         iii) Groups
+      d) Ghost zones and parallelism
+      e) Understanding the RFR concept
+      f) Understanding the GH concept
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\chapter{Anatomy of a thorn}
+
+Each thorn must be in a toolkit. Toolkits are fairly informal. If you
+want, you can just make your own toolkit directory, and stick your new
+thorn into it.
+
+      a) Creating a thorn (gmake new thorn)
+      b) Thorn directory structure
+      c) Thorn make files
+      d) Thorn configuration
+         (i)   Parameters (param.ccl)
+         (ii)  Variables (interface.ccl)
+         (iii) Scheduler (schedule.ccl)
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\chapter{Putting code into your thorn}
+
+      a) What the flesh basically provides (header files, macros, ...)
+      b) Argument lists and parameters
+      c) A simple example (Baloney)
+      d) Differences between F and C with the interface
+      e) A more complex example (Wavetoy)
+      f) Error handling and code stopping
+      g) Calling C from F, F from C, (C++ from F? ....)
+      h) Good Cactus Style Programming Guidelines
+      i) Adding a test suite
+      j) Sharing your thorn with the world.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\appendix{Appendix}
+
+\chapter{Using GNATS}
+\chapter{Using CVS}
+\chapter{Using TAGS}
+    \section{TAGS with emacs}
+    \section{TAGS with vi}
+
+
+\chapter{Configuration file syntax}
+    
+\section{General Concepts}
+
+Each thorn is configured by three compulsory files in the top level thorn
+directory:
+\begin{itemize}
+\item{} interface.ccl
+\item{} param.ccl
+\item{} schedule.ccl
+\end{itemize}
+
+\section{interface.ccl}
+
+The interface configuration file consists of a header block giving details 
+of the thorns relationship with other thorns, and then a series of blocks 
+listing the thorn's global variables.
+The header block has the form:
+{\t 
+\begin{verbatim}
+implements: <implementation>
+[inherits: <implementation>, <implementation>]
+[friend: <implentation>, <implementation>]
+\end{verbatim}
+}
+where
+\begin{itemize}
+\item{} The implentation name must be unique among all thorns, unless ????.
+\item{} Inheriting from another implentation makes all that implentations public 
+        variables and parameters available to your thorn. At least one thorn 
+        providing any inherited implentation must be present at compile time.
+        A thorn cannot inherit from itself. Inheritance is associative, but not
+        commutative.
+\item{} Being a friend of another implementation makes all that implementations 
+        protected and public (????)
+        variables and parameters available to your thorn. A friend is not required 
+        for compilation. A thorn cannot be its own friend. Friendship is 
+        associative and commutative.
+\end{itemize} 
+
+The thorn's variables are defined by:
+{\t
+\begin{verbatim}
+[<access>:]
+
+VTYPE <group name> [TYPE=<gtype>] [DIM=<dim>] 
+[{
+   <variable name>[,]<variable name>
+   <variable name>
+}]
+\end{verbatim}}
+
+\begin{itemize}
+\item{} {\t access} defines which thorns have can use the following 
+        groups, and can be either {\t public}, {\t protected} or {\t private}.
+\item{} {\t VTYPE} defines the data type of the variables in the group.
+Supported data types are {\t LOGICAL}, {\t INTEGER}, {\t CHAR} and {\t REAL}.
+\item{} {\t group name} must be a alpha-numeric name which is unique 
+within the scope of the thorn. A group name is compulsory.
+\item{} {\t TYPE} designates the kind of variables held by the group.
+The choices are {\t GF}, {\t ARRAY} or {\t SCALAR}. This field is 
+optional, with the default variable type being {\t SCALAR}.
+\item{} {\t DIM} defines the spatial dimension if the group is of type
+{\t ARRAY} or {\t GF}, and can take the value {\t 1}, {\t 2}, or {\t 3}.
+The default value is {\t DIM=3}.
+\item{} The block following the group declaration line contains a list of
+        variables contained in the group. All variables in a group have 
+        the same data type, variable type and dimension. The list can be 
+        separated by spaces, commas, or new lines. The variable names 
+        must be unique within the scope of the thorn. 
+        A variable can only be a member of 
+        one group. The block must be delimited by brackets on new lines.
+        If no block is given after a group declaration line, a 
+        variable with the same name as the group is created.
+\end{itemize} 
+
+\section{param.ccl}
+
+\section{schedule.ccl}
+
+The schedule configuration files consists of 
+\begin{itemize}
+\item{} assignments to switch on storage and communications 
+        for array variables at the start of program execution.
+\item{} {\it schedule blocks} which schedule a subroutine from the
+        thorn to be called at a specified time during program 
+        executation. Statements within the schedule block can
+        be used to switch on storage and communication for groups
+        of variables during the duration that the subroutine is called.
+\item{} Conditional statements
+\end{itemize}
+
+{\it assignments statements} have the form:
+{\t
+\begin{verbatim}
+[STORAGE: <group>, <group>]
+[COMMUNICATION: <group>, <group>]
+\end{verbatim}
+}
+
+Each {\it schedule block} in the file {\t schedule.ccl} must have
+the syntax:
+{\t
+\begin{verbatim}
+schedule [<function name>] at <time>
+{
+  [LANG: <language>]
+  [STORAGE: <group>,<group>]
+  [COMMUNICATION: <group>,<group>]
+  [TRIGGER: <grid function>,<grid function>]
+}
+\end{verbatim}
+}
+
+Any schedule block or assignment statements can be optionally 
+surrounded by conditional {\t if-elseif-else}
+constructs using the parameter data base. These can be nested,
+and have the general form:
+{\t
+\begin{verbatim}
+if (CCTK_Equals(<parameter>,<string>)) 
+{
+  [<assignments>]
+  [<schedule blocks>]
+}
+\end{verbatim}
+Conditional constructs cannot be used inside of a schedule block.
+
+
+\chapter{CCTK Parameters}
+\chapter{Thorn-Flesh Interface}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\end{document}
