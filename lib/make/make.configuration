@@ -16,10 +16,6 @@ CONFIG = $(TOP)/config-data
 BINDINGS_DIR = $(TOP)/bindings
 FLESH_DIR = $(CCTK_HOME)/src
 
-# Some empty strings yye00 fills from configuration.ccl files
-#ConfigInc =
-#ConfigLibdir =
-#ConfigLib =
 
 # Scratch build area - need this to make sure F90 module files end up all
 # in one directory.
@@ -51,11 +47,6 @@ DIVIDER =  $(DIVEL)$(DIVEL)$(DIVEL)$(DIVEL)
 
 # Include the definitions for this configuration
 include $(CONFIG)/make.config.defn
-
-# Remove this line in 4.0 beta 16, by which all configs should have this defined
-ifndef TRANSFORM_DIRS
-TRANSFORM_DIRS = $(1)
-endif
 
 # Define the name of the source file which is the one object on the linkline
 
