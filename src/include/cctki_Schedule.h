@@ -89,6 +89,10 @@ int CCTKi_DoScheduleFunction
    void *attributes
   );
 
+t_sched_modifier *CCTKi_DoScheduleAddModifier(t_sched_modifier *orig,
+					      const char *modifier, 
+					      const char *argument);
+
 int CCTKi_DoScheduleGroup
   (
    const char *gname, 
