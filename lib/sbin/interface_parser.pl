@@ -4,24 +4,24 @@
 #  @file      interface_parser.pl
 #  @date      Wed Sep 16 15:07:11 1998
 #  @author    Tom Goodale
-#  @desc 
+#  @desc
 #  Parses interface.ccl files
-#  @enddesc 
-#  @version $Header$
+#  @enddesc
+#  @version $Header: /cactusdevcvs/Cactus/lib/sbin/interface_parser.pl,v 1.55
 #@@*/
 
 #/*@@
 #  @routine    create_interface_database
 #  @date       Wed Sep 16 15:07:11 1998
 #  @author     Tom Goodale
-#  @desc 
+#  @desc
 #  Creates a database of all the interfaces
-#  @enddesc 
-#  @calls     
-#  @calledby   
-#  @history 
+#  @enddesc
+#  @calls
+#  @calledby
+#  @history
 #
-#  @endhistory 
+#  @endhistory
 #@@*/
 
 sub create_interface_database
@@ -32,10 +32,10 @@ sub create_interface_database
   my($thorn, @indata);
   my(@new_interface_data);
   my(@interface_data);
-  
+
   %system_database = @inargs[0..2*$n_system-1];
   %thorns = @inargs[2*$n_system..$#inargs];
-  
+
   #  Loop through each  thorn's interface file.
   foreach $thorn (keys %thorns)
   {
@@ -51,10 +51,10 @@ sub create_interface_database
     @new_interface_data = &parse_interface_ccl($arrangement,$thorn, @indata);
 
     &PrintInterfaceStatistics($thorn, @new_interface_data);
-    
+
     #       Add the interface to the master interface database
     push (@interface_data, @new_interface_data);
-    
+
   }
 
   @interface_data = &cross_index_interface_data(scalar(keys %thorns), scalar(keys %system_database), (keys %thorns), %system_database, @interface_data);
@@ -169,14 +169,14 @@ sub get_friends_of_me
     {
       if($friend =~ m:$implementation:i)
       {
-          $friends .= "$other_implementation "; 
+          $friends .= "$other_implementation ";
       }
     }
   }
 
   return $friends;
 }
-  
+
 
 sub get_implementation_friends
 {
@@ -204,7 +204,7 @@ sub get_implementation_friends
   $thorn = $1;
 
   # Recurse
-  foreach $friend (split(" ", $interface_data{"\U$thorn\E FRIEND"}), 
+  foreach $friend (split(" ", $interface_data{"\U$thorn\E FRIEND"}),
                    split(" ", $interface_data{"IMPLEMENTATION \U$implementation\E FRIENDS"}))
   {
     if(! $friends{"\U$friend\E"})
@@ -219,7 +219,7 @@ sub get_implementation_friends
       %friends = &get_implementation_friends($friend, scalar(keys %friends), %friends,%interface_data);
     }
   }
-  
+
   return %friends;
 
 }
@@ -290,7 +290,7 @@ sub get_implementation_ancestors
       %ancestors = &get_implementation_ancestors($ancestor, scalar(keys %ancestors), scalar(keys %system_database), %ancestors,%system_database, %interface_data);
     }
   }
-  
+
   return %ancestors;
 }
 
@@ -308,7 +308,7 @@ sub check_implementation_consistency
   my($n_errors);
   my($group);
   my(%attributes);
- 
+
   # Find out which thorns provide this implementation.
   @thorns = split(" ", $interface_data{"IMPLEMENTATION \U$implementation\E THORNS"});
 
@@ -346,10 +346,10 @@ sub check_implementation_consistency
           else
           {
             $friend{"\U$thing\E"} = "$thorn ";
-          }         
+          }
         }
       }
-  
+
       # Record the public groups
       foreach $thing (split(" ", $interface_data{"\U$thorn\E PUBLIC GROUPS"}))
       {
@@ -576,7 +576,7 @@ sub check_implementation_consistency
             &CST_error(0,$message,"",__LINE__,__FILE__);
             $n_errors++;
           }
-        }         
+        }
         else
         {
           $attributes{"DIM"} = $interface_data{"\U$thorn GROUP $group\E DIM"};
@@ -593,7 +593,7 @@ sub check_implementation_consistency
             &CST_error(0,$message,"",__LINE__,__FILE__);
             $n_errors++;
           }
-        }         
+        }
         else
         {
           $attributes{"STYPE"} = $interface_data{"\U$thorn GROUP $group\E STYPE"};
@@ -603,26 +603,26 @@ sub check_implementation_consistency
   }
   else
   {
-    # No need to do a consistency check if only one thorn 
+    # No need to do a consistency check if only one thorn
     # provides this implementation.
 
   }
 
 }
 
-  
+
 #/*@@
 #  @routine    check_interface_consistency
 #  @date       Sun Jun 3 2001
 #  @author     Gabrielle Allen
-#  @desc 
+#  @desc
 #  Check consistency of the interfaces files
-#  @enddesc 
-#  @calls     
-#  @calledby   
-#  @history 
+#  @enddesc
+#  @calls
+#  @calledby
+#  @history
 #
-#  @endhistory 
+#  @endhistory
 #@@*/
 
 sub check_interface_consistency
@@ -633,10 +633,10 @@ sub check_interface_consistency
   my($ancestor_imp,$ancestor_thorn);
   my($message);
 
-  # Find implementation 
+  # Find implementation
   $implementation =  $interface_data{"\U$thorn\E IMPLEMENTS"};
 
-  # Loop over ancestors 
+  # Loop over ancestors
   foreach $ancestor_imp (split " ",$interface_data{"IMPLEMENTATION \U$implementation\E ANCESTORS"})
   {
     # Need one thorn which implements this ancestor (we already have checked consistency)
@@ -652,24 +652,24 @@ sub check_interface_consistency
         $message = "Private group $private_group in thorn $thorn has same name as \n     public group in ancestor implementation $ancestor_imp (e.g. thorn $ancestor_thorn)";
         &CST_error(0,$message,"",__LINE__,__FILE__);
       }
-    }    
+    }
   }
 }
 
-  
+
 
 #/*@@
 #  @routine    parse_interface_ccl
 #  @date       Wed Sep 16 15:07:11 1998
 #  @author     Tom Goodale
-#  @desc 
+#  @desc
 #  Parses an interface.ccl file and generates a database of the values.
-#  @enddesc 
-#  @calls     
-#  @calledby   
-#  @history 
+#  @enddesc
+#  @calls
+#  @calledby
+#  @history
 #
-#  @endhistory 
+#  @endhistory
 #@@*/
 
 sub parse_interface_ccl
@@ -681,7 +681,7 @@ sub parse_interface_ccl
   my($option,%options);
   my(%known_groups);
   my(%known_variables);
-      
+
 
   # Initialise some stuff to prevent perl -w from complaining.
 
@@ -692,13 +692,13 @@ sub parse_interface_ccl
   $interface_db{"\U$thorn PRIVATE GROUPS\E"} = "";
   $interface_db{"\U$thorn USES HEADER\E"} = "";
   $interface_db{"\U$thorn FUNCTIONS\E"} = "";
-  $interface_db{"\U$thorn PROVIDES FUNCTION\E"} = ""; 
+  $interface_db{"\U$thorn PROVIDES FUNCTION\E"} = "";
   $interface_db{"\U$thorn USES FUNCTION\E"} = "";
   $interface_db{"\U$thorn ARRANGEMENT\E"} = "$arrangement";
-  
+
   #   The default block is private.
   $block = "PRIVATE";
-  
+
   for($line_number = 0; $line_number < @data; $line_number++)
   {
     $line = $data[$line_number];
@@ -708,7 +708,7 @@ sub parse_interface_ccl
     {
       #           It's a new block.
       $block = "\U$1\E";
-    } 
+    }
     elsif ($line =~ m/^\s*IMPLEMENTS\s*:/i)
     {
       if ($line =~ m/^\s*IMPLEMENTS\s*:\s*([a-z]+[a-z_0-9]*)\s*$/i)
@@ -754,7 +754,11 @@ sub parse_interface_ccl
       }
       else
       {
-        $provided_by_language = "Fortran";
+#        $provided_by_language = "Fortran";
+#        $provided_by_language = "C";
+        $message = "The providing function $provided_by in thorn $thorn does not have a specified language. Please add, e.g., \"LANGUAGE C\"";
+        &CST_error(0,$message,"",__LINE__,__FILE__);
+
       }
 
       $interface_db{"\U$thorn PROVIDES FUNCTION\E"} .= "$funcname ";
@@ -767,41 +771,47 @@ sub parse_interface_ccl
       $funcname = $1;
       $interface_db{"\U$thorn USES FUNCTION\E"} .= "$funcname ";
     }
-    elsif ($line =~ m/^\s*([a-zA-Z_0-9]+)\s*FUNCTION\s*([a-zA-Z_0-9]+)\s*(.*)\s*$/i)
+    elsif ($line =~ m/^\s*([a-zA-Z][a-zA-Z_0-9:]+)\s*FUNCTION\s*([a-zA-Z_0-9]+)\s*\((.*)\)\s*$/i)
     {
       $rettype  = $1;
       $funcname = $2;
       $rest     = $3;
-      if($rest =~ m/(.*)\s*PROVIDED-BY\s*(.+)/i)
-      {
-        $funcargs = $1;
-        $provided_by = $2;
+#      print "\n\n".$rettype." ".$funcname." ".$rest."\n\n";
+#      if($rest =~ m/(.*)\s*PROVIDED-BY\s*(.+)/i)
+#      {
+#        $funcargs = $1;
+#        $provided_by = $2;
 
-        if($provided_by =~ m/(.*)\s*LANGUAGE\s*(.+)/i)
-        {
-          $provided_by          = $1;
-          $provided_by_language = $2;
-        }
-        else
-        {
-          $provided_by_language = "Fortran";
-        }
-      }
-      else
-      {
+#        if($provided_by =~ m/(.*)\s*LANGUAGE\s*(.+)/i)
+#        {
+#          $provided_by          = $1;
+#          $provided_by_language = $2;
+#        }
+#        else
+#        {
+#          $provided_by_language = "Fortran";
+#          $provided_by_language = "C";        
+#          $message = "The providing function $provided_by in thorn $thorn does not have a specified language. Please add, e.g., \"LANGUAGE C\"";
+#          &CST_error(0,$message,"",__LINE__,__FILE__);
+
+#        }
+#      }
+#      else
+#      {
         $funcargs = $rest;
         $provided_by = "";
-      }
+#      }
 
-      $interface_db{"\U$thorn FUNCTIONS\E"} .= "$funcname ";
-      $interface_db{"\U$thorn FUNCTION\E $funcname ARGS"} .= "$funcargs";
-      $interface_db{"\U$thorn FUNCTION\E $funcname RET"} .= "$rettype";
-      
+      $interface_db{"\U$thorn FUNCTIONS\E"} .= "${funcname} ";
+      $interface_db{"\U$thorn FUNCTION\E $funcname ARGS"} .= "${funcargs} ";
+      $interface_db{"\U$thorn FUNCTION\E $funcname RET"} .= "${rettype} ";
+
       if($provided_by ne "")
       {
-        $interface_db{"\U$thorn PROVIDES FUNCTION\E"} .= "$funcname";
-        $interface_db{"\U$thorn PROVIDES FUNCTION\E $funcname WITH"} .= "$provided_by";
-        $interface_db{"\U$thorn PROVIDES FUNCTION\E $funcname LANG"} .= "$provided_by_language";
+        $interface_db{"\U$thorn PROVIDES FUNCTION\E"} .= "$funcname ";
+        $interface_db{"\U$thorn PROVIDES FUNCTION\E $funcname WITH"} .= "$provided_by ";
+        $interface_db{"\U$thorn PROVIDES FUNCTION\E $funcname LANG"} .= "$provided_by_language ";
+#        print "Parsed $thorn:$funcname:$provided_by_language\n";
       }
     }
     elsif ($line =~ m/^\s*(CCTK_)?(CHAR|BYTE|INT|INT2|INT4|INT8|REAL|REAL4|REAL8|REAL16|COMPLEX|COMPLEX8|COMPLEX16|COMPLEX32)\s*(([a-zA-Z]+[a-zA-Z_0-9]*)(\[([^]]+)\])?)\s*(.*)\s*$/i)
@@ -822,12 +832,11 @@ sub parse_interface_ccl
 
       if($known_groups{"\U$current_group\E"})
       {
-        $message = "Duplicate group $current_group in thorn $thorn";
-        &CST_error(0,$message,"",__LINE__,__FILE__);
+        &CST_error(0,"Duplicate group $current_group in thorn $thorn",'',
+                   __LINE__,__FILE__);
         if($data[$line_number+1] =~ m:\{:)
         {
-            $message = "Skipping interface block";
-            &CST_error(1,$message,"",__LINE__,__FILE__);
+            &CST_error(1,'Skipping interface block','',__LINE__,__FILE__);
             $line_number++ until ($data[$line_number] =~ m:\}:);
         }
         next;
@@ -839,30 +848,32 @@ sub parse_interface_ccl
         # Initialise some stuff to prevent perl -w from complaining.
         $interface_db{"\U$thorn GROUP $current_group\E"} = "";
       }
-      
+
       $interface_db{"\U$thorn $block GROUPS\E"} .= " $current_group";
       $interface_db{"\U$thorn GROUP $current_group\E VTYPE"} = "\U$vtype\E";
 
       # Grab optional group description from end of $options_list
       if ($options_list =~ /(=?)\s*"([^"]*)"\s*$/) #"
       {
-	if (!$1)
-	{
-	  if ($data[$line_number+1] =~ m/^\s*\{\s*$/) 
-	  {
-	    $message = "Group description for $current_group in thorn $thorn must be placed at end of variable block when variable block present";
-	    &CST_error(1,$message,"",__LINE__,__FILE__);
-	  } else
-	  {
-	    $description = $2;
-	    $options_list =~ s/\s*"$description"//;
-	  }
-	}
+        if (!$1)
+        {
+          if ($data[$line_number+1] =~ m/^\s*\{\s*$/)
+          {
+            &CST_error(1,"Group description for $current_group in thorn " .
+                       "$thorn must be placed at end of variable block " .
+                       "when variable block present",'',
+                       __LINE__,__FILE__);
+          } else
+          {
+            $description = $2;
+            $options_list =~ s/\s*"$description"//;
+          }
+        }
       }
 
       # split(/\s*=\s*|\s+/, $options_list);
       %options = SplitWithStrings($options_list);
-      
+
       # Parse the options
       foreach $option (keys %options)
       {
@@ -903,20 +914,22 @@ sub parse_interface_ccl
           {
             $options{$option} = $1;
           }
-          
+
           $options{$option} =~ s/\\/\\\\/g;
           $options{$option} =~ s/\"/\\\"/g;
-         
+
           $interface_db{"\U$thorn GROUP $current_group\E TAGS"} = $options{$option};
         }
         else
         {
-          $message = "Unknown option $option in group $current_group of thorn $thorn\n     Perhaps you forgot a '\\' at the end of a continued line?";
-          &CST_error(0,$message,"",__LINE__,__FILE__);
+          &CST_error(0,"Unknown option $option in group $current_group " .
+                     "of thorn $thorn\n     Perhaps you forgot a '\\' at the " .
+                     "end of a continued line?",'',
+                     __LINE__,__FILE__);
         }
       }
 
-      # Put in defaults      
+      # Put in defaults
       if(! $interface_db{"\U$thorn GROUP $current_group\E GTYPE"})
       {
         $interface_db{"\U$thorn GROUP $current_group\E GTYPE"} = "SCALAR";
@@ -941,7 +954,7 @@ sub parse_interface_ccl
       {
         $interface_db{"\U$thorn GROUP $current_group\E STYPE"} = "NONE";
       }
-      
+
       if(! $interface_db{"\U$thorn GROUP $current_group\E DISTRIB"})
       {
         $interface_db{"\U$thorn GROUP $current_group\E DISTRIB"} = "DEFAULT";
@@ -962,12 +975,12 @@ sub parse_interface_ccl
           &CST_error(0,$message,$hint,__LINE__,__FILE__);
           if($data[$line_number+1] =~ m:\{:)
           {
-              $message = "Skipping interface block in $thorn";
-              &CST_error(1,$message,"",__LINE__,__FILE__);
+              &CST_error(1,"Skipping interface block in $thorn","",
+                         __LINE__,__FILE__);
               $line_number++ until ($data[$line_number] =~ m:\}:);
           }
         next;
-      }       
+      }
 
       # Check that it is a known distribution type
       if($interface_db{"\U$thorn GROUP $current_group\E DISTRIB"} !~ m:DEFAULT|CONSTANT:)
@@ -979,12 +992,12 @@ sub parse_interface_ccl
           &CST_error(0,$message,"",__LINE__,__FILE__);
           if($data[$line_number+1] =~ m:\{:)
           {
-              $message = "Skipping interface block in $thorn";
-              &CST_error(1,$message,"",__LINE__,__FILE__);
+              &CST_error(1,"Skipping interface block in $thorn",'',
+                         __LINE__,__FILE__);
               $line_number++ until ($data[$line_number] =~ m:\}:);
           }
         next;
-      }       
+      }
 
       # Is it is a vararray ?
 
@@ -996,13 +1009,13 @@ sub parse_interface_ccl
         if(! $known_variables{"\U$function\E"})
         {
           $known_variables{"\U$function\E"} = 1;
-          
+
           $interface_db{"\U$thorn GROUP $current_group\E"} .= " $function";
         }
         else
         {
-          $message = "Duplicate variable $function in thorn $thorn";
-          &CST_error(0,$message,"",__LINE__,__FILE__);
+          &CST_error(0,"Duplicate variable $function in thorn $thorn",'',
+                     __LINE__,__FILE__);
         }
 
         # get its size
@@ -1028,26 +1041,26 @@ sub parse_interface_ccl
             foreach $function (@functions)
             {
               $function =~ s:\s*::g;
-              
+
               if($function =~ m:[^\s]+:)
               {
                 if(! $known_variables{"\U$function\E"})
                 {
                   $known_variables{"\U$function\E"} = 1;
-                  
+
                   $interface_db{"\U$thorn GROUP $current_group\E"} .= " $function";
-                }           
+                }
                 else
                 {
-                  $message = "Duplicate variable $function in thorn $thorn";
-                  &CST_error(0,$message,"",__LINE__,__FILE__);
+                  &CST_error(0,"Duplicate variable $function in thorn $thorn",'',
+                             __LINE__,__FILE__);
                 }
               }
             }
             $line_number++;
           }
           # Grab optional group description
-	  $data[$line_number] =~ m:\}\s*"([^"]*)":;
+          $data[$line_number] =~ m:\}\s*"([^"]*)":;
           $description = $1;
         }
         else
@@ -1057,15 +1070,15 @@ sub parse_interface_ccl
           if(! $known_variables{"\U$function\E"})
           {
             $known_variables{"\U$function\E"} = 1;
-          
+
             $interface_db{"\U$thorn GROUP $current_group\E"} .= " $function";
           }
           else
           {
-            $message = "Duplicate variable $function in thorn $thorn";
-            &CST_error(0,$message,"",__LINE__,__FILE__);
+            &CST_error(0,"Duplicate variable $function in thorn $thorn",'',
+                       __LINE__,__FILE__);
           }
-        
+
           # Decrement the line number, since the line is the first line of the next CCL statement.
           $line_number--;
         }
@@ -1074,46 +1087,45 @@ sub parse_interface_ccl
     }
     elsif ($line =~ m/^\s*(USES\s*INCLUDE)S?\s*(SOURCE)S?\s*:\s*(.*)\s*$/i)
     {
-      $interface_db{"\U$thorn USES SOURCE\E"} .= " $3";      
+      $interface_db{"\U$thorn USES SOURCE\E"} .= " $3";
     }
     elsif ($line =~ m/^\s*(USES\s*INCLUDE)S?\s*(HEADER)?S?\s*:\s*(.*)\s*$/i)
     {
-      $interface_db{"\U$thorn USES HEADER\E"} .= " $3";      
+      $interface_db{"\U$thorn USES HEADER\E"} .= " $3";
     }
     elsif ($line =~ m/^\s*(INCLUDE)S?\s*(SOURCE)S?\s*:\s*(.*)\s+IN\s+(.*)\s*$/i)
     {
       $header = $3;
       $header =~ s/ //g;
-      $interface_db{"\U$thorn ADD SOURCE\E"} .= " $header";      
+      $interface_db{"\U$thorn ADD SOURCE\E"} .= " $header";
 #      print "Adding $header to $4\n";
-      $interface_db{"\U$thorn ADD SOURCE $header TO\E"} = $4;      
+      $interface_db{"\U$thorn ADD SOURCE $header TO\E"} = $4;
     }
     elsif ($line =~ m/^\s*(INCLUDE)S?\s*(HEADER)?S?\s*:\s*(.*)\s+IN\s+(.*)\s*$/i)
     {
       $header = $3;
       $header =~ s/ //g;
-      $interface_db{"\U$thorn ADD HEADER\E"} .= " $header";      
+      $interface_db{"\U$thorn ADD HEADER\E"} .= " $header";
 #      print "Adding $header to $4\n";
-      $interface_db{"\U$thorn ADD HEADER $header TO\E"} = $4;      
+      $interface_db{"\U$thorn ADD HEADER $header TO\E"} = $4;
     }
     else
     {
       if($line =~ m:\{:)
       {
-        $message = "...Skipping interface block with missing keyword....";
-        &CST_error(0,$message,"",__LINE__,__FILE__);
+        &CST_error(0,'...Skipping interface block with missing keyword....','',
+                   __LINE__,__FILE__);
 
         $line_number++ until ($data[$line_number] =~ m:\}:);
       }
       else
       {
-	$line =~ /^(.*)\n+$/;
-        $message = "Unknown line in interface.ccl for thorn $arrangement/$thorn\n\"$line\"";
-        &CST_error(0,$message,"",__LINE__,__FILE__);
+        $line =~ /^(.*)\n+$/;
+        &CST_error(0,"Unknown line in interface.ccl for thorn $arrangement/$thorn\n\"$line\"",'',__LINE__,__FILE__);
       }
     }
   }
-  
+
   return %interface_db;
 }
 
@@ -1122,7 +1134,7 @@ sub print_interface_database
 {
   my(%database) = @_;
   my($field);
-  
+
   foreach $field ( sort keys %database )
   {
     print "$field has value $database{$field}\n";
@@ -1133,14 +1145,14 @@ sub print_interface_database
 #  @routine    PrintInterfaceStatistics
 #  @date       Sun Sep 19 13:03:23 1999
 #  @author     Tom Goodale
-#  @desc 
-#  Prints out some statistics about a thorn's interface.ccl  
-#  @enddesc 
-#  @calls     
-#  @calledby   
-#  @history 
+#  @desc
+#  Prints out some statistics about a thorn's interface.ccl
+#  @enddesc
+#  @calls
+#  @calledby
+#  @history
 #
-#  @endhistory 
+#  @endhistory
 #
 #@@*/
 sub PrintInterfaceStatistics
