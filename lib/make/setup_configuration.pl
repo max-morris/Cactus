@@ -256,7 +256,7 @@ sub SetConfigureEnv
 
   $commandline = $ENV{"MAKEFLAGS"};
   $used_commandline = 0;
-  while ($commandline =~ /^(.*)\s+(\w*)\s*=\s*([_\-\.\w\\\/\s]*)\s*$/)
+  while ($commandline =~ /^(.*)\s+(\w*)\s*=\s*([_+\-\.\w\\\/\s]*)\s*$/)
   {
     if ($2 ne "options")
     {
