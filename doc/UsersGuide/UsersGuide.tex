@@ -10,7 +10,21 @@
 
 \documentclass{report}
 \usepackage{fancyhdr,ifthen,calc}
+
+\newif\ifpdf
+\ifx\pdfoutput\undefined
+\pdffalse % we are not running PDFLaTeX
+\else
+\pdfoutput=1 % we are running PDFLaTeX
+\pdftrue
+\fi
+
+\ifpdf
+\usepackage[pdftex]{graphicx}
+\else
 \usepackage{graphicx}
+\fi
+
 
 \makeatletter
 \@addtoreset{chapter}{part}
@@ -211,7 +225,10 @@
 \rule{\linewidth}{1mm}
 \vspace*{\stretch{2}}
 \begin{center}
+\ifpdf
+\else
 \includegraphics[angle=0,width=5cm]{bincactus2.eps}
+\fi
 \end{center}
 \vspace*{\stretch{2}}
 \begin{center}
@@ -267,6 +284,12 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{document}
+
+\ifpdf
+\DeclareGraphicsExtensions{.pdf, .jpg}
+\else
+\DeclareGraphicsExtensions{.eps, .jpg}
+\fi
 
 \cactustitlepage{Users' Guide}{$$Revision$$}{$$Date$$}
 

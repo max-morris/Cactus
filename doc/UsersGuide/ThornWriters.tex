@@ -867,7 +867,10 @@ of grid points you can evolve decreases by one at each edge (see figure \ref{fig
 
 \begin{figure}[ht]
 \begin{center}
+\ifpdf
+\else
 \includegraphics[angle=0,width=8cm]{1dnoghost.eps}
+\fi
 \end{center}
 %\caption[]{} 
 % I know this figure is rubbish, but it's after 2am and I'll fix it up later.
@@ -936,7 +939,10 @@ rather unusual; included here for completeness.
 \begin{figure}[ht]
   \def\epsfsize#1#2{0.45#1}
 \begin{center}
+\ifpdf
+\else
 \includegraphics[angle=0,width=8cm]{staggering1.eps}
+\fi
 %  \centerline{\epsfbox{./staggering1.eps}}
 \end{center}
 \caption[]{\small {\bf Staggered gridpoints in 2D} for several
@@ -1599,7 +1605,10 @@ x-direction: {\em directional staggerindex} = CCTK\_STAGGER\_C (value 1).
 \begin{figure}[ht]
   \def\epsfsize#1#2{0.45#1}
 \begin{center}
+\ifpdf
+\else
 \includegraphics[angle=0,width=10cm]{staggering2.eps}
+\fi
 %  \centerline{\epsfbox{./staggering2.eps}}
 \end{center}
 \caption[]{\small {\bf Unstaggered and center-staggered gridpoints} with
