@@ -24,6 +24,8 @@ int RegisterKeyedFunction(void (*array[])(),
 			  int min, int max, 
 			  int key, void (*func)());
 
+void  (**(CreateKeyedFunctionArray(int size)))();
+
 #ifdef _cplusplus
 	   }
 #endif

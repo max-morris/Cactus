@@ -1,0 +1,27 @@
+ /*@@
+   @header    CactusRegister.h
+   @date      Tue Sep 29 11:37:03 1998
+   @author    Tom Goodale
+   @desc 
+   Functions used to register things in cactus.
+   @enddesc 
+ @@*/
+
+/* $Id$ */
+
+#ifndef _CACTUS_REGISTRY_H_
+#define _CACTUS_REGISTRY_H_
+
+#ifdef _cplusplus
+extern "C" {
+#endif
+
+int RegisterMainFunction(int key, int (*func)(tFleshConfig *));
+
+int SetupMainFunctions(void);
+
+#ifdef _cplusplus
+	   }
+#endif
+
+#endif
