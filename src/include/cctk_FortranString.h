@@ -31,7 +31,7 @@
     _fcd cctk_str1, _fcd cctk_str2, _fcd cctk_str3
 #define ONE_FORTSTRING_CREATE(arg1)\
        int cctk_strlen1 = _fcdlen(cctk_str1); \
-       char *arg1 = Util_NullTerminateString(_fcdtocp(cctk_str1),cctk_strlen1);;
+       char *arg1 = Util_NullTerminateString(_fcdtocp(cctk_str1),cctk_strlen1);
 #define TWO_FORTSTRINGS_CREATE(arg1,arg2)\
        int  cctk_strlen1    = _fcdlen(cctk_str1);\
        int  cctk_strlen2    = _fcdlen(cctk_str2);\
