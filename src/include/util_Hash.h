@@ -9,10 +9,11 @@
  @@*/
 
 #ifndef _HASH_H_
-#define _HASH_H_
+#define _HASH_H_ 1
 
 #ifdef __cplusplus
-extern "C" {
+extern "C" 
+{
 #endif
 
 typedef struct T_HASH_ENTRY
@@ -41,29 +42,29 @@ uHash *Util_HashCreate(unsigned int initial_size);
 int Util_HashDestroy(uHash *hash);
 
 int Util_HashStore(uHash *hash, 
-		   unsigned int klen, 
-		   char *key, 
-		   unsigned int hashval,
-		   void *data);
+                   unsigned int klen, 
+                   char *key, 
+                   unsigned int hashval,
+                   void *data);
 
 int Util_HashAdd(uHash *hash, 
-		 unsigned int klen, 
-		 char *key, 
-		 unsigned int hashval, 
-		 void *data);
+                 unsigned int klen, 
+                 char *key, 
+                 unsigned int hashval, 
+                 void *data);
 
 int Util_HashDelete(uHash *hash, 
-		    unsigned int klen, 
-		    char *key, 
-		    unsigned int hashval);
+                    unsigned int klen, 
+                    char *key, 
+                    unsigned int hashval);
 
 void *Util_HashData(uHash *hash, 
-		   unsigned int klen, 
-		   char *key, 
-		   unsigned int hashval);
+                    unsigned int klen, 
+                    char *key, 
+                    unsigned int hashval);
 
 unsigned int Util_HashHash(unsigned int klen, 
-			   char *key);
+                           char *key);
 
 #ifdef __cplusplus
 }

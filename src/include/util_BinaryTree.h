@@ -9,10 +9,11 @@
  @@*/
 
 #ifndef _BINARYTREE_H_
-#define _BINARYTREE_H_
+#define _BINARYTREE_H_ 1
 
 #ifdef _cplusplus
-extern "C" {
+extern "C" 
+{
 #endif
 
 typedef struct T_TREE
@@ -26,29 +27,29 @@ typedef struct T_TREE
 
 
 uBinTree *Util_BinTreeStoreData(uBinTree *root, 
-				uBinTree *subtree, 
-				void *data, 
-				int (*compare)(const void *, const void *));
+                                uBinTree *subtree, 
+                                void *data, 
+                                int (*compare)(const void *, const void *));
 
 int Util_BinTreeTraverseInorder(uBinTree *root, 
-				int (*process)(void *, void *), 
-				void *info);
+                                int (*process)(void *, void *), 
+                                void *info);
 
 int Util_BinTreeTraversePreorder(uBinTree *root, 
-				 int (*process)(void *, void *), 
-				 void *info);
+                                 int (*process)(void *, void *), 
+                                 void *info);
 
 int Util_BinTreeTraversePostorder(uBinTree *root, 
-				  int (*process)(void *, void *), 
-				  void *info);
+                                  int (*process)(void *, void *), 
+                                  void *info);
 
 int Util_BinTreePrintNodes(uBinTree *root, 
-			   int depth, 
-			   void (*print_node)(void *, int));
+                           int depth, 
+                           void (*print_node)(void *, int));
 
 uBinTree *Util_BinTreeFindNode(uBinTree *root, 
-		       void *data, 
-		       int (*compare)(const void *, const void *));
+                               void *data, 
+                               int (*compare)(const void *, const void *));
 
 #ifdef _cplusplus
 }
