@@ -5,7 +5,7 @@
 #   @desc 
 #   Some useful info.
 #   @enddesc
-#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.1 1999-06-24 09:08:38 goodale Exp $ 
+#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.2 1999-07-15 14:21:16 lanfer Exp $ 
 # @@*/
 
 
@@ -20,6 +20,15 @@ editing files and the clock on the machine you are compiling on are synchronised
 the compilation machine's clock is slow, then the newly made dependency files will
 still be `older' than the file you edited, and the system will loop until this 
 situation changes.
+
+
+2) I get 
+  identifier "DECLARE_CCTK_PARAMETERS" is undefined
+  DECLARE_CCTK_PARAMETERS
+  ^
+  Why ?
+
+You have to include the header: #include "cctk_parameters.h"
 
 
 
