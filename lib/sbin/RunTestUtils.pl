@@ -88,6 +88,8 @@ sub ParseParFile($thorn,$arrangement,$parfile,$config_data)
   # Give a default test name in case none is specified in the parameter file.
   $desc = "$arrangement/$thorn/test/$parfile";
     
+  $active = "";
+
   while (<IN>)
   {
     $line = $_;
@@ -96,12 +98,12 @@ sub ParseParFile($thorn,$arrangement,$parfile,$config_data)
     {
       if($line =~ m/(.*)\"/)
       {
-        $active .= $1;
+        $active .= " ".$1;
         $processing_active = 0;
       }
       else
       {
-        $active .= $line;
+        $active .= " ".$line;
       }
     }
     elsif ($line =~ m/^\s*\!\s*DESC(RIPTION)?\s*\"(.*)\"\s*$/i)
@@ -110,11 +112,11 @@ sub ParseParFile($thorn,$arrangement,$parfile,$config_data)
     }
     elsif ($line =~ m/^\s*ActiveThorns\s*=\s*\"(.*)\"/i)
     {
-      $active = $1;
+      $active .= " ".$1;
     }
     elsif($line =~ m/^\s*ActiveThorns\s*=\s*\"(.*)/i)
     {
-      $active = $1;
+      $active .= " ".$1;
       $processing_active = 1;
     }
   }
