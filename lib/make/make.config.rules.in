@@ -63,15 +63,15 @@ endef
 
 # No preprocessing, just create empty dependency file
 define f_DEPENDENCIES
-	touch $@
+	echo "" > $@
 endef
 
 define f77_DEPENDENCIES
-	touch $@
+	echo "" > $@
 endef
 
 define f90_DEPENDENCIES
-	touch $@
+	echo "">  $@
 endef
 
 #####################################################################
