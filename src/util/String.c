@@ -2,10 +2,10 @@
    @file      String.c
    @date      Tue May  2 10:44:19 2000
    @author    Tom Goodale
-   @desc 
-   Routines dealing with strings.
+   @desc
+              Routines dealing with strings.
    @enddesc
-   @version $Header$
+   @version   $Id$
  @@*/
 
 #include <stdlib.h>
@@ -45,33 +45,33 @@ CCTK_FILEVERSION(util_String_c)
    @routine    CCTK_StrSep
    @date       Tue May  2 10:29:07 2000
    @author     Tom Goodale
-   @desc 
+   @desc
      The strsep() function returns the next token from the string stringp which is delimited by delim.  The token
      is terminated with a `\0' character and stringp is updated to point past the token.
 
      RETURN VALUE
      The strsep() function returns a pointer to the token, or NULL if delim is not found in stringp.
 
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   @enddesc
+   @calls
+   @calledby
+   @history
+
+   @endhistory
    @var     stringp
    @vdesc   The string to search for a token in.
    @vtype   const char **stringp
    @vio     inout
-   @vcomment 
- 
-   @endvar 
+   @vcomment
+
+   @endvar
    @var     delim
    @vdesc   The delimiter
    @vtype   const char *delim
    @vio     in
-   @vcomment 
- 
-   @endvar 
+   @vcomment
+
+   @endvar
 
    @returntype const char *
    @returndesc
@@ -126,7 +126,7 @@ const char *Util_StrSep(const char **stringp, const char *delim)
     retval = NULL;
     retlength = 0;
   }
-  
+
   return retval;
 }
 
@@ -134,44 +134,44 @@ const char *Util_StrSep(const char **stringp, const char *delim)
    @routine    Util_SplitString
    @date       Wed Jan 20 10:14:00 1999
    @author     Tom Goodale
-   @desc 
+   @desc
    Splits a string into two parts at the given seperator.
-   Assigns memory for the two resulting strings, so this should be freed 
+   Assigns memory for the two resulting strings, so this should be freed
    when no longer needed.
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   @enddesc
+   @calls
+   @calledby
+   @history
+
+   @endhistory
    @var     before
    @vdesc   String before seperator
    @vtype   char **
    @vio     out
-   @vcomment 
- 
-   @endvar 
+   @vcomment
+
+   @endvar
    @var     after
    @vdesc   String after seperator
    @vtype   char **
    @vio     out
-   @vcomment 
- 
-   @endvar 
+   @vcomment
+
+   @endvar
    @var     string
    @vdesc   String to seperate
    @vtype   const char *
    @vio     in
-   @vcomment 
- 
-   @endvar 
+   @vcomment
+
+   @endvar
    @var     sep
    @vdesc   String seperator
    @vtype   const char *
    @vio     in
-   @vcomment 
- 
-   @endvar 
+   @vcomment
+
+   @endvar
 
    @returntype int
    @returndesc
@@ -221,10 +221,10 @@ int Util_SplitString(char **before, char **after, const char *string, const char
     /* Copy the data */
     strncpy(*before, string, (int)(position-string));
     (*before)[(int)(position-string)] = '\0';
-  
+
     strncpy(*after, position+strlen(sep), strlen(string)-(int)(position-string)-strlen(sep));
     (*after)[strlen(string)-(position-string)-strlen(sep)] = '\0';
-    
+
     retval = 0;
   }
 
@@ -235,37 +235,37 @@ int Util_SplitString(char **before, char **after, const char *string, const char
    @routine    Util_Strdup
    @date       Thu Mar 28 11:20:27 2000
    @author     Gerd Lanfermann
-   @desc 
+   @desc
    Homegrown ersion of strdup, since it's not guaranteed to be there.
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   @enddesc
+   @calls
+   @calledby
+   @history
+
+   @endhistory
    @var     s
    @vdesc   string to be duplicated
    @vtype   const char *
    @vio     in
-   @vcomment 
- 
-   @endvar 
+   @vcomment
+
+   @endvar
 
    @returntype char *
    @returndesc
    the duplicate string.
    @endreturndesc
 @@*/
-char *Util_Strdup(const char *s) 
+char *Util_Strdup(const char *s)
 {
   char *retstr=NULL;
-  
+
   retstr = (char*) malloc((strlen(s)+1)*sizeof(char));
   if(retstr)
   {
     strcpy(retstr,s);
   }
-    
+
   return retstr;
 }
 
@@ -273,29 +273,29 @@ char *Util_Strdup(const char *s)
    @routine    Util_StrCmpi
    @date       Mon Jul  5 01:19:00 1999
    @author     Tom Goodale
-   @desc 
+   @desc
    Case independent strcmp
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
+   @enddesc
+   @calls
+   @calledby
+   @history
    @hdate Wed Oct 13 15:30:57 1999 @hauthor Tom Goodale
-   @hdesc Checks the length of the two string first. 
-   @endhistory 
+   @hdesc Checks the length of the two string first.
+   @endhistory
    @var     string1
    @vdesc   First string in comparison
    @vtype   const char *
    @vio     in
-   @vcomment 
- 
-   @endvar 
+   @vcomment
+
+   @endvar
    @var     string2
    @vdesc   Second string in comparison
    @vtype   const char *
    @vio     in
-   @vcomment 
- 
-   @endvar 
+   @vcomment
+
+   @endvar
 
    @returntype int
    @returndesc
@@ -304,70 +304,54 @@ char *Util_Strdup(const char *s)
    -ve - string1 < string2
    @endreturndesc
 @@*/
-int Util_StrCmpi(const char *string1, const char *string2)
+int Util_StrCmpi (const char *string1, const char *string2)
 {
   int retval;
-  int position;
 
-  retval = 0;
 
-  if(! retval)
+  do
   {
-    for(position = 0; 
-        string1[position] && string2[position];
-        position++)
-    {
-      if((retval = (tolower(string1[position]) - tolower(string2[position]))))
-      {
-        break;
-      }
-    }
-  }
+    retval = tolower (*string1) - tolower (*string2);
+  } while (! retval && *string1++ && *string2++);
 
-  if(! retval)
-  {
-    retval = strlen(string1) - strlen(string2);
-  }
-
-
-  return retval;
+  return (retval);
 }
 
  /*@
    @routine    Util_SplitFilename
    @date       Wed Oct 4 10:14:00 2000
    @author     Gabrielle Allen
-   @desc 
+   @desc
    Splits a filename into its directory and basic filename parts.
-   Assigns memory for the two resulting strings, so this should be freed 
+   Assigns memory for the two resulting strings, so this should be freed
    when no longer needed.
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   @enddesc
+   @calls
+   @calledby
+   @history
+
+   @endhistory
    @var     dir
    @vdesc   The directory part
    @vtype   char **
    @vio     out
-   @vcomment 
- 
-   @endvar 
+   @vcomment
+
+   @endvar
    @var     file
    @vdesc   The file part
    @vtype   char **
    @vio     out
-   @vcomment 
- 
-   @endvar 
+   @vcomment
+
+   @endvar
    @var     string
    @vdesc   The string to split
    @vtype   const char *
    @vio     out
-   @vcomment 
- 
-   @endvar 
+   @vcomment
+
+   @endvar
 
    @returntype int
    @returndesc
@@ -397,7 +381,7 @@ int Util_SplitFilename (char **dir, char **file, const char *string)
       *dir = NULL;
     }
   }
-  
+
   return (*file ? 0 : -1);
 }
 
@@ -405,40 +389,40 @@ int Util_SplitFilename (char **dir, char **file, const char *string)
    @routine    Util_asprintf
    @date       Thu May 24 16:55:26 2001
    @author     Tom Goodale
-   @desc 
+   @desc
    Sprintf with memory allocation.  On input
    the buffer should point to a NULL area of memory.
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   @enddesc
+   @calls
+   @calledby
+   @history
+
+   @endhistory
    @var     buffer
    @vdesc   Buffer to which to print the string.
    @vtype   char **
    @vio     out
-   @vcomment 
-   *buffer should be NULL on entry.  The routine 
+   @vcomment
+   *buffer should be NULL on entry.  The routine
    allocates the memory, so the previous contents of
    the pointer are lost.
-   On exit the buffer size will be return-value+1 (i.e 
+   On exit the buffer size will be return-value+1 (i.e
    the length of the string plus the \0 ).
-   @endvar 
+   @endvar
    @var     format
    @vdesc   sprintf format string
    @vtype   const char *
    @vio     in
-   @vcomment 
+   @vcomment
    This is a standard sprintf format string.
-   @endvar 
+   @endvar
    @var     ...
    @vdesc   Rest of arguments
    @vtype   varargs
    @vio     in
-   @vcomment 
+   @vcomment
    These are the arguments necessary for the format string.
-   @endvar 
+   @endvar
 
    @returntype int
    @returndesc
@@ -476,45 +460,45 @@ int Util_asprintf(char **buffer, const char *fmt, ...)
    @routine    Util_asprintf
    @date       Thu May 24 16:55:26 2001
    @author     Tom Goodale
-   @desc 
+   @desc
    Sprintf with memory allocation if necessary.  On input
    the buffer should point to an area of memory of length 'size' .
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   @enddesc
+   @calls
+   @calledby
+   @history
+
+   @endhistory
    @var     buffer
    @vdesc   Buffer to which to print the string.
    @vtype   char **
    @vio     out
-   @vcomment 
+   @vcomment
    Buffer to which to print string.  If the buffer is too
-   small, the buffer is freed and a new buffer big enough to hold 
+   small, the buffer is freed and a new buffer big enough to hold
    the string and its null-termination is created.
-   @endvar 
+   @endvar
    @var     size
    @vdesc   initial size of the buffer
    @vtype   int
    @vio     in
-   @vcomment 
+   @vcomment
    This is the initial size of the buffer.
-   @endvar 
+   @endvar
    @var     format
    @vdesc   sprintf format string
    @vtype   const char *
    @vio     in
-   @vcomment 
+   @vcomment
    This is a standard sprintf format string.
-   @endvar 
+   @endvar
    @var     ...
    @vdesc   Rest of arguments
    @vtype   varargs
    @vio     in
-   @vcomment 
+   @vcomment
    These are the arguments necessary for the format string.
-   @endvar 
+   @endvar
 
    @returntype int
    @returndesc
@@ -594,6 +578,4 @@ int main(int argc, char *argv[])
   return 0;
 
 }
-
 #endif /*TEST_CCTK_STRSEP */
-
