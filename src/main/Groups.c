@@ -1264,6 +1264,7 @@ void CCTK_FCALL CCTK_FNAME (CCTK_FirstVarIndexI)
    @returndesc
                the index of the first variable in the given group, or
                -1 if given group name is invalid
+               -2 if given group has no members
    @endreturndesc
 @@*/
 int CCTK_FirstVarIndex (const char *groupname)
