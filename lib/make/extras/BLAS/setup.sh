@@ -35,12 +35,13 @@ if test "X$choose_blas" = 'Xyes' ; then
   fi
 
   if test -z "$BLAS_LIBS"; then
-    BLAS_LIBS='blas blas'
+    BLAS_LIBS='blas'
   fi
 
   # write the variables out to the header and makefiles
   CCTK_WriteLine cctk_Extradefs.h '#define CCTK_BLAS 1'
 
+  CCTK_WriteLine make.extra.defn "HAVE_BLAS     = 1"
   CCTK_WriteLine make.extra.defn "BLAS_LIBS     = $BLAS_LIBS $BLAS_EXTRA_LIBS m"
   CCTK_WriteLine make.extra.defn "BLAS_LIB_DIRS = $BLAS_DIR $BLAS_EXTRA_LIB_DIRS"
   CCTK_WriteLine make.extra.defn ''
