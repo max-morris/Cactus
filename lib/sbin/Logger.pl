@@ -14,7 +14,7 @@ require "$sbin_dir/CSTUtils.pl";
 
 #/*@@
 #  @routine   CreateLogFile
-#  @date      
+#  @date
 #  @author    Yaakoub El-Khamra
 #  @desc
 #  Writes logs of configuration scripts
@@ -24,9 +24,9 @@ sub CreateLogFile
 {
   my($config_dir, $cfg, $thorns)=@_;
   my($data) = '';
-  
+
   foreach $thorn (sort keys %thorns)
-  { 
+  {
     if ($cfg->{"\U$thorn\E PROVIDES"})
     {
       foreach $provides (split (' ', $cfg->{"\U$thorn\E PROVIDES"}))
