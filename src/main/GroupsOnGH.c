@@ -170,6 +170,16 @@ void CCTK_FCALL CCTK_FNAME (CCTK_GroupbboxVN)
                             const int *size,
                             int *bbox,
                             ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (CCTK_ActiveTimeLevelsVI)
+                           (int *num, const cGH *cctkGH, const int *var);
+void CCTK_FCALL CCTK_FNAME (CCTK_ActiveTimeLevelsVN)
+                           (int *num, const cGH *cctkGH, ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (CCTK_ActiveTimeLevelsGI)
+                           (int *num, const cGH *cctkGH, const int *var);
+void CCTK_FCALL CCTK_FNAME (CCTK_ActiveTimeLevelsGN)
+                           (int *num, const cGH *cctk, ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (CCTK_ActiveTimeLevels)
+                           (int *num, const cGH *cctkGH, ONE_FORTSTRING_ARG);
 
 
 
@@ -550,7 +560,7 @@ int CCTK_ActiveTimeLevelsGI(const cGH *GH, int gindex)
 void CCTK_FCALL CCTK_FNAME (CCTK_ActiveTimeLevelsGI)
                            (int *timelevels,
                             const cGH *cctkGH,
-                            int *gindex)
+                            const int *gindex)
 {
   *timelevels = CCTK_ActiveTimeLevelsGI (cctkGH, *gindex);
 }
@@ -607,7 +617,7 @@ int CCTK_ActiveTimeLevelsVI(const cGH *GH, int vindex)
 void CCTK_FCALL CCTK_FNAME (CCTK_ActiveTimeLevelsVI)
                            (int *timelevels,
                             const cGH *cctkGH,
-                            int *vindex)
+                            const int *vindex)
 {
   *timelevels = CCTK_ActiveTimeLevelsVI (cctkGH, *vindex);
 }
