@@ -415,6 +415,12 @@ int CCTKi_ScheduleFunction(void *function,
 
     retcode = CCTKi_DoScheduleFunction(where, name, function, modifier, (void *)attribute);
 
+    if(retcode == -2)
+    {
+      CCTK_VWarn (0, __LINE__, __FILE__, "Cactus",
+                  "Tried to schedule duplicate item '%s' from thorn '%s' in '%s'",
+                  name, thorn, where);
+    }
 #ifdef DEBUG
     fprintf(stderr, "Scheduled %s at %s\n", name, where);
 #endif
@@ -560,6 +566,14 @@ int CCTKi_ScheduleGroup(const char *realname,
   if(attribute && (modifier || (n_before == 0 && n_after == 0 && n_while == 0)))
   {
     retcode = CCTKi_DoScheduleGroup(where, name, realname, modifier, (void *)attribute);
+
+    if(retcode == -2)
+    {
+      CCTK_VWarn (0, __LINE__, __FILE__, "Cactus",
+                  "Tried to schedule duplicate item '%s' from thorn '%s' in '%s'",
+                  name, thorn, where);
+    }
+
 #ifdef DEBUG
     fprintf(stderr, "Scheduled %s at %s\n", name, where);
 #endif

@@ -577,6 +577,7 @@ static t_sched_item *ScheduleCreateItem(const char *name, t_sched_modifier *modi
    @returndesc 
     0 - success
    -1 - memory failure
+   -2 - duplicate item
    @endreturndesc
 @@*/
 static int ScheduleAddItem(int ghandle, t_sched_item *item)
@@ -587,27 +588,35 @@ static int ScheduleAddItem(int ghandle, t_sched_item *item)
 
   this_group = (t_sched_group *)Util_GetHandledData(schedule_groups, ghandle);
 
-  this_group->n_scheditems++;
-
-  temp = (t_sched_item *)realloc(this_group->scheditems, this_group->n_scheditems*sizeof(t_sched_item));
-
-  if(temp)
+  if(ScheduleItemNumber(this_group, item->name) == -1)
   {
-    this_group->scheditems = temp;
-    this_group->scheditems[this_group->n_scheditems-1] = *item;
+    this_group->n_scheditems++;
+
+    temp = (t_sched_item *)realloc(this_group->scheditems, this_group->n_scheditems*sizeof(t_sched_item));
+
+    if(temp)
+    {
+      this_group->scheditems = temp;
+      this_group->scheditems[this_group->n_scheditems-1] = *item;
 
 #ifdef DEBUG_SCHEDULAR
-    printf("Added item '%s' to group '%s'\n", item->name, this_group->name);
+      printf("Added item '%s' to group '%s'\n", item->name, this_group->name);
 #endif
 
-    free(item);
+      free(item);
 
-    retcode = 0;
+      retcode = 0;
+    }
+    else
+    {
+      this_group->n_scheditems--;
+      retcode = -1;
+    }
   }
   else
   {
-    this_group->n_scheditems--;
-    retcode = -1;
+    /* Item already existed. */
+    retcode = -2;
   }
 
   return retcode;
