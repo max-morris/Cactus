@@ -234,11 +234,12 @@ sub parse_param_ccl
 	&CST_error(0,$message,__LINE__,__FILE__);
 	$line_number++ until ($data[$line_number] =~ m:\}:);
       }
-      elsif(! $data[$line_number+1] =~ m:^\s*\{\s*$:)
+      elsif($data[$line_number+1] !~ m:^\s*\{\s*$:)
+
       {
 	# Since the data should have no blank lines, the next
 	# line should have { on it.
-	$message = "Parse error in $thorn/param.ccl";
+	$message = "Parse error in $thorn/param.ccl - missing \"{\" in definition of parameter \"$variable\"";
 	&CST_error(0,$message,__LINE__,__FILE__);
 	# Move past the end of this block.
 	$line_number++ until ($data[$line_number] =~ m:\}:);
