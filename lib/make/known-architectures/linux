@@ -86,7 +86,11 @@ else
          : ${LIBS="g2c m"} 
        fi
        if test "$LINUX_G77_USES_LIBG2C" = "no" ; then
-         : ${LIBS="f2c m"} 
+	 if test "$host_cpu" = "powerpc" ; then
+         : ${LIBS="m"}
+	 else
+         : ${LIBS="f2c m"}
+	 fi
        fi
        : ${F77_DEBUG_FLAGS="-g"}
        : ${F90_DEBUG_FLAGS="-g"}
@@ -279,7 +283,7 @@ else
         echo "Setting L2_CACHELINE_BYTES to $L2_CACHELINE_BYTES"
         ;;
        *)
-        echo "Don't know cache size for cpu $host_cpu"
+        echo "Don't know cacheline size for cpu $host_cpu"
         ;;
      esac
   fi
@@ -291,7 +295,7 @@ else
         # for IA64 set it to 2MB for now (actually it's the L3 cache size)
         L2_CACHE_SIZE=2*1024
       else
-        L2_CACHE_SIZE="`cat /proc/cpuinfo | perl -nae 'if(m:cache: && ! $dunnit) {print $F[3]; $dunnit=1}'`"
+        L2_CACHE_SIZE="`cat /proc/cpuinfo | perl -nae 'if(m:cache\D+(\d+): && ! $dunnit) {print $1; $dunnit=1}'`"
 	if test -z "$L2_CACHE_SIZE"; then
           L2_CACHE_SIZE=0
         fi
