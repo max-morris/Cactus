@@ -398,10 +398,11 @@ int CCTK_ParameterSet (const char *name, const char *thorn, const char *value)
        from the parameter file are overwritten by the checkpoint file */
       if (param->props->steerable == CCTK_STEERABLE_NEVER)
       {
-        CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
-                    "CCTK_ParameterSet: Parameter '%s::%s' is non-steerable "
-                    "and will be overwritten by its value from the checkpoint "
-                    "file", thorn, name);
+        CCTK_VWarn (2, __LINE__, __FILE__, "Cactus",
+                    "CCTK_ParameterSet: Non-steerable parameter '%s::%s' is "
+                    "not set from the parameter file but recovered from the "
+                    "checkpoint file",
+                    thorn, name);
       }
       else
       {
