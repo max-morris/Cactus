@@ -1,14 +1,15 @@
  /*@@
    @file      Reduction.c
-   @date      
+   @date      1999/05/13
    @author    Gabrielle Allen
-   @desc 
-   This file contains routines to deal with registering and 
-   using functions providing reduction operations.
+   @desc
+              This file contains routines to deal with registering and 
+              using functions providing reduction operations.
    @enddesc 
+   @version   $Id$
  @@*/
 
-/*#define DEBUG_REDUCTION*/
+/* #define DEBUG_REDUCTION 1 */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -93,6 +94,31 @@ void CCTK_FCALL CCTK_FNAME(CCTK_ReduceLocalArray1D)
       int *num_in_array1d,
       int *data_type);
 
+void CCTK_FCALL CCTK_FNAME(CCTK_ReduceLocArrayToArray1D)
+     (int *fortran_return,
+      cGH *GH, 
+      int *proc,
+      int *operation_handle,
+      void *in_array1d,
+      void *out_array1d,
+      int *num_in_array1d,
+      int *data_type);
+void CCTK_FCALL  CCTK_FNAME(CCTK_ReduceLocArrayToArray2D)
+     (int  *fortran_return, cGH *GH, 
+      int  *proc,
+      int  *operation_handle,
+      void *in_array2d,
+      void *out_array2d,
+      int  *xsize, int *ysize,
+      int  *data_type);
+void CCTK_FCALL  CCTK_FNAME(CCTK_ReduceLocArrayToArray3D)
+     (int  *fortran_return, cGH *GH,
+      int  *proc,
+      int  *operation_handle,
+      void *in_array3d,
+      void *out_array3d,
+      int  *xsize, int *ysize, int *zsize,
+      int  *data_type);
 /********************************************************************
  ********************    Internal Typedefs   ************************
  ********************************************************************/
