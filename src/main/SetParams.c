@@ -175,6 +175,21 @@ int CCTKi_SetParameter (const char *parameter, const char *value, int lineno)
       num_1errors++;
     }
   }
+  else if (retval == -8)
+  {
+    /* Tried to set an array base parameter */
+    CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
+                "In parameter file '%s' line %d: Parameter '%s' is an "
+                "array base parameter; please use %s[<number>]", parfile, lineno, parameter, parameter);
+    if (parameter_check == CCTK_PARAMETER_STRICT)
+    {
+      num_0errors++;
+    }
+    else if (parameter_check == CCTK_PARAMETER_NORMAL)
+    {
+      num_1errors++;
+    }
+  }
   else if (retval == -9)
   {
     /* Parameter adds to an accumulator and that value would be out of range. */

@@ -528,6 +528,7 @@ void CCTKi_ParameterAccumulatorBase(const char *thorn,
                -3 if trying to steer a non-steerable parameter<br>
                -6 if not a valid integer or float<br>
                -7 if tried to set an accumulator parameter directly<br>
+               -8 if tried to set an accumulator parameter directly<br>
                -9 if final value of accumulator out of range<br>
    @endreturndesc
 @@*/
@@ -546,6 +547,7 @@ int CCTK_ParameterSet (const char *name, const char *thorn, const char *value)
       CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
                   "CCTK_ParameterSet: Cannot set base array parameter '%s::%s' "
                   , thorn, name);
+      retval = -8;
     }
     else if(param->props->accumulator_expression)
     {
@@ -1137,7 +1139,7 @@ static t_param *ParameterFind (const char *name,
 
   if(list)
   {
-    if(list->param->array)
+    if(list->param->array && array_index > -1)
     {
       if(array_index < list->param->props->array_size)
       {
@@ -2254,7 +2256,7 @@ static void GetBaseName(const char *name, char **basename, int *array_index)
   else
   {
     baselen = strlen(name);
-    *array_index = 0;
+    *array_index = -1;
   }
 
   *basename = (char *)malloc(baselen+1);
