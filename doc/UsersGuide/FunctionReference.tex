@@ -6401,12 +6401,12 @@ many are C-only.
 %%\item[Util\_StringListNext]
 %%     [\pageref{Util-StringListNext}]
 
-\item[Util\_strlcat]
-     [\pageref{Util-strlcat}]
+\item[Util\_Strlcat]
+     [\pageref{Util-Strlcat}]
 Concatenate two strings safely.
 
-\item[Util\_strlcpy]
-     [\pageref{Util-strlcpy}]
+\item[Util\_Strlcpy]
+     [\pageref{Util-Strlcpy}]
 Copy a string safely.
 
 \item[Util\_TableClone]
@@ -6566,92 +6566,125 @@ a copy of a specified C-style null-terminated character string
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\begin{FunctionDescription}{Util\_strlcat}
-\label{Util-strlcat}
+\begin{FunctionDescription}{Util\_Strlcat}
+\label{Util-Strlcat}
 Concatenate strings safely. 
 
 \begin{SynopsisSection}
 \begin{Synopsis}{C}
 \begin{verbatim}
-
 #include "util_String.h"
-size_t strlcat(char *dst, const char *src, size_t size);
-
+size_t result_len = Util_Strlcat(char *dst, const char *src, size_t size);
 \end{verbatim}
 \end{Synopsis}
 \end{SynopsisSection}
 
 \begin{ResultSection}
-\begin{Result}{size\_t}
-The size of the string the function tried to create -- i.e. the
-initial size of dst plus the size of src.
+\begin{Result}{result\_len}
+The size of the string the function tried to create, i.e.\hbox{}
+the initial \verb|strlen(dst)| plus \verb|strlen(src)|.
 \end{Result}
 \end{ResultSection}
 
 \begin{ParameterSection}
 \begin{Parameter}{dst}
-The destination string.
+A non-NULL pointer to the (C-style NUL-terminated) destination string.
 \end{Parameter}
 \begin{Parameter}{src}
-The source string.
+A non-NULL pointer to the (C-style NUL-terminated) source string.
 \end{Parameter}
 \begin{Parameter}{size}
 The size of the destination buffer.
 \end{Parameter}
-
 \end{ParameterSection}
 
 \begin{Discussion}
+The standard \verb|strcat()| and \verb|strcpy()| functions provide
+no way to specify the size of the destination buffer, so code using
+these functions is often vulnerable to buffer overflows.  The standard
+\verb|strncat()| and \verb|strncpy()| functions can be used to write
+safe code, but their API is cumbersome, error-prone, and sometimes
+surprisingly inefficient:
+\begin{itemize}
+\item	Their \verb|size| arguments are the number of characters
+	{\em remaining\/} in the destination buffer, which must
+	often be calculated at run-time, and is prone to off-by-one
+	errors.
+\item	\verb|strncpy()| doesn't always NUL-terminate the destination string.
+\item	\verb|strncpy()| NUL-fills the remainder of the buffer not
+	used for the source string; this NUL-filling can be {\em very\/}
+	expensive.
+\end{itemize}
 
-The strlcat function is a safer alternative to strncat, and is
-available in OpenBSD.  Since it is not POSIX, we provide an equivalent
-utility function.
+To solve these problems, the OpenBSD project developed the
+\verb|strlcat()| and \verb|strlcpy()| functions.  See
+\verb|http://www.openbsd.org/papers/strlcpy-paper.ps|
+for a history and general discussion of these functions.
+Some other Unix systems (notably Solaris) now provide these,
+but many don't, so Cactus provides its own versions,
+\verb|Util_Strlcat()| and \verb|Util_Strlcpy()|.
 
-This function appends the NULL-terminated string src to the end of
-dst.  It appends at most size - strlen(dst) - 1 bytes and
-NULL-terminates the result.  Note that both src and dst must be proper
-C null-terminated strings.
-
+\verb|Util_Strlcat()| appends the NUL-terminated string \verb|src| to the
+end of the NUL-terminated string \verb|dst|.  It will append at most
+\verb|size - strlen(dst) - 1| characters (hence it never overflows the
+destination buffer), and it always leaves \verb|dst| string NUL-terminated.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{Util\_strlcpy()}
-safely copy a string.
+\begin{SeeAlso}{Util\_Strlcpy()}
+Safely copy a string.
 \end{SeeAlso}
 \end{SeeAlsoSection}
 
 \begin{ExampleSection}
 \begin{Example}{C}
 \begin{verbatim}
-
 #include "util_String.h"
 
-  /* Very simple example of use */
-  char *src;
-  char buf[BUFSIZ];
+/*
+ * safely concatenate strings s1,s2,s3 into buffer:
+ * ... this code is safe (it will never overflow the buffer), but
+ *     quick-n-dirty in that it doesn't give any error indication
+ *     if the result is truncated to fit in the buffer
+ */
+#define BUFFER_SIZE     1024
+char buffer[BUFFER_SIZE];
 
-  ...
-
-  strlcat(buf, s, sizeof(buf));
-
+Util_Strlcpy(buffer, s1, sizeof(buffer));
+Util_Strlcat(buffer, s2, sizeof(buffer));
+Util_Strlcat(buffer, s3, sizeof(buffer));
 \end{verbatim}
 \end{Example}
 \begin{Example}{C}
 \begin{verbatim}
-
 #include "util_String.h"
 
-  /* Detect truncation */
-  char *src;
-  char buf[BUFSIZ];
+#define OK              0
+#define ERROR_TRUNC     1
 
-  ...
+/*
+ * safely concatenate strings s1,s2,s3 into buffer[N_buffer];
+ * return OK if ok, ERROR_TRUNC if result was truncated to fit in buffer
+ */
+int cat3(int N_buffer, char buffer[],
+         const char s1[], const char s2[], const char s3[])
+{
+int length;
 
-  if(strlcat(buf, s, sizeof(buf)) > sizeof(buf))
-  {
-    printf("Buffer is too small\n");
-  }
+length = Util_Strlcpy(buffer, s1, N_buffer);
+if (length >= N_buffer)
+        return ERROR_TRUNC;                   /*** ERROR EXIT ***/
 
+length = Util_Strlcat(buffer, s2, N_buffer);
+if (length >= N_buffer)
+        return ERROR_TRUNC;                   /*** ERROR EXIT ***/
+
+length = Util_Strlcat(buffer, s3, N_buffer);
+if (length >= N_buffer)
+        return ERROR_TRUNC;                   /*** ERROR EXIT ***/
+
+return OK;                                    /*** NORMAL RETURN ***/
+}
 \end{verbatim}
 \end{Example}
 \end{ExampleSection}
@@ -6659,92 +6692,126 @@ safely copy a string.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\begin{FunctionDescription}{Util\_strlcpy}
-\label{Util-strlcpy}
+\begin{FunctionDescription}{Util\_Strlcpy}
+\label{Util-Strlcpy}
 Copies a string safely. 
 
 \begin{SynopsisSection}
 \begin{Synopsis}{C}
 \begin{verbatim}
-
 #include "util_String.h"
-size_t strlcpy(char *dst, const char *src, size_t size);
-
+size_t result_len = Util_Strlcpy(char *dst, const char *src, size_t size);
 \end{verbatim}
 \end{Synopsis}
 \end{SynopsisSection}
 
 \begin{ResultSection}
-\begin{Result}{size\_t}
-The size of the string the function tried to create -- i.e. the size
-of src.
+\begin{Result}{result\_len}
+The size of the string the function tried to create, i.e.\hbox{}
+\verb|strlen(src)|.
 \end{Result}
 \end{ResultSection}
 
 \begin{ParameterSection}
 \begin{Parameter}{dst}
-The destination string.
+A non-NULL pointer to the (C-style NUL-terminated) destination string.
 \end{Parameter}
 \begin{Parameter}{src}
-The source string.
+A non-NULL pointer to the (C-style NUL-terminated) source string.
 \end{Parameter}
 \begin{Parameter}{size}
 The size of the destination buffer.
 \end{Parameter}
-
 \end{ParameterSection}
 
 \begin{Discussion}
+The standard \verb|strcat()| and \verb|strcpy()| functions provide
+no way to specify the size of the destination buffer, so code using
+these functions is often vulnerable to buffer overflows.  The standard
+\verb|strncat()| and \verb|strncpy()| functions can be used to write
+safe code, but their API is cumbersome, error-prone, and sometimes
+surprisingly inefficient:
+\begin{itemize}
+\item	Their \verb|size| arguments are the number of characters
+	{\em remaining\/} in the destination buffer, which must
+	often be calculated at run-time, and is prone to off-by-one
+	errors.
+\item	\verb|strncpy()| doesn't always NUL-terminate the destination string.
+\item	\verb|strncpy()| NUL-fills the remainder of the buffer not
+	used for the source string; this NUL-filling can be {\em very\/}
+	expensive.
+\end{itemize}
 
-The strlcpy function is a safer alternative to strncpy, and is
-available in OpenBSD.  Since it is not POSIX, we provide an equivalent
-utility function.
+To solve these problems, the OpenBSD project developed the
+\verb|strlcat()| and \verb|strlcpy()| functions.  See
+\verb|http://www.openbsd.org/papers/strlcpy-paper.ps|
+for a history and general discussion of these functions.
+Some other Unix systems (notably Solaris) now provide these,
+but many don't, so Cactus provides its own versions,
+\verb|Util_Strlcat()| and \verb|Util_Strlcpy()|.
 
-This function copies up to size-1 bytes from the source string to the
-destination string, and null-terminates the result (unlike strncpy
-which does not guarantee null-termkination).  Note that src must be a
-proper C null-terminated string.
-
+\verb|Util_Strlcpy()| copies up to \verb|size-1| characters from the
+source string to the destination string, followed by a NUL character
+(so \verb|dst| is always NUL-terminated).  Unlike \verb|strncpy()|,
+\verb|Util_Strlcpy()| does {\em not\/} fill any left-over space at
+the end of the destination buffer with NUL characters.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{Util\_strlcat()}
-safely concatenates two strings.
+\begin{SeeAlso}{Util\_Strlcat()}
+Safely concatenates two strings.
 \end{SeeAlso}
 \end{SeeAlsoSection}
 
 \begin{ExampleSection}
 \begin{Example}{C}
 \begin{verbatim}
-
 #include "util_String.h"
 
-  /* Very simple example of use */
-  char *src;
-  char buf[BUFSIZ];
+/*
+ * safely concatenate strings s1,s2,s3 into buffer:
+ * ... this code is safe (it will never overflow the buffer), but
+ *     quick-n-dirty in that it doesn't give any error indication
+ *     if the result is truncated to fit in the buffer
+ */
+#define BUFFER_SIZE     1024
+char buffer[BUFFER_SIZE];
 
-  ...
-
-  strlcpy(buf, s, sizeof(buf));
-
+Util_Strlcpy(buffer, s1, sizeof(buffer));
+Util_Strlcat(buffer, s2, sizeof(buffer));
+Util_Strlcat(buffer, s3, sizeof(buffer));
 \end{verbatim}
 \end{Example}
 \begin{Example}{C}
 \begin{verbatim}
-
 #include "util_String.h"
 
-  /* Detect truncation */
-  char *src;
-  char buf[BUFSIZ];
+#define OK              0
+#define ERROR_TRUNC     1
 
-  ...
+/*
+ * safely concatenate strings s1,s2,s3 into buffer[N_buffer];
+ * return OK if ok, ERROR_TRUNC if result was truncated to fit in buffer
+ */
+int cat3(int N_buffer, char buffer[],
+         const char s1[], const char s2[], const char s3[])
+{
+int length;
 
-  if(strlcpy(buf, s, sizeof(buf)) > sizeof(buf))
-  {
-    printf("Buffer is too small\n");
-  }
+length = Util_Strlcpy(buffer, s1, N_buffer);
+if (length >= N_buffer)
+        return ERROR_TRUNC;                   /*** ERROR EXIT ***/
 
+length = Util_Strlcat(buffer, s2, N_buffer);
+if (length >= N_buffer)
+        return ERROR_TRUNC;                   /*** ERROR EXIT ***/
+
+length = Util_Strlcat(buffer, s3, N_buffer);
+if (length >= N_buffer)
+        return ERROR_TRUNC;                   /*** ERROR EXIT ***/
+
+return OK;                                    /*** NORMAL RETURN ***/
+}
 \end{verbatim}
 \end{Example}
 \end{ExampleSection}
