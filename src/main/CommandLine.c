@@ -23,6 +23,8 @@
 #include "cctk_ActiveThorns.h"
 #include "cctki_WarnLevel.h"
 
+#include "CactusCommFunctions.h"
+
 #define NEED_PARAMETER_SCOPE_STRINGS
 #define NEED_PARAMETER_TYPE_STRINGS
 
@@ -63,16 +65,17 @@ static int redirectsubs;
 void CCTKi_CommandLineTestThornCompiled(const char *optarg)
 {
   int retval;
+  char mess[512];
 
   if((retval = CCTK_IsThornCompiled(optarg)))
   {
-    printf("Thorn '%s' available.\n", optarg);
+    sprintf(mess,"Thorn '%s' available.\n", optarg);
   }
   else
   {
-    printf("Thorn '%s' unavailable.\n", optarg);
+    sprintf(mess,"Thorn '%s' unavailable.\n", optarg);
   }
-
+  CCTK_Info("CommandlineParser", mess);
   CCTK_Exit(retval,NULL);
 }
 
@@ -85,13 +88,14 @@ void CCTKi_CommandLineDescribeAllParameters(const char *optarg)
   const char *thornname;
   char *param;
   const cParamData *properties;
+  char mess[1024];
 
   n_thorns = CCTK_NumCompiledThorns ();
 
   for(thorn = 0; thorn < n_thorns; thorn++)
   {
     thornname = CCTK_CompiledThorn (thorn);
-    printf("\nParameters of thorn '%s' providing implementation '%s':\n",
+    sprintf(mess,"\nParameters of thorn '%s' providing implementation '%s':\n",
            thornname, CCTK_ThornImplementation(thornname));
 
     first = 1;
@@ -105,13 +109,14 @@ void CCTKi_CommandLineDescribeAllParameters(const char *optarg)
             CommandLinePrintParameter(properties);
             break;
           default :
-            fprintf(stderr, "Unknown verbosity option %s\n", optarg);
+            sprintf(mess,"%sUnknown verbosity option %s\n", mess, optarg);
+	    CCTK_Info("CommandlineParser", mess);
             CCTK_Exit(2,NULL);
         }
       }
       else
       {
-        printf("%s\n", param);
+        sprintf(mess,"%s%s\n", mess, param);
       }
 
       free(param);
@@ -120,7 +125,7 @@ void CCTKi_CommandLineDescribeAllParameters(const char *optarg)
   }
 
   /*  CCTKi_BindingsParameterHelp(NULL,"%s",stdout);*/
- 
+  CCTK_Info("CommandlineParser", mess);
   CCTK_Exit(0,NULL);
 }
 
@@ -243,9 +248,10 @@ void CCTKi_CommandLineRedirectStdout(void)
 
 void CCTKi_CommandLineListThorns(void)
 {
-  printf ("\n---------------Compiled Thorns-------------\n");
+  char mess[2048];
+  CCTK_Info("CommandlineParser", "\n---------------Compiled Thorns-------------\n");
   CCTKi_PrintThorns(stdout, "  %s\n", 0);
-  printf ("-------------------------------------------\n\n");
+  /*$CCTK_Info ("CommandlineParser", "-------------------------------------------\n\n");$*/
   CCTK_Exit(1,NULL);
 }
 
@@ -267,6 +273,7 @@ void CCTKi_CommandLineVersion(void)
 {
   int argc;
   char **argv;
+  char mess[512];
 
   const char *version=NULL;
 
@@ -274,9 +281,9 @@ void CCTKi_CommandLineVersion(void)
 
   version = (const char *)CCTK_FullVersion();
 
-  printf("%s: Version %s.  Compiled on %s at %s\n", argv[0], version, 
+  sprintf(mess,"%s: Version %s.  Compiled on %s at %s\n", argv[0], version, 
           compileDate(), compileTime());
-
+  CCTK_Info("CommandlineParser", mess);
   CCTK_Exit(1,NULL);
 }
 
@@ -320,7 +327,7 @@ void CCTKi_CommandLineHelp(void)
   sprintf(mess,"%s-T, -list-thorns                    : Lists the compiled-in thorns.\n", mess);
   sprintf(mess,"%s-t, -test-thorn-compiled <name>     : Tests for the presence of thorn <name>.\n", mess);
   sprintf(mess,"%s-v, -version                        : Prints the version.\n", mess);
-  CCTK_Info("CommandlineParser:",mess);
+  CCTK_Info("CommandlineParser",mess);
   CCTK_Exit(1,NULL);
 }
 
@@ -342,10 +349,12 @@ void CCTKi_CommandLineUsage(void)
 {
   int argc;
   char **argv;
+  char mess[512];
 
   argc = CCTK_CommandLine(&argv);
 
-  printf("Usage: %s [-h] [-O] [-o paramname] [-x [nprocs]] [-W n] [-E n] [-r] [-T] [-t name] [-v] <parameter_file_name>\n", argv[0]);
+  sprintf(mess,"Usage: %s [-h] [-O] [-o paramname] [-x [nprocs]] [-W n] [-E n] [-r] [-T] [-t name] [-v] <parameter_file_name>\n", argv[0]);
+  CCTK_Info("CommandlineParser", mess);
   CCTK_Exit(1,NULL);
 }  
 
@@ -409,26 +418,28 @@ void CCTKi_CommandLineFinished(void)
 static void CommandLinePrintParameter(const cParamData *properties)
 {
   t_range *range;
+  char mess[2048];
 
+  sprintf(mess,"");
   if(properties)
   {
-    printf("Parameter:   %s::%s", properties->thorn, properties->name);
+    sprintf(mess, "%sParameter:   %s::%s", mess, properties->thorn, properties->name);
     if(properties->scope != SCOPE_PRIVATE)
     {
-      printf(", %s::%s", CCTK_ThornImplementation(properties->thorn),
+      sprintf(mess, "%s, %s::%s", mess,CCTK_ThornImplementation(properties->thorn),
                          properties->name);
     }
-    printf("\n");
-    printf("Description: \"%s\"\n", properties->description);
-    printf("Type:        %s\n", cctk_parameter_type_names[properties->type-1]);
-    printf("Default:     %s\n", properties->defval);
-    printf("Scope:       %s\n", cctk_parameter_scopes[properties->scope-1]);
+    sprintf(mess, "%s\n");
+    sprintf(mess, "%sDescription: \"%s\"\n", mess,properties->description);
+    sprintf(mess, "%sType:        %s\n", mess,cctk_parameter_type_names[properties->type-1]);
+    sprintf(mess, "%sDefault:     %s\n", mess,properties->defval);
+    sprintf(mess, "%sScope:       %s\n", mess,cctk_parameter_scopes[properties->scope-1]);
     
     for(range=properties->range; range; range=range->next)
     {
-      printf("  Range:     %s\n", range->range);
-      printf("    Origin:      %s\n", range->origin);
-      printf("    Description: %s\n", range->description);
+      sprintf(mess, "%s  Range:     %s\n", mess,range->range);
+      sprintf(mess, "%s    Origin:      %s\n", mess,range->origin);
+      sprintf(mess, "%s    Description: %s\n", mess,range->description);
     }
   }
 
