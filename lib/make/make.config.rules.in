@@ -56,6 +56,11 @@ define F_DEPENDENCIES
 	$(DEPENDENCY_FIXER)
 endef
 
+define F90_DEPENDENCIES
+	$(F_DEPEND) $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DFCODE $< $(F_DEPEND_OUT)
+	$(DEPENDENCY_FIXER)
+endef
+
 #####################################################################
 # Define how to do a C compilation
 define PREPROCESS_C
@@ -93,28 +98,44 @@ endef
 define POSTPROCESS_F77
 endef
 
-# Define how to do a F90 compilation
+# Define how to do a fixed-format F90 compilation
+define PREPROCESS_F
+cat $< | sed 's.//.AUTOMATICALLY_GENERATED_CONCATONATION_PROTECTION_STRING.g' | $(CPP) $(CPPFLAGS) $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DFCODE - |  $(PERL) -p -e 's/__FORTRANFILE__/\"$(basename $(notdir $<)).F\"/g; s.AUTOMATICALLY_GENERATED_CONCATONATION_PROTECTION_STRING.//.g' - | $(PERL) $(F_FILE_PROCESSOR) > $(basename $(notdir $<)).f
+endef
+
+define COMPILE_F
+current_wd=`$(GET_WD)` ; cd $(SCRATCH_BUILD) ; $(F90) $(DEBUG_F90) $(F90FLAGS) $(FCOMPILEONLY)$(OPTIONSEP)$$current_wd$(DIRSEP)$@ $$current_wd$(DIRSEP)$(basename $(notdir $<)).f  
+endef
+
+define POSTPROCESS_F
+endef
+
+# Define how to do a free-format F90 compilation
 define PREPROCESS_F90
-cat $< | sed 's.//.AUTOMATICALLY_GENERATED_CONCATONATION_PROTECTION_STRING.g' | $(CPP) $(CPPFLAGS) $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DFCODE - |  $(PERL) -p -e  's/__FORTRANFILE__/\"$(basename $(notdir $<)).F\"/g ;s.AUTOMATICALLY_GENERATED_CONCATONATION_PROTECTION_STRING.//.g' | $(PERL) $(F_FILE_PROCESSOR) > $(basename $(notdir $<)).f
+cat $< | sed 's.//.AUTOMATICALLY_GENERATED_CONCATONATION_PROTECTION_STRING.g' | $(CPP) $(CPPFLAGS) $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DFCODE - |  $(PERL) -p -e 's/__FORTRANFILE__/\"$(basename $(notdir $<)).F\"/g; s.AUTOMATICALLY_GENERATED_CONCATONATION_PROTECTION_STRING.//.g' - | $(PERL) -s $(F_FILE_PROCESSOR) -free_format > $(basename $(notdir $<)).f90
 endef
 
 define COMPILE_F90
-current_wd=`$(GET_WD)` ; cd $(SCRATCH_BUILD) ; $(F90) $(DEBUG_F90) $(F90FLAGS) $(FCOMPILEONLY)$(OPTIONSEP)$$current_wd$(DIRSEP)$@ $$current_wd$(DIRSEP)$(basename $(notdir $<)).f  
+current_wd=`$(GET_WD)` ; cd $(SCRATCH_BUILD) ; $(F90) $(DEBUG_F90) $(F90FLAGS) $(FCOMPILEONLY)$(OPTIONSEP)$$current_wd$(DIRSEP)$@ $$current_wd$(DIRSEP)$(basename $(notdir $<)).f90  
 endef
 
 define POSTPROCESS_F90
 endef
 
 
+# Define how to do a f77 compilation
+define PREPROCESS_f77
+cat $< > $(basename $(notdir $<)).f
+endef
+
 # Define how to do a f compilation
 define PREPROCESS_f
 cat $< > $(basename $(notdir $<)).f
 endef
 
-
-# Define how to do a f77 compilation
-define PREPROCESS_f77
-cat $< > $(basename $(notdir $<)).f
+# Define how to do a f90 compilation
+define PREPROCESS_f90
+cat $< > $(basename $(notdir $<)).f90
 endef
 
 
@@ -128,7 +149,6 @@ endef
 	$(COMPILE_C)
 	@echo Postprocessing $<
 	$(POSTPROCESS_C)
-
 
 %.c.d: $(SRCDIR)/%.c
 	$(C_DEPENDENCIES)
@@ -212,10 +232,35 @@ endef
 %.f77.d: $(SRCDIR)/%.f77
 	$(F77_DEPENDENCIES)
 
-
 # Build rules for F90
 
 %.F.o: $(SRCDIR)/%.F
+	@echo $(DIVIDER)
+	@echo Preprocessing $<
+	$(PREPROCESS_F)
+	@echo Compiling $(DEBUG_F90) $<
+	$(COMPILE_F)
+	@echo Postprocessing $<
+	$(POSTPROCESS_F)
+
+%.f.o: $(SRCDIR)/%.f
+	@echo $(DIVIDER)
+	@echo Copying $<
+	$(PREPROCESS_f)
+	@echo Compiling $(DEBUG_F90) $<
+	$(COMPILE_F)
+	@echo Postprocessing $<
+	$(POSTPROCESS_F)
+
+%.F.d: $(SRCDIR)/%.F
+	$(F_DEPENDENCIES)
+
+%.f.d: $(SRCDIR)/%.f
+	$(F_DEPENDENCIES)
+
+# Build rules for free-format F90
+
+%.F90.o: $(SRCDIR)/%.F90
 	@echo $(DIVIDER)
 	@echo Preprocessing $<
 	$(PREPROCESS_F90)
@@ -224,18 +269,17 @@ endef
 	@echo Postprocessing $<
 	$(POSTPROCESS_F90)
 
-%.f.o: $(SRCDIR)/%.f
+%.f90.o: $(SRCDIR)/%.f90
 	@echo $(DIVIDER)
 	@echo Copying $<
-	$(PREPROCESS_f)
+	$(PREPROCESS_f90)
 	@echo Compiling $(DEBUG_F90) $<
 	$(COMPILE_F90)
 	@echo Postprocessing $<
 	$(POSTPROCESS_F90)
 
-%.F.d: $(SRCDIR)/%.F
-	$(F_DEPENDENCIES)
+%.F90.d: $(SRCDIR)/%.F90
+	$(F90_DEPENDENCIES)
 
-%.f.d: $(SRCDIR)/%.f
-	$(F_DEPENDENCIES)
-
+%.f90.d: $(SRCDIR)/%.f90
+	$(F90_DEPENDENCIES)
