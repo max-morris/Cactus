@@ -227,8 +227,7 @@ sub parse_param_ccl
 
         $message = "Duplicate parameter $variable in thorn $thorn. Ignoring second definition";
         &CST_error(1,$message,"",__LINE__,__FILE__);
-
-        $line_number++ until ($data[$line_number] =~ m:\}:);
+        $line_number++ until ($line_number>@data || $data[$line_number] =~ m:\}:);
       }
       elsif($use_or_extend && $use_or_extend =~ m:(EXTENDS|USES):i && $block !~ m:SHARES\s*\S:)
       {
@@ -477,7 +476,7 @@ sub parse_param_ccl
       }
       else
       {
-	$line =~ /^(.*)\n+$/;
+	$line =~ /^(.*)\n*$/;
         $message = "Unknown line in param.ccl for thorn $thorn\n\"$1\"";
         &CST_error(0,$message,"",__LINE__,__FILE__);
       }
@@ -485,7 +484,7 @@ sub parse_param_ccl
   }
   
   $parameter_db{"\U$thorn\E SHARES implementations"} = join(" ", sort keys %friends);
-  
+
   return %parameter_db;
 }
 
