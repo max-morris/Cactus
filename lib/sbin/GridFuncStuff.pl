@@ -1130,9 +1130,9 @@ sub VerifyParameterExpression
   my($i,$count,@fields);
 
   # First do some global checks
-  if($expression !~ m%^[-+*/a-zA-Z0-9_():]+$%)
+  if($expression !~ m%^[-+*/a-zA-Z0-9_():\[\]]+$%)
   {
-    &CST_error(0, "Array size in $thornname is an invalid arithmatic expression \n"
+    &CST_error(0, "Array size in $thornname is an invalid arithmetic expression \n"
                .  "      '$expression' contains invalid characters");
   }
 
@@ -1145,7 +1145,7 @@ sub VerifyParameterExpression
 
     if($count < 0)
     {
-      &CST_error(0, "Array size in $thornname is an invalid arithmatic expression \n"
+      &CST_error(0, "Array size in $thornname is an invalid arithmetic expression \n"
                  .  "        '$expression' has too many closing parentheses",
                 "",__LINE__,__FILE__);
     }
@@ -1153,7 +1153,7 @@ sub VerifyParameterExpression
 
     if($count > 0)
     {
-      &CST_error(0, "Array size in $thornname is an invalid arithmatic expression \n"
+      &CST_error(0, "Array size in $thornname is an invalid arithmetic expression \n"
                  .  "        '$expression' has unmatched parentheses",
                  "",__LINE__,__FILE__);
     }
@@ -1161,7 +1161,7 @@ sub VerifyParameterExpression
 
   if($expression =~ m:[-+*/]$:)
   {
-    &CST_error(0, "Array size in $thornname is an invalid arithmatic expression \n"
+    &CST_error(0, "Array size in $thornname is an invalid arithmetic expression \n"
                .  "          '$expression' ends with an operator",
                "",__LINE__,__FILE__);
 
@@ -1236,35 +1236,35 @@ sub VerifyParameterExpression
     elsif($i =~ m:^\(\)$:)
     {
       # Empty parenthesis - bad
-      &CST_error(0, "Array size in $thornname is an invalid arithmatic expression \n"
+      &CST_error(0, "Array size in $thornname is an invalid arithmetic expression \n"
                .  "          '$expression' contains empty parentheses",
                "",__LINE__,__FILE__);
     }
     elsif($i =~ m:[-+/*]{2,}:)
     {
       # Two operators in a row - bad
-      &CST_error(0, "Array size in $thornname is an invalid arithmatic expression \n"
+      &CST_error(0, "Array size in $thornname is an invalid arithmetic expression \n"
                .  "          '$expression' contains two operators in a row",
                "",__LINE__,__FILE__);
     }
     elsif($i =~ m:[-+/*]\):)
     {
       # Operator followed by closing parenthesis - bad
-      &CST_error(0, "Array size in $thornname is an invalid arithmatic expression \n"
+      &CST_error(0, "Array size in $thornname is an invalid arithmetic expression \n"
                .  "          '$expression' has a missing operand",
                "",__LINE__,__FILE__);
     }
     elsif($i =~ m:\([-+/*]:)
     {
       # Opening parenthesis followed by operator - bad
-      &CST_error(0, "Array size in $thornname is an invalid arithmatic expression \n"
+      &CST_error(0, "Array size in $thornname is an invalid arithmetic expression \n"
                .  "          '$expression' has a missing operand",
                "",__LINE__,__FILE__);
     }
     else
     {
       # I've run out of imagination
-      &CST_error(0, "Array size in $thornname is an invalid arithmatic expression \n"
+      &CST_error(0, "Array size in $thornname is an invalid arithmetic expression \n"
                .  "          '$expression' contains unrecognised token '$i'",
                "",__LINE__,__FILE__);
     }
