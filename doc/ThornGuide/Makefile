@@ -43,58 +43,54 @@ IMAGE_FILE=$(CCTK_HOME)/doc/UsersGuide/bincactus2.eps
 default : $(MASTER_FILE).ps
 
 $(MASTER_FILE).ps: $(MASTER_FILE).dvi 
-	@echo "  Running dvips on $<"
+	@echo "  Running dvips on $<...."
 	dvips -f $< 2> LOG_DVIPS_MSGS | $(CCTK_HOME)/lib/sbin/FixPageNumbersInPostscript.pl > $@ 
 	if test -e "$@"; then                                  \
 	   echo "     $@ created.";                              \
 	else                                                   \
 	   echo "  Cannot find $@, an error must have occured."; \
-	fi ;                                                   
+	fi
 
 $(MASTER_FILE).dvi: $(MASTER_FILE).tex
-	@echo "  Latexing $<"
-	latex -interaction=nonstopmode $< > LOG_NULL 2>&1; \
-	latex -interaction=nonstopmode $< > LOG_NULL 2>&1; \
-	latex -interaction=nonstopmode $< > LOG_NULL 2>&1; \
-	latex -interaction=nonstopmode $< | grep -v Underfull | grep -v Overfull | grep -v OT1 > LOG_LATEX_MSGS 2>&1;  \
+	@echo "  Latexing $<...."
+	latex $< < /dev/null > LOG_LATEX_FULL_MSGS 2>&1
+	latex $< < /dev/null > LOG_LATEX_FULL_MSGS 2>&1
+	latex $< < /dev/null 2>&1 | tee LOG_LATEX_FULL_MSGS | grep -v Underfull | grep -v Overfull | grep -v OT1 > LOG_LATEX_MSGS
 	if test -e "$@"; then                                  \
 	   echo "     $@ created.";                              \
 	else                                                   \
 	   echo "  Cannot find $@, an error must have occured."; \
-	fi ;                                                   
+	fi
 
 $(MASTER_FILE).pdf: $(MASTER_FILE).tex
-	@echo "  Running pdflatex on $<"
-
-	pdflatex -interaction=nonstopmode $< > LOG_NULL 2>&1; \
-	pdflatex -interaction=nonstopmode $< > LOG_NULL 2>&1; \
-	pdflatex -interaction=nonstopmode $< > LOG_NULL 2>&1; \
-	pdflatex -interaction=nonstopmode $< | grep -v Underfull | grep -v Overfull | grep -v OT1 > LOG_PDFLATEX_MSGS 2>&1
-
+	@echo "  Running pdflatex on $<...."
+	pdflatex $< < /dev/null > LOG_PDFLATEX_MSGS 2>&1
+	pdflatex $< < /dev/null > LOG_PDFLATEX_MSGS 2>&1
+	pdflatex $< < /dev/null 2>&1 | grep -v Underfull | grep -v Overfull | grep -v OT1 > LOG_PDFLATEX_MSGS
 	if test -e "$@"; then                                  \
 	   echo "     $@ created.";                              \
 	else                                                   \
 	   echo "  Cannot find $@, an error must have occured."; \
-	fi ;                                                  
+	fi
 
 $(MASTER_FILE).tex:  $(foreach thorn, $(THORN_DEPENDENCIES), $(thorn)/param.ccl $(thorn)/interface.ccl $(thorn)/schedule.ccl) $(THORNLIST)
 	@echo "  Creating thorn documentation $(MASTER_FILE).tex"
-	@echo "    Processing ..."
-	@echo "       param.ccl ..."
+	@echo "    Processing...."
+	@echo "       param.ccl...."
 	$(PERL) -s $(CCTK_HOME)/lib/sbin/ParamLatex.pl -cctk_home=$(CCTK_HOME) -directory=$(ARRANGEMENTS_DIR) -thornlist=$(THORNLIST) -outdir=./ -section -grouping=bythorn -sort=scope > LOG_PARAMLATEX_MSGS 2>&1
-	@echo "       interface.ccl ..."
+	@echo "       interface.ccl...."
 	$(PERL) -s $(CCTK_HOME)/lib/sbin/InterLatex.pl -cctk_home=$(CCTK_HOME) -directory=$(ARRANGEMENTS_DIR) -thornlist=$(THORNLIST) -outdir=./ -section -grouping=bythorn > LOG_INTERLATEX_MSGS 2>&1
-	@echo "       schedule.ccl ..."
+	@echo "       schedule.ccl...."
 	$(PERL) -s $(CCTK_HOME)/lib/sbin/SchedLatex.pl -cctk_home=$(CCTK_HOME) -directory=$(ARRANGEMENTS_DIR) -thornlist=$(THORNLIST) -outdir=./ -section > LOG_SCHEDLATEX_MSGS 2>&1
-	@echo "  Creating $@ ..."
+	@echo "  Creating $@...."
 	$(PERL) -s $(CCTK_HOME)/lib/sbin/ThornGuide.pl -cctk_home=$(CCTK_HOME) -directory=$(ARRANGEMENTS_DIR) -thornlist=$(THORNLIST) -outdir=./ -outfile=$(MASTER_FILE).tex -tocdepth=$(TOCDEPTH) > LOG_THORNGUIDE_MSGS 2>&1
-	if test -e $(IMAGE_FILE) && test ! -e "bincactus.eps"; then \
-	   cp $(IMAGE_FILE) bincactus.eps;                          \
-	fi ; 
+	if test -e $(IMAGE_FILE) && test ! -e "bincactus2.eps"; then \
+	   cp $(IMAGE_FILE) .;                                       \
+	fi
 
 make.thornlist: $(THORNLIST) 
 	THORN_DEPENDENCIES=`$(PERL) -s $(CCTK_HOME)/lib/sbin/ThornList.pl -arrangements_dir=$(ARRANGEMENTS_DIR) -thornlist=$(THORNLIST)`
 
 $(THORNLIST):
-	@echo "Creating $@ ..."
+	@echo "Creating $@...."
 	$(PERL) -s $(CCTK_HOME)/lib/sbin/ThornList.pl -arrangements_dir=$(ARRANGEMENTS_DIR) -thorns=$(THORNS) -arrangements=$(ARRANGEMENTS)> $@ 
