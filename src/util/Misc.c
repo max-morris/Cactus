@@ -9,7 +9,7 @@
 
 /*#define DEBUG_MISC*/
 
-#include "config.h"
+#include "cctk.h"
 
 #include <stdlib.h>
 #include <stdio.h>
