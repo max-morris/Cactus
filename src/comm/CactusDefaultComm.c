@@ -17,14 +17,44 @@
 static char *rcsid = "$Id$";
 
 
-int CactusDefaultSetupGH(cGH *GH)
+cGH *CactusDefaultSetupGH(tFleshConfig *config, int convergence_level)
 {
-  printf("I'm at line %d of file %s\n", __LINE__, __FILE__);
+  cGH *thisGH;
+  
+  cGFconfig *GF;
+  
+  cGF **tempGFs;
+
+  cScala
+  /* Create a new Grid Hierarchy */
+  thisGH = (cGH *)malloc(sizeof(cGH));
+
+  if(thisGH)
+  {
+    /* Traverse list of GH setup rroutines. */
+    CactusSetupGHTraverse(config, convergence_level, thisGH);
+
+    /* Setup GFs */
+    thisGH->GFs = NULL;
+    thisGH->nGFs = 0;
+    for(GF = config->GFs; GF; GF = GF->next)
+    {
+      thisGH->nGFs++;
+      tempGFs = (cGF **)realloc(thisGH->GFs, thisGH->nGFs*sizeof(cGF *));
+      if(tempGFs)
+      {
+	thisGH->GFs = tempGFs;
+	thisGH->GFs[thisGH->nGFs-1] = SetupGF(GH, GF);
+      }
+    }
+
+  return thisGH;
 }
 
 
-int CactusDefaultSetupGF(cGH *GH, cGF *GF)
+cGF *CactusDefaultSetupGF(cGH *GH, cGFconfig *configdata)
 {
+  
   printf("I'm at line %d of file %s\n", __LINE__, __FILE__);
 }
 
