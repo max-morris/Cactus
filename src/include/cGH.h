@@ -68,6 +68,9 @@ typedef struct _cGH
   /* The convergence level (numbered from zero upwards) */
   int cctk_convlevel;
 
+  /* The (per level) convergence factor */
+  int cctk_convfac;
+
   /* The number of ghostzones in each direction */
   int *cctk_nghostzones;
 
