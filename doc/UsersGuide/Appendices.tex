@@ -752,21 +752,70 @@ schedule [GROUP] <\var{function name}|\var{group name}> AT|IN <\var{time}> \verb
 
 \label{app:allopts}
 
+Cactus understands the following options.  These options are
+interpreted by the driver, not by Cactus.  The current set of options
+is useful for Berger-Oliger mesh refinement which has subcycling in
+time, and for multi-patch simulations in which the domain is split
+into several distinct patches.  Given this, the meanings of the
+options below is only tentative, and their exact meaning needs to be
+obtained from the driver documentation.  The standard driver PUGH
+ignores all options.
+
+Option names are case-insensitive.  There can be several options given
+at the same time.
+
 \begin{Lentry}
-
-\item[{\tt GLOBAL}]
-This routine will only be called once on a grid hierarchy, not for all
-subgrids making up the hierarchy.  This can be used, for example, for
-analysis routines which use global reduction or interpolation routines
-rather than the local subgrid passed to them, and hence should only be
-called once.
-
-\item[{\tt LEVEL}]
-This routine will only be called once on any ``level'' of grid
-hierarchy.  I.e. it will only be called once for any set of sub-grids
-which have the same \texttt{cctk\_levfac} numbers.
+  
+\item[{\tt META}] This routine will only be called once, even if
+  several simulations are performed at the same time.  This can be
+  used, for example, to initialise external libraries, or to set up
+  data structures that live in global variables.
+  
+\item[{\tt GLOBAL}] This routine will only be called once on a grid
+  hierarchy, not for all subgrids making up the hierarchy.  This can
+  be used, for example, for analysis routines which use global
+  reduction or interpolation routines rather than the local subgrid
+  passed to them, and hence should only be called once.
+  
+\item[{\tt LEVEL}] This routine will only be called once on any
+  ``level'' of the grid hierarchy.  That is, it will only be called
+  once for any set of sub-grids which have the same
+  \texttt{cctk\_levfac} numbers.
+  
+\item[{\tt SINGLEMAP}] This routine will only be called once on any of
+  the ``patches'' that form a ``level'' of the grid hierarchy.
+  
+\item[{\tt LOCAL} (this is the default)] This routine will be called
+  on every ``component''.
 
 \end{Lentry}
+
+When the above options are used, it is often the case that a certain
+routine should e.g.\ be called at the time for a \texttt{GLOBAL}
+routine, but should actually loop overall ``components''.  The
+following set of options allows this:
+
+\begin{Lentry}
+  
+\item[{\tt LOOP-META}] Loop once.
+  
+\item[{\tt LOOP-GLOBAL}] Loop over all simulations.
+  
+\item[{\tt LOOP-LEVEL}] Loop over all ``levels''.
+  
+\item[{\tt LOOP-SINGLEMAP}] Loop over all ``patches''.
+  
+\item[{\tt LOOP-LOCAL}] Loop over all ``components''.
+
+\end{Lentry}
+
+For example, the specification
+\begin{alltt}
+  OPTIONS: global loop-local
+\end{alltt}
+schedules a routine at those time when a \texttt{GLOBAL} routine is
+scheduled, and then calls the routine in a loop over all
+``components''.
 
 
 \subsection{Conditional Statements}
