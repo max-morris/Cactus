@@ -41,6 +41,9 @@ from Fortran.
 \item[\code{CCTK\_Abort}] [\pageref{CCTK-Abort}]
   Causes abnormal Cactus termination
 
+\item[\code{CCTK\_ActivatingThorn}] [\pageref{CCTK-ActivatingThorn}]
+  Finds the thorn which activated a particular implementation
+
 \item[\code{CCTK\_ActiveTimeLevels}] [\pageref{CCTK-ActiveTimeLevels}]
   Returns the number of active timelevels from a group name
 
@@ -106,6 +109,13 @@ from Fortran.
 
 \item[\code{CCTK\_CmplxSub}] [\pageref{CCTK-CmplxSub}]
   Returns the subtraction of two complex numbers (only C)
+
+\item[\code{CCTK\_CompiledImplementation}]
+  [\pageref{CCTK-CompiledImplementation}]
+  Return the name of the compiled implementation with given index
+
+\item[\code{CCTK\_CompiledThorn}] [\pageref{CCTK-CompiledThorn}]
+  Return the name of the compiled thorn with given index
 
 \item[\code{CCTK\_CoordDir}] [\pageref{CCTK-CoordDir}]
   Give the direction for a given coordinate name.
@@ -319,9 +329,16 @@ from Fortran.
 \item[\code{CCTK\_ImpFromVarI}] [\pageref{CCTK-ImpFromVarI}]
   Given a variable index, returns the implementation name
 
+\item[\code{CCTK\_ImplementationRequires}]
+  [\pageref{CCTK-ImplementationRequires}]
+  Return the ancestors for an implementation
+
 \item[\code{CCTK\_ImplementationThorn}]
   [\pageref{CCTK-ImplementationThorn}]
   Returns the name of one thorn providing an implementation.
+
+\item[\code{CCTK\_ImpThornList}] [\pageref{CCTK-ImpThornList}]
+  Return the thorns for an implementation
 
 \item[\code{CCTK\_INFO}] [\pageref{CCTK-INFO}]
   Macro to print a single string as an information message to screen
@@ -429,6 +446,13 @@ from Fortran.
 
 \item[\code{CCTK\_NullPointer}] [\pageref{CCTK-NullPointer}]
   Returns a C-style NULL pointer value
+
+\item[\code{CCTK\_NumCompiledImplementations}]
+  [\pageref{CCTK-NumCompiledImplementations}]
+  Return the number of implementations compiled in
+
+\item[\code{CCTK\_NumCompiledThorns}] [\pageref{CCTK-NumCompiledThorns}]
+  Return the number of thorns compiled in
 
 \item[\code{CCTK\_NumGroups}] [\pageref{CCTK-NumGroups}]
   Get the number of groups of variables compiled in the code
