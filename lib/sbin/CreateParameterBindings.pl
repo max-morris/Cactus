@@ -84,6 +84,8 @@ sub CreateParameterBindings
   {
     $dataout .= "$line\n";
   }
+  $dataout .= "\n\n";
+
   &WriteFile("ParameterCGlobal.h",\$dataout);
 
   $header_files{"GLOBAL"} = "ParameterCGlobal.h";
@@ -129,6 +131,7 @@ sub CreateParameterBindings
       {
 	$dataout .= "$line\n";
       }
+      $dataout .= "\n\n";
       &WriteFile("ParameterCRestricted\U$implementation\E".".h",\$dataout);
 
       $header_files{"\U$implementation\E RESTRICTED"} = "ParameterCRestricted\U$implementation\E".".h";
@@ -154,6 +157,7 @@ sub CreateParameterBindings
       {
 	$dataout .= "$line\n";
       }
+      $dataout .= "\n\n";
       &WriteFile("\U$thorn\E"."_private.c",\$dataout);
 
 
@@ -175,6 +179,7 @@ sub CreateParameterBindings
       {
 	$dataout .= "$line\n";
       }
+      $dataout .= "\n\n";
       &WriteFile("ParameterCPrivate\U$thorn\E".".h",\$dataout);
 
 
