@@ -3,13 +3,13 @@ dnl    @file      configure.in
 dnl    @date      Sun Jan 17 15:54:23 1999
 dnl    @author    Tom Goodale
 dnl    @desc 
-dnl    
+dnl               Cactus autoconf script
 dnl    @enddesc 
-dnl    @version $Id$
+dnl    @version   $Id$
 dnl  @@
 dnl Process this file with autoconf to produce a configure script.
 
-AC_REVISION($Id$)
+AC_REVISION($Header$)
 
 dnl It looks like older versions of Autoconf don't quite work properly under 
 dnl cygwin.
@@ -64,7 +64,7 @@ AC_PROG_CC_GNU
 
 if test "x$CXX" != "xnone" ; then
   if test -z "$CXX" ; then
-  AC_CHECK_PROGS(CXX, c++ g++ gcc CC cxx cc++ cl xlC)
+    AC_CHECK_PROGS(CXX, c++ g++ gcc CC cxx cc++ cl xlC)
   fi
 
   CCTK_PROG_CXX_WORKS
@@ -72,37 +72,37 @@ if test "x$CXX" != "xnone" ; then
 fi
 
 if test -z "$RANLIB" ; then
-AC_PROG_RANLIB
+  AC_PROG_RANLIB
 fi
 
 dnl Look for a standalone CPP
 
 if test -z "$CPP" ; then
-AC_PATH_PROGS(CPP, cpp, echo, /lib:/usr/lib:/usr/local/lib:$PATH)
+  AC_PATH_PROGS(CPP, cpp, echo, /lib:/usr/lib:/usr/local/lib:$PATH)
 fi
 
 if test -z "$PERL" ; then
-AC_CHECK_PROGS(PERL, perl)
+  AC_CHECK_PROGS(PERL, perl)
 fi
 
 if test -z "$F90" ; then
-AC_CHECK_PROGS(F90, f90 pgf90 xlf90)
+  AC_CHECK_PROGS(F90, f90 pgf90 xlf90)
 fi
 
 if test -z "$F77" ; then
-AC_CHECK_PROGS(F77, f77 pgf77 g77 f90 pgf90 xlf90)
+  AC_CHECK_PROGS(F77, f77 pgf77 g77 f90 pgf90 xlf90)
 fi
 
 if test -z "$AR" ; then
-AC_CHECK_PROGS(AR, ar)
+  AC_CHECK_PROGS(AR, ar)
 fi
 
 if test -z "$MKDIR" ; then
-AC_CHECK_PROGS(MKDIR, mkdir)
+  AC_CHECK_PROGS(MKDIR, mkdir)
 fi
 
 if test -z "$SHELL" ; then
-AC_CHECK_PROGS(SHELL, sh bash)
+  AC_CHECK_PROGS(SHELL, sh bash)
 fi
 
 AC_SUBST(LD)
@@ -160,13 +160,9 @@ CCTK_WriteLine cctk_Archdefs.h '#endif /* _CCTK_ARCHDEFS_H_ */'
 
 # Deal with the Fortran compiler issues.
 # If there's a Fortran 90 compiler use that for all the Fortran.
-if test "x$F90" != "x" ; then
-  if test "x$F90" != "xnone" ; then
-    if test "x$F77" != "xnone" ; then
-      F77=$F90 
-      : {F77FLAGS=$F90FLAGS} ;
-    fi
-  fi
+if test "x$F90" != "x" -a "x$F90" != "xnone" -a "x$F77" != "xnone" ; then
+  F77=$F90 
+  : {F77FLAGS=$F90FLAGS}
 fi
 
 # The known architecture stuff has probably set the LIBS variable
@@ -210,71 +206,55 @@ AC_C_INLINE
 
 # Check for sizes of integer types
 
-if test "x$cross_compiling" = "xyes"; then
-  if test -z "$SIZEOF_LONG_LONG" ; then
-    AC_MSG_ERROR(Cross-compiling - no value set for sizeof(long long) please set SIZEOF_LONG_LONG)
-  fi
+if test "x$cross_compiling" = "xyes" -a -z "$SIZEOF_LONG_LONG" ; then
+  AC_MSG_ERROR(Cross-compiling - no value set for sizeof(long long) please set SIZEOF_LONG_LONG)
 fi
 
 AC_CHECK_SIZEOF(long long, $SIZEOF_LONG_LONG)
 
-if test "x$cross_compiling" = "xyes"; then
-  if test -z "$SIZEOF_LONG_INT" ; then
-    AC_MSG_ERROR(Cross-compiling - no value set for sizeof(long int) please set SIZEOF_LONG_INT)
-  fi
+if test "x$cross_compiling" = "xyes" -a -z "$SIZEOF_LONG_INT" ; then
+  AC_MSG_ERROR(Cross-compiling - no value set for sizeof(long int) please set SIZEOF_LONG_INT)
 fi
 
 AC_CHECK_SIZEOF(long int, $SIZEOF_LONG_INT)
 
-if test "x$cross_compiling" = "xyes"; then
-  if test -z "$SIZEOF_INT" ; then
-    AC_MSG_ERROR(Cross-compiling - no value set for sizeof(int) please set SIZEOF_INT)
-  fi
+if test "x$cross_compiling" = "xyes" -a -z "$SIZEOF_INT" ; then
+  AC_MSG_ERROR(Cross-compiling - no value set for sizeof(int) please set SIZEOF_INT)
 fi
 
 AC_CHECK_SIZEOF(int, $SIZEOF_INT)
 
-if test "x$cross_compiling" = "xyes"; then
-  if test -z "$SIZEOF_SHORT_INT" ; then
-    AC_MSG_ERROR(Cross-compiling - no value set for sizeof(short int) please set SIZEOF_SHORT_INT)
-  fi
+if test "x$cross_compiling" = "xyes" -a -z "$SIZEOF_SHORT_INT" ; then
+  AC_MSG_ERROR(Cross-compiling - no value set for sizeof(short int) please set SIZEOF_SHORT_INT)
 fi
 
 AC_CHECK_SIZEOF(short int, $SIZEOF_SHORT_INT)
 
 # Check for sizes of floating point types
 
-if test "x$cross_compiling" = "xyes"; then
-  if test -z "$SIZEOF_LONG_DOUBLE" ; then
-    AC_MSG_ERROR(Cross-compiling - no value set for sizeof(long double) please set SIZEOF_LONG_DOUBLE)
-  fi
+if test "x$cross_compiling" = "xyes" -a -z "$SIZEOF_LONG_DOUBLE" ; then
+  AC_MSG_ERROR(Cross-compiling - no value set for sizeof(long double) please set SIZEOF_LONG_DOUBLE)
 fi
 
 AC_CHECK_SIZEOF(long double, $SIZEOF_LONG_DOUBLE)
 
-if test "x$cross_compiling" = "xyes"; then
-  if test -z "$SIZEOF_DOUBLE" ; then
-    AC_MSG_ERROR(Cross-compiling - no value set for sizeof(double) please set SIZEOF_DOUBLE)
-  fi
+if test "x$cross_compiling" = "xyes" -a -z "$SIZEOF_DOUBLE" ; then
+  AC_MSG_ERROR(Cross-compiling - no value set for sizeof(double) please set SIZEOF_DOUBLE)
 fi
 
 AC_CHECK_SIZEOF(double, $SIZEOF_DOUBLE)
 
 
-if test "x$cross_compiling" = "xyes"; then
-  if test -z "$SIZEOF_FLOAT" ; then
-    AC_MSG_ERROR(Cross-compiling - no value set for sizeof(float) please set SIZEOF_FLOAT)
-  fi
+if test "x$cross_compiling" = "xyes" -a -z "$SIZEOF_FLOAT" ; then
+  AC_MSG_ERROR(Cross-compiling - no value set for sizeof(float) please set SIZEOF_FLOAT)
 fi
 
 AC_CHECK_SIZEOF(float, $SIZEOF_FLOAT)
 
 # Check for sizes of pointers.  
 
-if test "x$cross_compiling" = "xyes"; then
-  if test -z "$SIZEOF_POINTER" ; then
-     AC_MSG_ERROR(Cross-compiling - no value set for sizeof(char *) please set SIZEOF_POINTER)
-  fi
+if test "x$cross_compiling" = "xyes" -a -z "$SIZEOF_POINTER" ; then
+   AC_MSG_ERROR(Cross-compiling - no value set for sizeof(char *) please set SIZEOF_POINTER)
 fi
 
 AC_CHECK_SIZEOF(char *, $SIZEOF_POINTER)
@@ -346,7 +326,7 @@ AC_CACHE_VAL(cctk_cv_have_mode_t,
 eval "cctk_cv_have_mode_t=no")
 ])
 if test "$cctk_cv_have_mode_t" = "yes"; then
-  AC_DEFINE(HAVE_MODE_T)	
+  AC_DEFINE(HAVE_MODE_T)
   AC_MSG_RESULT(yes)
 else
   AC_MSG_RESULT(no)
@@ -413,7 +393,7 @@ AC_CACHE_VAL(cctk_cv_have_socklen_t,
 eval "cctk_cv_have_socklen_t=no")
 ])
 if test "$cctk_cv_have_socklen_t" = "yes"; then
-  AC_DEFINE(HAVE_SOCKLEN_T)	
+  AC_DEFINE(HAVE_SOCKLEN_T)
   AC_MSG_RESULT(yes)
 else
   AC_MSG_RESULT(no)
@@ -440,7 +420,7 @@ AC_CACHE_VAL(cctk_cv_have_SOCKET,
 eval "cctk_cv_have_SOCKET=no")
 ])
 if test "$cctk_cv_have_SOCKET" = "yes"; then
-  AC_DEFINE(HAVE_SOCKET_TYPE)	
+  AC_DEFINE(HAVE_SOCKET_TYPE)
   AC_MSG_RESULT(yes)
 else
   AC_MSG_RESULT(no)
@@ -579,16 +559,16 @@ case "x$ac_cv_sizeof_short_int" in
       CCTK_INT2="short int" ;;
 esac
 
-if test -n  "$CCTK_INT8" ; then
-AC_DEFINE_UNQUOTED(CCTK_INT8, $CCTK_INT8)
+if test -n "$CCTK_INT8" ; then
+  AC_DEFINE_UNQUOTED(CCTK_INT8, $CCTK_INT8)
 fi
 
-if test -n  "$CCTK_INT4" ; then
-AC_DEFINE_UNQUOTED(CCTK_INT4, $CCTK_INT4)
+if test -n "$CCTK_INT4" ; then
+  AC_DEFINE_UNQUOTED(CCTK_INT4, $CCTK_INT4)
 fi
 
-if test -n  "$CCTK_INT2" ; then
-AC_DEFINE_UNQUOTED(CCTK_INT2, $CCTK_INT2)
+if test -n "$CCTK_INT2" ; then
+  AC_DEFINE_UNQUOTED(CCTK_INT2, $CCTK_INT2)
 fi
 
 # Float types
@@ -620,40 +600,40 @@ case "x$ac_cv_sizeof_float" in
       CCTK_REAL4="float" ;;
 esac
 
-if test -n  "$CCTK_REAL16" ; then
-AC_DEFINE_UNQUOTED(CCTK_REAL16, $CCTK_REAL16)
+if test -n "$CCTK_REAL16" ; then
+  AC_DEFINE_UNQUOTED(CCTK_REAL16, $CCTK_REAL16)
 fi
 
-if test -n  "$CCTK_REAL8" ; then
-AC_DEFINE_UNQUOTED(CCTK_REAL8, $CCTK_REAL8)
+if test -n "$CCTK_REAL8" ; then
+  AC_DEFINE_UNQUOTED(CCTK_REAL8, $CCTK_REAL8)
 fi
 
-if test -n  "$CCTK_REAL4" ; then
-AC_DEFINE_UNQUOTED(CCTK_REAL4, $CCTK_REAL4)
+if test -n "$CCTK_REAL4" ; then
+  AC_DEFINE_UNQUOTED(CCTK_REAL4, $CCTK_REAL4)
 fi
 
 
 # Define the default floating point and integer precisions
 case "x$REAL_PRECISION" in
-    "x16")
-	AC_DEFINE(CCTK_REAL_PRECISION_16) ;;
-    "x8")
-	AC_DEFINE(CCTK_REAL_PRECISION_8) ;;
-    "x4")
-	AC_DEFINE(CCTK_REAL_PRECISION_4) ;;
-    *)
-	AC_DEFINE(CCTK_REAL_PRECISION_8) ;;
+  "x16")
+    AC_DEFINE(CCTK_REAL_PRECISION_16) ;;
+  "x8")
+    AC_DEFINE(CCTK_REAL_PRECISION_8) ;;
+  "x4")
+    AC_DEFINE(CCTK_REAL_PRECISION_4) ;;
+  *)
+    AC_DEFINE(CCTK_REAL_PRECISION_8) ;;
 esac
 
 case "x$INTEGER_PRECISION" in
-    "x8")
-	AC_DEFINE(CCTK_INTEGER_PRECISION_8) ;;
-    "x4")
-	AC_DEFINE(CCTK_INTEGER_PRECISION_4) ;;
-    "x2")
-	AC_DEFINE(CCTK_INTEGER_PRECISION_2) ;;
-    *)
-	AC_DEFINE(CCTK_INTEGER_PRECISION_4) ;;
+  "x8")
+    AC_DEFINE(CCTK_INTEGER_PRECISION_8) ;;
+  "x4")
+    AC_DEFINE(CCTK_INTEGER_PRECISION_4) ;;
+  "x2")
+    AC_DEFINE(CCTK_INTEGER_PRECISION_2) ;;
+  *)
+    AC_DEFINE(CCTK_INTEGER_PRECISION_4) ;;
 esac
 
 # Define any code needed before the definition of a Fortran subroutine
@@ -714,19 +694,22 @@ AC_SUBST(FCOMPILEONLY)
 
 if test -n  "$DEBUG" ; then
   case "$DEBUG" in
-    MEMORY) 
-	AC_DEFINE(CCTK_TRACEMEMORY)
+     MEMORY) 
+       AC_DEFINE(CCTK_TRACEMEMORY)
+       ;;
+     FLAGS|yes)
+       DEBUG_FLAGS="yes"
+       ;;
+     DEFINES)
+       AC_DEFINE(DEBUG)
+       ;;
+     ALL)
+      AC_DEFINE(CCTK_TRACEMEMORY)
+      DEBUG_FLAGS="yes"
+      AC_DEFINE(CCTK_DEBUG)
       ;;
-    FLAGS|yes)
-        DEBUG_FLAGS="yes"
-      ;;
-    DEFINES)
-	AC_DEFINE(DEBUG)
-      ;;
-    ALL)
-	AC_DEFINE(CCTK_TRACEMEMORY)
-        DEBUG_FLAGS="yes"
-	AC_DEFINE(CCTK_DEBUG)
+    *)
+      AC_ERROR(Didn't recognize setting of DEBUG=\"$DEBUG\")
       ;;
    esac
 fi
@@ -743,66 +726,29 @@ fi
 AC_SUBST(C_DEBUG_FLAGS)
 
 if test -z "$C_DEBUG_FLAGS" ; then
-  case "$CC" in
-    gcc) 
-      C_DEBUG_FLAGS="-g"
-      ;;
-    pgcc)
-      C_DEBUG_FLAGS="-g"
-      ;;
-    *)
-#     This should be a reasonable default.
-      C_DEBUG_FLAGS="-g"      
-      ;;
-   esac
+# This should be a reasonable default.
+  C_DEBUG_FLAGS="-g"      
 fi
 
 AC_SUBST(CXX_DEBUG_FLAGS)
 
 if test -z "$CXX_DEBUG_FLAGS" ; then
-  case "$CXX" in
-    g++) 
-      CXX_DEBUG_FLAGS="-g"
-      ;;
-    pgCC)
-      CXX_DEBUG_FLAGS="-g"
-      ;;
-    *)
-#     This should be a reasonable default.
-      CXX_DEBUG_FLAGS="-g"      
-      ;;
-   esac
+# This should be a reasonable default.
+  CXX_DEBUG_FLAGS="-g"      
 fi
 
 AC_SUBST(F77_DEBUG_FLAGS)
 
 if test -z "$F77_DEBUG_FLAGS" ; then
-  case "$F77" in
-    g77) 
-      F77_DEBUG_FLAGS="-g"
-      ;;
-    pgf77)
-      F77_DEBUG_FLAGS="-g"
-      ;;
-    *)
-#     This should be a reasonable default.
-      F77_DEBUG_FLAGS="-g"      
-      ;;
-   esac
+# This should be a reasonable default.
+  F77_DEBUG_FLAGS="-g"      
 fi
 
 AC_SUBST(F90_DEBUG_FLAGS) 
 
 if test -z "$F90_DEBUG_FLAGS" ; then
-  case "$F90" in
-    pgf90)
-      F90_DEBUG_FLAGS="-g"
-      ;;
-    *)
-#     This should be a reasonable default.
-      F90_DEBUG_FLAGS="-g"      
-      ;;
-   esac
+# This should be a reasonable default.
+  F90_DEBUG_FLAGS="-g"      
 fi
 
 # Set the optimization flags if they've not been set by now
@@ -810,38 +756,31 @@ fi
 AC_SUBST(OPTIMISE_MODE)
 
 if test -n "$OPTIMISE" ; then
+  if test "$OPTIMISE" != "yes" -a "$OPTIMISE" != "no" ; then
+    AC_ERROR(Didn't recognize setting of OPTIMISE=\"$OPTIMISE\" (should be either \"yes\" or \"no\"))
+  fi
   OPTIMISE_MODE=$OPTIMISE
+elif test -n "$OPTIMIZE" ; then
+  if test "$OPTIMIZE" != "yes" -a "$OPTIMIZE" != "no" ; then
+    AC_ERROR(Didn't recognize setting of OPTIMIZE=\"$OPTIMIZE\" (should be either \"yes\" or \"no\"))
+  fi
+  OPTIMISE_MODE=$OPTIMIZE
 else
   OPTIMISE_MODE="yes"
 fi
 
-
 AC_SUBST(C_OPTIMISE_FLAGS)
 
 if test -z "$C_OPTIMISE_FLAGS" ; then
-  case "$CC" in
-    gcc) 
-      C_OPTIMISE_FLAGS="-O2"
-      ;;
-    *)
-#     This should be a reasonable default.
-      C_OPTIMISE_FLAGS="-O2"      
-      ;;
-   esac
+# This should be a reasonable default.
+  C_OPTIMISE_FLAGS="-O2"      
 fi
 
 AC_SUBST(CXX_OPTIMISE_FLAGS)
 
 if test -z "$CXX_OPTIMISE_FLAGS" ; then
-  case "$CXX" in
-    g++) 
-      CXX_OPTIMISE_FLAGS="-O2"
-      ;;
-    *)
-#     This should be a reasonable default.
-      CXX_OPTIMISE_FLAGS="-O2"      
-      ;;
-   esac
+# This should be a reasonable default.
+  CXX_OPTIMISE_FLAGS="-O2"      
 fi
 
 AC_SUBST(F77_OPTIMISE_FLAGS)
@@ -861,12 +800,8 @@ fi
 AC_SUBST(F90_OPTIMISE_FLAGS) 
 
 if test -z "$F90_OPTIMISE_FLAGS" ; then
-  case "$F90" in
-    *)
-#     Don't know a reasonable default.
-      F90_OPTIMISE_FLAGS=""      
-      ;;
-   esac
+# Don't know a reasonable default.
+  F90_OPTIMISE_FLAGS=""      
 fi
 
 # Set the warning flags if they've not been set by now
@@ -920,12 +855,8 @@ fi
 AC_SUBST(F90_WARN_FLAGS) 
 
 if test -z "$F90_WARN_FLAGS" ; then
-  case "$F90" in
-    *)
-#     Not sure what should be a reasonable default.
-      F90_WARN_FLAGS=""      
-      ;;
-   esac
+# Not sure what should be a reasonable default.
+  F90_WARN_FLAGS=""      
 fi
 
 
@@ -1100,6 +1031,4 @@ fi
 dnl Output everything
 CCTK_FinishFiles
 AC_OUTPUT(make.config.defn make.config.deps make.config.rules)
-
-
 
