@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.31 1999-06-25 20:42:55 goodale Exp $
+#   @version $Id: Makefile,v 1.32 1999-07-02 11:43:52 allen Exp $
 # @@*/
 
 # Make quietly unless told not to
@@ -107,7 +107,7 @@ endif
 
 ifdef INTEGER_PRECISION
 ifneq ($(strip $(origin INTEGER_PRECISION)), default)
-SETUP_ENV += INTEGER_PRECISION=$(PRECISION) ; export INTEGER_PRECISION ;
+SETUP_ENV += INTEGER_PRECISION=$(INTEGER_PRECISION) ; export INTEGER_PRECISION ;
 endif
 endif
 
