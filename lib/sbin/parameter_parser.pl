@@ -435,7 +435,7 @@ sub CheckParameterDefault
   # Check that boolean default is correct
   if ($parameter_db{"\U$thorn $variable\E type"} =~ /BOOLEAN/)
   {
-    if ($default !~ m:^yes|no|1|0$:i)
+    if ($default !~ m:^yes|no|y|n|1|0|t|f|true|false$:i)
       {
         $message = "Default ($default) for boolean incorrect for $variable in $thorn";
         &CST_error(0,$message,"",__LINE__,__FILE__);
