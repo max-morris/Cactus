@@ -767,7 +767,6 @@ void CCTK_FCALL CCTK_FNAME(CCTK_ReduceArray)
    @vtype   int
    @vio     in
    @endvar 
-                            void *in_scalar, void *out_scalar, int data_type)
    @var     in_scalar
    @vdesc   pointer to input scalar
    @vtype   void *
