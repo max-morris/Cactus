@@ -65,6 +65,7 @@
 #ifdef CCODE
 
 #include "cGH.h"
+#include "cctk_Flesh.h"
 #include "cctk_IO.h"
 #include "cctk_Comm.h"
 
