@@ -527,7 +527,8 @@ The keyword {\tt SYNC} specifies groups of variables which should be
 synchronised (that is, their ghostzones should be exchanged between
 processors) on exit from the routine. Specifying synchronisation of
 grid variables in {\tt schedule.ccl} is an alternative to calling the
-function {\tt CCTK\_SyncGroup()} from inside a routine. Using the {\tt SYNC}
+function {\tt CCTK\_SyncGroup()} (see the Reference Manual) from inside a 
+routine. Using the {\tt SYNC}
 keyword in the {\tt schedule.ccl} is the preferred method, since it
 provides the Flesh with more information about the behaviour of your code,
 and in particular is a requirement for using a driver with adaptive mesh
@@ -995,9 +996,9 @@ ghostzones as your stencil size requires.
 \section{Staggering}
 \label{sec:staggering}
 
-The staggering of a gridfunction or array describes the \emph{physical}
-placement of that gridfunction relative to the supporting grid
-structure. For example, a gridfunction does not have to
+The staggering of a grid function or array describes the \emph{physical}
+placement of that grid function relative to the supporting grid
+structure. For example, a grid function does not have to
 be placed at the intersection
 of the ``grid lines''. It can be moved by half a grid spacing in
 any or all dimensions. In the latter case, it will be placed in
@@ -1013,10 +1014,10 @@ used.
 
 {\bf Specifying the staggertype}
 
-The type of staggering applied to a gridfunction can be specified in
+The type of staggering applied to a grid function can be specified in
 the {\tt interface.ccl} file by the attribute {\tt stagger} (see
 \ref{sec:Appendix.interface}). Cactus supports three kinds of staggering
-per dimension. The physical location of a gridfunction is shifted
+per dimension. The physical location of a grid function is shifted
 relative to the default position by adding the following values to the
 stagger attribute:
 \begin{Lentry}
@@ -1025,9 +1026,9 @@ relative to  the default gridpoint.
 \item[{\tt C}] centre staggering. The physical location is offset by
 half of the grid spacing in the positive direction (or to the right).
 \item[{\tt P}] full staggered. {\tt P} refers to plus. The physical location
-is offset by a full gridspacing in the positive direction (or the right).
+is offset by a full grid spacing in the positive direction (or the right).
 \end{Lentry}
-For multi dimensional gridfunctions you concatenate the code
+For multi dimensional grid functions you concatenate the code
 characters in $xyz$ order. In Figure \ref{fig:stagger1} we show four different
 staggerings of a two dimensional grid function. The solid black grid
 circles show the default location of the grid function at the
@@ -1045,7 +1046,7 @@ rather unusual; it is included here for completeness.
 \end{center}
 \caption[]{\small {\bf Staggered gridpoints in 2D} for several
 staggerings. (a) : {\tt MC}, (b): {\tt CM}, (c): {\tt CC}, (d): {\tt
-PP}. Note that the staggering of gridfunctions does not change its
+PP}. Note that the staggering of grid functions does not change its
 index. The staggered gridpoints and the corresponding unstaggered
 points (arrows) are accessed by the same indices.}
 \label{fig:stagger1}
@@ -1102,15 +1103,26 @@ the information is requested using a group name ({\tt GN}) or index
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \chapter{Cactus Parameters}
-\label{chap:capa}
+\label{chap:Cactus_parameters}
 
 Parameters are the means by which the user specifies the runtime behaviour of
-the code.  The user specifies values for parameters in the parameter file, and
-then the Flesh validates these values against the ranges the thorn writers have
-specified to be valid.  Once validated, parameter values are fixed, and cannot
-be changed (unless the parameter is specified to be \textit{steerable}, see
-below).  For a detailed discussion of the {\tt param.ccl} syntax see
-Appendix \ref{sec:Appendix.param}.
+the code.  Each parameter has a data type and a name, as well as a 
+range of allowed values and a default value.  These are declared in the thorn's
+{\tt param.ccl} file.
+
+The thorn determines which parameters can be used in other thorns by
+specifying a \textit{scope} for the thorn, as explained in 
+\ref{sec:Cactus_parameters.scope}.
+
+The user may specify initial values for parameters in the parameter file
+(see Section~\ref{sec:Parameter_File}); the Flesh validates these values 
+against the parameters' allowed ranges.
+Otherwise, the initial value of the parameter is taken to be its default.
+Once validated, parameter values are fixed, and cannot be changed,
+unless the parameter is specified to be \textit{steerable}
+(see \ref{sec:Cactus_parameters.steerable}). 
+For a detailed discussion of the {\tt param.ccl} syntax see
+Appendix~\ref{sec:Appendix.param}.
 
 The full specification for a parameter declaration is
 \begin{alltt}
@@ -1120,11 +1132,17 @@ The full specification for a parameter declaration is
 \} <\var{default value}>
 \end{alltt}
 
+You can obtain lists of the parameters associated with
+each thorn using the Cactus command line options {\tt -o} and {\tt -O}
+(Section~\ref{sec:command_line_options}).
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Types and Ranges}
+\label{sec:Parameters.Types_and_Ranges}
 
-Parameters can be of several types:
+Parameters can be of these types:
 
 \begin{Lentry}
 \item[Integer]  Can take any integral value
@@ -1135,18 +1153,17 @@ Parameters can be of several types:
 \item[String] Can have any string value
 \end{Lentry}
 
-Each parameter can be validated against a set of allowed values or
-ranges, each of which has a description associated with it.  The type
-of range is determined by the type of parameter.
+Each parameter can be validated against a set of allowed 
+\textit{ranges}, each of which has a description associated with it. 
+The nature
+of the range is determined by the type of parameter, as follows:
 
 \subsection{Integer}
 
 The range specification is of the form
 
 \begin{alltt}
-
 \var{lower}:\var{upper}:\var{stride}
-
 \end{alltt}
 
 where \var{lower} and \var{upper} specify the lower and upper allowed
@@ -1198,6 +1215,7 @@ to be portable.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Scope}
+\label{sec:Cactus_parameters.scope}
 
 Parameters can be {\tt GLOBAL}, {\tt RESTRICTED}, or {\tt PRIVATE}.
 Global parameters are visible to all thorns.  Restricted parameters
@@ -1205,6 +1223,14 @@ are visible to any thorn which chooses to {\tt USE} or {\tt EXTEND}
 it.  A private parameter is only visible to the thorn which declares
 it.
 
+\section{Steerable}
+\label{sec:Cactus_parameters.steerable}
+A parameter can be changed dynamically if it is specified to be
+\textit{steerable} (see
+Section~\ref{subsec:Appendix.param.specification_items}). 
+It can then be changed by a call to the Flesh function
+{\tt CCTK\_ParameterSet} (see the Reference Guide for a description
+of this function).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1440,8 +1466,8 @@ should include at the top of the file the header
 A Cactus macro {\tt CCTK\_ARGUMENTS} is defined for each thorn
 to contain:
 \begin{itemize}
-\item General information about the grid hierarchy, for example
-      the number of grid points used. See Section \ref{sec:cactus_variables_c} for a
+\item General information about the grid hierarchy, for example the number
+      of grid points used. See Section \ref{sec:cactus_variables_c} for a
       complete list.
 \item All the grid variables defined in the thorn's {\tt interface.ccl}
 \item All the grid variables required from other thorns as requested by
@@ -1462,7 +1488,7 @@ no grid hierarchy exists.
 \subsubsection{Parameters}
 
 All parameters defined in a thorn's {\tt param.ccl} and all {\tt global}
-parameters appear as local variables of the corresponding {\tt CCTK} datatype
+parameters appear as local variables of the corresponding {\tt CCTK} data type
 in Fortran source code, i.e.. Booleans and Integers appear as {\tt CCTK\_INT}
 types (with nonzero/zero values for boolean {\t yes/no}),
 Reals as {\tt CCTK\_REAL}, and Keywords and String parameters as
@@ -1483,14 +1509,15 @@ In Fortran, special care should be taken with string valued parameters.
 These parameters are passed as C pointers, and can not be treated as
 normal Fortran strings.
 To compare a string valued parameter and Fortran
-string use the macro {\tt CCTK\_EQUALS()} or the function {\tt CCTK\_Equals()}.
+string use the macro {\tt CCTK\_EQUALS()} or the function {\tt CCTK\_Equals()}
+(see the reference manual for a description of the {\tt CCTK\_} functions).
 To print the value of a string valued parameter to screen, use the subroutine
 {\tt CCTK\_PrintString()}. A further function {\tt CCTK\_FortranString}
 provides a mechanism for converting a string parameter to a Fortran string.
 For example, if {\tt operator} is a Cactus string parameter holding the name of a reduction operator whose handle you need to find, you cannot pass it
 directly into the subroutine {\tt CCTK\_ReductionHandle} which is expecting
 a Fortran string. Instead, the following is needed:
-
+%
 \begin{verbatim}
       character*200 fortran_operator
       CCTK_INT      fortran_operator_len
@@ -1504,12 +1531,12 @@ a Fortran string. Instead, the following is needed:
 
 \subsubsection{Fortran Example}
 
-The Fortran routine {\tt MyFRoutine} is scheduled in the {\tt
+The Fortran routine \verb|MyFRoutine| is scheduled in the {\tt
 schedule.ccl} file, doesn't use Cactus parameters, and calls another
-routine, in the same thorn, {\tt MyNewRoutine} which does use
+routine, in the same thorn, \verb|MyNewRoutine| which does use
 parameters.  This routine needs to be passed an integer flag as well
 as the standard Cactus variables. The source file should look like
-
+%
 \begin{verbatim}
 #include "cctk.h"
 #include "cctk_Arguments.h"
@@ -1549,17 +1576,17 @@ c     Main code goes here
 
 Cactus Fortran functions, for example {\tt CCTK\_MyProc} and {\tt
 CCTK\_Equals}, can all be declared by adding the statement
-
+%
 \begin{verbatim}
 #include "cctk_Functions.h"
 \end{verbatim}
-
+%
 near the top of the file, and adding the declaration
-
+%
 \begin{verbatim}
 DECLARE_CCTK_FUNCTIONS
 \end{verbatim}
-
+%
 to a module or a subroutine after the \texttt{implicit none}
 statement, but before any executable code.
 
@@ -1570,7 +1597,7 @@ Fortran 90 modules should be included in a thorn's {\tt make.code.deps} file
 routines which use them. This is especially important for parallel
 building. For example, if a routine in {\tt MyRoutine.F} uses a module
 in {\tt MyModule.F} add the line:
-
+%
 \begin{verbatim}
 $(SYS_OBJD)/MyRoutine.F.o:         $(SYS_OBJD)/MyModule.F.o
 \end{verbatim}
@@ -1632,7 +1659,7 @@ no grid hierarchy exists.
 \subsubsection{Parameters}
 
 All parameters defined in a thorn's {\tt param.ccl} and all {\tt global}
-parameters appear as local variables of the corresponding {\tt CCTK} datatype
+parameters appear as local variables of the corresponding {\tt CCTK} data type
 in C source code, i.e. Integers and Booleans appear as {\tt CCTK\_INT} types
 (with nonzero/zero values for boolean {\t yes/no}), Reals as
 {\tt CCTK\_REAL}, and Keywords and String parameters as {\tt CCTK\_STRING}.
@@ -1650,7 +1677,7 @@ of the routine using them with the macro {\tt DECLARE\_CCTK\_PARAMETERS}.
 
 \subsubsection{Example}
 
-The C routine {\tt MyCRoutine} is scheduled in the {\tt schedule.ccl} file,
+The C routine \verb|MyCRoutine| is scheduled in the {\tt schedule.ccl} file,
 and uses Cactus parameters. The source file should look like
 \begin{verbatim}
 #include "cctk.h"
@@ -1676,6 +1703,7 @@ functionality available in Fortran. These functions are {\tt CCTK\_Cmplx},
 {\tt CCTK\_CmplxAdd}, {\tt CCTK\_CmplxSub}, {\tt CCTK\_CmplxMul},
 {\tt CCTK\_CmplxDiv}, {\tt CCTK\_CmplxExp}, {\tt CCTK\_CmplSin},
 {\tt CCTK\_CmplxAbs}, {\tt CCTK\_CmplxLog}, and {\tt CCTK\_CmplSqrt}.
+See the Reference Manual for more details.
 
 
 \subsubsection{Specifically for C Programmers}
@@ -1703,7 +1731,7 @@ for (k=0; k<cctk_lsh[2]; k++)
 }
 \end{verbatim}
 %
-Here, {\tt CCTK\_GFINDEX3D(cctkGH,i,j,k)]} expands to
+Here, \verb|CCTK_GFINDEX3D(cctkGH,i,j,k)| expands to
 \begin{verbatim}
 ((i) + cctkGH->cctk_lsh[0]*((j)+cctkGH->cctk_lsh[1]*(k)))
 \end{verbatim}
@@ -1826,9 +1854,9 @@ declarations.
 
 \subsubsection{Example}
 
-In the following example {\tt MyScalar} is a grid scalar which
+In the following example \verb|MyScalar| is a grid scalar which
 is declared in the {\tt interface.ccl} as {\tt CCTK\_REAL}.
-
+%
 \begin{verbatim}
       subroutine InitialData(CCTK_ARGUMENTS)
 
@@ -1842,7 +1870,7 @@ is declared in the {\tt interface.ccl} as {\tt CCTK\_REAL}.
       return
       end
 \end{verbatim}
-
+%
 Declaring {\tt local\_var} to have a non-Cactus data type, e.g.\
 {\tt REAL*4}, or using one of the other Cactus real data types
 described in Section~\ref{sec:datyansi} could give problems for
@@ -1853,20 +1881,20 @@ different architectures or configurations.
 
 \subsubsection{Indexing, ghostzones, etc.}
 Note that staggering does not make any changes to the indexing of a
-gridfunction: the black solid circles in diagram \ref{fig:stagger2} and their
-associated staggered gridfunctions (connected by arrows) have the same index!
+grid function: the black solid circles in diagram \ref{fig:stagger2} and their
+associated staggered grid functions (connected by arrows) have the same index!
 
-Since the gridfunction does not ``know'' anything about the physical
+Since the grid function does not ``know'' anything about the physical
 location (it's only addressed by indices) why add staggering if the
 indexing is the same?
 
 Indeed, you could roll your own, but there compelling reasons:
 Readability and the fact that you are able to query the staggertype of a
-gridfunction. More important: in the way the grid is laid out, there is one grid
+grid function. More important: in the way the grid is laid out, there is one grid
 point \emph{less} for {\tt M} and {\tt P} staggered grid functions. This is
 illustrated in picture \ref{fig:stagger2}, which shows 15 gridpoints distributed
 across 3 processors. The solid black circles show the default
-location of the gridfunctions, the grey circles depict the ghostzones.
+location of the grid functions, the grey circles depict the ghostzones.
 Note that the number of center staggered gridpoints (fat crosses)
 corresponds to the number of default gridpoints on all processors but
 the last one. (The same is true for full staggered gridpoints).
@@ -1918,8 +1946,7 @@ for a given staggertype and a direction this macro returns the number
 of processor local gridpoints, including ghostzones.
 
 \begin{itemize}
-\item{macro has to be in capital letters}
-\item{This macro is C/Fortran indexing aware:
+\item{macro has to be in capital letters}\item{This macro is C/Fortran indexing aware:
 can specify the dimension in C ranging from $0 \ldots$ and in Fortran
 ranging from $1 \ldots$.}
 \end{itemize}
@@ -2018,7 +2045,7 @@ is a parallel unigrid driver.
   processor number zero)
 \item[{\tt CCTK\_SyncGroup}] Synchronises a group of variables by
   exchanging the values held in each processor ghostzones with the
-  physical values of their neighbours
+  physical values of their neighbours (see the Reference Manual)
 \item[{\tt CCTK\_Barrier}] Waits for all processors to reach this point
   before proceeding
 \end{Lentry}
@@ -2075,12 +2102,12 @@ The registration utilities for thorns providing coordinates are:
 Assigns a coordinate system with a chosen name and dimension. For example,
 a 3-dimensional Cartesian coordinate system could be registered with the
 name {\tt cart3d} using the call from C
-
-{\tt
-int ierr;\\
-int dim=3;\\
-ierr = CCTK\_CoordRegisterSystem(dim,"cart3d");
-}
+%
+\begin{verbatim}
+int ierr;
+int dim=3;
+ierr = CCTK_CoordRegisterSystem(dim,"cart3d");
+\end{verbatim}
 
 \item[{\tt CCTK\_CoordRegisterData}]
 
@@ -2089,12 +2116,12 @@ Defines a coordinate in a given coordinate system, with a given
 The directions of the coordinates range from 1 to the dimension of the
 coordinate system. For example, to register the grid variable {\tt grid::y3d}
 to have the coordinate name {\tt y} in the {\tt cart3d} system
-
-{\tt
-int ierr;\\
-int dir=2;\\
-ierr = CCTK\_CoordRegisterData(dir,"grid::y3d","y","cart3d");
-}
+%
+\begin{verbatim}
+int ierr;
+int dir=2;
+ierr = CCTK_CoordRegisterData(dir,"grid::y3d","y","cart3d");
+\end{verbatim}
 
 \item[{\tt CCTK\_CoordRegisterRange}]
 
@@ -2103,23 +2130,23 @@ on a grid hierarchy, that is in a {\tt cctkGH}. At this time the
 maximum and minimum values have to be of type {\tt CCTK\_REAL}. For
 example, if the {\tt y} coordinate for the {\tt cart3d} system ranges
 between zero and one
-
-{\tt
-CCTK\_REAL lower=0;\\
-CCTK\_REAL upper=1;\\
-int ierr;\\
-ierr = CCTK\_CoordRegisterRange(cctkGH, lower, upper, -1, "y", "cart3d");
-}
-
+%
+\begin{verbatim}
+CCTK_REAL lower=0;
+CCTK_REAL upper=1;
+int ierr;
+ierr = CCTK_CoordRegisterRange(cctkGH, lower, upper, -1, "y", "cart3d");
+\end{verbatim}
+%
 Note that the API allows either the coordinate name or the direction to
 be used, so that the following is also valid
-
-{\tt
-CCTK\_REAL lower=0;\\
-CCTK\_REAL upper=1;\\
-int ierr;\\
-ierr = CCTK\_CoordRegisterRange(cctkGH, lower, upper, 2, NULL, "cart3d");
-}
+%
+\begin{verbatim}
+CCTK_REAL lower=0;
+CCTK_REAL upper=1;
+int ierr;
+ierr = CCTK_CoordRegisterRange(cctkGH, lower, upper, 2, NULL, "cart3d");
+\end{verbatim}
 
 \item[{\tt CCTK\_CoordRegisterPhysIndex}]
 
@@ -2129,13 +2156,13 @@ Such information is typically needed by IO thorns. The following call
 illustrates how to register the
 indices 3 and 25 as supplying the physical range of the {\tt y}
 coordinate in the {\tt cart3d} system
-
-{\tt
-int loweri=3;\\
-int upperi=25;\\
-int ierr;\\
-ierr = CCTK\_CoordRegisterPhysIndex(cctkGH, loweri, upperi, -1, "y", "cart3d");
-}
+%
+\begin{verbatim}
+int loweri=3;
+int upperi=25;
+int ierr;
+ierr = CCTK_CoordRegisterPhysIndex(cctkGH, loweri, upperi, -1, "y", "cart3d");
+\end{verbatim}
 
 
 
@@ -2150,10 +2177,11 @@ The utilities for thorns using coordinates are:
 \item[{\tt CCTK\_NumCoordSystems}]
 
 Returns the number of coordinate systems registered with the Flesh. For example,
-
-{\tt int num;\\
-num = CCTK\_NumCoordSystems();
-}
+%
+\begin{verbatim}
+int num;
+num = CCTK_NumCoordSystems();
+\end{verbatim}
 
 \item[{\tt CCTK\_CoordSystemName}]
 
@@ -2165,19 +2193,22 @@ depends on the order in which systems are registered, and can be different
 from one simulation to the next.
 
 For example, to print the names of all registered coordinate systems:
-
-{\tt for (i=0; i<CCTK\_NumCoordSystems(); i++) \\
- printf("\%s ",CCTK\_CoordSystemNName(i));}
+%
+\begin{verbatim}
+for (i=0; i<CCTK_NumCoordSystems(); i++)
+    printf("%s ",CCTK_CoordSystemNName(i));
+\end{verbatim}
 
 \item[{\tt CCTK\_CoordSystemDim}]
 
 Provides the dimension of a coordinate system. For example, if
 the {\tt cart3d} system was registered as having 3 dimensions, the
 variable {\tt dim} below will now be set to 3,
-
-{\tt int dim;\\
-dim = CCTK\_CoordSystemDim("cart3d");
-}
+%
+\begin{verbatim}
+int dim;
+dim = CCTK_CoordSystemDim("cart3d");
+\end{verbatim}
 
 \item[{\tt CCTK\_CoordSystemHandle}]
 
@@ -2185,18 +2216,21 @@ Provides the integer handle for a given coordinate system name. The handle descr
 the index for the coordinate system in the Flesh coordinate database, and its value
 will range between zero and the number of registered systems minus one. For example,
 the handle for the {\tt cart3d} coordinate system can be found using
-
-{\tt int handle;\\
-handle = CCTK\_CoordSystemHandle("cart3d");}
+%
+\begin{verbatim}
+int handle;
+handle = CCTK_CoordSystemHandle("cart3d");
+\end{verbatim}
 
 \item[{\tt CCTK\_CoordSystemName}]
 
 The inverse to the previous function call, this provides the name for a given coordinate system handle.
 For example to find the first coordinate system in the Flesh database
-
-{\tt int handle = 0;\\
-const char *name = CCTK\_CoordSystemName(handle);
-}
+%
+\begin{verbatim}
+int handle = 0;
+const char *name = CCTK_CoordSystemName(handle);
+\end{verbatim}
 
 \item[{\tt CCTK\_CoordIndex}]
 
@@ -2206,12 +2240,16 @@ and if no such grid variable is found a negative integer will be returned.
 For example, to find the grid variable index associated with the {\tt y}
 coordinate of the {\tt cart3d} system, either of the two following
 calls could be made
-
-{\tt int index;\\
-index = CCTK\_CoordIndex(2,NULL,"cart3d");}
-
-{\tt int index;\\
-index = CCTK\_CoordIndex(-1,"y","cart3d");}
+%
+\begin{verbatim}
+int index;
+index = CCTK_CoordIndex(2,NULL,"cart3d");
+\end{verbatim}
+%
+\begin{verbatim}
+int index;
+index = CCTK_CoordIndex(-1,"y","cart3d");
+\end{verbatim}
 
 
 \item[{\tt CCTK\_CoordDir}]
@@ -2220,10 +2258,11 @@ Provides the direction for a given coordinate. Directions are integers
 ranging from one to the number of dimensions for the coordinate system.
 For example, to return the direction of the {\tt y} coordinate in
 the {\tt cart3d} system
-
-{\tt int dir;\\
-dir = CCTK\_CoordDir("y","cart3d");
-}
+%
+\begin{verbatim}
+int dir;
+dir = CCTK_CoordDir("y","cart3d");
+\end{verbatim}
 
 The return of a negative integer indicates that the coordinate direction
 could not be found.
@@ -2234,17 +2273,17 @@ Provides the global range (that is, the minimum and maximum values across
 the complete grid) of a coordinate on a given grid hierarchy. Currently
 the minimum and maximum values must be of type {\tt CCTK\_REAL}. The
 coordinate can be specified either by name or by its direction. Note that
-this call returns the {\tt addresses} or the minimum and maximum values.
+this call takes the \emph{addresses} of the minimum and maximum values.
 For example, the range of the {\tt y} coordinate of the {\tt cart3d}
 coordinate system can be found using
-
+%
 \begin{verbatim}
 CCTK_REAL lower, upper;
 int ierr;
 ierr = CCTK_CoordRange(cctkGH, &lower, &upper, -1, "y", "cart3d");
 \end{verbatim}
 or alternatively, using the direction
-
+%
 \begin{verbatim}
 CCTK_REAL lower, upper;
 int ierr;
@@ -2258,14 +2297,14 @@ Provides the local range of a coordinate on a processor for a given
 grid hierarchy. WARNING: This utility only currently works for regular
 cartesian grids. For example, the local processor range of the
 {\tt y} coordinate of the {\tt cart3d} coordinate system can be found using
-
+%
 \begin{verbatim}
 CCTK_REAL lower, upper;
 int ierr;
 ierr = CCTK_CoordLocalRange(cctkGH, &lower, &upper, -1, "y", "cart3d");
 \end{verbatim}
 or alternatively, using the direction
-
+%
 \begin{verbatim}
 CCTK_REAL lower, upper;
 int ierr;
@@ -2283,15 +2322,17 @@ grid points which should not be considered part of the simulation results (for e
 grid points used for different boundary conditions). The physical range of the
 {\tt y} coordinate of the {\tt cart3d} system can be found using
 
-{\tt
-int ilower, iupper;\\
-int ierr;\\
-ierr = CCTK\_CoordRangePhysIndex(cctkGH,\&ilower,\&iupper, -1, "y", "cart3d");}
+\begin{verbatim}
+int ilower, iupper;
+int ierr;
+ierr = CCTK_CoordRangePhysIndex(cctkGH,&ilower,&iupper, -1, "y", "cart3d");
+\end{verbatim}
 or using the coordinate direction
-{\tt
-int ilower, iupper;\\
-int ierr;\\
-ierr = CCTK\_CoordRangePhysIndex(cctkGH,\&ilower,\&iupper, 2, NULL, "cart3d");}
+\begin{verbatim}
+int ilower, iupper;
+int ierr;
+ierr = CCTK_CoordRangePhysIndex(cctkGH,&ilower,&iupper, 2, NULL, "cart3d");
+\end{verbatim}
 
 \item[{\tt CCTK\_CoordSystemImplementation}]
 
@@ -2565,52 +2606,54 @@ use are described in the next section.  If uncertain, you should use
 those simpler interfaces.
 
 To reduce any CCTK variable, use
-\begin{verbatim}
-int CCTK_Reduce(  const cGH *GH,
-                  int processor,
-                  int operation_handle,
-                  int num_out_vals,
-                  int type_out_vals,
-                  void *out_vals,
-                  int num_in_fields,
+\begin{alltt}
+int CCTK_Reduce(  const cGH *\var{GH},
+                  int \var{processor},
+                  int \var{operation_handle},
+                  int \var{num_out_vals},
+                  int \var{type_out_vals},
+                  void *\var{out_vals},
+                  int \var{num_in_fields},
                   ...);
-
-call CCTK_Reduce( integer returnvalue,
-                  CCTK_POINTER_TO_CONST cctkGH,
-                  integer processor,
-                  integer operation_handle,
-                  integer num_out_vals,
-                  integer type_out_vals,
-                  CCTK_POINTER out_vals,
-                  integer num_in_fields,
+\end{alltt}
+\begin{alltt}
+call CCTK_Reduce( integer \var{returnvalue},
+                  CCTK_POINTER_TO_CONST \var{cctkGH},
+                  integer \var{processor},
+                  integer \var{operation_handle},
+                  integer \var{num_out_vals},
+                  integer \var{type_out_vals},
+                  CCTK_POINTER \var{out_vals},
+                  integer \var{num_in_fields},
                   ... )
-\end{verbatim}
+\end{alltt}
 (for C or Fortran respectively).
 To reduce any non-CCTK (local) variable, use
-\begin{verbatim}
-int CCTK_ReduceArray(  const cGH *GH,
-                       int processor,
-                       int operation_handle,
-                       int num_out_vals,
-                       int type_out_vals,
-                       void *out_vals,
-                       int num_dims,
-                       int num_in_arrays,
-                       int type_in_arrays,
+\begin{alltt}
+int CCTK_ReduceArray(  const cGH *\var{GH},
+                       int \var{processor},
+                       int \var{operation_handle},
+                       int \var{num_out_vals},
+                       int \var{type_out_vals},
+                       void *\var{out_vals},
+                       int \var{num_dims},
+                       int \var{num_in_arrays},
+                       int \var{type_in_arrays},
                        ... )
-
-call CCTK_ReduceArray( integer returnvalue,
-                       CCTK_POINTER_TO_CONST cctkGH,
-                       integer processor,
-                       integer operation_handle,
-                       integer num_out_vals,
-                       integer type_out_arrays,
-                       CCTK_POINTER out_vals,
-                       integer num_dims,
-                       integer num_in_arrays,
-                       integer type_in_arrays,
+\end{alltt}
+\begin{alltt}
+call CCTK_ReduceArray( integer \var{returnvalue},
+                       CCTK_POINTER_TO_CONST \var{cctkGH},
+                       integer \var{processor},
+                       integer \var{operation_handle},
+                       integer \var{num_out_vals},
+                       integer \var{type_out_arrays},
+                       CCTK_POINTER \var{out_vals},
+                       integer \var{num_dims},
+                       integer \var{num_in_arrays},
+                       integer \var{type_in_arrays},
                        ... )
-\end{verbatim}
+\end{alltt}
 
 \begin{Lentry}
 \item[{\tt returnvalue}] the return value of the operation.  A
@@ -2636,7 +2679,7 @@ number, this would be one.
 \item[{\tt type\_out\_arrays}, {\tt type\_in\_arrays}]
 specifies the type of the data
 you are communicating.  Use the values as specified in
-\ref{sec:datyansi}. Note: Do not \emph{mix} datatypes.  For example, in
+\ref{sec:datyansi}. Note: Do not \emph{mix} data types.  For example, in
 Fortran do not declare a variable as {\tt integer} and then specify
 the type {\tt CCTK\_VARIABLE\_INT} in the reduction command. These
 types may not be the same on some architectures and will conflict.
@@ -2682,23 +2725,23 @@ described above.
 variable across multiple processors.  The result of the reduction
 operation can be placed on the specified processor or on all
 processors.
-
-\begin{verbatim}
-int CCTK_ReduceLocScalar (const cGH *GH,
-                          int processor,
-                          int operation_handle,
-                          const void *in_scalar,
-                          void *out_scalar,
-                          int data_type)
-
-call CCTK_ReduceLocScalar(integer returnvalue,
-                          CCTK_POINTER_TO_CONST cctkGH,
-                          integer processor,
-                          integer operation_handle,
-                          in_scalar,
-                          out_scalar,
-                          integer data_type)
-\end{verbatim}
+\begin{alltt}
+int CCTK_ReduceLocScalar (const cGH *\var{GH},
+                          int \var{processor},
+                          int \var{operation_handle},
+                          const void *\var{in_scalar},
+                          void *\var{out_scalar},
+                          int \var{data_type})
+\end{alltt}
+\begin{alltt}
+call CCTK_ReduceLocScalar(integer \var{returnvalue},
+                          CCTK_POINTER_TO_CONST \var{cctkGH},
+                          integer \var{processor},
+                          integer \var{operation_handle},
+                          \var{in_scalar},
+                          \var{out_scalar},
+                          integer \var{data_type})
+\end{alltt}
 \begin{Lentry}
 \item[{\tt returnvalue}] the return value of the operation.  A
 negative value indicates a failure to perform the reduction.  A zero
@@ -2719,7 +2762,7 @@ to be reduced.  In Fortran, this can be of any (scalar) data type.
 with the global value (same on all processors) if {\tt processor} has been
 set to $-1$.  Otherwise only processor {\tt processor} will hold the reduction result. Note that the input and output scalar variable must be distinct.
 
-\item[{\tt data\_type}] specifies the type of the gridfunction you are
+\item[{\tt data\_type}] specifies the type of the grid function you are
 communicating. Use the values as specified in \ref{sec:datyansi}.
 \end{Lentry}
 
@@ -2728,24 +2771,25 @@ communicating. Use the values as specified in \ref{sec:datyansi}.
 reduce a 1d array on all processors to a 1d array.  This reduction is carried
 out element by element. The arrays need to have the same size on all
 processors.
-\begin{verbatim}
-int CCTK_ReduceLocArrayToArray1D( const cGH *GH,
-                                  int processor,
-                                  int operation_handle,
-                                  const void *in_array1d,
-                                  void *out_array1d,
-                                  int xsize)
-                                  int data_type)
-
-call CCTK_ReduceLocArrayToArray1D( integer returnvalue
-                                  CCTK_POINTER_TO_CONST cctkGH,
-                                  integer processor,
-                                  integer operation_handle,
-                                  in_array1d,
-                                  out_array1d,
-                                  integer xsize,
-                                  integer data_type)
-\end{verbatim}
+\begin{alltt}
+int CCTK_ReduceLocArrayToArray1D( const cGH *\var{GH},
+                                  int \var{processor},
+                                  int \var{operation_handle},
+                                  const void *\var{in_array1d},
+                                  void *\var{out_array1d},
+                                  int \var{xsize},
+                                  int \var{data_type})
+\end{alltt}
+\begin{alltt}
+call CCTK_ReduceLocArrayToArray1D( integer \var{returnvalue}
+                                  CCTK_POINTER_TO_CONST \var{cctkGH},
+                                  integer \var{processor},
+                                  integer \var{operation_handle},
+                                  \var{in_array1d},
+                                  \var{out_array1d},
+                                  integer \var{xsize},
+                                  integer \var{data_type})
+\end{alltt}
 
 \begin{Lentry}
 \item[{\tt returnvalue}] the return value of the operation.  A
@@ -2766,34 +2810,34 @@ across all processors, element by element.
 = Reduction(in\_array[1]). Note that the input and output array must be distinct.
 \item[{\tt xsize}] the size of the one dimensional array.
 
-\item[{\tt data\_type}] specifies the type of the gridfunction you are
+\item[{\tt data\_type}] specifies the type of the grid function you are
 communicating. Use the values as specified in \ref{sec:datyansi}.
 \end{Lentry}
 
 \vskip 0.24cm
 {\bf Reduction of 2d arrays} Use these routines to reduce a 2d array, element by element. The arrays need to have the same size on all
 processors.
-\begin{verbatim}
-int CCTK_ReduceLocArrayToArray2D( const cGH *GH,
-                                 int processor,
-                                 int opertaion_handle,
-                                 const void *in_array_2d,
-                                 void *out_array2d,
-                                 int xsize,
-                                 int ysize,
-                                 int data_type)
-
-
-call CCTK_ReduceLocArrayToArray2D( integer returnvalue
-                                   CCTK_POINTER_TO_CONST cctkGH,
-                                   integer processor,
-                                   integer operation_handle,
-                                   in_array2d,
-                                   out_array2d,
-                                   integer xsize,
-                                   integer ysize,
-                                   integer data_type)
-\end{verbatim}
+\begin{alltt}
+int CCTK_ReduceLocArrayToArray2D( const cGH *\var{GH},
+                                 int \var{processor},
+                                 int \var{opertaion_handle},
+                                 const void *\var{in_array_2d},
+                                 void *\var{out_array2d},
+                                 int \var{xsize},
+                                 int \var{ysize},
+                                 int \var{data_type})
+\end{alltt}
+\begin{alltt}
+call CCTK_ReduceLocArrayToArray2D( integer \var{returnvalue}
+                                   CCTK_POINTER_TO_CONST \var{cctkGH},
+                                   integer \var{processor},
+                                   integer \var{operation_handle},
+                                   \var{in_array2d},
+                                   \var{out_array2d},
+                                   integer \var{xsize},
+                                   integer \var{ysize},
+                                   integer \var{data_type})
+\end{alltt}
 
 \begin{Lentry}
 \item[{\tt returnvalue}] the return value of the operation.  A
@@ -2816,35 +2860,36 @@ result. out\_array2d[i,j]= Reduction(in\_array2d[i,j]).
 \item[{\tt ysize}] the size of the two dimensional array in $y$
 direction. Note that the input and output array must be distinct.
 
-\item[{\tt data\_type}] specifies the type of the gridfunction you are
+\item[{\tt data\_type}] specifies the type of the grid function you are
 communicating. Use the values as specified in \ref{sec:datyansi}.
 \end{Lentry}
 
 \vskip 0.24cm
 {\bf Reduction of 3d arrays} Use these routines to reduce a 3d array, element by element. The arrays need to have the same size on all
 processors.
-\begin{verbatim}
-int CCTK_ReduceLocArrayToArray3D(const cGH *GH,
-                                 int processor,
-                                 int opertaion_handle,
-                                 const void *in_array_3d,
-                                 void *out_array3d,
-                                 int xsize,
-                                 int ysize,
-                                 int zsize,
-                                 int data_type)
-
-call CCTK_ReduceLocArrayToArray3D(integer returnvalue
-                                 CCTK_POINTER_TO_CONST cctkGH,
-                                 integer processor,
-                                 integer operation_handle,
-                                 in_array3d,
-                                 out_array3d,
-                                 integer xsize,
-                                 integer ysize,
-                                 integer zsize,
-                                 integer data_type)
-\end{verbatim}
+\begin{alltt}
+int CCTK_ReduceLocArrayToArray3D(const cGH *\var{GH},
+                                 int \var{processor},
+                                 int \var{opertaion_handle},
+                                 const void *\var{in_array_3d},
+                                 void *\var{out_array3d},
+                                 int \var{xsize},
+                                 int \var{ysize},
+                                 int \var{zsize},
+                                 int \var{data_type})
+\end{alltt}
+\begin{alltt}
+call CCTK_ReduceLocArrayToArray3D(integer \var{returnvalue}
+                                 CCTK_POINTER_TO_CONST \var{cctkGH},
+                                 integer \var{processor},
+                                 integer \var{operation_handle},
+                                 \var{in_array3d},
+                                 \var{out_array3d},
+                                 integer \var{xsize},
+                                 integer \var{ysize},
+                                 integer \var{zsize},
+                                 integer \var{data_type})
+\end{alltt}
 
 \begin{Lentry}
 \item[{\tt returnvalue}] the return value of the operation.  A
@@ -2868,7 +2913,7 @@ result. out\_array3d[i,j,k]= Reduction(in\_array3d[i,j,k]).
 \item[{\tt zsize}] the size of the three dimensional array in $z$
 direction. Note that the input and output array must be distinct.
 
-\item[{\tt data\_type}] specifies the type of the gridfunction you are
+\item[{\tt data\_type}] specifies the type of the grid function you are
 communicating. Use the values as specified in \ref{sec:datyansi}.
 \end{Lentry}
 
@@ -2953,7 +2998,7 @@ For example, from the Fortran thorn {\tt MyThorn},
 \begin{verbatim}
   call CCTK_INFO("Starting Tricky Calculation")
 \end{verbatim}
-
+%
 will write the line:
 \begin{verbatim}
   INFO (MyThorn): Starting Tricky Calculation
@@ -2962,7 +3007,7 @@ will write the line:
 For a multiprocessor run, only runtime information from processor zero
 will be printed to screen by default. The standard output of other processors
 will usually be discarded unless the ``{\tt -r}'' command line option is used
-(Section~\ref{sec:coliop}).
+(Section~\ref{sec:command_line_options}).
 
 Note that the routine {\tt CCTK\_VInfo()} can only be called from C because
 Fortran doesn't know about variable argument lists. So including variables in
@@ -3023,7 +3068,7 @@ severity.
 By default, a Cactus run will abort on a level 0 warning
 and will report level 1 and severer warnings to screen.
 This behaviour can be amended using command line arguments,
-as described in Section~\ref{sec:coliop}.
+as described in Section~\ref{sec:command_line_options}.
 
 For example, to provide a warning which will be printed to standard
 error but which will not terminate the code for a run with default
@@ -3094,7 +3139,7 @@ used.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Adding documentation}
-\label{sec:addo}
+\label{sec:Adding_documentation}
 
 Documentation is a vital part of your thorn, helping to ensure its
 ease of use and longevity, not only for others but also for the thorn
@@ -3162,7 +3207,7 @@ documentation:
     distribution at {\tt doc/latex/cactus.sty}. This should be
     included using a relative link, so that updates to the style file
     are applied to all thorns.
-
+%
 \begin{verbatim}
 \usepackage{../../../../doc/latex/cactus}
 \end{verbatim}
@@ -3188,7 +3233,7 @@ and
  \item Currently we only support PostScript ({\tt .eps or .ps}) figures.
    Graphics figures should be included using the {\tt includegraphics}
    command (not {\tt epsffig}), with no file extension specified. For example,
-
+%
 \begin{verbatim}
 \begin{figure}[ht]
   \begin{center}
@@ -3209,7 +3254,7 @@ and
  \item References should be formatted with the standard LaTeX {\bf
         bibitem} command, for example, a bibliography section should
         look like:
-
+%
 \begin{verbatim}
 \begin{thebibliography}{9}
   \bibitem{MyArrangement_MyThorn_Author99}
@@ -3799,10 +3844,9 @@ When writing to a string its length should never be exceeded.
 \label{sec:caforofr}
 
 To call a utility Fortran routine from C use
-
-{\tt
-void CCTK\_FCALL CCTK\_FNAME(<Fortran routine name>)(<argument list>)
-}
+\begin{alltt}
+void CCTK_FCALL CCTK_FNAME(<\var{Fortran routine name}>)(<\var{argument list}>)
+\end{alltt}
 
 Note that Fortran expects all arguments (apart from strings) to be
 pointers, so any non-array data should be passed by address.
@@ -3839,17 +3883,13 @@ declarations.
 
 To use an aliased function you must first declare it in your {\tt
 interface.ccl} file. Declare the prototype as, for example,
-
-{\tt
-CCTK\_REAL FUNCTION SumStuff(CCTK\_REAL IN x, CCTK\_REAL IN y)
-}
-
+\begin{verbatim}
+CCTK_REAL FUNCTION SumStuff(CCTK_REAL IN x, CCTK_REAL IN y)
+\end{verbatim}
 \noindent and that this function will be used in your thorn by
-
-{\tt
+\begin{verbatim}
 USES FUNCTION SumStuff
-}
-
+\end{verbatim}
 A prototype of this function will be available to any C routine that
 includes the {\tt cctk.h} header file. 
 In a Fortran file, the declaration of the function will be included

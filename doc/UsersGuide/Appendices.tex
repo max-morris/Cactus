@@ -232,8 +232,12 @@ Cactus Users' Guide and the Cactus Reference Manual.
 \item[parallelisation]
 \item[parameter]
   A variable which remains unchanged throughout the execution of a
-  Cactus executable. Parameters all have default values which can be
-  changed in a parameter file.
+  Cactus executable. Parameters have default values which can be
+  set in a \textit{parameter file}.
+\item[parameter file]
+  (Also called \textit{par file}.) A text file used as the input of a
+  Cactus program, specifying initial values of thorn parameters.
+  See Section~\ref{sec:Parameter_File}.
 \item[processor topology]
 \item[PUGH]
   The default driver thorn for Cactus which uses MPI.
@@ -254,6 +258,9 @@ Cactus Users' Guide and the Cactus Reference Manual.
   See Section~\ref{subsec:param_ccl}. \ref{sec:Appendix.param}.
 \item[staggering]
   See Section~\ref{sec:staggering}.
+\item[steerable parameter]
+  A parameter which can be changed at any time after the program has been
+  initialised.  See Section~\ref{sec:Cactus_parameters.steerable}.
 \item[symmetry zone]
   A symmetry zone is a set of points added to the edge of a grid to
   contain data which is obtained, by some symmetry operation, from
@@ -503,7 +510,7 @@ The parameter configuration file consists of a list of
 range of the parameter separated by optional
 \textit{parameter data scoping items} (DSIs) which detail access to the
 parameter.  (For a more extensive discussion of Cactus parameters see Chapter
-\ref{chap:capa}.)
+\ref{chap:Cactus_parameters}.)
 
 \subsection{Parameter data scoping items}
 
@@ -529,6 +536,7 @@ on this line.)
 
 
 \subsection{Parameter object specification items}
+\label{subsec:Appendix.param.specification_items}
 
 \begin{alltt}
 [EXTENDS|USES] <\var{parameter_type}> <\var{parameter name}>[[<\var{integer}>]] "<\var{parameter description}>" 
@@ -599,7 +607,10 @@ instead.
         changed.  By default parameters may not be changed after the
         parameter file has been read, or on restarting from
         checkpoint.  This option relaxes this restricting, specifying that
-        the parameter may be changed at recovery time or at any time.
+        the parameter may be changed at recovery time from a parameter file
+	or at any time using the Flesh routine {\tt CCTK\_ParameterSet} ---
+        see the Reference Guide.
+
 \item{} {\t ACCUMULATOR} specifies that this is an \textit{accumulator}
          parameter.  Such parameters cannot be set directly, but are
          set by other parameters who specify this one as an {\tt

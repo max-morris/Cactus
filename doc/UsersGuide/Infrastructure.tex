@@ -176,7 +176,7 @@ struct SimpleExtension
 
 \end{verbatim}
 
-with a SetupGH routine like.
+with a {\tt SetupGH} routine like.
 
 \begin{verbatim}
 
@@ -216,12 +216,12 @@ Basically all this example is doing is preparing a data array for use.  The
 function can query the Flesh for information on every variable.  Note that
 scalars should always have memory actually assigned to them.
 
-An {\tt InitGH} function isn't strictly necessary, and in this case it could just
-be a dummy function.
+An {\tt InitGH} function isn't strictly necessary, and in this case it could
+just be a dummy function.
 
-The {\tt ScheduleTraverseGH} function needs to fill out the cGH data and then call
-{\tt CCTK\_ScheduleTraverse} to have the functions scheduled at that point executed on the
-grid.
+The {\tt ScheduleTraverseGH} function needs to fill out the cGH data and
+then call {\tt CCTK\_ScheduleTraverse} to have the functions scheduled at
+that point executed on the grid.
 
 \begin{verbatim}
 
@@ -385,16 +385,15 @@ int SimpleEnableGroupStorage(cGH *GH, const char *groupname)
 
 The disable function is basically the reverse of the enable one.
 
-The {\tt QueryGroupStorage} function basically returns true or false if there is storage
-for the group, and the {\tt ArrayGroupSize} returns the size of the grid function or array
-group in a particular direction.
+The {\tt QueryGroupStorage} function basically returns true or false if
+there is storage for the group, and the {\tt ArrayGroupSize} returns the
+size of the grid function or array group in a particular direction.
 
 \subsection{En/Disable Group Comm}
 
-These are the communication analogues to the storage functions.  Basically they flag
-that communication is to be done on that group or not, and may initialise data
-structures for the communication.
-
+These are the communication analogues to the storage functions.  Basically
+they flag that communication is to be done on that group or not, and may
+initialise data structures for the communication.
 
 
 \chapter{Adding an I/O Method}
@@ -441,13 +440,13 @@ The following example shows how a thorn would register an I/O method
 \section{Periodic Output of Grid Variables}
 %
 The Flesh scheduler will automatically call {\t CCTK\_OutputGH()} at every
-iteration after the {\tt CCTK\_ANALYSIS} time bin. This function loops over all I/O
-methods and calls their routines registered as {\t OutputGH()} (see also
+iteration after the {\tt CCTK\_ANALYSIS} time bin. This function loops over all
+I/O methods and calls their routines registered as {\t OutputGH()} (see also
 \ref{subsec:schedule_ccl}).
 %
-\begin{verbatim}
-  int SimpleIO_OutputGH (const cGH *GH);
-\end{verbatim}
+\begin{alltt}
+  int SimpleIO_OutputGH (const cGH *\var{GH});
+\end{alltt}
 %
 The {\t OutputGH()} routine itself should loop over all variables living on the
 {\t GH} grid hierarchy, and do all necessary output if requested (this is
@@ -470,18 +469,18 @@ If the {\t TimeToOutput()} routine decides that it is now time to do output, the
 Flesh scheduler will invoke the corresponding analysis routine and also request
 output of the triggering variable(s) using {\t TriggerOutput()}.
 %
-\begin{verbatim}
-  int SimpleIO_TimeToOutput (const cGH *GH, int varindex);
-  int SimpleIO_TriggerOutput (const cGH *GH, int varindex);
-\end{verbatim}
+\begin{alltt}
+  int SimpleIO_TimeToOutput (const cGH *\var{GH}, int \var{varindex});
+  int SimpleIO_TriggerOutput (const cGH *\var{GH}, int \var{varindex});
+\end{alltt}
 %
 Both routines get passed the index of a possible triggering grid variable.
 
 {\t TimeToOutput()} should return true (a non-zero value) if analysis and output
-for \textit{varindex} should take place at the current iteration, and false (zero)
+for \var{varindex} should take place at the current iteration, and false (zero)
 otherwise.\\
 {\t TriggerOutput()} should return zero for successful output of variable
-\textit{varindex}, and a negative value in case of an error.
+\var{varindex}, and a negative value in case of an error.
 %
 %
 \section{Unconditional Output of Grid Variables}
@@ -494,15 +493,15 @@ grid variables (see also \ref{sec:io}).
 A function registered as an {\t OutputVarAs()} routine has the following
 prototype:
 %
-\begin{verbatim}
-  int SimpleIO_OutputVarAs (const cGH *GH, const char *varname, const char *alias);
-\end{verbatim}
+\begin{alltt}
+  int SimpleIO_OutputVarAs (const cGH *\var{GH}, const char *\var{varname}, const char *\var{alias});
+\end{alltt}
 %
-The variable to output, \textit{varname}, is given by its full name.
-In addition to that, an \textit{alias} string can be passed which then serves
+The variable to output, \var{varname}, is given by its full name.
+In addition to that, an \var{alias} string can be passed which then serves
 the purpose of constructing a unique name for the output file.
 
-The {\t OutputVarAs()} routine should return zero if output for \textit{varname}
+The {\t OutputVarAs()} routine should return zero if output for \var{varname}
 was done successfully, or a negative error code otherwise.
 
 
@@ -518,7 +517,7 @@ will call thorns' routines in order to perform checkpointing and/or recovery.
 
 Thorns register their checkpointing routines at {\t CCTK\_CPINITIAL} and/or
 {\t CCTK\_CHECKPOINT}. These time bins are scheduled right after all initial
-data has been set up and after every evolution timestep, respectively. (see
+data has been set up and after every evolution timestep, respectively. (See
 \ref{subsec:schedule_ccl} for a description of all timebins). Depending on
 parameter settings, the checkpoint routines decide whether to write an initial
 data checkpoint, and when to write an evolution checkpoint.
