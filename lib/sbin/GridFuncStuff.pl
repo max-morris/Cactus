@@ -66,7 +66,7 @@ sub CreateVariableBindings
   foreach $thorn (split(" ",$interface_database{"THORNS"}))
   {
     print OUT "#ifdef THORN_IS_$thorn\n";
-    print OUT "#include $thorn"."_arguments.h\n";
+    print OUT "#include \"$thorn"."_arguments.h\"\n";
     print OUT "#define CCTK_FARGUMENTS \U$thorn"."_FARGUMENTS\n";
     print OUT "#define DECLARE_CCTK_FARGUMENTS DECLARE_\U$thorn"."_FARGUMENTS\n";
     print OUT "#define CCTK_CARGUMENTS \U$thorn"."_CARGUMENTS\n";
