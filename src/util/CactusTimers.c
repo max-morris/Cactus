@@ -26,10 +26,14 @@ static void CCTKi_TimerDestroy(int this_timer, t_Timer *timer);
 static void CCTKi_TimerStart(int this_timer, t_Timer *timer);
 static void CCTKi_TimerStop(int this_timer, t_Timer *timer);
 static void CCTKi_TimerReset(int this_timer, t_Timer *timer);
-static char *CCTKi_TimerGet(int this_timer, t_Timer *timer);
+static void CCTKi_TimerGet(int this_timer, t_Timer *timer, t_TimerInfo *info);
 
 static int n_timertypes = 0;
 static cHandledData *handles = NULL;
+
+/* The total number of timer values. */
+static int n_timer_vals = 0;
+
 
 static int n_timers = 0;
 static cHandledData *timers = NULL;
@@ -57,6 +61,7 @@ int CCTK_TimerRegister(const char *name, t_TimerFuncs *functions)
 
   if(newfuncs)
   {
+    newfuncs->info.n_vals = functions->info.n_vals;
     newfuncs->create = functions->create;
     newfuncs->destroy = functions->destroy;
     newfuncs->start = functions->start;
@@ -68,6 +73,7 @@ int CCTK_TimerRegister(const char *name, t_TimerFuncs *functions)
 
   handle = Util_NewHandle(&handles, name, newfuncs);
   n_timertypes++;
+  n_timer_vals += functions->info.n_vals;
 
   return handle;
 }
@@ -128,6 +134,32 @@ int CCTK_TimerCreate(const char *name)
   }
 
   return this_timer;
+}
+
+ /*@@
+   @routine    CCTK_TimerCreateI
+   @date       Fri Oct 22 10:21:14 1999
+   @author     Tom Goodale
+   @desc 
+   Creates a timer with a unique name.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+int CCTK_TimerCreateI(void)
+{
+  int retval;
+  char name[20];
+
+  sprintf(name, "timer_%d", n_timers);
+
+  retval = CCTK_TimerCreate(name);
+
+  return retval;
 }
 
  /*@@
@@ -393,79 +425,91 @@ static void CCTKi_TimerReset(int this_timer, t_Timer *timer)
    @endhistory 
 
 @@*/
-char *CCTK_TimerGet(const char *name)
+void CCTK_TimerGet(const char *name, t_TimerInfo *info)
 {
   t_Timer *timer;
   int this_timer;
-  char *retval;
 
   if(this_timer = Util_GetHandle(timers, name, (void **)&timer))
   {
-    retval = CCTKi_TimerGet(this_timer, timer);
-  }
-  else
-  {
-    retval = NULL;
+    CCTKi_TimerGet(this_timer, timer, info);
   }
 
-  return retval;
+  return;
 
 }
 
-char *CCTK_TimerGetI(int this_timer)
+void CCTK_TimerGetI(int this_timer, t_TimerInfo *info)
 {
   t_Timer *timer;
-  char *retval;
 
   if(timer = Util_GetHandledData(timers, this_timer))
   {
-    retval = CCTKi_TimerGet(this_timer, timer);
+    CCTKi_TimerGet(this_timer, timer, info);
   }
-  else
-  {
-    retval = NULL;
-  }
-  
-  return retval;
+
+  return;
 }
 
-static char *CCTKi_TimerGet(int this_timer, t_Timer *timer)
+
+
+
+static void CCTKi_TimerGet(int this_timer, t_Timer *timer, t_TimerInfo *info)
 {
   t_TimerFuncs *funcs;
   int handle;
-  char this_val[100];
-  char *retval;
-  char *temp;
-  int retlength;
-
-  retlength = 0;
-  retval = NULL;
+  int total_vars;
   
   if(timer)
   {
     if(timer->data)
     {
+      total_vars = 0;
       /* Start the timer info for this timer */
       for(handle = 0; handle < n_timertypes; handle++)
       {
         funcs = (t_TimerFuncs *)Util_GetHandledData(handles, handle);
-        sprintf(this_val, "%lf", funcs->get(this_timer, timer->data[handle]));
-        retlength += 2+strlen(this_val);
-        temp = realloc(retval, retlength);
-        if(temp)
-        { 
-          retval = temp;
-          
-          /* If this isn't the first one, add a couple of spaces. */
-          if(retlength > 2+strlen(this_val)) strcat(retval, "  ");
-          
-          strcat(retval, this_val);
-        }
+        funcs->get(this_timer, timer->data[handle], &(info->vals[total_vars]));
+        
+        total_vars += funcs->info.n_vals;
       }
+    }
+  }
+
+}
+
+t_TimerInfo *CCTK_TimerCreateInfo(void)
+{
+  t_TimerInfo *retval;
+
+  retval = (t_TimerInfo *)malloc(sizeof(t_TimerInfo));
+
+  if(retval)
+  {
+    retval->n_vals = n_timer_vals;
+
+    retval->vals = (t_TimerVal *)malloc(n_timer_vals*sizeof(t_TimerVal));
+
+    if(! retval->vals)
+    {
+      free(retval);
+      retval = NULL;
     }
   }
 
   return retval;
 }
 
-
+void CCTK_TimerDestroyInfo(t_TimerInfo *info)
+{
+  if(info)
+  {
+    if(info->vals)
+    {
+      free(info->vals);
+      info->vals = NULL;
+    }
+    free(info);
+  }
+}
+  
