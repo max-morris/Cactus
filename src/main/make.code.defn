@@ -3,33 +3,33 @@
 # $Header$
 
 SRCS=\
+ActiveThorns.c\
 Banner.c\
 CactusDefaultInitialise.c\
 CactusDefaultEvolve.c\
 CactusDefaultShutdown.c\
 CallStartupFunctions.c\
+CommandLine.c\
 ConfigData.c\
 Coord.c\
+Dummies.c\
+flesh.cc\
+FortranWrappers.c\
+GHExtensions.c\
+Groups.c\
+GroupsOnGH.c\
 InitialiseCactus.c\
 InitialiseDataStructures.c\
+OverloadMain.c\
+Parameters.c\
 ProcessCommandLine.c\
 ProcessEnvironment.c\
 ProcessParameterDatabase.c\
+rfrInterface.c\
+ScheduleInterface.c\
 SetParams.c\
 ShutdownCactus.c\
-flesh.cc\
-Groups.c\
-GroupsOnGH.c\
-Dummies.c\
-rfrInterface.c\
-OverloadMain.c\
-CommandLine.c\
-GHExtensions.c\
-WarnLevel.c\
-ActiveThorns.c\
-Parameters.c\
 Subsystems.c\
-ScheduleInterface.c\
-FortranWrappers.c
+WarnLevel.c
 
 
