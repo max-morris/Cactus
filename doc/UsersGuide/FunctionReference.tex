@@ -100,7 +100,7 @@ available from C, not all are currently available from Fortran.
 
 \item[CCTK\_CoordIndex] 
   [\pageref{CoordIndex}] 
-  Give the grid variable index for a given coordinate name.
+  Give the grid variable index for a given coordinate.
 
 \item[CCTK\_CoordRange] 
   [\pageref{CoordRange}] 
@@ -888,12 +888,11 @@ The coordinate name is independent of the grid function name.
 The coordinate name is independent of the grid variable name. 
 To find the index, the coordinate system name must be given, and either
 the coordinate direction or the coordinate name. The coordinate name 
-will be used if the coordinate direction is given as -1, otherwise the
-coordinate name will be used.
+will be used if the coordinate direction is given as less than or equal to zero, otherwise the coordinate name will be used. 
 \end{discussion}
 \begin{examples}
 \begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t index = CCTK\_CoordIndex(1,"xdir","cart3d")};
+\hfill {\bf C} && {\t index = CCTK\_CoordIndex(-1,"xdir","cart3d")};
 \\
 \hfill {\bf Fortran} && one = 1
 \\

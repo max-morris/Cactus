@@ -410,7 +410,52 @@ void CCTK_FCALL CCTK_FNAME(CCTK_CoordRegisterRange)
 
 
 
+ /*@@
+   @routine    CoordIndex
+   @date       
+   @author     Gabrielle Allen
+   @desc 
+   Return the index for a grid variable registered as a coordinate, taking
+   as input the coordinate system name and either the coordinate name or the
+   coordinate direction
+   @enddesc 
+   @calls     
 
+   @var     dir
+   @vdesc   the direction of the coordinate 
+   @vtype   int
+   @vio     in
+   @vcomment 
+   The range of the coordinate direction is (1,coord system dimension)
+   If the coord direction is > 0 it is used to calculate the coordinate grid
+   variable index, if it is <=0 then the coordinate name is used
+   @endvar 
+   @var     name
+   @vdesc   the name of the coordinate (used only if dir <= 0)
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+   If the coord direction is > 0 it is used to calculate the coordinate grid
+   variable index, if it is <=0 then the coordinate name is used 
+   @endvar 
+   @var     systemname
+   @vdesc   the name of the coordinate system
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+
+   @returntype int
+   @returndesc 
+   >=0      = grid variable index for coordinate
+   -1       = no coordinate systems registered
+   -2       = coordinate system not registered
+   -3       = coordinate name not found
+   -4       = coordinate direction greater than system dimension
+   @endreturndesc
+
+   @@*/
 
 int CCTK_CoordIndex(int dir, const char *name, const char *systemname)
 {
@@ -427,7 +472,7 @@ int CCTK_CoordIndex(int dir, const char *name, const char *systemname)
                                                0);
     if (data)
     {
-      if (dir>-1)
+      if (dir>0)
       {
         if (dir>data->dimension)
         {
