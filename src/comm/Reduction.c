@@ -18,9 +18,10 @@
 #include "cctk_Flesh.h"
 #include "cctk_FortranString.h"
 #include "cctk_Groups.h"
-#include "StoreHandledData.h"
 #include "cctk_Reduction.h"
 #include "cctk_WarnLevel.h"
+
+#include "StoreHandledData.h"
 
 static char *rcsid = "$Header$";
 
@@ -55,7 +56,7 @@ static int num_reductions_array = 0;
  
 
 int CCTK_RegisterReductionOperator(
-                                   void (*function)(REDUCTION_OPERATOR_REGISTER_ARGLIST),
+                                   int (*function)(REDUCTION_OPERATOR_REGISTER_ARGLIST),
                                    const char *name)
 {
   int handle;
@@ -66,7 +67,7 @@ int CCTK_RegisterReductionOperator(
   if(handle < 0)
   {
     /* Get a handle for it. */
-    handle = Util_NewHandle(&ReductionOperators, name, (void *)function);
+    handle = Util_NewHandle(&ReductionOperators, name, (int *)function);
     
     /* Remember how many reduction operators there are */
     num_reductions++;
@@ -124,8 +125,9 @@ int CCTK_ReductionHandle(const char *reduction)
 #endif
 
   if (handle < 0)
-    CCTK_Warn(1,__LINE__,__FILE__,"Cactus",
-	      "No handle found for this reduction operator");
+    CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
+	      "CCTK_ReductionHandle: No handle found reduction operator %s",
+	      reduction);
 
   return handle;
 
@@ -201,25 +203,27 @@ int CCTK_Reduce(cGH *GH,
 {
   va_list indices;
   int i;
+  int retval;
   int *in_fields;
-  void (*function)(REDUCTION_OPERATOR_REGISTER_ARGLIST); 
+  int (*function)(REDUCTION_OPERATOR_REGISTER_ARGLIST); 
 
 
   /* Get the pointer to the reduction operator */
   if (operation_handle < 0)
   {
     CCTK_Warn(3,__LINE__,__FILE__,"Cactus",
-	      "Invalid handle passed to CCTK_Reduce");
+	      "CCTK_Reduce: Invalid handle passed to CCTK_Reduce");
     return (-1);
   }
 
-  function = (void (*)(REDUCTION_OPERATOR_REGISTER_ARGLIST))
+  function = (int (*)(REDUCTION_OPERATOR_REGISTER_ARGLIST))
       Util_GetHandledData(ReductionOperators,operation_handle);
     
   if (! function)
   {
     CCTK_Warn(3,__LINE__,__FILE__,"Cactus",
-	      "Reduction operation is not registered and cannot be called");
+	      "CCTK_Reduce: Reduction operation is not registered"
+	      "and cannot be called");
     return (-1);
   }
         
@@ -227,15 +231,17 @@ int CCTK_Reduce(cGH *GH,
   in_fields = malloc(num_in_fields*sizeof(int));
   va_start(indices, num_in_fields);
   for (i=0; i<num_in_fields; i++)
+  {
     in_fields[i] = va_arg(indices,int);
+  }
   va_end(indices);
-  
-  function (GH, proc, num_out_vals, type_out_vals, out_vals,
+
+  retval = function (GH, proc, num_out_vals, type_out_vals, out_vals,
             num_in_fields, in_fields);
   
   free(in_fields);
-  
-  return (0);
+
+  return retval;
 }
 
 void CCTK_FCALL CCTK_FNAME(CCTK_Reduce)
@@ -250,9 +256,10 @@ void CCTK_FCALL CCTK_FNAME(CCTK_Reduce)
       ... )
 { 
   va_list indices;
+  int retval;
   int i;
   int *in_fields;
-  void (*function)(REDUCTION_OPERATOR_REGISTER_ARGLIST); 
+  int (*function)(REDUCTION_OPERATOR_REGISTER_ARGLIST); 
 
 
   /* initialize return code to indicate an error */
@@ -266,7 +273,7 @@ void CCTK_FCALL CCTK_FNAME(CCTK_Reduce)
   }
 
   /* Get the pointer to the reduction operator */
-  function = (void (*)(REDUCTION_OPERATOR_REGISTER_ARGLIST))
+  function = (int (*)(REDUCTION_OPERATOR_REGISTER_ARGLIST))
       Util_GetHandledData(ReductionOperators,*operation_handle);
     
   if (! function)
@@ -283,12 +290,12 @@ void CCTK_FCALL CCTK_FNAME(CCTK_Reduce)
     in_fields[i] = *va_arg(indices,int *);
   va_end(indices);
   
-  function (GH, *proc, *num_out_vals, *type_out_vals, out_vals,
+  retval = function (GH, *proc, *num_out_vals, *type_out_vals, out_vals,
             *num_in_fields,in_fields);
   
   free(in_fields);
 
-  *fortranreturn = 0;
+  *fortranreturn = retval;
 }
 
 
@@ -301,7 +308,7 @@ void CCTK_FCALL CCTK_FNAME(CCTK_Reduce)
    @enddesc 
    @var     function
    @vdesc   Routine containing reduction operator
-   @vtype   (void (*))
+   @vtype   (int (*))
    @vio     
    @vcomment 
    @endvar 
@@ -314,7 +321,7 @@ void CCTK_FCALL CCTK_FNAME(CCTK_Reduce)
 @@*/
  
 int CCTK_RegisterReductionArrayOperator
-         (void (*function)(REDUCTION_ARRAY_OPERATOR_REGISTER_ARGLIST),
+         (int (*function)(REDUCTION_ARRAY_OPERATOR_REGISTER_ARGLIST),
          const char *name)
 {
   int handle;
@@ -325,7 +332,7 @@ int CCTK_RegisterReductionArrayOperator
   if(handle < 0)
   {
     /* Get a handle for it. */
-    handle = Util_NewHandle(&ReductionArrayOperators, name, (void *)function);
+    handle = Util_NewHandle(&ReductionArrayOperators, name, (int *)function);
     
     /* Remember how many reduction operators there are */
     num_reductions_array++;
@@ -481,7 +488,7 @@ int CCTK_ReduceArray(cGH *GH,
   int i;
   int *dims;
   void **in_arrays;
-  void (*function)(REDUCTION_ARRAY_OPERATOR_REGISTER_ARGLIST)=NULL; 
+  int (*function)(REDUCTION_ARRAY_OPERATOR_REGISTER_ARGLIST)=NULL; 
 
 
   /* Get the pointer to the reduction operator */
@@ -492,7 +499,7 @@ int CCTK_ReduceArray(cGH *GH,
     return (-1);
   }
 
-  function = (void (*)(REDUCTION_ARRAY_OPERATOR_REGISTER_ARGLIST))
+  function = (int (*)(REDUCTION_ARRAY_OPERATOR_REGISTER_ARGLIST))
              Util_GetHandledData(ReductionArrayOperators,operation_handle);
     
   if (! function)
@@ -547,7 +554,7 @@ void CCTK_FCALL CCTK_FNAME(CCTK_ReduceArray)
   int i;
   int *dims;
   void **in_arrays;
-  void (*function)(REDUCTION_ARRAY_OPERATOR_REGISTER_ARGLIST); 
+  int (*function)(REDUCTION_ARRAY_OPERATOR_REGISTER_ARGLIST); 
 
 
   /* initialize return code to indicate an error */
@@ -561,7 +568,7 @@ void CCTK_FCALL CCTK_FNAME(CCTK_ReduceArray)
     return;
   }
 
-  function = (void (*) (REDUCTION_ARRAY_OPERATOR_REGISTER_ARGLIST))
+  function = (int (*) (REDUCTION_ARRAY_OPERATOR_REGISTER_ARGLIST))
               Util_GetHandledData (ReductionArrayOperators, *operation_handle);
     
   if (! function)
