@@ -5,11 +5,17 @@
    @desc
               Header file for using interpolation operators
    @enddesc
+
    @history
    @date      July 07 1999
    @author    Thomas Radke
    @hdesc     Just copied from cctk_Reduction.h
+
+   @date      Thu Feb 21 14:36:02 CET 2002
+   @author    Jonathan Thornburg <jthorn@aei.mpg.de>
+   @hdesc     add more comments, add new stuff for new interpolator API
    @endhistory
+
  @@*/
 
 
@@ -21,48 +27,85 @@ extern "C"
 {
 #endif
 
-/* prototype for interpolation operator routine
-   working on a list of grid variables */
-typedef int (*cInterpOperatorGV) (cGH *GH,
-                                  const char *coord_system,
-                                  int num_points,
-                                  int num_in_array_indices,
-                                  int num_out_arrays,
-                                  const void *const interp_coord_arrays[],
-                                  const int interp_coord_array_types[],
-                                  const int in_array_indices[],
-                                  void *const out_arrays[],
-                                  const int out_array_types[]);
+/*
+ * typedefs for interpolation operator routines
+ */
+typedef int (*cInterpOperatorGV)(cGH *GH,
+                                 const char *coord_system,
+                                 int num_points,
+                                 int num_in_array_indices,
+                                 int num_out_arrays,
+                                 const void *const interp_coord_arrays[],
+                                 const int interp_coord_array_types[],
+                                 const int in_array_indices[],
+                                 void *const out_arrays[],
+                                 const int out_array_types[]);
+typedef int (*cInterpOperatorLocal)(cGH *GH,
+                                    int num_points,
+                                    int num_dims,
+                                    int num_in_arrays,
+                                    int num_out_arrays,
+                                    const int coord_dims[],
+                                    const void *const coord_arrays[],
+                                    const int coord_array_types[],
+                                    const void *const interp_coord_arrays[],
+                                    const int interp_coord_array_types[],
+                                    const void *const in_arrays[],
+                                    const int in_array_types[],
+                                    void *const out_arrays[],
+                                    const int out_array_types[]);
+typedef int (*cInterpOpLocalUniform)(int N_dims,
+                                     int param_table_handle,
+                                     /***** coordinate system *****/
+                                     const CCTK_REAL coord_origin[],
+                                     const CCTK_REAL coord_delta[],
+                                     /***** interpolation points *****/
+                                     int N_interp_points,
+                                     int interp_coords_type_code,
+                                     const void *const interp_coords[],
+                                     /***** input arrays *****/
+                                     int N_input_arrays,
+                                     const CCTK_INT input_array_dims[],
+                                     const CCTK_INT input_array_type_codes[],
+                                     const void *const input_arrays[],
+                                     /***** output arrays *****/
+                                     int N_output_arrays,
+                                     const CCTK_INT output_array_type_codes[],
+                                     void *const output_arrays[]);
 
-/* prototype for interpolation operator routine
-   working on local arrays */
-typedef int (*cInterpOperatorLocal) (cGH *GH,
-				     int num_points,
-                                     int num_dims,
-                                     int num_in_arrays,
-                                     int num_out_arrays,
-                                     const int coord_dims[],
-                                     const void *const coord_arrays[],
-                                     const int coord_array_types[],
-                                     const void *const interp_coord_arrays[],
-                                     const int interp_coord_array_types[],
-                                     const void *const in_arrays[],
-                                     const int in_array_types[],
-                                     void *const out_arrays[],
-                                     const int out_array_types[]);
-
+/*
+ * prototypes for user-visible interpolation-registration API
+ */
 int CCTK_InterpHandle (const char *name);
 
-#define CCTK_InterpRegisterOperatorGV(a,b) CCTKi_InterpRegisterOperatorGV(CCTK_THORNSTRING,a,b)
-int CCTKi_InterpRegisterOperatorGV (const char *thorn,
-				    cInterpOperatorGV operator_GV,
-				    const char *name);
+#define CCTK_InterpRegisterOperatorGV(operator_ptr, operator_name)      \
+        CCTKi_InterpRegisterOperatorGV(operator_ptr,                    \
+                                       operator_name,                   \
+                                       CCTK_THORNSTRING)        /* end macro */
+int CCTKi_InterpRegisterOperatorGV(cInterpOperatorGV operator_ptr,
+                                   const char *operator_name,
+                                   const char *thorn_name);
 
-#define CCTK_InterpRegisterOperatorLocal(a,b) CCTKi_InterpRegisterOperatorLocal(CCTK_THORNSTRING,a,b)
-int CCTKi_InterpRegisterOperatorLocal (const char *thorn,
-				       cInterpOperatorLocal operator_local,
-				       const char *name);
+#define CCTK_InterpRegisterOperatorLocal(operator_ptr, operator_name)   \
+        CCTKi_InterpRegisterOperatorLocal(operator_ptr,                 \
+                                          operator_name,                \
+                                          CCTK_THORNSTRING)     /* end macro */
+int CCTKi_InterpRegisterOperatorLocal(cInterpOperatorLocal operator_ptr,
+                                      const char *operator_name,
+                                      const char *thorn_name);
 
+int CCTK_InterpRegisterOpLocalUniform(cInterpOpLocalUniform operator_ptr,
+                                      const char *operator_name,
+                                      const char *thorn_name);
+
+const char *CCTK_InterpOperatorImplementation(int handle);
+const char *CCTK_InterpOperator(int handle);
+int CCTK_NumInterpOperators(void);
+
+
+/*
+ * prototypes for user-visible interpolation API
+ */
 int CCTK_InterpGV (cGH *GH,
                    int operator_handle,
                    int coord_system_handle,
@@ -70,7 +113,6 @@ int CCTK_InterpGV (cGH *GH,
                    int num_in_array_indices,
                    int num_out_arrays,
                    ...);
-
 int CCTK_InterpLocal (cGH *GH,
                       int operator_handle,
                       int num_points,
@@ -78,12 +120,25 @@ int CCTK_InterpLocal (cGH *GH,
                       int num_in_arrays,
                       int num_out_arrays,
                       ...);
-
-const char *CCTK_InterpOperatorImplementation(int handle);
-
-const char *CCTK_InterpOperator(int handle);
-
-int CCTK_NumInterpOperators(void);
+int CCTK_InterpLocalUniform(int N_dims,
+                            int operator_handle,
+                            int param_table_handle,
+                            /***** coordinate system *****/
+                            const CCTK_REAL coord_origin[],
+                            const CCTK_REAL coord_delta[],
+                            /***** interpolation points *****/
+                            int N_interp_points,
+                            int interp_coords_type_code,
+                            const void *const interp_coords[],
+                            /***** input arrays *****/
+                            int N_input_arrays,
+                            const CCTK_INT input_array_dims[],
+                            const CCTK_INT input_array_type_codes[],
+                            const void *const input_arrays[],
+                            /***** output arrays *****/
+                            int N_output_arrays,
+                            const CCTK_INT output_array_type_codes[],
+                            void *const output_arrays[]);
 
 #ifdef __cplusplus
 }

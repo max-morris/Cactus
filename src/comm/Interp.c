@@ -5,11 +5,21 @@
    @desc
               Registration and invocation routines for interpolation operators.
    @enddesc
+
    @history
    @date      July 07 1999
    @author    Thomas Radke
    @hdesc     Just copied from Reduction.c
+
+   @date      Wed Feb 20 17:52:55 CET 2002
+   @author    Jonathan Thornburg <jthorn@aei.mpg.de>
+   @hdesc     * revise registration routines to pull out common code
+                into macro and new static function
+              * permute arguments to the CCTKi_* registration functions
+              * add CCTK_InterpRegisterOpLocalUniform() to register
+                new-API interpolators
    @endhistory
+
    @version   $Id$
  @@*/
 
@@ -30,16 +40,18 @@
 #include "cctk_WarnLevel.h"
 #include "cctk_Coord.h"
 #include "cctk_ActiveThorns.h"
+#include "util_ErrorCodes.h"
 
 static const char *rcsid = "$Header$";
 
 CCTK_FILEVERSION(comm_Interp_c)
 
 
-/********************************************************************
- ********************    External Routines   ************************
- ********************************************************************/
-/* prototypes for external C routines are declared in header cctk_Groups.h
+/******************************************************************************
+ *************************    External Routines   *****************************
+ ******************************************************************************/
+
+/* prototypes for external C routines are declared in header cctk_Interp.h
    here only follow the fortran wrapper prototypes */
 void CCTK_FCALL CCTK_FNAME (CCTK_InterpHandle)
                            (int *handle,
@@ -63,10 +75,41 @@ void CCTK_FCALL CCTK_FNAME (CCTK_InterpLocal)
                             const int *num_out_arrays,
                             ...);
 
+/******************************************************************************
+ *************************    Internal Data Structures ************************
+ ******************************************************************************/
 
-/********************************************************************
- ********************    Macro Definitions   ************************
- ********************************************************************/
+/* structure holding the routines for a registered interpolation operator */
+struct  interp_info
+        {
+        const char *implementation;
+        const char *name;
+        cInterpOperatorGV     interp_operator_GV;
+        cInterpOperatorLocal  interp_operator_local;
+        cInterpOpLocalUniform interp_op_local_uniform;
+        };
+
+/******************************************************************************
+ *************************    Static Variables   ******************************
+ ******************************************************************************/
+
+/* static data: interpolation operator database and counter for registered
+                operators */
+static cHandledData *interp_operators = NULL;
+static int num_interp_operators = 0;
+
+/******************************************************************************
+ ****************** Prototypes for Functions Local to this File ***************
+ ******************************************************************************/
+
+static
+  int get_interp_info(const char *thorn_name,
+                      const char *operator_name,
+                      struct interp_info **pp_interp_info);
+
+/******************************************************************************
+ *************************    Macro Definitions   *****************************
+ ******************************************************************************/
 /* macro to read a list of items from a variable argument list into an array */
 #define VARARGS_TO_ARRAY(array, type, modifier, count, varargs_list)          \
           {                                                                   \
@@ -84,209 +127,349 @@ void CCTK_FCALL CCTK_FNAME (CCTK_InterpLocal)
 #define NOTHING
 
 
-/********************************************************************
- ********************    Internal Typedefs   ************************
- ********************************************************************/
-/* structure holding the routines for a registered interpolation operator */
-typedef struct
-{
-  const char *implementation;
-  const char *name;
-  cInterpOperatorGV interp_operator_GV;
-  cInterpOperatorLocal interp_operator_local;
-} t_interp_operator;
 
-
-/********************************************************************
- ********************    Static Variables   *************************
- ********************************************************************/
-/* static data: interpolation operator database and counter for registered
-                operators */
-static cHandledData *interp_operators = NULL;
-static int num_interp_operators = 0;
-
+/******************************************************************************
+ ************************* Registration Functions *****************************
+ ******************************************************************************/
 
  /*@@
-   @routine    CCTKi_InterpRegisterOperatorGV
-   @date       Mon 12 Feb 2001
-   @author     Thomas Radke
+   @routine    CCTK_NumInterpOperators
+   @date       Mon Oct 22 2001
+   @author     Gabrielle Allen
    @desc
-               Registers a routine as an interpolation operator for
-               CCTK grid variables
+               The number of interp operators registered
    @enddesc
-
-   @var        operator_GV
-   @vdesc      interpolation operator
-   @vtype      cctk_interp_gv_operator
-   @vio        in
-   @endvar
-   @var        name
-   @vdesc      name identifying the interpolation operator
-   @vtype      const char *
-   @vio        in
-   @endvar
-
    @returntype int
    @returndesc
-               the handle for the newly registered operator, or<p>
-               -1 NULL pointer was passed as interpolation operator routine<p>
-               -2 failed to allocate memory<p>
-               -3 interpolation operator by given name already exists
+               number of interpolation operators
    @endreturndesc
 @@*/
-int CCTKi_InterpRegisterOperatorGV (const char *thorn,
-				    cInterpOperatorGV operator_GV,
-				    const char *name)
+int CCTK_NumInterpOperators()
 {
-  int handle;
-  t_interp_operator *operator;
-
-
-  /* Check arguments */
-  if (operator_GV == NULL)
-  {
-    CCTK_Warn (1, __LINE__, __FILE__, "Cactus",
-               "CCTKi_InterpRegisterOperatorGV: "
-	       "NULL pointer passed as interpolation operator routine");
-    handle = -1;
-  }
-  else
-  {
-    /* Check that the method hasn't already been registered */
-    handle = Util_GetHandle (interp_operators, name, (void **) &operator);
-
-    if (handle < 0)
-    {
-      /* Get a handle for it. */
-      operator = (t_interp_operator *) malloc (sizeof (t_interp_operator));
-      if (operator)
-      {
-	operator->implementation = CCTK_ThornImplementation(thorn);
-	operator->name = name;
-        operator->interp_operator_GV = operator_GV;
-        operator->interp_operator_local = NULL;
-        handle = Util_NewHandle (&interp_operators, name, operator);
-
-        /* Remember how many interpolation operators there are */
-        num_interp_operators++;
-      }
-      else
-      {
-        CCTK_Warn (1, __LINE__, __FILE__, "Cactus",
-                   "CCTKi_InterpRegisterOperatorGV: "
-		   "Couldn't allocate interpolation operator handle");
-        handle = -2;
-      }
-    }
-    else if (operator->interp_operator_GV == NULL)
-    {
-      operator->interp_operator_GV = operator_GV;
-    }
-    else
-    {
-      /* Interpolation operator with this name already exists. */
-      CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
-                  "CCTKi_InterpRegisterOperatorGV: "
-		  "Operator '%s' already exists",
-                  name);
-      handle = -3;
-    }
-  }
-
-  return (handle);
+  return num_interp_operators;
 }
 
+/******************************************************************************/
 
  /*@@
-   @routine    CCTKi_InterpRegisterOperatorLocal
-   @date       Mon 12 Feb 2001
-   @author     Thomas Radke
+   @routine    CCTK_InterpOperatorImplementation
+   @date       Mon Oct 22 2001
+   @author     Gabrielle Allen
    @desc
-               Registers a routine as an interpolation operator for
-               processor-local arrays
+   Provide the implementation which provides an interpolation operator
    @enddesc
-
-   @var        operator_local
-   @vdesc      interpolation operator
-   @vtype      cctk_interp_local_operator
-   @vio        in
-   @endvar
-   @var        name
-   @vdesc      name identifying the interpolation operator
-   @vtype      const char *
-   @vio        in
-   @endvar
-
    @returntype int
    @returndesc
-               the handle for the newly registered operator, or<p>
-               -1 NULL pointer was passed as interpolation operator routine<p>
-               -2 failed to allocate memory<p>
-               -3 interpolation operator by given name already exists
+               Implementation which supplied the interpolation operator
    @endreturndesc
 @@*/
-int CCTKi_InterpRegisterOperatorLocal (const char *thorn, 
-				       cInterpOperatorLocal operator_local,
-				       const char *name)
+const char *CCTK_InterpOperatorImplementation(int handle)
 {
-  int handle;
-  t_interp_operator *operator;
+  struct interp_info *operator;
+  const char *imp=NULL;
 
+  operator = (struct interp_info *)
+    Util_GetHandledData (interp_operators, handle);
 
-  /* Check arguments */
-  if (operator_local == NULL)
+  if (operator)
   {
-    CCTK_Warn (1, __LINE__, __FILE__, "Cactus",
-               "CCTKi_InterpRegisterOperatorLocal: "
-	       "NULL pointer passed as interpolation operator routine");
-    handle = -1;
-  }
-  else
-  {
-    /* Check that the method hasn't already been registered */
-    handle = Util_GetHandle (interp_operators, name, (void **) &operator);
-
-    if (handle < 0)
-    {
-      /* Get a handle for it. */
-      operator = (t_interp_operator *) malloc (sizeof (t_interp_operator));
-      if (operator)
-      {
-	operator->implementation = CCTK_ThornImplementation(thorn);
-	operator->name = name;
-        operator->interp_operator_local = operator_local;
-        operator->interp_operator_GV = NULL;
-        handle = Util_NewHandle (&interp_operators, name, operator);
-
-        /* Remember how many interpolation operators there are */
-        num_interp_operators++;
-      }
-      else
-      {
-        CCTK_Warn (1, __LINE__, __FILE__, "Cactus",
-                   "CCTKi_InterpRegisterOperatorLocal: "
-		   "Couldn't allocate interpolation operator handle");
-        handle = -2;
-      }
-    }
-    else if (operator->interp_operator_local == NULL)
-    {
-      operator->interp_operator_local = operator_local;
-    }
-    else
-    {
-      /* Interpolation operator with this name already exists. */
-      CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
-                  "CCTKi_InterpRegisterOperatorLocal: "
-		  "Operator '%s' already exists",
-                  name);
-      handle = -3;
-    }
+    imp = operator->implementation;
   }
 
-  return (handle);
+  return imp;
 }
 
+/******************************************************************************/
+
+/*@@
+  @routine    CCTK_INTERP_REGISTER_FN_BODY (macro)
+  @date       Fri Feb 22 15:45:42 CET 2002
+  @author     Jonathan Thornburg <jthorn@aei.mpg.de>
+  @desc       This macro expands into the *body* (not including the
+              opening/closing { }) of a function which registers a
+              user-specified function as an interpolation operator.
+  @enddesc
+
+  @var        operator_ptr_fnarg
+  @vdesc      the "function pointer pointing to the interpolation operator"
+              argument to the registration function
+  @vtype      cInterpOperatorGV or cInterpOperatorLocal
+              or cInterpOpLocalUniform or ... as appropriate
+  @vio        in
+  @endvar
+
+  @var        operator_name_fnarg
+  @vdesc      the "character-string name identifying the interpolation
+              operator" argument to the registration function
+  @vtype      const char *
+  @vio        in
+  @endvar
+
+  @var        thorn_name_fnarg
+  @vdesc      the "character-string name identifying which thorn provides
+              the operator being registered" argument to the registration
+              function
+  @vtype      const char *
+  @vio        in
+  @endvar
+
+  @var        function_name_string
+  @vdesc      the name of the registration function, as a literal C
+              string (encased in "double quotes")
+  @vtype      const char *
+  @vio        in
+  @endvar
+
+  @var        struct_field_name
+  @vdesc      the name of the field in  struct interp_info  which holds
+              the function pointer pointing to the interpolation operator
+  @vtype      const char *
+  @vio        in
+  @endvar
+
+  @returntype int
+  @returndesc the registration function returns...
+              the handle for the newly registered operator, or<p>
+              -1 NULL pointer was passed as interpolation operator routine<p>
+              -2 failed to allocate memory<p>
+              -3 interpolation operator by given name already exists
+  @endreturndesc
+
+  @history
+  @date       Mon 12 Feb 2001
+  @author     Thomas Radke
+  @hdesc      Original version
+
+  @date       Thu Feb 21 16:03:25 CET 2002
+  @author     Jonathan Thornburg <jthorn@aei.mpg.de>
+  @hdesc      * move common logic in all interpolator-registration
+                functions into new  get_interp_info()  function
+              * convert remaining boilerplate which differs from one
+                registration function to another, into this macro
+  @endhistory
+  @@*/
+#define CCTK_INTERP_REGISTER_FN_BODY(operator_ptr_fnarg,                \
+                                     operator_name_fnarg,               \
+                                     thorn_name_fnarg,                  \
+                                     function_name_string,              \
+                                     struct_field_name)                 \
+  /* begin function body */                                             \
+  int handle;                                                           \
+  struct interp_info *p_interp_info;                                    \
+                                                                        \
+  if (operator_ptr_fnarg == NULL)                                       \
+  {                                                                     \
+    CCTK_VWarn(1, __LINE__, __FILE__, "Cactus",                         \
+               function_name_string ": NULL function pointer\n"         \
+               "   passed for interpolation operator \"%s\"!"           \
+               ,                                                        \
+               operator_name_fnarg);                                    \
+    return -1;                                  /*** ERROR RETURN ***/  \
+  }                                                                     \
+                                                                        \
+  handle = get_interp_info(thorn_name_fnarg,                            \
+                           operator_name_fnarg,                         \
+                           &p_interp_info);                             \
+  if (handle < 0)                                                       \
+  {                                                                     \
+    return handle;                              /*** ERROR RETURN ***/  \
+  }                                                                     \
+                                                                        \
+  /* check that the operator isn't already registered */                \
+  if (p_interp_info->struct_field_name != NULL)                         \
+  {                                                                     \
+    CCTK_VWarn(1, __LINE__, __FILE__, "Cactus",                         \
+               function_name_string ":\n"                               \
+               "   Operator \"%s\" already exists!"                     \
+               ,                                                        \
+               operator_name_fnarg);                                    \
+    return -3;                                  /*** ERROR RETURN ***/  \
+  }                                                                     \
+                                                                        \
+  /* now, (finally!) the actual registration */                         \
+  p_interp_info->struct_field_name = operator_ptr_fnarg;                \
+                                                                        \
+  return handle;                                /*** NORMAL RETURN ***/ \
+  /* end function body */                                       /* end macro */
+
+/******************************************************************************/
+
+/*@@
+  @routine    CCTKi_InterpRegisterOperatorGV
+  @routine    CCTKi_InterpRegisterOperatorLocal
+  @routine    CCTK_InterpRegisterOpLocalUniform
+  @date       Thu Feb 21 16:02:05 CET 2002
+  @author     Jonathan Thornburg <jthorn@aei.mpg.de>
+  @desc       Each of these functions registers a user-specified
+              function as the corresponding type of interpolation
+              operator.  The function body is produced by the
+              CCTK_INTERP_REGISTER_FN_BODY() macro defined above.
+  @enddesc
+
+  @var        operator_ptr
+  @vdesc      function pointer pointing to the interpolation operator
+  @vtype      cInterpOperatorLocal or cInterpOpLocalUniform as appropriate
+  @vio        in
+  @endvar
+
+  @var        operator_name
+  @vdesc      character-string name identifying the interpolation operator
+  @vtype      const char *
+  @vio        in
+  @endvar
+
+  @var        thorn_name
+  @vdesc      character-string name identifying which thorn provides
+              the operator being registered
+  @vtype      const char *
+  @vio        in
+  @endvar
+
+  @returntype int
+  @returndesc
+              the handle for the newly registered operator, or<p>
+              -1 NULL pointer was passed as interpolation operator routine<p>
+              -2 failed to allocate memory<p>
+              -3 interpolation operator by given name already exists
+  @endreturndesc
+
+  @history
+  @date       Mon 12 Feb 2001
+  @author     Thomas Radke
+  @hdesc      Original version
+
+  @date       Thu Feb 21 16:03:25 CET 2002
+  @author     Jonathan Thornburg <jthorn@aei.mpg.de>
+  @hdesc      * move common logic in all interpolator-registration
+                functions into new  get_interp_info()  function
+              * convert remaining boilerplate which differs from one
+                registration function to another, into this macro
+  @endhistory
+  @@*/
+
+/**************************************/
+
+int CCTKi_InterpRegisterOperatorGV(cInterpOperatorGV operator_ptr,
+                                   const char *operator_name,
+                                   const char *thorn_name)
+{
+CCTK_INTERP_REGISTER_FN_BODY(operator_ptr,
+                             operator_name,
+                             thorn_name,
+                             "CCTKi_InterpRegisterOperatorGV",
+                             interp_operator_GV) /* no semicolon here! */
+}
+
+/**************************************/
+
+int CCTKi_InterpRegisterOperatorLocal(cInterpOperatorLocal operator_ptr,
+                                      const char *operator_name,
+                                      const char *thorn_name)
+{
+CCTK_INTERP_REGISTER_FN_BODY(operator_ptr,
+                             operator_name,
+                             thorn_name,
+                             "CCTKi_InterpRegisterOperatorLocal",
+                             interp_operator_local) /* no semicolon here! */
+}
+
+/**************************************/
+
+int CCTK_InterpRegisterOpLocalUniform(cInterpOpLocalUniform operator_ptr,
+                                      const char *operator_name,
+                                      const char *thorn_name)
+{
+CCTK_INTERP_REGISTER_FN_BODY(operator_ptr,
+                             operator_name,
+                             thorn_name,
+                             "CCTK_InterpRegisterOpLocalUniform",
+                             interp_op_local_uniform) /* no semicolon here! */
+}
+
+/******************************************************************************/
+
+/*@@
+  @routine      get_interp_info
+  @date         Thu Feb 21 14:41:35 CET 2002
+  @author       Jonathan Thornburg <jthorn@aei.mpg.de>
+  @desc         This is an internal worker routine used as part of the
+                process of registering an interpolation operator.  It
+                gets the  interpolator handle and the  struct interp_info
+                in which the operator information will be stored.
+
+                If some interpolation operator is already registered
+                under the specified operator name, we use the existing
+                 struct interp_info .  Otherwise, we allocate a new
+                 struct interp_info  and initialize it (implementation
+                and name assigned from this function's arguments, all
+                operator pointers set to NULL), use it.
+  @enddesc
+
+  @var          thorn_name
+  @vdesc        the character-string name of the thorn doing the registration
+  @vtype        const char *thorn_name
+  @vio          in
+  @endvar
+
+  @var          operator_name
+  @vdesc        name identifying the interpolation operator
+  @vtype        const char *operator_name
+  @vio          in
+  @endvar
+
+  @var          pp_interp_info
+  @vdesc        pointer to a  struct interp_info *  pointer which this
+                function will set to point to the appropriate
+                 struct interp_info
+  @vtype        struct interp_info **pp_interp_info
+  @vio          out
+  @endvar
+
+  @returntype   int
+  @returndesc   the handle for the interpolation operator, or<p>
+                -2 failed to allocate memory (in this case
+                   *pp_interp_info will be set to NULL)<p>
+  @endreturndesc
+  @@*/
+static
+  int get_interp_info(const char *thorn_name,
+                      const char *operator_name,
+                      struct interp_info **pp_interp_info)
+{
+  /* has some operator already been registered under this operator name? */
+  int handle = Util_GetHandle(interp_operators,
+                              operator_name,
+                              (void **) pp_interp_info);
+  /* yes ==> use the existing handle */
+  if (handle >= 0)
+  {
+    return handle;                                      /*** NORMAL RETURN ***/
+  }
+
+  /* no ==> set up a new  struct interp_info  for the registration */
+  *pp_interp_info = (struct interp_info *) malloc(sizeof(struct interp_info));
+  if (*pp_interp_info == NULL)
+  {
+    return -2;                                          /*** ERROR RETURN ***/
+  }
+
+  (*pp_interp_info)->implementation = CCTK_ThornImplementation(thorn_name);
+  (*pp_interp_info)->name = operator_name;
+  (*pp_interp_info)->interp_operator_GV      = NULL;
+  (*pp_interp_info)->interp_operator_local   = NULL;
+  (*pp_interp_info)->interp_op_local_uniform = NULL;
+
+  handle = Util_NewHandle(&interp_operators,
+                          operator_name,
+                          (void *) *pp_interp_info);
+  num_interp_operators++;
+
+  return handle;                                        /*** NORMAL RETURN ***/
+}
+
+/******************************************************************************
+ ************* User Functions to Get Interpolator Handle/Name/etc *************
+ ******************************************************************************/
 
  /*@@
    @routine    CCTK_InterpHandle
@@ -330,6 +513,7 @@ int CCTK_InterpHandle (const char *name)
   return (handle);
 }
 
+/******************************************************************************/
 
 void CCTK_FCALL CCTK_FNAME (CCTK_InterpHandle)
                            (int *handle, ONE_FORTSTRING_ARG)
@@ -339,6 +523,7 @@ void CCTK_FCALL CCTK_FNAME (CCTK_InterpHandle)
   free (name);
 }
 
+/******************************************************************************/
 
  /*@@
    @routine    CCTK_InterpOperator
@@ -356,14 +541,14 @@ void CCTK_FCALL CCTK_FNAME (CCTK_InterpHandle)
 
    @returntype const char *
    @returndesc
-   The name of the interpolation operator, or NULL if the handle 
+   The name of the interpolation operator, or NULL if the handle
    is invalid
    @endreturndesc
 @@*/
 const char *CCTK_InterpOperator (int handle)
 {
   const char *name=NULL;
-  t_interp_operator *operator;
+  struct interp_info *operator;
 
   if (handle < 0)
   {
@@ -372,8 +557,8 @@ const char *CCTK_InterpOperator (int handle)
   }
   else
   {
-    operator = (t_interp_operator *) Util_GetHandledData (interp_operators,
-							  handle);
+    operator = (struct interp_info *) Util_GetHandledData (interp_operators,
+                                                          handle);
     if (operator)
     {
       name = operator->name;
@@ -381,13 +566,17 @@ const char *CCTK_InterpOperator (int handle)
     else
     {
       CCTK_VWarn (6, __LINE__, __FILE__, "Cactus",
-		  "CCTK_InterpHandle: Handle %d invalid", handle);
+                  "CCTK_InterpHandle: Handle %d invalid", handle);
     }
   }
 
   return name;
 }
 
+
+/******************************************************************************
+ ****************** User Functions to Do Interpolation ************************
+ ******************************************************************************/
 
  /*@@
    @routine    CCTK_InterpGV
@@ -477,11 +666,11 @@ int CCTK_InterpGV (cGH *GH,
   int *in_array_indices, *interp_coord_array_types, *out_array_types;
   const void **interp_coord_arrays;
   void **out_arrays;
-  t_interp_operator *operator;
+  struct interp_info *operator;
 
 
   /* Get the interpolation operator routine and the coordinate system name */
-  operator = (t_interp_operator *) Util_GetHandledData (interp_operators,
+  operator = (struct interp_info *) Util_GetHandledData (interp_operators,
                                                         operator_handle);
   coord_system = CCTK_CoordSystemName (coord_system_handle);
 
@@ -534,6 +723,8 @@ int CCTK_InterpGV (cGH *GH,
   return (retcode);
 }
 
+/******************************************************************************/
+
 void CCTK_FCALL CCTK_FNAME (CCTK_InterpGV)
                            (int *fortranreturn,
                             cGH *GH,
@@ -550,11 +741,11 @@ void CCTK_FCALL CCTK_FNAME (CCTK_InterpGV)
   int *in_array_indices, *interp_coord_array_types, *out_array_types;
   const void **interp_coord_arrays;
   void **out_arrays;
-  t_interp_operator *operator;
+  struct interp_info *operator;
 
 
   /* Get the interpolation operator and the coordinate system name */
-  operator = (t_interp_operator *) Util_GetHandledData (interp_operators,
+  operator = (struct interp_info *) Util_GetHandledData (interp_operators,
                                                         *operator_handle);
   coord_system = CCTK_CoordSystemName (*coord_system_handle);
 
@@ -562,7 +753,7 @@ void CCTK_FCALL CCTK_FNAME (CCTK_InterpGV)
   {
     CCTK_Warn (3, __LINE__, __FILE__, "Cactus",
                "CCTK_InterpGV: "
-	       "Invalid interpolation operator handle passed to CCTK_InterpGV");
+               "Invalid interpolation operator handle passed to CCTK_InterpGV");
     retcode = -1;
   }
   else if (coord_system == NULL)
@@ -607,6 +798,7 @@ void CCTK_FCALL CCTK_FNAME (CCTK_InterpGV)
   *fortranreturn = retcode;
 }
 
+/******************************************************************************/
 
  /*@@
    @routine    CCTK_InterpLocal
@@ -717,11 +909,11 @@ int CCTK_InterpLocal (cGH *GH,
   int *in_array_types, *out_array_types;
   const void **coord_arrays, **interp_coord_arrays, **in_arrays;
   void **out_arrays;
-  t_interp_operator *operator;
+  struct interp_info *operator;
 
 
   /* Get the interpolation operator */
-  operator = (t_interp_operator *) Util_GetHandledData (interp_operators,
+  operator = (struct interp_info *) Util_GetHandledData (interp_operators,
                                                         operator_handle);
   if (operator == NULL)
   {
@@ -777,6 +969,7 @@ int CCTK_InterpLocal (cGH *GH,
   return (retcode);
 }
 
+/******************************************************************************/
 
 void CCTK_FCALL CCTK_FNAME (CCTK_InterpLocal)
                            (int *fortranreturn,
@@ -795,11 +988,11 @@ void CCTK_FCALL CCTK_FNAME (CCTK_InterpLocal)
   int *in_array_types, *out_array_types;
   const void **coord_arrays, **interp_coord_arrays, **in_arrays;
   void **out_arrays;
-  t_interp_operator *operator;
+  struct interp_info *operator;
 
 
   /* Get the interpolation operator */
-  operator = (t_interp_operator *) Util_GetHandledData (interp_operators,
+  operator = (struct interp_info *) Util_GetHandledData (interp_operators,
                                                         *operator_handle);
   if (operator == NULL)
   {
@@ -855,50 +1048,173 @@ void CCTK_FCALL CCTK_FNAME (CCTK_InterpLocal)
   *fortranreturn = retcode;
 }
 
- /*@@
-   @routine    CCTK_NumInterpOperators
-   @date       Mon Oct 22 2001
-   @author     Gabrielle Allen
-   @desc
-               The number of interp operators registered
-   @enddesc
-   @returntype int
-   @returndesc
-               number of interpolation operators
-   @endreturndesc
-@@*/
+/******************************************************************************/
 
-int CCTK_NumInterpOperators()
+/*@@
+  @routine    CCTK_InterpLocalUniform
+  @date       22 Oct 2001
+  @author     Jonathan Thornburg <jthorn@aei.mpg.de>
+  @desc
+        This API interpolates a set of data arrays defined on a uniform
+        N-dimensional tensor-product grid, to a set of interpolation points.
+        A key-value table is used to pass options to the interpolation
+        operator.
+  @enddesc
+
+  ***** misc arguments *****
+
+  @var          N_dims
+  @vdesc        dimensionality of the interpolation
+  @vtype        int N_dims                      (must be >= 1)
+  @endvar
+
+  @var          operator_handle
+  @vdesc        handle to the interpolation operator
+  @vtype        int operator_handle             (must be >= 0)
+  @endvar
+
+  @var          param_table_handle
+  @vdesc        handle to a key-value table giving additonal parameters
+                for the interpolation
+  @vtype        int param_table_handle          (must be >= 0)
+  @endvar
+
+  ***** arguments specifying the coordinate system *****
+
+  @var          coord_origin
+  @vdesc        (pointer to) array[N_dims] of values giving the
+                x,y,z,... coordinates which correspond to the
+                integer input-array subscripts (0,0,0,...,0)
+                (note there is no implication here that such a
+                grid point need actually exist; the arrays just
+                give the coordinates it would have if it did exist)
+  @vtype        const CCTK_REAL coord_origin[N_dims]
+  @endvar
+
+  @var          coord_delta
+  @vdesc        (pointer to) array[N_dims] of values giving the
+                coordinate spacing of the grid
+  @vtype        const CCTK_REAL coord_delta[N_dims]
+  @endvar
+
+  ***** arguments specifying the interpolation points *****
+
+  @var          N_interp_points
+  @vdesc number of interpolation points
+  @vtype        int N_interp_points             (must be >= 0)
+  @endvar
+
+  @var          interp_coords_type_code
+  @vdesc        one of the CCTK_VARIABLE_* codes giving the data
+                type of the arrays pointed to by  interp_coords[]
+  @vtype        int
+  @endvar
+
+  @var          interp_coords
+  @vdesc        (pointer to) array[N_dims] of pointers
+                to arrays[N_interp_points] giving
+                x,y,z,... coordinates of interpolation points
+  @vtype        const void *const interp_coords[N_dims]
+  @endvar
+
+  ***** arguments specifying the inputs (the data to be interpolated) *****
+
+  @var          N_input_arrays
+  @vdesc        number of arrays input to the interpolation
+  @vtype        int N_input_arrays              (must be >= 0)
+  @endvar
+
+  @var          input_array_dims
+  @vdesc        dimensions of the input arrays: unless overridden by
+                entries in the parameter table, all input arrays are
+                taken to have these dimensions, with [0] the most contiguous
+                axis and [N_dims-1] the least contiguous axis, and
+                array subscripts in the range 0 <= subscript < dims[axis]
+  @vtype        const int input_array_dims[N_dims]
+  @endvar
+
+  @var          input_array_type_codes
+  @vdesc        (pointer to) array of CCTK_VARIABLE_* codes
+                giving the data types of the input arrays
+  @vtype        const int input_array_type_codes[N_input_arrays]
+  @endvar
+
+  @var          input_arrays
+  @vdesc        (pointer to) array[N_input_arrays] of pointers to input arrays
+  @vtype        const void *const input_arrays[N_input_arrays]
+  @endvar
+
+  ***** arguments specifying the outputs (the interpolation results) *****
+
+  @var          N_output_arrays
+  @vdesc        number of arrays output from the interpolation
+  @vtype        int N_output_arrays             (must be >= 0)
+  @endvar
+
+  @var          output_array_type_codes
+  @vdesc        (pointer to) array of CCTK_VARIABLE_* codes
+                giving the data types of the output arrays
+  @vtype        const int output_array_type_codes[N_output_arrays]
+  @endvar
+
+  @var          output_arrays
+  @vdesc        (pointer to) array[N_output_arrays] of pointers to output arrays
+  @vtype        void *const output_arrays[N_output_arrays]
+  @endvar
+
+  ***** return result *****
+
+  @returntype   int
+  @returndesc    0 ==> successful, otherwise
+                 UTIL_ERROR_BAD_HANDLE ==> bad operator_handle
+  @endreturndesc
+  @@*/
+int CCTK_InterpLocalUniform(int N_dims,
+                            int operator_handle,
+                            int param_table_handle,
+                            /***** coordinate system *****/
+                            const CCTK_REAL coord_origin[],
+                            const CCTK_REAL coord_delta[],
+                            /***** interpolation points *****/
+                            int N_interp_points,
+                            int interp_coords_type_code,
+                            const void *const interp_coords[],
+                            /***** input arrays *****/
+                            int N_input_arrays,
+                            const CCTK_INT input_array_dims[],
+                            const CCTK_INT input_array_type_codes[],
+                            const void *const input_arrays[],
+                            /***** output arrays *****/
+                            int N_output_arrays,
+                            const CCTK_INT output_array_type_codes[],
+                            void *const output_arrays[])
 {
-  return num_interp_operators;
+const struct interp_info *p_interp_info
+        = (struct interp_info *)Util_GetHandledData(interp_operators,
+                                                   operator_handle);
+if (p_interp_info == NULL)
+        {
+        CCTK_VWarn(3, __LINE__, __FILE__, "Cactus",
+"CCTK_InterpLocalUniform: Invalid interpolation operator handle %d!",
+                   operator_handle);
+        return UTIL_ERROR_BAD_HANDLE;
+        }
+
+return p_interp_info->interp_op_local_uniform(N_dims,
+                                              param_table_handle,
+                                              /***** coordinate system *****/
+                                              coord_origin, coord_delta,
+                                              /***** interpolation points *****/
+                                              N_interp_points,
+                                              interp_coords_type_code,
+                                              interp_coords,
+                                              /***** input arrays *****/
+                                              N_input_arrays,
+                                              input_array_dims,
+                                              input_array_type_codes,
+                                              input_arrays,
+                                              /***** output arrays *****/
+                                              N_output_arrays,
+                                              output_array_type_codes,
+                                              output_arrays);
 }
-
- /*@@
-   @routine    CCTK_InterpOperatorImplementation
-   @date       Mon Oct 22 2001
-   @author     Gabrielle Allen
-   @desc
-   Provide the implementation which provides an interpolation operator
-   @enddesc
-   @returntype int
-   @returndesc
-               Implementation which supplied the interpolation operator
-   @endreturndesc
-@@*/
-
-const char *CCTK_InterpOperatorImplementation(int handle)
-{
-  t_interp_operator *operator;
-  const char *imp=NULL;
-
-  operator = (t_interp_operator *) 
-    Util_GetHandledData (interp_operators, handle);
-  
-  if (operator)
-  {
-    imp = operator->implementation;
-  }
-
-  return imp;
-}
-
