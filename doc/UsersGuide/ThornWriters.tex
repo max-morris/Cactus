@@ -2104,7 +2104,7 @@ character*(*) reduction_name
 call CCTK_ReductionHandle(reduction_handle, reduction_name)
 
 
-int CCTK_GetReductionArrayHandle(const char *reduction_name);
+int CCTK_ReductionArrayHandle(const char *reduction_name);
 
 integer       reduction_handle
 character*(*) reduction_name
@@ -2151,11 +2151,12 @@ uncertain, you should use these.
 \begin{verbatim}
 
 int CCTK_Reduce(  cGH *GH, 
-                  int retvaltype, 
-                  int retvalnum, 
-                  void *retval, 
-                  int handle, 
-                  int index, 
+                  int proc,
+                  int operation_handle,
+                  int num_out_vals,
+                  int type_out_vals,
+                  void *out_vals,
+                  int num_in_fields,
                   ...);
 
 
