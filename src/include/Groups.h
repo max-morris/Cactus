@@ -32,6 +32,8 @@ int CCTK_VarIndex(const char *variablename);
 
 char *CCTK_GroupNameFromVarI(int var);
 
+int CCTK_GroupIndexFromVar(const char *var);
+
 int CCTK_GroupIndexFromVarI(int var);
 
 char *CCTK_FullName(int var);
@@ -63,9 +65,9 @@ int CCTK_DecomposeName(const char *fullname, char **implementation, char **name)
 
 char *CCTK_GroupName(int varnum);
 
-int CCTK_GroupTypeFromVar(int var);
+int CCTK_GroupTypeFromVarI(int var);
 
-int CCTK_VarType(int var);
+int CCTK_VarTypeI(int var);
 
 int CCTK_NumTimeLevelsFromVar(const char *var);
 int CCTK_NumTimeLevelsFromVarI(int var);

@@ -32,6 +32,10 @@ int CCTK_RegisterCoord(const char *coordname,
 
 int CCTK_RegisterCoordI(const char *name, int index, int dir);
 
+int CCTK_CoordIndex(const char *name);
+
+CCTK_REAL CCTK_CoordOrigin(const char *name);
+
 #ifdef __cplusplus 
 }
 #endif
