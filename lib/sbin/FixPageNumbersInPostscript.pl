@@ -22,10 +22,11 @@ $part = 0;
 
 # @part_letters lists the numbering for all the parts
 # the first two parts (title page and table of contents) are skipped
-@part_letters = ('', '', 'A' .. 'Z');
+@part_letters = ('', '', 'A' .. 'Z', 'a' .. 'z');
 
 # $last_line must match EOP in order to check for a new page
-$last_line = "eop\n";
+$last2_line = "\n";
+$last_line = "end\n";
 
 
 # skip all lines in the postscript setup and prolog
@@ -39,7 +40,8 @@ while (<>)
 while (<>)
 {
   my $previous_line_was_eop
-	= (($last_line =~ /eop$/) || ($last_line =~ /eop end$/));
+	= (($last_line =~ /eop$/) || ($last_line =~ /eop end$/)
+           || ($last2_line =~ /eop$/ && $last_line =~ /^end$/));
   if ($previous_line_was_eop && (/^%%Page: (\d+) (\d+)$/))
   {
     $part++ if ($1 == 1);
@@ -48,6 +50,7 @@ while (<>)
   }
 
   print;
+  $last2_line = $last_line;
   $last_line = $_;
 }
 
