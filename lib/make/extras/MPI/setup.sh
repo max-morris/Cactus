@@ -13,7 +13,8 @@ if test -n "$MPI" ; then
 
 echo "Configuring with MPI"
 
-CCTK_WriteLine cctk_Extradefs.h "#define MPI"
+CCTK_WriteLine cctk_Extradefs.h "#define CCTK_MPI CCTK_MPI"
+CCTK_WriteLine cctk_Extradefs.h "#define MPI MPI"
 
 # Work out which variation of MPI is installed
 
