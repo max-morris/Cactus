@@ -21,7 +21,6 @@ else
 
 print "\nQuit or checkout more packages or thorns [quit] : ";
 $dowhat = <STDIN>;
-print $dowhat;
 if ($dowhat !~ /^t/i && $dowhat !~/^p/i)
 {
     print "All done!\n";
@@ -82,6 +81,9 @@ sub get_packages
     
     print "Checkout packages [1-$count] : ";
     
+    # Goto target package directory 
+    chdir packages || die "Could not find packages directory";
+
     $range = <STDIN>;
     
     while ($range =~/^([0-9]+(?:-[0-9]+)?),?/)
@@ -93,13 +95,15 @@ sub get_packages
 	{$last=$1}
 	else
         {$2=~/-([0-9]*)/; $last=$1}
-	
+
 	for ($i=$first; $i<$last+1; $i++)
 	{
-	    system("(cd packages; cvs checkout $name{$i})");
-	}
-	
+	    system("cvs -q checkout $name{$i}");
+	}	
     }
+
+    chdir("..") || die "Could not go back to Cactus home directory\n";
+
 }
 
 
@@ -134,6 +138,9 @@ sub get_thorns
     
     print "Checkout thorns [1-$count] : ";
     
+    # Goto target package directory 
+    chdir packages || die "Could not find packages directory\n";
+
     $range = <STDIN>;
     
     while ($range =~/^([0-9]+(?:-[0-9]+)?),?/)
@@ -148,10 +155,11 @@ sub get_thorns
 	
 	for ($i=$first; $i<$last+1; $i++)
 	{
-	    system("(cd ./packages; cvs -q checkout $name{$i}; cd ..)");
+	    system("cvs -q checkout $name{$i}");
 	}
-	
     }
+
+    chdir ("..") || die "Could not return to Cactus home directory\n";
 }
 
 

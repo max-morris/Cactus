@@ -1,3 +1,12 @@
+#/*@@
+#  @file      MakeUtils.pl
+#  @date      July 1999
+#  @author    Tom Goodale
+#  @desc 
+#  Utility perl routines needed by the Makefile.
+#  @enddesc 
+#  @version $Header$
+#@@*/
 
 
 #/*@@
@@ -5,7 +14,7 @@
 #  @date      Tue Jan 19 14:02:07 1999
 #  @author    Tom Goodale
 #  @desc 
-#  Creates an ActiveThornsList
+#  Creates an compiled ThornList
 #  @enddesc 
 #  @version $Id$
 #@@*/
@@ -13,15 +22,16 @@
 sub buildthorns
 {
     local($package_dir,$choice) = @_;
+    local(@packages);
 
-    chdir $package_dir || die "Can't change directory to $package_dir";
+    chdir $package_dir || die "Can't change directory to $package_dir\n";
 
     open(PACKAGES, "ls|");
     
     while(<PACKAGES>)
     {
 	chop;
-	
+
 	# Ignore CVS and backup stuff
 	next if (m:^CVS$:);
 	next if (m:^\#:);
