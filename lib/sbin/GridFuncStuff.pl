@@ -168,11 +168,11 @@ sub GetThornArguments
 
   if($block eq "PUBLIC")
   {
-    @other_imps = $interface_database{"IMPLEMENTATION \U$my_imp\E ANCESTORS"};
+    @other_imps = split(" ",$interface_database{"IMPLEMENTATION \U$my_imp\E ANCESTORS"});
   }
   elsif($block eq "PROTECTED")
   {
-    @other_imps = $interface_database{"IMPLEMENTATION \U$my_imp\E FRIENDS"};
+    @other_imps = split(" ", $interface_database{"IMPLEMENTATION \U$my_imp\E FRIENDS"});
   }
   elsif($block eq "PRIVATE")
   {
