@@ -125,71 +125,114 @@ foreach $t (@testfiles)
   $ntests++;
   $file =  "arrangements/$testthorns[$ntests-1]/test/$t";
   open (IN, "<$file") || die "Can not open $file";
+
+  $processing_active = 0;
+
+  # Give a default test name in case non is specified in the parameter file.
+  $testnames{$ntests} = "$testthorns[$ntests-1]/test/$t";
+ 
   while (<IN>)
   {
     $line = $_;
 
-    if ($line =~ /^\s*\!\s*DESC(RIPTION)?\s*\"(.*)\"\s*$/i)
+    if($processing_active == 1)
+    {
+      if($line =~ m/(.*)\"/)
+      {
+	$activethorns[$ntests-1] .= $1;
+	$processing_active = 0;
+      }
+      else
+      {
+	$activethorns[$ntests-1] .= $line;
+      }
+    }
+    elsif ($line =~ m/^\s*\!\s*DESC(RIPTION)?\s*\"(.*)\"\s*$/i)
     {
       $testnames{$ntests} = $2;
     }
-    if ($line =~ /^\s*ActiveThorns\s*=\s*\"(.*)\"/i)
+    elsif ($line =~ m/^\s*ActiveThorns\s*=\s*\"(.*)\"/i)
     {
       $activethorns[$ntests-1] = $1;
+    }
+    elsif($line =~ m/^\s*ActiveThorns\s*=\s*\"(.*)/i)
+    {
+      $activethorns[$ntests-1] = $1;
+      $processing_active = 1;
     }
   }
   close IN;
 }
 
-if ($tests =~ /All/) {
+$ntests=0;
+$number_missing=0;
+
+foreach $t (@testfiles) 
+{
+  $haveallthorns = 1;
+  $active = $activethorns[$ntests];
+  @at = split(' ',$active);
+  foreach $th (@at)
+  {
+    $th = "\U$th";
+    $foundit = 0;
+    
+    foreach $tthorn  (@allthorns)
+    {
+      $tthorn =~ m:.*/(.*)$:;
+      $thornpart = "\U$1";
+      if ($thornpart eq $th)
+      {
+	$foundit = 1;
+      }
+    }      
+    if (!$foundit)
+    {
+      $haveallthorns = 0;
+    }
+  }
+  
+  $ntests++;
+  
+  if ($haveallthorns)
+  {
+    $havethorns{"$t"} = 1;
+  }
+  else
+  {
+    $havethorns{"$t"} = 0;
+    $number_missing++;
+  }
+}
+
+if ($tests =~ /All/) 
+{
 
   # Run all parameter files
-  $ntests=0;
   $number_failed=0;
   $number_zerofiles=0;
   $number_passed1=0;
   $number_passed2=0;
-  $number_missed=0;
+  $ntested = 0;
 
   foreach $t (@testfiles) 
   {
-    $haveallthorns = 1;
-    $active = $activethorns[$ntests];
-    @at = split(' ',$active);
-    foreach $th (@at)
+    $thorn = $testthorns[$ntested];        
+    $ntested++;
+
+    if ($havethorns{"$t"})
     {
-      $th = "\U$th";
-      $foundit = 0;
-
-      foreach $tthorn  (@allthorns)
-      {
-        $tthorn =~ m:.*/(.*)$:;
-        $thornpart = "\U$1";
-        if ($thornpart eq $th)
-        {
-          $foundit = 1;
-        }
-      }      
-      if (!$foundit)
-      {
-        $haveallthorns = 0;
-      }
-    }
-
-    $thorn = $testthorns[$ntests];        
-    $ntests++;
-
-    if ($haveallthorns)
-    {
-      $havethorns{"$t"} = 1;
-      &runtest($t,$thorn,$ntests);
+      push(@actually_tested, $testnames{$ntested});
+      &runtest($t,$thorn,$ntested);
     }
     else
     {
-      $havethorns{"$t"} = 0;
+      push(@not_tested, $testnames{$ntested});
+      push(@not_tested_thorns, $thorn);
+      print "Ignoring test '$testnames{$ntested}' from thorn '$thorn' - missing thorns.\n";
     }
-  }
 
+  }
 
 # Show the statistics
 
@@ -206,7 +249,11 @@ if ($tests =~ /All/) {
   }
 
   print "\n";
-  print "  Tests run -> $ntests\n";
+  print "  Total Tests   -> $ntests\n";
+  if ($number_missing > 0)
+  {
+      print "  Number which couldn't be run -> $number_missing\n";
+  }
   print "  Number passed -> $number_passed1\n";
   if ($number_passed2 > 0)
   {
@@ -226,6 +273,16 @@ if ($tests =~ /All/) {
   {
       print "  Number with no output files -> $number_zerofiles\n";
   }
+
+  if ($number_missing>0)
+  {
+    print "\n  Tests Missed for lack of thorns:\n";
+    for ($i=0; $i<$number_missing;$i++)
+    {
+      print "    ". $not_tested[$i]." (from ". $not_tested_thorns[$i].")\n";
+    }
+  }
+
   print "==================================================\n\n";
 } 
 
