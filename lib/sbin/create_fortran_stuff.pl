@@ -46,7 +46,7 @@ sub CreateFortranThornParameterBindings
   if((keys %these_parameters > 0))
   {
     $implementation = $interface_database{"\U$thorn\E IMPLEMENTS"};
-
+    
     @data = &CreateFortranCommonDeclaration("$implementation"."prot", 0, scalar(keys %these_parameters), %these_parameters, %parameter_database);
 
     foreach $line (@data)
@@ -71,6 +71,7 @@ sub CreateFortranThornParameterBindings
   # Parameters from friends
   foreach $friend (split(" ",$parameter_database{"\U$thorn\E FRIEND implementations"}))
   {
+
     # Determine which thorn provides this friend implementation
     $interface_database{"IMPLEMENTATION \U$friend\E THORNS"} =~ m:([^ ]*):;
     
@@ -93,8 +94,8 @@ sub CreateFortranThornParameterBindings
 	$BindingAliasNum++;
       }
     }
-     
-    @data = &CreateFortranCommonDeclaration("$friend_thorn"."prot", 1, scalar(keys %these_parameters), %these_parameters, %alias_names, %parameter_database);
+
+    @data = &CreateFortranCommonDeclaration("$friend"."prot", 1, scalar(keys %these_parameters), %these_parameters, %alias_names, %parameter_database);
       
     foreach $line (@data)
     {
