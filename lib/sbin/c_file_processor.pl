@@ -2,15 +2,16 @@
 
 $home = shift(@ARGV);
 
-$/ = ";";
-$*=1;
-
 if (! -e "$home/fortran_name.pl" ) 
 {
     die "Unable to get fortran name file!";
 }
 
 require "$home/fortran_name.pl";
+
+$/ = ";";
+$*=1;
+
 
 while(<>)
 {
