@@ -118,69 +118,62 @@ sub ParseParFile($thorn,$parfile,%config_data)
 
 }
 
-sub ParseTests
+
+sub FindAllTests
 {
   my(%config_data) = @_;
-  my($scratch_dir);
+  my($config,$config_dir);
   my($thorn);
 
   $config      = $config_data{"CONFIG"};
   $configs_dir = $config_data{"CONFIGSDIR"};
   $sep         = $config_data{"SEPARATOR"};
 
-  if (!open (AT, "< $configs_dir${sep}$config${sep}ThornList")) 
+  open (AT, "< $configs_dir${sep}$config${sep}ThornList") || print "Cannot find ThornList for $config";
+
+  while (<AT>) 
   {
-    print "Can't open $scratchdir/ThornList - no thorn tests";
-  } 
-  else 
-  {
-    while (<AT>) 
+    next if (/^\s*(\#.*|\!.*)$/);
+
+    /^\s*([^\s]*)\s*/;
+    $thorn = $1;
+    $testdata{"FULL"} .= "$thorn ";
+
+    $thorn =~ m:^\s*([^\s]*)/([^\s]*)\s*:;
+    $testdata{"THORNS"} .= "$2 ";
+
+    if ($testdata{"ARRANGEMENTS"} !~ m:\s$1\s:)
     {
-      next if (m:^\s*$:);
-      next if (m:^\#:);
-      next if (m:^\!:);
+      $testdata{"ARRANGEMENTS"} .= "$1 ";
+    }
 
-      $name = $_;
-      $name =~ s/\#(.*)$//g;
-      $name =~ /^\s*([^\s]*)\s*/;
-      $thorn = $1;
-      $testdata{"FULL"} .= "$thorn ";
+    $thorntestdir = "$config_data{\"CCTK_DIR\"}${sep}arrangements${sep}$thorn${sep}test";
+
+    if (-d $thorntestdir) 
+    {
+      $testdata{"$thorn TESTSDIR"} = $thorntestdir;
       
-      $thorn =~ m:^.*/([^\s]*)\s*:;
-      $testdata{"THORNS"} .= "$1 ";
-      $thorn =~ m:^\s*([^\s]*)/:;
-      if ($testdata{"ARRANGEMENTS"} !~ m:\s$1\s:)
+      chdir $thorntestdir;
+      
+      while ($file=<*.par>)
       {
-	$testdata{"ARRANGEMENTS"} .= "$1 ";
-      }
-
-      $thorntestdir = "$config_data{\"CCTK_DIR\"}${sep}arrangements${sep}$thorn${sep}test";
-
-      if (-d $thorntestdir) 
-      {
-	$testdata{"$thorn PARFILESDIR"} = $thorntestdir;
-
-	chdir $thorntestdir;
-
-	while ($file=<*.par>)
+	$file =~ m:^(.*)\.par$:;
+	$filedir = $1;
+	if (-d $filedir)
 	{
-	  $file =~ m:^(.*)\.par$:;
-	  $filedir = $1;
-	  if (-d $filedir)
-	  {
-	    $testdata{"$thorn $filedir DATAFILES"} .= &FindFiles($filedir);
-	    $testdata{"$thorn $filedir NDATAFILES"} = scalar(split(" ",$testdata{"$thorn $filedir DATAFILES"}));
-	    $testdata{"$thorn PARFILES"} .= "$file ";
-	    $testdata{"$thorn NUMBER"}++;
-	  }
+	  $testdata{"$thorn $filedir DATAFILES"} .= &FindFiles($filedir);
+	  $testdata{"$thorn $filedir NDATAFILES"} = scalar(split(" ",$testdata{"$thorn $filedir DATAFILES"}));
+	  $testdata{"$thorn TESTS"} .= "$filedir ";
+	  $testdata{"$thorn NTESTS"}++;
 	}
       }
     }
-    chdir $config_data{"CCTK_DIR"};
   }
+  chdir $config_data{"CCTK_DIR"};
+
+  close AT;
 
   return %testdata;
-
 }
 
 sub ParseExecutable
@@ -684,7 +677,7 @@ sub RunTest
   # Run the test from the test thorn directory
   chdir ($test_dir) || print "Error: $test_dir not found\n";
 
-  $cmd = "$command $executable $testdata{\"$inthorn PARFILESDIR\"}${sep}$parfile";
+  $cmd = "$command $executable $testdata{\"$inthorn TESTSDIR\"}${sep}$parfile";
   $retcode = &RunCactus($test,$cmd);
   chdir $config_data{"CCTK_DIR"};
 
@@ -703,7 +696,7 @@ sub RunTest
 sub CompareTestFiles
 {
   my ($test,$inthorn,%testdata) = @_;
-  my ($test_dir,$file);
+  my ($test_dir,$file,$mythorn,$newfile,$oldfile);
 
   $inthorn =~ m:/(.*)$:;
   $mythorn = $1;
@@ -713,49 +706,36 @@ sub CompareTestFiles
   # Add output files to database
   $testdata{"$inthorn $test TESTFILES"} = &FindFiles("$test_dir${sep}$test");
 
-  $blewit = 0;
-  $reallyblewit = 0;
+  $testdata{"$inthorn $test NFAILWEAK"}=0;
+  $testdata{"$inthorn $test NFAILSTRONG"}=0;
+
 
   # Compare each file in the archived test directory
 
   foreach $file (split(" ",$testdata{"$inthorn $test DATAFILES"})) 
   {
     $newfile = "$test_dir$sep$test$sep$file"; 
-    $oldfile = "$testdata{\"$inthorn PARFILESDIR\"}${sep}${test}${sep}$file";
+    $oldfile = "$testdata{\"$inthorn TESTSDIR\"}${sep}${test}${sep}$file";
 
     if ( -e $newfile)
     {
       open (INORIG, "<$oldfile") || print "Warning: Archive file $oldfile not found";
       open (INNEW,  "<$newfile") || print "Warning: Test file $newfile not found";
 
-      $nblow = 0;
-      $nrealblow = 0;
-      $numnans=0;
-
+      $testdata{"$inthorn $test $file NINF"}=0;
+      $testdata{"$inthorn $test $file NNAN"}=0;
+      $testdata{"$inthorn $test $file NFAILSTRONG"}=0;
+      $testdata{"$inthorn $test $file NFAILWEAK"}=0;
+      
       while ($oline = <INORIG>) 
       {
 	$nline = <INNEW>;
 
 	# Now lets see if they differ.
-	if (!($nline eq $oline)) 
+	if (!("\U$nline" eq "\U$oline")) 
 	{
-      
-	  # Check against nans
-	  if ($nline =~ /nan/i)
-	  {
-	    $numnans++;
-	    $nblow ++;
-	    $nrealblow ++;
-	  }
-
-	  # Check against inf
-	  elsif ($nline =~ /inf/i)
-	  {
-	    print "****CAUGHT INF in $newfile****\n";
-	    $nblow ++;
-	    $nrealblow ++;
-	  }
-	  else
+	  # Check differences 
+	  if ($nline !~ /(nan|inf)/i)
 	  {
 	    # This is the new comparison (subtract last two numbers)
 	    ($t1,$v1) = split(' ', $nline);
@@ -763,13 +743,12 @@ sub CompareTestFiles
 	    # Make sure that floating point numbers have 'e' if exponential.
 	    $v1 =~ s/[dD]/e/; 
 	    $v2 =~ s/[dD]/e/; 
-	    
 	    $vdiff = abs($v1 - $v2);
+
 	    if ($vdiff > 0) 
 	    {
-	      
 	      # They diff. But do they differ strongly?
-	      $nblow ++;
+	      $testdata{"$inthorn $test $file NFAILWEAK"}++;
 	      
 	      $exp = sprintf("%e",$vdiff);
 	      $exp =~ s/^.*e-(\d+)/$1/;
@@ -783,46 +762,68 @@ sub CompareTestFiles
 	      }
 	      unless ($exp >= $tolerance) 
 	      {
-		$nrealblow++;
+		$testdata{"$inthorn $test $file NFAILSTRONG"}++;
 	      }
 	    }
+	  }
+	  # Check against nans
+	  elsif ($nline =~ /nan/i)
+	  {
+	    $testdata{"$inthorn $test $file NNAN"}++;
+	    $testdata{"$inthorn $test $file NFAILWEAK"}++;
+	    $testdata{"$inthorn $test $file NFAILSTRONG"}++;
+	  }
+	  # Check against inf
+	  elsif ($nline =~ /inf/i)
+	  {
+	    $testdata{"$inthorn $test $file NINF"}++;
+	    $testdata{"$inthorn $test $file NFAILWEAK"}++;
+	    $testdata{"$inthorn $test $file NFAILSTRONG"}++;
 	  }
 	} # if
       } #while
 
-      if ($nblow != 0)
-      {
-	$blewit ++;
-	$stripfile = $newfile;
-	$stripfile =~ s:^.*${sep}(.*)$:$1:;
-      if ($nrealblow == 0) 
-        {
-	  print "     $stripfile differs at machine precision (which is OK!)\n";
-	}
-      else 
-	{
-	  $reallyblewit ++;
-	  print "  Substantial differences detected in $stripfile\n";
-	  print "     $newfile $oldfile\n";
-	  if ($numnans)
-	  {
-	    print "     Caught $numnans NaNs in $stripfile\n";
-	    print "     Differ strongly on $nrealblow lines!\n";
-	  }
-	  $tmp = $nblow - $nrealblow;
-	  if ($tmp)
-	  {
-	    print "     Differ weakly on $tmp lines!\n";
-	  }
-	  
-	}
-      }
     }
     else
     {
       print "     $newfile not there for comparison\n";
-      $reallyblewit++;
-      $blewit++;
+      $testdata{"$inthorn $test NFAILWEAK"}++;
+      $testdata{"$inthorn $test NFAILSTRONG"}++;
+    }
+  }
+
+  return %testdata;
+
+}
+
+sub ReportOnTest
+{
+  my($test,$thorn,%testdata) = @_;
+  my($file,$tmp,$summary);
+
+  # Different lines in files
+  foreach $file (split(" ",$testdata{"$thorn $test DATAFILES"})) 
+  {
+    if ($testdata{"$thorn $test $file NFAILWEAK"} != 0)
+    {
+      $testdata{"$thorn $test NFAILWEAK"}++;
+      if ($testdata{"$thorn $test $file NFAILSTRONG"} == 0) 
+      {
+	print "     $file differs at machine precision (which is OK!)\n";
+      }
+      else 
+      {
+	$testdata{"$thorn $test NFAILSTRONG"}++;
+	print "  Substantial differences detected in $file\n";
+	print "     Caught  $testdata{\"$thorn $test $file NNAN\"} NaNs in $file\n" if $testdata{"$thorn $test $file NNAN"};
+	print "     Caught  $testdata{\"$thorn $test $file NINF\"} Infs in $file\n" if $testdata{"$thorn $test $file NINF"};
+	print "     Files differ strongly on $testdata{\"$thorn $test $file NFAILSTRONG\"} lines!\n";
+	$tmp = $testdata{"$thorn $test $file NFAILWEAK"} - $testdata{"$thorn $test $file NFAILSTRONG"};
+	if ($tmp)
+	{
+	  print "     Files differ weakly on $tmp lines!\n";
+	}
+      }
     }
   }
 
@@ -830,53 +831,52 @@ sub CompareTestFiles
 
   # Look for files created by test not in archive 
   # (Note this is not so bad)
-  foreach $file (split (" ",$testdata{"$inthorn $test TESTFILES"}))
+  foreach $file (split (" ",$testdata{"$thorn $test TESTFILES"}))
   {
-    if ($testdata{"$inthorn $test DATAFILES"} !~ m:\b$file\b:)
+    if ($testdata{"$thorn $test DATAFILES"} !~ m:\b$file\b:)
     {
       print "            $file not in thorn archive\n";
-      $testdata{"$inthorn $test NFILEEXTRA"}++;
-      $testdata{"$inthorn $test FILEEXTRA"} .= " $file";
+      $testdata{"$thorn $test NFILEEXTRA"}++;
+      $testdata{"$thorn $test FILEEXTRA"} .= " $file";
     }
   }
 
   # Look for files in archive which are not created in test
   # (Note this is bad)
-  foreach $file (split (" ",$testdata{"$inthorn $test DATAFILES"}))
+  foreach $file (split (" ",$testdata{"$thorn $test DATAFILES"}))
   {
-    if ($testdata{"$inthorn $test TESTFILES"} !~ m:\b$file\b:)
+    if ($testdata{"$thorn $test TESTFILES"} !~ m:\b$file\b:)
     {
       print "            $file not created in test\n";
-      $testdata{"$inthorn $test NFILEMISSING"}++;
-      $testdata{"$inthorn $test FILEMISSING"} .= " $file";
+      $testdata{"$thorn $test NFILEMISSING"}++;
+      $testdata{"$thorn $test FILEMISSING"} .= " $file";
     }
   }
 
-  if ($blewit == 0)
+  if (! $testdata{"$thorn $test NFAILWEAK"})
   {
-    $summary = "Success: $testdata{\"$inthorn $test NDATAFILES\"} files identical";
+    $summary = "Success: $testdata{\"$thorn $test NDATAFILES\"} files identical";
     printf("\n  $summary\n");
     $testdata{"NPASSED"}++;
   }
   else
   {
-    if ($reallyblewit == 0)
+    if (! $testdata{"$thorn $test NFAILSTRONG"})
     {
-      $summary = "Success (to $tolerance figures): $testdata{\"$inthorn $test NDATAFILES\"} compared, $blewit files differ in the last digits";
+      $summary = "Success (to $tolerance figures): $testdata{\"$thorn $test NDATAFILES\"} compared, $testdata{\"$thorn $test NFAILWEAK\"} files differ in the last digits";
       printf "\n  $summary\n";
       $testdata{"NPASSED"}++;
       $testdata{"NPASSEDTOTOLERENCE"}++;
     }
     else
     {
-      $summary = "Failure: ".
-         "$testdata{\"$inthorn $test NDATAFILES\"} files compared, $blewit differ, $reallyblewit differ significantly";
+      $summary = "Failure: $testdata{\"$thorn $test NDATAFILES\"} files compared, $testdata{\"$thorn $test NFAILWEAK\"} differ, $testdata{\"$thorn $test NFAILSTRONG\"} differ significantly";
       printf "\n  $summary\n";
-      $testdata{"$inthorn FAILED"} .= "$test ";
+      $testdata{"$thorn FAILED"} .= "$test ";
       $testdata{"NFAILED"}++;
     }
   }
-  $testdata{"$inthorn $test SUMMARY"} = $summary;
+  $testdata{"$thorn $test SUMMARY"} = $summary;
   printf ("\n");
 
   return %testdata;
@@ -911,15 +911,14 @@ sub ParseAllParameterFiles
     $thorn =~ m:^(.*)/:;
     $arr = $1;
     
-    foreach $test (split(" ",$testdata{"$thorn PARFILES"}))
+    foreach $testbase (split(" ",$testdata{"$thorn TESTS"}))
     {
-
-      $test =~ m:^(.*)\.par$:;
-      $testbase = $1;
+      
+      $parfile = "$testbase.par";
 
       # Set ActiveThorns and Description for this Test
-      ($active,$desc) = &ParseParFile($thorn,$test,%config_data);
-      $testdata{"$thorn $test ACTIVE"} = $active;
+      ($active,$desc) = &ParseParFile($thorn,$parfile,%config_data);
+      $testdata{"$thorn $testbase ACTIVE"} = $active;
       $testdata{"$thorn $testbase DESC"} = $desc;
 
       # Find any missing thorns for this test
@@ -938,7 +937,7 @@ sub ParseAllParameterFiles
       else
       {
 	$testdata{"$thorn UNRUNNABLE"} .= "$testbase ";
-	$testdata{"$thorn $test MISSING"} .= "$missing";
+	$testdata{"$thorn $testbase MISSING"} .= "$missing";
 	$testdata{"NUNRUNNABLE"}++;
 	$testdata{"$thorn NUNRUNNABLE"}++;
       }

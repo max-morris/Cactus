@@ -5,25 +5,22 @@
 
 require "lib/sbin/RunTestUtils.pl";
 
-$prompt = shift;
-$home_dir = shift;
-
+# Read options from command line
+$prompt = shift;   
 $prompt =~ tr/A-Z/a-z/;
-
+$home_dir = shift;
 $config = shift;;
-
-# Set up RunTest configuration
-%config_data = &Configure($config,$home_dir);
-$sep= "/";
 
 &PrintHeader;
 
-# Look to see if MPI is dfined
-$mpi = ParseExtras(%config_data);
+# Set up RunTest configuration
+%config_data = &Configure($config,$home_dir);
 
 # Get the executable
 $executable = ParseExecutable(%config_data);
 
+# Look to see if MPI is dfined
+$mpi = ParseExtras(%config_data);
 if ($mpi)
 {
   $numprocs = &defprompt("  Enter number of processors","2");
@@ -38,7 +35,7 @@ else
 %testdata = &InitialiseTestData();
 
 # Find test parameter files
-%testdata = &ParseTests(%config_data);
+%testdata = &FindAllTests(%config_data);
 
 # Parse test parameter files
 %testdata = &ParseAllParameterFiles(%testdata);
@@ -64,6 +61,7 @@ while ($choice !~ /^Q/i)
     print "  Customize testsuite checking [C]\n";
     print "  Quit [Q]\n\n";
     $choice = &defprompt("  Select choice: ","E");
+    print "\n";
     
     if ($choice =~ /^[EO]/i) 
     {
@@ -83,6 +81,7 @@ while ($choice !~ /^Q/i)
 	    %testdata = &RunTest($test,$thorn,%testdata);
 	  }
 	  %testdata = &CompareTestFiles($test,$thorn,%testdata);
+	  %testdata = &ReportOnTest($test,$thorn,%testdata);
 	}
       }
 
@@ -100,6 +99,7 @@ while ($choice !~ /^Q/i)
 	print "    \"$testdata{\"$thorn $test DESC\"}\"\n";
 	%testdata = &RunTest($tests[2*$i],$tests[2*$i+1],%testdata);
 	%testdata = &CompareTestFiles($tests[2*$i],$tests[2*$i+1],%testdata);
+	%testdata = &ReportOnTest($tests[2*$i],$tests[2*$i+1],%testdata);
       }
     }
     elsif ($choice =~ /^R/i)
@@ -110,6 +110,7 @@ while ($choice !~ /^Q/i)
 	print "    \"$testdata{\"$thorn $test DESC\"}\"\n";
 	%testdata = &RunTest($test,$thorn,%testdata);
 	%testdata = &CompareTestFiles($test,$thorn,%testdata);
+	%testdata = &ReportOnTest($test,$thorn,%testdata);
       }
       else
       {
