@@ -2313,18 +2313,18 @@ result. out\_array3d[i,j,k]= Reduction(in\_array3d[i,j,k]).
 
 {\bf Some brief examples:}
 
-{\bf Reduction of a local scalars:} a local error is reduced across a
+{\bf Reduction of a local scalars:} a local error is reduced across all
 processors wiht the maximum operation. The variable {\tt tmp} will
 hold the maximum of the error and  is the same on all
-processors. This qunatity can then be reassigned to {\tt normerr}.
-\begin{verbatim}      
+processors. This quantity can then be reassigned to {\tt normerr}.
+\begin{verbatim}
          CCTK_REAL normerr, tmp
          integer   ierr, reduction_handle
 
-         call CCTK_ReductionArrayHandle(reduction_handle,"max")
+         call CCTK_ReductionArrayHandle(reduction_handle,"maximum")
 
          if (reduction_handle.lt.0) then
-            call CCTK_WARN(1,"Cannot get reduction handle for SUM operation.")
+            call CCTK_WARN(1,"Cannot get reduction handle for maximum operation.")
          endif
 
          call CCTK_ReduceLocScalar(ierr, cctkGH, -1, 
