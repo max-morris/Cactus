@@ -100,6 +100,7 @@ sub write_rfr_header {
   $header .= "#include \"flesh.h\"\n";
   $header .= "#include \"Comm.h\"\n";
   $header .= "#include \"Groups.h\"\n";
+  $header .= "#include \"GroupsOnGH.h\"\n";
   $header .= "#include \"rfr_constants.h\"\n";
   $header .= "#include \"declare_parameters.h\"\n";
   $header .= "#include \"declare_arguments.h\"\n";
@@ -619,6 +620,7 @@ sub fortran_wrapper {
 #include \"cctk.h\"
 #include \"flesh.h\"
 #include \"Groups.h\"
+#include \"GroupsOnGH.h\"
 #include \"declare_arguments.h\"
 
    void FORTRAN_NAME($routine)($THORN_C2F_PROTO);
