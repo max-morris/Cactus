@@ -1,7 +1,7 @@
 #!/usr/local/bin/perl 
 
 use strict;
-use vars qw($h $help $cctk_home $thornlist $directory $outdir $verbose $debug $outfile);
+use vars qw($h $help $cctk_home $thornlist $directory $outdir $verbose $debug $outfile $tocdepth);
 #/*@@
 #  @file      ThornGuide.pl
 #  @date      Sun Mar  3 19:05:41 CET 2002
@@ -70,6 +70,9 @@ my $bibliography = "";
 
 # specify output file 
 $outfile ||= "ThornGuide.tex";
+
+# table of contents depth
+$tocdepth = 1 if (! defined $tocdepth);
 
 my $configname = "";
 
@@ -624,7 +627,7 @@ print OUT  <<EOC;
 % Table of contents
 \\pagenumbering{roman}
 
-\\setcounter{tocdepth}{1}
+\\setcounter{tocdepth}{$tocdepth}
 \\tableofcontents
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
