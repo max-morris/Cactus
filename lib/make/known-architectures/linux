@@ -4,9 +4,10 @@
 #   @date      Thu Jul 15 21:30:04 1999
 #   @author    Tom Goodale
 #   @desc 
-#  
+#              known-architectures file for systems running Linux
 #   @enddesc
-#   @version $Header$ 
+#   @version   $Header: /cactusdevcvs/Cactus/lib/make/known-architectures/linux,
+v 1.38 2001/06/14 17:23:01 tradke Exp $ 
 # @@*/
 
 if test "$CCTK_CONFIG_STAGE" = "preferred-compilers" ; then
@@ -189,42 +190,19 @@ else
 
 # C compiler
 
+# Set the appropriate dependency, warning, and debugging flags
+# Note that the defaults settings are for gcc/g++ and they are set by configure
   case "$CC" in
     ecc)
       : ${C_DEPEND='$(CC) -M $(CPPFLAGS)'}
-      ;;
-      *)
-      :
-      ;;
-   esac
-
-#Set the appropriate warning and debugging flags
-  case "$CC" in
-    gcc)
-      : ${C_DEBUG_FLAGS="-g"}
-      : ${C_WARN_FLAGS="-Wall -W -Wshadow -Wpointer-arith -Wbad-function-cast -Wcast-qual -Wcast-align -Wstrict-prototypes -Wmissing-declarations"}
-      ;;
-    ecc)
-      : ${C_DEBUG_FLAGS="-g"}
       : ${C_WARN_FLAGS="-w2"}
       ;;
       *)
-      : ${C_DEBUG_FLAGS="-g"}
-#      : ${C_WARN_FLAGS="-Wall"}
       ;;
   esac
 
-  case "$CXX" in
-    [cg]++)
-      : ${CXX_DEBUG_FLAGS="-g"}
-      : ${CXX_WARN_FLAGS="-Wall -W -Wshadow -Wpointer-arith -Wbad-function-cast -Wcast-qual -Wcast-align -Wstrict-prototypes -Wmissing-declarations"}
-      ;;
-      *)
-      : ${CXX_DEBUG_FLAGS="-g"}
-#      : ${C_WARN_FLAGS="-Wall"}
-      ;;
-  esac
-
+  : ${C_DEBUG_FLAGS="-g"}
+  : ${CXX_DEBUG_FLAGS="-g"}
 
 # Cache stuff
 
@@ -294,4 +272,3 @@ else
 # This is caught by lib/make/extras/MPI/NATIVE then.
 
 fi
-

@@ -4578,7 +4578,7 @@ fi
 if test -z "$C_WARN_FLAGS" ; then
   case "$CC" in
     gcc) 
-      C_WARN_FLAGS="-Wall"
+      C_WARN_FLAGS="-Wall -W -Wshadow -Wpointer-arith -Wbad-function-cast -Wcast-qual -Wcast-align -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Winline"
       ;;
     *)
 #     Not sure what should be a reasonable default.
@@ -4591,8 +4591,8 @@ fi
 
 if test -z "$CXX_WARN_FLAGS" ; then
   case "$CXX" in
-    g++) 
-      CXX_WARN_FLAGS="-Wall"
+    c++ | g++) 
+      CXX_WARN_FLAGS="\$(C_WARN_FLAGS) -Woverloaded-virtual"
       ;;
     *)
 #     Not sure what should be a reasonable default.
