@@ -21,6 +21,9 @@
 #include "cctk_WarnLevel.h"
 #include "cctk_FortranString.h"
 #include "cctk_Parameters.h"
+#include "cctk_Comm.h"
+
+int CactusDefaultMyProc(void *GH);
 
 static char *rcsid = "$Header$";
 
@@ -355,7 +358,10 @@ void FMODIFIER FORTRAN_NAME(CCTK_ParamWarn)(TWO_FORTSTRINGS_ARGS)
 
 int CCTK_Info(const char *thorn, const char *message)
 {
-  fprintf(stdout, "INFO (%s): %s\n", thorn, message);
+  if (CCTK_MyProc(NULL)==0) {
+    fprintf(stdout, "INFO (%s): %s\n", thorn, message);
+  }
+ 
   return 0;
 }
 
