@@ -1935,7 +1935,7 @@ int CCTK_TraverseString (const char *traverse_string,
 {
   int retval, nesting, vindex, gindex, first, last, selected_all;
   char delimiter, options_start, options_end;
-  char *string, *parse_string, *group_var_string, *option_string;
+  char *tmp, *string, *parse_string, *group_var_string, *option_string;
   cGroup gdata;
 
 
@@ -1981,12 +1981,20 @@ int CCTK_TraverseString (const char *traverse_string,
       /* check for an old-style options string (enclosed in square brackets) */
       if (*string == '[')
       {
-        *string = 0;
-        gindex = CCTK_GroupIndex (group_var_string);
-        *string = '[';
-        /* continue if the current token refers to a valid vector group name
+        gindex = -1;
+        /* find matching ']' */
+        for (tmp = string+1; *tmp != ']' && *tmp; tmp++);
+        if (*tmp == ']')
+        {
+          delimiter = *++tmp;
+          *tmp = 0;
+          gindex = CCTK_GroupIndexFromVar (group_var_string);
+          *tmp = delimiter;
+        }
+        /* continue if the current token refers to a valid vector variable name
            otherwise assume the start of an old-style options string */
-        if (CCTK_GroupData (gindex, &gdata) || ! gdata.vectorgroup)
+        if (gindex < 0 || CCTK_GroupData (gindex, &gdata) ||
+            ! gdata.vectorgroup)
         {
           options_start = '['; options_end = ']';
           break;
