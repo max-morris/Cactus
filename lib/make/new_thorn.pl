@@ -39,6 +39,14 @@ if(!$package)
   }
 }
 
+do {
+   push @author_names,  &prompt("Author Name");
+   push @author_emails, &prompt("Email Address");
+   $another_author = &prompt("Add another author? Y/N");
+} while ($another_author =~ /^y/i);
+
+
+
 chdir $package_dir;
 
 if(! -d "$package")
@@ -90,7 +98,14 @@ close OUT;
 open(OUT, ">README") || die "Cannot create README";
 
 print OUT "Cactus Code Thorn $thorn_name\n";
-print OUT "Authors    : ...\n";
+print OUT "Authors    : ";
+for ($i = 0; $i < (@author_names); $i++) {
+   if ($i ne 0) {
+      print OUT "\n             ";
+   }
+   print OUT "$author_names[$i] <$author_emails[$i]>";
+}
+print OUT "\n";
 print OUT "CVS info   : \$Header\$\n";
 print OUT "--------------------------------------------------------------------------\n";
 print OUT "\n";
@@ -116,10 +131,34 @@ print OUT "\n";
 close OUT;
 
 my $documentation_outputfile = "$cctk_home/$package_dir/$package/$thorn_name/doc/documentation.tex";
+open(IN,  "<$documentation_inputfile") || die "Cannot open $documentation_inputfile";
+open(OUT, ">$documentation_outputfile") || die "Cannot create $documentation_outputfile";
 
-system("cp $documentation_inputfile $documentation_outputfile");
+while (<IN>) {
+   if (/^\\author\{\s*?\}/) {
+      print OUT "\\author\{";
+      for ($i = 0; $i < (@author_names); $i++) {
+         if ($i ne 0) {
+            print OUT " \\\\ ";
+         }
+         print OUT "$author_names[$i] \$<\$$author_emails[$i]\$>\$";
+      }
+      print OUT "\}\n";
+   } elsif (/^\\date\{\s*?\}/) {
+      my $todays_date = `date "+%B %d %Y"`;
+      chomp ($todays_date);
+      if ($todays_date =~ /^\w+\s+\d+\s+\d+$/) {
+         print OUT "\\date\{$todays_date\}\n";
+      } else {
+         print OUT $_;
+      }
+   } else {
+      print OUT $_;
+   }
+}
+#system("cp $documentation_inputfile $documentation_outputfile");
 
-print "All done.  Please remember to fill out the README and doc/documenation.tex files.\n";
+print "All done.  \nPlease remember to fill out the README and doc/documentation.tex files.\n";
 
 exit;
 
