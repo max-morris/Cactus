@@ -96,10 +96,10 @@ sub parse_schedule_ccl
       $schedule_db{"\U$thorn\E BLOCK_$n_blocks TYPE"}        = $type;
       $schedule_db{"\U$thorn\E BLOCK_$n_blocks DESCRIPTION"} = $description;
       $schedule_db{"\U$thorn\E BLOCK_$n_blocks WHERE"}       = $where;
-      $schedule_db{"\U$thorn\E BLOCK_$n_blocks LANG"}    = $language;
-      $schedule_db{"\U$thorn\E BLOCK_$n_blocks STOR"}     = $mem_groups;
+      $schedule_db{"\U$thorn\E BLOCK_$n_blocks LANG"}        = $language;
+      $schedule_db{"\U$thorn\E BLOCK_$n_blocks STOR"}        = $mem_groups;
       $schedule_db{"\U$thorn\E BLOCK_$n_blocks COMM"}        = $comm_groups;
-      $schedule_db{"\U$thorn\E BLOCK_$n_blocks TRIG"}    = $trigger_groups;
+      $schedule_db{"\U$thorn\E BLOCK_$n_blocks TRIG"}        = $trigger_groups;
       $schedule_db{"\U$thorn\E BLOCK_$n_blocks BEFORE"}      = $before_list;
       $schedule_db{"\U$thorn\E BLOCK_$n_blocks AFTER"}       = $after_list;
       $schedule_db{"\U$thorn\E BLOCK_$n_blocks WHILE"}       = $while_list;
