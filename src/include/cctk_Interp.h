@@ -49,6 +49,13 @@ int CCTK_GetInterpHandle(const char *interp);
 int CCTK_RegisterInterpOperator(int (*function)(REGISTER_INTERP_ARGLIST),
                                 const char *name);
 
+int CCTK_Interp(cGH *GH,
+                 int operation_handle,
+                 int nPoints,
+                 int nDims,
+                 int nInFields,
+                 int nOutFields,
+                 ...);
 
 #ifdef __cplusplus
            }
