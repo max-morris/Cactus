@@ -612,6 +612,10 @@ Extension & Coding Language \\
 
 The following restrictions apply to file names:
 \begin{itemize}
+\item For portability across all operating systems, the base names 
+	for any particular extension should not depend on the operating
+  	system being case sensitive (e.g. having {\tt MyFile.c} and 
+	{\tt MYFILE.f77} is alright, but {\tt MyFile.c} and {\tt MYFILE.c} could cause problems).
 \item Currently all source files in different subroutines within a
 thorn must have distinct names.  We hope
 to relax this in future.  Different thorns can have files with the same names.
