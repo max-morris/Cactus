@@ -344,7 +344,7 @@ For example
 
 \begin{verbatim}
 
-friend:einstein
+shares:einstein
 
 KEYWORD initial_data ""
 {
@@ -382,44 +382,44 @@ where {\tt <name>} is the name of the routine, and {\tt <time bin>} is one of
 
 \begin{itemize}
 
-\item {\tt CACTUS\_BASEGRID}
+\item {\tt CCTK\_BASEGRID}
 Resposnible for setting up coordinates etc.
 
-\item {\tt CACTUS\_RECOVER}
+\item {\tt CCTK\_RECOVER}
 For recovery from checkpoint.
 
-\item {\tt CACTUS\_INITIAL}
+\item {\tt CCTK\_INITIAL}
 
 For generating initial data.
 
-\item {\tt CACTUS\_POSTINITIAL}
+\item {\tt CCTK\_POSTINITIAL}
 
 Tasks which must be applied after initial data is created.
 
-\item {\tt CACTUS\_CPINITIAL}
+\item {\tt CCTK\_CPINITIAL}
 For recovery of initial data from a checkpoint file.
 
-\item {\tt CACTUS\_PRESTEP}
+\item {\tt CCTK\_PRESTEP}
 
 Stuff done before the evolution step.
-\item {\tt CACTUS\_EVOL}      
+\item {\tt CCTK\_EVOL}      
 
 The evolution step.
 
-\item {\tt CACTUS\_POSTSTEP}
+\item {\tt CCTK\_POSTSTEP}
 
 Stuff done after the evolution step.
 
-\item {\tt CACTUS\_CHECKPOINT}
+\item {\tt CCTK\_CHECKPOINT}
 For checkpointing data
 
-\item {\tt CACTUS\_ANALYSIS}
+\item {\tt CCTK\_ANALYSIS}
 For analysing data.
 
-\item {\tt CACTUS\_TERMINATE}
+\item {\tt CCTK\_TERMINATE}
 Called when cactus teminates.
 
-\item {\tt CACTUS\_CONVERGENCE}
+\item {\tt CCTK\_CONVERGENCE}
 Convergence stuff.
 
 \end{itemize}
@@ -715,7 +715,8 @@ to contain
       the {\tt inherits} and {\tt friend} lines in the {\tt interface.ccl}
 \end{itemize}
 These variables must be declared at the start of the routine using
-the macro {\tt DECLARE\_CCTK\_CARGUMENTS}. 
+the macro {\tt DECLARE\_CCTK\_CARGUMENTS}. This macro should always be the
+first line of the routine.
 
 To pass the arguments to another routine in the same thorn use the macro 
 {\tt CCTK\_PASS\_CTOC} in the calling routine, and again the macro 
@@ -736,7 +737,7 @@ the top of the file the header
 \end{verbatim}
 
 The parameters should be declared at the start of the routine
-using them with the macro {\tt DECLARE\_PARAMETERS}
+using them with the macro {\tt DECLARE\_CCTK\_PARAMETERS}
 
 \subsubsection{Example}
 
@@ -989,6 +990,66 @@ is a parallel unigrid driver.
   before proceeding
 \end{Lentry}
 
+\subsection{Building Include Files}
+
+Cactus provides a mechanism for thorns to add code to 
+include files which can be used by any thorn. Any thorn 
+which uses the include file must declare this in its 
+{\tt interface.ccl} with the line
+
+\begin{verbatim}
+USES INCLUDE: <file_name>
+\end{verbatim}
+
+Any thorn which wishes to add to this include file, 
+declares in its own {\tt interface.ccl}
+
+\begin{verbatim}
+INCLUDES: <file_to_include> in <file_name>
+\end{verbatim}
+
+The code added in this way should only be 
+{\em executable} code, since it is automatically
+protected by a call to {\tt CCTK\_IsThornActive}.
+
+\subsubsection{Example}
+
+For an example of this in practice, consider thorn A which
+wants to gather terms for a calculation from any thorn
+which wishes to provide them. Thorn A could have
+the lines in its source code
+
+\begin{verbatim}
+c Get source code from other thorns
+      allterms = 0d0
+#include "AllSources.inc"
+\end{verbatim}
+and would then add to {\tt interface.ccl} the line
+\begin{verbatim}
+USES INCLUDE: AllSources.inc
+\end{verbatim}
+
+If thorn B wants to add terms for the calculation, it would
+create a file, say {\tt Bterms.inc} with the lines
+\begin{verbatim}
+c Add this to AllSources.inc
+      allterms = allterms + 1d0
+\end{verbatim}
+and would add to its own {\tt interface.ccl}
+
+\begin{verbatim}
+INCLUDES: Bterms.inc in AllSources.inc
+\end{verbatim}
+
+The final file for thorn A  which is compiled will contain the code
+\begin{verbatim}
+c Get source code from other thorns
+      allterms = 0d0
+      if (CCTK_IsThornActive("B") then
+c Add this to AllSources.inc
+        allterms = allterms + 1d0	
+      end if
+\end{verbatim}
 
 \subsection{Commenting Source Code}
 
