@@ -93,6 +93,14 @@ set entries in it based on a parameter-file--style string.
 As well, there are ``table iterator'' functions \verb|Util_TableIt*()|
 to allow manipulation of a table even if you don't know its keys.
 
+A table has an integer ``flags word'' which may be used to specify
+various options, via bit flags defined in \verb|"util_Table.h"|.
+For example, the flags word can be used to control whether keys
+should be compared as case-sensitive or case-insensitive strings.
+See the detailed function description of \verb|Util_TableCreate()|
+in section~\ref{sect-FunctionReference/UtilityFunctions} for a list
+of the possible bit flags and their semantics.  
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{A Simple Example}
@@ -309,38 +317,6 @@ single quotes are interpreted literally, strings in double quotes may contain
 character escape codes which then will be interpreted as in C.
 Arrays must be enclosed in curly brackets, array elements must be single numbers
 of the same type (either all integer or all real).
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\section{Table Options}
-
-A table has an integer ``flags word'' which may be used to specify
-various options, via bit flags defined in \verb|"util_Table.h"|.
-At present there is only a single option:
-\begin{description}
-\item[Keys May be Case-Sensitive or Case-Insensitive:]
-	By default keys are treated as C-style character strings,
-	and the table functions compare them with the standard C
-	\verb|strcmp()| function.
-	However, by setting the \verb|UTIL_TABLE_FLAGS_CASE_INSENSITIVE|
-	bit in the flags word, this table's keys may be made
-	case-insensitive, \ie{} the table routines then compare
-	this table's keys with \verb|Util_StrCmpi()|.%%%
-\footnote{%%%
- 	 It's not entirely clear how non-ASCII characters
-	 like \c{c}, \'{e}, \ss, \dots should be handled in
-	 this case (some of them have only a single case).
-	 And what about the 16-bit Asian character sets
-	 used for Chinese, Japanese, Korean, \dots.
-	 In general, Cactus basically just ignores
-	 internationalization issues.  Sigh\dots
-	 }%%%
-{}
-	Note that keys are still {\em stored\/} exactly as
-	the caller specifies them (\ie{} they are {\em not\/}
-	forced into a canonical case); it's only their
-	{\em comparison\/} that's affected by this flag.
-\end{description}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

@@ -5853,9 +5853,40 @@ is the same as sum here, since the bit masks are all disjoint.
 We require the flags word to be non-negative so that other
 functions can distinguish flags from (negative) error codes.
 
-Any User-defined flag words should use only bit positions at or above
+Any User-defined flag words should use only bit positions at or above\\
 \verb|UTIL_TABLE_FLAGS_USER_DEFINED_BASE|, i.e. all bit positions
 below this are reserved for present of future Cactus use.
+
+At present there is only a single flags-word bit mask defined
+in \verb|"util_Table.h"|:
+\begin{description}
+\item[{\t UTIL\_TABLE\_FLAGS\_CASE\_INSENSITIVE}]\mbox{}\\
+	By default keys are treated as C-style character strings,
+	and the table functions compare them with the standard C
+	\verb|strcmp()| function.
+	However, by setting the\\
+	\verb|UTIL_TABLE_FLAGS_CASE_INSENSITIVE|
+	bit in the flags word, this table's keys may be made
+	case-insensitive, \ie{} the table routines then compare
+	this table's keys with \verb|Util_StrCmpi()|.%%%
+\footnote{%%%
+ 	 It's not entirely clear how non-ASCII characters
+	 like \c{c}, \'{e}, \ss, \dots should be handled
+	 here, since the whole notion of ``case'' starts to
+	 blur once we leave ASCII-land.  For example, should
+	 {\t "stra\ss{}e"} compare equal to {\t "strasse"}?
+	 What about a case-insensitive comparison of
+	 {\t "STRA\ss{}E"} and {\t "STRASSE"}?  And what
+	 about the 16-bit character sets used for Chinese,
+	 Japanese, and Korean?  In general, Cactus basically
+	 just ignores internationalization issues.  Sigh\dots
+	 }%%%
+{}
+	Note that keys are still {\em stored\/} exactly as
+	the caller specifies them (\ie{} they are {\em not\/}
+	forced into a canonical case); it's only their
+	{\em comparison\/} that's affected by this flag.
+\end{description}
 \end{Discussion}
 
 \begin{SeeAlsoSection}
