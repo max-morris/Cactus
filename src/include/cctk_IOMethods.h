@@ -1,3 +1,16 @@
+ /*@@
+   @header    cctk_IOMethods.h
+   @date      
+   @author    
+   @desc 
+   header file for handling IO methods
+   @enddesc 
+   @version $Id$
+ @@*/
+
+#ifndef _CCTK_IOMETHODS_H_
+#define _CCTK_IOMETHODS_H_
+
 struct IOMethod
 {
   int    (*OutputGH)(cGH *);
@@ -20,3 +33,4 @@ int CCTK_RegisterIOMethodOutputVarAs(int handle, int (*func)(cGH *,
 }
 #endif
 
+#endif
