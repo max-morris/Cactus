@@ -40,7 +40,7 @@ else
 
 # Loop over all lines.
 $line = 1;
-$file = $source_file_name;
+$file = "";
 $autoline = 1;
 $autofile = "";
 while (<>)

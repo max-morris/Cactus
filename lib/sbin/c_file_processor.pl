@@ -28,11 +28,6 @@ if (! -e "$fortran_name_file" )
 
 require "$fortran_name_file";
 
-if($source_file_name)
-{
-  print "# 1 \"$source_file_name\"\n" if ($line_directives);
-}
-
 $closing_brackets  = '';
 $routine  = '';
 $n_arg_braces = -3;
