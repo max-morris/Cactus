@@ -5,7 +5,7 @@
 #   @desc 
 #   Some useful info.
 #   @enddesc
-#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.2 1999-07-15 14:21:16 lanfer Exp $ 
+#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.3 1999-08-24 15:47:22 goodale Exp $ 
 # @@*/
 
 
@@ -29,6 +29,14 @@ situation changes.
   Why ?
 
 You have to include the header: #include "cctk_parameters.h"
+
+3) I get 'g77: cannot specify -o with -c or -S and multiple compilations' when compiling with 
+the Pacific VAST90 compiler.
+
+If the libvast90.a library is in the same directory as your F90 script, F90 passes -lvast90 to
+the underlying G77 compile, which is of course only a valid switch when linking.  The solution
+is to seperate these files, e.g. into bin and lib directories.
+
 
 
 
