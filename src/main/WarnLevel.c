@@ -295,6 +295,8 @@ int CCTK_VWarn (int level,
 
   if (level <= warning_level)
   {
+
+    fflush(stdout);
     myproc = CCTK_MyProc(NULL);
 
     cctk_full_warnings = (const CCTK_INT *)
