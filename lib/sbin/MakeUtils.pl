@@ -2,9 +2,9 @@
 #  @file      MakeUtils.pl
 #  @date      July 1999
 #  @author    Tom Goodale
-#  @desc 
+#  @desc
 #  Utility perl routines needed by the Makefile.
-#  @enddesc 
+#  @enddesc
 #  @version $Header$
 #@@*/
 
@@ -13,9 +13,9 @@
 #  @routine   buildthorns
 #  @date      Tue Jan 19 14:02:07 1999
 #  @author    Tom Goodale
-#  @desc 
+#  @desc
 #  Creates an compiled ThornList
-#  @enddesc 
+#  @enddesc
 #  @version $Id$
 #@@*/
 
@@ -24,11 +24,14 @@ sub buildthorns
   my($arrangement_dir,$choice) = @_;
   my(@arrangements);
   my(%info);
+  my($home);
 
+  $home = `pwd`;
+  chomp ($home);
   chdir $arrangement_dir || die "Can't change directory to $arrangement_dir\n";
 
   open(ARRANGEMENTS, "ls|");
-    
+
   while(<ARRANGEMENTS>)
   {
     chomp;
@@ -39,61 +42,61 @@ sub buildthorns
     next if (m:~$:);
     next if (m:\.bak$:i);
     next if (m:^\.:);
-    
+
     # Just pick directories
     if( -d $_)
     {
       push (@arrangements, $_);
     }
   }
-    
+
   close ARRANGEMENTS;
-  
+
   if ($choice =~ "thorns")
   {
-    
+
     foreach $arrangement (@arrangements)
     {
       chdir $arrangement;
-      
+
       open(THORNLIST, "ls|");
-      
+
       while(<THORNLIST>)
       {
-	chomp;
-		
-	# Ignore CVS and backup stuff
-	next if (m:^CVS$:);
-	next if (m:^\#:);
-	next if (m:~$:);
-	next if (m:\.bak$:i);
-	next if (m:^\.:);
-		
-	# Allow each arrangement to have a documentation directory.
-	next if (m:^doc$:);
-	
-	# Just pick directories
-	if( -d $_)
-	{
-	  push(@total_list, "$arrangement/$_");
-	}
+        chomp;
+
+        # Ignore CVS and backup stuff
+        next if (m:^CVS$:);
+        next if (m:^\#:);
+        next if (m:~$:);
+        next if (m:\.bak$:i);
+        next if (m:^\.:);
+
+        # Allow each arrangement to have a documentation directory.
+        next if (m:^doc$:);
+
+        # Just pick directories
+        if( -d $_)
+        {
+          push(@total_list, "$arrangement/$_");
+        }
       }
-      chdir "..";
+      chdir ($arrangement_dir) || die "Can't change directory to $arrangement_dir\n";
     }
-    
+
   }
   else
   {
     @total_list = @arrangements;
   }
- 
+
   if($choice =~ "thorns")
   {
     foreach $thorn (@total_list)
     {
       if( -r "$thorn/interface.ccl" && -r "$thorn/param.ccl")
       {
-	$info{$thorn} = &ThornInfo($thorn);
+        $info{$thorn} = &ThornInfo($thorn);
       }
 #      print "$thorn \# $info{$thorn}\n";
     }
@@ -106,7 +109,7 @@ sub buildthorns
     }
   }
 
-  chdir "..";
+  chdir ($home) || die "Cannot change back to Cactus home directory\n";
 
   return %info;
 }
@@ -115,15 +118,9 @@ sub buildthorns
 #  @routine    ThornInfo
 #  @date       Sun Oct 17 15:57:44 1999
 #  @author     Tom Goodale
-#  @desc 
+#  @desc
 #  Determines some info about a thorn.
-#  @enddesc 
-#  @calls     
-#  @calledby   
-#  @history 
-#
-#  @endhistory 
-#
+#  @enddesc
 #@@*/
 sub ThornInfo
 {
@@ -209,18 +206,12 @@ sub ThornInfo
 
 #/*@@
 #  @routine    ThornInfo
-#  @date       Wed Sep 5 14:04:07 CEST 2001 
-#  @author     Ian Kelley 
-#  @desc 
+#  @date       Wed Sep 5 14:04:07 CEST 2001
+#  @author     Ian Kelley
+#  @desc
 #  Reads in a thornlist and returns the arrangements/thorns,
-#  strips out all the comments/etc. 
-#  @enddesc 
-#  @calls     
-#  @calledby   
-#  @history 
-#
-#  @endhistory 
-#
+#  strips out all the comments/etc.
+#  @enddesc
 #@@*/
 sub ReadThornlist
 {
@@ -228,15 +219,15 @@ sub ReadThornlist
    my (@temp);
    my (%tl);
 
-   open (TL, "$thornlist") 
+   open (TL, "$thornlist")
       || die "\nCannot open thornlist ($thornlist) for reading: $!";
 
-   while (<TL>) 
+   while (<TL>)
    {
       next if m:^!.*:;
       s/(.*?)#.*/\1/;            # read up to the first "#"
       s/\s+//g;                  # replace any spaces with nothing
-      if (/\w+/) 
+      if (/\w+/)
       {
          push @temp, $_;         # add to array if something is left
       }
@@ -249,5 +240,5 @@ sub ReadThornlist
 
    return %tl;
 }
-    
+
 1;

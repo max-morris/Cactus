@@ -2,10 +2,10 @@
 #  @file      CVSUpdate.pl
 #  @date      Tue Nov 21 2000
 #  @author    Gabrielle Allen
-#  @desc 
+#  @desc
 #     Updates Cactus checkout
 #     (avoids problems with different versions of cvs client)
-#  @enddesc 
+#  @enddesc
 #  @version $Header$
 #@@*/
 
@@ -44,32 +44,33 @@ if ($debug)
 if (!$debug)
 {
   open (CS, "$command |");
-  while (<CS>) 
-  {  
+  while (<CS>)
+  {
     print ;
   }
   close (CS);
 }
 
-($package_dir, $thornlist) = @ARGV;
+($arrangement_dir, $thornlist) = @ARGV;
 
 if ($thornlist =~ /^$/) {
-   %info = &buildthorns($package_dir,"thorns");
+   %info = &buildthorns($arrangement_dir,"thorns");
 } else {
    %info = &ReadThornlist($thornlist);
 }
 
-$current_dir = `pwd`;
-chdir $package_dir;
+$home = `pwd`;
+chomp ($home);
 foreach $thorn (sort keys %info)
 {
-
   if( ! -d "$thorn/CVS")
   {
     print "Ignoring $thorn - no CVS directory\n";
     next;
   }
-  chdir $thorn;
+
+  chdir ("$arrangement_dir/$thorn") ||
+    die "Cannot change to thorn directory '$arrangement_dir/$thorn'\n";
   print("\nUpdating $thorn\n");
   $command = "cvs $cvs_ops update $cvs_update_ops $cvs_symbolic_name";
   if($debug)
@@ -85,21 +86,20 @@ foreach $thorn (sort keys %info)
       open (FILE, "<CVS/$file") || die "Could not open CVS file";
       while (<FILE>)
       {
-	print;
+        print;
       }
     }
   }
   if (!$debug)
   {
     open (CS, "$command |");
-    while (<CS>) 
-    {  
+    while (<CS>)
+    {
       print ;
-    } 
+    }
   }
-  chdir "../..";
 }
-chdir $current_dir;
+  chdir $home) || die "Cannot change back to Cactus home directory '$home'\n";
 
 
 exit;

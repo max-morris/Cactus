@@ -1,4 +1,4 @@
-#! /usr/bin/perl -s 
+#! /usr/bin/perl -s
 #
 #/*@@
 #   @file      CheckoutUtils.pl
@@ -8,7 +8,7 @@
 #   Installer for Thorns from ThornList
 #   @enddesc
 #   @version $Header$
-# @@*/           
+# @@*/
 
 sub CheckoutThornList
 {
@@ -25,15 +25,15 @@ sub CheckoutThornList
 
   # Get CVS options
   $cvs_options = &CVSOptions;
-  
+
   # Parse the ThornList
   %thorns = &ParseThornList($thornlist,$fleshpath,$tag);
 
   # Checkout the thorns
-  if (chdir "arrangements")
+  if (chdir ('arrangements'))
   {
     &GetThorns($fleshpath,$cvs_options,$tag,%thorns);
-    chdir $mydir;
+    chdir ($mydir);
   }
   else
   {
@@ -48,17 +48,11 @@ sub CheckoutThornList
 
 #/*@@
 #  @routine   Repository exists
-#  @date      Sat Mar 11 15:31:55 CET 2000   
+#  @date      Sat Mar 11 15:31:55 CET 2000
 #  @author    Gabrielle Allen
-#  @desc 
+#  @desc
 #  Check that the CVS repository is actually there
-#  @enddesc 
-#  @calls     
-#  @calledby   
-#  @history 
-#
-#  @endhistory 
-#
+#  @enddesc
 #@@*/
 
 sub RepositoryExists
@@ -84,17 +78,11 @@ sub RepositoryExists
 
 #/*@@
 #  @routine   ParseCVSPasswordFile
-#  @date      Sat Mar 11 15:31:55 CET 2000   
+#  @date      Sat Mar 11 15:31:55 CET 2000
 #  @author    Gabrielle Allen
-#  @desc 
+#  @desc
 #  Read in .cvspass if it is there
-#  @enddesc 
-#  @calls     
-#  @calledby   
-#  @history 
-#
-#  @endhistory 
-#
+#  @enddesc
 #@@*/
 
 sub ParseCVSPasswordFile
@@ -131,17 +119,11 @@ sub ParseCVSPasswordFile
 
 #/*@@
 #  @routine   AddCVSPasswordFile
-#  @date      Sat Mar 11 15:31:55 CET 2000   
+#  @date      Sat Mar 11 15:31:55 CET 2000
 #  @author    Gabrielle Allen
-#  @desc 
+#  @desc
 #  If the checkout is anonymous add any needed passwords to .cvspass
-#  @enddesc 
-#  @calls     
-#  @calledby   
-#  @history 
-#
-#  @endhistory 
-#
+#  @enddesc
 #@@*/
 
 sub AddCVSPasswordFile
@@ -177,7 +159,7 @@ sub AddCVSPasswordFile
   if ($rep !~ /$rep2\b/)
   {
     print CVSPASS "$rep2 $anon_pass\n";
-  }   
+  }
   if ($rep !~ /$rep3\b/)
   {
     print CVSPASS "$rep3 $anon_pass\n";
@@ -195,18 +177,12 @@ sub AddCVSPasswordFile
 
 #/*@@
 #  @routine   StripSpaces
-#  @date      Sat Mar 11 15:31:55 CET 2000   
+#  @date      Sat Mar 11 15:31:55 CET 2000
 #  @author    Gabrielle Allen
-#  @desc 
+#  @desc
 #  Remove spaces at start and end of word ... there's probably
 #  a much easier way to do this
-#  @enddesc 
-#  @calls     
-#  @calledby   
-#  @history 
-#
-#  @endhistory 
-#
+#  @enddesc
 #@@*/
 
 sub StripSpaces
@@ -222,17 +198,11 @@ sub StripSpaces
 
 #/*@@
 #  @routine   LoginRepository
-#  @date      Sat Mar 11 15:31:55 CET 2000   
+#  @date      Sat Mar 11 15:31:55 CET 2000
 #  @author    Gabrielle Allen
-#  @desc 
+#  @desc
 #  Login to a repository with chosen username
-#  @enddesc 
-#  @calls     
-#  @calledby   
-#  @history 
-#
-#  @endhistory 
-#
+#  @enddesc
 #@@*/
 
 sub LoginRepository
@@ -242,10 +212,10 @@ sub LoginRepository
 
   $command = "cvs -d $repository login |";
 
-  if ($debug != 1) 
+  if ($debug != 1)
   {
     open(CVSLOGIN,$command);
-    while (<CVSLOGIN>) 
+    while (<CVSLOGIN>)
     {
       print $_;
     }
@@ -262,17 +232,11 @@ sub LoginRepository
 
 #/*@@
 #  @routine   GetThorns
-#  @date      Sat Mar 11 15:31:55 CET 2000   
+#  @date      Sat Mar 11 15:31:55 CET 2000
 #  @author    Gabrielle Allen
-#  @desc 
+#  @desc
 #  Check out the thorns from CVS
-#  @enddesc 
-#  @calls     
-#  @calledby   
-#  @history 
-#
-#  @endhistory 
-#
+#  @enddesc
 #@@*/
 
 sub GetThorns
@@ -285,22 +249,22 @@ sub GetThorns
     {
       if ($thorns{"$th"} ne $fleshrep)
       {
-	print " WARNING: Mixing stable and developmental repositories\n";
-	print "    Flesh: <$fleshrep>\n";
-	print "    $th: <$thorns{\"$th\"}>\n\n";
-	print " Continue? (h)elp, y)es, n)o) [yes] : ";
-	if (defined $defaults) 
-	{
-	  print "\n";
-	} 
-	else 
-	{
-	  $answer = <STDIN>;
-	}
-	if ($answer =~ /^n/i)
-	{
-	  DIE("Leaving GetCactus script");
-	}
+        print " WARNING: Mixing stable and developmental repositories\n";
+        print "    Flesh: <$fleshrep>\n";
+        print "    $th: <$thorns{\"$th\"}>\n\n";
+        print " Continue? (h)elp, y)es, n)o) [yes] : ";
+        if (defined $defaults)
+        {
+          print "\n";
+        }
+        else
+        {
+          $answer = <STDIN>;
+        }
+        if ($answer =~ /^n/i)
+        {
+          DIE("Leaving GetCactus script");
+        }
       }
     }
 
@@ -314,72 +278,72 @@ sub GetThorns
       @rep = &ParseCVSPasswordFile;
       foreach (@rep)
       {
-	# Strip optional port specification from entries in .cvspass
-	# assume that user names never have a '/'
-	s|:(\d+)?/|:/|;
+        # Strip optional port specification from entries in .cvspass
+        # assume that user names never have a '/'
+        s|:(\d+)?/|:/|;
       }
 
       $rep = join(" ",@rep);
       if ($rep !~ $thorns{"$th"})
       {
-	print "\n No login for CVS repository \n  $thorns{\"$th\"}\n\n";
-	do 
-	{
-	  print " Action: (q)uit, l)ogin, h)elp) [login] : ";
-	  $answer = <STDIN> if (! defined $defaults);
-	  if ($answer =~ /^q/i)
-	  {
-	    DIE("Leaving GetCactus script");
-	  }
-	  elsif ($answer =~ /^h/i)
-	  {
-	    &OtherRepositoriesHelp();
-	  }
-	  else
-	  {
-	    &LoginRepository($thorns{"$th"});
-	  }
-	} while ($answer =~ /^h/i);
-	
+        print "\n No login for CVS repository \n  $thorns{\"$th\"}\n\n";
+        do
+        {
+          print " Action: (q)uit, l)ogin, h)elp) [login] : ";
+          $answer = <STDIN> if (! defined $defaults);
+          if ($answer =~ /^q/i)
+          {
+            DIE("Leaving GetCactus script");
+          }
+          elsif ($answer =~ /^h/i)
+          {
+            &OtherRepositoriesHelp();
+          }
+          else
+          {
+            &LoginRepository($thorns{"$th"});
+          }
+        } while ($answer =~ /^h/i);
+
       }
     }
 
     # Checkout or update
-    if (-e $th) 
+    if (-e $th)
     {
       print "\n Thorn already installed ... no overwrite\n";
       print "\n Do you want to update $th [no] : ";
       $answer = <STDIN>;
       if ($answer =~ /y/i)
       {
-	print " Updating $th\n";
-	$command_up = "cvs $cvs_options -d $thorns{\"$th\"} update -d $tag $th |";
-	print "  (CVS repository: $thorns{\"$th\"})\n";
-	open(REP,"<$th/CVS/Root") || DIE("No CVS files for $th");
-	$installedrep = <REP>;
-	close(REP);
-	chomp $installedrep;
-	if ($thorns{"$th"} !~ m:^$installedrep$:)
-	{
-	  print " WARNING: Installed $th from different repository\n";
-	  print "          ($installedrep)\n";
-	}
-	else
-	{
-	  if ($debug != 1)
-	  {
-	    open(CVSCO,$command_up);
-	    while (<CVSCO>)
-	    {
-	      print $_;  
-	    }
-	    close CVSCO;
-	  }
-	  else
-	  {
-	    print "\n DEBUG: $command_up\n\n";
-	  }
-	}
+        print " Updating $th\n";
+        $command_up = "cvs $cvs_options -d $thorns{\"$th\"} update -d $tag $th |";
+        print "  (CVS repository: $thorns{\"$th\"})\n";
+        open(REP,"<$th/CVS/Root") || DIE("No CVS files for $th");
+        $installedrep = <REP>;
+        close(REP);
+        chomp $installedrep;
+        if ($thorns{"$th"} !~ m:^$installedrep$:)
+        {
+          print " WARNING: Installed $th from different repository\n";
+          print "          ($installedrep)\n";
+        }
+        else
+        {
+          if ($debug != 1)
+          {
+            open(CVSCO,$command_up);
+            while (<CVSCO>)
+            {
+              print $_;
+            }
+            close CVSCO;
+          }
+          else
+          {
+            print "\n DEBUG: $command_up\n\n";
+          }
+        }
       }
     }
     else
@@ -389,47 +353,40 @@ sub GetThorns
       $arrangement = $th;
       $arrangement =~ s:/[^/]*$::;
       $command_co_arr = "cvs $cvs_options -d $thorns{\"$th\"} co $tag $arrangement/README 2> /dev/null |";
-      # (discard stderr because it is annoying when looking for a potential 
+      # (discard stderr because it is annoying when looking for a potential
       # arragment README)
 
       if ($debug != 1)
       {
-	# Check that the repository exists
-	DIE("Repository $thorns{\"$th\"} not found \n Are you connected to the network?\n Is the repository name spelt right in your thornlist file?") if (!&RepositoryExists($thorns{"$th"}));
-	
-	open(CVSCO,$command_co_arr);
-	while (<CVSCO>)
-	{
-	  print $_;
-	}
-	open(CVSCO,$command_co);
-	while (<CVSCO>)
-	{
-	  print $_;  
-	}
+        # Check that the repository exists
+        DIE("Repository $thorns{\"$th\"} not found \n Are you connected to the network?\n Is the repository name spelt right in your thornlist file?") if (!&RepositoryExists($thorns{"$th"}));
+
+        open(CVSCO,$command_co_arr);
+        while (<CVSCO>)
+        {
+          print $_;
+        }
+        open(CVSCO,$command_co);
+        while (<CVSCO>)
+        {
+          print $_;
+        }
       }
       else
       {
-	print "\n DEBUG: $command_co\n\n";
+        print "\n DEBUG: $command_co\n\n";
       }
     }
   }
-  chdir "../..";
 }
 
 #/*@@
 #  @routine   CVSOptions
-#  @date      Sat Mar 11 15:31:55 CET 2000   
+#  @date      Sat Mar 11 15:31:55 CET 2000
 #  @author    Gabrielle Allen
-#  @desc 
+#  @desc
 #  Get options to be passed to CVS
-#  @enddesc 
-#  @calls     
-#  @calledby   
-#  @history 
-#
-#  @endhistory 
-#
+#  @enddesc
 #@@*/
 
 sub CVSOptions
@@ -442,11 +399,11 @@ sub CVSOptions
     $verbose = "no" if ((defined $defaults) && (! defined $verbose));
 
     print "Verbose checkout (y)es, n)o, h)elp) [no] : ";
-    if (! defined $verbose) 
+    if (! defined $verbose)
     {
-       $answer = <STDIN> 
-    } 
-    else 
+       $answer = <STDIN>
+    }
+    else
     {
        $answer = $verbose;
        print "$answer\n";
@@ -469,7 +426,7 @@ sub CVSOptions
   return $cvs_options;
 }
 
-sub VerboseCheckoutHelp 
+sub VerboseCheckoutHelp
 {
   print "\n\n";
   print " CactusCode CVS checkout options\n";
@@ -487,17 +444,11 @@ sub VerboseCheckoutHelp
 
 #/*@@
 #  @routine   GetCactusDir
-#  @date      Sat Mar 11 15:31:55 CET 2000   
+#  @date      Sat Mar 11 15:31:55 CET 2000
 #  @author    Gabrielle Allen
-#  @desc 
+#  @desc
 #  Get directory for Cactus installation
-#  @enddesc 
-#  @calls     
-#  @calledby   
-#  @history 
-#
-#  @endhistory 
-#
+#  @enddesc
 #@@*/
 
 sub GetCactusDir
@@ -507,22 +458,22 @@ sub GetCactusDir
 
   print "\n Directory for Cactus installation [$mydir] : ";
 
-  if (defined $install) 
+  if (defined $install)
   {
       print " $install\n";
   }
 
   $install = "" if ((defined $defaults) && (! defined $install));
 
-  if (! $install) 
+  if (! $install)
   {
      $install = <STDIN>;
   }
 
-  if ($install =~ /^$/) 
+  if ($install =~ /^$/)
   {
     $install = $mydir;
-  } 
+  }
 
   chomp($install);
 
@@ -538,17 +489,11 @@ sub GetCactusDir
 
 #/*@@
 #  @routine   GetThornList
-#  @date      Sat Mar 11 15:31:55 CET 2000   
+#  @date      Sat Mar 11 15:31:55 CET 2000
 #  @author    Gabrielle Allen
-#  @desc 
+#  @desc
 #  Get the full path of the thorn list
-#  @enddesc 
-#  @calls     
-#  @calledby   
-#  @history 
-#
-#  @endhistory 
-#
+#  @enddesc
 #@@*/
 
 sub GetThornList
@@ -580,17 +525,11 @@ sub GetThornList
 
 #/*@@
 #  @routine   ParseThornList
-#  @date      Sat Mar 11 15:31:55 CET 2000   
+#  @date      Sat Mar 11 15:31:55 CET 2000
 #  @author    Gabrielle Allen
-#  @desc 
+#  @desc
 #  Read the thorn names and repositories from the thorn list
-#  @enddesc 
-#  @calls     
-#  @calledby   
-#  @history 
-#
-#  @endhistory 
-#
+#  @enddesc
 #@@*/
 
 sub ParseThornList
@@ -619,17 +558,17 @@ sub ParseThornList
     {
       if (m:^\s*\!*\s*$endstring:)
       {
-	$parfile = 0;
-	&WriteParameterFile($filename,$parfiledata);
-	next;
+        $parfile = 0;
+        &WriteParameterFile($filename,$parfiledata);
+        next;
       }
       else
       {
-	if (m:^\s*\#(.*)$:)
-	{
-	  $parfiledata .= "$1\n";
-	  next;
-	}
+        if (m:^\s*\#(.*)$:)
+        {
+          $parfiledata .= "$1\n";
+          next;
+        }
       }
     }
 
@@ -642,8 +581,8 @@ sub ParseThornList
     {
       $directive = &StripSpaces($1);
       $value = &StripSpaces($2);
- 
-      # Global directives 
+
+      # Global directives
       if ($directive =~ "DESC")
       {
         $description = $value;
@@ -677,7 +616,7 @@ sub ParseThornList
       }
       elsif ($directive =~ "PARAMETER_FILE")
       {
-	$value =~ m:([\w._]*)\s*<<\s*(\w*)\s*$:;
+        $value =~ m:([\w._]*)\s*<<\s*(\w*)\s*$:;
         $parfile     =  1;
         $filename    = $1;
         $endstring   = $2;
@@ -716,17 +655,11 @@ sub ParseThornList
 
 #/*@@
 #  @routine   DIE
-#  @date      Sat Mar 11 15:31:55 CET 2000   
+#  @date      Sat Mar 11 15:31:55 CET 2000
 #  @author    Gabrielle Allen
-#  @desc 
+#  @desc
 #  Tidy up and die
-#  @enddesc 
-#  @calls     
-#  @calledby   
-#  @history 
-#
-#  @endhistory 
-#
+#  @enddesc
 #@@*/
 
 sub DIE
@@ -739,17 +672,11 @@ sub DIE
 
 #/*@@
 #  @routine   WriteParameterFile
-#  @date      Sun Apr 2 21:31:55 CET 2000   
+#  @date      Sun Apr 2 21:31:55 CET 2000
 #  @author    Gabrielle Allen
-#  @desc 
+#  @desc
 #  Write parameter file
-#  @enddesc 
-#  @calls     
-#  @calledby   
-#  @history 
-#
-#  @endhistory 
-#
+#  @enddesc
 #@@*/
 
 sub WriteParameterFile
@@ -771,11 +698,8 @@ sub WriteParameterFile
   }
 
   open(FILE,">$filename") || DIE("Could not open $filename");
-
   print FILE $data;
-
   close(FILE);
-
 }
 
 sub GetFleshPath
@@ -790,7 +714,6 @@ sub GetFleshPath
   }
 
   return $path;
-  
 }
 
 
