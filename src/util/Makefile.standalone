@@ -1,23 +1,27 @@
 # Makefile for test drivers in this directory
 # $Header$
 
-EXTRA_GCC_FLAGS := -pipe \
-                   -ffast-math \
-                   -Wall -W -Wno-unused -Wshadow -Winline -Wpointer-arith \
-                   -Wbad-function-cast -Wcast-align -Wcast-qual \
-                   -Wstrict-prototypes -Wmissing-prototypes \
-                   -Wmissing-declarations
+# defaults -- override from command line as desired
+CC := gcc
+CFLAGS := -Wall -W -Wno-unused -Wshadow -Winline -Wpointer-arith \
+          -Wbad-function-cast -Wcast-align -Wcast-qual \
+          -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations \
+          -pedantic -ansi
 
-CONFIG_H_DIR := $(firstword $(wildcard ../../configs/*/config-data))
-LIB_DIR      := $(dir $(CONFIG_H_DIR))lib
+CONFIG_DATA_DIR := $(firstword $(wildcard ../../configs/*/config-data))
+LIB_DIR         := $(dir $(CONFIG_DATA_DIR))lib
+
+MPI_LIB_DIRS    := $(shell egrep '^MPI_LIB_DIRS' $(CONFIG_DATA_DIR)/make.extra.defn | sed -e 's/.*=//')
+MPI_LIBS        := $(shell egrep '^MPI_LIBS'     $(CONFIG_DATA_DIR)/make.extra.defn | sed -e 's/.*=//')
 
 # build outside cactus
 .PHONY	: test-table-standalone
 test-table-standalone	:
-	gcc -I. -I../include -I$(CONFIG_H_DIR) -L$(LIB_DIR) \
-            -g $(EXTRA_GCC_FLAGS) $(CFLAGS) \
-            -pedantic -ansi \
-            -DUTIL_TABLE_TEST -DUTIL_TABLE_DEBUG2 \
-            -o test_Table \
-            Table.c \
-            $(LIB_DIR)/../datestamp.o -lCactus -lCactusBindings -lm
+	$(CC) $(CFLAGS) -g \
+              -I. -I../include -I$(CONFIG_DATA_DIR) -L$(LIB_DIR) \
+              -DUTIL_TABLE_TEST \
+              -o test_Table \
+              Table.c \
+              $(LIB_DIR)/../datestamp.o -lCactus -lCactusBindings \
+              $(addprefix -L, $(MPI_LIB_DIRS)) $(addprefix -l, $(MPI_LIBS)) \
+              -lm
