@@ -959,7 +959,7 @@ sub RegisterAllFunctions
         push(@required,'    {');
         push(@required,'      CCTK_Warn(1, __LINE__, __FILE__, "Bindings",');
         push(@required,'                "The aliased function ' .
-                       "'$Function->{'Name'}'" .
+                       "'$Function->{'Name'}' (required by thorn '$thorn')" .
                        ' has not been provided by any active thorn !\n"');
         push(@required,'                "Please activate one of the following '.
                        'thorns which provide this function:\n"');
