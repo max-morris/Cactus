@@ -190,8 +190,8 @@ sub get_implementation_friends
       $friends{"\U$friend\E"} = 1;
       if(! $interface_data{"IMPLEMENTATION \U$friend\E THORNS"})
       {
-	print "$implementation is friends with $friend - non-existent implementation\n";
-	$CST_errors++;
+	$message = "$implementation is friends with $friend - non-existent implementation";
+	&CST_error(0,$message,__LINE__,__FILE__);
 	next;
       }
       %friends = &get_implementation_friends($friend, scalar(keys %friends), %friends,%interface_data);
@@ -483,7 +483,7 @@ sub check_interface_consistency
 	  $attributes{"TIMELEVELS"} = $interface_data{"\U$thorn GROUP $group\E TIMELEVELS"};
 	}
 
-	# Check the size array sizes are consustent.
+	# Check the size array sizes are consistent.
 	if($attributes{"SIZE"})
 	{
 	  if($attributes{"SIZE"} ne $interface_data{"\U$thorn GROUP $group\E SIZE"})
@@ -500,6 +500,25 @@ sub check_interface_consistency
 	else
 	{
 	  $attributes{"SIZE"} = $interface_data{"\U$thorn GROUP $group\E SIZE"};
+	}
+
+	# Check the ghostsize array sizes are consistent.
+	if($attributes{"GHOSTSIZE"})
+	{
+	  if($attributes{"GHOSTSIZE"} ne $interface_data{"\U$thorn GROUP $group\E GHOSTSIZE"})
+	  {
+	    if(!$n_errors)
+	    {
+	      print STDERR "Inconsistent implementations of $implementation\n";
+	      print STDERR "    Implemented by thorns " . join(" ", @thorns) . "\n";
+	    }
+	    print STDERR "      Group $group has inconsistent ghostsize.\n";
+	    $n_errors++;
+	  }
+	}
+	else
+	{
+	  $attributes{"GHOSTSIZE"} = $interface_data{"\U$thorn GROUP $group\E GHOSTSIZE"};
 	}
 
 	# Check the dimensions are consistant
@@ -669,6 +688,10 @@ sub parse_interface_ccl
 	elsif($option =~ m:TIMELEVELS:i)
 	{
 	  $interface_db{"\U$thorn GROUP $current_group\E TIMELEVELS"} = "\U$options{$option}\E";
+	}
+	elsif($option =~ m:GHOSTSIZE:i)
+	{
+	  $interface_db{"\U$thorn GROUP $current_group\E GHOSTSIZE"} = "\U$options{$option}\E";
 	}
 	elsif($option =~ m:SIZE:i)
 	{
