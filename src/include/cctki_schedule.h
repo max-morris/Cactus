@@ -30,7 +30,8 @@ typedef struct T_SCHED_MODIFIER
 extern "C" {
 #endif
 
-t_sched_modifier *CCTKi_ScheduleAddModifer(t_sched_modifier *orig, 
+/* Routines to create items */
+t_sched_modifier *CCTKi_ScheduleAddModifier(t_sched_modifier *orig, 
 					   const char *modifier, 
 					   const char *argument);
 
@@ -41,10 +42,20 @@ int CCTKi_ScheduleFunction(const char *gname,
 			   void *attributes);
 
 int CCTKi_ScheduleGroup(const char *gname, 
-			const char *thisname, t_sched_modifier *modifiers, 
+			const char *thisname, 
+                        t_sched_modifier *modifiers, 
 			void *attributes);
 
+/* Routine to sort the groups - must be called before traversal. */
 int CCTKi_ScheduleSortAllGroups(void);
+
+/* Traversal routine */
+int CCTKi_ScheduleTraverse(const char *group_name,
+                           int (*item_entry)(void *, void *),
+                           int (*item_exit)(void *, void *),
+                           int  (*while_check)(int, char **, void *, void *),
+                           int (*function_process)(void *, void *, void *),
+                           void *data);
 
 #ifdef __cplusplus
 }
