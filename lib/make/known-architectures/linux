@@ -282,6 +282,10 @@ else
         L2_CACHELINE_BYTES=128
         echo "Setting L2_CACHELINE_BYTES to $L2_CACHELINE_BYTES"
         ;;
+       powerpc)
+        L2_CACHELINE_BYTES=32
+        echo "Setting L2_CACHELINE_BYTES to $L2_CACHELINE_BYTES"
+        ;;
        *)
         echo "Don't know cacheline size for cpu $host_cpu"
         ;;
