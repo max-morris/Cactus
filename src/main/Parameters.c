@@ -577,7 +577,7 @@ char *CCTK_ParameterValString (const char *param_name, const char *thorn)
         break;
 
       case PARAMETER_REAL:
-        sprintf (buffer, "%g", (double) (*(const CCTK_REAL *) param_data));
+        sprintf (buffer, "%.20g", (double) (*(const CCTK_REAL *) param_data));
         retval = strdup (buffer);
         break;
 
