@@ -5,6 +5,7 @@
    @desc 
    Main program file for cactus.
    @enddesc 
+   @version $Header$
  @@*/
 #include <stdio.h>
 
@@ -44,6 +45,11 @@ CCTK_FILEVERSION(main_flesh_cc)
    @vcomment 
  
    @endvar 
+
+   @returntype int
+   @returndesc
+   0 -- success
+   @endreturndesc
 
 @@*/
 int main(int argc, char **argv)

@@ -5,6 +5,7 @@
    @desc 
    Routines to deal with the Cactus banners.
    @enddesc 
+   @version $Header$
  @@*/
 
 /*#define DEBUG_BANNER*/
@@ -23,11 +24,28 @@ static char *rcsid = "$Header$";
 
 CCTK_FILEVERSION(main_Banner_c)
 
+/********************************************************************
+ *********************     Local Data Types   ***********************
+ ********************************************************************/
+
+/********************************************************************
+ ********************* Local Routine Prototypes *********************
+ ********************************************************************/
+
+/********************************************************************
+ ********************* Other Routine Prototypes *********************
+ ********************************************************************/
+
+/********************************************************************
+ *********************     Local Data   *****************************
+ ********************************************************************/
+
 static int number_banners = 0;
 static char **banner_strings = NULL;
 
-void CCTK_PrintBanners(void);
-
+/********************************************************************
+ *********************     External Routines   **********************
+ ********************************************************************/
 
 
  /*@@
@@ -37,6 +55,11 @@ void CCTK_PrintBanners(void);
    @desc 
    Prints the Cactus Banner
    @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
 @@*/
 
 void CCTKi_CactusBanner(void)
@@ -73,12 +96,23 @@ void CCTKi_CactusBanner(void)
    @desc 
    Registers a string as a banner
    @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
    @var     string
    @vdesc   The banner as a C string
    @vtype   const char *
-   @vio     
+   @vio     in
    @vcomment 
+
    @endvar 
+
+   @returntype int
+   @returndesc
+   0 -- success
+   @endreturndesc
 @@*/
 
 int CCTK_RegisterBanner(const char *string)
@@ -145,12 +179,16 @@ void  CCTK_FCALL CCTK_FNAME(CCTK_RegisterBanner)
    @desc 
    Print all registered banners
    @enddesc 
-   @var     string
-   @vdesc   The banner as a C string
-   @vtype   const char *
-   @vio     
-   @vcomment 
-   @endvar 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+   @returntype int
+   @returndesc
+   0 -- success
+   @endreturndesc
 @@*/
 
 int CCTKi_PrintBanners(void)
@@ -179,6 +217,9 @@ int CCTKi_PrintBanners(void)
 
 }
   
+/********************************************************************
+ *********************     Local Routines   *************************
+ ********************************************************************/
 
 
 

@@ -1614,7 +1614,7 @@ static int ParameterSetInteger(t_param *param, const char *value)
   int inval;
   CCTK_INT *val;
 
-  inval = atoi(value);
+  inval = strtol(value,NULL,0);
   val = (CCTK_INT *)param->data;
   retval = -1;
   for(range = param->props->range; range ; range = range->next)

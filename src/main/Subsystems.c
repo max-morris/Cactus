@@ -27,6 +27,11 @@ CCTK_FILEVERSION(main_Subsystems_c)
  
    @endhistory 
 
+   @returntype int
+   @returndesc
+   0  - success
+   @endreturndesc
+
 @@*/
 
 int CCTKi_InitialiseSubsystemDefaults(void)

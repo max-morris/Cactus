@@ -5,9 +5,11 @@
    @desc 
    Responsible for doing any cactus specific initialisations
    @enddesc 
+   @version $Header$
  @@*/
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <time.h>
 
 #include "cctk_Flesh.h"
@@ -19,23 +21,44 @@
 #include "cctki_Bindings.h"
 #include "cctki_Schedule.h"
 
-int CCTKi_InitialiseScheduler(tFleshConfig *ConfigData);
-int CCTKi_InitialiseSubsystemDefaults(void);
-int CCTKi_ProcessEnvironment(int *argc, char ***argv,tFleshConfig *ConfigData);
-int CCTKi_BindingsParameterRecoveryInitialise(void);
-
-#define CCTK_PRINTSEPARATOR \
-  printf("--------------------------------------------------------------------------------\n");
 
 static char *rcsid = "$Header$";
 
 CCTK_FILEVERSION(main_InitialiseCactus_c)
 
-int ProcessCommandLine(int *inargc, char ***inargv, tFleshConfig *ConfigData);
-int ProcessEnvironment(int *argc, char ***argv,tFleshConfig *ConfigData);
+/********************************************************************
+ *********************     Local Data Types   ***********************
+ ********************************************************************/
+
+/********************************************************************
+ ********************* Local Routine Prototypes *********************
+ ********************************************************************/
+
+static int CCTKi_InitialiseScheduler(tFleshConfig *ConfigData);
+
+/********************************************************************
+ ********************* Other Routine Prototypes *********************
+ ********************************************************************/
+
+int CCTKi_InitialiseSubsystemDefaults(void);
+int CCTKi_ProcessEnvironment(int *argc, char ***argv,tFleshConfig *ConfigData);
+int CCTKi_BindingsParameterRecoveryInitialise(void);
+
+int CCTKi_ProcessCommandLine(int *inargc, char ***inargv, tFleshConfig *ConfigData);
+int CCTKi_ProcessEnvironment(int *argc, char ***argv,tFleshConfig *ConfigData);
+
+/********************************************************************
+ *********************     Local Data   *****************************
+ ********************************************************************/
+
+#define CCTK_PRINTSEPARATOR \
+  printf("--------------------------------------------------------------------------------\n");
 
 static time_t startuptime;
-  
+
+/********************************************************************
+ *********************     External Routines   **********************
+ ********************************************************************/
 
  /*@@
    @routine    CCTKi_InitialiseCactus
@@ -71,6 +94,10 @@ static time_t startuptime;
  
    @endvar 
 
+   @returntype int
+   @returndesc
+   0  - success
+   @endreturndesc
 @@*/
 int CCTKi_InitialiseCactus(int *argc, char ***argv, tFleshConfig *ConfigData)
 {
@@ -99,6 +126,9 @@ int CCTKi_InitialiseCactus(int *argc, char ***argv, tFleshConfig *ConfigData)
   return 0;
 }
 
+/********************************************************************
+ *********************     Local Routines   *************************
+ ********************************************************************/
 
  /*@@
    @routine    CCTKi_InitialiseScheduler
@@ -112,10 +142,21 @@ int CCTKi_InitialiseCactus(int *argc, char ***argv, tFleshConfig *ConfigData)
    @history 
  
    @endhistory 
+   @var     ConfigData
+   @vdesc   Flesh configuration data
+   @vtype   tFleshConfig
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
 
+   @returntype int
+   @returndesc
+   0  - success
+   @endreturndesc
 @@*/
 
-int CCTKi_InitialiseScheduler(tFleshConfig *ConfigData)
+static int CCTKi_InitialiseScheduler(tFleshConfig *ConfigData)
 {
   int retcode;
   extern void CCTKi_SetParameterSetMask(int mask);
@@ -139,7 +180,6 @@ int CCTKi_InitialiseScheduler(tFleshConfig *ConfigData)
 }
 
 
-
  /*@@
    @routine    CCTK_RunTime
    @date       Tue Oct 3 2000
@@ -153,9 +193,13 @@ int CCTKi_InitialiseScheduler(tFleshConfig *ConfigData)
  
    @endhistory 
 
+   @returntype int
+   @returndesc
+   The number of seconds since the run started.
+   @endreturndesc
 @@*/
 
-int CCTK_RunTime()
+int CCTK_RunTime(void)
 {
   int retval;
   time_t currenttime;
@@ -166,6 +210,3 @@ int CCTK_RunTime()
 
   return retval;
 }
-
-
-

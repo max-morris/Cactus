@@ -3,8 +3,9 @@
    @date      Wed Jan 13 20:28:08 1999
    @author    Tom Goodale
    @desc 
-   
+   Initialise various datastructures.
    @enddesc 
+   @version $Header$
  @@*/
 
 #include <stdio.h>
@@ -16,11 +17,31 @@
 #include "cctki_ActiveThorns.h"
 #include "cctki_Cache.h"
 
-int CCTKi_RegisterDefaultTimerFunctions(void);
-
 static char *rcsid = "$Header$";
 
 CCTK_FILEVERSION(main_InitialiseDataStructures_c)
+
+/********************************************************************
+ *********************     Local Data Types   ***********************
+ ********************************************************************/
+
+/********************************************************************
+ ********************* Local Routine Prototypes *********************
+ ********************************************************************/
+
+/********************************************************************
+ ********************* Other Routine Prototypes *********************
+ ********************************************************************/
+
+int CCTKi_RegisterDefaultTimerFunctions(void);
+
+/********************************************************************
+ *********************     Local Data   *****************************
+ ********************************************************************/
+
+/********************************************************************
+ *********************     External Routines   **********************
+ ********************************************************************/
 
  /*@@
    @routine    CCTKi_InitialiseDataStructures
@@ -34,7 +55,18 @@ CCTK_FILEVERSION(main_InitialiseDataStructures_c)
    @history 
  
    @endhistory 
+   @var     ConfigData
+   @vdesc   Flesh configuration data
+   @vtype   tFleshConfig
+   @vio     inout
+   @vcomment 
+ 
+   @endvar 
 
+   @returntype int
+   @returndesc
+   0  - success
+   @endreturndesc
 @@*/
 
 int CCTKi_InitialiseDataStructures(tFleshConfig *ConfigData)
@@ -51,17 +83,13 @@ int CCTKi_InitialiseDataStructures(tFleshConfig *ConfigData)
   ConfigData->timer[ELLIPTIC] = CactusNewTimer();
 #endif
 
-
-  /* Initialise appropriate subsystems. */
-
-  /*  CCTKi_BindingsImplementationsInitialise();*/
-  /*  CCTKi_BindingsParametersInitialise();*/
-  /*  CCTKi_BindingsVariablesInitialise(); */
-  /*  CCTKi_BindingsScheduleInitialise(); */
-
   CCTKi_ActivateThorn("Cactus");
   CCTKi_SetupCache();
 
   return 0;
 }
+
+/********************************************************************
+ *********************     Local Routines   *************************
+ ********************************************************************/
 

@@ -5,6 +5,7 @@
    @desc 
    Checks the environment for various settings, and acts on them.
    @enddesc 
+   @version $Header$
  @@*/
 
 #include <stdio.h>
@@ -15,6 +16,26 @@
 #ifdef CCTK_MPI
 #include "mpi.h"
 #endif
+
+static char *rcsid = "$Header$";
+
+CCTK_FILEVERSION(main_ProcessEnvironment_c)
+
+/********************************************************************
+ *********************     Local Data Types   ***********************
+ ********************************************************************/
+
+/********************************************************************
+ ********************* Local Routine Prototypes *********************
+ ********************************************************************/
+
+/********************************************************************
+ ********************* Other Routine Prototypes *********************
+ ********************************************************************/
+
+/********************************************************************
+ *********************     Local Data   *****************************
+ ********************************************************************/
 
 #ifdef CCTK_MPI
 #define CACTUS_MPI_ERROR(xf)                                                  \
@@ -38,16 +59,55 @@
           } while (0)
 #endif
 
-#include "cctk_Flesh.h"
-
-static char *rcsid = "$Header$";
-
-CCTK_FILEVERSION(main_ProcessEnvironment_c)
-
 #ifdef CCTK_MPI
 char MPI_Active = 0;
 #endif
 
+
+/********************************************************************
+ *********************     External Routines   **********************
+ ********************************************************************/
+
+ /*@@
+   @routine    CCTKi_ProcessEnvironment
+   @date       Fri Feb 26 11:20:15 1999
+   @author     Tom Goodale
+   @desc 
+   
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+   @var     argc
+   @vdesc   Number of arguments
+   @vtype   int *
+   @vio     inout
+   @vcomment 
+ 
+   @endvar 
+   @var     argv
+   @vdesc   Argument list
+   @vtype   char ***
+   @vio     inout
+   @vcomment 
+ 
+   @endvar 
+   @var     ConfigData
+   @vdesc   Flesh configuration data
+   @vtype   tFleshConfig
+   @vio     inout
+   @vcomment 
+ 
+   @endvar 
+
+   @returntype int
+   @returndesc
+   0  - success
+   @endreturndesc
+
+@@*/
 int CCTKi_ProcessEnvironment(int *argc, char ***argv,tFleshConfig *ConfigData)
 {
   
@@ -66,3 +126,6 @@ int CCTKi_ProcessEnvironment(int *argc, char ***argv,tFleshConfig *ConfigData)
   return 0;
 }
 
+/********************************************************************
+ *********************     Local Routines   *************************
+ ********************************************************************/

@@ -11,6 +11,7 @@
 /*#define DEBUG_CCTK*/
 
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "cctk_Flesh.h"
 #include "cctk_Parameter.h"

@@ -5,6 +5,7 @@
    @desc 
    
    @enddesc 
+   @version $Header$
  @@*/
 
 #include <stdio.h>
@@ -19,22 +20,36 @@
 #include "cctk_WarnLevel.h"
 #include "cctk_Misc.h"
 #include "cctk_Flesh.h"
+#include "cctk_Parameter.h"
 
 #include "ParameterBindings.h"
 
-static int ReallySetParameter(
-   const char *parameter, 
-   const char *value
-   );
-int CCTK_ParameterSet(
-   const char *name,
-   const char *thorn,
-   const char *value
-   );
-       
 static char *rcsid = "$Header$";
 
 CCTK_FILEVERSION(main_SetParams_c)
+
+/********************************************************************
+ *********************     Local Data Types   ***********************
+ ********************************************************************/
+
+/********************************************************************
+ ********************* Local Routine Prototypes *********************
+ ********************************************************************/
+
+static int ReallySetParameter(const char *parameter, 
+                              const char *value);
+
+/********************************************************************
+ ********************* Other Routine Prototypes *********************
+ ********************************************************************/
+
+/********************************************************************
+ *********************     Local Data   *****************************
+ ********************************************************************/
+
+/********************************************************************
+ *********************     External Routines   **********************
+ ********************************************************************/
 
  /*@@
    @routine    CCTKi_SetParameter
@@ -48,7 +63,27 @@ CCTK_FILEVERSION(main_SetParams_c)
    @history 
  
    @endhistory 
+   @var     parameter
+   @vdesc   Name of a parameter
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     value
+   @vdesc   Value of the parameter
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
 
+   @returntype int
+   @returndesc
+   0  - success
+   -1 - unknown parameter
+   -? - other error
+   @endreturndesc
 @@*/
 int CCTKi_SetParameter(const char *parameter, const char *value)
 {
@@ -92,7 +127,6 @@ int CCTKi_SetParameter(const char *parameter, const char *value)
   }
   else
   {     
-    /*   retval = CCTKi_BindingsParameterSet(parameter, value);*/
     retval = ReallySetParameter(parameter, value); 
   }
   
@@ -111,6 +145,44 @@ int CCTKi_SetParameter(const char *parameter, const char *value)
   return retval;
 }
 
+/********************************************************************
+ *********************     Local Routines   *************************
+ ********************************************************************/
+
+
+ /*@@
+   @routine    ReallySetParameter
+   @date       Tue Jan 12 19:25:37 1999
+   @author     Tom Goodale
+   @desc 
+   Really sets the parameter value.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+   @var     parameter
+   @vdesc   Name of a parameter
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     value
+   @vdesc   Value of the parameter
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+
+   @returntype int
+   @returndesc
+   0  - success
+   -1 - unknown parameter
+   @endreturndesc
+@@*/
 static int ReallySetParameter(const char *parameter, const char *value)
 {
   int retval;
@@ -122,15 +194,11 @@ static int ReallySetParameter(const char *parameter, const char *value)
   int retval_thorn;
 
 
-  /*
-    CCTKi_BindingsParameterHelp(optarg,"%s",stdout);
-  */
- 
   Util_SplitString(&imp, &param, parameter, "::");
 
   retval = -1;
-  /* If param is null, there were no colons in the input */
 
+  /* If param is null, there were no colons in the input */
   if(!param)
   {
     retval = CCTK_ParameterSet(parameter, imp, value);
@@ -183,5 +251,4 @@ static int ReallySetParameter(const char *parameter, const char *value)
   free(param);
 
   return retval;
-
 }

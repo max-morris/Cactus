@@ -5,23 +5,45 @@
    @desc 
    Routines to deal with the command line arguments.
    @enddesc 
+   @version $Header$
  @@*/
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "CommandLine.h"
 #include "cctk_Flesh.h"
 #include "cctk_GNU.h"
+
+#include "CommandLine.h"
 
 static char *rcsid = "$Header$";
 
 CCTK_FILEVERSION(main_ProcessCommandLine_c)
 
+/********************************************************************
+ *********************     Local Data Types   ***********************
+ ********************************************************************/
+
+/********************************************************************
+ ********************* Local Routine Prototypes *********************
+ ********************************************************************/
+
+/********************************************************************
+ ********************* Other Routine Prototypes *********************
+ ********************************************************************/
+
+/********************************************************************
+ *********************     Local Data   *****************************
+ ********************************************************************/
+
 static char *parameter_file_name=NULL;
 
-static int argc;
+static int argc = 0;
 
-static char **argv;
+static char **argv = NULL;
+
+/********************************************************************
+ *********************     External Routines   **********************
+ ********************************************************************/
 
  /*@@
    @routine    CCTKi_ProcessCommandLine
@@ -35,6 +57,32 @@ static char **argv;
    @history 
  
    @endhistory 
+   @var     inargc
+   @vdesc   Number of runtime arguments
+   @vtype   int *
+   @vio     inout
+   @vcomment 
+ 
+   @endvar 
+   @var     inargv
+   @vdesc   Command line arguments
+   @vtype   char ***
+   @vio     inout
+   @vcomment 
+ 
+   @endvar 
+   @var     ConfigData
+   @vdesc   Flesh configuration data
+   @vtype   tFleshConfig
+   @vio     inout
+   @vcomment 
+ 
+   @endvar 
+
+   @returntype int
+   @returndesc
+   0 -- success
+   @endreturndesc
 
 @@*/
 int CCTKi_ProcessCommandLine(int *inargc, char ***inargv, tFleshConfig *ConfigData)
@@ -126,7 +174,18 @@ int CCTKi_ProcessCommandLine(int *inargc, char ***inargv, tFleshConfig *ConfigDa
    @history 
  
    @endhistory 
+   @var     outargv
+   @vdesc   Place to dump the command line arguments
+   @vtype   char ***
+   @vio     out
+   @vcomment 
+ 
+   @endvar 
 
+   @returntype int
+   @returndesc
+   The number of command line arguments.
+   @endreturndesc
 @@*/
 int CCTK_CommandLine(char ***outargv)
 {
@@ -148,6 +207,25 @@ int CCTK_CommandLine(char ***outargv)
    @history 
  
    @endhistory 
+   @var     len
+   @vdesc   The length of the incoming string
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     filename
+   @vdesc   String to contain the filename
+   @vtype   char *
+   @vio     out
+   @vcomment 
+ 
+   @endvar 
+
+   @returntype int
+   @returndesc
+   The length of the returned string.
+   @endreturndesc
 
 @@*/
 int CCTK_ParameterFilename(int len, char *filename)
@@ -172,4 +250,10 @@ void CCTK_FCALL CCTK_FNAME(CCTK_ParameterFilename)
 {
   *retval = CCTK_ParameterFilename(*len,name);
 }
+
+/********************************************************************
+ *********************     Local Routines   *************************
+ ********************************************************************/
+
+
 

@@ -69,7 +69,26 @@ static uHash *VariableData = NULL;
    @history 
  
    @endhistory 
+   @var     gname
+   @vdesc   Name of the group
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     gnum
+   @vdesc   Group number
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
 
+   @returntype int
+   @returndesc
+   0  - success
+   -1 - out of memory
+   @endreturndesc
 @@*/
 int CCTKi_NamesStoreGroup(const char *gname, int gnum)
 {
@@ -118,7 +137,33 @@ int CCTKi_NamesStoreGroup(const char *gname, int gnum)
    @history 
  
    @endhistory 
+   @var     name
+   @vdesc   Name of the variable
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     vnum
+   @vdesc   Variable number
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     gnum
+   @vdesc   Number of group containing variable.
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
 
+   @returntype int
+   @returndesc
+   0  - success
+   -1 - out of memory
+   @endreturndesc
 @@*/
 int CCTKi_NamesStoreVariable(const char *name, int vnum, int gnum)
 {
@@ -167,6 +212,27 @@ int CCTKi_NamesStoreVariable(const char *name, int vnum, int gnum)
    @history 
  
    @endhistory 
+   @var     gname
+   @vdesc   Name of the group
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     gnum
+   @vdesc   Group number
+   @vtype   int *
+   @vio     out
+   @vcomment 
+ 
+   @endvar 
+
+   @returntype int
+   @returndesc
+   0  - success
+   -1 - group doesn't exist
+   -2 - no groups exist
+   @endreturndesc
 
 @@*/
 int CCTKi_NamesRetrieveGroupNum(const char *gname, int *gnum)
@@ -212,7 +278,34 @@ int CCTKi_NamesRetrieveGroupNum(const char *gname, int *gnum)
    @history 
  
    @endhistory 
+   @var     name
+   @vdesc   Name of the variable
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     vnum
+   @vdesc   Variable number
+   @vtype   int *
+   @vio     out
+   @vcomment 
+ 
+   @endvar 
+   @var     gnum
+   @vdesc   Number of group containing variable.
+   @vtype   int *
+   @vio     out
+   @vcomment 
+ 
+   @endvar 
 
+   @returntype int
+   @returndesc
+   0  - success
+   -1 - variable doesn't exist
+   -2 - no variable exists
+   @endreturndesc
 @@*/
 int CCTKi_NamesRetrieveVariableNum(const char *name, int *vnum, int *gnum)
 {
@@ -266,7 +359,25 @@ int CCTKi_NamesRetrieveVariableNum(const char *name, int *vnum, int *gnum)
    @hdate Thu Mar  9 11:04:48 2000 @hauthor Tom Goodale
    @hdesc Copied from Util_HashHash and modified to be case independent. 
    @endhistory 
+   @var     klen
+   @vdesc   Key length
+   @vtype   unsigned int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     key
+   @vdesc   The key
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
 
+   @returntype unsigned int
+   @returndesc
+   The hash value
+   @endreturndesc
 @@*/
 static unsigned int CaseIndependentHash(unsigned int klen, 
                                         const char *key)

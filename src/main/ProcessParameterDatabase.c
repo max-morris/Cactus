@@ -5,6 +5,7 @@
    @desc 
    Routines to determine the parameters and store them.
    @enddesc 
+   @version $Header$
  @@*/
 
 #include <stdio.h>
@@ -20,10 +21,30 @@ static char *rcsid = "$Header$";
 
 CCTK_FILEVERSION(main_ProcessParameterDatabase_c)
 
+/********************************************************************
+ *********************     Local Data Types   ***********************
+ ********************************************************************/
+
+/********************************************************************
+ ********************* Local Routine Prototypes *********************
+ ********************************************************************/
+
+/********************************************************************
+ ********************* Other Routine Prototypes *********************
+ ********************************************************************/
+
 int ParseFile(FILE *ifp, 
               int (*set_function)(const char *, const char *),tFleshConfig *ConfigData);
+
 void CCTKi_SetParameterSetMask(int mask);
 
+/********************************************************************
+ *********************     Local Data   *****************************
+ ********************************************************************/
+
+/********************************************************************
+ *********************     External Routines   **********************
+ ********************************************************************/
 
  /*@@
    @routine    CCTKi_ProcessParameterDatabase
@@ -37,7 +58,19 @@ void CCTKi_SetParameterSetMask(int mask);
    @history 
  
    @endhistory 
+   @var     ConfigData
+   @vdesc   Flesh configuration data
+   @vtype   tFleshConfig
+   @vio     inout
+   @vcomment 
+ 
+   @endvar 
 
+   @returntype int
+   @returndesc
+   0  - success
+   1  - unable to open parameter file
+   @endreturndesc
 @@*/
 int CCTKi_ProcessParameterDatabase(tFleshConfig *ConfigData)
 {
@@ -74,4 +107,9 @@ int CCTKi_ProcessParameterDatabase(tFleshConfig *ConfigData)
       
   return retval;
 }
+
+/********************************************************************
+ *********************     Local Routines   *************************
+ ********************************************************************/
+
 
