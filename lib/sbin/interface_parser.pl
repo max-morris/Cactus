@@ -105,7 +105,6 @@ sub cross_index_interface_data
   foreach $implementation (keys %implementations)
   {
     %friends = &get_implementation_friends($implementation, 0, %interface_data);
-
     $interface_data{"IMPLEMENTATION \U$implementation\E FRIENDS"} = join(" ",( keys %friends));
   }
 
@@ -566,7 +565,7 @@ sub parse_interface_ccl
       
       $interface_db{"\U$thorn $block GROUPS\E"} .= " $2";
       $interface_db{"\U$thorn GROUP $current_group\E VTYPE"} = "\U$1\E";
-      %options = split(/\s+|\s*=\s*/, $3);
+      %options = split(/\s*=\s*|\s+/, $3);
       
       # Parse the options
       foreach $option (keys %options)
