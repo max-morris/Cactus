@@ -6,7 +6,7 @@
 #  @desc 
 #  Parses the the configuration files for thorns.
 #  @enddesc 
-#  @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.44 2001-07-11 21:44:53 allen Exp $
+#  @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.45 2001-08-19 12:52:13 allen Exp $
 #@@*/
 
 # Global parameter to track the number of errors from the CST
@@ -262,12 +262,12 @@ sub CreateThornList
 	    if ($package ne $1)
 	    {
 	      $message = "Duplicate thornname $thorn_name in $1 and $package";
-	      &CST_error(0,$message,__LINE__,__FILE__);
+	      &CST_error(0,$message,"",__LINE__,__FILE__);
 	    }
 	    else
 	    {
 	      $message = "Ignoring duplicate thorn $package/$thorn_name";
-	      &CST_error(1,$message,__LINE__,__FILE__);	     
+	      &CST_error(1,$message,"",__LINE__,__FILE__);	     
 	    } 
 	  }
 	  else
@@ -278,14 +278,14 @@ sub CreateThornList
 	else
 	{
 	  $message = "$thorn - missing ccl file(s)\n";
-	  &CST_error(0,$message,__LINE__,__FILE__);
+	  &CST_error(0,$message,"",__LINE__,__FILE__);
 	  next;
         }
       }
       else
       {
 	 $message = "Missing thorn $thorn\n";
-         &CST_error(0,$message,__LINE__,__FILE__);
+         &CST_error(0,$message,"",__LINE__,__FILE__);
       }
     }
   }

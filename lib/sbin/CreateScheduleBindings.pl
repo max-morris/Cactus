@@ -530,8 +530,8 @@ sub ScheduleBlock
     }
     else
     {
-      $mess = "Unknown language " .$rhschedule_db->{"\U$thorn\E BLOCK_$block LANG"} ."\n";
-      &CST_error(0,$mess,__LINE__,__FILE__);
+      $mess = "Unknown language " .$rhschedule_db->{"\U$thorn\E BLOCK_$block LANG"};
+      &CST_error(0,$mess,"",__LINE__,__FILE__);
       return ("", "");
     }
     $prototype = "extern int $function(void); /* Note that this is a cheat, we just need a function pointer. */\n";
@@ -541,8 +541,8 @@ sub ScheduleBlock
   }
   else
   {
-    $mess = "Internal error: Unknown schedule block type " . $rhschedule_db->{"\U$thorn\E BLOCK_$block TYPE"} . "\n";
-    &CST_error(0,$mess,__LINE__,__FILE__);
+    $mess = "Internal error: Unknown schedule block type " . $rhschedule_db->{"\U$thorn\E BLOCK_$block TYPE"};
+    &CST_error(0,$mess,"",__LINE__,__FILE__);
     return ("", "");
   }
   
@@ -629,8 +629,8 @@ sub ScheduleStatement
   else
   {
 
-    $mess = "Unknown statement type '" .$rhschedule_db{"\U$thorn\E STATEMENT_$statement TYPE"} ."'\n";
-    &CST_error(0,$mess,__LINE__,__FILE__);
+    $mess = "Unknown statement type '" .$rhschedule_db{"\U$thorn\E STATEMENT_$statement TYPE"};
+    &CST_error(0,$mess,"",__LINE__,__FILE__);
     return ("", "");
   }
 
@@ -687,8 +687,9 @@ sub ScheduleSelectGroups
 	}
 	else
 	{
-	  $mess = "Schedule error: Thorn $thorn - group $group doesn't exist.\n";
-	  &CST_error(0,$mess,__LINE__,__FILE__);
+	  $mess = "Schedule error: Thorn $thorn - group $other_imp\:\:$group doesn't exist.";
+	  $help = "Check thorn $thorn inherits from implementation $other_imp";
+	  &CST_error(0,$mess,$help,__LINE__,__FILE__);
 	  next;
 	}
 
@@ -702,8 +703,8 @@ sub ScheduleSelectGroups
 	}
 	else
 	{
-	  $mess = "Schedule error: Thorn $thorn - group $group doesn't exist.\n";
-	  &CST_error(0,$mess,__LINE__,__FILE__);
+	  $mess = "Schedule error: Thorn $thorn - group $other_imp\:\:$group doesn't exist.\n";
+	  &CST_error(0,$mess,"",__LINE__,__FILE__);
 	  next;
 	}	
       }
@@ -754,15 +755,18 @@ sub ScheduleSelectGroups
       }
       if(! $foundit)
       {
-	$mess = "Schedule error: Thorn $thorn - group $group doesn't exist.\n";
-	&CST_error(0,$mess,__LINE__,__FILE__);
+	$mess = "Schedule error: Thorn $thorn - group $group doesn't exist.";
+	$help = "Check $group really is in thorn $thorn. Groups from other thorns ";
+        $help .= "need to be specified using \$implementation\:\:\$group and ";
+	$help .= "$implementation must be inheritied by your thorn.";
+	&CST_error(0,$mess,$help,__LINE__,__FILE__);
 	
       }
     }
     else
     {
-      $mess = "Schedule error: Thorn $thorn - group $group doesn't exist.\n";
-      &CST_error(0,$mess,__LINE__,__FILE__);
+      $mess = "Schedule error: Thorn $thorn - group $group doesn't exist.";
+      &CST_error(0,$mess,"",__LINE__,__FILE__);
 
     }
   }

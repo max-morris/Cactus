@@ -145,7 +145,7 @@ sub get_c_type_string
   else
   {
       $message = "Unknown parameter type '$type'";
-      &CST_error(0,$message,__LINE__,__FILE__);
+      &CST_error(0,$message,"",__LINE__,__FILE__);
   }
 
   return $type_string;

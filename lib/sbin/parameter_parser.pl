@@ -71,7 +71,7 @@ sub cross_index_parameters
       if($public_parameters{"\U$parameter\E"})
       {
 	  $message = "Duplicate public parameter $parameter, defined in $imp and ".$public_parameters{"\Uparameter\E"};
-	  &CST_error(0,$message,__LINE__,__FILE__);
+	  &CST_error(0,$message,"",__LINE__,__FILE__);
       }
       else
       {
@@ -174,7 +174,7 @@ sub parse_param_ccl
 	else
 	{
 	  $message = "Missing description for $variable in thorn $thorn.";
-	  &CST_error(0,$message,__LINE__,__FILE__);
+	  &CST_error(0,$message,"",__LINE__,__FILE__);
 	}
       }
 
@@ -182,7 +182,7 @@ sub parse_param_ccl
       {
 
 	$message = "Duplicate parameter $variable in thorn $thorn. Ignoring second definition";
-	&CST_error(1,$message,__LINE__,__FILE__);
+	&CST_error(1,$message,"",__LINE__,__FILE__);
 
 	$line_number++ until ($data[$line_number] =~ m:\}:);
       }
@@ -190,7 +190,7 @@ sub parse_param_ccl
       {
 	# Can only extend a friend variable.
 	$message =  "Parse error in $thorn/param.ccl";
-	&CST_error(0,$message,__LINE__,__FILE__);
+	&CST_error(0,$message,"",__LINE__,__FILE__);
 	$line_number++ until ($data[$line_number] =~ m:\}:);
       }
       elsif($data[$line_number+1] !~ m:^\s*\{\s*$: && $use_clause == 0)
@@ -198,7 +198,7 @@ sub parse_param_ccl
 	# Since the data should have no blank lines, the next
 	# line should have { on it.
 	$message = "Parse error in $thorn/param.ccl - missing \"{\" in definition of parameter \"$variable\"";
-	&CST_error(0,$message,__LINE__,__FILE__);
+	&CST_error(0,$message,"",__LINE__,__FILE__);
 	# Move past the end of this block.
 	$line_number++ until ($data[$line_number] =~ m:\}:);
       }
@@ -216,7 +216,7 @@ sub parse_param_ccl
 	  {
 #           This message is already given above.
 #	    message = "Missing { at start of range block for parameter $variable pf thorn $thorn";
-#	    &CST_error(0,$message,__LINE__,__FILE__);
+#	    &CST_error(0,$message,"",__LINE__,__FILE__);
 	    die "Internal error in parser: this line should never be reached."
 	  }
 	}
@@ -239,7 +239,7 @@ sub parse_param_ccl
 	  else
 	  {
 	    $message = "Unknown option $option for parameter $variable of thorn $thorn";
-	    &CST_error(0,$message,__LINE__,__FILE__);
+	    &CST_error(0,$message,"",__LINE__,__FILE__);
 	  }
 	}
 
@@ -279,12 +279,12 @@ sub parse_param_ccl
 	    if($delim eq "" || ($delim =~ /::/ && $new_desc =~ /^\s*$/))
 	    {
 	      $message = "Missing description of range '$new_ranges' for parameter $thorn\::$variable";
-	      &CST_error(1,$message,__LINE__,__FILE__);
+	      &CST_error(1,$message,"",__LINE__,__FILE__);
 	    }
 	    elsif ($new_desc =~ /^\s*\".*[^\s\"]\s*$|^\s*[^\s\"].*\"\s*$/)
 	    {
 	      $message = "Description of range for $thorn\::$variable has misplaced quotes ($new_desc)";
-	      &CST_error(0,$message,__LINE__,__FILE__);
+	      &CST_error(0,$message,"",__LINE__,__FILE__);
 	    }
 	    $parameter_db{"\U$thorn $variable\E range $parameter_db{\"\U$thorn $variable\E ranges\"} description"} = $new_desc;
 	    $line_number++;
@@ -295,7 +295,7 @@ sub parse_param_ccl
         if (($use_clause == 0)  && ($parameter_db{"\U$thorn $variable\E ranges"}==0 && $type =~ m:INT|REAL:))
         {
 	    $message = "No range given for $variable in $thorn";
-	    &CST_error(0,$message,__LINE__,__FILE__);
+	    &CST_error(0,$message,"",__LINE__,__FILE__);
         }
 	if($block !~ m:SHARES:)
 	{
@@ -305,17 +305,17 @@ sub parse_param_ccl
 	      if ($type =~ m:INT|REAL: && $default =~ m:":)
 	      {
 		  $message = "String default given for $type $variable in $thorn";
-                  &CST_error(0,$message,__LINE__,__FILE__);
+                  &CST_error(0,$message,"",__LINE__,__FILE__);
 	      }
               elsif ($type =~ m:STRING|KEYWORD: && $default !~ m:".*":)
               {
 		  $message = "Default given for $type $variable in $thorn is not a string";
-                  &CST_error(0,$message,__LINE__,__FILE__);
+                  &CST_error(0,$message,"",__LINE__,__FILE__);
 	      }
               elsif ($type =~ m:BOOLEAN: && $default =~ m:": && $default !~ m:".*":)
 	      {
 		  $message = "Default given for $type $variable in $thorn is missing a quote";
-                  &CST_error(0,$message,__LINE__,__FILE__);
+                  &CST_error(0,$message,"",__LINE__,__FILE__);
 	      }
 	      
 	      $default = $1 if ($default =~ m:\"(((\\\")|[^\"])*)\":);
@@ -327,7 +327,7 @@ sub parse_param_ccl
 	  else
 	  {
 	    $message =  "Unable to find default for $variable";
-	    &CST_error(0,$message,__LINE,__FILE);
+	    &CST_error(0,$message,"",__LINE__,__FILE__);
 	  }		
 	}
       }
@@ -337,13 +337,13 @@ sub parse_param_ccl
       if($line =~ m:\{:)
       {
 	$message = "Skipping parameter block in $thorn with missing keyword";
-        &CST_error(1,$message,__LINE__,__FILE__);
+        &CST_error(1,$message,"",__LINE__,__FILE__);
 	$line_number++ until ($data[$line_number] =~ m:\}:);
       }
       else
       {
 	$message = "Unknown line \"$line\" in $thorn/param.ccl";
-        &CST_error(0,$message,__LINE__,__FILE__);
+        &CST_error(0,$message,"",__LINE__,__FILE__);
       }
     }
   }
@@ -437,7 +437,7 @@ sub CheckParameterDefault
     if ($default !~ m:^yes|no|1|0$:i)
       {
 	$message = "Default ($default) for boolean incorrect for $variable in $thorn";
-	&CST_error(0,$message,__LINE__,__FILE__);
+	&CST_error(0,$message,"",__LINE__,__FILE__);
       }
   }
 
@@ -462,7 +462,7 @@ sub CheckParameterDefault
     if ($foundit == 0)
     {
       $message = "Default ($default) for keyword incorrect for $variable in $thorn";
-      &CST_error(0,$message,__LINE__,__FILE__);
+      &CST_error(0,$message,"",__LINE__,__FILE__);
     }
   }
   
@@ -486,7 +486,7 @@ sub CheckParameterDefault
     if ($foundit == 0)
     {
       $message = "Default ($default) for string incorrect for $variable in $thorn";
-      &CST_error(0,$message,__LINE__,__FILE__);
+      &CST_error(0,$message,"",__LINE__,__FILE__);
     }
   }
   
@@ -529,7 +529,7 @@ sub CheckParameterDefault
     if ($foundit == 0)
     {
       $message = "Default ($default) for integer incorrect for $variable in $thorn";
-      &CST_error(0,$message,__LINE__,__FILE__);
+      &CST_error(0,$message,"",__LINE__,__FILE__);
     }
   }
   
@@ -572,7 +572,7 @@ sub CheckParameterDefault
     if ($foundit == 0)
     {
       $message = "Default ($default) for real incorrect for $variable in $thorn";
-      &CST_error(0,$message,__LINE__,__FILE__);
+      &CST_error(0,$message,"",__LINE__,__FILE__);
     }
   }
   

@@ -11,7 +11,12 @@
 
 sub CST_error
 {
-    my($level,$mess,$line,$file,$error) = @_;
+    my($level,$mess,$help,$line,$file,$error) = @_;
+
+    if ($help ne /$\s*^/)
+    {
+      $help = "     HINT: $help\n";
+    }
 
     if ($full_warnings)
     {
@@ -19,14 +24,14 @@ sub CST_error
 	{
 	    $CST_errors++;
             $error = "\nCST error in $file (at $line)\n  -> $mess\n";
-	    print STDERR $error;
-	    $error_string .= $error;
+	    print STDERR "$error\n";
+	    $error_string .= "$error$help\n";
 	}
 	else
 	{
             $error = "\nCST warning in $file (at $line)\n  -> $mess\n";
-	    print STDERR $error;
-	    $error_string .= $error;
+	    print STDERR "$error\n";
+	    $error_string .= "$error$help\n";
 	}
     }
     else
@@ -35,14 +40,14 @@ sub CST_error
 	{
 	    $CST_errors++;
             $error = "\nCST error $CST_errors:\n  -> $mess\n";
-	    print STDERR $error;
-	    $error_string .= $error;
+	    print STDERR "$error\n";
+	    $error_string .= "$error$help\n";
 	}
 	else
 	{
             $error = "\nCST warning:\n  -> $mess\n";
-	    print STDERR $error;
-	    $error_string .= $error;
+	    print STDERR "$error\n";
+	    $error_string .= "$error$help\n";
 	}	    
     }
     return;

@@ -1095,12 +1095,12 @@ sub FunctionDatabase
 	if ($types ne $function_db->{"$function TYPES"})
 	{
 	  $message = "Argument types for aliased $function do not match";
-	  &CST_error(0,$message,__LINE__,__FILE__);
+	  &CST_error(0,$message,"",__LINE__,__FILE__);
 	}
 	if ($inret ne $function_db->{"$function RET"})
 	{
 	  $message = "Return types for aliased $function do not match";
-	  &CST_error(0,$message,__LINE__,__FILE__);
+	  &CST_error(0,$message,"",__LINE__,__FILE__);
 	}
       }
       else
@@ -1124,14 +1124,14 @@ sub FunctionDatabase
 	  {
 	    $function_db->{"$function LANG"} = "C";
 	    $message = "Fortran wrapper not created for alias $function";
-	    &CST_error(1,$message,__LINE__,__FILE__);
+	    &CST_error(1,$message,"",__LINE__,__FILE__);
 	  }
 	}
 	else
 	{
 	  $function_db->{"$function LANG"} = "";
 	  $message = "Can't create alias for $function";
-	  &CST_error(0,$message,__LINE__,__FILE__);
+	  &CST_error(0,$message,"",__LINE__,__FILE__);
 	}	  
 
 	if ($rhinterface_db->{"\U$thorn FUNCTION\E $function RET"} eq "void")
@@ -1169,12 +1169,12 @@ sub FunctionDatabase
 	if ($types ne $function_db->{"$function TYPES"})
 	{
 	  $message = "Argument types for aliased $function do not match";
-	  &CST_error(0,$message,__LINE__,__FILE__);
+	  &CST_error(0,$message,"",__LINE__,__FILE__);
 	}
 	if ($inret ne $function_db->{"$function RET"})
 	{
 	  $message = "Return types for aliased $function do not match";
-	  &CST_error(0,$message,__LINE__,__FILE__);
+	  &CST_error(0,$message,"",__LINE__,__FILE__);
 	}
       }
       $function_db->{"PROVIDED FUNCTIONS"} .= "$function ";
@@ -1187,7 +1187,7 @@ sub FunctionDatabase
     if ($function_db->{"PROVIDED FUNCTIONS"} !~ / $function /)
     {
       $message = "Aliased function $function is not provided by any thorn";
-      &CST_error(1,$message,__LINE__,__FILE__);
+      &CST_error(1,$message,"",__LINE__,__FILE__);
     }
   }
 
@@ -1283,7 +1283,7 @@ sub ParseArguments
       $fortran = 0;
       $c = 0;
       $message = "Error parsing aliased function argument $arg";
-      &CST_error(1,$message,__LINE__,__FILE__);
+      &CST_error(1,$message,"",__LINE__,__FILE__);
     }
   }
 

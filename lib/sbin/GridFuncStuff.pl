@@ -351,14 +351,14 @@ sub CreateFortranArgumentDeclarations
           # DEPRECATED IN BETA 10
           if($type eq 'CHAR')
           {
-            &CST_error(1,"CCTK_CHAR is replaced by CCTK_BYTE, please change your code",__LINE__,__FILE__);
+            &CST_error(1,"CCTK_CHAR is replaced by CCTK_BYTE, please change your code","",__LINE__,__FILE__);
           }
 
           push(@declarations, "CCTK_$type $argument$suffix$dimensions");
         }
         else
         {
-          &CST_error(0,"Unknown argument type \"$type\"",__LINE__,__FILE__);
+          &CST_error(0,"Unknown argument type \"$type\"","",__LINE__,__FILE__);
         }
       }
     }
@@ -424,14 +424,14 @@ sub CreateCArgumentDeclarations
           # DEPRECATED IN BETA 10 */
           if($type eq 'CHAR')
           {
-            &CST_error(1,"CCTK_CHAR is replaced by CCTK_BYTE, please change your code",__LINE__,__FILE__);
+            &CST_error(1,"CCTK_CHAR is replaced by CCTK_BYTE, please change your code","",__LINE__,__FILE__);
           }
 
           push(@declarations, "CCTK_$type *$argument$suffix=(CCTK_$type *)(cctkGH->data[CCTK_VarIndex(\"$thorn\::$argument\")][$levelmone]);");
         }
         else
         {
-          &CST_error(0,"Unknown argument type $type",__LINE__,__FILE__);
+          &CST_error(0,"Unknown argument type $type","",__LINE__,__FILE__);
         }
       }
     }
@@ -712,7 +712,7 @@ sub CreateCArgumentPrototype
           }
           else
           {
-            &CST_error(0,"Unknown argument type $type",__LINE__,__FILE__);
+            &CST_error(0,"Unknown argument type $type","",__LINE__,__FILE__);
           }
         }
       }
@@ -780,7 +780,7 @@ sub CreateCArgumentList
             # DEPRECATED IN BETA 10
             if($type eq 'CHAR')
             {
-              &CST_error(1,"CCTK_CHAR is replaced by CCTK_BYTE, please change your code",__LINE__,__FILE__);
+              &CST_error(1,"CCTK_CHAR is replaced by CCTK_BYTE, please change your code","",__LINE__,__FILE__);
             }
 
             $arglist .= "$sep"."(CCTK_$type *)(CCTKARGNUM_$argument<0 ? NULL : (xGH)->data[CCTKARGNUM_$argument][$level-1])";
@@ -788,7 +788,7 @@ sub CreateCArgumentList
           }
           else
           {
-            &CST_error(0,"Unknown argument type $type",__LINE__,__FILE__);
+            &CST_error(0,"Unknown argument type $type","",__LINE__,__FILE__);
           }
         }
       }
@@ -1150,7 +1150,7 @@ sub CreateThornGroupInitialisers
         $message = "Array dimension $dim doesn't match the $numsize array sizes ";
         $message .= "\n     ($rhinterface_db->{\"\U$thorn GROUP $group\E SIZE\"}) for $group in $thorn";
         $message .= "\n     (Array sizes must be comma separated list of parameters)";
-        &CST_error(0,$message,__LINE__,__FILE__);
+        &CST_error(0,$message,"",__LINE__,__FILE__);
       }
     }
 
@@ -1274,7 +1274,7 @@ sub CheckArraySizes
     if ($gotit == 0)
     {
       $message = "Array size $par in $thorn is not a parameter";
-      &CST_error(0,$message,__LINE__,__FILE__);
+      &CST_error(0,$message,"",__LINE__,__FILE__);
     }
   }
 }

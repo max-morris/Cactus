@@ -255,8 +255,7 @@ sub ParseScheduleBlock
       if($keyword ne "")
       {
 	$message = "Error parsing schedule block line '$data[$line_number]'\n";
-	&CST_error(0,$message,__LINE,__FILE__);
-	$CST_errors++;
+	&CST_error(0,$message,"",__LINE__,__FILE__);
       }
       $keyword = "BEFORE";
       $field++;
@@ -266,8 +265,7 @@ sub ParseScheduleBlock
       if($keyword ne "")
       {
 	$message="Error parsing schedule block line '$data[$line_number]'\n";
-	&CST_error(0,$message,__LINE,__FILE__);
-	$CST_errors++;
+	&CST_error(0,$message,"",__LINE__,__FILE__);
       }
       $keyword = "AFTER";
       $field++;
@@ -277,8 +275,7 @@ sub ParseScheduleBlock
       if($keyword ne "")
       {
 	$message="Error parsing schedule block line '$data[$line_number]'\n";
-	&CST_error(0,$message,__LINE,__FILE__);
-	$CST_errors++;
+	&CST_error(0,$message,"",__LINE__,__FILE__);
       }
       $keyword = "WHILE";
       $field++;
@@ -348,8 +345,7 @@ sub ParseScheduleBlock
     else
     {
       $message="Error parsing schedule block line '$data[$line_number]'\n";
-      &CST_error(0,$message,__LINE,__FILE__);
-      $CST_errors++;
+      &CST_error(0,$message,"",__LINE__,__FILE__);
       $keyword = "";
       $field++;
     }      
@@ -367,8 +363,7 @@ sub ParseScheduleBlock
   if($data[$line_number] !~ m:\s*\{\s*:)
   {
     $message="Error parsing schedule block line '$data[$line_number]'\nMissing { at start of block\n";
-    &CST_error(0,$message,__LINE,__FILE__);
-    $CST_errors++;
+    &CST_error(0,$message,"",__LINE__,__FILE__);
     $line_number++ while($data[$line_number] !~ m:\s*\}\s*:);
   }
   else
@@ -405,7 +400,7 @@ sub ParseScheduleBlock
 	  $message  = "Error parsing schedule block in $thorn\n";
 	  $message .= "Attempt to specify language more than once\n";
 	  $message .= "Line: $thisline";
-	  &CST_error(0,$message,__LINE__,__FILE__);
+	  &CST_error(0,$message,"",__LINE__,__FILE__);
 	}
 	else
 	{
@@ -419,8 +414,7 @@ sub ParseScheduleBlock
       else
       {
 	$message = "Error parsing schedule block line '$data[$line_number]'\nUnrecognised statement";
-	&CST_error(0,$message,__LINE,__FILE__);
-	$CST_errors++;
+	&CST_error(0,$message,"",__LINE__,__FILE__);
       }
     }
   }
@@ -431,8 +425,7 @@ sub ParseScheduleBlock
   else
   {
     $message = "Error: Missing description at end of schedule block\n";
-    &CST_error(0,$message,__LINE,__FILE__);
-    $CST_errors++;
+    &CST_error(0,$message,"",__LINE__,__FILE__);
   }
 
   # Turn the arrays into strings.

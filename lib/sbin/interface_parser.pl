@@ -85,7 +85,7 @@ sub cross_index_interface_data
     if($implementation =~ m:^\s*$:)
     {
       $message = "Thorn $thorn doesn't specify an implementation";
-      &CST_error(0,$message,__LINE__,__FILE__);
+      &CST_error(0,$message,"",__LINE__,__FILE__);
       next;
     }
 
@@ -212,7 +212,7 @@ sub get_implementation_friends
       if(! $interface_data{"IMPLEMENTATION \U$friend\E THORNS"})
       {
 	$message = "$implementation is friends with $friend - non-existent implementation";
-	&CST_error(0,$message,__LINE__,__FILE__);
+	&CST_error(0,$message,"",__LINE__,__FILE__);
 	next;
       }
       %friends = &get_implementation_friends($friend, scalar(keys %friends), %friends,%interface_data);
@@ -281,7 +281,7 @@ sub get_implementation_ancestors
 	{
 	  $message .= "     No thorns in arrangements directory implement $ancestor";
 	}
-	&CST_error(0,$message,__LINE,__FILE__);
+	&CST_error(0,$message,"",__LINE__,__FILE__);
 
 	next;
       }
@@ -394,7 +394,7 @@ sub check_implementation_consistency
 	$message  = "Inconsistent implementations of $implementation. \n";
 	$message .= "Implemented by thorns " . join(" ", @thorns) . "\n";
 	$message .= "Not all inherit: $thing";
-	&CST_error(0,$message,__LINE,__FILE__);
+	&CST_error(0,$message,"",__LINE__,__FILE__);
 	$n_errors++;
       }
     }
@@ -407,7 +407,7 @@ sub check_implementation_consistency
 	$message  = "Inconsistent implementations of $implementation\n";
 	$message .= "Implemented by thorns " . join(" ", @thorns) . "\n";
 	$message .= "Not all are friends of: $thing";
-	&CST_error(0,$message,__LINE,__FILE__);
+	&CST_error(0,$message,"",__LINE__,__FILE__);
 	$n_errors++;
       }
     }
@@ -420,7 +420,7 @@ sub check_implementation_consistency
 	  $message  = "Inconsistent implementations of $implementation\n";
 	  $message .= "Implemented by thorns " . join(" ", @thorns) . "\n";
 	  $message .= "Not all declare public group: $thing";
-	  &CST_error(0,$message,__LINE__,__FILE__);
+	  &CST_error(0,$message,"",__LINE__,__FILE__);
 	  $n_errors++;
       }
     }
@@ -433,7 +433,7 @@ sub check_implementation_consistency
 	$message  = "Inconsistent implementations of $implementation\n";
 	$message .= "Implemented by thorns " . join(" ", @thorns) . "\n";
 	$message .= "Not all declare protected group: $thing";
-	&CST_error(0,$message,__LINE__,__FILE__);
+	&CST_error(0,$message,"",__LINE__,__FILE__);
 	$n_errors++;
       }
     }
@@ -468,7 +468,7 @@ sub check_implementation_consistency
 	    $message  = "Inconsistent implementations of $implementation\n";
 	    $message .= "Implemented by thorns " . join(" ", @thorns) . "\n";
 	    $message .= "Group $group has inconsistent variable type";
-	    &CST_error(0,$message,__LINE__,__FILE__);
+	    &CST_error(0,$message,"",__LINE__,__FILE__);
 	    $n_errors++;
 	  }
 	}
@@ -485,7 +485,7 @@ sub check_implementation_consistency
 	    $message  = "Inconsistent implementations of $implementation\n";
 	    $message .= "Implemented by thorns " . join(" ", @thorns) . "\n";
 	    $message .= "Group $group has inconsistent group type";
-	    &CST_error(0,$message,__LINE__,__FILE__);
+	    &CST_error(0,$message,"",__LINE__,__FILE__);
 	    $n_errors++;
 	  }
 	}
@@ -502,7 +502,7 @@ sub check_implementation_consistency
 	    $message  = "Inconsistent implementations of $implementation\n";
 	    $message .= "Implemented by thorns " . join(" ", @thorns) . "\n";
 	    $message .= "Group $group has inconsistent time levels";
-	    &CST_error(0,$message,__LINE__,__FILE__);
+	    &CST_error(0,$message,"",__LINE__,__FILE__);
 	    $n_errors++;
 	  }
 	}
@@ -519,7 +519,7 @@ sub check_implementation_consistency
 	    $message  = "Inconsistent implementations of $implementation\n";
 	    $message .= "Implemented by thorns " . join(" ", @thorns) . "\n";
 	    $message .= "Group $group has inconsistent size";
-	    &CST_error(0,$message,__LINE__,__FILE__);
+	    &CST_error(0,$message,"",__LINE__,__FILE__);
 	    $n_errors++;
 	  }
 	}
@@ -536,7 +536,7 @@ sub check_implementation_consistency
 	    $message  = "Inconsistent implementations of $implementation\n";
 	    $message .= "Implemented by thorns " . join(" ", @thorns) . "\n";
 	    $message .= "Group $group has inconsistent ghostsize";
-	    &CST_error(0,$message,__LINE__,__FILE__);
+	    &CST_error(0,$message,"",__LINE__,__FILE__);
 	    $n_errors++;
 	  }
 	}
@@ -553,7 +553,7 @@ sub check_implementation_consistency
 	    $message  = "Inconsistent implementations of $implementation\n";
 	    $message .= "Implemented by thorns " . join(" ", @thorns) . "\n";
 	    $message .= "      Group $group has inconsistent distribution";
-	    &CST_error(0,$message,__LINE__,__FILE__);
+	    &CST_error(0,$message,"",__LINE__,__FILE__);
 	    $n_errors++;
 	  }
 	}
@@ -570,7 +570,7 @@ sub check_implementation_consistency
 	    $message  = "Inconsistent implementations of $implementation\n";
 	    $message .= "Implemented by thorns " . join(" ", @thorns) . "\n";
 	    $message .= "Group $group has inconsistent dimension";
-	    &CST_error(0,$message,__LINE__,__FILE__);
+	    &CST_error(0,$message,"",__LINE__,__FILE__);
 	    $n_errors++;
 	  }
 	}	  
@@ -587,7 +587,7 @@ sub check_implementation_consistency
 	    $message  = "Inconsistent implementations of $implementation\n";
 	    $message .= "Implemented by thorns " . join(" ", @thorns) . "\n";
 	    $message .= "Group $group has inconsistent staggering type";
-	    &CST_error(0,$message,__LINE__,__FILE__);
+	    &CST_error(0,$message,"",__LINE__,__FILE__);
 	    $n_errors++;
 	  }
 	}	  
@@ -647,7 +647,7 @@ sub check_interface_consistency
       if ($interface_data{"\U$ancestor_thorn\E PUBLIC GROUPS"} =~ $private_group)
       {
 	$message = "Private group $private_group in thorn $thorn has same name as \n     public group in ancestor implementation $ancestor_imp (e.g. thorn $ancestor_thorn)";
-	&CST_error(0,$message,__LINE__,__FILE__);
+	&CST_error(0,$message,"",__LINE__,__FILE__);
       }
     }    
   }
@@ -716,7 +716,7 @@ sub parse_interface_ccl
       else
       {
 	  $message = "Only one implements line allowed in $thorn";
-	  &CST_error(0,$message,__LINE__,__FILE__);
+	  &CST_error(0,$message,"",__LINE__,__FILE__);
       }
     }
     # implementation names can be sepeated by ,\s, where , are stripped out below
@@ -798,11 +798,11 @@ sub parse_interface_ccl
       if($known_groups{"\U$current_group\E"})
       {
 	$message = "Duplicate group $3 in thorn $thorn";
-	&CST_error(0,$message,__LINE__,__FILE__);
+	&CST_error(0,$message,"",__LINE__,__FILE__);
 	if($data[$line_number+1] =~ m:\{:)
 	{
 	    $message = "Skipping interface block";
-	    &CST_error(1,$message,__LINE__,__FILE__);
+	    &CST_error(1,$message,"",__LINE__,__FILE__);
 	    $line_number++ until ($data[$line_number] =~ m:\}:);
 	}
 	next;
@@ -853,7 +853,7 @@ sub parse_interface_ccl
 	else
 	{
 	  $message = "Unknown option $option in group $current_group of thorn $thorn";
-	  &CST_error(0,$message,__LINE__,__FILE__);
+	  &CST_error(0,$message,"",__LINE__,__FILE__);
 	}
       }
 
@@ -894,11 +894,11 @@ sub parse_interface_ccl
 	  $message =  "Unknown GROUP TYPE " .
 	  $interface_db{"\U$thorn GROUP $current_group\E GTYPE"} .
 	    " for group $current_group of thorn $thorn";
-	  &CST_error(0,$message,__LINE,__FILE__);
+	  &CST_error(0,$message,"",__LINE__,__FILE__);
 	  if($data[$line_number+1] =~ m:\{:)
 	  {
 	      $message = "Skipping interface block in $thorn";
-	      &CST_error(1,$message,__LINE__,__FILE__);
+	      &CST_error(1,$message,"",__LINE__,__FILE__);
 	      $line_number++ until ($data[$line_number] =~ m:\}:);
 	  }
 	next;
@@ -910,11 +910,11 @@ sub parse_interface_ccl
 	  $message =  "Unknown DISTRIB TYPE " .
 	  $interface_db{"\U$thorn GROUP $current_group\E DISTRIB"} .
 	    " for group $current_group of thorn $thorn";
-	  &CST_error(0,$message,__LINE,__FILE__);
+	  &CST_error(0,$message,"",__LINE__,__FILE__);
 	  if($data[$line_number+1] =~ m:\{:)
 	  {
 	      $message = "Skipping interface block in $thorn";
-	      &CST_error(1,$message,__LINE__,__FILE__);
+	      &CST_error(1,$message,"",__LINE__,__FILE__);
 	      $line_number++ until ($data[$line_number] =~ m:\}:);
 	  }
 	next;
@@ -943,7 +943,7 @@ sub parse_interface_ccl
 	      else
 	      {
 		$message = "Duplicate variable $function in thorn $thorn";
-		&CST_error(0,$message,__LINE__,__FILE__);
+		&CST_error(0,$message,"",__LINE__,__FILE__);
 	      }
 	    }
 	  }
@@ -963,7 +963,7 @@ sub parse_interface_ccl
 	else
 	{
 	  $message = "Duplicate variable $function in thorn $thorn";
-	  &CST_error(0,$message,__LINE__,__FILE__);
+	  &CST_error(0,$message,"",__LINE__,__FILE__);
 	}
 	
 	# Decrement the line number, since the line is the first line of the next CCL statement.
@@ -1000,14 +1000,14 @@ sub parse_interface_ccl
       if($line =~ m:\{:)
       {
 	$message = "...Skipping interface block with missing keyword....";
-	&CST_error(0,$message,__LINE__,__FILE__);
+	&CST_error(0,$message,"",__LINE__,__FILE__);
 
 	$line_number++ until ($data[$line_number] =~ m:\}:);
       }
       else
       {
 	$message = "Unknown line in thorn $arrangement/$thorn\n$line";
-	&CST_error(0,$message,__LINE__,__FILE__);
+	&CST_error(0,$message,"",__LINE__,__FILE__);
       }
     }
   }

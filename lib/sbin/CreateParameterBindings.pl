@@ -583,7 +583,7 @@ sub CreateParameterRegistrationStuff
     else
     {
       $message = "Illegal steerable type ($steerable) for parameter $parameter in $thorn";
-      &CST_error(0,$message,__LINE__,__FILE__);
+      &CST_error(0,$message,"",__LINE__,__FILE__);
     }
 
     $line="  CCTKi_ParameterCreate(\"$parameter\", /* The parameter name */\n".

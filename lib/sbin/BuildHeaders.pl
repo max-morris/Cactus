@@ -66,7 +66,7 @@ sub BuildHeaders
 	else
 	{
 	  $message = "Include file $inc_file1 not found in $arrangement/$thorn\n";
-	  &CST_error(0,$message,__LINE__,__FILE__);
+	  &CST_error(0,$message,"",__LINE__,__FILE__);
 	}
 	$data{"$inc_file2"} .= "/* End of include header file $inc_file1 from $thorn */\n";
       }
@@ -94,7 +94,7 @@ sub BuildHeaders
 	else
 	{
 	  $message = "Include file $inc_file1 not found in $arrangement/$thorn\n";
-	  &CST_error(0,$message,__LINE__,__FILE__);
+	  &CST_error(0,$message,"",__LINE__,__FILE__);
 	}
          
 	$data{"$inc_file2"} .= "#ifdef FCODE\n";
