@@ -81,7 +81,7 @@ int ParseFile(FILE *ifp,
   while ((c=fgetc(ifp)) != EOF) 
   {
     /* Main Loop */
-    while (c == '#') 
+    while (c == '#' || c == '!' ) 
     {
       /* Comment line.  So forget rest of line */
       while ((c=fgetc(ifp)) != '\n' && c != EOF);
