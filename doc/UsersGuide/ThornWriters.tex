@@ -1302,9 +1302,9 @@ before compilation).
 
 \subsubsection{Variables}
 
-Any routine using Cactus argument lists (for example all
-routines called from the scheduler) should include at the
-top of the file the header
+Any routine using Cactus argument lists (for example all routines called from
+the scheduler at time bins between {\t CCTK\_STARTUP} and {\t CCTK\_SHUTDOWN})
+should include at the top of the file the header
 \begin{verbatim}
 #include "cctk_Arguments.h"
 \end{verbatim}
@@ -1325,6 +1325,10 @@ the macro {\tt DECLARE\_CCTK\_ARGUMENTS}.
 To pass the arguments to another routine in the same thorn use the macro
 {\tt CCTK\_PASS\_FTOF} in the calling routine, and again the macro
 {\tt CCTK\_ARGUMENTS} in the receiving routine.
+
+Note that you cannot use Cactus argument lists in routines scheduled at the
+{\t CCTK\_STARTUP} and {\t CCTK\_SHUTDOWN} time bins because at this time
+no grid hierarchy exists.
 
 
 \subsubsection{Parameters}
@@ -1460,9 +1464,9 @@ the header file {\tt cctk.h} using the line
 
 \subsubsection{Variables}
 
-Any routine using Cactus argument lists (for example all
-routines called from the scheduler) should include at the
-top of the file the header
+Any routine using Cactus argument lists (for example all routines called from
+the scheduler at time bins between {\t CCTK\_STARTUP} and {\t CCTK\_SHUTDOWN})
+should include at the top of the file the header
 \begin{verbatim}
 #include "cctk_Arguments.h"
 \end{verbatim}
@@ -1484,6 +1488,10 @@ first line of the routine.
 To pass the arguments to another routine in the same thorn use the macro
 {\tt CCTK\_PASS\_CTOC} in the calling routine, and again the macro
 {\tt CCTK\_ARGUMENTS} in the receiving routine.
+
+Note that you cannot use Cactus argument lists in routines scheduled at the
+{\t CCTK\_STARTUP} and {\t CCTK\_SHUTDOWN} time bins because at this time
+no grid hierarchy exists.
 
 
 \subsubsection{Parameters}
@@ -1571,6 +1579,7 @@ Here, {\tt CCTK\_GFINDEX3D(cctkGH,i,j,k)]} expands to
 The Cactus variables which are passed through the macro
 {\tt CCTK\_ARGUMENTS} are
 \begin{Lentry}
+\item [{\tt cctkGH}] A C pointer identifying the grid hierachy.
 \item [{\tt cctk\_dim}] An integer with the number of dimensions
       used for this grid hierarchy.
 \item [{\tt cctk\_lsh}] An array of {\tt cctk\_dim} integers
@@ -1584,7 +1593,6 @@ The Cactus variables which are passed through the macro
 CCTK\_REAL}s with the grid spacing in each direction.
 \item [{\tt cctk\_nghostzones}] An array of {\tt cctk\_dim} integers with
          the number of ghostzones used in each direction.
-\item [{\tt cctkGH}] A C pointer identifying the grid hierachy.
 %\item [{\tt cctk\_from}] The index value from which the user should start loops.
 %\item [{\tt cctk\_to}] ... end loops.
 %\item [{\tt cctk\_origin\_space}]  The coordinates of the spatial origin?
