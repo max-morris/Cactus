@@ -303,10 +303,10 @@ sub runtest {
     }
     close LOG;
     close CMD;
+    $retcode = $? >> 8 if($retcode==0);
     
     chdir ("../..");
    
-    $retcode = $? >> 8 if($retcode==0);
 
     if($retcode != 0)
     {
