@@ -487,19 +487,19 @@ There are a plethora of available options.
 \item {\tt Compiler and tool specification}
 
 These are used to specify which compilers and other tools to use. Entries followed
-by [CL] may be specified on the command line.
+by * may be specified on the command line.
 
 \begin{itemize}
 \item {\tt CC}
-[CL] The C compiler.
+* The C compiler.
 \item {\tt CXX}
 The C++ compiler
 \item {\tt F90}
-[CL] The Fortran 90 compiler
+* The Fortran 90 compiler
 \item {\tt F77}
-[CL] The FORTRAN 77 compiler.
+* The FORTRAN 77 compiler.
 \item {\tt LD}
-[CL] The linker.
+* The linker.
 \item {\tt AR}
 The archiver used for generating libraries.
 \item {\tt Ranlib}
@@ -523,13 +523,13 @@ Flags for the C compiler
 Flags for the C++ compiler
 
 \item {\tt F90FLAGS}
-[CL] Flags for the Fortran 90 compiler
+* Flags for the Fortran 90 compiler
 
 \item {\tt F77FLAGS}
-[CL] Flags for the FORTRAN 77 compiler
+* Flags for the FORTRAN 77 compiler
 
 \item {\tt LDFLAGS}
-[CL] Flags for the linker
+* Flags for the linker
 
 \item {\tt ARLAGS}
 Flags for the archiver
@@ -567,10 +567,10 @@ specified as the number of bytes the data takes up.  Note that not all
 values will be valid on all architectures.
 
 \item {\tt REAL\_PRECISION}
-[CL] Allowed values are 16,8,4 .
+* Allowed values are 16,8,4 .
 
 \item {\tt INTEGER\_PRECISION}
-[CL] Allowed values are 8,4 and 2 .
+* Allowed values are 8,4 and 2 .
 
 \end{itemize}
 
@@ -591,7 +591,82 @@ Used to specify options to compilers to make them only compile.
 \item {\tt FCOMPILEONLY}
 \end{itemize}
 
+\item{\tt Extra packages}
+
+Compiling with extra packages is described fully in Section \ref{sec:cowiexpa},
+which should be consulted for the full range of configuration options.
+
+\begin{itemize}
+\item {\tt MPI}
+*The MPI package to use, if required. Supported values are
+	CUSTOM, NATIVE, MPICH or LAM
 \end{itemize}
+
+\end{itemize}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Compiling with extra packages}
+\label{sec:cowiexpa}
+
+
+\subsubsection{MPI: Message Passing Interface}
+
+To compile with MPI, the configure option is
+\newline
+\newline
+{\tt MPI = <MPI\_TYPE>}
+\newline
+\newline
+where {\tt <MPI\_TYPE>} can take the values
+
+\begin{itemize}
+
+\item{} CUSTOM For a custom MPI configuation set the variables
+  \begin{itemize}
+  \item {\tt MPI\_LIBS} * libraries
+  \item {\tt MPI\_LIB\_DIRS} * library directories
+  \item {\tt MPI\_INC\_DIRS} * include file directories
+  \end{itemize}
+
+\item{} NATIVE Try and use the native MPI for this machine
+
+\item{} MPICH 
+Use MPICH (http://www-unix.mcs.anl.gov/mpi/mpich). This is controlled
+by the options
+  \begin{itemize}
+  \item {\tt MPICH\_DIR} * directory in which MPICH is installed.
+	If this option is not defined it will be searched for.
+  \item {\tt MPICH\_DEVICE} * the device used by MPICH. If not 
+        defined, the configuration process will search for this.
+        Supported devices are currently {\tt globus}, {\tt ch\_shmem}, 
+	{\tt ch\_p4}.
+  \end{itemize}
+
+If {\tt MPICH\_DEVICE} is chosen to be Globus, (www.globus.org), 
+an additional variable must be set
+  \begin{itemize}
+  \item{} {\tt GLOBUS\_LIB\_DIR} * directory in which Globus libraries are installed
+  \end{itemize}
+
+\item{} LAM
+Use LAM (Local Area Multicomputer, http://www.mpi.nd.edu/lam/). This is 
+controlled by the variable 
+  \begin{itemize}
+  \item{} {\tt LAM\_DIR} * directory in which LAM is installed. This 
+     will be search for if not given.
+  \end{itemize}
+
+
+\end{itemize}
+
+
+
+
+
+
 
 
 \subsection{File layout after a configuration has been created }
