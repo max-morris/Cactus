@@ -216,12 +216,11 @@ int CCTKi_RegisterThorn(const struct iAttributeList *attributes)
 
     if(thorn)
     {
-      thorn->implementation = (char *)malloc(sizeof(char)*(strlen(imp)+1));
+      thorn->implementation = Util_Strdup(imp);
 
       if(thorn->implementation)
       {
         /* Fill out data for the thorn. */
-        strcpy(thorn->implementation, imp);
         thorn->active = 0;
 
         /* Store the data in the tree */
@@ -327,8 +326,7 @@ int CCTKi_ActivateThorn(const char *name)
           thorn->active = 1;
           imp->active = 1;
           /* Remember which thorn activated this imp. */
-          imp->activating_thorn = (char *)malloc(sizeof(char)*(strlen(name)+1));
-          strcpy(imp->activating_thorn, name);
+          imp->activating_thorn = Util_Strdup(name);
           retval = 0;
         }
         else

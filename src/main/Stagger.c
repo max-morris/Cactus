@@ -389,7 +389,7 @@ int CCTKi_ParseStaggerString(int dim,
   int i,m;
   int base  = 1;
   int scode = 0;
-  char *hs;
+  char hs[11];
 
   if (dim>10) 
   {
@@ -398,8 +398,6 @@ int CCTKi_ParseStaggerString(int dim,
 	       dim);
   }
 
-  hs = (char*)malloc(11*sizeof(char));
-  
   /* change possible SHORTCUTS into the official notation*/
   if (CCTK_Equals(stype,"NONE"))
   {
@@ -438,7 +436,5 @@ int CCTKi_ParseStaggerString(int dim,
     base  = 3 * base;
   }
 
-  free(hs);
-
-  return(scode);
+  return scode;
 }

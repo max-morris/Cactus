@@ -725,6 +725,10 @@ int CCTK_ParameterWalk (int first,
   static t_param  *prev_startpoint_all = NULL;
   static t_param  *prev_startpoint_thorn = NULL;
 
+  /* FIXME : This routine has become extremely ugly:
+   *         It should only have one return in it.
+   *         The malloc failure should be flagged.
+   */
 
   /* determine the startpoint for search */
   if (! first)
@@ -785,7 +789,10 @@ int CCTK_ParameterWalk (int first,
 
             *pfullname = (char *) malloc (strlen (prefix) +
                                       strlen (startpoint->props->name) + 3);
-            sprintf (*pfullname, "%s::%s", prefix, startpoint->props->name);
+            if(*pfullname)
+            {
+              sprintf (*pfullname, "%s::%s", prefix, startpoint->props->name);
+            }
           }
 
           if (pdata)
