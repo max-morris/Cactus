@@ -7389,8 +7389,8 @@ end subroutine
 
 \begin{ResultSection}
 \begin{Result}{valstring}
-Pointer to parameter value as string.  \em{The memory for this string 
-must be released with a call to} \code{free} \em{after it has been used.}
+Pointer to parameter value as string.  \emph{The memory for this string 
+must be released with a call to} \code{free()} \emph{after it has been used.}
 \end{Result}
 \end{ResultSection}
 
@@ -7407,20 +7407,22 @@ On exit, the number of characters in the stringified parameter value,
 or $-1$ if the parameter doesn't exist
 \end{Parameter}
 \begin{Parameter}{value}
-On exit, contains as many characters of the parameter name as fit into the 
-Fortran string provided.  
+On exit, contains as many characters of the stringified parameter value as
+fit into the Fortran string provided.  
 You should check for truncation by comparing \code{nchars} against the length 
 of your Fortran string.
 \end{Parameter}
 \end{ParameterSection}
 
 \begin{Discussion}
-\fbox{The string \code{valstring} must be freed afterwards.}
+\fbox{In C, the string \code{valstring} must be freed afterwards.}
 
 The thorn or implementation name must be the name of the place where
 the parameter is originally defined.  It is not possible to pass the
 thorn or implementation name of a thorn that merely declares the
 parameter as used.
+
+Real variables are formatted according to the C \code{"\%.20g"} format.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
