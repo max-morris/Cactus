@@ -166,8 +166,17 @@ sub SetConfigureEnv
     print "End of options from '$config_file'.\n";
   }
 
-  # Add variables from user default file
-  if ($default_file)
+  # Add variables from either ${CACTUS_CONFIG_FILES} or a user default file
+  if (defined $ENV{CACTUS_CONFIG_FILES})
+  {
+    foreach $file (split (':', $ENV{CACTUS_CONFIG_FILES}))
+    {
+      print "Adding configuration options from '$file'...\n";
+      ParseOptionsFile ($file, \%ENV, \%CONFIGURED);
+      print "End of options from '$file'.\n";
+    }
+  }
+  elsif ($default_file)
   {
     print "Adding configuration options from user defaults...\n";
     ParseOptionsFile ($default_file, \%ENV, \%CONFIGURED);
