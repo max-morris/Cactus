@@ -56,7 +56,7 @@ while ($choice !~ /^Q/i)
     {
 
       # Reset/Initialise Test Statistics
-      \%rundata = &ResetTestStatistics(\%rundata,%testdata);
+      $rundata = &ResetTestStatistics($rundata,%testdata);
 
       # Run all parameter files
       foreach $thorn (split(" ",$testdata{"RUNNABLETHORNS"}))
@@ -70,17 +70,17 @@ while ($choice !~ /^Q/i)
 	  {
 	    %testdata = &RunTest($test,$thorn,\%config_data,%testdata);
 	  }
-	  %rundata = &CompareTestFiles($test,$thorn,\%runconfig,\%rundata,\%config_data,%testdata);
-	  %rundata = &ReportOnTest($test,$thorn,\%rundata,%testdata);
+	  $rundata = &CompareTestFiles($test,$thorn,\%runconfig,$rundata,\%config_data,%testdata);
+	  $rundata = &ReportOnTest($test,$thorn,$rundata,%testdata);
 	  if ($choice =~ /^I/i)
 	  {
-	    &ViewResults($test,$thorn,\%runconfig,\%rundata,%testdata);
+	    &ViewResults($test,$thorn,\%runconfig,$rundata,%testdata);
 	  }
 	}
       }
 
       # Write results of all tests
-      &WriteFullResults(\%rundata,%testdata);
+      &WriteFullResults($rundata,%testdata);
     } 
     elsif ($choice =~ /^[AT]/i)
     {
@@ -93,9 +93,9 @@ while ($choice !~ /^Q/i)
 	print "  Test $thorn: $test\n";
 	print "    \"$testdata{\"$thorn $test DESC\"}\"\n";
 	%testdata = &RunTest($tests[2*$i],$tests[2*$i+1],\%config_data,%testdata);
-	%rundata = &CompareTestFiles($tests[2*$i],$tests[2*$i+1],\%runconfig,\%rundata,\%config_data,%testdata);
-	%rundata = &ReportOnTest($tests[2*$i],$tests[2*$i+1],\%rundata,%testdata);
-	&ViewResults($tests[2*$i],$tests[2*$i+1],\%runconfig,\%rundata,%testdata);
+	$rundata = &CompareTestFiles($tests[2*$i],$tests[2*$i+1],\%runconfig,$rundata,\%config_data,%testdata);
+	$rundata = &ReportOnTest($tests[2*$i],$tests[2*$i+1],$rundata,%testdata);
+	&ViewResults($tests[2*$i],$tests[2*$i+1],\%runconfig,$rundata,%testdata);
       }
     }
     elsif ($choice =~ /^R/i)
@@ -106,9 +106,9 @@ while ($choice !~ /^Q/i)
 	print "  Test $thorn: $test \n";
 	print "    \"$testdata{\"$thorn $test DESC\"}\"\n";
 	%testdata = &RunTest($test,$thorn,\%config_data,%testdata);
-	%rundata = &CompareTestFiles($test,$thorn,\%runconfig,\%rundata,\%config_data,%testdata);
-	%rundata = &ReportOnTest($test,$thorn,,\%rundata,%testdata);
-	&ViewResults($test,$thorn,\%runconfig,\%rundata,%testdata);
+	$rundata = &CompareTestFiles($test,$thorn,\%runconfig,$rundata,\%config_data,%testdata);
+	$rundata = &ReportOnTest($test,$thorn,,$rundata,%testdata);
+	&ViewResults($test,$thorn,\%runconfig,$rundata,%testdata);
       }
       else
       {
