@@ -4,7 +4,7 @@ sub Configure
   my($configs_dir,$tests_dir);
 
   # Cactus home directory
-  $config_data{"CCTK_DIR"} = $home_dir;
+  $config_data->{"CCTK_DIR"} = $home_dir;
 
   # Cactus configurations directory
   if($ENV{"CONFIGS_DIR"})
@@ -15,7 +15,7 @@ sub Configure
   {
     $configs_dir = "$homedir/configs";
   }
-  $config_data{"CONFIGSDIR"} = $configs_dir;
+  $config_data->{"CONFIGSDIR"} = $configs_dir;
 
   # Cactus test directory
   if ($ENV{"TESTS_DIR"})
@@ -26,15 +26,15 @@ sub Configure
   {
     $tests_dir = $home_dir."/TEST";
   }
-  $config_data{"TESTS_DIR"} = $tests_dir;
+  $config_data->{"TESTS_DIR"} = $tests_dir;
 
-  $config_data{"SEPARATOR"} = "/";
-  $config_data{"CONFIG"} = $config;
+  $config_data->{"SEPARATOR"} = "/";
+  $config_data->{"CONFIG"} = $config;
 
   # Get the executable
-  %config_data = FindExecutionDetails(%config_data);
+  $config_data = FindExecutionDetails($config_data);
 
-  return %config_data;
+  return $config_data;
 }
 
 sub MissingThorns
@@ -70,9 +70,9 @@ sub MissingThorns
 }  
 
 
-sub ParseParFile($thorn,$parfile,%config_data)
+sub ParseParFile($thorn,$parfile,$config_data)
 {
-  my($thorn,$parfile,%config_data) = @_;
+  my($thorn,$parfile,$config_data) = @_;
   my($line,$file,$processing_active);
   my($active,$desc);
 
@@ -124,13 +124,13 @@ sub ParseParFile($thorn,$parfile,%config_data)
 
 sub FindAllTests
 {
-  my(%config_data) = @_;
+  my($config_data) = @_;
   my($config,$config_dir);
   my($thorn);
 
-  $config      = $config_data{"CONFIG"};
-  $configs_dir = $config_data{"CONFIGSDIR"};
-  $sep         = $config_data{"SEPARATOR"};
+  $config      = $config_data->{"CONFIG"};
+  $configs_dir = $config_data->{"CONFIGSDIR"};
+  $sep         = $config_data->{"SEPARATOR"};
 
   open (AT, "< $configs_dir${sep}$config${sep}ThornList") || print "Cannot find ThornList for $config";
 
@@ -140,22 +140,22 @@ sub FindAllTests
 
     /^\s*([^\s]*)\s*/;
     $thorn = $1;
-    $testdata{"FULL"} .= "$thorn ";
+    $testdata->{"FULL"} .= "$thorn ";
 
     $thorn =~ m:^\s*([^\s]*)/([^\s]*)\s*:;
-    $testdata{"$1 THORNS"} .= "$2 ";
-    $testdata{"THORNS"} .= "$2 ";
+    $testdata->{"$1 THORNS"} .= "$2 ";
+    $testdata->{"THORNS"} .= "$2 ";
 
-    if ($testdata{"ARRANGEMENTS"} !~ m:\s$1\s:)
+    if ($testdata->{"ARRANGEMENTS"} !~ m:\s$1\s:)
     {
-      $testdata{"ARRANGEMENTS"} .= "$1 ";
+      $testdata->{"ARRANGEMENTS"} .= "$1 ";
     }
 
-    $thorntestdir = "$config_data{\"CCTK_DIR\"}${sep}arrangements${sep}$thorn${sep}test";
+    $thorntestdir = "$config_data->{\"CCTK_DIR\"}${sep}arrangements${sep}$thorn${sep}test";
 
     if (-d $thorntestdir) 
     {
-      $testdata{"$thorn TESTSDIR"} = $thorntestdir;
+      $testdata->{"$thorn TESTSDIR"} = $thorntestdir;
       
       chdir $thorntestdir;
       
@@ -165,19 +165,19 @@ sub FindAllTests
 	$filedir = $1;
 	if (-d $filedir)
 	{
-	  $testdata{"$thorn $filedir DATAFILES"} .= &FindFiles($filedir);
-	  $testdata{"$thorn $filedir NDATAFILES"} = scalar(split(" ",$testdata{"$thorn $filedir DATAFILES"}));
-	  $testdata{"$thorn TESTS"} .= "$filedir ";
-	  $testdata{"$thorn NTESTS"}++;
+	  $testdata->{"$thorn $filedir DATAFILES"} .= &FindFiles($filedir);
+	  $testdata->{"$thorn $filedir NDATAFILES"} = scalar(split(" ",$testdata->{"$thorn $filedir DATAFILES"}));
+	  $testdata->{"$thorn TESTS"} .= "$filedir ";
+	  $testdata->{"$thorn NTESTS"}++;
 	}
       }
     }
   }
-  chdir $config_data{"CCTK_DIR"};
+  chdir $config_data->{"CCTK_DIR"};
 
   close AT;
 
-  return %testdata;
+  return $testdata;
 }
 
 sub FindExecutionDetails
@@ -185,11 +185,11 @@ sub FindExecutionDetails
   my($config_data) = @_;
   my($config,$dir,$sep,$defns,$defexename,$executable);
   
-  $config = $config_data{"CONFIG"};
-  $sep = $config_data{"SEPARATOR"};
+  $config = $config_data->{"CONFIG"};
+  $sep = $config_data->{"SEPARATOR"};
 
   # Check the name and directory of executable
-  $defns = "$config_data{\"CONFIGSDIR\"}${sep}$config${sep}config_data${sep}make.config.defn";
+  $defns = "$config_data->{\"CONFIGSDIR\"}${sep}$config${sep}config_data${sep}make.config.defn";
 
   $defexename = "cactus_$config";
 
@@ -212,9 +212,9 @@ sub FindExecutionDetails
 
   $executable = &defprompt("  Enter executable name (relative to Cactus home dir)","exe$sep$defexename");
 
-  if (! (-e "$config_data{\"CCTK_DIR\"}$sep$executable"))
+  if (! (-e "$config_data->{\"CCTK_DIR\"}$sep$executable"))
   {
-    if (-e "$config_data{\"CCTK_DIR\"}$sep$executable.exe")
+    if (-e "$config_data->{\"CCTK_DIR\"}$sep$executable.exe")
     {
       $executable .= ".exe";
     }
@@ -224,34 +224,34 @@ sub FindExecutionDetails
     }
   }
 
-  $config_data{"EXE"} = "$config_data{\"CCTK_DIR\"}$sep$executable";
+  $config_data->{"EXE"} = "$config_data->{\"CCTK_DIR\"}$sep$executable";
 
-  %config_data = &FindRunCommand(%config_data);
+  $config_data = &FindRunCommand($config_data);
 
-  return %config_data;
+  return $config_data;
 }
 
 sub FindRunCommand
 {
-  my(%config_data) = @_;
+  my($config_data) = @_;
   my($command,$numprocs);
 
   # Look to see if MPI is dfined
-  if (ParseExtras(%config_data))
+  if (ParseExtras($config_data))
   {
     $numprocs = &defprompt("  Enter number of processors","2");
     $command = &defprompt("  Enter command to run executable","mpirun -np $numprocs ");
-    $config_data{"MULTIPROCESSOR"} = $numprocs;
+    $config_data->{"MULTIPROCESSOR"} = $numprocs;
   }
   else
   {
     $command = &defprompt("  Enter command to run executable"," ");
-    $config_data{"MULTIPROCESSOR"} = 0;
+    $config_data->{"MULTIPROCESSOR"} = 0;
   }
   
-  $config_data{"COMMAND"} = $command;
+  $config_data->{"COMMAND"} = $command;
   
-  return %config_data;
+  return $config_data;
 }
 
 sub defprompt 
@@ -278,12 +278,12 @@ sub defprompt
 
 sub ParseExtras
 {
-  my(%config_data) = @_;
+  my($config_data) = @_;
   my($mpi,$dir,$sep,$extradir);
 
-  $dir = $config_data{"CCTK_DIR"};
-  $sep = $config_data{"SEPARATOR"};
-  $config = $config_data{"CONFIG"};
+  $dir = $config_data->{"CCTK_DIR"};
+  $sep = $config_data->{"SEPARATOR"};
+  $config = $config_data->{"CONFIG"};
 
   $extradir = "$dir${sep}configs${sep}$config${sep}config-data${sep}cctk_Extradefs.h";
 
@@ -307,20 +307,20 @@ sub ParseExtras
 
 sub InitialiseTestData
 {
-  my(%testdata);
+  my($testdata);
 
   # Complete list of thorns: arrangement/thorn
-  $testdata{"FULL"} = "";
+  $testdata->{"FULL"} = "";
 
-  $testdata{"NNODATAFILES"} = 0;
-  $testdata{"NRUNNABLE"} = 0;
-  $testdata{"NUNRUNNABLE"} = 0;
-  $testdata{"RUNNABLETHORNS"} = "";
-  $testdata{"UNRUNNABLETHORNS"} = "";
-  $testdata{"RUNNABLEARRANGEMENTS"} = "";
-  $testdata{"UNRUNNABLEARRANGEMENTS"} = "";
+  $testdata->{"NNODATAFILES"} = 0;
+  $testdata->{"NRUNNABLE"} = 0;
+  $testdata->{"NUNRUNNABLE"} = 0;
+  $testdata->{"RUNNABLETHORNS"} = "";
+  $testdata->{"UNRUNNABLETHORNS"} = "";
+  $testdata->{"RUNNABLEARRANGEMENTS"} = "";
+  $testdata->{"UNRUNNABLEARRANGEMENTS"} = "";
 
-  return %testdata;
+  return $testdata;
 }
 
 sub InitialiseRunData
@@ -436,7 +436,8 @@ sub PrintDataBase
 
 sub WriteFullResults
 {
-  my ($rundata,%testdata) = @_;
+  my ($rundata,$testdata) = @_;
+  my ($separator,$show_warnings);
 
   $separator = "==========================================================\n\n";
 
@@ -445,19 +446,19 @@ sub WriteFullResults
   if ($show_warnings)
   {
     print $separator;
-    print "  Warnings for configuration $config\n  --------\n";
+    print "  Warnings for configuration $config\n  --------\n\n";
 
     # Missing thorns for tests
     
-    $message = "  Tests missed for lack of thorns:\n\n";
+    $message = "  Tests missed for lack of thorns:\n";
     $missingtests = 0;
-    foreach $thorn (split(" ",$testdata{"UNRUNNABLETHORNS"}))
+    foreach $thorn (split(" ",$testdata->{"UNRUNNABLETHORNS"}))
     {
-      foreach $parfile (split(" ",$testdata{"$thorn UNRUNNABLE"}))
+      foreach $parfile (split(" ",$testdata->{"$thorn UNRUNNABLE"}))
       {
 	$message .= "\n    ".$parfile." in ". $thorn."\n";
-	$message .= "    (". $testdata{"$thorn $test DESC"}.")\n";
-	$message .= "    Missing: ".$testdata{"$thorn $parfile MISSING"}."\n";
+	$message .= "      (". $testdata->{"$thorn $parfile DESC"}.")\n";
+	$message .= "      Missing: ".$testdata->{"$thorn $parfile MISSING"}."\n";
 	$missingtests++;
       }
     }
@@ -471,15 +472,15 @@ sub WriteFullResults
     $message =  "  Tests with different number of test files:\n\n";
     
     $extratests = 0;
-    foreach $thorn (split(" ",$testdata{"RUNNABLETHORNS"}))
+    foreach $thorn (split(" ",$testdata->{"RUNNABLETHORNS"}))
     {
-      foreach $parfile (split(" ",$testdata{"$thorn RUNNABLE"}))
+      foreach $parfile (split(" ",$testdata->{"$thorn RUNNABLE"}))
       {
 	if ($rundata->{"$thorn $parfile NFILEEXTRA"}>0)
 	{
 	  $extratests++;
 	  $message .= "    $thorn ($parfile)\n";
-	  $message .= "      Test created $rundata->{\"$thorn $parfile NFILEEXTRA\"} extra files: $testdata{\"$thorn $parfile FILEEXTRA\"}\n";
+	  $message .= "      Test created $rundata->{\"$thorn $parfile NFILEEXTRA\"} extra files: $testdata->{\"$thorn $parfile FILEEXTRA\"}\n";
 	}
       }
     }
@@ -499,9 +500,9 @@ sub WriteFullResults
 
   $tested = 0;
   $nottested = "";
-  foreach $thorn (split(" ",$testdata{"FULL"}))
+  foreach $thorn (split(" ",$testdata->{"FULL"}))
   {
-    $num = scalar(split(" ",$testdata{"$thorn RUNNABLE"}));
+    $num = scalar(split(" ",$testdata->{"$thorn RUNNABLE"}));
     if ($num > 0)
     {
       print "    $thorn [$num]\n";
@@ -515,13 +516,13 @@ sub WriteFullResults
 
   print "\n";
   print "  Details:\n\n";
-  foreach $thorn (split(" ",$testdata{"FULL"}))
+  foreach $thorn (split(" ",$testdata->{"FULL"}))
   {
-    $num = scalar(split(" ",$testdata{"$thorn RUNNABLE"}));
+    $num = scalar(split(" ",$testdata->{"$thorn RUNNABLE"}));
     if ($num > 0)
     {
       print "    $thorn:\n";
-      foreach $test (split(" ",$testdata{"$thorn RUNNABLE"}))
+      foreach $test (split(" ",$testdata->{"$thorn RUNNABLE"}))
       {
     print "      $test\n";
       }
@@ -539,11 +540,11 @@ sub WriteFullResults
 
   print "  Run details for configuration $config\n\n";
 
-  foreach $thorn (split(" ",$testdata{"RUNNABLETHORNS"}))
+  foreach $thorn (split(" ",$testdata->{"RUNNABLETHORNS"}))
   {
-    if ($testdata{"$thorn RUNNABLE"} !~ m:^\s*$:)
+    if ($testdata->{"$thorn RUNNABLE"} !~ m:^\s*$:)
     {
-      foreach $test (split(" ",$testdata{"$thorn RUNNABLE"}))
+      foreach $test (split(" ",$testdata->{"$thorn RUNNABLE"}))
       {
 	print "      $thorn: $test\n         $rundata->{\"$thorn $test SUMMARY\"}\n";
       }
@@ -559,11 +560,11 @@ sub WriteFullResults
 
   print "  Summary for configuration $config\n\n";
 
-  $total = $testdata{"NUNRUNNABLE"}+$testdata{"NRUNNABLE"};
+  $total = $testdata->{"NUNRUNNABLE"}+$testdata->{"NRUNNABLE"};
   print "    Total available tests    -> $total\n";
-  print "    Unrunnable tests         -> $testdata{\"NUNRUNNABLE\"}\n";
-  print "    Runnable tests           -> $testdata{\"NRUNNABLE\"}\n";
-  print "    Total number of thorns   -> ".scalar(split(" ",$testdata{"FULL"}))."\n";
+  print "    Unrunnable tests         -> $testdata->{\"NUNRUNNABLE\"}\n";
+  print "    Runnable tests           -> $testdata->{\"NRUNNABLE\"}\n";
+  print "    Total number of thorns   -> ".scalar(split(" ",$testdata->{"FULL"}))."\n";
   print "    Number of tested thorns  -> $tested\n";
 
   print "    Number of tests passed   -> $rundata->{\"NPASSED\"}\n";
@@ -575,7 +576,7 @@ sub WriteFullResults
   if ($rundata->{"NFAILED"})
   {
     print "\n  Tests failed:\n\n";
-    foreach $thorn (split(" ",$testdata{"FULL"}))
+    foreach $thorn (split(" ",$testdata->{"FULL"}))
     {
       foreach $file (split(" ",$rundata->{"$thorn FAILED"}))
       {
@@ -592,7 +593,7 @@ sub WriteFullResults
 
 sub ChooseTests
 {
-  my ($choice,%testdata) = @_;
+  my ($choice,$testdata) = @_;
   my ($count,$arrangement,@myarrs,$arrchoice,$thorn,$mythorns,$mytests);
   my ($testcount,$test,$thornchoice);
 
@@ -600,11 +601,11 @@ sub ChooseTests
   {
 
     print "  No runnable testsuites in arrangements: ";
-    print "$testdata{\"UNRUNNABLEARRANGEMENTS\"}\n\n";
+    print "$testdata->{\"UNRUNNABLEARRANGEMENTS\"}\n\n";
 
     print "  Arrangements with runnable testsuites:\n";
     $count = 1;
-    foreach $arrangement (split(" ",$testdata{"RUNNABLEARRANGEMENTS"}))
+    foreach $arrangement (split(" ",$testdata->{"RUNNABLEARRANGEMENTS"}))
     {
       printf ("   [%2d] $arrangement\n",$count);
       $myarrs[$count] = "$arrangement";
@@ -613,7 +614,7 @@ sub ChooseTests
     $arrchoice = &defprompt("  Choose arrangement by number:"," ");
 
     print "  No runnable testsuites in thorns: ";
-    foreach  $thorn (split(" ",$testdata{"UNRUNNABLETHORNS"}))
+    foreach  $thorn (split(" ",$testdata->{"UNRUNNABLETHORNS"}))
     {
       if ($thorn =~ m:^$myarrs[$arrchoice]/:)
       {
@@ -624,7 +625,7 @@ sub ChooseTests
 
     print "  Thorns in $myarrs[$arrchoice] with runnable testsuites:\n";
     $count = 1;
-    foreach $thorn (split(" ",$testdata{"RUNNABLETHORNS"}))
+    foreach $thorn (split(" ",$testdata->{"RUNNABLETHORNS"}))
     {
       if ($thorn =~ m:^$myarrs[$arrchoice]/(.*):)
       {
@@ -635,10 +636,10 @@ sub ChooseTests
     }
     $thornchoice = &defprompt("  Choose thorn by number:"," ");
     $testcount = 1;
-    foreach $test (split(" ",$testdata{"$mythorns[$thornchoice] RUNNABLE"}))
+    foreach $test (split(" ",$testdata->{"$mythorns[$thornchoice] RUNNABLE"}))
     {
       printf ("  [%2d] $test\n",$testcount);
-      print "       $testdata{\"$mythorns[$thornchoice] $test DESC\"}\n";
+      print "       $testdata->{\"$mythorns[$thornchoice] $test DESC\"}\n";
       $mytests[$testcount] = "$test";
       $testcount++;
     }
@@ -650,7 +651,7 @@ sub ChooseTests
   elsif ($choice =~ m:^T:i)
   {
     $count = 1;
-    foreach $thorn (split(" ",$testdata{"RUNNABLETHORNS"}))
+    foreach $thorn (split(" ",$testdata->{"RUNNABLETHORNS"}))
     {
       printf ("  [%2d] $thorn\n",$count);
       $mythorns[$count] = "$thorn";
@@ -661,11 +662,11 @@ sub ChooseTests
       $thornchoice = &defprompt("  Choose thorn:"," ");
       $testcount = 0;
       printf ("  [ 0] All tests\n");
-      foreach $test (split(" ",$testdata{"$mythorns[$thornchoice] RUNNABLE"}))
+      foreach $test (split(" ",$testdata->{"$mythorns[$thornchoice] RUNNABLE"}))
       {
 	$testcount++;
 	printf ("  [%2d] $test\n",$testcount);
-	print "       $testdata{\"$mythorns[$thornchoice] $test DESC\"}\n";
+	print "       $testdata->{\"$mythorns[$thornchoice] $test DESC\"}\n";
 	$mytests[$testcount] = "$test";
       }
       $testchoice = &defprompt("  Choose test:","0");      
@@ -693,29 +694,29 @@ sub ChooseTests
 
 sub RunTest
 {
-  my ($test,$inthorn,$config_data,%testdata) = @_;
+  my ($test,$inthorn,$config_data,$testdata) = @_;
   my ($test_dir,$config);
   my ($retcode);
 
   $inthorn =~ m:/(.*)$:;
   $mythorn = $1;
 
-  $testdata{"$inthorn $test TESTRUNDIR"} = $config_data->{"TESTS_DIR"}.$sep.$config_data->{"CONFIG"}.$sep.$mythorn;
+  $testdata->{"$inthorn $test TESTRUNDIR"} = $config_data->{"TESTS_DIR"}.$sep.$config_data->{"CONFIG"}.$sep.$mythorn;
 
-  $testdata{"$inthorn $test TESTOUTPUTDIR"} = $testdata{"$inthorn $test TESTRUNDIR"}.$sep.$test;
+  $testdata->{"$inthorn $test TESTOUTPUTDIR"} = $testdata->{"$inthorn $test TESTRUNDIR"}.$sep.$test;
 
   # Make any necessary directories
-  &MakeTestRunDir($testdata{"$inthorn $test TESTRUNDIR"});
+  &MakeTestRunDir($testdata->{"$inthorn $test TESTRUNDIR"});
 
   $parfile = $test.".par";
 
   # Clean the output directory for this test
-  &CleanDir($testdata{"$inthorn $test TESTOUTPUTDIR"});
+  &CleanDir($testdata->{"$inthorn $test TESTOUTPUTDIR"});
 
   # Run the test from the test thorn directory
-  chdir ($testdata{"$inthorn $test TESTRUNDIR"}) ;
+  chdir ($testdata->{"$inthorn $test TESTRUNDIR"}) ;
 
-  $cmd = "$config_data->{\"COMMAND\"} $config_data->{\"EXE\"} $testdata{\"$inthorn TESTSDIR\"}${sep}$parfile";
+  $cmd = "$config_data->{\"COMMAND\"} $config_data->{\"EXE\"} $testdata->{\"$inthorn TESTSDIR\"}${sep}$parfile";
   $retcode = &RunCactus($test,$cmd);
   chdir $config_data->{"CCTK_DIR"};
 
@@ -723,23 +724,23 @@ sub RunTest
   if($retcode != 0)
   {
     print "Cactus exited with error code $retcode\n";
-    print "Please check the logfile $test_dir$sep$test.log\n\n";
-    $testdata{"$inthorn FAILED"} .= "$parfile ";
-    $testdata{"NFAILED"}++;
+    print "Please check the logfile $testdata->{\"$inthorn $test TESTRUNDIR\"}$sep$test.log\n\n";
+    $testdata->{"$inthorn FAILED"} .= "$parfile ";
+    $testdata->{"NFAILED"}++;
   }
 
-  return %testdata;
+  return $testdata;
 }
 
 sub CompareTestFiles
 {
-  my ($test,$inthorn,$runconfig,$rundata,$config_data,%testdata) = @_;
+  my ($test,$inthorn,$runconfig,$rundata,$config_data,$testdata) = @_;
   my ($test_dir,$file,$mythorn,$newfile,$oldfile);
 
   $inthorn =~ m:/(.*)$:;
   $mythorn = $1;
 
-  $test_dir = $testdata{"$inthorn $test TESTOUTPUTDIR"};
+  $test_dir = $testdata->{"$inthorn $test TESTOUTPUTDIR"};
   
   # Add output files to database
   $rundata->{"$inthorn $test TESTFILES"} = &FindFiles("$test_dir");
@@ -750,10 +751,10 @@ sub CompareTestFiles
 
   # Compare each file in the archived test directory
 
-  foreach $file (split(" ",$testdata{"$inthorn $test DATAFILES"})) 
+  foreach $file (split(" ",$testdata->{"$inthorn $test DATAFILES"})) 
   {
     $newfile = "$test_dir$sep$file"; 
-    $oldfile = "$testdata{\"$inthorn TESTSDIR\"}${sep}${test}${sep}$file";
+    $oldfile = "$testdata->{\"$inthorn TESTSDIR\"}${sep}${test}${sep}$file";
 
     if ( -e $newfile)
     {
@@ -879,13 +880,12 @@ sub CompareTestFiles
     else
     {
       print "     $newfile not there for comparison\n";
-      $rundata{"$inthorn $test NFAILWEAK"}++;
-      $rundata{"$inthorn $test NFAILSTRONG"}++;
+      $rundata->{"$inthorn $test NFAILWEAK"}++;
+      $rundata->{"$inthorn $test NFAILSTRONG"}++;
     }
   }
 
-
-  return %rundata;
+  return $rundata;
 
 }
 
@@ -907,11 +907,11 @@ sub max
 
 sub ReportOnTest
 {
-  my($test,$thorn,$rundata,%testdata) = @_;
+  my($test,$thorn,$rundata,$testdata) = @_;
   my($file,$tmp,$summary);
 
   # Different lines in files
-  foreach $file (split(" ",$testdata{"$thorn $test DATAFILES"})) 
+  foreach $file (split(" ",$testdata->{"$thorn $test DATAFILES"})) 
   {
     if ($rundata->{"$thorn $test $file NFAILWEAK"} != 0)
     {
@@ -958,7 +958,7 @@ sub ReportOnTest
   # (Note this is not so bad)
   foreach $file (split (" ",$rundata->{"$thorn $test TESTFILES"}))
   {
-    if ($testdata{"$thorn $test DATAFILES"} !~ m:\b$file\b:)
+    if ($testdata->{"$thorn $test DATAFILES"} !~ m:\b$file\b:)
     {
       print "            $file not in thorn archive\n";
       $rundata->{"$thorn $test NFILEEXTRA"}++;
@@ -968,7 +968,7 @@ sub ReportOnTest
 
   # Look for files in archive which are not created in test
   # (Note this is bad)
-  foreach $file (split (" ",$testdata{"$thorn $test DATAFILES"}))
+  foreach $file (split (" ",$testdata->{"$thorn $test DATAFILES"}))
   {
     if ($rundata->{"$thorn $test TESTFILES"} !~ m:\b$file\b:)
     {
@@ -978,9 +978,10 @@ sub ReportOnTest
     }
   }
 
+
   if (! $rundata->{"$thorn $test NFAILWEAK"})
   {
-    $summary = "Success: $testdata{\"$thorn $test NDATAFILES\"} files identical";
+    $summary = "Success: $testdata->{\"$thorn $test NDATAFILES\"} files identical";
     printf("\n  $summary\n");
     $rundata->{"NPASSED"}++;
   }
@@ -988,14 +989,14 @@ sub ReportOnTest
   {
     if (! $rundata->{"$thorn $test NFAILSTRONG"})
     {
-      $summary = "Success: $testdata{\"$thorn $test NDATAFILES\"} files compared, $rundata->{\"$thorn $test NFAILWEAK\"} differ in the last digits";
+      $summary = "Success: $testdata->{\"$thorn $test NDATAFILES\"} files compared, $rundata->{\"$thorn $test NFAILWEAK\"} differ in the last digits";
       printf "\n  $summary\n";
       $rundata->{"NPASSED"}++;
       $rundata->{"NPASSEDTOTOL"}++;
     }
     else
     {
-      $summary = "Failure: $testdata{\"$thorn $test NDATAFILES\"} files compared, $rundata->{\"$thorn $test NFAILWEAK\"} differ, $rundata->{\"$thorn $test NFAILSTRONG\"} differ significantly";
+      $summary = "Failure: $testdata->{\"$thorn $test NDATAFILES\"} files compared, $rundata->{\"$thorn $test NFAILWEAK\"} differ, $rundata->{\"$thorn $test NFAILSTRONG\"} differ significantly";
       printf "\n  $summary\n";
       $rundata->{"$thorn FAILED"} .= "$test ";
       $rundata->{"NFAILED"}++;
@@ -1004,18 +1005,18 @@ sub ReportOnTest
   $rundata->{"$thorn $test SUMMARY"} = $summary;
   printf ("\n");
 
-  return %rundata;
+  return $rundata;
 }
 
 
 sub ResetTestStatistics
 {
-  my($rundata,%testdata) = @_;
+  my($rundata,$testdata) = @_;
 
   $rundata->{"NFAILED"} = 0;
   $rundata->{"NPASSED"} = 0;
   $rundata->{"NPASSEDTOTOL"} = 0;
-  foreach $thorn (split(" ",$testdata{"FULL"}))
+  foreach $thorn (split(" ",$testdata->{"FULL"}))
   {
     $rundata->{"$thorn TESTED"} = 0;
   }
@@ -1027,72 +1028,72 @@ sub ResetTestStatistics
 
 sub ParseAllParameterFiles
 {
-  my(%testdata) = @_;
+  my($testdata) = @_;
 
   # Collect thorns needed for each testsuite
-  foreach $thorn (split(" ",$testdata{"FULL"}))
+  foreach $thorn (split(" ",$testdata->{"FULL"}))
   {
 
     $thorn =~ m:^(.*)/:;
     $arr = $1;
     
-    foreach $testbase (split(" ",$testdata{"$thorn TESTS"}))
+    foreach $testbase (split(" ",$testdata->{"$thorn TESTS"}))
     {
       
       $parfile = "$testbase.par";
 
       # Set ActiveThorns and Description for this Test
-      ($active,$desc) = &ParseParFile($thorn,$parfile,%config_data);
-      $testdata{"$thorn $testbase ACTIVE"} = $active;
-      $testdata{"$thorn $testbase DESC"} = $desc;
+      ($active,$desc) = &ParseParFile($thorn,$parfile,$config_data);
+      $testdata->{"$thorn $testbase ACTIVE"} = $active;
+      $testdata->{"$thorn $testbase DESC"} = $desc;
 
       # Find any missing thorns for this test
       ($nmissing,$missing) = 
-	&MissingThorns($testdata{"$thorn $testbase ACTIVE"},
-		       $testdata{"THORNS"});
+	&MissingThorns($testdata->{"$thorn $testbase ACTIVE"},
+		       $testdata->{"THORNS"});
       
       # Set whether test is runnable or not
       if($nmissing == 0)
       {
-	$testdata{"$thorn RUNNABLE"} .= "$testbase ";
-	$testdata{"NRUNNABLE"}++;
-	$testdata{"$thorn TESTED"} = 1;
-	$testdata{"$thorn NRUNNABLE"}++;
+	$testdata->{"$thorn RUNNABLE"} .= "$testbase ";
+	$testdata->{"NRUNNABLE"}++;
+	$testdata->{"$thorn TESTED"} = 1;
+	$testdata->{"$thorn NRUNNABLE"}++;
       }
       else
       {
-	$testdata{"$thorn UNRUNNABLE"} .= "$testbase ";
-	$testdata{"$thorn $testbase MISSING"} .= "$missing";
-	$testdata{"NUNRUNNABLE"}++;
-	$testdata{"$thorn NUNRUNNABLE"}++;
+	$testdata->{"$thorn UNRUNNABLE"} .= "$testbase ";
+	$testdata->{"$thorn $testbase MISSING"} .= "$missing";
+	$testdata->{"NUNRUNNABLE"}++;
+	$testdata->{"$thorn NUNRUNNABLE"}++;
       }
     }
     
-    if ($testdata{"$thorn NRUNNABLE"} > 0)
+    if ($testdata->{"$thorn NRUNNABLE"} > 0)
     {
-      $testdata{"RUNNABLETHORNS"} .= "$thorn ";
-      if ($testdata{"RUNNABLEARRANGEMENTS"} !~ m:[\s^]$arr\s:)
+      $testdata->{"RUNNABLETHORNS"} .= "$thorn ";
+      if ($testdata->{"RUNNABLEARRANGEMENTS"} !~ m:[\s^]$arr\s:)
       {
-	$testdata{"RUNNABLEARRANGEMENTS"} .= "$1 ";
+	$testdata->{"RUNNABLEARRANGEMENTS"} .= "$1 ";
       }
     }
     else
     {
-      $testdata{"UNRUNNABLETHORNS"} .= "$thorn ";
+      $testdata->{"UNRUNNABLETHORNS"} .= "$thorn ";
     }
   }
 
   # Last look for arrangements with no runnable tests
 
-  foreach $arr (split(" ",$testdata{"ARRANGEMENTS"}))
+  foreach $arr (split(" ",$testdata->{"ARRANGEMENTS"}))
   {
-    if ($testdata{"RUNNABLEARRANGEMENTS"} !~ m:[\s^]$arr\s:)
+    if ($testdata->{"RUNNABLEARRANGEMENTS"} !~ m:[\s^]$arr\s:)
     {
-      $testdata{"UNRUNNABLEARRANGEMENTS"} .= "$arr ";
+      $testdata->{"UNRUNNABLEARRANGEMENTS"} .= "$arr ";
     }
   }
 
-  return %testdata;
+  return $testdata;
 }
 
 
@@ -1110,7 +1111,7 @@ sub MakeTestRunDir
 
 sub ViewResults
 {
-  my($test,$thorn,$runconfig,$rundata,%testdata) = @_;
+  my($test,$thorn,$runconfig,$rundata,$testdata) = @_;
   my($count,$choice,$myfile,@myfiles);
 
   if ($rundata->{"$thorn $test NFAILSTRONG"})
@@ -1120,7 +1121,7 @@ sub ViewResults
       undef ($choice);
       print "  Files which differ strongly:\n";
       $count = 1;
-      foreach $file (split(" ",$testdata{"$thorn $test DATAFILES"}))
+      foreach $file (split(" ",$testdata->{"$thorn $test DATAFILES"}))
       {
 	if ($rundata->{"$thorn $test $file NFAILSTRONG"})
 	{
@@ -1139,7 +1140,7 @@ sub ViewResults
 	if ($choice =~ /^l/i)
 	{
 	  print "Archived file: $myfiles[$myfile]\n\n";
-	  open (ARCHIVE, "<$testdata{\"$thorn TESTSDIR\"}/$test/$myfiles[$myfile]");
+	  open (ARCHIVE, "<$testdata->{\"$thorn TESTSDIR\"}/$test/$myfiles[$myfile]");
 	  while (<ARCHIVE>)
 	  {
 	    print;
@@ -1148,7 +1149,7 @@ sub ViewResults
 	  
 	  print "\n\nNew file: $myfiles[$myfile]\n\n";
 
-	  open (TEST, "<$testdata{\"$thorn $test TESTOUTPUTDIR\"}/$myfiles[$myfile]");
+	  open (TEST, "<$testdata->{\"$thorn $test TESTOUTPUTDIR\"}/$myfiles[$myfile]");
 	  while (<TEST>)
 	  {
 	    print;
@@ -1159,7 +1160,7 @@ sub ViewResults
 	elsif ($choice =~ /^d/i)
 	{
 	  print "\n  Performing diff on  <archive> <test>\n\n";
-	  $command = "  diff $testdata{\"$thorn TESTSDIR\"}/$test/$myfiles[$myfile] $testdata{\"$thorn $test TESTOUTPUTDIR\"}/$myfiles[$myfile]\n";
+	  $command = "  diff $testdata->{\"$thorn TESTSDIR\"}/$test/$myfiles[$myfile] $testdata->{\"$thorn $test TESTOUTPUTDIR\"}/$myfiles[$myfile]\n";
 	  print "$command\n\n";
 	  system($command);
 	  print "\n";
@@ -1167,7 +1168,7 @@ sub ViewResults
 	elsif ($choice =~ /^g/i)
 	{
 	  print "  Xgraph <archive> <test>\n\n";
-	  $command = "  xgraph $testdata{\"$thorn TESTSDIR\"}/$test/$myfiles[$myfile] $testdata{\"$thorn $test TESTOUTPUTDIR\"}/$myfiles[$myfile] &\n";
+	  $command = "  xgraph $testdata->{\"$thorn TESTSDIR\"}/$test/$myfiles[$myfile] $testdata->{\"$thorn $test TESTOUTPUTDIR\"}/$myfiles[$myfile] &\n";
 	  print "  $command\n";
 	  system($command);
 	}	
