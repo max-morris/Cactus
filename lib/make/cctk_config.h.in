@@ -1,5 +1,5 @@
-#ifndef _CONFIG_H_
-#define _CONFIG_H_
+#ifndef _CCTK_CONFIG_H_
+#define _CCTK_CONFIG_H_
 
 /* Define to empty if the keyword does not work.  */
 #undef const
@@ -124,4 +124,4 @@
 /* Include any extra stuff from optional extra packages. */
 #include "cctk_extradefs.h"
 
-#endif /* _CONFIG_H_ */
+#endif /* _CCTK_CONFIG_H_ */
