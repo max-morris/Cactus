@@ -9531,8 +9531,15 @@ to \code{stderr}.
 
 \code{CCTK\_WARN(level, message)} expands to a call to an internal
 function which is equivalent to \verb|CCTK_VWarn()|, but without the
-variable-number-of-arguments feature (so it can be used from Fortran).
-The macro automatically includes details about the origin of the warning
+variable-number-of-arguments feature (so it can be used from Fortran).%%%
+\footnote{%%%
+	 Some code calls this internal function directly.
+	 For reference, the function is:\\
+	 \texttt{\hbox{}void CCTK\_Warn(int level,}\\
+	 \texttt{\hbox{}~~~~~~~~~~~~~~~int line\_number, const char* file\_name, const char* thorn\_name,}\\
+	 \texttt{\hbox{}~~~~~~~~~~~~~~~const char* message)}
+	 }%%%
+{}  The macro automatically includes details about the origin of the warning
 (the thorn name, the source code file name and the line number where the macro
 occurs).
 
