@@ -555,51 +555,7 @@ sub CreateCArgumentUses
 	  $suffix .= "_p";
 	}
 
-	if($1 eq "CHAR")
-	{
-	  push(@declarations, "cctk_dummy_pointer =$argument;");
-	}
-	elsif ($1 eq REAL)
-	{
-	  push(@declarations, "cctk_dummy_pointer =$argument;");
-	}
-	elsif ($1 eq REAL4)
-	{
-	  push(@declarations, "cctk_dummy_pointer =$argument;");
-	}
-	elsif ($1 eq REAL8)
-	{
-	  push(@declarations, "cctk_dummy_pointer =$argument;");
-	}
-	elsif ($1 eq REAL16)
-	{
-	  push(@declarations, "cctk_dummy_pointer=$argument;");
-	}
-	elsif ($1 eq COMPLEX)
-	{
-	  push(@declarations, "cctk_dummy_pointer =$argument;");
-	}
-	elsif ($1 eq INT)
-	{
-	  push(@declarations, "cctk_dummy_pointer=$argument;");
-	}
-	elsif ($1 eq INT2)
-	{
-	  push(@declarations, "cctk_dummy_pointer=$argument;");
-	}
-	elsif ($1 eq INT4)
-	{
-	  push(@declarations, "cctk_dummy_pointer=$argument;");
-	}
-	elsif ($1 eq INT8)
-	{
-	  push(@declarations, "cctk_dummy_pointer=$argument;");
-	}
-	else
-	{
-	  $message = "Unknown argument type $1";
-	  &CST_error(0,$message,__LINE__,__FILE__);
-	}
+	push(@declarations, "cctk_dummy_pointer =$argument$suffix;");
 
       }
     }
@@ -897,7 +853,7 @@ sub CreateCArgumentList
   {
     if($arguments{$argument} =~ m:STORAGESIZE\(([^,]*),\s*(\d+):)
     {
-      $arglist .= "$sep"."(int *)(CCTK_STORAGESIZE(xGH, $2, \"$1\"))";
+      $arglist .= "$sep"."(const int *)(CCTK_STORAGESIZE(xGH, $2, \"$1\"))";
       $sep = ",";
     }
   }
