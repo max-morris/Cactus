@@ -2218,13 +2218,18 @@ should be obvious):
 \item[{\tt CCTK\_InterpGV()}]
 	Interpolates Cactus grid arrays, with the topology of the
 	grid implicitly specified by a Cactus coordinate system.
-	(old API, being phased out as of early 2002)
-%notyet	\item[{\tt CCTK\_InterpGridArrays()}]
-%notyet		Interpolates Cactus grid arrays, with the topology of the
-%notyet		grid implicitly specified by a Cactus coordinate system.
+	(old API, will be phased out soon)
+\item[{\tt CCTK\_InterpGridArrays()}]
+	Interpolates Cactus grid arrays, with the topology of the
+	grid implicitly specified by a Cactus coordinate system.
+
+	This API doesn't provide an interpolation functionality itself,
+	it only takes care of the interprocessor communication
+	necessary when interpolating distributed grid arrays, and invokes
+	the {\tt CCTK\_InterpLocalUniform()} API on the each processor's
+	local patch of the data.
 \item[{\tt CCTK\_InterpLocal()}]
-	Interpolate processor-local arrays
-	(old API, being phased out as of early 2002)
+	Interpolate processor-local arrays (old API, will be phased out soon)
 \item[{\tt CCTK\_InterpLocalUniform()}]
 	Interpolates processor-local arrays with {\em uniformly\/}
 	spaced data points, \ie{} where the coordinates~$xyz$
@@ -2263,17 +2268,16 @@ should be obvious):
 %notyet		by providing 3-D arrays giving their values at the grid points.
 \end{Lentry}
 
-There are separate flesh routines to register operators for each of
+There are separate flesh routines to register interpolation operators for
 the APIs (note the calling sequences differ slightly from one registration
 routine to another!):
 \begin{Lentry}
 \item[{\tt CCTK\_InterpRegisterOperatorGV()}]
 	Register a \verb|CCTK_InterpGV()| interpolation operator
-%notyet	\item[{\tt CCTK\_InterpRegisterOpGridArrays()}]
-%notyet		Register a \verb|CCTK_InterpGridArrays()| interpolation operator
+	(old API, will be phased out soon)
 \item[{\tt CCTK\_InterpRegisterOperatorLocal()}]
 	Register a \verb|CCTK_InterpLocal()| interpolation operator
-	(old API, being phased out as of early 2002)
+	(old API, will be phased out soon)
 \item[{\tt CCTK\_InterpRegisterOpLocalUniform()}]
 	Register a \verb|CCTK_InterpLocalUniform()| interpolation operator
 %notyet	\item[{\tt CCTK\_InterpRegisterOpLocalNonUniform()}]
