@@ -8,8 +8,6 @@
 #  @enddesc 
 #@@*/
 
-$BindingsAliasNum = 0;
-
 sub CreateFortranThornParameterBindings
 {
   my($thorn, $rhparameter_db, $rhinterface_db) = @_;
@@ -19,6 +17,7 @@ sub CreateFortranThornParameterBindings
   my(@data);
   my(@file);
   my(%alias_names);
+  my(%num_aliases);
 
   push(@file, "#define DECLARE_CCTK_PARAMETERS \\");
 
@@ -64,6 +63,12 @@ sub CreateFortranThornParameterBindings
   }
 
   # Parameters from friends
+
+  # This number can be local to each thorn - it doesn't matter if 
+  # members of a common block get different names in different
+  # thorns, especially if the variable isn't being used !
+  $num_aliases = 0;
+
   foreach $friend (split(" ",$rhparameter_db->{"\U$thorn\E SHARES implementations"}))
   {
 
@@ -85,8 +90,8 @@ sub CreateFortranThornParameterBindings
       }
       else
       {
-	$alias_names{$parameter} = "CCTKH".$BindingAliasNum;
-	$BindingAliasNum++;
+	$alias_names{$parameter} = "CCTKH".$num_aliases;
+	$num_aliases++;
       }
     }
 
