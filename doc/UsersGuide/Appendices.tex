@@ -1,11 +1,11 @@
 % /*@@
 %   @file      Appendices.tex
 %   @date      27 Jan 1999
-%   @author    Tom Goodale, Gabrielle Allen, Gerd Lanferman
+%   @author    Tom Goodale, Gabrielle Allen, Gerd Lanferman, Thomas Radke
 %   @desc
-%   Appendices for the Cactus User's Guide
+%              Appendices for the Cactus User's Guide
 %   @enddesc
-%   @version $Header$
+%   @version   $Header$
 % @@*/
 \begin{cactuspart}{6}{Appendices}{$RCSfile$}{$Revision$}
 \renewcommand{\thepage}{\Alph{part}\arabic{page}}
@@ -140,7 +140,7 @@ The thorn's variables are defined by:
 [<access>:]
 
 <data_type> <group_name> [TYPE=<group_type>] [DIM=<dim>] [TIMELEVELS=<num>]
-[SIZE=<size in each direction>] [DISTRIB=<distribution_type>]  
+[SIZE=<size in each direction>] [DISTRIB=<distribution_type>]
 [GHOSTSIZE=<ghostsize>] [STAGGER=<stagger-specification>]
 [{
  [ <variable_name>[,]<variable_name>
@@ -191,9 +191,8 @@ a member of one group. The block must be delimited by brackets on new
 lines.  If no block is given after a group declaration line, a
 variable with the same name as the group is created.
 \item{} An optional description of the group can be given on the last
-	line, at the moment this description is not used for any purpose.
-	(Note that the variable block is required if you want to give a
-	group description.)
+line, at the moment this description is not used for any purpose. (Note that
+the variable block is required if you want to give a group description.)
 \end{itemize}
 
 The process of sharing code among thorns using include files is
@@ -286,7 +285,7 @@ another thorn. This allows it to declare additional acceptable values.
         value as acceptable.
 
 \item{} If the thorn wants to simply use a parameter from another
-thorn, without declaring additional values, use {\t USES} 
+thorn, without declaring additional values, use {\t USES}
 instead.
 
 \end{itemize}
@@ -299,16 +298,14 @@ A more extensive discussion of Cactus scheduling is provided in Chapter
 \ref{chap:scheduling}.) A schedule configuration file consists of
 \begin{itemize}
 
-\item{} {\it assignment statements} to switch on storage for 
-	grid variables for the entire duration of program execution
+\item{} {\it assignment statements} to switch on storage for
+  grid variables for the entire duration of program execution
 
 \item{} {\it schedule blocks} to schedule a subroutine from a thorn
-	to be called at specific times during program execution in a
-	given manner
+  to be called at specific times during program execution in a given manner
 
-\item {} {\it conditional statements} for both assignment statements 
-	and schedule blocks to allow them to be processed depending
-	on parameter values
+\item {} {\it conditional statements} for both assignment statements and
+  schedule blocks to allow them to be processed depending on parameter values
 
 \end{itemize}
 
@@ -320,8 +317,8 @@ A more extensive discussion of Cactus scheduling is provided in Chapter
 \end{verbatim}
 }
 
-If the thorn is active, storage will be allocated for the given groups 
-for the duration of program execution (unless storage is explicitly 
+If the thorn is active, storage will be allocated for the given groups
+for the duration of program execution (unless storage is explicitly
 switched off by some call to {\tt CCTK\_DisableGroupStorage} within a thorn). The behaviour of an assignment
 statement is independent of its position in the schedule file (so long as it is outside a schedule block).
 
@@ -341,54 +338,53 @@ Each {\it schedule block} in the file {\t schedule.ccl} must have the syntax:
 \end{verbatim}
 }
 \begin{Lentry}
-
-   \item[{\tt GROUP}] If one doesn't already exist, create and schedule a schedule group 
-	with the same options as a schedule function. 
+  \item[{\tt GROUP}] If one doesn't already exist, create and schedule a
+    schedule group with the same options as a schedule function.
 
   \item[{\tt <function names>}] Function names are case sensitive
 
-  \item[{\tt <group>}] Groups inherited from other thorns may be used, but they must 
-	then be fully qualified with the implementation name.
+  \item[{\tt <group>}] Groups inherited from other thorns may be used, but they
+    must then be fully qualified with the implementation name.
 
   \item[{\tt AT}] Functions can be scheduled to run at timebins: {\tt
-  CCTK\_STARTUP}, {\tt CCTK\_INITIAL}, {\tt CCTK\_POSTINITIAL}, {\tt
-  CCTK\_RECOVER\_PARAMETERS}, {\tt CCTK\_RECOVER\_VARIABLES}, {\tt
-  CCTK\_CHECKPOINT}, {\tt CCTK\_CPINITIAL}, {\tt CCTK\_PRESTEP}, {\tt
-  CCTK\_EVOL}, {\tt CCTK\_POSTSTEP}, {\tt CCTK\_PARAMCHECK}, {\tt
-  CCTK\_TERMINATE}, {\tt CCTK\_SHUTDOWN}. The initial letters {\tt
-  CCTK\_} are optional. Grid variables cannot be used in the {\tt
-  STARTUP} and {\tt SHUTDOWN} timebins.
+    CCTK\_STARTUP, CCTK\_RECOVER\_PARAMETERS, CCTK\_PARAMCHECK, CCTK\_BASEGRID,
+    CCTK\_INITIAL, CCTK\_POSTINITIAL, CCTK\_RECOVER\_VARIABLES,
+    CCTK\_POST\_RECOVER\_VARIABLES, CCTK\_CPINITIAL, CCTK\_CHECKPOINT,
+    CCTK\_PRESTEP, CCTK\_EVOL, CCTK\_POSTSTEP, CCTK\_ANALYSIS, CCTK\_TERMINATE,
+    CCTK\_SHUTDOWN}.
+    The initial letters {\tt CCTK\_} are optional. Grid variables cannot be
+    used in the {\tt CCTK\_STARTUP} and {\tt CCTK\_SHUTDOWN} timebins.
 
-  \item[{IN}] Specifies a function to run in a schedule group rather than in a Cactus timebin.
+  \item[{IN}] Specifies a function to run in a schedule group rather than in
+    a Cactus timebin.
 
-  \item[{BEFORE/AFTER}] Takes either a function name, or a function alias. If no function or alias with this name is
-	provided by an activating thorn this directive is ignored.
+  \item[{BEFORE/AFTER}] Takes either a function name, or a function alias.
+    If no function or alias with this name is provided by an activating thorn
+    this directive is ignored.
 
-  \item[{\tt WHILE}] Executes a function or schedule group until the
-  given variable (which must be a fully qualified grid scalar) has the value zero.
+  \item[{\tt WHILE}] Executes a function or schedule group until the given
+    variable (which must be a fully qualified grid scalar) has the value zero.
 
-  \item[{\tt AS}] The alias for a function which should be used for
-  functions referenced in the schedule files of other thorns to
-  provide thorn independence.
+  \item[{\tt AS}] The alias for a function which should be used for functions
+    referenced in the schedule files of other thorns to provide thorn independence.
 
-  \item[{\tt LANG}] The code language for the function (either {\tt C}
-  or {\tt FORTRAN}). No language should be specified for a schedule group.
+  \item[{\tt LANG}] The code language for the function (either {\tt C} or {\tt
+    FORTRAN}). No language should be specified for a schedule group.
 
   \item[{\tt STORAGE}] List of groups which should have storage
-  switched on for the duration of the function or schedule group. 
+    switched on for the duration of the function or schedule group.
 
   \item[{\tt TRIGGER}] List of grid variables or groups to be used as
-  triggers for causing an analysis function or analysis group to be
-  executed
+    triggers for causing an analysis function or analysis group to be executed
 
   \item[{\tt SYNCHRONISE}] List of groups to be synchronised as soon
-  as the function or schedule group is exited.
+    as the function or schedule group is exited.
 
   \item[{\tt OPTIONS}] List of additional options (see
-  Section~\ref{app:allopts}) for the scheduled function or group of functions
+    Section~\ref{app:allopts}) for the scheduled function or group of functions
 
-\end{Lentry} 
-  
+\end{Lentry}
+
 \subsubsection{Allowed Options}
 
 \label{app:allopts}
@@ -424,31 +420,47 @@ Conditional constructs cannot be used inside of a schedule block.
 \chapter{Flesh parameters}
 \label{sec:ccpa}
 
-The flesh parameters are defined in the file {\tt src/par/param.ccl}.
+The flesh parameters are defined in the file {\tt src/param.ccl}.
 
 \section{Private parameters}
 
 \begin{Lentry}
 
+\item[{\tt allow\_mixeddim\_gfs}]
+Allow use of GFs from different dimensions [{\tt no}]
 
-
-\item[{\tt cctk\_timer\_output}]
-Give timing information [{\tt yes}] \{{\tt off}, {\tt full}\}
+\item [{\tt cctk\_brief\_output}]
+Give only brief output [{\tt no}]
 
 \item[{\tt cctk\_full\_warnings}]
 Give detailed information for each warning statement [{\tt yes}]
 
-\item[{\tt cctk\_strong\_param\_check}]
-Die on parameter errors in {\tt CCTK\_PARAMCHECK} [{\tt yes}]
-
-\item [{\tt cctk\_show\_schedule}]
-Print the scheduling tree to standard output [{\tt yes}]
+\item [{\tt cctk\_run\_title}]
+Description of this simulation [{\tt ""}]
 
 \item [{\tt cctk\_show\_banners}]
 Show any registered banners for the different thorns [{\tt yes}]
 
-\item [{\tt cctk\_brief\_output}]
-Give only brief output [{\tt no}]
+\item [{\tt cctk\_show\_schedule}]
+Print the scheduling tree to standard output [{\tt yes}]
+
+\item[{\tt cctk\_strong\_param\_check}]
+Die on parameter errors in {\tt CCTK\_PARAMCHECK} [{\tt yes}]
+
+\item[{\tt cctk\_timer\_output}]
+Give timing information [{\tt off}] \{{\tt off, full}\}
+
+\item[{\tt manual\_cache\_setup}]
+Set the cache size manually [{\tt no}]
+
+\item[{\tt manual\_cache\_size}]
+The size to set the cache to if not done automatically (bytes) [{\tt 0}]
+
+\item[{\tt manual\_cacheline\_bytes}]
+The size of a cacheline if not set automatically (bytes) [{\tt 0}]
+
+\item[{\tt recovery\_mode}]
+How to behave when recovering from a checkpoint [{\tt strict}] \{{\tt strict, relaxed}\}
 
 \end{Lentry}
 
@@ -456,14 +468,20 @@ Give only brief output [{\tt no}]
 
 \begin{Lentry}
 
-\item[{\tt cctk\_initial\_time}]
-Initial time for evolution [{\tt 0.0}]
-
 \item [{\tt cctk\_final\_time}] Final time for evolution, overriden by
 {\tt cctk\_itlast} unless it is positive [{\tt -1.0}]
 
+\item[{\tt cctk\_initial\_time}]
+Initial time for evolution [{\tt 0.0}]
+
 \item [{\tt cctk\_itlast}]
 Final iteration number [{\tt 10}]
+
+\item [{\tt terminate}]
+Condition on which to terminate evolution loop [{\tt iteration}] \{{\tt never, iteration, time, either, both}\}
+
+\item [{\tt terminate\_next}]
+Terminate on next iteration ? [{\tt no}]
 
 \end{Lentry}
 
