@@ -57,7 +57,7 @@ VTYPE <group name> [TYPE=<gtype>] [DIM=<dim>]
 [{
    <variable name>[,]<variable name>
    <variable name>
-}]
+}] [``<group description>'']
 \end{verbatim}}
 
 \begin{itemize}
@@ -65,7 +65,9 @@ VTYPE <group name> [TYPE=<gtype>] [DIM=<dim>]
         groups, and can be either {\t public}, {\t protected} or {\t private}.
 \item{} {\t VTYPE} defines the data type of the variables in the group.
 Supported data types are {\t LOGICAL}, {\t INTEGER}, {\t CHAR} and {\t REAL}.
-\item{} {\t group name} must be a alpha-numeric name which is unique 
+(In the future {\t COMPLEX} will also be supported.)
+\item{} {\t group name} must be a alpha-numeric name (which may also 
+contain underscores) which is unique 
 within the scope of the thorn. A group name is compulsory.
 \item{} {\t TYPE} designates the kind of variables held by the group.
 The choices are {\t GF}, {\t ARRAY} or {\t SCALAR}. This field is 
@@ -82,6 +84,8 @@ The default value is {\t DIM=3}.
         one group. The block must be delimited by brackets on new lines.
         If no block is given after a group declaration line, a 
         variable with the same name as the group is created.
+\item{} An optional description of the group can be given on the last line, 
+        at the moment this description is not used for any purpose.
 \end{itemize} 
 
 \section{param.ccl}
@@ -150,7 +154,11 @@ this number is the only acceptable value.
      \item{} {\t STRING}  No allowed values should be specified for a logical 
              parameter.
      \item{} {\t LOGICAL} No allowed values should be specified for a logical 
-             parameter.
+             parameter. The default value for a logical can be 
+        \begin{itemize}
+           \item{} True: {\t 1}, {\t yes}, {\t y}, {\t t}, {\t true}
+           \item{} False: {\t 0}, {\t no}, {\t n}, {\t f}, {\t false}
+        \end{itemize}
   \end{itemize}
 
 \item{} The {\t parameter name} must be unique within the scope of the thorn.
@@ -232,7 +240,7 @@ A TAGS database can be generated with by gmake:
 {\tt gmake TAGS} will create a database for a routine reference
 table to be used within Emacs. This database can be accessed within
 emacs if you add either of the following lines to your {\tt .emacs} file:\\
-{\tt (setq tags-file-name "CCTK_dir/TAGS")} XOR \\
+{\tt (setq tags-file-name "CCTK\_dir/TAGS")} XOR \\
 {\tt (setq tag-table-alist '(("CCTK\_dir" . "CCTK\_dir/TAGS")))}\\
 where {\tt CCTK\_dir } is your CCTK directory.\\
 
