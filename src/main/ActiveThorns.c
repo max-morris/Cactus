@@ -1061,6 +1061,55 @@ const char *CCTK_CompiledImplementation(int tindex)
   return ret_val;
 }
 
+
+ /*@@
+   @routine    CCTK_ImplementationRequires
+   @date       Sat Oct 20 2001
+   @author     Gabrielle Allen
+   @desc 
+   Return the ancestors for an implementation
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+   @returntype int
+   @returndesc 
+   @endreturndesc
+@@*/
+
+uStringList *CCTK_ImplementationRequires(const char *imp)
+{
+  int i;
+  t_sktree *impnode;
+  struct IMPLEMENTATION *impdata;
+  uStringList *ancestors;
+  const char *addthorn=NULL;
+
+  impnode = SKTreeFindNode(implist, imp);
+  impdata = (struct IMPLEMENTATION *)(impnode->data);
+
+  ancestors = Util_StringListCreate(n_thorns);
+
+  /* Get ancestors */
+  for(i=0; impdata->ancestors[i]; i++)
+  {
+    addthorn = CCTK_ImplementationThorn(impdata->ancestors[i]);
+    Util_StringListAdd(ancestors,impdata->ancestors[i]);
+  }
+      
+  /* Get friends */
+  for(i=0; impdata->friends[i]; i++)
+  {
+    addthorn = CCTK_ImplementationThorn(impdata->friends[i]);
+    Util_StringListAdd(ancestors,impdata->ancestors[i]);
+  }
+
+  return ancestors;
+}
+
  /*@@
    @routine    CCTKi_ActivateThorns
    @date       Mon May 21 22:06:37 2001
@@ -1127,15 +1176,15 @@ int CCTKi_ActivateThorns(const char *activethornlist)
     }
     else if(! (this_imp = CCTK_ThornImplementation(token)))
     {
-      printf("Error: thorn %s doesn't exist\n", token);
+      printf("Error: Thorn %s not found\n", token);
       n_errors++;
       /*  Give some more help */
       if (CCTK_IsImplementationCompiled(token))
       {
         impthornlist = CCTK_ImpThornList(token);
 
-        printf("       Implementation %s does exist\n",token);
-        printf("       Provided by :");
+        printf("       However, implementation %s was found and is\n",token);
+        printf("       provided by thorn(s):");
         SKTreeTraverseInorder(impthornlist, 
                               JustPrintThornName, NULL);
         printf("\n");
@@ -1294,7 +1343,7 @@ int CCTKi_ActivateThorns(const char *activethornlist)
 }
   
     
-  
+
 /********************************************************************
  *********************     Local Routines   *************************
  ********************************************************************/

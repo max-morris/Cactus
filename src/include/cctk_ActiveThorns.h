@@ -13,6 +13,7 @@
 
 #include <stdio.h>
 #include "SKBinTree.h"   
+#include "util_StringList.h"
 
 #ifdef __cplusplus 
 extern "C" {
@@ -29,6 +30,8 @@ t_sktree *CCTK_ImpThornList (const char *imp);
 
 const char *CCTK_ThornImplementation(const char *name);
 const char *CCTK_ImplementationThorn(const char *name);
+
+uStringList *CCTK_ImplementationRequires(const char *imp);
 
 int CCTK_NumCompiledThorns(void);
 int CCTK_NumCompiledImplementations(void);
