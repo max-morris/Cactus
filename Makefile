@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.26 1999-04-28 09:06:44 allen Exp $
+#   @version $Id: Makefile,v 1.27 1999-06-22 09:09:02 goodale Exp $
 # @@*/
 
 # Make quietly unless told not to
@@ -45,6 +45,70 @@ ifneq ($(strip $(options)),)
 SETUP_OPTIONS = -config_file=$(options)
 else
 SETUP_OPTIONS = 
+endif
+
+# Allow various options to be passed to the configure script
+
+SETUP_ENV = 
+
+ifdef CC
+ifneq ($(strip $(origin CC)), default)
+SETUP_ENV += CC=$(CC) ; export CC ;
+endif
+endif
+
+ifdef F90
+ifneq ($(strip $(origin F90)), default)
+SETUP_ENV += F90=$(F90) ; export F90 ;
+endif
+endif
+
+ifdef F77
+ifneq ($(strip $(origin F77)), default)
+SETUP_ENV += F77=$(F77) ; export F77 ;
+endif
+endif
+
+ifdef LD
+ifneq ($(strip $(origin LD)), default)
+SETUP_ENV += LD=$(LD) ; export LD ;
+endif
+endif
+
+ifdef CFLAGS
+ifneq ($(strip $(origin CFLAGS)), default)
+SETUP_ENV += CFLAGS=$(CFLAGS) ; export CFLAGS;
+endif
+endif
+
+ifdef F90FLAGS
+ifneq ($(strip $(origin F90FLAGS)), default)
+SETUP_ENV += F90FLAGS=$(F90FLAGS) ; export F90FLAGS ;
+endif
+endif
+
+ifdef F77FLAGS
+ifneq ($(strip $(origin F77FLAGS)), default)
+SETUP_ENV += F77FLAGS=$(F77FLAGS) ; export F90FLAGS ;
+endif
+endif
+
+ifdef LDFLAGS
+ifneq ($(strip $(origin LDFLAGS)), default)
+SETUP_ENV += LDFLAGS=$(LDFLAGS) ; export LDFLAGS ;
+endif
+endif
+
+ifdef PRECISION
+ifneq ($(strip $(origin PRECISION)), default)
+SETUP_ENV += PRECISION=$(PRECISION) ; export PRECISION ;
+endif
+endif
+
+ifdef INTEGER_PRECISION
+ifneq ($(strip $(origin INTEGER_PRECISION)), default)
+SETUP_ENV += INTEGER_PRECISION=$(PRECISION) ; export INTEGER_PRECISION ;
+endif
 endif
 
 # Various auxilary programs
@@ -83,7 +147,7 @@ new_setup:
 ifeq ($(strip $(CONFIGURATIONS)),)
 	@echo $(DIVIDER)
 	@echo Setting up cctk
-	$(PERL) -s $(SETUP) $(SETUP_OPTIONS)
+	$(SETUP_ENV) $(PERL) -s $(SETUP) $(SETUP_OPTIONS)
 	@echo $(DIVIDER)
 	@echo You are now ready to build the CCTK.
 	@echo This is done by $(MAKE) \<configuration\>
@@ -138,7 +202,7 @@ tags:
 config:
 	@echo $(DIVIDER)
 	@echo Running the configuration program
-	$(PERL) -s $(SETUP) $(SETUP_OPTIONS)
+	$(SETUP_ENV) $(PERL) -s $(SETUP) $(SETUP_OPTIONS)
 	@echo $(DIVIDER)
 
 # The help system.
@@ -312,7 +376,7 @@ ifneq ($strip($(CONFIGURATIONS)),)
 
 $(addsuffix -reconfig,$(CONFIGURATIONS)):
 	@echo $(DIVIDER)
-	$(PERL) -s $(SETUP) -reconfig=1 $(SETUP_OPTIONS) $(@:%-reconfig=%); 
+	$(SETUP_ENV) $(PERL) -s $(SETUP) -reconfig=1 $(SETUP_OPTIONS) $(@:%-reconfig=%); 
 endif
 
 %-reconfig:
@@ -381,7 +445,7 @@ downsize:
 	if [ "x$$yesno" = "xyes" -o "x$$yesno" = "xy" -o "x$$yesno" = "xYES" -o "x$$yesno" = "xY" ] ;\
 	then  \
 	echo Setting up new configuration $@; \
-	$(PERL) -s $(SETUP) $(SETUP_OPTIONS) $@; \
+	$(SETUP_ENV) $(PERL) -s $(SETUP) $(SETUP_OPTIONS) $@; \
 	echo $(DIVIDER)   ;  \
 	echo Use $(MAKE) $@ to build the configuration.; \
 	else \
