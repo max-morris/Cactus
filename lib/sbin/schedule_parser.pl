@@ -32,6 +32,10 @@ sub create_schedule_code
   # Loop though each thorn's schedule file
   foreach $thorn (keys %thorns)
   {
+    if ($CST_debug)
+    {
+	print "DEBUG:   --> $thorn\n";
+    }
 
     $implementation = $interface_database{"\U$thorn\E IMPLEMENTS"};
 
@@ -170,11 +174,21 @@ sub create_RegisterRFR
   $rfr_order_prototypes = "";
 
   # Sort the rfr routines
+  if ($CST_debug)
+  {
+    print "DEBUG: Ordering RFR routines\n";
+  }
   @sorted_routines = &OrderList("Scheduling error", ":ROUTINES:", %schedule_data);
   $order = 1;
 
   foreach $routine (@sorted_routines)
   {
+
+    if ($CST_debug)
+    {
+	print "DEBUG:   --> $routine\n";
+    }
+
     if($routine)
     {
       $rfr_order_prototypes .= "void $routine(cGH *);\n";
