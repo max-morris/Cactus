@@ -189,6 +189,10 @@ sub WriteFile
   my ($filename,$rdata) = @_;
   my ($data_in);
 
+# Strip any matching quotes from filename
+  $filename =~ s/^\s*\"(.*)\"\s*$/\1/;
+  $filename =~ s/^\s*\'(.*)\'\s*$/\1/;
+
 # Read in file
   $data_in = "";
   if (-e $filename) 
