@@ -20,6 +20,7 @@ typedef struct
   int dim;
   int numvars;
   int numtimelevels;
+  int vectorgroup;
 } cGroup;
 
 /* Prototypes */
@@ -75,6 +76,8 @@ int         CCTK_VarTypeNumber(const char *type);
 const char *CCTK_VarTypeName(int vartype);
 
 int         CCTK_VarTypeSize(int vtype);
+
+const int *CCTKi_GroupLengthAsPointer(const char *fullgroupname);
 
 /* traverse a string of group and/or variable names */
 int CCTK_TraverseString (const char *parsestring,

@@ -26,6 +26,8 @@
 #include "cctki_Stagger.h"
 #include "cctki_Groups.h"
 
+#include "util_String.h"
+
 /*#define DEBUG_GROUPS*/
 
 static const char *rcsid = "$Header$";
@@ -147,6 +149,11 @@ typedef struct
 
   /* variables[n_variables] */
   cVariableDefinition *variables;
+
+  /* Variable array size parameter */
+
+  const char *vararraysize;
+
 } cGroupDefinition;
 
 
@@ -185,6 +192,7 @@ static CCTK_INT **CCTKi_ExtractSize (int dimension,
                                      const char *thorn,
                                      const char *sizestring);
 
+static int ExtractNVars(const char *parameter);
 
  /*@@
    @routine    CCTK_StaggerVars
@@ -943,6 +951,15 @@ int CCTK_GroupData (int group, cGroup *gp)
       gp->numvars       = groups[group].n_variables;
       gp->numtimelevels = groups[group].n_timelevels;
       gp->stagtype      = groups[group].staggertype;
+
+      if(groups[group].vararraysize)
+      {
+        gp->vectorgroup = 1;
+      }
+      else
+      {
+        gp->vectorgroup = 0;
+      }
     }
     else
     {
@@ -1807,21 +1824,43 @@ int CCTKi_CreateGroup (const char *gname,
                        ...
                        )
 {
-  int     retval;
-  int     groupscope;
-  int     staggercode;
-  int     variable;
+  int retval;
+  int groupscope;
+  int staggercode;
+  int variable;
 
   va_list ap;
 
-  char*   variable_name;
+  char *variable_name;
+  char *vararraysize;
 
-  cGroupDefinition* group=NULL;
+  cGroupDefinition *group;
+
+  group = NULL;
+  variable_name = NULL;
+  vararraysize = NULL;
 
   retval = 0;
 
+  va_start (ap, n_variables);
+
   /* get the staggercode */
   staggercode = CCTKi_ParseStaggerString (dimension, imp, gname, stype);
+
+  if(n_variables == -1)
+  {
+    variable_name = va_arg (ap, char *);
+      
+    vararraysize = Util_Strdup(va_arg (ap, char *));
+
+    n_variables = ExtractNVars(vararraysize);
+    if(n_variables < 1)
+    {
+      CCTK_VWarn (0, __LINE__, __FILE__, "Cactus",
+                  "CCTKi_CreateGroup: length of group %s less than 1 !",
+                  gname);
+    }
+  }
 
   /* Allocate storage for the group */
   groupscope = CCTK_GroupScopeNumber (gscope);
@@ -1851,22 +1890,36 @@ int CCTKi_CreateGroup (const char *gname,
     group->n_timelevels = ntimelevels;
 
     /* Extract the variable names from the argument list. */
-    va_start (ap, n_variables);
 
-    for (variable = 0; variable < n_variables; variable++)
+    if(! vararraysize)
     {
-      variable_name = va_arg (ap, char *);
-
-      group->variables[variable].name =
-        (char *)malloc ((strlen (variable_name)+1*sizeof (char)));
-
-      if (group->variables[variable].name)
+      for (variable = 0; variable < n_variables; variable++)
       {
-        strcpy (group->variables[variable].name, variable_name);
+        variable_name = va_arg (ap, char *);
+
+        group->variables[variable].name =
+          (char *)malloc ((strlen (variable_name)+1*sizeof (char)));
+        
+        if (group->variables[variable].name)
+        {
+          strcpy (group->variables[variable].name, variable_name);
+        }
+        else
+        {
+          break;
+        }
       }
-      else
+    }
+    else
+    {
+      group->vararraysize = Util_Strdup(va_arg (ap, char *));
+
+      for (variable = 0; variable < n_variables; variable++)
       {
-        break;
+        char *name;
+        Util_asprintf(&name, "%s[%d]", variable_name, variable);
+
+        group->variables[variable].name = name;
       }
     }
 
@@ -2060,6 +2113,7 @@ static cGroupDefinition *CCTKi_SetupGroup (const char *implementation,
    @returndesc
                pointer to an allocated array of sizes for the given list, or
                NULL if no parameter list is given or out of memory
+   @endreturndesc
 @@*/
 static CCTK_INT **CCTKi_ExtractSize (int dimension,
                                      const char *this_thorn,
@@ -2169,4 +2223,145 @@ static CCTK_INT **CCTKi_ExtractSize (int dimension,
   }
 
   return (size_array);
+}
+
+ /*@@
+   @routine    CCTKi_GroupLengthAsPointer
+   @date       Sun Oct  7 03:58:44 2001
+   @author     Tom Goodale
+   @desc 
+   
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+   @var     fullgroupname
+   @vdesc   The full name of a GV group
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+
+   @returntype const int *
+   @returndesc
+               pointer to an integer containing the number of variables in the group
+               NULL if group doesn't exist
+   @endreturndesc
+@@*/
+const int *CCTKi_GroupLengthAsPointer(const char *fullgroupname)
+{
+  int group;
+  const int *retval;
+  char *impname, *groupname;
+
+
+  retval = NULL;
+  impname = NULL;
+  groupname = NULL;
+
+  
+  if (! CCTK_DecomposeName (fullgroupname, &impname, &groupname))
+  {
+    for (group = 0; group < n_groups; group++)
+    {
+      if (CCTK_Equals (impname, groups[group].implementation) &&
+          CCTK_Equals (groupname, groups[group].name))
+      {
+        retval = &groups[group].n_variables;
+        break;
+      }
+    }
+
+    if (retval == NULL)
+    {
+      CCTK_VWarn (6, __LINE__, __FILE__, "Cactus",
+                  "CCTK_GroupIndex: No group named '%s' found",
+                  fullgroupname);
+    }
+  }
+
+  /* Free memory from CCTK_DecomposeName */
+  if (impname)
+  {
+    free (impname);
+  }
+  if (groupname)
+  {
+    free (groupname);
+  }
+
+  return retval;
+}
+
+ /*@@
+   @routine    ExtractNVars
+   @date       Sun Oct  7 05:34:23 2001
+   @author     Tom Goodale
+   @desc 
+   Simplem routine to turn a parameter value or integer into an integer
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+   @var     parameter
+   @vdesc   full parameter name
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+
+   @returntype int
+   @returndesc
+       A size extracted form the parameter
+   @endreturndesc
+@@*/
+static int ExtractNVars(const char *parameter)
+{
+  int retval;
+  char *tmp;
+  char *endptr;
+  const CCTK_INT *paramval;
+  char *thorn;
+  char *param;
+  int type;
+  
+  tmp = Util_Strdup(parameter);
+
+  retval = strtol(tmp,&endptr,0);
+
+  if(endptr == tmp)
+  {
+    CCTK_DecomposeName (parameter,&thorn,&param);
+  
+    paramval = (CCTK_INT *) CCTK_ParameterGet (param, thorn, &type);
+
+    if(paramval && type==PARAMETER_INTEGER)
+    {
+      retval = *paramval;
+    }
+    else if(!paramval)
+    {
+      CCTK_VWarn (0, __LINE__, __FILE__, "Cactus",
+                  "ExtractNSize: '%s::%s' is not a parameter",
+                  thorn, param);
+    }
+    else
+    {
+      CCTK_VWarn (0, __LINE__, __FILE__, "Cactus",
+                  "ExtractNSize: '%s::%s' is not an integer parameter",
+                  thorn, param);
+    }
+    free(thorn);
+    free(param);
+  }
+
+  free(tmp);
+
+  return retval;
 }

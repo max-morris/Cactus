@@ -247,6 +247,10 @@ extern int _cctk_one;
                   (CCTK_ArrayGroupSize(xGH, cctk_dim, group)) : &_cctk_one)
 
 
+#define CCTK_GROUPLENGTH(xGH, group) \
+                  (CCTK_QueryGroupStorage(xGH, group) ?\
+                  (CCTKi_GroupLengthAsPointer(group)) : &_cctk_one)
+
 #define CCTK_EQUALS(a,b) (CCTK_Equals((a),(b))==1)
 
 #define CCTK_PASS_CTOC cctkGH
