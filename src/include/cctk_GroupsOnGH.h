@@ -20,6 +20,7 @@ typedef struct GROUPDYNAMICDATA
   const int *ubnd;
   const int *bbox;
   const int *nghostzones;
+  int activetimelevels;
 } cGroupDynamicData;
 
 /* Prototypes */
