@@ -215,7 +215,7 @@ void FMODIFIER FORTRAN_NAME(CCTK_Reduce)(cGH *GH,
       {
 	
 	/* Fill in the array of variable indices from the variable argument list */
-	va_start(indices, *num_in_fields);
+	va_start(indices, num_in_fields);
 	for (i=0; i<*num_in_fields; i++)
 	  in_fields[i] = *va_arg(indices,int *);
 	va_end(indices);
