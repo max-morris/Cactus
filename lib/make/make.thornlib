@@ -33,7 +33,7 @@ CCTK_SRCS += $(SRCS)
 # These have to be wrapped to allow us to concatanate all the
 # SRCS definitions, complete with subdirectory names.
 ifneq ($(strip $(SUBDIRS)),)
-include $(foreach DIR,$(SUBDIRS), $(DIR)/make.identity $(MAKE_DIR)/$(PRE_WRAPPER) $(SRCDIR)/$(DIR)/make.code.defn $(MAKE_DIR)/$(POST_WRAPPER))
+sinclude $(foreach DIR,$(SUBDIRS), $(DIR)/make.identity $(MAKE_DIR)/$(PRE_WRAPPER) $(SRCDIR)/$(DIR)/make.code.defn $(MAKE_DIR)/$(POST_WRAPPER))
 endif
 
 SRCS = $(CCTK_SRCS)
@@ -50,7 +50,9 @@ $(NAME): $(addsuffix .check, $(SUBDIRS)) $(OBJS) $(SRCDIR)/make.code.defn $(fore
 include $(CONFIG)/make.config.rules
 
 # Extra thorn-specific dependencies
-include $(SRCDIR)/make.code.deps
+# This file isn't strictly necessary, so use sinclude to prevent 
+# warnings if it is missing.
+sinclude $(SRCDIR)/make.code.deps
 
 # Extra stuff for allowing make to recurse into directories
 

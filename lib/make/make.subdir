@@ -32,5 +32,7 @@ all: $(OBJS)
 include $(CONFIG)/make.config.rules
 
 # Extra subdir-specific dependencies
+# This file isn't strictly necessary, so use sinclude to prevent 
+# warnings if it is missing.
 include $(SRCDIR)/make.code.deps
 

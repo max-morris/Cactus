@@ -24,8 +24,10 @@ DIVIDER =  $(DIVEL)$(DIVEL)$(DIVEL)$(DIVEL)
 # Include the definitions for this configuration
 include $(CONFIG)/make.config.defn
 
-# Include the list of thorns to be built
-include $(CONFIG)/make.thornlist
+# Include the list of thorns to be built 
+# (Use sinclude to prevent warnings messages, as the file will be built if
+# it is missing .)
+sinclude $(CONFIG)/make.thornlist
 
 # Build the executable
 $(EXE): $(CONFIG)/make.thornlist $(patsubst %,$(CCTK_LIBDIR)/lib%.a,$(notdir $(THORNS))) $(CCTK_LIBDIR)/libCCTK.a
