@@ -144,7 +144,7 @@ sub parse_param_ccl
         
 	if ($3 !~ /^\s*$/)
 	{
-	  $mess = "More than one implementation on SHARES line in thorn $thorn";
+	  $mess = "More than one implementation on SHARES line in param.ccl for thorn $thorn";
 	  &CST_error(0,$mess,"",__LINE__,__FILE__);
 	}
 	  
