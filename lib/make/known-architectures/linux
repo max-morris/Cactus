@@ -31,6 +31,8 @@ else
         LINUX_F90_COMP=portland
     elif test "`$F90 -v 2>&1 | grep -i g77`" ; then
         LINUX_F90_COMP=gnu77
+    elif test "`$F90 -dumpversion | grep 'GNU Fortran 95'`" ; then
+        LINUX_F90_COMP=gnu95
     elif test "`$F90 -? 2>&1 | grep -i absoft`" ; then
         LINUX_F90_COMP=absoft77
     elif test "`$F90 --version 2>&1 | grep -i lahey/fujitsu`" ; then
@@ -51,6 +53,8 @@ else
   elif test -n "$F77" ; then
     if test "`$F77 -v 2>&1 | grep -i 'gcc version'`" ; then
         LINUX_F90_COMP=gnu77
+    elif test "`$F77 -dumpversion | grep 'GNU Fortran 95'`" ; then
+        LINUX_F90_COMP=gnu95
     elif test "`$F77 -? 2>&1 | grep -i absoft`" ; then
         LINUX_F90_COMP=absoft77
     elif test "`$F77 -V 2>&1 | grep NAGWare`" ; then
@@ -94,6 +98,13 @@ else
          : ${LIBS="f2c m"}
          fi
        fi
+       : ${F77_DEBUG_FLAGS="-g"}
+       : ${F90_DEBUG_FLAGS="-g"}
+       : ${F77_WARN_FLAGS="-Wall"}
+       : ${F90_WARN_FLAGS="-Wall"}
+       ;;
+     gnu95)
+       : ${LIBS="gfortran"}
        : ${F77_DEBUG_FLAGS="-g"}
        : ${F90_DEBUG_FLAGS="-g"}
        : ${F77_WARN_FLAGS="-Wall"}
