@@ -108,24 +108,13 @@ int CCTK_CreateDirectory (int mode, const char *pathname)
 
       if (stat (current, &statbuf))
       {
-#if 0
-        CCTK_VInfo ("Cactus", "Creating directory: '%s'", current);
-#endif
         if (MKDIR_WRAPPER (current, mode) == -1)
         {
-#if 0
-          CCTK_VWarn (0, __LINE__, __FILE__, "Cactus",
-                      "Failed to create directory '%s'", current);
-#endif
-          retval = -2;
+          retval = errno == EEXIST ? 1 : -2;
         }
       }
       else if (! S_ISDIR (statbuf.st_mode))
       {
-#if 0
-        CCTK_VWarn (0, __LINE__, __FILE__, "Cactus",
-                    "'%s' exists but is not a directory", current);
-#endif
         retval = -3;
       }
       else
@@ -146,24 +135,13 @@ int CCTK_CreateDirectory (int mode, const char *pathname)
       {
         if (stat (pathname, &statbuf))
         {
-#if 0
-          CCTK_VInfo ("Cactus", "Creating directory: '%s'", pathname);
-#endif
           if (MKDIR_WRAPPER (pathname, mode) == -1)
           {
-#if 0
-            CCTK_VWarn (0, __LINE__, __FILE__, "Cactus",
-                        "Failed to create directory '%s'", pathname);
-#endif
-            retval = -2;
+            retval = errno == EEXIST ? 1 : -2;
           }
         }
         else if (! S_ISDIR (statbuf.st_mode))
         {
-#if 0
-          CCTK_VWarn (0, __LINE__, __FILE__, "Cactus",
-                      "'%s' exists but is not a directory", pathname);
-#endif
           retval = -3;
         }
         else
@@ -178,10 +156,6 @@ int CCTK_CreateDirectory (int mode, const char *pathname)
   }
   else
   {
-#if 0
-    CCTK_Warn (0, __LINE__, __FILE__, "Cactus",
-               "Failed to allocate some temporary memory");
-#endif
     retval = -1;
   }
 
