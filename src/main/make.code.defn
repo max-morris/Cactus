@@ -19,5 +19,6 @@ flesh.cc\
 Groups.c\
 Dummies.c\
 rfrInterface.c\
-Overload.c
-
+Overload.c\
+CommandLine.c\
+WarnLevel.c
