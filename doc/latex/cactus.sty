@@ -510,7 +510,13 @@
   y\or z\else\@ctrerr\fi}
 \makeatother
 
-\newenvironment{cactuspart}[4]
+%
+% arguments:
+% #1 = Name of this part, eg "Function Reference"
+% #2 = $RCSFile:$ keyword
+% #3 = $Revision$ keyword
+%
+\newenvironment{cactuspart}[3]
 {
   \clearpage
   \renewcommand{\thepage}{\BigAlph{part}\arabic{page}}
@@ -518,8 +524,8 @@
   \fancypagestyle{plain}
   {
     \fancyhf{} % Clear all header and footer fields
-    \lfoot{#3}
-    \cfoot{#4}
+    \lfoot{#2}
+    \cfoot{#3}
     \rfoot{\thepage/\pageref{lastpage:\thepart}}
     \renewcommand{\headrulewidth}{0.0pt}  
     \renewcommand{\footrulewidth}{0.4pt}  
@@ -532,12 +538,11 @@
   \setcounter{page}{1}
   % Start a new part
   \renewcommand{\thepage}{\BigAlph{part}\arabic{page}}
-  \part{#2}
-  \setcounter{part}{#1}
+  \part{#1}
   % Redefine the page
   % Set up fancy headings.
-  \lfoot{#3}
-  \cfoot{#4}
+  \lfoot{#2}
+  \cfoot{#3}
   \rfoot{\thepage/\pageref{lastpage:\thepart}}
   \renewcommand{\headrulewidth}{0.4pt}
   \renewcommand{\footrulewidth}{0.4pt}
