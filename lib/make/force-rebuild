@@ -5,7 +5,7 @@
 #   @desc 
 #   Timestamp file for forcing rebuilds of configurations
 #   @enddesc 
-#   @version $Id: force-rebuild,v 1.11 2004-01-19 14:22:04 schnetter Exp $
+#   @version $Id: force-rebuild,v 1.12 2004-04-01 09:03:38 schnetter Exp $
 # @@*/
 
 6 March 2003: minor changes to CreateFunctionBindings.pl 
@@ -22,3 +22,4 @@
 21 November 2003: Allow vector groups to have multiple variables.
 19 Januar 2004: Compile Cactus and CactusBindings first so that other thorns
                 can access Fortran modules therein
+01 April 2004: Re-enable the consistency check for inheriting
