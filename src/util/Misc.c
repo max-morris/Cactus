@@ -50,14 +50,17 @@ int CCTK_RegexMatch(const char *string,
                     const int nmatch,
                     regmatch_t *pmatch);
 int CCTK_SetStringInRegexList(char **data, const char *value,
-                                     int n_elements, ...);
+                              int n_elements, ...);
 void CCTK_PrintString(const char *data);
 
 int CCTK_FCALL CCTK_FNAME(CCTK_Equals)
-     (const char **arg1,ONE_FORTSTRING_ARG);
+                         (const char **arg1, ONE_FORTSTRING_ARG);
+
+CCTK_POINTER CCTK_FCALL CCTK_FNAME(CCTK_PointerTo)
+                                  (CCTK_POINTER var);
 
 void CCTK_FCALL CCTK_FNAME(CCTK_PrintString)
-     (const char **arg1);
+                          (const char **arg1);
 
 void CCTK_FCALL CCTK_FNAME (CCTK_FortranString)
                            (CCTK_INT *nchars,
@@ -157,6 +160,30 @@ int CCTK_FCALL CCTK_FNAME(CCTK_Equals)
   return(retval);
 }
 
+
+ /*@@
+   @routine    CCTK_PointerTo
+   @date       Tue 10 Dec 2002
+   @author     Thomas Radke
+   @desc
+               Returns the pointer to a variable which is passed in
+               (by reference) from a fortran routine.
+   @enddesc
+
+   @var        var
+   @vdesc      variable passed in from fortran by reference
+   @vtype      CCTK_POINTER
+   @vio        in
+
+   @returntype CCTK_POINTER
+   @returndesc
+               pointer to the variable
+   @endreturndesc
+@@*/
+CCTK_POINTER CCTK_FCALL CCTK_FNAME (CCTK_PointerTo) (CCTK_POINTER var)
+{
+  return (var);
+}
 
  /*@@
    @routine Util_NullTerminateString
