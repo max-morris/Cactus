@@ -34,7 +34,7 @@ sub test_fortran_name
   local($retcode, $line, $name, $case, $n_underscores);
   local($underscore_suffix, $normal_suffix, $case_prefix);
 
-  if($compiler)
+  if($compiler && $compiler ne "")
   {
     # Create a test file
     open(OUT, ">fname_test.f") || die "Cannot open fname_test.f\n";
@@ -172,10 +172,12 @@ sub test_fortran_common_name
   local($retcode, $line, $name, $case, $n_underscores);
   local($underscore_suffix, $normal_suffix, $case_prefix);
 
-  # Create a test file
-  open(OUT, ">fname_test.f") || die "Cannot open fname_test.f\n";
+  if($compiler && $compiler ne "")
+  {
+    # Create a test file
+    open(OUT, ">fname_test.f") || die "Cannot open fname_test.f\n";
 
-  print OUT <<EOT;
+    print OUT <<EOT;
       subroutine test_name
       real b
       common /test_common/b
@@ -185,82 +187,82 @@ sub test_fortran_common_name
 
 EOT
 
-  close OUT;
+    close OUT;
 
-  # Compile the test file
-  print "Compiling test file with $compiler...\n";
-  system("$compiler -c fname_test.f");
-
-  $retcode = $? >> 8;
-
-  if($retcode > 0)
-  {
-    print "Failed to compile fname_test.f\n";
-  }
-
-
-  # Search the object file for the appropriate symbols
-    open(IN, "<fname_test.o") || open(IN, "<fname_test.obj") || die "Cannot open fname_test.o\n";
-
-  while(<IN>)
-  {
-    $line = $_;
-    if($line =~ m:(_[\w_]*)?(TEST_COMMON)(_*):i)
+    # Compile the test file
+    print "Compiling test file with $compiler...\n";
+    system("$compiler -c fname_test.f");
+    
+    $retcode = $? >> 8;
+    
+    if($retcode > 0)
     {
-      $prefix = $1;
-      $name = $2;
-      $underscores = $3;
-
-      # This is a pain.  If all symbols have underscores, need to remove
-      # the first one here.
-
-      if($symbols_preceeded_by_underscores)
-      {
-	if($prefix =~ m:^_(.*):)
-	{
-	  $prefix = $1;
-	}
-      }
-
-      if($name =~ m:TEST_COMMON:)
-      {
-	print "Uppercase - ";
-	$case = 1;
-      }
-      if($name =~ m:test_common:)
-      {
-	print "Lowercase - ";
-	$case = 0;
-      }
-      if($underscores eq "")
-      {
-	print " No trailing underscore\n";
-	$n_underscores = 0;
-      }
-      if($underscores eq "_")
-      {
-	print "One trailing underscore\n";
-	$n_underscores = 1;
-      }
-      if($underscores eq "__")
-      {
-	print "Two trailing underscores\n";
-	$n_underscores = 2;
-      }
-
-      last;
+      print "Failed to compile fname_test.f\n";
     }
-  }
 
-  close IN;
+    
+    # Search the object file for the appropriate symbols
+    open(IN, "<fname_test.o") || open(IN, "<fname_test.obj") || die "Cannot open fname_test.o\n";
+    
+    while(<IN>)
+    {
+      $line = $_;
+      if($line =~ m:(_[\w_]*)?(TEST_COMMON)(_*):i)
+      {
+	$prefix = $1;
+	$name = $2;
+	$underscores = $3;
+	
+	# This is a pain.  If all symbols have underscores, need to remove
+	# the first one here.
+	
+	if($symbols_preceeded_by_underscores)
+	{
+	  if($prefix =~ m:^_(.*):)
+	  {
+	    $prefix = $1;
+	  }
+	}
 
-  # Delete the temporary files
-  unlink <fname_test.*>;
+	if($name =~ m:TEST_COMMON:)
+	{
+	  print "Uppercase - ";
+	  $case = 1;
+	}
+	if($name =~ m:test_common:)
+	{
+	  print "Lowercase - ";
+	  $case = 0;
+	}
+	if($underscores eq "")
+	{
+	  print " No trailing underscore\n";
+	  $n_underscores = 0;
+	}
+	if($underscores eq "_")
+	{
+	  print "One trailing underscore\n";
+	  $n_underscores = 1;
+	}
+	if($underscores eq "__")
+	{
+	  print "Two trailing underscores\n";
+	  $n_underscores = 2;
+	}
 
-  # Determine the case and number of underscores
-  ($underscore_suffix, $normal_suffix, $case_prefix) = &determine_transformation($n_underscores, $case);
+	last;
+    }
+    }
+    
+    close IN;
+    
+    # Delete the temporary files
+    unlink <fname_test.*>;
 
-  $data =  "
+    # Determine the case and number of underscores
+    ($underscore_suffix, $normal_suffix, $case_prefix) = &determine_transformation($n_underscores, $case);
+
+    $data =  "
 sub fortran_common_name
 {
     local(\$old_name) = \@_;
@@ -281,6 +283,21 @@ sub fortran_common_name
 }
 
 ";
+
+  }
+  else
+  {
+    $data = "
+
+sub fortran_common_name
+{
+  local(\$old_name) = \@_;
+
+  return \"\$old_name\";
+
+}
+";
+}
 
   return $data;
 }
