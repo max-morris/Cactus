@@ -95,6 +95,7 @@ while ($choice !~ /^Q/i)
 	%testdata = &RunTest($tests[2*$i],$tests[2*$i+1],\%config_data,%testdata);
 	%rundata = &CompareTestFiles($tests[2*$i],$tests[2*$i+1],\%runconfig,\%rundata,\%config_data,%testdata);
 	%rundata = &ReportOnTest($tests[2*$i],$tests[2*$i+1],\%rundata,%testdata);
+	&ViewResults($tests[2*$i],$tests[2*$i+1],\%runconfig,\%rundata,%testdata);
       }
     }
     elsif ($choice =~ /^R/i)
@@ -107,6 +108,7 @@ while ($choice !~ /^Q/i)
 	%testdata = &RunTest($test,$thorn,\%config_data,%testdata);
 	%rundata = &CompareTestFiles($test,$thorn,\%runconfig,\%rundata,\%config_data,%testdata);
 	%rundata = &ReportOnTest($test,$thorn,,\%rundata,%testdata);
+	&ViewResults($test,$thorn,\%runconfig,\%rundata,%testdata);
       }
       else
       {
