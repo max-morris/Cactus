@@ -1,7 +1,7 @@
 
 Cactus Code Frequently Asked Questions
 
-$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.67 2003-07-24 10:29:54 allen Exp $
+$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.68 2003-07-26 14:53:28 schnetter Exp $
 
 Also available at http://www.cactuscode.org/Documentation/FAQ
 
@@ -126,9 +126,10 @@ C25 On compiling Fortran code I get errors like "dummy argument CCTK_DIM has
 C26 I'm passing arguments to my scheduled routine using CCTK_ARGUMENTS and
     I get the compile error "identifier DECLARE_CCTK_ARGUMENTS is undefined"
 
-C27 I have a code block commented out by '#if 0  ...  #endif' in a C/C++ routine
-    which uses the DECLARE_CCTK_ARGUMENTS and/or DECLARE_CCTK_PARAMETERS macro.
-    The compiler stops with a parsing error on this piece of code.
+C27 I have a code block commented out by '#if 0  ...  #endif' in a C/C++
+    routine which uses the DECLARE_CCTK_ARGUMENTS and/or
+    DECLARE_CCTK_PARAMETERS macro.  The compiler stops with a parsing error
+    on this piece of code.
 
 C28 (Linux IA64) I get a segmentation violation compiling snprintf.c in
     the Cactus flesh?
@@ -856,9 +857,10 @@ C26 I'm passing arguments to my scheduled routine using CCTK_ARGUMENTS and
 
     at the top of your source file
 
-C27 I have a code block commented out by '#if 0  ...  #endif' in a C/C++ routine
-    which uses the DECLARE_CCTK_ARGUMENTS and/or DECLARE_CCTK_PARAMETERS macro.
-    The compiler stops with a parsing error on this piece of code.
+C27 I have a code block commented out by '#if 0  ...  #endif' in a C/C++
+    routine which uses the DECLARE_CCTK_ARGUMENTS and/or
+    DECLARE_CCTK_PARAMETERS macro.  The compiler stops with a parsing error
+    on this piece of code.
 
     For C/C++ code, these two macros expand into (a list of) declarations
     of local variables, with the same names of the arguments/parameters,
