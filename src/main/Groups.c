@@ -21,7 +21,6 @@
 #include "cctk_Groups.h"
 #include "cctk_Parameter.h"
 #include "cctk_Types.h"
-#include "cctk_GNU.h"            /* includes <regex.h> */
 
 #include "cctki_Stagger.h"
 #include "cctki_Groups.h"
@@ -98,14 +97,6 @@ void CCTK_FCALL CCTK_FNAME (CCTK_GroupDimFromVarI)
                            (int *dim,
                             const int *vi);
 
-
-/********************************************************************
- ***********************    Other Routines   ************************
- ********************************************************************/
-int CCTK_RegexMatch(const char *string,
-                    const char *pattern,
-                    const int nmatch,
-                    regmatch_t *pmatch);
 
 /********************************************************************
  ********************    Internal Typedefs   ************************
@@ -2158,36 +2149,27 @@ static CCTK_INT **CCTKi_ExtractSize (int dimension,
                                      const char *this_thorn,
                                      const char *sizestring)
 {
-  int         dim, type;
-  CCTK_INT    *this_size, **size_array;
+  int         dim;
+  char       *tmp;
   const char *last_comma, *next_comma;
-  char       *thorn, *param, *tmp;
-  regmatch_t  pmatch[5];
+  CCTK_INT   **size_array;
 
-  /*#define USE_REGEX_PARSER 1*/
-
-#ifndef USE_REGEX_PARSER
-  CCTK_INT size;
-#endif
-  
 
   if (strlen (sizestring))
   {
-    size_array = (CCTK_INT **) malloc (dimension * sizeof (CCTK_INT *));
-
-#ifndef USE_REGEX_PARSER
-    size_array[0] = (CCTK_INT *) malloc(dimension *sizeof(CCTK_INT));
-
-    for(dim = 1; dim < dimension; dim++)
-    {
-      size_array[dim] = size_array[0] + dim;
-    }
-#endif
-
     next_comma = sizestring;
+
+    size_array = (CCTK_INT **) malloc (dimension * sizeof (CCTK_INT *));
 
     if (size_array)
     {
+      size_array[0] = (CCTK_INT *) malloc (dimension * sizeof (CCTK_INT));
+
+      for (dim = 1; dim < dimension; dim++)
+      {
+        size_array[dim] = size_array[0] + dim;
+      }
+
       for (dim = 0; dim < dimension; dim++)
       {
         /* find the comma as a delimiter for different dimension sizes */
@@ -2201,76 +2183,7 @@ static CCTK_INT **CCTKi_ExtractSize (int dimension,
           tmp[next_comma-last_comma] = '\0';
         }
 
-#ifdef USE_REGEX_PARSER
-        /* now execute the regex parser on that token
-           This should always succeed since the perl parser did the same
-           check already when creating the variable bindings. */
-        if (CCTK_RegexMatch (tmp, "(^[0-9]+)|([A-Za-z][A-Za-z0-9_]*)"
-                                  "(::[A-Za-z][A-Za-z0-9_]*)?([+-][0-9]+)?",
-                             5, pmatch) <= 0)
-        {
-          CCTK_VWarn (0, __LINE__, __FILE__, "Cactus",
-                      "CCTKi_ExtractSize: invalid syntax in size specification "
-                      "'%s'", tmp);
-        }
-
-        /* check for constant size */
-        if (pmatch[1].rm_so >= 0)
-        {
-          size_array[dim] = (CCTK_INT *) malloc (sizeof (CCTK_INT));
-          *size_array[dim] = (CCTK_INT) atoi (tmp + pmatch[0].rm_so);
-        }
-        else
-        {
-          /* it's a parameter name, either given as basename or fullname */
-          if (pmatch[3].rm_so >= 0)
-          {
-            thorn = strdup (tmp + pmatch[2].rm_so);
-            thorn[pmatch[2].rm_eo - pmatch[2].rm_so] = 0;
-            param = strdup (tmp + pmatch[3].rm_so + 2);
-            param[pmatch[3].rm_eo - pmatch[3].rm_so - 2] = 0;
-          }
-          else
-          {
-            thorn = strdup (this_thorn);
-            param = strdup (tmp + pmatch[2].rm_so);
-            param[pmatch[2].rm_eo - pmatch[2].rm_so] = 0;
-          }
-
-          /* check if such a parameter exists at all */
-          this_size = (CCTK_INT *) CCTK_ParameterGet (param, thorn, &type);
-          if (! this_size)
-          {
-            CCTK_VWarn (0, __LINE__, __FILE__, "Cactus",
-                        "CCTKi_ExtractSize: '%s::%s' is not a parameter",
-                        thorn, param);
-          }
-
-          /* check if the parameter is of type INTEGER */
-          if (type != PARAMETER_INTEGER)
-          {
-            CCTK_VWarn (0, __LINE__, __FILE__, "Cactus",
-                        "CCTKi_ExtractSize: parameter '%s::%s' is not of "
-                        "type INTEGER", thorn, param);
-          }
-
-          /* okay, store the size value */
-          size_array[dim] = this_size;
-
-          /* check for an optional constant (includes sign character) */
-          if (pmatch[4].rm_so >= 0)
-          {
-            *size_array[dim] += atoi (tmp + pmatch[2].rm_so);
-          }
-
-          free (thorn);
-          free (param);
-        }
-#else
-        size = CCTKi_ParamExpressionToInt(tmp, this_thorn);
-
-        *size_array[dim] = size;
-#endif /* USE_REGEX_PARSER */
+        *size_array[dim] = CCTKi_ParamExpressionToInt (tmp, this_thorn);
    
         free (tmp);
       }
