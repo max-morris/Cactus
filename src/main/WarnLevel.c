@@ -16,8 +16,14 @@
 #include "Misc.h"
 #include "WarnLevel.h"
 #include "FortranString.h"
+#include "declare_parameters.h"
 
 static char *rcsid = "$Header$";
+
+/* Store the number of parameter errors */
+
+static int param_errors = 0;
+
 
 /* Store the warning level - warnings of this severity or worse will
  * be reported
@@ -131,6 +137,49 @@ int FMODIFIER FORTRAN_NAME(CCTK_Warn)(int *level, TWO_FORTSTRINGS_ARGS)
   return(retval);
 }
 
+ /*@@
+   @routine    CCTK_ParamWarn
+   @date       Wed Feb 17 00:45:07 1999
+   @author     Tom Goodale
+   @desc 
+   Warn the user is a parameter error is found
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+void CCTK_ParamWarn(const char *thorn, const char *message)
+{
+
+  DECLARE_PARAMETERS
+
+  if(cctk_strong_param_check)
+  {
+    fprintf(stderr, "PARAM ERROR (%s): %s\n", thorn, message);
+    fflush(stderr);
+  }
+  else
+  {
+    fprintf(stderr, "PARAM WARNING (%s): %s\n", thorn, message);
+    fflush(stderr);
+  }
+
+  param_errors++;
+
+}
+
+void FMODIFIER FORTRAN_NAME(CCTK_ParamWarn)(TWO_FORTSTRINGS_ARGS)
+{
+  TWO_FORTSTRINGS_CREATE(thorn,message)
+  CCTK_ParamWarn(thorn,message);
+  free(thorn);
+  free(message); 
+}
+
+
 
  /*@@
    @routine    CCTK_Info
@@ -146,23 +195,17 @@ int FMODIFIER FORTRAN_NAME(CCTK_Warn)(int *level, TWO_FORTSTRINGS_ARGS)
    @endhistory 
 
 @@*/
-int CCTK_Info(const char *message)
+
+void CCTK_Info(const char *thorn, const char *message)
 {
-  int retval;
-
-  fprintf(stderr, "INFO: %s\n", message);
-  retval = 1;
-
-  return retval;
+  fprintf(stderr, "INFO (%s): %s\n", thorn, message);
 }
 
-int FMODIFIER FORTRAN_NAME(CCTK_Info)(ONE_FORTSTRING_ARG)
+int FMODIFIER FORTRAN_NAME(CCTK_Info)(TWO_FORTSTRINGS_ARGS)
 {
-  ONE_FORTSTRING_CREATE(message)
-  int retval;
-  retval = CCTK_Info(message);
+  TWO_FORTSTRINGS_CREATE(thorn,message)
+  CCTK_Info(thorn,message);
   free(message); 
-  return(retval);
 }
 
 
@@ -220,3 +263,45 @@ int CCTK_SetErrorLevel(int level)
 
   return retval;
 }
+
+ /*@@
+   @routine    CCTKi_FinaliseParamWarn
+   @date       June 1999
+   @author     Gabrielle Allen
+   @desc 
+               Die if required after param check
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+
+void CCTKi_FinaliseParamWarn(void)
+{
+
+  DECLARE_PARAMETERS
+
+  if (param_errors)
+  {
+    if(cctk_strong_param_check)
+    {
+      fprintf(stderr,"\nFailed parameter check (%d errors)\n\n",param_errors);
+      fflush(stderr);
+      exit(99);
+    }
+    else
+    {
+      if (param_errors==1)
+	fprintf(stderr, "\nThere was 1 parameter warning\n\n");
+      else
+	fprintf(stderr, "\nThere were %d parameter warnings\n\n",param_errors);
+      fflush(stderr);
+    }
+
+  }
+
+}
+
