@@ -35,10 +35,10 @@ $tests = &defprompt("Run All tests or go to Menu",
 # Get the active thorns list and test files with thorns 
 $scratchdir = "configs$sep$config";
  
-if (!open (AT, "< $scratchdir${sep}ActiveThorns")) {
-    print "Can't open $scratchdir/ActiveThorns - no thorn tests";
+if (!open (AT, "< $scratchdir${sep}ThornList")) {
+    print "Can't open $scratchdir/ThornList - no thorn tests";
 } else {
-    printf ("Reading Active Thorns\n");
+    printf ("Reading Thorn List\n");
     while (<AT>) {
         @t = split(' ');
         foreach $T (@t) {
