@@ -35,6 +35,8 @@ CXXFLAGS          = @CXXFLAGS@
 F90FLAGS          = @F90FLAGS@
 F77FLAGS          = @F77FLAGS@
 
+MKDIRFLAGS          = @MKDIRFLAGS@
+
 LDFLAGS           = @LDFLAGS@
 
 ARFLAGS           = @ARFLAGS@

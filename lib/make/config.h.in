@@ -60,6 +60,7 @@
 /* How to create a directory */
 
 #undef MKDIR
+#undef MKDIRFLAGS
 
 /******************************************************************************/
 
