@@ -816,6 +816,10 @@ sub parse_interface_ccl
       my $grouparray_size = $6;
       my $options_list = $7;
 
+#      print "line is [$line]\n";
+#      print "group name is [$current_group]\n";
+#      print "options list is [$options_list]\n";
+
       if($known_groups{"\U$current_group\E"})
       {
         $message = "Duplicate group $current_group in thorn $thorn";
@@ -907,7 +911,7 @@ sub parse_interface_ccl
         }
         else
         {
-          $message = "Unknown option $option in group $current_group of thorn $thorn";
+          $message = "Unknown option $option in group $current_group of thorn $thorn\n     Perhaps you forgot a '\\' at the end of a continued line?";
           &CST_error(0,$message,"",__LINE__,__FILE__);
         }
       }
