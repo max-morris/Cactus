@@ -184,7 +184,7 @@ int CCTK_GroupIndex(const char *fullgroupname)
     }
     else
     {
-      CCTK_VWarn(2,__LINE__,__FILE__,"Cactus", 
+      CCTK_VWarn(9,__LINE__,__FILE__,"Cactus", 
                  "CCTK_GroupIndex: No group %s found", 
                  fullgroupname);
       retval = -1;
