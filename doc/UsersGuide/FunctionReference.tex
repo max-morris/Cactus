@@ -3313,6 +3313,11 @@ one or more of the interpolation points is out of range
 may be reported through the parameter table; see the Thorn Guide for
 the LocalInterp thorn for further details)
 \end{Error}
+\begin{Error}{CCTK\_ERROR\_INTERP\_GRID\_TOO\_TINY}
+one or more of the dimensions of the input arrays is/are smaller than
+the molecule size chosen by the interpolator (based on the parameter-table
+options, e.g.\hbox{} the interpolation order)
+\end{Error}
 \begin{Error}{UTIL\_ERROR\_BAD\_INPUT}
 one or more of the inputs is invalid (eg.~\verb|NULL| pointer)
 \end{Error}
