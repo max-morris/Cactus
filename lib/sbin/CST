@@ -6,7 +6,7 @@
 #  @desc
 #             Parses the the configuration files for thorns.
 #  @enddesc
-#  @version   $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.63 2004-03-27 04:47:22 goodale Exp $
+#  @version   $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.64 2004-03-27 19:35:48 goodale Exp $
 #@@*/
 
 # Global parameter to track the number of errors from the CST
@@ -396,10 +396,13 @@ sub CreateThornDependencyList
   foreach my $thorn (sort keys %thorns) {
     next if ($configuration_database->{"\U$thorn OPTIONS\E"} eq 'NO_SOURCE'
              || "\U$thorn\E" eq "\UCactus\E");
+
     # Add the thorn and the thorn's requirements
-    my $line = "USESTHORNS_\U$thorn\E = Cactus CactusBindings";
-    foreach my $dep (sort (split (' ', $configuration_database->{"\U$thorn\E REQUIRES THORNS"}),
-                           split (' ', $configuration_database->{"\U$thorn\E USES THORNS"})))
+    # (The thorn name has to be lower case,
+    # because the Makefile cannot convert its library names to upper case)    
+
+    my $line = "USESTHORNS_$thorn = Cactus CactusBindings";
+    foreach my $dep (sort (split (' ', $configuration_database->{"\U$thorn\E USES THORNS"})))
     {
       $line .= " $dep";
     }
