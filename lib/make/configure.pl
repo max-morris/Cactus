@@ -274,7 +274,7 @@ sub determine_transformation
   }
   if($case = 1)
   {
-    $case_prefix = "\\L";
+    $case_prefix = "\\U";
   }
 
   return ($underscore_suffix, $normal_suffix, $case_prefix);
