@@ -37,6 +37,7 @@ struct THORN
 {
   int active;
   char *implementation;
+  const char **requires_thorns;
 };
 
 struct IMPLEMENTATION
@@ -132,37 +133,11 @@ int CCTKi_RegisterThorn(const struct iAttributeList *attributes)
 
   const char **ancestors;
   const char **friends;
+  const char **requires_thorns;
 
 
   name = imp = NULL;
-  ancestors = friends = NULL;
-
-#if 0
-  for(i=0; attributes[i].attribute; i++)
-  {
-    if(!strcmp(attributes[i].attribute, "functions"))
-    {
-      printf("Functions: \n");
-      for(j=0; attributes[i].AttributeData.FuncList[j].keyword; j++)
-      {
-        printf("keyword   is %s\n", attributes[i].AttributeData.FuncList[j].keyword);
-        printf("signature is %s\n", attributes[i].AttributeData.FuncList[j].signature);
-        printf("pointer   is %p\n", attributes[i].AttributeData.FuncList[j].func);
-      }
-    }
-    else
-    {
-      printf("attribute is %s\n", attributes[i].attribute);
-      if(attributes[i].AttributeData.StringList)
-      {
-        for(j=0; attributes[i].AttributeData.StringList[j]; j++)
-        {
-          printf("   datapoint %s\n", attributes[i].AttributeData.StringList[j]);
-        }
-      }
-    }
-  }
-#endif /* 0 */
+  ancestors = friends = requires_thorns = NULL;
 
   for(i=0; attributes[i].attribute; i++)
   {
@@ -188,6 +163,10 @@ int CCTKi_RegisterThorn(const struct iAttributeList *attributes)
     {
       friends = attributes[i].AttributeData.StringList;
     }
+    else if(!strcmp(attributes[i].attribute, "requires thorns"))
+    {
+      requires_thorns = attributes[i].AttributeData.StringList;
+    }
     else
     {
       fprintf(stderr, "Unknown/unimplemented thorn attribute %s\n", attributes[i].attribute);
@@ -207,8 +186,20 @@ int CCTKi_RegisterThorn(const struct iAttributeList *attributes)
 
     if(thorn)
     {
-      thorn->implementation = Util_Strdup(imp);
+      if (requires_thorns)
+      {
+        /* count the number of thorns */
+        for (i = 0; requires_thorns[i]; i++);
 
+        thorn->requires_thorns = malloc ((i+1) * sizeof(char *));
+        thorn->requires_thorns[i] = NULL;
+        while (--i >= 0)
+        {
+          thorn->requires_thorns[i] = Util_Strdup (requires_thorns[i]);
+        }
+      }
+
+      thorn->implementation = Util_Strdup(imp);
       if(thorn->implementation)
       {
         /* Fill out data for the thorn. */
@@ -938,10 +929,12 @@ int CCTKi_ActivateThorns(const char *activethornlist)
   t_sktree *impthornlist;
 
   struct IMPLEMENTATION *imp;
+  struct THORN *this_thorn;
   int i, j;
 
   const char *imp1, *imp2;
-  const char *thorn;
+  const char *this, *thorn;
+  struct iInternalStringList *current;
 
   local_list = Util_Strdup(activethornlist);
 
@@ -1135,6 +1128,41 @@ int CCTKi_ActivateThorns(const char *activethornlist)
     }
   }
 
+  /* check that all thorns that a thorn requires will also be activated */
+  if(! n_errors)
+  {
+    for (this = Util_StringListNext (required_thorns, 1);
+         this;
+         this = Util_StringListNext (required_thorns, 0))
+    {
+      /* cannot recursively browse through string list
+         so we have to remember the current entry for the outer loop */
+      current = required_thorns->current;
+      this_thorn = ((t_sktree *) SKTreeFindNode (thornlist, this))->data;
+      for (i = 0; this_thorn->requires_thorns &&
+                  this_thorn->requires_thorns[i]; i++)
+      {
+        for (thorn = Util_StringListNext (required_thorns, 1);
+             thorn;
+             thorn = Util_StringListNext (required_thorns, 0))
+        {
+          if (! Util_StrCmpi (thorn, this_thorn->requires_thorns[i]) ||
+              CCTK_IsThornActive (this_thorn->requires_thorns[i]))
+          {
+            break;
+          }
+        }
+        if (! thorn)
+        {
+          printf ("Error: Thorn %s requires thorn %s to be active.\n"
+                  "       Please add this thorn to the ActiveThorns "
+                  "parameter.\n", this, this_thorn->requires_thorns[i]);
+          n_errors++;
+        }
+      }
+      required_thorns->current = current;
+    }
+  }
 
   if(! n_errors)
   {
@@ -1251,14 +1279,14 @@ static int RegisterImp(const char *name,
       if(!retval)
       {
         /* Count the ancestors */
-        for(count=0; ancestors[count];count++);
+        for(count=0; ancestors && ancestors[count];count++);
 
         imp->n_ancestors = count;
         imp->ancestors = (char **)malloc((count+1)*sizeof(char *));
 
         if(imp->ancestors)
         {
-          for(count=0; ancestors[count];count++)
+          for(count=0; count < imp->n_ancestors; count++)
           {
             imp->ancestors[count] = Util_Strdup(ancestors[count]);
           }
@@ -1269,14 +1297,14 @@ static int RegisterImp(const char *name,
         }
 
         /* Count the friends */
-        for(count=0; friends[count];count++);
+        for(count=0; friends && friends[count];count++);
 
         imp->n_friends = count;
         imp->friends = (char **)malloc((count+1)*sizeof(char *));
 
         if(imp->friends)
         {
-          for(count=0; friends[count];count++)
+          for(count=0; count < imp->n_friends; count++)
           {
             imp->friends[count] = Util_Strdup(friends[count]);
           }
