@@ -59,12 +59,15 @@ cGH *CactusDefaultSetupGH(tFleshConfig *config, int convergence_level)
     /* Need this to be at least one otherwise the memory allocation will fail. */
     if(thisGH->dim == 0) thisGH->dim = 1;
     thisGH->iteration = 0;
+    thisGH->global_shape = (int *)malloc(thisGH->dim*sizeof(int));
     thisGH->local_shape = (int *)malloc(thisGH->dim*sizeof(int));
     thisGH->lower_bound = (int *)malloc(thisGH->dim*sizeof(int));
     thisGH->upper_bound = (int *)malloc(thisGH->dim*sizeof(int));
     thisGH->bbox        = (int *)malloc(2*thisGH->dim*sizeof(int));
 
     thisGH->levfac = 1;
+    thisGH->convlevel = 1;
+    thisGH->nghostzones = 0;
 
     n_variables = CCTK_GetNumVars();
 
@@ -91,6 +94,7 @@ cGH *CactusDefaultSetupGH(tFleshConfig *config, int convergence_level)
   }
   
   if(thisGH && 
+     thisGH->global_shape &&
      thisGH->local_shape &&
      thisGH->lower_bound &&
      thisGH->upper_bound &&
