@@ -12,6 +12,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdarg.h>
+#include <assert.h>
 
 #include "Misc.h"
 
@@ -116,6 +117,78 @@ int CCTK_Equals(const char *string1, const char *string2)
 
   return retval;
 }
+
+#if defined T3E
+#include <fortran.h>
+#define ONE_FORTSTRING_ARG\
+    _fcd fcdarg
+#define TWO_FORTSTRINGS_ARGS\
+    _fcd fcd_n, _fcd fcd_w
+#define ONE_FORTSTRING_CREATE(argn)\
+       int len = _fcdlen(fcdarg); \
+       char *argn    = CCTK_NullTerminateString(_fcdtocp(fcdarg),len);;
+#define TWO_FORTSTRINGS_CREATE(argn,argw)\
+       int  nl    = _fcdlen(fcd_n);\
+       int  wl    = _fcdlen(fcd_w);\
+       char *argn = CCTK_NullTerminateString(_fcdtocp(fcd_n),nl);\
+       char *argw = CCTK_NullTerminateString(_fcdtocp(fcd_w),wl);
+#elif defined WIN32
+#define ONE_FORTSTRING_ARG\
+   char *n, unsigned int nl
+#define TWO_FORSTRINGS_ARGS\
+   char *n, int nl, char *w, int wl
+#define ONE_FORTSTRING_CREATE(argn)\
+        char *argn = CCTK_NullTerminateString(n,nl);
+#define TWO_FORTSTRINGS_CREATE(argn,argw)\
+    char *argn = CCTK_NullTerminateString(n,nl);\
+    char *argw = CCTK_NullTerminateString(w,wl);
+#else
+#define ONE_FORTSTRING_ARG\
+   char *n, unsigned int nl
+#define TWO_FORTSTRINGS_ARGS\
+   const char *n, const char *w, int nl, int wl
+#define ONE_FORTSTRING_CREATE(argn)\
+        char *argn = CCTK_NullTerminateString(n,nl);
+#define TWO_FORTSTRINGS_CREATE(argn,argw)\
+    char *argn = CCTK_NullTerminateString(n,nl);\
+    char *argw = CCTK_NullTerminateString(w,wl);
+#endif
+
+int FORTRAN_NAME(CCTK_Equals)(const char *arg1,ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE(arg2)
+  int retval;
+  retval = CCTK_Equals(arg1,arg2);
+  free(arg2); 
+  return(retval);
+}
+
+/*@@
+  @routine CCTK_NullTerminateString
+  @author Paul Walker
+  @desc 
+  Null terminates a fortran string. Remember to free
+  what it returns...
+  @enddesc
+
+@@*/
+
+char *CCTK_NullTerminateString(const char *instring, unsigned int len) 
+{
+  char *outstring;
+  unsigned int i;
+
+  outstring = (char *)malloc((len+2)*sizeof(char));
+  assert(outstring);
+  for (i=0;i<len;i++) 
+  {
+    outstring[i] = instring[i];
+  }
+  outstring[len] = '\0';
+
+  return(outstring);
+}
+
 
  /*@@
    @routine    CCTK_InList
