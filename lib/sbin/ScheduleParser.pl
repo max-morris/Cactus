@@ -206,11 +206,11 @@ sub ParseScheduleBlock
       {
 	if($fields[$field] =~ m:CCTK_:)
 	{
-	  $where = $fields[$field];
+	  $where = "\U$fields[$field]\E";
 	}
 	else
 	{
-	  $where = "CCTK_$fields[$field]";
+	  $where = "CCTK_\U$fields[$field]\E";
 	}
       }
       $field+=2;
