@@ -232,7 +232,10 @@ sub CreateParameterBindings
   local($start_dir);
   local($line);
   local(%these_parameters);
-  
+  local($implementation, $thorn);
+  local($files);
+  local(%routines);
+
   %parameter_database = @rest[0..(2*$n_param_database)-1];
   %interface_database = @rest[2*$n_param_database..$#rest];
 
@@ -251,6 +254,7 @@ sub CreateParameterBindings
   chdir "Parameters";
 
 
+  # Generate all public parameters
   %these_parameters = &get_public_parameters(%parameter_database);
 
   @data = &CreateParameterBindingFile("CCTK_BindingsParametersPublic", "PUBLIC_PARAMETER_STRUCT", scalar(keys %these_parameters), %these_parameters, %parameter_database);
@@ -264,32 +268,148 @@ sub CreateParameterBindings
 
   close OUT;
 
+  $files = "Public.c";
+
+  # Generate all protected parameters
+  foreach $implementation (split(" ",$interface_database{"IMPLEMENTATIONS"}))
+  {
+    $interface_database{"IMPLEMENTATION \U$implementations\E THORNS"} =~ m:([^ ]+):;
+
+    $thorn = $1;
+
+    %these_parameters = &GetThornParameterList($thorn, "PROTECTED", %parameter_database);
+
+    if((keys %these_parameters > 0))
+    {
+      @data = &CreateParameterBindingFile("CCTK_BindingsParameters$implementation"."_protected", "PROTECTED_\U$implementation\E_STRUCT", scalar(keys %these_parameters), %these_parameters, %parameter_database);
+
+      open (OUT, ">$implementation". "_protected.c") || die "Cannot open $implementation"."_protected.c";
+      
+      foreach $line (@data)
+      {
+	print OUT "$line\n";
+      }
+    
+      close OUT;
+
+      $files .= " $implementation". "_protected.c";
+      $routines{"CCTK_BindingsParameters$implementation"."_protected"} = "$implementation";
+
+    }
+  }
+
+  # Generate all private parameters
+  foreach $thorn (split(" ",$interface_database{"THORNS"}))
+  {
+    %these_parameters = &GetThornParameterList($thorn, "PRIVATE", %parameter_database);
+
+    if((keys %these_parameters > 0))
+    {
+      @data = &CreateParameterBindingFile("CCTK_BindingsParameters$thorn"."_private", "PRIVATE_\U$thorn\E_STRUCT", scalar(keys %these_parameters), %these_parameters, %parameter_database);
+
+      open (OUT, ">$thorn"."_private.c") || die "Cannot open $thorn"."_private.c";
+
+      foreach $line (@data)
+      {
+	print OUT "$line\n";
+      }
+    
+      close OUT;
+
+      $files .= " $thorn". "_private.c";
+      $routines{"CCTK_BindingsParameters$thorn"."_private"} = "$thorn";
+
+    }
+  }
+
   open (OUT, ">Bindings.c") || die "Cannot open Bindings.c";
 
   print OUT  <<EOT;
- 
-  int CCTK_BindingsParametersInitialise(void)
-  {
-    return 0;
-  }
- 
-  int CCTK_BindingsParameterSet(const char *identifier, const char *value)
-  {
-    return 1;
-  }
- 
-  int CCTK_BindingsParameterGet(const char *identifier, void **value)
-  {
-    return -1;
-  }
- 
+#include <stdio.h>
+#include "config.h"
+#include "Misc.h"
+
 EOT
 
+  foreach $routine ((keys %routines), "CCTK_BindingsParametersPublic")
+  {
+    print OUT "int $routine"."Initialise(void);\n";
+    print OUT "int $routine"."Set(const char *param, const char *value);\n";
+    print OUT "int $routine"."Get(const char *param, void **data);\n";
+  }
+ 
+print OUT <<EOT;
+
+int CCTK_BindingsParametersInitialise(void)
+{
+
+EOT
+
+  foreach $routine (keys %routines)
+  {
+    print OUT "  $routine"."Initialise();\n";
+  }
+  print OUT <<EOT;
+  return 0;
+}
+ 
+int CCTK_BindingsParameterSet(const char *identifier, const char *value)
+{
+  int retval = 1;
+  int temp_retval;
+  char *implementation = NULL;
+  char *param_name = NULL;
+
+  CCTK_SplitString(&implementation, &param_name, identifier, "::");
+
+  if(!implementation)
+  {
+    retval = CCTK_BindingsParametersPublicSet(identifier, value);
+  }
+  else
+  { 
+EOT
+
+  foreach $routine (keys %routines)
+  {
+
+    print OUT <<EOT;
+
+    if(CCTK_Equals(implementation, \"$routines{$routine}\"))
+    {
+EOT
+      print OUT "      temp_retval =  $routine"."Set(param_name, value);";
+
+    print OUT <<EOT;
+ 
+      if(!temp_retval) 
+      {
+        retval = 0;
+      }
+    }
+EOT
+  }
+ 
+  print OUT <<EOT;
+  }
+ 
+  free(implementation);
+  free(param_name);
+  return retval;
+}
+ 
+int CCTK_BindingsParameterGet(const char *identifier, void **value)
+{   
+  return -1;
+}
+ 
+EOT
+  
   close OUT;
 
   open (OUT, ">make.code.defn") || die "Cannot open make.code.defn";
 
-  print OUT "SRCS = Bindings.c\n";
+  print OUT "SRCS = Bindings.c $files\n";
 
   close OUT;
     
@@ -382,288 +502,3 @@ EOT
 
 
 
-sub CreateParameterBindingFile
-{
-  local($prefix, $structure, $n_parameters, @rest) = @_;
-  local(%parameter_database);
-  local($line,@data);
-  local(%parameters);
-  local($type, $type_string);
-  local(@data);
-
-  %parameters = @rest[0..2*$n_parameters-1];
-  %parameter_database = @rest[2*$n_parameters..$#rest];
-
-  # Header Data
-  $line = "\#include <stdio.h>";
-  push(@data, $line);
-  $line = "\#include <stdlib.h>";
-  push(@data, $line);
-  $line = "\#include <string.h>";
-  push(@data, $line);
-  $line = "\#include <stdarg.h>";
-  push(@data, $line);
-  $line = "\#include \"Misc.h\"";
-  push(@data, $line);
-  push(@data, "");
-
-  # Create the structure
-
-  push(@data,( "struct ", "{"));
-
-  foreach $parameter (keys %parameters)
-  {
-    $type = $parameter_database{"\U$parameters{$parameter} $parameter\E type"};
-      
-    $type_string = &get_c_type_string($type);
-
-    $line = $type_string ." " .$parameter . ";";
-
-    push(@data, $line);
-  }
-
-  push(@data, "} $structure;");
-
-  push(@data, "");
-
-  # Initialisation subroutine
-  push(@data, ("int $prefix"."Initialise(void)", "{"));
-
-  foreach $parameter (keys %parameters)
-  {
-
-    push(@data, &set_parameter_default($structure,$parameters{$parameter}, 
-				       $parameter, %parameter_database));
-    
-    push(@data, "");
-
-  }
-
-  push(@data, "}");
-
-  push(@data, "");
-
-  # Setting subroutine
-
-  push(@data, ("int $prefix"."Set(const char *param, const char *value)", "{"));
-  push(@data, ("  char temp[1001];", "  int p;", ""));
-
-  push(@data, ("  int retval;", "  retval = 1;", ""));
-
-
-  foreach $parameter (keys %parameters)
-  {
-    push(@data, &set_parameter_code($structure,$parameters{$parameter}, 
-				       $parameter, %parameter_database));
-    push(@data, "");
-
-  }    
-
-  push(@data, "  return retval;");
-
-  push(@data, "}");
-
-  push(@data, "");
-
-
-  return @data;
-}
-
-
-sub set_parameter_code
-{
-  local($structure, $implementation,$parameter, %parameter_database) = @_;
-  local($type, $type_string);
-  local($line, @lines);
-  local($range);
-  local($quoted_range);
-
-  $type = $parameter_database{"\U$implementation $parameter\E type"};
-  $n_ranges = $parameter_database{"\U$implementation $parameter\E ranges"};
-
-  push(@lines,("  if(CCTK_Equals(param, \"$parameter\"))", "  {"));
-
-  if( $type ne "STRING" && $type ne "SENTENCE" && $type ne "LOGICAL")
-  {
-    if( $type eq "KEYWORD")
-    {
-      $line = "    if(CCTK_InList(value, $n_ranges" ;
-    }
-    elsif($type eq "INTEGER")
-    {
-      $line = "    if(CCTK_IntInRangeList(atoi(value), $n_ranges" ;
-    }
-    elsif($type eq "REAL")
-    {
-      $line = "    strncpy(temp, value, 1000);";
-      push(@lines, $line);
-
-      $line = "    for (p=0;p<strlen(temp);p++) if (temp[p] == 'E' || temp[p] == 'd' || temp[p] == 'D') temp[p] = 'e';";
-      push(@lines, $line);
-      $line = "    if(CCTK_DoubleInRangeList(atof(temp), $n_ranges" ;
-    }
-    for($range=1; $range <= $n_ranges; $range++)
-    {
-      $quoted_range = $parameter_database{"\U$implementation $parameter\E range $range range"};
-
-      $quoted_range =~ s:\":\\\":g;
-
-      $line .= ",\"".$quoted_range."\"";
-
-    }
-    $line .= "))";
-
-    push(@lines, ($line, "    {"));
-
-    if( $type eq "KEYWORD")
-    {
-      $line = "      if($structure.$parameter) free($structure.$parameter);";
-      push(@lines, $line);
-
-      $line = "      $structure" .".$parameter = malloc(strlen(value)\*sizeof(char));"; 
-      push(@lines, $line);
-      
-      $line = "  if($structure.$parameter)";
-      push(@lines, $line);
-      
-      $line = "    strcpy($structure.$parameter, value);";
-      push(@lines, ($line, "         retval = 0;", "    }"));
-      
-    }
-    elsif($type eq "INTEGER")
-    {
-      $line = "      $structure.$parameter = atoi(value);" ;
-      push(@lines, ($line, "         retval = 0;", "    }"));
-    }
-    elsif($type eq "REAL")
-    {
-      push(@lines, "         $structure.$parameter = atof(temp); ");
-
-      push(@lines, ($line, "         retval = 0;", "    }"));
-
-    }
-
-    push(@lines, "  }");
-
-  }
-  elsif( $type eq "STRING" || $type eq "SENTENCE")
-  {
-    $line = "      if($structure.$parameter) free($structure.$parameter);";
-    push(@lines, $line);
-    
-    $line = "      $structure" .".$parameter = malloc(strlen(value)\*sizeof(char));"; 
-    push(@lines, $line);
-      
-    $line = "      if($structure.$parameter)";
-    push(@lines, $line);
-      
-    $line = "        strcpy($structure.$parameter, value);";
-    push(@lines, ($line, "  }"));
-  }
-  elsif( $type eq "LOGICAL")
-  {
-    push(@lines, ("    if(CCTK_InList(value, 4, \"true\", \"t\", \"yes\", \"1\"))"," {", "$structure.$parameter = 1", "}", "else if(CCTK_InList(value, 4, \"false\", \"f\", \"no\", \"0\"))"," {", "$structure.$parameter = 0", "}", "else", "{ ", "retval = 2" , "};"));
-  }
-  else
-  {
-    print "Unknown parameter type $type\n";
-  }
-
-
-  return @lines;
-}
-
-    
-
-#/*@@
-#  @routine    set_parameter_default
-#  @date       Mon Jan 11 15:33:26 1999
-#  @author     Tom Goodale
-#  @desc 
-#  Set the default value of a parameter
-#  @enddesc 
-#  @calls     
-#  @calledby   
-#  @history 
-#
-#  @endhistory 
-#@@*/
-
-sub set_parameter_default
-{
-  local($structure, $implementation,$parameter, %parameter_database) = @_;
-  local($type, $type_string);
-  local($line, @lines);
-  local($default);
-
-  $default = $parameter_database{"\U$implementation $parameter\E default"};
-  $type = $parameter_database{"\U$implementation $parameter\E type"};
-
-    print "Getting type of $parameter from thorn $parameters{$parameter} - type is ..$type...  in defaults\n";
-
-  $type_string = &get_c_type_string($type);
-
-  if($type_string eq "char *")
-  {
-    $line = "  $structure" .".$parameter = malloc(" 
-      . (length($default)-1). "\*sizeof(char));";
-    push(@lines, $line);
-
-    $line = "  if($structure.$parameter)";
-    push(@lines, $line);
-
-    $line = "    strcpy($structure.$parameter, $default);";
-    push(@lines, $line);
-  }
-  else
-  {
-    $line = "  $structure.$parameter = $default;";
-    push(@lines, $line);
-  }
-
-  return @lines;
-}
-
-#/*@@
-#  @routine    get_c_type_string
-#  @date       Mon Jan 11 15:33:50 1999
-#  @author     Tom Goodale
-#  @desc 
-#  Returns the correct type string for a parameter
-#  @enddesc 
-#  @calls     
-#  @calledby   
-#  @history 
-#
-#  @endhistory 
-#@@*/
-
-sub get_c_type_string
-{
-  local($type) = @_;
-  local($type_string);
-
-
-  if($type eq "KEYWORD" ||
-     $type eq "STRING"  ||
-     $type eq "SENTENCE")
-  {
-    $type_string = "char *";
-  }
-  elsif($type eq "LOGICAL" ||
-	$type eq "INTEGER")
-  {
-    $type_string = "int ";
-  }
-  elsif($type eq "REAL")
-  {
-    $type_string = "Double ";
-  }
-  else
-  {
-    die("Unknown parameter type '$type'");
-  }
-
-  return $type_string;
-
-}

@@ -5,172 +5,359 @@
 #  @author    Tom Goodale
 #  @desc 
 #  
-#  @enddesc 
+#  @enddesc
+#  @version $Id$ 
 #@@*/
 
 
 #/*@@
-#  @routine    create_c_param_init_subroutine
-#  @date       Mon Jan 11 14:37:56 1999
+#  @routine    CreateParameterBindingFile
+#  @date       Wed Jan 20 15:20:23 1999
 #  @author     Tom Goodale
 #  @desc 
-#  Create a subroutine which initialises an implementation's parameters.
+#  Creates the bindings used to link the thorn parameters with the flesh.
 #  @enddesc 
 #  @calls     
 #  @calledby   
 #  @history 
 #
 #  @endhistory 
-#@@*/
-
-sub create_c_param_init_subroutine
-{
-  local($implementation,%parameter_database) = @_;
-  local(@subroutine);
-  local($line, @lines);
-  local($block, $parameter);
-
-  $line = "void CCTK_\U$implementation\E_ParamsInit(struct CCTK_PARAMS *cctk_parameters) {";
-  push(@subroutine, $line);
-
-  # Deal with variables defined in this thorn. 
-  foreach $block ("PUBLIC", "PRIVATE", "PROTECTED")
-  {
-    $entry = "\U$implementation $block\E variables";
-    foreach $parameter (split(/ /, $parameter_database{$entry}))
-    {
-      @lines = &set_parameter_default($implementation,$parameter, %parameter_database);
-      push(@subroutine, @lines);
-    }
-  }
-
-  $line = "}";
-
-  push(@subroutine, $line);
-
-  return @subroutine;
-}
-
-#/*@@
-#  @routine    create_c_parameter_declarations
-#  @date       Mon Jan 11 14:39:48 1999
-#  @author     Tom Goodale
-#  @desc 
-#  Create declarations for the parameters used by this thorn.
-#  @enddesc 
-#  @calls     
-#  @calledby   
-#  @history 
 #
-#  @endhistory 
 #@@*/
 
-sub create_c_parameter_declarations
+sub CreateParameterBindingFile
 {
-  local($implementation,%parameter_database) = @_;
-  local(@declarations);
-  local($line);
-  local($type, $type_string, $friend, $block, $parameter);
-
-  # Deal with variables defined in this thorn. 
-  foreach $block ("PUBLIC", "PRIVATE", "PROTECTED")
-  {
-    $entry = "\U$implementation $block\E variables";
-    foreach $parameter (split(/ /, $parameter_database{$entry}))
-    {
-      $type = $parameter_database{"\U$implementation $parameter\E type"};
-      
-      $type_string = &get_c_type_string($type);
-      
-      $line = "  ". $type_string .$parameter . 
-	" = _cctk_params." . "\U$implementation\E.\L$parameter\E;";
-      push(@declarations, $line);
-    }
-  }
-
-  # Deal with friend variables. 
-  foreach $friend (split(/ /,$parameter_database{"\U$implementation\E FRIEND implementations"}))
-  {
-    $other_implementation = "\U$friend\E";
-    $entry = "\U$implementation FRIEND $friend\E variables";
-    foreach $parameter (split(/ /, $parameter_database{$entry}))
-    {
-      $type = $parameter_database{"\U$other_implementation $parameter\E type"};
-      
-      $type_string = &get_c_type_string($type);
-      
-      $line = "  ". $type_string .$parameter . 
-	" = _cctk_params." . "\U$other_implementation\E.\L$parameter\E;";
-      push(@declarations, $line);
-    }
-  }	  
-
-  foreach $parameter (keys %public_parameters)
-  {
-    $other_implementation = "\U$public_parameters{$parameter}\E";
-
-    if($other_implementation ne "\U$implementation\E")
-    {
-      $type = $parameter_database{"\U$other_implementation $parameter\E type"};
-      
-      $type_string = &get_c_type_string($type);
-      
-      $line = "  ". $type_string .$parameter . 
-	" = _cctk_params." . "\U$other_implementation\E.\L$parameter\E;";
-      push(@declarations, $line);
-    }
-  }
-
-  return @declarations;
-}
-
-#/*@@
-#  @routine    create_c_parameter_structures
-#  @date       Mon Jan 11 15:05:16 1999
-#  @author     Tom Goodale
-#  @desc 
-#  Create the c parameter structures
-#  @enddesc 
-#  @calls     
-#  @calledby   
-#  @history 
-#
-#  @endhistory 
-#@@*/
-
-sub create_c_parameter_structures
-{
-  local($n_implementations, @indata) = @_;
-  local(@implementations);
+  local($prefix, $structure, $n_parameters, @rest) = @_;
   local(%parameter_database);
-  local(@structures);
+  local($line,@data);
+  local(%parameters);
+  local($type, $type_string);
   local(@data);
-  local($line, $entry, $thorn, $parameter, $type_string);
 
-  @implementations = @indata[0..$n_implementations-1];
-  %parameter_database = @indata[$n_implementations..$#indata];
+  %parameters = @rest[0..2*$n_parameters-1];
+  %parameter_database = @rest[2*$n_parameters..$#rest];
 
-  # Create types for each implementation
-  foreach $implementation (@implementations)
+  # Header Data
+  $line = "\#include <stdio.h>";
+  push(@data, $line);
+  $line = "\#include <stdlib.h>";
+  push(@data, $line);
+  $line = "\#include <string.h>";
+  push(@data, $line);
+  $line = "\#include <stdarg.h>";
+  push(@data, $line);
+  $line = "\#include \"config.h\"";
+  push(@data, $line);
+  $line = "\#include \"Misc.h\"";
+  push(@data, $line);
+  push(@data, "");
+
+  # Create the structure
+
+  push(@data,( "struct ", "{"));
+
+  foreach $parameter (keys %parameters)
   {
-    push(@structures, &create_c_parameter_type_declaration($implementation, %parameter_database));
-    push(@strucures,"");
+    $type = $parameter_database{"\U$parameters{$parameter} $parameter\E type"};
+      
+    $type_string = &get_c_type_string($type);
+
+    $line = $type_string ." " .$parameter . ";";
+
+    push(@data, $line);
   }
 
-  $line = "struct CCTK_PARAMS {";
-  push(@structures, $line);
+  push(@data, "} $structure;");
 
-  foreach $implementation (@implementations)
+  push(@data, "");
+
+  # Initialisation subroutine
+  push(@data, ("int $prefix"."Initialise(void)", "{"));
+
+  foreach $parameter (keys %parameters)
   {
-    $line = "struct CCTK_\U$implementation\E_PARAM_TYPE \U$implementation\E ;";
-    push(@structures, $line);
+
+    push(@data, &set_parameter_default($structure,$parameters{$parameter}, 
+				       $parameter, %parameter_database));
+    
+    push(@data, "");
+
   }
 
-  $line = "} ;";
-  push(@structures, $line);
-  
-  return @structures;
+  push(@data, "}");
+
+  push(@data, "");
+
+  # Setting subroutine
+
+  push(@data, ("int $prefix"."Set(const char *param, const char *value)", "{"));
+  push(@data, ("  char temp[1001];", "  int p;", ""));
+
+  push(@data, ("  int retval;", "  retval = 1;", ""));
+
+
+  foreach $parameter (keys %parameters)
+  {
+    push(@data, &set_parameter_code($structure,$parameters{$parameter}, 
+				       $parameter, %parameter_database));
+    push(@data, "");
+
+  }    
+
+  push(@data, "  return retval;");
+
+  push(@data, "}");
+
+  push(@data, "");
+
+
+  return @data;
 }
+
+
+#/*@@
+#  @routine    set_parameter_code
+#  @date       Wed Jan 20 15:21:31 1999
+#  @author     Tom Goodale
+#  @desc 
+#  Sets the value of a parameter.
+#  @enddesc 
+#  @calls     
+#  @calledby   
+#  @history 
+#
+#  @endhistory 
+#@@*/
+
+sub set_parameter_code
+{
+  local($structure, $implementation,$parameter, %parameter_database) = @_;
+  local($type, $type_string);
+  local($line, @lines);
+  local($range);
+  local($quoted_range);
+
+  $type = $parameter_database{"\U$implementation $parameter\E type"};
+  $n_ranges = $parameter_database{"\U$implementation $parameter\E ranges"};
+
+  push(@lines,("  if(CCTK_Equals(param, \"$parameter\"))", "  {"));
+
+  if( $type ne "STRING" && $type ne "SENTENCE" && $type ne "LOGICAL")
+  {
+    if( $type eq "KEYWORD")
+    {
+      $line = "    if(CCTK_InList(value, $n_ranges" ;
+    }
+    elsif($type eq "INTEGER")
+    {
+      $line = "    if(CCTK_IntInRangeList(atoi(value), $n_ranges" ;
+    }
+    elsif($type eq "REAL")
+    {
+      $line = "    strncpy(temp, value, 1000);";
+      push(@lines, $line);
+
+      $line = "    for (p=0;p<strlen(temp);p++) if (temp[p] == 'E' || temp[p] == 'd' || temp[p] == 'D') temp[p] = 'e';";
+      push(@lines, $line);
+      $line = "    if(CCTK_DoubleInRangeList(atof(temp), $n_ranges" ;
+    }
+    for($range=1; $range <= $n_ranges; $range++)
+    {
+      $quoted_range = $parameter_database{"\U$implementation $parameter\E range $range range"};
+
+      $quoted_range =~ s:\":\\\":g;
+
+      $line .= ",\"".$quoted_range."\"";
+
+    }
+    $line .= "))";
+
+    push(@lines, ($line, "    {"));
+
+    if( $type eq "KEYWORD")
+    {
+      $line = "      if($structure.$parameter) free($structure.$parameter);";
+      push(@lines, $line);
+
+      $line = "      $structure" .".$parameter = malloc(strlen(value)\*sizeof(char));"; 
+      push(@lines, $line);
+      
+      $line = "  if($structure.$parameter)";
+      push(@lines, $line);
+      
+      $line = "    strcpy($structure.$parameter, value);";
+      push(@lines, ($line, "         retval = 0;", "    }"));
+      
+    }
+    elsif($type eq "INTEGER")
+    {
+      $line = "      $structure.$parameter = atoi(value);" ;
+      push(@lines, ($line, "         retval = 0;", "    }"));
+    }
+    elsif($type eq "REAL")
+    {
+      push(@lines, "         $structure.$parameter = atof(temp); ");
+
+      push(@lines, ($line, "         retval = 0;", "    }"));
+
+    }
+
+    push(@lines, "  }");
+
+  }
+  elsif( $type eq "STRING" || $type eq "SENTENCE")
+  {
+    $line = "      if($structure.$parameter) free($structure.$parameter);";
+    push(@lines, $line);
+    
+    $line = "      $structure" .".$parameter = malloc(strlen(value)\*sizeof(char));"; 
+    push(@lines, $line);
+      
+    $line = "      if($structure.$parameter)";
+    push(@lines, $line);
+      
+    $line = "        strcpy($structure.$parameter, value);";
+    push(@lines, ($line, "  }"));
+  }
+  elsif( $type eq "LOGICAL")
+  {
+    push(@lines, ("    if(CCTK_InList(value, 4, \"true\", \"t\", \"yes\", \"1\"))"," {", "$structure.$parameter = 1", "}", "else if(CCTK_InList(value, 4, \"false\", \"f\", \"no\", \"0\"))"," {", "$structure.$parameter = 0", "}", "else", "{ ", "retval = 2" , "};"));
+  }
+  else
+  {
+    print "Unknown parameter type $type\n";
+  }
+
+
+  return @lines;
+}
+
+    
+
+#/*@@
+#  @routine    set_parameter_default
+#  @date       Mon Jan 11 15:33:26 1999
+#  @author     Tom Goodale
+#  @desc 
+#  Set the default value of a parameter
+#  @enddesc 
+#  @calls     
+#  @calledby   
+#  @history 
+#
+#  @endhistory 
+#@@*/
+
+sub set_parameter_default
+{
+  local($structure, $implementation,$parameter, %parameter_database) = @_;
+  local($type, $type_string);
+  local($line, @lines);
+  local($default);
+
+  $default = $parameter_database{"\U$implementation $parameter\E default"};
+  $type = $parameter_database{"\U$implementation $parameter\E type"};
+
+  $type_string = &get_c_type_string($type);
+
+  if($type_string eq "char *")
+  {
+    $line = "  $structure" .".$parameter = malloc(" 
+      . (length($default)-1). "\*sizeof(char));";
+    push(@lines, $line);
+
+    $line = "  if($structure.$parameter)";
+    push(@lines, $line);
+
+    $line = "    strcpy($structure.$parameter, $default);";
+    push(@lines, $line);
+  }
+  else
+  {
+    $line = "  $structure.$parameter = $default;";
+    push(@lines, $line);
+  }
+
+  return @lines;
+}
+
+#/*@@
+#  @routine    get_c_type_string
+#  @date       Mon Jan 11 15:33:50 1999
+#  @author     Tom Goodale
+#  @desc 
+#  Returns the correct type string for a parameter
+#  @enddesc 
+#  @calls     
+#  @calledby   
+#  @history 
+#
+#  @endhistory 
+#@@*/
+
+sub get_c_type_string
+{
+  local($type) = @_;
+  local($type_string);
+
+
+  if($type eq "KEYWORD" ||
+     $type eq "STRING"  ||
+     $type eq "SENTENCE")
+  {
+    $type_string = "char *";
+  }
+  elsif($type eq "LOGICAL" ||
+	$type eq "INTEGER")
+  {
+    $type_string = "int ";
+  }
+  elsif($type eq "REAL")
+  {
+    $type_string = "Double ";
+  }
+  else
+  {
+    die("Unknown parameter type '$type'");
+  }
+
+  return $type_string;
+
+}
+
+#/*@@
+#  @routine    GetThornParameterList
+#  @date       Wed Jan 20 15:29:40 1999
+#  @author     Tom Goodale
+#  @desc 
+#  Gets a list of all parameters in a aprticular block in a thorn.
+#  Returns a hash table.
+#  @enddesc 
+#  @calls     
+#  @calledby   
+#  @history 
+#
+#  @endhistory 
+#@@*/
+
+sub GetThornParameterList
+{
+  local($thorn, $block, %parameter_database) = @_;
+  local(%parameter_list);
+
+  $params = $parameter_database{"\U$thorn $block\E variables"};
+
+  foreach $parameter (split(" ", $params))
+  {
+    if($parameter =~ m:[^ ]:)
+    {
+      $parameter_list{$parameter} = $thorn;
+    }
+  }
+
+  return %parameter_list;
+}
+
 
 #/*@@
 #  @routine    create_c_parameter_type_declaration
