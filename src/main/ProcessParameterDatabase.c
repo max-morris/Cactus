@@ -10,6 +10,7 @@
 #include <stdio.h>
 
 #include "cctk_Flesh.h"
+#include "cctk_Parameter.h"
 
 #include "ParameterData.h"
 
@@ -19,6 +20,7 @@ CCTK_FILEVERSION(main_ProcessParameterDatabase_c)
 
 int ParseFile(FILE *ifp, 
               int (*set_function)(const char *, const char *));
+void CCTKi_SetParameterSetMask(int mask);
 
 
  /*@@
@@ -39,6 +41,8 @@ int CCTKi_ProcessParameterDatabase(tFleshConfig *ConfigData)
 {
   int retval;
   FILE *parameter_file;
+
+  CCTKi_SetParameterSetMask(PARAMETER_RECOVERY_PRE);
 
   if((parameter_file = fopen(ConfigData->parameter_file_name, "r")))
   {
