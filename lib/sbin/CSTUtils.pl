@@ -1,4 +1,3 @@
-
 #/*@@
 #  @routine   CST_error
 #  @date      4 July 1999
@@ -21,35 +20,35 @@ sub CST_error
 
     if ($full_warnings)
     {
-	if ($level == 0)
-	{
-	    $CST_errors++;
+        if ($level == 0)
+        {
+            $CST_errors++;
             $error = "\nCST error in $file (at $line)\n  -> $mess\n";
-	    print STDERR "$error\n";
-	    $error_string .= "$error$help\n";
-	}
-	else
-	{
+            print STDERR "$error\n";
+            $error_string .= "$error$help\n";
+        }
+        else
+        {
             $error = "\nCST warning in $file (at $line)\n  -> $mess\n";
-	    print STDERR "$error\n";
-	    $error_string .= "$error$help\n";
-	}
+            print STDERR "$error\n";
+            $error_string .= "$error$help\n";
+        }
     }
     else
     {
-	if ($level == 0)
-	{
-	    $CST_errors++;
+        if ($level == 0)
+        {
+            $CST_errors++;
             $error = "\nCST error $CST_errors:\n  -> $mess\n";
-	    print STDERR "$error\n";
-	    $error_string .= "$error$help\n";
-	}
-	else
-	{
+            print STDERR "$error\n";
+            $error_string .= "$error$help\n";
+        }
+        else
+        {
             $error = "\nCST warning:\n  -> $mess\n";
-	    print STDERR "$error\n";
-	    $error_string .= "$error$help\n";
-	}	    
+            print STDERR "$error\n";
+            $error_string .= "$error$help\n";
+        }           
     }
 
     return;
@@ -154,11 +153,11 @@ sub chompme
     $lastchar = chop($in);
     if ($lastchar eq "\n")
     {
-	return $_;
+        return $_;
     }
     else
     {
-	return $in;
+        return $in;
     }
 }
 
@@ -248,4 +247,3 @@ sub TestName
 }
 
 1;
-

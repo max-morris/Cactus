@@ -592,8 +592,8 @@ sub ThornIncludes
   {
     if ($function !~ m:^\s*$:)
     {
-	$line = "extern $function_db->{\"$function RET\"} (*$function)($function_db->{\"$function CARGS\"});\n";
-	push(@data, $line);
+        $line = "extern $function_db->{\"$function RET\"} (*$function)($function_db->{\"$function CARGS\"});\n";
+        push(@data, $line);
     }
   }
 
@@ -742,44 +742,44 @@ sub DummyThornFunctions
   {
     if ($function !~ m:^\s*$:)
       {
-	$ret = $function_db->{"$function RET"};
+        $ret = $function_db->{"$function RET"};
 
-	$line = "$ret CCTKBindings_Dummy$function($function_db->{\"$function CARGS\"});\n";
-	push(@data, $line);
-	$line = "$ret CCTKBindings_Dummy$function($function_db->{\"$function CARGS\"})\n";
-	push(@data, $line);
-	$line = "{\n";
-	push(@data, $line);
-	
-	# Make sure we use all arguments to avoid warnings
-	$line = "  const void *cctk_dummy_pointer;\n";
-	push(@data, $line);
-	$line = "  cctk_dummy_pointer = cctk_dummy_pointer;\n";
-	push(@data, $line);
-	foreach $arg (split(",",$function_db->{"$function CARGS"}))
-	{
-	  $arg =~ m:(.*\s+\**)([^\s*\*]+)\s*:;
-#	  $type=$1;
-	  $name=$2;
-	  $line = "  cctk_dummy_pointer = \&$name;\n";
-	  push(@data, $line);
-	}
-	$line = "  CCTK_Warn(1,__LINE__,__FILE__,\"Bindings\",\n";
-	push(@data, $line);
-	$line = "            \"CCTKBindings_Dummy$function: Calling thorn function $function which has not been overloaded\");\n";
-	push(@data, $line);
-	if ($ret =~ m:INT:i)
-	{
-	  $line = "return -1;";
-	  push(@data, $line);
-	}
-	elsif ($ret =~ m:REAL:i)
-	{
-	  $line = "return 0;";
-	  push(@data, $line);
-	}	  
-	$line = "}\n\n";
-	push(@data, $line);
+        $line = "$ret CCTKBindings_Dummy$function($function_db->{\"$function CARGS\"});\n";
+        push(@data, $line);
+        $line = "$ret CCTKBindings_Dummy$function($function_db->{\"$function CARGS\"})\n";
+        push(@data, $line);
+        $line = "{\n";
+        push(@data, $line);
+        
+        # Make sure we use all arguments to avoid warnings
+        $line = "  const void *cctk_dummy_pointer;\n";
+        push(@data, $line);
+        $line = "  cctk_dummy_pointer = cctk_dummy_pointer;\n";
+        push(@data, $line);
+        foreach $arg (split(",",$function_db->{"$function CARGS"}))
+        {
+          $arg =~ m:(.*\s+\**)([^\s*\*]+)\s*:;
+#         $type=$1;
+          $name=$2;
+          $line = "  cctk_dummy_pointer = \&$name;\n";
+          push(@data, $line);
+        }
+        $line = "  CCTK_Warn(1,__LINE__,__FILE__,\"Bindings\",\n";
+        push(@data, $line);
+        $line = "            \"CCTKBindings_Dummy$function: Calling thorn function $function which has not been overloaded\");\n";
+        push(@data, $line);
+        if ($ret =~ m:INT:i)
+        {
+          $line = "return -1;";
+          push(@data, $line);
+        }
+        elsif ($ret =~ m:REAL:i)
+        {
+          $line = "return 0;";
+          push(@data, $line);
+        }         
+        $line = "}\n\n";
+        push(@data, $line);
     }      
   }
 
@@ -866,10 +866,10 @@ sub RegisterThornFunctions
   {
     if ($function !~ m:^\s*$:)
     {
-	$line = "  ierr = CCTKBindings_Overload$function($rhinterface_db->{\"\U$thorn PROVIDES FUNCTION\E $function WITH\"});\n";
-	push(@data, $line);
-	$line = "  retval = (ierr == 0) ? retval-- : retval;\n";
-	push(@data, $line);
+        $line = "  ierr = CCTKBindings_Overload$function($rhinterface_db->{\"\U$thorn PROVIDES FUNCTION\E $function WITH\"});\n";
+        push(@data, $line);
+        $line = "  retval = (ierr == 0) ? retval-- : retval;\n";
+        push(@data, $line);
     }
   }
   
@@ -935,8 +935,8 @@ sub FortranThornFunctions
   {
     if ($function !~ m:^\s*$:)
     {
-	$line = "extern $function_db->{\"$function RET\"} (*$function)($function_db->{\"$function CARGS\"});\n";
-	push(@data, $line);
+        $line = "extern $function_db->{\"$function RET\"} (*$function)($function_db->{\"$function CARGS\"});\n";
+        push(@data, $line);
     }
   }
   $line = "\n\n";
@@ -951,15 +951,15 @@ sub FortranThornFunctions
       $line .= "($function_db->{\"$function WARGS\"}";
       if ($function_db->{"$function STRINGS"} == 1)
       {
-	$line .= ", ONE_FORTSTRING_ARG";
+        $line .= ", ONE_FORTSTRING_ARG";
       }
       elsif ($function_db->{"$function STRINGS"} == 2)
       {
-	$line .= ", TWO_FORTSTRINGS_ARGS";
+        $line .= ", TWO_FORTSTRINGS_ARGS";
       }
       elsif ($function_db->{"$function STRINGS"} == 3)
       {
-	$line .= ", THREE_FORTSTRINGS_ARGS";
+        $line .= ", THREE_FORTSTRINGS_ARGS";
       }
 
       $line .= ")";
@@ -973,30 +973,30 @@ sub FortranThornFunctions
 
       if ($function_db->{"$function TYPE"} =~ "FUNC")
       {
-	$line = "  $function_db->{\"$function RET\"} cctki_retval;\n";
-	push(@data, $line);
+        $line = "  $function_db->{\"$function RET\"} cctki_retval;\n";
+        push(@data, $line);
       }
 
       if ($function_db->{"$function STRINGS"} == 1)
       {
-	$line = "ONE_FORTSTRING_CREATE(cctki_string1)\n";
-	push(@data, $line);
+        $line = "ONE_FORTSTRING_CREATE(cctki_string1)\n";
+        push(@data, $line);
       }
       elsif ($function_db->{"$function STRINGS"} == 2)
       {
-	$line = "TWO_FORTSTRINGS_CREATE(cctki_string1,cctki_string2)\n";
-	push(@data, $line);
+        $line = "TWO_FORTSTRINGS_CREATE(cctki_string1,cctki_string2)\n";
+        push(@data, $line);
       }
       elsif ($function_db->{"$function STRINGS"} == 3)
       {
-	$line = "THREE_FORTSTRINGS_CREATE(cctki_string1,cctki_string2,cctki_string3)\n";
-	push(@data, $line);
+        $line = "THREE_FORTSTRINGS_CREATE(cctki_string1,cctki_string2,cctki_string3)\n";
+        push(@data, $line);
       }
 
       if ($function_db->{"$function TYPE"} =~ "FUNC")
       {
-	$line = "  cctki_retval = \n";
-	push(@data, $line);
+        $line = "  cctki_retval = \n";
+        push(@data, $line);
       }
 
       $line = "    $function($function_db->{\"$function WCALL\"}";
@@ -1004,18 +1004,18 @@ sub FortranThornFunctions
 
       if ($function_db->{"$function STRINGS"} == 1)
       {
-	$line = ", cctki_string1";
-	push(@data, $line);
+        $line = ", cctki_string1";
+        push(@data, $line);
       }
       elsif ($function_db->{"$function STRINGS"} == 2)
       {
-	$line = ", cctki_string1, cctki_string2";
-	push(@data, $line);
+        $line = ", cctki_string1, cctki_string2";
+        push(@data, $line);
       }
       elsif ($function_db->{"$function STRINGS"} == 3)
       {
-	$line = ", cctki_string1, cctki_string2, cctki_string3";
-	push(@data, $line);
+        $line = ", cctki_string1, cctki_string2, cctki_string3";
+        push(@data, $line);
       }
 
       $line = ");\n";
@@ -1023,24 +1023,24 @@ sub FortranThornFunctions
 
       if ($function_db->{"$function STRINGS"} == 1)
       {
-	$line = "  free(cctki_string1);\n";
-	push(@data, $line);
+        $line = "  free(cctki_string1);\n";
+        push(@data, $line);
       }
       elsif ($function_db->{"$function STRINGS"} == 2)
       {
-	$line = "  free(cctki_string1);\n  free(cctki_string2);\n";
-	push(@data, $line);
+        $line = "  free(cctki_string1);\n  free(cctki_string2);\n";
+        push(@data, $line);
       }
       elsif ($function_db->{"$function STRINGS"} == 3)
       {
-	$line = "  free(cctki_string1);\n  free(cctki_string2);\n  free(cctki_string3);\n";
-	push(@data, $line);
+        $line = "  free(cctki_string1);\n  free(cctki_string2);\n  free(cctki_string3);\n";
+        push(@data, $line);
       }
 
       if ($function_db->{"$function TYPE"} =~ "FUNC")
       {
-	$line = "  return cctki_retval; \n";
-	push(@data, $line);
+        $line = "  return cctki_retval; \n";
+        push(@data, $line);
       }
 
       $line = "}\n";
@@ -1092,64 +1092,64 @@ sub FunctionDatabase
 
       if ($function_db->{"FUNCTIONS"} =~ / $function / && $function !~ /^\s*$/)
       {
-	if ($types ne $function_db->{"$function TYPES"})
-	{
-	  $message = "Argument types for aliased $function do not match";
-	  &CST_error(0,$message,"",__LINE__,__FILE__);
-	}
-	if ($inret ne $function_db->{"$function RET"})
-	{
-	  $message = "Return types for aliased $function do not match";
-	  &CST_error(0,$message,"",__LINE__,__FILE__);
-	}
+        if ($types ne $function_db->{"$function TYPES"})
+        {
+          $message = "Argument types for aliased $function do not match";
+          &CST_error(0,$message,"",__LINE__,__FILE__);
+        }
+        if ($inret ne $function_db->{"$function RET"})
+        {
+          $message = "Return types for aliased $function do not match";
+          &CST_error(0,$message,"",__LINE__,__FILE__);
+        }
       }
       else
       {
-	if ($inret =~ m:^\s*void\s*$:)
-	{
-	  $function_db->{"$function CARGS"} = "SUB";
-	}
-	else
-	{
-	  $function_db->{"$function CARGS"} = "FUNC";
-	}
+        if ($inret =~ m:^\s*void\s*$:)
+        {
+          $function_db->{"$function CARGS"} = "SUB";
+        }
+        else
+        {
+          $function_db->{"$function CARGS"} = "FUNC";
+        }
 
-	if ($c)
-	{
-	  if ($fortran)
-	  {
-	    $function_db->{"$function LANG"} = "FC";
-	  }
-	  else
-	  {
-	    $function_db->{"$function LANG"} = "C";
-	    $message = "Fortran wrapper not created for alias $function";
-	    &CST_error(1,$message,"",__LINE__,__FILE__);
-	  }
-	}
-	else
-	{
-	  $function_db->{"$function LANG"} = "";
-	  $message = "Can't create alias for $function";
-	  &CST_error(0,$message,"",__LINE__,__FILE__);
-	}	  
+        if ($c)
+        {
+          if ($fortran)
+          {
+            $function_db->{"$function LANG"} = "FC";
+          }
+          else
+          {
+            $function_db->{"$function LANG"} = "C";
+            $message = "Fortran wrapper not created for alias $function";
+            &CST_error(1,$message,"",__LINE__,__FILE__);
+          }
+        }
+        else
+        {
+          $function_db->{"$function LANG"} = "";
+          $message = "Can't create alias for $function";
+          &CST_error(0,$message,"",__LINE__,__FILE__);
+        }         
 
-	if ($rhinterface_db->{"\U$thorn FUNCTION\E $function RET"} eq "void")
-	{
-	  $function_db->{"$function TYPE"} = "SUB";
-	}
-	else
-	{
-	  $function_db->{"$function TYPE"} = "FUNC";
-	}
+        if ($rhinterface_db->{"\U$thorn FUNCTION\E $function RET"} eq "void")
+        {
+          $function_db->{"$function TYPE"} = "SUB";
+        }
+        else
+        {
+          $function_db->{"$function TYPE"} = "FUNC";
+        }
 
-	$function_db->{"FUNCTIONS"} .= "$function ";
-	$function_db->{"$function STRINGS"} = $nstrings;
-	$function_db->{"$function CARGS"} = $cargs;
-	$function_db->{"$function TYPES"} = $types;
-	$function_db->{"$function WARGS"} = $wrapperargs;
-	$function_db->{"$function WCALL"} = $wrappercall;
-	$function_db->{"$function RET"} = $rhinterface_db->{"\U$thorn FUNCTION\E $function RET"};
+        $function_db->{"FUNCTIONS"} .= "$function ";
+        $function_db->{"$function STRINGS"} = $nstrings;
+        $function_db->{"$function CARGS"} = $cargs;
+        $function_db->{"$function TYPES"} = $types;
+        $function_db->{"$function WARGS"} = $wrapperargs;
+        $function_db->{"$function WCALL"} = $wrappercall;
+        $function_db->{"$function RET"} = $rhinterface_db->{"\U$thorn FUNCTION\E $function RET"};
       }
     }
   }
@@ -1166,16 +1166,16 @@ sub FunctionDatabase
 
       if ($function_db->{"FUNCTIONS"} =~ / $function / && $function !~ /^\s*$/)
       {
-	if ($types ne $function_db->{"$function TYPES"})
-	{
-	  $message = "Argument types for aliased $function do not match";
-	  &CST_error(0,$message,"",__LINE__,__FILE__);
-	}
-	if ($inret ne $function_db->{"$function RET"})
-	{
-	  $message = "Return types for aliased $function do not match";
-	  &CST_error(0,$message,"",__LINE__,__FILE__);
-	}
+        if ($types ne $function_db->{"$function TYPES"})
+        {
+          $message = "Argument types for aliased $function do not match";
+          &CST_error(0,$message,"",__LINE__,__FILE__);
+        }
+        if ($inret ne $function_db->{"$function RET"})
+        {
+          $message = "Return types for aliased $function do not match";
+          &CST_error(0,$message,"",__LINE__,__FILE__);
+        }
       }
       $function_db->{"PROVIDED FUNCTIONS"} .= "$function ";
     }
@@ -1262,20 +1262,20 @@ sub ParseArguments
     {
       if ($number_strings)
       {
-	$fortran = 0;
+        $fortran = 0;
       }
       # look for an array
       if ($type =~ m/^\s*(CCTK_INT??|CCTK_REAL??):ARRAY\s*$/)
       {
-	$ccallargs .= "$1 *$name, ";
-	$fwrapperargs .= "$1 *$name, ";
-	$fwrappercallargs .= "$name, ";
+        $ccallargs .= "$1 *$name, ";
+        $fwrapperargs .= "$1 *$name, ";
+        $fwrappercallargs .= "$name, ";
       }
       else
       {
-	$ccallargs .= "$type $name, ";
-	$fwrapperargs .= "$type *$name, ";
-	$fwrappercallargs .= "*$name, ";
+        $ccallargs .= "$type $name, ";
+        $fwrapperargs .= "$type *$name, ";
+        $fwrappercallargs .= "*$name, ";
       }
     }
     else
@@ -1302,4 +1302,3 @@ sub ParseArguments
 }
 
 1;
-

@@ -169,24 +169,24 @@ sub ParseProvidesBlock
       $line_number++;
       if($ra_data->[$line_number] =~ m/^\s*SCRIPT\s*(.*)$/i)
       {
-	$script = $1;
-	next;
+        $script = $1;
+        next;
       }
       elsif($ra_data->[$line_number] =~ m/^\s*LANG[^\s]*\s*(.*)$/i)
       {
-	$lang = $1;
-	next;
+        $lang = $1;
+        next;
       }
       elsif($ra_data->[$line_number] =~ m:\s*\}\s*:)
       {
-	# do nothing.
+        # do nothing.
       }
       else
       {
-	print STDERR "Error parsing provides block line '$ra_data->[$line_number]'\n";
-	print STDERR "Unrecognised statement\n";
-	$CST_errors++;
-      }	
+        print STDERR "Error parsing provides block line '$ra_data->[$line_number]'\n";
+        print STDERR "Unrecognised statement\n";
+        $CST_errors++;
+      } 
     }
   }
 
@@ -235,28 +235,28 @@ sub ParseOptionalBlock
       $line_number++;
       if($ra_data->[$line_number] =~ m/^\s*DEFINE\s*(.*)$/i)
       {
-	if($define eq "")
-	{
-	  $define = $1;
-	  next;
-	}
-	else
-	{
-	  print STDERR "Error parsing optional block line '$ra_data->[$line_number]'\n";
-	  print STDERR "Only one define allowed\n";
-	  $CST_errors++;
-	}
+        if($define eq "")
+        {
+          $define = $1;
+          next;
+        }
+        else
+        {
+          print STDERR "Error parsing optional block line '$ra_data->[$line_number]'\n";
+          print STDERR "Only one define allowed\n";
+          $CST_errors++;
+        }
       }
       elsif($ra_data->[$line_number] =~ m:\s*\}\s*:)
       {
-	# do nothing.
+        # do nothing.
       }
       else
       {
-	print STDERR "Error parsing provides block line '$ra_data->[$line_number]'\n";
-	print STDERR "Unrecognised statement\n";
-	$CST_errors++;
-      }	
+        print STDERR "Error parsing provides block line '$ra_data->[$line_number]'\n";
+        print STDERR "Unrecognised statement\n";
+        $CST_errors++;
+      } 
     }
   }
 

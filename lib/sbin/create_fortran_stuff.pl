@@ -86,12 +86,12 @@ sub CreateFortranThornParameterBindings
       # Alias the parameter unless it is one we want.
       if(($rhparameter_db->{"\U$thorn SHARES $friend\E variables"} =~ m:( )*$parameter( )*:) && (length($1) > 0)||length($2)>0||$1 eq $rhparameter_db->{"\U$thorn SHARES $friend\E variables"})
       {
-	$alias_names{$parameter} = "$parameter";
+        $alias_names{$parameter} = "$parameter";
       }
       else
       {
-	$alias_names{$parameter} = "CCTKH".$num_aliases;
-	$num_aliases++;
+        $alias_names{$parameter} = "CCTKH".$num_aliases;
+        $num_aliases++;
       }
     }
 
@@ -183,7 +183,7 @@ sub get_fortran_type_string
     $type_string = "CCTK_STRING ";
   } 
   elsif($type eq "BOOLEAN" ||
-	$type eq "INT")
+        $type eq "INT")
   {
     $type_string = "CCTK_INT";
   }
@@ -193,8 +193,8 @@ sub get_fortran_type_string
   }
   else
   {
-      $message = "Unknown parameter type '$type'";
-      &CST_error(0,$message,"",__LINE__,__FILE__);
+    $message = "Unknown parameter type '$type'";
+    &CST_error(0,$message,"",__LINE__,__FILE__);
   }
 
   return $type_string;

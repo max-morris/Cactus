@@ -206,19 +206,19 @@ sub ParseScheduleBlock
       $field+=2;
       if($where ne "")
       {
-	print STDERR "Error parsing schedule block line '$data[$line_number]'\n";
-	print STDERR "Attempt to schedule same block at/in two places.\n";
+        print STDERR "Error parsing schedule block line '$data[$line_number]'\n";
+        print STDERR "Attempt to schedule same block at/in two places.\n";
       }
       else
       {
-	if($fields[$field] =~ m:CCTK_:)
-	{
-	  $where = "\U$fields[$field]\E";
-	}
-	else
-	{
-	  $where = "CCTK_\U$fields[$field]\E";
-	}
+        if($fields[$field] =~ m:CCTK_:)
+        {
+          $where = "\U$fields[$field]\E";
+        }
+        else
+        {
+          $where = "CCTK_\U$fields[$field]\E";
+        }
       }
       $field+=2;
     }
@@ -227,12 +227,12 @@ sub ParseScheduleBlock
       $field+=2;
       if($where ne "")
       {
-	print STDERR "Error parsing schedule block line '$data[$line_number]'\n";
-	print STDERR "Attempt to schedule same block at/in two places.\n";
+        print STDERR "Error parsing schedule block line '$data[$line_number]'\n";
+        print STDERR "Attempt to schedule same block at/in two places.\n";
       }
       else
       {
-	$where = "$fields[$field]";
+        $where = "$fields[$field]";
       }
       $field+=2;
     }
@@ -241,12 +241,12 @@ sub ParseScheduleBlock
       $field+=2;
       if($as ne "")
       {
-	print STDERR "Error parsing schedule block line '$data[$line_number]'\n";
-	print STDERR "Attempt to schedule same block with two names.\n";
+        print STDERR "Error parsing schedule block line '$data[$line_number]'\n";
+        print STDERR "Attempt to schedule same block with two names.\n";
       }
       else
       {
-	$as = "$fields[$field]";
+        $as = "$fields[$field]";
       }
       $field+=2;
     }
@@ -254,8 +254,8 @@ sub ParseScheduleBlock
     {
       if($keyword ne "")
       {
-	$message = "Error parsing schedule block line '$data[$line_number]'\n";
-	&CST_error(0,$message,"",__LINE__,__FILE__);
+        $message = "Error parsing schedule block line '$data[$line_number]'\n";
+        &CST_error(0,$message,"",__LINE__,__FILE__);
       }
       $keyword = "BEFORE";
       $field++;
@@ -264,8 +264,8 @@ sub ParseScheduleBlock
     {
       if($keyword ne "")
       {
-	$message="Error parsing schedule block line '$data[$line_number]'\n";
-	&CST_error(0,$message,"",__LINE__,__FILE__);
+        $message="Error parsing schedule block line '$data[$line_number]'\n";
+        &CST_error(0,$message,"",__LINE__,__FILE__);
       }
       $keyword = "AFTER";
       $field++;
@@ -274,8 +274,8 @@ sub ParseScheduleBlock
     {
       if($keyword ne "")
       {
-	$message="Error parsing schedule block line '$data[$line_number]'\n";
-	&CST_error(0,$message,"",__LINE__,__FILE__);
+        $message="Error parsing schedule block line '$data[$line_number]'\n";
+        &CST_error(0,$message,"",__LINE__,__FILE__);
       }
       $keyword = "WHILE";
       $field++;
@@ -289,29 +289,29 @@ sub ParseScheduleBlock
 
       while($fields[$field] !~ m:\s*\)\s*: && $field <= $#fields)
       {
-	if($fields[$field] =~ m:\s*,\s*:)
-	{
-	  $field++;
-	  next;
-	}
+        if($fields[$field] =~ m:\s*,\s*:)
+        {
+          $field++;
+          next;
+        }
 
-	push(@current_sched_list, $fields[$field]);
-	$field++;
+        push(@current_sched_list, $fields[$field]);
+        $field++;
       }
       
       $field++;
       
       if($keyword eq "BEFORE")
       {
-	push(@before_list, @current_sched_list);
+        push(@before_list, @current_sched_list);
       }
       elsif($keyword eq "AFTER")
       {
-	push(@after_list, @current_sched_list);
+        push(@after_list, @current_sched_list);
       }
       elsif($keyword eq "WHILE")
       {
-	push(@while_list, @current_sched_list);
+        push(@while_list, @current_sched_list);
       }
       
       # Reset keyword to empty for next time.
@@ -321,15 +321,15 @@ sub ParseScheduleBlock
     {
       if($keyword eq "BEFORE")
       {
-	push(@before_list, $fields[$field]);
+        push(@before_list, $fields[$field]);
       }
       elsif($keyword eq "AFTER")
       {
-	push(@after_list, $fields[$field]);
+        push(@after_list, $fields[$field]);
       }
       elsif($keyword eq "WHILE")
       {
-	push(@while_list, $fields[$field]);
+        push(@while_list, $fields[$field]);
       }
       $field++;
       $keyword = "";
@@ -373,48 +373,48 @@ sub ParseScheduleBlock
       $line_number++;
       if($data[$line_number] =~ m/^\s*STOR[^:]*:\s*(.*)$/i)
       {
-	push(@mem_groups, split(/\s,/, $1));
+        push(@mem_groups, split(/\s,/, $1));
       }
       elsif($data[$line_number] =~ m/^\s*COMM[^:]*:\s*(.*)$/i)
       {
-	push(@comm_groups, split(/\s,/, $1));
+        push(@comm_groups, split(/\s,/, $1));
       }
       elsif($data[$line_number] =~ m/^\s*TRIG[^:]*:\s*(.*)$/i)
       {
-	push(@trigger_groups, split(/\s,/, $1));
+        push(@trigger_groups, split(/\s,/, $1));
       }
       elsif($data[$line_number] =~ m/^\s*SYNC[^:]*:\s*(.*)$/i)
       {
-	push(@sync_groups, split(/\s,/, $1));
+        push(@sync_groups, split(/\s,/, $1));
       }
       elsif($data[$line_number] =~ m/^\s*OPTI[^:]*:\s*(.*)$/i)
       {
-	push(@options, split(/\s,/, $1));
+        push(@options, split(/\s,/, $1));
       }
       elsif($data[$line_number] =~ m/^\s*LANG[^:]*:\s*(.*)$/i)
       {
-	if($language ne "")
-	{
-	  $thisline = $data[$line_number];
-	  $thisline =~ s/^\s*([^\s])\s$/$1/;
-	  $message  = "Error parsing schedule block in $thorn\n";
-	  $message .= "Attempt to specify language more than once\n";
-	  $message .= "Line: $thisline";
-	  &CST_error(0,$message,"",__LINE__,__FILE__);
-	}
-	else
-	{
-	  $language= $1; 
-	}
+        if($language ne "")
+        {
+          $thisline = $data[$line_number];
+          $thisline =~ s/^\s*([^\s])\s$/$1/;
+          $message  = "Error parsing schedule block in $thorn\n";
+          $message .= "Attempt to specify language more than once\n";
+          $message .= "Line: $thisline";
+          &CST_error(0,$message,"",__LINE__,__FILE__);
+        }
+        else
+        {
+          $language= $1; 
+        }
       }
       elsif($data[$line_number] =~ m:\s*\}\s*:)
       {
-	# do nothing.
+        # do nothing.
       }
       else
       {
-	$message = "Error parsing schedule block line '$data[$line_number]'\nUnrecognised statement";
-	&CST_error(0,$message,"",__LINE__,__FILE__);
+        $message = "Error parsing schedule block line '$data[$line_number]'\nUnrecognised statement";
+        &CST_error(0,$message,"",__LINE__,__FILE__);
       }
     }
   }
@@ -440,9 +440,9 @@ sub ParseScheduleBlock
 
 
   return ($line_number, 
-	  $name, $as, $type, $description, $where, $language, 
-	  $mem_groups, $comm_groups, $trigger_groups, $sync_groups,
-	  $options,$before_list, $after_list, $while_list);
+          $name, $as, $type, $description, $where, $language, 
+          $mem_groups, $comm_groups, $trigger_groups, $sync_groups,
+          $options,$before_list, $after_list, $while_list);
 
 }
 

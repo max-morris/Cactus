@@ -128,7 +128,7 @@ sub ScheduleCreateFile
     if ($rhschedule_db->{"\U$thorn\E BLOCK_$block WHERE"} !~ /RECOVER_PARAMETERS/)
     {
       ($block_buffer, $block_prototype) = &ScheduleBlock($thorn, $implementation, $block,
-							 $rhinterface_db, $rhschedule_db);
+                                                         $rhinterface_db, $rhschedule_db);
       $buffer =~ s:\@BLOCK\@$block:$block_buffer:;
       $prototypes .= "$block_prototype";
     }
@@ -142,7 +142,7 @@ sub ScheduleCreateFile
   for($statement = 0 ; $statement < $rhschedule_db->{"\U$thorn\E N_STATEMENTS"}; $statement++)
   {
     ($statement_buffer, $statement_prototype) = &ScheduleStatement($thorn, $implementation, $statement, 
-								   $rhinterface_db, $rhschedule_db);
+                                                                   $rhinterface_db, $rhschedule_db);
     $buffer =~ s:\@STATEMENT\@$statement:$statement_buffer:;
     $prototypes .= "$statement_prototype";
   }
@@ -231,14 +231,14 @@ sub ParameterRecoveryCreateFile
   {
     if ($rhschedule_db->{"\U$thorn\E BLOCK_$block WHERE"} =~ /RECOVER_PARAMETERS/)
       {
-	if($rhschedule_db->{"\U$thorn\E BLOCK_$block LANG"} =~ m:^\s*C\s*$:i )
-	{
-	  $block_buffer = $rhschedule_db->{"\U$thorn\E BLOCK_$block NAME"};
-	}
-	elsif($rhschedule_db->{"\U$thorn\E BLOCK_$block LANG"} =~ m:^\s*(F|F77|FORTRAN|F90)\s*$:i )
+        if($rhschedule_db->{"\U$thorn\E BLOCK_$block LANG"} =~ m:^\s*C\s*$:i )
         {
-	  $block_buffer = "CCTK_FNAME(".$rhschedule_db->{"\U$thorn\E BLOCK_$block NAME"} .")";
-	}
+          $block_buffer = $rhschedule_db->{"\U$thorn\E BLOCK_$block NAME"};
+        }
+        elsif($rhschedule_db->{"\U$thorn\E BLOCK_$block LANG"} =~ m:^\s*(F|F77|FORTRAN|F90)\s*$:i )
+        {
+          $block_buffer = "CCTK_FNAME(".$rhschedule_db->{"\U$thorn\E BLOCK_$block NAME"} .")";
+        }
 
       $buffer =~ s:\@BLOCK\@$block:result =  $block_buffer();:;
       $prototypes .= "extern int $block_buffer(void);\n";
@@ -470,13 +470,13 @@ sub ScheduleBlock
 
   # Extract group and routine information from the databases
   @mem_groups = &ScheduleSelectGroups($thorn, $implementation, 
-				      $rhschedule_db->{"\U$thorn\E BLOCK_$block STOR"},
-				      $rhinterface_db);
+                                      $rhschedule_db->{"\U$thorn\E BLOCK_$block STOR"},
+                                      $rhinterface_db);
 
 
   @unused_comm_groups = &ScheduleSelectGroups($thorn, $implementation, 
-					      $rhschedule_db->{"\U$thorn\E BLOCK_$block COMM"},
-					      $rhinterface_db);
+                                              $rhschedule_db->{"\U$thorn\E BLOCK_$block COMM"},
+                                              $rhinterface_db);
   if (@unused_comm_groups)
   {
     print "No need to switch on Communication in $thorn\n";
@@ -486,26 +486,26 @@ sub ScheduleBlock
   @comm_groups = @mem_groups; # Switch on storage for groups with comm
 
   @trigger_groups = &ScheduleSelectGroups($thorn, $implementation, 
-					  $rhschedule_db->{"\U$thorn\E BLOCK_$block TRIG"},
-					  $rhinterface_db);
-		
+                                          $rhschedule_db->{"\U$thorn\E BLOCK_$block TRIG"},
+                                          $rhinterface_db);
+                
   @sync_groups = &ScheduleSelectGroups($thorn, $implementation, 
-					  $rhschedule_db->{"\U$thorn\E BLOCK_$block SYNC"},
-					  $rhinterface_db);
+                                          $rhschedule_db->{"\U$thorn\E BLOCK_$block SYNC"},
+                                          $rhinterface_db);
 
   @options = split(/,/, $rhschedule_db->{"\U$thorn\E BLOCK_$block OPTIONS"});
 
   @before_list = &ScheduleSelectRoutines($thorn, $implementation, 
-					 $rhschedule_db->{"\U$thorn\E BLOCK_$block BEFORE"},
-					 $rhschedule_db);
+                                         $rhschedule_db->{"\U$thorn\E BLOCK_$block BEFORE"},
+                                         $rhschedule_db);
 
   @after_list = &ScheduleSelectRoutines($thorn, $implementation, 
-					$rhschedule_db->{"\U$thorn\E BLOCK_$block AFTER"},
-					$rhschedule_db);
+                                        $rhschedule_db->{"\U$thorn\E BLOCK_$block AFTER"},
+                                        $rhschedule_db);
 
   @while_list = &ScheduleSelectVars($thorn, $implementation, 
-				    $rhschedule_db->{"\U$thorn\E BLOCK_$block WHILE"},
-				    $rhinterface_db);
+                                    $rhschedule_db->{"\U$thorn\E BLOCK_$block WHILE"},
+                                    $rhinterface_db);
 
 
   # Start writing out the data 
@@ -566,7 +566,7 @@ sub ScheduleBlock
   $buffer .= $indent . scalar(@while_list) . "                        /* Number of WHILE   variables */";
   
   foreach $item (@mem_groups, @comm_groups, @trigger_groups, @sync_groups, 
-		 @options, @before_list, @after_list, @while_list)
+                 @options, @before_list, @after_list, @while_list)
   {
     $buffer .= ",\n" . $indent . "\"" . $item . "\"" ;
   }
@@ -600,8 +600,8 @@ sub ScheduleStatement
 
   # Extract the groups.
   @groups = &ScheduleSelectGroups($thorn, $implementation, 
-				  $rhschedule_db->{"\U$thorn\E STATEMENT_$statement GROUPS"},
-				  $rhinterface_db);
+                                  $rhschedule_db->{"\U$thorn\E STATEMENT_$statement GROUPS"},
+                                  $rhinterface_db);
 
   if($rhschedule_db->{"\U$thorn\E STATEMENT_$statement TYPE"} eq "STOR")
   {
@@ -675,38 +675,38 @@ sub ScheduleSelectGroups
 
       if(($1 !~ m:^\s*$thorn\s*$:i) && ($1 !~ m:^\s*$implementation\s*$:i))
       {
-	# The name has been given completely specified but it isn't this thorn.
+        # The name has been given completely specified but it isn't this thorn.
       
-	if($rhinterface_db->{"IMPLEMENTATION \U$implementation\E ANCESTORS"} =~ m:\b$other_imp\b:i)
-	{
-	  $block = "PUBLIC";
-	}
-	elsif($rhinterface_db->{"IMPLEMENTATION \U$implementation\E FRIENDS"} =~ m:\b$other_imp\b:i)
-	{
-	  $block = "PROTECTED";
-	}
-	else
-	{
-	  $mess = "Schedule error: Thorn $thorn - group $other_imp\:\:$group doesn't exist.";
-	  $help = "Check thorn $thorn inherits from implementation $other_imp";
-	  &CST_error(0,$mess,$help,__LINE__,__FILE__);
-	  next;
-	}
+        if($rhinterface_db->{"IMPLEMENTATION \U$implementation\E ANCESTORS"} =~ m:\b$other_imp\b:i)
+        {
+          $block = "PUBLIC";
+        }
+        elsif($rhinterface_db->{"IMPLEMENTATION \U$implementation\E FRIENDS"} =~ m:\b$other_imp\b:i)
+        {
+          $block = "PROTECTED";
+        }
+        else
+        {
+          $mess = "Schedule error: Thorn $thorn - group $other_imp\:\:$group doesn't exist.";
+          $help = "Check thorn $thorn inherits from implementation $other_imp";
+          &CST_error(0,$mess,$help,__LINE__,__FILE__);
+          next;
+        }
 
-	$rhinterface_db->{"IMPLEMENTATION \U$other_imp\E THORNS"} =~ m:(\w+):;
-	$other_thorn = $1;
+        $rhinterface_db->{"IMPLEMENTATION \U$other_imp\E THORNS"} =~ m:(\w+):;
+        $other_thorn = $1;
       
-	if($rhinterface_db->{"\U$other_thorn\E $block GROUPS"} =~ m:\b$group\b:i)
-	{
-	  push(@groups, "$other_imp\::$group");
-	  next;
-	}
-	else
-	{
-	  $mess = "Schedule error: Thorn $thorn - group $other_imp\:\:$group doesn't exist.\n";
-	  &CST_error(0,$mess,"",__LINE__,__FILE__);
-	  next;
-	}	
+        if($rhinterface_db->{"\U$other_thorn\E $block GROUPS"} =~ m:\b$group\b:i)
+        {
+          push(@groups, "$other_imp\::$group");
+          next;
+        }
+        else
+        {
+          $mess = "Schedule error: Thorn $thorn - group $other_imp\:\:$group doesn't exist.\n";
+          &CST_error(0,$mess,"",__LINE__,__FILE__);
+          next;
+        }       
       }
     }
 
@@ -728,39 +728,39 @@ sub ScheduleSelectGroups
       # Check ancestors and friends
       foreach $other_imp (split(" ", $rhinterface_db->{"IMPLEMENTATION \U$implementation\E ANCESTORS"}))
       {
-	$rhinterface_db->{"IMPLEMENTATION \U$other_imp\E THORNS"} =~ m:(\w+):;
-	$other_thorn = $1;
+        $rhinterface_db->{"IMPLEMENTATION \U$other_imp\E THORNS"} =~ m:(\w+):;
+        $other_thorn = $1;
 
-	if($rhinterface_db->{"\U$other_thorn\E PUBLIC GROUPS"} =~ m:\b$group\b:i)
-	{
-	  push(@groups, "$other_imp\::$group");
-	  $foundit = 1;
-	  last;
-	}
+        if($rhinterface_db->{"\U$other_thorn\E PUBLIC GROUPS"} =~ m:\b$group\b:i)
+        {
+          push(@groups, "$other_imp\::$group");
+          $foundit = 1;
+          last;
+        }
       }
       if(! $foundit)
       {
-	foreach $other_imp (split(" ", $rhinterface_db->{"IMPLEMENTATION \U$implementation\E FRIENDS"}))
-	{
-	  $rhinterface_db->{"IMPLEMENTATION \U$other_imp\E THORNS"} =~ m:(\w+):;
-	  $other_thorn = $1;
+        foreach $other_imp (split(" ", $rhinterface_db->{"IMPLEMENTATION \U$implementation\E FRIENDS"}))
+        {
+          $rhinterface_db->{"IMPLEMENTATION \U$other_imp\E THORNS"} =~ m:(\w+):;
+          $other_thorn = $1;
 
-	  if($rhinterface_db->{"\U$other_thorn\E PROTECTED GROUPS"} =~ m:\b$group\b:i)
-	  {
-	    push(@groups, "$other_imp\::$group");
-	    $foundit = 1;
-	    last;
-	  }
-	}
+          if($rhinterface_db->{"\U$other_thorn\E PROTECTED GROUPS"} =~ m:\b$group\b:i)
+          {
+            push(@groups, "$other_imp\::$group");
+            $foundit = 1;
+            last;
+          }
+        }
       }
       if(! $foundit)
       {
-	$mess = "Schedule error: Thorn $thorn - group $group doesn't exist.";
-	$help = "Check $group really is in thorn $thorn. Groups from other thorns ";
+        $mess = "Schedule error: Thorn $thorn - group $group doesn't exist.";
+        $help = "Check $group really is in thorn $thorn. Groups from other thorns ";
         $help .= "need to be specified using \$implementation\:\:\$group and ";
-	$help .= "$implementation must be inheritied by your thorn.";
-	&CST_error(0,$mess,$help,__LINE__,__FILE__);
-	
+        $help .= "$implementation must be inheritied by your thorn.";
+        &CST_error(0,$mess,$help,__LINE__,__FILE__);
+        
       }
     }
     else

@@ -499,8 +499,8 @@ sub runtest
     if ( -e $newfile)
     {
 
-	#print STDERR "*************** -e :${newfile}:!\n";
-	#if (-e $file) {print "************** file exists\n";}
+        #print STDERR "*************** -e :${newfile}:!\n";
+        #if (-e $file) {print "************** file exists\n";}
 
       open (INORIG, "<$file");
       open (INNEW,  "<$newfile");
@@ -516,7 +516,7 @@ sub runtest
         {
 
           # Check against nans
-	  #print STDERR "*************** Looking for nans...........\n\a\a\a";
+          #print STDERR "*************** Looking for nans...........\n\a\a\a";
           if ($nline =~ /nan/i)
           {
             print "****CAUGHT NAN in $newfile****\n";

@@ -46,7 +46,7 @@ sub CreateParameterBindingFile
   $line = "\#include \"CParameterStructNames.h\"";
   push(@data, $line);
   $line = "\#include \"cctk_Misc.h\"";
-  push(@data, $line);	
+  push(@data, $line);   
   $line = "\#include \"ParameterBindings.h\"";
   push(@data, $line);
   push(@data, "");
@@ -253,7 +253,7 @@ sub order_params
       push(@string_params, $parameter);
     }
     elsif($type eq "BOOLEAN" ||
-    	  $type eq "INT")
+          $type eq "INT")
     {
       push(@int_params, $parameter);
     }
@@ -263,8 +263,8 @@ sub order_params
     }
     else
     {
-	$message = "Unknown parameter type '$type'";
-	&CST_error(0,$message,__LINE__,__FILE__);
+        $message = "Unknown parameter type '$type'";
+        &CST_error(0,$message,__LINE__,__FILE__);
     }
     
   }

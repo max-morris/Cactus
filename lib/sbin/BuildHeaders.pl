@@ -48,27 +48,27 @@ sub BuildHeaders
     {
       if ($inc_file1 !~ /^\s*$/)
       {
-	$inc_file1 =~ s/ //g;
-	$inc_file2 = $interface_database{"\U$thorn ADD HEADER $inc_file1 TO"};
+        $inc_file1 =~ s/ //g;
+        $inc_file2 = $interface_database{"\U$thorn ADD HEADER $inc_file1 TO"};
 
-	# Write information to the global include file
-	$data{"$inc_file2"} .= "/* Including header file $inc_file1 from $thorn */\n";
-	
-	# Now have to find the include file and copy it
-	if (-e "$cctk_home/arrangements/$arrangement/$thorn/src/$inc_file1")
-	{
-	  $data{"$inc_file2"} .= "#include \"$arrangement/$thorn/src/$inc_file1\"\n\n";
-	}
-	elsif (-e "$cctk_home/arrangements/$arrangement/$thorn/src/include/$inc_file1")
-	{
-	  $data{"$inc_file2"} .= "#include \"$arrangement/$thorn/src/include/$inc_file1\"\n\n";
-	}
-	else
-	{
-	  $message = "Include file $inc_file1 not found in $arrangement/$thorn\n";
-	  &CST_error(0,$message,"",__LINE__,__FILE__);
-	}
-	$data{"$inc_file2"} .= "/* End of include header file $inc_file1 from $thorn */\n";
+        # Write information to the global include file
+        $data{"$inc_file2"} .= "/* Including header file $inc_file1 from $thorn */\n";
+        
+        # Now have to find the include file and copy it
+        if (-e "$cctk_home/arrangements/$arrangement/$thorn/src/$inc_file1")
+        {
+          $data{"$inc_file2"} .= "#include \"$arrangement/$thorn/src/$inc_file1\"\n\n";
+        }
+        elsif (-e "$cctk_home/arrangements/$arrangement/$thorn/src/include/$inc_file1")
+        {
+          $data{"$inc_file2"} .= "#include \"$arrangement/$thorn/src/include/$inc_file1\"\n\n";
+        }
+        else
+        {
+          $message = "Include file $inc_file1 not found in $arrangement/$thorn\n";
+          &CST_error(0,$message,"",__LINE__,__FILE__);
+        }
+        $data{"$inc_file2"} .= "/* End of include header file $inc_file1 from $thorn */\n";
       }
     }
 
@@ -76,40 +76,40 @@ sub BuildHeaders
     {
       if ($inc_file1 !~ /^\s*$/)
       {
-	$inc_file1 =~ s/ //g;
-	$inc_file2 = $interface_database{"\U$thorn ADD SOURCE $inc_file1 TO"};
+        $inc_file1 =~ s/ //g;
+        $inc_file2 = $interface_database{"\U$thorn ADD SOURCE $inc_file1 TO"};
 
-	# Write information to the global include file
-	$data{"$inc_file2"} .= "/* Including source file $inc_file1 from $thorn */\n";
-	
-	# Now have to find the include file and copy it
-	if (-e "$cctk_home/arrangements/$arrangement/$thorn/src/$inc_file1")
-	{
-	  $tmpline = "#include \"$arrangement/$thorn/src/$inc_file1\"\n";
-	}
-	elsif (-e "$cctk_home/arrangements/$arrangement/$thorn/src/include/$inc_file1")
-	{
-	  $tmpline = "#include \"$arrangement/$thorn/src/include/$inc_file1\"\n}\n";
-	}
-	else
-	{
-	  $message = "Include file $inc_file1 not found in $arrangement/$thorn\n";
-	  &CST_error(0,$message,"",__LINE__,__FILE__);
-	}
+        # Write information to the global include file
+        $data{"$inc_file2"} .= "/* Including source file $inc_file1 from $thorn */\n";
+        
+        # Now have to find the include file and copy it
+        if (-e "$cctk_home/arrangements/$arrangement/$thorn/src/$inc_file1")
+        {
+          $tmpline = "#include \"$arrangement/$thorn/src/$inc_file1\"\n";
+        }
+        elsif (-e "$cctk_home/arrangements/$arrangement/$thorn/src/include/$inc_file1")
+        {
+          $tmpline = "#include \"$arrangement/$thorn/src/include/$inc_file1\"\n}\n";
+        }
+        else
+        {
+          $message = "Include file $inc_file1 not found in $arrangement/$thorn\n";
+          &CST_error(0,$message,"",__LINE__,__FILE__);
+        }
          
-	$data{"$inc_file2"} .= "#ifdef FCODE\n";
-	$data{"$inc_file2"} .= "      if (CCTK_IsThornActive(\"$thorn\").eq.1) then\n";
-	$data{"$inc_file2"} .= "#else\n"; 
-	$data{"$inc_file2"} .= "if (CCTK_IsThornActive(\"$thorn\")){\n";
-	$data{"$inc_file2"} .= "#endif\n";           
-	$data{"$inc_file2"} .= "$tmpline\n";
-	$data{"$inc_file2"} .= "#ifdef FCODE\n";
-	$data{"$inc_file2"} .= "      end if\n";
-	$data{"$inc_file2"} .= "#else\n"; 
-	$data{"$inc_file2"} .= "\n}\n";
-	$data{"$inc_file2"} .= "#endif\n";           
+        $data{"$inc_file2"} .= "#ifdef FCODE\n";
+        $data{"$inc_file2"} .= "      if (CCTK_IsThornActive(\"$thorn\").eq.1) then\n";
+        $data{"$inc_file2"} .= "#else\n"; 
+        $data{"$inc_file2"} .= "if (CCTK_IsThornActive(\"$thorn\")){\n";
+        $data{"$inc_file2"} .= "#endif\n";           
+        $data{"$inc_file2"} .= "$tmpline\n";
+        $data{"$inc_file2"} .= "#ifdef FCODE\n";
+        $data{"$inc_file2"} .= "      end if\n";
+        $data{"$inc_file2"} .= "#else\n"; 
+        $data{"$inc_file2"} .= "\n}\n";
+        $data{"$inc_file2"} .= "#endif\n";           
 
-	$data{"$inc_file2"} .= "/* End of include source file $inc_file1 from $thorn */\n";
+        $data{"$inc_file2"} .= "/* End of include source file $inc_file1 from $thorn */\n";
       }
     }
 
@@ -133,4 +133,3 @@ sub BuildHeaders
 }
 
 1;
-

@@ -70,14 +70,14 @@ sub cross_index_parameters
     {
       if($public_parameters{"\U$parameter\E"})
       {
-	  $message = "Duplicate public parameter $parameter, defined in $imp and ".$public_parameters{"\Uparameter\E"};
-	  &CST_error(0,$message,"",__LINE__,__FILE__);
+          $message = "Duplicate public parameter $parameter, defined in $imp and ".$public_parameters{"\Uparameter\E"};
+          &CST_error(0,$message,"",__LINE__,__FILE__);
       }
       else
       {
-	$public_parameters{"\Uparameter\E"} = "$thorn";
-	
-	$parameter_database{"GLOBAL PARAMETERS"} .= "$thorn\::$parameter ";
+        $public_parameters{"\Uparameter\E"} = "$thorn";
+        
+        $parameter_database{"GLOBAL PARAMETERS"} .= "$thorn\::$parameter ";
       }
     }
   }
@@ -130,19 +130,19 @@ sub parse_param_ccl
       
       if($block eq "SHARES")
       {
-	$current_friend = $2;
-	$current_friend =~ s:\s::;
-	
-	#               It's a friend block.
-	$block .= " \U$current_friend\E";
-	#               Remember this friend, but make the memory unique.
-	$friends{"\U$current_friend\E"} = 1;
+        $current_friend = $2;
+        $current_friend =~ s:\s::;
+        
+        #               It's a friend block.
+        $block .= " \U$current_friend\E";
+        #               Remember this friend, but make the memory unique.
+        $friends{"\U$current_friend\E"} = 1;
       }
       
       # Do some initialisation to prevent perl -w from complaining.
       if(!$parameter_db{"\U$thorn $block\E variables"})
       {
-	$parameter_db{"\U$thorn $block\E variables"} = "";
+        $parameter_db{"\U$thorn $block\E variables"} = "";
       }
     }
     elsif($line =~ m:(EXTENDS |USES )?\s*(?\:CCTK_)?(INT|REAL|BOOLEAN|KEYWORD|STRING)\s+([a-zA-Z]+[a-zA-Z0-9_]*)\s+(\"[^\"]*\")?\s*(.*)$:i)
@@ -158,191 +158,191 @@ sub parse_param_ccl
 
       if($use_or_extend =~ m:USES:i)
       {
-	$use_clause = 1;
+        $use_clause = 1;
       }
       else
       {
-	$use_clause = 0;
+        $use_clause = 0;
       }
 
       if($description !~ m:\":)
       {
-	if($use_or_extend)
-	{
-	  $description = "";
-	}
-	else
-	{
-	  $message = "Missing description for $variable in thorn $thorn.";
-	  &CST_error(0,$message,"",__LINE__,__FILE__);
-	}
+        if($use_or_extend)
+        {
+          $description = "";
+        }
+        else
+        {
+          $message = "Missing description for $variable in thorn $thorn.";
+          &CST_error(0,$message,"",__LINE__,__FILE__);
+        }
       }
 
       if($defined_parameters{"\U$variable\E"})
       {
 
-	$message = "Duplicate parameter $variable in thorn $thorn. Ignoring second definition";
-	&CST_error(1,$message,"",__LINE__,__FILE__);
+        $message = "Duplicate parameter $variable in thorn $thorn. Ignoring second definition";
+        &CST_error(1,$message,"",__LINE__,__FILE__);
 
-	$line_number++ until ($data[$line_number] =~ m:\}:);
+        $line_number++ until ($data[$line_number] =~ m:\}:);
       }
       elsif($use_or_extend && $use_or_extend =~ m:(EXTENDS|USES):i && $block !~ m:SHARES\s*\S:)
       {
-	# Can only extend a friend variable.
-	$message =  "Parse error in $thorn/param.ccl";
-	&CST_error(0,$message,"",__LINE__,__FILE__);
-	$line_number++ until ($data[$line_number] =~ m:\}:);
+        # Can only extend a friend variable.
+        $message =  "Parse error in $thorn/param.ccl";
+        &CST_error(0,$message,"",__LINE__,__FILE__);
+        $line_number++ until ($data[$line_number] =~ m:\}:);
       }
       elsif($data[$line_number+1] !~ m:^\s*\{\s*$: && $use_clause == 0)
       {
-	# Since the data should have no blank lines, the next
-	# line should have { on it.
-	$message = "Parse error in $thorn/param.ccl - missing \"{\" in definition of parameter \"$variable\"";
-	&CST_error(0,$message,"",__LINE__,__FILE__);
-	# Move past the end of this block.
-	$line_number++ until ($data[$line_number] =~ m:\}:);
+        # Since the data should have no blank lines, the next
+        # line should have { on it.
+        $message = "Parse error in $thorn/param.ccl - missing \"{\" in definition of parameter \"$variable\"";
+        &CST_error(0,$message,"",__LINE__,__FILE__);
+        # Move past the end of this block.
+        $line_number++ until ($data[$line_number] =~ m:\}:);
       }
       else
       {
-	$skip_range_block = 0;
-	# Move past {
-	if($data[$line_number+1] !~ m:\s*\{\s*:)
-	{
-	  if ($use_clause) 
-	  {
-	    $skip_range_block = 1;
-	  }
-	  else
-	  {
+        $skip_range_block = 0;
+        # Move past {
+        if($data[$line_number+1] !~ m:\s*\{\s*:)
+        {
+          if ($use_clause) 
+          {
+            $skip_range_block = 1;
+          }
+          else
+          {
 #           This message is already given above.
-#	    message = "Missing { at start of range block for parameter $variable pf thorn $thorn";
-#	    &CST_error(0,$message,"",__LINE__,__FILE__);
-	    die "Internal error in parser: this line should never be reached."
-	  }
-	}
-	else
-	{
-	  $skip_range_block = 0;
-	  $line_number++;
-	  $line_number++;
-	}
+#           message = "Missing { at start of range block for parameter $variable pf thorn $thorn";
+#           &CST_error(0,$message,"",__LINE__,__FILE__);
+            die "Internal error in parser: this line should never be reached."
+          }
+        }
+        else
+        {
+          $skip_range_block = 0;
+          $line_number++;
+          $line_number++;
+        }
 
-	# Parse the options
-	%options = split(/\s*=\s*|\s+/, $options);
+        # Parse the options
+        %options = split(/\s*=\s*|\s+/, $options);
       
-	foreach $option (keys %options)
-	{
-	  if($option =~ m:STEERABLE:i)
-	  {
-	    $parameter_db{"\U$thorn $variable\E steerable"} = $options{$option};
-	  }
-	  else
-	  {
-	    $message = "Unknown option $option for parameter $variable of thorn $thorn";
-	    &CST_error(0,$message,"",__LINE__,__FILE__);
-	  }
-	}
+        foreach $option (keys %options)
+        {
+          if($option =~ m:STEERABLE:i)
+          {
+            $parameter_db{"\U$thorn $variable\E steerable"} = $options{$option};
+          }
+          else
+          {
+            $message = "Unknown option $option for parameter $variable of thorn $thorn";
+            &CST_error(0,$message,"",__LINE__,__FILE__);
+          }
+        }
 
-	# Store data about this variable.
-	$defined_parameters{"\U$variable\E"} = 1;
-	
-	$parameter_db{"\U$thorn $block\E variables"} .= $variable." ";
-	$parameter_db{"\U$thorn $variable\E type"} = $type;
-	$parameter_db{"\U$thorn $variable\E description"} = $description;
-	$parameter_db{"\U$thorn $variable\E ranges"} = 0;
-	
-	if(! $skip_range_block)
-	{
-	  # Parse the allowed values and their descriptions.
-	  # The (optional) description is seperated by ::
-	  while($data[$line_number] !~ m:^\s*\}:)
-	  {
-	    if($data[$line_number] =~ m/::/)
-	    {
-	      ($new_ranges, $delim, $new_desc) = $data[$line_number] =~ m/(.*)(::)(.*)/;
-	    }
-	    else
-	    {
-	      ($new_ranges, $delim, $new_desc) = ($data[$line_number],"","");
-	    }       
-	    # Increment the number of ranges found (ranges)
-	    $parameter_db{"\U$thorn $variable\E ranges"}++;
-	    # Strip out any spaces in the range for a numeric parameter.
-	    if($type =~ m:INT|REAL:)
-	    {
-	      $new_ranges =~ s/\s//g;
-	    }
-	    
-	    $parameter_db{"\U$thorn $variable\E range $parameter_db{\"\U$thorn $variable\E ranges\"} range"} = $new_ranges;
-	    
-	    # Check description
-	    if($delim eq "" || ($delim =~ /::/ && $new_desc =~ /^\s*$/))
-	    {
-	      $message = "Missing description of range '$new_ranges' for parameter $thorn\::$variable";
-	      &CST_error(1,$message,"",__LINE__,__FILE__);
-	    }
-	    elsif ($new_desc =~ /^\s*\".*[^\s\"]\s*$|^\s*[^\s\"].*\"\s*$/)
-	    {
-	      $message = "Description of range for $thorn\::$variable has misplaced quotes ($new_desc)";
-	      &CST_error(0,$message,"",__LINE__,__FILE__);
-	    }
-	    $parameter_db{"\U$thorn $variable\E range $parameter_db{\"\U$thorn $variable\E ranges\"} description"} = $new_desc;
-	    $line_number++;
-	  }
-	}
+        # Store data about this variable.
+        $defined_parameters{"\U$variable\E"} = 1;
+        
+        $parameter_db{"\U$thorn $block\E variables"} .= $variable." ";
+        $parameter_db{"\U$thorn $variable\E type"} = $type;
+        $parameter_db{"\U$thorn $variable\E description"} = $description;
+        $parameter_db{"\U$thorn $variable\E ranges"} = 0;
+        
+        if(! $skip_range_block)
+        {
+          # Parse the allowed values and their descriptions.
+          # The (optional) description is seperated by ::
+          while($data[$line_number] !~ m:^\s*\}:)
+          {
+            if($data[$line_number] =~ m/::/)
+            {
+              ($new_ranges, $delim, $new_desc) = $data[$line_number] =~ m/(.*)(::)(.*)/;
+            }
+            else
+            {
+              ($new_ranges, $delim, $new_desc) = ($data[$line_number],"","");
+            }       
+            # Increment the number of ranges found (ranges)
+            $parameter_db{"\U$thorn $variable\E ranges"}++;
+            # Strip out any spaces in the range for a numeric parameter.
+            if($type =~ m:INT|REAL:)
+            {
+              $new_ranges =~ s/\s//g;
+            }
+            
+            $parameter_db{"\U$thorn $variable\E range $parameter_db{\"\U$thorn $variable\E ranges\"} range"} = $new_ranges;
+            
+            # Check description
+            if($delim eq "" || ($delim =~ /::/ && $new_desc =~ /^\s*$/))
+            {
+              $message = "Missing description of range '$new_ranges' for parameter $thorn\::$variable";
+              &CST_error(1,$message,"",__LINE__,__FILE__);
+            }
+            elsif ($new_desc =~ /^\s*\".*[^\s\"]\s*$|^\s*[^\s\"].*\"\s*$/)
+            {
+              $message = "Description of range for $thorn\::$variable has misplaced quotes ($new_desc)";
+              &CST_error(0,$message,"",__LINE__,__FILE__);
+            }
+            $parameter_db{"\U$thorn $variable\E range $parameter_db{\"\U$thorn $variable\E ranges\"} description"} = $new_desc;
+            $line_number++;
+          }
+        }
 
         # Give a warning if no range was given and it was needed
         if (($use_clause == 0)  && ($parameter_db{"\U$thorn $variable\E ranges"}==0 && $type =~ m:INT|REAL:))
         {
-	    $message = "No range given for $variable in $thorn";
-	    &CST_error(0,$message,"",__LINE__,__FILE__);
+            $message = "No range given for $variable in $thorn";
+            &CST_error(0,$message,"",__LINE__,__FILE__);
         }
-	if($block !~ m:SHARES:)
-	{
-	  if($data[$line_number] =~ m:\s*\}\s*(.+):)
-	  {
-	      $default = $1;
-	      if ($type =~ m:INT|REAL: && $default =~ m:":)
-	      {
-		  $message = "String default given for $type $variable in $thorn";
+        if($block !~ m:SHARES:)
+        {
+          if($data[$line_number] =~ m:\s*\}\s*(.+):)
+          {
+              $default = $1;
+              if ($type =~ m:INT|REAL: && $default =~ m:":)
+              {
+                  $message = "String default given for $type $variable in $thorn";
                   &CST_error(0,$message,"",__LINE__,__FILE__);
-	      }
+              }
               elsif ($type =~ m:STRING|KEYWORD: && $default !~ m:".*":)
               {
-		  $message = "Default given for $type $variable in $thorn is not a string";
+                  $message = "Default given for $type $variable in $thorn is not a string";
                   &CST_error(0,$message,"",__LINE__,__FILE__);
-	      }
+              }
               elsif ($type =~ m:BOOLEAN: && $default =~ m:": && $default !~ m:".*":)
-	      {
-		  $message = "Default given for $type $variable in $thorn is missing a quote";
+              {
+                  $message = "Default given for $type $variable in $thorn is missing a quote";
                   &CST_error(0,$message,"",__LINE__,__FILE__);
-	      }
-	      
-	      $default = $1 if ($default =~ m:\"(((\\\")|[^\"])*)\":);
-	   
-	      &CheckParameterDefault($thorn,$variable,$default,%parameter_db);
+              }
+              
+              $default = $1 if ($default =~ m:\"(((\\\")|[^\"])*)\":);
+           
+              &CheckParameterDefault($thorn,$variable,$default,%parameter_db);
 
-	      $parameter_db{"\U$thorn $variable\E default"} = $default;
-	  }
-	  else
-	  {
-	    $message =  "Unable to find default for $variable";
-	    &CST_error(0,$message,"",__LINE__,__FILE__);
-	  }		
-	}
+              $parameter_db{"\U$thorn $variable\E default"} = $default;
+          }
+          else
+          {
+            $message =  "Unable to find default for $variable";
+            &CST_error(0,$message,"",__LINE__,__FILE__);
+          }             
+        }
       }
     }
     else
     {
       if($line =~ m:\{:)
       {
-	$message = "Skipping parameter block in $thorn with missing keyword";
+        $message = "Skipping parameter block in $thorn with missing keyword";
         &CST_error(1,$message,"",__LINE__,__FILE__);
-	$line_number++ until ($data[$line_number] =~ m:\}:);
+        $line_number++ until ($data[$line_number] =~ m:\}:);
       }
       else
       {
-	$message = "Unknown line \"$line\" in $thorn/param.ccl";
+        $message = "Unknown line \"$line\" in $thorn/param.ccl";
         &CST_error(0,$message,"",__LINE__,__FILE__);
       }
     }
@@ -436,8 +436,8 @@ sub CheckParameterDefault
   {
     if ($default !~ m:^yes|no|1|0$:i)
       {
-	$message = "Default ($default) for boolean incorrect for $variable in $thorn";
-	&CST_error(0,$message,"",__LINE__,__FILE__);
+        $message = "Default ($default) for boolean incorrect for $variable in $thorn";
+        &CST_error(0,$message,"",__LINE__,__FILE__);
       }
   }
 
@@ -456,7 +456,7 @@ sub CheckParameterDefault
       $range = quotemeta $range;
       if ($default =~ m:$range:i)
       {
-	$foundit = 1;
+        $foundit = 1;
       }
     }
     if ($foundit == 0)
@@ -480,7 +480,7 @@ sub CheckParameterDefault
 
       if ($default =~ m:$range:i)
       {
-	$foundit = 1;
+        $foundit = 1;
       }
     }
     if ($foundit == 0)
@@ -507,23 +507,23 @@ sub CheckParameterDefault
       $max = $2;
       if ($min =~ /^\s*[\*\s]*\s*$/)
       {
-	$minok=1;
+        $minok=1;
       }
       elsif ($default >= $min)
       {
-	$minok=1;
+        $minok=1;
       }
       if ($max =~ /^\s*[\*\s]*\s*$/)
       {
-	$maxok=1;
+        $maxok=1;
       }
       elsif ($default <= $max)
       {
-	$maxok=1;
+        $maxok=1;
       }
       if ($minok == 1 && $maxok == 1)
       {
-	$foundit = 1;
+        $foundit = 1;
       }
     }
     if ($foundit == 0)
@@ -550,23 +550,23 @@ sub CheckParameterDefault
       $max = $2;
       if ($min =~ /^\s*[\*\s]*\s*$/)
       {
-	$minok=1;
+        $minok=1;
       }
       elsif ($default >= $min)
       {
-	$minok=1;
+        $minok=1;
       }
       if ($max =~ /^\s*[\*\s]*\s*$/)
       {
-	$maxok=1;
+        $maxok=1;
       }
       elsif ($default <= $max)
       {
-	$maxok=1;
+        $maxok=1;
       }
       if ($minok == 1 && $maxok == 1)
       {
-	$foundit = 1;
+        $foundit = 1;
       }
     }
     if ($foundit == 0)
