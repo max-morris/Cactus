@@ -18,21 +18,22 @@ DIVIDER =  $(DIVEL)$(DIVEL)$(DIVEL)$(DIVEL)
 # Include the main make definitions for this configuration
 include $(CONFIG)/make.config.defn
  
-# Include the configuration make.code.def for the thorn if it is not cactus or cactusbindings
+BINDINGS_DIR=$(TOP)/bindings
+
+# Include the configuration make.code.defn for the thorn
+# if it is not Cactus or CactusBindings
 INC_DIRS = 
 ifneq ($(THORN), CactusBindings)
 ifneq ($(THORN), Cactus)
--include $(TOP)/bindings/Configuration/$(THORN)/make.configuration.defn
+-include $(BINDINGS_DIR)/Configuration/$(THORN)/make.configuration.defn
 endif
 endif
 
 # Add appropriate include lines
-INC_DIRS += $(SYS_INC_DIRS) $(SRCDIR) $(SRCDIR)/include $(CONFIG) $(TOP)/bindings/include $(CCTK_HOME)/src/include $(CCTK_HOME)/arrangements
+INC_DIRS += $(SYS_INC_DIRS) $(SRCDIR) $(SRCDIR)/include $(CONFIG) $(BINDINGS_DIR)/include $(CCTK_HOME)/src/include $(CCTK_HOME)/arrangements
 
 # Allow subdirectories to inherit these include directories
 export INC_DIRS
-
-BINDINGS_DIR=$(TOP)/bindings
 
 EXTRA_DEFINES += THORN_IS_$(THORN) 
 
