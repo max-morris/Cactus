@@ -27,6 +27,7 @@
 #ifdef FCODE
 
 #include "cctk_Faces.h"
+#include "cctk_Interp.h"
 
 #define CCTK_PRINTSEPARATOR\
   print '("--------------------------------------------------------------------------------")'
