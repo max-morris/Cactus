@@ -98,41 +98,44 @@
   printf("--------------------------------------------------------------------------------\n");
 
 #define _DECLARE_CCTK_CARGUMENTS \
-            int cctk_dim=cctkGH->cctk_dim;\
-            int *cctk_gsh=cctkGH->cctk_gsh;\
-            int *cctk_lsh=cctkGH->cctk_lsh;\
-            int *cctk_lbnd=cctkGH->cctk_lbnd;\
-            int *cctk_ubnd=cctkGH->cctk_ubnd;\
-            int *cctk_from=cctkGH->cctk_from;\
-            int *cctk_to=cctkGH->cctk_to;\
-            int *cctk_bbox=cctkGH->cctk_bbox;\
-            CCTK_REAL cctk_delta_time=cctkGH->cctk_delta_time;\
-            CCTK_REAL cctk_time=cctkGH->cctk_time;\
+            void      *cctk_dummy_pointer;\
+            int        cctk_dummy_int;\
+            CCTK_REAL  cctk_dummy_real;\
+            int        cctk_dim=cctkGH->cctk_dim;\
+            int       *cctk_gsh=cctkGH->cctk_gsh;\
+            int       *cctk_lsh=cctkGH->cctk_lsh;\
+            int       *cctk_lbnd=cctkGH->cctk_lbnd;\
+            int       *cctk_ubnd=cctkGH->cctk_ubnd;\
+            int       *cctk_from=cctkGH->cctk_from;\
+            int       *cctk_to=cctkGH->cctk_to;\
+            int       *cctk_bbox=cctkGH->cctk_bbox;\
+            CCTK_REAL  cctk_delta_time=cctkGH->cctk_delta_time;\
+            CCTK_REAL  cctk_time=cctkGH->cctk_time;\
             CCTK_REAL *cctk_delta_space=cctkGH->cctk_delta_space;\
             CCTK_REAL *cctk_origin_space=cctkGH->cctk_origin_space;\
-            int *cctk_levfac=cctkGH->cctk_levfac;\
-            int cctk_convlevel=cctkGH->cctk_convlevel;\
-            int *cctk_nghostzones=cctkGH->cctk_nghostzones;\
-            int cctk_iteration=cctkGH->cctk_iteration;
+            int       *cctk_levfac=cctkGH->cctk_levfac;\
+            int        cctk_convlevel=cctkGH->cctk_convlevel;\
+            int       *cctk_nghostzones=cctkGH->cctk_nghostzones;\
+            int        cctk_iteration=cctkGH->cctk_iteration;
 
 
 #define _USE_CCTK_CARGUMENTS\
-            (void *)cctk_dim;\
-            (void *)cctk_gsh;\
-            (void *)cctk_lsh;\
-            (void *)cctk_lbnd;\
-            (void *)cctk_ubnd;\
-            (void *)cctk_from;\
-            (void *)cctk_to;\
-            (void *)cctk_bbox;\
-            (void )cctk_delta_time;\
-            (void )cctk_time;\
-            (void *)cctk_delta_space;\
-            (void *)cctk_origin_space;\
-            (void *)cctk_levfac;\
-            (void *)cctk_convlevel;\
-            (void *)cctk_nghostzones;\
-            (void *)cctk_iteration;
+            cctk_dummy_int=cctk_dim;\
+            cctk_dummy_pointer=(void *)cctk_gsh;\
+            cctk_dummy_pointer=(void *)cctk_lsh;\
+            cctk_dummy_pointer=(void *)cctk_lbnd;\
+            cctk_dummy_pointer=(void *)cctk_ubnd;\
+            cctk_dummy_pointer=(void *)cctk_from;\
+            cctk_dummy_pointer=(void *)cctk_to;\
+            cctk_dummy_pointer=(void *)cctk_bbox;\
+            cctk_dummy_real=cctk_delta_time;\
+            cctk_dummy_real=cctk_time;\
+            cctk_dummy_pointer=(void *)cctk_delta_space;\
+            cctk_dummy_pointer=(void *)cctk_origin_space;\
+            cctk_dummy_pointer=(void *)cctk_levfac;\
+            cctk_dummy_pointer=(void *)cctk_convlevel;\
+            cctk_dummy_pointer=(void *)cctk_nghostzones;\
+            cctk_dummy_pointer=(void *)cctk_iteration;
 
 #define _INITIALISE_CCTK_C2F
 #define _DECLARE_CCTK_C2F 
