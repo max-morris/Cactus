@@ -371,7 +371,7 @@ sub CleanDir
 
 sub RunCactus
 {
-  my($testname,$command) = @_;
+  my($output,$testname,$command) = @_;
   my($retcode);
 
   printf "\n  Issuing $command\n";
@@ -381,13 +381,16 @@ sub RunCactus
 
   while (<CMD>)
   {
-    print LOG;
+    print LOG if ($output =~ /log/);
+    print STDOUT if ($output =~ /stdout/);
 
     if( /Cactus exiting with return code (.*)/)
     {
       $retcode = $1 + 0;
     }
   }
+  print STDOUT "\n\n" if ($output =~ /stdout/);
+
   close LOG;
   close CMD;
   $retcode = $? >> 8 if($retcode==0);
@@ -744,7 +747,7 @@ sub ChooseTests
 
 sub RunTest
 {
-  my ($test,$inthorn,$config_data,$testdata) = @_;
+  my ($output,$test,$inthorn,$config_data,$testdata) = @_;
   my ($test_dir,$config);
   my ($retcode);
 
@@ -767,7 +770,7 @@ sub RunTest
   chdir ($testdata->{"$inthorn $test TESTRUNDIR"}) ;
 
   $cmd = "$config_data->{\"COMMAND\"} $config_data->{\"EXE\"} $testdata->{\"$inthorn TESTSDIR\"}${sep}$parfile";
-  $retcode = &RunCactus($test,$cmd);
+  $retcode = &RunCactus($output,$test,$cmd);
   chdir $config_data->{"CCTK_DIR"};
 
   # Deal with the error code
@@ -1205,7 +1208,7 @@ sub ViewResults
 
       $myfile = &defprompt("  Choose file by number or [c]ontinue","c");
 
-      while ($myfile !~ /^c/i && $choice !~ /^c/i)
+      while ($myfile !~ /^[c]/i && $choice !~ /^[c]/i)
       {
         $choice = &defprompt("  Choose action [l]ist, [d]iff, [g]raph, [c]ontinue","c");
 
@@ -1247,6 +1250,8 @@ sub ViewResults
       }
     }
   }
+
+  return;
 
 }
 

@@ -48,6 +48,7 @@ while ($choice !~ /^Q/i)
     print "  Run entire set of tests interactively [I]\n";
     print "  Choose test from [T]horn or [A]rrangement\n";
     print "  Rerun previous test [R]\n";
+    print "  Rerun previous test and show run output on screen [S]\n";
     print "  Compare all files in the test output directories [O]\n";
     print "  Customize testsuite checking [C]\n";
     print "  Quit [Q]\n\n";
@@ -79,7 +80,7 @@ while ($choice !~ /^Q/i)
 	  print "    \"$testdata->{\"$thorn $test DESC\"}\"\n";
 	  if ($choice !~ /^O/i)
 	  {
-	    $testdata = &RunTest($test,$thorn,$config_data,$testdata);
+	    $testdata = &RunTest("log",$test,$thorn,$config_data,$testdata);
 	  }
 	  $rundata = &CompareTestFiles($test,$thorn,\%runconfig,$rundata,$config_data,$testdata);
 
@@ -107,20 +108,27 @@ while ($choice !~ /^Q/i)
 	print "------------------------------------------------------------------------\n\n";
 	print "  Test $thorn: $test\n";
 	print "    \"$testdata->{\"$thorn $test DESC\"}\"\n";
-	$testdata = &RunTest($tests[2*$i],$tests[2*$i+1],$config_data,$testdata);
+	$testdata = &RunTest("log",$tests[2*$i],$tests[2*$i+1],$config_data,$testdata);
 	$rundata = &CompareTestFiles($tests[2*$i],$tests[2*$i+1],\%runconfig,$rundata,$config_data,$testdata);
 	$rundata = &ReportOnTest($tests[2*$i],$tests[2*$i+1],$rundata,$testdata);
 	&ViewResults($tests[2*$i],$tests[2*$i+1],\%runconfig,$rundata,$testdata);
       }
     }
-    elsif ($choice =~ /^R/i)
+    elsif ($choice =~ /^[RS]/i)
     {
       if ($thorn && $test)
       {
 	print "------------------------------------------------------------------------\n\n";
 	print "  Test $thorn: $test \n";
 	print "    \"$testdata->{\"$thorn $test DESC\"}\"\n";
-	$testdata = &RunTest($test,$thorn,$config_data,$testdata);
+	if ($choice =~ /^S/i)
+	{
+	  $testdata = &RunTest("log stdout",$test,$thorn,$config_data,$testdata);
+	}
+	else
+	{
+	  $testdata = &RunTest("log",$test,$thorn,$config_data,$testdata);
+	}
 	$rundata = &CompareTestFiles($test,$thorn,\%runconfig,$rundata,$config_data,$testdata);
 	$rundata = &ReportOnTest($test,$thorn,,$rundata,$testdata);
 	&ViewResults($test,$thorn,\%runconfig,$rundata,$testdata);
