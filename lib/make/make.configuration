@@ -41,13 +41,19 @@ $(EXE): $(CONFIG)/make.thornlist $(patsubst %,$(CCTK_LIBDIR)/lib%.a,$(notdir $(T
 # Libraries go into the appropriate library directory
 # Each thorn's object files go into $(BUILD_DIR)/<thorn>
 # This makes sure the appropriate build directories exist
+# Also checks for the existance of Makefile in the thorn's
+# src directory, and calls that rather than the default makefile
+# used for making thorn libraries.
 $(CCTK_LIBDIR)/lib%.a: update
 	echo $(DIVIDER)
 	echo Checking status of $(notdir $@)
 	if [ ! -d $(BUILD_DIR) ]; then $(MKDIR) $(BUILD_DIR) ; fi
 	if [ ! -d $(@:$(CCTK_LIBDIR)/lib%.a=$(BUILD_DIR)/%) ]; then $(MKDIR) $(@:$(CCTK_LIBDIR)/lib%.a=$(BUILD_DIR)/%) ; fi
 	cd $(@:$(CCTK_LIBDIR)/lib%.a=$(BUILD_DIR)/%); \
-	$(MAKE) TOP=$(TOP) SRCDIR=$(@:$(CCTK_LIBDIR)/lib%.a=$(TOOLKIT_DIR)/$(filter %$(@:$(CCTK_LIBDIR)/lib%.a=%),$(THORNS))/src) CONFIG=$(CONFIG) NAME=$@ -f $(MAKE_DIR)/make.thornlib
+	if [ -e $(@:$(CCTK_LIBDIR)/lib%.a=$(TOOLKIT_DIR)/$(filter %$(@:$(CCTK_LIBDIR)/lib%.a=%),$(THORNS))/src)/Makefile ] ; \
+	then $(MAKE) TOP=$(TOP) SRCDIR=$(@:$(CCTK_LIBDIR)/lib%.a=$(TOOLKIT_DIR)/$(filter %$(@:$(CCTK_LIBDIR)/lib%.a=%),$(THORNS))/src) CONFIG=$(CONFIG) NAME=$@ -f $(@:$(CCTK_LIBDIR)/lib%.a=$(TOOLKIT_DIR)/$(filter %$(@:$(CCTK_LIBDIR)/lib%.a=%),$(THORNS))/src)/Makefile ; \
+	else $(MAKE) TOP=$(TOP) SRCDIR=$(@:$(CCTK_LIBDIR)/lib%.a=$(TOOLKIT_DIR)/$(filter %$(@:$(CCTK_LIBDIR)/lib%.a=%),$(THORNS))/src) CONFIG=$(CONFIG) NAME=$@ -f $(MAKE_DIR)/make.thornlib ; \
+	fi
 	echo $(DIVIDER)
 
 
