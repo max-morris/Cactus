@@ -99,8 +99,18 @@ int CCTK_Equals(const char *string1, const char *string2)
 {
   int retval;
   int position;
+  char *message;
 
   retval = 1;
+
+  /* Check that string1 isn't null */
+  if (!string1 && string2)
+  {
+    message = (char *)malloc((100+sizeof(string2))*sizeof(char));
+    sprintf(message,"First string null in CCTK_Equals (2nd is %s)",string2); 
+    CCTK_Warn(0,message);
+  }
+
   if(strlen(string1)==strlen(string2))
   {
     for(position = 0; position < strlen(string1);position++)
