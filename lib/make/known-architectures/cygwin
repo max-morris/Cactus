@@ -22,11 +22,7 @@ LD="f90"
 CFLAGS="/nologo /Oxy- /Gd"
 CXXFLAGS="/nologo /TP /Oxy- /Gd"
 
-# Fortran routines called from C, and C routines called from Fortran
-#  need __stdcall
-FMODIFIER="__stdcall"
-
-F90FLAGS="/fast"
+F90FLAGS="/fast /iface:cref"
 
 CCOMPILEONLY="/c /Fo"
 FCOMPILEONLY="/compile_only /object:"
