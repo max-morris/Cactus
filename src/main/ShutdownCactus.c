@@ -10,16 +10,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "cctk.h"
+#include "cctk_Flesh.h"
+#include "cctk_Misc.h"
 #include "cctk_Schedule.h"
-
-#include "cctk_parameters.h"
+#include "cctk_Parameters.h"
 
 static char *rcsid = "$Id$";
 
 
  /*@@
-   @routine    ShutdownCactus
+   @routine    CCTKi_ShutdownCactus
    @date       Mon Sep 28 14:50:50 1998
    @author     Tom Goodale
    @desc 
@@ -32,7 +32,7 @@ static char *rcsid = "$Id$";
    @endhistory 
 
 @@*/
-int ShutdownCactus(tFleshConfig *ConfigData)
+int CCTKi_ShutdownCactus(tFleshConfig *ConfigData)
 {
 
   DECLARE_CCTK_PARAMETERS
