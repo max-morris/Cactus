@@ -338,7 +338,7 @@ else
   $ntests = 0;
   foreach $t (@testfiles) 
   {
-    $t =~ m:([^${sep}]+).par$:;
+    $t =~ m:([^${sep}]+)\.par$:;
   $num = $1; 
   $inp{$num} = $t;
   $testnum[$ntests] = $num;
@@ -406,7 +406,7 @@ sub runtest
   
   $tp = $inpf;
   $tp =~ s:^.*$sep::;
-  $tp =~ s/.par//;
+  $tp =~ s/\.par$//;
   
   $test_base_dir = $inpf;
   $test_base_dir =~ s:[^${sep}]*$::;
@@ -463,7 +463,7 @@ sub runtest
   }
 
   $indir = $inpf;
-  $indir =~ s:.par:${sep}:g;
+  $indir =~ s:\.par$:${sep}:g;
   @oldout = <$indir${sep}*.*l>;
   $blewit = 0;
   $reallyblewit = 0;
@@ -488,67 +488,67 @@ sub runtest
       $nrealblow = 0;
       while ($oline = <INORIG>) 
       {
-	$nline = <INNEW>;
-	# Now lets see if they differ.
-	if (!($nline eq $oline)) 
-	{
-	  
-	  # Check against nans
-	  if ($nline =~ /nan/i)
-	  {
-	    print "****CAUGHT NAN in $newfile****\n";
-	    $nblow ++;
-	    $nrealblow ++;
-	  }
-	  # Check against inf
-	  elsif ($nline =~ /inf/i)
-	  {
-	    print "****CAUGHT INF in $newfile****\n";
-	    $nblow ++;
-	    $nrealblow ++;
-	  }
-	  else
-	  {
-	    # This is the new comparison (subtract last two numbers)
-	    ($t1,$v1) = split(' ', $nline);
-	    ($t2,$v2) = split(' ', $oline);
-	    # Make sure that floating point numbers have 'e' if exponential.
-	    $v1 =~ s/[dD]/e/; 
-	    $v2 =~ s/[dD]/e/; 
-	    
-	    $vdiff = abs($v1 - $v2);
-	    if ($vdiff > 0) 
-	    {
-	      
-	      # They diff. But do they differ strongly?
-	      $nblow ++;
-	      
-	      $exp = sprintf("%e",$vdiff);
-	      $exp =~ s/^.*e-(\d+)/$1/;
-	      unless ($exp >= $tolerance) 
-	      {
-		$nrealblow++;
-	      }
-	    }
-	  }
-	} # if
+        $nline = <INNEW>;
+        # Now lets see if they differ.
+        if (!($nline eq $oline)) 
+        {
+          
+          # Check against nans
+          if ($nline =~ /nan/i)
+          {
+            print "****CAUGHT NAN in $newfile****\n";
+            $nblow ++;
+            $nrealblow ++;
+          }
+          # Check against inf
+          elsif ($nline =~ /inf/i)
+          {
+            print "****CAUGHT INF in $newfile****\n";
+            $nblow ++;
+            $nrealblow ++;
+          }
+          else
+          {
+            # This is the new comparison (subtract last two numbers)
+            ($t1,$v1) = split(' ', $nline);
+            ($t2,$v2) = split(' ', $oline);
+            # Make sure that floating point numbers have 'e' if exponential.
+            $v1 =~ s/[dD]/e/; 
+            $v2 =~ s/[dD]/e/; 
+            
+            $vdiff = abs($v1 - $v2);
+            if ($vdiff > 0) 
+            {
+              
+              # They diff. But do they differ strongly?
+              $nblow ++;
+              
+              $exp = sprintf("%e",$vdiff);
+              $exp =~ s/^.*e-(\d+)/$1/;
+              unless ($exp >= $tolerance) 
+              {
+                $nrealblow++;
+              }
+            }
+          }
+        } # if
       } #while
       if ($nblow != 0) 
       {
-	$blewit ++;
-	$stripfile = $newfile;
-	$stripfile =~ s:^.*${sep}(.*)$:$1:;
+        $blewit ++;
+        $stripfile = $newfile;
+        $stripfile =~ s:^.*${sep}(.*)$:$1:;
         if ($nrealblow == 0) 
         {
-	  print "     $stripfile differs at machine precision (which is OK!)\n";
-	}
+          print "     $stripfile differs at machine precision (which is OK!)\n";
+        }
         else 
-	{
-	  $reallyblewit ++;
-	  print "Substantial differences detected in $stripfile\n";
-	  print "     $newfile $file\n";
-	  print "     Differ on $nblow lines!\n";
-	}
+        {
+          $reallyblewit ++;
+          print "Substantial differences detected in $stripfile\n";
+          print "     $newfile $file\n";
+          print "     Differ on $nblow lines!\n";
+        }
       }
     }
     else
