@@ -527,10 +527,10 @@ EOT
 
     print OUT <<EOT;
 
-\#define DECLARE_PARSER \
-DECLARE_PUBLIC_PARAMETER_STRUCT_PARAMS  \
-DECLARE_PROTECTED_\U$implementation\E_STRUCT_PARAMS  \
-DECLARE_PRIVATE_\U$thorn\E_STRUCT_PARAMS  \
+\#define DECLARE_PARSER \\
+DECLARE_PUBLIC_PARAMETER_STRUCT_PARAMS  \\
+DECLARE_PROTECTED_\U$implementation\E_STRUCT_PARAMS  \\
+DECLARE_PRIVATE_\U$thorn\E_STRUCT_PARAMS  \\
 EOT
 
     foreach $line (@data)
@@ -545,6 +545,30 @@ EOT
     close OUT;
   }   
     
+  open(OUT, ">CParameters.h") || die "Cannot open CParameters.h";
+
+  foreach $thorn (split(" ",$interface_database{"THORNS"}))
+  {
+    print OUT "#if THISTHORN==$thorn\n";
+    print OUT "#include \"$thorn"."_CParameters.h\"\n";
+    print OUT "#endif\n\n";
+  }
+
+  close OUT;
+
+  open(OUT, ">cctk_parameters.h") || die "Cannot open cctk_parameters.h";
+
+  print OUT "#ifdef CCODE\n";
+  print OUT "#include \"CParameters.h\"\n";
+  print OUT "#endif\n\n";
+
+
+  print OUT "#ifdef FCODE\n";
+  print OUT "#include \"FParameters.h\"\n";
+  print OUT "#endif\n\n";
+
+  close OUT;
+
   chdir $start_dir;
 }
 
