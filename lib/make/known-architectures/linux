@@ -122,7 +122,6 @@ else
        : ${F90_WARN_FLAGS="-Wall"}
        ;;
      gnu95)
-       : ${LIBS="gfortran"}
        : ${F77_DEBUG_FLAGS='-g'}
        : ${F90_DEBUG_FLAGS='-g'}
        : ${F77_WARN_FLAGS='-Wall'}
