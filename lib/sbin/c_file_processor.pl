@@ -100,7 +100,7 @@ while(<>)
       }
 ##    Start adding second macro
       if ($domacro2) {
-	if ($routine=~s/([ \t\f]*)(return\s*\S*\s*})$/$1$addmacro2\n$1$2/s) 
+	if (!($routine=~s/([ \t\f]*)(return\s*\S*\s*})$/$1$addmacro2\n$1$2/s)) 
 	{
 	  ($routine=~s/(}$)/  $addmacro2\n$1/s) 
         }
