@@ -36,7 +36,7 @@ CCTK_SRCS :=
 include $(SRCDIR)/make.code.defn
 
 # Some extra stuff to allow make to recurse into subdirectories
-CCTK_SRCS += $(SRCS)
+#CCTK_SRCS += $(SRCS)
 
 # Protect the value of SRCS and SUBDIRS of this directory
 #LOCAL_SRCS := $(SRCS)
