@@ -312,7 +312,7 @@ sub FindExecutionDetails
     }
     else
     {
-      die "Cannot locate $executable";
+      die "Cannot locate executable '$executable'\n";
     }
   }
 
@@ -860,7 +860,7 @@ sub RunTest
   # Run the test from the test thorn directory
   chdir ($testdata->{"$thorn $test TESTRUNDIR"}) ;
 
-  
+
   $cmd = "$config_data->{\"COMMAND\"} $config_data->{\"EXE\"} $parfile";
   $retcode = &RunCactus($output,$test,$cmd);
   chdir $config_data->{"CCTK_DIR"};
