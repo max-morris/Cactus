@@ -908,6 +908,7 @@ sub CreateThornGroupInitialisers
     $line  = "  CCTK_CreateGroup(\"\U$group\",\"$thorn\",\"$imp\",\n" 
            . "                   \"" . $interface_database{"\U$thorn GROUP $group\E GTYPE"} . "\",\n"
 	   . "                   \"" . $interface_database{"\U$thorn GROUP $group\E VTYPE"} . "\",\n"
+	   . "                   \"" . $block . "\",\n"
 	   . "                   " . $interface_database{"\U$thorn GROUP $group\E DIM"} . ",\n"
 	   . "                   " . $interface_database{"\U$thorn GROUP $group\E TIMELEVELS"} . ",\n"
            . "                   ". scalar(@variables);
