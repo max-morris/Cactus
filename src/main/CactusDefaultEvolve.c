@@ -67,7 +67,7 @@ static int iteration = 0;
 int CCTK_SetMainLoopIndex (int main_loop_index)
 {
   iteration = main_loop_index;
-  return 0;
+  return iteration;
 }
 
 
