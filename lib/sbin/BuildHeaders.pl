@@ -30,7 +30,8 @@ sub BuildHeaders
   {
     foreach $inc_file (split(" ",$interface_database{"\U$thorn USES HEADER"}))
     {
-      $data{"$inc_file"} = "/* Include file $inc_file used by $thorn */\n\n";
+#      $data{"$inc_file"} = "/* Include file $inc_file used by $thorn */\n\n";
+      $data{"$inc_file"} = "/* Include file $inc_file */\n\n";
     }
   }
 
