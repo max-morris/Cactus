@@ -5,5 +5,8 @@ ParseFile.c\
 RegisterKeyedFunction.c\
 StoreKeyedData.c\
 StoreNamedData.c\
-Misc.c
+Misc.c\
+getopt.c\
+getopt1.c
+
 
