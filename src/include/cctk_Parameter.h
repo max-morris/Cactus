@@ -54,6 +54,12 @@ static const char *cctk_parameter_type_names[] = {"KEYWORD",
                                                   "BOOLEAN"};
 #endif /* NEED_PARAMETER_TYPE_STRINGS */
 
+/* parameter set mask flags */
+#define PARAMETER_RECOVERY_PRE     0
+#define PARAMETER_RECOVERY_IN      1
+#define PARAMETER_RECOVERY_POST    2
+
+
 /* what is a parameter range:
  * list of independent ranges, each with
  *  - orig string (range)
