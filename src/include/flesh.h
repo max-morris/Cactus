@@ -62,10 +62,16 @@ typedef struct
 
 typedef struct
 {
+  /* The various names of the thing. */
+ 
+  char *thorn;
   char *implementation;
   char *name;
+
+  /* The group number. */
   int number;
 
+  /* The types. */
   int gtype;
   
   int vtype;
@@ -89,20 +95,6 @@ typedef struct
   cTimer *timer[3];
 } tFleshConfig;
 
-
-typedef struct
-{
-  char *name;
-  char *implementation;
-  int (*startup)();
-  int (*rfr_init)(cGH *);
-  int (*param_init)();
-  int (*param_set)(const char *, const char *);
-  int (*param_get)(const char *, void **);
-  int (*private_group_setup)(cGH *);
-  int (*protected_group_setup)(cGH *);
-  int (*public_group_setup)(cGH *);
-} t_thorndata;
 
 /* Function prototypes */
 

@@ -38,7 +38,7 @@ static int *group_of_variable = NULL;
    @date       Thu Jan 14 16:38:40 1999
    @author     Tom Goodale
    @desc 
-   
+   Stores the data associated with a group.
    @enddesc 
    @calls     
    @calledby   
@@ -53,78 +53,102 @@ cGroupDefinition *CCTK_SetupGroup(const char *implementation,
 {
   int *temp_int;
   cGroupDefinition *temp;
+  cGroupDefinition *returndata;
   int variable;
+  int group_num;
 
-  /* Resize the array of groups */
-  if(temp = (cGroupDefinition *)realloc(groups, (n_groups+1)*sizeof(cGroupDefinition)))
+  if((group_num = CCTK_GetGroupNumber(implementation, name)) == -1)
   {
-    groups = temp;
-
-    /* Allocate memory to various fields */
-    groups[n_groups].implementation = (char *)malloc((strlen(implementation)+1)*sizeof(char));
-
-    groups[n_groups].name = (char *)malloc((strlen(name)+1)*sizeof(char));
-
-    groups[n_groups].variables = (cVariableDefinition *)malloc(n_variables*sizeof(cVariableDefinition));
-
-    /* Resize the array holding correspondence between variables and groups. */
-
-    temp_int = (int *)realloc(group_of_variable, (total_variables+n_variables)*sizeof(int));
-
-    if(groups[n_groups].implementation && 
-       groups[n_groups].name && 
-       groups[n_groups].variables &&
-       temp_int)
+    /* Resize the array of groups */
+    if(temp = (cGroupDefinition *)realloc(groups, (n_groups+1)*sizeof(cGroupDefinition)))
     {
-      /* Fill in the data structures. */
-      group_of_variable = temp_int;
+      groups = temp;
+      
+      /* Allocate memory to various fields */
+      groups[n_groups].implementation = (char *)malloc((strlen(implementation)+1)*sizeof(char));
+      
+      groups[n_groups].name = (char *)malloc((strlen(name)+1)*sizeof(char));
+      
+      groups[n_groups].variables = (cVariableDefinition *)malloc(n_variables*sizeof(cVariableDefinition));
+      
+      /* Resize the array holding correspondence between variables and groups. */
 
-      strcpy(groups[n_groups].implementation, implementation);
-      strcpy(groups[n_groups].name, name);
+      temp_int = (int *)realloc(group_of_variable, (total_variables+n_variables)*sizeof(int));
 
-      groups[n_groups].number = n_groups;
-    
-      groups[n_groups].n_variables = n_variables;
-
-      /* Fill in global variable numbers. */
-      for(variable = 0; variable < n_variables; variable++)
+      if(groups[n_groups].implementation && 
+	 groups[n_groups].name && 
+	 groups[n_groups].variables &&
+	 temp_int)
       {
-	groups[n_groups].variables[variable].number = total_variables;
-
-	group_of_variable[total_variables] = n_groups;
-
-	total_variables++;
+	/* Fill in the data structures. */
+	group_of_variable = temp_int;
+	
+	strcpy(groups[n_groups].implementation, implementation);
+	strcpy(groups[n_groups].name, name);
+	
+	groups[n_groups].number = n_groups;
+	
+	groups[n_groups].n_variables = n_variables;
+	
+	/* Fill in global variable numbers. */
+	for(variable = 0; variable < n_variables; variable++)
+	{
+	  groups[n_groups].variables[variable].number = total_variables;
+	  
+	  group_of_variable[total_variables] = n_groups;
+	  
+	  total_variables++;
+	}
+	
+	n_groups++;
       }
+      else
+      {
+	/* Memory allocation failed, so free any which may have been allocated. */
+	free(groups[n_groups].implementation);
+	groups[n_groups].implementation = NULL;
 
-      n_groups++;
+	free(groups[n_groups].name);
+	groups[n_groups].name = NULL;
+    
+	free(groups[n_groups].variables);
+	groups[n_groups].variables = NULL;
+
+      }
+    }
+    
+    /* Return the new group definition structure if successful, otherwise NULL.*/
+    if(temp && groups[n_groups-1].name)
+    {
+      returndata =  &(groups[n_groups-1]);
     }
     else
     {
-      /* Memory allocation failed, so free any which may have been allocated. */
-      free(groups[n_groups].implementation);
-      groups[n_groups].implementation = NULL;
-
-      free(groups[n_groups].name);
-      groups[n_groups].name = NULL;
-    
-      free(groups[n_groups].variables);
-      groups[n_groups].variables = NULL;
-
+      returndata =  NULL;
     }
-  }
-
-  /* Return the new group definition structure if successful, otherwise NULL.*/
-  if(temp && groups[n_groups-1].name)
-  {
-    return &(groups[n_groups-1]);
   }
   else
   {
-    return NULL;
+    returndata = &(groups[group_num]);
   }
 
+  return returndata;
 }
 
+ /*@@
+   @routine    CCTK_GetGroupNumber
+   @date       Fri Jan 29 08:43:48 1999
+   @author     Tom Goodale
+   @desc 
+   Gets the number for the specified group.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
 int CCTK_GetGroupNumber(const char *implementation,
 			const char *name)
 {

@@ -13,8 +13,5 @@ int CCTK_RecordImplementation(const char *implementation,
 
 int GetImplementationThorns(const char *implementation, char ***thornlist);
 
-int CCTK_RegisterThorn(const char *name, const char *implementation,
-		       const t_thorndata *data);
-
-int GetThornData(const char *thorn, t_thorndata **thorndata);
+int CCTK_RegisterThorn(const char *name, const char *implementation);
 
