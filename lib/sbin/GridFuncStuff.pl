@@ -1154,7 +1154,7 @@ sub CreateThornGroupInitialisers
   {
     @variables = split(" ", $interface_database{"\U$thorn GROUP $group\E"});
 
-    $line  = "  CCTK_CreateGroup(\"\U$group\",\"$thorn\",\"$imp\",\n" 
+    $line  = "  CCTKi_CreateGroup(\"\U$group\",\"$thorn\",\"$imp\",\n" 
            . "                   \"" . $interface_database{"\U$thorn GROUP $group\E GTYPE"} . "\",\n"
 	   . "                   \"" . $interface_database{"\U$thorn GROUP $group\E VTYPE"} . "\",\n"
 	   . "                   \"" . $block . "\",\n"
