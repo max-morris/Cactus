@@ -9,7 +9,14 @@
 #  @version $Id$
 #@@*/
 
-require "lib/sbin/MakeUtils.pl";
+if ($ENV{'CCTK_HOME'})
+{
+  require "$ENV{'CCTK_HOME'}/lib/sbin/MakeUtils.pl";
+}
+else
+{
+  require "lib/sbin/MakeUtils.pl";
+}
 
 $package_dir = shift(@ARGV);
 
