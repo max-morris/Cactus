@@ -23,6 +23,7 @@
 #include <winsock2.h>
 #endif /* HAVE_WINSOCK2_H */
 
+#include "util_Network.h"
 
 static char *rcsid = "$Header$";
 
