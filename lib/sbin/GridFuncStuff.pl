@@ -119,7 +119,7 @@ sub create_thorn_group_initialisers
   local($variable,@variables);
   if($block eq "PRIVATE")
   {
-    $base_name = "thorn:$thorn";
+    $base_name = "\$$thorn";
   }
   else
   {
@@ -130,7 +130,7 @@ sub create_thorn_group_initialisers
   {
     @variables = split(" ", $interface_database{"\U$thorn GROUP $group\E"});
 
-    $line  = "  CCTK_CreateGroup(\"\U$base_name:$group\E\",\n" 
+    $line  = "  CCTK_CreateGroup(\"\U$base_name::$group\E\",\n" 
            . "                   \"" . $interface_database{"\U$thorn GROUP $group\E GTYPE"} . "\",\n"
 	   . "                   \"" . $interface_database{"\U$thorn GROUP $group\E VTYPE"} . "\",\n"
            . "                   ". scalar(@variables);
