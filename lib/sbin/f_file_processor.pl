@@ -244,7 +244,12 @@ sub free_format_splitline
       &printline ($OUT);
       $LINE =~ s/.{75,75}//;
     }
-    if ($LINE =~ /^\s*\&\s*$/)
+
+    if ($LINE =~ /^\&\s*$/)
+    {
+      &printline ("  & $LINE");
+    }
+    elsif ($LINE =~ /^\s*\&\s*$/)
     {
       &printline ("  &$LINE");
     }
