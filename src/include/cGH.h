@@ -23,11 +23,6 @@ typedef struct
 
 typedef struct _cGH
 {
-  /* Pointer to self.  This is a temporary measure to provide a safety
-     net while the passing of pointers to and from Fortran is
-     changed.  */
-  struct _cGH *self;
-
   int cctk_dim;
   int cctk_iteration;
 

@@ -152,8 +152,6 @@ cGH *CactusDefaultSetupGH(tFleshConfig *config, int convergence_level)
   thisGH = malloc(sizeof(cGH));
   if(thisGH)
   {
-    thisGH->self = thisGH;
-
     thisGH->cctk_dim = CCTK_MaxDim();
 
     /* Need this to be at least one otherwise the memory allocation will fail */
