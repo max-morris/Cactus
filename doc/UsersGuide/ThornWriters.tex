@@ -692,6 +692,7 @@ and has a working directory of {\tt <config>/build/<thorn\_name>} .
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \chapter{Cactus Variables}
+\label{sec:cava}
 
 Cactus variables are sorted into {\tt groups}.  All variables in a group 
 are of the same type, and have
@@ -1188,7 +1189,7 @@ A Cactus macro {\tt CCTK\_ARGUMENTS} is defined for each thorn
 to contain
 \begin{itemize}
 \item General information about the grid hierarchy, for example
-      the number of grid points used. See Section \ref{sec:cava} for a 
+      the number of grid points used. See Section \ref{sec:cava2} for a 
       complete list.
 \item All the grid variables defined in the thorns {\tt interface.ccl}
 \item All the grid variables required from other thorns as requested by
@@ -1210,7 +1211,7 @@ parameters appear as local variables in a thorn.  These variables are
 changing a parameter is undefined (at best).
 
 The parameters should be declared at the start of the routine
-using them with the macro {\tt DECLARE\_PARAMETERS}
+using them with the macro {\tt DECLARE\_CCTK\_PARAMETERS}
 
 Any routine using Cactus parameters should include at
 the top of the file the header
@@ -1325,7 +1326,7 @@ A Cactus macro {\tt CCTK\_ARGUMENTS} is defined for each thorn
 to contain
 \begin{itemize}
 \item General information about the grid hierachy, for example
-      the number of grid points on the processor. See Section \ref{sec:cava} for a 
+      the number of grid points on the processor. See Section \ref{sec:cava2} for a 
       complete list.
 \item All the grid variables defined in the thorns {\tt interface.ccl}
 \item All the grid variables required from other thorns as requested by
@@ -1419,7 +1420,7 @@ Here, {\tt CCTK\_GFINDEX3D(cctkGH,i,j,k)]} expands to
 \end{verbatim}
 
 \subsection{Cactus Variables}
-\label{sec:cava}
+\label{sec:cava2}
 
 The Cactus variables which are passed through the macros
 {\tt CCTK\_ARGUMENTS}, {\tt CCTK\_ARGUMENTS}, etc are

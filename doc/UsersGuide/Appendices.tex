@@ -192,24 +192,24 @@ range of the parameter separated by optional
 parameter.
 
 \subsection{Parameter data scoping items}
-{\t
+{\tt
 \begin{verbatim}
 <access>:
 \end{verbatim}
 }
 The key word {\t access} designates that all parameter object specification
 items up to the next parameter data scoping item are in the same 
-protection or scoping class. {\t access} can take the values:
+protection or scoping class. {\tt access} can take the values:
 \begin{Lentry}
-\item[{\t global}] all thorns have access to global parameters
-\item[{\t restricted}] other thorns can have access to these 
+\item[{\tt global}] all thorns have access to global parameters
+\item[{\tt restricted}] other thorns can have access to these 
                            parameters if they specifically request
                            it in their own param.ccl
-\item[{\t private}] only your thorn has access to private parameters
-\item[{\t shares}] in this case an {\t implementation} name must follow
+\item[{\tt private}] only your thorn has access to private parameters
+\item[{\tt shares}] in this case an {\t implementation} name must follow
                         the colon. It declare that all the parameters in 
                         the following scoping block are restricted variables
-                        from the specified {\t implementation}.
+                        from the specified {\tt implementation}.
 \end{Lentry}
 
 
@@ -234,7 +234,7 @@ protection or scoping class. {\t access} can take the values:
 [<low-range>][:[<high-range>][:[<step>]]][::"<range description>"]
 \end{verbatim}
 }
-Where an empty field, or a {\t *} in the place of {\t low-range} or
+Where an empty field, or a {\t *} in the place of {\tt low-range} or
 {\t high-range} indicates $-\infty$ and $\infty$ respectively. The 
 default value for {\t step} is 1. A number by itself denotes that
 this number is the only acceptable value.
