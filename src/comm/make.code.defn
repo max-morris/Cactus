@@ -1,5 +1,6 @@
 SRCS=\
 CactusComm.c\
+CactusSync.c\
 CactusDefaultComm.c\
 OverloadComm.c\
 FortranBindings.c\
