@@ -206,5 +206,47 @@ sub ThornInfo
   return "$implementation ($inherits) [$friends] {$shares}";
 }
 
+
+#/*@@
+#  @routine    ThornInfo
+#  @date       Wed Sep 5 14:04:07 CEST 2001 
+#  @author     Ian Kelley 
+#  @desc 
+#  Reads in a thornlist and returns the arrangements/thorns,
+#  strips out all the comments/etc. 
+#  @enddesc 
+#  @calls     
+#  @calledby   
+#  @history 
+#
+#  @endhistory 
+#
+#@@*/
+sub ReadThornlist
+{
+   my ($thornlist) = shift;
+   my (@temp);
+   my (%tl);
+
+   open (TL, "$thornlist") 
+      || die "\nCannot open thornlist ($thornlist) for reading: $!";
+
+   while (<TL>) 
+   {
+      s/(.*?)#.*/\1/;            # read up to the first "#"
+      s/\s+//g;                  # replace any spaces with nothing
+      if (/\w+/) 
+      {
+         push @temp, $_;         # add to array if something is left
+      }
+   }
+
+   foreach (@temp)      # see if docs exist for these thorns
+   {
+      $tl{$_} = "thorn";
+   }
+
+   return %tl;
+}
     
 1;

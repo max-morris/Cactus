@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.117 2001-08-27 15:52:08 tradke Exp $
+#   @version $Id: Makefile,v 1.118 2001-09-05 13:50:09 allen Exp $
 # @@*/
 
 ##################################################################################
@@ -324,6 +324,7 @@ else
 	@echo "  -testsuite     : run the test program."
 	@echo "  -thornlist     : regenerates the ThornList file. "
 	@echo "  -ThornGuide    : creates the thorn manual for a specific configuration. "
+        @echo "  -cvsupdate     : updates the files for a specific configuration."
 	@echo "  -examples      : copies thorn parameter files to examples directory."
 endif
 	@echo $(DIVIDER)
@@ -881,8 +882,8 @@ endif
 
 %-ThornGuide:
 	@echo $(DIVIDER)
-	@echo Configuration $(@:%-testsuite=%) does not exist.
-	@echo Test suite aborted.
+	@echo Configuration $(@:%-ThornGuide=%) does not exist.
+	@echo Thorn Guide creation aborted.
 
 ###############################################################################
 #                      End of documentation targets
@@ -905,7 +906,28 @@ cvsstatus:
 
 .PHONY: 
 cvsupdate:
-	$(PERL) -s $(CCTK_HOME)/lib/sbin/CVSUpdate.pl arrangements     
+	$(PERL) -s $(CCTK_HOME)/lib/sbin/CVSUpdate.pl arrangements
+
+# run cvsudpate on a configuration
+.PHONY cvsupdate:
+ 
+ifneq ($strip($(CONFIGURATIONS)),) 
+.PHONY $(addsuffix -cvsupdate,$(CONFIGURATIONS)):
+
+$(addsuffix -cvsupdate,$(CONFIGURATIONS)):
+	@echo $(DIVIDER)
+	@echo Updating files for configuration $(@:%-cvsupdate=%)
+	if test -r $(CONFIGS_DIR)/$(@:%-cvsupdate=%)/ThornList ; then \
+          $(PERL) -s lib/sbin/CVSUpdate.pl arrangements $(CONFIGS_DIR)/$(@:%-cvsupdate=%)/ThornList; \
+          cd $(CCTK_HOME);   \
+        fi
+	@echo " Done."
+endif
+ 
+%-cvsupdate:
+	@echo $(DIVIDER)
+	@echo Configuration $(@:%-cvsupdate=%) does not exist.
+	@echo CVS Update aborted.
 
 .PHONY: 
 cvsdiff:

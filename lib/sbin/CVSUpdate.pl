@@ -47,9 +47,13 @@ if ($network)
   close (CS);
 }
 
-$package_dir = shift(@ARGV);
+($package_dir, $thornlist) = @ARGV;
 
-%info = &buildthorns($package_dir,"thorns");
+if ($thornlist =~ /^$/) {
+   %info = &buildthorns($package_dir,"thorns");
+} else {
+   %info = &ReadThornlist($thornlist);
+}
 
 $current_dir = `pwd`;
 chdir $package_dir;
