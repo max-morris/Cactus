@@ -19,6 +19,7 @@
 #include "cctk_Misc.h"
 #include "cctk_Parameter.h"
 #include "cctk_GNU.h"
+#include "cctk_FortranString.h"
 #include "SKBinTree.h"
 #include "ParameterBindings.h"
 
@@ -67,6 +68,13 @@ typedef struct PARAMTREENODE
 
 /* mask for CCTK_ParameterSet() */
 static int cctk_parameter_set_mask;
+
+/********************************************************************
+ ********************* Fortran Wrapper Prototypes *******************
+ ********************************************************************/
+
+void CCTK_FCALL CCTK_FNAME (CCTK_ParameterValString)
+                           (CCTK_INT *ierror, THREE_FORTSTRING_ARG);
 
 /********************************************************************
  ********************* Local Routine Prototypes *********************
@@ -585,6 +593,48 @@ char *CCTK_ParameterValString (const char *param_name, const char *thorn)
   return (retval);
 }
 
+void CCTK_FCALL CCTK_FNAME (CCTK_ParameterValString)
+                           (CCTK_INT *ierror, THREE_FORTSTRING_ARG)
+{
+  size_t c_strlen;
+  char *c_string;
+  THREE_FORTSTRING_PTR (unused1, unused2, fortran_string)
+  THREE_FORTSTRING_CREATE (param, thorn, value)
+
+
+  /* get rid of compiler warnings about unused variables */
+  unused1 = unused1;
+  unused2 = unused2;
+
+  c_string = CCTK_ParameterValString (param, thorn);
+  if (c_string)
+  {
+    c_strlen = strlen (c_string);
+    if (c_strlen > cctk_strlen3)
+    {
+      CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
+                  "CCTK_ParameterValString: fortran string buffer is too short "
+                  "to hold value '%s' of parameter '%s::%s'",
+                  c_string, thorn, param);
+      *ierror = -2;
+    }
+    else
+    {
+      memcpy (fortran_string, c_string, c_strlen);
+      memset (fortran_string + c_strlen, ' ', cctk_strlen3 - c_strlen);
+      *ierror = 0;
+    }
+  }
+  else
+  {
+    /* no such parameter exists */
+    *ierror = -1;
+  }
+
+  free (param);
+  free (thorn);
+  free (value);
+}
 
 /*@@
    @routine    CCTK_ParameterWalk
