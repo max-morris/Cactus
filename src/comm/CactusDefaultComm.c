@@ -63,7 +63,7 @@ cGH *CactusDefaultSetupGH(tFleshConfig *config, int convergence_level)
 
     thisGH->levfac = 1;
 
-    n_variables = CCTK_GetNVariables();
+    n_variables = CCTK_GetNumVars();
 
     thisGH->data = (void **)malloc(n_variables*sizeof(void *));
 
@@ -77,7 +77,7 @@ cGH *CactusDefaultSetupGH(tFleshConfig *config, int convergence_level)
 
     thisGH->extensions = NULL;
 
-    thisGH->GroupData = (cGHGroupData *)malloc(CCTK_GetNGroups()*sizeof(cGHGroupData));
+    thisGH->GroupData = (cGHGroupData *)malloc(CCTK_GetNumGroups()*sizeof(cGHGroupData));
 
   }
   

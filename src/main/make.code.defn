@@ -7,7 +7,6 @@ CactusDefaultEvolve.c\
 CactusDefaultInitialise.c\
 CallStartupFunctions.c\
 ConfigData.c\
-CreateGroup.c\
 InitialiseCactus.c\
 InitialiseDataStructures.c\
 ProcessCommandLine.c\
@@ -16,7 +15,6 @@ RecordImplementation.c\
 RegisterThorn.c\
 SetParams.c\
 ShutdownCactus.c\
-StoreVariableData.c\
 flesh.cc\
 Groups.c\
 Variables.c\
