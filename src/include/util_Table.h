@@ -171,6 +171,11 @@ int Util_TableGetGenericArray(int handle,
 
 /* pointers */
 int Util_TableSetPointer(int handle, CCTK_POINTER value, const char *key);
+int Util_TableSetFPointer(int handle, CCTK_FPOINTER value, const char *key);
+/*
+ * ... the following function (an alias for the previous one) is for
+ *     backwards compatability only, and is deprecated as of 4.0beta13
+ */
 int Util_TableSetFnPointer(int handle, CCTK_FPOINTER value, const char *key);
 
 /* a single character */
@@ -218,6 +223,13 @@ int Util_TableSetComplex32(int handle, CCTK_COMPLEX32 value, const char *key);
 int Util_TableSetPointerArray(int handle,
                               int N_elements, const CCTK_POINTER array[],
                               const char *key);
+int Util_TableSetFPointerArray(int handle,
+                               int N_elements, const CCTK_FPOINTER array[],
+                               const char *key);
+/*
+ * ... the following function (an alias for the previous one) is for
+ *     backwards compatability only, and is deprecated as of 4.0beta13
+ */
 int Util_TableSetFnPointerArray(int handle,
                                 int N_elements, const CCTK_FPOINTER array[],
                                 const char *key);
@@ -296,6 +308,11 @@ int Util_TableSetComplex32Array(int handle,
 
 /* pointers */
 int Util_TableGetPointer(int handle, CCTK_POINTER *value, const char *key);
+int Util_TableGetFPointer(int handle, CCTK_FPOINTER *value, const char *key);
+/*
+ * ... the following function (an alias for the previous one) is for
+ *     backwards compatability only, and is deprecated as of 4.0beta13
+ */
 int Util_TableGetFnPointer(int handle, CCTK_FPOINTER *value, const char *key);
 
 /* a single character */
@@ -343,6 +360,13 @@ int Util_TableGetComplex32(int handle, CCTK_COMPLEX32 *value, const char *key);
 int Util_TableGetPointerArray(int handle,
                               int N_elements, CCTK_POINTER array[],
                               const char *key);
+int Util_TableGetFPointerArray(int handle,
+                               int N_elements, CCTK_FPOINTER array[],
+                               const char *key);
+/*
+ * ... the following function (an alias for the previous one) is for
+ *     backwards compatability only, and is deprecated as of 4.0beta13
+ */
 int Util_TableGetFnPointerArray(int handle,
                                 int N_elements, CCTK_FPOINTER array[],
                                 const char *key);
