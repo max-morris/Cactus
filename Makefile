@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.122 2001-09-17 18:04:25 allen Exp $
+#   @version $Id: Makefile,v 1.123 2001-09-23 11:03:05 allen Exp $
 # @@*/
 
 ##################################################################################
@@ -186,6 +186,7 @@ DIVIDER =  $(DIVEL)$(DIVEL)$(DIVEL)$(DIVEL)
 # Work out where we are
 export CCTK_HOME := $(shell pwd | sed 's,^/cygdrive/\(.\)/,\1:/,' | sed 's,^//\(.\)/,\1:/,' )
 
+
 # Work out where the configuration directory is
 ifdef CACTUS_CONFIGS_DIR
 CONFIGS_DIR = $(CACTUS_CONFIGS_DIR)
@@ -197,6 +198,7 @@ export CONFIGS_DIR
 
 # Work out which configurations are available
 CONFIGURATIONS = $(patsubst $(CONFIGS_DIR)/%,%,$(wildcard $(CONFIGS_DIR)/*))
+CONFIGINFOS = $(wildcard $(CONFIGS_DIR)/*/config-info)
 
 # Default target does nothing. 
 # Used to set up a default based upon uname or something.
@@ -284,7 +286,7 @@ tags:
 default:
 	@echo $(DIVIDER)
 	@echo Running the configuration program
-	$(SETUP_ENV) $(PERL) -s $(SETUP) $(SETUP_OPTIONS)
+	$(SETUP_ENV) $(PERL) -s $(SETUP) $(SETUP_OPTIONS) 
 	@echo $(DIVIDER)
 	@echo You are now ready to build the CCTK.
 	@echo This is done by $(MAKE) \<configuration\>
@@ -756,6 +758,35 @@ checkout:
 	@echo $(DIVIDER)
 	@echo Running app/arrangement/thorn checkout script
 	$(PERL) ./lib/sbin/checkout.pl
+
+# Show configuration information
+
+.PHONY: configinfo
+
+configinfo:
+ifeq ($(strip $(CONFIGURATIONS)),)
+	@echo $(DIVIDER)
+	@echo No configurations defined. 
+	@echo $(DIVIDER)
+else
+	cat $(CONFIGINFOS)
+endif
+	@echo $(DIVIDER)
+
+ifneq ($strip($(CONFIGURATIONS)),) 
+.PHONY: $(addsuffix -configinfo,$(CONFIGURATIONS))
+
+$(addsuffix -configinfo,$(CONFIGURATIONS)):
+	@echo $(DIVIDER)
+	@echo Displaying configuration information
+	cat configs/$(@:%-configinfo=%)/config-info
+endif
+
+%-configinfo:
+	@echo $(DIVIDER)
+	@echo Configuration $(@:%-configinfo=%) does not exist.
+	@echo Displaying configuration information aborted.
+
 
 # Create sysinfo file
 
