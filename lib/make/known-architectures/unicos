@@ -6,9 +6,12 @@
 #   @desc 
 #   
 #   @enddesc 
-#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/unicos,v 1.1 1999-04-08 19:31:21 goodale Exp $
+#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/unicos,v 1.2 1999-07-05 16:02:08 goodale Exp $
 # @@*/
 
 # The T3E F90 compiler uses -b if you want to supply a name for a .o file.
 : ${FCOMPILEONLY="-b"}
+
+# The T3E fortran compiler puts module info in .o files by default.
+: ${F90FLAGS="-em"}
 
