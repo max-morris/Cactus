@@ -9428,6 +9428,30 @@ This implies that a message will always be printed for any warning that's
 severe enough to halt the Cactus run.  It also implies that a level~0
 warning is guaranteed (to be printed and) to halt the Cactus run.
 
+The severity level may actually be any integer, and a lot of existing
+code uses bare ``magic number'' integers for warning levels, but to
+help standardize warning levels across thorns, new code should probably
+use one of the following macros, defined in \verb|"cctk_WarnLevel.h"|
+(which is \verb|#include|d by \verb|"cctk.h"|):
+\begin{verbatim}
+#define CCTK_WARN_ABORT    0    /* abort the Cactus run */
+#define CCTK_WARN_ALERT    1    /* the results of this run will probably */     
+                                /* be wrong, but this isn't quite certain, */
+                                /* so we're not going to abort the run */
+#define CCTK_WARN_COMPLAIN 2    /* the user should know about this, but */
+                                /* the results of this run are probably ok */
+#define CCTK_WARN_PICKY    3    /* this is for small problems that can */
+                                /* probably be ignored, but that careful */
+                                /* people may want to know about */     
+#define CCTK_WARN_DEBUG    4    /* these messages are probably useful */
+                                /* only for debugging purposes */     
+\end{verbatim}
+
+For example, to provide a warning for a serious problem, which
+indicates that the results of the run are quite likely wrong,
+and which will be printed to the screen by default,
+a level~\verb|CCTK_WARN_ALERT| warning should be used.
+
 In any case, the Boolean flesh parameter \code{cctk\_full\_warnings}
 determines whether all the details about the warning origin (processor~ID,
 line number, source file, source thorn) are shown. The default is to
@@ -9448,7 +9472,7 @@ macro to print a warning message with a single string argument
 
 const char *outdir;
 
-CCTK_VWarn(1, __LINE__, __FILE__, CCTK_THORNSTRING,
+CCTK_VWarn(CCTK_WARN_ALERT, __LINE__, __FILE__, CCTK_THORNSTRING,
            "Output directory '%s' could not be created", outdir);
 \end{verbatim}
 \end{Example}
