@@ -102,12 +102,12 @@ sub write_rfr_header {
   $header .= "#include \"Groups.h\"\n";
   $header .= "#include \"GroupsOnGH.h\"\n";
   $header .= "#include \"rfr_constants.h\"\n";
-  $header .= "#include \"declare_parameters.h\"\n";
-  $header .= "#include \"declare_arguments.h\"\n";
+  $header .= "#include \"cctk_parameters.h\"\n";
+  $header .= "#include \"cctk_arguments.h\"\n";
   $header .= "\n";
   $header .= "void $routine (cGH *GH)\n";
   $header .= "{\n";
-  $header .= "  DECLARE_PARAMETERS\n";
+  $header .= "  DECLARE_CCTK_PARAMETERS\n";
   $header .= "  int index;\n\n";
   $header .= "\n";
 
@@ -124,11 +124,11 @@ sub write_startup_header {
   print OUTSTART "#include \"cctk.h\"\n";
   print OUTSTART "#include \"flesh.h\"\n";
   print OUTSTART "#include \"rfr_constants.h\"\n";
-  print OUTSTART "#include \"declare_parameters.h\"\n";
+  print OUTSTART "#include \"cctk_parameters.h\"\n";
   print OUTSTART "\n";
   print OUTSTART "void $routine ()\n";
   print OUTSTART "{\n";
-  print OUTSTART "  DECLARE_PARAMETERS\n";
+  print OUTSTART "  DECLARE_CCTK_PARAMETERS\n";
   print OUTSTART "\n";
 
 
@@ -622,7 +622,7 @@ sub fortran_wrapper {
 #include \"flesh.h\"
 #include \"Groups.h\"
 #include \"Comm.h\"
-#include \"declare_arguments.h\"
+#include \"cctk_arguments.h\"
 
    void FORTRAN_NAME($routine)($THORN_C2F_PROTO);
 
@@ -636,7 +636,7 @@ sub fortran_wrapper {
    printf(\"Calling \%s from rfr wrapper\\n\");
 #endif
 
-   FORTRAN_NAME($routine)(PASS_$THORN_C2F(GH));
+   FORTRAN_NAME($routine)(PASS_$THORN_C2F(cctkGH));
 
 }
 EOT

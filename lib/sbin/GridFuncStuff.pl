@@ -61,7 +61,7 @@ sub CreateVariableBindings
     close OUT;
   }
 
-  open(OUT, ">declare_arguments.h");
+  open(OUT, ">cctk_arguments.h");
     
   foreach $thorn (split(" ",$interface_database{"THORNS"}))
   {
@@ -863,7 +863,7 @@ sub CreateThornArgumentHeaderFile
 
   # Dummy C declarations
 
-  push(@returndata, "#define \U$thorn"."_CARGUMENTS cGH *GH ");
+  push(@returndata, "#define \U$thorn"."_CARGUMENTS cGH *cctkGH ");
 
   push(@returndata, "#define \UDECLARE_$thorn"."_CARGUMENTS ");
   

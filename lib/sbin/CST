@@ -6,7 +6,7 @@
 #  @desc 
 #  Parses the the configuration files for thorns.
 #  @enddesc 
-#  @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.15 1999-06-25 12:25:36 goodale Exp $
+#  @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.16 1999-06-29 14:17:54 allen Exp $
 #@@*/
 
 # Global parameter to track the number of errors from the CST
@@ -919,7 +919,7 @@ EOT
       }
     }
 
-    print OUT "#define DECLARE_PARAMETERS \\\n";
+    print OUT "#define DECLARE_CCTK_PARAMETERS \\\n";
 
     $decl =  "DECLARE_PUBLIC_PARAMETER_STRUCT_PARAMS";
     if($header_files{"PUBLIC"})
@@ -985,7 +985,7 @@ EOT
 
   close OUT;
 
-  open(OUT, ">declare_parameters.h") || die "Cannot open declare_parameters.h";
+  open(OUT, ">cctk_parameters.h") || die "Cannot open cctk_parameters.h";
 
   print OUT "#ifdef CCODE\n";
   print OUT "#include \"CParameters.h\"\n";
