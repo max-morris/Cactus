@@ -150,6 +150,11 @@
 /* Define the type of a 4 byte float */
 #undef CCTK_REAL4
 
+/* Define the machine architecture for the build */
+#undef CCTK_BUILD_OS
+#undef CCTK_BUILD_CPU
+#undef CCTK_BUILD_VENDOR
+
 #ifdef __cplusplus
 
 /* Some C++ compilers don't have bool ! */

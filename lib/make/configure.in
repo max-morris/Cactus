@@ -132,6 +132,10 @@ fi
 
 . $srcdir/CCTK_Functions.sh
 
+# Machine architecture for the build
+AC_DEFINE_UNQUOTED(CCTK_BUILD_OS, "$host_os")
+AC_DEFINE_UNQUOTED(CCTK_BUILD_CPU, "$host_cpu")
+AC_DEFINE_UNQUOTED(CCTK_BUILD_VENDOR, "$host_vendor")
 
 #########################################################################
 # If this is a known architecture, setup any specific flags.
