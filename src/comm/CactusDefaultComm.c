@@ -13,7 +13,6 @@
 
 #include "flesh.h"
 #include "CactusMainDefaults.h"
-#include "CactusCommDefaults.h"
 #include "GHExtensions.h"
 
 static char *rcsid = "$Id$";
