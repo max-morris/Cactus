@@ -272,11 +272,17 @@ The installation requires about {\q HOW MANY MEGS ? }. See section
   You will be prompted for a password which is {\tt anon}. 
 \item{\bf Checkout}: To obtain a fresh CCTK checkout, type
   {\t
-    cvs -d :pserver:cvs\_anon@hod.aei-potsdam.mpg.de:/usr/users/cactus checkout cactus
+    cvs -d :pserver:cvs\_anon@hod.aei-potsdam.mpg.de:/usr/users/cactus checkout CCTK
     }
   The CVS checkout procedure will create a directory called {\tt
     ./CCTK} and install the CCTK inside this directory.  From now on we
   will reference all directory names relative to {\tt ./CCTK}. 
+
+  If you want to compile the CCTK with thorns, you now need to checkout separately 
+  the required thorn packages. These should be checked out in the
+  ./CCTK/packages directory. {\bf QUERY: Should we list packages here or refer 
+  to a web page or what? The two packages currently available are CactusBase and 
+  CactusEinstein}
   
 \item{\bf Update}: To update an existing CCTK checkout (to patch in
   possible changes, etc.), do the following {\em within} the {\tt ./CCTK} directory.
