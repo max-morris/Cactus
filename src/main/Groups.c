@@ -21,6 +21,7 @@
 #include "cctk_Groups.h"
 #include "cctk_Parameter.h"
 #include "cctk_Types.h"
+#include "cctk_ActiveThorns.h"
 
 #include "cctki_Stagger.h"
 #include "cctki_Groups.h"
@@ -2349,7 +2350,15 @@ static int IntParameterEvaluator(int nvars,
       }
       else
       {
-        use_thorn = thorn;
+        /* FIXME: need to be a bit more careful here. */
+        if (CCTK_IsImplementationActive (thorn))
+        {
+          use_thorn = CCTK_ActivatingThorn (thorn);
+        }
+        else
+        {
+          use_thorn = thorn;
+        }
         use_param = param;
       }
 
