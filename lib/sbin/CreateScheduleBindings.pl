@@ -195,8 +195,8 @@ sub ScheduleCreateBindings
   $outbuf = "";
   $outbuf .=  "\#include \"SKBinTree.h\"\n";
   $outbuf .=  "\#include \"cctk_ActiveThorns.h\"\n";
-  $outbuf =   "\n";
-  $outbuf .=  "/* Prototypes for functions to be registered. */";
+  $outbuf .=   "\n";
+  $outbuf .=  "/* Prototypes for functions to be registered. */\n";
 
   foreach $thorn (sort split(" ", $rhinterface_db->{"THORNS"}))
   {
