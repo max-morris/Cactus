@@ -284,9 +284,11 @@ sub FindFile
     }
   }
 
-  # Tidy up the path a bit
-  $fullpath =~ s,/./,/,g;
+  # Tidy up the path a bit 
+  # Get rid of /./ in paths
+  $fullpath =~ s,/\./,/,g;
 
+  # Get new current wd.
   if($fullpath)
   {
     $fullpath =~ m,^(.+)/[^/]+$,;
