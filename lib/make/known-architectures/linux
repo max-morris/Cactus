@@ -6,8 +6,7 @@
 #   @desc 
 #              known-architectures file for systems running Linux
 #   @enddesc
-#   @version   $Header: /cactusdevcvs/Cactus/lib/make/known-architectures/linux,
-v 1.38 2001/06/14 17:23:01 tradke Exp $ 
+#   @version   $Header$ 
 # @@*/
 
 if test "$CCTK_CONFIG_STAGE" = "preferred-compilers" ; then
