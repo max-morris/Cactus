@@ -35,6 +35,8 @@ else
        LINUX_F90_COMP=lahey          
     elif test "`$F90 -v 2>&1 | grep -i SGIcc`" ; then
        LINUX_F90_COMP=SGI          
+    elif test "`$F90 -V 2>&1 | grep -i intel`" ; then
+       LINUX_F90_COMP=Intel          
     else
         echo Unknown Linux f90 compiler.
         echo Please add appropriate information to 
@@ -47,6 +49,8 @@ else
         LINUX_F90_COMP=gnu77
     elif test "`$F77 -? 2>&1 | grep -i absoft`" ; then
         LINUX_F90_COMP=absoft77
+    elif test "`$F90 -V 2>&1 | grep -i intel`" ; then
+       LINUX_F90_COMP=Intel          
     else
         echo Unknown Linux f77 compiler.
         echo Please add appropriate information to 
@@ -157,6 +161,9 @@ else
      SGI)
        : ${LIBS="fortran ffio m"} 
        ;;
+     Intel)
+       : ${LIBS="m"}
+       ;;
      none)
        : ${LIBS="m"} 
        ;;
@@ -169,11 +176,26 @@ else
        ;;
   esac    
 
+# C compiler
+
+  case "$CC" in
+    ecc)
+      : ${C_DEPEND='$(CC) -M $(CPPFLAGS)'}
+      ;;
+      *)
+      :
+      ;;
+   esac
+
 #Set the appropriate warning and debugging flags
   case "$CC" in
     gcc)
       : ${C_DEBUG_FLAGS="-g"}
       : ${C_WARN_FLAGS="-Wall"}
+      ;;
+    ecc)
+      : ${C_DEBUG_FLAGS="-g"}
+      : ${C_WARN_FLAGS="-w2"}
       ;;
       *)
       : ${C_DEBUG_FLAGS="-g"}
