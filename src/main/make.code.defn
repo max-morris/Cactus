@@ -29,6 +29,7 @@ ProcessParameterDatabase.c\
 rfrInterface.c\
 ScheduleInterface.c\
 SetParams.c\
+SetupCache.c\
 ShutdownCactus.c\
 Subsystems.c\
 WarnLevel.c

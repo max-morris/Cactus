@@ -2822,6 +2822,21 @@ LDFLAGS="$KNOWN_LDFLAGS $LDFLAGS"
 
 : ${PERL_BACKUP_NECESSARY=""}
 
+# Cache stuff - this will probably change 
+
+: ${L2_CACHELINE_BYTES="0"}
+: ${L2_CACHE_SIZE="0"}
+
+cat >> confdefs.h <<EOF
+#define CCTK_CACHELINE_BYTES $L2_CACHELINE_BYTES
+EOF
+ 
+cat >> confdefs.h <<EOF
+#define CCTK_CACHE_SIZE $L2_CACHE_SIZE
+EOF
+ 
+
+
 
  
 

@@ -12,7 +12,8 @@ getopt1.c\
 StoreHandledData.c\
 gnu_regex.c\
 SKBinTree.c\
-Hash.c
+Hash.c\
+Cache.c
 
 
 

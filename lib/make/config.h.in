@@ -78,6 +78,11 @@
 #undef HAVE_TIME_GETRUSAGE
 #undef HAVE_TIME__FTIME
 
+/* Cache stuff */
+
+#undef CCTK_L2_CACHELINE_BYTES
+#undef CCTK_L2_CACHE_SIZE
+
 /******************************************************************************/
 
 #ifdef CCODE
