@@ -368,6 +368,7 @@ CCTK_CHECK_HEADERS(string.h)
 CCTK_CHECK_HEADERS(assert.h)
 CCTK_CHECK_HEADERS(sys/stat.h)
 CCTK_CHECK_HEADERS(getopt.h)
+CCTK_CHECK_HEADERS(dirent.h)
 CCTK_HEADER_REGEX
 CCTK_CHECK_HEADERS(sys/socket.h,[#ifdef HAVE_SYS_TYPES_H 
 #include <sys/types.h>

@@ -100,6 +100,7 @@
 #undef HAVE_ARPA_INET_H
 #undef HAVE_WINSOCK2_H
 #undef HAVE_CRYPT_H
+#undef HAVE_DIRENT_H
 
 #undef TIME_WITH_SYS_TIME
 
