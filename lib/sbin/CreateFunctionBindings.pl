@@ -431,16 +431,13 @@ sub FunctionDatabase
 	    if (!($KnownFunction{"Return Type"} eq
 		  $Function->{"Return Type"}))
 	    {
-# FIXME: This is only a warning as there are so many
-#        inconsistent prototypes that it will break any
-#        current build.
-	      &CST_error(1,"The prototypes for the aliased function \'".$KnownFunction{"Name"}."\'\n     given by thorns \' ".$thorn."\' and \'".$KnownThorn."\' are inconsistent.\n     The return types disagree.");
+	      &CST_error(0,"The prototypes for the aliased function \'".$KnownFunction{"Name"}."\'\n     given by thorns \' ".$thorn."\' and \'".$KnownThorn."\' are inconsistent.\n     The return types disagree.");
 	    }
 	    if (&CompareArguments($KnownFunction{"Arguments"},
 				 $Function->{"Arguments"}))
 	    {
               &debug_print("The prototypes for the aliased function \'".$KnownFunction{"Name"}."\'\n     given by thorns \'".$thorn."\' and \'".$KnownThorn."\' are inconsistent.\n     The argument lists disagree.");
-	      &CST_error(1,"The prototypes for the aliased function \'".$KnownFunction{"Name"}."\'\n     given by thorns \'".$thorn."\' and \'".$KnownThorn."\' are inconsistent.\n     The argument lists disagree.");
+	      &CST_error(0,"The prototypes for the aliased function \'".$KnownFunction{"Name"}."\'\n     given by thorns \'".$thorn."\' and \'".$KnownThorn."\' are inconsistent.\n     The argument lists disagree.");
 	    }
 	  }
 	}
