@@ -2,22 +2,20 @@
    @file      CactusDefaultComm.c
    @date      Tue Sep 29 15:06:22 1998
    @author    Tom Goodale
-   @desc 
-   Default communication routines.
-   @enddesc 
-   @version $Header$
+   @desc
+              Default communication routines.
+   @enddesc
+   @version   $Id$
  @@*/
 
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <assert.h>
 
 #include "cctk_Flesh.h"
 #include "cctk_Groups.h"
 #include "cctk_Constants.h"
 #include "CactusMainDefaults.h"
-#include "cctk_GHExtensions.h"
 #include "cctki_GHExtensions.h"
 
 #include "cctk_ParamCheck.h"
@@ -34,7 +32,7 @@ CCTK_FILEVERSION(comm_CactusDefaultComm_c)
  *********************     Global Data   *****************************
  ********************************************************************/
 
-/* FIXME:  This should be in a header somewhere */ 
+/* FIXME:  This should be in a header somewhere */
 #ifdef CCTK_MPI
 extern char MPI_Active;
 #endif
@@ -68,45 +66,62 @@ extern char MPI_Active;
 /********************************************************************
  *********************     External Routines   **********************
  ********************************************************************/
+cGH *CactusDefaultSetupGH(tFleshConfig *config, int convergence_level);
+int CactusDefaultMyProc(cGH *GH);
+int CactusDefaultnProcs(cGH *GH);
+int CactusDefaultExit(cGH *GH, int retval);
+int CactusDefaultAbort(cGH *GH, int retval);
+int CactusDefaultBarrier(cGH *GH);
 
 
  /*@@
    @routine    CactusDefaultSetupGH
    @date       Tue Sep 29 15:06:22 1998
    @author     Tom Goodale
-   @desc 
-   Default cactus SetupGH routine.
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   @desc
+               Default cactus SetupGH routine.
+   @enddesc
+   @calls      CCTK_MaxDim
+               CCTK_NumVars
+               CCTK_NumTimeLevelsFromVarI
+               CCTK_NumGroups
+               CCTKi_SetupGHExtensions
 
+   @var        config
+   @vdesc      Pointer to flesh configuration environment
+   @vtype      tFleshConfig *
+   @vio        in
+   @endvar
+   @var        convergence_level
+   @vdesc      convergence leve of new cGH
+   @vtype      int
+   @vio        in
+   @endvar
+
+   @returntype cGH *
+   @returndesc
+               the pointer to the new cGH structure,
+               or NULL if memory allocation failed
+   @endreturndesc
 @@*/
 cGH *CactusDefaultSetupGH(tFleshConfig *config, int convergence_level)
 {
-  cGH *retval;
-
   cGH *thisGH;
-
   int n_groups;
   int n_variables;
   int variable;
   int ntimelevels;
-  int level;
   int cctk_dim;
 
-  retval = NULL;
 
   /* Put this in for the moment until parameter stuff is done. */
   if(convergence_level > 0)
   {
-    return retval;
+    return (NULL);
   }
 
   /* Initialise this since it is used later and in exceptional
-   * circumstances might not be initialsed beforehand. 
+   * circumstances might not be initialsed beforehand.
    */
 
   variable = -1;
@@ -126,7 +141,7 @@ cGH *CactusDefaultSetupGH(tFleshConfig *config, int convergence_level)
     thisGH->cctk_lsh          = (int *)malloc(cctk_dim*sizeof(int));
     thisGH->cctk_lbnd         = (int *)malloc(cctk_dim*sizeof(int));
     thisGH->cctk_ubnd         = (int *)malloc(cctk_dim*sizeof(int));
-    
+
     thisGH->cctk_lssh         = (int *)malloc(CCTK_NSTAGGER*cctk_dim*sizeof(int));
     thisGH->cctk_to           = (int *)malloc(cctk_dim*sizeof(int));
     thisGH->cctk_from         = (int *)malloc(cctk_dim*sizeof(int));
@@ -153,15 +168,8 @@ cGH *CactusDefaultSetupGH(tFleshConfig *config, int convergence_level)
       {
         ntimelevels = CCTK_NumTimeLevelsFromVarI(variable);
 
-        thisGH->data[variable] = (void **)malloc(ntimelevels*sizeof(void *));
-        if(thisGH->data[variable])
-        {
-          for(level = 0; level < ntimelevels; level++)
-          {
-            thisGH->data[variable][level] = NULL;
-          }
-        }
-        else
+        thisGH->data[variable] = (void **)calloc(ntimelevels, sizeof(void *));
+        if(thisGH->data[variable] == NULL)
         {
           break;
         }
@@ -177,8 +185,8 @@ cGH *CactusDefaultSetupGH(tFleshConfig *config, int convergence_level)
     thisGH->GroupData = (cGHGroupData *)malloc((n_groups ? n_groups:1)*sizeof(cGHGroupData));
 
   }
-  
-  if(thisGH && 
+
+  if(thisGH &&
      thisGH->cctk_gsh &&
      thisGH->cctk_lsh &&
      thisGH->cctk_lbnd &&
@@ -197,161 +205,223 @@ cGH *CactusDefaultSetupGH(tFleshConfig *config, int convergence_level)
   {
     /* Traverse list of GH setup routines. */
     CCTKi_SetupGHExtensions(config, convergence_level, thisGH);
-
-    retval = thisGH;
+  }
+  else
+  {
+    /* FIXME: should free potentially allocated memory for this GH */
+    thisGH = NULL;
   }
 
-  return retval;
+  return (thisGH);
 }
+
 
  /*@@
    @routine    CactusDefaultMyProc
    @date       Tue Jan 23 1999
    @author     Gabrielle Allen
-   @desc 
-   Default cactus MyProc routine.
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   @desc
+               Default Cactus MyProc routine.
+   @enddesc
+   @calls      CCTK_ParamChecking
+               MPI_Comm_rank
 
+   @var        GH
+   @vdesc      Pointer to CCTK grid hierarchy
+   @vtype      cGH *
+   @vio        unused
+   @endvar
+
+   @returntype int
+   @returndesc
+               the processor number of the caller
+   @endreturndesc
 @@*/
-
-int CactusDefaultMyProc(cGH *GH)
+int CactusDefaultMyProc (cGH *GH)
 {
   int myproc;
 
-  if(CCTK_ParamChecking())
-  {
-    myproc = 0;
-  }
-  else
-  {
-#ifdef CCTK_MPI
-    if(MPI_Active)
-    {
-      CACTUS_MPI_ERROR(MPI_Comm_rank(MPI_COMM_WORLD, &myproc));
-    }
-#else
-    myproc = 0;
-#endif
-  }
 
-  return myproc;
+  /* avoid compiler warning about unused parameter */
+  GH = GH;
+
+  myproc = 0;
+#ifdef CCTK_MPI
+  if(! CCTK_ParamChecking() && MPI_Active)
+  {
+    CACTUS_MPI_ERROR (MPI_Comm_rank (MPI_COMM_WORLD, &myproc));
+  }
+#endif
+
+  return (myproc);
 }
+
 
  /*@@
    @routine    CactusDefaultnProcs
    @date       Tue Jan 23 1999
    @author     Gabrielle Allen
-   @desc 
-   Default cactus nProcs routine.
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   @desc
+               Default Cactus nProcs routine.
+   @enddesc
+   @calls      CCTK_ParamCheckNProcs
+               MPI_Comm_size
 
+   @var        GH
+   @vdesc      Pointer to CCTK grid hierarchy
+   @vtype      cGH *
+   @vio        unused
+   @endvar
+
+   @returntype int
+   @returndesc
+               the total number of processors
+   @endreturndesc
 @@*/
-
-int CactusDefaultnProcs(cGH *GH)
+int CactusDefaultnProcs (cGH *GH)
 {
   int nprocs;
 
-  if(CCTK_ParamChecking())
+
+  /* avoid compiler warning about unused parameter */
+  GH = GH;
+
+  if (CCTK_ParamChecking ())
   {
-    nprocs = CCTK_ParamCheckNProcs();
+    nprocs = CCTK_ParamCheckNProcs ();
   }
   else
   {
+    nprocs = 1;
 #ifdef CCTK_MPI
     if(MPI_Active)
     {
-      CACTUS_MPI_ERROR(MPI_Comm_size(MPI_COMM_WORLD, &nprocs));
+      CACTUS_MPI_ERROR (MPI_Comm_size (MPI_COMM_WORLD, &nprocs));
     }
-#else
-    nprocs = 1;
 #endif
   }
-  
-  return nprocs;
+
+  return (nprocs);
 }
+
 
  /*@@
    @routine    CactusDefaultExit
    @date       Tue Apr 18 15:21:15 2000
    @author     Gerd Lanfermann
-   @desc 
-   The default for when people call CCTK_Exit.
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   @desc
+               The default for when people call CCTK_Exit.
+   @enddesc
+   @calls      MPI_Finalize
+               exit
 
+   @var        GH
+   @vdesc      Pointer to CCTK grid hierarchy
+   @vtype      cGH *
+   @vio        unused
+   @endvar
+   @var        retval
+   @vdesc      return code to exit with
+   @vtype      int
+   @vio        in
+   @endvar
+
+   @returntype int
+   @returndesc
+               This function should never return.
+               But if it does it will return 0.
+   @endreturndesc
 @@*/
-int CactusDefaultExit(cGH *GH, int retval)
+int CactusDefaultExit (cGH *GH, int retval)
 {
-#ifdef CCTK_MPI  
+  /* avoid compiler warning about unused parameter */
+  GH = GH;
+
+#ifdef CCTK_MPI
   if(MPI_Active)
   {
-    CACTUS_MPI_ERROR(MPI_Finalize());
+    CACTUS_MPI_ERROR (MPI_Finalize ());
   }
 #endif
-  exit(retval);
+  exit (retval);
   return (0);
 }
-
 
 
  /*@@
    @routine    CactusDefaultAbort
    @date       Saturday July 15 2000
    @author     Gabrielle Allen
-   @desc 
-   The default for when people call CCTK_Abort
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   @desc
+               The default for when people call CCTK_Abort.
+   @enddesc
+   @calls      MPI_Abort
+               exit
 
+   @var        GH
+   @vdesc      Pointer to CCTK grid hierarchy
+   @vtype      cGH *
+   @vio        unused
+   @endvar
+   @var        retval
+   @vdesc      return code to abort with
+   @vtype      int
+   @vio        in
+   @endvar
+
+   @returntype int
+   @returndesc
+               This function should never return.
+               But if it does it will return 0.
+   @endreturndesc
 @@*/
-int CactusDefaultAbort(cGH *GH, int retval)
+int CactusDefaultAbort (cGH *GH, int retval)
 {
+  /* avoid compiler warning about unused parameter */
+  GH = GH;
+
 #ifdef CCTK_MPI
-  if(MPI_Active)
+  if (MPI_Active)
   {
-    CACTUS_MPI_ERROR(MPI_Abort(MPI_COMM_WORLD,retval));
+    /* flush stdout and stderr before calling MPI_Abort() because
+       some MPI implementations simply kill other MPI processes */
+    fflush (stdout);
+    fflush (stderr);
+    CACTUS_MPI_ERROR (MPI_Abort (MPI_COMM_WORLD, retval));
   }
 #else
   /* FIXME */
   /*abort();*/
+  retval = retval;
 #endif
-  exit(0);
-  return(0);
+  exit (0);
+  return (0);
 }
+
 
  /*@@
    @routine    CactusDefaultBarrier
    @date       Tue Apr 18 15:21:42 2000
    @author     Tom Goodale
-   @desc 
-   The default for when people call CCTK_Barrier
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   @desc
+               The default for when people call CCTK_Barrier
+   @enddesc
 
+   @var        GH
+   @vdesc      Pointer to CCTK grid hierarchy
+   @vtype      cGH *
+   @vio        unused
+   @endvar
+
+   @returntype int
+   @returndesc
+               0 for success
+   @endreturndesc
 @@*/
-int CactusDefaultBarrier(cGH *GH) 
+int CactusDefaultBarrier (cGH *GH)
 {
-  return 0;
+  /* avoid compiler warning about unused parameter */
+  GH = GH;
+
+  return (0);
 }
