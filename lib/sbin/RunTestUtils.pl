@@ -1089,13 +1089,13 @@ sub ReportOnTest
         if ($tmp)
         {
           $buffer .= "      (insignificant differences on $tmp lines)\n";
-        }
+        } 
       }
     }
   }
   if ($buffer)
   {
-      $buffer .= "$buffer\n";
+      $buffer .= "\n";
   }
   print $buffer;
 
