@@ -6,7 +6,7 @@
 #   @desc 
 #   
 #   @enddesc 
-#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/linux-gnu,v 1.1 1999-02-25 16:56:14 goodale Exp $
+#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/linux-gnu,v 1.2 1999-02-27 11:19:49 allen Exp $
 # @@*/
 
 # Determine which Fortran 90 compiler is in use
@@ -35,7 +35,8 @@ case "$LINUX_F90_COMP" in
      pacific)
      : ${LIBS="f2c vast90 f2c m"} ;;
      absoft)
-     : ${LIBS="f77math f90math fio m"} ;;
+     : ${LIBS="f77math f90math fio m"} 
+     F90FLAGS="-O" ;;
      nag)
      : ${LIBS="f90 nagfl90 nag m"} 
      F90FLAGS="$F90FLAGS -N140" ;;
