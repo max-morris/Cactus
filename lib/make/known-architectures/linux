@@ -227,12 +227,8 @@ else
 # Note that the defaults settings are for gcc/g++ and they are set by configure
   case "$CC" in
     [ei]cc)
-      # the '-D_ISOC99_SOURCE' is needed to get the optimized math functions
-      # defined from /usr/include/math.h
       if test "$OPTIMISE" = "no"; then
-        : ${CFLAGS='-D_ISOC99_SOURCE -O0'}
-      else
-        : ${CFLAGS='-D_ISOC99_SOURCE'}
+        : ${CFLAGS='-O0'}
       fi
       : ${C_OPTIMISE_FLAGS='-O3'}
       : ${C_DEPEND='$(CC) -M $(CPPFLAGS)'}
@@ -251,12 +247,8 @@ else
 
   case "$CXX" in
     [ei]cc | ecpc)
-      # the '-D_ISOC99_SOURCE' is needed to get the optimized math functions
-      # defined from /usr/include/math.h
       if test "$OPTIMISE" = "no"; then
-        : ${CXXFLAGS='-D_ISOC99_SOURCE -O0'}
-      else
-        : ${CXXFLAGS='-D_ISOC99_SOURCE'}
+        : ${CXXFLAGS='-O0'}
       fi
       : ${CXX_OPTIMISE_FLAGS='-O3'}
       : ${CXX_DEPEND='$(CXX) -M $(CPPFLAGS)'}
