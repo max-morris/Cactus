@@ -1776,7 +1776,7 @@ PERL_CONFIGURE_SCRIPT=`echo $srcdir/configure.pl | sed 's,^//\(.\)/,\1:/,'`
 
 BUILD_ACTIVETHORNS=`echo $srcdir/../sbin/BuildActiveThorns.pl | sed 's,^//\(.\)/,\1:/,'`
 
-CST=`echo $srcdir/../sbin/config_parser.pl | sed 's,^//\(.\)/,\1:/,'`
+CST=`echo $srcdir/../sbin/CST | sed 's,^//\(.\)/,\1:/,'`
 
 
 F_FILE_PROCESSOR=`echo $srcdir/../sbin/f_file_processor.pl | sed 's,^//\(.\)/,\1:/,'`

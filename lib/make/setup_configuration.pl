@@ -33,16 +33,16 @@ else
 # Replace slashes with underscores.
 $config =~ s:[/\\]:_:g;
 
-# The build directory doesn't exist.
-if (! -d "build" && ! -l "build")
+# The configs directory doesn't exist.
+if (! -d "configs" && ! -l "configs")
 {
   print "Completely new cactus build.  Creating config database\n";
 
-  mkdir("build", 0755)
+  mkdir("configs", 0755)
   
 }
 
-chdir build;
+chdir configs;
 
 # The specified configuration doesn't exist
 if (! -d "$config" && ! -l "$config")
