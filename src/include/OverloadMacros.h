@@ -69,4 +69,9 @@ RETURN_TYPE CCTK_Dummy##name(ARGUMENTS);
   if(!CCTK_##name) CCTK_##name = CCTK_Dummy##name;
 
 
+/* This macro defines the prototype for the overloading function itself */
+#define OVERLOADABLE_OVERLOADPROTO(name)                          \
+int CCTK_Overload##name(RETURN_TYPE (*func)(ARGUMENTS));
+
+
 #endif
