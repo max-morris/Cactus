@@ -9,18 +9,3 @@
 #  @endhistory
 #@@*/
 
-
-public:
-
-INTEGER nx "Grid size in first coordinate direction"
-{
-  1::
-} 10
-INTEGER ny "Grid size in second coordinate direction"
-{
-  1::
-} 10
-INTEGER nz "Grid size in third coordinate direction"
-{
-  1::
-} 10
