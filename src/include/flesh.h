@@ -7,6 +7,8 @@
    @enddesc 
  @@*/
 
+/* $Id$ */
+
 #ifndef _FLESH_H_
 #define _FLESH_H_
 
@@ -23,11 +25,11 @@ extern "C" {
 
 int InitialiseCactus(int *, char **, tFleshConfig *);
 
-int Initialise(tFleshConfig *);
+extern int (*Initialise)(tFleshConfig *);
 
-int Evolve(tFleshConfig *);
+extern int (*Evolve)(tFleshConfig *);
 
-int Shutdown(tFleshConfig *);
+extern int (*Shutdown)(tFleshConfig *);
 
 int ShutdownCactus(tFleshConfig *);
 
