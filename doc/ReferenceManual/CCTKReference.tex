@@ -7389,8 +7389,8 @@ end subroutine
 
 \begin{ResultSection}
 \begin{Result}{valstring}
-Pointer to parameter value as string.  This string must be freed after
-it has been used.
+Pointer to parameter value as string.  \em{The memory for this string 
+must be released with a call to} \code{free} \em{after it has been used.}
 \end{Result}
 \end{ResultSection}
 
@@ -7407,9 +7407,10 @@ On exit, the number of characters in the stringified parameter value,
 or $-1$ if the parameter doesn't exist
 \end{Parameter}
 \begin{Parameter}{value}
-As many characters as fit into the Fortran string.  You should check
-for truncation by comparing \code{nchars} against the length of your
-Fortran string.
+On exit, contains as many characters of the parameter name as fit into the 
+Fortran string provided.  
+You should check for truncation by comparing \code{nchars} against the length 
+of your Fortran string.
 \end{Parameter}
 \end{ParameterSection}
 
