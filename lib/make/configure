@@ -1679,7 +1679,7 @@ C_FILE_PROCESSOR=`echo $srcdir/../sbin/c_file_processor.pl | sed 's,^//\(.\)/,\1
 # If there's a Fortran 90 compiler use that for all the Fortran.
 if test "x$F90" != "x" ; then
 F77=$F90 
-F77FLAGS=$F90 ;
+F77FLAGS=$F90FLAGS ;
 fi
 
 
