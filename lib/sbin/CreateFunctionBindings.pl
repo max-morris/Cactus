@@ -957,7 +957,7 @@ sub ParseArguments
       $number_strings++;
       $ccallargs .= "$type $name, ";
     }
-    elsif ($type =~ m/CCTK_(INT|REAL|POINTER)/)
+    elsif ($type =~ m/CCTK_(INT|REAL|POINTER|FPOINTER)/)
     {
       if ($number_strings)
       {
