@@ -852,17 +852,29 @@ sub parse_interface_ccl
 	
       }
     }
-    elsif ($line =~ m/^\s*(USES\s*INCLUDE)S?\s*:\s*(.*)\s*$/)
+    elsif ($line =~ m/^\s*(USES\s*INCLUDE)S?\s*(SOURCE)S?\s*:\s*(.*)\s*$/)
     {
-      $interface_db{"\U$thorn USES HEADER\E"} .= " $2";      
+      $interface_db{"\U$thorn USES SOURCE\E"} .= " $3";      
     }
-    elsif ($line =~ m/^\s*(INCLUDES)\s*:\s*(.*)\s+in\s+(.*)\s*$/)
+    elsif ($line =~ m/^\s*(USES\s*INCLUDE)S?\s*(HEADER)?S?\s*:\s*(.*)\s*$/)
     {
-      $header = $2;
+      $interface_db{"\U$thorn USES HEADER\E"} .= " $3";      
+    }
+    elsif ($line =~ m/^\s*(INCLUDE)S?\s*(SOURCE)S?\s*:\s*(.*)\s+in\s+(.*)\s*$/)
+    {
+      $header = $3;
+      $header =~ s/ //g;
+      $interface_db{"\U$thorn ADD SOURCE\E"} .= " $header";      
+#      print "Adding $header to $4\n";
+      $interface_db{"\U$thorn ADD SOURCE $header TO\E"} = $4;      
+    }
+    elsif ($line =~ m/^\s*(INCLUDE)S?\s*(HEADER)?S?\s*:\s*(.*)\s+in\s+(.*)\s*$/)
+    {
+      $header = $3;
       $header =~ s/ //g;
       $interface_db{"\U$thorn ADD HEADER\E"} .= " $header";      
-#      print "Adding $header to $3\n";
-      $interface_db{"\U$thorn ADD HEADER $header TO\E"} = $3;      
+#      print "Adding $header to $4\n";
+      $interface_db{"\U$thorn ADD HEADER $header TO\E"} = $4;      
     }
     else
     {
