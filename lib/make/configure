@@ -4508,6 +4508,15 @@ cat >> confdefs.h <<EOF
 EOF
  
 
+# Set default Fortran compilers
+
+if test -z "$F90" ; then
+  F90="F90_NOT_SET"
+fi
+
+if test -z "$F77" ; then
+  F77="F77_NOT_SET"
+fi
 
 
  
@@ -4934,4 +4943,6 @@ EOF
 chmod +x $CONFIG_STATUS
 rm -fr confdefs* $ac_clean_files
 test "$no_create" = yes || ${CONFIG_SHELL-/bin/sh} $CONFIG_STATUS || exit 1
+
+
 

@@ -1078,6 +1078,15 @@ AC_SUBST(PERL_BACKUP_NECESSARY)
 AC_DEFINE_UNQUOTED(CCTK_L2_CACHELINE_BYTES, $L2_CACHELINE_BYTES) 
 AC_DEFINE_UNQUOTED(CCTK_L2_CACHE_SIZE, $L2_CACHE_SIZE) 
 
+# Set default Fortran compilers
+AC_SUBST(F90)
+if test -z "$F90" ; then
+  F90="F90_NOT_SET"
+fi
+AC_SUBST(F77)
+if test -z "$F77" ; then
+  F77="F77_NOT_SET"
+fi
 
 dnl Run any other scripts necessary
 
@@ -1085,3 +1094,5 @@ AC_OUTPUT_COMMANDS(,$PERL -s $PERL_CONFIGURE_SCRIPT -compiler="$F77" -opts="$F77
 
 dnl Output everything
 AC_OUTPUT(make.config.defn make.config.deps make.config.rules)
+
+
