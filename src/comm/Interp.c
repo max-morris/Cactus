@@ -78,8 +78,7 @@ void CCTK_FCALL CCTK_FNAME (CCTK_InterpGridArrays)
                            (int *ierror,
                             const cGH *GH,
                             const int *N_dims,
-                            const int *global_param_table_handle,
-                            const int *local_param_table_handle,
+                            const int *param_table_handle,
                             const int *local_interp_handle,
                             const int *coord_system_handle,
                             const int *N_interp_points,
@@ -1118,15 +1117,10 @@ void CCTK_FCALL CCTK_FNAME (CCTK_InterpLocal)
    @vtype      const int *
    @vio        in
    @endvar
-   @var        global_param_table_handle
-   @vdesc      (reference to) the parameter table handle for passing optional
-               parameters to the global interpolator routine
-   @vtype      const int *
-   @vio        in
    @endvar
-   @var        local_param_table_handle
+   @var        param_table_handle
    @vdesc      (reference to) the parameter table handle for passing optional
-               parameters to the local interpolator routine
+               parameters to the interpolator routine
    @vtype      const int *
    @vio        in
    @endvar
@@ -1191,8 +1185,7 @@ void CCTK_FCALL CCTK_FNAME (CCTK_InterpGridArrays)
                            (int *ierror,
                             const cGH *GH,
                             const int *N_dims,
-                            const int *global_param_table_handle,
-                            const int *local_param_table_handle,
+                            const int *param_table_handle,
                             const int *local_interp_handle,
                             const int *coord_system_handle,
                             const int *N_interp_points,
@@ -1204,8 +1197,7 @@ void CCTK_FCALL CCTK_FNAME (CCTK_InterpGridArrays)
                               const CCTK_INT output_array_types[],
                               void *const output_arrays[])
 {
-  *ierror = CCTK_InterpGridArrays (GH, *N_dims, *global_param_table_handle,
-                                   *local_param_table_handle,
+  *ierror = CCTK_InterpGridArrays (GH, *N_dims, *param_table_handle,
                                    *local_interp_handle, *coord_system_handle,
                                    *N_interp_points, *interp_coords_type,
                                    interp_coords,

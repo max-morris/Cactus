@@ -124,8 +124,7 @@ OVERLOADABLE(GroupStorageDecrease)
 #define RETURN_TYPE int
 #define ARGUMENTS const cGH *GH,                                              \
                   int N_dims,                                                 \
-                  int global_param_table_handle,                              \
-                  int local_param_table_handle,                               \
+                  int param_table_handle,                                     \
                   int local_interp_handle,                                    \
                   int coord_system_handle,                                    \
                   int N_interp_points,                                        \
@@ -138,8 +137,7 @@ OVERLOADABLE(GroupStorageDecrease)
                     void *const output_arrays[]
 #define USE_ARGUMENTS (void) (GH + 0);                                        \
                       (void) (N_dims + 0);                                    \
-                      (void) (global_param_table_handle + 0);                 \
-                      (void) (local_param_table_handle + 0);                  \
+                      (void) (param_table_handle + 0);                        \
                       (void) (local_interp_handle + 0);                       \
                       (void) (coord_system_handle + 0);                       \
                       (void) (N_interp_points + 0);                           \
