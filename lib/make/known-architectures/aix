@@ -35,10 +35,10 @@ else
 
   : ${ARFLAGS="-X$AIX_BITS -rucs"}
 
-  : ${F90FLAGS="-q$AIX_BITS -qspill=10000"}
-  : ${F77FLAGS="-qfixed -q$AIX_BITS"}
-  : ${F90_OPTIMISE_FLAGS='-O2'}
-  : ${F77_OPTIMISE_FLAGS='-O2'}
+  : ${F90FLAGS="-q$AIX_BITS -qmaxmem=-1 -qspill=10000"}
+  : ${F77FLAGS="-q$AIX_BITS -qmaxmem=-1 -qfixed"}
+  : ${F90_OPTIMISE_FLAGS='-O5'}
+  : ${F77_OPTIMISE_FLAGS='-O5'}
   : ${F90_DEBUG_FLAGS='-g'}
   : ${F77_DEBUG_FLAGS='-g'}
 
