@@ -2334,14 +2334,15 @@ EOF
 PERL_CONFIGURE_SCRIPT=`echo $srcdir/configure.pl | sed 's,^//\(.\)/,\1:/,'`
 
 
-BUILD_ACTIVETHORNS=`echo $srcdir/../sbin/BuildActiveThorns.pl | sed 's,^//\(.\)/,\1:/,'`
-
-CST=`echo $srcdir/../sbin/CST | sed 's,^//\(.\)/,\1:/,'`
+BUILD_ACTIVETHORNS='$(CCTK_HOME)/lib/sbin/BuildActiveThorns.pl'
 
 
-F_FILE_PROCESSOR='${CCTK_HOME}/lib/sbin/f_file_processor.pl'
+CST='$(CCTK_HOME)/lib//sbin/CST'
 
-C_FILE_PROCESSOR='${CCTK_HOME}/lib/sbin/c_file_processor.pl'
+
+F_FILE_PROCESSOR='$(CCTK_HOME)/lib/sbin/f_file_processor.pl'
+
+C_FILE_PROCESSOR='$(CCTK_HOME)/lib/sbin/c_file_processor.pl'
 
 
 
@@ -2412,6 +2413,9 @@ LDFLAGS="$KNOWN_LDFLAGS $LDFLAGS"
 
 
 : ${SYS_INC_DIRS=" "}
+
+
+: ${GENERAL_LIBRARIES='$(LIBDIRS:%=-L%) $(LIBS:%=-l%)'}
 
 
  
@@ -2603,6 +2607,7 @@ s%@F_DEPEND@%$F_DEPEND%g
 s%@F_DEPEND_OUT@%$F_DEPEND_OUT%g
 s%@GET_WD@%$GET_WD%g
 s%@SYS_INC_DIRS@%$SYS_INC_DIRS%g
+s%@GENERAL_LIBRARIES@%$GENERAL_LIBRARIES%g
 
 CEOF
 EOF

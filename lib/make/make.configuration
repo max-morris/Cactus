@@ -38,6 +38,13 @@ DIVIDER =  $(DIVEL)$(DIVEL)$(DIVEL)$(DIVEL)
 # Include the definitions for this configuration
 include $(CONFIG)/make.config.defn
 
+# Put this in temporarily to make sure that people with existing
+# configurations aren't disturbed
+
+ifeq ($(strip $(GENERAL_LIBRARIES)),)
+GENERAL_LIBRARIES = $(LIBDIRS:%=-L%) $(LIBS:%=-l%)
+endif
+
 # Include the list of thorns to be built 
 # (Use -include to prevent warnings messages, as the file will be built if
 # it is missing .)
@@ -60,7 +67,7 @@ $(EXEDIR)$(DIRSEP)$(EXE): $(CONFIG)/make.thornlist $(CONFIG)/cctk_version.h $(pa
 	@echo Creating $(EXE) in $(EXEDIR) from $(THORNS)
 	$(CC) $(DEBUG_C) $(CFLAGS) $(CCOMPILEONLY)$(OPTIONSEP)$(TOP)$(DIRSEP)datestamp.o -I$(CONFIG) $(subst /,$(DIRSEP),$(DATESTAMP))
 	if [ ! -d $(EXEDIR) ]; then $(MKDIR) $(EXEDIR) ; fi
-	$(LD) $(CREATEEXE)$(OPTIONSEP)$(subst /,$(DIRSEP),$@) $(DEBUG_LD) $(LDFLAGS) $(EXTRAFLAGS) $(subst /,$(DIRSEP), $(TOP)/datestamp.o) $(CACTUSLIBLINKLINE) $(LIBDIRS:%=-L%) $(LIBS:%=-l%) 
+	$(LD) $(CREATEEXE)$(OPTIONSEP)$(subst /,$(DIRSEP),$@) $(DEBUG_LD) $(LDFLAGS) $(EXTRAFLAGS) $(subst /,$(DIRSEP), $(TOP)/datestamp.o) $(CACTUSLIBLINKLINE) $(GENERAL_LIBRARIES) 
 	@echo $(DIVIDER)
 	@echo All done !
 	@echo $(DIVIDER)

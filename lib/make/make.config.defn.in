@@ -76,6 +76,9 @@ GET_WD = @GET_WD@
 LIBS    += @LIBS@
 LIBDIRS += @LIBDIRS@
 
+# Command to generate the link line for libraries
+GENERAL_LIBRARIES = @GENERAL_LIBRARIES@
+
 # System include directories
 
 SYS_INC_DIRS += @SYS_INC_DIRS@

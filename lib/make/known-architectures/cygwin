@@ -46,6 +46,11 @@ MKDIR="mkdir -p"
 
 CACTUSLIBLINKLINE='$(addsuffix .a,$(addprefix $(subst /,$(DIRSEP),$(CCTK_LIBDIR))$(DIRSEP)lib,$(notdir $(ALLCACTUSLIBS))))'
 
+# Windows libraries have to explicitly appear on the link line with full name
+# So ignore the LIBDIRS variable and don't put flags on.
+
+GENERAL_LIBRARIES='$(LIBS)' 
+
 cat >> cctk_archdefs.h <<EOF;
 
 /* WIN stuff */

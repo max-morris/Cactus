@@ -333,14 +333,15 @@ AC_DEFINE_UNQUOTED(FMODIFIER, $FMODIFIER)
 PERL_CONFIGURE_SCRIPT=`echo $srcdir/configure.pl | sed 's,^//\(.\)/,\1:/,'`
 
 AC_SUBST(BUILD_ACTIVETHORNS)
-BUILD_ACTIVETHORNS=`echo $srcdir/../sbin/BuildActiveThorns.pl | sed 's,^//\(.\)/,\1:/,'`
+BUILD_ACTIVETHORNS='$(CCTK_HOME)/lib/sbin/BuildActiveThorns.pl'
+
 AC_SUBST(CST)
-CST=`echo $srcdir/../sbin/CST | sed 's,^//\(.\)/,\1:/,'`
+CST='$(CCTK_HOME)/lib//sbin/CST'
 
 AC_SUBST(F_FILE_PROCESSOR)
-F_FILE_PROCESSOR='${CCTK_HOME}/lib/sbin/f_file_processor.pl'
+F_FILE_PROCESSOR='$(CCTK_HOME)/lib/sbin/f_file_processor.pl'
 AC_SUBST(C_FILE_PROCESSOR)
-C_FILE_PROCESSOR='${CCTK_HOME}/lib/sbin/c_file_processor.pl'
+C_FILE_PROCESSOR='$(CCTK_HOME)/lib/sbin/c_file_processor.pl'
 
 
 
@@ -411,6 +412,9 @@ AC_SUBST(GET_WD)
 
 AC_SUBST(SYS_INC_DIRS)
 : ${SYS_INC_DIRS=" "}
+
+AC_SUBST(GENERAL_LIBRARIES)
+: ${GENERAL_LIBRARIES='$(LIBDIRS:%=-L%) $(LIBS:%=-l%)'}
 
 dnl Run any other scripts necessary
 
