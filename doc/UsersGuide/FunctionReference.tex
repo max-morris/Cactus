@@ -4162,7 +4162,7 @@ Util_TableSetFromString(handle, "order=3 myparam=42.314159");
 /* also equivalent to the above */
 int handle = Util_TableCreate(UTIL_TABLE_FLAGS_CASE_INSENSITIVE);
 Util_TableSetInt(handle, 3, "order");
-Util_TableSetReal(handle, 42.314159, myparam);
+Util_TableSetReal(handle, 42.314159, "myparam");
 \end{verbatim}
 \end{Example}
 \end{FunctionDescription}
