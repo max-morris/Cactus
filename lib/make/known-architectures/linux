@@ -186,15 +186,15 @@ else
        ;;
      Intel)
        if test "$OPTIMISE" = "no"; then
-         : ${F77FLAGS='-132 -w95 -O0'}
-         : ${F90FLAGS='-132 -w95 -O0'}
+         : ${F77FLAGS='-align -w95 -O0'}
+         : ${F90FLAGS='-align -w95 -O0'}
        else
-         : ${F77FLAGS='-132 -w95'}
-         : ${F90FLAGS='-132 -w95'}
+         : ${F77FLAGS='-align -w95'}
+         : ${F90FLAGS='-align -w95'}
        fi
-       : ${F77_OPTIMISE_FLAGS='-O3'}
-       : ${F90_OPTIMISE_FLAGS='-O3'}
-       : ${LIBS="intrins IEPCF90 F90 m"}
+       : ${F77_OPTIMISE_FLAGS='-O3 -ip'}
+       : ${F90_OPTIMISE_FLAGS='-O3 -ip'}
+       : ${LIBS='intrins IEPCF90 F90 imf m irc cxa cprts cxa'}
 
        # add the libpath if the linker is not Intel
        if test "$LD" != "icc" -a -n "$IA32ROOT" ; then
@@ -229,9 +229,11 @@ else
   case "$CC" in
     [ei]cc)
       if test "$OPTIMISE" = "no"; then
-        : ${CFLAGS='-O0'}
+        : ${CFLAGS='-O0 -restrict'}
+      else
+        : ${CFLAGS='-restrict'}
       fi
-      : ${C_OPTIMISE_FLAGS='-O3'}
+      : ${C_OPTIMISE_FLAGS='-O3 -ip'}
       : ${C_DEPEND='$(CC) -M $(CPPFLAGS)'}
       : ${C_WARN_FLAGS='-w2'}
       ;;
@@ -249,9 +251,11 @@ else
   case "$CXX" in
     [ei]cc | ecpc)
       if test "$OPTIMISE" = "no"; then
-        : ${CXXFLAGS='-O0'}
+        : ${CXXFLAGS='-restrict -O0'}
+      else
+        : ${CXXFLAGS='-restrict'}
       fi
-      : ${CXX_OPTIMISE_FLAGS='-O3'}
+      : ${CXX_OPTIMISE_FLAGS='-O3 -ip'}
       : ${CXX_DEPEND='$(CXX) -M $(CPPFLAGS)'}
       ;;
     sgiCC)
