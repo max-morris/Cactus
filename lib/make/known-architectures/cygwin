@@ -35,12 +35,16 @@ else
 # /Gd means use __cdecl, it's /Gz for __stdcall
 
   if test -z "$CFLAGS"; then
-    CFLAGS="/nologo /Oxy- /Gd"
+    CFLAGS="/nologo /Gd"
   fi
 
   if test -z "$CXXFLAGS" ; then 
-    CXXFLAGS="/nologo /Oxy- /Gd"
+    CXXFLAGS="/nologo /Gd"
   fi
+
+# Set the optimization flags
+  C_OPTIMISE_FLAGS="/Oxy-"
+  CXX_OPTIMISE_FLAGS="/Oxy-"
 
   CREATEEXE="/Fe"
   CCOMPILEONLY="/c /Fo"
