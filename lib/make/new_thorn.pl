@@ -35,7 +35,7 @@ chdir $package_dir;
 
 if(! -d "$package")
 {
-  print "Creating new package $package\n";
+  print "Creating new arrangement $package\n";
   
   mkdir($package, 0755);
 
@@ -83,24 +83,11 @@ open(OUT, ">README") || die "Cannot create README";
 
 print OUT "Cactus Code Thorn $thorn_name\n";
 print OUT "Authors    : ...\n";
-print OUT "Managed by : ... <...\@...........>\n";
-print OUT "Version    : ...  \n";
 print OUT "CVS info   : \$Header\$\n";
 print OUT "--------------------------------------------------------------------------\n";
 print OUT "\n";
-print OUT "1. Purpose of the thorn\n";
+print OUT "Purpose of the thorn:\n";
 print OUT "\n";
-print OUT "This thorn does ...\n";
-print OUT "\n";
-print OUT "2. Dependencies of the thorn\n";
-print OUT "\n";
-print OUT "This thorn additionally requires implementations and thorns ...\n";
-print OUT "\n";
-print OUT "3. Thorn distribution\n";
-print OUT "\n";
-print OUT "This thorn is available to ...\n";
-print OUT "\n";
-print OUT "4. Additional information\n";
 
 close OUT;
 
