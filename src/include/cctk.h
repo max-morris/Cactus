@@ -61,7 +61,7 @@
 
 #define CCTK_PASS_FTOF CCTK_FARGUMENTS
 
-#define CCTK_DELTA_SPACE(x) cctk_delta_space(x)/cctk_levfac(x)
+#define CCTK_DELTA_SPACE(x) (cctk_delta_space(x)/cctk_levfac(x))
 #define CCTK_DELTA_TIME cctk_delta_time
 #define CCTK_LSSH(stag,dim) cctk_lssh(stag*CCTK_NSTAGGER+dim)
 #define CCTK_LSSH_IDX(stag,dim) (stag*CCTK_NSTAGGER+dim)
@@ -96,8 +96,8 @@
 #include "cctk_Reduction.h"
 #include "cctk_WarnLevel.h"
 
-#define CCTK_GFINDEX3D(GH,i,j,k) ((i) + GH->cctk_lsh[0]*((j)+GH->cctk_lsh[1]*(k)))
-#define CCTK_GFINDEX2D(GH,i,j)   ((i) + GH->cctk_lsh[0]*((j)))
+#define CCTK_GFINDEX3D(GH,i,j,k) ((i) + (GH)->cctk_lsh[0]*((j)+(GH)->cctk_lsh[1]*(k)))
+#define CCTK_GFINDEX2D(GH,i,j)   ((i) + (GH)->cctk_lsh[0]*((j)))
 #define CCTK_GFINDEX1D(GH,i)      (i)
 
 
@@ -186,11 +186,11 @@
 
 extern int _cctk_one;
 
-#define CCTK_EQUALS(a,b) (CCTK_Equals(a,b)==1)
+#define CCTK_EQUALS(a,b) (CCTK_Equals((a),(b))==1)
 
 #define CCTK_PASS_CTOC cctkGH
 
-#define CCTK_DELTA_SPACE(x) cctk_delta_space[x]/cctk_levfac[x]
+#define CCTK_DELTA_SPACE(x) (cctk_delta_space[x]/cctk_levfac[x])
 #define CCTK_DELTA_TIME cctk_delta_time
 #define CCTK_LSSH(stag,dim) cctk_lssh[stag*CCTK_NSTAGGER+dim]
 #define CCTK_LSSH_IDX(stag,dim) (stag*CCTK_NSTAGGER+dim)
@@ -203,8 +203,8 @@ extern int _cctk_one;
 
 #endif /*CCODE*/
 
-#define CCTK_INFO(a) CCTK_Info(CCTK_THORNSTRING,a)
-#define CCTK_PARAMWARN(a) CCTK_ParamWarn(CCTK_THORNSTRING,a)
+#define CCTK_INFO(a) CCTK_Info(CCTK_THORNSTRING,(a))
+#define CCTK_PARAMWARN(a) CCTK_ParamWarn(CCTK_THORNSTRING,(a))
 
 /*
 #define CCTK_MAKESTRING(x) CCTK_REALSTRING(x)
