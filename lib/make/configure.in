@@ -104,11 +104,20 @@ F77FLAGS=$F90FLAGS ;
 fi
 
 
+AC_SUBST(CCOMPILEONLY)
+AC_SUBST(FCOMPILEONLY)
+
 # If this is a known architecture, setup any specific flags
 
 if test -r $srcdir/known-architectures/$host_os ; then
 . $srcdir/known-architectures/$host_os
 fi
+
+#Set the compileonly flags if they've not been set by now
+
+: ${CCOMPILEONLY="-c -o"}
+: ${FCOMPILEONLY="-c -o"}
+
 
 dnl Run any other scripts necessary
 

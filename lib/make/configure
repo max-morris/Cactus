@@ -1672,11 +1672,20 @@ F77FLAGS=$F90FLAGS ;
 fi
 
 
+
+
+
 # If this is a known architecture, setup any specific flags
 
 if test -r $srcdir/known-architectures/$host_os ; then
 . $srcdir/known-architectures/$host_os
 fi
+
+#Set the compileonly flags if they've not been set by now
+
+: ${CCOMPILEONLY="-c -o"}
+: ${FCOMPILEONLY="-c -o"}
+
 
 
  
@@ -1850,6 +1859,8 @@ s%@BUILD_ACTIVETHORNS@%$BUILD_ACTIVETHORNS%g
 s%@CST@%$CST%g
 s%@F_FILE_PROCESSOR@%$F_FILE_PROCESSOR%g
 s%@C_FILE_PROCESSOR@%$C_FILE_PROCESSOR%g
+s%@CCOMPILEONLY@%$CCOMPILEONLY%g
+s%@FCOMPILEONLY@%$FCOMPILEONLY%g
 
 CEOF
 EOF

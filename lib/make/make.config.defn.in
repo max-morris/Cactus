@@ -34,6 +34,10 @@ LDFLAGS           = @LDFLAGS@
 
 ARFLAGS           = @ARFLAGS@
 
+# Most compilers use -c -o to compile only, some do something different
+CCOMPILEONLY = @CCOMPILEONLY@
+FCOMPILEONLY = @FCOMPILEONLY@
+
 # Library info
 
 LIBS    = @LIBS@
