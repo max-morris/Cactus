@@ -142,6 +142,9 @@ sub SetConfigureEnv
       #Ignore comments.
       s/\#(.*)$//g;
       
+      #Remove spaces at end of lines
+      s/\s*$//;
+
       s/\n//g;		# Different from chop...
 
       #Ignore blank lines
@@ -151,7 +154,7 @@ sub SetConfigureEnv
       #     keyword value
       # or  keyword = value
       m/\s*([^\s=]*)([\s]*=?\s*)(.*)\s*/;
-
+      
       if($1 && $2)
       {
 	print "Setting $1 to '$3'\n";
