@@ -96,6 +96,12 @@ static int CCTKi_ScheduleCallFunction(void *function, t_attribute *attribute, t_
 
 static int indent_level = 0;
 
+static int n_scheduled_comm_groups = 0;
+static int *scheduled_comm_groups = NULL;
+
+static int n_scheduled_storage_groups = 0;
+static int *scheduled_storage_groups = NULL;
+
 
 /********************************************************************
  *********************     External Routines   **********************
@@ -208,7 +214,85 @@ int CCTK_ScheduleGroup(const char *name,
 
 }
 
+ /*@@
+   @routine    CCTK_ScheduleGroupStorage
+   @date       Fri Sep 17 18:55:59 1999
+   @author     Tom Goodale
+   @desc 
+   Schedules a group for storage when a GH is created.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
 
+@@*/
+int CCTK_ScheduleGroupStorage(const char *group)
+{
+  int retcode;
+  int *temp;
+
+  n_scheduled_storage_groups++;
+  temp = (int*)realloc(scheduled_storage_groups, n_scheduled_storage_groups*sizeof(int));
+
+  if(temp)
+  {
+    scheduled_storage_groups = temp;
+
+    scheduled_storage_groups[n_scheduled_storage_groups-1] = CCTK_GroupIndex(group);
+
+    retcode = scheduled_storage_groups[n_scheduled_storage_groups-1];
+  }
+  else
+  {
+    retcode = -1;
+    n_scheduled_storage_groups--;
+  }
+
+  return retcode;
+
+}
+
+ /*@@
+   @routine    CCTK_ScheduleGroupComm
+   @date       Fri Sep 17 18:55:59 1999
+   @author     Tom Goodale
+   @desc 
+   Schedules a group for communication when a GH is created.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+int CCTK_ScheduleGroupComm(const char *group)
+{
+  int retcode;
+  int *temp;
+
+  n_scheduled_comm_groups++;
+  temp = (int*)realloc(scheduled_comm_groups, n_scheduled_comm_groups*sizeof(int));
+
+  if(temp)
+  {
+    scheduled_comm_groups = temp;
+
+    scheduled_comm_groups[n_scheduled_comm_groups-1] = CCTK_GroupIndex(group);
+
+    retcode = scheduled_comm_groups[n_scheduled_comm_groups-1];
+  }
+  else
+  {
+    retcode = -1;
+    n_scheduled_comm_groups--;
+  }
+
+  return retcode;
+
+}
 
 /********************************************************************
  *********************     Local Routines   *************************
