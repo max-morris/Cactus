@@ -62,10 +62,6 @@ int CCTK_RegexMatch(const char *string,
  *********************     External Routines   **********************
  ********************************************************************/
 
-/********************************************************************
- *********************     Local Routines   *************************
- ********************************************************************/
-
  /*@@
    @routine    CCTK_Equals
    @date       Wed Jan 20 10:25:30 1999
@@ -104,47 +100,37 @@ int CCTK_Equals(const char *string1, const char *string2)
 {
   int retval;
   int position;
-  char *message;
 
   retval = 1;
 
   /* Check that string1 isn't null */
   if (!string1 || !string2)
   {
+    retval = 0;
     if (!string1 && string2)
     {
-      message = (char *)malloc((100+sizeof(string2))*sizeof(char));
-      sprintf(message,"First string null in CCTK_Equals (2nd is %s)",string2); 
-      CCTK_Warn(0,__LINE__,__FILE__,"Cactus",message);
+      CCTK_VWarn(0,__LINE__,__FILE__,"Cactus",
+		 "CCTK_Equals: First string null (2nd is %s)",string2); 
+
     }
     else if (string1 && !string2)
     { 
-      message = (char *)malloc((100+sizeof(string1))*sizeof(char));
-      sprintf(message,"Second string null in CCTK_Equals (1st is %s)",string1); 
-      CCTK_Warn(0,__LINE__,__FILE__,"Cactus",message);
+      CCTK_VWarn(0,__LINE__,__FILE__,"Cactus",
+		 "CCTK_Equals: Second string null (1st is %s)",string1);
     }     
     else
     {
-      CCTK_Warn(0,__LINE__,__FILE__,"Cactus","Both strings null in CCTK_Equals");
-    }
-  }
-
-  if(strlen(string1)==strlen(string2))
-  {
-    for(position = 0; position < strlen(string1);position++)
-    {
-      if(tolower(string1[position]) != tolower(string2[position]))
-      {
-        retval = 0;
-        break;
-      }
+      CCTK_Warn(0,__LINE__,__FILE__,"Cactus",
+		"CCTK_Equals: Both strings null");
     }
   }
   else
   {
-    retval = 0;
+    if (Util_StrCmpi(string1,string2))
+    {
+      retval = 0;
+    }
   }
-
   return retval;
 }
 
@@ -163,8 +149,8 @@ int CCTK_FCALL CCTK_FNAME(CCTK_Equals)
    @routine Util_NullTerminateString
    @author Paul Walker
    @desc 
-   Null terminates a fortran string. Remember to free
-   what it returns...
+   Null terminates a fortran string. Need to free the 
+   string it returns
    @enddesc
    @calls     
    @calledby   
@@ -196,36 +182,36 @@ char *Util_NullTerminateString(const char *instring, unsigned int len)
 {
   char *outstring;
   unsigned int i;
-  int position;
+  unsigned int position;
 
   if (len > 100000)
   {
-    char *message;
-    message = malloc(1024*sizeof(char));
-    sprintf(message,"You are Null Terminating a string with length %d !!\n"
-                    "This is probably an error in calling a C routine from Fortran",len);
-    CCTK_Warn(1,__LINE__,__FILE__,"Cactus",message);
-    free(message);
+    CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
+	       "Null Terminating a string with length %d !!\n"
+	       "This is probably an error in calling a C routine from Fortran",
+	       len);
   }
 
 #ifdef DEBUG_MISC
   printf("Util_NullTerminateString: -%s-, (%u)\n",instring,len);
 #endif
 
-  position = len-1;
-  while (instring[position] == ' ')
+  position = len;
+  while (position > 0 && instring[position-1] == ' ')
   {
     position--;
   }
 
-  outstring = (char *)malloc((position+2)*sizeof(char));
-  assert(outstring);
+  outstring = (char *)malloc((position+1)*sizeof(char));
 
-  for (i=0;i<=position;i++) 
-    outstring[i] = instring[i];
-  
-  outstring[position+1] = '\0';
-
+  if (outstring)
+  {
+    for (i=0;i<position;i++) 
+    {
+      outstring[i] = instring[i];
+    }
+    outstring[position] = '\0';
+  }
   return(outstring);
 }
 
@@ -1396,3 +1382,8 @@ void CCTK_FCALL CCTK_FNAME(CCTK_FortranString)
   free(fstring);
 }
                            
+
+/********************************************************************
+ *********************     Local Routines   *************************
+ ********************************************************************/
+
