@@ -482,6 +482,7 @@ int CCTK_ParamWarn (const char *thorn, const char *message)
   cctk_strong_param_check = (const CCTK_INT *)
                               CCTK_ParameterGet ("cctk_strong_param_check",
                                                  "Cactus", &param_type);
+  fflush (stdout);
   fprintf (stderr, "PARAM %s (%s): %s\n",
            *cctk_strong_param_check ? "ERROR" : "WARNING", thorn, message);
   fflush (stderr);
@@ -542,6 +543,7 @@ int CCTK_VParamWarn (const char *thorn,
   cctk_strong_param_check = (const CCTK_INT *)
                               CCTK_ParameterGet ("cctk_strong_param_check",
                                                  "Cactus", &param_type);
+  fflush (stdout);
   fprintf (stderr, "PARAM %s (%s): ",
            *cctk_strong_param_check ? "ERROR" : "WARNING", thorn);
 
@@ -551,7 +553,6 @@ int CCTK_VParamWarn (const char *thorn,
   fflush (stderr);
   va_end (ap);
 
-  fflush (stderr);
   param_errors++;
 
   return (0);
@@ -763,11 +764,12 @@ void CCTKi_FinaliseParamWarn (void)
     cctk_strong_param_check = (const CCTK_INT *)
                                 CCTK_ParameterGet ("cctk_strong_param_check",
                                                    "Cactus", &param_type);
+    fflush (stdout);
     if (*cctk_strong_param_check)
     {
       fprintf (stderr, "\nFailed parameter check (%d errors)\n\n", param_errors);
       fflush (stderr);
-      exit (99);
+      CCTK_Abort (NULL, 99);
     }
     else
     {
