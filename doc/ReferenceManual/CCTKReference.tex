@@ -6253,7 +6253,6 @@ character*(*) variable
 \begin{Parameter}{cctkGH}pointer to CCTK grid hierarchy\end{Parameter}
 \begin{Parameter}{variable}full name of variable to output, with an optional
 options string in curly braces\end{Parameter}
-\end{Parameter}
 \end{ParameterSection}
 
 \begin{Discussion}
@@ -8285,15 +8284,15 @@ return to the caller).
 Cactus's behavior when \code{CCTK\_VWarn} is called depends on the
 \code{-W} and \code{-E} command-line options:
 \begin{itemize}
-\item	Cactus prints any warning with a warning level $\le$
-	the \code{-W} level to standard error (any warnings with
-	warning levels $>$ the \code{-W} level are silently discarded).
-  	The default \code{-W} level is~1, \ie{} only level~0 and level~1
-	warnings will be printed.
-\item	Cactus stops (aborts) the current run for any warning
-	with a warning level $\le$ the \code{-E} level.
-  	The default \code{-W} level is~0, \ie{} only level~0
-	warnings will abort the run.
+\item   Cactus prints any warning with a warning level $\le$
+        the \code{-W} level to standard error (any warnings with
+        warning levels $>$ the \code{-W} level are silently discarded).
+        The default \code{-W} level is~1, \ie{} only level~0 and level~1
+        warnings will be printed.
+\item   Cactus stops (aborts) the current run for any warning
+        with a warning level $\le$ the \code{-E} level.
+        The default \code{-W} level is~0, \ie{} only level~0
+        warnings will abort the run.
 \end{itemize}
 
 Cactus guarantees that
