@@ -6,7 +6,7 @@
 #   @desc 
 #   
 #   @enddesc 
-#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/unicos,v 1.6 2000-01-26 09:07:58 allen Exp $
+#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/unicos,v 1.7 2000-02-16 18:27:50 goodale Exp $
 # @@*/
 
 if test "$CCTK_CONFIG_STAGE" = "preferred-compilers" ; then
@@ -35,5 +35,24 @@ else
 
 EOF
 
+# Cache stuff
+  if test -z "$L2_CACHELINE_BYTES" ; then
+    L2_CACHELINE_BYTES=64
+    echo "Setting L2_CACHELINE_BYTES to $L2_CACHELINE_BYTES"
+  fi
+
+  if test -z "$L2_CACHE_SIZE" ; then
+    L2_CACHE_SIZE="96*1024"
+    echo "Setting L2_CACHE_SIZE to $L2_CACHE_SIZE bytes"
+  fi
+
+# MPI stuff
+
+  if test -n "$MPI" ; then
+    if test "$MPI" = "NATIVE" ; then
+#   Don't need to do anything for the T3E
+    fi
+  fi
 
 fi
+

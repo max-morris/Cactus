@@ -102,4 +102,24 @@ else
        ;;
   esac    
 
+# Cache stuff
+  if test -z "$L2_CACHELINE_BYTES" ; then
+    L2_CACHELINE_BYTES=32
+    echo "Setting L2_CACHELINE_BYTES to $L2_CACHELINE_BYTES"
+  fi
+
+  if test -z "$L2_CACHE_SIZE" ; then
+    L2_CACHE_SIZE="`cat /proc/cpuinfo | perl -nae 'print $F[3] if(m:cache:)'`*1024"
+    echo "Setting L2_CACHE_SIZE to $L2_CACHE_SIZE bytes"
+  fi
+
+# MPI stuff
+
+  if test -n "$MPI" ; then
+    if test "$MPI" = "NATIVE" ; then
+      echo "ERROR: NATIVE MPI selected, but linux has no native MPI"
+      exit 2
+    fi
+  fi
+
 fi
