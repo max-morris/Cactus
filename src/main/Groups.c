@@ -99,6 +99,10 @@ void CCTK_FCALL CCTK_FNAME (CCTK_GroupDimFromVarI)
                            (int *dim,
                             const int *vi);
 
+/* prototype for CCTKi_VarDataPtr() doesn't appear in a header file because it
+   is only used in the variable bindings (see grdoc for CCTKi_VarDataPtr()) */
+void *CCTKi_VarDataPtr(const cGH *GH, int timelevel,
+                       const char *implementation, const char *varname);
 
 /********************************************************************
  ********************    Internal Typedefs   ************************
@@ -174,12 +178,6 @@ static int maxdim = 0;
 static int gfdim = 0;
 
 static int staggered = 0;
-
-/* When passing to fortran, must pass by reference
- * so need to define the odd global variable to pass 8-(
- */
-
-int _cctk_one = 1;
 
 
 /********************************************************************
@@ -361,6 +359,55 @@ void CCTK_FCALL CCTK_FNAME (CCTK_VarIndex)
   ONE_FORTSTRING_CREATE (name)
   *vindex = CCTK_VarIndex (name);
   free (name);
+}
+
+
+ /*@@
+   @routine    CCTKi_VarDataPtr
+   @date       Wed 19 June 2002
+   @author     Thomas Radke
+   @desc
+               For a grid variable given by its timelevel, implementation,
+               and name, return its data pointer on the cGH.
+               This internal function is only called by the variable bindings
+               in the DECLARE_CCTK_ARGUMENTS macro. It does not print a warning
+               if the variable doesn't exist (eg. because the providing thorn
+               wasn't activated) - it passes back a NULL pointer in this case.
+               <P>
+               Note that for performance reasons the variable's full name
+               is passed in as separate implementation and varname strings
+               (to save a call to CCTK_Decompose()), and we also don't use
+               CCTK_Equals() for the string comparisons but make use of the
+               implicit assumption that the CST-generated macros pass in the
+               names in the same notation as they are stored in the database.
+   @enddesc
+
+   @returntype void *
+   @returndesc
+               data pointer on the cGH, or NULL if variable doesn't exist
+   @endreturndesc
+@@*/
+void *CCTKi_VarDataPtr(const cGH *GH, int timelevel,
+                       const char *implementation, const char *varname)
+{
+  int group, var;
+
+
+  for (group = 0; group < n_groups; group++)
+  {
+    if (strcmp (implementation, groups[group].implementation) == 0)
+    {
+      for (var = 0; var < groups[group].n_variables; var++)
+      {
+        if (strcmp (varname, groups[group].variables[var].name) == 0)
+        {
+          return (GH->data[groups[group].variables[var].number][timelevel]);
+        }
+      }
+    }
+  }
+
+  return (NULL);
 }
 
 
