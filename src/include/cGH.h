@@ -53,7 +53,7 @@ typedef struct
   /* The refinement factor over the top level (coarsest) grid. */
   int *cctk_levfac;
 
-  /* The convergence level */
+  /* The convergence level (numbered from zero upwards) */
   int cctk_convlevel;
 
   /* The number of ghostzones in each direction */
