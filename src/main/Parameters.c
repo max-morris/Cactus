@@ -2124,7 +2124,11 @@ static int ParameterSetReal (t_param *param, const char *value)
   char *endptr;
 
 
-  /*  Convert the value string to a double. Allow various formats.*/
+  /*
+   * Canonicalize the string by converting all exponent letters
+   * (we allow [eEdD]) to 'e', since strtod(3) (which we will use
+   * to do the actual conversion) only groks [eE].
+   */
   temp = strdup (value);
   for (p = 0; p < strlen (temp); p++)
   {
