@@ -19,7 +19,7 @@
 #include "cctk_Groups.h"
 #include "cctk_WarnLevel.h"
 
-/*#define DEBUG_GROUPS */
+/*#define DEBUG_GROUPS*/
 
 static char *rcsid = "$Header$";
 
@@ -1136,6 +1136,16 @@ int CCTK_GroupTypeFromVarI(int var)
 
     gtype = groups[group].gtype;
   }
+
+#ifdef DEBUG_GROUPS
+  CCTK_PRINTSEPARATOR
+  printf("In CCTK_GroupTypeFromVarI\n");
+  printf("-------------------------\n");
+  printf("Variable index = %d\n",var);
+  printf("Variable name = %s\n",CCTK_FullName(var));
+  printf("Group type = %d\n",gtype);
+  CCTK_PRINTSEPARATOR
+#endif
 
   return gtype;
 }
