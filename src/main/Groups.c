@@ -896,14 +896,14 @@ char *CCTK_VarName(int varnum)
   char *name;
   int group;
 
-  if(varnum < total_variables)
+  if (varnum<0 || varnum>total_variables-1)
   {
-    group = group_of_variable[varnum];
-    name  = groups[group].variables[varnum-groups[group].variables[0].number].name;
+    name = NULL;
   }
   else
   {
-    name = NULL;
+    group = group_of_variable[varnum];
+    name  = groups[group].variables[varnum-groups[group].variables[0].number].name;
   }
 
   return name;
@@ -1072,15 +1072,15 @@ int CCTK_GroupTypeFromVarI(int var)
   int gtype;
   int group;
 
-  if(var < total_variables)
+  if (var<0 || var>total_variables-1)
+  {
+    gtype = -1;
+  }
+  else
   {
     group = group_of_variable[var];
 
     gtype = groups[group].gtype;
-  }
-  else
-  {
-    gtype = -1;
   }
 
   return gtype;
@@ -1107,15 +1107,15 @@ int CCTK_VarTypeI(int var)
   int vtype;
   int group;
 
-  if(var < total_variables)
+  if (var<0 || var>total_variables-1)
+  {
+    vtype = -1;
+  }
+  else
   {
     group = group_of_variable[var];
 
     vtype = groups[group].vtype;
-  }
-  else
-  {
-    vtype = -1;
   }
 
   return vtype;
@@ -1147,14 +1147,14 @@ int CCTK_NumTimeLevelsFromVarI(int var)
   int ntimelevels;
   int group;
 
-  if(var < total_variables)
+  if (var<0 || var>total_variables-1)
   {
-    group = group_of_variable[var];
-    ntimelevels = groups[group].n_timelevels;
+    ntimelevels = -1;
   }
   else
   {
-    ntimelevels = -1;
+    group = group_of_variable[var];
+    ntimelevels = groups[group].n_timelevels;
   }
   
   return ntimelevels;
