@@ -7,16 +7,19 @@
 #
 # WARNING: This makefile may not function with "make".  Errors like
 # make: file `Makefile' line 36: Must be a separator (: or ::) for rules (bu39)
-# mean you should have used gmake.  gmake is available free
-# from ftp://prep.ai.mit.edu/ and should be installed on all production
-# systems.
+# mean you should have used gmake.  gmake is available free from
+#
+#   http://www.gnu.org/software/make/
+#
+# and should be installed on all production systems.
 #
 # For information on how to use this makefile, type
-# gmake help
+#
+#   gmake help
 #
 #
 #   @enddesc
-#   @version $Id: Makefile,v 1.160 2004-06-21 11:09:45 tradke Exp $
+#   @version $Id: Makefile,v 1.161 2004-10-27 13:04:52 tradke Exp $
 # @@*/
 
 ##################################################################################
