@@ -8,7 +8,7 @@
 #  with by the normal c preprocessor.
 #  
 #  It also parses the C source and adds the USE macros, which perform 
-#  a dummy assign. This avoid ugky warnings on some compilers.
+#  a dummy assign. This avoid ugly warnings on some compilers.
 #  This auto adding was tested on all C-thorns and it worked. Since this 
 #  does not match the full C syntax, there can pathological cases, where
 #  this script will not be able to put the USE stuff in the right place.
@@ -95,17 +95,17 @@ while(<>)
     }
     if (($par eq "") &&($mline=~/}/)&&(($domacro1==1)||($domacro2==1))) 
     {
-      $frag1="\n/* DUMMY MACROS STARTX */\n";
+      $frag1="/* DUMMY MACROS STARTX */";
       $frag2="/* DUMMY MACROS ENDX */ ";
       if ($domacro1==1) 
       {
-        $frag1.="$addmacro1\n";
+        $frag1.="$addmacro1 ";
 	$done1   =1; 
 	$domacro1=0;
       }
       if ($domacro2==1)
       {
-	$frag1.="$addmacro2\n";
+	$frag1.="$addmacro2 ";
 	$done2   =1; 
 	$domacro2=0;
       }
