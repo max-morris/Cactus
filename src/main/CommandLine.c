@@ -16,6 +16,7 @@
 #include "cctk_Flesh.h"
 #include "cGH.h"
 
+#include "cctk_Version.h"
 #include "cctk_ActiveThorns.h"
 #include "cctk_Comm.h"
 #include "cctk_Misc.h"
@@ -48,9 +49,6 @@ static void CommandLinePrintParameter(const cParamData *properties);
 
 /* FIXME: these should be put in a header somewhere */
 
-char *compileTime(void);
-char *compileDate(void);
-char *CCTK_FullVersion(void);
 int CCTK_CommandLine(char ***outargv);
 
 /********************************************************************
@@ -402,7 +400,7 @@ void CCTKi_CommandLineListThorns(void)
    @desc 
    Prints version info
    @enddesc 
-   @calls     CCTK_FullVersion
+   @calls     CCTK_FullVersion CCTK_CompileDate CCTK_CompileTime
    @calledby   
    @history 
  
@@ -419,11 +417,10 @@ void CCTKi_CommandLineVersion(void)
   {
     CCTK_CommandLine(&argv);
 
-    version = (const char *)CCTK_FullVersion();
+    version = CCTK_FullVersion();
 
     printf("%s: Version %s.  Compiled on %s at %s\n", argv[0], version, 
-           compileDate(), compileTime());
-
+           CCTK_CompileDate(), CCTK_CompileTime());
   }
 
   CCTK_Exit(NULL,1);
@@ -436,7 +433,7 @@ void CCTKi_CommandLineVersion(void)
    @desc 
    Prints a help message
    @enddesc 
-   @calls     CCTK_CommandLine
+   @calls     CCTK_CommandLine CCTK_CompileDate CCTK_CompileTime
    @calledby   
    @history 
  
@@ -451,7 +448,7 @@ void CCTKi_CommandLineHelp(void)
   {
     CCTK_CommandLine(&argv);
 
-    printf("%s, compiled on %s at %s\n", argv[0], compileDate(), compileTime());
+    printf("%s, compiled on %s at %s\n", argv[0], CCTK_CompileDate(), CCTK_CompileTime());
     printf("Usage: %s [-h] [-O] [-o paramname] [-x [nprocs]] [-W n] [-E n] [-r] [-T] [-t name] [-v] <parameter_file_name>\n", argv[0]);
 
     printf("\n");
