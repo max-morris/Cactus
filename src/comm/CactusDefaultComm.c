@@ -47,7 +47,6 @@ extern char MPI_Active;
 
 #ifdef CCTK_MPI
 #define CACTUS_MPI_ERROR(xf)                                                  \
-          do                                                                  \
           {                                                                   \
             int errcode;                                                      \
                                                                               \
@@ -64,7 +63,7 @@ extern char MPI_Active;
               fprintf(stderr, "At line %d of file %s\n",                      \
                               __LINE__, __FILE__);                            \
             }                                                                 \
-          } while (0)
+          }
 #endif
 
 /********************************************************************
