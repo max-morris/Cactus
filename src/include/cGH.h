@@ -34,6 +34,9 @@ typedef struct
   Double delta_time;
   Double *delta_space;
 
+  /* FIXME we want coordinate registration instead of this */
+  Double *origin_space;
+
   /* The bounding box - 1 => a real boundary, 0 => a local grid boundary. */
   /* bbox[2*dim] */
   int *bbox;
