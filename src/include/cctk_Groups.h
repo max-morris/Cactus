@@ -17,15 +17,6 @@
 extern "C" {
 #endif
 
-int CCTKi_CreateGroup(const char *gname, const char *thorn, const char *imp,
-		     const char *gtype,
-		     const char *vtype,
-		     const char *gscope,
-		     int dimension,
-		     int ntimelevels,
-		     int n_variables,
-		     ...);
-
 int CCTK_GroupIndex(const char *groupname);
 
 int CCTK_VarIndex(const char *variablename);
