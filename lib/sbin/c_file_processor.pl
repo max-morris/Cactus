@@ -92,17 +92,17 @@ while(<>)
     {
 ##    Start adding first macro, deal with "return }"first, "}" after
       if ($domacro1) {
-        if (!($routine=~s/([ \t\f]*)(return\s*\S*\s*}\s*)$/$1$addmacro1\n$1$2/s))
+        if (!($routine=~s/([ \t\f]*)(return\s*\S*\s*}\s*)$/$1$addmacro1; $1$2/s))
         {
-	  ($routine=~s/(}\s*$)/  $addmacro1\n$1/s)
+	  ($routine=~s/(}\s*$)/  $addmacro1; $1/s)
 	}
 
       }
 ##    Start adding second macro
       if ($domacro2) {
-	if (!($routine=~s/([ \t\f]*)(return\s*\S*\s*}\s*)$/$1$addmacro2\n$1$2/s)) 
+	if (!($routine=~s/([ \t\f]*)(return\s*\S*\s*}\s*)$/$1$addmacro2 $1$2/s)) 
 	{
-	  ($routine=~s/(}\s*$)/  $addmacro2\n$1/s) 
+	  ($routine=~s/(}\s*$)/  $addmacro2 $1/s) 
         }
       }  
       $n_arg_braces = -2; 
