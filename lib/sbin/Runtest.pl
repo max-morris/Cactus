@@ -148,13 +148,14 @@ if ($tests =~ /All/) {
     @at = split(' ',$active);
     foreach $th (@at)
     {
+      $th = "\U$th";
       $foundit = 0;
 
       foreach $tthorn  (@allthorns)
       {
         $tthorn =~ m:.*/(.*)$:;
-	$thornpart = $1;  
-	if ($thornpart =~ /$th/i)
+	$thornpart = "\U$1"; 
+	if ($thornpart eq $th)
 	{
 	  $foundit = 1;
 	}
