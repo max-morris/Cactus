@@ -7,3 +7,5 @@
 #else
 #error "Unable to find a 4 byte integer type. "
 #endif
+
+#define Double double
