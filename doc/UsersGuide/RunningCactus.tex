@@ -646,7 +646,7 @@ defines necessary for compiling multithreaded code.
 
 
 
-\subsection{File layout after a configuration has been created }
+\subsection{File layout}
 
 The configuration process sets up various subdirectories and files in the 
 {\tt configs} directory to contain the configuration specific files, these
@@ -779,6 +779,9 @@ is to do. The command {\tt gmake help} lists all gmake targets.
 
 \item [{\tt gmake <config>-examples}] copies all the example parameter files relevant for this configuration to the directory {\tt examples} in the Cactus home directory. If a file of the same name is already there, it will not overwrite it.
 
+\item[{\tt gmake <config>-ThornGuide}] builds documentation for the thorns 
+in this configuration.
+
 \end{Lentry}
 
 
@@ -885,6 +888,8 @@ Note that with more modern versions of gmake, it is sufficient to pass the norma
   \ref{sec:usta} for using TAGS within Cactus.
 
 \item [{\tt gmake UsersGuide}] runs LaTeX to produce a copy of the Users' Guide.
+\item [{\tt gmake ThornGuide}] runs LaTeX to produce a copy of the Thorn Guide, for all the thorns in the arrangements directory.
+
 \item [{\tt gmake MaintGuide}] runs LaTeX to produce a copy of the Maintainers' Guide.
 
 \item [{\tt gmake ThornGuide}] runs LaTeX to produce a copy of the Thorn Guide, which is the documentation from each thorn gathered together.

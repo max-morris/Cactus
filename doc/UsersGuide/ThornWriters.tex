@@ -183,14 +183,20 @@ which indicates that the rest of the line is a comment. If the last non-blank ch
 
 \subsection{The {\tt interface.ccl}}
 
-The {\tt interface.ccl} file is used to declare the implementation 
-provided by the thorn, and to define the variables provided by it.
-The implementation is declared by a single line at the top of the file
+The {\tt interface.ccl} file is used to declare
 
+\begin{itemize}
+\item the implementation provided by the thorn, 
+\item the variables provided by the thorn
+\item the include files provided by the thorn
+\item the functions provided by the thorn (in development)
+\end{itemize}
+
+
+The implementation is declared by a single line at the top of the file
 \begin{verbatim}
 implements: <name>
 \end{verbatim}
-
 Where {\tt <name>} can be any combination of alphanumeric 
 characters and underscores, and is case independent.
 There are three different access levels available for variables
@@ -222,122 +228,41 @@ variables.
 \end{Lentry}
 
 So, for example, an {\tt interface.ccl} starting
-
 \begin{verbatim}
 implements: wavetoy
 inherits:   grid
 friend:     wave_extract
 \end{verbatim}
-
 declares that the thorn provides an implementation called `wavetoy', gets
 all the {\tt public} variables declared by an implementation called `grid', and
 shares all {\tt protected} variables with {\tt wave\_extract} and its friends.
 
+Cactus variables, described in Section~\ref{sec:cava} are placed
+in groups with homogeneous attributes, where
+the attributes describe properties such as the data type, group type, 
+dimenension, ghostsize, number of timelevels, type of staggering and 
+distribution. 
 
-For convenience variables are placed in groups of homogeneous variables.  
-Currently, names of groups
-and variables must be distinct. The group has several
-attributes:
-
-\begin{Lentry}
-
-\item [{\tt variable type}]
-e.g. REAL, INT, COMPLEX. The prefix ``CCTK\_'' is optional.
-
-\item [{\tt name}]
-The name of the group
-
-\item [{\tt group type}]
-This indicates the kind of variables help by the group (each group can
-only hold one kind of variable), and defaults to {\tt GF}.
-
-\begin{Lentry}
-\item [{\tt SCALAR}]
-This is a single number.
-\item [{\tt GF}]
-This is an array with the default grid size (a {\it grid function}).
-\item [{\tt ARRAY}]
-This is an array of any size.
-\end{Lentry}
-
-\item [{\tt Dim}]
-This is the dimension of the arrays in a group.  (Meaningless for scalars.)
-This defaults to 3
-
-\item [{\tt Size}]
-This is the grid size of the arrays in a group, which must be a 
-comma-separated list of {\tt Dim} parameters. The grid size cannot be
- specified for grid functions, which take the default grid size.
-
-\item [{\tt Ghostsize}]
-This is the number of ghostzones used for the arrays in a group, which must 
-be a comma-separated list of {\tt Dim} parameters. The ghostsize
-cannot be specified for grid functions, whose ghostsize is specified 
-by a driver thorn.
-
-\item [{\tt TimeLevels}]
-This is the number of timelevels the group has. This defaults to 1.
-
-\item [{\tt Stagger}]
-This attribute defines the stagger for a grid function. Specify a
-string of length {\tt Dim}, where each character indicates the type of 
-staggering in that direction (yxz ordered). If you use default
-staggering ({\tt MMM}), you can omit this attribute.
-\begin{Lentry}
-\item[{\tt M}] no staggering (``minus'' face, relative to default gridpoint).
-\item[{\tt C}] center staggering
-\item[{\tt P}] full staggering by one grid spacing (``plus'' face,
-relative to default)
-\end{Lentry}
-For a full discussion on staggering refer to \ref{sec:st}.
-
-\item [{\tt Distrib}]
-This attribute describes how an array should be distributed across 
-multiple processors, it defaults to {\tt DEFAULT}.
-\begin{Lentry}
-\item[{\tt DEFAULT}] Distribute grid in default manner across processors. 
-\item[{\tt CONSTANT}] Put a constant sized array on each processor.
-\end{Lentry}
-
-\end{Lentry}
-
-
-
-A group specification consists of the variable type, followed by
-the name of the group, then a space separated list of the form
-`attribute = value' .  Then a brace delimited block containing
-a comma or newline separated list of variables in the group.
-A description of the group may be included on the line with the
-closing brace.
-
-For example, for a group of 5 grid functions on a 3D grid, with 3
-timelevels:
-
+For example, a group, called {\tt realfields} of 5 real grid 
+functions ({\tt phi}, {\tt a}, 
+{\tt b}, {\tt c}, {\tt d}), on a 3D grid, would be defined by
 \begin{verbatim}
-
-REAL fields type=GF TimeLevels=3 Dim=3 stagger=MCM
+CCTK_REAL realfields type=GF TimeLevels=3 Dim=3 
 {
   phi
   a,b,c,d
-} "Wave fields"
-
-\end{verbatim}
-or, for a group consisting of just one 2D array of integers, 
+} "Example grid functions"\end{verbatim}
+or, for a group called {\tt intfields} consisting of just one 
+distributed 2D array of integers, 
 \begin{verbatim}
-INT afields type=ARRAY size=xsize,ysize ghostsize=gxsize,gysize
+CCTK_INT intfields type=ARRAY size=xsize,ysize ghostsize=gxsize,gysize
 {
  anarray
 } "My 2D arrays"
-
 \end{verbatim}
 where {\tt xsize}, {\tt ysize}, {\tt gxsize}, {\tt gysize} are all 
 parameters defined in the thorns {\tt param.ccl}.
 
-
-defines a group of real grid functions of dimension 3 each of which exists on
-three time levels. The staggering of this group is of type {\tt MCM}:
-no staggering {\tt M} in the first and third dimension, center
-staggering {\tt C} for the second dimension.
 
 By default all groups are {\tt private}, to change this an access
 specification of the form {\tt public:} or {\tt protected:} (or 
@@ -402,9 +327,7 @@ forms lower-bound:upper-bound:step where a missing number or a \* denotes
 anything (i.e. infinite bounds or an infinitesimal step).
 
 For example 
-
 \begin{verbatim}
-
 REAL Coeff "Important coefficient"
 {
 0:3.14 :: "Range has to be from zero to Pi, default is zero"
@@ -424,7 +347,6 @@ KEYWORD confused "Are we getting confused ?"
   "never"   :: "never"
 } "never"
 \end{verbatim}
-
 defines a REAL parameter, a BOOLEAN parameter, and a KEYWORD.
 
 By default all parameters are {\tt private}, to change this an access
@@ -582,7 +504,7 @@ statements in the schedule.ccl.
 These can be used to schedule things based upon the value of a parameter.
 
 \vskip .5cm
-{\bf Example I:}\\
+{\bf Example I:}
 
 The routine {\tt hydro\_predictor} is scheduled at {\em evolution}, after the 
 routine {\tt metric\_predictor} and before {\tt metric\_corrector}, if
@@ -600,7 +522,7 @@ if(CCTK_Equals(evolve_hydro,''yes''))
 \end{verbatim}
 
 \vskip .5cm
-{\bf Example II:}\\
+{\bf Example II:}
 
 The thorns {\tt WaveToy77} and {\tt WaveToyC} each provide an
 routine to evolve the 3D wave equation: {\tt WaveToyF77\_Evolution} and
@@ -617,15 +539,14 @@ change depending on the activation in the parameter file).
 
 In both cases the group of variables {\tt scalarfield} are synchronised
 across processes when the routine is exited.
-
-\begin{verbatim}
-schedule WaveToyF77_Evolution AS WaveToy_Evolution AT evol
-{
-  LANG: Fortran
-  STORAGE: scalartmps
-  SYNC: scalarfield
-} "Evolution of 3D wave equation"
-\end{verbatim}
+{\tt 
+schedule WaveToyF77\_Evolution AS WaveToy\_Evolution AT evol \\
+{ \\
+  LANG: Fortran \\
+  STORAGE: scalartmps \\
+  SYNC: scalarfield \\
+} "Evolution of 3D wave equation" \\
+}
 
 \begin{verbatim}
 schedule WaveToyC_Evolution AS WaveToy_Evolution AT evol
@@ -732,7 +653,6 @@ The only requirement is that
 a library called {\tt \$NAME} be created by the {\tt Makefile}.
 
 The makefile is passed the following variables
-
 \begin{Lentry}
 
 \item [{\tt \$(CCTK\_HOME)}]  the main Cactus directory
@@ -773,51 +693,66 @@ and has a working directory of {\tt <config>/build/<thorn\_name>} .
 
 \chapter{Cactus Variables}
 
-Cactus variables are sorted into {\tt groups}.  All variables in a group have
-the same attributes, and most cactus operations act on a group as a whole.
+Cactus variables are sorted into {\tt groups}.  All variables in a group 
+are of the same type, and have
+the same attributes, and most Cactus operations act on a group as a whole.
 
-Cactus variables are used instead of local variables for two purposes.  Firstly
-these variables can be made visable to other thorns, thus allowing thorns to
-communicate and share data, secondly these variables can be communicated and
-shared between processors, thus allowing parallel computation.
+Cactus variables are used instead of local variables for a number of reasons
+\begin{itemize}
+\item Cactus variables can be made visable to other thorns, allowing 
+thorns to communicate and share data, 
+\item Cactus  variables can be distributed and communicated
+        between processors, allowing parallel computation, 
+\item A database of Cactus variables, and their attributes, is held by
+      the Flesh, and this information is used by thorns, for example for
+      obtaining a list of variables for checkpointing, 
+\item Many Cactus APIs and tools can only be used with Cactus variables,
+\item Cactus provides features for error checking based on Cactus variables
+      and their attributes.
+\end{itemize}
 
-The full specification for a group declaration is
+The specification for a group declaration 
+(fully described in Section~\ref{sec:in}) is, 
 
 \begin{verbatim}
-<data_type> <group_name> [TYPE=<group_type>] [DIM=<dim>] [TIMELEVELS=<num>] [SIZE=<size in each direction>] [DISTRIB=<distribution_type>] [GHOSTSIZE=<ghostsize>] [STAGGER=<stagger-specification>]
+<data_type> <group_name> [TYPE=<group_type>] [DIM=<dim>] [TIMELEVELS=<num>] \
+   [SIZE=<size in each direction>] [DISTRIB=<distribution_type>] \
+   [GHOSTSIZE=<ghostsize>] [STAGGER=<stagger-specification>]
 [{
    <variable_name>[,]<variable_name>
    <variable_name>
 }] ["<group_description>"]
 \end{verbatim}
 
+Currently, the names of groups and variables much be distinct.
+
 \section{Data Type}
 
-Cactus supports integer, real, complex and character variables, in various different
-sizes.  (Sizes in the following refer to the number of bytes the type takes.)
+Cactus supports integer, real, complex and character variables, in 
+various different sizes.  (Sizes in the following refer to the number of 
+bytes the type takes).
 
 \begin{Lentry}
-\item[Integer]
-CCTK\_INT, CCTK\_INT2, CCTK\_INT4, CCTK\_INT8.  CCTK\_INT defaults to being CCTK\_INT4, but
-this can be changed at configuration time.
+\item[INTEGER]
+CCTK\_INT, CCTK\_INT2, CCTK\_INT4, CCTK\_INT8.  (CCTK\_INT defaults to being CCTK\_INT4).
 \item[REAL]
-CCTK\_REAL, CCTK\_REAL4, CCTK\_REAL8, CCTK\_INT16.  CCTK\_REAL defaults to being CCTK\_REAL8, but
-this can be changed at configuration time.
+CCTK\_REAL, CCTK\_REAL4, CCTK\_REAL8, CCTK\_INT16.  (CCTK\_REAL defaults to being CCTK\_REAL8).
 \item[COMPLEX]
-CCTK\_COMPLEX, CCTK\_COMPLEX8, CCTK\_COMPLEX16, CCTK\_COMPLEX32.  CCTK\_COMPLEX defaults to being 
-CCTK\_COMPLEX16, but this can be changed at configuration time.
-\item[CHAR]
+CCTK\_COMPLEX, CCTK\_COMPLEX8, CCTK\_COMPLEX16, CCTK\_COMPLEX32.  
+(CCTK\_COMPLEX defaults to being CCTK\_COMPLEX16).
+\item[BYTE]
 This is a 1 byte data type.
 \end{Lentry}
 
-Normally a thorn should use the default types --- CCTK\_INT, CCTK\_REAL, CCTK\_COMPLEX --- rather
-than explicitly setting the size, as this gives maximum portability, and allows people to
-compile the code in different precisions to test for round-off effects, or to run more
-quickly with a lower accuracy.
+Normally a thorn should use the default types --- 
+CCTK\_INT, CCTK\_REAL, CCTK\_COMPLEX --- rather than explicitly setting the size, as this gives maximum 
+portability. Also, the defaults can be changed at configuration time,  and 
+this allows people to compile the code with different precisions to test 
+for round-off effects, or to run more quickly with a lower accuracy.
 
 \section{Group Types}
 
-Groups can be either {\tt scalars}, {\tt grid functions (GFs)}, or {\tt grid arrays}.
+Groups can be either {\tt scalars}, {\tt grid functions (GFs)}, or {\tt grid arrays}. Different attributes are relevant for the different group types.
 
 \begin{Lentry}
 \item[SCALAR] 
@@ -825,22 +760,24 @@ This is just a single number, e.g. the total energy of some field.  These
 variables aren't communicated between processors --- what would be the
 result of such communication ?
 \item[GF]
-This is the most common group type.  A GF is a an array with a specific size, set at
-run-time in the parameter file, which is distributed across processors.  All GFs
-have the same size, and the same number of ghostzones.
+This is the most common group type.  A GF is a an array with a 
+specific size, set at run-time in the parameter file, which is distributed 
+across processors.  All GFs have the same size, and the same number of 
+ghostzones. Groups of GFs can also specify a dimension, 
+number of timelevels, and stagger type.
 \item[ARRAY]
-This is a more general form of the GF.  Each array can have a distinct size and number
-of ghostzones.  The drawback of using an array over a GF is that a lot of data about the
-array can only be determined by function calls, rather than the quicker methods available
-for GFs.
+This is a more general form of the GF.  Each group of arrays can have 
+a distinct size and number of ghostzones, in addition to dimension, 
+number of timelevels and stagger type.  
+The drawback of using an array over a GF is that a lot of data about the
+array can only be determined by function calls, rather than the 
+quicker methods available for GFs.
 \end{Lentry}
 
 \section{Timelevels}
 
-These are best introduced by an example.  People familier with
-finite differencing can probably skip the next bit.
-
-Take the 1-D wave equation
+These are best introduced by an example using finite differencing, 
+take the 1-D wave equation
 
 \begin{equation}
 \frac{\partial^2 \phi}{\partial t^2} = \frac{\partial^2 \phi}{\partial x^2} 
@@ -857,29 +794,38 @@ to do this, one of which produces the following difference equation
 
 Which relates the three timelevels $t+\Delta t$, $t$, and $t-\Delta t$.  
 
-Obviously the code could just use three variables, one for each timelevel.  This turns out,
-however, to be inefficient as, as soon as the time is incremented to $t+\Delta t$, it
-would be necessary to copy data from the $t$ variable to the $t-\Delta t$ variable and from
-the $t+\Delta t$ variable to the $t$ variable.
+Obviously the code could just use three variables, one for each timelevel.  
+This turns out, however, to be inefficient as, as soon as the time is 
+incremented to $t+\Delta t$, it would be necessary to copy data from the 
+$t$ variable to the $t-\Delta t$ variable and from the $t+\Delta t$ variable 
+to the $t$ variable.
 
-To remove this extraneous copy, Cactus allows you to specify the number of timelevels used by
-your numerical scheme.  It then generate variables with the base name (e.g. {\tt phi}) suffixed
-by a qualifier for which timelevel is referred to --- {\tt \_n} for the {\tt n}ext timelevel, just 
-the base name for the current timelevel, and an {\tt \_p} for each {\tt p}revious timelevel.  E.g.
-a four timelevel scheme would produce phi\_n, phi, phi\_p and phi\_p\_p .  The only exception to this
-is for a two timelevel scheme, which has no previous timelevel, just a current and a next.
+To remove this extraneous copy, Cactus allows you to specify the number 
+of timelevels used by your numerical scheme.  It then generates variables 
+with the base name (e.g. {\tt phi}) suffixed by a qualifier for 
+which timelevel is being referred to --- no suffix for the 
+{\tt n}ext timelevel, {\tt \_p} for the current timelevel, 
+and  {\tt \_p\_p} for each {\tt p}revious timelevel.  E.g.
+a four timelevel scheme would produce {\tt phi}, 
+{\tt phi\_p}, 
+{\tt phi\_p\_p} and 
+{\tt phi\_p\_p\_p}.
 
 \section{Size and Distrib}
 
-A Cactus array can have a size set at runtime by parameters.  This size can either be the
-total size of the array across all processors, or, if {\tt DISTRIB=CONSTANT} the specified
-size on each processor.  If the size is split across processors, the driver thorn is
+A Cactus array has a size set at runtime by parameters.  
+This size can either be the global size of the array across all processors
+({\tt DISTRIB=DEFAULT}), 
+or, if {\tt DISTRIB=CONSTANT} the specified
+size on {\bf each} processor.  
+If the size is split across processors, the driver thorn is
 responsible for assigning the size on each processor.
 
 \section{Ghost Size}
 
-Cactus is based upon a {\tt distributed computing} paradigm.  I.e. the problem
-domain is split into blocks, each of which is assigned to a processor.  For 
+Cactus is based upon a {\tt distributed computing} paradigm.  That is
+the problem domain is split into blocks, each of which is assigned to a 
+processor.  For 
 hyperbolic and parabolic problems the blocks only need to communicate at the edges.
 
 To illustrate this, take the example of the wave equation again, equation \ref{equation:difference}  
@@ -1171,7 +1117,34 @@ sub-grids the driver may have broken the problem into.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\chapter{Putting code into your thorn}
+\chapter{Writing a Thorn}
+
+\section{Thorn Programming Languages}
+
+When you start writing a new thorn, the first decision to make is
+which programming language to use? The source code in Cactus thorns
+can be written in any mixture of {\tt FORTRAN77}, {\tt FORTRAN90}, 
+{\tt C} or {\tt C++}. The following points should be considered when 
+choosing a language to work in
+\begin{itemize}
+
+\item All functions designed for application thorn writers are available
+      in all languages, however some of interfaces for infrastructure 
+      thorn writing are only available from {\tt C} or {\tt C++}.
+
+\item If you are writing in {\tt FORTRAN}, use {\tt F77} is you want
+      to distribute your code to people who may not be able to afford 
+      to buy proprietory {\tt F90} compilers.
+
+\item Stick to {\tt C} rather than {\tt C++}, unless you really need 
+      features from {\tt C++}, this will help you with portability.
+
+\end{itemize}
+
+Whatever language you choose, if you want your thorn to be portable, and
+compile and run on multiple platforms, stick to the standards and don't 
+use machine dependent extensions.
+
 
 \section{What the Flesh provides}
 
@@ -1703,234 +1676,8 @@ staggerindex.
 
 \end{Lentry}
 
-\subsection{Providing Run Time Information}
 
-To write from thorns to standard output ({\it i.e.} the screen) 
-at runtime, use the function {\tt CCTK\_INFO}. 
-For example, from the Fortran thorn {\tt MyThorn},
-
-\begin{verbatim}
-call CCTK_INFO("Starting Tricky Calculation")
-\end{verbatim}
-
-will write the line:
-
-\begin{verbatim}
-INFO (MyThorn): Starting Tricky Calculation
-\end{verbatim}
-
-For a multiprocessor run, only information from processor zero 
-will appear. If the "{\tt -r"} command line option is used 
-(Section~\ref{sec:coliop}) the output from this command will be redirected.
-
-To output a variable using {\tt CCTK\_INFO} currently more tricky. From Fortran you will need something like
-
-\begin{verbatim}
-write(infoline,'(A,1X,I)') 'The integer was ',inum
-call CCTK_INFO(infoline)
-\end{verbatim}
-
-and for C
-
-\begin{verbatim}
-char *infoline;
-infoline = (char *)malloc(18*sizeof(char));
-sprintf(infoline,'The integer was %d',inum);
-CCTK_INFO(infoline);
-free(infoline);
-\end{verbatim}
-
-
-
-Notes
-\begin{itemize}
-\item{} {\tt CCTK\_INFO} is actually a macro for the function
-        {\tt CCTK\_Info(<thorn name>,<message>)} which automatically
-        includes the thorn name.
-
-\item{} {\tt CCTK\_INFO} should be used rather than print statements,
-       since it will give consistent behaviour on multiprocessors, and
-       also provides a mechanism for switching the output to screen on 
-       and off, even on a thorn-by-thorn basis. (Although this is 
-       not yet implemented).
-\end{itemize}
-
-\section{Memory Tracing}
-\label{sec:metr}
-
-Cactus provides a mechanism for overriding the standard C memory allocation 
-routines ({\tt malloc, free,} \ldots) with Cactus specific routines, 
-that track the amount of memory allocated and from where the
-allocation call was made. This information can be accessed by the user to
-provide an understanding of the memory consumption between two instances and
-to track down possible memory leaks. This feature is available in C only.
-
-\subsection{Activating Memory Tracing}
-\label{sec:acmetr}
-
-Memory tracing has to be activated at configure time. The
-standard malloc statements are overriden with macros ({\tt CCTK\_MALLOC}). 
-To activate memory tracing use either
-
-\begin{Lentry}
-\item[{\tt DEBUG=all}]  Enables all debug options (compiler debug
-flags, redefines malloc)
-\item[{\tt DEBUG=memory}] Redefine malloc only.
-\end{Lentry}
-
-The {\tt CCTK\_MALLOC} statements can also be used directly in the C
-code. But by employing them this way, only a fraction of the total
-memory consumption is traced. Also, they cannot be turned off at
-configure time. (this behavior might change). For example:
-\begin{verbatim}
-machine> gmake bigbuild DEBUG=yes
- 
-machine> gmake bigbuild-config DEBUG=memory
-\end{verbatim}
-The new configuration {\tt bigbuild} is configured with all debugging features
-turned on. The already existing configuration {\tt bigbuild} is
-reconfigured with memory tracing only.
-
-\subsection{Using Memory Tracing}
-\label{sec:usmetr}
-
-You can  request Cactus to store the memory consumption at a certain
-instance in the program flow and return the difference in memory
-allocation some time later.
-
-\begin{Lentry}
-\item[{\tt int CCTK\_MemTicketRequest(void)}]
-	Request a ticket: save the current total memory to a database.
-	Return an integer (ticket). Use the ticket to calculate the
-	difference in memory allocation between the two instances in
- 	CCTK\_MemTicketCash.	
- 
-\item[{\tt long int CCTK\_MemTicketCash(int your\_ticket)}]
-	Cash in your ticket: return the memory difference between now and the
-     	time the ticket was requested. Tickets can be cashed in
-	several times. See Example below.
-     	This only tracks the real data memory, which is the same as in
-     	undebug mode. It does not keep track of the internal allocations
-     	done to provide the database, motivation is that this is not
- 	allocated either if you compile undebugged.
-
-\item[{\tt int CCTK\_MemTicketDelete(int your\_ticket)}]
-	Delete the memory ticket. The ticket-id will not be reused, since
-        it's incremented with every ticket request, but the memory of
-	the memory datastructure is deallocated.
-
-\item[{\tt unsigned long int CCTK\_TotalMemory(void)}]
-	Returns the total allocated memory (not including the tracing
-        data structures). 
-
-\item[{\tt void CCTK\_MemStat}] Prints an info string, stating the current, 
- 	past and total memory (in bytes) allocation between two
-	successive calls to this routine, as well as the difference. 
-\end{Lentry}
-
-Sample C Code demonstrating the ticket handling. Two tickets are
-requested during malloc operations. The {\tt CCTK\_MALLOC} statement is 
-used directly. They are cashed in and the memory
-difference is printed. Ticket 1 is cashed twice. The tickets are
-deleted at the end.
-\begin{verbatim}
-
-int ticket1;
-int ticket2;
-
-/* store current memstate, ticket: t1*/
-t1 = CCTK_MemTicketRequest();
-
-/* allocate data */	
-hi = (int*) CCTK_MALLOC(10*sizeof(int));
-
-/* store current memstate, ticket: t2*/
-t2 = CCTK_MemTicketRequest();      
-	
-/* cash ticket t1, print mem difference */	
-printf("NOW1a: %+d \n",CCTK_MemTicketCash(t1)); 
-
-/* allocte some more data */
-wo = (CCTK_REAL*)CCTK_MALLOC(10*sizeof(CCTK_REAL));
-	
-/* cash ticket t1 and t2, print mem difference */	
-printf("NOW1b: %+d \n",CCTK_MemTicketCash(t1));  
-printf("NOW2 : %+d \n",CCTK_MemTicketCash(t2));    
-
-/* delete the tickets from the database */
-CCTK_MemTicketDelete(t1);
-CCTK_MemTicketDelete(t2);
-
-\end{verbatim}
-
-\section{Error handling, Warnings and Code Termination}
-\label{sec:erhawancote}
-The Cactus function {\tt CCTK\_WARN} should be used to provide
-warning messages during code execution. Along with the
-warning message, an integer is given to indicate the severity
-of the warning. The warning severity indicates whether the
-message is printed to standard output and whether the code
-should be stopped. A level 0 warning indicates the highest
-severity, with higher numbers indicating lower severity.
-
-By default, a Cactus run will abort on a level 0 warning
-and will report level 1 and severer warnings to screen. 
-This behaviour can be amended using command line arguments,
-as described in Section~\ref{sec:coliop}.
-
-For example, to provide a warning which will be printed to standard
-output but which will not terminate the code for a run with default
-options, a level 1 warning should be used. The syntax from Fortran is
-{\tt
-\begin{verbatim}
-call CCTK_WARN(1,"Your warning message")
-\end{verbatim}
-}
-or from C,
-{\tt
-\begin{verbatim}
-CCTK_WARN(1,"Your warning message");
-\end{verbatim}
-}
-
-Note that {\tt CCTK\_WARN} is actually a macro which automatically 
-expands to include the name of the thorn, the source file name and line 
-number of the error. (For this reason it is important that capital letters are
-always used for the function). If the flesh parameter {\tt cctk\_full\_warnings} is
-set to true, then the source file name and line number will be printed to
-standard output along with the thorn name and warning.
-
-To include variables in warning messages is more troublesome. From C, the
-variable argument list
-function {\tt CCTK\_VWarn} can be used to include variables using standard printf format strings. Unfortunately, a macro can no
-longer be provided to automatically include the origin details of the warning,
-and the syntax is for example,
-{\tt
-\begin{verbatim}
-CCTK_VWarn(1,__LINE__,__FILE__,CCTK_THORNNAME,
-  "Your warning message, including %f and %d",
-  myreal,myint);
-\end{verbatim}
-}
-To include variables from Fortran, a string must be constructed and passed
-to the standard function {\tt CCTK\_WARN}, for example
-{\tt
-\begin{verbatim}
- character*200 warnline
- write(warnline,'(A32,G12.7,A5,I8)') 
-&  'Your warning message, including ',myreal,' and ',myint
- call CCTK_WARN(1,warnline)
-\end{verbatim}
-}
-
-The flesh will be implementing standard error return codes
-which can be used by the thorns, although this is not 
-yet ready. In general, thorns should attempt to handle errors
-without terminating, and warning messages should be liberally
-used.
-      
-
-\section{Adding Parallelisation}
+\section{Parallelisation}
 \label{seap}
 
 The flesh itself does not actually set up grid variables. This 
@@ -1961,87 +1708,9 @@ is a parallel unigrid driver.
   before proceeding
 \end{Lentry}
 
-\section{Building Include Files}
-
-Cactus provides a mechanism for thorns to add code to 
-include files which can be used by any other thorn.
-Such include files can contain executable source code, or header/declaration
-information. A difference is made between these two cases, since included
-executable code is protected from being run if a thorn is compiled but
-not active by being wrapped by a call to {\tt CCTK\_IsThornActive}. 
+\chapter{Cactus Application Interfaces}
 
 
-Any thorn 
-which uses the include file must declare this in its 
-{\tt interface.ccl} with the line
-
-\begin{verbatim}
-USES INCLUDE [SOURCE|HEADER]: <file_name>
-\end{verbatim}
-
-Any thorn which wishes to add to this include file, 
-declares in its own {\tt interface.ccl}
-
-\begin{verbatim}
-INCLUDE [SOURCE|HEADER]: <file_to_include> in <file_name>
-\end{verbatim}
-
-\subsubsection{Example}
-
-For an example of this in practice, for the case of Fortran code, 
-consider thorn A which
-wants to gather terms for a calculation from any thorn
-which wishes to provide them. Thorn A could have
-the lines in its source code
-
-\begin{verbatim}
-c Get source code from other thorns
-      allterms = 0d0
-#include "AllSources.inc"
-\end{verbatim}
-and would then add to {\tt interface.ccl} the line
-\begin{verbatim}
-USES INCLUDE SOURCE: AllSources.inc
-\end{verbatim}
-
-If thorn B wants to add terms for the calculation, it would
-create a file, say {\tt Bterms.inc} with the lines
-\begin{verbatim}
-c Add this to AllSources.inc
-      allterms = allterms + 1d0
-\end{verbatim}
-and would add to its own {\tt interface.ccl}
-
-\begin{verbatim}
-INCLUDE SOURCE: Bterms.inc in AllSources.inc
-\end{verbatim}
-
-The final file for thorn A  which is compiled will contain the code
-\begin{verbatim}
-c Get source code from other thorns
-      allterms = 0d0
-      if (CCTK_IsThornActive("B").eq.0) then
-c Add this to AllSources.inc
-        allterms = allterms + 1d0       
-      end if
-\end{verbatim}
-
-Any Fortran thorn routines which include source code must include 
-the declaration {\tt DECLARE\_CCTK\_FUNCTIONS}.
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Commenting Source Code}
-
-Note that since most source files (see Section~\ref{nacofosofi} for exceptions) 
-pass through a C preprocessor, C style comments can be used in 
-Fortran code. C++ comments (that is //), should not be used, since 
-they indicate the string concatonation operator in Fortran. 
-
-The Flesh and the Cactus thorns use {\tt grdoc} to document the code.
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Coordinates}
 \label{sec:co}
 
@@ -2123,7 +1792,6 @@ Provides the local range of a coordinate on a processor for
 \end{Lentry}
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{IO}
 \label{sec:io}
 
@@ -2615,20 +2283,414 @@ Note that the memory for the returned values must be allocated before
 the reduction call is made.
 
 
-\section{Calls between different programming languages}
-\label{sec:cabedipr}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Calling C routines from FORTRAN}
-\label{sec:cacrofr}
+\chapter{Completing a Thorn}
 
-For a C routine to be called from Fortran, the C routine must be
-declared using the {\em CCTK\_FCALL} and {\em CCTK\_FNAME} macros:
+\section{Commenting Source Code}
 
-{\tt
-void CCTK\_FCALL CCTK\_FNAME(<routine name>)(<argument list>)
+Note that since most source files (see Section~\ref{nacofosofi} 
+for exceptions) pass through a C preprocessor, C style comments 
+can be used in Fortran code. C++ comments (that is //), should not be used, 
+since they indicate the string concatonation operator in Fortran. 
+
+The Flesh and the Cactus thorns use {\tt grdoc} to document the code.
+
+
+\section{Providing Run Time Information}
+\label{sec:prrutiin}
+
+To write from thorns to standard output ({\it i.e.} the screen) 
+at runtime, use the function {\tt CCTK\_INFO}. 
+For example, from the Fortran thorn {\tt MyThorn},
+
+{\tt 
+call CCTK\_INFO("Starting Tricky Calculation")
 }
 
-The convention used in Cactus is that <routine name> be the same as the
+will write the line:
+
+{\tt
+INFO (MyThorn): Starting Tricky Calculation
+}
+
+For a multiprocessor run, only information from processor zero 
+will appear, unless the "{\tt -r"} command line option is used 
+(Section~\ref{sec:coliop}).
+
+To output a variable using {\tt CCTK\_INFO} is currently more tricky,
+since you need to build the string to be output. For example, from Fortran,
+
+{\tt
+character*200 infoline\\
+write(infoline,'(A,1X,I)') 'The integer was ',inum\\
+call CCTK\_INFO(infoline)
+}
+
+and from C
+
+{\tt
+char *infoline;\\
+infoline = (char *)malloc(18*sizeof(char));\\
+sprintf(infoline,'The integer was \%d',inum);\\
+CCTK\_INFO(infoline);\\
+free(infoline);
+}
+
+Note that:
+\begin{itemize}
+\item{} {\tt CCTK\_INFO} is actually a macro for the function
+        {\tt CCTK\_Info(<thorn name>,<message>)} which automatically
+        includes the thorn name.
+
+\item{} {\tt CCTK\_INFO} should be used rather than print statements,
+       since it will give consistent behaviour on multiprocessors, and
+       also provides a mechanism for switching the output to screen on 
+       and off, even on a thorn-by-thorn basis. (Although this is 
+       not yet implemented).
+
+\item{}  The function {\tt CCTK\_VInfo}, available in C only,
+         can be used to output a list of variables, using a C format string.
+         For example, the above example becomes
+
+{\tt
+CCTK\_VInfo(CCTK\_THORNSTRING,'The integer was \%d',inum);
+}
+
+\end{itemize}
+
+
+
+\section{Error handling, warnings and code termination}
+\label{sec:erhawancote}
+The Cactus function {\tt CCTK\_WARN} should be used to provide
+warning messages during code execution. Along with the
+warning message, an integer is given to indicate the severity
+of the warning. The warning severity indicates whether the
+message is printed to standard output and whether the code
+should be stopped. A level 0 warning indicates the highest
+severity, with higher numbers indicating lower severity.
+
+By default, a Cactus run will abort on a level 0 warning
+and will report level 1 and severer warnings to screen. 
+This behaviour can be amended using command line arguments,
+as described in Section~\ref{sec:coliop}.
+
+For example, to provide a warning which will be printed to standard
+output but which will not terminate the code for a run with default
+options, a level 1 warning should be used. The syntax from Fortran is
+{\tt
+\begin{verbatim}
+call CCTK_WARN(1,"Your warning message")
+\end{verbatim}
+}
+or from C,
+{\tt
+\begin{verbatim}
+CCTK_WARN(1,"Your warning message");
+\end{verbatim}
+}
+
+Note that {\tt CCTK\_WARN} is actually a macro which automatically 
+expands to include the name of the thorn, the source file name and line 
+number of the error. (For this reason it is important that capital letters are
+always used for the function). If the flesh parameter {\tt cctk\_full\_warnings} is
+set to true, then the source file name and line number will be printed to
+standard output along with the thorn name and warning.
+
+To include variables in warning messages is more troublesome. From C, the
+variable argument list
+function {\tt CCTK\_VWarn} can be used to include variables using standard printf format strings. Unfortunately, a macro can no
+longer be provided to automatically include the origin details of the warning,
+and the syntax is for example,
+{\tt
+\begin{verbatim}
+CCTK_VWarn(1,__LINE__,__FILE__,CCTK_THORNNAME,
+  "Your warning message, including %f and %d",
+  myreal,myint);
+\end{verbatim}
+}
+To include variables from Fortran, a string must be constructed and passed
+to the standard function {\tt CCTK\_WARN}, for example
+{\tt
+\begin{verbatim}
+ character*200 warnline
+ write(warnline,'(A32,G12.7,A5,I8)') 
+&  'Your warning message, including ',myreal,' and ',myint
+ call CCTK_WARN(1,warnline)
+\end{verbatim}
+}
+
+The flesh will be implementing standard error return codes
+which can be used by the thorns, although this is not 
+yet ready. In general, thorns should attempt to handle errors
+without terminating, and warning messages should be liberally
+used.
+      
+
+
+
+\section{Adding documentation}
+
+To include documentation from your thorn into the {\tt ThornGuide}
+(obtained from using {\tt gmake <config>-ThornGuide} or 
+{\tt gmake ThornGuide}), include a {\tt LaTeX} file called {\tt documentation.tex}
+in the {\tt doc} directory as your thorn. Your thorn configuration 
+files will be automatically parsed to create documentation for 
+Cactus parameters, variables and scheduling. The format 
+for the thorn documentation isn't standardized yet, for now please use
+the following format:
+\begin{verbatim}
+\documentclass{article}
+
+\begin{document}
+
+\title{<Thorn Name>}
+\author{<Authors>}
+\date{<Date>}
+\maketitle
+
+\abstract{<The Abstract>}
+
+\section{Purpose}
+
+\section{<Whatever You Want}
+
+<Thorn Documentation>
+
+% Automatically created from the ccl files by using gmake ThornGuide
+\include{interface}
+\include{param}
+\include{schedule}
+
+\end{document}
+\end{verbatim}
+
+\section{Adding a test suite}
+\label{sec:adatesu}
+
+To add a test suite to your thorn, devise a series of parameter
+files which use as many aspects of your thorn as possible. 
+Make sure that the parameter files produce ascii output to files,
+and that these files are in the directory 
+{\tt ./<parameter file base name>}.
+
+Run Cactus on each of the parameter files, and move the parameter files,
+and the output directories they produced, to the {\tt test} directory
+in your thorn. 
+
+Document carefully any situations or architectures in which your test 
+suite does not give the correct answers. 
+
+For details on running the test suites, see Section~\ref{sec:te}.
+
+
+\chapter{Advanced Thorn Writing}
+
+\section{Include Files}
+
+Cactus provides a mechanism for thorns to add code to 
+include files which can be used by any other thorn.
+Such include files can contain executable source code, or header/declaration
+information. A difference is made between these two cases, since included
+executable code is protected from being run if a thorn is compiled but
+not active by being wrapped by a call to {\tt CCTK\_IsThornActive}. 
+
+
+Any thorn 
+which uses the include file must declare this in its 
+{\tt interface.ccl} with the line
+
+\begin{verbatim}
+USES INCLUDE [SOURCE|HEADER]: <file_name>
+\end{verbatim}
+
+Any thorn which wishes to add to this include file, 
+declares in its own {\tt interface.ccl}
+
+\begin{verbatim}
+INCLUDE [SOURCE|HEADER]: <file_to_include> in <file_name>
+\end{verbatim}
+
+\subsubsection{Example}
+
+For an example of this in practice, for the case of Fortran code, 
+consider thorn A which
+wants to gather terms for a calculation from any thorn
+which wishes to provide them. Thorn A could have
+the lines in its source code
+
+\begin{verbatim}
+c Get source code from other thorns
+      allterms = 0d0
+#include "AllSources.inc"
+\end{verbatim}
+and would then add to {\tt interface.ccl} the line
+\begin{verbatim}
+USES INCLUDE SOURCE: AllSources.inc
+\end{verbatim}
+
+If thorn B wants to add terms for the calculation, it would
+create a file, say {\tt Bterms.inc} with the lines
+\begin{verbatim}
+c Add this to AllSources.inc
+      allterms = allterms + 1d0
+\end{verbatim}
+and would add to its own {\tt interface.ccl}
+
+\begin{verbatim}
+INCLUDE SOURCE: Bterms.inc in AllSources.inc
+\end{verbatim}
+
+The final file for thorn A  which is compiled will contain the code
+\begin{verbatim}
+c Get source code from other thorns
+      allterms = 0d0
+      if (CCTK_IsThornActive("B").eq.0) then
+c Add this to AllSources.inc
+        allterms = allterms + 1d0       
+      end if
+\end{verbatim}
+
+Any Fortran thorn routines which include source code must include 
+the declaration {\tt DECLARE\_CCTK\_FUNCTIONS}.
+
+
+\section{Memory Tracing}
+\label{sec:metr}
+
+Cactus provides a mechanism for overriding the standard C memory allocation 
+routines ({\tt malloc, free,} \ldots) with Cactus specific routines, 
+that track the amount of memory allocated and from where the
+allocation call was made. This information can be accessed by the user to
+provide an understanding of the memory consumption between two instances and
+to track down possible memory leaks. This feature is available in C only.
+
+\subsection{Activating Memory Tracing}
+\label{sec:acmetr}
+
+Memory tracing has to be activated at configure time. The
+standard malloc statements are overriden with macros ({\tt CCTK\_MALLOC}). 
+To activate memory tracing use either
+
+\begin{Lentry}
+\item[{\tt DEBUG=all}]  Enables all debug options (compiler debug
+flags, redefines malloc)
+\item[{\tt DEBUG=memory}] Redefine malloc only.
+\end{Lentry}
+
+The {\tt CCTK\_MALLOC} statements can also be used directly in the C
+code. But by employing them this way, only a fraction of the total
+memory consumption is traced. Also, they cannot be turned off at
+configure time. (this behavior might change). For example:
+\begin{verbatim}
+machine> gmake bigbuild DEBUG=yes
+ 
+machine> gmake bigbuild-config DEBUG=memory
+\end{verbatim}
+The new configuration {\tt bigbuild} is configured with all debugging features
+turned on. The already existing configuration {\tt bigbuild} is
+reconfigured with memory tracing only.
+
+\subsection{Using Memory Tracing}
+\label{sec:usmetr}
+
+You can  request Cactus to store the memory consumption at a certain
+instance in the program flow and return the difference in memory
+allocation some time later.
+
+\begin{Lentry}
+\item[{\tt int CCTK\_MemTicketRequest(void)}]
+	Request a ticket: save the current total memory to a database.
+	Return an integer (ticket). Use the ticket to calculate the
+	difference in memory allocation between the two instances in
+ 	CCTK\_MemTicketCash.	
+ 
+\item[{\tt long int CCTK\_MemTicketCash(int your\_ticket)}]
+	Cash in your ticket: return the memory difference between now and the
+     	time the ticket was requested. Tickets can be cashed in
+	several times. See Example below.
+     	This only tracks the real data memory, which is the same as in
+     	undebug mode. It does not keep track of the internal allocations
+     	done to provide the database, motivation is that this is not
+ 	allocated either if you compile undebugged.
+
+\item[{\tt int CCTK\_MemTicketDelete(int your\_ticket)}]
+	Delete the memory ticket. The ticket-id will not be reused, since
+        it's incremented with every ticket request, but the memory of
+	the memory datastructure is deallocated.
+
+\item[{\tt unsigned long int CCTK\_TotalMemory(void)}]
+	Returns the total allocated memory (not including the tracing
+        data structures). 
+
+\item[{\tt void CCTK\_MemStat}] Prints an info string, stating the current, 
+ 	past and total memory (in bytes) allocation between two
+	successive calls to this routine, as well as the difference. 
+\end{Lentry}
+
+Sample C Code demonstrating the ticket handling. Two tickets are
+requested during malloc operations. The {\tt CCTK\_MALLOC} statement is 
+used directly. They are cashed in and the memory
+difference is printed. Ticket 1 is cashed twice. The tickets are
+deleted at the end.
+\begin{verbatim}
+
+int ticket1;
+int ticket2;
+
+/* store current memstate, ticket: t1*/
+t1 = CCTK_MemTicketRequest();
+
+/* allocate data */	
+hi = (int*) CCTK_MALLOC(10*sizeof(int));
+
+/* store current memstate, ticket: t2*/
+t2 = CCTK_MemTicketRequest();      
+	
+/* cash ticket t1, print mem difference */	
+printf("NOW1a: %+d \n",CCTK_MemTicketCash(t1)); 
+
+/* allocte some more data */
+wo = (CCTK_REAL*)CCTK_MALLOC(10*sizeof(CCTK_REAL));
+	
+/* cash ticket t1 and t2, print mem difference */	
+printf("NOW1b: %+d \n",CCTK_MemTicketCash(t1));  
+printf("NOW2 : %+d \n",CCTK_MemTicketCash(t2));    
+
+/* delete the tickets from the database */
+CCTK_MemTicketDelete(t1);
+CCTK_MemTicketDelete(t2);
+
+\end{verbatim}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Calls between different programming languages}
+
+\subsection{Calling C routines from FORTRAN}
+\label{sec:cacrofr}
+
+To make the following C routine,
+
+{\tt
+int <routine name>(<argument list>)\\
+{\\
+...\\
+}
+}
+
+also callable from Fortran, a new routine must added, which is
+declared using the {\tt CCTK\_FCALL} and {\tt CCTK\_FNAME} macros:
+
+{\tt
+void CCTK\_FCALL CCTK\_FNAME(<routine name>)(int *ierr, <argument list>)\\
+<rewrite routine code, or call C routine itself>
+}
+
+The convention used in Cactus is that {\tt <routine name>} be the same as any
 C-callable routine name, and that this is mixed-case.  The macros change
 the case and number of underscores of the routine name to match that expected
 by Fortran.
@@ -2797,24 +2859,6 @@ pointers, so any non-array data should be passed by address.
 
 Currently we have no support for calling Fortran routines which expect 
 strings from C.
-
-\section{Adding a test suite}
-\label{sec:adatesu}
-
-To add a test suite to your thorn, devise a series of parameter
-files which use as many aspects of your thorn as possible. 
-Make sure that the parameter files produce ascii output to files,
-and that these files are in the directory 
-{\tt ./<parameter file base name>}.
-
-Run Cactus on each of the parameter files, and move the parameter files,
-and the output directories they produced, to the {\tt test} directory
-in your thorn. 
-
-Document carefully any situations or architectures in which your test 
-suite does not give the correct answers. 
-
-For details on running the test suites, see Section~\ref{sec:te}.
 
 
 \section{Naming conventions}
