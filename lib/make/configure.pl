@@ -63,7 +63,7 @@ EOT
 
 
     # Search the object file for the appropriate symbols
-    open(IN, "<fname_test.o") || die "Cannot open fname_test.o\n";
+    open(IN, "<fname_test.o") || open(IN, "<fname_test.obj") || die "Cannot open fname_test.o\n";
 
     while(<IN>)
     {
@@ -187,7 +187,7 @@ EOT
 
 
   # Search the object file for the appropriate symbols
-  open(IN, "<fname_test.o") || die "Cannot open fname_test.o\n";
+    open(IN, "<fname_test.o") || open(IN, "<fname_test.obj") || die "Cannot open fname_test.o\n";
 
   while(<IN>)
   {
