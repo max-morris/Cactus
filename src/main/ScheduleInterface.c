@@ -49,7 +49,7 @@ typedef struct
   /* Static data */
   char *description;
 
-  char *thorn;
+  /*char *thorn; MOVED TO FunctionData */
   char *implementation;
 
   iSchedType type;
@@ -102,7 +102,9 @@ static int ScheduleTraverse(const char *where,
                             void *GH,
                             int (*CallFunction)(void *, cFunctionData *, void *));
 
-static t_attribute *CreateAttribute(const char *description,
+static t_attribute *CreateAttribute(const char *where,
+				    const char *routine,
+				    const char *description,
                                     const char *language,
                                     const char *name,
                                     const char *thorn,
@@ -393,7 +395,7 @@ int CCTKi_ScheduleFunction(void *function,
 
   va_start(ap, n_while);
 
-  attribute = CreateAttribute(description, language, thorn, implementation,
+  attribute = CreateAttribute(where,name,description, language, thorn, implementation,
                               n_mem_groups, n_comm_groups, n_trigger_groups,
                               n_sync_groups, n_options, &ap);
   modifier  = CreateModifiers(n_before, n_after, n_while, &ap);
@@ -531,7 +533,7 @@ int CCTKi_ScheduleGroup(const char *name,
 
   va_start(ap, n_while);
 
-  attribute = CreateAttribute(description, NULL, thorn, implementation,
+  attribute = CreateAttribute(where,name,description, NULL, thorn, implementation,
                               n_mem_groups, n_comm_groups, n_trigger_groups,
                               n_sync_groups, n_options, &ap);
   modifier  = CreateModifiers(n_before, n_after, n_while, &ap);
@@ -1149,7 +1151,9 @@ static int ScheduleTraverse(const char *where,
    The attribute
    @endreturndesc
 @@*/
-static t_attribute *CreateAttribute(const char *description,
+static t_attribute *CreateAttribute(const char *where,
+				    const char *name,
+				    const char *description,
                                     const char *language,
                                     const char *thorn,
                                     const char *implementation,
@@ -1167,8 +1171,10 @@ static t_attribute *CreateAttribute(const char *description,
 
   if(this)
   {
+    this->FunctionData.where = (char *)malloc((strlen(where)+1)*sizeof(char));
+    this->FunctionData.routine = (char *)malloc((strlen(name)+1)*sizeof(char));
     this->description    = (char *)malloc((strlen(description)+1)*sizeof(char));
-    this->thorn          = (char *)malloc((strlen(thorn)+1)*sizeof(char));
+    this->FunctionData.thorn = (char *)malloc((strlen(thorn)+1)*sizeof(char));
     this->implementation = (char *)malloc((strlen(implementation)+1)*sizeof(char));
     this->mem_groups     = (int *)malloc(n_mem_groups*sizeof(int));
     this->comm_groups    = (int *)malloc(n_comm_groups*sizeof(int));
@@ -1177,16 +1183,20 @@ static t_attribute *CreateAttribute(const char *description,
     this->StorageOnEntry = (int *)malloc(n_mem_groups*sizeof(int));
     this->CommOnEntry    = (int *)malloc(n_comm_groups*sizeof(int));
 
-    if(this->description     &&
-       this->thorn           &&
+    if(this->FunctionData.where &&
+       this->FunctionData.routine &&
+       this->description     &&
+       this->FunctionData.thorn  &&
        this->implementation  &&
        (this->mem_groups || n_mem_groups==0)         &&
        (this->comm_groups || n_comm_groups==0)       &&
        (this->trigger_groups || n_trigger_groups==0) &&
        (this->FunctionData.SyncGroups || n_sync_groups==0))
     {
+      strcpy(this->FunctionData.where,where);
+      strcpy(this->FunctionData.routine,name);
       strcpy(this->description,    description);
-      strcpy(this->thorn,          thorn);
+      strcpy(this->FunctionData.thorn, thorn);
       strcpy(this->implementation, implementation);
 
       if(language)
@@ -1229,6 +1239,8 @@ static t_attribute *CreateAttribute(const char *description,
     }
     else
     {
+      free(this->FunctionData.where);
+      free(this->FunctionData.routine);
       free(this->description);
       free(this->comm_groups);
       free(this->trigger_groups);
@@ -1928,7 +1940,7 @@ static int CCTKi_SchedulePrintFunction(void *function,
   {
     printf ("%*s", indent_level, " ");
   }
-  printf("%s: %s\n", attribute->thorn, attribute->description);
+  printf("%s: %s\n", attribute->FunctionData.thorn, attribute->description);
 
   return 1;
 }
@@ -2276,7 +2288,8 @@ static int CCTKi_SchedulePrintTimesFunction(void *function,
     }
 
     CCTKi_SchedulePrintTimerInfo(data->info, data->total_time,
-                                 attribute->thorn, attribute->description);
+                                 attribute->FunctionData.thorn, 
+                                 attribute->description);
   }
 
   return 1;

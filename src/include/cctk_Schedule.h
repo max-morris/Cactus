@@ -18,7 +18,11 @@ typedef enum {FunctionNoArgs, FunctionOneArg, FunctionStandard} cFunctionType;
 typedef struct
 {
   cLanguage language;
-
+  
+  char *where;
+  
+  char *routine;
+  
   int (*FortranCaller)(cGH *, void *);
 
   cFunctionType type;
@@ -30,6 +34,8 @@ typedef struct
   /* Option Flags */
 
   int global;
+
+  char *thorn;
 
 } cFunctionData;
 
