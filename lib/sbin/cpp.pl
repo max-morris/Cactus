@@ -1022,16 +1022,26 @@ sub ParseAndExpand
         # Find any arguments
         if($splitline[$pos+1] eq "(")
         {
+          my $insstring = 0;
+          my $indstring = 0;
           $pos++;
           my $depth = 1;
           $pos++;
           while($pos < @splitline && $depth > 0)
           {
-            if($splitline[$pos] eq "(")
+            if($splitline[$pos] eq '\'' && ! $indstring)
+            {
+                $insstring = 1 - $insstring;
+            }
+            if($splitline[$pos] eq '"'&& ! $insstring)
+            {
+                $indstring = 1 - $indstring;
+            }
+            if($splitline[$pos] eq "(" && ! $insstring && ! $indstring)
             {
               $depth++;
             }
-            elsif($splitline[$pos] eq ")")
+            elsif($splitline[$pos] eq ")" && ! $insstring && ! $indstring)
             {
               $depth--;
             }
