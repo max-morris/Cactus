@@ -213,7 +213,7 @@ sub parse_param_ccl
 	$parameter_db{"\U$thorn $block\E variables"} = "";
       }
     }
-    elsif($line =~ m:(EXTENDS )?\s*(INTEGER|REAL|LOGICAL|KEYWORD|STRING)\s*([a-zA-Z]+[a-zA-Z0-9_]*) \s*(\"[^\"]*\"):i)
+    elsif($line =~ m:(EXTENDS )?\s*(?\:CCTK_)?(INT|REAL|LOGICAL|KEYWORD|STRING)\s*([a-zA-Z]+[a-zA-Z0-9_]*) \s*(\"[^\"]*\"):i)
     {
 
       # This is a parameter definition.
@@ -266,7 +266,7 @@ sub parse_param_ccl
           # Increment the number of ranges found (ranges)
 	  $parameter_db{"\U$thorn $variable\E ranges"}++;
 	  # Strip out any spaces in the range for a numeric parameter.
-	  if($type =~ m:INTEGER|REAL:)
+	  if($type =~ m:INT|REAL:)
 	  {
 	    $new_ranges =~ s/[ \t]+/ /g;
 	  }
@@ -280,7 +280,7 @@ sub parse_param_ccl
 	  $line_number++;
 	}
         # Give a warning if no range was given and it was needed
-        if ($parameter_db{"\U$thorn $variable\E ranges"}==0 && $type =~ m:INTEGER|REAL:)
+        if ($parameter_db{"\U$thorn $variable\E ranges"}==0 && $type =~ m:INT|REAL:)
         {
 	    print STDERR "No range given for $variable in $thorn\n";
             $CST_errors++;
@@ -291,7 +291,7 @@ sub parse_param_ccl
 	  {
 	      $default = $1;
 #	      print "type is $type, default is $default\n";
-	      if ($type =~ m:INTEGER|REAL: && $default =~ m:":)
+	      if ($type =~ m:INT|REAL: && $default =~ m:":)
 	      {
 		  print STDERR "String default given for $type $variable in $thorn\n";
 		  $CST_errors++;
@@ -315,7 +315,8 @@ sub parse_param_ccl
       }
       else
       {
-	print STDERR "Unknown line $line!!!\n";
+        $CST_errors++;
+	print STDERR "Unknown line $line\n";
       }
     }
   }

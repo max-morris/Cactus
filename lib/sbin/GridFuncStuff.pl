@@ -311,7 +311,7 @@ sub CreateFortranArgumentDeclarations
 	  $suffix .= "_p";
 	}
 
-	if($1 eq "CHAR")
+	if($1 eq CHAR)
 	{
 	  push(@declarations, "CCTK_CHAR $argument$suffix$2");
 	}
@@ -319,17 +319,42 @@ sub CreateFortranArgumentDeclarations
 	{
 	  push(@declarations, "CCTK_REAL $argument$suffix$2");
 	}
+	elsif ($1 eq REAL4)
+	{
+	  push(@declarations, "CCTK_REAL4 $argument$suffix$2");
+	}
+	elsif ($1 eq REAL8)
+	{
+	  push(@declarations, "CCTK_REAL8 $argument$suffix$2");
+	}
+	elsif ($1 eq REAL16)
+	{
+	  push(@declarations, "CCTK_REAL16 $argument$suffix$2");
+	}
 	elsif ($1 eq COMPLEX)
 	{
 	  push(@declarations, "CCTK_COMPLEX $argument$suffix$2");
 	}
-	elsif ($1 eq INTEGER)
+	elsif ($1 eq INT)
 	{
 	  push(@declarations, "CCTK_INT $argument$suffix$2");
 	}
+	elsif ($1 eq INT2)
+	{
+	  push(@declarations, "CCTK_INT2 $argument$suffix$2");
+	}
+	elsif ($1 eq INT4)
+	{
+	  push(@declarations, "CCTK_INT4 $argument$suffix$2");
+	}
+	elsif ($1 eq INT8)
+	{
+	  push(@declarations, "CCTK_INT8 $argument$suffix$2");
+	}
 	else
 	{
-	  print STDERR "Unknown argument type $1\n";
+	  $CST_errors++;
+	  print STDERR "Unknown argument type \"$1\"\n";
 	}
       }
     }
@@ -400,19 +425,43 @@ sub CreateCArgumentDeclarations
 	}
 	elsif ($1 eq REAL)
 	{
-	  
 	  push(@declarations, "CCTK_REAL *$argument$suffix=(CCTK_REAL *)(cctkGH->data[CCTK_GetVarIndex(\"$3::$argument\")][0]);");
+	}
+	elsif ($1 eq REAL4)
+	{
+	  push(@declarations, "CCTK_REAL4 *$argument$suffix=(CCTK_REAL4 *)(cctkGH->data[CCTK_GetVarIndex(\"$3::$argument\")][0]);");
+	}
+	elsif ($1 eq REAL8)
+	{
+	  push(@declarations, "CCTK_REAL8 *$argument$suffix=(CCTK_REAL8 *)(cctkGH->data[CCTK_GetVarIndex(\"$3::$argument\")][0]);");
+	}
+	elsif ($1 eq REAL16)
+	{
+	  push(@declarations, "CCTK_REAL16 *$argument$suffix=(CCTK_REAL16 *)(cctkGH->data[CCTK_GetVarIndex(\"$3::$argument\")][0]);");
 	}
 	elsif ($1 eq COMPLEX)
 	{
 	  push(@declarations, "CCTK_COMPLEX *$argument$suffix=(CCTK_COMPLEX *)(cctkGH->data[CCTK_GetVarIndex(\"$3::$argument\")][0]);");
 	}
-	elsif ($1 eq INTEGER)
+	elsif ($1 eq INT)
 	{
 	  push(@declarations, "CCTK_INT *$argument$suffix=(CCTK_INT *)(cctkGH->data[CCTK_GetVarIndex(\"$3::$argument\")][0]);");
 	}
+	elsif ($1 eq INT2)
+	{
+	  push(@declarations, "CCTK_INT2 *$argument$suffix=(CCTK_INT2 *)(cctkGH->data[CCTK_GetVarIndex(\"$3::$argument\")][0]);");
+	}
+	elsif ($1 eq INT4)
+	{
+	  push(@declarations, "CCTK_INT4 *$argument$suffix=(CCTK_INT4 *)(cctkGH->data[CCTK_GetVarIndex(\"$3::$argument\")][0]);");
+	}
+	elsif ($1 eq INT8)
+	{
+	  push(@declarations, "CCTK_INT8 *$argument$suffix=(CCTK_INT8 *)(cctkGH->data[CCTK_GetVarIndex(\"$3::$argument\")][0]);");
+	}
 	else
 	{
+	  $CST_errors++;
 	  print STDERR "Unknown argument type $1\n";
 	}
       }
@@ -628,18 +677,49 @@ sub CreateCArgumentPrototype
 	    $prototype .="$sep". "CCTK_REAL *";
 	    $sep = ",";	
 	  }
+	  elsif ($1 eq REAL4)
+	  {
+	    $prototype .="$sep". "CCTK_REAL4 *";
+	    $sep = ",";	
+	  }
+	  elsif ($1 eq REAL8)
+	  {
+	    $prototype .="$sep". "CCTK_REAL8 *";
+	    $sep = ",";	
+	  }
+	  elsif ($1 eq REAL16)
+	  {
+	    $prototype .="$sep". "CCTK_REAL16 *";
+	    $sep = ",";	
+	  }
 	  elsif ($1 eq COMPLEX)
 	  {
-	    $prototype .="$sep". "Complex *";
+	    $prototype .="$sep". "CCTK_COMPLEX *";
 	    $sep = ",";
 	  }
-	  elsif ($1 eq INTEGER)
+	  elsif ($1 eq INT)
 	  {
-	    $prototype .="$sep". "int *";
+	    $prototype .="$sep". "CCTK_INT *";
+	    $sep = ",";
+	  }
+	  elsif ($1 eq INT2)
+	  {
+	    $prototype .="$sep". "CCTK_INT2 *";
+	    $sep = ",";
+	  }
+	  elsif ($1 eq INT4)
+	  {
+	    $prototype .="$sep". "CCTK_INT4 *";
+	    $sep = ",";
+	  }
+	  elsif ($1 eq INT8)
+	  {
+	    $prototype .="$sep". "CCTK_INT8 *";
 	    $sep = ",";
 	  }
 	  else
 	  {
+	    $CST_errors++;
 	    print STDERR "Unknown argument type $1\n";
 	  }
 	}
@@ -711,18 +791,54 @@ sub CreateCArgumentList
 	    $arglist .= "$sep"."(CCTK_REAL *)((xGH)->data[CCTKARGNUM_$argument][$level-1])";
 	    $sep = ",";
 	  }
+	  elsif ($1 eq REAL)
+	  {
+	    $arglist .= "$sep"."(CCTK_REAL *)((xGH)->data[CCTKARGNUM_$argument][$level-1])";
+	    $sep = ",";
+	  }
+	  elsif ($1 eq REAL4)
+	  {
+	    $arglist .= "$sep"."(CCTK_REAL4 *)((xGH)->data[CCTKARGNUM_$argument][$level-1])";
+	    $sep = ",";
+	  }
+	  elsif ($1 eq REAL8)
+	  {
+	    $arglist .= "$sep"."(CCTK_REAL8 *)((xGH)->data[CCTKARGNUM_$argument][$level-1])";
+	    $sep = ",";
+	  }
+	  elsif ($1 eq REAL16)
+	  {
+	    $arglist .= "$sep"."(CCTK_REAL16 *)((xGH)->data[CCTKARGNUM_$argument][$level-1])";
+	    $sep = ",";
+	  }
 	  elsif ($1 eq COMPLEX)
 	  {
 	    $arglist .= "$sep"."(CCTK_COMPLEX *)((xGH)->data[CCTKARGNUM_$argument][$level-1])";
 	    $sep = ",";
 	  }
-	  elsif ($1 eq INTEGER)
+	  elsif ($1 eq INT)
 	  {
 	    $arglist .= "$sep"."(CCTK_INT *)((xGH)->data[CCTKARGNUM_$argument][$level-1])";
 	    $sep = ",";
 	  }
+	  elsif ($1 eq INT2)
+	  {
+	    $arglist .= "$sep"."(CCTK_INT2 *)((xGH)->data[CCTKARGNUM_$argument][$level-1])";
+	    $sep = ",";
+	  }
+	  elsif ($1 eq INT4)
+	  {
+	    $arglist .= "$sep"."(CCTK_INT4 *)((xGH)->data[CCTKARGNUM_$argument][$level-1])";
+	    $sep = ",";
+	  }
+	  elsif ($1 eq INT8)
+	  {
+	    $arglist .= "$sep"."(CCTK_INT8 *)((xGH)->data[CCTKARGNUM_$argument][$level-1])";
+	    $sep = ",";
+	  }
 	  else
 	  {
+	    $CST_errors++;
 	    print STDERR "Unknown argument type $1\n";
 	  }
 	}

@@ -196,7 +196,7 @@ sub set_parameter_code
     {
       $line = "    retval = CCTK_SetKeywordInRangeList(\&($structure.$parameter), value, $n_ranges" ;
     }
-    elsif($type eq "INTEGER")
+    elsif($type eq "INT")
     {
       $line = "    retval = CCTK_SetIntInRangeList(\&($structure.$parameter),value, $n_ranges" ;
     }
@@ -331,14 +331,41 @@ sub get_c_type_string
   {
     $type_string = "char *";
   }
-  elsif($type eq "LOGICAL" ||
-	$type eq "INTEGER")
+  elsif($type eq "LOGICAL")
   {
     $type_string = "int ";
+  } 
+  elsif($type eq "INT")
+  {
+    $type_string = "CCTK_INT ";
+  }
+  elsif($type eq "INT2")
+  {
+    $type_string = "CCTK_INT2 ";
+  }
+  elsif($type eq "INT4")
+  {
+    $type_string = "CCTK_INT4 ";
+  }
+  elsif($type eq "INT8")
+  {
+    $type_string = "CCTK_INT8 ";
   }
   elsif($type eq "REAL")
   {
     $type_string = "CCTK_REAL ";
+  }
+  elsif($type eq "REAL4")
+  {
+    $type_string = "CCTK_REAL4 ";
+  }
+  elsif($type eq "REAL8")
+  {
+    $type_string = "CCTK_REAL8 ";
+  }
+  elsif($type eq "REAL16")
+  {
+    $type_string = "CCTK_REAL16 ";
   }
   else
   {
@@ -460,7 +487,7 @@ sub order_params
       push(@string_params, $parameter);
     }
     elsif($type eq "LOGICAL" ||
-    	  $type eq "INTEGER")
+    	  $type eq "INT")
     {
       push(@int_params, $parameter);
     }
@@ -505,7 +532,7 @@ sub get_parameter_code
     $line  = "    *value = $structure.$parameter;\n" ;
     $line .= "    retval = PARAMETER_SENTENCE;" ;
   }
-  elsif($type eq "INTEGER")
+  elsif($type eq "INT")
   {
     $line  = "    *value = \&($structure.$parameter);\n" ;
     $line .= "    retval = PARAMETER_INTEGER;" ;
