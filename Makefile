@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.88 2000-04-18 12:10:50 allen Exp $
+#   @version $Id: Makefile,v 1.89 2000-04-19 11:18:18 allen Exp $
 # @@*/
 
 ##################################################################################
@@ -571,7 +571,7 @@ $(addsuffix -config,$(CONFIGURATIONS)):
 	  fi ; \
 	  echo $(DIVIDER) ; \
 	  if test "x$(PROMPT)" = "xno" ; then \
-	    gmake $(@:%-config=%); \
+	    gmake $(@:%-config=%) WARN=$(WARN); \
 	  else \
 	    echo Use $(MAKE) $(@:%-config=%) to build the configuration. ; \
 	  fi; \
@@ -606,7 +606,7 @@ endif
 	    fi ;\
 	    echo $(DIVIDER)   ;  \
 	    if test "x$(PROMPT)" = "xno" ; then \
-	      gmake $(@:%-config=%); \
+	      gmake $(@:%-config=%) WARN=$(WARN); \
 	    else \
 	      echo Use $(MAKE) $(@:%-config=%) to build the configuration.; \
 	    fi; \
@@ -792,7 +792,7 @@ downsize:
 	  fi ; \
 	  echo $(DIVIDER) ;  \
 	  if test "x$(PROMPT)" = "xno" ; then \
-	    gmake $(@:%-config=%); \
+	    gmake $(@:%-config=%) WARN=$(WARN); \
 	  else \
 	    echo Use $(MAKE) $@ to build the configuration. ; \
 	  fi; \
