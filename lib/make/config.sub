@@ -1,4 +1,8 @@
 #! /bin/sh
+#
+# CCTK_MODIFICATION:  11/5/2001 Added info for sx5-nec.  Tom Goodale
+#
+#
 # Configuration validation subroutine script.
 #   Copyright (C) 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001
 #   Free Software Foundation, Inc.
@@ -956,6 +960,10 @@ case $basic_machine in
 		basic_machine=c4x-none
 		os=-coff
 		;;
+        *-nec)
+                basic_machine=sx5-nec
+                os=-superux
+		;;
 	*)
 		echo Invalid configuration \`$1\': machine \`$basic_machine\' not recognized 1>&2
 		exit 1
@@ -1116,6 +1124,9 @@ case $os in
 		;;
         -*mint | -mint[0-9]* | -*MiNT | -MiNT[0-9]*)
 	        os=-mint
+		;;
+	-superux)
+		os=-superux
 		;;
 	-none)
 		;;
