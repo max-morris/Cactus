@@ -637,17 +637,25 @@ is to do. The command {\tt gmake help} lists all gmake targets.
 \subsection{Compiling in thorns}
 \label{sec:cointh}
 
-Cactus compiles in all thorns listed in {\tt configs/CONF/ThornList}, 
-if they have been checked out.
+Cactus will try to compile all thorns listed in {\tt configs/<config>/ThornList}.
 
 The {\tt ThornList} file is simply a list of the form
 {\t <arrangement>/<thorn>}.  All text on appearing on a line after a \# sign
 is ignored, so comments can be included.
 
+The first time that you compile a configuration, 
+you will be shown a list of all the thorns in your arrangement
+directory, and asked if you with to edit them. You can regenerate
+this list at anytime by typing
+
+\begin{verbatim}
+gmake <config>-thornlist
+\end{verbatim}
+
 Instead of using the editor to specify the thorns you want to
   have compiled, you can {\em edit} the {\em ThornList} outside
-  the make process. It is located in {\tt configs/<CONF>/ThornList},
-  wher {\tt <CONF>} refers to the name of your configuration.
+  the make process. It is located in {\tt configs/<config>/ThornList},
+  wher {\tt <config>} refers to the name of your configuration.
   For a completely new configuration, this directory exists {\em
     after} the first  make phase.
 

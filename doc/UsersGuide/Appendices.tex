@@ -33,10 +33,10 @@ implements: <implementation>
 }
 where
 \begin{itemize}
-\item{} The implementation name must be unique among all thorns, except between 
-        thorns which have the same public and protected variables and 
-        parameters.
-\item{} Inheriting from another implementation makes all that implementation 
+\item{} The implementation name must be unique among all thorns, except 
+        between thorns which have the same public and protected variables and 
+        global and restricted parameters. 
+\item{} Inheriting from another implementation makes all that implementation's 
         public variables available to your thorn. At least one thorn 
         providing any inherited implementation must be present at compile time.
         A thorn cannot inherit from itself. Inheritance is associative and 
@@ -63,7 +63,7 @@ VTYPE <group name> [TYPE=<gtype>] [DIM=<dim>]
 \end{verbatim}}
 
 \begin{itemize}
-\item{} {\t access} defines which thorns have can use the following 
+\item{} {\t access} defines which thorns have  use the following 
         groups, and can be either {\t public}, {\t protected} or {\t private}.
 \item{} {\t VTYPE} defines the data type of the variables in the group.
 Supported data types are {\t LOGICAL}, {\t INTEGER}, {\t CHAR} and {\t REAL}.

@@ -13,126 +13,60 @@
 \section{Arrangements}
 
 Thorns are grouped into {\em arrangements}.  This is a logical grouping of
-thorns which is purely for administrative purposes.  The compiled
-code knows nothing about arrangements.
+thorns which is purely for organisational purposes. For example, 
+you might wish to keep all your initial data thorns in one arrangement,
+and all your evolution thorns in another arrangement, or to have
+separate arrangements for your development, private and shared 
+thorns. 
 
-The arrangements live in the `arrangements' directory off the main CCTK directory.  
-Arrangement names must be unique, and cannot start with a `\#', or finish
-with `~' or `.bak'.
+The arrangements live in the `arrangements' directory off the main 
+Cactus directory.  Arrangement names must be unique, and cannot start 
+with a `\#', or finish
+with `\~{}' or `.bak'.
 
-Inside a arrangement directory there is a directory for each thorn belonging
-to the arrangement.  Thorn names have the same restrictions as arrangement names,
-with the addition that a thorn cannot be called `doc'.  This name is
-reserved for arrangement documentation.
+Inside a arrangement directory there are directories for each thorn 
+belonging to the arrangement.  
+Thorn names have the same restrictions as arrangement names,
+with the addition that a thorn cannot be called `doc'.  
+This name is reserved for arrangement documentation.
 
 \section{Implementations}
 
+\label{sec:im}
+
 One of the key concepts for thorns is the concept of the {\bf implementation}.
-Relationships between thorns are all based upon relationship between
-{\bf implementations} and in principle it should be possible to replace
-one thorn providing an implementation with another thorn providing that
-implementation without affecting any other thorn.
+Relationships between thorns are all based upon relationship between the
+{\bf implementations} they provide. 
+In principle it should be possible to swap one thorn providing an 
+implementation with another thorn providing that implementation,
+without affecting any other thorn.
 
 An {\bf implementation} defines a group of variables and parameters which
 are used to implement some functionality.  For example the thorn 
 {\tt CactusPUGH/PUGH} provides the implementation {\tt driver}.  This 
 implementation is responsible for providing memory for grid variables and
 for communication.  Another thorn can also implement {\tt driver}, 
-and both thorns can be compiled in {\em at the same time}.  Then, at runtime,
-the user can decide which thorn providing {\tt driver} is used.  No other
-thorn should be affected by this choice.
+and both thorns can be compiled in {\em at the same time}.  
+At runtime, the user can decide which thorn providing {\tt driver} is used.  
+No other thorn should be affected by this choice.
 
 When a thorn decides it needs access to a variable or a parameter provided by 
 another thorn, it defines a relationship between itself and the other thorn's
-implementation, not explicitly with the other thorn.  This allows the
-transparent replacement, at compile or runtime, of one thorn with another
-thorn providing the same functionality as seen by the other thorns.
+{\bf implementation}, not explicitly with the other {\bf thorn}.  
+This allows the transparent replacement, at compile or runtime, of one 
+thorn with another thorn providing the same functionality as seen by 
+the other thorns.
 
-\section{Data Types and Sizes}
-
-Cactus supports the following fixed size data types
-
-\begin{center}
-\begin{tabular}{|c|c|c|c|}
-\hline
-Data Type & Size (bytes) & Variable Type & Fortran Equivalent\\
-\hline
-{\t CCTK\_INT2}     & 2 & {\t CCTK\_VARIABLE\_INT2}     & {\t integer*2}\\
-{\t CCTK\_INT4}     & 4 & {\t CCTK\_VARIABLE\_INT4}     & {\t integer*4}\\
-{\t CCTK\_INT8}     & 8& {\t CCTK\_VARIABLE\_INT8}      & {\t integer*8}\\
-{\t CCTK\_REAL4}    & 4 & {\t CCTK\_VARIABLE\_REAL4}    & {\t real*4}\\
-{\t CCTK\_REAL8}    & 8 & {\t CCTK\_VARIABLE\_REAL8}    & {\t real*8}\\
-{\t CCTK\_REAL16}   & 16& {\t CCTK\_VARIABLE\_REAL16}   & {\t real*16}\\
-{\t CCTK\_COMPLEX4} & 4 & {\t CCTK\_VARIABLE\_COMPLEX4} & {\t complex*4}\\
-{\t CCTK\_COMPLEX8} & 8 & {\t CCTK\_VARIABLE\_COMPLEX8} & {\t complex*8}\\
-{\t CCTK\_COMPLEX16}& 16& {\t CCTK\_VARIABLE\_COMPLEX16}& {\t complex*16}\\
-{\t CCTK\_CHAR}     & 1 & {\t CCTK\_VARIABLE\_CHAR}     & {\t character} \\ \hline
-\end{tabular}
-\end{center}
-
-In addition Cactus provides three data types whose size is chosen
-during the compilation process (at configuration time). This is to
-allow the code to be easily run at different precisions. Note that
-the effectiveness of running the code at a lower or higher precision
-depends crucially on all thorns being used making consistent use
-of the following data types:
-
-
-\begin{center}
-\begin{tabular}{|c|c|c|c|}
-\hline
-Data Type          & Default Size (bytes) & Variable Type & Configuration Option\\
-\hline
-{\t CCTK\_INT}     & 4 & {\t CCTK\_VARIABLE\_INT} & {\t INTEGER\_PRECISION}\\
-{\t CCTK\_REAL}    & 8 & {\t CCTK\_VARIABLE\_REAL} & {\t REAL\_PRECISION}\\
-{\t CCTK\_COMPLEX} & (8,8) & {\t CCTK\_VARIABLE\_COMPLEX} & Same as real precision\\
-\hline
-\end{tabular}
-\end{center}
-
-These variable types must be used by thorn writers to declare variables
- in the thorn interface files, and may be used to declare
-variables in the thorn routines. Note that variable declarations in 
-thorns should obviously match with definitions in the interface files
-where appropriate.
-
-Also provided, are a set of macros which
-are interpreted by the preprocessor at compile time to signify which
-data size is being used:
-
-\begin{center}
-\begin{tabular}{|c|c|}
-\hline
-Data Type & {\t \#define}\\
-{\t CCTK\_INT2} & {\t CCTK\_INT\_PRECISION\_2} \\
-{\t CCTK\_INT4} & {\t CCTK\_INT\_PRECISION\_4} \\
-{\t CCTK\_INT8} & {\t CCTK\_INT\_PRECISION\_8} \\
-{\t CCTK\_REAL4} & {\t CCTK\_REAL\_PRECISION\_4} \\
-{\t CCTK\_REAL8} & {\t CCTK\_REAL\_PRECISION\_8} \\
-{\t CCTK\_REAL16} & {\t CCTK\_REAL\_PRECISION\_16} \\
-{\t CCTK\_COMPLEX4} & {\t CCTK\_COMPLEX\_PRECISION\_4} \\
-{\t CCTK\_COMPLEX8} & {\t CCTK\_COMPLEX\_PRECISION\_8} \\
-{\t CCTK\_COMPLEX16} & {\t CCTK\_COMPLEX\_PRECISION\_16} \\
-\hline 
-\end{tabular}
-\end{center}
-
-Note that the availability of these types, and the corresponding 
-C data types are platform dependent.
-
-\subsection{Fortran Thorn Writers}
-
-Cactus provides a further data type {\tt CCTK\_POINTER} 
-for use in Fortran code to declare a pointer passed from C. 
-For example, the variable {\tt cctkGH} is of this type.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 \chapter{Anatomy of a thorn}
+\label{sec:anofath}
 
 \section{thorns}
+\label{sec:th}
 
 A thorn consists of a subdirectory of a arrangement containing three 
 administrative files
@@ -182,8 +116,9 @@ These consist of:
 \begin{itemize}
 
 \item {\tt interface.ccl}
-This defines the {\bf implementation} the thorn provides, and the variables
-the thorn needs, along with their visibility to other implementations.
+This defines the {\bf implementation} (Section~\ref{sec:im}) the thorn 
+provides, and the variables the thorn needs, along with their 
+visibility to other implementations.
 
 \item {\tt param.ccl}
 This defines the parameters that are used to control the thorn, along
@@ -443,7 +378,7 @@ schedule <name> at <time bin> [other options]
 
 \end{verbatim}
 
-where <name> is the name of the routine, and <time bin> is one of
+where {\tt <name>} is the name of the routine, and {\tt <time bin>} is one of
 
 \begin{itemize}
 
@@ -573,7 +508,6 @@ the CCTK make system looks for a file called {\tt make.code.defn} in that
 directory.  At its simplest, this file contains two lines
 
 \begin{itemize}
-\item
 \item {\t SRCS = <list of all source files {\em in this directory}>}
 
 \item {\t SUBDIRS = <list of all subdirectories, {\em including subdirectories of subdirectories}>}
@@ -608,14 +542,14 @@ The makefile is passed the following variables
 
 \item {\tt \$(THORN)}  - the thorn name
 
-\item {\tt \$(SCRATCH\_BUILD)} - the scratch directory where f90 module
+\item {\tt \$(SCRATCH\_BUILD)} - the scratch directory where Fortran90 module
 files should end up if they need to be seen by other thorns.
 
 \item {\tt \$(NAME)}.
 
 \end{itemize}
 
-and has a working directory of <config>/build/<thorn\_name> .
+and has a working directory of {\tt <config>/build/<thorn\_name>} .
 
 \subsection{Other makefile variables}
 
@@ -653,7 +587,7 @@ The flesh provides various things to thorns.
 Any source file using Cactus infrastructure should include 
 the header file {\tt cctk.h} using the line
 \begin{verbatim}
-#include ``cctk.h''
+#include "cctk.h"
 \end{verbatim}
 (Fortran programmers should not be put of by this being a C style
 header file, most Cactus files are run through a C preprocessor
@@ -665,7 +599,7 @@ Any routine using Cactus argument lists (for example all
 routines called from the scheduler) should include at the
 top of the file the header
 \begin{verbatim}
-#include ``cctk_arguments.h''
+#include "cctk_arguments.h"
 \end{verbatim}
 
 A Cactus macro {\tt CCTK\_FARGUMENTS} is defined for each thorn
@@ -699,7 +633,7 @@ using them with the macro {\tt DECLARE\_PARAMETERS}
 Any routine using Cactus parameters should include at
 the top of the file the header
 \begin{verbatim}
-#include ``cctk_parameters.h''
+#include "cctk_parameters.h"
 \end{verbatim}
 
 In Fortran, special care should be taken with string valued parameters.
@@ -717,9 +651,9 @@ This routine needs to be passed an integer flag as
 well as the standard Cactus The source file should look like
 
 \begin{verbatim}
-#include ``cctk.h''
-#include ``cctk_arguments.h''
-#include ``cctk_parameters.h''
+#include "cctk.h"
+#include "cctk_arguments.h"
+#include "cctk_parameters.h"
 
       subroutine MyCRoutine(CCTK_FARGUMENTS)
 
@@ -757,7 +691,7 @@ c     Main code goes here
 Any source file using Cactus infrastructure should include 
 the header file {\tt cctk.h} using the line
 \begin{verbatim}
-#include ``cctk.h''
+#include "cctk.h"
 \end{verbatim}
 
 \subsubsection{Variables}
@@ -766,7 +700,7 @@ Any routine using Cactus argument lists (for example all
 routines called from the scheduler) should include at the
 top of the file the header
 \begin{verbatim}
-#include ``cctk_arguments.h''
+#include "cctk_arguments.h"
 \end{verbatim}
 
 A Cactus macro {\tt CCTK\_CARGUMENTS} is defined for each thorn
@@ -797,7 +731,7 @@ changing a parameter is undefined (at best).
 Any routine using Cactus parameters should include at
 the top of the file the header
 \begin{verbatim}
-#include ``cctk_parameters.h''
+#include "cctk_parameters.h"
 \end{verbatim}
 
 The parameters should be declared at the start of the routine
@@ -805,7 +739,7 @@ using them with the macro {\tt DECLARE\_PARAMETERS}
 
 \subsubsection{Example}
 
-The C routine ``MyCRoutine'' is scheduled in the {\tt schedule.ccl} file,
+The C routine "MyCRoutine" is scheduled in the {\tt schedule.ccl} file,
 and uses Cactus parameters. The source file should look like
 \begin{verbatim}
 #include "cctk.h"
@@ -821,7 +755,7 @@ void MyCRoutine(CCTK_CARGUMENTS)
 }
 \end{verbatim}
 
-\subsection{Specifically for C Programmers}
+\subsubsection{Specifically for C Programmers}
 
 Grid functions are held in memory as 1D C arrays. These are laid
 out in memory as in Fortran. This means that the first index should
@@ -841,13 +775,17 @@ for (k=0; k<cctk_lsh[2]; k++)
   {
     for (i=0; i<cctk_lsh[0]; i++)
     {
-      My3DGF [CCTK_GFINDEX3D(cctkGH,i,j,k)] = i*j*k;
+      My3D_GF[CCTK_GFINDEX3D(cctkGH,i,j,k)] = i*j*k;
     }
   }
 }
 \end{verbatim}
 
-Here, CCTK ...
+Here, {\tt CCTK\_GFINDEX3D(cctkGH,i,j,k)]} expands to 
+
+\begin{verbatim}
+((i) + cctkGH->cctk_lsh[0]*((j)+cctkGH->cctk_lsh[1]*(k)))
+\end{verbatim}
 
 \subsection{Cactus Variables}
 \label{sec:cava}
@@ -893,6 +831,50 @@ The following variable is needed for grid refinement methods
         with respect to the base grid.
 \end{itemize}
 
+
+\subsection{Cactus Data Types}
+
+The Cactus grid variables and parameters are defined and
+declared using Cactus data types, to provide portability 
+across platforms. The most important of 
+these data types are described below, for a full description
+see Section~\ref{sec:datyansi}. These data types should 
+be used to declare local variables where needed, and to
+declare Cactus grid variables or parameters that need 
+declarations. 
+
+\begin{Lentry}
+
+\item[{\tt CCTK\_INT}] default size 4 bytes
+\item[{\tt CCTK\_REAL}] default size 8 bytes
+
+\end{Lentry}
+
+\subsubsection{Example}
+
+In the following example {\tt MyScalar} is a grid scalar which
+is declared in the {\tt interface.ccl} as {\tt CCTK\_REAL}.
+
+\begin{verbatim}
+      subroutine InitialData(CCTK_FARGUMENTS)
+
+      DECLARE_CCTK_ARGUMENTS
+
+      CCTK_REAL local_var
+      
+      local_var = 1.0/3.0      
+      MyScalar = local_var
+
+      return
+      end 
+\end{verbatim}
+
+Declaring {\tt local\_var} to have a non-Cactus data type, e.g.
+{\tt REAL*4}, or using one of the other Cactus real data types
+described in Section~\ref{datyansi} could give problems for 
+different architectures or configurations.
+
+
 \subsection{Providing Run Time Information}
 
 To write from thorns to standard output ({\it i.e.} the screen) 
@@ -900,7 +882,7 @@ at runtime, use the function {\tt CCTK\_INFO}.
 For example, from the Fortran thorn {\tt MyThorn},
 
 \begin{verbatim}
-call CCTK\_INFO(``Starting Tricky Calculation'')
+call CCTK_INFO("Starting Tricky Calculation")
 \end{verbatim}
 
 will write the line:
@@ -910,11 +892,10 @@ INFO (MyThorn): Starting Tricky Calculation
 \end{verbatim}
 
 For a multiprocessor run, only information from processor zero 
-will appear. If the ``{\tt -r''} command line option is used 
+will appear. If the "{\tt -r"} command line option is used 
 (Section~\ref{sec:coliop}) the output from this command will be redirected.
 
-To output a variable using {\tt CCTK\_INFO} currently requires you
-to use for Fortran something like
+To output a variable using {\tt CCTK\_INFO} currently more tricky. From Fortranyou will need something like
 
 \begin{verbatim}
 write(infoline,'(A,1X,I)') 'The integer was ',inum
@@ -931,6 +912,8 @@ CCTK_INFO(infoline);
 free(infoline);
 \end{verbatim}
 
+
+
 Notes
 \begin{itemize}
 \item{} {\tt CCTK\_INFO} is actually a macro for the function
@@ -945,7 +928,32 @@ Notes
 \end{itemize}
 
 
+
+
+\section{Error handling, Warnings and Code Termination}
+\label{sec:erhawancote}
+The Cactus function {\tt CCTK\_WARN} should be used to provide
+warning messages during code executation. Along with the
+warning message, an integer is given to indicate the severity
+of the warning. The warning severity indicates whether the
+message is printed to standard output and whether the code
+should be stopped. A level 0 warning indicates the highest
+severity, with higher numbers indicating lower severity.
+
+By default, a Cactus run will abort on a level 0 warning
+and will report level 1 and severer warnings to screen. 
+This behaviour can be amended using command line arguments,
+as described in Section~\ref{sec:coliop}.
+
+The flesh will be implementing standard error return codes
+which can be used by the thorns, although this is not 
+yet ready. In general, thorns should attempt to handle errors
+without terminating, and warning messages should be liberally
+used.
+      
+
 \subsection{Adding Parallelisation}
+\label{seap}
 
 The flesh itself does not actually set up grid variables. This 
 is done by a {\it driver} thorn. To allow the distribution of 
@@ -974,6 +982,7 @@ is a parallel unigrid driver.
 \item[{\tt CCTK\_Barrier}] Waits for all processors to reach this point
   before proceeding
 \end{Lentry}
+
 
 
 \subsection{IO}
@@ -1050,7 +1059,7 @@ operators through the following function calls:
 {\t
 \begin{verbatim}
 
-#include ``cctk_Reduction.h''
+#include "cctk_Reduction.h"
 int CCTK_GetReductionHandle(const char *reduction);
 
 \end{verbatim}
@@ -1067,7 +1076,7 @@ argument lists).
 {\t
 \begin{verbatim}
 
-#include ``cctk_Reduction.h''
+#include "cctk_Reduction.h"
 int CCTK_Reduce(cGH *GH, int retvaltype, int retvalnum, void *retval, int handle, int index, ...);
 
 \end{verbatim}
@@ -1075,30 +1084,6 @@ int CCTK_Reduce(cGH *GH, int retvaltype, int retvalnum, void *retval, int handle
 \vskip .25cm
 Note that the memory for {\t retval} must be assigned before the reduction
 call is made.
-
-\section{Error handling, Warnings and Code Termination}
-      
-There are two CCTK commands to use for stopping the code
-from within your thorn:
-\begin{itemize}
-\item{} To shut the code down cleanly, use
-{\t
-\begin{verbatim}
-CCTK_Stop(pointer GH, int return_code)
-CCTK_Stop(cGH *GH, int return_code);
-\end{verbatim}
-}
-\item{} To shut the code down more violently, use
-{\t
-\begin{verbatim}
-CCTK_Abort(pointer GH, int return_code)
-CCTK_Abort(cGH *GH, int return_code);
-\end{verbatim}
-}
-\end{itemize}
-In both cases, an error code should be returned indicating the
-error that you trapped which precipitated the code shutdown.
-The error codes will soon be detailed in a following table.
 
 \section{Calls between different programming languages}
 \label{sec:cabedipr}
@@ -1116,29 +1101,37 @@ To call a utility Fortran routine from C use
 void FMODIFIER FORTRAN\_NAME(<Fortran routine name>)(<argument list>)
 }
 
-\section{Programming Style Guidelines and Recommendations}
-\label{sec:prstguan}
 
 \section{Adding a test suite}
 \label{sec:adatesu}
 
-\section{Sharing your thorns/arrangements with others}
-\label{sec:shyothwi}
+To add a test suite to your thorn, devise a series of parameter
+files which use as many aspects of your thorn as possible. 
+Make sure that the parameter files produce ascii output to files,
+and that these files are in the directory 
+{\tt ./<parameter file base name>}.
+
+Run Cactus on each of the parameter files, and move the parameter files,
+and the output directories they produced, to the {\tt test} directory
+in your thorn. 
+
+Document carefully any situations or architectures in which your test 
+suite does not give the correct answers. 
+
+For details on running the test suites, see Section~\ref{sec:te}.
+
 
 \section{Naming conventions}
 
 \begin{itemize}
 
-\item{} Thorn names must not start with the word ``Cactus'' (in
+\item{} Thorn names must not start with the word "Cactus" (in
         any case).
 \item{} Arrangements will be ignored if their names start with \# or .
-        or end in \~ .bak or .BAK 
+        or end in \~{} .bak or .BAK 
 \item{} Thorns will be ignored if they are called doc or start with
-        \# or . or end in \~ .bak or .BAK
+        \# or . or end in \~{} .bak or .BAK
 \item{} Routine names have to be unique among all thorns. 
-\item{} Sourcecode filenames do not have to be unique, but you
-        cannot have the same root filename used by different languages.
-        (For example, you cannot have initial.c and initial.F)
 
 \end{itemize}
 
@@ -1159,6 +1152,85 @@ allow for a homogeneous code.
     Examples: {\tt MyThorn\_StartUpRoutine}, {\tt BestSolver\_InitialDataForPDE}.
 
 \end{itemize}
+
+\section{Data Types and Sizes}
+\label{sec:datyansi}
+
+Cactus supports the following fixed size data types
+
+\begin{center}
+\begin{tabular}{|c|c|c|c|}
+\hline
+Data Type & Size (bytes) & Variable Type & Fortran Equivalent\\
+\hline
+{\t CCTK\_INT2}     & 2 & {\t CCTK\_VARIABLE\_INT2}     & {\t integer*2}\\
+{\t CCTK\_INT4}     & 4 & {\t CCTK\_VARIABLE\_INT4}     & {\t integer*4}\\
+{\t CCTK\_INT8}     & 8& {\t CCTK\_VARIABLE\_INT8}      & {\t integer*8}\\
+{\t CCTK\_REAL4}    & 4 & {\t CCTK\_VARIABLE\_REAL4}    & {\t real*4}\\
+{\t CCTK\_REAL8}    & 8 & {\t CCTK\_VARIABLE\_REAL8}    & {\t real*8}\\
+{\t CCTK\_REAL16}   & 16& {\t CCTK\_VARIABLE\_REAL16}   & {\t real*16}\\
+{\t CCTK\_COMPLEX4} & 4 & {\t CCTK\_VARIABLE\_COMPLEX4} & {\t complex*4}\\
+{\t CCTK\_COMPLEX8} & 8 & {\t CCTK\_VARIABLE\_COMPLEX8} & {\t complex*8}\\
+{\t CCTK\_COMPLEX16}& 16& {\t CCTK\_VARIABLE\_COMPLEX16}& {\t complex*16}\\
+{\t CCTK\_CHAR}     & 1 & {\t CCTK\_VARIABLE\_CHAR}     & {\t character} \\ \hline
+\end{tabular}
+\end{center}
+
+In addition Cactus provides three data types whose size is chosen
+during the compilation process (at configuration time). This is to
+allow the code to be easily run at different precisions. Note that
+the effectiveness of running the code at a lower or higher precision
+depends crucially on all thorns being used making consistent use
+of the following data types:
+
+
+\begin{center}
+\begin{tabular}{|c|c|c|c|}
+\hline
+Data Type          & Default Size (bytes) & Variable Type & Configuration Option\\
+\hline
+{\t CCTK\_INT}     & 4 & {\t CCTK\_VARIABLE\_INT} & {\t INTEGER\_PRECISION}\\
+{\t CCTK\_REAL}    & 8 & {\t CCTK\_VARIABLE\_REAL} & {\t REAL\_PRECISION}\\
+{\t CCTK\_COMPLEX} & (8,8) & {\t CCTK\_VARIABLE\_COMPLEX} & Same as real precision\\
+\hline
+\end{tabular}
+\end{center}
+
+These variable types must be used by thorn writers to declare variables
+ in the thorn interface files, and may be used to declare
+variables in the thorn routines. Note that variable declarations in 
+thorns should obviously match with definitions in the interface files
+where appropriate.
+
+Also provided, are a set of macros which
+are interpreted by the preprocessor at compile time to signify which
+data size is being used:
+
+\begin{center}
+\begin{tabular}{|c|c|}
+\hline
+Data Type & {\t \#define}\\
+{\t CCTK\_INT2} & {\t CCTK\_INT\_PRECISION\_2} \\
+{\t CCTK\_INT4} & {\t CCTK\_INT\_PRECISION\_4} \\
+{\t CCTK\_INT8} & {\t CCTK\_INT\_PRECISION\_8} \\
+{\t CCTK\_REAL4} & {\t CCTK\_REAL\_PRECISION\_4} \\
+{\t CCTK\_REAL8} & {\t CCTK\_REAL\_PRECISION\_8} \\
+{\t CCTK\_REAL16} & {\t CCTK\_REAL\_PRECISION\_16} \\
+{\t CCTK\_COMPLEX4} & {\t CCTK\_COMPLEX\_PRECISION\_4} \\
+{\t CCTK\_COMPLEX8} & {\t CCTK\_COMPLEX\_PRECISION\_8} \\
+{\t CCTK\_COMPLEX16} & {\t CCTK\_COMPLEX\_PRECISION\_16} \\
+\hline 
+\end{tabular}
+\end{center}
+
+Note that the availability of these types, and the corresponding 
+C data types are platform dependent.
+
+\subsection{Fortran Thorn Writers}
+
+Cactus provides a further data type {\tt CCTK\_POINTER} 
+for use in Fortran code to declare a pointer passed from C. 
+For example, the variable {\tt cctkGH} is of this type.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
