@@ -67,24 +67,32 @@ sub CreateFunctionBindings
   $dataout = &FortranThornFunctions($function_db);
   &WriteFile('Functions/FortranThornFunctions.c',\$dataout);
 
-  # Create Thorn Include Prototypes
+  # Create Thorn Include Prototypes for thorns which use overloaded functions
   foreach $thorn (split(' ',$rhinterface_db->{'THORNS'}))
   {
-    $dataout = &ThornIncludes($thorn,$function_db,$rhinterface_db);
-    &WriteFile("include/${thorn}_Prototypes.h",\$dataout);
+    # only create a Thorn Include Prototypes header
+    # if this thorn uses overloaded functions
+    if ($rhinterface_db->{"\U$thorn USES FUNCTION\E"})
+    {
+      $dataout = &ThornIncludes($thorn,$function_db,$rhinterface_db);
+      &WriteFile("include/${thorn}_Prototypes.h",\$dataout);
+    }
   }
 
   # Create Master Include Prototypes
   $dataout = &ThornMasterIncludes($rhinterface_db);
   &WriteFile('include/cctk_FunctionAliases.h',\$dataout);
 
-  # Create THORN_Register.c
+  # Create THORN_Register.c for thorns which provide overloaded functions
   foreach $thorn (split(' ',$rhinterface_db->{'THORNS'}))
   {
-    $filename = "${thorn}_Register.c";
-    $dataout = &RegisterThornFunctions($thorn,$function_db,$rhinterface_db);
-    &WriteFile("Functions/$filename",\$dataout);
-    $registerfiles .= " $filename";
+    if ($rhinterface_db->{"\U$thorn PROVIDES FUNCTION\E"})
+    {
+      $filename = "${thorn}_Register.c";
+      $dataout = &RegisterThornFunctions($thorn,$function_db,$rhinterface_db);
+      &WriteFile("Functions/$filename",\$dataout);
+      $registerfiles .= " $filename";
+    }
   }
 
   # Create Master registration file RegisterThornFunctions.c
@@ -295,16 +303,18 @@ sub ThornMasterIncludes
 
   push(@data, '#ifdef CCODE');
   push(@data, 'int CCTK_IsFunctionAliased(const char *function);');
-  push(@data, '');
   push(@data, '#endif');
   push(@data, '');
 
   foreach $thorn (split(' ',$rhinterface_db->{'THORNS'}))
   {
-    push(@data, "#ifdef THORN_IS_$thorn");
-    push(@data, "#include \"${thorn}_Prototypes.h\"");
-    push(@data, '#endif');
-    push(@data, '');
+    if ($rhinterface_db->{"\U$thorn USES FUNCTION\E"})
+    {
+      push(@data, "#ifdef THORN_IS_$thorn");
+      push(@data, "#include \"${thorn}_Prototypes.h\"");
+      push(@data, '#endif');
+      push(@data, '');
+    }
   }
 
   push(@data, '#endif  /* _CCTK_FUNCTIONALIASES_H_ */');
@@ -472,20 +482,28 @@ sub RegisterAllFunctions
 
   foreach $thorn (split(' ',$rhinterface_db->{'THORNS'}))
   {
-    push(@data, "int CCTKBindings_${thorn}Aliases(void);");
+    if ($rhinterface_db->{"\U$thorn PROVIDES FUNCTION\E"})
+    {
+      push(@data, "int CCTKBindings_${thorn}Aliases(void);");
+    }
   }
 
   push(@data, 'int CCTKBindings_RegisterThornFunctions(void);');
+  push(@data, '');
   push(@data, 'int CCTKBindings_RegisterThornFunctions(void)');
   push(@data, '{');
   push(@data, '  int retval = 0;');
+  push(@data, '');
 
   foreach $thorn (split(' ',$rhinterface_db->{'THORNS'}))
   {
-    push(@data, "  if (CCTK_IsThornActive(\"$thorn\"))");
-    push(@data, '  {');
-    push(@data, "    retval += CCTKBindings_${thorn}Aliases();");
-    push(@data, '  }');
+    if ($rhinterface_db->{"\U$thorn PROVIDES FUNCTION\E"})
+    {
+      push(@data, "  if (CCTK_IsThornActive(\"$thorn\"))");
+      push(@data, '  {');
+      push(@data, "    retval += CCTKBindings_${thorn}Aliases();");
+      push(@data, '  }');
+    }
   }
   push(@data, '  return retval;');
   push(@data, '}');
