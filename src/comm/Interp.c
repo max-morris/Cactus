@@ -31,6 +31,9 @@
 #include "cctk_Interp.h"
 #include "cctk_WarnLevel.h"
 
+static char *rcsid = "$Header$";
+
+CCTK_FILEVERSION(comm_Interp_c)
 
 static cHandledData *InterpOperators = NULL;
 static int num_interps = 0;

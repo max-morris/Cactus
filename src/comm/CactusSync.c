@@ -23,6 +23,8 @@
 
 static char *rcsid = "$Header$";
 
+CCTK_FILEVERSION(comm_CactusSync_c)
+
  /*@@
    @routine    CCTK_SyncGroupI
    @date       Thu Sep  18 14:27:18 1999

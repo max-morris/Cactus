@@ -43,6 +43,7 @@ extern char MPI_Active;
 
 static char *rcsid = "$Header$";
 
+CCTK_FILEVERSION(comm_CactusDefaultComm_c)
 
  /*@@
    @routine    CactusDefaultSetupGH

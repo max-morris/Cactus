@@ -16,7 +16,6 @@
 #include <malloc.h>
 #include <stdarg.h>
 
-#include "cctk.h"
 #include "cctk_Flesh.h"
 #include "cctk_FortranString.h"
 #include "cctk_Groups.h"
@@ -25,6 +24,8 @@
 #include "cctk_WarnLevel.h"
 
 static char *rcsid = "$Header$";
+
+CCTK_FILEVERSION(comm_Interp_c)
 
 static cHandledData *ReductionOperators = NULL;
 static int num_reductions = 0;
