@@ -102,6 +102,7 @@ int CCTKi_SetParameter(const char *parameter, const char *value)
   
   if(CCTK_Equals(parameter, "ActiveThorns"))
   {
+#if 0
     n_errors = 0;
     position = value;
 
@@ -123,6 +124,10 @@ int CCTKi_SetParameter(const char *parameter, const char *value)
       if(*position) position++;
 
     }
+
+#endif /*0*/
+
+    n_errors = CCTKi_ActivateThorns(value);
     
     if(n_errors)
     {

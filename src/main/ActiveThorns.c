@@ -18,6 +18,7 @@
 
 #include "cctk_Flesh.h"
 #include "cctk_FortranString.h"
+#include "cctk_WarnLevel.h"
 
 #include "util_String.h"
 #include "util_StringList.h"
@@ -60,6 +61,9 @@ static int RegisterImp(const char *name,
                        const char *thorn,
                        const char **ancestors,
                        const char **friends);
+
+static int ActivateThorn(const char *name);
+static int ActivateImp(const char *implementation, const char *thorn);
 
 static int CompareStrings(const void *string1, const void *string2);
 
@@ -988,7 +992,32 @@ const char *CCTK_CompiledImplementation(int index)
   return ret_val;
 }
 
-int ActivateThorns(const char *thornlist)
+ /*@@
+   @routine    CCTKi_ActivateThorns
+   @date       Mon May 21 22:06:37 2001
+   @author     Tom Goodale
+   @desc 
+   Activates a list of thorns if they are self consistent.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+   @var     thornlist
+   @vdesc   The list of thorns to activate.
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+
+   @returntype int
+   @returndesc 
+   -ve Number of errors encountered.
+   @endreturndesc
+@@*/
+int CCTKi_ActivateThorns(const char *thornlist)
 {
   int retval;
   char *local_list;
@@ -1002,9 +1031,12 @@ int ActivateThorns(const char *thornlist)
   int result;
   t_sktree *impnode;
   t_sktree *temp;
-  
+
   struct IMPLEMENTATION *imp;
   int i;
+
+  const char *imp1, *imp2;
+  const char *thorn;
 
   local_list = Util_Strdup(thornlist);
 
@@ -1012,7 +1044,7 @@ int ActivateThorns(const char *thornlist)
   required_imps    = Util_StringListCreate(n_imps);
   requested_imps   = Util_StringListCreate(n_imps);
 
-  printf("Activation requested for ->%s<-...", thornlist);
+  printf("Activation requested for \n--->%s<---\n", thornlist);
 
   n_errors = 0;
   n_warnings = 0;
@@ -1022,36 +1054,38 @@ int ActivateThorns(const char *thornlist)
   {
     if(CCTK_IsThornActive(token))
     {
-      printf("Warning thorn %s already active\n", token);
+      printf("Warning: thorn %s already active\n", token);
       n_warnings++;
     }
     else if(! (this_imp = CCTK_ThornImplementation(token)))
     {
-      printf("Error thorn %s doesn't exist\n", token);
+      printf("Error: thorn %s doesn't exist\n", token);
       n_errors++;
     }
     else if(CCTK_IsImplementationActive(this_imp))
     {
-      printf("Error thorn %s provides implementation %s - already active\n", token, this_imp);
+      printf("Error: thorn %s provides implementation %s - already active\n", token, this_imp);
       n_errors++;
     }
     else if(! Util_StringListAdd(required_thorns,token))
     {
-      printf("Warning thorn %s already scheduled for activation\n", token);
+      printf("Warning: thorn %s already scheduled for activation\n", token);
       n_warnings++;
     }
     else if(! Util_StringListAdd(requested_imps,this_imp))
     {
-      printf("Error thorn %s provides implementation %s which is already scheduled for activation\n", token, this_imp);
+      printf("Error: thorn %s provides implementation %s which is already scheduled for activation\n", token, this_imp);
       n_errors++;
     }
-    else if(! (impnode = SKTreeFindNode(implist, this_imp)))
+    else if((impnode = SKTreeFindNode(implist, this_imp)))
     {
       /* Ok, this thorn exists, and isn't active, a duplicate, or provide the same imp as another thorn 
        * which is active or has just been schedule for activation, so can get on with cataloging 
        * dependencies.
        */
       
+      Util_StringListAdd(required_imps,this_imp);
+
       imp = (struct IMPLEMENTATION *)(impnode->data);
 
       /* Look at ancestors */
@@ -1060,7 +1094,7 @@ int ActivateThorns(const char *thornlist)
         if(!CCTK_IsImplementationActive(imp->ancestors[i]))
         {
           /* We need this imp */
-          Util_StringListAdd(required_imps, this_imp);
+          Util_StringListAdd(required_imps, imp->ancestors[i]);
         }
       }
       
@@ -1070,21 +1104,77 @@ int ActivateThorns(const char *thornlist)
         if(!CCTK_IsImplementationActive(imp->friends[i]))
         {
           /* We need this imp */
-          Util_StringListAdd(required_imps, this_imp);
+          Util_StringListAdd(required_imps, imp->friends[i]);
         }
       }
     }
     else
     {
-      CCTK_VWarn(0, __LINE__, __FILE__, "Cactus",
-                 "Internal error :- please report this to cactusmaint@cactuscode.org");
-    }   
+      CCTK_Warn(0, __LINE__, __FILE__, "Cactus", 
+                "Internal error :- please report this to cactusmaint@cactuscode.org");
+    }
+    token = strtok(NULL," \t\n");
   }
 
   /* No longer need the local list */
   free(local_list);
 
-  
+  if(! n_errors)
+  {
+    /* So, let's see if we are requesting all the imps we need */
+
+    for(imp1=Util_StringListNext(requested_imps,1),
+          imp2=Util_StringListNext(required_imps,1); 
+        imp1&&imp2;
+        imp1=Util_StringListNext(requested_imps,0),
+          imp2=Util_StringListNext(required_imps,0))
+    {
+      do
+      {
+        if(Util_StrCmpi(imp1,imp2))
+        {
+          printf("Error: required implementation %s not requested\n", imp2);
+           n_errors++;
+        }
+        else
+        {
+          break;
+        }
+      } while(imp2=Util_StringListNext(required_imps,0));
+    }
+    /* Since the requested imps is a subset of the required imps, 
+     * we may still have some required imps to go through.
+     */
+    while(imp2=Util_StringListNext(required_imps,0))
+    {
+      printf("Error: required implementation %s not requested\n", imp2);
+      n_errors++;
+    }    
+  }
+
+
+  if(! n_errors)
+  {
+    /* Ok, so we have all required imps, so can activate the thorns, finally */
+
+    for(thorn = Util_StringListNext(required_thorns, 1);
+        thorn;
+        thorn = Util_StringListNext(required_thorns, 0))
+    {
+      ActivateThorn(thorn);
+    }
+
+    retval = 0;
+  }
+  else
+  {
+    printf("Activation failed - %d errors in activation sequence\n", n_errors);
+    retval = -n_errors;
+  }
+
+  Util_StringListDestroy(required_thorns);
+  Util_StringListDestroy(required_imps);
+  Util_StringListDestroy(requested_imps);
 
   return retval;
 }
@@ -1235,6 +1325,122 @@ static int RegisterImp(const char *name,
     imp = (struct IMPLEMENTATION *)(node->data);
     SKTreeStoreData(imp->thornlist,imp->thornlist, thorn, NULL);
 
+    retval = -1;
+  }
+
+  return retval;
+}
+
+ /*@@
+   @routine    ActivateThorn
+   @date       Mon May 21 22:09:47 2001
+   @author     Tom Goodale
+   @desc 
+   Activate one thorn - assumes all error checking done by calling routine.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+   @var     name
+   @vdesc   Name of thorn to activate
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+
+   @returntype int
+   @returndesc 
+   0  - success
+   -1 - can't find thorn
+   @endreturndesc
+@@*/
+static int ActivateThorn(const char *name)
+{
+  int retval;
+  t_sktree *thornnode;
+  
+  struct THORN *thorn;
+
+  printf("Activating thorn %s...", name);
+
+  /* Find the thorn */
+  thornnode = SKTreeFindNode(thornlist, name);
+
+  if(thornnode)
+  {
+    thorn = (struct THORN *)(thornnode->data);
+
+    thorn->active = 1;
+
+    printf("Success -> active implementation %s\n", thorn->implementation);
+
+    retval = ActivateImp(thorn->implementation, name);
+  }
+  else
+  {
+    retval = -1;
+  }
+
+  return retval;
+}
+
+ /*@@
+   @routine    ActivateImp
+   @date       Mon May 21 22:09:47 2001
+   @author     Tom Goodale
+   @desc 
+   Activate one implementation - assumes all error checking done by calling routine.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+   @var     implementation
+   @vdesc   Name of implementation to activate
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     thorn
+   @vdesc   Name of thorn activating this imp
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+
+   @returntype int
+   @returndesc 
+   0  - success
+   -1 - can't find implementation
+   @endreturndesc
+@@*/
+static int ActivateImp(const char *implementation, const char *thorn)
+{
+  int retval;
+  t_sktree *impnode;
+  
+  struct IMPLEMENTATION *imp;
+
+  /* Find the implementation */
+  impnode = SKTreeFindNode(implist, implementation);
+
+  if(impnode)
+  {
+    imp = (struct IMPLEMENTATION *)(impnode->data);
+          
+    imp->active = 1;
+    /* Remember which thorn activated this imp. */
+    imp->activating_thorn = Util_Strdup(thorn);
+    retval = 0;
+  }
+  else
+  {
     retval = -1;
   }
 

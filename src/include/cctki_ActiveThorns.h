@@ -39,6 +39,8 @@ int CCTKi_ActivateThorn(const char *name);
 int CCTKi_PrintThorns(FILE *file, const char *format, int active);
 int CCTKi_PrintImps(FILE *file, const char *format, int active);
 
+int CCTKi_ActivateThorns(const char *thornlist);
+
 #ifdef __cplusplus 
 }
 #endif
