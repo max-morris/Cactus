@@ -19,13 +19,6 @@
 \pdftrue
 \fi
 
-\ifpdf
-\usepackage[pdftex]{graphicx}
-\else
-\usepackage{graphicx}
-\fi
-
-
 \makeatletter
 \@addtoreset{chapter}{part}
 \makeatother
@@ -43,6 +36,20 @@
 \addtolength{\cftsecnumwidth}{0.5em}
 \addtolength{\cftsubsecnumwidth}{0.5em}
 \addtolength{\cftsubsubsecnumwidth}{0.5em}
+
+\ifpdf
+\pdfinfo{ /Author (Gabrielle Allen, Tom Goodale, Gerd Lanfermann, Thomas Radke, David Rideout, Jonathan Thornburg) 
+          /Title (Cactus Users Guide)
+}
+\usepackage[pdftex,plainpages=false,pdfpagelabels,hypertexnames=false,
+                   colorlinks=true,pdfstartview=FitV,
+                   linkcolor=blue,citecolor=blue,
+                   urlcolor=blue]{hyperref}
+\usepackage{graphicx}
+\usepackage{thumbpdf}
+\else
+\usepackage{graphicx}
+\fi
 
 \def\q{\bf QUERY: }
 \def\t{\tt \obeylines }
