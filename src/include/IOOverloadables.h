@@ -26,7 +26,7 @@ OVERLOADABLE(OutputGH)
                   const char *var,    \
                   const char *method, \
                   const char *alias
-OVERLOADABLE(OutputVarAs)
+OVERLOADABLE(OutputVarAsByMethod)
 
 #undef ARGUMENTS
 #undef RETURN_TYPE
