@@ -439,6 +439,33 @@ else
   AC_MSG_RESULT(no)
 fi
 
+# Check if someone has defined SOCKET 
+AC_MSG_CHECKING([if SOCKET is defined])
+AC_CACHE_VAL(cctk_cv_have_SOCKET,
+[AC_TRY_COMPILE([#include <stdio.h>
+#include <stdlib.h>
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>
+#endif
+#ifdef HAVE_SYS_TYPES_H
+#include <sys/types.h>
+#endif
+#ifdef HAVE_SYS_SOCKET_H
+#include <sys/socket.h>
+#endif
+#ifdef HAVE_WINSOCK2_H
+#include <winsock2.h>
+#endif],
+[SOCKET foo; return 0], eval "cctk_cv_have_SOCKET=yes",
+eval "cctk_cv_have_SOCKET=no")
+])
+if test "$cctk_cv_have_SOCKET" = "yes"; then
+  AC_DEFINE(HAVE_SOCKET_TYPE)	
+  AC_MSG_RESULT(yes)
+else
+  AC_MSG_RESULT(no)
+fi
+
 # Do we have gethostbyname
 AC_CHECK_FUNCS(gethostbyname)
 
