@@ -346,7 +346,7 @@ sub CreateScheduleBindings
     return 0;
   }
 
-  int CCTK_BindingsScheduleRegister(const char *type)
+  int CCTK_BindingsScheduleRegister(const char *type, void *data)
   {
     return 0;
   }
