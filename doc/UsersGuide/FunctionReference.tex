@@ -1618,8 +1618,9 @@ the form {\t <implementation>::<variable>}
 % cctk_GHExtensions.h
 \begin{CCTKFunc}{CCTK\_GHExtension}{Get the pointer to a registered extension to the Cactus GH structure}
 \label{CCTK-GHExtension}
-\subroutine{int}{integer}{extension}
-\argument{GH *}{CCTK\_POINTER}{cctkGH}
+\subroutine{void *}{CCTK\_POINTER}{extension}
+\argument{const GH *}{CCTK\_POINTER}{cctkGH}
+\argument{const char *}{character*(*)}{name}
 \showcargs
 \begin{params}
 \parameter{extension}{The pointer to the GH extension}
@@ -1631,12 +1632,12 @@ No Fortran routine exists at the moment.
 \end{discussion}
 \begin{examples}
 \begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t extension = CCTK\_GHExtension("myExtension");}
+\hfill {\bf C} && {\t void *extension = CCTK\_GHExtension(GH, "myExtension");}
 \\
 \end{tabular}
 \end{examples}
 \begin{errorcodes}
-A NULL pointer is returned if an invalid extension name was given.
+NULL	& A NULL pointer is returned if an invalid extension name was given.
 \end{errorcodes}
 \end{CCTKFunc}
 
