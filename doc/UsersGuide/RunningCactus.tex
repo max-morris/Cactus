@@ -195,7 +195,7 @@ in a single processor mode. Please refer to the architecture section
   may also work, this is not guaranteed.
   Gmake can be obtained from your favorite GNU site.
 \item{\tt C/C++} A C and C++ compiler. For example, the GNU compilers. These
- are available for all supported platforms {\bf (QUERY: Is this right:? Gab)}.
+ are available for most supported platforms.
  Platform specific compilers should also work.
 \item{\tt CVS} The {\em ``Concurrent Versioning System''} is not needed
   to run/compile the CCTK, but you are strongly encourage to install
@@ -255,7 +255,6 @@ Cactus on, including some architecture specific notes.
   free Linux F90 compiler available from  {\tt http://www.psrv.com}
   -- the only free we know of. Single processor mode and MPICH
   supported.
-\item{\bf Windows32 using Cygwin32 extensions} {\q still true?}
 \item{\bf Windows NT}: successful compile with the following software:
   \begin{itemize}
   \item{\tt DIGITAL Visual Fortran Optimizing Compiler Version: V5.0C}
@@ -264,6 +263,7 @@ Cactus on, including some architecture specific notes.
   \item{Cygnus Unix suite version 1.19}
   \end{itemize}
 \item{\bf Solaris } {\q What is the status on this ??}
+\item{\bf HP Exemplar}
 \end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -353,10 +353,9 @@ following files and subdirectories:
 \item{\tt ./src/} contains the source code for the CCTK
 
 \item {\tt ./packages/} contains the Cactus packages. The packages
-  (the actual ``physics'') is not supplied by the CCTK. If the packages
+  (the actual ``physics'') are not supplied by the CCTK. If the packages
   you want to use are part of the central repository, they can be
-  checked out in similar way the CCTK.  Each directory inside {\tt
-    packages/} contains thorns. {\q ??}
+  checked out in similar way the CCTK. 
 \end{itemize}
 
 When Cactus is first compiled it creates a new directory {\tt
