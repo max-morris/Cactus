@@ -392,7 +392,7 @@ int CCTK_VWarn (int level,
   const CCTK_INT *cctk_full_warnings, *highlight_warning_messages;
   int param_type;
   int myproc;
-  va_list ap;
+  va_list ap, aq;
 
   if (level <= warning_level || level <= logging_level)
   {
@@ -405,6 +405,7 @@ int CCTK_VWarn (int level,
       CCTK_ParameterGet ("highlight_warning_messages", "Cactus", &param_type);
 
     va_start (ap, format);
+    va_copy (aq, ap);
 
     /* print to stderr if necessary */
     if (level <= warning_level)
@@ -467,11 +468,12 @@ int CCTK_VWarn (int level,
       }
 
       fprintf (stdout, " ");
-      vfprintf (stdout, format, ap);
+      vfprintf (stdout, format, aq);
       fprintf (stdout, "\n");
 
     }
 
+    va_end (aq);
     va_end (ap);
 
   }
