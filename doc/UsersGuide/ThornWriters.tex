@@ -1845,7 +1845,7 @@ Provides the local range of a coordinate on a processor for
 
 To allow flexible IO, the flesh itself does not provide any output
 routines, however it provides a mechanism for thorns to register
-different routines as IO methods. % (see chapter \ref{chap:io_methods}). -- there is no such chapter
+different routines as IO methods (see chapter \ref{chap:io_methods}).
 Application thorns can interact with the different IO methods through
 the following function calls:
 
@@ -1958,7 +1958,7 @@ truncation error.
 
 The exchange of
 information across processors needs the functionality of a
-communication layer eg. {\tt CactusPUGH/PUGH}. For this reason, the
+communication layer e.g. {\tt CactusPUGH/PUGH}. For this reason, the
 reduction operation itself is not part of the flesh, instead Cactus (again)
 provides a registration mechanism for thorns to register routines they 
 provide as reduction operators. The different operators are
@@ -1968,7 +1968,7 @@ interface while hiding the individual communication calls in the
 layer.
 
 In Cactus, reduction operators can in principle be applied to 
-grid functions, arrays and scalars, as well as to local (non CCTK-) arrays. Note that 
+grid functions, arrays, and scalars, as well as to local (non CCTK-) arrays. Note that 
 different implementations of reduction operators may be limited in 
 the types of objects to which they can be applied.
 There is a fundamental difference between a reduction operation on
@@ -1976,8 +1976,11 @@ CCTK variables (grid functions, arrays, scalars) and arbitrary
 (non-CCTK, local) arrays (which includes a single variable as a special case
 of a one element array).
 
+The reduction interface is currently under revision, and in the future
+should closely resemble that of the new interpolator interface.  See
+e.g. \ref{CTK-InterpLocalArrays} or \ref{CCTK-InterpGridArrays}.
 
-\vskip .25cm
+\vskip .24cm
 {\bf Obtaining the reduction handle}
 
 Before calling the routine which performs the reduction operation,
@@ -2015,8 +2018,6 @@ Computational Toolkit release which provides reduction operators is
 {\tt CactusPUGH/PUGHReduce}.
 \end{Lentry}
 
-%Get a integer handle corresponding to a given reduction operator.
-%The operator is identified by the name it was registered with.
 (Note that although it would appear to be far more convenient to 
 pass the name of the reduction operator directly to the following
 function call to {\t CCTK\_Reduce} this causes problems with the
@@ -2024,7 +2025,7 @@ translation of strings from {\t FORTRAN} to {\t C} with variable
 argument lists).
 
 
-\vskip 0.25cm
+\vskip 0.24cm
 {\bf The general reduction interface}
 
 The main interfaces for reduction operations described here are quite
@@ -2139,15 +2140,18 @@ variable.
 \end{Lentry}
 
 
-\vskip 0.25cm
+\vskip 0.24cm
 {\bf Special reduction interfaces}
 
-These routines are designed for the purpose of reducing scalars, arrays
-and grid functions. They hide many of the options of the generic
-interface described above.
+These routines are designed for the purpose of reducing scalars,
+arrays and grid functions; they will work on CCTK variables as well as
+local arrays. They hide many of the options of the generic interface
+described above.
 
-{\bf Reduction of local scalars} across multiple processors, the result of 
-the reduction operation will be on the specified processor or on all processors.
+{\bf Reduction of scalars}  Use these routines to reduce a single
+variable across multiple processors.  The result of the reduction
+operation can be placed on the specified processor or on all
+processors.
 
 {\t
 \begin{verbatim}
@@ -2158,29 +2162,42 @@ int CCTK_ReduceLocScalar (cGH *GH,
                           void *out_scalar, 
                           int data_type)
 
-call CCTK_ReduceLocScalar(int returnvalue,
-                          cctkGH,
-                          int processor,
-                          int operation_handle,
+call CCTK_ReduceLocScalar(integer returnvalue,
+                          CCTK_POINTER cctkGH,
+                          integer processor,
+                          integer operation_handle,
                           in_scalar,
                           out_scalar,
-                          int data_type)
+                          integer data_type)
 \end{verbatim}
 }
 \begin{Lentry}
-\item[{\tt in\_scalar}] the processor local variable with local value to be reduced
+\item[{\tt returnvalue}] the return value of the operation.  A
+negative value indicates a failure to perform the reduction.  A zero
+indicates successfull operation.
+\item[{\tt GH} or {\tt cctkGH}] the pointer to the grid hierachy
+structure.
+\item[{\tt processor}] the processor which collects the
+information; a negative value will distribute the data to all
+processors.
+\item[{\tt operation\_handle}] the reduction operation handle
+(integer).  This is obtained by calling {\tt CCTK\_ReductionHandle} or
+{\tt CCTK\_ReductionArrayHandle}.
+
+\item[{\tt in\_scalar}] the processor local variable with local value
+to be reduced.  In Fortran, this can be of any (scalar) data type.
+
 \item[{\tt out\_scalar}] the reduction result: a processor local variable 
-with the global value (same on all procs) if {\tt processor} has been
-set to $-1$. Otherwise {\tt processor} will hold the reduction result.
-\item[{\tt data\_type}]
-specifies the type of the gridfunction 
-you are communicating. Use the values as specified in
-\ref{sec:datyansi}.
+with the global value (same on all processors) if {\tt processor} has been
+set to $-1$.  Otherwise processor {\tt processor} will hold the reduction result.
+
+\item[{\tt data\_type}] specifies the type of the gridfunction you are
+communicating. Use the values as specified in \ref{sec:datyansi}.
 \end{Lentry}
 
-\vskip 0.25cm
-
-{\bf Reduction of local 1d arrays} to a local arrays, this reduction is carried
+\vskip 0.24cm
+{\bf Reduction of 1d arrays}  Use these routines to 
+reduce a 1d array on all processors to a 1d array.  This reduction is carried
 out element by element. The arrays need to have the same size on all
 processors.
 {\t
@@ -2193,29 +2210,42 @@ int CCTK_ReduceLocArrayToArray1D( cGH *GH,
                                   int xsize)
                                   int data_type)
 
-call CCTK_ReduceLocArrayToArray1D( int returnvalue
-                                  cctkGH,
-                                  int processor,
-                                  int operation_handle,
+call CCTK_ReduceLocArrayToArray1D( integer returnvalue
+                                  CCTK_POINTER cctkGH,
+                                  integer processor,
+                                  integer operation_handle,
                                   in_array1d,
                                   out_array1d,
-                                  int xsize,
-                                  int data_type)
+                                  integer xsize,
+                                  integer data_type)
 \end{verbatim}
 }
 
 \begin{Lentry}
-\item[{\tt in\_array1d}] one dimensional local arrays, to be reduced across a 
-processors, element by element. 
-\item[{\tt out\_array1d}] array holding the reduction result. out\_array1d[1]
+\item[{\tt returnvalue}] the return value of the operation.  A
+negative value indicates a failure to perform the reduction.  A zero
+indicates successfull operation.
+\item[{\tt GH} or {\tt cctkGH}] the pointer to the grid hierachy
+structure.
+\item[{\tt processor}] the processor which collects the
+information; a negative value will distribute the data to all
+processors.
+\item[{\tt operation\_handle}] the reduction operation handle
+(integer).  This is obtained by calling {\tt CCTK\_ReductionHandle} or
+{\tt CCTK\_ReductionArrayHandle}.
+
+\item[{\tt in\_array1d}] the one dimensional array to be reduced
+across all processors, element by element.
+\item[{\tt out\_array1d}] the array holding the reduction result. out\_array1d[1]
 = Reduction(in\_array[1]).
 \item[{\tt xsize}] the size of the one dimensional array.
+
+\item[{\tt data\_type}] specifies the type of the gridfunction you are
+communicating. Use the values as specified in \ref{sec:datyansi}.
 \end{Lentry}
 
-\vskip 0.25cm
-
-{\bf Reduction of local 2d arrays} to a local 2d array, this reduction is carried
-out element by element. The arrays need to have the same size on all
+\vskip 0.24cm
+{\bf Reduction of 2d arrays} Use these routines to reduce a 2d array, element by element. The arrays need to have the same size on all
 processors.
 {\t
 \begin{verbatim}
@@ -2229,32 +2259,45 @@ int CCTK_ReduceLocArrayToArrayD( cGH *GH,
                                  int data_type)
                                  
 
-call CCTK_ReduceLocArrayToArray2D( int returnvalue
-                                   cctkGH,
-                                   int processor,
-                                   int operation_handle,
+call CCTK_ReduceLocArrayToArray2D( integer returnvalue
+                                   CCTK_POINTER cctkGH,
+                                   integer processor,
+                                   integer operation_handle,
                                    in_array2d,
                                    out_array2d,
-                                   int xsize,
-                                   int ysize,
-                                   int data_type)
-                                 
+                                   integer xsize,
+                                   integer ysize,
+                                   integer data_type)
 \end{verbatim}
 }
 
 \begin{Lentry}
-\item[{\tt in\_array1d}] two dimensional local arrays, to be reduced across a 
+\item[{\tt returnvalue}] the return value of the operation.  A
+negative value indicates a failure to perform the reduction.  A zero
+indicates successfull operation.
+\item[{\tt GH} or {\tt cctkGH}] the pointer to the grid hierachy
+structure.
+\item[{\tt processor}] the processor which collects the
+information; a negative value will distribute the data to all
+processors.
+\item[{\tt operation\_handle}] the reduction operation handle
+(integer).  This is obtained by calling {\tt CCTK\_ReductionHandle} or
+{\tt CCTK\_ReductionArrayHandle}.
+
+\item[{\tt in\_array2d}] two dimensional array, to be reduced across all
 processors, element by element. 
-\item[{\tt out\_array1d}] two dimensional array holding the reduction
+\item[{\tt out\_array2d}] two dimensional array to hold the reduction
 result. out\_array2d[i,j]= Reduction(in\_array2d[i,j]).
-\item[{\tt xsize}] the size of the one dimensional array in x direction.
-\item[{\tt ysize}] the size of the one dimensional array in y direction.
+\item[{\tt xsize}] the size of the two dimensional array in x direction.
+\item[{\tt ysize}] the size of the two dimensional array in y
+direction.
+
+\item[{\tt data\_type}] specifies the type of the gridfunction you are
+communicating. Use the values as specified in \ref{sec:datyansi}.
 \end{Lentry}
 
-\vskip 0.25cm
-
-{\bf Reduction of local 3d arrays} to a local 3d array, this reduction is carried
-out element by element. The arrays need to have the same size on all
+\vskip 0.24cm
+{\bf Reduction of 3d arrays} Use these routines to reduce a 3d array, element by element. The arrays need to have the same size on all
 processors.
 {\t
 \begin{verbatim}
@@ -2268,34 +2311,50 @@ int CCTK_ReduceLocArrayToArray3D(cGH *GH,
                                  int zsize,
                                  int data_type)
 
-call CCTK_ReduceLocArrayToArray3D(int returnvalue
-                                 cctkGH,
-                                 int processor,
-                                 int operation_handle,
+call CCTK_ReduceLocArrayToArray3D(integer returnvalue
+                                 CCTK_POINTER cctkGH,
+                                 integer processor,
+                                 integer operation_handle,
                                  in_array3d,
                                  out_array3d,
-                                 int xsize,
-                                 int ysize,
-                                 int zsize,
-                                 int data_type)
+                                 integer xsize,
+                                 integer ysize,
+                                 integer zsize,
+                                 integer data_type)
 \end{verbatim}
 }
 
 \begin{Lentry}
-\item[{\tt in\_array3d}] two dimensional local arrays, to be reduced across a 
-processors, element by element. 
-\item[{\tt out\_array3d}] two dimensional array holding the reduction
+\item[{\tt returnvalue}] the return value of the operation.  A
+negative value indicates a failure to perform the reduction.  A zero
+indicates successfull operation.
+\item[{\tt GH} or {\tt cctkGH}] the pointer to the grid hierachy
+structure.
+\item[{\tt processor}] the processor which collects the
+information; a negative value will distribute the data to all
+processors.
+\item[{\tt operation\_handle}] the reduction operation handle
+(integer).  This is obtained by calling {\tt CCTK\_ReductionHandle} or
+{\tt CCTK\_ReductionArrayHandle}.
+
+\item[{\tt in\_array3d}] the three dimensional array, to be reduced across all 
+processors, element by element.
+\item[{\tt out\_array3d}] three dimensional array holding the reduction
 result. out\_array3d[i,j,k]= Reduction(in\_array3d[i,j,k]).
-\item[{\tt xsize}] the size of the one dimensional array in x direction.
-\item[{\tt ysize}] the size of the one dimensional array in y direction.
-\item[{\tt ysize}] the size of the one dimensional array in z direction.
+\item[{\tt xsize}] the size of the three dimensional array in x direction.
+\item[{\tt ysize}] the size of the three dimensional array in y direction.
+\item[{\tt ysize}] the size of the three dimensional array in z
+direction.
+
+\item[{\tt data\_type}] specifies the type of the gridfunction you are
+communicating. Use the values as specified in \ref{sec:datyansi}.
 \end{Lentry}
 
-\vskip .25cm
+\vskip .24cm
 {\bf Some brief examples:}
 
-{\bf Reduction of a local scalars:} a local error is reduced across all
-processors wiht the maximum operation. The variable {\tt tmp} will
+{\bf Reduction of a scalar:}  A local error is reduced across all
+processors with the maximum operation. The variable {\tt tmp} will
 hold the maximum of the error and  is the same on all
 processors. This quantity can then be reassigned to {\tt normerr}.
 \begin{verbatim}
@@ -2318,9 +2377,9 @@ processors. This quantity can then be reassigned to {\tt normerr}.
 \end{verbatim}
 
 
-{\bf Reduction of a local 2d array:} a two dimensional array $(2x3)$ is 
-rdeuced, reduction results (aray of same size: {\tt bla\_tmp}) is seen
-on all processors ($-1$ entry as the thid argument); also demonstrates
+{\bf Reduction of a 2d array:}  A two dimensional $(2x3)$ array is 
+reduced; the reduction result (array of same size: {\tt bla\_tmp}) is seen
+on all processors ($-1$ entry as the thid argument).  This example also demonstrates
 some simple error checking with the {\tt CCTKi\_EXPECTOK} macro.
 \begin{verbatim}
       CCTK_REAL bla(2,3),bla_tmp(2,3);
