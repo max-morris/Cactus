@@ -371,10 +371,13 @@ CCTK_CHECK_HEADERS(sys/stat.h)
 CCTK_CHECK_HEADERS(getopt.h)
 CCTK_CHECK_HEADERS(dirent.h)
 CCTK_HEADER_REGEX
-CCTK_CHECK_HEADERS(sys/socket.h,[#ifdef HAVE_SYS_TYPES_H
+CCTK_CHECK_HEADERS(sys/filio.h,[#ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
 #endif])
-CCTK_CHECK_HEADERS(sys/filio.h,[#ifdef HAVE_SYS_TYPES_H
+CCTK_CHECK_HEADERS(sys/ioctl.h,[#ifdef HAVE_SYS_TYPES_H
+#include <sys/types.h>
+#endif])
+CCTK_CHECK_HEADERS(sys/socket.h,[#ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
 #endif])
 CCTK_CHECK_HEADERS(netinet/in.h,[#ifdef HAVE_SYS_TYPES_H
