@@ -39,7 +39,7 @@
 #define _DECLARE_CCTK_FARGUMENTS INTEGER cctk_dim&&\
                            INTEGER cctk_gsh(cctk_dim),cctk_lsh(cctk_dim)&&\
                            INTEGER cctk_lbnd(cctk_dim),cctk_ubnd(cctk_dim)&&\
-                           INTEGER cctk_lssh(3,cctk_dim)&&\
+                           INTEGER cctk_lssh(3*cctk_dim)&&\
                            INTEGER cctk_from(cctk_dim),cctk_to(cctk_dim)&&\
                            INTEGER cctk_bbox(2*cctk_dim)&&\
                            CCTK_REAL cctk_delta_time, cctk_time&&\
@@ -63,6 +63,8 @@
 
 #define CCTK_DELTA_SPACE(x) cctk_delta_space(x)/cctk_levfac(x)
 #define CCTK_DELTA_TIME cctk_delta_time
+#define CCTK_LSSH(stag,dim) cctk_lssh(stag*3+dim)
+#define CCTK_LSSH_IDX(stag,dim) (stag*3+dim)
 
 #define DECLARE_CCTK_FUNCTIONS integer CCTK_Equals, CCTK_MyProc, CCTK_nProcs
 
@@ -82,6 +84,7 @@
 #include "cctk_Coord.h"
 #include "cctk_File.h"
 #include "cctk_Groups.h"
+#include "cctk_Stagger.h"
 #include "cctk_GroupsOnGH.h"
 #include "cctk_GHExtensions.h"
 #include "cctk_Interp.h"
@@ -107,7 +110,7 @@
             int       *cctk_lsh=cctkGH->cctk_lsh;\
             int       *cctk_lbnd=cctkGH->cctk_lbnd;\
             int       *cctk_ubnd=cctkGH->cctk_ubnd;\
-            int      **cctk_lssh=cctkGH->cctk_lssh;\
+            int       *cctk_lssh=cctkGH->cctk_lssh;\
             int       *cctk_from=cctkGH->cctk_from;\
             int       *cctk_to=cctkGH->cctk_to;\
             int       *cctk_bbox=cctkGH->cctk_bbox;\
@@ -186,6 +189,8 @@ extern int _cctk_one;
 
 #define CCTK_DELTA_SPACE(x) cctk_delta_space[x]/cctk_levfac[x]
 #define CCTK_DELTA_TIME cctk_delta_time
+#define CCTK_LSSH(stag,dim) cctk_lssh[stag*3+dim]
+#define CCTK_LSSH_IDX(stag,dim) (stag*3+dim)
 
 #define CCTK_WARN(a,b) CCTK_Warn(a,__LINE__,__FILE__,CCTK_THORNSTRING,b)
 

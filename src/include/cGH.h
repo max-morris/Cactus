@@ -32,8 +32,8 @@ typedef struct
   int *cctk_lbnd;
   int *cctk_ubnd;
 
-  /* local stagger shape lssh[3][dim] (3 staggerings) */
-  int *cctk_lssh[3];
+  /* local stagger shape lssh[3*dim] (3 staggerings) */
+  int *cctk_lssh;
 
   /* unused */
   int *cctk_to;
