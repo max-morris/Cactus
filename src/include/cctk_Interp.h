@@ -88,7 +88,7 @@ int CCTK_InterpLocalUniform (int N_dims,
                              int N_output_arrays,
                              const CCTK_INT output_array_type_codes[],
                              void *const output_arrays[]);
-#endif /* ifdef CCODE /*
+#endif /* ifdef CCODE */
 
 /*
  * error codes for CCTK_InterpLocalUniform()
