@@ -40,6 +40,8 @@ CCTK_FILEVERSION(comm_OverloadComm_c);
 #define CCTKi_DummyGroupStorageIncrease  CactusDefaultGroupStorageIncrease
 #define CCTKi_DummyGroupStorageDecrease  CactusDefaultGroupStorageDecrease
 
+#define CCTKi_DummyInterpGridArrays  CactusDefaultInterpGridArrays
+
 #include "CommOverloadables.h"
 
   /* Reset the #define to prevent complications. */
@@ -54,6 +56,8 @@ CCTK_FILEVERSION(comm_OverloadComm_c);
 #undef CCTKi_DummyDisableGroupStorage
 #undef CCTKi_DummyGroupStorageIncrease
 #undef CCTKi_DummyGroupStorageDecrease
+
+#undef CactusDefaultInterpGridArrays
 
 #undef OVERLOADABLE
 
@@ -98,6 +102,8 @@ int CCTKi_SetupCommFunctions(void)
 #define CCTKi_DummyDisableGroupStorage   CactusDefaultDisableGroupStorage
 #define CCTKi_DummyGroupStorageIncrease  CactusDefaultGroupStorageIncrease
 #define CCTKi_DummyGroupStorageDecrease  CactusDefaultGroupStorageDecrease
+
+#define CCTKi_DummyInterpGridArrays  CactusDefaultInterpGridArrays
 
 #include "CommOverloadables.h"
 
