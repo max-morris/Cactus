@@ -358,10 +358,29 @@ sub SortThings
     return;
   }
 
-  # Sort the things
-  @sorted_things = sort ThingSorter @things;
+  # Remove anything which doesn't need sorting
+  $sortcount=0;
+  $returncount=0;
+  for ($i=0;$i<scalar(@things);$i++)
+  {
+      if ($database{"\U$things[$i] AFTER"} || $database{"\U$things[$i] ALLAFTER"} || 
+	  $database{"\U$things[$i] BEFORE"} || $database{"\U$things[$i] ALLBEFORE"})
+      {
+	  $sortthings[$sortcount] = $things[$i];
+	  $sortcount++;
+      }
+      else
+      {
+	  $returnthings[$returncount] = $things[$i];
+	  $returncount++
+      }
+  }
 
-  return @sorted_things;
+
+  # Sort the things
+  @sorted_things = sort ThingSorter @sortthings;
+  return (@returnthings,@sorted_things);
+
 }
 
 
