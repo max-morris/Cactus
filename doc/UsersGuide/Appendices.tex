@@ -176,17 +176,18 @@ The thorn's variables are defined by:
 \begin{verbatim}
 [<access>:]
 
-<data_type> <group_name>[[<number>]] [TYPE=<group_type>] [DIM=<dim>] [TIMELEVELS=<num>]
+<data_type> <group_name>[[<number>]] [TYPE=<group_type>] [DIM=<dim>]
+[TIMELEVELS=<num>]
 [SIZE=<size in each direction>] [DISTRIB=<distribution_type>]
 [GHOSTSIZE=<ghostsize>] [STAGGER=<stagger-specification>]
-[TAGS=<string>]
+[TAGS=<string>]  ["<group_description>"]
 [{
  [ <variable_name>[,]<variable_name>
    <variable_name> ]
 } ["<group_description>"] ]
 \end{verbatim}}
 %
-(The options {\t TYPE}, {\t DIM}, etc. following {\t <group\_name>}
+(The options {\t TYPE}, {\t DIM}, etc.\ following {\t <group\_name>}
 must all appear on one line.)  Note that the beginning brace (\{) must
 sit on a line by itself; the ending brace (\} must be preceded by a
 carriage return.
@@ -222,14 +223,16 @@ optional, with the default variable type being {\t SCALAR}.
 \item{} {\t DISTRIB} defines the processor decomposition of an {\tt ARRAY}.
         {\tt DISTRIB=CONSTANT} implies that {\tt SIZE} grid-points should
         be allocated on each processor.
-\item{} {\t GHOSTSIZE} defines number of ghost-zones in each dimension of an {\tt ARRAY}.
+\item{} {\t GHOSTSIZE} defines number of ghost-zones in each dimension
+of an {\tt ARRAY}.  
+%Does GHOSTSIZE default to one for a GF and zero for a GA?
 \item{} {\t STAGGER} defines position of grid-points of a {\tt GF} with respect to
         the underlying grid.  It consists of a string made up of a combination {\tt DIM}
         of the letters {\tt M}, {\tt C}, {\tt P} depending on whether the layout in
         that direction is on the {\tt M}inus face, {\tt C}entre, or {\tt P}lus face
         of the cell in that dimension.
 \item{} {\t TAGS} defines an optional string which is used to create a
-        set of key-value pairs associated witn the group.  The keys
+        set of key-value pairs associated with the group.  The keys
         are case independent.
 \item{} The (optional) block following the group declaration line
 contains a list of variables contained in the group. All variables in
@@ -242,8 +245,8 @@ lines.  If no block is given after a group declaration line, a
 variable with the same name as the group is created. Apart from this case, 
 a group name cannot be the same as the name of any variable seen by this thorn.
 \item{} An optional description of the group can be given on the last
-line, at the moment this description is not used for any purpose. (Note that
-the variable block is required if you want to give a group description.)
+line.  If the variable block is omitted, this description can be given
+at the end of the declaration line.
 \end{itemize}
 
 The process of sharing code among thorns using include files is
@@ -373,7 +376,7 @@ instead.
 \section{schedule.ccl}
 \label{sec:sc}
 
-A more extensive discussion of Cactus scheduling is provided in Chapter
+(A more extensive discussion of Cactus scheduling is provided in Chapter
 \ref{chap:scheduling}.) A schedule configuration file consists of
 \begin{itemize}
 
