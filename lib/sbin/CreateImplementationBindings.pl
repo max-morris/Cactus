@@ -40,6 +40,7 @@ sub CreateImplementationBindings
   push(@data, "/* FIXME - remove when ActiveThorns does not need this */\n");
   push(@data, "#include \"SKBinTree.h\"\n\n");
   push(@data, "#include \"cctk_ActiveThorns.h\"\n\n");
+  push(@data, "#include \"cctki_ActiveThorns.h\"\n\n");
 
   push(@data, "int CCTKi_BindingsImplementationsInitialise(void)\n{\n");
 
