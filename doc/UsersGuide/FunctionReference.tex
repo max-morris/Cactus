@@ -1,6 +1,92 @@
 \begin{cactuspart}{4}{FunctionReference}{$RCSfile$}{$Revision$}
 \renewcommand{\thepage}{\Alph{part}\arabic{page}}
 
+\section{Cactus Functions Alphabetically}
+
+\begin{description}
+
+\item[CCTK\_ArrayGroupSize]
+\item[CCTK\_Abort]
+\item[CCTK\_ArrayGroupSizeB]
+\item[CCTK\_ArrayGroupSize]
+
+\item[CCTK\_Barrier]
+
+\item[CCTK\_CoordIndex] Give the GF index for a given coordinate name.
+\item[CCTK\_CoordRange] Return the global upper and lower bounds for a given coordinate name
+
+\item[CCTK\_DecomposeName] Given the full name of a variable/group, separates the name returning both the implementation and the variable/group
+\item[CCTK\_DisableGroupComm]
+\item[CCTK\_DisableGroupStorage]
+
+\item[CCTK\_EnableGroupComm]
+\item[CCTK\_EnableGroupStorage]
+\item[CCTK\_Exit]
+
+\item[CCTK\_FullName] Given a variable index, returns the full name of the variable
+\item[CCTK\_FirstVarIndexI] Given a group index returns the first variable index in the group
+
+\item[CCTK\_GroupIndex] Get the index number for a group name
+\item[CCTK\_GroupNameFromVarI] Given a variable index, return the name of the associated group
+\item[CCTK\_GroupIndexFromVarI] Given a variable index, returns the index of the associated group
+\item[CCTK\_GroupIndexFromVar] Given a variable name, returns the index of the associated group
+\item[CCTK\_GroupData] Given a group index, returns information about the variables held in the group
+\item[CCTK\_GroupName] Given a group index, returns the group name
+\item[CCTK\_GroupTypeFromVarI] Provides group type index from the group index
+
+\item[CCTK\_ImpFromVarI] Given a variable index, returns the implementation name
+\item[CCTK\_INFO] Prints an information message
+	 
+\item[CCTK\_MaxDim] Get the maximum dimension of any grid variable 
+\item[CCTK\_MyProc] 
+
+\item[CCTK\_NumGroups] Get the number of groups of variables compiled in the code
+\item[CCTK\_NumVarsInGroupI] Provides the number of variables in a group from the group index
+\item[CCTK\_NumVarsInGroup] Provides the number of variables in a group from the group name
+\item[CCTK\_NumTimeLevelsFromVarI] Gives the number of timelevels for a variable
+\item[CCTK\_NumTimeLevelsFromVar] Gives the number of timelevels for a variable
+\item[CCTK\_nProcs] 
+
+
+\item[CCTK\_OutputVarAsByMethod] 
+\item[CCTK\_OutputGH] 
+
+
+\item[CCTK\_ParallelInit] 
+\item[CCTK\_PARAMWARN] Prints a warning from parameter checking, and possibly stops the code
+\item[CCTK\_PrintGroup] Prints a group name from its index
+\item[CCTK\_PrintVar] Prints a variable name from its index
+
+
+\item[CCTK\_QueryGroupStorage] 
+\item[CCTK\_QueryGroupStorageI] 
+
+\item[CCTK\_RegisterCoordI] Register a grid function index as identifying a coordinate with a given coordinate name and direction.
+\item[CCTK\_RegisterCoord] Register a grid function name as identifying a coordinate with a given coordinate name and direction.
+\item[CCTK\_RegisterCoordRange] Saves the global upper and lower bounds for a given coordinate name
+\item[CCTK\_RegisterIOMethod] 
+\item[CCTK\_RegisterIOMethodOutputGH] 
+\item[CCTK\_RegisterIOMethodTimeToOutput] 
+\item[CCTK\_RegisterIOMethodTriggerOutput] 
+\item[CCTK\_RegisterIOMethodOutputVarAs] 
+\item[CCTK\_RegisterGHExtension] 
+\item[CCTK\_RegisterGHExtensionSetupGH] 
+\item[CCTK\_RegisterGHExtensionInitGH] 
+\item[CCTK\_RegisterGHExtensionrfrTraverseGH] 
+
+\item[CCTK\_SetupGH] 
+\item[CCTK\_SyncGroup] 
+
+\item[CCTK\_VarIndex] Get the index for a variable
+\item[CCTK\_VarName] Given a variable index, returns the variable name
+\item[CCTK\_VarTypeI] Provides variable type index from the variable index
+
+\item[CCTK\_WARN] Prints a warning message and possibly stops the code
+
+\end{description}
+
+
+\section{Cactus Functions}
 
 %\begin{CCTKFunc}{}{}
 %\function{int}{CCTK\_INT}{storage}
@@ -1430,6 +1516,128 @@ This routine is for debugging purposes for Fortran programmers.
 
 
 
+% Interp.h
+\begin{CCTKFunc}{CCTK\_RegisterInterpOperator}{Register a function
+  which will provide an interpolation operator}
+\subroutine{int}{}{handle}
+\argument{int}{}{(*function)(REGISTER\_INTERP\_ARGLIST)}
+\argument{const char *}{}{name}
+\showcargs
+\begin{params}
+\parameter{handle}{Handle from the registration}
+\parameter{function}{Routine containing interpolation operator}
+\parameter{name}{Name of interpolation operator}
+\end{params}
+\begin{discussion}
+The argument list {\t REGISTER\_INTERP\_ARGLIST} 
+ for the interpolation operator routine is
+\begin{description}
+\item[cGH *GH]
+ 	Pointer to CCTK grid hierachy (in)
+\item[int nPoints]
+	Number of points to be interpolated on this processor (in)
+\item[int nDims]
+	Number of coordinate dimensions for each point (in)
+\item[int nInFields]
+	Number of input fields to interpolate from (in)
+\item[int nOutFields]
+	Number of output fields to interpolate to (in)
+\item[int *dims]
+ 	Size nDims array with dimensions of the underlying grid (in)
+\item[void **coords]
+	Void *array of size nDims with coordinates of points to interpolate at (in)
+\item[int *coordTypes]
+	size ndims array with variable type of coordinate fields (in)
+\item[void *origin]
+	size ndims array with origin of the underlying grid (in)
+\item[void *delta]
+	size ndims array with gridspacing of the underlying grid (in)
+\item[void **inFields]
+	size nInFields *array of input fields to interpolate on (in)
+\item[int *inTypes]
+	size ndims array with variable types of input fields (in)
+\item[void **outFields]
+	size nOutFields *array of output fields to interpolate to (out)
+\item[int *outTypes]
+	size ndims array with variable types of output fields (in)
+\end{description}
+\end{discussion}
+\begin{examples}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
+
+
+
+% Interp.h
+\begin{CCTKFunc}{CCTK\_Interp}{Perform an interpolatation, using a chosen method}
+\subroutine{int}{integer}{num}
+\argument{cGH *}{CCTK\_POINTER}{GH}
+\argument{int}{integer}{handle}
+\argument{int}{integer}{nPoints}
+\argument{int}{integer}{nDims}
+\argument{int}{integer}{nInFields}
+\argument{int}{integer}{nOutFields}
+\argument{...}{...}{}
+\showargs
+\begin{params}
+\parameter{GH}{pointer to CCTK grid hierarchy}
+\parameter{handle}{handle for interpolation method}
+\parameter{nPoints}{number of points to be interpolated on this processor}
+\parameter{nDims}{number of passed coordinate fields}
+\parameter{nInFields}{number of passed input fields}
+\parameter{nOutFields}{number of passed output fields}
+\parameter{...}{variable argument list containing coordinate details andvariable indices, described below}
+\end{params}
+\begin{discussion}
+The handle for a given interpolation method can be found using
+{\t CCTK\_InterpHandle}. The variable argument list contains
+information in the order:
+\begin{itemize}
+\item{} nDim integers containing ??
+\item{} nDim coordinate grid indices
+\item{} nDim coordinate variable types
+\item{} nDim coordinate origins
+\item{} nDim grid spacings
+\item{} nInFields indices for the fields to be interpolated from
+\item{} nInFields variable types for the fields to be interpolated from
+\item{} nOutFields indices for the fields to be interpolated to
+\item{} nOutFields variable types for the fields to be interpolated to
+\end{itemize}
+
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc} 
+
+
+
+
+
+% Groups.c
+\begin{CCTKFunc}{CCTK\_InterpHandle}{Return the handle for a given interpolation operator}
+\subroutine{int}{integer}{handle}
+\argument{const char *}{character*(*)}{operator}
+\showargs
+\begin{params}
+\parameter{hnadle}{Handle for the interpolation operator}
+\parameter{operator}{Name of interpolation operator}
+\end{params}
+\begin{discussion}
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc} 
 
 
 
