@@ -19,13 +19,28 @@ static char *rcsid = "$Header$";
 
 CCTK_FILEVERSION(util_Hash_c)
 
-/* Local routine prototypes */
+/********************************************************************
+ *********************     Local Data Types   ***********************
+ ********************************************************************/
+
+/********************************************************************
+ ********************* Local Routine Prototypes *********************
+ ********************************************************************/
+
 static iHashEntry *HashFind(uHash *hash, 
                             unsigned int klen, 
                             const char *key, 
                             unsigned int hashval);
 
 static int HashRehash(uHash *hash);
+
+/********************************************************************
+ ********************* Other Routine Prototypes *********************
+ ********************************************************************/
+
+/********************************************************************
+ *********************     Local Data   *****************************
+ ********************************************************************/
 
 /********************************************************************
  ********************    External Routines   ************************
@@ -44,6 +59,18 @@ static int HashRehash(uHash *hash);
    @history 
  
    @endhistory 
+   @var     initial_size
+   @vdesc   Initial size of hash table
+   @vtype   int
+   @vio     in
+   @vcomment 
+   Should be the size of a typical table.
+   @endvar 
+
+   @returntype uHash *
+   @returndesc
+   The new hash table object.
+   @endreturndesc
 
 @@*/
 uHash *Util_HashCreate(unsigned int initial_size)
@@ -90,6 +117,25 @@ uHash *Util_HashCreate(unsigned int initial_size)
    @history 
  
    @endhistory 
+   @var     hash
+   @vdesc   A hash table
+   @vtype   uHash *
+   @vio     inout
+   @vcomment 
+   This is the hash table to be destroyed.
+   @endvar 
+   @var     delete_entry
+   @vdesc   Function used to destroy each entry.
+   @vtype   void (*)(void *)
+   @vio     in
+   @vcomment 
+   This is called on each entry before the hash table is destroyed.
+   @endvar 
+
+   @returntype int
+   @returndesc
+   Always 0.
+   @endreturndesc
 
 @@*/
 int Util_HashDestroy(uHash *hash, void (*delete_entry)(void *))
@@ -127,13 +173,57 @@ int Util_HashDestroy(uHash *hash, void (*delete_entry)(void *))
    @date       Wed Oct 27 23:44:14 1999
    @author     Tom Goodale
    @desc 
-   Stores a value in the hash table.
+   Stores a value in the hash table.  If the entry already
+   exists it just changes the data stored there.
    @enddesc 
    @calls     
    @calledby   
    @history 
  
    @endhistory 
+   @var     hash
+   @vdesc   A hash table
+   @vtype   uHash *
+   @vio     inout
+   @vcomment 
+   This is the hash table to store the data in.
+   @endvar 
+   @var     klen
+   @vdesc   The length of the key passed in
+   @vtype   unsigned int
+   @vio     in
+   @vcomment 
+   This is the number of significant bytes of the key. 
+   @endvar 
+   @var     key
+   @vdesc   The key to the data
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+   This can in fact be any array of klen bytes, so if you want
+   to hash on an integer foo, say, you can pass in 
+   (const char *)&foo .
+   @endvar 
+   @var     hashval
+   @vdesc   A precalculated hashvalue
+   @vtype   unsigned int
+   @vio     in
+   @vcomment 
+   If this is 0 the default hash calculation is used.
+   @endvar 
+   @var     data
+   @vdesc   Data to be stored with the key
+   @vtype   void *
+   @vio     in
+   @vcomment 
+   This is an arbitrary data structure.
+   @endvar 
+
+   @returntype int
+   @returndesc
+   0  - success
+   else return value of @seeroutine Util_HashAdd
+   @endreturndesc
 
 @@*/
 int Util_HashStore(uHash *hash, 
@@ -172,6 +262,50 @@ int Util_HashStore(uHash *hash,
    @history 
  
    @endhistory 
+   @var     hash
+   @vdesc   A hash table
+   @vtype   uHash *
+   @vio     inout
+   @vcomment 
+   This is the hash table to add data to.
+   @endvar 
+   @var     klen
+   @vdesc   The length of the key passed in
+   @vtype   unsigned int
+   @vio     in
+   @vcomment 
+   This is the number of significant bytes of the key. 
+   @endvar 
+   @var     key
+   @vdesc   The key to the data
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+   This can in fact be any array of klen bytes, so if you want
+   to hash on an integer foo, say, you can pass in 
+   (const char *)&foo .
+   @endvar 
+   @var     hashval
+   @vdesc   A precalculated hashvalue
+   @vtype   unsigned int
+   @vio     in
+   @vcomment 
+   If this is 0 the default hash calculation is used.
+   @endvar 
+   @var     data
+   @vdesc   Data to be stored with the key
+   @vtype   void *
+   @vio     in
+   @vcomment 
+   This is an arbitrary data structure.
+   @endvar 
+
+   @returntype int
+   @returndesc
+   0  - success
+   -1 - duplicate entry
+   -2 - memory failure
+   @endreturndesc
 
 @@*/
 int Util_HashAdd(uHash *hash, 
@@ -292,6 +426,42 @@ int Util_HashAdd(uHash *hash,
    @history 
  
    @endhistory 
+   @var     hash
+   @vdesc   A hash table
+   @vtype   uHash *
+   @vio     inout
+   @vcomment 
+   This is the hash table to delete data from.
+   @endvar 
+   @var     klen
+   @vdesc   The length of the key passed in
+   @vtype   unsigned int
+   @vio     in
+   @vcomment 
+   This is the number of significant bytes of the key. 
+   @endvar 
+   @var     key
+   @vdesc   The key to the data
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+   This can in fact be any array of klen bytes, so if you want
+   to hash on an integer foo, say, you can pass in 
+   (const char *)&foo .
+   @endvar 
+   @var     hashval
+   @vdesc   A precalculated hashvalue
+   @vtype   unsigned int
+   @vio     in
+   @vcomment 
+   If this is 0 the default hash calculation is used.
+   @endvar 
+
+   @returntype int
+   @returndesc
+   1  - entry found
+   0  - non-existent entry
+   @endreturndesc
 
 @@*/
 int Util_HashDelete(uHash *hash, 
@@ -370,6 +540,41 @@ int Util_HashDelete(uHash *hash,
    @history 
  
    @endhistory 
+   @var     hash
+   @vdesc   A hash table
+   @vtype   uHash *
+   @vio     inout
+   @vcomment 
+   This is the hash table with the data in.
+   @endvar 
+   @var     klen
+   @vdesc   The length of the key passed in
+   @vtype   unsigned int
+   @vio     in
+   @vcomment 
+   This is the number of significant bytes of the key. 
+   @endvar 
+   @var     key
+   @vdesc   The key to the data
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+   This can in fact be any array of klen bytes, so if you want
+   to hash on an integer foo, say, you can pass in 
+   (const char *)&foo .
+   @endvar 
+   @var     hashval
+   @vdesc   A precalculated hashvalue
+   @vtype   unsigned int
+   @vio     in
+   @vcomment 
+   If this is 0 the default hash calculation is used.
+   @endvar 
+
+   @returntype void *
+   @returndesc
+   The data associated with the key if found, ogtherwise NULL.
+   @endreturndesc
 
 @@*/
 void *Util_HashData(uHash *hash, 
@@ -411,6 +616,27 @@ void *Util_HashData(uHash *hash,
    @history 
  
    @endhistory 
+   @var     klen
+   @vdesc   The length of the key passed in
+   @vtype   unsigned int
+   @vio     in
+   @vcomment 
+   This is the number of significant bytes of the key. 
+   @endvar 
+   @var     key
+   @vdesc   The key to the data
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+   This can in fact be any array of klen bytes, so if you want
+   to hash on an integer foo, say, you can pass in 
+   (const char *)&foo .
+   @endvar 
+
+   @returntype unsigned int
+   @returndesc
+   The hash value
+   @endreturndesc
 
 @@*/
 unsigned int Util_HashHash(unsigned int klen, 
@@ -454,6 +680,41 @@ unsigned int Util_HashHash(unsigned int klen,
    @history 
  
    @endhistory 
+   @var     hash
+   @vdesc   A hash table
+   @vtype   uHash *
+   @vio     inout
+   @vcomment 
+   This is the hash table to find the data in.
+   @endvar 
+   @var     klen
+   @vdesc   The length of the key passed in
+   @vtype   unsigned int
+   @vio     in
+   @vcomment 
+   This is the number of significant bytes of the key. 
+   @endvar 
+   @var     key
+   @vdesc   The key to the data
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+   This can in fact be any array of klen bytes, so if you want
+   to hash on an integer foo, say, you can pass in 
+   (const char *)&foo .
+   @endvar 
+   @var     hashval
+   @vdesc   A precalculated hashvalue
+   @vtype   unsigned int
+   @vio     in
+   @vcomment 
+   If this is 0 the default hash calculation is used.
+   @endvar 
+
+   @returntype iHashEntry *
+   @returndesc
+   The hash entry if found, otherwise NULL.
+   @endreturndesc
 
 @@*/
 static iHashEntry *HashFind(uHash *hash, 
@@ -503,6 +764,19 @@ static iHashEntry *HashFind(uHash *hash,
    @history 
  
    @endhistory 
+   @var     hash
+   @vdesc   The hash table to rehash
+   @vtype   uHash *
+   @vio     inout
+   @vcomment 
+   
+   @endvar 
+
+   @returntype int
+   @returndesc
+   0  - success
+   -1 - memory failure
+   @endreturndesc
 
 @@*/
 static int HashRehash(uHash *hash)
