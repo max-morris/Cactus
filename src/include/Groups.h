@@ -51,6 +51,10 @@ int CCTK_DecomposeGroupName(const char *fullname, char **implementation, char **
 
 char *CCTK_GetGroupName(int varnum);
 
+int CCTK_GetVarGType(int var);
+
+int CCTK_GetVarVType(int var);
+
 #ifdef _cplusplus 
 }
 #endif

@@ -564,3 +564,27 @@ int CCTK_GetFirstVarNum(int group)
 {
   return groups[group].variables[0].number;
 }
+
+int CCTK_GetVarGType(int var)
+{
+  int gtype;
+  int group;
+
+  group = group_of_variable[var];
+
+  gtype = groups[group].gtype;
+
+  return gtype;
+}
+
+int CCTK_GetVarVType(int var)
+{
+  int vtype;
+  int group;
+
+  group = group_of_variable[var];
+
+  vtype = groups[group].vtype;
+
+  return vtype;
+}
