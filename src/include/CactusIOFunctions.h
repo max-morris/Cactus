@@ -1,0 +1,35 @@
+ /*@@
+   @header    CactusIOFunctions.h
+   @date      Mon Jan 8 1999
+   @author    Gabrielle Allen
+   @desc 
+   Overloadable IO functions
+   @enddesc 
+ @@*/
+ 
+/* $Header$ */
+
+#ifndef _CACTUSIOFUNCTIONS_H_
+#define _CACTUSIOFUNCTIONS_H_
+
+#include <stdarg.h>
+
+#include "OverloadMacros.h"
+
+#ifdef _cplusplus
+extern "C" {
+#endif
+
+/* The functions. */
+
+#define OVERLOADABLE(name) OVERLOADABLE_PROTOTYPE(name)
+
+#include "IOOverloadables.h"
+
+#undef OVERLOADABLE(name)
+
+#ifdef _cplusplus
+	   }
+#endif
+
+#endif
