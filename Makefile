@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.119 2001-09-14 08:10:34 allen Exp $
+#   @version $Id: Makefile,v 1.120 2001-09-14 14:38:12 allen Exp $
 # @@*/
 
 ##################################################################################
@@ -226,7 +226,7 @@ endif
 # Target to build a configuration
 .PHONY: $(CONFIGURATIONS)
 
-$(CONFIGURATIONS):
+$(CONFIGURATIONS): int_version
 	cd $(CONFIGS_DIR)/$@ 
 	$(MAKE) -f $(CCTK_HOME)/lib/make/make.configuration TOP=$(CONFIGS_DIR)/$@ CCTK_HOME=$(CCTK_HOME) $(TPARFLAGS)
 
@@ -351,11 +351,27 @@ endif
 	@echo "  <anything else>  - prompts to create such a configuration."
 	@echo $(DIVIDER)
 
+
+# Version information
+.PHONY: version
+
+version:
+	@echo "Cactus - version: $(CCTK_VERSION)"
+
+
+# Version information for internal use
+.PHONY: int_version
+
+int_version:
+	@echo $(DIVIDER)
+	@echo "Cactus - version: $(CCTK_VERSION)"
+
+
 # Clean a configuration
 
 .PHONY: clean
 
-clean:
+clean: 
 	@echo $(DIVIDER)
 	@echo Please specify a configuration to clean.
 	@echo $(DIVIDER)
@@ -502,23 +518,20 @@ endif
 
 .PHONY: rebuild
 
-rebuild:
-	@echo $(DIVIDER)
+rebuild: int_version
 	@echo Please specify a configuration to rebuild.
 	@echo $(DIVIDER)
 
 ifneq ($strip($(CONFIGURATIONS)),)
 .PHONY: $(addsuffix -rebuild,$(CONFIGURATIONS))
 
-$(addsuffix -rebuild,$(CONFIGURATIONS)):
-	@echo $(DIVIDER)
+$(addsuffix -rebuild,$(CONFIGURATIONS)): int_version
 	@echo Rebuilding $(@:%-rebuild=%)
 	if [ -r $(CONFIGS_DIR)/$(@:%-rebuild=%)/config-data/make.thornlist ] ; then rm  $(CONFIGS_DIR)/$(@:%-rebuild=%)/config-data/make.thornlist ; fi
 	$(MAKE) $(@:%-rebuild=%)
 endif
 
 %-rebuild:
-	@echo $(DIVIDER)
 	@echo Configuration $(@:%-rebuild=%) does not exist.
 	@echo Rebuild aborted.
 
@@ -526,7 +539,7 @@ endif
 
 .PHONY: thornlist
 
-thornlist:
+thornlist: 
 	@echo $(DIVIDER)
 	@echo Please specify a configuration to regenerate the thornlist of.
 	@echo $(DIVIDER)
@@ -575,17 +588,14 @@ endif
 
 .PHONY: config
 
-config:
-	@echo $(DIVIDER)
+config: int_version
 	@echo Please specify a configuration to configure.
 	@echo $(DIVIDER)
-
 
 ifneq ($strip($(CONFIGURATIONS)),)
 .PHONY: $(addsuffix -config,$(CONFIGURATIONS))
 
-$(addsuffix -config,$(CONFIGURATIONS)):
-	echo $(DIVIDER)
+$(addsuffix -config,$(CONFIGURATIONS)): int_version
 	if test -z "$(THORNLIST)" || (test -n "$(THORNLIST)" && test -r "$(THORNLIST_DIR)/$(THORNLIST)") ; \
 	then \
 	  if ($(SETUP_ENV) $(PERL) -s $(SETUP) -reconfig=1 $(SETUP_OPTIONS) $(@:%-config=%)) ; then : ; else \
@@ -614,7 +624,6 @@ $(addsuffix -config,$(CONFIGURATIONS)):
 endif
 
 %-config:
-	@echo $(DIVIDER)
 	@echo Configuration $(@:%-config=%) does not exist.; 
 	if test "x$(PROMPT)" = "xyes" ; then \
 	  echo Setup configuration $(@:%-config=%) \(yes\)?; \
@@ -690,8 +699,7 @@ newthorn:
 
 .PHONY: testsuite
 
-testsuite:
-	@echo $(DIVIDER)
+testsuite: int_version
 	@echo Please specify a configuration to test.
 	@echo $(DIVIDER)
 
@@ -700,13 +708,11 @@ ifneq ($strip($(CONFIGURATIONS)),)
 .PHONY: $(addsuffix -testsuite,$(CONFIGURATIONS))
 
 $(addsuffix -testsuite,$(CONFIGURATIONS)):
-	@echo $(DIVIDER)
 	@echo Running test suite $(@:%-thornlist=%)
 	if [ -r $(CONFIGS_DIR)/$(@:%-testsuite=%)/ThornList ] ; then $(PERL) lib/sbin/Runtest.pl $(PROMPT) $(@:%-testsuite=%) ; fi
 endif
 
 %-testsuite:
-	@echo $(DIVIDER)
 	@echo Configuration $(@:%-testsuite=%) does not exist.
 	@echo Test suite aborted.
 
@@ -964,6 +970,7 @@ downsize:
 
 %::
 	@echo $(DIVIDER)
+	@echo "Cactus - version: $(CCTK_VERSION)"
 	if test "x$(PROMPT)" = "xyes" ; then \
 	  echo Setup configuration $@ \(yes\)?; \
 	  read yesno rest ; \
