@@ -22,8 +22,6 @@
 #include <winsock2.h>
 #endif /* HAVE_WINSOCK2_H */
 
-#include "util_Network.h"
-
 static char *rcsid = "$Header$";
 
 CCTK_FILEVERSION(util_Network_c)
@@ -90,7 +88,7 @@ void Util_GetHostName (char *name, int length)
     if (thishostent)
     {
       strncpy (name, thishostent->h_name, length);
-      name[length] = 0;
+      name[length - 1] = 0;
     }
 #endif
   }
