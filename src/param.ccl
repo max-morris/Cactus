@@ -1,11 +1,14 @@
-#/*@@
-#  @file param.ccl
-#  @date 31 Jan 1999
-#  @author Gabrielle Allen
-#  @desc
-#  Parameters for the main code
-#  @enddesc
-#  @history
-#  @endhistory
-#@@*/
+# Parameter definitions for flesh
+# $Header$
 
+public:
+ 
+INTEGER cctk_itfirst "Initial iteration number"
+{
+: :: "Any integer"
+} 0
+
+INTEGER cctk_itlast "Final iteration number"
+{
+: :: "Any integer"
+} 10
