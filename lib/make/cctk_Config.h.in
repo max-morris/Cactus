@@ -76,6 +76,7 @@
 
 #undef HAVE_MKDIR
 #undef HAVE_SCANDIR
+#undef HAVE_GETOPT_LONG_ONLY
 
 /* Do we have mode_t ? */
 

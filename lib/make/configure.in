@@ -388,9 +388,11 @@ dnl Misc stuff
 
 dnl Do we need to build the GNU getopt and regex stuff ?
 
+AC_CHECK_FUNCS(getopt_long_only)
+
 AC_SUBST(BUILD_GETOPT)
 
-if test "x$cctk_cv_header_getopt_h" = "xyes" ; then
+if test "x$cctk_cv_header_getopt_h" = "xyes" -a "x$ac_cv_func_getopt_long_only" = "xyes"; then
   BUILD_GETOPT=no
 else
   BUILD_GETOPT=yes
