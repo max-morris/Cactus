@@ -21,6 +21,7 @@
 #include "Groups.h"
 #include "StoreHandledData.h"
 #include "Reduction.h"
+#include "WarnLevel.h"
 
 static char *rcsid = "$Header$";
 

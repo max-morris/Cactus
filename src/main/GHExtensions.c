@@ -76,7 +76,6 @@ static int DummyrfrTraverseGH(cGH *GH, int rfrpoint);
 @@*/
 int CCTK_RegisterGHExtension(const char *name)
 {
-  int return_val;
 
   int handle;
 
