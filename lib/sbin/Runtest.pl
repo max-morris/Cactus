@@ -69,7 +69,6 @@ if (!open (AT, "< $scratchdir${sep}ThornList")) {
 } 
 else 
 {
-  printf ("Reading Thorn List\n");
   while (<AT>) 
   {
     @t = split(' ');
