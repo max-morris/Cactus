@@ -503,7 +503,7 @@ int CCTKi_SetWarnLevel (int level)
   {
     retval = level > warning_level ? +1 : -1;
     CCTK_VInfo ("Cactus", "%s warning level from %d to %d",
-                retval > 0 ? "Increasing" : "Decreasing", error_level, level);
+                retval > 0 ? "Increasing" : "Decreasing", warning_level, level);
     warning_level = level;
   }
   else
