@@ -14,13 +14,14 @@
 #include <stdio.h>
 
 #include "cctk_WarnLevel.h"
+#include "cctk_FortranString.h"
 
 int CCTK_mkdir(char *dir)
 {
   int retval;
   char *command;
   char *message;
-
+ 
   command = (char *)malloc(1024*sizeof(char));
 
   /***
@@ -51,5 +52,13 @@ int CCTK_mkdir(char *dir)
 
   return retval;
 
+}
+
+void FMODIFIER FORTRAN_NAME(CCTK_mkdir)(int *ierr, ONE_FORTSTRING_ARG)
+{
+  int retval;
+  ONE_FORTSTRING_CREATE(arg1)
+  *ierr = CCTK_mkdir(arg1);
+  free(arg1); 
 }
 
