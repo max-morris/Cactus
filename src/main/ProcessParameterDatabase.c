@@ -58,6 +58,6 @@ int CCTKi_ProcessParameterDatabase(tFleshConfig *ConfigData)
     retval = 1;
   }
       
-  return 0;
+  return retval;
 }
 
