@@ -11,6 +11,12 @@
 
 \begin{document}
 
+\newenvironment{CCTKroutine}{\newpage}{}
+\newenvironment{CCTKsyn}{\noindent\begin{tabular}{@{}p{3cm}cp{11cm}}&&\\{\bf Synopis} \hfill&&\\}{\end{tabular}}
+\newenvironment{CCTKpar}{\noindent\begin{tabular}{@{}p{3cm}cp{11cm}}&&\\{\bf Parameters} \hfill&&\\}{\end{tabular}}
+\newcommand{\CCTKname}[1]{\noindent{\t #1}\hrule}
+\newcommand{\CCTKdesc}[1]{\vskip .3cm \noindent #1}
+
 \date{\verb$Date$}
 
 \title{Cactus 4.0 Documentation\\
