@@ -16,14 +16,18 @@ if ($h || $help)
 print <<EOC;
 This program will take as input a thornlist, and outputs a latex table that contains the information in the thorns' param.ccl file(s).  This latex table can then be used as a stand-alone document, or as a section of a large "ThornGuide"         
 
--cctk_home=        : root directory of Cactus 
--arrangements_dir= : arrangements directory
--thornlist=        : thornlist to process
--outdir=           : where to place resulting output files
--document_type=    : is this a self containted 'document' or 'section'
--verbose           : verbose output
--debug             : (=1 is debug, >1 prints more info)
--h | -help         : this screen
+	-cctk_home=        : root directory of Cactus 
+	-arrangements_dir= : arrangements directory
+	-thornlist=        : thornlist to process
+	-outdir=           : where to place resulting output files
+	-document_type=    : is this a self containted 'document' or 'section'
+
+	-verbose           : verbose output
+	-debug             : (=1 is debug, >1 prints more info)
+	-h | -help         : this screen
+
+Example:
+	\$ perl -s ParamLatex.pl -cctk_home=/tmp/CactusCheckout/ -thornlist=/tmp/WaveToy.th -outdir=/tmp/output/
 EOC
    
 exit 0;
@@ -69,7 +73,10 @@ require "$sbin_dir/MakeUtils.pl";
 my $start_directory = `pwd`;
 chomp ($start_directory);
 
+# table width in ''mm''
 my $TABLE_WIDTH     = "160";
+
+# maximum characters that can be in a variable (range) name until we split it out of the table
 my $MAX_VAR_LENGTH  = "20";
 
 # set some variables in ThornUtils(.pm) namespace
@@ -122,6 +129,7 @@ ThornUtils::ClassifyThorns(\%arrangements, @listOfThorns);
 foreach my $arrangement (keys %arrangements) 
 {
    print "\n$arrangement" if ($debug);
+
    # now each thorn in the given arrangement
    foreach my $thorn (@{$arrangements{$arrangement}}) 
    {
@@ -202,7 +210,7 @@ sub ReadParameterDatabase
    # only deals with one thorn at a time, as that is currently the nature of this program
    foreach (sort keys %parameterDatabase)
    {
-      print "\n--> [$_] = [$parameterDatabase{$_}]" if ($debug>1);
+      print "\n--> [$_] = [$parameterDatabase{$_}]" if ($debug || $verbose);
 
       # save he original key, as we will make it all lower case later
       # and need the original for hash keys
@@ -255,6 +263,14 @@ sub ReadParameterDatabase
 #  @date      Sun Mar  3 01:54:37 CET 2002
 #  @author    Ian Kelley
 #  @desc 
+#     Opens/closes output file and calls the function to  'latex table' for each given thorn.
+#
+#     This function is called by ThornUtils::ProcessOneArrangement, the main section of this program
+#     calls ThornUtils::ProcessAllArrangements which calls ProcessOneArrangement.  Things are simply 
+#     split up this way so that if later things ever wanted to be changed around more, then can be.
+#     This function is called by ThornUtils::ProcessOneArrangement, the main section of this program
+#     calls ThornUtils::ProcessAllArrangements which calls ProcessOneArrangement.  Things are simply 
+#     split up this way so that if later things ever wanted to be changed around more, then can be.
 #
 #  @enddesc 
 #  @version 
@@ -388,7 +404,6 @@ sub FindMaxVarLen
 {
    my %thorn   = %{$_[0]};
    my $max_len = "";
-#   my $temp    = "";
 
    # we are going to go through each variable name and range name to see where
    # the largest text is, then we will use this for later formatting of our 

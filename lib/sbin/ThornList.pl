@@ -79,7 +79,7 @@ else
 #  @date      Sun Mar  3 01:54:37 CET 2002
 #  @author    Ian Kelley
 #  @desc 
-#  Grabs all directories within a given directory, minus the ones created by CVS
+#     Grabs all directories within a given directory, minus the ones created by CVS
 #  @enddesc 
 #  @version 
 #@@*/

@@ -1,27 +1,25 @@
 #!/usr/local/bin/perl 
 
-#######################
-# -> ThornGuide.pl <- #
-##########################################################################
-# Create cactus documentation based upon documenation provided by thorns #
-# in the current checkout being examined.                                #
-#                                                                        #
-# It will create a "manual" for this particular checkout, with an index  #
-# and everything.  Note that the documentation provided by thorns may    #
-# not use macros, etc. (except of course, the ones we provide globally)  #
-##########################################################################
-
-#################################
-# what file are we looking for? #
-$file = "documentation.tex";
-
-$mydir = `pwd`;
-chomp($mydir);
-$mydir =~ s/\/lib\/sbin\/$//;
-
-
-$TODAYS_DATE = `date +%B%d%Y`;
-$TODAYS_DATE =~ s/(.*?)(\d{2})(\d{4})/$1 $2, $3/;
+use strict;
+use vars qw($h $help $cctk_home $thornlist $directory $outdir $verbose $debug $outfile);
+#/*@@
+#  @file      ThornGuide.pl
+#  @date      Sun Mar  3 19:05:41 CET 2002
+#  @author    Ian Kelley
+#  @desc 
+#     Create cactus documentation based upon documenation provided by thorns 
+#     in the current checkout being examined. (documentation.tex files)                               
+#                                                                        
+#     It will create a "manual" for this particular checkout, with an index  
+#     and everything.  Note that the documentation provided by thorns may    
+#     not use macros, etc. (except of course, the ones we provide globally)  
+#
+#     It attempts to include the output of InterLatex.pl, ParamLatex.pl and 
+#     SchedLatex.pl, which if run before this program, will create output from
+#     parsing the interface.ccl, param.ccl, and schedule.ccl files.
+#  @enddesc 
+#  @version 
+#@@*/
 
 #################
 # HELP FUNCTION #
@@ -41,124 +39,91 @@ if ($help || $h) {
    exit 0;  
 }
 
-# get directory to process #
-if (! $directory) 
-{ 
-   if (! $thornlist) {
-      die "Cannot locate directory or thornlist to process.";
-   } else {
-      $directory = "$mydir/arrangements/";
-   }
-} elsif (! ($directory =~ /^\//)) {
-    $directory = "$mydir/$directory";  
-}
+# setup the cctk_home, if it doesn't exist, we leave it blank
+$cctk_home  .= '/' if (($cctk_home !~ /\/$/) && (defined $cctk_home));
 
-$directory .= '/' if ($directory !~ /\/$/);
+# set up the sbin dir, tacking cctk_home on the front
+my $sbin_dir = "${cctk_home}lib/sbin";
 
-print STDERR "\nProcessing: $directory" if ($verbose);
+##############
+# REQUIRE(S) #
+##############
 
-# what are we going to process, if we are processing a directory?
-if (defined $directory) 
-{
-   if ($directory =~ /arrangements\/(.*?)\//) { 
-      $arrangement = $1;
-      print "\nProcessing one arrangement" if ($verbose);
-      $level = "one_arr";
-   } elsif ($directory =~ /arrangements\//) {
-      print "\nProcessing all arrangements" if ($verbose);
-      $level = "all_arr";
-   } else {
-      print "\nProcessing one thorn" if ($verbose);
-      $level = "thorn";
-   }
-}
+# common procedures used to create the thornguide(s)
+require "$sbin_dir/ThornUtils.pm";
 
-$start_directory=`pwd`;
-chomp($start_directory);
+# for reading of the thornlist routine: %thorns = &ReadThornlist($thornlist)
+require "$sbin_dir/MakeUtils.pl";
 
-# determine the output directory
-if (! $outdir) {
-    $outdir = "./";
+#####################
+# INITIAL VARIABLES #
+#####################
+
+my $start_directory = `pwd`;
+chomp ($start_directory);
+
+# what file are we looking for? 
+my $file = "documentation.tex";
+
+# specify output file 
+$outfile ||= "ThornGuide.tex";
+
+# get the date for printing out on the first page of the documentation
+my $TODAYS_DATE = `date +%B%d%Y`;
+$TODAYS_DATE =~ s/(.*?)(\d{2})(\d{4})/$1 $2, $3/;
+
+# set some variables in ThornUtils(.pm) namespace
+$ThornUtils::cctk_home          = $cctk_home;
+$ThornUtils::start_directory    = $start_directory;
+$ThornUtils::verbose            = $verbose;
+$ThornUtils::debug              = $debug;
+
+# get/setup the output directory and the arrangements directory
+$outdir                 = ThornUtils::SetupOutputDirectory($outdir);
+my $arrangements_dir    = ThornUtils::GetArrangementsDir($directory);
+
+my %thorns;
+my %arrangements;
+my @listOfThorns;
+
+# determine thornlist, create one if one doesn't exist
+if (defined $thornlist) {
+   # provided by MakeUtils.pl, returns a hash with a list of the thorns in our thornlist
+   %thorns       = &ReadThornlist($thornlist);
+   @listOfThorns = keys %thorns;
 } else {
-   if ($outdir =~ /^\//) {
-      if (! -d "$outdir") {
-         mkdir($outdir, 0755);
-         print STDERR "\nCreating directory: $outdir" if ($verbose);
-      }
-   } else {
-      if (! -d "$start_directory/$outdir") {
-         mkdir("$start_directory/$outdir", 0755);
-         print STDERR "\nCreating directory: $start_directory/$outdir" if ($verbose);
-      }
-   }
-   $outdir .= '/' if ($outdir !~ /\/$/);
+   # we don't have a thornlist, go find all thorns in arrangements directory
+   @listOfThorns = ThornUtils::CreateThornlist($arrangements_dir);
 }
-
-# specify outfile #
-$outfile = "ThornGuide.tex" if (! $outfile);
 
 # open the file for output #
 open (OUT, ">$outdir$outfile") || die "\nCannot open $outdir$outfile for output: $!";
 
-## START ##
 &Output_Top;
+ThornUtils::ClassifyThorns(\%arrangements, @listOfThorns);
 
-# process a directory or a thornlist
-if (! $thornlist) {
-   &Recur($directory); 
-} else {
-   @foundfiles = &Read_ThornList($thornlist, $directory); 
-}
+my $counter = 1;
 
-#############################################################
-# Goes through and classifies thorns based upon arrangement #
-foreach (@foundfiles) 
+# lets go through, one arrangement at a time
+foreach my $arrangement (sort keys %arrangements)
 {
-   s/^$directory//;
-   /(.*?)\/(.*?)\//;
+   print "\n$arrangement" if ($debug);
 
-   ($arr, $thorn) = ($1, $2);
+   &Start_Arr($arrangement, $counter);
 
-   # hash of arrangements
-   $arrangements{$arr} = $1 if (! defined $arrangements{$arr});
-
-   push @$arr, $thorn;  
-}
-
-##############################################################
-# Iterates through our known arrangements, then its thorns,  #
-# reading in documentation and creating .tex file            #
-
-#########################################
-# if we are processing all arrangements #
-if ($level eq "all_arr") {
-   $i = 1;                                           # $i = "cactuspart" counter
-   foreach $arrangement (sort keys %arrangements) 
+   # now each thorn in the given arrangement
+   foreach my $thorn (@{$arrangements{$arrangement}})
    {
-      &Start_Arr($arrangement,$i);                 # begins a "cactuspart"
-      foreach $thorn (@$arrangement) {
-         $$thorn = &Read_Thorn_Doc("$directory$arrangement/$thorn/doc");
-         &Add_Section($thorn, $$thorn);            # add thorn documentation
-      }
-      &End_Arr;                                    # ends a "cactuspart"
-      $i++;  
-   }
-#############################################
-# if we are just processing one arrangement #
-} elsif ($level eq "one_arr") {
-   &Start_Arr($arrangement, "1");
-   foreach $thorn (keys %arrangements) 
-   {
-      $$thorn = &Read_Thorn_Doc("$directory$thorn/doc");
-      &Add_Section($thorn, $$thorn);
+      print "\n\t$thorn" if ($debug);
+   
+      &Add_Section($thorn, &Read_Thorn_Doc($arrangements_dir, $arrangement, $thorn));
    }
    &End_Arr;
+   $counter++;
 }
-#                                                             #
-###############################################################
 
 &Output_Bottom;
-print STDERR "\nFinished\n" if ($verbose);
+print "\nFinished.\n";
 
 #######################
 ## END OF MAIN STUFF ##
@@ -168,36 +133,43 @@ print STDERR "\nFinished\n" if ($verbose);
 #                    BEGINNING OF SUB-ROUTINES                     #
 ####################################################################
 
-####################################################################
-# Reads in the thorn documentation file and returns it as a string #
+#/*@@
+#  @routine   Read_Thorn_Doc   
+#  @date      Sun Mar  3 01:54:37 CET 2002
+#  @author    Ian Kelley
+#  @desc 
+#     Reads in the thorn documentation file and returns it as a string 
 # 
-# This function starts reading when it hits he first section after #
-# the \begin{document} section, and continues until the \end{d...} #
-# statement.  it also adds the include paramater to include the    #
-# output from ParamLatex.pl.                                       #
-####################################################################
+#     This function starts reading when it hits he first section after 
+#     the \begin{document} section, and continues until the \end{d...} 
+#     statement.  it also adds the include paramater to include the    
+#     output from ParamLatex.pl.                                       
+#  @enddesc 
+#  @version 
+#@@*/
 sub Read_Thorn_Doc 
 {
-   my ($path)        = shift;
-   my ($contents)    = "";
-   my ($pathandfile) = "";
+   my $arrangements_dir = shift;
+   my $arrangement      = shift;
+   my $thorn            = shift;
 
-   my ($start) = 0;
-   my ($stop)  = 0;
-   my ($temp)  = 0;
+   my $contents    = "";
 
-   $pathandfile .= "$path/$file";
+   my $start = 0;
+   my $stop  = 0;
+   my $document_has_begun  = 0;
 
-   open (DOC, "$pathandfile");
+   my $path = "$arrangements_dir$arrangement/$thorn/doc";
+   my $pathandfile = "$path/$file";
+
+   open (DOC, "<$pathandfile") || print STDERR "\nCould not find documentation in $path";
 
    while (<DOC>)                            # loop through thorn doc.
    {
       if (/\\end\{document\}/) {            # stop reading
          $stop = 1;
          $contents .= "\n\\include{${arrangement}_${thorn}_param}\n";
-         my $tmp = "${arrangement}_${thorn}_inter";
-         $tmp =~ tr/A-Z/a-z/;
-         $contents .= "\n\\include{$tmp}\n";
+         $contents .= "\n\\include{" . ThornUtils::ToLower("${arrangement}_${thorn}_inter") . "\}\n";
          $contents .= "\n\\include{${arrangement}_${thorn}_schedule}\n";
       }
 
@@ -205,35 +177,31 @@ sub Read_Thorn_Doc
          s/(\\includegraphics.*?\{)\s*?(.*\.eps\s*?\})/$1$path\/$2/g;
          $contents .= $_;
       } elsif (/\\begin\{document\}/) {     # don't begin yet.... 1st flag
-         $temp = 1; 
+         $document_has_begun = 1; 
       }
 
-      if (($temp) && ( /\\section\{/ ) ) {
-      #if (($temp) && (( /\\section\{/ ) || (/\\abstract\{/)) ) {   # start reading
-      #    if (/\\abstract\{/) {
-      #       s/\\abstract\{/\\section\{Abstract\}\\begin\{paragraph\}\{/;
-      #    }
-          $start = 1;
+      #if (($document_has_begun) && ( /\\section\{/ ) ) {
+      if (($document_has_begun) && (( /\\section\{/ ) || (/\\abstract\{/)) ) {   # start reading
+          if (/\\abstract\{/) {
+             s/\\abstract\{/\\section\{Abstract\}\{/;
+          }
+          $start    = 1;
           $contents = $_;
-          $temp = 0;
+          $document_has_begun     = 0;
       }
    }
 
    # if it never started reading, then we print some error message
    if (! $start) {
-      $tmp2 = $arrangement;
-      $tmp2 =~ s/\_/\\\_/g;
-      $tmp = $thorn;
-      $tmp=~ s/\_/\\\_/g;
-      my $tmp3 = "${arrangement}_${thorn}_inter";
-      $tmp3 =~ tr/A-Z/a-z/;
+      my $tmp = ThornUtils::CleanForLatex("$arrangement/$thorn");  
+
       if (-e $pathandfile) {
-         $contents = "Could not parse latex documentation for $tmp2/$tmp($file)";
+         $contents = "Could not parse latex documentation for $tmp ($file)";
       } else {
-         $contents = "Could not find latex documentation for $tmp2/$tmp ($file)";
+         $contents = "Could not find latex documentation for $tmp ($file)";
       }
       $contents .= "\n\n\\include{${arrangement}\_${thorn}\_param}\n";
-      $contents .= "\n\\include{$tmp3}\n";
+      $contents .= "\n\\include{" . ThornUtils::ToLower("${arrangement}_${thorn}_inter") . "\}\n";
       $contents .= "\n\\include{${arrangement}\_${thorn}\_schedule}\n";
    }
    
@@ -242,16 +210,22 @@ sub Read_Thorn_Doc
    return $contents;
 }
 
-##########################################################################
-# Adds a thorn section (chapter), mini table of contents and whatever we #
-# have parsed out from ($file) [documentation.tex]                       #
-##########################################################################
+#/*@@
+#  @routine   Add_Section
+#  @date      Sun Mar  3 01:54:37 CET 2002
+#  @author    Ian Kelley
+#  @desc 
+#     Adds a thorn section (chapter), mini table of contents and whatever we 
+#     have parsed out from ($file) [documentation.tex]                       
+#  @enddesc 
+#  @version 
+#@@*/
 sub Add_Section 
 {
-   my ($thorn) = shift;
-   my ($contents) = shift;
+   my $thorn    = shift;
+   my $contents = shift;
 
-$thorn =~ s/\_/\\\_/g;
+$thorn = ThornUtils::CleanForLatex($thorn);
 print OUT <<EOC;
 
 \\chapter{$thorn}
@@ -261,9 +235,15 @@ $contents
 EOC
 }  
 
-############################################################
-# Ends a cactuspart, which will normally be an arrangement #
-############################################################
+#/*@@
+#  @routine   End_Arr
+#  @date      Sun Mar  3 01:54:37 CET 2002
+#  @author    Ian Kelley
+#  @desc 
+#     Ends a cactuspart, which will normally be an arrangement 
+#  @enddesc 
+#  @version 
+#@@*/
 sub End_Arr
 {
 print OUT <<EOC;
@@ -273,15 +253,21 @@ print OUT <<EOC;
 EOC
 }  
 
-##############################################################
-# Starts a cactuspart, which will normally be an arrangement #
-##############################################################
+#/*@@
+#  @routine   Start_Arr
+#  @date      Sun Mar  3 01:54:37 CET 2002
+#  @author    Ian Kelley
+#  @desc 
+#     Starts a cactuspart, which will normally be an arrangement 
+#  @enddesc 
+#  @version 
+#@@*/
 sub Start_Arr 
 {
-   my ($arr) = shift;
-   my ($partnum) = shift;
+   my $arr     = shift;
+   my $partnum = shift;
 
-   $arr =~ s/\_/\\\_/g;
+   $arr = ThornUtils::CleanForLatex($arr);
 print OUT <<EOC;
 
 \\begin{cactuspart}{$partnum}{$arr}{}{}
@@ -290,9 +276,15 @@ EOC
 }  
 
 
-###########################   
-# Ends the latex document #
-###########################
+#/*@@
+#  @routine   Output_Bottom
+#  @date      Sun Mar  3 01:54:37 CET 2002
+#  @author    Ian Kelley
+#  @desc 
+#     Ends the latex document 
+#  @enddesc 
+#  @version 
+#@@*/
 sub Output_Bottom 
 {
 print OUT <<EOC;
@@ -301,75 +293,15 @@ print OUT <<EOC;
 EOC
 }
 
-##########################
-# Reads in the thornlist #
-##########################
-sub Read_ThornList 
-{
-   my ($thornlist) = shift;
-   my ($directory) = shift;
-   my (@tl);
-
-   chomp($directory);
-
-   open (TL, "$thornlist") 
-      || die "\nCannot open thornlist ($thornlist) for reading: $!";
-
-   while (<TL>) 
-   {
-      next if /\s*?\!/;
-      s/(.*?)#.*/\1/;            # read up to the first "#"
-      s/\s+//g;                  # replace any spaces with nothing
-      if (/\w+/) {               
-         push @tl, "$directory$_/doc/$file";
-      }
-   }     
-
-    return @tl;
-}
-
-##############################################################
-# This is the function that finds me the file I want ($file) #
-##############################################################
-sub Recur 
-{
-   local ($dir) = shift;
-   local (@dirs);
-
-   chdir ($dir) || die "\nFatal Error: cannot chdir to $dir: $!";
-
-   open (LS, "ls -p|");
-
-   while(chomp($name = <LS>)) 
-   {
-      if ((($name =~ /\/$/) && ($name ne "History/")) && ($name ne "CVS/")) {
-         push @dirs, $name; 
-      }
-   }
-   close (LS);
-
-   if ($dir =~ /arrangements\/(.*?)\/(.*?)\/$/) {
-      if (-e "${dir}/doc/$file") {                              # we found the file
-         push @foundfiles, $dir; 
-         print STDERR "\n$dir\t\tFound $file" if ($verbose);
-      } elsif (-e "${dir}param.ccl") {                   # we didn't find the file
-         print STDERR "\n$dir\t\tNo $file, but param.ccl" if ($verbose); 
-         push @foundfiles, "${dir}/doc";
-      } else {
-        #print STDERR "\n$dir\t\tNo $file, no param.ccl" if ($verbose);
-      }
-   }
-
-   foreach (@dirs) {                    # look in sub directories
-      &Recur("$dir$_");
-   }
-
-   return;
-}
-
-###########################################################################
-# Starts the latex document, using lots of stuff taken from the UserGuide #
-###########################################################################
+#/*@@
+#  @routine   Output_Top
+#  @date      Sun Mar  3 01:54:37 CET 2002
+#  @author    Ian Kelley
+#  @desc 
+#     Starts the latex document, using lots of stuff taken from the UserGuide 
+#  @enddesc 
+#  @version 
+#@@*/
 sub Output_Top 
 {
 

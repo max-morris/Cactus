@@ -64,7 +64,7 @@ require "$sbin_dir/MakeUtils.pl";
 # INITIALIZATION #
 ##################
 my $TABLE_WIDTH   ||= "160";
-$document_type ||= "section";
+$document_type    ||= "section";
 
 my $start_directory = `pwd`;
 chomp ($start_directory);
@@ -254,7 +254,6 @@ sub ProcessOneThorn
 #  @enddesc 
 #  @version 
 #@@*/
-#sub LatexTableElement 
 sub CreateLatexTable
 {
    my %thorn      = %{$_[0]};

@@ -75,14 +75,11 @@ my $width = "150mm";
 # spacing between tables
 my $spacing      = "3mm";
 
-# maximum number of cells in a table
+# maximum number of cells in a table before we split the table
 my $cellsintable = 6;
 
 # set some defaults
 $document_type  ||= 'section';
-
-my $start_directory = `pwd`;
-chomp ($start_directory);
 
 # set some variables in ThornUtils(.pm) namespace
 $ThornUtils::cctk_home          = $cctk_home;
@@ -118,10 +115,13 @@ if (defined $thornlist) {
    @listOfThorns = ThornUtils::CreateThornlist($arrangements_dir);
 }
 
+# returns a hash with keys as Arrangment/Thorn and values of the location of the interface.ccl file
 %pathsToThorns         =  ThornUtils::GetThornPaths(\@listOfThorns, $arrangements_dir, "interface.ccl", 1);
 
+# run the interface parser from 'interface_parser.pl'
 %interface_database    = &create_interface_database(scalar(keys %system_database), %system_database, %pathsToThorns);
 
+# parse up the output we just got into more of a tree-like format
 %arrangements_database = &ReadInterfaceDatabase(\%interface_database);
 
 if ($debug) {
@@ -147,6 +147,13 @@ print "\nFinished.\n";
 #  @date      Sun Mar  3 01:54:37 CET 2002
 #  @author    Ian Kelley
 #  @desc 
+#     Will parse up the interfaceDatabase created by create_interface_database in 
+#     interface_parser.pl.   Creates (then returns) a hash of hash of hashes, etc
+#     that contains all the information split up into more of a tree structure for
+#     easy iteration and printing.
+#     
+#     Creates something in the form of:
+#        $newDatabase{"CactusWave"}->{"WaveToyC"}->{"add"}->{"header"} = "something.h somethingother.h";
 #
 #  @enddesc 
 #  @version 
@@ -159,7 +166,7 @@ sub ReadInterfaceDatabase
 
    foreach (sort keys %interfaceDatabase)
    {
-      print STDERR "\n--> [$_] = [$interfaceDatabase{$_}]" if (($debug>1) && ($verbose));
+      print STDERR "\n--> [$_] = [$interfaceDatabase{$_}]" if ($debug || $verbose);
 
       # save he original key, as we will make it all lower case later
       # and need the original for hash keys
@@ -179,10 +186,12 @@ sub ReadInterfaceDatabase
       next if ($interfaceDatabase{$old_key} !~ /\w/);
    
 
+      # try to categorize things, we have a few exceptions in here we have to deal with so that hash variables
+      # are not overwriting their old values.  This whole process will give us a hash in the form of:
+      #     $newDatabase{"CactusWave"}->{"WaveToyC"}->{"add"}->{"header"} = "something.h somethingother.h";
       if (/^([^\s]+) ([^\s]+) ([^\s]+) ([^\s]+) ([^\s]+) ([^\s]+)$/) {
              $newDatabase{$arrangement}->{$thorn}->{$2}->{$3}->{$4}->{$5}->{$6} = $interfaceDatabase{$old_key}; 
       } elsif (/^([^\s]+) ([^\s]+) ([^\s]+) ([^\s]+) ([^\s]+)$/) {
-          print STDERR "\n-->($2) $_";
           if ($2 eq "add" || $2 eq "uses" || $2 eq "provides") {
              $newDatabase{$arrangement}->{$thorn}->{$2}->{$4}->{$5} = $interfaceDatabase{$old_key};
           } else {
@@ -212,6 +221,9 @@ sub ReadInterfaceDatabase
 #  @date      Sun Mar  3 01:54:37 CET 2002
 #  @author    Ian Kelley
 #  @desc 
+#     This function is called by ThornUtils::ProcessOneArrangement, the main section of this program
+#     calls ThornUtils::ProcessAllArrangements which calls ProcessOneArrangement.  Things are simply 
+#     split up this way so that if later things ever wanted to be changed around more, then can be.
 #
 #  @enddesc 
 #  @version 
@@ -223,13 +235,13 @@ sub ProcessOneThorn
    my $arrangement  = $_[1];
    my $thorn        = $_[2];
 
-   my $latex_output = "";
-
+   # open up the output file
    my $ofh = ThornUtils::StartDocument("inter", $thorn, $outdir, $arrangement, "Interfaces", $document_type);
    
+   # print out the table   
    &LatexTableElement(\%thorn);
 
-   print $latex_output;
+   # close the output file
    ThornUtils::EndDocument($ofh, $document_type);
 }
 
@@ -242,6 +254,7 @@ sub ProcessOneThorn
 #    Takes whatever table element is currently reffered to by $table    
 #    and prints it out into a LaTeX table.  Only nifty things it curr.  
 #    does is NOT print ranges for BOOLEAN and SHARED elements.          
+#
 #  @enddesc 
 #  @version 
 #@@*/
@@ -257,10 +270,12 @@ sub LatexTableElement
 
    print "\n\\vspace\{$spacing\} \\subsection\*\{General\}";
 
-
+   # print out implementations and inheriting
    PrintVar("Implements", $thorn{"implements"});
-   PrintVar("Inherits", $thorn{"inherits"}) if ($thorn{"inherits"} !~ /^$/);
+   PrintVar("Inherits",   $thorn{"inherits"}) if ($thorn{"inherits"} !~ /^$/);
 
+
+   # now we are going to go through and print out stuff for each group type (public, private, protected, etc)
    my $printgridtitle = 1;
    foreach my $group_scope (@valid_groups) 
    {
@@ -283,11 +298,13 @@ sub LatexTableElement
       $printgridtitle = 0;
       my $counter     = 0;
 
+      # where @groups is all the different groups for this thorn in this particular storage type (e.g private)
       foreach my $group (@groups) 
       {
          $group =~ tr/A-Z/a-z/;
          next if ($thorn{"group"}->{$group} =~ /^$/);
   
+         # so we are splitting the table every so often, otherwise it could overrun off the page
          if (( ! ($counter % $cellsintable)) && ($counter ne 0) )
          {
             print "\\end\{tabular*\} \n\n";
@@ -305,6 +322,7 @@ sub LatexTableElement
 
          $counter++;
 
+         # now we are just dealing with one group, so we are going to go print out the details for it.
          my $var_counter = 0;
          foreach my $group_detail (keys %{$thorn{"group details"}->{$group}}) 
          {
@@ -317,6 +335,8 @@ sub LatexTableElement
             }
 
             my $new_counter = 1;
+
+            # split things (group properties) onto different lines if need be
             if (@temp = split/,/, $value) 
             {
                foreach my $val (@temp) 
@@ -343,12 +363,10 @@ sub LatexTableElement
 
    print "\n\n\\vspace\{5mm\}";
 
+   # now we are going to print out some extra information that is general to the thorn
    PrintHeaderOrFunction("Adds Header", $thorn{"add"}->{"header"},        $thorn{"add"});
    PrintHeaderOrFunction("Uses Header", $thorn{"uses"}->{"header"},       $thorn{"uses"});
    PrintHeaderOrFunction("Provides",    $thorn{"provides"}->{"function"}, $thorn{"provides"});
-   #&PrintData("HEADER");
-   #&PrintData("SOURCE");
-   #&PrintData("FUNCTION");
 } 
 
 #/*@@
@@ -356,6 +374,8 @@ sub LatexTableElement
 #  @date      Sun Mar  3 01:54:37 CET 2002
 #  @author    Ian Kelley
 #  @desc 
+#     Used to  print out a variable by spitting it if we need to, used for printing stuff like
+#     what a group "inherits" or "implements"
 #
 #  @enddesc 
 #  @version 
@@ -389,6 +409,8 @@ sub PrintVar
 #  @date      Sun Mar  3 01:54:37 CET 2002
 #  @author    Ian Kelley
 #  @desc 
+#     Very similar to &PrintVar, but does not lowercase stuff and deals with optional aliasing of what
+#     it is including.  This is used to print out headers/functions/etc it addes, uses or provides. 
 #
 #  @enddesc 
 #  @version 
@@ -437,6 +459,8 @@ sub PrintHeaderOrFunction
 #  @date      Sun Mar  3 01:54:37 CET 2002
 #  @author    Ian Kelley
 #  @desc 
+#     When we are printing out the properties of a group, sometimes we want to expand the 
+#     names of stuff out to be more descriptive.  This function provides that.
 #
 #  @enddesc 
 #  @version 
@@ -460,51 +484,4 @@ sub ExpandGroupName
     } else {
        return ThornUtils::ToLower(ThornUtils::CleanForLatex($name));
     }
-}
-
-#/*@@
-#  @routine   PrintData
-#  @date      Sun Mar  3 01:54:37 CET 2002
-#  @author    Ian Kelley
-#  @desc 
-#
-#  @enddesc 
-#  @version 
-#@@*/
-sub PrintData 
-{
-   my $type = shift;
-   my @todo = qw(add uses provides);
-   my $heading;
-   my @clean_values;
-   my %add; my %uses; my %provides;
-
-   my $section = &Translate($type."s");
-
-   print "\n\n\\noindent \\subsection\*\{$section\}" if (($add{$type} !~ /^$/) || ($uses{$type} !~ /^$/) || ($provides{$type} !~ /^$/));
-  
-   foreach my $todo (@todo)
-   {
-      if ($$todo{$type} !~ /^$/) 
-      {
-         @clean_values = split/\s+/, &Clean($$todo{$type});
-
-         $heading = &Translate($todo);
-         $heading .= $heading =~ /s$/ ? "" : "s";
-
-         print "\n\n\\noindent \{\\bf $heading\}:\n\n"; 
-         foreach (@clean_values) 
-         {
-            my $check = "$type $_ TO";
-            $check =~ tr/a-z/A-Z/;   
-
-            if ((defined $$todo{$check}) && ($$todo{$check} ne $_)) {
-               $check = "$_ to "  . $$todo{$check};
-               print "\n\n" . $check;
-            } else {
-               print "\n\n$_";
-            }
-         }
-      } 
-   }
 }
