@@ -22,7 +22,7 @@
 
 #include "cctk_ParamCheck.h"
 
-#ifdef MPI
+#ifdef CCTK_MPI
 #include "mpi.h"
 #endif
 
@@ -35,7 +35,7 @@ CCTK_FILEVERSION(comm_CactusDefaultComm_c)
  ********************************************************************/
 
 /* FIXME:  This should be in a header somewhere */ 
-#ifdef MPI
+#ifdef CCTK_MPI
 extern char MPI_Active;
 #endif
 
@@ -43,19 +43,26 @@ extern char MPI_Active;
  *********************     Local Definitions   **********************
  ********************************************************************/
 
-#ifdef MPI
-#define CACTUS_MPI_ERROR(xf)  do {int errcode; \
-                                    if((errcode = xf) != MPI_SUCCESS)                     \
-                                    {                                                     \
-                                      char mpi_error_string[MPI_MAX_ERROR_STRING+1];      \
-                                      int resultlen;                                      \
-                                      MPI_Error_string(errcode, mpi_error_string, &resultlen);\
-                                      fprintf(stderr, "MPI Call %s returned error code %d (%s)\n", \
-                                      #xf, errcode, mpi_error_string);                    \
-                                      fprintf(stderr, "At line %d of file %s\n",                   \
-                                             __LINE__, __FILE__);                         \
-                                    }                                                     \
-                                  } while (0)
+#ifdef CCTK_MPI
+#define CACTUS_MPI_ERROR(xf)                                                  \
+          do                                                                  \
+          {                                                                   \
+            int errcode;                                                      \
+                                                                              \
+                                                                              \
+            if((errcode = xf) != MPI_SUCCESS)                                 \
+            {                                                                 \
+              char mpi_error_string[MPI_MAX_ERROR_STRING+1];                  \
+              int resultlen;                                                  \
+                                                                              \
+                                                                              \
+              MPI_Error_string(errcode, mpi_error_string, &resultlen);        \
+              fprintf(stderr, "MPI Call %s returned error code %d (%s)\n",    \
+                              #xf, errcode, mpi_error_string);                \
+              fprintf(stderr, "At line %d of file %s\n",                      \
+                              __LINE__, __FILE__);                            \
+            }                                                                 \
+          } while (0)
 #endif
 
 /********************************************************************
@@ -222,7 +229,7 @@ int CactusDefaultMyProc(cGH *GH)
   }
   else
   {
-#ifdef MPI
+#ifdef CCTK_MPI
     if(MPI_Active)
     {
       CACTUS_MPI_ERROR(MPI_Comm_rank(MPI_COMM_WORLD, &myproc));
@@ -260,7 +267,7 @@ int CactusDefaultnProcs(cGH *GH)
   }
   else
   {
-#ifdef MPI
+#ifdef CCTK_MPI
     if(MPI_Active)
     {
       CACTUS_MPI_ERROR(MPI_Comm_size(MPI_COMM_WORLD, &nprocs));
@@ -289,7 +296,7 @@ int CactusDefaultnProcs(cGH *GH)
 @@*/
 int CactusDefaultExit(cGH *GH, int retval)
 {
-#ifdef MPI  
+#ifdef CCTK_MPI  
   if(MPI_Active)
   {
     CACTUS_MPI_ERROR(MPI_Finalize());

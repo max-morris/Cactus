@@ -304,7 +304,7 @@ void TerminationStepper(cGH *GH)
 
 #if 0
 
-#ifdef MPI
+#ifdef CCTK_MPI
   MPI_Allreduce(&cactus_terminate,&cactus_terminate_global,1,
                 MPI_INT,MPI_LOR,GH->PUGH_COMM_WORLD);
 #endif

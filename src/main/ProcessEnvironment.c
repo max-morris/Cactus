@@ -12,23 +12,30 @@
 
 #include "cctk_Flesh.h"
 
-#ifdef MPI
+#ifdef CCTK_MPI
 #include "mpi.h"
 #endif
 
-#ifdef MPI
-#define CACTUS_MPI_ERROR(xf)  do {int errcode; \
-                                    if((errcode = xf) != MPI_SUCCESS)                     \
-                                    {                                                     \
-                                      char mpi_error_string[MPI_MAX_ERROR_STRING+1];      \
-                                      int resultlen;                                      \
-                                      MPI_Error_string(errcode, mpi_error_string, &resultlen);\
-                                      fprintf(stderr, "MPI Call %s returned error code %d (%s)\n", \
-                                      #xf, errcode, mpi_error_string);                    \
-                                      fprintf(stderr, "At line %d of file %s\n",                   \
-                                             __LINE__, __FILE__);                         \
-                                    }                                                     \
-                                  } while (0)
+#ifdef CCTK_MPI
+#define CACTUS_MPI_ERROR(xf)                                                  \
+          do                                                                  \
+          {                                                                   \
+            int errcode;                                                      \
+                                                                              \
+                                                                              \
+            if((errcode = xf) != MPI_SUCCESS)                                 \
+            {                                                                 \
+              char mpi_error_string[MPI_MAX_ERROR_STRING+1];                  \
+              int resultlen;                                                  \
+                                                                              \
+                                                                              \
+              MPI_Error_string(errcode, mpi_error_string, &resultlen);        \
+              fprintf(stderr, "MPI Call %s returned error code %d (%s)\n",    \
+                              #xf, errcode, mpi_error_string);                \
+              fprintf(stderr, "At line %d of file %s\n",                      \
+                              __LINE__, __FILE__);                            \
+            }                                                                 \
+          } while (0)
 #endif
 
 #include "cctk_Flesh.h"
@@ -37,7 +44,7 @@ static char *rcsid = "$Header$";
 
 CCTK_FILEVERSION(main_ProcessEnvironment_c)
 
-#ifdef MPI
+#ifdef CCTK_MPI
 char MPI_Active = 0;
 #endif
 
@@ -46,7 +53,7 @@ int CCTKi_ProcessEnvironment(int *argc, char ***argv,tFleshConfig *ConfigData)
   
   /* Check if MPI compiled in but choosing not to use MPI. */  
 
-#ifdef MPI
+#ifdef CCTK_MPI
   if(!getenv("CACTUS_NOMPI"))
   {
     MPI_Active = 1;
