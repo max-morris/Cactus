@@ -494,7 +494,9 @@ as {\t CCTK\_REAL4} to specify the precision of the parameter.
 "<keyword value>", "<keyword value>" :: "<description>"
 \end{verbatim}
 }
-     \item[{\t STRING}]  Allowed values for strings should be specified using regular expressions. To allow any string, the regular expression ".*" should be used.
+     \item[{\t STRING}]  Allowed values for strings should be specified 
+     using regular expressions. To allow any string, the regular expression 
+     {\tt ".*"} should be used.
      \item[{\t BOOLEAN}] No {\t PARAMETER\_VALUES} should be specified for a boolean
              parameter. The default value for a boolean can be
         \begin{itemize}
@@ -646,9 +648,9 @@ Each \textit{schedule block} in the file {\t schedule.ccl} must have the syntax:
   this number may be omitted.
 
   \item[{\tt TRIGGER}] List of grid variables or groups to be used as
-  triggers for causing an analysis function or analysis group to be
+  triggers for causing an {\tt ANALYSIS} function or group to be
   executed.  Any schedule block for an analysis function or analysis
-  group must contain a nontrivial TRIGGER line.
+  group must contain a nontrivial {\tt TRIGGER} line.
 
   \item[{\tt SYNCHRONISE}] List of groups to be synchronised as soon
     as the function or schedule group is exited.

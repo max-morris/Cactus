@@ -217,7 +217,7 @@ The implementation is declared by a single line at the top of the file
 \begin{verbatim}
 implements: <name>
 \end{verbatim}
-Where {\tt <name>} can be any combination of alphanumeric
+where {\tt <name>} can be any combination of alphanumeric
 characters and underscores, and is case independent.
 
 There are three different access levels available for variables
@@ -1085,7 +1085,7 @@ Parameters are the means by which the user specifies the runtime behaviour of
 the code.  The user specifies values for parameters in the parameter file, and
 then the Flesh validates these values against the ranges the thorn writers have
 specified to be valid.  Once validated, parameter values are fixed, and cannot
-be changed (unless the parameter is specified to be steerable, see
+be changed (unless the parameter is specified to be \textit{steerable}, see
 below).  For a detailed discussion of the {\tt param.ccl} syntax see
 Appendix \ref{sec:pa}.
 
@@ -1230,7 +1230,7 @@ Each schedule item is scheduled either {\tt AT} a particular
 \label{scheduling:schedule_bins}
 
 These are the main times at which scheduled functions are run, from
-fixed points in the Flesh and Driver thorn (schedule bins can easily
+fixed points in the Flesh and driver thorn (schedule bins can easily
 be traversed from any thorn, although this is not usual).  When a
 schedule bin is \textit{traversed}, all the functions scheduled in that
 particular are called, in the manner described in
@@ -1287,7 +1287,7 @@ or group.
 \begin{Lentry}
 \item[\texttt{LANG}]
 This specifies the language of the routine.  Currently this is either
-C or Fortran. C++ routines should be defined as {\tt extern ``C''} 
+C or Fortran. C++ routines should be defined as {\tt extern "C"} 
 and registered as {\tt LANG: C}.
 \item[\texttt{STORAGE}] The {\tt STORAGE} keyword specifies groups for
 which memory should be allocated for the duration of the routine or
