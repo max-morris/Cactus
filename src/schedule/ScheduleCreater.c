@@ -12,6 +12,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "cctk_WarnLevel.h"
 #include "cctk_Flesh.h"
 
 #include "cctki_Schedule.h"
@@ -325,7 +326,13 @@ int CCTKi_DoScheduleGroup(const char *gname,
    @calls   ScheduleSortGroups  
    @calledby   
    @history 
- 
+    @hdate    Mon Mar 21 16:33:07 CET 2005
+    @hauthor  Jonathan Thornburg <jthorn@aei.mpg.de>
+    @nddesc   change error-handling strategy from
+              "print a message to stderr, then return error code"
+              to CCTK_VWarn(CCTK_WARN_ABORT, ...), i.e.
+              "print a message to stderr, then abort the Cactus run";
+              this is a partial fix for bug Cactus/1908
    @endhistory 
 
    @returntype int
@@ -351,10 +358,10 @@ int CCTKi_DoScheduleSortAllGroups(void)
 
       if(errcode)
       {
-        fprintf(stderr, 
+        CCTK_VWarn(CCTK_WARN_ABORT, __LINE__, __FILE__, "Cactus",
                 "Error while sorting group '%s' - %d remaining unsorted routines.\n", 
                 gdata->name,
-                -errcode);
+                -errcode);                                      /*NOTREACHED*/
 
         n_errors += -errcode;
       }
@@ -690,7 +697,13 @@ static t_sched_modifier_type ScheduleTranslateModifierType(const char *modifier)
               CCTKi_ScheduleDestroyArray CCTKi_ScheduleDestroyIVec
    @calledby   
    @history 
- 
+    @hdate    Mon Mar 21 16:33:07 CET 2005
+    @hauthor  Jonathan Thornburg <jthorn@aei.mpg.de>
+    @nddesc   change error-handling strategy from
+              "print a message to stderr, then return error code"
+              to CCTK_VWarn(CCTK_WARN_ABORT, ...), i.e.
+              "print a message to stderr, then abort the Cactus run"
+              this is a partial fix for bug Cactus/1908
    @endhistory 
    @var     group
    @vdesc   The schedule group
@@ -804,7 +817,9 @@ static int ScheduleSortGroup(t_sched_group *group)
 
   if(errcode)
   {
-    fprintf(stderr, "Schedule sort failed with error code %d\n", errcode);
+    CCTK_VWarn(CCTK_WARN_ABORT, __LINE__, __FILE__, "Cactus",
+    "Schedule sort of group %s failed with error code %d\n",
+    group->name, errcode);                                  /*NOTREACHED*/
   }
 
 #ifdef DEBUG_SCHEDULAR
