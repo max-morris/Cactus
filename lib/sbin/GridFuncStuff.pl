@@ -1220,6 +1220,9 @@ sub VerifyParameterExpression
   my($expression,$thornname,$rhparameter_db,$rh_interface_db) = @_;
   my($i,$count,@fields);
 
+  # Eliminate white space in expression
+  $expression =~ s/\s+//g;
+
   # First do some global checks
   if($expression !~ m%^[-+*/a-zA-Z0-9_():\[\]]+$%)
   {
