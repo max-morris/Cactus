@@ -40,7 +40,7 @@ static int termination_reached = 0;
  ********************************************************************/
 
  /*@@
-   @routine    CCTK_TerminationReached(cGH *)
+   @routine    CCTK_TerminationReached
    @date       Thu March 15 7pm
    @author     Gabrielle Allen
    @desc 
