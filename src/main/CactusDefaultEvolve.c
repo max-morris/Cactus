@@ -16,7 +16,8 @@
 #include "cctk_Flesh.h"
 #include "cctk_Parameter.h"
 
-#include "CactusIOFunctions.h"
+#include "cctk_Main.h"
+#include "cctk_IO.h"
 
 static char *rcsid="$Header$";
 
@@ -120,7 +121,7 @@ int CactusDefaultEvolve(tFleshConfig *config)
     /* Step each convergence level */
 
 
-    ForallConvLevels(CCTK_MainLoopIndex(iteration), convergence_level)
+    ForallConvLevels(CCTK_MainLoopIndex(), convergence_level)
     {
 
       StepGH(config->GH[convergence_level]);
