@@ -6,7 +6,7 @@
 #  @desc 
 #  Parses the the configuration files for thorns.
 #  @enddesc 
-#  @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.27 1999-09-09 10:49:36 goodale Exp $
+#  @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.28 1999-09-14 11:27:41 allen Exp $
 #@@*/
 
 # Global parameter to track the number of errors from the CST
@@ -74,6 +74,7 @@ require "$sbin_dir/CSTUtils.pl";
 require "$sbin_dir/CreateParameterBindings.pl";
 require "$sbin_dir/CreateImplementationBindings.pl";
 require "$sbin_dir/CreateScheduleBindings.pl";
+require "$sbin_dir/BuildHeaders.pl";
 
 #######################################################################
 #
@@ -157,6 +158,9 @@ if ($CST_debug)
 }
 @definethisthornheader = &CreateDefineThisThornHeader(%thorns);
 &OutputFile("$bindings_dir/include/", "definethisthorn.h", @definethisthornheader);
+
+# Create the header files used by the thorns
+&BuildHeaders($cctk_home,$bindings_dir,%interface_database);
 
 # Finally (must be last), create the make.thornlist file.
 @make_thornlist = &CreateMakeThornlist(%thorns);
