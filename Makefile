@@ -16,7 +16,7 @@
 #
 #
 #   @enddesc
-#   @version $Id: Makefile,v 1.133 2002-04-16 15:17:29 goodale Exp $
+#   @version $Id: Makefile,v 1.134 2002-04-19 20:37:44 allen Exp $
 # @@*/
 
 ##################################################################################
@@ -939,17 +939,12 @@ ThornGuide.ps: ThornGuide
 ThornGuide:
 	@echo $(DIVIDER)
 	@echo Creating thorn documentation ThornGuide.ps
-	if test ! -d doc/ThornGuide ; then mkdir doc/ThornGuide ; fi
-	rm -f doc/ThornGuide/*;
+	if test ! -d $(CCTK_HOME)/doc/ThornGuide/build ; then mkdir $(CCTK_HOME)/doc/ThornGuide/build ; fi
+	rm -f $(CCTK_HOME)/doc/ThornGuide/build/*;
 	@echo "  Processing...."
-	$(PERL) -s lib/sbin/ParamLatex.pl -processall -grouping=bythorn -outdir=doc/ThornGuide/ -section -sort=scope > doc/ThornGuide/PARAMLATEX_MESSAGES 2>&1; $(PERL) -s lib/sbin/ThornGuide.pl -directory=arrangements/ -outdir=doc/ThornGuide/
-	cd doc/ThornGuide; cp ../UsersGuide/bincactus2.eps bincactus.eps;    \
-	echo "  Running LaTeX....";                                          \
-	latex -interaction=nonstopmode ThornGuide.tex > LATEX_MESSAGES 2>&1; \
-	latex -interaction=nonstopmode ThornGuide.tex > LATEX_MESSAGES 2>&1; \
-	latex -interaction=nonstopmode ThornGuide.tex > LATEX_MESSAGES 2>&1; \
-	echo "  Running dvips....";                                          \
-	dvips -f ./ThornGuide.dvi 2> DVIPS_MESSAGES | $(CCTK_HOME)/lib/sbin/FixPageNumbersInPostscript.pl > $(CCTK_HOME)/ThornGuide.ps
+	cd $(CCTK_HOME)/doc/ThornGuide/build; \
+	$(MAKE) -f $(CCTK_HOME)/doc/ThornGuide/Makefile PERL=$(PERL) CCTK_HOME=$(CCTK_HOME); \
+	cp ThornGuide.ps $(CCTK_HOME)/ThornGuide.ps 
 	@echo "  Done."
 	@echo $(DIVIDER)
 
@@ -962,18 +957,12 @@ ifneq ($strip($(CONFIGURATIONS)),)
 $(addsuffix -ThornGuide,$(CONFIGURATIONS)):
 	@echo $(DIVIDER)
 	@echo Creating ThornGuide for $(@:%-ThornGuide=%)
+	if test ! -d $(CONFIGS_DIR)/$(@:%-ThornGuide=%)/build ; then mkdir $(CONFIGS_DIR)/$(@:%-ThornGuide=%)/build; fi 
 	if test -r $(CONFIGS_DIR)/$(@:%-ThornGuide=%)/ThornList ; then \
-	  echo "  Processing...." ;                                    \
-	  $(PERL) -s lib/sbin/ParamLatex.pl -processall -sort=scope -grouping=bythorn -outdir=$(CONFIGS_DIR)/$(@:%-ThornGuide=%)/doc -section -thornlist=$(CONFIGS_DIR)/$(@:%-ThornGuide=%)/ThornList; \
-	  $(PERL) -s lib/sbin/ThornGuide.pl -thornlist=$(CONFIGS_DIR)/$(@:%-ThornGuide=%)/ThornList -outdir=$(CONFIGS_DIR)/$(@:%-ThornGuide=%)/doc; \
-	  cd $(CONFIGS_DIR)/$(@:%-ThornGuide=%)/doc;                                                       \
-	  cp $(CCTK_HOME)/doc/UsersGuide/bincactus2.eps bincactus.eps;                                     \
-	  echo "  Running LaTeX....";                                                                      \
-	  latex -interaction=nonstopmode ThornGuide.tex > LATEX_MESSAGES 2>&1;                             \
-	  latex -interaction=nonstopmode ThornGuide.tex > LATEX_MESSAGES 2>&1;                             \
-	  latex -interaction=nonstopmode ThornGuide.tex > LATEX_MESSAGES 2>&1;                             \
-	  echo "  Running dvips....";                                                                      \
-	  dvips -f ./ThornGuide.dvi 2> DVIPS_MESSAGES | $(CCTK_HOME)/lib/sbin/FixPageNumbersInPostscript.pl > $(CCTK_HOME)/ThornGuide-$(@:%-ThornGuide=%).ps; \
+	  rm -f  $(CONFIGS_DIR)/$(@:%-ThornGuide=%)/build/*.*; \
+	  cd  $(CONFIGS_DIR)/$(@:%-ThornGuide=%)/build; \
+	  $(MAKE) -f $(CCTK_HOME)/doc/ThornGuide/Makefile THORNLIST=$(CONFIGS_DIR)/$(@:%-ThornGuide=%)/ThornList CCTK_HOME=$(CCTK_HOME) PERL=$(PERL); \
+	  cp ThornGuide.ps $(CCTK_HOME)/ThornGuide-$(@:%-ThornGuide=%).ps; \
 	fi
 	@echo "  Done."
 endif
