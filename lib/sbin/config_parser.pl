@@ -298,7 +298,7 @@ sub CreateParameterBindings
   # Generate all protected parameters
   foreach $implementation (split(" ",$interface_database{"IMPLEMENTATIONS"}))
   {
-    $interface_database{"IMPLEMENTATION \U$implementations\E THORNS"} =~ m:([^ ]+):;
+    $interface_database{"IMPLEMENTATION \U$implementation\E THORNS"} =~ m:([^ ]+):;
 
     $thorn = $1;
 
@@ -475,6 +475,75 @@ EOT
   print OUT "SRCS = Bindings.c $files\n";
 
   close OUT;
+
+  # Create the appropriate thorn parameter headers
+
+  chdir "..";
+  chdir "include";
+
+  foreach $thorn (split(" ",$interface_database{"THORNS"}))
+  {
+
+    open(OUT, ">$thorn"."_CParameters.h") || die "Cannot open $thorn"."_CParameters.h";
+
+    $implementation = $interface_database{"\U$thorn\E IMPLEMENTS"};
+
+    print OUT <<EOT;
+ 
+\#ifndef _\U$thorn\E_PARAMETERS_H_
+ 
+\#define _\U$thorn\E_PARAMETERS_H_
+ 
+\#include "ParameterCPublic.h"
+ 
+\#include "ParameterCProtected$implementation.h"
+ 
+\#include "ParameterCPrivate$thorn.h"
+ 
+EOT
+    @data = ();
+    foreach $friend (split(" ",$parameter_database{"\U$thorn\E FRIEND implementations"}))
+    {
+      $friend_implementation = $interface_database{"\U$friend\E IMPLEMENTS"};
+
+      print OUT "#include \"ParameterCProtected$friend_implementation.h\"\n";
+
+      foreach $parameter (split(" ",$parameter_database{"\U$thorn FRIEND $friend\E variables"}))
+      {
+	$interface_database{"IMPLEMENTATION \U$friend\E THORNS"} =~ m:([^ ]*):;
+ 
+	$friend_thorn = $1;
+
+	$type = $parameter_database{"\U$friend_thorn $parameter\E type"};
+
+	$type_string = &get_c_type_string($type);
+
+	$line = "  ".$type_string ." " .$parameter . " = PROTECTED_\U$friend\E_STRUCT.$parameter;";
+
+	push(@data, $line);
+
+      }
+    }
+
+    print OUT <<EOT;
+
+\#define DECLARE_PARSER \
+DECLARE_PUBLIC_PARAMETER_STRUCT_PARAMS  \
+DECLARE_PROTECTED_\U$implementation\E_STRUCT_PARAMS  \
+DECLARE_PRIVATE_\U$thorn\E_STRUCT_PARAMS  \
+EOT
+
+    foreach $line (@data)
+    {
+      print OUT $line . "\\\n";
+    }
+
+    print OUT "\n";
+
+    print OUT "#endif\n";
+
+    close OUT;
+  }   
     
   chdir $start_dir;
 }
