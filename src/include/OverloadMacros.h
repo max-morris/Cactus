@@ -86,6 +86,8 @@ extern RETURN_TYPE (*prefix##name)(ARGUMENTS);
 #define __OVERLOADABLE_DUMMY(prefix, dummy_prefix, name)        \
 RETURN_TYPE dummy_prefix##name(ARGUMENTS)                       \
 {                                                               \
+  /* prevent compiler warning about unused parameters */        \
+  USE_ARGUMENTS                                                 \
   fprintf(stderr, "Dummy %s%s called.\n", #dummy_prefix,#name); \
   return 0;                                                     \
 }

@@ -29,12 +29,17 @@
 #undef ARGUMENTS
 #endif
 
+#ifdef USE_ARGUMENTS
+#undef USE_ARGUMENTS
+#endif
+
 #ifdef RETURN_TYPE
 #undef RETURN_TYPE
 #endif
 
-#define RETURN_TYPE int
 #define ARGUMENTS const cGH *GH
+#define USE_ARGUMENTS GH = GH;
+#define RETURN_TYPE int
 OVERLOADABLE(OutputGH)
 
 #undef ARGUMENTS
@@ -42,9 +47,12 @@ OVERLOADABLE(OutputGH)
                   const char *var,    \
                   const char *method, \
                   const char *alias
+#undef USE_ARGUMENTS
+#define USE_ARGUMENTS GH = GH; var = var; method = method; alias = alias;
 OVERLOADABLE(OutputVarAsByMethod)
 
 #undef ARGUMENTS
+#undef USE_ARGUMENTS
 #undef RETURN_TYPE
 
 #undef OVERLOADABLE_CALL
