@@ -27,6 +27,8 @@ static char *rcsid = "$Header$";
 
 #include "cctk_FortranWrappers.h"
 
+#include "CactusTimers.h"
+
 /********************************************************************
  *********************     Local Data Types   ***********************
  ********************************************************************/
@@ -56,6 +58,10 @@ typedef struct
 
   int n_trigger_groups;
   int *trigger_groups;
+
+  /* Timer data */
+
+  int timer_handle;
 
   /* Dynamic data */
   int *CommOnEntry;
@@ -125,6 +131,7 @@ static int *scheduled_comm_groups = NULL;
 static int n_scheduled_storage_groups = 0;
 static int *scheduled_storage_groups = NULL;
 
+static int n_schedule_timers = 0;
 
 /********************************************************************
  *********************     External Routines   **********************
@@ -494,6 +501,7 @@ static t_attribute *CreateAttribute(const char *description,
                                     va_list *ap)
 {
   t_attribute *this;
+  char timerid[20];
 
   this = (t_attribute *)malloc(sizeof(t_attribute));
 
@@ -540,6 +548,10 @@ static t_attribute *CreateAttribute(const char *description,
       this->n_comm_groups    = n_comm_groups;
       this->n_trigger_groups = n_trigger_groups;
 
+      /* Add a timer to the item */
+      
+      sprintf(timerid,"schedule_%d", n_schedule_timers++);
+      this->timer_handle = CCTK_TimerCreate(timerid);
     }
     else
     {
@@ -1013,6 +1025,7 @@ static int CCTKi_ScheduleCallFunction(void *function,
 
   void (*calledfunc)(void *);
 
+  CCTK_TimerStartI(attribute->timer_handle);
   if(attribute->language == lang_fortran)
   {
     /* Call the fortran wrapper. */
@@ -1026,6 +1039,8 @@ static int CCTKi_ScheduleCallFunction(void *function,
   
     calledfunc(data->GH);
   }
+
+  CCTK_TimerStopI(attribute->timer_handle);
 
   return 1;
 }

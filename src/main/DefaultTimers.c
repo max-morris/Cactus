@@ -9,6 +9,7 @@
 
 static char *rcsid = "$Header$";
 
+#include <stdio.h>
 #include <stdlib.h>
 
 #include "config.h"
@@ -163,6 +164,9 @@ void CCTKi_TimerGetTimeOfDayStart(int timernum, t_GetTimeOfDayTimer *data)
 
   data->last = tp.tv_sec + (double)tp.tv_usec/1000000.0;
 
+#ifdef DEBUG_TIMERS
+  printf("Starting gettimeofday timer %d\n", timernum);
+#endif
 }
 
  /*@@
@@ -188,6 +192,9 @@ void CCTKi_TimerGetTimeOfDayStop(int timernum, t_GetTimeOfDayTimer *data)
 
   data->total += (tp.tv_sec + (double)tp.tv_usec/1000000.0 - data->last);
 
+#ifdef DEBUG_TIMERS
+  printf("Stopping gettimeofday timer %d\n", timernum);
+#endif
 }
 
  /*@@
@@ -278,6 +285,7 @@ void CCTKi_RegisterTimersGetTimeOfDay(void)
   functions.get     = CCTKi_TimerGetTimeOfDayGet;
   functions.set     = CCTKi_TimerGetTimeOfDaySet;
 
+  CCTK_TimerRegister("GetrUsage", &functions);
 }
     
 #endif /* HAVE_TIME_GETTIMEOFDAY */
@@ -372,6 +380,9 @@ void CCTKi_TimerGetrUsageStart(int timernum, t_GetrUsageTimer *data)
 
   data->last = ru.ru_utime.tv_sec + (double)ru.ru_utime.tv_usec/1000000.0;
 
+#ifdef DEBUG_TIMERS
+  printf("Starting getrusage timer %d\n", timernum);
+#endif
 }
 
  /*@@
@@ -396,6 +407,9 @@ void CCTKi_TimerGetrUsageStop(int timernum, t_GetrUsageTimer *data)
 
   data->total += (ru.ru_utime.tv_sec + (double)ru.ru_utime.tv_usec/1000000.0 - data->last);
 
+#ifdef DEBUG_TIMERS
+  printf("Starting getrusage timer %d\n", timernum);
+#endif
 }
 
  /*@@
@@ -485,6 +499,8 @@ void CCTKi_RegisterTimersGetrUsage(void)
   functions.reset   = CCTKi_TimerGetrUsageReset;
   functions.get     = CCTKi_TimerGetrUsageGet;
   functions.set     = CCTKi_TimerGetrUsageSet;
+
+  CCTK_TimerRegister("GetrUsage", &functions);
 
 }
 

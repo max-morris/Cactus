@@ -34,6 +34,7 @@ extern "C" {
 #endif
 
 int CCTK_TimerRegister(const char *name, t_TimerFuncs *functions);
+int CCTK_TimerCreate(const char *name);
 void CCTK_TimerDestroy(const char *name);
 void CCTK_TimerDestroyI(int this_timer);
 void CCTK_TimerStart(const char *name);
