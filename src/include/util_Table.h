@@ -4,9 +4,11 @@
   @author       Jonathan Thornburg <jthorn@aei.mpg.de>
   @desc
         This header defines the programmer API for Cactus key-value tables.
-        This is documented in
+        This is documented in the Cactus Reference Manual,
+	and there's a tutorial introduction to the API
+	in chapter C of the Cactus Users' Guide.
+	A slightly-out-of-date draft of this API can also be found in
            http://www.cactuscode.org/Development/Specs/KeyValueLookup.txt
-        FIXME: this is a bit out of date :(
   @enddesc
   @seefile      seefile Table.c
   @version      $Header$
