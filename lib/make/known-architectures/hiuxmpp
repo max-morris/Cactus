@@ -6,7 +6,7 @@
 #   @desc 
 #   
 #   @enddesc 
-#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/hiuxmpp,v 1.2 2000-05-10 13:34:51 goodale Exp $
+#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/hiuxmpp,v 1.3 2000-07-22 16:32:41 goodale Exp $
 # @@*/
 
 if test "$CCTK_CONFIG_STAGE" = "preferred-compilers" ; then
@@ -43,9 +43,9 @@ else
 # Yet another CXX->C translator 8-(.
   : ${CXX_WORKING_NAME='$(notdir $<)'}
 
-  : ${CXX_POSTPROCESSING='cp $(SCRATCH_BUILD)$(DIRSEP)$(basename $(basename $(notdir $@))).o $@'}
+  : ${CXX_POSTPROCESSING='if test -r $(SCRATCH_BUILD)$(DIRSEP)$(basename $(basename $(notdir $@))).o ; then cp $(SCRATCH_BUILD)$(DIRSEP)$(basename $(basename $(notdir $@))).o $@ ; fi'}
 
-  : ${LIBS="f90s f90 hf90math hf90pvmath m"}
+  : ${LIBS="f90s f90 hf90pvmath hf90math m"}
 
 # MPI stuff
 
