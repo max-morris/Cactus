@@ -17,7 +17,11 @@ extern "C" {
 
 int RegisterMainFunction(int key, int (*func)(tFleshConfig *));
 
-int SetupMainFunctions(void);
+int CCTKi_SetupMainFunctions(void);
+int CCTKi_SetupCommFunctions(void);
+int CCTKi_SetupIOFunctions(void);
+int CCTKi_BindingsImplementationsInitialise(void);
+int CCTKi_BindingsParametersInitialise(void);
 
 #ifdef __cplusplus
 }

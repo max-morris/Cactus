@@ -48,13 +48,13 @@ int CCTK_Reduce(cGH *GH,
 int CCTK_ReductionHandle(const char *reduction);
 
 int CCTK_RegisterReductionOperator(
-         void (*function)(REDUCTION_OPERATOR_REGISTER_ARGLIST),
+         int (*function)(REDUCTION_OPERATOR_REGISTER_ARGLIST),
          const char *name);
 
 int CCTK_ReductionArrayHandle(const char *reduction);
 
 int CCTK_RegisterReductionArrayOperator(
-         void (*function)(REDUCTION_ARRAY_OPERATOR_REGISTER_ARGLIST),
+         int (*function)(REDUCTION_ARRAY_OPERATOR_REGISTER_ARGLIST),
          const char *name);
 
 /* FIXME: old interface - should go */

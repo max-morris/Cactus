@@ -8,8 +8,8 @@
    @version $Header$
  @@*/
 
-#ifndef _CCTK_BINDINGS_H_
-#define _CCTK_BINDINGS_H_
+#ifndef _CCTKI_BINDINGS_H_
+#define _CCTKI_BINDINGS_H_
 
 #ifdef __cplusplus
 extern "C" {
