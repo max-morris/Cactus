@@ -13,11 +13,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
-#ifdef   HAVE_REGEX_H
-#include <regex.h>
-#else
-#include "../gnu/regex.h"
-#endif
 
 #include "cctk_Constants.h"
 #include "cctk_WarnLevel.h"
@@ -26,6 +21,7 @@
 #include "cctk_Groups.h"
 #include "cctk_Parameter.h"
 #include "cctk_Types.h"
+#include "cctk_GNU.h"            /* includes <regex.h> */
 
 #include "cctki_Stagger.h"
 #include "cctki_Groups.h"
