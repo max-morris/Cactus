@@ -12,7 +12,7 @@ static char *rcsid = "$Header$";
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "config.h"
+#include "cctk_config.h"
 
 #if TIME_WITH_SYS_TIME
 # include <sys/time.h>

@@ -2828,11 +2828,11 @@ LDFLAGS="$KNOWN_LDFLAGS $LDFLAGS"
 : ${L2_CACHE_SIZE="0"}
 
 cat >> confdefs.h <<EOF
-#define CCTK_CACHELINE_BYTES $L2_CACHELINE_BYTES
+#define CCTK_L2_CACHELINE_BYTES $L2_CACHELINE_BYTES
 EOF
  
 cat >> confdefs.h <<EOF
-#define CCTK_CACHE_SIZE $L2_CACHE_SIZE
+#define CCTK_L2_CACHE_SIZE $L2_CACHE_SIZE
 EOF
  
 
@@ -2940,7 +2940,7 @@ done
 
 ac_given_srcdir=$srcdir
 
-trap 'rm -fr `echo "make.config.defn make.config.deps make.config.rules config.h" | sed "s/:[^ ]*//g"` conftest*; exit 1' 1 2 15
+trap 'rm -fr `echo "make.config.defn make.config.deps make.config.rules cctk_config.h" | sed "s/:[^ ]*//g"` conftest*; exit 1' 1 2 15
 EOF
 cat >> $CONFIG_STATUS <<EOF
 
@@ -3147,7 +3147,7 @@ ac_eD='%g'
 if test "${CONFIG_HEADERS+set}" != set; then
 EOF
 cat >> $CONFIG_STATUS <<EOF
-  CONFIG_HEADERS="config.h"
+  CONFIG_HEADERS="cctk_config.h"
 EOF
 cat >> $CONFIG_STATUS <<\EOF
 fi

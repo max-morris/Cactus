@@ -14,12 +14,13 @@
 
 #ifdef HAVE_CONFIG_H
 #if defined (emacs) || defined (CONFIG_BROKETS)
-/* We use <config.h> instead of "config.h" so that a compilation
-   using -I. -I$srcdir will use ./config.h rather than $srcdir/config.h
+/* We use <cctk_config.h> instead of "cctk_config.h" so that a compilation
+   using -I. -I$srcdir will use ./cctk_config.h rather than 
+   $srcdir/cctk_config.h
    (which it would do because it found this file in $srcdir).  */
-#include <config.h>
+#include <cctk_config.h>
 #else
-#include "config.h"
+#include "cctk_config.h"
 #endif
 #endif
 

@@ -9,7 +9,7 @@
 
 const char *rcsid="$Header$";
 
-#include "config.h"
+#include "cctk_config.h"
 
 #include <stdio.h>
 #include <stdlib.h>

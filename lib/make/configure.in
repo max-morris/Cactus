@@ -17,7 +17,7 @@ AC_PREREQ(2.13)
 
 dnl Starts here
 AC_INIT()
-AC_CONFIG_HEADER(config.h)
+AC_CONFIG_HEADER(cctk_config.h)
 
 dnl Check the system type
 AC_CANONICAL_SYSTEM

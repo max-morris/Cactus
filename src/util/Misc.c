@@ -23,7 +23,7 @@
 
 #include "gnu_regex.h"
 
-#include "config.h"
+#include "cctk_config.h"
 #include "cctk_Misc.h"
 #include "cctk_FortranString.h"
 #include "cctk_WarnLevel.h"

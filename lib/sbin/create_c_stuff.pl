@@ -41,7 +41,7 @@ sub CreateParameterBindingFile
   push(@data, $line);
   $line = "\#include <stdarg.h>";
   push(@data, $line);
-  $line = "\#include \"config.h\"";
+  $line = "\#include \"cctk_config.h\"";
   push(@data, $line);
   $line = "\#include \"CParameterStructNames.h\"";
   push(@data, $line);
