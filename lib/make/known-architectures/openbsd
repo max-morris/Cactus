@@ -6,7 +6,7 @@
 #   @desc
 #              generic known-architectures file for all versions of OpenBSD
 #   @enddesc 
-#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/openbsd,v 1.1 2002-05-15 17:17:47 tradke Exp $
+#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/openbsd,v 1.2 2002-05-16 16:06:31 tradke Exp $
 # @@*/
 
 if test "$CCTK_CONFIG_STAGE" = "preferred-compilers" ; then
@@ -14,6 +14,12 @@ if test "$CCTK_CONFIG_STAGE" = "preferred-compilers" ; then
 :
 
 else
+
+  # Determine which Fortran 77 compiler is in use
+  if test -n "$F77" -a "`$F77 -v 2>&1 | grep -i g77`" ; then
+    : ${F77_WARN_FLAGS='-Wall'}
+    : ${LIBS='g2c m'}
+  fi
 
   ARFLAGS=-ruc
   USE_RANLIB=yes
