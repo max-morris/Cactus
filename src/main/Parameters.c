@@ -1861,7 +1861,7 @@ static int ParameterSetAccumulator(t_param *param)
 }
 
  /*@@
-   @routine    ParameterSet
+   @routine    ParameterSetSimple
    @date       Mon May 20 07:08:03 2002
    @author     Tom Goodale
    @desc
