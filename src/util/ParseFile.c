@@ -3,11 +3,11 @@
    @date      Tue Jan 12 15:58:31 1999
    @author    Tom Goodale
    @desc
-   Routines to read in a parameter file and pass the resulting data
-   to a user-supplied subroutine.
-   Currently taken from the old cactus ones and slightly modifed.
+              Routines to read in a parameter file and pass the resulting data
+              to a user-supplied subroutine.
+              Currently taken from the old cactus ones and slightly modifed.
    @enddesc
-   @version $Header$
+   @version   $Id$
  @@*/
 
 /*#define DEBUG*/
@@ -44,7 +44,7 @@ static void removeSpaces(char *stripMe);
  ********************************************************************/
 
 int ParseFile(FILE *ifp,
-              int (*set_function)(const char *, const char *),
+              int (*set_function)(const char *, const char *, int),
               tFleshConfig *ConfigData);
 
 /********************************************************************
@@ -120,7 +120,7 @@ static int lineno = 1;
    @endreturndesc
 @@*/
 int ParseFile(FILE *ifp,
-              int (*set_function)(const char *, const char *),
+              int (*set_function)(const char *, const char *, int),
               tFleshConfig *ConfigData)
 {
   /* Buffers for parsing from the file */
@@ -163,6 +163,10 @@ int ParseFile(FILE *ifp,
 #ifdef DEBUG
         printf("%c",c);
 #endif
+      }
+      if (c == '\n')
+      {
+        lineno++;
       }
       c = fgetc(ifp);
 #ifdef DEBUG
@@ -279,7 +283,7 @@ int ParseFile(FILE *ifp,
           printf ("\nString %s -> %s\n",
                   tokens,value);
 #endif
-          set_function(tokens,value);
+          set_function(tokens,value, lineno);
         }
         else if (c == '$')
         {
@@ -307,7 +311,7 @@ int ParseFile(FILE *ifp,
           free(dir);
           free(file);
           value[strlen(value)-1] = '\0';
-          set_function(tokens,value);
+          set_function(tokens,value,lineno);
         }
         else
         {
@@ -331,21 +335,20 @@ int ParseFile(FILE *ifp,
 #ifdef DEBUG
               printf("%c",c);
 #endif
-              if (c=='\n')
-              {
-#ifdef DEBUG
-                printf ("LINE %d\n",lineno);
-#endif
-                lineno++;
-              }
             }
             value[p] = '\0';
 #ifdef DEBUG
             printf ("Parsed %d characters\n", p);
             printf("\nFloat/Int: %s -> %s\n", tokens,value);
 #endif
-            set_function(tokens,value);
-
+            set_function(tokens,value,lineno);
+            if (c=='\n')
+            {
+#ifdef DEBUG
+              printf ("LINE %d\n",lineno);
+#endif
+              lineno++;
+            }
           }
           else
           {
@@ -437,7 +440,7 @@ int ParseFile(FILE *ifp,
               }
               subvalue[pp] = '\0';
 
-              set_function(subtoken,subvalue);
+              set_function(subtoken,subvalue,lineno);
 #ifdef DEBUG
               printf("Setting sub-token %s -> %s\n",
                      subtoken, subvalue);
@@ -465,7 +468,7 @@ int ParseFile(FILE *ifp,
             }
             subvalue[pp] = '\0';
 
-            set_function(subtoken,subvalue);
+            set_function(subtoken,subvalue,lineno);
           }
         }
       }

@@ -25,7 +25,7 @@ CCTK_FILEVERSION(main_ProcessParameterDatabase_c)
  ********************* Other Routine Prototypes *********************
  ********************************************************************/
 int ParseFile (FILE *ifp, 
-               int (*set_function) (const char *, const char *),
+               int (*set_function) (const char *, const char *, int),
                tFleshConfig *ConfigData);
 void CCTKi_SetParameterSetMask (int mask);
 
