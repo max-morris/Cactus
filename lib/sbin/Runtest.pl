@@ -88,7 +88,7 @@ else
     $name =~ s/\#(.*)$//g;
     $name =~ /^\s*([^\s]*)\s*/;
     $T = $1;
-    @allthorns = (@allthorns, $T);
+    push(@allthorns, $T);
 
     $T =~ m:^.*/([^\s]*)\s*:;
     $database{"\U$T THORN\E"} = $1;
@@ -104,8 +104,8 @@ else
       while ($file=<*.par>)
       {
         $database{"\U$T TESTFILE\E"} = $file;
-        @testfiles = (@testfiles, $file);
-        @testthorns = (@testthorns, $T);
+        push(@testfiles, $file);
+        push(@testthorns, $T);
         $number++;
       }
       chdir "../../.." || die "Unable to chdir to $thisdir";
@@ -122,14 +122,13 @@ else
 $ntests = 0;
 foreach $t (@testfiles) 
 {
-  $ntests++;
-  $file =  "arrangements/$testthorns[$ntests-1]/test/$t";
+  $file =  "arrangements/$testthorns[$ntests]/test/$t";
   open (IN, "<$file") || die "Can not open $file";
 
   $processing_active = 0;
 
   # Give a default test name in case non is specified in the parameter file.
-  $testnames{$ntests} = "$testthorns[$ntests-1]/test/$t";
+  $testnames{$ntests} = "$testthorns[$ntests]/test/$t";
  
   while (<IN>)
   {
@@ -139,29 +138,30 @@ foreach $t (@testfiles)
     {
       if($line =~ m/(.*)\"/)
       {
-	$activethorns[$ntests-1] .= $1;
+	$activethorns[$ntests] .= $1;
 	$processing_active = 0;
       }
       else
       {
-	$activethorns[$ntests-1] .= $line;
+	$activethorns[$ntests] .= $line;
       }
     }
     elsif ($line =~ m/^\s*\!\s*DESC(RIPTION)?\s*\"(.*)\"\s*$/i)
     {
-      $testnames{$ntests} = $2;
+      $testnames[$ntests] = $2;
     }
     elsif ($line =~ m/^\s*ActiveThorns\s*=\s*\"(.*)\"/i)
     {
-      $activethorns[$ntests-1] = $1;
+      $activethorns[$ntests] = $1;
     }
     elsif($line =~ m/^\s*ActiveThorns\s*=\s*\"(.*)/i)
     {
-      $activethorns[$ntests-1] = $1;
+      $activethorns[$ntests] = $1;
       $processing_active = 1;
     }
   }
   close IN;
+  $ntests++;
 }
 
 $ntests=0;
@@ -192,8 +192,6 @@ foreach $t (@testfiles)
     }
   }
   
-  $ntests++;
-  
   if ($haveallthorns)
   {
     $havethorns{"$t"} = 1;
@@ -203,6 +201,8 @@ foreach $t (@testfiles)
     $havethorns{"$t"} = 0;
     $number_missing++;
   }
+  $ntests++;
+  
 }
 
 if ($tests =~ /All/) 
@@ -218,20 +218,20 @@ if ($tests =~ /All/)
   foreach $t (@testfiles) 
   {
     $thorn = $testthorns[$ntested];        
-    $ntested++;
 
     if ($havethorns{"$t"})
     {
-      push(@actually_tested, $testnames{$ntested});
+      push(@actually_tested, $testnames[$ntested]);
       &runtest($t,$thorn,$ntested);
     }
     else
     {
-      push(@not_tested, $testnames{$ntested});
+      push(@not_tested, $testnames[$ntested]);
       push(@not_tested_thorns, $thorn);
-      print "Ignoring test '$testnames{$ntested}' from thorn '$thorn' - missing thorns.\n";
+      print "Ignoring test '$testnames[$ntested]' from thorn '$thorn' - missing thorns.\n";
     }
 
+    $ntested++;
   }
 
 # Show the statistics
@@ -296,29 +296,48 @@ else
   $ntests = 0;
   foreach $t (@testfiles) 
   {
-    $ntests++;
     $t =~ m:([^${sep}]+).par$:;
-  $num = $1; 
+    $num = $1; 
   $inp{$num} = $t;
-  $testnum{$ntests} = $num;
+  $testnum[$ntests] = $num;
+  $ntests++;
   }
   while (!($choice =~ /^q/i) ) 
   {
     print "\n--- Menu ---\n";
     $sp = "     ";
-    for ($i=1;$i<$ntests+1;$i++) {
-      print "[$i] ".$testthorns[$i-1]." $testnum{$i}: \n      \"$testnames{$i}\"\n";
+    for ($i=0;$i<$ntests;$i++) 
+    {
+      if($havethorns{$inp{$testnum[$i]}})
+      {
+	$number = $i+1;
+      }
+      else
+      {
+	$number = "x";
+      }
+      print "[$number] $testthorns[$i] $testnum[$i]: \n      \"$testnames[$i]\"\n";
     }
     print "\n  Enter number of test to run (quit to end) : ";
     $choice = <STDIN> if ($prompt eq "yes");
     $choice =~ s/\n//;
     $choice =~ s/\s//;
     print "\n";
-    $ip = $inp{$testnum{$choice}};
+    $ip = $inp{$testnum[$choice-1]};
     $thorn = $testthorns[$choice-1];
     if (!($choice =~ m/^q/i || $choice =~ m/^\s*$/)) 
     {
-      &runtest($ip,$thorn,$choice);
+      if($choice > 0 && $choice <= $ntests)
+      {
+	if($havethorns{$ip})
+	{
+	  &runtest($ip,$thorn,$choice-1);
+	}
+	else
+	{
+	  print "This test cannot be run - missing thorns\n";
+	}
+      }
     }
     if (!($choice =~ m/^q/i))
     {
@@ -349,7 +368,7 @@ sub runtest {
     $test_base_dir = $inpf;
     $test_base_dir =~ s:[^${sep}]*$::;
 
-    print "Running $tp: $testnames{$num}\n";
+    print "Running $tp: $testnames[$num]\n";
 
     unlink(<$tsttop${sep}$tp${sep}*.*>);
 
