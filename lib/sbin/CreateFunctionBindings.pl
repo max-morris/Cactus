@@ -463,7 +463,7 @@ sub CheckRequiredFunctions
         }
         &CST_error(0,"Aliased function \'$Function->{'Name'}\' required " .
                    "by thorn '$thorn' is not provided by any thorn\n",
-                   '',__LINE__,__FILE__);
+                   '',__LINE__,__FILE__)
           if (! $is_provided);
       }
     }
