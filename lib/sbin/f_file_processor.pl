@@ -40,7 +40,7 @@ else
 
 # Loop over all lines.
 $line = 1;
-$file = "$source_file_name";
+$file = $source_file_name;
 $autoline = 1;
 $autofile = "";
 while (<>)
@@ -58,6 +58,10 @@ while (<>)
       {
         $line = $1;
         $file = $2;
+        if ($file eq '<stdin>')
+        {
+          $file = $source_file_name;
+        }
       } else {
         ++$line;
       }
