@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.29 1999-06-23 20:24:51 goodale Exp $
+#   @version $Id: Makefile,v 1.30 1999-06-24 17:11:02 goodale Exp $
 # @@*/
 
 # Make quietly unless told not to
@@ -127,35 +127,25 @@ export CCTK_HOME := $(shell pwd)
 CONFIGURATIONS = $(patsubst configs/%,%,$(wildcard configs/*))
 
 # Default target does nothing. 
-# In principle should set up a default based upon uname or something.
-.PHONY:default 
+# Used to set up a default based upon uname or something.
+.PHONY:default-target
 
-default: new_setup
+default-target:
+ifeq ($(strip $(CONFIGURATIONS)),)
 	@echo $(DIVIDER)
+	@echo No configurations defined. 
+	@echo Please use \'$(MAKE) \<name\>\' to setup a configuration called \<name\>.
+	@echo $(DIVIDER)
+	@echo \'$(MAKE) help\' lists all $(MAKE) options.
+else
 ifeq ($(words $(CONFIGURATIONS)), 1)
 	@echo Please use $(MAKE) $(CONFIGURATIONS) 
 else
 	@echo Known configurations are: $(CONFIGURATIONS)
 	@echo Please use $(MAKE) \<configuration\>
 endif
-	@echo $(DIVIDER)
-
-# If there are no configurations, call the setup program.
-.PHONY: new_setup
-
-new_setup:
-ifeq ($(strip $(CONFIGURATIONS)),)
-	@echo $(DIVIDER)
-	@echo Setting up cctk
-	$(SETUP_ENV) $(PERL) -s $(SETUP) $(SETUP_OPTIONS)
-	@echo $(DIVIDER)
-	@echo You are now ready to build the CCTK.
-	@echo This is done by $(MAKE) \<configuration\>
-	@echo
-	@echo Please ignore the error below !
-	@echo $(DIVIDER)
-	exit 2
 endif
+	@echo $(DIVIDER)
 
 # Target to build a configuration
 .PHONY: $(CONFIGURATIONS)
@@ -198,13 +188,16 @@ tags:
 	perl -pi -e 's/(subroutine\s*)([a-zA-Z0-9_]+)/\1\L\2/g;' tags
 	@echo $(DIVIDER)
 
-# Make a new configuration
-.PHONY: config
+# Make a new configuration with a default name
+.PHONY: default
 
-config:
+default:
 	@echo $(DIVIDER)
 	@echo Running the configuration program
 	$(SETUP_ENV) $(PERL) -s $(SETUP) $(SETUP_OPTIONS)
+	@echo $(DIVIDER)
+	@echo You are now ready to build the CCTK.
+	@echo This is done by $(MAKE) \<configuration\>
 	@echo $(DIVIDER)
 
 # The help system.
@@ -215,25 +208,35 @@ help:
 	@echo This is the main makefile for the Cactus Computational Toolkit
 ifeq ($(strip $(CONFIGURATIONS)),)
 	@echo There are no configurations currently specified.
-	@echo $(MAKE) with no arguments will run a setup script.
+	@echo \'$(MAKE) \<name\>\' will run a setup script to setup a configuration called \'\<name\>\'.
 else
 	@echo The following configurations are currently specified
 	@echo $(CONFIGURATIONS)
-	@echo To build a configuration run $(MAKE) followed by the name of a configuration.
-	@echo To clean a configuration run $(MAKE) followed by the name of a configuration suffixed by -clean e.g. Linux-clean.  This deletes all object and dependency files in the configuration.
-	@echo To clean a configuration\'s dependency files run $(MAKE) followed by the name of a configuration suffixed by -cleandeps e.g. Linux-cleandeps.
-	@echo To clean a configuration\'s object files run $(MAKE) followed by the name of a configuration suffixed by -cleanobjs e.g. Linux-cleanobjs.
-	@echo To restore a configuration to almost a new state run $(MAKE) followed by the name of a configuration suffixed by -realclean e.g. Linux-realclean. This deletes all but the config-data directory and the ActiveThorns file.
-	@echo To delete a configuration run $(MAKE) followed by the name of a configuration suffixed by -delete e.g. Linux-delete.
-	@echo To rebuild a configuration run $(MAKE) followed by the name of a configuration suffixed by -rebuild e.g. Linux-rebuild. This forces the CST to be rerun.
-	@echo To reconfigure a configuration run $(MAKE) followed by the name of a configuration suffixed by -reconfig e.g. Linux-reconfig.  This reruns the configuration scripts.
+	@echo $(DIVIDER)
+	@echo To build a configuration: run $(MAKE) followed by the name of a configuration.
+	@echo $(DIVIDER)
+	@echo There is a range of options available to act on a configuration.
+	@echo These are activated by $(MAKE) \<conf-name\>-\<option\>
+	@echo Valid options are
+	@echo -clean"     ": to clean a configuration.   
+	@echo "            " - deletes all object and dependency files in the configuration.
+	@echo -cleandeps" ": to clean a configuration\'s dependency files.
+	@echo -cleanobjs" ": to clean a configuration\'s object files.
+	@echo -realclean" ": to restore a configuration to almost a new state. 
+	@echo "            " - deletes all but the config-data directory 
+	@echo "              " and the ActiveThorns file.
+	@echo -delete"    ": to delete a configuration. 
+	@echo -rebuild"   ": to rebuild a configuration. 
+	@echo "            " - forces the CST to be rerun.
+	@echo -reconfig"  ": to reconfigure a configuration. 
+	@echo "            " - reruns the configuration scripts.
 endif
 	@echo $(DIVIDER)
 	@echo $(MAKE) also knows the following targets
 	@echo
 	@echo       TAGS      - creates an Emacs TAGS file
 	@echo       tags      - creates a Vi TAGS file
-	@echo       config    - creates a new configuration
+	@echo       default   - creates a new configuration with a default name
 	@echo       newthorn  - creates a new thorn
 	@echo       distclean - deletes all existing configurations
 	@echo       testsuite - run the test program
