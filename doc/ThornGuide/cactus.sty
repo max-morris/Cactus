@@ -1,20 +1,46 @@
-\newif\ifpdf
+% @version $Header$
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\NeedsTeXFormat{LaTeX2e}
+
+\def\CA@styledate{\CA@getcvsdate $Date$}
+\def\CA@styleversion{\CA@getcvsversion $Revision$}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\def\CA@getcvsdate    $Date${#1/#2/#3}
+\def\CA@getcvsversion $Revision${#1}
+
+\IfFileExists{../interface.ccl}
+{
+  \ProvidesPackage{../../../../doc/ThornGuide/cactus}[\CA@styledate \CA@styleversion]
+}
+{
+  \ProvidesPackage{cactus}[\CA@styledate \CA@styleversion]
+}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Check if we are under pdftex
+\newif\ifCA@pdf
 \ifx\pdfoutput\undefined
-   \pdffalse % we are not running PDFLaTeX
+   \CA@pdffalse % we are not running PDFLaTeX
 \else
    \pdfoutput=1 % we are running PDFLaTeX
-   \pdftrue
+   \CA@pdftrue
+   % Add the pdftex option to a subsequent load of graphicx
+   \PassOptionsToPackage{pdftex}{graphicx}
 \fi
 
-\ifpdf
-\usepackage[pdftex]{graphicx}
-\else
-\usepackage{graphicx}
-\fi
 
-\usepackage{latexsym}
-\usepackage{ifthen}
-\usepackage{calc}
+% Load in other packages.
+
+\RequirePackage{graphicx}
+\RequirePackage{latexsym}
+\RequirePackage{ifthen}
+\RequirePackage{calc}
 
 \parskip = 2 pt
 \oddsidemargin = 0 cm
@@ -45,3 +71,7 @@
   {\renewcommand{\entrylabel}{\Lentrylabel}
    \begin{entry}}
   {\end{entry}}
+
+\endinput
+%%
+%% End of cactus.sty
