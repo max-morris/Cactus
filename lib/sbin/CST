@@ -469,7 +469,7 @@ sub CreateParameterBindings
 
       $files .= " \U$implementation\E". "_protected.c";
       $routines{"CCTK_BindingsParameters$implementation"."_protected"} = "$implementation";
-      $structures{"PROTECTED_\U$implementation\E_STRUCT"} = "$implementation"."prot";
+      $structures{"PROTECTED_\U$implementation\E_STRUCT"} = "cctk_params_$implementation"."_protected";
 
       # Generate the data header file
       
