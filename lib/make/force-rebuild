@@ -5,7 +5,7 @@
 #   @desc 
 #   Timestamp file for forcing rebuilds of configurations
 #   @enddesc 
-#   @version $Id: force-rebuild,v 1.5 2003-10-13 18:07:49 schnetter Exp $
+#   @version $Id: force-rebuild,v 1.6 2003-10-27 17:23:10 schnetter Exp $
 # @@*/
 
 6 March 2003: minor changes to CreateFunctionBindings.pl 
@@ -14,3 +14,4 @@
               (Changes from Ian).
 4 September 2003: Parse information in thorns' configuration.ccl files
 13 October 2003: Add support for CCTK_INT1.
+27 October 2003: Provide function prototypes for both Fortran and C
