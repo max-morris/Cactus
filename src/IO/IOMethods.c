@@ -22,7 +22,7 @@
 
 static char *rcsid = "$Header$";
 
-CCTK_FILEVERSION (IO_IOMethods_c);
+CCTK_FILEVERSION (IO_IOMethods_c)
 
 /* Local data holding info on IO methods.*/
 static cHandledData *IOMethods = NULL;
