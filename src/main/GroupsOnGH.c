@@ -92,30 +92,6 @@ void *CCTK_GetVarDataPtr(cGH *GH, int varindex, char *fullvarname, int timelevel
 }
 
 
-
-
-
-
- /*@@
-   @routine    CCTK_ArrayGroupSize
-   @date       Mon Feb  8 12:05:50 1999
-   @author     Tom Goodale
-   @desc 
-   Gets the size of a array in a specific direction.
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
-
-@@*/
-int *CCTK_ArrayGroupSize(cGH *GH, const char *group, int dir)
-{
-  /* Quick fudge */
-  return &(GH->local_shape[dir]);
-}
-
  /*@@
    @routine    CCTK_QueryGroupStorage
    @date       
