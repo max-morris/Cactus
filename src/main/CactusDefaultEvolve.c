@@ -9,6 +9,8 @@
 #include <stdio.h>
 
 #include "flesh.h"
+#include "cctk.h"
+#include "declare_parameters.h"
 #include "rfr_constants.h"
 #include "CactusIOFunctions.h"
 
@@ -35,8 +37,8 @@ static char *rcsid="$Id$";
 #define EVOLUTION 1
 #define OUTPUT    2
 int cactus_terminate;
-int cctk_itfirst = 0;
-int cctk_itlast = 50;
+/*int cctk_itfirst = 0;
+  int cctk_itlast = 50;*/
 static int cactus_terminate_global = 0;
 #define TERMINATION_RAISED_BRDCAST 4
  
@@ -57,6 +59,9 @@ static int cactus_terminate_global = 0;
 @@*/
 int CactusDefaultEvolve(tFleshConfig *config)
 {
+
+  DECLARE_PARAMETERS
+
   int iteration;
   int convergence_level;
 
