@@ -6,7 +6,7 @@
 #   @desc
 #            Configure Cactus to compile with the LAM version of MPI.
 #   @enddesc
-#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/extras/MPI/LAM,v 1.7 2004-06-25 16:13:04 tradke Exp $
+#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/extras/MPI/LAM,v 1.8 2004-09-17 14:48:08 tradke Exp $
 # @@*/
 
 echo '  LAM selected'
@@ -42,16 +42,37 @@ if test -z "$LAM_LIB_DIR" -o -z "$LAM_INC_DIR" ; then
         lam_cxx_includes="$lam_includes/../mpi2c++"
       fi
     fi
-    LAM_INC_DIR="$lam_includes $lam_cxx_includes"
+
+    # don't explicitely add standard include search paths
+    if test "$lam_includes" != '/usr/include' -a "$lam_includes" != '/usr/local/include'; then
+      LAM_INC_DIR="$lam_includes"
+    fi
+    if test -n "$lam_cxx_includes"; then
+      LAM_INC_DIR="$LAM_INC_DIR $lam_cxx_includes"
+    fi
 
   fi
 
   # set LAM_LIB_DIR if not already set
-  : ${lam_libs="$LAM_DIR/lib"}
-  : ${LAM_LIB_DIR="$lam_libs"}
+  if test -z "$LAM_LIB_DIR" ; then
+    lam_libs="$LAM_DIR/lib"
 
-  echo "  Using \"$LAM_INC_DIR\" as LAM include path"
-  echo "  Using \"$LAM_LIB_DIR\" as LAM library path"
+    # don't add standard library search paths
+    if test "$lam_libs" != '/usr/lib' -a "$lam_libs" != '/usr/local/lib'; then
+      LAM_LIB_DIR="$lam_libs"
+    fi
+  fi
+
+  if test -z "$LAM_INC_DIR"; then
+    echo "  Using no explicit LAM include path"
+  else
+    echo "  Using \"$LAM_INC_DIR\" as LAM include path"
+  fi
+  if test -z "$LAM_LIB_DIR"; then
+    echo "  Using no explicit LAM library path"
+  else
+    echo "  Using \"$LAM_LIB_DIR\" as LAM library path"
+  fi
 fi
 
 # LAM libs changed in versions newer than 6.4
