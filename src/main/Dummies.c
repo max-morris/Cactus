@@ -38,7 +38,7 @@ int CCTK_DummyTriggerable(int variable)
 
 int CCTK_DummyTriggerSaysGo(int variable)
 {
-  return 0;
+  return 1;
 }
 
 int CCTK_DummyTriggerAction(void *GH, int group)
@@ -46,7 +46,8 @@ int CCTK_DummyTriggerAction(void *GH, int group)
   return 0;
 }
 
-int CCTK_DummyCallFunc(void *GH, int language, void *function)
+
+int CCTK_CallFunc(void *GH, int language, void *function)
 {
 
   void (*calledfunc)(void *);

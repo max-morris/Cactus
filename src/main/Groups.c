@@ -248,8 +248,8 @@ int CCTK_GetGroupNum(const char *implementation,
 
   for(group_num = 0; group_num < n_groups; group_num++)
   {
-    if(!strcmp(implementation, groups[group_num].implementation) &&
-       !strcmp(name, groups[group_num].name)) break;
+    if(CCTK_Equals(implementation, groups[group_num].implementation) &&
+       CCTK_Equals(name, groups[group_num].name)) break;
   }
 
   if (group_num < n_groups)
@@ -293,7 +293,7 @@ int CCTK_GetVarNum(const char *implementation,
   {
     for(variable=0; variable<groups[group_num].n_variables;variable++)
     {
-      if(!strcmp(variable_name, groups[group_num].variables[variable].name))
+      if(CCTK_Equals(variable_name, groups[group_num].variables[variable].name))
       {
 	retval  = groups[group_num].variables[variable].number;
 	break;
@@ -382,11 +382,34 @@ int CCTK_GetNumGroups(void)
    @endhistory 
 
 @@*/
-int CCTK_ArrayGroupSize(cGH *GH, const char *group, int dim)
+int *CCTK_ArrayGroupSize(cGH *GH, const char *group, int dim)
 {
-  return 0;
+  /* Quick fudge */
+  return &(GH->local_shape[dim]);
 }
 
+ /*@@
+   @routine    CCTK_
+   @date       
+   @author     Tom Goodale
+   @desc 
+
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+int CCTK_QueryGroupStorage(cGH *GH, const char *group)
+{
+  /* Quick fudge */  
+  return 1;
+}
+
+
+ 
  /*@@
    @routine    CCTK_GTypeNumber
    @date       Mon Feb  8 14:44:45 1999
