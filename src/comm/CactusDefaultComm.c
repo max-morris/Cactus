@@ -27,19 +27,19 @@ extern char MPI_Active;
 #ifdef MPI
 #define CACTUS_MPI_ERROR(xf)  do {int errcode; \
                                     if((errcode = xf) != MPI_SUCCESS)                     \
-				    {                                                     \
-				      char mpi_error_string[MPI_MAX_ERROR_STRING+1];      \
-				      int resultlen;                                      \
-				      MPI_Error_string(errcode, mpi_error_string, &resultlen);\
-				      fprintf(stderr, "MPI Call %s returned error code %d (%s)\n", \
+                                    {                                                     \
+                                      char mpi_error_string[MPI_MAX_ERROR_STRING+1];      \
+                                      int resultlen;                                      \
+                                      MPI_Error_string(errcode, mpi_error_string, &resultlen);\
+                                      fprintf(stderr, "MPI Call %s returned error code %d (%s)\n", \
                                       #xf, errcode, mpi_error_string);                    \
-				      fprintf(stderr, "At line %d of file %s\n",                   \
-					     __LINE__, __FILE__);                         \
-				    }                                                     \
-				  } while (0)
+                                      fprintf(stderr, "At line %d of file %s\n",                   \
+                                             __LINE__, __FILE__);                         \
+                                    }                                                     \
+                                  } while (0)
 #endif
 
-static char *rcsid = "$Id$";
+static char *rcsid = "$Header$";
 
 
  /*@@
@@ -119,20 +119,20 @@ cGH *CactusDefaultSetupGH(tFleshConfig *config, int convergence_level)
     {
       for(variable = 0; variable < n_variables; variable++)
       {
-	ntimelevels = CCTK_NumTimeLevelsFromVarI(variable);
+        ntimelevels = CCTK_NumTimeLevelsFromVarI(variable);
 
-	thisGH->data[variable] = (void **)malloc(ntimelevels*sizeof(void *));
-	if(thisGH->data[variable])
-	{
-	  for(level = 0; level < ntimelevels; level++)
-	  {
-	    thisGH->data[variable][level] = NULL;
-	  }
-	}
-	else
-	{
-	  break;
-	}
+        thisGH->data[variable] = (void **)malloc(ntimelevels*sizeof(void *));
+        if(thisGH->data[variable])
+        {
+          for(level = 0; level < ntimelevels; level++)
+          {
+            thisGH->data[variable][level] = NULL;
+          }
+        }
+        else
+        {
+          break;
+        }
       }
     }
 

@@ -82,31 +82,31 @@ int CCTKi_RegisterThorn(const char *name, const char *imp)
 
       if(thorn->implementation)
       {
-	/* Fill out data for the thorn. */
-	strcpy(thorn->implementation, imp);
-	thorn->active = 0;
+        /* Fill out data for the thorn. */
+        strcpy(thorn->implementation, imp);
+        thorn->active = 0;
 
-	/* Store the data in the tree */
-	temp = SKTreeStoreData(thornlist, thornlist, name, thorn);
+        /* Store the data in the tree */
+        temp = SKTreeStoreData(thornlist, thornlist, name, thorn);
 
-	if(!thornlist) thornlist = temp;
+        if(!thornlist) thornlist = temp;
 
-	if(temp)
-	{
+        if(temp)
+        {
 
-	  /* Register the implementation */
-	  CCTK_RegisterImp(imp, name);
+          /* Register the implementation */
+          CCTK_RegisterImp(imp, name);
 
-	  retval = 0;
-	}
-	else
-	{
-	  retval = -4;
-	}
+          retval = 0;
+        }
+        else
+        {
+          retval = -4;
+        }
       }
       else
       {
-	retval = -3;
+        retval = -3;
       }
     }
     else
@@ -168,11 +168,11 @@ static int CCTK_RegisterImp(const char *name, const char *thorn)
 
       if(temp)
       {
-	retval = 0;
+        retval = 0;
       }
       else
       {
-	retval = -3;
+        retval = -3;
       }
     }
     else
@@ -234,27 +234,27 @@ int CCTKi_ActivateThorn(const char *name)
           
       if(!thorn->active)
       {
-	if(!imp->active)
-	{
-	  /* Activate the thorn. */
-	  printf("Success -> active implementation %s\n", thorn->implementation);
-	  thorn->active = 1;
-	  imp->active = 1;
-	  /* Remember which thorn activated this imp. */
-	  imp->activating_thorn = (char *)malloc(sizeof(char)*(strlen(name)+1));
-	  strcpy(imp->activating_thorn, name);
-	  retval = 0;
-	}
-	else
-	{
-	  printf("Failure -> Implementation %s already activated by %s\n", thorn->implementation, imp->activating_thorn);
-	  retval = -4;
-	}
+        if(!imp->active)
+        {
+          /* Activate the thorn. */
+          printf("Success -> active implementation %s\n", thorn->implementation);
+          thorn->active = 1;
+          imp->active = 1;
+          /* Remember which thorn activated this imp. */
+          imp->activating_thorn = (char *)malloc(sizeof(char)*(strlen(name)+1));
+          strcpy(imp->activating_thorn, name);
+          retval = 0;
+        }
+        else
+        {
+          printf("Failure -> Implementation %s already activated by %s\n", thorn->implementation, imp->activating_thorn);
+          retval = -4;
+        }
       }
       else
       {
-	printf("Failure -> Thorn %s already active\n", name);
-	retval = -3;
+        printf("Failure -> Thorn %s already active\n", name);
+        retval = -3;
       }
     }
     else
@@ -667,7 +667,7 @@ int CCTK_ImplementationThornList (const char *imp, char ***list, int *n_items)
   int       retval;
   t_sktree *node;
   t_sktree *thornlist;
-  int	    alloc_size = 0;
+  int       alloc_size = 0;
     
   /* FIXME */
 #define _MY_THORN_JUNK_SIZE 10
@@ -679,13 +679,13 @@ int CCTK_ImplementationThornList (const char *imp, char ***list, int *n_items)
   thornlist = (t_sktree*) CCTK_ImpThornList (imp);
     
     
-  /* got thornlist? */	
+  /* got thornlist? */  
   if (thornlist)
   {
     /* then we can start allocatin list */
     alloc_size += _MY_THORN_JUNK_SIZE;
     *list = (char **) malloc (alloc_size * sizeof (char *));
-	
+        
     /* success? */
     if (! (*list)) 
     {

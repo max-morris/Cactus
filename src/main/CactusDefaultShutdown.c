@@ -19,6 +19,7 @@
 #include "mpi.h"
 #endif
 
+static char *rcsid = "$Header$";
 
 #ifdef MPI
 extern char MPI_Active;
@@ -27,16 +28,16 @@ extern char MPI_Active;
 #ifdef MPI
 #define CACTUS_MPI_ERROR(xf)  do {int errcode; \
                                     if((errcode = xf) != MPI_SUCCESS)                     \
-				    {                                                     \
-				      char mpi_error_string[MPI_MAX_ERROR_STRING+1];      \
-				      int resultlen;                                      \
-				      MPI_Error_string(errcode, mpi_error_string, &resultlen);\
-				      fprintf(stderr, "MPI Call %s returned error code %d (%s)\n", \
+                                    {                                                     \
+                                      char mpi_error_string[MPI_MAX_ERROR_STRING+1];      \
+                                      int resultlen;                                      \
+                                      MPI_Error_string(errcode, mpi_error_string, &resultlen);\
+                                      fprintf(stderr, "MPI Call %s returned error code %d (%s)\n", \
                                       #xf, errcode, mpi_error_string);                    \
-				      fprintf(stderr, "At line %d of file %s\n",                   \
-					     __LINE__, __FILE__);                         \
-				    }                                                     \
-				  } while (0)
+                                      fprintf(stderr, "At line %d of file %s\n",                   \
+                                             __LINE__, __FILE__);                         \
+                                    }                                                     \
+                                  } while (0)
 #endif
 
  /*@@

@@ -19,8 +19,8 @@
 static int ScheduleCreateGroup(const char *name);
 
 static t_sched_item *ScheduleCreateItem(const char *name, 
-					t_sched_modifier *modifiers, 
-					void *attributes);
+                                        t_sched_modifier *modifiers, 
+                                        void *attributes);
 
 static int ScheduleAddItem(int ghandle, t_sched_item *item);
 
@@ -29,7 +29,7 @@ static int ScheduleSortGroup(t_sched_group *group);
 static t_sched_modifier_type ScheduleTranslateModifierType(const char *modifier);
 
 static int ScheduleItemNumber(t_sched_group *group, 
-			      const char *name);
+                              const char *name);
 
 
 static int ScheduleSetupWhiles(t_sched_item *item);
@@ -103,10 +103,10 @@ t_sched_modifier *CCTKi_ScheduleAddModifier(t_sched_modifier *orig,
 
 @@*/
 int CCTKi_ScheduleFunction(const char *gname, 
-			   const char *fname, 
-			   void *func, 
-			   t_sched_modifier *modifiers, 
-			   void *attributes)
+                           const char *fname, 
+                           void *func, 
+                           t_sched_modifier *modifiers, 
+                           void *attributes)
 {
   int retcode;
   int handle;
@@ -158,9 +158,9 @@ int CCTKi_ScheduleFunction(const char *gname,
 
 @@*/
 int CCTKi_ScheduleGroup(const char *gname, 
-			const char *thisname, 
-			t_sched_modifier *modifiers, 
-			void *attributes)
+                        const char *thisname, 
+                        t_sched_modifier *modifiers, 
+                        void *attributes)
 {
   int retcode;
   int handle;
@@ -238,12 +238,12 @@ int CCTKi_ScheduleSortAllGroups(void)
 
       if(errcode)
       {
-	fprintf(stderr, 
-		"Error while dorting group '%s' - %d remaining unsorted routines.\n", 
-		gdata->name,
-		-errcode);
+        fprintf(stderr, 
+                "Error while dorting group '%s' - %d remaining unsorted routines.\n", 
+                gdata->name,
+                -errcode);
 
-	n_errors += -errcode;
+        n_errors += -errcode;
       }
     }
   }
@@ -298,19 +298,19 @@ static int ScheduleCreateGroup(const char *name)
 
       if(this_group->name)
       {
-	strcpy(this_group->name, name);
+        strcpy(this_group->name, name);
 
-	this_group->order = NULL;
-	this_group->n_scheditems = 0;
-	this_group->scheditems = NULL;
-	retcode = Util_NewHandle(&schedule_groups, name, (void *)this_group);
-	n_schedule_groups++;
+        this_group->order = NULL;
+        this_group->n_scheditems = 0;
+        this_group->scheditems = NULL;
+        retcode = Util_NewHandle(&schedule_groups, name, (void *)this_group);
+        n_schedule_groups++;
       }
       else
       {
-	free(this_group);
+        free(this_group);
 
-	retcode = -2;
+        retcode = -2;
       }
     }
     else
@@ -509,7 +509,7 @@ static int ScheduleSortGroup(t_sched_group *group)
     {
       if(modifier->type == sched_while)
       {
-	continue;
+        continue;
       }
       number = ScheduleItemNumber(group, modifier->argument);
 
@@ -518,18 +518,18 @@ static int ScheduleSortGroup(t_sched_group *group)
 #endif
       if(number >= 0 && number < group->n_scheditems)
       {
-	switch(modifier->type)
-	{
-	  case sched_before : mod = -1;  break;
-	  case sched_after  : mod = 1; break;
-	  default :
-	    mod = 0;
-	}
+        switch(modifier->type)
+        {
+          case sched_before : mod = -1;  break;
+          case sched_after  : mod = 1; break;
+          default :
+            mod = 0;
+        }
 #ifdef DEBUG_SCHEDULAR
-	printf("Modifier is %d\n", mod);
+        printf("Modifier is %d\n", mod);
 #endif
 
-	thisorders[number] = mod;
+        thisorders[number] = mod;
       }
     }
 
@@ -676,22 +676,22 @@ static int ScheduleSetupWhiles(t_sched_item *item)
 
       if(temp)
       {
-	item->whiles = temp;
+        item->whiles = temp;
 
-	temp[item->n_whiles-1] = (char *)malloc((strlen(modifier->argument)+1)*sizeof(char));
-	if(temp[item->n_whiles-1])
-	{
-	  strcpy(temp[item->n_whiles-1], modifier->argument);
-	}
-	else
-	{
-	  item->n_whiles--;
-	  retval--;
-	}
+        temp[item->n_whiles-1] = (char *)malloc((strlen(modifier->argument)+1)*sizeof(char));
+        if(temp[item->n_whiles-1])
+        {
+          strcpy(temp[item->n_whiles-1], modifier->argument);
+        }
+        else
+        {
+          item->n_whiles--;
+          retval--;
+        }
       }
       else
       {
-	retval--;
+        retval--;
       }
     }
   }

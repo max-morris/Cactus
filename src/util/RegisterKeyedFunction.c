@@ -10,7 +10,7 @@
 #include <stdlib.h>
 #include "RegisterKeyedFunction.h"
 
-static char *rcsid = "$Id$";
+static char *rcsid = "$Header$";
 
  /*@@
    @routine    RegisterKeyedFunction
@@ -27,8 +27,8 @@ static char *rcsid = "$Id$";
 
 @@*/
 int RegisterKeyedFunction(void (*array[])(), 
-			  int min, int max, 
-			  int key, void (*func)())
+                          int min, int max, 
+                          int key, void (*func)())
 {
   int return_code;
 

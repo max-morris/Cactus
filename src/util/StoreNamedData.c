@@ -15,7 +15,7 @@
 
 #include "StoreNamedData.h"
 
-static char *rcsid = "$Id$";
+static char *rcsid = "$Header$";
  
 
  /*@@
@@ -156,8 +156,8 @@ void *GetNamedData(pNamedData *list, const char *name)
       /* Compare the name */
       if(!strcmp(current->name, name))
       {
-	return_val = current->data;
-	break;
+        return_val = current->data;
+        break;
       };
     };
   };

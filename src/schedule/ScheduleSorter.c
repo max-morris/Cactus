@@ -45,7 +45,7 @@ int CCTKi_ScheduleSort(int size, signed char **array, int *order)
     {
       for(column = row+1; column < size ; column++)
       {
-	if(array[row][column] > 0) break;
+        if(array[row][column] > 0) break;
       }
       if(column < size && array[row][column] > 0) break;
     }
@@ -65,7 +65,7 @@ int CCTKi_ScheduleSort(int size, signed char **array, int *order)
   {
     for(column = row+1; column <size ; column++)
     {
-	if(array[row][column] > 0) retval -= 1;
+        if(array[row][column] > 0) retval -= 1;
     }
   }
 
@@ -87,10 +87,10 @@ int CCTKi_ScheduleSort(int size, signed char **array, int *order)
 
 @@*/
 int CCTKi_ScheduleAddRow(int size, 
-			 signed char **array, 
-			 int *order, 
-			 int item, 
-			 int *thisorders)
+                         signed char **array, 
+                         int *order, 
+                         int item, 
+                         int *thisorders)
 {
   int retval;
 
@@ -151,7 +151,7 @@ signed char **CCTKi_ScheduleCreateArray(int size)
       /* Free already allocated memory */
       for(i--; i >=0; i--)
       {
-	free(array[i]);
+        free(array[i]);
       }
       free(array);
       array = NULL;
@@ -165,7 +165,7 @@ signed char **CCTKi_ScheduleCreateArray(int size)
     {
       for(j=0; j < size; j++)
       {
-	array[i][j] = 0;
+        array[i][j] = 0;
       }
     }
   }
@@ -353,18 +353,18 @@ int main(int argc, char *argv[])
     {
       if(i==j)
       {
-	array[i][i]=0;
+        array[i][i]=0;
       }
       else
       {
 
-	val = (signed char)((int)(weight*rand()/(RAND_MAX+1.0))-2);
+        val = (signed char)((int)(weight*rand()/(RAND_MAX+1.0))-2);
 
-	/* Normalise */
-	if(val) val /= abs(val);
+        /* Normalise */
+        if(val) val /= abs(val);
 
-	array[i][j] = val;
-	array[j][i] = -val;
+        array[i][j] = val;
+        array[j][i] = -val;
       }
     }
   }

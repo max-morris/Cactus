@@ -5,10 +5,8 @@
    @desc 
    Header file for keyed function registration.
    @enddesc 
+   @version $Header$
  @@*/
-
-/* $Id$ */
-
 
 #ifndef _REGISTERKEYEDFUNCTION_H_
 #define _REGISTERKEYEDFUNCTION_H_
@@ -21,13 +19,13 @@ extern "C" {
 #endif
 
 int RegisterKeyedFunction(void (*array[])(), 
-			  int min, int max, 
-			  int key, void (*func)());
+                          int min, int max, 
+                          int key, void (*func)());
 
 void  (**(CreateKeyedFunctionArray(int size)))();
 
 #ifdef __cplusplus
-	   }
+}
 #endif
 
 /*****************************************************/
@@ -35,8 +33,8 @@ void  (**(CreateKeyedFunctionArray(int size)))();
 /* Possible return codes. */
 
 enum RegisterKeyedFunctionErrors {REG_KEYED_FUNCTION_SUCCESS, 
-				  REG_KEYED_FUNCTION_ALREADY_ASSIGNED,
-				  REG_KEYED_FUNCTION_RANGE_ERROR};
+                                  REG_KEYED_FUNCTION_ALREADY_ASSIGNED,
+                                  REG_KEYED_FUNCTION_RANGE_ERROR};
 
 
 /*****************************************************/

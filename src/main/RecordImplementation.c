@@ -13,6 +13,8 @@
 
 #include "StoreNamedData.h"
 
+static char *rcsid = "$Header$";
+
 typedef struct 
 {
   int n_thorns;
@@ -37,7 +39,7 @@ static pNamedData *implementation_data = NULL;
 
 @@*/
 int CCTK_RecordImplementation(const char *implementation,
-			      const char *thorn)
+                              const char *thorn)
 {
   int retval;
   char **temp;
@@ -54,12 +56,12 @@ int CCTK_RecordImplementation(const char *implementation,
       data->thornlist[data->n_thorns-1] = (char *)malloc((strlen(thorn)+1)*sizeof(char));
       if(data->thornlist[data->n_thorns-1])
       {
-	strcpy(data->thornlist[data->n_thorns-1], thorn);
-	retval = 0;
+        strcpy(data->thornlist[data->n_thorns-1], thorn);
+        retval = 0;
       }
       else
       {
-	retval = 4;
+        retval = 4;
       }
     }
     else
@@ -77,23 +79,23 @@ int CCTK_RecordImplementation(const char *implementation,
       data->thornlist = (char **)malloc(sizeof(char *));
       if(data->thornlist)
       {
-	data->thornlist[0] = (char *)malloc((strlen(thorn)+1)*sizeof(char));
-	if(data->thornlist[0])
-	{
-	  strcpy(data->thornlist[0], thorn);
-	  data->n_thorns = 1;
-	  StoreNamedData(&implementation_data,implementation, data);
-	  retval = 0;
-	}
-	else
-	{
-	  retval = 4;
-	}
+        data->thornlist[0] = (char *)malloc((strlen(thorn)+1)*sizeof(char));
+        if(data->thornlist[0])
+        {
+          strcpy(data->thornlist[0], thorn);
+          data->n_thorns = 1;
+          StoreNamedData(&implementation_data,implementation, data);
+          retval = 0;
+        }
+        else
+        {
+          retval = 4;
+        }
       }
       else
       {
-	fprintf(stderr, "Unable to allocate memory for new thorn %s\n", thorn);
-	retval = 3;
+        fprintf(stderr, "Unable to allocate memory for new thorn %s\n", thorn);
+        retval = 3;
       }
     }
     else

@@ -58,7 +58,7 @@ typedef struct RANGE
     struct RANGE *next;
     char         *range;
     char         *origin;
-    int 	  active;
+    int           active;
     char         *description;
 } t_range;
 

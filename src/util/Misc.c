@@ -28,10 +28,12 @@
 #include "cctk_FortranString.h"
 #include "cctk_WarnLevel.h"
 
+static char *rcsid = "$Header";
+
 int CCTK_RegexMatch(const char *string, 
-		    const char *pattern, 
-		    const int nmatch,
-		    regmatch_t *pmatch); 
+                    const char *pattern, 
+                    const int nmatch,
+                    regmatch_t *pmatch); 
 
  /*@@
    @routine    Util_SplitString
@@ -145,8 +147,8 @@ int CCTK_Equals(const char *string1, const char *string2)
     {
       if(tolower(string1[position]) != tolower(string2[position]))
       {
-	retval = 0;
-	break;
+        retval = 0;
+        break;
       }
     }
   }
@@ -252,7 +254,7 @@ int Util_InList(const char *string1, int n_elements, ...)
   return retval;
 
 }
-	 
+         
 
  /*@@
    @routine    Util_IntInRange
@@ -294,17 +296,17 @@ int Util_IntInRange(int inval, const char *range)
    */
 
   if((matched = CCTK_RegexMatch(range, 
-		     "(\\[|\\()?([^]):]*):?([^]):]*)?:?([^]):]*)?(\\]|\\))?", 
-		     6, pmatch)) != 0)
+                     "(\\[|\\()?([^]):]*):?([^]):]*)?:?([^]):]*)?(\\]|\\))?", 
+                     6, pmatch)) != 0)
   {
     /* First work out if the range is closed at the lower end. */
     if(pmatch[1].rm_so != -1)
     {
       switch(range[pmatch[1].rm_so])
       {
-	case '(' : start_closed = 0; break;
-	case '[' : 
-	default  : start_closed = 1;
+        case '(' : start_closed = 0; break;
+        case '[' : 
+        default  : start_closed = 1;
       }
     }
     else
@@ -337,7 +339,7 @@ int Util_IntInRange(int inval, const char *range)
       /* No end range given, so use the largest integer available. */
       end = INT_MAX;
     }
-	  
+          
     /* Next find the step of the range */
     if(pmatch[4].rm_so != -1 && (pmatch[4].rm_eo-pmatch[4].rm_so > 0))
     {
@@ -354,9 +356,9 @@ int Util_IntInRange(int inval, const char *range)
     {
       switch(range[pmatch[5].rm_so])
       {
-	case ')' : end_closed = 0; break;
-	case ']' : 
-	default  : end_closed = 1;
+        case ')' : end_closed = 0; break;
+        case ']' : 
+        default  : end_closed = 1;
       }
     }
     else
@@ -420,17 +422,17 @@ int Util_DoubleInRange(double inval, const char *range)
    */
 
   if((matched = CCTK_RegexMatch(range, 
-		     "(\\[|\\()?([^]):]*):?([^]):]*)?:?([^]):]*)?(\\]|\\))?", 
-		     6, pmatch)) != 0)
+                     "(\\[|\\()?([^]):]*):?([^]):]*)?:?([^]):]*)?(\\]|\\))?", 
+                     6, pmatch)) != 0)
   {
     /* First work out if the range is closed at the lower end. */
     if(pmatch[1].rm_so != -1)
     {
       switch(range[pmatch[1].rm_so])
       {
-	case '(' : start_closed = 0; break;
-	case '[' : 
-	default  : start_closed = 1;
+        case '(' : start_closed = 0; break;
+        case '[' : 
+        default  : start_closed = 1;
       }
     }
     else
@@ -464,7 +466,7 @@ int Util_DoubleInRange(double inval, const char *range)
       end = FLT_MAX;
     }
 
-#if 0	  
+#if 0     
     /* Next find the step of the range */
     if(pmatch[4].rm_so != -1 && (pmatch[4].rm_eo-pmatch[4].rm_so > 0))
     {
@@ -482,9 +484,9 @@ int Util_DoubleInRange(double inval, const char *range)
     {
       switch(range[pmatch[5].rm_so])
       {
-	case ')' : end_closed = 0; break;
-	case ']' : 
-	default  : end_closed = 1;
+        case ')' : end_closed = 0; break;
+        case ']' : 
+        default  : end_closed = 1;
       }
     }
     else
@@ -494,7 +496,7 @@ int Util_DoubleInRange(double inval, const char *range)
   
     if(inval > start /*+ !start_closed */&& 
        inval < end  /* - !end_closed */ /* &&
-				       ! ((inval-start) % step)*/)
+                                       ! ((inval-start) % step)*/)
     {
       retval = 1;
     }
@@ -615,7 +617,7 @@ int Util_DoubleInRangeList(double inval, int n_elements, ...)
 
 @@*/
 int CCTK_SetDoubleInRangeList(CCTK_REAL *data, const char *value, 
-			      int n_elements, ...)
+                              int n_elements, ...)
 {
   int retval;
   char temp[1001];
@@ -637,8 +639,8 @@ int CCTK_SetDoubleInRangeList(CCTK_REAL *data, const char *value,
   for (p=0;p<strlen(temp);p++) 
   {
     if (temp[p] == 'E' || 
-	temp[p] == 'd' || 
-	temp[p] == 'D') 
+        temp[p] == 'd' || 
+        temp[p] == 'D') 
     {
       temp[p] = 'e';
       break;
@@ -683,7 +685,7 @@ int CCTK_SetDoubleInRangeList(CCTK_REAL *data, const char *value,
 
 @@*/
 int CCTK_SetIntInRangeList(CCTK_INT *data, const char *value, 
-			   int n_elements, ...)
+                           int n_elements, ...)
 {
   int retval;
   int arg;
@@ -735,7 +737,7 @@ int CCTK_SetIntInRangeList(CCTK_INT *data, const char *value,
 
 @@*/
 int CCTK_SetKeywordInRangeList(char **data, const char *value, 
-			       int n_elements, ...)
+                               int n_elements, ...)
 {
   int retval;
   int arg;
@@ -760,12 +762,12 @@ int CCTK_SetKeywordInRangeList(char **data, const char *value,
       *data = (char *)malloc((strlen(value)+1)*sizeof(char));
       if(*data)
       {
-	strcpy(*data, value);
-	retval = 0;
+        strcpy(*data, value);
+        retval = 0;
       }
       else
       {
-	retval =-1;
+        retval =-1;
       }
       break;
     }
@@ -793,7 +795,7 @@ int CCTK_SetKeywordInRangeList(char **data, const char *value,
 
 @@*/
 int CCTK_SetStringInRegexList(char **data, const char *value, 
-			       int n_elements, ...)
+                               int n_elements, ...)
 {
   int retval;
   int arg;
@@ -941,9 +943,9 @@ int CCTK_SetBoolean(CCTK_INT *data, const char *value)
 @@*/
 
 int CCTK_RegexMatch(const char *string, 
-		    const char *pattern, 
-		    const int nmatch,
-		    regmatch_t *pmatch) 
+                    const char *pattern, 
+                    const int nmatch,
+                    regmatch_t *pmatch) 
 {
   int status;
   regex_t re;
@@ -984,7 +986,7 @@ void FORTRAN_NAME(CCTK_FortranString)(CCTK_INT *nchar, char **cstring,ONE_FORTST
     char *message;
     message = (char *)malloc( (200+strlen(*cstring))*sizeof(char) );
     sprintf(message,"Cannot output %s to char* of length %d",
-	    *cstring,cctk_strlen1);
+            *cstring,cctk_strlen1);
     CCTK_Warn (1,__LINE__,__FILE__,"Cactus",message);
     free(message);
     *nchar = -1;

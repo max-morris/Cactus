@@ -362,9 +362,9 @@ void CCTKi_FinaliseParamWarn(void)
     else
     {
       if (param_errors==1)
-	fprintf(stderr, "\nThere was 1 parameter warning\n\n");
+        fprintf(stderr, "\nThere was 1 parameter warning\n\n");
       else
-	fprintf(stderr, "\nThere were %d parameter warnings\n\n",param_errors);
+        fprintf(stderr, "\nThere were %d parameter warnings\n\n",param_errors);
       fflush(stderr);
     }
 
@@ -418,17 +418,17 @@ void FMODIFIER FORTRAN_NAME(CCTK_VInfo)(int format_number, ...)
     {
       if(*format_string != '%')
       {
-	message[current_place] = *format_string;
-	current_place++;
-	if(current_place >= message_length)
-	{
-	  message = (char *)realloc(message, message_length*2);
-	  message_length *=2;
-	}
+        message[current_place] = *format_string;
+        current_place++;
+        if(current_place >= message_length)
+        {
+          message = (char *)realloc(message, message_length*2);
+          message_length *=2;
+        }
       }
       else
       {
-	
+        
       }
     }
 

@@ -13,10 +13,10 @@
 
 #include "ParameterData.h"
 
-static char *rcsid = "$Id$";
+static char *rcsid = "$Header$";
 
 int ParseFile(FILE *ifp, 
-	      int (*set_function)(const char *, const char *));
+              int (*set_function)(const char *, const char *));
 
 
  /*@@
@@ -47,7 +47,7 @@ int ProcessParameterDatabase(tFleshConfig *ConfigData)
   else
   {
     fprintf(stderr, "Unable to open parameter file '%s'\n", 
-	            ConfigData->parameter_file_name);
+                    ConfigData->parameter_file_name);
     retval = 1;
   }
       

@@ -60,8 +60,8 @@ typedef struct
 
   int stagger;
 
-  /* size[dim] */
-  CCTK_INT *size;
+  /* *size[dim]  - pointers to parameter data*/
+  CCTK_INT **size;
 
   /* variables[n_variables] */
   cVariableDefinition *variables;
@@ -137,7 +137,7 @@ int CCTK_GroupIndex(const char *fullgroupname)
     for(group_num = 0; group_num < n_groups; group_num++)
     {
       if(CCTK_Equals(imp2, groups[group_num].implementation) &&
-	 CCTK_Equals(group2, groups[group_num].name)) break;
+         CCTK_Equals(group2, groups[group_num].name)) break;
     }
 
     if (group_num < n_groups)
@@ -245,9 +245,9 @@ int CCTKi_CreateGroup(const char *gname, const char *thorn, const char *imp,
     sprintf(fullname,"%s::%s",imp,gname);
     printf("Created implementation group %s\n",fullname);
     printf("  CCTK_GroupIndex(%s) = %d\n",fullname,
-	   CCTK_GroupIndex(fullname));
+           CCTK_GroupIndex(fullname));
     printf("  CCTK_GroupName(%d) = %s\n",CCTK_GroupIndex(fullname),
-	   CCTK_GroupName(CCTK_GroupIndex(fullname)));
+           CCTK_GroupName(CCTK_GroupIndex(fullname)));
     free(fullname);
   }
 #endif
@@ -263,9 +263,9 @@ int CCTKi_CreateGroup(const char *gname, const char *thorn, const char *imp,
     sprintf(fullname,"%s::%s",thorn,gname);
     printf("Created thorn group %s\n",fullname);
     printf("  CCTK_GroupIndex(%s) = %d\n",fullname,
-	   CCTK_GroupIndex(fullname));
+           CCTK_GroupIndex(fullname));
     printf("  CCTK_GroupName(%d) = %s\n",CCTK_GroupIndex(fullname),
-	   CCTK_GroupName(CCTK_GroupIndex(fullname)));
+           CCTK_GroupName(CCTK_GroupIndex(fullname)));
     free(fullname);
   }
 #endif
@@ -297,11 +297,11 @@ int CCTKi_CreateGroup(const char *gname, const char *thorn, const char *imp,
       
       if(group->variables[variable].name)
       {
-	strcpy(group->variables[variable].name, variable_name);
+        strcpy(group->variables[variable].name, variable_name);
       }
       else
       {
-	break;
+        break;
       }
     }
 
@@ -357,7 +357,7 @@ static cGroupDefinition *CCTKi_SetupGroup(const char *implementation,
   const char *fullname2;
 
   fullname1 = (char *) malloc( (strlen(implementation)+strlen(name)+2)
-				    *sizeof(const char *));
+                                    *sizeof(const char *));
   sprintf(fullname1,"%s::%s",implementation,name); 
   fullname2 = (const char *)fullname1;
 
@@ -380,43 +380,43 @@ static cGroupDefinition *CCTKi_SetupGroup(const char *implementation,
       temp_int = (int *)realloc(group_of_variable, (total_variables+n_variables)*sizeof(int));
 
       if(groups[n_groups].implementation && 
-	 groups[n_groups].name && 
-	 groups[n_groups].variables &&
-	 temp_int)
+         groups[n_groups].name && 
+         groups[n_groups].variables &&
+         temp_int)
       {
-	/* Fill in the data structures. */
-	group_of_variable = temp_int;
-	
-	strcpy(groups[n_groups].implementation, implementation);
-	strcpy(groups[n_groups].name, name);
-	
-	groups[n_groups].number = n_groups;
-	
-	groups[n_groups].n_variables = n_variables;
-	
-	/* Fill in global variable numbers. */
-	for(variable = 0; variable < n_variables; variable++)
-	{
-	  groups[n_groups].variables[variable].number = total_variables;
-	  
-	  group_of_variable[total_variables] = n_groups;
-	  
-	  total_variables++;
-	}
-	
-	n_groups++;
+        /* Fill in the data structures. */
+        group_of_variable = temp_int;
+        
+        strcpy(groups[n_groups].implementation, implementation);
+        strcpy(groups[n_groups].name, name);
+        
+        groups[n_groups].number = n_groups;
+        
+        groups[n_groups].n_variables = n_variables;
+        
+        /* Fill in global variable numbers. */
+        for(variable = 0; variable < n_variables; variable++)
+        {
+          groups[n_groups].variables[variable].number = total_variables;
+          
+          group_of_variable[total_variables] = n_groups;
+          
+          total_variables++;
+        }
+        
+        n_groups++;
       }
       else
       {
-	/* Memory allocation failed, so free any which may have been allocated. */
-	free(groups[n_groups].implementation);
-	groups[n_groups].implementation = NULL;
+        /* Memory allocation failed, so free any which may have been allocated. */
+        free(groups[n_groups].implementation);
+        groups[n_groups].implementation = NULL;
 
-	free(groups[n_groups].name);
-	groups[n_groups].name = NULL;
+        free(groups[n_groups].name);
+        groups[n_groups].name = NULL;
     
-	free(groups[n_groups].variables);
-	groups[n_groups].variables = NULL;
+        free(groups[n_groups].variables);
+        groups[n_groups].variables = NULL;
 
       }
     }
@@ -487,16 +487,16 @@ int CCTK_VarIndex(const char *variable_name)
     varname = realvarname;
 
     for (gnum = 0; gnum < n_groups; gnum++)
-    {			
+    {                   
     
       for(variable=0; variable<groups[gnum].n_variables;variable++)
       {
-	if(CCTK_Equals(varname, groups[gnum].variables[variable].name)
-	   && CCTK_Equals(impname,groups[gnum].implementation))
-	{
-	  retval  = groups[gnum].variables[variable].number;
-	  break;
-	}
+        if(CCTK_Equals(varname, groups[gnum].variables[variable].name)
+           && CCTK_Equals(impname,groups[gnum].implementation))
+        {
+          retval  = groups[gnum].variables[variable].number;
+          break;
+        }
       }
     }
 
@@ -505,7 +505,7 @@ int CCTK_VarIndex(const char *variable_name)
   {
     message = (char *)malloc( (100+strlen(variable_name))*sizeof(char) );
     sprintf(message,"Full name %s in wrong format in CCTK_VarNum",
-	    variable_name);
+            variable_name);
     CCTK_WARN(2,message);
     if (message) free(message);
     retval = -3; 
@@ -645,10 +645,10 @@ char *CCTK_GroupNameFromVarI(int var)
   {  
     group_num = group_of_variable[var];
     retval = (char *)malloc( ( strlen(groups[group_num].name) 
-			     + strlen(groups[group_num].implementation) + 3)
-			     * sizeof(char) );
+                             + strlen(groups[group_num].implementation) + 3)
+                             * sizeof(char) );
     sprintf(retval,"%s::%s",groups[group_num].implementation,
-	    groups[group_num].name);
+            groups[group_num].name);
   } 
 
   return retval;
@@ -950,11 +950,11 @@ void  FMODIFIER FORTRAN_NAME(CCTK_GroupScopeNumber)(int *number,ONE_FORTSTRING_A
 
 @@*/
 int CCTK_GroupData(int group, 
-		      int *gtype, 
-		      int *vtype, 
-		      int *dim, 
-		      int *n_variables,
-		      int *n_timelevels)
+                      int *gtype, 
+                      int *vtype, 
+                      int *dim, 
+                      int *n_variables,
+                      int *n_timelevels)
 {
   int return_code;
 
@@ -1058,7 +1058,7 @@ char *CCTK_GroupName(int group)
   else
   {
     name = (char *)malloc((strlen(groups[group].implementation)
-			   +strlen(groups[group].name)+3)*sizeof(char));
+                           +strlen(groups[group].name)+3)*sizeof(char));
     if (name)
     {
       sprintf(name, "%s::%s",groups[group].implementation, groups[group].name);

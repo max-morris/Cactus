@@ -20,7 +20,7 @@ int STR_cmpi(const char *string1, const char *string2);
 
 #define STR_CMP(a,b) STR_cmpi(a,b)
 
-static char *rcsid = "$Id$";
+static char *rcsid = "$Header$";
 
  /*@@
    @routine    SKTreeStoreData
@@ -59,10 +59,10 @@ t_sktree *SKTreeStoreData(t_sktree *root, t_sktree *subtree,
       strcpy(newsubtree->key, key);
       if(root) 
       {
-	if((order = STR_CMP(key, root->key)) < 0)
-	{
-	  root->left = newsubtree;
-	  newsubtree->next = root;
+        if((order = STR_CMP(key, root->key)) < 0)
+        {
+          root->left = newsubtree;
+          newsubtree->next = root;
           newsubtree->last = root->last;
           if(newsubtree->last)
           {
@@ -70,17 +70,17 @@ t_sktree *SKTreeStoreData(t_sktree *root, t_sktree *subtree,
           }
 
           /*          printf("Added %s, NEXT: %s\n", newsubtree->key, root->key); */
-	}
-	else
-	{
-	  root->right = newsubtree;
-	  newsubtree->next = root->next;
+        }
+        else
+        {
+          root->right = newsubtree;
+          newsubtree->next = root->next;
           newsubtree->last = root;
-	  root->next = newsubtree;
+          root->next = newsubtree;
           
           /*printf("Added %s, NEXT: %s\n", newsubtree->key, newsubtree->next ? newsubtree->next->key : "(none)");*/
           /*printf("Modified %s NEXT\n", root->key);*/
-	}
+        }
 
       }
     }
@@ -171,7 +171,7 @@ int SKTreeTraversePreorder(t_sktree *root, int (*process)(void *, void *), void 
 
   return terminate;
 }
-		     
+                     
  /*@@
    @routine    SKTreeTraversePostorder
    @date       Mon Oct  5 11:05:54 1998

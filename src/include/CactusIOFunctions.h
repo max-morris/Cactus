@@ -5,9 +5,8 @@
    @desc 
    Overloadable IO functions
    @enddesc 
+   @version $Header$
  @@*/
- 
-/* $Header$ */
 
 #ifndef _CACTUSIOFUNCTIONS_H_
 #define _CACTUSIOFUNCTIONS_H_
@@ -29,7 +28,7 @@ extern "C" {
 #undef OVERLOADABLE
 
 #ifdef __cplusplus
-	   }
+}
 #endif
 
 #endif

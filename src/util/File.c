@@ -16,6 +16,8 @@
 #include "cctk_FortranString.h"
 #include "StoreHandledData.h"
 
+static char *rcsid = "$Header$";
+
 static cHandledData *DirNames = NULL;   
 
  /*@@
@@ -43,7 +45,6 @@ int CCTK_mkdir(char *dir)
 
   if (handle < 0)
   {
-
     /* New directory name */
     handle = Util_NewHandle(&DirNames, dir, NULL);     
 
@@ -70,8 +71,8 @@ int CCTK_mkdir(char *dir)
     free(message);
 
     /*** FIXME: not sure what a successfull system call look like
-	 across all architecures - ignore for now
-	 and set zero for Cactus success ***/
+         across all architecures - ignore for now
+         and set zero for Cactus success ***/
     retval = system(command);
     retval = 0;
 

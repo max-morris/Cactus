@@ -5,10 +5,8 @@
    @desc 
    Header file for using reduction operators
    @enddesc 
+   @version $Header$
  @@*/
-
-/* $Id$ */
-
 
 #ifndef _CCTK_REDUCTION_H_
 #define _CCTK_REDUCTION_H_
@@ -18,7 +16,7 @@ extern "C" {
 #endif
 
 #define REDUCTION_OPERATOR_REGISTER_ARGLIST  \
-	  cGH *,  \
+          cGH *,  \
           int,    \
           int,    \
           int,    \
@@ -39,12 +37,12 @@ extern "C" {
   int outType
 
 int CCTK_Reduce(cGH *GH,
-		int proc,
-		int operation_handle,
-		int num_out_vals,
-		int type_out_vals,
-		void *out_vals,
-		int num_in_fields, ...);
+                int proc,
+                int operation_handle,
+                int num_out_vals,
+                int type_out_vals,
+                void *out_vals,
+                int num_in_fields, ...);
 
 int CCTK_ReductionHandle(const char *reduction);
 
@@ -63,7 +61,7 @@ int CCTK_ReduceLocalScalar (cGH *GH, int proc, int operation_handle,
 
 int CCTK_ReduceLocalArray1D (cGH *GH, int proc, int operation_handle,
                             void *in_array1d, void *out_array1d, 
-			    int num_in_array1d, int data_type);
+                            int num_in_array1d, int data_type);
 
 
 int CCTK_ReduceArray(cGH *GH,
@@ -78,7 +76,7 @@ int CCTK_ReduceArray(cGH *GH,
                      ... );
 
 #ifdef __cplusplus
-	   }
+}
 #endif
 
 #endif

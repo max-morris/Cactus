@@ -13,7 +13,7 @@
 
 #include "BinaryTree.h"
 
-static char *rcsid = "$Id$";
+static char *rcsid = "$Header$";
 
 
  /*@@
@@ -47,14 +47,14 @@ t_tree *TreeStoreData(t_tree *root, t_tree *subtree, void *data, int (*compare)(
 
       if(root) 
       {
-	if((order = compare(data, root->data)) < 0)
-	{
-	  root->left = subtree;
-	}
-	else
-	{
-	  root->right = subtree;
-	}
+        if((order = compare(data, root->data)) < 0)
+        {
+          root->left = subtree;
+        }
+        else
+        {
+          root->right = subtree;
+        }
       }
     }
   }
@@ -143,7 +143,7 @@ int TreeTraversePreorder(t_tree *root, int (*process)(void *, void *), void *inf
 
   return terminate;
 }
-		     
+                     
  /*@@
    @routine    TreeTraversePostorder
    @date       Mon Oct  5 11:05:54 1998

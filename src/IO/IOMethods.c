@@ -717,7 +717,7 @@ void FMODIFIER FORTRAN_NAME(CCTK_OutputVarByMethod)(int *ierr, cGH *GH, TWO_FORT
    @returntype int
    @returndesc
                0    = Trigger says don't output me this iteration
-	       1    = Trigger says output me this iteration
+               1    = Trigger says output me this iteration
    @endreturndesc
 
    @version    $Header$
@@ -738,7 +738,7 @@ int CCTKi_rfrTriggerSaysGo(cGH *GH, int variable)
       /* Check if it is time to output this variable for this method*/
       flag = method->TimeToOutput(GH, variable);
       if (flag) 
-	return 1;
+        return 1;
     }
     else
     {
@@ -761,9 +761,9 @@ int CCTKi_rfrTriggerSaysGo(cGH *GH, int variable)
    @enddesc 
    @calls      Util_GetHandledData
                CCTK_FullName
-	       CCTK_VarName
+               CCTK_VarName
                IOMethod->TimeToOutput
-	       IOMethod->OutputVarAs
+               IOMethod->OutputVarAs
    @history  
    @endhistory 
 
@@ -785,8 +785,8 @@ int CCTKi_rfrTriggerSaysGo(cGH *GH, int variable)
    @returndesc
                0    = This should never happen, since at least
                       one IO method should have been found by
-		      CCTKi_rfrTriggerSaysGo
-	       >0   = Number of IO methods called for output for
+                      CCTKi_rfrTriggerSaysGo
+               >0   = Number of IO methods called for output for
                       this variable
    @endreturndesc
 
@@ -817,9 +817,9 @@ int CCTKi_rfrTriggerAction(void *GH, int variable)
       /* Check if it is time to output this variable for this method*/
       if (method->TimeToOutput(GH, variable))
       {
-	/* And if so do call the output routine for the method */
-	method->TriggerOutput(GH,variable);
-	nmethods++;
+        /* And if so do call the output routine for the method */
+        method->TriggerOutput(GH,variable);
+        nmethods++;
       }
     }
     else

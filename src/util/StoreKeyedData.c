@@ -13,7 +13,7 @@
 #include <stdlib.h>
 #include "StoreKeyedData.h"
 
-static char *rcsid = "$Id$";
+static char *rcsid = "$Header$";
  
 
  /*@@
@@ -144,8 +144,8 @@ void *GetKeyedData(pKeyedData *storage, int key)
       /* Compare the key */
       if(current->key == key)
       {
-	return_val = current->data;
-	break;
+        return_val = current->data;
+        break;
       };
     };
   };

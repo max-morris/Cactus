@@ -5,10 +5,15 @@
    @desc 
    Prototypes and data definitions for binary tree routines.
    @enddesc 
+   @version $Header$
  @@*/
 
 #ifndef _BINARYTREE_H_
 #define _BINARYTREE_H_
+
+#ifdef _cplusplus
+extern "C" {
+#endif
 
 typedef struct T_TREE
 {
@@ -19,9 +24,6 @@ typedef struct T_TREE
   void *data;
 } t_tree;
 
-#ifdef _cplusplus
-extern "C" {
-#endif
 
 t_tree *TreeStoreData(t_tree *root, t_tree *subtree, void *data, int (*compare)(const void *, const void *));
 
@@ -36,7 +38,7 @@ void TreePrintNodes(t_tree *root, int depth, void (*print_node)(void *, int));
 t_tree *TreeFindNode(t_tree *root, void *data, int (*compare)(const void *, const void *));
 
 #ifdef _cplusplus
-	   }
+           }
 #endif
 
 #endif

@@ -280,7 +280,7 @@ void CCTKi_CommandLineVersion(void)
   version = (const char *)CCTK_FullVersion();
 
   printf("%s: Version %s.  Compiled on %s at %s\n", argv[0], version, 
-	  compileDate(), compileTime());
+          compileDate(), compileTime());
 
   exit(1);
 }
@@ -315,8 +315,8 @@ void CCTKi_CommandLineHelp(void)
   printf("-O, -describe-all-parameters        : describes all the parameters.\n");
   printf("-o, -describe-parameter <paramname> : describe the given parameter.\n");
   printf("-x, -test-parameters [nprocs]       : does a quick test of the parameter file\n"
-	 "                                      pretending to be on nprocs processors, \n"
-	 "                                      or 1 if not given.\n");
+         "                                      pretending to be on nprocs processors, \n"
+         "                                      or 1 if not given.\n");
   printf("-W, -warning-level <n>              : Sets the warning level to n.\n");
   printf("-E, -error-level <n>                : Sets the error level to n.\n");
   printf("-r, -redirect-stdout                : Redirects standard output to files.\n");

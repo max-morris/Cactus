@@ -42,8 +42,8 @@ int STR_cmpi(const char *string1, const char *string2);
  */
 typedef struct PARAM
 {
-    t_param_prop*    	props;
-    void*	    	data;
+    t_param_prop*       props;
+    void*               data;
     
 } t_param;
 
@@ -54,9 +54,9 @@ typedef struct PARAM
  */
 typedef struct PARAMLIST
 {
-    t_param*		param;
-    struct PARAMLIST*	last;
-    struct PARAMLIST*	next;
+    t_param*            param;
+    struct PARAMLIST*   last;
+    struct PARAMLIST*   next;
     
 } t_paramlist;
 
@@ -67,7 +67,7 @@ typedef struct PARAMLIST
  */
 typedef struct PARAMTREENODE
 {
-    t_paramlist*	paramlist;
+    t_paramlist*        paramlist;
     
 } t_paramtreenode;
 
@@ -76,52 +76,52 @@ static t_param *ParameterFind(const char *name,
                                   int scope);
 
 static t_param *ParameterNew(const char *thorn,
-				 const char *name,
-				 const char *type,
-				 const char *scope,
-				 int        steerable,
-				 const char *description,
-				 const char *defval,
-				 void       *data);
+                                 const char *name,
+                                 const char *type,
+                                 const char *scope,
+                                 int        steerable,
+                                 const char *description,
+                                 const char *defval,
+                                 void       *data);
 
-static int ParameterCheck	(const char *thorn,
-				 const char *name,
-				 const char *type,
-				 const char *scope,
-				 int        steerable,
-				 const char *description,
-				 const char *defval,
-				 void       *data);
+static int ParameterCheck       (const char *thorn,
+                                 const char *name,
+                                 const char *type,
+                                 const char *scope,
+                                 int        steerable,
+                                 const char *description,
+                                 const char *defval,
+                                 void       *data);
 
-static void *ParameterGetSimple	(t_param *param, 
-				 int *type);
+static void *ParameterGetSimple (t_param *param, 
+                                 int *type);
 
-static int ParameterSetSimple	(t_param *param, const char *value);
+static int ParameterSetSimple   (t_param *param, const char *value);
 
 static t_paramtreenode *ParameterPTreeNodeFind(t_sktree *tree, 
-					       const char *name);
+                                               const char *name);
 
 static t_sktree *ParameterPTreeNodeAdd(t_sktree **tree,
-				       const char *name,
-				       t_paramtreenode *new_node);
+                                       const char *name,
+                                       t_paramtreenode *new_node);
 
-static int ParameterGetScope	(const char *scope);
-static int ParameterGetType	(const char *type);
+static int ParameterGetScope    (const char *scope);
+static int ParameterGetType     (const char *type);
 
-static int ParameterInsert	(t_sktree **tree, 
-				 t_param *newparam);
+static int ParameterInsert      (t_sktree **tree, 
+                                 t_param *newparam);
 
-static int ParameterPrintSimple	(t_param *param, 
-				 const char *format,
-				 FILE *file);
+static int ParameterPrintSimple (t_param *param, 
+                                 const char *format,
+                                 FILE *file);
 
-static int ParameterExtend	(t_param *param,  
-				 const char *range_origin, 
-				 const char *range, 
-				 const char *range_description);
+static int ParameterExtend      (t_param *param,  
+                                 const char *range_origin, 
+                                 const char *range, 
+                                 const char *range_description);
 
 static int ParameterListAddParam(t_paramlist **paramlist,
-				 t_param *newparam);
+                                 t_param *newparam);
 
 
 static int ParameterSetKeyword  (t_param *param, const char *value);
@@ -1559,8 +1559,8 @@ static int ParameterSetReal(t_param *param, const char *value)
   for (p=0;p<strlen(temp);p++) 
   {
     if (temp[p] == 'E' || 
-	temp[p] == 'd' || 
-	temp[p] == 'D') 
+        temp[p] == 'd' || 
+        temp[p] == 'D') 
     {
       temp[p] = 'e';
       break;

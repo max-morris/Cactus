@@ -44,11 +44,11 @@ int CCTK_VarTypeNumber(const char *type);
 int CCTK_GroupScopeNumber(const char *type);
 
 int CCTK_GroupData(int group, 
-		      int *gtype, 
-		      int *vtype, 
-		      int *dim, 
-		      int *n_variables,
-		      int *n_timelevels);
+                      int *gtype, 
+                      int *vtype, 
+                      int *dim, 
+                      int *n_variables,
+                      int *n_timelevels);
 
 char *CCTK_VarName(int varnum);
 

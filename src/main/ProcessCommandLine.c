@@ -53,40 +53,40 @@ int ProcessCommandLine(int *inargc, char ***inargv, tFleshConfig *ConfigData)
     {
       struct option long_options[] =
       {
-	{"help", no_argument, NULL, 'h'},
-	{"describe-all-parameters", optional_argument, NULL, 'O'},
-	{"describe-parameter",      required_argument, NULL, 'o'},
-	{"test-parameters",         optional_argument, NULL, 'x'},
-	{"warning-level",           required_argument, NULL, 'W'},
-	{"error-level",             required_argument, NULL, 'E'},
-	{"redirect-stdout",         no_argument,       NULL, 'r'},
-	{"list-thorns",             no_argument,       NULL, 'T'},
-	{"test-thorn-compiled",     required_argument, NULL, 't'},
-	{"version", no_argument, NULL, 'v'},
-	{0, 0, 0, 0}
+        {"help", no_argument, NULL, 'h'},
+        {"describe-all-parameters", optional_argument, NULL, 'O'},
+        {"describe-parameter",      required_argument, NULL, 'o'},
+        {"test-parameters",         optional_argument, NULL, 'x'},
+        {"warning-level",           required_argument, NULL, 'W'},
+        {"error-level",             required_argument, NULL, 'E'},
+        {"redirect-stdout",         no_argument,       NULL, 'r'},
+        {"list-thorns",             no_argument,       NULL, 'T'},
+        {"test-thorn-compiled",     required_argument, NULL, 't'},
+        {"version", no_argument, NULL, 'v'},
+        {0, 0, 0, 0}
       };
       
       c = getopt_long_only (argc, argv, "hO::o:x::W:E:rTt:v",
-			    long_options, &option_index);
+                            long_options, &option_index);
       if (c == -1)
-	break;
+        break;
   
       switch (c)
       {
-	case 't': CCTKi_CommandLineTestThornCompiled(optarg); break;
-	case 'O': CCTKi_CommandLineDescribeAllParameters(optarg); break;
-	case 'o': CCTKi_CommandLineDescribeParameter(optarg); break;
-	case 'x': CCTKi_CommandLineTestParameters(optarg); break;
-	case 'W': CCTKi_CommandLineWarningLevel(optarg); break;
-	case 'E': CCTKi_CommandLineErrorLevel(optarg); break;
-	case 'r': CCTKi_CommandLineRedirectStdout(); break;
-	case 'T': CCTKi_CommandLineListThorns(); break;
-	case 'v': CCTKi_CommandLineVersion(); break;
-	case 'h': 
-	case '?':
-	  CCTKi_CommandLineHelp(); break;
-	default:
-	  printf ("?? getopt returned character code 0%o ??\n", c);
+        case 't': CCTKi_CommandLineTestThornCompiled(optarg); break;
+        case 'O': CCTKi_CommandLineDescribeAllParameters(optarg); break;
+        case 'o': CCTKi_CommandLineDescribeParameter(optarg); break;
+        case 'x': CCTKi_CommandLineTestParameters(optarg); break;
+        case 'W': CCTKi_CommandLineWarningLevel(optarg); break;
+        case 'E': CCTKi_CommandLineErrorLevel(optarg); break;
+        case 'r': CCTKi_CommandLineRedirectStdout(); break;
+        case 'T': CCTKi_CommandLineListThorns(); break;
+        case 'v': CCTKi_CommandLineVersion(); break;
+        case 'h': 
+        case '?':
+          CCTKi_CommandLineHelp(); break;
+        default:
+          printf ("?? getopt returned character code 0%o ??\n", c);
       }
     }
 

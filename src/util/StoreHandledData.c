@@ -13,7 +13,7 @@
 
 #include "StoreHandledData.h"
 
-static char *rcsid="$Id$";
+static char *rcsid="$Header$";
 
 /* Purely internal definitions. */
 
@@ -73,31 +73,31 @@ int Util_NewHandle(cHandledData **storage, const char *name, void *data)
     {
       if(!(temp = (void *)realloc((*storage)->array, ((*storage)->array_size+1)*sizeof(cHandleStorage))))
       {
-	/* Failed to allocate memory for new array element. */
-	
-	return_code = -2;
+        /* Failed to allocate memory for new array element. */
+        
+        return_code = -2;
       }
       else
       {
-	(*storage)->array = temp;
-	
-	/* Fill in data in array. */
-	(*storage)->array[(*storage)->array_size].in_use = TRUE;
-	(*storage)->array[(*storage)->array_size].data = data;
-	(*storage)->array[(*storage)->array_size].name = (char *)malloc((strlen(name)+1)*sizeof(char));
-	
-	if((*storage)->array[(*storage)->array_size].name)
-	{
-	  strcpy((*storage)->array[(*storage)->array_size].name, name);
-	}
-	
-	return_code = (*storage)->array_size;
-	
-	/* Increase array size counter. */
-	(*storage)->array_size++;
-	
-	/* Record position of first unused array element. */
-	(*storage)->first_unused = (*storage)->array_size;
+        (*storage)->array = temp;
+        
+        /* Fill in data in array. */
+        (*storage)->array[(*storage)->array_size].in_use = TRUE;
+        (*storage)->array[(*storage)->array_size].data = data;
+        (*storage)->array[(*storage)->array_size].name = (char *)malloc((strlen(name)+1)*sizeof(char));
+        
+        if((*storage)->array[(*storage)->array_size].name)
+        {
+          strcpy((*storage)->array[(*storage)->array_size].name, name);
+        }
+        
+        return_code = (*storage)->array_size;
+        
+        /* Increase array size counter. */
+        (*storage)->array_size++;
+        
+        /* Record position of first unused array element. */
+        (*storage)->first_unused = (*storage)->array_size;
       }
     }
     else
@@ -106,23 +106,23 @@ int Util_NewHandle(cHandledData **storage, const char *name, void *data)
 
       if((*storage)->array[(*storage)->first_unused].in_use == TRUE)
       {
-	/* The pointers have become corrupted in some fashion.
-	 *
-	 * Could write a repair function, but probably safer to just
-	 * produce an error.
-	 */
-	return_code = -2;
+        /* The pointers have become corrupted in some fashion.
+         *
+         * Could write a repair function, but probably safer to just
+         * produce an error.
+         */
+        return_code = -2;
       }
       else
       {      
-	/* Fill in data in array. */
-	(*storage)->array[(*storage)->first_unused].in_use = TRUE;
-	(*storage)->array[(*storage)->first_unused].data = data;
+        /* Fill in data in array. */
+        (*storage)->array[(*storage)->first_unused].in_use = TRUE;
+        (*storage)->array[(*storage)->first_unused].data = data;
       
-	return_code = (*storage)->first_unused;
+        return_code = (*storage)->first_unused;
       
-	/* Change pointer to first unused array element. */
-	(*storage)->first_unused = FindNextUnused(*storage, (*storage)->first_unused);
+        /* Change pointer to first unused array element. */
+        (*storage)->first_unused = FindNextUnused(*storage, (*storage)->first_unused);
       }
     }
   }

@@ -25,10 +25,10 @@ signed char **CCTKi_ScheduleCreateArray(int size);
 void CCTKi_ScheduleDestroyArray(int size, signed char **array);
 
 int CCTKi_ScheduleAddRow(int size, 
-			 signed char **array, 
-			 int *order, 
-			 int item, 
-			 int *thisorders);
+                         signed char **array, 
+                         int *order, 
+                         int item, 
+                         int *thisorders);
 
 int CCTKi_ScheduleSort(int size, signed char **array, int *order);
 

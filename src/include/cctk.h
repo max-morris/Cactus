@@ -5,7 +5,7 @@
    @desc 
    Main include file for the CCTK.  All thorns should include this...
    @enddesc
-   @version $Id$
+   @version $Header$
  @@*/
 
 #ifndef _CCTK_H_
@@ -43,7 +43,7 @@
                            INTEGER cctk_bbox(2*cctk_dim)&&\
                            CCTK_REAL cctk_delta_time, cctk_time&&\
                            CCTK_REAL cctk_delta_space(cctk_dim)&&\
-			   CCTK_REAL cctk_origin_space(cctk_dim)&&\
+                           CCTK_REAL cctk_origin_space(cctk_dim)&&\
                            INTEGER cctk_levfac(cctk_dim)&&\
                            INTEGER cctk_convlevel&&\
                            INTEGER cctk_nghostzones(cctk_dim)&&\
@@ -137,7 +137,7 @@
                             (xGH)->cctk_bbox,\
                             &((xGH)->cctk_delta_time), \
                             &((xGH)->cctk_time), (xGH)->cctk_delta_space,\
-			    (xGH)->cctk_origin_space,\
+                            (xGH)->cctk_origin_space,\
                             (xGH)->cctk_levfac,\
                             &((xGH)->cctk_convlevel),\
                             (xGH)->cctk_nghostzones,\
@@ -147,7 +147,7 @@
                             int *,\
                             int *,int *, int *, int *,int *,int *,\
                             CCTK_REAL *, CCTK_REAL *, CCTK_REAL *,\
-			    CCTK_REAL *,\
+                            CCTK_REAL *,\
                             int *,\
                             int *,\
                             int *,\

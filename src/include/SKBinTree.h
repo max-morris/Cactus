@@ -5,6 +5,7 @@
    @desc 
    Prototypes and data definitions for binary tree routines.
    @enddesc 
+   @version $Header$
  @@*/
 
 #ifndef _SKBINTREE_H_
@@ -26,9 +27,9 @@ extern "C" {
 #endif
 
 t_sktree *SKTreeStoreData(t_sktree *root, 
-			  t_sktree *subtree, 
-			  const char *key, 
-			  void *data);
+                          t_sktree *subtree, 
+                          const char *key, 
+                          void *data);
 
 int SKTreeTraverseInorder(t_sktree *root, int (*process)(void *, void *), void *info);
 
@@ -43,7 +44,7 @@ t_sktree *SKTreeFindNode(t_sktree *root, const char *key);
 t_sktree *SKTreeFindFirst(t_sktree *root);
 
 #ifdef _cplusplus
-	   }
+}
 #endif
 
 #endif

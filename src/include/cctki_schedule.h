@@ -32,19 +32,19 @@ extern "C" {
 
 /* Routines to create items */
 t_sched_modifier *CCTKi_ScheduleAddModifier(t_sched_modifier *orig, 
-					   const char *modifier, 
-					   const char *argument);
+                                           const char *modifier, 
+                                           const char *argument);
 
 int CCTKi_ScheduleFunction(const char *gname, 
-			   const char *fname, 
-			   void *func, 
-			   t_sched_modifier *modifiers, 
-			   void *attributes);
+                           const char *fname, 
+                           void *func, 
+                           t_sched_modifier *modifiers, 
+                           void *attributes);
 
 int CCTKi_ScheduleGroup(const char *gname, 
-			const char *thisname, 
+                        const char *thisname, 
                         t_sched_modifier *modifiers, 
-			void *attributes);
+                        void *attributes);
 
 /* Routine to sort the groups - must be called before traversal. */
 int CCTKi_ScheduleSortAllGroups(void);

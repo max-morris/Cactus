@@ -5,10 +5,8 @@
    @desc 
    Prototypes for default functions.
    @enddesc 
+   @version $Header$
  @@*/
-
-
-/* $Id$ */
 
 #ifndef _CACTUSMAINDEFAULTS_H_
 #define _CACTUSMAINDEFAULTS_H_
@@ -22,7 +20,7 @@ int CactusDefaultEvolve(tFleshConfig *);
 int CactusDefaultShutdown(tFleshConfig *);
 
 #ifdef __cplusplus
-	   }
+}
 #endif
 
 #endif

@@ -5,7 +5,7 @@
    @desc 
    header file for miscellaneous routines.
    @enddesc 
-   @version $Id$
+   @version $Header$
  @@*/
 
 #ifndef _MISC_H_
@@ -29,16 +29,16 @@ int Util_IntInRangeList(int inval, int n_elements, ...);
 int Util_DoubleInRangeList(double inval, int n_elements, ...);
 
 int CCTK_SetDoubleInRangeList(CCTK_REAL *data, const char *value, 
-			      int n_elements, ...);
+                              int n_elements, ...);
 int CCTK_SetIntInRangeList(CCTK_INT *data, const char *value, 
-			   int n_elements, ...);
+                           int n_elements, ...);
 int CCTK_SetKeywordInRangeList(char **data, const char *value, 
-			       int n_elements, ...);
+                               int n_elements, ...);
 int CCTK_SetString(char **data, const char *value);
 int CCTK_SetBoolean(CCTK_INT *data, const char *value);
 
 #ifdef __cplusplus
-           }   
+}   
 #endif
 
 #endif

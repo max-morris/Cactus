@@ -5,6 +5,7 @@
    @desc 
    Main registerable functions.
    @enddesc 
+   @version $Header$
  @@*/
 
 #ifndef _CACTUSMAINFUNCTIONS_H_
@@ -25,7 +26,7 @@ extern "C" {
 #undef OVERLOADABLE
 
 #ifdef __cplusplus
-	   }
+}
 #endif
 
 #endif

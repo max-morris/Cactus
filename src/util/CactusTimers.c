@@ -118,16 +118,16 @@ int CCTK_TimerCreate(const char *name)
 
       if(timer->data)
       {
-	/* Store the data structure for this timer */
-	this_timer = Util_NewHandle(&timers, name, timer);
+        /* Store the data structure for this timer */
+        this_timer = Util_NewHandle(&timers, name, timer);
 
-	/* Create the timer info for this timer */
-	for(handle = 0; handle < n_timertypes; handle++)
-	{
-	  funcs = (t_TimerFuncs *)Util_GetHandledData(handles, handle);
+        /* Create the timer info for this timer */
+        for(handle = 0; handle < n_timertypes; handle++)
+        {
+          funcs = (t_TimerFuncs *)Util_GetHandledData(handles, handle);
 
-	  timer->data[handle] = funcs->create(this_timer);
-	}
+          timer->data[handle] = funcs->create(this_timer);
+        }
         retval = this_timer;
       }
       else

@@ -5,9 +5,8 @@
    @desc 
    Overloadable communication functions
    @enddesc 
+   @version $Header$
  @@*/
- 
-/* $Id$ */
 
 #ifndef _CACTUSCOMMFUNCTIONS_H_
 #define _CACTUSCOMMFUNCTIONS_H_
@@ -29,7 +28,7 @@ extern "C" {
 #undef OVERLOADABLE
 
 #ifdef __cplusplus
-	   }
+}
 #endif
 
 #endif

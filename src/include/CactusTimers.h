@@ -5,10 +5,8 @@
    @desc 
    Timer stuff
    @enddesc 
+   @version $Header$
  @@*/
-
-
-/* $Id$ */
 
 #ifndef _CACTUSTIMERS_H_
 #define _CACTUSTIMERS_H_
@@ -75,7 +73,7 @@ t_TimerInfo *CCTK_TimerCreateInfo(void);
 void CCTK_TimerDestroyInfo(t_TimerInfo *info);
 
 #ifdef __cplusplus
-	   }
+           }
 #endif
 
 #define INITIALISATION 0

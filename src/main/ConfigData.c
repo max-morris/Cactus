@@ -12,7 +12,7 @@
 
 #include "cctk_Flesh.h"
 
-static char *rcsid = "$Id$";
+static char *rcsid = "$Header$";
 
  /*@@
    @routine    CCTKi_AddGH
@@ -47,7 +47,7 @@ int CCTKi_AddGH(tFleshConfig *config, int convergence_level, cGH *GH)
       config->GH = temp;
       for(i=config->nGHs; i<convergence_level+1;i++)
       {
-	config->GH[i] = NULL;
+        config->GH[i] = NULL;
       }
       config->nGHs=convergence_level+1;
     }

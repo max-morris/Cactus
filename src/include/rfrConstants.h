@@ -5,9 +5,11 @@
    @desc 
    
    @enddesc 
+   @version $Header$
  @@*/
 
-/* $Id$ */
+#ifndef _RFRCONSTANTS_H
+#define _RFRCONSTANTS_H
 
 /* Be careful changing ordering. Look at tree in rfrInitialize before you do! */
 #define CCTK_PARAMCHECK  0
@@ -46,17 +48,19 @@ extern "C"
 #endif
 
 int rfrInitTree(void **rfr_top,   
-		int (*StorageOn)(void *, int),
-		int (*StorageOff)(void *, int),
-		int (*CommunicationOn)(void *, int),
-		int (*CommunicationOff)(void *, int),
-		int (*Triggerable)(int),
-		int (*TriggerSaysGo)(void *, int),
-		int (*TriggerAction)(void *, int),
-		int (*CallFunc)(void *, int, void *));
+                int (*StorageOn)(void *, int),
+                int (*StorageOff)(void *, int),
+                int (*CommunicationOn)(void *, int),
+                int (*CommunicationOff)(void *, int),
+                int (*Triggerable)(int),
+                int (*TriggerSaysGo)(void *, int),
+                int (*TriggerAction)(void *, int),
+                int (*CallFunc)(void *, int, void *));
 
 void rfrPrintDescs(void *rfr_top, void *data, int when, char *tag, char *spacing);
 
 #ifdef __cplusplus
 }
 #endif
+
+#endif /*  _RFRCONSTANTS_H */

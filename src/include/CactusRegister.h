@@ -5,9 +5,8 @@
    @desc 
    Functions used to register things in cactus.
    @enddesc 
+   @version $Header$
  @@*/
-
-/* $Id$ */
 
 #ifndef _CACTUS_REGISTRY_H_
 #define _CACTUS_REGISTRY_H_
@@ -21,7 +20,7 @@ int RegisterMainFunction(int key, int (*func)(tFleshConfig *));
 int SetupMainFunctions(void);
 
 #ifdef __cplusplus
-	   }
+}
 #endif
 
 #endif

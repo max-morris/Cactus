@@ -19,23 +19,23 @@
 
 #include "CactusIOFunctions.h"
 
-static char *rcsid="$Id$";
+static char *rcsid="$Header$";
 
 /* Define some macros for convenience. */
 
 #define ForallConvLevels(iteration, conv_level)  {                     \
                                         int factor = 1;                \
-					for(conv_level = 0 ;           \
-					    conv_level < config->nGHs; \
-					    conv_level++)              \
-					{                              \
-					  if(iteration%factor == 0)    \
-					  {
+                                        for(conv_level = 0 ;           \
+                                            conv_level < config->nGHs; \
+                                            conv_level++)              \
+                                        {                              \
+                                          if(iteration%factor == 0)    \
+                                          {
                             
 #define EndForallConvLevels                                            \
-					  };                           \
-					  factor *=2;                  \
-					};                             \
+                                          };                           \
+                                          factor *=2;                  \
+                                        };                             \
                                      }
 
  /* Quick stuff for testing purposes. */
@@ -150,7 +150,7 @@ int CactusDefaultEvolve(tFleshConfig *config)
     CCTK_PRINTSEPARATOR
     printf("In CactusDefaultEvolve\n----------------------\n");
     printf("  Advancing iteration %d = %d + 1\n",iteration+1,
-	 iteration); 
+         iteration); 
     CCTK_PRINTSEPARATOR
 #endif
 
@@ -186,7 +186,7 @@ int CactusDefaultEvolve(tFleshConfig *config)
     ForallConvLevels(iteration, convergence_level)
     {
         CCTK_rfrTraverse(config->GH[convergence_level],CCTK_ANALYSIS);
-	CCTK_OutputGH(config->GH[convergence_level]);
+        CCTK_OutputGH(config->GH[convergence_level]);
     }
     EndForallConvLevels;
       
@@ -247,7 +247,7 @@ int CCTK_StepGH(cGH *GH)
   CCTK_PRINTSEPARATOR
   printf("In CCTK_StepGH\n--------------\n");
   printf("  Advancing GH->iteration to %lu = %lu + 1\n",(GH->cctk_iteration+1),
-	 GH->cctk_iteration);
+         GH->cctk_iteration);
   CCTK_PRINTSEPARATOR
 #endif
 
@@ -262,7 +262,7 @@ int CCTK_StepGH(cGH *GH)
   CCTK_PRINTSEPARATOR
   printf("In CCTK_StepGH\n--------------\n");
   printf("  Advancing GH->cctk_time %f = %f + %f\n",GH->cctk_time+GH->cctk_delta_time,
-	 GH->cctk_time,GH->cctk_delta_time);
+         GH->cctk_time,GH->cctk_delta_time);
   CCTK_PRINTSEPARATOR
 #endif
 
@@ -389,7 +389,7 @@ void TerminationStepper(cGH *GH) {
 
 #ifdef MPI
   MPI_Allreduce(&cactus_terminate,&cactus_terminate_global,1,
-		MPI_INT,MPI_LOR,GH->PUGH_COMM_WORLD);
+                MPI_INT,MPI_LOR,GH->PUGH_COMM_WORLD);
 #endif
 #endif
   if (cactus_terminate_global) { 

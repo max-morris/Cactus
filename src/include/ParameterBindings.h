@@ -5,6 +5,7 @@
    @desc 
    Defines for parameter stuff
    @enddesc 
+   @version $Header$
  @@*/
 
 #ifndef _PARAMETERBINDINGS_H_
@@ -16,15 +17,15 @@ extern "C" {
 #endif
 
 int ParameterCreate(const char *name,        /* The parameter name */
-		    const char *thorn,       /* The thorn          */ 
-		    const char *type,       /* The parameter type */
+                    const char *thorn,       /* The thorn          */ 
+                    const char *type,       /* The parameter type */
                     const char *scope,       /* The scoping block  */
                     int steerable,           /* Is it steerable ?  */
                     const char *description, /* The description    */ 
                     const char *defval,      /* The default value  */ 
                     void *datapointer,       /* The actual data    */
                     int n_ranges,            /* How many allowed ranges it has */
-		    ...);
+                    ...);
 
 int ParameterAddRange(const char *implementation, 
                       const char *name,

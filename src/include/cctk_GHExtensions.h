@@ -3,9 +3,9 @@
    @date      Fri Jan 15 14:15:20 1999
    @author    Tom Goodale
    @desc 
-   
+   Prototypes for functions dealing with GH extensions.
    @enddesc
-   @version $Id$
+   @version $Header$
  @@*/
 
 #ifndef _GHEXTENSIONS_H_
@@ -18,15 +18,15 @@ extern "C" {
 int CCTK_RegisterGHExtension(const char *name);
 
 int CCTK_RegisterGHExtensionSetupGH(int handle, 
-				    void *(*func)(tFleshConfig *, int, cGH *));
+                                    void *(*func)(tFleshConfig *, int, cGH *));
 
 int CCTK_RegisterGHExtensionInitGH(int handle, int (*func)(cGH *));
 
 int CCTK_RegisterGHExtensionrfrTraverseGH(int handle, int (*func)(cGH *, int));
 
 int CCTKi_SetupGHExtensions(tFleshConfig *config, 
-			   int convergence_level, 
-			   cGH *GH);
+                           int convergence_level, 
+                           cGH *GH);
 
 int CCTKi_InitGHExtensions(cGH *GH);
 

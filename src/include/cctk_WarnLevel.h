@@ -5,6 +5,7 @@
    @desc 
    Header for the warning functions.
    @enddesc 
+   @version $Header$
  @@*/
 
 #ifndef _CCTK_WARNLEVEL_H_
@@ -15,10 +16,10 @@ extern "C" {
 #endif
 
 void CCTK_Warn(int level, 
-	       int line, 
-	       const char *file, 
-	       const char *thorn, 
-	       const char *message);
+               int line, 
+               const char *file, 
+               const char *thorn, 
+               const char *message);
 void CCTK_VWarn(int level, 
                 int line, 
                 const char *file, 

@@ -36,7 +36,7 @@ typedef struct COORD_RANGE
 
   cGH *GH;
 
-  struct Coordprops *props;	  /* Coordinate data */
+  struct Coordprops *props;       /* Coordinate data */
 
   CCTK_REAL lower;                /* Lower range */
   CCTK_REAL upper;                /* Upper range */
@@ -58,7 +58,7 @@ int CCTKi_CoordHande(const char *name);
    @author     Gabrielle Allen
    @desc 
                Register a GF as a coordinate with a name, and index
-	       and a direction
+               and a direction
    @enddesc 
    @calls      Util_GetHandle, Util_NewHandle, CCTK_Warn
 
@@ -200,7 +200,7 @@ void FMODIFIER FORTRAN_NAME(CCTK_RegisterCoordI)(int *handle, int *dir, int *ind
    @@*/
 
 int CCTK_RegisterCoord(int dir, const char *gfname, 
-		       const char *coordname)
+                       const char *coordname)
 {
   
   int retval;
@@ -233,7 +233,7 @@ void FMODIFIER FORTRAN_NAME(CCTK_RegisterCoord)(int *handle, int *dir, TWO_FORTS
 
 
 int CCTK_RegisterCoordRange(cGH *GH, CCTK_REAL min, CCTK_REAL max, 
-			    const char *coordname)
+                            const char *coordname)
 {
   coord_range *newguy;
 
@@ -276,7 +276,7 @@ int CCTKi_CoordHandle(const char *name)
     if (coord)
     {
       if (CCTK_Equals(name,(const char *)coord->name))
-	return handle;
+        return handle;
     }
     else
     {
@@ -302,7 +302,7 @@ struct Coordprops *CCTKi_CoordData(const char *name)
     if (coord)
     {
       if (CCTK_Equals(name,(const char *)coord->name))
-	return coord;
+        return coord;
     }
     else
     {
@@ -328,7 +328,7 @@ int CCTK_CoordIndex(const char *name)
     if (coord)
     {
       if (CCTK_Equals(name,(const char *)coord->name))
-	return coord->index;
+        return coord->index;
     }
     else
     {
@@ -362,7 +362,7 @@ CCTK_REAL CCTK_CoordOrigin(const char *name)
     if (coord)
     {
       if (CCTK_Equals(name,(const char *)coord->name))
-	return coord->origin;
+        return coord->origin;
     }
     else
     {
@@ -408,10 +408,10 @@ int CCTK_CoordRange(cGH *GH, CCTK_REAL *lower, CCTK_REAL *upper, const char *nam
 
 
 void FMODIFIER FORTRAN_NAME(CCTK_CoordRange)(int *ierr, 
-					     cGH *GH, 
-					     CCTK_REAL *lower, 
-					     CCTK_REAL *upper, 
-					     ONE_FORTSTRING_ARG)
+                                             cGH *GH, 
+                                             CCTK_REAL *lower, 
+                                             CCTK_REAL *upper, 
+                                             ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_CREATE(name)
   *ierr = CCTK_CoordRange (GH,lower,upper,name);

@@ -19,7 +19,7 @@
 #include "StoreHandledData.h"
 #include "cctk_WarnLevel.h"
 
-static char *rcsid = "$Id$";
+static char *rcsid = "$Header$";
 
 
 /* Local data holding info on extensions..*/
@@ -146,7 +146,7 @@ int CCTK_RegisterGHExtension(const char *name)
 
 @@*/
 int CCTK_RegisterGHExtensionSetupGH(int handle, 
-				    void *(*func)(tFleshConfig *, int, cGH *))
+                                    void *(*func)(tFleshConfig *, int, cGH *))
 {
   int return_code;
   struct GHExtension *extension;
@@ -259,8 +259,8 @@ int CCTK_RegisterGHExtensionrfrTraverseGH(int handle, int (*func)(cGH *, int))
 
 @@*/
 int CCTKi_SetupGHExtensions(tFleshConfig *config, 
-			   int convergence_level, 
-			   cGH *GH)
+                           int convergence_level, 
+                           cGH *GH)
 {
   int return_code;
   int handle;
@@ -275,11 +275,11 @@ int CCTKi_SetupGHExtensions(tFleshConfig *config,
     {
       for(handle = 0; handle < num_extensions; handle++)
       {
-	/* Call the SetupGH routines for each extension. */
-	extension =  (struct GHExtension *)Util_GetHandledData(GHExtensions, handle);
-	GH->extensions[handle] = extension->SetupGH(config, 
-						    convergence_level, 
-						    GH);
+        /* Call the SetupGH routines for each extension. */
+        extension =  (struct GHExtension *)Util_GetHandledData(GHExtensions, handle);
+        GH->extensions[handle] = extension->SetupGH(config, 
+                                                    convergence_level, 
+                                                    GH);
       }
       return_code = 0;
     }
