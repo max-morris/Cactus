@@ -80,14 +80,17 @@
 #define ONE_FORTSTRING_ARG\
    char *cctk_str1, unsigned int cctk_strlen1
 #define TWO_FORTSTRING_ARG\
-   char *cctk_str1, int cctk_strlen1, char *cctk_str2, int cctk_strlen2
+   char *cctk_str1,\
+   int cctk_strlen1,\
+   char *cctk_str2,\
+   int cctk_strlen2
 #define THREE_FORTSTRING_ARG\
    char *cctk_str1,\
+   int cctk_strlen1,\
    char *cctk_str2,\
+   int cctk_strlen2,\
    char *cctk_str3,\
-   unsigned int cctk_strlen1,\
-   unsigned int cctk_strlen2,\
-   unsigned int cctk_strlen3
+   int cctk_strlen3
 
 #define ONE_FORTSTRING_CREATE(arg1)\
    char *arg1 = Util_NullTerminateString(cctk_str1,cctk_strlen1);
