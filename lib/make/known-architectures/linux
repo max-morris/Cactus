@@ -63,23 +63,23 @@ else
   fi
 
 # find out if we have egcs or not, LIBS is either g2c or f2c
-  LINUX_F77=
+  LINUX_G77_USES_LIBG2C=
 
   if test -n "$F77" ; then
-    if g77 -v 2>&1 | grep 'egcs\|gcc version 2\.95' > /dev/null; then
-      LINUX_F77=egcs
+    if test -n "`g77 -v 2>&1 | grep g2c`" ; then
+      LINUX_G77_USES_LIBG2C=yes
     else
-      LINUX_F77=noegcs
+      LINUX_G77_USES_LIBG2C=no
     fi
   fi
 
 #Set the appropriate flags
   case "$LINUX_F90_COMP" in
      gnu77)
-       if test "$LINUX_F77" = "egcs" ; then
+       if test "$LINUX_G77_USES_LIBG2C" = "yes" ; then
          : ${LIBS="g2c m"} 
        fi
-       if test "$LINUX_F77" = "noegcs" ; then
+       if test "$LINUX_G77_USES_LIBG2C" = "no" ; then
          : ${LIBS="f2c m"} 
        fi
        : ${F77_DEBUG_FLAGS="-g"}
@@ -88,10 +88,10 @@ else
        : ${F90_WARN_FLAGS="-Wall"}
        ;;
      pacific)
-       if test "$LINUX_F77" = "egcs" ; then
+       if test "$LINUX_G77_USES_LIBG2C" = "yes" ; then
          : ${LIBS="vast90 g2c m"} 
        fi
-       if test "$LINUX_F77" = "noegcs" ; then
+       if test "$LINUX_G77_USES_LIBG2C" = "no" ; then
          : ${LIBS="vast90 f2c m"} 
        fi
        : ${F77_DEBUG_FLAGS="-g"}
