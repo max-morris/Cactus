@@ -28,7 +28,7 @@ if(!$package)
     print "$package\n";
   }
   print "Pick one, or create a new one.\n";
-  $package = &prompt("Toolkit");
+  $package = &prompt("Arrangement");
 }
 
 chdir $package_dir;
