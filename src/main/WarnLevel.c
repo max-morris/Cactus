@@ -34,13 +34,13 @@ CCTK_FILEVERSION(main_WarnLevel_c)
    cctk_WarnLevel.h and cctki_WarnLevel.h
    here only follow the fortran wrapper prototypes */
 void CCTK_FCALL CCTK_FNAME (CCTK_Info)
-                           (TWO_FORTSTRINGS_ARGS);
+                           (TWO_FORTSTRING_ARG);
 void CCTK_FCALL CCTK_FNAME (CCTK_Warn)
                            (const int *level,
                             const int *line,
-                            THREE_FORTSTRINGS_ARGS);
+                            THREE_FORTSTRING_ARG);
 void CCTK_FCALL CCTK_FNAME (CCTK_ParamWarn)
-                           (TWO_FORTSTRINGS_ARGS);
+                           (TWO_FORTSTRING_ARG);
 int CCTK_FCALL CCTK_FNAME (CCTK_MessageFormat)
                           (ONE_FORTSTRING_ARG);
 void CCTK_FCALL CCTK_FNAME (CCTKi_ExpectError)
@@ -48,13 +48,13 @@ void CCTK_FCALL CCTK_FNAME (CCTKi_ExpectError)
                             const int *err,
                             const int *warnonerr,
                             const int *line,
-                            THREE_FORTSTRINGS_ARGS);
+                            THREE_FORTSTRING_ARG);
 void CCTK_FCALL CCTK_FNAME (CCTKi_ExpectOK)
                            (const int *in,
                             const int *ok,
                             const int *warnonerr,
                             const int *line,
-                            THREE_FORTSTRINGS_ARGS);
+                            THREE_FORTSTRING_ARG);
 void CCTK_FCALL CCTK_FNAME (CCTKi_NotYetImplemented)
                            (ONE_FORTSTRING_ARG);
 
@@ -114,9 +114,9 @@ int CCTK_Info (const char *thorn, const char *message)
 }
 
 void CCTK_FCALL CCTK_FNAME (CCTK_Info)
-                           (TWO_FORTSTRINGS_ARGS)
+                           (TWO_FORTSTRING_ARG)
 {
-  TWO_FORTSTRINGS_CREATE (thorn, message)
+  TWO_FORTSTRING_CREATE (thorn, message)
   CCTK_Info (thorn, message);
   free (thorn);
   free (message);
@@ -222,9 +222,9 @@ int CCTK_Warn (int level,
 void CCTK_FCALL CCTK_FNAME (CCTK_Warn)
                            (const int *level,
                             const int *line,
-                            THREE_FORTSTRINGS_ARGS)
+                            THREE_FORTSTRING_ARG)
 {
-  THREE_FORTSTRINGS_CREATE (file, thorn, message)
+  THREE_FORTSTRING_CREATE (file, thorn, message)
   CCTK_Warn (*level, *line, file, thorn, message);
   free (thorn);
   free (message);
@@ -407,9 +407,9 @@ int CCTK_ParamWarn (const char *thorn, const char *message)
 }
 
 void CCTK_FCALL CCTK_FNAME (CCTK_ParamWarn)
-                           (TWO_FORTSTRINGS_ARGS)
+                           (TWO_FORTSTRING_ARG)
 {
-  TWO_FORTSTRINGS_CREATE (thorn, message)
+  TWO_FORTSTRING_CREATE (thorn, message)
   CCTK_ParamWarn (thorn, message);
   free (thorn);
   free (message);
@@ -667,9 +667,9 @@ void CCTK_FCALL CCTK_FNAME (CCTKi_ExpectError)
                             const int *err,
                             const int *warnonerr,
                             const int *line,
-                            THREE_FORTSTRINGS_ARGS)
+                            THREE_FORTSTRING_ARG)
 {
-  THREE_FORTSTRINGS_CREATE (file, thorn, message)
+  THREE_FORTSTRING_CREATE (file, thorn, message)
   CCTKi_ExpectError (*in, *err, *warnonerr, *line, file, thorn, message);
   free (file);
   free (thorn);
@@ -743,9 +743,9 @@ void CCTK_FCALL CCTK_FNAME (CCTKi_ExpectOK)
                             const int *ok,
                             const int *warnonerr,
                             const int *line,
-                            THREE_FORTSTRINGS_ARGS)
+                            THREE_FORTSTRING_ARG)
 {
-  THREE_FORTSTRINGS_CREATE (file, thorn, message)
+  THREE_FORTSTRING_CREATE (file, thorn, message)
   CCTKi_ExpectOK (*in, *ok, *warnonerr, *line, file, thorn, message);
   free (file);
   free (thorn);
