@@ -259,7 +259,7 @@ sub parse_param_ccl
           {
             if($data[$line_number] =~ m/::/)
             {
-              ($new_ranges, $delim, $new_desc) = $data[$line_number] =~ m/(.*)(::)(.*)/;
+              ($new_ranges, $delim, $new_desc) = $data[$line_number] =~ m/(.+?)(::)(.*)/;
             }
             else
             {
