@@ -9,6 +9,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "ActiveThorns.h"
 #include "SKBinTree.h"
@@ -231,7 +232,7 @@ int CCTK_ActivateThorn(const char *name)
 	if(!imp->active)
 	{
 	  /* Activate the thorn. */
-	  printf("Success -> active implementation %s\n", name, thorn->implementation);
+	  printf("Success -> active implementation %s\n", thorn->implementation);
 	  thorn->active = 1;
 	  imp->active = 1;
 	  /* Remember which thorn activated this imp. */
