@@ -76,6 +76,7 @@ require "$sbin_dir/output_config.pl";
 # Parse the interface.ccl files
 %interface_database = &create_interface_database(%thorns);
 
+
 if($debug_interface)
 {
   &print_interface_database(%interface_database);
@@ -662,14 +663,14 @@ EOT
       print OUT "$decl \\\n";
     }
  
-    $header =  "ParameterCProtected$implementation.h";
+    $header =  "ParameterCProtected\U$implementation\E.h";
     $decl = "DECLARE_PROTECTED_\U$implementation\E_STRUCT_PARAMS";
     if( -r $header)
     {
       print OUT "$decl \\\n";
     }
 
-    $header =  "ParameterCPrivate$thorn.h";
+    $header =  "ParameterCPrivate\U$thorn\E.h";
     $decl = "DECLARE_PRIVATE_\U$thorn\E_STRUCT_PARAMS";
     if( -r $header)
     {
