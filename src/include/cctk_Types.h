@@ -21,6 +21,8 @@
 /* Define stuff for C. */
 #ifdef CCODE
 
+#define CCTK_STRING const char *
+
 /* Structures for complex types */
 
 #ifdef CCTK_REAL16
