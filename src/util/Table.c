@@ -2022,6 +2022,7 @@ int ihandle;
 assert(false);
 abort();                                /* internal error (core dump) */
 /* prevent compiler warning 'function should return a value' */
+return(0);
   }
 }
 
