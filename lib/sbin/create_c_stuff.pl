@@ -215,15 +215,15 @@ sub CreateCStructureParameterHeader
 
     if ($type_string =~ /CCTK_REAL/)
     {
-      $line = "cctk_dummy_real=$parameter;";
+      $line = "cctk_pdummy_real=$parameter;";
     }
     elsif ($type_string =~ /CCTK_INT/)
     {
-      $line = "cctk_dummy_int=$parameter;";
+      $line = "cctk_pdummy_int=$parameter;";
     }
     elsif ($type_string =~ /char/)
     {
-      $line = "cctk_dummy_pointer=(void *)$parameter;";
+      $line = "cctk_pdummy_pointer=(void *)$parameter;";
     }
     else
     {
