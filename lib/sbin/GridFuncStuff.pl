@@ -209,6 +209,8 @@ sub CreateVariableBindings
 
     push(@data, "#define THORN_IS_$thorn 1");
     push(@data, '');
+    push(@data, '#include <stddef.h>');
+    push(@data, '');
     push(@data, '#include "cctk.h"');
     push(@data, '#include "cctk_Arguments.h"');
     push(@data, '#include "cctk_Parameter.h"');
