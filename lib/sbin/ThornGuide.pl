@@ -1,7 +1,9 @@
-#!/usr/local/bin/perl 
+#!/usr/local/bin/perl
 
 use strict;
 use vars qw($h $help $cctk_home $thornlist $directory $outdir $verbose $debug $outfile $tocdepth);
+#$debug = 1;
+
 #/*@@
 #  @file      ThornGuide.pl
 #  @date      Sun Mar  3 19:05:41 CET 2002
@@ -129,7 +131,7 @@ my $counter = 1;
 # lets go through, one arrangement at a time
 foreach my $arrangement (sort keys %arrangements)
 {
-   print "\n$arrangement" if ($debug);
+   print "\nWorking through arrangement $arrangement..." if ($debug);
 
    # starts a new latex chapter of name $arrangement, with a chapter counter of $counter
    &Start_Arr($arrangement, $counter);
@@ -141,13 +143,14 @@ foreach my $arrangement (sort keys %arrangements)
    # now each THORN in the given arrangement
    foreach my $thorn (sort @{$arrangements{$arrangement}})
    {
-      print "\n\t$thorn" if ($debug);
+      print "\t$thorn:\n" if ($debug);
  
       # try to parse out the "NEW" format of latex documentation
-      my $contents = &Read_New_Thorn_Doc($arrangements_dir, $arrangement, $thorn);   
+      my $contents = &Read_New_Thorn_Doc($arrangements_dir, $arrangement, $thorn);
   
       # we could not sucessfully parse the "NEW" format, try the old format
       if (! $contents) {
+	  print "\nError reading thornguide in new format...  Trying old format.\n" if ($debug);
          $contents = &Read_Thorn_Doc($arrangements_dir, $arrangement, $thorn);   
       }
 
@@ -207,12 +210,18 @@ sub Read_New_Thorn_Doc
    my $date = "";
    my $cnts = "";
 
-   open (DOC, "<$pathandfile") || print STDERR "\nCould not find documentation in $path";
+   open (DOC, "<$pathandfile") or print "\nCould not find documentation in $pathandfile: $!\n";
 
-   
    while (<DOC>)                            # loop through thorn doc.
    {
-      if (/\\title\{(.*?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?.*?)\}/) { $title = $1; if ($title !~ /\w/) { close DOC; return 0;} }
+      print "processing: $_" if $debug;
+      if (/\\title\{(.*?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?.*?)\}/) { 
+	  $title = $1; 
+	  if ($title !~ /\w/) { 
+	      print 'ThornGuide.pl Warning: \title{} does not contain any word characters.\n';
+	      #close DOC; return 0;
+	  }
+      }
       if (/\\author\{(.*?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?.*?)\}/) { $author = $1;}
       if (/\\date\{(.*?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?.*?)\}/) { $date = $1; $date =~ s/.*Date:(.*?)\$\s*?\$/$1/; }
       if (/^% START CACTUS THORNGUIDE\s*$/) {
@@ -248,8 +257,10 @@ sub Read_New_Thorn_Doc
    $contents .= "\n\\include{" . ThornUtils::ToLower("${arrangement}_${thorn}_inter") . "\}\n";
    $contents .= "\n\\include{${arrangement}_${thorn}_schedule}\n";
 
-   # if it never started reading, then we print some error message
+   # If it never started reading, then return 0.
+   # (It is probably an older documentation.doc.)
    if (! $start) {
+      print "ThornGuide.pl Error: % START CACTUS THORNGUIDE\\s*\$ not found\n" if $debug;
       close DOC; return 0;
    }
    
@@ -316,7 +327,7 @@ sub Read_Thorn_Doc
    my $date = "";
    my $cnts = "";
 
-   open (DOC, "<$pathandfile") || print STDERR "\nCould not find documentation in $path";
+   open (DOC, "<$pathandfile") or print "\nCould not find documentation in $pathandfile: $!\n";
 
    while (<DOC>)                            # loop through thorn doc.
    {
@@ -627,4 +638,3 @@ print OUT  <<EOC;
 %%%%%%%%%%%%%%%%%%%%%%%
 EOC
 }
-
