@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.41 1999-07-23 12:52:47 goodale Exp $
+#   @version $Id: Makefile,v 1.42 1999-07-28 10:15:36 allen Exp $
 # @@*/
 
 ##################################################################################
@@ -540,7 +540,7 @@ endif
 .PHONY: checkout
 checkout:
 	@echo $(DIVIDER)
-	@echo Running package/thorn checkout script
+	@echo Running app/package/thorn checkout script
 	$(PERL) ./lib/sbin/checkout.pl
 
 
