@@ -76,24 +76,25 @@ void CCTKi_CommandLineTestThornCompiled(const char *optarg)
 void CCTKi_CommandLineDescribeAllParameters(const char *optarg)
 {
   int n_thorns;
-  char **thornlist;
   int thorn;
   int n_parameters;
   char **parameterlist;
   int parameter;
+  const char *thornname;
   const char *implementation;
   t_param_prop *properties;
 
-  CCTKi_ThornList(0, &thornlist, &n_thorns);
+  n_thorns = CCTK_NumCompiledThorns ();
 
   for(thorn = 0; thorn < n_thorns; thorn++)
   {
-    implementation = CCTK_ThornImplementation(thornlist[thorn]);
-    CCTK_ParameterList(thornlist[thorn], &parameterlist, &n_parameters);
+    thornname = CCTK_CompiledThorn (thorn);
+    implementation = CCTK_ThornImplementation(thornname);
+    CCTK_ParameterList(thornname, &parameterlist, &n_parameters);
 
     for(parameter = 0 ; parameter < n_parameters; parameter++)
     {
-      properties = CCTK_ParameterInfo(parameterlist[parameter], thornlist[thorn]);
+      properties = CCTK_ParameterInfo(parameterlist[parameter], thornname);
 
       if(optarg)
       {
@@ -111,7 +112,7 @@ void CCTKi_CommandLineDescribeAllParameters(const char *optarg)
       {
         if(properties->scope == SCOPE_PRIVATE)
         {
-          printf("%s::%s\n", thornlist[thorn], parameterlist[parameter]);
+          printf("%s::%s\n", thornname, parameterlist[parameter]);
         }
         else
         {
@@ -122,9 +123,7 @@ void CCTKi_CommandLineDescribeAllParameters(const char *optarg)
       free(parameterlist[parameter]);
     }
     free(parameterlist);
-    free(thornlist[thorn]);
   }
-  free(thornlist);
 
   /*  CCTKi_BindingsParameterHelp(NULL,"%s",stdout);*/
  
