@@ -6,7 +6,7 @@
 #    @desc 
 #   
 #    @enddesc 
-#    @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/irix,v 1.5 1999-04-30 13:32:46 tradke Exp $
+#    @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/irix,v 1.6 1999-04-30 13:35:37 goodale Exp $
 #  @@*/
 
 # extract the CPU type from hinv output
@@ -34,11 +34,11 @@ esac
 case "$IRIX_BITS:$CC" in
     64:cc)
     CFLAGS="$CFLAGS -O3 -64 -mips4 -r10000"
-    CXXFLAGS="$CFLAGS -O2 -64 -mips4 -r10000"
+    CXXFLAGS="$CXXFLAGS -O3 -64 -mips4 -r10000"
     ;;
     32:cc)
     CFLAGS="$CFLAGS -O3 -n32 -mips3"
-    CXXFLAGS="$CFLAGS -O2 -n32 -mips3"
+    CXXFLAGS="$CXXFLAGS -O3 -n32 -mips3"
     ;;
     *)
     ;;
