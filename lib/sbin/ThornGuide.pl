@@ -126,7 +126,7 @@ foreach my $arrangement (sort keys %arrangements)
 
    print OUT &Read_Thorn_Doc($arrangements_dir, $arrangement, "donotshowwarnings");
    # now each thorn in the given arrangement
-   foreach my $thorn (@{$arrangements{$arrangement}})
+   foreach my $thorn (sort @{$arrangements{$arrangement}})
    {
       print "\n\t$thorn" if ($debug);
  
