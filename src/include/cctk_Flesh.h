@@ -18,48 +18,6 @@
 
 /*  Typedefs */
 
-typedef struct
-{
-  int dummy;
-  char *name;
-} cGF;
-
-typedef struct 
-{
-  char *name;
-  int number;
-
-  /* dimensional_comm_array[dim] */
-  char *dimensional_comm_array;
-} cVariableDefinition;
-
-typedef struct
-{
-  /* The various names of the thing. */
- 
-  char *thorn;
-  char *implementation;
-  char *name;
-
-  /* The group number. */
-  int number;
-
-  /* The types. */
-  int gtype;
-  
-  int vtype;
-
-  int gscope;
-
-  int dim;
-
-  int n_timelevels;
-
-  int n_variables;
-
-  /* variables[n_variables] */
-  cVariableDefinition *variables;
-} cGroupDefinition;
 
 typedef struct
 {

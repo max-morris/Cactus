@@ -24,6 +24,49 @@
 
 static char *rcsid = "$Header$";
 
+/* Typedefs. */
+typedef struct 
+{
+  char *name;
+  int number;
+
+  /* dimensional_comm_array[dim] */
+  char *dimensional_comm_array;
+} cVariableDefinition;
+
+typedef struct
+{
+  /* The various names of the thing. */
+ 
+  char *thorn;
+  char *implementation;
+  char *name;
+
+  /* The group number. */
+  int number;
+
+  /* The types. */
+  int gtype;
+  
+  int vtype;
+
+  int gscope;
+
+  int dim;
+
+  int n_timelevels;
+
+  int n_variables;
+
+  int stagger;
+
+  /* size[dim] */
+  CCTK_INT *size;
+
+  /* variables[n_variables] */
+  cVariableDefinition *variables;
+} cGroupDefinition;
+
 /* Static variables needed to hold group and variable data. */
 
 static int n_groups = 0;
@@ -43,8 +86,9 @@ static int maxdim = 0;
 int _cctk_one = 1;
 
 
-cGroupDefinition *CCTK_SetupGroup(const char *implementation, const char *group_name, int n_variables);
-
+static cGroupDefinition *CCTKi_SetupGroup(const char *implementation, 
+                                          const char *name, 
+                                          int n_variables);
 
 
  /*@@
@@ -102,11 +146,11 @@ int CCTK_GroupIndex(const char *fullgroupname)
     }
     else
     {
-      char *message;
-      message = (char *)malloc( (100+strlen(fullgroupname))*sizeof(char) ); 
-      sprintf(message,"No group found with the name %s",fullgroupname);
-      CCTK_WARN(6,message);
-      if (message) free(message);
+      /*      char *message;*/
+      /*      message = (char *)malloc( (100+strlen(fullgroupname))*sizeof(char) ); */
+      /*      sprintf(message,"No group found with the name %s",fullgroupname); */
+      CCTK_VWarn(6,__LINE__,__FILE__,CCTK_THORNSTRING, "No group found with the name %s", fullgroupname);
+      /*      if (message) free(message); */
       retval = -1;
     }
   }
@@ -193,7 +237,7 @@ int CCTKi_CreateGroup(const char *gname, const char *thorn, const char *imp,
   groupscope = CCTK_GroupScopeNumber(gscope);
   if (groupscope == GROUP_PUBLIC || groupscope == GROUP_PROTECTED)
   {
-    group = CCTK_SetupGroup(imp, gname, n_variables);
+    group = CCTKi_SetupGroup(imp, gname, n_variables);
 
 #ifdef DEBUG_GROUPS
   {
@@ -211,7 +255,7 @@ int CCTKi_CreateGroup(const char *gname, const char *thorn, const char *imp,
   }
   else if (groupscope == GROUP_PRIVATE)
   {
-    group = CCTK_SetupGroup(thorn, gname, n_variables);
+    group = CCTKi_SetupGroup(thorn, gname, n_variables);
 
 #ifdef DEBUG_GROUPS
   {
@@ -287,7 +331,7 @@ int CCTKi_CreateGroup(const char *gname, const char *thorn, const char *imp,
 }
 
  /*@@
-   @routine    CCTK_SetupGroup
+   @routine    CCTKi_SetupGroup
    @date       Thu Jan 14 16:38:40 1999
    @author     Tom Goodale
    @desc 
@@ -300,9 +344,9 @@ int CCTKi_CreateGroup(const char *gname, const char *thorn, const char *imp,
    @endhistory 
 
 @@*/
-cGroupDefinition *CCTK_SetupGroup(const char *implementation, 
-				  const char *name, 
-				  int n_variables)
+static cGroupDefinition *CCTKi_SetupGroup(const char *implementation, 
+                                          const char *name, 
+                                          int n_variables)
 {
   int *temp_int;
   cGroupDefinition *temp;
