@@ -221,10 +221,10 @@ variables that {\tt <name>} has in turn inherited.
 An implementation may inherit from any number of other implementations.
 \item [{\tt Friend: <name>}]
 This gets all {\tt Protected} variables from implementation {\tt <name>}, but,
-unlike {\tt inherits} it also pushes its own implementations {\tt Protected}
-variables onto implementation {\tt <name>}.  This keyword is used to define
-a group of implementations which all end up with the same {\tt Protected}
-variables.
+unlike {\tt inherits}, it is symmetric and also defines a transitive relation by
+pushing its own implementations {\tt Protected} variables onto implementation
+{\tt <name>}.  This keyword is used define to a group of implementations which
+all end up with the same {\tt Protected} variables.
 \end{Lentry}
 
 So, for example, an {\tt interface.ccl} starting
