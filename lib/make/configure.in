@@ -37,6 +37,19 @@ else
   echo "         and we'll include it in the next release."
 fi
 
+# Save these for future use.
+
+if test -n "$LIBS" ; then
+  KNOWN_LIBS="$LIBS"
+  unset LIBS
+fi
+
+if test -n "$LDFLAGS" ; then
+  KNOWN_LDFLAGS="$LDFLAGS"
+  unset LDFLAGS
+fi
+
+
 dnl Checks for programs.
 AC_PROG_MAKE_SET
 
@@ -85,6 +98,18 @@ fi
 if test -z "$LD" ; then
 AC_SUBST(LD)
 LD=$CXX
+fi
+
+# Restore the values we saved earlier
+
+if test -n "$KNOWN_LIBS" ; then
+  LIBS="$KNOWN_LIBS"
+  unset KNOWN_LIBS
+fi
+
+if test -n "$KNOWN_LDFLAGS" ; then
+  LDFLAGS="$KNOWN_LDFLAGS"
+  unset KNOWN_LDFLAGS
 fi
 
 # Include some CCTK auxiliary functions
@@ -174,10 +199,10 @@ fi
 # rest of the configure stuff.
 
 KNOWN_LIBS="$LIBS"
-LIBS=
+unset LIBS
 
 KNOWN_LDFLAGS="$LDFLAGS"
-LDFLAGS=
+unset LDFLAGS
 
 dnl Checks for libraries.
 
@@ -247,7 +272,6 @@ dnl Include file stuff
 CCTK_CHECK_HEADERS(sys/time.h)
 CCTK_CHECK_HEADERS(unistd.h)
 CCTK_CHECK_HEADERS(string.h)
-CCTK_CHECK_HEADERS(wchan.h)
 
 AC_HEADER_TIME
 
