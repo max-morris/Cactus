@@ -38,7 +38,7 @@ if (-e "$extra")
   open(EXTRA,"<$extra");
   while(<EXTRA>)
   {
-    if (/\#define MPI/)
+    if (/\#define CCTK_MPI/)
     {
       $mpi = 1
     }
