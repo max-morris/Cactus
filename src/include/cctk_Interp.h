@@ -155,12 +155,15 @@ int CCTK_InterpLocalUniform(int N_dims,
  */
 #define CCTK_ERROR_INTERP_GHOST_SIZE_TOO_SMALL (-1001)
 
-/* an interpolation point is outside the input grid */
+/*
+ * an interpolation point is outside (or too close to an edge of)
+ * the input grid
+ */
 #define CCTK_ERROR_INTERP_POINT_OUTSIDE (-1002)
 /* ... old code for backwards compatability */
 #define CCTK_ERROR_INTERP_POINT_X_RANGE CCTK_ERROR_INTERP_POINT_OUTSIDE
 
-/* an interpolation point is in an excised region */
+/* an interpolation point is in (or too close to) an excised region */
 #define CCTK_ERROR_INTERP_POINT_EXCISED (-1003)
 
 #ifdef __cplusplus
