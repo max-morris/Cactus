@@ -1,6 +1,15 @@
 # Makefile for test drivers in this directory
 # $Header$
 
+#
+# We want to compile standalone test drivers which may use other flesh
+# routines (eg Util_*()), so we have to link with -lCactus.  That means
+# we also need to link against a bunch of other libraries which -lCactus
+# uses.  The current "solution" is to find a configuration (just the first
+# one in the configs directory) and grab the libraries it specifies.
+# This is a kludge, but it seems to work fairly well...
+#
+
 # defaults -- override from command line as desired
 CC := gcc
 CFLAGS := -Wall -W -Wno-unused -Wshadow -Winline -Wpointer-arith \
