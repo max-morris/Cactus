@@ -153,9 +153,9 @@
             cctk_dummy_pointer=(void *)cctk_delta_space;\
             cctk_dummy_pointer=(void *)cctk_origin_space;\
             cctk_dummy_pointer=(void *)cctk_levfac;\
-            cctk_dummy_pointer=(void *)cctk_convlevel;\
+            cctk_dummy_int=cctk_convlevel;\
             cctk_dummy_pointer=(void *)cctk_nghostzones;\
-            cctk_dummy_pointer=(void *)cctk_iteration;
+            cctk_dummy_int=cctk_iteration;
 
 #define _INITIALISE_CCTK_C2F
 #define _DECLARE_CCTK_C2F 
