@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.23 1999-04-15 08:39:01 goodale Exp $
+#   @version $Id: Makefile,v 1.24 1999-04-26 09:58:16 allen Exp $
 # @@*/
 
 # Make quietly unless told not to
@@ -325,6 +325,15 @@ newthorn:
 	@echo $(DIVIDER)
 	@echo Creating a new thorn
 	$(PERL) -s $(NEWTHORN);
+	@echo $(DIVIDER)
+
+# Run the testsuite
+
+.PHONY: testsuite
+testsuite:
+	@echo $(DIVIDER)
+	@echo Running testsuite
+	$(PERL) lib/sbin/Runtest.pl
 	@echo $(DIVIDER)
 
 # Last resort rule.  Assume it is the name of a configuration
