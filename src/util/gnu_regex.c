@@ -44,7 +44,7 @@ static char *rcsid = "$Id$";
 #include <sys/types.h>
 
 #ifdef HAVE_CONFIG_H
-#include "cctk_config.h"
+#include "cctk_Config.h"
 #endif
 
 /* The `emacs' switch turns on certain matching commands

@@ -10,7 +10,7 @@
 #include <stdio.h>
 
 #include "cctk_Flesh.h"
-#include "cctk_schedule.h"
+#include "cctk_Schedule.h"
 
 static char *rcsid = "$Id$";
 

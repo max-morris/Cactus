@@ -13,7 +13,7 @@
 
 #include "SKBinTree.h"
 
-#include "cctk_config.h"
+#include "cctk_Config.h"
 #include "cctk_ActiveThorns.h"
 #include "cctk_FortranString.h"
 

@@ -11,7 +11,7 @@
 #include <stdlib.h>
 
 #include "cctk.h"
-#include "cctk_schedule.h"
+#include "cctk_Schedule.h"
 
 #include "cctk_parameters.h"
 

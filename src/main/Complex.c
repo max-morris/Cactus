@@ -12,7 +12,7 @@ static char *rcsid = "$Header$";
 #include <math.h>
 
 #include "cctk.h"
-#include "cctk_complex.h"
+#include "cctk_Complex.h"
 
  /*@@
    @routine    CCTK_Cmplx

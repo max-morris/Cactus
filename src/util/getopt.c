@@ -31,14 +31,14 @@ char * getenv(const char *);
 
 #ifdef HAVE_CONFIG_H
 #if defined (emacs) || defined (CONFIG_BROKETS)
-/* We use <cctk_config.h> instead of "cctk_config.h" so that a compilation
-   using -I. -I$srcdir will use ./cctk_config.h rather than 
-   $srcdir/cctk_config.h
+/* We use <cctk_Config.h> instead of "cctk_Config.h" so that a compilation
+   using -I. -I$srcdir will use ./cctk_Config.h rather than 
+   $srcdir/cctk_Config.h
    (which it would do because it found this file in $srcdir).  */
-#include <cctk_config.h>
+#include <cctk_Config.h>
 #else
 /*Gab */
-#include "cctk_config.h"
+#include "cctk_Config.h"
 #endif
 #endif
 

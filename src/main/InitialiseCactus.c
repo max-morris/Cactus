@@ -14,8 +14,8 @@ static char *rcsid = "$Header$";
 #include "cctk.h"
 #include "cctk_Flesh.h"
 
-#include "cctk_schedule.h"
-#include "cctki_schedule.h"
+#include "cctk_Schedule.h"
+#include "cctki_Schedule.h"
 
 int ProcessCommandLine(int *inargc, char ***inargv, tFleshConfig *ConfigData);
 int ProcessEnvironment(int *argc, char ***argv,tFleshConfig *ConfigData);

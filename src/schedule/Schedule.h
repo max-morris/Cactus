@@ -8,7 +8,7 @@
    @version $Header$
  @@*/
 
-#include "cctki_schedule.h"
+#include "cctki_Schedule.h"
 #include "StoreHandledData.h"
 
 #ifndef _SCHEDULE_H_

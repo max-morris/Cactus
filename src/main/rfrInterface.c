@@ -47,7 +47,7 @@ int CCTK_rfrTraverse(cGH *GH, int rfrpoint)
   return 0;
 }
 
-#include "cctk_schedule.h"
+#include "cctk_Schedule.h"
 
 #define SCHEDULE(x) case CCTK_ ## x : CCTK_ScheduleTraverse("CCTK_" #x, data); break
 

@@ -13,6 +13,7 @@
 
 #include "cctk_Flesh.h"
 #include "cctk_Groups.h"
+#include "cctk_Constants.h"
 #include "CactusMainDefaults.h"
 #include "cctk_GHExtensions.h"
 

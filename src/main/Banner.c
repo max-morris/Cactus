@@ -13,7 +13,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "cctk_config.h"
+#include "cctk_Config.h"
 #include "cctk_parameters.h"
 #include "cctk_Banner.h"
 #include "cctk_FortranString.h"
