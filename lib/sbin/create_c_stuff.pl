@@ -213,6 +213,7 @@ sub CreateCStructureParameterHeader
 
     push(@definition, $line);
 
+    $line = "";
     if ($type_string =~ /CCTK_REAL/)
     {
       $line = "cctk_pdummy_real=$parameter;";
@@ -230,6 +231,7 @@ sub CreateCStructureParameterHeader
       print "missed $type_string\n";
       exit;
     }
+
     push(@use, $line);
      
   }

@@ -354,6 +354,36 @@ sub CreateParameterBindings
       $dataout .= "$decl \\\n";
     }
 
+
+    @data = ();
+    foreach $friend (split(" ",$rhparameter_db->{"\U$thorn\E SHARES implementations"}))
+    {
+      $friend_implementation = $rhinterface_db->{"\U$friend\E IMPLEMENTS"};
+      $rhinterface_db->{"IMPLEMENTATION \U$friend\E THORNS"} =~ m:([^ ]*):;
+      $friend_thorn = $1;
+      foreach $parameter (split(" ",$rhparameter_db->{"\U$thorn SHARES $friend\E variables"}))
+      {
+	$type = $rhparameter_db->{"\U$friend_thorn $parameter\E type"};
+	if ($type =~ /REAL/)
+	{
+	  $type_parameter = "cctk_pdummy_real";
+	}
+	elsif ($type =~ /INT/)
+	{
+	  $type_parameter = "cctk_pdummy_int";
+	}
+	elsif ($type =~ /BOOLEAN/)
+	{
+	  $type_parameter = "cctk_pdummy_int";
+	}	
+	else 
+	{
+	  $type_parameter = "cctk_pdummy_pointer";
+	}
+	$line = "$type_parameter = $parameter;";
+	push(@data, $line);
+      }
+    }
     foreach $line (@data)
     {
       $dataout .= $line . "\\\n";

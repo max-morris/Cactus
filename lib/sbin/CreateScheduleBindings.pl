@@ -140,8 +140,6 @@ sub ScheduleCreateFile
   $outbuf .=  "\#include \"cctk.h\"\n";
   $outbuf .=  "\#include \"cctk_parameters.h\"\n";
   $outbuf .=  "\#include \"cctk_schedule.h\"\n";
-  $outbuf .=  "\#include \"cctk_Flesh.h\"\n";
-  $outbuf .=  "\#include \"cctk_Comm.h\"\n";
   $outbuf .=  "\n";
   $outbuf .=  "/* Prototypes for functions to be registered. */\n";
   $outbuf .=  "$prototypes\n";
@@ -164,6 +162,7 @@ sub ScheduleCreateFile
   $outbuf .=  "{\n";
   $outbuf .=  "  DECLARE_CCTK_PARAMETERS\n";
   $outbuf .=  "$buffer\n";
+  $outbuf .=  "  USE_CCTK_PARAMETERS\n";
   $outbuf .=  "}\n";
   $outbuf .=  "\n";
 
