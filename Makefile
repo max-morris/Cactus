@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.6 1999-01-19 09:29:36 goodale Exp $
+#   @version $Id: Makefile,v 1.7 1999-01-19 12:44:28 goodale Exp $
 # @@*/
 
 # Comment this out if you want to see what's going on.
@@ -122,6 +122,8 @@ else
 	@echo The following configurations are currently specified
 	@echo $(CONFIGURATIONS)
 	@echo To build a configuration run $(make) followed by the name of a configuration.
+	@echo To clean a configuration run $(make) followed by the name of a configuration suffixed by -clean e.g. Linux-clean.
+	@echo To delete a configuration run $(make) followed by the name of a configuration suffixed by -delete e.g. Linux-delete.
 endif
 	@echo $(DIVIDER)
 	@echo $(MAKE) also knows the following targets
@@ -130,14 +132,50 @@ endif
 	@echo       tags      - creates a Vi TAGS file
 	@echo       config    - creates a new configuration
 	@echo       distclean - deletes all existing configurations
+	@echo       \<anything else\> prompts to create such a configuration.
 	@echo $(DIVIDER)
+
+# Clean a configuration
+$(addsuffix -clean,$(CONFIGURATIONS)):
+	@echo $(DIVIDER)
+	@echo Cleaning configuration $(@:%-clean=%)
+	cd build/$(@:%-clean=%)  
+	$(MAKE) -f $(CCTK_HOME)/lib/make/make.configuration TOP=$(CCTK_HOME)/build/$(@:%-clean=%) CCTK_HOME=$(CCTK_HOME) clean
+	@echo $(DIVIDER)
+
+%-clean:
+	@echo $(DIVIDER)
+	@echo Configuration $(@:%-clean=%) does not exist.
+	@echo Cleaning aborted.
+
+
+
+# Clean a configuration
+$(addsuffix -delete,$(CONFIGURATIONS)):
+	@echo $(DIVIDER)
+	@echo Deleting configuration $(@:%-delete=%)
+	cd build ; rm -rf $(@:%-delete=%)  
+	@echo $(DIVIDER)
+
+%-delete:
+	@echo $(DIVIDER)
+	@echo Configuration $(@:%-delete=%) does not exist.
+	@echo Deletion aborted.
 
 # Last resort rule.  Assume it is the name of a configuration
 
 %::
 	@echo $(DIVIDER)
-	@echo Setting up new configuration $@
-	$(PERL) $(SETUP) $@
+	echo Setup configuration $@ \(no\)?
+	read yesno rest ;\
+	if [ $$yesno = "yes" -o $$yesno = "y" -o $$yesno = "YES" -o $$yesno = "Y" ] ;\
+	then  \
+	echo Setting up new configuration $@; \
+	$(PERL) $(SETUP) $@; \
+	echo $(DIVIDER)   ;  \
+	echo Use $(MAKE) $@ to build the configuration.; \
+	else \
+	echo Setup cancelled ;     \
+	fi 
 	@echo $(DIVIDER)
-	@echo Use $(MAKE) $@ to build the configuration.
-	@echo $(DIVIDER)
+
