@@ -297,8 +297,6 @@ int CCTKi_ParseStaggerString(int dim,
     sprintf(hs,"%s",stype);
   }
 
-  printf("PARSE: %d %s %s \n",dim, stype,hs);
-
   for (i=0;i<dim;i++) {
 
     switch (hs[i])
@@ -360,9 +358,7 @@ int CCTKi_CreateGroup(const char *gname, const char *thorn, const char *imp,
   retval = 0;
 
   /* get the staggercode */
-  /*$printf("Calling Stagger \n");$*/
   staggercode = CCTKi_ParseStaggerString(dimension, imp, gname, stype);
-  printf("CG: sc: %d %s \n",staggercode,stype);
 
   /* Allocate storage for the group */
   groupscope = CCTK_GroupScopeNumber(gscope);
