@@ -178,8 +178,6 @@ sub CreateFortranCommonDeclaration
       }	
     }
 
-    print("Type is $type_string\n");
-    print("String is $definition\n");
     $sepchar = ",";
     $n++;
   }
