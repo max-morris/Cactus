@@ -752,6 +752,19 @@ int CCTK_GetFirstVarNum(int group)
   }
 }
 
+
+int CCTK_GetNumVarsInGroup(int group)
+{
+  if (0 <= group && group<n_groups)
+  {
+    return groups[group].n_variables;
+  }
+  else
+  {
+    return -1;
+  }
+}
+
 int CCTK_GetVarGType(int var)
 {
   int gtype;
