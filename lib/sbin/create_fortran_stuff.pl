@@ -46,7 +46,7 @@ sub CreateFortranThornParameterBindings
   {
     $implementation = $interface_database{"\U$thorn\E IMPLEMENTS"};
 
-    @data = &CreateFortranCommonDeclaration("cctk_params_$implementation"."_public", 0, scalar(keys %these_parameters), %these_parameters, %parameter_database);
+    @data = &CreateFortranCommonDeclaration("cctk_params_$implementation"."_prptected", 0, scalar(keys %these_parameters), %these_parameters, %parameter_database);
 
     foreach $line (@data)
     {
