@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.60 1999-12-16 09:02:42 allen Exp $
+#   @version $Id: Makefile,v 1.61 2000-01-03 12:15:42 allen Exp $
 # @@*/
 
 ##################################################################################
@@ -145,6 +145,7 @@ endif
 PERL = perl
 SETUP    = lib/make/setup_configuration.pl
 NEWTHORN = lib/make/new_thorn.pl
+BUILD_ACTIVETHORNS = lib/sbin/BuildActiveThorns.pl
 
 # Dividers to make the screen output slightly nicer
 DIVEL   =  __________________
@@ -282,15 +283,16 @@ endif
 	@echo $(DIVIDER)
 	@echo $(MAKE) also knows the following targets
 	@echo
-	@echo "  TAGS      - creates an Emacs TAGS file."
-	@echo "  tags      - creates a Vi TAGS file."
 	@echo "  checkout  - checkout public arrangements/thorns."
 	@echo "  default   - creates a new configuration with a default name."
-	@echo "  newthorn  - creates a new thorn."
 	@echo "  distclean - deletes all existing configurations."
-	@echo "  testsuite - run the test program."
-	@echo "  downsize  - remove non-essential files."
 	@echo "  doc       - creates UserGuide.ps"
+	@echo "  downsize  - remove non-essential files."
+	@echo "  newthorn  - creates a new thorn."
+	@echo "  TAGS      - creates an Emacs TAGS file."
+	@echo "  tags      - creates a Vi TAGS file."
+	@echo "  testsuite - run the test program."
+	@echo "  thorninfo - give information about all available thorns."
 	@echo "  <anything else> prompts to create such a configuration."
 	@echo $(DIVIDER)
 
@@ -630,6 +632,17 @@ doc:
 	@echo Creating user documentation UsersGuide.ps
 	(cd doc/UsersGuide; latex UsersGuide.tex; latex UsersGuide.tex; dvips ./UsersGuide.dvi -o $(CCTK_HOME)/UsersGuide.ps) ; cd $(CCTK_HOME);
 	@echo $(DIVIDER)
+
+# Rule to show thorn information
+
+.PHONY: thorninfo
+thorninfo:
+	@echo $(DIVIDER)
+	@echo Displaying info for all thorns in the arrangements directory
+	$(PERL) -s $(BUILD_ACTIVETHORNS) $(CCTK_HOME)/arrangements > $@;
+	cat $@;
+	@echo $(DIVIDER)
+
 
 # Remove non-essential files
 
