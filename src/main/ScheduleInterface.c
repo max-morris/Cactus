@@ -1238,6 +1238,7 @@ static t_attribute *CreateAttribute(const char *where,
                                     const int *timelevels,
                                     va_list *ap)
 {
+  static int timernum = 0;
   char *timername;
   t_attribute *this;
   int i;
@@ -1323,15 +1324,25 @@ static t_attribute *CreateAttribute(const char *where,
 
       /* Add a timer to the item */
       timername = malloc (strlen (thorn) + strlen (description) +
-                          strlen (where) + 7);
-      sprintf (timername, "%s: %s at %s", thorn, description, where);
-      this->timer_handle = CCTK_TimerCreate(timername);
-      if (this->timer_handle < 0)
+                          strlen (where) + 100);
+      if (!timername)
       {
         CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
-                    "Couldn't create timer with name '%s'", timername);
+                    "Could not allocate memory for timer");
+        this->timer_handle = -1;
       }
-      free (timername);
+      else
+      {
+        sprintf (timername, "[%04d] %s: %s in %s",
+                 timernum++, thorn, description, where);
+        this->timer_handle = CCTK_TimerCreate(timername);
+        if (this->timer_handle < 0)
+        {
+          CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
+                      "Could not create timer with name '%s'", timername);
+        }
+        free (timername);
+      }
     }
     else
     {
