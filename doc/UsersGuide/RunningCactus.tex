@@ -549,12 +549,15 @@ To compile with HDF5 ({\tt http://hdf.ncsa.uiuc.edu/whatishdf5.html}),
 the configure options are
 \newline
 \newline
-{\tt HDF5 = YES [HDF5\_DIR = <dir>]}
+{\tt HDF5 = YES [HDF5\_DIR = <dir>] [LIBZ\_DIR = <dir>]}
 \newline
 \newline
 If HDF5\_DIR is not given the configuration process will search for an
 installed HDF5 package in some standard places (defined in
-{\tt lib/make/extras/HDF5}.\\
+{\tt lib/make/extras/HDF5}). If the found HDF5 library was compiled with
+libz.a, the configuration process also searches for that library and adds it 
+to the linker flags. You may also point directly to an installation of libz.a
+by setting LIBZ\_DIR.\\
 
 
 
