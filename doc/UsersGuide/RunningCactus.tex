@@ -927,6 +927,23 @@ is also of use when trying to get Cactus to work on a new architecture.
 
 \chapter{Running Cactus}
 
+Cactus executables always run from a parameter file (which may be a
+physical file or taken from standard input), which specifies which
+Thorns to use and set the values of any parameters which are different
+to the default values. Any accepted filename can be used for the name
+of the parameter file, although standard convention is to use the file
+extension {\tt .par}. Optional command line arguments can be used
+to customise runtime behaviour, and to provide information about the
+Thorns used in the executable. The general syntax for running Cactus from
+a physical parameter file is
+then
+
+{\tt ./cactus\_<config> <parameter file> [command line options]}
+
+or if the parameter file should be taken from standard input
+
+{\tt ./cactus\_<config> [command line options] -}
+
 This chapter covers all aspects for running your Cactus executable.
 These include: command line options; parameter file syntax; understanding
 screen output and environment variables.
