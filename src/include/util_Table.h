@@ -1,10 +1,5 @@
-/* util_Table.h -- header for key-value tables */
-/* $header$ */
-
 /*@@
-  @file         util_Table.h
   @header       util_Table.h
-  @version      $Header$
   @date         Wed Oct 31 14:20:43 MET 2001
   @author       Jonathan Thornburg <jthorn@aei.mpg.de>
   @desc
@@ -15,6 +10,7 @@
         FIXME: should write some latex docs
   @enddesc
   @seefile      seefile Table.c
+  @version      $Header$
   @@*/
 
 /*
@@ -118,9 +114,12 @@ extern "C"
   @@*/
 #define UTIL_ERROR_TABLE_NO_MIXED_TYPE_ARRAY    (-107)
 
+
 /******************************************************************************/
 /***** Main Table API *********************************************************/
 /******************************************************************************/
+
+#ifdef CCODE
 
 /* create/destroy */
 int Util_TableCreate(int flags);
@@ -152,17 +151,17 @@ int Util_TableGetString(int handle,
 
 /* set/get generic types described by CCTK_VARIABLE_* type codes */
 int Util_TableSetGeneric(int handle,
-			 int type_code, const void *value_ptr,
-			 const char *key);
+                         int type_code, const void *value_ptr,
+                         const char *key);
 int Util_TableSetGenericArray(int handle,
-			      int type_code, int N_elements, const void *array,
-			      const char *key);
+                              int type_code, int N_elements, const void *array,
+                              const char *key);
 int Util_TableGetGeneric(int handle,
-			 int type_code, void *value_ptr,
-			 const char *key);
+                         int type_code, void *value_ptr,
+                         const char *key);
 int Util_TableGetGenericArray(int handle,
-			      int type_code, int N_elements, void *array,
-			      const char *key);
+                              int type_code, int N_elements, void *array,
+                              const char *key);
 
 /**************************************/
 
@@ -438,6 +437,8 @@ int Util_TableItAdvance(int ihandle);
 int Util_TableItResetToStart(int ihandle);
 int Util_TableItSetToNull(int ihandle);
 int Util_TableItSetToKey(int ihandle, const char *key);
+
+#endif  /* CCODE */
 
 /******************************************************************************/
 /******************************************************************************/
