@@ -796,217 +796,227 @@ sub CompareTestFiles
 
   $test_dir = $testdata->{"$inthorn $test TESTOUTPUTDIR"};
   
-  # Add output files to database
+  # Add new output files to database
   ($rundata->{"$inthorn $test UNKNOWNFILES"},$rundata->{"$inthorn $test TESTFILES"}) = &FindFiles("$test_dir");
+  $rundata->{"$inthorn $test NUNKNOWNFILES"} = scalar(split(" ",$rundata->{"$inthorn $test UNKNOWNFILES"}));
+  $rundata->{"$inthorn $test NTESTFILES"} = scalar(split(" ",$rundata->{"$inthorn $test TESTFILES"}));
 
   $rundata->{"$inthorn $test NFAILWEAK"}=0;
   $rundata->{"$inthorn $test NFAILSTRONG"}=0;
 
-
-  # Compare each file in the archived test directory
-  foreach $file (split(" ",$testdata->{"$inthorn $test DATAFILES"})) 
+  if ($rundata->{"$inthorn $test NTESTFILES"}) 
   {
-    $newfile = "$test_dir$sep$file"; 
-    $oldfile = "$testdata->{\"$inthorn TESTSDIR\"}${sep}${test}${sep}$file";
-
-    if ( -e $newfile && -s $newfile && -s $oldfile)
-    {
-      open (INORIG, "<$oldfile") || print "Warning: Archive file $oldfile not found";
-      open (INNEW,  "<$newfile") || print "Warning: Test file $newfile not found";
-
-      $rundata->{"$inthorn $test $file NINF"}=0;
-      $rundata->{"$inthorn $test $file NNAN"}=0;
-      $rundata->{"$inthorn $test $file NINFNOTFOUND"}=0;
-      $rundata->{"$inthorn $test $file NNANNOTFOUND"}=0;
-      $rundata->{"$inthorn $test $file NFAILSTRONG"}=0;
-      $rundata->{"$inthorn $test $file NFAILWEAK"}=0;
-      
-      undef(@maxdiff);
-      undef(@diffvals);
-      undef(@oldvals);
-      undef(@newvals);
-      undef(@valmax);
-
-      $numlines = 0;
-
-      while ($oline = <INORIG>) 
+      # Compare each file in the archived test directory
+      foreach $file (split(" ",$testdata->{"$inthorn $test DATAFILES"})) 
       {
-        $nline = <INNEW>;
-
-        next if (($oline =~ /^[\"\#]/) && ($nline =~ /^[\"\#]/));
-        $numlines++;
-
-        # Now lets see if they differ.
-        if (!("\U$nline" eq "\U$oline")) 
-        {
-
-          # Check differences 
-          if (($nline !~ /(nan|inf)/i) && ($oline !~ /(nan|inf)/i))
-          {
-
-            # This is the new comparison (subtract last two numbers)
-            @newvals = split(' ',$nline);
-            @oldvals = split(' ',$oline);
-
-            $nnew = scalar(@newvals);
-            $nold = scalar(@oldvals);
-
-            # Make sure that floating point numbers have 'e' if exponential.
-            $allzero = 1;
-            for ($count = 0; $count < $nold; $count++)
-            {
-              $newvals[$count] =~ s/[dD]/e/; 
-              $oldvals[$count] =~ s/[dD]/e/; 
-              $diffvals[$count] = abs($newvals[$count] - $oldvals[$count]);
-              if ($allzero == 1)
-              {
-                $allzero = 0 if ($diffvals[$count] > 0);
-              }
-            }
-            
-            if ($allzero == 0) 
-            {
-              # They diff. But do they differ strongly?
-              $rundata->{"$inthorn $test $file NFAILWEAK"}++;
-              
-              if (!$runconfig->{"$inthorn $test ABSTOL"})
-              {
-                $abstol = $runconfig->{"ABSTOL"};
-              }
-              else
-              {
-                $abstol = $runconfig->{"$inthorn $test ABSTOL"};
-              }
-
-              if (!$runconfig->{"$inthorn $test RELTOL"})
-              {
-                $reltol = $runconfig->{"RELTOL"};
-              }
-              else
-              {
-                $reltol = $runconfig->{"$inthorn $test RELTOL"};
-              }
-
-              $allunder = 1;
-              for ($count = 0; $count < $nold; $count++)
-              {
-                $vreltol[$count] = $reltol*&max(abs($oldvals[$count]),abs($newvals[$count]));
-                $vtol[$count] = &max($abstol,$vreltol[$count]);
-                if ($allunder == 1)
-                {
-                  if ($diffvals[$count] >= $vtol[$count])
-                  {
-                    $allunder = 0;
-                  }
-
-                }
-              }
-
-              unless ($allunder == 1) 
-              {
-                $rundata->{"$inthorn $test $file NFAILSTRONG"}++;
-              }
-
-              # store difference for strong failures
-              for ($count = 0; $count < $nold; $count++)
-              {
-                $maxdiff[$count] = &max($maxdiff[$count],$diffvals[$count]);
-                $valmax[$count] = &max(abs($oldvals[$count]),abs($newvals[$count]));
-              }
-            }
-          }
-          # Check against nans
-          elsif ($nline =~ /nan/i && $oline !~ /nan/i)
-          {
-            $rundata->{"$inthorn $test $file NNAN"}++;
-            $rundata->{"$inthorn $test $file NFAILWEAK"}++;
-            $rundata->{"$inthorn $test $file NFAILSTRONG"}++;
-          }
-          # Check against inf
-          elsif ($nline =~ /inf/i && $oline !~ /inf/i)
-          {
-            $rundata->{"$inthorn $test $file NINF"}++;
-            $rundata->{"$inthorn $test $file NFAILWEAK"}++;
-            $rundata->{"$inthorn $test $file NFAILSTRONG"}++;
-          }
-	  elsif ($oline =~ /nan/i)
+	  $newfile = "$test_dir$sep$file"; 
+	  $oldfile = "$testdata->{\"$inthorn TESTSDIR\"}${sep}${test}${sep}$file";
+	  
+	  if ( -e $newfile && -s $newfile && -s $oldfile)
 	  {
-	    $rundata->{"$inthorn $test $file NNANNOTFOUND"}++;
-            $rundata->{"$inthorn $test $file NFAILWEAK"}++;
-            $rundata->{"$inthorn $test $file NFAILSTRONG"}++;
+	      open (INORIG, "<$oldfile") || print "Warning: Archive file $oldfile not found";
+	      open (INNEW,  "<$newfile") || print "Warning: Test file $newfile not found";
+	      
+	      $rundata->{"$inthorn $test $file NINF"}=0;
+	      $rundata->{"$inthorn $test $file NNAN"}=0;
+	      $rundata->{"$inthorn $test $file NINFNOTFOUND"}=0;
+	      $rundata->{"$inthorn $test $file NNANNOTFOUND"}=0;
+	      $rundata->{"$inthorn $test $file NFAILSTRONG"}=0;
+	      $rundata->{"$inthorn $test $file NFAILWEAK"}=0;
+	      
+	      undef(@maxdiff);
+	      undef(@diffvals);
+	      undef(@oldvals);
+	      undef(@newvals);
+	      undef(@valmax);
+	      
+	      $numlines = 0;
+	      
+	      while ($oline = <INORIG>) 
+	      {
+		  $nline = <INNEW>;
+		  
+		  next if (($oline =~ /^[\"\#]/) && ($nline =~ /^[\"\#]/));
+		  $numlines++;
+		  
+		  # Now lets see if they differ.
+		  if (!("\U$nline" eq "\U$oline")) 
+		  {
+		      
+		      # Check differences 
+		      if (($nline !~ /(nan|inf)/i) && ($oline !~ /(nan|inf)/i))
+		      {
+			  
+			  # This is the new comparison (subtract last two numbers)
+			  @newvals = split(' ',$nline);
+			  @oldvals = split(' ',$oline);
+			  
+			  $nnew = scalar(@newvals);
+			  $nold = scalar(@oldvals);
+			  
+			  # Make sure that floating point numbers have 'e' if exponential.
+			  $allzero = 1;
+			  for ($count = 0; $count < $nold; $count++)
+			  {
+			      $newvals[$count] =~ s/[dD]/e/; 
+			      $oldvals[$count] =~ s/[dD]/e/; 
+			      $diffvals[$count] = abs($newvals[$count] - $oldvals[$count]);
+			      if ($allzero == 1)
+			      {
+				  $allzero = 0 if ($diffvals[$count] > 0);
+			      }
+			  }
+			  
+			  if ($allzero == 0) 
+			  {
+			      # They diff. But do they differ strongly?
+			      $rundata->{"$inthorn $test $file NFAILWEAK"}++;
+			      
+			      if (!$runconfig->{"$inthorn $test ABSTOL"})
+			      {
+				  $abstol = $runconfig->{"ABSTOL"};
+			      }
+			      else
+			      {
+				  $abstol = $runconfig->{"$inthorn $test ABSTOL"};
+			      }
+			      
+			      if (!$runconfig->{"$inthorn $test RELTOL"})
+			      {
+				  $reltol = $runconfig->{"RELTOL"};
+			      }
+			      else
+			      {
+				  $reltol = $runconfig->{"$inthorn $test RELTOL"};
+			      }
+			      
+			      $allunder = 1;
+			      for ($count = 0; $count < $nold; $count++)
+			      {
+				  $vreltol[$count] = $reltol*&max(abs($oldvals[$count]),abs($newvals[$count]));
+				  $vtol[$count] = &max($abstol,$vreltol[$count]);
+				  if ($allunder == 1)
+				  {
+				      if ($diffvals[$count] >= $vtol[$count])
+				      {
+					  $allunder = 0;
+				      }
+				      
+				  }
+			      }
+			      
+			      unless ($allunder == 1) 
+			      {
+				  $rundata->{"$inthorn $test $file NFAILSTRONG"}++;
+			      }
+			      
+			      # store difference for strong failures
+			      for ($count = 0; $count < $nold; $count++)
+			      {
+				  $maxdiff[$count] = &max($maxdiff[$count],$diffvals[$count]);
+				  $valmax[$count] = &max(abs($oldvals[$count]),abs($newvals[$count]));
+			      }
+			  }
+		      }
+		      # Check against nans
+		      elsif ($nline =~ /nan/i && $oline !~ /nan/i)
+		      {
+			  $rundata->{"$inthorn $test $file NNAN"}++;
+			  $rundata->{"$inthorn $test $file NFAILWEAK"}++;
+			  $rundata->{"$inthorn $test $file NFAILSTRONG"}++;
+		      }
+		      # Check against inf
+		      elsif ($nline =~ /inf/i && $oline !~ /inf/i)
+		      {
+			  $rundata->{"$inthorn $test $file NINF"}++;
+			  $rundata->{"$inthorn $test $file NFAILWEAK"}++;
+			  $rundata->{"$inthorn $test $file NFAILSTRONG"}++;
+		      }
+		      elsif ($oline =~ /nan/i)
+		      {
+			  $rundata->{"$inthorn $test $file NNANNOTFOUND"}++;
+			  $rundata->{"$inthorn $test $file NFAILWEAK"}++;
+			  $rundata->{"$inthorn $test $file NFAILSTRONG"}++;
+		      }
+		      elsif ($oline =~ /inf/i)
+		      {
+			  $rundata->{"$inthorn $test $file NINFNOTFOUND"}++;
+			  $rundata->{"$inthorn $test $file NFAILWEAK"}++;
+			  $rundata->{"$inthorn $test $file NFAILSTRONG"}++;
+		      }
+		      else
+		      {
+			  print "TESTSUITE ERROR: Didn't catch case in CompareFiles\n";
+		      }
+		  } # if
+	      } #while
+	      
 	  }
-	  elsif ($oline =~ /inf/i)
+	  elsif (!-e $newfile && -s $oldfile)
 	  {
-	    $rundata->{"$inthorn $test $file NINFNOTFOUND"}++;
-            $rundata->{"$inthorn $test $file NFAILWEAK"}++;
-            $rundata->{"$inthorn $test $file NFAILSTRONG"}++;
+	      print "     $file in archive but not created in test\n";
+	      $rundata->{"$inthorn $test NFAILWEAK"}++;
+	      $rundata->{"$inthorn $test NFAILSTRONG"}++;
+	  }
+	  elsif (!-e $newfile && -z $oldfile)
+	  {
+	      print "     $file in archive but not created in test\n";
+	      print "       ($file empty in archive)\n";
+	      $rundata->{"$inthorn $test NFAILWEAK"}++;
+	      $rundata->{"$inthorn $test NFAILSTRONG"}++;
+	  }
+	  elsif (-e $newfile && -s $oldfile && -z $newfile)
+	  {
+	      print "     $file is empty in test\n";
+	      $rundata->{"$inthorn $test NFAILWEAK"}++;
+	      $rundata->{"$inthorn $test NFAILSTRONG"}++;
+	  }
+	  elsif (-e $newfile && -z $oldfile && -z $newfile)      
+	  {
+	      print "     $file empty in both test and archive\n";
+	  }
+	  elsif (-e $newfile && -z $oldfile && -s $newfile)      
+	  {
+	      print "     $file is empty in archive but not in test\n";
+	      $rundata->{"$inthorn $test NFAILWEAK"}++;
+	      $rundata->{"$inthorn $test NFAILSTRONG"}++;
 	  }
 	  else
 	  {
-	    print "TESTSUITE ERROR: Didn't catch case in CompareFiles\n";
+	      print "     TESTSUITE ERROR: $newfile not compared\n";
 	  }
-        } # if
-      } #while
-
-    }
-    elsif (!-e $newfile && -s $oldfile)
-    {
-      print "     $file in archive but not created in test\n";
-      $rundata->{"$inthorn $test NFAILWEAK"}++;
-      $rundata->{"$inthorn $test NFAILSTRONG"}++;
-    }
-    elsif (!-e $newfile && -z $oldfile)
-    {
-      print "     $file in archive but not created in test\n";
-      print "       ($file empty in archive)\n";
-      $rundata->{"$inthorn $test NFAILWEAK"}++;
-      $rundata->{"$inthorn $test NFAILSTRONG"}++;
-    }
-    elsif (-e $newfile && -s $oldfile && -z $newfile)
-    {
-      print "     $file is empty in test\n";
-      $rundata->{"$inthorn $test NFAILWEAK"}++;
-      $rundata->{"$inthorn $test NFAILSTRONG"}++;
-    }
-    elsif (-e $newfile && -z $oldfile && -z $newfile)      
-    {
-      print "     $file empty in both test and archive\n";
-    }
-    elsif (-e $newfile && -z $oldfile && -s $newfile)      
-    {
-      print "     $file is empty in archive but not in test\n";
-      $rundata->{"$inthorn $test NFAILWEAK"}++;
-      $rundata->{"$inthorn $test NFAILSTRONG"}++;
-    }
-    else
-    {
-      print "     TESTSUITE ERROR: $newfile not compared\n";
-    }
-
-    for ($count = 1; $count <= $nold; $count++)
-    {
-      if ($maxdiff[$count])
-      {
-        $rundata->{"$inthorn $test $file MAXABSDIFF $count"} = $maxdiff[$count];
-	if ($valmax[$count] > 0)
-	{
-	  $rundata->{"$inthorn $test $file MAXRELDIFF $count"} = $maxdiff[$count]/$valmax[$count];
-	}
-	else
-	{
-	  print "ERROR: How did I get here, maximum difference is $maxdiff[$count] and maximum value if $valmax[$count]\n";
-	}
+	  
+	  for ($count = 1; $count <= $nold; $count++)
+	  {
+	      if ($maxdiff[$count])
+	      {
+		  $rundata->{"$inthorn $test $file MAXABSDIFF $count"} = $maxdiff[$count];
+		  if ($valmax[$count] > 0)
+		  {
+		      $rundata->{"$inthorn $test $file MAXRELDIFF $count"} = $maxdiff[$count]/$valmax[$count];
+		  }
+		  else
+		  {
+		      print "ERROR: How did I get here, maximum difference is $maxdiff[$count] and maximum value if $valmax[$count] for $file\n";
+		  }
+	      }
+	      else
+	      {
+		  $rundata->{"$inthorn $test $file MAXABSDIFF $count"} = 0;
+		  $rundata->{"$inthorn $test $file MAXRELDIFF $count"} = 0;
+	      }
+	      
+	  }
+	  
+	  $rundata->{"$inthorn $test $file NUMLINES"} = $numlines;
+	  
       }
-      else
-      {
-        $rundata->{"$inthorn $test $file MAXABSDIFF $count"} = 0;
-        $rundata->{"$inthorn $test $file MAXRELDIFF $count"} = 0;
-      }
-
-    }
-
-    $rundata->{"$inthorn $test $file NUMLINES"} = $numlines;
-
+  }
+  else
+  {
+      print "  \n  No files created in test directory\n";
+      $rundata->{"$inthorn $test NFAILWEAK"} = $testdata->{"$thorn $test NDATAFILES"};
+      $rundata->{"$inthorn $test NFAILSTRONG"} = $testdata->{"$thorn $test NDATAFILES"};
   }
 
   return $rundata;
@@ -1032,7 +1042,9 @@ sub max
 sub ReportOnTest
 {
   my($test,$thorn,$rundata,$testdata) = @_;
-  my($file,$tmp,$summary);
+  my($file,$tmp,$summary,$buffer);
+
+  $buffer = "";
 
   # Different lines in files
   foreach $file (split(" ",$testdata->{"$thorn $test DATAFILES"})) 
@@ -1042,17 +1054,17 @@ sub ReportOnTest
       $rundata->{"$thorn $test NFAILWEAK"}++;
       if ($rundata->{"$thorn $test $file NFAILSTRONG"} == 0) 
       {
-        print "\n  - $file: differences below tolerance on $rundata->{\"$thorn $test $file NFAILWEAK\"} lines";
+        $buffer .= "\n  - $file: differences below tolerance on $rundata->{\"$thorn $test $file NFAILWEAK\"} lines";
       }
       else 
       {
         $rundata->{"$thorn $test NFAILSTRONG"}++;
-        print "\n  - $file: substantial differences!\n";
-        print "      caught  $rundata->{\"$thorn $test $file NNAN\"} NaNs in new $file\n" if $rundata->{"$thorn $test $file NNAN"};
-        print "      did not reproduce  $rundata->{\"$thorn $test $file NNANNOTFOUND\"} NaNs from old $file\n" if $rundata->{"$thorn $test $file NNANNOTFOUND"};
-        print "      caught  $rundata->{\"$thorn $test $file NINF\"} Infs in new $file\n" if $rundata->{"$thorn $test $file NINF"};
-        print "      did not reproduce  $rundata->{\"$thorn $test $file NINFNOTFOUND\"} Infs from old $file\n" if $rundata->{"$thorn $test $file NINFNOTFOUND"};
-        print "      significant differences on $rundata->{\"$thorn $test $file NFAILSTRONG\"} (out of $rundata->{\"$thorn $test $file NUMLINES\"}) lines!\n";
+        $buffer .= "\n  - $file: substantial differences!\n";
+        $buffer .= "      caught  $rundata->{\"$thorn $test $file NNAN\"} NaNs in new $file\n" if $rundata->{"$thorn $test $file NNAN"};
+        $buffer .= "      did not reproduce  $rundata->{\"$thorn $test $file NNANNOTFOUND\"} NaNs from old $file\n" if $rundata->{"$thorn $test $file NNANNOTFOUND"};
+        $buffer .= "      caught  $rundata->{\"$thorn $test $file NINF\"} Infs in new $file\n" if $rundata->{"$thorn $test $file NINF"};
+        $buffer .= "      did not reproduce  $rundata->{\"$thorn $test $file NINFNOTFOUND\"} Infs from old $file\n" if $rundata->{"$thorn $test $file NINFNOTFOUND"};
+        $buffer .= "      significant differences on $rundata->{\"$thorn $test $file NFAILSTRONG\"} (out of $rundata->{\"$thorn $test $file NUMLINES\"}) lines!\n";
         foreach $val (keys (%$rundata))
         {
           if ($val =~ /$thorn $test $file MAXABSDIFF (.*)$/)
@@ -1060,7 +1072,7 @@ sub ReportOnTest
             $column = $1;
             if ($rundata->{"$thorn $test $file MAXABSDIFF $column"})
             {
-              print "      maximum absolute difference in column $column is $rundata->{\"$val\"}\n";
+              $buffer .= "      maximum absolute difference in column $column is $rundata->{\"$val\"}\n";
             }
           }
           elsif ($val =~ /$thorn $test $file MAXRELDIFF (.*)$/)
@@ -1068,7 +1080,7 @@ sub ReportOnTest
             $column = $1;
             if ($rundata->{"$thorn $test $file MAXRELDIFF $column"})
             {
-              print "      maximum relative difference in column $column is $rundata->{\"$val\"}\n";
+              $buffer .= "      maximum relative difference in column $column is $rundata->{\"$val\"}\n";
             }
           }
         }
@@ -1076,11 +1088,16 @@ sub ReportOnTest
         $tmp = $rundata->{"$thorn $test $file NFAILWEAK"} - $rundata->{"$thorn $test $file NFAILSTRONG"};
         if ($tmp)
         {
-          print "      (insignificant differences on $tmp lines)\n";
+          $buffer .= "      (insignificant differences on $tmp lines)\n";
         }
       }
     }
   }
+  if ($buffer)
+  {
+      $buffer .= "$buffer\n";
+  }
+  print $buffer;
 
   # Give a warning if there were different files created
 
@@ -1099,21 +1116,28 @@ sub ReportOnTest
 
   # Look for files in archive which are not created in test
   # (Note this is bad)
-  foreach $file (split (" ",$testdata->{"$thorn $test DATAFILES"}))
+  if ($testdata->{"$thorn $test NTESTFILES"})
   {
-    $myfile = quotemeta($file);
-    if ($rundata->{"$thorn $test TESTFILES"} !~ m:\b$myfile\b:)
-    {
-      print "            $file not created in test\n";
-      $rundata->{"$thorn $test NFILEMISSING"}++;
-      $rundata->{"$thorn $test FILEMISSING"} .= " $file";
-    }
+      foreach $file (split (" ",$testdata->{"$thorn $test DATAFILES"}))
+      {
+	  $myfile = quotemeta($file);
+	  if ($rundata->{"$thorn $test TESTFILES"} !~ m:\b$myfile\b:)
+	  {
+	      print "            $file not created in test\n";
+	      $rundata->{"$thorn $test NFILEMISSING"}++;
+	      $rundata->{"$thorn $test FILEMISSING"} .= " $file";
+	  }
+      }
   }
-
+  else
+  {
+      $rundata->{"$thorn $test NFILEMISSING"}++;
+      $rundata->{"$thorn $test FILEMISSING"} = $rundata->{"$thorn $test DATAFILES"};
+  }
 
   if (! $rundata->{"$thorn $test NFAILWEAK"})
   {
-    $summary = "\n  Success: $testdata->{\"$thorn $test NDATAFILES\"} files identical";
+    $summary = "Success: $testdata->{\"$thorn $test NDATAFILES\"} files identical";
     printf("\n  $summary\n");
     $rundata->{"NPASSED"}++;
   }
@@ -1121,14 +1145,14 @@ sub ReportOnTest
   {
     if (! $rundata->{"$thorn $test NFAILSTRONG"})
     {
-      $summary = "\n  Success: $testdata->{\"$thorn $test NDATAFILES\"} files compared, $rundata->{\"$thorn $test NFAILWEAK\"} differ in the last digits";
+      $summary = "Success: $testdata->{\"$thorn $test NDATAFILES\"} files compared, $rundata->{\"$thorn $test NFAILWEAK\"} differ in the last digits";
       printf "\n  $summary\n";
       $rundata->{"NPASSED"}++;
       $rundata->{"NPASSEDTOTOL"}++;
     }
     else
     {
-      $summary = "\n  Failure: $testdata->{\"$thorn $test NDATAFILES\"} files compared, $rundata->{\"$thorn $test NFAILWEAK\"} differ, $rundata->{\"$thorn $test NFAILSTRONG\"} differ significantly";
+      $summary = "Failure: $testdata->{\"$thorn $test NDATAFILES\"} files compared, $rundata->{\"$thorn $test NFAILWEAK\"} differ, $rundata->{\"$thorn $test NFAILSTRONG\"} differ significantly";
       printf "\n  $summary\n";
       $rundata->{"$thorn FAILED"} .= "$test ";
       $rundata->{"NFAILED"}++;
@@ -1246,7 +1270,7 @@ sub ViewResults
   my($test,$thorn,$runconfig,$rundata,$testdata) = @_;
   my($count,$choice,$myfile,@myfiles);
 
-  if ($rundata->{"$thorn $test NFAILSTRONG"})
+  if ($rundata->{"$thorn $test NTESTFILES"} && $rundata->{"$thorn $test NFAILSTRONG"})
   {
     while ($myfile !~ /^c/i)
     {
