@@ -3,10 +3,10 @@
 #   @file      hiuxmpp
 #   @date      Wed Apr 19 17:58:22 2000
 #   @author    Tom Goodale
-#   @desc 
+#   @desc  Optimazations by Peter Diener
 #   Configuration file for the Hitachi SR8000-F1
 #   @enddesc 
-#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/hiuxmpp,v 1.4 2001-02-19 15:19:03 goodale Exp $
+#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/hiuxmpp,v 1.5 2001-02-21 14:18:46 lanfer Exp $
 # @@*/
 
 if test "$CCTK_CONFIG_STAGE" = "preferred-compilers" ; then
@@ -23,11 +23,11 @@ else
 
   LDFLAGS="$LDFLAGS -64"
 
-  : ${C_OPTIMISE_FLAGS="-O4 -pvec -pvfunc -predicate"}
-#  : ${CXX_OPTIMISE_FLAGS="-O4 -pvec -pvfunc -predicate"}
+  : ${C_OPTIMISE_FLAGS="-O4 -pvec -pvfunc -predicate -model=F1"}
+#  : ${CXX_OPTIMISE_FLAGS="-O4 -pvec -pvfunc -predicate -model=F1"}
 
-  : ${F77_OPTIMISE_FLAGS="-opt=ss -pvfunc=2 -noparallel"}
-  : ${F90_OPTIMISE_FLAGS="-opt=ss -pvfunc=2 -noparallel"}
+  : ${F77_OPTIMISE_FLAGS="-opt=ss -pvfunc=2 -noparallel -model=F1"}
+  : ${F90_OPTIMISE_FLAGS="-opt=ss -pvfunc=2 -noparallel -model=F1 -noscope"}
 
 # No way to generate dependencies on this machine.
   : ${C_DEPEND="echo"}
