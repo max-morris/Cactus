@@ -39,7 +39,7 @@
 
 #define CCTK_CONVERGENCE 100
 
-
+#define CCTK_SHUTDOWN  95 
 /* This shouldn't be here, but need it externally visable. */
 
 #ifdef __cplusplus
