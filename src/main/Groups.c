@@ -1191,29 +1191,27 @@ void  FMODIFIER FORTRAN_NAME(CCTK_GroupScopeNumber)(int *number,
 @@*/
 
 
-cGroup *CCTK_GroupData(int group)
+int CCTK_GroupData(int group, cGroup *gp)
 {
-  cGroup *gp;
+  int retval=0;
 
-  gp = (cGroup *)malloc(sizeof(cGroup));
-
-  if (gp) 
+  if(group >=0 && group < n_groups)
   {
-    if(group >=0 && group < n_groups)
-    {
-	gp->grouptype    = groups[group].gtype;
-	gp->variabletype = groups[group].vtype;
-	gp->dim          = groups[group].dim;
-	gp->numvariables = groups[group].n_variables;
-	gp->numtimelevels= groups[group].n_timelevels;
-	gp->staggertype  = groups[group].staggertype;
-    }
-    else
-    {
-      gp = NULL;
-    }
+      gp->grouptype     = groups[group].gtype;
+      gp->vartype       = groups[group].vtype;
+      gp->dim           = groups[group].dim;
+      gp->numvars       = groups[group].n_variables;
+      gp->numtimelevels = groups[group].n_timelevels;
+      gp->stagtype      = groups[group].staggertype;
   }
-  return gp;
+  else
+  {
+    gp = NULL;
+    retval = -1;
+  }
+
+  return retval;
+
 }
 
 
