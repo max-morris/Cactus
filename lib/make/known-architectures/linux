@@ -182,7 +182,7 @@ else
   fi
 
   if test -z "$L2_CACHE_SIZE" ; then
-    TEMP_CACHE_SIZE="`cat /proc/cpuinfo | perl -nae 'print $F[3] if(m:cache:)'`"
+    TEMP_CACHE_SIZE="`cat /proc/cpuinfo | perl -nae 'if(m:cache: && ! $dunnit) {print $F[3]; $dunnit=1}'`"
     if test -n "$TEMP_CACHE_SIZE" ; then
       L2_CACHE_SIZE="$TEMP_CACHE_SIZE*1024"
       echo "Setting L2_CACHE_SIZE to $L2_CACHE_SIZE bytes"
