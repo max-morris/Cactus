@@ -153,7 +153,8 @@ sub CreateThornList
 
       $toolkit = $1;
       $thorn_name = $2;
-      $thorn_name =~ s/thorn_//;
+      # No longer strip thorn_ off the beginning of a thorn name.
+      #      $thorn_name =~ s/thorn_//;
       
       if( -r "$cctk_home/toolkits/$thorn/param.ccl" &&
 	  -r "$cctk_home/toolkits/$thorn/interface.ccl" &&
