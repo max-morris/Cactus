@@ -36,6 +36,7 @@ endif
 
 export MAKE_DIR  = $(CCTK_HOME)/lib/make
 
+CCTK_LIBNAME_PREFIX=thorn_
 FLESHLIB = Cactus
 BINDINGSLIB= CactusBindings
 
@@ -57,23 +58,9 @@ export PERLINTERP = $(shell echo $(PERL) | sed 's,^/cygdrive/\(.\)/,\1:/,' | sed
 # Use a phony main target to make sure we print a nice ending message 8-)
 .PHONY: main
 
-main: checklibs $(EXEDIR)$(DIRSEP)$(EXE)
+main: $(EXEDIR)$(DIRSEP)$(EXE)
 	@echo All done !
 	@echo $(DIVIDER)
-
-
-# Check whether the system libraries clash with the thorn libraries
-.PHONY: checklibs
-
-# Which Cactus libraries have the same name as system libraries?
-CLASHINGLIBS = $(strip $(foreach lib, $(ALLCACTUSLIBS), $(findstring $(lib), $(LIBS))))
-
-checklibs:
-	if test "$(CLASHINGLIBS)x" != "x"; then\
-	  echo "The thorn(s) '$(CLASHINGLIBS)' have the same names as sytem libraries.";\
-	  echo "This is not possible.";\
-	  exit 1;\
-	fi
 
 
 # Put this in temporarily to make sure that people with existing
@@ -118,13 +105,15 @@ UTIL_DIR=$(EXEDIR)$(DIRSEP)$(CONFIG_NAME)
 
 
 # Build the list of all libraries
-ALLCACTUSLIBS = $(notdir $(CACTUSLIBS) $(THORN_LINKLIST) $(CACTUSLIBS))
+ALLCACTUSLIBS_BASE = $(notdir $(CACTUSLIBS) $(THORN_LINKLIST) $(CACTUSLIBS))
+
+ALLCACTUSLIBS = $(ALLCACTUSLIBS_BASE:%=$(CCTK_LIBNAME_PREFIX)%)
 
 # Include all required external libraries from configuration
 -include $(TOP)/bindings/Configuration/make.link
 
 # Build the executable
-$(EXEDIR)$(DIRSEP)$(EXE): $(CONFIG)/make.thornlist $(CONFIG)/cctki_version.h $(patsubst %,$(CCTK_LIBDIR)/$(LIBNAME_PREFIX)%$(LIBNAME_SUFFIX),$(notdir $(THORNS) $(CACTUSLIBS)))
+$(EXEDIR)$(DIRSEP)$(EXE): $(CONFIG)/make.thornlist $(CONFIG)/cctki_version.h $(patsubst %,$(CCTK_LIBDIR)/$(LIBNAME_PREFIX)$(CCTK_LIBNAME_PREFIX)%$(LIBNAME_SUFFIX),$(notdir $(THORNS) $(CACTUSLIBS)))
 	@echo Creating $(EXE) in $(EXEDIR) from $(THORNS)
 	$(CC) $(OPTIMISE_C) $(DEBUG_C) $(CFLAGS) $(CCOMPILEONLY)$(OPTIONSEP)"$(call TRANSFORM_DIRS,$(TOP)/datestamp.o)" -I"$(call TRANSFORM_DIRS,$(CCTK_HOME)/src/include)" -I"$(call TRANSFORM_DIRS,$(CONFIG))" "$(call TRANSFORM_DIRS,$(DATESTAMP))"
 	if [ ! -d $(EXEDIR) ]; then $(MKDIR) $(MKDIRFLAGS) $(EXEDIR) ; fi
@@ -152,9 +141,9 @@ $(CONFIG)/cctki_version.h: $(CCTK_HOME)/Makefile
 # Checks if the library is Cactus, in which case it uses the main source
 # directory.
 
-$(CCTK_LIBDIR)/$(LIBNAME_PREFIX)%$(LIBNAME_SUFFIX): update
+$(CCTK_LIBDIR)/$(LIBNAME_PREFIX)$(CCTK_LIBNAME_PREFIX)%$(LIBNAME_SUFFIX): update
         # (the mkdir below is protected against parallel makes)
-	@thorn_name=$(@:$(CCTK_LIBDIR)/$(LIBNAME_PREFIX)%$(LIBNAME_SUFFIX)=%) ; \
+	@thorn_name=$(@:$(CCTK_LIBDIR)/$(LIBNAME_PREFIX)$(CCTK_LIBNAME_PREFIX)%$(LIBNAME_SUFFIX)=%) ; \
 	echo "Checking status of thorn $$thorn_name" ; \
 	if [ ! -d $(SCRATCH_BUILD) ] ; \
 	then \
@@ -182,7 +171,7 @@ $(CCTK_LIBDIR)/$(LIBNAME_PREFIX)%$(LIBNAME_SUFFIX): update
 		then \
 			src_dir=$(BINDINGS_DIR) ; \
 		else \
-			src_dir=$(PACKAGE_DIR)/$(@:$(CCTK_LIBDIR)/$(LIBNAME_PREFIX)%$(LIBNAME_SUFFIX)=$(filter %/$(@:$(CCTK_LIBDIR)/$(LIBNAME_PREFIX)%$(LIBNAME_SUFFIX)=%), $(THORNS)))/src ; \
+			src_dir=$(PACKAGE_DIR)/$(@:$(CCTK_LIBDIR)/$(LIBNAME_PREFIX)$(CCTK_LIBNAME_PREFIX)%$(LIBNAME_SUFFIX)=$(filter %/$(@:$(CCTK_LIBDIR)/$(LIBNAME_PREFIX)$(CCTK_LIBNAME_PREFIX)%$(LIBNAME_SUFFIX)=%), $(THORNS)))/src ; \
 		fi ; \
 	fi ; \
 	if [ ! -d $(BUILD_DIR)/$$thorn_name ]; \
@@ -197,7 +186,7 @@ $(CCTK_LIBDIR)/$(LIBNAME_PREFIX)%$(LIBNAME_SUFFIX): update
 	else \
 		make_file=$(MAKE_DIR)/make.thornlib ; \
 	fi ; \
-	$(MAKE) TOP=$(TOP) SRCDIR=$$src_dir CONFIG=$(CONFIG) NAME=$@ THORN=$$thorn_name USESTHORNS="$(USESTHORNS_$(@:$(CCTK_LIBDIR)/$(LIBNAME_PREFIX)%$(LIBNAME_SUFFIX)=%))" -f $$make_file $(FPARFLAGS)
+	$(MAKE) TOP=$(TOP) SRCDIR=$$src_dir CONFIG=$(CONFIG) NAME=$@ THORN=$$thorn_name USESTHORNS="$(USESTHORNS_$(@:$(CCTK_LIBDIR)/$(LIBNAME_PREFIX)$(CCTK_LIBNAME_PREFIX)%$(LIBNAME_SUFFIX)=%))" -f $$make_file $(FPARFLAGS)
 	@echo $(DIVIDER)
 
 
@@ -298,10 +287,10 @@ realclean:
 
 # This target will build only a subset of the thorns for a given configuration.
 # It also warns about thorns which don't exist.
-THORN_BUILDLIST = $(filter $(ALLCACTUSLIBS), $(BUILDLIST))
-UNKNOWN_THORNS = $(filter-out $(ALLCACTUSLIBS), $(BUILDLIST))
+THORN_BUILDLIST = $(filter $(ALLCACTUSLIBS_BASE), $(BUILDLIST))
+UNKNOWN_THORNS = $(filter-out $(ALLCACTUSLIBS_BASE), $(BUILDLIST))
 
-build: $(CONFIG)/make.thornlist $(CONFIG)/cctki_version.h $(patsubst %, $(CCTK_LIBDIR)/$(LIBNAME_PREFIX)%$(LIBNAME_SUFFIX), $(THORN_BUILDLIST))
+build: $(CONFIG)/make.thornlist $(CONFIG)/cctki_version.h $(patsubst %, $(CCTK_LIBDIR)/$(LIBNAME_PREFIX)$(CCTK_LIBNAME_PREFIX)%$(LIBNAME_SUFFIX), $(THORN_BUILDLIST))
 	if test "x$(UNKNOWN_THORNS)" != "x"; then \
 	  echo "WARNING: Don't know anything about '$(UNKNOWN_THORNS)' !"; \
 	  echo $(DIVIDER); \

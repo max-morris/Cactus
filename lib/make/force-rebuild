@@ -5,7 +5,7 @@
 #   @desc 
 #   Timestamp file for forcing rebuilds of configurations
 #   @enddesc 
-#   @version $Id: force-rebuild,v 1.14 2004-08-03 13:34:08 schnetter Exp $
+#   @version $Id: force-rebuild,v 1.15 2004-11-30 23:22:00 goodale Exp $
 # @@*/
 
 06 Mar 2003: minor changes to CreateFunctionBindings.pl 
@@ -27,3 +27,5 @@
              parameters/variables in place (without requiring separate
              USE_CCTK_* macros)
 03 Aug 2004: Parse multiple schedule options correctly
+30 Nov 2004: Change name of thorn libraries.
+             (Rebuild because of Fortran deps from CST.)

@@ -6,7 +6,7 @@
 #  @desc
 #             Parses the the configuration files for thorns.
 #  @enddesc
-#  @version   $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.72 2004-08-27 03:20:39 goodale Exp $
+#  @version   $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.73 2004-11-30 23:22:00 goodale Exp $
 #@@*/
 
 # Global parameter to track the number of errors from the CST
@@ -425,7 +425,7 @@ sub CreateThornDependencyList
       $line .= " $dep" if ($dep ne $thorn);
     }
     push (@varlist, $line);
-    push (@deplist, "\$(CCTK_LIBDIR)/\$(LIBNAME_PREFIX)$thorn\$(LIBNAME_SUFFIX): \$(USESTHORNS_$thorn:%=\$(CCTK_LIBDIR)/\$(LIBNAME_PREFIX)%\$(LIBNAME_SUFFIX))");
+    push (@deplist, "\$(CCTK_LIBDIR)/\$(LIBNAME_PREFIX)\$(CCTK_LIBNAME_PREFIX)$thorn\$(LIBNAME_SUFFIX): \$(USESTHORNS_$thorn:%=\$(CCTK_LIBDIR)/\$(LIBNAME_PREFIX)\$(CCTK_LIBNAME_PREFIX)%\$(LIBNAME_SUFFIX))");
   }
 
   return (@varlist, @deplist);
