@@ -76,7 +76,7 @@ int CCTK_RegisterReductionOperator(
   {
     /* Reduction operator with this name already exists. */
     CCTK_Warn(1,__LINE__,__FILE__,"Cactus",
-	      "Reduction operator with this name already exists");
+              "Reduction operator with this name already exists");
     handle = -1;
   }
 
@@ -126,8 +126,8 @@ int CCTK_ReductionHandle(const char *reduction)
 
   if (handle < 0)
     CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
-	      "CCTK_ReductionHandle: No handle found reduction operator %s",
-	      reduction);
+              "CCTK_ReductionHandle: No handle found for reduction operator '%s'",
+              reduction);
 
   return handle;
 
@@ -212,7 +212,7 @@ int CCTK_Reduce(cGH *GH,
   if (operation_handle < 0)
   {
     CCTK_Warn(3,__LINE__,__FILE__,"Cactus",
-	      "CCTK_Reduce: Invalid handle passed to CCTK_Reduce");
+              "CCTK_Reduce: Invalid handle passed to CCTK_Reduce");
     return (-1);
   }
 
@@ -222,8 +222,8 @@ int CCTK_Reduce(cGH *GH,
   if (! function)
   {
     CCTK_Warn(3,__LINE__,__FILE__,"Cactus",
-	      "CCTK_Reduce: Reduction operation is not registered"
-	      "and cannot be called");
+              "CCTK_Reduce: Reduction operation is not registered"
+              "and cannot be called");
     return (-1);
   }
         
@@ -268,7 +268,7 @@ void CCTK_FCALL CCTK_FNAME(CCTK_Reduce)
   if (*operation_handle < 0)
   {
     CCTK_Warn(3,__LINE__,__FILE__,"Cactus",
-	      "Invalid handle passed to CCTK_Reduce");
+              "Invalid handle passed to CCTK_Reduce");
     return;
   }
 
@@ -279,7 +279,7 @@ void CCTK_FCALL CCTK_FNAME(CCTK_Reduce)
   if (! function)
   {
     CCTK_Warn(3,__LINE__,__FILE__,"Cactus",
-	      "Reduction operation is not registered and cannot be called");
+              "Reduction operation is not registered and cannot be called");
     return;
   }
       
@@ -341,7 +341,7 @@ int CCTK_RegisterReductionArrayOperator
   {
     /* Reduction operator with this name already exists. */
     CCTK_Warn(1,__LINE__,__FILE__,"Cactus",
-	      "Array reduction operator with this name already exists");
+              "Array reduction operator with this name already exists");
     handle = -1;
   }
 
@@ -390,11 +390,12 @@ int CCTK_ReductionArrayHandle(const char *reduction)
 #endif
 
   if (handle < 0)
-    CCTK_Warn(1,__LINE__,__FILE__,"Cactus",
-	      "No handle found for this array reduction operator");
+  {
+    CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
+                "No handle found for array reduction operator '%s'", reduction);
+  }
 
   return handle;
-
 }  
 
 void CCTK_FCALL CCTK_FNAME(CCTK_ReductionArrayHandle)
@@ -495,7 +496,7 @@ int CCTK_ReduceArray(cGH *GH,
   if (operation_handle < 0)
   {
     CCTK_Warn(3,__LINE__,__FILE__,"Cactus",
-	      "Invalid handle passed to CCTK_ReduceArray");
+              "Invalid handle passed to CCTK_ReduceArray");
     return (-1);
   }
 
@@ -505,7 +506,7 @@ int CCTK_ReduceArray(cGH *GH,
   if (! function)
   {
     CCTK_Warn(3,__LINE__,__FILE__,"Cactus",
-	      "Array reduction operation is not registered "
+              "Array reduction operation is not registered "
                  "and cannot be called");
     return (-1);
   }
@@ -564,7 +565,7 @@ void CCTK_FCALL CCTK_FNAME(CCTK_ReduceArray)
   if (*operation_handle < 0)
   {
     CCTK_Warn (3,__LINE__,__FILE__,"Cactus",
-	       "Invalid handle passed to CCTK_ReduceArray");
+               "Invalid handle passed to CCTK_ReduceArray");
     return;
   }
 
@@ -574,7 +575,7 @@ void CCTK_FCALL CCTK_FNAME(CCTK_ReduceArray)
   if (! function)
   {
     CCTK_Warn (3,__LINE__,__FILE__,"Cactus", 
-	       "Array reduction operation is not registered "
+               "Array reduction operation is not registered "
                   "and cannot be called");
     return;
   }

@@ -3,7 +3,7 @@
    @date      Mon Jan 8 1999
    @author    Gabrielle Allen
    @desc
-              Functions to deal with IO registration
+              Functions to deal with I/O registration
    @enddesc
    @version   $Id$
  @@*/
@@ -25,7 +25,7 @@ static const char *rcsid = "$Header$";
 
 CCTK_FILEVERSION (IO_IOMethods_c)
 
-/* Local data holding info on IO methods.*/
+/* Local data holding info on I/O methods.*/
 static cHandledData *IOMethods = NULL;
 static int num_methods = 0;
 
@@ -55,7 +55,7 @@ int CCTKi_TriggerAction (void *GH, int variable);
 
 /************************************************************************
  *
- *  Registration routines functions provided by IO methods
+ *  Registration routines functions provided by I/O methods
  *
  ************************************************************************/
 
@@ -64,21 +64,22 @@ int CCTKi_TriggerAction (void *GH, int variable);
    @date       Wed Feb  3 13:33:09 1999
    @author     Tom Goodale
    @desc
-               Registers a new IO method.
+               Registers a new I/O method.
    @enddesc
    @calls      Util_GetHandle
                Util_NewHandle
 
    @var        name
-   @vdesc      The name of the method for IO
+   @vdesc      The name of the method for I/O
    @vtype      const char *
    @vio        in
    @endvar
 
    @returntype int
-   @returndesc -2  = memory allocation failed
-               -1  = method with this name already registered
-               i>0 = handle for method
+   @returndesc
+               positive handle for I/O method, or<BR>
+               -1 if method with this name already registered,<BR>
+               -2 if memory allocation failed
    @endreturndesc
 @@*/
 int CCTK_RegisterIOMethod(const char *name)
@@ -100,7 +101,7 @@ int CCTK_RegisterIOMethod(const char *name)
       /* Get a handle for it. */
       handle = Util_NewHandle(&IOMethods, name, new_method);
 
-      /* Initialise the IO method structure with dummy routines */
+      /* Initialise the I/O method structure with dummy routines */
       new_method->OutputGH      = DummyOutputGH;
       new_method->OutputVarAs   = DummyOutputVarAs;
       new_method->TriggerOutput = DummyTriggerOutput;
@@ -146,8 +147,9 @@ int CCTK_RegisterIOMethod(const char *name)
    @endvar
 
    @returntype int
-   @returndesc 1 = function successfully registered
-               0 = function did not register
+   @returndesc
+               0  if function was successfully registered, or<BR>
+               -1 if function did not register
    @endreturndesc
 @@*/
 int CCTK_RegisterIOMethodOutputGH(int handle, int (*func)(cGH *))
@@ -156,13 +158,13 @@ int CCTK_RegisterIOMethodOutputGH(int handle, int (*func)(cGH *))
 
 
   /* Get the method. */
-  method = Util_GetHandledData(IOMethods, handle);
-  if(method)
+  method = Util_GetHandledData (IOMethods, handle);
+  if (method)
   {
     method->OutputGH = func;
   }
 
-  return (method != NULL);
+  return (method ? 0 : -1);
 }
 
 
@@ -187,8 +189,9 @@ int CCTK_RegisterIOMethodOutputGH(int handle, int (*func)(cGH *))
    @endvar
 
    @returntype int
-   @returndesc 1 = function successfully registered
-               0 = function did not register
+   @returndesc
+                0 if function was successfully registered, or<BR>
+               -1 if function did not register
    @endreturndesc
 @@*/
 int CCTK_RegisterIOMethodOutputVarAs(int handle, int (*func)(cGH *,
@@ -198,13 +201,13 @@ int CCTK_RegisterIOMethodOutputVarAs(int handle, int (*func)(cGH *,
 
 
   /* Get the extension. */
-  method = Util_GetHandledData(IOMethods, handle);
+  method = Util_GetHandledData (IOMethods, handle);
   if (method)
   {
     method->OutputVarAs = func;
   }
 
-  return (method != NULL);
+  return (method ? 0 : -1);
 }
 
 
@@ -245,11 +248,12 @@ int CCTK_RegisterIOMethodTriggerOutput(int handle, int (*func)(cGH *, int))
    @endvar
 
    @returntype int
-   @returndesc 1 = function successfully registered
-               0 = function did not register
+   @returndesc
+                0 if function was successfully registered, or<BR>
+               -1 if function did not register
    @endreturndesc
 @@*/
-int CCTK_RegisterIOMethodTimeToOutput(int handle, int (*func)(cGH *, int))
+int CCTK_RegisterIOMethodTimeToOutput (int handle, int (*func)(cGH *, int))
 {
   struct IOMethod *method;
 
@@ -261,7 +265,7 @@ int CCTK_RegisterIOMethodTimeToOutput(int handle, int (*func)(cGH *, int))
     method->TimeToOutput = func;
   }
 
-  return (method != NULL);
+  return (method ? 0 : -1);
 }
 
 
@@ -332,7 +336,7 @@ static int DummyTriggerOutput(cGH *GH, int var)
 
 /************************************************************************
  *
- *  Default functions for overloadable functions provided by IO methods
+ *  Default functions for overloadable functions provided by I/O methods
  *
  ************************************************************************/
 
@@ -353,33 +357,41 @@ static int DummyTriggerOutput(cGH *GH, int var)
    @endvar
 
    @returntype int
-   @returndesc -1    = No IO methods were found
-               i>=0 = Last handle used for output (number of IO methods-1)
+   @returndesc
+               logical or'ed return codes of all I/O methods'
+               OutputGH() routines, or<BR>
+               -2 if no I/O methods were found
    @endreturndesc
 @@*/
 int CactusDefaultOutputGH (cGH *GH)
 {
-  int handle;
+  int handle, retval;
   struct IOMethod *method;
 
 
-  for (handle = 0;;handle++)
+  if (num_methods > 0)
   {
-    method = (struct IOMethod *)Util_GetHandledData(IOMethods, handle);
-    if (method)
+    retval = 0;
+    for (handle = 0; handle < num_methods; handle++)
     {
+      method = (struct IOMethod *) Util_GetHandledData (IOMethods, handle);
+      if (method)
+      {
 
 #ifdef DEBUG_IO
-    printf("Calling IO method with handle %d \n",handle);
+        printf("Calling I/O method with handle %d \n",handle);
 #endif
 
-      method->OutputGH(GH);
-    }
-    else
-    {
-      return handle--;
+        retval |= method->OutputGH (GH);
+      }
     }
   }
+  else
+  {
+    retval = -2;
+  }
+
+  return (retval);
 }
 
 
@@ -410,12 +422,13 @@ int CactusDefaultOutputGH (cGH *GH)
    @vdesc      Name variable should be output as
    @vtype      const char *alias
    @vio        in
-   @vcomment   Note that the IO method may not use this feature
+   @vcomment   Note that the I/O method may not use this feature
    @endvar
 
    @returntype int
-   @returndesc -1    = No such IO method found
-               0    = success
+   @returndesc
+               return code of I/O method's OutputVarAs() routine, or<BR>
+               -1 if no such I/O method was found
    @endreturndesc
 @@*/
 int CactusDefaultOutputVarAsByMethod (cGH *GH,
@@ -423,18 +436,21 @@ int CactusDefaultOutputVarAsByMethod (cGH *GH,
                                       const char *methodname,
                                       const char *alias)
 {
-  struct IOMethod *method = NULL;
+  int retval;
+  struct IOMethod *method;
 
 
   Util_GetHandle (IOMethods, methodname, (void **) &method);
-  if (! method)
+  if (method)
   {
-    return -1;
+    retval = method->OutputVarAs (GH, var, alias);
+  }
+  else
+  {
+    retval = -1;
   }
 
-  method->OutputVarAs(GH, var, alias);
-
-  return 0;
+  return (retval);
 }
 
 
@@ -453,13 +469,13 @@ void CCTK_FCALL CCTK_FNAME (CCTK_OutputVarAsByMethod)
 
 /************************************************************************
  *
- *  More IO functions which perhaps should be overloadable
+ *  More I/O functions which perhaps should be overloadable
  *
  ************************************************************************/
 
 
  /*@@
-   @routine    CactusOutputVarAs
+   @routine    CCTK_OutputVarAs
    @date       Sat March 6 1999
    @author     Gabrielle Allen
    @desc
@@ -483,37 +499,45 @@ void CCTK_FCALL CCTK_FNAME (CCTK_OutputVarAsByMethod)
    @vdesc      Name variable should be output as
    @vtype      const char *alias
    @vio        in
-   @vcomment   Note that the IO method may not use this feature
+   @vcomment   Note that the I/O method may not use this feature
    @endvar
 
    @returntype int
-   @returndesc -1    = No IO methods were found
-               i>=0 = Last handle used for output (number of IO methods-1)
+   @returndesc
+               logical or'ed return codes of all I/O methods'
+               OutputVarAs() routines, or<BR>
+               -2 if no I/O methods were found
    @endreturndesc
 @@*/
 int CCTK_OutputVarAs (cGH *GH, const char *var, const char *alias)
 {
-  int handle;
+  int handle, retval;
   struct IOMethod *method;
 
 
-  for (handle = 0;;handle++)
+  if (num_methods > 0)
   {
-    method = (struct IOMethod *)Util_GetHandledData(IOMethods, handle);
-    if (method)
+    retval = 0;
+    for (handle = 0; handle < num_methods; handle++)
     {
-      method->OutputVarAs(GH, var, alias);
-    }
-    else
-    {
-      return handle--;
+      method = (struct IOMethod *) Util_GetHandledData (IOMethods, handle);
+      if (method)
+      {
+        method->OutputVarAs(GH, var, alias);
+      }
     }
   }
+  else
+  {
+    retval = -2;
+  }
+
+  return (retval);
 }
 
 
  /*@@
-   @routine    CactusOutputVar
+   @routine    CCTK_OutputVar
    @date       Sat March 6 1999
    @author     Gabrielle Allen
    @desc
@@ -533,19 +557,23 @@ int CCTK_OutputVarAs (cGH *GH, const char *var, const char *alias)
    @endvar
 
    @returntype int
-   @returndesc 0    = always returns this
+   @returndesc
+               return code of @seeroutine CCTK_OutputVarAs
    @endreturndesc
 @@*/
 int CCTK_OutputVar (cGH *GH, const char *var)
 {
-  CCTK_OutputVarAs(GH, var, var);
+  int retval;
 
-  return 0;
+
+  retval = CCTK_OutputVarAs (GH, var, var);
+
+  return (retval);
 }
 
 
  /*@@
-   @routine    CactusOutputVarByMethod
+   @routine    CCTK_OutputVarByMethod
    @date       Sat March 6 1999
    @author     Gabrielle Allen
    @desc
@@ -571,14 +599,18 @@ int CCTK_OutputVar (cGH *GH, const char *var)
    @endvar
 
    @returntype int
-   @returndesc 0    = always returns this
+   @returndesc
+               return code of @seeroutine CCTK_OutputVarAsByMethod
    @endreturndesc
 @@*/
 int CCTK_OutputVarByMethod (cGH *GH, const char *var, const char *method)
 {
-  CCTK_OutputVarAsByMethod(GH, var, method, var);
+  int retval;
 
-  return 0;
+
+  retval = CCTK_OutputVarAsByMethod (GH, var, method, var);
+
+  return (retval);
 }
 
 void CCTK_FCALL CCTK_FNAME (CCTK_OutputVarByMethod)
@@ -603,7 +635,7 @@ void CCTK_FCALL CCTK_FNAME (CCTK_OutputVarByMethod)
    @author     Gabrielle Allen
    @desc
                Checks if a trigger registered for a routine is
-               due for output by any IO method.
+               due for output by any I/O method.
    @enddesc
    @calls      Util_GetHandledData
                IOMethod->TimeToOutput
@@ -620,8 +652,9 @@ void CCTK_FCALL CCTK_FNAME (CCTK_OutputVarByMethod)
    @endvar
 
    @returntype int
-   @returndesc 0    = Trigger says don't output me this iteration
-               1    = Trigger says output me this iteration
+   @returndesc
+               0 if trigger says don't output me this iteration, or<BR>
+               1 if trigger says output me this iteration
    @endreturndesc
 @@*/
 int CCTKi_TriggerSaysGo (cGH *GH, int variable)
@@ -630,7 +663,7 @@ int CCTKi_TriggerSaysGo (cGH *GH, int variable)
   struct IOMethod *method;
 
 
-  /* Loop over all registered IO methods */
+  /* Loop over all registered I/O methods */
   for (handle = 0; handle < num_methods; handle++)
   {
     /* Check if it is time to output this variable for this method */
@@ -650,7 +683,7 @@ int CCTKi_TriggerSaysGo (cGH *GH, int variable)
    @author     Gabrielle Allen
    @desc
                Essentially the same as CCTKi_TriggerSaysGo,
-               but now calls each IO method for which it is
+               but now calls each I/O method for which it is
                time to output the trigger
    @enddesc
    @calls      Util_GetHandledData
@@ -671,10 +704,11 @@ int CCTKi_TriggerSaysGo (cGH *GH, int variable)
    @endvar
 
    @returntype int
-   @returndesc 0    = This should never happen, since at least
-                      one IO method should have been found by
+   @returndesc
+               0    = This should never happen, since at least
+                      one I/O method should have been found by
                       CCTKi_TriggerSaysGo
-               >0   = Number of IO methods called for output for
+               >0   = Number of I/O methods called for output for
                       this variable
    @endreturndesc
 @@*/
@@ -688,7 +722,7 @@ int CCTKi_TriggerAction (void *GH, int variable)
   /* Count the number of methods used */
   nmethods = 0;
 
-  /* Loop over all registered IO methods */
+  /* Loop over all registered I/O methods */
   for (handle = 0; handle < num_methods; handle++)
   {
     /* Check if it is time to output this variable for this method */
