@@ -6,7 +6,7 @@
 #  @desc 
 #  Parses the the configuration files for thorns.
 #  @enddesc 
-#  @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.35 1999-12-16 07:50:21 allen Exp $
+#  @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.36 2000-01-21 10:13:09 allen Exp $
 #@@*/
 
 # Global parameter to track the number of errors from the CST
@@ -425,7 +425,8 @@ sub CreateDefineThornsHeader
 #  @author     Gabrielle Allen
 #  @desc 
 #  Creates the lines which should be placed in the definethisthorn.h
-#  which contains a #define CCTK_THORN <THORNNAME> for each thorn.
+#  which contains a #define CCTK_THORN <THORNNAME> and a 
+#  #define CCTK_ARRANGEMENT <ARRANGEMENTNAME> for each thorn.
 #  @enddesc 
 #  @calls     
 #  @calledby   
@@ -453,8 +454,8 @@ sub CreateDefineThisThornHeader
     $header .= "#ifdef THORN_IS_$thorn\n";
     $header .= "#define CCTK_THORN   $3\n"; 
     $header .= "#define CCTK_THORNSTRING \"$3\"\n";
-    $header .= "#define CCTK_PACKAGE $2\n";
-    $header .= "#define CCTK_PACKAGESTRING \"$2\"\n";
+    $header .= "#define CCTK_ARRANGEMENT $2\n";
+    $header .= "#define CCTK_ARRANGEMENTSTRING \"$2\"\n";
     $header .= "#endif\n\n";
   }
 
