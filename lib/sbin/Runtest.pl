@@ -9,10 +9,17 @@ $sep = "/";
 $prompt = shift;
 $config = shift;;
 
+$prompt =~ tr/A-Z/a-z/;
+
 $tolerance = 13;
 
-$ansinormal  = "\033[0m";
-$ansibold    =  "\033[1m";
+$ansinormal="";
+$ansibold="";
+
+if ($prompt ne "no") {
+   $ansinormal  = "\033[0m";
+   $ansibold    =  "\033[1m";
+}
 
 # Work out where the config directory is
 if($ENV{"CONFIGS_DIR"})
