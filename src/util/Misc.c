@@ -143,10 +143,28 @@ int CCTK_FCALL CCTK_FNAME(CCTK_Equals)
      (const char **arg1,ONE_FORTSTRING_ARG)
 {
   int retval;
-  ONE_FORTSTRING_CREATE(arg2)
-  retval = CCTK_Equals(*arg1,arg2);
-  free(arg2);
-  return(retval);
+  const char *string1 = *arg1;
+  ONE_FORTSTRING_PTR(string2);
+  ONE_FORTSTRING_LEN(len2);
+
+  retval = 1;
+
+  /* Check that string1 isn't null */
+  if (!string1)
+  {
+    retval = 0;
+    CCTK_VWarn(0,__LINE__,__FILE__,"Cactus",
+               "CCTK_Equals: First string null (2nd is %s)",
+               Util_NullTerminateString(string2,len2));
+  }
+  else
+  {
+    if (Util_StrMemCmpi(string1,string2,len2))
+    {
+      retval = 0;
+    }
+  }
+  return retval;
 }
 
 
@@ -1201,29 +1219,52 @@ void CCTK_FCALL CCTK_FNAME(CCTK_PrintString)
    @vio        out
    @endvar
 @@*/
+int CCTK_FortranString (const char *c_string,
+                        char *fortran_string,
+                        size_t fortran_length)
+{
+  int nchars;
+  size_t c_strlen;
+
+
+  nchars = c_strlen = strlen (c_string);
+  if (c_strlen > fortran_length)
+  {
+    CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
+                "CCTK_FortranString: Fortran string buffer is too short to "
+                "hold C string '%s, string will be truncated", c_string);
+    c_strlen = fortran_length;
+  }
+
+  /* copy up to the size of the fortran string
+     and pad remaining chars in the fortran string with spaces */
+  memcpy (fortran_string, c_string, c_strlen);
+  memset (fortran_string + c_strlen, ' ', fortran_length - c_strlen);
+
+  return nchars;
+}
+
 void CCTK_FCALL CCTK_FNAME (CCTK_FortranString)
                            (CCTK_INT *nchars,
                             const char *const *c_string,
                             ONE_FORTSTRING_ARG)
 {
   size_t c_strlen;
-  ONE_FORTSTRING_CREATE (fstring)
   ONE_FORTSTRING_PTR (fortran_string)
+  ONE_FORTSTRING_LEN (fortran_length)
 
 
   *nchars = c_strlen = strlen (*c_string);
-  if (c_strlen > (size_t) cctk_strlen1)
+  if (c_strlen > fortran_length)
   {
     CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
-                "CCTK_FortranString: fortran string buffer is too short to "
-                "hold C string '%s, string will be truncated", *c_string);
-    c_strlen = (size_t) cctk_strlen1;
+                "CCTK_FortranString: Fortran string buffer is too short to "
+                "hold C string '%s', string will be truncated", *c_string);
+    c_strlen = fortran_length;
   }
 
   /* copy up to the size of the fortran string
      and pad remaining chars in the fortran string with spaces */
   memcpy (fortran_string, *c_string, c_strlen);
-  memset (fortran_string + c_strlen, ' ', (size_t) cctk_strlen1 - c_strlen);
-
-  free (fstring);
+  memset (fortran_string + c_strlen, ' ', fortran_length - c_strlen);
 }

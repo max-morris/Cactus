@@ -20,6 +20,9 @@ extern "C" {
 int Util_SplitString(char **before, char **after, const char *string, const char *sep);
 
 int CCTK_Equals(const char *string1, const char *string2);
+int CCTK_FortranString (const char *c_string,
+                        char *fortran_string,
+                        size_t fortran_length);
 
 char *Util_NullTerminateString(const char *, unsigned int);
 
