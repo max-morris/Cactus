@@ -16,19 +16,31 @@ $config = shift;
 # Set up RunTest configuration
 $config_data = &Configure($config,$home_dir,$prompt);
 
+%runconfig = &InitialiseRunData();
+
+# ----------------------------------------------------
+
+# Sort out the static test data
+
 # Initialise testdata database
 $testdata = &InitialiseTestData();
 
-%runconfig = &InitialiseRunData();
-
 # Find test parameter files
-$testdata = &FindAllTests($config_data);
+$testdata = &FindTestParameterFiles($testdata,$config_data);
+
+# Parse test config files
+$testdata = &ParseTestConfigs($testdata,$config_data);
+
+# Find the Archive Datafiles
+$testdata = &FindTestArchiveFiles($testdata);
 
 # Parse test parameter files
 $testdata = &ParseAllParameterFiles($testdata);
 
 # Print database
 #&PrintDataBase($testdata);
+
+# ----------------------------------------------------
 
 $haverunall = 0;
 
