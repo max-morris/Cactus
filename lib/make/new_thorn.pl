@@ -285,6 +285,12 @@ sub TestName
     $valid = 0;
   }
 
+  if ($thorn && length($name)>27)
+  {
+    print STDERR "Thorn names must be 27 characters or less!\n\n";
+    $valid = 0;
+  }
+
   if ($thorn && $name eq "doc")
   {
     print STDERR "Thorn name doc is not allowed!\n\n";
