@@ -74,8 +74,8 @@ int CCTK_TimerI(int this_timer, cTimerData *info);
 cTimerData *CCTK_TimerCreateData(void);
 int CCTK_TimerDestroyData(cTimerData *info);
 
-int CCTK_DisplayTimerData (const char *name);
-int CCTK_DisplayTimerDataI(int this_timer);
+int CCTK_TimerPrintData (const char *name);
+int CCTK_TimerPrintDataI(int this_timer);
 
 #ifdef __cplusplus
 }
