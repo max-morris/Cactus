@@ -27,9 +27,20 @@ typedef struct
 extern "C" {
 #endif
 
+void CCTK_DumpGroupInfo(void); 
+
+int     CCTK_StaggeredGrids(void); 
+int     CCTK_StaggerCodeName(const char *stype); 
+int     CCTK_DirStaggerCodeVal(int dir, int staggercode); 
+int     CCTK_DirStaggerCodeName(int dir, const char *stype); 
+int     CCTKi_ParseStaggerString(int dim,  
+				 const char *imp, 
+				 const char *gname,  
+				 const char *stype); 
+
 int     CCTK_DecomposeName(const char *fullname, 
-			      char **implementation, 
-			      char **name);
+			   char **implementation, 
+			   char **name);
 
 int     CCTK_FirstVarIndex(const char *group);
 int     CCTK_FirstVarIndexI(int group);
