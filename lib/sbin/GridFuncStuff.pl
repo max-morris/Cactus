@@ -52,7 +52,6 @@ sub CreateVariableBindings
     @data = &CreateThornArgumentHeaderFile($thorn, $rhinterface_db);
 
     $dataout = "";
-#    open(OUT, ">$thorn"."_arguments.h");
 
     foreach $line (@data)
     {
@@ -60,11 +59,8 @@ sub CreateVariableBindings
     }
 
     &WriteFile("$thorn\_arguments.h",\$dataout);
-#    close OUT;
   }
 
-#  open(OUT, ">cctk_arguments.h");
-    
   $dataout = "";
   foreach $thorn (split(" ",$rhinterface_db->{"THORNS"}))
   {
@@ -74,11 +70,11 @@ sub CreateVariableBindings
     $dataout .= "#define DECLARE_CCTK_FARGUMENTS DECLARE_\U$thorn"."_FARGUMENTS\n";
     $dataout .= "#define CCTK_CARGUMENTS \U$thorn"."_CARGUMENTS\n";
     $dataout .= "#define DECLARE_CCTK_CARGUMENTS DECLARE_\U$thorn"."_CARGUMENTS\n";
+    $dataout .= "#define USE_CCTK_CARGUMENTS USE_\U$thorn"."_CARGUMENTS\n";
     $dataout .= "#endif\n\n";
   }
 
   &WriteFile("cctk_arguments.h",\$dataout);
-#  close OUT;
       
   chdir "..";
 
@@ -87,8 +83,6 @@ sub CreateVariableBindings
     mkdir("Variables", 0755) || die "Unable to create Variables directory";
   }
   chdir "Variables";
-
-#  open (OUT, ">BindingsVariables.c") || die "Cannot open BindingsVariables.c";
 
   $filelist = "BindingsVariables.c";
 
@@ -112,18 +106,11 @@ sub CreateVariableBindings
 
   &WriteFile("BindingsVariables.c",\$dataout);
 
-#  close OUT;
-
   foreach $thorn (split(" ",$rhinterface_db->{"THORNS"}))
   {
     $dataout = "";
-
-#    open(OUT, ">$thorn.c") || die "Cannot create $thorn.c";
-  
     $dataout .= "\#include \"cctki_Groups.h\"\n";
     $dataout .= "\#include \"cctk_FortranWrappers.h\"\n";
-#    print OUT "#include \"cctk_Flesh.h\"\n";
-#    print OUT "#include \"StoreVariableData.h\"\n\n";
     $dataout .= "int CCTKi_BindingsFortranWrapper$thorn(void *GH, void *fpointer);";
 
     $dataout .= "int CactusBindingsVariables_$thorn"."_Initialise(void)\n{\n";
@@ -141,14 +128,12 @@ sub CreateVariableBindings
     $dataout .= "  return 0;\n};\n";
  
     &WriteFile("$thorn.c",\$dataout);
-#    close OUT;
 
     $filelist .= " $thorn.c";
   }
 
   foreach $thorn (split(" ",$rhinterface_db->{"THORNS"}))
   {
-#    open(OUT, ">$thorn\_FortranWrapper.c") || die "Cannot create $thorn\_FortranWrapper.c";
     $dataout = "";
 
     @data = &CreateThornFortranWrapper($thorn);
@@ -159,14 +144,11 @@ sub CreateVariableBindings
     }
 
     &WriteFile("$thorn\_FortranWrapper.c",\$dataout);
-#    close OUT;
     $filelist .= " $thorn\_FortranWrapper.c";
   }
 
-#  open (OUT, ">make.code.defn") || die "Cannot open make.code.defn";
   $dataout = "SRCS = $filelist\n";
   &WriteFile("make.code.defn",\$dataout);
-#  close OUT;
 
   chdir $start_dir;
 }
@@ -501,6 +483,68 @@ sub CreateCArgumentDeclarations
 	  $message = "Unknown argument type $1";
 	  &CST_error(0,$message,__LINE__,__FILE__);
 	}
+      }
+    }
+  }
+
+  return @declarations;
+    
+}
+
+#/*@@
+#  @routine    CreateCArgumentUses
+#  @date       Nov 5 1999
+#  @author     Gabrielle Allen
+#  @desc 
+#  Creates the requisite argument list declarations for C.
+#  @enddesc 
+#  @calls     
+#  @calledby   
+#  @history 
+#
+#  @endhistory 
+#
+#@@*/
+
+sub CreateCArgumentUses
+{
+  my(%arguments) = @_;
+  my($argument);
+  my(@declarations) = ();
+  my($suffix);
+  my($imp);
+
+  
+  # Now deal with the rest of the arguments
+  foreach $argument (sort keys %arguments)
+  {
+    $suffix = "";
+    if($arguments{$argument} !~ m:STORAGESIZE:)
+    {
+      $arguments{$argument} =~ m\([^ ]*) ?(.*)?!(.*)::(.*)!(.*)\;
+
+      $ntimelevels = $5;
+
+      for($level = $ntimelevels; $level > 0; $level--)
+      {
+	# Modify the name for the time level 
+	if($ntimelevels == 1)
+	{
+	  $suffix = "";
+	}
+	elsif($level == $ntimelevels)
+	{
+	  $suffix = "_n";
+	}
+	elsif($level == $ntimelevels-1)
+	{
+	  $suffix = "";
+	}
+	else
+	{
+	  $suffix .= "_p";
+	}
+
       }
     }
   }
@@ -972,6 +1016,19 @@ sub CreateThornArgumentHeaderFile
 
     push(@returndata, ("",""));
 
+    # Create code to use each C argument variable
+
+    @data = &CreateCArgumentUses(%data);
+   
+    push(@returndata, "#define \UUSE_$thorn"."_$block"."_CARGUMENTS \\");
+
+    foreach $line (@data)
+    {
+      push(@returndata, "$line \\");
+    }
+
+    push(@returndata, ("",""));
+
     # Create the C argument variable number statics
 
     push(@returndata, "#define \UDECLARE_$thorn"."_$block"."_C2F \\");
@@ -1069,6 +1126,19 @@ sub CreateThornArgumentHeaderFile
     if($hasvars{$block})
     {
       push(@returndata, "DECLARE_\U$thorn"."_$block"."_CARGUMENTS \\");
+    }
+  }
+
+  push(@returndata, ("",""));
+
+  # Do the C declarations
+  push(@returndata, "#define \UUSE_$thorn"."_CARGUMENTS _USE_CCTK_CARGUMENTS \\");
+
+  foreach $block ("PRIVATE", "PROTECTED", "PUBLIC")
+  {
+    if($hasvars{$block})
+    {
+      push(@returndata, "USE_\U$thorn"."_$block"."_CARGUMENTS \\");
     }
   }
 
