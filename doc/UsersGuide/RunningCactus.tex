@@ -573,11 +573,18 @@ an additional variable must be set
 
 \item[{\tt LAM}]
 Use {\tt LAM} (Local Area Multicomputer, {\tt http://www.mpi.nd.edu/lam/}). This is 
-controlled by the variable 
+controlled by the variables 
   \begin{Lentry}
   \item[{\tt LAM\_DIR} *] directory in which {\tt LAM} is installed. This 
      will be searched for, in a few provided places,  if not given.
   \end{Lentry}
+if the {\tt LAM} installation splits libraries and include files into different
+directories, instead of setting {\tt LAM\_DIR} set the two variables
+  \begin{Lentry}
+  \item[{\tt LAM\_LIB\_DIR} *] directory in which {\tt LAM} libraries are installed. 
+  \item[{\tt LAM\_INC\_DIR} *] directory in which {\tt LAM} include files are installed. 
+  \end{Lentry}
+
 
 \item[{\tt WMPI}] 
 Use WMPI (Win32 Message Passing Interface, {\tt http://dsg.dei.uc.pt/w32mpi/intro.html}). This is controlled by the variable
