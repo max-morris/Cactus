@@ -49,11 +49,11 @@ if (! -d "$configs_dir" && ! -l "$configs_dir")
   print "Completely new cactus build.  Creating config database\n";
 
   mkdir("$configs_dir", 0755) ||
-    die "Internal error - could't create '$configs_dir'\n";
+    die "Internal error - couldn't create '$configs_dir'\n";
 }
 
 chdir "$configs_dir" ||
-  die "Internal error - could't enter '$configs_dir'\n";
+  die "Internal error - couldn't enter '$configs_dir'\n";
 
 # The specified configuration doesn't exist
 if (! -d "$config" && ! -l "$config")
@@ -62,7 +62,7 @@ if (! -d "$config" && ! -l "$config")
 
   for $dir ("$config", "$config/build", "$config/lib", "$config/config-data")
   {
-    mkdir("$dir",0755) || die "Internal error - could't create $dir";
+    mkdir("$dir",0755) || die "Internal error - couldn't create $dir";
   }
 }
 else
@@ -76,7 +76,7 @@ else
 $configure_command = &DetermineConfigureCommand($configure);
 
 chdir "$config/config-data" ||
-  die "Internal error - could't enter '$configs_dir/$config/config-data'\n";
+  die "Internal error - couldn't enter '$configs_dir/$config/config-data'\n";
 
 # remove cached configure options
 unlink 'config.cache' if (-f 'config.cache');
