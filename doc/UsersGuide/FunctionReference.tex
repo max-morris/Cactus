@@ -2577,6 +2577,23 @@ A negative return code indicates an error condition:
 \end{CCTKFunc} 
 
 
+% ActiveThorns.c
+\begin{CCTKFunc}{CCTK\_IsThornActive}{Reports whether a thorn was activated in a parameter file}
+\label{CCTK-IsThornActive}
+\function{int}{integer}{istat}
+\argument{const char *}{character*(*)}{thornname}
+\showargs
+\begin{params}
+\parameter{istat}{the return status}
+\parameter{thorname}{the name of the thorn to check}
+\end{params}
+\begin{discussion}
+This function returns a non-zero value if the thorn given by {\it thornname}
+was activated in a parameter file, and zero otherwise.
+\end{discussion}
+\end{CCTKFunc}
+
+
 %%%%%
 % JJJ
 %%%%%
