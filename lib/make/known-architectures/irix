@@ -6,14 +6,14 @@
 #    @desc 
 #   
 #    @enddesc 
-#    @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/irix,v 1.1 1999-02-25 18:42:12 goodale Exp $
+#    @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/irix,v 1.2 1999-03-17 17:13:37 goodale Exp $
 #  @@*/
 
-IRIX_CPU="hinv | grep CPU | sed 's/^[^R]*R\([01-9]*\).*$/\1/'"
+IRIX_CPU="`hinv | grep CPU | sed 's/^[^R]*R\([01-9]*\).*$/\1/`"
 
 case "$IRIX_CPU:$CC" in
     10000:gcc)
-    CFLAGS="$CFLAGS -mips4" 
+    CFLAGS="$CFLAGS -mips3" 
     ;;
     10000:cc)
     CFLAGS="$CFLAGS -O3 -64 -mips4 -r10000"
@@ -23,9 +23,9 @@ case "$IRIX_CPU:$CC" in
     ;;
 esac
 
-case "$IRIX_CPU:$CC" in
+case "$IRIX_CPU:$CXX" in
     10000:c++)
-    CXXFLAGS="$CXXFLAGS -mips4" 
+    CXXFLAGS="$CXXFLAGS -mips3" 
     ;;
     *)
     ;;
@@ -45,7 +45,8 @@ esac
 
 case "$IRIX_CPU:$LD" in
     10000:c++)
-    LDFLAGS="$LDFLAGS -mips4"
+    LDFLAGS="$LDFLAGS -mips3"
+    ;;
     10000:CC)
     LDFLAGS="$LDFLAGS -64 -Wl,\"-woff 84\",\"-woff 85\""
     ;;
