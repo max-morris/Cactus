@@ -1230,7 +1230,7 @@ the header file {\tt cctk.h} using the line
 \end{verbatim}
 (Fortran programmers should not be put of by this being a C style
 header file, most Cactus files are run through a C preprocessor
-before compilation)
+before compilation).
 
 \subsubsection{Variables}
 
@@ -1280,10 +1280,27 @@ using them with the macro {\tt DECLARE\_CCTK\_PARAMETERS}.
 
 In Fortran, special care should be taken with string valued parameters.
 These parameters are passed as C pointers, and can not be treated as
-normal Fortran strings. To compare a string valued parameter and Fortran
+normal Fortran strings. 
+To compare a string valued parameter and Fortran
 string use the macro {\tt CCTK\_EQUALS()} or the function {\tt CCTK\_Equals()}.
 To print the value of a string valued parameter to screen, use the subroutine
-{\tt CCTK\_PrintString()}.
+{\tt CCTK\_PrintString()}. A further function {\tt CCTK\_FortranString} 
+provides a mechanism for converting a string parameter to a Fortran string. 
+For example, if {\tt operator} is a Cactus string parameter holding the name of a reduction operator whose handle you need to find, you cannot pass it 
+directly into the subroutine {\tt CCTK\_ReductionHandle} which is expecting 
+a Fortran string. Instead, the following is needed:
+{\tt
+\begin{verbatim}
+      character*200 fortran_operator
+      CCTK_INT      fortran_operator_len
+      integer       handle
+
+      call CCTK_FortranString(fortran_operator_len,operator,fortran_operator)
+      call CCTK_ReductionHandle(handle,fortran_operator(1:fortran_operator_len))
+\end{verbatim}
+}
+
+
 
 \subsubsection{Fortran Example}
 
