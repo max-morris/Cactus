@@ -30,7 +30,7 @@ that the thorn configuration files are written in.
 \item[{\tt CST}] This stands for Cactus Specification Tool, which is
 the perl scripts which parse the thorns' configuration files (those
 that have a \texttt{.ccl} extension).
-\item[{\tt CVS}] The {\em "Concurrent Versioning System"} is the
+\item[{\tt CVS}] The {\em ``Concurrent Versioning System''} is the
   favoured distribution system for Cactus and can be
   downloaded from your favorite GNU site.
 \item[{\tt driver}] A thorn which creates and handles grid hierachies.
@@ -51,7 +51,7 @@ is what you get if you check out {\tt Cactus} from our CVS repository.
   the same object class should not be trusted to comprise a consecutive
   sequence of integer values.
 \item[{\tt HDF5}] Hierarchical Data Format version 5.
-\item[{\tt implementation}]
+\item[{\tt implementation}] See Section \ref{sec:im}.
 \item[{\tt inherit}]
 \item[{\tt interpolation}]
 \item[{\tt MPI}]
@@ -146,8 +146,8 @@ The thorn's variables are defined by:
    <variable_name> ]
 } "<group_description>"]
 \end{verbatim}}
-(The options following <group\_name> must all appear on one line.)
-
+(The options {\t TYPE}, {\t DIM}, etc. following {\t <group\_name>} must all appear on one line.)
+%
 \begin{itemize}
 \item{} {\t access} defines which thorns can use the following
         groups of variables. {\t access} can be either
@@ -239,7 +239,7 @@ protection or scoping class. {\tt access} can take the values:
 \begin{itemize}
 \item{} Allowed {\t parameter\_type}s are
   \begin{Lentry}
-     \item[{\t INTEGER}] The specification of {\t parameter\_value}s takes
+     \item[{\t INT}] The specification of {\t parameter\_value}s takes
      the form of any number of comma-separated blocks of the form:
 {\t
 \begin{verbatim}
@@ -292,7 +292,7 @@ The schedule configuration files consists of
 \item{} Conditional statements
 \end{itemize}
 
-{\it assignments statements} have the form:
+{\it Assignment statements} have the form:
 {\t
 \begin{verbatim}
 [STORAGE: <group>, <group>]
