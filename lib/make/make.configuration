@@ -127,10 +127,8 @@ $(CCTK_LIBDIR)/$(LIBNAME_PREFIX)%$(LIBNAME_SUFFIX): update
 	if [ ! -d $(SCRATCH_BUILD) ] ; \
 	then \
 		msg=`$(MKDIR) $(MKDIRFLAGS) $(SCRATCH_BUILD) 2>&1` ; \
-		if [ -d $(SCRATCH_BUILD) ] ; \
+		if [ ! -d $(SCRATCH_BUILD) ] ; \
 		then \
-			exit 0 ; \
-		else \
 			echo "$$msg" ; \
 			exit 1 ; \
 		fi ; \
@@ -138,10 +136,8 @@ $(CCTK_LIBDIR)/$(LIBNAME_PREFIX)%$(LIBNAME_SUFFIX): update
 	if [ ! -d $(BUILD_DIR) ] ; \
 	then \
 		msg=`$(MKDIR) $(MKDIRFLAGS) $(BUILD_DIR) 2>&1` ; \
-		if [ -d $(BUILD_DIR) ] ; \
+		if [ ! -d $(BUILD_DIR) ] ; \
 		then \
-			exit 0 ; \
-		else \
 			echo "$$msg" ; \
 			exit 1 ; \
 		fi ; \
@@ -156,7 +152,7 @@ $(CCTK_LIBDIR)/$(LIBNAME_PREFIX)%$(LIBNAME_SUFFIX): update
 		else \
 			src_dir=$(PACKAGE_DIR)/$(@:$(CCTK_LIBDIR)/$(LIBNAME_PREFIX)%$(LIBNAME_SUFFIX)=$(filter %/$(@:$(CCTK_LIBDIR)/$(LIBNAME_PREFIX)%$(LIBNAME_SUFFIX)=%), $(THORNS)))/src ; \
 		fi ; \
-	fi ;\
+	fi ; \
 	if [ ! -d $(BUILD_DIR)/$$thorn_name ]; \
 	then \
 		$(MKDIR) $(MKDIRFLAGS) $(BUILD_DIR)/$$thorn_name ; \
