@@ -253,7 +253,7 @@ sub parse_param_ccl
     {
       if($line =~ m:\{:)
       {
-	print STDERR "...Skipping block with missing keyword....\n";
+	print STDERR "...Skipping parameter block with missing keyword....\n";
 	$line_number++ until ($data[$line_number] =~ m:\}:);
       }
       else
