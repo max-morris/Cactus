@@ -103,8 +103,9 @@ sub CreateImplementationBindings
     push(@data, "    0,");
     push(@data, "  };\n");
 
+    # Just pass the ones this thorn has declared itself to be friends with.
     push(@data, "  const char *friends[]=\n  {");
-    foreach $friend (split(" ",$rhinterface_db->{"IMPLEMENTATION \U$myimp\E FRIENDS"}))
+    foreach $friend (split(" ",$rhinterface_db->{"\U$thorn\E FRIEND"}))
     {
       push(@data, "    \"$friend\",");
     }
