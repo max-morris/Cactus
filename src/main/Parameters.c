@@ -1544,14 +1544,30 @@ static int ParameterSetInteger(t_param *param, const char *value)
   return retval;
 }
 
+
+
 static int ParameterSetReal(t_param *param, const char *value)
 {
-  int retval;
+  int retval,p;
   t_range *range;
   double inval;
   CCTK_REAL *val;
+  char temp[1001];
 
-  inval = atof(value);
+  /*  Convert the value string to a double. Allow various formats.*/
+  strncpy(temp, value, 1000);
+  for (p=0;p<strlen(temp);p++) 
+  {
+    if (temp[p] == 'E' || 
+	temp[p] == 'd' || 
+	temp[p] == 'D') 
+    {
+      temp[p] = 'e';
+      break;
+    }
+  }
+  inval = atof(temp);
+
   val = (CCTK_REAL *)param->data;
   retval = -1;
   for(range = param->props->range; range ; range = range->next)
