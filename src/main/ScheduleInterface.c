@@ -258,7 +258,7 @@ int CCTK_ScheduleGroup(const char *name,
 
   va_end(ap);
 
-  if(attribute && modifier)
+  if(attribute && (modifier || (n_before == 0 && n_after == 0 && n_while == 0)))
   {
     retcode = CCTKi_ScheduleGroup(where, name, modifier, (void *)attribute);
 #ifdef DEBUG
