@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.95 2000-07-19 09:48:24 goodale Exp $
+#   @version $Id: Makefile,v 1.96 2000-07-22 17:22:28 goodale Exp $
 # @@*/
 
 ##################################################################################
@@ -574,7 +574,7 @@ ifneq ($strip($(CONFIGURATIONS)),)
 
 $(addsuffix -config,$(CONFIGURATIONS)):
 	echo $(DIVIDER)
-	if test -z "$(THORNLIST)" || (test -n "$(THORNLIST)" && test -e "$(THORNLIST_DIR)/$(THORNLIST)") ; \
+	if test -z "$(THORNLIST)" || (test -n "$(THORNLIST)" && test -r "$(THORNLIST_DIR)/$(THORNLIST)") ; \
 	then \
 	  if ($(SETUP_ENV) $(PERL) -s $(SETUP) -reconfig=1 $(SETUP_OPTIONS) $(@:%-config=%)) ; then : ; else \
             echo "" ;                                                      \
@@ -609,7 +609,7 @@ endif
 	  echo Setup cancelled ;     \
 	else \
 	  echo Setting up new configuration $(@:%-config=%); \
-	  if test -z "$(THORNLIST)" || (test -n "$(THORNLIST)" && test -e "$(THORNLIST_DIR)/$(THORNLIST)") ; \
+	  if test -z "$(THORNLIST)" || (test -n "$(THORNLIST)" && test -r "$(THORNLIST_DIR)/$(THORNLIST)") ; \
 	  then \
 	    if ($(SETUP_ENV) $(PERL) -s $(SETUP) $(SETUP_OPTIONS) $(@:%-config=%)) ; then : ; else \
               echo "" ;                                                      \
@@ -833,7 +833,7 @@ downsize:
 	  echo Setup cancelled ; \
 	else \
 	  echo Setting up new configuration $@ ; \
-	  if test -z "$(THORNLIST)" || (test -n "$(THORNLIST)" && test -e "$(THORNLIST_DIR)/$(THORNLIST)") ; \
+	  if test -z "$(THORNLIST)" || (test -n "$(THORNLIST)" && test -r "$(THORNLIST_DIR)/$(THORNLIST)") ; \
 	  then \
 	  if ($(SETUP_ENV) $(PERL) -s $(SETUP) $(SETUP_OPTIONS) $@) ; then : ; else\
             echo "" ;                                                      \
