@@ -243,9 +243,11 @@ sub set_parameter_default
   {
     # Logicals need to be done specially.
 
-    # Strip out any quote marks.
+    # Strip out any quote marks, and spaces at start and end.
     $temp_default = $default;
     $temp_default =~ s:\"::g;
+    $temp_default =~ s:\s*$:: ;
+    $temp_default =~ s:^\s*:: ;
 
     $line = "  CCTK_SetLogical(\&($structure.$parameter),\"$temp_default\");";
     push(@lines, $line);
