@@ -1068,8 +1068,7 @@ sub parse_interface_ccl
       }
       else
       {
-        $line =~ /^(.*)\n+$/;
-        &CST_error(0,"Unknown line in interface.ccl for thorn $arrangement/$thorn\n\"$line\"",'',__LINE__,__FILE__);
+        &CST_error(0,"Unknown line in interface.ccl for thorn $arrangement/$thorn\n\"$line\"",'',__LINE__,__FILE__) if ($line);
       }
     }
   }
