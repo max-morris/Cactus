@@ -2320,7 +2320,7 @@ static void CCTKi_SchedulePrintTimerInfo(cTimerData *timer,
   /* print the actual timer values */
   for (i = 0; i < timer->n_vals; i++)
   {
-    j = strlen (timer->vals[i].heading);
+    j = strlen (timer->vals[i].heading) + strlen (timer->vals[i].units) + 3;
 
     switch (timer->vals[i].type)
     {
@@ -2370,7 +2370,7 @@ static void CCTKi_SchedulePrintTimerHeaders (cTimerData *timer)
   printf ("%-16.16s| %-40.40s", "Thorn", "Scheduled routine in time bin");
   for (i = 0; i < timer->n_vals; i++)
   {
-    printf ("| %s ", timer->vals[i].heading);
+    printf ("| %s [%s] ", timer->vals[i].heading, timer->vals[i].units);
   }
   putchar ('\n');
 
@@ -2386,7 +2386,7 @@ static void PrintDelimiterLine (char delimiter, const cTimerData *timer)
   len = 58;
   for (i = 0; i < timer->n_vals; i++)
   {
-    len += strlen (timer->vals[i].heading) + 3;
+    len += strlen (timer->vals[i].heading) + strlen (timer->vals[i].units) + 6;
   }
   for (i = 0; i < len; i++)
   {

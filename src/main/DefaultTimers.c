@@ -128,7 +128,7 @@ typedef struct
   struct timeval last;
 } t_GetTimeOfDayTimer;
 
-static char *GetTimeOfDayHeading = "Data from gettimeofday call";
+static char *GetTimeOfDayHeading = "gettimeofday";
 static char *GetTimeOfDayUnits   = "secs";
 
  /*@@
@@ -490,7 +490,7 @@ typedef struct
   struct timeval last;
 } t_GetrUsageTimer;
 
-static char *GetrUsageHeading = "Data from getrusage call";
+static char *GetrUsageHeading = "getrusage";
 static char *GetrUsageUnits   = "secs";
 
  /*@@
