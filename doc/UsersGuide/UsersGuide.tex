@@ -216,7 +216,7 @@
 %
 % Alternate environments/macros to define function descriptions
 % (can/should be used to replace CCTKFunc environment)
-% Jonathan Thornburg, 10 Nov 2001
+% Jonathan Thornburg, 10 Nov 2001, revised 26 Mar 2002 & 3 Apr 2002
 %
 % Usage:
 %	\begin{FunctionDescription}{name}
@@ -349,6 +349,22 @@
 		     }%%%
 	       }%%%
 	       {\end{list}}%%%
+\newenvironment{FunctionDescriptionWideEntry}
+	       {%%%
+	       \begin{list}%%%
+		     {}%%%
+		     {%%%
+		     \renewcommand{\makelabel}{\Lentrylabel}%%%
+		     \setlength{\topsep}{0ex}%%%
+		     \setlength{\partopsep}{0ex}%%%
+		     \setlength{\itemsep}{0ex}%%%
+		     \setlength{\labelwidth}{16em}%%%
+		     \setlength{\leftmargin}{\labelwidth+\labelsep}%%%
+		     \setlength{\itemindent}{0em}%%%
+		     \setlength{\listparindent}{0em}%%%
+		     }%%%
+	       }%%%
+	       {\end{list}}%%%
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
@@ -388,17 +404,17 @@
 \newenvironment{SeeAlsoSection}
 	       {%%%
 	       \par\noindent{\bf See Also}
-               \begin{FunctionDescriptionEntry}
+               \begin{FunctionDescriptionWideEntry}
 	       }%%%
-               {\end{FunctionDescriptionEntry}}
+               {\end{FunctionDescriptionWideEntry}}
 \newenvironment{SeeAlso}[1]{\item[\tt ##1]}{}
 %
 \newenvironment{ErrorSection}
 	       {%%%
 	       \par\noindent{\bf Errors}
-               \begin{FunctionDescriptionEntry}
+               \begin{FunctionDescriptionWideEntry}
 	       }%%%
-               {\end{FunctionDescriptionEntry}}
+               {\end{FunctionDescriptionWideEntry}}
 \newenvironment{Error}[1]{\item[\tt ##1]}{}
 %
 \newenvironment{ExampleSection}
