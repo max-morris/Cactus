@@ -916,7 +916,7 @@ sub ScheduleSelectVars
 sub ScheduleValidateTimeLevels
 {
   my($thorn, $implementation, $groups,$timelevels_list, $rhinterface_db) = @_;
-  
+
   my $i;
 
   my $return_code;
@@ -971,18 +971,22 @@ sub ScheduleValidateTimeLevels
                  ,"",__LINE__,__FILE__);
       $return_code++;
     }      
-    elsif($timelevels  <= $allowed_timelevels)
-    {
-      next;
-    }
-    elsif($timelevels  > 0)
+    elsif($timelevels > 0 && $timelevels  <= $allowed_timelevels)
     {
       next;
     }
     else
     {
-      &CST_error(0,"Tried to schedule $timelevels timelevels for group '$group' in schedule.ccl of thorn '$thorn'\n" .
-                   "Value must be between 1 and $allowed_timelevels (inclusive)","",__LINE__,__FILE__);
+      if($allowed_timelevels > 1)
+      {
+        &CST_error(0,"Tried to schedule $timelevels timelevels for group '$group' in schedule.ccl of thorn '$thorn'\n" .
+                     "Value must be between 1 and $allowed_timelevels (inclusive)","",__LINE__,__FILE__);
+      }
+      else
+      {
+        &CST_error(0,"Tried to schedule $timelevels timelevels for group '$group' in schedule.ccl of thorn '$thorn'\n" .
+                     "This variable has one timelevel only","",__LINE__,__FILE__);
+      }
       $return_code++;
     }
   }
