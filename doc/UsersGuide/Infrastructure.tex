@@ -15,10 +15,67 @@
  \item{} Overloadable functions
 \end{itemize}
 
+\chapter{Concepts and Terminology}
+\label{chap:cote}
 
- \section{Overloadable functions}
+\section{Overloading and Registration}
 
- \subsection{Core functions}
+The flesh defines a core API which guarantees the presence of a set of 
+functions.  Although the flesh guarantees the presence of these functions,
+they can be provided by thorns.  Thorns do this either by the {\em overloading} 
+or the {\em registration} of functions.
+
+\subsection{Overloading}
+
+Some functions can only be provided by one thorn.  The first thorn to
+{\em overload} this function succeeds, and any later attempt to overload
+the function fails.  For each overloadable function there is a function
+with a name something like {\tt CCTK\_Overload...} which is passed the
+function pointer.
+
+\subsection{Registration}
+
+Some functions may be provided by several thorns.  The thorns {\em register}
+their function with the flesh, and when the flesh-provided function is called, 
+the flesh calls all the registered functions.
+
+\section{GH Extensions}
+
+A GH extension is a way to associate data with each cGH.  This data should be data 
+that is required to be associated with a particular GH by a thorn.
+
+Each GH extension is given a unique handle.
+
+\section{IO Methods}
+
+An IO method is a distinct way to output data.  Each IO method has a unique name,
+and the flesh-provided IO functions operate on all registered IO methods.
+
+\chapter{GH Extensions}
+
+A GH extension is created by calling {\tt CCTK\_RegisterGHExtension} , with the 
+name of the extension.  This returns a unique handle that identifies the extension.
+(This handle can be retrieved at any time by a call to {\tt CCTK\_GHExtensionHandle}.)
+
+Associated with a GH extension are three functions
+
+\begin{itemize}
+\item[SetupGH]
+this is used to actually create the data structure holding the extension.  It
+is called when a new cGH is created.
+\item[InitGH]
+this is used to initialise the extension.  It is called after the scheduler has
+been initialised on the cGH.
+\item[rfrTraverse]
+this is called whenever the schedule tree is due to be traversed on the GH.  It
+should initialise the data on the cGH and the call {\tt rfrTraverse} to traverse 
+the schedule tree.
+\end{itemize}
+
+\chapter{IO Methods}
+
+\chapter{Overloadable and Registerable Functions in Main}
+
  \begin{tabular}{|l|l|}
    \hline  {\bf Function} & {\bf Default} \\
    \hline {\t CCTK\_Initialise} 	&\\
@@ -27,15 +84,8 @@
    \hline
  \end{tabular}
 
- \subsection{IO Functions}
- \begin{tabular}{|l|l|} 
-   \hline {\bf Function} & {\bf Default} \\
-   \hline {\t CCTK\_OutputGH} & \\
-   \hline {\t CCTK\_OutputVarAsByMethod} & \\
-   \hline
- \end{tabular}
+\chapter{Overloadable and Registerable Functions in Comm}
 
-  \subsection{Driver functions}
   \begin{tabular}{|l|l|}
    \hline {\bf Function} & {\bf Default} \\
    \hline {\t CCTK\_SyncGroup} 		&\\
@@ -47,12 +97,181 @@
    \hline {\t CCTK\_Reduce}			&\\
    \hline {\t CCTK\_Interp} 			&\\
    \hline {\t CCTK\_ParallelInit}		&\\
-   \hline {\t CCTK\_Init}			&\\
-   \hline {\t CCTK\_Exit}			&\\
-   \hline {\t CCTK\_Abort}			&\\
-   \hline {\t CCTK\_SetupGH}			&\\
    \hline
   \end{tabular}
+
+\chapter{Overloadable and Registerable Functions in IO}
+
+ \begin{tabular}{|l|l|} 
+   \hline {\bf Function} & {\bf Default} \\
+   \hline {\t CCTK\_OutputGH} & \\
+   \hline {\t CCTK\_OutputVarAsByMethod} & \\
+   \hline
+ \end{tabular}
+
+\chapter{Adding a Driver}
+
+The flesh knows nothing about memory allocation for grid variables, or about how
+to communicate data when synchronisation is called for.  It knows nothing about 
+multiple patches or adaptive mesh refinement.  All this is the job of a driver.
+
+\section{Anatomy}
+
+A driver consists of a Startup routine which creates a GH extension and 
+registers its associated functions, and overloads the communication functions.
+It may optionally register interpolation, reduction, and IO methods.
+
+A driver may also overload the default Initialisation and Evolution routines,
+although a simple unigrid evolver is supplied in the flesh.
+
+\section{Startup}
+
+A driver consists of a GH extension, and the following overloaded
+functions.
+
+\begin{enumerate}
+\item{} CCTK\_EnableGroupStorage
+\item{} CCTK\_DisableGroupStorage
+\item{} CCTK\_ArrayGroupSizeB
+\item{} CCTK\_QueryGroupStorageB
+\item{} CCTK\_SyncGroup
+\item{} CCTK\_EnableGroupComm
+\item{} CCTK\_DisableGroupComm
+\item{} CCTK\_Barrier
+\item{} CCTK\_OverloadParallelInit
+\item{} CCTK\_OverloadExit
+\item{} CCTK\_OverloadAbort
+\item{} CCTK\_OverloadMyProc
+\item{} CCTK\_OverloadnProcs
+\end{enumerate}
+
+\section{The GH Extension}
+
+The GH extension is where the driver stores all its grid-dependent information.
+This is stuff like any data associated with a grid variable (e.g. storage and
+communication state), how many grids if it is AMR, ...  It is very difficult to 
+describe in general, but one simple example might be
+
+\begin{verbatim}
+
+struct SimpleExtension
+{
+  /* The data assocatiated with each variable */
+  /* data[var][timelevel][ijk]
+  void ***data
+} ;
+
+\end{verbatim}
+
+with a SetupGH routine like.
+
+\begin{verbatim}
+
+struct SimpleExtension *SimpleSetupGH(t_Fleshconfig *config, int conv_level, cGH *GH)
+{
+   struct SimpleExtension *extension;
+
+   extension = NULL;
+
+   if(conv_level < max_conv_level)
+   {  
+      /* Create the extension */
+      extension = malloc(sizeof(struct SimpleExtension));
+
+      /* Allocate data for all the variables */
+      extension->data = malloc(num_vars*sizeof(void**));
+
+      for(var = 0 ; var < num_vars; var++)
+      {
+        /* Allocate the memory for the time levels */
+        extension->data[var] = malloc(num_var_time_levels*sizeof(void *));
+
+        for(time_level = 0; time_level < num_var_time_level; time_level++)
+        {
+          /* Initialise the data to NULL */ 
+          extension->data[var][time_level] = NULL;
+        }
+      }
+    }
+
+   return extension;
+}
+
+\end{verbatim}
+
+Basically all this example is doing is preparing a data array for use.  The
+function can query the flesh for information on every variable.  Note that 
+scalars should always have memory actually assigned to them.
+
+An {\tt InitGH} function isn't strictly necessary, and in ths case it could just
+be a dummy function.
+
+The {\tt rfrTravers} function needs to fill out the cGH data and then call 
+{\tt CCTK\_Schedule} to have the functions scheduled at that point executed on the
+grid.
+
+\section{Memory Functions}
+
+These consist of 
+\begin{enumerate}
+\item{} CCTK\_EnableGroupStorage
+\item{} CCTK\_DisableGroupStorage
+\item{} CCTK\_QueryGroupStorageB
+\item{} CCTK\_ArrayGroupSizeB
+\end{enumerate}
+
+\subsection{En/Disable Group Storage}
+
+These are responsible for switching the memory for all variables
+in a group on or off.  They should return the former state, e.g.
+if the group already has storage assigned, they should return 1.
+
+In our simple example above, the enabling routine would look 
+something like
+
+\begin{verbatim}
+
+int SimpleEnableGroupStorage(cGH *GH, const char *groupname)
+{
+
+  extension = (struct SimpleExtension *)GH->extensions[SimpleExtension];
+
+  if(extension->data[first][0][0] == NULL)
+  {
+    for(var = first; var <= last; var++)
+    {
+      allocate memory for all time levels;
+    }
+    retcode = 0;
+  }
+  else
+  {
+    retcode = 1;
+  }
+
+  return retcode;
+}
+
+\end{verbatim}
+
+Note that scalars should always have memory assigned.
+
+The disable function is basically the reverse of the enable one.
+
+The QueryGroupStorage function basically returns true or false if there is storage
+for the group, and the ArrayGroupSize returns the size of the grid function or array
+group in a particular direction.
+
+\subsection{En/Disable Group Comm}
+
+These are the communication analogues to the storage functions.  Basically they flag
+that communication is to be done on that group or not, and may initialise data 
+structures for the communication.
+
+
+
+\chapter{Adding an IO layer}
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
