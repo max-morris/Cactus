@@ -671,6 +671,8 @@ is to do. The command {\tt gmake help} lists all gmake targets.
 
 \item [{\tt gmake <config>-thornlist}] regenerates the ThornList for a configuration.
 
+\item [{\tt gmake <config>-editthorns}] edits the ThornList
+
 \item [{\tt gmake <config>-testsuite}] runs the test programs associated with
  each thorn. See section \ref{sec:te} for information about the 
  test suite mechanism.
@@ -696,6 +698,12 @@ this list at anytime by typing
 
 \begin{verbatim}
 gmake <config>-thornlist
+\end{verbatim}
+
+or you can edit it using
+
+\begin{verbatim}
+gmake <config>-editthorns
 \end{verbatim}
 
 Instead of using the editor to specify the thorns you want to
