@@ -1585,7 +1585,7 @@ void  CCTK_FCALL CCTK_FNAME(CCTK_PrintVar)
    @date       Sun Nov 28 12:38:38 1999
    @author     Tom Goodale
    @desc 
-   Extracts the size array from a comma-seperated list.
+   Extracts the size array from a comma-separated list.
    @enddesc 
    @calls     
    @calledby   
@@ -1594,10 +1594,13 @@ void  CCTK_FCALL CCTK_FNAME(CCTK_PrintVar)
    @endhistory 
 
 @@*/
-static CCTK_INT **CCTKi_ExtractSize(int dimension, const char *thorn, const char *sizestring)
+static CCTK_INT **CCTKi_ExtractSize(int dimension, 
+				    const char *thorn, 
+				    const char *sizestring)
 {
   int         i;
   int         type;
+  CCTK_INT    *this_size;
   CCTK_INT  **size_array;
   const char *last_comma;
   const char *next_comma;  
@@ -1628,8 +1631,16 @@ static CCTK_INT **CCTKi_ExtractSize(int dimension, const char *thorn, const char
             strcpy(tmp, last_comma);
           }
 
-          size_array[i] = (CCTK_INT *)CCTK_ParameterGet(tmp, thorn, &type);
-
+	  this_size = (CCTK_INT *)CCTK_ParameterGet(tmp, thorn, &type);
+	  if (this_size)
+	  {
+	    size_array[i] = this_size;
+	  }
+	  else
+	  {
+	    CCTK_VWarn(0,__LINE__,__FILE__,"Cactus",
+		      "CCTKi_ExtractSize: %s is not a parameter",tmp);
+	  }
         }
       }
     }
