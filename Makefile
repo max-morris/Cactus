@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.82 2000-04-04 10:05:17 allen Exp $
+#   @version $Id: Makefile,v 1.83 2000-04-05 14:41:48 allen Exp $
 # @@*/
 
 ##################################################################################
@@ -635,7 +635,7 @@ ifneq ($strip($(CONFIGURATIONS)),)
 $(addsuffix -testsuite,$(CONFIGURATIONS)):
 	@echo $(DIVIDER)
 	@echo Running test suite $(@:%-thornlist=%)
-	if [ -r $(CONFIGS_DIR)/$(@:%-testsuite=%)/ThornList ] ; then $(PERL) lib/sbin/Runtest.pl $(@:%-testsuite=%) ; fi
+	if [ -r $(CONFIGS_DIR)/$(@:%-testsuite=%)/ThornList ] ; then $(PERL) lib/sbin/Runtest.pl $(PROMPT) $(@:%-testsuite=%) ; fi
 endif
 
 %-testsuite:
