@@ -75,13 +75,13 @@ sub CheckImpParamConsistency
           }
           else
           {
-              $message = "Thorn $thorn attempted to EXTEND or USE non-restricted parameter $realname from $friend";
+              $message = "Thorn \"$thorn\" attempted to EXTEND or USE non-restricted parameter \"$realname\" from implementation \"$friend\"";
               &CST_error(0,$message,"",__LINE__,__FILE__);
           }
         }
         else
         {
-          $message = "Thorn $thorn attempted to EXTEND or USE non-existent parameter $realname from $friend";
+          $message = "Thorn \"$thorn\" attempted to EXTEND or USE non-existent parameter \"$realname\" from implementation \"$friend\"";
           &CST_error(0,$message,"",__LINE__,__FILE__);
         }
       }
