@@ -106,13 +106,12 @@ int CCTKi_SetupCommFunctions(void)
 
 int FMODIFIER FORTRAN_NAME(CCTK_Exit)(int *retval, cGH *GH)
 {
-  CCTK_Exit(*retval, GH);
+  return CCTK_Exit(*retval, GH);
 }
 
 int FMODIFIER FORTRAN_NAME(CCTK_ParallelInit)(cGH *GH)
 {
-  CCTK_ParallelInit(GH);
-  return 0;
+  return CCTK_ParallelInit(GH);
 }
 
 int FMODIFIER FORTRAN_NAME(CCTK_Abort)(cGH *GH)
