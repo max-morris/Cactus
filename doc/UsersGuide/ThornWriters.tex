@@ -31,7 +31,170 @@ behavior of someone else's thorn.)
 
 Each thorn must be in a package. Packages are fairly informal. If you
 want, you can just make your own package directory, and stick your new
-thorn into it.
+thorn into it. The idea is to collect the interdependencies and
+functionality of a set of thorns.
+
+\section{Creating a thorn}
+You can use the following gmake target to create a new thorn: {\tt
+gmake newthorn}. 
+\begin{enumerate} 
+\item{} You will be prompted for the name of the new thorn.
+\item{} You will be prompted for the name of the package you would
+like to include your thorn in. Either enter a new package name or pick 
+one from the list of available packages that are shown.
+\end{enumerate}
+
+Cactus creates the following files in {\tt ./package/<package\_name>/<thorn\_name>}:
+\begin{itemize}
+\item{\tt README}: please fill out 
+\item{\tt interface.ccl}: the cactus interface, which defined the grid 
+fucntions, variables, etc. See \ref{inteface.ccl}.
+\item{\tt param.ccl}: the parameter introduced by your thorn. See
+\ref{param.ccl}.
+\item{\tt schedule.ccl}: schedules the routines provided by your thorn 
+with the CCTK registry. Depending on the timing keywords chosen for
+the routines, they will be executed appropriately.
+\end{itemize}
+These sub-directories are created:
+\begin{itemize}
+\item{\tt ./par}: will hold sample parameter files to show the usage
+of your thorn.
+\item{\tt ./doc}: this directory shoudl be used to document your
+thorn.
+\item{\tt ./test}: this directory will hold a {\em testsuite}, a set
+of parameter files and their respective output. This is very important 
+for the maintainers and your colleagues  to be able to support your
+thorn adequately in the case of changes made to the core code or key thorns.
+\item{\tt ./src}: this directory will hold the source and include
+files of your thorn. It comes with file {\tt ./src/make.code.defn}
+which indentifies the source files in this directory to the make
+process.  The can be either in {\em Fortran} ending with {\tt *.F} or
+in {\em C} ending in {\tt *.c}.
+\item{}You may create additional sub-directories in {\tt ./src}, but 
+you have to mention them in {\tt make.code.defn}.
+\end{itemize}
+
+
+\section{The {\tt param.ccl}}
+The {\tt param.ccl} defines the parameters your thorn provides. To
+avoid wrong assumptions by other thorns about your parameters, you have 
+to speciy several informations, which we'll motivate here:
+\begin{enumerate}
+\item{} Are you creating a new parameter or are you extending
+the value range of a parameter by a different thorns?
+\item{} Is your parameter public to all other thorns, is it just
+used by your thorn or is it available to a subset of thorns only ?
+\item{} What are possible values your parameter can take: range of
+numerical values or the set of keywords, what do they mean ?  What is
+the parameter's default value ? 
+\end{enumerate}
+The {\em cactus computational language} lets you specify these
+information in a straight forward manner. (For the actual syntax of the 
+{\tt param.ccl} see \ref{syntax_param.ccl}.)
+The parameters you define can be grouped in four classes: {\tt
+private}, {\tt public},  {\tt protected} and {\tt friend}:{\em
+thorn\_name}.  We'll go over them one by one: 
+\begin{itemize}
+\item{\tt private} This parameter can only be used by your thorn. It
+it not even visible to other thorns: multiple private parameters of
+the same name may exist in parallel. {\bf IS THIS TRUE ?} We give
+examples of private parameters of type {\em integer}, {\em real}, {\em logical}
+and {\em keyword}, which may have the following form (comments start with
+{\tt \#}):
+\begin{verbatim}
+
+REAL Coeff "Important coefficient"
+{
+0:3.14 :: ``Range has to be from zero to Pi, default is zero''
+} 0.0
+
+INTEGER hitch ``The hitch-hiker parameter''
+{
+-42:42 :: ``Ranges from -42 to 42, default is zero''
+} 0
+
+#If you omitt the range, it will look a bit strange.
+#better put a range!
+INTEGER hitch_nolimits ``The confusing hitch-hiker parameter''
+{
+: :: ``We are confused, what is the range?''
+} 0
+
+#No need to define a range for LOGICAL
+LOGICAL nice ``Nice weather ?''
+{
+}``yes''
+
+# A example for a set of keywords and its default (which has to be
+# defined in the body)
+KEYWORD confused "Are we getting confused ?''
+{
+  "yes''    :: ``absolutley positively''
+  "perhaps" :: "we are not sure''
+  "never"   :: "never''
+} "never''
+\end{verbatim}
+Please consult the syntax for the {\tt param.ccl} for other possible
+combinations.
+\item{\tt public} this class allows parameters to be read by {\em all} 
+thorns a user will possibly compile with. You should make very
+restricted use of the {\tt public} keyword since this can be the cause 
+for incompatabilities and misunderstandings. {\bf CAN I HAVE A SECOND
+(PRIVATE) PARAMETER OF THE SAME NAME ? IN A DIFFERENT THORN ?}
+A typical declaration which further demonstrates the parameter syntax
+could be: 
+\begin{verbatim}
+public:
+
+# grid spacing has to be in the positive range 
+REAL grid_dx "Coarse grid spacing in x-direction"
+{
+  0: :: ``grid spacing has to be positive, default is 0.3''
+} 0.3
+\end{verbatim}
+
+\item{\tt protected} a parameter in this class is not only visible by
+its own thorn, but can be {\em inherited} by friend: a different thorn 
+may either check the value of this parameter or may extend its value
+range. A typical application would be the generation of initial data
+by different thorns, where each thorns extends an intial data
+parameter value by a name indicating the type of data it implements.
+
+\begin{verbatim}
+protected:
+
+KEYWORD initial_data "Physical spacetime model to evolve"
+{
+  "flat" :: "Flat Minkowski space"
+} "flat"
+\end{verbatim}
+
+\item{\tt friend}:{\em thorn\_name} a parameter of type friend has been declared by an
+other thorn and you are extending its value. You have
+to specify which thorn has declared this parameter initially. This
+``parent''-thorn has to identify the parameter as {\tt protected}
+(see above) in order for you to modify its value range. A typical
+delcaration for would look like:
+\begin{verbatim}
+#We inherit this parameter form thorn Einstein and add several models
+#Only einstein and our thorn see this parameter. ******TRUE ???
+#BTW: No need to add a new comment
+friend:einstein
+
+EXTENDS KEYWORD initial_data ""
+{
+  "bl_bh"         :: "Brill Lindquist black holes"
+  "misner_bh"     :: "Misner black holes"
+  "schwarzschild" :: "One Schwarzshild black hole"
+}
+\end{verbatim}
+{\bf Can I reset the default, when I extend ?}
+\end{itemize}
+
+
+
+\section{The {\tt interface.ccl}}
+\section{The {\tt schedule.ccl}}
 
       a) Creating a thorn (gmake new thorn)
       b) Thorn directory structure
