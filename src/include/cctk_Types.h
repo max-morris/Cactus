@@ -75,6 +75,7 @@ typedef unsigned char CCTK_BYTE;
 #define CCTK_INT8 INTEGER*8
 #define CCTK_INT4 INTEGER*4
 #define CCTK_INT2 INTEGER*2
+#define CCTK_INT1 INTEGER*1
 
 #define CCTK_COMPLEX32  COMPLEX*32
 #define CCTK_COMPLEX16  COMPLEX*16
@@ -114,6 +115,10 @@ typedef unsigned char CCTK_BYTE;
 
 #ifdef CCTK_INTEGER_PRECISION_2
 #define CCTK_INT CCTK_INT2
+#endif
+
+#ifdef CCTK_INTEGER_PRECISION_1
+#define CCTK_INT CCTK_INT1
 #endif
 
 /* Complex precision */

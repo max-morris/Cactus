@@ -8,6 +8,7 @@
    @version   $Id$
  @@*/
 
+#include <assert.h>
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -717,6 +718,10 @@ int CCTK_VarTypeNumber (const char *type)
   {
     retval = CCTK_VARIABLE_INT;
   }
+  else if (! strcmp (type, "INT1"))
+  {
+    retval = CCTK_VARIABLE_INT1;
+  }
   else if (! strcmp (type, "INT2"))
   {
     retval = CCTK_VARIABLE_INT2;
@@ -812,6 +817,10 @@ const char *CCTK_VarTypeName (int vtype)
       retval = "CCTK_VARIABLE_INT";
       break;
 
+    case CCTK_VARIABLE_INT1:
+      retval = "CCTK_VARIABLE_INT1";
+      break;
+
     case CCTK_VARIABLE_INT2:
       retval = "CCTK_VARIABLE_INT2";
       break;
@@ -852,9 +861,16 @@ const char *CCTK_VarTypeName (int vtype)
       retval = "CCTK_VARIABLE_COMPLEX32";
       break;
 
+    case CCTK_VARIABLE_BYTE:
+      retval = "CCTK_VARIABLE_BYTE";
+      break;
+
+#if 0
+    /* DEPRECATED IN BETA 10 */
     case CCTK_VARIABLE_CHAR:
       retval = "CCTK_VARIABLE_CHAR";
       break;
+#endif
 
     case CCTK_VARIABLE_STRING:
       retval = "CCTK_VARIABLE_STRING";
@@ -1743,6 +1759,12 @@ int CCTK_VarTypeSize (int vtype)
     case CCTK_VARIABLE_COMPLEX:
       var_size = sizeof (CCTK_COMPLEX);
       break;
+
+#ifdef CCTK_INT1
+    case CCTK_VARIABLE_INT1:
+      var_size = sizeof (CCTK_INT1);
+      break;
+#endif
 
 #ifdef CCTK_INT2
     case CCTK_VARIABLE_INT2:

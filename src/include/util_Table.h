@@ -183,6 +183,9 @@ int Util_TableSetChar(int handle, CCTK_CHAR value, const char *key);
 
 /* integers */
 int Util_TableSetInt(int handle, CCTK_INT value, const char *key);
+#ifdef CCTK_INTEGER_PRECISION_1
+int Util_TableSetInt1(int handle, CCTK_INT1 value, const char *key);
+#endif
 #ifdef CCTK_INTEGER_PRECISION_2
 int Util_TableSetInt2(int handle, CCTK_INT2 value, const char *key);
 #endif
@@ -244,6 +247,11 @@ int Util_TableSetCharArray(int handle,
 int Util_TableSetIntArray(int handle,
                           int N_elements, const CCTK_INT array[],
                           const char *key);
+#ifdef CCTK_INTEGER_PRECISION_1
+int Util_TableSetInt1Array(int handle,
+                           int N_elements, const CCTK_INT1 array[],
+                           const char *key);
+#endif
 #ifdef CCTK_INTEGER_PRECISION_2
 int Util_TableSetInt2Array(int handle,
                            int N_elements, const CCTK_INT2 array[],
@@ -320,6 +328,9 @@ int Util_TableGetChar(int handle, CCTK_CHAR *value, const char *key);
 
 /* integers */
 int Util_TableGetInt(int handle, CCTK_INT *value, const char *key);
+#ifdef CCTK_INTEGER_PRECISION_1
+int Util_TableGetInt1(int handle, CCTK_INT1 *value, const char *key);
+#endif
 #ifdef CCTK_INTEGER_PRECISION_2
 int Util_TableGetInt2(int handle, CCTK_INT2 *value, const char *key);
 #endif
@@ -381,6 +392,11 @@ int Util_TableGetCharArray(int handle,
 int Util_TableGetIntArray(int handle,
                           int N_elements, CCTK_INT array[],
                           const char *key);
+#ifdef CCTK_INTEGER_PRECISION_1
+int Util_TableGetInt1Array(int handle,
+                           int N_elements, CCTK_INT1 array[],
+                           const char *key);
+#endif
 #ifdef CCTK_INTEGER_PRECISION_2
 int Util_TableGetInt2Array(int handle,
                            int N_elements, CCTK_INT2 array[],

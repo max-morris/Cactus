@@ -5,7 +5,7 @@
 #   @desc 
 #   Timestamp file for forcing rebuilds of configurations
 #   @enddesc 
-#   @version $Id: force-rebuild,v 1.4 2003-09-04 16:16:29 tradke Exp $
+#   @version $Id: force-rebuild,v 1.5 2003-10-13 18:07:49 schnetter Exp $
 # @@*/
 
 6 March 2003: minor changes to CreateFunctionBindings.pl 
@@ -13,3 +13,4 @@
               CCTK_IsFunctionAliased against C++. 
               (Changes from Ian).
 4 September 2003: Parse information in thorns' configuration.ccl files
+13 October 2003: Add support for CCTK_INT1.

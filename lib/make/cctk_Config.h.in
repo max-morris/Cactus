@@ -45,6 +45,7 @@
 #undef CCTK_INTEGER_PRECISION_8
 #undef CCTK_INTEGER_PRECISION_4
 #undef CCTK_INTEGER_PRECISION_2
+#undef CCTK_INTEGER_PRECISION_1
 
 /* Modifier for Fortran function definitions. */
 
@@ -145,6 +146,9 @@
 
 /* Define the type of a 2 byte integer */
 #undef CCTK_INT2
+
+/* Define the type of a 1 byte integer */
+#undef CCTK_INT1
 
 /* Float sizes */
 

@@ -478,7 +478,7 @@ sub CreateFortranArgumentDeclarations
       $argument .= '_p';
     }
 
-    if($type =~ /^(CHAR|BYTE|INT|INT2|INT4|INT8|REAL|REAL4|REAL8|REAL16|COMPLEX|COMPLEX8|COMPLEX16|COMPLEX32)$/)
+    if($type =~ /^(CHAR|BYTE|INT|INT1|INT2|INT4|INT8|REAL|REAL4|REAL8|REAL16|COMPLEX|COMPLEX8|COMPLEX16|COMPLEX32)$/)
     {
       # DEPRECATED IN BETA 10
       if($type eq 'CHAR')
@@ -533,7 +533,7 @@ sub CreateCArgumentDeclarations
       $varname .= '_p';
     }
 
-    if($type =~ /^(CHAR|BYTE|INT|INT2|INT4|INT8|REAL|REAL4|REAL8|REAL16|COMPLEX|COMPLEX8|COMPLEX16|COMPLEX32)$/)
+    if($type =~ /^(CHAR|BYTE|INT|INT1|INT2|INT4|INT8|REAL|REAL4|REAL8|REAL16|COMPLEX|COMPLEX8|COMPLEX16|COMPLEX32)$/)
     {
       # DEPRECATED IN BETA 10 */
       if($type eq 'CHAR')
@@ -747,7 +747,7 @@ sub CreateCArgumentPrototype
         push(@prototype, "CCTK_$type *");
       }
 
-      if($type !~ /^(CHAR|BYTE|INT|INT2|INT4|INT8|REAL|REAL4|REAL8|REAL16|COMPLEX|COMPLEX8|COMPLEX16|COMPLEX32)$/)
+      if($type !~ /^(CHAR|BYTE|INT|INT1|INT2|INT4|INT8|REAL|REAL4|REAL8|REAL16|COMPLEX|COMPLEX8|COMPLEX16|COMPLEX32)$/)
       {
         &CST_error(0,"Unknown argument type $type","",__LINE__,__FILE__);
       }
@@ -804,7 +804,7 @@ sub CreateCArgumentList
       push(@arglist, "PASS_REFERENCE($argument, $level)");
     }
 
-    if($type =~ /^(CHAR|BYTE|INT|INT2|INT4|INT8|REAL|REAL4|REAL8|REAL16|COMPLEX|COMPLEX8|COMPLEX16|COMPLEX32)$/)
+    if($type =~ /^(CHAR|BYTE|INT|INT1|INT2|INT4|INT8|REAL|REAL4|REAL8|REAL16|COMPLEX|COMPLEX8|COMPLEX16|COMPLEX32)$/)
     {
       # DEPRECATED IN BETA 10
       if($type eq 'CHAR')

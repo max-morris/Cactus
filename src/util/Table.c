@@ -1994,7 +1994,7 @@ void CCTK_FCALL CCTK_FNAME (Util_TableGetGenericArray)
   @vtype        one of
                    CCTK_POINTER, CCTK_FPOINTER,
                    CCTK_CHAR,
-                   CCTK_INT, CCTK_INT2, CCTK_INT4, CCTK_INT8,
+                   CCTK_INT, CCTK_INT1, CCTK_INT2, CCTK_INT4, CCTK_INT8,
                    CCTK_REAL, CCTK_REAL4, CCTK_REAL8, CCTK_REAL16,
                    CCTK_COMPLEX, CCTK_COMPLEX8, CCTK_COMPLEX16, CCTK_COMPLEX32
                 (not all of these may be supported on any given system)
@@ -2141,6 +2141,25 @@ void CCTK_FCALL CCTK_FNAME (Util_TableSetInt)
   free (key);
 }
 #endif	/* !UTIL_TABLE_TEST */
+
+#ifdef CCTK_INTEGER_PRECISION_1
+int Util_TableSetInt1(int handle, CCTK_INT1 value, const char *key)
+{
+  return Util_TableSetInt1Array(handle, 1, &value, key);
+}
+
+void CCTK_FCALL CCTK_FNAME (Util_TableSetInt1)
+                           (int *retval, const int *handle,
+                            const CCTK_INT1 *value, ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (Util_TableSetInt1)
+                           (int *retval, const int *handle,
+                            const CCTK_INT1 *value, ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (key)
+  *retval = Util_TableSetInt1 (*handle, *value, key);
+  free (key);
+}
+#endif
 
 #ifdef CCTK_INTEGER_PRECISION_2
 int Util_TableSetInt2(int handle, CCTK_INT2 value, const char *key)
@@ -2407,7 +2426,7 @@ void CCTK_FCALL CCTK_FNAME (Util_TableSetComplex32)
   @vtype        const T[], where T is one of
                    CCTK_POINTER, CCTK_FPOINTER,
                    CCTK_CHAR,
-                   CCTK_INT, CCTK_INT2, CCTK_INT4, CCTK_INT8,
+                   CCTK_INT, CCTK_INT1, CCTK_INT2, CCTK_INT4, CCTK_INT8,
                    CCTK_REAL, CCTK_REAL4, CCTK_REAL8, CCTK_REAL16,
                    CCTK_COMPLEX, CCTK_COMPLEX8, CCTK_COMPLEX16, CCTK_COMPLEX32
                 (not all of these may be supported on any given system)
@@ -2588,6 +2607,31 @@ void CCTK_FCALL CCTK_FNAME (Util_TableSetIntArray)
   free (key);
 }
 #endif	/* !UTIL_TABLE_TEST */
+
+#ifdef CCTK_INTEGER_PRECISION_1
+int Util_TableSetInt1Array(int handle,
+                           int N_elements, const CCTK_INT1 array[],
+                           const char *key)
+{
+  return internal_set(handle,
+                      CCTK_VARIABLE_INT1, N_elements, (const void *) array,
+                      key);
+}
+
+void CCTK_FCALL CCTK_FNAME (Util_TableSetInt1Array)
+                           (int *retval, const int *handle,
+                            const int *N_elements,
+                            const CCTK_INT1 array[], ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (Util_TableSetInt1Array)
+                           (int *retval, const int *handle,
+                            const int *N_elements,
+                            const CCTK_INT1 array[], ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (key)
+  *retval = Util_TableSetInt1Array (*handle, *N_elements, array, key);
+  free (key);
+}
+#endif
 
 #ifdef CCTK_INTEGER_PRECISION_2
 int Util_TableSetInt2Array(int handle,
@@ -2915,7 +2959,7 @@ void CCTK_FCALL CCTK_FNAME (Util_TableSetComplex32Array)
   @vtype        T *, where T is one of
                    CCTK_POINTER, CCTK_FPOINTER,
                    CCTK_CHAR,
-                   CCTK_INT, CCTK_INT2, CCTK_INT4, CCTK_INT8,
+                   CCTK_INT, CCTK_INT1, CCTK_INT2, CCTK_INT4, CCTK_INT8,
                    CCTK_REAL, CCTK_REAL4, CCTK_REAL8, CCTK_REAL16,
                    CCTK_COMPLEX, CCTK_COMPLEX8, CCTK_COMPLEX16, CCTK_COMPLEX32
                 (not all of these may be supported on any given system)
@@ -3084,6 +3128,28 @@ void CCTK_FCALL CCTK_FNAME (Util_TableGetInt)
   free (key);
 }
 #endif	/* !UTIL_TABLE_TEST */
+
+#ifdef CCTK_INTEGER_PRECISION_1
+int Util_TableGetInt1(int handle, CCTK_INT1 *value, const char *key)
+{
+  const int status = Util_TableGetInt1Array(handle, 1, value, key);
+  return (status == 0)
+         ? UTIL_ERROR_TABLE_VALUE_IS_EMPTY
+         : status;
+}
+
+void CCTK_FCALL CCTK_FNAME (Util_TableGetInt1)
+                           (int *retval, const int *handle,
+                            CCTK_INT1 *value, ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (Util_TableGetInt1)
+                           (int *retval, const int *handle,
+                            CCTK_INT1 *value, ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (key)
+  *retval = Util_TableGetInt1 (*handle, value, key);
+  free (key);
+}
+#endif
 
 #ifdef CCTK_INTEGER_PRECISION_2
 int Util_TableGetInt2(int handle, CCTK_INT2 *value, const char *key)
@@ -3376,7 +3442,7 @@ void CCTK_FCALL CCTK_FNAME (Util_TableGetComplex32)
   @vtype        T[], where T is one of
                    CCTK_POINTER, CCTK_FPOINTER,
                    CCTK_CHAR,
-                   CCTK_INT, CCTK_INT2, CCTK_INT4, CCTK_INT8,
+                   CCTK_INT, CCTK_INT1, CCTK_INT2, CCTK_INT4, CCTK_INT8,
                    CCTK_REAL, CCTK_REAL4, CCTK_REAL8, CCTK_REAL16,
                    CCTK_COMPLEX, CCTK_COMPLEX8, CCTK_COMPLEX16, CCTK_COMPLEX32
                 (not all of these may be supported on any given system)
@@ -3565,6 +3631,31 @@ void CCTK_FCALL CCTK_FNAME (Util_TableGetIntArray)
   free (key);
 }
 #endif	/* !UTIL_TABLE_TEST */
+
+#ifdef CCTK_INTEGER_PRECISION_1
+int Util_TableGetInt1Array(int handle,
+                           int N_elements, CCTK_INT1 array[],
+                           const char *key)
+{
+  return internal_get(handle,
+                      CCTK_VARIABLE_INT1, N_elements, (void *) array,
+                      key);
+}
+
+void CCTK_FCALL CCTK_FNAME (Util_TableGetInt1Array)
+                           (int *retval, const int *handle,
+                            const int *N_elements, CCTK_INT1 array[],
+                            ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (Util_TableGetInt1Array)
+                           (int *retval, const int *handle,
+                            const int *N_elements, CCTK_INT1 array[],
+                            ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (key)
+  *retval = Util_TableGetInt1Array (*handle, *N_elements, array, key);
+  free (key);
+}
+#endif
 
 #ifdef CCTK_INTEGER_PRECISION_2
 int Util_TableGetInt2Array(int handle,
@@ -4513,7 +4604,7 @@ int Util_TableItSetToKey(int ihandle, const char *key)
   @vtype        const T[], where T is one of
                    CCTK_POINTER, CCTK_FPOINTER,
                    CCTK_CHAR,
-                   CCTK_INT, CCTK_INT2, CCTK_INT4, CCTK_INT8,
+                   CCTK_INT, CCTK_INT1, CCTK_INT2, CCTK_INT4, CCTK_INT8,
                    CCTK_REAL, CCTK_REAL4, CCTK_REAL8, CCTK_REAL16,
                    CCTK_COMPLEX, CCTK_COMPLEX8, CCTK_COMPLEX16, CCTK_COMPLEX32
                 (not all of these may be supported on any given system)
@@ -4628,7 +4719,7 @@ static
   @vtype        T[], where T is one of
                    CCTK_POINTER, CCTK_FPOINTER,
                    CCTK_CHAR,
-                   CCTK_INT, CCTK_INT2, CCTK_INT4, CCTK_INT8,
+                   CCTK_INT, CCTK_INT1, CCTK_INT2, CCTK_INT4, CCTK_INT8,
                    CCTK_REAL, CCTK_REAL4, CCTK_REAL8, CCTK_REAL16,
                    CCTK_COMPLEX, CCTK_COMPLEX8, CCTK_COMPLEX16, CCTK_COMPLEX32
                 (not all of these may be supported on any given system)
@@ -4853,7 +4944,7 @@ static
   @vtype        const T[], where T is one of
                    CCTK_POINTER, CCTK_FPOINTER,
                    CCTK_CHAR,
-                   CCTK_INT, CCTK_INT2, CCTK_INT4, CCTK_INT8,
+                   CCTK_INT, CCTK_INT1, CCTK_INT2, CCTK_INT4, CCTK_INT8,
                    CCTK_REAL, CCTK_REAL4, CCTK_REAL8, CCTK_REAL16,
                    CCTK_COMPLEX, CCTK_COMPLEX8, CCTK_COMPLEX16, CCTK_COMPLEX32
                 (not all of these may be supported on any given system)
@@ -5607,6 +5698,10 @@ static
   /* integers */
   CHECK_SET_GET_INT(handle, CCTK_INT, 0, case_insensitive,
                     Util_TableSetInt, Util_TableGetInt);
+  #ifdef CCTK_INTEGER_PRECISION_1
+  CHECK_SET_GET_INT(handle, CCTK_INT1, 1, case_insensitive,
+                    Util_TableSetInt1, Util_TableGetInt1);
+  #endif
   #ifdef CCTK_INTEGER_PRECISION_2
   CHECK_SET_GET_INT(handle, CCTK_INT2, 1, case_insensitive,
                     Util_TableSetInt2, Util_TableGetInt2);
@@ -5627,6 +5722,10 @@ static
   /* generic scalars which are actually integers */
   CHECK_SET_GET_GENERIC_INT(handle, CCTK_VARIABLE_INT, CCTK_INT,
                             0, case_insensitive);
+  #ifdef CCTK_INTEGER_PRECISION_1
+  CHECK_SET_GET_GENERIC_INT(handle, CCTK_VARIABLE_INT1, CCTK_INT1,
+                            1, case_insensitive);
+  #endif
   #ifdef CCTK_INTEGER_PRECISION_2
   CHECK_SET_GET_GENERIC_INT(handle, CCTK_VARIABLE_INT2, CCTK_INT2,
                             1, case_insensitive);
@@ -5726,6 +5825,10 @@ static
                           Util_TableSetCharArray, Util_TableGetCharArray);
   CHECK_SET_GET_INT_ARRAY(handle, CCTK_INT, 1,
                           Util_TableSetIntArray, Util_TableGetIntArray);
+  #ifdef CCTK_INTEGER_PRECISION_1
+  CHECK_SET_GET_INT_ARRAY(handle, CCTK_INT1, 1,
+                          Util_TableSetInt1Array, Util_TableGetInt1Array);
+  #endif
   #ifdef CCTK_INTEGER_PRECISION_2
   CHECK_SET_GET_INT_ARRAY(handle, CCTK_INT2, 1,
                           Util_TableSetInt2Array, Util_TableGetInt2Array);

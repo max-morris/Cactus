@@ -99,6 +99,10 @@ sub get_c_type_string
   {
     $type_string = 'CCTK_INT';
   }
+  elsif($type eq 'INT1')
+  {
+    $type_string = 'CCTK_INT1';
+  }
   elsif($type eq 'INT2')
   {
     $type_string = 'CCTK_INT2';

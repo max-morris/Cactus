@@ -572,6 +572,8 @@ case "x$ac_cv_sizeof_short_int" in
       CCTK_INT2="short int" ;;
 esac
 
+CCTK_INT1="signed char"
+
 if test -n "$CCTK_INT8" ; then
   AC_DEFINE_UNQUOTED(CCTK_INT8, $CCTK_INT8)
 fi
@@ -582,6 +584,10 @@ fi
 
 if test -n "$CCTK_INT2" ; then
   AC_DEFINE_UNQUOTED(CCTK_INT2, $CCTK_INT2)
+fi
+
+if test -n "$CCTK_INT1" ; then
+  AC_DEFINE_UNQUOTED(CCTK_INT1, $CCTK_INT1)
 fi
 
 # Float types
