@@ -15,11 +15,13 @@
 #include "cctk_Flesh.h"
 #include "cctk_GHExtensions.h"
 #include "cctk_Groups.h"
+#include "cctk_WarnLevel.h"
+#include "cctk_IOMethods.h"
+#include "cctk_Parameters.h"
+
+#include "CactusCommFunctions.h"
 #include "CactusrfrInterface.h"
 #include "rfrConstants.h"
-#include "CactusCommFunctions.h"
-#include "cctk_IOMethods.h"
-#include "cctk_parameters.h"
 #include "rfrInterface.h"
 
 static char *rcsid = "$Header$";
@@ -42,14 +44,16 @@ static char *rcsid = "$Header$";
 int CCTK_rfrTraverse(cGH *GH, int rfrpoint)
 {
   
-  CCTK_rfrTraverseGHExtensions(GH, rfrpoint);
+  CCTKi_rfrTraverseGHExtensions(GH, rfrpoint);
 
   return 0;
 }
 
-#include "cctk_Schedule.h"
+#include "cctki_Schedule.h"
 
-#define SCHEDULE(x) case CCTK_ ## x : CCTK_ScheduleTraverse("CCTK_" #x, data, NULL); break
+/*#define SCHEDULE(x) case CCTK_ ## x : CCTKi_ScheduleTraverse("CCTK_" #x, data); break*/
+
+#define SCHEDULE(x) case CCTK_ ## x : CCTKi_ScheduleTraverse("CCTK_" #x, data, NULL); break
 
 void rfrTraverse(void *rfr_top, void *data, int when) 
 {
@@ -57,6 +61,8 @@ void rfrTraverse(void *rfr_top, void *data, int when)
   {
     SCHEDULE(PARAMCHECK);
     SCHEDULE(BASEGRID);
+    SCHEDULE(RECOVER_PARAMETERS);
+    SCHEDULE(RECOVER_VARIABLES);
     SCHEDULE(RECOVER);
     SCHEDULE(INITIAL);
     SCHEDULE(POSTINITIAL);
