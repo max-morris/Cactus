@@ -645,7 +645,6 @@ void FMODIFIER FORTRAN_NAME(CCTK_ReduceLocalScalar)(int *fortran_return,
                                       1, 1, *data_type, 1, in_scalar);
 }
 
-
  /*@@
    @routine    CCTK_ReduceLocalArray1D
    @date       Thu Oct 14 12:10:01 1999
@@ -662,13 +661,14 @@ void FMODIFIER FORTRAN_NAME(CCTK_ReduceLocalScalar)(int *fortran_return,
 
 @@*/
 
+
 int CCTK_ReduceLocalArray1D (cGH *GH, int proc, int operation_handle, 
-                            void *in_array1d, void *out_array1d, int num_in_array1d, 
+			     void *in_array1d, void *out_array1d, int num_in_array1d, 
 			     int data_type)
 {
   return (CCTK_ReduceArray (GH, proc, operation_handle,
-                            1, data_type, out_array1d,
-                            2, 1, data_type, num_in_array1d, in_array1d));
+			    num_in_array1d, data_type, out_array1d,
+			    1, 1, data_type, 1, in_array1d));
 }
 
 void FMODIFIER FORTRAN_NAME(CCTK_ReduceLocalArray1D)(int *fortran_return,
@@ -681,7 +681,7 @@ void FMODIFIER FORTRAN_NAME(CCTK_ReduceLocalArray1D)(int *fortran_return,
                                                     int *data_type)
 {
   *fortran_return = CCTK_ReduceArray (GH, *proc, *operation_handle,
-                                      1, *data_type, out_array1d,
-                                      2, 1, *data_type, *num_in_array1d, in_array1d);
+                                      *num_in_array1d, *data_type, out_array1d,
+				      1, 1, *data_type, 1,in_array1d);
 }
 
