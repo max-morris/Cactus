@@ -1,7 +1,7 @@
 
 Cactus Code Frequently Asked Questions
 
-$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.13 2001-01-14 15:08:51 allen Exp $
+$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.14 2001-02-06 15:25:21 allen Exp $
 
 Also available at http://www.cactuscode.org/Documentation/FAQ
 
@@ -55,6 +55,9 @@ Also available at http://www.cactuscode.org/Documentation/FAQ
    Check that you are using the latest version of CVS, otherwise moving into 
    the arrangements directory and performing another 'cvs update', followed 
    by a final one in the toplevel directory should complete your update.
+
+   There is now a Cactus make target "gmake cvsupdate" which avoids this 
+   problem by updating the flesh and checked out thorns explicitly.
 
 -------------------------------------------------------------------------------
 
