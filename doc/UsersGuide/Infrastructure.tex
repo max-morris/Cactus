@@ -411,7 +411,8 @@ them with the Flesh.
 %
 \section{I/O Method Registration}
 %
-All I/O methods have to be registered with the Flesh before they can be used.\\
+All I/O methods have to be registered with the Flesh before they can be used.
+
 The Flesh I/O registration API provides a routine {\t CCTK\_RegisterIOMethod()}
 to create a handle for a new I/O method which is identified by its name
 (this name must be unique for all I/O methods).
@@ -425,10 +426,7 @@ The following example shows how a thorn would register an I/O method
 \begin{verbatim}
   void SimpleIO_Startup (void)
   {
-    int handle;
-
-
-    handle = CCTK_RegisterIOMethod ("SimpleIO");
+    int handle = CCTK_RegisterIOMethod ("SimpleIO");
     if (handle >= 0)
     {
       CCTK_RegisterIOMethodOutputGH (handle, SimpleIO_OutputGH);
@@ -454,8 +452,8 @@ I/O methods and calls their routines registered as {\t OutputGH()} (see also
 \end{alltt}
 %
 The {\t OutputGH()} routine itself should loop over all variables living on the
-{\t GH} grid hierarchy, and do all necessary output if requested (this is
-usually determined by I/O parameter settings).
+\texttt{\var{GH}} grid hierarchy, and do all necessary output if requested
+(this is usually determined by I/O parameter settings).
 
 As its return code it should pass back the number of variables which were output
 at the current iteration, or zero if no output was done by this I/O method.
@@ -481,11 +479,12 @@ output of the triggering variable(s) using {\t TriggerOutput()}.
 %
 Both routines get passed the index of a possible triggering grid variable.
 
-{\t TimeToOutput()} should return true (a non-zero value) if analysis and output
-for \var{varindex} should take place at the current iteration, and false (zero)
-otherwise.\\
+{\t TimeToOutput()} should return a non-zero value if analysis and output
+for \texttt{\var{varindex}} should take place at the current iteration, and zero
+otherwise.
+
 {\t TriggerOutput()} should return zero for successful output of variable
-\var{varindex}, and a negative value in case of an error.
+\texttt{\var{varindex}}, and a negative value in case of an error.
 %
 %
 \section{Unconditional Output of Grid Variables}
@@ -495,20 +494,21 @@ specific grid variable if ever possible. It will be invoked by the Flesh I/O API
 routines {\t CCTK\_OutputVar*()} for unconditional, non-triggered output of
 grid variables (see also \ref{sec:io}).
 
-A function registered as an {\t OutputVarAs()} routine has the following
+A function registered as an \texttt{OutputVarAs()} routine has the following
 prototype:
 %
 \begin{alltt}
   int SimpleIO_OutputVarAs (const cGH *\var{GH}, const char *\var{varname}, const char *\var{alias});
 \end{alltt}
 %
-The variable to output, \var{varname}, is given by its full name.
+The variable to output, \texttt{\var{varname}}, is given by its full name.
 The full name may have appended an optional I/O options string enclosed in
 curly braces (with no space between the full name and the opening curly brace).
-In addition to that, an \var{alias} string can be passed which then serves
-the purpose of constructing a unique name for the output file.
+In addition to that, an \texttt{\var{alias}} string can be passed which then
+serves the purpose of constructing a unique name for the output file.
 
-The {\t OutputVarAs()} routine should return zero if output for \var{varname}
+The {\t OutputVarAs()} routine should return zero if output for
+\texttt{\var{varname}}
 was done successfully, or a negative error code otherwise.
 
 
@@ -610,18 +610,45 @@ The function pointers are placed in function pointer fields of a
 The first \texttt{int} argument of the functions may be used in any way
 you see fit.
 
+The \texttt{n\_vals} field holds the number of elements in the 
+\texttt{vals} array field of the \texttt{cTimerVal} structure 
+used by your timer (usually 1).
+
 The return value of the \texttt{create} function will be a pointer to
 a new structure representing your clock.
 
 The second \texttt{void*} argument of all the other functions will be the
 pointer returned from the \texttt{create} function.
 
-The \texttt{cTimerVal*} argument of the \texttt{get} and \texttt{set}
-functions is as described in Section \ref{subsec:cTimerData}.
+The \texttt{get} and \texttt{set} functions should write to and read from
+(respectively) a structure pointed to by the \texttt{cTimerVal*} argument:
 
-The \texttt{n\_vals} field holds the number of elements in the 
-\texttt{vals} array field of the \texttt{cTimerVal} structure 
-used by your timer.
+\begin{verbatim}
+typedef enum {val_none, val_int, val_long, val_double} cTimerValType;
+
+typedef struct
+{
+  cTimerValType type;
+  const char *heading;
+  const char *units;
+  union
+ {
+    int        i;
+    long int   l;
+    double     d;
+  } val;
+  double seconds;
+  double resolution;
+} cTimerVal;
+\end{verbatim}
+
+The \texttt{heading} field is the name of the clock, the \texttt{units} 
+field  holds a string describing the type held in the \texttt{val} field,
+and the \texttt{seconds} field is the time elapsed in seconds.  The 
+\texttt{resolution} field is the smallest non-zero difference in values 
+of two calls to the timer, in seconds.  For example, it could reflect
+that the clock saves the time value internally as an integer value 
+representing milliseconds.
 
 To name and register the clock with the Flesh, call the function
 \begin{alltt}

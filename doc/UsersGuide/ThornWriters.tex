@@ -3517,6 +3517,13 @@ the value of the clock when the timer was stopped
 
 Return the name of the clock given by the {\t cTimerVal} pointer argument.
 
+\item[{\t CCTK\_TimerClockResolution}]
+
+Return the floating-point value of the resolution in seconds 
+of the clock referred to by the {\t cTimerVal} pointer argument.
+This is a lower bound for the smallest non-zero difference in values
+between calls of {\t CCTK\_TimerClockSeconds}.
+
 \item[{\t CCTK\_TimerClockSeconds}]
 
 Return the floating-point value of the measurement in seconds 
