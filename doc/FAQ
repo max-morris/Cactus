@@ -1,7 +1,7 @@
 
 Cactus Code Frequently Asked Questions
 
-$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.40 2002-08-19 10:42:23 allen Exp $
+$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.41 2002-08-20 11:35:32 allen Exp $
 
 Also available at http://www.cactuscode.org/Documentation/FAQ
 
@@ -584,5 +584,21 @@ Also available at http://www.cactuscode.org/Documentation/FAQ
     variables as const if they aren't changed afterwards. But it's doesn't 
     have any benefit in writing cleaner code. I think this is just 
     overkill and using just 'const cGH *' is fine.
+
+-------------------------------------------------------------------------------
+
+38. When trying the new gcc 3.1.1 compiler on Linux, I received a lot of 
+    warnings about the compiler flag "-I/usr/local/include". 
+
+    This is because HDF5 is installed on this machine in what we
+    would consider to be a sub-optimal place. HDF5 is preferably
+    installed in own installation directory with (optionally) sym-links to 
+    the system directories. Cactus configurations should use the HDF5 
+    installation directory itself.
+
+    It is a matter of office debate as to whether it would be really be a 
+    good idea or not to check for and remove system directories, we can come 
+    up with pathological examples both if they are left or if they are 
+    removed.
 
 -------------------------------------------------------------------------------
