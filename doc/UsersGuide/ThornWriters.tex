@@ -1,4 +1,4 @@
-% /*@@
+Th% /*@@
 %   @file      ThornWriters.tex
 %   @date      27 Jan 1999
 %   @author    Gabrielle Allen, Tom Goodale, Gerd Lanfermann
@@ -934,7 +934,6 @@ specified to be valid.  Once validated, parameters values are fixed, and cannot
 be changed (unless the parameter is specified to be steerable, see below).
 
 The full specification for a parameter decalaration is
-
 \begin{verbatim}
 [EXTENDS|USES] <parameter_type> <parameter name> "<parameter description>" 
 {
@@ -1036,16 +1035,16 @@ user to schedule a routine with respect to another routine which may not
 exist.
 
 The full specification for a schedule declaration is
-
 \begin{verbatim}
-schedule [GROUP] <function|group name> AT|IN <time> [BEFORE|AFTER <item>] [WHILE <variable>] [AS <alias>]
+schedule [GROUP] <function|schedule group name> AT|IN <time|schedule group name> \
+                 [BEFORE|AFTER <item>] [WHILE <variable>] [AS <alias>]
 {
   LANG: <language>
   [STORAGE:       <group>,<group>...]
   [TRIGGER:       <group>,<group>...]
   [SYNC:          <group>,<group>...]
   [OPTIONS:       <option>,<option>...]
-} "Description of function|group"
+} "Description of function| schedule group"
 \end{verbatim}
 
 This consists of a mandatory part, a set of options, and the main
@@ -1061,7 +1060,7 @@ These are listed in \ref{subsec:schedule_ccl}.
 
 \section{Groups}
 
-If the optional {\em GROUP} specifier is used, the item is a schedule
+If the optional {\tt GROUP} specifier is used, the item is a schedule
 group rather than a normal function.  Schedule groups are effectively
 new, user-defined, schedule bins.  Functions or groups may be
 scheduled {\em IN} these in the same way as they are scheduled {\em
@@ -1078,7 +1077,7 @@ be scheduled.
 This specifies a {\em CCTK\_INT} grid scalar which is used to control
 the execution of this item.  If the grid scalar has a non-zero value
 the schedule item will be executed, otherwise the item will be
-ignored.  This allows iteration within the schedular.
+ignored.  This allows iteration within the scheduler.
 \item[AS]
 This assigns a new name to a function for scheduling purposes.  This
 is used, for instance, to allow a thorn to schedule something before
@@ -1095,9 +1094,9 @@ The schedule block specifies further details of the scheduled function or group.
 \item[LANG]
 This specifies the language of the routine.  Currently this is either
 C or Fortran.
-\item[{\tt STORAGE}] The {\tt STORAGE} keyword specifies any groups for 
+\item[{\tt STORAGE}] The {\tt STORAGE} keyword specifies groups for 
 which  memory should be
-allocated for the duration of the routine.
+allocated for the duration of the routine or schedule group.
 The storage status reverts to its previous status after the 
 \item[TRIGGER]
 This is only used for items scheduled at {\em CCTK\_ANALYSIS}.  The
