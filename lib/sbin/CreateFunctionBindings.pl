@@ -416,6 +416,34 @@ sub FunctionDatabase
           &CST_error(0,$message,'',__LINE__,__FILE__);
 #        $Function->{"Return Type"}.="*";
       }
+#  At this point we should be checking that any duplicated function
+#  prototypes are consistent.
+      my $KnownThorn;
+      foreach $KnownThorn (sort keys %{$FunctionDatabase})
+      {
+	my $KnownList = $FunctionDatabase->{"$KnownThorn"};
+	my $KnownFunctionName;
+	foreach $KnownFunctionName (sort keys %{$KnownList})
+	{
+	  my %KnownFunction = %{$KnownList->{$KnownFunctionName}};
+	  if ($KnownFunction{"Name"} eq $Function->{"Name"})
+	  {
+	    if (!($KnownFunction{"Return Type"} eq
+		  $Function->{"Return Type"}))
+	    {
+# FIXME: This is only a warning as there are so many
+#        inconsistent prototypes that it will break any
+#        current build.
+	      &CST_error(1,"The prototypes for the aliased function \'".$KnownFunction{"Name"}."\'\n     given by thorns \' ".$thorn."\' and \'".$KnownThorn."\' are inconsistent.\n     The return types disagree.");
+	    }
+	    if (&CompareArguments($KnownFunction{"Arguments"},
+				 $Function->{"Arguments"}))
+	    {
+	      &CST_error(1,"The prototypes for the aliased function \'".$KnownFunction{"Name"}."\'\n     given by thorns \'".$thorn."\' and \'".$KnownThorn."\' are inconsistent.\n     The argument lists disagree.");
+	    }
+	  }
+	}
+      }
       $FunctionList->{$FunctionName}=$Function;
     }
     $FunctionDatabase->{$thorn}=$FunctionList;
@@ -701,6 +729,71 @@ sub ParseArgument
 #  print $Argument->{"Name"}." ".$Argument->{"Type"}." ".$Argument->{"Is Array"}." ".$Argument->{"Function Pointer"}."\n";
 
   return $Argument;
+}
+
+#/*@@
+#  @routine    CompareArguments
+#  @date       Sun Feb 16 01:41:08 2003
+#  @author     Ian Hawke
+#  @desc
+#  Takes two argument lists and checks that they are the same.
+#
+#  Returns the number of arguments that disagree.
+#
+#  @enddesc
+#@@*/
+
+sub CompareArguments
+{
+  use strict;
+
+  my @Arguments1 = @{$_[0]};
+  my @Arguments2 = @{$_[1]};
+
+  my $num_errors = 0;
+
+  for (my $i=0;$i<@Arguments1;$i++) {
+    my $Arg1 = $Arguments1[$i];
+    my $Arg2 = $Arguments2[$i];
+    &debug_print("arg1: ".$Arg1->{"Type"}." ".$Arg1->{"Intent"}." ".$Arg1->{"Name"}."\n");
+    &debug_print("arg2: ".$Arg2->{"Type"}." ".$Arg2->{"Intent"}." ".$Arg2->{"Name"}."\n");
+  }
+
+  if (!($#Arguments1 == $#Arguments2))
+  {
+    $num_errors = 10;
+  }
+  else
+  {
+    for (my $argnum = 0; $argnum < @Arguments1; $argnum++)
+    {
+      my $Arg1 = $Arguments1[$argnum];
+      my $Arg2 = $Arguments2[$argnum];
+      if ($Arg1->{"Function pointer"})
+      {
+	if ($Arg2->{"Function pointer"})
+        {
+	  $num_errors++;
+	}
+      }
+      elsif (
+	     (!($Arg1->{"Type"} eq $Arg2->{"Type"})) ||
+	     (!($Arg1->{"Intent"} eq $Arg2->{"Intent"}))
+	    )
+      {
+
+	&debug_print("Errors in arguments:\n".
+	  $Arg1->{"Type"}." ".$Arg2->{"Type"}."\n".
+	  $Arg1->{"Intent"}." ".$Arg2->{"Intent"}."\n".
+	  $Arg1->{"Function pointer"}." ".$Arg2->{"Function pointer"}
+		    );
+
+	$num_errors++;
+      }
+    }
+  }
+
+  return $num_errors;
 }
 
 #/*@@
