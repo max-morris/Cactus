@@ -16,7 +16,7 @@
 #
 #
 #   @enddesc
-#   @version $Id: Makefile,v 1.159 2004-06-20 12:22:20 tradke Exp $
+#   @version $Id: Makefile,v 1.160 2004-06-21 11:09:45 tradke Exp $
 # @@*/
 
 ##################################################################################
@@ -582,7 +582,7 @@ $(addsuffix -delete,$(CONFIGURATIONS)):
 	@echo $(DIVIDER)
 	if test "x$(DELETE_CONFIRMATION)" = "xyes" ; then          \
 	  echo "Really delete configuration $(@:%-delete=%) (no)?";\
-	  read confirm rest;                                       \ 
+	  read confirm rest;                                       \
 	  if test $$? -ne 0 ; then                                 \
 	    confirm='no';                                          \
 	  fi;                                                      \
@@ -724,7 +724,7 @@ endif
 	@echo Configuration $(@:%-config=%) does not exist.;
 	if test "x$(PROMPT)" = "xyes" ; then \
 	  echo Setup configuration $(@:%-config=%) \(yes\)?; \
-	  read yesno rest; \  
+	  read yesno rest; \
 	  if test $$? -ne 0 ; then \
 	    yesno='no'; \
 	  fi; \
@@ -737,10 +737,10 @@ endif
 	  if test -z "$(THORNLIST)" || (test -n "$(THORNLIST)" && test -r "$(THORNLIST_DIR)/$(THORNLIST)") ; \
 	  then \
 	    if ($(SETUP_ENV) $(PERL) -s $(SETUP) $(SETUP_OPTIONS) $(@:%-config=%)) ; then : ; else \
-              echo "" ;                                                      \
-              echo "Error creating configuration $(@:%-config=%)" ;                       \
-              exit 2                                 ;                       \
-            fi ;                                                             \
+              echo "" ; \
+              echo "Error creating configuration $(@:%-config=%)" ; \
+              exit 2; \
+            fi ; \
 	    if test -n "$(THORNLIST)"; \
 	    then \
 	      cp $(THORNLIST_DIR)/$(THORNLIST) $(CONFIGS_DIR)/$(@:%-config=%)/ThornList;\
@@ -1128,7 +1128,7 @@ cvsdiff:
 downsize:
 	@echo $(DIVIDER)
 	@echo Remove flesh and thorn documentation \(\no\)?
-	read yesno rest; \  
+	read yesno rest; \
 	if test $$? -ne 0 ; then \
 	  yesno='no'; \
 	fi; \
@@ -1138,7 +1138,7 @@ downsize:
 	echo $(DIVIDER)   ;  \
 	fi
 	@echo Remove thorn testsuites \(\no\)?
-	read yesno rest; \  
+	read yesno rest; \
 	if test $$? -ne 0 ; then \
 	  yesno='no'; \
 	fi; \
@@ -1148,7 +1148,7 @@ downsize:
 	echo $(DIVIDER)   ;  \
 	fi
 	@echo Remove all configurations \(\no\)?
-	read yesno rest; \  
+	read yesno rest; \
 	if test $$? -ne 0 ; then \
 	  yesno='no'; \
 	fi; \
@@ -1165,7 +1165,7 @@ downsize:
 	@echo "Cactus - version: $(CCTK_VERSION)"
 	if test "x$(PROMPT)" = "xyes" ; then \
 	  echo Setup configuration $@ \(yes\)?; \
-	  read yesno rest; \  
+	  read yesno rest; \
 	  if test $$? -ne 0 ; then \
 	    yesno='no'; \
 	  fi; \
