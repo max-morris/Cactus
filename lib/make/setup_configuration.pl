@@ -75,6 +75,9 @@ if (! -d "$config" && ! -l "$config")
   &SetConfigureEnv();
 
   system("$configure");
+
+  $retcode = $? >> 8;
+
   chdir "..";
   chdir "..";
 }
@@ -91,9 +94,15 @@ if($reconfig)
   &SetConfigureEnv();
 
   system("$configure");
+
+  $retcode = $? >> 8;
+
   chdir "..";
   chdir "..";
 }
+
+exit $retcode;
+
 
 #/*@@
 #  @routine    
