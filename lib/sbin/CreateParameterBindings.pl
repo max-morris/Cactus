@@ -225,7 +225,7 @@ sub CreateParameterBindings
         my $realname = $rhparameter_db->{"\U$thorn $parameter\E realname"};
 
         $type = $rhparameter_db->{"\U$friend_thorn $realname\E type"};
-        $array = $rhparameter_db->{"\U$friend_thorn $realname\E array_size"};
+        $array_size = $rhparameter_db->{"\U$friend_thorn $realname\E array_size"};
         $type_string = &get_c_type_string($type);
 
         my $varprefix = '';
