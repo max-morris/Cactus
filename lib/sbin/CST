@@ -9,6 +9,12 @@
 #  @version $Header $
 #@@*/
 
+# Global parameter to track the number of errors from the CST
+# The file make.thornlist is only created if the number of errors
+# is zero.
+
+$CST_errors = 0;
+
 ##########################################################################
 # Parse the command line
 
@@ -88,8 +94,6 @@ if($debug_interface)
 
 %parameter_database = &CheckImpParamConsistency(scalar(keys %interface_database), %interface_database, %parameter_database);
 
-#$debug_parameters = 1;
-
 if($debug_parameters)
 {
   &print_parameter_database(%parameter_database);
@@ -105,6 +109,26 @@ if($debug_parameters)
 
 # Finally (must be last), create the make.thornlist file.
 @make_thornlist = &CreateMakeThornlist(%thorns);
+
+# Stop the make process if there were any errors
+if ($CST_errors)
+{
+    if ($CST_errors == 1) 
+    {
+      $comment1 = "was 1 error";
+      $comment2 = "This";
+    }
+    else 
+    {
+      $comment1 = "were $CST_errors errors";
+      $comment2 = "These";
+    }
+    print "\n\n------------------------------------------------------\n";
+    print "There $comment1 during execution of the CST\n";
+    print "$comment2 must be corrected before compilation can proceed\n";
+    print "------------------------------------------------------\n\n";
+    exit(1);
+}
 
 &OutputFile($config_dir, "make.thornlist", @make_thornlist);
 
