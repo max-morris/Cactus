@@ -1,11 +1,11 @@
 #! /usr/bin/perl -w
 
 #/*@@
-#  @file      interface_parser.pl
-#  @date      Wed Sep 16 15:07:11 1998
-#  @author    Tom Goodale
+#  @file    interface_parser.pl
+#  @date    Wed Sep 16 15:07:11 1998
+#  @author  Tom Goodale
 #  @desc
-#  Parses interface.ccl files
+#           Parses interface.ccl files
 #  @enddesc
 #  @version $Header: /cactusdevcvs/Cactus/lib/sbin/interface_parser.pl,v 1.55
 #@@*/
@@ -17,11 +17,6 @@
 #  @desc
 #  Creates a database of all the interfaces
 #  @enddesc
-#  @calls
-#  @calledby
-#  @history
-#
-#  @endhistory
 #@@*/
 
 sub create_interface_database
@@ -390,13 +385,19 @@ sub check_implementation_consistency
     # Check the consistency of the inheritance
     foreach $thing (keys %inherits)
     {
-      if(split(" ", $inherits{$thing}) != $n_thorns)
+      if(split(' ', $inherits{$thing}) != $n_thorns)
       {
-        $message  = "Inconsistent implementations of $implementation. ";
-        $message .= "Implemented by thorns " . join(" ", @thorns) . "\n";
-        $message .= "Not all inherit: $thing";
-        &CST_error(0,$message,"",__LINE__,__FILE__);
-        $n_errors++;
+### Thomas Radke, 2 Sep 2003
+### If this consistency check fails, only a warning should be issued
+### rather than stopping the CST with an error message.
+### This allows thorns providing the same implementation to have different
+### inherits.
+#        $n_errors++;
+#        &CST_error(0,
+        &CST_error(1,
+                   "Inconsistent implementation of '$implementation' " .
+                   "provided by thorns '@thorns': not all inherit '$thing'",
+                   '', __LINE__, __FILE__);
       }
     }
 
@@ -618,11 +619,6 @@ sub check_implementation_consistency
 #  @desc
 #  Check consistency of the interfaces files
 #  @enddesc
-#  @calls
-#  @calledby
-#  @history
-#
-#  @endhistory
 #@@*/
 
 sub check_interface_consistency
@@ -665,11 +661,6 @@ sub check_interface_consistency
 #  @desc
 #  Parses an interface.ccl file and generates a database of the values.
 #  @enddesc
-#  @calls
-#  @calledby
-#  @history
-#
-#  @endhistory
 #@@*/
 
 sub parse_interface_ccl
@@ -1129,12 +1120,6 @@ sub print_interface_database
 #  @desc
 #  Prints out some statistics about a thorn's interface.ccl
 #  @enddesc
-#  @calls
-#  @calledby
-#  @history
-#
-#  @endhistory
-#
 #@@*/
 sub PrintInterfaceStatistics
 {
