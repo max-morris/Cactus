@@ -17,11 +17,11 @@
 extern "C" {
 #endif
 
-void *CCTK_GetVarDataPtr_ByName(cGH *GH, char *fullvarname, int timelevel);
+void *CCTK_GetVarDataPtr_ByName(cGH *GH, int timelevel, char *fullvarname);
 
-void *CCTK_GetVarDataPtr_ByIndex(cGH *GH, int varindex, int timelevel);
+void *CCTK_GetVarDataPtr_ByIndex(cGH *GH, int timelevel, int varindex);
 
-void *CCTK_GetVarDataPtr(cGH *GH, int varindex, char *fullvarname, int timelevel);
+void *CCTK_GetVarDataPtr(cGH *GH, int timelevel, int varindex, char *fullvarname);
 
 #ifdef __cplusplus 
 }
