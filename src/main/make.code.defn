@@ -8,6 +8,7 @@ CactusDefaultEvolve.c\
 CactusDefaultShutdown.c\
 CallStartupFunctions.c\
 ConfigData.c\
+Coord.c\
 InitialiseCactus.c\
 InitialiseDataStructures.c\
 ProcessCommandLine.c\
