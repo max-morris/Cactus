@@ -40,8 +40,12 @@ else
 fi
 
 # Set the FFTW libs, libdirs and includedirs
-FFTW_LIB_DIRS='$(FFTW_DIR)/lib'
-FFTW_INC_DIRS='$(FFTW_DIR)/include'
+
+# don't explicitely add standard include and library search paths
+if [ "$FFTW_DIR" != '/usr' -a "$FFTW_DIR" != '/usr/local' ]; then
+  FFTW_LIB_DIRS="$FFTW_DIR/lib"
+  FFTW_INC_DIRS="$FFTW_DIR/include"
+fi
 
 
 # Write the data out to the header and make files.

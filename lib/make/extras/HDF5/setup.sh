@@ -182,7 +182,6 @@ CCTK_WriteLine make.extra.defn "HDF5_LIB_DIRS        = $HDF5_LIB_DIRS"
 CCTK_WriteLine make.extra.defn "HDF5_INC_DIRS        = $HDF5_INC_DIRS"
 
 CCTK_WriteLine make.extra.defn ''
-CCTK_WriteLine make.extra.defn ''
 
 CCTK_WriteLine make.extra.defn 'LIBS         += $(HDF5_LIBS)'
 CCTK_WriteLine make.extra.defn 'LIBDIRS      += $(HDF5_LIB_DIRS)'

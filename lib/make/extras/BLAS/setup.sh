@@ -29,6 +29,10 @@ if test "X$choose_blas" = 'Xyes' ; then
       exit 2
     fi
     echo "Found a BLAS package in $BLAS_DIR"
+    # don't explicitely add standard include and library search paths
+    if [ "$BLAS_DIR" = '/usr/lib' -o "$BLAS_DIR" = '/usr/local/lib' ]; then
+      BLAS_DIR=''
+    fi
   elif test "$BLAS_DIR" = 'none'; then
     # user doesn't want the library path added
     BLAS_DIR=''

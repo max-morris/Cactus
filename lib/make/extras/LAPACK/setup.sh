@@ -26,6 +26,10 @@ if test "X$choose_lapack" = "Xyes" ; then
       exit 2
     fi
     echo "  Found a LAPACK package in $LAPACK_DIR"
+    # don't explicitely add standard include and library search paths
+    if [ "$LAPACK_DIR" = '/usr/lib' -o "$LAPACK_DIR" = '/usr/local/lib' ]; then
+      LAPACK_DIR=''
+    fi
   elif test "$LAPACK_DIR" = 'none'; then
     # user doesn't want the library path added
     LAPACK_DIR=''
