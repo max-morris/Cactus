@@ -44,7 +44,7 @@ int ProcessCommandLine(int *inargc, char ***inargv, tFleshConfig *ConfigData)
 
   argv = *inargv;
 
-  /* Process the command line */
+  /* Process the command line - needs some work !*/
 
   if(argc>1)
   {

@@ -9,7 +9,7 @@
 #include <stdio.h>
 
 #include "flesh.h"
-#include "parameters.h"
+#include "rfr_constants.h"
 
 static char *rcsid="$Id$";
 
@@ -33,11 +33,12 @@ static char *rcsid="$Id$";
  /* Quick stuff for testing purposes. */
 #define EVOLUTION 1
 #define OUTPUT    2
-int itlast;
+static int itlast =0;
 int cactus_terminate;
-#define CACTUS_CHECKPOINT 3
+static int cactus_terminate_global = 0;
 #define TERMINATION_RAISED_BRDCAST 4
  
+
  /*@@
    @routine    CactusDefaultEvolve
    @date       Thu Oct  8 17:30:15 1998
@@ -59,9 +60,9 @@ int CactusDefaultEvolve(tFleshConfig *config)
 
   CactusStartTimer(config->timer[EVOLUTION]);
 
-#ifdef 0
-  InfoHeader(config);
-#endif
+  /*
+  CCTK_InfoHeader(config);
+  */
 
   while (iteration<itlast) 
   {
@@ -71,21 +72,19 @@ int CactusDefaultEvolve(tFleshConfig *config)
 
 
     ForallConvLevels(iteration, convergence_level)
-      {
-#ifdef 0
-	StepGH(config->GH[convergence_level]);
-	InfoOutput(config->GH[convergence_level], convergence_level);
-#endif
-      }
+    {
+      CCTK_StepGH(config->GH[convergence_level]);
+      /*
+      CCTK_InfoOutput(config->GH[convergence_level], convergence_level);
+      */
+    }
     EndForallConvLevels;
   
     /* Dump out checkpoint data on all levels */
     ForallConvLevels(iteration, convergence_level)
-      {
-#ifdef 0
-	rfrTraverse(config->GH[convergence_level],CACTUS_CHECKPOINT);
-#endif
-      }
+    {
+      rfrTraverse(config->GH[convergence_level],CACTUS_CHECKPOINT);
+    }
     EndForallConvLevels;
 
     /* Output perhaps */
@@ -119,3 +118,161 @@ int CactusDefaultEvolve(tFleshConfig *config)
   return 0;
 }
 
+/************************************************************************/
+
+/* The following routines have been nicked from 3.0 for the moment. */
+
+
+
+
+
+ /*@@
+   @routine    CStepper
+   @date       Fri Aug 14 12:39:49 1998
+   @author     Gerd Lanfermann
+   @desc 
+     The full set of routines used to execute all rfr steps 
+     int the main iteration loop. Makes calls to the individual 
+     routines for each rfr step.
+   @enddesc 
+   @calls  PreStepper, EvolStepper, PostStepper, BoundStepper
+   @calledby main   
+ @@*/
+
+int CCTK_StepGH(cGH *GH) {
+  void PreStepper(cGH *GH);
+  void EvolStepper(cGH *GH);
+  void PostStepper(cGH *GH);
+  void BoundStepper(cGH *GH);
+  PreStepper(GH);
+  EvolStepper(GH);
+  BoundStepper(GH);
+  PostStepper(GH);
+}
+
+ /*@@
+   @routine    PreStepper
+   @date       Fri Aug 14 12:43:20 1998
+   @author     Gerd Lanfermann
+   @desc 
+     calls RFR-PRESTEP
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+
+void PreStepper(cGH *GH) {
+  int Rstep;  
+
+  /* Call the rfr with CACTUS_PRESTEP */
+  for (Rstep = CACTUS_PRESTEP;Rstep <= CACTUS_PRESTEP5; Rstep++)
+    rfrTraverse(GH, Rstep);
+}
+ /*@@
+   @routine    EvolStepper
+   @date       Fri Aug 14 12:44:00 1998
+   @author     Gerd Lanfermann
+   @desc 
+     calls RFR-EVOLUTION, checks for nans, increases physical time
+   @enddesc 
+   @calls     
+   @calledby   
+   @history
+   @hauthor Gabrielle Allen
+   @hdate Sep 98 @hdesc Advance GHiteration
+   @endhistory
+@@*/
+
+void EvolStepper(cGH *GH) {
+  /* Call the rfr with Evolution */
+  rfrTraverse(GH, CACTUS_EVOL);
+  /* after Evolution check for NANs */
+
+#ifdef 0
+  /* Increment physical time now */
+  GH->phys_time = GH->phys_time + GH->dt0;
+#endif
+
+  GH->iteration++;
+
+
+}
+ /*@@
+   @routine    BoundStepper
+   @date       Fri Aug 14 12:44:58 1998
+   @author     Gerd Lanfermann
+   @desc 
+     calls RFR-CACTUS_BOUND applies boudnary conditions
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+
+void BoundStepper(cGH *GH) {
+  rfrTraverse(GH,CACTUS_BOUND);
+}
+
+ /*@@
+   @routine    PostStepper
+   @date       Fri Aug 14 12:45:39 1998
+   @author     Gerd Lanfermann
+   @desc 
+     calls the routines rgeistered as CACTUS_POSSTEPS
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+void PostStepper(cGH *GH) {
+  int Rstep;  
+   /* Call the rfr with post step */
+  for (Rstep = CACTUS_POSTSTEP; Rstep <= CACTUS_POSTSTEP10; Rstep++)
+    rfrTraverse(GH, Rstep); 
+}
+ /*@@
+   @routine    TerminationStepper
+   @date       Fri Aug 14 13:07:11 1998
+   @author     Gerd Lanfermann
+   @desc 
+     catctus_terminate is a global variable with these values: 
+     TERMINATION_NOT_RAISED    : not signaled yet (cactus_initial.c)
+     TERMINATION_RAISED_LOCAL  : signaled on one PE, not reduced (MPI_LOR) 
+                                 to all PEs yet (main.c)
+     TERMINATION_RAISED_BRDCAST: reduced -> can now be used to terminate 
+                                 (chkpnt_terminate.c) by RFR 
+     the raised termiantion signal is caught on 1 PE only and has to be recduced
+     on all PEs before a termination sequenced can be launched (I like that)
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+
+void TerminationStepper(cGH *GH) {
+  int cactus_terminate_global; 
+  
+  cactus_terminate_global=cactus_terminate;
+#ifdef MPI
+  MPI_Allreduce(&cactus_terminate,&cactus_terminate_global,1,
+		MPI_INT,MPI_LOR,GH->PUGH_COMM_WORLD);
+#endif
+  if (cactus_terminate_global) { 
+    cactus_terminate=TERMINATION_RAISED_BRDCAST;
+    printf("RECEIVED GLOBAL TERMINATION SIGNAL \n");
+  }
+  rfrTraverse(GH,CACTUS_TERMINATE);
+}
