@@ -643,9 +643,6 @@ int CactusDefaultGroupStorageIncrease (const cGH *GH, int n_groups,
   char *gname;
 
 
-  /* Avoid a warning about timelevels being unused. */
-  (void) (timelevels + 0);
-
   /* Has the normal group storage been overloaded ? */
   if(CCTK_EnableGroupStorage != CactusDefaultEnableGroupStorage)
   {
@@ -653,10 +650,22 @@ int CactusDefaultGroupStorageIncrease (const cGH *GH, int n_groups,
     {
       if(groups[i] >= 0)
       {
-        gname = CCTK_GroupName(groups[i]);
-        value = CCTK_EnableGroupStorage(GH, gname);
-        free (gname);
-        retval += value;
+        /* Since the old enable and disable group storage just returned true or
+         * false and did all timelevels, only enable storage if timelevels is
+         not 0
+         */
+        value = 0;
+        if(timelevels[i] != 0)
+        {
+          gname = CCTK_GroupName(groups[i]);
+          value = CCTK_EnableGroupStorage(GH, gname);
+          free (gname);
+          if (value)
+          {
+            value = CCTK_NumTimeLevelsI(groups[i]);
+          }
+          retval += value;
+        }
         if(status)
         {
           status[i] = value;
@@ -754,6 +763,10 @@ int CactusDefaultGroupStorageDecrease (const cGH *GH, int n_groups,
         if(timelevels[i] == 0)
         {
           value = CCTK_DisableGroupStorage(GH, CCTK_GroupName(groups[i]));
+          if (value)
+          {
+            value = CCTK_NumTimeLevelsI(groups[i]);
+          }
           retval += value;
         }
         if(status)
