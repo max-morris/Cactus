@@ -360,19 +360,19 @@ sub ParseFile
       next;
     }
 
-    if($line =~ m/^#define\s+([^\s]+)(\s+(.*))?/)
+    if($line =~ m/^\s*#\s*define\s+([^\s]+)(\s+(.*))?/)
     {
       # Define a macro
       &Define($1,$3,$filename, $linenumber) if($active);
       next;
     }
-    elsif($line =~ m/^#undef\s+([^\s]+)/)
+    elsif($line =~ m/^\s*#\s*undef\s+([^\s]+)/)
     {
       # Undefine a macro
       &UnDefine($1,$filename,$linenumber) if($active);
       next;
     }
-    elsif($line =~ m/^#if(.+)/)
+    elsif($line =~ m/^\s*#\s*if(.+)/)
     {
       #Deal with a #if clause - do it recursively
       my $newactive;
@@ -400,12 +400,12 @@ sub ParseFile
           # Got EOF !
           die "Unexpected EOF when parsing $filename";
         }
-        elsif($currentline && $currentline =~ /\#endif\s*/)
+        elsif($currentline && $currentline =~ /\#\s*endif\s*/)
         {
           # Finished
           last;
         }
-        elsif($currentline =~ m/^#elif(\s+.+)/ && ! $foundelse)
+        elsif($currentline =~ m/^\s*#\s*elif(\s+.+)/ && ! $foundelse)
         {
           # Got #elif, is this next clause active ?
           if(! $beenactive)
@@ -425,7 +425,7 @@ sub ParseFile
             $newactive = 0;
           }
         }
-        elsif($currentline =~ m/^#else\s*$/ && ! $foundelse)
+        elsif($currentline =~ m/^\s*#\s*else\s*$/ && ! $foundelse)
         {
           # Got #else, have any of the clauses been active ?
           if($active)
@@ -441,7 +441,7 @@ sub ParseFile
         }
         else
         {
-          if($currentline =~ m/^#else/ || $currentline =~ m/^#elsif/)
+          if($currentline =~ m/^\s*#\s*else/ || $currentline =~ m/^\s*#\s*elsif/)
           {
             print STDERR "Extraneous #else of #elsif found at $filename:$linenumber\n";
             $newactive = 0;
@@ -453,7 +453,7 @@ sub ParseFile
         }
       }
     }
-    elsif($line =~ m/^\#elif/ || $line =~ m/^\#else/ || $line =~ m/^\#endif/)
+    elsif($line =~ m/^\s*\#\s*elif/ || $line =~ m/^\s*\#\s*else/ || $line =~ m/^\s*\#\s*endif/)
     {
       if($firstline > 0)
       {
@@ -466,7 +466,7 @@ sub ParseFile
         die "Unexpected #elif/#else/#endif at $filename:$linenumber";
       }
     }
-    elsif($line =~ m/^#include\s+(.+)?/)
+    elsif($line =~ m/^\s*#\s*include\s+(.+)?/)
     {
       # Now to include files.
       if(! defined($1))
@@ -659,25 +659,22 @@ sub ProcessIf
   {
     $retval = defined($defines{$1}) ? 0 : 1;
   }
-  elsif($line =~ m/^\s+([^\s]+)\s*$/)
+  elsif($line =~ m/^\s+(defined\s+)?([^\s]+)\s*$/)
   {
-    my $val = $1;
-    if(defined($defines{$val}))
-    {
-      $retval = $defines{$val}
-    }
-    elsif($val =~ m/^\d+$/)
+    my $val = $2;
+    if($val =~ m/^\d+$/)
     {
       $retval = $val;
     }
     else
     {
-      print STDERR "#if <constant> called on non-digit and non-define $val at $filename\::$linenumber !\n";
+#      print STDERR "#if <constant> called on non-digit and non-define $val at $filename\::$linenumber !\n";
+      $retval = defined($defines{$val}) ? $defines{$val} : 0;
     }
   }
   else
   {
-    print STDERR "#if can currently to #ifdef and #ifndef, sorry ! (At $filename\::$linenumber.)\n";
+    print STDERR "#if can currently do #ifdef and #ifndef, sorry ! (At $filename\::$linenumber.)\n";
     $retval = 0;
   }
 
@@ -723,7 +720,7 @@ sub Define
 
   if($defines{$defname})
   {
-    print STDERR "Redefining $defname at $filename:$linenumber\n";
+#    print STDERR "Redefining $defname at $filename:$linenumber\n";
   }
 
   # Translate argument names just once at original definition.
@@ -1144,7 +1141,7 @@ sub ArgumentSubstitute
 
     for(my $arg = 0; $arg < $nargs; $arg++)
     {
-      if($token eq "$args[$arg]$")
+      if($token eq "$args[$arg]")
       {
         $token = $args[$arg+$nargs];
         last;
