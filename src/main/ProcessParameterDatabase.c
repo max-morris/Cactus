@@ -75,6 +75,12 @@ int CCTKi_ProcessParameterDatabase (tFleshConfig *ConfigData)
     parameter_file = fopen (ConfigData->parameter_file_name, "r");
   }
 
+  if (parameter_file == NULL)
+  {
+    CCTK_VWarn (0, __LINE__, __FILE__, "Cactus",
+                "Cannot open parameter file '%s'", ConfigData->parameter_file_name);
+  }
+
   if (parameter_file)
   {
     parse_errors = ParseFile (parameter_file, CCTKi_SetParameter, ConfigData);
@@ -129,8 +135,9 @@ int CCTKi_ProcessParameterDatabase (tFleshConfig *ConfigData)
   }
   else
   {
-    fprintf (stderr, "Unable to open parameter file '%s'\n", 
-             ConfigData->parameter_file_name);
+    CCTK_VWarn(0, __LINE__, __FILE__, "Cactus", 
+               "Unable to open parameter file '%s'\n", 
+               ConfigData->parameter_file_name);
   }
       
   return (parameter_file ? 0 : -1);
