@@ -1902,7 +1902,7 @@ int CCTKi_CreateGroup (const char *gname,
         variable_name = va_arg (ap, char *);
 
         group->variables[variable].name =
-          (char *)malloc ((strlen (variable_name)+1*sizeof (char)));
+          (char *)malloc ((strlen (variable_name)+1)*sizeof (char));
         
         if (group->variables[variable].name)
         {
@@ -1920,7 +1920,7 @@ int CCTKi_CreateGroup (const char *gname,
 
       for (variable = 0; variable < n_variables; variable++)
       {
-        char *name;
+        char *name = NULL;
         Util_asprintf(&name, "%s[%d]", variable_name, variable);
 
         group->variables[variable].name = name;
@@ -2132,14 +2132,20 @@ static CCTK_INT **CCTKi_ExtractSize (int dimension,
   const char *last_comma, *next_comma;
   char       *thorn, *param, *tmp;
   regmatch_t  pmatch[5];
+/*** FIXME: TR 23 Oct 2001 - switch back to old regex parsing
+            the parameter expression parser has a bug for parsing tokens
+            like '<parameter>+<constant>' (try AHFinder testsuites) ***/
+#define USE_REGEX_PARSER 1
+#ifndef USE_REGEX_PARSER
   CCTK_INT size;
+#endif
   
 
   if (strlen (sizestring))
   {
     size_array = (CCTK_INT **) malloc (dimension * sizeof (CCTK_INT *));
 
-#if 1
+#ifndef USE_REGEX_PARSER
     size_array[0] = (CCTK_INT *) malloc(dimension *sizeof(CCTK_INT));
 
     for(dim = 1; dim < dimension; dim++)
@@ -2165,7 +2171,7 @@ static CCTK_INT **CCTKi_ExtractSize (int dimension,
           tmp[next_comma-last_comma] = '\0';
         }
 
-#if 0
+#ifdef USE_REGEX_PARSER
         /* now execute the regex parser on that token
            This should always succeed since the perl parser did the same
            check already when creating the variable bindings. */
@@ -2230,12 +2236,11 @@ static CCTK_INT **CCTKi_ExtractSize (int dimension,
           free (thorn);
           free (param);
         }
-#endif
-#if 1
+#else
         size = CCTKi_ParamExpressionToInt(tmp, this_thorn);
 
         *size_array[dim] = size;
-#endif
+#endif /* USE_REGEX_PARSER */
    
         free (tmp);
       }
