@@ -17,6 +17,7 @@
 #include "parameters.h"
 #include "rfr_constants.h"
 #include "CactusrfrInterface.h"
+#include "declare_parameters.h"
 
 static char *rcsid = "$Id$";
 
@@ -76,12 +77,17 @@ int CactusDefaultInitialise(tFleshConfig *config)
 @@*/
 int Cactus_InitialiseGH(cGH *GH)
 {
+  
+  DECLARE_PARAMETERS
 
   int Rstep;
 
   /*
   SetupFortranArrays(GH);
   */
+  
+  /* Initialise time */
+  GH->time = cctk_initial_time;
   
   
   /* Setup the rfr_top on this GH */
