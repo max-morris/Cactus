@@ -12,9 +12,9 @@
 : ${F90FLAGS="-g -O2 -qfixed"}
 : ${F77FLAGS="-g -O2 -qfixed"}
 
-: ${C_DEPEND_OUT=" > $@"}
-: ${CXX_DEPEND_OUT=" > $@"}
-: ${F_DEPEND_OUT=" > /dev/null ; mv $(basename $(@)).u $@"}
-: ${F77_DEPEND_OUT=" > /dev/null ; mv $(basename $(@)).u $@"}
+: ${C_DEPEND_OUT=' > $@'}
+: ${CXX_DEPEND_OUT=' > $@'}
+: ${F_DEPEND_OUT=' > /dev/null ; mv $(basename $(@)).u $@'}
+: ${F77_DEPEND_OUT=' > /dev/null ; mv $(basename $(@)).u $@'}
 
-: ${LIBS="xlf990"}
+: ${LIBS="xlf90"}
