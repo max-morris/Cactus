@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.72 2000-02-19 20:08:24 allen Exp $
+#   @version $Id: Makefile,v 1.73 2000-03-05 20:02:10 allen Exp $
 # @@*/
 
 ##################################################################################
@@ -305,16 +305,19 @@ endif
 	@echo $(DIVIDER)
 	@echo $(MAKE) also knows the following targets
 	@echo
-	@echo "  checkout  - checkout public arrangements/thorns."
-	@echo "  default   - creates a new configuration with a default name."
-	@echo "  distclean - deletes all existing configurations."
-	@echo "  doc       - creates UserGuide.ps"
-	@echo "  downsize  - remove non-essential files."
-	@echo "  newthorn  - creates a new thorn."
-	@echo "  TAGS      - creates an Emacs TAGS file."
-	@echo "  tags      - creates a Vi TAGS file."
-	@echo "  thorninfo - give information about all available thorns."
-	@echo "  <anything else> prompts to create such a configuration."
+	@echo "  checkout         - checkout public arrangements/thorns."
+	@echo "  default          - creates a new configuration with "
+	@echo "			    a default name."
+	@echo "  distclean        - deletes all existing configurations."
+	@echo "  downsize         - remove non-essential files."
+	@echo "  MaintGuide       - creates maintainers manual, MaintGuide.ps."
+	@echo "  newthorn         - creates a new thorn."
+	@echo "  TAGS             - creates an Emacs TAGS file."
+	@echo "  tags             - creates a Vi TAGS file."
+	@echo "  thorninfo        - give information about all available "
+	@echo "                     thorns."
+	@echo "  UsersGuide       - creates users manual UserGuide.ps."
+	@echo "  <anything else>  - prompts to create such a configuration."
 	@echo $(DIVIDER)
 
 # Clean a configuration
@@ -669,11 +672,18 @@ endif
 
 # Make the users manuals
 
-.PHONY: doc
-doc:
+.PHONY: UsersGuide
+UsersGuide:
 	@echo $(DIVIDER)
 	@echo Creating user documentation UsersGuide.ps
 	(cd doc/UsersGuide; latex UsersGuide.tex; latex UsersGuide.tex; dvips ./UsersGuide.dvi -o $(CCTK_HOME)/UsersGuide.ps) ; cd $(CCTK_HOME);
+	@echo $(DIVIDER)
+
+.PHONY: MaintGuide
+MaintGuide:
+	@echo $(DIVIDER)
+	@echo Creating maintainers documentation MaintGuide.ps
+	(cd doc/MaintGuide; latex MaintGuide.tex; latex MaintGuide.tex; dvips ./MaintGuide.dvi -o $(CCTK_HOME)/MaintGuide.ps) ; cd $(CCTK_HOME);
 	@echo $(DIVIDER)
 
 # Rule to show thorn information
