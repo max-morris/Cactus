@@ -751,9 +751,10 @@ This is a 1 byte data type.
 
 Normally a thorn should use the default types ---
 CCTK\_INT, CCTK\_REAL, CCTK\_COMPLEX --- rather than explicitly setting the size, as this gives maximum
-portability. Also, the defaults can be changed at configuration time,  and
-this allows people to compile the code with different precisions to test
-for round-off effects, or to run more quickly with a lower accuracy.
+portability. Also, the defaults can be changed at configuration time (see
+\ref{Compilation-Available_Options}), and this allows people to compile the
+code with different precisions to test for round-off effects, or to run more
+quickly with a lower accuracy.
 
 \section{Group Types}
 
@@ -3435,22 +3436,22 @@ Data Type & Size (bytes) & Variable Type & Fortran Equivalent\\
 \end{tabular}
 \end{center}
 
-In addition Cactus provides three data types whose size is chosen
-during the compilation process (at configuration time). This is to
-allow the code to be easily run at different precisions. Note that
-the effectiveness of running the code at a lower or higher precision
-depends crucially on all thorns being used making consistent use
-of the following data types:
-
+In addition Cactus provides three generic numeric data types which map onto
+the compilers' native data types used to represent integer, real, and complex
+values. The size for these generic types can be chosen at configuration time
+(see \ref{Compilation-Available_Options}). This is to allow the code to be
+easily run at different precisions. Note that the effectiveness of running the
+code at a lower or higher precision depends crucially on all thorns being used
+making consistent use of the these generic data types:
 
 \begin{center}
 \begin{tabular}{|l|l|l|l|}
 \hline
-Data Type          & Default Size (bytes) & Variable Type & Configuration Option\\
+Data Type          & Variable Type & Configuration Option\\
 \hline
-{\t CCTK\_INT}     & 4 & {\t CCTK\_VARIABLE\_INT} & {\t INTEGER\_PRECISION}\\
-{\t CCTK\_REAL}    & 8 & {\t CCTK\_VARIABLE\_REAL} & {\t REAL\_PRECISION}\\
-{\t CCTK\_COMPLEX} & (8,8) & {\t CCTK\_VARIABLE\_COMPLEX} & Same as real precision\\
+{\t CCTK\_INT}     & {\t CCTK\_VARIABLE\_INT} & {\t INTEGER\_PRECISION}\\
+{\t CCTK\_REAL}    & {\t CCTK\_VARIABLE\_REAL} & {\t REAL\_PRECISION}\\
+{\t CCTK\_COMPLEX} & {\t CCTK\_VARIABLE\_COMPLEX} & Same as real precision\\
 \hline
 \end{tabular}
 \end{center}
@@ -3487,6 +3488,7 @@ data size is being used:
 \begin{tabular}{|l|l|}
 \hline
 Data Type & {\t \#define}\\
+\hline
 {\t CCTK\_INT2}      & {\t CCTK\_INT\_PRECISION\_2}      \\
 {\t CCTK\_INT4}      & {\t CCTK\_INT\_PRECISION\_4}      \\
 {\t CCTK\_INT8}      & {\t CCTK\_INT\_PRECISION\_8}      \\
