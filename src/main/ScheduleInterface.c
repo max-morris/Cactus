@@ -782,7 +782,7 @@ int CCTK_ScheduleTraverse(const char *where,
   const char *current;
 
   static char *current_point = NULL;
-  static int current_length = 0;
+  static unsigned int current_length = 0;
   char *temp;
 
   special=0;
@@ -1874,6 +1874,10 @@ static int SchedulePrintTimes(const char *where, t_sched_data *data)
 static int CCTKi_SchedulePrintEntry(t_attribute *attribute, 
                                     t_sched_data *data)
 {
+  /* prevent compiler warnings about unused parameters */
+  attribute = attribute;
+  data = data;
+
   indent_level += 2;
 
   return 1;
@@ -1914,6 +1918,10 @@ static int CCTKi_SchedulePrintEntry(t_attribute *attribute,
 static int CCTKi_SchedulePrintExit(t_attribute *attribute, 
                                    t_sched_data *data)
 {
+  /* prevent compiler warnings about unused parameters */
+  attribute = attribute;
+  data = data;
+
   indent_level -=2;
 
   return 1;
@@ -1980,6 +1988,10 @@ static int CCTKi_SchedulePrintWhile(int n_whiles,
                                     int first)
 {
   int i;
+
+  /* prevent compiler warnings about unused parameters */
+  attribute = attribute;
+  data = data;
 
   if(first)
   {
@@ -2053,6 +2065,12 @@ static int CCTKi_SchedulePrintFunction(void *function,
                                        t_sched_data *data)
 {
   int i;
+
+  /* prevent compiler warnings about unused parameters */
+  function = function;
+  attribute = attribute;
+  data = data;
+
   for(i=0; i < indent_level; i++) printf(" ");
 
   printf("%s: %s\n", attribute->thorn, attribute->description);
@@ -2304,6 +2322,11 @@ static int CCTKi_ScheduleCallWhile(int n_whiles,
   int i;
   int retcode;
 
+  /* prevent compiler warnings about unused parameters */
+  attribute = attribute;
+  data = data;
+  first = first;
+
   retcode = 1;
 
   /* FIXME - should do a lot of validation either here or on registration */
@@ -2358,8 +2381,6 @@ static int CCTKi_ScheduleCallFunction(void *function,
                                       t_attribute *attribute, 
                                       t_sched_data *data)
 {
-  int synchronised;
-
   CCTK_TimerStartI(attribute->timer_handle);
 
   /* Use whatever has been chosen as the calling function for this 
@@ -2412,6 +2433,10 @@ static int CCTKi_ScheduleCallFunction(void *function,
 static int CCTKi_SchedulePrintTimesEntry(t_attribute *attribute, 
                                          t_sched_data *data)
 {
+  /* prevent compiler warnings about unused parameters */
+  attribute = attribute;
+  data = data;
+
   return 1;
 }
 
@@ -2450,6 +2475,10 @@ static int CCTKi_SchedulePrintTimesEntry(t_attribute *attribute,
 static int CCTKi_SchedulePrintTimesExit(t_attribute *attribute, 
                                         t_sched_data *data)
 {
+  /* prevent compiler warnings about unused parameters */
+  attribute = attribute;
+  data = data;
+
   return 1;
 }
 
@@ -2513,6 +2542,12 @@ static int CCTKi_SchedulePrintTimesWhile(int n_whiles,
                                          t_sched_data *data,
                                          int first)
 {
+  /* prevent compiler warnings about unused parameters */
+  n_whiles = n_whiles;
+  whiles = whiles;
+  attribute = attribute;
+  data = data;
+
   return first;
 }
 
@@ -2560,6 +2595,10 @@ static int CCTKi_SchedulePrintTimesFunction(void *function,
                                             t_sched_data *data)
 {
   int i;
+
+  /* prevent compiler warnings about unused parameters */
+  function = function;
+
   for(i=0; i < indent_level; i++) printf(" ");
 
   CCTK_TimerI(attribute->timer_handle, data->info);
