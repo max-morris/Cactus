@@ -16,7 +16,7 @@
 #
 #
 #   @enddesc
-#   @version $Id: Makefile,v 1.132 2002-04-13 21:59:18 allen Exp $
+#   @version $Id: Makefile,v 1.133 2002-04-16 15:17:29 goodale Exp $
 # @@*/
 
 ##################################################################################
@@ -772,7 +772,7 @@ ifneq ($strip($(CONFIGURATIONS)),)
 
 $(addsuffix -testsuite,$(CONFIGURATIONS)):
 	@echo Running test suite $(@:%-thornlist=%)
-	if [ -r $(CONFIGS_DIR)/$(@:%-testsuite=%)/ThornList ] ; then $(PERL) -s lib/sbin/RunTest.pl $(PROMPT) $(@:%-testsuite=%) ; fi
+	if [ -r $(CONFIGS_DIR)/$(@:%-testsuite=%)/ThornList ] ; then $(PERL) -s lib/sbin/RunTest.pl $(PROMPT) $(CCTK_HOME) $(@:%-testsuite=%) ; fi
 endif
 
 %-testsuite:
