@@ -220,9 +220,9 @@ else
 
        # add the necessary libraries according to the compiler version
        if test "`$F90 -V 2>&1 | grep Version | sed 's/.*Version //' | sed 's/\..*//'`" -ge 8; then
-         : ${LIBS='ifcore imf m irc cxa cprts cxa unwind'}
+         : ${LIBS='ifcore imf svml m irc cxa cprts cxa unwind'}
        else
-         : ${LIBS='intrins IEPCF90 F90 imf m irc cxa cprts cxa'}
+         : ${LIBS='intrins IEPCF90 F90 imf svml m irc cxa cprts cxa'}
        fi
 
        # add the libpath if the linker is not Intel
