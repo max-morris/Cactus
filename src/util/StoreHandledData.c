@@ -223,7 +223,7 @@ static int FindNextUnused(cHandledData *storage, int first)
    @date       Fri May  8 17:36:33 1998
    @author     Tom Goodale
    @desc 
-   Gets a pointer to the data corresponding to the give handle.
+   Gets a pointer to the data corresponding to the given handle.
    @enddesc 
    @calls     
    @calledby
