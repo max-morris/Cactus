@@ -16,7 +16,7 @@
 #include "Misc.h"
 #include "Groups.h"
 
-static char *rcsid = "$Id$";
+static char *rcsid = "$Header$";
 
 /* Static variables needed to hold group and variable data. */
 
@@ -278,8 +278,8 @@ int CCTK_GetGroupNum(const char *implementation,
 
 @@*/
 int CCTK_GetVarNum(const char *implementation,
-		    const char *group_name,
-		    const char *variable_name)
+		   const char *group_name,
+		   const char *variable_name)
 {
   int retval;
   int group_num;
@@ -462,4 +462,39 @@ int CCTK_VTypeNumber(const char *type)
   }
 
   return retval;
+}
+
+
+ /*@@
+   @routine    CCTK_GetGroupData
+   @date       Mon Feb  8 15:56:01 1999
+   @author     Tom Goodale
+   @desc 
+   Gets the group type, the variable type, and the number of variables
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+int CCTK_GetGroupData(int group, int *gtype, int *vtype, int *n_variables)
+{
+  int return_code;
+
+  if(group >=0 && group < n_groups)
+  {
+    *gtype = groups[group].gtype;
+    *vtype = groups[group].vtype;
+    *n_variables = groups[group].n_variables;
+
+    return_code = 1;
+  }
+  else
+  {
+    return_code = 0;
+  }
+
+  return return_code;
 }

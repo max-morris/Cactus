@@ -43,6 +43,8 @@ int CCTK_GTypeNumber(const char *type);
 
 int CCTK_VTypeNumber(const char *type);
 
+int CCTK_GetGroupData(int group, int *gtype, int *vtype, int *n_variables);
+
 #ifdef _cplusplus 
 }
 #endif
