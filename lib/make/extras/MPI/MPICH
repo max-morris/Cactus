@@ -6,7 +6,7 @@
 #   @desc
 #            Configuration options for MPI=MPICH
 #   @enddesc
-#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/extras/MPI/MPICH,v 1.19 2004-09-23 11:51:40 tradke Exp $
+#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/extras/MPI/MPICH,v 1.20 2004-12-17 16:29:13 goodale Exp $
 # @@*/
 
 
@@ -115,7 +115,7 @@ case "$MPICH_DEVICE" in
 #
    if test -z "$MYRINET_DIR" ; then
       echo '  Myrinet device selected but no MYRINET_DIR set. Checking some places...'
-      CCTK_Search MYRINET_DIR '/usr /usr/local /usr/local/myrinet /usr/local/packages/myrinet /usr/local/apps/myrinet' lib/libgm.a
+      CCTK_Search MYRINET_DIR '/usr /usr/gm /usr/local /usr/local/gm /usr/local/myrinet /usr/local/packages/myrinet /usr/local/apps/myrinet' lib/libgm.a
       if test -z "$MYRINET_DIR" ; then
          echo '  Unable to locate the Myrinet directory - please set MYRINET_DIR'
          exit 2
