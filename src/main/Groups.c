@@ -479,7 +479,7 @@ int CCTK_VTypeNumber(const char *type)
    @endhistory 
 
 @@*/
-int CCTK_GetGroupData(int group, int *gtype, int *vtype, int *n_variables)
+int CCTK_GetGroupData(int group, int *gtype, int *vtype, int *dim, int *n_variables)
 {
   int return_code;
 
@@ -487,6 +487,7 @@ int CCTK_GetGroupData(int group, int *gtype, int *vtype, int *n_variables)
   {
     *gtype = groups[group].gtype;
     *vtype = groups[group].vtype;
+    *dim   = groups[group].dim;
     *n_variables = groups[group].n_variables;
 
     return_code = 1;
@@ -497,4 +498,16 @@ int CCTK_GetGroupData(int group, int *gtype, int *vtype, int *n_variables)
   }
 
   return return_code;
+}
+
+char *CCTK_GetVarName(int varnum)
+{
+  char *name;
+  int group;
+
+  group = group_of_variable[varnum];
+
+  name = groups[group].variables[varnum-groups[group].variables[0].number].name;
+
+  return name;
 }
