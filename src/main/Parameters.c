@@ -417,7 +417,6 @@ int ParameterSet(const char *name,
                  const char *value)
 {
   int retval;
-  int iscope;
   t_param *param;
 
   param = ParameterFind(name, thorn, SCOPE_ANY);
@@ -501,7 +500,6 @@ int ParameterPrintDescription(const char *name,
                               FILE *file)
 {
   int retval;
-  int iscope;
   t_param *param;
 
   param = NULL;
@@ -573,7 +571,6 @@ void *ParameterGet(const char *name,
                    int *type)
 {
   void *retval;
-  int iscope;
   t_param *param;
 
   param = NULL;
@@ -589,10 +586,83 @@ void *ParameterGet(const char *name,
     retval = NULL;
   }
 
-
   return retval;
 
 }
+
+/*@@
+   @routine    ParameterValString
+   @date       Thu Jan 21 2000
+   @author     Thomas Radke
+   @desc 
+   Gets the string representation of a parameter's value
+   - should be used for checkpointing and recovery.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+   @var     param_name
+   @vdesc   The name of the parameter
+   @vtype   const char *
+   @vio     in
+   @endvar
+   @var     thorn
+   @vdesc   The originating thorn
+   @vtype   const char *
+   @vio     in
+   @endvar 
+   @returntype char *
+   @returndesc
+   The address of the allocated string (should be freed after usage).
+   @endreturndesc
+
+@@*/
+char *ParameterValString (const char *param_name,
+                          const char *thorn)
+{
+  int param_type;
+  void *param_data;
+  char *retval = NULL;
+  char buffer [80];
+
+  param_data = ParameterGet (param_name, thorn, &param_type);
+  if (param_data == NULL) return (NULL);
+
+  switch (param_type)
+  {
+    case PARAMETER_KEYWORD:
+    case PARAMETER_STRING:
+    case PARAMETER_SENTENCE:
+      retval = strdup (*(char **) param_data);
+      break;
+
+    case PARAMETER_BOOLEAN:
+      retval = strdup ((int) (*(CCTK_INT *) param_data) ? "yes" : "no");
+      break;
+
+    case PARAMETER_INT:
+      sprintf (buffer, "%d", (int) (*(CCTK_INT *) param_data));
+      retval = strdup (buffer);
+      break;
+
+    case PARAMETER_REAL:
+      sprintf (buffer, "%e", (double) (*(CCTK_REAL *) param_data));
+      retval = strdup (buffer);
+      break;
+
+    default:
+      CCTK_VWarn (3, __LINE__, __FILE__, CCTK_THORNSTRING,
+                  "Unknown type %d for parameter '%s::%s'",
+                  param_type, thorn, param_name);
+      retval = NULL;
+      break;
+  }
+
+  return (retval);
+}
+
 
 /*@@
    @routine    ParameterWalk
@@ -650,8 +720,8 @@ const char *ParameterWalk(int first,
 
     if (startpoint == NULL)
     {
-      CCTK_Warn(2,__LINE__,__FILE__,"Cactus", "ParameterWalk: Cannot walk through parameter list without "
-                    "setting a startpoint at first");
+      CCTK_Warn(2,__LINE__,__FILE__,"Cactus", "ParameterWalk: Cannot walk "
+                "through parameter list without setting a startpoint at first");
       return NULL;
     }
   }

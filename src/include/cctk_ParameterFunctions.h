@@ -106,6 +106,11 @@ void *ParameterGet (const char *name,        /* The name of the parameter  */
                     const char *thorn,       /* The originating thorn      */
                     int *type);              /* Holds type of parameter    */
 
+/* get the string representation of a parameter's value
+   (string should be freed afterwards) */
+char *ParameterValString (const char *name,  /* The name of the parameter  */
+                    const char *thorn);      /* The originating thorn      */
+
 /* walk through list of parameters */
 const char *ParameterWalk(
                     int first,               /* Get first parameter or not */
