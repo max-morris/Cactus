@@ -415,14 +415,22 @@ sub runtest {
 
 }
 
-sub defprompt {
+sub defprompt 
+{
     my ($pr, $de) = @_;
     my ($res);
+
     print "$pr [$de] \n";
     print "   --> ";
+
     $res = <STDIN> if ($prompt eq "yes");
-    if ($res =~ m/^\s*$/) {
-        $res = $de;
+    if ($res =~ m/^$/) 
+    {
+      $res = $de;
+    }
+    elsif ($res =~ m/^ $/)
+    {
+      $res = "";
     }
     $res =~ s/\n//;
     print "\n";
