@@ -20,11 +20,11 @@ REAL cctk_initial_time "Initial time for evolution"
  : :: "Anything"
 } 0.0
  
-INTEGER cctk_itfirst "Initial iteration number"
+REAL cctk_final_time "Final time for evolution"
 {
-: :: "Any integer"
-} 0
-
+ : :: "Anything"
+} -1.0
+ 
 INTEGER cctk_itlast "Final iteration number"
 {
 : :: "Any integer"
