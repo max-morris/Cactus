@@ -28,12 +28,12 @@ int (*SetupGF)(cGH *, cGF *);
 
 int (*SyncAllFuncs)(cGH *);
 int (*SyncGroupFuncs)(cGH *, const char *group);
-int (*SyncOneFunc)(cGH*, cGF *);
+int (*SyncOneFunc)(cGH*, int );
 
 int (*ParallelInit)(tFleshConfig *);
 int (*ParallelFinalise)(tFleshConfig *);
 
-int (*Reduce)(cGH *, cGF *, int operation, void *result);
+int (*Reduce)(cGH *, int , int operation, void *result);
 
 /* Array of functions */
 
@@ -109,16 +109,6 @@ int SetupCommFunctions(void)
 
   if(functions&&functions[0])
   {
-    SetupGF = (int (*)(cGH *, cGF *))functions[0];
-  }
-  else
-  {
-    SetupGF = CactusDefaultSetupGF;
-  }
-
-
-  if(functions&&functions[0])
-  {
     SyncAllFuncs = (int (*)(cGH *))functions[0];
   }
   else
@@ -137,7 +127,7 @@ int SetupCommFunctions(void)
 
   if(functions&&functions[0])
   {
-    SyncOneFunc = (int (*)(cGH*, cGF *))functions[0];
+    SyncOneFunc = (int (*)(cGH*, int ))functions[0];
   }
   else
   {
@@ -166,7 +156,7 @@ int SetupCommFunctions(void)
 
   if(functions&&functions[0])
   {
-    Reduce = (int (*)(cGH *, cGF *, int operation, void *result))functions[0];
+    Reduce = (int (*)(cGH *, int , int operation, void *result))functions[0];
   }
   else
   {

@@ -13,52 +13,70 @@
 
 #include "flesh.h"
 #include "CactusMainDefaults.h"
+#include "CactusCommDefaults.h"
+#include "GHExtensions.h"
 
 static char *rcsid = "$Id$";
 
 
 cGH *CactusDefaultSetupGH(tFleshConfig *config, int convergence_level)
 {
+  cGH *retval;
 
   cGH *thisGH;
 
-#ifdef 0
-  
-  cGFconfig *GF;
-  
-  cGF **tempGFs;
+  int n_variables;
+  int variable;
 
-  cScala
+  retval = NULL;
+
   /* Create a new Grid Hierarchy */
   thisGH = (cGH *)malloc(sizeof(cGH));
 
   if(thisGH)
   {
-    /* Traverse list of GH setup routines. */
-    CactusSetupGHTraverse(config, convergence_level, thisGH);
+    thisGH->dim = CCTK_GetMaxDim();
+    thisGH->iteration = 0;
+    thisGH->local_shape = (int *)malloc(thisGH->dim*sizeof(int));
+    thisGH->lower_bound = (int *)malloc(thisGH->dim*sizeof(int));
+    thisGH->upper_bound = (int *)malloc(thisGH->dim*sizeof(int));
+    thisGH->bbox        = (int *)malloc(2*thisGH->dim*sizeof(int));
 
-    /* Setup GFs */
-    thisGH->GFs = NULL;
-    thisGH->nGFs = 0;
-    for(GF = config->GFs; GF; GF = GF->next)
+    thisGH->levfac = 1;
+
+    n_variables = CCTK_GetNVariables();
+
+    thisGH->data = (void **)malloc(n_variables*sizeof(void *));
+
+    if(thisGH->data)
     {
-      thisGH->nGFs++;
-      tempGFs = (cGF **)realloc(thisGH->GFs, thisGH->nGFs*sizeof(cGF *));
-      if(tempGFs)
+      for(variable = 0; variable < n_variables; variable++)
       {
-	thisGH->GFs = tempGFs;
-	thisGH->GFs[thisGH->nGFs-1] = SetupGF(GH, GF);
+	thisGH->data[variable] = NULL;
       }
     }
 
-#endif
-  return thisGH;
-}
+    thisGH->extensions = NULL;
 
-cGF *CactusDefaultSetupGF(cGH *GH, cGF *configdata)
-{
+    thisGH->GroupData = (cGHGroupData *)malloc(CCTK_GetNGroups()*sizeof(cGHGroupData));
+
+  }
   
-  printf("I'm at line %d of file %s\n", __LINE__, __FILE__);
+  if(thisGH && 
+     thisGH->local_shape &&
+     thisGH->lower_bound &&
+     thisGH->upper_bound &&
+     thisGH->bbox &&
+     thisGH->data &&
+     thisGH->GroupData)
+  {
+    /* Traverse list of GH setup routines. */
+    CCTK_TraverseGHExtensions(config, convergence_level, thisGH);
+
+    retval = thisGH;
+  }
+
+  return thisGH;
 }
 
 int CactusDefaultSyncAllFuncs(cGH *GH)
@@ -71,7 +89,7 @@ int CactusDefaultSyncGroupFuncs(cGH *GH, const char *group)
   printf("I'm at line %d of file %s\n", __LINE__, __FILE__);
 }
 
-int CactusDefaultSyncOneFunc(cGH *GH, cGF *GF)
+int CactusDefaultSyncOneFunc(cGH *GH, int GF)
 {
   printf("I'm at line %d of file %s\n", __LINE__, __FILE__);
 }
@@ -86,7 +104,7 @@ int CactusDefaultParallelFinalise(tFleshConfig *config)
   printf("I'm at line %d of file %s\n", __LINE__, __FILE__);
 }
 
-int CactusDefaultReduce(cGH *GH, cGF *GF, int operation, void *result)
+int CactusDefaultReduce(cGH *GH, int GF, int operation, void *result)
 {
   printf("I'm at line %d of file %s\n", __LINE__, __FILE__);
 }
