@@ -47,7 +47,7 @@ int CactusDefaultInitialise(tFleshConfig *config)
   {
     CCTK_AddGH(config, convergence_level, GH);
 #ifdef 0
-    Initialise(GH);
+    Cactus_InitialiseGH(GH);
 #endif 
     convergence_level++;
   };
@@ -78,4 +78,10 @@ int CactusDefaultShutdown(tFleshConfig *config)
   printf("I'm in the default shutdown routine\n");
   
   return 0;
+}
+
+int Cactus_InitialiseGH(cGH *GH)
+{
+  CCTK_BindingsScheduleRegister("RFRINIT", (void *)GH);
+
 }
