@@ -141,7 +141,7 @@ else
        : ${F77_OPTIMISE_FLAGS="-O"}
        : ${F90_OPTIMISE_FLAGS="-O"}         
        : ${LIBS="fj9i6 fj9e6 fj9f6"} 
-       : ${LIBDIRS='${LAHEY)/lib'} 
+       : ${LIBDIRS='$(LAHEY)/lib'} 
        ;;
      SGI)
        : ${LIBS="fortran ffio m"} 
