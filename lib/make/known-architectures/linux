@@ -42,11 +42,27 @@ else
     LINUX_F90_COMP=none
   fi
 
+# find out if we have egcs or not, LIBS is either g2c or f2c
+  LINUX_F77=
+
+  if test -n "$F77" ; then
+    if test -n "`$F77 -v 2>&1 | grep egcs`" ; then
+      LINUX_F77=egcs
+    else
+      LINUX_F77=noegcs
+    fi
+  fi
 
 #Set the appropriate flags
   case "$LINUX_F90_COMP" in
      pacific)
-       : ${LIBS="vast90 g2c m"} ;;
+       if test "$LINUX_F77" = "egcs" ; then
+         : ${LIBS="vast90 g2c m"} 
+       fi
+       if test "$LINUX_F77" = "noegcs" ; then
+         : ${LIBS="vast90 f2c m"} 
+       fi
+       ;;
      absoft)
        : ${LIBS="f90math fio f77math m"} 
        F90FLAGS="-s -O" 
