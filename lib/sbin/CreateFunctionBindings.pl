@@ -985,6 +985,8 @@ sub RegisterAllFunctions
 
   push(@data, '#include "cctk_Flesh.h"');
   push(@data, '#include "cctk_ActiveThorns.h"');
+  push(@data, '#include "cctk_WarnLevel.h"');
+  push(@data, '#include "cctk_Functions.h"');
   push(@data, '');
 
   push(@prototypes,'CCTK_INT CCTKBindings_RegisterThornFunctions(void);');
