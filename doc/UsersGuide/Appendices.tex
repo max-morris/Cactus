@@ -1068,12 +1068,20 @@ indicate whether an error occurred.  You should return 0.
         {\tt AFTER} etc. functionality of the {\tt schedule.ccl} file
         should allow all functions to be scheduled in the main {\tt CCTK\_EVOL}
         timebin.
-
+        
 \item[{\tt CCTK\_POSTRESTRICT}]
         This timebin is used only in mesh refinement settings.  It is
-        ignored for unigrid runs.  (With mesh refinements, boundary
-        conditions might need to be applied after every
-        ``restriction'' step.)
+        ignored for unigrid runs.  This bin is executed after each
+        restriction operation.  It is, e.g., necessary to re-apply the
+        boundary conditions after every restriction operation.
+
+\item[{\tt CCTK\_POSTREGRID}]
+        This timebin is used in mesh refinement settings, or when there are
+        multiple grid patches.  It is ignored for unigrid runs.  This bin is
+        executed whenever the grid hierarchy or patch setup has changed.  It
+        is, e.g., necessary to re-apply the boundary conditions or
+        re-calculate the grid points' coordinates after every changing the
+        grid hierarchy.
 
 \item[{\tt CCTK\_ANALYSIS}]
         The {\tt ANALYSIS} timebin is special, in that it is closely coupled 
