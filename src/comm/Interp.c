@@ -20,6 +20,14 @@
                 new-API interpolators
    @endhistory
 
+   @date      Tue May 11 13:01:51 CEST 2004
+   @author    Jonathan Thornburg <jthorn@aei.mpg.de>
+   @hdesc     change  CCTK_InterpLocal()  and  CCTK_InterpGV()
+              to give level 1 warnings that these APIs are obsolescent
+              and will be phased out soon (and to point to their
+              replacement APIs ).
+   @endhistory
+
    @version   $Id$
  @@*/
 
@@ -683,6 +691,14 @@ int CCTK_InterpGV (cGH *GH,
   struct interp_info *operator;
 
 
+  /* warn the user that this API is obselete and will disappear soon! */
+    CCTK_VWarn(1, __LINE__, __FILE__, "Cactus",
+"\n"
+"***\n"
+"*** CCTK_InterpGV()  is obsolescent and will be phased out soon!\n"
+"*** You should convert your code to use CCTK_InterpGridArrays() instead.\n"
+"***\n");
+
   /* Get the interpolation operator routine and the coordinate system name */
   operator = (struct interp_info *) Util_GetHandledData (interp_operators,
                                                         operator_handle);
@@ -762,6 +778,14 @@ void CCTK_FCALL CCTK_FNAME (CCTK_InterpGV)
   void **out_arrays;
   struct interp_info *operator;
 
+
+  /* warn the user that this API is obselete and will disappear soon! */
+    CCTK_VWarn(1, __LINE__, __FILE__, "Cactus",
+"\n"
+"***\n"
+"*** CCTK_InterpGV()  is obsolescent and will be phased out soon!\n"
+"*** You should convert your code to use CCTK_InterpGridArrays() instead.\n"
+"***\n");
 
   /* Get the interpolation operator and the coordinate system name */
   operator = (struct interp_info *) Util_GetHandledData (interp_operators,
@@ -935,6 +959,13 @@ int CCTK_InterpLocal (cGH *GH,
   void **out_arrays;
   struct interp_info *operator;
 
+  /* warn the user that this API is obselete and will disappear soon! */
+    CCTK_VWarn(1, __LINE__, __FILE__, "Cactus",
+"\n"
+"***\n"
+"*** CCTK_InterpLocal()  is obsolescent and will be phased out soon!\n"
+"*** You should convert your code to use CCTK_InterpLocalUniform() instead.\n"
+"***\n");
 
   /* Get the interpolation operator */
   operator = (struct interp_info *) Util_GetHandledData (interp_operators,
@@ -1020,6 +1051,14 @@ void CCTK_FCALL CCTK_FNAME (CCTK_InterpLocal)
   void **out_arrays;
   struct interp_info *operator;
 
+
+  /* warn the user that this API is obselete and will disappear soon! */
+    CCTK_VWarn(1, __LINE__, __FILE__, "Cactus",
+"\n"
+"***\n"
+"*** CCTK_InterpLocal()  is obsolescent and will be phased out soon!\n"
+"*** You should convert your code to use CCTK_InterpLocalUniform() instead.\n"
+"***\n");
 
   /* Get the interpolation operator */
   operator = (struct interp_info *) Util_GetHandledData (interp_operators,
