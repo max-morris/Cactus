@@ -146,6 +146,7 @@ int CCTK_RegisterReductionLocalArrayOperator(
 const char *CCTK_LocalArrayReduceOperatorImplementation(int handle);
 
 const char *CCTK_LocalArrayReduceOperator (int handle);
+int CCTK_NumLocalArrayReduceOperators(void);
 
 /* new GA reduction API */
 int CCTK_ReduceGridArrays(const cGH *GH,
@@ -164,6 +165,7 @@ int CCTKi_RegisterGridArrayReductionOperator(const char *thorn, cGridArrayReduce
         operatorGV);
 
 const char *CCTK_GridArrayReductionOperator(void);
+int CCTK_NumGridArrayReductionOperators(void);
 
 /* FIXME: old interface - should go */
 int CCTK_ReduceLocalScalar (const cGH *GH, int proc, int operation_handle,
