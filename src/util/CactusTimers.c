@@ -128,12 +128,16 @@ int CCTK_TimerCreate(const char *name)
 
 	  timer->data[handle] = funcs->create(this_timer);
 	}
-	retval = this_timer;
+        retval = this_timer;
       }
+    }
+    else
+    {
+      retval = -2;
     }
   }
 
-  return this_timer;
+  return retval;
 }
 
  /*@@
@@ -155,7 +159,7 @@ int CCTK_TimerCreateI(void)
   int retval;
   char name[20];
 
-  sprintf(name, "timer_%d", n_timers);
+  sprintf(name, "timer_%d", n_timers++);
 
   retval = CCTK_TimerCreate(name);
 
@@ -474,6 +478,11 @@ static void CCTKi_TimerGet(int this_timer, t_Timer *timer, t_TimerInfo *info)
         total_vars += funcs->info.n_vals;
       }
     }
+    info->n_vals = total_vars;
+  }
+  else
+  {
+    info->n_vals = 0;
   }
 
 }
