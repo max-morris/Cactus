@@ -1030,7 +1030,7 @@ sub CreateThornGroupInitialisers
       # Check that the size is allowed.
       &CheckArraySizes($rhinterface_db->{"\U$thorn GROUP $group\E VARARRAY_SIZE"},$thorn,$rhparameter_db,$rhinterface_db);
       # Flag Cactus that it is a vector group.
-      $line = '                         -1,';
+      $line = '                         -1';
     }
     else
     {
@@ -1040,6 +1040,8 @@ sub CreateThornGroupInitialisers
     foreach $variable (@variables)
     {
       $line .= ",\n                         \"$variable\"";
+      print "\n\n\n$thorn\n";
+      print "$line\n";
     }
 
     # Pass in the size of the GV array, which may be a valid parameter expression
