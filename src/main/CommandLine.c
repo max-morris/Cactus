@@ -16,7 +16,7 @@
 #include "cGH.h"
 #include "cctk_Comm.h"
 #include "cctk_WarnLevel.h"
-#include "CCTK_Bindings.h"
+#include "cctk_Bindings.h"
 
 /* FIXME. This shouldn't be here !*/
 #include "thornlist.h"

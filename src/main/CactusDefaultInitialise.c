@@ -18,7 +18,7 @@
 #include "cctk_GHExtensions.h"
 #include "rfrConstants.h"
 #include "CactusrfrInterface.h"
-#include "CCTK_Bindings.h"
+#include "cctk_Bindings.h"
 #include "rfrInterface.h"
 
 #include "cctk_parameters.h"
