@@ -6,7 +6,7 @@
 #    @desc
 #               known-architectures file for OSF systems
 #    @enddesc
-#    @version   $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/osf,v 1.13 2004-07-05 15:45:37 tradke Exp $
+#    @version   $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/osf,v 1.14 2004-09-22 15:15:47 tradke Exp $
 #  @@*/
 
 if test "$CCTK_CONFIG_STAGE" = "preferred-compilers" ; then
@@ -18,7 +18,7 @@ if test "$CCTK_CONFIG_STAGE" = "preferred-compilers" ; then
 
 else
 
-  STD_FLAGS='-std1 -nopt'
+  STD_FLAGS='-std1'
 
   # need to explicitly add '-O0' to switch off default optimization level
   if test "X$OPTIMISE" = "Xno"; then
