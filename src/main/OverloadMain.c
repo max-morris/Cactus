@@ -70,7 +70,7 @@ CCTK_FILEVERSION(main_OverloadMain_c)
 int CCTKi_SetupMainFunctions(void)
 {
 
-#define OVERLOADABLE(name) OVERLOADABLE_CHECK(name)
+#define OVERLOADABLE(name) OVERLOADABLE_INITIALISE(name)
 
   /* These ones actually have defaults. */
 #define CCTKi_DummyInitialise       CactusDefaultInitialise
