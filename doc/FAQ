@@ -1,7 +1,7 @@
 
 Cactus Code Frequently Asked Questions
 
-$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.55 2003-02-06 07:05:06 allen Exp $
+$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.56 2003-02-07 10:45:53 allen Exp $
 
 Also available at http://www.cactuscode.org/Documentation/FAQ
 
@@ -134,6 +134,9 @@ C29 (Linux) Using the Intel Fortran compiler I get the error "/usr/bin/ld
     cannot find -lintrins" on linking.
 
 C30 Why can't I use different F90 and F77 compilers with Cactus? 
+
+C31 I just want to check that one thorn compiles correctly, can I test 
+    this without compiling all the thorns which come before it?
 
 
 ------------------------------------------------------------------------------
@@ -813,6 +816,14 @@ C29 (Linux) Using the Intel Fortran compiler I get the error "/usr/bin/ld
     Set the environment variable IA32ROOT to point to the location of your
     Intel compiler installation (eg /opt/intel/compiler60/ia32). You will
     need to reconfigure, and then try building your executable again.
+
+C31 I just want to check that one thorn compiles correctly, can I test 
+    this without compiling all the thorns which come before it?
+
+      make <config>-build BUILDLIST="<list of thorns>"
+
+    builds thorns in the order they appear in the list. (Note, this does 
+    not link any thorn libraries together).
 
 
 ------------------------------------------------------------------------------
