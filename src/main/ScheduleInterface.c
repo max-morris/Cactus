@@ -3,9 +3,9 @@
    @date      Thu Sep 16 14:06:21 1999
    @author    Tom Goodale
    @desc
-   Routines to interface the main part of Cactus to the schedular.
+              Routines to interface the main part of Cactus to the schedular.
    @enddesc
-   @version $Header$
+   @version   $Id$
  @@*/
 
 #include <stdio.h>
@@ -100,8 +100,8 @@ static int ScheduleTraverse(const char *where,
                             int (*CallFunction)(void *, cFunctionData *, void *));
 
 static t_attribute *CreateAttribute(const char *where,
-				    const char *routine,
-				    const char *description,
+                                    const char *routine,
+                                    const char *description,
                                     const char *language,
                                     const char *name,
                                     const char *thorn,
@@ -803,19 +803,22 @@ int CCTK_SchedulePrint(const char *where)
 {
   if(!where)
   {
-    printf ("  if (recover)\n");
-    printf ("    Recover parameters\n");
-    printf ("  endif\n\n");
-    printf ("  Startup routines\n");
+    puts ("  if (recover initial data)");
+    puts ("    Recover parameters");
+    puts ("  endif");
+    putchar ('\n');
+    puts ("  Startup routines");
     SchedulePrint("CCTK_STARTUP");
-    printf("\n");
-    printf ("  Parameter checking routines\n");
+    putchar ('\n');
+    puts ("  Parameter checking routines");
     SchedulePrint("CCTK_PARAMCHECK");
-    printf("\n");
-    printf("  Initialisation\n");
+    putchar ('\n');
+    puts("  Initialisation");
     SchedulePrint("CCTK_BASEGRID$ENTRY");
     SchedulePrint("CCTK_BASEGRID");
     SchedulePrint("CCTK_BASEGRID$EXIT");
+    puts ("    if (NOT (recover initial data AND recovery_mode is 'strict'))");
+    indent_level +=2;
     SchedulePrint("CCTK_INITIAL$ENTRY");
     SchedulePrint("CCTK_INITIAL");
     SchedulePrint("CCTK_INITIAL$EXIT");
@@ -825,28 +828,25 @@ int CCTK_SchedulePrint(const char *where)
     SchedulePrint("CCTK_POSTSTEP$ENTRY");
     SchedulePrint("CCTK_POSTSTEP");
     SchedulePrint("CCTK_POSTSTEP$EXIT");
-    printf ("    if (recover)\n");
-    indent_level +=2;
+    puts ("    endif");
+    puts ("    if (recover initial data)");
     SchedulePrint("CCTK_RECOVER_VARIABLES");
-    indent_level -=2;
-    printf ("    endif\n");
-    printf ("    if (checkpoint initial data)\n");
-    indent_level +=2;
+    SchedulePrint("CCTK_POST_RECOVER_VARIABLES");
+    puts ("    endif");
+    puts ("    if (checkpoint initial data)");
     SchedulePrint("CCTK_CPINITIAL");
-    indent_level -=2;
-    printf ("    endif\n");
-    printf ("    if (analysis)\n");
-    indent_level +=2;
+    puts ("    endif");
+    puts ("    if (analysis)");
     SchedulePrint("CCTK_ANALYSIS$ENTRY");
     SchedulePrint("CCTK_ANALYSIS");
     SchedulePrint("CCTK_ANALYSIS$EXIT");
     indent_level -=2;
-    printf ("    endif\n");
-    printf("\n");
-    printf ("  do loop over timesteps\n");
-    printf ("    Rotate timelevels\n");
-    printf ("    iteration = iteration + 1\n");
-    printf ("    t = t+dt\n");
+    puts ("    endif");
+    putchar ('\n');
+    puts ("  do loop over timesteps");
+    puts ("    Rotate timelevels");
+    puts ("    iteration = iteration + 1");
+    puts ("    t = t+dt");
     SchedulePrint("CCTK_PRESTEP$ENTRY");
     SchedulePrint("CCTK_PRESTEP");
     SchedulePrint("CCTK_PRESTEP$EXIT");
@@ -856,22 +856,22 @@ int CCTK_SchedulePrint(const char *where)
     SchedulePrint("CCTK_POSTSTEP$ENTRY");
     SchedulePrint("CCTK_POSTSTEP");
     SchedulePrint("CCTK_POSTSTEP$EXIT");
-    printf ("    if (checkpoint)\n");
+    puts ("    if (checkpoint)");
     indent_level +=2;
     SchedulePrint("CCTK_CHECKPOINT");
-    indent_level -=2;
-    printf ("    endif\n");
-    printf ("    if (analysis)\n");
-    indent_level +=2;
+    puts ("    endif");
+    puts ("    if (analysis)");
     SchedulePrint("CCTK_ANALYSIS$ENTRY");
     SchedulePrint("CCTK_ANALYSIS");
     SchedulePrint("CCTK_ANALYSIS$EXIT");
     indent_level -=2;
-    printf ("    endif\n");
-    printf ("  enddo\n");
-    printf ("  Termination routines\n");
+    puts ("    endif");
+    puts ("  enddo");
+    putchar ('\n');
+    puts ("  Termination routines");
     SchedulePrint("CCTK_TERMINATE");
-    printf ("  Shutdown routines\n");
+    putchar ('\n');
+    puts ("  Shutdown routines");
     SchedulePrint("CCTK_SHUTDOWN");
   }
   else
@@ -879,7 +879,7 @@ int CCTK_SchedulePrint(const char *where)
     SchedulePrint(where);
   }
 
-  return 0;
+  return (0);
 }
 
 /*@@
@@ -1149,8 +1149,8 @@ static int ScheduleTraverse(const char *where,
    @endreturndesc
 @@*/
 static t_attribute *CreateAttribute(const char *where,
-				    const char *name,
-				    const char *description,
+                                    const char *name,
+                                    const char *description,
                                     const char *language,
                                     const char *thorn,
                                     const char *implementation,
