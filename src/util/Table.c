@@ -4993,7 +4993,7 @@ static
   #endif
     {
   void *const buffer = malloc(sizeof_value);
-  if (buffer == NULL)
+  if (sizeof_value != 0 && buffer == NULL)
   {
     free(tep->key);
     free(tep);
