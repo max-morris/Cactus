@@ -23,43 +23,152 @@
 sub create_schedule_code
 {
 
-  local(%thorns) = @_;
+  local($dir,%thorns) = @_;
   local($thorn);
   local(@rfr_file);
   local(@indata);
 
-  # Header for main rfr file
-  $header = 
-   "\n\n
-#include \"cactus.h\"\n\n
-void thorns_rfr(pGH *GH) {\n";
-
   # Loop though each thorn's schedule file
   foreach $thorn (keys %thorns)
   {
-   # Read the data
-   @indata = &read_file("$thorns{$thorn}/schedule.ccl");
+     
+    $thorn_rfr = "CCTK_".$thorn."_rfr";
+    $thorn_startup = "CCTK_".$thorn."_startup";
 
-   # Parse the data and create rfr subroutine
-   push(@rfr_file,"\n\n/* From $thorn (schedule.ccl) */\n\n");
-   push(@rfr_file,&parse_schedule_ccl($thorn, @indata));
+    open (OUTRFR, ">$dir/Schedule/$thorn_rfr".".c") || die "Cannot open $thorn_rfr".".c";
+    open (OUTSTART, ">$dir/Schedule/$thorn_startup".".c") || die "Cannot open $thorn_startup".".c";
+
+    open (PROTO, ">$dir/Schedule/prototypes_$thorn".".h") || die "Cannot open file";
+
+    &write_rfr_header($thorn,$thorn_rfr,OUTRFR);
+    &write_startup_header($thorn,$thorn_startup,OUTSTART);
+
+    # Read all the data in the schedule file
+    @indata = &read_file("$thorns{$thorn}/schedule.ccl");
+
+    # Parse the data and create rfr and startup subroutines
+    @wrapper_files = &parse_schedule_ccl($thorn,"rfr",OUTRFR,PROTO,@indata);
+    push (@compile_files,@wrapper_files);
+    push (@compile_files,$thorn_rfr);
+    push (@compile_files,$thorn_startup);
+
+    &parse_schedule_ccl($thorn,"startup",OUTSTART,PROTO,@indata);
+
+   # The footer for the thorn RFR routine
+   print OUTRFR "}";
+   print OUTSTART "}";
+
+   close OUTRFR;
+   close OUTSTART;
+
   }
 
-  # Footer for main rfr file
-  $footer = 
-"\n
-}\n";
+  return  @compile_files;
 
-  return (($header,@rfr_file,$footer));
 }
+
+sub write_rfr_header {
+
+  local($thorn,$routine,$out) = @_;
+
+# The header for the thorn RFR routine
+    print $out <<EOT;
+\#define THORN_IS_$thorn
+\#include \"cctk.h\"
+\#include \"flesh.h\"
+\#include \"rfr_constants.h\"
+\#include \"declare_parameters.h\"
+\#include \"prototypes_$thorn.h\"
+
+$routine (void *Cactus_data)
+{
+DECLARE_PARAMETERS
+
+EOT
+}
+
+sub write_startup_header {
+
+  local($thorn,$routine,$out) = @_;
+
+# The header for the thorn RFR routine
+    print $out <<EOT;
+\#define THORN_IS_$thorn
+\#include \"cctk.h\"
+\#include \"flesh.h\"
+\#include \"rfr_constants.h\"
+\#include \"declare_parameters.h\"
+
+$routine (void *data)
+{
+
+DECLARE_PARAMETERS
+
+EOT
+}
+
+
+sub create_BindingsScheduleRegisterRFR
+{
+  
+  local ($dir,@rfr_routines) = @_;
+  local ($rfr_calls,$file,$outfile);
+
+  $outfile = "$dir/Schedule/Cactus_BindingsScheduleRegisterRFR.c";
+  open (OUT, ">$outfile") || die "Cannot open $outfile";
+
+  $rfr_calls = "";
+  foreach $file (@rfr_routines) {
+    $rfr_calls = "$rfr_calls ".$file."(data);\n";
+  }
+
+  print OUT <<EOT;
+
+  Cactus_BindingsScheduleRegisterRFR(void *data)
+  {
+   $rfr_calls
+  }
+EOT
+
+  return;
+
+}
+
+sub create_BindingsScheduleRegisterSTARTUP
+{
+  
+  local ($dir,@startup_routines) = @_;
+  local ($startup_calls,$file,$outfile);
+
+  $outfile = "$dir/Schedule/Cactus_BindingsScheduleRegisterSTARTUP.c";
+  open (OUT, ">$outfile") || die "Cannot open $outfile";
+
+  $startup_calls = "";
+  foreach $file (@startup_routines) {
+    $startup_calls = "$startup_calls ".$file."();\n";
+  }
+
+  print OUT <<EOT;
+
+  Cactus_BindingsScheduleRegisterSTARTUP()
+  {
+   $startup_calls
+  }
+EOT
+
+  return;
+
+}
+
 
 #/*@@
 #  @routine    parse_schedule_ccl
 #  @date       Fri Jan 8 1999
 #  @author     Gabrielle Allen
 #  @desc 
-#  Parse a thorns schedule.ccl file and write the 
-#  corresponding rfr code
+#  Parse a thorns schedule.ccl file, writes the 
+#  corresponding rfr code for each thorn, and
+#  writes a wrapper routine for each fortran routine.
 #  @enddesc 
 #  @calls     
 #  @calledby   
@@ -70,41 +179,58 @@ void thorns_rfr(pGH *GH) {\n";
 
 sub parse_schedule_ccl
 {
-  local($thorn,@data) = @_;
+  local($thorn,$type,$out,$proto,@data) = @_;
+  local($line,$line_number,@compile_files);
 
+# Parse the data from the thorns schedule.ccl file
   for ($line_number=0; $line_number<@data; $line_number++)
   {
     $line = @data[$line_number];
 
-    if ($line =~ m/\s*schedule\s*.*\s*at\s*.*/i)
+    # Parse the entire schedule block
+    if ($line =~ m/\s*schedule\s*(.*)\s*at\s*.*/i)
     {
-     push(@rfr_file,&parse_schedule_block(@data));
+      $wrapper_file = &parse_schedule_block($out,$proto,$thorn,$type,@data);
+      push(@compile_files,$wrapper_file);
     }
+
+    # Parse the non-schedule storage line
     elsif ($line =~ m/\s*STORAGE\s*:\s*(.*)/i)
     {
-      @list = split(",",$1);
-      foreach $group (@list) 
+      if ($type eq "rfr")
       {
-        push(@rfr_file,"EnableGroupStorage($group)\n");
+        @list = split(",",$1);
+        foreach $group (@list) 
+        {
+          print $out "EnableGroupStorage(\"$group\");\n";
+        }
       }
     }
+
+    # Parse the non-schedule communication line
     elsif ($line =~ m/\s*COMMUNICATION\s*:\s*(.*)/i)
     {
-      @list = split(",",$1);
-      foreach $group (@list) 
+      if ($type eq "rfr")
       {
-        push(@rfr_file,"EnableGroupCommunication($group)\n");
+        @list = split(",",$1);
+        foreach $group (@list) 
+        {
+          print $out "EnableGroupCommunication(\"$group\");\n";
+        }
       }
     }
+
+    # Parse any other lines
     else
     {
-     # Any other line is assumed for now to be C
-     push(@rfr_file,"$line\n");
+      # Any other line is assumed for now to be C
+      print $out "$line\n";
     }
 
   }  
 
-  return @rfr_file;
+  return @compile_files;
+
 }
 
 
@@ -135,7 +261,7 @@ sub find_schedule_block
 
 # Parse the routine name and rfr entry point
   $line = @data[$line_number];
-  $line =~ m/\s*schedule\s*(.*)\s*at\s*(.*)/i;
+  $line =~ m/\s*schedule\s*(\w*)\s*at\s*(\w*)/i;
   $routine = $1;
   $rfr_entry = $2;
 
@@ -172,10 +298,38 @@ sub find_schedule_block
 
 sub parse_schedule_block
 {
-  local(@data)=@_;
-  local(@schedule_code);
+  local($out,$proto,$thorn,$type,@data)=@_;
 
-  ($routine,$rfr_entry,$desc,@block) = &find_schedule_block(@data);
+  ($routine,$when,$desc,@block) = &find_schedule_block(@data);
+
+  # At the moment can schedule at RFR entry points of at STARTUP
+  if ($type eq "startup" && $when eq "STARTUP") {
+    &parse_schedule_at_STARTUP($out,$thorn,$routine,$desc,@block);
+    return ;
+  } elsif ($type eq "rfr" && $when ne "STARTUP") {
+    $wrapper_file = &parse_schedule_at_RFR($out,$proto,$thorn,$routine,$when,$desc,@block);
+    return $wrapper_file;
+  }
+}
+
+sub parse_schedule_at_STARTUP {
+
+  local($out,$thorn,$routine,$desc,@block) = @_;
+
+  print $out "  $routine();\n";
+
+  return;
+
+}
+
+
+
+
+
+sub parse_schedule_at_RFR {
+
+  local($out,$proto,$thorn,$routine,$when,$desc,@block) = @_;
+  local($got_it,$i,$line);
 
 # Look for the Language and register routine
   $got_it = 0;
@@ -184,11 +338,18 @@ sub parse_schedule_block
     $line = @block[$i];
     if ($line =~ m/\s*LANG\s*:\s*FORTRAN\s*$/i)
     {
-      push(@schedule_code,"  rfrRegisterEither(GH,$routine,NULL,$rfr_entry,$desc);\n");
+      print $out "  rfrRegister(Cactus_data,".$routine."_wrapper,$when,$desc);\n";
       $got_it++;
+
+      # Write the rfr called fortran wrapper routine
+      $wrapper_file = &fortran_wrapper($thorn,$routine);
+      $routine = "$routine"."_wrapper";
+      print $proto "void $wrapper_file(CCTK_CARGUMENTS);\n"; 
+   
     }
     elsif ($line =~ m/\s*LANG\s*:\s*C\s*$/i)
     {
+      print $proto "void $routine(CCTK_CARGUMENTS);\n"; 
       $got_it++;
     }
   }
@@ -206,7 +367,7 @@ sub parse_schedule_block
       @list = split(",",$1);
       foreach $group (@list) 
       {
-       push(@schedule_code,"  RFR_RegisterStorage($group,$routine);\n");
+       print $out "  rfrRegisterStorage(\"$group\",$routine);\n";
       }
     }
   }
@@ -220,7 +381,7 @@ sub parse_schedule_block
       @list = split(",",$1);
       foreach $group (@list) 
       {
-        push(@schedule_code,"  RFR_RegisterComm($group,$routine);\n");
+        print $out "  rfrRegisterComm(\"$group\",$routine);\n";
       }
     }
   }
@@ -234,12 +395,67 @@ sub parse_schedule_block
       @list = split(",",$1);
       foreach $group (@list) 
       {
-        push(@schedule_code,"  rfrRegisterTimer($group,$routine);\n");
+        print $out "  rfrRegisterTimer($group,$routine);\n"
       }
     }
   }
 
-  return (@schedule_code);
+  return ($wrapper_file);
+
+}
+
+
+#/*@@
+#  @routine    fortran_wrapper
+#  @date       27 Jan 1999
+#  @author     Gab Allen
+#  @desc 
+#  Writes C wrapper for a fortran routine which is called
+#  by the RFR. Note that this is done because of the arguement
+#  lists. It is assumed that we are in the correct directory 
+#  for writing ( build/<config>/build/bindings/Scheduler/ )
+#  @enddesc 
+#  @calls     
+#  @calledby   
+#  @history 
+# 
+#  @endhistory 
+#@@*/
+
+sub fortran_wrapper {
+
+  local($thorn,$routine) = @_;
+  local($wrapper,$ROUTINE,$file);
+
+  $THORN_C2F = "\U$thorn"."_C2F";
+  $THORN_C2F_PROTO = "\U$thorn"."_C2F_PROTO";
+  $wrapper = "$routine"."_wrapper";
+  $file = "$routine"."_wrapper".".c";
+
+  open(FILE, ">$file") || die("Can't open $file\n");
+
+  print FILE<<EOT;
+
+#define THORN_IS_$thorn
+#include \"cctk.h\"
+#include \"flesh.h\"
+#include \"declare_arguments.h\"
+
+   void FORTRAN_NAME($routine)($THORN_C2F_PROTO);
+
+   $wrapper(CCTK_CARGUMENTS) {
+
+   DECLARE_CCTK_CARGUMENTS
+   DECLARE_$THORN_C2F
+   INITIALISE_$THORN_C2F
+
+   FORTRAN_NAME($routine)(PASS_$THORN_C2F(GH));
+
+}
+EOT
+
+# Return the filename since we have to add it to a makefile
+return ($wrapper);
 
 }
  
@@ -279,3 +495,5 @@ sub read_file
   
   return @indata;
 }
+
+1;
