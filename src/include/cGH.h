@@ -53,6 +53,13 @@ typedef struct
   /* The refinement factor over the top level (coarsest) grid. */
   int *cctk_levfac;
 
+  /* Offset between this level's and the coarsest level's origin */
+  int *cctk_levoff;
+  int *cctk_levoffdenom;
+
+  /* The refinement factor in time over the top level (coarsest) grid. */
+  int cctk_timefac;
+
   /* The convergence level (numbered from zero upwards) */
   int cctk_convlevel;
 

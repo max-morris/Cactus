@@ -32,7 +32,9 @@
 #define _CCTK_FARGUMENTS  cctk_dim, cctk_gsh, cctk_lsh, cctk_lbnd,\
                           cctk_ubnd, cctk_lssh, cctk_from, cctk_to, cctk_bbox,\
                           cctk_delta_time, cctk_time, cctk_delta_space,\
-                          cctk_origin_space, cctk_levfac, cctk_convlevel,\
+                          cctk_origin_space, cctk_levfac, \
+                          cctk_levoff, cctk_levoffdenom, cctk_timefac, \
+                          cctk_convlevel,\
                           cctk_nghostzones, cctk_iteration, cctkGH
 
 #define _DECLARE_CCTK_ARGUMENTS _DECLARE_CCTK_FARGUMENTS
@@ -46,6 +48,9 @@
                            CCTK_REAL cctk_delta_space(cctk_dim)&&\
                            CCTK_REAL cctk_origin_space(cctk_dim)&&\
                            INTEGER cctk_levfac(cctk_dim)&&\
+                           INTEGER cctk_levoff(cctk_dim)&&\
+                           INTEGER cctk_levoffdenom(cctk_dim)&&\
+                           INTEGER cctk_timefac&&\
                            INTEGER cctk_convlevel&&\
                            INTEGER cctk_nghostzones(cctk_dim)&&\
                            INTEGER cctk_iteration&&\
@@ -63,8 +68,9 @@
 
 #define CCTK_PASS_FTOF CCTK_FARGUMENTS
 
+#define CCTK_ORIGIN_SPACE(x) (cctk_origin_space(x)+cctk_delta_space(x)/cctk_levfac(x)*cctk_levoff(x)/cctk_levoffdenom(x))
 #define CCTK_DELTA_SPACE(x) (cctk_delta_space(x)/cctk_levfac(x))
-#define CCTK_DELTA_TIME cctk_delta_time
+#define CCTK_DELTA_TIME (cctk_delta_time/cctk_timefac)
 #define CCTK_LSSH(stag,dim) cctk_lssh((stag)+CCTK_NSTAGGER+(dim))
 #define CCTK_LSSH_IDX(stag,dim) ((stag)+CCTK_NSTAGGER*(dim))
 
@@ -191,6 +197,9 @@ inline int CCTK_GFINDEX4D (const cGH *GH, int i, int j, int k, int l)
             CCTK_REAL  *cctk_delta_space = cctkGH->cctk_delta_space;\
             CCTK_REAL  *cctk_origin_space = cctkGH->cctk_origin_space;\
             int        *cctk_levfac = cctkGH->cctk_levfac;\
+            int        *cctk_levoff = cctkGH->cctk_levoff;\
+            int        *cctk_levoffdenom = cctkGH->cctk_levoffdenom;\
+            int         cctk_timefac = cctkGH->cctk_timefac;\
             int         cctk_convlevel = cctkGH->cctk_convlevel;\
             int        *cctk_nghostzones = cctkGH->cctk_nghostzones;\
             int         cctk_iteration = cctkGH->cctk_iteration;
@@ -211,6 +220,9 @@ inline int CCTK_GFINDEX4D (const cGH *GH, int i, int j, int k, int l)
             (void) (cctk_delta_space + 0);\
             (void) (cctk_origin_space + 0);\
             (void) (cctk_levfac + 0);\
+            (void) (cctk_levoff + 0);\
+            (void) (cctk_levoffdenom + 0);\
+            (void) (cctk_timefac + 0);\
             (void) (cctk_convlevel + 0);\
             (void) (cctk_nghostzones + 0);\
             (void) (cctk_iteration + 0);
@@ -227,6 +239,9 @@ inline int CCTK_GFINDEX4D (const cGH *GH, int i, int j, int k, int l)
                             &((xGH)->cctk_time), (xGH)->cctk_delta_space,\
                             (xGH)->cctk_origin_space,\
                             (xGH)->cctk_levfac,\
+                            (xGH)->cctk_levoff,\
+                            (xGH)->cctk_levoffdenom,\
+                            &((xGH)->cctk_timefac),\
                             &((xGH)->cctk_convlevel),\
                             (xGH)->cctk_nghostzones,\
                             &((xGH)->cctk_iteration),\
@@ -240,14 +255,18 @@ inline int CCTK_GFINDEX4D (const cGH *GH, int i, int j, int k, int l)
                             int *,\
                             int *,\
                             int *,\
+                            int *,\
+                            int *,\
+                            int *,\
                             cGH *
 
 #define CCTK_EQUALS(a,b) (CCTK_Equals((a),(b))==1)
 
 #define CCTK_PASS_CTOC cctkGH
 
+#define CCTK_ORIGIN_SPACE(x) (cctk_origin_space[x]+cctk_delta_space[x]/cctk_levfac[x]*cctk_levoff[x]/cctk_levoffdenom[x])
 #define CCTK_DELTA_SPACE(x) (cctk_delta_space[x]/cctk_levfac[x])
-#define CCTK_DELTA_TIME cctk_delta_time
+#define CCTK_DELTA_TIME (cctk_delta_time/cctk_timefac)
 #define CCTK_LSSH(stag,dim) cctk_lssh[(stag)+CCTK_NSTAGGER*(dim)]
 #define CCTK_LSSH_IDX(stag,dim) ((stag)+CCTK_NSTAGGER*(dim))
 

@@ -167,11 +167,14 @@ cGH *CactusDefaultSetupGH(tFleshConfig *config, int convergence_level)
     thisGH->cctk_bbox         = malloc(2*cctk_dim*sizeof(int));
     thisGH->cctk_nghostzones  = malloc(2*cctk_dim*sizeof(int));
     thisGH->cctk_levfac       = malloc(cctk_dim*sizeof(int));
+    thisGH->cctk_levoff       = malloc(cctk_dim*sizeof(int));
+    thisGH->cctk_levoffdenom  = malloc(cctk_dim*sizeof(int));
     thisGH->cctk_delta_space  = malloc(cctk_dim*sizeof(CCTK_REAL));
     /* FIXME : Next line goes when coords are done properly */
     thisGH->cctk_origin_space = malloc(cctk_dim*sizeof(CCTK_REAL));
 
     thisGH->cctk_delta_time = 1;
+    thisGH->cctk_timefac = 1;
     thisGH->cctk_convlevel = 0;
 
     n_variables = CCTK_NumVars();
@@ -214,6 +217,8 @@ cGH *CactusDefaultSetupGH(tFleshConfig *config, int convergence_level)
      thisGH->cctk_bbox &&
      thisGH->cctk_nghostzones &&
      thisGH->cctk_levfac &&
+     thisGH->cctk_levoff &&
+     thisGH->cctk_levoffdenom &&
      thisGH->cctk_delta_space &&
      thisGH->cctk_origin_space &&
      thisGH->data &&
