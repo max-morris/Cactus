@@ -568,6 +568,8 @@ int CCTK_SchedulePrint(const char *where)
     indent_level -=2;
     printf ("    endif\n");
     printf ("  enddo\n");
+    printf ("  Shutdown routines\n");
+    SchedulePrint("CCTK_SHUTDOWN");
   }
   else
   {
@@ -607,7 +609,9 @@ int CCTK_SchedulePrintTimes(const char *where)
     SchedulePrintTimes("CCTK_PRESTEP", &data);
     SchedulePrintTimes("CCTK_EVOL", &data);
     printf("\n");
-    SchedulePrintTimes("CCTK_ANALYSIS", &data);
+    SchedulePrintTimes("CCTK_ANALYSIS", &data);    
+    printf("\n");
+    SchedulePrintTimes("CCTK_SHUTDOWN", &data);
   }
   else
   {
