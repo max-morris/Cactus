@@ -61,7 +61,7 @@ sub NewCreateScheduleBindings
 
   foreach $thorn (sort split(" ", $interface_database{"THORNS"}))
   {
-    $buffer = &ScheduleCreateFile($thorn, scalar(%interface_database), 
+    $buffer = &ScheduleCreateFile($thorn, scalar(keys %interface_database), 
 				  %interface_database, %schedule_database);
 
     open(OUT, ">Schedule$thorn.c") || die "Unable to open Schedule$thorn.c";
@@ -76,6 +76,20 @@ sub NewCreateScheduleBindings
   chdir "$start_dir";
 }  
 
+#/*@@
+#  @routine    ScheduleCreateFile
+#  @date       Fri Sep 17 17:34:26 1999
+#  @author     Tom Goodale
+#  @desc 
+#  Creates a string containing all the data which should go into a schedule file.
+#  @enddesc 
+#  @calls     
+#  @calledby   
+#  @history 
+#
+#  @endhistory 
+#
+#@@*/
 sub ScheduleCreateFile
 {
   local($thorn, $n_interface_database, @rest) = @_;
@@ -94,6 +108,7 @@ sub ScheduleCreateFile
   local(@after_list);
   local(@while_list);
   local($outfile);
+  local($outbuf);
 
   # Extract the interface, and schedule databases from the arguments.
   %interface_database = @rest[0..2*$n_interface_database-1];
@@ -103,63 +118,81 @@ sub ScheduleCreateFile
   
   $buffer = $schedule_database{"\U$thorn\E FILE"};
   
+  # Process each schedule block
   for($block = 0 ; $block < $schedule_database{"\U$thorn\E N_BLOCKS"}; $block++)
   {
     ($block_buffer, $block_prototype) = &ScheduleBlock($thorn, $implementation, $block,
 						       $n_interface_database, 
-						       %interface_database, %schedule_database);
+						       @rest);
     $buffer =~ s:\@BLOCK\@$block:$block_buffer:;
     $prototypes .= "$block_prototype";
   }
 
+  # Process each schedule statement
   for($statement = 0 ; $statement < $schedule_database{"\U$thorn\E N_STATEMENTS"}; $statement++)
   {
     ($statement_buffer, $statement_prototype) = &ScheduleStatement($thorn, $implementation, $statement, 
 								   $n_interface_database,
-								   %interface_database, %schedule_database);
+								   @rest);
     $buffer =~ s:\@STATEMENT\@$statement:$statement_buffer:;
     $prototypes .= "$statement_prototype";
   }
     
-  print "---------------------------------\n";
-  print "$thorn -> $implementation\n";
+  # Actually create the string
 
-  print "\#include <stdarg.h>\n";
-  print "\#define THORN_IS_$thorn\n";
-  print "\#include \"cctk.h\"\n";
-  print "\#include \"cctk_parameters.h\"\n";
-  print "\#include \"cctk_schedule.h\"\n";
-  print "\#include \"cctk_Comm.h\"\n";
-  print "\n";
-  print "/* Prototypes for functions to be registered. */";
-  print "$prototypes\n";
-  print "/*\@\@\n";
-  print "  \@routine    CCTK_BindingsSchedule$thorn\n";
-  print "  \@date       \n";
-  print "  \@author     \n";
-  print "  \@desc \n";
-  print "  Creates the schedule bindings for thorn $thorn\n";
-  print "  \@enddesc \n";
-  print "  \@calls     \n";
-  print "  \@calledby   \n";
-  print "  \@history \n";
-  print "\n";
-  print "  \@endhistory\n"; 
-  print "\n";
-  print "\@\@*/\n";
-  print "void CCTK_BindingsSchedule$thorn(cGH *GH)\n";
-  print "{\n";
-  print "  DECLARE_CCTK_PARAMETERS\n";
-  print "$buffer\n";
-  print "}\n";
-  print "\n";
+  # Header stuff
+  $outbuf = "";
+  $outbuf .=  "\#define THORN_IS_$thorn\n";
+  $outbuf .=  "\n";
+  $outbuf .=  "\#include <stdarg.h>\n";
+  $outbuf .=  "\n";
+  $outbuf .=  "\#include \"cctk.h\"\n";
+  $outbuf .=  "\#include \"cctk_parameters.h\"\n";
+  $outbuf .=  "\#include \"cctk_schedule.h\"\n";
+  $outbuf .=  "\#include \"cctk_Comm.h\"\n";
+  $outbuf .=  "\n";
+  $outbuf .=  "/* Prototypes for functions to be registered. */";
+  $outbuf .=  "$prototypes\n";
+  $outbuf .=  "\n";
+  $outbuf .=  "/*\@\@\n";
+  $outbuf .=  "  \@routine    CCTK_BindingsSchedule$thorn\n";
+  $outbuf .=  "  \@date       \n";
+  $outbuf .=  "  \@author     \n";
+  $outbuf .=  "  \@desc \n";
+  $outbuf .=  "  Creates the schedule bindings for thorn $thorn\n";
+  $outbuf .=  "  \@enddesc \n";
+  $outbuf .=  "  \@calls     \n";
+  $outbuf .=  "  \@calledby   \n";
+  $outbuf .=  "  \@history \n";
+  $outbuf .=  "\n";
+  $outbuf .=  "  \@endhistory\n"; 
+  $outbuf .=  "\n";
+  $outbuf .=  "\@\@*/\n";
+  $outbuf .=  "void CCTK_BindingsSchedule$thorn(cGH *GH)\n";
+  $outbuf .=  "{\n";
+  $outbuf .=  "  DECLARE_CCTK_PARAMETERS\n";
+  $outbuf .=  "$buffer\n";
+  $outbuf .=  "}\n";
+  $outbuf .=  "\n";
 
-  print "---------------------------------\n";
-
-  return $buffer;
+  return $outbuf;
 
 }
 
+#/*@@
+#  @routine    ScheduleBlock
+#  @date       Fri Sep 17 17:37:59 1999
+#  @author     Tom Goodale
+#  @desc 
+#  Creates the code for a given schedule block
+#  @enddesc 
+#  @calls     
+#  @calledby   
+#  @history 
+#
+#  @endhistory 
+#
+#@@*/
 sub ScheduleBlock
 {
   local($thorn, $implementation, $block, $n_interface_database, @rest) = @_;
@@ -272,6 +305,20 @@ sub ScheduleBlock
   return ($buffer, $prototype);
 }
 
+#/*@@
+#  @routine    ScheduleStatement
+#  @date       Fri Sep 17 17:38:30 1999
+#  @author     Tom Goodale
+#  @desc 
+#  Creates the code for a given schedule statement
+#  @enddesc 
+#  @calls     
+#  @calledby   
+#  @history 
+#
+#  @endhistory 
+#
+#@@*/
 sub ScheduleStatement
 {
   local($thorn, $implementation, $statement, $n_interface_database, @rest) = @_;
@@ -316,6 +363,20 @@ sub ScheduleStatement
   return ($buffer, $prototype);
 }
 
+#/*@@
+#  @routine    ScheduleSelectGroups
+#  @date       Fri Sep 17 17:38:53 1999
+#  @author     Tom Goodale
+#  @desc 
+#  Parses a list of variable groups and selects valid ones.
+#  @enddesc 
+#  @calls     
+#  @calledby   
+#  @history 
+#
+#  @endhistory 
+#
+#@@*/
 sub ScheduleSelectGroups
 {
   local($thorn, $implementation, $group_list, %interface_database) = @_;
@@ -341,6 +402,11 @@ sub ScheduleSelectGroups
     {
       push(@groups, "$implementation\::$group");
     }
+    elsif($group =~ m/::/)
+    {
+      # FIXME - Should do some validation here.
+      push(@groups, $group);
+    }
     else
     {
       print STDERR "Schedule error: Thorn $thorn - group $group doesn't exist.\n";
@@ -350,6 +416,21 @@ sub ScheduleSelectGroups
   return @groups;
 }
 
+#/*@@
+#  @routine    ScheduleSelectRoutines
+#  @date       Fri Sep 17 17:39:29 1999
+#  @author     Tom Goodale
+#  @desc 
+#  Parses a list of schedule routines/groups.
+#  FIXME - should validate
+#  @enddesc 
+#  @calls     
+#  @calledby   
+#  @history 
+#
+#  @endhistory 
+#
+#@@*/
 sub ScheduleSelectRoutines
 {
   local($thorn, $implementation, $routine_list, %schedule_database) = @_;
@@ -370,6 +451,21 @@ sub ScheduleSelectRoutines
   return @routines;
 }
 
+#/*@@
+#  @routine    ScheduleSelectVars
+#  @date       Fri Sep 17 17:39:58 1999
+#  @author     Tom Goodale
+#  @desc 
+#  Parses a list of variables
+#  FIXME - should validate
+#  @enddesc 
+#  @calls     
+#  @calledby   
+#  @history 
+#
+#  @endhistory 
+#
+#@@*/
 sub ScheduleSelectVars
 {
   local($thorn, $implementation, $var_list, %interface_database) = @_;
