@@ -116,12 +116,12 @@
 #endif /*FCODE */
 
 /* Now include the code to pick an appropriate precison for reals and ints */
-#include "cctk_types.h"
+#include "cctk_Types.h"
 
 /* Include any other stuff which is specific to this architecture */
-#include "cctk_archdefs.h"
+#include "cctk_Archdefs.h"
 
 /* Include any extra stuff from optional extra packages. */
-#include "cctk_extradefs.h"
+#include "cctk_Extradefs.h"
 
 #endif /* _CCTK_CONFIG_H_ */
