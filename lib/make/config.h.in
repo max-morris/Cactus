@@ -30,9 +30,14 @@
 #error "Unable to find a 4 byte integer type. "
 #endif
 
+#ifdef FCODE
+
 #define POINTER integer*SIZEOF_CHAR_P
 
 #define CCTK_STRING POINTER
 
-#define Double double
 #define REAL double precision
+
+#endif
+
+#define Double double
