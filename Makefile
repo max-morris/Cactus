@@ -16,7 +16,7 @@
 #
 #
 #   @enddesc
-#   @version $Id: Makefile,v 1.137 2002-05-14 14:27:22 tradke Exp $
+#   @version $Id: Makefile,v 1.138 2002-06-04 18:34:31 allen Exp $
 # @@*/
 
 ##################################################################################
@@ -948,6 +948,18 @@ ThornGuide:
 	@echo "  Done."
 	@echo $(DIVIDER)
 
+.PHONY: ThornGuide.pdf
+ThornGuide.pdf:
+	@echo $(DIVIDER)
+	@echo Creating thorn documentation ThornGuide.pdf
+	rm -rf $(CCTK_HOME)/doc/ThornGuide/build;
+	mkdir $(CCTK_HOME)/doc/ThornGuide/build; 
+	@echo "  Processing...."
+	cd $(CCTK_HOME)/doc/ThornGuide/build; \
+	$(MAKE) -f $(CCTK_HOME)/doc/ThornGuide/Makefile ThornGuide.pdf PERL=$(PERL) CCTK_HOME=$(CCTK_HOME); \
+	cp ThornGuide.pdf $(CCTK_HOME)/ThornGuide.pdf 
+	@echo "  Done."
+	@echo $(DIVIDER)
 
 # Run ThornGuide on a configuration
 
