@@ -675,7 +675,7 @@ int CCTK_VTypeNumber(const char *type)
 {
   int retval=-1;
 
-  if(!strcmp(type, "INTEGER"))
+  if(!strcmp(type, "INT"))
   {
     retval = CCTK_VARIABLE_INTEGER;
   }
