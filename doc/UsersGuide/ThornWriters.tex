@@ -272,7 +272,7 @@ CCTK_INT intfields type=ARRAY size=xsize,ysize ghostsize=gxsize,gysize dim=2
 } "My 2D arrays"
 \end{verbatim}
 where {\tt xsize}, {\tt ysize}, {\tt gxsize}, {\tt gysize} are all
-parameters defined in the thorns {\tt param.ccl}.
+parameters defined in the thorn's {\tt param.ccl}.
 
 
 By default all groups are {\tt private}, to change this an access
@@ -321,16 +321,24 @@ A boolean type which can take values 1, `t', `true', `yes' or
 
 \item the parameter name
 
+\item an optional size (in square brackets) -- if this is present the
+  parameter is a ``parameter array'', i.e. will actually be an array
+  of parameters each of which has the same properties but a different
+  value.  Such arrays appear as normal arrays in C or Fortran, 0-based
+  in C and 1-based in Fortran.  In the parameter file the value of
+  each element is specified with square brackets and is 0-based.  The
+  size must be an integer.
+
 \item a {\tt description} of the parameter
 
-\item an allowed value block --- This consists of a brace delimited
+\item an allowed value block -- This consists of a brace delimited
 block of lines\footnote{The beginning brace (\{) must sit on a line by
 itself; the ending brace (\}) must be preceded by a carriage return.}
 describing the allowed values of the parameter.  Each range may have a
 description associated with it by placing a :: on the line and putting
 the description afterwards.
 
-\item the default value ---
+\item the default value --
 This must be one of the allowed values.
 
 \end{itemize}
@@ -360,8 +368,15 @@ KEYWORD confused "Are we getting confused ?"
   "perhaps" :: "we are not sure"
   "never"   :: "never"
 } "never"
+
+REAL Length[2] "Length in each direction"
+{
+0:* :: "Range has to be from zero to infinity, default is one"
+} 1.0
+
 \end{verbatim}
-defines a REAL parameter, a BOOLEAN parameter, and a KEYWORD.
+defines a REAL parameter, a BOOLEAN parameter, a KEYWORD and an array
+of REAL parameters.
 
 By default all parameters are {\tt private}, to change this an access
 specification of the form {\tt global:} or {\tt restricted:} (or
@@ -622,9 +637,9 @@ Extension & Coding Language \\
 The following restrictions apply to file names:
 \begin{itemize}
 \item For portability across all operating systems, the base names
-	for any particular extension should not depend on the operating
-  	system being case sensitive (e.g. having {\tt MyFile.c} and
-	{\tt MYFILE.f77} is alright, but {\tt MyFile.c} and {\tt MYFILE.c} could cause problems).
+        for any particular extension should not depend on the operating
+        system being case sensitive (e.g. having {\tt MyFile.c} and
+        {\tt MYFILE.f77} is alright, but {\tt MyFile.c} and {\tt MYFILE.c} could cause problems).
 \item Currently all source files in different subroutines within a
 thorn must have distinct names.  We hope
 to relax this in future.  Different thorns can have files with the same names.
@@ -1011,7 +1026,7 @@ Appendix \ref{sec:pa}.
 
 The full specification for a parameter decalaration is
 \begin{verbatim}
-[EXTENDS|USES] <parameter_type> <parameter name> "<parameter description>"
+[EXTENDS|USES] <parameter_type>[[<size>]] <parameter name> "<parameter description>"
 {
   <PARAMETER_RANGES>
 } <default value>
@@ -1618,8 +1633,8 @@ the global grid.
       Fortran thorns.
 \item {\tt cctk\_bbox}
       An array of 2$*${\tt cctk\_dim} integers (in the order
-	$[{\mbox{dim}}_0^{\mbox{min}}, \mbox{dim}_0^{\mbox{max}},
-	{\mbox dim}_1^{\mbox{min}}, {\mbox dim}_1^{\mbox{max}}, \ldots]$),
+        $[{\mbox{dim}}_0^{\mbox{min}}, \mbox{dim}_0^{\mbox{max}},
+        {\mbox dim}_1^{\mbox{min}}, {\mbox dim}_1^{\mbox{max}}, \ldots]$),
       which indicate whether the boundaries are internal boundaries
       (e.g. between processors), or physical boundaries. A value of 1 indicates
       a physical (outer) boundary at the edge of the computational grid,
@@ -1635,7 +1650,7 @@ The following variable is needed for grid refinement methods
 The following variable is used for identifing convergence levels. {\tt NOTE:} Convergence is not currently implemented by Cactus, so that {\tt cctk\_convlevel} is currently always 0.
 \begin{itemize}
 \item {\tt cctk\_convlevel} The convergence level of this grid hierachy.
- 	The base level is 0, and every level above that is currently coarsened 	       by a factor of 2.
+        The base level is 0, and every level above that is currently coarsened         by a factor of 2.
 \end{itemize}
 
 The variables {\tt cctk\_delta\_space} and {\tt cctk\_delta\_time}
@@ -1925,7 +1940,7 @@ ierr = CCTK\_CoordRegisterSystem(dim,"cart3d");
 \item[{\tt CCTK\_CoordRegisterData}]
 
 Defines a coordinate in a given coordinate system, with a given
-	direction and name, and optionally associates it to a grid variable.
+        direction and name, and optionally associates it to a grid variable.
 The directions of the coordinates range from 1 to the dimension of the
 coordinate system. For example, to register the grid variable {\it grid::y3d}
 to have the coordinate name {\tt y} in the {\tt cart3d} system
@@ -2216,56 +2231,56 @@ are for 3-D, but the generalizations to other numbers of dimensions
 should be obvious):
 \begin{Lentry}
 \item[{\tt CCTK\_InterpGV()}]
-	Interpolates Cactus grid arrays, with the topology of the
-	grid implicitly specified by a Cactus coordinate system.
-	(old API, will be phased out soon)
+        Interpolates Cactus grid arrays, with the topology of the
+        grid implicitly specified by a Cactus coordinate system.
+        (old API, will be phased out soon)
 \item[{\tt CCTK\_InterpGridArrays()}]
-	Interpolates Cactus grid arrays, with the topology of the
-	grid implicitly specified by a Cactus coordinate system.
+        Interpolates Cactus grid arrays, with the topology of the
+        grid implicitly specified by a Cactus coordinate system.
 
-	This API doesn't provide an interpolation functionality itself,
-	it only takes care of the interprocessor communication
-	necessary when interpolating distributed grid arrays, and invokes
-	the {\tt CCTK\_InterpLocalUniform()} API on the each processor's
-	local patch of the data.
+        This API doesn't provide an interpolation functionality itself,
+        it only takes care of the interprocessor communication
+        necessary when interpolating distributed grid arrays, and invokes
+        the {\tt CCTK\_InterpLocalUniform()} API on the each processor's
+        local patch of the data.
 \item[{\tt CCTK\_InterpLocal()}]
-	Interpolate processor-local arrays (old API, will be phased out soon)
+        Interpolate processor-local arrays (old API, will be phased out soon)
 \item[{\tt CCTK\_InterpLocalUniform()}]
-	Interpolates processor-local arrays with {\em uniformly\/}
-	spaced data points, \ie{} where the coordinates~$xyz$
-	are related to the integer array subscripts~\verb|ijk| by
-	{\em linear\/} functions
-	\begin{flushleft}
-	$x = \verb|origin|_x + \verb|delta|_x \verb|i|$	\\
-	$y = \verb|origin|_y + \verb|delta|_y \verb|j|$	\\
-	$z = \verb|origin|_z + \verb|delta|_z \verb|k|$	%%%\\
-	\end{flushleft}
-	where the caller specifies the \verb|origin| and \verb|delta|
-	values.
-%notyet	\item[{\tt CCTK\_InterpLocalNonUniform()}]
-%notyet		Interpolates processor-local arrays with {\em nonuniformly\/}
-%notyet		spaced data points, \ie{} where the coordinates~$xyz$
-%notyet		are related to the integer array subscripts~\verb|ijk| by
-%notyet		{\em nonlinear\/} (but still single-variable) functions
-%notyet		\begin{flushleft}
-%notyet		$x = x(\verb|i|)$	\\
-%notyet		$y = y(\verb|j|)$	\\
-%notyet		$z = z(\verb|k|)$	%%%\\
-%notyet		\end{flushleft}
-%notyet		where the caller specifies the functions $x$, $y$, and $z$
-%notyet		by providing 1-D arrays giving their values at the grid points.
-%notyet	\item[{\tt CCTK\_InterpLocalWarped()}]
-%notyet		Interpolates processor-local arrays with {\em curvilinearly
-%notyet		warped\/} data points, \ie{} where the coordinates~$xyz$
-%notyet		are related to the integer array subscripts~\verb|ijk| by
-%notyet		generic {\em nonlinear\/} functions
-%notyet		\begin{flushleft}
-%notyet		$x = x(\verb|i|, \verb|j|, \verb|k|)$	\\
-%notyet		$y = y(\verb|i|, \verb|j|, \verb|k|)$	\\
-%notyet		$z = z(\verb|i|, \verb|j|, \verb|k|)$	%%%\\
-%notyet		\end{flushleft}
-%notyet		where the caller specifies the functions $x$, $y$, and $z$
-%notyet		by providing 3-D arrays giving their values at the grid points.
+        Interpolates processor-local arrays with {\em uniformly\/}
+        spaced data points, \ie{} where the coordinates~$xyz$
+        are related to the integer array subscripts~\verb|ijk| by
+        {\em linear\/} functions
+        \begin{flushleft}
+        $x = \verb|origin|_x + \verb|delta|_x \verb|i|$ \\
+        $y = \verb|origin|_y + \verb|delta|_y \verb|j|$ \\
+        $z = \verb|origin|_z + \verb|delta|_z \verb|k|$ %%%\\
+        \end{flushleft}
+        where the caller specifies the \verb|origin| and \verb|delta|
+        values.
+%notyet \item[{\tt CCTK\_InterpLocalNonUniform()}]
+%notyet         Interpolates processor-local arrays with {\em nonuniformly\/}
+%notyet         spaced data points, \ie{} where the coordinates~$xyz$
+%notyet         are related to the integer array subscripts~\verb|ijk| by
+%notyet         {\em nonlinear\/} (but still single-variable) functions
+%notyet         \begin{flushleft}
+%notyet         $x = x(\verb|i|)$       \\
+%notyet         $y = y(\verb|j|)$       \\
+%notyet         $z = z(\verb|k|)$       %%%\\
+%notyet         \end{flushleft}
+%notyet         where the caller specifies the functions $x$, $y$, and $z$
+%notyet         by providing 1-D arrays giving their values at the grid points.
+%notyet \item[{\tt CCTK\_InterpLocalWarped()}]
+%notyet         Interpolates processor-local arrays with {\em curvilinearly
+%notyet         warped\/} data points, \ie{} where the coordinates~$xyz$
+%notyet         are related to the integer array subscripts~\verb|ijk| by
+%notyet         generic {\em nonlinear\/} functions
+%notyet         \begin{flushleft}
+%notyet         $x = x(\verb|i|, \verb|j|, \verb|k|)$   \\
+%notyet         $y = y(\verb|i|, \verb|j|, \verb|k|)$   \\
+%notyet         $z = z(\verb|i|, \verb|j|, \verb|k|)$   %%%\\
+%notyet         \end{flushleft}
+%notyet         where the caller specifies the functions $x$, $y$, and $z$
+%notyet         by providing 3-D arrays giving their values at the grid points.
 \end{Lentry}
 
 There are separate flesh routines to register interpolation operators for
@@ -2273,17 +2288,17 @@ the APIs (note the calling sequences differ slightly from one registration
 routine to another!):
 \begin{Lentry}
 \item[{\tt CCTK\_InterpRegisterOperatorGV()}]
-	Register a \verb|CCTK_InterpGV()| interpolation operator
-	(old API, will be phased out soon)
+        Register a \verb|CCTK_InterpGV()| interpolation operator
+        (old API, will be phased out soon)
 \item[{\tt CCTK\_InterpRegisterOperatorLocal()}]
-	Register a \verb|CCTK_InterpLocal()| interpolation operator
-	(old API, will be phased out soon)
+        Register a \verb|CCTK_InterpLocal()| interpolation operator
+        (old API, will be phased out soon)
 \item[{\tt CCTK\_InterpRegisterOpLocalUniform()}]
-	Register a \verb|CCTK_InterpLocalUniform()| interpolation operator
-%notyet	\item[{\tt CCTK\_InterpRegisterOpLocalNonUniform()}]
-%notyet		Register a \verb|CCTK_InterpLocalNonUniform()| interpolation operator
-%notyet	\item[{\tt CCTK\_InterpRegisterOpLocalWarped()}]
-%notyet		Register a \verb|CCTK_InterpLocalWarped()| interpolation operator
+        Register a \verb|CCTK_InterpLocalUniform()| interpolation operator
+%notyet \item[{\tt CCTK\_InterpRegisterOpLocalNonUniform()}]
+%notyet         Register a \verb|CCTK_InterpLocalNonUniform()| interpolation operator
+%notyet \item[{\tt CCTK\_InterpRegisterOpLocalWarped()}]
+%notyet         Register a \verb|CCTK_InterpLocalWarped()| interpolation operator
 \end{Lentry}
 These are described in detail in part~\ref{part:FunctionReference}
 of this manual.
@@ -2296,10 +2311,10 @@ name.  In general each name/handle is actually associated with a
 {\em set\/} of interpolation operators, one for each of the
 interpolation APIs.%%%
 \footnote{%%%
- 	 If (as is often the case) an operator
-	 doesn't support all the APIs, the unused
-	 ones should be be left unregistered.
-	 }%%%
+         If (as is often the case) an operator
+         doesn't support all the APIs, the unused
+         ones should be be left unregistered.
+         }%%%
 {}  The combination of a name/handle and an API must be globally
 unique with a Cactus binary, and uniquely identifies the interpolation
 operator.
@@ -3033,7 +3048,7 @@ and
    line. Do not redefine any standard latex command
 
  \item Do not use the {\t $\backslash$appendix} command, instead include any appendices
-	you have as standard sections.
+        you have as standard sections.
 
  \item Currently we only support postscript ({\tt .eps or .ps}) figures.
    Graphics figures should be included using the {\tt includegraphics}
@@ -3059,8 +3074,8 @@ and
      CactusWave\_WaveToyC\_blackhole.eps}
 
  \item References should be formatted with the standard latex {\bf
-	bibitem} command, for example, a bibliography section should
-	look like:
+        bibitem} command, for example, a bibliography section should
+        look like:
 
 {\tt
 \begin{verbatim}
@@ -3414,32 +3429,32 @@ allocation some time later.
 
 \begin{Lentry}
 \item[{\tt int CCTK\_MemTicketRequest(void)}]
-	Request a ticket: save the current total memory to a database.
-	Return an integer (ticket). Use the ticket to calculate the
-	difference in memory allocation between the two instances in
- 	CCTK\_MemTicketCash.	
+        Request a ticket: save the current total memory to a database.
+        Return an integer (ticket). Use the ticket to calculate the
+        difference in memory allocation between the two instances in
+        CCTK\_MemTicketCash.    
 
 \item[{\tt long int CCTK\_MemTicketCash(int your\_ticket)}]
-	Cash in your ticket: return the memory difference between now and the
-     	time the ticket was requested. Tickets can be cashed in
-	several times. See Example below.
-     	This only tracks the real data memory, which is the same as in
-     	undebug mode. It does not keep track of the internal allocations
-     	done to provide the database, motivation is that this is not
- 	allocated either if you compile undebugged.
+        Cash in your ticket: return the memory difference between now and the
+        time the ticket was requested. Tickets can be cashed in
+        several times. See Example below.
+        This only tracks the real data memory, which is the same as in
+        undebug mode. It does not keep track of the internal allocations
+        done to provide the database, motivation is that this is not
+        allocated either if you compile undebugged.
 
 \item[{\tt int CCTK\_MemTicketDelete(int your\_ticket)}]
-	Delete the memory ticket. The ticket-id will not be reused, since
+        Delete the memory ticket. The ticket-id will not be reused, since
         it's incremented with every ticket request, but the memory of
-	the memory datastructure is deallocated.
+        the memory datastructure is deallocated.
 
 \item[{\tt unsigned long int CCTK\_TotalMemory(void)}]
-	Returns the total allocated memory (not including the tracing
+        Returns the total allocated memory (not including the tracing
         data structures).
 
 \item[{\tt void CCTK\_MemStat}] Prints an info string, stating the current,
- 	past and total memory (in bytes) allocation between two
-	successive calls to this routine, as well as the difference.
+        past and total memory (in bytes) allocation between two
+        successive calls to this routine, as well as the difference.
 \end{Lentry}
 
 Sample C Code demonstrating the ticket handling. Two tickets are
@@ -3455,19 +3470,19 @@ int ticket2;
 /* store current memstate, ticket: t1*/
 t1 = CCTK_MemTicketRequest();
 
-/* allocate data */	
+/* allocate data */     
 hi = (int*) CCTK_MALLOC(10*sizeof(int));
 
 /* store current memstate, ticket: t2*/
 t2 = CCTK_MemTicketRequest();
-	
-/* cash ticket t1, print mem difference */	
+        
+/* cash ticket t1, print mem difference */      
 printf("NOW1a: %+d \n",CCTK_MemTicketCash(t1));
 
 /* allocte some more data */
 wo = (CCTK_REAL*)CCTK_MALLOC(10*sizeof(CCTK_REAL));
-	
-/* cash ticket t1 and t2, print mem difference */	
+        
+/* cash ticket t1 and t2, print mem difference */       
 printf("NOW1b: %+d \n",CCTK_MemTicketCash(t1));
 printf("NOW2 : %+d \n",CCTK_MemTicketCash(t2));
 
@@ -3556,28 +3571,28 @@ In more detail:
 \begin{Lentry}
 
 \item[{\tt <ONE|TWO|THREE>\_FORTSTRING\_ARG}]
-	Used in the argument list of the C routine to which the Fortran
-	strings are passed.
+        Used in the argument list of the C routine to which the Fortran
+        strings are passed.
 
 \item[{\tt <ONE|TWO|THREE>\_FORTSTRING\_CREATE}]
-	Used in the declaration section of the C routine to which the Fortran
-	strings are passed. These macros have one, two or three arguments
-	which are the variable names you choose to use for the strings in
-	the C routine, created
-	by null-terminating the passed-in Fortran strings. The {\tt CREATE}
-	macros create new strings with the names you provide, and thus should
-	be treated as read-only and freed after use.
+        Used in the declaration section of the C routine to which the Fortran
+        strings are passed. These macros have one, two or three arguments
+        which are the variable names you choose to use for the strings in
+        the C routine, created
+        by null-terminating the passed-in Fortran strings. The {\tt CREATE}
+        macros create new strings with the names you provide, and thus should
+        be treated as read-only and freed after use.
 
 \item[{\tt <ONE|TWO|THREE>\_FORTSTRING\_PTR}]
-	These macros, used in the declaration section of the C routine
-	{\em after} the {\tt CREATE} macro,
-	should be used if you need to modify one of the passed-in strings.
-	They declare and define pointers to the passed-in strings.
-	
+        These macros, used in the declaration section of the C routine
+        {\em after} the {\tt CREATE} macro,
+        should be used if you need to modify one of the passed-in strings.
+        They declare and define pointers to the passed-in strings.
+        
 \item[{\tt cctk\_strlen<1|2|3>}] these integer variables,
-	automatically defined by
-	the {\tt CREATE} macro, hold the lengths of the passed in
-	Fortran strings.
+        automatically defined by
+        the {\tt CREATE} macro, hold the lengths of the passed in
+        Fortran strings.
 \end{Lentry}
 
 The use of the macros is probably best explained with examples.
@@ -3767,12 +3782,12 @@ files):
 \begin{center}
 \begin{tabular}{|l|l|l|}
 \hline
-Data Type          	& Variable Type & C equivalent			\\
+Data Type               & Variable Type & C equivalent                  \\
 \hline
-{\t CCTK\_POINTER}	& {\t CCTK\_VARIABLE\_POINTER}
-					& {\t void *data\_ptr}		\\
-{\t CCTK\_FN\_POINTER}	& {\t CCTK\_VARIABLE\_FN\_POINTER}
-					& {\t void (*fn\_ptr)(void)}	\\
+{\t CCTK\_POINTER}      & {\t CCTK\_VARIABLE\_POINTER}
+                                        & {\t void *data\_ptr}          \\
+{\t CCTK\_FN\_POINTER}  & {\t CCTK\_VARIABLE\_FN\_POINTER}
+                                        & {\t void (*fn\_ptr)(void)}    \\
 \hline
 \end{tabular}
 \end{center}
