@@ -149,8 +149,27 @@ endif
 
 # Phony targets.
 
-.PHONY:update clean cleandeps cleanobjs realclean
+.PHONY:update editthorns clean cleandeps cleanobjs realclean
 update:
+
+editthorns:
+	@echo $(DIVIDER)
+	if test ! -e $(TOP)/ThornList ; then \
+	echo "Creating compiled ThornList containing all thorns in the arrangements directory" \
+	$(PERL) -s $(BUILD_ACTIVETHORNS) $(CCTK_HOME)/arrangements > $@ ; fi
+	action="yes"; if [ "x$$EDITOR" = "x" ] ; then EDITOR=vi ; fi; \
+	while [ "x$$action" = "xyes" -o "x$$action" = "xy" -o "x$$action" = "xYES" -o "x$$action" = "xY" ] ; \
+	do \
+	echo The thorn list is ; \
+	echo $(DIVIDER) ; \
+	cat $(TOP)/ThornList ; \
+	echo $(DIVIDER) ; \
+	echo Edit this list \(no\) \? ; \
+	read action rest ; \
+	if [ "x$$action" = "xyes" -o "x$$action" = "xy" -o "x$$action" = "xYES" -o "x$$action" = "xY" ] ; \
+	then $$EDITOR $(TOP)/ThornList ; fi ; \
+	done
+	@echo $(DIVIDER)
 
 clean:
 	@echo Deleting all object and dependency files in $(TOP)

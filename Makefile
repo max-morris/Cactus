@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.53 1999-10-24 18:03:52 goodale Exp $
+#   @version $Id: Makefile,v 1.54 1999-10-26 09:40:57 goodale Exp $
 # @@*/
 
 ##################################################################################
@@ -276,6 +276,7 @@ else
 	@echo "  -config        : to (re)configure a configuration. "
 	@echo "                  (runs or reruns the configuration scripts)."
 	@echo "  -thornlist     : regenerates the ThornList file. "
+	@echo "  -editthorns    : edits the ThornList file. "
 	@echo "  -thornparfiles : copies example parameter files to thornparfiles."
 endif
 	@echo $(DIVIDER)
@@ -476,6 +477,30 @@ endif
 	@echo $(DIVIDER)
 	@echo Configuration $(@:%-thornlist=%) does not exist.
 	@echo Regeneration of compiled ThornList aborted.
+
+# Edit the thornlist
+
+.PHONY editthorn:
+
+editthorns:
+	@echo $(DIVIDER)
+	@echo Please specify a configuration to edit the thornlist of.
+	@echo $(DIVIDER)
+
+
+ifneq ($strip($(CONFIGURATIONS)),) 
+.PHONY $(addsuffix -editthorns,$(CONFIGURATIONS)):
+
+$(addsuffix -editthorns,$(CONFIGURATIONS)):
+	@echo $(DIVIDER)
+	@echo Editing compiled ThornList $(@:%-editthorn=%)
+	$(MAKE) -f $(CCTK_HOME)/lib/make/make.configuration TOP=$(CONFIGS_DIR)/$(@:%-editthorns=%) CCTK_HOME=$(CCTK_HOME) editthorns
+endif
+
+%-editthorns:
+	@echo $(DIVIDER)
+	@echo Configuration $(@:%-editthorns=%) does not exist.
+	@echo Editing of compiled ThornList aborted.
 
 # Rerun the configuration script
 
