@@ -1,7 +1,7 @@
 
 Cactus Code Frequently Asked Questions
 
-$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.24 2002-02-13 15:44:02 allen Exp $
+$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.25 2002-02-28 11:59:24 rideout Exp $
 
 Also available at http://www.cactuscode.org/Documentation/FAQ
 
@@ -13,7 +13,7 @@ Also available at http://www.cactuscode.org/Documentation/FAQ
    The first thing to do whenever a problem arises from the make system 
    is to run with the "SILENT=no" option.
 
-   In this case, 'though, first check that the clocks on the machine on 
+   In this case, though, first check that the clocks on the machine on 
    which you are editing files and the clock on the machine you are compiling 
    on are synchronised.  If the compilation machine's clock is slow, then the 
    newly made dependency files will still be `older' than the file you edited, 
@@ -208,7 +208,7 @@ Also available at http://www.cactuscode.org/Documentation/FAQ
     make[2]: *** [metric.F90.d] Error 33                                
 
 
-    But then when I type gmake again the compilation proceeds without problem?
+    But then when I type gmake again the compilation proceeds without problem.
 
     You are probably using Linux, and the C preprocessor is complaining 
     about single apostrophes in a Fortran comment line when it is creating the
@@ -225,8 +225,8 @@ Also available at http://www.cactuscode.org/Documentation/FAQ
 
 -------------------------------------------------------------------------------
 
-17. Is there anyway to tell what CVS version of individual source files
-    was used to build an executable.
+17. Is there any way to tell what CVS version of individual source files
+    was used to build an executable?
 
     Actually there is, just issue the Unix command:
 
@@ -238,18 +238,18 @@ Also available at http://www.cactuscode.org/Documentation/FAQ
 
     to look for a particular file.
 
-    (Note that this only works for files using the CCTK_FILEVERSION macro)
+    (Note that this only works for files using the CCTK_FILEVERSION macro.)
 
 -------------------------------------------------------------------------------
 
 18. I want to recreate a Cactus executable from last year, I have a thorn list
     but when I try and check it out from the /cactus or /cactusdevcvs 
-    repository I don't get some of the thorns?
+    repository I don't get some of the thorns.
 
     This is probably because the thorns moved arrangement, or were rewritten. 
     To checkout the right code, look at the Release web pages to decide which 
     release the thorn was in, and then checkout the thorn from the /cactus 
-    repository, eg. is the thorn "OldThorn" was last in the Beta 7 release use:
+    repository, eg. if the thorn "OldThorn" was last in the Beta 7 release use:
 
     cvs -d :pserver:cvs_anon@cvs.cactuscode.org:/cactus co -d OldThorn \ 
                                                              beta7/OldThorn
@@ -286,7 +286,7 @@ Also available at http://www.cactuscode.org/Documentation/FAQ
 -------------------------------------------------------------------------------
 
 21. Sometimes when I compile in parallel with TJOBS or FJOBS the compilation
-    stops halfway through?
+    stops halfway through.
 
     Compiling in parallel using TJOBS/FJOBS is not always failsafe. Usually
     simply issuing your gmake command again will complete the compilation
@@ -316,14 +316,14 @@ Also available at http://www.cactuscode.org/Documentation/FAQ
     available on your machine (and so you are not trying to compile any thorns
     containing C++), we use the C compiler instead.
 
---------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
 
 23. Are there grid scalars of type STRING ?
 
     No, there is only a CCTK_CHAR type. You can however define an array
     with DISTRIB=CONSTANT with a maximum length.
 
---------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
 
 24. How do I checkout an earlier version of Cactus ?
 
@@ -338,9 +338,9 @@ Also available at http://www.cactuscode.org/Documentation/FAQ
     cvs -d :pserver:cvs_anon@cvs.cactuscode.org:/cactus checkout -D \
                 "7 July 2000"
 
-    Also look at FAQ No. 18
+    Also look at FAQ No. 18.
 
---------------------------------------------------------------------------------    
+-------------------------------------------------------------------------------
 
 25. Why don't you use compilers mpicc, mpiCC etc when they exist on parallel 
     machines?
@@ -354,12 +354,12 @@ Also available at http://www.cactuscode.org/Documentation/FAQ
     libraries and options to the configure system than to rely on mpicc behaving
     well on all platforms. At some point we will be reinvestigating this.
 
---------------------------------------------------------------------------------    
+-------------------------------------------------------------------------------
 
 26. I'm running Cactus on a parallel system with missing C++ libraries on some 
-    nodes, Cactus compiles but it won't run, is there anything I can do?
+    nodes.  Cactus compiles but it won't run.  Is there anything I can do?
 
     If C++ isn't being used in any thorn, you can compile Cactus without using
-    and C++ using the configure option CXX=none.
+    C++ using the configure option CXX=none.
 
---------------------------------------------------------------------------------    
+-------------------------------------------------------------------------------
