@@ -51,9 +51,12 @@ fi
 
 # Set the HDF5 libs, libdirs and includedirs
 
+# don't explicitely add standard include and library search paths
+if [ "$HDF5_DIR" != '/usr' -a "$HDF5_DIR" != '/usr/local' ]; then
+  HDF5_LIB_DIRS="$HDF5_DIR/lib"
+  HDF5_INC_DIRS="$HDF5_DIR/include"
+fi
 HDF5_LIBS=hdf5
-HDF5_LIB_DIRS="$HDF5_DIR/lib"
-HDF5_INC_DIRS="$HDF5_DIR/include"
 
 
 # check that we have the right version of HDF5 under 32/64 bit IRIX
