@@ -66,32 +66,39 @@ while (<>)
   # Get rid of any tabs
   s/\t/        /g;
   
-  # Get rid of standard c C, or even ! comments
-  s/^$standard_comments.*$/\n/g;
-    
-  # Get rid of ! comments : a bit tricky as ! may appear inside strings
-  s/(.)![^'"]*$/\1\n/g;
-
-  # OK, now put in the line breaks (&& or &!)
-  s/\&\&\s*/\n      /g;
-  s/\&\!\s*/\n/g;
-
-  # Get rid of lonesome semicolons
-  s/\s*\;\s*$//;
-
-  # And now we can fix the lines.  This is actually a little complicated.
-  # since there is a different case if the thing matches a newline
-  # than if it doesn't.
-  if (/\n/)
+  # Ignore some fortran comments (they stay in code)
+  # (standard c C, or even ! comments)
+  if (/^$standard_comments.*$/ || /(.)![^'"]*$/)
   {
-    foreach $LINE (split('\n',$_)) 
-    {
-      &splitline($LINE);
-    }
+     print;
+     print "\n";
   }
-  else
+  else 
   {
-    &splitline($_);
+    # Get rid of ! comments : a bit tricky as ! may appear inside strings
+    s/(.)![^'"]*$/\1\n/g;
+
+    # OK, now put in the line breaks (&& or &!)
+    s/\&\&\s*/\n      /g;
+    s/\&\!\s*/\n/g;
+
+    # Get rid of lonesome semicolons
+    s/\s*\;\s*$//;
+
+    # And now we can fix the lines.  This is actually a little complicated.
+    # since there is a different case if the thing matches a newline
+    # than if it doesn't.
+    if (/\n/)
+    {
+      foreach $LINE (split('\n',$_)) 
+      {
+        &splitline($LINE);
+      }
+    }
+    else
+    {
+      &splitline($_);
+    }
   }
 }
 
