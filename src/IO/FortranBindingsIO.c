@@ -10,7 +10,7 @@
 #include <stdlib.h>
 #include "cctk_Flesh.h"
 #include "cctk_FortranString.h"
-#include "cctk_Comm.h"
+#include "cctk_IO.h"
 #include "cctk_IOMethods.h"
 
 void FMODIFIER FORTRAN_NAME(CCTK_OutputGH)(int *istat,cGH *GH)
