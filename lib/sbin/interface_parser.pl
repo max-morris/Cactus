@@ -7,7 +7,7 @@
 #  @desc
 #           Parses interface.ccl files
 #  @enddesc
-#  @version $Header: /cactusdevcvs/Cactus/lib/sbin/interface_parser.pl,v 1.55
+#  @version $Header$
 #@@*/
 
 #/*@@
