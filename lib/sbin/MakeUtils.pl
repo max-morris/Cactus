@@ -22,7 +22,7 @@
 sub buildthorns
 {
     local($package_dir,$choice) = @_;
-    local(@packages);
+    local(@arrangements);
 
     chdir $package_dir || die "Can't change directory to $package_dir\n";
 
@@ -42,7 +42,7 @@ sub buildthorns
 	# Just pick directories
 	if( -d $_)
 	{
-	    push (@packages, $_);
+	    push (@arrangements, $_);
 	}
     }
     
@@ -51,7 +51,7 @@ sub buildthorns
     if ($choice =~ "thorns")
     {
     
-	foreach $package (@packages)
+	foreach $package (@arrangements)
 	{
 	    chdir $package;
 	    
@@ -83,7 +83,7 @@ sub buildthorns
     }
     else
     {
-	@total_list = @packages;
+	@total_list = @arrangements;
     }
 
     foreach $thorn (@total_list)

@@ -4,7 +4,7 @@ $sbin_dir = "lib/sbin";
 
 require "$sbin_dir/parameter_parser.pl";
 
-$thorn{"WaveToy"} = "packages/CactusApplications/WaveToy";
+$thorn{"WaveToy"} = "arrangements/CactusApplications/WaveToy";
 %parameter_database = &create_parameter_database(%thorn);
 
 

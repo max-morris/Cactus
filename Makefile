@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.45 1999-07-30 14:38:32 jmasso Exp $
+#   @version $Id: Makefile,v 1.46 1999-07-30 15:56:40 allen Exp $
 # @@*/
 
 ##################################################################################
@@ -123,7 +123,7 @@ SETUP_ENV += INTEGER_PRECISION=$(INTEGER_PRECISION) ; export INTEGER_PRECISION ;
 endif
 endif
 
-# Package options
+# Arrangement options
 
 ifdef MPI
 ifneq ($(strip $(origin MPI)), default)
@@ -210,9 +210,9 @@ TAGS:
 	@echo $(DIVIDER)
 	@echo Updating the Emacs TAGS file
 	rm -f TAGS ; touch TAGS 
-	find src packages \( -name '*.[chCF]' -o -name '*.F77' -o -name '*.cc' \) \
+	find src arrangements \( -name '*.[chCF]' -o -name '*.F77' -o -name '*.cc' \) \
           -exec etags -a {} \;
-#	find src packages \( -name '*.[cChF]' -o -name '*.F77' -o -name '*.cc'\) \
+#	find src arrangements \( -name '*.[cChF]' -o -name '*.F77' -o -name '*.cc'\) \
 #          -exec etags --append --regex '/[a-z A-Z \t]*FORTRAN_NAME[^)]*/' {} \;
 	perl -pi -e 's/(subroutine\s*)([a-zA-Z0-9_]+)/\1\L\2/g;' TAGS
 	@echo $(DIVIDER)
@@ -221,7 +221,7 @@ tags:
 	@echo $(DIVIDER)
 	@echo Updating the vi tags file
 	rm -f tags ; touch tags 
-	find src packages \( -name '*.[cChF]' -o -name '*.F77' -o -name '*.cc' \) \
+	find src arrangements \( -name '*.[cChF]' -o -name '*.F77' -o -name '*.cc' \) \
           -exec ctags -a {} \;
 	perl -pi -e 's/(subroutine\s*)([a-zA-Z0-9_]+)/\1\L\2/g;' tags
 	sort tags > sortedtags ; mv sortedtags tags
@@ -281,7 +281,7 @@ endif
 	@echo
 	@echo "  TAGS      - creates an Emacs TAGS file."
 	@echo "  tags      - creates a Vi TAGS file."
-	@echo "  checkout  - checkout public packages/thorns."
+	@echo "  checkout  - checkout public arrangements/thorns."
 	@echo "  default   - creates a new configuration with a default name."
 	@echo "  newthorn  - creates a new thorn."
 	@echo "  distclean - deletes all existing configurations."
@@ -544,12 +544,12 @@ endif
 	@echo Test suite aborted.
 
 
-# Checkout public thorns and packages
+# Checkout public thorns and arrangements
 
 .PHONY: checkout
 checkout:
 	@echo $(DIVIDER)
-	@echo Running app/package/thorn checkout script
+	@echo Running app/arrangement/thorn checkout script
 	$(PERL) ./lib/sbin/checkout.pl
 
 
@@ -571,14 +571,14 @@ downsize:
 	read yesno rest ;\
 	if [ "x$$yesno" = "xyes" -o "x$$yesno" = "xy" -o "x$$yesno" = "xYES" -o "x$$yesno" = "xY" ] ;\
 	then  \
-	rm -rf doc; rm -rf packages/*/*/doc; \
+	rm -rf doc; rm -rf arrangements/*/*/doc; \
 	echo $(DIVIDER)   ;  \
 	fi 
 	@echo Remove thorn testsuites \(\no\)?
 	read yesno rest ;\
 	if [ "x$$yesno" = "xyes" -o "x$$yesno" = "xy" -o "x$$yesno" = "xYES" -o "x$$yesno" = "xY" ] ;\
 	then  \
-	rm -rf packages/*/*/test; \
+	rm -rf arrangements/*/*/test; \
 	echo $(DIVIDER)   ;  \
 	fi 
 	@echo Remove all configurations \(\no\)?

@@ -6,7 +6,7 @@
 #  @desc 
 #  Parses the the configuration files for thorns.
 #  @enddesc 
-#  @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.24 1999-07-24 23:01:17 goodale Exp $
+#  @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.25 1999-07-30 15:56:42 allen Exp $
 #@@*/
 
 # Global parameter to track the number of errors from the CST
@@ -51,7 +51,7 @@ if(! $bindings_dir)
 
 
 ########################################################################
-# Require certain packages
+# Require certain arrangements
 
 
 $sbin_dir = "$cctk_home/lib/sbin";
@@ -229,11 +229,11 @@ sub CreateThornList
       # No longer strip thorn_ off the beginning of a thorn name.
       #      $thorn_name =~ s/thorn_//;
 
-      if( -d "$cctk_home/packages/$thorn")
+      if( -d "$cctk_home/arrangements/$thorn")
       {      
-        if( -r "$cctk_home/packages/$thorn/param.ccl" &&
-	    -r "$cctk_home/packages/$thorn/interface.ccl" &&
-	    -r "$cctk_home/packages/$thorn/schedule.ccl")
+        if( -r "$cctk_home/arrangements/$thorn/param.ccl" &&
+	    -r "$cctk_home/arrangements/$thorn/interface.ccl" &&
+	    -r "$cctk_home/arrangements/$thorn/schedule.ccl")
 	{ 
 	  if( $thornlist{"$thorn_name"} )
 	  {
@@ -242,7 +242,7 @@ sub CreateThornList
 	  }
 	  else
 	  {
-	    $thornlist{"$thorn_name"} = "$cctk_home/packages/$thorn";
+	    $thornlist{"$thorn_name"} = "$cctk_home/arrangements/$thorn";
 	  }
         }
 	else

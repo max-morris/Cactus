@@ -77,8 +77,8 @@ if (!open (AT, "< $scratchdir${sep}ThornList")) {
     while (<AT>) {
         @t = split(' ');
         foreach $T (@t) {
-            if (-d "packages${sep}$T${sep}test") {
-                @testfiles = (@testfiles, <packages${sep}$T${sep}test${sep}*.par>);
+            if (-d "arrangements${sep}$T${sep}test") {
+                @testfiles = (@testfiles, <arrangements${sep}$T${sep}test${sep}*.par>);
             }
         }
     }

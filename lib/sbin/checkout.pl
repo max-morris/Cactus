@@ -20,7 +20,7 @@ elsif ($which =~ /^t/i)
 {
     &get_thorns();
 }
-elsif ($which =~ /^a/i)
+elsif ($which =~ /^ap/i)
 {
     &get_applications();
 }
@@ -48,7 +48,7 @@ while ()
     {
 	&get_thorns();
     }
-    elsif ($dowhat =~ /^a/i)
+    elsif ($dowhat =~ /^ap/i)
     {
 	&get_applications();
     }

@@ -119,8 +119,8 @@ $(CONFIG)/make.thornlist: $(TOP)/ThornList $(foreach lib, $(CCTK_HOME)/src $(THO
 
 $(TOP)/ThornList:
 	@echo $(DIVIDER)
-	@echo Creating compiled ThornList containing all thorns in the packages directory
-	$(PERL) -s $(BUILD_ACTIVETHORNS) $(CCTK_HOME)/packages > $@
+	@echo Creating compiled ThornList containing all thorns in the arrangements directory
+	$(PERL) -s $(BUILD_ACTIVETHORNS) $(CCTK_HOME)/arrangements > $@
 	action="yes"; if [ "x$$EDITOR" = "x" ] ; then EDITOR=vi ; fi; \
 	while [ "x$$action" = "xyes" -o "x$$action" = "xy" -o "x$$action" = "xYES" -o "x$$action" = "xY" ] ; \
 	do \

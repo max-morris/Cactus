@@ -9,7 +9,7 @@
 #  @version $Id$ 
 #@@*/
 
-$package_dir = "packages";
+$package_dir = "arrangements";
 
 $thorn_name = shift(@ARGV);
 
@@ -20,10 +20,10 @@ if(!$thorn_name)
 
 if(!$package)
 {
-  @packages = &GetToolkits($package_dir);
+  @arrangements = &GetToolkits($package_dir);
   
-  print "The following packages are available:\n";
-  foreach $package (@packages)
+  print "The following arrangements are available:\n";
+  foreach $package (@arrangements)
   {
     print "$package\n";
   }
@@ -182,7 +182,7 @@ sub prompt {
 #  @date       Wed Feb  3 16:45:22 1999
 #  @author     Tom Goodale
 #  @desc 
-#  Gets a list of the current packages.
+#  Gets a list of the current arrangements.
 #  @enddesc 
 #  @calls     
 #  @calledby   
@@ -195,7 +195,7 @@ sub GetToolkits
 {
   local($package_dir) = @_;
   local($start_dir);
-  local(@packages);
+  local(@arrangements);
 
   $start_dir = `pwd`;
 
@@ -215,7 +215,7 @@ sub GetToolkits
     # Just pick directories
     if( -d $_)
     {
-      push (@packages, $_);
+      push (@arrangements, $_);
     }
   }
 
@@ -223,5 +223,5 @@ sub GetToolkits
 
   chdir $start_dir;
 
-  return @packages;
+  return @arrangements;
 }
