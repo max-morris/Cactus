@@ -225,7 +225,7 @@ int CCTK_InterpGF (cGH *GH,
   CCTK_REAL *origin;
   int (*function)(REGISTER_INTERP_ARGLIST)=NULL; 
 
-  retcode = 0;
+  retcode = -1;
 
   /* Get the pointer to the interpolation operator */
   if (operation_handle < 0)
@@ -257,9 +257,10 @@ int CCTK_InterpGF (cGH *GH,
       for (i = 0; i < nInFields; i++) {
         index = va_arg (indices, int);
         timelevel = CCTK_NumTimeLevelsFromVarI (index);
+        retcode = 0;
         if (timelevel < 0) {
           CCTK_WARN (1, "Invalid variable index in CCTK_InterpGF()");
-          retcode = 1;
+          retcode = -1;
         } else {
           if (--timelevel > 0)
              --timelevel;
@@ -320,7 +321,7 @@ void FMODIFIER FORTRAN_NAME(CCTK_InterpGF)(int *fortranreturn,
   CCTK_REAL *origin;
   int (*function)(REGISTER_INTERP_ARGLIST)=NULL; 
 
-  i = 0;
+  retcode = -1;
 
   /* Get the pointer to the interpolation operator */
 
@@ -353,9 +354,10 @@ void FMODIFIER FORTRAN_NAME(CCTK_InterpGF)(int *fortranreturn,
       for (i = 0; i < *nInFields; i++) {
         index = *va_arg (indices, int *);
         timelevel = CCTK_NumTimeLevelsFromVarI (index);
+        retcode = 0;
         if (timelevel < 0) {
           CCTK_WARN (1, "Invalid variable index in CCTK_InterpGF()");
-          retcode = 1;
+          retcode = -1;
         } else {
           if (--timelevel > 0)
              --timelevel;
@@ -393,7 +395,7 @@ void FMODIFIER FORTRAN_NAME(CCTK_InterpGF)(int *fortranreturn,
       CCTK_WARN(3,"Interpolation operation is not registered and cannot be called");
   }
 
-  *fortranreturn = i;
+  *fortranreturn = retcode;
 }
 
 
@@ -503,7 +505,7 @@ int CCTK_Interp (cGH *GH,
   int *inFieldTypes, *outFieldTypes;
   int (*function)(REGISTER_INTERP_ARGLIST)=NULL; 
 
-  retcode = 0;
+  retcode = -1;
 
   /* Get the pointer to the interpolation operator */
   if (operation_handle < 0)
@@ -525,6 +527,7 @@ int CCTK_Interp (cGH *GH,
       inFieldTypes = (int *) malloc (nInFields * sizeof (int));
       outFields = (void **) malloc (nOutFields * sizeof (void *));
       outFieldTypes = (int *) malloc (nOutFields * sizeof (int));
+      retcode = 0;
 
       /* Fill in the arrays from the variable argument list */
       va_start (indices, nOutFields);
@@ -563,7 +566,7 @@ int CCTK_Interp (cGH *GH,
 
           default:
             CCTK_WARN (1, "Invalid variable type for coordinates");
-            retcode = 1;
+            retcode = -1;
             break;
         }
 
@@ -595,7 +598,7 @@ int CCTK_Interp (cGH *GH,
 
           default:
             CCTK_WARN (1, "Invalid variable type for coordinates");
-            retcode = 1;
+            retcode = -1;
             break;
         }
 
@@ -652,7 +655,7 @@ void FMODIFIER FORTRAN_NAME(CCTK_Interp)(int *fortranreturn,
   int *inFieldTypes, *outFieldTypes;
   int (*function)(REGISTER_INTERP_ARGLIST)=NULL; 
 
-  retcode = 0;
+  retcode = -1;
 
   /* Get the pointer to the interpolation operator */
 
@@ -675,6 +678,7 @@ void FMODIFIER FORTRAN_NAME(CCTK_Interp)(int *fortranreturn,
       inFieldTypes = (int *) malloc (*nInFields * sizeof (int));
       outFields = (void **) malloc (*nOutFields * sizeof (void *));
       outFieldTypes = (int *) malloc (*nOutFields * sizeof (int));
+      retcode = 0;
 
       /* Fill in the arrays from the variable argument list */
       va_start (indices, nOutFields);
@@ -713,7 +717,7 @@ void FMODIFIER FORTRAN_NAME(CCTK_Interp)(int *fortranreturn,
 
           default:
             CCTK_WARN (1, "Invalid variable type for coordinates");
-            retcode = 1;
+            retcode = -1;
             break;
         }
 
@@ -745,7 +749,7 @@ void FMODIFIER FORTRAN_NAME(CCTK_Interp)(int *fortranreturn,
 
           default:
             CCTK_WARN (1, "Invalid variable type for coordinates");
-            retcode = 1;
+            retcode = -1;
             break;
         }
 
