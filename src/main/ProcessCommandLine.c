@@ -17,6 +17,8 @@ static char *rcsid = "$Header$";
 
 CCTK_FILEVERSION(main_ProcessCommandLine_c)
 
+static char *parameter_file_name=NULL;
+
 static int argc;
 
 static char **argv;
@@ -94,6 +96,7 @@ int CCTKi_ProcessCommandLine(int *inargc, char ***inargv, tFleshConfig *ConfigDa
     if(argc > optind)
     {
       ConfigData->parameter_file_name = argv[optind];
+      parameter_file_name = ConfigData->parameter_file_name;
     }
     else
     {
@@ -130,4 +133,28 @@ int CCTK_CommandLine(char ***outargv)
   *outargv = argv;
 
   return argc;
+}
+
+
+ /*@@
+   @routine    CCTK_CommandLine
+   @date       Wed Feb 17 00:19:30 1999
+   @author     Tom Goodale
+   @desc 
+   Gets the command line arguments.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+int CCTK_ParameterFilename(int len, char *filename)
+{
+  int retval;
+  strncpy(filename,parameter_file_name,len-1);
+  retval = strlen(filename);
+  retval=retval > len ? 0 : retval;
+  return retval;
 }
