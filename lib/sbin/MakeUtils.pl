@@ -233,6 +233,7 @@ sub ReadThornlist
 
    while (<TL>) 
    {
+      next if m:^!.*:;
       s/(.*?)#.*/\1/;            # read up to the first "#"
       s/\s+//g;                  # replace any spaces with nothing
       if (/\w+/) 
