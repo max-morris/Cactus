@@ -581,9 +581,10 @@ int CCTK_Interp (cGH *GH,
       {
         switch (coordTypes [i]) {
           case CCTK_VARIABLE_CHAR:
+            /* CCTK_CHAR will be promoted to int */
             if (i == 0)
-              origin = malloc (nDims * sizeof (CCTK_CHAR));
-            ((CCTK_CHAR *) origin) [i] = va_arg (indices, CCTK_CHAR);
+              origin = malloc (nDims * sizeof (int));
+            ((int *) origin) [i] = va_arg (indices, int);
             break;
 
           case CCTK_VARIABLE_INT:
@@ -617,9 +618,10 @@ int CCTK_Interp (cGH *GH,
       {
         switch (coordTypes [i]) {
           case CCTK_VARIABLE_CHAR:
+            /* CCTK_CHAR will be promoted to int */
             if (i == 0)
-              delta = malloc (nDims * sizeof (CCTK_CHAR));
-            ((CCTK_CHAR *) delta) [i] = va_arg (indices, CCTK_CHAR);
+              delta = malloc (nDims * sizeof (int));
+            ((int *) delta) [i] = va_arg (indices, int);
             break;
 
           case CCTK_VARIABLE_INT:
@@ -753,9 +755,10 @@ void CCTK_FCALL CCTK_FNAME(CCTK_Interp)
       for (i = 0; i < *nDims; i++)
         switch (coordTypes [i]) {
           case CCTK_VARIABLE_CHAR:
+            /* CCTK_CHAR will be promoted to int */
             if (i == 0)
-              origin = malloc (*nDims * sizeof (CCTK_CHAR));
-            ((CCTK_CHAR *) origin) [i] = *va_arg (indices, CCTK_CHAR *);
+              origin = malloc (*nDims * sizeof (int));
+            ((int *) origin) [i] = *va_arg (indices, int *);
             break;
 
           case CCTK_VARIABLE_INT:
@@ -785,10 +788,11 @@ void CCTK_FCALL CCTK_FNAME(CCTK_Interp)
 
       for (i = 0; i < *nDims; i++)
         switch (coordTypes [i]) {
+          /* CCTK_CHAR will be promoted to int */
           case CCTK_VARIABLE_CHAR:
             if (i == 0)
-              delta = malloc (*nDims * sizeof (CCTK_CHAR));
-            ((CCTK_CHAR *) delta) [i] = *va_arg (indices, CCTK_CHAR *);
+              delta = malloc (*nDims * sizeof (int));
+            ((int *) delta) [i] = *va_arg (indices, int *);
             break;
 
           case CCTK_VARIABLE_INT:
