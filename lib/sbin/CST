@@ -6,7 +6,7 @@
 #  @desc
 #             Parses the the configuration files for thorns.
 #  @enddesc
-#  @version   $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.52 2003-07-22 11:02:19 tradke Exp $
+#  @version   $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.53 2003-09-04 16:16:29 tradke Exp $
 #@@*/
 
 # Global parameter to track the number of errors from the CST
@@ -97,9 +97,6 @@ print "Reading ThornList...\n";
 print "Parsing configuration files...\n";
 $configuration_database = &CreateConfigurationDatabase(%thorns);
 
-#$debug_configuration = 1;
-&PrintConfigurationDatabase($configuration_database) if($debug_configuration);
-
 # Restrict the rest of this to thorns with source
 
 &SplitThorns($configuration_database, \%thorns, \%source_thorns, \%nosource_thorns);
@@ -134,7 +131,7 @@ print "Checking consistency...\n";
 
 # Create all the bindings
 print "Creating Thorn-Flesh bindings...\n";
-&CreateBindings($bindings_dir, \%parameter_database, \%interface_database, \%schedule_database);
+&CreateBindings($bindings_dir, \%parameter_database, \%interface_database, \%schedule_database, $configuration_database);
 
 # Create header file of active thorns for the code
 $activethornsheader = &CreateActiveThornsHeader(%source_thorns);
@@ -571,7 +568,7 @@ sub CreateDefineThisThornHeader
 
 sub CreateBindings
 {
-  my($bindings_dir, $rhparameter_db, $rhinterface_db, $rhschedule_db) = @_;
+  my($bindings_dir, $rhparameter_db, $rhinterface_db, $rhschedule_db, $configuration_db) = @_;
 
   # Create the bindings directory if it doesn't exist.
   if(! -d $bindings_dir)
@@ -581,7 +578,7 @@ sub CreateBindings
 
   # Create the bindings for the subsystems.
   print "   Creating implementation bindings...\n";
-  &CreateImplementationBindings($bindings_dir, $rhparameter_db, $rhinterface_db);
+  &CreateImplementationBindings($bindings_dir, $rhparameter_db, $rhinterface_db, $configuration_db);
   print "   Creating parameter bindings...\n";
   &CreateParameterBindings($bindings_dir, $rhparameter_db, $rhinterface_db);
   print "   Creating variable bindings...\n";

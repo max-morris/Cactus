@@ -1,61 +1,108 @@
 #! /usr/bin/perl -w
 
 #/*@@
-#  @file      ConfigurationParser.pl
-#  @date      Tue Feb  8 17:36:48 2000
-#  @author    Tom Goodale
-#  @desc 
-#  Parser for configuration.ccl files
+#  @file     ConfigurationParser.pl
+#  @date     Tue Feb  8 17:36:48 2000
+#  @author   Tom Goodale
+#  @desc
+#            Parser for configuration.ccl files
 #  @enddesc
-#  @version $Header$ 
+#  @version  $Header$
 #@@*/
 
 #/*@@
 #  @routine    CreateConfigurationDatabase
 #  @date       Tue Feb  8 17:47:26 2000
 #  @author     Tom Goodale
-#  @desc 
-#  
-#  @enddesc 
-#  @calls     
-#  @calledby   
-#  @history 
-#
-#  @endhistory 
-#
+#  @desc
+#              Parses the information in all the thorns' configuration.ccl files
+#              and creates a database from it
+#  @enddesc
 #@@*/
-
 sub CreateConfigurationDatabase
 {
   my(%thorns) = @_;
-  my($thorn, @indata);
-  my(%configuration_data) = ();
-  my($filename);
+  my(%cfg) = ();
+  my($thorn, $required, @missing, $filename);
 
-  #  Loop through each  thorn's interface file.
+
+  # Loop through each thorn's configuration file.
   foreach $thorn (keys %thorns)
   {
-    #       Get the arrangement name for the thorn
-    $thorns{$thorn} =~ m:.*/arrangements/([^/]*)/[^/]*:;
-    $arrangement = $1;
-
     $filename = "$thorns{$thorn}/configuration.ccl";
+    next if (! -r $filename);
 
-    if(-r $filename)
-    { 
-      print "   $thorn\n";
+    # Get the configuration data from it
+    &ParseConfigurationCCL($thorn, \%cfg, $filename);
 
-      #       Read the data
-      @indata = &read_file($filename);
+    print "   $thorn\n";
+    print "           Provides: ", $cfg{"\U$thorn\E PROVIDES"}, "\n"
+      if ($cfg{"\U$thorn\E PROVIDES"});
+    print "           Requires: ", $cfg{"\U$thorn\E REQUIRES"}, "\n"
+      if ($cfg{"\U$thorn\E REQUIRES"});
 
-      #       Get the configuration data from it
-      &ParseConfigurationCCL($arrangement,$thorn, \%configuration_data, \@indata);
-      
-      &PrintConfigurationStatistics($thorn, \%configuration_data);
+    # verify that all required thorns are there in the ThornList
+    if ($cfg{"\U$thorn\E REQUIRES THORNS"})
+    {
+      print "           Requires thorns: ", $cfg{"\U$thorn\E REQUIRES THORNS"}, "\n";
+
+      @missing = ();
+      foreach $required (split (' ', $cfg{"\U$thorn\E REQUIRES THORNS"}))
+      {
+        if (! $thorns{"$required"})
+        {
+          push (@missing, $required);
+        }
+      }
+      if (@missing)
+      {
+        if (@missing == 1)
+        {
+          &CST_error (0, "Thorn $thorn requires thorn @missing. " .
+                         'Please add this thorn to your ThornList or remove ' .
+                         "$thorn from it !");
+        }
+        else
+        {
+          &CST_error (0, "Thorn $thorn requires thorns '@missing'. " .
+                         'Please add these thorns to your ThornList or ' .
+                         "remove $thorn from it !");
+        }
+      }
     }
   }
-  
-  return \%configuration_data;
+
+  # Print configuration database
+  # my($field);
+  # foreach $field ( sort keys %cfg)
+  # {
+  #   print "$field has value ", $cfg{$field}, "\n";
+  # }
+
+  return \%cfg;
+}
+
+
+#/*@@
+#  @routine    VerifyConfigurationDatabase
+#  @date       Wed 3 Sep 2003
+#  @author     Thomas Radke
+#  @desc
+#              Verifies that all 'REQUIRES THORNS' requirements are satisfied
+#  @enddesc
+#@@*/
+sub VerifyConfigurationDatabase
+{
+#  my(%thorns) = @_;
+  my(%cfg) = @_;
+  my($key);
+
+
+  # Loop through each thorn's configuration file.
+  foreach $key (keys %cfg)
+  {
+    print "got key '$key'\n";
+  }
 }
 
 
@@ -63,177 +110,160 @@ sub CreateConfigurationDatabase
 #  @routine    ParseConfigurationCCL
 #  @date       Tue Feb  8 19:23:18 2000
 #  @author     Tom Goodale
-#  @desc 
+#  @desc
 #  Parses a configuration.ccl file and generates a database of the values
-#  @enddesc 
-#  @calls     
-#  @calledby   
-#  @history 
-#
-#  @endhistory 
-#
+#  @enddesc
 #@@*/
 sub ParseConfigurationCCL
 {
-  my($arrangement, $thorn, $rh_configuration_db, $ra_data) = @_;
+  my($thorn, $cfg, $filename) = @_;
+  my(@data);
   my($line_number, $line);
   my($provides, $script, $lang);
   my($optional, $define);
 
   # Initialise some stuff to prevent perl -w from complaining.
 
-  $rh_configuration_db->{"\U$thorn PROVIDES\E"} = "";
-  $rh_configuration_db->{"\U$thorn REQUIRES\E"} = "";
-  $rh_configuration_db->{"\U$thorn OPTIONAL\E"} = "";
-  $rh_configuration_db->{"\U$thorn OPTIONS\E"}  = "";
-  
+  $cfg->{"\U$thorn PROVIDES\E"} = '';
+  $cfg->{"\U$thorn REQUIRES\E"} = '';
+  $cfg->{"\U$thorn REQUIRES THORNS\E"} = '';
+  $cfg->{"\U$thorn OPTIONAL\E"} = '';
+  $cfg->{"\U$thorn OPTIONS\E"}  = '';
 
-  for($line_number = 0; $line_number < @$ra_data; $line_number++)
+  # Read the data
+  @data = &read_file($filename);
+
+  for($line_number = 0; $line_number < @data; $line_number++)
   {
-    $line = $ra_data->[$line_number];
-    
-    #       Parse the line
+    $line = $data[$line_number];
 
+    # Parse the line
     if($line =~ m/^\s*PROVIDES\s*/i)
     {
-      ($provides, $script, $lang, $line_number) = &ParseProvidesBlock($line_number, $ra_data);
-      $rh_configuration_db->{"\U$thorn PROVIDES\E"} .= "$provides";
-      $rh_configuration_db->{"\U$thorn PROVIDES $provides\E SCRIPT"} = "$script";
-      $rh_configuration_db->{"\U$thorn PROVIDES $provides\E LANG"} = "$lang";
+      ($provides, $script, $lang, $line_number) = &ParseProvidesBlock($line_number, \@data);
+      $cfg->{"\U$thorn\E PROVIDES"} .= "$provides";
+      $cfg->{"\U$thorn\E PROVIDES \U$provides\E SCRIPT"} = "$script";
+      $cfg->{"\U$thorn\E PROVIDES \U$provides\E LANG"} = "$lang";
       next;
+    }
+    elsif($line =~ m/^\s*REQUIRES\s+THORNS\s*:\s*(.*)/i)
+    {
+      $cfg->{"\U$thorn\E REQUIRES THORNS"} .= "$1";
     }
     elsif($line =~ m/^\s*REQUIRES\s*(.*)/i)
     {
-      $rh_configuration_db->{"\U$thorn REQUIRES\E"} .= "$1";
+      $cfg->{"\U$thorn\E REQUIRES"} .= "$1";
     }
     elsif($line =~ m/^\s*OPTIONAL\s*/i)
     {
-      ($optional, $define, $line_number) = &ParseOptionalBlock($line_number, $ra_data);
-      $rh_configuration_db->{"\U$thorn OPTIONAL\E"} .= "$provides";
-      $rh_configuration_db->{"\U$thorn OPTIONAL $optional\E DEFINE"} = "$define";
+      ($optional, $define, $line_number) = &ParseOptionalBlock($line_number, \@data);
+      $cfg->{"\U$thorn\E OPTIONAL"} .= "$provides";
+      $cfg->{"\U$thorn\E OPTIONAL \U$optional\E DEFINE"} = "$define";
     }
     elsif($line =~ m/^\s*NO_SOURCE\s*/i)
     {
-      $rh_configuration_db->{"\U$thorn OPTIONS\E"} .= "NO_SOURCE";
+      $cfg->{"\U$thorn\E OPTIONS"} .= "NO_SOURCE";
     }
     else
     {
-      print STDERR "Error: Unrecognised line in configure.ccl '$line' \n";
-      $CST_errors++;
+      &CST_error (0, "Unrecognised line in configure.ccl '$line'");
     }
-
   }
-
-  return;
 }
+
 
 #/*@@
 #  @routine    ParseProvidesBlock
 #  @date       Mon May  8 15:52:40 2000
 #  @author     Tom Goodale
-#  @desc 
+#  @desc
 #  Parses the PROVIDES block in a configuration.ccl file.
-#  @enddesc 
-#  @calls     
-#  @calledby   
-#  @history 
-#
-#  @endhistory 
-#
+#  @enddesc
 #@@*/
 sub ParseProvidesBlock
 {
-  my ($line_number, $ra_data) = @_;
+  my ($line_number, $data) = @_;
   my ($provides, $script, $lang);
 
   $provides = "";
   $script   = "";
   $lang     = "";
 
-  $ra_data->[$line_number] =~ m/^\s*PROVIDES\s*(.*)/i;
-  
+  $data->[$line_number] =~ m/^\s*PROVIDES\s*(.*)/i;
+
   $provides = $1;
 
   $line_number++;
-  if($ra_data->[$line_number] !~ m/^\s*\{\s*$/)
+  if($data->[$line_number] !~ m/^\s*\{\s*$/)
   {
-    print STDERR "Error parsing provides block line '$ra_data->[$line_number]'\n";
-    print STDERR "Missing { at start of block\n";
-    $CST_errors++;
-    $line_number++ while($ra_data[$line_number] !~ m:\s*\}\s*:);
+    &CST_error (0, "Error parsing provides block line '$data->[$line_number]'.".
+                   'Missing { at start of block');
+    $line_number++ while($data[$line_number] !~ m:\s*\}\s*:);
   }
   else
   {
-    while($ra_data->[$line_number] !~ m:\s*\}\s*:)
+    while($data->[$line_number] !~ m:\s*\}\s*:)
     {
       $line_number++;
-      if($ra_data->[$line_number] =~ m/^\s*SCRIPT\s*(.*)$/i)
+      if($data->[$line_number] =~ m/^\s*SCRIPT\s*(.*)$/i)
       {
         $script = $1;
         next;
       }
-      elsif($ra_data->[$line_number] =~ m/^\s*LANG[^\s]*\s*(.*)$/i)
+      elsif($data->[$line_number] =~ m/^\s*LANG[^\s]*\s*(.*)$/i)
       {
         $lang = $1;
         next;
       }
-      elsif($ra_data->[$line_number] =~ m:\s*\}\s*:)
+      elsif($data->[$line_number] =~ m:\s*\}\s*:)
       {
         # do nothing.
       }
       else
       {
-        print STDERR "Error parsing provides block line '$ra_data->[$line_number]'\n";
-        print STDERR "Unrecognised statement\n";
-        $CST_errors++;
-      } 
+        print STDERR "Error parsing provides block line '$data->[$line_number]'\n";
+        &CST_error (0, 'Unrecognised statement');
+      }
     }
   }
 
-
   return ($provides, $script, $lang, $line_number);
 }
+
 
 #/*@@
 #  @routine    ParseProvidesBlock
 #  @date       Mon May  8 15:52:40 2000
 #  @author     Tom Goodale
-#  @desc 
+#  @desc
 #  Parses the OPTIONAL block in a configuration.ccl file.
-#  @enddesc 
-#  @calls     
-#  @calledby   
-#  @history 
-#
-#  @endhistory 
-#
+#  @enddesc
 #@@*/
 sub ParseOptionalBlock
 {
-  my ($line_number, $ra_data) = @_;
+  my ($line_number, $data) = @_;
   my ($optional, $define);
 
-  $ra_data->[$line_number] =~ m/^\s*OPTIONAL\s*(.*)/i;
-  
+  $data->[$line_number] =~ m/^\s*OPTIONAL\s*(.*)/i;
+
   $optional = $1;
 
   $define = "";
 
   $line_number++;
 
-  if($ra_data->[$line_number] !~ m/^\s*\{\s*$/)
+  if($data->[$line_number] !~ m/^\s*\{\s*$/)
   {
-    print STDERR "Error parsing optional block line '$ra_data->[$line_number]'\n";
-    print STDERR "Missing { at start of block\n";
-    $CST_errors++;
-    $line_number++ while($ra_data->[$line_number] !~ m:\s*\}\s*:);
+    &CST_error (0, "Error parsing optional block line '$data->[$line_number]'".
+                ' Missing { at start of block.');
+    $line_number++ while($data->[$line_number] !~ m:\s*\}\s*:);
   }
   else
   {
-    while($ra_data->[$line_number] !~ m:\s*\}\s*:)
+    while($data->[$line_number] !~ m:\s*\}\s*:)
     {
       $line_number++;
-      if($ra_data->[$line_number] =~ m/^\s*DEFINE\s*(.*)$/i)
+      if($data->[$line_number] =~ m/^\s*DEFINE\s*(.*)$/i)
       {
         if($define eq "")
         {
@@ -242,73 +272,21 @@ sub ParseOptionalBlock
         }
         else
         {
-          print STDERR "Error parsing optional block line '$ra_data->[$line_number]'\n";
-          print STDERR "Only one define allowed\n";
-          $CST_errors++;
+          &CST_error (0, "Error parsing optional block line '$data->[$line_number]' " . 'Only one define allowed.');
         }
       }
-      elsif($ra_data->[$line_number] =~ m:\s*\}\s*:)
+      elsif($data->[$line_number] =~ m:\s*\}\s*:)
       {
         # do nothing.
       }
       else
       {
-        print STDERR "Error parsing provides block line '$ra_data->[$line_number]'\n";
-        print STDERR "Unrecognised statement\n";
-        $CST_errors++;
-      } 
+        &CST_error (0, "Error parsing provides block line '$data->[$line_number]' " . 'Unrecognised statement.');
+      }
     }
   }
 
   return ($optional, $define, $line_number);
-}
-
-#/*@@
-#  @routine    PrintConfigurationDatabase
-#  @date       Mon May  8 15:53:23 2000
-#  @author     Tom Goodale
-#  @desc 
-#  Prints out the configuration database.
-#  @enddesc 
-#  @calls     
-#  @calledby   
-#  @history 
-#
-#  @endhistory 
-#
-#@@*/
-sub PrintConfigurationDatabase
-{
-  my($configuration_data) = @_;
-  my($field);
-  
-  foreach $field ( sort keys %$configuration_data)
-  {
-    print "$field has value $configuration_data->{$field}\n";
-  }
-}
-
-#/*@@
-#  @routine    PrintConfigurationStatistics
-#  @date       Mon May  8 15:53:23 2000
-#  @author     Tom Goodale
-#  @desc 
-#  Prints out the configuration statistics.
-#  @enddesc 
-#  @calls     
-#  @calledby   
-#  @history 
-#
-#  @endhistory 
-#
-#@@*/
-sub PrintConfigurationStatistics
-{
-  my($thorn, $configuration_data) = @_;
-
-  print "          " . "Provides: " . $configuration_data->{"\U$thorn\E PROVIDES"} . ".\n";
-
-  return;
 }
 
 1;
