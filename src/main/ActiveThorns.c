@@ -1112,8 +1112,8 @@ int CCTKi_ActivateThorns(const char *activethornlist)
      */
     while(imp2)
     {
-      printf("Error: required implementation %s not requested\n", imp2);
-      printf("       Add a thorn providing this implementation to ActiveThorns "
+      printf("Error: Required implementation %s was not requested\n", imp2);
+      printf("       Add a thorn providing this implementation to the ActiveThorns "
              "parameter.\n");
       n_errors++;
       /*  Give some more help */
@@ -1121,7 +1121,7 @@ int CCTKi_ActivateThorns(const char *activethornlist)
       {
         impthornlist = CCTK_ImpThornList(imp2);
 
-        printf("       This implementation is provided by compiled thorns:\n");
+        printf("       For example, this implementation is provided by compiled thorns:\n");
         printf("          ");
         SKTreeTraverseInorder(impthornlist, JustPrintThornName, NULL);
         printf("\n");
