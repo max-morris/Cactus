@@ -2879,8 +2879,7 @@ coefficients can be used for all the arrays.
 int status =
      CCTK_InterpGridArrays(const cGH *cctkGH,
                            int N_dims,
-                           int local_interp_handle,
-                           int param_table_handle,
+                           int local_interp_handle, int param_table_handle,
                            int coord_system_handle,
                            int N_interp_points,
                              const int interp_coords_type_code,
@@ -2895,10 +2894,12 @@ int status =
 \begin{Synopsis}{Fortran}
 \begin{verbatim}
 call CCTK_InterpGridArrays(status,
-.                          cctkGH, N_dims, local_interp_handle, param_table_handle,
+.                          cctkGH,
+.                          N_dims,
+.                          local_interp_handle, param_table_handle,
 .                          coord_system_handle,
-.                          N_interp_points, interp_coords_type_code,
-.                          interp_coords,
+.                          N_interp_points,
+.                            interp_coords_type_code, interp_coords,
 .                          N_input_arrays, input_array_variable_indices,
 .                          N_output_arrays, output_array_type_codes,
 .                          output_arrays)
@@ -6478,7 +6479,6 @@ int clone_handle = Util_TableClone(int handle);
 \begin{Synopsis}{Fortran}
 \begin{verbatim}
 call Util_TableClone(clone_handle, handle)
-
 integer clone_handle, handle
 \end{verbatim}
 \end{Synopsis}
@@ -6595,7 +6595,6 @@ int handle = Util_TableCreate(int flags);
 \begin{Synopsis}{Fortran}
 \begin{verbatim}
 call Util_TableCreate(handle, flags)
-
 integer handle, flags
 \end{verbatim}
 \end{Synopsis}
@@ -6701,7 +6700,6 @@ int handle = Util_TableCreateFromString(const char *string);
 \begin{Synopsis}{Fortran}
 \begin{verbatim}
 call Util_TableCreateFromString(handle, string)
-
 integer       handle
 character*(*) string
 \end{verbatim}
@@ -6805,7 +6803,6 @@ int key_exists = Util_TableDeleteKey(int handle, const char *key);
 \begin{Synopsis}{Fortran}
 \begin{verbatim}
 call Util_TableDeleteKey(key_exists, handle, key)
-
 integer        key_exists, handle
 character*(*)  key
 \end{verbatim}
@@ -6862,7 +6859,6 @@ int status = Util_TableDestroy(int handle);
 \begin{Synopsis}{Fortran}
 \begin{verbatim}
 call Util_TableDestroy(status, handle)
-
 integer status, handle
 \end{verbatim}
 \end{Synopsis}
@@ -6956,7 +6952,6 @@ where \verb|XXX| is one of
 \begin{Synopsis}{Fortran}
 \begin{verbatim}
 call Util_TableGetXxx(N_elements, handle, value, key)
-
 integer        N_elements, handle
 CCTK_XXX       value
 character*(*)  key
@@ -7110,7 +7105,6 @@ where \verb|XXX| is one of
 \begin{Synopsis}{Fortran}
 \begin{verbatim}
 call Util_TableGetXxxArray(N_elements, handle, N_array, array, key)
-
 integer        N_elements, handle, N_array
 CCTK_XXX(*)    array
 character*(*)  key
@@ -7268,7 +7262,6 @@ int N_elements = Util_TableGetGeneric(int handle,
 \begin{Synopsis}{Fortran}
 \begin{verbatim}
 call Util_TableGetGeneric(N_elements, handle, type_code, value, key)
-
 integer        N_elements, handle, type_code
 CCTK_POINTER   value
 character*(*)  key
@@ -7432,8 +7425,11 @@ int N_elements = Util_TableGetGenericArray(int handle,
 \end{Synopsis}
 \begin{Synopsis}{Fortran}
 \begin{verbatim}
-call Util_TableGetGenericArray(N_elements, handle, type_code, N_array, array, key)
-
+call Util_TableGetGenericArray(N_elements,
+.                              handle,
+.                              type_code,
+.                              N_array, array,
+.                              key)
 integer        N_elements, handle, type_code, N_array
 CCTK_POINTER   array
 character*(*)  key
@@ -8618,7 +8614,6 @@ int flags = Util_TableQueryFlags(int handle);
 \begin{Synopsis}{Fortran}
 \begin{verbatim}
 call Util_TableQueryFlags(flags, handle)
-
 integer  flags, handle
 \end{verbatim}
 \end{Synopsis}
@@ -8699,8 +8694,10 @@ int key_exists =
 \end{Synopsis}
 \begin{Synopsis}{Fortran}
 \begin{verbatim}
-call Util_TableQueryValueInfo(key_exists, handle, type_code, N_elements, key)
-
+call Util_TableQueryValueInfo(key_exists,
+.                             handle,
+.                             type_code, N_elements,
+.                             key)
 integer        key_exists, handle
 CCTK_INT       type_code, N_elements
 character*(*)  key
@@ -8817,7 +8814,6 @@ int max_key_length = Util_TableQueryMaxKeyLength(int handle);
 \begin{Synopsis}{Fortran}
 \begin{verbatim}
 call Util_TableQueryMaxKeyLength(max_key_length, handle)
-
 integer  max_key_length, handle
 \end{verbatim}
 \end{Synopsis}
@@ -8891,7 +8887,6 @@ int N_Keys = Util_TableQueryNKeys(int handle);
 \begin{Synopsis}{Fortran}
 \begin{verbatim}
 call Util_TableQueryNKeys(N_Keys, handle)
-
 integer  N_Keys, handle
 \end{verbatim}
 \end{Synopsis}
@@ -8944,7 +8939,6 @@ where \verb|XXX| is one of
 \begin{Synopsis}{Fortran}
 \begin{verbatim}
 call Util_TableSetXxx(status, handle, value, key)
-
 integer        status, handle
 CCTK_XXX       value
 character*(*)  key
@@ -9086,7 +9080,6 @@ where \verb|XXX| is one of
 \begin{Synopsis}{Fortran}
 \begin{verbatim}
 call Util_TableSetXxxArray(status, handle, N_elements, array, key)
-
 integer        status, handle, N_elements
 CCTK_XXX(*)    array
 character*(*)  key
@@ -9219,7 +9212,6 @@ int count = Util_TableSetFromString(int handle, const char *string);
 \begin{Synopsis}{Fortran}
 \begin{verbatim}
 call Util_TableSetFromString(count, handle, string)
-
 integer        count, handle
 character*(*)  string
 \end{verbatim}
@@ -9403,7 +9395,6 @@ int status = Util_TableSetGeneric(int handle,
 \begin{Synopsis}{Fortran}
 \begin{verbatim}
 call Util_TableSetGeneric(status, handle, type_code, value, key)
-
 integer        status, handle, type_code
 CCTK_POINTER   value
 character*(*)  key
@@ -9554,8 +9545,11 @@ int status = Util_TableSetGenericArray(int handle,
 \end{Synopsis}
 \begin{Synopsis}{Fortran}
 \begin{verbatim}
-call Util_TableSetGenericArray(status, handle, type_code, N_elements, array, key)
-
+call Util_TableSetGenericArray(status,
+.                              handle,
+.                              type_code,
+.                              N_elements, array,
+.                              key)
 integer           status, handle, type_code, N_elements
 CCTK_POINTER(*)   array
 character*(*)     key
@@ -9712,7 +9706,6 @@ int status = Util_TableSetString(int handle,
 \begin{Synopsis}{Fortran}
 \begin{verbatim}
 call Util_TableSetString(status, handle, string, key)
-
 integer           status, handle
 character*(*)     string, key
 \end{verbatim}
