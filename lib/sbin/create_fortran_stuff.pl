@@ -46,7 +46,7 @@ sub CreateFortranThornParameterBindings
   {
     $implementation = $interface_database{"\U$thorn\E IMPLEMENTS"};
 
-    @data = &CreateFortranCommonDeclaration("cctk_params_$implementation"."_protected", 0, scalar(keys %these_parameters), %these_parameters, %parameter_database);
+    @data = &CreateFortranCommonDeclaration("$implementation"."prot", 0, scalar(keys %these_parameters), %these_parameters, %parameter_database);
 
     foreach $line (@data)
     {
@@ -90,6 +90,8 @@ sub CreateFortranThornParameterBindings
       }
     }
      
+    printf("friend_thorn = $friend_thorn\n");
+    printf("@alias_names = @alias_names\n");
     @data = &CreateFortranCommonDeclaration("$friend_thorn"."prot", 1, scalar(keys %these_parameters), %these_parameters, @alias_names, %parameter_database);
       
     foreach $line (@data)
@@ -147,7 +149,8 @@ sub CreateFortranCommonDeclaration
     }
     else
     {
-      $line = "$type_string $alias_names[$n]";
+      $line = "$type_string $parameter";
+     # $line = "$type_string $alias_names[$n]";
     }
 
     push(@data, $line);
@@ -158,7 +161,8 @@ sub CreateFortranCommonDeclaration
     }
     else
     {
-      $definition .= "$sepchar$alias_names[$n]";
+      #$definition .= "$sepchar$alias_names[$n]";
+      $definition .= "$sepchar$parameter";
     }
 
 
