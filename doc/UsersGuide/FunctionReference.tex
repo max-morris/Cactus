@@ -3131,21 +3131,22 @@ coefficients can be used for all the arrays.
 \begin{verbatim}
 #include "util_ErrorCodes.h"
 #include "cctk.h"
-int status = CCTK_InterpLocalUniform(int N_dims,
-                                     int operator_handle,
-                                     int param_table_handle,
-                                     const CCTK_REAL coord_origin[],
-                                     const CCTK_REAL coord_delta[],
-                                     int N_interp_points,
-                                     int interp_coords_type_code,
-                                     const void *const interp_coords[],
-                                     int N_input_arrays,
-                                     const CCTK_INT input_array_dims[],
-                                     const CCTK_INT input_array_type_codes[],
-                                     const void *const input_arrays[],
-                                     int N_output_arrays,
-                                     const CCTK_INT output_array_type_codes[],
-                                     void *const output_arrays[]);
+int status
+   = CCTK_InterpLocalUniform(int N_dims,
+                             int operator_handle,
+                             int param_table_handle,
+                             const CCTK_REAL coord_origin[],
+                             const CCTK_REAL coord_delta[],
+                             int N_interp_points,
+                               int interp_coords_type_code,
+                               const void *const interp_coords[],
+                             int N_input_arrays,
+                               const CCTK_INT input_array_dims[],
+                               const CCTK_INT input_array_type_codes[],
+                               const void *const input_arrays[],
+                             int N_output_arrays,
+                               const CCTK_INT output_array_type_codes[],
+                               void *const output_arrays[]);
 \end{verbatim}
 \end{Synopsis}
 \end{SynopsisSection}
