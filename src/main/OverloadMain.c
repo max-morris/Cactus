@@ -24,7 +24,6 @@ static char *rcsid="$Header$";
 #define CCTKi_DummyInitialise  CactusDefaultInitialise
 #define CCTKi_DummyEvolve      CactusDefaultEvolve
 #define CCTKi_DummyShutdown    CactusDefaultShutdown
-#define CCTKi_DummyExit        CactusDefaultExit
 
 #include "MainOverloadables.h"
 
@@ -32,7 +31,6 @@ static char *rcsid="$Header$";
 #undef CCTKi_DummyInitialise 
 #undef CCTKi_DummyEvolve     
 #undef CCTKi_DummyShutdown   
-#undef CCTKi_DummyExit        CactusDefaultExit
 
 #undef OVERLOADABLE
 
