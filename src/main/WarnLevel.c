@@ -147,8 +147,6 @@ int CCTK_Warn(int level, int line, const char *file, const char *thorn, const ch
     exit(99);
   }
 
-  USE_CCTK_PARAMETERS
-
   return 0;
 
 }
@@ -291,7 +289,6 @@ int CCTK_VWarn(int level, int line, const char *file, const char *thorn, const c
     exit(99);
   }
 
-  USE_CCTK_PARAMETERS
   return 0;
 }  
 
@@ -327,8 +324,6 @@ int CCTK_ParamWarn(const char *thorn, const char *message)
   }
 
   param_errors++;
-
-  USE_CCTK_PARAMETERS
 
   return 0;
 }
@@ -506,8 +501,6 @@ void CCTKi_FinaliseParamWarn(void)
     }
 
   }
-
-  USE_CCTK_PARAMETERS
 
 }
 

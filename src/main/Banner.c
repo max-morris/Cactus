@@ -175,8 +175,6 @@ int CCTKi_PrintBanners(void)
 
   return 0;
 
-  USE_CCTK_PARAMETERS
-
 }
   
 

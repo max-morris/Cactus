@@ -42,8 +42,7 @@ int CCTKi_ShutdownCactus(tFleshConfig *ConfigData)
   {
     CCTK_SchedulePrintTimes(NULL);
   }
-  return 0;
 
-  USE_CCTK_PARAMETERS
+  return 0;
 
 }
