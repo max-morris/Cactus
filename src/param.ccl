@@ -51,6 +51,10 @@ INT manual_cacheline_bytes "The size of a cacheline if not set automatically (by
 
 restricted:
 
+BOOLEAN terminate_next "Terminate on next iteration?" STEERABLE=ALWAYS
+{
+} "no"
+
 REAL cctk_initial_time "Initial time for evolution"
 {
  : :: "Anything"
