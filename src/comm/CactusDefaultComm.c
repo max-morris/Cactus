@@ -746,6 +746,7 @@ int CactusDefaultGroupStorageDecrease (const cGH *GH, int n_groups,
                                        int *status)
 {
   int i, value, retval;
+  char *gname;
 
 
   /* Has the normal group storage been overloaded ? */
@@ -762,7 +763,9 @@ int CactusDefaultGroupStorageDecrease (const cGH *GH, int n_groups,
         value = 0;
         if(timelevels[i] == 0)
         {
-          value = CCTK_DisableGroupStorage(GH, CCTK_GroupName(groups[i]));
+          gname = CCTK_GroupName(groups[i]);
+          value = CCTK_DisableGroupStorage(GH, gname);
+          free (gname);
           if (value)
           {
             value = CCTK_NumTimeLevelsI(groups[i]);
