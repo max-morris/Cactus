@@ -128,7 +128,16 @@ procedure, as any commits made to fix problems need to be checked on
 all other architectures.
 \item[{\em Tag the code}]
 Tag the code with the latest release tag and update the {\tt LATEST}
-and {\tt STABLE} tags. 
+and {\tt STABLE} tags.  The easiest way to do this is from a clean
+checkout.
+\begin{verbatim}
+cd /Cactus
+cvs -q update -d  # To check for any missing/not up-to-date files.
+cvs tag Cactus_4_0_Beta_X
+cvs tag -F LATEST
+cvs tag -F STABLE
+\end{verbatim}
+
 \item[{\em Log into cvs machine as cactus\_admin}]
 All repository maintanence should be done as the cactus admin user.
 \item[{\em Store old module files}]
@@ -139,8 +148,8 @@ command is of the form
 
 \begin{verbatim}
 cd /cactus
-mkdir BetaX
-mv Cactus{,Base,Connect,Einstein,X,X,X} BetaX
+mkdir betaX
+mv Cactus{,Base,Connect,Einstein,X,X,X} betaX
 \end{verbatim}
 
 \item[{\em Copy new module files}]
@@ -153,6 +162,9 @@ cp -r /cactusdevcvs/Cactus{,Base,Connect,Einstein,X,X,X} .
 find Cactus{,Base,Connect,Einstein,X,X,X} -type d -exec chmod 777 \;
 Setperms.pl public Cactus{,Base,Connect,Einstein,X,X,X}
 \end{verbatim}
+\item[{\em Update CVS {\tt modules} file for new modules}]
+The stable repository's {\tt modules} file should be updated with any
+new module information added. 
 \item[{\em Check that checkout/update works}]
 A fresh checkout should be made as a double check that all permissions 
 have been set correctly.
