@@ -6,7 +6,7 @@
 #   @desc
 #            Known architecture stuff for the SX-5
 #   @enddesc
-#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/superux,v 1.15 2003-09-26 15:35:54 tradke Exp $
+#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/superux,v 1.16 2003-09-29 12:52:49 tradke Exp $
 # @@*/
 
 if test "$CCTK_CONFIG_STAGE" = 'preferred-compilers' ; then
@@ -24,9 +24,20 @@ else
   : ${F77_OPTIMISE_FLAGS='-C hopt -Wf,"-pvctl fullmsg loopcnt=100000000 vwork=stack -L fmtlist mrgmsg transform source"'}
   : ${F90_OPTIMISE_FLAGS='$(F77_OPTIMISE_FLAGS)'}
 
+  # switch off warnings by default, reactivate if WARN=yes was set
+  : ${F77FLAGS='-w'}
+  : ${F90FLAGS='$(F77FLAGS)'}
+  if test "$WARN" = 'xyes' ; then
+    : ${F77_WARN_FLAGS='-Nw'}
+    : ${F90_WARN_FLAGS='-Nw'}
+  fi
   : ${CXX_WARN_FLAGS=''}
 
-  : ${LIBS='i90sx f90sxe v90sxe_sv i90sxe m90sxe u90sx m'}
+  if test "$LD" = "$CXX" -o "$LD" = "$F90" ; then
+    : ${LDFLAGS='-f90lib'}
+  else
+    : ${LIBS='i90sx f90sxe v90sxe_sv i90sxe m90sxe u90sx m'}
+  fi
 
   # dependencies are a bit awkward to generate on the SX-5
   if test "x$cross_compiling" = 'xyes' ; then
