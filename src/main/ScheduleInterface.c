@@ -2219,6 +2219,16 @@ static int CCTKi_ScheduleCallExit(t_attribute *attribute,
   if(attribute && attribute->done_entry)
   {
 
+
+    /* Synchronise variable groups associated with this schedule group. */
+    if(attribute->FunctionData.n_SyncGroups > 0 && ! data->synchronised)
+    {
+      CCTK_SyncGroupsI(data->GH, 
+                       attribute->FunctionData.n_SyncGroups,  
+                       attribute->FunctionData.SyncGroups);
+      data->synchronised = 0;
+    }
+
     if(data->schedpoint == schedpoint_analysis)
     {
       /* In analysis, so do any trigger actions. */
@@ -2231,15 +2241,6 @@ static int CCTKi_ScheduleCallExit(t_attribute *attribute,
           CCTKi_TriggerAction(data->GH, vindex);
         }
       }
-    }
-
-    /* Synchronise variable groups associated with this schedule group. */
-    if(attribute->FunctionData.n_SyncGroups > 0 && ! data->synchronised)
-    {
-      CCTK_SyncGroupsI(data->GH, 
-                       attribute->FunctionData.n_SyncGroups,  
-                       attribute->FunctionData.SyncGroups);
-      data->synchronised = 0;
     }
 
     /* Switch off communication if it was done in entry. */
