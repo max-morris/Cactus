@@ -147,8 +147,7 @@ sub CreateFortranCommonDeclaration
     }
     else
     {
-      $line = "$type_string $parameter";
-     # $line = "$type_string $alias_names[$n]";
+      $line = "$type_string $alias_names[$n]";
     }
 
     push(@data, $line);
@@ -159,8 +158,7 @@ sub CreateFortranCommonDeclaration
     }
     else
     {
-      #$definition .= "$sepchar$alias_names[$n]";
-      $definition .= "$sepchar$parameter";
+      $definition .= "$sepchar$alias_names[$n]";
     }
 
 
