@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.80 2000-03-14 00:55:07 allen Exp $
+#   @version $Id: Makefile,v 1.81 2000-03-23 14:58:31 allen Exp $
 # @@*/
 
 ##################################################################################
@@ -208,9 +208,13 @@ ifeq ($(strip $(CONFIGURATIONS)),)
 else
 ifeq ($(words $(CONFIGURATIONS)), 1)
 	@echo Please use $(MAKE) $(CONFIGURATIONS) 
+	@echo $(DIVIDER)
+	@echo \'$(MAKE) help\' lists all $(MAKE) options.
 else
 	@echo Known configurations are: $(CONFIGURATIONS)
 	@echo Please use $(MAKE) \<configuration\>
+	@echo $(DIVIDER)
+	@echo \'$(MAKE) help\' lists all $(MAKE) options.
 endif
 endif
 	@echo $(DIVIDER)
@@ -771,6 +775,7 @@ downsize:
 	$(SETUP_ENV) $(PERL) -s $(SETUP) $(SETUP_OPTIONS) $@ ; \
 	if test -n "$(THORNLIST)" ; \
 	then \
+	echo Using ThornList $(THORNLIST_DIR)/$(THORNLIST) ; \
 	cp $(THORNLIST_DIR)/$(THORNLIST) $(CONFIGS_DIR)/$@/ThornList ; \
 	fi ; \
 	echo $(DIVIDER) ;  \
