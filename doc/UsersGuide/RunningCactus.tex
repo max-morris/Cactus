@@ -24,7 +24,7 @@ This documentation splits naturally into these parts:
   advanced part, we talk about user supplied infrastructure routines
   as {\em additional output routines, boundary conditions, etc.}
 
-\item {\bf The standard toolkit.} 
+\item {\bf The standard package.} 
 
 \end{itemize}
 
@@ -32,7 +32,7 @@ Other topics will be discussed in separate documents:
 
 \begin{itemize}
 
-\item The numerical relativity toolkit.
+\item The numerical relativity package.
 
 \item A description of the flesh, for the maintainers.
 
@@ -149,9 +149,9 @@ $y$ and $z$. (These could be spherical type coordinates, although that
 was not the original intention.) Grid functions can be two or
 one-dimensional as well as three dimensional.
 
-Routines are grouped in thorns, and thorns informally in toolkits,
-such as the standard toolkit, and the general relativity
-toolkit. The routines inside a thorn can interact in any way, but
+Routines are grouped in thorns, and thorns informally in packages,
+such as the base package, and the general relativity
+package. The routines inside a thorn can interact in any way, but
 thorns interact with the flesh and with each other only through a
 well-defined interface. Confirming to this interface guarantees that
 thorns will be compatible with, and useful for, all future extensions
@@ -161,7 +161,7 @@ understand what a given thorn does.
 The flesh and many thorns are public and can be used by anyone,
 assuming ethical behavior. Public thorns and the flesh are distributed
 by CVS (see {\q where?} below). Public thorns are checked out in
-toolkits. The flesh may change in the future but this should never
+packages. The flesh may change in the future but this should never
 affect users, as Cactus 4.0 is making every effort to codify and
 freeze the interface. Public thorns should of course not lose
 important functionality they once had. (Nevertheless, CVS gives the
@@ -212,7 +212,7 @@ basic CCTK installation on track. Its listed in the order of importance.
   operating systems at {\tt http://www-unix.mcs.anl.gov/mpi/}.
 \item{\tt TAGS}: Tags enables you browse through the calling structure
   of a program by help of function call database. Navigating the CCTK and
-  Toolkits becomes very easy. Emacs and vi both support this database. See
+  packages becomes very easy. Emacs and vi both support this database. See
   \ref{sec:tags} how to install ``tags''.
 \end{itemize}
 
@@ -287,7 +287,7 @@ The installation requires about {\q HOW MANY MEGS ? }. See section
   within the CCTK tree. To update only certain directories, change
   into these directories and issue the update command.
 \item{\bf CVS status}: to obtain a status report on the ``age'' of your
-  CCTK or Toolkit routines (from your current directory position
+  CCTK or package routines (from your current directory position
   downward), type
   {\t
     cvs -d :pserver:cvs\_anon@hod.aei-potsdam.mpg.de:/usr/users/cactus status
@@ -297,7 +297,7 @@ The installation requires about {\q HOW MANY MEGS ? }. See section
   {\em non-anonymously}, replace {\tt cvs\_anon} by your login name
   and provide the appropriate password during the CVS login
   process. Depending on your permissions, you may then make commits to the CCTK
-  or its Toolkits.
+  or its packages.
 \item{\bf Commits}: you need to perform a personalized login and have
   proper permissions to commit code to the repository. 
 \end{itemize}
@@ -320,11 +320,11 @@ following files substructure:
 
 \item{\tt ./src/} contains the source code for the CCTK
 
-\item {\tt ./toolkits/} contains the Cactus toolkits. The toolkits
-  (the actual ``physics'') is not supplied by the CCTK. If the  toolkits
+\item {\tt ./packages/} contains the Cactus packages. The packages
+  (the actual ``physics'') is not supplied by the CCTK. If the packages
   you want to use are part of the central repository, they can be
   checked out in similar way the CCTK.  Each directory inside {\tt
-    toolkits/} contains thorns. {\q ??}
+    packages/} contains thorns. {\q ??}
 \end{itemize}
 
 When Cactus is first compiled it creates a new directory {\tt
@@ -425,7 +425,7 @@ system.
 \end{enumerate}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Compilation and configuartions of the CCTK and its Toolkits}
+\section{Compilation and configuartions of the CCTK and its Packages}
 
 Building the code with GNU make is easy. Use gmake with the following syntax:
 {\t gmake [configuration options] <CONF>}
@@ -477,7 +477,7 @@ structure is
   For a completely new configuration, this directory exists {\em
     after} the first  make phase. 
 \item{} The {\em ActiveThorns List} can also contain the name of a
-  CACTUS Toolkit. In this case all thorns of the Toolkit will be
+  CACTUS package. In this case all thorns of the package will be
   compiled into the executable.
 \item{} If the CCTK {\em cannot find a thorn} you specified, it will
   repartition you hard disk amd install Windows.

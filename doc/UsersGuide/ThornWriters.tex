@@ -12,7 +12,7 @@
 those arising from plausible but incorrect assumptions about the
 behavior of someone else's thorn.)
       a) Again probably emphasize collaboration, what are thorns,
-         toolkits, how to share them.
+         packages, how to share them.
       b) Things to think about before you start programming:
              Language, read all the documentation, emphasize use of
              standard supported Cactus infrastructure
@@ -29,8 +29,8 @@ behavior of someone else's thorn.)
 
 \chapter{Anatomy of a thorn}
 
-Each thorn must be in a toolkit. Toolkits are fairly informal. If you
-want, you can just make your own toolkit directory, and stick your new
+Each thorn must be in a package. Packages are fairly informal. If you
+want, you can just make your own package directory, and stick your new
 thorn into it.
 
       a) Creating a thorn (gmake new thorn)
@@ -46,16 +46,52 @@ thorn into it.
 
 \chapter{Putting code into your thorn}
 
-      a) What the flesh basically provides (header files, macros, ...)
-      b) Argument lists and parameters
-      c) A simple example (Baloney)
-      d) Differences between F and C with the interface
-      e) A more complex example (Wavetoy)
-      f) Error handling and code stopping
-      g) Calling C from F, F from C, (C++ from F? ....)
-      h) Good Cactus Style Programming Guidelines
-      i) Adding a test suite
-      j) Sharing your thorn with the world.
+\section{What the F***h provides}
+
+Header files, macros ...
+
+\section{Argument lists and parameters}
+
+\section{A First Example (Baloney)}
+
+\section{Programming language differences}
+
+\section{A more complex example (WaveToy)}
+
+\section{Error handling, Warnings and Code Termination}
+      
+There are two CCTK commands to use for stopping the code
+from within your thorn:
+\begin{itemize}
+\item{} To shut the code down cleanly, use
+{\t
+\begin{verbatim}
+CCTK_Stop(pointer GH, INTEGER return_code)
+CCTK_Stop(cGH *GH, int return_code);
+\end{verbatim}
+}
+\item{} To shut the code down more violently, use
+{\t
+\begin{verbatim}
+CCTK_Abort(pointer GH, INTEGER return_code)
+CCTK_Abort(cGH *GH, int return_code);
+\end{verbatim}
+}
+\end{itemize}
+In both cases, an error code should be returned indicating the
+error that you trapped which precipitated the code shutdown.
+The error codes are detailed in the following table:
+{\bf ACTION: Fill in the table QUERY}.
+
+\section{Calls between different programming languages}
+\subsection{Calling C routines from FORTRAN}
+\subsection{Calling FORTRAN routines from C}
+
+\section{Programming Style Guidelines and Recommendations}
+
+\section{Adding a test suite}
+
+\section{Sharing your thorns/packages with others}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
