@@ -475,7 +475,7 @@ void CCTKi_CommandLineHelp (void)
     "-T, -list-thorns                    : Lists the compiled-in thorns.\n"
     "-t, -test-thorn-compiled <name>     : Tests for the presence of thorn <name>.\n"
     "    -parameter-level <level>        : Sets the amount of parameter checking, \n"
-    "                                      level can be script, normal, relaxed.\n"
+    "                                      level can be strict, normal, relaxed.\n"
     "-v, -version                        : Prints the version.\n"
     "-i, -ignore-next                    : Ignores the next argument.\n";
 
