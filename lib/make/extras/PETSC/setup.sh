@@ -65,10 +65,20 @@ else
   echo "  Using PETSc architecture-specific libraries '$PETSC_ARCH_LIBS'"
 fi
 
+
+# Set version-specific libraries
+# (version 2.2.0 and newer do not have libpetscsles.a any more)
+if [ -e $(PETSC_DIR)/lib/libO/$(PETSC_ARCH)/libpetscksp.a ]; then
+  PETSC_SLES_LIBS="petscksp"
+else
+  PETSC_SLES_LIBS="petscsles"
+fi
+
+
 # Set the PETSc libs, libdirs and includedirs
 PETSC_LIB_DIRS='$(PETSC_DIR)/lib/libO/$(PETSC_ARCH)'
 PETSC_INC_DIRS='$(PETSC_DIR)/include $(PETSC_DIR)/bmake/$(PETSC_ARCH)'
-PETSC_LIBS="petscts petscsnes petscsles petscdm petscmat petscvec petsc   $PETSC_ARCH_LIBS"
+PETSC_LIBS="petscfortran petscts petscsnes $PETSC_SLES_LIBS petscdm petscmat petscvec petsc   $PETSC_ARCH_LIBS"
 
 
 # Write the data out to the header and make files.
