@@ -27,6 +27,7 @@
 /*#define DEBUG_GROUPS*/
 
 static const char *rcsid = "$Header$";
+
 CCTK_FILEVERSION(main_Groups_c)
 
 
@@ -1541,7 +1542,8 @@ int CCTK_TraverseString (const char *parsestring,
 
   if (callback == NULL)
   {
-    CCTK_VWarn (1, __LINE__, __FILE__, "Cactus", "No callback given");
+    CCTK_VWarn (1, __LINE__, __FILE__, "Cactus", 
+		"CCTK_TraverseString: No callback given");
     return (-1);
   }
 
@@ -1644,7 +1646,8 @@ int CCTK_TraverseString (const char *parsestring,
       else
       {
         CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
-                    "Ignoring '%s' in string (invalid token)", before);
+                    "CCTK_TraverseString: "
+		    "Ignoring '%s' in string (invalid token)", before);
       }
     }
 
