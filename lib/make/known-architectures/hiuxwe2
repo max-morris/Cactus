@@ -6,7 +6,7 @@
 #   @desc  Optimazations by Peter Diener
 #   Configuration file for the Hitachi SR8000-F1
 #   @enddesc 
-#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/hiuxwe2,v 1.4 2001-06-19 15:28:23 tradke Exp $
+#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/hiuxwe2,v 1.5 2001-06-20 13:28:34 tradke Exp $
 # @@*/
 
 if test "$CCTK_CONFIG_STAGE" = "preferred-compilers" ; then
@@ -31,8 +31,8 @@ if test "$CCTK_CONFIG_STAGE" = "preferred-compilers" ; then
 
 else
 
-  : ${F77FLAGS="-conti199 -uinline=2"}
-  : ${F90FLAGS="-conti199 -uinline=2"}
+  : ${F77FLAGS="-conti199 -msg=w -uinline=2"}
+  : ${F90FLAGS="-conti199 -msg=w -uinline=2"}
   if test "$LD" = "CC" ; then
     F77FLAGS="$F77FLAGS -64"
     F90FLAGS="$F90FLAGS -64"
@@ -40,6 +40,9 @@ else
 
   : ${F77_OPTIMISE_FLAGS="-opt=ss -pvfunc=2 -noparallel -model=F1"}
   : ${F90_OPTIMISE_FLAGS="-opt=ss -pvfunc=2 -noparallel -model=F1 -noscope"}
+
+  : ${F77_WARN_FLAGS="-fullmsg"}
+  : ${F90_WARN_FLAGS="-fullmsg"}
 
   if test "$CC" = "cc" ; then
     CFLAGS="$CFLAGS -64"
