@@ -74,7 +74,7 @@ int CCTK_TerminationReached(cGH *GH)
    @endhistory 
 
 @@*/
-int CCTK_TerminateNext(cGH *GH)
+void CCTK_TerminateNext(cGH *GH)
 {
   termination_reached = 1;
 }

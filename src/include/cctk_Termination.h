@@ -5,7 +5,7 @@
    @desc 
               Prototypes of CCTK termination functions.
    @enddesc 
-   @version   $Id$
+   @version   $Header$
  @@*/
 
 #ifndef _CCTK_TERMINATION_H_
@@ -17,7 +17,7 @@ extern "C"
 #endif
 
 int CCTK_TerminationReached (cGH *GH);
-int CCTK_TerminateNext (cGH *GH);
+void CCTK_TerminateNext (cGH *GH);
 
 #ifdef __cplusplus 
 }
