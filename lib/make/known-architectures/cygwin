@@ -26,6 +26,13 @@ if test "$CCTK_CONFIG_STAGE" = "preferred-compilers" ; then
     LD='$(CC)'
   fi
 
+  if test -z "$FPP" -a -z "$FPPFLAGS"; then
+    FPP='/usr/bin/cpp'
+    FPPFLAGS='-traditional'
+    echo Setting FPP to $FPP
+    echo Setting FPPFLAGS to $FPPFLAGS
+  fi
+
 else
 
   CCTK_WriteLine cctk_Archdefs.h '/* WIN stuff */'
