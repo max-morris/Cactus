@@ -77,10 +77,14 @@
 #include "cctk_ActiveThorns.h"
 #include "cctk_Banner.h"
 #include "cctk_Coord.h"
+#include "cctk_File.h"
 #include "cctk_Groups.h"
 #include "cctk_GroupsOnGH.h"
 #include "cctk_GHExtensions.h"
+#include "cctk_Interp.h"
+#include "cctk_IOMethods.h"
 #include "cctk_Misc.h"
+#include "cctk_Reduction.h"
 #include "cctk_WarnLevel.h"
 
 #define CCTK_GFINDEX3D(GH,i,j,k) ((i) + GH->cctk_lsh[0]*((j)+GH->cctk_lsh[1]*(k)))
