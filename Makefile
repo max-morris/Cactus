@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.10 1999-01-20 16:03:41 goodale Exp $
+#   @version $Id: Makefile,v 1.11 1999-02-03 14:48:07 goodale Exp $
 # @@*/
 
 # Comment this out if you want to see what's going on.
@@ -24,7 +24,7 @@
 
 # Various auxilary programs
 PERL = perl
-SETUP = setup
+SETUP = lib/make/setup_configuration.pl
 
 # Dividers to make the screen output slightly nicer
 DIVEL   =  __________________
