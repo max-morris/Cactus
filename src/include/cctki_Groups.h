@@ -19,21 +19,21 @@ extern "C" {
 
 void CCTKi_DumpGroupInfo(void); 
 
-int  CCTKi_CreateGroup
-  (const char* gname, 
-   const char* thorn,  
-   const char* imp,
-   const char* gtype,
-   const char* vtype,
-   const char* gscope,
-   int         dimension,
-   int         ntimelevels,
-   const char* stype,
-   const char* dtype,
-   const char* size,
-   const char* ghostsize,
-   int         n_variables,
-   ...);
+int  CCTKi_CreateGroup(const char *gname, 
+                       const char *thorn,  
+                       const char *imp,
+                       const char *gtype,
+                       const char *vtype,
+                       const char *gscope,
+                       int         dimension,
+                       int         ntimelevels,
+                       const char *stype,
+                       const char *dtype,
+                       const char *size,
+                       const char *ghostsize,
+                       const char *tags,
+                       int         n_variables,
+                       ...);
 
 #ifdef __cplusplus 
 }

@@ -840,12 +840,16 @@ sub parse_interface_ccl
       
       $interface_db{"\U$thorn $block GROUPS\E"} .= " $current_group";
       $interface_db{"\U$thorn GROUP $current_group\E VTYPE"} = "\U$vtype\E";
-      
-      %options = split(/\s*=\s*|\s+/, $options_list);
+
+      # split(/\s*=\s*|\s+/, $options_list);
+      %options = SplitWithStrings($options_list);
       
       # Parse the options
       foreach $option (keys %options)
       {
+
+#        print "DEBUG $option is $options{$option}\n";
+
         if($option =~ m:DIM|DIMENSION:i)
         {
           $interface_db{"\U$thorn GROUP $current_group\E DIM"} = $options{$option};
@@ -873,6 +877,18 @@ sub parse_interface_ccl
         elsif($option =~ m:SIZE:i)
         {
           $interface_db{"\U$thorn GROUP $current_group\E SIZE"} = "\U$options{$option}\E";
+        }
+        elsif($option =~ m:TAGS:i)
+        {
+          if($options{$option} =~ m/\s*^[\'\"](.*)[\'\"]$/)
+          {
+            $options{$option} = $1;
+          }
+          
+          $options{$option} =~ s/\\/\\\\/g;
+          $options{$option} =~ s/\"/\\\"/g;
+         
+          $interface_db{"\U$thorn GROUP $current_group\E TAGS"} = $options{$option};
         }
         else
         {

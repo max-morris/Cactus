@@ -88,6 +88,9 @@ int CCTK_TraverseString (const char *parsestring,
                          void *callback_arg,
                          int selection);
 
+int CCTK_GroupTagsTable(const char *group);
+int CCTK_GroupTagsTableI(int group);
+
 #ifdef __cplusplus 
 }
 #endif

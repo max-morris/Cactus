@@ -27,6 +27,7 @@
 #include "cctki_Groups.h"
 
 #include "util_Expression.h"
+#include "util_Table.h"
 
 #include "util_String.h"
 
@@ -145,8 +146,14 @@ typedef struct
   cVariableDefinition *variables;
 
   /* Variable array size parameter */
-
   const char *vararraysize;
+
+  /* Stuff for group tags.  Really want table on a per-cGH basis,
+   * but that means we need a cGH to get data which would rule
+   * out Startup until 4.1
+   */
+  const char *tags_string;
+  int tags_table;
 
 } cGroupDefinition;
 
@@ -1079,6 +1086,79 @@ char *CCTK_GroupName (int group)
   return (name);
 }
 
+ /*@@
+   @routine    CCTK_GroupTagsTable
+   @date       Wed May 22 00:47:58 2002
+   @author     Tom Goodale
+   @desc 
+   Returns the TAGS table for a group.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+   @var     groupname
+   @vdesc   The group name
+   @vtype   int
+   @vio     in
+   @endvar 
+
+   @returntype int
+   @returndesc
+               -1 if group index out of range
+   @endreturndesc
+ @@*/
+int CCTK_GroupTagsTable(const char *groupname)
+{
+  int retval;
+  int group;
+
+  group = CCTK_GroupIndex (groupname);
+
+  retval = CCTK_GroupTagsTableI(group);
+
+  return retval;
+}
+
+ /*@@
+   @routine    CCTK_GroupTagsTableI
+   @date       Wed May 22 00:47:58 2002
+   @author     Tom Goodale
+   @desc 
+   Returns the TAGS table for a group.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+   @var     group
+   @vdesc   The group index
+   @vtype   int
+   @vio     in
+   @endvar 
+
+   @returntype int
+   @returndesc
+               -1 if group index out of range
+   @endreturndesc
+ @@*/
+int CCTK_GroupTagsTableI(int group)
+{
+  int retval;
+
+  if (0 <= group && group < n_groups)
+  {
+    retval = groups[group].tags_table;
+  }
+  else
+  {
+    retval = -1;
+  }
+
+  return retval;
+}
 
  /*@@
    @routine    CCTK_FirstVarIndexI
@@ -1822,6 +1902,7 @@ int CCTKi_CreateGroup (const char *gname,
                        const char *dtype,
                        const char *size,
                        const char *ghostsize,
+                       const char *tags,
                        int         n_variables,
                        ...
                        )
@@ -1891,7 +1972,16 @@ int CCTKi_CreateGroup (const char *gname,
     group->staggertype  = staggercode;
     group->dtype        = CCTK_GroupDistribNumber (dtype);
     group->n_timelevels = ntimelevels;
+    group->tags_string  = Util_Strdup(tags);
 
+    group->tags_table   = Util_TableCreateFromString(tags);
+    if(group->tags_table < 0)
+    {
+      CCTK_VWarn (0, __LINE__, __FILE__, "Cactus",
+                  "CCTKi_CreateGroup: Failed to create TAGS table for group '%s' from thorn '%s'",
+                  gname, thorn);
+    }
+    
     /* Extract the variable names from the argument list. */
 
     if(! vararraysize)
