@@ -1,6 +1,16 @@
 #! /usr/bin/perl -w
 
 #/*@@
+#  @file      interface_parser.pl
+#  @date      Wed Sep 16 15:07:11 1998
+#  @author    Tom Goodale
+#  @desc 
+#  Parses interface.ccl files
+#  @enddesc 
+#  @version $Header$
+#@@*/
+
+#/*@@
 #  @routine    create_interface_database
 #  @date       Wed Sep 16 15:07:11 1998
 #  @author     Tom Goodale
