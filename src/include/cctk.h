@@ -66,7 +66,10 @@
 #define CCTK_LSSH(stag,dim) cctk_lssh(stag*CCTK_NSTAGGER+dim)
 #define CCTK_LSSH_IDX(stag,dim) (stag*CCTK_NSTAGGER+dim)
 
-#define DECLARE_CCTK_FUNCTIONS integer CCTK_Equals, CCTK_MyProc, CCTK_nProcs
+#define DECLARE_CCTK_FUNCTIONS &&\
+        integer  CCTK_Equals, CCTK_MyProc, CCTK_nProcs&&\
+        external CCTK_Equals, CCTK_MyProc, CCTK_nProcs\
+
 
 #endif /*FCODE*/
 
