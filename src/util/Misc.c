@@ -127,6 +127,7 @@ char *Util_NullTerminateString(const char *instring, unsigned int len)
 {
   char *outstring;
   unsigned int i;
+  int position;
 
   if (len > 100000)
   {
@@ -142,13 +143,19 @@ char *Util_NullTerminateString(const char *instring, unsigned int len)
   printf("Util_NullTerminateString: -%s-, (%u)\n",instring,len);
 #endif
 
-  outstring = (char *)malloc((len+2)*sizeof(char));
+  position = len-1;
+  while (instring[position] == ' ')
+  {
+    position--;
+  }
+
+  outstring = (char *)malloc((position+2)*sizeof(char));
   assert(outstring);
 
-  for (i=0;i<len;i++) 
+  for (i=0;i<=position;i++) 
     outstring[i] = instring[i];
   
-  outstring[len] = '\0';
+  outstring[position+1] = '\0';
 
   return(outstring);
 }
