@@ -36,6 +36,15 @@ DIVIDER =  $(DIVEL)$(DIVEL)$(DIVEL)$(DIVEL)
 # Include the definitions for this configuration
 include $(CONFIG)/make.config.defn
 
+
+# Use a phony main target to make sure we print a nice ending message 8-)
+.PHONY: main
+
+main: $(EXEDIR)$(DIRSEP)$(EXE)
+	@echo All done !
+	@echo $(DIVIDER)
+
+
 # Put this in temporarily to make sure that people with existing
 # configurations aren't disturbed
 
@@ -81,13 +90,6 @@ UTIL_DIR=$(EXEDIR)$(DIRSEP)$(CONFIG_NAME)
 ALLCACTUSLIBS = $(notdir $(CACTUSLIBS) $(THORN_LINKLIST) $(CACTUSLIBS))
 
 
-# Use a phony main target to make sure we print a nice ending message 8-)
-.PHONY: main
-
-main: $(EXEDIR)$(DIRSEP)$(EXE)
-	@echo All done !
-	@echo $(DIVIDER)
-
 # Build the executable
 
 $(EXEDIR)$(DIRSEP)$(EXE): $(CONFIG)/make.thornlist $(CONFIG)/cctki_version.h $(patsubst %,$(CCTK_LIBDIR)/$(LIBNAME_PREFIX)%$(LIBNAME_SUFFIX),$(notdir $(THORNS) $(CACTUSLIBS)))
@@ -119,21 +121,56 @@ $(CONFIG)/cctki_version.h: $(CCTK_HOME)/Makefile
 # directory.
 
 $(CCTK_LIBDIR)/$(LIBNAME_PREFIX)%$(LIBNAME_SUFFIX): update
-	@echo Checking status of $(notdir $@)
-    # protect the following mkdir against parallel makes
-	if [ ! -d $(SCRATCH_BUILD) ]; then msg=`$(MKDIR) $(MKDIRFLAGS) $(SCRATCH_BUILD) 2>&1`; if [ -d $(SCRATCH_BUILD) ]; then exit 0; else echo "$$msg"; exit 1; fi; fi
-	if [ ! -d $(BUILD_DIR) ]; then msg=`$(MKDIR) $(MKDIRFLAGS) $(BUILD_DIR) 2>&1`; if [ -d $(BUILD_DIR) ]; then exit 0; else echo "$$msg"; exit 1; fi; fi
-	thorn_name=$(@:$(CCTK_LIBDIR)/$(LIBNAME_PREFIX)%$(LIBNAME_SUFFIX)=%); \
-	if [ "$$thorn_name" = "Cactus" ] ; then src_dir=$(CCTK_HOME)/src ; \
-	else if [ "$$thorn_name" = "CactusBindings" ] ; then src_dir=$(BINDINGS_DIR) ; \
-	else src_dir=$(PACKAGE_DIR)/$(@:$(CCTK_LIBDIR)/$(LIBNAME_PREFIX)%$(LIBNAME_SUFFIX)=$(filter %/$(@:$(CCTK_LIBDIR)/$(LIBNAME_PREFIX)%$(LIBNAME_SUFFIX)=%), $(THORNS)))/src ; fi ; fi ;\
-	if [ ! -d $(BUILD_DIR)/$$thorn_name ]; then $(MKDIR) $(MKDIRFLAGS) $(BUILD_DIR)/$$thorn_name ; fi ; \
+        # (the mkdir below is protected against parallel makes)
+	@thorn_name=$(@:$(CCTK_LIBDIR)/$(LIBNAME_PREFIX)%$(LIBNAME_SUFFIX)=%) ; \
+	echo "Checking status of thorn $$thorn_name" ; \
+	if [ ! -d $(SCRATCH_BUILD) ] ; \
+	then \
+		msg=`$(MKDIR) $(MKDIRFLAGS) $(SCRATCH_BUILD) 2>&1` ; \
+		if [ -d $(SCRATCH_BUILD) ] ; \
+		then \
+			exit 0 ; \
+		else \
+			echo "$$msg" ; \
+			exit 1 ; \
+		fi ; \
+	fi ; \
+	if [ ! -d $(BUILD_DIR) ] ; \
+	then \
+		msg=`$(MKDIR) $(MKDIRFLAGS) $(BUILD_DIR) 2>&1` ; \
+		if [ -d $(BUILD_DIR) ] ; \
+		then \
+			exit 0 ; \
+		else \
+			echo "$$msg" ; \
+			exit 1 ; \
+		fi ; \
+	fi ; \
+	if [ "$$thorn_name" = "Cactus" ] ; \
+	then \
+		src_dir=$(CCTK_HOME)/src ; \
+	else \
+		if [ "$$thorn_name" = "CactusBindings" ] ; \
+		then \
+			src_dir=$(BINDINGS_DIR) ; \
+		else \
+			src_dir=$(PACKAGE_DIR)/$(@:$(CCTK_LIBDIR)/$(LIBNAME_PREFIX)%$(LIBNAME_SUFFIX)=$(filter %/$(@:$(CCTK_LIBDIR)/$(LIBNAME_PREFIX)%$(LIBNAME_SUFFIX)=%), $(THORNS)))/src ; \
+		fi ; \
+	fi ;\
+	if [ ! -d $(BUILD_DIR)/$$thorn_name ]; \
+	then \
+		$(MKDIR) $(MKDIRFLAGS) $(BUILD_DIR)/$$thorn_name ; \
+	fi ; \
 	cd $(BUILD_DIR)/$$thorn_name ; \
 	echo $(DIVIDER) ; \
-	if [ -r "$$src_dir/Makefile" ] ; then  make_file=$$src_dir/Makefile ; \
-	                  else make_file=$(MAKE_DIR)/make.thornlib ; fi ; \
-	$(MAKE) TOP=$(TOP) SRCDIR=$$src_dir CONFIG=$(CONFIG) NAME=$@ THORN=$$thorn_name -f $$make_file $(FPARFLAGS)
-	@echo $(DIVIDER)
+	if [ -r "$$src_dir/Makefile" ] ; \
+	then \
+		make_file=$$src_dir/Makefile ; \
+	else \
+		make_file=$(MAKE_DIR)/make.thornlib ; \
+	fi ; \
+	$(MAKE) TOP=$(TOP) SRCDIR=$$src_dir CONFIG=$(CONFIG) NAME=$@ THORN=$$thorn_name USESTHORNS="$(USESTHORNS_$(@:$(CCTK_LIBDIR)/$(LIBNAME_PREFIX)%$(LIBNAME_SUFFIX)=%))" -f $$make_file $(FPARFLAGS) ; \
+	echo $(DIVIDER)
 
 
 # Include any extra dependencies

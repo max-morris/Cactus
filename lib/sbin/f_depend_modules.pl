@@ -3,6 +3,8 @@
 
 # Create dependencies for Fortran 90 "use" and "include" statements
 
+use strict;
+
 my $srcfile = $ARGV[0];
 my $dest = $ARGV[1];
 my $srcdir = $ARGV[2];
@@ -64,7 +66,12 @@ while (<STDIN>) {
       }
     }
     if (! $found) {
-      print STDERR "$srcfile:$line: Warning: While tracing module depencencies: Source file for module $name not found\n";
+      print STDERR "$srcfile:$line: Warning: While tracing module depencencies: Source file for module \"$name\" not found\n";
+      if (@otherdirs) {
+        print STDERR "   Searched in thorn directory and in [" . join(', ', @otherdirs) . "]\n";
+      } else {
+        print STDERR "   Searched in thorn directory only.\n";
+      }
     }
   }
 }

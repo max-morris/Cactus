@@ -6,7 +6,7 @@
 #  @desc
 #             Parses the the configuration files for thorns.
 #  @enddesc
-#  @version   $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.60 2004-01-19 14:22:04 schnetter Exp $
+#  @version   $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.61 2004-01-19 20:52:40 schnetter Exp $
 #@@*/
 
 # Global parameter to track the number of errors from the CST
@@ -303,6 +303,7 @@ sub CreateMakeThornlist
   my($thornlist);
   my($thorn_linklist);
   my($config_thornlist);
+  my($thorn_dependencies);
 
   $thornlist        = 'THORNS         =';
   $thorn_linklist   = 'THORN_LINKLIST =';
@@ -326,7 +327,9 @@ sub CreateMakeThornlist
 
   $thorn_linklist .= ' ' . &CreateThornLinkList($thorns, $config);
 
-  return ($thornlist . "\n" . $thorn_linklist . "\n" . $config_thornlist . "\n");
+  $thorn_dependencies = join ("\n", &CreateThornDependencyList($thorns, $config));
+
+  return ($thornlist . "\n" . $thorn_linklist . "\n" . $config_thornlist . "\n" . $thorn_dependencies . "\n");
 }
 
 
@@ -352,8 +355,7 @@ sub CreateThornLinkList
 
     # add this thorn to the thorn liblist
     # as well as any other thorns it requires (directly or indirectly)
-    push (@liblist, $thorn, RequiredThorns ($thorn, $thorn, $config),
-          'Cactus', 'CactusBindings');
+    push (@liblist, $thorn, RequiredThorns ($thorn, $thorn, $config));
   }
 
   # remove duplicate entries from the list, only keeping the rightmost
@@ -370,6 +372,37 @@ sub CreateThornLinkList
   }
 
   return (join (' ', @liblist));
+}
+
+
+#/*@@
+#  @routine    CreateThornDependencyList
+#  @date       Fri 36 Dec 2004
+#  @author     Erik Schnetter
+#  @desc
+#  Create the list of the thorns' make dependencies
+#  @enddesc
+#@@*/
+sub CreateThornDependencyList
+{
+  my (@varlist, @deplist);
+  
+  # Find list of all thorns
+  foreach my $thorn (sort keys %thorns) {
+    next if ($configuration_database->{"\U$thorn OPTIONS\E"} eq 'NO_SOURCE'
+             || $thorn eq 'Cactus');
+    # Add the thorn and the thorn's requirements
+    my $line = "USESTHORNS_$thorn =";
+    foreach my $dep (sort (split (' ', $configuration_database->{"\U$thorn\E REQUIRES THORNS"}),
+                           split (' ', $configuration_database->{"\U$thorn\E USES THORNS"})),
+                     "Cactus", "CactusBindings") {
+      $line .= " $dep";
+    }
+    push (@varlist, $line);
+    push (@deplist, "\$(CCTK_LIBDIR)/\$(LIBNAME_PREFIX)$thorn\$(LIBNAME_SUFFIX): \$(USESTHORNS_$thorn:%=\$(CCTK_LIBDIR)/\$(LIBNAME_PREFIX)%\$(LIBNAME_SUFFIX))");
+  }
+  
+  return (@varlist, @deplist);
 }
 
 
