@@ -168,6 +168,7 @@ if ($level eq "all_arr") {
 
 &Output_Bottom;
 print STDERR "\nFinished\n" if ($verbose);
+print "\n";
 #######################
 ## END OF MAIN STUFF ##
 #######################
@@ -433,7 +434,7 @@ print OUT  <<EOC;
 \\rule{\\linewidth}{1mm}
 \\vspace*{\\stretch{2}}
 \\begin{center}
-\\includegraphics[angle=0,width=5cm]{../UsersGuide/bincactus.eps}
+\\includegraphics[angle=0,width=5cm]{bincactus.eps}
 \\end{center}
 \\vspace*{\\stretch{2}}
 \\begin{center}

@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.107 2001-04-09 10:19:12 allen Exp $
+#   @version $Id: Makefile,v 1.108 2001-04-11 10:39:17 allen Exp $
 # @@*/
 
 ##################################################################################
@@ -345,6 +345,7 @@ endif
 	@echo "  thorninfo        - give information about all available "
 	@echo "                     thorns."
 	@echo "  UsersGuide       - creates users manual UsersGuide.ps."
+	@echo "  ThornGuide       - creates the thorn manual ThornGuide.ps"
 	@echo "  <anything else>  - prompts to create such a configuration."
 	@echo $(DIVIDER)
 
@@ -794,6 +795,18 @@ UsersGuide:
 	@echo $(DIVIDER)
 	@echo Creating user documentation UsersGuide.ps
 	(cd doc/UsersGuide; latex UsersGuide.tex > $NULL_DEVICE; latex UsersGuide.tex > $NULL_DEVICE; dvips ./UsersGuide.dvi -o $(CCTK_HOME)/UsersGuide.ps >& $NULL_DEVICE) ; cd $(CCTK_HOME);
+	@echo $(DIVIDER)
+
+# Make the ThornGuide, new addition
+
+.PHONY: ThornGuide.ps
+ThornGuide.ps: ThornGuide
+
+.PHONY: ThornGuide
+ThornGuide: 
+	@echo $(DIVIDER)
+	@echo Creating thorn documentation ThornGuide.ps
+	($(PERL) -s lib/sbin/ParamLatex.pl -processall -grouping=bythorn -outdir=doc/ThornGuide/ -section; $(PERL) -s lib/sbin/ThornGuide.pl -directory=arrangements/ -outdir=doc/ThornGuide/; cd doc/ThornGuide; cp ../UsersGuide/bincactus2.eps bincactus.eps; latex ThornGuide.tex > $NULL_DEVICE; latex ThornGuide.tex > $NULL_DEVICE; dvips ./ThornGuide.dvi -o $(CCTK_HOME)/ThornGuide.ps >& $NULL_DEVICE) ; cd $(CCTK_HOME); 
 	@echo $(DIVIDER)
 
 .PHONY: MaintGuide.ps

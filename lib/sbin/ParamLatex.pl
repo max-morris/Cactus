@@ -73,12 +73,12 @@ if (! $outdir) {
 } else {
    if ($outdir =~ /^\//) {
       if (! -d "$outdir") {
-         mkdir($outdir, 0666);
+         mkdir($outdir, 0755);
          print STDERR "\nCreating directory: $outdir" if ($verbose);
       }
    } else {
       if (! -d "$start_directory/$outdir") {
-         mkdir("$start_directory/$outdir", 0666);
+         mkdir("$start_directory/$outdir", 0755);
          print STDERR "\nCreating directory: $start_directory/$outdir" if ($verbose);
       }
    }
@@ -105,14 +105,18 @@ foreach $arrangement (sort @arrangements) {
    {
       if (($processall) || (($thorn eq $th) || ($arr eq $arrangement))) 
       { 
-         &StartDocument($thorn) if ((! $dump) && ($grouping eq "bythorn"));
 
-         $$thorn{$thorn} = "${directory}/${arrangement}/${thorn}";
-         %parameter_database = &create_parameter_database(%$thorn);
-         &ReadLatexDatabase(%parameter_database);
-         &FormatTable;
+         if (-e "$directory$arrangement/${thorn}/param.ccl") {
+            &StartDocument($thorn) if ((! $dump) && ($grouping eq "bythorn"));
 
-         &EndDocument if ((! $dump) && ($grouping eq "bythorn"));
+            $$thorn{$thorn} = "${directory}${arrangement}/${thorn}";
+            %parameter_database = &create_parameter_database(%$thorn);
+            $killme = &ReadLatexDatabase(%parameter_database);
+            &FormatTable;
+
+            undef %$killme;
+            &EndDocument if ((! $dump) && ($grouping eq "bythorn"));
+         }       
       }
    }
    &EndDocument if ((! $dump) && ($grouping eq "byarrangement")); 
@@ -160,6 +164,7 @@ sub ReadLatexDatabase
 
   foreach $field (sort keys %parameter_database)
   {
+
       &Clean;
          #################
          # ADD TO SCOPES #
@@ -205,6 +210,7 @@ sub ReadLatexDatabase
          } 
       } 
    } 
+   return $name;
 } ## END :ReadLatexDatabase:
 
 #########################################################################
@@ -338,6 +344,9 @@ sub LatexTableElement {
    $name =~ s/\_/\\\_/g;
 #   print STDERR "$name\n";
    $description =~ s/\_/\\\_/g;
+   
+   # new addition 4/2001
+   $description =~ s/\^/\\\^/g;
 
    print "$table{\"thorn\"}";
    print "\\begin\{tabular*\}\{$width\}\{|c|c|c|\@\{\\extracolsep\{\\fill\}\}r|\} \\hline \n";
@@ -363,6 +372,11 @@ sub LatexTableElement {
 
          $tempvar2 =  $$table{"range $i range"};
          $tempvar2 =~  s/\_/\\\_/g;
+
+         # new addition 4/2001
+         $tempvar2 =~ s/\^/\\\^/g;
+         $tempvar2 =~ s/\$/\\\$/g;
+
          print "$tempvar2 & $tempvar & \\\\ \\hline \n";
       }
       print "\\end\{tabular*\} \n\n";
@@ -460,3 +474,4 @@ sub Dump {
 #########################################################################
 sub Clean {
 } ## END :Clean:
+
