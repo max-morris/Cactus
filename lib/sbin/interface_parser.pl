@@ -712,14 +712,14 @@ sub parse_interface_ccl
         else
         {
           $message = "Multiple implementations specified in $thorn";
-          $hint = "A thorn can only specify one implementation in it's interface.ccl file, with the format implements:<implementation>";
+          $hint = "A thorn can only specify one implementation in its interface.ccl file, with the format implements:<implementation>";
           &CST_error(0,$message,$hint,__LINE__,__FILE__);
         }
       }
       else
       {
         $message = "Implementation line has wrong format in $thorn";
-        $hint = "A thorn must specify one implementation in it's interface.ccl file with the format IMPLEMENTS: <implementation>";
+        $hint = "A thorn must specify one implementation in its interface.ccl file with the format IMPLEMENTS: <implementation>";
         &CST_error(0,$message,$hint,__LINE__,__FILE__);
       }
     }
