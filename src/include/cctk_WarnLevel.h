@@ -19,6 +19,11 @@ void CCTK_Warn(int level,
 	       const char *file, 
 	       const char *thorn, 
 	       const char *message);
+void CCTK_VWarn(int level, 
+                int line, 
+                const char *file, 
+                const char *thorn, 
+                const char *format, ...);
 void CCTK_ParamWarn(const char *thorn, const char *message);
 void CCTK_Info(const char *thorn, const char *message);
  
