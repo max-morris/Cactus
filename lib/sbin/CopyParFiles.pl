@@ -17,7 +17,7 @@ if (! -d "thornparfiles")
 
 while (<THORNLIST>)
 {
- /^(.*)\s/;
+ /^(\S*)/;
  $thorn=$1;
  print "Thorn $thorn\n";
  $thorn = "arrangements/$thorn/par";
