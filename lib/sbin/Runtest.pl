@@ -153,7 +153,7 @@ if ($tests =~ /All/) {
     print "\n  Tests failed:\n";
     for ($i=0; $i<$number_failed;$i++)
     {
-      print "    ".@which_failed[$i]." (from $testthorns[$i])\n";
+      print "    ".@which_failed[$i]." (from ".@thorn_failed[$i].")\n";
     }
   }
   if ($number_zerofiles > 0)
@@ -255,6 +255,7 @@ sub runtest {
         print "Please check the logfile $tsttop$sep$tp.log\n\n";
 	$number_failed++;
 	@which_failed = (@which_failed,$tp); 
+	@thorn_failed = (@thorn_failed,$inthorn);
         return;
     }
  
@@ -336,7 +337,7 @@ sub runtest {
                 "$nfiles compared, $blewit files differ, $reallyblewit differ significantly\n";
 	    $number_failed++;
 	    @which_failed = (@which_failed,$tp); 
-
+	    @thorn_failed = (@thorn_failed,$inthorn);
         }
     }
     printf ("\n\n");
