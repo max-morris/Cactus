@@ -19,6 +19,7 @@
 #include "cctk_Types.h"
 #include "cctk_WarnLevel.h"
 
+#include "cctk_Stagger.h"
 #include "cctki_Stagger.h"
 
 static char *rcsid = "$Header$";

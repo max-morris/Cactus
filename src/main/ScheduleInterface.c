@@ -2102,7 +2102,7 @@ static int CCTKi_ScheduleCallEntry(t_attribute *attribute,
                                    t_sched_data *data)
 {
   int i;
-  int index; 
+  int indx; 
   int last;
   int go;
 
@@ -2115,11 +2115,11 @@ static int CCTKi_ScheduleCallEntry(t_attribute *attribute,
       /* In analysis, so check triggers */
       for (i = 0; i < attribute->n_trigger_groups ; i++) 
       { 
-        index = CCTK_FirstVarIndexI(attribute->trigger_groups[i]);
-        last  = index + CCTK_NumVarsInGroupI(attribute->trigger_groups[i]) -1;
-        for(; index <= last ; index++)
+        indx = CCTK_FirstVarIndexI(attribute->trigger_groups[i]);
+        last  = indx + CCTK_NumVarsInGroupI(attribute->trigger_groups[i]) -1;
+        for(; indx <= last ; indx++)
         {
-          go = go || CCTKi_TriggerSaysGo(data->GH, index);
+          go = go || CCTKi_TriggerSaysGo(data->GH, indx);
         }
       }
     }

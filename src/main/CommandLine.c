@@ -83,7 +83,7 @@ int cctki_paramcheck_nprocs;
    @history 
  
    @endhistory 
-   @var     optarg
+   @var     argument
    @vdesc   option argument
    @vtype   const char *
    @vio     in
@@ -93,22 +93,22 @@ int cctki_paramcheck_nprocs;
 
 @@*/
 
-void CCTKi_CommandLineTestThornCompiled(const char *optarg)
+void CCTKi_CommandLineTestThornCompiled(const char *argument)
 {
   int retval;
 
-  if((retval = CCTK_IsThornCompiled(optarg)))
+  if((retval = CCTK_IsThornCompiled(argument)))
   {
     if (CCTK_MyProc(NULL) == 0)
     {
-      printf("Thorn '%s' available.\n", optarg);
+      printf("Thorn '%s' available.\n", argument);
     }
   }
   else
   {
     if (CCTK_MyProc(NULL) == 0)
     {
-      printf("Thorn '%s' unavailable.\n", optarg);
+      printf("Thorn '%s' unavailable.\n", argument);
     }
   }
 
@@ -128,7 +128,7 @@ void CCTKi_CommandLineTestThornCompiled(const char *optarg)
    @history 
  
    @endhistory 
-   @var     optarg
+   @var     argument
    @vdesc   option argument
    @vtype   const char *
    @vio     in
@@ -137,7 +137,7 @@ void CCTKi_CommandLineTestThornCompiled(const char *optarg)
    @endvar 
 
 @@*/
-void CCTKi_CommandLineDescribeAllParameters(const char *optarg)
+void CCTKi_CommandLineDescribeAllParameters(const char *argument)
 {
   int first;
   int n_thorns;
@@ -159,15 +159,15 @@ void CCTKi_CommandLineDescribeAllParameters(const char *optarg)
       first = 1;
       while (CCTK_ParameterWalk (first, thornname, &param, &properties) == 0)
       {
-        if(optarg)
+        if(argument)
         {
-          switch(*optarg)
+          switch(*argument)
           {
             case 'v':
               CommandLinePrintParameter(properties);
               break;
             default :
-              fprintf(stderr, "Unknown verbosity option %s\n", optarg);
+              fprintf(stderr, "Unknown verbosity option %s\n", argument);
               CCTK_Exit(NULL,2);
           }
         }
@@ -197,7 +197,7 @@ void CCTKi_CommandLineDescribeAllParameters(const char *optarg)
    @history 
  
    @endhistory 
-   @var     optarg
+   @var     argument
    @vdesc   option argument
    @vtype   const char *
    @vio     in
@@ -206,7 +206,7 @@ void CCTKi_CommandLineDescribeAllParameters(const char *optarg)
    @endvar 
 
 @@*/
-void CCTKi_CommandLineDescribeParameter(const char *optarg)
+void CCTKi_CommandLineDescribeParameter(const char *argument)
 {
   char *thorn;
   char *param;
@@ -215,11 +215,11 @@ void CCTKi_CommandLineDescribeParameter(const char *optarg)
 
   if (CCTK_MyProc(NULL) == 0)
   {
-    Util_SplitString(&thorn, &param, optarg, "::");
+    Util_SplitString(&thorn, &param, argument, "::");
 
     if(!param)
     {
-      properties = CCTK_ParameterData(optarg, NULL);
+      properties = CCTK_ParameterData(argument, NULL);
     }
     else
     {
@@ -253,7 +253,7 @@ void CCTKi_CommandLineDescribeParameter(const char *optarg)
    @history 
  
    @endhistory 
-   @var     optarg
+   @var     argument
    @vdesc   option argument
    @vtype   const char *
    @vio     in
@@ -262,17 +262,17 @@ void CCTKi_CommandLineDescribeParameter(const char *optarg)
    @endvar 
 
 @@*/
-void CCTKi_CommandLineTestParameters(const char *optarg)
+void CCTKi_CommandLineTestParameters(const char *argument)
 {
   int nprocs;
 
-  if(optarg == NULL)
+  if(argument == NULL)
   {
     nprocs = 1;
   }
   else
   {
-    nprocs = atoi(optarg);
+    nprocs = atoi(argument);
   }
 
   paramchecking = 1;
@@ -293,7 +293,7 @@ void CCTKi_CommandLineTestParameters(const char *optarg)
    @history 
  
    @endhistory 
-   @var     optarg
+   @var     argument
    @vdesc   option argument
    @vtype   const char *
    @vio     in
@@ -303,11 +303,11 @@ void CCTKi_CommandLineTestParameters(const char *optarg)
 
 @@*/
 
-void CCTKi_CommandLineWarningLevel(const char *optarg)
+void CCTKi_CommandLineWarningLevel(const char *argument)
 {
   int warninglevel;
 
-  warninglevel = atoi(optarg);
+  warninglevel = atoi(argument);
 
   CCTKi_SetWarnLevel(warninglevel);
 
@@ -325,7 +325,7 @@ void CCTKi_CommandLineWarningLevel(const char *optarg)
    @history 
  
    @endhistory 
-   @var     optarg
+   @var     argument
    @vdesc   option argument
    @vtype   const char *
    @vio     in
@@ -334,11 +334,11 @@ void CCTKi_CommandLineWarningLevel(const char *optarg)
    @endvar 
 
 @@*/
-void CCTKi_CommandLineErrorLevel(const char *optarg)
+void CCTKi_CommandLineErrorLevel(const char *argument)
 {
   int errorlevel;
 
-  errorlevel = atoi(optarg);
+  errorlevel = atoi(argument);
 
   CCTKi_SetErrorLevel(errorlevel);
 

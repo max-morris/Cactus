@@ -22,6 +22,8 @@
 #include "cctk_Flesh.h"
 #include "cctk_Parameter.h"
 
+#include "cctki_Parameter.h"
+
 #include "ParameterBindings.h"
 
 static char *rcsid = "$Header$";

@@ -9,9 +9,11 @@
  @@*/
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "cctk_Flesh.h"
 #include "cctk_GNU.h"
+#include "cctk_Misc.h"
 
 #include "CommandLine.h"
 
