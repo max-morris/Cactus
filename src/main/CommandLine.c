@@ -322,7 +322,12 @@ void CCTKi_CommandLineFinished(void)
     }
     else
     {
+#ifdef WIN32
+      /* hack for Windows which doesn't know about /dev/null */
+      sprintf(fname,"NUL");
+#else
       sprintf(fname,"/dev/null");
+#endif
     }
 
     freopen(fname,"w",stdout);
