@@ -1,7 +1,7 @@
 
 Cactus Code Frequently Asked Questions
 
-$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.28 2002-04-21 15:38:19 allen Exp $
+$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.29 2002-04-27 11:55:36 allen Exp $
 
 Also available at http://www.cactuscode.org/Documentation/FAQ
 
@@ -426,5 +426,18 @@ Also available at http://www.cactuscode.org/Documentation/FAQ
     gmake <config>-cleandeps
 
     before compiling again.
+
+-------------------------------------------------------------------------------
+
+31. I have a single Cactus thorn which schedules a simple routine at STARTUP,
+    which prints output to the screen. If I schedule this routine at 
+    EVOL though I don't see any output.
+
+    You need a driver thorn activated for anything other than routines
+    scheduled at STARTUP to run. Drivers provide memory for grid 
+    variables, etc.
+
+    If you add e.g. CactusPUGH/PUGH to your ActiveThorns parameter things 
+    should work as you expect.
 
 -------------------------------------------------------------------------------
