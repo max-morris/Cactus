@@ -518,16 +518,16 @@ sub FindFiles
       $f =~ m:.*\.([^\s\.]+)\s*$:;
       $extension = $1;
       
-      if ($extension =~ /.+/ && $testdata->{"EXTENSIONS"} =~ /\b$extension\b/)
+      if ($f !~ /^(\.\#.*|\.|\.\.|.*\.par|CVS|.*~)$/)
       {
-	  $recognizedfiles .= " $f ";
-      }
-      else
-      {
-	  if ($f !~ /^(\.|\.\.|.*\.par|CVS|.*~)$/)
-	  {
-	      $unrecognizedfiles .= " $f";
-	  }
+	if ($extension =~ /.+/ && $testdata->{"EXTENSIONS"} =~ /\b$extension\b/)
+	{
+	  $recognizedfiles .= " $f "; 
+	}
+	else
+	{
+	  $unrecognizedfiles .= " $f";
+	}
       }
   }
   
