@@ -1608,7 +1608,12 @@ CCTK\_REAL}s with the grid spacing in each direction.
          the number of ghostzones used in each direction.
 %\item [{\tt cctk\_from}] The index value from which the user should start loops.
 %\item [{\tt cctk\_to}] ... end loops.
-%\item [{\tt cctk\_origin\_space}]  The coordinates of the spatial origin?
+\item [{\tt cctk\_origin\_space}] An array of {\tt cctk\_dim} {\tt
+      CCTK\_REAL}s with the spatial coordinates of the global origin
+      of the grid.  The coordinates of the $i$th local grid point in
+      the $x$ direction can e.g.\ in C be calculated by {\tt x =
+      CCTK\_ORIGIN\_SPACE(0) + (cctk\_lsh[0] + i) *
+      CCTK\_DELTA\_SPACE(0)}.
 \item [{\tt cctk\_lssh}]  This is an internal array used to hold
 array extents for staggering.  One should use the macro CCTK\_LSSH(,)
 to access its elements.
@@ -1643,8 +1648,18 @@ the global grid.
 
 The following variable is needed for grid refinement methods
 \begin{itemize}
-\item {\tt cctk\_levfac} The factor by which the local grid is refined
-        with respect to the base grid.
+\item {\tt cctk\_levfac} An array of {\tt cctk\_dim} integer factors
+        by which the local grid is refined in the corresponding
+        direction with respect to the base grid.
+\item {\tt cctk\_levoff} and {\tt cctk\_levoffdenom} Two arrays of
+        {\tt cctk\_dim} integers describing the distance by which the
+        local grid is offset with respect to the base grid, measured
+        in local grid spacings.  The distance in direction {\tt dir}
+        is given by {\tt 1.0 * cctk\_levoff[dir] /
+        cctk\_levoffdenom[dir]}.
+\item {\tt cctk\_timefac} The integer factor
+        by which the time step size is reduced with respect to the
+        base grid.
 \end{itemize}
 
 The following variable is used for identifing convergence levels. {\tt NOTE:} Convergence is not currently implemented by Cactus, so that {\tt cctk\_convlevel} is currently always 0.
@@ -1653,13 +1668,18 @@ The following variable is used for identifing convergence levels. {\tt NOTE:} Co
         The base level is 0, and every level above that is currently coarsened         by a factor of 2.
 \end{itemize}
 
-The variables {\tt cctk\_delta\_space} and {\tt cctk\_delta\_time}
-denote the grid spacings on the {\em base} grid. If you are using
-a grid refinement method, you need to calculate the grid spacings
-on the grid you are on. There are Cactus macros provided for this,
-with the syntax {\tt CCTK\_DELTA\_SPACE(dir)} and {\tt CCTK\_DELTA\_TIME}
-for both C and Fortran. It is recommended that these macros are
-always used to provide the grid spacings in your thorns.
+The variables {\tt cctk\_delta\_space}, {\tt cctk\_delta\_time}, and
+{\tt cctk\_origin\_space} denote the grid spacings, time step size,
+and spatial origin on the {\em base} grid.  If you are using a grid
+refinement method, you need to calculate these quantities on the grid
+you are on.  There are Cactus macros provided for this, with the
+syntax {\tt CCTK\_DELTA\_SPACE(dir)}, {\tt CCTK\_ORIGIN\_SPACE(dir)},
+and {\tt CCTK\_DELTA\_TIME} for both C and Fortran.  It is recommended
+that these macros are always used to provide the grid spacings, time
+step sizes, and spatial origins in your thorns.  In doing so, you
+incorporate the effects of {\tt cctk\_levfac}, {\tt cctk\_levoff},
+{\tt cctk\_levoffdenom}, and {\tt cctk\_timefac}, so that you do not
+explicitly have to take them into account.
 
 \subsection{Cactus Data Types}
 
