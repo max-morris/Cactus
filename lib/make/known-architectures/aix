@@ -82,8 +82,11 @@ else
     NATIVE_MPI_INC_DIRS="/usr/lpp/ppe.poe/include"
     if test "$MPI" = "NATIVE" ; then
       case "$CC:$CXX" in 
-        "xlc:xlC"|"cc:xlC"|"xlc_r:xlC_r")
+        "xlc:xlC"|"cc:xlC")
           LD=mpCC
+          ;;
+        "xlc_r:xlC_r")
+          LD=mpCC_r
           ;;
          *)
         echo "NATIVE MPI requires xlc and xlC"
@@ -95,10 +98,3 @@ else
   fi          
 
 fi
-
-
-
-
-
-
-
