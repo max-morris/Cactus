@@ -40,11 +40,10 @@ if(!$package)
 }
 
 do {
-   push @author_names,  &prompt("Author Name");
+   push @author_names,  &prompt("Thorn Author Name");
    push @author_emails, &prompt("Email Address");
    $another_author = &prompt("Add another author? Y/N");
 } while ($another_author =~ /^y/i);
-
 
 
 chdir $package_dir;
@@ -97,16 +96,23 @@ close OUT;
 
 open(OUT, ">README") || die "Cannot create README";
 
+print OUT "CVS info   : \$" . "Header:\$\n\n";
 print OUT "Cactus Code Thorn $thorn_name\n";
-print OUT "Authors    : ";
+print OUT "Thorn Author(s)     : ";
+for ($i = 0; $i < (@author_names); $i++) {
+   if ($i ne 0) { 
+      print OUT "\n                    : ";
+   }
+   print OUT "$author_names[$i] <$author_emails[$i]>";
+}
+print OUT "\nThorn Maintainer(s) : ";
 for ($i = 0; $i < (@author_names); $i++) {
    if ($i ne 0) {
-      print OUT "\n             ";
+      print OUT "\n                    : ";
    }
    print OUT "$author_names[$i] <$author_emails[$i]>";
 }
 print OUT "\n";
-print OUT "CVS info   : \$" . "Header:\$\n";
 print OUT "--------------------------------------------------------------------------\n";
 print OUT "\n";
 print OUT "Purpose of the thorn:\n";
