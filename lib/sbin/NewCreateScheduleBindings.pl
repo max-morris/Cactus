@@ -300,7 +300,7 @@ sub ScheduleBlock
 
   # Extract group and routine information from the databases
   @mem_groups = &ScheduleSelectGroups($thorn, $implementation, 
-				      $schedule_database{"\U$thorn\E BLOCK_$block STORAGE"},
+				      $schedule_database{"\U$thorn\E BLOCK_$block STOR"},
 				      %interface_database);
 
   @comm_groups = &ScheduleSelectGroups($thorn, $implementation, 
@@ -308,7 +308,7 @@ sub ScheduleBlock
 				       %interface_database);
 
   @trigger_groups = &ScheduleSelectGroups($thorn, $implementation, 
-					  $schedule_database{"\U$thorn\E BLOCK_$block TRIGGERS"},
+					  $schedule_database{"\U$thorn\E BLOCK_$block TRIG"},
 					  %interface_database);
 		
 
@@ -335,19 +335,19 @@ sub ScheduleBlock
   }
   elsif($schedule_database{"\U$thorn\E BLOCK_$block TYPE"} eq "FUNCTION")
   {
-    if($schedule_database{"\U$thorn\E BLOCK_$block LANGUAGE"} =~ m:^\s*C\s*$:i )
+    if($schedule_database{"\U$thorn\E BLOCK_$block LANG"} =~ m:^\s*C\s*$:i )
     {
       $language = "C";
       $function = $schedule_database{"\U$thorn\E BLOCK_$block NAME"};
     }
-    elsif($schedule_database{"\U$thorn\E BLOCK_$block LANGUAGE"} =~ m:^\s*(F|F77|FORTRAN|F90)\s*$:i )
+    elsif($schedule_database{"\U$thorn\E BLOCK_$block LANG"} =~ m:^\s*(F|F77|FORTRAN|F90)\s*$:i )
     {
       $language = "Fortran";
       $function = "FORTRAN_NAME(".$schedule_database{"\U$thorn\E BLOCK_$block NAME"} .")";
     }
     else
     {
-      print STDERR "Unknown language " .$schedule_database{"\U$thorn\E BLOCK_$block LANGUAGE"} ."\n";
+      print STDERR "Unknown language " .$schedule_database{"\U$thorn\E BLOCK_$block LANG"} ."\n";
       $CST_errors++;
       return ("", "");
     }
@@ -423,11 +423,11 @@ sub ScheduleStatement
 				  $schedule_database{"\U$thorn\E STATEMENT_$statement GROUPS"},
 				  %interface_database);
 
-  if($schedule_database{"\U$thorn\E STATEMENT_$statement TYPE"} eq "STORAGE")
+  if($schedule_database{"\U$thorn\E STATEMENT_$statement TYPE"} eq "STOR")
   {
     $function = "CCTK_ScheduleGroupStorage(";
   }
-  elsif($schedule_database{"\U$thorn\E STATEMENT_$statement TYPE"} eq "COMMUNICATION")
+  elsif($schedule_database{"\U$thorn\E STATEMENT_$statement TYPE"} eq "COMM")
   {
     $function = "CCTK_ScheduleGroupComm(";
   }

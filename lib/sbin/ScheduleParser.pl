@@ -96,10 +96,10 @@ sub parse_schedule_ccl
       $schedule_db{"\U$thorn\E BLOCK_$n_blocks TYPE"}        = $type;
       $schedule_db{"\U$thorn\E BLOCK_$n_blocks DESCRIPTION"} = $description;
       $schedule_db{"\U$thorn\E BLOCK_$n_blocks WHERE"}       = $where;
-      $schedule_db{"\U$thorn\E BLOCK_$n_blocks LANGUAGE"}    = $language;
-      $schedule_db{"\U$thorn\E BLOCK_$n_blocks STORAGE"}     = $mem_groups;
+      $schedule_db{"\U$thorn\E BLOCK_$n_blocks LANG"}    = $language;
+      $schedule_db{"\U$thorn\E BLOCK_$n_blocks STOR"}     = $mem_groups;
       $schedule_db{"\U$thorn\E BLOCK_$n_blocks COMM"}        = $comm_groups;
-      $schedule_db{"\U$thorn\E BLOCK_$n_blocks TRIGGERS"}    = $trigger_groups;
+      $schedule_db{"\U$thorn\E BLOCK_$n_blocks TRIG"}    = $trigger_groups;
       $schedule_db{"\U$thorn\E BLOCK_$n_blocks BEFORE"}      = $before_list;
       $schedule_db{"\U$thorn\E BLOCK_$n_blocks AFTER"}       = $after_list;
       $schedule_db{"\U$thorn\E BLOCK_$n_blocks WHILE"}       = $while_list;
@@ -107,7 +107,7 @@ sub parse_schedule_ccl
       $buffer .= "\@BLOCK\@$n_blocks\n";
       $n_blocks++;
     }
-    elsif($data[$line_number] =~ m/^\s*(STORAGE|COMM(UNICATION)):\s*/i)
+    elsif($data[$line_number] =~ m/^\s*(STOR|COMM)[^:]*:\s*/i)
     {
       ($line_number, $type, $groups) = &ParseScheduleStatement($line_number, @data);
       $schedule_db{"\U$thorn\E STATEMENT_$n_statements TYPE"}        = $type;
@@ -345,19 +345,19 @@ sub ParseScheduleBlock
     while($data[$line_number] !~ m:\s*\}\s*:)
     {
       $line_number++;
-      if($data[$line_number] =~ m/^\s*STORAGE\s*:\s*(.*)$/i)
+      if($data[$line_number] =~ m/^\s*STOR[^:]*:\s*(.*)$/i)
       {
 	push(@mem_groups, split(/\s,/, $1));
       }
-      elsif($data[$line_number] =~ m/^\s*COMM(UNICATION)?\s*:\s*(.*)$/i)
+      elsif($data[$line_number] =~ m/^\s*COMM[^:]*:\s*(.*)$/i)
       {
-	push(@comm_groups, split(/\s,/, $2));
+	push(@comm_groups, split(/\s,/, $1));
       }
-      elsif($data[$line_number] =~ m/^\s*TRIGGER(S)?\s*:\s*(.*)$/i)
+      elsif($data[$line_number] =~ m/^\s*TRIG[^:]*:\s*(.*)$/i)
       {
-	push(@trigger_groups, split(/\s,/, $2));
+	push(@trigger_groups, split(/\s,/, $1));
       }
-      elsif($data[$line_number] =~ m/^\s*LANG(UAGE)?\s*:\s*(.*)$/i)
+      elsif($data[$line_number] =~ m/^\s*LANG[^:]*:\s*(.*)$/i)
       {
 	if($language ne "")
 	{
@@ -366,7 +366,7 @@ sub ParseScheduleBlock
 	}
 	else
 	{
-	  $language= $2; 
+	  $language= $1; 
 	}
       }
       elsif($data[$line_number] =~ m:\s*\}\s*:)
@@ -426,10 +426,11 @@ sub ParseScheduleStatement
   local($line_number, @data) = @_;
   local($type, $groups);
 
-  $data[$line_number] =~ m/^\s*(STORAGE|COMM(UNICATION)):\s*([\w\s\,]*)/i;
+  $data[$line_number] =~ m/^\s*(STOR|COMM)[^:]*:\s*([\w\s\,]*)/i;
 
   $type = "\U$1\E";
-  $groups = $3;
+
+  $groups = $2;
   
   return ($line_number, $type, $groups);
 }
