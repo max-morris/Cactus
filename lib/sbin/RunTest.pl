@@ -39,6 +39,7 @@ while ($choice !~ /^Q/i)
   while (!($choice =~ /^Q/i) )
   {
       
+    print "------------------------------------------------------------------------\n\n";
     print "  --- Menu ---\n\n";
     
     print "  Run entire set of tests [E]\n";
@@ -62,6 +63,7 @@ while ($choice !~ /^Q/i)
       {
 	foreach $test (split(" ",$testdata{"$thorn RUNNABLE"}))
 	{
+	  print "------------------------------------------------------------------------\n\n";
 	  print "  Test $thorn: $test \n";
 	  print "    \"$testdata{\"$thorn $test DESC\"}\"\n";
 	  if ($choice !~ /^O/i)
@@ -87,6 +89,7 @@ while ($choice !~ /^Q/i)
       {
 	$test  = $tests[2*$i];
 	$thorn = $tests[2*$i+1];
+	print "------------------------------------------------------------------------\n\n";
 	print "  Test $thorn: $test\n";
 	print "    \"$testdata{\"$thorn $test DESC\"}\"\n";
 	%testdata = &RunTest($tests[2*$i],$tests[2*$i+1],\%config_data,%testdata);
@@ -98,6 +101,7 @@ while ($choice !~ /^Q/i)
     {
       if ($thorn && $test)
       {
+	print "------------------------------------------------------------------------\n\n";
 	print "  Test $thorn: $test \n";
 	print "    \"$testdata{\"$thorn $test DESC\"}\"\n";
 	%testdata = &RunTest($test,$thorn,\%config_data,%testdata);
