@@ -295,25 +295,35 @@ write generic code which can operate on a table without knowing the
 keys.  ``Table iterators'' (``iterators'' for short) are used for this.
 
 An iterator is an abstraction of a pointer to a particular table entry.
-Iterators are analogous to the Unix current working directory, to
-database cursors, to the \verb|DIR *| pointers used by the POSIX
+Iterators are to the \verb|DIR *| pointers used by the POSIX
 \verb|opendir()|, \verb|readdir()|, \verb|closedir()|, and similar
-functions, and to Perl hash tables' \verb|each()|, \verb|keys()|,
-and \verb|values|.
+functions, to Perl hash tables' \verb|each()|, \verb|keys()|,
+and \verb|values|, and to the C++ Standard Template Library's
+forward iterators.
 
-The entries in a table may be considered to be in some
-implementation-defined order; an iterator may be used to walk through
-some or all of the table entries in this order.  This order is
-arbitrary, and may change if there is any change in the table
-(setting a value or deleting a table entry).%%%
+At any time the entries in a table may be considered to be in some
+arbitrary (implementation-defined) order; an iterator may be used to
+walk through some or all of the table entries in this order.  This
+order is guaranteed to remain unchanged for any given table so long
+as no changes are made to that table, \ie{} so long as no
+\verb|Util_TableSet*()|, \verb|Util_TableSet*Array()|,
+\verb|Util_TableSetString()|, or \verb|Util_TableDeleteKey()| calls
+are made on that table (making such calls on other tables doesn't matter).
+The order may change if there is any change in the table, and it
+may differ even between different tables with identical key/value
+contents.%%%
 \footnote{%%%
 	 For example, if tables were implemented by hashing,
-	 the internal order could be that of the hash buckets.
+	 the internal order could be that of the hash buckets,
+	 and the hash function could depend on the internal
+	 table address.
 	 }%%%
-{}  Any change in the table also invalidates all iterators pointing
+{}  
+
+Any change in the table also invalidates all iterators pointing
 anywhere in the table; using any such iterator is an error.
 Multiple iterators may point into the same table; they all use the
-same ordering, and (unlike in Perl) they're all independent.
+same order, and (unlike in Perl) they're all independent.
 
 The detailed function description
 (section~\ref{sect-FunctionReference/UtilityFunctions})
