@@ -101,7 +101,15 @@ int CCTKi_InitialiseCactus(int *argc, char ***argv, tFleshConfig *ConfigData)
 int CCTKi_InitialiseScheduler(tFleshConfig *ConfigData)
 {
   int retcode;
-  
+  extern void CCTKi_SetParameterSetMask(int mask);
+
+  CCTKi_SetParameterSetMask(PARAMETER_RECOVERY_IN);
+
+  if(CCTKi_BindingsParameterRecoveryInitialise() != 0)
+    CCTK_WARN(0, "Failed to recover parameters");
+
+  CCTKi_SetParameterSetMask(PARAMETER_RECOVERY_POST);
+
   CCTKi_BindingsScheduleInitialise();
 
   retcode = CCTKi_DoScheduleSortAllGroups();
