@@ -1110,8 +1110,10 @@ static t_param *ParameterFind (const char *name,
   char *basename;
   int   array_index;
 
+  /* Split an array parameter into its name and index */
   GetBaseName(name, &basename, &array_index);
 
+  /* Find the parameter */
   node = ParameterPTreeNodeFind (paramtree, basename);
 
   free(basename);
@@ -1120,6 +1122,7 @@ static t_param *ParameterFind (const char *name,
 
   if (node)
   {
+    /* Parameter exists for some thorn;  check thorn */
     for (list = node->paramlist; list; list = list->next)
     {
       if (! thorn)
@@ -1144,21 +1147,30 @@ static t_param *ParameterFind (const char *name,
     }
   }
 
+  /* Now get the correct parameter structure */
   if(list)
   {
-    if(list->param->array && array_index > -1)
+    if(!list->param->array && array_index > -1)
     {
+      /* Trying to treat a non-array parameter as an array */
+      retval = NULL;
+    }
+    else if(list->param->array && array_index > -1)
+    {
+      /* It's an array parameter */
       if(array_index < list->param->props->array_size)
       {
         retval = &(list->param->array[array_index]);
       }
       else
       {
+        /* It's out of bounds */
         retval = NULL;
       }
     }
     else
     {
+      /* Just a normal parameter */
       retval = list->param;
     }
   }
