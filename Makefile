@@ -16,7 +16,7 @@
 #
 #
 #   @enddesc
-#   @version $Id: Makefile,v 1.140 2002-08-19 17:29:07 allen Exp $
+#   @version $Id: Makefile,v 1.141 2002-08-21 16:25:30 allen Exp $
 # @@*/
 
 ##################################################################################
@@ -945,7 +945,7 @@ ThornGuide:
 	mkdir $(CCTK_HOME)/doc/ThornGuide/build; 
 	@echo "  Processing...."
 	cd $(CCTK_HOME)/doc/ThornGuide/build; \
-	$(MAKE) -f $(CCTK_HOME)/doc/ThornGuide/Makefile PERL=$(PERL) CCTK_HOME=$(CCTK_HOME); \
+	$(MAKE) -f $(CCTK_HOME)/doc/ThornGuide/Makefile PERL=$(PERL) CCTK_HOME=$(CCTK_HOME) THORNS=$(THORNS) ARRANGEMENTS=$(ARRANGEMENTS); \
 	cp ThornGuide.ps $(CCTK_HOME)/doc/ThornGuide.ps 
 	@echo "  ThornGuide.ps created in doc directory."
 	@echo "  Done."
@@ -959,7 +959,7 @@ ThornGuide.pdf:
 	mkdir $(CCTK_HOME)/doc/ThornGuide/build; 
 	@echo "  Processing...."
 	cd $(CCTK_HOME)/doc/ThornGuide/build; \
-	$(MAKE) -f $(CCTK_HOME)/doc/ThornGuide/Makefile ThornGuide.pdf PERL=$(PERL) CCTK_HOME=$(CCTK_HOME); \
+	$(MAKE) -f $(CCTK_HOME)/doc/ThornGuide/Makefile ThornGuide.pdf PERL=$(PERL) CCTK_HOME=$(CCTK_HOME) THORNS=$(THORNS) ARRANGEMENTS=$(ARRANGEMENTS); \
 	cp ThornGuide.pdf $(CCTK_HOME)/doc/ThornGuide.pdf 
 	@echo "  ThornGuide.pdf created in doc directory."
 	@echo "  Done."
