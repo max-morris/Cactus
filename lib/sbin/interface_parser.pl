@@ -59,6 +59,7 @@ sub cross_index_interface_data
   local(%interface_data);
   local(%implementations);
   local($implementation);
+  local(%ancestors);
 
   @thorns = @indata[0..$n_thorns-1];
   %interface_data = @indata[$n_thorns..$#indata];
@@ -84,9 +85,11 @@ sub cross_index_interface_data
 
     &check_interface_consistency($implementation, %interface_data);
 
-    $interface_data{"IMPLEMENTATION \U$implementation\E ANCESTORS"} = &get_implementation_ancestors($implementation, %interface_data);
+    %ancestors = &get_implementation_ancestors($implementation, 0, %interface_data);
 
-    $interface_data{"IMPLEMENTATION \U$implementation\E FRIENDS"} = &get_implementation_friends($implementation, %interface_data);
+    $interface_data{"IMPLEMENTATION \U$implementation\E ANCESTORS"} = join(" ",( keys %ancestors));
+
+#    $interface_data{"IMPLEMENTATION \U$implementation\E FRIENDS"} = &get_implementation_friends($implementation, %interface_data);
     
   }
 
@@ -124,10 +127,22 @@ sub get_implementation_friends
 
 sub get_implementation_ancestors
 {
-  local($implementation, %interface_data);
+  local($implementation, $n_ancestors, @indata) = @_;
+  local(%ancestors);
+  local(%interface_data);
   local($thorn);
   local($ancestor, $ancestors);
-  local(%ancestors);
+
+  if($n_ancestors > 0)
+  {
+    %ancestors = @indata[0..2*$n_ancestors-1];
+    %interface_data = @indata[2*$n_ancestors..$#indata];
+  }
+  else
+  {
+    %ancestors = ();
+    %interface_data = @indata;
+  }
 
   $interface_data{"IMPLEMENTATION \U$implementation\E THORNS"} =~ m:(\w+):;
 
@@ -136,19 +151,14 @@ sub get_implementation_ancestors
   # Recurse.  This needs to be made robust against loops.
   foreach $ancestor (split(" ", $interface_data{"\U$thorn\E INHERITS"}))
   {
-    $ancestors .= &get_implementation_ancestors($ancestor, %interface_data);
-    $ancestors .= "$ancestor ";
+    if(! $ancestors{"\U$ancestor\E"})
+    {
+      $ancestors{"\U$ancestor\E"} = 1;
+      %ancestors = &get_implementation_ancestors($ancestor, scalar(keys %ancestors), %ancestors,%interface_data);
+    }
   }
   
-  # Uniquify the list.
-  foreach $ancestor (split(" ", $ancestors))
-  {
-    $ancestors{"\U$ancestor\E"} = 1;
-  }
-
-  $ancestors = join(" ", %ancestors);
-
-  return $ancestors;
+  return %ancestors;
 }
 
 sub check_interface_consistency
