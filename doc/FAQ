@@ -1,7 +1,7 @@
 
 Cactus Code Frequently Asked Questions
 
-$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.78 2004-03-22 02:29:31 allen Exp $
+$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.79 2004-05-01 22:06:14 tradke Exp $
 
 Also available at http://www.cactuscode.org/Documentation/FAQ
 
@@ -197,6 +197,9 @@ D10 Output to screen using the Info IO method of IOBasic doesn't work.
 
 D11 I get an error saying "CCTK_Equals: First string null".
 
+D12 I have a Cactus executable compiled with MPI. When running it on a single
+    processor (without using mpirun) I get an error saying "Unable to open
+    parameter file ...".
 
 ------------------------------------------------------------------------------
 Thorn Writing:
@@ -1210,6 +1213,21 @@ D11 I get an error saying "CCTK_Equals: First string null".
 
     Try to re-configure your application, perform a "make
     CONFIG-realclean", and then recompile.
+
+D12 I have a Cactus executable compiled with MPI. When running it on a single
+    processor (without using mpirun) I get an error saying "Unable to open
+    parameter file ...".
+
+    If you built Cactus with the ch_p4 device of the MPICH distribution
+    and then execute the program directly (without using mpirun), it will
+    start in the directory where the executable resides.
+    If you specified a relative path to your parameter file Cactus would
+    start searching for it from that directory (rather than the directory
+    you are currently working in) and then potentially not find it.
+
+    The solution is to never run an MPICH ch_p4 executable directly but
+    always use mpirun. This will make sure that the program will start
+    in your current working directory.
 
 
 ------------------------------------------------------------------------------
