@@ -71,10 +71,18 @@ int CCTKi_SetParameter(const char *parameter, const char *value)
 
   if(retval)
   {
+#if 0
     if(retval == -1)
     {
-      fprintf(stderr, "Unknown parameter %s\n", parameter);
+#endif
+      char *msg = (char *) malloc (strlen (parameter) + 30);
+
+      sprintf(msg, "Unknown parameter %s %d", parameter, retval);
+      CCTK_PARAMWARN (msg);
+      free (msg);
+#if 0
     }
+#endif
   }
 
   return retval;
