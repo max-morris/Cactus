@@ -286,7 +286,7 @@ sub ParameterRecoveryCreateFile
   $outbuf .=  "int CCTKi_BindingsParameterRecovery_$thorn(void)\n";
   $outbuf .=  "{\n";
   $outbuf .=  "  DECLARE_CCTK_PARAMETERS\n";
-  $outbuf .=  "  int result = -1;\n\n";
+  $outbuf .=  "  int result = 0;\n\n";
   $outbuf .=  "$buffer\n";
   $outbuf .=  "  return (result);\n";
   $outbuf .=  "  USE_CCTK_PARAMETERS\n";
@@ -411,20 +411,23 @@ sub ParameterRecoveryCreateBindings
   $outbuf .=  "int CCTKi_BindingsParameterRecoveryInitialise(void)\n";
   $outbuf .=  "{\n";
 
-  $outbuf .= "  int result = 0;\n";
+  $outbuf .= "  int result;\n";
+  $outbuf .= "  int retval = 0;\n\n";
   $outbuf .= "  do\n";
   $outbuf .= "  {\n";
   foreach $thorn (sort split(" ", $rhinterface_db->{"THORNS"}))
   {
-    $outbuf .= "  if(CCTK_IsThornActive(\"$thorn\"))\n";
-    $outbuf .= "  {\n";
-    $outbuf .= "    result=CCTKi_BindingsParameterRecovery_$thorn();\n";
-    $outbuf .= "    if (result == 0)\n";
-    $outbuf .= "      break;\n";
-    $outbuf .= "  }\n";
+    $outbuf .= "    if(CCTK_IsThornActive(\"$thorn\"))\n";
+    $outbuf .= "    {\n";
+    $outbuf .= "      result = CCTKi_BindingsParameterRecovery_$thorn();\n";
+    $outbuf .= "      if (result != 0)\n";
+    $outbuf .= "        retval = result;\n";
+    $outbuf .= "      if (retval > 0)\n";
+    $outbuf .= "        break;\n";
+    $outbuf .= "    }\n";
   }
   $outbuf .=  "  } while (0);\n";
-  $outbuf .=  "  return result;\n";
+  $outbuf .=  "  return retval;\n";
   $outbuf .=  "}\n";
   $outbuf .=  "\n";
 
