@@ -21,6 +21,11 @@ extern "C" {
 void CCTK_MemStat(void);
 unsigned long int  CCTK_TotalMemory(void);
 
+long int CCTK_MemTicketCash(int this_ticket);
+int CCTK_MemTicketRequest(void);
+int CCTK_MemTicketDelete(int this_ticket);
+
+
 #ifdef __cplusplus
 }
 #endif
