@@ -2,10 +2,10 @@
 %   @file      FunctionReference.tex
 %   @date      27 Jan 1999
 %   @author    Tom Goodale, Gabrielle Allen, Gerd Lanferman
-%   @desc 
+%   @desc
 %   Function Reference for the Cactus User's Guide
-%   @enddesc 
-%   @version $Header$      
+%   @enddesc
+%   @version $Header$
 %   @history
 %   @date       Sat Nov  3 18:47:53 MET 2001
 %   @author     Jonathan Thornburg <jthorn@aei.mpg.de>
@@ -33,23 +33,21 @@ from Fortran.
 
 \begin{Lentry}
 
-\item[CCTK\_Abort] 
-  [\pageref{CCTK-Abort}] 
+\item[CCTK\_Abort]
+  [\pageref{CCTK-Abort}]
+  Causes abnormal Cactus termination
 
-\item[CCTK\_ArrayGroupSize] 
+\item[CCTK\_ArrayGroupSize]
   [\pageref{CCTK-ArrayGroupSize}]
-  Give the size of the variables in a group, from the name
+  Returns the local size for a group, given by its group name
 
-\item[CCTK\_ArrayGroupSizeB] 
-  [\pageref{CCTK-ArrayGroupSizeB}] 
-  Give the size of the variables in a group, from either the name of the index
-
-\item[CCTK\_ArrayGroupSizeI] 
-  [\pageref{CCTK-ArrayGroupSizeI}] 
-  Give the size of the variables in a group, from the group index
+\item[CCTK\_ArrayGroupSizeI]
+  [\pageref{CCTK-ArrayGroupSizeI}]
+  Returns the local size for a group, given by its group index
 
 \item[CCTK\_Barrier]
-  [\pageref{CCTK-Barrier}] 
+  [\pageref{CCTK-Barrier}]
+  Synchronizes all processors
 
 \item[CCTK\_Cmplx]
   [\pageref{CCTK-Cmplx}]
@@ -107,137 +105,137 @@ from Fortran.
   [\pageref{CCTK-CmplxSub}]
   Returns the subtraction of two complex numbers (only C)
 
-\item[CCTK\_CoordDir] 
-  [\pageref{CCTK-CoordDir}] 
+\item[CCTK\_CoordDir]
+  [\pageref{CCTK-CoordDir}]
   Give the direction for a given coordinate name.
 
-\item[CCTK\_CoordIndex] 
-  [\pageref{CCTK-CoordIndex}] 
+\item[CCTK\_CoordIndex]
+  [\pageref{CCTK-CoordIndex}]
   Give the grid variable index for a given coordinate.
 
-\item[CCTK\_CoordRange] 
-  [\pageref{CCTK-CoordRange}] 
+\item[CCTK\_CoordRange]
+  [\pageref{CCTK-CoordRange}]
   Return the global upper and lower bounds for a given coordinate name on a cctkGH
 
-\item[CCTK\_CoordRegisterData] 
-  [\pageref{CCTK-CoordRegisterData}] 
+\item[CCTK\_CoordRegisterData]
+  [\pageref{CCTK-CoordRegisterData}]
   Register a coordinate as belonging to a coordinate system, with a given name and direction, and
   optionally with a grid variable
 
-\item[CCTK\_CoordRegisterRange] 
-  [\pageref{CCTK-CoordRegisterRange}] 
+\item[CCTK\_CoordRegisterRange]
+  [\pageref{CCTK-CoordRegisterRange}]
   Saves the global upper and lower bounds for a given coordinate name on a cctkGH
 
-\item[CCTK\_CoordRegisterSystem] 
-  [\pageref{CCTK-CoordRegisterSystem}] 
+\item[CCTK\_CoordRegisterSystem]
+  [\pageref{CCTK-CoordRegisterSystem}]
   Registers a coordinate system with a given dimension
 
-\item[CCTK\_CoordSystemDim] 
-  [\pageref{CCTK-CoordDim}] 
+\item[CCTK\_CoordSystemDim]
+  [\pageref{CCTK-CoordDim}]
   Provides the dimension of a given coordinate system
 
-\item[CCTK\_CoordSystemHandle] 
-  [\pageref{CCTK-CoordSystemHandle}] 
+\item[CCTK\_CoordSystemHandle]
+  [\pageref{CCTK-CoordSystemHandle}]
   Get the handle associated with a registered coordinate system
 
-\item[CCTK\_CoordSystemName] 
-  [\pageref{CCTK-CoordSystemName}] 
+\item[CCTK\_CoordSystemName]
+  [\pageref{CCTK-CoordSystemName}]
   Provides the name of the coordinate system identified by its handle
 
-\item[CCTK\_CreateDirectory]   
-  [\pageref{CCTK-CreateDirectory}] 
+\item[CCTK\_CreateDirectory]
+  [\pageref{CCTK-CreateDirectory}]
   Creates a directory
 
-\item[CCTK\_DecomposeName] 
-  [\pageref{CCTK-DecomposeName}] 
+\item[CCTK\_DecomposeName]
+  [\pageref{CCTK-DecomposeName}]
   Given the full name of a variable/group, separates the name returning both the implementation and the variable/group
 
-\item[CCTK\_DisableGroupComm] 
-  [\pageref{CCTK-DisableGroupComm}] 
+\item[CCTK\_DisableGroupComm]
+  [\pageref{CCTK-DisableGroupComm}]
   Disable the communication for a group
 
-\item[CCTK\_DisableGroupStorage] 
-  [\pageref{CCTK-DisableGroupStorage}] 
+\item[CCTK\_DisableGroupStorage]
+  [\pageref{CCTK-DisableGroupStorage}]
   Disable the storage for a group
 
-\item[CCTK\_EnableGroupComm] 
-  [\pageref{CCTK-EnableGroupComm}] 
+\item[CCTK\_EnableGroupComm]
+  [\pageref{CCTK-EnableGroupComm}]
   Enable the communication for a group
 
-\item[CCTK\_EnableGroupStorage] 
-  [\pageref{CCTK-EnableGroupStorage}] 
+\item[CCTK\_EnableGroupStorage]
+  [\pageref{CCTK-EnableGroupStorage}]
   Enable the storage for a group
 
-\item[CCTK\_Equals] 
-  [\pageref{CCTK-Equals}] 
+\item[CCTK\_Equals]
+  [\pageref{CCTK-Equals}]
   Check a STRING or KEYWORD parameter for equality equality with a given string
 
 \item[CCTK\_Exit]
-  [\pageref{CCTK-Equals}] 
+  [\pageref{CCTK-Equals}]
+  Causes normal Cactus termination
 
-
-\item[CCTK\_FirstVarIndex]   
-  [\pageref{CCTK-FirstVarIndex}] 
+\item[CCTK\_FirstVarIndex]
+  [\pageref{CCTK-FirstVarIndex}]
   Given a group name returns the first variable index in the group
 
-\item[CCTK\_FirstVarIndexI]   
-  [\pageref{CCTK-FirstVarIndexI}] 
+\item[CCTK\_FirstVarIndexI]
+  [\pageref{CCTK-FirstVarIndexI}]
   Given a group index returns the first variable index in the group
 
 \item[CCTK\_FortranString]
   [\pageref{CCTK-FortranString}]
   Changes a C string into a Fortran string
 
-\item[CCTK\_FullName] 
-  [\pageref{CCTK-FullName}] 
+\item[CCTK\_FullName]
+  [\pageref{CCTK-FullName}]
   Given a variable index, returns the full name of the variable
 
-\item[CCTK\_GroupData]   
-  [\pageref{CCTK-GroupData}] 
+\item[CCTK\_GroupData]
+  [\pageref{CCTK-GroupData}]
   Given a group index, returns information about the variables held in the group
 
-\item[CCTK\_GHExtension]   
-  [\pageref{CCTK-GHExtension}] 
+\item[CCTK\_GHExtension]
+  [\pageref{CCTK-GHExtension}]
   Get the pointer to a registered extension to the Cactus GH structure
 
-\item[CCTK\_GHExtensionHandle]   
-  [\pageref{CCTK-GHExtensionHandle}] 
+\item[CCTK\_GHExtensionHandle]
+  [\pageref{CCTK-GHExtensionHandle}]
   Get the handle associated with a extension to the Cactus GH structure
 
-\item[CCTK\_GroupIndex]   
-  [\pageref{CCTK-GroupIndex}] 
+\item[CCTK\_GroupIndex]
+  [\pageref{CCTK-GroupIndex}]
   Get the index number for a group name
 
-\item[CCTK\_GroupIndexFromVar]   
-  [\pageref{CCTK-GroupIndexFromVar}] 
+\item[CCTK\_GroupIndexFromVar]
+  [\pageref{CCTK-GroupIndexFromVar}]
   Given a variable name, returns the index of the associated group
 
-\item[CCTK\_GroupIndexFromVarI]   
-  [\pageref{CCTK-GroupIndexFromVarI}] 
+\item[CCTK\_GroupIndexFromVarI]
+  [\pageref{CCTK-GroupIndexFromVarI}]
   Given a variable index, returns the index of the associated group
 
-\item[CCTK\_GroupName]   
-  [\pageref{CCTK-GroupName}] 
+\item[CCTK\_GroupName]
+  [\pageref{CCTK-GroupName}]
   Given a group index, returns the group name
 
-\item[CCTK\_GroupNameFromVarI]   
-  [\pageref{CCTK-GroupNameFromVarI}] 
+\item[CCTK\_GroupNameFromVarI]
+  [\pageref{CCTK-GroupNameFromVarI}]
   Given a variable index, return the name of the associated group
 
-\item[CCTK\_GroupTypeFromVarI]   
-  [\pageref{CCTK-GroupTypeFromVarI}] 
+\item[CCTK\_GroupTypeFromVarI]
+  [\pageref{CCTK-GroupTypeFromVarI}]
   Provides group type index from the group index
 
 \item[CCTK\_ImpFromVarI]
-  [\pageref{CCTK-ImpFromVarI}] 
+  [\pageref{CCTK-ImpFromVarI}]
   Given a variable index, returns the implementation name
 
 \item[CCTK\_INFO]
   [\pageref{CCTK-INFO}]
   Prints an information message
 
-\item[CCTK\_InterpGridArrays]   
-  [\pageref{CCTK-InterpLocalArrays}] 
+\item[CCTK\_InterpGridArrays]
+  [\pageref{CCTK-InterpLocalArrays}]
   Performs an interpolation on a list of distributed arrays,
   using a chosen interpolation operator (this function is currently
   being implemented; it should be available in early 2002)
@@ -252,14 +250,14 @@ from Fortran.
   [\pageref{CCTK-InterpHandle}]
   Returns the handle for a given interpolation operator
 
-\item[CCTK\_InterpLocal]   
-  [\pageref{CCTK-InterpLocal}] 
+\item[CCTK\_InterpLocal]
+  [\pageref{CCTK-InterpLocal}]
   Performs an interpolation on a list of processor-local arrays,
   using a chosen interpolation operator (this function is being phased out;
   it will eventually be replaced by \verb|CCTK_InterpLocalArrays()|)
 
-\item[CCTK\_InterpLocalArrays]   
-  [\pageref{CCTK-InterpLocalArrays}] 
+\item[CCTK\_InterpLocalArrays]
+  [\pageref{CCTK-InterpLocalArrays}]
   Performs an interpolation on a list of processor-local arrays,
   using a chosen interpolation operator (this function is currently
   being implemented; it should be available in early 2002)
@@ -272,172 +270,184 @@ from Fortran.
   [\pageref{CCTK-InterpRegisterOperatorLocal}]
   Registers a routine as an interpolation operator for processor-local arrays
 
-\item[CCTK\_IsThornActive]   
-  [\pageref{CCTK-IsThornActive}] 
+\item[CCTK\_IsThornActive]
+  [\pageref{CCTK-IsThornActive}]
   Reports whether a thorn was activated in a parameter file
 
-\item[CCTK\_MaxDim]   
-  [\pageref{CCTK-MaxDim}] 
-  Get the maximum dimension of any grid variable 
+\item[CCTK\_MaxDim]
+  [\pageref{CCTK-MaxDim}]
+  Get the maximum dimension of any grid variable
 
-\item[CCTK\_MyProc]   
-  [\pageref{CCTK-MyProc}] 
+\item[CCTK\_MyProc]
+  [\pageref{CCTK-MyProc}]
   Get the local processor number
 
-\item[CCTK\_NumGroups]   
-  [\pageref{CCTK-NumGroups}] 
+\item[CCTK\_NumGroups]
+  [\pageref{CCTK-NumGroups}]
   Get the number of groups of variables compiled in the code
 
-\item[CCTK\_NumIOMethods] 
-  [\pageref{CCTK-_NumIOMethods}] 
+\item[CCTK\_NumIOMethods]
+  [\pageref{CCTK-NumIOMethods}]
+  Returns the total number of I/O methods registered with the flesh
 
-\item[CCTK\_NumTimeLevelsFromVar]   
-  [\pageref{CCTK-NumTimeLevelsFromVar}] 
+\item[CCTK\_NumTimeLevelsFromVar]
+  [\pageref{CCTK-NumTimeLevelsFromVar}]
   Gives the number of timelevels for a variable
 
-\item[CCTK\_NumTimeLevelsFromVarI]   
-  [\pageref{CCTK-NumTimeLevelsFromVarI}] 
+\item[CCTK\_NumTimeLevelsFromVarI]
+  [\pageref{CCTK-NumTimeLevelsFromVarI}]
   Gives the number of timelevels for a variable
 
-\item[CCTK\_NumVars]   
-  [\pageref{CCTK-NumVars}] 
+\item[CCTK\_NumVars]
+  [\pageref{CCTK-NumVars}]
   Get the number of grid variables compiled in the code
 
-\item[CCTK\_NumVarsInGroup]   
+\item[CCTK\_NumVarsInGroup]
   [\pageref{CCTK-NumVarsInGroup}]
   Provides the number of variables in a group from the group name
 
-\item[CCTK\_NumVarsInGroupI]   
-  [\pageref{CCTK-NumVarsInGroupI}] 
+\item[CCTK\_NumVarsInGroupI]
+  [\pageref{CCTK-NumVarsInGroupI}]
   Provides the number of variables in a group from the group index
 
-\item[CCTK\_nProcs]    
-  [\pageref{CCTK-nProcs}] 
+\item[CCTK\_nProcs]
+  [\pageref{CCTK-nProcs}]
   Get the total number of processors used
 
-\item[CCTK\_OutputGH] 
-  [\pageref{CCTK-OutputGH}] 
+\item[CCTK\_OutputGH]
+  [\pageref{CCTK-OutputGH}]
+  Conditional output of all variables on a GH by all I/O methods
 
-\item[CCTK\_OutputVar] 
-  [\pageref{CCTK-OutputVar}] 
+\item[CCTK\_OutputVar]
+  [\pageref{CCTK-OutputVar}]
+  Output of a single variable by all I/O methods
 
-\item[CCTK\_OutputVarAs] 
-  [\pageref{CCTK-OutputVarAs}] 
+\item[CCTK\_OutputVarAs]
+  [\pageref{CCTK-OutputVarAs}]
+  Output of a single variable as an alias by all I/O methods
 
-\item[CCTK\_OutputVarAsByMethod] 
-  [\pageref{CCTK-OutputVarAsByMethod}] 
+\item[CCTK\_OutputVarAsByMethod]
+  [\pageref{CCTK-OutputVarAsByMethod}]
+  Output of a single variable as an alias by a single I/O method
 
-\item[CCTK\_OutputVarByMethod] 
-  [\pageref{CCTK-OutputVarByMethod}] 
+\item[CCTK\_OutputVarByMethod]
+  [\pageref{CCTK-OutputVarByMethod}]
+  Output of a single variable by a single I/O method
 
-\item[CCTK\_ParallelInit] 
-  [\pageref{CCTK-ParallelInit}] 
+\item[CCTK\_ParallelInit]
+  [\pageref{CCTK-ParallelInit}]
+  Initializes the parallel subsystem
 
-\item[CCTK\_PARAMWARN] 
-  [\pageref{CCTK-PARAMWARN}] 
+\item[CCTK\_PARAMWARN]
+  [\pageref{CCTK-PARAMWARN}]
   Prints a warning from parameter checking, and possibly stops the code
 
-\item[CCTK\_PrintGroup] 
-  [\pageref{CCTK-PrintGroup}] 
+\item[CCTK\_PrintGroup]
+  [\pageref{CCTK-PrintGroup}]
   Prints a group name from its index
 
 \item[CCTK\_PrintString]
   [\pageref{CCTK-PrintString}]
   Prints a Cactus string to screen (from Fortran)
 
-\item[CCTK\_PrintVar] 
-  [\pageref{CCTK-PrintVar}] 
+\item[CCTK\_PrintVar]
+  [\pageref{CCTK-PrintVar}]
   Prints a variable name from its index
 
-\item[CCTK\_QueryGroupStorage] 
-  [\pageref{CCTK-QueryGroupStorage}] 
+\item[CCTK\_QueryGroupStorage]
+  [\pageref{CCTK-QueryGroupStorage}]
+  Queries storage for a group given by its group name
 
-\item[CCTK\_QueryGroupStorageI] 
-  [\pageref{CCTK-QueryGroupStorageI}] 
+\item[CCTK\_QueryGroupStorageI]
+  [\pageref{CCTK-QueryGroupStorageI}]
+  Queries storage for a group given by its group index
 
-%\item[CCTK\_Reduce] 
-%  [\pageref{CCTK-Reduce}] 
+%\item[CCTK\_Reduce]
+%  [\pageref{CCTK-Reduce}]
 %  Perform a reduction operation using a registered operator
 
-\item[CCTK\_ReductionHandle] 
-  [\pageref{CCTK-ReductionHandle}] 
+\item[CCTK\_ReductionHandle]
+  [\pageref{CCTK-ReductionHandle}]
   Get the handle for a registered reduction operator
 
-\item[CCTK\_RegisterBanner] 
-  [\pageref{CCTK-RegisterBanner}] 
+\item[CCTK\_RegisterBanner]
+  [\pageref{CCTK-RegisterBanner}]
   Register a banner for a thorn
 
-\item[CCTK\_RegisterGHExtension] 
-  [\pageref{CCTK-RegisterGHExtension}] 
+\item[CCTK\_RegisterGHExtension]
+  [\pageref{CCTK-RegisterGHExtension}]
   Register the name of an extension to the Cactus GH.
 
-\item[CCTK\_RegisterGHExtensionInitGH] 
-  [\pageref{CCTK-RegisterGHExtensionInitGH}] 
+\item[CCTK\_RegisterGHExtensionInitGH]
+  [\pageref{CCTK-RegisterGHExtensionInitGH}]
   Register a routine for providing initialisation for an extension to the Cactus GH
 
-\item[CCTK\_RegisterGHExtensionScheduleTraverseGH] 
-  [\pageref{CCTK-RegisterGHExtensionScheduleTraverseGH}] 
+\item[CCTK\_RegisterGHExtensionScheduleTraverseGH]
+  [\pageref{CCTK-RegisterGHExtensionScheduleTraverseGH}]
   Register a GH extension schedule traversal routine
 
-\item[CCTK\_RegisterGHExtensionSetupGH]  
-  [\pageref{CCTK-RegisterGHExtensionSetupGH}] 
+\item[CCTK\_RegisterGHExtensionSetupGH]
+  [\pageref{CCTK-RegisterGHExtensionSetupGH}]
   Register a routine for setting up an extension to the Cactus GH
 
-\item[CCTK\_RegisterIOMethod] 
-  [\pageref{CCTK-RegisterIOMethod}] 
-  Register an IO method name
+\item[CCTK\_RegisterIOMethod]
+  [\pageref{CCTK-RegisterIOMethod}]
+  Registers a new I/O method
 
-\item[CCTK\_RegisterIOMethodOutputGH] 
-  [\pageref{CCTK-RegisterIOMethodOutputGH}] 
+\item[CCTK\_RegisterIOMethodOutputGH]
+  [\pageref{CCTK-RegisterIOMethodOutputGH}]
+  Registers an I/O method's routine for conditional output
 
-\item[CCTK\_RegisterIOMethodOutputVarAs] 
-  [\pageref{CCTK-RegisterIOMethodOutputVarAs}] 
+\item[CCTK\_RegisterIOMethodOutputVarAs]
+  [\pageref{CCTK-RegisterIOMethodOutputVarAs}]
+  Registers an I/O method's routine for unconditional output
 
-\item[CCTK\_RegisterIOMethodTimeToOutput] 
-  [\pageref{CCTK-RegisterIOMethodTimeToOutput}] 
-  Register a routine for deciding if it is time to output for an IO method 
+\item[CCTK\_RegisterIOMethodTimeToOutput]
+  [\pageref{CCTK-RegisterIOMethodTimeToOutput}]
+  Register a routine for deciding if it is time to output for an IO method
 
-\item[CCTK\_RegisterIOMethodTriggerOutput] 
-  [\pageref{CCTK-RegisterIOMethodTriggerOutput}] 
+\item[CCTK\_RegisterIOMethodTriggerOutput]
+  [\pageref{CCTK-RegisterIOMethodTriggerOutput}]
   Register a routine for dealing with trigger output for an IO method
 
-\item[CCTK\_RegisterReductionOperator] 
-  [\pageref{CCTK-RegisterReductionOperator}] 
+\item[CCTK\_RegisterReductionOperator]
+  [\pageref{CCTK-RegisterReductionOperator}]
   Register a function as providing a reduction operation
 
-\item[CCTK\_SetupGH] 
-  [\pageref{CCTK-SetupGH}] 
+\item[CCTK\_SetupGH]
+  [\pageref{CCTK-SetupGH}]
+  Sets up a CCTK grid hierarchy
 
-\item[CCTK\_SyncGroup] 
-  [\pageref{CCTK-SyncGroup}] 
+\item[CCTK\_SyncGroup]
+  [\pageref{CCTK-SyncGroup}]
   Synchronize the ghost zones for a group of variables
 
 \item[CCTK\_VarDataPtr]
-  [\pageref{CCTK-VarDataPtr}] 
+  [\pageref{CCTK-VarDataPtr}]
   Returns the data pointer for a grid variable
 
 \item[CCTK\_VarDataPtrB]
-  [\pageref{CCTK-VarDataPtrB}] 
+  [\pageref{CCTK-VarDataPtrB}]
   Returns the data pointer for a grid variable from the variable index or name
 
 \item[CCTK\_VarDataPtrI]
-  [\pageref{CCTK-VarDataPtrI}] 
+  [\pageref{CCTK-VarDataPtrI}]
   Returns the data pointer for a grid variable from the variable index
 
 \item[CCTK\_VarIndex]
-   [\pageref{CCTK-VarIndex}] 
+   [\pageref{CCTK-VarIndex}]
   Get the index for a variable
 
-\item[CCTK\_VarName] 
-  [\pageref{CCTK-VarName}] 
+\item[CCTK\_VarName]
+  [\pageref{CCTK-VarName}]
   Given a variable index, returns the variable name
 
-\item[CCTK\_VarTypeI] 
-  [\pageref{CCTK-VarTypeI}] 
+\item[CCTK\_VarTypeI]
+  [\pageref{CCTK-VarTypeI}]
   Provides variable type index from the variable index
 
-\item[CCTK\_WARN] 
-  [\pageref{CCTK-WARN}] 
+\item[CCTK\_WARN]
+  [\pageref{CCTK-WARN}]
   Prints a warning message and possibly stops the code
 
 \end{Lentry}
@@ -452,7 +462,7 @@ from Fortran.
 
 
 % CommOverloadables.c
-\begin{CCTKFunc}{CCTK\_Abort}{Exit the code abruptly}
+\begin{CCTKFunc}{CCTK\_Abort}{Abnormal Cactus termination}
 \label{CCTK-Abort}
 \subroutine{int}{integer}{istat}
 \argument{cGH *}{CCTK\_POINTER}{cctkGH}
@@ -460,16 +470,12 @@ from Fortran.
 \showargs
 \begin{params}
 \parameter{cctkGH}{pointer to CCTK grid hierarchy}
-\parameter{value}{error code}
+\parameter{value}{the return code to abort with}
 \end{params}
 \begin{discussion}
+This routine causes an immediate, abnormal Cactus termination.
+It never returns to the caller.
 \end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
 \end{CCTKFunc}
 
 
@@ -479,43 +485,26 @@ from Fortran.
 % cctk_Comm.h
 \begin{CCTKFunc}{CCTK\_ArrayGroupSize}{}
 \label{CCTK-ArrayGroupSize}
-\subroutine{int *}{}{size}
-\argument{const cGH *}{}{cctkGH}
-\argument{const char *}{}{groupname}
+\subroutine{const int *}{}{size}
+\argument{const cGH *}{CCTK\_POINTER}{cctkGH}
+\argument{int}{integer}{dir}
+\argument{const char *}{character*(*)}{groupname}
 \showcargs
 \begin{params}
 \parameter{cctkGH}{pointer to CCTK grid hierarchy}
+\parameter{dir}{the direction to query}
+\parameter{groupname}{the group to query given by its full name}
+\parameter{size}{pointer to the size in the given direction}
 \end{params}
 \begin{discussion}
+For a CCTK\_ARRAY or CCTK\_GF group, this routine returns the processor-local
+size for variables in that group in a given direction. The direction is counted
+in C order (zero being the lowest dimension).
 \end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\end{tabular}
-\end{examples}
 \begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
-
-
-% CommOverloadables.c
-\begin{CCTKFunc}{CCTK\_ArrayGroupSizeB}{}
-\label{CCTK-ArrayGroupSizeB}
-\subroutine{int *}{}{size}
-\argument{const cGH *}{}{cctkGH}
-\argument{int}{}{groupindex}
-\argument{int}{}{dir}
-\argument{const char *}{}{groupname}
-\showargs
-\begin{params}
-\parameter{cctkGH}{pointer to CCTK grid hierarchy}
-\end{params}
-\begin{discussion}
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
+\begin{tabular}{l}
+A NULL pointer is returned if the group name or the direction given are invalid.
 \end{tabular}
-\end{examples}
-\begin{errorcodes}
 \end{errorcodes}
 \end{CCTKFunc}
 
@@ -523,23 +512,26 @@ from Fortran.
 % CommOverloadables.c
 \begin{CCTKFunc}{CCTK\_ArrayGroupSizeI}{}
 \label{CCTK-ArrayGroupSizeI}
-\subroutine{int *}{}{size}
-\argument{const cGH *}{}{cctkGH}
-\argument{int}{}{dir}
-\argument{int}{}{index}
-\showargs
+\subroutine{const int *}{}{size}
+\argument{const cGH *}{CCTK\_POINTER}{cctkGH}
+\argument{int}{integer}{dir}
+\argument{int}{integer}{groupindex}
+\showcargs
 \begin{params}
 \parameter{cctkGH}{pointer to CCTK grid hierarchy}
-\parameter{dir}{coordinate direction}
-\parameter{index}{group index}
+\parameter{dir}{the direction to query}
+\parameter{groupindex}{the group to query given by its index}
+\parameter{size}{pointer to the size in the given direction}
 \end{params}
 \begin{discussion}
+For a CCTK\_ARRAY or CCTK\_GF group, this routine returns the processor-local
+size for variables in that group in a given direction. The direction is counted
+in C order (zero being the lowest dimension).
 \end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\end{tabular}
-\end{examples}
 \begin{errorcodes}
+\begin{tabular}{l}
+A NULL pointer is returned if the group name or the direction given are invalid.
+\end{tabular}
 \end{errorcodes}
 \end{CCTKFunc}
 
@@ -549,22 +541,21 @@ from Fortran.
 
 
 % CommOverloadables.c
-\begin{CCTKFunc}{CCTK\_Barrier}{}
+\begin{CCTKFunc}{CCTK\_Barrier}{Synchronizes all processors at a given execution point}
 \label{CCTK-Barrier}
 \subroutine{int}{integer}{istat}
 \argument{cGH *}{CCTK\_POINTER}{cctkGH}
-\showcargs
+\showargs
 \begin{params}
 \parameter{cctkGH}{pointer to CCTK grid hierarchy}
+\parameter{istat}{return code}
 \end{params}
 \begin{discussion}
 \end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
+This routine synchronizes all processors in a parallel job at a given point of
+execution. No processor will continue execution until all other processors
+have called {\t CCTK\_Barrier()}. Note that this is a collective operation --
+it must be called by all processors otherwise the code will hang.
 \end{CCTKFunc}
 
 
@@ -848,7 +839,7 @@ The real part of a complex number $z=a+bi$ is $a$.
 \parameter{inval2}{The complex number to subtract}
 \end{params}
 \begin{discussion}
-If $z_1=a_1 + b_1 i$ and $z_2 = a_2+ b_2 i$ then 
+If $z_1=a_1 + b_1 i$ and $z_2 = a_2+ b_2 i$ then
 $$
 z_1-z_2 = (a_1-a_2)+ (b_1 - b_2)i
 $$
@@ -921,7 +912,7 @@ $$
 \parameter{systemname}{The name of the coordinate system}
 \end{params}
 \begin{discussion}
-The coordinate name is independent of the grid function name. 
+The coordinate name is independent of the grid function name.
 \end{discussion}
 \begin{examples}
 \begin{tabular}{@{}p{3cm}cp{11cm}}
@@ -950,10 +941,10 @@ The coordinate name is independent of the grid function name.
 \parameter{systemname}{The coordinate system for this coordinate}
 \end{params}
 \begin{discussion}
-The coordinate name is independent of the grid variable name. 
+The coordinate name is independent of the grid variable name.
 To find the index, the coordinate system name must be given, and either
-the coordinate direction or the coordinate name. The coordinate name 
-will be used if the coordinate direction is given as less than or equal to zero, otherwise the coordinate name will be used. 
+the coordinate direction or the coordinate name. The coordinate name
+will be used if the coordinate direction is given as less than or equal to zero, otherwise the coordinate name will be used.
 \end{discussion}
 \begin{examples}
 \begin{tabular}{@{}p{3cm}cp{11cm}}
@@ -992,7 +983,7 @@ will be used if the coordinate direction is given as less than or equal to zero,
 \parameter{systemname}{Coordinate system name}
 \end{params}
 \begin{discussion}
-The coordinate name is independent of the grid function name. 
+The coordinate name is independent of the grid function name.
 The coordinate range is registered by {\t CCTK\_CoordRegisterRange}.
 To find the range, the coordinate system name must be given, and either
 the coordinate direction or the coordinate name. The coordinate direction
@@ -1029,7 +1020,7 @@ system.}
 \parameter{systemname}{Name of this coordinate system}
 \end{params}
 \begin{discussion}
-There must already be a coordinate system registered, 
+There must already be a coordinate system registered,
 using {\tt CCTK\_CoordRegisterSystem}.
 \end{discussion}
 \begin{examples}
@@ -1047,7 +1038,7 @@ using {\tt CCTK\_CoordRegisterSystem}.
 \end{CCTKFunc}
 
 % Coord.c
-\begin{CCTKFunc}{CCTK\_CoordRegisterRange}{Assign the global maximum and minimum 
+\begin{CCTKFunc}{CCTK\_CoordRegisterRange}{Assign the global maximum and minimum
 values of a coordinate on a given grid hierachy}
 \label{CCTK-CoordRegisterRange}
 \subroutine{int}{integer}{ierr}
@@ -1069,15 +1060,15 @@ values of a coordinate on a given grid hierachy}
 \end{params}
 \begin{discussion}
 There must already
-be a coordinate registered with the given name, with {\t CCTK\_CoordRegisterData}. 
+be a coordinate registered with the given name, with {\t CCTK\_CoordRegisterData}.
 The coordinate range
-can be accessed by {\t CCTK\_CoordRange}. 
+can be accessed by {\t CCTK\_CoordRange}.
 \end{discussion}
 \begin{examples}
 \begin{tabular}{@{}p{3cm}cp{11cm}}
 \hfill {\bf C} && {\t ierr = CCTK\_CoordRegisterRange(cctkGH,-1.0,1.0,1,"x2d","cart2d")};
 \\
-\hfill {\bf Fortran} && min = 0 
+\hfill {\bf Fortran} && min = 0
 \\
 && max = 3.1415d0/2.0d0
 \\
@@ -1276,7 +1267,7 @@ communications are all off.
 \parameter{name}{The group/variable name}
 \end{params}
 \begin{discussion}
-No Fortran routine exists at the moment. 
+No Fortran routine exists at the moment.
 \end{discussion}
 \begin{examples}
 \begin{tabular}{@{}p{3cm}cp{11cm}}
@@ -1309,7 +1300,7 @@ No Fortran routine exists at the moment.
 \begin{discussion}
 Grid variables with communication enabled will have their ghost zones communicated during a call
 to {\tt CCTK\_SyncGroup}. In general, this function does not need to be used, since communication
-is automatically enabled for grid variables who have assigned storage via the {\tt schedule.ccl} 
+is automatically enabled for grid variables who have assigned storage via the {\tt schedule.ccl}
 file.
 \end{discussion}
 \begin{examples}
@@ -1377,16 +1368,12 @@ should be used to check the value of such a parameter.
 \showargs
 \begin{params}
 \parameter{cctkGH}{pointer to CCTK grid hierarchy}
-\parameter{value}{error code}
+\parameter{value}{the return code to abort with}
 \end{params}
 \begin{discussion}
+This routine causes an immediate, regular termination of Cactus.
+It never returns to the caller.
 \end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
 \end{CCTKFunc}
 
 
@@ -1461,7 +1448,7 @@ should be used to check the value of such a parameter.
 \parameter{strin}{The (pointer to the) C string containing the null terminator}
 \end{params}
 \begin{discussion}
-String or keyword parameters in Cactus are passed into Fortran routines as 
+String or keyword parameters in Cactus are passed into Fortran routines as
 pointers to C strings. This means that they cannot be directly used as Fortran
 strings. This routine allows a Fortran string to be created from such a C string. Note that the Fortran string must be defined to have at least the same expected length as the C string. This routine is only callable from Fortran.
 \end{discussion}
@@ -1573,7 +1560,7 @@ A NULL pointer is returned if an invalid extension name was given.
 \parameter{group}{The group index}
 \end{params}
 \begin{discussion}
-The group type index indicates the type of variables in the group. 
+The group type index indicates the type of variables in the group.
 Either scalars, grid functions or arrays. The group type can be checked
 with the Cactus provided macros for {\t GROUP\_SCALAR}, {\t GROUP\_GF}, {\t GROUP\_ARRAY}.
 \end{discussion}
@@ -1604,7 +1591,7 @@ with the Cactus provided macros for {\t GROUP\_SCALAR}, {\t GROUP\_GF}, {\t GROU
 \parameter{index}{The group index}
 \end{params}
 \begin{discussion}
-No Fortran routine exists at the moment. 
+No Fortran routine exists at the moment.
 \end{discussion}
 \begin{examples}
 \begin{tabular}{@{}p{3cm}cp{11cm}}
@@ -1643,7 +1630,7 @@ The cGroup structure contains the information
 \item numvars: The number of variables in the group
 \item ntimelevels: The number of timelevels for variables in the group
 \end{itemize}
-No Fortran routine exists at the moment. 
+No Fortran routine exists at the moment.
 \end{discussion}
 \begin{examples}
 \begin{tabular}{@{}p{3cm}cp{11cm}}
@@ -2121,7 +2108,7 @@ A negative return code indicates an error condition:
 -2 & Invalid coordinate system handle passed\\
 \end{tabular}
 \end{errorcodes}
-\end{CCTKFunc} 
+\end{CCTKFunc}
 
 
 % Interp.c
@@ -2149,7 +2136,7 @@ A negative return code indicates an error condition:
 A negative value is returned for invalid/unregistered interpolation operator names.
 \end{tabular}
 \end{errorcodes}
-\end{CCTKFunc} 
+\end{CCTKFunc}
 
 
 % Interp.c
@@ -2254,7 +2241,7 @@ A negative return code indicates an error condition:
 -1 & Invalid interpolation operator handle passed\\
 \end{tabular}
 \end{errorcodes}
-\end{CCTKFunc} 
+\end{CCTKFunc}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -2524,7 +2511,7 @@ A negative return code indicates an error condition:
 -3 & Interpolation operator with this name already exists\\
 \end{tabular}
 \end{errorcodes}
-\end{CCTKFunc} 
+\end{CCTKFunc}
 
 
 % Interp.c
@@ -2574,7 +2561,7 @@ A negative return code indicates an error condition:
 -3 & Interpolation operator with this name already exists\\
 \end{tabular}
 \end{errorcodes}
-\end{CCTKFunc} 
+\end{CCTKFunc}
 
 
 % ActiveThorns.c
@@ -2676,7 +2663,7 @@ and not the active thorn list.
 \parameter{cctkGH}{pointer to CCTK grid hierarchy}
 \end{params}
 \begin{discussion}
-For a single processor run this call will return one. 
+For a single processor run this call will return one.
 \end{discussion}
 \begin{examples}
 \begin{tabular}{@{}p{3cm}cp{11cm}}
@@ -2898,7 +2885,7 @@ character*(*) alias
 \begin{Parameter}{variable}full name of variable to output\end{Parameter}
 \begin{Parameter}{alias}alias name to base the output filename on\end{Parameter}
 \begin{Discussion}
-Output a variable {\t variable} looping over all registered IO methods. 
+Output a variable {\t variable} looping over all registered IO methods.
 The output should take place if at all possible.
 If the appropriate file exists the data is appended, otherwise a new
 file is created. Uses {\t alias} as the name of the variable for the purpose
@@ -2938,7 +2925,7 @@ character*(*) alias
 \begin{Parameter}{method}method to use for output\end{Parameter}
 \begin{Parameter}{alias}alias name to base the output filename on\end{Parameter}
 \begin{Discussion}
-Output a variable {\t variable} using the method {\t method} if it is 
+Output a variable {\t variable} using the method {\t method} if it is
 registered. Uses {\t alias} as the name of the variable for the purpose
 of constructing a filename. The output should take place if at all possible.
 If the appropriate file exists the data is appended, otherwise a new
@@ -2973,7 +2960,7 @@ character*(*) method
 \begin{Parameter}{variable}full name of variable to output\end{Parameter}
 \begin{Parameter}{method}method to use for output\end{Parameter}
 \begin{Discussion}
-Output a variable {\t variable} using the IO method {\t method} if it is 
+Output a variable {\t variable} using the IO method {\t method} if it is
 registered. The output should take place if at all possible.
 if the appropriate file exists the data is appended, otherwise a new
 file is created.
@@ -3004,7 +2991,7 @@ character*(*) variable
 \begin{Parameter}{cctkGH}pointer to CCTK grid hierarchy\end{Parameter}
 \begin{Parameter}{variable}full name of variable to output\end{Parameter}
 \begin{Discussion}
-Output a variable {\t variable} looping over all registered methods. 
+Output a variable {\t variable} looping over all registered methods.
 The output should take place if at all possible.
 If the appropriate file exists the data is appended, otherwise a new
 file is created.
@@ -3051,7 +3038,7 @@ The IO methods decide themselfes whether it is time to do output now or not.
 
 
 % CommOverloadables.c
-\begin{CCTKFunc}{CCTK\_ParallelInit}{}
+\begin{CCTKFunc}{CCTK\_ParallelInit}{Initialize the parallel subsystem}
 \label{CCTK-ParallelInit}
 \subroutine{int}{integer}{istat}
 \argument{cGH *}{CCTK\_POINTER}{cctkGH}
@@ -3060,13 +3047,8 @@ The IO methods decide themselfes whether it is time to do output now or not.
 \parameter{cctkGH}{pointer to CCTK grid hierarchy}
 \end{params}
 \begin{discussion}
+Initializes the parallel subsystem.
 \end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
 \end{CCTKFunc}
 
 
@@ -3160,8 +3142,8 @@ This routine is for debugging purposes for Fortran programmers.
 \end{params}
 \begin{discussion}
 The call should be used in routines registered at the schedule point {\t CCTK\_PARAMCHECK}
-to indicate that there is parameter error or conflict and the code should 
-terminate. The code will terminate only after all the parameters have been 
+to indicate that there is parameter error or conflict and the code should
+terminate. The code will terminate only after all the parameters have been
 checked.
 \end{discussion}
 \begin{examples}
@@ -3184,43 +3166,49 @@ checked.
 
 
 % cctk_Comm.h
-\begin{CCTKFunc}{CCTK\_QueryGroupStorage}{}
+\begin{CCTKFunc}{CCTK\_QueryGroupStorage}{Query storage for a group given by its group name}
 \label{CCTK-QueryGroupStorage}
-\subroutine{int}{}{storage}
-\argument{const cGH *}{}{cctkGH}
-\argument{const char *}{}{groupname}
-\showcargs
+\subroutine{int}{integer}{istat}
+\argument{const cGH *}{CCTK\_POINTER}{cctkGH}
+\argument{const char *}{character*(*)}{groupname}
+\showargs
 \begin{params}
 \parameter{cctkGH}{pointer to CCTK grid hierarchy}
+\parameter{groupname}{the group to query, given by its full name}
+\parameter{istat}{the return code}
 \end{params}
 \begin{discussion}
+This routine queries whether the variables in a group have storage assigned.
+If so it returns true (a non-zero value), otherwise false (zero).
 \end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\end{tabular}
-\end{examples}
 \begin{errorcodes}
+\begin{tabular}{l}
+A negative error code is returned for an invalid group name.
+\end{tabular}
 \end{errorcodes}
 \end{CCTKFunc}
 
 
 % cctk_Comm.h
-\begin{CCTKFunc}{CCTK\_QueryGroupStorageI}{}
+\begin{CCTKFunc}{CCTK\_QueryGroupStorageI}{Query storage for a group given by its group index}
 \label{CCTK-QueryGroupStorageI}
-\subroutine{int}{}{storage}
+\subroutine{int}{integer}{istat}
 \argument{const cGH *}{}{cctkGH}
-\argument{int}{}{groupindex}
-\showcargs
+\argument{int}{integer}{groupindex}
+\showargs
 \begin{params}
 \parameter{cctkGH}{pointer to CCTK grid hierarchy}
+\parameter{groupindex}{the group to query, given by its index}
+\parameter{istat}{the return code}
 \end{params}
 \begin{discussion}
+This routine queries whether the variables in a group have storage assigned.
+If so it returns true (a non-zero value), otherwise false (zero).
 \end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\end{tabular}
-\end{examples}
 \begin{errorcodes}
+\begin{tabular}{l}
+A negative error code is returned for an invalid group name.
+\end{tabular}
 \end{errorcodes}
 \end{CCTKFunc}
 
@@ -3281,17 +3269,17 @@ operator is case dependent.
 
 
 
-\begin{CCTKFunc}{CCTK\_RegisterIOMethod}{}
+\begin{CCTKFunc}{CCTK\_RegisterIOMethod}{Register a new I/O method}
 \label{CCTK-RegisterIOMethod}
 \function{int}{integer}{handle}
 \argument{const char *}{}{name}
 \showargs
 \begin{params}
 \parameter{handle}{handle returned by registration}
-\parameter{name}{name of the IO method}
+\parameter{name}{name of the I/O method}
 \end{params}
 \begin{discussion}
-IO methods should be registered at {\t CCTK\_STARTUP}. 
+IO methods should be registered at {\t CCTK\_STARTUP}.
 \end{discussion}
 \begin{examples}
 \begin{tabular}{@{}p{3cm}cp{11cm}}
@@ -3303,7 +3291,7 @@ IO methods should be registered at {\t CCTK\_STARTUP}.
 
 
 % cctk_IOMethods.h
-\begin{CCTKFunc}{CCTK\_RegisterIOMethodOutputGH}{Register a routine for an IO method which will be called from {\tt CCTK\_OutputGH}.}
+\begin{CCTKFunc}{CCTK\_RegisterIOMethodOutputGH}{Register a routine for an I/O method which will be called from {\tt CCTK\_OutputGH}.}
 \label{CCTK-RegisterIOMethodOutputGH}
 \function{int}{integer}{istat}
 \argument{int}{}{handle}
@@ -3324,7 +3312,7 @@ IO methods should be registered at {\t CCTK\_STARTUP}.
 
 
 % cctk_IOMethods.h
-\begin{CCTKFunc}{CCTK\_RegisterIOMethodTimeToOutput}{Register a routine for an IO method which will decide if it is time for the method to output.}
+\begin{CCTKFunc}{CCTK\_RegisterIOMethodTimeToOutput}{Register a routine for an I/O method which will decide if it is time for the method to output.}
 \label{CCTK-RegisterIOMethodTimeToOutput}
 \function{int}{integer}{istat}
 \argument{int}{}{handle}
@@ -3344,7 +3332,7 @@ IO methods should be registered at {\t CCTK\_STARTUP}.
 
 
 % cctk_IOMethods.h
-\begin{CCTKFunc}{CCTK\_RegisterIOMethodTriggerOutput}{Register a routine for an IO method which will handle trigger output}
+\begin{CCTKFunc}{CCTK\_RegisterIOMethodTriggerOutput}{Register a routine for an I/O method which will handle trigger output}
 \label{CCTK-RegisterIOMethodTriggerOutput}
 \function{int}{integer}{istat}
 \argument{int}{}{handle}
@@ -3364,7 +3352,7 @@ IO methods should be registered at {\t CCTK\_STARTUP}.
 
 
 % cctk_IOMethods.h
-\begin{CCTKFunc}{CCTK\_RegisterIOMethodOutputVarAs}{Register a routine for an IO method which will provide aliased variable output}
+\begin{CCTKFunc}{CCTK\_RegisterIOMethodOutputVarAs}{Register a routine for an I/O method which will provide aliased variable output}
 \label{CCTK-RegisterIOMethodOutputVarAs}
 \function{int}{integer}{istat}
 \argument{int}{}{handle}
@@ -3525,15 +3513,15 @@ displayed in the order in which they are registered.
 \parameter{cctkGH}{pointer to CCTK grid hierarchy}
 \end{params}
 \begin{discussion}
-Only those grid variables which have communication enabled 
-will be synchronised. This is usually equivalent to the variables 
+Only those grid variables which have communication enabled
+will be synchronised. This is usually equivalent to the variables
 which have storage assigned, unless communication has been explicitly
 turned off with a call to {\tt CCTK\_DisableGroupComm}.
 
-Note that an alternative to calling {\tt CCTK\_SyncGroup} explicitly 
+Note that an alternative to calling {\tt CCTK\_SyncGroup} explicitly
 from within a thorn, is to use the {\tt SYNC} keyword in a thorns
-{\tt schedule.ccl} file to indicate which groups of variables need 
-to be synchronised on exit from the routine. This latter method is 
+{\tt schedule.ccl} file to indicate which groups of variables need
+to be synchronised on exit from the routine. This latter method is
 the preferred method from synchronising variables.
 \end{discussion}
 \begin{examples}
@@ -3590,7 +3578,7 @@ The variable name should be in the form {\t <implementation>::<variable>}.
 \argument{const cGH *}{}{cctkGH}
 \argument{int}{}{timelevel}
 \argument{int}{}{index}
-\argument{char *}{}{name} 
+\argument{char *}{}{name}
 \showcargs
 \begin{params}
 \parameter{ptr}{a void pointer to the grid variable data}
@@ -3676,7 +3664,7 @@ The variable name should be the given in its fully qualified form, that is {\t <
 \parameter{index}{The variable index}
 \end{params}
 \begin{discussion}
-No Fortran routine exists at the moment. 
+No Fortran routine exists at the moment.
 \end{discussion}
 \begin{examples}
 \begin{tabular}{@{}p{3cm}cp{11cm}}
@@ -3703,7 +3691,7 @@ No Fortran routine exists at the moment.
 \parameter{group}{The variable index}
 \end{params}
 \begin{discussion}
-The variable type index indicates the type of the variable. 
+The variable type index indicates the type of the variable.
 Either character, int, complex or real. The group type can be checked
 with the Cactus provided macros for {\t CCTK\_VARIABLE\_INT}, {\t CCTK\_VARIABLE\_REAL}, {\t CCTK\_VARIABLE\_COMPLEX} or {\t CCTK\_VARIABLE\_CHAR}.
 \end{discussion}
@@ -3743,13 +3731,13 @@ with the Cactus provided macros for {\t CCTK\_VARIABLE\_INT}, {\t CCTK\_VARIABLE
 By default Cactus stops on a level 0 warning, and prints any level 1 warnings
 to standard error. This behaviour can be changed on the command line using
 the flags -W and -E (see \ref{sec:coliop} for full details). Note that
-{\tt CCTK\_WARN} is in fact a macro for the underlying function {\tt 
+{\tt CCTK\_WARN} is in fact a macro for the underlying function {\tt
 CCTK\_Warn}, the macro automatically including details about the origin
 of the warning, for example the thorn name, and the source code file
 name and line number. For this reason it is important that the function
 is called with capitalised letters, otherwise the macro will not be invoked
 and the function call will contain the wrong number of arguments. A call to
-{\tt CCTK\_WARN(level,message)} actually expands internally to 
+{\tt CCTK\_WARN(level,message)} actually expands internally to
 {\tt
 \begin{verbatim}
 CCTK_Warn(level,__LINE__,__FILE__,CCTK_THORNNAME,message)
@@ -3757,7 +3745,7 @@ CCTK_Warn(level,__LINE__,__FILE__,CCTK_THORNNAME,message)
 }
 it is recommended that the macro version {\tt CCTK\_WARN} is used rather
 than {\tt CCTK\_VWarn}.
-The flesh parameter {\tt cctk\_full\_warnings} 
+The flesh parameter {\tt cctk\_full\_warnings}
 determines whether all the details about the warning origin are shown.
 To include variables in warning messages is more troublesome. From C, the
 variable argument list
@@ -3776,7 +3764,7 @@ to the standard function {\tt CCTK\_WARN}, for example
 {\tt
 \begin{verbatim}
  character*200 warnline
- write(warnline,'(A32,G12.7,A5,I8)') 
+ write(warnline,'(A32,G12.7,A5,I8)')
 &  'Your warning message, including ',myreal,' and ',myint
  call CCTK_WARN(1,warnline)
 \end{verbatim}
