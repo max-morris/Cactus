@@ -64,6 +64,7 @@
  *    Fixed formatting of floating point numbers with zeros
  *    immediately after the decimal point.
  *    Added support for 'e' format.
+ *    Added support for 'g' format.
  *
  **************************************************************/
 
@@ -361,6 +362,7 @@ static int dopr (char *buffer, size_t maxlen, const char *format, va_list args)
 	  fvalue = va_arg (args, LDOUBLE);
 	else
 	  fvalue = va_arg (args, double);
+	total += fmtfp (buffer, &currlen, maxlen, fvalue, min, max, flags);
 	break;
       case 'c':
 	total += dopr_outch (buffer, &currlen, maxlen, va_arg (args, int));
@@ -638,22 +640,31 @@ static int fmtfp (char *buffer, size_t *currlen, size_t maxlen,
   if (flags & DP_F_UP) caps = 1; /* Should characters be upper case? */
 
   /* Check for an 'e' format */
-  if(flags & DP_F_EXP)
+  if(flags & DP_F_EXP || flags & DP_F_G)
   {
     /* Normalise the number to one digit before decimal point*/
     logvalue = log10(ufvalue);
     
     exponent = (long)logvalue;
 
-    ufvalue = pow(10.0,(double)(logvalue-exponent));
-
-    if(exponent < 0)
+    if(flags & DP_F_G && exponent >= -4 && exponent < max)
     {
-      expsign = '-';
+      /* With 'G' format use 'f' if exponent is small enough. */
+      exponent = 0;
     }
     else
     {
-      expsign = '+';
+      flags |= DP_F_EXP;
+      ufvalue = pow(10.0,(double)(logvalue-exponent));
+
+      if(exponent < 0)
+      {
+        expsign = '-';
+      }
+      else
+      {
+        expsign = '+';
+      }
     }
   }
 
@@ -701,25 +712,31 @@ static int fmtfp (char *buffer, size_t *currlen, size_t maxlen,
   {
     fconvert[fplace++] = '0';
   }
-
   if (fplace == 20) fplace--;
   fconvert[fplace] = 0;
 
-  /* Convert exponent part */
-  do {
-    econvert[eplace++] =
-      (caps? "0123456789ABCDEF":"0123456789abcdef")[exponent % 10];
-    exponent = (exponent / 10);
-  } while(exponent && (eplace < 20));
-  /* Minimum exponent length is 2. */
-  while(eplace < 2)
+  if(flags & DP_F_EXP)
   {
-    econvert[eplace++] = '0';
+    /* Convert exponent part */
+    do {
+      econvert[eplace++] =
+          (caps? "0123456789ABCDEF":"0123456789abcdef")[exponent % 10];
+      exponent = (exponent / 10);
+    } while(exponent && (eplace < 20));
+    /* Minimum exponent length is 2. */
+    while(eplace < 2)
+    {
+      econvert[eplace++] = '0';
+    }
+    econvert[eplace++] = expsign;
+    econvert[eplace++] = caps ? 'E' : 'e';
+    if (eplace == 20) eplace--;
+    econvert[eplace] = 0;
   }
-  econvert[eplace++] = expsign;
-  econvert[eplace++] = caps ? 'E' : 'e';
-  if (eplace == 20) eplace--;
-  econvert[eplace] = 0;
+  else
+  {
+    eplace = 0;
+  }
 
   /* -1 for decimal point, another -1 if we are printing a sign */
   padlen = min - iplace - max - 1 - ((signvalue) ? 1 : 0) - eplace;
