@@ -1,0 +1,52 @@
+#! /bin/sh
+# /*@@
+#   @file      hiuxmpp
+#   @date      Wed Apr 19 17:58:22 2000
+#   @author    Tom Goodale
+#   @desc 
+#   
+#   @enddesc 
+#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/hiuxmpp,v 1.1 2000-04-20 11:42:02 goodale Exp $
+# @@*/
+
+if test "$CCTK_CONFIG_STAGE" = "preferred-compilers" ; then
+
+  :
+
+else
+
+  : ${F77FLAGS="-conti199 -uinline=2"}
+  : ${F90FLAGS="-conti199 -uinline=2"}
+
+  : ${C_OPTIMISE_FLAGS="-O4 -pvec -pvfunc -predicate"}
+#  : ${CXX_OPTIMISE_FLAGS="-O4 -pvec -pvfunc -predicate"}
+
+  : ${F77_OPTIMISE_FLAGS="-opt=ss -pvfunc=2 -noparallel"}
+  : ${F90_OPTIMISE_FLAGS="-opt=ss -pvfunc=2 -noparallel"}
+
+# No way to generate dependencies on this machine.
+  : ${C_DEPEND="echo"}
+  : ${CXX_DEPEND="echo"}
+  : ${F_DEPEND="echo"}
+  : ${F77_DEPEND="echo"}
+
+  : ${C_DEPEND_OUT='>/dev/null ; touch $@'}
+  : ${CXX_DEPEND_OUT='>/dev/null ; touch $@'}
+  : ${F_DEPEND_OUT='>/dev/null ; touch $@'}
+  : ${F77_DEPEND_OUT='>/dev/null ; touch $@'}
+
+# Yet another CXX->C translator 8-(.
+  : ${CXX_WORKING_NAME='$(notdir $<)'}
+
+  : ${CXX_POSTPROCESSING='cp $(SCRATCH_BUILD)$(DIRSEP)$(basename $(basename $(notdir $@))).o $@'}
+
+  : ${LIBS="f90s f90 hf90math hf90pvmath m"}
+
+fi
+
+
+
+
+
+
+
