@@ -707,7 +707,7 @@ sub parse_interface_ccl
 	$interface_db{"\U$thorn PROVIDES FUNCTION\E $funcname LANG"} .= "$provided_by_language";
       }
     }
-    elsif ($line =~ m/^\s*(CCTK_)?(INT|INT2|INT4|INT8|REAL|REAL4|REAL8|REAL16|CHAR|COMPLEX)\s*([a-zA-Z]+[a-zA-Z_0-9]*)\s*(.*)\s*$/i)
+    elsif ($line =~ m/^\s*(CCTK_)?(INT|INT2|INT4|INT8|REAL|REAL4|REAL8|REAL16|CHAR|COMPLEX|BYTE)\s*([a-zA-Z]+[a-zA-Z_0-9]*)\s*(.*)\s*$/i)
     {
       $current_group = "$3";
       
