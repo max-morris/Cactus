@@ -857,7 +857,7 @@ fi
 
 AC_SUBST(CXX_WARN_FLAGS)
 if test -z "$CXX_WARN_FLAGS" -a \( "$CXX" = 'c++' -o "$CXX" = 'g++' \) ; then
-  CXX_WARN_FLAGS='-Wall -W -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Wstrict-prototypes -Wmissing-prototypes -Winline -Woverloaded-virtual'
+  CXX_WARN_FLAGS='-Wall -W -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Winline -Woverloaded-virtual'
 else
   : ${CXX_WARN_FLAGS=''}
 fi
