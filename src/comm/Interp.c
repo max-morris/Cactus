@@ -926,8 +926,12 @@ int CCTK_InterpLocal (cGH *GH,
                                                         operator_handle);
   if (operator == NULL)
   {
-    CCTK_Warn (3, __LINE__, __FILE__, "Cactus",
-               "CCTK_InterpLocal: Invalid interpolation operator handle");
+    CCTK_VWarn(3, __LINE__, __FILE__, "Cactus",
+"\n"
+"   CCTK_InterpLocal(): no interpolation operator is registered\n"
+"                       under the handle %d"
+               ,
+               operator_handle);
     retcode = -1;
   }
   else
@@ -1005,8 +1009,12 @@ void CCTK_FCALL CCTK_FNAME (CCTK_InterpLocal)
                                                         *operator_handle);
   if (operator == NULL)
   {
-    CCTK_Warn (3, __LINE__, __FILE__, "Cactus",
-               "CCTK_InterpLocal: Invalid interpolation operator handle");
+    CCTK_VWarn(3, __LINE__, __FILE__, "Cactus",
+"\n"
+"   CCTK_InterpLocal(): no interpolation operator is registered\n"
+"                       under the handle %d"
+               ,
+               *operator_handle);
     retcode = -1;
   }
   else
@@ -1198,32 +1206,35 @@ int CCTK_InterpLocalUniform(int N_dims,
                             const CCTK_INT output_array_type_codes[],
                             void *const output_arrays[])
 {
-const struct interp_info *p_interp_info
+  const struct interp_info *p_interp_info
         = (struct interp_info *)Util_GetHandledData(interp_operators,
                                                    operator_handle);
-if (p_interp_info == NULL)
-        {
-        CCTK_VWarn(3, __LINE__, __FILE__, "Cactus",
-"CCTK_InterpLocalUniform: Invalid interpolation operator handle %d!",
-                   operator_handle);
-        return UTIL_ERROR_BAD_HANDLE;
-        }
+  if (p_interp_info == NULL)
+    {
+    CCTK_VWarn(3, __LINE__, __FILE__, "Cactus",
+"\n"
+"   CCTK_InterpLocalUniform(): no interpolation operator is registered\n"
+"                              under the handle %d"
+               ,
+               operator_handle);
+    return UTIL_ERROR_BAD_HANDLE;
+    }
 
-return p_interp_info->interp_op_local_uniform(N_dims,
-                                              param_table_handle,
-                                              /***** coordinate system *****/
-                                              coord_origin, coord_delta,
-                                              /***** interpolation points *****/
-                                              N_interp_points,
-                                              interp_coords_type_code,
-                                              interp_coords,
-                                              /***** input arrays *****/
-                                              N_input_arrays,
-                                              input_array_dims,
-                                              input_array_type_codes,
-                                              input_arrays,
-                                              /***** output arrays *****/
-                                              N_output_arrays,
-                                              output_array_type_codes,
-                                              output_arrays);
+  return p_interp_info->interp_op_local_uniform(N_dims,
+                                                param_table_handle,
+                                                /*** coordinate system ***/
+                                                coord_origin, coord_delta,
+                                                /*** interpolation points ***/
+                                                N_interp_points,
+                                                interp_coords_type_code,
+                                                interp_coords,
+                                                /***** input arrays *****/
+                                                N_input_arrays,
+                                                input_array_dims,
+                                                input_array_type_codes,
+                                                input_arrays,
+                                                /***** output arrays *****/
+                                                N_output_arrays,
+                                                output_array_type_codes,
+                                                output_arrays);
 }
