@@ -1,6 +1,6 @@
 
 # this scrips gathers some basic info on the system it runs on.
-# This is inteded to be included in bugreports etc.
+# This is intended to be included in bugreports etc.
 
 $config = $ARGV[0];
 $home = `pwd`;
@@ -42,7 +42,6 @@ if (-e "$extra")
     }
   }
 }
-
 
 #Get the version number of the makefile
 open (MF,"<Makefile");
