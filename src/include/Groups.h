@@ -13,7 +13,7 @@
 
 /* Prototypes */
 
-#ifdef _cplusplus 
+#ifdef __cplusplus 
 extern "C" {
 #endif
 
@@ -21,6 +21,7 @@ int CCTK_CreateGroup(const char *gname, const char *thorn, const char *imp,
 		     const char *gtype,
 		     const char *vtype,
 		     int dimension,
+		     int ntimelevels,
 		     int n_variables,
 		     ...);
 
@@ -28,8 +29,8 @@ int CCTK_GetGroupNum(const char *implementation,
 		     const char *name);
 
 int CCTK_GetVarNum(const char *implementation,
-		    const char *group_name,
-		    const char *variable_name);
+		   const char *group_name,
+		   const char *variable_name);
 
 int CCTK_GetMaxDim(void);
 
@@ -57,7 +58,9 @@ int CCTK_GetVarGType(int var);
 
 int CCTK_GetVarVType(int var);
 
-#ifdef _cplusplus 
+int CCTK_GetNumTimeLevels(int var);
+
+#ifdef __cplusplus 
 }
 #endif
 

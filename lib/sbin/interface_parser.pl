@@ -443,6 +443,25 @@ sub check_interface_consistency
 	  $attributes{"GTYPE"} = $interface_data{"\U$thorn GROUP $group\E GTYPE"};
 	}
 
+	# Check the number of time levels is consistent.
+	if($attributes{"TIMELEVELS"})
+	{
+	  if($attributes{"TIMELEVELS"} ne $interface_data{"\U$thorn GROUP $group\E TIMELEVELS"})
+	  {
+	    if(!$n_errors)
+	    {
+	      print STDERR "Inconsistent implementations of $implementation\n";
+	      print STDERR "    Implemented by thorns " . join(" ", @thorns) . "\n";
+	    }
+	    print STDERR "      Group $group has inconsistent time levels.\n";
+	    $n_errors++;
+	  }
+	}
+	else
+	{
+	  $attributes{"TIMELEVELS"} = $interface_data{"\U$thorn GROUP $group\E TIMELEVELS"};
+	}
+
 	# Check the dimensions are consistant
 	if($attributes{"DIM"} && $attributes{"GTYPE"} ne "SCALAR")
 	{
@@ -578,6 +597,10 @@ sub parse_interface_ccl
 	{
 	  $interface_db{"\U$thorn GROUP $current_group\E GTYPE"} = "\U$options{$option}\E";
 	}
+	elsif($option =~ m:TIMELEVELS:i)
+	{
+	  $interface_db{"\U$thorn GROUP $current_group\E TIMELEVELS"} = "\U$options{$option}\E";
+	}
 	else
 	{
 	  print STDERR "Unknown option $option in group $current_group of thorn $thorn.\n";
@@ -588,14 +611,20 @@ sub parse_interface_ccl
       if(! $interface_db{"\U$thorn GROUP $current_group\E GTYPE"})
       {
 	$interface_db{"\U$thorn GROUP $current_group\E GTYPE"} = "SCALAR";
+	$interface_db{"\U$thorn GROUP $current_group\E DIM"} = 1;
       }
       
       if(! $interface_db{"\U$thorn GROUP $current_group\E DIM"})
       {
 	$interface_db{"\U$thorn GROUP $current_group\E DIM"} = 3;
       }
+
+      if(! $interface_db{"\U$thorn GROUP $current_group\E TIMELEVELS"})
+      {
+	$interface_db{"\U$thorn GROUP $current_group\E TIMELEVELS"} = 1;
+      }
       
-      # Check that it is a know group type
+      # Check that it is a known group type
       if($interface_db{"\U$thorn GROUP $current_group\E GTYPE"} !~ m:SCALAR|GF|ARRAY:)
       {
 	print STDERR "Unknown GROUP TYPE " .

@@ -60,6 +60,7 @@ int CCTK_CreateGroup(const char *gname, const char *thorn, const char *imp,
 		     const char *gtype,
 		     const char *vtype,
 		     int dimension,
+		     int ntimelevels,
 		     int n_variables,
 		     ...)
 {
@@ -82,6 +83,8 @@ int CCTK_CreateGroup(const char *gname, const char *thorn, const char *imp,
     group->dim = dimension;
     group->gtype = CCTK_GTypeNumber(gtype);
     group->vtype = CCTK_VTypeNumber(vtype);
+
+    group->n_timelevels = ntimelevels;
     
     /* Extract the variable names from the argument list. */
     va_start(ap, n_variables);
@@ -552,9 +555,16 @@ char *CCTK_GetVarName(int varnum)
   char *name;
   int group;
 
-  group = group_of_variable[varnum];
+  if(varnum < total_variables)
+  {
+    group = group_of_variable[varnum];
 
-  name = groups[group].variables[varnum-groups[group].variables[0].number].name;
+    name = groups[group].variables[varnum-groups[group].variables[0].number].name;
+  }
+  else
+  {
+    name = NULL;
+  }
 
   return name;
 }
@@ -599,9 +609,16 @@ int CCTK_GetVarGType(int var)
   int gtype;
   int group;
 
-  group = group_of_variable[var];
+  if(var < total_variables)
+  {
+    group = group_of_variable[var];
 
-  gtype = groups[group].gtype;
+    gtype = groups[group].gtype;
+  }
+  else
+  {
+    gtype = -1;
+  }
 
   return gtype;
 }
@@ -611,9 +628,35 @@ int CCTK_GetVarVType(int var)
   int vtype;
   int group;
 
-  group = group_of_variable[var];
+  if(var < total_variables)
+  {
+    group = group_of_variable[var];
 
-  vtype = groups[group].vtype;
+    vtype = groups[group].vtype;
+  }
+  else
+  {
+    vtype = -1;
+  }
 
   return vtype;
 }
+
+int CCTK_GetNumTimeLevels(int var)
+{
+  int ntimelevels;
+  int group;
+
+  if(var < total_variables)
+  {
+    group = group_of_variable[var];
+    ntimelevels = groups[group].n_timelevels;
+  }
+  else
+  {
+    ntimelevels = -1;
+  }
+  
+  return ntimelevels;
+}
+  
