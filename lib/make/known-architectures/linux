@@ -38,6 +38,18 @@ else
 	echo ad send the updated file to CactusMaint
         echo We will try anyway ...
     fi
+  elif test -n "$F77" ; then 
+    if test "`$F77 -v 2>&1 | grep -i g77`" ; then
+	LINUX_F90_COMP=gnu77
+    elif test "`$F77 -? 2>&1 | grep -i absoft`" ; then
+	LINUX_F90_COMP=absoft77
+    else
+	echo Unknown Linux f77 compiler.
+	echo Please add appropriate information to 
+	echo $srcdir/known-architectures/linux-gnu
+	echo ad send the updated file to CactusMaint
+        echo We will try anyway ...
+    fi
   else
     LINUX_F90_COMP=none
   fi
@@ -55,6 +67,18 @@ else
 
 #Set the appropriate flags
   case "$LINUX_F90_COMP" in
+     gnu77)
+       if test "$LINUX_F77" = "egcs" ; then
+         : ${LIBS="g2c m"} 
+       fi
+       if test "$LINUX_F77" = "noegcs" ; then
+         : ${LIBS="f2c m"} 
+       fi
+       : ${F77_DEBUG_FLAGS="-g"}
+       : ${F90_DEBUG_FLAGS="-g"}
+       : ${F77_WARN_FLAGS="-Wall"}
+       : ${F90_WARN_FLAGS="-Wall"}
+       ;;
      pacific)
        if test "$LINUX_F77" = "egcs" ; then
          : ${LIBS="vast90 g2c m"} 
