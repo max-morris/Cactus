@@ -98,31 +98,33 @@ directory:
 These files are written in the {\it Cactus Configuration Language} which is
 case insensitive.
 
+% A note on optional arguments and square brackets:  If e.g. a variable or
+% include file is provided by this thorn, then the corresponding
+% section of the (in this case) interface.ccl is not optional.  Thus
+% these sections are not enclosed in [] as a whole (though parts of them can of
+% course be enclosed in []).
+
 \section{interface.ccl}
 \label{sec:in}
 
 The interface configuration file consists of
 \begin{itemize}
-\item a header block giving details
-of the thorn's relationship with other thorns.
-\item a series of blocks
-listing the thorn's global variables.
-\item details of other interactions with thorns:
-\begin{itemize}
-\item building include files
-\end{itemize}
+\item a header block giving details of the thorn's relationship with
+other thorns.
+\item a block detailing which include files are used from other
+thorns, and which include files are provided by this thorn
+\item a series of blocks listing the thorn's global variables.
 \end{itemize}
 (For a more extensive discussion of Cactus variables see Chapter
 \ref{chap:cava}.)
 
+\subsection{Header block}
 The header block has the form:
-{\t
 \begin{verbatim}
 implements: <implementation>
-[inherits: <implementation>, <implementation>]
-[friend: <implementation>, <implementation>]
+inherits: <implementation>, <implementation>
+friend: <implementation>, <implementation>
 \end{verbatim}
-}
 where
 \begin{itemize}
 \item{} The implementation name must be unique among all thorns, except
@@ -141,6 +143,20 @@ where
         of all your thorn's friends' friends.
 \end{itemize}
 
+\subsection{Include files}
+The include file section has the form:
+\begin{verbatim}
+USES INCLUDE [SOURCE|HEADER]: <file_name>
+INCLUDE [SOURCE|HEADER]: <file_to_include> in <file_name>
+\end{verbatim}
+The former is used when a thorn wishes to use an include file from
+another thorn.  The latter indicates that this thorn adds the code in
+\verb|<file_to_include>| to the include file \verb|<file_name>|.  If
+the include file is described as \verb|SOURCE|, the included code is
+only exectuted if the providing thorn is active.
+Both default to \verb|HEADER|.
+
+\subsection{Variable blocks}
 The thorn's variables are collected into groups. This is not only
 for convenience, but for collecting like variables together.
 Storage assignment, communication assignment, and ghostzone synchronization
