@@ -6,7 +6,7 @@
 #  @desc 
 #  Parses the the configuration files for thorns.
 #  @enddesc 
-#  @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.40 2001-02-24 17:31:08 allen Exp $
+#  @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.41 2001-05-12 18:33:16 allen Exp $
 #@@*/
 
 # Global parameter to track the number of errors from the CST
@@ -536,7 +536,7 @@ sub CreateBindings
   print "   Creating parameter bindings...\n";
   &CreateParameterBindings($bindings_dir, $rhparameter_db, $rhinterface_db);
   print "   Creating variable bindings...\n";
-  &CreateVariableBindings($bindings_dir, $rhinterface_db);
+  &CreateVariableBindings($bindings_dir, $rhinterface_db, $rhparameter_db);
   print "   Creating schedule bindings...\n";
   &CreateScheduleBindings($bindings_dir, $rhinterface_db, $rhschedule_db);
   print "   Creating function bindings...\n";

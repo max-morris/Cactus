@@ -27,7 +27,7 @@
 
 sub CreateVariableBindings
 {
-  my($bindings_dir, $rhinterface_db) = @_;
+  my($bindings_dir, $rhinterface_db, $rhparameter_db) = @_;
   my($thorn, @data);
   my($line, $block, $filelist);
 
@@ -136,7 +136,7 @@ sub CreateVariableBindings
     $dataout .= "int CactusBindingsVariables_$thorn"."_Initialise(void)\n{\n";
     foreach $block ("PUBLIC", "PROTECTED", "PRIVATE")
     {
-      @data = &CreateThornGroupInitialisers($thorn, $block, $rhinterface_db);
+      @data = &CreateThornGroupInitialisers($thorn, $block, $rhinterface_db, $rhparameter_db);
 
       foreach $line (@data)
       {
@@ -1283,7 +1283,7 @@ sub CreateThornArgumentHeaderFile
 
 sub CreateThornGroupInitialisers  
 {
-  my($thorn, $block, $rhinterface_db) = @_;
+  my($thorn, $block, $rhinterface_db, $rhparameter_db) = @_;
   my($imp);
   my($group, @variables);
   my($line);
@@ -1302,10 +1302,13 @@ sub CreateThornGroupInitialisers
     {
       $dim = $rhinterface_db->{"\U$thorn GROUP $group\E DIM"};
       $string = $rhinterface_db->{"\U$thorn GROUP $group\E SIZE"};
+      &CheckArraySizes($string,$thorn,$rhparameter_db,$rhinterface_db);
       $numsize = ($string =~ s/,//g)+1;
       if ($dim != $numsize)
       {
-	$message = "Array dimension $dim doesn't match array sizes for $group in $thorn";
+	$message = "Array dimension $dim doesn't match the $numsize array sizes ";
+        $message .= "\n     ($rhinterface_db->{\"\U$thorn GROUP $group\E SIZE\"}) for $group in $thorn";
+	$message .= "\n     (Array sizes must be comma separated list of parameters)";
 	&CST_error(0,$message,__LINE__,__FILE__);
       }
     }
@@ -1389,5 +1392,51 @@ sub CreateThornFortranWrapper
 
   return (@data);
 }
+
+
+
+#/*@@
+#  @routine    CheckArraySize
+#  @date       Thu May 10 2001
+#  @author     Gabrielle Allen
+#  @desc 
+#  Arrays sizes need to be parameters
+#  @enddesc 
+#  @calls     
+#  @calledby   
+#  @history 
+#
+#  @endhistory 
+#
+#@@*/
+
+sub CheckArraySizes
+{
+  my($size,$thorn,$rhparameter_db,$rhinterface_db) = @_;
+  my($gotit,$par,$th,$message);
+
+  foreach $par (split(",",$size))
+  {
+    $gotit = 0;
+    # Get the basename
+    $par =~ /([^:]*)$/;
+    $base = $1;
+    foreach $th (split(" ",$rhinterface_db->{"THORNS"}))
+    {
+      if ($rhparameter_db->{"\U$th Private\E variables"} =~ m:$base:i || 
+	  $rhparameter_db->{"\U$th Global\E variables"} =~ m:$base:i  ||
+          $rhparameter_db->{"\U$th Restricted\E variables"} =~ m:$base:i)
+      {
+	$gotit = 1;
+      } 
+    }  
+    if ($gotit == 0)
+    {
+      $message = "Array size $par in $thorn is not a parameter";
+      &CST_error(0,$message,__LINE__,__FILE__);
+    }
+  }
+}
+
 
 1;
