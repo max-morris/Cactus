@@ -45,7 +45,7 @@ static int cactus_terminate_global = 0;
 #define TERMINATION_RAISED_BRDCAST 4
 
 /* Local function prototypes. */
-
+static int DoneMainLoop (CCTK_REAL cctk_time, int iteration);
 static int StepGH(cGH *GH);
  
 /* the iteration counter used in the evolution loop */
@@ -99,15 +99,13 @@ int CCTK_MainLoopIndex (void)
    @calls     
    @calledby   
    @history 
- 
+   @hdate Fri May 12 2000 @hauthor Thomas Radke
+   @hdesc  Moved evolution loop termination check into DoneMainLoop()
    @endhistory 
 
 @@*/
 int CactusDefaultEvolve(tFleshConfig *config)
 {
-
-  DECLARE_CCTK_PARAMETERS
-
   int convergence_level;
 
 #ifdef DEBUG_CCTK
@@ -141,7 +139,7 @@ int CactusDefaultEvolve(tFleshConfig *config)
   */
 
 
-  while (iteration<cctk_itlast || (cctk_final_time>cctk_initial_time?config->GH[0]->cctk_time<cctk_final_time:0)) 
+  while (! DoneMainLoop (config->GH[0]->cctk_time, iteration))
   {
 
 #ifdef DEBUG_CCTK
@@ -210,6 +208,29 @@ int CactusDefaultEvolve(tFleshConfig *config)
 }
 
 /************************************************************************/
+
+ /*@@
+   @routine    DoneMainLoop
+   @date       Fri May 12 2000
+   @author     Thomas Radke
+   @desc
+   Check the termination conditions for the evolution loop
+   @enddesc
+   @calls
+   @calledby
+   @history
+   @endhistory
+
+@@*/
+static int DoneMainLoop (CCTK_REAL cctk_time, int iteration)
+{
+  DECLARE_CCTK_PARAMETERS
+
+  return (! (iteration < cctk_itlast ||
+            (cctk_final_time > cctk_initial_time ?
+             cctk_time < cctk_final_time : 0)));
+}
+
 
  /*@@
    @routine    StepGH
