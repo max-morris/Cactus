@@ -49,6 +49,7 @@ int        CCTK_GroupScopeNumber(const char *type);
 CCTK_INT **CCTK_GroupSizesI(int group);
 int        CCTK_GroupTypeFromVarI(int var);
 int        CCTK_GroupTypeNumber(const char *type);
+int        CCTK_GroupTypeI(int group);
 
 char      *CCTK_ImpFromVarI(int var);
 
@@ -66,6 +67,8 @@ char      *CCTK_VarName(int varnum);
 int        CCTK_VarTypeI(int var);
 int        CCTK_VarTypeNumber(const char *type);
 char      *CCTK_VarTypeName(int vartype);
+
+int        CCTK_VarTypeSize(int vtype);
 
 #ifdef __cplusplus 
 }
