@@ -57,7 +57,7 @@ CCTK_FILEVERSION(comm_OverloadComm_c);
 #undef CCTKi_DummyGroupStorageIncrease
 #undef CCTKi_DummyGroupStorageDecrease
 
-#undef CactusDefaultInterpGridArrays
+#undef CCTKi_DummyInterpGridArrays
 
 #undef OVERLOADABLE
 
@@ -119,6 +119,8 @@ int CCTKi_SetupCommFunctions(void)
 #undef CCTKi_DummyDisableGroupStorage
 #undef CCTKi_DummyGroupStorageIncrease
 #undef CCTKi_DummyGroupStorageDecrease
+
+#undef CCTKi_DummyInterpGridArrays
 
 #undef OVERLOADABLE
 
