@@ -15,7 +15,13 @@
 #include "cctk_WarnLevel.h"
 
 #include "cctki_Banner.h"
+#include "cctki_Bindings.h"
 #include "cctki_Schedule.h"
+
+int CCTKi_InitialiseScheduler(tFleshConfig *ConfigData);
+int CCTKi_InitialiseSubsystemDefaults(void);
+int CCTKi_ProcessEnvironment(int *argc, char ***argv,tFleshConfig *ConfigData);
+int CCTKi_BindingsParameterRecoveryInitialise(void);
 
 #define CCTK_PRINTSEPARATOR \
   printf("--------------------------------------------------------------------------------\n");

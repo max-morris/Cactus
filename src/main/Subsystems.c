@@ -8,6 +8,7 @@
  @@*/
 
 #include "cctk_Flesh.h"
+#include "CactusRegister.h"
 
 static char *rcsid = "$Header$";
 
@@ -32,7 +33,7 @@ int CCTKi_InitialiseSubsystemDefaults(void)
 {
   CCTKi_SetupMainFunctions();
   CCTKi_SetupCommFunctions();
-  SetupIOFunctions();
+  CCTKi_SetupIOFunctions();
 
   CCTKi_BindingsImplementationsInitialise();
   CCTKi_BindingsParametersInitialise();

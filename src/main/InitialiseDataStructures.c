@@ -16,6 +16,8 @@
 #include "cctki_ActiveThorns.h"
 #include "cctki_Cache.h"
 
+int CCTKi_RegisterDefaultTimerFunctions(void);
+
 static char *rcsid = "$Header$";
 
 CCTK_FILEVERSION(main_InitialiseDataStructures_c)
