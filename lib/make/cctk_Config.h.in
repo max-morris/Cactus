@@ -150,6 +150,13 @@
 #define restrict CCTK_C_RESTRICT
 #endif
 
+/* Allow the use of CCTK_RESTRICT as a qualifier always. */
+#ifdef CCTK_C_RESTRICT
+#define CCTK_RESTRICT CCTK_C_RESTRICT
+#else
+#define CCTK_RESTRICT
+#endif
+
 /* Some C compilers (e.g. c99 ones) define bool */
 #undef HAVE_CCTK_C_BOOL
 
@@ -192,6 +199,13 @@ typedef enum {false, true} bool;
 #ifdef CCTK_CXX_RESTRICT
 #define restrict CCTK_CXX_RESTRICT
 #endif
+#endif
+
+/* Allow the use of CCTK_RESTRICT as a qualifier always. */
+#ifdef CCTK_CXX_RESTRICT
+#define CCTK_RESTRICT CCTK_CXX_RESTRICT
+#else
+#define CCTK_RESTRICT
 #endif
 
 #endif /* __cplusplus */
