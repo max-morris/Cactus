@@ -30,7 +30,7 @@ CCTK_FILEVERSION(comm_Reduction_c);
 /********************************************************************
  ********************    External Routines   ************************
  ********************************************************************/
-/* prototypes for external C routines are declared in header cctk_Reduce.h
+/* prototypes for external C routines are declared in header cctk_Reduction.h
    here only follow the fortran wrapper prototypes */
 
 void CCTK_FCALL CCTK_FNAME(CCTK_ReductionHandle)
@@ -59,6 +59,22 @@ void CCTK_FCALL CCTK_FNAME(CCTK_ReduceArray)
       const int *num_in_arrays,
       const int *type_in_arrays,
       ... );
+
+/* new local array reduction API */
+void CCTK_FCALL CCTK_FNAME(CCTK_LocalArrayReductionHandle)
+     (int *handle, ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME(CCTK_LocalArrayReductionParameterHandle)
+     (int *parameter_handle, ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME(CCTK_ReduceLocalArrays)
+     (int *fortran_return,
+      int N_dims, int *operation_handle, 
+      int param_table_handle,   int N_input_arrays,
+      const CCTK_INT input_array_dims[], 
+      const CCTK_INT input_array_type_codes[],
+      const void *const input_arrays[],
+      int M_output_numbers,
+      const CCTK_INT output_number_type_codes[],
+      void *const output_numbers[]);
 
 /* FIXME: OLD INTERFACE */
 void CCTK_FCALL CCTK_FNAME(CCTK_ReduceLocalScalar)
@@ -130,6 +146,19 @@ typedef struct
   int (*function) (REDUCTION_ARRAY_OPERATOR_REGISTER_ARGLIST);
 } t_reduction_array_op;
 
+/* structure holding the routines for a registered local array reduction operator */
+typedef struct
+{
+  const char *implementation;
+  const char *name;
+  cLocalArrayReduceOperator reduce_operator;
+} t_local_array_reduce_operator;
+
+/* structure holding a function pointer to an array reduction operator */
+typedef struct
+{
+  int (*function) (REDUCTION_LOCAL_ARRAY_OPERATOR_REGISTER_ARGLIST);
+} t_reduction_local_array_op;
 
 /********************************************************************
  ********************    Static Variables   *************************
@@ -138,7 +167,10 @@ static cHandledData *ReductionOperators = NULL;
 static int num_reductions = 0;
 static cHandledData *ReductionArrayOperators = NULL;
 static int num_reductions_array = 0;
-
+static cHandledData *LocalArrayReductionOperators = NULL;
+static int num_local_array_reductions = 0;
+static cHandledData *LocalArrayReductionParameters = NULL;
+static int num_local_array_reduction_parameters = 0;
 
  /*@@
    @routine    CCTKi_RegisterReductionOperator
@@ -218,8 +250,8 @@ int CCTK_ReductionHandle(const char *reduction)
   if (handle < 0)
   {
     CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
-               "CCTK_ReductionHandle: No handle found for reduction operator "
-               "'%s'", reduction);
+               "CCTK_ReductionHandle: No handle: '%d' found for reduction operator "
+               "'%s'", handle, reduction);
   }
 
   return handle;
@@ -425,7 +457,6 @@ int CCTK_RegisterReductionArrayOperator
   int handle;
   t_reduction_array_op *data;
 
-
   /* Check that the method hasn't already been registered */
   handle = Util_GetHandle(ReductionArrayOperators, name, NULL);
 
@@ -439,6 +470,7 @@ int CCTK_RegisterReductionArrayOperator
 
     /* Remember how many reduction operators there are */
     num_reductions_array++;
+  printf ("\n registering handle %s with handle %d \n", name, handle);
    }
   else
   {
@@ -941,6 +973,239 @@ void CCTK_FCALL  CCTK_FNAME(CCTK_ReduceLocArrayToArray3D)
                                        in_array3d);
 }
 
+ /* new local arrays api routines */
+ /*@@
+   @routine    CCTKi_RegisterLocalArrayReductionOperator
+   @date       
+   @author     Gabrielle Allen, Yaakoub El Khamra
+   @desc
+   Registers "function" as a reduction operator called "name"
+   @enddesc
+   @var     function
+   @vdesc   Routine containing reduction operator
+   @vtype   (void (*))
+   @vio
+   @endvar
+   @var     name
+   @vdesc   String containing name of reduction operator
+   @vtype   const char *
+   @vio     in
+   @endvar
+@@*/
+int CCTKi_RegisterLocalArrayReductionOperator(const char *thorn,
+                                    cLocalArrayReduceOperator operator,
+                                    const char *name)
+{
+  int handle;
+  t_local_array_reduce_operator *reduce_operator;
+
+
+  /* Check that the method hasn't already been registered */
+  handle = Util_GetHandle(LocalArrayReductionOperators, name,
+                          (void **) &reduce_operator);
+  if(handle < 0)
+  {
+    reduce_operator = malloc (sizeof (t_reduce_operator));
+    if (reduce_operator)
+    {
+      reduce_operator->implementation = CCTK_ThornImplementation(thorn);
+      reduce_operator->name = name;
+      reduce_operator->reduce_operator = operator;
+      handle = Util_NewHandle(&LocalArrayReductionOperators, name, reduce_operator);
+
+      /* Remember how many reduction operators there are */
+      num_local_array_reductions++;
+      printf("/nregistered name: %s with handle: %d \n", name, handle);
+    }
+  }
+  else
+  {
+    /* Reduction operator with this name already exists. */
+    CCTK_Warn(1,__LINE__,__FILE__,"Cactus",
+              "CCTK_RegisterLocalArrayReductionOperator: Reduction operator "
+              "with this name already exists");
+    handle = -1;
+  }
+
+  return handle;
+}
+
+
+ /*@@
+   @routine    CCTK_LocalArrayReductionHandle
+   @date       
+   @author     Gabrielle Allen Yaakoub El Khamra
+   @desc
+   Returns the handle of a given local array reduction operator
+   @enddesc
+   @var     reduction
+   @vdesc   String containing name of reduction operator
+   @vtype   const char *
+   @vio     in
+   @endvar
+@@*/
+int CCTK_LocalArrayReductionHandle(const char *reduction)
+{
+  int handle;
+
+
+  handle = Util_GetHandle(LocalArrayReductionOperators, reduction, NULL);
+  if (handle < 0)
+  {
+    CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
+               "CCTK_LocalArrayReductionHandle: No handle: '%d' found for reduction operator "
+               "'%s'", handle, reduction);
+  }
+
+  return handle;
+}
+
+void CCTK_FCALL CCTK_FNAME(CCTK_LocalArrayReductionHandle)(int *handle, ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE(reduction)
+  *handle = CCTK_LocalArrayReductionHandle(reduction);
+  free(reduction);
+}
+
+
+ /*@@
+   @routine    CCTK_ReduceLocalArrays
+   @date       
+   @author     Gabrielle Allen, Yaakoub El Khamra
+   @desc
+               Generic routine for doing a reduction operation on a set of
+               Cactus variables.
+   @enddesc
+   @var     GH
+   @vdesc   pointer to the grid hierarchy
+   @vtype   cGH *
+   @vio     in
+   @endvar
+   @var     proc
+   @vdesc   processor that receives the result of the reduction operation
+            (a negative value means that all processors get the result)
+   @vtype   int
+   @vio     in
+   @endvar
+   @var     operation_handle
+   @vdesc   the handle specifying the reduction operator
+   @vtype   int
+   @vio     in
+   @endvar
+   @var     num_out_vals
+   @vdesc   number of elements in the reduction output
+   @vtype   int
+   @vio     in
+   @endvar
+   @var     type_out_vals
+   @vdesc   datatype of the output values
+   @vtype   int
+   @vio     in
+   @endvar
+   @var     out_vals
+   @vdesc   pointer to buffer holding the output values
+   @vtype   void *
+   @vio     in
+   @endvar
+   @var     num_in_fields
+   @vdesc   number of input fields passed in the variable argument list
+   @vtype   int
+   @vio     in
+   @endvar
+   @var     <...>
+   @vdesc   list of variables indices of input fields
+   @vtype   int
+   @vio     in
+   @endvar
+@@*/
+int CCTK_ReduceLocalArrays(int N_dims, int operation_handle, 
+                          int param_table_handle,   
+                          int N_input_arrays,
+                          const CCTK_INT input_array_dims[], 
+                          const CCTK_INT input_array_type_codes[],
+                          const void *const input_arrays[],
+                          int M_output_numbers,
+                          const CCTK_INT output_number_type_codes[],
+                          void *const output_numbers[])
+{
+  int retval;
+  t_local_array_reduce_operator *operator;
+
+  /* Get the pointer to the reduction operator */
+  if (operation_handle < 0)
+  {
+    CCTK_Warn(3,__LINE__,__FILE__,"Cactus",
+              "CCTK_LocalArraysReduce: Invalid handle passed to CCTK_LocalArraysReduce");
+    retval = -1;
+  }
+  else
+  {
+    operator = Util_GetHandledData(LocalArrayReductionOperators,operation_handle);
+
+    if (!operator)
+    {
+      CCTK_Warn(3,__LINE__,__FILE__,"Cactus",
+                "CCTK_LocalArraysReduce: Reduction operation is not registered"
+                "and cannot be called");
+      retval = -1;
+    }
+    else
+    {
+      retval = operator->reduce_operator (N_dims, operation_handle, 
+                          param_table_handle, N_input_arrays,
+                          input_array_dims, input_array_type_codes,
+                          input_arrays, M_output_numbers,
+                          output_number_type_codes, output_numbers);
+    }
+  }
+  return retval;
+}
+
+void CCTK_FCALL CCTK_FNAME(CCTK_ReduceLocalArrays)
+     (int *fortranreturn,int N_dims, int *operation_handle, 
+      int param_table_handle, int N_input_arrays,
+      const CCTK_INT input_array_dims[], 
+      const CCTK_INT input_array_type_codes[],
+      const void *const input_arrays[],
+      int M_output_numbers, const CCTK_INT output_number_type_codes[],
+      void *const output_numbers[])
+{
+  int retval;
+  t_local_array_reduce_operator *operator;
+
+  /* initialize return code to indicate an error */
+  *fortranreturn = -1;
+
+  if (*operation_handle < 0)
+  {
+    CCTK_Warn(3,__LINE__,__FILE__,"Cactus",
+              "CCTK_ReduceLocalArrays: Invalid handle passed to CCTK_ReduceLocalArrays");
+    retval = -1;
+  }
+  else
+  {
+    /* Get the pointer to the reduction operator */
+    operator = Util_GetHandledData(LocalArrayReductionOperators,*operation_handle);
+
+    if (!operator)
+    {
+      CCTK_Warn(3,__LINE__,__FILE__,"Cactus",
+                "CCTK_ReduceLocalArrays: Reduction operation is not registered"
+                " and cannot be called");
+      retval = -1;
+    }
+    else
+    {
+      retval = operator->reduce_operator (N_dims, *operation_handle, 
+                          param_table_handle, N_input_arrays,
+                          input_array_dims, input_array_type_codes,
+                          input_arrays, M_output_numbers,
+                          output_number_type_codes, output_numbers);
+    }
+  }
+  *fortranreturn = retval;
+}
+
  /*@@
    @routine    CCTK_NumReduceOperators
    @date       Mon Oct 22 2001
@@ -957,6 +1222,24 @@ void CCTK_FCALL  CCTK_FNAME(CCTK_ReduceLocArrayToArray3D)
 int CCTK_NumReduceOperators()
 {
   return num_reductions;
+}
+
+ /*@@
+   @routine    CCTK_NumReduceOperators
+   @date       
+   @author     Gabrielle Allen, Yaakoub El Khamra
+   @desc
+               The number of reduction operators registered
+   @enddesc
+   @returntype int
+   @returndesc
+               number of reduction operators
+   @endreturndesc
+@@*/
+
+int CCTK_NumLocalArrayReduceOperators()
+{
+  return num_local_array_reductions;
 }
 
  /*@@
@@ -977,6 +1260,28 @@ const char *CCTK_ReduceOperatorImplementation(int handle)
 
 
   operator = Util_GetHandledData (ReductionOperators, handle);
+
+  return (operator ? operator->implementation : NULL);
+}
+
+ /*@@
+   @routine    CCTK_LocalArrayReduceOperatorImplementation
+   @date       
+   @author     Gabrielle Allen, Yaakoub El Khamra
+   @desc
+   Provide the implementation which provides an local array reduction operator
+   @enddesc
+   @returntype int
+   @returndesc
+               Implementation which supplied the interpolation operator
+   @endreturndesc
+@@*/
+const char *CCTK_LocalArrayReduceOperatorImplementation(int handle)
+{
+  t_local_array_reduce_operator *operator;
+
+
+  operator = Util_GetHandledData (LocalArrayReductionOperators, handle);
 
   return (operator ? operator->implementation : NULL);
 }
@@ -1023,6 +1328,51 @@ const char *CCTK_ReduceOperator (int handle)
     {
       CCTK_VWarn (6, __LINE__, __FILE__, "Cactus",
                   "CCTK_ReduceOperator: Handle %d invalid", handle);
+    }
+  }
+
+  return name;
+}
+ /*@@
+   @routine    CCTK_LocalArrayReduceOperator
+   @date       
+   @author     Gabrielle Allen, Yaakoub El Khamra
+   @desc
+               Returns the name of a reduction operator
+   @enddesc
+   @var        handle
+   @vdesc      Handle for reduction operator
+   @vtype      int
+   @vio        in
+   @endvar
+
+   @returntype const char *
+   @returndesc
+   The name of the reduction operator, or NULL if the handle
+   is invalid
+   @endreturndesc
+@@*/
+const char *CCTK_LocalArrayReduceOperator (int handle)
+{
+  const char *name=NULL;
+  t_local_array_reduce_operator *operator;
+
+  if (handle < 0)
+  {
+    CCTK_VWarn (6, __LINE__, __FILE__, "Cactus",
+                "CCTK_LocalArrayReduceOperator: Handle %d invalid", handle);
+  }
+  else
+  {
+    operator = Util_GetHandledData (LocalArrayReductionOperators, handle);
+    if (operator)
+    {
+      name = operator->name;
+    }
+    else
+    {
+      CCTK_VWarn (6, __LINE__, __FILE__, "Cactus",
+                  "CCTK_LocalArrayReduceOperator: Handle %d invalid", handle);
     }
   }
 
