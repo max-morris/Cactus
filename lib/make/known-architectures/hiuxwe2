@@ -6,7 +6,7 @@
 #   @desc  Optimazations by Peter Diener
 #   Configuration file for the Hitachi SR8000-F1
 #   @enddesc 
-#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/hiuxwe2,v 1.1 2001-05-11 08:52:28 goodale Exp $
+#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/hiuxwe2,v 1.2 2001-06-18 17:45:51 tradke Exp $
 # @@*/
 
 if test "$CCTK_CONFIG_STAGE" = "preferred-compilers" ; then
@@ -31,30 +31,33 @@ if test "$CCTK_CONFIG_STAGE" = "preferred-compilers" ; then
 
 else
 
-  CFLAGS="$CFLAGS -64"
-  CXXFLAGS="$CXXFLAGS -64"
-
-  : ${F77FLAGS="-64 -conti199 -uinline=2"}
-  : ${F90FLAGS="-64 -conti199 -uinline=2"}
-
-  LDFLAGS="$LDFLAGS -64"
-
-  : ${C_OPTIMISE_FLAGS="-O4 -pvec -pvfunc -predicate -model=F1"}
-#  : ${CXX_OPTIMISE_FLAGS="-O4 -pvec -pvfunc -predicate -model=F1"}
+  : ${F77FLAGS="-conti199 -uinline=2"}
+  : ${F90FLAGS="-conti199 -uinline=2"}
+  if test "$LD" = "CC" ; then
+    : ${F77FLAGS="$(F77FLAGS) -64"}
+    : ${F90FLAGS="$(F90FLAGS) -64"}
+  fi
 
   : ${F77_OPTIMISE_FLAGS="-opt=ss -pvfunc=2 -noparallel -model=F1"}
   : ${F90_OPTIMISE_FLAGS="-opt=ss -pvfunc=2 -noparallel -model=F1 -noscope"}
 
-# No way to generate dependencies on this machine.
-  : ${C_DEPEND="echo"}
-  : ${CXX_DEPEND="echo"}
-  : ${F_DEPEND="echo"}
-  : ${F77_DEPEND="echo"}
+  if test "$CC" = "cc" ; then
+    CFLAGS="$CFLAGS -64"
+    : ${C_OPTIMISE_FLAGS="-O4 -pvec -pvfunc -predicate -model=F1"}
+  fi
+  if test "$CXX" = "CC" ; then
+    CXXFLAGS="$CXXFLAGS -64"
+#   : ${CXX_OPTIMISE_FLAGS="-O4 -pvec -pvfunc -predicate -model=F1"}
+  fi
+  if test "$LD" = "CC" ; then
+    LDFLAGS="$LDFLAGS -64"
+  fi
 
-  : ${C_DEPEND_OUT='>/dev/null ; touch $@'}
-  : ${CXX_DEPEND_OUT='>/dev/null ; touch $@'}
-  : ${F_DEPEND_OUT='>/dev/null ; touch $@'}
-  : ${F77_DEPEND_OUT='>/dev/null ; touch $@'}
+# /lib/cpp cannot generate dependencies on this machine but we have gcc.
+: ${C_DEPEND='gcc -E -M $(CPPFLAGS)'}
+: ${CXX_DEPEND='$(C_DEPEND)'}
+: ${F_DEPEND='$(C_DEPEND) -x c'}
+: ${F77_DEPEND='$(F_DEPEND)'}
 
 # Yet another CXX->C translator 8-(.
   : ${CXX_WORKING_NAME='$(notdir $<)'}
@@ -70,7 +73,11 @@ else
 
   if test -n "$MPI" ; then
     NATIVE_MPI_LIBS="mpi"
-    NATIVE_MPI_LIB_DIRS="/usr/mpi/lib/lib64"
+    if test "$LD" = "CC" ; then
+      NATIVE_MPI_LIB_DIRS="/usr/mpi/lib/lib64"
+    else
+      NATIVE_MPI_LIB_DIRS="/usr/mpi/lib/lib32"
+    fi
     NATIVE_MPI_INC_DIRS="/usr/mpi/include"
   fi
 
