@@ -23,6 +23,8 @@ else
         LINUX_F90_COMP=pacific
     elif test "`$F90 -V 2>&1 | grep -i f90 | grep -i absoft`" ; then 
         LINUX_F90_COMP=absoft
+    elif test "`$F90 -V 2>&1 | grep NAGWare`" ; then 
+        LINUX_F90_COMP=nag
     elif test "`$F90 -V 2>&1 | grep -i fujitsu`" ; then 
         LINUX_F90_COMP=fujitsu
     elif test "`$F90 -V 2>&1 | grep -i f90 | grep -i pgf90`" ; then
@@ -51,6 +53,8 @@ else
         LINUX_F90_COMP=gnu77
     elif test "`$F77 -? 2>&1 | grep -i absoft`" ; then
         LINUX_F90_COMP=absoft77
+    elif test "`$F77 -V 2>&1 | grep NAGWare`" ; then 
+        LINUX_F90_COMP=nag
     elif test "`$F90 -V 2>&1 | grep -i intel`" ; then
        LINUX_F90_COMP=Intel          
     elif test "`$F90 -v 2>&1 | grep -i compaq`" ; then
@@ -127,8 +131,10 @@ else
        : ${F90_WARN_FLAGS="-m0"}
        ;;
      nag)
-       : ${LIBS="f90 nagfl90 nag m"} 
-       F90FLAGS="$F90FLAGS -N140" 
+       : ${F77FLAGS='-maxcontin=100 -mismatch -w=x77 -w=uda -w=usy'}
+       : ${F90FLAGS='-maxcontin=100 -mismatch -w=x77 -w=uda -w=usy'}
+       : ${F77_OPTIMISE_FLAGS='-O4'}
+       : ${F90_OPTIMISE_FLAGS='-O4'}
        ;;
      portland)
        : ${LIBS="pgftnrtl pgf90rtl pgf90 pgf90_rpm1 pghpf2 pgc m"}
