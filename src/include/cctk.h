@@ -16,7 +16,7 @@
 #include "config.h"
 
 
-/* The thorn definitions #define <PACKAGE>_<THORN>
+/* The thorn definitions #define <PACKAGE>_<THORN> */
 
 #include "definethorn.h"
 
