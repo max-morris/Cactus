@@ -934,9 +934,13 @@ int CCTK_SchedulePrint(const char *where)
     SchedulePrint("CCTK_POSTSTEP$ENTRY");
     SchedulePrint("CCTK_POSTSTEP");
     SchedulePrint("CCTK_POSTSTEP$EXIT");
+    printf ("    if (analysis)\n");
+    indent_level +=2;
     SchedulePrint("CCTK_ANALYSIS$ENTRY");
     SchedulePrint("CCTK_ANALYSIS");
     SchedulePrint("CCTK_ANALYSIS$EXIT");
+    indent_level -=2;
+    printf ("    endif\n");
     printf("\n");
     printf ("  do loop over timesteps\n");
     printf ("    Rotate timelevels\n");
