@@ -22,7 +22,7 @@ extern "C" {
 
 #include "MainOverloadables.h"
 
-#undef OVERLOADABLE(name)
+#undef OVERLOADABLE
 
 #ifdef __cplusplus
 	   }
