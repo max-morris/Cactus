@@ -1889,3 +1889,178 @@ void  CCTK_FCALL CCTK_FNAME(CCTK_GroupDimFromVarI)(int *dim, int *vi)
 {
   *dim = CCTK_GroupDimFromVarI(*vi);
 }
+
+
+ /*@@
+   @routine    CCTK_TraverseString
+   @date       Wed 20 Sep 2000
+   @author     Thomas Radke
+   @desc
+               Traverse through all variables and/or groups whose names
+               appear in the given string, and call the callback routine
+               with those indices and an optstring string appended the
+               the variable/group name.
+               The special keyword "all" in the string can be used to
+               indicate that the callback should be called for all
+               variables/groups.
+   @enddesc
+   @history
+   @endhistory
+   @var        string
+   @vdesc      list of variable and/or group names
+   @vtype      const char *
+   @vio        in
+   @endvar
+   @var        callback
+   @vdesc      routine to call for every variable and/or group found
+   @vtype      int (*) (int index, const char *optstring, void *callback_arg)
+   @vio        int
+   @endvar
+   @var        callback_arg
+   @vdesc      an arbitrary argument which gets passed to the callback routine
+   @vtype      void *
+   @vio        in
+   @endvar
+   @var        selection
+   @vdesc      decides whether group and/or variable names are accepted
+               in the string
+   @vtype      int
+   @vio        in
+   @endvar
+@@*/
+
+int CCTK_TraverseString (const char *parsestring,
+                         void (*callback) (int index,
+                                           const char *optstring,
+                                           void *callback_arg),
+                         void *callback_arg,
+                         int selection)
+{
+  int retval;
+  char *before;
+  char *after;
+  char *splitstring;
+  char *optstring;
+  int index, first, last;
+
+
+  if (callback == NULL)
+  {
+    CCTK_VWarn (1, __LINE__, __FILE__, "Cactus", "No callback given");
+    return (-1);
+  }
+
+  retval = 0;
+
+  splitstring = (char *) parsestring;
+  after = NULL;
+
+  while (splitstring && *splitstring)
+  {
+
+    if (Util_SplitString (&before, &after, splitstring, " "))
+    {
+      before = splitstring;
+      if (after)
+      {
+        free (after);
+        after = NULL;
+      }
+    }
+
+#ifdef DEBUG_GROUPS
+    printf ("   String is '%s'\n", splitstring);
+    printf ("   Split is '%s' and '%s'\n", before, after);
+#endif
+
+    if (strlen (before) > 0)
+    {
+
+      optstring = strchr (before, '[');
+      if (optstring)
+      {
+        *optstring = '\0';
+      }
+
+      /* See if this name is "<implementation>::<variable>" */
+      if (selection == CCTK_VAR || selection == CCTK_GROUP_OR_VAR)
+      {
+        first = last = CCTK_VarIndex (before);
+      }
+      else
+      {
+        first = last = -1;
+      }
+      if (first < 0)
+      {
+
+        /* See if this name is "<implementation>::<group>" */
+        if (selection == CCTK_GROUP || selection == CCTK_GROUP_OR_VAR)
+        {
+          index = CCTK_GroupIndex (before);
+        }
+        else
+        {
+          index = -1;
+        }
+        if (index >= 0)
+        {
+          /* We have a group so now need all the variables in the group */
+          first = CCTK_FirstVarIndexI (index);
+          last = first + CCTK_NumVarsInGroupI (index) - 1;
+        }
+        else if (CCTK_Equals (before, "all")) /* Look for any special tokens */
+        {
+          first = 0;
+          if (selection == CCTK_GROUP)
+          {
+            last = CCTK_NumGroups () - 1;
+          }
+          else
+          {
+            last = CCTK_NumVars () - 1;
+          }
+        }
+        else
+        {
+          first = last = -1;
+        }
+      }
+
+      if (optstring)
+      {
+        *optstring = '[';
+      }
+      if (first >= 0)
+      {
+        for (index = first; index <= last; index++)
+        {
+          (*callback) (index, optstring, callback_arg);
+        }
+        retval += last - first + 1;
+      }
+      else
+      {
+        CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
+                    "Ignoring '%s' in string (invalid token)", before);
+      }
+    }
+
+    if (before != splitstring)
+    {
+      free (before);
+    }
+    if (splitstring != parsestring)
+    {
+      free (splitstring);
+    }
+    splitstring = after;
+  }
+
+  if (after)
+  {
+    free (after);
+  }
+
+  return (retval);
+}
