@@ -421,43 +421,43 @@ sub CreateCArgumentDeclarations
 
 	if($1 eq "CHAR")
 	{
-	  push(@declarations, "CCTK_CHAR *$argument$suffix=(CCTK_CHAR *)(cctkGH->data[CCTK_GetVarIndex(\"$3::$argument\")][0]);");
+	  push(@declarations, "CCTK_CHAR *$argument$suffix=(CCTK_CHAR *)(cctkGH->data[CCTK_VarIndex(\"$3::$argument\")][0]);");
 	}
 	elsif ($1 eq REAL)
 	{
-	  push(@declarations, "CCTK_REAL *$argument$suffix=(CCTK_REAL *)(cctkGH->data[CCTK_GetVarIndex(\"$3::$argument\")][0]);");
+	  push(@declarations, "CCTK_REAL *$argument$suffix=(CCTK_REAL *)(cctkGH->data[CCTK_VarIndex(\"$3::$argument\")][0]);");
 	}
 	elsif ($1 eq REAL4)
 	{
-	  push(@declarations, "CCTK_REAL4 *$argument$suffix=(CCTK_REAL4 *)(cctkGH->data[CCTK_GetVarIndex(\"$3::$argument\")][0]);");
+	  push(@declarations, "CCTK_REAL4 *$argument$suffix=(CCTK_REAL4 *)(cctkGH->data[CCTK_VarIndex(\"$3::$argument\")][0]);");
 	}
 	elsif ($1 eq REAL8)
 	{
-	  push(@declarations, "CCTK_REAL8 *$argument$suffix=(CCTK_REAL8 *)(cctkGH->data[CCTK_GetVarIndex(\"$3::$argument\")][0]);");
+	  push(@declarations, "CCTK_REAL8 *$argument$suffix=(CCTK_REAL8 *)(cctkGH->data[CCTK_VarIndex(\"$3::$argument\")][0]);");
 	}
 	elsif ($1 eq REAL16)
 	{
-	  push(@declarations, "CCTK_REAL16 *$argument$suffix=(CCTK_REAL16 *)(cctkGH->data[CCTK_GetVarIndex(\"$3::$argument\")][0]);");
+	  push(@declarations, "CCTK_REAL16 *$argument$suffix=(CCTK_REAL16 *)(cctkGH->data[CCTK_VarIndex(\"$3::$argument\")][0]);");
 	}
 	elsif ($1 eq COMPLEX)
 	{
-	  push(@declarations, "CCTK_COMPLEX *$argument$suffix=(CCTK_COMPLEX *)(cctkGH->data[CCTK_GetVarIndex(\"$3::$argument\")][0]);");
+	  push(@declarations, "CCTK_COMPLEX *$argument$suffix=(CCTK_COMPLEX *)(cctkGH->data[CCTK_VarIndex(\"$3::$argument\")][0]);");
 	}
 	elsif ($1 eq INT)
 	{
-	  push(@declarations, "CCTK_INT *$argument$suffix=(CCTK_INT *)(cctkGH->data[CCTK_GetVarIndex(\"$3::$argument\")][0]);");
+	  push(@declarations, "CCTK_INT *$argument$suffix=(CCTK_INT *)(cctkGH->data[CCTK_VarIndex(\"$3::$argument\")][0]);");
 	}
 	elsif ($1 eq INT2)
 	{
-	  push(@declarations, "CCTK_INT2 *$argument$suffix=(CCTK_INT2 *)(cctkGH->data[CCTK_GetVarIndex(\"$3::$argument\")][0]);");
+	  push(@declarations, "CCTK_INT2 *$argument$suffix=(CCTK_INT2 *)(cctkGH->data[CCTK_VarIndex(\"$3::$argument\")][0]);");
 	}
 	elsif ($1 eq INT4)
 	{
-	  push(@declarations, "CCTK_INT4 *$argument$suffix=(CCTK_INT4 *)(cctkGH->data[CCTK_GetVarIndex(\"$3::$argument\")][0]);");
+	  push(@declarations, "CCTK_INT4 *$argument$suffix=(CCTK_INT4 *)(cctkGH->data[CCTK_VarIndex(\"$3::$argument\")][0]);");
 	}
 	elsif ($1 eq INT8)
 	{
-	  push(@declarations, "CCTK_INT8 *$argument$suffix=(CCTK_INT8 *)(cctkGH->data[CCTK_GetVarIndex(\"$3::$argument\")][0]);");
+	  push(@declarations, "CCTK_INT8 *$argument$suffix=(CCTK_INT8 *)(cctkGH->data[CCTK_VarIndex(\"$3::$argument\")][0]);");
 	}
 	else
 	{
@@ -609,7 +609,7 @@ sub CreateCArgumentInitialisers
     {
       $arguments{$argument} =~ m,([^ ]*) ?(.*)?!(.*)\::(.*)!(.*),;
 
-      push(@initialisers, "if(CCTKARGNUM_$argument == -1) CCTKARGNUM_$argument = CCTK_GetVarIndex(\"$3::$argument\")");
+      push(@initialisers, "if(CCTKARGNUM_$argument == -1) CCTKARGNUM_$argument = CCTK_VarIndex(\"$3::$argument\")");
     }
   }
 
