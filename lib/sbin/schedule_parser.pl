@@ -23,15 +23,20 @@
 sub create_schedule_code
 {
 
-  local($dir,%thorns) = @_;
+  local($dir,$n_thorns,@rest) = @_;
   local($thorn);
   local(@rfr_file);
-  local(@indata);
+  local(@indata,$implementation);
+
+  %thorns = @rest[0..2*$n_thorns-1];
+  %interface_database = @rest[2*$n_thorns..$#rest];
 
   # Loop though each thorn's schedule file
   foreach $thorn (keys %thorns)
   {
-     
+
+    $implementation = $interface_database{"\U$thorn\E IMPLEMENTS"};
+
     $thorn_rfr = "CCTK_".$thorn."_rfr";
     $thorn_startup = "CCTK_".$thorn."_startup";
 
@@ -46,14 +51,14 @@ sub create_schedule_code
     @indata = &read_file("$thorns{$thorn}/schedule.ccl");
 
     # Parse the data and create rfr and startup subroutines
-    ($proto,$out,@wrappers) = &parse_schedule_ccl($thorn,"rfr",@indata);
+    ($proto,$out,@wrappers) = &parse_schedule_ccl($thorn,$implementation,"rfr",@indata);
     print OUTRFR $proto;
     print OUTRFR $out; 
     $wrapper_files .= join(" ",@wrappers);
     $rfr_files .= " $thorn_rfr";
     $startup_files .= " $thorn_startup";
 
-    ($proto,$out,@wrappers) = &parse_schedule_ccl($thorn,"startup",@indata);
+    ($proto,$out,@wrappers) = &parse_schedule_ccl($thorn,$implementation,"startup",@indata);
     print OUTSTART $proto;
     print OUTSTART $out; 
 
@@ -187,7 +192,7 @@ EOT
 
 sub parse_schedule_ccl
 {
-  local($thorn,$type,@data) = @_;
+  local($thorn,$implementation,$type,@data) = @_;
   local($proto,$out,$line,$line_number,@compile_files);
 
 # Parse the data from the thorns schedule.ccl file
@@ -198,7 +203,7 @@ sub parse_schedule_ccl
     # Parse the entire schedule block
     if ($line =~ m/\s*schedule\s*(.*)\s*at\s*.*/i)
     {
-      ($wrapper_file,$proto_block,$out_block) = &parse_schedule_block($thorn,$type,@data);
+      ($wrapper_file,$proto_block,$out_block) = &parse_schedule_block($thorn,$implementation,$type,@data);
       $proto .= "$proto_block"; 
       $out .= "$out_block";
       push(@compile_files," $wrapper_file");
@@ -225,7 +230,7 @@ sub parse_schedule_ccl
         @list = split(",",$1);
         foreach $group (@list) 
         {
-          $out .= "CCTK_EnableGroupComm(GH,\"$group\");\n";
+          $out .= "CCTK_EnableGroupComm(GH,\"$implentation\::$group\");\n";
         }
       }
     }
@@ -317,7 +322,7 @@ sub find_schedule_block
 
 sub parse_schedule_block
 {
-  local($thorn,$type,@data)=@_;
+  local($thorn,$implementation,$type,@data)=@_;
   local($proto,$out);
   local($wrapper_file, $proto, $out);
 
@@ -329,9 +334,9 @@ sub parse_schedule_block
 
   # At the moment can schedule at RFR entry points of at STARTUP
   if ($type eq "startup" && $when eq "STARTUP") {
-    ($wrapper_file, $proto, $out) = &parse_schedule_at_STARTUP($thorn,$routine,$desc,@block);
+    ($wrapper_file, $proto, $out) = &parse_schedule_at_STARTUP($thorn,$implementation,$routine,$desc,@block);
   } elsif ($type eq "rfr" && $when ne "STARTUP") {
-    ($wrapper_file,$proto,$out) = &parse_schedule_at_RFR($thorn,$routine,$when,$desc,@block);
+    ($wrapper_file,$proto,$out) = &parse_schedule_at_RFR($thorn,$implementation,$routine,$when,$desc,@block);
   }
 
   return ($wrapper_file,$proto,$out);
@@ -340,7 +345,7 @@ sub parse_schedule_block
 
 sub parse_schedule_at_STARTUP {
 
-  local($thorn,$routine,$desc,@block) = @_;
+  local($thorn,$implementation,$routine,$desc,@block) = @_;
   local($out);
 
   $out .= "  $routine();\n";
@@ -355,7 +360,7 @@ sub parse_schedule_at_STARTUP {
 
 sub parse_schedule_at_RFR {
 
-  local($thorn,$routine,$when,$desc,@block) = @_;
+  local($thorn,$implementation,$routine,$when,$desc,@block) = @_;
   local($proto,$out,$got_it,$i,$line);
 
 # Look for the Language and register routine
@@ -394,7 +399,7 @@ sub parse_schedule_at_RFR {
       @list = split(",",$1);
       foreach $group (@list) 
       {
-       $out .= "  index = CCTK_GetGroupNum(\"$group\");\n";
+       $out .= "  index = CCTK_GetGroupNum(\"$implementation\",\"$group\");\n";
        $out .= "  rfrRegisterStorage(GH->rfr_top,GH,index,$routine);\n";
       }
     }
@@ -409,7 +414,7 @@ sub parse_schedule_at_RFR {
       @list = split(",",$1);
       foreach $group (@list) 
       {
-        $out .= "  index = CCTK_GetGroupNum(\"$group\");\n";
+        $out .= "  index = CCTK_GetGroupNum(\"$implementation\::$group\");\n";
         $out .= "  rfrRegisterComm(GH->rfr_top,GH,index,$routine);\n";
       }
     }
@@ -425,7 +430,7 @@ sub parse_schedule_at_RFR {
       foreach $var (@list) 
       {
         $out .= "  index = CCTK_GetVarNum(\"$var\");\n";
-        $out .= "  rfrRegisterTrigger(GH->rfr_top,GH,$group,$routine);\n"
+        $out .= "  rfrRegisterTrigger(GH->rfr_top,GH,$implentation\::$group,$routine);\n"
       }
     }
   }

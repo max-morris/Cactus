@@ -76,7 +76,6 @@ require "$sbin_dir/output_config.pl";
 # Parse the interface.ccl files
 %interface_database = &create_interface_database(%thorns);
 
-
 if($debug_interface)
 {
   &print_interface_database(%interface_database);
@@ -291,7 +290,7 @@ sub CreateBindings
   # Create the bindings for the subsystems.
   &CreateParameterBindings($bindings_dir, $n_param_database, @rest);
   &CreateVariableBindings($bindings_dir, %interface_database);
-  &CreateScheduleBindings($bindings_dir);
+  &CreateScheduleBindings($bindings_dir, scalar(keys %thorns), %thorns,%interface_database);
 
   # Place an appropriate make.code.defn in the bindings directory.
   chdir $bindings_dir;
@@ -757,7 +756,10 @@ EOT
 #@@*/
 sub CreateScheduleBindings
 {
-  local($bindings_dir,$schedule_code) = @_;
+  local($bindings_dir,$n_thorns,@rest) = @_;
+
+  %thorns = @rest[0..2*$n_thorns-1];
+  %interface_database = @rest[2*$n_thorns..$#rest];
 
   if(! -d $bindings_dir)
   {
@@ -773,7 +775,7 @@ sub CreateScheduleBindings
   chdir "Schedule";
 
   # Parse the schedule.ccl files 
-  ($wrapper,$rfr,$startup) = &create_schedule_code($bindings_dir,%thorns);
+  ($wrapper,$rfr,$startup) = &create_schedule_code($bindings_dir,$n_thorns,%thorns,%interface_database);
   
 
   # Write the contents of BindingsScheduleRegisterRFR.c
