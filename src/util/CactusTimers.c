@@ -26,6 +26,7 @@ typedef struct
   void **data;
 } t_Timer;
 
+static int  CCTKi_TimerCreate(const char *timername);
 static void CCTKi_TimerDestroy(int this_timer, t_Timer *timer);
 static void CCTKi_TimerStart(int this_timer, t_Timer *timer);
 static void CCTKi_TimerStop(int this_timer, t_Timer *timer);
@@ -161,14 +162,72 @@ const char *CCTK_TimerName (int timer_handle)
 int CCTK_TimerCreate(const char *name)
 {
   int retval;
+  char *timername;
+
+
+  /* the name itself might not be unique - so prepend the timer handle */
+  timername = (char *) malloc (strlen (name) + 30);
+  sprintf (timername, "NAMED TIMER %5d -- %s", n_timers, name);
+
+  retval = CCTKi_TimerCreate (timername);
+
+  free (timername);
+
+  return retval;
+}
+
+ /*@@
+   @routine    CCTK_TimerCreateI
+   @date       Fri Oct 22 10:21:14 1999
+   @author     Tom Goodale
+   @desc 
+   Creates a timer with a unique name.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+int CCTK_TimerCreateI(void)
+{
+  int retval;
+  char timername[40];
+
+
+  sprintf (timername, "UNNAMED TIMER %5d", n_timers);
+  retval = CCTKi_TimerCreate(timername);
+
+  return retval;
+}
+
+ /*@@
+   @routine    CCTKi_TimerCreate
+   @date       Wed Sep  1 10:09:57 1999
+   @author     Tom Goodale
+   @desc 
+   Creates a new timer with the name given
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+static int CCTKi_TimerCreate(const char *timername)
+{
+  int retval;
   t_Timer *timer;
   const cClockFuncs *funcs;
   int this_timer;
   int handle;
 
+
   this_timer = -3;
 
-  if(Util_GetHandle(timers, name, (void **)&timer) > -1)
+  if(Util_GetHandle(timers, timername, (void **)&timer) > -1)
   {
     /* Handle already exists */
     retval = -3;
@@ -184,7 +243,7 @@ int CCTK_TimerCreate(const char *name)
       if(timer->data)
       {
         /* Store the data structure for this timer */
-        this_timer = Util_NewHandle(&timers, name, timer);
+        this_timer = Util_NewHandle(&timers, timername, timer);
         n_timers++;
 
         /* Create the timer info for this timer */
@@ -211,31 +270,6 @@ int CCTK_TimerCreate(const char *name)
   return retval;
 }
 
- /*@@
-   @routine    CCTK_TimerCreateI
-   @date       Fri Oct 22 10:21:14 1999
-   @author     Tom Goodale
-   @desc 
-   Creates a timer with a unique name.
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
-
-@@*/
-int CCTK_TimerCreateI(void)
-{
-  int retval;
-  char name[40];
-
-  sprintf(name, "ANONYMOUS TIMER %d", n_timers);
-
-  retval = CCTK_TimerCreate(name);
-
-  return retval;
-}
 
  /*@@
    @routine    CCTK_TimerDestroy
