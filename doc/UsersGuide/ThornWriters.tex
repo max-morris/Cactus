@@ -266,7 +266,7 @@ CCTK_REAL realfields type=GF TimeLevels=3 Dim=3
 or, for a group called {\tt intfields} consisting of just one
 distributed 2D array of integers,
 \begin{verbatim}
-CCTK_INT intfields type=ARRAY size=xsize,ysize ghostsize=gxsize,gysize
+CCTK_INT intfields type=ARRAY size=xsize,ysize ghostsize=gxsize,gysize dim=2
 {
  anarray
 } "My 2D arrays"
