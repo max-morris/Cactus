@@ -6,7 +6,7 @@
 #  @desc
 #             Parses the the configuration files for thorns.
 #  @enddesc
-#  @version   $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.53 2003-09-04 16:16:29 tradke Exp $
+#  @version   $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.54 2003-09-05 13:59:07 tradke Exp $
 #@@*/
 
 # Global parameter to track the number of errors from the CST
@@ -385,10 +385,14 @@ sub CreateThornLinkList
     next if ($configuration_database->{"\U$thorn OPTIONS\E"} =~ m/NO_SOURCE/i ||
              $thorn eq "Cactus");
 
+    # add any thorns which this thorn requires to be compiled
+    @requires = split (' ', $configuration_database->{"\U$thorn\E REQUIRES THORNS"});
+    unshift (@libs, @requires) if (@requires);
+
     $implementation = $interface_database->{"\U$thorn\E IMPLEMENTS"};
-    if ($interface_database->{"IMPLEMENTATION \U$implementation\E ANCESTORS"})
+    @anchestors = split (' ', $interface_database->{"IMPLEMENTATION \U$implementation\E ANCESTORS"});
+    if (@anchestors)
     {
-      @anchestors = split (' ', $interface_database->{"IMPLEMENTATION \U$implementation\E ANCESTORS"});
       for ($i = $j = 0; $i <= $#libs; $i++)
       {
         if ($libs[$i] =~ /^$implementation$/i)
