@@ -121,17 +121,14 @@ char *CCTK_ParameterValString (const char *name,   /* The name of the parameter 
                                const char *thorn); /* The originating thorn      */
 
 /* walk through list of parameters */
-char *CCTK_ParameterWalk(int first,           /* Get first parameter or not */
-                         const char *origin); /* Origin of this walk  */
+int CCTK_ParameterWalk(int first,           /* Get first parameter or not */
+                       const char *origin,  /* Origin of this walk  */
+                       char **pfullname,    /* Address of string pointer */
+                 const cParamData **pdata); /* Address of parameter data ptr */
 
-/* get list of parameter names for given thorn */
-int CCTK_ParameterList (const char* thorn, 
-                        char ***paramlist, 
-                        int *n_param);
-
-/* get parameter properties for gven parameter/thorn pair */
-cParamData *CCTK_ParameterData (const char *name, 
-                                const char *thorn);
+/* get parameter properties for given parameter/thorn pair */
+const cParamData *CCTK_ParameterData (const char *name, 
+                                      const char *thorn);
 
 #ifdef __cplusplus
 }

@@ -104,9 +104,11 @@ static int ParameterSetSimple   (t_param *param, const char *value);
 static t_paramtreenode *ParameterPTreeNodeFind(t_sktree *tree, 
                                                const char *name);
 
+#if 0
 static t_sktree *ParameterPTreeNodeAdd(t_sktree **tree,
                                        const char *name,
                                        t_paramtreenode *new_node);
+#endif
 
 static int ParameterGetScope    (const char *scope);
 static int ParameterGetType     (const char *type);
@@ -712,17 +714,41 @@ char *CCTK_ParameterValString (const char *param_name,
    @vtype   const char *
    @vio     in
    @vcomment 
-   The thorn or implementation to walk, or NULL if to walk all params.
+   The thorn to walk, or NULL if to walk all params.
    @endvar 
 
-   @returntype const char *
+   @var     pfullname
+   @vdesc   address of pointer to string where the fullname of the parameter
+            will be stored
+   @vtype   char *
+   @vio     out
+   @vcomment 
+   If not NULL, the full name is written into an allocated string which
+   can be refered to via *pfullname. Should be freed after usage.
+   Full name is "Implementation::name" for global and restricted parameters,
+   and "Thorn::name" for private parameters.
+   @endvar 
+
+   @var     pdata
+   @vdesc   address of pointer to parameter data structure
+   @vtype   cParamData **
+   @vio     out
+   @vcomment 
+   If not NULL, the pointer to the parameter data structure is stored in *pdata.
+   @endvar 
+
+   @returntype int
    @returndesc
-   The full name of the parameter. (Implementation::name).
+            - zero for success
+            - positive if parameter was not found
+            - negative if initial startpoint was not set
    @endreturndesc
 
 @@*/
-char *CCTK_ParameterWalk(int first,
-                         const char *origin)
+int CCTK_ParameterWalk(int first,
+                       const char *origin,
+                       char **pfullname,
+                       const cParamData **pdata)
 {
   int             return_found;
   t_sktree        *tnode;
@@ -742,39 +768,34 @@ char *CCTK_ParameterWalk(int first,
     {
       CCTK_Warn(2,__LINE__,__FILE__,"Cactus", "CCTK_ParameterWalk: Cannot walk "
                 "through parameter list without setting a startpoint at first");
-      return NULL;
+      return -1;
     }
+    /* return next match AFTER startpoint */
+    return_found = 0;
   }
   else
   {
+    /* return next match which also becomes startpoint for following searches */
+    return_found = 1;
     startpoint = NULL;
   }
  
-  /* say whether the startpoint should be returned (if found)
-     or the next matching parameter */
-  return_found = 0; startpoint == NULL;
-
-
-  /* begin the search */
-  tnode = SKTreeFindFirst (paramtree);
-
   /* iterate over nodes */
-  for ( ; tnode ; tnode = tnode->next) 
+  for (tnode = SKTreeFindFirst (paramtree) ; tnode ; tnode = tnode->next) 
   {  
-    /* get data and parameter paramlist */
+    /* get node data */
     node  = (t_paramtreenode *) tnode->data;
-    paramlist = node->paramlist;
-
-    /* if startpoint is still unassigned set it to first parameter in list */
-    if (paramlist && startpoint == NULL)
-    {
-      if (! origin || CCTK_Equals (origin, paramlist->param->props->thorn))
-        startpoint = paramlist->param;
-    }
 
     /* iterate over parameters in list */
-    for ( ; paramlist; paramlist = paramlist->next)
+    for (paramlist = node->paramlist; paramlist; paramlist = paramlist->next)
     {
+
+      /* if startpoint is still unassigned set it to next match in list */
+      if (startpoint == NULL)
+      {
+        if (! origin || CCTK_Equals (origin, paramlist->param->props->thorn))
+          startpoint = paramlist->param;
+      }
 
       /* Hey, we've found the startpoint ! */
       if (startpoint == paramlist->param)
@@ -784,18 +805,29 @@ char *CCTK_ParameterWalk(int first,
            If not prepare finding the next matching param. */
         if (return_found)
         {
-          char *retval;
-          const char *implementation;
+          const char *prefix;
 
-          implementation = CCTK_ThornImplementation (startpoint->props->thorn);
-          retval = (char *) malloc (strlen (implementation) +
-                                    strlen (startpoint->props->name) + 3);
-          sprintf (retval, "%s::%s", implementation, startpoint->props->name);
+          if (pfullname)
+          {
+            if (startpoint->props->scope == SCOPE_PRIVATE)
+              prefix = startpoint->props->thorn;
+            else
+              prefix = CCTK_ThornImplementation (startpoint->props->thorn);
+
+            *pfullname = (char *) malloc (strlen (prefix) +
+                                      strlen (startpoint->props->name) + 3);
+            sprintf (*pfullname, "%s::%s", prefix, startpoint->props->name);
+          }
+
+          if (pdata)
+          {
+            *pdata = startpoint->props;
+          }
 
           /* save the last startpoint */
           prev_startpoint_all = prev_startpoint_thorn = startpoint;
 
-          return retval;
+          return 0;
 
         }
         else
@@ -807,139 +839,7 @@ char *CCTK_ParameterWalk(int first,
     } /* end looping over parameter list */
   } /* end looping over all nodes */
 
-  return NULL;
-}
-
-/**********************************************************************/ 
-/*@@
-  @routine    CCTK_ParameterList
-  @date       Mon Aug 30 17:16:58 MSZ 1999
-  @author     Andre Merzky
-  @desc 
-  stores names of all parameters of given thorn into char** *list
-  @enddesc 
-  @calls
-  @calledby   
-  @history 
-  @endhistory 
- 
-  @var     thorn
-  @vdesc   thorn to get parameter names for
-  @vtype   const char *
-  @vio     in
-  @vcomment 
-  @endvar 
- 
-  @var     paramlist
-  @vdesc   list to store parameter names into
-  @vtype   char ***
-  @vio     out
-  @vcomment 
-  @endvar 
- 
-  @var     n_param
-  @vdesc   integer to store numbr of found parameters into
-  @vtype   int *
-  @vio     out
-  @vcomment 
-  @endvar 
- 
-  @returntype int
-  @returndesc
-  number of parameters found, <0 on failure
-  @endreturndesc
-
-  @@*/
-int CCTK_ParameterList (const char *thorn, char ***paramlist, int *n_param)
-{
-  t_paramtreenode *node;
-  t_sktree        *tnode;
-  int              alloc_size;
-    
-  t_paramlist *tmp_paramlist;
-    
-  node    = NULL;
-
-  *n_param = 0;
-
-  /* FIXME */
-#define _MY_PARAM_JUNK_SIZE  100
-    
-  alloc_size = _MY_PARAM_JUNK_SIZE;
-  *paramlist = (char **) malloc (sizeof (char *) * alloc_size);
-    
-  if (! *paramlist) 
-  {
-    fprintf (stderr, "Cannot malloc paramlist* at line %d of %s\n", __LINE__, __FILE__);
-    return (-1);
-  }
-    
-  /* ok, get first node in sktree */
-  tnode = SKTreeFindFirst (paramtree);
-    
-  /* iterate over nodes */
-  for ( ; tnode ; tnode = tnode->next) 
-  {  
-    /* get data and parameter paramlist */
-    node  = (t_paramtreenode *)(tnode->data);
-    tmp_paramlist = node->paramlist;
-  
-    /* iterate over parameters */
-    for ( ; tmp_paramlist ; tmp_paramlist = tmp_paramlist->next)
-    {   
-      /* is it a parameter of the given thorn? */
-      if (!STR_CMP (thorn, tmp_paramlist->param->props->thorn)) 
-      {  
-        /* list long enough? */
-        if ((*n_param) >= alloc_size)
-        {
-          alloc_size += _MY_PARAM_JUNK_SIZE;
-          *paramlist = (char **) realloc (*paramlist, sizeof(char *)*alloc_size);
-        
-          if (! *paramlist) 
-          {
-            fprintf (stderr, "Cannot realloc paramlist* at line %d of %s\n", __LINE__, __FILE__);
-            return (-1);
-          }
-        } 
-
-        /* malloc actual string in paramlist */
-        (*paramlist)[(*n_param)] = (char *) malloc 
-          (strlen (tmp_paramlist->param->props->name) + 1);
-
-        /* got memory? */    
-        if (! (*paramlist)[(*n_param)]) 
-        {
-          fprintf (stderr, "Cannot malloc paramlist*[%d]at line %d of %s\n", 
-                   (*n_param), __LINE__, __FILE__);
-          return (-1);
-        }
-    
-        /* save parameter name */
-        strcpy ((*paramlist)[(*n_param)], tmp_paramlist->param->props->name);
-    
-        /* increase counter */
-        (*n_param)++;
-      }
-    }
-  }
-    
-  /* if necessary, shrink paramlist again. */
-  if ((*n_param) < alloc_size)
-  {
-    alloc_size = (*n_param);
-    *paramlist = (char **) realloc ((*paramlist), sizeof(char *)*alloc_size);
-
-    if (*n_param && ! (*paramlist)) 
-    {
-      fprintf (stderr, "Cannot realloc paramlist* at line %d of %s\n", __LINE__, __FILE__);
-      fprintf(stderr, "n_param is %d\n", *n_param);
-      return (-1);
-    }
-  } 
-    
-  /* done */
-  return (*n_param);
+  return 1;
 }
 
 
@@ -970,23 +870,16 @@ int CCTK_ParameterList (const char *thorn, char ***paramlist, int *n_param)
   @vcomment 
   @endvar 
  
-  @var     param_prop
-  @vdesc   parameter descriptions
-  @vtype   cParamData *
-  @vio     out
-  @vcomment 
-  @endvar 
-   
-  @returntype int
+  @returntype const cParamData *
   @returndesc
-  1 on success, 0 on failure.
+  pointer to parameter data structure on success, NULL on failure.
   @endreturndesc
 
   @@*/
-cParamData *CCTK_ParameterData (const char *name, 
-                                const char *thorn) 
+const cParamData *CCTK_ParameterData (const char *name, 
+                                      const char *thorn) 
 {
-  cParamData *retval;
+  const cParamData *retval;
 
   t_param *param;
 
@@ -1181,6 +1074,7 @@ static t_paramtreenode *ParameterPTreeNodeFind(t_sktree *tree,
   
 }
 
+#if 0
 static t_sktree *ParameterPTreeNodeAdd(t_sktree **tree,
                                        const char *name,
                                        t_paramtreenode *new_node)
@@ -1196,6 +1090,7 @@ static t_sktree *ParameterPTreeNodeAdd(t_sktree **tree,
 
   return root;
 }
+#endif
 
 static int ParameterGetScope(const char *scope)
 {

@@ -37,7 +37,7 @@ char *compileDate(void);
 char *CCTK_FullVersion(void);
 int CCTK_CommandLine(char ***outargv);
 
-static void CommandLinePrintParameter(cParamData *properties);
+static void CommandLinePrintParameter(const cParamData *properties);
 
 static int redirectsubs;
 
@@ -79,27 +79,24 @@ void CCTKi_CommandLineTestThornCompiled(const char *optarg)
 
 void CCTKi_CommandLineDescribeAllParameters(const char *optarg)
 {
+  int first;
   int n_thorns;
   int thorn;
-  int n_parameters;
-  char **parameterlist;
-  int parameter;
   const char *thornname;
-  const char *implementation;
-  cParamData *properties;
+  char *param;
+  const cParamData *properties;
 
   n_thorns = CCTK_NumCompiledThorns ();
 
   for(thorn = 0; thorn < n_thorns; thorn++)
   {
     thornname = CCTK_CompiledThorn (thorn);
-    implementation = CCTK_ThornImplementation(thornname);
-    CCTK_ParameterList(thornname, &parameterlist, &n_parameters);
+    printf("\nParameters of thorn '%s' providing implementation '%s':\n",
+           thornname, CCTK_ThornImplementation(thornname));
 
-    for(parameter = 0 ; parameter < n_parameters; parameter++)
+    first = 1;
+    while (CCTK_ParameterWalk (first, thornname, &param, &properties) == 0)
     {
-      properties = CCTK_ParameterData(parameterlist[parameter], thornname);
-
       if(optarg)
       {
         switch(*optarg)
@@ -114,19 +111,12 @@ void CCTKi_CommandLineDescribeAllParameters(const char *optarg)
       }
       else
       {
-        if(properties->scope == SCOPE_PRIVATE)
-        {
-          printf("%s::%s\n", thornname, parameterlist[parameter]);
-        }
-        else
-        {
-          printf("%s::%s\n", implementation, parameterlist[parameter]);
-        }
+        printf("%s\n", param);
       }
 
-      free(parameterlist[parameter]);
+      free(param);
+      first = 0;
     }
-    free(parameterlist);
   }
 
   /*  CCTKi_BindingsParameterHelp(NULL,"%s",stdout);*/
@@ -138,7 +128,7 @@ void CCTKi_CommandLineDescribeParameter(const char *optarg)
 {
   char *thorn;
   char *param;
-  cParamData *properties;
+  const cParamData *properties;
   const char *cthorn;
 
   Util_SplitString(&thorn, &param, optarg, "::");
@@ -414,13 +404,20 @@ void CCTKi_CommandLineFinished(void)
    @endhistory 
 
 @@*/
-static void CommandLinePrintParameter(cParamData *properties)
+static void CommandLinePrintParameter(const cParamData *properties)
 {
   t_range *range;
 
   if(properties)
   {
-    printf("Parameter:   %s::%s - \"%s\"\n", properties->thorn, properties->name, properties->description);
+    printf("Parameter:   %s::%s", properties->thorn, properties->name);
+    if(properties->scope != SCOPE_PRIVATE)
+    {
+      printf(", %s::%s", CCTK_ThornImplementation(properties->thorn),
+                         properties->name);
+    }
+    printf("\n");
+    printf("Description: \"%s\"\n", properties->description);
     printf("Type:        %s\n", cctk_parameter_type_names[properties->type-1]);
     printf("Default:     %s\n", properties->defval);
     printf("Scope:       %s\n", cctk_parameter_scopes[properties->scope-1]);
