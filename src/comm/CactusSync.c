@@ -140,7 +140,7 @@ int CCTK_SyncGroupsI(cGH *GH,
 
   for(i = 0; i < n_groups; i++)
   {
-    CCTK_SyncGroupI(GH, i);
+    CCTK_SyncGroupI(GH, groups[i]);
   }
 
   return 0;
