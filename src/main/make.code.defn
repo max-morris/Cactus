@@ -17,7 +17,6 @@ ProcessEnvironment.c\
 ProcessParameterDatabase.c\
 SetParams.c\
 ShutdownCactus.c\
-Startup.c\
 flesh.cc\
 Groups.c\
 GroupsOnGH.c\
