@@ -382,7 +382,8 @@ sub LatexTableElement {
    my ($description) = $$table{"description"};
    my ($default) = $$table{"default"};
    $default =~ s/\_/\\\_/g;
-
+   $default =~ s/%/\\%/g;
+   
    $name =~ s/\_/\\\_/g;
 
    $description =~ s/\_/\\\_/g;
