@@ -18,12 +18,12 @@
 
 static char *rcsid = "$Header$";
 
-/* #define MEMDEBUG */
+/*$#define MEMDEBUG$*/ 
 
 /********************************************************************
  *********************     Local Data Types   ***********************
  ********************************************************************/
-
+/* Datastructure to track the allocation per file */
 typedef struct
 {
   unsigned long int size;
@@ -32,18 +32,29 @@ typedef struct
 } t_memhash;
 
 
-typedef struct
+/* Database structure (d), is kept at the beginning of 
+   the allocated memory chunk (m):   ddddmmmmmmm
+   pointer points to beginning of m:     |_pointer
+*/
+typedef struct            
 {
-  unsigned long int size;
-  unsigned long int tsize;
-  unsigned int line;
-  const char *file;
+  unsigned long int ok;      /* magic number */
+  unsigned long int size;    /* requested size */
+  unsigned long int tsize;   /* requested size + database */
+  unsigned int line;         /* allocated on line # */
+  const char *file;          /* allocated by file # */
 } t_mallocinfo;
 
+/* used for integrity checking of the data */
+#define OK_INTEGRITY 424242
+
+/* Datastructure to track the allocation size at ticket
+   request time */
 typedef struct
 {
   unsigned long int size;
 } t_memticket;
+
 
 /********************************************************************
  *********************     Local Data   *****************************
@@ -60,6 +71,8 @@ static unsigned long int pastmem=0;
 /********************************************************************
  *********************   internal prototypes     ********************
  ********************************************************************/
+void *CCTKi_Malloc(size_t size, int line, const char *file);
+void CCTKi_Free(void *pointer, int line, const char *file);
 
 int CCTKi_UpdateMemByFile(int size, int line, const char *file);
 
@@ -95,6 +108,7 @@ void *CCTKi_Malloc(size_t size, int line, const char *file)
     fprintf(stderr, "Allocation error! ");
   }
   info = (t_mallocinfo*) data;
+  info->ok   = OK_INTEGRITY;
   info->size = size;
   info->tsize= size+sizeof(t_mallocinfo);
   info->line = line;
@@ -110,8 +124,131 @@ void *CCTKi_Malloc(size_t size, int line, const char *file)
          info->size, info->file, info->line, CCTK_TotalMemory());
 #endif
 
+  /* return the pointer plus an OFFSET (t_mallocinfo) to hide the info*/
   return((void*)(data+sizeof(t_mallocinfo)));
 }
+
+
+/*@@
+   @routine    CCTKi_Realloc
+   @date       Wed Mar  8 12:46:06 2000
+   @author     Gerd Lanfermann
+   @desc 
+      ReAllocates memory, updates the total memory variable (static)
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+
+void *CCTKi_Realloc(void *pointer, size_t size, int line, const char *file)
+{
+  t_mallocinfo tmp,*info;
+  char *data;
+  char mess[256];
+ 
+  /* Realloc called with NULL equiv. to malloc */
+  if (pointer==NULL)
+    return(CCTKi_Malloc(size, line, file));
+
+  /* Realloc called with size zero equiv. to free */
+  if (size==0) {
+    CCTKi_Free(pointer, line, file);
+    return;
+  }
+
+  /* Realloc failure */
+  if ((data==NULL)&&(size>0))
+  {
+    fprintf(stderr, "Allocation error! ");
+  }
+
+  /* get the info section */
+  info = (t_mallocinfo *)((char*)pointer-sizeof(t_mallocinfo));
+
+  /* make a sanity check: could be allocated with standard malloc */
+  if (info->ok!=OK_INTEGRITY)  
+  {
+    sprintf(mess,"Malloc database corrupted. \n     Reallocation called from %s, line %d. \n     Was this memory allocated with CCTK_MALLOC \n?!",file,line);
+    CCTK_Warn(1,__LINE__,__FILE__,",routine: CCTKi_Realloc",mess);
+    CCTK_Abort(NULL);
+  }
+  
+  /* reallocate starting at info pointer */
+  data = (char*)realloc(info, size+sizeof(t_mallocinfo));
+
+  /* get the info section again and update */
+  info = (t_mallocinfo*) data;
+  info->size = size;
+  info->tsize= size+sizeof(t_mallocinfo);
+
+  /* update some static variables */
+  pastmem = totmem;
+  totmem += size;
+  CCTKi_UpdateMemByFile(info->size, line, file);
+ 
+#ifdef MEMDEBUG
+  printf("ReAllocating %lu - by %s in line %d TOTAL: %lu\n",
+         info->size, info->file, info->line, CCTK_TotalMemory());  
+#endif
+
+  /* return the pointer starting at the datasection, behind the info section */
+  return((void*)(data+sizeof(t_mallocinfo)));
+}
+
+/*@@
+   @routine    CCTKi_cMalloc
+   @date       Wed Mar  8 12:46:06 2000
+   @author     Gerd Lanfermann
+   @desc 
+      Allocates memory, updates the total memory variable (static)
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+
+void *CCTKi_Calloc(size_t nmemb, size_t size, int line, const char *file)
+{
+  t_mallocinfo *info;
+  size_t nsize;
+  char *data;
+  int retval;
+
+  /* instead of a cmalloc(nmem,size) , we do a malloc(nmem*size) */
+  nsize = nmemb*size;
+  data  = (char*)malloc(nsize+sizeof(t_mallocinfo));
+  if(!data) 
+  {
+    fprintf(stderr, "Allocation error! ");
+  }
+  info = (t_mallocinfo*) data;
+  info->size = OK_INTEGRITY;
+  info->size = nsize;
+  info->tsize= nsize+sizeof(t_mallocinfo);
+  info->line = line;
+  info->file = file;
+
+  pastmem = totmem;
+  totmem += nsize;
+
+  retval = CCTKi_UpdateMemByFile(info->size, line, file);
+
+#ifdef MEMDEBUG
+  printf("Allocating %lu - by %s in line %d TOTAL: %lu\n",
+         info->size, info->file, info->line, CCTK_TotalMemory());
+#endif
+
+  return((void*)(data+sizeof(t_mallocinfo)));
+}
+
+
 
 /*@@
    @routine    CCTKi_Free
@@ -128,15 +265,25 @@ void *CCTKi_Malloc(size_t size, int line, const char *file)
 
 @@*/
 
-void CCTKi_Free(void *pointer)
+void CCTKi_Free(void *pointer, int line, const char *file)
 {
   t_mallocinfo *info;
+  char mess[256];
 
   info = (t_mallocinfo *)((char*)pointer-sizeof(t_mallocinfo));
+
+  if (info->ok!=OK_INTEGRITY)  
+  {    
+    sprintf(mess,"Malloc database corrupted. \n     Reallocation called from %s, line %d.\n     Was this memory allocated with CCTK_[RE]MALLOC ?!",file,line);
+    CCTK_Warn(1,__LINE__,__FILE__,",routine CCTKi_Free",mess);
+    CCTK_Abort(NULL);
+  }
+
 #ifdef MEMDEBUG
   printf("Freeing %lu - allocated by %s in line %d TOTAL: %lu\n",
-         info->size, info->file, info->line, CCTK_TotalMemory());
+         info->size, info->file, info->line, CCTK_TotalMemory());  
 #endif
+
   pastmem  = totmem;
   totmem  -= info->size;
   
@@ -144,7 +291,7 @@ void CCTKi_Free(void *pointer)
 } 
 
 /*@@
-   @routine    CCTKi_Malloc
+   @routine    CCTKi_UpdateMemByFile
    @date       Wed Mar  8 12:46:06 2000
    @author     Gerd Lanfermann
    @desc 
@@ -415,7 +562,7 @@ int main(int argc, char *argv[])
 
   printf("Total Memory allocated: %d ", CCTK_TotalMemory);
   printf("### Start Freeing ...\n");
-  CCTKi_Free(myint, 43, "Myn int");
+  CCTKi_Free(myint, 43, "My int");
   CCTKi_Free(mydouble, 43, "My double");
   CCTKi_Free(mychar, 43, "My char");
 
