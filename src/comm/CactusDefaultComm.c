@@ -16,6 +16,29 @@
 #include "CactusMainDefaults.h"
 #include "GHExtensions.h"
 
+#ifdef MPI
+#include "mpi.h"
+#endif
+
+#ifdef MPI
+extern char MPI_Active;
+#endif
+
+#ifdef MPI
+#define CACTUS_MPI_ERROR(xf)  do {int errcode; \
+                                    if((errcode = xf) != MPI_SUCCESS)                     \
+				    {                                                     \
+				      char mpi_error_string[MPI_MAX_ERROR_STRING+1];      \
+				      int resultlen;                                      \
+				      MPI_Error_string(errcode, mpi_error_string, &resultlen);\
+				      fprintf(stderr, "MPI Call %s returned error code %d (%s)\n", \
+                                      #xf, errcode, mpi_error_string);                    \
+				      fprintf(stderr, "At line %d of file %s\n",                   \
+					     __LINE__, __FILE__);                         \
+				    }                                                     \
+				  } while (0)
+#endif
+
 static char *rcsid = "$Id$";
 
 
@@ -147,7 +170,18 @@ cGH *CactusDefaultSetupGH(tFleshConfig *config, int convergence_level)
 
 int CactusDefaultGetMyProc(cGH *GH)
 {
-  return 0;
+  int myproc;
+
+#ifdef MPI
+  if(MPI_Active)
+  {
+    CACTUS_MPI_ERROR(MPI_Comm_rank(MPI_COMM_WORLD, &myproc));
+  }
+#else
+  myproc = 0;
+#endif
+
+  return myproc;
 }
 
  /*@@
@@ -167,5 +201,16 @@ int CactusDefaultGetMyProc(cGH *GH)
 
 int CactusDefaultGetnProcs(cGH *GH)
 {
-  return 1;
+  int nprocs;
+
+#ifdef MPI
+  if(MPI_Active)
+  {
+    CACTUS_MPI_ERROR(MPI_Comm_size(MPI_COMM_WORLD, &nprocs));
+  }
+#else
+  nprocs = 1;
+#endif
+
+  return nprocs;
 }
