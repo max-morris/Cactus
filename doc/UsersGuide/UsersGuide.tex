@@ -28,7 +28,45 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \part{Introduction}
+\chapter{Overview of documentation}
 
+This documentation splits naturally into these parts: 
+
+\begin{itemize}
+
+\item {\bf The history of Cactus and the Concepts behind the
+    CCTK. Getting you up and running.}
+  We give an overview on the required hardware and
+  software and we willll talk you through the installation of a working
+  CCTK. You will be able to verify the correct installation by the
+  CCTK testsuite. We show how to perform some basic simulation and
+  introduce the concepts behind data output. We provide brief
+  information on how to vizualize the 1D, 2D and 3D data.
+
+\item {\bf Part2: How to write a physics thorn.} We introduce a
+  sample thorn that illustrates the implementation of simple initial
+  data and the subsequent evolution. You will learn how to use the
+  programming interface to take advantage of parallelism and modularity.
+
+\item {\bf Part3: How to writes an infrastructure thorn.} In this more
+  advanced part, we talk about user supplied infrastructure routines
+  as {\em additional output routines, boundary conditions, etc.}
+
+\item {\bf The standard toolkit.} 
+
+\end{itemize}
+
+Other topics will be discussed in separate documents:
+
+\begin{itemize}
+
+\item The numerical relativity toolkit.
+
+\item A description of the flesh, for the maintainers.
+
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -78,13 +116,13 @@ The aim of this radicalism is to allow for future growth. We now
 distinguish informally between physics thorns and infrastructure
 thorns. The main infrastructure project for now is adding different
 flavors of adaptive mesh refinement -- while the user writing a
-physics thorn can still largely pretend she is working a single-processor,
+physics thorn can still large she is working a single-processor,
 unigrid code. Similarly, an infrastructure thorn could be replaced by
 one that does the same job, but simply better. Even the flesh could be
 rewritten in the future, but the interface between the flesh and
 thorns is to remain unchanged.
 
-Cactus thorns can be written in F90, F77, C, C++ (or a mixture). The
+Cactus thorns can be written in F90, F77 and C (or a mixture). The
 decision to support Fortran was made for the pragmatic reason that
 many people like it, or don't write C. This decision does make the
 flesh more complex. The flesh is written in C, and in perl that
@@ -159,132 +197,167 @@ user access to all earlier versions.)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\chapter{Overview of documentation}
-
-This documentation splits naturally into these parts: 
-
-\begin{itemize}
-
-\item What one needs to know to obtain, compile and run the code, and
-look at output.  
-
-\item How one writes a physics thorn.
-
-\item How one writes an infrastructure thorn.
-
-\item The standard toolkit.
-
-\end{itemize}
-
-Other topics will be discussed in separate documents:
-
-\begin{itemize}
-
-\item The numerical relativity toolkit.
-
-\item A description of the flesh, for the maintainers.
-
-\end{itemize}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\part{Using Cactus}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 \chapter{Installation} 
-
-(Contains details of everything needed to get the code, compile it,
-and check that it works)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Required software}
 
-To check out cactus you will require CVS, and to build it you will 
-require Gnu Make, and perl.  All these are freely available and
-may be downloaded from...{\q fill these in}.
+In general, Cactus {\em requires} the following set of software to function
+in a single processor mode. Please refer to the architecture section
+\ref{sec:architecture} for architecture specific items.
+\begin{itemize}
+\item{\tt Perl5.0} Perl is used extensively during the CCTK
+  configuration phase. {\tt Perl} is available for nearly all
+  operating systems known to man and can be obtained at {\tt
+    http://www.perl.org}.
+\item{\tt gmake} The GNU make utility needss to be installed. Errors
+ {\q wanna name them here ?} during the make process  are often caused
+ by not using {\tt gmake}. {\tt gmake} can be obtained from any
+ friendly GNU site.
+\item{\tt C/C++} A C/C++ compiler. These can be the GNU compilers as well.
+\item{\tt Fortran 90} 
+\item{\tt CVS} The {\em ``Concurrent Versioning System''} is not needed
+  to run/compile the CCTK, but you are strongly encourage to install
+  this software to take advantage of the update procedures.
+\end{itemize}
 
-You will also need a C compiler to build the flesh, and most thorns
-require FORTRAN77 or Fortran 90 compilers.
-
+\noindent
+The following software is {\em optional} and not needed to get the
+basic CCTK installation on track. Its listed in the order of importance.
+\begin{itemize}
+\item{\tt Fortran 90} CCTK requires a F90 compiler to run modules
+  written in F77 or F90. There is no
+  GNU F90 and just a very limited set of free F90 compilers for
+  various architectures.
+\item{\tt MPI} Currently the communication layer of the CCTK uses the
+  {\em Message Passing Interface (MPI)} provide inter process
+  communication. Supercomputers very often supply a native MPI
+  implementation at their site. CCTK is very likely to work with
+  them. For local area networks we suggest installing the {\tt MPICH}
+  version, which can be obtained for various architectures and
+  operating systems at {\tt http://www-unix.mcs.anl.gov/mpi/}.
+\item{\tt TAGS}: Tags enables you browse through the calling structure
+  of a program by help of function call database. Navigating the CCTK and
+  Toolkits becomes very easy. Emacs and vi both support this database. See
+  \ref{sec:tags} how to install {\tt TAGS}.
+\end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Supported architectures}
-
 Cactus runs on many machines, under a large number of Unix operating
-systems, and also under Windows NT.  The flesh is written in ANSI
-standard C, and so should compile on any machine with a compiler
-supporting this. {\q Elsewhere} we discuss how to port cactus to a new 
-operating system or hardware platform.
+systems. Here we list all the machines we have compiled and verfied
+Cactus on, including some architecture specific notes. 
+\begin{itemize} 
+\item{\bf SGI Origin 2000}
+\item{\bf SGI}
+\item{\bf Cray T3E}
+\item{\bf Dec Alpha}: Dec operating system and Linux. Single processor
+  mode and MPICH.
+  supported. The Decs need to have the GNU {\tt C/C++} compilers installed.
+\item{\bf Intel Linux}: There is a
+  free Linux F90 compiler available from  {\tt http://www.sierra.com}
+  -- the only free we know of. Single processor mode and MPICH
+  supported.
+\item{\bf Windows32 using Cygwin32 extensions} {\q still true?}
+\item{\bf Windows NT}: succesful compile with the following software:
+  \begin{itemize}
+  \item{\tt DIGITAL Visual Fortran Optimizing Compiler Version: V5.0C}
+  \item{\tt Microsoft (R) 32-bit C/C++ Optimizing Compiler Version
+        11.00.7022 for 80x86}
+  \item{Cygnus Unix suite version 1.19}
+  \end{itemize}
+\item{\bf Solaris } {\q What is the status on this ??}
+\end{itemize}
+If you did not find you architecture/operating system of
+choice, see section sec\ref{sec:how_to_port} on how to port to an
+unsupported architecture.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Checkout procedure}
 
 Cactus is distributed, added to, and updated through the free CVS
-software. Basically, CVS (Concurrent Versioning System) allows many
+software. CVS ({\em ``Concurrent Versioning System''}) allows many
 people to work on a large software project together without getting
-into a tangle. For the beginner, we summarize the basics in an
-appendix to this document. To check out the Cactus Computational
-Toolkit from the central repository, type in
+into a tangle by keeping track of changes made by the different
+users. For the beginner, we summarize the basics in appendix
+\ref{sec:CVS}, please refer to this section for small description of
+the CVS syntax.
 
-{\t
-cvs -d :pserver:cvs\_anon@hod.aei-potsdam.mpg.de:/usr/users/cactus login
-cvs -d :pserver:cvs\_anon@hod.aei-potsdam.mpg.de:/usr/users/cactus checkout cactus
-}
+The installation requires about {\q HOW MANY MEGS ? }. See section
+\ref{sec:downsize_CCTK} on how to downsize CCTK installtion if space is tight.
+{\q gmake small ??}
 
-Note our typesetting conventions: these are two separate unix commands
-(two lines, each followed by the Enter key). Note also that the cvs
-commands are basically {\tt cvs login} and {\tt cvs checkout
-cactus}. The middle bit tells CVS where to look. The first line will
-prompt you for a password, which is {\tt anon}. 
+\begin{itemize}
+\item{\bf Login}: Prior to any CVS operation, you need to loginto the central
+  repository. For an  anoymous checkout, type:\\
+  {\tt
+    cvs -d :pserver:cvs\_anon@hod.aei-potsdam.mpg.de:/usr/users/cactus login
+    }
+  You will be prompted for a password which is {\tt anon}. 
+\item{\bf Checkout}: To obtain a fresh CCTK checkout, type
+  {\t
+    cvs -d :pserver:cvs\_anon@hod.aei-potsdam.mpg.de:/usr/users/cactus checkout cactus
+    }
+  The CVS checkout procedure will create a directory called {\tt
+    ./CCTK} and install the CCTK inside this directory.  From now on we
+  will reference all directory names relative to {\tt ./CCTK}. 
+  
+\item{\bf Update}: To update an existing CCTK checkout (to patch in
+  possible changes, etc.), do the following {\em within} the {\tt ./CCTK} directory.
+  {\t
+    cvs -d :pserver:cvs\_anon@hod.aei-potsdam.mpg.de:/usr/users/cactus update
+    }
+  The update process will operate downwards relative to you current position
+  within the CCTK tree. To update only certain directories, change
+  into these directories and issue the update command.
+\item{\bf CVS status}: to obtain a status report on the ``age'' of your
+  CCTK or Toolkit routines (from your current directory position
+  downward), type
+  {\t
+    cvs -d :pserver:cvs\_anon@hod.aei-potsdam.mpg.de:/usr/users/cactus status
+    }
+\item{\bf non-anonymous CVS}: if you have an account at the central
+  repository and you would like to perform any of the operation above
+  {\em non-anonymously}, replace {\tt cvs\_anon} by your login name
+  and provide the appropriate password during the CVS login
+  process. Depending on your permissions, you may then make commits to the CCTK
+  or its Toolkits.
+\item{\bf Commits}: you need to perform a personalized login and have
+  proper permissions to commit code to the repository. 
+\end{itemize}
+
+For more CVS commands please refer to appendix \ref{sec:CVS}.
 
 {\q Change CCTK to cactus in the distribution}
-
-(If you contribute to cactus, you will have your own account, as we'll
-discuss in the section on writing thorns. Then {\tt cvs\_anon} will be
-replaced by your user name, and the password will be different.)
-
-In order to update your checkout later (because someone else has
-changed the repository version), go to the directory you want to
-update (eg {\tt cactus}) and do {\tt cvs update}. To find out if you
-are up to date, do {\tt cvs status}. Note the {\tt CVS/} directories
-at each directory level: they tell CVS what you have checked out, and
-when you last updated it. See the appendix on CVS for more
-information. (Note our typesetting convention: {\tt CVS/} means that
-{\tt CVS} is a directory. Your unix {\tt ls} may or may not show the
-slash.)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Directory structure}
 
-In the {\tt cactus/} directory you see a file called {\tt Makefile}. It
-tells the make program what to do in order to build
-Cactus. {\tt cactus/} also contains these directories:
-
+A fresh CCTK checkout creates a directory {\tt ./CCTK} with the
+following files substructure:
 \begin{itemize}
 
-\item {\tt doc/} contains documentation. 
+\item{\tt ./CVS/} the CVS book-keeping directory, present in every subdirectory.
 
-\item {\tt lib/} contains libraries and support tools for building the code.
+\item{\tt ./doc/} CCTK documentation
 
-\item {\tt src/} contains the source code for the flesh. (If you
-are familiar with unix, all this will be obvious to you.) 
+\item{\tt ./lib/} contains libraries.
 
-\item {\tt toolkits/} contains the Cactus toolkits. It is empty now.  Each
-directory inside {\tt toolkits/} contains thorns.
+\item{\tt ./src/} contains the source code for the CCTK
 
+\item {\tt ./toolkits/} contains the Cactus toolkits. The toolkits
+  (the actual ``physics'') is not supplied by the CCTK. If the  toolkits
+  you want to use are part of the central repository, they can be
+  checked out in similar way the CCTK.  Each directory inside {\tt
+    toolkits/} contains thorns. {\q ??}
 \end{itemize}
 
 When Cactus is first compiled it creates a new directory {\tt
-cactus/build/}. Disk space may be a problem on supercomputers where
+./CCTK/build/}. Disk space may be a problem on supercomputers where
 home directories are small. A workaround is to first create a
 build directory on scratch space, say {\tt scratch/cactus\_build/} (where
 {\tt scratch/} is your scratch directory), and soft link ({\tt ln -s
@@ -327,7 +400,7 @@ are called from C)
 
 \item {\tt make.config.deps}
 
-\item {\tt make.config.rule} (rules to generate object files and their dependencies from source files)
+\item {\tt make.config.rule} (rules to generate object files from source files)
 \end{itemize}
 
 \item {\tt lib} : contains the libraries built from the object files,
@@ -336,16 +409,16 @@ are called from C)
 
 \item {\tt libCactus.a} for the flesh
 
-\item{\tt libCactusBindings.a} for the bindings between the flesh and the thorns
+\item{\tt llibCactusBinding.a} for the Bindings 
 
-\item {\tt lib***.a} for each thorn
+\item {\tt llib***.a} for each thorn
 
 \end{itemize}
 
 {\q It might be useful to give a couple of commands like nm for seeing
 what is in libraries.}
 
-\item {\tt scratch}: contains any F90 module files produced by the compiler.
+\item {\tt scratch}: empty at the end.
 
 \end{itemize}
 
@@ -381,8 +454,7 @@ different compilers or optimization settings on the same machine, and
 compare one against the other. As a third example, you may want to
 compile with different sets of thorns.  As a final example, you might
 want to build cactus using different multi-processor communication
-protocols, such as different implementations of MPI 
-(currently the cactus standard), PVM, or shared memory.
+protocols, such as MPI (currently the cactus standard) or GLOBUS.
 
 Building the code should be easy. Just type
 
@@ -443,12 +515,10 @@ and each subdirectory mentioned should also contain a {\tt
 make.code.defn} file with a {\tt SRCS} line ({\tt SUBDIRS} in a
 subdirectory {\tt make.code.defn} file will be ignored).
 
-The {\tt make.code.defn} file in a source directory is included at the top of
-the makefile used to build the sources, and thus can be used to change
-compiler flags on a per-directory basis. If a file {\tt make.code.deps} 
-exists in a source directory it is similarly included at the bottom;  this
-can be used to add dependencies or customised build rules for particular
-files.
+The {\tt make.code.defn} file in a directory is included at the top of
+the makefile {\q where does it sit?}  used to build the sources. If a
+file {\tt make.code.deps} exists in the directory {\q where?} it is
+included at the bottom.
 
 The standard make system may be overridden by placing a makefile
 called {\tt Makefile} in the {\tt src/} directory.  This can do
@@ -456,7 +526,8 @@ whatever it likes, but must create a library called
 
 {\tt \$(NAME)}
 
-(which is actually {\tt CONF/lib/lib<thorn>.a }).
+(which is actually {\tt \$(CCTK\_LIBDIR)/lib<thorn>.a }). {\q We need more detail here. What does ``is
+actually'' mean?}
 
 {\q Watch for CCTK here and elsewhere. Don't remove this query before
 CCTK is gone.}
@@ -505,9 +576,9 @@ is to do.)
 
 \item {\tt gmake tags} creates a {\tt vi} style tags file
 
-\item {\tt gmake TAGS} creates an {\tt Emacs} style TAGS file
+\item {\tt gmake TAGS} creates an Emacs style TAGS file
 
-\item {\tt gmake distclean} deletes your whole build directory.
+\item {\tt gmake distclean} nukes your build directory.
 
 \end{itemize}
 
@@ -525,6 +596,7 @@ is to do.)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \chapter{Running Cactus}
+
       a) Command line options
       b) Simple parameter file syntax (will be explained fully in thorn
          writers part)
