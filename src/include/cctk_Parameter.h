@@ -1,5 +1,5 @@
  /*@@
-   @file      cctk_Parameter.h
+   @header    cctk_Parameter.h
    @date      Wed Sep  8 10:46:19 MSZ 1999
    @author    Andre Merzky
    @desc 
@@ -9,7 +9,7 @@
  @@*/
 
 #ifndef _CCTK_PARAMETER_H
-#define _CCTK_PARAMETER_H
+#define _CCTK_PARAMETER_H 1
 
 /* this include file declares all parameter structs/defines which 
  * should be visible and useable for some thorn programmers.
@@ -27,7 +27,13 @@
 #define SCOPE_NOT_GLOBAL    4 /* parameter is not visible everywhere         */
 #define SCOPE_ANY           5 /* parameter scope is undefined/arbitrary      */
 
-static char *cctk_parameter_scopes[] = {"GLOBAL", "RESTRICTED", "PRIVATE"};
+#ifdef NEED_PARAMETER_SCOPE_STRINGS
+static char *cctk_parameter_scopes[] = {"GLOBAL", 
+                                        "RESTRICTED", 
+                                        "PRIVATE", 
+                                        "NOT GLOBAL", 
+                                        "ANY"};
+#endif /* NEED_SCOPE_STRINGS */
 
 /* parameter types  */
 
@@ -39,12 +45,14 @@ static char *cctk_parameter_scopes[] = {"GLOBAL", "RESTRICTED", "PRIVATE"};
 #define PARAMETER_REAL      5 /* parameter is float    */
 #define PARAMETER_BOOLEAN   6 /* parameter is bool     */
 
+#ifdef NEED_PARAMETER_TYPE_STRINGS
 static const char *cctk_parameter_type_names[] = {"KEYWORD", 
                                                   "STRING", 
                                                   "SENTENCE", 
                                                   "INTEGER", 
                                                   "REAL", 
                                                   "BOOLEAN"};
+#endif /* NEED_PARAMETER_TYPE_STRINGS */
 
 /* what is a parameter range:
  * list of independent ranges, each with
@@ -104,8 +112,8 @@ int CCTK_ParameterSet (const char *name,      /* The name of the parameter  */
 
 /* get the data pointer to and type of a parameter's value */
 void *CCTK_ParameterGet (const char *name,    /* The name of the parameter  */
-			 const char *thorn,   /* The originating thorn      */
-			 int *type);          /* Holds type of parameter    */
+                         const char *thorn,   /* The originating thorn      */
+                         int *type);          /* Holds type of parameter    */
 
 /* get the string representation of a parameter's value
    (string should be freed afterwards) */
@@ -117,11 +125,13 @@ char *CCTK_ParameterWalk(int first,           /* Get first parameter or not */
                          const char *origin); /* Origin of this walk  */
 
 /* get list of parameter names for given thorn */
-int CCTK_ParameterList (const char* thorn, char ***paramlist, int *n_param);
+int CCTK_ParameterList (const char* thorn, 
+                        char ***paramlist, 
+                        int *n_param);
 
 /* get parameter properties for gven parameter/thorn pair */
 cParamData *CCTK_ParameterData (const char *name, 
-				const char *thorn);
+                                const char *thorn);
 
 #ifdef __cplusplus
 }
