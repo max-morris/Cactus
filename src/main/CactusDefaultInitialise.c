@@ -139,6 +139,7 @@ int CactusInitialiseGH(cGH *GH)
 
   /* FIXME : PARAM_CHECK SHOULD BE BEFORE HERE */
   CCTK_rfrTraverse(GH, CCTK_PARAMCHECK);
+  CCTKi_FinaliseParamWarn();
 
   CCTK_rfrTraverse(GH, CCTK_BASEGRID); 
   CCTK_rfrTraverse(GH, CCTK_INITIAL0);
