@@ -66,6 +66,4 @@ int CCTKi_SetupCache(void)
 
   return 0;
 
-  USE_CCTK_PARAMETERS
-
 }
