@@ -225,7 +225,7 @@ else
   esac
 
   case "$CXX" in
-    [ei]cc)
+    [ei]cc | ecpc)
       : ${CXX_OPTIMISE_FLAGS='-O3'}
       : ${CXX_DEPEND='$(CXX) -M $(CPPFLAGS)'}
       ;;
