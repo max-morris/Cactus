@@ -362,6 +362,11 @@ else
     sgiCC)
       : ${CXX_OPTIMISE_FLAGS='-O3'}
       : ${CXX_DEBUG_FLAGS='-g3'}
+      ;;
+    pgCC)
+      : ${CXX_FLAGS='--no_using_std -tused -Wl,--allow-multiple-definition'}
+      : ${CXX_OPTIMISE_FLAGS='-fast'}
+      ;;
   esac
 
   : ${C_DEBUG_FLAGS="-g"}
