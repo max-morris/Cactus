@@ -658,12 +658,12 @@ test "$host_alias" != "$target_alias" &&
 
 CCTK_CONFIG_STAGE="preferred-compilers"
 
-if test -r $srcdir/known-architectures/$target_os ; then
-. $srcdir/known-architectures/$target_os
+if test -r $srcdir/known-architectures/$host_os ; then
+. $srcdir/known-architectures/$host_os
 else
   echo "Warning: "
   echo "  Cactus has not been previously compiled for this architecture: "
-  echo "    ($target_os)"
+  echo "    ($host_os)"
   echo "  The currently known architectures can be found in "
   echo "    $srcdir/known-architectures"
   echo "  The configuration will try to do its best to work things out."
@@ -1260,8 +1260,8 @@ EOF
 
 CCTK_CONFIG_STAGE="misc"
 
-if test -r $srcdir/known-architectures/$target_os ; then
-. $srcdir/known-architectures/$target_os
+if test -r $srcdir/known-architectures/$host_os ; then
+. $srcdir/known-architectures/$host_os
 fi
 
 # Finish the architecture stuff
