@@ -8,8 +8,8 @@
    @version $Header$
  @@*/
 
-#ifndef _GHEXTENSIONS_H_
-#define _GHEXTENSIONS_H_
+#ifndef _CCTK_GHEXTENSIONS_H_
+#define _CCTK_GHEXTENSIONS_H_
 
 #ifdef __cplusplus
 extern "C" {

@@ -71,10 +71,10 @@
    unsigned int cctk_strlen2,\
    unsigned int cctk_strlen3
 #define ONE_FORTSTRING_CREATE(arg1)\
-        char *arg1 = Util_NullTerminateString(cctk_str1,cctk_strlen1);
+   char *arg1 = Util_NullTerminateString(cctk_str1,cctk_strlen1);
 #define TWO_FORTSTRINGS_CREATE(arg1,arg2)\
-    char *arg1 = Util_NullTerminateString(cctk_str1,cctk_strlen1);\
-    char *arg2 = Util_NullTerminateString(cctk_str2,cctk_strlen2);
+   char *arg1 = Util_NullTerminateString(cctk_str1,cctk_strlen1);\
+   char *arg2 = Util_NullTerminateString(cctk_str2,cctk_strlen2);
 #define THREE_FORTSTRINGS_CREATE(arg1,arg2,arg3)\
    char *arg1 = Util_NullTerminateString(cctk_str1,cctk_strlen1);\
    char *arg2 = Util_NullTerminateString(cctk_str2,cctk_strlen2);\

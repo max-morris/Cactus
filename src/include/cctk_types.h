@@ -4,18 +4,18 @@
    @author    Tom Goodale
    @desc 
    Defines the appropriate types based upon the precision.
-   Should be included by config.h .
+   Should be included by cctk_config.h .
    @enddesc 
  @@*/
 
 #ifndef _CCTK_TYPES_H_
 #define _CCTK_TYPES_H_
 
-/* Make sure that config.h is available in case someone includes
+/* Make sure that cctk_config.h is available in case someone includes
  * this by hand.
  */
-#ifndef _CONFIG_H_
-#include "config.h"
+#ifndef _CCTK_CONFIG_H_
+#include "cctk_config.h"
 #endif
 
 /* Define stuff for C. */

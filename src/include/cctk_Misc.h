@@ -8,8 +8,8 @@
    @version $Header$
  @@*/
 
-#ifndef _MISC_H_
-#define _MISC_H_
+#ifndef _CCTK_MISC_H_
+#define _CCTK_MISC_H_
 
 #ifdef __cplusplus
 extern "C" {

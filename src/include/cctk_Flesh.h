@@ -13,8 +13,8 @@
 #include "cGH.h"
 
 
-#ifndef _FLESH_H_
-#define _FLESH_H_
+#ifndef _CCTK_FLESH_H_
+#define _CCTK_FLESH_H_
 
 /*  Typedefs */
 

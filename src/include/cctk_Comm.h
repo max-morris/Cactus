@@ -8,8 +8,8 @@
    @version $Header$
  @@*/
 
-#ifndef _COMM_H_
-#define _COMM_H_
+#ifndef _CCTK_COMM_H_
+#define _CCTK_COMM_H_
 
 #include "OverloadMacros.h"
 
