@@ -34,6 +34,7 @@ typedef struct
   unsigned long int iteration;
 
   /* ...[dim]*/
+  int *global_shape;
   int *local_shape;
   int *lower_bound;
   int *upper_bound;
@@ -42,8 +43,14 @@ typedef struct
   /* bbox[2*dim] */
   int *bbox;
 
-  /* The refinement factor over the top level grid. */
+  /* The refinement factor over the top level (coarsest) grid. */
   int levfac;
+
+  /* The convergence level */
+  int convlevel;
+
+  /* The number of ghostzones in each direction */
+  int nghostzones;
 
   /* data[var_num][xyz]*/
   void **data;
