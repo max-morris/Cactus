@@ -74,7 +74,7 @@ sub CreateVariableBindings
     $dataout .= "#endif\n\n";
   }
 
-  &WriteFile("cctk_arguments.h",\$dataout);
+  &WriteFile("cctk_Arguments.h",\$dataout);
       
   chdir "..";
 
@@ -110,7 +110,7 @@ sub CreateVariableBindings
   {
     $dataout = "";
     $dataout .= "\#include \"cctki_Groups.h\"\n";
-    $dataout .= "\#include \"cctk_FortranWrappers.h\"\n";
+    $dataout .= "\#include \"cctki_FortranWrappers.h\"\n";
     $dataout .= "int CCTKi_BindingsFortranWrapper$thorn(void *GH, void *fpointer);";
 
     $dataout .= "int CactusBindingsVariables_$thorn"."_Initialise(void)\n{\n";
@@ -123,7 +123,7 @@ sub CreateVariableBindings
 	$dataout  .= "$line\n";
       }
     }
-    $dataout .= "  CCTK_RegisterFortranWrapper(\"$thorn\", CCTKi_BindingsFortranWrapper$thorn);\n\n";
+    $dataout .= "  CCTKi_RegisterFortranWrapper(\"$thorn\", CCTKi_BindingsFortranWrapper$thorn);\n\n";
 
     $dataout .= "  return 0;\n};\n";
  
@@ -1323,6 +1323,7 @@ sub CreateThornGroupInitialisers
 	   . "                    " . $rhinterface_db->{"\U$thorn GROUP $group\E TIMELEVELS"} . ",\n"
 	   . "                    \"" . $rhinterface_db->{"\U$thorn GROUP $group\E STYPE"} . "\",\n"
 	   . "                    \"" . $rhinterface_db->{"\U$thorn GROUP $group\E SIZE"} . "\",\n"
+	   . "                    \"" . $rhinterface_db->{"\U$thorn GROUP $group\E GHOSTSIZE"} . "\",\n"
            . "                    ". scalar(@variables);
     foreach $variable (@variables)
     {
@@ -1348,7 +1349,7 @@ sub CreateThornFortranWrapper
   push(@data, "#include \"cctk_Flesh.h\"");
   push(@data, "#include \"cctk_Groups.h\"");
   push(@data, "#include \"cctk_Comm.h\"");
-  push(@data, "#include \"cctk_arguments.h\"");
+  push(@data, "#include \"cctk_Arguments.h\"");
   push(@data, "");
 
   push(@data, "int CCTKi_BindingsFortranWrapper$thorn(cGH *GH, void *fpointer)");
