@@ -67,7 +67,7 @@ t_tree *TreeStoreData(t_tree *root, t_tree *subtree, void *data, int (*compare)(
     }
     else if(order > 0) 
     {
-      root = TreeStoreData(subtree, subtree->right, data, compare);
+      subtree = TreeStoreData(subtree, subtree->right, data, compare);
     }
     else if(order==0)
     {
@@ -198,6 +198,32 @@ void TreePrintNodes(t_tree *root, int depth, void (*print_node)(void *, int))
   }
 }
 
+
+t_tree *TreeFindNode(t_tree *root, void *data, int (*compare)(const void *, const void *))
+{
+  int order;
+
+  t_tree *node;
+
+  /* Go down left or right branch. */
+  if((order = compare(data, root->data)) < 0)
+  {
+    node = TreeFindNode(root->left, data, compare);
+  }
+  else if(order > 0) 
+  {
+    node = TreeFindNode(root->right, data, compare);
+  }
+  else if(order==0)
+  {
+    /* Found it. */
+    node = root;
+  }
+
+  return node;
+}  
+
+
 /* Stuff to test the routines. */
 
 /*#define TEST_BinaryTree*/
@@ -230,6 +256,7 @@ int main(void)
   t_infodata infodata;
   char instring[500];
   char *newstring;
+  t_tree *node;
 
   infodata.i=0;
 
@@ -254,6 +281,19 @@ int main(void)
 
   TreePrintNodes(root, 0, (void (*)(void *, int))print_node);
 
+  printf("String to find ? ");
+  scanf("%s", instring);
+
+  node = TreeFindNode(root, instring, (int (*)(const void *, const void *))strcmp);
+
+  if(node)
+  {
+    printf("Found a node, node->data is %s\n", node->data);
+  }
+  else
+  {
+    printf("Unable to find node with %s\n", instring);
+  }
 
   return 0;
 }

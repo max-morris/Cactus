@@ -14,6 +14,7 @@ typedef struct T_TREE
 {
   struct T_TREE *left;
   struct T_TREE *right;
+  struct T_TREE *next;
 
   void *data;
 } t_tree;
@@ -31,6 +32,8 @@ int TreeTraversePreorder(t_tree *root, int (*process)(void *, void *), void *inf
 int TreeTraversePostorder(t_tree *root, int (*process)(void *, void *), void *info);
 
 void TreePrintNodes(t_tree *root, int depth, void (*print_node)(void *, int));
+
+t_tree *TreeFindNode(t_tree *root, void *data, int (*compare)(const void *, const void *));
 
 #ifdef _cplusplus
 	   }
