@@ -26,6 +26,8 @@
 #include "cctki_Stagger.h"
 #include "cctki_Groups.h"
 
+#include "cctki_Expression.h"
+
 #include "util_String.h"
 
 /*#define DEBUG_GROUPS*/
@@ -193,6 +195,7 @@ static CCTK_INT **CCTKi_ExtractSize (int dimension,
                                      const char *sizestring);
 
 static int ExtractNVars(const char *parameter);
+static int CCTKi_ParamExpressionToInt(const char *expression, const char *thorn);
 
  /*@@
    @routine    CCTK_StaggerVars
@@ -1853,7 +1856,8 @@ int CCTKi_CreateGroup (const char *gname,
       
     vararraysize = Util_Strdup(va_arg (ap, char *));
 
-    n_variables = ExtractNVars(vararraysize);
+    n_variables = CCTKi_ParamExpressionToInt(vararraysize,thorn);
+
     if(n_variables < 1)
     {
       CCTK_VWarn (0, __LINE__, __FILE__, "Cactus",
@@ -2105,8 +2109,12 @@ static cGroupDefinition *CCTKi_SetupGroup (const char *implementation,
    @author     Tom Goodale
    @desc
                Extracts the size array from a comma-separated list of
-               positive integer constants or parameter names (which can
-               have an optional integer constant added/substracted to/from it).
+               positive integer constants or arithmetical combinations of
+               integer parameters.
+
+               FIXME:  This routine originally returned a pointer to the
+                       parameter values, which is why it returns **.
+                       Now it doesn't, so we probably have a memory leak.
    @enddesc
 
    @returntype CCTK_INT **
@@ -2120,15 +2128,25 @@ static CCTK_INT **CCTKi_ExtractSize (int dimension,
                                      const char *sizestring)
 {
   int         dim, type;
-  CCTK_INT   *this_size, **size_array;
+  CCTK_INT    *this_size, **size_array;
   const char *last_comma, *next_comma;
   char       *thorn, *param, *tmp;
   regmatch_t  pmatch[5];
-
+  CCTK_INT size;
+  
 
   if (strlen (sizestring))
   {
     size_array = (CCTK_INT **) malloc (dimension * sizeof (CCTK_INT *));
+
+#if 1
+    size_array[0] = (CCTK_INT *) malloc(dimension *sizeof(CCTK_INT));
+
+    for(dim = 1; dim < dimension; dim++)
+    {
+      size_array[dim] = size_array[0] + dim;
+    }
+#endif
 
     next_comma = sizestring;
 
@@ -2147,6 +2165,7 @@ static CCTK_INT **CCTKi_ExtractSize (int dimension,
           tmp[next_comma-last_comma] = '\0';
         }
 
+#if 0
         /* now execute the regex parser on that token
            This should always succeed since the perl parser did the same
            check already when creating the variable bindings. */
@@ -2211,7 +2230,13 @@ static CCTK_INT **CCTKi_ExtractSize (int dimension,
           free (thorn);
           free (param);
         }
+#endif
+#if 1
+        size = CCTKi_ParamExpressionToInt(tmp, this_thorn);
 
+        *size_array[dim] = size;
+#endif
+   
         free (tmp);
       }
     }
@@ -2222,7 +2247,7 @@ static CCTK_INT **CCTKi_ExtractSize (int dimension,
     size_array = NULL;
   }
 
-  return (size_array);
+  return size_array;
 }
 
  /*@@
@@ -2297,11 +2322,11 @@ const int *CCTKi_GroupLengthAsPointer(const char *fullgroupname)
 }
 
  /*@@
-   @routine    ExtractNVars
-   @date       Sun Oct  7 05:34:23 2001
+   @routine    IntParameterEvaluator
+   @date       Fri Oct 12 10:01:32 2001
    @author     Tom Goodale
    @desc 
-   Simplem routine to turn a parameter value or integer into an integer
+   Evaluates integer parameters for the expression parser.
    @enddesc 
    @calls     
    @calledby   
@@ -2309,26 +2334,36 @@ const int *CCTKi_GroupLengthAsPointer(const char *fullgroupname)
  
    @endhistory 
    @var     parameter
-   @vdesc   full parameter name
+   @vdesc   The parameter name
    @vtype   const char *
    @vio     in
    @vcomment 
  
    @endvar 
+   @var     data
+   @vdesc   Data passed from expression evaluator
+   @vtype   void *
+   @vio     in
+   @vcomment 
+     Should be a char * with the thorn name.
+   @endvar 
 
    @returntype int
    @returndesc
-       A size extracted form the parameter
+     The value of the parameter
    @endreturndesc
 @@*/
-static int ExtractNVars(const char *parameter)
+static int IntParameterEvaluator(const char *parameter, void *data)
 {
   int retval;
+
   char *tmp;
   char *endptr;
   const CCTK_INT *paramval;
   char *thorn;
   char *param;
+  const char *use_thorn;
+  const char *use_param;
   int type;
   
   tmp = Util_Strdup(parameter);
@@ -2337,9 +2372,20 @@ static int ExtractNVars(const char *parameter)
 
   if(endptr == tmp)
   {
-    CCTK_DecomposeName (parameter,&thorn,&param);
-  
-    paramval = (CCTK_INT *) CCTK_ParameterGet (param, thorn, &type);
+    if(CCTK_DecomposeName (parameter,&thorn,&param))
+    {
+      thorn = NULL;
+      param = NULL;
+      use_thorn = (const char *)data;
+      use_param = parameter;
+    }
+    else
+    {
+      use_thorn = thorn;
+      use_param = param;
+    }
+
+    paramval = (const CCTK_INT *) CCTK_ParameterGet (use_param, use_thorn, &type);
 
     if(paramval && type==PARAMETER_INTEGER)
     {
@@ -2348,14 +2394,14 @@ static int ExtractNVars(const char *parameter)
     else if(!paramval)
     {
       CCTK_VWarn (0, __LINE__, __FILE__, "Cactus",
-                  "ExtractNSize: '%s::%s' is not a parameter",
-                  thorn, param);
+                  "IntParameterEvaluator: '%s::%s' is not a parameter",
+                  use_thorn, use_param);
     }
     else
     {
       CCTK_VWarn (0, __LINE__, __FILE__, "Cactus",
-                  "ExtractNSize: '%s::%s' is not an integer parameter",
-                  thorn, param);
+                  "IntParameterEvaluator: '%s::%s' is not an integer parameter",
+                  use_thorn, use_param);
     }
     free(thorn);
     free(param);
@@ -2365,3 +2411,67 @@ static int ExtractNVars(const char *parameter)
 
   return retval;
 }
+  
+ /*@@
+   @routine    CCTKi_ParamExpressionToInt
+   @date       Fri Oct 12 10:04:18 2001
+   @author     Tom Goodale
+   @desc 
+   Parses an arithmetic expression involving integer parameter names and
+   returns the final integer
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+   @var     expression
+   @vdesc   The expression to be parsed
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     thorn
+   @vdesc   The thorn name
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+     Used for parameters which aren't fully qualified.
+   @endvar 
+
+   @returntype int
+   @returndesc
+     The final value of the exppression
+   @endreturndesc
+@@*/
+static int CCTKi_ParamExpressionToInt(const char *expression, const char *thorn)
+{
+  int retval;
+  char *parsed_expression;
+  char *this_thorn;
+
+  this_thorn = Util_Strdup(thorn);
+
+  parsed_expression = CCTKi_ExpressionParse(expression);
+
+  if(parsed_expression && strlen(parsed_expression) > 0)
+  {
+    /* Evaluate the expression */
+    retval = CCTKi_ExpressionEvaluate(parsed_expression, IntParameterEvaluator, this_thorn);
+
+    free(parsed_expression);
+  }
+  else
+  {
+    CCTK_VWarn (0, __LINE__, __FILE__, "Cactus",
+                "Unable to parse parameter expression '%s'",
+                expression);
+    retval = -1;
+  }
+
+  free(this_thorn);
+
+  return retval;
+}
+
