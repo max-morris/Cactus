@@ -6,18 +6,19 @@
 #   @desc 
 #   
 #   @enddesc 
-#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/linux-gnu,v 1.2 1999-02-27 11:19:49 allen Exp $
+#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/linux-gnu,v 1.3 1999-02-27 11:51:15 allen Exp $
 # @@*/
 
 # Determine which Fortran 90 compiler is in use
 LINUX_F90_COMP=
 
 if test -n "$F90" ; then 
+    echo $F90
     if test "`$F90 -V 2>&1 | grep -i f90 | grep -i vast`" ; then 
 	LINUX_F90_COMP=pacific
     elif test "`$F90 -V 2>&1 | grep -i f90 | grep -i absoft`" ; then 
 	LINUX_F90_COMP=absoft
-    elif test "$F90" = "pgf90" ; then
+    elif test "`$F90 -V 2>&1 | grep -i f90 | grep -i pgf90`" ; then
 	LINUX_F90_COMP=portland
     else
 	echo Unknown Linux f90 compiler.

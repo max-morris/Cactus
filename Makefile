@@ -16,12 +16,12 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.18 1999-02-21 15:37:05 goodale Exp $
+#   @version $Id: Makefile,v 1.19 1999-02-27 11:51:14 allen Exp $
 # @@*/
 
 # Make quietly unless told not to
 ifneq ($(strip $(SILENT)),no)
-.SILENT:
+#.SILENT:
 endif
 
 # Set the options to pass to the setup script
