@@ -146,7 +146,7 @@ int CCTK_Warn(int level, int line, const char *file, const char *thorn, const ch
 
   if(level <= error_level)
   {
-    exit(99);
+    CCTK_Abort(NULL,0); 
   }
 
   return 0;
@@ -292,7 +292,7 @@ int CCTK_VWarn(int level, int line, const char *file, const char *thorn, const c
 
   if(level <= error_level)
   {
-    exit(99);
+    CCTK_Abort(NULL,0);
   }
 
   return 0;
