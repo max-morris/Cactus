@@ -7,6 +7,7 @@
    @enddesc 
  @@*/
 
+/*#define DEBUG_MISC*/
 
 #include <stdlib.h>
 #include <string.h>
@@ -169,12 +170,16 @@ char *CCTK_NullTerminateString(const char *instring, unsigned int len)
   char *outstring;
   unsigned int i;
 
+#ifdef DEBUG_MISC
+  printf("CCTK_NullTerminateString: -%s-, (%u)\n",instring,len);
+#endif
+
   outstring = (char *)malloc((len+2)*sizeof(char));
   assert(outstring);
+
   for (i=0;i<len;i++) 
-  {
     outstring[i] = instring[i];
-  }
+  
   outstring[len] = '\0';
 
   return(outstring);
