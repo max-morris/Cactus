@@ -153,6 +153,7 @@ The interface configuration file consists of
 other thorns.
 \item a block detailing which include files are used from other
 thorns, and which include files are provided by this thorn
+\item blocks detailing aliased functions provided or used by this thorn
 \item a series of blocks listing the thorn's global variables.
 \end{itemize}
 (For a more extensive discussion of Cactus variables see Chapter
@@ -195,6 +196,46 @@ another thorn.  The latter indicates that this thorn adds the code in
 the include file is described as \verb|SOURCE|, the included code is
 only exectuted if the providing thorn is active.
 Both default to \verb|HEADER|.
+
+\subsection{Function aliasing}
+If any aliased function is to be used or provided by the thorn then
+the prototype must be declared with the form:
+\begin{verbatim}
+<return_type> FUNCTION <alias>(<arg1_type> <arg1>, ...)
+\end{verbatim}
+The \verb|<return_type>| must be either \verb|void|, \verb|CCTK_INT|
+or \verb|CCTK_REAL|. The name of the aliased function \verb|<alias>|
+must be 21 characters or less, contain at least one uppercase and one
+lowercase letter, and follow the C standard for function names.  The
+type of each argument, \verb|<arg*_type>| must be a \verb|CCTK| type
+in \verb|INT,REAL,STRING,POINTER,INT:ARRAY,REAL:ARRAY|. Arguments may
+only be modified if they have the \verb|ARRAY| suffix.
+
+If the argument \verb|<arg*>| is a function pointer then the argument
+itself (which will preceded by the return type) should be
+\begin{verbatim}
+CCTK_FPOINTER <function_arg1>(<arg1_type> <arg1>, ...)
+\end{verbatim}
+Function pointers may not be nested. The combined character length of
+\verb|<alias>| and \verb|<function_arg*>| must be 21 characters or
+less. 
+
+If an aliased function is to be used then the block
+\begin{verbatim}
+USES FUNCTION <alias>
+\end{verbatim}
+is required.
+
+If a function is provided then the block
+\begin{verbatim}
+PROVIDES FUNCTION <alias> WITH <provider> LANGUAGE <providing_language>
+\end{verbatim}
+is required. As with the alias name, \verb|<provider>| must be 21
+characters or less, contain at least one uppercase and one lowercase
+letter, and follow the C standard for function names. Currently the
+only supported values of \verb|<providing_language>| are \verb|C| and
+\verb|Fortran|.
+
 
 \subsection{Variable blocks}
 The thorn's variables are collected into groups. This is not only
