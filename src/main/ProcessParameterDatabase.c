@@ -8,6 +8,7 @@
  @@*/
 
 #include <stdio.h>
+#include <string.h>
 
 #include "cctk_Flesh.h"
 #include "cctk_Parameter.h"
@@ -45,10 +46,23 @@ int CCTKi_ProcessParameterDatabase(tFleshConfig *ConfigData)
 
   CCTKi_SetParameterSetMask(PARAMETER_RECOVERY_PRE);
 
-  if((parameter_file = fopen(ConfigData->parameter_file_name, "r")))
+  if(!strcmp(ConfigData->parameter_file_name,"-"))
+  {
+    parameter_file = stdin;
+  }
+  else
+  {
+    parameter_file = fopen(ConfigData->parameter_file_name, "r");
+  }
+
+  if(parameter_file)
   {
     ParseFile(parameter_file, CCTKi_SetParameter, ConfigData);
-    fclose(parameter_file);
+
+    if(strcmp(ConfigData->parameter_file_name,"-"))
+    {
+      fclose(parameter_file);
+    }
     retval = 0;
   }
   else
