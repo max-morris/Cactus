@@ -13,6 +13,10 @@
 #include "cctk_IO.h"
 #include "cctk_IOMethods.h"
 
+static char *rcsid = "$Header$";
+
+CCTK_FILEVERSION(IO_FortranBindingsIO_c)
+
 void CCTK_FCALL CCTK_FNAME(CCTK_OutputGH)
      (int *istat,cGH *GH)
 {

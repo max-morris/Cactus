@@ -34,7 +34,7 @@
 
 static char *rcsid = "$Header$";
 
-CCTK_FILEVERSION(main_ScheduleImplementation_c)
+CCTK_FILEVERSION(main_ScheduleInterface_c)
 
 
 /********************************************************************
