@@ -25,32 +25,34 @@ You have to do the following:
      #include "cctk.h"
 
 - to include parameters, use 
-     #include "cctk_parameters.h"
+     #include "cctk_Parameters.h"
 
 - to declare arguments, use
-     #include "cctk_arguments.h"
+     #include "cctk_Arguments.h"
 
 - C programmers now need to declare their own standard libraries
 
 - the macro argument CACTUS or any particular one, like 
-  BONAMASSO_EVOLUTION_ARGS has to be replaced by CCTK_FARGUMENTS,
-  in case of fortran routine and by CCTK_CARGUMENTS in case of
+  BONAMASSO_EVOLUTION_ARGS has to be replaced by CCTK_ARGUMENTS,
+  in case of fortran routine and by CCTK_ARGUMENTS in case of
   C routine.
-  In order to declare it, use DECLARE_CCTK_FARGUMENTS (fortran case)
-  or DECLARE_CCTK_CARGUMENTS (C case)
+  In order to declare it, use DECLARE_CCTK_ARGUMENTS (fortran case)
+  or DECLARE_CCTK_ARGUMENTS (C case)
 
 - replace DECLARE_PARSER with DECLARE_CCTK_PARAMETERS. 
   
-- For now fortran programmers have  to declare 
-     integer CCTK_Equals
-  wherever you need to read parameters. See below. Note that
-  since CCTK_Equals returns an INTEGER, you cannot say
+- Fortran programmers should declare 
+     DECLARE_CCTK_FUNCTIONS 
+
+  wherever you need to read parameters or call flesh functions.  For
+  comparing string-valued parameters you should use CCTK_Equals. Note
+  that since CCTK_Equals returns an INTEGER, you cannot say
 
   if (CCTK_Equals(mypar,"thispar")) then
 
   you must say 
 
-  if (CCTK_Equals(mypar,"thispar").eq.1) then
+  if (CCTK_Equ(mypar,"thispar").eq.1) then
 
   (some compilers will not insist on this). To make this easier,
   there is a macro CCTK_EQUALS which you can use as a logical
@@ -62,8 +64,9 @@ You have to do the following:
   "integer CCTK_Equals")
  
 - the MACROS CONFORMAL_METRIC, NON_CONFORMAL_METRIC, SHIFT_ACTIVE,
-  SHIFT_INACTIVE are now placed in thorn Einstein, in "Einstein.h". 
-  You should #include this file wherever you need them.
+  SHIFT_INACTIVE no longer exist.  Please see the documentation for
+  CactusEinstein/ADMBase and CactusEinstein/StaticConformal for  
+  the new usage.
 
 - the extrinsic curvature has changed name from hxx etc to kxx etc.
 
@@ -131,20 +134,20 @@ Now you have "param.ccl", a ccl file (see below), to make up for it.
 
 The vocabulary includes:
 
-  > friend:thorn_which_is_friend_of_mine
+  > shares:thorn_which_I_share_a_parameter_from
 
-      this allows you to access protected parameters from other thorns,e.g.
+      this allows you to access restructed parameters from other thorns,e.g.
 
-      friend:einstein
+      friend:admcoupling
 
-  > protected:
-    whatever parameter definition following can just be used by friends
+  > restricted:
+    whatever parameter definition following can just be used by other thorns
 
   > private:
     whatever parameter definition following can just be used by this very
-    thorn. No friends!
+    thorn. No one else.
 
-  > public:
+  > global:
     whatever parameter definition following can be used by any thorn.
     [Note by Cactus Maint: in general, you shouldn't need any public 
     parameters]
@@ -168,7 +171,7 @@ INTEGER nholes "number of black holes"
 
 INTEGER ADM_ICN_itnum_min "minimum number of iterations of ICN"
 {
- : :: ""
+ 1: :: ""
 } 1
 
 REAL bm_f "f factor on lapse"
@@ -176,7 +179,7 @@ REAL bm_f "f factor on lapse"
  : :: ""
 } 2.0
 
-LOGICAL evolve_metric "Choose whether to evolve the metric"
+BOOLEAN evolve_metric "Choose whether to evolve the metric"
 {
 } "yes"
 
@@ -195,20 +198,14 @@ value can just be adjusted to one of the allowed values. Otherwise
 you will be warned you have been bad.
 
 You can extend the range of the parameters belonging to a thorn
-which you have become friend of. Example:
+which you share parameters from. Example:
 
-EXTEND KEYWORD evolution_system ""
+shares:admbase
+
+EXTEND KEYWORD evolution_method ""
 {
    "BMA" :: "Evolve using BMA evolution scheme"
 }
-
-Einsten thorn owns this parameter, therefore I have had to declare my
-friendship before:
-
-friend:einstein
-
-Enemies and lovers not still implemented, but the Cactus 4 team is
-considering them, or so I was told.
 
 Of course all this does not come without modification in the parameter
 files. First, because of multiple-purpose parameters are now 
@@ -218,11 +215,9 @@ the same private parameters in different thorns with different
 purposes, and they shouldn't conflict with each other.
 For instance,
 
-einstein::evolution_system        =    "ADM"    
+admbase::evolution_method        =    "ADM"    
 
 The old flesh parameters now belong to some implementation or another, like
-einstein::dtfac
-grid::dx
 driver::global_nx
 
 or have cctk status:
@@ -234,33 +229,29 @@ etc.
  
 _________________________________________________________________________
 
-3) THE NEW RFR INTERFACE
+3) THE NEW SCHEDULE INTERFACE
 
-The RFR interface between thorns and flesh is no longer a C/FORTRAN file,
-but a ccl file ("schedule.ccl") and includes storage and communication 
+The RFR interface between thorns and flesh has been replaced by a
+scheduling interface.  The data is no longer in a C/FORTRAN file,
+but in a ccl file ("schedule.ccl") and includes storage and communication 
 information for the variables (in Cactus 3 this was in the GridFuncList).
 
 The vocabulary is 
 
 STORAGE:  somethingtostore
 
-COMMUNICATION: variableswhichcommunicate
-
-
 Example:______________________________
 
 if (CCTK_Equals(evolution_system,"BMA"))
 {
+
 ########### what to store #######################################
   STORAGE: alpha_derivatives,metric_derivatives,vees,traces
-########### what to communicate #################################
-  COMMUNICATION: alpha_derivatives,metric_derivatives,vees,traces
 
   # shift treatment
   if (!CCTK_Equals(shift,"none")) 
   {
     STORAGE: shift_deriv
-    COMMUNICATION: shift_deriv
   }
 
   .... 
@@ -284,6 +275,15 @@ For instance:
   schedule BonaMasso_evolution at CCTK_EVOL
   {
     LANG: Fortran
+  } "Evolve with BMA system"
+
+Instead of calling Sync, you should now declare that a group of
+variables should be synced at the end of a routine, e.g.
+
+  schedule BonaMasso_evolution at CCTK_EVOL
+  {
+    LANG: Fortran
+    SYNC: bm_vars
   } "Evolve with BMA system"
 
 
@@ -320,10 +320,10 @@ now to be specified in "schedule.ccl"
     > inherits
          for instance, 
 
-         inherits: einstein
+         inherits: admbase
 
          the arguments passed to the routines of this thorn will
-         include "public" stuff of einstein implementation in
+         include "public" stuff of admbase implementation in
          einsteins's interface.ccl.
 
     > protected
