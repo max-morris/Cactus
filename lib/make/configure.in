@@ -770,6 +770,18 @@ if test -z "$F90_DEBUG_FLAGS" ; then
   F90_DEBUG_FLAGS="-g"
 fi
 
+# Set the warn flags
+AC_SUBST(WARN_MODE)
+
+if test -n "$WARN" ; then
+  if test "$WARN" != "yes" -a "$WARN" != "no" ; then
+    AC_ERROR(Didn't recognize setting of WARN=\"$WARN\" (should be either \"yes\" or \"no\"))
+  fi
+  WARN_MODE=$WARN
+else
+  WARN_MODE='no'
+fi
+
 # Set the optimization flags if they've not been set by now
 
 AC_SUBST(OPTIMISE_MODE)

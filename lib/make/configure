@@ -1584,12 +1584,12 @@ else
 #line 1585 "configure"
 #include "confdefs.h"
 #include <stdio.h>
-int main()
+main()
 {
   FILE *f=fopen("conftestval", "w");
-  if (!f) return(1);
+  if (!f) exit(1);
   fprintf(f, "%d\n", sizeof(long long));
-  return(0);
+  exit(0);
 }
 EOF
 if { (eval echo configure:1596: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
@@ -1628,12 +1628,12 @@ else
 #line 1629 "configure"
 #include "confdefs.h"
 #include <stdio.h>
-int main()
+main()
 {
   FILE *f=fopen("conftestval", "w");
-  if (!f) return(1);
+  if (!f) exit(1);
   fprintf(f, "%d\n", sizeof(long int));
-  return(0);
+  exit(0);
 }
 EOF
 if { (eval echo configure:1640: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
@@ -1672,12 +1672,12 @@ else
 #line 1673 "configure"
 #include "confdefs.h"
 #include <stdio.h>
-int main()
+main()
 {
   FILE *f=fopen("conftestval", "w");
-  if (!f) return(1);
+  if (!f) exit(1);
   fprintf(f, "%d\n", sizeof(int));
-  return(0);
+  exit(0);
 }
 EOF
 if { (eval echo configure:1684: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
@@ -1716,12 +1716,12 @@ else
 #line 1717 "configure"
 #include "confdefs.h"
 #include <stdio.h>
-int main()
+main()
 {
   FILE *f=fopen("conftestval", "w");
-  if (!f) return(1);
+  if (!f) exit(1);
   fprintf(f, "%d\n", sizeof(short int));
-  return(0);
+  exit(0);
 }
 EOF
 if { (eval echo configure:1728: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
@@ -1762,12 +1762,12 @@ else
 #line 1763 "configure"
 #include "confdefs.h"
 #include <stdio.h>
-int main()
+main()
 {
   FILE *f=fopen("conftestval", "w");
-  if (!f) return(1);
+  if (!f) exit(1);
   fprintf(f, "%d\n", sizeof(long double));
-  return(0);
+  exit(0);
 }
 EOF
 if { (eval echo configure:1774: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
@@ -1806,12 +1806,12 @@ else
 #line 1807 "configure"
 #include "confdefs.h"
 #include <stdio.h>
-int main()
+main()
 {
   FILE *f=fopen("conftestval", "w");
-  if (!f) return(1);
+  if (!f) exit(1);
   fprintf(f, "%d\n", sizeof(double));
-  return(0);
+  exit(0);
 }
 EOF
 if { (eval echo configure:1818: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
@@ -1851,12 +1851,12 @@ else
 #line 1852 "configure"
 #include "confdefs.h"
 #include <stdio.h>
-int main()
+main()
 {
   FILE *f=fopen("conftestval", "w");
-  if (!f) return(1);
+  if (!f) exit(1);
   fprintf(f, "%d\n", sizeof(float));
-  return(0);
+  exit(0);
 }
 EOF
 if { (eval echo configure:1863: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
@@ -1897,12 +1897,12 @@ else
 #line 1898 "configure"
 #include "confdefs.h"
 #include <stdio.h>
-int main()
+main()
 {
   FILE *f=fopen("conftestval", "w");
-  if (!f) return(1);
+  if (!f) exit(1);
   fprintf(f, "%d\n", sizeof(char *));
-  return(0);
+  exit(0);
 }
 EOF
 if { (eval echo configure:1909: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
@@ -4682,6 +4682,18 @@ if test -z "$F90_DEBUG_FLAGS" ; then
   F90_DEBUG_FLAGS="-g"
 fi
 
+# Set the warn flags
+
+
+if test -n "$WARN" ; then
+  if test "$WARN" != "yes" -a "$WARN" != "no" ; then
+    { echo "configure: error: Didn't recognize setting of WARN=\"$WARN\" (should be either \"yes\" or \"no\")" 1>&2; exit 1; }
+  fi
+  WARN_MODE=$WARN
+else
+  WARN_MODE='no'
+fi
+
 # Set the optimization flags if they've not been set by now
 
 
@@ -5151,6 +5163,7 @@ s%@C_DEBUG_FLAGS@%$C_DEBUG_FLAGS%g
 s%@CXX_DEBUG_FLAGS@%$CXX_DEBUG_FLAGS%g
 s%@F77_DEBUG_FLAGS@%$F77_DEBUG_FLAGS%g
 s%@F90_DEBUG_FLAGS@%$F90_DEBUG_FLAGS%g
+s%@WARN_MODE@%$WARN_MODE%g
 s%@OPTIMISE_MODE@%$OPTIMISE_MODE%g
 s%@C_OPTIMISE_FLAGS@%$C_OPTIMISE_FLAGS%g
 s%@CXX_OPTIMISE_FLAGS@%$CXX_OPTIMISE_FLAGS%g
