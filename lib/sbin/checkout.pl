@@ -339,5 +339,5 @@ sub CheckOut
   local($file) = @_;
 
   print("Checking out $file\n");
-  system("cvs -q checkout $file");
+  system("cvs -z9 -q checkout $file");
 }
