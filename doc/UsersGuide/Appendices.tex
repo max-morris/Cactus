@@ -109,14 +109,14 @@ The key word {\t access} designates that all parameter object specification
 items up to the next parameter data scoping item are in the same 
 protection or scoping class. {\t access} can take the values:
 \begin{itemize}
-\item{} {\t public} --- all thorns have access to public parameters
-\item{} {\t protected} --- other thorns can have access to these 
+\item{} {\t global} --- all thorns have access to global parameters
+\item{} {\t restricted} --- other thorns can have access to these 
                            parameters if they specifically request
                            it in their own param.ccl
 \item{} {\t private} --- only your thorn has access to private parameters
-\item{} {\t friend} --- in this case an {\t implementation} name must follow
+\item{} {\t uses} --- in this case an {\t implementation} name must follow
                         the colon. It declare that all the parameters in 
-                        the following scoping block are protected variables
+                        the following scoping block are restricted variables
                         from the specified {\t implementation}.
 \end{itemize}
 
@@ -126,7 +126,7 @@ protection or scoping class. {\t access} can take the values:
 
 {\t
 \begin{verbatim}
-[EXTENDS] <parameter type> <parameter name> ``<parameter description>'' 
+[EXTENDS|USES] <parameter type> <parameter name> ``<parameter description>'' 
 {
   <PARAMETER VALUES>
 } <default value>
@@ -245,7 +245,7 @@ problem report.
 \item[{\bf Reporters email}] Your email address so we can get in
 contact with you.
 \item[{\bf Category}] there is currently a category for each of the
-Cactus thorns and packages, also a category for the old Cactus3.x and
+Cactus thorns and arrangements, also a category for the old Cactus3.x and
 some general subjects like Web,etc. Select whatever category fits
 best.
 \item[{\bf Synopsis}] A brief and informative subject line.
@@ -262,7 +262,6 @@ problem you are dealing with.
 \item[{\bf Originator}] Your name
 
 \item[{\bf Release}] The Cactus release your are using.
-%Type {\tt gmake version} FIXME
 
 \item[{\bf Environment}] Very important: specify the environment:
 e.g. {\tt uname -a}, MPI/non-MPI, etc.
@@ -299,7 +298,7 @@ files among multiple  authors. CVS can be obtained from
 
 A {\em CVS repository}located on a {\em server} may consist of an arbitrary
 number of {\em modules}, which can be checked out independently. The Cactus
-packages are organized as modules, their {\em CVS server} is {\tt cvs.cactuscode.org}.
+arrangements are organized as modules, their {\em CVS server} is {\tt cvs.cactuscode.org}.
 
 \subsection{Essential CVS commands}
 
@@ -369,7 +368,7 @@ updates.
 
 \item[{\bf cvs import} {\tt repository tag1 tag2}]
 Import adds an entire source distribution to the repository directory.
-Use this command to add new packages to the Cactus4.0 repository. The
+Use this command to add new arrangements to the Cactus4.0 repository. The
 {\tt repository} argument gives a directory name (or a path to a
 directory) and the CVS root directory for repositories; to obtain this 
 directory on the CVS server, send a request to {\tt
@@ -504,14 +503,14 @@ schedule the file for addition, then you commit it:\\
 
 \item\textbf{Creating a new thorn}\newline
 To add a new module to the Cactus repository, (e.g. an additional Cactus
-package), you have to obtain a directory on the CVS server and a
+arrangement), you have to obtain a directory on the CVS server and a
 login, which gives you administrative rights on your module. Please
 contact the {\tt cactus@cactuscode.org} for details. The following
 CVS steps apply as well to adding to a locally hosted CVS repository (except 
 that the CVSROOT option has to be changed to your local host).
 To perform the addition, type\\
 {\tt cvs -d :pserver:}{\em your\_login}{\tt
-@cvs.cactuscode.org:/usr/users/cactus }{\em package\_name} {\tt start V1}\\
+@cvs.cactuscode.org:/usr/users/cactus }{\em arrangement\_name} {\tt start V1}\\
 where {\tt start} and {\tt V1} are the vendor and release tags, which
 have to be supplied. 
 \end{description}
@@ -593,9 +592,6 @@ Return to previous location before jump to tag (not widely implemented).
 \end{enumerate}
 
 
-
-\chapter{Thorn-Flesh Interface}
-\label{sec:thflin}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

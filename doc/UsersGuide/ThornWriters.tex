@@ -6,51 +6,24 @@
 
 \chapter{Thorn concepts} 
 
-      (This section has to contain enough explanation to make the rest of
-       the writers guide readable the first time through)
-(The hardest bugs to find are
-those arising from plausible but incorrect assumptions about the
-behavior of someone else's thorn.)
-
-\begin{itemize}
-
-\item 
-Again probably emphasize collaboration, what are thorns, packages, 
-how to share them.
-\item 
-Things to think about before you start programming:
-             Language, read all the documentation, emphasize use of
-             standard supported Cactus infrastructure
-\item  Available data types
-\begin{itemize}
-\item Groups
-\item Scalars
-\item Arrays and GFs
-\end{itemize}
-
-\item  Understanding the RFR concept
-\item  Understanding the GH concept
-\item  Ghost zones and parallelism
-
-\end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Packages}
+\section{Arrangements}
 
-Thorns are grouped into {\em packages}.  This is a logical grouping of
+Thorns are grouped into {\em arrangements}.  This is a logical grouping of
 thorns which is purely for administrative purposes.  The compiled
-code knows nothing about packages.
+code knows nothing about arrangements.
 
-The packages live in the `packages' directory off the main CCTK directory.  
-Package names must be unique, and cannot start with a `\#', or finish
+The arrangements live in the `arrangements' directory off the main CCTK directory.  
+Arrangement names must be unique, and cannot start with a `\#', or finish
 with `~' or `.bak'.
 
-Inside a package directory there is a directory for each thorn belonging
-to the package.  Thorn names have the same restrictions as package names,
+Inside a arrangement directory there is a directory for each thorn belonging
+to the arrangement.  Thorn names have the same restrictions as arrangement names,
 with the addition that a thorn cannot be called `doc'.  This name is
-reserved for package documentation.
+reserved for arrangement documentation.
 
 \section{Implementations}
 
@@ -118,7 +91,7 @@ Data Type          & Default Size (bytes) & Variable Type & Configuration Option
 \end{center}
 
 These variable types must be used by thorn writers to declare variables
- in the thorn interface files (FIXME: REF), and may be used to declare
+ in the thorn interface files, and may be used to declare
 variables in the thorn routines. Note that variable declarations in 
 thorns should obviously match with definitions in the interface files
 where appropriate.
@@ -161,7 +134,7 @@ For example, the variable {\tt cctkGH} is of this type.
 
 \section{thorns}
 
-A thorn consists of a subdirectory of a package containing three 
+A thorn consists of a subdirectory of a arrangement containing three 
 administrative files
 
 \begin{itemize}
@@ -193,9 +166,9 @@ When this is run:
 
 \begin{enumerate} 
 \item{} You will be prompted for the name of the new thorn.
-\item{} You will be prompted for the name of the package you would
-like to include your thorn in. Either enter a new package name or pick 
-one from the list of available packages that are shown.
+\item{} You will be prompted for the name of the arrangement you would
+like to include your thorn in. Either enter a new arrangement name or pick 
+one from the list of available arrangements that are shown.
 \end{enumerate}
 
 
@@ -485,6 +458,10 @@ For recovery from checkpoint.
 
 For generating initial data.
 
+\item {\tt CACTUS\_POSTINITIAL}
+
+Tasks which must be applied after initial data is created.
+
 \item {\tt CACTUS\_CPINITIAL}
 For recovery of initial data from a checkpoint file.
 
@@ -499,9 +476,6 @@ The evolution step.
 
 Stuff done after the evolution step.
 
-\item {\tt CACTUS\_BOUND}
-
-Boundary stuff. {\q Is this used ? }
 \item {\tt CACTUS\_CHECKPOINT}
 For checkpointing data
 
@@ -699,23 +673,13 @@ changing a parameter is undefined.
 
 To allow flexible IO, the flesh itself does not provide 
 any output routines, however it provides a mechanism for 
-thorns to register different routines as IO methods. For 
-details of writing IO thorns see ????. Application thorns
+thorns to register different routines as IO methods. Application thorns
 can interact with the different IO methods through the following
 function calls:
 
-{\t
-\begin{verbatim}
+\begin{description}
 
-#include ``CactusIOFunctions.h''
-int CCTK_OutputGH(cGH *GH);
-
-#include ``cctk.h''
-call CCTK_OutputGH(GH)
-    CCTK_POINTER GH
-\end{verbatim}
-}
-\vskip .25cm
+\item[CCTK\_OutputGH]
 
 This call loops over all registered IO methods, calling 
 the routine that each method has registered for {\t OutputGH}.
@@ -726,21 +690,7 @@ supply routines to output all different types of variables)
 and if the method decides it is an appropriate time to 
 output. 
 
-
-{\t
-\begin{verbatim}
-
-#include ``CactusIOFunctions.h''
-int CCTK_OutputVarAsByMethod(cGH *GH, const char *varname, const char *alias, const char *methodname);
-
-#include ``cctk.h''
-call CCTK_OutputVarAsByMethod(GH,varname,alias,methodname)
-    CCTK_POINTER GH
-    char* varname
-    char* alias
-    char* methodname
-\end{verbatim}
-}
+\item[CCTK\_OutputVarAsByMethod]
 
 Output a variable {\t varname} using the method {\t methodname} if it is 
 registered. Uses {\t alias} as the name of the variable for the purpose
@@ -749,38 +699,14 @@ if the appropriate file exists the data is appended, otheriwise a new
 file is created.
 
 
-{\t
-\begin{verbatim}
-
-#include ``CactusIOFunctions.h''
-int CCTK_OutputVarByMethod(cGH *GH, const char *varname, const char *methodname);
-
-#include ``cctk.h''
-call CCTK_OutputVarByMethod(GH,varname,methodname)
-    CCTK_POINTER GH
-    char* varname
-    char* methodname
-\end{verbatim}
-}
+\item[CCTK\_OutputVarByMethod]
 
 Output a variable {\t varname} using the method {\t methodname} if it is 
 registered. The output should take place if at all possible,
 if the appropriate file exists the data is appended, otherwise a new
 file is created.
 
-{\t
-\begin{verbatim}
-
-#include ``CactusIOFunctions.h''
-int CCTK_OutputVarAs(cGH *GH, const char *varname, const char *alias);
-
-#include ``cctk.h''
-call CCTK_OutputVarAs(GH,varname,alias)
-    CCTK_POINTER GH
-    char* varname
-    char* alias
-\end{verbatim}
-}
+\item[CCTK\_OutputVarAs]
 
 Output a variable {\t varname} looping over all registered methods. 
 The output should take place if at all possible,
@@ -788,23 +714,14 @@ if the appropriate file exists the data is appended, otherwise a new
 file is created. Uses {\t alias} as the name of the variable for the purpose
 of constructing a filename.
 
-{\t
-\begin{verbatim}
-
-#include ``CactusIOFunctions.h''
-int CCTK_OutputVar(cGH *GH, const char *varname);
-
-#include ``cctk.h''
-call CCTK_OutputVarAs(GH,varname)
-    CCTK_POINTER GH
-    char* varname
-\end{verbatim}
-}
+\item[CCTK\_OutputVar]
 
 Output a variable {\t varname} looping over all registered methods. 
 The output should take place if at all possible,
 if the appropriate file exists the data is appended, otherwise a new
 file is created.
+
+\end{description}
 
 \subsection{Reduction Operators}
 \label{sec:reop}
@@ -851,15 +768,6 @@ int CCTK_Reduce(cGH *GH, int retvaltype, int retvalnum, void *retval, int handle
 Note that the memory for {\t retval} must be assigned before the reduction
 call is made.
 
-\subsection{Interpolation}
-
-
-\section{A First Example (Baloney)}
-
-\section{Programming language differences}
-
-\section{A more complex example (WaveToy)}
-
 \section{Error handling, Warnings and Code Termination}
       
 There are two CCTK commands to use for stopping the code
@@ -882,8 +790,7 @@ CCTK_Abort(cGH *GH, int return_code);
 \end{itemize}
 In both cases, an error code should be returned indicating the
 error that you trapped which precipitated the code shutdown.
-The error codes are detailed in the following table:
-{\bf ACTION: Fill in the table QUERY}.
+The error codes will soon be detailed in a following table.
 
 \section{Calls between different programming languages}
 \label{sec:cabedipr}
@@ -907,7 +814,7 @@ void FMODIFIER FORTRAN\_NAME(<Fortran routine name>)(<argument list>)
 \section{Adding a test suite}
 \label{sec:adatesu}
 
-\section{Sharing your thorns/packages with others}
+\section{Sharing your thorns/arrangements with others}
 \label{sec:shyothwi}
 
 \section{Naming conventions}
@@ -916,7 +823,7 @@ void FMODIFIER FORTRAN\_NAME(<Fortran routine name>)(<argument list>)
 
 \item{} Thorn names must not start with the word ``Cactus'' (in
         any case).
-\item{} Packages will be ignored if their names start with \# or .
+\item{} Arrangements will be ignored if their names start with \# or .
         or end in \~ .bak or .BAK 
 \item{} Thorns will be ignored if they are called doc or start with
         \# or . or end in \~ .bak or .BAK
@@ -928,38 +835,10 @@ void FMODIFIER FORTRAN\_NAME(<Fortran routine name>)(<argument list>)
 \end{itemize}
 
 
-\section{Providing a Reduction Operator}
-\label{sec:prareop}
-
-{\bf QUERY: Where should this go ... infrastructure or thorn writer?
-     Interface with driver layer? Gab}
-
-To provide a reduction operator, you must provide a routine with 
-the following interface
-
-{\t
-\begin{verbatim}
-
-int MyReductionOperator(cGH *GH, int proc, int retvaltype, int numretval, void *retvals, int numinfields, int *infields);
-
-\end{verbatim}
-}
-\vskip .25cm
-
-\begin{itemize}
-\item{} {\t int proc} If this argument is negative, the result should
-        be returned to all processors, if it is positive the result
-        need  only be calculated and returned
-        on one processor.
-\item{} {\t int retvaltype} 
-\item{} {\t int numretval} The number of values of type {\t retvaltype}
-        being returned in the array {\t retvals}.
-\end{itemize}
-
 \section{General Naming Conventions}
 
 The following naming conventions are followed by the flesh and the
-supported Cactus packages. They are not compulsory, but if followed
+supported Cactus arrangements. They are not compulsory, but if followed
 allow for a homogeneous code.
 
 \begin{itemize}

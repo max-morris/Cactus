@@ -272,6 +272,75 @@
 \renewcommand{\thepage}{\Alph{part}\arabic{page}}
 \pagestyle{fancy}
 
+\newpage
+
+{\Large \bf Overview of documentation}
+
+This document will eventually be a complete guide to using and
+developing with the Cactus Code. However, it is currently under
+development, so please be patient if you can't find what you need.
+Please contact {\it cactusmaint@cactuscode.org} if you need to know something
+which isn't yet documented, and we will try our best to add it as soon
+as possible. 
+
+This document covers the following topics
+
+\begin{itemize}
+
+\item {\bf PART A: Installation and Running.}
+  We give an overview on the required hardware and
+  software and we will talk you through the installation of a working
+  CCTK. You will be able to verify the correct installation by the
+  CCTK test suite. 
+
+\item {\bf Part B: Application Thorn Writing.} We introduce a
+  sample thorn that illustrates the implementation of simple initial
+  data and the subsequent evolution. You will learn how to use the
+  programming interface to take advantage of parallelism and modularity.
+
+\item {\bf Part C: Infrastructure Thorn Writer's Guide.} In this more
+  advanced part, we talk about user supplied infrastructure routines such
+  as {\em additional output routines, boundary conditions, etc.}
+
+\item {\bf Part D: Function Reference.} Here all Cactus functions which
+are available to thorn writers in C and Fortran are described.
+
+
+\item {\bf PART E: Appendices.} These contain a description of the
+Cactus Configuration Language, and other odds and ends, such as how to
+use GNATS or TAGS.
+
+\end{itemize}
+
+Other topics to be discussed in separate documents:
+
+\begin{itemize}
+
+\item Computational Thorn Guide
+
+\item Relativity Thorn Guide
+
+\item Maintainer Guide to the Flesh
+
+\end{itemize}
+
+For now, we give here a short guide to terms used in this document:
+
+\begin{itemize}
+
+\item[CCTK] Cactus Computational Tool Kit (The Cactus flesh and
+            computational thorns).
+\item[CCL] Cactus Configuration Language
+\item[flesh] The routines which hold all the thorns together.
+\item[thorn] A collection of subroutines with a definite interface 
+             and purpose
+\item[arrangement] A collection of thorns
+
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \include{RunningCactus}
 
