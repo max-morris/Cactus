@@ -6,7 +6,7 @@
 #   @desc 
 #   
 #   @enddesc
-#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/extras/MPI/MPICH,v 1.10 2000-06-27 17:08:26 tradke Exp $
+#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/extras/MPI/MPICH,v 1.11 2001-01-08 14:50:25 tradke Exp $
 # @@*/
 
 
@@ -17,20 +17,20 @@ echo "MPICH selected"
 # Find the directory.
 if test -z "$MPICH_DIR" ; then
    echo "MPICH selected but no MPICH_DIR set... Checking some places"
-   CCTK_Search MPICH_DIR "/usr /usr/local /usr/local/mpich /usr/local/packages/mpich /usr/local/apps/mpich" include/mpe.h
+   CCTK_Search MPICH_DIR "/usr /usr/local /usr/local/mpich /usr/local/packages/mpich /usr/local/apps/mpich /usr/lib/mpich" include/mpe.h
    if test -z "$MPICH_DIR" ; then
      if test -n "$MPICH_ARCH" ; then
-       CCTK_Search MPICH_DIR "/usr/local/mpich/$MPICH_ARCH /usr/local/packages/mpich/$MPICH_ARCH /usr/local/apps/mpich/$MPICH_ARCH" include/mpe.h
+       CCTK_Search MPICH_DIR "/usr/local/mpich/$MPICH_ARCH /usr/local/packages/mpich/$MPICH_ARCH /usr/local/apps/mpich/$MPICH_ARCH /usr/lib/mpich/$MPICH_ARCH" include/mpe.h
        if test -z "$MPICH_DIR" ; then
          if test -n "$MPICH_DEVICE" ; then
-           CCTK_Search MPICH_DIR "/usr/local/mpich/$MPICH_ARCH/$MPICH_DEVICE /usr/local/packages/mpich/$MPICH_ARCH/$MPICH_DEVICE /usr/local/apps/mpich/$MPICH_ARCH/$MPICH_DEVICE" include/mpe.h
+           CCTK_Search MPICH_DIR "/usr/local/mpich/$MPICH_ARCH/$MPICH_DEVICE /usr/local/packages/mpich/$MPICH_ARCH/$MPICH_DEVICE /usr/local/apps/mpich/$MPICH_ARCH/$MPICH_DEVICE /usr/lib/mpich/$MPICH_ARCH/$MPICH_DEVICE" include/mpe.h
            if test -z "$MPICH_DIR" ; then
-             CCTK_Search MPICH_DIR "/usr/local/mpich/$MPICH_DEVICE /usr/local/packages/mpich/$MPICH_DEVICE /usr/local/apps/mpich/$MPICH_DEVICE" include/mpe.h
+             CCTK_Search MPICH_DIR "/usr/local/mpich/$MPICH_DEVICE /usr/local/packages/mpich/$MPICH_DEVICE /usr/local/apps/mpich/$MPICH_DEVICE /usr/lib/mpich/$MPICH_DEVICE" include/mpe.h
            fi
          fi
        fi
      else
-       CCTK_Search MPICH_DIR "/usr/local/mpich/$MPICH_DEVICE /usr/local/packages/mpich/$MPICH_DEVICE /usr/local/apps/mpich/$MPICH_DEVICE" include/mpe.h
+       CCTK_Search MPICH_DIR "/usr/local/mpich/$MPICH_DEVICE /usr/local/packages/mpich/$MPICH_DEVICE /usr/local/apps/mpich/$MPICH_DEVICE /usr/lib/mpich/$MPICH_DEVICE" include/mpe.h
 
      fi
    fi 
