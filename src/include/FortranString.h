@@ -28,7 +28,7 @@
 #elif defined WIN32
 #define ONE_FORTSTRING_ARG\
    char *n, unsigned int nl
-#define TWO_FORSTRINGS_ARGS\
+#define TWO_FORTSTRINGS_ARGS\
    char *n, int nl, char *w, int wl
 #define ONE_FORTSTRING_CREATE(argn)\
         char *argn = CCTK_NullTerminateString(n,nl);
