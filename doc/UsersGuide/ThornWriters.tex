@@ -407,17 +407,18 @@ Note that you must compile at least one thorn which implements {\tt einstein}.
 
 \subsection{The {\tt schedule.ccl}}
 \label{subsec:schedule_ccl}
-By default no routine of a thorn will be run.  The {\tt schedule.ccl} file
-defines those that should be run and when they should be run.
+By default no routine of a thorn will be run.  The {\tt schedule.ccl}
+file defines those that should be run and when and under which
+conditions they should be run.
 
-The specification of this is via a schedule block which consists of
- lines of the form
+The specification of routine scheduling is via a schedule block which
+consists of lines of the form
 
 \begin{verbatim}
 schedule <name> at <time bin> [other options]
 {
   LANG:     <FORTRAN|C>
-  STORAGE:  [group list]
+  STORAGE:  [group list with timelevels]
   TRIGGERS: [group list]
   SYNC:     [group list]
 } "A description"
@@ -496,10 +497,15 @@ C and Fortran linkage are possible here. C++ routines should be defined as
 {\tt extern "C"} and registered as {\tt LANG: C}.
 
 \item[{\tt STORAGE}] The {\tt STORAGE} keyword specifies any groups for
-which  memory should be
-allocated for the duration of the routine.
-The storage status reverts to its previous status after the
-routine returns.
+which memory should be allocated for the duration of the routine.  The
+storage status reverts to its previous status after the routine
+returns. The format of the {\tt STORAGE} statement includes specifying 
+the number of timelevels of each group for which storage should be activated.
+
+{\tt STORAGE: <group1>[timelevels1], <group2>[timelevels2]}
+
+ This number can range from one to the maximum number of timelevels for the group as specified in the group definition in its {\tt interface.ccl} file. If this maximum number is one, the timelevel specification can be omitted from the
+{\tt STORAGE} statement. 
 
 \item[{\tt TRIGGERS}] {\tt TRIGGERS} is used when the routine is registered at {\tt ANALYSIS} ---
 this is a
@@ -519,27 +525,41 @@ refinement.
 
 \end{Lentry}
 
-As well as schedule blocks it's possible to embed C style {\tt if/else}
-statements in the schedule.ccl.
-These can be used to schedule things based upon the value of a parameter.
+As well as schedule blocks it's possible to embed C style {\tt
+if/else} statements in the schedule.ccl.  These can be used to
+schedule things based upon the value of a parameter.
 
 \vskip .5cm
 {\bf Example I:}
 
-The routine {\tt hydro\_predictor} is scheduled at {\em evolution}, after the
-routine {\tt metric\_predictor} and before {\tt metric\_corrector}, if
-the parameter {\tt evolve\_hydro} has been set.
-\begin{verbatim}
+If the parameter {\tt evolve\_hydro} is positively set, the Fortran
+routine {\tt hydro\_predictor} is scheduled to run in the {\em
+evolution} loop, after the routine {\tt metric\_predictor} and before
+{\tt metric\_corrector}. The routine names {\tt metric\_predictor} and
+{\tt metric\_corrector} may either be real routine names from the same
+or a different thorn, or they may be {\tt aliased} routine names (see the
+next example). 
 
+Before entry to {\tt hydro\_predictor}
+storage will be allocated for one timelevel for the group of grid
+variables {\tt hydro\_variables}, on exit from the routine this storage
+will be deallocated and the contents of the variables will be lost.
+\begin{verbatim}
 if(CCTK_Equals(evolve_hydro,"yes"))
 {
   SCHEDULE hydro_predictor AT evol AFTER metric_predictor BEFORE metric_corrector
   {
     LANG:     FORTRAN
-    STORAGE:  hydro_variables
+    STORAGE:  hydro_variables[1]
   } "Do a predictor step on the hydro variables"
 }
 \end{verbatim}
+
+If the parameter {\tt evolve\_hydro} is set negatively, the {\tt
+hydro\_predictor} routine will not be called by the scheduler. Note
+that if the {\tt evolve\_hydro} parameter is {\tt STEERABLE} it can be
+dynamically scheduled and de-scheduled during a run if a steering
+interface is available.
 
 \vskip .5cm
 {\bf Example II:}
@@ -559,9 +579,8 @@ change depending on the activation in the parameter file).
 
 In both cases the group of variables {\tt scalarfield} are synchronised
 across processes when the routine is exited.
-
 \begin{verbatim}
-schedule WaveToyF77_Evolution AS WaveToy\_Evolution AT evol
+schedule WaveToyF77_Evolution AS WaveToy_Evolution AT evol
 {
   LANG: Fortran
   STORAGE: scalartmps
@@ -590,11 +609,13 @@ schedule WaveBinary AT evol AFTER WaveToy_Evolution
 
 \subsubsection{Storage Outside of Schedule Blocks}
 
-The keyword {\tt STORAGE} can also be used outside
-of the schedule blocks to indicate that storage for these
-groups should be switched on at the start of the run. Note that
-the storage is only allocated in this way at the start,
-a thorn could explicitly switch the storage off.
+The keyword {\tt STORAGE} can also be used outside of the schedule
+blocks to indicate that storage for these groups should be switched on
+at the start of the run. Note that the storage is only allocated in
+this way at the start, a thorn could explicitly switch the storage off
+(although this is not recommended practise). As for the {\tt STORAGE}
+statement in schedule blocks, each group must also specify how many
+timelevels to activate storage for.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -1376,11 +1397,11 @@ a Fortran string. Instead, the following is needed:
 
 \subsubsection{Fortran Example}
 
-The Fortran routine {\tt MyFRoutine} is scheduled in the {\tt schedule.ccl} file,
-doesn't use Cactus parameters, and calls another routine, in the same thorn,
-{\tt MyNewRoutine} which does use parameters.
-This routine needs to be passed an integer flag as
-well as the standard Cactus variables. The source file should look like
+The Fortran routine {\tt MyFRoutine} is scheduled in the {\tt
+schedule.ccl} file, doesn't use Cactus parameters, and calls another
+routine, in the same thorn, {\tt MyNewRoutine} which does use
+parameters.  This routine needs to be passed an integer flag as well
+as the standard Cactus variables. The source file should look like
 
 \begin{verbatim}
 #include "cctk.h"

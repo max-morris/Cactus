@@ -311,16 +311,28 @@ A more extensive discussion of Cactus scheduling is provided in Chapter
 
 \subsection{Assignment Statements}
 
-{\it Assignment statements}, have the form:
+{\it Assignment statements}, currently only assign storage.
+
+These lines have the form:
 {\t
-\begin{verbatim}[STORAGE: <group>, <group>]
+\begin{verbatim}[STORAGE: <group>[timelevels], <group>[timelevels]]
 \end{verbatim}
 }
 
 If the thorn is active, storage will be allocated for the given groups
 for the duration of program execution (unless storage is explicitly
-switched off by some call to {\tt CCTK\_DisableGroupStorage} within a thorn). The behaviour of an assignment
-statement is independent of its position in the schedule file (so long as it is outside a schedule block).
+switched off by some call to {\tt CCTK\_DisableGroupStorage} within a
+thorn). 
+
+The storage line includes the number of timelevels to activate storage
+for, this number can be from 1 up to the maximum number or timelevels
+for the group as specified in the defining {\tt interface.ccl}
+file. If the maximum number of timelevels is 1 (the default), this
+number may be omitted.
+
+The behaviour of an assignment statement is independent of its
+position in the schedule file (so long as it is outside a schedule
+block). 
 
 \subsection{Schedule Blocks}
 
@@ -330,7 +342,7 @@ Each {\it schedule block} in the file {\t schedule.ccl} must have the syntax:
      [BEFORE|AFTER <function name>] [WHILE <variable>] [AS <alias>]
 {
   [LANG: <language>]
-  [STORAGE:       <group>,<group>...]
+  [STORAGE:       <group>[timelevels],<group>[timelevels]...]
   [TRIGGER:       <group>,<group>...]
   [SYNCHRONISE:   <group>,<group>...]
   [OPTIONS:       <option>,<option>...]
@@ -372,7 +384,11 @@ Each {\it schedule block} in the file {\t schedule.ccl} must have the syntax:
     FORTRAN}). No language should be specified for a schedule group.
 
   \item[{\tt STORAGE}] List of groups which should have storage
-    switched on for the duration of the function or schedule group.
+  switched on for the duration of the function or schedule group.
+  Each group must specify how many timelevels to activate storage for,
+  from 1 up to the maximum number for the group as specified in the
+  defining {\tt interface.ccl} file. If the maximum is 1 (the default)
+  this number may be omitted.
 
   \item[{\tt TRIGGER}] List of grid variables or groups to be used as
   triggers for causing an analysis function or analysis group to be
