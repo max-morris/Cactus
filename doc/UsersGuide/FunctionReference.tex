@@ -1874,58 +1874,57 @@ See the discussion of the \verb|input_array_strides| optional parameter
 (passed in the parameter table) for details.
 \end{Parameter}
 \begin{Parameter}{operator\_handle ($\ge 0$)}
-\hbox{}\\
+\hbox{}
 Handle to the interpolation operator.
 \end{Parameter}
 \begin{Parameter}{param\_table\_handle ($\ge 0$)}
-\hbox{}\\
+\hbox{}
 Handle to a key-value table containing additional parameters for
 the interpolator.
 \end{Parameter}
 \begin{Parameter}{coord\_system\_handle ($\ge 0$)}
-\hbox{}\\
+\hbox{}
 Cactus coordinate system handle defining the mapping between
 physical coordinates and integer grid subscripts.
 \end{Parameter}
 \begin{Parameter}{N\_interp\_points ($\ge 0$)}
-\hbox{}\\
+\hbox{}
 The number of points at which interpolation is to be done.
 \end{Parameter}
 \begin{Parameter}{interp\_coord\_type\_codes ($\ne$ NULL)}
-\hbox{}\\
+\hbox{}
 (Pointer to) an array of \verb|N_dims| \verb|CCTK_VARIABLE_|* type codes
 giving the data types of the interpolation-point coordinate arrays
 pointed to by \verb|interp_coords[]|.
 \end{Parameter}
 \begin{Parameter}{interp\_coords ($\ne$ NULL)}
-\hbox{}\\
+\hbox{}
 (Pointer to) an array of \verb|N_dims| pointers to arrays giving the
 physical coordinates of the interpolation points.
 \end{Parameter}
 \begin{Parameter}{N\_input\_arrays ($\ge 0$)}
-\hbox{}\\
-The number of input arrays to be interpolated.
+\hbox{}The number of input arrays to be interpolated.
 Note that if the parameter table entry \verb|operand_indices|
 is used to specify a 1-to-many mapping of input arrays to output arrays,
 only the unique set of input arrays should be given here.
 \end{Parameter}
 \begin{Parameter}{input\_array\_variable\_indices ($\ne$ NULL)}
-\hbox{}\\
+\hbox{}
 (Pointer to) an array of \verb|N_input_arrays| Cactus variable
 indices specifying the input grid arrays for the interpolation.
 \end{Parameter}
 \begin{Parameter}{N\_output\_arrays ($\ge 0$)}
-\hbox{}\\
+\hbox{}
 The number of output arrays from the interpolation.
 \end{Parameter}
 \begin{Parameter}{output\_array\_type\_codes ($\ne$ NULL)}
-\hbox{}\\
+\hbox{}
 (Pointer to) an array of \verb|N_output_arrays| \verb|CCTK_VARIABLE_|*
 type codes giving the data types of the output arrays pointed to by
 \verb|output_arrays[]|.
 \end{Parameter}
 \begin{Parameter}{output\_arrays ($\ne$ NULL)}
-\hbox{}\\
+\hbox{}
 (Pointer to) an array of \verb|N_output_arrays| pointers to the
 output arrays for the interpolation.
 \end{Parameter}
@@ -2300,16 +2299,16 @@ See the discussion of the \verb|input_array_strides| optional parameter
 (passed in the parameter table) for details.
 \end{Parameter}
 \begin{Parameter}{operator\_handle ($\ge 0$)}
-\hbox{}\\
+\hbox{}
 Handle to the interpolation operator.
 \end{Parameter}
 \begin{Parameter}{param\_table\_handle ($\ge 0$)}
-\hbox{}\\
+\hbox{}
 Handle to a key-value table containing additional parameters for
 the interpolator.
 \end{Parameter}
 \begin{Parameter}{coord\_system\_origin ($\ne$ NULL)}
-\hbox{}\\
+\hbox{}
 (Pointer to) an array giving the physical coordinates of the grid point
 with integer grid subscripts 0, 0, \dots, 0.  (It doesn't matter whether
 or not this grid point actually exists in the grid.)  See the description
@@ -2317,7 +2316,7 @@ of \verb|grid_spacing| for more on how \verb|coord_system_origin| is
 actually used.
 \end{Parameter}
 \begin{Parameter}{grid\_spacing ($\ne$ NULL)}
-\hbox{}\\
+\hbox{}
 (Pointer to) an array giving the physical-coordinate grid spacing.
 Thus, for example, in 3-D the physical coordinates of the grid point
 with integer grid subscripts \verb|i,j,k| are
@@ -2326,29 +2325,29 @@ $y = \verb|coord_system_origin[1] + j*grid_spacing[1]|$, and
 $z = \verb|coord_system_origin[2] + k*grid_spacing[2]|$.
 \end{Parameter}
 \begin{Parameter}{N\_interp\_points ($\ge 0$)}
-\hbox{}\\
+\hbox{}
 The number of points at which interpolation is to be done.
 \end{Parameter}
 \begin{Parameter}{interp\_coord\_type\_codes ($\ne$ NULL)}
-\hbox{}\\
+\hbox{}
 (Pointer to) an array of \verb|N_dims| \verb|CCTK_VARIABLE_|* type codes
 giving the data types of the interpolation-point coordinate arrays
 pointed to by \verb|interp_coords[]|.
 \end{Parameter}
 \begin{Parameter}{interp\_coords ($\ne$ NULL)}
-\hbox{}\\
+\hbox{}
 (Pointer to) an array of \verb|N_dims| pointers to arrays giving the
 physical coordinates of the interpolation points.
 \end{Parameter}
 \begin{Parameter}{N\_input\_arrays ($\ge 0$)}
-\hbox{}\\
+\hbox{}
 The number of input arrays to be interpolated.
 Note that if the parameter table entry \verb|operand_indices|
 is used to specify a 1-to-many mapping of input arrays to output arrays,
 only the unique set of input arrays should be given here.
 \end{Parameter}
 \begin{Parameter}{input\_array\_dims ($\ne$ NULL)}
-\hbox{}\\
+\hbox{}
 (Pointer to) an array of \verb|N_dims| integers giving the dimensions
 of the input array.  By default all the input arrays are taken to have
 these dimensions, with \verb|[0]| the most contiguous axis and
@@ -2358,28 +2357,28 @@ range \verb|0 <= subscript < dims[axis]|.  See the discussion of the
 for details of how this can be overridden.
 \end{Parameter}
 \begin{Parameter}{input\_array\_type\_codes ($\ne$ NULL)}
-\hbox{}\\
+\hbox{}
 (Pointer to) an array of \verb|N_input_arrays| \verb|CCTK_VARIABLE_|*
 type codes giving the data types of the input arrays pointed to by
 \verb|input_arrays[]|.
 \end{Parameter}
 \begin{Parameter}{input\_arrays ($\ne$ NULL)}
-\hbox{}\\
+\hbox{}
 (Pointer to) an array of \verb|N_input_arrays| pointers to the
 input arrays for the interpolation.
 \end{Parameter}
 \begin{Parameter}{N\_output\_arrays ($\ge 0$)}
-\hbox{}\\
+\hbox{}
 The number of output arrays from the interpolation.
 \end{Parameter}
 \begin{Parameter}{output\_array\_type\_codes ($\ne$ NULL)}
-\hbox{}\\
+\hbox{}
 (Pointer to) an array of \verb|N_output_arrays| \verb|CCTK_VARIABLE_|*
 type codes giving the data types of the output arrays pointed to by
 \verb|output_arrays[]|.
 \end{Parameter}
 \begin{Parameter}{output\_arrays ($\ne$ NULL)}
-\hbox{}\\
+\hbox{}
 (Pointer to) an array of \verb|N_output_arrays| pointers to the
 output arrays for the interpolation.
 \end{Parameter}
