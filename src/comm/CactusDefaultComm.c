@@ -67,6 +67,7 @@ cGH *CactusDefaultSetupGH(tFleshConfig *config, int convergence_level)
   int variable;
   int ntimelevels;
   int level;
+  int i;
 
   retval = NULL;
 
@@ -96,6 +97,9 @@ cGH *CactusDefaultSetupGH(tFleshConfig *config, int convergence_level)
     thisGH->cctk_lsh          = (int *)malloc(thisGH->cctk_dim*sizeof(int));
     thisGH->cctk_lbnd         = (int *)malloc(thisGH->cctk_dim*sizeof(int));
     thisGH->cctk_ubnd         = (int *)malloc(thisGH->cctk_dim*sizeof(int));
+    
+    for (i=0;i<3;i++)
+      thisGH->cctk_lssh[i]    = (int *)malloc(thisGH->cctk_dim*sizeof(int));
     thisGH->cctk_to           = (int *)malloc(thisGH->cctk_dim*sizeof(int));
     thisGH->cctk_from         = (int *)malloc(thisGH->cctk_dim*sizeof(int));
     thisGH->cctk_bbox         = (int *)malloc(2*thisGH->cctk_dim*sizeof(int));
@@ -151,6 +155,7 @@ cGH *CactusDefaultSetupGH(tFleshConfig *config, int convergence_level)
      thisGH->cctk_lsh &&
      thisGH->cctk_lbnd &&
      thisGH->cctk_ubnd &&
+     thisGH->cctk_lssh &&
      thisGH->cctk_from &&
      thisGH->cctk_to &&
      thisGH->cctk_bbox &&
