@@ -14,10 +14,10 @@
 typedef struct
 {
   int grouptype;
-  int variabletype;
-  int staggertype;
+  int vartype;
+  int stagtype;
   int dim;
-  int numvariables;
+  int numvars;
   int numtimelevels;
 } cGroup;
 
@@ -33,11 +33,6 @@ int     CCTK_StaggeredGrids(void);
 int     CCTK_StaggerCodeName(const char *stype); 
 int     CCTK_DirStaggerCodeVal(int dir, int staggercode); 
 int     CCTK_DirStaggerCodeName(int dir, const char *stype); 
-int     CCTKi_ParseStaggerString(int dim,  
-				 const char *imp, 
-				 const char *gname,  
-				 const char *stype); 
-
 int     CCTK_DecomposeName(const char *fullname, 
 			   char **implementation, 
 			   char **name);
@@ -46,7 +41,7 @@ int     CCTK_FirstVarIndex(const char *group);
 int     CCTK_FirstVarIndexI(int group);
 char   *CCTK_FullName(int var);
 
-cGroup *CCTK_GroupData(int group);
+int     CCTK_GroupData(int group, cGroup *gp);
 int     CCTK_GroupIndex(const char *groupname);
 int     CCTK_GroupIndexFromVar(const char *var);
 int     CCTK_GroupIndexFromVarI(int var);
