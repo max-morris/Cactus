@@ -6,7 +6,7 @@
 #  @desc 
 #  Parses the the configuration files for thorns.
 #  @enddesc 
-#  @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.45 2001-08-19 12:52:13 allen Exp $
+#  @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.46 2001-09-03 21:48:51 allen Exp $
 #@@*/
 
 # Global parameter to track the number of errors from the CST
@@ -277,14 +277,14 @@ sub CreateThornList
         }
 	else
 	{
-	  $message = "$thorn - missing ccl file(s)\n";
+	  $message = "$thorn - missing ccl file(s)";
 	  &CST_error(0,$message,"",__LINE__,__FILE__);
 	  next;
         }
       }
       else
       {
-	 $message = "Missing thorn $thorn\n";
+	 $message = "Missing thorn $thorn";
          &CST_error(0,$message,"",__LINE__,__FILE__);
       }
     }
