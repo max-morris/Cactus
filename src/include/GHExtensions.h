@@ -8,6 +8,21 @@
    @version $Id$
  @@*/
 
-int CCTK_TraverseGHExtensions(tFleshConfig *config, 
-			      int convergence_level, 
-			      cGH *GH);
+#ifndef _GHEXTENSIONS_H_
+#define _GHEXTENSIONS_H_
+
+#ifdef _cplusplus
+extern "C" {
+#endif
+
+int CCTK_RegisterGHExtension(const char *name);
+
+int CCTK_RegisterGHExtensionInitialiser(int handle, void *(*func)(cGH *));
+
+
+#ifdef _cplusplus
+}
+#endif
+
+#endif
+

@@ -10,6 +10,7 @@
 #include <stdlib.h>
 
 #include "flesh.h"
+#include "GHExtensions.h"
 #include "StoreHandledData.h"
 
 static char *rcsid = "$Id$";
@@ -28,7 +29,7 @@ int CCTK_TraverseGHExtensions(cGH *GH, const char *when)
   return 0;
 }
 
-int CCTK_RegisterGHExtension(cGH *GH, const char *name)
+int CCTK_RegisterGHExtension(const char *name)
 {
   int return_val;
 
