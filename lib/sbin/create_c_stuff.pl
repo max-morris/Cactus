@@ -207,7 +207,10 @@ sub set_parameter_code
     {
       $quoted_range = $parameter_database{"\U$implementation $parameter\E range $range range"};
 
-      $quoted_range =~ s:\":\\\":g;
+      #$quoted_range =~ s:\":\\\":g;
+      $quoted_range =~ s:\"::g;
+      $quoted_range =~ s:^\s*::;
+      $quoted_range =~ s:\s*$::;
 
       $line .= ",\"".$quoted_range."\"";
 
@@ -456,7 +459,7 @@ sub order_params
       push(@string_params, $parameter);
     }
     elsif($type eq "LOGICAL" ||
-	  $type eq "INTEGER")
+    	  $type eq "INTEGER")
     {
       push(@int_params, $parameter);
     }
