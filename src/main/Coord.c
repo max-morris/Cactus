@@ -19,6 +19,8 @@
 #include "ErrorCodes.h"
 #include "Groups.h"
 #include "Misc.h"
+#include "FortranString.h"
+
 
 static cHandledData *coordinates = NULL;
 static int num_coords = 0;
@@ -212,3 +214,9 @@ int CCTK_GetCoordIndex(const char *name)
   }
 }
 
+void FMODIFIER FORTRAN_NAME(CCTK_GetCoordIndex)(int *handle, ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE(name)
+  *handle = CCTK_GetCoordIndex (name);
+  free(name);
+}
