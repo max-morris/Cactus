@@ -23,8 +23,8 @@ else
   : ${F77_DEPEND_OUT='> /dev/null; touch $@'}
 
   # this is needed to compile with modules
-  : ${F77_FLAGS='-Am'}
-  : ${F90_FLAGS='-Am'}
+  : ${F77FLAGS='-Am'}
+  : ${F90FLAGS='-Am'}
 
   # some optimization flags
   : ${C_OPTIMISE_FLAGS='-O -K4'}
