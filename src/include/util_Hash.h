@@ -39,7 +39,8 @@ typedef struct T_HASH
 } uHash;
 
 uHash *Util_HashCreate(unsigned int initial_size);
-int Util_HashDestroy(uHash *hash);
+
+int Util_HashDestroy(uHash *hash, void (*delete_entry)(void *));
 
 int Util_HashStore(uHash *hash, 
                    unsigned int klen, 

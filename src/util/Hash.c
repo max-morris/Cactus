@@ -92,12 +92,13 @@ uHash *Util_HashCreate(unsigned int initial_size)
    @endhistory 
 
 @@*/
-int Util_HashDestroy(uHash *hash)
+int Util_HashDestroy(uHash *hash, void (*delete_entry)(void *))
 {
   unsigned int size;
 
   iHashEntry **array;
   iHashEntry *entry;
+  iHashEntry *next;
 
   unsigned int location;
 
@@ -106,9 +107,14 @@ int Util_HashDestroy(uHash *hash)
   
   for(location = 0; location < size; location++)
   {
-    for(entry = array[location]; entry; entry = entry->next)
+    for(entry = array[location]; entry; entry = next)
     {
+      next = entry->next;
       free(entry->key);
+      if(delete_entry)
+      {
+        delete_entry(entry->data);
+      }
       free(entry);
     }
   }
