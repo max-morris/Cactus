@@ -82,7 +82,7 @@ endef
 
 # Define how to do a F77 compilation
 define PREPROCESS_F77
-cat $< | sed 's.//.AUTOMATICALLY_GENERATED_CONCATONATION_PROTECTION_STRING.g' | $(CPP) $(CPPFLAGS) $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DFCODE - |  sed 's/__FORTRANFILE__/"$(basename $(notdir $<)).F"/g' | sed 's.AUTOMATICALLY_GENERATED_CONCATONATION_PROTECTION_STRING.//.g' | $(PERL) $(F_FILE_PROCESSOR) > $(basename $(notdir $<)).f
+cat $< | sed 's.//.AUTOMATICALLY_GENERATED_CONCATONATION_PROTECTION_STRING.g' | $(CPP) $(CPPFLAGS) $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DFCODE - |  $(PERL) -p -e 's/__FORTRANFILE__/"$(basename $(notdir $<)).F"/g; s.AUTOMATICALLY_GENERATED_CONCATONATION_PROTECTION_STRING.//.g' - | $(PERL) $(F_FILE_PROCESSOR) > $(basename $(notdir $<)).f
 endef
 
 define COMPILE_F77
@@ -94,7 +94,7 @@ endef
 
 # Define how to do a F90 compilation
 define PREPROCESS_F90
-cat $< | sed 's.//.AUTOMATICALLY_GENERATED_CONCATONATION_PROTECTION_STRING.g' | $(CPP) $(CPPFLAGS) $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DFCODE - |  sed 's/__FORTRANFILE__/"$(basename $(notdir $<)).F"/g' | sed 's.AUTOMATICALLY_GENERATED_CONCATONATION_PROTECTION_STRING.//.g' | $(PERL) $(F_FILE_PROCESSOR) > $(basename $(notdir $<)).f
+cat $< | sed 's.//.AUTOMATICALLY_GENERATED_CONCATONATION_PROTECTION_STRING.g' | $(CPP) $(CPPFLAGS) $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DFCODE - |  $(PERL) -p -e  's/__FORTRANFILE__/"$(basename $(notdir $<)).F"/g ;s.AUTOMATICALLY_GENERATED_CONCATONATION_PROTECTION_STRING.//.g' | $(PERL) $(F_FILE_PROCESSOR) > $(basename $(notdir $<)).f
 endef
 
 define COMPILE_F90
