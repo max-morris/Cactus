@@ -1,0 +1,13 @@
+#! /usr/bin/perl
+
+$uname = `uname`;
+
+$uname =~ s/(sn\d\d\d\d|jsimpson)/UNICOS\/mk/;
+
+if (! -d "build" || ! -l "build")
+{
+  print "Completely new cactus build.  Creating config database\n";
+
+  system("mkdir build");
+  
+}
