@@ -19,39 +19,45 @@ extern "C"
 int CCTK_CoordRegisterSystem(int dim, const char *systemname);
 
 int CCTK_CoordRegisterData(int dir, 
-			   const char *gv, 
-			   const char *name,
-			   const char *systemname);
+                           const char *gv, 
+                           const char *name,
+                           const char *systemname);
+
+int CCTK_CoordSystemHandle (const char *systemname);
 
 int CCTK_CoordIndex(int dir, 
-		    const char *name, 
-		    const char *systemname);
+                    const char *name, 
+                    const char *systemname);
 
 int CCTK_CoordDir(const char *name,
-		  const char *systemname);
+                  const char *systemname);
 
 int CCTK_CoordSystemDim(const char *systemname);
+
+int CCTK_CoordSystemHande(const char *systemname);
+
+const char *CCTK_CoordSystemName(int handle);
 
 int CCTK_CoordRange(cGH        *GH, 
                     CCTK_REAL  *coord_lower, 
                     CCTK_REAL  *coord_upper, 
-		    int         coord_dir,
+                    int         coord_dir,
                     const char *coord_name,
-		    const char *system_name);
+                    const char *system_name);
 
 int CCTK_CoordLocalRange(cGH        *GH, 
                          CCTK_REAL  *lower, 
                          CCTK_REAL  *upper, 
-			 int         coord_dir,
+                         int         coord_dir,
                          const char *coord_name,
-			 const char *system_name);
+                         const char *system_name);
 
 int CCTK_CoordRegisterRange(cGH        *GH, 
                             CCTK_REAL   coord_min, 
                             CCTK_REAL   coord_max, 
-			    int         coord_dir,
+                            int         coord_dir,
                             const char *coord_name,
-			    const char *system_name);
+                            const char *system_name);
 
 #ifdef __cplusplus 
 }
