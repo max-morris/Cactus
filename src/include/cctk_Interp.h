@@ -145,7 +145,7 @@ int CCTK_InterpLocalUniform(int N_dims,
  */
 
 /* an interpolation point is outside the range of the input arrays */
-/* n.b. the "X" here abbreviates "not" -- the point could be out of range
+/* n.b. the "X" here abbreviates "not" -- the point could be out of range */
 /*      along any coordinate axis */
 #define CCTK_ERROR_INTERP_POINT_X_RANGE	(-1000)
 
