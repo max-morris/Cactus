@@ -24,7 +24,7 @@ sub ParseConfigScript
   my($exit_value, $signal_num, $dumped_core);
 
   my $start_dir = `pwd`;
-  chdir $config_dir;  
+  chdir $config_dir;
 
   # Run the configuration script in the config_dir folder
   if ($lang ne '' && $script ne '')
@@ -38,7 +38,6 @@ sub ParseConfigScript
   for($line_number = 0; $line_number < @data; $line_number++)
   {
     $line = $data[$line_number];
-
     # Parse the line
     if($line =~ m/^\s*BEGIN\s+DEFINE\s*/i)
     {
@@ -82,7 +81,7 @@ sub ParseConfigScript
         $cfg->{"\U$thorn $provides\E DEFINITION"} .= $line;
         $line_number++;
         $line = $data[$line_number];
-      }    
+      }
     }
     elsif($line =~ m/^\s*BEGIN\s+DEPENDENCY\s*/i)
     {
@@ -93,8 +92,8 @@ sub ParseConfigScript
         $cfg->{"\U$thorn $provides\E DEPENDENCY"} .= $line;
         $line_number++;
         $line = $data[$line_number];
-      }     
-    }  
+      }
+    }
     elsif($line =~ m/^\s*INCLUDE_DIRECTORY[^\s]*\s*(.*)$/i)
     {
       $cfg->{"\U$thorn $provides\E INCLUDE_DIRECTORY"} .=' ' . $1;
@@ -112,12 +111,20 @@ sub ParseConfigScript
       &CST_error (0, "Unrecognised line in ConfigScriptParser.ccl '$line'");
     }
   }
-  &CST_error (0,  "Configuration script for thorn $thorn returned $exit_value\n Error message: ", $cfg->{"\U$thorn $provides\E ERROR"}) if $exit_value;
-  &CST_error (0,  "Configuration script for thorn $thorn received signal $signal_num\n Error message: ", $cfg->{"\U$thorn $provides\E ERROR"}) if $signal_num;
-  &CST_error (0,  "Configuration script for thorn $thorn dumped core\n Error message: ", $cfg->{"\U$thorn $provides\E ERROR"} ) if $dumped_core;
 
+  chomp ($error_msg = $cfg->{"\U$thorn $provides\E ERROR"});
+  $error_msg = $error_msg ? "     Error message: '$error_msg'" : 
+                            '     (no error message)';
 
-  return ($cfg );
+  $msg = "Configuration script for thorn $thorn ";
+  &CST_error (0, $msg . "returned exit code $exit_value\n$error_msg")
+    if ($exit_value);
+  &CST_error (0, $msg . "received signal $signal_num\n$error_msg")
+    if ($signal_num);
+  &CST_error (0, $msg . "dumped core\n$error_msg")
+    if ($dumped_core);
+
+  return ($cfg);
 }
 
 1;
