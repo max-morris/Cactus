@@ -83,11 +83,73 @@ sub cross_index_interface_data
     $interface_data{"IMPLEMENTATIONS"} .= $implementations{"\U$implementation\E"} . " ";
 
     &check_interface_consistency($implementation, %interface_data);
+
+    $interface_data{"IMPLEMENTATION \U$implementation\E ANCESTORS"} = &get_implementation_ancestors($implementation, %interface_data);
+
+    $interface_data{"IMPLEMENTATION \U$implementation\E FRIENDS"} = &get_implementation_friends($implementation, %interface_data);
+    
   }
 
-  
+  return %interface_data;
 }
 
+sub get_implementation_friends
+{
+  local($implementation, %interface_data);
+  local($thorn);
+  local($friend, $friends);
+  local(%ancestors);
+
+  $interface_data{"IMPLEMENTATION \U$implementation\E THORNS"} =~ m:(\w+):;
+
+  $thorn = $1;
+
+  # Recurse.  This needs to be made robust against loops.
+  foreach $ancestor (split(" ", $interface_data{"\U$thorn\E INHERITS"}))
+  {
+    $ancestors .= &get_implementation_ancestors($ancestor, %interface_data);
+    $ancestors .= "$ancestor ";
+  }
+  
+  # Uniquify the list.
+  foreach $ancestor (split(" ", $ancestors))
+  {
+    $ancestors{"\U$ancestor\E"} = 1;
+  }
+
+  $ancestors = join(" ", %ancestors);
+
+  return $ancestors;
+}
+
+sub get_implementation_ancestors
+{
+  local($implementation, %interface_data);
+  local($thorn);
+  local($ancestor, $ancestors);
+  local(%ancestors);
+
+  $interface_data{"IMPLEMENTATION \U$implementation\E THORNS"} =~ m:(\w+):;
+
+  $thorn = $1;
+
+  # Recurse.  This needs to be made robust against loops.
+  foreach $ancestor (split(" ", $interface_data{"\U$thorn\E INHERITS"}))
+  {
+    $ancestors .= &get_implementation_ancestors($ancestor, %interface_data);
+    $ancestors .= "$ancestor ";
+  }
+  
+  # Uniquify the list.
+  foreach $ancestor (split(" ", $ancestors))
+  {
+    $ancestors{"\U$ancestor\E"} = 1;
+  }
+
+  $ancestors = join(" ", %ancestors);
+
+  return $ancestors;
+}
 
 sub check_interface_consistency
 {
