@@ -350,7 +350,7 @@ sub ParseFile
     last if(! defined($line));
 
     # If it isn't a preprocessor command, just process it
-    if($line !~ m/^\#/)
+    if($line !~ m/^\s*\#/)
     {
       if($active)
       {
@@ -362,7 +362,7 @@ sub ParseFile
       next;
     }
 
-    if($line =~ m/^\s*#\s*define\s+([^\s]+)(\s+(.*))?/)
+    if($line=~m/^\s*#\s*define\s+([a-zA-Z_][a-zA-Z0-9_]*(?:\(.*?\))?)(\s+(.*))?/)
     {
       # Define a macro
       &Define($1,$3,$filename, $linenumber) if($active);
@@ -708,16 +708,28 @@ sub Define
 {
   my ($arg1,$arg2,$filename,$linenumber) = @_;
 
-  $arg1 =~ m:^([a-zA-Z_][a-zA-Z0-9_]*)(\(([a-zA-Z0-9_,]+)\))?$:;
+  $arg1 =~ m:^([a-zA-Z_][a-zA-Z0-9_]*)(\(([a-zA-Z0-9_,\s]+)\))?$:;
 
   my $defname = $1;
   my $defargs = $3;
 
   my @args = split(/,/, $defargs);
+# Remove any whitespace around an argument name
+  my $arg;
+  foreach $arg (@args)
+  {
+    $arg =~ /\s*(.*)\s*/;
+    $arg = $1;
+    if ($debug)
+    {
+      print "Arg is '$arg'\n";
+    }
+  }
 
   if($debug)
   {
-    print "Defining '$defname'\n";
+    print "Args are '$arg1' and '$arg2'\n";
+    print "Defining '$defname' with '$defargs'\n";
   }
 
   if($defines{$defname})
@@ -1002,6 +1014,10 @@ sub ParseAndExpand
     # Is this token a macro ?
     if($defines{$token})
     {
+      if ($debug)
+      {
+        print "The macro is '$token'\n";
+      }
       my $arg = "";
       if(@{$defines{$token}{"ARGS"}} > 0 && 
          $pos+1 < @splitline)
