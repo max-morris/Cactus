@@ -29,7 +29,7 @@
 CCTK_Search()
 {
   eval  $1=""
-  if test -z $4 ; then
+  if test $# -lt 4 ; then
     cctk_basedir=""
   else
     cctk_basedir="$4/"
