@@ -53,7 +53,7 @@ require "$cctk_home/lib/sbin/create_c_stuff.pl";
 require "$cctk_home/lib/sbin/create_fortran_stuff.pl";
 require "$cctk_home/lib/sbin/GridFuncStuff.pl";
 
-%thorns = &create_thorn_list($activethorns);
+%thorns = &create_thorn_list($cctk_home, $activethorns);
 
 foreach $thorn (keys %thorns)
 {
@@ -108,14 +108,25 @@ foreach $line (@GFstuff)
   print "$line\n";
 }
 
+@make_thornlist = &CreateMakeThornlist(%thorns);
+
+foreach $line (@make_thornlist)
+{
+  print "$line\n";
+}
       
 sub create_thorn_list
 {
-  local($activethorns) = @_;
+  local($cctk_home, $activethorns) = @_;
   local(%thornlist);
   local($thorn, $toolkit, $thorn_name);
 
   open(ACTIVE, "<$activethorns") || die "Cannot open ActiveThorns file $activethorns !";
+
+  $thornlist{"Cactus"} = "$cctk_home/src";
+
+  print "cctk_home is $cctk_home\n";
+
 
   while(<ACTIVE>)
   {
@@ -134,7 +145,14 @@ sub create_thorn_list
 	  -r "$cctk_home/toolkits/$thorn/interface.ccl" &&
 	  -r "$cctk_home/toolkits/$thorn/schedule.ccl")
       {
-	$thornlist{"$thorn_name"} = "$cctk_home/toolkits/$thorn";
+	if( $thornlist{"$thorn_name"} )
+	{
+	  print "Ignoring duplicate thorn $thorn_name\n";
+	}
+	else
+	{
+	  $thornlist{"$thorn_name"} = "$cctk_home/toolkits/$thorn";
+	}
       }
       else
       {
@@ -167,6 +185,25 @@ sub get_public_parameters
 }
 
     
+sub CreateMakeThornlist
+{
+  local(%thorns) = @_;
+  local($thorn);
+  local($thornlist);
+
+  $thornlist = "THORNS =";
+  foreach $thorn (keys %thorns)
+  {
+    next if ($thorn =~ m:Cactus:);
+
+    $thorns{$thorn} =~ m:(.*)/(.*)/(.*):;
+
+    $thornlist .= " $2/$3";
+  }
+
+  return ("$thornlist", "");
+}
+  
   
 
     

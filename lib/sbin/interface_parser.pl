@@ -1,14 +1,5 @@
 #! /usr/bin/perl -w
 
-#require "parameter_parser.pl";
-
-
-#%implementations = ("flesh", "flesh", "test1", "test1", "test2", "test2");
-
-#%interface_database = create_interface_database(%implementations);
-
-#&print_interface_database(%interface_database);
-
 #/*@@
 #  @routine    create_interface_database
 #  @date       Wed Sep 16 15:07:11 1998
