@@ -70,6 +70,12 @@ Cactus Users' Guide and the Cactus Reference Manual.
   restarted at a later time.
   See Sections~\ref{sec:checkpointing}, \ref{chap:cp_recovery_methods}.
 \item[computational grid]
+  A discrete finite set of spatial points in $\Re^n$
+  (typically $1 \le n \le 3$).
+  Historically Cactus has required these points to be uniformly spaced
+  (we say the grid is uniformly spaced), but we are now starting to add
+  support for non-uniform spacings (we say the grid is non-uniformly spaced).
+  See \textit{grid functions} for the typical use of grid points.
 \item[convergence]
   Important, but often neglected.
 \item[CST]
@@ -112,6 +118,13 @@ Cactus Users' Guide and the Cactus Reference Manual.
 \item[grid function]
   A \textit{grid variable} whose global size is the size of the
   computational grid.  (See also \textit{local array}.)
+  From another perspective,
+  \textit{grid functions} are functions (of any of the Cactus
+  datatypes (see section~\ref{sect-ThornWriting/DataTypes})
+  defined on the domain of grid points.
+  Typically grid functions are used to discretely approximate functions
+  defined on the domain $\Re^n$, with \textit{finite differencing}
+  used to approximate partial derivatives.
 \item[grid hierarchy]
   A computational grid, and the grid variables associated with it.
 \item[grid point]
