@@ -1934,7 +1934,9 @@ int CCTK_TraverseString (const char *traverse_string,
                          int selection)
 {
   int retval, nesting, vindex, gindex, first, last, selected_all;
-  char delimiter, *string, *parse_string, *group_var_string, *option_string;
+  char delimiter, options_start, options_end;
+  char *string, *parse_string, *group_var_string, *option_string;
+  cGroup gdata;
 
 
   if (callback == NULL)
@@ -1968,11 +1970,27 @@ int CCTK_TraverseString (const char *traverse_string,
     /* find end of group/varname string (can be either EOS,
        space before next token, or following option string) */
     group_var_string = string;
+    options_start = '{'; options_end = '}';
     while (*string)
     {
-      if (! *string || isspace (*string) || *string == '[')
+      if (! *string || isspace (*string) || *string == '{')
       {
         break;
+      }
+
+      /* check for an old-style options string (enclosed in square brackets) */
+      if (*string == '[')
+      {
+        *string = 0;
+        gindex = CCTK_GroupIndex (group_var_string);
+        *string = '[';
+        /* continue if the current token refers to a valid vector group name
+           otherwise assume the start of an old-style options string */
+        if (CCTK_GroupData (gindex, &gdata) || ! gdata.vectorgroup)
+        {
+          options_start = '['; options_end = ']';
+          break;
+        }
       }
       string++;
     }
@@ -1982,18 +2000,18 @@ int CCTK_TraverseString (const char *traverse_string,
     *string = 0;
 
     /* parse the option string if there is one */
-    option_string = delimiter == '[' ? string + 1: NULL;
+    option_string = delimiter == options_start ? string + 1: NULL;
     if (option_string)
     {
       /* find end of option string (matching bracket) */
       nesting = 1;
       while (*(++string))
       {
-        if (*string == '[')
+        if (*string == options_start)
         {
           nesting++;
         }
-        else if (*string == ']')
+        else if (*string == options_end)
         {
           if (--nesting == 0)
           {
@@ -2011,7 +2029,7 @@ int CCTK_TraverseString (const char *traverse_string,
         retval = -2;
         break;
       }
-      else if (! (delimiter == ']' && nesting == 0))
+      else if (! (delimiter == options_end && nesting == 0))
       {
         CCTK_VWarn (5, __LINE__, __FILE__, "Cactus", 
                     "CCTK_TraverseString: unterminated option string '%s'",
@@ -2026,6 +2044,13 @@ int CCTK_TraverseString (const char *traverse_string,
                     option_string);
         retval = -4;
         break;
+      }
+      else if (options_start == '[')
+      {
+        CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
+                    "CCTK_TraverseString: enclosing options string '%s' in "
+                    "square brackets is deprecated in BETA13. Please use "
+                    "curly braces instead !", option_string);
       }
     }
 
