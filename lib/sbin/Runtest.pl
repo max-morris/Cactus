@@ -427,7 +427,9 @@ sub runtest
   }
 
   # clear out test directory
-  chdir ("$tsttop${sep}$tp");
+  chdir ("$tsttop");
+  mkdir ($tp,0755);
+  chdir ("$tp");
   opendir (DIR, ".");
   unlink (grep (/.+\..+/, readdir (DIR)));
   closedir (DIR);
