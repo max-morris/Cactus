@@ -749,6 +749,7 @@ void CCTK_FCALL CCTK_FNAME(CCTK_CoordRange)
   TWO_FORTSTRINGS_CREATE(name,systemname)
   *ierr = CCTK_CoordRange (GH,lower,upper,*dir,name,systemname);
   free(name);
+  free(systemname);
 }
 
 
@@ -788,15 +789,34 @@ int CCTK_CoordLocalRange(cGH *GH,
                          const char *systemname)
 {
 
+  int ierr;
+  int realdir;
   CCTK_REAL global_lower;
   CCTK_REAL global_upper;
   
-  CCTK_CoordRange(GH,&global_lower,&global_upper,dir,name,systemname);
+  ierr = CCTK_CoordRange(GH,&global_lower,&global_upper,dir,name,systemname);
 
-  *lower = global_lower+GH->cctk_lbnd[dir-1]*GH->cctk_delta_space[dir-1];
-  *upper = global_lower+GH->cctk_ubnd[dir-1]*GH->cctk_delta_space[dir-1];
+  if (ierr >= 0)
+  {
+    if (dir > 0) 
+    {
+      realdir = dir;
+    }
+    else
+    {
+      realdir = CCTK_CoordDir(name,systemname);
+    }
+    *lower = global_lower+GH->cctk_lbnd[realdir-1]*
+      GH->cctk_delta_space[realdir-1];
+    *upper = global_lower+GH->cctk_ubnd[realdir-1]*
+      GH->cctk_delta_space[realdir-1];
+  }
+  else
+  {
+    CCTK_Warn(4,__LINE__,__FILE__,"Cactus","Error finding coordinate range");
+  }
 
-#ifdef DEBUG  
+#ifdef DEBUG_COORD  
   printf("Upper/Lower are %f,%f\n",*lower,*upper);
 #endif
 
@@ -817,5 +837,4 @@ void CCTK_FCALL CCTK_FNAME(CCTK_CoordLocalRange)
   free(name);
   free(systemname);
 }
-
 
