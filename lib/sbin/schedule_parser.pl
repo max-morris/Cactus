@@ -39,8 +39,13 @@ sub create_schedule_code
 
     $implementation = $interface_database{"\U$thorn\E IMPLEMENTS"};
 
-#   Private groups for thorn
+#   Private groups and variables for thorn
     $privategroups = $interface_database{"\U$thorn\E PRIVATE GROUPS"};
+    $privatevars = "";
+    foreach $var (split(" ", $privategroups))
+    {
+      $privatevars .= " $interface_database{\"\U$thorn GROUP $var\"} ";
+    }
 
     $thorn_rfr = $thorn."_rfr";
     $thorn_startup = $thorn."_startup";
@@ -56,14 +61,14 @@ sub create_schedule_code
     @indata = &read_file("$thorns{$thorn}/schedule.ccl");
 
     # Parse the data and create rfr and startup subroutines
-    ($proto,$out,$wrapper_files, @retscheduledata) = &parse_schedule_ccl(1,$privategroups,$thorn,$implementation,"rfr",@indata);
+    ($proto,$out,$wrapper_files, @retscheduledata) = &parse_schedule_ccl(1,$privategroups,$privatevars,$thorn,$implementation,"rfr",@indata);
     print OUTRFR $proto;
     print OUTRFR $out; 
     $rfr_files .= " $thorn_rfr";
     $startup_files .= " $thorn_startup";
     push(@schedule_data, @retscheduledata);
 
-    ($proto,$out,$schedule_wrappers) = &parse_schedule_ccl(2,$privategroups,$thorn,$implementation,"startup",@indata);
+    ($proto,$out,$schedule_wrappers) = &parse_schedule_ccl(2,$privategroups,$privatevars,$thorn,$implementation,"startup",@indata);
     print OUTSTART $proto;
     print OUTSTART $out; 
 
@@ -114,11 +119,12 @@ sub write_rfr_header {
   $header .= "#include \"rfrConstants.h\"\n";
   $header .= "#include \"cctk_parameters.h\"\n";
   $header .= "#include \"cctk_arguments.h\"\n";
+  $header .= "#include \"cctk_WarnLevel.h\"\n";
   $header .= "\n";
   $header .= "void $routine (cGH *GH)\n";
   $header .= "{\n";
   $header .= "  DECLARE_CCTK_PARAMETERS\n";
-  $header .= "  int index;\n\n";
+  $header .= "  int index,varfirst,varlast,varindex;\n\n";
   $header .= "\n";
   $header .= "  if(CCTK_IsThornActive(\"$thorn\"))\n";
   $header .= "  {\n\n";
@@ -270,7 +276,7 @@ EOT
 
 sub parse_schedule_ccl
 {
-  local($number,$privategroups,$thorn,$implementation,$type,@data) = @_;
+  local($number,$privategroups,$privatevars,$thorn,$implementation,$type,@data) = @_;
   local($proto,$out,$line,$line_number,@compile_files);
   local(%schedule_ordering);
   local($routine);
@@ -288,7 +294,7 @@ sub parse_schedule_ccl
       $routine = $1;
       @options = split(" ", $2);
 
-      ($wrapper_file,$proto_block,$out_block, $routine) = &parse_schedule_block($number,$privategroups,$thorn,$implementation,$type,@data);
+      ($wrapper_file,$proto_block,$out_block, $routine) = &parse_schedule_block($number,$privategroups,$privatevars,$thorn,$implementation,$type,@data);
 
       $proto .= "$proto_block"; 
       $out .= "$out_block";
@@ -467,7 +473,7 @@ sub find_schedule_block
 
 sub parse_schedule_block
 {
-  local($number,$privategroups,$thorn,$implementation,$type,@data)=@_;
+  local($number,$privategroups,$privatevars,$thorn,$implementation,$type,@data)=@_;
   local($proto,$out);
   local($wrapper_file, $proto, $out);
 
@@ -479,9 +485,9 @@ sub parse_schedule_block
 
   # At the moment can schedule at RFR entry points of at STARTUP
   if ($type eq "startup" && $when =~ /\s*STARTUP\s*/i) {
-    ($wrapper_file, $proto, $out, $routine) = &parse_schedule_at_STARTUP($thorn,$privategroups,$implementation,$routine,$desc,@block);
+    ($wrapper_file, $proto, $out, $routine) = &parse_schedule_at_STARTUP($thorn,$privategroups,$privatevars,$implementation,$routine,$desc,@block);
   } elsif ($type eq "rfr" && $when !~ /\s*STARTUP\s*/i) {
-    ($wrapper_file,$proto,$out, $routine) = &parse_schedule_at_RFR($thorn,$privategroups,$implementation,$routine,$when,$desc,@block);
+    ($wrapper_file,$proto,$out, $routine) = &parse_schedule_at_RFR($thorn,$privategroups,$privatevars,$implementation,$routine,$when,$desc,@block);
   }
 
   return ($wrapper_file,$proto,$out, $routine);
@@ -490,7 +496,7 @@ sub parse_schedule_block
 
 sub parse_schedule_at_STARTUP {
 
-  local($thorn,$privategroups,$implementation,$routine,$desc,@block) = @_;
+  local($thorn,$privategroups,$privatevars,$implementation,$routine,$desc,@block) = @_;
   local($out);
 
   $out .= "  $routine();\n";
@@ -505,7 +511,7 @@ sub parse_schedule_at_STARTUP {
 
 sub parse_schedule_at_RFR {
 
-  local($thorn,$privategroups,$implementation,$routine,$when,$desc,@block) = @_;
+  local($thorn,$privategroups,$privatevars,$implementation,$routine,$when,$desc,@block) = @_;
   local($proto,$out,$got_it,$i,$line);
 
 # Look for the Language and register routine
@@ -635,14 +641,14 @@ sub parse_schedule_at_RFR {
 
 	# Take of implementation if it is there
 	$this_imp = $implementation;
-	$this_group = $group;
-	if ($group =~ /(.*)::(.*)/)
+	$this_var = $var;
+	if ($var =~ /(.*)::(.*)/)
 	{
 	  $this_imp = $1;
-	  $this_group = $2;
+	  $this_var = $2;
 	}
 
-	if ($privategroups =~ /\b$this_group\b/)
+	if ($privategroups =~ /\b$this_var\b/ || $privatevars =~ /\b$this_var\b/ )
 	{
 	  $use_imp = $thorn;
 	}
@@ -651,8 +657,31 @@ sub parse_schedule_at_RFR {
 	  $use_imp = $this_imp;
 	}
 
-        $out .= "  index = CCTK_VarIndex(\"$use_imp\:\:$var\");\n";
-        $out .= "  rfrRegisterTriggers(GH->rfr_top,GH,$routine,index);\n"
+        $out .="\n\n";
+        $out .="  index = CCTK_VarIndex(\"$use_imp\:\:$this_var\");\n";
+	$out .="  if (index < 0)\n";
+	$out .="  {\n";
+	$out .="    index = CCTK_GroupIndex(\"$use_imp\:\:$this_var\");\n";
+	$out .="    if (index >= 0)\n";
+        $out .="    {\n";
+        $out .="      varfirst = CCTK_FirstVarIndexI(index);\n";
+        $out .="      varlast  = varfirst+CCTK_NumVarsInGroupI(index)-1;\n";
+        $out .="    }\n";
+        $out .="    else\n";
+        $out .="    {\n";
+	$out .="      CCTK_WARN(0,\"CCTK_VarIndex(\\\"$use_imp\:\:$this_var\\\") failed in $thorn rfr file\");\n";
+        $out .="    }\n";
+        $out .="  }\n";
+        $out .="  else\n";
+	$out .="  {\n";
+        $out .="    varfirst = index;\n";
+        $out .="    varlast  = index;\n";
+        $out .="  }\n";
+        $out .="  for (varindex = varfirst; varindex <= varlast; varindex++)\n";
+        $out .="  {\n";
+        $out .="    rfrRegisterTriggers(GH->rfr_top,GH,$routine,varindex);\n";
+        $out .="  }\n";
+
       }
     }
   }
