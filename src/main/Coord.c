@@ -242,6 +242,7 @@ void CCTK_FCALL CCTK_FNAME (CCTKi_CoordRegisterSystem)
    -2 = direction outside system dimension
    -3 = coordinate name already registered
    -4 = coordinate direction already registered
+   -5 = invalid gridfunction specified
    @endreturndesc
 @@*/
 int CCTK_CoordRegisterData(int dir,
@@ -309,7 +310,9 @@ int CCTK_CoordRegisterData(int dir,
         if (coord_system->coords[dir-1].index < 0)
         {
           CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
-                      "CCTK_CoordRegisterData: No grid variable registered");
+                      "CCTK_CoordRegisterData: Invalid grid variable "
+		      "specified");
+	  retval = -5;
         }
       }
     }
@@ -1498,4 +1501,3 @@ const char *CCTK_CoordName (int dir, const char *systemname)
 
   return (retval);
 }
-
