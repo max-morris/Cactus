@@ -75,6 +75,7 @@ if (!open (AT, "< $scratchdir${sep}ThornList")) {
 } else {
     printf ("Reading Thorn List\n");
     while (<AT>) {
+        s:\#.*::; # Get rid of comment lines.
         @t = split(' ');
         foreach $T (@t) {
             if (-d "arrangements${sep}$T${sep}test") {
@@ -112,7 +113,7 @@ if ($tests =~ /All/) {
     $inp{$num} = $t;
     $testnum{$ntests} = $num;
   }
-  while (!($choice =~ /quit/i) ) {
+  while (!($choice =~ /q(uit)?/i) ) {
     print "\n--- Menu ---\n";
     $sp = "     ";
     for ($i=1;$i<$ntests+1;$i++) {
@@ -124,7 +125,7 @@ if ($tests =~ /All/) {
     $choice =~ s/\s//;
     print "\n";
     $ip = $inp{$testnum{$choice}};
-    if (!($choice =~ m/quit/i)) {
+    if (!($choice =~ m/q(uit)?/i)) {
       &runtest($ip,$choice);
     }
   }
