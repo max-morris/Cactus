@@ -129,7 +129,7 @@ t_sktree *SKTreeStoreData(t_sktree *root, t_sktree *subtree,
    @endhistory 
 
 @@*/
-int SKTreeTraverseInorder(t_sktree *root, int (*process)(void *, void *), void *info)
+int SKTreeTraverseInorder(t_sktree *root, int (*process)(const char *, void *, void *), void *info)
 {
   int terminate;
 
@@ -138,7 +138,7 @@ int SKTreeTraverseInorder(t_sktree *root, int (*process)(void *, void *), void *
   if(root)
   {
     terminate = SKTreeTraverseInorder(root->left, process, info);
-    if(!terminate) terminate = process(root->data,info);
+    if(!terminate) terminate = process(root->key,root->data,info);
     if(!terminate) terminate = SKTreeTraverseInorder(root->right, process, info);
   }
 
@@ -159,7 +159,7 @@ int SKTreeTraverseInorder(t_sktree *root, int (*process)(void *, void *), void *
    @endhistory 
 
 @@*/
-int SKTreeTraversePreorder(t_sktree *root, int (*process)(void *, void *), void *info)
+int SKTreeTraversePreorder(t_sktree *root, int (*process)(const char *,void *, void *), void *info)
 {
   int terminate;
 
@@ -167,7 +167,7 @@ int SKTreeTraversePreorder(t_sktree *root, int (*process)(void *, void *), void 
 
   if(root)
   {
-    terminate = process(root->data, info);
+    terminate = process(root->key,root->data, info);
     if(!terminate) terminate = SKTreeTraversePreorder(root->left, process, info);
     if(!terminate) terminate = SKTreeTraversePreorder(root->right, process,info);
   }
@@ -189,7 +189,7 @@ int SKTreeTraversePreorder(t_sktree *root, int (*process)(void *, void *), void 
    @endhistory 
 
 @@*/
-int SKTreeTraversePostorder(t_sktree *root, int (*process)(void *, void *), void *info)
+int SKTreeTraversePostorder(t_sktree *root, int (*process)(const char *, void *, void *), void *info)
 {
   int terminate;
 
@@ -199,7 +199,7 @@ int SKTreeTraversePostorder(t_sktree *root, int (*process)(void *, void *), void
   {
     terminate = SKTreeTraversePostorder(root->left, process, info);
     if(!terminate) terminate = SKTreeTraversePostorder(root->right, process, info);
-    if(!terminate) terminate = process(root->data, info);
+    if(!terminate) terminate = process(root->key,root->data, info);
   }
 
   return terminate;
@@ -219,12 +219,12 @@ int SKTreeTraversePostorder(t_sktree *root, int (*process)(void *, void *), void
    @endhistory 
 
 @@*/
-void SKTreePrintNodes(t_sktree *root, int depth, void (*print_node)(void *, int))
+void SKTreePrintNodes(t_sktree *root, int depth, void (*print_node)(const char *,void *, int))
 {
   if(root)
   {
     SKTreePrintNodes(root->left, depth+1,print_node);
-    print_node(root->data,depth);
+    print_node(root->key,root->data,depth);
     SKTreePrintNodes(root->right, depth+1, print_node);
   }
 }
