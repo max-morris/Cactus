@@ -62,7 +62,7 @@ extern RETURN_TYPE (*CCTK_##name)(ARGUMENTS);
 RETURN_TYPE CCTKi_Dummy##name(ARGUMENTS)                           \
 {                                                                 \
   fprintf(stderr, "Dummy %s called.\n", #name);                   \
-  return 0;                                                       \
+  return -1;                                                       \
 }
 
 /* This macro defines the prototype for a dummy function. */
