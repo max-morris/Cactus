@@ -195,7 +195,9 @@ sub Read_Thorn_Doc
       if (/\\end\{document\}/) {            # stop reading
          $stop = 1;
          $contents .= "\n\\include{${arrangement}_${thorn}_param}\n";
-         $contents .= "\n\\include{${arrangement}_${thorn}_inter}\n";
+         my $tmp = "${arrangement}_${thorn}_inter";
+         $tmp =~ tr/A-Z/a-z/;
+         $contents .= "\n\\include{$tmp}\n";
          $contents .= "\n\\include{${arrangement}_${thorn}_schedule}\n";
       }
 

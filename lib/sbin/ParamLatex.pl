@@ -311,7 +311,7 @@ sub CreateLatexTable
    my $variable_name = ThornUtils::CleanForLatex($_[1]);
    my $scope         = ThornUtils::CleanForLatex($variable{"scope"});
    my $default       = ThornUtils::AddQuotes(ThornUtils::CleanForLatex($variable{"default"}));
-   my $description   = ThornUtils::AddQuotes(ThornUtils::CleanForLatex($variable{"description"}));
+   my $description   = ThornUtils::CleanForLatex($variable{"description"});
 
    # set some vars to hold the output we create
    my $latex_output  = "";
@@ -347,7 +347,7 @@ sub CreateLatexTable
          $latex_output .= "\\hline\n\\multicolumn{3}{|l|}{\\bf Extends ranges:}\\\\ \n\\hline";
       }
    } else {
-      $latex_output .= "\\hline\n\\multicolumn{3}{|p{\\descWidth}|}{{\\bf Description:}   $description} \\\\\n\\hline";
+      $latex_output .= "\\hline\n\\multicolumn{3}{|p{\\descWidth}|}{{\\bf Description:}   {\\em $description}} \\\\\n\\hline";
 
       if ($default !~ /\w/) {
          $default = "(none)";

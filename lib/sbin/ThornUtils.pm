@@ -635,6 +635,21 @@ sub AddQuotes {
 }
 
 #/*@@
+#  @routine   RemoveQuotes
+#  @date      Sat Apr  20 2002
+#  @author    Gabrielle
+#  @desc 
+#     Simply takes away any enclosing quotes if they exist.
+#  @enddesc 
+#  @version 
+#@@*/
+sub AddQuotes {
+   my $var = shift;
+   $var =~ s/^\s*?\"(.*)\"\s*?$/$1/;
+   return $var;
+}
+
+#/*@@
 #  @routine   SetWidth
 #  @date      Sun Mar  3 01:54:37 CET 2002
 #  @author    Ian Kelley
