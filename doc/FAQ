@@ -1,7 +1,7 @@
 
 Cactus Code Frequently Asked Questions
 
-$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.43 2002-09-01 19:58:23 allen Exp $
+$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.44 2002-09-02 17:47:56 allen Exp $
 
 Also available at http://www.cactuscode.org/Documentation/FAQ
 
@@ -123,6 +123,8 @@ C25 On compiling Fortran code I get errors like "dummy argument CCTK_DIM has
 C26 I'm passing arguments to my scheduled routine using CCTK_ARGUMENTS and
     I get the compile error "identifier DECLARE_CCTK_ARGUMENTS is undefined"
 
+C27 (Linux IA64) I get a segmentation violation compiling snprintf.c in
+    the Cactus flesh?
 
 ------------------------------------------------------------------------------
 Running:
@@ -718,6 +720,27 @@ C26 I'm passing arguments to my scheduled routine using CCTK_ARGUMENTS and
     #include "cctk_Arguments.h"
 
     at the top of your source file
+
+C27 (Linux IA64) I get a segmentation violation compiling snprintf.c in
+    the Cactus flesh?
+
+    Compiling /home/Cactus/src/util//snprintf.c
+    /home/Cactus/configs/admeccy/build/Cactus/util/snprintf.c
+    ecc: error: Fatal error in /usr/local/intel/compiler60/ia64/bin/mcpcom, 
+      terminated by segmentation violation
+    compilation aborted for 
+    /home/Cactus/configs/admeccy/build/Cactus/util/snprintf.c 
+    (code 1)
+
+    The Intel C++ compiler (Version 6.0, Build 20020320) has problems 
+    dealing with this file, which needs to be compiled without the -ip 
+    option. Either run gmake with the option SILENT=no then cut and paste 
+    the compile statement to the command line and remove the -ip option 
+    before executing it, and then continue to build the executable as normal.
+ 
+    Alternatively configure with the -O1 option. (Note, so far our benchmarks
+    have indicated that -O1 actually executes faster than -O3, although this
+    may be just for our particular benchmarks).
 
 
 ------------------------------------------------------------------------------
