@@ -1190,6 +1190,12 @@ static int CCTKi_ScheduleCallExit(t_attribute *attribute,
     {
       if(!attribute->CommOnEntry[i]) CCTK_DisableGroupCommI(data->GH,attribute->comm_groups[i]);
     }
+
+    /* Synchronise variable groups associated with this schedule group. */
+
+    CCTK_SyncGroupsI(data->GH, 
+                     attribute->FunctionData.n_SyncGroups,  
+                     attribute->FunctionData.SyncGroups);
   }
 
   return 1;
