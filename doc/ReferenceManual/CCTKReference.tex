@@ -1563,7 +1563,11 @@ A NULL pointer is returned if an invalid handle was given.
 \parameter{pathname}{Directory to create}
 \end{params}
 \begin{discussion}
-To create a directory readable by everyone, but writeable only by the user runnning the code, the permission mode would be 0755.
+To create a directory readable by everyone, but writeable only by the
+user runnning the code, the permission mode would be 0755.  
+Alternatively, a permission mode of 0777 gives everyone unlimited
+access; the user's \verb|umask| setting should cut this down to
+whatever the user's normal default permissions are anyway.
 
 Note that
 (partly for historical reasons and partly for Fortran~77 compatability)
