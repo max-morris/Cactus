@@ -923,6 +923,7 @@ screen output and environment variables.
 \label{sec:coliop}
 
 The cactus executable accepts numerous command line arguments:
+
 {\tt
 \begin{tabular}{|l|l|}
 \hline
@@ -947,6 +948,10 @@ Short Version & Long Version \\
  -E <level> & -error-level <level> \\
 \hline
  -r & -redirect-stdout \\
+\hline
+ -i & -ignore-next \\
+\hline
+    & -parameter-level <level> \\
 \hline
 \end{tabular}
 }
@@ -985,12 +990,17 @@ treated as a fatal error.  This cannot be set to a higher value than
 \item [{\tt -r} or {\tt -redirect-stout}]
 This redirects the standard output of each processor to a file.  By default
 the output from processors other than processor 0 is discarded.
+\item [{\tt -i} or {\tt -ignore-next}] 
+Ignore the next argument on the command line.
+\item [{\tt -parameter-level}]
+Set the level of parameter checking to be used, either {\tt strict}, {\tt normal} (the default), or {\tt relaxed}. See Section~\ref{sec:pafisy}.
 \end{Lentry}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Parameter File Syntax}
+\label{sec:pafisy}
 
 The parameter file is used to control the behaviour of the code at runtime.
 It is of a text file with lines which are either comments, denoted
