@@ -191,7 +191,8 @@ declares that the thorn provides an implementation called `wavetoy', gets
 all {\tt public} variables declared by an implementation called `grid', and
 shares all {\tt protected} variables with `wave\_extract' and its friends.
 
-For convenience variables are placed in groups.  The group has several
+For convenience variables are placed in groups.  Currently, names of groups
+and variables must be distinct. The group has several
 attributes:
 
 \begin{itemize}
@@ -278,7 +279,7 @@ A parameter specification consists of:
 A distinct string with only a few known allowed values.
 \item {\tt STRING}
 An arbitrary string, which must conform to a given regular expression.
-\item {\tt LOGICAL}
+\item {\tt BOOLEAN}
 A boolean type which can take values 1, `t', `true', `yes' or 
 0, `f', `false', `no'.
 \end{itemize}
@@ -309,8 +310,8 @@ REAL Coeff "Important coefficient"
 0:3.14 :: "Range has to be from zero to Pi, default is zero"
 } 0.0
 
-#No need to define a range for LOGICAL
-LOGICAL nice "Nice weather ?"
+#No need to define a range for BOOLEAN
+BOOLEAN nice "Nice weather ?"
 {
 }"yes"
 
@@ -324,7 +325,7 @@ KEYWORD confused "Are we getting confused ?"
 } "never"
 \end{verbatim}
 
-defines a REAL parameter, a LOGICAL parameter, and a KEYWORD.
+defines a REAL parameter, a BOOLEAN parameter, and a KEYWORD.
 
 By default all paramters are {\tt private}, to change this an access
 specification of the form {\tt global:} or {\tt restricted:} (or 
@@ -373,7 +374,7 @@ schedule <name> at <time bin> [other options]
   LANG:     <FORTRAN|C>
   STORAGE:  [group list]
   COMM:     [group list]
-  TRIGGERS: [group or variable list]
+  TRIGGERS: [group list]
 } "A description"
 
 \end{verbatim}
@@ -431,7 +432,7 @@ routine returns.
 
 TRIGGERS is used when the routine is registered at ANALYSIS --- this is a 
 special time bin, a routine registered here will only be called if one of
-the variables mentioned in TRIGGERS is due for output.
+the variables from a group in TRIGGERS is due for output.
 
 The `other options' allow finer grained control of the scheduling.  It is
 possible to state that the routine must run BEFORE or AFTER another routine.
@@ -656,7 +657,7 @@ well as the standard Cactus The source file should look like
 #include "cctk_arguments.h"
 #include "cctk_parameters.h"
 
-      subroutine MyCRoutine(CCTK_FARGUMENTS)
+      subroutine MyFRoutine(CCTK_FARGUMENTS)
 
 c     I'm very cautious, so I want to declare all variables
       implicit none 
@@ -666,12 +667,12 @@ c     I'm very cautious, so I want to declare all variables
       integer flag
 
       flag = 1
-      call MyNewRoutine(CCTK_PASS_FTO_F,flag)
+      call MyNewRoutine(CCTK_PASS_FTOF,flag)
 
       return 
       end
 
-      subroutine MyCRoutine(CCTK_FARGUMENTS,flag)
+      subroutine MyNewRoutine(CCTK_FARGUMENTS,flag)
 
       implicit none 
 
@@ -684,6 +685,15 @@ c     Main code goes here
       return
       end
       
+\end{verbatim}
+
+\subsubsection{Cactus Fortran Functions}
+
+Cactus Fortran functions, for example {\tt CCTK\_MyProc}, can
+all be declared by adding before any executable code, the declaration
+
+\begin{verbatim}
+DECLARE_CCTK_FUNCTIONS
 \end{verbatim}
 
 
@@ -801,7 +811,7 @@ The Cactus variables which are passed through the macros
       with the local grid size on this processor
 \item {\tt cctk\_delta\_time} A {\tt CCTK\_REAL} with the timestep 
 \item {\tt cctk\_time} A {\tt CCTK\_REAL} with the current time
-\item {\tt cctk\_space} An array of {\tt cctk\_dim} {\tt CCTK\_REAL}s with
+\item {\tt cctk\_delta\_space} An array of {\tt cctk\_dim} {\tt CCTK\_REAL}s with
          the grid spacing in each direction
 \item {\tt cctk\_nghostzones} An array of {\tt cctk\_dim} integers with
          the number of ghostzones used in each direction

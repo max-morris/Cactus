@@ -66,7 +66,7 @@ VTYPE <group name> [TYPE=<gtype>] [DIM=<dim>]
 \item{} {\t access} defines which thorns have  use the following 
         groups, and can be either {\t public}, {\t protected} or {\t private}.
 \item{} {\t VTYPE} defines the data type of the variables in the group.
-Supported data types are {\t LOGICAL}, {\t INTEGER}, {\t CHAR} and {\t REAL}.
+Supported data types are {\t BOOLEAN}, {\t INTEGER}, {\t CHAR} and {\t REAL}.
 (In the future {\t COMPLEX} will also be supported.)
 \item{} {\t group name} must be a alpha-numeric name (which may also 
 contain underscores) which is unique 
@@ -152,13 +152,12 @@ this number is the only acceptable value.
              for a keyword has the form 
 {\t
 \begin{verbatim}
-``<keyword value>'', ``<keyword value>'' :: ``<description>''
+"<keyword value>", "<keyword value>" :: "<description>"
 \end{verbatim}
 }
-     \item{} {\t STRING}  No allowed values should be specified for a logical 
-             parameter.
-     \item{} {\t LOGICAL} No allowed values should be specified for a logical 
-             parameter. The default value for a logical can be 
+     \item{} {\t STRING}  Allowed values for strings should be specified using regular expressions. To allow any string, the regular expression ".*" should be used.
+     \item{} {\t BOOLEAN} No allowed values should be specified for a boolean
+             parameter. The default value for a boolean can be 
         \begin{itemize}
            \item{} True: {\t 1}, {\t yes}, {\t y}, {\t t}, {\t true}
            \item{} False: {\t 0}, {\t no}, {\t n}, {\t f}, {\t false}
