@@ -78,8 +78,8 @@ void CCTK_FCALL CCTK_FNAME (CCTK_InterpGridArrays)
                            (int *ierror,
                             const cGH *GH,
                             const int *N_dims,
-                            const int *param_table_handle,
                             const int *local_interp_handle,
+                            const int *param_table_handle,
                             const int *coord_system_handle,
                             const int *N_interp_points,
                               const int *interp_coords_type,
@@ -1118,6 +1118,12 @@ void CCTK_FCALL CCTK_FNAME (CCTK_InterpLocal)
    @vio        in
    @endvar
    @endvar
+   @var        local_interp_handle
+   @vdesc      (reference to) the handle which specifies the local interpolator
+               to use
+   @vtype      const int *
+   @vio        in
+   @endvar
    @var        param_table_handle
    @vdesc      (reference to) the parameter table handle for passing optional
                parameters to the interpolator routine
@@ -1185,8 +1191,8 @@ void CCTK_FCALL CCTK_FNAME (CCTK_InterpGridArrays)
                            (int *ierror,
                             const cGH *GH,
                             const int *N_dims,
-                            const int *param_table_handle,
                             const int *local_interp_handle,
+                            const int *param_table_handle,
                             const int *coord_system_handle,
                             const int *N_interp_points,
                               const int *interp_coords_type,
@@ -1197,8 +1203,8 @@ void CCTK_FCALL CCTK_FNAME (CCTK_InterpGridArrays)
                               const CCTK_INT output_array_types[],
                               void *const output_arrays[])
 {
-  *ierror = CCTK_InterpGridArrays (GH, *N_dims, *param_table_handle,
-                                   *local_interp_handle, *coord_system_handle,
+  *ierror = CCTK_InterpGridArrays (GH, *N_dims, *local_interp_handle,
+                                   *param_table_handle, *coord_system_handle,
                                    *N_interp_points, *interp_coords_type,
                                    interp_coords,
                                    *N_input_arrays,input_array_indices,
