@@ -1827,6 +1827,7 @@ No Fortran routine exists at the moment
 %notyet	communication can be done together, and the same interpolation
 %notyet	coefficients can be used for all the arrays.
 %notyet	
+%notyet	\begin{SynopsisSection}
 %notyet	\begin{Synopsis}{C}
 %notyet	\begin{verbatim}
 %notyet	#include "cctk.h"
@@ -1846,11 +1847,15 @@ No Fortran routine exists at the moment
 %notyet	                           void *const output_arrays[]);
 %notyet	\end{verbatim}
 %notyet	\end{Synopsis}
+%notyet	\end{SynopsisSection}
 %notyet	
+%notyet	\begin{ResultSection}
 %notyet	\begin{Result}{\rm 0}
 %notyet	success
 %notyet	\end{Result}
+%notyet	\end{ResultSection}
 %notyet	
+%notyet	\begin{ParameterSection}
 %notyet	\begin{Parameter}{GH ($\ne$ NULL)}
 %notyet	Pointer to a valid Cactus grid hierarchy.
 %notyet	\end{Parameter}
@@ -1916,12 +1921,13 @@ No Fortran routine exists at the moment
 %notyet	(Pointer to) an array of \verb|N_output_arrays| pointers to the
 %notyet	(user-supplied) 1-D output arrays for the interpolation.
 %notyet	\end{Parameter}
+%notyet	\end{ParameterSection}
 %notyet	
 %notyet	\begin{Discussion}
 %notyet	This function interpolates a list of distributed grid arrays.
 %notyet	The grid topology and coordinates are implicitly specified via a
 %notyet	Cactus coordinate system.
-%notyet	\NewPar
+%notyet	
 %notyet	This is a collective operation, so in the multiprocessor case you
 %notyet	{\em must\/} call this function in parallel on {\em each\/} processor.
 %notyet	However, you may (and typically will) specify a different set of
@@ -1931,18 +1937,19 @@ No Fortran routine exists at the moment
 %notyet	interprocessor-communication issues), though it may be more efficient
 %notyet	to have most or all of the interpolation points ``owned'' by the
 %notyet	current processor.
-%notyet	\NewPar
+%notyet	
 %notyet	Details of the operation performed, and what (if any) inputs and/or
 %notyet	outputs are specified in the parameter table, depend on which driver
 %notyet	thorn and interpolation operator you use.  See the documentation on
 %notyet	individual interpolator thorns (eg.~\verb|PUGHInterp|) for details.
-%notyet	\NewPar
+%notyet	
 %notyet	One common parameter-table option, which a number of interpolation
 %notyet	operators are likely to support, is \verb|order|, a \verb|CCTK_INT|
 %notyet	specifying the order of the (presumably polynomial) interpolation
 %notyet	(1=linear, 2=quadratic, 3=cubic, etc).
 %notyet	\end{Discussion}
 %notyet	
+%notyet	\begin{SeeAlsoSection}
 %notyet	\begin{SeeAlso}{CCTK\_InterpHandle()}
 %notyet	Get the interpolator handle for a given character-string name.
 %notyet	\end{SeeAlso}
@@ -1967,7 +1974,9 @@ No Fortran routine exists at the moment
 %notyet	\begin{SeeAlso}{CCTK\_InterpRegisterOpGrid()}
 %notyet	Register a \verb|CCTK_InterpGridArrays()| interpolation operator.
 %notyet	\end{SeeAlso}
+%notyet	\end{SeeAlsoSection}
 %notyet	
+%notyet	\begin{ErrorSection}
 %notyet	\begin{Error}{UTIL\_ERROR\_BAD\_INPUT}
 %notyet	one or more of the inputs is invalid (eg.~\verb|NULL| pointer)
 %notyet	\end{Error}
@@ -1977,7 +1986,9 @@ No Fortran routine exists at the moment
 %notyet	\begin{Error}{UTIL\_ERROR\_BAD\_HANDLE}
 %notyet	parameter table handle is invalid
 %notyet	\end{Error}
+%notyet	\end{ErrorSection}
 %notyet	
+%notyet	\begin{ExampleSection}
 %notyet	\begin{Example}{C}
 %notyet	Here's a simple example to do quartic 3-D interpolation of a real
 %notyet	and a complex grid array, at 1000 interpolation points:
@@ -2036,6 +2047,7 @@ No Fortran routine exists at the moment
 %notyet	        CCTK_WARN(-1, "error return from interpolator!");
 %notyet	\end{verbatim}
 %notyet	\end{Example}
+%notyet	\end{ExampleSection}
 %notyet	\end{FunctionDescription}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -2290,6 +2302,7 @@ A negative return code indicates an error condition:
 %notyet	number of arrays at a time; in this case the same interpolation
 %notyet	coefficients can be used for all the arrays.
 %notyet	
+%notyet	\begin{SynopsisSection}
 %notyet	\begin{Synopsis}{C}
 %notyet	\begin{verbatim}
 %notyet	#include "util_ErrorCodes.h"
@@ -2313,11 +2326,15 @@ A negative return code indicates an error condition:
 %notyet	                                void *const output_arrays[]);
 %notyet	\end{verbatim}
 %notyet	\end{Synopsis}
+%notyet	\end{SynopsisSection}
 %notyet	
+%notyet	\begin{ResultSection}
 %notyet	\begin{Result}{\rm 0}
 %notyet	success
 %notyet	\end{Result}
+%notyet	\end{ResultSection}
 %notyet	
+%notyet	\begin{ParameterSection}
 %notyet	\begin{Parameter}{N\_dims ($\ge 1$)}
 %notyet	Number of dimensions in which to interpolate.
 %notyet	Note that this may be less than the number of dimensions of the
@@ -2333,15 +2350,15 @@ A negative return code indicates an error condition:
 %notyet	\verb|CCTK_InterpHandle()|.
 %notyet	\end{Parameter}
 %notyet	\begin{Parameter}{param\_table\_handle ($\ge 0$)}
-%notyet	\NewPar
+%notyet	
 %notyet	Handle to a key-value table containing additional parameters for
 %notyet	the interpolator.
-%notyet	\NewPar
+%notyet	
 %notyet	One common parameter-table option, which a number of interpolation
 %notyet	operators are likely to support, is \verb|order|, a \verb|CCTK_INT|
 %notyet	specifying the order of the (presumably polynomial) interpolation
 %notyet	(1=linear, 2=quadratic, 3=cubic, etc).
-%notyet	\NewPar
+%notyet	
 %notyet	See the Thorn Guide for the LocalInterp thorn for other parameters.
 %notyet	\end{Parameter}
 %notyet	\begin{Parameter}{coord\_arrays\_type\_code}
@@ -2419,6 +2436,7 @@ A negative return code indicates an error condition:
 %notyet	(Pointer to) an array of \verb|N_output_arrays| pointers to the
 %notyet	(user-supplied) 1-D output arrays for the interpolation.
 %notyet	\end{Parameter}
+%notyet	\end{ParameterSection}
 %notyet	
 %notyet	\begin{Discussion}
 %notyet	\verb|CCTK_InterpLocalNonUniform()| is a generic API for interpolating
@@ -2439,23 +2457,24 @@ A negative return code indicates an error condition:
 %notyet	$y = \verb|coord_arrays[1][j]|$	\\
 %notyet	$z = \verb|coord_arrays[2][k]|$	\\
 %notyet	\end{flushleft}
-%notyet	\NewPar
+%notyet	
 %notyet	[If these nonlinear functions are known analytically, then it's
 %notyet	probably more efficient to analytically transform to coordinates
 %notyet	which are linear functions of the subscripts, then use
 %notyet	\verb|CCTK_InterpLocalUniform()|.]
-%notyet	\NewPar
+%notyet	
 %notyet	The $(x,y,z)$ coordinates are used for the interpolation
 %notyet	(\ie{}~the interpolator may internally use polynomials in these
 %notyet	coordinates); \verb|interp_coords[]| specifies coordinates in this
 %notyet	same coordinate system.
-%notyet	\NewPar
+%notyet	
 %notyet	Details of the operation performed, and what (if any) inputs and/or
 %notyet	outputs are specified in the parameter table, depend on which interpolation
 %notyet	operator you use.  See the Thorn Guide for the LocalInterp thorn for
 %notyet	further discussion.
 %notyet	\end{Discussion}
 %notyet	
+%notyet	\begin{SeeAlsoSection}
 %notyet	\begin{SeeAlso}{CCTK\_InterpHandle()}
 %notyet	Get the interpolator handle for a given character-string name.
 %notyet	\end{SeeAlso}
@@ -2473,7 +2492,9 @@ A negative return code indicates an error condition:
 %notyet	\hbox{}
 %notyet	Register a \verb|CCTK_InterpLocalNonUniform()| interpolation operator.
 %notyet	\end{SeeAlso}
+%notyet	\end{SeeAlsoSection}
 %notyet	
+%notyet	\begin{ErrorSection}
 %notyet	\begin{Error}{CCTK\_ERROR\_INTERP\_POINT\_X\_RANGE}
 %notyet	one or more of the interpolation points is out of range
 %notyet	(in this case additional information about the out-of-range point
@@ -2494,7 +2515,9 @@ A negative return code indicates an error condition:
 %notyet	\verb|Util_Table*()| routines used to get parameters from
 %notyet	(and/or set results in) the parameter table
 %notyet	\end{Error}
+%notyet	\end{ErrorSection}
 %notyet	
+%notyet	\begin{ExampleSection}
 %notyet	\begin{Example}{C}
 %notyet	Here's a simple example of interpolating a \verb|CCTK_REAL| and a
 %notyet	\verb|CCTK_COMPLEX| $10 \times 20$ 2-D array, at 5 interpolation points,
@@ -2561,6 +2584,7 @@ A negative return code indicates an error condition:
 %notyet	        CCTK_WARN(-1, "error return from interpolator!");
 %notyet	\end{verbatim}
 %notyet	\end{Example}
+%notyet	\end{ExampleSection}
 %notyet	\end{FunctionDescription}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -2579,6 +2603,7 @@ The computation is optimized for the case of interpolating a
 number of arrays at a time; in this case the same interpolation
 coefficients can be used for all the arrays.
 
+\begin{SynopsisSection}
 \begin{Synopsis}{C}
 \begin{verbatim}
 #include "util_ErrorCodes.h"
@@ -2600,11 +2625,15 @@ int status = CCTK_InterpLocalUniform(int N_dims,
                                      void *const output_arrays[]);
 \end{verbatim}
 \end{Synopsis}
+\end{SynopsisSection}
 
+\begin{ResultSection}
 \begin{Result}{\rm 0}
 success
 \end{Result}
+\end{ResultSection}
 
+\begin{ParameterSection}
 \begin{Parameter}{N\_dims ($\ge 1$)}
 Number of dimensions in which to interpolate.
 Note that this may be less than the number of dimensions of the
@@ -2620,15 +2649,14 @@ Handle to the interpolation operator as returned by
 \verb|CCTK_InterpHandle()|.
 \end{Parameter}
 \begin{Parameter}{param\_table\_handle ($\ge 0$)}
-\NewPar
 Handle to a key-value table containing additional parameters for
 the interpolator.
-\NewPar
+
 One common parameter-table option, which a number of interpolation
 operators are likely to support, is \verb|order|, a \verb|CCTK_INT|
 specifying the order of the (presumably polynomial) interpolation
 (1=linear, 2=quadratic, 3=cubic, etc).
-\NewPar
+
 See the Thorn Guide for the LocalInterp thorn for other parameters.
 \end{Parameter}
 \begin{Parameter}{coord\_origin ($\ne$ NULL)}
@@ -2705,6 +2733,7 @@ type codes giving the data types of the 1-D output arrays pointed to by
 (Pointer to) an array of \verb|N_output_arrays| pointers to the
 (user-supplied) 1-D output arrays for the interpolation.
 \end{Parameter}
+\end{ParameterSection}
 
 \begin{Discussion}
 \verb|CCTK_InterpLocalUniform()| is a generic API for interpolating
@@ -2722,13 +2751,14 @@ The $(x,y,z)$ coordinates are used for the interpolation
 (\ie{}~the interpolator may internally use polynomials in these
 coordinates); \verb|interp_coords[]| specifies coordinates in this
 same coordinate system.
-\NewPar
+
 Details of the operation performed, and what (if any) inputs and/or
 outputs are specified in the parameter table, depend on which interpolation
 operator you use.  See the Thorn Guide for the LocalInterp thorn for
 further discussion.
 \end{Discussion}
 
+\begin{SeeAlsoSection}
 \begin{SeeAlso}{CCTK\_InterpHandle()}
 Get the interpolator handle for a given character-string name.
 \end{SeeAlso}
@@ -2749,7 +2779,9 @@ Register a \verb|CCTK_InterpLocalUniform()| interpolation operator
 Interpolate a list of processor-local arrays,
 with non-uniformly spaced data points.
 \end{SeeAlso}
+\end{SeeAlsoSection}
 
+\begin{ErrorSection}
 \begin{Error}{CCTK\_ERROR\_INTERP\_POINT\_X\_RANGE}
 one or more of the interpolation points is out of range
 (in this case additional information about the out-of-range point
@@ -2770,12 +2802,14 @@ this function may also return any error codes returned by the
 \verb|Util_Table*()| routines used to get parameters from
 (and/or set results in) the parameter table
 \end{Error}
+\end{ErrorSection}
 
+\begin{ExampleSection}
 \begin{Example}{C}
 Here's a simple example of interpolating a \verb|CCTK_REAL| and a
 \verb|CCTK_COMPLEX| $10 \times 20$ 2-D array, at 5 interpolation points,
 using cubic interpolation.
-\NewPar
+
 Note that since C allows arrays to be initialized only if the
 initializer values are compile-time constants, we have to declare the
 \verb|interp_coords[]|, \verb|input_arrays[]|, and \verb|output_arrays[]|
@@ -2854,6 +2888,7 @@ if (CCTK_InterpLocalUniform(N_DIMS,
         CCTK_WARN(-1, "error return from interpolator!");
 \end{verbatim}
 \end{Example}
+\end{ExampleSection}
 \end{FunctionDescription}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -2872,6 +2907,7 @@ if (CCTK_InterpLocalUniform(N_DIMS,
 %notyet	number of arrays at a time; in this case the same interpolation
 %notyet	coefficients can be used for all the arrays.
 %notyet	
+%notyet	\begin{SynopsisSection}
 %notyet	\begin{Synopsis}{C}
 %notyet	\begin{verbatim}
 %notyet	#include "util_ErrorCodes.h"
@@ -2894,11 +2930,15 @@ if (CCTK_InterpLocalUniform(N_DIMS,
 %notyet	                                    void *const output_arrays[]);
 %notyet	\end{verbatim}
 %notyet	\end{Synopsis}
+%notyet	\end{SynopsisSection}
 %notyet	
+%notyet	\begin{ResultSection}
 %notyet	\begin{Result}{\rm 0}
 %notyet	success
 %notyet	\end{Result}
+%notyet	\end{ResultSection}
 %notyet	
+%notyet	\begin{ParameterSection}
 %notyet	\begin{Parameter}{N\_dims ($\ge 1$)}
 %notyet	Number of dimensions in which to interpolate.
 %notyet	Note that this may be less than the number of dimensions of the
@@ -2914,15 +2954,15 @@ if (CCTK_InterpLocalUniform(N_DIMS,
 %notyet	\verb|CCTK_InterpHandle()|.
 %notyet	\end{Parameter}
 %notyet	\begin{Parameter}{param\_table\_handle ($\ge 0$)}
-%notyet	\NewPar
+%notyet	
 %notyet	Handle to a key-value table containing additional parameters for
 %notyet	the interpolator.
-%notyet	\NewPar
+%notyet	
 %notyet	One common parameter-table option, which a number of interpolation
 %notyet	operators are likely to support, is \verb|order|, a \verb|CCTK_INT|
 %notyet	specifying the order of the (presumably polynomial) interpolation
 %notyet	(1=linear, 2=quadratic, 3=cubic, etc).
-%notyet	\NewPar
+%notyet	
 %notyet	See the Thorn Guide for the LocalInterp thorn for other parameters.
 %notyet	\end{Parameter}
 %notyet	\begin{Parameter}{coord\_arrays\_type\_code}
@@ -3005,6 +3045,7 @@ if (CCTK_InterpLocalUniform(N_DIMS,
 %notyet	(Pointer to) an array of \verb|N_output_arrays| pointers to the
 %notyet	(user-supplied) 1-D output arrays for the interpolation.
 %notyet	\end{Parameter}
+%notyet	\end{ParameterSection}
 %notyet	
 %notyet	\begin{Discussion}
 %notyet	This function is a generic API for interpolating processor-local arrays
@@ -3026,23 +3067,24 @@ if (CCTK_InterpLocalUniform(N_DIMS,
 %notyet	$z = \verb|coord_arrays[2][i,j,k]|$	\\
 %notyet	\end{flushleft}
 %notyet	where \verb|[i,j,k]| refers to \verb|N_dims|-D array subscripting.
-%notyet	\NewPar
+%notyet	
 %notyet	[If these nonlinear functions are known analytically, then it's
 %notyet	probably more efficient to analytically transform to coordinates
 %notyet	which are linear functions of the subscripts, then use
 %notyet	\verb|CCTK_InterpLocalUniform()|.]
-%notyet	\NewPar
+%notyet	
 %notyet	The $(x,y,z)$ coordinates are used for the interpolation
 %notyet	(\ie{}~the interpolator may internally use polynomials in these
 %notyet	coordinates); \verb|interp_coords| specifies coordinates in this
 %notyet	same coordinate system.
-%notyet	\NewPar
+%notyet	
 %notyet	Details of the operation performed, and what (if any) inputs and/or
 %notyet	outputs are specified in the parameter table, depend on which interpolation
 %notyet	operator you use.  See the Thorn Guide for the LocalInterp thorn for
 %notyet	further discussion.
 %notyet	\end{Discussion}
 %notyet	
+%notyet	\begin{SeeAlsoSection}
 %notyet	\begin{SeeAlso}{CCTK\_InterpHandle()}
 %notyet	Get the interpolator handle for a given character-string name.
 %notyet	\end{SeeAlso}
@@ -3060,7 +3102,9 @@ if (CCTK_InterpLocalUniform(N_DIMS,
 %notyet	\hbox{}
 %notyet	Register a \verb|CCTK_InterpLocalWarped()| interpolation operator.
 %notyet	\end{SeeAlso}
+%notyet	\end{SeeAlsoSection}
 %notyet	
+%notyet	\begin{ErrorSection}
 %notyet	\begin{Error}{CCTK\_ERROR\_INTERP\_POINT\_X\_RANGE}
 %notyet	one or more of the interpolation points is out of range
 %notyet	(in this case additional information about the out-of-range point
@@ -3081,7 +3125,9 @@ if (CCTK_InterpLocalUniform(N_DIMS,
 %notyet	\verb|Util_Table*()| routines used to get parameters from
 %notyet	(and/or set results in) the parameter table
 %notyet	\end{Error}
+%notyet	\end{ErrorSection}
 %notyet	
+%notyet	\begin{ExampleSection}
 %notyet	\begin{Example}{C}
 %notyet	Here's a simple example of interpolating a \verb|CCTK_REAL| and a
 %notyet	\verb|CCTK_COMPLEX| $10 \times 20$ 2-D array, at 5 interpolation points,
@@ -3152,6 +3198,7 @@ if (CCTK_InterpLocalUniform(N_DIMS,
 %notyet	        CCTK_WARN(-1, "error return from interpolator!");
 %notyet	\end{verbatim}
 %notyet	\end{Example}
+%notyet	\end{ExampleSection}
 %notyet	\end{FunctionDescription}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -3260,6 +3307,7 @@ A negative return code indicates an error condition:
 \label{CCTK-InterpRegisterOpLocalUniform}
 Register a \verb|CCTK_InterpLocalUniform()| interpolation operator.
 
+\begin{SynopsisSection}
 \begin{Synopsis}{C}
 \begin{verbatim}
 #include "cctk.h"
@@ -3268,12 +3316,16 @@ int CCTK_InterpRegisterOpLocalUniform(cInterpOpLocalUniform operator_ptr,
                                       const char *thorn_name);
 \end{verbatim}
 \end{Synopsis}
+\end{SynopsisSection}
 
+\begin{ResultSection}
 \begin{Result}{handle ($\ge 0$)}
 A cactus handle to refer to all interpolation operators registered
 under this operator name.
 \end{Result}
+\end{ResultSection}
 
+\begin{ParameterSection}
 \begin{Parameter}{operator\_ptr ($\ne$ NULL)}
 \hbox{}
 Pointer to the \verb|CCTK_InterpLocalUniform()| interpolation operator.
@@ -3291,12 +3343,14 @@ the name under which to register the operator.
 (Pointer to) a (C-style null-terminated) character string giving
 the name of the thorn which provides the interpolation operator.
 \end{Parameter}
+\end{ParameterSection}
 
 \begin{Discussion}
 Only C functions (or other routines with C-compatible calling sequences)
 can be registered as interpolation operators.
 \end{Discussion}
 
+\begin{SeeAlsoSection}
 \begin{SeeAlso}{CCTK\_InterpHandle()}
 Get the interpolator handle for a given character-string name.
 \end{SeeAlso}
@@ -3304,7 +3358,9 @@ Get the interpolator handle for a given character-string name.
 Interpolate a list of processor-local arrays, with uniformly spaced
 data points.
 \end{SeeAlso}
+\end{SeeAlsoSection}
 
+\begin{ErrorSection}
 \begin{Error}{-1}
 NULL pointer was passed as interpolation operator routine
 \end{Error}
@@ -3314,7 +3370,9 @@ interpolation handle could not be allocated
 \begin{Error}{-3}
 Interpolation operator with this name already exists
 \end{Error}
+\end{ErrorSection}
 
+\begin{ExampleSection}
 \begin{Example}{C}
 \begin{verbatim}
 /* prototype for function we want to register */
@@ -3343,6 +3401,7 @@ CCTK_InterpRegisterOpLocalUniform(LocalInterp_InterpLocalUniform,
                                   CCTK_THORNSTRING);
 \end{verbatim}
 \end{Example}
+\end{ExampleSection}
 \end{FunctionDescription}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -3481,9 +3540,13 @@ For a single processor run this call will return one.
 \end{errorcodes}
 \end{CCTKFunc}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{FunctionDescription}{CCTK\_NumIOMethods}
 \label{CCTK-NumIOMethods}
+Find the total number of I/O methods registered with the flesh
+
+\begin{SynopsisSection}
 \begin{Synopsis}{C}
 \begin{verbatim}
 int num_methods = CCTK_NumIOMethods (void);
@@ -3492,16 +3555,21 @@ int num_methods = CCTK_NumIOMethods (void);
 \begin{Synopsis}{Fortran}
 \begin{verbatim}
 call CCTK_NumIOMethods (num_methods)
-
 integer num_methods
 \end{verbatim}
 \end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ParameterSection}
 \begin{Parameter}{num\_methods}number of registered IO methods\end{Parameter}
+\end{ParameterSection}
+
 \begin{Discussion}
 Returns the total number of IO methods registered with the flesh.
 \end{Discussion}
 \end{FunctionDescription}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Groups.c
 \begin{CCTKFunc}{CCTK\_NumTimeLevelsFromVar}{Gives the number of timelevels for a variable}
@@ -3647,6 +3715,9 @@ The group name should be given in the form {\t <implementation>::<group>}
 % IOOverloadables.h
 \begin{FunctionDescription}{CCTK\_OutputGH}
 \label{CCTK-OutputGH}
+Output all variables living on the GH looping over all registered IO methods.
+
+\begin{SynopsisSection}
 \begin{Synopsis}{C}
 \begin{verbatim}
 int istat = CCTK_OutputGH (const cGH *cctkGH);
@@ -3655,28 +3726,43 @@ int istat = CCTK_OutputGH (const cGH *cctkGH);
 \begin{Synopsis}{Fortran}
 \begin{verbatim}
 call CCTK_OutputGH (istat, cctkGH)
-
 integer istat
 CCTK_POINTER cctkGH
 \end{verbatim}
 \end{Synopsis}
-\begin{Parameter}{istat}return status\end{Parameter}
-\begin{Parameter}{cctkGH}pointer to CCTK grid hierarchy\end{Parameter}
+\end{SynopsisSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{istat}
+total number of variables for which output was done by all IO methods
+\end{Parameter}
+\begin{Parameter}{cctkGH}
+pointer to CCTK grid hierarchy
+\end{Parameter}
+\end{ParameterSection}
+
 \begin{Discussion}
-Output all variables living on the GH looping over all registered IO methods.
 The IO methods decide themselfes whether it is time to do output now or not.
 \end{Discussion}
-\begin{Error}{positive}total number of variables for which output was done by all IO methods\end{Error}
-\begin{Error}{0}if it wasn't time to output anything yet by any IO method\end{Error}
-\begin{Error}{-1}if no IO methods were registered\end{Error}
+
+\begin{ErrorSection}
+\begin{Error}{\rm 0}
+it wasn't time to output anything yet by any IO method
+\end{Error}
+\begin{Error}{-1}
+if no IO methods were registered
+\end{Error}
+\end{ErrorSection}
 \end{FunctionDescription}
 
-
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % IOOverloadables.h
 \begin{FunctionDescription}{CCTK\_OutputVar}
+Output a single variable by all I/O methods
 \label{CCTK-OutputVar}
+
+\begin{SynopsisSection}
 \begin{Synopsis}{C}
 \begin{verbatim}
 int istat = CCTK_OutputVar (const cGH *cctkGH,
@@ -3686,29 +3772,43 @@ int istat = CCTK_OutputVar (const cGH *cctkGH,
 \begin{Synopsis}{Fortran}
 \begin{verbatim}
 call CCTK_OutputVar (istat, cctkGH, variable)
-
 integer istat
 CCTK_POINTER cctkGH
 character*(*) variable
 \end{verbatim}
 \end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ParameterSection}
 \begin{Parameter}{istat}return status\end{Parameter}
 \begin{Parameter}{cctkGH}pointer to CCTK grid hierarchy\end{Parameter}
 \begin{Parameter}{variable}full name of variable to output\end{Parameter}
+\end{ParameterSection}
+
 \begin{Discussion}
-Output a variable {\t variable} looping over all registered methods.
 The output should take place if at all possible.
 If the appropriate file exists the data is appended, otherwise a new
 file is created.
 \end{Discussion}
-\begin{Error}{0}for success\end{Error}
-\begin{Error}{negative}for some error condition (eg. IO method is not registered)\end{Error}
+
+\begin{ErrorSection}
+\begin{Error}{\rm 0}
+for success
+\end{Error}
+\begin{Error}{negative}
+for some error condition (eg. IO method is not registered)
+\end{Error}
+\end{ErrorSection}
 \end{FunctionDescription}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % IOOverloadables.h
 \begin{FunctionDescription}{CCTK\_OutputVarAs}
+Output a single variable as an alias by all I/O methods
 \label{CCTK-OutputVarAs}
+
+\begin{SynopsisSection}
 \begin{Synopsis}{C}
 \begin{verbatim}
 int istat = CCTK_OutputVarAs (const cGH *cctkGH,
@@ -3719,33 +3819,42 @@ int istat = CCTK_OutputVarAs (const cGH *cctkGH,
 \begin{Synopsis}{Fortran}
 \begin{verbatim}
 call CCTK_OutputVarAsByMethod (istat, cctkGH, variable, alias)
-
 integer istat
 CCTK_POINTER cctkGH
 character*(*) variable
 character*(*) alias
 \end{verbatim}
 \end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ParameterSection}
 \begin{Parameter}{istat}return status\end{Parameter}
 \begin{Parameter}{cctkGH}pointer to CCTK grid hierarchy\end{Parameter}
 \begin{Parameter}{variable}full name of variable to output\end{Parameter}
 \begin{Parameter}{alias}alias name to base the output filename on\end{Parameter}
+\end{ParameterSection}
+
 \begin{Discussion}
-Output a variable {\t variable} looping over all registered IO methods.
 The output should take place if at all possible.
 If the appropriate file exists the data is appended, otherwise a new
 file is created. Uses {\t alias} as the name of the variable for the purpose
 of constructing a filename.
 \end{Discussion}
+
+\begin{ErrorSection}
 \begin{Error}{positive}the number of IO methods which did output of {\t variable}\end{Error}
-\begin{Error}{0}for success\end{Error}
+\begin{Error}{\rm 0}for success\end{Error}
 \begin{Error}{negative}if no IO methods were registered\end{Error}
+\end{ErrorSection}
 \end{FunctionDescription}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % IOOverloadables.h
 \begin{FunctionDescription}{CCTK\_OutputVarAsByMethod}
 \label{CCTK-OutputVarAsByMethod}
+
+\begin{SynopsisSection}
 \begin{Synopsis}{C}
 \begin{verbatim}
 int istat = CCTK_OutputVarAsByMethod (const cGH *cctkGH,
@@ -3757,7 +3866,6 @@ int istat = CCTK_OutputVarAsByMethod (const cGH *cctkGH,
 \begin{Synopsis}{Fortran}
 \begin{verbatim}
 call CCTK_OutputVarAsByMethod (istat, cctkGH, variable, method, alias)
-
 integer istat
 CCTK_POINTER cctkGH
 character*(*) variable
@@ -3765,11 +3873,16 @@ character*(*) method
 character*(*) alias
 \end{verbatim}
 \end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ParameterSection}
 \begin{Parameter}{istat}return status\end{Parameter}
 \begin{Parameter}{cctkGH}pointer to CCTK grid hierarchy\end{Parameter}
 \begin{Parameter}{variable}full name of variable to output\end{Parameter}
 \begin{Parameter}{method}method to use for output\end{Parameter}
 \begin{Parameter}{alias}alias name to base the output filename on\end{Parameter}
+\end{ParameterSection}
+
 \begin{Discussion}
 Output a variable {\t variable} using the method {\t method} if it is
 registered. Uses {\t alias} as the name of the variable for the purpose
@@ -3777,13 +3890,19 @@ of constructing a filename. The output should take place if at all possible.
 If the appropriate file exists the data is appended, otherwise a new
 file is created.
 \end{Discussion}
-\begin{Error}{0}for success\end{Error}
+
+\begin{ErrorSection}
+\begin{Error}{\rm 0}for success\end{Error}
 \begin{Error}{negative}indicating some error (eg. IO method is not registered)\end{Error}
+\end{ErrorSection}
 \end{FunctionDescription}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % IOOverloadables.h
 \begin{FunctionDescription}{CCTK\_OutputVarByMethod}
 \label{CCTK-OutputVarByMethod}
+\begin{SynopsisSection}
 \begin{Synopsis}{C}
 \begin{verbatim}
 int istat = CCTK_OutputVarByMethod (const cGH *cctkGH,
@@ -3794,25 +3913,32 @@ int istat = CCTK_OutputVarByMethod (const cGH *cctkGH,
 \begin{Synopsis}{Fortran}
 \begin{verbatim}
 call CCTK_OutputVarByMethod (istat, cctkGH, variable, method)
-
 integer istat
 CCTK_POINTER cctkGH
 character*(*) variable
 character*(*) method
 \end{verbatim}
 \end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ParameterSection}
 \begin{Parameter}{istat}return status\end{Parameter}
 \begin{Parameter}{cctkGH}pointer to CCTK grid hierarchy\end{Parameter}
 \begin{Parameter}{variable}full name of variable to output\end{Parameter}
 \begin{Parameter}{method}method to use for output\end{Parameter}
+\end{ParameterSection}
+
 \begin{Discussion}
 Output a variable {\t variable} using the IO method {\t method} if it is
 registered. The output should take place if at all possible.
 if the appropriate file exists the data is appended, otherwise a new
 file is created.
 \end{Discussion}
-\begin{Error}{0}for success\end{Error}
+
+\begin{ErrorSection}
+\begin{Error}{\rm 0}for success\end{Error}
 \begin{Error}{negative}indicating some error (eg. IO method is not registered)\end{Error}
+\end{ErrorSection}
 \end{FunctionDescription}
 
 
@@ -4835,6 +4961,7 @@ a copy of a specified C-style null-terminated character string
 \label{Util-TableCreate}
 Creates a new (empty) table
 
+\begin{SynopsisSection}
 \begin{Synopsis}{C}
 \begin{verbatim}
 #include "util_ErrorCodes.h"
@@ -4842,27 +4969,33 @@ Creates a new (empty) table
 int handle = Util_TableCreate(int flags);
 \end{verbatim}
 \end{Synopsis}
+\end{SynopsisSection}
 
+\begin{ResultSection}
 \begin{Result}{handle ($\ge 0$)}
 A handle to the newly-created table
 \end{Result}
+\end{ResultSection}
 
+\begin{ParameterSection}
 \begin{Parameter}{flags ($\ge 0$)}
 A flags word for the table.  This should be the inclusive-or of zero
 or more of the \verb|UTIL_TABLE_FLAGS_|* bit masks (defined in
 \verb|"util_Table.h"|).  For Fortran users, note that inclusive-or
 is the same as sum here, since the bit masks are all disjoint.
 \end{Parameter}
+\end{ParameterSection}
 
 \begin{Discussion}
 We require the flags word to be non-negative so that other
 functions can distinguish flags from (negative) error codes.
-\NewPar
+
 Any User-defined flag words should use only bit positions at or above
 \verb|UTIL_TABLE_FLAGS_USER_DEFINED_BASE|, i.e. all bit positions
 below this are reserved for present of future Cactus use.
 \end{Discussion}
 
+\begin{SeeAlsoSection}
 \begin{SeeAlso}{Util\_TableCreateFromString()}
 convenience routine to create a table and set key/value entries
 in it based on a parameter-file--like character string
@@ -4870,14 +5003,18 @@ in it based on a parameter-file--like character string
 \begin{SeeAlso}{Util\_TableDestroy()}
 destroy a table
 \end{SeeAlso}
+\end{SeeAlsoSection}
 
+\begin{ErrorSection}
 \begin{Error}{UTIL\_ERROR\_NO\_MEMORY}
 unable to allocate memory
 \end{Error}
 \begin{Error}{UTIL\_ERROR\_TABLE\_BAD\_FLAGS}
 flags word is negative
 \end{Error}
+\end{ErrorSection}
 
+\begin{ExampleSection}
 \begin{Example}{C}
 \begin{verbatim}
 #include "util_ErrorCodes.h"
@@ -4890,6 +5027,7 @@ int handle = Util_TableCreate(UTIL_TABLE_FLAGS_DEFAULT);
 int handle2 = Util_TableCreate(UTIL_TABLE_FLAGS_CASE_INSENSITIVE);
 \end{verbatim}
 \end{Example}
+\end{ExampleSection}
 \end{FunctionDescription}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -4900,6 +5038,7 @@ Creates a new table (with the case-insensitive flag set) and sets
 values in it based on a string argument (interpreted with
 ``parameter-file'' semantics)
 
+\begin{SynopsisSection}
 \begin{Synopsis}{C}
 \begin{verbatim}
 #include "util_ErrorCodes.h"
@@ -4907,17 +5046,23 @@ values in it based on a string argument (interpreted with
 int handle = Util_TableCreateFromString(const char *string);
 \end{verbatim}
 \end{Synopsis}
+\end{SynopsisSection}
 
+\begin{ResultSection}
 \begin{Result}{handle ($\ge 0$)}
 a handle to the newly-created table
 \end{Result}
+\end{ResultSection}
 
+\begin{ParameterSection}
 \begin{Parameter}{string}
 a pointer to a C-style null-terminated string specifying the table
 contents; see the description for \verb|Util_TableSetFromString()|
 for a full description of the syntax and semantics of this string
 \end{Parameter}
+\end{ParameterSection}
 
+\begin{SeeAlsoSection}
 \begin{SeeAlso}{Util\_TableCreate()}
 create a table
 \end{SeeAlso}
@@ -4930,7 +5075,9 @@ store a \verb|CCTK_INT| value in a table
 \begin{SeeAlso}{Util\_TableSetReal()}
 store a \verb|CCTK_REAL| value in a table
 \end{SeeAlso}
+\end{SeeAlsoSection}
 
+\begin{ErrorSection}
 \begin{Error}{UTIL\_ERROR\_NO\_MEMORY}
 unable to allocate memory
 \end{Error}
@@ -4944,7 +5091,9 @@ invalid input: can't parse input string
 this function may also return any error codes returned by
 \verb|Util_TableCreate()| or \verb|Util_TableSetFromString()|
 \end{Error}
+\end{ErrorSection}
 
+\begin{ExampleSection}
 \begin{Example}{C}
 \begin{verbatim}
 #include "util_ErrorCodes.h"
@@ -4962,6 +5111,7 @@ Util_TableSetInt(handle, 3, "order");
 Util_TableSetReal(handle, 42.314159, "myparam");
 \end{verbatim}
 \end{Example}
+\end{ExampleSection}
 \end{FunctionDescription}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -4970,6 +5120,7 @@ Util_TableSetReal(handle, 42.314159, "myparam");
 \label{Util-TableDeleteKey}
 Deletes a specified key/value entry from a table
 
+\begin{SynopsisSection}
 \begin{Synopsis}{C}
 \begin{verbatim}
 #include "util_ErrorCodes.h"
@@ -4977,23 +5128,29 @@ Deletes a specified key/value entry from a table
 int key_exists = Util_TableDeleteKey(int handle, const char *key);
 \end{verbatim}
 \end{Synopsis}
+\end{SynopsisSection}
 
+\begin{ResultSection}
 \begin{Result}{\rm 0}
 ok (key existed before this call, and has now been deleted)
 \end{Result}
+\end{ResultSection}
 
+\begin{ParameterSection}
 \begin{Parameter}{handle ($\ge 0$)}
 handle to the table
 \end{Parameter}
 \begin{Parameter}{key}
 a pointer to the key (a C-style null-terminated string)
 \end{Parameter}
+\end{ParameterSection}
 
 \begin{Discussion}
 This function invalidates any iterators for the table which are
 not in the ``null-pointer'' state.
 \end{Discussion}
 
+\begin{ErrorSection}
 \begin{Error}{UTIL\_ERROR\_BAD\_HANDLE}
 handle is invalid
 \end{Error}
@@ -5003,6 +5160,7 @@ key contains '/' character
 \begin{Error}{UTIL\_ERROR\_TABLE\_NO\_SUCH\_KEY}
 no such key in table
 \end{Error}
+\end{ErrorSection}
 \end{FunctionDescription}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -5011,6 +5169,7 @@ no such key in table
 \label{Util-TableDestroy}
 Destroys a table
 
+\begin{SynopsisSection}
 \begin{Synopsis}{C}
 \begin{verbatim}
 #include "util_ErrorCodes.h"
@@ -5018,19 +5177,25 @@ Destroys a table
 int status = Util_TableDestroy(int handle);
 \end{verbatim}
 \end{Synopsis}
+\end{SynopsisSection}
 
+\begin{ResultSection}
 \begin{Result}{\rm 0}
 ok
 \end{Result}
+\end{ResultSection}
 
+\begin{ParameterSection}
 \begin{Parameter}{handle ($\ge 0$)}
 handle to the table
 \end{Parameter}
+\end{ParameterSection}
 
 \begin{Discussion}
 Of course, this function invalidates any and all iterators for the table. :)
 \end{Discussion}
 
+\begin{SeeAlsoSection}
 \begin{SeeAlso}{Util\_TableCreate()}
 create a table
 \end{SeeAlso}
@@ -5038,11 +5203,15 @@ create a table
 convenience routine to create a table and set key/value entries
 in it based on a parameter-file--like character string
 \end{SeeAlso}
+\end{SeeAlsoSection}
 
+\begin{ErrorSection}
 \begin{Error}{UTIL\_ERROR\_BAD\_HANDLE}
 handle is invalid
 \end{Error}
+\end{ErrorSection}
 
+\begin{ExampleSection}
 \begin{Example}{C}
 \begin{verbatim}
 #include "util_ErrorCodes.h"
@@ -5060,6 +5229,7 @@ int handle = Util_TableCreate(UTIL_TABLE_FLAGS_DEFAULT);
 Util_TableDestroy(handle);
 \end{verbatim}
 \end{Example}
+\end{ExampleSection}
 \end{FunctionDescription}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -5070,6 +5240,7 @@ Get the single (1-element array) value, or more generally the first
 array element of the value, associated with a specified key in a
 key/value table.
 
+\begin{SynopsisSection}
 \begin{Synopsis}{C}
 \begin{verbatim}
 #include "util_ErrorCodes.h"
@@ -5086,11 +5257,15 @@ where \verb|XXX| is one of
    \verb|COMPLEX|, \verb|COMPLEX8|, \verb|COMPLEX16|, \verb|COMPLEX32|
 (not all of these may be supported on any given system)
 \end{Synopsis}
+\end{SynopsisSection}
 
+\begin{ResultSection}
 \begin{Result}{N\_elements}
 the number of array elements in the value
 \end{Result}
+\end{ResultSection}
 
+\begin{ParameterSection}
 \begin{Parameter}{handle ($\ge 0$)}
 handle to the table
 \end{Parameter}
@@ -5103,6 +5278,7 @@ or NULL pointer to skip storing this
 \begin{Parameter}{key}
 a pointer to the key (a C-style null-terminated string)
 \end{Parameter}
+\end{ParameterSection}
 
 \begin{Discussion}
 Note that it is {\em not\/} an error for the value to actually have
@@ -5111,15 +5287,16 @@ The rationale for this design is that the caller may know or suspect
 that the value is a large array, but may only want the first array
 element; in this case this design avoids the caller having to allocate
 a large buffer unnecessarily.
-\NewPar
+
 In contrast, it {\em is\/} an error for the value to actually be an
 empty (0-length) array, because then there is no ``first array element''
 to get.
-\NewPar
+
 If any error code is returned, the user's value buffer
 (pointed to by \verb|value| if this is non-NULL) is unchanged.
 \end{Discussion}
 
+\begin{SeeAlsoSection}
 \begin{SeeAlso}{Util\_TableCreateFromString()}
 convenience routine to create a table and set key/value entries
 in it based on a parameter-file--like character string
@@ -5143,7 +5320,9 @@ parameter-file--like character string
 \begin{SeeAlso}{Util\_TableSetString()}
 set a character-string value
 \end{SeeAlso}
+\end{SeeAlsoSection}
 
+\begin{ErrorSection}
 \begin{Error}{UTIL\_ERROR\_BAD\_HANDLE}
 handle is invalid
 \end{Error}
@@ -5159,7 +5338,9 @@ value has data type other than \verb|CCTK_TYPE|
 \begin{Error}{UTIL\_ERROR\_TABLE\_VALUE\_IS\_EMPTY}
 value is an empty (0-element) array
 \end{Error}
+\end{ErrorSection}
 
+\begin{ExampleSection}
 \begin{Example}{C}
 \begin{verbatim}
 #include "util_ErrorCodes.h"
@@ -5182,6 +5363,7 @@ N = Util_TableGetInt(handle, &x, "the answer");
 N = Util_TableGetInt(handle, &x, "empty array");
 \end{verbatim}
 \end{Example}
+\end{ExampleSection}
 \end{FunctionDescription}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -5192,6 +5374,7 @@ This is a family of functions, one for each Cactus data type, to get
 a copy of the value associated with a specified key, and store it
 (more accurately, as much of it as will fit) in a specified array
 
+\begin{SynopsisSection}
 \begin{Synopsis}{C}
 \begin{verbatim}
 #include "util_ErrorCodes.h"
@@ -5208,11 +5391,15 @@ where \verb|XXX| is one of
    \verb|COMPLEX|, \verb|COMPLEX8|, \verb|COMPLEX16|, \verb|COMPLEX32|
 (not all of these may be supported on any given system)
 \end{Synopsis}
+\end{SynopsisSection}
 
+\begin{ResultSection}
 \begin{Result}{N\_elements}
 the number of array elements in the value
 \end{Result}
+\end{ResultSection}
 
+\begin{ParameterSection}
 \begin{Parameter}{handle ($\ge 0$)}
 handle to the table
 \end{Parameter}
@@ -5228,6 +5415,7 @@ or NULL pointer to skip storing this
 \begin{Parameter}{key}
 a pointer to the key (a C-style null-terminated string)
 \end{Parameter}
+\end{ParameterSection}
 
 \begin{Discussion}
 Note that it is {\em not\/} an error for the value to actually have
@@ -5238,15 +5426,16 @@ The rationale for this design is that the caller may know or suspect
 that the value is a large array, but may only want the first few array
 elements; in this case this design avoids the caller having to allocate
 a large buffer unnecessarily.
-\NewPar
+
 It is also {\em not\/} an error for the value to actually have
 $< \verb|N_array|$ array elements; again the caller can detect this by
 comparing the return value with \verb|N_array|.
-\NewPar
+
 If any error code is returned, the user's value buffer
 (pointed to by \verb|array| if this is non-NULL) is unchanged.
 \end{Discussion}
 
+\begin{SeeAlsoSection}
 \begin{SeeAlso}{Util\_TableCreateFromString()}
 convenience routine to create a table and set key/value entries
 in it based on a parameter-file--like character string
@@ -5271,7 +5460,9 @@ parameter-file--like character string
 \begin{SeeAlso}{Util\_TableSetString()}
 set a character-string value
 \end{SeeAlso}
+\end{SeeAlsoSection}
 
+\begin{ErrorSection}
 \begin{Error}{UTIL\_ERROR\_BAD\_HANDLE}
 handle is invalid
 \end{Error}
@@ -5287,7 +5478,9 @@ no such key in table
 \begin{Error}{UTIL\_ERROR\_TABLE\_WRONG\_DATA\_TYPE}
 value has data type other than \verb|CCTK_TYPE|
 \end{Error}
+\end{ErrorSection}
 
+\begin{ExampleSection}
 \begin{Example}{C}
 \begin{verbatim}
 #include "util_ErrorCodes.h"
@@ -5308,6 +5501,7 @@ Util_TableSetIntArray(handle, N_STUFF, stuff, "blah blah blah");
 N = Util_TableGetRealArray(handle, N_OUTPUT, output, "blah blah blah");
 \end{verbatim}
 \end{Example}
+\end{ExampleSection}
 \end{FunctionDescription}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -5318,6 +5512,7 @@ Gets a copy of the character-string value associated with a specified
 key in a table, and stores it (more accurately, as much of it as will fit)
 in a specified character string
 
+\begin{SynopsisSection}
 \begin{Synopsis}{C}
 \begin{verbatim}
 #include "util_ErrorCodes.h"
@@ -5327,16 +5522,20 @@ int length = Util_TableGetString(int handle,
                                  const char *key);
 \end{verbatim}
 \end{Synopsis}
+\end{SynopsisSection}
 
+\begin{ResultSection}
 \begin{ResultNote}
 Results are the same as all the other \verb|Util_TableGet|* functions:
 \end{ResultNote}
 \begin{Result}{length}
-the length of the string\\
+the length of the string
 (C \verb|strlen()| semantics, \ie{} {\em not\/} including
 the terminating null character)
 \end{Result}
+\end{ResultSection}
 
+\begin{ParameterSection}
 \begin{Parameter}{handle ($\ge 0$)}
 handle to the table
 \end{Parameter}
@@ -5353,16 +5552,17 @@ or NULL pointer to skip storing this
 \begin{Parameter}{key}
 a pointer to the key (a C-style null-terminated string)
 \end{Parameter}
+\end{ParameterSection}
 
 \begin{Discussion}
 This function assumes that the string is stored as an array of
 \verb|CCTK_CHAR|s, {\em not\/} including a terminating null character.
-\NewPar
+
 This function differs from \verb|Util_TableGetCharArray()| in two ways:
 It explicitly provides a terminating null character for C-style strings,
 and it explicitly checks for the string being too long to fit in the buffer
 (in which case it returns \verb|UTIL_ERROR_TABLE_STRING_TRUNCATED|).
-\NewPar
+
 If the error code \verb|UTIL_ERROR_TABLE_STRING_TRUNCATED| is returned,
 then the first \verb|buffer_length-1| characters of the string are
 returned in the user's buffer (assuming \verb|buffer| is non-NULL),
@@ -5371,6 +5571,7 @@ buffer.  If any other error code is returned, the user's value buffer
 (pointed to by \verb|buffer| if this is non-NULL) is unchanged.
 \end{Discussion}
 
+\begin{SeeAlsoSection}
 \begin{SeeAlso}{Util\_TableCreateFromString()}
 convenience routine to create a table and set key/value entries
 in it based on a parameter-file--like character string
@@ -5401,7 +5602,9 @@ parameter-file--like character string
 \begin{SeeAlso}{Util\_TableSetCharArray()}
 set an array-of-\verb|CCTK_CHAR| value
 \end{SeeAlso}
+\end{SeeAlsoSection}
 
+\begin{ErrorSection}
 \begin{Error}{UTIL\_ERROR\_BAD\_HANDLE}
 handle is invalid
 \end{Error}
@@ -5421,7 +5624,9 @@ value has data type other than \verb|CCTK_CHAR|
 \quad
 \verb|buffer != NULL| and value was truncated to fit in \verb|buffer[]|
 \end{Error}
+\end{ErrorSection}
 
+\begin{ExampleSection}
 \begin{Example}{C}
 \begin{verbatim}
 #include "util_ErrorCodes.h"
@@ -5440,6 +5645,7 @@ int length = Util_TableGetString(handle, 0, NULL, "Einstein");
 Util_TableGetString(handle, N_BUFFER, buffer, "Einstein");
 \end{verbatim}
 \end{Example}
+\end{ExampleSection}
 \end{FunctionDescription}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -5448,6 +5654,7 @@ Util_TableGetString(handle, N_BUFFER, buffer, "Einstein");
 \label{Util-TableItAdvance}
 Advance a table iterator to the next entry in the table
 
+\begin{SynopsisSection}
 \begin{Synopsis}{C}
 \begin{verbatim}
 #include "util_ErrorCodes.h"
@@ -5455,7 +5662,9 @@ Advance a table iterator to the next entry in the table
 int is_nonnull = Util_TableItAdvance(int ihandle);
 \end{verbatim}
 \end{Synopsis}
+\end{SynopsisSection}
 
+\begin{ResultSection}
 \begin{Result}{\rm 1}
 ok (iterator now points to some table entry)
 \end{Result}
@@ -5463,26 +5672,32 @@ ok (iterator now points to some table entry)
 ok (iterator has just advanced past the last table entry,
     and is now in the "null-pointer" state)
 \end{Result}
+\end{ResultSection}
 
+\begin{ParameterSection}
 \begin{Parameter}{ihandle ($\ge 0$)}
 handle to the iterator
 \end{Parameter}
+\end{ParameterSection}
 
 \begin{Discussion}
 If we view an iterator as an abstraction of a pointer into the table,
 then this function is the abstraction of the C \verb|++| operation applied
 to the pointer, except that this function automagically sets the iterator
 to the "null-pointer" state when it advances past the last table entry.
-\NewPar
+
 Note that bad things (garbage results, core dumps) may happen if
 you call this function on an iterator which has been invalidated
 by a change in the table's contents.
 \end{Discussion}
 
+\begin{ErrorSection}
 \begin{Error}{UTIL\_ERROR\_BAD\_HANDLE}
 iterator handle is invalid
 \end{Error}
+\end{ErrorSection}
 
+\begin{ExampleSection}
 \begin{Example}{C}
 \begin{verbatim}
 /* walk through all entries of a table */
@@ -5498,6 +5713,7 @@ int ihandle;
 Util_TableItDestroy(ihandle);
 \end{verbatim}
 \end{Example}
+\end{ExampleSection}
 \end{FunctionDescription}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -5506,6 +5722,7 @@ Util_TableItDestroy(ihandle);
 \label{Util-TableItCreate}
 Create a new table iterator
 
+\begin{SynopsisSection}
 \begin{Synopsis}{C}
 \begin{verbatim}
 #include "util_ErrorCodes.h"
@@ -5513,31 +5730,41 @@ Create a new table iterator
 int ihandle = Util_TableItCreate(int handle);
 \end{verbatim}
 \end{Synopsis}
+\end{SynopsisSection}
 
+\begin{ResultSection}
 \begin{Result}{ihandle ($\ge 0$)}
 handle to the iterator
 \end{Result}
+\end{ResultSection}
 
+\begin{ParameterSection}
 \begin{Parameter}{handle ($\ge 0$)}
 handle to the table over which the iterator should iterate
 \end{Parameter}
+\end{ParameterSection}
 
 \begin{Discussion}
 This function creates a new table iterator.  The iterator initially
 points at the starting table entry.
 \end{Discussion}
 
+\begin{SeeAlsoSection}
 \begin{SeeAlso}{Util\_TableItDestroy()}
 destroy a table iterator
 \end{SeeAlso}
+\end{SeeAlsoSection}
 
+\begin{ErrorSection}
 \begin{Error}{UTIL\_ERROR\_BAD\_HANDLE}
 table handle is invalid
 \end{Error}
 \begin{Error}{UTIL\_ERROR\_NO\_MEMORY}
 unable to allocate memory
 \end{Error}
+\end{ErrorSection}
 
+\begin{ExampleSection}
 \begin{Example}{C}
 \begin{verbatim}
 /* walk through all entries of a table */
@@ -5553,6 +5780,7 @@ int ihandle;
 Util_TableItDestroy(ihandle);
 \end{verbatim}
 \end{Example}
+\end{ExampleSection}
 \end{FunctionDescription}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -5561,6 +5789,7 @@ Util_TableItDestroy(ihandle);
 \label{Util-TableItDestroy}
 Destroy a table iterator
 
+\begin{SynopsisSection}
 \begin{Synopsis}{C}
 \begin{verbatim}
 #include "util_ErrorCodes.h"
@@ -5568,29 +5797,39 @@ Destroy a table iterator
 int status = Util_TableItDestroy(int ihandle);
 \end{verbatim}
 \end{Synopsis}
+\end{SynopsisSection}
 
+\begin{ResultSection}
 \begin{Result}{\rm 0}
 ok
 \end{Result}
+\end{ResultSection}
 
+\begin{ParameterSection}
 \begin{Parameter}{ihandle ($\ge 0$)}
 handle to the iterator
 \end{Parameter}
+\end{ParameterSection}
 
 \begin{Discussion}
 \end{Discussion}
 
+\begin{SeeAlsoSection}
 \begin{SeeAlso}{Util\_TableItCreate()}
 create a table iterator
 \end{SeeAlso}
+\end{SeeAlsoSection}
 
+\begin{ErrorSection}
 \begin{Error}{UTIL\_ERROR\_BAD\_HANDLE}
 iterator handle is invalid
 \end{Error}
 \begin{Error}{UTIL\_ERROR\_NO\_MEMORY}
 unable to allocate memory
 \end{Error}
+\end{ErrorSection}
 
+\begin{ExampleSection}
 \begin{Example}{C}
 \begin{verbatim}
 /* walk through all entries of a table */
@@ -5606,6 +5845,7 @@ int ihandle;
 Util_TableItDestroy(ihandle);
 \end{verbatim}
 \end{Example}
+\end{ExampleSection}
 \end{FunctionDescription}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -5614,6 +5854,7 @@ Util_TableItDestroy(ihandle);
 \label{Util-TableItQueryIsNonNull}
 Query whether a table iterator is {\em not\/} in the ``null-pointer'' state
 
+\begin{SynopsisSection}
 \begin{Synopsis}{C}
 \begin{verbatim}
 #include "util_ErrorCodes.h"
@@ -5621,7 +5862,9 @@ Query whether a table iterator is {\em not\/} in the ``null-pointer'' state
 int status = Util_TableItQueryIsNonNull(int ihandle);
 \end{verbatim}
 \end{Synopsis}
+\end{SynopsisSection}
 
+\begin{ResultSection}
 \begin{Result}{\rm 1}
 iterator is {\em not\/} in the ``null-pointer'' state,
 \ie{} iterator points to some table entry
@@ -5629,30 +5872,38 @@ iterator is {\em not\/} in the ``null-pointer'' state,
 \begin{Result}{\rm 0}
 iterator is in the ``null-pointer'' state
 \end{Result}
+\end{ResultSection}
 
+\begin{ParameterSection}
 \begin{Parameter}{ihandle ($\ge 0$)}
 handle to the iterator
 \end{Parameter}
+\end{ParameterSection}
 
 \begin{Discussion}
 If no errors occur,
 \verb|Util_TableItQueryIsNonNull(ihandle)|
 is the same as
 \verb|1 - Util_TableItQueryIsNull(ihandle)|.
-\NewPar
+
 Note that bad things (garbage results, core dumps) may happen if
 you call this function on an iterator which has been invalidated
 by a change in the table's contents.
 \end{Discussion}
 
+\begin{SeeAlsoSection}
 \begin{SeeAlso}{Util\_TableItQueryIsNull()}
 query whether a table iterator is in the ``null-pointer'' state
 \end{SeeAlso}
+\end{SeeAlsoSection}
 
+\begin{ErrorSection}
 \begin{Error}{UTIL\_ERROR\_BAD\_HANDLE}
 iterator handle is invalid
 \end{Error}
+\end{ErrorSection}
 
+\begin{ExampleSection}
 \begin{Example}{C}
 \begin{verbatim}
 /* walk through all entries of a table */
@@ -5668,6 +5919,7 @@ int ihandle;
 Util_TableItDestroy(ihandle);
 \end{verbatim}
 \end{Example}
+\end{ExampleSection}
 \end{FunctionDescription}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -5676,6 +5928,7 @@ Util_TableItDestroy(ihandle);
 \label{Util-TableItQueryIsNull}
 Query whether a table iterator is in the ``null-pointer'' state
 
+\begin{SynopsisSection}
 \begin{Synopsis}{C}
 \begin{verbatim}
 #include "util_ErrorCodes.h"
@@ -5683,7 +5936,9 @@ Query whether a table iterator is in the ``null-pointer'' state
 int status = Util_TableItQueryIsNull(int ihandle);
 \end{verbatim}
 \end{Synopsis}
+\end{SynopsisSection}
 
+\begin{ResultSection}
 \begin{Result}{\rm 1}
 iterator is in the ``null-pointer'' state
 \end{Result}
@@ -5691,31 +5946,39 @@ iterator is in the ``null-pointer'' state
 iterator is {\em not\/} in the ``null-pointer'' state,
 \ie{} iterator points to some table entry
 \end{Result}
+\end{ResultSection}
 
+\begin{ParameterSection}
 \begin{Parameter}{ihandle ($\ge 0$)}
 handle to the iterator
 \end{Parameter}
+\end{ParameterSection}
 
 \begin{Discussion}
 If no errors occur,
 \verb|Util_TableItQueryIsNull(ihandle)|
 is the same as
 \verb|1 - Util_TableItQueryIsNonNull(ihandle)|.
-\NewPar
+
 Note that bad things (garbage results, core dumps) may happen if
 you call this function on an iterator which has been invalidated
 by a change in the table's contents.
 \end{Discussion}
 
+\begin{SeeAlsoSection}
 \begin{SeeAlso}{Util\_TableItQueryIsNonNull()}
 query whether a table iterator is {\em not\/} in the ``null-pointer'' state,
 \ie{} whether the iterator points to some table entry
 \end{SeeAlso}
+\end{SeeAlsoSection}
 
+\begin{ErrorSection}
 \begin{Error}{UTIL\_ERROR\_BAD\_HANDLE}
 iterator handle is invalid
 \end{Error}
+\end{ErrorSection}
 
+\begin{ExampleSection}
 \begin{Example}{C}
 \begin{verbatim}
 /* variant code to walk through all entries of a table */
@@ -5731,6 +5994,7 @@ int ihandle;
 Util_TableItDestroy(ihandle);
 \end{verbatim}
 \end{Example}
+\end{ExampleSection}
 \end{FunctionDescription}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -5740,6 +6004,7 @@ Util_TableItDestroy(ihandle);
 Query the key and the type and number of elements of the value
 corresponding to that key, of the table entry to which an iterator points
 
+\begin{SynopsisSection}
 \begin{Synopsis}{C}
 \begin{verbatim}
 #include "util_ErrorCodes.h"
@@ -5750,13 +6015,17 @@ int key_length =
                                CCTK_INT *type_code, CCTK_INT *N_elements)
 \end{verbatim}
 \end{Synopsis}
+\end{SynopsisSection}
 
+\begin{ResultSection}
 \begin{Result}{key\_length}
 The string length of the key
-(this has C {\t strlen()} semantics, \ie{} it does not
+(this has C {\t strlen()} semantics, \ie{} it does {\em not\/}
 include a terminating null character)
 \end{Result}
+\end{ResultSection}
 
+\begin{ParameterSection}
 \begin{Parameter}{handle ($\ge 0$)}
 handle to the table iterator
 \end{Parameter}
@@ -5781,16 +6050,17 @@ a pointer to where this function should store
 the number of array elements in the value,
 or a NULL pointer to skip storing this.
 \end{Parameter}
+\end{ParameterSection}
 
 \begin{Discussion}
 The usual use of an iterator is to iterate through all the entries
 of a table, calling this function on each entry, then taking further
 action based on the results.
-\NewPar
+
 Note that bad things (garbage results, core dumps) may happen if
 you call this function on an iterator which has been invalidated
 by a change in the table's contents.
-\NewPar
+
 If the error code \verb|UTIL_ERROR_TABLE_STRING_TRUNCATED| is returned,
 then the first \verb|key_buffer_length-1| characters of the key are
 returned in the user's key buffer (assuming \verb|key_buffer| is non-NULL),
@@ -5799,10 +6069,13 @@ buffer.  If any other error code is returned, the user's key buffer
 (pointed to by \verb|key_buffer| if this is non-NULL) is unchanged.
 \end{Discussion}
 
+\begin{SeeAlsoSection}
 \begin{SeeAlso}{Util\_TableQueryValueInfo()}
 perform a similar query using the key instead of an iterator
 \end{SeeAlso}
+\end{SeeAlsoSection}
 
+\begin{ErrorSection}
 \begin{Error}{UTIL\_ERROR\_BAD\_HANDLE}
 handle is invalid
 \end{Error}
@@ -5814,7 +6087,9 @@ iterator is in "null-pointer" state
 \quad
 \verb|key_buffer != NULL| and key was truncated to fit in \verb|key_buffer|
 \end{Error}
+\end{ErrorSection}
 
+\begin{ExampleSection}
 \begin{Example}{C}
 \begin{verbatim}
 /* print out all entries in a table */
@@ -5865,6 +6140,8 @@ if (key_buffer == NULL)
                 break;
         default:
                 /* we don't know how to handle this type */
+                Util_TableItDestroy(ihandle);
+                free(key_buffer);
                 return type_code;
                 }
         }
@@ -5875,6 +6152,7 @@ return 0;
 }
 \end{verbatim}
 \end{Example}
+\end{ExampleSection}
 \end{FunctionDescription}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -5883,6 +6161,7 @@ return 0;
 \label{Util-TableItQueryTableHandle}
 Query what table a table iterator iterates over
 
+\begin{SynopsisSection}
 \begin{Synopsis}{C}
 \begin{verbatim}
 #include "util_ErrorCodes.h"
@@ -5890,30 +6169,39 @@ Query what table a table iterator iterates over
 int handle = Util_TableItQueryTableHandle(int ihandle);
 \end{verbatim}
 \end{Synopsis}
+\end{SynopsisSection}
 
-\begin{Parameter}{ihandle ($\ge 0$)}
-handle to the iterator
-\end{Parameter}
-
+\begin{ResultSection}
 \begin{Result}{handle ($\ge 0$)}
 handle to the table over which the iterator iterates
 \end{Result}
+\end{ResultSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{ihandle ($\ge 0$)}
+handle to the iterator
+\end{Parameter}
+\end{ParameterSection}
 
 \begin{Discussion}
 Note that it is always ok to call this function, regardless of
 whether or not the iterator is in the ``null-pointer'' state.
-\NewPar
+
 It's also ok to call this function even when the iterator has been
 invalidated by a change in the table's contents.
 \end{Discussion}
 
+\begin{SeeAlsoSection}
 \begin{SeeAlso}{Util\_TableItCreate()}
 create an iterator (which iterates over a specified table)
 \end{SeeAlso}
+\end{SeeAlsoSection}
 
+\begin{ErrorSection}
 \begin{Error}{UTIL\_ERROR\_BAD\_HANDLE}
 iterator handle is invalid
 \end{Error}
+\end{ErrorSection}
 \end{FunctionDescription}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -5922,6 +6210,7 @@ iterator handle is invalid
 \label{Util-TableItResetToStart}
 Reset a table iterator to point to the starting table entry
 
+\begin{SynopsisSection}
 \begin{Synopsis}{C}
 \begin{verbatim}
 #include "util_ErrorCodes.h"
@@ -5929,7 +6218,9 @@ Reset a table iterator to point to the starting table entry
 int status = Util_TableItResetToStart(int ihandle);
 \end{verbatim}
 \end{Synopsis}
+\end{SynopsisSection}
 
+\begin{ResultSection}
 \begin{ResultNote}
 Results are the same as calling \verb|Util_TableItQueryIsNonNull()|
 on the iterator after the reset:
@@ -5942,29 +6233,36 @@ iterator is {\em not\/} in the ``null-pointer'' state,
 iterator is in the ``null-pointer'' state
 (this happens if and only if the table is empty)
 \end{Result}
+\end{ResultSection}
 
+\begin{ParameterSection}
 \begin{Parameter}{ihandle ($\ge 0$)}
 handle to the iterator
 \end{Parameter}
+\end{ParameterSection}
 
 \begin{Discussion}
 Note that it is always ok to call this function, regardless of
 whether or not the iterator is in the ``null-pointer'' state.
-\NewPar
+
 It's also ok to call this function even when the iterator has been
 invalidated by a change in the table's contents.
 \end{Discussion}
 
+\begin{SeeAlsoSection}
 \begin{SeeAlso}{Util\_TableItSetToNull()}
 set an iterator to the ``null-pointer'' state
 \end{SeeAlso}
 \begin{SeeAlso}{Util\_TableItSetToKey()}
 set an iterator to point to a specified table entry
 \end{SeeAlso}
+\end{SeeAlsoSection}
 
+\begin{ErrorSection}
 \begin{Error}{UTIL\_ERROR\_BAD\_HANDLE}
 iterator handle is invalid
 \end{Error}
+\end{ErrorSection}
 \end{FunctionDescription}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -5973,6 +6271,7 @@ iterator handle is invalid
 \label{Util-TableItSetToKey}
 Set a table iterator to point to a specified table entry
 
+\begin{SynopsisSection}
 \begin{Synopsis}{C}
 \begin{verbatim}
 #include "util_ErrorCodes.h"
@@ -5980,35 +6279,43 @@ Set a table iterator to point to a specified table entry
 int status = Util_TableItSetToKey(int ihandle, const char *key);
 \end{verbatim}
 \end{Synopsis}
+\end{SynopsisSection}
 
+\begin{ResultSection}
 \begin{Result}{\rm 0}
 ok
 \end{Result}
+\end{ResultSection}
 
+\begin{ParameterSection}
 \begin{Parameter}{ihandle ($\ge 0$)}
 handle to the iterator
 \end{Parameter}
+\end{ParameterSection}
 
 \begin{Discussion}
 This function has the same effect as calling \verb|Util_TableItResetToStart()|
 followed by calling \verb|Util_TableItAdvance()| zero or more times
 to make the iterator point to the desired table entry.  However, this
 function will typically be more efficient than that sequence.
-\NewPar
+
 Note that it is always ok to call this function, regardless of
 whether or not the iterator is in the ``null-pointer'' state.
-\NewPar
+
 It's also ok to call this function even when the iterator has been
 invalidated by a change in the table's contents.
 \end{Discussion}
 
+\begin{SeeAlsoSection}
 \begin{SeeAlso}{Util\_TableItResetToStart()}
 reset an iterator to point to the starting table entry
 \end{SeeAlso}
 \begin{SeeAlso}{Util\_TableItSetToNull()}
 set a table iterator to the "null-pointer" state
 \end{SeeAlso}
+\end{SeeAlsoSection}
 
+\begin{ErrorSection}
 \begin{Error}{UTIL\_ERROR\_BAD\_HANDLE}
 iterator handle is invalid
 \end{Error}
@@ -6018,6 +6325,7 @@ key contains '/' character
 \begin{Error}{UTIL\_ERROR\_TABLE\_NO\_SUCH\_KEY}
 no such key in table
 \end{Error}
+\end{ErrorSection}
 \end{FunctionDescription}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -6026,6 +6334,7 @@ no such key in table
 \label{Util-TableItSetToNull}
 Set a table iterator to the "null-pointer" state
 
+\begin{SynopsisSection}
 \begin{Synopsis}{C}
 \begin{verbatim}
 #include "util_ErrorCodes.h"
@@ -6033,33 +6342,42 @@ Set a table iterator to the "null-pointer" state
 int handle = Util_TableItSetToNull(int ihandle);
 \end{verbatim}
 \end{Synopsis}
+\end{SynopsisSection}
 
+\begin{ResultSection}
 \begin{Result}{\rm 0}
 ok
 \end{Result}
+\end{ResultSection}
 
+\begin{ParameterSection}
 \begin{Parameter}{ihandle ($\ge 0$)}
 handle to the iterator
 \end{Parameter}
+\end{ParameterSection}
 
 \begin{Discussion}
 Note that it is always ok to call this function, regardless of
 whether or not the iterator is already in the ``null-pointer'' state.
-\NewPar
+
 It's also ok to call this function even when the iterator has been
 invalidated by a change in the table's contents.
 \end{Discussion}
 
+\begin{SeeAlsoSection}
 \begin{SeeAlso}{Util\_TableItResetToStart()}
 reset an iterator to point to the starting table entry
 \end{SeeAlso}
 \begin{SeeAlso}{Util\_TableItSetToKey()}
 set an iterator to point to a specified table entry
 \end{SeeAlso}
+\end{SeeAlsoSection}
 
+\begin{ErrorSection}
 \begin{Error}{UTIL\_ERROR\_BAD\_HANDLE}
 iterator handle is invalid
 \end{Error}
+\end{ErrorSection}
 \end{FunctionDescription}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -6068,6 +6386,7 @@ iterator handle is invalid
 Query a table's flags word
 \label{Util-TableQueryFlags}
 
+\begin{SynopsisSection}
 \begin{Synopsis}{C}
 \begin{verbatim}
 #include "util_ErrorCodes.h"
@@ -6075,18 +6394,21 @@ Query a table's flags word
 int flags = Util_TableQueryFlags(int handle);
 \end{verbatim}
 \end{Synopsis}
+\end{SynopsisSection}
 
+\begin{ResultSection}
 \begin{Result}{flags ($\ge 0$)}
 the flags word
 \end{Result}
+\end{ResultSection}
 
+\begin{ParameterSection}
 \begin{Parameter}{handle ($\ge 0$)}
 handle to the table
 \end{Parameter}
+\end{ParameterSection}
 
-\begin{Discussion}
-\end{Discussion}
-
+\begin{SeeAlsoSection}
 \begin{SeeAlso}{Util\_TableCreate()}
 create a table (flags word specified explicitly)
 \end{SeeAlso}
@@ -6095,11 +6417,15 @@ convenience routine to create a table (with certain default flags)
 and set key/value entries in it based on a parameter-file--like
 character string
 \end{SeeAlso}
+\end{SeeAlsoSection}
 
+\begin{ErrorSection}
 \begin{Error}{UTIL\_ERROR\_BAD\_HANDLE}
 handle is invalid
 \end{Error}
+\end{ErrorSection}
 
+\begin{ExampleSection}
 \begin{Example}{C}
 \begin{verbatim}
 #include <string.h>
@@ -6118,6 +6444,7 @@ return (flags & UTIL_TABLE_FLAGS_CASE_INSENSITIVE)
 }
 \end{verbatim}
 \end{Example}
+\end{ExampleSection}
 \end{FunctionDescription}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -6127,6 +6454,7 @@ return (flags & UTIL_TABLE_FLAGS_CASE_INSENSITIVE)
 Query whether or not a specified key is in the table, and optionally
 the type and/or number of elements of the value corresponding to this key
 
+\begin{SynopsisSection}
 \begin{Synopsis}{C}
 \begin{verbatim}
 #include "util_ErrorCodes.h"
@@ -6137,7 +6465,9 @@ int key_exists =
                           const char *key);
 \end{verbatim}
 \end{Synopsis}
+\end{SynopsisSection}
 
+\begin{ResultSection}
 \begin{Result}{\rm 1}
 ok (key is in table)
 \end{Result}
@@ -6145,7 +6475,9 @@ ok (key is in table)
 ok (no such key in table)\\
 (in this case nothing is stored in \verb|*type_code| and \verb|*N_elements|)
 \end{Result}
+\end{ResultSection}
 
+\begin{ParameterSection}
 \begin{Parameter}{handle ($\ge 0$)}
 handle to the table
 \end{Parameter}
@@ -6162,29 +6494,35 @@ or a NULL pointer to skip storing this.
 \begin{Parameter}{key}
 a pointer to the key (a C-style null-terminated string)
 \end{Parameter}
+\end{ParameterSection}
 
 \begin{Discussion}
 Unlike all the other table query functions, this function returns
 0 for ``no such key in table''.  The rationale for this design is that
 by passing NULL pointers for \verb|type_code| and \verb|N_elements|, this
 function is then a Boolean ``is key in table?'' predicate.
-\NewPar
+
 If any error code is returned, the user's buffers (pointed to by
 \verb|type_code| and \verb|N_elements| if these are non-NULL) are
 unchanged.
 \end{Discussion}
 
+\begin{SeeAlsoSection}
 \begin{SeeAlso}{Util\_TableItQueryKeyValueInfo()}
 perform a similar query using an iterator instead of the key
 \end{SeeAlso}
+\end{SeeAlsoSection}
 
+\begin{ErrorSection}
 \begin{Error}{UTIL\_ERROR\_BAD\_HANDLE}
 handle is invalid
 \end{Error}
 \begin{Error}{UTIL\_ERROR\_TABLE\_BAD\_KEY}
 key contains '/' character
 \end{Error}
+\end{ErrorSection}
 
+\begin{ExampleSection}
 \begin{Example}{C}
 \begin{verbatim}
 #include <stdio.h>
@@ -6217,6 +6555,7 @@ assert( type_code == CCTK_VARIABLE_INT );
 assert( N_elements == N_DATA );
 \end{verbatim}
 \end{Example}
+\end{ExampleSection}
 \end{FunctionDescription}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -6225,6 +6564,7 @@ assert( N_elements == N_DATA );
 \label{Util-TableQueryMaxKeyLength}
 Query the maximum key length in a table
 
+\begin{SynopsisSection}
 \begin{Synopsis}{C}
 \begin{verbatim}
 #include "util_ErrorCodes.h"
@@ -6232,17 +6572,21 @@ Query the maximum key length in a table
 int max_key_length = Util_TableQueryMaxKeyLength(int handle);
 \end{verbatim}
 \end{Synopsis}
+\end{SynopsisSection}
 
+\begin{ResultSection}
 \begin{Result}{max\_key\_length ($\ge 0$)}
-\quad\quad\quad
 The string length of the longest key in the table
-(this has C {\t strlen()} semantics, \ie{} it does not
+(this has C {\t strlen()} semantics, \ie{} it does {\em not\/}
 include a terminating null character)
 \end{Result}
+\end{ResultSection}
 
+\begin{ParameterSection}
 \begin{Parameter}{handle ($\ge 0$)}
 handle to the table
 \end{Parameter}
+\end{ParameterSection}
 
 \begin{Discussion}
 This function is useful if you're going to iterate through a table,
@@ -6250,10 +6594,13 @@ and you want to allocate a buffer which is guaranteed to be big enough
 to hold any key in the table.
 \end{Discussion}
 
+\begin{ErrorSection}
 \begin{Error}{UTIL\_ERROR\_BAD\_HANDLE}
 handle is invalid
 \end{Error}
+\end{ErrorSection}
 
+\begin{ExampleSection}
 \begin{Example}{C}
 \begin{verbatim}
 #include <stdlib.h>
@@ -6275,6 +6622,7 @@ if (buffer == NULL)
 /* big enough for any key in the table */
 \end{verbatim}
 \end{Example}
+\end{ExampleSection}
 \end{FunctionDescription}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -6283,6 +6631,7 @@ if (buffer == NULL)
 \label{Util-TableQueryNKeys}
 Query the number of key/value entries in a table
 
+\begin{SynopsisSection}
 \begin{Synopsis}{C}
 \begin{verbatim}
 #include "util_ErrorCodes.h"
@@ -6290,21 +6639,25 @@ Query the number of key/value entries in a table
 int N_Keys = Util_TableQueryNKeys(int handle);
 \end{verbatim}
 \end{Synopsis}
+\end{SynopsisSection}
 
+\begin{ResultSection}
 \begin{Result}{N\_Keys ($\ge 0$)}
 the number of key/value entries in the table
 \end{Result}
+\end{ResultSection}
 
+\begin{ParameterSection}
 \begin{Parameter}{handle ($\ge 0$)}
 handle to the table
 \end{Parameter}
+\end{ParameterSection}
 
-\begin{Discussion}
-\end{Discussion}
-
+\begin{ErrorSection}
 \begin{Error}{UTIL\_ERROR\_BAD\_HANDLE}
 handle is invalid
 \end{Error}
+\end{ErrorSection}
 \end{FunctionDescription}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -6315,6 +6668,7 @@ This is a family of functions, one for each Cactus data type,
 to set the value associated with a specified key to be a specified
 single (1-element array) value
 
+\begin{SynopsisSection}
 \begin{Synopsis}{C}
 \begin{verbatim}
 #include "util_ErrorCodes.h"
@@ -6331,7 +6685,9 @@ where \verb|XXX| is one of
    \verb|COMPLEX|, \verb|COMPLEX8|, \verb|COMPLEX16|, \verb|COMPLEX32|
 (not all of these may be supported on any given system)
 \end{Synopsis}
+\end{SynopsisSection}
 
+\begin{ResultSection}
 \begin{Result}{\rm 1}
 ok (key was already in table before this call, old value was replaced)\\
    (it doesn't matter what the old value's \verb|type_code| and
@@ -6341,7 +6697,9 @@ ok (key was already in table before this call, old value was replaced)\\
 \begin{Result}{\rm 0}
 ok (key was not in table before this call)
 \end{Result}
+\end{ResultSection}
 
+\begin{ParameterSection}
 \begin{Parameter}{handle ($\ge 0$)}
 handle to the table
 \end{Parameter}
@@ -6351,17 +6709,19 @@ the value to be associated with the key
 \begin{Parameter}{key}
 a pointer to the key (a C-style null-terminated string)
 \end{Parameter}
+\end{ParameterSection}
 
 \begin{Discussion}
 The key may be any C character string which does not contain a slash
 character (\verb|'/'|).
-\NewPar
+
 The value is stored as a 1-element array.
-\NewPar
+
 This function invalidates any iterators for the table which are
 not in the ``null-pointer'' state.
 \end{Discussion}
 
+\begin{SeeAlsoSection}
 \begin{SeeAlso}{Util\_TableCreateFromString()}
 convenience routine to create a table and set key/value entries
 in it based on a parameter-file--like character string
@@ -6386,7 +6746,9 @@ parameter-file--like character string
 \begin{SeeAlso}{Util\_TableSetString()}
 set a character-string value
 \end{SeeAlso}
+\end{SeeAlsoSection}
 
+\begin{ErrorSection}
 \begin{Error}{UTIL\_ERROR\_BAD\_HANDLE}
 handle is invalid
 \end{Error}
@@ -6396,7 +6758,9 @@ key contains '/' character
 \begin{Error}{UTIL\_ERROR\_NO\_MEMORY}
 unable to allocate memory
 \end{Error}
+\end{ErrorSection}
 
+\begin{ExampleSection}
 \begin{Example}{C}
 \begin{verbatim}
 #include <math.h>
@@ -6413,6 +6777,7 @@ z.Re = cos(0.37);       z.Im = sin(0.37);
 Util_TableSetComplex16(handle, z, "my complex number");
 \end{verbatim}
 \end{Example}
+\end{ExampleSection}
 \end{FunctionDescription}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -6423,6 +6788,7 @@ This is a family of functions, one for each Cactus data type,
 to set the value associated with a specified key to be a copy
 of a specified array
 
+\begin{SynopsisSection}
 \begin{Synopsis}{C}
 \begin{verbatim}
 #include "util_ErrorCodes.h"
@@ -6440,7 +6806,9 @@ where \verb|XXX| is one of
    \verb|COMPLEX|, \verb|COMPLEX8|, \verb|COMPLEX16|, \verb|COMPLEX32|
 (not all of these may be supported on any given system)
 \end{Synopsis}
+\end{SynopsisSection}
 
+\begin{ResultSection}
 \begin{Result}{\rm 1}
 ok (key was already in table before this call, old value was replaced)\\
    (it doesn't matter what the old value's \verb|type_code| and
@@ -6450,7 +6818,9 @@ ok (key was already in table before this call, old value was replaced)\\
 \begin{Result}{\rm 0}
 ok (key was not in table before this call)
 \end{Result}
+\end{ResultSection}
 
+\begin{ParameterSection}
 \begin{Parameter}{handle ($\ge 0$)}
 handle to the table
 \end{Parameter}
@@ -6463,17 +6833,19 @@ a pointer to the array (a copy of which) is to be associated with the key
 \begin{Parameter}{key}
 a pointer to the key (a C-style null-terminated string)
 \end{Parameter}
+\end{ParameterSection}
 
 \begin{Discussion}
 The key may be any C character string which does not contain a slash
 character (\verb|'/'|).
-\NewPar
+
 Note that empty (0-element) arrays are ok.
-\NewPar
+
 This function invalidates any iterators for the table which are
 not in the ``null-pointer'' state.
 \end{Discussion}
 
+\begin{SeeAlsoSection}
 \begin{SeeAlso}{Util\_TableCreateFromString()}
 convenience routine to create a table and set key/value entries
 in it based on a parameter-file--like character string
@@ -6498,7 +6870,9 @@ parameter-file--like character string
 \begin{SeeAlso}{Util\_TableSetString()}
 set a character-string value
 \end{SeeAlso}
+\end{SeeAlsoSection}
 
+\begin{ErrorSection}
 \begin{Error}{UTIL\_ERROR\_BAD\_HANDLE}
 handle is invalid
 \end{Error}
@@ -6511,7 +6885,9 @@ key contains '/' character
 \begin{Error}{UTIL\_ERROR\_NO\_MEMORY}
 unable to allocate memory
 \end{Error}
+\end{ErrorSection}
 
+\begin{ExampleSection}
 \begin{Example}{C}
 \begin{verbatim}
 #include "util_ErrorCodes.h"
@@ -6524,6 +6900,7 @@ int handle = Util_TableCreate(UTIL_TABLE_FLAGS_DEFAULT);
 Util_TableSetIntArray(handle, N_DIGITS, pi_digits, "digits of pi");
 \end{verbatim}
 \end{Example}
+\end{ExampleSection}
 \end{FunctionDescription}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -6533,6 +6910,7 @@ Util_TableSetIntArray(handle, N_DIGITS, pi_digits, "digits of pi");
 Sets values in a table based on a string argument, which is interpreted
 with ``parameter-file'' semantics
 
+\begin{SynopsisSection}
 \begin{Synopsis}{C}
 \begin{verbatim}
 #include "util_ErrorCodes.h"
@@ -6540,22 +6918,27 @@ with ``parameter-file'' semantics
 int count = Util_TableSetFromString(int handle, const char *string);
 \end{verbatim}
 \end{Synopsis}
+\end{SynopsisSection}
 
+\begin{ResultSection}
 \begin{Result}{count ($\ge 0$)}
 the number of key/value entries set
 \end{Result}
+\end{ResultSection}
 
+\begin{ParameterSection}
 \begin{Parameter}{string}
 a pointer to a C-style null-terminated string specifying the table
 entries to be set (see below for details on the string contents)
 \end{Parameter}
+\end{ParameterSection}
 
 \begin{Discussion}
 The string should contain a sequence of zero or more \verb|key=value|
 ``assignments'', separated by whitespace.  This function processes
 these assignments in left-to-right order, setting corresponding key/value
 entries in the table.
-\NewPar
+
 The present implementation only recognises integer or real values
 (not pointer, complex, character, or string), and only scalars
 (not arrays).  To be precise, the string must match the following BNF:\\
@@ -6582,21 +6965,22 @@ whitespace	& blank~(\verb|' '|)
 		  $\big|$ vertical-tab~(\verb|'\v'|)			%%%\\
 \end{tabular}\\
 where * denotes 0 or more repetitions and $\big|$ denotes logical or.
-\NewPar
+
 Note that no whitespace may appear within a \verb|key=value| assignment.
 In particular, do {\em not\/} put whitespace around the ``\verb|=|''!
-\NewPar
+
 Notice also that the keys allowed by this function are somewhat more
 restricted than those allowed by the other \verb|Util_TableSet*()|
 functions, in that this function disallows keys containing \verb|'='|,
 \verb|';'|, and/or whitespace.
-\NewPar
+
 If any error code is returned, assignments lexicographically earlier
 in the input string than where the error was detected will already
 have been made in the table.  Unfortunately, there is no easy way to
 find out where the error was detected. :(
 \end{Discussion}
 
+\begin{SeeAlsoSection}
 \begin{SeeAlso}{Util\_TableCreateFromString()}
 convenience routine to create a table and set key/value entries
 in it based on a parameter-file--like character string
@@ -6624,7 +7008,9 @@ parameter-file--like character string
 \begin{SeeAlso}{Util\_TableSetString()}
 set a character-string value
 \end{SeeAlso}
+\end{SeeAlsoSection}
 
+\begin{ErrorSection}
 \begin{Error}{UTIL\_ERROR\_NO\_MEMORY}
 unable to allocate memory
 \end{Error}
@@ -6638,7 +7024,9 @@ invalid input: can't parse input string
 this function may also return any error codes returned by
 \verb|Util_TableSetInt()| or \verb|Util_TableSetReal()|.
 \end{Error}
+\end{ErrorSection}
 
+\begin{ExampleSection}
 \begin{Example}{C}
 \begin{verbatim}
 #include "util_ErrorCodes.h"
@@ -6656,6 +7044,7 @@ Util_TableSetReal(handle, 4.0e-5, "dx");
 Util_TableSetReal(handle, 3.1, "pi");
 \end{verbatim}
 \end{Example}
+\end{ExampleSection}
 \end{FunctionDescription}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -6665,6 +7054,7 @@ Util_TableSetReal(handle, 3.1, "pi");
 Sets the value associated with a specified key in a table, to be
 a copy of a specified C-style null-terminated character string
 
+\begin{SynopsisSection}
 \begin{Synopsis}{C}
 \begin{verbatim}
 #include "util_ErrorCodes.h"
@@ -6674,7 +7064,9 @@ int status = Util_TableSetString(int handle,
                                  const char *key);
 \end{verbatim}
 \end{Synopsis}
+\end{SynopsisSection}
 
+\begin{ResultSection}
 \begin{ResultNote}
 Results are the same as all the other \verb|Util_TableSet|* functions:
 \end{ResultNote}
@@ -6687,7 +7079,9 @@ ok (key was already in table before this call, old value was replaced)\\
 \begin{Result}{\rm 0}
 ok (key was not in table before this call)
 \end{Result}
+\end{ResultSection}
 
+\begin{ParameterSection}
 \begin{Parameter}{handle ($\ge 0$)}
 handle to the table
 \end{Parameter}
@@ -6697,21 +7091,23 @@ a pointer to the string (a C-style null-terminated string)
 \begin{Parameter}{key}
 a pointer to the key (a C-style null-terminated string)
 \end{Parameter}
+\end{ParameterSection}
 
 \begin{Discussion}
 The key may be any C character string which does not contain a slash
 character (\verb|'/'|).
-\NewPar
+
 The string is stored as an array of \verb|strlen(string)|
 \verb|CCTK_CHAR|s.  It does {\em not\/} include a terminating
 null character.
-\NewPar
+
 This function is very similar to \verb|Util_TableSetCharArray()|.
-\NewPar
+
 This function invalidates any iterators for the table which are
 not in the ``null-pointer'' state.
 \end{Discussion}
 
+\begin{SeeAlsoSection}
 \begin{SeeAlso}{Util\_TableCreateFromString()}
 convenience routine to create a table and set key/value entries
 in it based on a parameter-file--like character string
@@ -6738,7 +7134,9 @@ set an array value
 \begin{SeeAlso}{Util\_TableSetCharArray()}
 set an array-of-\verb|CCTK_CHAR| value
 \end{SeeAlso}
+\end{SeeAlsoSection}
 
+\begin{ErrorSection}
 \begin{Error}{UTIL\_ERROR\_BAD\_HANDLE}
 handle is invalid
 \end{Error}
@@ -6748,7 +7146,9 @@ key contains '/' character
 \begin{Error}{UTIL\_ERROR\_NO\_MEMORY}
 unable to allocate memory
 \end{Error}
+\end{ErrorSection}
 
+\begin{ExampleSection}
 \begin{Example}{C}
 \begin{verbatim}
 #include "util_ErrorCodes.h"
@@ -6765,6 +7165,7 @@ Util_TableSetString(handle, "relativity", "Einstein");
 Util_TableSetCharArray(handle, N_ARRAY, array, "Einstein");
 \end{verbatim}
 \end{Example}
+\end{ExampleSection}
 \end{FunctionDescription}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
