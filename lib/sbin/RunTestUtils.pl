@@ -1389,8 +1389,8 @@ sub ViewResults
 
       while ($myfile !~ /^[c]/i && $choice !~ /^[c]/i)
       {
-        print "  File $myfiles[$myfile] of test $test for thorn $thorn\n";
-        $choice = &defprompt("  Choose action [l]ist, [d]iff, [g]raph, [c]ontinue","c");
+	print "  File $myfiles[$myfile] of test $test for thorn $thorn\n";
+        $choice = &defprompt("  Choose action [l]ist, [d]iff, [x]graph, [y]graph, [g]nuplot, [c]ontinue","c");
 
         if ($choice =~ /^l/i)
         {
@@ -1415,15 +1415,32 @@ sub ViewResults
         elsif ($choice =~ /^d/i)
         {
           print "\n  Performing diff on  <archive> <test>\n\n";
-          $command = "  diff $testdata->{\"$thorn TESTSDIR\"}/$test/$myfiles[$myfile] $testdata->{\"$thorn $test TESTOUTPUTDIR\"}/$myfiles[$myfile]\n";
+          $command = "diff $testdata->{\"$thorn TESTSDIR\"}/$test/$myfiles[$myfile] $testdata->{\"$thorn $test TESTOUTPUTDIR\"}/$myfiles[$myfile]\n";
           print "$command\n\n";
           system($command);
           print "\n";
         }
+        elsif ($choice =~ /^x/i)
+        {
+          print "  xgraph <archive> <test>\n\n";
+          $command = "xgraph $testdata->{\"$thorn TESTSDIR\"}/$test/$myfiles[$myfile] $testdata->{\"$thorn $test TESTOUTPUTDIR\"}/$myfiles[$myfile] &\n";
+          print "  $command\n";
+          system($command);
+        }
+        elsif ($choice =~ /^y/i)
+        {
+          print "  ygraph <archive> <test>\n\n";
+          $command = "ygraph $testdata->{\"$thorn TESTSDIR\"}/$test/$myfiles[$myfile] $testdata->{\"$thorn $test TESTOUTPUTDIR\"}/$myfiles[$myfile] &\n";
+          print "  $command\n";
+          system($command);
+        }
         elsif ($choice =~ /^g/i)
         {
-          print "  Xgraph <archive> <test>\n\n";
-          $command = "  xgraph $testdata->{\"$thorn TESTSDIR\"}/$test/$myfiles[$myfile] $testdata->{\"$thorn $test TESTOUTPUTDIR\"}/$myfiles[$myfile] &\n";
+          print "  gnuplot <archive> <test>\n\n";
+	  $command = ("gnuplot -persist <<EOF\n"
+		      . "set grid\n"
+		      . "plot \"$testdata->{\"$thorn TESTSDIR\"}/$test/$myfiles[$myfile]\" w lp, \"$testdata->{\"$thorn $test TESTOUTPUTDIR\"}/$myfiles[$myfile]\" w lp\n"
+		      . "EOF");
           print "  $command\n";
           system($command);
         }
