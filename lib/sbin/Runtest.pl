@@ -266,8 +266,12 @@ else
 sub runtest {
     my ($inpf,$inthorn,$num) = @_;
 
+    # File name from thorn
     $inpf = "arrangements/$inthorn/test/$inpf";
-    $tsttop = ".${sep}TEST";
+
+    # Directory for output
+    $tsttop = ".${sep}TEST${sep}$config";
+    mkdir (TEST,0755);
     mkdir ($tsttop,0755);
 
     $tp = $inpf;
@@ -300,7 +304,7 @@ sub runtest {
     close LOG;
     close CMD;
     
-    chdir ("..");
+    chdir ("../..");
    
     $retcode = $? >> 8 if($retcode==0);
 
@@ -317,7 +321,6 @@ sub runtest {
     $indir = $inpf;
     $indir =~ s:.par:${sep}:g;
     @oldout = <$indir${sep}*.*l>;
-
     $blewit = 0;
     $reallyblewit = 0;
     $nfiles = 0;
