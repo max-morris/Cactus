@@ -3,7 +3,8 @@
    @date      Tue Mar  7 11:58:03 2000
    @author    Gerd lanfermann
    @desc 
-   
+      Cactus memory allocation routines to monitor memory consumption
+      by C routines. No fortran support.
    @enddesc 
    @version $Header$
  @@*/
@@ -41,6 +42,21 @@ static unsigned long int pastmem=0;
  *********************     External Routines   **********************
  ********************************************************************/
 
+/*@@
+   @routine    CCTKi_Malloc
+   @date       Wed Mar  8 12:46:06 2000
+   @author     Gerd Lanfermann
+   @desc 
+      Allocates memory, updates the total memory variable (static)
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+
 void *CCTKi_Malloc(size_t size, int line, const char *file)
 {
   iMemData *memdata;
@@ -67,6 +83,21 @@ void *CCTKi_Malloc(size_t size, int line, const char *file)
   return((void*)(data+sizeof(iMemData)));
 }
 
+/*@@
+   @routine    CCTKi_Free
+   @date       Wed Mar  8 12:46:55 2000
+   @author     Gerd Lanfermann
+   @desc 
+     Frees  memory, updates the total memory variable (static)
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+
 void CCTKi_Free(void *pointer)
 {
   iMemData *memdata;
@@ -82,6 +113,22 @@ void CCTKi_Free(void *pointer)
   free(memdata);
 }
 
+ /*@@
+   @routine    CCTK_MemStat
+   @date       Wed Mar  8 12:47:23 2000
+   @author     Gerd Lanfermann
+   @desc 
+     prints a info string, statign current, past total memory
+     and difference.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+
 void CCTK_MemStat(void) 
 {
   char mess[138];
@@ -90,6 +137,21 @@ void CCTK_MemStat(void)
   printf("CCTK_Memstat: %s ",mess);
 }
 
+ /*@@
+   @routine    CCTK_MemStat
+   @date       Wed Mar  8 12:47:23 2000
+   @author     Gerd Lanfermann
+   @desc 
+     returns total memory allocated by C routines 
+     (which use CCTK_MALLOC)
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
 unsigned long int CCTK_TotalMemory(void)
 {
   return(totmem);
