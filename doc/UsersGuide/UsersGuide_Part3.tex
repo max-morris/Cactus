@@ -223,8 +223,47 @@ Conditional constructs cannot be used inside of a schedule block.
 \chapter{Using CVS}
 
 \chapter{Using TAGS}
+Finding your way around in the Cactus structure can be pretty
+difficult to handle. To make life easier there is support for TAGS,
+which lets you browse the code easily from within Emacs/XEmacs or vi. 
+A TAGS database can be generated with by gmake:
 
-\section{TAGS with emacs}
+ \section{TAGS with emacs}
+{\tt gmake TAGS} will create a database for a routine reference
+table to be used within Emacs. This database can be accessed within
+emacs if you add either of the following lines to your {\tt .emacs} file:\\
+{\tt (setq tags-file-name "CCTK_dir/TAGS")} XOR \\
+{\tt (setq tag-table-alist '(("CCTK\_dir" . "CCTK\_dir/TAGS")))}\\
+where {\tt CCTK\_dir } is your CCTK directory.\\
+
+You can now easily navigate the CCTK and Toolkits by searching for
+functions or ``tags'':
+\begin{enumerate}
+\item \textbf{ Alt.} will find a tag
+\item \textbf{ Alt,} will find the next matching tag
+\item \textbf{ Alt*} will go back to the last matched tag
+\end{enumerate}
+If you add the following lines to your {\tt .emacs} file, the
+files found with TAGS will opened in {\em read-only} mode:
+\begin{verbatim}
+(defun find-tag-readonly (&rest a)
+  (interactive)
+  (call-interactively `find-tag a)
+  (if (eq nil buffer-read-only) (setq buffer-read-only t))  )
+
+(defun find-tag-readonly-next (&rest a)
+  (interactive)
+  (call-interactively `tags-loop-continue a)
+  (if (eq nil buffer-read-only) (setq buffer-read-only t))  )
+
+(global-set-key [(control meta \.)] 'find-tag-readonly)
+(global-set-key [(control meta \,)] 'find-tag-readonly-next)
+\end{verbatim}
+The Key strokes to use when you want to browse in read-only mode are:
+\begin{enumerate}
+\item{CTRL Alt.} will find a tag and open the file in read-only mode
+\item{CTRL Alt,} will find the next matching tag in read-only mode
+\end{enumerate}
 
 \section{TAGS with vi}
 
