@@ -2775,6 +2775,14 @@ this function may also return any error codes returned by the
 Here's a simple example of interpolating a \verb|CCTK_REAL| and a
 \verb|CCTK_COMPLEX| $10 \times 20$ 2-D array, at 5 interpolation points,
 using cubic interpolation.
+\NewPar
+Note that since C allows arrays to be initialized only if the
+initializer values are compile-time constants, we have to declare the
+\verb|interp_coords[]|, \verb|input_arrays[]|, and \verb|output_arrays[]|
+arrays as non-\verb|const|, and set their values with ordinary (run-time)
+assignment statements.  In \Cplusplus, there's no restriction on
+initializer values, so we could declare the arrays \verb|const| and
+initialize them as part of their declarations.
 
 \begin{verbatim}
 #define N_DIMS   2
@@ -2793,8 +2801,7 @@ const CCTK_REAL delta [N_DIMS] = { X_DELTA,  Y_DELTA  };
 /* (x,y) coordinates of interpolation points */
 const CCTK_REAL interp_x[N_INTERP_POINTS];
 const CCTK_REAL interp_y[N_INTERP_POINTS];
-const void *const interp_coords[N_DIMS]
-        = { (const void *) interp_x, (const void *) interp_y };
+const void *interp_coords[N_DIMS];              /* see note above */
 
 /* input arrays */
 /* ... note Cactus uses Fortran storage ordering, i.e. X is contiguous */
@@ -2805,16 +2812,14 @@ const CCTK_COMPLEX input_complex[NY][NX];
 const CCTK_INT input_array_dims[N_DIMS] = { NX, NY };
 const CCTK_INT input_array_type_codes[N_INPUT_ARRAYS]
         = { CCTK_VARIABLE_REAL, CCTK_VARIABLE_COMPLEX };
-const void *const input_arrays[N_INPUT_ARRAYS]
-        = { (const void *) input_real, (const void *) input_complex };
+const void *input_arrays[N_INPUT_ARRAYS];       /* see note above */
 
 /* output arrays */
 CCTK_REAL    output_real   [N_INTERP_POINTS];
 CCTK_COMPLEX output_complex[N_INTERP_POINTS];
 const CCTK_INT output_array_type_codes[N_OUTPUT_ARRAYS]
         = { CCTK_VARIABLE_REAL, CCTK_VARIABLE_COMPLEX };
-void *const output_arrays[N_OUTPUT_ARRAYS]
-        = { (void *) output_real, (void *) output_complex };
+void *const output_arrays[N_OUTPUT_ARRAYS];     /* see note above */
 
 int operator_handle, param_table_handle;
 operator_handle = CCTK_InterpHandle("my interpolation operator");
@@ -2823,6 +2828,16 @@ if (operator_handle < 0)
 param_table_handle = Util_TableCreateFromString("order=3");
 if (param_table_handle < 0)
         CCTK_WARN(-1, "can't create parameter table!");
+
+/* initialize the rest of the parameter arrays */
+interp_coords[0] = (const void *) interp_x;
+interp_coords[1] = (const void *) interp_y;
+input_arrays[0] = (const void *) input_real;
+input_arrays[1] = (const void *) input_complex;
+output_arrays[0] = (void *) output_real;
+output_arrays[1] = (void *) output_complex;
+
+/* do the actual interpolation, and check for error returns */
 if (CCTK_InterpLocalUniform(N_DIMS,
                             operator_handle, param_table_handle,
                             origin, delta,
