@@ -206,8 +206,12 @@ EOF
 # Deal with the Fortran compiler issues.
 # If there's a Fortran 90 compiler use that for all the Fortran.
 if test "x$F90" != "x" ; then
-  F77=$F90 
-  : {F77FLAGS=$F90FLAGS} ;
+  if test "x$F90" != "xnone" ; then
+    if test "x$F77" != "xnone" ; then
+      F77=$F90 
+      : {F77FLAGS=$F90FLAGS} ;
+    fi
+  fi
 fi
 
 # The known architecture stuff has probably set the LIBS variable
@@ -1080,16 +1084,16 @@ AC_DEFINE_UNQUOTED(CCTK_L2_CACHE_SIZE, $L2_CACHE_SIZE)
 
 dnl Run any other scripts necessary
 
-AC_OUTPUT_COMMANDS(,$PERL -s $PERL_CONFIGURE_SCRIPT -compiler="$F77" -opts="$F77FLAGS" .) 
+AC_OUTPUT_COMMANDS(,$PERL -s $PERL_CONFIGURE_SCRIPT -compiler_f77="$F77" -opts_f77="$F77FLAGS" -compiler_f90="$F90" -opts_f90="$F90FLAGS" .) 
 
 # Set default Fortran compilers
 AC_SUBST(F90)
 if test -z "$F90" ; then
-  F90="F90_NOT_SET"
+  F90="none"
 fi
 AC_SUBST(F77)
 if test -z "$F77" ; then
-  F77="F77_NOT_SET"
+  F77="none"
 fi
 
 dnl Output everything

@@ -37,6 +37,8 @@ else
        LINUX_F90_COMP=SGI          
     elif test "`$F90 -V 2>&1 | grep -i intel`" ; then
        LINUX_F90_COMP=Intel          
+    elif test "$F90" = "none" ; then
+       LINUX_F90_COMP=none
     else
         echo Unknown Linux f90 compiler.
         echo Please add appropriate information to 
