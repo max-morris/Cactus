@@ -83,6 +83,7 @@ typedef struct
 
   cTimerData *info;
   int print_headers;
+  int synchronised;
 
   /* Stuff passed in in user calls */
 
@@ -2151,6 +2152,9 @@ static int CCTKi_ScheduleCallEntry(t_attribute *attribute,
     go = 1;
   }
 
+  /* Initialise then synchronised flag. */
+  data->synchronised = 0;
+
   return go;
 }
 
@@ -2211,10 +2215,13 @@ static int CCTKi_ScheduleCallExit(t_attribute *attribute,
       }
     }
 
-    /* Switch off storage if it was switched on in entry. */
-    for(i = 0; i < attribute->n_mem_groups; i++)
+    /* Synchronise variable groups associated with this schedule group. */
+    if(attribute->FunctionData.n_SyncGroups > 0 && ! data->synchronised)
     {
-      if(!attribute->StorageOnEntry[i]) CCTK_DisableGroupStorageI(data->GH,attribute->mem_groups[i]);
+      CCTK_SyncGroupsI(data->GH, 
+                       attribute->FunctionData.n_SyncGroups,  
+                       attribute->FunctionData.SyncGroups);
+      data->synchronised = 0;
     }
 
     /* Switch off communication if it was done in entry. */
@@ -2223,10 +2230,12 @@ static int CCTKi_ScheduleCallExit(t_attribute *attribute,
       if(!attribute->CommOnEntry[i]) CCTK_DisableGroupCommI(data->GH,attribute->comm_groups[i]);
     }
 
-    /* Synchronise variable groups associated with this schedule group. */
-    CCTK_SyncGroupsI(data->GH, 
-                     attribute->FunctionData.n_SyncGroups,  
-                     attribute->FunctionData.SyncGroups);
+    /* Switch off storage if it was switched on in entry. */
+    for(i = 0; i < attribute->n_mem_groups; i++)
+    {
+      if(!attribute->StorageOnEntry[i]) CCTK_DisableGroupStorageI(data->GH,attribute->mem_groups[i]);
+    }
+
   }
 
   return 1;
@@ -2356,17 +2365,9 @@ static int CCTKi_ScheduleCallFunction(void *function,
   /* Use whatever has been chosen as the calling function for this 
    * function. 
    */
-  synchronised = data->CallFunction(function, &(attribute->FunctionData), data->GH);
+  data->synchronised = data->CallFunction(function, &(attribute->FunctionData), data->GH);
 
   CCTK_TimerStopI(attribute->timer_handle);
-
-  /* Synchronise the groups if necessary */
-  if(!synchronised)
-  {
-    CCTK_SyncGroupsI(data->GH, 
-                     attribute->FunctionData.n_SyncGroups,  
-                     attribute->FunctionData.SyncGroups);
-  }
 
   return 1;
 }
