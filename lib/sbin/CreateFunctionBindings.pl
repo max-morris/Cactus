@@ -615,6 +615,7 @@ sub ParseArgument
   }
   else # (usually meaning intent is missing, so $intent holds the name and $name is empty)
   {
+    $intent =~ s/FPTRARGS//; #strip off the FPTARGS if this happens for a function pointer
     my $message = "Thorn $Thorn, Function $Function:\nEvery argument must contain an intent statement of type IN, OUT or INOUT.\n The argument \"$intent\" does not.";
     &CST_error(0,$message,'',__LINE__,__FILE__);
   }
