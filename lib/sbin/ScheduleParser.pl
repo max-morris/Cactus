@@ -232,7 +232,7 @@ sub ParseScheduleBlock
       if ($where !~ m:CCTK_(STARTUP|PARAMCHECK|BASEGRID|INITIAL|POSTINITIAL|RECOVER_VARIABLES|POST_RECOVER_VARIABLES|RECOVER_PARAMETERS|CHECKPOINT|CPINITIAL|PRESTEP|EVOL|POSTSTEP|ANALYSIS|TERMINATE|SHUTDOWN):)
       {
         &CST_error(0,"Schedule bin \'$where\' not recognised in schedule.ccl " .
-                   "file of thorn $arrangement/$thorn","",__LINE__,__FILE__);
+                   "file of thorn $thorn","",__LINE__,__FILE__);
       }
       $field+=2;
     }
@@ -427,7 +427,7 @@ sub ParseScheduleBlock
       else
       {
 	$data[$line_number] =~ /^(.*)\n+/;
-        &CST_error(0,"Unrecognised statement in schedule block ($name) in schedule.ccl for thorn $thorn/$arrangement\n\"$1\"","",__LINE__,__FILE__);
+        &CST_error(0,"Unrecognised statement in schedule block ($name) in schedule.ccl for thorn $thorn\n\"$1\"","",__LINE__,__FILE__);
       }
     }
   }
@@ -437,7 +437,7 @@ sub ParseScheduleBlock
   }
   else
   {
-    $message = "Missing desciption at end of schedule block ($name) in schedule.ccl for thorn $thorn/$arrangement";
+    $message = "Missing desciption at end of schedule block ($name) in schedule.ccl for thorn $thorn";
     &CST_error(0,$message,"",__LINE__,__FILE__);
   }
 
