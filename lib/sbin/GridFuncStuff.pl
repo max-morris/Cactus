@@ -1240,8 +1240,12 @@ sub CreateThornGroupInitialisers
            . "                    \"" . $rhinterface_db->{"\U$thorn GROUP $group\E SIZE"} . "\",\n"
            . "                    \"" . $rhinterface_db->{"\U$thorn GROUP $group\E GHOSTSIZE"} . "\",\n";
 
+    # Is it a vector group ?
     if(defined($rhinterface_db->{"\U$thorn GROUP $group\E VARARRAY_SIZE"}))
     {
+      # Check that the size is allowed.
+      &CheckArraySizes($rhinterface_db->{"\U$thorn GROUP $group\E VARARRAY_SIZE"},$thorn,$rhparameter_db,$rhinterface_db);
+      # Flag Cactus that it is a vector group.
       $line .= "                    -1";
     }
     else
@@ -1254,7 +1258,7 @@ sub CreateThornGroupInitialisers
       $line .= ",\n                   \"$variable\"";
     }
 
-    # Pass in the size of the GV array, which may be an integer or a parameter
+    # Pass in the size of the GV array, which may be a valid parameter expression
     if(defined($rhinterface_db->{"\U$thorn GROUP $group\E VARARRAY_SIZE"}))
     {
       $line .= ",\n                   \"" . $rhinterface_db->{"\U$thorn GROUP $group\E VARARRAY_SIZE"} . "\"";
@@ -1401,9 +1405,9 @@ sub VerifyParameterExpression
 {
   my($expression,$thornname,$rhparameter_db) = @_;
   my($i,$count,@fields);
-  
+
   # First do some global checks
-  if($expression !~ m%[-+*/a-zA-Z0-9_()]%)
+  if($expression !~ m%^[-+*/a-zA-Z0-9_()]+$%)
   {
     &CST_error(0, "Array size in $thornname is an invalid arithmatic expression \n"
                .  "      '$expression' contains invalid characters");

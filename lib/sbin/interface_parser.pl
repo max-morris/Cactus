@@ -804,19 +804,19 @@ sub parse_interface_ccl
         $interface_db{"\U$thorn PROVIDES FUNCTION\E $funcname LANG"} .= "$provided_by_language";
       }
     }
-    elsif ($line =~ m/^\s*(CCTK_)?(CHAR|BYTE|INT|INT2|INT4|INT8|REAL|REAL4|REAL8|REAL16|COMPLEX|COMPLEX8|COMPLEX16|COMPLEX32)\s*(([a-zA-Z]+[a-zA-Z_0-9]*)(\[([a-zA-Z1-9][a-zA-Z_0-9]*)(::[a-zA-Z]+[a-zA-Z_0-9]*)?\])?)\s*(.*)\s*$/i)
+    elsif ($line =~ m/^\s*(CCTK_)?(CHAR|BYTE|INT|INT2|INT4|INT8|REAL|REAL4|REAL8|REAL16|COMPLEX|COMPLEX8|COMPLEX16|COMPLEX32)\s*(([a-zA-Z]+[a-zA-Z_0-9]*)(\[([^]]+)\])?)\s*(.*)\s*$/i)
     {
 
 #      for($i = 1; $i < 10; $i++)
 #      {
-#       print "$i is ${$i}\n";
+#        print "$i is ${$i}\n";
 #      }
 
       my $vtype = $2;
       my $current_group = "$4";
       my $isgrouparray = $5;
       my $grouparray_size = $6;
-      my $options_list = $8;
+      my $options_list = $7;
 
       if($known_groups{"\U$current_group\E"})
       {
@@ -970,11 +970,8 @@ sub parse_interface_ccl
           &CST_error(0,$message,"",__LINE__,__FILE__);
         }
 
-        # get its size and, if a parameter, get fullname
-        if($grouparray_size !~ m/::/)
-        {
-          $grouparray_size = "$thorn\::$grouparray_size";
-        }
+        # get its size
+
         $interface_db{"\U$thorn GROUP $current_group\E VARARRAY_SIZE"} = $grouparray_size;
 
         if($data[$line_number+1] =~ m/^\s*\{\s*$/)
