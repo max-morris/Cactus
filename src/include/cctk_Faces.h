@@ -13,11 +13,16 @@
 #define _CCTK_FACES_H_ 1
 
 /* The set of all faces */
+#if CCTK_INTEGER_PRECISION>=4
 #define CCTK_ALL_FACES 1073741823
 /* (This is 2^30-1, so it will set the 'last' 30 bits to 1.)
  * (The 'top' two bits are useless because there is no unsigned int in
  * Fortran, and face bits come in pairs.)
  */
+#else
+#define CCTK_ALL_FACES 16383
+/* 2^14-1 */
+#endif
 
 /* Here will be placed macros which provide a user friendly interface
  * to a general specification for expressing sets of faces of an
