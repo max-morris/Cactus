@@ -95,7 +95,8 @@ sub cross_index_parameters
 #  @calls     
 #  @calledby   
 #  @history 
-# 
+#  @hdate Fri Sep 10 10:25:47 1999 @hauthor Tom Goodale
+#  @hdesc Allows a \ to escape the end of a line. 
 #  @endhistory 
 #@@*/
 
@@ -103,20 +104,40 @@ sub read_file
 {
   local($file) = @_;
   local(@indata);
-  
+  local($line);
+
   open(IN, "<$file") || die("Can't open $file\n");
   
+  $line = "";
+
   while(<IN>)
   {
     $_ =~ s/\#.*//;
     
     next if(m/^\s+$/);
-    
+ 
     &chompme($_);
-    
-    push(@indata, $_);
+
+    # Add to the currently processed line.
+    $line .= $_;
+
+    # Check the line for line-continuation
+    if(m:[^\\]\\$:)
+    {
+      $line =~ s:\\$::;
+    }
+    else
+    {
+      push(@indata, $line);
+      $line = "";
+    }
   }
   
+  # Make sure to dump out the last line, even if it ends in a \
+  if($line ne "")
+  {
+    push(@indata, $line);
+  }
   close IN;
   
   return @indata;
