@@ -43,7 +43,7 @@ static char *rcsid = "$Header$";
    @vcomment 
    @endvar 
 
-   @var        fullvarname
+   @var        varn
    @vdesc      Full name of the grid variable
    @vtype      char *
    @vio        in
@@ -65,12 +65,12 @@ static char *rcsid = "$Header$";
 
 @@*/
 
-void *CCTK_VarDataPtr(cGH *GH, int timelevel, char *fullvarname)
+void *CCTK_VarDataPtr(cGH *GH, int timelevel, char *varn)
 {
   int index;
   void *retval=NULL;
 
-  index = CCTK_VarIndex(fullvarname);
+  index = CCTK_VarIndex(varn);
   if (index >= 0)
   {
      retval = GH->data[index][timelevel];
@@ -81,7 +81,7 @@ void *CCTK_VarDataPtr(cGH *GH, int timelevel, char *fullvarname)
 #ifdef DEBUG_GROUPS
   CCTK_PRINTSEPARATOR
   printf("In CCTK_VarDataPtr\n----------------------------\n");
-  printf("  Data pointer for %s (%d) is %x\n",fullvarname,index,retval);
+  printf("  Data pointer for %s (%d) is %x\n",varn,index,retval);
   CCTK_PRINTSEPARATOR
 #endif
 
@@ -108,7 +108,7 @@ void *CCTK_VarDataPtr(cGH *GH, int timelevel, char *fullvarname)
    @vcomment 
    @endvar 
 
-   @var        varindex
+   @var        vari
    @vdesc      Index of grid variable
    @vtype      int
    @vio        in
@@ -130,12 +130,12 @@ void *CCTK_VarDataPtr(cGH *GH, int timelevel, char *fullvarname)
 
 @@*/
 
-void *CCTK_VarDataPtrI(cGH *GH, int timelevel, int varindex)
+void *CCTK_VarDataPtrI(cGH *GH, int timelevel, int vari)
 { 
-  if (varindex < 0) 
+  if (vari < 0) 
     CCTK_Warn(1,__LINE__,__FILE__,"Cactus",
 	      "WARNING: calling CCTK_VarDataPtrI with negative index");
-  return GH->data[varindex][timelevel];
+  return GH->data[vari][timelevel];
 }
 
  /*@@
@@ -157,14 +157,14 @@ void *CCTK_VarDataPtrI(cGH *GH, int timelevel, int varindex)
    @vcomment 
    @endvar 
 
-   @var        varindex
+   @var        vari
    @vdesc      Index of grid variable
    @vtype      int
    @vio        in
    @vcomment   Assumed to be in correct range
    @endvar 
 
-   @var        fullvarname
+   @var        varn
    @vdesc      Full name of the grid variable
    @vtype      char *
    @vio        in
@@ -185,15 +185,15 @@ void *CCTK_VarDataPtrI(cGH *GH, int timelevel, int varindex)
    @version    $Header$
 
 @@*/
-void *CCTK_VarDataPtrB(cGH *GH, int timelevel, int varindex, char *fullvarname)
+void *CCTK_VarDataPtrB(cGH *GH, int timelevel, int vari, char *varn)
 {
-  if (fullvarname) 
+  if (varn) 
   {
-    return CCTK_VarDataPtr(GH, timelevel, fullvarname);
+    return CCTK_VarDataPtr(GH, timelevel, varn);
   }
   else
   {
-    return CCTK_VarDataPtrI(GH, timelevel, varindex);
+    return CCTK_VarDataPtrI(GH, timelevel, vari);
   }
 }
 
@@ -343,4 +343,25 @@ int CCTK_DisableGroupStorageI(void *GH, int group)
   }
 
   return retcode;
+}
+
+
+int *CCTK_ArrayGroupSizeI(cGH *GH, int dir, int groupi)
+{
+  return CCTK_ArrayGroupSizeB(GH,dir,groupi,NULL);
+}
+
+int *CCTK_ArrayGroupSize(cGH *GH, int dir, const char *groupn)
+{
+  return CCTK_ArrayGroupSizeB(GH,dir,-1,groupn);
+}
+
+int CCTK_QueryGroupStorageI(cGH *GH, int groupi)
+{
+  return CCTK_QueryGroupStorageB(GH,groupi,NULL);
+}
+
+int CCTK_QueryGroupStorage(cGH *GH, const char *groupn)
+{
+  return CCTK_QueryGroupStorageB(GH, -1, groupn);
 }
