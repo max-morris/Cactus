@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.32 1999-07-02 11:43:52 allen Exp $
+#   @version $Id: Makefile,v 1.33 1999-07-03 12:59:43 allen Exp $
 # @@*/
 
 # Make quietly unless told not to
@@ -212,37 +212,41 @@ ifeq ($(strip $(CONFIGURATIONS)),)
 	@echo \'$(MAKE) \<name\>\' will run a setup script to setup a configuration called \'\<name\>\'.
 else
 	@echo The following configurations are currently specified
-	@echo $(CONFIGURATIONS)
+	@echo 
+	@echo "  $(CONFIGURATIONS)"
 	@echo $(DIVIDER)
-	@echo To build a configuration: run $(MAKE) followed by the name of a configuration.
+	@echo "To build a configuration: "
+	@echo "  run $(MAKE) followed by the name of a configuration."
 	@echo $(DIVIDER)
 	@echo There is a range of options available to act on a configuration.
 	@echo These are activated by $(MAKE) \<conf-name\>-\<option\>
 	@echo Valid options are
-	@echo -clean"     ": to clean a configuration.   
-	@echo "            " - deletes all object and dependency files in the configuration.
-	@echo -cleandeps" ": to clean a configuration\'s dependency files.
-	@echo -cleanobjs" ": to clean a configuration\'s object files.
-	@echo -realclean" ": to restore a configuration to almost a new state. 
-	@echo "            " - deletes all but the config-data directory 
-	@echo "              " and the ActiveThorns file.
-	@echo -delete"    ": to delete a configuration. 
-	@echo -rebuild"   ": to rebuild a configuration. 
-	@echo "            " - forces the CST to be rerun.
-	@echo -reconfig"  ": to reconfigure a configuration. 
-	@echo "            " - reruns the configuration scripts.
+	@echo "  -clean       : to clean a configuration."
+	@echo "                 (deletes all object and dependency files in "
+	@echo "                  the configuration)."
+	@echo "  -cleandeps   : to clean a configuration\'s dependency files."
+	@echo "  -cleanobjs   : to clean a configuration\'s object files."
+	@echo "  -realclean   : to restore a configuration to almost a new state. "
+	@echo "                 (deletes all but the config-data directory "
+	@echo "                  and the ActiveThorns file)."
+	@echo "  -delete      : to delete a configuration." 
+	@echo "  -rebuild     : to rebuild a configuration." 
+	@echo "                 (forces the CST to be rerun)."
+	@echo "  -reconfig    : to reconfigure a configuration. "
+	@echo "                 (reruns the configuration scripts)."
 endif
 	@echo $(DIVIDER)
 	@echo $(MAKE) also knows the following targets
 	@echo
-	@echo       TAGS      - creates an Emacs TAGS file
-	@echo       tags      - creates a Vi TAGS file
-	@echo       default   - creates a new configuration with a default name
-	@echo       newthorn  - creates a new thorn
-	@echo       distclean - deletes all existing configurations
-	@echo       testsuite - run the test program
-	@echo       downsize  - remove non-essential files
-	@echo       \<anything else\> prompts to create such a configuration.
+	@echo "  TAGS      - creates an Emacs TAGS file."
+	@echo "  tags      - creates a Vi TAGS file."
+	@echo "  default   - creates a new configuration with a default name."
+	@echo "  newthorn  - creates a new thorn."
+	@echo "  distclean - deletes all existing configurations."
+	@echo "  testsuite - run the test program."
+	@echo "  downsize  - remove non-essential files."
+	@echo "  doc       - creates UserGuide.ps"
+	@echo "  \<anything else\> prompts to create such a configuration."
 	@echo $(DIVIDER)
 
 # Clean a configuration
@@ -399,6 +403,7 @@ newthorn:
 	$(PERL) -s $(NEWTHORN);
 	@echo $(DIVIDER)
 
+
 # Run the testsuite
 
 ifneq ($strip($(CONFIGURATIONS)),) 
@@ -414,6 +419,18 @@ endif
 	@echo $(DIVIDER)
 	@echo Configuration $(@:%-testsuite=%) does not exist.
 	@echo Test suite aborted.
+
+
+# Make the users manuals
+
+.PHONY: doc
+doc:
+	@echo $(DIVIDER)
+	@echo Creating user documentation UsersGuide.ps
+	(cd doc/UsersGuide; latex UsersGuide.tex; cd $(CCTK_HOME); dvips doc/UsersGuide/UsersGuide.dvi -o UsersGuide.ps) ;
+	@echo $(DIVIDER)
+
+
 
 # Remove non-essential files
 
