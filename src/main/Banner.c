@@ -160,7 +160,7 @@ int CCTKi_PrintBanners(void)
   int param_type;
   int cctk_show_banners;
 
-  cctk_show_banners = (*(int *)CCTK_ParameterGet("cctk_show_banners",
+  cctk_show_banners = (*(CCTK_INT *)CCTK_ParameterGet("cctk_show_banners",
 						 "Cactus",&param_type));
 
   if (cctk_show_banners)

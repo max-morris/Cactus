@@ -50,14 +50,14 @@ int CCTKi_SetupCache(void)
   unsigned long cache_size;
   unsigned long cacheline_bytes;
 
-  manual_cache_setup = (*(int *)CCTK_ParameterGet("manual_cache_setup",
+  manual_cache_setup = (*(CCTK_INT *)CCTK_ParameterGet("manual_cache_setup",
 						  "Cactus",&param_type));
 
   if(manual_cache_setup)
   {
-    cache_size = (*(int *)CCTK_ParameterGet("manual_cache_size",
+    cache_size = (*(CCTK_INT *)CCTK_ParameterGet("manual_cache_size",
 					    "Cactus",&param_type));
-    cacheline_bytes = (*(int *)CCTK_ParameterGet("manual_cacheline_bytes",
+    cacheline_bytes = (*(CCTK_INT *)CCTK_ParameterGet("manual_cacheline_bytes",
 						 "Cactus",&param_type));
   } 
   else
