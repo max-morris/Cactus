@@ -59,6 +59,8 @@ dnl Checks for library functions.
 
 dnl Misc stuff
 
+AC_SUBST(LIBDIRS)
+
 AC_SUBST(PACKAGE_DIR)
 AC_SUBST(BUILD_DIR)
 AC_SUBST(CCTK_LIBDIR)
@@ -83,8 +85,16 @@ F_FILE_PROCESSOR=`echo $srcdir/../sbin/f_file_processor.pl | sed 's,^//\(.\)/,\1
 AC_SUBST(C_FILE_PROCESSOR)
 C_FILE_PROCESSOR=`echo $srcdir/../sbin/c_file_processor.pl | sed 's,^//\(.\)/,\1:/,'`
 
+# Deal with the Fortran compiler issues.
+# If there's a Fortran 90 compiler use that for all the Fortran.
+if test "x$F90" != "x" ; then
+F77=$F90 
+F77FLAGS=$F90 ;
+fi
+
 dnl Run any other scripts necessary
-AC_OUTPUT_COMMANDS(,$PERL -s $PERL_CONFIGURE_SCRIPT -compiler="$F90" .)
+
+AC_OUTPUT_COMMANDS(,$PERL -s $PERL_CONFIGURE_SCRIPT -compiler="$F77" -opts="$F77FLAGS" .) 
 
 dnl Output everything
 AC_OUTPUT(make.config.defn make.config.deps make.config.rules)

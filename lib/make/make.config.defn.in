@@ -11,6 +11,8 @@
 #   @version $Id$
 # @@*/
 
+# Compiler/executable info
+
 SHELL             = @SHELL@
 MKDIR             = @MKDIR@
 CC                = @CC@
@@ -33,6 +35,17 @@ F77FLAGS          = @F77FLAGS@
 LDFLAGS           = @LDFLAGS@
 
 ARFLAGS           = @ARFLAGS@
+
+# Library info
+
+LIBS    = @LIBS@
+LIBDIRS = @LIBDIRS@
+
+# Stuff for the architecture
+
+OS     = @host_os@
+CPU    = @host_cpu@
+VENDOR = @host_vendor@
 
 # Where the CCTK puts things
 PACKAGE_DIR = $(CCTK_HOME)/@PACKAGE_DIR@

@@ -12,11 +12,6 @@
 
 $tmphome = shift(@ARGV);
 
-if(! $compiler)
-{
-  $compiler="f90"
-}
-
 print "Determining number of fortran underscores...\n";
 
 push(@routines, &test_fortran_name); 
@@ -39,10 +34,12 @@ sub test_fortran_name
   local($retcode, $line, $name, $case, $n_underscores);
   local($underscore_suffix, $normal_suffix, $case_prefix);
 
-  # Create a test file
-  open(OUT, ">fname_test.f") || die "Cannot open fname_test.f\n";
+  if($compiler)
+  {
+    # Create a test file
+    open(OUT, ">fname_test.f") || die "Cannot open fname_test.f\n";
 
-  print OUT <<EOT;
+    print OUT <<EOT;
       subroutine test_name(a)
       integer a
       a = 1
@@ -51,93 +48,110 @@ sub test_fortran_name
 
 EOT
 
-  close OUT;
+    close OUT;
+    
+    # Compile the test file
+    print "Compiling test file with $compiler...\n";
+    system("$compiler -c fname_test.f");
 
-  # Compile the test file
-  print "Compiling test file with $compiler...\n";
-  system("$compiler -c fname_test.f");
+    $retcode = $? >> 8;
 
-  $retcode = $? >> 8;
-
-  if($retcode > 0)
-  {
-    print "Failed to compile fname_test.f\n";
-  }
-
-
-  # Search the object file for the appropriate symbols
-  open(IN, "<fname_test.o") || die "Cannot open fname_test.o\n";
-
-  while(<IN>)
-  {
-    $line = $_;
-    if($line =~ m:(TEST_NAME)(_*):i)
+    if($retcode > 0)
     {
-      $name = $1;
-      $underscores = $2;
-      
-      if($name =~ m:TEST_NAME:)
-      {
-	print "Uppercase - ";
-	$case = 1;
-      }
-      if($name =~ m:test_name:)
-      {
-	print "Lowercase - ";
-	$case = 0;
-      }
-      if($underscores eq "")
-      {
-	print " No trailing underscore\n";
-	$n_underscores = 0;
-      }
-      if($underscores eq "_")
-      {
-	print "One trailing underscore\n";
-	$n_underscores = 1;
-      }
-      if($underscores eq "__")
-      {
-	print "Two trailing underscores\n";
-	$n_underscores = 2;
-      }
-
-      last;
+      print "Failed to compile fname_test.f\n";
     }
-  }
 
-  close IN;
 
-  # Delete the temporary files
-  unlink <fname_test.*>;
+    # Search the object file for the appropriate symbols
+    open(IN, "<fname_test.o") || die "Cannot open fname_test.o\n";
 
-  # Determine the case and number of underscores
-  ($underscore_suffix, $normal_suffix, $case_prefix) = &determine_transformation($n_underscores, $case);
+    while(<IN>)
+    {
+      $line = $_;
+      if($line =~ m:(TEST_NAME)(_*):i)
+      {
+	$name = $1;
+	$underscores = $2;
+      
+	if($name =~ m:TEST_NAME:)
+	{
+	  print "Uppercase - ";
+	  $case = 1;
+	}
+	if($name =~ m:test_name:)
+	{
+	  print "Lowercase - ";
+	  $case = 0;
+	}
+	if($underscores eq "")
+	{
+	  print " No trailing underscore\n";
+	  $n_underscores = 0;
+	}
+	if($underscores eq "_")
+	{
+	  print "One trailing underscore\n";
+	  $n_underscores = 1;
+	}
+	if($underscores eq "__")
+	{
+	  print "Two trailing underscores\n";
+	  $n_underscores = 2;
+	}
 
-  $data =  "
+	last;
+      }
+    }
+
+    close IN;
+
+    # Delete the temporary files
+    unlink <fname_test.*>;
+
+    # Determine the case and number of underscores
+    ($underscore_suffix, $normal_suffix, $case_prefix) = &determine_transformation($n_underscores, $case);
+
+    $data =  "
 sub fortran_name
 {
-    local(\$old_name) = \@_;
-    local(\$new_name);
+  local(\$old_name) = \@_;
+  local(\$new_name);
 
-    \$new_name = \"$case_prefix\$old_name\\E\";
+  \$new_name = \"$case_prefix\$old_name\\E\";
+  
+  if(\$new_name =~ m:_: ) 
+  {
+    \$new_name = \$new_name.\"$underscore_suffix\";
+  }
+  else
+  {
+    \$new_name = \$new_name.\"$normal_suffix\";
+  }
 
-    if(\$new_name =~ m:_: ) 
-    {
-	\$new_name = \$new_name.\"$underscore_suffix\";
-    }
-    else
-    {
-	\$new_name = \$new_name.\"$normal_suffix\";
-    }
-
-    return \$new_name;
+  return \$new_name;
 }
 
 ";
+  }
+  else
+  {
+    print "No Fortran compiler - creating null fortran name conversion routine.\n";
+
+$data = "
+
+sub fortran_name
+{
+  local(\$old_name) = \@_;
+
+  return \"\$old_name\";
+
+}
+";
+}
 
   return $data;
 }
+
 
 sub test_fortran_common_name
 {

@@ -4,9 +4,11 @@
 #  @date      Fri Jan  8 13:48:48 1999
 #  @author    Tom Goodale
 #  @desc 
-#  Prototype setup file for the CCTK
+#  Setup file for a new configuration in the CCTK
+#  Invocation is 
+#  setup_configuration [-reconfig] [-config_file=<options>] config_name
 #  @enddesc 
-#  @version $Id$
+#  @version $Header$
 #@@*/
 
 $top = `pwd`;
@@ -42,7 +44,7 @@ if (! -d "configs" && ! -l "configs")
   
 }
 
-chdir configs;
+chdir "configs";
 
 # The specified configuration doesn't exist
 if (! -d "$config" && ! -l "$config")
@@ -56,11 +58,10 @@ if (! -d "$config" && ! -l "$config")
   mkdir("build",0755);
   mkdir("lib",0755);
   mkdir("config-data",0755);
-  mkdir("libraries",0755);
 
   chdir "config-data";
 
-  $ENV{"EXE"} = "cctk";
+  &SetConfigureEnv();
 
   system("$configure");
   chdir "..";
@@ -76,9 +77,71 @@ if($reconfig)
 
   chdir "config-data";
 
-  $ENV{"EXE"} = "cctk";
+  &SetConfigureEnv();
 
   system("$configure");
   chdir "..";
   chdir "..";
+}
+
+#/*@@
+#  @routine    
+#  @date       Fri Feb 19 19:53:48 1999
+#  @author     Tom Goodale
+#  @desc 
+#  Sets the environment for running the configure script.
+#  @enddesc 
+#  @calls     
+#  @calledby   
+#  @history 
+#
+#  @endhistory 
+#
+#@@*/
+sub SetConfigureEnv
+{
+  local($line_number) = 0;
+  # Set a default name for the configuration
+  $ENV{"EXE"} = "cactus_$config";
+
+  if($config_file)
+  {
+    # The user has specified a configuration file
+
+    print "Using configuration options from $config_file...\n";
+    open(INFILE, "<$top/$config_file") || die "Cannot open configuration file $config_file";
+    
+    while(<INFILE>)
+    {
+      $line_number++;
+
+      #Ignore comments.
+      s/\#(.*)$//g;
+      
+      s/\n//g;		# Different from chop...
+
+      #Ignore blank lines
+      next if (m:^\s*$:);
+
+      # Match lines of the form 
+      #     keyword value
+      # or  keyword = value
+      m/\s*([^\s=]*)([\s]*=?\s*)(.*)\s*/;
+
+      if($1 && $2)
+      {
+	print "Setting $1 to '$3'\n";
+	$ENV{"$1"} = $3;
+      }
+      else
+      {
+	print "Could not parse configuration line $line_number...\n'$_'\n";
+      }
+
+    }
+    print "End of options from $config_file.\n";
+    
+    close(INFILE);
+  }
+
 }

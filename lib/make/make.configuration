@@ -44,7 +44,7 @@ $(EXE): $(CONFIG)/make.thornlist $(patsubst %,$(CCTK_LIBDIR)/lib%.a,$(notdir $(T
 	@echo $(DIVIDER)
 	@echo Creating $(EXE) from $(THORNS)
 	$(CC) -c $(DATESTAMP) -o $(TOP)/datestamp.o
-	$(LD) -o $@ $(LDFLAGS) $(TOP)/datestamp.o  -L$(CCTK_LIBDIR) -lCactus -lCactusBindings $(addprefix -l,$(notdir $(THORNS))) $(addprefix -l,$(notdir $(THORNS))) -lCactus $(LIBDIRS:%=-L%) $(LIBS:%=-l%)
+	$(LD) -o $@ $(LDFLAGS) $(EXTRAFLAGS) $(TOP)/datestamp.o  `find $(TOP)/build/grace -name '*.o'` $(EXTRAFLAGS) -L$(CCTK_LIBDIR) -lCactus -lCactusBindings  $(addprefix -l,$(notdir $(THORNS))) $(addprefix -l,$(notdir $(THORNS))) -lCactus $(EXTRAFLAGS) $(LIBDIRS:%=-L%) $(LIBS:%=-l%)
 	@echo $(DIVIDER)
 	@echo All done !
 	@echo $(DIVIDER)

@@ -16,13 +16,19 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.16 1999-02-16 21:30:52 goodale Exp $
+#   @version $Id: Makefile,v 1.17 1999-02-20 17:26:48 goodale Exp $
 # @@*/
 
-# Comment this out if you want to see what's going on.
-
+# Make quietly unless told not to
 ifneq ($(strip $(SILENT)),no)
 .SILENT:
+endif
+
+# Set the options to pass to the setup script
+ifneq ($(strip $(options)),)
+SETUP_OPTIONS = -config_file=$(options)
+else
+SETUP_OPTIONS = 
 endif
 
 # Various auxilary programs
@@ -61,7 +67,7 @@ new_setup:
 ifeq ($(strip $(CONFIGURATIONS)),)
 	@echo $(DIVIDER)
 	@echo Setting up cctk
-	$(PERL) -s $(SETUP)
+	$(PERL) -s $(SETUP) $(SETUP_OPTIONS)
 	@echo $(DIVIDER)
 	@echo You are now ready to build the CCTK.
 	@echo This is done by $(MAKE) \<configuration\>
@@ -114,7 +120,7 @@ tags:
 config:
 	@echo $(DIVIDER)
 	@echo Running the configuration program
-	$(PERL) -s $(SETUP)
+	$(PERL) -s $(SETUP) $(SETUP_OPTIONS)
 	@echo $(DIVIDER)
 
 # The help system.
@@ -209,7 +215,7 @@ ifneq ($strip($(CONFIGURATIONS)),)
 
 $(addsuffix -reconfig,$(CONFIGURATIONS)):
 	@echo $(DIVIDER)
-	$(PERL) -s $(SETUP) -reconfig=1 $(@:%-reconfig=%); 
+	$(PERL) -s $(SETUP) -reconfig=1 $(SETUP_OPTIONS) $(@:%-reconfig=%); 
 endif
 
 %-reconfig:
@@ -235,7 +241,7 @@ newthorn:
 	if [ "x$$yesno" = "xyes" -o "x$$yesno" = "xy" -o "x$$yesno" = "xYES" -o "x$$yesno" = "xY" ] ;\
 	then  \
 	echo Setting up new configuration $@; \
-	$(PERL) -s $(SETUP) $@; \
+	$(PERL) -s $(SETUP) $(SETUP_OPTIONS) $@; \
 	echo $(DIVIDER)   ;  \
 	echo Use $(MAKE) $@ to build the configuration.; \
 	else \
