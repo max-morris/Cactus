@@ -473,7 +473,7 @@ sub CreateCArgumentInitialisers
     {
       $arguments{$argument} =~ m,([^ ]*) ?(.*)?!(.*)\::(.*)!(.*),;
 
-      push(@initialisers, "if(CCTKARGNUM_$argument == -1) CCTKARGNUM_$argument = CCTK_GetVarNum(\"$3\", \"$4\",\"$argument\")");
+      push(@initialisers, "if(CCTKARGNUM_$argument == -1) CCTKARGNUM_$argument = CCTK_GetVarIndex(\"$3::$argument\")");
     }
   }
 
