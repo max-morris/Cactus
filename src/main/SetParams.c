@@ -77,7 +77,7 @@ int CCTKi_SetParameter(const char *parameter, const char *value)
 #endif
       char *msg = (char *) malloc (strlen (parameter) + 30);
 
-      sprintf(msg, "Unknown parameter %s %d", parameter, retval);
+      sprintf(msg, "Unknown parameter %s", parameter);
       CCTK_PARAMWARN (msg);
       free (msg);
 #if 0
