@@ -362,7 +362,7 @@ CCTK_CHECK_FUNCS(mkdir)
 CCTK_CHECK_FUNCS(scandir, ,
 [SAVED_LIBDIRS="$LIBDIRS"
 LIBDIRS="$LIBDIRS /usr/ucblib" 
-AC_CHECK_LIB(ucb, scandir, AC_DEFINE(HAVE_SCANDIR), LIBDIRS="$SAVED_LIBDIRS")
+CCTK_CHECK_LIB(ucb, scandir, AC_DEFINE(HAVE_SCANDIR), LIBDIRS="$SAVED_LIBDIRS")
 ])
 
 # Check if we have mode_t available 
