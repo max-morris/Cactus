@@ -63,6 +63,7 @@
 #undef HAVE_CRYPT
 #undef HAVE_FINITE
 #undef HAVE_ISNAN
+#undef HAVE_MKSTEMP
 
 /* Do we have mode_t ? */
 

@@ -539,19 +539,18 @@ CCTK_C_BOOL
 CCTK_CXX_BOOL
 
 dnl Do we have crypt(3)
-
 CCTK_CHECK_FUNC(crypt, , CCTK_CHECK_LIB_FUNC(crypt, crypt))
 
 dnl Do we have finite(3)
-
 CCTK_CHECK_FUNCS(finite, , CCTK_CHECK_LIB_FUNC(m, finite))
 
 dnl Do we have isnan(3)
-
 CCTK_CHECK_FUNCS(isnan, , CCTK_CHECK_LIB_FUNC(m, isnan))
 
-dnl Checks for availability of pthreads library.
+dnl Do we have mkstemp(3)
+CCTK_CHECK_FUNCS(mkstemp, , CCTK_CHECK_LIB_FUNC(c, mkstemp))
 
+dnl Checks for availability of pthreads library.
 if test "X$PTHREADS" = "Xyes"; then
   PTHREAD_LIBS=
   CCTK_CHECK_LIB(c_r, main,[PTHREAD_LIBS="c_r" LIBS="$LIBS c_r"],,)
