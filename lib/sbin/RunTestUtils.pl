@@ -812,18 +812,18 @@ sub CompareTestFiles
 	  $newfile = "$test_dir$sep$file"; 
 	  $oldfile = "$testdata->{\"$inthorn TESTSDIR\"}${sep}${test}${sep}$file";
 	  
+	  $rundata->{"$inthorn $test $file NINF"}=0;
+	  $rundata->{"$inthorn $test $file NNAN"}=0;
+	  $rundata->{"$inthorn $test $file NINFNOTFOUND"}=0;
+	  $rundata->{"$inthorn $test $file NNANNOTFOUND"}=0;
+	  $rundata->{"$inthorn $test $file NFAILSTRONG"}=0;
+	  $rundata->{"$inthorn $test $file NFAILWEAK"}=0;
+
 	  if ( -e $newfile && -s $newfile && -s $oldfile)
 	  {
 	      open (INORIG, "<$oldfile") || print "Warning: Archive file $oldfile not found";
 	      open (INNEW,  "<$newfile") || print "Warning: Test file $newfile not found";
-	      
-	      $rundata->{"$inthorn $test $file NINF"}=0;
-	      $rundata->{"$inthorn $test $file NNAN"}=0;
-	      $rundata->{"$inthorn $test $file NINFNOTFOUND"}=0;
-	      $rundata->{"$inthorn $test $file NNANNOTFOUND"}=0;
-	      $rundata->{"$inthorn $test $file NFAILSTRONG"}=0;
-	      $rundata->{"$inthorn $test $file NFAILWEAK"}=0;
-	      
+	      	      
 	      undef(@maxdiff);
 	      undef(@diffvals);
 	      undef(@oldvals);
@@ -836,7 +836,7 @@ sub CompareTestFiles
 	      {
 		  $nline = <INNEW>;
 		  
-		  next if (($oline =~ /^[\"\#]/) && ($nline =~ /^[\"\#]/));
+		  next if (($oline =~ /^\s*["\#]/) && ($nline =~ /^\s*["\#]/));
 		  $numlines++;
 		  
 		  # Now lets see if they differ.
