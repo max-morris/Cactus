@@ -87,6 +87,8 @@ int SetupMainFunctions(void);
 int SetupCommFunctions(void);
 int SetupIOFunctions(void);
 
+int CCTKi_SetupCache(void);
+
 #ifdef __cplusplus
 }
 #endif
