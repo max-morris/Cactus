@@ -779,21 +779,17 @@ quicker methods available for GFs.
 
 These are best introduced by an example using finite differencing, 
 take the 1-D wave equation
-
 \begin{equation}
 \frac{\partial^2 \phi}{\partial t^2} = \frac{\partial^2 \phi}{\partial x^2} 
 \end{equation}
-
 To solve this by partial differences, one discretises the derivatives, to get
 an equation relating the solution at different times.  There are many ways
 to do this, one of which produces the following difference equation
-
 \begin{equation}
 \label{equation:difference}
 \phi(t+\Delta t,x) -2\phi(t,x) +\phi(t-\Delta t,x) = \frac{\Delta t}{\Delta x^2} \lbrace{\phi(t,x+\Delta x) -2\phi(t,x) +\phi(t,x-\Delta x)}\rbrace
 \end{equation}
-
-Which relates the three timelevels $t+\Delta t$, $t$, and $t-\Delta t$.  
+which relates the three timelevels $t+\Delta t$, $t$, and $t-\Delta t$.  
 
 Obviously the code could just use three variables, one for each timelevel.  
 This turns out, however, to be inefficient as, as soon as the time is 
@@ -805,12 +801,36 @@ To remove this extraneous copy, Cactus allows you to specify the number
 of timelevels used by your numerical scheme.  It then generates variables 
 with the base name (e.g. {\tt phi}) suffixed by a qualifier for 
 which timelevel is being referred to --- no suffix for the 
-{\tt n}ext timelevel, {\tt \_p} for the current timelevel, 
-and  {\tt \_p\_p} for each {\tt p}revious timelevel.  E.g.
-a four timelevel scheme would produce {\tt phi}, 
-{\tt phi\_p}, 
-{\tt phi\_p\_p} and 
-{\tt phi\_p\_p\_p}.
+next timelevel, and {\tt \_p} for each previous timelevel.
+
+The timelevels are rotated (by the driver thorn) at the start
+of each evolution step, that is:
+\begin{verbatim}
+initial
+poststep
+analysis
+
+loop:
+  rotate timelevels
+  t = t + dt
+  it = it + 1
+  prestep
+  evolve
+  poststep 
+  analysis
+\end{verbatim}
+
+Timelevel rotation means that, for example,
+{\tt phi\_p} now holds the values of the former {\tt phi},
+and {\tt phi\_p\_p} the values of the former {\tt phi\_p}, etc.
+Note that after rotation {\tt phi} is  undefined, and it's values should 
+not be used until they have been updated.
+
+All timelevels, except the current level, should be considered {\bf read-only} during evolution, that is their values should not be changed by thorns. 
+The exception to this rule is for function initialisation, when the
+values at the previous timelevels do need to be explicately filled out.
+
+
 
 \section{Size and Distrib}
 
@@ -1457,11 +1477,13 @@ the global grid.
       start from zero, so you need to add one when using them in
       Fortran thorns.
 \item {\tt cctk\_bbox} 
-      An array of 2*{\tt cctk\_dim} integers 
+      An array of 2*{\tt cctk\_dim} integers (in the order
+	$[{\mbox{dim}}_0^{\mbox{min}}, \mbox{dim}_0^{\mbox{max}}, 
+	{\mbox dim}_1^{\mbox{min}}, {\mbox dim}_1^{\mbox{max}}, \ldots]$),
       which indicate whether the boundaries are internal boundaries
       (e.g. between processors), or physical boundaries. A value of 1 indicates
       a physical (outer) boundary at the edge of the computational grid, 
-      and 0 indicates an internal boundary.
+      and 0 indicates an internal boundary. 
 \end{itemize}
 
 The following variable is needed for grid refinement methods
@@ -1795,60 +1817,56 @@ Provides the local range of a coordinate on a processor for
 \section{IO}
 \label{sec:io}
 
-To allow flexible IO, the flesh itself does not provide 
-any output routines, however it provides a mechanism for 
-thorns to register different routines as IO methods (see chapter \ref{chap:io_methods}).
-Application thorns can interact with the different IO methods through the
-following function calls:
+To allow flexible IO, the flesh itself does not provide any output
+routines, however it provides a mechanism for thorns to register
+different routines as IO methods (see chapter \ref{chap:io_methods}).
+Application thorns can interact with the different IO methods through
+the following function calls:
 
 \begin{Lentry}
 
 \item[{\tt CCTK\_OutputGH (cGH *GH)}]
 
-This call loops over all registered IO methods, calling 
-the routine that each method has registered for {\t OutputGH}.
-The expected behaviour of any {\t OutputGH} routine is to
-loop over all GH variables outputting them if the IO method 
-contains appropriate routines (that is, not all methods will 
-supply routines to output all different types of variables) 
-and if the method decides it is an appropriate time to 
-output. 
+This call loops over all registered IO methods, calling the routine
+that each method has registered for {\t OutputGH}.  The expected
+behaviour of any {\t OutputGH} routine is to loop over all GH
+variables outputting them if the IO method contains appropriate
+routines (that is, not all methods will supply routines to output all
+different types of variables) and if the method decides it is an
+appropriate time to output.
 
 \item[{\tt CCTK\_OutputVar (cGH *GH, const char *varname)}]
 
-Output a variable {\t varname} looping over all registered IO methods. 
-The output should take place if at all possible.
-If output goes into a file and the appropriate file exists the data is appended,
-otherwise a new file is created.
+Output a variable {\t varname} looping over all registered IO methods.
+The output should take place if at all possible.  If output goes into
+a file and the appropriate file exists the data is appended, otherwise
+a new file is created.
 
 \item[{\tt CCTK\_OutputVarAs (cGH *GH, const char *varname, const char *alias)}]
 
-Output a variable {\t varname} looping over all registered IO methods. 
-The output should take place if at all possible.
-If output goes into a file and the appropriate file exists the data is appended,
-otherwise a new file is created.
-Uses {\t alias} as the name of the variable for the purpose
-of constructing a filename.
+Output a variable {\t varname} looping over all registered IO methods.
+The output should take place if at all possible.  If output goes into
+a file and the appropriate file exists the data is appended, otherwise
+a new file is created.  Uses {\t alias} as the name of the variable
+for the purpose of constructing a filename.
 
 \item[{\tt CCTK\_OutputVarByMethod (cGH *GH, const char *varname, const char *methodname)}]
 
-Output a variable {\t varname} using the IO method {\t methodname} if it is 
-registered. The output should take place if at all possible.
-If output goes into a file and the appropriate file exists the data is appended,
-otherwise a new file is created. 
+Output a variable {\t varname} using the IO method {\t methodname} if
+it is registered. The output should take place if at all possible.  If
+output goes into a file and the appropriate file exists the data is
+appended, otherwise a new file is created.
 
 \item[{\tt CCTK\_OutputVarAsByMethod (cGH *GH,
                                      const char *varname,
                                      const char *methodname,
                                      const char *alias)}]
 
-Output a variable {\t varname} using the IO method {\t methodname} if it is 
-registered.
-The output should take place if at all possible.
-If output goes into a file and the appropriate file exists the data is appended,
-otherwise a new file is created. 
-Uses {\t alias} as the name of the variable for the purpose
-of constructing a filename. 
+Output a variable {\t varname} using the IO method {\t methodname} if
+it is registered.  The output should take place if at all possible.
+If output goes into a file and the appropriate file exists the data is
+appended, otherwise a new file is created.  Uses {\t alias} as the
+name of the variable for the purpose of constructing a filename.
 
 \end{Lentry}
 
@@ -1857,25 +1875,26 @@ of constructing a filename.
 \section{Interpolation Operators}
 \label{sec:inop}
 
-The flesh does not provide interpolation routines by itself. Instead it offers
-a general function API to thorns for the registration and invocation of
-interpolation operators.
+The flesh does not provide interpolation routines by itself. Instead
+it offers a general function API to thorns for the registration and
+invocation of interpolation operators.
 
 Interpolation is done on arrays which can be either processor-local or
-distributed among all processors in the computational domain. Thorns can
-register an interpolation operator under a unique name as a set of 2 routines --
-one for every array type. If an operator cannot handle both types, the
-corresponding routine may be left unregistered. At registration every
-interpolation operator gets assigned a unique integer number which is used as
-a handle to refer to the operator later on.
+distributed among all processors in the computational domain. Thorns
+can register an interpolation operator under a unique name as a set of
+2 routines -- one for every array type. If an operator cannot handle
+both types, the corresponding routine may be left unregistered. At
+registration every interpolation operator gets assigned a unique
+integer number which is used as a handle to refer to the operator
+later on.
 
-Separate flesh routines exist to invoke an interpolation operator for either
-one of these types. The number of points to interpolate along with their
-coordinates are passed in as well as necessary information about the coordinate
-system to use for interpolation.
-The flesh routines take a variable list of input and output arrays as arguments
-thus allowing operators to be optimized for interpolating multiple arrays
-at the same coordinate points.\\
+Separate flesh routines exist to invoke an interpolation operator for
+either one of these types. The number of points to interpolate along
+with their coordinates are passed in as well as necessary information
+about the coordinate system to use for interpolation.  The flesh
+routines take a variable list of input and output arrays as arguments
+thus allowing operators to be optimized for interpolating multiple
+arrays at the same coordinate points.\\
 
 The flesh registration routines for interpolation operators are:
 \begin{Lentry}
@@ -2289,10 +2308,11 @@ the reduction call is made.
 
 \section{Commenting Source Code}
 
-Note that since most source files (see Section~\ref{nacofosofi} 
-for exceptions) pass through a C preprocessor, C style comments 
-can be used in Fortran code. C++ comments (that is //), should not be used, 
-since they indicate the string concatonation operator in Fortran. 
+Note that since most source files (see Section~\ref{nacofosofi} for
+exceptions) pass through a C preprocessor, C style comments can be
+used in Fortran code. C++ comments (that is //), should not be used in
+Fortran code, since they indicate the string concatonation operator in
+Fortran.
 
 The Flesh and the Cactus thorns use {\tt grdoc} to document the code.
 
@@ -2486,6 +2506,140 @@ For details on running the test suites, see Section~\ref{sec:te}.
 
 
 \chapter{Advanced Thorn Writing}
+
+
+
+\section{Using Cactus Timers}
+
+\subsection{What are timers?}
+
+The standard timing information available during a simulation was
+described in Section~\ref{????}.
+Cactus provides a flexible mechanism for timing different sections of 
+your thorns using all the clocks which have been registered with the Flesh.
+By default, the Flesh provides two clocks (if they are available on 
+your achitecture), measuring wall clock time and CPU time. Additional 
+clocks are implemented by thorns and registered with the flesh (see 
+Section~\ref{????} on how to write and register your own clock).
+
+You can add any number of timers to your thorn source code, providing each with
+a chosen name, for example {\t TimeMyRoutine}, {\t TimeNextCalculation}, and
+then use Cactus functions to switch on the timers, stop then, reset them, 
+and recover timing information from them.
+
+\subsection{Timing calls}
+
+\begin{Lentry}
+
+\item[{\t CCTK\_TimerCreate}, {\t CCTK\_TimerCreateI}]
+
+Create a timer with a provided name  (or with no name)  and give back
+a timer index. If no name is provided for the function, future interactions
+with the timer should be made using the returned timer index.
+
+\item[{\t CCTK\_TimerDestroy}, {\t CCTK\_TimerDestroyI}]
+
+Destroy a timer using either the timer name or timer index. This 
+
+\item[{\t CCTK\_TimerStart}, {\t CCTK\_TimerStartI}]
+
+Start the given timer (identified by name or index), using all registered
+clocks. 
+
+\item[{\t CCTK\_TimerStop}, {\t CCTK\_TimerStopI}]
+
+Stop the given timer (identified by name or index) on all registered clocks.
+
+\item[{\t CCTK\_TimerReset}, {\t CCTK\_TimerResetI}]
+
+Reset the given timer.
+
+\item[{\t CCTK\_TimerCreateData}, {\t CCTK\_Timer}, {\t CCTK\_TimerDestroyData}]
+
+Access the actual timing results, which are passed back as a 
+structure, {\t cTimerData} described below, in {\t CCTK\_Timer}. 
+Since the timing data is dynamic, before it can be assessed, the structure 
+must be allocated with a call to {\t CCTK\_TimerCreateData}. A similar function
+is provided to destroy the stucture
+
+\end{Lentry}
+
+
+\subsection{How to insert timers in your code}
+
+The function prototypes and structure definitions are contained in the
+include file {\t CCTK\_Timers.h}, which is included in the standard thorn header file {\t cctk.h}. At the moment the timer calls are only 
+available from C. 
+
+The following example, which uses a timer called {\t TimeMyStuff} to 
+instrument a section of code, illustrates how timers are used by application
+thorns:
+
+{\bf Creating the {\t TimeMyStuff} timer}
+
+The first action for any timer is to create it, using {\t CCTK\_TimerCreate}.
+This can be performed at any time, as long as it precedes using the timer:
+{\tt
+\begin{verbatim}
+#include ``cctk_Timers.h''
+ierr = CCTK_TimerCreate(`TimeMyStuff`);
+\end{verbatim}
+}
+
+{\bf Instrumenting a section of code}
+
+Code sections are instrumented using the Start, Stop and Reset functions. These
+functions are applied to the chosen timer using all the registered clocks.
+{\tt
+\begin{verbatim}
+#include ``cctk_Timers.h''
+ierr = CCTK_TimerStart(`TimeMyStuff`);
+\* Piece of code to time *\
+y = CalculateNewValue(y);
+ierr = CCTK_TimerStop(`TimeMyStuff`);
+}
+
+{\bf Accessing the timer results}
+
+This is a little bit cumbersome at the moment, since the timer data can be
+of different types.
+
+{\tt
+\begin{verbatim}
+#include ``cctk_Timers.h''
+cTimerData *info;
+
+info = CCTK_TimerDataCreate();
+ierr = CCTK_Timer('TimeMyStuff',info);
+
+for (i = 0; i < info->n_vals; i++)
+{
+  switch (info->vals[i].type)
+  {
+    case val_int:
+    printf(``%s: %d %s'', info->vals[i].heading,info->vals[i].val.i, 
+                          info->vals[i].units);
+    break;
+
+    case val_long:
+    printf(``%s: %d %s'', info->vals[i].heading,(int) info->vals[i].val.l, 
+                          info->vals[i].units);
+    break;
+
+    case val_double:
+    printf(``%s: %.3f %s'', info->vals[i].heading,info->vals[i].val.d, 
+                            info->vals[i].units);
+    break;
+
+    default:
+    CCTK_WARN(1, ``Unknown data type for timer info'');
+    break;
+  }
+}
+ierr = CCTK_TimerDestroyData(info);
+\end{verbatim}
+}  
+
 
 \section{Include Files}
 
