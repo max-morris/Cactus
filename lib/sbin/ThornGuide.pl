@@ -492,6 +492,15 @@ print OUT  <<EOC;
 \\\@addtoreset{chapter}{part}
 \\makeatother
 
+\\usepackage{tocloft}
+\\addtolength{\\cftchapnumwidth}{0.5em}
+\\addtolength{\\cftsecnumwidth}{0.5em}
+\\addtolength{\\cftsubsecnumwidth}{0.5em}
+\\addtolength{\\cftsubsubsecnumwidth}{0.5em}
+
+% macros
+\\def\\text#1{{\\rm #1}}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \\parskip = 2 pt
 \\oddsidemargin = 0 cm
@@ -499,17 +508,10 @@ print OUT  <<EOC;
 \\topmargin = -1 cm
 \\textheight = 24 cm
 
-\\usepackage{tocloft}
-\\addtolength{\\cftchapnumwidth}{0.5em}
-\\addtolength{\\cftsecnumwidth}{0.5em}
-\\addtolength{\\cftsubsecnumwidth}{0.5em}
-\\addtolength{\\cftsubsubsecnumwidth}{0.5em}
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \\def\\q{\\bf QUERY: }
 \\def\\t{\\tt \\obeylines }
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % MANPAGE like description setting for options, use as % \\begin{Lentry}
 %\\item[text] text \\end{Lentry} \\usepackage{ifthen,calc}
 \\newcommand{\\entrylabel}[1]{\\mbox{\\textsf{#1}}\\hfil}
@@ -530,7 +532,7 @@ print OUT  <<EOC;
   {\\renewcommand{\\entrylabel}{\\Lentrylabel}
    \\begin{entry}}
   {\\end{entry}}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Takes three arguments - the name of the document, the revision, and
