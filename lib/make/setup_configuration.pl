@@ -100,6 +100,9 @@ chdir "config-data" || die "Internal error - could't enter $configs_dir/$config/
 
 $configure_command = &DetermineConfigureCommand($configure, %ENV);
 
+# remove cached configure options
+unlink 'config.cache' if (-f 'config.cache');
+
 system("$configure_command");
 
 $retcode = $? >> 8;
