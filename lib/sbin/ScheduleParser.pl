@@ -1,26 +1,26 @@
-#! /usr/bin/perl 
+#! /usr/bin/perl
 #/*@@
 #  @file      ScheduleParser.pl
 #  @date      Thu Sep 16 19:13:05 1999
 #  @author    Tom Goodale
-#  @desc 
-#  New schedule parser
-#  @enddesc 
-#  @version $Header$
+#  @desc
+#             New schedule parser
+#  @enddesc
+#  @version   $Header$
 #@@*/
 
 #/*@@
 #  @routine    create_schedule_database
 #  @date       Thu Sep 16 23:31:00 1999
 #  @author     Tom Goodale
-#  @desc 
-#  Parses the schedule files for all thorns.  
-#  @enddesc 
-#  @calls     
-#  @calledby   
-#  @history 
+#  @desc
+#  Parses the schedule files for all thorns.
+#  @enddesc
+#  @calls
+#  @calledby
+#  @history
 #
-#  @endhistory 
+#  @endhistory
 #
 #@@*/
 sub create_schedule_database
@@ -29,26 +29,26 @@ sub create_schedule_database
   my($thorn, @indata);
   my(@new_schedule_data);
   my(@schedule_data);
-  
+
   #  Loop through each implementation's schedule file.
   foreach $thorn (keys %thorns)
   {
     print "   $thorn\n";
     #       Read the data
     @indata = &read_file("$thorns{$thorn}/schedule.ccl");
-    
+
     #       Get the schedule stuff from it
     @new_schedule_data = &parse_schedule_ccl($thorn, @indata);
 
     &PrintScheduleStatistics($thorn, @new_schedule_data);
-    
+
     #       Add the schedule stuff to the master schedule database
     push (@schedule_data, @new_schedule_data);
-    
+
   }
-  
+
 #  @schedule_data = &cross_index_schedule_data(scalar(keys %thorns), (keys %thorns), @schedule_data);
-  
+
   return @schedule_data;
 }
 
@@ -56,14 +56,14 @@ sub create_schedule_database
 #  @routine    parse_schedule_ccl
 #  @date       Thu Sep 16 23:23:07 1999
 #  @author     Tom Goodale
-#  @desc 
-#  Parses a schedule ccl file  
-#  @enddesc 
-#  @calls     
-#  @calledby   
-#  @history 
+#  @desc
+#  Parses a schedule ccl file
+#  @enddesc
+#  @calls
+#  @calledby
+#  @history
 #
-#  @endhistory 
+#  @endhistory
 #
 #@@*/
 sub parse_schedule_ccl
@@ -74,7 +74,7 @@ sub parse_schedule_ccl
   my($buffer);
   my($n_blocks);
   my($n_statements);
-  my($name, $as, $type, $description, $where, $language, 
+  my($name, $as, $type, $description, $where, $language,
        $mem_groups, $comm_groups, $trigger_groups, $sync_groups,
        $options, $before_list, $after_list, $while_list);
   my($groups);
@@ -87,8 +87,8 @@ sub parse_schedule_ccl
   {
     if($data[$line_number] =~ m:^\s*schedule\s*:i)
     {
-      ($line_number, 
-       $name, $as, $type, $description, $where, $language, 
+      ($line_number,
+       $name, $as, $type, $description, $where, $language,
        $mem_groups, $comm_groups, $trigger_groups, $sync_groups,
        $options,$before_list, $after_list, $while_list) = &ParseScheduleBlock($thorn,$line_number, @data);
 
@@ -106,7 +106,7 @@ sub parse_schedule_ccl
       $schedule_db{"\U$thorn\E BLOCK_$n_blocks BEFORE"}      = $before_list;
       $schedule_db{"\U$thorn\E BLOCK_$n_blocks AFTER"}       = $after_list;
       $schedule_db{"\U$thorn\E BLOCK_$n_blocks WHILE"}       = $while_list;
- 
+
       $buffer .= "\@BLOCK\@$n_blocks\n";
       $n_blocks++;
     }
@@ -116,7 +116,7 @@ sub parse_schedule_ccl
       $schedule_db{"\U$thorn\E STATEMENT_$n_statements TYPE"}        = $type;
       $schedule_db{"\U$thorn\E STATEMENT_$n_statements GROUPS"}      = $groups;
       $buffer .= "\@STATEMENT\@$n_statements\n";
-      $n_statements++;      
+      $n_statements++;
     }
     else
     {
@@ -135,20 +135,20 @@ sub parse_schedule_ccl
 #  @routine    ParseScheduleBlock
 #  @date       Thu Sep 16 23:34:55 1999
 #  @author     Tom Goodale
-#  @desc 
-#  Parses a schedule block and extracts all the info.  
-#  @enddesc 
-#  @calls     
-#  @calledby   
-#  @history 
+#  @desc
+#  Parses a schedule block and extracts all the info.
+#  @enddesc
+#  @calls
+#  @calledby
+#  @history
 #
-#  @endhistory 
+#  @endhistory
 #
 #@@*/
 sub ParseScheduleBlock
 {
   my($thorn,$line_number, @data) = @_;
-  my($name, $as, $type, $description, $where, $language, 
+  my($name, $as, $type, $description, $where, $language,
      $mem_groups, $comm_groups, $trigger_groups, $sync_groups,
      $options, $before_list, $after_list, $while_list);
   my(@fields);
@@ -188,7 +188,7 @@ sub ParseScheduleBlock
   {
     $type = "FUNCTION";
     $field = 2;
-  }    
+  }
 
   $name = $fields[$field];
   $field ++;
@@ -220,10 +220,12 @@ sub ParseScheduleBlock
           $where = "CCTK_\U$fields[$field]\E";
         }
       }
-      if (&CheckScheduleBin($where)< 0)
+
+      # check that the given schedule bin is recognized
+      if ($where !~ m:CCTK_(STARTUP|PARAMCHECK|BASEGRID|INITIAL|POSTINITIAL|RECOVER_VARIABLES|RECOVER_PARAMETERS|CHECKPOINT|CPINITIAL|PRESTEP|EVOL|POSTSTEP|ANALYSIS|TERMINATE|SHUTDOWN):)
       {
-        $message = "Schedule bin $fields[$field] not recognised in $thorn\n";
-        &CST_error(0,$message,"",__LINE__,__FILE__);	
+        &CST_error(0,"Schedule bin \'$where\' not recognised in schedule.ccl " .
+                   "file of thorn $thorn","",__LINE__,__FILE__);
       }
       $field+=2;
     }
@@ -259,8 +261,8 @@ sub ParseScheduleBlock
     {
       if($keyword ne "")
       {
-        $message = "Error parsing schedule block line '$data[$line_number]'\n";
-        &CST_error(0,$message,"",__LINE__,__FILE__);
+        &CST_error(0,"Error parsing schedule block line '$data[$line_number]'",
+                   "",__LINE__,__FILE__);
       }
       $keyword = "BEFORE";
       $field++;
@@ -269,8 +271,8 @@ sub ParseScheduleBlock
     {
       if($keyword ne "")
       {
-        $message="Error parsing schedule block line '$data[$line_number]'\n";
-        &CST_error(0,$message,"",__LINE__,__FILE__);
+        &CST_error(0,"Error parsing schedule block line '$data[$line_number]'",
+                   "",__LINE__,__FILE__);
       }
       $keyword = "AFTER";
       $field++;
@@ -279,8 +281,8 @@ sub ParseScheduleBlock
     {
       if($keyword ne "")
       {
-        $message="Error parsing schedule block line '$data[$line_number]'\n";
-        &CST_error(0,$message,"",__LINE__,__FILE__);
+        &CST_error(0,"Error parsing schedule block line '$data[$line_number]'",
+                   "",__LINE__,__FILE__);
       }
       $keyword = "WHILE";
       $field++;
@@ -303,9 +305,9 @@ sub ParseScheduleBlock
         push(@current_sched_list, $fields[$field]);
         $field++;
       }
-      
+
       $field++;
-      
+
       if($keyword eq "BEFORE")
       {
         push(@before_list, @current_sched_list);
@@ -318,7 +320,7 @@ sub ParseScheduleBlock
       {
         push(@while_list, @current_sched_list);
       }
-      
+
       # Reset keyword to empty for next time.
       $keyword = "";
     }
@@ -349,11 +351,11 @@ sub ParseScheduleBlock
     }
     else
     {
-      $message="Error parsing schedule block line '$data[$line_number]'\n";
-      &CST_error(0,$message,"",__LINE__,__FILE__);
+      &CST_error(0,"Error parsing schedule block line '$data[$line_number]'",
+                 "",__LINE__,__FILE__);
       $keyword = "";
       $field++;
-    }      
+    }
   }
   $line_number++;
 
@@ -367,8 +369,7 @@ sub ParseScheduleBlock
 
   if($data[$line_number] !~ m:\s*\{\s*:)
   {
-    $message="Error parsing schedule block line '$data[$line_number]'\nMissing { at start of block\n";
-    &CST_error(0,$message,"",__LINE__,__FILE__);
+    &CST_error(0,"Error parsing schedule block line '$data[$line_number]'\nMissing { at start of block","",__LINE__,__FILE__);
     $line_number++ while($data[$line_number] !~ m:\s*\}\s*:);
   }
   else
@@ -409,7 +410,7 @@ sub ParseScheduleBlock
         }
         else
         {
-          $language= $1; 
+          $language= $1;
         }
       }
       elsif($data[$line_number] =~ m:\s*\}\s*:)
@@ -418,8 +419,7 @@ sub ParseScheduleBlock
       }
       else
       {
-        $message = "Error parsing schedule block line '$data[$line_number]'\nUnrecognised statement";
-        &CST_error(0,$message,"",__LINE__,__FILE__);
+        &CST_error(0,"Error parsing schedule block line '$data[$line_number]'\nUnrecognised statement","",__LINE__,__FILE__);
       }
     }
   }
@@ -429,8 +429,8 @@ sub ParseScheduleBlock
   }
   else
   {
-    $message = "Error: Missing description at end of schedule block\n";
-    &CST_error(0,$message,"",__LINE__,__FILE__);
+    &CST_error(0,"Error: Missing description at end of schedule block",
+               "",__LINE__,__FILE__);
   }
 
   # Turn the arrays into strings.
@@ -438,14 +438,14 @@ sub ParseScheduleBlock
   $comm_groups    = join(",", @comm_groups);
   $trigger_groups = join(",", @trigger_groups);
   $sync_groups    = join(",", @sync_groups);
-  $options        = join(",", @options);  
+  $options        = join(",", @options);
   $before_list    = join(",", @before_list);
   $after_list     = join(",", @after_list);
   $while_list     = join(",", @while_list);
 
 
-  return ($line_number, 
-          $name, $as, $type, $description, $where, $language, 
+  return ($line_number,
+          $name, $as, $type, $description, $where, $language,
           $mem_groups, $comm_groups, $trigger_groups, $sync_groups,
           $options,$before_list, $after_list, $while_list);
 
@@ -455,14 +455,14 @@ sub ParseScheduleBlock
 #  @routine    ParseScheduleStatement
 #  @date       Thu Sep 16 23:36:04 1999
 #  @author     Tom Goodale
-#  @desc 
-#  Extracts info from a simple schedule statement.  
-#  @enddesc 
-#  @calls     
-#  @calledby   
-#  @history 
+#  @desc
+#  Extracts info from a simple schedule statement.
+#  @enddesc
+#  @calls
+#  @calledby
+#  @history
 #
-#  @endhistory 
+#  @endhistory
 #
 #@@*/
 sub ParseScheduleStatement
@@ -475,7 +475,7 @@ sub ParseScheduleStatement
   $type = "\U$1\E";
 
   $groups = $2;
-  
+
   return ($line_number, $type, $groups);
 }
 
@@ -483,20 +483,20 @@ sub ParseScheduleStatement
 #  @routine    print_schedule_database
 #  @date       Thu Sep 16 19:13:05 1999
 #  @author     Tom Goodale
-#  @desc 
+#  @desc
 #  Prints out a schedule database.
-#  @enddesc 
-#  @calls     
-#  @calledby   
-#  @history 
+#  @enddesc
+#  @calls
+#  @calledby
+#  @history
 #
-#  @endhistory 
+#  @endhistory
 #@@*/
 sub print_schedule_database
 {
   my(%schedule_database) = @_;
   my($field);
-  
+
   foreach $field ( sort keys %schedule_database )
   {
     print "$field has value $schedule_database{$field}\n";
@@ -507,14 +507,14 @@ sub print_schedule_database
 #  @routine    PrintScheduleStatistics
 #  @date       Sun Sep 19 13:07:08 1999
 #  @author     Tom Goodale
-#  @desc 
+#  @desc
 #  Prints out statistics about a thorn's schedule.ccl
-#  @enddesc 
-#  @calls     
-#  @calledby   
-#  @history 
+#  @enddesc
+#  @calls
+#  @calledby
+#  @history
 #
-#  @endhistory 
+#  @endhistory
 #
 #@@*/
 sub PrintScheduleStatistics
@@ -525,33 +525,5 @@ sub PrintScheduleStatistics
 
   return;
 }
-
-#/*@@
-#  @routine    CheckScheduleBin
-#  @date       Sun MAr 17 2002
-#  @author     Gabrielle Allen
-#  @desc 
-#  Check if routine scheduled at known schedule bin
-#  @enddesc 
-#  @calls     
-#  @calledby   
-#  @history 
-#
-#  @endhistory 
-#
-#@@*/
-sub CheckScheduleBin
-{
-  my($where) = @_;
-  my($retval)=-1;
-
-  if ($where =~ m:CCTK_(STARTUP|PARAMCHECK|BASEGRID|INITIAL|POSTINITIAL|RECOVER_VARIABLES|RECOVER_PARAMETERS|CHECKPOINT|CPINITIAL|PRESTEP|EVOL|POSTSTEP|TERMINATE|SHUTDOWN):)
-  {
-    $retval = 0;
-  }
-
-  return $retval;
-}
-
 
 1;
