@@ -206,14 +206,14 @@ Cactus Users' Guide and the Cactus Reference Manual.
   You get a null pointer by converting the integer constant 0 to a
   pointer type, e.g.\ \verb|int* ptr = 0;|.%%%
 \footnote{%%%
-	 Note that if you have an expression which
-	 has the value zero, but which isn't an
-  	 integer constant, converting this to a
-	 pointer type is \emph{not} guaranteed to
-	 give a NULL pointer, e.g.:\\
-	 {\tt int i = 0;}\\
-	 {\tt int* ptr = i;     /* ptr is NOT guaranteed to be a NULL pointer! */}\\
-	 }%%%
+       Note that if you have an expression which
+       has the value zero, but which isn't an
+       integer constant, converting this to a
+       pointer type is \emph{not} guaranteed to
+       give a NULL pointer, e.g.:\\
+       {\tt int i = 0;}\\
+       {\tt int* ptr = i;     /* ptr is NOT guaranteed to be a NULL pointer! */}\\
+       }%%%
 
   Many programmers prefer to use the predefined macro \verb|NULL|
   (defined in \verb|<stdlib.h>|, \verb|<stdio.h>|, and possibly other
@@ -608,7 +608,7 @@ instead.
         parameter file has been read, or on restarting from
         checkpoint.  This option relaxes this restricting, specifying that
         the parameter may be changed at recovery time from a parameter file
-	or at any time using the Flesh routine {\tt CCTK\_ParameterSet} ---
+        or at any time using the Flesh routine {\tt CCTK\_ParameterSet} ---
         see the Reference Guide.
 
 \item{} {\t ACCUMULATOR} specifies that this is an \textit{accumulator}
@@ -670,7 +670,7 @@ block).
 
 \subsection{Schedule Blocks}
 
-Each \textit{schedule block} in the file {\t schedule.ccl} must have the syntax:
+Each \textit{schedule block} in the file {\t schedule.ccl} must have the syntax
 
 \begin{alltt}
 schedule [GROUP] <\var{function name}|\var{group name}> AT|IN <\var{time}> \verb|\|
@@ -788,29 +788,143 @@ Conditional constructs cannot be used inside a schedule block.
 \section{configuration.ccl}
 \label{sec:Appendix.configuration.ccl}
 
-A configuration options file has the form:
+[{\bf NOTE:} The configuration.ccl is still relatively new, and not
+all features listed below may be fully implemented or functional.]
+
+A configuration.ccl file defines {\bf capabilities} which a thorn
+either provides or requires, or may use if available.  Unlike {\bf
+implementations}, only one thorn providing a particular capability may
+be compiled into a configuration at one time.  Thus this mechanism may
+be used to, for example: provide access to external libraries; provide
+access to functions which other thorns must call, but are too complex
+for function aliasing; or to split a thorn into several thorns, all of
+which require some common (not aliased) functions.
+
+A configuration options file can contain any number of the following
+sections:
+
+\begin{itemize}
+
+\item
 
 \begin{alltt}
-Requires Thorns: <\var{list of thorns}>
+PROVIDES <\var{Capability}>
+\{
+  SCRIPT <\var{Configuration script}>
+  LANG <\var{Language}>
+\}
 \end{alltt}
 
-The \verb|Requires Thorns| configuration option has as its argument a
-case sensitive, space-separated list of thorn names (without the name
-of the arrangement they are located in).  This option allows this
-thorn to access global variables or call routines from the listed
-thorns.
+Informs the CST that this thorn provides a given capability, and that
+this capability has a given detection script which may be used to
+configure it (e.g. running an autoconf script or detecting an external
+library's location).  The script should output configuration
+information on its standard output --- the syntax is described below
+in sectio \ref{sec:Appendix.configuration.ccl.configscript}.  The
+script may also indicate the failure to detect a capability by
+returning a non-zero exit code;  this will stop the build after the
+CST stage.
 
-This option has the following results: The listed thorns must be
-present in the \verb|ThornList| when the thorn is compiled, and they
-must be activated whenever the requiring thorn is activated.  They are
-also guaranteed to be listed after this thorn when the linker is
-called, so that variable references and function calls can be
-resolved.
+Scripts can be in any language.  If an interpreter is needed to run
+the script, for example \verb|Perl|, this should be indicated by the
+\verb|LANG| option.
 
-Note: This option is reserved for special cases, such as when a third
-party library is incorporated into Cactus.  In order to share
-variables, you should rather declare corresponding grid variables, and
-in order to call routines, you should use rather function aliasing.
+\item
+
+\begin{alltt}
+REQUIRES  <\var{Capability}>
+\end{alltt}
+
+Informs the CST that this thorn requires a certain capability to be
+present.  If no thorn providing the capability is in the ThornList,
+the build will stop after the CST stage.
+
+\begin{alltt}
+OPTIONAL <\var{Capability}>
+\{
+  DEFINE <\var{macro}>
+\}
+\end{alltt}
+
+Informs the CST that this thorn may use a certain capability if a
+thorn providing it is in the ThornList.  If present, the preprocessor
+macro \verb|macro| will be defined and given the value ``1''.
+
+\end{itemize}
+
+\subsection{Configuration Scripts}
+\label{sec:Appendix.configuration.ccl.configscript}
+
+The configuration script may tell the CST to add certain features to
+the Cactus environment --- either to the make system or to header
+files included by thorns.  It does this by outputing lines to its
+standard output:
+
+\begin{itemize}
+
+\item
+
+\begin{alltt}
+BEGIN DEFINE 
+<text>
+END DEFINE
+\end{alltt}
+
+Places a set of definitions in a header file which will be included by
+all thorns using this capability (either through an OPTIONAL or
+REQUIRES entry in their configuration.ccl files).
+
+\item
+
+\begin{alltt}
+INCLUDE_DIRECTORY  <directory>
+\end{alltt}
+
+Adds a directory to the include path used for compiling files in
+thorns using this capability.
+
+\item
+
+\begin{alltt}
+BEGIN MAKE DEFINITION 
+<text>
+END MAKE DEFINITION
+\end{alltt}
+
+Adds a makefile definition into the compilation of all thorns using
+this capability.
+
+\item
+
+\begin{alltt}
+MAKE DEPENDENCY 
+<text>
+END MAKE DEPENDENCY 
+\end{alltt}
+
+Adds makefile dependency information into the compilation of all
+thorns using this capability.
+
+\item
+
+\begin{alltt}
+LIBRARY <library>
+\end{alltt}
+
+Adds a library to the final cactus link.
+
+\item
+
+\begin{alltt}
+LIBRARY_DIRECTORY <library>
+\end{alltt}
+
+Adds a directory to the list of directories searched for libraries at
+link time.
+
+\end{itemize}
+
+No other lines should be output by the script.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

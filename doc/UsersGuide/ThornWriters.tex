@@ -188,7 +188,8 @@ This defines which functions are called from the thorn and when they are
 called. It also handles memory and communication assignment for grid variables.
 
 \item [{\tt configuration.ccl}]
-This file is optional for a thorn. If it exists it contains configuration options of this thorn such as what other thorns it requires to be compiled and activated.
+This file is optional for a thorn. If it exists it contains extra
+configuration options of this thorn.
 
 \end{Lentry}
 
@@ -630,19 +631,94 @@ timelevels to activate storage for.
 
 \subsection{The {\tt configuration.ccl}}
 \label{subsec:configuration_ccl}
-The {\tt configuration.ccl} file is optional. If it exists Cactus will obtain
-from it specific configuration options for a thorn as well as what capabilities
-it provides to or requires from other thorns.
 
-Currently there is only one option evaluated from a thorn's {\tt configuration.ccl} file:
+[{\bf NOTE:} the configuration.ccl is a new feature, and not all the
+features described in this section have been fully implemented yet.
+PROVIDES and REQUIRES should work, but script support and OPTIONAL are still
+being developed.]
+
+The {\tt configuration.ccl} file is optional.  It can be used for two
+purposes: to detect certain features of the host system, such as the
+presence or absence of libraries, variables types, etc, or the
+location of libraries; or to provide access to certain functions too
+complex or otherwise not suitable for function aliasing.
+
+The basic concept here is that a thorn can either provide or use a
+{\bf capability}.  A thorn providing a capability can specify a script
+which is run by the CST to detect features and write any configuration
+files;  the script may output lines to its standard output to inform
+the CST of features to: add to the header files included by thorns
+using this capability; add to the make files used to build thorns
+using this capability; or to the main Cactus link line.  The script
+may also indicate that this capability is not present by returning a
+non-zero exit code --- e.g., if the thorn is providing access to an
+external library, it should return an error if the library is not
+installed on the system.
+
+A thorn may either require a capability to be present, in which case
+it is an error if there is no thorn providing that capability in the
+configuration's ThornList, or it may optionally use a capability, in
+which case a macro is defined in the thorn's header file if a thorn
+providing the capability is present.
+
+A configuration.ccl file has the form:
 
 \begin{alltt}
-Requires Thorns: <\var{list of thorns}>
+PROVIDES <\var{My_Capability}>
+\{
+  SCRIPT <\var{My_ConfigScript}>
+  LANG <\var{My_Language}>
+\}
+
+REQUIRES  <\var{Another_Capability}>
+
+OPTIONAL <\var{Yet_Another_Capability}>
+\{
+  DEFINE <\var{macro}>
+\}
+
 \end{alltt}
 
-where {\tt <\var{list of thorns}>} is a space-separated list of thorns which
-this thorn requires in order to be compiled and to be activated at runtime.
-Thorns must be given by their exact names, without the arrangement name.
+which states that this thorn provides the capability
+\verb|My_Capability|, and a script \verb|MyConfigScript| should be run
+to detect features of this capability; the script is in language
+\verb|My_Language| --- the CST will use the appropriate environment or
+interpreter to invoke the script.
+
+The example requires a thorn providing \verb|Another_Capability| to be
+in the ThornList, and, if a thorn providing
+\verb|Yet_Another_Capability| is in the ThornList, the preprocessor
+macro \verb|macro| will be defined, and set to 1.  
+
+As and example a thorn A may be able to use PVM for parallelism if it is
+present, but can still work in the absence of it.  There could be a
+thorn providing PVM, and thorn A would then have
+
+\begin{alltt}
+OPTIONAL PVM
+\{
+  DEFINE HAVE_PVM
+\}
+
+\end{alltt}
+
+The code in thorn A could then have
+
+\begin{alltt}
+
+#ifdef HAVE_PVM
+  do something
+#else
+  do something else
+#endif
+
+\end{alltt}
+
+to pick the appropriate mode.
+
+The syntax of the output of the configure script is described in
+Appendix \ref{sec:Appendix.configuration.ccl.configscript}.
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
