@@ -37,7 +37,9 @@ int CCTK_GetNumVars(void);
 
 int CCTK_GetNumGroups(void);
 
-int CCTK_ArrayGroupSize(cGH *GH, const char *group, int dim);
+int *CCTK_ArrayGroupSize(cGH *GH, const char *group, int dim);
+
+int CCTK_QueryGroupStorage(cGH *GH, const char *group);
 
 int CCTK_GTypeNumber(const char *type);
 
