@@ -277,7 +277,7 @@ EOT
     {
        char *message = malloc( (200+strlen(param_name)+strlen(implementation))*sizeof(char) );
        sprintf(message, "Can't set %s - %s is not active", param_name, implementation);
-       CCTK_ParamWarn("CactusBindings",message);
+       CCTK_Warn(0,__LINE__,__FILE__,"CactusBindings",message);
        free(message);
        retval = -2;
     }
