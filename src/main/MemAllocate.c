@@ -12,27 +12,30 @@
 
 #define MEMDEBUG 
 
-static int totmem=0;
+static int totmem=0, pastmem=0;
 
 typedef struct
 {
   int size;
   int line;
-  char *file;
+  const char *file;
 } iMemData;
 
 void *CCTKi_malloc(size_t size, int line, const char *file)
 {
   iMemData *memdata;
   char *foo;
+  int diffmem;
   
-  foo = malloc(size+sizeof(iMemData));
+  foo = (char*)malloc(size+sizeof(iMemData));
   if (!foo) printf("Allocation error! ");
   memdata = foo;
   memdata->size = size;
   memdata->line = line;
   memdata->file = file;
+  pastmem =totmem;
   totmem +=size;
+  diffmem =totmem-pastmem;
 #ifdef MEMDEBUG
   printf("Allocating %d - by %s in line %d TOTAL: %d\n",
 	 memdata->size,memdata->file,memdata->line, CCTKi_TotalMemory());
@@ -44,12 +47,18 @@ void *CCTKi_malloc(size_t size, int line, const char *file)
 void CCTKi_free(void *foo)
 {
   iMemData *memdata;
+  int diffmem;
+
   memdata = ((char*)foo)-sizeof(iMemData);
 #ifdef MEMDEBUG
   printf("Freeing %d - allocated by %s in line %d TOTAL: %d\n",
+
 	 memdata->size,memdata->file,memdata->line, CCTKi_TotalMemory());
 #endif
+  pastmem=totmem;
   totmem-=memdata->size;
+  diffmem=totmem-pastmem;
+  
   free(memdata);
 }
 
