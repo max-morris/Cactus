@@ -644,3 +644,44 @@ void FMODIFIER FORTRAN_NAME(CCTK_ReduceLocalScalar)(int *fortran_return,
                                       1, *data_type, out_scalar,
                                       1, 1, *data_type, 1, in_scalar);
 }
+
+
+ /*@@
+   @routine    CCTK_ReduceLocalArray1D
+   @date       Thu Oct 14 12:10:01 1999
+   @author     Gerd Lanfermann
+   @desc 
+        Interface to the migthy CCTK_Reduce for
+	reduction of local 1D arrays.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+
+int CCTK_ReduceLocalArray1D (cGH *GH, int proc, int operation_handle, 
+                            void *in_array1d, void *out_array1d, int num_in_array1d, 
+			     int data_type)
+{
+  return (CCTK_ReduceArray (GH, proc, operation_handle,
+                            1, data_type, out_array1d,
+                            2, 1, data_type, num_in_array1d, in_array1d));
+}
+
+void FMODIFIER FORTRAN_NAME(CCTK_ReduceLocalArray1D)(int *fortran_return,
+                                                    cGH *GH, 
+                                                    int *proc,
+                                                    int *operation_handle,
+                                                    void *in_array1d,
+                                                    void *out_array1d,
+						    int *num_in_array1d,
+                                                    int *data_type)
+{
+  *fortran_return = CCTK_ReduceArray (GH, *proc, *operation_handle,
+                                      1, *data_type, out_array1d,
+                                      2, 1, *data_type, *num_in_array1d, in_array1d);
+}
+
