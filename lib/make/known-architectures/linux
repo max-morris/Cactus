@@ -234,7 +234,7 @@ else
       : ${C_WARN_FLAGS='-w2'}
       ;;
     sgicc)
-      : ${C_OPTIMISE_FLAGS='-O3 -Ofast'}
+      : ${C_OPTIMISE_FLAGS='-O3'}
       : ${C_DEBUG_FLAGS='-g3'}
       ;;
     pgcc)
@@ -253,7 +253,7 @@ else
       : ${CXX_DEPEND='$(CXX) -M $(CPPFLAGS)'}
       ;;
     sgiCC)
-      : ${CXX_OPTIMISE_FLAGS='-O3 -Ofast'}
+      : ${CXX_OPTIMISE_FLAGS='-O3'}
       : ${CXX_DEBUG_FLAGS='-g3'}
   esac
 
