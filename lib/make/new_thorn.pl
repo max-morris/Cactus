@@ -45,7 +45,7 @@ chdir $package;
 
 if( -e $thorn_name)
 {
-  die "Thorn $thorn_name already exists !";
+  die "Thorn $thorn_name already exists !\n";
 }
 
 print "Creating thorn $thorn_name in $package\n";
