@@ -261,6 +261,10 @@ else
 # Set the appropriate dependency, warning, and debugging flags
 # Note that the defaults settings are for gcc/g++ and they are set by configure
   case `basename $CC` in
+    gcc | cc)
+      : ${CFLAGS='-pipe'}
+      : ${C_OPTIMISE_FLAGS='-O3'}
+      ;;
     [ei]cc)
       if test "$OPTIMISE" = "no"; then
         : ${CFLAGS='-O0 -restrict'}
@@ -283,6 +287,10 @@ else
   esac
 
   case `basename $CXX` in
+    gcc | [gc]++)
+      : ${CXXFLAGS='-pipe'}
+      : ${CXX_OPTIMISE_FLAGS='-O3'}
+      ;;
     [ei]cc | ecpc)
       if test "$OPTIMISE" = "no"; then
         : ${CXXFLAGS='-restrict -O0'}
