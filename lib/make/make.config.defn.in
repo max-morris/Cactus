@@ -70,6 +70,10 @@ CXX_DEPEND_OUT = @CXX_DEPEND_OUT@
 F_DEPEND_OUT   = @F_DEPEND_OUT@
 F77_DEPEND_OUT = @F77_DEPEND_OUT@
 
+# Exclude some files from the dependency lists
+
+DEP_EXCLUDE_FILES = cctk_arguments\.h|definethisthorn\.h|FParameters.h|CParameters\.h
+
 # Command used to get the working directory
 GET_WD = @GET_WD@
 

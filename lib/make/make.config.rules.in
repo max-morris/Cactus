@@ -26,7 +26,8 @@ DIVIDER =  $(DIVEL)$(DIVEL)$(DIVEL)$(DIVEL)
 
 ifeq ($(strip $(PERL_BACKUP_NECESSARY)),)
 define DEPENDENCY_FIXER
-	$(PERL) -pi -e "s,([^:]*),$(basename $@).o $(basename $@).d, if(m/: /)" $@ 
+	$(PERL) -pi -e "s,([^:]*),$(basename $@).o $(basename $@).d, if(m/: /);\
+	 s:\s[^\s]*[/\\\]($(DEP_EXCLUDE_FILES))\b::g" $@ 
 endef
 else
 define DEPENDENCY_FIXER
