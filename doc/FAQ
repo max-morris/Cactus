@@ -1,7 +1,7 @@
 
 Cactus Code Frequently Asked Questions
 
-$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.68 2003-07-26 14:53:28 schnetter Exp $
+$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.69 2003-08-18 14:49:40 schnetter Exp $
 
 Also available at http://www.cactuscode.org/Documentation/FAQ
 
@@ -150,6 +150,10 @@ C32 What is the Cactus c-preprocessor (Cactus cpp) ?
 C33 I'm working on a machine where a compiler problem means that I 
     need to compile a particular thorn with a lower optimisation level. 
     Is there an easy way to do this? 
+
+C34 How can I make sure that one file is compiled before another? For example
+    to make sure that an F90 module file "module.F90" is available for other
+    file "using.F90".
 
 
 ------------------------------------------------------------------------------
@@ -990,6 +994,17 @@ C33 I'm working on a machine where a compiler problem means that I
     These flags will then only apply for the particular thorn. These flags
     will be machine/compiler specific, so you only want to add them for 
     the problematic machine.
+
+C34 How can I make sure that one file is compiled before another? For example
+    to make sure that an F90 module file "module.F90" is available for other
+    file "using.F90".
+
+    Add dependency declarations to the thorn's make.code.deps file, for example
+
+    using.F90.o: module.F90.o
+
+    Note that you have to use the source file names and append the suffix ".o".
+    This convention is different from the default Makefile rules.
 
 
 ------------------------------------------------------------------------------
