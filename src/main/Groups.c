@@ -241,7 +241,6 @@ int CCTKi_CreateGroup
   int     groupscope;
   int     staggercode;
   int     variable;
-  int     i;
 
   va_list ap;
 
