@@ -55,10 +55,10 @@ require "lib/sbin/GridFuncStuff.pl";
 
 @fortran_module_file = &create_fortran_module_file(scalar(@implementations),@implementations,%parameter_database);
 
-#foreach $line (@fortran_module_file)
-#{
-#  print "$line\n";
-#}
+foreach $line (@fortran_module_file)
+{
+  print "$line\n";
+}
 
 #%public_parameters = &get_public_parameters(%parameter_database);
 
@@ -69,10 +69,10 @@ require "lib/sbin/GridFuncStuff.pl";
 
 @c_structures = &create_c_parameter_structures(scalar(@implementations),@implementations,%parameter_database);
 
-#foreach $line (@c_structures)
-#{
-#  print "$line\n";
-#}
+foreach $line (@c_structures)
+{
+  print "$line\n";
+}
 
 @subroutine = &create_c_param_init_subroutine("test2", %parameter_database);
 

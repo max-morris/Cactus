@@ -1,6 +1,28 @@
 #! /usr/bin/perl
+#/*@@
+#  @file      create_c_stuff.pl
+#  @date      Mon Jan 11 10:53:22 1999
+#  @author    Tom Goodale
+#  @desc 
+#  
+#  @enddesc 
+#@@*/
 
 
+#/*@@
+#  @routine    create_c_param_init_subroutine
+#  @date       Mon Jan 11 14:37:56 1999
+#  @author     Tom Goodale
+#  @desc 
+#  Create a subroutine which initialises an implementation's parameters.
+#  @enddesc 
+#  @calls     
+#  @calledby   
+#  @history 
+#
+#  @endhistory 
+
+@@*/
 sub create_c_param_init_subroutine
 {
   local($implementation,%parameter_database) = @_;
@@ -29,6 +51,20 @@ sub create_c_param_init_subroutine
   return @subroutine;
 }
 
+#/*@@
+#  @routine    create_c_parameter_declarations
+#  @date       Mon Jan 11 14:39:48 1999
+#  @author     Tom Goodale
+#  @desc 
+#  Create declarations for the parameters used by this thorn.
+#  @enddesc 
+#  @calls     
+#  @calledby   
+#  @history 
+#
+#  @endhistory 
+
+@@*/
 sub create_c_parameter_declarations
 {
   local($implementation,%parameter_database) = @_;
@@ -88,6 +124,20 @@ sub create_c_parameter_declarations
   return @declarations;
 }
 
+#/*@@
+#  @routine    create_c_parameter_structures
+#  @date       Mon Jan 11 15:05:16 1999
+#  @author     Tom Goodale
+#  @desc 
+#  Create the c parameter structures
+#  @enddesc 
+#  @calls     
+#  @calledby   
+#  @history 
+#
+#  @endhistory 
+
+@@*/
 sub create_c_parameter_structures
 {
   local($n_implementations, @indata) = @_;
@@ -122,6 +172,20 @@ sub create_c_parameter_structures
   return @structures;
 }
 
+#/*@@
+#  @routine    create_c_parameter_type_declaration
+#  @date       Mon Jan 11 15:32:59 1999
+#  @author     Tom Goodale
+#  @desc 
+#  Create the c parameter type declarations
+#  @enddesc 
+#  @calls     
+#  @calledby   
+#  @history 
+#
+#  @endhistory 
+
+@@*/
 sub create_c_parameter_type_declaration
 {
   local($implementation,%parameter_database) = @_;
@@ -154,6 +218,20 @@ sub create_c_parameter_type_declaration
 }
 
 
+#/*@@
+#  @routine    set_parameter_default
+#  @date       Mon Jan 11 15:33:26 1999
+#  @author     Tom Goodale
+#  @desc 
+#  Set the default value of a parameter
+#  @enddesc 
+#  @calls     
+#  @calledby   
+#  @history 
+#
+#  @endhistory 
+
+@@*/
 sub set_parameter_default
 {
   local($implementation,$parameter, %parameter_database) = @_;
@@ -186,6 +264,20 @@ sub set_parameter_default
 
   return @lines;
 }
+#/*@@
+#  @routine    get_c_type_string
+#  @date       Mon Jan 11 15:33:50 1999
+#  @author     Tom Goodale
+#  @desc 
+#  Returns the correct type string for a parameter
+#  @enddesc 
+#  @calls     
+#  @calledby   
+#  @history 
+#
+#  @endhistory 
+
+@@*/
 sub get_c_type_string
 {
   local($type) = @_;
