@@ -211,7 +211,7 @@ AC_SUBST(EXE)
 : ${PACKAGE_DIR=packages}
 : ${BUILD_DIR=build}
 : ${CCTK_LIBDIR=lib}
-: ${EXEDIR='$(CCTK_HOME)'}
+: ${EXEDIR='$(CCTK_HOME)/exe'}
 : ${EXE=cactus-unknown}
 
 # Integer types
