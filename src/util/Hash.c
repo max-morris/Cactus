@@ -573,7 +573,7 @@ int Util_HashDelete(uHash *hash,
 
    @returntype void *
    @returndesc
-   The data associated with the key if found, ogtherwise NULL.
+   The data associated with the key if found, otherwise NULL.
    @endreturndesc
 
 @@*/
