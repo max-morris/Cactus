@@ -970,6 +970,12 @@ sub ParseArguments
         $fwrapperargs .= "$1 *$name, ";
         $fwrappercallargs .= "$name, ";
       }
+      elsif ($type =~ m/^\s*CCTK_POINTER\s*$/)
+      {
+        $ccallargs .= "$type $name, ";
+        $fwrapperargs .= "$type *$name, ";
+        $fwrappercallargs .= "$name, ";
+      }
       else
       {
         $ccallargs .= "$type $name, ";
