@@ -977,6 +977,12 @@ Return to previous location before jump to tag (not widely implemented).
 
 \end{enumerate}
 
+\vspace{1.1cm}
+
+\textbf{Note: Currently some of the \texttt{CCTK\_FILEVERSION()} macros
+at the top of every source file don't have a trailing semicolon, which
+confuses the \texttt{etags} and \texttt{ctags} programs, so TAGS does not find the first
+subroutine in any file with this problem.}
 
 \chapter{ThornLists}
 
