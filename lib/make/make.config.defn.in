@@ -136,6 +136,10 @@ VENDOR = @host_vendor@
 X_LIB_DIR  = @X_LIB_DIR@
 X_INC_DIR  = @X_INC_DIR@
 
+# GNU stuff
+
+BUILD_GETOPT = @BUILD_GETOPT@
+BUILD_REGEX  = @BUILD_REGEX@
 
 # Where the CCTK puts things
 PACKAGE_DIR = $(CCTK_HOME)/@PACKAGE_DIR@

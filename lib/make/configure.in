@@ -366,9 +366,14 @@ CCTK_TIME__FTIME
 
 dnl Include file stuff
 
+CCTK_CHECK_HEADERS(time.h)
 CCTK_CHECK_HEADERS(sys/time.h)
 CCTK_CHECK_HEADERS(unistd.h)
 CCTK_CHECK_HEADERS(string.h)
+CCTK_CHECK_HEADERS(assert.h)
+CCTK_CHECK_HEADERS(sys/stat.h)
+CCTK_CHECK_HEADERS(getopt.h)
+CCTK_HEADER_REGEX
 
 AC_HEADER_TIME
 
@@ -380,6 +385,24 @@ CCTK_CHECK_HEADERS(vector vector.h)
 AC_LANG_RESTORE
 
 dnl Misc stuff
+
+dnl Do we need to build the GNU getopt and regex stuff ?
+
+AC_SUBST(BUILD_GETOPT)
+
+if test "x$cctk_cv_header_getopt_h" = "xyes" ; then
+  BUILD_GETOPT=no
+else
+  BUILD_GETOPT=yes
+fi
+
+AC_SUBST(BUILD_REGEX)
+
+if test "x$cctk_cv_header_regex_h" = "xyes" ; then
+  BUILD_REGEX=no
+else
+  BUILD_REGEX=yes
+fi
 
 AC_SUBST(LIBDIRS)
 

@@ -176,3 +176,19 @@ AC_MSG_CHECKING([whether the C++ compiler ($CXX $CXXFLAGS $LDFLAGS) is a cross-c
 AC_MSG_RESULT($ac_cv_prog_cxx_cross)
 cross_compiling=$ac_cv_prog_cxx_cross
 ])
+
+AC_DEFUN(CCTK_HEADER_REGEX,
+[AC_MSG_CHECKING([for regex.h])
+AC_CACHE_VAL(cctk_cv_header_regex_h,
+[AC_TRY_COMPILE([#include <stdio.h>
+#include <regex.h>], [return 0;], eval "cctk_cv_header_regex_h=yes",
+  eval "cctk_cv_header_regex_h=no")])dnl
+if eval "test \"`echo '$cctk_cv_header_regex_h'`\" = yes"; then
+  AC_MSG_RESULT(yes)
+  AC_DEFINE_UNQUOTED(HAVE_REGEX_H)
+else
+  AC_MSG_RESULT(no)
+fi
+])
+
+
