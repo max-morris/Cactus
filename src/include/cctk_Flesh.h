@@ -47,7 +47,7 @@ extern "C"
 
 int CCTK_Traverse(cGH *GH, const char *where);
 
-int CCTKi_SetParameter(const char *parameter, const char *value);
+  /*int CCTKi_SetParameter(const char *parameter, const char *value);*/
 
 int CCTKi_ProcessCommandLine(int *argc, char ***argv, tFleshConfig *ConfigData);
 
@@ -63,7 +63,7 @@ int CCTKi_InitialiseCactus(int *argc, char ***argv, tFleshConfig *ConfigData);
 
 int CCTKi_ShutdownCactus(tFleshConfig *ConfigData);
 
-int CCTKi_DummyExit(int retval, cGH *GH);
+int CCTKi_DummyExit(cGH *GH, int retval);
 
 #ifdef __cplusplus
 }
