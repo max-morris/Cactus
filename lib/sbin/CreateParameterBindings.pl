@@ -318,6 +318,34 @@ sub CreateParameterBindings
     }
 
     $dataout .= "\n";
+
+    $dataout .= "#define USE_CCTK_PARAMETERS \\\n";
+
+    $decl =  "USE_GLOBAL_PARAMETER_STRUCT_PARAMS";
+    if($header_files{"GLOBAL"})
+    {
+      $dataout .= "$decl \\\n";
+    }
+ 
+    $decl = "USE_RESTRICTED_\U$implementation\E_STRUCT_PARAMS";
+    if($header_files{"\U$implementation\E RESTRICTED"})
+    {
+      $dataout .= "$decl \\\n";
+    }
+
+    $decl = "USE_PRIVATE_\U$thorn\E_STRUCT_PARAMS";
+    if($header_files{"\U$thorn\E PRIVATE"})
+    {
+      $dataout .= "$decl \\\n";
+    }
+
+    foreach $line (@data)
+    {
+      $dataout .= $line . "\\\n";
+    }
+
+    $dataout .= "\n";
+
     $dataout .= "#endif\n";
     &WriteFile("\U$thorn\E"."_CParameters.h",\$dataout);
 
