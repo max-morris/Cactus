@@ -109,6 +109,7 @@ sub parse_param_ccl
   my($data, %parameter_db);
   my(%friends);
   my(%defined_parameters);
+  my($use_clause);
   
   
   #   The default block is private.
@@ -144,9 +145,8 @@ sub parse_param_ccl
 	$parameter_db{"\U$thorn $block\E variables"} = "";
       }
     }
-    elsif($line =~ m:(EXTENDS |USES )?\s*(?\:CCTK_)?(INT|REAL|LOGICAL|BOOLEAN|KEYWORD|STRING)\s*([a-zA-Z]+[a-zA-Z0-9_]*) \s*(\"[^\"]*\")\s*(.*)$:i)
+    elsif($line =~ m:(EXTENDS |USES )?\s*(?\:CCTK_)?(INT|REAL|BOOLEAN|KEYWORD|STRING)\s*([a-zA-Z]+[a-zA-Z0-9_]*) \s*(\"[^\"]*\")\s*(.*)$:i)
     {
-
       # This is a parameter definition.
       $type = "\U$2\E";
 
@@ -154,10 +154,13 @@ sub parse_param_ccl
       $description = $4;
       $options = $5;
 
-      # Logical is depricated
-      if ($type =~ /LOGICAL/i)
+      if($1 =~ m:USES:i)
       {
-	$type =~ s/LOGICAL/BOOLEAN/gi;
+	$use_clause = 1;
+      }
+      else
+      {
+	$use_clause = 0;
       }
 
       if($defined_parameters{"\U$variable\E"})
@@ -176,7 +179,6 @@ sub parse_param_ccl
 	$line_number++ until ($data[$line_number] =~ m:\}:);
       }
       elsif($data[$line_number+1] !~ m:^\s*\{\s*$:)
-
       {
 	# Since the data should have no blank lines, the next
 	# line should have { on it.
@@ -253,7 +255,7 @@ sub parse_param_ccl
 	}
 
         # Give a warning if no range was given and it was needed
-        if ($parameter_db{"\U$thorn $variable\E ranges"}==0 && $type =~ m:INT|REAL:)
+        if ((! $use_clause)  && ($parameter_db{"\U$thorn $variable\E ranges"}==0 && $type =~ m:INT|REAL:))
         {
 	    $message = "No range given for $variable in $thorn";
 	    &CST_error(0,$message,__LINE__,__FILE__);
