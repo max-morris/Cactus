@@ -11,7 +11,6 @@
 #ifndef __CCTK_ACTIVETHORNS_H_
 #define __CCTK_ACTIVETHORNS_H_
 
-#include <stdio.h>
 #include "SKBinTree.h"   
 #include "util_StringList.h"
 
