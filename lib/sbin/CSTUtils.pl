@@ -1,3 +1,14 @@
+
+#/*@@
+#  @routine   CST_error
+#  @date      4 July 1999
+#  @author    Gabrielle Allen
+#  @desc 
+#  Print an error or warning message
+#  @enddesc 
+#  @version $Id$
+#@@*/
+
 sub CST_error
 {
     local($level,$mess,$line,$file) = @_;
@@ -31,4 +42,6 @@ sub CST_error
     return;
 }
 
+
 1;
+
