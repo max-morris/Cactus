@@ -60,29 +60,6 @@ int CactusDefaultInitialise(tFleshConfig *config)
 }
 
 
-
- /*@@
-   @routine    CactusDefaultShutdown
-   @date       Tue Sep 29 12:45:04 1998
-   @author     Tom Goodale
-   @desc 
-   DEfault shutdown routine.
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
-
-@@*/
-int CactusDefaultShutdown(tFleshConfig *config)
-{
-  printf("I'm in the default shutdown routine\n");
-  
-  return 0;
-}
-
-
  /*@@
    @routine    Cactus_InitialiseGH
    @date       Mon Feb  1 12:13:09 1999
