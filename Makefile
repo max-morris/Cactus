@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.57 1999-11-12 18:31:42 goodale Exp $
+#   @version $Id: Makefile,v 1.58 1999-11-12 18:32:40 goodale Exp $
 # @@*/
 
 ##################################################################################
@@ -211,7 +211,7 @@ TAGS:
 	@echo $(DIVIDER)
 	@echo Updating the Emacs TAGS file
 	rm -f TAGS ; touch TAGS 
-	find src arrangements \( -name '*.[chCF]' -o -name '*.F77' -o -name '*.cc' \) \
+	find src arrangements \( -name '*.[chCF]' -o -name '*.F77' -o -name '*.cc' -o -name '*.[ch]pp' \) \
           -exec etags -a {} \;
 #	find src arrangements \( -name '*.[cChF]' -o -name '*.F77' -o -name '*.cc'\) \
 #          -exec etags --append --regex '/[a-z A-Z \t]*FORTRAN_NAME[^)]*/' {} \;
@@ -222,7 +222,7 @@ tags:
 	@echo $(DIVIDER)
 	@echo Updating the vi tags file
 	rm -f tags ; touch tags 
-	find src arrangements \( -name '*.[cChF]' -o -name '*.F77' -o -name '*.cc' \) \
+	find src arrangements \( -name '*.[cChF]' -o -name '*.F77' -o -name '*.cc' -o -name '*.[ch]pp' \) \
           -exec ctags -a {} \;
 	perl -pi -e 's/(subroutine\s*)([a-zA-Z0-9_]+)/\1\L\2/g;' tags
 	sort tags > sortedtags ; mv sortedtags tags
