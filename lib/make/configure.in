@@ -63,12 +63,14 @@ fi
 CCTK_PROG_CC_WORKS
 AC_PROG_CC_GNU
 
-if test -z "$CXX" ; then
-AC_CHECK_PROGS(CXX, c++ g++ gcc CC cxx cc++ cl xlC)
-fi
+if test "x$CXX" != "xnone" ; then
+  if test -z "$CXX" ; then
+  AC_CHECK_PROGS(CXX, c++ g++ gcc CC cxx cc++ cl xlC)
+  fi
 
-CCTK_PROG_CXX_WORKS
-AC_PROG_CXX_GNU
+  CCTK_PROG_CXX_WORKS
+  AC_PROG_CXX_GNU
+fi
 
 if test -z "$RANLIB" ; then
 AC_PROG_RANLIB
@@ -104,10 +106,16 @@ if test -z "$SHELL" ; then
 AC_CHECK_PROGS(SHELL, sh bash)
 fi
 
-if test -z "$LD" ; then
 AC_SUBST(LD)
-LD=$CXX
+
+if test -z "$LD" ; then
+  if test "x$CXX" != "xnone" ; then
+    LD=$CXX
+  else
+    LD=$CC
+  fi
 fi
+
 
 # Restore the values we saved earlier
 
@@ -382,16 +390,18 @@ CCTK_CHECK_SOCK_LENGTH_TYPE
 
 # C++ STL stuff
 
-AC_LANG_SAVE
-AC_LANG_CPLUSPLUS
-CCTK_CHECK_HEADERS(vector vector.h)
-AC_LANG_RESTORE
+if test "x$CXX" != "xnone" ; then
+  AC_LANG_SAVE
+  AC_LANG_CPLUSPLUS
+  CCTK_CHECK_HEADERS(vector vector.h)
+  AC_LANG_RESTORE
 
-AC_LANG_SAVE
-AC_LANG_CPLUSPLUS
-AC_TRY_COMPILE(, bool foo;,
+  AC_LANG_SAVE
+  AC_LANG_CPLUSPLUS
+  AC_TRY_COMPILE(, bool foo;,
 AC_DEFINE(HAVE_BOOL))
-AC_LANG_RESTORE
+  AC_LANG_RESTORE
+fi
 
 dnl Misc stuff
 
