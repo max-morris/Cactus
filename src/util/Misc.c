@@ -1007,6 +1007,7 @@ void FORTRAN_NAME(CCTK_FortranString)(CCTK_INT *nchar,
                                       ONE_FORTSTRING_ARG)
 {
   int i;
+  ONE_FORTSTRING_CREATE(fstring)
   ONE_FORTSTRING_PTR(fptr)
 
   if (strlen(*cstring) > cctk_strlen1) 
