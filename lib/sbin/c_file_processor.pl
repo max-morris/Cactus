@@ -63,16 +63,13 @@ while (<>)
   {
     $routine .= $mline . "\n";
 
+    $skip = 1 if ($mline =~ /$skipstring/);
+
     # skip one-line comments
     # (note that this is still incomplete for C comments -
     #  it is not checked if some code follows after the closing '*/')
     next if ($mline =~ m/^\s*\/\//);
     next if ($mline =~ m/^\s*\/\*.*\*\//);
-
-    if ($mline =~ /$skipstring/)
-    {
-      $skip = 1;
-    }
 
     # check if the DECLARE macros are found on a line
     if ($mline =~ m/$checkfor2/)
