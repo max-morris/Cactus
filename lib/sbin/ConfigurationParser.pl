@@ -183,8 +183,8 @@ sub ParseConfigurationCCL
       $cfg->{"\U$thorn\E REQUIRES THORNS"} .= "$1";
       if ($cfg->{"\U$thorn\E REQUIRES THORNS"})
       {
-        &CST_error (3, 'This feature will not be supported in release beta-14' . 
-        "\n Please make sure you adjust thorn \U$thorn\E accordingly  ");
+        &CST_error (3, '\'Requires Thorns\' will not be supported in release beta-14' . 
+        "\n Please adjust thorn \U$thorn\E to use \'Requires\' instead.");
       }
     }
     elsif($line =~ m/^\s*REQUIRES\s*(.*)/i) 
