@@ -184,8 +184,9 @@ sub parse_param_ccl
         }
         else
         {
-          $message = "Missing description for $variable in thorn $thorn.";
-          &CST_error(0,$message,"",__LINE__,__FILE__);
+          $message = "Missing description for parameter $variable in param.ccl for thorn $arrangement/$thorn.";
+	  $hint = "The first line of each parameter definition must have the syntax <TYPE> <NAME> <\"DESCRIPTION\">";
+          &CST_error(0,$message,$hint,__LINE__,__FILE__);
         }
       }
 
@@ -391,12 +392,13 @@ sub parse_param_ccl
             # Check description
             if($delim eq "" || ($delim =~ /::/ && $new_desc =~ /^\s*$/))
             {
-              $message = "Missing description of range '$new_ranges' for parameter $thorn\::$variable";
-              &CST_error(1,$message,"",__LINE__,__FILE__);
+	      $message = "Missing range description ($new_ranges) for parameter $variable in param.ccl for thorn $arrangement/$thorn.";
+	      $hint = "Each parameter range line should have the syntax <RANGE> :: <\"DESCRIPTION\">";
+              &CST_error(1,$message,$hint,__LINE__,__FILE__);
             }
             elsif ($new_desc =~ /^\s*\".*[^\s\"]\s*$|^\s*[^\s\"].*\"\s*$/)
             {
-              $message = "Description of range for $thorn\::$variable has misplaced quotes ($new_desc)";
+              $message = "Description of range for parameter $variable has misplaced quotes ($new_desc) in param.ccl for thorn $arrangement/$thorn";
               &CST_error(0,$message,"",__LINE__,__FILE__);
             }
             $parameter_db{"\U$thorn $variable\E range $parameter_db{\"\U$thorn $variable\E ranges\"} description"} = $new_desc;
@@ -407,8 +409,9 @@ sub parse_param_ccl
         # Give a warning if no range was given and it was needed
         if (($use_clause == 0)  && ($parameter_db{"\U$thorn $variable\E ranges"}==0 && $type =~ m:INT|REAL:))
         {
-            $message = "No range given for $variable in $thorn";
-            &CST_error(0,$message,"",__LINE__,__FILE__);
+            $message = "No range provided for parameter $variable in param.ccl for thorn $arrangement/$thorn";
+	    $hint = "All definitions for integer and real parameters must provide one or more allowed ranges";
+            &CST_error(0,$message,$hint,__LINE__,__FILE__);
         }
         if($block !~ m:SHARES:)
         {
@@ -554,8 +557,9 @@ sub CheckParameterDefault
   {
     if ($default !~ m:^yes|no|y|n|1|0|t|f|true|false$:i)
       {
-        $message = "Default ($default) for boolean incorrect for $variable in $thorn";
-        &CST_error(0,$message,"",__LINE__,__FILE__);
+      $message = "Default ($default) for boolean parameter \"$variable\" is incorrect in param.ccl for thorn $arrangement/$thorn";
+      $hint = "The default value for a boolean parameter must be one of yes,no,y,n,1,0,t,f,true,false";
+        &CST_error(0,$message,$hint,__LINE__,__FILE__);
       }
   }
 
@@ -579,8 +583,9 @@ sub CheckParameterDefault
     }
     if ($foundit == 0)
     {
-      $message = "Default ($default) for keyword incorrect for $variable in $thorn";
-      &CST_error(0,$message,"",__LINE__,__FILE__);
+      $message = "Default ($default) for keyword parameter \"$variable\" is incorrect in param.ccl for thorn $arrangement/$thorn";
+      $hint = "The default value for a parameter must lie within the allowed range";
+      &CST_error(0,$message,$hint,__LINE__,__FILE__);
     }
   }
   
@@ -603,8 +608,9 @@ sub CheckParameterDefault
     }
     if ($foundit == 0)
     {
-      $message = "Default ($default) for string incorrect for $variable in $thorn";
-      &CST_error(0,$message,"",__LINE__,__FILE__);
+      $message = "Default ($default) for string parameter \"$variable\" is incorrect in param.ccl for thorn $arrangement/$thorn";
+      $hint = "The default value for a parameter must lie within an allowed range";
+      &CST_error(0,$message,$hint,__LINE__,__FILE__);
     }
   }
   
@@ -614,6 +620,7 @@ sub CheckParameterDefault
     $nranges=$parameter_db{"\U$thorn $variable\E ranges"};
     for ($i=1; $i<=$nranges; $i++)
     {
+      
       $minok=0;
       $maxok=0;
       $range = $parameter_db{"\U$thorn $variable\E range $i range"};
@@ -644,10 +651,11 @@ sub CheckParameterDefault
         $foundit = 1;
       }
     }
-    if ($foundit == 0)
+    if ($nranges > 0 && $foundit == 0)
     {
-      $message = "Default ($default) for integer incorrect for $variable in $thorn";
-      &CST_error(0,$message,"",__LINE__,__FILE__);
+      $message = "Default ($default) for integer parameter \"$variable\" is incorrect in param.ccl for thorn $arrangement/$thorn";
+      $hint = "The default value for a parameter must lie within the allowed range";
+      &CST_error(0,$message,$hint,__LINE__,__FILE__);
     }
   }
   
@@ -687,10 +695,11 @@ sub CheckParameterDefault
         $foundit = 1;
       }
     }
-    if ($foundit == 0)
+    if ($nranges > 0 && $foundit == 0)
     {
-      $message = "Default ($default) for real incorrect for $variable in $thorn";
-      &CST_error(0,$message,"",__LINE__,__FILE__);
+      $message = "Default ($default) for real parameter \"$variable\" is incorrect in param.ccl for thorn $arrangement/$thorn";
+      $hint = "The default value for a parameter must lie within the allowed range";
+      &CST_error(0,$message,$hint,__LINE__,__FILE__);
     }
   }
   
