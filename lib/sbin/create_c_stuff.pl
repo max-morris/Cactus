@@ -84,6 +84,7 @@ sub CreateParameterBindingFile
 
   }
 
+  push(@data, "  return 0;");
   push(@data, "}");
 
   push(@data, "");
@@ -91,8 +92,6 @@ sub CreateParameterBindingFile
   # Setting subroutine
 
   push(@data, ("int $prefix"."Set(const char *param, const char *value)", "{"));
-  push(@data, ("  char temp[1001];", "  int p;", ""));
-
   push(@data, ("  int retval;", "  retval = 1;", ""));
 
 
@@ -146,20 +145,15 @@ sub set_parameter_code
   {
     if( $type eq "KEYWORD")
     {
-      $line = "    if(CCTK_InList(value, $n_ranges" ;
+      $line = "    retval = CCTK_SetKeywordInRangeList(\&($structure.$parameter), value, $n_ranges" ;
     }
     elsif($type eq "INTEGER")
     {
-      $line = "    if(CCTK_IntInRangeList(atoi(value), $n_ranges" ;
+      $line = "    retval = CCTK_SetIntInRangeList(\&($structure.$parameter),value, $n_ranges" ;
     }
     elsif($type eq "REAL")
     {
-      $line = "    strncpy(temp, value, 1000);";
-      push(@lines, $line);
-
-      $line = "    for (p=0;p<strlen(temp);p++) if (temp[p] == 'E' || temp[p] == 'd' || temp[p] == 'D') temp[p] = 'e';";
-      push(@lines, $line);
-      $line = "    if(CCTK_DoubleInRangeList(atof(temp), $n_ranges" ;
+      $line = "    retval = CCTK_SetDoubleInRangeList(\&($structure.$parameter),value, $n_ranges" ;
     }
     for($range=1; $range <= $n_ranges; $range++)
     {
@@ -170,65 +164,24 @@ sub set_parameter_code
       $line .= ",\"".$quoted_range."\"";
 
     }
-    $line .= "))";
-
-    push(@lines, ($line, "    {"));
-
-    if( $type eq "KEYWORD")
-    {
-      $line = "      if($structure.$parameter) free($structure.$parameter);";
-      push(@lines, $line);
-
-      $line = "      $structure" .".$parameter = malloc(strlen(value)\*sizeof(char));"; 
-      push(@lines, $line);
-      
-      $line = "  if($structure.$parameter)";
-      push(@lines, $line);
-      
-      $line = "    strcpy($structure.$parameter, value);";
-      push(@lines, ($line, "         retval = 0;", "    }"));
-      
-    }
-    elsif($type eq "INTEGER")
-    {
-      $line = "      $structure.$parameter = atoi(value);" ;
-      push(@lines, ($line, "         retval = 0;", "    }"));
-    }
-    elsif($type eq "REAL")
-    {
-      push(@lines, "         $structure.$parameter = atof(temp); ");
-
-      push(@lines, ($line, "         retval = 0;", "    }"));
-
-    }
-
-    push(@lines, "  }");
+    $line .= ");";
+  }
+  elsif( $type eq "KEYWORD")
+  {
+    $line = "    retval = CCTK_SetKeyword(\&($structure.$parameter), value);" ;
 
   }
   elsif( $type eq "STRING" || $type eq "SENTENCE")
   {
-    $line = "      if($structure.$parameter) free($structure.$parameter);";
-    push(@lines, $line);
-    
-    $line = "      $structure" .".$parameter = malloc(strlen(value)\*sizeof(char));"; 
-    push(@lines, $line);
-      
-    $line = "      if($structure.$parameter)";
-    push(@lines, $line);
-      
-    $line = "        strcpy($structure.$parameter, value);";
-    push(@lines, ($line, "  }"));
-  }
-  elsif( $type eq "LOGICAL")
-  {
-    push(@lines, ("    if(CCTK_InList(value, 4, \"true\", \"t\", \"yes\", \"1\"))"," {", "$structure.$parameter = 1", "}", "else if(CCTK_InList(value, 4, \"false\", \"f\", \"no\", \"0\"))"," {", "$structure.$parameter = 0", "}", "else", "{ ", "retval = 2" , "};"));
+    $line = "    retval = CCTK_SetString(\&($structure.$parameter),value);" ;
   }
   else
   {
     print "Unknown parameter type $type\n";
   }
 
-
+  push(@lines, ($line, "  }"));
+    
   return @lines;
 }
 
