@@ -60,7 +60,7 @@ int CCTK_TerminationReached(cGH *GH)
 }
   
  /*@@
-   @routine    CCTK_TerminateNext(cGH *)
+   @routine    CCTK_TerminateNext
    @date       Thu March 15 7pm
    @author     Gabrielle Allen
    @desc 
