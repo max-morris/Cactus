@@ -53,7 +53,9 @@ sub create_schedule_code
     $rfr_files .= " $thorn_rfr";
     $startup_files .= " $thorn_startup";
 
-    &parse_schedule_ccl($thorn,"startup",@indata);
+    ($proto,$out,@wrappers) = &parse_schedule_ccl($thorn,"startup",@indata);
+    print OUTSTART $proto;
+    print OUTSTART $out; 
 
    # The footer for the thorn RFR routine
    print OUTRFR "}\n";
@@ -274,10 +276,19 @@ sub find_schedule_block
   for ($i=$line_number+1; $i<@data; $i++)
   {
     $line = @data[$i];
-    if ($line =~  m/\s*}\s*\"(.*)\"\s*/)
+    if ($line =~  m/\}/)
     {
+      $line =~  m/\s*\}\s*\"(.*)\"\s*/;
       $line_number = $i;
-      $desc = "\"$1\"";
+      if($1)
+      {	
+	$desc = "\"$1\"";
+      }
+      else
+      {
+	print STDERR "No description listed for routine '$routine' registered at '$rfr_entry'\n";
+	$desc = "Please write a description of what this routine does.";
+      }
       return ($routine,$rfr_entry,$desc,@block);
     }
     else
@@ -306,17 +317,23 @@ sub parse_schedule_block
 {
   local($thorn,$type,@data)=@_;
   local($proto,$out);
+  local($wrapper_file, $proto, $out);
+
+  $wrapper_file = "";
+  $proto = "";
+  $out = "";
 
   ($routine,$when,$desc,@block) = &find_schedule_block(@data);
 
   # At the moment can schedule at RFR entry points of at STARTUP
   if ($type eq "startup" && $when eq "STARTUP") {
-    $out = &parse_schedule_at_STARTUP($thorn,$routine,$desc,@block);
-    return ;
+    ($wrapper_file, $proto, $out) = &parse_schedule_at_STARTUP($thorn,$routine,$desc,@block);
   } elsif ($type eq "rfr" && $when ne "STARTUP") {
     ($wrapper_file,$proto,$out) = &parse_schedule_at_RFR($thorn,$routine,$when,$desc,@block);
-    return ($wrapper_file,$proto,$out);
   }
+
+  return ($wrapper_file,$proto,$out);
+
 }
 
 sub parse_schedule_at_STARTUP {
@@ -326,7 +343,7 @@ sub parse_schedule_at_STARTUP {
 
   $out .= "  $routine();\n";
 
-  return $out;
+  return ("", "", $out);
 
 }
 
