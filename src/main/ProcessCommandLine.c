@@ -10,7 +10,9 @@
 
 #include "flesh.h"
 
-static int argc;
+static char *rcsid = "$Id$";
+
+static int *argc;
 
 static char **argv;
 

@@ -10,6 +10,8 @@
 
 #include "flesh.h"
 
+static char *rcsid = "$Id$";
+
  /*@@
    @routine    main
    @date       Fri Sep 18 14:17:37 1998
