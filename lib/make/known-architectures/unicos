@@ -6,7 +6,7 @@
 #   @desc 
 #   
 #   @enddesc 
-#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/unicos,v 1.4 1999-10-11 13:49:09 goodale Exp $
+#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/unicos,v 1.5 1999-10-27 13:47:50 goodale Exp $
 # @@*/
 
 if test "$CCTK_CONFIG_STAGE" = "preferred-compilers" ; then
@@ -15,6 +15,8 @@ if test "$CCTK_CONFIG_STAGE" = "preferred-compilers" ; then
 
 else
 
+  CFLAGS="-O3"
+  CXXFLAGS="-O3"
   # The T3E F90 compiler uses -b if you want to supply a name for a .o file.
   : ${FCOMPILEONLY="-b"}
 
