@@ -187,7 +187,7 @@ sub get_fortran_type_string
   {
     $type_string = "CCTK_STRING ";
   } 
-  elsif($type eq "LOGICAL" ||
+  elsif($type eq "BOOLEAN" ||
 	$type eq "INT")
   {
     $type_string = "CCTK_INT";

@@ -195,7 +195,7 @@ sub set_parameter_code
 
   push(@lines,("  if(CCTK_Equals(param, \"$parameter\"))", "  {"));
 
-  if( $type ne "STRING" && $type ne "SENTENCE" && $type ne "LOGICAL")
+  if( $type ne "STRING" && $type ne "SENTENCE" && $type ne "BOOLEAN")
   {
     if( $type eq "KEYWORD")
     {
@@ -227,7 +227,7 @@ sub set_parameter_code
   {
     $line = "    retval = CCTK_SetString(\&($structure.$parameter),value);" ;
   }
-  elsif( $type eq "LOGICAL")
+  elsif( $type eq "BOOLEAN")
   {
     $line = "    retval = CCTK_SetLogical(\&($structure.$parameter), value);" ;
 
@@ -283,7 +283,7 @@ sub set_parameter_default
     $line = "    strcpy($structure.$parameter, $default);";
     push(@lines, $line);
   }
-  elsif($type eq "LOGICAL")
+  elsif($type eq "BOOLEAN")
   {
     # Logicals need to be done specially.
 
@@ -331,7 +331,7 @@ sub get_c_type_string
   {
     $type_string = "char *";
   }
-  elsif($type eq "LOGICAL")
+  elsif($type eq "BOOLEAN")
   {
     $type_string = "CCTK_INT ";
   } 
@@ -487,7 +487,7 @@ sub order_params
     {
       push(@string_params, $parameter);
     }
-    elsif($type eq "LOGICAL" ||
+    elsif($type eq "BOOLEAN" ||
     	  $type eq "INT")
     {
       push(@int_params, $parameter);
@@ -544,10 +544,10 @@ sub get_parameter_code
     $line  = "    *value = \&($structure.$parameter);\n" ;
     $line .= "    retval = PARAMETER_REAL;" ;
   }
-  elsif($type eq "LOGICAL")
+  elsif($type eq "BOOLEAN")
   {
     $line  = "    *value = \&($structure.$parameter);\n" ;
-    $line .= "    retval = PARAMETER_LOGICAL;" ;
+    $line .= "    retval = PARAMETER_BOOLEAN;" ;
   }
   else
   {
@@ -603,7 +603,7 @@ sub create_parameter_code
     $line = "    strcpy($structure.$parameter, $default);";
     push(@lines, $line);
   }
-  elsif($type eq "LOGICAL")
+  elsif($type eq "BOOLEAN")
   {
     # Logicals need to be done specially.
 

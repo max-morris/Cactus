@@ -322,7 +322,7 @@ sub parse_schedule_ccl
     }
 
     # Parse the non-schedule storage line
-    elsif ($line =~ m/\s*STORAGE\s*:\s*(.*)\s*$/i)
+    elsif ($line =~ m/\s*STOR[^\:]*:\s*(.*)\s*$/i)
     {
       if ($type eq "rfr")
       {
@@ -355,7 +355,7 @@ sub parse_schedule_ccl
     }
 
     # Parse the non-schedule communication line
-    elsif ($line =~ m/\s*COMM(UNICATION)?\s*:\s*(.*)/i)
+    elsif ($line =~ m/\s*COMM[^\:]*:\s*(.*)/i)
     {
       if ($type eq "rfr")
       {
@@ -519,7 +519,7 @@ sub parse_schedule_at_RFR {
   for ($i=0; $i<@block; $i++) 
   {
     $line = @block[$i];
-    if ($line =~ m/\s*LANG\s*:\s*FORTRAN\s*$/i)
+    if ($line =~ m/\s*LANG[^\:]*:\s*FORTRAN\s*$/i)
     {
       $got_it++;
 
@@ -529,7 +529,7 @@ sub parse_schedule_at_RFR {
       $proto = "void $wrapper_file(CCTK_CARGUMENTS);\n"; 
    
     }
-    elsif ($line =~ m/\s*LANG\s*:\s*C\s*$/i)
+    elsif ($line =~ m/\s*LANG[^\:]*:\s*C\s*$/i)
     {
       $proto = "void $routine(CCTK_CARGUMENTS);\n"; 
       $got_it++;
@@ -546,7 +546,7 @@ sub parse_schedule_at_RFR {
   for ($i=0; $i<@block; $i++) 
   {
     $line = @block[$i];
-    if ($line =~ m/\s*STORAGE\s*:\s*(.*)\s*$/i)
+    if ($line =~ m/\s*STOR[^\:]*:\s*(.*)\s*$/i)
     {
       @list = split(",",$1);
       foreach $group (@list) 
@@ -587,7 +587,7 @@ sub parse_schedule_at_RFR {
   for ($i=0; $i<@block; $i++) 
   {
     $line = @block[$i];
-    if ($line =~ m/\s*COMM(UNICATION)?\s*:\s*(.*)\s*/i)
+    if ($line =~ m/\s*COMM[^\:]*:\s*(.*)\s*/i)
     {
       @list = split(",",$2);
       foreach $group (@list) 

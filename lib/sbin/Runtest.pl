@@ -1,12 +1,10 @@
 #!/bin/perl -s
 #
-# Test Suite tool.  Needs a few comments up here ...
-# Version: $Id$
-#
+# Test Suite tool
+# Version: $Header$
 
-# Fix this for NT
+
 $sep = "/";
-$seps = "/";
 
 $config = $ARGV[0];
 
@@ -14,14 +12,6 @@ $tolerance = 13;
 
 $ansinormal  = "\033[0m";
 $ansibold    =  "\033[1m";
-
-print <<EOT;
-
--------------------------------
- Cactus Code Test Suite Tool
--------------------------------
-
-EOT
 
 # Work out where the config directory is
 if($ENV{"CONFIGS_DIR"})
@@ -35,8 +25,9 @@ else
 
 $current_directory = `pwd`;
 chop($current_directory);
-
 $current_directory =~ s,^//([^/]+)/,$1:/,;
+
+&print_header;
 
 # Look to see if MPI is defined
 $extra = "$current_directory${sep}configs${sep}$config${sep}config-data${sep}cctk_extradefs.h";
@@ -66,54 +57,59 @@ else
 {
   $command = &defprompt("Enter command to run executable"," ");
 }
-$tests = &defprompt("Run All tests or go to Menu",
-                        "All");
+$tests = &defprompt("Run All tests or go to Menu","All");
+
+
 
 # Get the active thorns list and test files with thorns 
 $scratchdir = "$configs_dir$sep$config";
  
 if (!open (AT, "< $scratchdir${sep}ThornList")) {
     print "Can't open $scratchdir/ThornList - no thorn tests";
-} else {
-    printf ("Reading Thorn List\n");
-    while (<AT>) {
-        @t = split(' ');
-        foreach $T (@t) {
-            if (-d "arrangements${sep}$T${sep}test") 
-	      {
-		$thisdir = `pwd`;
-                chop($thisdir);
-		chdir "arrangements${sep}$T${sep}test";
-		while ($file=<*.par>)
-		{
-		  @testfiles = (@testfiles, $file);
-		  @testthorns = (@testthorns, $T);
-		}
-	        chdir "$thisdir";
-            }
-        }
+} 
+else 
+{
+  printf ("Reading Thorn List\n");
+  while (<AT>) 
+  {
+    @t = split(' ');
+    foreach $T (@t) {
+      if (-d "arrangements${sep}$T${sep}test") 
+      {
+	$thisdir = `pwd`;
+	chop($thisdir);
+	chdir "arrangements${sep}$T${sep}test";
+	while ($file=<*.par>)
+	{
+	  @testfiles = (@testfiles, $file);
+	  @testthorns = (@testthorns, $T);
+	}
+	chdir "$thisdir";
+      }
     }
+  }
 }
 
 # Parse the parameter files for directives
 $ntests = 0;
-foreach $t (@testfiles) {
-    $ntests++;
-    $file =  "arrangements/@testthorns[$ntests-1]/test/$t";
-    open (IN, "<$file") || die "Can not open $file";
-    while (<IN>)
+foreach $t (@testfiles) 
+{
+  $ntests++;
+  $file =  "arrangements/@testthorns[$ntests-1]/test/$t";
+  open (IN, "<$file") || die "Can not open $file";
+  while (<IN>)
+  {
+    if (/^\s*\#\s*DESC(RIPTION)?\s*\"(.*)\"\s*$/i)
     {
-      if (/^\s*\#\s*DESC(RIPTION)?\s*\"(.*)\"\s*$/i)
-      {
-	$testnames{$ntests} = $2
-      }
+      $testnames{$ntests} = $2
     }
-    close IN;
+  }
+  close IN;
 }
 
 if ($tests =~ /All/) {
 
-# Run all parameter files
+  # Run all parameter files
   $ntests=0;
   $number_failed=0;
   $number_zerofiles=0;
@@ -126,8 +122,11 @@ if ($tests =~ /All/) {
     &runtest($t,$thorn,$ntests);
   }
 
+
+# Show the statistics
+
   print "==================================================\n";
-  print "All tests run for configuration $config\n";
+  print "All tests run for configuration $config\n\n";
   print "  Tests run -> $ntests\n";
   print "  Number passed -> $number_passed1\n";
   if ($number_passed2 > 0)
@@ -135,9 +134,18 @@ if ($tests =~ /All/) {
     print " (Number passed to only $tolerance digits -> $number_passed2)\n";
   }
   print "  Number failed -> $number_failed\n";
+
+  if ($number_failed>0)
+  {
+    print "\n  Tests failed:\n";
+    for ($i=0; $i<$number_failed;$i++)
+    {
+      print "    ".@which_failed[$i]."\n";
+    }
+  }
   if ($number_zerofiles > 0)
   {
-    print "  Number with no output files -> $number_zerofiles\n";
+      print "  Number with no output files -> $number_zerofiles\n";
   }
   print "==================================================\n\n";
 } 
@@ -152,7 +160,7 @@ else
   $ntests = 0;
   foreach $t (@testfiles) {
     $ntests++;
-    $t =~ m:([^${seps}]+).par$:;
+    $t =~ m:([^${sep}]+).par$:;
     $num = $1;
     $inp{$num} = $t;
     $testnum{$ntests} = $num;
@@ -185,43 +193,17 @@ sub runtest {
     mkdir ($tsttop,0755);
 
     $tp = $inpf;
-    $tp =~ s:^.*$seps::;
+    $tp =~ s:^.*$sep::;
     $tp =~ s/.par//;
  
     $test_base_dir = $inpf;
-    $test_base_dir =~ s:[^${seps}]*$::;
-
-    $pretest  = "$test_base_dir$tp.pretest";
-    $posttest = "$test_base_dir$tp.posttest";
+    $test_base_dir =~ s:[^${sep}]*$::;
 
     print "Running $tp: $testnames{$num}\n";
 
     unlink(<$tsttop${sep}$tp${sep}*.*>);
 
-#   Run a pre-test script if it exists
-
-    if( -x $pretest)
-    {
-        print "Running pre-test script $pretest\n";
-        open (CMD, "(cd $tsttop; ..${sep}$pretest ..${sep}$test_base_dir) |");
-        open (LOG, "> $tsttop${sep}$tp.prestep.log");
-        while (<CMD>) {
-            print LOG;
-        }
-        close LOG;
-        close CMD;
-
-        $retcode = $? >> 8;
-
-        if($retcode > 0)
-        {
-            print "$pretest exited with error code $retcode\n";
-            print "Aborting test\n";
-            return;
-        }
-    }
- 
-    $cmd = "($command $current_directory$sep$executable ..$sep$inpf)";
+    $cmd = "($command $current_directory$sep$executable $current_directory$sep$inpf)";
 
     chdir ($tsttop);
 
@@ -249,12 +231,12 @@ sub runtest {
         print "${ansibold}Cactus exited with error code $retcode $ansinormal \n";
         print "Please check the logfile $tsttop$sep$tp.log\n\n";
 	$number_failed++;
-
+	@which_failed = (@which_failed,$tp); 
         return;
     }
  
     $indir = $inpf;
-    $indir =~ s:.par:${seps}:g;
+    $indir =~ s:.par:${sep}:g;
     @oldout = <$indir${sep}*.*l>;
 
     $blewit = 0;
@@ -264,7 +246,7 @@ sub runtest {
     foreach $file (@oldout) {
         $nfiles ++;
         $newfile = $file;
-        $newfile =~ s:^.*${seps}([^${seps}]+)$:\1:;
+        $newfile =~ s:^.*${sep}([^${sep}]+)$:\1:;
         $newfile = "$tsttop$sep$tp$sep$newfile"; 
 #       print "Comparing $file with $newfile\n";
 
@@ -297,7 +279,7 @@ sub runtest {
         if ($nblow != 0) {
             $blewit ++;
             $stripfile = $newfile;
-            $stripfile =~ s:^.*${seps}(.*)$:\1:;
+            $stripfile =~ s:^.*${sep}(.*)$:\1:;
             if ($nrealblow == 0) {
                 print "     $stripfile differs at machine precision (which is OK!)\n";
             } else {
@@ -330,30 +312,11 @@ sub runtest {
             printf "\n  $ansibold TEST FAILED!!:$ansinormal ".
                 "$nfiles compared, $blewit files differ, $reallyblewit differ significantly\n";
 	    $number_failed++;
+	    @which_failed = (@which_failed,$tp); 
+
         }
     }
     printf ("\n\n");
-
-#   Run a post-test script if it exists
-    if( -x $posttest)
-    {
-        print "Running post-test script $posttest\n";
-        open (CMD, "(cd $tsttop; ..$sep$posttest ..$sep$test_base_dir) |");
-        open (LOG, "> $tsttop$sep$tp.posttest.log");
-        while (<CMD>) {
-            print LOG;
-        }
-        close LOG;
-        close CMD;
-
-        $retcode = $? >> 8;
-
-        if($retcode > 0)
-        {
-            print "$posttest exited with error code $retcode\n";
-            return;
-        }
-    }
 
 }
 
@@ -374,4 +337,16 @@ sub defprompt {
 sub fpabs {
     local ($val) = @_[0];
     $val > 0 ? $val:-$val;
+}
+
+
+sub print_header
+{
+  print <<EOT;
+
+-------------------------------
+ Cactus Code Test Suite Tool
+-------------------------------
+
+EOT
 }

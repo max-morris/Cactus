@@ -144,11 +144,18 @@ sub parse_param_ccl
 	$parameter_db{"\U$thorn $block\E variables"} = "";
       }
     }
-    elsif($line =~ m:(EXTENDS |USES )?\s*(?\:CCTK_)?(INT|REAL|LOGICAL|KEYWORD|STRING)\s*([a-zA-Z]+[a-zA-Z0-9_]*) \s*(\"[^\"]*\"):i)
+    elsif($line =~ m:(EXTENDS |USES )?\s*(?\:CCTK_)?(INT|REAL|LOGICAL|BOOLEAN|KEYWORD|STRING)\s*([a-zA-Z]+[a-zA-Z0-9_]*) \s*(\"[^\"]*\"):i)
     {
 
       # This is a parameter definition.
       $type = "\U$2\E";
+
+      # Logical is depricated
+      if ($type =~ /LOGICAL/)
+      {
+	$type = "BOOLEAN";
+      }
+
       $variable = $3;
       $description = $4;
       
@@ -235,7 +242,7 @@ sub parse_param_ccl
 		  $message = "Default given for $type $variable in $thorn is not a string";
                   &CST_error(0,$message,__LINE__,__FILE__);
 	      }
-              elsif ($type =~ m:LOGICAL: && $default =~ m:": && $default !~ m:".*":)
+              elsif ($type =~ m:BOOLEAN: && $default =~ m:": && $default !~ m:".*":)
 	      {
 		  $message = "Default given for $type $variable in $thorn is missing a quote";
                   &CST_error(0,$message,__LINE__,__FILE__);
