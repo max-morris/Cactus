@@ -157,8 +157,11 @@ static void CactusInitialiseGH (const tFleshConfig *config, cGH *GH)
   }
 
   /* Traverse recovery and post-recovery routines */
-  CCTK_Traverse (GH, "CCTK_RECOVER_VARIABLES");
-  CCTK_Traverse (GH, "CCTK_POST_RECOVER_VARIABLES");
+  if (config->recovered)
+  {
+    CCTK_Traverse (GH, "CCTK_RECOVER_VARIABLES");
+    CCTK_Traverse (GH, "CCTK_POST_RECOVER_VARIABLES");
+  }
 
   /* Traverse ID checkpoint routines */
   CCTK_Traverse (GH, "CCTK_CPINITIAL");
