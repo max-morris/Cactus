@@ -522,10 +522,13 @@ void CCTKi_ParameterAccumulatorBase(const char *thorn,
    @returntype int
    @returndesc
                 0 for success, or<br>
-               return code of @seeroutine ParameterSetSimple, or<br>
+               return code of @seeroutine ParameterSet, or<br>
                -1 if parameter is out of range<br>
                -2 if parameter was not found<br>
-               -3 if trying to steer a non-steerable parameter
+               -3 if trying to steer a non-steerable parameter<br>
+               -6 if not a valid integer or float<br>
+               -7 if tried to set an accumulator parameter directly<br>
+               -9 if final value of accumulator out of range<br>
    @endreturndesc
 @@*/
 int CCTK_ParameterSet (const char *name, const char *thorn, const char *value)
@@ -549,7 +552,8 @@ int CCTK_ParameterSet (const char *name, const char *thorn, const char *value)
       CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
                   "CCTK_ParameterSet: Cannot set accumulator parameter '%s::%s' directly"
                   , thorn, name);
-    }      
+      retval = -7;
+    }
     /* before parameter recovery (which is while parsing the parameter file)
        all parameters can be set */
     else if (cctk_parameter_set_mask == PARAMETER_RECOVERY_POST &&
@@ -2064,27 +2068,34 @@ static int ParameterSetInteger (t_param *param, const char *value)
 {
   int inval, retval;
   const t_range *range;
-
+  char *endptr;
 
   retval = -1;
-  inval = strtol (value, NULL, 0);
+  inval = strtol (value, &endptr, 0);
 
-  for (range = param->props->range; range; range = range->next)
+  if(!*endptr)
   {
-    if (CCTK_IsThornActive (range->origin) ||
-        CCTK_Equals (param->props->thorn, range->origin))
+    for (range = param->props->range; range; range = range->next)
     {
-#ifndef CCTK_PARAMUNCHECKED
-      if (Util_IntInRange (inval, range->range))
+      if (CCTK_IsThornActive (range->origin) ||
+          CCTK_Equals (param->props->thorn, range->origin))
       {
-#endif
-        *(CCTK_INT *) param->data = inval;
-        retval = 0;
-        break;
 #ifndef CCTK_PARAMUNCHECKED
-      }
+        if (Util_IntInRange (inval, range->range))
+        {
 #endif
+          *(CCTK_INT *) param->data = inval;
+          retval = 0;
+          break;
+#ifndef CCTK_PARAMUNCHECKED
+        }
+#endif
+      }
     }
+  }
+  else
+  {
+    retval = -6;
   }
 
   if (retval == -1)
@@ -2094,6 +2105,13 @@ static int ParameterSetInteger (t_param *param, const char *value)
                 "not in any active range",
                 param->props->thorn, param->props->name, value);
   }
+  else if (retval == -6)
+  {
+    CCTK_VWarn (2, __LINE__, __FILE__, "Cactus",
+                "ParameterSetInteger: Unable to set integer '%s::%s' - '%s' "
+                "is not a valid integer",
+                param->props->thorn, param->props->name, value);
+  }    
 
   return (retval);
 }
@@ -2106,6 +2124,7 @@ static int ParameterSetReal (t_param *param, const char *value)
   const t_range *range;
   double inval;
   char *temp;
+  char *endptr;
 
 
   /*  Convert the value string to a double. Allow various formats.*/
@@ -2118,33 +2137,49 @@ static int ParameterSetReal (t_param *param, const char *value)
       break;
     }
   }
-  inval = atof (temp);
-  free (temp);
 
   retval = -1;
-  for (range = param->props->range; range; range = range->next)
+  inval = strtod (temp, &endptr);
+
+  if(!*endptr)
   {
-    if (CCTK_IsThornActive (range->origin) ||
-        CCTK_Equals (param->props->thorn, range->origin))
+    for (range = param->props->range; range; range = range->next)
     {
-#ifndef CCTK_PARAMUNCHECKED
-      if(Util_DoubleInRange (inval, range->range))
+      if (CCTK_IsThornActive (range->origin) ||
+          CCTK_Equals (param->props->thorn, range->origin))
       {
-#endif
-        *(CCTK_REAL *) param->data = inval;
-        retval = 0;
-        break;
 #ifndef CCTK_PARAMUNCHECKED
-      }
+        if(Util_DoubleInRange (inval, range->range))
+        {
 #endif
+          *(CCTK_REAL *) param->data = inval;
+          retval = 0;
+          break;
+#ifndef CCTK_PARAMUNCHECKED
+        }
+#endif
+      }
     }
   }
+  else
+  {
+    retval = -6;
+  }
 
+  free (temp);
+  
   if (retval == -1)
   {
     CCTK_VWarn (2, __LINE__, __FILE__, "Cactus",
                 "ParameterSetReal: Unable to set real '%s:%s' - '%s' not in "
                 "any active range",
+                param->props->thorn, param->props->name, value);
+  }
+  else if (retval == -6)
+  {
+    CCTK_VWarn (2, __LINE__, __FILE__, "Cactus",
+                "ParameterSetInteger: Unable to set integer '%s::%s' - '%s' "
+                "is not a valid floating point number",
                 param->props->thorn, param->props->name, value);
   }
 

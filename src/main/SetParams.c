@@ -152,6 +152,37 @@ int CCTKi_SetParameter (const char *parameter, const char *value, int lineno)
       num_1errors++;
     }
   }
+  else if (retval == -6)
+  {
+    /* Parameter value is not a valid number */
+    CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
+                "In parameter file '%s' line %d: Error setting parameter '%s' "
+                "'%s' is not a valid number", parfile, lineno, parameter, value);
+    num_0errors++;
+  }    
+  else if (retval == -7)
+  {
+    /* Tried to set an accumulator parameter directly */
+    CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
+                "In parameter file '%s' line %d: Parameter '%s' is an "
+                "accumulator parameter; it cannot be set directly", parfile, lineno, parameter);
+    if (parameter_check == CCTK_PARAMETER_STRICT)
+    {
+      num_0errors++;
+    }
+    else if (parameter_check == CCTK_PARAMETER_NORMAL)
+    {
+      num_1errors++;
+    }
+  }
+  else if (retval == -9)
+  {
+    /* Parameter adds to an accumulator and that value would be out of range. */
+    CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
+                "In parameter file '%s' line %d: Range error setting parameter "
+                "'%s' to '%s' - out of range in accumulator", parfile, lineno, parameter, value);
+    num_0errors++;
+  }
 
   return (retval);
 }
@@ -228,6 +259,8 @@ int CCTKi_NumParameterFileErrors (int level)
    @returntype int
    @returndesc
                 0 = success,<BR>
+               -9 = final value of accumulator out of range<br>
+               -6 = not a valid integer or float<br>
                -5 = thorn/imp not active,<BR>
                -4 = tried to set parameter in two different thorns,<BR>
                -3 = tried to steer nonsteerable parameter,<BR>
