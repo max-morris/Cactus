@@ -1813,12 +1813,19 @@ The following variable is needed for grid refinement methods
         base grid.
 \end{itemize}
 
-The following variable is used for identifying convergence levels. \emph{NOTE:}
+The following variables are used for identifying convergence levels.
+\emph{NOTE:}
 Convergence is not currently implemented by Cactus, so that
-{\tt cctk\_convlevel} is currently always 0.
+{\tt cctk\_convlevel} is currently always $0$.
 \begin{itemize}
 \item {\tt cctk\_convlevel} The convergence level of this grid hierarchy.
-        The base level is 0, and every level above that is currently coarsened         by a factor of 2.
+        The base level is $0$, and every level above that is
+        coarsened by a factor of {\tt cctk\_convfac}.
+\item {\tt cctk\_convfac} The factor between convergence levels.
+        The relation between the resolutions of different convergence
+        levels is $\Delta x_L = \Delta x_0 \cdot F^L$, where $L$ is the
+        convergence level and $F$ is the convergence factor.
+        The convergence factor defaults to $2$.
 \end{itemize}
 
 The variables {\tt cctk\_delta\_space}, {\tt cctk\_delta\_time}, and
