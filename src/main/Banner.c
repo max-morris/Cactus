@@ -73,6 +73,7 @@ static const char *delimiter = "------------------------------------------------
 @@*/
 void CCTKi_CactusBanner (void)
 {
+  char ***commandargs;
   char buffer[DATALENGTH+1];
   const char *banner = "       10                                  \n"
                        "  1   0101       ************************  \n"
@@ -97,6 +98,8 @@ void CCTKi_CactusBanner (void)
   printf (" (%s)\n", buffer);
   Util_GetHostName (buffer, DATALENGTH);
   printf ("Run host:       %s\n", buffer);
+  CCTK_CommandLine(commandargs);
+  printf ("Executable:     %s\n",*commandargs[0]);
   CCTK_ParameterFilename (DATALENGTH, buffer);
   printf ("Parameter file: %s\n", buffer);
 
