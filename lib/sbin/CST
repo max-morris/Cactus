@@ -6,7 +6,7 @@
 #  @desc 
 #  Parses the the configuration files for thorns.
 #  @enddesc 
-#  @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.42 2001-07-11 16:38:40 tradke Exp $
+#  @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.43 2001-07-11 21:20:29 allen Exp $
 #@@*/
 
 # Global parameter to track the number of errors from the CST
@@ -450,7 +450,7 @@ sub CreateThornLinkList
     #        For now we just repeat them twice on the linker line
     #        hoping that this will resolve all external symbols.
     $liblist = join (' ', @liblist);
-    $liblist .= $liblist;
+    $liblist .= " ".$liblist;
   }
 
   return ($liblist);
