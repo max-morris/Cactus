@@ -3,16 +3,16 @@
    @date      Thu Sep 24 10:18:52 1998
    @author    Tom Goodale
    @desc 
-   Header file for flesh functions.
+              Header file for flesh functions.
    @enddesc 
-   @version $Header$
+   @version   $Header$
  @@*/
-
-#include "cGH.h"
-
 
 #ifndef _CCTK_FLESH_H_
 #define _CCTK_FLESH_H_
+
+#include "cGH.h"
+
 
 /*  Typedefs */
 
@@ -24,18 +24,12 @@ typedef struct
   cGH **GH;
   unsigned int nGHs;
 
+  /* flag telling whether we restart from a checkpoint or not */
+  int recovered;
+
   /*  cTimer *timer[3];*/
 } tFleshConfig;
 
-#ifdef __cplusplus
-
-#define CCTK_FILEVERSION(file) extern "C" const char *CCTKi_version_##file(void);  const char *CCTKi_version_##file(void){ return rcsid; }
-
-#else
-
-#define CCTK_FILEVERSION(file) const char *CCTKi_version_##file(void); const char *CCTKi_version_##file(void) { return rcsid; }
-
-#endif
 
 /* Function prototypes */
 
@@ -44,28 +38,23 @@ extern "C"
 {
 #endif
 
-int CCTK_Traverse(cGH *GH, const char *where);
+#define CCTK_FILEVERSION(file) const char *CCTKi_version_##file (void);       \
+                               const char *CCTKi_version_##file (void)        \
+                               { return (rcsid); }
 
-  /*int CCTKi_SetParameter(const char *parameter, const char *value);*/
-
-int CCTKi_ProcessCommandLine(int *argc, char ***argv, tFleshConfig *ConfigData);
-
-int CCTKi_InitialiseDataStructures(tFleshConfig *ConfigData);
-
-int CCTKi_ProcessParameterDatabase(tFleshConfig *ConfigData);
-
-int CCTKi_CallStartupFunctions(tFleshConfig *ConfigData);
-
-int CCTKi_AddGH(tFleshConfig *config, unsigned int convergence_level, cGH *GH);
-
-int CCTKi_InitialiseCactus(int *argc, char ***argv, tFleshConfig *ConfigData);
-
-int CCTKi_ShutdownCactus(tFleshConfig *ConfigData);
-
-int CCTKi_DummyExit(cGH *GH, int retval);
+int CCTK_Traverse (cGH *GH, const char *where);
+int CCTKi_ProcessCommandLine (int *argc, char ***argv, tFleshConfig *config);
+int CCTKi_ProcessEnvironment (int *argc, char ***argv, tFleshConfig *config);
+int CCTKi_InitialiseDataStructures (tFleshConfig *config);
+int CCTKi_ProcessParameterDatabase (tFleshConfig *config);
+int CCTKi_CallStartupFunctions (tFleshConfig *config);
+int CCTKi_AddGH (tFleshConfig *config, unsigned int convergence_level, cGH *GH);
+int CCTKi_InitialiseCactus (int *argc, char ***argv, tFleshConfig *config);
+int CCTKi_ShutdownCactus (tFleshConfig *config);
+int CCTKi_DummyExit (cGH *GH, int retval);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif
+#endif  /* _CCTK_FLESH_H_ */
