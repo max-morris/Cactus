@@ -134,7 +134,7 @@ thorns used. The flesh on its own requires less than 5 MB.
 \item[{\bf Checkout}] To obtain a fresh copy of Cactus, move to a directory
   which does not contain a previously checked out version, and type
   {\t
-    cvs -d :pserver:cvs\_anon@cvs.cactuscode.org:/cactus checkout Cactus
+    cvs -z9 -d :pserver:cvs\_anon@cvs.cactuscode.org:/cactus checkout Cactus
     }
   The CVS checkout procedure will create a directory called {\bf
   Cactus} and install the code inside this directory.  From now on we
@@ -146,16 +146,16 @@ thorns used. The flesh on its own requires less than 5 MB.
    into the {\bf arrangements} directory. To see  the 
   available Cactus arrangements and thorns type
   {\t 
-    cvs -d :pserver:cvs\_anon@cvs.cactuscode.org:/cactus checkout -s
+    cvs -z9 -d :pserver:cvs\_anon@cvs.cactuscode.org:/cactus checkout -s
   }
   To check out a arrangement or thorn type go to the arrangements directory,  {\t cd arrangements},
   and  for a arrangement type
 {\t 
-  cvs checkout <arrangement\_name>
+  cvs -z9 checkout <arrangement\_name>
   }
         or for just one thorn
 {\t 
-cvs checkout <arrangement\_name/thorn\_name>
+cvs -z9 checkout <arrangement\_name/thorn\_name>
 }
  
 To simplify this procedure you may use {\t gmake checkout} in the Cactus
@@ -165,7 +165,7 @@ home directory which provides menus to pick arrangements and thorns from.
 \item[{\bf Update}] to update an existing Cactus checkout (to patch in
   possible changes, etc.), do the following {\em within} the {\tt Cactus} directory.
   {\t
-    cvs update
+    cvs -z9 update
     }
   The update process will operate recusrively downwards from your current position
   within the Cactus tree. To update only on certain directories, change
@@ -692,7 +692,7 @@ is to do. The command {\tt gmake help} lists all gmake targets.
 
 \item [{\tt gmake <config>-thornlist}] regenerates the ThornList for a configuration.
 
-\item [{\tt gmake <config>-thornparfiles}] copies all the example parameter files relevant for this configuration to the directory {\tt thornparfiles} in the Cactus home directory. If a file of the same name is already there, it will not overwrite it.
+\item [{\tt gmake <config>-examples}] copies all the example parameter files relevant for this configuration to the directory {\tt examples} in the Cactus home directory. If a file of the same name is already there, it will not overwrite it.
 
 \end{Lentry}
 
@@ -771,6 +771,10 @@ the same.
 \item [{\tt gmake help}] lists all make options
 
 \item [{\tt gmake checkout}] allows you to easily checkout Cactus arrangements and thorns.
+
+\item [{\tt gmake cvsdiff}] differences between checked out version of Cactus and that in the CVS repositories.
+
+\item [{\tt gmake cvsstatus}] status of checked out version of Cactus, reporting which files have been modified or need updating.
 
 \item [{\tt gmake default}] creates a new configuration with a default name.
 
