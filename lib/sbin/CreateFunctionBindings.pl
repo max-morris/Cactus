@@ -279,7 +279,7 @@ sub CreateFunctionBindings
 ###
 
   $dataout = &ThornMasterIncludes($function_db);
-  &WriteFile('include/cctk_FunctionAliases.h',\$dataout);
+  &WriteFile('include/cctk_Functions.h',\$dataout);
 
 ###
 # Create the prototype header file for all thorns that USE a
@@ -1610,10 +1610,16 @@ sub ThornMasterIncludes
     {
       push(@data, "#ifdef THORN_IS_$thorn");
       push(@data, "#include \"${thorn}_Prototypes.h\"");
+      push(@data, "#define DECLARE_CCTK_FUNCTIONS DECLARE_\U$thorn\E_FUNCTIONS");
       push(@data, '#endif');
       push(@data, '');
     }
   }
+
+  push(@data, '#ifndef DECLARE_CCTK_FUNCTIONS');
+  push(@data, '#define DECLARE_CCTK_FUNCTIONS _DECLARE_CCTK_FUNCTIONS');
+  push(@data, '#endif');
+  push(@data, '');
 
   push(@data, '#endif  /* _CCTK_FUNCTIONALIASES_H_ */');
   push(@data, "\n");   # workaround for perl 5.004_04 to add a trailing newline
@@ -1692,6 +1698,30 @@ sub UsesPrototypes
   push(@data, '#endif');
 
   push(@data, '#endif /* CCODE */');
+  push(@data, '');
+
+  push(@data, '#ifdef FCODE');
+
+  push(@data, "#define DECLARE_\U$thorn\E_FUNCTIONS _DECLARE_CCTK_FUNCTIONS &&\\");
+
+  foreach my $FunctionKey (sort keys %FunctionList)
+  {
+    $Function = $FunctionList{$FunctionKey};
+    if ($Function)
+    {
+      if ($Function->{"Used"})
+      {
+        push(@data, "      external $Function->{\"Name\"} &&\\");
+        if ($Function->{"Return Type"} ne 'void') {
+          push(@data, "      $Function->{\"Return Type\"} $Function->{\"Name\"} && \\");
+        }
+      }
+    }
+  }
+
+  push(@data, '');
+
+  push(@data, '#endif /* FCODE */');
   push(@data, '');
 
   push(@data, '#endif');

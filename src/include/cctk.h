@@ -72,11 +72,11 @@
 #define CCTK_LSSH(stag,dim) cctk_lssh((stag)+CCTK_NSTAGGER+(dim))
 #define CCTK_LSSH_IDX(stag,dim) ((stag)+CCTK_NSTAGGER*(dim))
 
-#define DECLARE_CCTK_FUNCTIONS &&\
+#define _DECLARE_CCTK_FUNCTIONS &&\
         integer  CCTK_Equals, CCTK_MyProc, CCTK_nProcs, CCTK_IsThornActive&&\
         external CCTK_Equals, CCTK_MyProc, CCTK_nProcs, CCTK_IsThornActive&&\
-        CCTK_POINTER  CCTK_PointerTo, CCTK_NullPointer&&\
-        external CCTK_PointerTo, CCTK_NullPointer
+        CCTK_POINTER CCTK_PointerTo, CCTK_NullPointer&&\
+        external     CCTK_PointerTo, CCTK_NullPointer
 
 
 #endif /*FCODE*/
@@ -95,7 +95,7 @@
 #include "cctk_Faces.h"
 #include "cctk_File.h"
 #include "cctk_Flesh.h"
-#include "cctk_FunctionAliases.h"
+#include "cctk_Functions.h"
 #include "cctk_GHExtensions.h"
 #include "cctk_Groups.h"
 #include "cctk_GroupsOnGH.h"
