@@ -92,7 +92,7 @@ sub parse_interface_ccl
 	    }
 	    else
 	    {
-		print "Error:  Only one implements line allowed.\n";
+		print STDERR "Error:  Only one implements line allowed.\n";
 	    }
 	}
 	elsif ($line =~ m/^\s*(INHERITS|FRIEND)\s*:((\s*[a-z]+[a-z_0-9]*)*\s*)$/i)
@@ -139,12 +139,12 @@ sub parse_interface_ccl
 	{
 	    if($line =~ m:\{:)
 	    {
-		print "...Skipping block with missing keyword....\n";
+		print STDERR "...Skipping block with missing keyword....\n";
 		$linenum++ until ($data[$linenum] =~ m:\}:);
 	    }
 	    else
 	    {
-		print "Unknown line $line!!!\n";
+		print STDERR "Unknown line $line!!!\n";
 	    }
 	}
     }

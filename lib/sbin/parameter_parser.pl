@@ -104,6 +104,8 @@ sub parse_param_ccl
     local($current_friend, $new_ranges, $new_desc);
     local($data, %parameter_db);
     local(%friends);
+    local(%defined_parameters);
+
 
 #   The default block is private.
     $block = "PRIVATE";
@@ -136,21 +138,28 @@ sub parse_param_ccl
 	    $variable = $3;
 	    $description = $4;
 
-	    if($1 =~ m:EXTENDS:i && $block ne "FRIEND")
+	    if($defined_parameters{"\U$variable\E"})
+	    {
+	      print STDERR "Duplicate parameter $variable in implementation $implementation\n";
+	      print STDERR "Ignoring second definition.\n";
+		$nerrors++;
+		$linenum++ until ($data[$linenum] =~ m:\}:);
+	    }
+	    elsif($1 =~ m:EXTENDS:i && $block ne "FRIEND")
 	    {
 #               Can only extend a friend variable.
-		print "Parse error at line $linenum\n";
+		print STDERR "Parse error at line $linenum\n";
 		$nerrors++;
-		$linenum++ while($line[$linenum] !=~ m:\}:);
+		$linenum++ until ($data[$linenum] !=~ m:\}:);
 	    }
 	    elsif(! $data[$linenum+1] =~ m:^\s*\{\s*$:)
 	    {
 #               Since the data should have no blank lines, the next
 #               line should have { on it.
-		print "Parse error at line $linenum\n";
+		print STDERR "Parse error at line $linenum\n";
 		$nerrors++;
 #               Move past the end of this block.
-		$linenum++ while($line[$linenum] !=~ m:\}:);
+		$linenum++ until ($data[$linenum] !=~ m:\}:);
 	    }
 	    else
 	    {
@@ -159,6 +168,8 @@ sub parse_param_ccl
 		$linenum++;
 
 #               Store data about this variable.
+		$defined_parameters{"\U$variable\E"} = 1;
+
 		$parameter_db{"\U$implementation $block\E variables"} .= $variable." ";
 		$parameter_db{"\U$implementation $variable\E type"} = $type;
 		$parameter_db{"\U$implementation $variable\E description"} = $description;
@@ -190,17 +201,17 @@ sub parse_param_ccl
 	{
 	    if($line =~ m:\{:)
 	    {
-		print "...Skipping block with missing keyword....\n";
+		print STDERR "...Skipping block with missing keyword....\n";
 		$linenum++ until ($data[$linenum] =~ m:\}:);
 	    }
 	    else
 	    {
-		print "Unknown line $line!!!\n";
+		print STDERR "Unknown line $line!!!\n";
 	    }
 	}
     }
 
-    $parameter_db{"\U$implementations\E FRIEND implementations"} = join(" ", keys %friends);
+    $parameter_db{"\U$implementation\E FRIEND implementations"} = join(" ", keys %friends);
 
     return %parameter_db;
 }
