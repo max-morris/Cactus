@@ -391,7 +391,7 @@ sub get_applications
 	    # Checkout C WaveToy
 	    print("\n");
 	    &CheckOut("CactusWave/WaveToyC",$repository);
-	    &CheckOut("CactusWave/IDScalarWave",$repository);
+	    &CheckOut("CactusWave/IDScalarWaveC",$repository);
 	    &CheckOut("CactusBase/Boundary",$repository);
 	    &CheckOut("CactusBase/CartGrid3D",$repository);
 	    &CheckOut("CactusBase/IOUtil",$repository);
