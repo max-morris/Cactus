@@ -73,7 +73,7 @@ void CCTKi_CommandLineTestThornCompiled(const char *optarg)
     printf("Thorn '%s' unavailable.\n", optarg);
   }
 
-  exit(retval);
+  CCTK_Exit(retval,NULL);
 }
 
 
@@ -106,7 +106,7 @@ void CCTKi_CommandLineDescribeAllParameters(const char *optarg)
             break;
           default :
             fprintf(stderr, "Unknown verbosity option %s\n", optarg);
-            exit(2);
+            CCTK_Exit(2,NULL);
         }
       }
       else
@@ -121,7 +121,7 @@ void CCTKi_CommandLineDescribeAllParameters(const char *optarg)
 
   /*  CCTKi_BindingsParameterHelp(NULL,"%s",stdout);*/
  
-  exit(0);
+  CCTK_Exit(0,NULL);
 }
 
 void CCTKi_CommandLineDescribeParameter(const char *optarg)
@@ -153,7 +153,7 @@ void CCTKi_CommandLineDescribeParameter(const char *optarg)
 
   CommandLinePrintParameter(properties);
     
-  exit(0);
+  CCTK_Exit(0,NULL);
 }
 
 void CCTKi_CommandLineTestParameters(const char *optarg)
@@ -246,7 +246,7 @@ void CCTKi_CommandLineListThorns(void)
   printf ("\n---------------Compiled Thorns-------------\n");
   CCTKi_PrintThorns(stdout, "  %s\n", 0);
   printf ("-------------------------------------------\n\n");
-  exit(1);
+  CCTK_Exit(1,NULL);
 }
 
  /*@@
@@ -277,7 +277,7 @@ void CCTKi_CommandLineVersion(void)
   printf("%s: Version %s.  Compiled on %s at %s\n", argv[0], version, 
           compileDate(), compileTime());
 
-  exit(1);
+  CCTK_Exit(1,NULL);
 }
 
  /*@@
@@ -298,28 +298,30 @@ void CCTKi_CommandLineHelp(void)
 {
   int argc;
   char **argv;
+  char *mess;
 
   argc = CCTK_CommandLine(&argv);
+  mess = (char*) malloc (2048*sizeof(char));
 
-  printf("%s, compiled on %s at %s\n", argv[0], compileDate(), compileTime());
-  printf("Usage: %s [-h] [-O] [-o paramname] [-x [nprocs]] [-W n] [-E n] [-r] [-T] [-t name] [-v] <parameter_file_name>\n", argv[0]);
+  sprintf(mess,"\n%s, compiled on %s at %s\n", argv[0], compileDate(), compileTime());
+  sprintf(mess,"%sUsage: %s [-h] [-O] [-o paramname] [-x [nprocs]] [-W n] [-E n] [-r] [-T] [-t name] [-v] <parameter_file_name>\n", mess, argv[0]);
 
-  printf("\n");
-  printf("Valid options:\n");
-  printf("-h, -help                           : gets this help.\n");
-  printf("-O, -describe-all-parameters        : describes all the parameters.\n");
-  printf("-o, -describe-parameter <paramname> : describe the given parameter.\n");
-  printf("-x, -test-parameters [nprocs]       : does a quick test of the parameter file\n"
+  sprintf(mess,"%s\n", mess);
+  sprintf(mess,"%sValid options:\n", mess);
+  sprintf(mess,"%s-h, -help                           : gets this help.\n", mess);
+  sprintf(mess,"%s-O, -describe-all-parameters        : describes all the parameters.\n", mess);
+  sprintf(mess,"%s-o, -describe-parameter <paramname> : describe the given parameter.\n", mess);
+  sprintf(mess,"%s-x, -test-parameters [nprocs]       : does a quick test of the parameter file\n"
          "                                      pretending to be on nprocs processors, \n"
-         "                                      or 1 if not given.\n");
-  printf("-W, -warning-level <n>              : Sets the warning level to n.\n");
-  printf("-E, -error-level <n>                : Sets the error level to n.\n");
-  printf("-r, -redirect-stdout                : Redirects standard output to files.\n");
-  printf("-T, -list-thorns                    : Lists the compiled-in thorns.\n");
-  printf("-t, -test-thorn-compiled <name>     : Tests for the presence of thorn <name>.\n");
-  printf("-v, -version                        : Prints the version.\n");
-
-  exit(1);
+         "                                      or 1 if not given.\n", mess);
+  sprintf(mess,"%s-W, -warning-level <n>              : Sets the warning level to n.\n", mess);
+  sprintf(mess,"%s-E, -error-level <n>                : Sets the error level to n.\n", mess);
+  sprintf(mess,"%s-r, -redirect-stdout                : Redirects standard output to files.\n", mess);
+  sprintf(mess,"%s-T, -list-thorns                    : Lists the compiled-in thorns.\n", mess);
+  sprintf(mess,"%s-t, -test-thorn-compiled <name>     : Tests for the presence of thorn <name>.\n", mess);
+  sprintf(mess,"%s-v, -version                        : Prints the version.\n", mess);
+  CCTK_Info("CommandlineParser:",mess);
+  CCTK_Exit(1,NULL);
 }
 
  /*@@
@@ -344,7 +346,7 @@ void CCTKi_CommandLineUsage(void)
   argc = CCTK_CommandLine(&argv);
 
   printf("Usage: %s [-h] [-O] [-o paramname] [-x [nprocs]] [-W n] [-E n] [-r] [-T] [-t name] [-v] <parameter_file_name>\n", argv[0]);
-  exit(1);
+  CCTK_Exit(1,NULL);
 }  
 
  /*@@
