@@ -1617,7 +1617,10 @@ CCTK\_REAL}s with the grid spacing in each direction.
 %\item [{\tt cctk\_from}] The index value from which the user should start loops.
 %\item [{\tt cctk\_to}] ... end loops.
 %\item [{\tt cctk\_origin\_space}]  The coordinates of the spatial origin?
-%\item [{\tt cctk\_lssh}]  This is an internal array used to hold array extents for staggering.  One should use the macro CCTK_LSSH(,) to access its elements.
+\item [{\tt cctk\_lssh}]  This is an internal array used to hold
+array extents for staggering.  One should use the macro CCTK\_LSSH(,)
+to access its elements.
+
 \end{Lentry}
 
 The following variables describe the location of the local
@@ -1637,7 +1640,7 @@ the global grid.
       start from zero, so you need to add one when using them in
       Fortran thorns.
 \item {\tt cctk\_bbox}
-      An array of 2*{\tt cctk\_dim} integers (in the order
+      An array of 2$*${\tt cctk\_dim} integers (in the order
 	$[{\mbox{dim}}_0^{\mbox{min}}, \mbox{dim}_0^{\mbox{max}},
 	{\mbox dim}_1^{\mbox{min}}, {\mbox dim}_1^{\mbox{max}}, \ldots]$),
       which indicate whether the boundaries are internal boundaries
@@ -3307,6 +3310,7 @@ which uses the include file must declare this in its
 USES INCLUDE [SOURCE|HEADER]: <file_name>
 \end{verbatim}
 
+(If the optional \verb![SOURCE|HEADER]! is omitted, \verb|HEADER| is assumed.)
 Any thorn which wishes to add to this include file,
 declares in its own {\tt interface.ccl}
 
