@@ -26,13 +26,17 @@ extern "C" {
                          int,    \
                          int,    \
                          int,    \
+                         int *,  \
                          void **,\
                          int *,  \
+                         void *, \
+                         void *, \
+                         void **,\
                          int *,  \
                          void **,\
                          int *    
 
-int CCTK_Interp(cGH *GH,
+int CCTK_InterpArray(cGH *GH,
                 int operation_handle,
                 int nPoints,
                 int nCoords,
