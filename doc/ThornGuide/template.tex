@@ -1,0 +1,76 @@
+\documentclass{article}
+
+% Comment out this line if you do not have this style file, or download
+% it from www.cactuscode.org
+\usepackage{../../../../doc/ThornGuide/cactus}
+
+\begin{document}
+
+% The author of the documentation
+\author{Your Name} 
+
+% The title of the document (not necessarily the name of the Thorn)
+\title{The Title of This Document}
+
+\date{The Date of The Last Change}
+
+% the following 3 lines will be ignored when the ThornGuide is constructed
+\maketitle
+
+\section{Abstract}
+This thorn can do this and that, in three different ways. 
+
+\tableofcontents
+
+\section{Introduction}
+
+Introductory kind of stuff
+
+\section{Physics and Equations}
+
+Very important to describe any physical system which your thorn is modelling,
+this is hard to work out from code.
+
+If you want to include figures you {\it have} to use the following
+structure for now. Name the figure with the name of your arrangement
+and thorn as below in~\ref{MyArrangement_MyThorn_MyLabel}, to avoid
+name clashes. Don't include the extension in the figure name,
+
+\begin{figure}
+\begin{verbatim}
+\begin{figure}[ht]
+\begin{center}
+   \includegraphics[width=6cm]{MyArrangement_MyThorn_MyFigure}
+\end{center}
+\caption{Illustration of this and that}
+\label{MyArrangement_MyThorn_MyLabel}
+\end{figure}
+\end{verbatim}
+\caption{This is how you include figures}
+\label{MyArrangement_MyThorn_MyLabel}
+\end{figure}
+
+Note that you should also include the arrangement name and thorn name in 
+any labels you use, again to avoid name clashes with other thorns. Ditto 
+for~\cite{MyArrangement_MyThorn_Author99} labels for and citations.
+
+\section{Numerical Methods}
+
+You probably want to say something about the numerical methods you are using.
+
+\section{How to Use This Thorn}
+
+As well as any special instructions on how to get hold of and use the 
+thorn, and how it interacts with other thorns. Note that when the 
+ThornGuide is constructed, sections are automatically included from 
+the information in the CCL files.
+
+\begin{thebibliography}{9}
+
+\bibitem{MyArrangement_MyThorn_Author99}
+{J. Author, {\em The Title of the Book, Journal, or periodical}, 1 (1999), 
+1--16. {\tt http://www.nowhere.com/}}
+
+\end{thebibliography}
+
+\end{document}
