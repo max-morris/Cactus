@@ -376,7 +376,7 @@ sub RunCactus
 
   printf "\n  Issuing $command\n";
   $retcode = 0;
-  open (CMD, "$command |");
+  open (CMD, "pwd; $command |");
   open (LOG, "> $testname.log");
 
   while (<CMD>)
@@ -432,7 +432,7 @@ sub FindFiles
 
   foreach $f (@tmp) 
   {
-    if ($f =~ /(xl|yl|zl|dl|tl|gnuplot|asc)$/)
+    if ($f =~ /(xl|yl|zl|dl|tl|gnuplot|asc|gauss|alm|ul)$/)
     {
       $recognizedfiles .= " $f";
     }
@@ -817,6 +817,8 @@ sub CompareTestFiles
 
       $rundata->{"$inthorn $test $file NINF"}=0;
       $rundata->{"$inthorn $test $file NNAN"}=0;
+      $rundata->{"$inthorn $test $file NINFNOTFOUND"}=0;
+      $rundata->{"$inthorn $test $file NNANNOTFOUND"}=0;
       $rundata->{"$inthorn $test $file NFAILSTRONG"}=0;
       $rundata->{"$inthorn $test $file NFAILWEAK"}=0;
       
@@ -838,9 +840,11 @@ sub CompareTestFiles
         # Now lets see if they differ.
         if (!("\U$nline" eq "\U$oline")) 
         {
+
           # Check differences 
-          if ($nline !~ /(nan|inf)/i)
+          if (($nline !~ /(nan|inf)/i) && ($oline !~ /(nan|inf)/i))
           {
+
             # This is the new comparison (subtract last two numbers)
             @newvals = split(' ',$nline);
             @oldvals = split(' ',$oline);
@@ -913,19 +917,35 @@ sub CompareTestFiles
             }
           }
           # Check against nans
-          elsif ($nline =~ /nan/i)
+          elsif ($nline =~ /nan/i && $oline !~ /nan/i)
           {
             $rundata->{"$inthorn $test $file NNAN"}++;
             $rundata->{"$inthorn $test $file NFAILWEAK"}++;
             $rundata->{"$inthorn $test $file NFAILSTRONG"}++;
           }
           # Check against inf
-          elsif ($nline =~ /inf/i)
+          elsif ($nline =~ /inf/i && $oline !~ /inf/i)
           {
             $rundata->{"$inthorn $test $file NINF"}++;
             $rundata->{"$inthorn $test $file NFAILWEAK"}++;
             $rundata->{"$inthorn $test $file NFAILSTRONG"}++;
           }
+	  elsif ($oline =~ /nan/i)
+	  {
+	    $rundata->{"$inthorn $test $file NNANNOTFOUND"}++;
+            $rundata->{"$inthorn $test $file NFAILWEAK"}++;
+            $rundata->{"$inthorn $test $file NFAILSTRONG"}++;
+	  }
+	  elsif ($oline =~ /inf/i)
+	  {
+	    $rundata->{"$inthorn $test $file NINFNOTFOUND"}++;
+            $rundata->{"$inthorn $test $file NFAILWEAK"}++;
+            $rundata->{"$inthorn $test $file NFAILSTRONG"}++;
+	  }
+	  else
+	  {
+	    print "TESTSUITE ERROR: Didn't catch case in CompareFiles\n";
+	  }
         } # if
       } #while
 
@@ -1022,8 +1042,10 @@ sub ReportOnTest
       {
         $rundata->{"$thorn $test NFAILSTRONG"}++;
         print "\n  - $file: substantial differences!\n";
-        print "      caught  $rundata->{\"$thorn $test $file NNAN\"} NaNs in $file\n" if $rundata->{"$thorn $test $file NNAN"};
-        print "      caught  $rundata->{\"$thorn $test $file NINF\"} Infs in $file\n" if $rundata->{"$thorn $test $file NINF"};
+        print "      caught  $rundata->{\"$thorn $test $file NNAN\"} NaNs in new $file\n" if $rundata->{"$thorn $test $file NNAN"};
+        print "      did not reproduce  $rundata->{\"$thorn $test $file NNANNOTFOUND\"} NaNs from old $file\n" if $rundata->{"$thorn $test $file NNANNOTFOUND"};
+        print "      caught  $rundata->{\"$thorn $test $file NINF\"} Infs in new $file\n" if $rundata->{"$thorn $test $file NINF"};
+        print "      did not reproduce  $rundata->{\"$thorn $test $file NINFNOTFOUND\"} Infs from old $file\n" if $rundata->{"$thorn $test $file NINFNOTFOUND"};
         print "      significant differences on $rundata->{\"$thorn $test $file NFAILSTRONG\"} (out of $rundata->{\"$thorn $test $file NUMLINES\"}) lines!\n";
         foreach $val (keys (%$rundata))
         {
