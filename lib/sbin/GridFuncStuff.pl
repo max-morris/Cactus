@@ -168,11 +168,11 @@ sub GetThornArguments
 
   if($block eq "PUBLIC")
   {
-    @other_imps = $interface_data{"IMPLEMENTATION \U$my_imp\E ANCESTORS"};
+    @other_imps = $interface_database{"IMPLEMENTATION \U$my_imp\E ANCESTORS"};
   }
   elsif($block eq "PROTECTED")
   {
-    @other_imps = $interface_data{"IMPLEMENTATION \U$my_imp\E FRIENDS"};
+    @other_imps = $interface_database{"IMPLEMENTATION \U$my_imp\E FRIENDS"};
   }
   elsif($block eq "PRIVATE")
   {
@@ -184,7 +184,7 @@ sub GetThornArguments
   }
 
 #  print "Thorn is $this_thorn, implementation $my_imp, block is $block\n";
-
+#  print "Other imps are @other_imps\n";
 
   foreach $imp (@other_imps,$my_imp)
   {
@@ -750,7 +750,7 @@ sub CreateThornArgumentHeaderFile
   {
     if($hasvars{$block})
     {
-      push(@returndata, "DECLARE_\U$thorn"."_$block"."_C2F\\");
+      push(@returndata, "DECLARE_\U$thorn"."_$block"."_C2F \\");
     }
   }
 
@@ -764,7 +764,7 @@ sub CreateThornArgumentHeaderFile
   {
     if($hasvars{$block})
     {
-      push(@returndata, "INITIALISE_\U$thorn"."_$block"."_C2F\\");
+      push(@returndata, "INITIALISE_\U$thorn"."_$block"."_C2F \\");
     }
   }
 
@@ -772,9 +772,9 @@ sub CreateThornArgumentHeaderFile
 
   # Dummy C declarations
 
-  push(@returndata, "#define \U$thorn"."_CARGUMENTS cGH *GH");
+  push(@returndata, "#define \U$thorn"."_CARGUMENTS cGH *GH ");
 
-  push(@returndata, "#define \UDECLARE_$thorn"."_CARGUMENTS");
+  push(@returndata, "#define \UDECLARE_$thorn"."_CARGUMENTS ");
   
 
   push(@returndata, "#endif /*CCODE*/");
