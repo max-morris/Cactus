@@ -479,6 +479,7 @@ sub NewParamStuff
     push(@data, "#include <stdarg.h>");
     push(@data, "");
     push(@data, "#include \"cctk_Config.h\"");
+    push(@data, "#include \"cctk_Constants.h\"");
     push(@data, "#include \"ParameterBindings.h\"");
 
     push(@data, "#include \"CParameterStructNames.h\"");
@@ -604,11 +605,31 @@ sub CreateParameterRegistrationStuff
  
 #    $quoted_default =~ s:\"::g;  The database now strips all unescaped quotes.
 
+    # Set steerable details
+    $steerable = $rhparameter_db->{"\U$thorn $parameter\E steerable"};
+    if ($steerable =~ /never/i || $steerable =~/^$/)
+    {
+      $steerable_type = "CCTK_STEERABLE_NEVER";
+    }
+    elsif ($steerable =~ /always/i)
+    {
+      $steerable_type = "CCTK_STEERABLE_ALWAYS";
+    }
+    elsif ($steerable =~ /recover/i)
+    {
+      $steerable_type = "CCTK_STEERABLE_RECOVER";
+    }
+    else
+    {
+      $message = "Illegal steerable type ($steerable) for parameter $parameter in $thorn";
+      &CST_error(0,$message,__LINE__,__FILE__);
+    }
+
     $line="  CCTKi_ParameterCreate(\"$parameter\", /* The parameter name */\n".
           "                        \"$thorn\",     /* The thorn          */\n".
           "                        \"$type\",       /* The parameter type*/\n".
           "                        \"$block\",     /* The scoping block  */\n".
-          "                  0,              /* Is it steerable ?  */\n".
+          "                  $steerable_type,              /* Is it steerable ?  */\n".
           "                  " . $rhparameter_db->{"\U$thorn $parameter\E description"} . ", /* The description */\n" .
           "                  \"" . $quoted_default . "\",  /* The default value */\n" .
           "                  &($structure.$parameter),   /* The actual data pointer */\n".

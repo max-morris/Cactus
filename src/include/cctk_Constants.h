@@ -27,9 +27,14 @@
 #define CCTK_VARIABLE_COMPLEX32 13
 #define CCTK_VARIABLE_STRING    14
 
+/* steerable status of parameters */
+#define CCTK_STEERABLE_NEVER   0
+#define CCTK_STEERABLE_ALWAYS  1
+#define CCTK_STEERABLE_RECOVER 2
+
 /* stagger flags: yes/no, number of staggerings: 3 */
 #define CCTK_NO_STAGGER    0
-#define CCTK_STAGGER       0
+#define CCTK_STAGGER       1
 #define CCTK_NSTAGGER      3
 
 /* stagger code in one direction */

@@ -144,7 +144,7 @@ sub parse_param_ccl
 	$parameter_db{"\U$thorn $block\E variables"} = "";
       }
     }
-    elsif($line =~ m:(EXTENDS |USES )?\s*(?\:CCTK_)?(INT|REAL|LOGICAL|BOOLEAN|KEYWORD|STRING)\s*([a-zA-Z]+[a-zA-Z0-9_]*) \s*(\"[^\"]*\"):i)
+    elsif($line =~ m:(EXTENDS |USES )?\s*(?\:CCTK_)?(INT|REAL|LOGICAL|BOOLEAN|KEYWORD|STRING)\s*([a-zA-Z]+[a-zA-Z0-9_]*) \s*(\"[^\"]*\")\s*(.*)$:i)
     {
 
       # This is a parameter definition.
@@ -152,6 +152,7 @@ sub parse_param_ccl
 
       $variable = $3;
       $description = $4;
+      $options = $5;
 
       # Logical is depricated
       if ($type =~ /LOGICAL/i)
@@ -189,7 +190,25 @@ sub parse_param_ccl
 	# Move past {
 	$line_number++;
 	$line_number++;
-	
+
+	# Parse the options
+	%options = split(/\s*=\s*|\s+/, $options);
+      
+	foreach $option (keys %options)
+	{
+	  if($option =~ m:STEERABLE:i)
+	  {
+	    $parameter_db{"\U$thorn $variable\E steerable"} = $options{$option};
+	    print "Got STEERABLE <$options{$option}> for $variable in $thorn\n";
+	  }
+	  else
+	  {
+	    $message = "Unknown option $option for parameter $variable of thorn $thorn";
+	    &CST_error(0,$message,__LINE__,__FILE__);
+	  }
+	}
+
+
 	# Store data about this variable.
 	$defined_parameters{"\U$variable\E"} = 1;
 	
