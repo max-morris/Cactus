@@ -6,10 +6,13 @@
    
    @enddesc 
  @@*/
+
 #include <stdio.h>
 #include "cctk_version.h"
 
-static char *rcsid = "$Id$";
+static char *rcsid = "$Header$";
+
+const char *CCTKi_version_src_datestamp_c(void) { return rcsid; }
 
  /*@@
    @routine    datastamp
