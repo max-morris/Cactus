@@ -21,6 +21,7 @@
 #include "cctk_Misc.h"
 #include "cctk_ActiveThorns.h"
 #include "cctk_ParameterFunctions.h"
+#include "cctki_WarnLevel.h"
 
 static char *rcsid = "$Header$";
 
@@ -57,7 +58,7 @@ void CCTKi_CommandLineTestThornCompiled(const char *optarg)
 {
   int retval;
 
-  if(retval = CCTK_IsThornCompiled(optarg))
+  if((retval = CCTK_IsThornCompiled(optarg)))
   {
     printf("Thorn '%s' available.\n", optarg);
   }
@@ -133,7 +134,6 @@ void CCTKi_CommandLineDescribeParameter(const char *optarg)
   char *thorn;
   char *param;
   t_param_prop *properties;
-  t_range *range;
   const char *cthorn;
 
   Util_SplitString(&thorn, &param, optarg, "::");

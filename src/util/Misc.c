@@ -28,6 +28,11 @@
 #include "cctk_FortranString.h"
 #include "cctk_WarnLevel.h"
 
+int CCTK_RegexMatch(const char *string, 
+		    const char *pattern, 
+		    const int nmatch,
+		    regmatch_t *pmatch); 
+
  /*@@
    @routine    Util_SplitString
    @date       Wed Jan 20 10:14:00 1999
@@ -75,7 +80,7 @@ int Util_SplitString(char **before, char **after, const char *string, const char
     retval = 1;
   }
 
-  if(position && before && after)
+  if(position && *before && *after)
   {
     /* Copy the data */
     strncpy(*before, string, (int)(position-string));
@@ -288,9 +293,9 @@ int Util_IntInRange(int inval, const char *range)
    * 5 - ) or ]
    */
 
-  if(matched = CCTK_RegexMatch(range, 
+  if((matched = CCTK_RegexMatch(range, 
 		     "(\\[|\\()?([^]):]*):?([^]):]*)?:?([^]):]*)?(\\]|\\))?", 
-		     6, pmatch))
+		     6, pmatch)) != 0)
   {
     /* First work out if the range is closed at the lower end. */
     if(pmatch[1].rm_so != -1)
@@ -414,9 +419,9 @@ int Util_DoubleInRange(double inval, const char *range)
    * 5 - ) or ]
    */
 
-  if(matched = CCTK_RegexMatch(range, 
+  if((matched = CCTK_RegexMatch(range, 
 		     "(\\[|\\()?([^]):]*):?([^]):]*)?:?([^]):]*)?(\\]|\\))?", 
-		     6, pmatch))
+		     6, pmatch)) != 0)
   {
     /* First work out if the range is closed at the lower end. */
     if(pmatch[1].rm_so != -1)

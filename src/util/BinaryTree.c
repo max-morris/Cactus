@@ -199,6 +199,20 @@ void TreePrintNodes(t_tree *root, int depth, void (*print_node)(void *, int))
 }
 
 
+ /*@@
+   @routine    TreeFindNode
+   @date       Mon Oct  5 11:06:52 1998
+   @author     Tom Goodale
+   @desc 
+   Find a node.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
 t_tree *TreeFindNode(t_tree *root, void *data, int (*compare)(const void *, const void *))
 {
   int order;
@@ -218,6 +232,10 @@ t_tree *TreeFindNode(t_tree *root, void *data, int (*compare)(const void *, cons
   {
     /* Found it. */
     node = root;
+  }
+  else
+  {
+    node = NULL;
   }
 
   return node;

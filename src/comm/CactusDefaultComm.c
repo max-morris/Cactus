@@ -76,6 +76,12 @@ cGH *CactusDefaultSetupGH(tFleshConfig *config, int convergence_level)
     return retval;
   }
 
+  /* Initialise this since it is used later and in exceptional
+   * circumstances might not be initialsed beforehand. 
+   */
+
+  variable = -1;
+
   /* Create a new Grid Hierarchy */
   thisGH = (cGH *)malloc(sizeof(cGH));
 
@@ -85,14 +91,14 @@ cGH *CactusDefaultSetupGH(tFleshConfig *config, int convergence_level)
 
     /* Need this to be at least one otherwise the memory allocation will fail. */
     if(thisGH->cctk_dim == 0) thisGH->cctk_dim = 1;
-    thisGH->cctk_iteration = 0;
-    thisGH->cctk_gsh = (int *)malloc(thisGH->cctk_dim*sizeof(int));
-    thisGH->cctk_lsh = (int *)malloc(thisGH->cctk_dim*sizeof(int));
-    thisGH->cctk_lbnd = (int *)malloc(thisGH->cctk_dim*sizeof(int));
-    thisGH->cctk_ubnd = (int *)malloc(thisGH->cctk_dim*sizeof(int));
-    thisGH->cctk_to = (int *)malloc(thisGH->cctk_dim*sizeof(int));
-    thisGH->cctk_from = (int *)malloc(thisGH->cctk_dim*sizeof(int));
-    thisGH->cctk_bbox        = (int *)malloc(2*thisGH->cctk_dim*sizeof(int));
+    thisGH->cctk_iteration    = 0;
+    thisGH->cctk_gsh          = (int *)malloc(thisGH->cctk_dim*sizeof(int));
+    thisGH->cctk_lsh          = (int *)malloc(thisGH->cctk_dim*sizeof(int));
+    thisGH->cctk_lbnd         = (int *)malloc(thisGH->cctk_dim*sizeof(int));
+    thisGH->cctk_ubnd         = (int *)malloc(thisGH->cctk_dim*sizeof(int));
+    thisGH->cctk_to           = (int *)malloc(thisGH->cctk_dim*sizeof(int));
+    thisGH->cctk_from         = (int *)malloc(thisGH->cctk_dim*sizeof(int));
+    thisGH->cctk_bbox         = (int *)malloc(2*thisGH->cctk_dim*sizeof(int));
     thisGH->cctk_nghostzones  = (int *)malloc(2*thisGH->cctk_dim*sizeof(int));
     thisGH->cctk_levfac       = (int *)malloc(2*thisGH->cctk_dim*sizeof(int));
     thisGH->cctk_delta_space  = (CCTK_REAL *)malloc(thisGH->cctk_dim*sizeof(CCTK_REAL));

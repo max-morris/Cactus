@@ -17,10 +17,10 @@
 #include "cctk_Banner.h"
 #include "cctk_FortranString.h"
 
-static char *rcsis = "$Header$";
+static char *rcsid = "$Header$";
 
 static int number_banners = 0;
-static const char **banner_strings = NULL;
+static char **banner_strings = NULL;
 
 void CCTK_PrintBanners(void);
 
@@ -81,18 +81,18 @@ void CactusBanner(void)
 void CCTK_RegisterBanner(const char *string)
 {
   const char **temp = NULL;
-  const char *newstring;
+  char *newstring;
   number_banners++;
 
   /* Resize the array of banner strings */
   if (number_banners == 1)
   {
-    banner_strings = (const char **)malloc( number_banners*sizeof(const char *));  
+    banner_strings = (char **)malloc( number_banners*sizeof(char *));  
     temp = banner_strings;
   }
   else
   {
-    temp = realloc( banner_strings, number_banners*sizeof(const char *));  
+    temp = (char **)realloc( banner_strings, number_banners*sizeof(char *));  
 
     if(temp)
     {
@@ -107,7 +107,7 @@ void CCTK_RegisterBanner(const char *string)
   /* If this was succesful, copy the data into the array */
   if(temp)
   {
-    newstring = malloc((strlen(string)+1)*sizeof(const char));
+    newstring = (char *)malloc((strlen(string)+1)*sizeof(char));
     if(newstring)
     {
       strcpy(newstring, string);

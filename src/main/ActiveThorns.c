@@ -413,8 +413,6 @@ int CCTK_IsThornCompiled(const char *name)
   int retval;
   t_sktree *node;
   
-  struct THORN *thorn;
-
   /* Find the thorn */
   node = SKTreeFindNode(thornlist, name);
 
@@ -673,6 +671,9 @@ int CCTK_ImplementationThornList (const char *imp, char ***list, int *n_items)
     
   /* FIXME */
 #define _MY_THORN_JUNK_SIZE 10
+
+
+  retval = 0;
 
   /* find all thorns for implementation */
   thornlist = (t_sktree*) CCTK_ImpThornList (imp);

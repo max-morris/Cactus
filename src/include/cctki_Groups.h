@@ -17,7 +17,7 @@
 extern "C" {
 #endif
 
-int CCTKi_CreateGroup(const char *gname, const char *thorn, const char *imp,
+int CCTK_CreateGroup(const char *gname, const char *thorn, const char *imp,
 		     const char *gtype,
 		     const char *vtype,
 		     const char *gscope,

@@ -98,7 +98,6 @@ int Util_NewHandle(cHandledData **storage, const char *name, void *data)
 	
 	/* Record position of first unused array element. */
 	(*storage)->first_unused = (*storage)->array_size;
-	
       }
     }
     else
@@ -124,9 +123,13 @@ int Util_NewHandle(cHandledData **storage, const char *name, void *data)
       
 	/* Change pointer to first unused array element. */
 	(*storage)->first_unused = FindNextUnused(*storage, (*storage)->first_unused);
-      };
-    };
-  };
+      }
+    }
+  }
+  else
+  {
+    return_code = -1;
+  }
 
   return return_code;
 

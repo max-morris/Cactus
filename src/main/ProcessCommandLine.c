@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "CommandLine.h"
 #include "cctk_Flesh.h"
 #include "getopt.h"
 

@@ -12,6 +12,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
 #include "SKBinTree.h"
 
@@ -40,7 +41,6 @@ t_sktree *SKTreeStoreData(t_sktree *root, t_sktree *subtree,
 {
   int order;
   t_sktree *newsubtree;
-  t_sktree *lastnode, *node;
 
   if(!subtree)
   {
@@ -96,7 +96,7 @@ t_sktree *SKTreeStoreData(t_sktree *root, t_sktree *subtree,
     {
       newsubtree = SKTreeStoreData(subtree, subtree->right, key, data);
     }
-    else if(order==0)
+    else
     {
       /* Duplicate key. */
       newsubtree = NULL;
@@ -273,7 +273,7 @@ t_sktree *SKTreeFindNode(t_sktree *root, const char *key)
     {
       node = SKTreeFindNode(root->right, key);
     }
-    else if(order==0)
+    else
     {
       /* Found it. */
       node = root;

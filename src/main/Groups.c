@@ -318,7 +318,7 @@ cGroupDefinition *CCTK_SetupGroup(const char *implementation,
   if((group_num = CCTK_GroupIndex(fullname1)) == -1)
   {
     /* Resize the array of groups */
-    if(temp = ((cGroupDefinition *)realloc(groups, (n_groups+1)*sizeof(cGroupDefinition))))
+    if((temp = (cGroupDefinition *)realloc(groups, (n_groups+1)*sizeof(cGroupDefinition))))
     {
       groups = temp;
       

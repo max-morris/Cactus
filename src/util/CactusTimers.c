@@ -7,7 +7,7 @@
    @enddesc 
  @@*/
 
-
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -130,6 +130,11 @@ int CCTK_TimerCreate(const char *name)
 	}
         retval = this_timer;
       }
+      else
+      {
+        free(timer);
+        retval = -2;
+      }
     }
     else
     {
@@ -183,11 +188,9 @@ int CCTK_TimerCreateI(void)
 void CCTK_TimerDestroy(const char *name)
 {
   t_Timer *timer;
-  t_TimerFuncs *funcs;
   int this_timer;
-  int handle;
 
-  if(this_timer = Util_GetHandle(timers, name, (void **)&timer))
+  if((this_timer = Util_GetHandle(timers, name, (void **)&timer)) > -1)
   {
     CCTKi_TimerDestroy(this_timer, timer);
   }
@@ -211,7 +214,7 @@ void CCTK_TimerDestroyI(int this_timer)
 {
   t_Timer *timer;
 
-  if(timer = Util_GetHandledData(timers, this_timer))
+  if((timer = Util_GetHandledData(timers, this_timer)) > -1)
   {
     CCTKi_TimerDestroy(this_timer, timer);
   }
@@ -272,7 +275,7 @@ void CCTK_TimerStart(const char *name)
   t_Timer *timer;
   int this_timer;
 
-  if(this_timer = Util_GetHandle(timers, name, (void **)&timer))
+  if((this_timer = Util_GetHandle(timers, name, (void **)&timer)) > -1)
   {
     CCTKi_TimerStart(this_timer, timer);
   }
@@ -282,7 +285,7 @@ void CCTK_TimerStartI(int this_timer)
 {
   t_Timer *timer;
 
-  if(timer = Util_GetHandledData(timers, this_timer))
+  if((timer = Util_GetHandledData(timers, this_timer)) > -1)
   {
     CCTKi_TimerStart(this_timer, timer);
   }
@@ -326,7 +329,7 @@ void CCTK_TimerStop(const char *name)
   t_Timer *timer;
   int this_timer;
 
-  if(this_timer = Util_GetHandle(timers, name, (void **)&timer))
+  if((this_timer = Util_GetHandle(timers, name, (void **)&timer)) > -1)
   {
     CCTKi_TimerStop(this_timer, timer);
   }
@@ -336,7 +339,7 @@ void CCTK_TimerStopI(int this_timer)
 {
   t_Timer *timer;
 
-  if(timer = Util_GetHandledData(timers, this_timer))
+  if((timer = Util_GetHandledData(timers, this_timer)) > -1)
   {
     CCTKi_TimerStop(this_timer, timer);
   }
@@ -380,7 +383,7 @@ void CCTK_TimerReset(const char *name)
   t_Timer *timer;
   int this_timer;
 
-  if(this_timer = Util_GetHandle(timers, name, (void **)&timer))
+  if((this_timer = Util_GetHandle(timers, name, (void **)&timer)) > -1)
   {
     CCTKi_TimerReset(this_timer, timer);
   }
@@ -390,7 +393,7 @@ void CCTK_TimerResetI(int this_timer)
 {
   t_Timer *timer;
 
-  if(timer = Util_GetHandledData(timers, this_timer))
+  if((timer = Util_GetHandledData(timers, this_timer)) > -1)
   {
     CCTKi_TimerReset(this_timer, timer);
   }
@@ -434,7 +437,7 @@ void CCTK_TimerGet(const char *name, t_TimerInfo *info)
   t_Timer *timer;
   int this_timer;
 
-  if(this_timer = Util_GetHandle(timers, name, (void **)&timer))
+  if((this_timer = Util_GetHandle(timers, name, (void **)&timer)) > -1)
   {
     CCTKi_TimerGet(this_timer, timer, info);
   }
@@ -447,7 +450,7 @@ void CCTK_TimerGetI(int this_timer, t_TimerInfo *info)
 {
   t_Timer *timer;
 
-  if(timer = Util_GetHandledData(timers, this_timer))
+  if((timer = Util_GetHandledData(timers, this_timer)) > -1)
   {
     CCTKi_TimerGet(this_timer, timer, info);
   }
@@ -466,9 +469,9 @@ static void CCTKi_TimerGet(int this_timer, t_Timer *timer, t_TimerInfo *info)
   
   if(timer)
   {
+    total_vars = 0;
     if(timer->data)
     {
-      total_vars = 0;
       /* Start the timer info for this timer */
       for(handle = 0; handle < n_timertypes; handle++)
       {
