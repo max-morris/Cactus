@@ -153,6 +153,57 @@ void FMODIFIER FORTRAN_NAME(CCTK_Warn)(int *level, int *line, THREE_FORTSTRINGS_
 }
 
  /*@@
+   @routine    CCTK_VWarn
+   @date       Sun Nov 14 00:23:29 1999
+   @author     Tom Goodale
+   @desc 
+   Warning routine with variable argument list
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+void CCTK_VWarn(int level, int line, const char *file, const char *thorn, const char *format, ...)
+{
+  DECLARE_CCTK_PARAMETERS
+    
+  va_list ap;
+
+  if(level <= warning_level)
+  {
+
+    va_start(ap, format);
+    
+    if (cctk_full_warnings)
+    {
+      fprintf(stderr, "WARNING level %d in thorn %s (line %d of %s): \n", level, thorn, line, file);
+      fprintf(stderr, "  -> ");
+      vfprintf(stderr, format, ap);
+      fprintf(stderr, "\n");
+      fflush(stderr);
+    }
+    else
+    {
+      fprintf(stderr, "WARNING (%s): ", thorn);
+      vfprintf(stderr, format, ap);
+      fprintf(stderr, "\n");
+      fflush(stderr);
+    }
+
+    va_end(ap);
+  }
+
+  if(level <= error_level)
+  {
+    exit(99);
+  }
+}  
+
+
+ /*@@
    @routine    CCTK_ParamWarn
    @date       Wed Feb 17 00:45:07 1999
    @author     Tom Goodale
@@ -357,7 +408,7 @@ void FMODIFIER FORTRAN_NAME(CCTK_VInfo)(int format_number, ...)
   {
     format_string = (char *)GetKeyedData(formatlist, format_number);
 
-    /* Pick an aribitrary starting length for the message */
+    /* Pick an arbitrary starting length for the message */
     message_length=5*strlen(format_string);
 
     message = (char *)malloc(message_length);
