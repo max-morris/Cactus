@@ -1374,7 +1374,7 @@ sub CheckArraySizes
 #                  "",__LINE__,__FILE__);
 #     }
 
-    &VerifyParameterExpression($par,$thornname,$rhparameter_db);
+    &VerifyParameterExpression($par,$thornname,$rhparameter_db,$rhinterface_db);
   }
     
     
@@ -1387,6 +1387,9 @@ sub CheckArraySizes
 #  @desc 
 #  Does some sanity checking on an arithmetic expression 
 #  involving parameter values.
+#  Parameter names can be bare, in which case they are assumed to be
+#  from the current thorn, or qualified, in which case they should
+#  refer either to the current thorn or a valid shared parameter.
 #  @enddesc 
 #  @calls     
 #  @calledby   
@@ -1397,11 +1400,11 @@ sub CheckArraySizes
 #@@*/
 sub VerifyParameterExpression
 {
-  my($expression,$thornname,$rhparameter_db) = @_;
+  my($expression,$thornname,$rhparameter_db,$rh_interface_db) = @_;
   my($i,$count,@fields);
 
   # First do some global checks
-  if($expression !~ m%^[-+*/a-zA-Z0-9_()]+$%)
+  if($expression !~ m%^[-+*/a-zA-Z0-9_():]+$%)
   {
     &CST_error(0, "Array size in $thornname is an invalid arithmatic expression \n"
                .  "      '$expression' contains invalid characters");
@@ -1468,13 +1471,40 @@ sub VerifyParameterExpression
         $base = $1;
       }
 
-      # check if the parameter really exists
-      if ($rhparameter_db->{"\U$thorn Private\E variables"} !~ m:$base:i &&
-          $rhparameter_db->{"\U$thorn Global\E variables"} !~ m:$base:i &&
-          $rhparameter_db->{"\U$thorn Restricted\E variables"} !~ m:$base:i)
+      if($thorn =~ m/^$thornname$/i)
       {
-        &CST_error(0,"Array size \'$expression\' in $thornname contains a constant which isn\'t a parameter",
-                   "",__LINE__,__FILE__);
+        # check if the parameter really exists
+        # FIXME: should also translate and check implementation for restricted and global params.
+        if ($rhparameter_db->{"\U$thorn Private\E variables"} !~ m:$base:i &&
+            $rhparameter_db->{"\U$thorn Global\E variables"} !~ m:$base:i &&
+            $rhparameter_db->{"\U$thorn Restricted\E variables"} !~ m:$base:i)
+        {
+          &CST_error(0,"Array size \'$expression\' in $thornname contains a constant which isn\'t a parameter",
+                     "",__LINE__,__FILE__);
+        }
+      }
+      else
+      {
+        # Parameter is from a different implementation
+
+        my $implementation = $thorn;
+
+        if($rhparameter_db->{"\U$thornname SHARES\E implementations"} =~ m/\b$implementation\b/i)
+        {
+          # Ok, so it does share from this implementation
+          if($rhparameter_db->{"\U$thornname SHARES $implementation\E variables"} !~ m/\b$base\b/i)
+          {
+            &CST_error(0,"Array size \'$expression\' in $thornname contains a reference to a parameter from $implementation" .
+                       " which is neither USED nor EXTENDED",
+                       "",__LINE__,__FILE__);
+          }
+        }
+        else
+        {
+          &CST_error(0,"Array size \'$expression\' in $thornname contains a reference to a parameter from $implementation" .
+                     " which is not shared",
+                     "",__LINE__,__FILE__);
+        }            
       }
     }
     elsif($i =~ m:^\(\)$:)
