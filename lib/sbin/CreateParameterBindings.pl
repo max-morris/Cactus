@@ -404,7 +404,7 @@ sub CreateParameterBindings
 
   foreach $structure (keys %structures)
   {
-    print OUT "#define $structure FORTRAN_COMMON_NAME($structures{$structure})\n";
+    print OUT "#define $structure CCTK_FORTRAN_COMMON_NAME($structures{$structure})\n";
   }
 
   print OUT "\n";

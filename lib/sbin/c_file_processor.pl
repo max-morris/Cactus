@@ -128,7 +128,18 @@ sub fixfnames {
 
   foreach $fline (@flines)
   {
-  
+      while($fline =~ m:CCTK_FNAME\s*\(([^\)]*)\):)
+    {
+        $arglist = $1;
+        $arglist =~ s:[\s\n\t]+::g;
+
+        @args = split(",", $arglist );
+
+        $new = &fortran_name($args[$#args]);
+
+        $fline =~ s:CCTK_FNAME\s*\(([^\)]*)\):$new:;
+    }
+    # DEPRECATED IN BETA 9
     while($fline =~ m:FORTRAN_NAME\s*\(([^\)]*)\):)
     {
         $arglist = $1;
@@ -140,7 +151,8 @@ sub fixfnames {
 
         $fline =~ s:FORTRAN_NAME\s*\(([^\)]*)\):$new:;
     }
-    while($fline =~ m:FORTRAN_COMMON_NAME\s*\(([^\)]*)\):)
+    # END DEPRECATED IN BETA 9
+    while($fline =~ m:CCTK_FORTRAN_COMMON_NAME\s*\(([^\)]*)\):)
     {
         $arglist = $1;
         $arglist =~ s:[\s\n\t]+::g;
@@ -149,7 +161,7 @@ sub fixfnames {
 
         $new = &fortran_common_name($args[$#args]);
 
-        $fline =~ s:FORTRAN_COMMON_NAME\s*\(([^\)]*)\):$new:;
+        $fline =~ s:CCTK_FORTRAN_COMMON_NAME\s*\(([^\)]*)\):$new:;
     }
 
     print $fline;

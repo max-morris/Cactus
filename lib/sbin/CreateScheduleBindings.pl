@@ -180,7 +180,7 @@ sub ScheduleCreateFile
   $outbuf .=  "{\n";
   $outbuf .=  "  DECLARE_CCTK_PARAMETERS\n";
   $outbuf .=  "$buffer\n";
-  $outbuf .=  "  USE_CCTK_PARAMETERS\n";
+  $outbuf .=  "return;\n";
   $outbuf .=  "}\n";
   $outbuf .=  "\n";
 
@@ -236,7 +236,7 @@ sub ParameterRecoveryCreateFile
 	}
 	elsif($rhschedule_db->{"\U$thorn\E BLOCK_$block LANG"} =~ m:^\s*(F|F77|FORTRAN|F90)\s*$:i )
         {
-	  $block_buffer = "FORTRAN_NAME(".$rhschedule_db->{"\U$thorn\E BLOCK_$block NAME"} .")";
+	  $block_buffer = "CCTK_FNAME(".$rhschedule_db->{"\U$thorn\E BLOCK_$block NAME"} .")";
 	}
 
       $buffer =~ s:\@BLOCK\@$block:result =  $block_buffer();:;
@@ -289,7 +289,6 @@ sub ParameterRecoveryCreateFile
   $outbuf .=  "  int result = 0;\n\n";
   $outbuf .=  "$buffer\n";
   $outbuf .=  "  return (result);\n";
-  $outbuf .=  "  USE_CCTK_PARAMETERS\n";
   $outbuf .=  "}\n";
   $outbuf .=  "\n";
 
@@ -523,7 +522,7 @@ sub ScheduleBlock
     elsif($rhschedule_db->{"\U$thorn\E BLOCK_$block LANG"} =~ m:^\s*(F|F77|FORTRAN|F90)\s*$:i )
     {
       $language = "Fortran";
-      $function = "FORTRAN_NAME(".$rhschedule_db->{"\U$thorn\E BLOCK_$block NAME"} .")";
+      $function = "CCTK_FNAME(".$rhschedule_db->{"\U$thorn\E BLOCK_$block NAME"} .")";
     }
     else
     {
