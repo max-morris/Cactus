@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.36 1999-07-05 11:08:48 goodale Exp $
+#   @version $Id: Makefile,v 1.37 1999-07-05 14:33:55 goodale Exp $
 # @@*/
 
 # Make quietly unless told not to
@@ -172,7 +172,7 @@ distclean:
 TAGS:
 	@echo $(DIVIDER)
 	@echo Updating the Emacs TAGS file
-	rm TAGS ; touch TAGS 
+	rm -f TAGS ; touch TAGS 
 	find src packages \( -name '*.[chCF]' -o -name '*.F77' -o -name '*.cc' \) \
           -exec etags --append {} \;
 #	find src packages \( -name '*.[cChF]' -o -name '*.F77' -o -name '*.cc'\) \
@@ -183,8 +183,8 @@ TAGS:
 tags:
 	@echo $(DIVIDER)
 	@echo Updating the vi tags file
-	rm tags ; touch tags 
-	find src packages \( -name '*.[cChF]' -o -name '*.F77' -o '*.cc'\) \
+	rm -f tags ; touch tags 
+	find src packages \( -name '*.[cChF]' -o -name '*.F77' -o -name '*.cc' \) \
           -exec ctags --append {} \;
 	perl -pi -e 's/(subroutine\s*)([a-zA-Z0-9_]+)/\1\L\2/g;' tags
 	@echo $(DIVIDER)
