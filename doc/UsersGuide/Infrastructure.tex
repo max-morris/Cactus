@@ -68,7 +68,7 @@ name of the extension.  This returns a unique handle that identifies the extensi
 
 Associated with a GH extension are three functions
 
-\begin{itemize}
+\begin{Lentry}
 \item[SetupGH]
 this is used to actually create the data structure holding the extension.  It
 is called when a new cGH is created.
@@ -88,33 +88,33 @@ the schedule tree.
 
  \begin{tabular}{|l|l|}
    \hline  {\bf Function} & {\bf Default} \\
-   \hline {\t CCTK\_Initialise} 	&\\
-   \hline {\t CCTK\_Evolve}	&\\
-   \hline {\t CCTK\_Shutdown}	&\\
+   \hline {\t CCTK\_Initialise}           &\\
+   \hline {\t CCTK\_Evolve}               &\\
+   \hline {\t CCTK\_Shutdown}             &\\
    \hline
  \end{tabular}
 
 \chapter{Overloadable and Registerable Functions in Comm}
 
   \begin{tabular}{|l|l|}
-   \hline {\bf Function} & {\bf Default} \\
-   \hline {\t CCTK\_SyncGroup} 		&\\
-   \hline {\t CCTK\_EnableGroupStorage}	&\\
-   \hline {\t CCTK\_DisableGroupStorage}	&\\
-   \hline {\t CCTK\_EnableGroupComm}		&\\
-   \hline {\t CCTK\_DisableGroupComm}		&\\
-   \hline {\t CCTK\_Barrier}			&\\
-   \hline {\t CCTK\_Reduce}			&\\
-   \hline {\t CCTK\_Interp} 			&\\
-   \hline {\t CCTK\_ParallelInit}		&\\
+   \hline {\bf Function} & {\bf Default}  \\
+   \hline {\t CCTK\_SyncGroup}           &\\
+   \hline {\t CCTK\_EnableGroupStorage}  &\\
+   \hline {\t CCTK\_DisableGroupStorage} &\\
+   \hline {\t CCTK\_EnableGroupComm}     &\\
+   \hline {\t CCTK\_DisableGroupComm}    &\\
+   \hline {\t CCTK\_Barrier}             &\\
+   \hline {\t CCTK\_Reduce}              &\\
+   \hline {\t CCTK\_Interp}              &\\
+   \hline {\t CCTK\_ParallelInit}        &\\
    \hline
   \end{tabular}
 
 \chapter{Overloadable and Registerable Functions in IO}
 
  \begin{tabular}{|l|l|} 
-   \hline {\bf Function} & {\bf Default} \\
-   \hline {\t CCTK\_OutputGH} & \\
+   \hline {\bf Function} & {\bf Default}   \\
+   \hline {\t CCTK\_OutputGH}            & \\
    \hline {\t CCTK\_OutputVarAsByMethod} & \\
    \hline
  \end{tabular}
@@ -256,19 +256,19 @@ int SimpleScheduleTraversGH(cGH *GH, const char *where)
     {
       switch(gtype)
       {
-	case CCTK_SCALAR :
-	  GH->data[var][level] = extension->variables[var][level]; 
-	  break;
-	case CCTK_GF     :
-	  GH->data[var][level] = 
-	    ((pGF ***)(extension->variables))[var][level]->data; 
-	  break;
-	case CCTK_ARRAY :
-	  GH->data[var][level] = 
-	    ((pGA ***)(extension->variables))[var][level]->data; 
-	  break;
-	default:
-	  CCTK_WARN(1,"Unknown group type in SimpleScheduleTraverse");
+        case CCTK_SCALAR :
+          GH->data[var][level] = extension->variables[var][level]; 
+          break;
+        case CCTK_GF     :
+          GH->data[var][level] = 
+            ((pGF ***)(extension->variables))[var][level]->data; 
+          break;
+        case CCTK_ARRAY :
+          GH->data[var][level] = 
+            ((pGA ***)(extension->variables))[var][level]->data; 
+          break;
+        default:
+          CCTK_WARN(1,"Unknown group type in SimpleScheduleTraverse");
       }
     }
   }
