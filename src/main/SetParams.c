@@ -1,4 +1,4 @@
- /*@@
+/*@@
    @file      SetParams.c
    @date      Tue Jan 12 19:16:38 1999
    @author    Tom Goodale
@@ -63,14 +63,14 @@ int CCTKi_SetParameter(const char *parameter, const char *value)
       
       for(;*position && *position != ' ';position++)
       {
-	thornname[length] = *position;
-	if(length < 100) length++;
+        thornname[length] = *position;
+        if(length < 100) length++;
       }
       
       if (length > 0)
       {
-	thornname[length] = '\0';
-	n_errors += CCTKi_ActivateThorn(thornname) != 0;
+        thornname[length] = '\0';
+        n_errors += CCTKi_ActivateThorn(thornname) != 0;
       }
       if(*position) position++;
 
@@ -114,7 +114,7 @@ int CCTKi_ReallySetParameter(const char *parameter, const char *value)
 
 
   /*
-  CCTKi_BindingsParameterHelp(optarg,"%s",stdout);
+    CCTKi_BindingsParameterHelp(optarg,"%s",stdout);
   */
  
   Util_SplitString(&imp, &param, parameter, "::");
@@ -144,7 +144,14 @@ int CCTKi_ReallySetParameter(const char *parameter, const char *value)
     /* Set if this is a thorn one. */
     if(!thorn || !CCTK_Equals(thorn,imp))
     {
-      retval_thorn = ParameterSet(param, imp, value);
+      if(CCTK_IsThornActive(imp))
+      {
+        retval_thorn = ParameterSet(param, imp, value);
+      }
+      else
+      {
+        retval_thorn = -1;
+      }
     }
     else
     {
