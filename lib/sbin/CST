@@ -6,7 +6,7 @@
 #  @desc 
 #  Parses the the configuration files for thorns.
 #  @enddesc 
-#  @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.21 1999-07-18 10:38:29 allen Exp $
+#  @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.22 1999-07-21 08:12:43 allen Exp $
 #@@*/
 
 # Global parameter to track the number of errors from the CST
@@ -226,25 +226,34 @@ sub CreateThornList
       $thorn_name = $2;
       # No longer strip thorn_ off the beginning of a thorn name.
       #      $thorn_name =~ s/thorn_//;
-      
-      if( -r "$cctk_home/packages/$thorn/param.ccl" &&
-	  -r "$cctk_home/packages/$thorn/interface.ccl" &&
-	  -r "$cctk_home/packages/$thorn/schedule.ccl")
-      {
-	if( $thornlist{"$thorn_name"} )
-	{
-	  $message = "Duplicate thorn $thorn_name";
-          &CST_error(0,$message,__LINE__,__FILE__);
-	}
+
+      if( -d "$cctk_home/packages/$thorn")
+      {      
+        if( -r "$cctk_home/packages/$thorn/param.ccl" &&
+	    -r "$cctk_home/packages/$thorn/interface.ccl" &&
+	    -r "$cctk_home/packages/$thorn/schedule.ccl")
+	{ 
+	  if( $thornlist{"$thorn_name"} )
+	  {
+	    $message = "Duplicate thorn $thorn_name";
+            &CST_error(0,$message,__LINE__,__FILE__);
+	  }
+	  else
+	  {
+	    $thornlist{"$thorn_name"} = "$cctk_home/packages/$thorn";
+	  }
+        }
 	else
 	{
-	  $thornlist{"$thorn_name"} = "$cctk_home/packages/$thorn";
-	}
+	  $message = "$thorn - missing ccl file(s)\n";
+	  &CST_error(0,$message,__LINE__,__FILE__);
+	  next;
+        }
       }
       else
       {
-	print "Ignoring $thorn - missing ccl file(s)\n";
-	next;
+	 $message = "Missing thorn $thorn\n";
+         &CST_error(0,$message,__LINE__,__FILE__);
       }
     }
   }
