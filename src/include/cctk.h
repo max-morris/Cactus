@@ -1,4 +1,4 @@
- /*@@
+/*@@
    @header    cctk.h
    @date      Tue Jan 26 17:29:34 1999
    @author    Tom Goodale
@@ -63,8 +63,8 @@
 
 #define CCTK_DELTA_SPACE(x) (cctk_delta_space(x)/cctk_levfac(x))
 #define CCTK_DELTA_TIME cctk_delta_time
-#define CCTK_LSSH(stag,dim) cctk_lssh(stag*CCTK_NSTAGGER+dim)
-#define CCTK_LSSH_IDX(stag,dim) (stag*CCTK_NSTAGGER+dim)
+#define CCTK_LSSH(stag,dim) cctk_lssh((stag)+CCTK_NSTAGGER+(dim))
+#define CCTK_LSSH_IDX(stag,dim) ((stag)+CCTK_NSTAGGER*(dim))
 
 #define DECLARE_CCTK_FUNCTIONS &&\
         integer  CCTK_Equals, CCTK_MyProc, CCTK_nProcs, CCTK_IsThornActive&&\
@@ -197,8 +197,8 @@ extern int _cctk_one;
 
 #define CCTK_DELTA_SPACE(x) (cctk_delta_space[x]/cctk_levfac[x])
 #define CCTK_DELTA_TIME cctk_delta_time
-#define CCTK_LSSH(stag,dim) cctk_lssh[stag*CCTK_NSTAGGER+dim]
-#define CCTK_LSSH_IDX(stag,dim) (stag*CCTK_NSTAGGER+dim)
+#define CCTK_LSSH(stag,dim) cctk_lssh[(stag)+CCTK_NSTAGGER*(dim)]
+#define CCTK_LSSH_IDX(stag,dim) ((stag)+CCTK_NSTAGGER*(dim))
 
 #define CCTK_WARN(a,b) CCTK_Warn(a,__LINE__,__FILE__,CCTK_THORNSTRING,b)
 
