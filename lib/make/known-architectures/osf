@@ -6,18 +6,38 @@
 #    @desc 
 #   
 #    @enddesc
-#    @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/osf,v 1.5 2001-09-04 15:09:32 allen Exp $
+#    @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/osf,v 1.6 2001-10-10 14:00:24 allen Exp $
 #  @@*/
 
 if test "$CCTK_CONFIG_STAGE" = "preferred-compilers" ; then
 
-:
+  if test -z "$CC"; then
+    echo Setting C compiler to cc
+    CC="cc"
+  fi
 
 else
 
-  : ${LIBS="for m"}
+  if test "$CC" = "cc" ; then
+    : ${CFLAGS='-std1'}
+    : ${C_OPTIMISE_FLAGS='-O5 -fast'}
+    : ${C_DEBUG_FLAGS='-g3'}
+  fi
+
   if test "$CXX" = "cxx" ; then
     : ${CXX_DEPEND='$(CXX) -E -M $(CPPFLAGS) -noimplicit_include'}
+    : ${CXXFLAGS='-std1'}
+    : ${CXX_OPTIMISE_FLAGS='-O5 -fast'}
+    : ${CXX_DEBUG_FLAGS='-g3'}
   fi
+
+  : ${F77FLAGS='-std1'}
+  : ${F77_OPTIMISE_FLAGS='-O5 -fast'}
+  : ${F77_DEBUG_FLAGS='-g3'}
+  : ${F90FLAGS='-std1'}
+  : ${F90_OPTIMISE_FLAGS='-O5 -fast'}
+  : ${F90_DEBUG_FLAGS='-g3'}
+
+  : ${LIBS="for m"}
 
 fi
