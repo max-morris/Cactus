@@ -45,15 +45,19 @@ fi
 
 
 # Set platform-specific libraries
-case "$PETSC_ARCH" in
-  IRIX64) PETSC_ARCH_LIBS='fpe blas complib.sgimath' ;;
-  linux)  PETSC_ARCH_LIBS='flapack fblas g2c mpich'  ;;
-  linux_intel) PETSC_ARCH_LIBS='mkl_lapack mkl_def guide' ;;
-  rs6000_64) PETSC_ARCH_LIBS='essl' ;;
-  *)           echo "  No PETSc support for architecture '$PETSC_ARCH' !"
-               echo '  Please file a bug report to cactusmaint@cactuscode.org.'
-               exit 2
-esac
+if test -z "$PETSC_ARCH_LIBS" ; then
+  case "$PETSC_ARCH" in
+    IRIX64) PETSC_ARCH_LIBS='fpe blas complib.sgimath' ;;
+    linux)  PETSC_ARCH_LIBS='flapack fblas g2c mpich'  ;;
+    linux_intel) PETSC_ARCH_LIBS='mkl_lapack mkl_def guide' ;;
+    rs6000_64) PETSC_ARCH_LIBS='essl' ;;
+    *)           echo "  No PETSc support for architecture '$PETSC_ARCH' !"
+                 echo '  Please file a bug report to cactusmaint@cactuscode.org.'
+                 exit 2
+  esac
+else
+  echo "  Using PETSc architecture-specific libraries '$PETSC_ARCH_LIBS'"
+fi
 
 # Set the PETSc libs, libdirs and includedirs
 PETSC_LIB_DIRS='$(PETSC_DIR)/lib/libO/$(PETSC_ARCH)'
