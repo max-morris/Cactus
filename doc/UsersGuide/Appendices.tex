@@ -207,6 +207,9 @@ int* ptr = i;     /* ptr is NOT guaranteed to be a NULL pointer! */
 
 \end{Lentry}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \chapter{Configuration file syntax}
 \label{sec:cofisy}
@@ -696,6 +699,10 @@ scheduling the SCHEDULE WHILE construction should be used.
 
 Conditional constructs cannot be used inside a schedule block.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \chapter{Schedule bins}
 \label{sec:scbi}
 
@@ -790,6 +797,10 @@ through them.
 
 \end{Lentry}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \chapter{Flesh parameters}
 \label{sec:ccpa}
 
@@ -835,6 +846,17 @@ The size of a cacheline if not set automatically (bytes) [{\tt 0}]
 \item[{\tt recovery\_mode}]
 How to behave when recovering from a checkpoint [{\tt strict}] \{{\tt strict, relaxed}\}
 
+\item[{\tt info\_format}]
+Specifies the content and format of \code{CCTK\_INFO()}/\code{CCTK\_VInfo()}
+messages. [{\tt basic}]
+% don't want lines broken in the middle of one of the keywords!!
+\{%%%
+\hbox{{\tt "basic"}},
+\hbox{{\tt "numeric time stamp"}},
+\hbox{{\tt "human-readable time stamp"}},\\
+\hbox{{\tt "full time stamp"}}%%%
+\}
+
 \end{Lentry}
 
 \section{Restricted parameters}
@@ -860,6 +882,10 @@ Condition on which to terminate evolution loop [{\tt iteration}] \{{\tt never, i
 Terminate on next iteration ? [{\tt no}]
 
 \end{Lentry}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \chapter{Using {\tt GNATS}}
 GNATS is a freely redistributable set of tools for tracking bug
@@ -914,6 +940,10 @@ reports in your shell and from within emacs, respectively.
 
 
 \label{sec:usgn}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \chapter{Using {\tt CVS}}
 \label{sec:uscv}
@@ -1249,6 +1279,9 @@ home directory which provides menus to pick arrangements and thorns from.
   proper permissions to commit code to the repository.
 \end{Lentry}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \chapter{Using TAGS}
 \label{sec:usta}
@@ -1331,6 +1364,10 @@ Return to previous location before jump to tag (not widely implemented).
 at the top of every source file don't have a trailing semicolon, which
 confuses the \texttt{etags} and \texttt{ctags} programs, so TAGS does not find the first
 subroutine in any file with this problem.}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \chapter{ThornLists}
 
