@@ -174,7 +174,9 @@ else
        ;;
      portland)
        : ${LIBS="pgf90rtl pgf90 pgftnrtl pgf90_rpm1 pghpf2 pgc m"}
-       : ${LIBDIRS='$(PGI)/linux86/lib'}
+       if test -z "$LIBDIRS" ; then
+         LIBDIRS="`which $F90 | sed 's,/bin/.*,/lib,'`"
+       fi
        : ${F77_OPTIMISE_FLAGS='-fast'}
        : ${F90_OPTIMISE_FLAGS='$(F77_OPTIMISE_FLAGS)'}
        : ${F77_DEBUG_FLAGS="-g"}
