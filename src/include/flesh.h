@@ -43,6 +43,8 @@ typedef struct
 
   int levfac;
 
+  void *rfr_top;
+
   /* data[var_num][xyz]*/
   void **data;
 
