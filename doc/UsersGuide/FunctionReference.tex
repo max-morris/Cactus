@@ -169,7 +169,7 @@ from Fortran.
 
 \item[CCTK\_Equals]
   [\pageref{CCTK-Equals}]
-  Check a STRING or KEYWORD parameter for equality equality with a given string
+  Check a STRING or KEYWORD parameter for equality with a given string
 
 \item[CCTK\_Exit]
   [\pageref{CCTK-Exit}]
@@ -2666,8 +2666,8 @@ No Fortran routine exists at the moment.
 \end{errorcodes}
 \end{CCTKFunc}
 
-
-
+%main/Groups.c
+% Please document CCTK_GroupTagsTableI and CCTK_GroupTagsTable.
 
 % Groups.c
 \begin{CCTKFunc}{CCTK\_GroupTypeFromVarI}{Provides a group's group type
@@ -6685,7 +6685,7 @@ functions can distinguish flags from (negative) error codes.
 
 Any User-defined flag words should use only bit positions at or above\\
 \verb|UTIL_TABLE_FLAGS_USER_DEFINED_BASE|, i.e. all bit positions
-below this are reserved for present of future Cactus use.
+below this are reserved for present or future Cactus use.
 
 At present there is only a single flags-word bit mask defined
 in \verb|"util_Table.h"|:
