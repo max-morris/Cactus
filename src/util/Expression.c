@@ -283,7 +283,7 @@ int Util_ExpressionEvaluate(const uExpression buffer,
   if(varvals || ! buffer->nvars)
   {
     /* Evaluate the variables in one go to help people doing parallel ops. */
-    eval(buffer->nvars, buffer->vars, varvals, data);
+    eval(buffer->nvars, (const char * const *) buffer->vars, varvals, data);
 
     /* Tokens are seperated by @ signs */
     for(position = 0; position < buffer->ntokens; position++)
@@ -1296,7 +1296,7 @@ static int StoreVar(uExpressionInternals *buffer, const char *var)
   if(retval == -1)
   {
     buffer->nvars++;
-    buffer->vars = (const char **)realloc(buffer->vars,sizeof(const char *)*buffer->nvars);
+    buffer->vars = (char **)realloc(buffer->vars,sizeof(char *)*buffer->nvars);
     
     buffer->vars[buffer->nvars-1] = strdup(var);
 
