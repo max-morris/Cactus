@@ -9,9 +9,6 @@
  @@*/
 
 
-#include <stdio.h>
-#include <stdlib.h>
-
 #include "cctk_Flesh.h"
 #include "cctk_Groups.h"
 #include "cctk_Constants.h"
@@ -23,6 +20,12 @@
 #include "cctk_ParamCheck.h"
 
 #include "CactusMainDefaults.h"
+
+#include <stdio.h>
+#include <stdlib.h>
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>
+#endif
 
 #ifdef CCTK_MPI
 #include "mpi.h"
@@ -407,10 +410,15 @@ int CactusDefaultAbort (cGH *GH, int retval)
 #ifdef CCTK_MPI
   if (MPI_Active)
   {
-    /* flush stdout and stderr before calling MPI_Abort() because
-       some MPI implementations simply kill other MPI processes */
+    /* flush stdout/stderr and then wait a few seconds before calling
+       MPI_Abort()
+       This cures a problem where processor 0 is slightly behind, eg. with
+       activating thorns, and would print an error message (to stdout!!)
+       about a thorn missing only a few milliseconds later. If other processors
+       call CCTK_Abort() before that those messages wouldn't be seen. */
     fflush (stdout);
     fflush (stderr);
+    sleep (5);
     CACTUS_MPI_ERROR (MPI_Abort (MPI_COMM_WORLD, retval));
   }
 #else
