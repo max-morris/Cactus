@@ -1,7 +1,7 @@
 
 Cactus Code Frequently Asked Questions
 
-$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.35 2002-06-25 13:24:21 allen Exp $
+$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.36 2002-06-26 20:54:09 allen Exp $
 
 Also available at http://www.cactuscode.org/Documentation/FAQ
 
@@ -202,7 +202,6 @@ Also available at http://www.cactuscode.org/Documentation/FAQ
 
 16. When I compile Cactus I get an error like
 
-
     /home/allen/Cactus/arrangements/MineStuff/Test/src/metric.F90:3: 
                 unterminated character constant
     make[2]: *** [metric.F90.d] Error 33                                
@@ -345,14 +344,16 @@ Also available at http://www.cactuscode.org/Documentation/FAQ
 25. Why don't you use compilers mpicc, mpiCC etc when they exist on parallel 
     machines?
 
-    The compilers mpicc etc are scripts for compilation which are site dependent
-    and whose contents can change. The major reason we don't use these is that
-    in general it is difficult to work out what underlying compiler is being
-    used, which in turn leads to problems adding the correct compilation flags.
+    The compilers mpicc etc are scripts for compilation which are site
+    dependent and whose contents can change. The major reason we don't
+    use these is that in general it is difficult to work out what
+    underlying compiler is being used, which in turn leads to problems
+    adding the correct compilation flags.
 
     So far we have found it more convenient and transparent to manually add 
-    libraries and options to the configure system than to rely on mpicc behaving
-    well on all platforms. At some point we will be reinvestigating this.
+    libraries and options to the configure system than to rely on
+    mpicc behaving well on all platforms. At some point we will be
+    reinvestigating this.
 
 -------------------------------------------------------------------------------
 
@@ -506,5 +507,16 @@ Also available at http://www.cactuscode.org/Documentation/FAQ
     any grid variables, and the segmentation fault occurs in 
     CCTK_DECLARE_ARGUMENTS when these undefined variables are accessed. 
     Parameters can however be used in STARTUP routines.
+
+-------------------------------------------------------------------------------
+
+36. My thorn is calling directly a function from another thorn. Both thorns 
+    are in my ThornList, but on linking I get the error
+
+    Startup.c.o(.text+0x4d): undefined reference to `OtherThornsFunction'
+
+    Make sure that your thorn inherits from the implementation provided by
+    the other thorn. If you don't do this, the end link line may not list
+    the libraries in the right order for linking.
 
 -------------------------------------------------------------------------------
