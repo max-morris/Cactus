@@ -8,47 +8,22 @@
    @version $Header$
  @@*/
 
-#ifndef _COORD_H_
-#define _COORD_H_
-
-/* Prototypes */
+#ifndef _CCTK_COORD_H_
+#define _CCTK_COORD_H_
 
 #ifdef __cplusplus 
 extern "C" {
 #endif
 
-struct Coordprops
-{ 
-  char * name;
-  int    index;
-  CCTK_REAL origin;
-  int    direction;
-};
+int CCTK_CoordIndex(const char *name);
 
-typedef struct COORD_RANGE {
+int CCTK_CoordRange( cGH *GH, CCTK_REAL *lower, CCTK_REAL *upper, const char *name);
 
-  cGH *GH;
-
-  struct Coordprops *props;	  /* Coordinate data */
-
-  CCTK_REAL lower;                      /* Lower range */
-  CCTK_REAL upper;                      /* Upper range */
-
-  struct COORD_RANGE *next;        /* List */
-
-} coord_range;
-
-
-int CCTK_CoordRange(cGH *GH, CCTK_REAL *lower, CCTK_REAL *upper, const char *name);
-
-int CCTK_RegisterCoord(int dir, const char *gfname, 
-		       const char *coordname);
+int CCTK_RegisterCoord(int dir, const char *gfname, const char *coordname);
 
 int CCTK_RegisterCoordI(int dir, int index, const char *name);
 
-int CCTK_CoordIndex(const char *name);
-
-CCTK_REAL CCTK_CoordOrigin(const char *name);
+int CCTK_RegisterCoordRange( cGH *GH, CCTK_REAL min, CCTK_REAL max, const char *coordname);
 
 #ifdef __cplusplus 
 }
