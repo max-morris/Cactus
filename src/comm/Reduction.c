@@ -22,6 +22,8 @@
 #include "StoreHandledData.h"
 #include "Reduction.h"
 
+static char *rcsid = "$Header$";
+
 static cHandledData *ReductionOperators = NULL;
 static int num_reductions = 0;
 
@@ -66,7 +68,7 @@ int CCTK_RegisterReductionOperator(void (*function)(REGISTER_ARGLIST),
   if(handle < 0)
   {
     /* Get a handle for it. */
-    handle = CCTK_NewHandle(&ReductionOperators, name, function);
+    handle = CCTK_NewHandle(&ReductionOperators, name, (void *)function);
     
     /* Remember how many reduction operators there are */
     num_reductions++;

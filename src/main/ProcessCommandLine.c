@@ -12,7 +12,7 @@
 #include "flesh.h"
 #include "getopt.h"
 
-static char *rcsid = "$Header";
+static char *rcsid = "$Header$";
 
 static int argc;
 

@@ -105,7 +105,7 @@ int CactusInitialiseGH(cGH *GH)
   CCTK_PRINTSEPARATOR
   printf("In Cactus_Initialise\n--------------------\n");
   printf("  Initializing GH->time = %f\n",GH->time);
-  printf("  Initializing GH->iteration = %lu\n",GH->iteration);
+  printf("  Initializing GH->iteration = %u\n",GH->iteration);
   CCTK_PRINTSEPARATOR
 #endif
   
