@@ -140,6 +140,13 @@ int CCTK_InterpLocalUniform(int N_dims,
                             const CCTK_INT output_array_type_codes[],
                             void *const output_arrays[]);
 
+/*
+ * error codes for CCTK_InterpLocalUniform()
+ */
+
+/* an interpolation point is outside the range of the input arrays */
+#define CCTK_ERROR_INTERP_POINT_X_RANGE	(-1000)
+
 #ifdef __cplusplus
 }
 #endif
