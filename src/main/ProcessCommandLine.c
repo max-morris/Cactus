@@ -37,6 +37,7 @@ int ProcessCommandLine(int *inargc, char ***inargv, tFleshConfig *ConfigData)
 {
 
   int option_index = 0;
+  int test_nprocs = 1;
   int c;
 
   /* Store the command line */
@@ -52,35 +53,78 @@ int ProcessCommandLine(int *inargc, char ***inargv, tFleshConfig *ConfigData)
     {
       struct option long_options[] =
       {
-	{"help", 0, 0, 'h'},
+	{"help", no_argument, NULL, 'h'},
+	{"describe-all-parameters", no_argument, NULL, 'O'},
+	{"describe-parameter", required_argument, NULL, 'o'},
+	{"test-parameters", optional_argument, NULL, 'x'},
+	{"warning-level", required_argument, NULL, 'W'},
+	{"error-level", required_argument, NULL, 'E'},
+	{"redirect-stderr", no_argument, NULL, 'r'},
+	{"list-active-thorns", no_argument, NULL, 'A'},
+	{"test-thorn-active", required_argument, NULL, 'a'},
+	{"version", no_argument, NULL, 'v'},
 	{0, 0, 0, 0}
       };
       
-      c = getopt_long_only (argc, argv, "h",
+      c = getopt_long_only (argc, argv, "hOo:x::W:E:rAa:v",
 			    long_options, &option_index);
       if (c == -1)
 	break;
   
       switch (c)
       {
+	case 'a': CCTK_CommandLineTestThornActive(optarg); break;
+	case 'O': CCTK_CommandLineDescribeAllParameters(); break;
+	case 'o': CCTK_CommandLineDescribeParameter(optarg); break;
+	case 'x': CCTK_CommandLineTestParameters(optarg); break;
+	case 'W': CCTK_CommandLineWarningLevel(optarg); break;
+	case 'E': CCTK_CommandLineErrorLevel(optarg); break;
+	case 'r': CCTK_CommandLineRedirectStderr(); break;
+	case 'A': CCTK_CommandLineListActiveThorns(); break;
+	case 'v': CCTK_CommandLineVersion(); break;
 	case 'h': 
 	case '?':
-	  printf("Usage: %s <parameter_file_name>\n", argv[0]);
-	  exit(1);
+	  CCTK_CommandLineHelp(); break;
 	default:
 	  printf ("?? getopt returned character code 0%o ??\n", c);
       }
     }
 
-    ConfigData->parameter_file_name = argv[optind];
+    if(argc > optind)
+    {
+      ConfigData->parameter_file_name = argv[optind];
+    }
+    else
+    {
+      CCTK_CommandLineUsage();
+    }
   }
   else
   {
-    printf("Usage: %s <parameter_file_name>\n", argv[0]);
-
-    exit(1);
+    CCTK_CommandLineUsage();
   }
 
   return 0;
 }
 
+
+ /*@@
+   @routine    CCTK_GetCommandLine
+   @date       Wed Feb 17 00:19:30 1999
+   @author     Tom Goodale
+   @desc 
+   Gets the command line arguments.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+int CCTK_GetCommandLine(char ***outargv)
+{
+  *outargv = argv;
+
+  return argc;
+}
