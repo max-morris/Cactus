@@ -15,7 +15,7 @@ $top = `pwd`;
 
 chop $top;
 
-$configure = "$top/lib/make/configure";
+$configure = "sh $top/lib/make/configure";
 
 $uname = `uname`;
 

@@ -14,8 +14,13 @@
 echo Setting compiler to cl
 CC="cl"
 
-CFLAGS="/nologo /Oxy- /Gz"
-CXXFLAGS="/nologo /Oxy- /Gz"
+# /Gd means use __cdecl, it's /Gz for __stdcall
+CFLAGS="/nologo /Oxy- /Gd"
+CXXFLAGS="/nologo /Oxy- /Gd"
+
+# Fortran routines called from C, and C routines called from Fortran
+#  need __stdcall
+FMODIFIER="__stdcall"
 
 F90FLAGS="/fast"
 

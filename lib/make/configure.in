@@ -38,27 +38,27 @@ AC_PATH_PROGS(CPP, cpp, echo, /lib:/usr/lib:/usr/local/lib:$PATH)
 fi
 
 if test -z "$PERL" ; then
-AC_PATH_PROGS(PERL, perl)
+AC_CHECK_PROGS(PERL, perl)
 fi
 
 if test -z "$F90" ; then
-AC_PATH_PROGS(F90, f90 pgf90)
+AC_CHECK_PROGS(F90, f90 pgf90)
 fi
 
 if test -z "$F77" ; then
-AC_PATH_PROGS(F77, f77 pgf77 g77 f90 pgf90)
+AC_CHECK_PROGS(F77, f77 pgf77 g77 f90 pgf90)
 fi
 
 if test -z "$AR" ; then
-AC_PATH_PROGS(AR, ar)
+AC_CHECK_PROGS(AR, ar)
 fi
 
 if test -z "$MKDIR" ; then
-AC_PATH_PROGS(MKDIR, mkdir)
+AC_CHECK_PROGS(MKDIR, mkdir)
 fi
 
 if test -z "$SHELL" ; then
-AC_PATH_PROGS(SHELL, sh bash)
+AC_CHECK_PROGS(SHELL, sh bash)
 fi
 
 if test -z "$LD" ; then
