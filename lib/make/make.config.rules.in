@@ -42,7 +42,7 @@ endef
 
 # Define how to do a F77 compilation
 define PREPROCESS_F77
-cat $< | $(CPP) $(CPPFLAGS) $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DFCODE - | $(PERL) $(F_FILE_PROCESSOR) > $(notdir $<)
+cat $< | sed 's.//.AUTOMATICALLY_GENERATED_CONCATONATION_PROTECTION_STRING.g' | $(CPP) $(CPPFLAGS) $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DFCODE - |  sed 's.AUTOMATICALLY_GENERATED_CONCATONATION_PROTECTION_STRING.//.g' | $(PERL) $(F_FILE_PROCESSOR) > $(notdir $<)
 endef
 
 define COMPILE_F77
@@ -54,7 +54,7 @@ endef
 
 # Define how to do a F90 compilation
 define PREPROCESS_F90
-cat $< | $(CPP) $(CPPFLAGS) $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DFCODE - | $(PERL) $(F_FILE_PROCESSOR) > $(basename $(notdir $<)).f
+cat $< | sed 's.//.AUTOMATICALLY_GENERATED_CONCATONATION_PROTECTION_STRING.g' | $(CPP) $(CPPFLAGS) $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DFCODE - | sed 's.AUTOMATICALLY_GENERATED_CONCATONATION_PROTECTION_STRING.//.g' | $(PERL) $(F_FILE_PROCESSOR) > $(basename $(notdir $<)).f
 endef
 
 define COMPILE_F90
