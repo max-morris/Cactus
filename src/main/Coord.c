@@ -21,6 +21,27 @@
 #include "cctk_Misc.h"
 #include "cctk_FortranString.h"
 
+struct Coordprops
+{ 
+  char * name;
+  int    index;
+  CCTK_REAL origin;
+  int    direction;
+};
+
+typedef struct COORD_RANGE {
+
+  cGH *GH;
+
+  struct Coordprops *props;	  /* Coordinate data */
+
+  CCTK_REAL lower;                /* Lower range */
+  CCTK_REAL upper;                /* Upper range */
+
+  struct COORD_RANGE *next;       /* List */
+
+} coord_range;
+
 static cHandledData *coordinates = NULL;
 static int num_coords = 0;
 static struct COORD_RANGE *first = NULL;
@@ -327,6 +348,7 @@ void FMODIFIER FORTRAN_NAME(CCTK_CoordIndex)(int *handle, ONE_FORTSTRING_ARG)
 }
 
 
+/*
 CCTK_REAL CCTK_CoordOrigin(const char *name)
 {
   int handle;
@@ -353,6 +375,8 @@ CCTK_REAL CCTK_CoordOrigin(const char *name)
   }
 
 }
+*/
+
 
 int CCTK_CoordRange(cGH *GH, CCTK_REAL *lower, CCTK_REAL *upper, const char *name)
 {
@@ -379,9 +403,14 @@ int CCTK_CoordRange(cGH *GH, CCTK_REAL *lower, CCTK_REAL *upper, const char *nam
   }
 }
 
-void FMODIFIER FORTRAN_NAME(CCTK_CoordRange)(int *ierr,cGH *GH, CCTK_REAL *lower, CCTK_REAL *upper, ONE_FORTSTRING_ARG)
+
+void FMODIFIER FORTRAN_NAME(CCTK_CoordRange)(int *ierr, 
+					     cGH *GH, 
+					     CCTK_REAL *lower, 
+					     CCTK_REAL *upper, 
+					     ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_CREATE(name)
-  *ierr=CCTK_CoordRange (GH,lower,upper,name);
+  *ierr = CCTK_CoordRange (GH,lower,upper,name);
   free(name);
 }
