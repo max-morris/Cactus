@@ -1,7 +1,7 @@
 
 Cactus Code Frequently Asked Questions
 
-$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.59 2003-02-19 11:11:16 allen Exp $
+$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.60 2003-03-04 08:07:29 allen Exp $
 
 Also available at http://www.cactuscode.org/Documentation/FAQ
 
@@ -249,6 +249,11 @@ F7  Why don't you use compilers mpicc, mpiCC etc when they exist on parallel
 
 F8  How does Cactus manage to so seamlessly call Fortran routines from
     C, and vice versa?
+
+F9  The documentation says that Cactus parameters are read-only, but I 
+    can trivially change the value of a parameter in the Fortran source
+    code of my thorn. 
+
 
 ------------------------------------------------------------------------------
 Documentation:
@@ -1306,6 +1311,14 @@ F8  How does Cactus manage to so seamlessly call Fortran routines from
     seem strange), and the architecture details of string passing are
     maintained in the file src/include/cctk_FortranString.h. At the moment
     we have macros for one, two or three strings in an argument list.
+
+F9  The documentation says that Cactus parameters are read-only, but I 
+    can trivially change the value of a parameter in the Fortran source
+    code of my thorn. 
+
+    Although changing parameters in Fortran is possible (we haven't thought
+    of an easy way to enforce read-only parameters) it is not supported and
+    should not be done!
 
 
 ------------------------------------------------------------------------------
