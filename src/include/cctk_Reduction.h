@@ -56,12 +56,33 @@ int CCTK_RegisterReductionArrayOperator(
          void (*function)(REDUCTION_ARRAY_OPERATOR_REGISTER_ARGLIST),
          const char *name);
 
+/* FIXME: old interface - should go */
 int CCTK_ReduceLocalScalar (cGH *GH, int proc, int operation_handle,
                             void *inScalar, void *outScalar, int dataType);
 
+
+/* FIXME: old interface - should go */
 int CCTK_ReduceLocalArray1D (cGH *GH, int proc, int operation_handle,
                             void *in_array1d, void *out_array1d, 
                             int num_in_array1d, int data_type);
+
+int CCTK_ReduceLocScalar(cGH *GH, int proc, int operation_handle,
+			 void *in_scalar, void *out_scalar, int data_type);
+
+int CCTK_ReduceLocArrayToArray1D(cGH *GH, int proc, int operation_handle,
+				 void *in_array1d, void *out_array1d, 
+				 int num_in_array1d,
+				 int data_type);
+
+int CCTK_ReduceLocArrayToArray2D(cGH *GH, int proc, int operation_handle,
+				 void *in_array2d, void *out_array2d, 
+				 int xsize, int ysize,
+				 int data_type);
+
+int CCTK_ReduceLocArrayToArray3D(cGH *GH, int proc, int operation_handle,
+				 void *in_array3d, void *out_array3d, 
+				 int xsize, int  ysize, int zsize,
+				 int data_type);
 
 
 int CCTK_ReduceArray(cGH *GH,

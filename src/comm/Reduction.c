@@ -502,7 +502,7 @@ int CCTK_ReduceArray(  cGH *GH,
 
   va_start(indices, type_in_arrays);
 
-  for (i = 0; i < num_dims; i++)
+  for (i = 0; i < num_dims; i++) 
     dims [i] = va_arg (indices, int);
   for (i = 0; i < num_in_arrays; i++)
     in_arrays [i] = va_arg (indices, void *);
@@ -623,6 +623,7 @@ void FMODIFIER FORTRAN_NAME(CCTK_ReduceArray)(int *fortran_return,
    @endvar 
 @@*/
 
+/*** FIXME: OLD INTERFACE gerd ***/
 int CCTK_ReduceLocalScalar (cGH *GH, int proc, int operation_handle,
                             void *in_scalar, void *out_scalar, int data_type)
 {
@@ -631,7 +632,7 @@ int CCTK_ReduceLocalScalar (cGH *GH, int proc, int operation_handle,
                             1, 1, data_type, 1, in_scalar));
 }
 
-
+/*** FIXME: OLD INTERFACE gerd ***/
 void FMODIFIER FORTRAN_NAME(CCTK_ReduceLocalScalar)(int *fortran_return,
                                                     cGH *GH, 
                                                     int *proc,
@@ -645,13 +646,37 @@ void FMODIFIER FORTRAN_NAME(CCTK_ReduceLocalScalar)(int *fortran_return,
                                       1, 1, *data_type, 1, in_scalar);
 }
 
+
+int CCTK_ReduceLocScalar (cGH *GH, int proc, int operation_handle,
+                            void *in_scalar, void *out_scalar, int data_type)
+{
+  return (CCTK_ReduceArray (GH, proc, operation_handle,
+                            1, data_type, out_scalar,
+                            1, 1, data_type, 1, in_scalar));
+}
+
+void FMODIFIER FORTRAN_NAME(CCTK_ReduceLocScalar)(int *fortran_return,
+                                                    cGH *GH, 
+                                                    int *proc,
+                                                    int *operation_handle,
+                                                    void *in_scalar,
+                                                    void *out_scalar,
+                                                    int *data_type)
+{
+  *fortran_return = CCTK_ReduceArray (GH, *proc, *operation_handle,
+                                      1, *data_type, out_scalar,
+                                      1, 1, *data_type, 1, in_scalar);
+}
+
+
  /*@@
-   @routine    CCTK_ReduceLocalArray1D
+   @routine    CCTK_ReduceLocArrayToArray1D
    @date       Thu Oct 14 12:10:01 1999
    @author     Gerd Lanfermann
    @desc 
         Interface to the migthy CCTK_Reduce for
-        reduction of local 1D arrays.
+	reduction of local 1D arrays to local arrays 
+	(element by element).
    @enddesc 
    @calls     
    @calledby   
@@ -661,18 +686,30 @@ void FMODIFIER FORTRAN_NAME(CCTK_ReduceLocalScalar)(int *fortran_return,
 
 @@*/
 
-
+/*** FIXME: OLD INTERFACE gerd ***/
 int CCTK_ReduceLocalArray1D (cGH *GH, int proc, int operation_handle, 
-                             void *in_array1d, void *out_array1d, int num_in_array1d, 
-                             int data_type)
+			     void *in_array1d, void *out_array1d, 
+			     int num_in_array1d, 
+			     int data_type)
+{
+  return (CCTK_ReduceArray (GH, proc, operation_handle,
+			    num_in_array1d, data_type, out_array1d,
+			    1, 1, data_type, num_in_array1d, in_array1d));
+}
+
+int CCTK_ReduceLocArrayToArray1D(cGH *GH, int proc, int operation_handle,
+				 void *in_array1d, void *out_array1d, 
+				 int num_in_array1d,
+				 int data_type)
 {
   return (CCTK_ReduceArray (GH, proc, operation_handle,
                             num_in_array1d, data_type, out_array1d,
                             1, 1, data_type, num_in_array1d, in_array1d));
 }
 
+/*** FIXME: OLD INTERFACE gerd ***/
 void FMODIFIER FORTRAN_NAME(CCTK_ReduceLocalArray1D)(int *fortran_return,
-                                                    cGH *GH, 
+                                                    cGH *GH,
                                                     int *proc,
                                                     int *operation_handle,
                                                     void *in_array1d,
@@ -686,3 +723,133 @@ void FMODIFIER FORTRAN_NAME(CCTK_ReduceLocalArray1D)(int *fortran_return,
                                       in_array1d);
 }
 
+
+/*@@
+   @routine    CCTK_ReduceLocArrayToArray1D
+   @date       Sat Nov 27 22:52:10 1999
+   @author     Gerd Lanfermann
+   @desc 
+       Interface for the reduction of local 1d arrays
+       to the mighty CCCTK_reduce interface. 
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+
+
+void FMODIFIER FORTRAN_NAME(CCTK_ReduceLocArrayToArray1D)(int *fortran_return,
+                                                    cGH *GH, 
+                                                    int *proc,
+                                                    int *operation_handle,
+                                                    void *in_array1d,
+                                                    void *out_array1d,
+						    int *num_in_array1d,
+                                                    int *data_type)
+{
+  *fortran_return = CCTK_ReduceArray (GH, *proc, *operation_handle,
+                                      *num_in_array1d, *data_type, out_array1d,
+				      1, 1, *data_type, *num_in_array1d,
+                                      in_array1d);
+}
+
+/*@@
+   @routine    CCTK_ReduceLocArrayToArray2D
+   @date       Sat Nov 27 22:52:10 1999
+   @author     Gerd Lanfermann
+   @desc 
+       Interface for the reduction of local 2d arrays
+       to the mighty CCCTK_reduce interface. 
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+
+
+
+int CCTK_ReduceLocArrayToArray2D(cGH *GH, int proc, int operation_handle,
+				 void *in_array2d, void *out_array2d, 
+				 int xsize, int ysize,
+				 int data_type)
+{
+  int  lin_size= xsize*ysize;
+  return (CCTK_ReduceArray (GH, proc, operation_handle,
+                            lin_size,
+			    data_type, out_array2d,
+                            2, 1, data_type, 
+			    xsize,ysize, in_array2d));
+}
+
+void FMODIFIER  FORTRAN_NAME(CCTK_ReduceLocArrayToArray2D)
+     (int  *fortran_return, cGH *GH, 
+      int  *proc,
+      int  *operation_handle,
+      void *in_array2d,
+      void *out_array2d,
+      int  *xsize, int *ysize,
+      int  *data_type)
+{
+  int lin_size = (*xsize)*(*ysize);
+  *fortran_return =  CCTK_ReduceArray (GH, *proc, *operation_handle,
+				      lin_size,
+				      *data_type, out_array2d,
+				      2, 1, *data_type, 
+				      *xsize, *ysize,
+				      in_array2d);
+}
+
+/*@@
+   @routine    CCTK_ReduceLocArrayToArray1D
+   @date       Sat Nov 27 22:52:10 1999
+   @author     Gerd Lanfermann
+   @desc 
+       Interface for the reduction of local 3d arrays
+       to 3d arrays.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+
+int CCTK_ReduceLocArrayToArray3D(cGH *GH, int proc, int operation_handle,
+				 void *in_array3d, void *out_array3d, 
+				 int xsize, int  ysize, int zsize,
+				 int data_type)
+{
+
+  int lin_size =  xsize*ysize*zsize;
+  return (CCTK_ReduceArray (GH, proc, operation_handle,
+                            lin_size,
+			    data_type, out_array3d,
+                            3, 1, data_type, 
+			    xsize,ysize,zsize,
+			    in_array3d));
+}
+
+void FMODIFIER  FORTRAN_NAME(CCTK_ReduceLocArrayToArray3D)
+     (int  *fortran_return, cGH *GH, 
+      int  *proc,
+      int  *operation_handle,
+      void *in_array3d,
+      void *out_array3d,
+      int  *xsize, int *ysize, int *zsize,
+      int  *data_type)
+{
+  int lin_size =  (*xsize)*(*ysize)*(*zsize);
+  *fortran_return =  CCTK_ReduceArray (GH, *proc, *operation_handle,
+				       lin_size,
+				       *data_type, out_array3d,
+				       3, 1, *data_type, 
+				       *xsize,*ysize,*zsize, 
+				       in_array3d);
+}
