@@ -36,7 +36,7 @@ $* = 1;                         # Multi-line is on!
 # Pick the correct set of comments to remove.
 if ($free_format)
 {
-  $standard_comments = "[!]";
+  $standard_comments = "\\s*[!]";
 }
 else
 {
