@@ -2,13 +2,13 @@
    @file      IOMethods.c
    @date      Mon Jan 8 1999
    @author    Gabrielle Allen
-   @desc 
-   Functions to deal with IO registration
-   @enddesc 
-   @version    $Header$
+   @desc
+              Functions to deal with IO registration
+   @enddesc
+   @version   $Id$
  @@*/
 
-/*#define DEBUG_IO*/
+/* #define DEBUG_IO 1 */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -31,11 +31,26 @@ static int num_methods = 0;
 
 /* Dummy registerable function prototypes. */
 static int DummyOutputGH(cGH *GH);
-static int DummyOutputVarAs(cGH *GH, 
-                            const char *var, 
+static int DummyOutputVarAs(cGH *GH,
+                            const char *var,
                             const char *alias);
 static int DummyTriggerOutput(cGH *GH, int var);
 static int DummyTimeToOutput(cGH *GH, int var);
+
+int CactusDefaultOutputGH (cGH *GH);
+int CactusDefaultOutputVarAsByMethod (cGH *GH,
+                                      const char *var,
+                                      const char *methodname,
+                                      const char *alias);
+void CCTK_FCALL CCTK_FNAME (CCTK_OutputVarAsByMethod)
+                           (int *ierr, cGH *GH, THREE_FORTSTRINGS_ARGS);
+void CCTK_FCALL CCTK_FNAME (CCTK_OutputVarByMethod)
+                           (int *ierr, cGH *GH, TWO_FORTSTRINGS_ARGS);
+int CCTK_OutputVarAs (cGH *GH, const char *var, const char *alias);
+int CCTK_OutputVar (cGH *GH, const char *var);
+int CCTK_OutputVarByMethod (cGH *GH, const char *var, const char *method);
+int CCTKi_TriggerSaysGo (cGH *GH, int variable);
+int CCTKi_TriggerAction (void *GH, int variable);
 
 
 /************************************************************************
@@ -48,35 +63,29 @@ static int DummyTimeToOutput(cGH *GH, int var);
    @routine    CCTK_RegisterIOMethod
    @date       Wed Feb  3 13:33:09 1999
    @author     Tom Goodale
-   @desc 
+   @desc
                Registers a new IO method.
-   @enddesc 
+   @enddesc
    @calls      Util_GetHandle
                Util_NewHandle
-   @history 
-   @endhistory
- 
+
    @var        name
    @vdesc      The name of the method for IO
    @vtype      const char *
    @vio        in
-   @vcomment 
-   @endvar 
+   @endvar
 
    @returntype int
-   @returndesc
-               -2  = memory allocation failed
+   @returndesc -2  = memory allocation failed
                -1  = method with this name already registered
                i>0 = handle for method
    @endreturndesc
-
 @@*/
-
 int CCTK_RegisterIOMethod(const char *name)
 {
-
   int handle;
   struct IOMethod *new_method;
+
 
   /* Check that the method hasn't already been registered */
   handle = Util_GetHandle(IOMethods, name, NULL);
@@ -111,7 +120,7 @@ int CCTK_RegisterIOMethod(const char *name)
     /* Method already exists. */
     handle = -1;
   }
-    
+
   return handle;
 }
 
@@ -120,57 +129,40 @@ int CCTK_RegisterIOMethod(const char *name)
    @routine    CCTK_RegisterIOMethodOutputGH
    @date       Wed Feb  3 13:34:12 1999
    @author     Tom Goodale
-   @desc 
+   @desc
                Registers a function to register a routine for OutputGH.
-   @enddesc 
+   @enddesc
    @calls      Util_GetHandledData
-   @calledby   
-   @history 
-   @endhistory 
 
    @var        handle
    @vdesc      identifies the method in the stored data
    @vtype      int
    @vio        in
-   @vcomment 
-   @endvar 
-
+   @endvar
    @var        func
    @vdesc      name of the routine for implementing OutputGH
    @vtype      (* func)(cGH *)
    @vio        in
-   @vcomment 
-   @endvar 
+   @endvar
 
    @returntype int
-   @returndesc
-               1 = function successfully registered
+   @returndesc 1 = function successfully registered
                0 = function did not register
    @endreturndesc
-
-   @version    $Header$
-
 @@*/
-
 int CCTK_RegisterIOMethodOutputGH(int handle, int (*func)(cGH *))
 {
-  int return_code;
   struct IOMethod *method;
+
 
   /* Get the method. */
   method = Util_GetHandledData(IOMethods, handle);
-
   if(method)
   {
     method->OutputGH = func;
-    return_code = 1;
-  }
-  else
-  {
-    return_code = 0;
   }
 
-  return return_code;
+  return (method != NULL);
 }
 
 
@@ -178,136 +170,98 @@ int CCTK_RegisterIOMethodOutputGH(int handle, int (*func)(cGH *))
    @routine    CCTK_RegisterIOMethodOutputVarAs
    @date       Wed Feb  3 13:34:12 1999
    @author     Tom Goodale
-   @desc 
+   @desc
                Registers a function to register a routine for OutputVarAs
-   @enddesc 
+   @enddesc
    @calls      Util_GetHandledData
-   @calledby   
-   @history 
-   @endhistory 
 
    @var        handle
    @vdesc      identifies the method in the stored data
    @vtype      int
    @vio        in
-   @vcomment 
-   @endvar 
-
+   @endvar
    @var        func
    @vdesc      name of the routine for implementing OutputVarAs
    @vtype      (* func)(cGH *, const char *,const char *)
    @vio        in
-   @vcomment 
-   @endvar 
+   @endvar
 
    @returntype int
-   @returndesc
-               1 = function successfully registered
+   @returndesc 1 = function successfully registered
                0 = function did not register
    @endreturndesc
-
-   @version    $Header$
-
 @@*/
-
-int CCTK_RegisterIOMethodOutputVarAs(int handle, int (*func)(cGH *, 
+int CCTK_RegisterIOMethodOutputVarAs(int handle, int (*func)(cGH *,
                                     const char *,const char *))
 {
-  int return_code;
   struct IOMethod *method;
+
 
   /* Get the extension. */
   method = Util_GetHandledData(IOMethods, handle);
-
-  if(method)
+  if (method)
   {
     method->OutputVarAs = func;
-    return_code = 1;
-  }
-  else
-  {
-    return_code = 0;
   }
 
-  return return_code;
+  return (method != NULL);
 }
+
 
 int CCTK_RegisterIOMethodTriggerOutput(int handle, int (*func)(cGH *, int))
 {
-  int return_code;
   struct IOMethod *method;
+
 
   /* Get the extension. */
   method = Util_GetHandledData(IOMethods, handle);
-
-  if(method)
+  if (method)
   {
     method->TriggerOutput = func;
-    return_code = 1;
-  }
-  else
-  {
-    return_code = 0;
   }
 
-  return return_code;
+  return (method != NULL);
 }
+
 
  /*@@
    @routine    CCTK_RegisterIOMethodTimeToOutput
    @date       Sat March 6 1999
    @author     Gabrielle Allen
-   @desc 
+   @desc
                Registers a function to register a routine for TimeToOutput
-   @enddesc 
+   @enddesc
    @calls      Util_GetHandledData
-   @calledby   
-   @history 
-   @endhistory 
 
    @var        handle
    @vdesc      identifies the method in the stored data
    @vtype      int
    @vio        in
-   @vcomment 
-   @endvar 
-
+   @endvar
    @var        func
    @vdesc      name of the routine for implementing TimeToOutput
    @vtype      (* func)(cGH *, int)
    @vio        in
-   @vcomment 
-   @endvar 
+   @endvar
 
    @returntype int
-   @returndesc
-               1 = function successfully registered
+   @returndesc 1 = function successfully registered
                0 = function did not register
    @endreturndesc
-
-   @version    $Header$
-
 @@*/
-
 int CCTK_RegisterIOMethodTimeToOutput(int handle, int (*func)(cGH *, int))
 {
-  int return_code;
   struct IOMethod *method;
 
-  /* Get the extension. */
-  method = Util_GetHandledData(IOMethods, handle);
 
-  if(method)
+  /* Get the extension. */
+  method = Util_GetHandledData (IOMethods, handle);
+  if (method)
   {
     method->TimeToOutput = func;
-    return_code = 1;
-  }
-  else
-  {
-    return_code = 0;
   }
 
-  return return_code;
+  return (method != NULL);
 }
 
 
@@ -322,51 +276,58 @@ int CCTK_RegisterIOMethodTimeToOutput(int handle, int (*func)(cGH *, int))
    @routine    DummyOutputGH
    @date       Wed Feb  3 13:36:52 1999
    @author     Tom Goodale
-   @desc 
-   Dummy for OutputGH functions.
-   @enddesc 
+   @desc
+               Dummy for OutputGH functions.
+   @enddesc
 @@*/
-
 static int DummyOutputGH(cGH *GH)
 {
+  GH = GH;
   return 0;
 }
+
 
  /*@@
    @routine    DummyTimeToOutput
    @date       Sat March 6 1999
    @author     Gabrielle Allen
-   @desc 
-   Dummy for TimeToOutput function.
-   @enddesc 
+   @desc
+               Dummy for TimeToOutput function.
+   @enddesc
 @@*/
-
 static int DummyTimeToOutput(cGH *GH, int var)
 {
+  GH = GH;
+  var = var;
   return 0;
 }
+
 
  /*@@
    @routine    DummyOutputVarAs
    @date       Wed Feb  3 13:37:31 1999
    @author     Tom Goodale
-   @desc 
-   Dummy for OutputVarAs functions.
-   @enddesc 
+   @desc
+               Dummy for OutputVarAs functions.
+   @enddesc
 @@*/
-
-static int DummyOutputVarAs(cGH *GH, 
-                            const char *var, 
+static int DummyOutputVarAs(cGH *GH,
+                            const char *var,
                             const char *alias)
 {
+  GH = GH;
+  var = var;
+  alias = alias;
   return 0;
 }
+
 
 static int DummyTriggerOutput(cGH *GH, int var)
 {
+  GH = GH;
+  var = var;
   return 0;
 }
-
 
 
 /************************************************************************
@@ -379,36 +340,28 @@ static int DummyTriggerOutput(cGH *GH, int var)
    @routine    CactusDefaultOutputGH
    @date       Sat March 6 1999
    @author     Gabrielle Allen
-   @desc 
-               Loops over all methods calling each methods OutputGH 
+   @desc
+               Loops over all methods calling each methods OutputGH
                routine
-   @enddesc 
+   @enddesc
    @calls      IOMethod->OutputGH
-   @calledby   
-   @history 
-   @endhistory 
 
    @var        GH
    @vdesc      Pointer to Grid Hierachy
    @vtype      cGH *
    @vio        in
-   @vcomment 
-   @endvar 
+   @endvar
 
    @returntype int
-   @returndesc
-              -1    = No IO methods were found
+   @returndesc -1    = No IO methods were found
                i>=0 = Last handle used for output (number of IO methods-1)
    @endreturndesc
-
-   @version    $Header$
-
 @@*/
-
-int CactusDefaultOutputGH(cGH *GH)
+int CactusDefaultOutputGH (cGH *GH)
 {
   int handle;
   struct IOMethod *method;
+
 
   for (handle = 0;;handle++)
   {
@@ -434,57 +387,44 @@ int CactusDefaultOutputGH(cGH *GH)
    @routine    CactusDefaultOutputVarAsByMethod
    @date       Sat March 6 1999
    @author     Gabrielle Allen
-   @desc 
+   @desc
                Outputs one chosen variable by one chosen method
-   @enddesc 
-   @calls      
-   @history 
-   @endhistory 
+   @enddesc
 
    @var        GH
    @vdesc      Pointer to Grid Hierachy
    @vtype      cGH *
    @vio        in
-   @vcomment 
-   @endvar 
-
+   @endvar
    @var        var
    @vdesc      Name of variable to output
    @vtype      const char *
    @vio        in
-   @vcomment 
-   @endvar 
-
+   @endvar
    @var        method
    @vdesc      Name of method to use for output
    @vtype      const char *
    @vio        in
-   @vcomment 
-   @endvar 
-
+   @endvar
    @var        alias
    @vdesc      Name variable should be output as
    @vtype      const char *alias
    @vio        in
    @vcomment   Note that the IO method may not use this feature
-   @endvar 
+   @endvar
 
    @returntype int
-   @returndesc
-              -1    = No such IO method found
+   @returndesc -1    = No such IO method found
                0    = success
    @endreturndesc
-
-   @version    $Header$
-
 @@*/
-
-int CactusDefaultOutputVarAsByMethod(cGH *GH, 
-                                     const char *var,   
-                                     const char *methodname, 
-                                     const char *alias)
+int CactusDefaultOutputVarAsByMethod (cGH *GH,
+                                      const char *var,
+                                      const char *methodname,
+                                      const char *alias)
 {
   struct IOMethod *method = NULL;
+
 
   Util_GetHandle (IOMethods, methodname, (void **) &method);
   if (! method)
@@ -497,8 +437,9 @@ int CactusDefaultOutputVarAsByMethod(cGH *GH,
   return 0;
 }
 
+
 void CCTK_FCALL CCTK_FNAME (CCTK_OutputVarAsByMethod)
-     (int *ierr, cGH *GH, THREE_FORTSTRINGS_ARGS)
+                           (int *ierr, cGH *GH, THREE_FORTSTRINGS_ARGS)
 {
   THREE_FORTSTRINGS_CREATE(var, methodname, alias);
 
@@ -521,52 +462,41 @@ void CCTK_FCALL CCTK_FNAME (CCTK_OutputVarAsByMethod)
    @routine    CactusOutputVarAs
    @date       Sat March 6 1999
    @author     Gabrielle Allen
-   @desc 
+   @desc
                Loops over all methods for a given variable,
                calling each methods OutputVarAs routine
-   @enddesc 
+   @enddesc
    @calls      Util_GetHandledData
                IOMethod->OutputVarAs
-   @history 
-   @endhistory 
 
    @var        GH
    @vdesc      Pointer to Grid Hierachy
    @vtype      cGH *
    @vio        in
-   @vcomment 
-   @endvar 
-
+   @endvar
    @var        var
    @vdesc      Name of variable to output
    @vtype      const char *
    @vio        in
-   @vcomment 
-   @endvar 
-
+   @endvar
    @var        alias
    @vdesc      Name variable should be output as
    @vtype      const char *alias
    @vio        in
    @vcomment   Note that the IO method may not use this feature
-   @endvar 
+   @endvar
 
    @returntype int
-   @returndesc
-              -1    = No IO methods were found
+   @returndesc -1    = No IO methods were found
                i>=0 = Last handle used for output (number of IO methods-1)
    @endreturndesc
-
-   @version    $Header$
-
 @@*/
-
-
-int CCTK_OutputVarAs(cGH *GH, const char *var, const char *alias)
+int CCTK_OutputVarAs (cGH *GH, const char *var, const char *alias)
 {
   int handle;
   struct IOMethod *method;
-  
+
+
   for (handle = 0;;handle++)
   {
     method = (struct IOMethod *)Util_GetHandledData(IOMethods, handle);
@@ -586,37 +516,27 @@ int CCTK_OutputVarAs(cGH *GH, const char *var, const char *alias)
    @routine    CactusOutputVar
    @date       Sat March 6 1999
    @author     Gabrielle Allen
-   @desc 
+   @desc
                Outputs a variable using all methods and no alias
-   @enddesc 
+   @enddesc
    @calls      CCTK_OutputVarAs
-   @history 
-   @endhistory 
 
    @var        GH
    @vdesc      Pointer to Grid Hierachy
    @vtype      cGH *
    @vio        in
-   @vcomment 
-   @endvar 
-
+   @endvar
    @var        var
    @vdesc      Name of variable to output
    @vtype      const char *
    @vio        in
-   @vcomment   This is also the name the variable will be output as
-   @endvar 
+   @endvar
 
    @returntype int
-   @returndesc
-               0    = always returns this
+   @returndesc 0    = always returns this
    @endreturndesc
-
-   @version    $Header$
-
 @@*/
-
-int CCTK_OutputVar(cGH *GH, const char *var)
+int CCTK_OutputVar (cGH *GH, const char *var)
 {
   CCTK_OutputVarAs(GH, var, var);
 
@@ -628,59 +548,47 @@ int CCTK_OutputVar(cGH *GH, const char *var)
    @routine    CactusOutputVarByMethod
    @date       Sat March 6 1999
    @author     Gabrielle Allen
-   @desc 
+   @desc
                Outputs a variable using one given method and no alias
-   @enddesc 
+   @enddesc
    @calls      CCTK_OutputVarAsByMethod
-   @history 
-   @endhistory 
 
    @var        GH
    @vdesc      Pointer to Grid Hierachy
    @vtype      cGH *
    @vio        in
-   @vcomment 
-   @endvar 
-
+   @endvar
    @var        var
    @vdesc      Name of variable to output
    @vtype      const char *
    @vio        in
    @vcomment   This is also the name the variable will be output as
-   @endvar 
-
+   @endvar
    @var        method
    @vdesc      Name of method to use for output
    @vtype      const char *
    @vio        in
-   @vcomment 
-   @endvar 
+   @endvar
 
    @returntype int
-   @returndesc
-               0    = always returns this
+   @returndesc 0    = always returns this
    @endreturndesc
-
-   @version    $Header$
-
 @@*/
-
-int CCTK_OutputVarByMethod(cGH *GH, const char *var, const char *method)
+int CCTK_OutputVarByMethod (cGH *GH, const char *var, const char *method)
 {
   CCTK_OutputVarAsByMethod(GH, var, method, var);
 
   return 0;
 }
 
-void CCTK_FCALL CCTK_FNAME(CCTK_OutputVarByMethod)
-     (int *ierr, cGH *GH, TWO_FORTSTRINGS_ARGS)
+void CCTK_FCALL CCTK_FNAME (CCTK_OutputVarByMethod)
+                           (int *ierr, cGH *GH, TWO_FORTSTRINGS_ARGS)
 {
   TWO_FORTSTRINGS_CREATE(var,method);
   *ierr = CCTK_OutputVarByMethod(GH, var, method);
   free(var);
   free(method);
 }
-
 
 
 /************************************************************************
@@ -693,62 +601,46 @@ void CCTK_FCALL CCTK_FNAME(CCTK_OutputVarByMethod)
    @routine    CCTKi_TriggerSaysGo
    @date       Sat March 6 1999
    @author     Gabrielle Allen
-   @desc 
+   @desc
                Checks if a trigger registered for a routine is
                due for output by any IO method.
-   @enddesc 
+   @enddesc
    @calls      Util_GetHandledData
                IOMethod->TimeToOutput
-   @history  
-   @endhistory 
 
    @var        GH
    @vdesc      Pointer to Grid Hierachy
    @vtype      cGH *
    @vio        in
-   @vcomment 
-   @endvar 
-
+   @endvar
    @var        variable
    @vdesc      GH variable index
    @vtype      int
    @vio        in
-   @vcomment 
-   @endvar 
+   @endvar
 
    @returntype int
-   @returndesc
-               0    = Trigger says don't output me this iteration
+   @returndesc 0    = Trigger says don't output me this iteration
                1    = Trigger says output me this iteration
    @endreturndesc
-
-   @version    $Header$
- */
-
-int CCTKi_TriggerSaysGo(cGH *GH, int variable)
+@@*/
+int CCTKi_TriggerSaysGo (cGH *GH, int variable)
 {
   int handle;
-  int flag;
   struct IOMethod *method;
 
+
   /* Loop over all registered IO methods */
-  for (handle = 0;;handle++)
+  for (handle = 0; handle < num_methods; handle++)
   {
-    method = (struct IOMethod *)Util_GetHandledData(IOMethods, handle);
-    if (method)
+    /* Check if it is time to output this variable for this method */
+    method = (struct IOMethod *) Util_GetHandledData (IOMethods, handle);
+    if (method && method->TimeToOutput (GH, variable))
     {
-      /* Check if it is time to output this variable for this method*/
-      flag = method->TimeToOutput(GH, variable);
-      if (flag) 
-        return 1;
-    }
-    else
-    {
-      /* There are no more methods left, so the variable will not be output */
-      return 0;
+      return (1);
     }
   }
-  
+  return (0);
 }
 
 
@@ -756,80 +648,58 @@ int CCTKi_TriggerSaysGo(cGH *GH, int variable)
    @routine    CCTKi_TriggerAction
    @date       Sat March 6 1999
    @author     Gabrielle Allen
-   @desc 
-               Essentially the same as CCTKi_TriggerSaysGo, 
-               but now calls each IO method for which it is 
+   @desc
+               Essentially the same as CCTKi_TriggerSaysGo,
+               but now calls each IO method for which it is
                time to output the trigger
-   @enddesc 
+   @enddesc
    @calls      Util_GetHandledData
                CCTK_FullName
                CCTK_VarName
                IOMethod->TimeToOutput
                IOMethod->OutputVarAs
-   @history  
-   @endhistory 
 
    @var        GH
    @vdesc      Pointer to Grid Hierachy
    @vtype      cGH *
    @vio        in
-   @vcomment 
-   @endvar 
-
+   @endvar
    @var        variable
    @vdesc      GH variable index
    @vtype      int
    @vio        in
-   @vcomment 
-   @endvar 
+   @endvar
 
    @returntype int
-   @returndesc
-               0    = This should never happen, since at least
+   @returndesc 0    = This should never happen, since at least
                       one IO method should have been found by
                       CCTKi_TriggerSaysGo
                >0   = Number of IO methods called for output for
                       this variable
    @endreturndesc
-
-   @version    $Header$
- */
-
-int CCTKi_TriggerAction(void *GH, int variable)
+@@*/
+int CCTKi_TriggerAction (void *GH, int variable)
 {
-  char *fullvarname;
   int handle;
   int nmethods;
   struct IOMethod *method;
 
-  fullvarname = CCTK_FullName(variable);
 
   /* Count the number of methods used */
   nmethods = 0;
 
   /* Loop over all registered IO methods */
-  for (handle = 0;;handle++)
+  for (handle = 0; handle < num_methods; handle++)
   {
-    method = (struct IOMethod *)Util_GetHandledData(IOMethods, handle);
-    if (method)
+    /* Check if it is time to output this variable for this method */
+    method = (struct IOMethod *) Util_GetHandledData (IOMethods, handle);
+    if (method && method->TimeToOutput (GH, variable))
     {
-
-      /* Check if it is time to output this variable for this method*/
-      if (method->TimeToOutput(GH, variable))
-      {
-        /* And if so do call the output routine for the method */
-        method->TriggerOutput(GH,variable);
-        nmethods++;
-      }
-    }
-    else
-    {
-      /* There are no methods left */
-
-      /* This was assigned by CCTK_FullName */
-      free(fullvarname);
-
-      return nmethods;
+      /* And if so do call the output routine for the method */
+      method->TriggerOutput (GH, variable);
+      nmethods++;
     }
   }
+
+  return (nmethods);
 }
