@@ -423,17 +423,15 @@ schedule <name> at <time bin> [other options]
   SYNC:     [group list]
 } "A description"
 \end{verbatim}
-where {\tt <name>} is the name of the routine, and {\tt <time bin>} is one of
-the following schedule bins (the {\tt CCTK\_} prefix is optional):
+where {\tt <name>} is the name of the routine, and {\tt <time bin>} is the
+name of a schedule bins (the {\tt CCTK\_} prefix is optional). A list of 
+the most useful schedule bins for application thorns is given here, a complete and more descriptive list is provided in Appendix~\ref{sec:scbi}:
 
 \begin{Lentry}
 
 \item [{\tt CCTK\_STARTUP}]
 For routines run before the grid hierachy is set up, for example function
 registration.
-
-\item [{\tt CCTK\_RECOVER\_PARAMETERS}]
-When restarting Cactus from a checkpoint, routines scheduled at {\tt CCTK\_RECOVER\_PARAMETERS} are called to recover the parameters from the checkpoint file.
 
 \item [{\tt CCTK\_PARAMCHECK}]
 For routines which check parameter combinations, routines registered here
@@ -448,15 +446,6 @@ For generating initial data.
 \item [{\tt CCTK\_POSTINITIAL}]
 Tasks which must be applied after initial data is created.
 
-\item [{\tt CCTK\_RECOVER\_VARIABLES}]
-For recovery of grid variables from a checkpoint.
-
-\item [{\tt CCTK\_POST\_RECOVER\_VARIABLES}]
-For functions which want to modify grid variables after recovery.
-
-\item [{\tt CCTK\_CPINITIAL}]
-For checkpointing initial data.
-
 \item [{\tt CCTK\_PRESTEP}]
 Stuff done before the evolution step.
 
@@ -466,21 +455,9 @@ The evolution step.
 \item [{\tt CCTK\_POSTSTEP}]
 Stuff done after the evolution step.
 
-\item [{\tt CCTK\_CHECKPOINT}]
-For checkpointing evolution data.
-
 \item [{\tt CCTK\_ANALYSIS}]
 For analysing data.
 
-\item [{\tt CCTK\_TERMINATE}]
-Called when Cactus terminates.
-
-\item [{\tt CCTK\_SHUTDOWN}]
-Cactus final shutdown routines.
-
-%\item [{\tt CCTK\_CONVERGENCE}]
-%Convergence stuff.
-%
 \end{Lentry}
 
 The {\tt other options} allow finer grained control of the scheduling.  It is
