@@ -286,7 +286,7 @@ int CCTK_VWarn (int level,
                 const char *format,
                 ...)
 {
-  int cctk_full_warnings;
+  CCTK_INT *cctk_full_warnings;
   int param_type;
 
 
@@ -294,12 +294,10 @@ int CCTK_VWarn (int level,
 
   if (level <= warning_level)
   {
-    va_start (ap, format);
-
-    cctk_full_warnings = *((CCTK_INT *)
-                           CCTK_ParameterGet ("cctk_full_warnings",
-                                              "Cactus", &param_type));
-    if (cctk_full_warnings)
+    cctk_full_warnings = (CCTK_INT *) CCTK_ParameterGet ("cctk_full_warnings",
+                                                         "Cactus",
+                                                         &param_type);
+    if (cctk_full_warnings && *cctk_full_warnings)
     {
       fprintf (stderr, "WARNING level %d in thorn %s\n"
                        "  (line %d of %s): \n"
@@ -310,10 +308,11 @@ int CCTK_VWarn (int level,
     {
       fprintf (stderr, "WARNING[%d] (%s): ", level, thorn);
     }
+
+    va_start (ap, format);
     vfprintf (stderr, format, ap);
     fprintf (stderr, "\n");
     fflush (stderr);
-
     va_end (ap);
   }
 
