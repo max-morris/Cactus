@@ -520,7 +520,7 @@ int ParameterPrintDescription(const char *name,
 }
 
 /*@@
-   @routine    ParameterGet
+   @routine    CCTK_ParameterGet
    @date       Tue Jun 29 10:28:20 1999
    @author     Tom Goodale
    @desc 
@@ -567,9 +567,9 @@ int ParameterPrintDescription(const char *name,
    @endreturndesc
 
 @@*/
-void *ParameterGet(const char *name,
-                   const char *thorn,
-                   int *type)
+void *CCTK_ParameterGet(const char *name,
+                        const char *thorn,
+                        int *type)
 {
   void *retval;
   t_param *param;
@@ -592,7 +592,7 @@ void *ParameterGet(const char *name,
 }
 
 /*@@
-   @routine    ParameterValString
+   @routine    CCTK_ParameterValString
    @date       Thu Jan 21 2000
    @author     Thomas Radke
    @desc 
@@ -620,15 +620,15 @@ void *ParameterGet(const char *name,
    @endreturndesc
 
 @@*/
-char *ParameterValString (const char *param_name,
-                          const char *thorn)
+char *CCTK_ParameterValString (const char *param_name,
+                               const char *thorn)
 {
   int param_type;
   void *param_data;
   char *retval = NULL;
   char buffer [80];
 
-  param_data = ParameterGet (param_name, thorn, &param_type);
+  param_data = CCTK_ParameterGet (param_name, thorn, &param_type);
   if (param_data == NULL) return (NULL);
 
   switch (param_type)

@@ -103,20 +103,21 @@ int CCTK_ParameterSet (
                        const char *value);      /* The value of the parameter */
 
 /* get the data pointer to and type of a parameter's value */
-void *ParameterGet (
-                    const char *name,        /* The name of the parameter  */
-                    const char *thorn,       /* The originating thorn      */
-                    int *type);              /* Holds type of parameter    */
+void *CCTK_ParameterGet (
+                    const char *name,           /* The name of the parameter  */
+                    const char *thorn,          /* The originating thorn      */
+                    int *type);                 /* Holds type of parameter    */
 
 /* get the string representation of a parameter's value
    (string should be freed afterwards) */
-char *ParameterValString (const char *name,  /* The name of the parameter  */
-                          const char *thorn);      /* The originating thorn      */
+char *CCTK_ParameterValString (
+                 const char *name,              /* The name of the parameter  */
+                 const char *thorn);            /* The originating thorn      */
 
 /* walk through list of parameters */
 const char *CCTK_ParameterWalk(
-                               int first,               /* Get first parameter or not */
-                               const char *origin);     /* The origin of this walk    */
+                 int first,                     /* Get first parameter or not */
+                 const char *origin);           /* The origin of this walk    */
 
 /* get list of parameter names for given thorn */
 int CCTK_ParameterList (const char* thorn, char ***paramlist, int *n_param);

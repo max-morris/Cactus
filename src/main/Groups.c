@@ -1563,7 +1563,7 @@ static CCTK_INT **CCTKi_ExtractSize(int dimension, const char *thorn, const char
             strcpy(tmp, last_comma);
           }
 
-          size_array[i] = (CCTK_INT *)ParameterGet(tmp, thorn, &type);
+          size_array[i] = (CCTK_INT *)CCTK_ParameterGet(tmp, thorn, &type);
         }
       }
     }
