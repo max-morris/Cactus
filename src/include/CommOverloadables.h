@@ -69,4 +69,14 @@ OVERLOADABLE(Abort)
 OVERLOADABLE(SetupGH)
 
 #undef ARGUMENTS
+#define ARGUMENTS cGH *GH, int group, const char *groupname, int dir
+#undef RETURN_TYPE 
+#define RETURN_TYPE int *
+OVERLOADABLE(ArrayGroupSize_ByBoth)
+
+#undef ARGUMENTS
 #undef RETURN_TYPE
+
+
+
+
