@@ -968,6 +968,13 @@ int CCTK_ParameterWalk (int first,
           /* save the last startpoint */
           prev_startpoint_all = prev_startpoint_thorn = startpoint;
 
+          /* advance to the next if this is an array parameter */
+          if (startpoint->props->array_size > 0)
+          {
+            startpoint = &startpoint->array[next_index++];
+          }
+
+          /* set the parameter's fullname if requested by the caller */
           if (pfullname)
           {
             prefix = startpoint->props->thorn;
@@ -976,10 +983,6 @@ int CCTK_ParameterWalk (int first,
               prefix = CCTK_ThornImplementation (prefix);
             }
 
-            if (startpoint->props->array_size > 0)
-            {
-              startpoint = &startpoint->array[next_index++];
-            }
             *pfullname = malloc (strlen (prefix) +
                                  strlen (startpoint->props->name) + 3);
             if(*pfullname)
