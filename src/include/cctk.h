@@ -27,6 +27,11 @@
 /* Define some stuff */
 
 #ifdef FCODE
+
+#define CCTK_PRINTSEPARATOR\
+  print *,"----------------------------------------------------------------"
+
+
 #define _CCTK_FARGUMENTS  dim, global_sh, sh, lb, ub, bbox, delta_time, time, delta_space, origin_space, levfac, convlevel, nghostzones, iteration, GH
 #define _DECLARE_CCTK_FARGUMENTS INTEGER dim&&\
                            INTEGER global_sh(dim)&&\
@@ -42,6 +47,12 @@
 #endif /*FCODE*/
 
 #ifdef CCODE
+
+#include "cGH.h"
+
+#define CCTK_PRINTSEPARATOR \
+  printf("----------------------------------------------------------------\n");
+
 #define _INITIALISE_CCTK_C2F
 #define _DECLARE_CCTK_C2F 
 #define _PASS_CCTK_C2F(xGH) &((xGH)->dim),\
@@ -78,6 +89,13 @@ extern int _cctk_one;
 
 #endif /*CCODE*/
 
+#define CCTK_REAL 3
+
+/*#define CCTK_MAKESTRING(x) CCTK_REALSTRING(x)
+#define CCTK_REALSTRING(x) #x
+#define CCTK_WARN(a,b) CCTK_Warn(a,CCTK_MAKESTRING(CCTK_THORN),b)
+*/
 #define CCTK_WARN(a,b) CCTK_Warn(a,CCTK_THORNSTRING,b)
 
 #endif
+
