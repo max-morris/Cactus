@@ -37,57 +37,77 @@ while (<THORNLIST>)
 }
 close(THORNLIST);
 
+@sorted = sort(@thorns);
+
 for ($i=0;$i<$nthorns;$i++)
 {
- $thorn=$thorns[$i];
- $thorn = "arrangements/$thorn/par";
- if (-d $thorn)
- {    
-   chdir $thorn;
-   while ($parfile = <*.par>)
-   { 
-     $gotall = 1;
-     @ActiveThorns = &GetActiveThorns($parfile);
-     $donothave = "";
-     for ($j=0;$j<scalar(@ActiveThorns);$j++)
-     {
-       $gotit = 0;
-       for ($k=0;$k<$nthorns;$k++)
-       {
-	 $thorns[$k] =~ m:.*/(\w*):;
-	 if ($ActiveThorns[$j] =~ /^$1$/i)
-	 {
-	   $gotit = 1;
-	 }
-       }
-       if ($gotit == 0)
-       {
-	 $donothave .= "$ActiveThorns[$j] ";
-	 $gotall = 0;
-       }
-     }
+  $thorn = $sorted[$i];
+  $thorn = "arrangements/$thorn/par";
+  if (-d $thorn)
+  {    
+    $newthorn = 1;
+    chdir $thorn;
+    while ($parfile = <*.par>)
+    { 
+      $gotall = 1;
+      $counter = 0;
+      @ActiveThorns = &GetActiveThorns($parfile);
+      $donothave = "";
+      for ($j=0;$j<scalar(@ActiveThorns);$j++)
+      {
+	$gotit = 0;
+	for ($k=0;$k<$nthorns;$k++)
+	{
+	  $sorted[$k] =~ m:.*/(\w*):;
+	  if ($ActiveThorns[$j] =~ /^$1$/i)
+	  {
+	    $gotit = 1;
+	  }
+	}
+	if ($gotit == 0)
+	{
+	  $counter++;
+	  if ($counter%6 != 0)
+	  {
+	    $donothave .= "$ActiveThorns[$j] ";
+	  }
+	  else
+	  {
+	    $donothave .= "\n       $ActiveThorns[$j] ";
+	  }
+	  $gotall = 0;
+	}
+      }
 
-     if ($gotall == 1)
-     {
-       if (-e "$home/examples/$config/$parfile")
-       {
-	 print "  $parfile:  Exists, no overwrite\n";
-       }
-       else
-       {
-	 print "  $parfile: Copying from $thorns[$i]\n";
-	 system("cp $parfile $home/examples/$config/$parfile");
-       }
+      if ($newthorn == 1)
+      {
+	print "  $sorted[$i]:\n";
+	$newthorn = 0;
+      }
+      
+      if ($gotall == 1)
+      {
+	if (-e "$home/examples/$config/$parfile")
+	{
+	  print "    $parfile: Not copied, already exists\n";
+	}
+	else
+	{
+	  print "    $parfile: Copied\n";
+	  system("cp $parfile $home/examples/$config/$parfile");
+	}
+      }
+      else
+      {
+       $donothave =~ s/\s*$//;
+       print "    $parfile: Not copied, missing thorns\n      ($donothave)\n";
      }
-     else
-     {
-       print "  $parfile: Missing thorns ($donothave)\n";
-     }
-   }
-   
-   chdir "$home${sep}";
+    }
+    
+    chdir "$home${sep}";
 
- }
+  }
+
 }
 
 # Parse the active thorns from a parameter file
