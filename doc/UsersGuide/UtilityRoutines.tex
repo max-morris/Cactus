@@ -58,7 +58,8 @@ Perl hash table.)%%%
 	 }%%%
 
 More formally, a table is an object which stores a set of ``keys''
-and a corresponding set of ``values''.
+and a corresponding set of ``values''.  We refer to a (key,entry)
+pair as a table ``entry''.
 
 Keys are C-style null-terminated character strings, with the slash
 character \verb|'/'| reserved for future expansion.%%%
@@ -73,18 +74,22 @@ A string can be stored by treating it as a 1-dimensional array of
 \verb|CCTK_CHAR| (there's an example of this below).
 
 The basic ``life cycle'' of a table is that you first create it
-with \verb|Util_TableCreate()|, then set values in it with one or
-more of the \verb|Util_TableSet*()| and/or \verb|Util_TableSet*Array()|
-functions, then later on some other piece of code can get (copies of)
-the values you set from the table with one or more of the
-\verb|Util_TableGet*()| and/or \verb|Util_TableGet*Array()| functions.
-Finally, when you're through with a table you destroy it with
-\verb|Util_TableDestroy()|.
+with \verb|Util_TableCreate()|, then set entries in it with one or
+more of the \verb|Util_TableSet*()|, \verb|Util_TableSet*Array()|,
+and/or \verb|Util_TableSetString()| functions, then later on some
+other piece of code can get (copies of) the values you set from the
+table with one or more of the \verb|Util_TableGet*()|,
+\verb|Util_TableGet*Array()|, and/or \verb|Util_TableGetString()|
+functions.  Finally, when you're through with a table you destroy
+it with \verb|Util_TableDestroy()|.
 
-For simple uses, there's also a short-cut function
-\verb|Util_TableCreateFromString()|, which creates a table and
-sets some integer or real values in it, based on a parameter-file--style
-string.
+There are also convenience functions \verb|Util_TableSetFromString()|
+to sets entries in a table based on a parameter-file--style string,
+and \verb|Util_TableCreateFromString()| to create a table and then
+set entries in it based on a parameter-file--style string.
+
+As well, there are ``table iterator'' functions \verb|Util_TableIt*()|
+to allow manipulation of a table even if you don't know its keys.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -101,7 +106,7 @@ Here's a simple example (in C)%%%
 #include "util_Table.h"
 #include "cctk.h"
 
-/* create a table and set some values in it */
+/* create a table and set some entries in it */
 int handle = Util_TableCreate(UTIL_TABLE_FLAGS_DEFAULT);
 Util_TableSetInt(handle, 2, "two");
 Util_TableSetReal(handle, 3.14, "pi");
@@ -116,11 +121,12 @@ Util_TableGetReal(handle, &pi_value, "pi");     /* sets pi_value = 3.14 */
 \end{verbatim}
 
 Actually, you shouldn't write code like this -- in the real world
-errors sometimes happen, and it's not at all nice to have your program
-crash.  The {\em right\/} thing to do is to always check for errors.
-To allow this, all the table routines return a status, which is
-zero or positive for a successful return, but negative if and only
-if some sort of error has occured.%%%
+errors sometimes happen, and it's much better to catch them close to
+their point of occurence rather than silently produce garbage results
+or crash your program.  So, the {\em right\/} thing to do is to always
+check for errors.  To allow this, all the table routines return a status,
+which is zero or positive for a successful return, but negative if
+and only if some sort of error has occured.%%%
 \footnote{%%%
 	 Often (as in the examples here) you don't care
 	 about the details of which error occured.  But if
@@ -130,17 +136,17 @@ if some sort of error has occured.%%%
 	 section~\ref{sect-FunctionReference/UtilityFunctions}
 	 say which error codes each function can return.
 	 }%%%
-{}  So, the above example can (should) be rewritten like this:
+{}  So, the above example should be rewritten like this:
 
 \begin{verbatim}
 #include <util_Table.h>
 
-/* create a table and set some values in it */
+/* create a table and set some entries in it */
 int handle = Util_TableCreate(UTIL_TABLE_FLAGS_DEFAULT);
 if (handle < 0)
         CCTK_WARN(-1, "couldn't create table!");
 
-/* try to set two_value = 2 and set pi_value = 3.14 */
+/* try to set some table entries */
 if (Util_TableSetInt(handle, 2, "two") < 0)
         CCTK_WARN(-1, "couldn't set integer value in table!");
 if (Util_TableSetReal(handle, 3.14, "pi") < 0)
@@ -148,16 +154,15 @@ if (Util_TableSetReal(handle, 3.14, "pi") < 0)
 
 ...
 
-/* get the values from the table */
+/* try to get the values from the table */
 CCTK_INT two_value;
 CCTK_REAL pi_value;
-/* try to get two_value and pi_value from the table */
 if (Util_TableGetInt(handle, &two_value, "two") < 0)
         CCTK_WARN(-1, "couldn't get integer value from table!");
 if (Util_TableGetReal(handle, &pi_value, "pi") < 0)
         CCTK_WARN(-1, "couldn't get integer value from table!");
 
-/* now two_value = 2 and pi_value = 3.14 */
+/* if we get to here, then two_value = 2 and pi_value = 3.14 */
 \end{verbatim}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -178,7 +183,7 @@ int handle = Util_TableCreate(UTIL_TABLE_FLAGS_DEFAULT);
 if (handle < 0)
         CCTK_WARN(-1, "couldn't create table!");
 
-/* try to set two_value = 2 and set pi_value = 3.14 */
+/* try to set some table entries */
 if (Util_TableSetFromString(handle, "two=2 pi=3.14") != 2)
         CCTK_WARN(-1, "couldn't set values in table!");
 \end{verbatim}
@@ -210,8 +215,8 @@ also store 1-dimensional arrays of numbers (or characters or pointers).%%%
 	 you pass in, so you probably shouldn't use tables to
 	 store really big arrays like grid functions.  But it's
 	 fine to store things like parameters and coefficients.
-	 (If you do have a really big array, consider storing
-	 a pointer to it.)%%%
+	 If you do have a really big array, consider storing
+	 a pointer to it.%%%
 	 }%%%
 
 For example (continuing the previous example):
@@ -251,7 +256,7 @@ if (count < 0)
 You can even ask for just the first value:
 \begin{verbatim}
 CCTK_INT blah1;
-int count = Util_TableGetInt(handle, blah1, "my array");
+int count = Util_TableGetInt(handle, &blah1, "my array");
 if (count < 0)
         CCTK_WARN(-1, "couldn't get integer array value from table!");
 /* now count = 3, blah1 = 42 */
@@ -393,8 +398,8 @@ In a multiprocessor environment, tables are always processor-local.
 
 We have decided that tables do not {\em themselves\/} have names or other
 attributes.  However, at some time in the future we may add some special
-``system tables'' by Cactus itself to store this sort of information
-for those cases where it's needed.
+``system tables'' to be used by Cactus itself to store this sort of
+information for those cases where it's needed.
 
 For example, at some time in the future we may add support for a
 ``checkpoint me'' bit in a table's flags word, so that if you want a
