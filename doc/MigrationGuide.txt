@@ -40,14 +40,34 @@ You have to do the following:
   or DECLARE_CCTK_CARGUMENTS (C case)
 
 - replace DECLARE_PARSER with DECLARE_CCTK_PARAMETERS. 
-
+  
 - For now fortran programmers have  to declare 
      integer CCTK_Equals
-  wherever you need to read parameters. See below.
+  wherever you need to read parameters. See below. Note that
+  since CCTK_Equals returns an INTEGER, you cannot say
+
+  if (CCTK_Equals(mypar,"thispar")) then
+
+  you must say 
+
+  if (CCTK_Equals(mypar,"thispar").eq.1) then
+
+  (some compilers will not insist on this). To make this easier,
+  there is a macro CCTK_EQUALS which you can use as a logical
+
+  if (CCTK_EQUALS(mypar,"thispar")) then
+
+  (Unfortunately this means that some compilers will complain
+  if you declare "integer CCTK_EQUALS" instead of the correct
+  "integer CCTK_Equals")
  
 - the MACROS CONFORMAL_METRIC, NON_CONFORMAL_METRIC, SHIFT_ACTIVE,
   SHIFT_INACTIVE are now placed in thorn Einstein, in "Einstein.h". 
   You should #include this file wherever you need them.
+
+- the extrinsic curvature has changed name from hxx etc to kxx etc.
+
+- the Bona Masso variables should not be assumed to be available anymore.
 
 - the point macros, say CACTUS_POINT, BONAMASSO_EVOLUTION_POINT, are no
   longer available. If you need them you have to manage it yourself. As
@@ -60,8 +80,7 @@ You have to do the following:
   1 stands for TRUE, of course.
   Equals has a different meaning than contains. Equals means exactly
   that (but is case independent), so you can no longer have different 
-words separate by blank 
-  spaces in the parameter files. 
+  words separate by blank spaces in the parameter files. 
   As a consequence any multi-purpose parameter has to be broken into
   a set of them. You might have to think carefully about how to rewrite
   the part of the code dealing with this. This can be the more tiresome
