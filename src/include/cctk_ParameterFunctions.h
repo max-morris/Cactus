@@ -95,6 +95,22 @@ typedef struct PARAM_PROPS
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+/* set the value of a parameter */
+int ParameterSet   (const char *name,        /* The name of the parameter  */
+                    const char *thorn,       /* The originating thorn      */
+                    const char *value);      /* The value of the parameter */
+
+/* get the data pointer to and type of a parameter's value */
+void *ParameterGet (const char *name,        /* The name of the parameter  */
+                    const char *thorn,       /* The originating thorn      */
+                    int *type);              /* Holds type of parameter    */
+
+/* walk through list of parameters */
+const char *ParameterWalk(
+                    int first,               /* Get first parameter or not */
+                    const char *origin);     /* The origin of this walk    */
+
 /* get list of parameter names for given thorn */
 int CCTK_ParameterList (const char* thorn, char ***paramlist, int *n_param);
 
