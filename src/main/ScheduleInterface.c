@@ -1725,6 +1725,7 @@ static int SchedulePrintTimes(const char *where, t_sched_data *data)
       for (i = 0; i < data->total_time->n_vals; i++)
       {
         data->total_time->vals[i].type = data->info->vals[i].type;
+        data->total_time->vals[i].units = data->info->vals[i].units;
         data->total_time->vals[i].heading = data->info->vals[i].heading;
       }
       description = (char *) malloc (strlen (where) + 16);
