@@ -96,7 +96,7 @@ sub get_packages
 	
 	for ($i=$first; $i<$last+1; $i++)
 	{
-	    system("(cd packages; cvs checkout $name{$i}, cd ..)");
+	    system("(cd packages; cvs checkout $name{$i})");
 	}
 	
     }

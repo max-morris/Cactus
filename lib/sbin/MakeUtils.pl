@@ -80,6 +80,8 @@ sub buildthorns
     {
 	print "$thorn\n";
     }
+
+    chdir "..";
 }
 
 1;
