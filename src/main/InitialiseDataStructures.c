@@ -12,6 +12,7 @@
 #include <string.h>
 
 #include "flesh.h"
+#include "ActiveThorns.h"
 
 static char *rcsid = "$Id$";
 
@@ -49,6 +50,7 @@ int InitialiseDataStructures(tFleshConfig *ConfigData)
   CCTK_BindingsVariablesInitialise();
   CCTK_BindingsScheduleInitialise();
 
+  CCTK_ActivateThorn("Cactus");
 
   return 0;
 }

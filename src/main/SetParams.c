@@ -31,9 +31,11 @@ int CCTK_SetParameter(const char *parameter, const char *value)
   char thornname[101];
   const char *position;
   int length;
-  
+  int n_errors;
+
   if(CCTK_Equals(parameter, "ActiveThorns"))
   {
+    n_errors = 0;
     position = value;
 
     while(*position)
@@ -47,10 +49,9 @@ int CCTK_SetParameter(const char *parameter, const char *value)
       }
 
       thornname[length] = '\0';
-      CCTK_ActivateThorn(thornname);
-      if(position) position++;
+      n_errors += CCTK_ActivateThorn(thornname) != 0;
+      if(*position) position++;
     }
-      CCTK_ActivateThorn("Cactus");
   }
   else
   {     
