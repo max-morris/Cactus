@@ -42,6 +42,11 @@
 #define CCTK_STORAGESIZE(xGH, group, dim) (CCTK_QueryGroupStorage(xGH,group) ?\
                            (CCTK_ArrayGroupSize(xGH, group, dim)) : &(_cctk_one))
 
+typedef struct
+{
+  Double r;
+  Double i;
+} Complex;
 
 extern int _cctk_one;
 
