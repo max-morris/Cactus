@@ -4593,13 +4593,13 @@ CCTK_COMPLEX output_for_complex_array[N_INTERP_POINTS];
 operator_handle = CCTK_InterpHandle("generalized polynomial interpolation");
 if (operator_handle < 0)
 {
-  CCTK_WARN(-1, "can't get operator handle!");
+  CCTK_WARN(CCTK_WARN_ABORT, "can't get operator handle!");
 }
 
 coord_system_handle = CCTK_CoordSystemHandle("cart3d");
 if (coord_system_handle < 0)
 {
-  CCTK_WARN(-1, "can't get coordinate-system handle!");
+  CCTK_WARN(CCTK_WARN_ABORT, "can't get coordinate-system handle!");
 }
 
 interp_coords[0] = (const void *) interp_x;
@@ -4620,7 +4620,7 @@ if (CCTK_InterpGridArrays(GH, N_DIMS,
                           N_OUTPUT_ARRAYS, output_array_type_codes,
                                            output_arrays) < 0)
 {
-  CCTK_WARN(-1, "error return from interpolator!");
+  CCTK_WARN(CCTK_WARN_ABORT, "error return from interpolator!");
 }
 \end{verbatim}
 \end{Example}
@@ -4935,10 +4935,10 @@ in the \code{src/include/} directory in the Cactus flesh.
 %notyet int operator_handle, param_table_handle;
 %notyet operator_handle = CCTK_InterpHandle("my interpolation operator");
 %notyet if (operator_handle < 0)
-%notyet         CCTK_WARN(-1, "can't get interpolation handle!");
+%notyet         CCTK_WARN(CCTK_WARN_ABORT, "can't get interpolation handle!");
 %notyet param_table_handle = Util_TableCreateFromString("order=3");
 %notyet if (param_table_handle < 0)
-%notyet         CCTK_WARN(-1, "can't create parameter table!");
+%notyet         CCTK_WARN(CCTK_WARN_ABORT, "can't create parameter table!");
 %notyet if (CCTK_InterpLocalNonUniform(N_DIMS,
 %notyet                                operator_handle, param_table_handle,
 %notyet                                CCTK_VARIABLE_REAL, coord_arrays,
@@ -4952,7 +4952,7 @@ in the \code{src/include/} directory in the Cactus flesh.
 %notyet                                N_OUTPUT_ARRAYS,
 %notyet                                   output_array_type_codes,
 %notyet                                   output_arrays) < 0)
-%notyet         CCTK_WARN(-1, "error return from interpolator!");
+%notyet         CCTK_WARN(CCTK_WARN_ABORT, "error return from interpolator!");
 %notyet \end{verbatim}
 %notyet \end{Example}
 %notyet \end{ExampleSection}
@@ -5235,10 +5235,10 @@ void *const output_arrays[N_OUTPUT_ARRAYS];     /* see note above */
 int operator_handle, param_table_handle;
 operator_handle = CCTK_InterpHandle("my interpolation operator");
 if (operator_handle < 0)
-        CCTK_WARN(-1, "can't get interpolation handle!");
+        CCTK_WARN(CCTK_WARN_ABORT, "can't get interpolation handle!");
 param_table_handle = Util_TableCreateFromString("order=3");
 if (param_table_handle < 0)
-        CCTK_WARN(-1, "can't create parameter table!");
+        CCTK_WARN(CCTK_WARN_ABORT, "can't create parameter table!");
 
 /* initialize the rest of the parameter arrays */
 interp_coords[0] = (const void *) interp_x;
@@ -5262,7 +5262,7 @@ if (CCTK_InterpLocalUniform(N_DIMS,
                             N_OUTPUT_ARRAYS,
                                output_array_type_codes,
                                output_arrays) < 0)
-        CCTK_WARN(-1, "error return from interpolator!");
+        CCTK_WARN(CCTK_WARN_ABORT, "error return from interpolator!");
 \end{verbatim}
 \end{Example}
 \end{ExampleSection}
@@ -5719,10 +5719,10 @@ The number of local reduction operators registered
 %notyet int operator_handle, param_table_handle;
 %notyet operator_handle = CCTK_InterpHandle("my interpolation operator");
 %notyet if (operator_handle < 0)
-%notyet         CCTK_WARN(-1, "can't get interpolation handle!");
+%notyet         CCTK_WARN(CCTK_WARN_ABORT, "can't get interpolation handle!");
 %notyet param_table_handle = Util_TableCreateFromString("order=3");
 %notyet if (param_table_handle < 0)
-%notyet         CCTK_WARN(-1, "can't create parameter table!");
+%notyet         CCTK_WARN(CCTK_WARN_ABORT, "can't create parameter table!");
 %notyet if (CCTK_InterpLocalWarped(N_DIMS,
 %notyet                            operator_handle, param_table_handle,
 %notyet                            CCTK_VARIABLE_REAL,
@@ -5738,7 +5738,7 @@ The number of local reduction operators registered
 %notyet                            N_OUTPUT_ARRAYS,
 %notyet                               output_array_type_codes,
 %notyet                               output_arrays) < 0)
-%notyet         CCTK_WARN(-1, "error return from interpolator!");
+%notyet         CCTK_WARN(CCTK_WARN_ABORT, "error return from interpolator!");
 %notyet \end{verbatim}
 %notyet \end{Example}
 %notyet \end{ExampleSection}
@@ -9533,7 +9533,7 @@ prints a warning message with a variable argument list
 #include "cctk.h"
 #include "cctk_WarningLevel.h"
 
-CCTK_WARN(0, "Divide by 0");
+CCTK_WARN(CCTK_WARN_ABORT, "Divide by 0");
 \end{verbatim}
 \end{Example}
 \begin{Example}{Fortran}
@@ -9546,7 +9546,7 @@ character*200 message
 
 write(message, '(A32, G12.7, A5, I8)')
 &     'Your warning message, including ', myreal, ' and ', myint
-call CCTK_WARN(1, message)
+call CCTK_WARN(CCTK_WARN_ALERT, message)
 \end{verbatim}
 \end{Example}
 \end{ExampleSection}
