@@ -28,7 +28,7 @@
 #define _UTIL_TABLE_H_  1       /* define to 1 is Cactus standard */
                                 /* n.b. usual standard is empty defn! */
 
-#ifdef _cplusplus
+#ifdef __cplusplus
 extern "C"
 {
 #endif
