@@ -8,9 +8,7 @@
 #   @enddesc 
 # @@*/
     
-if test "X$PTHREADS" != "Xyes"; then
-  return
-fi
+if test "X$PTHREADS" = "Xyes"; then
 
 echo "Configuring with PTHREADS"
 
@@ -29,3 +27,5 @@ CCTK_WriteLine make.extra.defn "PTHREADS_LIBS = $PTHREAD_LIBS"
 CCTK_WriteLine make.extra.defn ""
 CCTK_WriteLine make.extra.defn ""
 CCTK_WriteLine make.extra.defn 'LIBS     += $(PTHREADS_LIBS)'
+
+fi  # if PTHREADS
