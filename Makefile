@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.112 2001-05-15 18:11:40 goodale Exp $
+#   @version $Id: Makefile,v 1.113 2001-05-21 11:56:03 goodale Exp $
 # @@*/
 
 ##################################################################################
@@ -710,25 +710,6 @@ endif
 	@echo Test suite aborted.
 
 
-###############################
-# Run ThornGuide on a configuration
-
-.PHONY thornguide:
-
-ifneq ($strip($(CONFIGURATIONS)),) 
-.PHONY $(addsuffix -ThornGuide,$(CONFIGURATIONS)):
-
-$(addsuffix -ThornGuide,$(CONFIGURATIONS)):
-	@echo $(DIVIDER)
-	@echo Creating ThornGuide for $(@:%-thornlist=%)
-	if [ -r $(CONFIGS_DIR)/$(@:%-ThornGuide=%)/ThornList ] ; then ($(PERL) -s lib/sbin/ParamLatex.pl -processall -sort=scope -grouping=bythorn -outdir=$(CONFIGS_DIR)/$(@:%-ThornGuide=%)/doc -section -thornlist=$(CONFIGS_DIR)/$(@:%-ThornGuide=%)/ThornList; $(PERL) -s lib/sbin/ThornGuide.pl -thornlist=$(CONFIGS_DIR)/$(@:%-ThornGuide=%)/ThornList -outdir=$(CONFIGS_DIR)/$(@:%-ThornGuide=%)/doc;  cd $(CONFIGS_DIR)/$(@:%-ThornGuide=%)/doc; cp $(CCTK_HOME)/doc/UsersGuide/bincactus2.eps bincactus.eps; latex -interaction=nonstopmode ThornGuide.tex > LATEX_MESSAGES 2>&1; latex -interaction=nonstopmode ThornGuide.tex > LATEX_MESSAGES 2>&1; dvips ./ThornGuide.dvi -o $(CCTK_HOME)/ThornGuide-$(@:%-ThornGuide=%).ps > DVIPS_MESSAGES 2>&1); cd $(CCTK_HOME); fi
-endif
-
-%-ThornGuide:
-	@echo $(DIVIDER)
-	@echo Configuration $(@:%-testsuite=%) does not exist.
-	@echo Test suite aborted.
-
 
 ##########################################
 
@@ -808,7 +789,11 @@ endif
 	@echo Configuration $(@:%-bugreport=%) does not exist.
 	@echo Bugreport creation aborted.
 
-# Make the users manuals
+###############################################################################
+#                      Documentation targets
+###############################################################################
+
+# Make the users manual
 
 .PHONY: UsersGuide.ps
 UsersGuide.ps: UsersGuide
@@ -817,7 +802,31 @@ UsersGuide.ps: UsersGuide
 UsersGuide: 
 	@echo $(DIVIDER)
 	@echo Creating user documentation UsersGuide.ps
-	(cd doc/UsersGuide; latex UsersGuide.tex > LATEX_MESSAGES 2>&1; latex UsersGuide.tex > LATEX_MESSAGES 2>&1; dvips ./UsersGuide.dvi -o $(CCTK_HOME)/UsersGuide.ps > DVIPS_MESSAGES 2>&1) ; cd $(CCTK_HOME);
+	cd doc/UsersGuide;                          \
+	echo "  Running LaTeX....";                 \
+	latex UsersGuide.tex > LATEX_MESSAGES 2>&1; \
+	latex UsersGuide.tex > LATEX_MESSAGES 2>&1; \
+	echo "  Running dvips....";                 \
+	dvips ./UsersGuide.dvi -o $(CCTK_HOME)/UsersGuide.ps > DVIPS_MESSAGES 2>&1
+	@echo "  Done."
+	@echo $(DIVIDER)
+
+# Make the Maintainers' guide
+
+.PHONY: MaintGuide.ps
+MaintGuide.ps: MaintGuide
+
+.PHONY: MaintGuide
+MaintGuide:
+	@echo $(DIVIDER)
+	@echo Creating maintainers documentation MaintGuide.ps
+	cd doc/MaintGuide;                          \
+	echo "  Running LaTeX....";                 \
+	latex MaintGuide.tex > LATEX_MESSAGES 2>&1; \
+	latex MaintGuide.tex > LATEX_MESSAGES 2>&1; \
+	echo "  Running dvips....";                 \
+	dvips ./MaintGuide.dvi -o $(CCTK_HOME)/MaintGuide.ps > DVIPS_MESSAGES 2>&1 
+	@echo "  Done."
 	@echo $(DIVIDER)
 
 # Make the ThornGuide
@@ -829,18 +838,51 @@ ThornGuide.ps: ThornGuide
 ThornGuide: 
 	@echo $(DIVIDER)
 	@echo Creating thorn documentation ThornGuide.ps
-	(rm -f doc/ThornGuide/*; $(PERL) -s lib/sbin/ParamLatex.pl -processall -grouping=bythorn -outdir=doc/ThornGuide/ -section -sort=scope > doc/ThornGuide/PARAMLATEX_MESSAGES 2>&1; $(PERL) -s lib/sbin/ThornGuide.pl -directory=arrangements/ -outdir=doc/ThornGuide/ > doc/ThornGuide/THORNGUIDE_MESSAGES 2>&1; cd doc/ThornGuide; cp ../UsersGuide/bincactus2.eps bincactus.eps; latex -interaction=nonstopmode ThornGuide.tex > LATEX_MESSAGES 2>&1; latex -interaction=nonstopmode ThornGuide.tex > LATEX_MESSAGES 2>&1; dvips ./ThornGuide.dvi -o $(CCTK_HOME)/ThornGuide.ps > DVIPS_MESSAGES 2>&1); cd $(CCTK_HOME); 
+	if test ! -d doc/ThornGuide ; then mkdir doc/ThornGuide ; fi 
+	rm -f doc/ThornGuide/*;
+	@echo "  Processing...."
+	$(PERL) -s lib/sbin/ParamLatex.pl -processall -grouping=bythorn -outdir=doc/ThornGuide/ -section -sort=scope > doc/ThornGuide/PARAMLATEX_MESSAGES 2>&1; $(PERL) -s lib/sbin/ThornGuide.pl -directory=arrangements/ -outdir=doc/ThornGuide/  
+	cd doc/ThornGuide; cp ../UsersGuide/bincactus2.eps bincactus.eps;    \
+	echo "  Running LaTeX....";                                          \
+	latex -interaction=nonstopmode ThornGuide.tex > LATEX_MESSAGES 2>&1; \
+	latex -interaction=nonstopmode ThornGuide.tex > LATEX_MESSAGES 2>&1; \
+	echo "  Running dvips....";                                          \
+	dvips ./ThornGuide.dvi -o $(CCTK_HOME)/ThornGuide.ps > DVIPS_MESSAGES 2>&1 
+	@echo "  Done."
 	@echo $(DIVIDER)
 
-.PHONY: MaintGuide.ps
-MaintGuide.ps: MaintGuide
 
-.PHONY: MaintGuide
-MaintGuide:
+# Run ThornGuide on a configuration
+
+ifneq ($strip($(CONFIGURATIONS)),) 
+.PHONY $(addsuffix -ThornGuide,$(CONFIGURATIONS)):
+
+$(addsuffix -ThornGuide,$(CONFIGURATIONS)):
 	@echo $(DIVIDER)
-	@echo Creating maintainers documentation MaintGuide.ps
-	(cd doc/MaintGuide; latex MaintGuide.tex > LATEX_MESSAGES 2>&1; latex MaintGuide.tex > LATEX_MESSAGES 2>&1; dvips ./MaintGuide.dvi -o $(CCTK_HOME)/MaintGuide.ps > DVIPS_MESSAGES 2>&1) ; cd $(CCTK_HOME); 
+	@echo Creating ThornGuide for $(@:%-ThornGuide=%)
+	if test -r $(CONFIGS_DIR)/$(@:%-ThornGuide=%)/ThornList ; then \
+	  echo "  Processing...." ;                                    \
+	  $(PERL) -s lib/sbin/ParamLatex.pl -processall -sort=scope -grouping=bythorn -outdir=$(CONFIGS_DIR)/$(@:%-ThornGuide=%)/doc -section -thornlist=$(CONFIGS_DIR)/$(@:%-ThornGuide=%)/ThornList; \
+	  $(PERL) -s lib/sbin/ThornGuide.pl -thornlist=$(CONFIGS_DIR)/$(@:%-ThornGuide=%)/ThornList -outdir=$(CONFIGS_DIR)/$(@:%-ThornGuide=%)/doc; \
+	  cd $(CONFIGS_DIR)/$(@:%-ThornGuide=%)/doc;                                                       \
+	  cp $(CCTK_HOME)/doc/UsersGuide/bincactus2.eps bincactus.eps;                                     \
+	  echo "  Running LaTeX....";                                                                      \
+	  latex -interaction=nonstopmode ThornGuide.tex > LATEX_MESSAGES 2>&1;                             \
+	  latex -interaction=nonstopmode ThornGuide.tex > LATEX_MESSAGES 2>&1;                             \
+	  echo "  Running dvips....";                                                                      \
+	  dvips ./ThornGuide.dvi -o $(CCTK_HOME)/ThornGuide-$(@:%-ThornGuide=%).ps > DVIPS_MESSAGES 2>&1 ; \
+	fi
+	@echo "  Done."
+endif
+
+%-ThornGuide:
 	@echo $(DIVIDER)
+	@echo Configuration $(@:%-testsuite=%) does not exist.
+	@echo Test suite aborted.
+
+###############################################################################
+#                      End of documentation targets
+###############################################################################
 
 # Rule to show thorn information
 
