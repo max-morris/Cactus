@@ -404,7 +404,9 @@ EOF
               }
 EOF
 	(${CC-cc} dummy.c -o dummy 2>/dev/null ) && HP_ARCH=`./dummy`
-	rm -f dummy.c dummy
+	rm -f dummy.c dummy ;;
+        *)
+        HP_ARCH="hppa"
 	esac
 	HPUX_REV=`echo ${UNAME_RELEASE}|sed -e 's/[^.]*.[0B]*//'`
 	echo ${HP_ARCH}-hp-hpux${HPUX_REV}
