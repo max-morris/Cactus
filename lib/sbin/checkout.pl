@@ -203,6 +203,7 @@ sub get_applications
   print "\nAvailable applications: \n";
   print "  [1] Example F90 wave equation evolver\n";
   print "  [2] Example F77 wave equation evolver\n";
+  print "  [3] Benchmark (ADM)\n";
   print "\n";
     
   # Put number of applications here
@@ -280,6 +281,25 @@ sub get_applications
 	    system("cvs -q checkout CactusPUGH/PUGH");
 	    print("Completed checkout of application Wave F77\n");
 	  }	  
+          elsif ($i == 3)
+          {
+            # Checkout ADM Benchmark
+	    print("\n");
+	    print("Checking out ADM\n");
+	    system("cvs -q checkout CactusEinstein/ADM");
+	    print("Checking out Einstein\n");
+	    system("cvs -q checkout CactusEinstein/Einstein");
+	    print("Checking out \n");
+	    system("cvs -q checkout CactusBase/CartGrid3D");
+	    print("Checking out IOUtil\n");
+	    system("cvs -q checkout CactusBase/IOUtil");
+	    print("Checking out IOASCII\n");
+	    system("cvs -q checkout CactusPUGHIO/IOASCII");
+	    print("Checking out PUGH\n");
+	    system("cvs -q checkout CactusPUGH/PUGH");
+	    print("Completed checkout of application Benchmark (ADM)\n");
+          }
+     
 	}
     }
 
