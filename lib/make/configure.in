@@ -382,11 +382,43 @@ CCTK_CHECK_HEADERS(assert.h)
 CCTK_CHECK_HEADERS(sys/stat.h)
 CCTK_CHECK_HEADERS(getopt.h)
 CCTK_HEADER_REGEX
+CCTK_CHECK_HEADERS(sys/types.h)
+CCTK_CHECK_HEADERS(sys/socket.h)
+CCTK_CHECK_HEADERS(winsock2.h)
 
 AC_HEADER_TIME
 
 #Check type of socklen
-CCTK_CHECK_SOCK_LENGTH_TYPE
+
+# Check if we have socklen_t available 
+AC_MSG_CHECKING([if socklen_t is defined])
+AC_CACHE_VAL(cctk_cv_have_socklen_t,
+[AC_TRY_COMPILE([#include <stdio.h>
+#include <stdlib.h>
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>
+#endif
+#ifdef HAVE_SYS_TYPES_H
+#include <sys/types.h>
+#endif
+#ifdef HAVE_SYS_SOCKET_H
+#include <sys/socket.h>
+#endif
+#ifdef HAVE_WINSOCK2_H
+#include <winsock2.h>
+#endif],
+[socklen_t foo; return 0], eval "cctk_cv_have_socklen_t=yes",
+eval "cctk_cv_have_socklen_t=no")
+])
+if test "$cctk_cv_have_socklen_t" = "yes"; then
+  AC_DEFINE(HAVE_SOCKLEN_T)	
+  AC_MSG_RESULT(yes)
+else
+  AC_MSG_RESULT(no)
+fi
+
+dnl Let's see if the above does it for us.
+dnl CCTK_CHECK_SOCK_LENGTH_TYPE
 
 # C++ STL stuff
 
