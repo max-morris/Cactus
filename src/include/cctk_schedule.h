@@ -42,6 +42,15 @@ int CCTK_ScheduleGroup(const char *name,
                        int n_while,
                        ...);
 
+int CCTK_ScheduleGroupStorage(const char *group);
+
+int CCTK_ScheduleGroupComm(const char *group);
+
+int CCTK_ScheduleTraverse(const char *where, void *GH);
+
+int CCTK_ScheduleGHInit(void *GH);
+
+
 #ifdef __cplusplus
 }
 #endif
