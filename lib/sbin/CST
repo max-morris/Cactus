@@ -6,7 +6,7 @@
 #  @desc 
 #  Parses the the configuration files for thorns.
 #  @enddesc 
-#  @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.26 1999-08-26 15:34:16 goodale Exp $
+#  @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.27 1999-09-09 10:49:36 goodale Exp $
 #@@*/
 
 # Global parameter to track the number of errors from the CST
@@ -88,6 +88,8 @@ if ($CST_debug)
 {
   print "DEBUG: Creating thorn list\n";
 }
+
+print "Reading ThornList...\n";
 %thorns = &CreateThornList($cctk_home, $activethorns);
 
 # Parse the interface.ccl files
@@ -95,6 +97,8 @@ if ($CST_debug)
 {
   print "DEBUG: Creating interface database\n";
 }
+
+print "Parsing interface files...\n";
 %interface_database = &create_interface_database(%thorns);
 
 if($debug_interface)
@@ -107,12 +111,15 @@ if ($CST_debug)
 {
   print "DEBUG: Creating parameter database\n";
 }
+
+print "Parsing parameter files...\n";
 %parameter_database = &create_parameter_database(%thorns);
 
 if ($CST_debug)
 {
   print "DEBUG: Checking parameter consistency\n";
 }
+print "Checking consistency...\n";
 %parameter_database = &CheckImpParamConsistency(scalar(keys %interface_database), %interface_database, %parameter_database);
 
 #$debug_parameters = 1;
@@ -127,6 +134,8 @@ if ($CST_debug)
 {
   print "DEBUG: Creating all bindings\n";
 }
+
+print "Creating Thorn-Flesh bindings...\n";
 &CreateBindings($bindings_dir, scalar(keys %parameter_database), %parameter_database, %interface_database);
 
 # Create header file of active thorns for the code
@@ -174,6 +183,7 @@ if ($CST_errors)
 
 &OutputFile($config_dir, "make.thornlist", @make_thornlist);
 
+print "CST finished.\n";
 exit;
 
 
