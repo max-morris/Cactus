@@ -439,8 +439,8 @@ else
   AC_MSG_RESULT(no)
 fi
 
-dnl Let's see if the above does it for us.
-dnl CCTK_CHECK_SOCK_LENGTH_TYPE
+# Do we have gethostbyname
+AC_CHECK_FUNCS(gethostbyname)
 
 # C++ STL stuff
 
