@@ -9,11 +9,9 @@
 
 #include <stdio.h>
 
-#include "cctk.h"
-
 #include "cctk_Flesh.h"
-
 #include "cctk_Comm.h"
+#include "CactusMainDefaults.h"
 
 #ifdef CCTK_MPI
 #include "mpi.h"
@@ -65,7 +63,8 @@ extern char MPI_Active;
 @@*/
 int CactusDefaultShutdown(tFleshConfig *config)
 {
-  int myproc,conv_level;
+  int myproc;
+  unsigned int conv_level;
 
   myproc = CCTK_MyProc(config->GH[0]);
 

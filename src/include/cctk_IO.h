@@ -1,15 +1,16 @@
  /*@@
    @header    cctk_IO.h
-   @date      
+   @date      1999/07/22
    @author    Tom Goodale
-   @desc 
-   Header defining the variables holding the overloaded communication functions
-   @enddesc 
-   @version $Header$
+   @desc
+              Header defining the variables holding the overloaded
+              communication functions
+   @enddesc
+   @version   $Header$
  @@*/
 
 #ifndef _CCTK_IO_H_
-#define _CCTK_IO_H_
+#define _CCTK_IO_H_ 1
 
 #include "OverloadMacros.h"
 
@@ -32,16 +33,12 @@ extern "C" {
 
 #undef OVERLOADABLE
 
-int CCTK_OutputVarAs (cGH *GH, const char *var, const char *alias);
-int CCTK_OutputVar (cGH *GH, const char *var);
-int CCTK_OutputVarByMethod (cGH *GH, const char *var, const char *method);
+int CCTK_OutputVarAs (const cGH *GH, const char *var, const char *alias);
+int CCTK_OutputVar (const cGH *GH, const char *var);
+int CCTK_OutputVarByMethod (const cGH *GH, const char *var, const char *method);
 
 #ifdef __cplusplus
 }
 #endif
 
 #endif
-
-
-
-

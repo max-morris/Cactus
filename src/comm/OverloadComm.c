@@ -2,26 +2,26 @@
    @file      Overload.c
    @date      Wed Feb  3 23:27:18 1999
    @author    Tom Goodale
-   @desc 
-   Contains routines to overload the communication functions.
-   Uses the overload macros to make sure of consistency and
-   to save typing !
-   @enddesc 
+   @desc
+              Contains routines to overload the communication functions.
+              Uses the overload macros to make sure of consistency and
+              to save typing !
+   @enddesc
+   @version   $Id$
  @@*/
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdarg.h>
-#include <string.h>
 
 #include "cctk_Flesh.h"
 #include "cctk_FortranString.h"
-#include "OverloadMacros.h"
 #include "cctk_WarnLevel.h"
+#include "CactusRegister.h"
+#include "OverloadMacros.h"
 
-static const char *rcsid="$Header$";
-
+static const char *rcsid = "$Header$";
 CCTK_FILEVERSION(comm_OverloadComm_c)
+
 
 /* Define the prototypes for the dummy functions. */
 #define OVERLOADABLE(name) OVERLOADABLE_DUMMYPROTOTYPE(name)
@@ -107,74 +107,76 @@ int CCTKi_SetupCommFunctions(void)
 
 
 
-/*    Fortran bindings for the comm functions */
+/* Fortran bindings prototypes for the comm functions */
+int CCTK_FCALL CCTK_FNAME (CCTK_nProcs) (const cGH *GH);
+int CCTK_FCALL CCTK_FNAME (CCTK_MyProc) (const cGH *GH);
+void CCTK_FCALL CCTK_FNAME (CCTK_Barrier) (int *ierr, const cGH *GH);
+void CCTK_FCALL CCTK_FNAME (CCTK_Exit) (int *ierr, cGH *GH, const int *retval);
+void CCTK_FCALL CCTK_FNAME (CCTK_Abort) (int *ierr, cGH *GH, const int *retval);
+void CCTK_FCALL CCTK_FNAME (CCTK_SyncGroup) (int *ierr, cGH *GH, ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (CCTK_EnableGroupComm) (int *ierr, cGH *GH, ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (CCTK_DisableGroupComm) (int *ierr, cGH *GH, ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (CCTK_EnableGroupStorage) (int *ierr, cGH *GH, ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (CCTK_DisableGroupStorage) (int *ierr, cGH *GH, ONE_FORTSTRING_ARG);
 
 
-
-int CCTK_FCALL CCTK_FNAME(CCTK_Exit)(cGH *GH, int *retval)
+/* Fortran bindings definitions for the comm functions */
+int CCTK_FCALL CCTK_FNAME (CCTK_nProcs) (const cGH *GH)
 {
-  return CCTK_Exit(GH, *retval);
-}
-
-int CCTK_FCALL CCTK_FNAME(CCTK_ParallelInit)(cGH *GH)
-{
-  return CCTK_ParallelInit(GH);
-}
-
-int CCTK_FCALL CCTK_FNAME(CCTK_Abort)(cGH *GH, int *retval)
-{
-  CCTK_Abort(GH, *retval);
-  return 0;
-}
-
-int CCTK_FCALL CCTK_FNAME(CCTK_SyncGroup)(cGH *GH, ONE_FORTSTRING_ARG)
-{
-  ONE_FORTSTRING_CREATE(group_name)
-  CCTK_SyncGroup(GH,group_name);
-  free(group_name); 
-  return 0;
-}
-
-void CCTK_FCALL CCTK_FNAME(CCTK_EnableGroupComm)(int *ierr, cGH *GH, ONE_FORTSTRING_ARG)
-{
-  ONE_FORTSTRING_CREATE(group_name)
-  *ierr = CCTK_EnableGroupComm(GH, group_name); 
-  free(group_name);
-}
-
-void CCTK_FCALL CCTK_FNAME(CCTK_DisableGroupComm)(int *ierr, cGH *GH, ONE_FORTSTRING_ARG)
-{
-  ONE_FORTSTRING_CREATE(group_name)
-  *ierr = CCTK_DisableGroupComm(GH, group_name); 
-  free(group_name);
-}
-
-void CCTK_FCALL CCTK_FNAME(CCTK_EnableGroupStorage)(int *ierr, cGH *GH, ONE_FORTSTRING_ARG)
-{
-  ONE_FORTSTRING_CREATE(group_name)
-  *ierr = CCTK_EnableGroupStorage(GH, group_name);
-  free(group_name);
-}
-
-void CCTK_FCALL CCTK_FNAME(CCTK_DisableGroupStorage)(int *ierr, cGH *GH, ONE_FORTSTRING_ARG)
-{
-  ONE_FORTSTRING_CREATE(group_name)
-  *ierr = CCTK_DisableGroupStorage(GH, group_name);
-  free(group_name);
-}
-
-int CCTK_FCALL CCTK_FNAME(CCTK_nProcs)(const cGH *GH)
-{
-  return CCTK_nProcs(GH);
+  return (CCTK_nProcs (GH));
 }
  
-int CCTK_FCALL CCTK_FNAME(CCTK_MyProc)(const cGH *GH)
+int CCTK_FCALL CCTK_FNAME (CCTK_MyProc) (const cGH *GH)
 {
-  return CCTK_MyProc(GH);
+  return (CCTK_MyProc (GH));
 }
  
-int CCTK_FCALL CCTK_FNAME(CCTK_Barrier)(const cGH *GH)
+void CCTK_FCALL CCTK_FNAME (CCTK_Barrier) (int *ierr, const cGH *GH)
 {
-  return CCTK_Barrier(GH);
+  *ierr = CCTK_Barrier (GH);
 }
- 
+
+void CCTK_FCALL CCTK_FNAME (CCTK_Exit) (int *ierr, cGH *GH, const int *retval)
+{
+  *ierr = CCTK_Exit (GH, *retval);
+}
+
+void CCTK_FCALL CCTK_FNAME (CCTK_Abort) (int *ierr, cGH *GH, const int *retval)
+{
+  *ierr = CCTK_Abort (GH, *retval);
+}
+
+void CCTK_FCALL CCTK_FNAME (CCTK_SyncGroup) (int *ierr, cGH *GH, ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (group_name)
+  *ierr = CCTK_SyncGroup (GH, group_name);
+  free (group_name); 
+}
+
+void CCTK_FCALL CCTK_FNAME (CCTK_EnableGroupComm) (int *ierr, cGH *GH, ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (group_name)
+  *ierr = CCTK_EnableGroupComm (GH, group_name); 
+  free (group_name);
+}
+
+void CCTK_FCALL CCTK_FNAME (CCTK_DisableGroupComm) (int *ierr, cGH *GH, ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (group_name)
+  *ierr = CCTK_DisableGroupComm (GH, group_name); 
+  free (group_name);
+}
+
+void CCTK_FCALL CCTK_FNAME (CCTK_EnableGroupStorage) (int *ierr, cGH *GH, ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (group_name)
+  *ierr = CCTK_EnableGroupStorage (GH, group_name);
+  free (group_name);
+}
+
+void CCTK_FCALL CCTK_FNAME (CCTK_DisableGroupStorage) (int *ierr, cGH *GH, ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (group_name)
+  *ierr = CCTK_DisableGroupStorage (GH, group_name);
+  free (group_name);
+}

@@ -14,6 +14,7 @@
 #include <string.h>
 
 #include "cctk_Flesh.h"
+#include "cctk_Misc.h"
 
 static const char *rcsid = "$Header$";
 

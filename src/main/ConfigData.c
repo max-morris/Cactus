@@ -2,10 +2,10 @@
    @file      ConfigData.c
    @date      Fri Jan 15 13:27:50 1999
    @author    Tom Goodale
-   @desc 
-   Miscellaneous routines to deal with configuration data
+   @desc
+              Miscellaneous routines to deal with configuration data
    @enddesc 
-   @version $Header$
+   @version   $Id$
  @@*/
 
 #include <stdio.h>
@@ -17,74 +17,45 @@ static const char *rcsid = "$Header$";
 
 CCTK_FILEVERSION(main_ConfigData_c)
 
-/********************************************************************
- *********************     Local Data Types   ***********************
- ********************************************************************/
-
-/********************************************************************
- ********************* Local Routine Prototypes *********************
- ********************************************************************/
-
-/********************************************************************
- ********************* Other Routine Prototypes *********************
- ********************************************************************/
-
-/********************************************************************
- *********************     Local Data   *****************************
- ********************************************************************/
-
-/********************************************************************
- *********************     External Routines   **********************
- ********************************************************************/
 
  /*@@
    @routine    CCTKi_AddGH
    @date       Fri Jan 15 13:43:11 1999
    @author     Tom Goodale
    @desc 
-   Adds a GH to the config_data structure at a particular convergence level.
+               Adds a GH to the config_data structure at a particular
+               convergence level.
    @enddesc 
-   @calls     
-   @calledby   
-   @history 
  
-   @endhistory 
-   @var     config
-   @vdesc   Flesh config data
-   @vtype   tFleshConfig
-   @vio     in
-   @vcomment 
- 
+   @var        config
+   @vdesc      Flesh config data
+   @vtype      tFleshConfig *
+   @vio        in
    @endvar 
-   @var     convergence_level
-   @vdesc   The convergence level
-   @vtype   int
-   @vio     in
-   @vcomment 
- 
+   @var        convergence_level
+   @vdesc      The convergence level
+   @vtype      unsigned int
+   @vio        in
    @endvar 
-   @var     GH
-   @vdesc   the cctk GH
-   @vtype   cGH *
-   @vio     in
-   @vcomment 
- 
+   @var        GH
+   @vdesc      the cctk GH
+   @vtype      cGH *
+   @vio        in
    @endvar 
 
    @returntype int
    @returndesc 
-   0 - success
-   1 - memory failure
-   2 - duplicate convergence level
+               0 - success
+               1 - memory failure
+               2 - duplicate convergence level
    @endreturndesc
 @@*/
-int CCTKi_AddGH(tFleshConfig *config, int convergence_level, cGH *GH)
+int CCTKi_AddGH (tFleshConfig *config, unsigned int convergence_level, cGH *GH)
 {
   int retval;
-
+  unsigned int i;
   cGH **temp;
 
-  int i;
 
   retval = 0;
 
@@ -117,10 +88,5 @@ int CCTKi_AddGH(tFleshConfig *config, int convergence_level, cGH *GH)
     retval = 2;
   }
 
-  return retval;
+  return (retval);
 }
-
-/********************************************************************
- *********************     Local Routines   *************************
- ********************************************************************/
-

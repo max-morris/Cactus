@@ -381,6 +381,7 @@ int *CCTKi_ScheduleCreateIVec(int size)
 @@*/
 void CCTKi_ScheduleDestroyIVec(int size, int *vector)
 {
+  size = size;
   free(vector);
 }
 

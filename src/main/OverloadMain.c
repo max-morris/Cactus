@@ -16,6 +16,7 @@
 
 #include "cctk_Flesh.h"
 #include "cctk_WarnLevel.h"
+#include "CactusRegister.h"
 #include "OverloadMacros.h"
 
 static const char *rcsid="$Header$";

@@ -2,9 +2,10 @@
    @file      ShutdownCactus.c
    @date      Mon Sep 28 14:25:48 1998
    @author    Tom Goodale
-   @desc 
-   Contains routines to shutdown cactus.
-   @enddesc 
+   @desc
+              Contains routines to shutdown cactus.
+   @enddesc
+   @version   $Id$
  @@*/
 
 #include <stdio.h>
@@ -12,7 +13,7 @@
 
 #include "cctk_Flesh.h"
 #include "cctk_Misc.h"
-#include "cctk_Parameter.h"
+#include "cctk_Parameters.h"
 #include "cctk_Schedule.h"
 
 static const char *rcsid = "$Header$";
@@ -23,28 +24,34 @@ CCTK_FILEVERSION(main_ShutdownCactus_c)
    @routine    CCTKi_ShutdownCactus
    @date       Mon Sep 28 14:50:50 1998
    @author     Tom Goodale
-   @desc 
-   Cactus specific shutdown stuff.
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   @desc
+               Cactus specific shutdown stuff.
+   @enddesc
+   @calls      CCTK_SchedulePrintTimes
 
+   @var        ConfigData
+   @vdesc      Flesh configuration data
+   @vtype      tFleshConfig *
+   @vio        unused
+   @endvar
+
+   @returntype int
+   @returndesc
+               0  - success
+   @endreturndesc
 @@*/
 int CCTKi_ShutdownCactus(tFleshConfig *ConfigData)
 {
-  int param_type;
-  const char *cctk_timer_output;
+  DECLARE_CCTK_PARAMETERS
 
-  cctk_timer_output = (*(const char **)CCTK_ParameterGet("cctk_timer_output","Cactus",&param_type));
 
-  if (CCTK_Equals(cctk_timer_output,"full"))
+  /* avoid compiler warning about unused argument */
+  ConfigData = ConfigData;
+
+  if (CCTK_Equals (cctk_timer_output, "full"))
   {
-    CCTK_SchedulePrintTimes(NULL);
+    CCTK_SchedulePrintTimes (NULL);
   }
 
   return 0;
-
 }

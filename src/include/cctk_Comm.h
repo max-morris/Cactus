@@ -2,20 +2,22 @@
    @header    cctk_Comm.h
    @date      Sat Feb  13 19:42:29 1999
    @author    Tom Goodale
-   @desc 
-   Header defining the variables holding the overloaded communication functions
-   @enddesc 
-   @version $Header$
+   @desc
+              Header defining the variables holding the overloaded
+              communication functions
+   @enddesc
+   @version   $Header$
  @@*/
 
 #ifndef _CCTK_COMM_H_
-#define _CCTK_COMM_H_
+#define _CCTK_COMM_H_ 1
 
 #include "OverloadMacros.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
 /* Define the prototypes for the functions. */
 #define OVERLOADABLE(name) OVERLOADABLE_PROTOTYPE(name)
 
@@ -30,17 +32,13 @@ extern "C" {
 
 #undef OVERLOADABLE
 
-int CCTK_QueryGroupStorage(cGH *,const char *);
-int CCTK_QueryGroupStorageI(cGH *,int);
-const int *CCTK_ArrayGroupSize(cGH *,int, const char *);
-const int *CCTK_ArrayGroupSizeI(cGH *,int,int);
+int CCTK_QueryGroupStorage (const cGH *GH, const char *groupname);
+int CCTK_QueryGroupStorageI (const cGH *GH, int groupindex);
+const int *CCTK_ArrayGroupSize (const cGH *GH, int dir, const char *groupname);
+const int *CCTK_ArrayGroupSizeI (const cGH *GH, int dir, int groupindex);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif
-
-
-
-
+#endif  /* _CCTK_COMM_H_ */

@@ -27,11 +27,22 @@ static const char *rcsid = "$Header$";
 CCTK_FILEVERSION(main_Stagger_c)
 
 /********************************************************************
- *********************     Local Data   *****************************
+ *********************     Fortran Wrappers   ***********************
  ********************************************************************/
-
- /* none */
-
+void CCTK_FCALL CCTK_FNAME (CCTK_GroupStaggerIndexGI)
+                           (int *stagcode, int *gindex);
+void CCTK_FCALL CCTK_FNAME (CCTK_GroupStaggerIndexGN)
+                           (int *scode, ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (CCTK_StaggerIndex)
+                           (int *scode, ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (CCTK_StaggerDirIndex)
+                           (int *dsi, int *dir, int *gsi);
+void CCTK_FCALL CCTK_FNAME (CCTK_GroupStaggerDirArray)
+                           (int *ierr, int *dindex, int *dim, int *gsc);
+void CCTK_FCALL CCTK_FNAME (CCTK_GroupStaggerDirArrayGI)
+                           (int *ierr, int *dindex, int *dim, int *gi);
+void CCTK_FCALL CCTK_FNAME (CCTK_StaggerDirName)
+                           (int *dsc, int *dir, ONE_FORTSTRING_ARG);
 
 /********************************************************************
  *********************     External Routines   **********************
@@ -62,8 +73,8 @@ int CCTK_GroupStaggerIndexGI(int gindex)
   return(sc);
 }
 
-void CCTK_FCALL CCTK_FNAME(CCTK_GroupStaggerIndexGI)
-     (int *stagcode, int *gindex) 
+void CCTK_FCALL CCTK_FNAME (CCTK_GroupStaggerIndexGI)
+                           (int *stagcode, int *gindex) 
 {
   *stagcode = CCTK_GroupStaggerIndexGI(*gindex);
 }
@@ -90,8 +101,8 @@ int CCTK_GroupStaggerIndexGN(const char *gname)
   return(CCTK_GroupStaggerIndexGI(gindex));
 }
 
-void CCTK_FCALL CCTK_FNAME(CCTK_GroupStaggerIndexGN)
-     (int *scode, ONE_FORTSTRING_ARG)
+void CCTK_FCALL CCTK_FNAME (CCTK_GroupStaggerIndexGN)
+                           (int *scode, ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_CREATE(gname)
   int gindex;
@@ -143,8 +154,8 @@ int CCTK_StaggerIndex(const char *stype)
   return(scode);
 }
 
-void CCTK_FCALL CCTK_FNAME(CCTK_StaggerIndex)
-     (int *scode, ONE_FORTSTRING_ARG)
+void CCTK_FCALL CCTK_FNAME (CCTK_StaggerIndex)
+                           (int *scode, ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_CREATE(sname);
   *scode = CCTK_StaggerIndex(sname);
@@ -197,8 +208,8 @@ int CCTK_StaggerDirIndex(int dir, int si)
 
 
 
-void CCTK_FCALL CCTK_FNAME(CCTK_StaggerDirIndex)
-     ( int *dsi, int *dir, int *gsi) 
+void CCTK_FCALL CCTK_FNAME (CCTK_StaggerDirIndex)
+                           (int *dsi, int *dir, int *gsi) 
 {
   /* accept fortran indexing [1..]: decrease the directional index
      for the call to the C routine.  */
@@ -254,8 +265,8 @@ int CCTK_StaggerDirArray(int *dindex , int dim, int sindex)
 }
 
 
-void CCTK_FCALL CCTK_FNAME(CCTK_GroupStaggerDirArray)
-     (int *ierr, int *dindex, int *dim, int *gsc) 
+void CCTK_FCALL CCTK_FNAME (CCTK_GroupStaggerDirArray)
+                           (int *ierr, int *dindex, int *dim, int *gsc) 
 {
   /* accept fortran indexing [1..]: decrease the directional index
      for the call to the C routine.  */
@@ -287,8 +298,8 @@ int CCTK_GroupStaggerDirArrayGI(int *dindex, int dim, int gi)
   return ierr;
 }
 
-void CCTK_FCALL CCTK_FNAME(CCTK_GroupStaggerDirArrayGI)
-     (int *ierr, int *dindex, int *dim, int *gi) 
+void CCTK_FCALL CCTK_FNAME (CCTK_GroupStaggerDirArrayGI)
+                           (int *ierr, int *dindex, int *dim, int *gi) 
 {
   *ierr = CCTK_GroupStaggerDirArrayGI(dindex, *dim, *gi);
 } 
@@ -317,7 +328,7 @@ int CCTK_StaggerDirName(int dir, const char *stype)
 
   sprintf(hs,"%s",stype);
 
-  if (dir>strlen(hs)) 
+  if (dir> (int) strlen(hs)) 
   {
     CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
 	      "CCTK_StaggerDirName: Stagger name too short for direction %d",
@@ -337,8 +348,8 @@ int CCTK_StaggerDirName(int dir, const char *stype)
   return(scode);
 }
 
-void CCTK_FCALL CCTK_FNAME(CCTK_StaggerDirName)
-     (int *dsc, int *dir, ONE_FORTSTRING_ARG) 
+void CCTK_FCALL CCTK_FNAME (CCTK_StaggerDirName)
+                           (int *dsc, int *dir, ONE_FORTSTRING_ARG) 
 {
   ONE_FORTSTRING_CREATE(sname);
 
@@ -400,7 +411,7 @@ int CCTKi_ParseStaggerString(int dim,
   }
   else 
   {  
-    if (strlen(stype)!=dim) 
+    if ((int) strlen(stype)!=dim) 
     {  
       CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
 		"CCTKi_ParseStaggerString: Staggering %s for %s unequal to group dimension %d",

@@ -32,6 +32,7 @@ CCTK_FILEVERSION(main_ProcessEnvironment_c)
 /********************************************************************
  ********************* Other Routine Prototypes *********************
  ********************************************************************/
+int CCTKi_ProcessEnvironment (int *argc, char ***argv,tFleshConfig *ConfigData);
 
 /********************************************************************
  *********************     Local Data   *****************************
@@ -110,6 +111,8 @@ char MPI_Active = 0;
 @@*/
 int CCTKi_ProcessEnvironment(int *argc, char ***argv,tFleshConfig *ConfigData)
 {
+  /* avoid compiler warning about unused argument */
+  ConfigData = ConfigData;
   
   /* Check if MPI compiled in but choosing not to use MPI. */  
 

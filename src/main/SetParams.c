@@ -90,9 +90,11 @@ static int ReallySetParameter(const char *parameter,
 int CCTKi_SetParameter(const char *parameter, const char *value)
 {
   int retval;
+#if 0
   char thornname[101];
   const char *position;
   int length;
+#endif
   int n_errors;
   int parameter_check;
 
@@ -265,6 +267,9 @@ static int ReallySetParameter(const char *parameter, const char *value)
   const char *thorn;
   char *param;
   char *imp;
+
+
+  retval = 0;
 
   Util_SplitString(&imp, &param, parameter, "::");
 

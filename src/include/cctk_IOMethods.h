@@ -18,30 +18,31 @@ extern "C" {
 struct IOMethod
 {
   const char *implementation;
-  int    (*OutputGH)(cGH *);
-  int    (*OutputVarAs)(cGH *, const char *, const char *);
-  int    (*TriggerOutput)(cGH *, int);
-  int    (*TimeToOutput)(cGH *,int);
+  int (*OutputGH)      (const cGH *GH);
+  int (*OutputVarAs)   (const cGH *GH, const char *vname, const char *alias);
+  int (*TriggerOutput) (const cGH *GH, int vindex);
+  int (*TimeToOutput)  (const cGH *GH, int vindex);
 };
 
-#define CCTK_RegisterIOMethod(a) CCTKi_RegisterIOMethod(CCTK_THORNSTRING, a)
-int CCTKi_RegisterIOMethod(const char *thorn, const char *name);
+#define CCTK_RegisterIOMethod(a) CCTKi_RegisterIOMethod (CCTK_THORNSTRING, a)
+int CCTKi_RegisterIOMethod (const char *thorn, const char *name);
+int CCTK_RegisterIOMethodOutputGH (int handle, int (*OutputGH) (const cGH *GH));
+int CCTK_RegisterIOMethodTimeToOutput (int handle,
+                                       int (*TimeToOutput) (const cGH *GH,
+                                                            int vindex));
+int CCTK_RegisterIOMethodTriggerOutput (int handle,
+                                        int (*TriggerOutput) (const cGH *GH,
+                                                              int vindex));
+int CCTK_RegisterIOMethodOutputVarAs (int handle,
+                                      int (*OutputVarAs) (const cGH *GH,
+                                                          const char *vname,
+                                                          const char *alias));
 
-int CCTK_RegisterIOMethodOutputGH(int handle, int (*func)(cGH *));
-
-int CCTK_RegisterIOMethodTimeToOutput(int handle, int (*func)(cGH *, int));
-
-int CCTK_RegisterIOMethodTriggerOutput(int handle, int (*func)(cGH *, int));
-
-int CCTK_RegisterIOMethodOutputVarAs(int handle, int (*func)(cGH *,
-                                     const char *,const char *));
-
-const char *CCTK_IOMethodImplementation(int handle);
-
-int CCTK_NumIOMethods(void);
+const char *CCTK_IOMethodImplementation (int handle);
+int CCTK_NumIOMethods (void);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif
+#endif  /* _CCTK_IOMETHODS_H_ */

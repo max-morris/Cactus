@@ -3,8 +3,9 @@
    @date      Thu Feb  18 14:27:18 1999
    @author    Gabrielle Allen
    @desc 
-   Fortran bindings for the IO functions
+              Fortran bindings for the IO functions
    @enddesc 
+   @version   $Id$
  @@*/ 
 
 #include <stdlib.h>
@@ -17,18 +18,24 @@ static const char *rcsid = "$Header$";
 
 CCTK_FILEVERSION(IO_FortranBindingsIO_c)
 
-void CCTK_FCALL CCTK_FNAME(CCTK_OutputGH)
-     (int *istat,cGH *GH)
+
+void CCTK_FCALL CCTK_FNAME (CCTK_OutputGH)
+                           (int *istat, const cGH *GH);
+void CCTK_FCALL CCTK_FNAME (CCTKi_RegisterIOMethod)
+                           (int *handle, TWO_FORTSTRING_ARG);
+
+
+void CCTK_FCALL CCTK_FNAME (CCTK_OutputGH)
+                           (int *istat, const cGH *GH)
 {
-  *istat = CCTK_OutputGH(GH);
+  *istat = CCTK_OutputGH (GH);
 }
 
-void CCTK_FCALL CCTK_FNAME(CCTKi_RegisterIOMethod)
-     (int *handle, TWO_FORTSTRING_ARG)
+void CCTK_FCALL CCTK_FNAME (CCTKi_RegisterIOMethod)
+                           (int *handle, TWO_FORTSTRING_ARG)
 {
-  TWO_FORTSTRING_CREATE(thorn,name);
-  *handle = CCTKi_RegisterIOMethod(thorn,name);
-  free(thorn);
-  free(name);
+  TWO_FORTSTRING_CREATE (thorn, name);
+  *handle = CCTKi_RegisterIOMethod (thorn, name);
+  free (thorn);
+  free (name);
 }
- 

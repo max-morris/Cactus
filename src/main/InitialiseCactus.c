@@ -3,9 +3,9 @@
    @date      Fri Sep 18 14:04:02 1998
    @author    Tom Goodale
    @desc 
-   Responsible for doing any cactus specific initialisations
+              Responsible for doing any cactus specific initialisations
    @enddesc 
-   @version $Header$
+   @version   $Id$
  @@*/
 
 #include <stdio.h>
@@ -16,6 +16,7 @@
 #include "cctk_Parameter.h"
 #include "cctk_Schedule.h"
 #include "cctk_WarnLevel.h"
+#include "cctk_Misc.h"
 
 #include "cctki_Banner.h"
 #include "cctki_Bindings.h"
@@ -34,18 +35,19 @@ CCTK_FILEVERSION(main_InitialiseCactus_c)
  ********************* Local Routine Prototypes *********************
  ********************************************************************/
 
-static int CCTKi_InitialiseScheduler(tFleshConfig *ConfigData);
+static int CCTKi_InitialiseScheduler (tFleshConfig *ConfigData);
 
 /********************************************************************
  ********************* Other Routine Prototypes *********************
  ********************************************************************/
 
-int CCTKi_InitialiseSubsystemDefaults(void);
-int CCTKi_ProcessEnvironment(int *argc, char ***argv,tFleshConfig *ConfigData);
-int CCTKi_BindingsParameterRecoveryInitialise(void);
+int CCTKBindings_RegisterThornFunctions (void);
+int CCTKi_InitialiseSubsystemDefaults (void);
+int CCTKi_ProcessEnvironment (int *argc, char ***argv,tFleshConfig *ConfigData);
+int CCTKi_BindingsParameterRecoveryInitialise (void);
 
-int CCTKi_ProcessCommandLine(int *inargc, char ***inargv, tFleshConfig *ConfigData);
-int CCTKi_ProcessEnvironment(int *argc, char ***argv,tFleshConfig *ConfigData);
+int CCTKi_ProcessCommandLine (int *inargc, char ***inargv, tFleshConfig *ConfigData);
+int CCTKi_ProcessEnvironment (int *argc, char ***argv,tFleshConfig *ConfigData);
 
 /********************************************************************
  *********************     Local Data   *****************************
@@ -67,65 +69,65 @@ static time_t startuptime;
    @desc 
    
    @enddesc 
-   @calls      CCTKi_InitialiseSubsystemDefaults CCTKi_ProcessEnvironment CCTKi_ProcessCommandLine CCTKi_CactusBanner CCTKi_InitialiseDataStructures CCTKi_ProcessParameterDatabase CCTKi_BindingsVariablesInitialise CCTKi_InitialiseScheduler CCTKi_CallStartupFunctions CCTKi_PrintBanners
-   @calledby   main  
-   @history 
+   @calls      CCTKi_InitialiseSubsystemDefaults
+               CCTKi_ProcessEnvironment
+               CCTKi_ProcessCommandLine
+               CCTKi_CactusBanner
+               CCTKi_InitialiseDataStructures
+               CCTKi_ProcessParameterDatabase
+               CCTKi_BindingsVariablesInitialise
+               CCTKi_InitialiseScheduler
+               CCTKi_CallStartupFunctions
+               CCTKi_PrintBanners
  
-   @endhistory 
-   @var     argc
-   @vdesc   The number of command line arguments
-   @vtype   int *
-   @vio     inout
-   @vcomment 
-
+   @var        argc
+   @vdesc      The number of command line arguments
+   @vtype      int *
+   @vio        inout
    @endvar 
-   @var     argv
-   @vdesc   The command line arguments
-   @vtype   char **
-   @vio     inout
-   @vcomment 
- 
+   @var        argv
+   @vdesc      The command line arguments
+   @vtype      char ***
+   @vio        inout
    @endvar 
-   @var     ConfigData
-   @vdesc   Flesh configuration data
-   @vtype   tFleshConfig
-   @vio     inout
-   @vcomment 
- 
+   @var        ConfigData
+   @vdesc      Flesh configuration data
+   @vtype      tFleshConfig *
+   @vio        inout
    @endvar 
 
    @returntype int
    @returndesc
-   0  - success
+               0  - success
    @endreturndesc
 @@*/
-int CCTKi_InitialiseCactus(int *argc, char ***argv, tFleshConfig *ConfigData)
+int CCTKi_InitialiseCactus (int *argc, char ***argv, tFleshConfig *ConfigData)
 {
-  startuptime = time(NULL);
+  startuptime = time (NULL);
 
-  CCTKi_InitialiseSubsystemDefaults();
+  CCTKi_InitialiseSubsystemDefaults ();
 
-  CCTKi_ProcessEnvironment(argc, argv, ConfigData);
+  CCTKi_ProcessEnvironment (argc, argv, ConfigData);
 
-  CCTKi_ProcessCommandLine(argc, argv, ConfigData);
+  CCTKi_ProcessCommandLine (argc, argv, ConfigData);
 
-  CCTKi_CactusBanner();
+  CCTKi_CactusBanner ();
 
-  CCTKi_InitialiseDataStructures(ConfigData);
+  CCTKi_InitialiseDataStructures (ConfigData);
 
-  CCTKi_ProcessParameterDatabase(ConfigData);
+  CCTKi_ProcessParameterDatabase (ConfigData);
 
-  CCTKi_BindingsVariablesInitialise();
+  CCTKi_BindingsVariablesInitialise ();
 
-  CCTKBindings_RegisterThornFunctions();
+  CCTKBindings_RegisterThornFunctions ();
 
-  CCTKi_InitialiseScheduler(ConfigData);
+  CCTKi_InitialiseScheduler (ConfigData);
 
-  CCTKi_CallStartupFunctions(ConfigData);
+  CCTKi_CallStartupFunctions (ConfigData);
 
-  CCTKi_PrintBanners();
+  CCTKi_PrintBanners ();
 
-  return 0;
+  return (0);
 }
 
 /********************************************************************
@@ -137,55 +139,59 @@ int CCTKi_InitialiseCactus(int *argc, char ***argv, tFleshConfig *ConfigData)
    @date       Fri Sep 17 19:34:55 1999
    @author     Tom Goodale
    @desc 
-   Initialise all scheduled items
+               Initialise all scheduled items
    @enddesc 
-   @calls    CCTKi_SetParameterSetMask CCTKi_BindingsParameterRecoveryInitialise CCTKi_BindingsScheduleInitialise CCTKi_DoScheduleSortAllGroups CCTK_SchedulePrint 
-   @calledby   
-   @history 
- 
-   @endhistory 
-   @var     ConfigData
-   @vdesc   Flesh configuration data
-   @vtype   tFleshConfig
-   @vio     in
-   @vcomment 
- 
+   @calls      CCTKi_SetParameterSetMask
+               CCTKi_BindingsParameterRecoveryInitialise
+               CCTKi_BindingsScheduleInitialise
+               CCTKi_DoScheduleSortAllGroups
+               CCTK_SchedulePrint 
+
+   @var        ConfigData
+   @vdesc      Flesh configuration data
+   @vtype      tFleshConfig *
+   @vio        unused
    @endvar 
 
    @returntype int
    @returndesc
-   0  - success
+               0  - success
    @endreturndesc
 @@*/
-
-static int CCTKi_InitialiseScheduler(tFleshConfig *ConfigData)
+static int CCTKi_InitialiseScheduler (tFleshConfig *ConfigData)
 {
-  int retcode;
-  int param_type;
-  int cctk_show_schedule;
-  extern void CCTKi_SetParameterSetMask(int mask);
+  int i, retcode;
+  const CCTK_INT *cctk_show_schedule;
+  extern void CCTKi_SetParameterSetMask (int mask);
 
-  CCTKi_SetParameterSetMask(PARAMETER_RECOVERY_IN);
 
-  if(CCTKi_BindingsParameterRecoveryInitialise() < 0)
-    CCTK_Warn(0,__LINE__,__FILE__,"Cactus","Failed to recover parameters");
+  /* avoid compiler warning about unused arguments */
+  ConfigData = ConfigData;
 
-  CCTKi_SetParameterSetMask(PARAMETER_RECOVERY_POST);
+  CCTKi_SetParameterSetMask (PARAMETER_RECOVERY_IN);
 
-  CCTKi_BindingsScheduleInitialise();
+  if (CCTKi_BindingsParameterRecoveryInitialise () < 0)
+  {
+    CCTK_Warn (0, __LINE__, __FILE__, "Cactus", "Failed to recover parameters");
+  }
 
-  retcode = CCTKi_DoScheduleSortAllGroups();
+  CCTKi_SetParameterSetMask (PARAMETER_RECOVERY_POST);
 
-  cctk_show_schedule = *((CCTK_INT *)CCTK_ParameterGet("cctk_show_schedule","Cactus",&param_type));
+  CCTKi_BindingsScheduleInitialise ();
 
-  if (cctk_show_schedule)
+  retcode = CCTKi_DoScheduleSortAllGroups ();
+
+  cctk_show_schedule = (const CCTK_INT *)
+                       CCTK_ParameterGet ("cctk_show_schedule", "Cactus", &i);
+
+  if (*cctk_show_schedule)
   {
     CCTK_PRINTSEPARATOR
-    CCTK_SchedulePrint(NULL);
+    CCTK_SchedulePrint (NULL);
     CCTK_PRINTSEPARATOR
   }
 
-  return retcode;
+  return (retcode);
 }
 
 
@@ -194,28 +200,15 @@ static int CCTKi_InitialiseScheduler(tFleshConfig *ConfigData)
    @date       Tue Oct 3 2000
    @author     Gabrielle Allen
    @desc 
-   Seconds since startup
+               Seconds since startup
    @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
 
    @returntype int
    @returndesc
-   The number of seconds since the run started.
+               The number of seconds since the run started.
    @endreturndesc
 @@*/
-
-int CCTK_RunTime(void)
+int CCTK_RunTime (void)
 {
-  int retval;
-  time_t currenttime;
-
-  currenttime = time(NULL);
-  
-  retval = (int)(currenttime-startuptime);
-
-  return retval;
+  return ((int) (time (NULL) - startuptime));
 }

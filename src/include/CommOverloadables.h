@@ -70,19 +70,19 @@ OVERLOADABLE(Abort)
 OVERLOADABLE(SetupGH)
 
 #undef ARGUMENTS
-#define ARGUMENTS cGH *GH, int dir, int group, const char *groupname
+#define ARGUMENTS const cGH *GH, int dir, int group, const char *groupname
 #undef RETURN_TYPE
 #define RETURN_TYPE const int *
 OVERLOADABLE(ArrayGroupSizeB)
 
 #undef ARGUMENTS
-#define ARGUMENTS cGH *GH, int group, const char *groupname
+#define ARGUMENTS const cGH *GH, int group, const char *groupname
 #undef RETURN_TYPE
 #define RETURN_TYPE int
 OVERLOADABLE(QueryGroupStorageB)
 
 #undef ARGUMENTS
-#define ARGUMENTS cGH *GH, int group, cGroupDynamicData *data
+#define ARGUMENTS const cGH *GH, int group, cGroupDynamicData *data
 #undef RETURN_TYPE
 #define RETURN_TYPE int
 OVERLOADABLE(GroupDynamicData)

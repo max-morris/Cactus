@@ -3,16 +3,14 @@
    @date      Tue Nov 30 10:30:09 1999
    @author    Tom Goodale
    @desc 
-   Sets up cache stuff for the CCTK
+              Sets up cache stuff for the CCTK
    @enddesc 
-   @version $Header$
+   @version   $Id$
  @@*/
-
-#include <stdlib.h>
 
 #include "cctk_Config.h"
 #include "cctk_Flesh.h"
-#include "cctk_Parameter.h"
+#include "cctk_Parameters.h"
 
 #include "cctki_Cache.h"
 
@@ -29,37 +27,26 @@ CCTK_FILEVERSION(main_SetupCache_c)
    @date       Tue Nov 30 10:50:02 1999
    @author     Tom Goodale
    @desc 
-   Sets the cache information.
+               Sets the cache information.
    @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   @calls      Utili_CacheDataSet
 
    @returntype int
    @returndesc
-   0 - success
+               0 - success
    @endreturndesc
-
 @@*/
-int CCTKi_SetupCache(void)
+int CCTKi_SetupCache (void)
 {
-  int param_type;
-  int manual_cache_setup;
-
   unsigned long cache_size;
   unsigned long cacheline_bytes;
+  DECLARE_CCTK_PARAMETERS
 
-  manual_cache_setup = (*(CCTK_INT *)CCTK_ParameterGet("manual_cache_setup",
-						  "Cactus",&param_type));
 
-  if(manual_cache_setup)
+  if (manual_cache_setup)
   {
-    cache_size = (*(CCTK_INT *)CCTK_ParameterGet("manual_cache_size",
-					    "Cactus",&param_type));
-    cacheline_bytes = (*(CCTK_INT *)CCTK_ParameterGet("manual_cacheline_bytes",
-						 "Cactus",&param_type));
+    cache_size      = manual_cache_size;
+    cacheline_bytes = manual_cacheline_bytes;
   } 
   else
   {
@@ -67,8 +54,7 @@ int CCTKi_SetupCache(void)
     cacheline_bytes = CCTK_L2_CACHELINE_BYTES;
   }
 
-  Utili_CacheDataSet(cacheline_bytes, cache_size);
+  Utili_CacheDataSet (cacheline_bytes, cache_size);
 
-  return 0;
-
+  return (0);
 }

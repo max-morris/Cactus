@@ -2,11 +2,11 @@
    @header    IOOverloadables.h
    @date      Thu Feb  4 09:59:34 1999
    @author    Tom Goodale
-   @desc 
-   The overloadable functions for the IO layer.
-   See OverloadMacros.h to see how to use these.
-   @enddesc 
-   @version $Header$
+   @desc
+              The overloadable functions for the IO layer.
+              See OverloadMacros.h to see how to use these.
+   @enddesc
+   @version   $Header$
  @@*/
 
 #ifdef OVERLOADABLE_CALL
@@ -34,11 +34,11 @@
 #endif
 
 #define RETURN_TYPE int
-#define ARGUMENTS cGH *GH
+#define ARGUMENTS const cGH *GH
 OVERLOADABLE(OutputGH)
 
 #undef ARGUMENTS
-#define ARGUMENTS cGH *GH,            \
+#define ARGUMENTS const cGH *GH,      \
                   const char *var,    \
                   const char *method, \
                   const char *alias
