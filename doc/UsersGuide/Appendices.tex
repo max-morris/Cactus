@@ -156,28 +156,35 @@ Cactus Users' Guide and the Cactus Reference Manual.
   character strings.  A NUL character has the integer value zero, but
   it's useful to write it as \verb|'\0'| to emphasize to human readers
   that this has type \verb|char| rather than \verb|int|.
-\item[NULL pointer]
-  C defines a ``NULL pointer'' which is guaranteed not to point to any
-  object.  You get a NULL pointer by converting the integer constant 0
-  to a pointer type, e.g.\ \verb|int* ptr = 0;|.  Note that if you
-  have an expression which has the value zero, but which isn't an
-  integer constant, converting this to a pointer type is \emph{not}
-  guaranteed to give a NULL pointer, e.g.:
-\begin{verbatim}
-int i = 0;
-int* ptr = i;     /* ptr is NOT guaranteed to be a NULL pointer! */
-\end{verbatim}
+\item[null pointer, NULL pointer]
+  C defines a ``null pointer'' (often (slightly incorrectly) called
+  a ``NULL pointer'') which is guaranteed not to point to any object.
+  You get a null pointer by converting the integer constant 0 to a
+  pointer type, e.g.\ \verb|int* ptr = 0;|.%%%
+\footnote{%%%
+	 Note that if you have an expression which
+	 has the value zero, but which isn't an
+  	 integer constant, converting this to a
+	 pointer type is \emph{not} guaranteed to
+	 give a NULL pointer, e.g.:\\
+	 {\tt int i = 0;}\\
+	 {\tt int* ptr = i;     /* ptr is NOT guaranteed to be a NULL pointer! */}\\
+	 }%%%
 
   Many programmers prefer to use the predefined macro \verb|NULL|
-  (defined in \verb|<stdlib.h>| and \verb|<stdio.h>|) to create NULL
-  pointers, e.g.\ \verb|int* ptr = NULL;|, to emphasize to
-  human readers that this is a NULL \emph{pointer} rather than
-  ``just'' the integer zero.
+  (defined in \verb|<stdlib.h>|, \verb|<stdio.h>|, and possibly other
+  system header files) to create null pointers,
+  e.g.\ \verb|int* ptr = NULL;|, to emphasize to human readers that
+  this is a null \emph{pointer} rather than ``just'' the integer zero.
 
-  Note that it is explicitly \emph{not} defined whether a NULL pointer
+  Note that it is explicitly \emph{not} defined whether a null pointer
   is represented by a bit pattern of all zero bits --- this varies from
-  system to system, and there are real-world systems where NULL pointers
+  system to system, and there are real-world systems where null pointers
   are in fact \emph{not} represented this way.
+
+  For further information, see the section ``Null pointers''
+  in the (excellent) {\tt comp.lang.c FAQ}, available online at
+  \url{http://www.eskimo.com/~scs/C-faq/top.html}.
 \item[parameter]
   A variable which remains unchanged throughout the execution of a
   Cactus executable. Parameters all have default values which can be
