@@ -689,6 +689,10 @@ if (CCTK_Equals(<parameter>,<string>))
 }\end{verbatim}
 }
 
+Such conditionals are evaluated only at program startup and are used
+to pick between different static schedule options.  For dynamic
+scheduling the SCHEDULE WHILE construction should be used.
+
 Conditional constructs cannot be used inside a schedule block.
 
 \chapter{Schedule bins}
@@ -1338,3 +1342,8 @@ This section still needs to be written.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \end{cactuspart}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "UsersGuide"
+%%% End: 
