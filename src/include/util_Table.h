@@ -50,13 +50,6 @@ extern "C"
 #define UTIL_TABLE_FLAGS_CASE_INSENSITIVE       0x1
 
 /*@@
-  @defines      UTIL_TABLE_FLAGS_AUTO_DESTROY
-  @desc         flags-word macro: automagically destroy this table
-                when the *next* table is created
-  @@*/
-#define UTIL_TABLE_FLAGS_AUTO_DESTROY           0x2
-
-/*@@
   @defines      UTIL_TABLE_FLAGS_USER_DEFINED_BASE
   @desc         flags-word macro: user-defined flags word bit masks
                 should use only this and higher bit positions (i.e.

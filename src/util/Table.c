@@ -4,15 +4,14 @@
 /*@@
  @file          Table.c
  @seeheader     util_Table.h
- @version       $Header$
+ @version       $Id$
  @date          Wed Oct 31 16:17:45 MET 2001
  @author        Jonathan Thornburg <jthorn@aei.mpg.de>
  @desc
-        This program implements the key-value table API defined in util_Table.h
-        This is documented in
+        This program implements the key-value table API defined
+        in util_Table.h and in the Cactus User's Guide.  A slightly
+        earlier version of this is documented in
            http://www.cactuscode.org/Development/Specs/KeyValueLookup.txt
-        FIXME: this is a bit out of date :(
-        FIXME: should write some latex docs
  @enddesc
  @@*/
 
@@ -89,7 +88,7 @@
 typedef enum { false = 0, true = 1 } bool;
 
 #ifndef CCODE
-#define CCODE   /* signal Cactus header files that we're C, not Fortran */
+  #define CCODE        /* signal Cactus header files that we're C, not Fortran */
 #endif
 
 #include "cctk_Types.h"
@@ -207,14 +206,6 @@ static int N_thp_array = 0;
  * ... name abbreviates "table-header-pointer array"
  */
 void **thp_array = NULL;
-
-/*
- * handle of table with auto-destroy flag set 
- * (there can be at most one such table at any time),
- * or AUTO_DESTROY_NONE if there is no such table
- */
-#define AUTO_DESTROY_NONE       (-1)
-static int auto_destroy_handle = AUTO_DESTROY_NONE;
 
 /******************************************************************************/
 /***** Iterator Data Structures ***********************************************/
@@ -415,16 +406,6 @@ static void test_set_get_string(int handle, bool case_insensitive);
   @@*/
 int Util_TableCreate(int flags)
 {
-/* destroy any table noted for auto-destroy */
-if (auto_destroy_handle >= 0)
-   then {
-        #ifdef UTIL_TABLE_DEBUG
-        printf("auto-destroying auto_destroy_handle=%d\n", auto_destroy_handle);
-        #endif
-        Util_TableDestroy(auto_destroy_handle);
-        auto_destroy_handle = AUTO_DESTROY_NONE;
-        }
-
 #ifdef UTIL_TABLE_DEBUG
 printf("Util_TableCreate()\n");
 #endif
@@ -480,10 +461,6 @@ int handle;
                 ++N_tables;
                 thp_array[handle] = (void *) thp;
 
-                /* mark this table for auto-destroy? */
-                if (flags & UTIL_TABLE_FLAGS_AUTO_DESTROY)
-                   then auto_destroy_handle = handle;
-
                 return handle;
                 }
         }
@@ -524,15 +501,6 @@ if (thp == NULL)
 #ifdef UTIL_TABLE_DEBUG
 printf("Util_TableDestroy(handle=%d)\n", handle);
 #endif
-
-/*
- * If this table is noted for auto-destroy, that note was specific
- * to the table we're about to destroy, so cancel the note.  (I.e.
- * if a new table gets created later with this same handle, we don't
- * want to keep the old auto-destroy note referring to it!)
- */
-if (auto_destroy_handle == handle)
-   then auto_destroy_handle = AUTO_DESTROY_NONE;
 
 /* delete all the keys */
   {
@@ -768,8 +736,7 @@ return delete_key(thp, key);
   @routine      Util_TableCreateFromString
   @desc         This function creates a new table based on a string
                 argument, which is interpreted with "parameter-file"
-                semantics.  The table has the case-insensitive and
-                auto-destroy flags set.
+                semantics.  The table has the case-insensitive flag set.
 
   @comment      Implementation Restriction:
                 The present implementation only recognises integer or
@@ -816,8 +783,7 @@ const char *const delimiters = "; \t\n";
 const char *const whitespace =  " \t\n";
 const char *const int_chars  = "-+0123456789";
 
-const int handle = Util_TableCreate(  UTIL_TABLE_FLAGS_CASE_INSENSITIVE
-                                    | UTIL_TABLE_FLAGS_AUTO_DESTROY    );
+const int handle = Util_TableCreate(UTIL_TABLE_FLAGS_CASE_INSENSITIVE);
 if (handle < 0)
    then return handle;                  /* error creating table */
 
@@ -2896,8 +2862,7 @@ static
 {
 int handle;
 
-printf("N_tables=%d N_thp_array=%d auto_destroy_handle=%d\n",
-       N_tables, N_thp_array, auto_destroy_handle);
+printf("N_tables=%d N_thp_array=%d\n", N_tables, N_thp_array);
         for (handle = 0 ; handle < N_thp_array ; ++handle)
         {
         print_table(handle);
@@ -3227,73 +3192,61 @@ static
 assert( N_tables == 0 );
 
 assert( Util_TableCreate(UTIL_TABLE_FLAGS_DEFAULT) == 0 );
+assert( N_tables == 1 );
 assert( Util_TableCreate(UTIL_TABLE_FLAGS_CASE_INSENSITIVE) == 1 );
+assert( N_tables == 2 );
 assert( Util_TableCreate(UTIL_TABLE_FLAGS_DEFAULT) == 2 );
-assert( Util_TableCreate(  UTIL_TABLE_FLAGS_CASE_INSENSITIVE
-                         | UTIL_TABLE_FLAGS_AUTO_DESTROY    ) == 3 );
-assert( N_tables == 4 );
-assert( auto_destroy_handle == 3 );
-assert( get_table_header_ptr(0) != NULL );
-assert( get_table_header_ptr(1) != NULL );
-assert( get_table_header_ptr(2) != NULL );
-assert( get_table_header_ptr(3) != NULL );
-assert( Util_TableQueryFlags(3) == (  UTIL_TABLE_FLAGS_CASE_INSENSITIVE
-                                    | UTIL_TABLE_FLAGS_AUTO_DESTROY    ) );
-
+assert( N_tables == 3 );
 assert( Util_TableCreate(UTIL_TABLE_FLAGS_CASE_INSENSITIVE) == 3 );
 assert( N_tables == 4 );
-assert( auto_destroy_handle == -1 );
 assert( get_table_header_ptr(0) != NULL );
-assert( Util_TableQueryFlags(0) == UTIL_TABLE_FLAGS_DEFAULT );
 assert( get_table_header_ptr(1) != NULL );
-assert( Util_TableQueryFlags(1) == UTIL_TABLE_FLAGS_CASE_INSENSITIVE );
 assert( get_table_header_ptr(2) != NULL );
-assert( Util_TableQueryFlags(2) == UTIL_TABLE_FLAGS_DEFAULT );
 assert( get_table_header_ptr(3) != NULL );
+assert( Util_TableQueryFlags(0) == UTIL_TABLE_FLAGS_DEFAULT );
+assert( Util_TableQueryFlags(1) == UTIL_TABLE_FLAGS_CASE_INSENSITIVE );
+assert( Util_TableQueryFlags(2) == UTIL_TABLE_FLAGS_DEFAULT );
 assert( Util_TableQueryFlags(3) == UTIL_TABLE_FLAGS_CASE_INSENSITIVE );
+
 assert( Util_TableDeleteKey(3, "pickle") == UTIL_ERROR_TABLE_NO_SUCH_KEY );
 assert( Util_TableDeleteKey(3, "Pickle") == UTIL_ERROR_TABLE_NO_SUCH_KEY );
 assert( Util_TableDeleteKey(3, "PICKLE") == UTIL_ERROR_TABLE_NO_SUCH_KEY );
 
 assert( Util_TableDestroy(2) == 0 );
 assert( N_tables == 3 );
-assert( auto_destroy_handle == -1 );
 assert( get_table_header_ptr(0) != NULL );
 assert( get_table_header_ptr(1) != NULL );
 assert( get_table_header_ptr(2) == NULL );
 assert( get_table_header_ptr(3) != NULL );
 
-assert( Util_TableCreate(UTIL_TABLE_FLAGS_AUTO_DESTROY) == 2 );
+assert( Util_TableCreate(0x43) == 2 );
 assert( N_tables == 4 );
-assert( auto_destroy_handle == 2 );
 assert( get_table_header_ptr(0) != NULL );
 assert( get_table_header_ptr(1) != NULL );
 assert( get_table_header_ptr(2) != NULL );
-assert( Util_TableQueryFlags(2) == UTIL_TABLE_FLAGS_AUTO_DESTROY );
+assert( Util_TableQueryFlags(2) == 0x43);
 assert( get_table_header_ptr(3) != NULL );
 
-/* explicitly destroy table with auto-destroy flag set */
-/* also check querying NKeys and MaxKeyLength for empty tables */
-assert( Util_TableDestroy(2) == 0 );
+assert( Util_TableDestroy(1) == 0 );
 assert( N_tables == 3 );
-assert( auto_destroy_handle == -1 );
 assert( get_table_header_ptr(0) != NULL );
 assert( Util_TableQueryNKeys(0) == 0 );
-assert( get_table_header_ptr(1) != NULL );
-assert( Util_TableQueryMaxKeyLength(1) == 0 );
-assert( get_table_header_ptr(2) == NULL );
+assert( get_table_header_ptr(1) == NULL );
+assert( Util_TableQueryMaxKeyLength(1) == UTIL_ERROR_BAD_HANDLE );
+assert( get_table_header_ptr(2) != NULL );
+assert( Util_TableQueryMaxKeyLength(2) == 0 );
 assert( get_table_header_ptr(3) != NULL );
 assert( Util_TableDeleteKey(3, "pickle") == UTIL_ERROR_TABLE_NO_SUCH_KEY );
 
-assert( Util_TableDestroy(1) == 0 );
-assert( N_tables == 2 );
-assert( auto_destroy_handle == -1 );
+assert( Util_TableDestroy(1) == UTIL_ERROR_BAD_HANDLE );
+assert( N_tables == 3 );
 assert( get_table_header_ptr(0) != NULL );
 assert( get_table_header_ptr(1) == NULL );
-assert( get_table_header_ptr(2) == NULL );
+assert( get_table_header_ptr(2) != NULL );
 assert( get_table_header_ptr(3) != NULL );
 
 assert( Util_TableDestroy(0) == 0 );
+assert( Util_TableDestroy(2) == 0 );
 assert( Util_TableDestroy(3) == 0 );
 
 assert( N_tables == 0 );
@@ -3515,7 +3468,7 @@ CCTK_INT type_code, N_elements;
 assert( Util_TableItQueryKeyValueInfo(ihandle,
                                       N_key_buffer, key_buffer,
                                       &type_code, &N_elements)
-	== (int)strlen("REAL_y") );
+        == (int)strlen("REAL_y") );
 assert( strcmp(key_buffer, "REAL_y") == 0 );
 assert( type_code == CCTK_VARIABLE_REAL );
 assert( N_elements == 1 );
@@ -3527,7 +3480,7 @@ assert( Util_TableItAdvance(ihandle) == 1 );
 assert( Util_TableItQueryKeyValueInfo(ihandle,
                                       N_key_buffer, key_buffer,
                                       &type_code, &N_elements)
-	== (int)strlen("COMPlex_Z") );
+        == (int)strlen("COMPlex_Z") );
 assert( strcmp(key_buffer, "COMPlex_Z") == 0 );
 assert( type_code = CCTK_VARIABLE_COMPLEX );
 assert( N_elements == 1 );
@@ -3539,7 +3492,7 @@ assert( Util_TableItAdvance(ihandle) == 1 );
 assert( Util_TableItQueryKeyValueInfo(ihandle,
                                       N_key_buffer, key_buffer,
                                       &type_code, &N_elements)
-	== (int)strlen("int_x") );
+        == (int)strlen("int_x") );
 assert( strcmp(key_buffer, "int_x") == 0 );
 assert( type_code = CCTK_VARIABLE_INT );
 assert( N_elements == 1 );
@@ -3570,7 +3523,7 @@ assert( Util_TableItAdvance(ihandle) == 1 );
 assert( Util_TableItQueryKeyValueInfo(ihandle,
                                       N_key_buffer, key_buffer,
                                       &type_code, &N_elements)
-	== (int)strlen("COMPlex_Z") );
+        == (int)strlen("COMPlex_Z") );
 assert( strcmp(key_buffer, "COMPlex_Z") == 0 );
 assert( type_code = CCTK_VARIABLE_COMPLEX );
 assert( N_elements == 1 );
@@ -3587,7 +3540,7 @@ assert( Util_TableItQueryIsNull(ihandle) == 0);
 assert( Util_TableItQueryKeyValueInfo(ihandle,
                                       N_key_buffer, key_buffer,
                                       &type_code, &N_elements)
-	== (int)strlen("REAL_y") );
+        == (int)strlen("REAL_y") );
 assert( strcmp(key_buffer, "REAL_y") == 0 );
 assert( type_code == CCTK_VARIABLE_REAL );
 assert( N_elements == 1 );
@@ -3647,7 +3600,7 @@ CCTK_INT N_elements = 54321;
 assert( Util_TableItQueryKeyValueInfo(ihandle,
                                       N_key_buffer, key_buffer,
                                       &type_code, &N_elements)
-	== (int)strlen("COMPlex_Z") );
+        == (int)strlen("COMPlex_Z") );
 assert( strcmp(key_buffer, "COMPlex_Z") == 0 );
 assert( type_code = CCTK_VARIABLE_COMPLEX );
 assert( N_elements == 1 );
@@ -3659,7 +3612,7 @@ assert( Util_TableItAdvance(ihandle) == 1 );
 assert( Util_TableItQueryKeyValueInfo(ihandle,
                                       N_key_buffer, key_buffer,
                                       &type_code, &N_elements)
-	== (int)strlen("int_x") );
+        == (int)strlen("int_x") );
 assert( strcmp(key_buffer, "int_x") == 0 );
 assert( type_code = CCTK_VARIABLE_INT );
 assert( N_elements == 1 );
@@ -3689,7 +3642,7 @@ N_elements = 54321;
 assert( Util_TableItQueryKeyValueInfo(ihandle2,
                                       N_key_buffer, key_buffer,
                                       &type_code, &N_elements)
-	== (int)strlen("COMPlex_Z") );
+        == (int)strlen("COMPlex_Z") );
 assert( strcmp(key_buffer, "COMPlex_Z") == 0 );
 assert( type_code = CCTK_VARIABLE_COMPLEX );
 assert( N_elements == 1 );
@@ -3737,6 +3690,10 @@ free(key_buffer);
 /*
  * This function tests  Util_TableCreateFromString() .
  * It returns the handle of the newly-created table.
+ *
+ * Bugs:
+ * This test is tied to the present implementation -- it assumes a
+ * specific ordering of table elements returned by an iterator.
  */
 static
   int test_create_from_string(void)
@@ -3762,10 +3719,7 @@ assert( Util_TableCreateFromString("foo= 12") == UTIL_ERROR_BAD_INPUT );
   {
 int handle = Util_TableCreateFromString("ij=42 real1=3.5; real_e=2.75");
 assert( handle >= 0 );
-assert( Util_TableQueryFlags(handle)
-        == (  UTIL_TABLE_FLAGS_CASE_INSENSITIVE
-            | UTIL_TABLE_FLAGS_AUTO_DESTROY    ) );
-
+assert( Util_TableQueryFlags(handle) == UTIL_TABLE_FLAGS_CASE_INSENSITIVE );
 assert( Util_TableQueryNKeys(handle) == 3 );
 
 /* set up the key buffer */
@@ -3778,6 +3732,7 @@ char *const key_buffer = malloc(N_key_buffer);
 assert( key_buffer != NULL );
 
 /* walk through the table to verify contents {"real_e", "real1", "ij"} */
+/* n.b. implementation-dependence here for order of table elements */
   {
 int ihandle = Util_TableItCreate(handle);
 CCTK_INT key_length, type_code, N_elements;
@@ -3788,7 +3743,7 @@ N_elements = 54321;
 assert( Util_TableItQueryKeyValueInfo(ihandle,
                                       N_key_buffer, key_buffer,
                                       &type_code, &N_elements)
-	== (int)strlen("real_e") );
+        == (int)strlen("real_e") );
 assert( strcmp(key_buffer, "real_e") == 0 );
 assert( type_code = CCTK_VARIABLE_REAL );
 assert( N_elements == 1 );
@@ -3804,7 +3759,7 @@ N_elements = 54321;
 assert( Util_TableItQueryKeyValueInfo(ihandle,
                                       N_key_buffer, key_buffer,
                                       &type_code, &N_elements)
-	== (int)strlen("real1") );
+        == (int)strlen("real1") );
 assert( strcmp(key_buffer, "real1") == 0 );
 assert( type_code = CCTK_VARIABLE_REAL );
 assert( N_elements == 1 );
@@ -3818,7 +3773,7 @@ N_elements = 54321;
 assert( Util_TableItQueryKeyValueInfo(ihandle,
                                       N_key_buffer, key_buffer,
                                       &type_code, &N_elements)
-	== (int)strlen("ij") );
+        == (int)strlen("ij") );
 assert( strcmp(key_buffer, "ij") == 0 );
 assert( type_code = CCTK_VARIABLE_REAL );
 assert( N_elements == 1 );
