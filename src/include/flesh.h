@@ -44,6 +44,17 @@ typedef struct
 } tFleshConfig;
 
 
+typedef struct
+{
+  char *name;
+  char *implementation;
+  int (*param_init)();
+  int (*param_set)(const char *, const char *);
+  int (*param_get)(const char *, void **);
+  int (*private_group_setup)(cGH *);
+  int (*protected_group_setup)(cGH *);
+  int (*public_group_setup)(cGH *);
+} t_thorndata;
 
 /* Function prototypes */
 
