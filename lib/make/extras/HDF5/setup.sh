@@ -77,6 +77,40 @@ if [ -n "$IRIX_BITS" ]; then
   fi
 fi
 
+
+# check whether we run Windows or not
+$PERL -we 'exit (`uname` =~ /^CYGWIN/)'
+is_windows=$?
+
+
+# Check whether we have to link with libsz.a
+grep -qe '#define H5_HAVE_LIBSZ 1' ${HDF5_DIR}/include/H5pubconf.h 2> /dev/null
+test_szlib=$?
+if [ $test_szlib -eq 0 ]; then
+  if [ $is_windows -eq 0 ]; then
+    libsz='libsz.a'
+  else
+    libsz='szlib.lib'
+  fi
+
+  if [ -z "$LIBSZ_DIR" -a ! -r /usr/lib/$libsz ]; then
+    echo "  HDF5 library was built with external szlib I/O filter, searching for library $libsz ..."
+    CCTK_Search LIBSZ_DIR '/usr/local/lib c:/packages/libsz/lib c:/packages/hdf5/lib' $libsz
+    if [ -z "$LIBSZ_DIR" ]; then
+      echo "  Unable to locate the library $libsz - please set LIBSZ_DIR"
+      exit 2
+    fi
+    echo "  Found library $libsz in $LIBSZ_DIR"
+  fi
+  if [ $is_windows -eq 0 ]; then
+    HDF5_LIBS="$HDF5_LIBS sz"
+  else
+    HDF5_LIBS="$HDF5_LIBS szlib"
+  fi
+  HDF5_LIB_DIRS="$HDF5_LIB_DIRS $LIBSZ_DIR"
+fi
+
+
 # Check whether we have to link with libz.a
 
 # this is for current versions of HDF5 (starting from 1.4.x)
@@ -89,10 +123,6 @@ if [ $test_zlib -ne 0 ]; then
   test_zlib=$?
 fi
 
-# check whether we run Windows or not
-$PERL -we 'exit (`uname` =~ /^CYGWIN/)'
-is_windows=$?
-
 if [ $test_zlib -eq 0 ]; then
   if [ $is_windows -eq 0 ]; then
     libz='libz.a'
@@ -100,7 +130,7 @@ if [ $test_zlib -eq 0 ]; then
     libz='zlib.lib'
   fi
   if [ -z "$LIBZ_DIR" -a ! -r /usr/lib/$libz ]; then
-    echo "  HDF5 library was compiled with compression library, searching for $libz ..."
+    echo "  HDF5 library was built with external deflate I/O filter, searching for library $libz ..."
     CCTK_Search LIBZ_DIR '/usr/local/lib c:/packages/libz/lib c:/packages/hdf5/lib' $libz
     if [ -z "$LIBZ_DIR" ]; then
        echo "  Unable to locate the library $libz - please set LIBZ_DIR"
