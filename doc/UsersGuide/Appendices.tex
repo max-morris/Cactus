@@ -323,6 +323,19 @@ Conditional constructs cannot be used inside of a schedule block.
 in which case it switches storage on for the specified groups permanently,
 subject to any conditional statements around the {\tt STORAGE} statement.
 
+\subsection{Allowed Options}
+
+\begin{Lentry} 
+
+\item[{\tt GLOBAL}] 
+This routine will only be called once on a grid hierarchy, not for all
+subgrids making up the hierarchy.  This can be used, for example, for
+analysis routines which use global reduction or interpolation routines 
+rather than the local subgrid passed to them, and hence should only be 
+called once.
+
+\end{Lentry} 
+
 \chapter{Flesh parameters}
 \label{sec:ccpa}
 
