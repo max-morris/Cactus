@@ -767,7 +767,26 @@ is to do.
 
 \end{itemize}
 
+
+
+\subsection{gmake options}
+\label{sec:gmta}
+
+An {\it option} for gmake can be thought of as an arguement which tells
+it how it should make a target. Note that the final result is always
+the same.
+
+\begin{itemize}
+
+\item {\tt gmake <target> SILENT=no} prints the commands that gmake is executing
+\item {\tt gmake <target> TJOBS=<number>} compile in parallel, across thorns 
+\item {\tt gmake <target> FJOBS=<number>} compile in parallel, across files
+
+\end{itemize}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
 
 \section{Compiling in thorns}
 \label{sec:cointh}
