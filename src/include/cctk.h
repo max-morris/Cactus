@@ -19,7 +19,7 @@
 /* Define some stuff */
 
 #ifdef FCODE
-#define _CCTK_FARGUMENTS  dim, global_sh, sh, lb, ub, bbox, delta_time, time, delta_space, levfac, convlevel, nghostzones, GH
+#define _CCTK_FARGUMENTS  dim, global_sh, sh, lb, ub, bbox, delta_time, time, delta_space, levfac, convlevel, nghostzones, iteration, GH
 #define _DECLARE_CCTK_FARGUMENTS INTEGER dim&&\
                            INTEGER global_sh(dim)&&\
                            INTEGER sh(dim), lb(dim), ub(dim), bbox(2*dim)&&\
@@ -27,6 +27,7 @@
                            INTEGER levfac&&\
                            INTEGER convlevel&&\
                            INTEGER nghostzones&&\
+                           INTEGER iteration&&\
                            POINTER GH&&\
 
 #endif /*FCODE*/
@@ -41,6 +42,7 @@
                             &((xGH)->levfac),\
                             &((xGH)->convlevel),\
                             &((xGH)->nghostzones),\
+                            &((xGH)->iteration),\
                             (xGH)
 #define _CCTK_C2F_PROTO     int *,\
                             int *,\
@@ -49,6 +51,7 @@
                             int *,\
                             int *,\
                             int *,\
+                            unsigned long *,\
                             cGH *
 
 #define CCTK_STORAGESIZE(xGH, group, dim) (CCTK_QueryGroupStorage(xGH,group) ?\
