@@ -9,6 +9,7 @@
  @@*/
 
 #include "CactusTimers.h"
+#include "cctk.h"
 
 #ifndef _FLESH_H_
 #define _FLESH_H_
