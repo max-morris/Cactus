@@ -6,11 +6,17 @@ require "$sbin_dir/MakeUtils.pl";
 
 print "\n";
 
+print "Type \"help\" at any prompt for a description on how\nto use this script\n\n";
+
 print "Checkout packages or thorns? [packages] : ";
     
 $which = <STDIN>;
 
-if ($which =~ /^t/i)
+if ($which =~ /^h/i)
+{
+    &print_help();
+}
+elsif ($which =~ /^t/i)
 {
     &get_thorns();
 }
@@ -21,7 +27,7 @@ else
 
 print "\nQuit or checkout more packages or thorns [quit] : ";
 $dowhat = <STDIN>;
-if ($dowhat !~ /^t/i && $dowhat !~/^p/i)
+if ($dowhat !~ /^t/i && $dowhat !~/^p/i && $dowhat !~ /^h/i)
 {
     print "All done!\n";
     exit;
@@ -30,8 +36,11 @@ if ($dowhat !~ /^t/i && $dowhat !~/^p/i)
 $doit = 1;
 while ()
 {
-    
-    if ($dowhat =~ /^t/i)
+    if ($dowhat =~ /^h/i)
+    {
+	&print_help();
+    }
+    elsif ($dowhat =~ /^t/i)
     {
 	&get_thorns();
     }
@@ -43,7 +52,7 @@ while ()
     print "\nQuit or checkout more packages or thorns [quit] : ";
 
     $dowhat = <STDIN>;
-    if ($dowhat !~ /^t/i && $dowhat !~/^p/i)
+    if ($dowhat !~ /^t/i && $dowhat !~/^p/i && $dowhat !~ /^h/i)
     {
 	print "All done!\n";
 	exit;
@@ -85,7 +94,11 @@ sub get_packages
     chdir packages || die "Could not find packages directory";
 
     $range = <STDIN>;
-    if ($range =~ /^\s*$/)
+    if ($range =! /^h/i)
+    {
+	&print_help();
+    }
+    elsif ($range =~ /^\s*$/)
     {
 	$range = "1-$count";
     }
@@ -146,7 +159,11 @@ sub get_thorns
     chdir packages || die "Could not find packages directory\n";
 
     $range = <STDIN>;
-    if ($range =~ /^\s*$/)
+    if ($range =~ /^h/i)
+    {
+	&print_help();
+    }
+    elsif ($range =~ /^\s*$/)
     {
 	$range = "1-$count";
     }
@@ -170,4 +187,12 @@ sub get_thorns
     chdir ("..") || die "Could not return to Cactus home directory\n";
 }
 
+sub print_help
+{ 
 
+    print "\nTo select packages or thorns for checking out from CVS, give\n";
+    print "a comma separated list with the numbers of the thorns/packages.\n";
+    print "Ranges can also be given, using a hyphen.\n";
+    print "For example, to checkout thorns/packages 1,2,4,6,7,9 use:\n\n";
+    print "   1-2,4,6-7,9\n\n";
+}
