@@ -29,7 +29,7 @@ static int FindNextUnused(cHandledData *storage, int first);
 
 
  /*@@
-   @routine    CCTK_NewHandle
+   @routine    Util_NewHandle
    @date       Fri May  8 12:56:43 1998
    @author     Tom Goodale
    @desc 
@@ -44,7 +44,7 @@ static int FindNextUnused(cHandledData *storage, int first);
 
 @@*/
 
-int CCTK_NewHandle(cHandledData **storage, const char *name, void *data)
+int Util_NewHandle(cHandledData **storage, const char *name, void *data)
 {
   int return_code;
 
@@ -133,7 +133,7 @@ int CCTK_NewHandle(cHandledData **storage, const char *name, void *data)
 }
 
  /*@@
-   @routine    CCTK_DeleteHandle
+   @routine    Util_DeleteHandle
    @date       Fri May  8 14:13:16 1998
    @author     Tom Goodale
    @desc 
@@ -146,7 +146,7 @@ int CCTK_NewHandle(cHandledData **storage, const char *name, void *data)
    @endhistory 
 
 @@*/
-int CCTK_DeleteHandle(cHandledData *storage, int handle)
+int Util_DeleteHandle(cHandledData *storage, int handle)
 {
   int return_code;
 
@@ -213,7 +213,7 @@ static int FindNextUnused(cHandledData *storage, int first)
 }
     
  /*@@
-   @routine    CCTK_GetHandledData
+   @routine    Util_GetHandledData
    @date       Fri May  8 17:36:33 1998
    @author     Tom Goodale
    @desc 
@@ -226,7 +226,7 @@ static int FindNextUnused(cHandledData *storage, int first)
    @endhistory 
 
 @@*/
-void *CCTK_GetHandledData(cHandledData *storage, int handle)
+void *Util_GetHandledData(cHandledData *storage, int handle)
 {
   void *data;
 
@@ -255,7 +255,7 @@ void *CCTK_GetHandledData(cHandledData *storage, int handle)
 }
 
  /*@@
-   @routine    CCTK_GetHandle
+   @routine    Util_GetHandle
    @date       Tue Feb  2 10:55:34 1999
    @author     Tom Goodale
    @desc 
@@ -269,7 +269,7 @@ void *CCTK_GetHandledData(cHandledData *storage, int handle)
    @endhistory 
 
 @@*/
-int CCTK_GetHandle(cHandledData *storage, const char *name, void **data)
+int Util_GetHandle(cHandledData *storage, const char *name, void **data)
 {
   int handle;
   int current;
@@ -306,7 +306,7 @@ int CCTK_GetHandle(cHandledData *storage, const char *name, void **data)
 }
 
  /*@@
-   @routine    CCTK_GetHandleName
+   @routine    Util_GetHandleName
    @date       Wed Feb  3 12:52:53 1999
    @author     Tom Goodale
    @desc 
@@ -319,7 +319,7 @@ int CCTK_GetHandle(cHandledData *storage, const char *name, void **data)
    @endhistory 
 
 @@*/
-char *CCTK_GetHandleName(cHandledData *storage, int handle)
+char *Util_GetHandleName(cHandledData *storage, int handle)
 {
   char *name;
 
@@ -374,39 +374,39 @@ int main(void)
 
 
   /* Test creation of the data. */
-  handle1 = CCTK_NewHandle(&handledata, first_name, first_data);
-  handle2 = CCTK_NewHandle(&handledata, second_name, second_data);
-  handle3 = CCTK_NewHandle(&handledata, third_name, third_data);
+  handle1 = Util_NewHandle(&handledata, first_name, first_data);
+  handle2 = Util_NewHandle(&handledata, second_name, second_data);
+  handle3 = Util_NewHandle(&handledata, third_name, third_data);
 
   /* Test accessing the data. */
-  if((data = CCTK_GetHandledData(handledata, handle1)))
+  if((data = Util_GetHandledData(handledata, handle1)))
   {
     printf("Name %s (%d) has data %s\n", first_name, handle1, data);
   };
 
-  if((data = CCTK_GetHandledData(handledata, handle2)))
+  if((data = Util_GetHandledData(handledata, handle2)))
   {
     printf("Name %s (%d) has data %s\n", second_name, handle2, data);
   };
 
-  if((data = CCTK_GetHandledData(handledata, handle3)))
+  if((data = Util_GetHandledData(handledata, handle3)))
   {
     printf("Name %s (%d) has data %s\n", third_name, handle3, data);
   };
 
   /* Test getting by name */
 
-  if((handle = CCTK_GetHandle(handledata, first_name, (void **)&data)) > -1)
+  if((handle = Util_GetHandle(handledata, first_name, (void **)&data)) > -1)
   {
     printf("Name %s (%d, was %d) has data %s\n", first_name, handle, handle1, data);
   };
 
-  if((handle = CCTK_GetHandle(handledata, second_name, (void **)&data)) > -1)
+  if((handle = Util_GetHandle(handledata, second_name, (void **)&data)) > -1)
   {
     printf("Name %s (%d, was %d) has data %s\n", second_name, handle, handle2, data);
   };
 
-  if((handle = CCTK_GetHandle(handledata, third_name, (void **)&data)) > -1)
+  if((handle = Util_GetHandle(handledata, third_name, (void **)&data)) > -1)
   {
     printf("Name %s (%d, was %d) has data %s\n", third_name, handle, handle3, data);
   };

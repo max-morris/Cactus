@@ -33,7 +33,7 @@ static int num_coords = 0;
                Register a GF as a coordinate with a name, and index
 	       and a direction
    @enddesc 
-   @calls      CCTK_GetHandle, CCTK_NewHandle, CCTK_Warn
+   @calls      Util_GetHandle, Util_NewHandle, CCTK_Warn
 
    @var        name        
    @vdesc      Name coordinate is registered as
@@ -73,7 +73,7 @@ int CCTK_RegisterCoordI(const char *name, int index, int dir)
   struct Coordprops *new_coord;
 
   /* Check that the method hasn't already been registered */
-  handle = CCTK_GetHandle(coordinates, name, NULL);
+  handle = Util_GetHandle(coordinates, name, NULL);
 
   if(handle < 0)
   {
@@ -83,7 +83,7 @@ int CCTK_RegisterCoordI(const char *name, int index, int dir)
     if(new_coord)
     {
       /* Get a handle for it. */
-      handle = CCTK_NewHandle(&coordinates, name, new_coord);
+      handle = Util_NewHandle(&coordinates, name, new_coord);
 
       /* Initialise the coordinate properties structure */
       new_coord->name      = (char *)name;
@@ -196,7 +196,7 @@ int CCTK_CoordIndex(const char *name)
 
   for (handle = 0;;handle++)
   {
-    coord = (struct Coordprops *)CCTK_GetHandledData(coordinates, handle);
+    coord = (struct Coordprops *)Util_GetHandledData(coordinates, handle);
     if (coord)
     {
       if (CCTK_Equals(name,(const char *)coord->name))
@@ -230,7 +230,7 @@ CCTK_REAL CCTK_CoordOrigin(const char *name)
 
   for (handle = 0;;handle++)
   {
-    coord = (struct Coordprops *)CCTK_GetHandledData(coordinates, handle);
+    coord = (struct Coordprops *)Util_GetHandledData(coordinates, handle);
     if (coord)
     {
       if (CCTK_Equals(name,(const char *)coord->name))

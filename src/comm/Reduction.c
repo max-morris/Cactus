@@ -57,12 +57,12 @@ int CCTK_RegisterReductionOperator(void (*function)(REGISTER_ARGLIST),
   int handle;
 
   /* Check that the method hasn't already been registered */
-  handle = CCTK_GetHandle(ReductionOperators, name, NULL);
+  handle = Util_GetHandle(ReductionOperators, name, NULL);
 
   if(handle < 0)
   {
     /* Get a handle for it. */
-    handle = CCTK_NewHandle(&ReductionOperators, name, (void *)function);
+    handle = Util_NewHandle(&ReductionOperators, name, (void *)function);
     
     /* Remember how many reduction operators there are */
     num_reductions++;
@@ -108,7 +108,7 @@ int CCTK_ReductionHandle(const char *reduction)
   int handle;
   void **data=NULL; /* isn't used here */
 
-  handle = CCTK_GetHandle(ReductionOperators, reduction, data);
+  handle = Util_GetHandle(ReductionOperators, reduction, data);
 
 #ifdef DEBUG_REDUCTION
   CCTK_PRINTSEPARATOR
@@ -160,7 +160,7 @@ int CCTK_Reduce(  cGH *GH,
   else
   {
     function = (void (*)(REGISTER_ARGLIST))
-      CCTK_GetHandledData(ReductionOperators,operation_handle);
+      Util_GetHandledData(ReductionOperators,operation_handle);
     
     if (function)
       {
@@ -209,7 +209,7 @@ void FMODIFIER FORTRAN_NAME(CCTK_Reduce)(cGH *GH,
   else
   {
     function = (void (*)(REGISTER_ARGLIST))
-      CCTK_GetHandledData(ReductionOperators,*operation_handle);
+      Util_GetHandledData(ReductionOperators,*operation_handle);
     
     if (function)
       {

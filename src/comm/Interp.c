@@ -62,12 +62,12 @@ int CCTK_RegisterInterpOperator(int (*function)(REGISTER_INTERP_ARGLIST),
   int handle;
 
   /* Check that the method hasn't already been registered */
-  handle = CCTK_GetHandle(InterpOperators, name, NULL);
+  handle = Util_GetHandle(InterpOperators, name, NULL);
 
   if(handle < 0)
   {
     /* Get a handle for it. */
-    handle = CCTK_NewHandle(&InterpOperators, name, (void *)function);
+    handle = Util_NewHandle(&InterpOperators, name, (void *)function);
     
     /* Remember how many interpolation operators there are */
     num_interps++;
@@ -113,7 +113,7 @@ int CCTK_GetInterpHandle(const char *interp)
   int handle;
   void **data=NULL; /* isn't used here */
 
-  handle = CCTK_GetHandle(InterpOperators, interp, data);
+  handle = Util_GetHandle(InterpOperators, interp, data);
 
 #ifdef DEBUG_INTERP
   CCTK_PRINTSEPARATOR
@@ -235,7 +235,7 @@ int CCTK_InterpGF (cGH *GH,
   else
   {
     function = (int (*)(REGISTER_INTERP_ARGLIST))
-      CCTK_GetHandledData(InterpOperators,operation_handle);
+      Util_GetHandledData(InterpOperators,operation_handle);
     
     if (function)
     {
@@ -331,7 +331,7 @@ void FMODIFIER FORTRAN_NAME(CCTK_InterpGF)(cGH *GH,
   else
   {
     function = (int (*)(REGISTER_INTERP_ARGLIST))
-      CCTK_GetHandledData(InterpOperators,*operation_handle);
+      Util_GetHandledData(InterpOperators,*operation_handle);
     
     if (function)
     {
@@ -513,7 +513,7 @@ int CCTK_Interp (cGH *GH,
   else
   {
     function = (int (*)(REGISTER_INTERP_ARGLIST))
-      CCTK_GetHandledData(InterpOperators,operation_handle);
+      Util_GetHandledData(InterpOperators,operation_handle);
     
     if (function)
     {
@@ -663,7 +663,7 @@ void FMODIFIER FORTRAN_NAME(CCTK_Interp)(cGH *GH,
   else
   {
     function = (int (*)(REGISTER_INTERP_ARGLIST))
-      CCTK_GetHandledData(InterpOperators,*operation_handle);
+      Util_GetHandledData(InterpOperators,*operation_handle);
     
     if (function)
     {

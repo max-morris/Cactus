@@ -10,5 +10,5 @@
 
 int ProcessParameterDatabase(tFleshConfig *ConfigData);
 
-int CCTK_InitialiseParameters(tFleshConfig *ConfigData);
+int CCTKi_InitialiseParameters(tFleshConfig *ConfigData);
 

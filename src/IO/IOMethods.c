@@ -47,8 +47,8 @@ static int DummyTimeToOutput(cGH *GH, int var);
    @desc 
                Registers a new IO method.
    @enddesc 
-   @calls      CCTK_GetHandle
-               CCTK_NewHandle
+   @calls      Util_GetHandle
+               Util_NewHandle
    @history 
    @endhistory
  
@@ -76,7 +76,7 @@ int CCTK_RegisterIOMethod(const char *name)
   struct IOMethod *new_method;
 
   /* Check that the method hasn't already been registered */
-  handle = CCTK_GetHandle(IOMethods, name, NULL);
+  handle = Util_GetHandle(IOMethods, name, NULL);
 
   if(handle < 0)
   {
@@ -86,7 +86,7 @@ int CCTK_RegisterIOMethod(const char *name)
     if(new_method)
     {
       /* Get a handle for it. */
-      handle = CCTK_NewHandle(&IOMethods, name, new_method);
+      handle = Util_NewHandle(&IOMethods, name, new_method);
 
       /* Initialise the IO method structure with dummy routines */
       new_method->OutputGH      = DummyOutputGH;
@@ -120,7 +120,7 @@ int CCTK_RegisterIOMethod(const char *name)
    @desc 
                Registers a function to register a routine for OutputGH.
    @enddesc 
-   @calls      CCTK_GetHandledData
+   @calls      Util_GetHandledData
    @calledby   
    @history 
    @endhistory 
@@ -155,7 +155,7 @@ int CCTK_RegisterIOMethodOutputGH(int handle, int (*func)(cGH *))
   struct IOMethod *method;
 
   /* Get the method. */
-  method = CCTK_GetHandledData(IOMethods, handle);
+  method = Util_GetHandledData(IOMethods, handle);
 
   if(method)
   {
@@ -178,7 +178,7 @@ int CCTK_RegisterIOMethodOutputGH(int handle, int (*func)(cGH *))
    @desc 
                Registers a function to register a routine for OutputVarAs
    @enddesc 
-   @calls      CCTK_GetHandledData
+   @calls      Util_GetHandledData
    @calledby   
    @history 
    @endhistory 
@@ -214,7 +214,7 @@ int CCTK_RegisterIOMethodOutputVarAs(int handle, int (*func)(cGH *,
   struct IOMethod *method;
 
   /* Get the extension. */
-  method = CCTK_GetHandledData(IOMethods, handle);
+  method = Util_GetHandledData(IOMethods, handle);
 
   if(method)
   {
@@ -235,7 +235,7 @@ int CCTK_RegisterIOMethodTriggerOutput(int handle, int (*func)(cGH *, int))
   struct IOMethod *method;
 
   /* Get the extension. */
-  method = CCTK_GetHandledData(IOMethods, handle);
+  method = Util_GetHandledData(IOMethods, handle);
 
   if(method)
   {
@@ -257,7 +257,7 @@ int CCTK_RegisterIOMethodTriggerOutput(int handle, int (*func)(cGH *, int))
    @desc 
                Registers a function to register a routine for TimeToOutput
    @enddesc 
-   @calls      CCTK_GetHandledData
+   @calls      Util_GetHandledData
    @calledby   
    @history 
    @endhistory 
@@ -292,7 +292,7 @@ int CCTK_RegisterIOMethodTimeToOutput(int handle, int (*func)(cGH *, int))
   struct IOMethod *method;
 
   /* Get the extension. */
-  method = CCTK_GetHandledData(IOMethods, handle);
+  method = Util_GetHandledData(IOMethods, handle);
 
   if(method)
   {
@@ -409,7 +409,7 @@ int CactusDefaultOutputGH(cGH *GH)
 
   for (handle = 0;;handle++)
   {
-    method = (struct IOMethod *)CCTK_GetHandledData(IOMethods, handle);
+    method = (struct IOMethod *)Util_GetHandledData(IOMethods, handle);
     if (method)
     {
 
@@ -484,7 +484,7 @@ int CactusDefaultOutputVarAsByMethod(cGH *GH,
 {
   struct IOMethod *method = NULL;
 
-  CCTK_GetHandle (IOMethods, methodname, (void **) &method);
+  Util_GetHandle (IOMethods, methodname, (void **) &method);
   if (! method)
   {
     return -1;
@@ -523,7 +523,7 @@ void FMODIFIER FORTRAN_NAME (CCTK_OutputVarAsByMethod)
                Loops over all methods for a given variable,
                calling each methods OutputVarAs routine
    @enddesc 
-   @calls      CCTK_GetHandledData
+   @calls      Util_GetHandledData
                IOMethod->OutputVarAs
    @history 
    @endhistory 
@@ -567,7 +567,7 @@ int CCTK_OutputVarAs(cGH *GH, const char *var, const char *alias)
   
   for (handle = 0;;handle++)
   {
-    method = (struct IOMethod *)CCTK_GetHandledData(IOMethods, handle);
+    method = (struct IOMethod *)Util_GetHandledData(IOMethods, handle);
     if (method)
     {
       method->OutputVarAs(GH, var, alias);
@@ -685,7 +685,7 @@ int CCTK_OutputVarByMethod(cGH *GH, const char *var, const char *method)
                Checks if a trigger registered for a routine is
                due for output by any IO method.
    @enddesc 
-   @calls      CCTK_GetHandledData
+   @calls      Util_GetHandledData
                IOMethod->TimeToOutput
    @history  
    @endhistory 
@@ -722,7 +722,7 @@ int CCTKi_rfrTriggerSaysGo(cGH *GH, int variable)
   /* Loop over all registered IO methods */
   for (handle = 0;;handle++)
   {
-    method = (struct IOMethod *)CCTK_GetHandledData(IOMethods, handle);
+    method = (struct IOMethod *)Util_GetHandledData(IOMethods, handle);
     if (method)
     {
       /* Check if it is time to output this variable for this method*/
@@ -749,7 +749,7 @@ int CCTKi_rfrTriggerSaysGo(cGH *GH, int variable)
                but now calls each IO method for which it is 
                time to output the trigger
    @enddesc 
-   @calls      CCTK_GetHandledData
+   @calls      Util_GetHandledData
                CCTK_FullName
 	       CCTK_VarName
                IOMethod->TimeToOutput
@@ -800,7 +800,7 @@ int CCTKi_rfrTriggerAction(void *GH, int variable)
   /* Loop over all registered IO methods */
   for (handle = 0;;handle++)
   {
-    method = (struct IOMethod *)CCTK_GetHandledData(IOMethods, handle);
+    method = (struct IOMethod *)Util_GetHandledData(IOMethods, handle);
     if (method)
     {
 
