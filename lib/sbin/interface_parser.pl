@@ -240,7 +240,7 @@ sub get_implementation_ancestors
   else
   {
     %ancestors = ();
-    %system_database = [0..2*$n_system-1];
+    %system_database = @indata[0..2*$n_system-1];
     %interface_data = @indata[2*$n_system..$#indata];
   }
 
