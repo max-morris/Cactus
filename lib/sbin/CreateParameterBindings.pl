@@ -195,9 +195,14 @@ sub CreateParameterBindings
   $dataout .= "\#include \"cctk_Misc.h\"\n";
   $dataout .= "\#include \"cctk_WarnLevel.h\"\n";
 
-  foreach $routine ((keys %routines), "CCTK_BindingsParametersGlobal")
+  foreach $thorn (split(" ",$rhinterface_db->{"THORNS"}))
   {
-    $dataout .= "int $routine"."Initialise(void);\n";
+    $dataout .= "extern int CCTKi_BindingsCreate$thorn"."Parameters(void);\n\n";
+  }
+
+  foreach $thorn (split(" ",$rhinterface_db->{"THORNS"}))
+  {
+    $dataout .= "extern int CCTKi_Bindings$thorn"."ParameterExtensions(void);\n\n";
   }
 
   $dataout .= "int CCTKi_BindingsParametersInitialise(void)\n";

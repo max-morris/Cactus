@@ -120,7 +120,7 @@ sub CreateVariableBindings
 
 #    open(OUT, ">$thorn.c") || die "Cannot create $thorn.c";
   
-    $dataout .= "\#include \"cctk_Groups.h\"\n";
+    $dataout .= "\#include \"cctki_Groups.h\"\n";
     $dataout .= "\#include \"cctk_FortranWrappers.h\"\n";
 #    print OUT "#include \"cctk_Flesh.h\"\n";
 #    print OUT "#include \"StoreVariableData.h\"\n\n";
