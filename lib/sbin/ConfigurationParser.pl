@@ -84,29 +84,6 @@ sub CreateConfigurationDatabase
 
 
 #/*@@
-#  @routine    VerifyConfigurationDatabase
-#  @date       Wed 3 Sep 2003
-#  @author     Thomas Radke
-#  @desc
-#              Verifies that all 'REQUIRES THORNS' requirements are satisfied
-#  @enddesc
-#@@*/
-sub VerifyConfigurationDatabase
-{
-#  my(%thorns) = @_;
-  my(%cfg) = @_;
-  my($key);
-
-
-  # Loop through each thorn's configuration file.
-  foreach $key (keys %cfg)
-  {
-    print "got key '$key'\n";
-  }
-}
-
-
-#/*@@
 #  @routine    ParseConfigurationCCL
 #  @date       Tue Feb  8 19:23:18 2000
 #  @author     Tom Goodale
