@@ -915,6 +915,9 @@ int CCTK_SchedulePrint(const char *where)
 {
   if(!where)
   {
+    printf ("  if (recover)\n");
+    printf ("    Recover parameters\n");
+    printf ("  endif\n\n");
     printf ("  Startup routines\n");
     SchedulePrint("CCTK_STARTUP");
     printf("\n");
@@ -931,6 +934,16 @@ int CCTK_SchedulePrint(const char *where)
     SchedulePrint("CCTK_POSTINITIAL$ENTRY");
     SchedulePrint("CCTK_POSTINITIAL");
     SchedulePrint("CCTK_POSTINITIAL$EXIT");
+    printf ("    if (recover)\n");
+    indent_level +=2;
+    SchedulePrint("CCTK_RECOVER_VARIABLES");
+    indent_level -=2;
+    printf ("    endif\n");
+    printf ("    if (checkpoint initial data)\n");
+    indent_level +=2;
+    SchedulePrint("CCTK_CPINITIAL");
+    indent_level -=2;
+    printf ("    endif\n");
     SchedulePrint("CCTK_POSTSTEP$ENTRY");
     SchedulePrint("CCTK_POSTSTEP");
     SchedulePrint("CCTK_POSTSTEP$EXIT");
@@ -955,6 +968,11 @@ int CCTK_SchedulePrint(const char *where)
     SchedulePrint("CCTK_POSTSTEP$ENTRY");
     SchedulePrint("CCTK_POSTSTEP");
     SchedulePrint("CCTK_POSTSTEP$EXIT");
+    printf ("    if (checkpoint)\n");
+    indent_level +=2;
+    SchedulePrint("CCTK_CHECKPOINT");
+    indent_level -=2;
+    printf ("    endif\n");
     printf ("    if (analysis)\n");
     indent_level +=2;
     SchedulePrint("CCTK_ANALYSIS$ENTRY");
@@ -1018,6 +1036,10 @@ int CCTK_SchedulePrintTimes(const char *where)
 
   if(!where)
   {
+    SchedulePrintTimes("CCTK_RECOVER_VARIABLES", &data);
+    printf("\n");
+    SchedulePrintTimes("CCTK_CHECKPOINT", &data);
+    printf("\n");
     SchedulePrintTimes("CCTK_STARTUP", &data);
     printf("\n");
     SchedulePrintTimes("CCTK_PARAMCHECK", &data);
@@ -1031,9 +1053,6 @@ int CCTK_SchedulePrintTimes(const char *where)
     SchedulePrintTimes("CCTK_POSTINITIAL$ENTRY", &data);
     SchedulePrintTimes("CCTK_POSTINITIAL", &data);
     SchedulePrintTimes("CCTK_POSTINITIAL$EXIT", &data);
-    SchedulePrintTimes("CCTK_POSTSTEP$ENTRY", &data);
-    SchedulePrintTimes("CCTK_POSTSTEP", &data);
-    SchedulePrintTimes("CCTK_POSTSTEP$EXIT", &data);
     printf("\n");
     SchedulePrintTimes("CCTK_PRESTEP$ENTRY", &data);
     SchedulePrintTimes("CCTK_PRESTEP", &data);
@@ -1041,6 +1060,9 @@ int CCTK_SchedulePrintTimes(const char *where)
     SchedulePrintTimes("CCTK_EVOL$ENTRY", &data);
     SchedulePrintTimes("CCTK_EVOL", &data);
     SchedulePrintTimes("CCTK_EVOL$EXIT", &data);
+    SchedulePrintTimes("CCTK_POSTSTEP$ENTRY", &data);
+    SchedulePrintTimes("CCTK_POSTSTEP", &data);
+    SchedulePrintTimes("CCTK_POSTSTEP$EXIT", &data);
     printf("\n");
     SchedulePrintTimes("CCTK_ANALYSIS$ENTRY", &data);    
     SchedulePrintTimes("CCTK_ANALYSIS", &data);    
