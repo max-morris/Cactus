@@ -79,10 +79,8 @@ void *CCTK_VarDataPtr(cGH *GH, int timelevel, char *varn)
      CCTK_Warn(1,__LINE__,__FILE__,"Cactus","Invalid index in CCTK_VarDataPtr");
 
 #ifdef DEBUG_GROUPS
-  CCTK_PRINTSEPARATOR
   printf("In CCTK_VarDataPtr\n----------------------------\n");
   printf("  Data pointer for %s (%d) is %x\n",varn,index,retval);
-  CCTK_PRINTSEPARATOR
 #endif
 
   return retval;
@@ -219,8 +217,8 @@ int CCTK_EnableGroupCommI(void *GH, int group)
   group_name = CCTK_GroupName(group);
   if(group_name)
   {
-#ifdef DEBUG
-    printf("Turning on comm in %s for group %s (%d)\n",__FILE__group_name,group);
+#ifdef DEBUG_GROUPS
+    printf("Turning on comm in %s for group %s (%d)\n",__FILE__,group_name,group);
 #endif
     retcode = CCTK_EnableGroupComm(GH, group_name);
 
@@ -256,8 +254,8 @@ int CCTK_EnableGroupStorageI(void *GH, int group)
   group_name = CCTK_GroupName(group);
   if(group_name)
   {
-#ifdef DEBUG
-    printf("Turning on storage in %s for group %s (%d)\n",__FILE__group_name,group);
+#ifdef DEBUG_GROUPS
+    printf("Turning on storage in %s for group %s (%d)\n",__FILE__,group_name,group);
 #endif
     retcode = CCTK_EnableGroupStorage(GH, group_name);
 
@@ -293,7 +291,7 @@ int CCTK_DisableGroupCommI(void *GH, int group)
   group_name = CCTK_GroupName(group);
   if(group_name)
   {
-#ifdef DEBUG
+#ifdef DEBUG_GROUPS
     printf("Turning off comm in %s for group %s (%d)\n",__FILE__,group_name,group);
 #endif
     retcode = CCTK_DisableGroupComm(GH, group_name);
@@ -330,7 +328,7 @@ int CCTK_DisableGroupStorageI(void *GH, int group)
   group_name = CCTK_GroupName(group);
   if(group_name)
   {
-#ifdef DEBUG
+#ifdef DEBUG_GROUPS
     printf("Turning off storage in %s for group %s (%d)\n",__FILE__,group_name,group);
 #endif
     retcode = CCTK_DisableGroupStorage(GH, group_name);
