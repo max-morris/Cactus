@@ -58,7 +58,7 @@
 #define CCTK_DELTA_SPACE(x) cctk_delta_space(x)/cctk_levfac(x)
 #define CCTK_DELTA_TIME cctk_delta_time
 
-#define CCTK_DECLARE_FUNCTIONS integer CCTK_Equals, CCTK_MyProc, CCTK_nProcs
+#define DECLARE_CCTK_FUNCTIONS integer CCTK_Equals, CCTK_MyProc, CCTK_nProcs
 
 #endif /*FCODE*/
 
