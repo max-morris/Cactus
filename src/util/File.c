@@ -90,7 +90,6 @@ int CCTK_mkdir(const char *dir)
 
 void FMODIFIER FORTRAN_NAME(CCTK_mkdir)(int *ierr, ONE_FORTSTRING_ARG)
 {
-  int retval;
   ONE_FORTSTRING_CREATE(arg1)
   *ierr = CCTK_mkdir(arg1);
   free(arg1); 

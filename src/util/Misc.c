@@ -75,6 +75,10 @@ int Util_SplitString(char **before, char **after, const char *string, const char
       *after = NULL;
       retval = 2;
     }
+    else
+    {
+      retval = 3;
+    }
   }
   else
   {
@@ -404,7 +408,10 @@ int Util_DoubleInRange(double inval, const char *range)
   int matched;
   regmatch_t pmatch[6];
   int start_closed, end_closed;
-  double start, end, step;
+  double start, end;
+#if 0
+  double step;
+#endif
 
   retval = 0;
 
@@ -746,8 +753,6 @@ int CCTK_SetKeywordInRangeList(char **data, const char *value,
 
   char *element;
 
-  int inval;
-
   retval = 1;
 
   /* Walk through the element list. */
@@ -803,8 +808,6 @@ int CCTK_SetStringInRegexList(char **data, const char *value,
   va_list ap;
 
   char *element;
-
-  int inval;
 
   retval = 1;
 
