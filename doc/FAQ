@@ -1,7 +1,7 @@
 
 Cactus Code Frequently Asked Questions
 
-$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.51 2002-11-04 18:31:34 allen Exp $
+$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.52 2003-01-27 13:20:59 allen Exp $
 
 Also available at http://www.cactuscode.org/Documentation/FAQ
 
@@ -241,6 +241,13 @@ Documentation:
 
 G1  How can I build the ThornGuide documentation for single thorns or 
     arrangements?
+
+
+------------------------------------------------------------------------------
+I/O:
+
+H1  I want to run an old parameter file, but none of the I/O parameters are
+    recognised!
 
 
 
@@ -1197,3 +1204,24 @@ G1  How can I build the ThornGuide documentation for single thorns or
     gmake ThornGuide THORNS="CactusBase/Boundary"
 
     gmake ThornGuide ARRANGEMENTS="CactusBase"   
+
+
+------------------------------------------------------------------------------
+I/O:
+
+H1  I want to run an old parameter file, but none of the I/O parameters are
+    recognised!
+
+    In Beta 13 the "old" I/O parameter names were finally fully removed in 
+    favour of "new" more consister parameter names across the I/O thorns in 
+    the computational toolkit. A complete list of I/O parameters which 
+    changed is contained in the following mail:
+
+    http://www.cactuscode.org/archives_html/users/msg00278.html
+
+    Note that there is a perl script for which can automatically update
+    parameter files for these changes.
+
+    http://www.cactuscode.org/Development/Release/FixParametersForBETA13.pl
+
+
