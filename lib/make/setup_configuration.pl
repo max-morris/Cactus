@@ -62,44 +62,46 @@ if (! -d "$config" && ! -l "$config")
 {
   print "Creating new configuration $config.\n";
 
-  mkdir("$config",0755) || die "Internal error - could't create $configs_dir/$config";
+  for $dir ("$config", "$config/build", "$config/lib", "$config/config-data")
+  {
+    mkdir("$dir",0755) || die "Internal error - could't create $dir";
+  }
 
-  chdir "$config" || die "Internal error - could't enter $configs_dir/$config";
-
-  mkdir("build",0755);
-  mkdir("lib",0755);
-  mkdir("config-data",0755);
-
-  chdir "config-data" || die "Internal error - could't enter $configs_dir/$config/config-data";
-
-  &SetConfigureEnv();
-
-  system("$configure");
-
-  $retcode = $? >> 8;
-
-  chdir "..";
-  chdir "..";
 }
-
-# Rerun the configure script
-if($reconfig)
+else
 {
   print "Reconfiguring $config.\n";
-
-  chdir "$config" || die "Internal error - could't enter $configs_dir/$config";
-
-  chdir "config-data" || die "Internal error - couldn't enter $configs_dir/$config/config-data";
-
-  &SetConfigureEnv();
-
-  system("$configure");
-
-  $retcode = $? >> 8;
-
-  chdir "..";
-  chdir "..";
+  $reconfiguring = 1;
 }
+
+
+chdir "$config" || die "Internal error - could't enter $configs_dir/$config";
+
+open(INFO, ">config-info") || die "Internal error - couldn't create $configs_dir/$config/config-info";
+
+print INFO "CONFIG        : $config\n";
+print INFO "CONFIG-FLAGS  : " . $ENV{"MAKEFLAGS"} . "\n";
+print INFO "CONFIG-DATE   : " . gmtime(time()) . "\n"; 
+
+$host = `hostname`;
+
+chop $host;
+
+print INFO "CONFIG-HOST   : " . $host . "\n";
+
+chdir "config-data" || die "Internal error - could't enter $configs_dir/$config/config-data";
+
+&SetConfigureEnv();
+
+system("$configure");
+
+$retcode = $? >> 8;
+
+chdir "..";
+
+print INFO "CONFIG-STATUS : $retcode\n";
+
+close(INFO);
 
 exit $retcode;
 
@@ -165,3 +167,5 @@ sub SetConfigureEnv
   }
 
 }
+
+sub ConfigureConfiguration
