@@ -1,0 +1,25 @@
+#! /bin/sh
+# /*@@
+#   @file      CUSTOM
+#   @date      Wed Jul 21 13:27:07 1999
+#   @author    Tom Goodale
+#   @desc 
+#   
+#   @enddesc
+#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/extras/MPI/HPVM,v 1.1 2000-12-12 17:52:56 goodale Exp $ 
+# @@*/
+
+
+# Allow the user to completely specify at the command line,
+echo "HPVM MPI selected"
+
+if test -z "$HPVM_DIR" ; then
+   echo "HPVM selected but no HPVM_DIR set.  Unable to proceed."
+   exit 2
+fi
+
+MPI_LIBS="mpi fm advapi kernel32 wsock32"
+MPI_LIB_DIRS="`echo $HPVM_DIR\\\lib | sed 's:\\\:\\\\\\\\:g'`"
+MPI_INC_DIRS="`echo $HPVM_DIR\\\include | sed 's:\\\:\\\\\\\\:g'`"
+
+
