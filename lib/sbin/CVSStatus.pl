@@ -11,33 +11,37 @@
 
 &writeheader();
 
+$full = 0;
+
 open (CS, "cvs status 2>&1 |");
 $gotone = 0;
 
 while (<CS>) {
-    if (m/waiting for/) {
-	print;
-    }
-    if (m/Examining/) {
+
+    if (m/============/ || m/Examining/) {
 	if ($gotone) {
-	  $dir =~ m:^\s*(/\w*/\w*):;
-	  $dir = $1;
-	  if ($dir ne $dir_old) {
-	    print "\n$dir\n";$dir_old=$dir;
-	  }
-	  write;
+	  $module =~ m:^\s*(/\w*/\w*):;
+	  $module = $1;
+          if ($module ne $module_old) {
+            print "\nRepository: $module\n";$module_old=$module;
+          }        
 	  # Get differences between versions
           if ($case =~ /diff/i)
 	  {
-	    print "\n\ncvs diff -r $rversion $thisdir/$file\n\n";
-	    open (DIFF, "cvs diff -r $rversion $thisdir/$file |");
+	    print "\n\n*******************************************************************\n\ncvs diff -r $rversion $dir/$file\n\n";
+	    write;
+	    print "\n\n";
+	    open (DIFF, "cvs diff -r $rversion $dir/$file |");
 	    while (<DIFF>) {print;}
+	  }
+	  else
+	  {
+	    write;
 	  }
 	}
 	$gotone = 0;
-	$thisdir="";
+	$module="";
 	$file = ""; 
-	$dir = ""; 
 	$status = ""; 
 	$version=""; 
 	$rversion="";
@@ -49,12 +53,12 @@ while (<CS>) {
 	    $gotone = 1;
 	}
     }
-    if (m/Examining\s*(\S+)\s*$/) {$thisdir = $1;}
+    if (m/Examining\s*(\S+)\s*$/) {$dir = $1;}
     if (m/Working revision:\s*(\S+)\s/) {$version = $1;}
     if (m/Repository revision:\s*(\S+)\s+(\S+)/) {
-	$rversion = $1; $dir = $2;
+	$rversion = $1; $module = $2;
     }
-    
+
 }
 exit;
 
@@ -66,8 +70,10 @@ $file, $status, $version, $rversion
 
 sub writeheader
 {
-local ($case);
-if ($case =~ "diff")
+my ($case) = @_;
+
+print "$case\n";
+if ($case =~ /diff/)
 {
 print <<EOF;
 
@@ -75,6 +81,7 @@ CVS Diff report
 
 File                                         Status          Local/Remote ver
 -------------------------------------------------------------------------------
+EOF
 }
 else
 {
