@@ -66,6 +66,35 @@ sub CreateVariableBindings
   push(@data, '#endif');
   push(@data, 'void *CCTKi_VarDataPtr(const cGH *GH, int timelevel,');
   push(@data, '                       const char *implementation, const char *varname);');
+  push(@data, '');
+
+  push(@data, '#define PASS_GROUPSIZE(group, dir)  CCTKGROUPNUM_##group >= 0 ? \\');
+  push(@data, '                                    CCTK_ArrayGroupSizeI(GH, dir, CCTKGROUPNUM_##group) : &_cctk_zero');
+  push(@data, '');
+  push(@data, '#define PASS_GROUPLEN(thorn, group) CCTKGROUPNUM_##group >= 0 ? \\');
+  push(@data, '                                    CCTKi_GroupLengthAsPointer(#thorn "::" #group) : &_cctk_zero');
+  push(@data, '');
+  push(@data, '/*');
+  push(@data, ' * References to non-existing or non-allocated variables should be passed');
+  push(@data, ' * as NULL pointers in order to catch any invalid access immediately');
+  push(@data, ' * However, this runtime debugging feature may cause problems');
+  push(@data, ' * with some fortran compilers which require all fortran routine arguments');
+  push(@data, ' * to refer to a valid memory location (eg. to enable the code optimizer');
+  push(@data, ' * to generate conditional load/store instructions if applicable).');
+  push(@data, ' * For this reason, we pass NULL pointers only for debugging configurations,');
+  push(@data, ' * and a pointer to a user-accessable memory location (a local dummy variable)');
+  push(@data, ' * otherwise.');
+  push(@data, ' */');
+  push(@data, '#ifdef CCTK_DEBUG');
+  push(@data, '#define PASS_REFERENCE(var, level)  CCTKARGNUM_##var >= 0 ? \\');
+  push(@data, '                                    GH->data[CCTKARGNUM_##var][level] : 0');
+  push(@data, '#else');
+  push(@data, '#define PASS_REFERENCE(var, level)  CCTKARGNUM_##var >= 0 && \\');
+  push(@data, '                                    GH->data[CCTKARGNUM_##var][level] ? \\');
+  push(@data, '                                    GH->data[CCTKARGNUM_##var][level] : _cctk_dummy_var');
+  push(@data, '#endif');
+  push(@data, '');
+
   push(@data, '#define CCTK_ARGUMENTS CCTK_CARGUMENTS');
   push(@data, '#define _CCTK_ARGUMENTS _CCTK_CARGUMENTS');
   push(@data, '#define DECLARE_CCTK_ARGUMENTS DECLARE_CCTK_CARGUMENTS USE_CCTK_CARGUMENTS');
@@ -172,10 +201,16 @@ sub CreateVariableBindings
     push(@data, '{');
     push(@data, '  cGH *GH = _GH;');
     push(@data, '  const int _cctk_zero = 0;');
+    push(@data, '#ifndef CCTK_DEBUG');
+    push(@data, '  CCTK_COMPLEX _cctk_dummy_var[4];');
+    push(@data, '#endif');
     push(@data, "  void (*function)(\U$thorn\E_C2F_PROTO);");
     push(@data, "  DECLARE_\U$thorn\E_C2F");
     push(@data, "  INITIALISE_\U$thorn\E_C2F");
     push(@data, '  (void) (_cctk_zero + 0);');
+    push(@data, '#ifndef CCTK_DEBUG');
+    push(@data, '  (void) (_cctk_dummy_var + 0);');
+    push(@data, '#endif');
     push(@data, '');
     push(@data, "  function = (void (*) (\U$thorn\E_C2F_PROTO)) fpointer;");
     push(@data, "  function (PASS_\U$thorn\E_C2F (GH));");
@@ -744,11 +779,11 @@ sub CreateCArgumentList
   {
     if($arguments{$argument} =~ m/STORAGESIZE\([^,]*::([^,]*),\s*(\d+)/)
     {
-      push(@arglist, "CCTKGROUPNUM_$1 >= 0 ? CCTK_ArrayGroupSizeI(GH, $2, CCTKGROUPNUM_$1) : &_cctk_zero");
+      push(@arglist, "PASS_GROUPSIZE($1, $2)");
     }
     elsif($arguments{$argument} =~ m/GROUPLENGTH\(([^:]*)::([^)]*)\)/)
     {
-      push(@arglist, "CCTKGROUPNUM_$2 >= 0 ? CCTKi_GroupLengthAsPointer(\"$1::$2\") : &_cctk_zero");
+      push(@arglist, "PASS_GROUPLEN($1, $2)");
     }
   }
 
@@ -766,7 +801,7 @@ sub CreateCArgumentList
 
     for($level = 0; $level < $ntimelevels; $level++)
     {
-      push(@arglist, "CCTKGROUPNUM_$group >= 0 ? GH->data[CCTKARGNUM_$argument][$level] : 0");
+      push(@arglist, "PASS_REFERENCE($argument, $level)");
     }
 
     if($type =~ /^(CHAR|BYTE|INT|INT2|INT4|INT8|REAL|REAL4|REAL8|REAL16|COMPLEX|COMPLEX8|COMPLEX16|COMPLEX32)$/)
