@@ -962,15 +962,15 @@ will be used if the coordinate direction is given as less than or equal to zero,
 The coordinate name is independent of the grid function name. 
 The coordinate range is registered by {\t CCTK\_CoordRegisterRange}.
 To find the range, the coordinate system name must be given, and either
-the coordinate direction or the coordinate name. The coordinate name 
-will be used if the coordinate direction is given as -1, otherwise the
-coordinate name will be used.
+the coordinate direction or the coordinate name. The coordinate direction
+will be used if is given as a positive value, otherwise the coordinate
+name will be used.
 \end{discussion}
 \begin{examples}
 \begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t ierr = CCTK\_CoordRange(cctkGH,*xmin,*xmax,-1,"xdir","mysystem") };
+\hfill {\bf C} && {\t ierr = CCTK\_CoordRange(cctkGH, \&xmin, \&xmax, -1, "xdir", "mysystem");}
 \\
-\hfill {\bf Fortran} && {\t call CCTK\_COORDRANGE(ierr,cctkGH,Rmin,Rmax,-1,"radius","sphersystem")}
+\hfill {\bf Fortran} && {\t call CCTK\_COORDRANGE(ierr, cctkGH, Rmin, Rmax, -1, "radius", "sphersystem")}
 \\
 \end{tabular}
 \end{examples}
