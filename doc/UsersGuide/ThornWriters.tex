@@ -797,7 +797,8 @@ bytes the type takes).
 
 \begin{Lentry}
 \item[INTEGER]
-CCTK\_INT, CCTK\_INT2, CCTK\_INT4, CCTK\_INT8.  (CCTK\_INT defaults to being CCTK\_INT4).
+CCTK\_INT, CCTK\_INT1, CCTK\_INT2, CCTK\_INT4, CCTK\_INT8.
+(CCTK\_INT defaults to being CCTK\_INT4).
 \item[REAL]
 CCTK\_REAL, CCTK\_REAL4, CCTK\_REAL8, CCTK\_REAL16.  (CCTK\_REAL defaults to being CCTK\_REAL8).
 \item[COMPLEX]
@@ -3975,6 +3976,7 @@ Cactus supports the following fixed size data types:
 \hline
 Data Type & Size (bytes) & Variable Type & Fortran Equivalent\\
 \hline
+{\t CCTK\_INT1}      & 2  & {\t CCTK\_VARIABLE\_INT1}      & {\t integer*1}\\
 {\t CCTK\_INT2}      & 2  & {\t CCTK\_VARIABLE\_INT2}      & {\t integer*2}\\
 {\t CCTK\_INT4}      & 4  & {\t CCTK\_VARIABLE\_INT4}      & {\t integer*4}\\
 {\t CCTK\_INT8}      & 8  & {\t CCTK\_VARIABLE\_INT8}      & {\t integer*8}\\
@@ -4041,6 +4043,7 @@ data size is being used:
 \hline
 Data Type & {\t \#define}\\
 \hline
+{\t CCTK\_INT1}      & {\t CCTK\_INT\_PRECISION\_1}      \\
 {\t CCTK\_INT2}      & {\t CCTK\_INT\_PRECISION\_2}      \\
 {\t CCTK\_INT4}      & {\t CCTK\_INT\_PRECISION\_4}      \\
 {\t CCTK\_INT8}      & {\t CCTK\_INT\_PRECISION\_8}      \\
