@@ -57,7 +57,7 @@
                            INTEGER cctk_convfac&&\
                            INTEGER cctk_nghostzones(cctk_dim)&&\
                            INTEGER cctk_iteration&&\
-                           CCTK_POINTER cctkGH&&\
+                           CCTK_POINTER cctkGH&&
 
 #define CCTK_WARN(a,b) CCTK_Warn(a,__LINE__,__FORTRANFILE__,CCTK_THORNSTRING,b)
 
