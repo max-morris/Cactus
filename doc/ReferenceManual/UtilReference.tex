@@ -1626,6 +1626,10 @@ integer        N_elements, handle
 CCTK_XXX       value
 character*(*)  key
 \end{verbatim}
+where \code{CCTK\_XXX} may be any data type supported by C (above)
+except \code{CCTK\_CHAR} (Fortran doesn't have a separate ``character''
+data type; use \code{CCTK\_BYTE} instead, or \verb|Util_TableGetString()|
+for a characer string)
 \end{Synopsis}
 \end{SynopsisSection}
 
@@ -1677,7 +1681,7 @@ in it based on a parameter-file--like character string
 \begin{SeeAlso}{Util\_TableGet*Array()}
 get an array value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGet*String()}
+\begin{SeeAlso}{Util\_TableGetString()}
 get a character-string value
 \end{SeeAlso}
 \begin{SeeAlso}{Util\_TableSet*()}
@@ -1847,7 +1851,7 @@ get a single (1-element array) value with generic data type
 \begin{SeeAlso}{Util\_TableGetGenericArray()}
 get an array value with generic data type
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGet*String()}
+\begin{SeeAlso}{Util\_TableGetString()}
 get a character-string value
 \end{SeeAlso}
 \begin{SeeAlso}{Util\_TableSet*()}
@@ -1999,7 +2003,7 @@ get a single (1-element array) value
 \begin{SeeAlso}{Util\_TableGet*Array()}
 get an array value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGet*String()}
+\begin{SeeAlso}{Util\_TableGetString()}
 get a character-string value
 \end{SeeAlso}
 \begin{SeeAlso}{Util\_TableItQueryValueInfo()}
@@ -2176,7 +2180,7 @@ get a single (1-element array) value with generic data type
 \begin{SeeAlso}{Util\_TableGetGenericArray()}
 get an array value with generic data type
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGet*String()}
+\begin{SeeAlso}{Util\_TableGetString()}
 get a character-string value
 \end{SeeAlso}
 \begin{SeeAlso}{Util\_TableItQueryValueInfo()}
@@ -3624,7 +3628,7 @@ where \code{XXX} is one of
 	 This is deprecated as of Cactus 4.0 beta 13.
 	 }%%%
 ,
-   \code{CHAR},
+   \code{CHAR}, \code{BYTE},
    \code{INT}, \code{INT1}, \code{INT2}, \code{INT4}, \code{INT8},
    \code{REAL}, \code{REAL4}, \code{REAL8}, \code{REAL16},
    \code{COMPLEX}, \code{COMPLEX8}, \code{COMPLEX16}, \code{COMPLEX32}
@@ -3637,6 +3641,10 @@ integer        status, handle
 CCTK_XXX       value
 character*(*)  key
 \end{verbatim}
+where \code{CCTK\_XXX} may be any data type supported by C (above)
+except \code{CCTK\_CHAR} (Fortran doesn't have a separate ``character''
+data type; use \code{CCTK\_BYTE} instead, or \verb|Util_TableSetString()|
+for a characer string)
 \end{Synopsis}
 \end{SynopsisSection}
 
@@ -3692,7 +3700,7 @@ get a single (1-element array) value with generic data type
 \begin{SeeAlso}{Util\_TableGetGenericArray()}
 get an array value with generic data type
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGet*String()}
+\begin{SeeAlso}{Util\_TableGetString()}
 get a character-string value
 \end{SeeAlso}
 \begin{SeeAlso}{Util\_TableSet*Array()}
@@ -3843,7 +3851,7 @@ get a single (1-element array) value with generic data type
 \begin{SeeAlso}{Util\_TableGetGenericArray()}
 get an array value with generic data type
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGet*String()}
+\begin{SeeAlso}{Util\_TableGetString()}
 get a character-string value
 \end{SeeAlso}
 \begin{SeeAlso}{Util\_TableSet*()}
@@ -4009,7 +4017,7 @@ get a single (1-element array) value with generic data type
 \begin{SeeAlso}{Util\_TableGetGenericArray()}
 get an array value with generic data type
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGet*String()}
+\begin{SeeAlso}{Util\_TableGetString()}
 get a character-string value
 \end{SeeAlso}
 \begin{SeeAlso}{Util\_TableSet*()}
@@ -4164,7 +4172,7 @@ get a single (1-element array) value with generic data type
 \begin{SeeAlso}{Util\_TableGetGenericArray()}
 get an array value with generic data type
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGet*String()}
+\begin{SeeAlso}{Util\_TableGetString()}
 get a character-string value
 \end{SeeAlso}
 \begin{SeeAlso}{Util\_TableSet*()}
@@ -4322,7 +4330,7 @@ get a single (1-element array) value with generic data type
 \begin{SeeAlso}{Util\_TableGetGenericArray()}
 get an array value with generic data type
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGet*String()}
+\begin{SeeAlso}{Util\_TableGetString()}
 get a character-string value
 \end{SeeAlso}
 \begin{SeeAlso}{Util\_TableSet*()}
@@ -4477,7 +4485,7 @@ get a single (1-element array) value with generic data type
 \begin{SeeAlso}{Util\_TableGetGenericArray()}
 get an array value with generic data type
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGet*String()}
+\begin{SeeAlso}{Util\_TableGetString()}
 get a character-string value
 \end{SeeAlso}
 \begin{SeeAlso}{Util\_TableSetCharArray()}
