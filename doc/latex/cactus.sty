@@ -500,10 +500,21 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\makeatletter
+\def\BigAlph#1{\expandafter\@BigAlph\csname c@#1\endcsname}
+\def\@BigAlph#1{%
+  \ifcase#1\or A\or B\or C\or D\or E\or F\or G\or H\or I\or J\or
+  K\or L\or M\or N\or O\or P\or Q\or R\or S\or T\or U\or V\or W\or X\or
+  Y\or Z\or
+  a\or b\or c\or d\or e\or f\or g\or h\or i\or j\or
+  k\or l\or m\or n\or o\or p\or q\or r\or s\or t\or u\or v\or w\or x\or
+  y\or z\else\@ctrerr\fi}
+\makeatother
+
 \newenvironment{cactuspart}[4]
 {
   \clearpage
-  \renewcommand{\thepage}{\Alph{part}\arabic{page}}
+  \renewcommand{\thepage}{\BigAlph{part}\arabic{page}}
   % Redefine the plain style
   \fancypagestyle{plain}
   {
@@ -513,7 +524,7 @@
     \rfoot{\thepage/\pageref{lastpage:\thepart}}
     \renewcommand{\headrulewidth}{0.0pt}  
     \renewcommand{\footrulewidth}{0.4pt}  
-    \renewcommand{\thepage}{\Alph{part}\arabic{page}}
+    \renewcommand{\thepage}{\BigAlph{part}\arabic{page}}
   }
 
   % Make sure it's arabic numbering
@@ -521,7 +532,7 @@
   % Start the page counter at 1
   \setcounter{page}{1}
   % Start a new part
-  \renewcommand{\thepage}{\Alph{part}\arabic{page}}
+  \renewcommand{\thepage}{\BigAlph{part}\arabic{page}}
   \part{#2}
   \setcounter{part}{#1}
   % Redefine the page
@@ -538,7 +549,7 @@
   \clearpage
 }
 
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \endinput
 %% End of cactus.sty
