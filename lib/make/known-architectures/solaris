@@ -6,18 +6,19 @@
 #    @desc 
 #   
 #    @enddesc
-#    @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/solaris,v 1.6 2000-12-13 22:43:59 goodale Exp $
+#    @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/solaris,v 1.7 2001-11-02 23:30:15 tradke Exp $
 #  @@*/
 
 if test "$CCTK_CONFIG_STAGE" = "preferred-compilers" ; then
 
-:
+  : ${CC='cc'}
+  : ${CXX='CC'}
 
 else
 
   if test -n "$F90" ; then
     SOLARIS_F90_LIBDIR="`find /opt/SUNWspro/ -name libfsu.a | grep lib/libfsu.a | tail -1 | sed -e 's:/libfsu.a::'`"
-    SOLARIS_F90_LIBS="fsu fsumai fminvai fmaxvai fai sunmath"
+    SOLARIS_F90_LIBS="fsu fsumai fminvai fmaxvai fai sunmath mvec"
   fi
 
   : ${LIBS="socket nsl $SOLARIS_F90_LIBS m ucb"}
@@ -27,10 +28,14 @@ else
   : ${C_DEPEND='$(CPP) -M $(CPPFLAGS)'}
   : ${CXX_DEPEND='$(CPP) -M $(CPPFLAGS)'}
 
-  : ${C_OPTIMISE_FLAGS="-O3"}
-  : ${CXX_OPTIMISE_FLAGS="-O3"}
-  : ${F90_OPTIMISE_FLAGS="-fast"}
-  : ${F77_OPTIMISE_FLAGS="-fast"}
+  if test "$CC" = 'cc' ; then
+    : ${C_OPTIMISE_FLAGS='-xO5 -xtarget=native -fast'}
+  fi
+  if test "$CXX" = 'CC' ; then
+    : ${CXX_OPTIMISE_FLAGS='-xO5 -xtarget=native -fast'}
+  fi
+  : ${F90_OPTIMISE_FLAGS='-xO5 -xtarget=native -fast'}
+  : ${F77_OPTIMISE_FLAGS='-xO5 -xtarget=native -fast'}
 
 # MPI stuff
 
