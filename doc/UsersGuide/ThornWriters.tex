@@ -459,6 +459,7 @@ if(evolve_hydro)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Naming Conventions for Source Files}
+\label{nacofosofi}
 
 The make system uses file extensions
 to designate coding language. The following extensions are
@@ -797,13 +798,12 @@ The Cactus variables which are passed through the macros
       used for this grid hierarchy
 \item {\tt cctk\_lsh} An array of {\tt cctk\_dim} integers
       with the local grid size on this processor
-\item {\tt cctk\_delta\_time} A {\tt CCTK\_REAL} with the timestep
+\item {\tt cctk\_delta\_time} A {\tt CCTK\_REAL} with the timestep 
 \item {\tt cctk\_time} A {\tt CCTK\_REAL} with the current time
 \item {\tt cctk\_space} An array of {\tt cctk\_dim} {\tt CCTK\_REAL}s with
          the grid spacing in each direction
 \item {\tt cctk\_nghostzones} An array of {\tt cctk\_dim} integers with
          the number of ghostzones used in each direction
-\item {\tt cctk\_iteration} Integer with the current iteration number
 \item {\tt cctkGH} A C pointer identifying the grid hierachy
 \end{itemize}
 
@@ -830,7 +830,13 @@ The following variable is needed for grid refinement methods
 \item {\tt cctk\_levfac} The factor by which the local grid is refined
         with respect to the base grid.
 \end{itemize}
-
+The variables {\tt cctk\_delta\_space} and {\tt cctk\_delta\_time}
+denote the grid spacings on the {\em base} grid. If you are using 
+a grid refinement method, you need yo calculate the grid spacings
+on the grid you are on. There are Cactus macros provided for this,
+with the syntax {\tt CCTK\_DELTA\_SPACE(dir)} and {\tt CCTK\_DELTA\_TIME}
+for both C and Fortran. It is recommended that these macros are
+always used to provide the grid spacings in your thorns. 
 
 \subsection{Cactus Data Types}
 
@@ -983,6 +989,15 @@ is a parallel unigrid driver.
   before proceeding
 \end{Lentry}
 
+
+\subsection{Commenting Source Code}
+
+Note that since most source files (see Section~\ref{nacofosofi} for exceptions) 
+pass through a C preprocessor, C style comments can be used in 
+Fortran code. C++ comments (that is //), should not be used, since 
+they indicate the string concatonation operator in Fortran. 
+
+The Flesh and the Cactus thorns use {\tt grdoc} to document the code.
 
 
 \subsection{IO}
