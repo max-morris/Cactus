@@ -9,6 +9,18 @@
 #  @version $Id$
 #@@*/
 
+##########################################################################
+# Parse the command line
+
+$activethorns = shift(@ARGV);
+
+if (! $activethorns) 
+{
+    printf "Usage: config_parser [-top=<TOP>] [-config_dir=<config directory>] [-cctk_home=<CCTK home dir>] -bindings_dir=<CCTK bindings directory> ActiveThornList";
+    exit;
+}
+
+
 if(! $top)
 {
   $top = `pwd`;
@@ -23,7 +35,7 @@ if(! $config_dir)
 if(! $cctk_home)
 {
   $cctk_home = $ENV{'CCTK_HOME'} || "$ENV{HOME}/CCTK";
-  $cachome =~ s:/$::g;
+  $cctk_home =~ s:/$::g;
 }
 
 if(! $bindings_dir)
@@ -31,13 +43,10 @@ if(! $bindings_dir)
   $bindings_dir = "$top/bindings";
 }
 
-$activethorns = shift(@ARGV);
 
-if (! $activethorns) 
-{
-    printf "Usage: config_parser [-top=<TOP>] [-config_dir=<config directory>] [-cctk_home=<CCTK home dir>] -bindings_dir=<CCTK bindings directory> ActiveThornList";
-    exit;
-}
+########################################################################
+# Require certain packages
+
 
 $sbin_dir = "$cctk_home/lib/sbin";
 
@@ -53,32 +62,66 @@ require "$sbin_dir/create_fortran_stuff.pl";
 require "$sbin_dir/GridFuncStuff.pl";
 require "$sbin_dir/output_config.pl";
 
-%thorns = &create_thorn_list($cctk_home, $activethorns);
 
+#######################################################################
+#
+#                     Main Program
+#
+######################################################################
+
+# Find out which thorns we have and the location of the ccl files.
+%thorns = &CreateThornList($cctk_home, $activethorns);
+
+# Parse the interface.ccl files
 %interface_database = &create_interface_database(%thorns);
 
+if($debug_interface)
+{
+  &print_interface_database(%interface_database);
+}
+
+# Parse the parameter.ccl files
 %parameter_database = &create_parameter_database(%thorns);
 
-#&print_parameter_database(%parameter_database);
-
-#&print_interface_database(%interface_database);
-
-
-#@GFstuff = &CreateGroups(%interface_database);
-
-#foreach $line (@GFstuff)
-#{
-#  print "$line\n";
-#}
+if($debug_parameters)
+{
+  &print_parameter_database(%parameter_database);
+}
 
 
+# Create all the bindings
 &CreateBindings($bindings_dir, scalar(keys %parameter_database), %parameter_database, %interface_database);
 
+# Finally (must be last), create the make.thornlist file.
 @make_thornlist = &CreateMakeThornlist(%thorns);
 
 &OutputFile($config_dir, "make.thornlist", @make_thornlist);
 
-sub create_thorn_list
+exit;
+
+
+#############################################################################
+#
+#                      Subroutines
+#
+#############################################################################
+
+#/*@@
+#  @routine    CreateThornList
+#  @date       Thu Jan 28 15:18:45 1999
+#  @author     Tom Goodale
+#  @desc 
+#  Parses the ActiveThorns file and extracts the thorn names.
+#  @enddesc 
+#  @calls     
+#  @calledby   
+#  @history 
+#
+#  @endhistory 
+#
+#@@*/
+
+sub CreateThornList
 {
   local($cctk_home, $activethorns) = @_;
   local(%thornlist);
@@ -86,16 +129,22 @@ sub create_thorn_list
 
   open(ACTIVE, "<$activethorns") || die "Cannot open ActiveThorns file $activethorns !";
 
+  # Put a reference to the main cctk sources in.
   $thornlist{"Cactus"} = "$cctk_home/src";
 
-  print "cctk_home is $cctk_home\n";
+#  print "cctk_home is $cctk_home\n";
 
-
+  # Loop through the lines of the file.
   while(<ACTIVE>)
   {
+    #Ignore comments.
     s/\#(.*)$//g;
+
     s/\n//g;		# Different from chop...
+
+    #Ignore blank lines
     next if (m:^\s*$:);
+
     foreach $thorn (split(' '))
     {
       $thorn =~ m:(.*)[/\\](.*):;
@@ -130,6 +179,22 @@ sub create_thorn_list
 }
 
 
+
+#/*@@
+#  @routine    get_public_parameters
+#  @date       Thu Jan 28 15:21:52 1999
+#  @author     Tom Goodale
+#  @desc 
+#  Gets a list of all public parameters and the throns they are in.
+#  @enddesc 
+#  @calls     
+#  @calledby   
+#  @history 
+#
+#  @endhistory 
+#
+#@@*/
+
 sub get_public_parameters
 {
   local(%parameter_database) = @_;
@@ -148,6 +213,22 @@ sub get_public_parameters
 }
 
     
+
+#/*@@
+#  @routine    CreateMakeThornlist
+#  @date       Thu Jan 28 15:22:31 1999
+#  @author     Tom Goodale
+#  @desc 
+#  Creates the lines which should be palced in the make.thornlist file.
+#  @enddesc 
+#  @calls     
+#  @calledby   
+#  @history 
+#
+#  @endhistory 
+#
+#@@*/
+
 sub CreateMakeThornlist
 {
   local(%thorns) = @_;
@@ -157,16 +238,33 @@ sub CreateMakeThornlist
   $thornlist = "THORNS =";
   foreach $thorn (keys %thorns)
   {
+    # Ignore the main sources - they are dealt with separately
     next if ($thorn =~ m:Cactus:);
 
     $thorns{$thorn} =~ m:(.*)/(.*)/(.*):;
 
+    # Onlu place toolkit_name/thorn_name in the file.
     $thornlist .= " $2/$3";
   }
 
   return ("$thornlist", "");
 }
   
+#/*@@
+#  @routine    CreateBindings
+#  @date       Thu Jan 28 15:24:53 1999
+#  @author     Tom Goodale
+#  @desc 
+#  All the perl generated stuff is finally placed into the bindings 'thorn'.
+#  @enddesc 
+#  @calls     
+#  @calledby   
+#  @history 
+#
+#  @endhistory 
+#
+#@@*/
+
 sub CreateBindings
 {
   local($bindings_dir, $n_param_database, @rest) = @_;
@@ -174,19 +272,25 @@ sub CreateBindings
   local(%interface_database);
   local($start_dir);
 
+  # Extract the parameter and interface databases from the arguments.
   %parameter_database = @rest[0..2*$n_param_database-1];
   %interface_database = @rest[2*$n_param_database..$#rest];
 
+  # Create the bindings directory if it doesn't exist.
   if(! -d $bindings_dir)
   {
     mkdir("$bindings_dir", 0755) || die "Unable to create $bindings_dir";
   }
+
+  # Remember where we started.
   $start_dir = `pwd`;
 
+  # Create the bindings for the subsystems.
   &CreateParameterBindings($bindings_dir, $n_param_database, @rest);
   &CreateVariableBindings($bindings_dir, %interface_database);
   &CreateScheduleBindings($bindings_dir);
 
+  # Place an appropriate make.code.defn in the bindings directory.
   chdir $bindings_dir;
 
   open (OUT, ">make.code.defn") || die "Cannot open make.code.defn";
@@ -196,9 +300,25 @@ sub CreateBindings
 
   close OUT;
     
+  # Go back to where we started.
   chdir $start_dir;
   
 }
+
+#/*@@
+#  @routine    CreateParameterBindings
+#  @date       Thu Jan 28 15:27:16 1999
+#  @author     Tom Goodale
+#  @desc 
+#  Create the bindings used for the parameters.
+#  @enddesc 
+#  @calls     
+#  @calledby   
+#  @history 
+#
+#  @endhistory 
+#
+#@@*/
 
 sub CreateParameterBindings
 {
@@ -618,85 +738,21 @@ EOT
 }
 
 
-sub CreateVariableBindings
-{
-  local($bindings_dir, %interface_database) = @_;
 
-  if(! -d $bindings_dir)
-  {
-    mkdir("$bindings_dir", 0755) || die "Unable to create $bindings_dir";
-  }
-  $start_dir = `pwd`;
-  chdir $bindings_dir;
-
-  # Create the header files
-  if(! -d "include")
-  {
-    mkdir("include", 0755) || die "Unable to create include directory";
-  }
-  chdir "include";
-
-
-  foreach $thorn (split(" ",$interface_database{"THORNS"}))
-  {
-
-    @data = &CreateThornArgumentHeaderFile($thorn, %interface_database);
-
-    open(OUT, ">$thorn"."_arguments.h");
-
-    foreach $line (@data)
-    {
-      print OUT "$line\n";
-    }
-
-    close OUT;
-  }
-
-  open(OUT, ">declare_arguments.h");
-    
-  foreach $thorn (split(" ",$interface_database{"THORNS"}))
-  {
-    print OUT "#ifdef THORN_IS_$thorn\n";
-    print OUT "#include $thorn"."_arguments.h\n";
-    print OUT "#define CCTK_FARGUMENTS \U$thorn"."_FARGUMENTS\n";
-    print OUT "#define DECLARE_CCTK_FARGUMENTS DECLARE_\U$thorn"."_FARGUMENTS\n";
-    print OUT "#define CCTK_CARGUMENTS \U$thorn"."_CARGUMENTS\n";
-    print OUT "#define DECLARE_CCTK_CARGUMENTS DECLARE_\U$thorn"."_CARGUMENTS\n";
-    print OUT "#endif\n\n";
-  }
-
-  close OUT;
-      
-  chdir "..";
-
-  if(! -d "Variables")
-  {
-    mkdir("Variables", 0755) || die "Unable to create Variables directory";
-  }
-  chdir "Variables";
-
-  open (OUT, ">Bindings.c") || die "Cannot open Bindings.c";
-
-  print OUT  <<EOT;
- 
-  int CCTK_BindingsVariablesInitialise(void)
-  {
-    return 0;
-  }
- 
-EOT
-
-  close OUT;
-
-  open (OUT, ">make.code.defn") || die "Cannot open make.code.defn";
-
-  print OUT "SRCS = Bindings.c\n";
-
-  close OUT;
-
-  chdir $start_dir;
-}
-
+#/*@@
+#  @routine    CreateParameterBindings
+#  @date       Thu Jan 28 15:27:16 1999
+#  @author     Tom Goodale
+#  @desc 
+#  Create the bindings used for the scheduler.
+#  @enddesc 
+#  @calls     
+#  @calledby   
+#  @history 
+#
+#  @endhistory 
+#
+#@@*/
 sub CreateScheduleBindings
 {
   local($bindings_dir) = @_;

@@ -9,168 +9,152 @@
 #  @version $Id$
 #@@*/
 
+
 #/*@@
-#  @routine    CreateGroups
-#  @date       Tue Jan 12 11:08:19 1999
+#  @routine    CreateVariableBindings
+#  @date       Thu Jan 28 15:14:20 1999
 #  @author     Tom Goodale
 #  @desc 
-#  
+#  Creates all the binding files for the variables.
 #  @enddesc 
 #  @calls     
 #  @calledby   
 #  @history 
 #
 #  @endhistory 
+#
 #@@*/
 
-sub CreateGroups
+sub CreateVariableBindings
 {
-  local(%interface_database) = @_;
-  local(@interfaces);
-  local(%thorns);
-  local(@group_initialisers);
-  local(@indata);
-    
+  local($bindings_dir, %interface_database) = @_;
+  local($thorn, @data);
+  local($line, $block, $filelist);
 
-  @interfaces = split(" ", $interface_database{"IMPLEMENTATIONS"});
-
-  foreach $interface (@interfaces)
+  if(! -d $bindings_dir)
   {
-    @indata = &create_interface_group_initialisers($interface, %interface_database);
+    mkdir("$bindings_dir", 0755) || die "Unable to create $bindings_dir";
+  }
+  $start_dir = `pwd`;
+  chdir $bindings_dir;
 
-    push(@group_initialisers, @indata);
+  # Create the header files
+  if(! -d "include")
+  {
+    mkdir("include", 0755) || die "Unable to create include directory";
+  }
+  chdir "include";
 
-    foreach $thorn (split(" ",$interface_database{"IMPLEMENTATION \U$interface\E THORNS"}))
+
+  foreach $thorn (split(" ",$interface_database{"THORNS"}))
+  {
+
+    @data = &CreateThornArgumentHeaderFile($thorn, %interface_database);
+
+    open(OUT, ">$thorn"."_arguments.h");
+
+    foreach $line (@data)
     {
-      $thorns{"\U$thorn\E"} = 1;
-    }
-  }
-
-  foreach $thorn (keys %thorns)
-  {
-    
-    @indata = &create_thorn_group_initialisers($thorn, "PRIVATE", %interface_database);
-
-    push(@group_initialisers, @indata);
-    
-  }
-
-  @group_initialisers = &sort_groups(@group_initialisers);
-
-  return @group_initialisers;
-}
-
-#/*@@
-#  @routine    create_interface_group_initialisers
-#  @date       Tue Jan 12 11:08:41 1999
-#  @author     Tom Goodale
-#  @desc 
-#  
-#  @enddesc 
-#  @calls     
-#  @calledby   
-#  @history 
-#
-#  @endhistory 
-#@@*/
-
-sub create_interface_group_initialisers
-{
-  local($interface, %interface_database) = @_;
-  local($thorn);
-  local(@definitions);
-  local(@indata);
-
-  
-  $interface_database{"IMPLEMENTATION \U$interface\E THORNS"} =~ m:([^ ]+):;
-
-  $thorn = $1;
-
-  @indata = &create_thorn_group_initialisers($thorn, "PUBLIC", %interface_database);
-
-  push(@definitions, @indata);
-
-  @indata = &create_thorn_group_initialisers($thorn, "PROTECTED", %interface_database);
-
-  push(@definitions, @indata);
-
-  return @definitions;
-  
-}
-  
-#/*@@
-#  @routine    create_thorn_group_initialisers
-#  @date       Tue Jan 12 11:09:08 1999
-#  @author     Tom Goodale
-#  @desc 
-#  
-#  @enddesc 
-#  @calls     
-#  @calledby   
-#  @history 
-#
-#  @endhistory 
-#@@*/
-sub create_thorn_group_initialisers
-{
-  local($thorn, $block, %interface_database) = @_;
-  local(@definitions);
-  local($base_name);
-  local($group);
-  local($variable,@variables);
-  if($block eq "PRIVATE")
-  {
-    $base_name = "\$$thorn";
-  }
-  else
-  {
-    $base_name = $interface_database{"\U$thorn\E IMPLEMENTS"};
-  }    
-  
-  foreach $group (split(" ", $interface_database{"\U$thorn $block GROUPS"}))
-  {
-    @variables = split(" ", $interface_database{"\U$thorn GROUP $group\E"});
-
-    $line  = "  CCTK_CreateGroup(\"\U$base_name::$group\E\",\n" 
-           . "                   \"" . $interface_database{"\U$thorn GROUP $group\E GTYPE"} . "\",\n"
-	   . "                   \"" . $interface_database{"\U$thorn GROUP $group\E VTYPE"} . "\",\n"
-           . "                   ". scalar(@variables);
-    foreach $variable (@variables)
-    {
-      $line .= ",\n                   \"\U$variable\E\"";
+      print OUT "$line\n";
     }
 
-    $line  .= ");\n\n";
-
-    push(@definitions, $line);
+    close OUT;
   }
 
-  return @definitions;
+  open(OUT, ">declare_arguments.h");
     
+  foreach $thorn (split(" ",$interface_database{"THORNS"}))
+  {
+    print OUT "#ifdef THORN_IS_$thorn\n";
+    print OUT "#include $thorn"."_arguments.h\n";
+    print OUT "#define CCTK_FARGUMENTS \U$thorn"."_FARGUMENTS\n";
+    print OUT "#define DECLARE_CCTK_FARGUMENTS DECLARE_\U$thorn"."_FARGUMENTS\n";
+    print OUT "#define CCTK_CARGUMENTS \U$thorn"."_CARGUMENTS\n";
+    print OUT "#define DECLARE_CCTK_CARGUMENTS DECLARE_\U$thorn"."_CARGUMENTS\n";
+    print OUT "#endif\n\n";
+  }
 
+  close OUT;
+      
+  chdir "..";
+
+  if(! -d "Variables")
+  {
+    mkdir("Variables", 0755) || die "Unable to create Variables directory";
+  }
+  chdir "Variables";
+
+  open (OUT, ">Bindings.c") || die "Cannot open Bindings.c";
+
+  $filelist = "Bindings.c";
+
+  foreach $thorn (split(" ",$interface_database{"THORNS"}))
+  {
+    print OUT "int CactusBindingsVariables_$thorn"."_Initialise(void);\n";
+  }
+
+  print OUT "\n";
+ 
+  print OUT "int CCTK_BindingsVariablesInitialise(void)\n{\n";
+
+  foreach $thorn (split(" ",$interface_database{"THORNS"}))
+  {
+    print OUT "  CactusBindingsVariables_$thorn"."_Initialise();\n";
+  }
+ 
+  print OUT "  return 0;\n}\n\n";
+
+  close OUT;
+
+  foreach $thorn (split(" ",$interface_database{"THORNS"}))
+  {
+    open(OUT, ">$thorn.c") || die "Cannot create $thorn.c";
+
+#    print OUT "#include \"flesh.h\"\n";
+#    print OUT "#include \"StoreVariableData.h\"\n\n";
+
+    print OUT "int CactusBindingsVariables_$thorn"."_Initialise(void)\n{\n";
+    foreach $block ("PUBLIC", "PROTECTED", "PRIVATE")
+    {
+      @data = &CreateThornGroupInitialisers($thorn, $block, %interface_database);
+
+      foreach $line (@data)
+      {
+	print OUT "$line\n";
+      }
+    }
+
+    print OUT "  return 0;\n};\n";
+    close OUT;
+
+    $filelist .= " $thorn.c";
+  }
+
+  open (OUT, ">make.code.defn") || die "Cannot open make.code.defn";
+
+  print OUT "SRCS = $filelist\n";
+
+  close OUT;
+
+  chdir $start_dir;
 }
 
+
 #/*@@
-#  @routine    sort_groups
-#  @date       Tue Jan 12 11:09:26 1999
+#  @routine    GetThornArguments
+#  @date       Thu Jan 28 14:31:38 1999
 #  @author     Tom Goodale
 #  @desc 
-#  
+#  Gets a list of all the variables available for a thorn in a 
+#  particular block.
 #  @enddesc 
 #  @calls     
 #  @calledby   
 #  @history 
 #
 #  @endhistory 
+#
 #@@*/
-sub sort_groups
-{
-  local(@group_initialisers) = @_;
-
-  return @group_initialisers;
-}
-
-
 sub GetThornArguments
 {
   local($this_thorn, $block, %interface_database) = @_;
@@ -248,6 +232,21 @@ sub GetThornArguments
 }
 
 
+#/*@@
+#  @routine    CreateFortranArgumentDeclarations
+#  @date       Thu Jan 28 14:32:57 1999
+#  @author     Tom Goodale
+#  @desc 
+#  Creates the requisite argument list declarations for Fortran.
+#  @enddesc 
+#  @calls     
+#  @calledby   
+#  @history 
+#
+#  @endhistory 
+#
+#@@*/
+
 sub CreateFortranArgumentDeclarations
 {
   local(%arguments) = @_;
@@ -297,6 +296,21 @@ sub CreateFortranArgumentDeclarations
     
 }
 
+#/*@@
+#  @routine    CreateFortranArgumentList
+#  @date       Thu Jan 28 14:33:50 1999
+#  @author     Tom Goodale
+#  @desc 
+#  Creates the argument list a Fortran subroutine sees.
+#  @enddesc 
+#  @calls     
+#  @calledby   
+#  @history 
+#
+#  @endhistory 
+#
+#@@*/
+
 sub CreateFortranArgumentList
 {
   local(%arguments) = @_;
@@ -328,6 +342,22 @@ sub CreateFortranArgumentList
   return $argumentlist;
 }
 
+#/*@@
+#  @routine    CreateCArgumentStatics
+#  @date       Thu Jan 28 14:33:50 1999
+#  @author     Tom Goodale
+#  @desc 
+#  Creates the declarations of static variables used to speed up
+#  construction of arguments to pass to Fortran.
+#  @enddesc 
+#  @calls     
+#  @calledby   
+#  @history 
+#
+#  @endhistory 
+#
+#@@*/
+
 sub CreateCArgumentStatics
 {
   local(%arguments) = @_;
@@ -345,6 +375,21 @@ sub CreateCArgumentStatics
   return @declarations;
 }  
 
+
+#/*@@
+#  @routine    CreateCArgumentInitialisers
+#  @date       Thu Jan 28 14:33:50 1999
+#  @author     Tom Goodale
+#  @desc 
+#  Creates the code to initialise the statics.
+#  @enddesc 
+#  @calls     
+#  @calledby   
+#  @history 
+#
+#  @endhistory 
+#
+#@@*/
 
 sub CreateCArgumentInitialisers
 {
@@ -364,6 +409,21 @@ sub CreateCArgumentInitialisers
 
   return @initialisers;
 }
+
+#/*@@
+#  @routine    CreateCArgumentPrototype
+#  @date       Thu Jan 28 14:36:25 1999
+#  @author     Tom Goodale
+#  @desc 
+#  Creates the prototype needed to call a Fortran function from C.
+#  @enddesc 
+#  @calls     
+#  @calledby   
+#  @history 
+#
+#  @endhistory 
+#
+#@@*/
 
 sub CreateCArgumentPrototype
 {
@@ -422,6 +482,22 @@ sub CreateCArgumentPrototype
 }
 
 
+
+#/*@@
+#  @routine    CreateCArgumentList
+#  @date       Thu Jan 28 14:37:07 1999
+#  @author     Tom Goodale
+#  @desc 
+#  Creates the argument list used to call a Fortran function from C.
+#  @enddesc 
+#  @calls     
+#  @calledby   
+#  @history 
+#
+#  @endhistory 
+#
+#@@*/
+
 sub CreateCArgumentList
 {
   local(%arguments) = @_;
@@ -478,6 +554,21 @@ sub CreateCArgumentList
   return $arglist;
 
 }  
+
+#/*@@
+#  @routine    CreateThornArgumentHeaderFile
+#  @date       Thu Jan 28 14:37:58 1999
+#  @author     Tom Goodale
+#  @desc 
+#  Creates all the argument list stuff necessary to call Fortran from C
+#  @enddesc 
+#  @calls     
+#  @calledby   
+#  @history 
+#
+#  @endhistory 
+#
+#@@*/
 
 sub CreateThornArgumentHeaderFile
 {
@@ -693,5 +784,54 @@ sub CreateThornArgumentHeaderFile
   
   return @returndata;
 }
+
+
+
+#/*@@
+#  @routine    CreateThornGroupInitialisers
+#  @date       Thu Jan 28 14:38:56 1999
+#  @author     Tom Goodale
+#  @desc 
+#  Creates the calls used to setup groups for a particular thorn block.
+#  @enddesc 
+#  @calls     
+#  @calledby   
+#  @history 
+#
+#  @endhistory 
+#
+#@@*/
+
+sub CreateThornGroupInitialisers  
+{
+  local($thorn, $block, %interface_database) = @_;
+  local($imp);
+  local($group, @variables);
+  local($line);
+  local(@definitions);
+
+  $imp = $interface_database{"\U$thorn\E IMPLEMENTS"};
+
+  foreach $group (split(" ", $interface_database{"\U$thorn $block GROUPS"}))
+  {
+    @variables = split(" ", $interface_database{"\U$thorn GROUP $group\E"});
+
+    $line  = "  CCTK_CreateGroup(\"\U$group\",\"$thorn\",\"$imp\",\n" 
+           . "                   \"" . $interface_database{"\U$thorn GROUP $group\E GTYPE"} . "\",\n"
+	   . "                   \"" . $interface_database{"\U$thorn GROUP $group\E VTYPE"} . "\",\n"
+           . "                   ". scalar(@variables);
+    foreach $variable (@variables)
+    {
+      $line .= ",\n                   \"\U$variable\E\"";
+    }
+
+    $line  .= ");\n\n";
+
+    push(@definitions, $line);
+  }
+
+  return @definitions;
   
+}
+
 1;
