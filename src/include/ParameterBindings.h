@@ -14,7 +14,7 @@
 #define PARAMETER_STRING   2
 #define PARAMETER_SENTENCE 3
 #define PARAMETER_INTEGER  4
-#define PARAMETER_REAL     4
-#define PARAMETER_LOGICAL  5
+#define PARAMETER_REAL     5
+#define PARAMETER_LOGICAL  6
 
 #endif
