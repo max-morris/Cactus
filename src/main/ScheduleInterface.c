@@ -70,7 +70,7 @@ typedef struct
   /* Dynamic data */
   int *CommOnEntry;
   int *StorageOnEntry;
-  
+
   int done_entry;
 
 } t_attribute;
@@ -389,7 +389,7 @@ int CCTKi_ScheduleFunction(void *function,
                            int n_before,
                            int n_after,
                            int n_while,
-                           const int *timelevels, 
+                           const int *timelevels,
                            ...
                            )
 {
@@ -531,7 +531,7 @@ int CCTKi_ScheduleGroup(const char *name,
                         int n_before,
                         int n_after,
                         int n_while,
-                        const int *timelevels, 
+                        const int *timelevels,
                         ...
                         )
 {
@@ -589,7 +589,7 @@ int CCTKi_ScheduleGroup(const char *name,
    @vdesc   The number of timelevels of this group to enable.
    @vtype   int
    @vio     in
- 
+
    @returntype int
    @returndesc
    Group index or
@@ -612,7 +612,7 @@ int CCTKi_ScheduleGroupStorage(const char *group, int timelevels)
     scheduled_storage_groups = temp;
     scheduled_storage_groups_timelevels = temp2;
 
-    scheduled_storage_groups_timelevels[n_scheduled_storage_groups-1] = timelevels;    
+    scheduled_storage_groups_timelevels[n_scheduled_storage_groups-1] = timelevels;
   }
 
   return (temp && temp2  ? temp[n_scheduled_storage_groups-1] : -1);
@@ -1199,25 +1199,37 @@ static t_attribute *CreateAttribute(const char *where,
   t_attribute *this;
   int i;
 
-  this = (t_attribute *)malloc(sizeof(t_attribute));
+  this = (t_attribute *)calloc(1, sizeof(t_attribute));
 
   if(this)
   {
     this->FunctionData.where = (char *)malloc((strlen(where)+1)*sizeof(char));
     this->FunctionData.routine = (char *)malloc((strlen(name)+1)*sizeof(char));
-    this->description    = 
+    this->description    =
       (char *)malloc((strlen(description)+1)*sizeof(char));
     this->FunctionData.thorn = (char *)malloc((strlen(thorn)+1)*sizeof(char));
-    this->implementation = 
+    this->implementation =
       (char *)malloc((strlen(implementation)+1)*sizeof(char));
-    this->mem_groups     = (int *)malloc(n_mem_groups*sizeof(int));
-    this->timelevels     = (int *)malloc(n_mem_groups*sizeof(int));
-    this->comm_groups    = (int *)malloc(n_comm_groups*sizeof(int));
-    this->FunctionData.TriggerGroups = 
-      (int *)malloc(n_trigger_groups*sizeof(int));
-    this->FunctionData.SyncGroups = (int *)malloc(n_sync_groups*sizeof(int));
-    this->StorageOnEntry = (int *)malloc(n_mem_groups*sizeof(int));
-    this->CommOnEntry    = (int *)malloc(n_comm_groups*sizeof(int));
+    if (n_mem_groups > 0)
+    {
+      this->mem_groups     = (int *)malloc(n_mem_groups*sizeof(int));
+      this->timelevels     = (int *)malloc(n_mem_groups*sizeof(int));
+      this->StorageOnEntry = (int *)malloc(n_mem_groups*sizeof(int));
+    }
+    if (n_trigger_groups > 0)
+    {
+      this->FunctionData.TriggerGroups =
+        (int *)malloc(n_trigger_groups*sizeof(int));
+    }
+    if (n_sync_groups > 0)
+    {
+      this->FunctionData.SyncGroups = (int *)malloc(n_sync_groups*sizeof(int));
+    }
+    if (n_comm_groups > 0)
+    {
+      this->comm_groups    = (int *)malloc(n_comm_groups*sizeof(int));
+      this->CommOnEntry    = (int *)malloc(n_comm_groups*sizeof(int));
+    }
 
     if(this->FunctionData.where &&
        this->FunctionData.routine &&
@@ -2068,7 +2080,7 @@ static int CCTKi_ScheduleCallEntry(t_attribute *attribute,
       {
         CCTK_GroupStorageIncrease(data->GH,
                                   attribute->n_mem_groups,
-                                  attribute->mem_groups, 
+                                  attribute->mem_groups,
                                   attribute->timelevels,
                                   attribute->StorageOnEntry);
       }
@@ -2175,7 +2187,7 @@ static int CCTKi_ScheduleCallExit(t_attribute *attribute,
     {
       CCTK_GroupStorageDecrease(data->GH,
                                 attribute->n_mem_groups,
-                                attribute->mem_groups, 
+                                attribute->mem_groups,
                                 attribute->StorageOnEntry,
                                 NULL);
     }
@@ -2354,7 +2366,7 @@ static int CCTKi_SchedulePrintTimesFunction(void *function,
     }
 
     CCTKi_SchedulePrintTimerInfo(data->info, data->total_time,
-                                 attribute->FunctionData.thorn, 
+                                 attribute->FunctionData.thorn,
                                  attribute->description);
   }
 
