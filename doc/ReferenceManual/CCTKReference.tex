@@ -2646,19 +2646,19 @@ The {\t cGroup} structure%%%
   int vartype;        /* variable type, as returned by CCTK_VarTypeNumber() */
   int disttype;       /* distribution type, */
                       /* as returned by CCTK_GroupDistribNumber() */
-  int stagtype;       /* an internal code representing the type of */
-                      /* grid staggering for this group's arrays (if any) */
-                      /* FIXME: what are the precise semantics of this? */
-  int dim;            /* dimensionality of the group */
-                      /* eg 3 for a group of 3-D variables */
+  int stagtype;       /* stagger type, as accepted by CCTK_StaggerDirName() */
+  int dim;            /* dimension (rank) of the group */
+                      /* e.g. 3 for a group of 3-D variables */
   int numvars;        /* number of variables in the group */
-  int numtimelevels;  /* number of time levels for this group's variables */
-                      /* FIXME: is this the max number of time levels */
-                      /*        allocated, or the current number? */
+  int numtimelevels;  /* maximum number of time levels for this group's variables */
   int vectorgroup;    /* 1 if this is a vector group, 0 if it's not */
-  int vectorlength;   /* length of vector group */
-                      /* (i.e. number of grid variables in the group), */
-                      /* or unused if this isn't a vector group */
+  int vectorlength;   /* vector length of group */
+                      /* (i.e. number of vector elements) */
+                      /* (it is numvars = vectorlength * num_basevars, */
+                      /*  where num_basevars is the number of */
+                      /*  variables that have been given names in the */
+                      /*  interface.ccl) */ 
+                      /* 1 if this isn't a vector group */
   int tagstable;      /* handle to the group's tags table; */
                       /* this is a Cactus key-value table used to store */
                       /* metadata about the group and its variables, */
