@@ -1,13 +1,13 @@
 
 Cactus Code Frequently Asked Questions
 
-$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.36 2002-06-26 20:54:09 allen Exp $
+$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.37 2002-07-30 15:11:25 allen Exp $
 
 Also available at http://www.cactuscode.org/Documentation/FAQ
 
 -------------------------------------------------------------------------------
 
-1) The make system says "Checking status of libXXX.a" and then just 
+1. The make system says "Checking status of libXXX.a" and then just 
    sits there.  What can I do ?
 
    The first thing to do whenever a problem arises from the make system 
@@ -21,7 +21,7 @@ Also available at http://www.cactuscode.org/Documentation/FAQ
 
 -------------------------------------------------------------------------------
 
-2) Compilation of Cactus fails with the error:
+2. Compilation of Cactus fails with the error:
 	 identifier "DECLARE_CCTK_PARAMETERS" is undefined?
 
    You have to include the header: 
@@ -29,7 +29,7 @@ Also available at http://www.cactuscode.org/Documentation/FAQ
 
 -------------------------------------------------------------------------------
 
-3) I get 'g77: cannot specify -o with -c or -S and multiple compilations' when 
+3. I get 'g77: cannot specify -o with -c or -S and multiple compilations' when 
    compiling with the Pacific VAST90 compiler.
 
    If the libvast90.a library is in the same directory as your F90 script, 
@@ -39,7 +39,7 @@ Also available at http://www.cactuscode.org/Documentation/FAQ
 
 -------------------------------------------------------------------------------
 
-4) Why do I have to use e.g. "mpirun -np 1 ./exe/cactus_myconfig -O" to see 
+4. Why do I have to use e.g. "mpirun -np 1 ./exe/cactus_myconfig -O" to see 
    the compiled parameters, can't the parameters be output before MPI is 
    initialised?
 
@@ -49,7 +49,7 @@ Also available at http://www.cactuscode.org/Documentation/FAQ
 
 -------------------------------------------------------------------------------
 
-5) When doing a cvs update I get 'not enough slashes in ...' .
+5. When doing a cvs update I get 'not enough slashes in ...' .
 
    It seems that CVS sometimes gets confused with multiple repositories.  
    Check that you are using the latest version of CVS, otherwise moving into 
@@ -61,7 +61,7 @@ Also available at http://www.cactuscode.org/Documentation/FAQ
 
 -------------------------------------------------------------------------------
 
-6) How do I compile with MPI? Why isn't it automatic like in Cactus 3?
+6. How do I compile with MPI? Why isn't it automatic like in Cactus 3?
               
    The standard MPI driver (PUGH) is in a thorn now (CactusPUGH/PUGH), so 
    there is now the possibility to add other parallel drivers using 
@@ -76,7 +76,7 @@ Also available at http://www.cactuscode.org/Documentation/FAQ
 
 -------------------------------------------------------------------------------
 
-7) I can't compile because the compiler complains that a routine name has been 
+7. I can't compile because the compiler complains that a routine name has been 
    previously defined ... but I can't find it repeated?
 
    If it is a C routine, whose name is either all in capitals or all in 
@@ -87,7 +87,7 @@ Also available at http://www.cactuscode.org/Documentation/FAQ
    
 -------------------------------------------------------------------------------
 
-8) How can I make sure that one thorn is compiled before another? For example 
+8. How can I make sure that one thorn is compiled before another? For example 
    to make sure that F90 module files from  ArrangementA/ThornA are available 
    for ArrangementB/ThornB.
 
@@ -102,7 +102,7 @@ Also available at http://www.cactuscode.org/Documentation/FAQ
 
 -------------------------------------------------------------------------------
 
-9) On my SUN I start a configuration process with gmake, but on the second 
+9. On my SUN I start a configuration process with gmake, but on the second 
     gmake it wants to set up the configuration again and again .... 
     Why is this ?
 
@@ -112,13 +112,13 @@ Also available at http://www.cactuscode.org/Documentation/FAQ
 
 -------------------------------------------------------------------------------
 
-10) How do I compile Cactus in 32 bit mode on a 64 bit irix machine?
+10. How do I compile Cactus in 32 bit mode on a 64 bit irix machine?
 
     gmake <config>-config IRIX_BITS=32
 
 -------------------------------------------------------------------------------
 
-11) What can I do if I don't have enough disk space to compile Cactus?
+11. What can I do if I don't have enough disk space to compile Cactus?
 
     If you have access to some scratch space, or temporary space, you can
     instruct Cactus to put the "configs" directory there (with all the 
@@ -135,7 +135,7 @@ Also available at http://www.cactuscode.org/Documentation/FAQ
 
 -------------------------------------------------------------------------------
 
-12) Why isn't a BOOLEAN parameter a LOGICAL in Fortran?
+12. Why isn't a BOOLEAN parameter a LOGICAL in Fortran?
 
     There is no way we can guarantee the way the Fortran logical type is 
     represented at machine level, and since all Fortran variables need 
@@ -144,7 +144,7 @@ Also available at http://www.cactuscode.org/Documentation/FAQ
 
 -------------------------------------------------------------------------------
 
-13) I'm trying to run Cactus with MPI using "mpirun", but I just get an error
+13. I'm trying to run Cactus with MPI using "mpirun", but I just get an error
     "Unknown option -np", what's the problem?
 
     It looks like the MPI implementation on the machine you're using isn't
@@ -156,7 +156,7 @@ Also available at http://www.cactuscode.org/Documentation/FAQ
 
 -------------------------------------------------------------------------------
            
-14) Why is there an MPI call in the Flesh (MPI_Init)? I thought that the 
+14. Why is there an MPI call in the Flesh (MPI_Init)? I thought that the 
     Cactus flesh was independent of any parallel protocol, why isn't this
     call made from a driver thorn?
 
@@ -255,7 +255,7 @@ Also available at http://www.cactuscode.org/Documentation/FAQ
 
 -------------------------------------------------------------------------------
 
-19. How can I communicate the value of a local scalar on one processor to all 
+19a. How can I communicate the value of a local scalar on one processor to all 
     processors? There doesn't seem to be an API for this in Cactus.
 
     There isn't a general broadcast API in Cactus at the moment, this is 
@@ -268,6 +268,15 @@ Also available at http://www.cactuscode.org/Documentation/FAQ
     with the "sum" reduction operator, and set your local variable to zero 
     on all processors except for the one with the value you want to have 
     communicated.
+
+19b. What about if I only want to send a local scalar to a single processor?
+
+    This type of point-to-point communication is not possible with Cactus 
+    APIs right now. Any CCTK_Reduce*() is a global communication so far, 
+    and all processors must take part in that communication.
+
+    For doing point-to-point communication you should use the appropriate API
+    of an underlying communication layer like MPI.
     
 -------------------------------------------------------------------------------
 
