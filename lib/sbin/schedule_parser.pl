@@ -55,8 +55,8 @@ sub create_schedule_code
     &parse_schedule_ccl($thorn,"startup",OUTSTART,PROTO,@indata);
 
    # The footer for the thorn RFR routine
-   print OUTRFR "}";
-   print OUTSTART "}";
+   print OUTRFR "}\n";
+   print OUTSTART "}\n";
 
    close OUTRFR;
    close OUTSTART;
