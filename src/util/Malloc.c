@@ -8,6 +8,7 @@
    @enddesc 
    @version $Header$
  @@*/
+static char *rcsid = "$Header$";
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -17,7 +18,7 @@
 #include "cctk_Malloc.h"
 #include "StoreHandledData.h"
 
-static char *rcsid = "$Header$";
+int CCTK_Abort(void *GH);
 
 /*$#define MEMDEBUG$*/ 
 
@@ -158,19 +159,15 @@ void *CCTKi_Realloc(void *pointer, size_t size, int line, const char *file)
   /* Realloc called with size zero equiv. to free */
   if (size==0) {
     CCTKi_Free(pointer, line, file);
-    return;
+    return(NULL);
   }
 
   /* Realloc failure */
-  if ((data==NULL)&&(size>0))
-  {
-    fprintf(stderr, "Allocation error! ");
-  }
-
+ 
   /* get the info section */
   info = (t_mallocinfo *)((char*)pointer-sizeof(t_mallocinfo));
 
-  /* make a sanity check: could be allocated with standard malloc */
+  /* make a sanity check: memory could have be allocated with standard malloc */
   if (info->ok!=OK_INTEGRITY)  
   {
     sprintf(mess,"Malloc database corrupted. \n     Reallocation called from %s, line %d. \n     Was this memory allocated with CCTK_MALLOC \n?!",file,line);
@@ -180,6 +177,11 @@ void *CCTKi_Realloc(void *pointer, size_t size, int line, const char *file)
   
   /* reallocate starting at info pointer */
   data = (char*)realloc(info, size+sizeof(t_mallocinfo));
+  if (!data)
+  {
+     printf(mess,"Could not reallocate memory.  Reallocation called from %s, line %d. \n", file,line);
+    CCTK_Warn(0,__LINE__,__FILE__,",routine: CCTKi_Realloc",mess);
+  }
 
   /* get the info section again and update */
   info = (t_mallocinfo*) data;
@@ -312,18 +314,20 @@ int CCTKi_UpdateMemByFile(int size, int line, const char *file)
   int handle, retval=-1;
   
   if ((handle=Util_GetHandle(memfileDB, file, (void**)&memfile)) > -1) 
+  {
+    memfile = (t_memhash*) Util_GetHandledData(memfileDB, handle);
+
+    /* Memory entry under <file> exists */
+    if (memfile)
     {
-      /* Memory entry under <file> exists */
-      if (memfile = (t_memhash*) Util_GetHandledData(memfileDB, handle))
-	{
-	  memfile->size +=size;
-	  memfile->tsize+=size;
-	  retval = 0;
-	}
-      else {
-	retval = -3;
-      }
+      memfile->size +=size;
+      memfile->tsize+=size;
+      retval = 0;
     }
+    else {
+      retval = -3;
+    }
+  }
   else
     {
       /* Memory entry under <file> has to be created */
@@ -414,8 +418,10 @@ long int CCTK_MemTicketCash(int this_ticket)
   long int tdiff;
   unsigned long int tsize;
   t_memticket *tmem;
+  
+  tmem = (t_memticket*) Util_GetHandledData(ticketDB, this_ticket);
 
-  if (tmem = (t_memticket*) Util_GetHandledData(ticketDB, this_ticket))
+  if (tmem)
   {
     tsize = tmem->size;
     tdiff = CCTK_TotalMemory() - tsize;
@@ -450,7 +456,9 @@ int CCTK_MemTicketDelete(int this_ticket)
   int ret_val;
   t_memticket *tmem;
 
-  if (tmem = (t_memticket*)Util_GetHandledData(ticketDB, this_ticket))
+  tmem = (t_memticket*)Util_GetHandledData(ticketDB, this_ticket);
+
+  if (tmem)
   {
     Util_DeleteHandle(ticketDB, this_ticket); 
     ret_val = 0;
