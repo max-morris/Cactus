@@ -10,6 +10,7 @@
 
 #include "cctk_Config.h"
 #include "cctk_Flesh.h"
+#include "cctk_DebugDefines.h"
 
 static const char *rcsid = "$Header$";
 
@@ -19,15 +20,9 @@ CCTK_FILEVERSION(main_DebugDefines_c);
 /********************************************************************
  *********************     External Routines   **********************
  ********************************************************************/
-#ifdef CCTK_DEBUG
-int CCTK_GFINDEX1D (const cGH *GH, int i);
-int CCTK_GFINDEX2D (const cGH *GH, int i, int j);
-int CCTK_GFINDEX3D (const cGH *GH, int i, int j, int k);
-int CCTK_GFINDEX4D (const cGH *GH, int i, int j, int k, int l);
-
 
  /*@@
-   @routine    CCTK_GFINDEX?D
+   @routine    CCTK_GFIndex?D
    @date       Tue 2 Jul 2001
    @author     Thomas Radke
    @desc
@@ -51,25 +46,23 @@ int CCTK_GFINDEX4D (const cGH *GH, int i, int j, int k, int l);
                the linear index for the given spatial indices
    @endreturndesc
 @@*/
-int CCTK_GFINDEX1D (const cGH *GH, int i)
+int CCTK_GFIndex1D (const cGH *GH, int i)
 {
   GH = GH;
   return (i);
 }
 
-int CCTK_GFINDEX2D (const cGH *GH, int i, int j)
+int CCTK_GFIndex2D (const cGH *GH, int i, int j)
 {
   return (i + GH->cctk_lsh[0]*j);
 }
 
-int CCTK_GFINDEX3D (const cGH *GH, int i, int j, int k)
+int CCTK_GFIndex3D (const cGH *GH, int i, int j, int k)
 {
   return (i + GH->cctk_lsh[0]*(j + GH->cctk_lsh[1]*k));
 }
 
-int CCTK_GFINDEX4D (const cGH *GH, int i, int j, int k, int l)
+int CCTK_GFIndex4D (const cGH *GH, int i, int j, int k, int l)
 {
   return (i + GH->cctk_lsh[0]*(j + GH->cctk_lsh[1]*(k + GH->cctk_lsh[2] * l)));
 }
-
-#endif /* CCTK_DEBUG */

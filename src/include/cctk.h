@@ -123,9 +123,11 @@
 #include "cctk_Comm.h"
 #include "cctk_CommandLine.h"
 #include "cctk_Complex.h"
+#include "cctk_DebugDefines.h"
 #include "cctk_Faces.h"
 #include "cctk_File.h"
 #include "cctk_Flesh.h"
+#include "cctk_FortranString.h"
 #include "cctk_Functions.h"
 #include "cctk_GHExtensions.h"
 #include "cctk_Groups.h"
@@ -148,64 +150,63 @@
  * routines/macros to compute the linear index
  * of a grid funtion element from its i/j/k dimensions
  *
- * For C++ these are defined as inline functions, for C as macros.
- * For CCTK_DEBUG these are external C routines defined in Debug.c.
+ * These are defined as inline functions when the language supports this,
+ * otherwise they are defined as macros.
+ * For CCTK_DEBUG these are external C routines defined in DebugDefines.c.
  */
 
-#ifdef CCTK_DEBUG
+#if defined(__cplusplus) || !defined(inline)
+/* The "inline" keyword is supported */
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif /* __cplusplus */
-
-int CCTK_GFINDEX1D (const cGH *GH, int i);
-int CCTK_GFINDEX2D (const cGH *GH, int i, int j);
-int CCTK_GFINDEX3D (const cGH *GH, int i, int j, int k);
-int CCTK_GFINDEX4D (const cGH *GH, int i, int j, int k, int l);
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
-
-#else  /* CCTK_DEBUG */
-
-#ifdef __cplusplus
-
-inline int CCTK_GFINDEX1D (const cGH *GH, int i)
+static inline int CCTK_GFINDEX1D (const cGH *GH, int i);
+static inline int CCTK_GFINDEX1D (const cGH *GH, int i)
 {
   GH = GH;
   return (i);
 }
 
-inline int CCTK_GFINDEX2D (const cGH *GH, int i, int j)
+static inline int CCTK_GFINDEX2D (const cGH *GH, int i, int j);
+static inline int CCTK_GFINDEX2D (const cGH *GH, int i, int j)
 {
   return (i + GH->cctk_lsh[0]*j);
 }
 
-inline int CCTK_GFINDEX3D (const cGH *GH, int i, int j, int k)
+static inline int CCTK_GFINDEX3D (const cGH *GH, int i, int j, int k);
+static inline int CCTK_GFINDEX3D (const cGH *GH, int i, int j, int k)
 {
   return (i + GH->cctk_lsh[0]*(j + GH->cctk_lsh[1]*k));
 }
 
-inline int CCTK_GFINDEX4D (const cGH *GH, int i, int j, int k, int l)
+static inline int CCTK_GFINDEX4D (const cGH *GH, int i, int j, int k, int l);
+static inline int CCTK_GFINDEX4D (const cGH *GH, int i, int j, int k, int l)
 {
   return (i + GH->cctk_lsh[0]*(j + GH->cctk_lsh[1]*(k + GH->cctk_lsh[2] * l)));
 }
 
-#else /* __cplusplus */
+#else /* ! defined(__cplusplus) && defined(inline) */
+
+#ifdef CCTK_DEBUG
+/* The "inline" keyword is not supported, and we want to debug */
+
+#define CCTK_GFINDEX1D CCTK_GFIndex1D
+#define CCTK_GFINDEX2D CCTK_GFIndex2D
+#define CCTK_GFINDEX3D CCTK_GFIndex3D
+#define CCTK_GFINDEX4D CCTK_GFIndex4D
+
+#else /* ! defined(CCTK_DEBUG) */
+/* The "inline" keyword is not supported, and we want to optimise */
 
 #define CCTK_GFINDEX1D(GH, i)          (i)
-#define CCTK_GFINDEX2D(GH, i, j)       ((i) + (GH)->cctk_lsh[0] * ((j)))
+#define CCTK_GFINDEX2D(GH, i, j)       ((i) + (GH)->cctk_lsh[0] * (j))
 #define CCTK_GFINDEX3D(GH, i, j, k)    ((i) + (GH)->cctk_lsh[0] *             \
                                         ((j) + (GH)->cctk_lsh[1] * (k)))
 #define CCTK_GFINDEX4D(GH, i, j, k, l) ((i) + (GH)->cctk_lsh[0] *             \
                                         ((j) + (GH)->cctk_lsh[1] *            \
                                          ((k) + (GH)->cctk_lsh[2] * (l))))
 
-#endif /* __cplusplus */
+#endif /* ! defined(CCTK_DEBUG) */
 
-#endif /* CCTK_DEBUG */
+#endif /* ! defined(__cplusplus) && defined(inline) */
 
 
 #define CCTK_PRINTSEPARATOR \
