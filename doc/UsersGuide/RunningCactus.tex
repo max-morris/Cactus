@@ -569,11 +569,11 @@ contains compilers and compilation flags for a configuration.
 \item [{\tt make.extra.defn}]
 contains details about extra packages used in the configuration.
 
-\item [{\tt config.h}]
+\item [{\tt cctk\_Config.h}]
 The main configuration header file, containing architecture specific
 definitions.
 
-\item [{\tt cctk\_archdefs.h}]
+\item [{\tt cctk\_Archdefs.h}]
 An architecture specific header file containing things which cannot be
 automatically detected, and have thus been hand-coded for this architecture.
 \end{Lentry}
@@ -733,6 +733,7 @@ the same.
 
 \begin{Lentry}
 
+\item [{\tt gmake <target> THORNLIST=<file> [THORNLIST\_DIR=<dir>]}] uses the file {\tt dir/file} as the ThornList for the configuration. The directory defaults to the current directory
 \item [{\tt gmake <target> SILENT=no}] prints the commands that gmake is executing
 \item [{\tt gmake <target> TJOBS=<number>}] compile in parallel, across thorns 
 \item [{\tt gmake <target> FJOBS=<number>}] compile in parallel, across files within each thorn

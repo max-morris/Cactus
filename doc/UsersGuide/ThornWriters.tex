@@ -637,7 +637,7 @@ Any routine using Cactus argument lists (for example all
 routines called from the scheduler) should include at the
 top of the file the header
 \begin{verbatim}
-#include "cctk_arguments.h"
+#include "cctk_Arguments.h"
 \end{verbatim}
 
 A Cactus macro {\tt CCTK\_FARGUMENTS} is defined for each thorn
@@ -671,7 +671,7 @@ using them with the macro {\tt DECLARE\_PARAMETERS}
 Any routine using Cactus parameters should include at
 the top of the file the header
 \begin{verbatim}
-#include "cctk_parameters.h"
+#include "cctk_Parameters.h"
 \end{verbatim}
 
 In Fortran, special care should be taken with string valued parameters.
@@ -690,8 +690,8 @@ well as the standard Cactus variables. The source file should look like
 
 \begin{verbatim}
 #include "cctk.h"
-#include "cctk_arguments.h"
-#include "cctk_parameters.h"
+#include "cctk_Arguments.h"
+#include "cctk_Parameters.h"
 
       subroutine MyFRoutine(CCTK_FARGUMENTS)
 
@@ -774,7 +774,7 @@ Any routine using Cactus argument lists (for example all
 routines called from the scheduler) should include at the
 top of the file the header
 \begin{verbatim}
-#include "cctk_arguments.h"
+#include "cctk_Arguments.h"
 \end{verbatim}
 
 A Cactus macro {\tt CCTK\_CARGUMENTS} is defined for each thorn
@@ -806,7 +806,7 @@ changing a parameter is undefined (at best).
 Any routine using Cactus parameters should include at
 the top of the file the header
 \begin{verbatim}
-#include "cctk_parameters.h"
+#include "cctk_Parameters.h"
 \end{verbatim}
 
 The parameters should be declared at the start of the routine
@@ -818,8 +818,8 @@ The C routine "MyCRoutine" is scheduled in the {\tt schedule.ccl} file,
 and uses Cactus parameters. The source file should look like
 \begin{verbatim}
 #include "cctk.h"
-#include "cctk_arguments.h"
-#include "cctk_parameters.h"
+#include "cctk_Arguments.h"
+#include "cctk_Parameters.h"
 
 void MyCRoutine(CCTK_CARGUMENTS)
 {
@@ -1383,7 +1383,7 @@ processors.
 \item[{\tt int type\_out\_arrays}, {\tt type\_in\_arrays}] 
 specifies the type of the gridfunction 
 you are communicating. Use the values as specified in
-\ref{sec:cctk_datatypes}. Note: do not {\em mix} datatypes: e.g. in
+\ref{sec:datyansi}. Note: do not {\em mix} datatypes: e.g. in
 Fortran do not declare a variable as {\tt integer} and then specify  
 the type {\tt CCTK\_VARIABLE\_INT} in the reduction command. These
 types need not be the same on some architectures and will conflict.
@@ -1436,7 +1436,7 @@ set to $-1$. Otherwise {\tt processor} will hold the reduction result.
 \item[{\tt data\_type}]
 specifies the type of the gridfunction 
 you are communicating. Use the values as specified in
-\ref{sec:cctk_datatypes}.
+\ref{sec:datyansi}.
 \end{Lentry}
 
 \vskip 0.25cm
