@@ -144,13 +144,16 @@ int CCTK_InterpLocalUniform(int N_dims,
  * error codes for CCTK_InterpLocalUniform()
  */
 
-/* an interpolation point is outside the range of the input arrays */
-/* n.b. the "X" here abbreviates "not" -- the point could be out of range */
-/*      along any coordinate axis */
-#define CCTK_ERROR_INTERP_POINT_X_RANGE	(-1000)
-
 /* the grid is too small for the selected interpolation molecule */
-#define CCTK_ERROR_INTERP_GRID_TOO_TINY (-1001)
+#define CCTK_ERROR_INTERP_GRID_TOO_TINY (-1000)
+
+/* an interpolation point is outside the input grid */
+#define CCTK_ERROR_INTERP_POINT_OUTSIDE (-1001)
+/* ... old code for backwards compatability */
+#define CCTK_ERROR_INTERP_POINT_X_RANGE (-1001)
+
+/* an interpolation point is in an excised region */
+#define CCTK_ERROR_INTERP_POINT_EXCISED (-1002)
 
 #ifdef __cplusplus
 }
