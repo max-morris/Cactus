@@ -133,8 +133,8 @@ else
      portland)
        : ${LIBS="pgftnrtl pgf90rtl pgf90 pgf90_rpm1 pghpf2 pgc m"}
        : ${LIBDIRS='$(PGI)/linux86/lib'} 
-       : ${F77_OPTIMISE_FLAGS='-fast -Mvect=sse'}
-       : ${F90_OPTIMISE_FLAGS='-fast -Mvect=sse'}
+       : ${F77_OPTIMISE_FLAGS='-fast'}
+       : ${F90_OPTIMISE_FLAGS='$(F77_OPTIMISE_FLAGS)'}
        : ${F77_DEBUG_FLAGS="-g"}
        : ${F90_DEBUG_FLAGS="-g"}
        ;;
