@@ -526,4 +526,57 @@ sub PrintScheduleStatistics
   return;
 }
 
+#/*@@
+#  @routine    check_schedule_database
+#  @date       26th April 2002
+#  @author     Gabrielle Allen
+#  @desc
+#  Checks on consistency of schedule database
+#  @enddesc
+#  @calls
+#  @calledby
+#  @history
+#
+#  @endhistory
+#
+#@@*/
+
+sub check_schedule_database
+{
+  my($rhschedule_db,%thorns) = @_;
+
+  # make a list of all group names
+  $allgroups = "";
+  foreach $thorn (keys %thorns)
+  {
+    # Process each schedule block
+    for($block = 0 ; $block < $rhschedule_db->{"\U$thorn\E N_BLOCKS"}; $block++)
+    {
+      if ($rhschedule_db->{"\U$thorn\E BLOCK_$block TYPE"} =~ /GROUP/)
+      {
+	$allgroups .= " $rhschedule_db->{\"\U$thorn\E BLOCK_$block NAME\"}";
+      }
+    }
+  }
+
+  # check that scheduling in is only for a known group
+  foreach $thorn (keys %thorns)
+  {
+    # Process each schedule block
+    for($block = 0 ; $block < $rhschedule_db->{"\U$thorn\E N_BLOCKS"}; $block++)
+    {
+      if ($allgroups !~ /$rhschedule_db->{"\U$thorn\E BLOCK_$block WHERE"}/)
+      {
+ 
+	if ($rhschedule_db->{"\U$thorn\E BLOCK_$block WHERE"} !~ m:CCTK_(STARTUP|PARAMCHECK|BASEGRID|INITIAL|POSTINITIAL|RECOVER_VARIABLES|POST_RECOVER_VARIABLES|RECOVER_PARAMETERS|CHECKPOINT|CPINITIAL|PRESTEP|EVOL|POSTSTEP|ANALYSIS|TERMINATE|SHUTDOWN):)
+	{
+	  $message = "Scheduling $rhschedule_db->{\"\U$thorn\E BLOCK_$block NAME\"} in non-existant group or timebin $rhschedule_db->{\"\U$thorn\E BLOCK_$block WHERE\"}";
+	  $hint = "If this routine should be scheduled check the spelling of the group or timebin name. Note that scheduling IN must use full names for standard timebins (e.g. CCTK_EVOL and not EVOL)";
+	  &CST_error(1,$message,$hint,__LINE__,__FILE__);
+	}
+      }
+    }
+  }
+}
+
 1;

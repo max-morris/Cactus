@@ -6,7 +6,7 @@
 #  @desc 
 #  Parses the the configuration files for thorns.
 #  @enddesc 
-#  @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.48 2002-03-27 15:34:17 tradke Exp $
+#  @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.49 2002-04-26 13:47:07 allen Exp $
 #@@*/
 
 # Global parameter to track the number of errors from the CST
@@ -120,6 +120,8 @@ print "Parsing schedule files...\n";
 %schedule_database = &create_schedule_database(%source_thorns);
 
 print "Checking consistency...\n";
+&check_schedule_database(\%schedule_database, %source_thorns);
+
 %parameter_database = &CheckImpParamConsistency(scalar(keys %interface_database), %interface_database, %parameter_database);
 
 &print_parameter_database(%parameter_database) if($debug_parameters);
@@ -171,6 +173,10 @@ if ($CST_errors)
     print "------------------------------------------------------\n\n";
     &CST_PrintErrors;
     exit(1);
+}
+else
+{
+  &CST_PrintErrors;
 }
 
 &WriteFile("$config_dir/make.thornlist", \$make_thornlist);
