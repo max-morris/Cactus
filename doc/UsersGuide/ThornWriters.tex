@@ -1921,6 +1921,8 @@ c Add this to AllSources.inc
 Any Fortran thorn routines which include source code must include 
 the declaration {\tt DECLARE\_CCTK\_FUNCTIONS}.
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Commenting Source Code}
 
 Note that since most source files (see Section~\ref{nacofosofi} for exceptions) 
@@ -1930,27 +1932,33 @@ they indicate the string concatonation operator in Fortran.
 
 The Flesh and the Cactus thorns use {\tt grdoc} to document the code.
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Coordinates}
 \label{sec:co}
 
 The flesh provides utility routines for registering and querying coordinate 
-information. 
-The flesh does not provide any coordinates itself, these must be supplied 
-by a thorn. 
-Thorns are not required to register coordinates to the flesh, 
-but registering coordinates provides a means 
-for infrastructure thorns, to make use of coordinate information.
+information. The flesh does not provide any coordinates itself, these must be
+supplied by a thorn. Thorns are not required to register coordinates to the
+flesh, but registering coordinates provides a means for infrastructure thorns,
+to make use of coordinate information.
 
-Coordinate support is still being developed in the Cactus flesh. 
-At the moment, it is assumed that 
-coordinates will usually be grid functions. 
+Coordinate support is still being developed in the Cactus flesh. At the moment,
+it is assumed that coordinates will usually be grid functions. 
 
-Coordinates are grouped into {\it coordinate systems}, which have a specified dimension. Any number of 
-coordinate systems can be registered with the flesh, and a coordinate system must be registered before
-any coordinates can be registered, since they must be associated with their corresponding system. 
-Coordinates can be registered, with any chosen name, with an existing coordinate system, along with
-their direction or index in the coordinate system. Optionally, the coordinate can also be associated with
-a given grid variable. A separate call can register the global range for a coordinate on a given grid hierachy. 
+Coordinates are grouped into {\it coordinate systems}, which have a specified
+dimension. Any number of coordinate systems can be registered with the flesh,
+and a coordinate system must be registered before any coordinates can be
+registered, since they must be associated with their corresponding system. 
+Coordinates can be registered, with any chosen name, with an existing coordinate
+system, along with their direction or index in the coordinate system.
+Optionally, the coordinate can also be associated with a given grid variable.
+A separate call can register the global range for a coordinate on a given grid
+hierachy. 
+
+A registered coordinate system can be refered to by both its name and an
+associated handle. Passing such an integer handle instead of the name string
+is necessary for calling C routines from Fortran.\\
 
 The registration utilities for thorns providing coordinates are:
 \begin{Lentry}
@@ -1979,6 +1987,14 @@ The utilities for thorns using coordinates are:
 
 Provides the dimension of a coordinate system
 
+\item[{\tt CCTK\_CoordSystemHandle}]
+
+Provides the integer handle for a given coordinate system name
+
+\item[{\tt CCTK\_CoordSystemName}]
+
+Provides the name string for a given coordinate system handle
+
 \item[{\tt CCTK\_CoordIndex}]
 
 Provides the grid variable index for a given coordinate
@@ -1998,12 +2014,14 @@ Provides the local range of a coordinate on a processor for
 
 \end{Lentry}
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{IO}
 \label{sec:io}
 
 To allow flexible IO, the flesh itself does not provide 
 any output routines, however it provides a mechanism for 
-thorns to register different routines as IO methods (see chapter \ref{chap:iome}).
+thorns to register different routines as IO methods (see chapter \ref{chap:io_methods}).
 Application thorns can interact with the different IO methods through the
 following function calls:
 
@@ -2058,6 +2076,55 @@ of constructing a filename.
 
 \end{Lentry}
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Interpolation Operators}
+\label{sec:inop}
+
+The flesh does not provide interpolation routines by itself. Instead it offers
+a general function API to thorns for the registration and invocation of
+interpolation operators.
+
+Interpolation is done on arrays which can be either processor-local or
+distributed among all processors in the computational domain. Thorns can
+register an interpolation operator under a unique name as a set of 2 routines --
+one for every array type. If an operator cannot handle both types, the
+corresponding routine may be left unregistered. At registration every
+interpolation operator gets assigned a unique integer number which is used as
+a handle to refer to the operator later on.
+
+Separate flesh routines exist to invoke an interpolation operator for either
+one of these types. The number of points to interpolate along with their
+coordinates are passed in as well as necessary information about the coordinate
+system to use for interpolation.
+The flesh routines take a variable list of input and output arrays as arguments
+thus allowing operators to be optimized for interpolating multiple arrays
+at the same coordinate points.\\
+
+The flesh registration routines for interpolation operators are:
+\begin{Lentry}
+  \item[{\tt CCTK\_InterpRegisterOperatorGV}]
+    Registers a user-supplied routine as an interpolation operator for
+    distributed CCTK variables
+  \item[{\tt CCTK\_InterpRegisterOperatorLocal}]
+    Registers a user-supplied routine as an interpolation operator for
+    processor-local arrays
+\end{Lentry}
+
+The flesh routines for invoking an interpolation operator are:
+\begin{Lentry}
+  \item[{\tt CCTK\_InterpHandle}]
+    Provides the handle for a given interpolation operator
+  \item[{\tt CCTK\_InterpGV}]
+    Calls the operator associated with the given handle
+    for interpolating a list of distributed CCTK variables
+  \item[{\tt CCTK\_InterpLocal}]
+    Calls the operator associated with the given handle
+    for interpolating a list of processor-local arrays
+\end{Lentry}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Reduction Operators}
 \label{sec:reop}
 
