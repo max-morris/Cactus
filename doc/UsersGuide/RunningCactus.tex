@@ -395,8 +395,11 @@ Flags for the C++ compiler
 Flags for the archiver
 
 \item [{\tt DEBUG}]
-Specifies what type of debug mode should be used. The only
-option currently available is {\tt yes}. The default is no debugging.
+Specifies what type of debug mode should be used, the default is no debugging.
+Current options are {\tt yes}, {\tt no}, or {\tt memory}. The option 
+{\tt yes} switches on all debugging features, whereas {\tt memory} just 
+employs memory tracing (\ref{sec:metr}).
+
 
 \item [{\tt OPTIMISE}]
 Specifies what type of optimisation should be used. The only option

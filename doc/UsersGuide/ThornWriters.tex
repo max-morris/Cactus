@@ -216,7 +216,7 @@ The name of the group
 
 \item [{\tt group type}]
 This indicates the kind of variables help by the group (each group can
-only hold one kind of variable).
+only hold one kind of variable), and defaults to {\tt GF}.
 
 \begin{Lentry}
 \item [{\tt SCALAR}]
@@ -245,11 +245,11 @@ by a driver thorn.
 \item [{\tt TimeLevels}]
 This is the number of timelevels the group has. This defaults to 1.
 
-\item [{\tt stagger}]
+\item [{\tt Stagger}]
 This attribute defines the stagger for a grid function. Specify a
 string of length {\tt Dim}, where each character indicates the type of 
 staggering in that direction (yxz ordered). If you use default
-staggering ({\tt MMM}), you can ommit this attribute.
+staggering ({\tt MMM}), you can omit this attribute.
 \begin{Lentry}
 \item[{\tt M}] no staggering (``minus'' face, relative to default gridpoint).
 \item[{\tt C}] center staggering
@@ -257,7 +257,17 @@ staggering ({\tt MMM}), you can ommit this attribute.
 relative to default)
 \end{Lentry}
 For a full discussion on staggering refer to \ref{sec:staggercode}.
+
+\item [{\tt Distrib}]
+This attribute describes how an array should be distributed across 
+multiple processors, it defaults to {\tt DEFAULT}.
+\begin{Lentry}
+\item[{\tt DEFAULT}] Distribute grid in default manner across processors. 
+\item[{\tt CONSTANT}] Put a constant sized array on each processor.
 \end{Lentry}
+
+\end{Lentry}
+
 
 
 A group specification consists of the variable type, followed by
@@ -327,7 +337,7 @@ These are only seen by this thorn.
 A parameter specification consists of:
 \begin{itemize}
 
-\item the parameter type (each may have an optional {\t CCTL\_} in front)
+\item the parameter type (each may have an optional {\t CCTK\_} in front)
 \begin{Lentry}
 \item [{\tt REAL}]
 \item [{\tt INT}]
@@ -1071,10 +1081,11 @@ different architectures or configurations.
 
 \subsection{Staggering}
 The staggering of a gridfunction or array describes the {\em physical} 
-placement of that gridfunctions relative to the supporting grid
-structure.  A gridfunction e.g. does not be placed at the intersection 
-of the ``grid lines''. They could moved by half a grid spacing in
-either or each direction. In the latter case, they will be placed in
+placement of that gridfunction relative to the supporting grid
+structure. For example, a gridfunction does not have to 
+be placed at the intersection 
+of the ``grid lines''. It can moved by half a grid spacing in
+any or all dimensions. In the latter case, it will be placed in
 the center of a cell.  
 
 The staggering of grid function is a pure {\em physical} property: 
@@ -1326,31 +1337,32 @@ Notes
 \end{itemize}
 
 \section{Memory Tracing}
-\label{memtracing}
-Cactus allows to override the standard C memory allocation routines
-({\tt malloc, free,} \ldots) with Cactus specific routines, that track 
-the amount of memory allocated and in which routine and line the
-allocation call was made. This data can be accessed by the user to get 
-an understanding of the memory consumption between two instances and
-to track down possible memory leaks. Thsi feature is available in C only.
+\label{sec:metr}}
+
+Cactus provides a mechanism for overriding the standard C memory allocation 
+routines ({\tt malloc, free,} \ldots) with Cactus specific routines, 
+that track the amount of memory allocated and from where the
+allocation call was made. This information can be accessed by the user to
+provide an understanding of the memory consumption between two instances and
+to track down possible memory leaks. This feature is available in C only.
 
 \subsection{Activating Memory Tracing}
-Memory tracing has to be activated at configure time. It redfines the
-standard malloc statements with the {\tt CCTK\_MALLOC} macros. The
-redefinition, which allows memorytracing can be activated by setting:
+\label{sec:acmetr}
+
+Memory tracing has to be activated at configure time. The
+standard malloc statements are overriden with macros ({\tt CCTK\_MALLOC}). 
+To activate memory tracing use either
 
 \begin{Lentry}
 \item[{\tt DEBUG=all}]  Enables all debug options (compiler debug
 flags, redefines malloc)
-\item[{\tt DEBUG=memory}] Redefined malloc only.
+\item[{\tt DEBUG=memory}] Redefine malloc only.
 \end{Lentry}
 
-The {\tt CCTK\_MALLOC} statements can be used directly in the C
+The {\tt CCTK\_MALLOC} statements can also be used directly in the C
 code. But by employing them this way, only a fraction of the total
 memory consumption is traced. Also, they cannot be turned off at
-configure time. (this behavior might change).
-
-Example:
+configure time. (this behavior might change). For example:
 \begin{verbatim}
 machine> gmake bigbuild DEBUG=yes
  
@@ -1361,8 +1373,10 @@ turned on. The already existing configuration {\tt bigbuild} is
 reconfigured with memory tracing only.
 
 \subsection{Using Memory Tracing}
+\label{sec:usmetr}
+
 You can  request Cactus to store the memory consumption at a certain
-instance in the programm flow and return the difference in memory
+instance in the program flow and return the difference in memory
 allocation some time later.
 
 \begin{Lentry}
@@ -1372,7 +1386,7 @@ allocation some time later.
 	difference in memory allocation between the two instances in
  	CCTK\_MemTicketCash.	
  
-\item[{tt long int CCTK\_MemTicketCash(int your\_ticket)}]
+\item[{\tt long int CCTK\_MemTicketCash(int your\_ticket)}]
 	Cash in your ticket: return the memory difference between now and the
      	time the ticket was requested. Tickets can be cashed in
 	several times. See Example below.
@@ -1395,38 +1409,38 @@ allocation some time later.
 	successive calls to this routine, as well as the difference. 
 \end{Lentry}
 
-Sample C Code demonstrting the ticket handling. Two tickets are
-requested during malloc operations. Teh {\tt CCTK\_MALLOC} statement is 
+Sample C Code demonstrating the ticket handling. Two tickets are
+requested during malloc operations. The {\tt CCTK\_MALLOC} statement is 
 used directly. They are cashed in and the memory
 difference is printed. Ticket 1 is cashed twice. The tickets are
 deleted at the end.
 \begin{verbatim}
 
-	int ticket1;
-	int ticket2;
+int ticket1;
+int ticket2;
 
-        /* store current memstate, ticket: t1*/
-	t1= CCTK_MemTicketRequest();
+/* store current memstate, ticket: t1*/
+t1 = CCTK_MemTicketRequest();
 
-	/* allocate data */	
-	hi= (int*) CCTK_MALLOC(10*sizeof(int));
+/* allocate data */	
+hi = (int*) CCTK_MALLOC(10*sizeof(int));
 
-        /* store current memstate, ticket: t2*/
-	t2= CCTK_MemTicketRequest();      
+/* store current memstate, ticket: t2*/
+t2 = CCTK_MemTicketRequest();      
 	
-	/* cash ticket t1, print mem difference */	
-	printf("NOW1a: %+d \n",CCTK_MemTicketCash(t1)); 
+/* cash ticket t1, print mem difference */	
+printf("NOW1a: %+d \n",CCTK_MemTicketCash(t1)); 
 
-	/* allocte some more data */
-	wo= (CCTK_REAL*)CCTK_MALLOC(10*sizeof(CCTK_REAL));
+/* allocte some more data */
+wo = (CCTK_REAL*)CCTK_MALLOC(10*sizeof(CCTK_REAL));
 	
-	/* cash ticket t1 and t2, print mem difference */	
-	printf("NOW1b: %+d \n",CCTK_MemTicketCash(t1));  
-	printf("NOW2 : %+d \n",CCTK_MemTicketCash(t2));    
+/* cash ticket t1 and t2, print mem difference */	
+printf("NOW1b: %+d \n",CCTK_MemTicketCash(t1));  
+printf("NOW2 : %+d \n",CCTK_MemTicketCash(t2));    
 
-	/* delete the tickets from the database */
-	CCTK_MemTicketDelete(t1);
-	CCTK_MemTicketDelete(t2);
+/* delete the tickets from the database */
+CCTK_MemTicketDelete(t1);
+CCTK_MemTicketDelete(t2);
 
 \end{verbatim}
 
