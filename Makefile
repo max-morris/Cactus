@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.68 2000-01-26 17:23:54 allen Exp $
+#   @version $Id: Makefile,v 1.69 2000-02-04 10:14:00 goodale Exp $
 # @@*/
 
 ##################################################################################
@@ -59,7 +59,7 @@ endif
 
 # Set the options to pass to the setup script
 ifneq ($(strip $(options)),)
-SETUP_OPTIONS = -configfile=$(options)
+SETUP_OPTIONS = -config_file=$(options)
 else
 SETUP_OPTIONS = 
 endif
