@@ -1,3 +1,39 @@
+                     ********************************
+                        Welcome to the Cactus Code
+                               Version 4.0
+                     ********************************
+
+All Cactus source code is (c) Copyright by the Authors listed in the
+respective README and source files that you will find scattered thru
+the directory structure of all the thorns. This is a truly
+collaborative development project that benefits from input of many
+people worldwide and we try our best to give credit to every
+contribution. The cactus code web page at
+                    http://www.cactuscode.org 
+contains an extensive list of authors to all the thorns that are
+part of the Cactus Code project. 
+
+The flesh of the Cactus Code and the design of the project is (c)
+Copyright 1997-99 by Gabrielle Allen, Tom Goodale, Joan Masso and Paul
+Walker from the Numerical Relativity group of the Max-Planck-Institut
+fuer Gravitationphysik / Albert Einstein Institute
+(http://www.aei-potsdam.mpg.de).
+
+The Cactus Code is distributed under the GNU general public license
+version 2 which is available below. All thorns distributed with Cactus
+follow this license unless it is explicitly stated otherwise in the
+corresponding README files.
+
+Please, take a look at the documentation in the main doc directory or
+check the cactus web page for instructions on how to run the code,
+report bugs, give feedback, etc. 
+
+Thanks for using cactus. We hope you find it useful. Love it or hate
+it, please let us know what you think.
+- The Cactus Team <cactus@cactuscode.org>
+
+**************************************************************************
+
 		    GNU GENERAL PUBLIC LICENSE
 		       Version 2, June 1991
 
@@ -337,3 +373,5 @@ proprietary programs.  If your program is a subroutine library, you may
 consider it more useful to permit linking proprietary applications with the
 library.  If this is what you want to do, use the GNU Library General
 Public License instead of this License.
+
+
