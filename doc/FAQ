@@ -1,7 +1,7 @@
 
 Cactus Code Frequently Asked Questions
 
-$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.22 2001-09-17 16:06:50 allen Exp $
+$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.23 2001-10-23 08:14:19 allen Exp $
 
 Also available at http://www.cactuscode.org/Documentation/FAQ
 
@@ -339,6 +339,20 @@ Also available at http://www.cactuscode.org/Documentation/FAQ
                 "7 July 2000"
 
     Also look at FAQ No. 18
+
+--------------------------------------------------------------------------------    
+
+25. Why don't you use compilers mpicc, mpiCC etc when they exist on parallel 
+    machines?
+
+    The compilers mpicc etc are scripts for compilation which are site dependent
+    and whose contents can change. The major reason we don't use these is that
+    in general it is difficult to work out what underlying compiler is being
+    used, which in turn leads to problems adding the correct compilation flags.
+
+    So far we have found it more convenient and transparent to manually add 
+    libraries and options to the configure system than to rely on mpicc behaving
+    well on all platforms. At some point we will be reinvestigating this.
 
 --------------------------------------------------------------------------------    
 
