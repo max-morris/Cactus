@@ -1,7 +1,7 @@
 
 Cactus Code Frequently Asked Questions
 
-$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.39 2002-08-19 10:04:32 allen Exp $
+$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.40 2002-08-19 10:42:23 allen Exp $
 
 Also available at http://www.cactuscode.org/Documentation/FAQ
 
@@ -206,7 +206,6 @@ Also available at http://www.cactuscode.org/Documentation/FAQ
                 unterminated character constant
     make[2]: *** [metric.F90.d] Error 33                                
 
-
     But then when I type gmake again the compilation proceeds without problem.
 
     You are probably using Linux, and the C preprocessor is complaining 
@@ -219,8 +218,27 @@ Also available at http://www.cactuscode.org/Documentation/FAQ
     before using the C preprocessor, but we don't want to add this overhead
     at the moment, since we are writing a Cactus preprocessor which won't 
     have this problem (and will solve a number of other preprocessing 
-    problems). You should try and remove any single apostrophes in 
-    Fortran comments for now, or use gmake twice.
+    problems). 
+
+    Your choices for getting past this for now are
+
+     - try and remove any single apostrophes in Fortran comments
+
+     - use gmake twice and live with possibly bad dependency information
+       for these files
+
+     - if you are using Linux, try using the option "-traditional" 
+       with the GNU cpp which does ignore the apostrophes.  
+
+    Unfortunately, cpp is broken in Red Hat's version 2.96, and in the official 
+    releases 3.0 up to 3.0.3.  The versions 2.95.x and 3.0.4 do work fine.
+
+    In order to use a different cpp and to pass the option "-traditional", use 
+    for example
+
+    CPP = /home/user/gcc/bin/cpp -traditional
+
+    when you configure your application.
 
 -------------------------------------------------------------------------------
 
@@ -477,7 +495,8 @@ Also available at http://www.cactuscode.org/Documentation/FAQ
     Creating cactus_origin in /data2/convCactus/exe from
     CactusBase/IOASCII CactusBase/Boundary CactusPUGH/PUGHInterp 
     CactusBase/CartGrid3D CactusEinstein/StaticConformal CactusPUGH/PUGHReduce
-    CactusEinstein/ADMBase CactusBase/Time CactusPUGH/PUGH CactusPUGH/PUGHSlab     CactusBase/IOUtil CactusElliptic/EllBase CactusBase/IOBasic
+    CactusEinstein/ADMBase CactusBase/Time CactusPUGH/PUGH CactusPUGH/PUGHSlab
+    CactusBase/IOUtil CactusElliptic/EllBase CactusBase/IOBasic
     ld64: ERROR   33 : Unresolved text symbol "SetCartSymVN" -- 1st referenced 
     by /data2/Cactus/configs/origin/lib/libADMBase.a\
     (InitSymBound.c.o)
