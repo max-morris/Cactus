@@ -139,7 +139,7 @@ int ParseFile(FILE *ifp,
   num_errors = 0;
 
   /* avoid compiler warning about unused parameter */
-  ConfigData = ConfigData;
+  (void) (ConfigData + 0);
 
   /* allocate parse buffers */
   tokens = (char *) malloc (4 * BUF_SZ);
@@ -180,7 +180,7 @@ int ParseFile(FILE *ifp,
       if(intoken)
       {
         fprintf(stderr, "Parse error at line %d.  No value supplied.\n", lineno);
-	num_errors++;
+        num_errors++;
         intoken = 0;
       }
 
@@ -289,15 +289,20 @@ int ParseFile(FILE *ifp,
         {
           /* We got a define */
           /* FIXME: Assume it is a parameter file for now */
-          char filename[500];
-          char *dir;
-          char *file;
-          int lpar;
+          char path[500];
+          char *parfile;
 
-          CCTK_ParameterFilename(500,filename);
-          Util_SplitFilename(&dir,&file,filename);
-
-          lpar=((strlen(file)-3)*sizeof(char));
+          CCTK_ParameterFilename(500,path);
+          parfile = strrchr (path, '/');
+          if (parfile == NULL)
+          {
+            parfile = path;
+          }
+          /* skip the parameter file extension */
+          if (strcmp (parfile + strlen (parfile) - 4, ".par") == 0)
+          {
+            parfile[strlen (parfile) - 4] = 0;
+          }
 
           /* ignore everything else on the line */
           while (!(c==' ' || c=='\t' || c == '\n' || c == EOF))
@@ -307,11 +312,7 @@ int ParseFile(FILE *ifp,
             printf("%c",c);
 #endif
           }
-          strncpy(value,file,lpar);
-          free(dir);
-          free(file);
-          value[strlen(value)-1] = '\0';
-          set_function(tokens,value,lineno);
+          set_function(tokens,parfile,lineno);
         }
         else
         {
@@ -373,7 +374,7 @@ int ParseFile(FILE *ifp,
               {
                 value[pp++] = c;
                 CheckBuf(pp,lineno);
-	      }
+              }
               if (c == ',') ncommas ++;
               c = fgetc(ifp);
 #ifdef DEBUG
