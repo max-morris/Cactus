@@ -97,6 +97,27 @@ void CCTK_FCALL CCTK_FNAME (CCTK_InterpGridArrays)
                             const int *N_output_arrays,
                               const CCTK_INT output_array_types[],
                               void *const output_arrays[]);
+void CCTK_FCALL CCTK_FNAME (CCTK_InterpLocalUniform)
+                           (int *ierror,
+                            const int *N_dims,
+                            const int *operator_handle,
+                            const int *param_table_handle,
+                            /***** coordinate system *****/
+                            const CCTK_REAL coord_origin[],
+                            const CCTK_REAL coord_delta[],
+                            /***** interpolation points *****/
+                            const int *N_interp_points,
+                            const int *interp_coords_type_code,
+                            const void *const interp_coords[],
+                            /***** input arrays *****/
+                            const int *N_input_arrays,
+                            const CCTK_INT input_array_dims[],
+                            const CCTK_INT input_array_type_codes[],
+                            const void *const input_arrays[],
+                            /***** output arrays *****/
+                            const int *N_output_arrays,
+                            const CCTK_INT output_array_type_codes[],
+                            void *const output_arrays[]);
 
 /******************************************************************************
  *************************    Internal Data Structures ************************
@@ -978,7 +999,7 @@ int CCTK_InterpLocal (cGH *GH,
   if (obsolete_warning_first_time_flag)
   {
     obsolete_warning_first_time_flag = 0;
-    CCTK_VWarn(1, __LINE__, __FILE__, "Cactus",
+    CCTK_VWarn(0, __LINE__, __FILE__, "Cactus",
 "\n"
 "***\n"
 "*** CCTK_InterpLocal()  is obsolescent and will be phased out soon!\n"
@@ -1441,4 +1462,38 @@ int CCTK_InterpLocalUniform(int N_dims,
                                                 N_output_arrays,
                                                 output_array_type_codes,
                                                 output_arrays);
+}
+
+
+void CCTK_FCALL CCTK_FNAME (CCTK_InterpLocalUniform)
+                           (int *ierror,
+                            const int *N_dims,
+                            const int *operator_handle,
+                            const int *param_table_handle,
+                            /***** coordinate system *****/
+                            const CCTK_REAL coord_origin[],
+                            const CCTK_REAL coord_delta[],
+                            /***** interpolation points *****/
+                            const int *N_interp_points,
+                            const int *interp_coords_type_code,
+                            const void *const interp_coords[],
+                            /***** input arrays *****/
+                            const int *N_input_arrays,
+                            const CCTK_INT input_array_dims[],
+                            const CCTK_INT input_array_type_codes[],
+                            const void *const input_arrays[],
+                            /***** output arrays *****/
+                            const int *N_output_arrays,
+                            const CCTK_INT output_array_type_codes[],
+                            void *const output_arrays[])
+{
+  *ierror = CCTK_InterpLocalUniform (*N_dims, *operator_handle,
+                                     *param_table_handle,
+                                     coord_origin, coord_delta,
+                                     *N_interp_points, *interp_coords_type_code,
+                                     interp_coords,
+                                     *N_input_arrays, input_array_dims,
+                                     input_array_type_codes, input_arrays,
+                                     *N_output_arrays, output_array_type_codes,
+                                     output_arrays);
 }
