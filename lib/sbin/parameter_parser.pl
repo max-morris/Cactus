@@ -525,6 +525,11 @@ sub PrintParameterStatistics
   my($thorn, %parameter_database) = @_;
   my($block);
   my($sep);
+  
+  if($parameter_database{"\U$thorn SHARES implementations"} ne "")
+  {
+    print "           Shares: " . $parameter_database{"\U$thorn SHARES implementations"} . "\n";
+  }
 
   $sep = "          ";
   foreach $block ("Global", "Restricted", "Private")
