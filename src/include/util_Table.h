@@ -183,40 +183,40 @@ int Util_TableSetChar(int handle, CCTK_CHAR value, const char *key);
 
 /* integers */
 int Util_TableSetInt(int handle, CCTK_INT value, const char *key);
-#if CCTK_HAVE_INT1
+#ifdef HAVE_CCTK_INT1
 int Util_TableSetInt1(int handle, CCTK_INT1 value, const char *key);
 #endif
-#if CCTK_HAVE_INT2
+#ifdef HAVE_CCTK_INT2
 int Util_TableSetInt2(int handle, CCTK_INT2 value, const char *key);
 #endif
-#if CCTK_HAVE_INT4
+#ifdef HAVE_CCTK_INT4
 int Util_TableSetInt4(int handle, CCTK_INT4 value, const char *key);
 #endif
-#if CCTK_HAVE_INT8
+#ifdef HAVE_CCTK_INT8
 int Util_TableSetInt8(int handle, CCTK_INT8 value, const char *key);
 #endif
 
 /* real numbers */
 int Util_TableSetReal(int handle, CCTK_REAL value, const char *key);
-#if CCTK_HAVE_REAL4
+#ifdef HAVE_CCTK_REAL4
 int Util_TableSetReal4(int handle, CCTK_REAL4 value, const char *key);
 #endif
-#if CCTK_HAVE_REAL8
+#ifdef HAVE_CCTK_REAL8
 int Util_TableSetReal8(int handle, CCTK_REAL8 value, const char *key);
 #endif
-#if CCTK_HAVE_REAL16
+#ifdef HAVE_CCTK_REAL16
 int Util_TableSetReal16(int handle, CCTK_REAL16 value, const char *key);
 #endif
 
 /* complex numbers */
 int Util_TableSetComplex(int handle, CCTK_COMPLEX value, const char *key);
-#if CCTK_HAVE_REAL4
+#ifdef HAVE_CCTK_REAL4
 int Util_TableSetComplex8(int handle, CCTK_COMPLEX8 value, const char *key);
 #endif
-#if CCTK_HAVE_REAL8
+#ifdef HAVE_CCTK_REAL8
 int Util_TableSetComplex16(int handle, CCTK_COMPLEX16 value, const char *key);
 #endif
-#if CCTK_HAVE_REAL16
+#ifdef HAVE_CCTK_REAL16
 int Util_TableSetComplex32(int handle, CCTK_COMPLEX32 value, const char *key);
 #endif
 
@@ -247,22 +247,22 @@ int Util_TableSetCharArray(int handle,
 int Util_TableSetIntArray(int handle,
                           int N_elements, const CCTK_INT array[],
                           const char *key);
-#if CCTK_HAVE_INT1
+#ifdef HAVE_CCTK_INT1
 int Util_TableSetInt1Array(int handle,
                            int N_elements, const CCTK_INT1 array[],
                            const char *key);
 #endif
-#if CCTK_HAVE_INT2
+#ifdef HAVE_CCTK_INT2
 int Util_TableSetInt2Array(int handle,
                            int N_elements, const CCTK_INT2 array[],
                            const char *key);
 #endif
-#if CCTK_HAVE_INT4
+#ifdef HAVE_CCTK_INT4
 int Util_TableSetInt4Array(int handle,
                            int N_elements, const CCTK_INT4 array[],
                            const char *key);
 #endif
-#if CCTK_HAVE_INT8
+#ifdef HAVE_CCTK_INT8
 int Util_TableSetInt8Array(int handle,
                            int N_elements, const CCTK_INT8 array[],
                            const char *key);
@@ -272,17 +272,17 @@ int Util_TableSetInt8Array(int handle,
 int Util_TableSetRealArray(int handle,
                            int N_elements, const CCTK_REAL array[],
                            const char *key);
-#if CCTK_HAVE_REAL4
+#ifdef HAVE_CCTK_REAL4
 int Util_TableSetReal4Array(int handle,
                             int N_elements, const CCTK_REAL4 array[],
                             const char *key);
 #endif
-#if CCTK_HAVE_REAL8
+#ifdef HAVE_CCTK_REAL8
 int Util_TableSetReal8Array(int handle,
                             int N_elements, const CCTK_REAL8 array[],
                             const char *key);
 #endif
-#if CCTK_HAVE_REAL16
+#ifdef HAVE_CCTK_REAL16
 int Util_TableSetReal16Array(int handle,
                              int N_elements, const CCTK_REAL16 array[],
                              const char *key);
@@ -292,17 +292,17 @@ int Util_TableSetReal16Array(int handle,
 int Util_TableSetComplexArray(int handle,
                               int N_elements, const CCTK_COMPLEX array[],
                               const char *key);
-#if CCTK_HAVE_REAL4
+#ifdef HAVE_CCTK_REAL4
 int Util_TableSetComplex8Array(int handle,
                                int N_elements, const CCTK_COMPLEX8 array[],
                                const char *key);
 #endif
-#if CCTK_HAVE_REAL8
+#ifdef HAVE_CCTK_REAL8
 int Util_TableSetComplex16Array(int handle,
                                 int N_elements, const CCTK_COMPLEX16 array[],
                                 const char *key);
 #endif
-#if CCTK_HAVE_REAL16
+#ifdef HAVE_CCTK_REAL16
 int Util_TableSetComplex32Array(int handle,
                                 int N_elements, const CCTK_COMPLEX32 array[],
                                 const char *key);
@@ -328,40 +328,40 @@ int Util_TableGetChar(int handle, CCTK_CHAR *value, const char *key);
 
 /* integers */
 int Util_TableGetInt(int handle, CCTK_INT *value, const char *key);
-#if CCTK_HAVE_INT1
+#ifdef HAVE_CCTK_INT1
 int Util_TableGetInt1(int handle, CCTK_INT1 *value, const char *key);
 #endif
-#if CCTK_HAVE_INT2
+#ifdef HAVE_CCTK_INT2
 int Util_TableGetInt2(int handle, CCTK_INT2 *value, const char *key);
 #endif
-#if CCTK_HAVE_INT4
+#ifdef HAVE_CCTK_INT4
 int Util_TableGetInt4(int handle, CCTK_INT4 *value, const char *key);
 #endif
-#if CCTK_HAVE_INT8
+#ifdef HAVE_CCTK_INT8
 int Util_TableGetInt8(int handle, CCTK_INT8 *value, const char *key);
 #endif
 
 /* real numbers */
 int Util_TableGetReal(int handle, CCTK_REAL *value, const char *key);
-#if CCTK_HAVE_REAL4
+#ifdef HAVE_CCTK_REAL4
 int Util_TableGetReal4(int handle, CCTK_REAL4 *value, const char *key);
 #endif
-#if CCTK_HAVE_REAL8
+#ifdef HAVE_CCTK_REAL8
 int Util_TableGetReal8(int handle, CCTK_REAL8 *value, const char *key);
 #endif
-#if CCTK_HAVE_REAL16
+#ifdef HAVE_CCTK_REAL16
 int Util_TableGetReal16(int handle, CCTK_REAL16 *value, const char *key);
 #endif
 
 /* complex numbers */
 int Util_TableGetComplex(int handle, CCTK_COMPLEX *value, const char *key);
-#if CCTK_HAVE_REAL4
+#ifdef HAVE_CCTK_REAL4
 int Util_TableGetComplex8(int handle, CCTK_COMPLEX8 *value, const char *key);
 #endif
-#if CCTK_HAVE_REAL8
+#ifdef HAVE_CCTK_REAL8
 int Util_TableGetComplex16(int handle, CCTK_COMPLEX16 *value, const char *key);
 #endif
-#if CCTK_HAVE_REAL16
+#ifdef HAVE_CCTK_REAL16
 int Util_TableGetComplex32(int handle, CCTK_COMPLEX32 *value, const char *key);
 #endif
 
@@ -392,22 +392,22 @@ int Util_TableGetCharArray(int handle,
 int Util_TableGetIntArray(int handle,
                           int N_elements, CCTK_INT array[],
                           const char *key);
-#if CCTK_HAVE_INT1
+#ifdef HAVE_CCTK_INT1
 int Util_TableGetInt1Array(int handle,
                            int N_elements, CCTK_INT1 array[],
                            const char *key);
 #endif
-#if CCTK_HAVE_INT2
+#ifdef HAVE_CCTK_INT2
 int Util_TableGetInt2Array(int handle,
                            int N_elements, CCTK_INT2 array[],
                            const char *key);
 #endif
-#if CCTK_HAVE_INT4
+#ifdef HAVE_CCTK_INT4
 int Util_TableGetInt4Array(int handle,
                            int N_elements, CCTK_INT4 array[],
                            const char *key);
 #endif
-#if CCTK_HAVE_INT8
+#ifdef HAVE_CCTK_INT8
 int Util_TableGetInt8Array(int handle,
                            int N_elements, CCTK_INT8 array[],
                            const char *key);
@@ -417,17 +417,17 @@ int Util_TableGetInt8Array(int handle,
 int Util_TableGetRealArray(int handle,
                            int N_elements, CCTK_REAL array[],
                            const char *key);
-#if CCTK_HAVE_REAL4
+#ifdef HAVE_CCTK_REAL4
 int Util_TableGetReal4Array(int handle,
                             int N_elements, CCTK_REAL4 array[],
                             const char *key);
 #endif
-#if CCTK_HAVE_REAL8
+#ifdef HAVE_CCTK_REAL8
 int Util_TableGetReal8Array(int handle,
                             int N_elements, CCTK_REAL8 array[],
                             const char *key);
 #endif
-#if CCTK_HAVE_REAL16
+#ifdef HAVE_CCTK_REAL16
 int Util_TableGetReal16Array(int handle,
                              int N_elements, CCTK_REAL16 array[],
                              const char *key);
@@ -437,17 +437,17 @@ int Util_TableGetReal16Array(int handle,
 int Util_TableGetComplexArray(int handle,
                               int N_elements, CCTK_COMPLEX array[],
                               const char *key);
-#if CCTK_HAVE_REAL4
+#ifdef HAVE_CCTK_REAL4
 int Util_TableGetComplex8Array(int handle,
                                int N_elements, CCTK_COMPLEX8 array[],
                                const char *key);
 #endif
-#if CCTK_HAVE_REAL8
+#ifdef HAVE_CCTK_REAL8
 int Util_TableGetComplex16Array(int handle,
                                 int N_elements, CCTK_COMPLEX16 array[],
                                 const char *key);
 #endif
-#if CCTK_HAVE_REAL16
+#ifdef HAVE_CCTK_REAL16
 int Util_TableGetComplex32Array(int handle,
                                 int N_elements, CCTK_COMPLEX32 array[],
                                 const char *key);
