@@ -60,6 +60,7 @@ void CCTKi_SetParameterSetMask (int mask);
 int CCTKi_ProcessParameterDatabase (tFleshConfig *ConfigData)
 {
   int parse_errors;
+  int major, minor;
   FILE *parameter_file;
 
 
@@ -90,18 +91,40 @@ int CCTKi_ProcessParameterDatabase (tFleshConfig *ConfigData)
                   "parameter file", parse_errors);
     }      
 
-    if (CCTKi_NumParameterFileErrors (1))
+    minor = CCTKi_NumParameterFileErrors(1);
+    if (minor)
     {
-      CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
-                  "CCTKi_SetParameterSetMask: %d level 1 errors in "
-                  "parameter file", CCTKi_NumParameterFileErrors (1));
+      if (minor > 1) 
+      {
+	CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
+		    "CCTKi_SetParameterSetMask: %d minor errors in "
+		    "parameter file", CCTKi_NumParameterFileErrors (1));
+      }
+      else
+      {
+	CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
+		    "CCTKi_SetParameterSetMask: %d minor error in "
+		    "parameter file", CCTKi_NumParameterFileErrors (1));
+      }
+
     }
 
-    if (CCTKi_NumParameterFileErrors (0))
+    major = CCTKi_NumParameterFileErrors (0);
+    if (major)
     {
-      CCTK_VWarn (0, __LINE__, __FILE__, "Cactus",
-                  "CCTKi_SetParameterSetMask: %d level 0 errors in "
-                  "parameter file", CCTKi_NumParameterFileErrors (0));
+      if (major > 1) 
+      {
+	CCTK_VWarn (0, __LINE__, __FILE__, "Cactus",
+		    "CCTKi_SetParameterSetMask: %d major errors in "
+		    "parameter file", CCTKi_NumParameterFileErrors (0));
+      }
+      else
+      {
+	CCTK_VWarn (0, __LINE__, __FILE__, "Cactus",
+		    "CCTKi_SetParameterSetMask: %d major error in "
+		    "parameter file", CCTKi_NumParameterFileErrors (0));
+      }
+
     }
   }
   else
