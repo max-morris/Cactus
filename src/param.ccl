@@ -23,7 +23,7 @@ LOGICAL cctk_brief_output "Give only brief output"
  : :: 
 } "no"
 
-public:
+global:
 
 REAL cctk_initial_time "Initial time for evolution"
 {
