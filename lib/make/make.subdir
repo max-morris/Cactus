@@ -22,6 +22,9 @@ EXTRA_DEFINES += THORN_IS_$(THORN)
 # Include the subdirectory's local include data
 -include $(SRCDIR)/make.code.defn
 
+# Include the bindings configuration make.code.defn for the thorn
+-include $(TOP)/bindings/Configuration/$(THORN)/make.configuration.defn
+
 # Turn source file names into object file names
 OBJS = $(SRCS:%=%.o)
 
