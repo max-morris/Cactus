@@ -19,9 +19,11 @@ AC_CANONICAL_SYSTEM
 dnl Checks for programs.
 AC_PROG_MAKE_SET
 AC_PROG_CC
-AC_PROG_CPP
 AC_PROG_CXX
 AC_PROG_RANLIB
+dnl Look for a standalone CPP
+AC_PATH_PROGS(CPP, cpp, echo, /lib:/usr/lib:/usr/local/lib:$PATH)
+
 AC_PATH_PROGS(PERL, perl)
 AC_PATH_PROGS(F90, f90 pgf90)
 AC_PATH_PROGS(F77, f77 pgf77 g77 f90 pgf90)

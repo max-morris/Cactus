@@ -82,7 +82,7 @@ endef
 
 
 %.d: $(SRCDIR)/%.c
-	$(CPP) -M $(CFLAGS) $< $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DCCODE > $@
+	$(CC) -E -M $(CPPFLAGS) $< $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DCCODE > $@
 
 # Build rules for C++
 
@@ -105,10 +105,10 @@ endef
 	$(POSTPROCESS_CXX)
 
 %.d: $(SRCDIR)/%.cc
-	$(CPP) -M $(CFLAGS) $< $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DCCODE > $@
+	$(CC) -E -M $(CPPFLAGS) $< $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DCCODE > $@
 
 %.d: $(SRCDIR)/%.C
-	$(CPP) -M $(CFLAGS) $< $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DCCODE > $@
+	$(CC) -E -M $(CPPFLAGS) $< $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DCCODE > $@
 
 # Build rules for F77
 
@@ -131,10 +131,10 @@ endef
 	$(POSTPROCESS_F77)
 
 %.d: $(SRCDIR)/%.F77
-	cat $< | $(CPP) -M $(F77FLAGS) $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DFCODE - > $@
+	$(CPP) -M $(CPPFLAGS) $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DFCODE $< > $@
 
 %.d: $(SRCDIR)/%.f77
-	cat $< | $(CPP) -M $(F77FLAGS) $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DFCODE - > $@
+	$(CPP) -M $(CPPFLAGS) $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DFCODE $< > $@
 
 # Build rules for F90
 
@@ -157,7 +157,7 @@ endef
 	$(POSTPROCESS_F90)
 
 %.d: $(SRCDIR)/%.F
-	cat $< | $(CPP) -M $(F90FLAGS) $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DFCODE - > $@
+	$(CPP) -M $(CPPFLAGS) $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DFCODE $< > $@
 
 %.d: $(SRCDIR)/%.f
-	cat $< | $(CPP) -M $(F90FLAGS) $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DFCODE - > $@
+	$(CPP) -M $(CPPFLAGS) $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DFCODE $< > $@
