@@ -64,7 +64,8 @@ typedef unsigned char CCTK_BYTE;
 /* Define stuff for fortran. */
 #ifdef FCODE
 
-#define CCTK_POINTER integer*SIZEOF_CHAR_P
+#define CCTK_POINTER          integer*SIZEOF_CHAR_P
+#define CCTK_POINTER_TO_CONST integer*SIZEOF_CHAR_P
 
 #define CCTK_STRING CCTK_POINTER
 
