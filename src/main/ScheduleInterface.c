@@ -956,6 +956,10 @@ static cFunctionType TranslateFunctionType(const char *where)
   {
     retcode = FunctionNoArgs;
   }
+  else if(CCTK_Equals(where, "CCTK_SHUTDOWN"))
+  {
+    retcode = FunctionNoArgs;
+  }
   else
   {
     retcode = FunctionStandard;
