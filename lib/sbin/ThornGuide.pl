@@ -77,7 +77,9 @@ $tocdepth = 1 if (! defined $tocdepth);
 my $configname = "";
 
 if ($outfile =~ /ThornGuide\-?(.*?)\.tex/) {
-   $configname = ": $1";
+   $configname = $1;
+   $configname = ThornUtils::CleanForLatex($configname);
+   $configname = ": $configname";
 }
 
 # get the date for printing out on the first page of the documentation
