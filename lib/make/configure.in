@@ -198,6 +198,16 @@ AC_CHECK_SIZEOF(char *)
 
 CCTK_FIND_NULLDEVICE
 
+# Find the X libraries in case people need them
+
+AC_PATH_X
+
+AC_SUBST(X_LIB_DIR)
+AC_SUBST(X_INC_DIR)
+
+X_LIB_DIR="$x_libraries"
+X_INC_DIR="$x_includes"
+
 # Various flags
 
 AC_SUBST(ARFLAGS)

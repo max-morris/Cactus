@@ -99,6 +99,12 @@ OS     = @host_os@
 CPU    = @host_cpu@
 VENDOR = @host_vendor@
 
+# X stuff
+
+X_LIB_DIR  = @X_LIB_DIR@
+X_INC_DIR  = @X_INC_DIR@
+
+
 # Where the CCTK puts things
 PACKAGE_DIR = $(CCTK_HOME)/@PACKAGE_DIR@
 BUILD_DIR   = $(TOP)/@BUILD_DIR@
