@@ -149,29 +149,17 @@ const char *CCTK_TimerName (int timer_handle)
    @routine    CCTK_TimerCreate
    @date       Wed Sep  1 10:09:57 1999
    @author     Tom Goodale
-   @desc 
-   Creates a new timer
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
-
+   @desc
+               Creates a new timer with a given name
+   @enddesc
+   @calls      CCTKi_TimerCreate
 @@*/
-int CCTK_TimerCreate(const char *name)
+int CCTK_TimerCreate (const char *name)
 {
   int retval;
-  char *timername;
 
 
-  /* the name itself might not be unique - so prepend the timer handle */
-  timername = (char *) malloc (strlen (name) + 30);
-  sprintf (timername, "NAMED TIMER %5d -- %s", n_timers, name);
-
-  retval = CCTKi_TimerCreate (timername);
-
-  free (timername);
+  retval = CCTKi_TimerCreate (name);
 
   return retval;
 }
