@@ -373,6 +373,7 @@ CCTK_CHECK_HEADERS(winsock2.h)
 CCTK_CHECK_HEADERS(crypt.h,[#ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif])
+CCTK_CHECK_HEADERS(signal.h)
 
 AC_HEADER_TIME
 
