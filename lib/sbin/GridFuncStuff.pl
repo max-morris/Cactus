@@ -169,4 +169,81 @@ sub sort_groups
   return @group_initialisers;
 }
 
+
+sub GetThornArguments
+{
+  local($this_thorn, $block, %interface_database) = @_;
+  local(%arguments);
+  local(@other_imps);
+  local($my_imp);
+  local($imp);
+  local($thorn, $group, $variable, $vtype, $gtype, $type);
+
+  $my_imp = $interface_database{"\U$this_thorn IMPLEMENTS"};
+
+  if($block eq "PUBLIC")
+  {
+    @other_imps = $interface_data{"IMPLEMENTATION \U$my_imp\E ANCESTORS"};
+  }
+  elsif($block eq "PROTECTED")
+  {
+    @other_imps = $interface_data{"IMPLEMENTATION \U$my_imp\E FRIENDS"};
+  }
+  elsif($block eq "PRIVATE")
+  {
+    @other_imps = ();
+  }
+  else
+  {
+    die "Unknown block type $block!!!\n";
+  }
+
+#  print "Thorn is $this_thorn, implementation $my_imp, block is $block\n";
+
+
+  foreach $imp (@other_imps,$my_imp)
+  {
+
+    next if (! defined $imp);
+
+    $interface_database{"IMPLEMENTATION \U$imp\E THORNS"} =~ m:([^ ]*):;
+
+    $thorn = $1;
+
+#    print "This thorn is $thorn, implementation $imp\n";
+
+    foreach $group (split(" ",$interface_database{"\U$thorn $block GROUPS\E"}))
+    {
+      $vtype = $interface_database{"\U$thorn GROUP $group VTYPE\E"};
+      $gtype = $interface_database{"\U$thorn GROUP $group GTYPE\E"};
+
+      $type = "$vtype";
+
+      if($gtype eq "GF" || $gtype eq "ARRAY")
+      {
+	$type .= " (";
+	$sep = "";
+	for($dim =0; $dim < $interface_database{"\U$thorn GROUP $group DIM\E"}; $dim++)
+	{
+	  $type .= "$sep$group$dim";
+	  $sep = ",";
+	  $arguments{"$group$dim"} = "STORAGESIZE($thorn:$group, $dim)";
+	}
+	$type .= ")";
+      }
+
+#      print "Group is $group, resulting type is $type\n";
+
+      foreach $variable (split(" ", $interface_data{"\U$thorn GROUP $group\E"}))
+      {
+       $arguments{$variable} = $type;
+      }
+    }
+  }
+
+  return %arguments;
+}
+
+
+
 1;
