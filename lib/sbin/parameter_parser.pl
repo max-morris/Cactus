@@ -145,7 +145,7 @@ sub parse_param_ccl
 	$parameter_db{"\U$thorn $block\E variables"} = "";
       }
     }
-    elsif($line =~ m:(EXTENDS |USES )?\s*(?\:CCTK_)?(INT|REAL|BOOLEAN|KEYWORD|STRING)\s*([a-zA-Z]+[a-zA-Z0-9_]*) \s*(\"[^\"]*\")\s*(.*)$:i)
+    elsif($line =~ m:(EXTENDS |USES )?\s*(?\:CCTK_)?(INT|REAL|BOOLEAN|KEYWORD|STRING)\s*([a-zA-Z]+[a-zA-Z0-9_]*)\s*(\"[^\"]*\")?\s*(.*)$:i)
     {
       # This is a parameter definition.
 
@@ -163,6 +163,19 @@ sub parse_param_ccl
       else
       {
 	$use_clause = 0;
+      }
+
+      if($description !~ m:\":)
+      {
+	if($use_or_extend)
+	{
+	  $description = "";
+	}
+	else
+	{
+	  $message = "Missing description for $variable in thorn $thorn.";
+	  &CST_error(0,$message,__LINE__,__FILE__);
+	}
       }
 
       if($defined_parameters{"\U$variable\E"})
@@ -195,7 +208,7 @@ sub parse_param_ccl
 	# Move past {
 	if($data[$line_number+1] !~ m:\s*\{\s*:)
 	{
-	  if ($use_clause)
+	  if ($use_clause) 
 	  {
 	    $skip_range_block = 1;
 	  }
