@@ -19,7 +19,7 @@ sub CreateFortranThornParameterBindings
   local($implementation);
   local(@data);
   local(@file);
-  local(@alias_names);
+  local(%alias_names);
 
   %parameter_database = @rest[0..(2*$n_param_database)-1];
   %interface_database = @rest[2*$n_param_database..$#rest];
@@ -67,30 +67,32 @@ sub CreateFortranThornParameterBindings
     }
   }
 
+  # Parameters from friends
   foreach $friend (split(" ",$parameter_database{"\U$thorn\E FRIEND implementations"}))
   {
+    # Determine which thorn provides this friend implementation
     $interface_database{"IMPLEMENTATION \U$friend\E THORNS"} =~ m:([^ ]*):;
     
     $friend_thorn = $1;
     
     %these_parameters = &GetThornParameterList($friend_thorn, "PROTECTED", %parameter_database);
     
-    @alias_names = ();
+    %alias_names = ();
 
     foreach $parameter (keys %these_parameters)
     {
       # Alias the parameter unless it is one we want.
       if(($parameter_database{"\U$thorn FRIEND $friend\E variables"} =~ m:( )*$parameter( )*:) && (length($1) > 0)||length($2)>0||$1 eq $parameter_database{"\U$thorn FRIEND $friend\E variables"})
       {
-	push(@alias_names, $parameter);
+	$alias_names{$parameter} = "$parameter";
       }
       else
       {
-	push(@alias_names, "CCTKH".scalar(@alias_names));
+	$alias_names{$parameter} = "CCTKH".scalar(@alias_names);
       }
     }
      
-    @data = &CreateFortranCommonDeclaration("$friend_thorn"."prot", 1, scalar(keys %these_parameters), %these_parameters, @alias_names, %parameter_database);
+    @data = &CreateFortranCommonDeclaration("$friend_thorn"."prot", 1, scalar(keys %these_parameters), %these_parameters, %alias_names, %parameter_database);
       
     foreach $line (@data)
     {
@@ -113,19 +115,19 @@ sub CreateFortranCommonDeclaration
   local(%parameters);
   local($type, $type_string);
   local($definition);
-  local(@alias_names);
-  local($n);
+  local(%alias_names);
 
   if($aliases == 0)
   {
     %parameters = @rest[0..2*$n_parameters-1];
+    %alias_names = ();
     %parameter_database = @rest[2*$n_parameters..$#rest];
   }
   else
   {
     %parameters = @rest[0..2*$n_parameters-1];
-    @alias_names = @rest[2*$n_parameters..3*$n_parameters-1];
-    %parameter_database = @rest[3*$n_parameters..$#rest];
+    %alias_names = @rest[2*$n_parameters..4*$n_parameters-1];
+    %parameter_database = @rest[4*$n_parameters..$#rest];
   }
 
   # Create the data
@@ -134,7 +136,6 @@ sub CreateFortranCommonDeclaration
 
   $sepchar = "";
 
-  $n = 0;
   foreach $parameter (order_params(scalar(keys %parameters), %parameters,%parameter_database))
   {
     $type = $parameter_database{"\U$parameters{$parameter} $parameter\E type"};
@@ -147,7 +148,7 @@ sub CreateFortranCommonDeclaration
     }
     else
     {
-      $line = "$type_string $alias_names[$n]";
+      $line = "$type_string $alias_names{$parameter}";
     }
 
     push(@data, $line);
@@ -158,12 +159,11 @@ sub CreateFortranCommonDeclaration
     }
     else
     {
-      $definition .= "$sepchar$alias_names[$n]";
+      $definition .= "$sepchar$alias_names{$parameter}";
     }
 
 
     $sepchar = ",";
-    $n++;
   }
 
   push(@data, $definition);
