@@ -1,7 +1,7 @@
 
 Cactus Code Frequently Asked Questions
 
-$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.23 2001-10-23 08:14:19 allen Exp $
+$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.24 2002-02-13 15:44:02 allen Exp $
 
 Also available at http://www.cactuscode.org/Documentation/FAQ
 
@@ -356,3 +356,10 @@ Also available at http://www.cactuscode.org/Documentation/FAQ
 
 --------------------------------------------------------------------------------    
 
+26. I'm running Cactus on a parallel system with missing C++ libraries on some 
+    nodes, Cactus compiles but it won't run, is there anything I can do?
+
+    If C++ isn't being used in any thorn, you can compile Cactus without using
+    and C++ using the configure option CXX=none.
+
+--------------------------------------------------------------------------------    
