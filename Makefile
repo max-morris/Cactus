@@ -16,7 +16,7 @@
 #
 #
 #   @enddesc
-#   @version $Id: Makefile,v 1.156 2004-06-07 14:39:13 tradke Exp $
+#   @version $Id: Makefile,v 1.157 2004-06-11 11:05:19 tradke Exp $
 # @@*/
 
 ##################################################################################
@@ -713,8 +713,9 @@ $(addsuffix -config,$(CONFIGURATIONS)): int_version
 	  else \
 	    echo Use $(MAKE) $(@:%-config=%) to build the configuration. ; \
 	  fi; \
-	  else \
+	else \
 	  echo "ThornList $(THORNLIST_DIR)/$(THORNLIST) does not exist" ; \
+	  exit 2; \
 	fi
 	@echo $(DIVIDER)
 endif
@@ -754,6 +755,7 @@ endif
 	    fi; \
 	  else \
 	    echo "ThornList $(THORNLIST_DIR)/$(THORNLIST) does not exist" ; \
+	    exit 2; \
 	  fi ; \
 	fi
 	@echo $(DIVIDER)
@@ -1193,6 +1195,7 @@ downsize:
 	  fi; \
 	  else \
 	    echo "ThornList $(THORNLIST_DIR)/$(THORNLIST) does not exist" ; \
+	    exit 2; \
 	  fi ; \
 	fi
 	@echo $(DIVIDER)
