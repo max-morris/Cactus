@@ -851,10 +851,10 @@ int CCTK_CoordLocalRange(cGH *GH,
     {
       realdir = CCTK_CoordDir(name,systemname);
     }
-    *lower = global_lower+GH->cctk_lbnd[realdir-1]*
-      GH->cctk_delta_space[realdir-1];
-    *upper = global_lower+GH->cctk_ubnd[realdir-1]*
-      GH->cctk_delta_space[realdir-1];
+    *lower = global_lower +
+              GH->cctk_lbnd[realdir-1] * GH->cctk_delta_space[realdir-1];
+    *upper = global_lower +
+             (GH->cctk_ubnd[realdir-1] + 1) * GH->cctk_delta_space[realdir-1];
   }
   else
   {
