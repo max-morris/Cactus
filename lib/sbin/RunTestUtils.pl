@@ -188,7 +188,7 @@ sub FindTestArchiveFiles
 	{
 	    $dir = "$testdata->{\"$thorn TESTSDIR\"}/$test";
 	    ($testdata->{"$thorn $test UNKNOWNFILES"},$testdata->{"$thorn $test DATAFILES"}) = &FindFiles($dir,$testdata);
-	    $testdata->{"$thorn $test NDATAFILES"} = scalar(split(" ",$testdata->{"$thorn $test DATAFILES"}));	    
+	    $testdata->{"$thorn $test NDATAFILES"} = scalar(split(" ",$testdata->{"$thorn $test DATAFILES"}));
 	}
     }
     return $testdata;
@@ -212,22 +212,23 @@ sub FindTestParameterFiles
     next if (/^\s*(\#.*|\!.*)$/);
 
     /^\s*([^\s]*)\s*/;
+
     $fullthorn = $1;
     $testdata->{"FULL"} .= "$fullthorn ";
-
+    
     $fullthorn =~ m:^\s*([^\s]*)/([^\s]*)\s*:;
-
+    
     $thorn = $2;
     $testdata->{"THORNS"} .= "$thorn ";
     $testdata->{"$thorn ARRANGEMENT"} .= "$1";
-
+    
     if ($testdata->{"ARRANGEMENTS"} !~ m:\s$1\s:)
     {
       $testdata->{"ARRANGEMENTS"} .= "$1 ";
     }
-
+    
     $thorntestdir = "$config_data->{\"CCTK_DIR\"}${sep}arrangements${sep}$fullthorn${sep}test";
-
+    
     if (-d $thorntestdir) 
     {
       $testdata->{"$thorn TESTSDIR"} = $thorntestdir;
@@ -236,16 +237,16 @@ sub FindTestParameterFiles
       
       while ($file=<*.par>)
       {
-        $file =~ m:^(.*)\.par$:;
-        $filedir = $1;
-        if (-d $filedir)
-        {
-          $testdata->{"$thorn TESTS"} .= "$filedir ";
-          $testdata->{"$thorn NTESTS"}++;
-        }
+	$file =~ m:^(.*)\.par$:;
+	$filedir = $1;
+	if (-d $filedir)
+	{
+	  $testdata->{"$thorn TESTS"} .= "$filedir ";
+	  $testdata->{"$thorn NTESTS"}++;
+	}
 	else
 	{
-	    &RunTestWarn(1,"Parameter file $filedir in thorn $thorn but no output directory");
+	  &RunTestWarn(1,"Parameter file $filedir in thorn $thorn but no output directory");
 	}
       }
     }
@@ -281,11 +282,11 @@ sub FindExecutionDetails
     open(DEFNS,"<$defns");
     while(<DEFNS>)
     {
-      if (/EXE\s*=\s*([\w-_]+)/)
+      if (/EXE\s*=\s*([\w_-]+)/)
       {
         $defexename = $1;
       }
-      if (/EXEDIR\s*=\s*([\w-_]+)/)
+      if (/EXEDIR\s*=\s*([\w_-]+)/)
       {
         $defexedirname = $1;
       }
@@ -453,6 +454,7 @@ sub RunCactus
   my($retcode);
 
   printf "\n  Issuing $command\n";
+
   $retcode = 0;
   open (CMD, "pwd; $command |");
   open (LOG, "> $testname.log");
@@ -469,6 +471,7 @@ sub RunCactus
   }
   close LOG;
   close CMD;
+
   $retcode = $? >> 8 if($retcode==0);
 
   print STDOUT "\n\n" if ($output =~ /stdout/);
@@ -723,7 +726,6 @@ sub ChooseTests
 
   if ($choice =~ m:^A:i)
   {
-
     print "  No runnable testsuites in arrangements: ";
     print "$testdata->{\"UNRUNNABLEARRANGEMENTS\"}\n\n";
 
@@ -735,12 +737,15 @@ sub ChooseTests
       $myarrs[$count] = "$arrangement";
       $count++;
     }
-    $arrchoice = &defprompt("  Choose arrangement by number:"," ");
+    while (!$arrchoice or $arrchoice eq " ")
+    {
+      $arrchoice = &defprompt("  Choose arrangement by number:"," ");
+    }
 
     print "  No runnable testsuites in thorns: ";
     foreach  $thorn (split(" ",$testdata->{"UNRUNNABLETHORNS"}))
     {
-      if ($thorn =~ m:^$myarrs[$arrchoice]/:)
+      if ($testdata->{"$thorn ARRANGEMENT"} =~ m:^$myarrs[$arrchoice]:)
       {
         print "$thorn ";
       }
@@ -751,26 +756,43 @@ sub ChooseTests
     $count = 1;
     foreach $thorn (split(" ",$testdata->{"RUNNABLETHORNS"}))
     {
-      if ($thorn =~ m:^$myarrs[$arrchoice]/(.*):)
+      if ($testdata->{"$thorn ARRANGEMENT"} =~ m:^$myarrs[$arrchoice]:)
       {
-        printf ("  [%2d] $1\n",$count);
+        printf ("  [%2d] $thorn\n",$count);
         $mythorns[$count] = "$thorn";
         $count++;
       }
     }
-    $thornchoice = &defprompt("  Choose thorn by number:"," ");
-    $testcount = 1;
+    while (!$thornchoice or $thornchoice eq " ")
+    {
+      $thornchoice = &defprompt("  Choose thorn by number:"," ");
+    }
+    $testcount = 0;
+    printf ("  [ 0] All tests\n");
     foreach $test (split(" ",$testdata->{"$mythorns[$thornchoice] RUNNABLE"}))
     {
+      $testcount++;
       printf ("  [%2d] $test\n",$testcount);
       print "       $testdata->{\"$mythorns[$thornchoice] $test DESC\"}\n";
       $mytests[$testcount] = "$test";
-      $testcount++;
     }
-    $testchoice = &defprompt("  Choose test:"," ");      
-    $ntests = 1;
-    $returntests[0] = $mytests[$testchoice];
-    $returntests[1] = $mythorns[$thornchoice];
+    $testchoice = &defprompt("  Choose test:","0");
+
+    if ($testchoice == 0)
+    {
+      $ntests = $testcount;
+      for ($i=0;$i<$testcount;$i++)
+      {
+	$returntests[2*$i]   = $mytests[$i+1];
+	$returntests[2*$i+1] = $mythorns[$thornchoice];
+      }
+    }
+    else
+    {
+      $ntests = 1;
+      $returntests[0] = $mytests[$testchoice];
+      $returntests[1] = $mythorns[$thornchoice];
+    }
   }
   elsif ($choice =~ m:^T:i)
   {
@@ -783,7 +805,10 @@ sub ChooseTests
     }
     if ($count > 1)
     {
-      $thornchoice = &defprompt("  Choose thorn:"," ");
+      while (!$thornchoice or $thornchoice eq " ")
+      {
+	$thornchoice = &defprompt("  Choose thorn:"," ");
+      }
       $testcount = 0;
       printf ("  [ 0] All tests\n");
       foreach $test (split(" ",$testdata->{"$mythorns[$thornchoice] RUNNABLE"}))
@@ -1293,9 +1318,9 @@ sub ParseAllParameterFiles
     if ($testdata->{"$thorn NRUNNABLE"} > 0)
     {
       $testdata->{"RUNNABLETHORNS"} .= "$thorn ";
-      if ($testdata->{"RUNNABLEARRANGEMENTS"} !~ m:[\s^]$arr\s:)
+      if ($testdata->{"RUNNABLEARRANGEMENTS"} !~ m:\b$arr\s:)
       {
-        $testdata->{"RUNNABLEARRANGEMENTS"} .= "$1 ";
+        $testdata->{"RUNNABLEARRANGEMENTS"} .= "$arr ";
       }
     }
     else
@@ -1308,7 +1333,7 @@ sub ParseAllParameterFiles
 
   foreach $arr (split(" ",$testdata->{"ARRANGEMENTS"}))
   {
-    if ($testdata->{"RUNNABLEARRANGEMENTS"} !~ m:[\s^]$arr\s:)
+    if ($testdata->{"RUNNABLEARRANGEMENTS"} !~ m:\b$arr\s:)
     {
       $testdata->{"UNRUNNABLEARRANGEMENTS"} .= "$arr ";
     }
@@ -1402,4 +1427,3 @@ sub ViewResults
 }
 
 1;
-
