@@ -76,7 +76,11 @@ sub CST_error
 
 sub CST_PrintErrors
 {
+  print "\n\n------------------------------------------------------\n";
+  print "Warnings were generated during execution of the CST\n";
+  print "------------------------------------------------------\n\n";
   print "$error_string";
+  print "------------------------------------------------------\n\n";
 }
 
 
