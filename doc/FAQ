@@ -1,7 +1,7 @@
 
 Cactus Code Frequently Asked Questions
 
-$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.30 2002-04-27 15:57:39 allen Exp $
+$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.31 2002-05-09 11:40:44 allen Exp $
 
 Also available at http://www.cactuscode.org/Documentation/FAQ
 
@@ -471,3 +471,23 @@ Also available at http://www.cactuscode.org/Documentation/FAQ
     we have macros for one, two or three strings in an argument list.
 
 -------------------------------------------------------------------------------
+
+34. When trying to create the Cactus executable I get the error
+
+    Creating cactus_origin in /data2/convCactus/exe from
+    CactusBase/IOASCII CactusBase/Boundary CactusPUGH/PUGHInterp 
+    CactusBase/CartGrid3D CactusEinstein/StaticConformal CactusPUGH/PUGHReduce
+    CactusEinstein/ADMBase CactusBase/Time CactusPUGH/PUGH CactusPUGH/PUGHSlab     CactusBase/IOUtil CactusElliptic/EllBase CactusBase/IOBasic
+    ld64: ERROR   33 : Unresolved text symbol "SetCartSymVN" -- 1st referenced 
+    by /data2/wolf/convCactus/configs/Fish_origin/lib/libADMBase.a\
+    (InitSymBound.c.o)
+
+    Probably ADMBase is not inheriting from the thorn which contains the
+    SetCartSymVN function which it is using. When Cactus makes up the 
+    link line order it then doesn't know to list the ADMBase library before
+    the library containing this function. To test this and/or to get an
+    executable, find the link line used by issuing
+
+    gmake origin SILENT=no
+  
+    and add the missing library to the end of the link line. 
