@@ -116,28 +116,26 @@ sub read_file
   {
     chomp;
 
-    # Remove comments.
-    $_ = &RemoveComments($_);
-#    $_ =~ s/\#.*//;
-    
-    # Ignore empty lines.
-    next if(m/^\s*$/);
- 
-    #&chompme($_);
-
     # Add to the currently processed line.
     $line .= $_;
 
-    # Check the line for line-continuation
-    if(m:[^\\]\\\s*$:)
+    # Check if this line will be continued
+    if($line =~ m:[^\\]\\$:)
     {
-      $line =~ s:\\\s*$::;
+      $line =~ s:\\$::;
+      next;
     }
-    else
+      
+    # Remove comments.
+    $line = &RemoveComments($line);
+    
+    # Ignore empty lines.
+    if($line !~ m/^\s*$/)
     {
       push(@indata, $line);
-      $line = "";
     }
+ 
+    $line = "";
   }
   
   # Make sure to dump out the last line, even if it ends in a \
@@ -145,6 +143,7 @@ sub read_file
   {
     push(@indata, $line);
   }
+
   close IN;
   
   return @indata;
@@ -444,7 +443,7 @@ sub RemoveComments
 
   if($insstring || $indstring)
   {
-    print "Error: Unterminated string while parsing interface for thorn : $thorn\n";
+    print "Error: Unterminated string while parsing ccl file for thorn : $thorn\n";
     print $nocomment;
   }
 
