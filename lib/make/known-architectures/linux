@@ -179,7 +179,7 @@ else
        if test -z "$LIBDIRS" ; then
          LIBDIRS="`which $F90 | sed 's,/bin/.*,/lib,'`"
        fi
-       : ${F77_OPTIMISE_FLAGS='-fast'}
+       : ${F77_OPTIMISE_FLAGS='-fast -Minfo -Mneginfo -Mvect=assoc'}
        : ${F90_OPTIMISE_FLAGS='$(F77_OPTIMISE_FLAGS)'}
        : ${F77_DEBUG_FLAGS="-g"}
        : ${F90_DEBUG_FLAGS="-g"}
@@ -339,7 +339,7 @@ else
       : ${C_DEBUG_FLAGS='-g3'}
       ;;
     pgcc)
-      : ${C_OPTIMISE_FLAGS='-fast'}
+      : ${C_OPTIMISE_FLAGS='-fast -O3 -Minfo -Mneginfo -Mvect=assoc'}
       ;;
       *)
       ;;
@@ -365,7 +365,7 @@ else
       ;;
     pgCC)
       : ${CXX_FLAGS='--no_using_std -tused -Wl,--allow-multiple-definition'}
-      : ${CXX_OPTIMISE_FLAGS='-fast'}
+      : ${CXX_OPTIMISE_FLAGS='-fast -O3 -Minfo -Mneginfo -Mvect=assoc'}
       ;;
   esac
 
