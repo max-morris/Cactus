@@ -21,4 +21,5 @@ Dummies.c\
 rfrInterface.c\
 Overload.c\
 CommandLine.c\
+GHExtensions.c\
 WarnLevel.c
