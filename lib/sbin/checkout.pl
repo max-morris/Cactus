@@ -495,9 +495,10 @@ sub RepositoryExists
   my($repository) = @_;
   my $dummy;
 
-  open(MODULES,"cvs -d $_[0] co -s |");
-  $dummy = <MODULES>;
-  close(MODULES);
+#  open(MODULES,"cvs -d $_[0] co -s |");
+  $dummy = join('', qx {cvs -d $_[0] co -s});
+#  $dummy = <MODULES>;
+#  close(MODULES);
 
   return !$?;
 
