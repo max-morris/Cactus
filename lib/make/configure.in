@@ -22,16 +22,24 @@ AC_CONFIG_HEADER(config.h)
 dnl Check the system type
 AC_CANONICAL_SYSTEM
 
+# See if there are any preferred compilers for this system
+
+CCTK_CONFIG_STAGE="preferred-compilers"
+
+if test -r $srcdir/known-architectures/$host_os ; then
+. $srcdir/known-architectures/$host_os
+fi
+
 dnl Checks for programs.
 AC_PROG_MAKE_SET
 
-if test -z "$CC" ; then
+#if test -z "$CC" ; then
 AC_PROG_CC
-fi
+#fi
 
-if test -z "$CXX" ; then
+#if test -z "$CXX" ; then
 AC_PROG_CXX
-fi
+#fi
 
 if test -z "$RANLIB" ; then
 AC_PROG_RANLIB
@@ -89,6 +97,8 @@ cat > cctk_archdefs.h <<EOF
 #ifndef _CCTK_ARCHDEFS_H_
 #define _CCTK_ARCHDEFS_H_
 EOF
+
+CCTK_CONFIG_STAGE="misc"
 
 if test -r $srcdir/known-architectures/$host_os ; then
 . $srcdir/known-architectures/$host_os
@@ -183,6 +193,26 @@ AC_CHECK_SIZEOF(float)
 
 # Check for sizes of pointers.  
 AC_CHECK_SIZEOF(char *)
+
+# This may look bizarre, but the cygwin environment
+# emulates /dev/null
+AC_MSG_CHECKING(the NULL device)
+
+if test -d /dev ; then
+  NULL_DEVICE="/dev/null"
+else
+  cat > NUL <<EOF
+test
+EOF
+
+  if `cat NUL > /dev/null 2>/dev/null` ; then
+    NULL_DEVICE="NUL"
+  else
+    echo "Can't find NULL device !"
+  fi
+fi
+
+AC_MSG_RESULT($NULL_DEVICE)
 
 # Various flags
 

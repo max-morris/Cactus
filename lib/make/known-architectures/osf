@@ -6,8 +6,15 @@
 #    @desc 
 #   
 #    @enddesc
-#    @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/osf,v 1.1 1999-04-22 13:21:59 allen Exp $
+#    @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/osf,v 1.2 1999-10-11 13:49:09 goodale Exp $
 #  @@*/
 
-: ${LIBS="for"}
+if test "$CCTK_CONFIG_STAGE" = "preferred-compilers" ; then
 
+:
+
+else
+
+  : ${LIBS="for"}
+
+fi

@@ -6,23 +6,32 @@
 #   @desc 
 #   
 #   @enddesc 
-#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/unicos,v 1.3 1999-07-06 20:19:13 goodale Exp $
+#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/unicos,v 1.4 1999-10-11 13:49:09 goodale Exp $
 # @@*/
 
-# The T3E F90 compiler uses -b if you want to supply a name for a .o file.
-: ${FCOMPILEONLY="-b"}
+if test "$CCTK_CONFIG_STAGE" = "preferred-compilers" ; then
 
-# The T3E fortran compiler puts module info in .o files by default.
-: ${F90FLAGS="-O scalar3,noieeeconform,unroll2,inline3 -dp -em"}
+:
 
-: ${LIBS="_ereg _perf_mjp _util _vect"}
+else
 
-: ${LIBDIRS='$(CCTK_HOME)/lib/archlibs/t3e'}
+  # The T3E F90 compiler uses -b if you want to supply a name for a .o file.
+  : ${FCOMPILEONLY="-b"}
 
-cat >> cctk_archdefs.h <<EOF
+  # The T3E fortran compiler puts module info in .o files by default.
+  : ${F90FLAGS="-O scalar3,noieeeconform,unroll2,inline3 -dp -em"}
+
+  : ${LIBS="_ereg _perf_mjp _util _vect"}
+
+  : ${LIBDIRS='$(CCTK_HOME)/lib/archlibs/t3e'}
+
+  cat >> cctk_archdefs.h <<EOF
 
 /* T3E stuff */
 
 #define T3E
 
 EOF
+
+
+fi

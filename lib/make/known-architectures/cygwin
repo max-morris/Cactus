@@ -10,54 +10,75 @@
 #   @version $Header$
 # @@*/
 
+if test "$CCTK_CONFIG_STAGE" = "preferred-compilers" ; then
 
-echo Setting compiler to cl
-CC="cl"
-CXX="cl"
+  if test -z "$CC"; then
+    echo Setting C compiler to cl
+    CC="cl"
+  fi
 
-echo Setting linker to f90
-LD="f90"
+  if test -z "$CXX"; then
+    echo Setting C++ compiler to cl
+    CXX="cl"
+  fi
+
+  if test -z "$LD"; then
+    echo Setting linker to f90
+    LD="f90"
+  fi
+
+else
 
 # /Gd means use __cdecl, it's /Gz for __stdcall
-CFLAGS="/nologo /Oxy- /Gd"
-CXXFLAGS="/nologo /TP /Oxy- /Gd"
 
-F90FLAGS="/fast /iface:cref"
+  if test -z "$CFLAGS"; then
+    CFLAGS="/nologo /Oxy- /Gd"
+  fi
 
-CCOMPILEONLY="/c /Fo"
-FCOMPILEONLY="/compile_only /object:"
+  if test -z "CXXFLAGS" ; then 
+    CXXFLAGS="/nologo /TP /Oxy- /Gd"
+  fi
 
-CREATEEXE="-exe:"
+  if test -z "CXXFLAGS" ; then 
+    F90FLAGS="/fast /iface:cref"
+  fi
 
-SYS_INC_DIRS="/PROGRA~/MICROS~1/VC98/INCLUDE"
+  CCOMPILEONLY="/c /Fo"
+  FCOMPILEONLY="/compile_only /object:"
 
-DIRSEP="\\\\"
+  CREATEEXE="-exe:"
 
-OPTIONSEP="# not even a single a single space under cygwin"
+  SYS_INC_DIRS="/PROGRA~/MICROS~1/VC98/INCLUDE"
+
+  DIRSEP="\\\\"
+
+  OPTIONSEP="# not even a single a single space under cygwin"
 
 # Convert //a to a: 
-GET_WD="pwd | sed 's,^//\(.\)/,\1:/,' | sed 's,/,\\\\\\,g' "
+  GET_WD="pwd | sed 's,^//\(.\)/,\1:/,' | sed 's,/,\\\\\\,g' "
 
-C_DEPEND='$(CPP) -E -MM -nostdinc $(CPPFLAGS) '
+  C_DEPEND='$(CPP) -E -MM -nostdinc $(CPPFLAGS) '
 
-CXX_DEPEND='$(CPP) -E -MM -nostdinc $(CPPFLAGS) '
+  CXX_DEPEND='$(CPP) -E -MM -nostdinc $(CPPFLAGS) '
 
-MKDIR="mkdir "
-MKDIRFLAGS=" -p "
+  MKDIR="mkdir "
+  MKDIRFLAGS=" -p "
 
-CACTUSLIBLINKLINE='$(addsuffix .a,$(addprefix $(subst /,$(DIRSEP),$(CCTK_LIBDIR))$(DIRSEP)lib,$(notdir $(ALLCACTUSLIBS))))'
+  CACTUSLIBLINKLINE='$(addsuffix .a,$(addprefix $(subst /,$(DIRSEP),$(CCTK_LIBDIR))$(DIRSEP)lib,$(notdir $(ALLCACTUSLIBS))))'
 
 # Windows libraries have to explicitly appear on the link line with full name
 # So ignore the LIBDIRS variable and don't put flags on.
 
-GENERAL_LIBRARIES='$(LIBS)' 
+  GENERAL_LIBRARIES='$(LIBS)' 
 
-cat >> cctk_archdefs.h <<EOF;
+  cat >> cctk_archdefs.h <<EOF;
 
 /* WIN stuff */
 #define WIN32
 
 EOF
+
+fi
 
 
 

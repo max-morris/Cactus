@@ -9,24 +9,31 @@
 #    @version $Header$
 #  @@*/
 
-: ${F90FLAGS="-g -O2 -qfixed"}
-: ${F77FLAGS="-g -O2 -qfixed"}
+if test "$CCTK_CONFIG_STAGE" = "preferred-compilers" ; then
 
-: ${C_DEPEND_OUT=' > $@'}
-: ${CXX_DEPEND_OUT=' > $@'}
-: ${F_DEPEND_OUT=' > /dev/null ; mv $(basename $(@)).u $@'}
-: ${F77_DEPEND_OUT=' > /dev/null ; mv $(basename $(@)).u $@'}
+:
 
-: ${LIBS="xlf90"}
+else
+
+  : ${F90FLAGS="-g -O2 -qfixed"}
+  : ${F77FLAGS="-g -O2 -qfixed"}
+
+  : ${C_DEPEND_OUT=' > $@'}
+  : ${CXX_DEPEND_OUT=' > $@'}
+  : ${F_DEPEND_OUT=' > /dev/null ; mv $(basename $(basename $@)).u $@'}
+  : ${F77_DEPEND_OUT=' > /dev/null ; mv $(basename $(basename $@)).u $@'}
+
+  : ${LIBS="xlf90"}
 
 
-# MPI stuff
+  # MPI stuff
  
-if test -n "$MPI" ; then
-    if test "$MPI" = "NATIVE" ; then
-       MPI_LIBS="mpi"
-       MPI_LIB_DIRS="/usr/lpp/ppe.poe/lib"
-       MPI_INC_DIRS="/usr/lpp/ppe.poe/include"
-    fi
-fi          
+  if test -n "$MPI" ; then
+      if test "$MPI" = "NATIVE" ; then
+         MPI_LIBS="mpi"
+         MPI_LIB_DIRS="/usr/lpp/ppe.poe/lib"
+         MPI_INC_DIRS="/usr/lpp/ppe.poe/include"
+      fi
+  fi          
 
+fi

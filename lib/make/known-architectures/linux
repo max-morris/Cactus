@@ -9,10 +9,16 @@
 #   @version $Header$ 
 # @@*/
 
-# Determine which Fortran 90 compiler is in use
-LINUX_F90_COMP=
+if test "$CCTK_CONFIG_STAGE" = "preferred-compilers" ; then
 
-if test -n "$F90" ; then 
+:
+
+else
+
+# Determine which Fortran 90 compiler is in use
+  LINUX_F90_COMP=
+
+  if test -n "$F90" ; then 
     if test "`$F90 -V 2>&1 | grep -i f90 | grep -i vast`" ; then 
 	LINUX_F90_COMP=pacific
     elif test "`$F90 -V 2>&1 | grep -i f90 | grep -i absoft`" ; then 
@@ -32,44 +38,52 @@ if test -n "$F90" ; then
 	echo ad send the updated file to CactusMaint
         echo We will try anyway ...
     fi
-else
+  else
     LINUX_F90_COMP=none
-fi
+  fi
 
 
 #Set the appropriate flags
-case "$LINUX_F90_COMP" in
+  case "$LINUX_F90_COMP" in
      pacific)
-     : ${LIBS="vast90 g2c m"} ;;
+       : ${LIBS="vast90 g2c m"} ;;
      absoft)
-     : ${LIBS="f90math fio f77math m"} 
-     F90FLAGS="-s -O" 
-     # Test if it is a version of the absoft compiler which has the library in a custom place.
-     if test -n "$ABSOFT" ; then
-       : ${LIBDIRS='$(ABSOFT)/lib'}
-     fi ;;
+       : ${LIBS="f90math fio f77math m"} 
+       F90FLAGS="-s -O" 
+       # Test if it is a version of the absoft compiler which has the library in a custom place.
+       if test -n "$ABSOFT" ; then
+         : ${LIBDIRS='$(ABSOFT)/lib'}
+       fi 
+       ;;
      absoft77)
-     : ${LIBS="fio f77math m"}
-     F90FLAGS="-f"
-     # Test if it is a version of the absoft compiler which has the library in a custom place.
-     if test -n "$ABSOFT" ; then
-       : ${LIBDIRS='$(ABSOFT)/lib'}
-     fi ;;
+       : ${LIBS="fio f77math m"}
+       F90FLAGS="-f"
+       # Test if it is a version of the absoft compiler which has the library in a custom place.
+       if test -n "$ABSOFT" ; then
+         : ${LIBDIRS='$(ABSOFT)/lib'}
+       fi 
+       ;;
      nag)
-     : ${LIBS="f90 nagfl90 nag m"} 
-     F90FLAGS="$F90FLAGS -N140" ;;
+       : ${LIBS="f90 nagfl90 nag m"} 
+       F90FLAGS="$F90FLAGS -N140" 
+       ;;
      portland)
-     : ${LIBS="pgf90 pgf90_rpm1 pghpf2 pgf90rtl pgc m"}
-     : ${LIBDIRS='$(PGI)/linux86/lib'} ;;
+       : ${LIBS="pgf90 pgf90_rpm1 pghpf2 pgf90rtl pgc m"}
+       : ${LIBDIRS='$(PGI)/linux86/lib'} 
+       ;;
      fujitsu)
-     : ${LIBS="fj9i6 fj9e6 fj9f6"} ;;
+       : ${LIBS="fj9i6 fj9e6 fj9f6"} 
+       ;;
      none)
-     : ${LIBS="m"} ;;
-    *)
-    echo Unknown Linux f90 compiler.
-    echo Please add appropriate information to 
-    echo $srcdir/known-architectures/linux-gnu
-    echo and send the updated file to CactusMaint
-    echo We will try anyway ...
-    ;;
-esac    
+       : ${LIBS="m"} 
+       ;;
+     *)
+       echo Unknown Linux f90 compiler.
+       echo Please add appropriate information to 
+       echo $srcdir/known-architectures/linux-gnu
+       echo and send the updated file to CactusMaint
+       echo We will try anyway ...
+       ;;
+  esac    
+
+fi
