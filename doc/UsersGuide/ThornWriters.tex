@@ -71,14 +71,14 @@ the other thorns.
 A thorn consists of a subdirectory of a arrangement containing three 
 administrative files
 
-\begin{itemize}
-\item{\tt interface.ccl}: the cactus interface, which defines the grid 
+\begin{Lentry}
+\item[{\tt interface.ccl}] the cactus interface, which defines the grid 
 functions, variables, etc. See \ref{sec:in}.
-\item{\tt param.ccl}: the parameters introduced by the thorn. See
-\ref{param.ccl}.
-\item{\tt schedule.ccl}: scheduling information for routines called by
-the flesh.
-\end{itemize}
+\item[{\tt param.ccl}] the parameters introduced by the thorn. See
+\ref{sec:thpa}.
+\item[{\tt schedule.ccl}] scheduling information for routines called by
+the flesh. See \ref{sec:thsc}
+\end{Lentry}
 
 Thorns can also contain  
 \begin{itemize}
@@ -259,40 +259,40 @@ within the allowed values.
 
 There are three access levels available for parameters:
 
-\begin{itemize}
-\item {\tt Global}
+\begin{Lentry}
+\item [{\tt Global}]
 These parameters are seen by all thorns.
-\item {\tt Restricted}
+\item [{\tt Restricted}]
 These parameters may be used by other implementations if they so desire.
-\item {\tt Private}
+\item [{\tt Private}]
 These are only seen by this thorn.
-\end {itemize}
+\end {Lentry}
 
 A parameter specification consists of:
 \begin{itemize}
 
-\item {\tt the parameter type}
-\begin{itemize}
-\item {\tt REAL}
-\item {\tt INT}
-\item {\tt KEYWORD}
+\item the parameter type
+\begin{Lentry}
+\item [{\tt REAL}]
+\item [{\tt INT}]
+\item [{\tt KEYWORD}]
 A distinct string with only a few known allowed values.
-\item {\tt STRING}
+\item [{\tt STRING}]
 An arbitrary string, which must conform to a given regular expression.
-\item {\tt BOOLEAN}
+\item [{\tt BOOLEAN}]
 A boolean type which can take values 1, `t', `true', `yes' or 
 0, `f', `false', `no'.
-\end{itemize}
+\end{Lentry}
 
-\item {\tt A description of the parameter}
+\item a description of the parameter
 
-\item {An allowed value block}
+\item an allowed value block
 This consists of a brace delimited block of lines
 describing the allowed values of the parameter.  Each range may
 have a description associated with it by placing a :: on the line and
 putting the description afterwards.
 
-\item {\tt The default value}
+\item the default value
 This must be one of the allowed values.
 
 \end{itemize}
@@ -380,49 +380,57 @@ schedule <name> at <time bin> [other options]
 
 where {\tt <name>} is the name of the routine, and {\tt <time bin>} is one of
 
-\begin{itemize}
+\begin{Lentry}
 
-\item {\tt CCTK\_BASEGRID}
+\item [{\tt CCTK\_STARTUP}]
+For routines run before the grid hierachy is set up, for example function
+registration.
+
+\item [{\tt CCTK\_PARAMCHECK}]
+For routines which check parameter combinations, routines registered here
+only have access to the grid size and the parameters.
+
+\item [{\tt CCTK\_BASEGRID}]
 Responsible for setting up coordinates etc.
 
-\item {\tt CCTK\_RECOVER}
+\item [{\tt CCTK\_RECOVER}]
 For recovery from checkpoint.
 
-\item {\tt CCTK\_INITIAL}
+\item [{\tt CCTK\_INITIAL}]
 
 For generating initial data.
 
-\item {\tt CCTK\_POSTINITIAL}
+\item [{\tt CCTK\_POSTINITIAL}]
 
 Tasks which must be applied after initial data is created.
 
-\item {\tt CCTK\_CPINITIAL}
+\item [{\tt CCTK\_CPINITIAL}]
 For recovery of initial data from a checkpoint file.
 
-\item {\tt CCTK\_PRESTEP}
+\item [{\tt CCTK\_PRESTEP}]
 Stuff done before the evolution step.
 
-\item {\tt CCTK\_EVOL}      
+\item [{\tt CCTK\_EVOL}]      
 
 The evolution step.
 
-\item {\tt CCTK\_POSTSTEP}
+\item [{\tt CCTK\_POSTSTEP}]
 
 Stuff done after the evolution step.
 
-\item {\tt CCTK\_CHECKPOINT}
+\item [{\tt CCTK\_CHECKPOINT}]
 For checkpointing data
 
-\item {\tt CCTK\_ANALYSIS}
+\item [{\tt CCTK\_ANALYSIS}]
 For analysing data.
 
-\item {\tt CCTK\_TERMINATE}
+\item [{\tt CCTK\_TERMINATE}]
 Called when cactus terminates.
 
-\item {\tt CCTK\_CONVERGENCE}
+\item [{\tt CCTK\_CONVERGENCE}]
 Convergence stuff.
 
-\end{itemize}
+\end{Lentry}
 
 These time bins can be given in the {\tt schedule.ccl} file with
 or without the initial {\tt CCTK\_}, and in any case.
@@ -547,24 +555,24 @@ a library called {\tt \$NAME} be created by the Makefile.
 
 The makefile is passed the following variables
 
-\begin{itemize}
+\begin{Lentry}
 
-\item {\tt \$(CCTK\_HOME)} - the main CCTK directory
+\item [{\tt \$(CCTK\_HOME)}]  the main CCTK directory
 
-\item {\tt \$(TOP)}    - the CONF directory
+\item [{\tt \$(TOP)}] the CONF directory
 
-\item {\tt \$(SRCDIR)} - the directory in which the source files can be found
+\item [{\tt \$(SRCDIR)}] the directory in which the source files can be found
 
-\item {\tt \$(CONFIG)} - the directory containing the configuration files
+\item [{\tt \$(CONFIG)}]  the directory containing the configuration files
 
-\item {\tt \$(THORN)}  - the thorn name
+\item [{\tt \$(THORN)}]   the thorn name
 
-\item {\tt \$(SCRATCH\_BUILD)} - the scratch directory where Fortran90 module
+\item [{\tt \$(SCRATCH\_BUILD)}]  the scratch directory where Fortran90 module
 files should end up if they need to be seen by other thorns.
 
-\item {\tt \$(NAME)}.
+\item [{\tt \$(NAME)}]
 
-\end{itemize}
+\end{Lentry}
 
 and has a working directory of {\tt <config>/build/<thorn\_name>} .
 
@@ -819,19 +827,19 @@ Here, {\tt CCTK\_GFINDEX3D(cctkGH,i,j,k)]} expands to
 
 The Cactus variables which are passed through the macros
 {\tt CCTK\_FARGUMENTS}, {\tt CCTK\_CARGUMENTS}, etc are
-\begin{itemize}
-\item {\tt cctk\_dim} An integer with the number of dimensions
+\begin{Lentry}
+\item [{\tt cctk\_dim}] An integer with the number of dimensions
       used for this grid hierarchy
-\item {\tt cctk\_lsh} An array of {\tt cctk\_dim} integers
+\item [{\tt cctk\_lsh}] An array of {\tt cctk\_dim} integers
       with the local grid size on this processor
-\item {\tt cctk\_delta\_time} A {\tt CCTK\_REAL} with the timestep 
-\item {\tt cctk\_time} A {\tt CCTK\_REAL} with the current time
-\item {\tt cctk\_delta\_space} An array of {\tt cctk\_dim} {\tt CCTK\_REAL}s with
+\item [{\tt cctk\_delta\_time}] A {\tt CCTK\_REAL} with the timestep 
+\item [{\tt cctk\_time}] A {\tt CCTK\_REAL} with the current time
+\item [{\tt cctk\_delta\_space}] An array of {\tt cctk\_dim} {\tt CCTK\_REAL}s with
          the grid spacing in each direction
-\item {\tt cctk\_nghostzones} An array of {\tt cctk\_dim} integers with
+\item [{\tt cctk\_nghostzones}] An array of {\tt cctk\_dim} integers with
          the number of ghostzones used in each direction
-\item {\tt cctkGH} A C pointer identifying the grid hierachy
-\end{itemize}
+\item [{\tt cctkGH}] A C pointer identifying the grid hierachy
+\end{Lentry}
 
 The following variables describe the location of the local
 grid (e.g. the grid treated on a given processor) within 
@@ -890,7 +898,7 @@ is declared in the {\tt interface.ccl} as {\tt CCTK\_REAL}.
 \begin{verbatim}
       subroutine InitialData(CCTK_FARGUMENTS)
 
-      DECLARE_CCTK_ARGUMENTS
+      DECLARE_CCTK_FARGUMENTS
 
       CCTK_REAL local_var
       
@@ -927,7 +935,7 @@ For a multiprocessor run, only information from processor zero
 will appear. If the "{\tt -r"} command line option is used 
 (Section~\ref{sec:coliop}) the output from this command will be redirected.
 
-To output a variable using {\tt CCTK\_INFO} currently more tricky. From Fortranyou will need something like
+To output a variable using {\tt CCTK\_INFO} currently more tricky. From Fortran you will need something like
 
 \begin{verbatim}
 write(infoline,'(A,1X,I)') 'The integer was ',inum
@@ -1085,6 +1093,36 @@ they indicate the string concatonation operator in Fortran.
 
 The Flesh and the Cactus thorns use {\tt grdoc} to document the code.
 
+\subsection{Coordinates}
+\label{sec:co}
+
+The flesh provides utility routines for handling coordinates.
+The utilities for thorns providing coordinates are:
+\begin{Lentry}
+\item[{\bf Coordinate registration:} {\tt CCTK\_RegisterCoord} or {\tt CCTK\_RegisterCoordI}]
+
+allows one to associate a given grid variable with with a coordinate name
+
+\item[{\bf Coordinate range registration:} {\tt CCTK\_RegisterCoordRange}]
+
+allows one to register the upper and lower bound of a coordinate with a coordinate name
+
+\end{Lentry}
+
+The utilities for thorns using coordinates are:
+
+\begin{Lentry}
+
+\item[{\bf Coordinate identification:} {\tt CCTK\_CoordIndex}]
+
+Returns the grid variable index for a given coordinate name
+
+\item[{\bf Coordinate range identification:} {\tt CCTK\_CoordRange}] 
+
+Returns the lower and upper bound of a coordinate for a given coordinate name
+
+
+\end{Lentry}
 
 \subsection{IO}
 \label{sec:io}
