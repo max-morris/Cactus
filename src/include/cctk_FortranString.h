@@ -17,6 +17,9 @@
 
 #include "cctk_Misc.h"
 
+#ifndef _CCTK_FORTRANSTRING_H_
+#define _CCTK_FORTRANSTRING_H_
+
 #if defined T3E
 
 #include <fortran.h>
@@ -45,9 +48,9 @@
 #elif defined WIN32
 
 #define ONE_FORTSTRING_ARG\
-   char *n, unsigned int cctk_strlen1
+   char *cctk_str1, unsigned int cctk_strlen1
 #define TWO_FORTSTRINGS_ARGS\
-   char *n, int cctk_strlen1, char *w, int cctk_strlen2
+   char *cctk_str1, int cctk_strlen1, char *cctk_str2, int cctk_strlen2
 #define THREE_FORTSTRINGS_ARGS\
    char *cctk_str1,\
    char *cctk_str2,\
@@ -93,3 +96,5 @@
    char *arg3 = Util_NullTerminateString(cctk_str3,cctk_strlen3);
 
 #endif
+
+#endif /* _CCTK_FORTRANSTRING_H_*/
