@@ -19,25 +19,25 @@
 /* Define some stuff */
 
 #ifdef FCODE
-#define CCTK_FARGS  dim,sh, lb, ub, bbox, levfac, GH
-#define DECLARE_CCTK_FARGS INTEGER dim&&\
+#define _CCTK_FARGUMENTS  dim,sh, lb, ub, bbox, levfac, GH
+#define _DECLARE_CCTK_FARGUMENTS INTEGER dim&&\
                            INTEGER sh(dim), lb(dim), ub(dim), bbox(2*dim)&&\
                            INTEGER levfac&&\
-                           POINTER GH
+                           POINTER GH&&\
 
 #endif /*FCODE*/
 
 #ifdef CCODE
-#define INITIALISE_CCTK_C2F
-#define DECLARE_CCTK_C2F 
-#define PASS_CCTK_C2F(xGH) &((xGH)->dim),\
-                           (xGH)->local_shape, (xGH)->lower_bound, (xGH)->upper_bound, (xGH)->bbox,\
-                           &((xGH)->levfac),\
-                           (xGH)
-#define CCTK_C2F_PROTO     int *,\
-                           int *,int *, int *, int *,\
-                           int *,\
-                           cGH *
+#define _INITIALISE_CCTK_C2F
+#define _DECLARE_CCTK_C2F 
+#define _PASS_CCTK_C2F(xGH) &((xGH)->dim),\
+                            (xGH)->local_shape, (xGH)->lower_bound, (xGH)->upper_bound, (xGH)->bbox,\
+                            &((xGH)->levfac),\
+                            (xGH)
+#define _CCTK_C2F_PROTO     int *,\
+                            int *,int *, int *, int *,\
+                            int *,\
+                            cGH *
 
 #define CCTK_STORAGESIZE(xGH, group, dim) (CCTK_QueryGroupStorage(xGH,group) ?\
                            (CCTK_ArrayGroupSize(xGH, group, dim)) : &(_cctk_one))
