@@ -77,6 +77,7 @@
 #undef HAVE_MKDIR
 #undef HAVE_SCANDIR
 #undef HAVE_GETOPT_LONG_ONLY
+#undef HAVE_CRYPT
 
 /* Do we have mode_t ? */
 
@@ -97,6 +98,7 @@
 #undef HAVE_REGEX_H
 #undef HAVE_SYS_TYPES_H
 #undef HAVE_SYS_SOCKET_H
+#undef HAVE_NETINET_IN_H
 #undef HAVE_WINSOCK2_H
 
 #undef TIME_WITH_SYS_TIME

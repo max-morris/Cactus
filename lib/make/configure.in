@@ -384,6 +384,7 @@ CCTK_CHECK_HEADERS(getopt.h)
 CCTK_HEADER_REGEX
 CCTK_CHECK_HEADERS(sys/types.h)
 CCTK_CHECK_HEADERS(sys/socket.h)
+CCTK_CHECK_HEADERS(netinet/in.h)
 CCTK_CHECK_HEADERS(winsock2.h)
 
 AC_HEADER_TIME
@@ -456,6 +457,10 @@ if test "x$cctk_cv_header_regex_h" = "xyes" ; then
 else
   BUILD_REGEX=yes
 fi
+
+dnl Do we have crypt(3)
+
+AC_CHECK_FUNCS(crypt)
 
 AC_SUBST(LIBDIRS)
 
