@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.102 2000-12-13 12:04:59 goodale Exp $
+#   @version $Id: Makefile,v 1.103 2000-12-13 12:14:26 goodale Exp $
 # @@*/
 
 ##################################################################################
@@ -254,7 +254,8 @@ TAGS:
 	  \) -print |  xargs etags -a 
 #	find src arrangements \( -name '*.[cChF]' -o -name '*.F77' -o -name '*.cc'\) \
 #          -exec etags --append --regex '/[a-z A-Z \t]*FORTRAN_NAME[^)]*/' {} \;
-	$(PERL) -pi -e 's/(subroutine\s*)([a-zA-Z0-9_]+)/\1\L\2/g;' TAGS
+	$(PERL) -pi.bak -e 's/(subroutine\s*)([a-zA-Z0-9_]+)/\1\L\2/g;' TAGS
+	rm TAGS.bak
 	@echo $(DIVIDER)
 
 tags:
@@ -265,7 +266,8 @@ tags:
 	  -name '*.[chCfF]' -o -name '*.[fF]77' -o -name '*.[fF]90'\
 	  -o -name '*.cc' -o -name '*.cxx' -o -name '*.hh' -o -name '*.[ch]pp' \
 	  \) -print |  xargs ctags -a 
-	$(PERL) -pi -e 's/(subroutine\s*)([a-zA-Z0-9_]+)/\1\L\2/g;' tags
+	$(PERL) -pi.bak -e 's/(subroutine\s*)([a-zA-Z0-9_]+)/\1\L\2/g;' tags
+	rm tags.bak
 	sort tags > sortedtags ; mv sortedtags tags
 	@echo $(DIVIDER)
 
