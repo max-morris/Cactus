@@ -60,7 +60,6 @@ CCTK_INT ** CCTK_GroupSizesI(int group);
 int         CCTK_GroupTypeFromVarI(int var);
 int         CCTK_GroupTypeNumber(const char *type);
 int         CCTK_GroupTypeI(int group);
-int         CCTK_NumTimeLevelsI(int group);
 
 const char *CCTK_ImpFromVarI(int var);
 
@@ -110,23 +109,5 @@ int CCTK_GroupTagsTableI(int group);
 }
 #endif
 
-
-/* Group Types */
-
-#define CCTK_DISTRIB_CONSTANT 301
-#define CCTK_DISTRIB_DEFAULT  302
-
-#define CCTK_SCALAR 401
-#define CCTK_GF     402
-#define CCTK_ARRAY  403
-
-#define CCTK_PRIVATE   501
-#define CCTK_PROTECTED 502
-#define CCTK_PUBLIC    503
-
-/* constants for CCTK_TraverseString() */
-#define CCTK_VAR          601
-#define CCTK_GROUP        602
-#define CCTK_GROUP_OR_VAR 603
 
 #endif /* _CCTK_GROUPS_H_ */
