@@ -294,7 +294,7 @@ sub runtest {
 
     unlink(<$tsttop${sep}$tp${sep}*.*>);
 
-    if (! (-e $current_directory$sep$executable))
+    if (! (-e "$current_directory$sep$executable"))
     {
        if (-e "$current_directory$sep${executable}.exe")
        {
