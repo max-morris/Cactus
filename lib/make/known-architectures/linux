@@ -142,7 +142,7 @@ else
        : ${F90_OPTIMISE_FLAGS="-O"}         
        : ${LIBS="fj9i6 fj9e6 fj9f6"} 
        if test -n "$LAHEY" ; then
-         : ${LIBDIRS=$LAHEY}
+         : ${LIBDIRS="$LAHEY/lib"}
        else
          if test -d '/usr/local/lf9555/lib' ; then
 	   : ${LIBDIRS="/usr/local/lf9555/lib"}
