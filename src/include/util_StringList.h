@@ -31,8 +31,8 @@ typedef struct
 
 uStringList *Util_StringListCreate(int size);
 int Util_StringListAdd(uStringList *list, const char *item);
-void Util_StringListDestroy(uStringList *this);
-const char *Util_StringListNext(uStringList *this, int flag);
+void Util_StringListDestroy(uStringList *list);
+const char *Util_StringListNext(uStringList *list, int flag);
 
 
 #ifdef __cplusplus
