@@ -1,0 +1,35 @@
+CONFIG = $(TOP)/config-stuff
+
+# Include the definitions for this configuration
+
+include $(CONFIG)/make.config.defn
+
+# Silence all but designated output
+#.SILENT:
+
+# Build the executable
+$(EXE): datestamp.o $(patsubst %,$(CCTK_LIBDIR)/lib%.a,$(notdir $(THORNS)))
+	echo Creating $(EXE) from $(THORNS)
+	$(CC) -c datestamp.c
+	$(CC) -o $@ $(LDFLAGS) datestamp.o $(LIBDIRS:%=-L%) $(LIBS:%=-l%) -L$(CCTK_LIBDIR) $(addprefix -l,$(notdir $(THORNS)))
+
+# Build a thorn library
+# Libraries go into the appropriate library directory
+# Each thorn's object files go into $(BUILD_DIR)/<thorn>
+$(CCTK_LIBDIR)/lib%.a: update
+	echo Checking status of $(notdir $@)
+	cd $(@:$(CCTK_LIBDIR)/lib%.a=$(BUILD_DIR)/%); \
+	$(MAKE) TOP=$(TOP) SRCDIR=$(@:$(CCTK_LIBDIR)/lib%.a=$(TOOLKIT_DIR)/$(filter %$(@:$(CCTK_LIBDIR)/lib%.a=%),$(THORNS))) CONFIG=$(CONFIG) -f $(MAKE_DIR)/make.thornlib
+
+# Include any extra dependencies
+
+include $(CONFIG)/make.config.deps
+
+
+# Phony targets.
+
+.PHONY:update clean
+update:
+
+clean:
+	find $(TOP) -name '*.o' -o -name '*.a' -exec rm {} \;

@@ -1,0 +1,16 @@
+include $(CONFIG)/make.config.defn
+
+INC_DIRS += $(SRCDIR) $(SRCDIR)/include
+
+include $(SRCDIR)/make.code.defn
+
+THORN_SRCS = $(SRCS:%=$(SRCDIR)/%)
+
+OBJS = $(patsubst $(SRCDIR)/%.c,%.o,$(THORN_SRCS))
+
+$(CCTK_LIBDIR)/libtest.a: $(OBJS)
+	$(AR) $(ARFLAGS) $@ $(OBJS)
+
+include $(CONFIG)/make.config.rules
+
+include $(SRCDIR)/make.code.deps
