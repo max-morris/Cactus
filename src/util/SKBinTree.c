@@ -21,7 +21,6 @@ int STR_cmpi(const char *string1, const char *string2);
 
 static char *rcsid = "$Id$";
 
-
  /*@@
    @routine    SKTreeStoreData
    @date       Mon Oct  5 11:04:55 1998
@@ -37,37 +36,52 @@ static char *rcsid = "$Id$";
 
 @@*/
 t_sktree *SKTreeStoreData(t_sktree *root, t_sktree *subtree, 
-		      const char *key, void *data)
+                          const char *key, void *data)
 {
   int order;
+  t_sktree *newsubtree;
+  t_sktree *lastnode, *node;
 
   if(!subtree)
   {
     /* Create a new element. */ 
-    subtree = (t_sktree *)malloc(sizeof(t_sktree));
-    if(subtree)
+    newsubtree = (t_sktree *)malloc(sizeof(t_sktree));
+    if(newsubtree)
     {
-      subtree->left=NULL;
-      subtree->right=NULL;
-      subtree->next=NULL;
+      newsubtree->left=NULL;
+      newsubtree->right=NULL;
+      newsubtree->next=NULL;
+      newsubtree->last=NULL;
 
-      subtree->data = data;
+      newsubtree->data = data;
 
-      subtree->key= (char *)malloc(sizeof(char)*(strlen(key)+1));
-      strcpy(subtree->key, key);
+      newsubtree->key= (char *)malloc(sizeof(char)*(strlen(key)+1));
+      strcpy(newsubtree->key, key);
       if(root) 
       {
 	if((order = STR_CMP(key, root->key)) < 0)
 	{
-	  root->left = subtree;
-	  subtree->next = root ;
+	  root->left = newsubtree;
+	  newsubtree->next = root;
+          newsubtree->last = root->last;
+          if(newsubtree->last)
+          {
+            newsubtree->last->next = newsubtree;
+          }
+
+          /*          printf("Added %s, NEXT: %s\n", newsubtree->key, root->key); */
 	}
 	else
 	{
-	  root->right = subtree;
-	  subtree->next = root->next;
-	  root->next = subtree;
+	  root->right = newsubtree;
+	  newsubtree->next = root->next;
+          newsubtree->last = root;
+	  root->next = newsubtree;
+          
+          /*printf("Added %s, NEXT: %s\n", newsubtree->key, newsubtree->next ? newsubtree->next->key : "(none)");*/
+          /*printf("Modified %s NEXT\n", root->key);*/
 	}
+
       }
     }
   }
@@ -76,24 +90,25 @@ t_sktree *SKTreeStoreData(t_sktree *root, t_sktree *subtree,
     /* Go down left or right branch. */
     if((order = STR_CMP(key, subtree->key)) < 0)
     {
-      subtree = SKTreeStoreData(subtree, subtree->left, key, data);
+      newsubtree = SKTreeStoreData(subtree, subtree->left, key, data);        
     }
     else if(order > 0) 
     {
-      subtree = SKTreeStoreData(subtree, subtree->right, key, data);
+      newsubtree = SKTreeStoreData(subtree, subtree->right, key, data);
     }
     else if(order==0)
     {
       /* Duplicate key. */
-      subtree = NULL;
+      newsubtree = NULL;
     }
+
   }
 
   /* Return either the new node, or NULL if either a duplicate value or
    * memory failure.
    */
 
-  return subtree;
+  return newsubtree;
 
 }
 
@@ -211,6 +226,21 @@ void SKTreePrintNodes(t_sktree *root, int depth, void (*print_node)(void *, int)
   }
 }
 
+void SKTreeDebugNodes(t_sktree *root, int depth)
+{
+  if(root)
+  {
+    SKTreeDebugNodes(root->left, depth+1);
+
+    printf("KEY:   %s\n", root->key);
+    root->left  ? printf("LEFT:  %s\n", root->left->key)  : printf("LEFT:  (none)\n");
+    root->right ? printf("RIGHT: %s\n", root->right->key) : printf("RIGHT: (none)\n");
+    root->next  ? printf("NEXT:  %s\n", root->next->key)  : printf("NEXT: (none)\n");
+
+    SKTreeDebugNodes(root->right, depth+1);
+  }
+}
+
 
  /*@@
    @routine    SKTreeFindNode
@@ -300,8 +330,8 @@ int STR_cmpi(const char *string1, const char *string2)
 {
   int retval;
   int position;
- 
-  retval = strlen(string1) - strlen(string2);
+
+  retval = 0;
 
   if(! retval)
   {
@@ -315,6 +345,12 @@ int STR_cmpi(const char *string1, const char *string2)
       }
     }
   }
+
+  if(! retval)
+  {
+    retval = strlen(string1) - strlen(string2);
+  }
+
 
   return retval;
 }
