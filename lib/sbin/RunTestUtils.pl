@@ -1113,7 +1113,7 @@ sub ReportOnTest
 
   if (! $rundata->{"$thorn $test NFAILWEAK"})
   {
-    $summary = "Success: $testdata->{\"$thorn $test NDATAFILES\"} files identical";
+    $summary = "\n  Success: $testdata->{\"$thorn $test NDATAFILES\"} files identical";
     printf("\n  $summary\n");
     $rundata->{"NPASSED"}++;
   }
@@ -1121,14 +1121,14 @@ sub ReportOnTest
   {
     if (! $rundata->{"$thorn $test NFAILSTRONG"})
     {
-      $summary = "Success: $testdata->{\"$thorn $test NDATAFILES\"} files compared, $rundata->{\"$thorn $test NFAILWEAK\"} differ in the last digits";
+      $summary = "\n  Success: $testdata->{\"$thorn $test NDATAFILES\"} files compared, $rundata->{\"$thorn $test NFAILWEAK\"} differ in the last digits";
       printf "\n  $summary\n";
       $rundata->{"NPASSED"}++;
       $rundata->{"NPASSEDTOTOL"}++;
     }
     else
     {
-      $summary = "Failure: $testdata->{\"$thorn $test NDATAFILES\"} files compared, $rundata->{\"$thorn $test NFAILWEAK\"} differ, $rundata->{\"$thorn $test NFAILSTRONG\"} differ significantly";
+      $summary = "\n  Failure: $testdata->{\"$thorn $test NDATAFILES\"} files compared, $rundata->{\"$thorn $test NFAILWEAK\"} differ, $rundata->{\"$thorn $test NFAILSTRONG\"} differ significantly";
       printf "\n  $summary\n";
       $rundata->{"$thorn FAILED"} .= "$test ";
       $rundata->{"NFAILED"}++;
