@@ -75,6 +75,12 @@ OVERLOADABLE(SetupGH)
 OVERLOADABLE(ArrayGroupSize_ByBoth)
 
 #undef ARGUMENTS
+#define ARGUMENTS cGH *GH, int group, const char *groupname
+#undef RETURN_TYPE
+#define RETURN_TYPE int
+OVERLOADABLE(QueryGroupStorage_ByBoth)
+
+#undef ARGUMENTS
 #undef RETURN_TYPE
 
 
