@@ -55,6 +55,10 @@ while (<>)
         $n_arg_braces = -1;
       }
 
+      # Remove a ; from after the fileversion macro
+      # such a semicolon could lead to warning messages.
+      $mline =~ s/^\s*(CCTK_FILEVERSION\s*\([^)]*\))(\s*;)?/$1/;
+
       # start counting braces if there has been a DECLARE macro
       if ($closing_brackets)
       {
