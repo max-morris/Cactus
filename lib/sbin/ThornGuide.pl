@@ -168,7 +168,7 @@ if ($level eq "all_arr") {
 
 &Output_Bottom;
 print STDERR "\nFinished\n" if ($verbose);
-print "\n";
+#print "\n";
 #######################
 ## END OF MAIN STUFF ##
 #######################
@@ -279,7 +279,7 @@ sub Start_Arr
 
 print OUT <<EOC;
 
-\\begin{cactuspart}{$partnum}{$arr}{\$RCSfile$}{\$Revision$}
+\\begin{cactuspart}{$partnum}{$arr}{}{}
 \\renewcommand{\\thepage}{\\Alph{part}\\arabic{page}}
 EOC
 }  
