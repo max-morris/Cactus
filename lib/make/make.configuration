@@ -216,7 +216,7 @@ clean:
 
 cleandeps:
 	@echo Deleting all dependency files in $(TOP)
-	find $(TOP) \( -name '*.[d]' -o -name '*.a' \) -exec rm {} \;
+	find $(TOP)/build \( -name '*.[d]' -o -name '*.a' \) -exec rm {} \;
 
 cleanobjs:
 	@echo Deleting all object files in $(TOP)
