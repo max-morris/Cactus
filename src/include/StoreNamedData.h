@@ -34,7 +34,7 @@ extern "C" {
 /* Store the data. */
 int StoreNamedData(pNamedData **list, const char *name, void *data);
 
-/* Fet the data. */
+/* Fetch the data. */
 void *GetNamedData(pNamedData *list, const char *name);
 
 /* destroy the data. */
