@@ -4,6 +4,11 @@
  
 private:
 
+STRING cctk_run_title "Description of this simulation"
+{
+  ".*" :: "Any string"
+} ""
+
 KEYWORD cctk_timer_output  "Provide output from timers"
 {
  "off"  :: "No timer output"
