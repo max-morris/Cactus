@@ -1,0 +1,25 @@
+# /*@@
+#   @file      FAQ
+#   @date      Thu Jun 24 11:06:01 1999
+#   @author    Tom Goodale
+#   @desc 
+#   Some useful info.
+#   @enddesc
+#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.1 1999-06-24 09:08:38 goodale Exp $ 
+# @@*/
+
+
+1) The make system says "Checking status of libXXX.a" and then just sits there.  What
+can I do ?
+
+The first thing to do whenever a problem arises from the make system is to run with
+the "SILENT=no" option.
+
+In this case, 'though, first check that the clocks on the machine on which you are 
+editing files and the clock on the machine you are compiling on are synchronised.  If
+the compilation machine's clock is slow, then the newly made dependency files will
+still be `older' than the file you edited, and the system will loop until this 
+situation changes.
+
+
+
