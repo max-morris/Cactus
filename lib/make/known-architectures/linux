@@ -12,7 +12,7 @@
 if test "$CCTK_CONFIG_STAGE" = "preferred-compilers" ; then
 
   if test -z "$FPP" -a -z "$FPPFLAGS"; then
-    FPP='/usr/bin/cpp'
+    FPP='/lib/cpp'
     FPPFLAGS='-traditional'
     echo Setting FPP to $FPP
     echo Setting FPPFLAGS to $FPPFLAGS
