@@ -1,5 +1,0 @@
-
-schedule Cactus_Startup at CCTK_Startup
-{
-  LANG: C
-} "Register banner for Cactus"
