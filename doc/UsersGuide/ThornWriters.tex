@@ -1216,41 +1216,41 @@ layer.
 In Cactus, reduction operators can be applied to gridfunctions, grid
 scalars and distributed arrays, as well as local variables/arrays. 
 There is a fundamental difference between the reduction operation on
-grid functions and quantities as arrays {\bf FIXME WHY??}.
+grid functions and quantities as arrays.
 
-The syntax of the reduction in C / Fortran, for examples see below.
 
-{\t
+{\bf Obtaining the reduction handle}
+Before calling the routine which performs the reduction operation,
+the handle, which indentifies the operation must be derived from its
+registered name.
+
 \begin{verbatim}
 
 int CCTK_GetReductionHandle(const char *reduction_name);
 
 call CCTK_ReductionHandle(int reduction_handle, character reduction_name)
 
-\end{verbatim}
-}
-
-{\t
-\begin{verbatim}
 
 int CCTK_GetReductionArrayHandle(const char *reduction_name);
 
 call CCTK_ReductionArrayHandle(int reduction_handle, character reduction_name)
 
 \end{verbatim}
-}
+
 
 \vskip .25cm
 
 \begin{Lentry}
-\item{\tt reduction\_handle}: In Fortran the name of the variable will
+\item[{\tt reduction\_handle}] 
+In Fortran the name of the variable will
 contain the handle value after the call. In C this value is the
 function value.
-\item{\tt reduction\_name}: is the name under which the operator has
-been registered by the providor. This name can be looked up {\bf FIXME 
-WHERE ?} in PUGH, since this is the only communication layer at this
-point.
-\item{\tt Error checking}: negative handle value indicates failure to
+\item[{\tt reduction\_name}] 
+is the name under which the operator has
+been registered by the providind thorn. Currently only PUGH is
+providing reduction operations.
+\item[{\bf error checking}] 
+negative handle value indicates failure to
 identify the correct operator. Possible causes: misspelled operator
 name, operator not registered properly.
 \end{Lentry}
@@ -1265,6 +1265,8 @@ argument lists).
 
 \vskip 0.25cm
 
+
+{\bf The general reduction interface}
 The main interfaces for reduction operations are quite powerful (and
 hence rather complicated) To ease the use of these main interfaces, wrappers
 designed for specific and more restricted use are described below. If 
@@ -1273,18 +1275,18 @@ uncertain, you should use these.
 {\t
 \begin{verbatim}
 
-int CCTK_Reduce( cGH *GH, 
-	 	 int retvaltype, 
-		 int retvalnum, 
-		 void *retval, 
-		 int handle, 
-		 int index, 
-		 ...);
+int CCTK_Reduce(  cGH *GH, 
+                  int retvaltype, 
+                  int retvalnum, 
+                  void *retval, 
+                  int handle, 
+                  int index, 
+                  ...);
 
 
 call CCTK_Reduce( int returnvalue, 
-		  cctkGH, 
-		  int processor,
+                  cctkGH, 
+                  int processor,
                   int operation_handle,
                   int num_out_vals,
                   int type_out_vals,
@@ -1308,7 +1310,7 @@ call CCTK_ReduceArray(int returnvalue,
                       int processor,
                       int operation_handle,
                       int num_out_vals,
-                      int type_out_vals,
+                      int type_out_arrays,
                       void out_vals,
                       int num_dims,
                       int num_in_arrays,
@@ -1318,157 +1320,249 @@ call CCTK_ReduceArray(int returnvalue,
 }
 
 \begin{Lentry}
-\item{\tt int returnvalue} the return value of the operation. negative
-			value indicates failure to perform reduction.
-\item{\tt cctkGH}	in fortran the pointer to the grid hierachy
-			structure. Cannot be used within Fortran but
-			can be used from within	
-			C. Since this name is fixed write it out shown
-			above.
-\item{\tt cGH *GH} in the C the pointer to the grid hierarchy.
-\item{\tt int processor} the processor which collects the
-			information, negative value (-1) will distribute the data to all
-			processors.
-\item{\tt int operation\_handle} the number of the reduction operation
+\item[{\tt int returnvalue}] 
+the return value of the operation. negative
+value indicates failure to perform reduction.
+Zero indicates successfull operation.
+\item[{\tt cctkGH}]
+in fortran the pointer to the grid hierachy
+structure. Cannot be used within Fortran but
+can be used from within	
+C. Since this name is fixed write it out shown
+above.
+\item[{\tt cGH *GH}]
+ in the C the pointer to the grid hierarchy.
+\item[{\tt int processor}] 
+the processor which collects the
+information, negative value ($-1$) will distribute the data to all
+processors.
+\item[{\tt int operation\_handle}] the number of the reduction operation
 		handle, needs to be found by calling {\tt CCTK\_ReductionHandle} or
 		{\tt CCTK\_ReductionArrayHandle}.
-\item{\tt int num\_out\_vals} integer defining the number of ??
-\item{\tt int type\_out\_values} specifies the type of the gridfunction 
+\item[{\tt int num\_out\_vals}] integer defining the number of ??
+\item[{\tt int type\_out\_arrays}, {\tt type\_in\_arrays}] 
+specifies the type of the gridfunction 
 you are communicating. Use the values as specified in
 \ref{sec:cctk_datatypes}. Note: do not {\em mix} datatypes: e.g. in
-fortran do not declare a variable as {\tt integer} and then specify
-the type {\tt CCTK\_VARIABLE\_INT}. These types need not be the same on
-some architectures.
-\item{\tt out\_vals}
-\item{\tt int num\_in\_fields} specifies the number of  to follow
-\item{\tt ...} A varible argument list: specify x and xx, see examples 
-below. A note on variable arguments lists: A  function  may  be called
-with a varying number of arguments of varying types.
-\item{em error checking} a return value other than zero indicates
+Fortran do not declare a variable as {\tt integer} and then specify  
+the type {\tt CCTK\_VARIABLE\_INT} in the reduction command. These
+types need not be the same on some architectures and will conflict.
+\item[{\tt out\_vals}]
+\item[{\tt int num\_in\_fields}] specifies the number of  to follow
+\item[{\tt ...}] indicates a varible argument list: specify the size
+of the array in each dimension, comma separated numbers or integer
+variables. Specify the arrays which will be reduced, the number of
+specified arrays must be the same as the value of the {\tt
+num\_in\_fields} variable.
+\item[{\bf error checking}] a return value other than zero indicates
 failure to perform the operation.
 \end{Lentry}
 
 \vskip 0.25cm
 
 
+{\bf Special reduction interfaces}
+
 The routines are designed for the purpose of reducing scalars, arrays
 and grid functions. They hide many of the options of the generic
-interface described above. 
-{\t
-\begin{verbatim}
-int CCTK_ReduceLocScalar (cGH *GH, 
-			  int processor, 
-			  int operation_handle,
-                          void *in_scalar, 
-			  void *out_scalar, 
-			  int data_type)
-\end{verbatim}
-}
+interface described above.\\
+
+{\bf Reduction of local scalars} across multiple processors, the result of 
+the reduction operation will be on the specified processor or on all processors.
 
 {\t
 \begin{verbatim}
+int CCTK_ReduceLocScalar (cGH *GH, 
+                          int processor, 
+                          int operation_handle,
+                          void *in_scalar, 
+                          void *out_scalar, 
+                          int data_type)
+
 call CCTK_ReduceLocScalar(int returnvalue,
                           cctkGH,
-			  int processor,
+                          int processor,
                           int operation_handle,
                           in_scalar,
                           out_scalar,
                           int data_type)
 \end{verbatim}
 }
+\begin{Lentry}
+\item[{\tt in\_scalar}] the processor local variable with local value to be reduced
+\item[{\tt out\_scalar}] the reduction result: a processor local variable 
+with the global value (same on all procs) if {\tt processor} has been
+set to $-1$. Otherwise {\tt processor} will hold the reduction result.
+\item[{\tt data\_type}]
+specifies the type of the gridfunction 
+you are communicating. Use the values as specified in
+\ref{sec:cctk_datatypes}.
+\end{Lentry}
 
+\vskip 0.25cm
 
-
-{\t
-\begin{verbatim}
-int CCTK_ReduceLocArrayToScalar1D()
-\end{verbatim}
-}
-
-{\t
-\begin{verbatim}
-call CCTK_ReduceLocArrayToScalar1D()
-\end{verbatim}
-}
-
+{\bf Reduction of local 1d arrays} to a local arrays, this reduction is carried
+out element by element. The arrays need to have the same size on all
+processors.
 {\t
 \begin{verbatim}
 int CCTK_ReduceLocArrayToArray1D( cGH *GH, 
-		                  int processor,
-				  int operation_handle,
+                                  int processor,
+                                  int operation_handle,
                                   void *in_array1d, 
-	                          void *out_array1d, 
-			          int elements_in_array1d)
-			          int data_type)
+                                  void *out_array1d, 
+                                  int xsize)
+                                  int data_type)
+
+call CCTK_ReduceLocArrayToArray1D( int returnvalue
+                                  cctkGH,
+                                  int processor,
+                                  int operation_handle,
+                                  in_array1d,
+                                  out_array1d,
+                                  int xsize,
+                                  int data_type)
 \end{verbatim}
 }
 
+\begin{Lentry}
+\item[{\tt in\_array1d}] one dimensional local arrays, to be reduced across a 
+processors, element by element.	
+\item[{\tt out\_array1d}] array holding the reduction result. out\_array1d[1]
+= Reduction(in\_array[1]).
+\item[{\tt xsize}] the size of the one dimensional array.
+\end{Lentry}
+
+\vskip 0.25cm
+
+{\bf Reduction of local 2d arrays} to a local 2d array, this reduction is carried
+out element by element. The arrays need to have the same size on all
+processors.
 {\t
 \begin{verbatim}
-call CCTK_ReduceLocArrayToArray1D( int returnvalue
-			           cctkGH,
+int CCTK_ReduceLocArrayToArrayD( cGH *GH,
+                                 int processor,
+                                 int opertaion_handle,
+                                 in_array_2d,
+                                 out_array2d,
+                                 int xsize,
+                                 int ysize,
+                                 int data_type)
+                                 
+
+call CCTK_ReduceLocArrayToArray2D( int returnvalue
+                                   cctkGH,
                                    int processor,
                                    int operation_handle,
-                                   in_array1d,
-                                   out_array1d,
-                                   int elements_in_array1d,
+                                   in_array2d,
+                                   out_array2d,
+                                   int xsize,
+                                   int ysize,
                                    int data_type)
+                                 
 \end{verbatim}
 }
 
+\begin{Lentry}
+\item[{\tt in\_array1d}] two dimensional local arrays, to be reduced across a 
+processors, element by element.	
+\item[{\tt out\_array1d}] two dimensional array holding the reduction
+result. out\_array2d[i,j]= Reduction(in\_array2d[i,j]).
+\item[{\tt xsize}] the size of the one dimensional array in x direction.
+\item[{\tt ysize}] the size of the one dimensional array in y direction.
+\end{Lentry}
 
+\vskip 0.25cm
 
+{\bf Reduction of local 3d arrays} to a local 3d array, this reduction is carried
+out element by element. The arrays need to have the same size on all
+processors.
 {\t
 \begin{verbatim}
-int CCTK_ReduceLocArrayToScalar2D()
+int CCTK_ReduceLocArrayToArray3D(cGH *GH,
+                                 int processor,
+                                 int opertaion_handle,
+                                 in_array_3d,
+                                 out_array3d,
+                                 int xsize,
+                                 int ysize,
+                                 int zsize,
+                                 int data_type)
+
+call CCTK_ReduceLocArrayToArray3D(int returnvalue
+                                 cctkGH,
+                                 int processor,
+                                 int operation_handle,
+                                 in_array3d,
+                                 out_array3d,
+                                 int xsize,
+                                 int ysize,
+                                 int zsize,
+                                 int data_type)
 \end{verbatim}
 }
 
-{\t
-\begin{verbatim}
-call CCTK_ReduceLocArrayToScalar2D()
-\end{verbatim}
-}
-
-{\t
-\begin{verbatim}
-int CCTK_ReduceLocArrayToArray2D()
-\end{verbatim}
-}
-
-{\t
-\begin{verbatim}
-call CCTK_ReduceLocArrayToArray2D()
-\end{verbatim}
-}
-
-{\t
-\begin{verbatim}
-int CCTK_ReduceLocArrayToScalar3D()
-\end{verbatim}
-}
-
-{\t
-\begin{verbatim}
-call CCTK_ReduceLocArrayToScalar3D()
-\end{verbatim}
-}
-
-{\t
-\begin{verbatim}
-int CCTK_ReduceLocArrayToArray3D()
-\end{verbatim}
-}
-
-{\t
-\begin{verbatim}
-call CCTK_ReduceLocArrayToArray3D()
-\end{verbatim}
-}
+\begin{Lentry}
+\item[{\tt in\_array3d}] two dimensional local arrays, to be reduced across a 
+processors, element by element.	
+\item[{\tt out\_array3d}] two dimensional array holding the reduction
+result. out\_array3d[i,j,k]= Reduction(in\_array3d[i,j,k]).
+\item[{\tt xsize}] the size of the one dimensional array in x direction.
+\item[{\tt ysize}] the size of the one dimensional array in y direction.
+\item[{\tt ysize}] the size of the one dimensional array in z direction.
+\end{Lentry}
 
 \vskip .25cm
+
+{\bf Some brief examples:}
+
+{\bf Reduction of a local scalars:} a local error is reduced across a
+processors wiht the maximum operation. The variable {\tt tmp} will
+hold the maximum of the error and  is the same on all
+processors. This qunatity can then be reassigned to {\tt normerr}.
+\begin{verbatim}      
+         CCTK_REAL normerr, tmp
+         integer   ierr, reduction_handle
+
+         call CCTK_ReductionArrayHandle(reduction_handle,"max")
+
+         if (reduction_handle.lt.0) then
+            call CCTK_WARN(1,"Cannot get reduction handle for SUM operation.")
+         endif
+
+         call CCTK_ReduceLocScalar(ierr, cctkGH, -1, 
+     .             reduction_handle,
+     .             normerr, tmp, CCTK_VARIABLE_REAL)
+         if (ierr.ne.0) then
+            call CCTK_WARN(1,"Reduction of norm failed!");
+         endif
+         normerr = tmp
+\end{verbatim}
+
+
+{\bf Reduction of a local 2d array:} a two dimensional array $(2x3)$ is 
+rdeuced, reduction results (aray of same size: {\tt bla\_tmp}) is seen
+on all processors ($-1$ entry as the thid argument); also demonstrates
+some simple error checking with the {\tt CCTKi\_EXPECTOK} macro.
+\begin{verbatim}
+      CCTK_REAL bla(2,3),bla_tmp(2,3);
+      integer   ierr, sum_handle
+
+      call CCTK_ReductionArrayHandle(sum_handle,"sum")
+      bla         =  1.0d0
+      write (*,*) "BLA ",bla
+
+      call CCTK_ReduceLocArrayToArray2D(ierr, cctkGH, -1, sum_handle,
+     .     bla, bla_tmp, 2, 3, CCTK_VARIABLE_REAL)
+      call CCTKi_EXPECTOK(ierr, 0, 1, "2D Reduction failed")
+
+      bla = bla_tmp
+      write (*,*) "BLA ",bla
+\end{verbatim}
+
 Note that the memory for the returned values must be allocated before
 the reduction call is made.
+
 
 \section{Calls between different programming languages}
 \label{sec:cabedipr}
