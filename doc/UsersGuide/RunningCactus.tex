@@ -38,6 +38,9 @@ in single processor mode. Please refer to the architecture section
 \item[{\tt C/C++}] C and C++ compiler. For example, the GNU compilers. These
  are available for most supported platforms.  Platform specific compilers 
  should also work. 
+\item[{\tt CPP}] C Pre-processor. For example, the GNU CPP.  These are
+normally provided on most platforms, and many C compilers have an option
+to just run as a preprocessor.
 \item[{\tt CVS}] The {\em ``Concurrent Versioning System''} is not needed
   to run/compile Cactus, but you are strongly encourage to install
   this software to take advantage of the update procedures. It can be
@@ -94,18 +97,21 @@ Cactus on, including some architecture specific notes.
 \item[{\bf Dec Alpha}]  Dec operating system and Linux. Single processor
   mode and {\tt MPI} supported. The Decs need to have the GNU {\tt C/C++} 
   compilers installed 
-\item[{\bf Intel Linux}] There is a
+\item[{\bf Intel Linux (ia32, ia64, ppc)}] There is a
   free Linux F90 compiler available from  {\tt http://www.psrv.com}
   -- the only free we know of. Single processor mode and {\tt MPICH}, {\tt LAM}
   supported.
 \item[{\bf Windows NT}] Compiles with Cygwin version B20, Digital Fortran Compiler and Microsoft Visual C++ compiler. Single processor mode and {\tt WMPI}, 
 {\tt HPVM} supported.
+\item[{\bf SP2}]
 \end{Lentry}
 
 The following machines are only partially supported
 \begin{Lentry}
-\item[{\bf SP2}]
 \item[{\bf HP Exemplar}] 
+\item[{\bf Hitachi SR8000-F1}]
+\item[{\bf NEC SX-5}]
+\item[{\bf Sun Solaris}]  
 \end{Lentry}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -166,7 +172,7 @@ home directory which provides menus to pick arrangements and thorns from.
   {\t
     cvs -z9 update
     }
-  The update process will operate recusrively downwards from your current position
+  The update process will operate recursively downwards from your current position
   within the Cactus tree. To update only on certain directories, change
   into these directories and issue the update command.
 \item{\bf CVS status}: to obtain a status report on the ``age'' of your
@@ -229,7 +235,8 @@ this directory
 or
 \begin{itemize}
 \item{}  soft link this directory ({\tt ln -s
-scratch/cactus\_configs Cactus/configs/}) to the Cactus directory.
+scratch/cactus\_configs Cactus/configs/}) to the Cactus directory, if your
+file-system supports soft-links.
 \end{itemize}
 
 Configurations are descibed in detail in section \ref{sec:coaco}.
@@ -250,6 +257,8 @@ A description of the GNATS categories which we use is provided in the appendix
 % OK, there is NO emacs at the moment, because the GNATS setup is really stupid
 % and sendpr handles like c.... besides the fact, that the user has to go 
 % through a make-process which installs stuff somewhere on his HD. gerd.
+% BUT, we could distribute our own, either copy cvsbug, or write a perl
+% version.  Tom
 % \begin{itemize}
 % \item {\tt A web interface}
 % \item {\tt SendPR}
@@ -277,20 +286,20 @@ system.
 \item{} You can compare different {\em compiler options, debug-modes}.
   You might want to compile different communication protocols
   (e.g. {\tt MPI} or {\tt GLOBUS}) or leave them out all together.
-\item{} You can have different configurations for {\em different thorns
+\item{} You can have different configurations for {\em different thorn
     collections} compiled into your executable.
 \end{enumerate}
 
 Once a configuration has been created, by {\tt gmake <config>} as described
 in detail in the next section, a single call to {\tt gmake <config>}
-will compile the code.  The first time will display your compile 
-{\tt ThornList},  and give you the chance to edit it before continuing.
+will compile the code.  The first time generate a compile 
+{\tt ThornList},  and gives you the chance to edit it before continuing.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Creating a configuration}
 \label{sec:coaco}
 
-At its simplest, this is done by {\tt gmake <config>}.  This will generate
+At its simplest, this is done by {\tt gmake <config>}.  This generates
 a configuration with the name {\tt config}, doing its best to automatically
 determine the default compilers and compilation flags suitable for the current 
 architecture.
@@ -325,7 +334,7 @@ be set are indicated in the table below.
 
 Note that if a configuration file is used, and options are also passed
 on the command line, the configuration file will currently override the command line
-options, although this behaviour will soon change.
+options, although this behaviour may change.
 
 It is important to note that these methods cannot be used to, for example add
 options to the default values for {\tt CFLAGS}. Setting {\tt CFLAGS} in the
@@ -515,7 +524,7 @@ Supported values are YES
 {\tt MPI} (the {\it Message Passing Interface}) can provides inter-processor 
 communication. It can either be implemented natively on a machine
 (this is usual on most supercomputers), or through a standard package
-such as {\tt MPICH}, {\tt MPICH-G}, {\tt LAM}, {WMPI}, or {PACX}.  
+such as {\tt MPICH}, {\tt LAM}, {WMPI}, or {PACX}.  
 
 To compile with MPI, the configure option is
 \newline
@@ -588,7 +597,7 @@ Use the PACX Metacomputing package (PArallel Computer eXtension,\\
 
 \end{Lentry}
 
-Note that the searches for libraries etc. mentions above use the 
+Note that the searches for libraries etc. mentioned above use the 
 locations given in the files in {\tt lib/make/extras/MPI}.
 
 
@@ -671,7 +680,7 @@ Finally, autoconf generates the following files.
 A log of the autoconf process.
 
 \item [{\tt config.status}]
-A scrit which may be used to regenerate the configuration.
+A script which may be used to regenerate the configuration.
 
 \item [{\tt config.cache}]
 An internal file used by autoconf.
@@ -684,6 +693,9 @@ An empty directory which will contain the libraries created for each thorn.
 \item [{\tt build}] 
 An empty directory which will contain the object files generated for this 
 configuration, and preprocessed source files.
+
+\item [{\tt config-info}] 
+An file containing information about the configuration.
 
 \end{Lentry}
 
@@ -754,7 +766,7 @@ Cactus will try to compile all thorns listed in
 {\tt configs/<config>/ThornList}.
 The {\tt ThornList} file is simply a list of the form
 {\t <arrangement>/<thorn>}.  All text after a \# sign
-one a line is treated as a comment and ignored.
+on a line is treated as a comment and ignored.
 The first time that you compile a configuration, 
 you will be shown a list of all the thorns in your arrangement
 directory, and asked if you with to edit them. You can regenerate
@@ -798,14 +810,16 @@ the same.
 
 \begin{Lentry}
 
-\item [{\tt gmake <target> FJOBS=<number>}] compile in parallel, across files within each thorn
 \item [{\tt gmake <target> THORNLIST=<file> [THORNLIST\_DIR=<dir>]}] uses the file {\tt dir/file} as the ThornList for the configuration. The directory defaults to the current directory
 \item [{\tt gmake <target> SILENT=no}] print the commands that gmake is executing
-\item [{\tt gmake <target> TJOBS=<number>}] compile in parallel, across thorns 
 \item [{\tt gmake <target> WARN=yes}] show compiler warnings during compilation.
+\item [{\tt gmake <target> FJOBS=<number>}] compile in parallel, across files within each thorn
+\item [{\tt gmake <target> TJOBS=<number>}] compile in parallel, across thorns 
 
 \end{Lentry}
 
+Note that with more modern versions of gmake, it is sufficient to pass the normal
+ {\tt -j <number>} flag to gmake to get parallel compilation. 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
@@ -843,7 +857,8 @@ the same.
 \item [{\tt gmake tags}] creates a {\tt vi} style tags file. See section
   \ref{sec:usta} for using TAGS within Cactus.
 
-\item [{\tt gmake thorninfo}] give information about all available thorns.
+\item [{\tt gmake UsersGuide}] runs LaTeX to produce a copy of the Users' Guide.
+\item [{\tt gmake MaintGuide}] runs Latex to produce a copy of the Mainainers' Guide.
 
 \end{Lentry}
 
@@ -917,7 +932,9 @@ Short Version & Long Version \\
 \begin{Lentry}
 \item [{\tt -O} or {\tt -describe-all-parameters}]
 Produces a full list of all parameters from all thorns which were compiled,
-along with descriptions and allowed values.
+along with descriptions and allowed values.  This can take an optional extra
+parameter {\tt v}  (i.e. {\tt -Ov} to give verbose information about
+all parameters).
 \item [{\tt -o <param>} or {\tt -describe-parameter <param>}] 
 Produces the description and allowed values for a given parameter - takes one
 argument.
@@ -969,7 +986,7 @@ The name of the {\em implementation} which defined the parameter, two colons,
 and the name of the parameter --- e.g. {\tt driver::global\_nx}.
 \item [{\tt Private parameters}]
 The name of the {\em thorn} which defined the parameter, two colons,
-and the name of the parameter --- e.g. {\tt wavetoy::amplitude}.
+and the name of the parameter --- e.g. {\tt wavetoyF77::amplitude}.
 \end{Lentry}
 
 In addition there is a parameter {\tt ActiveThorns} which tells the code
