@@ -58,7 +58,7 @@ sub MissingThorns
       $thornpart = "\U$tthorn";
       if ($thornpart eq $th)
       {
-	$foundit = 1;
+        $foundit = 1;
       }
     }      
     if (!$foundit)
@@ -96,12 +96,12 @@ sub ParseParFile($thorn,$parfile,$config_data)
     {
       if($line =~ m/(.*)\"/)
       {
-	$active .= $1;
-	$processing_active = 0;
+        $active .= $1;
+        $processing_active = 0;
       }
       else
       {
-	$active .= $line;
+        $active .= $line;
       }
     }
     elsif ($line =~ m/^\s*\!\s*DESC(RIPTION)?\s*\"(.*)\"\s*$/i)
@@ -164,15 +164,15 @@ sub FindAllTests
       
       while ($file=<*.par>)
       {
-	$file =~ m:^(.*)\.par$:;
-	$filedir = $1;
-	if (-d $filedir)
-	{
-	  $testdata->{"$thorn $filedir DATAFILES"} .= &FindFiles($filedir);
-	  $testdata->{"$thorn $filedir NDATAFILES"} = scalar(split(" ",$testdata->{"$thorn $filedir DATAFILES"}));
-	  $testdata->{"$thorn TESTS"} .= "$filedir ";
-	  $testdata->{"$thorn NTESTS"}++;
-	}
+        $file =~ m:^(.*)\.par$:;
+        $filedir = $1;
+        if (-d $filedir)
+        {
+          $testdata->{"$thorn $filedir DATAFILES"} .= &FindFiles($filedir);
+          $testdata->{"$thorn $filedir NDATAFILES"} = scalar(split(" ",$testdata->{"$thorn $filedir DATAFILES"}));
+          $testdata->{"$thorn TESTS"} .= "$filedir ";
+          $testdata->{"$thorn NTESTS"}++;
+        }
       }
     }
   }
@@ -203,11 +203,11 @@ sub FindExecutionDetails
     {
       if (/EXE\s*=\s*([\w-_]+)/)
       {
-	$defexename = $1;
+        $defexename = $1;
       }
       if (/EXEDIR\s*=\s*([\w-_]+)/)
       {
-	$defexedirname = $1;
+        $defexedirname = $1;
       }
     }
     close(DEFNS);
@@ -306,7 +306,7 @@ sub ParseExtras
     {
       if (/\#define CCTK_MPI/)
       {
-	$mpi = 1;
+        $mpi = 1;
       }
     }
     close(EXTRA);
@@ -423,12 +423,16 @@ sub FindFiles
   $files="";
 
   opendir (DIR, $dir);
-  @tmp = grep (/\..+l$/, readdir (DIR));
-  foreach $f (@tmp)
-  {
-    $files .= " $f";
-  }
+  @tmp = readdir (DIR);
   closedir (DIR);
+
+  foreach $f (@tmp) 
+  {
+    if ($f =~ /[xl|yl|zl|dl|tl|gnuplot|asc]$/)
+    {
+      $files .= " $f";
+    }
+  }
  
   return $files;
 }
@@ -467,10 +471,10 @@ sub WriteFullResults
     {
       foreach $parfile (split(" ",$testdata->{"$thorn UNRUNNABLE"}))
       {
-	$message .= "\n    ".$parfile." in ". $thorn."\n";
-	$message .= "      (". $testdata->{"$thorn $parfile DESC"}.")\n";
-	$message .= "      Missing: ".$testdata->{"$thorn $parfile MISSING"}."\n";
-	$missingtests++;
+        $message .= "\n    ".$parfile." in ". $thorn."\n";
+        $message .= "      (". $testdata->{"$thorn $parfile DESC"}.")\n";
+        $message .= "      Missing: ".$testdata->{"$thorn $parfile MISSING"}."\n";
+        $missingtests++;
       }
     }
     if ($missingtests > 0)
@@ -487,12 +491,12 @@ sub WriteFullResults
     {
       foreach $parfile (split(" ",$testdata->{"$thorn RUNNABLE"}))
       {
-	if ($rundata->{"$thorn $parfile NFILEEXTRA"}>0)
-	{
-	  $extratests++;
-	  $message .= "    $thorn ($parfile)\n";
-	  $message .= "      Test created $rundata->{\"$thorn $parfile NFILEEXTRA\"} extra files: $testdata->{\"$thorn $parfile FILEEXTRA\"}\n";
-	}
+        if ($rundata->{"$thorn $parfile NFILEEXTRA"}>0)
+        {
+          $extratests++;
+          $message .= "    $thorn ($parfile)\n";
+          $message .= "      Test created $rundata->{\"$thorn $parfile NFILEEXTRA\"} extra files: $testdata->{\"$thorn $parfile FILEEXTRA\"}\n";
+        }
       }
     }
     if ($extratests > 0)
@@ -557,7 +561,7 @@ sub WriteFullResults
     {
       foreach $test (split(" ",$testdata->{"$thorn RUNNABLE"}))
       {
-	print "      $thorn: $test\n         $rundata->{\"$thorn $test SUMMARY\"}\n";
+        print "      $thorn: $test\n         $rundata->{\"$thorn $test SUMMARY\"}\n";
       }
     }
     else
@@ -629,7 +633,7 @@ sub ChooseTests
     {
       if ($thorn =~ m:^$myarrs[$arrchoice]/:)
       {
-	print "$thorn ";
+        print "$thorn ";
       }
     }
     print "\n\n";
@@ -640,9 +644,9 @@ sub ChooseTests
     {
       if ($thorn =~ m:^$myarrs[$arrchoice]/(.*):)
       {
-	printf ("  [%2d] $1\n",$count);
-	$mythorns[$count] = "$thorn";
-	$count++;
+        printf ("  [%2d] $1\n",$count);
+        $mythorns[$count] = "$thorn";
+        $count++;
       }
     }
     $thornchoice = &defprompt("  Choose thorn by number:"," ");
@@ -675,26 +679,26 @@ sub ChooseTests
       printf ("  [ 0] All tests\n");
       foreach $test (split(" ",$testdata->{"$mythorns[$thornchoice] RUNNABLE"}))
       {
-	$testcount++;
-	printf ("  [%2d] $test\n",$testcount);
-	print "       $testdata->{\"$mythorns[$thornchoice] $test DESC\"}\n";
-	$mytests[$testcount] = "$test";
+        $testcount++;
+        printf ("  [%2d] $test\n",$testcount);
+        print "       $testdata->{\"$mythorns[$thornchoice] $test DESC\"}\n";
+        $mytests[$testcount] = "$test";
       }
       $testchoice = &defprompt("  Choose test:","0");      
       if ($testchoice == 0)
       {
-	$ntests = $testcount;
-	for ($i=0;$i<$testcount;$i++)
-	{
-	  $returntests[2*$i]   = $mytests[$i+1];
-	  $returntests[2*$i+1] = $mythorns[$thornchoice];
-	}
+        $ntests = $testcount;
+        for ($i=0;$i<$testcount;$i++)
+        {
+          $returntests[2*$i]   = $mytests[$i+1];
+          $returntests[2*$i+1] = $mythorns[$thornchoice];
+        }
       }
       else
       {
-	$ntests = 1;
-	$returntests[0] = $mytests[$testchoice];
-	$returntests[1] = $mythorns[$thornchoice];
+        $ntests = 1;
+        $returntests[0] = $mytests[$testchoice];
+        $returntests[1] = $mythorns[$thornchoice];
       }
     }
   }
@@ -746,7 +750,8 @@ sub RunTest
 sub CompareTestFiles
 {
   my ($test,$inthorn,$runconfig,$rundata,$config_data,$testdata) = @_;
-  my ($test_dir,$file,$mythorn,$newfile,$oldfile);
+  my ($test_dir,$file,$mythorn,$newfile,$oldfile,$maxdiff);
+  my ($vmaxdiff,$tmaxdiff,$numlines);
 
   $inthorn =~ m:/(.*)$:;
   $mythorn = $1;
@@ -777,116 +782,115 @@ sub CompareTestFiles
       $rundata->{"$inthorn $test $file NFAILSTRONG"}=0;
       $rundata->{"$inthorn $test $file NFAILWEAK"}=0;
       
-      $vmaxdiff = 0;
-      $tmaxdiff = 0;
+      undef(@maxdiff);
+      undef(@diffvals);
+      undef(@oldvals);
+      undef(@newvals);
+      undef(@valmax);
+
       $numlines = 0;
 
       while ($oline = <INORIG>) 
       {
-	$nline = <INNEW>;
-	
-	$numlines++;
+        $nline = <INNEW>;
 
-	# Now lets see if they differ.
-	if (!("\U$nline" eq "\U$oline")) 
-	{
-	  # Check differences 
-	  if ($nline !~ /(nan|inf)/i)
-	  {
-	    # This is the new comparison (subtract last two numbers)
-	    ($t1,$v1) = split(' ', $nline);
-	    ($t2,$v2) = split(' ', $oline);
+        next if (($oline =~ /^[\"\#]/) && ($nline =~ /^[\"\#]/));
+        $numlines++;
 
-	    # Make sure that floating point numbers have 'e' if exponential.
-	    $t1 =~ s/[dD]/e/; 
-	    $t2 =~ s/[dD]/e/; 
-	    $v1 =~ s/[dD]/e/; 
-	    $v2 =~ s/[dD]/e/; 
-	    
-	    $tdiff = abs($t1 - $t2);
-	    $vdiff = abs($v1 - $v2);
+        # Now lets see if they differ.
+        if (!("\U$nline" eq "\U$oline")) 
+        {
+          # Check differences 
+          if ($nline !~ /(nan|inf)/i)
+          {
+            # This is the new comparison (subtract last two numbers)
+            @newvals = split(' ',$nline);
+            @oldvals = split(' ',$oline);
 
-	    if ($vdiff > 0 || $tdiff > 0) 
-	    {
-	      # They diff. But do they differ strongly?
-	      $rundata->{"$inthorn $test $file NFAILWEAK"}++;
-	      
-#	      $texp = sprintf("%e",$tdiff);
-#	      $texp =~ s/^.*e-(\d+)/$1/;
-#	      $vexp = sprintf("%e",$vdiff);
-#	      $vexp =~ s/^.*e-(\d+)/$1/;
+            $nnew = scalar(@newvals);
+            $nold = scalar(@oldvals);
 
-	      if (!$runconfig->{"$inthorn $test ABSTOL"})
-	      {
-		$abstol = $runconfig->{"ABSTOL"};
-	      }
-	      else
-	      {
-		$abstol = $runconfig->{"$inthorn $test ABSTOL"};
-	      }
+            # Make sure that floating point numbers have 'e' if exponential.
+            $allzero = 1;
+            for ($count = 0; $count < $nold; $count++)
+            {
+              $newvals[$count] =~ s/[dD]/e/; 
+              $oldvals[$count] =~ s/[dD]/e/; 
+              $diffvals[$count] = abs($newvals[$count] - $oldvals[$count]);
+              if ($allzero == 1)
+              {
+                $allzero = 0 if ($diffvals[$count] > 0);
+              }
+            }
+            
+            if ($allzero == 0) 
+            {
+              # They diff. But do they differ strongly?
+              $rundata->{"$inthorn $test $file NFAILWEAK"}++;
+              
+              if (!$runconfig->{"$inthorn $test ABSTOL"})
+              {
+                $abstol = $runconfig->{"ABSTOL"};
+              }
+              else
+              {
+                $abstol = $runconfig->{"$inthorn $test ABSTOL"};
+              }
 
-	      if (!$runconfig->{"$inthorn $test RELTOL"})
-	      {
-		$reltol = $runconfig->{"RELTOL"};
-	      }
-	      else
-	      {
-		$reltol = $runconfig->{"$inthorn $test RELTOL"};
-	      }
-	      $vreltol = $reltol*&max(abs($v1),abs($v2));
-	      $treltol = $reltol*&max(abs($t1),abs($t2));
+              if (!$runconfig->{"$inthorn $test RELTOL"})
+              {
+                $reltol = $runconfig->{"RELTOL"};
+              }
+              else
+              {
+                $reltol = $runconfig->{"$inthorn $test RELTOL"};
+              }
 
-	      $vtol = &max($abstol,$vreltol);
-	      $ttol = &max($abstol,$treltol);
+              $allunder = 1;
+              for ($count = 0; $count < $nold; $count++)
+              {
+                $vreltol[$count] = $reltol*&max(abs($oldvals[$count]),abs($newvals[$count]));
+                $vtol[$count] = &max($abstol,$vreltol[$count]);
+                if ($allunder == 1)
+                {
+                  if ($diffvals[$count] >= $vtol[$count])
+                  {
+                    $allunder = 0;
+                  }
 
-	      unless (($vdiff < $vtol) && ($tdiff < $ttol)) 
-	      {
-		$rundata->{"$inthorn $test $file NFAILSTRONG"}++;
-		# only store difference for strong failures
-		$tmaxdiff = &max($tmaxdiff,$tdiff);
-		$tmax = &max(abs($t1),abs($t2));
-		$vmaxdiff = &max($vmaxdiff,$vdiff);
-		$vmax = &max(abs($v1),abs($v2));
-	      }
-	    }
-	  }
-	  # Check against nans
-	  elsif ($nline =~ /nan/i)
-	  {
-	    $rundata->{"$inthorn $test $file NNAN"}++;
-	    $rundata->{"$inthorn $test $file NFAILWEAK"}++;
-	    $rundata->{"$inthorn $test $file NFAILSTRONG"}++;
-	  }
-	  # Check against inf
-	  elsif ($nline =~ /inf/i)
-	  {
-	    $rundata->{"$inthorn $test $file NINF"}++;
-	    $rundata->{"$inthorn $test $file NFAILWEAK"}++;
-	    $rundata->{"$inthorn $test $file NFAILSTRONG"}++;
-	  }
-	} # if
+                }
+              }
+
+              unless ($allunder == 1) 
+              {
+                $rundata->{"$inthorn $test $file NFAILSTRONG"}++;
+              }
+
+              # store difference for strong failures
+              for ($count = 0; $count < $nold; $count++)
+              {
+                $maxdiff[$count] = &max($maxdiff[$count],$diffvals[$count]);
+                $valmax[$count] = &max(abs($oldvals[$count]),abs($newvals[$count]));
+              }
+            }
+          }
+          # Check against nans
+          elsif ($nline =~ /nan/i)
+          {
+            $rundata->{"$inthorn $test $file NNAN"}++;
+            $rundata->{"$inthorn $test $file NFAILWEAK"}++;
+            $rundata->{"$inthorn $test $file NFAILSTRONG"}++;
+          }
+          # Check against inf
+          elsif ($nline =~ /inf/i)
+          {
+            $rundata->{"$inthorn $test $file NINF"}++;
+            $rundata->{"$inthorn $test $file NFAILWEAK"}++;
+            $rundata->{"$inthorn $test $file NFAILSTRONG"}++;
+          }
+        } # if
       } #while
 
-      $rundata->{"$inthorn $test $file TMAXABSDIFF"} = $tmaxdiff;
-      $rundata->{"$inthorn $test $file VMAXABSDIFF"} = $vmaxdiff;
-      if ($tmax)
-      {
-	$rundata->{"$inthorn $test $file TMAXRELDIFF"} = $tmaxdiff/$tmax;
-      }
-      else
-      {
-	$rundata->{"$inthorn $test $file TMAXRELDIFF"} = 0;
-      }
-      if ($vmax)
-      {
-	$rundata->{"$inthorn $test $file VMAXRELDIFF"} = $vmaxdiff/$vmax;
-      }
-      else
-      {
-	$rundata->{"$inthorn $test $file VMAXRELDIFF"} = 0;
-      }	
-      $rundata->{"$inthorn $test $file NUMLINES"} = $numlines;
-      
     }
     else
     {
@@ -894,6 +898,24 @@ sub CompareTestFiles
       $rundata->{"$inthorn $test NFAILWEAK"}++;
       $rundata->{"$inthorn $test NFAILSTRONG"}++;
     }
+
+    for ($count = 0; $count < $nold; $count++)
+    {
+      if ($maxdiff[$count])
+      {
+        $rundata->{"$inthorn $test $file MAXABSDIFF $count"} = $maxdiff[$count];
+        $rundata->{"$inthorn $test $file MAXRELDIFF $count"} = $maxdiff[$count]/$valmax[$count];
+      }
+      else
+      {
+        $rundata->{"$inthorn $test $file MAXABSDIFF $count"} = 0;
+        $rundata->{"$inthorn $test $file MAXRELDIFF $count"} = 0;
+      }
+
+    }
+
+    $rundata->{"$inthorn $test $file NUMLINES"} = $numlines;
+
   }
 
   return $rundata;
@@ -929,36 +951,40 @@ sub ReportOnTest
       $rundata->{"$thorn $test NFAILWEAK"}++;
       if ($rundata->{"$thorn $test $file NFAILSTRONG"} == 0) 
       {
-	print "\n  - $file: differences below tolerance on $rundata->{\"$thorn $test $file NFAILWEAK\"} lines\n";
+        print "\n  - $file: differences below tolerance on $rundata->{\"$thorn $test $file NFAILWEAK\"} lines\n";
       }
       else 
       {
-	$rundata->{"$thorn $test NFAILSTRONG"}++;
-	print "\n  - $file: substantial differences!\n";
-	print "      caught  $rundata->{\"$thorn $test $file NNAN\"} NaNs in $file\n" if $rundata->{"$thorn $test $file NNAN"};
-	print "      caught  $rundata->{\"$thorn $test $file NINF\"} Infs in $file\n" if $rundata->{"$thorn $test $file NINF"};
-	print "      significant differences on $rundata->{\"$thorn $test $file NFAILSTRONG\"} (out of $rundata->{\"$thorn $test $file NUMLINES\"}) lines!\n";
-	if ($rundata->{"$thorn $test $file TMAXABSDIFF"})
-	{
-	  print "      maximum absolute difference in first column is $rundata->{\"$thorn $test $file TMAXABSDIFF\"}\n";
-	}
-	if ($rundata->{"$thorn $test $file TMAXRELDIFF"})
-	{
-	  print "      maximum relative difference in first column is $rundata->{\"$thorn $test $file TMAXRELDIFF\"}\n";
-	}
-	if ($rundata->{"$thorn $test $file VMAXABSDIFF"})
-	{
-	  print "      maximum absolute difference in second column is $rundata->{\"$thorn $test $file VMAXABSDIFF\"}\n";
-	}
-	if ($rundata->{"$thorn $test $file VMAXRELDIFF"})
-	{
-	  print "      maximum relative difference in second column is $rundata->{\"$thorn $test $file VMAXRELDIFF\"}\n";
-	}
-	$tmp = $rundata->{"$thorn $test $file NFAILWEAK"} - $rundata->{"$thorn $test $file NFAILSTRONG"};
-	if ($tmp)
-	{
-	  print "      (insignificant differences on $tmp lines)\n";
-	}
+        $rundata->{"$thorn $test NFAILSTRONG"}++;
+        print "\n  - $file: substantial differences!\n";
+        print "      caught  $rundata->{\"$thorn $test $file NNAN\"} NaNs in $file\n" if $rundata->{"$thorn $test $file NNAN"};
+        print "      caught  $rundata->{\"$thorn $test $file NINF\"} Infs in $file\n" if $rundata->{"$thorn $test $file NINF"};
+        print "      significant differences on $rundata->{\"$thorn $test $file NFAILSTRONG\"} (out of $rundata->{\"$thorn $test $file NUMLINES\"}) lines!\n";
+        foreach $val (keys (%$rundata))
+        {
+          if ($val =~ /$thorn $test $file MAXABSDIFF (.*)$/)
+          {
+            $column = $1;
+            if ($rundata->{"$thorn $test $file MAXABSDIFF $column"})
+            {
+              print "      maximum absolute difference in column $column is $rundata->{\"$val\"}\n";
+            }
+          }
+          elsif ($val =~ /$thorn $test $file MAXRELDIFF (.*)$/)
+          {
+            $column = $1;
+            if ($rundata->{"$thorn $test $file MAXRELDIFF $column"})
+            {
+              print "      maximum relative difference in column $column is $rundata->{\"$val\"}\n";
+            }
+          }
+        }
+
+        $tmp = $rundata->{"$thorn $test $file NFAILWEAK"} - $rundata->{"$thorn $test $file NFAILSTRONG"};
+        if ($tmp)
+        {
+          print "      (insignificant differences on $tmp lines)\n";
+        }
       }
     }
   }
@@ -1060,23 +1086,23 @@ sub ParseAllParameterFiles
 
       # Find any missing thorns for this test
       ($nmissing,$missing) = 
-	&MissingThorns($testdata->{"$thorn $testbase ACTIVE"},
-		       $testdata->{"THORNS"});
+        &MissingThorns($testdata->{"$thorn $testbase ACTIVE"},
+                       $testdata->{"THORNS"});
       
       # Set whether test is runnable or not
       if($nmissing == 0)
       {
-	$testdata->{"$thorn RUNNABLE"} .= "$testbase ";
-	$testdata->{"NRUNNABLE"}++;
-	$testdata->{"$thorn TESTED"} = 1;
-	$testdata->{"$thorn NRUNNABLE"}++;
+        $testdata->{"$thorn RUNNABLE"} .= "$testbase ";
+        $testdata->{"NRUNNABLE"}++;
+        $testdata->{"$thorn TESTED"} = 1;
+        $testdata->{"$thorn NRUNNABLE"}++;
       }
       else
       {
-	$testdata->{"$thorn UNRUNNABLE"} .= "$testbase ";
-	$testdata->{"$thorn $testbase MISSING"} .= "$missing";
-	$testdata->{"NUNRUNNABLE"}++;
-	$testdata->{"$thorn NUNRUNNABLE"}++;
+        $testdata->{"$thorn UNRUNNABLE"} .= "$testbase ";
+        $testdata->{"$thorn $testbase MISSING"} .= "$missing";
+        $testdata->{"NUNRUNNABLE"}++;
+        $testdata->{"$thorn NUNRUNNABLE"}++;
       }
     }
     
@@ -1085,7 +1111,7 @@ sub ParseAllParameterFiles
       $testdata->{"RUNNABLETHORNS"} .= "$thorn ";
       if ($testdata->{"RUNNABLEARRANGEMENTS"} !~ m:[\s^]$arr\s:)
       {
-	$testdata->{"RUNNABLEARRANGEMENTS"} .= "$1 ";
+        $testdata->{"RUNNABLEARRANGEMENTS"} .= "$1 ";
       }
     }
     else
@@ -1134,55 +1160,55 @@ sub ViewResults
       $count = 1;
       foreach $file (split(" ",$testdata->{"$thorn $test DATAFILES"}))
       {
-	if ($rundata->{"$thorn $test $file NFAILSTRONG"})
-	{
-	  print "    [$count] $file\n";
-	  $myfiles[$count] = $file;
-	  $count++;
-	}
+        if ($rundata->{"$thorn $test $file NFAILSTRONG"})
+        {
+          print "    [$count] $file\n";
+          $myfiles[$count] = $file;
+          $count++;
+        }
       }
 
       $myfile = &defprompt("  Choose file by number or [c]ontinue","c");
 
       while ($myfile !~ /^c/i && $choice !~ /^c/i)
       {
-	$choice = &defprompt("  Choose action [l]ist, [d]iff, [g]raph, [c]ontinue","c");
+        $choice = &defprompt("  Choose action [l]ist, [d]iff, [g]raph, [c]ontinue","c");
 
-	if ($choice =~ /^l/i)
-	{
-	  print "Archived file: $myfiles[$myfile]\n\n";
-	  open (ARCHIVE, "<$testdata->{\"$thorn TESTSDIR\"}/$test/$myfiles[$myfile]");
-	  while (<ARCHIVE>)
-	  {
-	    print;
-	  }
-	  close (ARCHIVE);
-	  
-	  print "\n\nNew file: $myfiles[$myfile]\n\n";
+        if ($choice =~ /^l/i)
+        {
+          print "Archived file: $myfiles[$myfile]\n\n";
+          open (ARCHIVE, "<$testdata->{\"$thorn TESTSDIR\"}/$test/$myfiles[$myfile]");
+          while (<ARCHIVE>)
+          {
+            print;
+          }
+          close (ARCHIVE);
+          
+          print "\n\nNew file: $myfiles[$myfile]\n\n";
 
-	  open (TEST, "<$testdata->{\"$thorn $test TESTOUTPUTDIR\"}/$myfiles[$myfile]");
-	  while (<TEST>)
-	  {
-	    print;
-	  }
-	  close (TEST);
-	  print "\n";
-	}
-	elsif ($choice =~ /^d/i)
-	{
-	  print "\n  Performing diff on  <archive> <test>\n\n";
-	  $command = "  diff $testdata->{\"$thorn TESTSDIR\"}/$test/$myfiles[$myfile] $testdata->{\"$thorn $test TESTOUTPUTDIR\"}/$myfiles[$myfile]\n";
-	  print "$command\n\n";
-	  system($command);
-	  print "\n";
-	}
-	elsif ($choice =~ /^g/i)
-	{
-	  print "  Xgraph <archive> <test>\n\n";
-	  $command = "  xgraph $testdata->{\"$thorn TESTSDIR\"}/$test/$myfiles[$myfile] $testdata->{\"$thorn $test TESTOUTPUTDIR\"}/$myfiles[$myfile] &\n";
-	  print "  $command\n";
-	  system($command);
-	}	
+          open (TEST, "<$testdata->{\"$thorn $test TESTOUTPUTDIR\"}/$myfiles[$myfile]");
+          while (<TEST>)
+          {
+            print;
+          }
+          close (TEST);
+          print "\n";
+        }
+        elsif ($choice =~ /^d/i)
+        {
+          print "\n  Performing diff on  <archive> <test>\n\n";
+          $command = "  diff $testdata->{\"$thorn TESTSDIR\"}/$test/$myfiles[$myfile] $testdata->{\"$thorn $test TESTOUTPUTDIR\"}/$myfiles[$myfile]\n";
+          print "$command\n\n";
+          system($command);
+          print "\n";
+        }
+        elsif ($choice =~ /^g/i)
+        {
+          print "  Xgraph <archive> <test>\n\n";
+          $command = "  xgraph $testdata->{\"$thorn TESTSDIR\"}/$test/$myfiles[$myfile] $testdata->{\"$thorn $test TESTOUTPUTDIR\"}/$myfiles[$myfile] &\n";
+          print "  $command\n";
+          system($command);
+        }        
       }
     }
   }
