@@ -82,14 +82,14 @@ $(CONFIG)/make.thornlist: $(TOP)/ActiveThorns $(foreach lib, $(CCTK_HOME)/src $(
 	@echo $(DIVIDER)
 	if [ -r $@ ] ; then echo Reconfiguring thorns ; rm $@ ;\
 	else echo Configuring thorns ; fi
-	$(PERL) -s $(CCTK_HOME)/lib/sbin/config_parser.pl -config_dir=$(CONFIG) -cctk_home=$(CCTK_HOME) -top=$(TOP) $< 
+	$(PERL) -s $(CST) -config_dir=$(CONFIG) -cctk_home=$(CCTK_HOME) -top=$(TOP) $< 
 
 # Rule to build ActiveThorns
 
 $(TOP)/ActiveThorns:
 	@echo $(DIVIDER)
 	@echo Creating ActiveThorn list containing all thorns in the toolkits directory
-	$(PERL) -s $(CCTK_HOME)/lib/sbin/BuildActiveThorns.pl $(CCTK_HOME)/toolkits > $@
+	$(PERL) -s $(BUILD_ACTIVETHORNS) $(CCTK_HOME)/toolkits > $@
 	action="yes"; if [ "x$$EDITOR" = "x" ] ; then EDITOR=vi ; fi; \
 	while [ "x$$action" = "xyes" -o "x$$action" = "xy" -o "x$$action" = "xYES" -o "x$$action" = "xY" ] ; \
 	do \

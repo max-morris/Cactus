@@ -68,8 +68,23 @@ TOOLKIT_DIR=toolkits
 BUILD_DIR=build
 CCTK_LIBDIR=lib
 
+# The perl scripts run by the make system need to have their names
+# changed if under cygwin - e.g. //d/foo needs to be d:/foo
+
+PERL_CONFIGURE_SCRIPT=`echo $srcdir/configure.pl | sed 's,^//\(.\)/,\1:/,'`
+
+AC_SUBST(BUILD_ACTIVETHORNS)
+BUILD_ACTIVETHORNS=`echo $srcdir/../sbin/BuildActiveThorns.pl | sed 's,^//\(.\)/,\1:/,'`
+AC_SUBST(CST)
+CST=`echo $srcdir/../sbin/config_parser.pl | sed 's,^//\(.\)/,\1:/,'`
+
+AC_SUBST(F_FILE_PROCESSOR)
+F_FILE_PROCESSOR=`echo $srcdir/../sbin/f_file_processor.pl | sed 's,^//\(.\)/,\1:/,'`
+AC_SUBST(C_FILE_PROCESSOR)
+C_FILE_PROCESSOR=`echo $srcdir/../sbin/c_file_processor.pl | sed 's,^//\(.\)/,\1:/,'`
+
 dnl Run any other scripts necessary
-AC_OUTPUT_COMMANDS(,$PERL -s $srcdir/configure.pl -compiler=$F90 .)
+AC_OUTPUT_COMMANDS(,$PERL -s $PERL_CONFIGURE_SCRIPT -compiler="$F90" .)
 
 dnl Output everything
 AC_OUTPUT(make.config.defn make.config.deps make.config.rules)

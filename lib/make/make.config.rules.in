@@ -18,7 +18,7 @@ DIVIDER =  $(DIVEL)$(DIVEL)$(DIVEL)$(DIVEL)
 
 # Define how to do a C compilation
 define PREPROCESS_C
-cat $< | $(PERL) $(CCTK_HOME)/lib/sbin/c_file_processor.pl $(CONFIG) > $(notdir $<)
+cat $< | $(PERL) $(C_FILE_PROCESSOR) $(CONFIG) > $(notdir $<)
 endef
 
 define COMPILE_C 
@@ -42,7 +42,7 @@ endef
 
 # Define how to do a F77 compilation
 define PREPROCESS_F77
-cat $< | $(CPP) $(CPPFLAGS) $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DFCODE - | $(PERL) $(CCTK_HOME)/lib/sbin/f_file_processor.pl > $(notdir $<)
+cat $< | $(CPP) $(CPPFLAGS) $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DFCODE - | $(PERL) $(F_FILE_PROCESSOR) > $(notdir $<)
 endef
 
 define COMPILE_F77
@@ -54,7 +54,7 @@ endef
 
 # Define how to do a F90 compilation
 define PREPROCESS_F90
-cat $< | $(CPP) $(CPPFLAGS) $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DFCODE - | $(PERL) $(CCTK_HOME)/lib/sbin/f_file_processor.pl > $(notdir $<)
+cat $< | $(CPP) $(CPPFLAGS) $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DFCODE - | $(PERL) $(F_FILE_PROCESSOR) > $(notdir $<)
 endef
 
 define COMPILE_F90
