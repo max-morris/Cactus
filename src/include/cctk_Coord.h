@@ -36,21 +36,21 @@ int CCTK_CoordSystemHandle(const char *systemname);
 
 const char *CCTK_CoordSystemName(int handle);
 
-int CCTK_CoordRange(cGH        *GH,
+int CCTK_CoordRange(const cGH  *GH,
                     CCTK_REAL  *coord_lower,
                     CCTK_REAL  *coord_upper,
                     int         coord_dir,
                     const char *coord_name,
                     const char *system_name);
 
-int CCTK_CoordRangePhysIndex (cGH *GH,
+int CCTK_CoordRangePhysIndex (const cGH *GH,
                               int *lower,
                               int *upper,
                               int coorddir,
                               const char *coordname,
                               const char *systemname);
 
-int CCTK_CoordLocalRange(cGH        *GH,
+int CCTK_CoordLocalRange(const cGH  *GH,
                          CCTK_REAL  *lower,
                          CCTK_REAL  *upper,
                          int         coord_dir,

@@ -108,21 +108,21 @@ void CCTK_FCALL CCTK_FNAME (CCTK_CoordDir)
                            (int *dir, TWO_FORTSTRING_ARG);
 void CCTK_FCALL CCTK_FNAME (CCTK_CoordRange)
                            (int *ierr,
-                            cGH *GH,
+                            const cGH *GH,
                             CCTK_REAL *lower,
                             CCTK_REAL *upper,
                             const int *dir,
                             TWO_FORTSTRING_ARG);
 void CCTK_FCALL CCTK_FNAME (CCTK_CoordRangePhysIndex)
                            (int *ierr,
-                            cGH *GH,
+                            const cGH *GH,
                             int *lower,
                             int *upper,
                             const int *dir,
                             TWO_FORTSTRING_ARG);
 void CCTK_FCALL CCTK_FNAME (CCTK_CoordLocalRange)
                            (int *ierr,
-                            cGH *GH,
+                            const cGH *GH,
                             CCTK_REAL *lower,
                             CCTK_REAL *upper,
                             const int *dir,
@@ -980,7 +980,7 @@ void CCTK_FCALL CCTK_FNAME (CCTK_CoordDir)
 
    @var     GH
    @vdesc   GH data
-   @vtype   cGH *
+   @vtype   const cGH *
    @vio     in
    @endvar
    @var     lower
@@ -1019,7 +1019,7 @@ void CCTK_FCALL CCTK_FNAME (CCTK_CoordDir)
    @endreturndesc
 @@*/
 
-int CCTK_CoordRange (cGH *GH,
+int CCTK_CoordRange (const cGH *GH,
                      CCTK_REAL *lower,
                      CCTK_REAL *upper,
                      int coorddir,
@@ -1117,7 +1117,7 @@ int CCTK_CoordRange (cGH *GH,
 
 void CCTK_FCALL CCTK_FNAME (CCTK_CoordRange)
                            (int *ierr,
-                            cGH *GH,
+                            const cGH *GH,
                             CCTK_REAL *lower,
                             CCTK_REAL *upper,
                             const int *dir,
@@ -1147,7 +1147,7 @@ void CCTK_FCALL CCTK_FNAME (CCTK_CoordRange)
 
    @var     GH
    @vdesc   GH data
-   @vtype   cGH *
+   @vtype   const cGH *
    @vio     in
    @endvar
    @var     lower
@@ -1186,7 +1186,7 @@ void CCTK_FCALL CCTK_FNAME (CCTK_CoordRange)
       -6 = physical coordinate range not registered
    @endreturndesc
 @@*/
-int CCTK_CoordRangePhysIndex (cGH *GH,
+int CCTK_CoordRangePhysIndex (const cGH *GH,
                               int *lower,
                               int *upper,
                               int coorddir,
@@ -1294,7 +1294,7 @@ int CCTK_CoordRangePhysIndex (cGH *GH,
 
 void CCTK_FCALL CCTK_FNAME (CCTK_CoordRangePhysIndex)
                            (int *ierr,
-                            cGH *GH,
+                            const cGH *GH,
                             int *lower,
                             int *upper,
                             const int *dir,
@@ -1330,7 +1330,7 @@ void CCTK_FCALL CCTK_FNAME (CCTK_CoordRangePhysIndex)
    @returndesc
    @endreturndesc
 @@*/
-int CCTK_CoordLocalRange(cGH *GH,
+int CCTK_CoordLocalRange(const cGH *GH,
                          CCTK_REAL *lower,
                          CCTK_REAL *upper,
                          int dir,
@@ -1375,7 +1375,7 @@ int CCTK_CoordLocalRange(cGH *GH,
 
 void CCTK_FCALL CCTK_FNAME (CCTK_CoordLocalRange)
                            (int *ierr,
-                            cGH *GH,
+                            const cGH *GH,
                             CCTK_REAL *lower,
                             CCTK_REAL *upper,
                             const int *dir,
