@@ -5,4 +5,5 @@ ParseFile.c\
 RegisterKeyedFunction.c\
 StoreKeyedData.c\
 StoreNamedData.c\
+Misc.c
 
