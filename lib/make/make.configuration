@@ -197,6 +197,7 @@ $(foreach lib, $(CCTK_HOME)/src $(THORNS:%=$(PACKAGE_DIR)/%), $(lib)/param.ccl $
 clean:
 	@echo Deleting all object and dependency files in $(TOP)
 	find $(TOP) \( -name '*.[od]' -o -name '*.a' \) -exec rm {} \;
+	rm -rf $(TOP)/scratch/*
 
 cleandeps:
 	@echo Deleting all dependency files in $(TOP)
@@ -205,6 +206,7 @@ cleandeps:
 cleanobjs:
 	@echo Deleting all object files in $(TOP)
 	find $(TOP) \( -name '*.[o]' -o -name '*.a' \) -exec rm {} \;
+	rm -rf $(TOP)/scratch/*
 
 realclean:
 	@echo Deleting all built files in $(TOP)
@@ -212,6 +214,7 @@ realclean:
 	rm -rf $(TOP)/bindings
 	rm -rf $(TOP)/config-data/make.thornlist
 	rm -rf $(TOP)/lib/*
+	rm -rf $(TOP)/scratch/*
 	rm -f datestamp.o
 
 # This target allows thorns to add to $(ALL_UTILS) and then
