@@ -180,20 +180,65 @@ else
       ;;
   esac
 
+
 # Cache stuff
+
   if test -z "$L2_CACHELINE_BYTES" ; then
-    L2_CACHELINE_BYTES=32
-    echo "Setting L2_CACHELINE_BYTES to $L2_CACHELINE_BYTES"
+    case "$host_cpu" in 
+       i?86)
+        L2_CACHELINE_BYTES=32
+        echo "Setting L2_CACHELINE_BYTES to $L2_CACHELINE_BYTES"
+        ;;
+       *)
+        echo "Don\'t know cache size for cpu $host_cpu"
+        ;;
+     esac
   fi
 
   if test -z "$L2_CACHE_SIZE" ; then
-    TEMP_CACHE_SIZE="`cat /proc/cpuinfo | perl -nae 'if(m:cache: && ! $dunnit) {print $F[3]; $dunnit=1}'`"
-    if test -n "$TEMP_CACHE_SIZE" ; then
-      L2_CACHE_SIZE="$TEMP_CACHE_SIZE*1024"
-      echo "Setting L2_CACHE_SIZE to $L2_CACHE_SIZE bytes"
+
+    if test "x$cross_compiling" = "xno" ; then
+      TEMP_CACHE_SIZE="`cat /proc/cpuinfo | perl -nae 'if(m:cache: && ! $dunnit) {print $F[3]; $dunnit=1}'`"
+      if test -n "$TEMP_CACHE_SIZE" ; then
+        L2_CACHE_SIZE="$TEMP_CACHE_SIZE*1024"
+        echo "Setting L2_CACHE_SIZE to $L2_CACHE_SIZE bytes"
+      else
+        echo "Unable to determine L2 Cache size on this machine. "
+      fi
     else
-      echo "Unable to determine L2 Cache size on this machine. "
+      echo "Cross compiling - unable to determine L2 cache size" 
     fi
+  fi
+
+  if test "x$cross_compiling" = "xyes" ; then
+    case "$host_cpu" in
+      i?86)
+        ENDIAN=little
+        SIZEOF_LONG_INT=8
+        SIZEOF_INT=4
+        SIZEOF_SHORT_INT=2
+
+        SIZEOF_LONG_DOUBLE=8
+        SIZEOF_DOUBLE=8
+        SIZEOF_FLOAT=4
+
+        SIZEOF_POINTER=4
+      ;;
+      ia64)
+        ENDIAN=little
+        SIZEOF_LONG_INT=8
+        SIZEOF_INT=4
+        SIZEOF_SHORT_INT=2
+
+        SIZEOF_LONG_DOUBLE=8
+        SIZEOF_DOUBLE=8
+        SIZEOF_FLOAT=4
+
+        SIZEOF_POINTER=8
+      ;;
+      *)
+        echo "Don\'t know details for cross-compilation to $host_cpu"
+    esac
   fi
 
 # MPI stuff
