@@ -126,7 +126,7 @@ include $(CONFIG)/make.config.deps
 
 # Rule to build the make.thornlist file from the ThornList file
 
-$(CONFIG)/make.thornlist: $(TOP)/ThornList $(foreach lib, $(CCTK_HOME)/src $(THORNS:%=$(PACKAGE_DIR)/%), $(lib)/param.ccl $(lib)/interface.ccl $(lib)/schedule.ccl)
+$(CONFIG)/make.thornlist: $(TOP)/ThornList $(foreach lib, $(CCTK_HOME)/src $(THORNS:%=$(PACKAGE_DIR)/%), $(lib)/param.ccl $(lib)/interface.ccl $(lib)/schedule.ccl) $(CONFIG_THORNS:%=$(PACKAGE_DIR)/%/configuration.ccl)
 	@echo $(DIVIDER)
 	if [ -r $@ ] ; then echo Reconfiguring thorns ; rm $@ ;\
 	else echo Processing CCL files ; fi
@@ -182,6 +182,14 @@ editthorns:
 	then $$EDITOR $(TOP)/ThornList ; fi ; \
 	done
 	@echo $(DIVIDER)
+
+$(foreach lib, $(CCTK_HOME)/src $(THORNS:%=$(PACKAGE_DIR)/%), $(lib)/param.ccl $(lib)/interface.ccl $(lib)/schedule.ccl) $(CONFIG_THORNS:%=$(PACKAGE_DIR)/%/configuration.ccl):
+	@echo "Missing file $@"
+	@echo "Possibly from a thorn deleted from an arrangement"
+	@echo "Deleting make.thornlist" 
+	rm  $(CONFIG)/make.thornlist
+	@echo "Please try building again"
+	exit 1
 
 clean:
 	@echo Deleting all object and dependency files in $(TOP)
