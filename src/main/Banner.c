@@ -14,7 +14,10 @@
 #include "cctk_parameters.h"
 
 static int number_banners = 0;
-static const char **strings;
+static const char **banner_strings;
+
+void CCTKi_PrintBanners(void);
+
 
  /*@@
    @routine    CCTK_RegisterBanner
@@ -37,11 +40,12 @@ void CCTK_RegisterBanner(const char *string)
   number_banners++;
 
   if (number_banners == 1)
-    strings = (const char **)malloc( number_banners*sizeof(const char *));  
+    banner_strings = (const char **)malloc( number_banners*sizeof(const char *));  
   else
-    realloc( strings, number_banners*sizeof(const char *));  
+    realloc( banner_strings, number_banners*sizeof(const char *));  
 
-  strings[number_banners-1] = string;
+  banner_strings[number_banners-1] = string;
+
 }
 
 
@@ -71,9 +75,13 @@ void CCTKi_PrintBanners(void)
   {
     for (i=0;i<number_banners;i++)
     {
-      printf("-------------------------------------------------------------------------------------\n");
-      printf("%s\n",strings[i]);
-      printf("-------------------------------------------------------------------------------------\n");
+      if (banner_strings[i])
+      {
+	printf("-------------------------------------------------------------------------------------\n");
+	printf("Banner\n");
+	/*	printf("%s\n",banner_strings[i]); */
+	printf("-------------------------------------------------------------------------------------\n");
+      }
     }
   }
 }
