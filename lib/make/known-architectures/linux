@@ -293,8 +293,13 @@ else
       : ${LIBS='for m'}
       ;;
     PathScale)
-#      : ${F77_OPTIMISE_FLAGS='-Ofast'}
-#      : ${F90_OPTIMISE_FLAGS='-Ofast'}
+      : ${F77FLAGS='-fno-second-underscore'}
+      : ${F90FLAGS='-fno-second-underscore'}
+      : ${F77_OPTIMISE_FLAGS='-Ofast'}
+      : ${F90_OPTIMISE_FLAGS='-Ofast'}
+      if test "$OPTIMISE" != 'no'; then
+        : ${LDFLAGS='-Ofast'}
+      fi
       : ${F77_WARN_FLAGS='-fullwarn'}
       : ${F90_WARN_FLAGS='-fullwarn'}
       : ${LIBS='pathfortran mv'}
@@ -342,7 +347,7 @@ else
       : ${C_OPTIMISE_FLAGS='-fast -O3 -Minfo -Mneginfo -Mvect=assoc'}
       ;;
     pathcc)
-#      : ${C_OPTIMISE_FLAGS='-O3'}
+      : ${C_OPTIMISE_FLAGS='-Ofast'}
       ;;
   esac
 
@@ -376,7 +381,7 @@ else
       fi
       ;;
     pathCC)
-#      : ${CXX_OPTIMISE_FLAGS='-O3'}
+      : ${CXX_OPTIMISE_FLAGS='-Ofast'}
       ;;
   esac
 
