@@ -470,12 +470,56 @@ sub ScheduleSelectGroups
   local(@groups);
   local(@temp_list);
   local($group);
+  local($other_imp, $other_thorn, $foundit, $block);
 
   @temp_list = split(/[,\s\n]+/, $group_list);
 
   foreach $group (@temp_list)
   {
     next if($group =~ m:^\s*$:);
+
+    $other_imp = "";
+
+    if($group =~ m/(.+)::(.+)/)
+    {
+      $other_imp=$1;
+      $group = $2;
+
+      if(($1 !~ m:^\s*$thorn\s*$:i) && ($1 !~ m:^\s*$implementation\s*$:i))
+      {
+	# The name has been given completely specified but it isn't this thorn.
+      
+	if($interface_database{"IMPLEMENTATION \U$implementation\E ANCESTORS"} =~ m:\b$other_imp\b:i)
+	{
+	  $block = "PUBLIC";
+	}
+	elsif($interface_database{"IMPLEMENTATION \U$implementation\E FRIENDS"} =~ m:\b$other_imp\b:i)
+	{
+	  $block = "PROTECTED";
+	}
+	else
+	{
+	  print STDERR "Schedule error: Thorn $thorn - group $group doesn't exist.\n";
+	  $CST_errors++;
+	  next;
+	}
+
+	$interface_database{"IMPLEMENTATION \U$other_imp\E THORNS"} =~ m:(\w+):;
+	$other_thorn = $1;
+      
+	if($interface_database{"\U$other_thorn\E $block GROUPS"} =~ m:\b$group\b:i)
+	{
+	  push(@groups, "$other_imp\::$group");
+	  next;
+	}
+	else
+	{
+	  print STDERR "Schedule error: Thorn $thorn - group $group doesn't exist.\n";
+	  $CST_errors++;
+	  next;
+	}	
+      }
+    }
 
     if($interface_database{"\U$thorn\E PRIVATE GROUPS"} =~ m:\b$group\b:i)
     {
@@ -489,14 +533,47 @@ sub ScheduleSelectGroups
     {
       push(@groups, "$implementation\::$group");
     }
-    elsif($group =~ m/::/)
+    elsif($other_imp eq "")
     {
-      # FIXME - Should do some validation here.
-      push(@groups, $group);
+      $foundit = 0;
+      # Check ancestors and friends
+      foreach $other_imp (split(" ", $interface_database{"IMPLEMENTATION \U$implementation\E ANCESTORS"}))
+      {
+	$interface_database{"IMPLEMENTATION \U$other_imp\E THORNS"} =~ m:(\w+):;
+	$other_thorn = $1;
+
+	if($interface_database{"\U$other_thorn\E PUBLIC GROUPS"} =~ m:\b$group\b:i)
+	{
+	  push(@groups, "$other_imp\::$group");
+	  $foundit = 1;
+	  last;
+	}
+      }
+      if(! $foundit)
+      {
+	foreach $other_imp (split(" ", $interface_database{"IMPLEMENTATION \U$implementation\E FRIENDS"}))
+	{
+	  $interface_database{"IMPLEMENTATION \U$other_imp\E THORNS"} =~ m:(\w+):;
+	  $other_thorn = $1;
+
+	  if($interface_database{"\U$other_thorn\E PROTECTED GROUPS"} =~ m:\b$group\b:i)
+	  {
+	    push(@groups, "$other_imp\::$group");
+	    $foundit = 1;
+	    last;
+	  }
+	}
+      }
+      if(! $foundit)
+      {
+	print STDERR "Schedule error: Thorn $thorn - group $group doesn't exist.\n";
+	$CST_errors++;
+      }
     }
     else
     {
       print STDERR "Schedule error: Thorn $thorn - group $group doesn't exist.\n";
+      $CST_errors++;
     }
   }
 
