@@ -79,7 +79,7 @@ endef
 define PREPROCESS_C
 cat $< | $(PERL) -s $(C_FILE_PROCESSOR) -source_file_name=\"$<\" $(CONFIG) > $(notdir $<)
 endef
- 
+
 define COMPILE_C 
 current_wd=`$(GET_WD)` ; cd $(SCRATCH_BUILD) ; $(CC) $(CFLAGS) $(CCOMPILEONLY)$(OPTIONSEP)$$current_wd$(DIRSEP)$@ $$current_wd$(DIRSEP)$(notdir $<) $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DCCODE
 endef
@@ -103,7 +103,7 @@ endef
 
 # Define how to do a F77 compilation
 define PREPROCESS_F77
-$(FPP) $(FPPFLAGS) $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DFCODE $< | sed -e 's/__FORTRANFILE__/\"$(basename $(notdir $<)).F77\"/g' | $(PERL) -s $(F_FILE_PROCESSOR) > $(basename $(notdir $<)).f
+cat $< | sed -e 's.//.(CCTK_AUTOMATICALLY_GENERATED_CONCATENATION_PROTECTION).g' | $(FPP) $(FPPFLAGS) $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DFCODE | sed -e 's.(CCTK_AUTOMATICALLY_GENERATED_CONCATENATION_PROTECTION).//.g' | sed -e 's/__FORTRANFILE__/\"$(basename $(notdir $<)).F77\"/g' | $(PERL) -s $(F_FILE_PROCESSOR) > $(basename $(notdir $<)).f
 endef
 
 define COMPILE_F77
@@ -116,7 +116,7 @@ endef
 
 # Define how to do a fixed-format F90 compilation
 define PREPROCESS_F
-$(FPP) $(FPPFLAGS) $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DFCODE -DF90CODE $< | sed -e 's/__FORTRANFILE__/\"$(basename $(notdir $<)).F\"/g' | $(PERL) -s $(F_FILE_PROCESSOR) > $(basename $(notdir $<)).f
+cat $< | sed -e 's.//.(CCTK_AUTOMATICALLY_GENERATED_CONCATENATION_PROTECTION).g' | $(FPP) $(FPPFLAGS) $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DFCODE -DF90CODE | sed -e 's.(CCTK_AUTOMATICALLY_GENERATED_CONCATENATION_PROTECTION).//.g' | sed -e 's/__FORTRANFILE__/\"$(basename $(notdir $<)).F\"/g' | $(PERL) -s $(F_FILE_PROCESSOR) > $(basename $(notdir $<)).f
 endef
 
 define COMPILE_F
@@ -129,7 +129,7 @@ endef
 
 # Define how to do a free-format F90 compilation
 define PREPROCESS_F90
-$(FPP) $(FPPFLAGS) $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DFCODE $< | sed -e 's/__FORTRANFILE__/\"$(basename $(notdir $<)).F90\"/g' | $(PERL) -s $(F_FILE_PROCESSOR) -free_format > $(basename $(notdir $<)).$(F90_SUFFIX)
+cat $< | sed -e 's.//.(CCTK_AUTOMATICALLY_GENERATED_CONCATENATION_PROTECTION).g' | $(FPP) $(FPPFLAGS) $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DFCODE | sed -e 's.(CCTK_AUTOMATICALLY_GENERATED_CONCATENATION_PROTECTION).//.g' | sed -e 's/__FORTRANFILE__/\"$(basename $(notdir $<)).F90\"/g' | $(PERL) -s $(F_FILE_PROCESSOR) -free_format > $(basename $(notdir $<)).$(F90_SUFFIX)
 endef
 
 define COMPILE_F90
