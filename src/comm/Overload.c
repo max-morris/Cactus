@@ -33,7 +33,7 @@ static char *rcsid="$Header$";
 #undef CCTK_DummyGetMyProc  
 #undef CCTK_DummyGetnProcs
 
-#undef OVERLOADABLE(name)
+#undef OVERLOADABLE
 
 /* Create the overloadable function variables and the 
  * functions allowing the variables to be set.
@@ -42,7 +42,7 @@ static char *rcsid="$Header$";
 
 #include "CommOverloadables.h"
 
-#undef OVERLOADABLE(name)
+#undef OVERLOADABLE
 
 
  /*@@
@@ -76,7 +76,7 @@ int SetupCommFunctions(void)
 #undef CCTK_DummyGetMyProc  
 #undef CCTK_DummyGetnProcs
 
-#undef OVERLOADABLE(name)
+#undef OVERLOADABLE
 
   return 0;
 }
@@ -86,5 +86,5 @@ int SetupCommFunctions(void)
 
 #include "CommOverloadables.h"
 
-#undef OVERLOADABLE(name)
+#undef OVERLOADABLE
 

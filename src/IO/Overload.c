@@ -29,7 +29,7 @@ static char *rcsid="$Header$";
 
 #undef CCTK_DummyOutputGH
 #undef CCTK_DummyOutputVarAsByMethod
-#undef OVERLOADABLE(name)
+#undef OVERLOADABLE
 
 /* Create the overloadable function variables and the 
  * functions allowing the variables to be set.
@@ -38,7 +38,7 @@ static char *rcsid="$Header$";
 
 #include "IOOverloadables.h"
 
-#undef OVERLOADABLE(name)
+#undef OVERLOADABLE
 
  /*@@
    @routine    SetupIOFunctions
@@ -69,7 +69,7 @@ int SetupIOFunctions(void)
 #undef CCTK_DummyOutputGH
 #undef CCTK_DummyOutputVarAsByMethod
 
-#undef OVERLOADABLE(name)
+#undef OVERLOADABLE
 
   return 0;
 }

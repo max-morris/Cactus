@@ -32,7 +32,7 @@ static char *rcsid="$Header$";
 #undef CCTK_DummyEvolve     
 #undef CCTK_DummyShutdown   
 
-#undef OVERLOADABLE(name)
+#undef OVERLOADABLE
 
 
 /* Create the overloadable function variables and the 
@@ -42,7 +42,7 @@ static char *rcsid="$Header$";
 
 #include "MainOverloadables.h"
 
-#undef OVERLOADABLE(name)
+#undef OVERLOADABLE
 
  /*@@
    @routine    SetupMainFunctions
@@ -75,7 +75,7 @@ int SetupMainFunctions(void)
 #undef CCTK_DummyEvolve     
 #undef CCTK_DummyShutdown   
 
-#undef OVERLOADABLE(name)
+#undef OVERLOADABLE
 
   return 0;
 }
