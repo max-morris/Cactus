@@ -18,3 +18,15 @@
 : ${F77_DEPEND_OUT=' > /dev/null ; mv $(basename $(@)).u $@'}
 
 : ${LIBS="xlf90"}
+
+
+# MPI stuff
+ 
+if test -n "$MPI" ; then
+    if test "$MPI" = "NATIVE" ; then
+       MPI_LIBS="mpi"
+       MPI_LIB_DIRS="/usr/lpp/ppe.poe/lib"
+       MPI_INC_DIRS="/usr/lpp/ppe.poe/include"
+    fi
+fi          
+
