@@ -1897,6 +1897,7 @@ int CCTKi_CreateGroup (const char *gname,
 
     if(! vararraysize)
     {
+      group->vararraysize = NULL;
       for (variable = 0; variable < n_variables; variable++)
       {
         variable_name = va_arg (ap, char *);
