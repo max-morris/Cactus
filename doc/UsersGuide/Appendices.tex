@@ -77,7 +77,7 @@ Ghost zones should not be confused with symmetry or boundary zones.
   A computational grid, and the grid variables associated with it.
 \item[{\tt grid scalar}]
   A {\it grid variable\/} which has zero indices,
-  i.e.\hbox{} it's just a number on each processor.
+  i.e.\ it's just a number on each processor.
 \item[{\tt grid variable}] Any variable which can be passed between thorns,
 or routines belonging to the same thorn, but passed through the defined
 flesh interface; implicitly implies it is related to the computational
@@ -116,7 +116,7 @@ the outside world.   See Section~\ref{sec:im}.
   to human readers that this has type \verb|char| rather than \verb|int|.
 \item[{\tt NULL pointer}] C defines a ``NULL pointer'' which is guaranteed not
   to point to any object.  You get a NULL pointer by converting the integer
-  constant 0 to a pointer type, e.g.\hbox{} \verb|int* ptr = 0;|.  Note
+  constant 0 to a pointer type, e.g.\ \verb|int* ptr = 0;|.  Note
   that if you have an expression which has the value zero, but which isn't
   an integer constant, converting this to a pointer type is {\em not\/}
   guaranteed to give a NULL pointer, e.g.:
@@ -127,7 +127,7 @@ int* ptr = i;     /* ptr is NOT guaranteed to be a NULL pointer! */
 
   Many programmers prefer to use the predefined macro \verb|NULL|
   (defined in \verb|<stdlib.h>| and \verb|<stdio.h>|) to create NULL
-  pointers, e.g.\hbox{} \verb|int* ptr = NULL;|, to emphasize to
+  pointers, e.g.\ \verb|int* ptr = NULL;|, to emphasize to
   human readers that this is a NULL {\em pointer\/} rather than
   ``just'' the integer zero.
 
@@ -170,7 +170,7 @@ directory:
 These files are written in the {\it Cactus Configuration Language} which is
 case insensitive.
 
-% A note on optional arguments and square brackets:  If e.g. a variable or
+% A note on optional arguments and square brackets:  If e.g.\ a variable or
 % include file is provided by this thorn, then the corresponding
 % section of the (in this case) interface.ccl is not optional.  Thus
 % these sections are not enclosed in [] as a whole (though parts of them can of
@@ -301,8 +301,8 @@ carriage return.
         groups of variables. {\t access} can be either
         {\t public}, {\t protected} or {\t private}.
 \item{} {\t data\_type} defines the data type of the variables in the
-group.  Supported data types are {\t INT}, {\t CHAR}, {\t REAL} and
-{\t COMPLEX}.
+group.  Supported data types are {\t CHAR}, {\t BYTE}, {\it INT}, {\t REAL} and
+{\t COMPLEX}. 
 \item{} {\t group\_name} must be an alpha-numeric name (which may also
 contain underscores) which is unique across group and variable names
 within the scope of the thorn. A group name is compulsory.
@@ -426,7 +426,7 @@ this number is the only acceptable value.
      \item[{\t REAL}] The range specification is the same as integers,
              except that here, no {\t step} implies a continuum of
 values.  Note that numeric constants should be expressed as in C
-(e.g. {\t 1e-10}).  Note also that one can use the Cactus types such
+(e.g.\ {\t 1e-10}).  Note also that one can use the Cactus types such
 as {\t CCTK\_REAL4} to specify the precision of the parameter.
      \item[{\t KEYWORD}] Each entry in the list of acceptable values
              for a keyword has the form
@@ -648,12 +648,12 @@ through them.
 \begin{Lentry}
 
 \item[{\tt CCTK\_STARTUP}] 
-        Run before any grids are constructed, this is 
-        the timebin for example where grid independent information 
-        (e.g. output methods, reduction operators) is registered. 
-        Note that since no grids are setup at this point, grid 
-        variables cannot be used in routines scheduled here.
-        
+	Run before any grids are constructed, this is 
+	the timebin for example where grid independent information 
+ 	(e.g.\ output methods, reduction operators) is registered. 
+	Note that since no grids are setup at this point, grid 
+	variables cannot be used in routines scheduled here.
+
 \item[{\tt CCTK\_RECOVER\_PARAMETERS}]
         Used by thorns with relevent IO methods as the point 
         to read parameters when recovering from checkpoint files.
@@ -837,7 +837,7 @@ problem you are dealing with.
    out, for example, from an executable by typing {\tt cactus\_<config> -v}.
 
 \item[{\bf Environment}] Very important: specify the environment,
-e.g. {\tt uname -a}, {\tt MPI}/non-{\tt MPI}, etc.
+e.g.\ {\tt uname -a}, {\tt MPI}/non-{\tt MPI}, etc.
 
 \item[{\bf Description}] Describe your problem precisely, if you get a
 core dump, include the stack trace, give the minimal number of thorns,
@@ -945,7 +945,7 @@ the same files.
 
 \item[{\bf cvs status} [file]]
 This command returns the current status of your local copy relative to
-the repository: e.g. it indicates local modifications and possible
+the repository: e.g.\ it indicates local modifications and possible
 updates.
 
 \item[{\bf cvs import} {\tt repository tag1 tag2}]
@@ -1100,13 +1100,13 @@ schedule the file for addition, then you commit it:\\
 
 \item\textbf{Creating a new thorn}\newline
 
-To add a new {\bf module} (e.g. an arrangement) to a Cactus repository we
+To add a new {\bf module} (e.g.\ an arrangement) to a Cactus repository we
 first have to create a directory for you with the right permissions.
 Please contact {\tt cactus@cactuscode.org} providing the name of the
 requested module, and who should be able to commit changes to the module.
 
 To add the new module, change directory so that you are in the first directory
-that you want to commit to the repository. (e.g. if you want to commit
+that you want to commit to the repository. (e.g.\ if you want to commit
 a new arrangement called {\tt MyArrange} then change directory to
 {\tt MyArrange}). Then type\\
 {\tt cvs -d :pserver:}{\em your\_login}{\tt
