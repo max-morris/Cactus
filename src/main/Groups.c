@@ -77,6 +77,10 @@ void CCTK_FCALL CCTK_FNAME (CCTK_NumTimeLevelsFromVarI)
                            (int *num, const int *var);
 void CCTK_FCALL CCTK_FNAME (CCTK_NumTimeLevelsFromVar)
                            (int *num, ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (CCTK_NumTimeLevelsI)
+                           (int *num, const int *var);
+void CCTK_FCALL CCTK_FNAME (CCTK_NumTimeLevels)
+                           (int *num, ONE_FORTSTRING_ARG);
 void CCTK_FCALL CCTK_FNAME (CCTK_PrintGroup)
                            (const int *group);
 void CCTK_FCALL CCTK_FNAME (CCTK_PrintVar)
@@ -1362,6 +1366,33 @@ void CCTK_FCALL CCTK_FNAME (CCTK_VarTypeI)
    @date       3 July 1999
    @author     Gabrielle Allen
    @desc
+               Given a group index return the number of timelevels
+   @enddesc
+
+   @returntype int
+   @returndesc
+               the number of timelevels of variables in the group, or
+               -1 if given group index is invalid
+   @endreturndesc
+@@*/
+int CCTK_NumTimeLevelsI (int group)
+{
+  return ((0 <= group && group < n_groups) ?
+          groups[group].n_timelevels : -1);
+}
+
+void CCTK_FCALL CCTK_FNAME (CCTK_NumTimeLevelsI)
+                           (int *num, const int *group)
+{
+  *num = CCTK_NumTimeLevelsI (*group);
+}
+
+
+ /*@@
+   @routine    CCTK_NumTimeLevelsFromVarI
+   @date       3 July 1999
+   @author     Gabrielle Allen
+   @desc
                Given a variable index return the number of timelevels
    @enddesc
 
@@ -1383,6 +1414,32 @@ void CCTK_FCALL CCTK_FNAME (CCTK_NumTimeLevelsFromVarI)
   *num = CCTK_NumTimeLevelsFromVarI (*var);
 }
 
+
+ /*@@
+   @routine    CCTK_NumTimeLevels
+   @date       8 June 2003
+   @author     Gabrielle Allen
+   @desc
+               Given a group name return the number of timelevels
+   @enddesc
+
+   @returntype int
+   @returndesc
+               return code of @seeroutine CCTK_NumTimeLevelsI
+   @endreturndesc
+@@*/
+int CCTK_NumTimeLevels (const char *group)
+{
+  return CCTK_NumTimeLevelsI (CCTK_GroupIndex (group));
+}
+
+void CCTK_FCALL CCTK_FNAME (CCTK_NumTimeLevels)
+                           (int *num, ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (group)
+  *num = CCTK_NumTimeLevels (group);
+  free (group);
+}
 
  /*@@
    @routine    CCTK_NumTimeLevelsFromVar
@@ -2011,7 +2068,7 @@ int CCTKi_CreateGroup (const char *gname,
     
     /* Extract the variable names from the argument list. */
 
-    if(! vararraysize)
+    if(!vararraysize)
     {
       group->vararraysize = NULL;
       for (variable = 0; variable < n_variables; variable++)
