@@ -236,7 +236,7 @@ else
       intel_dir="$(dirname $(dirname $(which $F90)))"
 
       case "$host_cpu" in
-        i?86)
+        i?86 | x86_64)
           # add the necessary libraries according to the compiler version
           if test "`$F90 -V 2>&1 | grep Version | sed 's/.*Version //' | sed 's/\..*//'`" -ge 8; then
             intel_p4_opt_flag='-xN'
