@@ -147,7 +147,7 @@ while (<IN>) {
          if ($i ne 0) {
             print OUT " \\\\ ";
          }
-         print OUT "$author_names[$i] \$<\$$author_emails[$i]\$>\$";
+         print OUT "$author_names[$i] \\textless $author_emails[$i]\\textgreater";
       }
       print OUT "\}\n";
    } elsif (/^\\date\{\s*?\}/) {
