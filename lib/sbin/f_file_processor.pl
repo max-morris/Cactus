@@ -182,7 +182,7 @@ sub free_format_splitline
   $LINE =~ s/,\s*\)/\)/;
 
   # Some preprocessors put extraneous spaces in 8-(
-  $LINE =~ s:\. (eq|le|lt|ge|gt|ne) \.:\.$1\.:ig;
+  $LINE =~ s:\. ([a-zA-Z]+) \.:\.$1\.:ig;
 
   # Strip out leading spaces in favor of 3 spaces
   # $LINE =~ s/^\s+/   /;
@@ -195,23 +195,24 @@ sub free_format_splitline
     print "\n";
     $LINE =~ s/.{78,78}//;
 
-    while ($LINE =~ /^(.{74,74}).*/) 
+    while ($LINE =~ /^(.{75,75}).*/) 
     {
+      $LINE =~ /^(.{74,74}).*/;
       $OUT = $1;
-      print "&" if (! ($OUT =~ /^[\s]*\&/));
+      print "   &" if (! ($OUT =~ /^[\s]*\&/));
       print "$OUT";
       print "&" if (! ($OUT =~ /\&[\s]*$/));
       print "\n";
       $LINE =~ s/.{74,74}//;
     }
-    print "&" if (! ($LINE =~ /^[\s]*\&/));
+    print "   &" if (! ($LINE =~ /^[\s]*\&/));
     print "$LINE\n";
   } 
   else 
   {
     print "$LINE\n";
   }
-  
+
 }
 
 
