@@ -228,8 +228,16 @@ sub CreateParameterBindings
         $type = $rhparameter_db->{"\U$friend_thorn $parameter\E type"};
         $type_string = &get_c_type_string($type);
 
-        push(@data, "  const $type_string$parameter = RESTRICTED_\U$friend\E_STRUCT.$parameter; \\");
-        push(@use, "  (void) ($parameter + 0); \\");
+        # See if we are sharing it AS something
+        my $name = $rhparameter_db->{"\U$thorn $parameter\E alias"};
+
+        if(! $name)
+        {
+          $name = "$parameter";
+        }
+
+        push(@data, "  const $type_string$name = RESTRICTED_\U$friend\E_STRUCT.$parameter; \\");
+        push(@use, "  (void) ($name + 0); \\");
       }
     }
 
@@ -321,6 +329,7 @@ sub NewParamStuff
   my($filelist);
   my(@creationdata);
   my(@extensiondata);
+  my(@accumulationdata);
   my(@data);
 
   foreach $thorn (split(' ',$rhinterface_db->{'THORNS'}))
@@ -337,6 +346,8 @@ sub NewParamStuff
     push(@data, '');
     push(@data, '');
 
+    push(@data, '#include <stdio.h>');
+    push(@data, '#include <stdlib.h>');
     push(@data, '#include <stdarg.h>');
     push(@data, '');
     push(@data, '#include "cctk_Config.h"');
@@ -369,6 +380,7 @@ sub NewParamStuff
 
 #        print "Generating $block parameters for $thorn, providing $imp\n";
         push(@creationdata,&CreateParameterRegistrationStuff($block, $thorn, $imp, $rhparameter_db, %these_parameters));
+        push(@accumulationdata,&CreateParameterAccumulationStuff($block, $thorn, $rhparameter_db, %these_parameters));
       }
     }
 
@@ -402,6 +414,7 @@ sub NewParamStuff
     push(@data, '{');
 
     push(@data, @extensiondata);
+    push(@data, @accumulationdata);
 
     push(@data, '  return 0;');
     push(@data, '}');
@@ -413,6 +426,7 @@ sub NewParamStuff
     @data=();
     @creationdata=();
     @extensiondata=();
+    @accumulationdata=();
 
     $filelist .= " Create${thorn}Parameters.c";
   }
@@ -453,20 +467,20 @@ sub CreateParameterRegistrationStuff
 
 #    print "This param is $parameter\n";
 
-    $type = $rhparameter_db->{"\U$thorn $parameter\E type"};
+    my $type = $rhparameter_db->{"\U$thorn $parameter\E type"};
 
 #    print "Type is $type\n";
 
-    $n_ranges = $rhparameter_db->{"\U$thorn $parameter\E ranges"};
+    my $n_ranges = $rhparameter_db->{"\U$thorn $parameter\E ranges"};
 
 #    print "N_ranges is $n_ranges\n";
 
-    $quoted_default = $rhparameter_db->{"\U$thorn $parameter\E default"};
+    my $quoted_default = $rhparameter_db->{"\U$thorn $parameter\E default"};
 
 #    $quoted_default =~ s:\"::g;  The database now strips all unescaped quotes.
 
     # Set steerable details
-    $steerable = $rhparameter_db->{"\U$thorn $parameter\E steerable"};
+    my $steerable = $rhparameter_db->{"\U$thorn $parameter\E steerable"};
     if ($steerable =~ /never/i || $steerable =~/^$/)
     {
       $steerable_type = 'CCTK_STEERABLE_NEVER';
@@ -485,6 +499,34 @@ sub CreateParameterRegistrationStuff
       &CST_error(0,$message,'',__LINE__,__FILE__);
     }
 
+    my $array_size = $rhparameter_db->{"\U$thorn $parameter\E array_size"};
+
+    my $dereference = '';
+
+    if(! $array_size)
+    {
+      $array_size = 0;
+      $dereference = '&'
+    }
+
+    my $accumulator_expression = $rhparameter_db->{"\U$thorn $parameter\E accumulator-expression"};
+
+    if(! $accumulator_expression)
+    {
+      $accumulator_expression = 'NULL';
+    }
+    else
+    {
+      $accumulator_expression = "\"$accumulator_expression\"";
+    }
+
+#    my $accumulator_base = $rhparameter_db->{"\U$thorn $parameter\E accumulator-base"};
+#
+#    if(! $accumulator_expression)
+#    {
+#      $accumulator_base = 'NULL';
+#    }
+
     $line="  CCTKi_ParameterCreate(\"$parameter\",\n" .
           "                        \"$thorn\",\n" .
           "                        \"$type\",\n" .
@@ -492,7 +534,10 @@ sub CreateParameterRegistrationStuff
           "                        $steerable_type,\n" .
           "                        " . $rhparameter_db->{"\U$thorn $parameter\E description"} . ",\n" .
           "                        \"" . $quoted_default . "\",\n" .
-          "                        &($structure.$parameter),\n" .
+          "                        $dereference($structure.$parameter),\n" .
+          "                        $array_size,\n" .
+          "                        $accumulator_expression,\n" .
+#          "                        $accumulator_base,\n" .
           "                        $n_ranges";
 
     for($range=1; $range <= $n_ranges; $range++)
@@ -569,5 +614,38 @@ sub CreateParameterExtensionStuff
 
   return @data;
 }
+
+sub CreateParameterAccumulationStuff
+{
+  my($block, $thorn, $rhparameter_db, %these_parameters) = @_;
+  my(@data);
+
+  @data = ();
+
+  foreach $parameter (sort keys %these_parameters)
+  {
+    my $accumulator_base = $rhparameter_db->{"\U$thorn $parameter\E accumulator-base"};
+
+    if($accumulator_base)
+    {
+
+      print "accumulator_base = $accumulator_base\n";
+
+      $accumulator_base =~ m/([^:]+)::(.+)/;
+
+      my $importhorn = $1;
+      my $accparam   = $2;
+
+      push(@data, "  CCTKi_ParameterAccumulatorBase(\"$thorn\",");
+      push(@data, "                          \"$parameter\",");
+      push(@data, "                          \"$importhorn\",");
+      push(@data, "                          \"$accparam\");");
+      push(@data, "");
+    }
+  }
+
+  return @data;
+}
+
 
 1;

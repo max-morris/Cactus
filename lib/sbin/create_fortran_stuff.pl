@@ -84,9 +84,18 @@ sub CreateFortranThornParameterBindings
     foreach $parameter (sort(keys %these_parameters))
     {
       # Alias the parameter unless it is one we want.
-      if(($rhparameter_db->{"\U$thorn SHARES $friend\E variables"} =~ m:( )*$parameter( )*:) && (length($1) > 0)||length($2)>0||$1 eq $rhparameter_db->{"\U$thorn SHARES $friend\E variables"})
+      if(($rhparameter_db->{"\U$thorn SHARES $friend\E variables"} =~ m:( )*$parameter( )*:) && 
+         (length($1) > 0)||length($2)>0||$1 eq $rhparameter_db->{"\U$thorn SHARES $friend\E variables"})
       {
-        $alias_names{$parameter} = $parameter;
+        # See if we are sharing it AS something
+        my $name = $rhparameter_db->{"\U$thorn $parameter\E alias"};
+
+        if(! $name)
+        {
+          $name = "$parameter";
+        }
+
+        $alias_names{$parameter} = $name;
       }
       else
       {
@@ -136,18 +145,34 @@ sub CreateFortranCommonDeclaration
 
   foreach $parameter (&order_params($rhparameters,$rhparameter_db))
   {
-    $type = $rhparameter_db->{"\U$rhparameters->{$parameter} $parameter\E type"};
+    my $type = $rhparameter_db->{"\U$rhparameters->{$parameter} $parameter\E type"};
 
-    $type_string = &get_fortran_type_string($type);
+    my $type_string = &get_fortran_type_string($type);
+
+    my $array_size = $rhparameter_db->{"\U$rhparameters->{$parameter} $parameter\E array_size"};
+
+    my $suffix = '';
+
+    if($array_size)
+    {
+      $suffix = "($array_size)";
+    }
 
     if($aliases == 0)
     {
-      $line = "$type_string $parameter";
-      $definition .= "$sepchar$parameter";
+      my $name = $rhparameter_db->{"\U$rhparameters->{$parameter} $parameter\E alias"};
+
+      if(! $name)
+      {
+        $name = "$parameter";
+      }
+      
+      $line = "$type_string $name$suffix";
+      $definition .= "$sepchar$name";
     }
     else
     {
-      $line = "$type_string $rhaliases->{$parameter}";
+      $line = "$type_string $rhaliases->{$parameter}$suffix";
       $definition .= "$sepchar$rhaliases->{$parameter}";
     }
 

@@ -145,15 +145,17 @@ sub parse_param_ccl
         $parameter_db{"\U$thorn $block\E variables"} = "";
       }
     }
-    elsif($line =~ m:(EXTENDS |USES )?\s*(?\:CCTK_)?(INT|REAL|BOOLEAN|KEYWORD|STRING)\s+([a-zA-Z]+[a-zA-Z0-9_]*)(\s+\"[^\"]*\")?\s*(.*)$:i)
+    elsif($line =~ m:(EXTENDS |USES )?\s*(?\:CCTK_)?(INT|REAL|BOOLEAN|KEYWORD|STRING)\s+([a-zA-Z]+[a-zA-Z0-9_]*)(\[([^]]+)\])?(\s+\"[^\"]*\")?\s*(.*)$:i)
     {
       # This is a parameter definition.
 
-      $use_or_extend = $1;
-      $type = "\U$2\E";
-      $variable = $3;
-      $description = $4;
-      $options = $5;
+      my $use_or_extend = $1;
+      my $type = "\U$2\E";
+      my $variable = $3;
+      my $array_size = $5;
+      my $description = $6;
+      my $options = $7;
+
       $description =~ s:^\s*::;
 
       if($use_or_extend =~ m:USES:i)
@@ -228,6 +230,31 @@ sub parse_param_ccl
         }
 
         # Parse the options
+
+        # First deal with an alias
+#         if($options =~ m/\bAS\s+([^\s]+)\s*/i)
+#         {
+#           my $alias = $1;
+
+#           if($alias !~ m/[a-zA-Z]+[a-zA-Z0-9_]*/)
+#           {
+#             $message = "Invalid alias name '$alias' for  $variable of thorn $thorn";
+#             &CST_error(0,$message,"",__LINE__,__FILE__);
+#           }
+#           elsif($defined_parameters{"\U$alias\E"})
+#           {
+#             $message = "Invalid alias name '$alias' for $variable of thorn $thorn - parameter of that name already exists";
+#             &CST_error(0,$message,"",__LINE__,__FILE__);
+#           }
+#           else
+#           {
+#             $parameter_db{"\U$thorn $variable\E alias"} = $alias;
+#           }
+
+#           $options =~ s/\bAS\s+([^\s])+\s*//i;
+#         }
+
+        # Now parse options of the form option = value
         %options = split(/\s*=\s*|\s+/, $options);
       
         foreach $option (keys %options)
@@ -236,16 +263,98 @@ sub parse_param_ccl
           {
             $parameter_db{"\U$thorn $variable\E steerable"} = $options{$option};
           }
+          elsif($option =~ m:ACCUMULATOR-BASE:i)
+          {
+            if($options{$option} =~ m/[a-zA-Z]+[a-zA-Z0-9_]*::([a-zA-Z]+[a-zA-Z0-9_]*)/)
+            {
+              if($defined_parameters{"\U$1\E"})
+              {
+                $parameter_db{"\U$thorn $variable\E accumulator-base"} = $options{$option};
+              }
+              else
+              {
+                $message = "Unknown parameter '$options{$option}' specified as accumulator-base of $variable of thorn $thorn\n" .
+                           "   HINT: if it comes from another thorn it must be shared";
+                &CST_error(0,$message,"",__LINE__,__FILE__);
+              }
+            }
+            elsif($options{$option} =~ m/[a-zA-Z]+[a-zA-Z0-9_]*/)
+            {
+              $parameter_db{"\U$thorn $variable\E accumulator-base"} = "$thorn\::$options{$option}";
+            }
+            else
+            {
+              $message = "Invalid accumulator-base $options{$option} for  $variable of thorn $thorn";
+              &CST_error(0,$message,"",__LINE__,__FILE__);
+            }              
+          }
+          elsif($option =~ m:ACCUMULATOR:i)
+          {
+            my $retcode = &CheckExpression($options{$option});
+
+            if($retcode == 0)
+            {
+              $parameter_db{"\U$thorn $variable\E accumulator-expression"} = $options{$option};
+            }
+            elsif($retcode == 1)
+            {
+              $message = "Invalid accumulator expression '$options{$option}' for $variable of thorn $thorn";
+              &CST_error(0,$message,"",__LINE__,__FILE__);
+            }
+            elsif($retcode == 2)
+            {
+              $message = "Arithmetic error in accumulator expression '$options{$option}' for $variable of thorn $thorn";
+              &CST_error(0,$message,"",__LINE__,__FILE__);
+            }
+            elsif($retcode == 3)
+            {
+              $message = "Accumulator expression '$options{$option}' can be infinite for $variable of thorn $thorn";
+              &CST_error(0,$message,"",__LINE__,__FILE__);
+            }
+            elsif($retcode == 4)
+            {
+              $message = "Accumulator expression '$options{$option}' does not commute for $variable of thorn $thorn";
+              &CST_error(0,$message,"",__LINE__,__FILE__);
+            }
+            else
+            {
+              $message = "Internal-error while checking accumulator expression '$options{$option}' for $variable of thorn $thorn";
+              &CST_error(0,$message,"",__LINE__,__FILE__);
+            }
+          }
           else
           {
-            $message = "Unknown option $option for parameter $variable of thorn $thorn";
+            $message = "Unknown option '$option' for parameter $variable of thorn $thorn";
             &CST_error(0,$message,"",__LINE__,__FILE__);
+          }
+        }
+        
+        # Check array size
+
+        if($array_size)
+        {
+          if($array_size !~ /^\d+$/)
+          {
+            $message = "Invalid array size '$array_size' for parameter $variable of thorn $thorn";
+            &CST_error(0,$message,"",__LINE__,__FILE__);
+          }
+          else
+          {
+            $parameter_db{"\U$thorn $variable\E array_size"} = $array_size;
           }
         }
 
         # Store data about this variable.
-        $defined_parameters{"\U$variable\E"} = 1;
-        
+
+        if($alias)
+        {
+          $defined_parameters{"\U$alias\E"} = 1;
+        }
+        else
+        {
+          $defined_parameters{"\U$variable\E"} = 1;
+        }
+
         $parameter_db{"\U$thorn $block\E variables"} .= $variable." ";
         $parameter_db{"\U$thorn $variable\E type"} = $type;
         $parameter_db{"\U$thorn $variable\E description"} = $description;
@@ -605,6 +714,7 @@ sub CheckParameterDefault
 #  @vdesc   The expression to verify
 #  @vtype   string
 #  @vio     in
+#  @endvar
 #
 #  @returntype int
 #  @returndesc
@@ -644,12 +754,12 @@ sub CheckExpression
     # Calculate L(L(a,b),c).
     my $answer1 = &EvalExpression(&EvalExpression($a,$b,"$expression"),$c,$expression);
     
-    print "$answer1\n" if defined $answer1;
+#    print "$answer1\n" if defined $answer1;
     
     # Calculate L(L(a,c),b).
     my $answer2 = &EvalExpression(&EvalExpression($a,$c,"$expression"),$b,$expression);
     
-    print "$answer2\n" if defined $answer2;
+#    print "$answer2\n" if defined $answer2;
     
     if( !defined $answer1 || ! defined $answer2)
     {
@@ -695,14 +805,17 @@ sub CheckExpression
 #  @vdesc   An argument in the expression
 #  @vtype   scalar
 #  @vio     in
+#  @endvar
 #  @var     y
 #  @vdesc   An argument in the expression
 #  @vtype   scalar
 #  @vio     in
+#  @endvar
 #  @var     expression
 #  @vdesc   The expression to evaluate
 #  @vtype   string
 #  @vio     in
+#  @endvar
 #
 #  @returntype scalar
 #  @returndesc

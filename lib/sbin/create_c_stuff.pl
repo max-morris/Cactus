@@ -37,10 +37,19 @@ sub CreateParameterBindingFile
 
   foreach $parameter (&order_params($rhparameters,$rhparameter_db))
   {
-    $type = $rhparameter_db->{"\U$rhparameters->{$parameter} $parameter\E type"};
-    $type_string = &get_c_type_string($type);
+    my $type = $rhparameter_db->{"\U$rhparameters->{$parameter} $parameter\E type"};
+    my $type_string = &get_c_type_string($type);
 
-    push(@data, "  $type_string$parameter;");
+    my $array_size = $rhparameter_db->{"\U$rhparameters->{$parameter} $parameter\E array_size"};
+
+    my $suffix = '';
+
+    if($array_size)
+    {
+      $suffix = "[$array_size]";
+    }
+
+    push(@data, "  $type_string$parameter$suffix;");
   }
 
   # Some compilers don't like an empty structure.
@@ -171,12 +180,30 @@ sub CreateCStructureParameterHeader
 
   foreach $parameter (&order_params($rhparameters, $rhparameter_db))
   {
-    $type = $rhparameter_db->{"\U$rhparameters->{$parameter} $parameter\E type"};
-    $type_string = &get_c_type_string($type);
+    my $type = $rhparameter_db->{"\U$rhparameters->{$parameter} $parameter\E type"};
+    my $type_string = &get_c_type_string($type);
 
-    push(@data, "  $type_string $parameter;");
-    push(@definition, "  const $type_string $parameter = $structure.$parameter; \\");
-    push(@use, "  (void) ($parameter + 0); \\");
+    my $array_size = $rhparameter_db->{"\U$rhparameters->{$parameter} $parameter\E array_size"};
+
+    my $suffix = '';
+    my $prefix = '';
+
+    if($array_size)
+    {
+      $prefix = '*';
+      $suffix = "[$array_size]";
+    }
+
+    my $name = $rhparameter_db->{"\U$rhparameters->{$parameter} $parameter\E alias"};
+
+    if(! $name)
+    {
+      $name = "$parameter";
+    }
+
+    push(@data, "  $type_string $parameter$suffix;");
+    push(@definition, "  const $type_string $prefix$name = $structure.$parameter; \\");
+    push(@use, "  (void) ($name + 0); \\");
   }
 
   # Some compilers don't like an empty structure.
