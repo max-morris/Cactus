@@ -130,7 +130,8 @@ sub CreateFortranCommonDeclaration
 
   # Create the data
 
-  $definition = "COMMON /$common_block/";
+  $definition_front = "COMMON /$common_block/";
+  $definition = "";
 
   $sepchar = "";
 
@@ -152,21 +153,38 @@ sub CreateFortranCommonDeclaration
 
     push(@data, $line);
 
+    # Make up the common block declaration, putting 
+    # strings at the start to avoid misalignment
     if($aliases == 0)
     {
-      $definition .= "$sepchar$parameter";
+      if ($type_string =~ /CCTK_STRING/)
+      {
+        $definition = "$parameter$sepchar$definition";
+      }
+      else
+      {
+        $definition .= "$sepchar$parameter";
+      }	
     }
     else
     {
-      $definition .= "$sepchar$alias_names[$n]";
+      if ($type_string =~ /CCTK_STRING/)
+      {
+        $definition = "$alias_names[$n]$sepchar$definition";
+      }
+      else
+      {
+        $definition .= "$sepchar$alias_names[$n]";
+      }	
     }
 
-
+    print("Type is $type_string\n");
+    print("String is $definition\n");
     $sepchar = ",";
     $n++;
   }
 
-  push(@data, $definition);
+  push(@data, $definition_front.$definition);
 
   return @data;
 }
