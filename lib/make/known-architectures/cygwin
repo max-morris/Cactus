@@ -75,7 +75,7 @@ else
 # doing inplace editing
   PERL_BACKUP_NECESSARY='yes'
 
-  cat >> cctk_archdefs.h <<EOF;
+  cat >> cctk_Archdefs.h <<EOF;
 
 /* WIN stuff */
 #define WIN32
