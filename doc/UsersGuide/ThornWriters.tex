@@ -50,6 +50,120 @@ thorn into it.
 
 Header files, macros ...
 
+\subsection{IO}
+
+To allow flexible IO, the flesh itself does not provide 
+any output routines, however it provides a mechanism for 
+thorns to register different routines as IO methods. For 
+details of writing IO thorns see ????. Application thorns
+can interact with the different IO methods through the following
+function calls:
+
+{\t
+\begin{verbatim}
+
+#include ``CactusIOFunctions.h''
+int CCTK_OutputGH(cGH *GH);
+
+#include ``cctk.h''
+CCTK_OutputGH(GH)
+    CCTK_POINTER GH
+\end{verbatim}
+}
+
+\vskip .25cm
+
+This call loops over all registered IO methods, calling 
+the routine that each method has registered for {\t OutputGH}.
+The expected behaviour of any methods {\t OutputGH} is to
+loop over all GH variables outputting them if the method 
+contains appropriate routines (that is, not all methods will 
+supply routines to output all different types of variables) 
+and if the method decides it is an appropriate time to 
+output. 
+
+
+{\t
+\begin{verbatim}
+
+#include ``CactusIOFunctions.h''
+int CCTK_OutputVarAsByMethod(cGH *GH, const char *varname, const char *alias, const char *methodname);
+
+#include ``cctk.h''
+CCTK_OutputVarAsByMethod(GH,varname,alias,methodname)
+    CCTK_POINTER GH
+    char* varname
+    char* alias
+    char* methodname
+\end{verbatim}
+}
+
+Output a variable {\t varname} using the method {\t methodname} if it is 
+registered. Uses {\t alias} as the name of the variable for the purpose
+of constructing a filename. The output should take place if at all possible,
+if the appropriate file exists the data is appended, otheriwise a new
+file is created.
+
+
+{\t
+\begin{verbatim}
+
+#include ``CactusIOFunctions.h''
+int CCTK_OutputVarByMethod(cGH *GH, const char *varname, const char *methodname);
+
+#include ``cctk.h''
+CCTK_OutputVarByMethod(GH,varname,methodname)
+    CCTK_POINTER GH
+    char* varname
+    char* methodname
+\end{verbatim}
+}
+
+Output a variable {\t varname} using the method {\t methodname} if it is 
+registered. The output should take place if at all possible,
+if the appropriate file exists the data is appended, otherwise a new
+file is created.
+
+{\t
+\begin{verbatim}
+
+#include ``CactusIOFunctions.h''
+int CCTK_OutputVarAs(cGH *GH, const char *varname, const char *alias);
+
+#include ``cctk.h''
+CCTK_OutputVarAs(GH,varname,alias)
+    CCTK_POINTER GH
+    char* varname
+    char* alias
+\end{verbatim}
+}
+
+Output a variable {\t varname} looping over all registered methods. 
+The output should take place if at all possible,
+if the appropriate file exists the data is appended, otherwise a new
+file is created. Uses {\t alias} as the name of the variable for the purpose
+of constructing a filename.
+
+{\t
+\begin{verbatim}
+
+#include ``CactusIOFunctions.h''
+int CCTK_OutputVar(cGH *GH, const char *varname);
+
+#include ``cctk.h''
+CCTK_OutputVarAs(GH,varname)
+    CCTK_POINTER GH
+    char* varname
+\end{verbatim}
+}
+
+Output a variable {\t varname} looping over all registered methods. 
+The output should take place if at all possible,
+if the appropriate file exists the data is appended, otherwise a new
+file is created.
+
+
+
 \section{Argument lists and parameters}
 
 \section{A First Example (Baloney)}
