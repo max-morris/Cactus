@@ -57,7 +57,7 @@
        char *arg2 = _fcdtocp(cctk_str2);\
        char *arg3 = _fcdtocp(cctk_str3);
 
-#elif defined WIN32
+#elif defined WIN32_DIGITAL_FORTRAN
 
 #define ONE_FORTSTRING_ARG\
    char *cctk_str1, unsigned int cctk_strlen1
