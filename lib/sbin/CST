@@ -6,7 +6,7 @@
 #  @desc
 #             Parses the the configuration files for thorns.
 #  @enddesc
-#  @version   $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.67 2004-05-09 21:43:45 tradke Exp $
+#  @version   $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.68 2004-05-09 21:57:37 tradke Exp $
 #@@*/
 
 # Global parameter to track the number of errors from the CST
@@ -595,11 +595,11 @@ sub TopoSort
     &CST_error (0,  "Tsort script returned $exit_value\n") if $exit_value;
     &CST_error (0,  "Tsort script received signal $signal_num\n") if $signal_num;
     &CST_error (0,  "Tsort script dumped core\n" ) if $dumped_core;
-
-    $data =  join(' ', split("\n", $data));
-    $data =~ s/dummy//;
-    $data =~ s/  / /;
   }
+
+  $data =  join(' ', split("\n", $data));
+  $data =~ s/dummy//;
+  $data =~ s/  / /;
 
   return $data;
 }
