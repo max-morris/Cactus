@@ -101,6 +101,7 @@ sub write_rfr_header {
   # The header for the thorn RFR routine
 
   $header  = "#define THORN_IS_$thorn\n";
+  $header .= "#include <stdio.h>\n";
   $header .= "#include \"cctk.h\"\n";
   $header .= "#include \"flesh.h\"\n";
   $header .= "#include \"Comm.h\"\n";
@@ -562,13 +563,24 @@ sub parse_schedule_at_RFR {
   for ($i=0; $i<@block; $i++) 
   {
     $line = @block[$i];
-    if ($line =~ m/\s*TRIGGERS\s*:\s*(.*)\s*\n/i)
+    if ($line =~ m/\s*TRIGGERS\s*:\s*(.*)\s*/i)
     {
       @list = split(",",$1);
       foreach $var (@list) 
       {
-        $out .= "  index = CCTK_GetVarNum(\"$var\");\n";
-        $out .= "  rfrRegisterTrigger(GH->rfr_top,GH,$\::$group,$routine);\n"
+	# Strip of any spaces 
+	$var =~ /^\s*(.*)\s*$/;
+	$var = $1;
+
+	$this_imp = $implementation;
+	$this_var = $var;
+	if ($var =~ /(.*)::(.*)/)
+	{
+	  $this_imp = $1;
+	  $this_var = $2;
+	}
+        $out .= "  index = CCTK_GetVarNum(\"$this_imp\",NULL,\"$var\");\n";
+        $out .= "  rfrRegisterTriggers(GH->rfr_top,GH,$routine,index);\n"
       }
     }
   }
