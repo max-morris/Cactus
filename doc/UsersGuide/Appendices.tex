@@ -450,13 +450,13 @@ group.  Supported data types are {\t CHAR}, {\t BYTE}, {\t INT}, {\t REAL} and
 \item{} {\t \var{group\_name}} must be an alphanumeric name (which may also
 contain underscores) which is unique across group and variable names
 within the scope of the thorn. A group name is compulsory.
-\item{} {\t [\var{number}]}, if present, indicates that this is a \emph{vector}
-group.  Such a group does not have named variables (so the \{\} block
-should not be present) but instead appears as a one-dimensional array
-of grid variables.  The first index in the array is the member-index,
-and any other indices are the normal spatial indices for a group of
-this type and dimension.  The number can be any valid arithmetical
-expression consisting of integers or integer-valued parameters.
+\item{} {\t [\var{number}]}, if present, indicates that this is a
+  \emph{vector} group.  The number can be any valid arithmetical
+  expression consisting of integers or integer-valued parameters.
+  Each variable in that group appears as a one-dimensional array of
+  grid variables.  When the variable is accessed in the code, then the
+  last index is the member-index, and any other indices are the normal
+  spatial indices for a group of this type and dimension.
 \item{} {\t TYPE} designates the kind of variables held by the group.
 The choices are {\t GF}, {\t ARRAY} or {\t SCALAR}. This field is
 optional, with the default variable type being {\t SCALAR}.
