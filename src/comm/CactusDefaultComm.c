@@ -652,7 +652,7 @@ int CactusDefaultGroupStorageIncrease (const cGH *GH, int n_groups,
       {
         /* Since the old enable and disable group storage just returned true or
          * false and did all timelevels, only enable storage if timelevels is
-         not 0
+         * not 0
          */
         if(CCTK_QueryGroupStorageI(GH, groups[i]))
         {
@@ -761,7 +761,8 @@ int CactusDefaultGroupStorageDecrease (const cGH *GH, int n_groups,
       if(groups[i] >= 0)
       {
         /* Since the old enable and disable group storage just returned true or
-         * false and did all timelevels, only disable storage if timelevels is 0
+         * false and did all timelevels, only disable storage if timelevels is
+         * 0
          */
         if(CCTK_QueryGroupStorageI(GH, groups[i]))
         {
