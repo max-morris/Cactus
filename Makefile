@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.25 1999-04-26 10:16:33 allen Exp $
+#   @version $Id: Makefile,v 1.26 1999-04-28 09:06:44 allen Exp $
 # @@*/
 
 # Make quietly unless told not to
@@ -331,12 +331,19 @@ newthorn:
 
 # Run the testsuite
 
-.PHONY: testsuite
-testsuite:
+ifneq ($strip($(CONFIGURATIONS)),) 
+.PHONY $(addsuffix -testsuite,$(CONFIGURATIONS)):
+
+$(addsuffix -testsuite,$(CONFIGURATIONS)):
 	@echo $(DIVIDER)
-	@echo Running testsuite
-	$(PERL) lib/sbin/Runtest.pl
+	@echo Running test suite $(@:%-activethorns=%)
+	if [ -r configs/$(@:%-testsuite=%)/ActiveThorns ] ; then $(PERL) lib/sbin/Runtest.pl $(@:%-testsuite=%) ; fi
+endif
+
+%-testsuite:
 	@echo $(DIVIDER)
+	@echo Configuration $(@:%-testsuite=%) does not exist.
+	@echo Test suite aborted.
 
 # Remove non-essential files
 
