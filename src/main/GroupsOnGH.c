@@ -40,7 +40,7 @@ void *CCTK_GetVarDataPtr_ByName(cGH *GH, char *fullvarname, int timelevel)
    int index;
    void *retval=NULL;
 
-  index = CCTK_GetVarNum(NULL,NULL,fullvarname);
+  index = CCTK_GetVarIndex(fullvarname);
   if (index >= 0)
   {
      retval = GH->data[index][timelevel];
@@ -89,26 +89,5 @@ void *CCTK_GetVarDataPtr(cGH *GH, int varindex, char *fullvarname, int timelevel
   {
     return CCTK_GetVarDataPtr_ByIndex(GH, varindex, timelevel);
   }
-}
-
-
- /*@@
-   @routine    CCTK_QueryGroupStorage
-   @date       
-   @author     Tom Goodale
-   @desc 
-
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
-
-@@*/
-int CCTK_QueryGroupStorage(cGH *GH, const char *group)
-{
-  /* Quick fudge */  
-  return 1;
 }
 

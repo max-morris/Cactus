@@ -25,14 +25,11 @@ int CCTK_CreateGroup(const char *gname, const char *thorn, const char *imp,
 		     int n_variables,
 		     ...);
 
-int CCTK_GetGroupNum(const char *implementation,
-		     const char *name);
+int CCTK_GetGroupIndex(const char *groupname);
 
-int CCTK_GetVarNum(const char *implementation,
-		   const char *group_name,
-		   const char *variable_name);
+int CCTK_GetVarIndex(const char *variablename);
 
-char *CCTK_GetGroupFromVar(int var);
+char *CCTK_GetGroupNameFromVar_ByIndex(int var);
 
 char *CCTK_GetFullName(int var);
 
@@ -69,9 +66,11 @@ int CCTK_GetVarVType(int var);
 
 int CCTK_GetNumTimeLevels(int var);
 
-int CCTK_GetFirstVarNum(int group);
+int CCTK_GetFirstVarIndex(const char *group);
+int CCTK_GetFirstVarIndex_ByIndex(int group);
 
-int CCTK_GetNumVarsInGroup(int group);
+int CCTK_GetNumVarsInGroup(const char *group);
+int CCTK_GetNumVarsInGroup_ByIndex(int group);
 
 #ifdef __cplusplus 
 }

@@ -42,6 +42,83 @@ int _cctk_one = 1;
 cGroupDefinition *CCTK_SetupGroup(const char *implementation, const char *group_name, int n_variables);
 
 
+
+ /*@@
+   @routine    CCTK_GetGroupIndex
+   @date       Fri Jan 29 08:43:48 1999
+   @author     Tom Goodale
+   @desc 
+   Gets the index number for the specified group.
+   @enddesc 
+   @calls CCTK_Equals   
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+
+int CCTK_GetGroupIndex(const char *fullgroupname)
+{
+  int group_num;
+  int retval=-1;
+  int ierr;
+  char *imp1         = NULL;
+  char *group1       = NULL;
+  const char *imp2   = NULL;
+  const char *group2 = NULL;
+  
+  switch(CCTK_DecomposeName(fullgroupname,&imp1,&group1))
+  {
+  case 1:
+
+    CCTK_Warn(2,"Group name not in correct format implementation::group");
+    retval = -3;
+    break;
+
+  case 2:
+
+    CCTK_Warn(2,"Memory allocation failed");
+    retval = -4;
+    break;
+
+  default:
+
+    imp2 = (const char *)imp1;
+    group2 = (const char *)group1;
+
+    for(group_num = 0; group_num < n_groups; group_num++)
+    {
+      if(CCTK_Equals(imp2, groups[group_num].implementation) &&
+	 CCTK_Equals(group2, groups[group_num].name)) break;
+    }
+
+    if (group_num < n_groups)
+    {
+      retval = group_num;
+    }
+    else
+    {
+      char *message;
+      message = (char *)malloc( (100+sizeof(fullgroupname))*sizeof(char) ); 
+      sprintf(message,"No group found with the name %s",fullgroupname);
+      CCTK_Warn(2,message);
+      if (message) free(message);
+      retval = -1;
+    }
+  }
+
+  /* Free memory from CCTK_DecomposeName */
+  if (imp1) free(imp1);
+  if (group1) free(group1);
+ 
+  return retval;
+
+}
+
+
+
+
  /*@@
    @routine    CCTK_CreateGroup
    @date       Thu Jan 14 15:25:54 1999
@@ -126,10 +203,10 @@ int CCTK_CreateGroup(const char *gname, const char *thorn, const char *imp,
 
 #ifdef DEBUG_GROUPS
   printf("Created group %s\n",gname);
-  printf("  CCTK_GetGroupNum(%s,%s) = %d\n",imp,gname,
-	 CCTK_GetGroupNum(imp,gname));
-  printf("  CCTK_GetGroupName(%d) = %s\n",CCTK_GetGroupNum(imp,gname),
-         CCTK_GetGroupName(CCTK_GetGroupNum(imp,gname)));
+  printf("  CCTK_GetGroupIndex(%s) = %d\n",groupname,
+	 CCTK_GetGroupIndex(groupname));
+  printf("  CCTK_GetGroupName(%d) = %s\n",CCTK_GetGroupIndex(name),
+         CCTK_GetGroupName(CCTK_GetGroupIndex(groupname)));
 #endif
 
   return retval;
@@ -159,8 +236,15 @@ cGroupDefinition *CCTK_SetupGroup(const char *implementation,
   cGroupDefinition *returndata;
   int variable;
   int group_num;
- 
-  if((group_num = CCTK_GetGroupNum(implementation, name)) == -1)
+  char *fullname1;
+  const char *fullname2;
+
+  fullname1 = (char *) malloc( (strlen(implementation)+strlen(name)+2)
+				    *sizeof(const char *));
+  sprintf(fullname1,"%s::%s",implementation,name); 
+  fullname2 = (const char *)fullname1;
+
+  if((group_num = CCTK_GetGroupIndex(fullname1)) == -1)
   {
     /* Resize the array of groups */
     if(temp = (cGroupDefinition *)realloc(groups, (n_groups+1)*sizeof(cGroupDefinition)))
@@ -235,100 +319,16 @@ cGroupDefinition *CCTK_SetupGroup(const char *implementation,
     returndata = &(groups[group_num]);
   }
 
+  if (fullname1) free(fullname1);
+
   return returndata;
 }
 
 
- /*@@
-   @routine    CCTK_GetGroupNum
-   @date       Fri Jan 29 08:43:48 1999
-   @author     Tom Goodale
-   @desc 
-   Gets the index number for the specified group.
-   @enddesc 
-   @calls CCTK_Equals   
-   @calledby   
-   @history 
- 
-   @endhistory 
-
-@@*/
-int CCTK_GetGroupNum(const char *implementation,
-		     const char *group)
-{
-  int group_num;
-  int fullname=0;
-  int retval=-1;
-  int ierr;
-  char *message;
-  char *impname=NULL;
-  char *groupname=NULL;
-  
-  if (!implementation)
-  {
-    if (group) 
-    {
-      ierr = CCTK_DecomposeName(group,&impname,&groupname);
-      if (ierr == 0)
-      {
-	fullname=1; /* Successful decomposition */
-      }
-      else if (ierr == 1)
-      {
-        CCTK_Warn(2,"Full name not in correct format");
-        retval = -3;
-      }
-      else if (ierr == 2)
-      {
-        CCTK_Warn(2,"Memory allocation failed");
-        retval = -4;
-      }
-      else
-      {
-        CCTK_Warn(1,"Error failed to be caught");
-      }
-    } 
-    else
-    {
-      CCTK_Warn(2,"Both implementation and group null in CCTK_GetGroupNum");
-      retval = -2;
-    } 
-  }
-  else
-  {
-    impname = (char *)implementation;
-    groupname = (char *)group;
-  }
-
-  for(group_num = 0; group_num < n_groups; group_num++)
-  {
-    if(CCTK_Equals(implementation, groups[group_num].implementation) &&
-       CCTK_Equals(groupname, groups[group_num].name)) break;
-  }
-
-  if (fullname)
-  {
-     if (impname) free(impname);
-     if (groupname) free(groupname);
-  }
-
-  if (group_num < n_groups)
-  {
-    return group_num;
-  }
-  else
-  {
-    message = (char *)malloc( (100+sizeof(group))*sizeof(char) ); 
-    sprintf(message,"No group found with the name %s",groupname);
-    CCTK_Warn(2,message);
-    if (message) free(message);
-    return -1;
-  }
-}
 
 
  /*@@
-   @routine    CCTK_GetVarNum
+   @routine    CCTK_GetVarIndex
    @date       Mon Feb  8 12:03:22 1999
    @author     Tom Goodale
    @desc 
@@ -342,9 +342,7 @@ int CCTK_GetGroupNum(const char *implementation,
 
 @@*/
 
-int CCTK_GetVarNum(const char *implementation,
-	           const char *group_name,
-		   const char *variable_name)
+int CCTK_GetVarIndex(const char *variable_name)
 {
   int retval;
   int gnum,group_num;
@@ -359,65 +357,18 @@ int CCTK_GetVarNum(const char *implementation,
 
   retval = -1;
 
-  if (!implementation)
+  ierr = CCTK_DecomposeName(variable_name,&realimpname,&realvarname);
+
+  if (ierr == 0)
   {
-    if (group_name) 
-    {
-      message = (char *)malloc( (100+sizeof(group_name))*sizeof(char) );
-      sprintf(message,"Ignoring group %s in CCTK_GetVarNum",group_name);
-      CCTK_Warn(2,message);
-      if (message) free(message);
-    }
 
-    /* variable_name must be of the form <implementation>::<variable> */
-    ierr = CCTK_DecomposeName(variable_name,&realimpname,&realvarname);
-    if (ierr == 0)
-    {
-      fullname = 1;
-      /* Store the pointers to these strings in const char *s */
-      impname = realimpname;
-      varname = realvarname;
-    }
-    else if (ierr == 1)
-    {
-      message = (char *)malloc( (100+sizeof(variable_name))*sizeof(char) );
-      sprintf(message,"Full name %s in wrong format in CCTK_GetVarNum",
-                      variable_name);
-      CCTK_Warn(2,message);
-      if (message) free(message);
-      retval = -3; 
-    }
-    else if (ierr == 2)
-    {
-      CCTK_Warn(2,"Memory allocation failed");
-      retval = -4;
-    }
-    else
-    {
-      CCTK_Warn(1,"Error failed to be caught");
-    }
+    /* Store the pointers to these strings in const char *s */
+    impname = realimpname;
+    varname = realvarname;
 
-  }
-  else
-  {
-    
-    /* Can only assign a const char * to a const char * */
-    impname = implementation;
-    varname = variable_name;
-  }
-
-#ifdef DEBUG_GROUPS
-  printf(" In GetVarNum\n"," ------------\n");
-  printf("   impname -%s-\n",impname);
-  printf("   group_name -%s-\n",group_name);
-  printf("   varname -%s-\n",varname);
-#endif
-    
-  if (group_name == NULL)
-  {	
     for (gnum = 0; gnum < n_groups; gnum++)
     {			
-      
+    
       for(variable=0; variable<groups[gnum].n_variables;variable++)
       {
 	if(CCTK_Equals(varname, groups[gnum].variables[variable].name)
@@ -428,34 +379,37 @@ int CCTK_GetVarNum(const char *implementation,
 	}
       }
     }
-  } 
+
+  }
+  else if (ierr == 1)
+  {
+    message = (char *)malloc( (100+sizeof(variable_name))*sizeof(char) );
+    sprintf(message,"Full name %s in wrong format in CCTK_GetVarNum",
+	    variable_name);
+    CCTK_Warn(2,message);
+    if (message) free(message);
+    retval = -3; 
+  }
+  else if (ierr == 2)
+  {
+    CCTK_Warn(2,"Memory allocation failed");
+    retval = -4;
+  }
   else
   {
-    group_num = CCTK_GetGroupNum(impname, group_name);
-    
-    if(group_num > -1)
-    {
-      for(variable=0; variable<groups[group_num].n_variables;variable++)
-      {
-	if(CCTK_Equals(varname, groups[group_num].variables[variable].name))
-	{
-	  retval  = groups[group_num].variables[variable].number;
-	  break;
-	}
-      }
-    }
-    else
-    {
-      retval = -2;
-    }
+    CCTK_Warn(1,"Error failed to be caught");
   }
 
-  if (fullname)
-  {
-    /* Had to allocate new strings, so free them. */
-    free(realimpname);
-    free(realvarname);
-  }
+#ifdef DEBUG_GROUPS
+  printf(" In GetVarIndex\n"," ------------\n");
+  printf("   impname -%s-\n",impname);
+  printf("   group_name -%s-\n",group_name);
+  printf("   varname -%s-\n",varname);
+#endif
+    
+
+  if (realimpname) free(realimpname);
+  if (realvarname) free(realvarname);
     
   return retval;
 
@@ -520,7 +474,7 @@ int CCTK_GetNumGroups(void)
 }
 
  /*@@
-   @routine    CCTK_GetGroupFromVar
+   @routine    CCTK_GetGroupNameFromVar_ByIndex
    @date       Mon Feb 22
    @author     Gabrielle Allen
    @desc 
@@ -533,7 +487,7 @@ int CCTK_GetNumGroups(void)
    @endhistory 
 
 @@*/
-char *CCTK_GetGroupFromVar(int var)
+char *CCTK_GetGroupNameFromVar_ByIndex(int var)
 {
   char *retval;
   int group_num;
@@ -545,10 +499,37 @@ char *CCTK_GetGroupFromVar(int var)
   else
   {  
     group_num = group_of_variable[var];
-    retval = groups[group_num].name;
+    retval = (char *)malloc( ( strlen(groups[group_num].name) 
+			     + strlen(groups[group_num].implementation) + 2)
+			     * sizeof(char) );
+    sprintf(retval,"%s::%s",groups[group_num].implementation,
+	    groups[group_num].name);
   } 
 
   return retval;
+}
+
+int CCTK_GetGroupIndexFromVar_ByIndex(int var)
+{
+
+  int retval;
+
+  if (var<0 || var>total_variables-1)
+  {
+    retval = -1;
+  }
+  else
+  {  
+    retval = group_of_variable[var];
+  } 
+
+  return retval;
+
+}
+
+int CCTK_GetGroupIndexFromVar(const char *var)
+{
+  return CCTK_GetGroupIndexFromVar_ByIndex(CCTK_GetVarIndex(var));
 }
 
  /*@@
@@ -807,7 +788,7 @@ char *CCTK_GetGroupName(int group)
   }
   else
   {
-    name = malloc((strlen(groups[group].implementation)+strlen(groups[group].name)+3)*sizeof(char));
+    name = (char *)malloc((strlen(groups[group].implementation)+strlen(groups[group].name)+3)*sizeof(char));
     if (name)
     {
       sprintf(name, "%s::%s",groups[group].implementation, groups[group].name);
@@ -817,10 +798,12 @@ char *CCTK_GetGroupName(int group)
       name = NULL;
     }
   }
+
   return name;
 }
 
-int CCTK_GetFirstVarNum(int group)
+
+int CCTK_GetFirstVarIndex_ByIndex(int group)
 {
   if (0 <= group && group<n_groups)
   {
@@ -832,8 +815,13 @@ int CCTK_GetFirstVarNum(int group)
   }
 }
 
+int CCTK_GetFirstVarIndex(const char *groupname)
+{
+  return CCTK_GetFirstVarIndex_ByIndex(CCTK_GetGroupIndex(groupname));
+}
 
-int CCTK_GetNumVarsInGroup(int group)
+
+int CCTK_GetNumVarsInGroup_ByIndex(int group)
 {
   if (0 <= group && group<n_groups)
   {
@@ -843,6 +831,11 @@ int CCTK_GetNumVarsInGroup(int group)
   {
     return -1;
   }
+}
+
+int CCTK_GetNumVarsInGroup(const char *groupname)
+{
+  return CCTK_GetNumVarsInGroup_ByIndex(CCTK_GetGroupIndex(groupname));
 }
 
 int CCTK_GetVarGType(int var)
