@@ -13,7 +13,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
+#ifdef   HAVE_REGEX_H
 #include <regex.h>
+#else
+#include "../gnu/regex.h"
+#endif
 
 #include "cctk_Constants.h"
 #include "cctk_WarnLevel.h"
