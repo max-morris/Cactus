@@ -1,7 +1,7 @@
 
 Cactus Code Frequently Asked Questions
 
-$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.19 2001-08-14 12:59:15 allen Exp $
+$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.20 2001-09-11 12:33:42 allen Exp $
 
 Also available at http://www.cactuscode.org/Documentation/FAQ
 
@@ -284,3 +284,24 @@ Also available at http://www.cactuscode.org/Documentation/FAQ
     and this is automatically done for you if you use the Cactus APIs.
 
 -------------------------------------------------------------------------------
+
+21. Sometimes when I compile in parallel with TJOBS or FJOBS the compilation
+    stops halfway through?
+
+    Compiling in parallel using TJOBS/FJOBS is not always failsafe. Usually
+    simply issuing your gmake command again will complete the compilation
+    and produce an executable. Occasionally you may see link errors 
+    in the last stage of compilation, if this happens remove the libraries
+    
+    rm configs/<config>/lib/*
+
+    and issue gmake once more.
+
+    Problems with TJOBS/FJOBS can be avoided if your version of gmake 
+    supports parallel make (this happened somewhere between 3.74 and3.78.1),
+    in which case you can use instead the more robust:
+
+    gmake <config> -j <number of processors>
+    
+-------------------------------------------------------------------------------
+
