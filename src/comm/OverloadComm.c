@@ -110,10 +110,18 @@ int CCTKi_SetupCommFunctions(void)
 /* Fortran bindings prototypes for the comm functions */
 int CCTK_FCALL CCTK_FNAME (CCTK_nProcs) (const cGH *GH);
 int CCTK_FCALL CCTK_FNAME (CCTK_MyProc) (const cGH *GH);
+#if 0
 void CCTK_FCALL CCTK_FNAME (CCTK_Barrier) (int *ierr, const cGH *GH);
+#else
+int CCTK_FCALL CCTK_FNAME(CCTK_Barrier)(const cGH *GH);
+#endif
 void CCTK_FCALL CCTK_FNAME (CCTK_Exit) (int *ierr, cGH *GH, const int *retval);
 void CCTK_FCALL CCTK_FNAME (CCTK_Abort) (int *ierr, cGH *GH, const int *retval);
+#if 0
 void CCTK_FCALL CCTK_FNAME (CCTK_SyncGroup) (int *ierr, cGH *GH, ONE_FORTSTRING_ARG);
+#else
+int CCTK_FCALL CCTK_FNAME(CCTK_SyncGroup)(cGH *GH, ONE_FORTSTRING_ARG);
+#endif
 void CCTK_FCALL CCTK_FNAME (CCTK_EnableGroupComm) (int *ierr, cGH *GH, ONE_FORTSTRING_ARG);
 void CCTK_FCALL CCTK_FNAME (CCTK_DisableGroupComm) (int *ierr, cGH *GH, ONE_FORTSTRING_ARG);
 void CCTK_FCALL CCTK_FNAME (CCTK_EnableGroupStorage) (int *ierr, cGH *GH, ONE_FORTSTRING_ARG);
@@ -131,10 +139,17 @@ int CCTK_FCALL CCTK_FNAME (CCTK_MyProc) (const cGH *GH)
   return (CCTK_MyProc (GH));
 }
  
+#if 0
 void CCTK_FCALL CCTK_FNAME (CCTK_Barrier) (int *ierr, const cGH *GH)
 {
   *ierr = CCTK_Barrier (GH);
 }
+#else
+int CCTK_FCALL CCTK_FNAME(CCTK_Barrier)(const cGH *GH)
+{
+  return CCTK_Barrier(GH);
+}
+#endif
 
 void CCTK_FCALL CCTK_FNAME (CCTK_Exit) (int *ierr, cGH *GH, const int *retval)
 {
@@ -146,12 +161,22 @@ void CCTK_FCALL CCTK_FNAME (CCTK_Abort) (int *ierr, cGH *GH, const int *retval)
   *ierr = CCTK_Abort (GH, *retval);
 }
 
+#if 0
 void CCTK_FCALL CCTK_FNAME (CCTK_SyncGroup) (int *ierr, cGH *GH, ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_CREATE (group_name)
   *ierr = CCTK_SyncGroup (GH, group_name);
   free (group_name); 
 }
+#else
+int CCTK_FCALL CCTK_FNAME(CCTK_SyncGroup)(cGH *GH, ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE(group_name)
+  CCTK_SyncGroup(GH,group_name);
+  free(group_name);
+  return 0;
+}
+#endif
 
 void CCTK_FCALL CCTK_FNAME (CCTK_EnableGroupComm) (int *ierr, cGH *GH, ONE_FORTSTRING_ARG)
 {
