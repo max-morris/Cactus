@@ -30,7 +30,7 @@ int CCTK_RegisterGHExtensionScheduleTraverseGH(int handle,
 
 int CCTK_GHExtensionHandle(const char *name);
 
-void *CCTK_GHExtension(cGH *GH, const char *name);
+void *CCTK_GHExtension(const cGH *GH, const char *name);
 
 #ifdef __cplusplus
 }
