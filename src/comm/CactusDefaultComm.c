@@ -30,7 +30,7 @@
 
 static const char *rcsid = "$Header$";
 
-CCTK_FILEVERSION(comm_CactusDefaultComm_c)
+CCTK_FILEVERSION(comm_CactusDefaultComm_c);
 
 /********************************************************************
  *********************     Global Data   *****************************

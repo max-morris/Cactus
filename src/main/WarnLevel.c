@@ -24,7 +24,7 @@
 #include "cctki_WarnLevel.h"
 
 static const char *rcsid = "$Header$";
-CCTK_FILEVERSION(main_WarnLevel_c)
+CCTK_FILEVERSION(main_WarnLevel_c);
 
 
 /********************************************************************

@@ -23,7 +23,7 @@
 
 static const char *rcsid = "$Header$";
 
-CCTK_FILEVERSION(main_CactusDefaultInitialise_c)
+CCTK_FILEVERSION(main_CactusDefaultInitialise_c);
 
 /*# define DEBUG_CCTK 1 */
 

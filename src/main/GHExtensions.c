@@ -23,7 +23,7 @@
 
 static const char *rcsid = "$Header$";
 
-CCTK_FILEVERSION(main_GHExtensions_c)
+CCTK_FILEVERSION(main_GHExtensions_c);
 
 /********************************************************************
  *********************     Local Data Types   ***********************

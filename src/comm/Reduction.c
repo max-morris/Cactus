@@ -27,7 +27,7 @@
 
 static const char *rcsid = "$Header$";
 
-CCTK_FILEVERSION(comm_Reduction_c)
+CCTK_FILEVERSION(comm_Reduction_c);
 
 /********************************************************************
  ********************    External Routines   ************************

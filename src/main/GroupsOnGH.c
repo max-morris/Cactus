@@ -23,7 +23,7 @@
 
 static const char *rcsid = "$Header$";
 
-CCTK_FILEVERSION(main_GroupsOnGH_c)
+CCTK_FILEVERSION(main_GroupsOnGH_c);
 
 
 void CCTK_FCALL CCTK_FNAME (CCTK_GrouplbndGI)

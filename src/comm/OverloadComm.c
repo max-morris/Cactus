@@ -20,7 +20,7 @@
 #include "OverloadMacros.h"
 
 static const char *rcsid = "$Header$";
-CCTK_FILEVERSION(comm_OverloadComm_c)
+CCTK_FILEVERSION(comm_OverloadComm_c);
 
 
 /* Define the prototypes for the dummy functions. */

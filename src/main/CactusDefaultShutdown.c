@@ -19,7 +19,7 @@
 
 static const char *rcsid = "$Header$";
 
-CCTK_FILEVERSION(main_CactusDefaultShutdown_c)
+CCTK_FILEVERSION(main_CactusDefaultShutdown_c);
 
 #ifdef CCTK_MPI
 extern char MPI_Active;

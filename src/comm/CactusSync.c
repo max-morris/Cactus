@@ -22,7 +22,7 @@
 #include "cctk_Sync.h"
 
 static const char *rcsid = "$Header$";
-CCTK_FILEVERSION(comm_CactusSync_c)
+CCTK_FILEVERSION(comm_CactusSync_c);
 
 
 /********************************************************************

@@ -17,7 +17,7 @@
 
 static const char *rcsid = "$Header$";
 
-CCTK_FILEVERSION(main_FortranWrappers_c)
+CCTK_FILEVERSION(main_FortranWrappers_c);
 
 /********************************************************************
  *********************     Local Data Types   ***********************

@@ -12,7 +12,7 @@
 
 static const char *rcsid = "$Header$";
 
-CCTK_FILEVERSION(main_CactusDefaultMainLoopIndex_c)
+CCTK_FILEVERSION(main_CactusDefaultMainLoopIndex_c);
 
 static int iteration = 0;
 

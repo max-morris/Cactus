@@ -35,7 +35,7 @@
 
 static const char *rcsid = "$Header$";
 
-CCTK_FILEVERSION(main_CommandLine_c)
+CCTK_FILEVERSION(main_CommandLine_c);
 
 /********************************************************************
  ********************* Local Routine Prototypes *********************

@@ -13,7 +13,7 @@
 
 static const char *rcsid="$Header$";
 
-CCTK_FILEVERSION(main_Termination_c)
+CCTK_FILEVERSION(main_Termination_c);
 
 /********************************************************************
  *********************     Local Data   *****************************

@@ -16,7 +16,7 @@
 
 static const char *rcsid = "$Header$";
 
-CCTK_FILEVERSION(main_CallStartupFunctions_c)
+CCTK_FILEVERSION(main_CallStartupFunctions_c);
 
 /********************************************************************
  *********************     External Routines   **********************

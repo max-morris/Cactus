@@ -24,7 +24,7 @@
 
 static const char *rcsid = "$Header$";
 
-CCTK_FILEVERSION (IO_IOMethods_c)
+CCTK_FILEVERSION (IO_IOMethods_c);
 
 /********************************************************************
  ********************* Local Routine Prototypes *********************

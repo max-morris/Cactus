@@ -11,7 +11,7 @@
 
 static const char *rcsid = "$Header$";
 
-CCTK_FILEVERSION(main_Startup_c)
+CCTK_FILEVERSION(main_Startup_c);
 
 int CactusStartup(void)
 {

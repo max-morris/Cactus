@@ -18,7 +18,7 @@
 
 static const char *rcsid = "$Header$";
 
-CCTK_FILEVERSION(main_ShutdownCactus_c)
+CCTK_FILEVERSION(main_ShutdownCactus_c);
 
  /*@@
    @routine    CCTKi_ShutdownCactus

@@ -21,7 +21,7 @@
 
 static const char *rcsid="$Header$";
 
-CCTK_FILEVERSION (IO_OverloadIO_c)
+CCTK_FILEVERSION (IO_OverloadIO_c);
 
 /* Define the prototypes for the dummy functions. */
 #define OVERLOADABLE(name) OVERLOADABLE_DUMMYPROTOTYPE(name)

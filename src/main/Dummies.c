@@ -13,7 +13,7 @@
 
 static const char *rcsid = "$Header$";
 
-CCTK_FILEVERSION(main_Dummies_c)
+CCTK_FILEVERSION(main_Dummies_c);
 
 int CCTKi_DummyStorageOn(void *GH, int group)
 {
