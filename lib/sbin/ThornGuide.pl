@@ -190,14 +190,15 @@ print STDERR "\nFinished\n" if ($verbose);
 ####################################################################
 sub Read_Thorn_Doc 
 {
-   my ($pathandfile) = shift;
-   my ($contents)    = "";
+   my ($path) = shift;
+   my ($contents) = "";
+   my ($pathandfile);
 
    my ($start) = 0;
    my ($stop)  = 0;
    my ($temp)  = 0;
 
-   $pathandfile .= "/$file";
+   $pathandfile .= "$path/$file";
 
    open (DOC, "$pathandfile");
 
@@ -209,6 +210,7 @@ sub Read_Thorn_Doc
       }
 
       if ($start && ! $stop) {              # add to $contents
+         s/(\\includegraphics.*?\{)\s*?(.*\.eps\s*?\})/$1$path\/$2/g;
          $contents .= $_;
       } elsif (/\\begin\{document\}/) {     # don't begin yet.... 1st flag
          $temp = 1;
