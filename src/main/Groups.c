@@ -1654,7 +1654,7 @@ CCTK_INT **CCTK_GroupGhostsizesI(int group)
 
 @@*/
 
-int CCTK_VarTypeSize(vtype)
+int CCTK_VarTypeSize(int vtype)
 {
 
   int var_size=0;
