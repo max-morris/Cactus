@@ -162,7 +162,7 @@ else
        : ${LIBS="fortran ffio m"} 
        ;;
      Intel)
-       : ${LIBS="m"}
+       : ${LIBS="IEPCF90 F90 C m"}
        ;;
      none)
        : ${LIBS="m"} 
