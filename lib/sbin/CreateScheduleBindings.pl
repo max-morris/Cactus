@@ -176,6 +176,7 @@ sub ScheduleCreateFile
   $outbuf .=  "  \@endhistory\n"; 
   $outbuf .=  "\n";
   $outbuf .=  "\@\@*/\n";
+  $outbuf .=  "void CCTKi_BindingsSchedule_$thorn(void);\n";
   $outbuf .=  "void CCTKi_BindingsSchedule_$thorn(void)\n";
   $outbuf .=  "{\n";
   $outbuf .=  "  DECLARE_CCTK_PARAMETERS\n";
@@ -283,6 +284,7 @@ sub ParameterRecoveryCreateFile
   $outbuf .=  "  \@endhistory\n"; 
   $outbuf .=  "\n";
   $outbuf .=  "\@\@*/\n";
+  $outbuf .=  "int CCTKi_BindingsParameterRecovery_$thorn(void);\n";
   $outbuf .=  "int CCTKi_BindingsParameterRecovery_$thorn(void)\n";
   $outbuf .=  "{\n";
   $outbuf .=  "  DECLARE_CCTK_PARAMETERS\n";
@@ -344,6 +346,7 @@ sub ScheduleCreateBindings
   $outbuf .=  "  \@endhistory\n"; 
   $outbuf .=  "\n";
   $outbuf .=  "\@\@*/\n";
+  $outbuf .=  "int CCTKi_BindingsScheduleInitialise(void);\n";
   $outbuf .=  "int CCTKi_BindingsScheduleInitialise(void)\n";
   $outbuf .=  "{\n";
   foreach $thorn (sort split(" ", $rhinterface_db->{"THORNS"}))
@@ -388,6 +391,7 @@ sub ParameterRecoveryCreateBindings
   $outbuf .=   "\n";
   $outbuf .=  "/* Prototypes for functions to be registered. */\n";
 
+  $outbuf .=  "int CCTKi_BindingsParameterRecoveryInitialise(void);\n";
   foreach $thorn (sort split(" ", $rhinterface_db->{"THORNS"}))
   {
     $outbuf .= "int CCTKi_BindingsParameterRecovery_$thorn(void);\n";

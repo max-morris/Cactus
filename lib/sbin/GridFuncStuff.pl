@@ -1353,6 +1353,7 @@ sub CreateThornFortranWrapper
   push(@data, "#include \"cctk_Arguments.h\"");
   push(@data, "");
 
+  push(@data, "int CCTKi_BindingsFortranWrapper$thorn(cGH *GH, void *fpointer);");
   push(@data, "int CCTKi_BindingsFortranWrapper$thorn(cGH *GH, void *fpointer)");
   push(@data, "{");
   push(@data, "  void (*function)(\U$thorn\E_C2F_PROTO);");
