@@ -16,7 +16,7 @@
 #include "CactusCommFunctions.h"
 #include "parameters.h"
 #include "rfr_constants.h"
-#include "Dummies.h"
+#include "CactusrfrInterface.h"
 
 static char *rcsid = "$Id$";
 
@@ -112,14 +112,14 @@ int Cactus_InitialiseGH(cGH *GH)
   GH->rfr_top = NULL;
 
   rfrInitTree(&(GH->rfr_top), 
-	      CCTK_DummyStorageOn,
-	      CCTK_DummyStorageOff,
-	      CCTK_DummyCommunicationOn,
-	      CCTK_DummyCommunicationOff,
-	      CCTK_DummyTriggerable,
-	      CCTK_DummyTriggerSaysGo,
-	      CCTK_DummyTriggerAction,
-	      CCTK_DummyCallFunc);
+	      CCTK_rfrStorageOn,
+	      CCTK_rfrStorageOff,
+	      CCTK_rfrCommunicationOn,
+	      CCTK_rfrCommunicationOff,
+	      CCTK_rfrTriggerable,
+	      CCTK_rfrTriggerSaysGo,
+	      CCTK_rfrTriggerAction,
+	      CCTK_rfrCallFunc);
 
   /* Do the rfr initialisation on this GH */
   CCTK_BindingsScheduleRegister("RFRINIT", (void *)GH);
