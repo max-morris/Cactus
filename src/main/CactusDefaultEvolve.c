@@ -24,7 +24,7 @@
 
 static const char *rcsid="$Header$";
 
-CCTK_FILEVERSION(main_CactusDefaultEvolve_c)
+CCTK_FILEVERSION(main_CactusDefaultEvolve_c);
 
 /* Define some macros for convenience. */
 
