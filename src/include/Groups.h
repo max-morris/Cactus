@@ -47,6 +47,8 @@ int CCTK_GetGroupData(int group, int *gtype, int *vtype, int *dim, int *n_variab
 
 char *CCTK_GetVarName(int varnum);
 
+int CCTK_DecomposeGroupName(const char *fullname, char **implementation, char **name);
+
 #ifdef _cplusplus 
 }
 #endif

@@ -500,6 +500,20 @@ int CCTK_GetGroupData(int group, int *gtype, int *vtype, int *dim, int *n_variab
   return return_code;
 }
 
+ /*@@
+   @routine    CCTK_GetVarName
+   @date       Tue Feb  9 15:34:56 1999
+   @author     Tom Goodale
+   @desc 
+   Gets the name of a variable.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
 char *CCTK_GetVarName(int varnum)
 {
   char *name;
@@ -510,4 +524,24 @@ char *CCTK_GetVarName(int varnum)
   name = groups[group].variables[varnum-groups[group].variables[0].number].name;
 
   return name;
+}
+
+
+ /*@@
+   @routine    CCTK_DecomposeGroupName
+   @date       Tue Feb  9 15:39:14 1999
+   @author     Tom Goodale
+   @desc 
+   Decomposes a group name of the form imp::group
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+int CCTK_DecomposeGroupName(const char *fullname, char **implementation, char **name)
+{
+  return CCTK_SplitString(implementation, name, fullname, "::");
 }
