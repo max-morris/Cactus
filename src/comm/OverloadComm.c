@@ -135,3 +135,8 @@ int FMODIFIER FORTRAN_NAME(CCTK_MyProc)(cGH *GH)
   return CCTK_MyProc(GH);
 }
  
+int FMODIFIER FORTRAN_NAME(CCTK_Barrier)(cGH *GH)
+{
+  return CCTK_Barrier(GH);
+}
+ 
