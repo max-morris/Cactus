@@ -6,7 +6,7 @@
 #   @desc
 #            Configure Cactus to compile with the LAM version of MPI.
 #   @enddesc
-#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/extras/MPI/LAM,v 1.8 2004-09-17 14:48:08 tradke Exp $
+#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/extras/MPI/LAM,v 1.9 2004-10-25 11:27:05 tradke Exp $
 # @@*/
 
 echo '  LAM selected'
@@ -79,7 +79,7 @@ fi
 if test -r "$LAM_LIB_DIR/libtrillium.a" ; then
   MPI_LIBS='mpi tstdio args t trillium"'
 else
-  MPI_LIBS="mpi lam"
+  MPI_LIBS="mpi lam pthread"
 fi
 
 MPI_INC_DIRS="$LAM_INC_DIR"
