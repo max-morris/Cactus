@@ -59,10 +59,10 @@ DECLARE_CMPLX_FUNCTIONS (CCTK_Cmplx32, CCTK_REAL16, CCTK_COMPLEX32)
 #define CCTK_CmplxSub   CCTK_Cmplx8Sub
 #define CCTK_CmplxMul   CCTK_Cmplx8Mul
 #define CCTK_CmplxDiv   CCTK_Cmplx8Div
-#define CCTK_CmplxDiv   CCTK_Cmplx8Sin
-#define CCTK_CmplxDiv   CCTK_Cmplx8Cos
-#define CCTK_CmplxDiv   CCTK_Cmplx8Exp
-#define CCTK_CmplxDiv   CCTK_Cmplx8Sqrt
+#define CCTK_CmplxSin   CCTK_Cmplx8Sin
+#define CCTK_CmplxCos   CCTK_Cmplx8Cos
+#define CCTK_CmplxExp   CCTK_Cmplx8Exp
+#define CCTK_CmplxSqrt  CCTK_Cmplx8Sqrt
 #elif CCTK_REAL_PRECISION_8
 #define CCTK_Cmplx      CCTK_Cmplx16
 #define CCTK_CmplxReal  CCTK_Cmplx16Real
@@ -73,10 +73,10 @@ DECLARE_CMPLX_FUNCTIONS (CCTK_Cmplx32, CCTK_REAL16, CCTK_COMPLEX32)
 #define CCTK_CmplxSub   CCTK_Cmplx16Sub
 #define CCTK_CmplxMul   CCTK_Cmplx16Mul
 #define CCTK_CmplxDiv   CCTK_Cmplx16Div
-#define CCTK_CmplxDiv   CCTK_Cmplx16Sin
-#define CCTK_CmplxDiv   CCTK_Cmplx16Cos
-#define CCTK_CmplxDiv   CCTK_Cmplx16Exp
-#define CCTK_CmplxDiv   CCTK_Cmplx16Sqrt
+#define CCTK_CmplxSin   CCTK_Cmplx16Sin
+#define CCTK_CmplxCos   CCTK_Cmplx16Cos
+#define CCTK_CmplxExp   CCTK_Cmplx16Exp
+#define CCTK_CmplxSqrt  CCTK_Cmplx16Sqrt
 #elif CCTK_REAL_PRECISION_16
 #define CCTK_Cmplx      CCTK_Cmplx32
 #define CCTK_CmplxReal  CCTK_Cmplx32Real
@@ -87,10 +87,10 @@ DECLARE_CMPLX_FUNCTIONS (CCTK_Cmplx32, CCTK_REAL16, CCTK_COMPLEX32)
 #define CCTK_CmplxSub   CCTK_Cmplx32Sub
 #define CCTK_CmplxMul   CCTK_Cmplx32Mul
 #define CCTK_CmplxDiv   CCTK_Cmplx32Div
-#define CCTK_CmplxDiv   CCTK_Cmplx32Sin
-#define CCTK_CmplxDiv   CCTK_Cmplx32Cos
-#define CCTK_CmplxDiv   CCTK_Cmplx32Exp
-#define CCTK_CmplxDiv   CCTK_Cmplx32Sqrt
+#define CCTK_CmplxSin   CCTK_Cmplx32Sin
+#define CCTK_CmplxCos   CCTK_Cmplx32Cos
+#define CCTK_CmplxExp   CCTK_Cmplx32Exp
+#define CCTK_CmplxSqrt  CCTK_Cmplx32Sqrt
 #endif
 
 #ifdef __cplusplus
