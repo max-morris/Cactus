@@ -1,7 +1,7 @@
 
 Cactus Code Frequently Asked Questions
 
-$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.71 2003-09-27 20:33:40 allen Exp $
+$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.72 2003-11-12 14:38:11 schnetter Exp $
 
 Also available at http://www.cactuscode.org/Documentation/FAQ
 
@@ -190,6 +190,8 @@ D9  How do I run Cactus until a given coordinate time instead of to a
     given iteration number?
 
 D10 Output to screen using the Info IO method of IOBasic doesn't work.
+
+D11 I get an error saying "CCTK_Equals: First string null".
 
 
 ------------------------------------------------------------------------------
@@ -1131,6 +1133,20 @@ D10 Output to screen using the Info IO method of IOBasic doesn't work.
 
     You need to activate a thorn which implements the min/max reductions,
     for example CactusPUGH/PUGHReduce.
+
+D11 I get an error saying "CCTK_Equals: First string null".
+
+    The routine CCTK_Equals tries to look at the value of a keyword or
+    a string parameter.  The value "null" indicates that this
+    parameter has never been set.
+
+    The problem could be that Cactus mis-detected the way the Fortran
+    compiler does its name mangling.  The linker then creates two
+    tables that contain parameter values, where one is set by the
+    flesh and the other is accessed by Fortran code.
+
+    Try to re-configure your application, perform a "make
+    CONFIG-realclean", and then recompile.
 
 
 ------------------------------------------------------------------------------
