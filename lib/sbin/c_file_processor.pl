@@ -25,7 +25,7 @@ $*=1;
 while(<>)
 {
     $line = $_;
-    if($line =~ m:FORTRAN_NAME\s*\(([^\)]*)\):)
+    while($line =~ m:FORTRAN_NAME\s*\(([^\)]*)\):)
     {
         $arglist = $1;
         $arglist =~ s:[\s\n\t]+::g;
@@ -36,7 +36,7 @@ while(<>)
 
 	$line =~ s:FORTRAN_NAME\s*\(([^\)]*)\):$new:;
     }
-    if($line =~ m:FORTRAN_COMMON_NAME\s*\(([^\)]*)\):)
+    while($line =~ m:FORTRAN_COMMON_NAME\s*\(([^\)]*)\):)
     {
         $arglist = $1;
         $arglist =~ s:[\s\n\t]+::g;

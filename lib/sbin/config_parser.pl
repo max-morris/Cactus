@@ -235,6 +235,7 @@ sub CreateParameterBindings
   local($implementation, $thorn);
   local($files);
   local(%routines);
+  local($structure, %structures);
 
   %parameter_database = @rest[0..(2*$n_param_database)-1];
   %interface_database = @rest[2*$n_param_database..$#rest];
@@ -275,6 +276,7 @@ sub CreateParameterBindings
   close OUT;
 
   $files = "Public.c";
+  $structures{"PUBLIC_PARAMETER_STRUCT"} = "cctk_params_public";
 
   # Generate the public data header file
 
@@ -319,6 +321,7 @@ sub CreateParameterBindings
 
       $files .= " $implementation". "_protected.c";
       $routines{"CCTK_BindingsParameters$implementation"."_protected"} = "$implementation";
+      $structures{"PROTECTED_\U$implementation\E_STRUCT"} = "cctk_params_$implementation"."_protected";
 
       # Generate the data header file
       
@@ -369,6 +372,8 @@ sub CreateParameterBindings
       chdir "include";
 
       @data = &CreateCStructureParameterHeader("CCTK_BindingsParameters$thorn"."_private", "PRIVATE_\U$thorn\E_STRUCT", scalar(keys %these_parameters), %these_parameters, %parameter_database);
+
+      $structures{"PRIVATE_\U$thorn\E_STRUCT"} = "cctk_params_$thorn"."_private";
       
       open (OUT, ">ParameterCPrivate$thorn".".h") || die "Cannot open ParameterCPrivate$thorn".".h";
 
@@ -585,8 +590,20 @@ EOT
 
     close OUT;
   }   
+
+  open(OUT, "| perl $cctk_home/lib/sbin/c_file_processor.pl $top/config-data > CParameterStructNames.h") || die "Cannot create CParameterStructNames.h by running c_file_procesor.pl";
+  foreach $structure (keys %structures)
+  {
+    print OUT "#define $structure FORTRAN_NAME($structures{$structure})\n";
+  }
+
+  print OUT "\n";
+
+  close OUT;
     
   open(OUT, ">CParameters.h") || die "Cannot open CParameters.h";
+
+  print OUT "#include \"CParameterStructNames.h\"\n\n";
 
   foreach $thorn (split(" ",$interface_database{"THORNS"}))
   {
