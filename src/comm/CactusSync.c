@@ -31,11 +31,11 @@ CCTK_FILEVERSION(comm_CactusSync_c);
 /* prototypes for external C routines are declared in header cctk_Groups.h
    here only follow the fortran wrapper prototypes */
 void CCTK_FCALL CCTK_FNAME (CCTK_SyncGroupI)
-                           (int *ierror, cGH *GH, const int *group);
+                           (int *ierror, const cGH *GH, const int *group);
 void CCTK_FCALL CCTK_FNAME (CCTK_SyncGroupWithVar)
-                           (int *ierror, cGH *GH, ONE_FORTSTRING_ARG);
+                           (int *ierror, const cGH *GH, ONE_FORTSTRING_ARG);
 void CCTK_FCALL CCTK_FNAME (CCTK_SyncGroupWithVarI)
-                           (int *ierror, cGH *GH, const int *var);
+                           (int *ierror, const cGH *GH, const int *var);
 
 
  /*@@
@@ -50,7 +50,7 @@ void CCTK_FCALL CCTK_FNAME (CCTK_SyncGroupWithVarI)
 
    @var        GH
    @vdesc      Pointer to Grid Hierachy
-   @vtype      cGH *
+   @vtype      const cGH *
    @vio        in
    @endvar
    @var        group
@@ -66,7 +66,7 @@ void CCTK_FCALL CCTK_FNAME (CCTK_SyncGroupWithVarI)
                -2 if driver returned an error on syncing the group
    @endreturndesc
 @@*/
-int CCTK_SyncGroupI (cGH *GH, int group)
+int CCTK_SyncGroupI (const cGH *GH, int group)
 {
   int retval;
   char *groupname;
@@ -88,7 +88,7 @@ int CCTK_SyncGroupI (cGH *GH, int group)
 }
 
 void CCTK_FCALL CCTK_FNAME (CCTK_SyncGroupI)
-                           (int *ierror, cGH *GH, const int *group)
+                           (int *ierror, const cGH *GH, const int *group)
 {
   CCTK_SyncGroupI (GH, *group);
   *ierror = 0;
@@ -109,7 +109,7 @@ void CCTK_FCALL CCTK_FNAME (CCTK_SyncGroupI)
 
    @var        GH
    @vdesc      Pointer to Grid Hierachy
-   @vtype      cGH *
+   @vtype      const cGH *
    @vio        in
    @endvar
    @var        varname
@@ -123,7 +123,7 @@ void CCTK_FCALL CCTK_FNAME (CCTK_SyncGroupI)
                return code of @seeroutine CCTK_SyncGroupI
    @endreturndesc
 @@*/
-int CCTK_SyncGroupWithVar (cGH *GH, const char *varname)
+int CCTK_SyncGroupWithVar (const cGH *GH, const char *varname)
 {
   int idx;
 
@@ -134,7 +134,7 @@ int CCTK_SyncGroupWithVar (cGH *GH, const char *varname)
 }
 
 void CCTK_FCALL CCTK_FNAME (CCTK_SyncGroupWithVar)
-                           (int *ierror, cGH *GH, ONE_FORTSTRING_ARG)
+                           (int *ierror, const cGH *GH, ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_CREATE (varname);
   *ierror = CCTK_SyncGroupWithVar (GH, varname);
@@ -155,7 +155,7 @@ void CCTK_FCALL CCTK_FNAME (CCTK_SyncGroupWithVar)
 
    @var        GH
    @vdesc      Pointer to Grid Hierachy
-   @vtype      cGH *
+   @vtype      const cGH *
    @vio        in
    @endvar
    @var        var
@@ -169,7 +169,7 @@ void CCTK_FCALL CCTK_FNAME (CCTK_SyncGroupWithVar)
                return code of @seeroutine CCTK_SyncGroupI
    @endreturndesc
 @@*/
-int CCTK_SyncGroupWithVarI (cGH *GH, int var)
+int CCTK_SyncGroupWithVarI (const cGH *GH, int var)
 {
   int idx;
 
@@ -179,7 +179,7 @@ int CCTK_SyncGroupWithVarI (cGH *GH, int var)
 }
 
 void CCTK_FCALL CCTK_FNAME (CCTK_SyncGroupWithVarI)
-                           (int *ierror, cGH *GH, const int *var)
+                           (int *ierror, const cGH *GH, const int *var)
 {
   *ierror = CCTK_SyncGroupWithVarI (GH, *var);
 }
@@ -196,7 +196,7 @@ void CCTK_FCALL CCTK_FNAME (CCTK_SyncGroupWithVarI)
 
    @var        GH
    @vdesc      Pointer to Grid Hierachy
-   @vtype      cGH *
+   @vtype      const cGH *
    @vio        in
    @endvar
    @var        n_groups
@@ -215,7 +215,7 @@ void CCTK_FCALL CCTK_FNAME (CCTK_SyncGroupWithVarI)
                the total number of groups synchronized
    @endreturndesc
 @@*/
-int CCTK_SyncGroupsI (cGH *GH,
+int CCTK_SyncGroupsI (const cGH *GH,
                       int n_groups,
                       const int *groups)
 {

@@ -16,10 +16,10 @@ extern "C"
 {
 #endif
 
-int CCTK_SyncGroupI (cGH *GH, int group);
-int CCTK_SyncGroupWithVar (cGH *GH, const char *varname);
-int CCTK_SyncGroupWithVarI (cGH *GH, int var);
-int CCTK_SyncGroupsI (cGH *GH, int n_groups, const int *groups);
+int CCTK_SyncGroupI (const cGH *GH, int group);
+int CCTK_SyncGroupWithVar (const cGH *GH, const char *varname);
+int CCTK_SyncGroupWithVarI (const cGH *GH, int var);
+int CCTK_SyncGroupsI (const cGH *GH, int n_groups, const int *groups);
 
 #ifdef __cplusplus
 }
