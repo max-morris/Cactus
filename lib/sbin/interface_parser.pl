@@ -32,7 +32,7 @@ sub create_interface_database
   %thorns = @inargs[2*$n_system..$#inargs];
 
   #  Loop through each  thorn's interface file.
-  foreach $thorn (keys %thorns)
+  foreach $thorn (sort keys %thorns)
   {
     print "   $thorn\n";
     #       Get the arrangement name for the thorn
@@ -52,7 +52,7 @@ sub create_interface_database
 
   }
 
-  @interface_data = &cross_index_interface_data(scalar(keys %thorns), scalar(keys %system_database), (keys %thorns), %system_database, @interface_data);
+  @interface_data = &cross_index_interface_data(scalar(keys %thorns), scalar(keys %system_database), (sort keys %thorns), %system_database, @interface_data);
 
   return @interface_data;
 }
@@ -100,7 +100,7 @@ sub cross_index_interface_data
 
   $interface_data{"THORNS"} = join(" ", @thorns);
 
-  foreach $implementation (keys %implementations)
+  foreach $implementation (sort keys %implementations)
   {
 
     # Put if statement around this to prevent perl -w from complaining.
@@ -117,9 +117,9 @@ sub cross_index_interface_data
 
     %ancestors = &get_implementation_ancestors($implementation, 0,  scalar(keys %system_database), %system_database, %interface_data);
 
-    $interface_data{"IMPLEMENTATION \U$implementation\E ANCESTORS"} = join(" ",( keys %ancestors));
+    $interface_data{"IMPLEMENTATION \U$implementation\E ANCESTORS"} = join(" ",(sort keys %ancestors));
 
-    $interface_data{"IMPLEMENTATION \U$implementation\E FRIENDS"} = &get_friends_of_me($implementation, scalar(keys %implementations), (keys %implementations),%interface_data);
+    $interface_data{"IMPLEMENTATION \U$implementation\E FRIENDS"} = &get_friends_of_me($implementation, scalar(keys %implementations), (sort keys %implementations),%interface_data);
 
   }
 
@@ -128,10 +128,10 @@ sub cross_index_interface_data
     &check_interface_consistency($thorn, %interface_data);
   }
 
-  foreach $implementation (keys %implementations)
+  foreach $implementation (sort keys %implementations)
   {
     %friends = &get_implementation_friends($implementation, 0, %interface_data);
-    $interface_data{"IMPLEMENTATION \U$implementation\E FRIENDS"} = join(" ",( keys %friends));
+    $interface_data{"IMPLEMENTATION \U$implementation\E FRIENDS"} = join(" ",(sort keys %friends));
   }
 
   return %interface_data;
@@ -255,7 +255,7 @@ sub get_implementation_ancestors
         # Implementation not found give extensive information
         %info = &buildthorns("$cctk_home/arrangements","thorns");
         $suggest_thorns = "";
-        foreach $thorninfo (keys %info)
+        foreach $thorninfo (sort keys %info)
         {
          $info{"$thorninfo"} =~ /^([^\s]+)/;
          $testimp = $1;
@@ -383,7 +383,7 @@ sub check_implementation_consistency
     $n_thorns = @thorns;
 
     # Check the consistency of the inheritance
-    foreach $thing (keys %inherits)
+    foreach $thing (sort keys %inherits)
     {
       if(split(' ', $inherits{$thing}) != $n_thorns)
       {
@@ -402,7 +402,7 @@ sub check_implementation_consistency
     }
 
     # Check the consistency of the friendships
-    foreach $thing (keys %friend)
+    foreach $thing (sort keys %friend)
     {
       if(split(" ", $friend{$thing}) != $n_thorns)
       {
@@ -415,7 +415,7 @@ sub check_implementation_consistency
     }
 
     # Check the consistency of the public groups
-    foreach $thing (keys %public_groups)
+    foreach $thing (sort keys %public_groups)
     {
       if(split(" ", $public_groups{$thing}) != $n_thorns)
       {
@@ -428,7 +428,7 @@ sub check_implementation_consistency
     }
 
     # Check the consistency of the protected groups
-    foreach $thing (keys %protected_groups)
+    foreach $thing (sort keys %protected_groups)
     {
       if(split(" ", $protected_groups{$thing}) != $n_thorns)
       {
@@ -441,7 +441,7 @@ sub check_implementation_consistency
     }
 
     # Check consistancy of group definitions
-    foreach $group ((keys %public_groups), (keys %protected_groups))
+    foreach $group ((sort keys %public_groups), (sort keys %protected_groups))
     {
       %variables = ();
       %attributes = ();
@@ -847,7 +847,7 @@ sub parse_interface_ccl
       %options = SplitWithStrings($options_list);
 
       # Parse the options
-      foreach $option (keys %options)
+      foreach $option (sort keys %options)
       {
 
 #        print "DEBUG $option is $options{$option}\n";

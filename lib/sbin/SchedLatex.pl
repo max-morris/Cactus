@@ -100,13 +100,13 @@ my $arrangements_dir       = ThornUtils::GetArrangementsDir($directory);
 if (defined $thornlist) {
    # provided by MakeUtils.pl, returns a hash with a list of the thorns in our thornlist
    %thorns       = &ReadThornlist($thornlist);
-   @listOfThorns = keys %thorns; 
+   @listOfThorns = sort keys %thorns; 
 } else {
    # we don't have a thornlist, go find all thorns in arrangements directory
    @listOfThorns = ThornUtils::CreateThornlist($arrangements_dir);
 }
 
-# this will return us a hash with keys as thorn names, and values as absolute paths to the 
+# this will return us a hash with keys as thorn names, and values as absolute paths to the
 # thorn's directory param.ccl can be located in that path.
 #   We need this information to create a schedule database using create_schedule_database
 #
@@ -116,7 +116,7 @@ if (defined $thornlist) {
 ThornUtils::ClassifyThorns(\%arrangements, @listOfThorns);
 
 # lets go through, one arrangement at a time
-foreach my $arrangement (keys %arrangements) 
+foreach my $arrangement (sort keys %arrangements) 
 {
    print "\n$arrangement" if ($debug);
 
@@ -200,7 +200,7 @@ sub ReadScheduleDatabase
 
    # conditional blocks/statements
    $conditionals = $schedule_database{"$name FILE"};
-   foreach my $key (keys %thorn) 
+   foreach my $key (sort keys %thorn) 
    {
       next if ($key !~ /(BLOCK|STATEMENT)\_(\d+)/);
 
@@ -266,7 +266,7 @@ sub CreateLatexTable
    my $len;
 
    # categorize the storage types for STATEMENTS into conditional and always on
-   foreach my $key (keys %thorn) 
+   foreach my $key (sort keys %thorn) 
    {
       next if ($key !~ /^STATEMENT/);
 
@@ -338,13 +338,13 @@ sub CreateLatexTable
       # go print out the rest of the key/value pairs
       foreach my $group_key (sort keys %{$thorn{$block}}) {
          &OutputVar($group_key, $thorn{$block}->{$group_key});
-      } # foreach keys %{$thorn{$group}}
+      } # foreach sort keys %{$thorn{$group}}
  
       print "\\end\{tabular*\} \n\n";
    } # foreach %blocks
  
    # delete aliases where they key equals the value
-   foreach my $key (keys %aliases) {
+   foreach my $key (sort keys %aliases) {
       if ($key eq $aliases{$key}) {
          delete $aliases{$key};
       }

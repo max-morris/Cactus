@@ -859,7 +859,7 @@ sub CreateThornArgumentHeaderFile
 #    $print_data = 1;
 #    if ($print_data)
 #    {
-#      foreach $arg (keys %data)
+#      foreach $arg (sort keys %data)
 #      {
 #        print "$this_thorn data: $arg : $data{\"$arg\"}\n";
 #      }

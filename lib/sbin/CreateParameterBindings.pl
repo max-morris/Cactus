@@ -256,7 +256,7 @@ sub CreateParameterBindings
 
   open(OUT, "| perl $cctk_home/lib/sbin/c_file_processor.pl $top/config-data > include/CParameterStructNames_temp.h") || die 'Cannot create CParameterStructNames.h by running c_file_processor.pl';
 
-  foreach $structure (keys %structures)
+  foreach $structure (sort keys %structures)
   {
     print OUT "#define $structure CCTK_FORTRAN_COMMON_NAME($structures{$structure})\n";
   }

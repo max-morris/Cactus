@@ -1165,7 +1165,7 @@ sub ReportOnTest
         $buffer .= "      caught  $rundata->{\"$thorn $test $file NINF\"} Infs in new $file\n" if $rundata->{"$thorn $test $file NINF"};
         $buffer .= "      did not reproduce  $rundata->{\"$thorn $test $file NINFNOTFOUND\"} Infs from old $file\n" if $rundata->{"$thorn $test $file NINFNOTFOUND"};
         $buffer .= "      significant differences on $rundata->{\"$thorn $test $file NFAILSTRONG\"} (out of $rundata->{\"$thorn $test $file NUMLINES\"}) lines!\n";
-        foreach $val (keys (%$rundata))
+        foreach $val (sort keys (%$rundata))
         {
           if ($val =~ /$thorn $test $file MAXABSDIFF (.*)$/)
           {

@@ -25,7 +25,7 @@ sub SplitThorns
 {
   my ($configuration_database, $thorns, $source_thorns, $nosource_thorns) = @_;
 
-  foreach $thorn (keys %$thorns)
+  foreach $thorn (sort keys %$thorns)
   {
     if($configuration_database->{"\U$thorn OPTIONS\E"} =~ m/NO_SOURCE/i)
     {

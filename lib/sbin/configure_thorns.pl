@@ -19,7 +19,7 @@ chdir $config;
 
 chdir "arrangements";
 
-foreach $thorn (keys %activethorns)
+foreach $thorn (sort keys %activethorns)
 {
   if (! -d $activethorns{$thorn} && ! -l $activethorns{$thorn})
   {

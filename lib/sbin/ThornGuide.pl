@@ -115,7 +115,7 @@ my @listOfThorns;
 if (defined $thornlist) {
    # provided by MakeUtils.pl, returns a hash with a list of the thorns in our thornlist
    %thorns       = &ReadThornlist($thornlist);
-   @listOfThorns = keys %thorns;
+   @listOfThorns = sort keys %thorns;
 } else {
    # we don't have a thornlist, go find all thorns in arrangements directory
    @listOfThorns = ThornUtils::CreateThornlist($arrangements_dir);

@@ -110,13 +110,13 @@ $arrangements_dir 	= ThornUtils::GetArrangementsDir($arrangements_dir);
 if (defined $thornlist) {
    # provided by MakeUtils.pl, returns a hash with a list of the thorns in our thornlist
    %thorns 	 = &ReadThornlist($thornlist);
-   @listOfThorns = keys %thorns; 
+   @listOfThorns = sort keys %thorns; 
 } else {
    # we don't have a thornlist, go find all thorns in arrangements directory
    @listOfThorns = ThornUtils::CreateThornlist($arrangements_dir);
 }
 
-# this will return us a hash with keys as thorn names, and values as absolute paths to the 
+# this will return us a hash with keys as thorn names, and values as absolute paths to the
 # thorn's directory param.ccl can be located in that path.
 #   We need this information to create a parameter database using create_parameter_database
 #
@@ -126,7 +126,7 @@ if (defined $thornlist) {
 ThornUtils::ClassifyThorns(\%arrangements, @listOfThorns);
 
 # lets go through, one arrangement at a time
-foreach my $arrangement (keys %arrangements) 
+foreach my $arrangement (sort keys %arrangements) 
 {
    print "\n$arrangement" if ($debug);
 
@@ -182,9 +182,9 @@ print "\nFinished.\n";
 #
 #  [print out all the ''variables'']
 #     print "\nProgram variables:";
-#     foreach my $variable (keys %{$thorn{"variables"}}) {
+#     foreach my $variable (sort keys %{$thorn{"variables"}}) {
 #        print "\n   $variable";
-#        foreach my $key (keys %{$thorn{"variables"}{$variable}}) {
+#        foreach my $key (sort keys %{$thorn{"variables"}{$variable}}) {
 #           print "\n      $key = $thorn{\"variables\"}->{$variable}->{$key}";
 #        }
 #     }
@@ -197,7 +197,7 @@ print "\nFinished.\n";
 #
 #  NOTE: Naturally, you will have to take into account that the returned hash (%thorn) may be
 #        part of a greater data-structure, so you may have to do something like:
-#           foreach (keys %{$thorns{"CactusWave"}{"WaveToyC"}{"variables"}}) {
+#           foreach (sort keys %{$thorns{"CactusWave"}{"WaveToyC"}{"variables"}}) {
 #  @enddesc 
 #  @version 
 #@@*/
@@ -408,7 +408,7 @@ sub FindMaxVarLen
    # we are going to go through each variable name and range name to see where
    # the largest text is, then we will use this for later formatting of our 
    # latex tables (so we do not get paragraph run-off
-   foreach my $variable (keys %thorn)
+   foreach my $variable (sort keys %thorn)
    {
       # we will always take the variable length as the standard maximum length,
       # regardless of if it is longer than MAX_VAR_LENGTH

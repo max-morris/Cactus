@@ -6,7 +6,7 @@
 #  @desc
 #             Parses the the configuration files for thorns.
 #  @enddesc
-#  @version   $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.56 2003-09-12 13:34:39 tradke Exp $
+#  @version   $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.57 2003-10-07 14:50:37 schnetter Exp $
 #@@*/
 
 # Global parameter to track the number of errors from the CST
@@ -308,7 +308,7 @@ sub CreateMakeThornlist
   $thorn_linklist   = 'THORN_LINKLIST =';
   $config_thornlist = 'CONFIG_THORNS  =';
 
-  foreach $thorn (keys %$thorns)
+  foreach $thorn (sort keys %$thorns)
   {
     if($configuration_database->{"\U$thorn\E OPTIONS"} ne 'NO_SOURCE' &&
       $thorn ne 'Cactus')
@@ -349,7 +349,7 @@ sub CreateThornLinkList
 
   @implist = ();
   $cross_inherits = 0;
-  foreach $thorn (keys %$thorns)
+  foreach $thorn (sort keys %$thorns)
   {
     next if ($configuration_database->{"\U$thorn OPTIONS\E"} eq 'NO_SOURCE' ||
              $thorn eq 'Cactus');
@@ -437,7 +437,7 @@ sub CreateThornsHeaders
   $header3 = "\/* Defines for thorn this file is part of *\/\n\n";
 
   $nthorns = 0;
-  foreach $thorn (keys %thorns)
+  foreach $thorn (sort keys %thorns)
   {
     # Only place package_name/thorn_name in the file.
     $thorns{$thorn} =~ m:.*/(.*)/(.*):;

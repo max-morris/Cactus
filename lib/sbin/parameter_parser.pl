@@ -37,7 +37,7 @@ sub create_parameter_database
   my(@parameter_data);
   
   #  Loop through each implementation's parameter file.
-  foreach $thorn (keys %thorns)
+  foreach $thorn (sort keys %thorns)
   {
     print "   $thorn\n";
     #       Read the data
@@ -53,7 +53,7 @@ sub create_parameter_database
     
   }
   
-  @parameter_data = &cross_index_parameters(scalar(keys %thorns), (keys %thorns), @parameter_data);
+  @parameter_data = &cross_index_parameters(scalar(keys %thorns), (sort keys %thorns), @parameter_data);
   
   return @parameter_data;
 }
@@ -275,7 +275,7 @@ sub parse_param_ccl
 
         %options = split(/\s*=\s*|\s+/, $options);
       
-        foreach $option (keys %options)
+        foreach $option (sort keys %options)
         {
           if($option =~ m:STEERABLE:i)
           {
@@ -476,7 +476,7 @@ sub parse_param_ccl
     }
   }
   
-  $parameter_db{"\U$thorn\E SHARES implementations"} = join(" ", keys %friends);
+  $parameter_db{"\U$thorn\E SHARES implementations"} = join(" ", sort keys %friends);
   
   return %parameter_db;
 }

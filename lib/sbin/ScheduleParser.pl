@@ -31,7 +31,7 @@ sub create_schedule_database
   my(@schedule_data);
 
   #  Loop through each implementation's schedule file.
-  foreach $thorn (keys %thorns)
+  foreach $thorn (sort keys %thorns)
   {
     print "   $thorn\n";
     #       Read the data
@@ -47,7 +47,7 @@ sub create_schedule_database
 
   }
 
-#  @schedule_data = &cross_index_schedule_data(scalar(keys %thorns), (keys %thorns), @schedule_data);
+#  @schedule_data = &cross_index_schedule_data(scalar(keys %thorns), (sort keys %thorns), @schedule_data);
 
   return @schedule_data;
 }
@@ -555,7 +555,7 @@ sub check_schedule_database
 
   # make a list of all group names
   $allgroups = "";
-  foreach $thorn (keys %thorns)
+  foreach $thorn (sort keys %thorns)
   {
     # Process each schedule block
     for($block = 0 ; $block < $rhschedule_db->{"\U$thorn\E N_BLOCKS"}; $block++)
@@ -568,7 +568,7 @@ sub check_schedule_database
   }
 
   # check that scheduling in is only for a known group
-  foreach $thorn (keys %thorns)
+  foreach $thorn (sort keys %thorns)
   {
     # Process each schedule block
     for($block = 0 ; $block < $rhschedule_db->{"\U$thorn\E N_BLOCKS"}; $block++)

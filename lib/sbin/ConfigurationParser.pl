@@ -27,7 +27,7 @@ sub CreateConfigurationDatabase
 
 
   # Loop through each thorn's configuration file.
-  foreach $thorn (keys %thorns)
+  foreach $thorn (sort keys %thorns)
   {
     $filename = "$thorns{$thorn}/configuration.ccl";
     next if (! -r $filename);

@@ -109,7 +109,7 @@ my $arrangements_dir    = ThornUtils::GetArrangementsDir($directory);
 if (defined $thornlist) {
    # provided by MakeUtils.pl, returns a hash with a list of the thorns in our thornlist
    %thorns       = &ReadThornlist($thornlist);
-   @listOfThorns = keys %thorns;
+   @listOfThorns = sort keys %thorns;
 } else {
    # we don't have a thornlist, go find all thorns in arrangements directory
    @listOfThorns = ThornUtils::CreateThornlist($arrangements_dir);
@@ -324,7 +324,7 @@ sub LatexTableElement
 
          # now we are just dealing with one group, so we are going to go print out the details for it.
          my $var_counter = 0;
-         foreach my $group_detail (keys %{$thorn{"group details"}->{$group}}) 
+         foreach my $group_detail (sort keys %{$thorn{"group details"}->{$group}}) 
          {
             my $value = ThornUtils::CleanForLatex($thorn{"group details"}->{$group}->{$group_detail});
 

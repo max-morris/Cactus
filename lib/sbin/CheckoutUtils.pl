@@ -279,7 +279,7 @@ sub GetThorns
 {
   my($fleshrep,$options,$tag,%thorns) = @_;
 
-  foreach $th (keys %thorns)
+  foreach $th (sort keys %thorns)
   {
     if ($thorns{"$th"} =~ m|cvs.cactuscode.org:/cactus|)
     {
