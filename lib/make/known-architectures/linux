@@ -123,10 +123,12 @@ else
        ;;
      gnu95)
        : ${LIBS="gfortran"}
-       : ${F77_DEBUG_FLAGS="-g"}
-       : ${F90_DEBUG_FLAGS="-g"}
-       : ${F77_WARN_FLAGS="-Wall"}
-       : ${F90_WARN_FLAGS="-Wall"}
+       : ${F77_DEBUG_FLAGS='-g'}
+       : ${F90_DEBUG_FLAGS='-g'}
+       : ${F77_WARN_FLAGS='-Wall'}
+       : ${F90_WARN_FLAGS='-Wall'}
+       : ${F77_OPTIMISE_FLAGS='-O3 -funroll-loops'}
+       : ${F90_OPTIMISE_FLAGS='-O3 -funroll-loops'}
        ;;
      pacific)
        if test "$LINUX_G77_USES_LIBG2C" = "yes" ; then
