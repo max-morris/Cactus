@@ -547,6 +547,30 @@ int CCTK_SetString(char **data, const char *value)
 }
 
  /*@@
+   @routine    CCTK_PrintString
+   @date       Fri Apr 1 1999
+   @author     Gabrielle Allen
+   @desc
+   Prints the value of a string (this is for fortran)
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+void CCTK_PrintString(char *data)
+{
+  printf("%s",data);
+}
+
+void FORTRAN_NAME(CCTK_PrintString)(char *arg1)
+{
+  CCTK_PrintString(arg1);
+}
+
+ /*@@
    @routine    CCTK_SetLogical
    @date       Thu Jan 21 10:35:11 1999
    @author     Tom Goodale
