@@ -413,7 +413,10 @@ sub runtest
 
   print "Running $tp: $testnames[$num]\n";
 
-  unlink(<$tsttop${sep}$tp${sep}*.*>);
+  # clear out test directory
+  opendir (DIR, "$tsttop${sep}$tp");
+  unlink (grep (/.+\..+/, readdir (DIR)));
+  closedir (DIR);
 
   if (! (-e "$current_directory$sep$executable"))
   {
