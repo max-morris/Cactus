@@ -37,6 +37,8 @@ else
        LINUX_F90_COMP=SGI          
     elif test "`$F90 -V 2>&1 | grep -i intel`" ; then
        LINUX_F90_COMP=Intel          
+    elif test "`$F90 -v 2>&1 | grep -i compaq`" ; then
+       LINUX_F90_COMP=Compaq
     else
         echo Unknown Linux f90 compiler.
         echo Please add appropriate information to 
@@ -51,6 +53,8 @@ else
         LINUX_F90_COMP=absoft77
     elif test "`$F90 -V 2>&1 | grep -i intel`" ; then
        LINUX_F90_COMP=Intel          
+    elif test "`$F90 -v 2>&1 | grep -i compaq`" ; then
+       LINUX_F90_COMP=Compaq
     else
         echo Unknown Linux f77 compiler.
         echo Please add appropriate information to 
@@ -167,6 +171,9 @@ else
        ;;
      Intel)
        : ${LIBS="IEPCF90 F90 C m"}
+       ;;
+     Compaq)
+       : ${LIBS="for m"}
        ;;
      none)
        : ${LIBS="m"} 
