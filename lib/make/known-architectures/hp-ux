@@ -1,15 +1,18 @@
 #! /bin/sh
 # /*@@
-#   @file      
+#   @file   hp-ux     
 #   @date      
-#   @author   
+#   @author Gabrielle Allen  
 #   @desc 
-#   
+#   Known architecture stuff for the NCSA Exemplar
 #   @enddesc 
-#   @version $Header: /usr/users/cactus/CCTK/lib/make/known-architectures/hp-ux,
-v 1.1 1999/06/14 15:50:32 allen Exp $
+#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/hp-ux,v 1.4 1999-07-16 13:26:33 allen Exp $
 # @@*/
 
 : ${LIBS="cl F90 "}
-: ${LIBDIRS="+ /opt/fortran90/lib/"}
+: ${LIBDIRS="/opt/fortran90/lib/"}
+: ${F77_DEPEND='$(CPP) -M$@ $(CPPFLAGS)'}
+: ${F_DEPEND='$(CPP) -M$@ $(CPPFLAGS)'}
+: ${F77_DEPEND_OUT='> /dev/null'}
+: ${F_DEPEND_OUT='> /dev/null'}
 
