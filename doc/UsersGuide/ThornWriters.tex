@@ -551,6 +551,7 @@ names ? }
 
 {\bf FIXME: talk about before/after. }
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -919,6 +920,23 @@ int MyReductionOperator(cGH *GH, int proc, int retvaltype, int numretval, void *
 \item{} {\t int retvaltype} {\bf FIXME}
 \item{} {\t int numretval} The number of values of type {\t retvaltype}
         being returned in the array {\t retvals}.
+\end{itemize}
+
+\section{General Naming Conventions}
+
+The following naming conventions are followed by the flesh and the
+supported Cactus packages. They are not compulsory, but if followed
+allow for a homogeneous code.
+
+\begin{itemize}
+
+\item Parameters: lower case (except for acronyms) with words separated
+  by an underscore. Examples: {\tt my\_first\_parameter}, 
+  {\tt solve\_PDE\_equation}.
+
+\item Filenames and routine names: Prefixed by thorn name with an underscore, then capitalised words, with no spaces.
+    Examples: {\tt MyThorn\_StartUpRoutine}, {\tt BestSolver\_InitialDataForPDE}.
+
 \end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
