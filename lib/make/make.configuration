@@ -57,7 +57,7 @@ $(CCTK_LIBDIR)/lib%.a: update
 	if [ ! -d $(BUILD_DIR) ]; then $(MKDIR) $(BUILD_DIR) ; fi
 	thorn_name=$(@:$(CCTK_LIBDIR)/lib%.a=%); \
 	if [ "$$thorn_name" = "Cactus" ] ; then src_dir=$(CCTK_HOME)/src ; \
-	else src_dir=$(TOOLKIT_DIR)/$(@:$(CCTK_LIBDIR)/lib%.a=$(filter %,$(@:$(CCTK_LIBDIR)/lib%.a=%)))/src ; fi ; \
+	else src_dir=$(TOOLKIT_DIR)/$(@:$(CCTK_LIBDIR)/lib%.a=$(filter %/$(@:$(CCTK_LIBDIR)/lib%.a=%), $(THORNS)))/src ; fi ; \
 	if [ ! -d $(BUILD_DIR)/$$thorn_name ]; then $(MKDIR) $(BUILD_DIR)/$$thorn_name ; fi ; \
 	cd $(BUILD_DIR)/$$thorn_name ; \
 	if [ -r "$$src_dir/Makefile" ] ; then  make_file=$$src_dir/Makefile ; \
@@ -73,8 +73,9 @@ include $(CONFIG)/make.config.deps
 # Rule to build the make.thornlist file from the ActiveThorns file
 
 $(CONFIG)/make.thornlist: $(TOP)/ActiveThorns
-	@echo Currently $@ must be edited by hand.
-	if [ ! -r $@ ] ; then touch $@ ; fi
+	@echo $(DIVIDER)
+	@echo Configuring thorns
+	$(PERL) -s $(CCTK_HOME)/lib/sbin/config_parser.pl -config_dir=$(CONFIG) -cctk_home=$(CCTK_HOME) -top=$(TOP) $< 
 
 # Rule to build ActiveThorns
 
