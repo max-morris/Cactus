@@ -104,7 +104,7 @@ int CCTKi_InitialiseCactus (int *argc, char ***argv, tFleshConfig *config)
 
   CCTKi_BindingsVariablesInitialise ();
 
-  if (CCTKBindings_RegisterThornFunctions () < 0)
+  if (CCTKBindings_RegisterThornFunctions ())
   {
     CCTK_Warn (0, __LINE__, __FILE__, "Cactus",
                "Failed to register/provide aliased functions for active thorns");
