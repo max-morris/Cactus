@@ -551,7 +551,10 @@ $dataout .= "\#define _\U$thorn\E_PARAMETERS_H_\n\n";
 #    close OUT;
   }   
 
-  open(OUT, "| perl $cctk_home/lib/sbin/c_file_processor.pl $top/config-data > CParameterStructNames.h") || die "Cannot create CParameterStructNames.h by running c_file_processor.pl";
+# Write this one to a temporary file and read it back in
+# Can probably do this better
+
+  open(OUT, "| perl $cctk_home/lib/sbin/c_file_processor.pl $top/config-data > CParameterStructNames_temp.h") || die "Cannot create CParameterStructNames.h by running c_file_processor.pl";
 
   foreach $structure (keys %structures)
   {
@@ -561,7 +564,18 @@ $dataout .= "\#define _\U$thorn\E_PARAMETERS_H_\n\n";
   print OUT "\n";
 
   close OUT;
-    
+
+  open(IN,"<CParameterStructNames_temp.h");
+  $dataout = "";
+  while (<IN>)
+  {
+    $dataout .= $_;
+  }
+  close IN;
+
+  &WriteFile("CParameterStructNames.h",$dataout);
+
+
 #  open(OUT, ">CParameters.h") || die "Cannot open CParameters.h";
   $dataout = "";
   $dataout .= "#include \"CParameterStructNames.h\"\n\n";
