@@ -2142,7 +2142,7 @@ void CCTK_FCALL CCTK_FNAME (Util_TableSetInt)
 }
 #endif	/* !UTIL_TABLE_TEST */
 
-#ifdef CCTK_INTEGER_PRECISION_1
+#ifdef CCTK_INT1
 int Util_TableSetInt1(int handle, CCTK_INT1 value, const char *key)
 {
   return Util_TableSetInt1Array(handle, 1, &value, key);
@@ -2161,7 +2161,7 @@ void CCTK_FCALL CCTK_FNAME (Util_TableSetInt1)
 }
 #endif
 
-#ifdef CCTK_INTEGER_PRECISION_2
+#ifdef CCTK_INT2
 int Util_TableSetInt2(int handle, CCTK_INT2 value, const char *key)
 {
   return Util_TableSetInt2Array(handle, 1, &value, key);
@@ -2182,7 +2182,7 @@ void CCTK_FCALL CCTK_FNAME (Util_TableSetInt2)
 #endif	/* !UTIL_TABLE_TEST */
 #endif
 
-#ifdef CCTK_INTEGER_PRECISION_4
+#ifdef CCTK_INT4
 int Util_TableSetInt4(int handle, CCTK_INT4 value, const char *key)
 {
   return Util_TableSetInt4Array(handle, 1, &value, key);
@@ -2203,7 +2203,7 @@ void CCTK_FCALL CCTK_FNAME (Util_TableSetInt4)
 #endif	/* !UTIL_TABLE_TEST */
 #endif
 
-#ifdef CCTK_INTEGER_PRECISION_8
+#ifdef CCTK_INT8
 int Util_TableSetInt8(int handle, CCTK_INT8 value, const char *key)
 {
   return Util_TableSetInt8Array(handle, 1, &value, key);
@@ -2249,7 +2249,7 @@ void CCTK_FCALL CCTK_FNAME (Util_TableSetReal)
 }
 #endif	/* !UTIL_TABLE_TEST */
 
-#ifdef CCTK_REAL_PRECISION_4
+#ifdef CCTK_REAL4
 int Util_TableSetReal4(int handle, CCTK_REAL4 value, const char *key)
 {
   return Util_TableSetReal4Array(handle, 1, &value, key);
@@ -2270,7 +2270,7 @@ void CCTK_FCALL CCTK_FNAME (Util_TableSetReal4)
 #endif	/* !UTIL_TABLE_TEST */
 #endif
 
-#ifdef CCTK_REAL_PRECISION_8
+#ifdef CCTK_REAL8
 int Util_TableSetReal8(int handle, CCTK_REAL8 value, const char *key)
 {
   return Util_TableSetReal8Array(handle, 1, &value, key);
@@ -2291,7 +2291,7 @@ void CCTK_FCALL CCTK_FNAME (Util_TableSetReal8)
 #endif	/* !UTIL_TABLE_TEST */
 #endif
 
-#ifdef CCTK_REAL_PRECISION_16
+#ifdef CCTK_REAL16
 int Util_TableSetReal16(int handle, CCTK_REAL16 value, const char *key)
 {
   return Util_TableSetReal16Array(handle, 1, &value, key);
@@ -2337,7 +2337,7 @@ void CCTK_FCALL CCTK_FNAME (Util_TableSetComplex)
 }
 #endif	/* !UTIL_TABLE_TEST */
 
-#ifdef CCTK_COMPLEX_PRECISION_8
+#ifdef CCTK_REAL4
 int Util_TableSetComplex8(int handle, CCTK_COMPLEX8 value, const char *key)
 {
   return Util_TableSetComplex8Array(handle, 1, &value, key);
@@ -2358,7 +2358,7 @@ void CCTK_FCALL CCTK_FNAME (Util_TableSetComplex8)
 #endif	/* !UTIL_TABLE_TEST */
 #endif
 
-#ifdef CCTK_COMPLEX_PRECISION_16
+#ifdef CCTK_REAL8
 int Util_TableSetComplex16(int handle, CCTK_COMPLEX16 value, const char *key)
 {
   return Util_TableSetComplex16Array(handle, 1, &value, key);
@@ -2379,7 +2379,7 @@ void CCTK_FCALL CCTK_FNAME (Util_TableSetComplex16)
 #endif	/* !UTIL_TABLE_TEST */
 #endif
 
-#ifdef CCTK_COMPLEX_PRECISION_32
+#ifdef CCTK_REAL16
 int Util_TableSetComplex32(int handle, CCTK_COMPLEX32 value, const char *key)
 {
   return Util_TableSetComplex32Array(handle, 1, &value, key);
@@ -2608,7 +2608,7 @@ void CCTK_FCALL CCTK_FNAME (Util_TableSetIntArray)
 }
 #endif	/* !UTIL_TABLE_TEST */
 
-#ifdef CCTK_INTEGER_PRECISION_1
+#ifdef CCTK_INT1
 int Util_TableSetInt1Array(int handle,
                            int N_elements, const CCTK_INT1 array[],
                            const char *key)
@@ -2633,7 +2633,7 @@ void CCTK_FCALL CCTK_FNAME (Util_TableSetInt1Array)
 }
 #endif
 
-#ifdef CCTK_INTEGER_PRECISION_2
+#ifdef CCTK_INT2
 int Util_TableSetInt2Array(int handle,
                            int N_elements, const CCTK_INT2 array[],
                            const char *key)
@@ -2660,7 +2660,7 @@ void CCTK_FCALL CCTK_FNAME (Util_TableSetInt2Array)
 #endif	/* !UTIL_TABLE_TEST */
 #endif
 
-#ifdef CCTK_INTEGER_PRECISION_4
+#ifdef CCTK_INT4
 int Util_TableSetInt4Array(int handle,
                            int N_elements, const CCTK_INT4 array[],
                            const char *key)
@@ -2687,7 +2687,7 @@ void CCTK_FCALL CCTK_FNAME (Util_TableSetInt4Array)
 #endif	/* !UTIL_TABLE_TEST */
 #endif
 
-#ifdef CCTK_INTEGER_PRECISION_8
+#ifdef CCTK_INT8
 int Util_TableSetInt8Array(int handle,
                            int N_elements, const CCTK_INT8 array[],
                            const char *key)
@@ -2746,7 +2746,7 @@ void CCTK_FCALL CCTK_FNAME (Util_TableSetRealArray)
 }
 #endif	/* !UTIL_TABLE_TEST */
 
-#ifdef CCTK_REAL_PRECISION_4
+#ifdef CCTK_REAL4
 int Util_TableSetReal4Array(int handle,
                             int N_elements, const CCTK_REAL4 array[],
                             const char *key)
@@ -2773,7 +2773,7 @@ void CCTK_FCALL CCTK_FNAME (Util_TableSetReal4Array)
 #endif	/* !UTIL_TABLE_TEST */
 #endif
 
-#ifdef CCTK_REAL_PRECISION_8
+#ifdef CCTK_REAL8
 int Util_TableSetReal8Array(int handle,
                             int N_elements, const CCTK_REAL8 array[],
                             const char *key)
@@ -2800,7 +2800,7 @@ void CCTK_FCALL CCTK_FNAME (Util_TableSetReal8Array)
 #endif	/* !UTIL_TABLE_TEST */
 #endif
 
-#ifdef CCTK_REAL_PRECISION_16
+#ifdef CCTK_REAL16
 int Util_TableSetReal16Array(int handle,
                              int N_elements, const CCTK_REAL16 array[],
                              const char *key)
@@ -2858,7 +2858,7 @@ void CCTK_FCALL CCTK_FNAME (Util_TableSetComplexArray)
 }
 #endif	/* !UTIL_TABLE_TEST */
 
-#ifdef CCTK_COMPLEX_PRECISION_8
+#ifdef CCTK_REAL4
 int Util_TableSetComplex8Array(int handle,
                                int N_elements, const CCTK_COMPLEX8 array[],
                                const char *key)
@@ -2885,7 +2885,7 @@ void CCTK_FCALL CCTK_FNAME (Util_TableSetComplex8Array)
 #endif	/* !UTIL_TABLE_TEST */
 #endif
 
-#ifdef CCTK_COMPLEX_PRECISION_16
+#ifdef CCTK_REAL8
 int Util_TableSetComplex16Array(int handle,
                                 int N_elements, const CCTK_COMPLEX16 array[],
                                 const char *key)
@@ -2912,7 +2912,7 @@ void CCTK_FCALL CCTK_FNAME (Util_TableSetComplex16Array)
 #endif	/* !UTIL_TABLE_TEST */
 #endif
 
-#ifdef CCTK_COMPLEX_PRECISION_32
+#ifdef CCTK_REAL16
 int Util_TableSetComplex32Array(int handle,
                                 int N_elements, const CCTK_COMPLEX32 array[],
                                 const char *key)
@@ -3129,7 +3129,7 @@ void CCTK_FCALL CCTK_FNAME (Util_TableGetInt)
 }
 #endif	/* !UTIL_TABLE_TEST */
 
-#ifdef CCTK_INTEGER_PRECISION_1
+#ifdef CCTK_INT1
 int Util_TableGetInt1(int handle, CCTK_INT1 *value, const char *key)
 {
   const int status = Util_TableGetInt1Array(handle, 1, value, key);
@@ -3151,7 +3151,7 @@ void CCTK_FCALL CCTK_FNAME (Util_TableGetInt1)
 }
 #endif
 
-#ifdef CCTK_INTEGER_PRECISION_2
+#ifdef CCTK_INT2
 int Util_TableGetInt2(int handle, CCTK_INT2 *value, const char *key)
 {
   const int status = Util_TableGetInt2Array(handle, 1, value, key);
@@ -3175,7 +3175,7 @@ void CCTK_FCALL CCTK_FNAME (Util_TableGetInt2)
 #endif	/* !UTIL_TABLE_TEST */
 #endif
 
-#ifdef CCTK_INTEGER_PRECISION_4
+#ifdef CCTK_INT4
 int Util_TableGetInt4(int handle, CCTK_INT4 *value, const char *key)
 {
   const int status = Util_TableGetInt4Array(handle, 1, value, key);
@@ -3199,7 +3199,7 @@ void CCTK_FCALL CCTK_FNAME (Util_TableGetInt4)
 #endif	/* !UTIL_TABLE_TEST */
 #endif
 
-#ifdef CCTK_INTEGER_PRECISION_8
+#ifdef CCTK_INT8
 int Util_TableGetInt8(int handle, CCTK_INT8 *value, const char *key)
 {
   const int status = Util_TableGetInt8Array(handle, 1, value, key);
@@ -3248,7 +3248,7 @@ void CCTK_FCALL CCTK_FNAME (Util_TableGetReal)
 }
 #endif	/* !UTIL_TABLE_TEST */
 
-#ifdef CCTK_REAL_PRECISION_4
+#ifdef CCTK_REAL4
 int Util_TableGetReal4(int handle, CCTK_REAL4 *value, const char *key)
 {
   const int status = Util_TableGetReal4Array(handle, 1, value, key);
@@ -3272,7 +3272,7 @@ void CCTK_FCALL CCTK_FNAME (Util_TableGetReal4)
 #endif	/* !UTIL_TABLE_TEST */
 #endif
 
-#ifdef CCTK_REAL_PRECISION_8
+#ifdef CCTK_REAL8
 int Util_TableGetReal8(int handle, CCTK_REAL8 *value, const char *key)
 {
   const int status = Util_TableGetReal8Array(handle, 1, value, key);
@@ -3296,7 +3296,7 @@ void CCTK_FCALL CCTK_FNAME (Util_TableGetReal8)
 #endif	/* !UTIL_TABLE_TEST */
 #endif
 
-#ifdef CCTK_REAL_PRECISION_16
+#ifdef CCTK_REAL16
 int Util_TableGetReal16(int handle, CCTK_REAL16 *value, const char *key)
 {
   const int status = Util_TableGetReal16Array(handle, 1, value, key);
@@ -3308,7 +3308,7 @@ int Util_TableGetReal16(int handle, CCTK_REAL16 *value, const char *key)
 #ifndef UTIL_TABLE_TEST
 void CCTK_FCALL CCTK_FNAME (Util_TableGetReal16)
                            (int *retval, const int *handle,
-                            CCTK_REAL4 *value, ONE_FORTSTRING_ARG);
+                            CCTK_REAL16 *value, ONE_FORTSTRING_ARG);
 void CCTK_FCALL CCTK_FNAME (Util_TableGetReal16)
                            (int *retval, const int *handle,
                             CCTK_REAL16 *value, ONE_FORTSTRING_ARG)
@@ -3345,7 +3345,7 @@ void CCTK_FCALL CCTK_FNAME (Util_TableGetComplex)
 }
 #endif	/* !UTIL_TABLE_TEST */
 
-#ifdef CCTK_COMPLEX_PRECISION_8
+#ifdef CCTK_REAL4
 int Util_TableGetComplex8(int handle, CCTK_COMPLEX8 *value, const char *key)
 {
   const int status = Util_TableGetComplex8Array(handle, 1, value, key);
@@ -3369,7 +3369,7 @@ void CCTK_FCALL CCTK_FNAME (Util_TableGetComplex8)
 #endif	/* !UTIL_TABLE_TEST */
 #endif
 
-#ifdef CCTK_COMPLEX_PRECISION_16
+#ifdef CCTK_REAL8
 int Util_TableGetComplex16(int handle, CCTK_COMPLEX16 *value, const char *key)
 {
   const int status = Util_TableGetComplex16Array(handle, 1, value, key);
@@ -3393,7 +3393,7 @@ void CCTK_FCALL CCTK_FNAME (Util_TableGetComplex16)
 #endif	/* !UTIL_TABLE_TEST */
 #endif
 
-#ifdef CCTK_COMPLEX_PRECISION_32
+#ifdef CCTK_REAL16
 int Util_TableGetComplex32(int handle, CCTK_COMPLEX32 *value, const char *key)
 {
   const int status = Util_TableGetComplex32Array(handle, 1, value, key);
@@ -3632,7 +3632,7 @@ void CCTK_FCALL CCTK_FNAME (Util_TableGetIntArray)
 }
 #endif	/* !UTIL_TABLE_TEST */
 
-#ifdef CCTK_INTEGER_PRECISION_1
+#ifdef CCTK_INT1
 int Util_TableGetInt1Array(int handle,
                            int N_elements, CCTK_INT1 array[],
                            const char *key)
@@ -3657,7 +3657,7 @@ void CCTK_FCALL CCTK_FNAME (Util_TableGetInt1Array)
 }
 #endif
 
-#ifdef CCTK_INTEGER_PRECISION_2
+#ifdef CCTK_INT2
 int Util_TableGetInt2Array(int handle,
                            int N_elements, CCTK_INT2 array[],
                            const char *key)
@@ -3684,7 +3684,7 @@ void CCTK_FCALL CCTK_FNAME (Util_TableGetInt2Array)
 #endif	/* !UTIL_TABLE_TEST */
 #endif
 
-#ifdef CCTK_INTEGER_PRECISION_4
+#ifdef CCTK_INT4
 int Util_TableGetInt4Array(int handle,
                            int N_elements, CCTK_INT4 array[],
                            const char *key)
@@ -3711,7 +3711,7 @@ void CCTK_FCALL CCTK_FNAME (Util_TableGetInt4Array)
 #endif	/* !UTIL_TABLE_TEST */
 #endif
 
-#ifdef CCTK_INTEGER_PRECISION_8
+#ifdef CCTK_INT8
 int Util_TableGetInt8Array(int handle,
                            int N_elements, CCTK_INT8 array[],
                            const char *key)
@@ -3766,7 +3766,7 @@ void CCTK_FCALL CCTK_FNAME (Util_TableGetRealArray)
 }
 #endif	/* !UTIL_TABLE_TEST */
 
-#ifdef CCTK_REAL_PRECISION_4
+#ifdef CCTK_REAL4
 int Util_TableGetReal4Array(int handle,
                             int N_elements, CCTK_REAL4 array[],
                             const char *key)
@@ -3793,7 +3793,7 @@ void CCTK_FCALL CCTK_FNAME (Util_TableGetReal4Array)
 #endif	/* !UTIL_TABLE_TEST */
 #endif
 
-#ifdef CCTK_REAL_PRECISION_8
+#ifdef CCTK_REAL8
 int Util_TableGetReal8Array(int handle,
                             int N_elements, CCTK_REAL8 array[],
                             const char *key)
@@ -3820,7 +3820,7 @@ void CCTK_FCALL CCTK_FNAME (Util_TableGetReal8Array)
 #endif	/* !UTIL_TABLE_TEST */
 #endif
 
-#ifdef CCTK_REAL_PRECISION_16
+#ifdef CCTK_REAL16
 int Util_TableGetReal16Array(int handle,
                              int N_elements, CCTK_REAL16 array[],
                              const char *key)
@@ -3875,7 +3875,7 @@ void CCTK_FCALL CCTK_FNAME (Util_TableGetComplexArray)
 }
 #endif	/* !UTIL_TABLE_TEST */
 
-#ifdef CCTK_COMPLEX_PRECISION_8
+#ifdef CCTK_REAL4
 int Util_TableGetComplex8Array(int handle,
                                int N_elements, CCTK_COMPLEX8 array[],
                                const char *key)
@@ -3902,7 +3902,7 @@ void CCTK_FCALL CCTK_FNAME (Util_TableGetComplex8Array)
 #endif	/* !UTIL_TABLE_TEST */
 #endif
 
-#ifdef CCTK_COMPLEX_PRECISION_16
+#ifdef CCTK_REAL8
 int Util_TableGetComplex16Array(int handle,
                                 int N_elements, CCTK_COMPLEX16 array[],
                                 const char *key)
@@ -3929,7 +3929,7 @@ void CCTK_FCALL CCTK_FNAME (Util_TableGetComplex16Array)
 #endif	/* !UTIL_TABLE_TEST */
 #endif
 
-#ifdef CCTK_COMPLEX_PRECISION_32
+#ifdef CCTK_REAL16
 int Util_TableGetComplex32Array(int handle,
                                 int N_elements, CCTK_COMPLEX32 array[],
                                 const char *key)
@@ -5698,19 +5698,19 @@ static
   /* integers */
   CHECK_SET_GET_INT(handle, CCTK_INT, 0, case_insensitive,
                     Util_TableSetInt, Util_TableGetInt);
-  #ifdef CCTK_INTEGER_PRECISION_1
+  #ifdef CCTK_INT1
   CHECK_SET_GET_INT(handle, CCTK_INT1, 1, case_insensitive,
                     Util_TableSetInt1, Util_TableGetInt1);
   #endif
-  #ifdef CCTK_INTEGER_PRECISION_2
+  #ifdef CCTK_INT2
   CHECK_SET_GET_INT(handle, CCTK_INT2, 1, case_insensitive,
                     Util_TableSetInt2, Util_TableGetInt2);
   #endif
-  #ifdef CCTK_INTEGER_PRECISION_4
+  #ifdef CCTK_INT4
   CHECK_SET_GET_INT(handle, CCTK_INT4, 1, case_insensitive,
                     Util_TableSetInt4, Util_TableGetInt4);
   #endif
-  #ifdef CCTK_INTEGER_PRECISION_8
+  #ifdef CCTK_INT8
   CHECK_SET_GET_INT(handle, CCTK_INT8, 1, case_insensitive,
                     Util_TableSetInt8, Util_TableGetInt8);
   #endif
@@ -5722,19 +5722,19 @@ static
   /* generic scalars which are actually integers */
   CHECK_SET_GET_GENERIC_INT(handle, CCTK_VARIABLE_INT, CCTK_INT,
                             0, case_insensitive);
-  #ifdef CCTK_INTEGER_PRECISION_1
+  #ifdef CCTK_INT1
   CHECK_SET_GET_GENERIC_INT(handle, CCTK_VARIABLE_INT1, CCTK_INT1,
                             1, case_insensitive);
   #endif
-  #ifdef CCTK_INTEGER_PRECISION_2
+  #ifdef CCTK_INT2
   CHECK_SET_GET_GENERIC_INT(handle, CCTK_VARIABLE_INT2, CCTK_INT2,
                             1, case_insensitive);
   #endif
-  #ifdef CCTK_INTEGER_PRECISION_4
+  #ifdef CCTK_INT4
   CHECK_SET_GET_GENERIC_INT(handle, CCTK_VARIABLE_INT4, CCTK_INT4,
                             1, case_insensitive);
   #endif
-  #ifdef CCTK_INTEGER_PRECISION_8
+  #ifdef CCTK_INT8
   CHECK_SET_GET_GENERIC_INT(handle, CCTK_VARIABLE_INT8, CCTK_INT8,
                             1, case_insensitive);
   #endif
@@ -5748,15 +5748,15 @@ static
   /* complex numbers */
   CHECK_SET_GET_COMPLEX(handle, CCTK_COMPLEX, 0, case_insensitive,
                         Util_TableSetComplex, Util_TableGetComplex);
-  #ifdef CCTK_COMPLEX_PRECISION_8
+  #ifdef CCTK_REAL4
   CHECK_SET_GET_COMPLEX(handle, CCTK_COMPLEX8, 1, case_insensitive,
                         Util_TableSetComplex8, Util_TableGetComplex8);
   #endif
-  #ifdef CCTK_COMPLEX_PRECISION_16
+  #ifdef CCTK_REAL8
   CHECK_SET_GET_COMPLEX(handle, CCTK_COMPLEX16, 1, case_insensitive,
                         Util_TableSetComplex16, Util_TableGetComplex16);
   #endif
-  #ifdef CCTK_COMPLEX_PRECISION_32
+  #ifdef CCTK_REAL16
   CHECK_SET_GET_COMPLEX(handle, CCTK_COMPLEX32, 1, case_insensitive,
                         Util_TableSetComplex32, Util_TableGetComplex32);
   #endif
@@ -5768,15 +5768,15 @@ static
   /* reals */
   CHECK_SET_GET_REAL(handle, CCTK_REAL, 0, case_insensitive,
                      Util_TableSetReal, Util_TableGetReal);
-  #ifdef CCTK_REAL_PRECISION_4
+  #ifdef CCTK_REAL4
   CHECK_SET_GET_REAL(handle, CCTK_REAL4, 1, case_insensitive,
                      Util_TableSetReal4, Util_TableGetReal4);
   #endif
-  #ifdef CCTK_REAL_PRECISION_8
+  #ifdef CCTK_REAL8
   CHECK_SET_GET_REAL(handle, CCTK_REAL8, 1, case_insensitive,
                      Util_TableSetReal8, Util_TableGetReal8);
   #endif
-  #ifdef CCTK_REAL_PRECISION_16
+  #ifdef CCTK_REAL16
   CHECK_SET_GET_REAL(handle, CCTK_REAL16, 1, case_insensitive,
                      Util_TableSetReal16, Util_TableGetReal16);
   #endif
@@ -5825,19 +5825,19 @@ static
                           Util_TableSetCharArray, Util_TableGetCharArray);
   CHECK_SET_GET_INT_ARRAY(handle, CCTK_INT, 1,
                           Util_TableSetIntArray, Util_TableGetIntArray);
-  #ifdef CCTK_INTEGER_PRECISION_1
+  #ifdef CCTK_INT1
   CHECK_SET_GET_INT_ARRAY(handle, CCTK_INT1, 1,
                           Util_TableSetInt1Array, Util_TableGetInt1Array);
   #endif
-  #ifdef CCTK_INTEGER_PRECISION_2
+  #ifdef CCTK_INT2
   CHECK_SET_GET_INT_ARRAY(handle, CCTK_INT2, 1,
                           Util_TableSetInt2Array, Util_TableGetInt2Array);
   #endif
-  #ifdef CCTK_INTEGER_PRECISION_4
+  #ifdef CCTK_INT4
   CHECK_SET_GET_INT_ARRAY(handle, CCTK_INT4, 1,
                           Util_TableSetInt4Array, Util_TableGetInt4Array);
   #endif
-  #ifdef CCTK_INTEGER_PRECISION_8
+  #ifdef CCTK_INT8
   CHECK_SET_GET_INT_ARRAY(handle, CCTK_INT8, 1,
                           Util_TableSetInt8Array, Util_TableGetInt8Array);
   #endif
@@ -5847,15 +5847,15 @@ static
   /* reals */
   CHECK_SET_GET_REAL_ARRAY(handle, CCTK_REAL, 0,
                            Util_TableSetRealArray, Util_TableGetRealArray);
-  #ifdef CCTK_REAL_PRECISION_4
+  #ifdef CCTK_REAL4
   CHECK_SET_GET_REAL_ARRAY(handle, CCTK_REAL4, 1,
                            Util_TableSetReal4Array, Util_TableGetReal4Array);
   #endif
-  #ifdef CCTK_REAL_PRECISION_8
+  #ifdef CCTK_REAL8
   CHECK_SET_GET_REAL_ARRAY(handle, CCTK_REAL8, 1,
                            Util_TableSetReal8Array, Util_TableGetReal8Array);
   #endif
-  #ifdef CCTK_REAL_PRECISION_16
+  #ifdef CCTK_REAL16
   CHECK_SET_GET_REAL_ARRAY(handle, CCTK_REAL16, 1,
                            Util_TableSetReal16Array, Util_TableGetReal16Array);
   #endif
@@ -5864,13 +5864,13 @@ static
 
   /* generic arrays which are actually reals */
   CHECK_SET_GET_GENERIC_REAL_ARRAY(handle, CCTK_VARIABLE_REAL, CCTK_REAL, 0);
-  #ifdef CCTK_REAL_PRECISION_4
+  #ifdef CCTK_REAL4
   CHECK_SET_GET_GENERIC_REAL_ARRAY(handle, CCTK_VARIABLE_REAL4, CCTK_REAL4, 1);
   #endif
-  #ifdef CCTK_REAL_PRECISION_8
+  #ifdef CCTK_REAL8
   CHECK_SET_GET_GENERIC_REAL_ARRAY(handle, CCTK_VARIABLE_REAL8, CCTK_REAL8, 1);
   #endif
-  #ifdef CCTK_REAL_PRECISION_16
+  #ifdef CCTK_REAL16
   CHECK_SET_GET_GENERIC_REAL_ARRAY(handle,
                                    CCTK_VARIABLE_REAL16, CCTK_REAL16, 1);
   #endif
@@ -5880,17 +5880,17 @@ static
   CHECK_SET_GET_COMPLEX_ARRAY(handle, CCTK_COMPLEX, 0,
                               Util_TableSetComplexArray,
                               Util_TableGetComplexArray);
-  #ifdef CCTK_COMPLEX_PRECISION_8
+  #ifdef CCTK_REAL4
   CHECK_SET_GET_COMPLEX_ARRAY(handle, CCTK_COMPLEX8, 1,
                               Util_TableSetComplex8Array,
                               Util_TableGetComplex8Array);
   #endif
-  #ifdef CCTK_COMPLEX_PRECISION_16
+  #ifdef CCTK_REAL8
   CHECK_SET_GET_COMPLEX_ARRAY(handle, CCTK_COMPLEX16, 1,
                               Util_TableSetComplex16Array,
                               Util_TableGetComplex16Array);
   #endif
-  #ifdef CCTK_COMPLEX_PRECISION_32
+  #ifdef CCTK_REAL16
   CHECK_SET_GET_COMPLEX_ARRAY(handle, CCTK_COMPLEX32, 1,
                               Util_TableSetComplex32Array,
                               Util_TableGetComplex32Array);
