@@ -418,6 +418,10 @@ sub ParseScheduleBlock
         else
         {
           $language= $1;
+          if ($type eq "GROUP")
+          {
+            &CST_error(1, "Scheduling group \"$name\" with LANG specifier in thorn \"$thorn\"");
+          }
         }
       }
       elsif($data[$line_number] =~ m:\s*\}\s*:)
