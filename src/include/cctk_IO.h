@@ -32,6 +32,10 @@ extern "C" {
 
 #undef OVERLOADABLE
 
+int CCTK_OutputVarAs (cGH *GH, const char *var, const char *alias);
+int CCTK_OutputVar (cGH *GH, const char *var);
+int CCTK_OutputVarByMethod (cGH *GH, const char *var, const char *method);
+
 #ifdef __cplusplus
 }
 #endif
