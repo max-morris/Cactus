@@ -383,7 +383,10 @@ int CCTKi_InitGHExtensions(cGH *GH)
   for(handle = 0; handle < num_extensions; handle++)
   {
     extension =  (struct GHExtension *)Util_GetHandledData(GHExtensions, handle);
-    extension->InitGH(GH);
+    if(extension)
+    {
+      extension->InitGH(GH);
+    }
   }
 
   return 0;
@@ -412,7 +415,10 @@ int CCTKi_ScheduleTraverseGHExtensions(cGH *GH,
   for(handle = 0; handle < num_extensions; handle++)
   {
     extension =  (struct GHExtension *)Util_GetHandledData(GHExtensions, handle);
-    extension->ScheduleTraverseGH(GH, where);
+    if(extension)
+    {
+      extension->ScheduleTraverseGH(GH, where);
+    }
   }
 
   return 0;
@@ -451,38 +457,39 @@ static int CheckAllExtensionsSetup(void)
   for(handle = 0; handle < num_extensions; handle++)
   {
     extension =  (struct GHExtension *)Util_GetHandledData(GHExtensions, handle);
-
-    /* Check that each function has been registered.
-     * Print a warning if not, and then register a dummy function.
-     */
-
-    /* SetupGH */
-    if(!extension->SetupGH)
+    if(extension)
     {
-      CCTK_VWarn(4,__LINE__,__FILE__,"Cactus",
-                 "GH Extension '%s' has not registered a SetupGH routine",
-                 Util_GetHandleName(GHExtensions, handle));
-      extension->SetupGH=DummySetupGH;
-    }
+      /* Check that each function has been registered.
+       * Print a warning if not, and then register a dummy function.
+       */
 
-    /*  InitGH */
-    if(!extension->InitGH)
-    {   
-      CCTK_VWarn(4,__LINE__,__FILE__,"Cactus",
-                 "GH Extension '%s' has not registered a InitGH routine",
-                 Util_GetHandleName(GHExtensions, handle));
-      extension->InitGH=DummyInitGH;
-    }
+      /* SetupGH */
+      if(!extension->SetupGH)
+      {
+        CCTK_VWarn(4,__LINE__,__FILE__,"Cactus",
+                   "GH Extension '%s' has not registered a SetupGH routine",
+                   Util_GetHandleName(GHExtensions, handle));
+        extension->SetupGH=DummySetupGH;
+      }
 
-    /* ScheduleTraverse */
-    if(!extension->ScheduleTraverseGH)
-    {
-      CCTK_VWarn(4,__LINE__,__FILE__,"Cactus",
-                 "GH Extension '%s' has not registered a ScheduleTraverse routine",
-                 Util_GetHandleName(GHExtensions, handle));
-      extension->ScheduleTraverseGH=DummyScheduleTraverseGH;
-    }
+      /*  InitGH */
+      if(!extension->InitGH)
+      {   
+        CCTK_VWarn(4,__LINE__,__FILE__,"Cactus",
+                   "GH Extension '%s' has not registered a InitGH routine",
+                   Util_GetHandleName(GHExtensions, handle));
+        extension->InitGH=DummyInitGH;
+      }
 
+      /* ScheduleTraverse */
+      if(!extension->ScheduleTraverseGH)
+      {
+        CCTK_VWarn(4,__LINE__,__FILE__,"Cactus",
+                   "GH Extension '%s' has not registered a ScheduleTraverse routine",
+                   Util_GetHandleName(GHExtensions, handle));
+        extension->ScheduleTraverseGH=DummyScheduleTraverseGH;
+      }
+    }
   }
 
   return return_code;
