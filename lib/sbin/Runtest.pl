@@ -27,7 +27,7 @@ print <<EOT;
 
 EOT
 
-$command = &defprompt("Enter Command to run cactus code","");
+$command = &defprompt("Enter Command to run cactus code","./cactus_$config");
 
 $tests = &defprompt("Run All tests or go to Menu",
                         "All");
