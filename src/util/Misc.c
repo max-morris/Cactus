@@ -450,7 +450,7 @@ int Util_DoubleInRange(double inval, const char *range)
     else
     {
       /* No start range given, so use the smallest float available. */
-      start = FLT_MIN;
+      start = -FLT_MAX;
     }
 
     /* Next find the end of the range */
@@ -494,8 +494,8 @@ int Util_DoubleInRange(double inval, const char *range)
       end_closed = 1;
     }
   
-    if(inval > start /*+ !start_closed */&& 
-       inval < end  /* - !end_closed */ /* &&
+    if(inval >= start /*+ !start_closed */&& 
+       inval <= end  /* - !end_closed */ /* &&
                                        ! ((inval-start) % step)*/)
     {
       retval = 1;
@@ -965,7 +965,7 @@ int CCTK_RegexMatch(const char *string,
 
 
 /*@@
-   @routine    getoutpfx
+   @routine    CCTK_FortranString
    @date       Thu Jan 22 14:44:39 1998
    @author     Paul Walker
    @desc
@@ -974,9 +974,10 @@ int CCTK_RegexMatch(const char *string,
 @@*/
  
  
-void FORTRAN_NAME(CCTK_FortranString)(CCTK_INT *nchar, char **cstring,ONE_FORTSTRING_ARG)
+void FORTRAN_NAME(CCTK_FortranString)(CCTK_INT *nchar, 
+				      char **cstring, 
+				      ONE_FORTSTRING_ARG)
 {
-
   int i;
   ONE_FORTSTRING_CREATE(fstring)
   ONE_FORTSTRING_PTR(fptr)
