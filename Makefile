@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.76 2000-03-10 13:30:03 allen Exp $
+#   @version $Id: Makefile,v 1.77 2000-03-10 14:09:55 allen Exp $
 # @@*/
 
 ##################################################################################
@@ -32,7 +32,7 @@ export CCTK_VERSION_MAJOR CCTK_VERSION_MINOR CCTK_VERSION_OTHER CCTK_VERSION
 ##################################################################################
 
 # Stop with prompts unless told not to
-ifeq ($strip $(PROMPT)), )
+ifeq ($(strip $(PROMPT)), )
 PROMPT = "yes"
 endif
 
