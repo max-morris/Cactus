@@ -91,7 +91,7 @@ CCTK_CreateFile()
 
 CCTK_WriteLine()
 {
-  echo $2 >> $1
+  echo "$2" >> $1
   return
 }
 
