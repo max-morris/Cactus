@@ -91,7 +91,7 @@ cGH *CactusDefaultSetupGH(tFleshConfig *config, int convergence_level)
      thisGH->GroupData)
   {
     /* Traverse list of GH setup routines. */
-    CCTK_TraverseGHExtensions(config, convergence_level, thisGH);
+    CCTK_SetupGHExtensions(config, convergence_level, thisGH);
 
     retval = thisGH;
   }

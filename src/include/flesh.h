@@ -49,7 +49,7 @@ typedef struct
   void **data;
 
   /* The extension array */
-  void *extensions;
+  void **extensions;
 
   /* All the group data for this GH (storage, comm, etc. */
   cGHGroupData *GroupData;
