@@ -266,15 +266,21 @@ sub GetThornArguments
 
         for($dim =0; $dim < $rhinterface_db->{"\U$thorn GROUP $group DIM\E"}; $dim++)
         {
-          $type .= "${sep}cctkv$group$dim";
+# FIXME: quick hack to shorten argument names
+#          $type .= "${sep}cctkv$group$dim";
+          $type .= "${sep}X$group$dim";
           $sep = ",";
           if($block eq "PRIVATE")
           {
-            $arguments{"cctkv$group$dim"} = "(STORAGESIZE($thorn\::$group, $dim))";
+# FIXME: quick hack to shorten argument names
+#            $arguments{"cctkv$group$dim"} = "(STORAGESIZE($thorn\::$group, $dim))";
+            $arguments{"X$group$dim"} = "(STORAGESIZE($thorn\::$group, $dim))";
           }
           else
           {
-            $arguments{"cctkv$group$dim"} = "(STORAGESIZE($imp\::$group, $dim))";
+# FIXME: quick hack to shorten argument names
+#            $arguments{"cctkv$group$dim"} = "(STORAGESIZE($imp\::$group, $dim))";
+            $arguments{"X$group$dim"} = "(STORAGESIZE($imp\::$group, $dim))";
           }
         }
         if(defined($vararraysize) && $compactgroup == 0)
