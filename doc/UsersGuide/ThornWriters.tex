@@ -430,43 +430,42 @@ only have access to the grid size and the parameters.
 \item [{\tt CCTK\_BASEGRID}]
 Responsible for setting up coordinates etc.
 
-\item [{\tt CCTK\_RECOVER}]
-For recovery from checkpoint.
-
 \item [{\tt CCTK\_INITIAL}]
-
 For generating initial data.
 
 \item [{\tt CCTK\_POSTINITIAL}]
-
 Tasks which must be applied after initial data is created.
 
+\item [{\tt CCTK\_RECOVER\_VARIABLES}]
+For recovery of grid variables from a checkpoint.
+
 \item [{\tt CCTK\_CPINITIAL}]
-For recovery of initial data from a checkpoint file.
+For checkpointing initial data.
 
 \item [{\tt CCTK\_PRESTEP}]
 Stuff done before the evolution step.
 
 \item [{\tt CCTK\_EVOL}]      
-
 The evolution step.
 
 \item [{\tt CCTK\_POSTSTEP}]
-
 Stuff done after the evolution step.
 
 \item [{\tt CCTK\_CHECKPOINT}]
-For checkpointing data
+For checkpointing evolution data.
 
 \item [{\tt CCTK\_ANALYSIS}]
 For analysing data.
 
 \item [{\tt CCTK\_TERMINATE}]
-Called when cactus terminates.
+Called when Cactus terminates.
 
-\item [{\tt CCTK\_CONVERGENCE}]
-Convergence stuff.
+\item [{\tt CCTK\_SHUTDOWN}]
+Cactus final shutdown routines.
 
+%\item [{\tt CCTK\_CONVERGENCE}]
+%Convergence stuff.
+%
 \end{Lentry}
 
 
@@ -486,7 +485,7 @@ The keyword {\tt SYNC} specifies groups of variables which should be
 synchronised (that is, their ghostzones should be exchanged between 
 processors) on exit from the routine. Specifying synchonisation of 
 grid variables in {\tt schedule.ccl} is an alternative to calling the
-function {\tt CCTK\_SyncGroup} from inside a routine. Using the {\tt SYNC}
+function {\tt CCTK\_SyncGroup()} from inside a routine. Using the {\tt SYNC}
 keyword in the {\tt schedule.ccl} is the preferred method, since it 
 provides the Flesh with more information about the behaviour of your code,
 and in particular is a requirement for using a driver with adaptive mesh
