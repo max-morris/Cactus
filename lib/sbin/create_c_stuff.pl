@@ -21,8 +21,8 @@
 #  @history 
 #
 #  @endhistory 
+#@@*/
 
-@@*/
 sub create_c_param_init_subroutine
 {
   local($implementation,%parameter_database) = @_;
@@ -63,8 +63,8 @@ sub create_c_param_init_subroutine
 #  @history 
 #
 #  @endhistory 
+#@@*/
 
-@@*/
 sub create_c_parameter_declarations
 {
   local($implementation,%parameter_database) = @_;
@@ -136,8 +136,8 @@ sub create_c_parameter_declarations
 #  @history 
 #
 #  @endhistory 
+#@@*/
 
-@@*/
 sub create_c_parameter_structures
 {
   local($n_implementations, @indata) = @_;
@@ -184,8 +184,8 @@ sub create_c_parameter_structures
 #  @history 
 #
 #  @endhistory 
+#@@*/
 
-@@*/
 sub create_c_parameter_type_declaration
 {
   local($implementation,%parameter_database) = @_;
@@ -230,8 +230,8 @@ sub create_c_parameter_type_declaration
 #  @history 
 #
 #  @endhistory 
+#@@*/
 
-@@*/
 sub set_parameter_default
 {
   local($implementation,$parameter, %parameter_database) = @_;
@@ -264,6 +264,7 @@ sub set_parameter_default
 
   return @lines;
 }
+
 #/*@@
 #  @routine    get_c_type_string
 #  @date       Mon Jan 11 15:33:50 1999
@@ -276,8 +277,8 @@ sub set_parameter_default
 #  @history 
 #
 #  @endhistory 
+#@@*/
 
-@@*/
 sub get_c_type_string
 {
   local($type) = @_;

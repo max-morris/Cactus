@@ -1,4 +1,26 @@
 #! /usr/bin/perl
+#/*@@
+#  @file      GridFuncStuff.pl
+#  @date      Tue Jan 12 11:07:45 1999
+#  @author    Tom Goodale
+#  @desc 
+#  
+#  @enddesc 
+#@@*/
+
+#/*@@
+#  @routine    CreateGroups
+#  @date       Tue Jan 12 11:08:19 1999
+#  @author     Tom Goodale
+#  @desc 
+#  
+#  @enddesc 
+#  @calls     
+#  @calledby   
+#  @history 
+#
+#  @endhistory 
+#@@*/
 
 sub CreateGroups
 {
@@ -37,6 +59,20 @@ sub CreateGroups
   return @group_initialisers;
 }
 
+#/*@@
+#  @routine    create_interface_group_initialisers
+#  @date       Tue Jan 12 11:08:41 1999
+#  @author     Tom Goodale
+#  @desc 
+#  
+#  @enddesc 
+#  @calls     
+#  @calledby   
+#  @history 
+#
+#  @endhistory 
+#@@*/
+
 sub create_interface_group_initialisers
 {
   local($interface, %interface_database) = @_;
@@ -61,6 +97,19 @@ sub create_interface_group_initialisers
   
 }
   
+#/*@@
+#  @routine    create_thorn_group_initialisers
+#  @date       Tue Jan 12 11:09:08 1999
+#  @author     Tom Goodale
+#  @desc 
+#  
+#  @enddesc 
+#  @calls     
+#  @calledby   
+#  @history 
+#
+#  @endhistory 
+#@@*/
 sub create_thorn_group_initialisers
 {
   local($thorn, $block, %interface_database) = @_;
@@ -100,6 +149,19 @@ sub create_thorn_group_initialisers
 
 }
 
+#/*@@
+#  @routine    sort_groups
+#  @date       Tue Jan 12 11:09:26 1999
+#  @author     Tom Goodale
+#  @desc 
+#  
+#  @enddesc 
+#  @calls     
+#  @calledby   
+#  @history 
+#
+#  @endhistory 
+#@@*/
 sub sort_groups
 {
   local(@group_initialisers) = @_;

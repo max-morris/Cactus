@@ -1,4 +1,26 @@
 #! /usr/bin/perl
+#/*@@
+#  @file      create_fortran_stuff.pl
+#  @date      Tue Jan 12 09:52:35 1999
+#  @author    Tom Goodale
+#  @desc 
+#  
+#  @enddesc 
+#@@*/
+
+#/*@@
+#  @routine    create_fortran_module_file
+#  @date       Tue Jan 12 09:53:04 1999
+#  @author     Tom Goodale
+#  @desc 
+#  
+#  @enddesc 
+#  @calls     
+#  @calledby   
+#  @history 
+#
+#  @endhistory 
+#@@*/
 
 sub create_fortran_module_file
 {
@@ -73,6 +95,20 @@ sub create_fortran_module_file
 
 }
     
+
+#/*@@
+#  @routine    create_fortran_param_init_subroutine
+#  @date       Tue Jan 12 09:53:54 1999
+#  @author     Tom Goodale
+#  @desc 
+#  
+#  @enddesc 
+#  @calls     
+#  @calledby   
+#  @history 
+#
+#  @endhistory 
+#@@*/
 
 sub create_fortran_param_init_subroutine
 {
