@@ -229,7 +229,7 @@ int CactusDefaultEvolve(tFleshConfig *config)
      int the main iteration loop. Makes calls to the individual 
      routines for each rfr step.
    @enddesc 
-   @calls  PreStepper, EvolStepper, PostStepper, BoundStepper
+   @calls  PreStepper, EvolStepper, PostStepper
    @calledby main   
  @@*/
 
@@ -239,8 +239,6 @@ int CCTK_StepGH(cGH *GH)
   void PreStepper(cGH *GH);
   void EvolStepper(cGH *GH);
   void PostStepper(cGH *GH);
-  void BoundStepper(cGH *GH);
-
 
   /* Advance GH->iteration BEFORE evolving */
 #ifdef DEBUG_CCTK
@@ -255,7 +253,6 @@ int CCTK_StepGH(cGH *GH)
 
   PreStepper(GH);
   EvolStepper(GH);
-  BoundStepper(GH);
 
   /* Advance GH->time AFTER evolving */
 #ifdef DEBUG_CCTK
@@ -316,26 +313,6 @@ void EvolStepper(cGH *GH)
   CCTK_rfrTraverse(GH, CCTK_EVOL);
   /* after Evolution check for NANs */
 
-}
-
-
- /*@@
-   @routine    BoundStepper
-   @date       Fri Aug 14 12:44:58 1998
-   @author     Gerd Lanfermann
-   @desc 
-     calls RFR-CCTK_BOUND applies boundary conditions
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
-
-@@*/
-
-void BoundStepper(cGH *GH) {
-  CCTK_rfrTraverse(GH,CCTK_BOUND);
 }
 
  /*@@

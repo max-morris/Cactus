@@ -64,7 +64,6 @@ void rfrTraverse(void *rfr_top, void *data, int when)
     SCHEDULE(PRESTEP);
     SCHEDULE(POSTSTEP);
     SCHEDULE(EVOL);
-    SCHEDULE(BOUND);
     SCHEDULE(CHECKPOINT);
     SCHEDULE(ANALYSIS);
     SCHEDULE(TERMINATE);

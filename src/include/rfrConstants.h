@@ -29,8 +29,6 @@
 
 #define CCTK_EVOL       60
 
-#define CCTK_BOUND      70
-
 #define CCTK_CHECKPOINT 75 
 
 #define CCTK_ANALYSIS   80

@@ -471,7 +471,6 @@ int CCTK_SchedulePrint(const char *where)
     printf ("  do loop over timesteps\n");
     SchedulePrint("CCTK_PRESTEP");
     SchedulePrint("CCTK_EVOL");
-    SchedulePrint("CCTK_BOUND");
     printf ("    t = t+dt\n");
     SchedulePrint("CCTK_POSTSTEP");
     printf ("    if (analysis)\n");
@@ -518,7 +517,6 @@ int CCTK_SchedulePrintTimes(const char *where)
     printf("\n");
     SchedulePrintTimes("CCTK_PRESTEP", &data);
     SchedulePrintTimes("CCTK_EVOL", &data);
-    SchedulePrintTimes("CCTK_BOUND", &data);
     printf("\n");
     SchedulePrintTimes("CCTK_ANALYSIS", &data);
   }
