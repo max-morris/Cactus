@@ -19,6 +19,46 @@ dnl Starts here
 AC_INIT()
 AC_CONFIG_HEADER(cctk_Config.h)
 
+#######################################################################
+# determine WARN_MODE from the WARN option
+# if this option isn't set WARN_MODE will default to 'no'
+
+WARN_MODE='no'
+if test -n "$WARN" ; then
+  changequote({, })
+  WARN=`echo $WARN | tr '[:upper:]' '[:lower:]'`
+  changequote([, ])
+  if test "$WARN" != "yes" -a "$WARN" != "no" ; then
+    AC_ERROR(Didn't recognize setting of WARN=\"$WARN\" (should be either \"yes\" or \"no\"))
+  fi
+  WARN_MODE=$WARN
+fi
+
+
+#######################################################################
+# determine OPTIMISE_MODE from the OPTIMISE/OPTIMIZE option
+# if this option isn't set OPTIMISE_MODE will default to 'yes' 
+
+OPTIMISE_MODE='yes'
+if test -n "$OPTIMISE" ; then
+  changequote({, })
+  OPTIMISE=`echo $OPTIMISE | tr '[:upper:]' '[:lower:]'`
+  changequote([, ])
+  if test "$OPTIMISE" != 'yes' -a "$OPTIMISE" != 'no' ; then
+    AC_ERROR(Didn't recognize setting of OPTIMISE=\"$OPTIMISE\" (should be either \"yes\" or \"no\"))
+  fi
+  OPTIMISE_MODE=$OPTIMISE
+elif test -n "$OPTIMIZE"; then
+  changequote({, })
+  OPTIMISE=`echo $OPTIMIZE | tr '[:upper:]' '[:lower:]'`
+  changequote([, ])
+  if test "$OPTIMISE" != 'yes' -a "$OPTIMISE" != 'no' ; then
+    AC_ERROR(Didn't recognize setting of OPTIMIZE=\"$OPTIMIZE\" (should be either \"yes\" or \"no\"))
+  fi
+  OPTIMISE_MODE=$OPTIMISE
+fi
+
+
 dnl Check the system type
 AC_CANONICAL_HOST
 
@@ -672,26 +712,33 @@ AC_DEFINE_UNQUOTED(CCTK_FCALL, $CCTK_FCALL)
 # Decide whether the preprocessed C and Fortran files should contain
 # C preprocessor line directives to point to the original source file
 
-AC_DEFINE_UNQUOTED(C_LINE_DIRECTIVES, "$C_LINE_DIRECTIVES")
-AC_DEFINE_UNQUOTED(F_LINE_DIRECTIVES, "$F_LINE_DIRECTIVES")
-
-AC_SUBST(C_LINE_DIRECTIVES)
-AC_SUBST(F_LINE_DIRECTIVES)
-
+# Test for valid setting of option C_LINE_DIRECTIVES/F_LINE_DIRECTIVES
 if test -n "$C_LINE_DIRECTIVES" ; then
-  if test "$C_LINE_DIRECTIVES" != "yes" -a "$C_LINE_DIRECTIVES" != "no" ; then
+  changequote({, })
+  C_LINE_DIRECTIVES=`echo $C_LINE_DIRECTIVES | tr '[:upper:]' '[:lower:]'`
+  changequote([, ])
+  if test "$C_LINE_DIRECTIVES" != 'yes' -a "$C_LINE_DIRECTIVES" != 'no' ; then
     AC_ERROR(Didn't recognize setting of C_LINE_DIRECTIVES=\"$C_LINE_DIRECTIVES\" (should be either \"yes\" or \"no\"))
   fi
 else
   C_LINE_DIRECTIVES='no'
 fi
-if test -n "$F_LINE_DIRECTIVES" ; then
-  if test "$F_LINE_DIRECTIVES" != "yes" -a "$F_LINE_DIRECTIVES" != "no" ; then
+if test -n "$F_LINE_DIRECTIVES"; then
+  changequote({, })
+  F_LINE_DIRECTIVES=`echo $F_LINE_DIRECTIVES | tr '[:upper:]' '[:lower:]'`
+  changequote([, ])
+  if test "$F_LINE_DIRECTIVES" != 'yes' -a "$F_LINE_DIRECTIVES" != 'no' ; then
     AC_ERROR(Didn't recognize setting of F_LINE_DIRECTIVES=\"$F_LINE_DIRECTIVES\" (should be either \"yes\" or \"no\"))
   fi
 else
   F_LINE_DIRECTIVES='no'
 fi
+
+AC_DEFINE_UNQUOTED(C_LINE_DIRECTIVES, "$C_LINE_DIRECTIVES")
+AC_DEFINE_UNQUOTED(F_LINE_DIRECTIVES, "$F_LINE_DIRECTIVES")
+
+AC_SUBST(C_LINE_DIRECTIVES)
+AC_SUBST(F_LINE_DIRECTIVES)
 
 
 # Define how to make a directory in the config.h file
@@ -742,21 +789,31 @@ AC_SUBST(FCOMPILEONLY)
 
 # Define the type of debugging to use
 
-if test -n "$DEBUG" -a "x$DEBUG" != 'xno' ; then
+#######################################################################
+# determine DEBUG_MODE from the DEBUG option
+# if this option isn't set DEBUG_MODE will default to 'no'
+
+if test -n "$DEBUG" ; then
+  changequote({, })
+  DEBUG=`echo $DEBUG | tr '[:upper:]' '[:lower:]'`
+  changequote([, ])
+fi
+
+if test -n "$DEBUG" -a "$DEBUG" != 'no' ; then
   AC_DEFINE(CCTK_DEBUG)
   case "$DEBUG" in
-     MEMORY)
+     memory)
        AC_DEFINE(CCTK_TRACEMEMORY)
        ;;
-     FLAGS|yes)
-       DEBUG_FLAGS="yes"
+     flags|yes)
+       DEBUG_FLAGS='yes'
        ;;
-     DEFINES)
+     defines)
        AC_DEFINE(DEBUG)
        ;;
-     ALL)
+     all)
       AC_DEFINE(CCTK_TRACEMEMORY)
-      DEBUG_FLAGS="yes"
+      DEBUG_FLAGS='yes'
       ;;
     *)
       AC_ERROR(Didn't recognize setting of DEBUG=\"$DEBUG\")
@@ -766,83 +823,57 @@ fi
 
 AC_SUBST(DEBUG_MODE)
 
-if test -n "$DEBUG_FLAGS" ; then
+DEBUG_MODE='no'
+if test -n "$DEBUG_FLAGS"; then
   DEBUG_MODE=$DEBUG_FLAGS
-else
-  DEBUG_MODE="no"
 fi
-
 
 AC_SUBST(C_DEBUG_FLAGS)
 
 if test -z "$C_DEBUG_FLAGS" ; then
 # This should be a reasonable default.
-  C_DEBUG_FLAGS="-g"
+  C_DEBUG_FLAGS='-g'
 fi
 
 AC_SUBST(CXX_DEBUG_FLAGS)
 
 if test -z "$CXX_DEBUG_FLAGS" ; then
 # This should be a reasonable default.
-  CXX_DEBUG_FLAGS="-g"
+  CXX_DEBUG_FLAGS='-g'
 fi
 
 AC_SUBST(F77_DEBUG_FLAGS)
 
 if test -z "$F77_DEBUG_FLAGS" ; then
 # This should be a reasonable default.
-  F77_DEBUG_FLAGS="-g"
+  F77_DEBUG_FLAGS='-g'
 fi
 
 AC_SUBST(F90_DEBUG_FLAGS)
 
 if test -z "$F90_DEBUG_FLAGS" ; then
 # This should be a reasonable default.
-  F90_DEBUG_FLAGS="-g"
+  F90_DEBUG_FLAGS='-g'
 fi
 
 # Set the warn flags
 AC_SUBST(WARN_MODE)
 
-if test -n "$WARN" ; then
-  if test "$WARN" != "yes" -a "$WARN" != "no" ; then
-    AC_ERROR(Didn't recognize setting of WARN=\"$WARN\" (should be either \"yes\" or \"no\"))
-  fi
-  WARN_MODE=$WARN
-else
-  WARN_MODE='no'
-fi
-
 # Set the optimization flags if they've not been set by now
-
 AC_SUBST(OPTIMISE_MODE)
-
-if test -n "$OPTIMISE" ; then
-  if test "$OPTIMISE" != "yes" -a "$OPTIMISE" != "no" ; then
-    AC_ERROR(Didn't recognize setting of OPTIMISE=\"$OPTIMISE\" (should be either \"yes\" or \"no\"))
-  fi
-  OPTIMISE_MODE=$OPTIMISE
-elif test -n "$OPTIMIZE" ; then
-  if test "$OPTIMIZE" != "yes" -a "$OPTIMIZE" != "no" ; then
-    AC_ERROR(Didn't recognize setting of OPTIMIZE=\"$OPTIMIZE\" (should be either \"yes\" or \"no\"))
-  fi
-  OPTIMISE_MODE=$OPTIMIZE
-else
-  OPTIMISE_MODE="yes"
-fi
 
 AC_SUBST(C_OPTIMISE_FLAGS)
 
 if test -z "$C_OPTIMISE_FLAGS" ; then
 # This should be a reasonable default.
-  C_OPTIMISE_FLAGS="-O2"
+  C_OPTIMISE_FLAGS='-O2'
 fi
 
 AC_SUBST(CXX_OPTIMISE_FLAGS)
 
 if test -z "$CXX_OPTIMISE_FLAGS" ; then
 # This should be a reasonable default.
-  CXX_OPTIMISE_FLAGS="-O2"
+  CXX_OPTIMISE_FLAGS='-O2'
 fi
 
 AC_SUBST(F77_OPTIMISE_FLAGS)
@@ -850,11 +881,11 @@ AC_SUBST(F77_OPTIMISE_FLAGS)
 if test -z "$F77_OPTIMISE_FLAGS" ; then
   case "$F77" in
     g77)
-      F77_OPTIMISE_FLAGS="-O2"
+      F77_OPTIMISE_FLAGS='-O2'
       ;;
     *)
 #     Don't know a reasonable default.
-      F77_OPTIMISE_FLAGS=""
+      F77_OPTIMISE_FLAGS=''
       ;;
    esac
 fi
@@ -863,7 +894,7 @@ AC_SUBST(F90_OPTIMISE_FLAGS)
 
 if test -z "$F90_OPTIMISE_FLAGS" ; then
 # Don't know a reasonable default.
-  F90_OPTIMISE_FLAGS=""
+  F90_OPTIMISE_FLAGS=''
 fi
 
 # Set the warning flags if they've not been set by now
@@ -873,11 +904,11 @@ AC_SUBST(C_WARN_FLAGS)
 if test -z "$C_WARN_FLAGS" ; then
   case "$CC" in
     gcc)
-      C_WARN_FLAGS="-Wall -W -Wshadow -Wpointer-arith -Wbad-function-cast -Wcast-qual -Wcast-align -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Winline"
+      C_WARN_FLAGS='-Wall -W -Wshadow -Wpointer-arith -Wbad-function-cast -Wcast-qual -Wcast-align -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Winline'
       ;;
     *)
 #     Not sure what should be a reasonable default.
-      C_WARN_FLAGS=""
+      C_WARN_FLAGS=''
       ;;
    esac
 fi
@@ -887,15 +918,15 @@ AC_SUBST(CXX_WARN_FLAGS)
 if test -z "$CXX_WARN_FLAGS" ; then
   case "$CXX" in
     c++ | g++)
-      if test "$CC" = "gcc"; then
-        CXX_WARN_FLAGS="\$(C_WARN_FLAGS) -Woverloaded-virtual"
+      if test "$CC" = 'gcc'; then
+        CXX_WARN_FLAGS='$(C_WARN_FLAGS) -Woverloaded-virtual'
       else
-        CXX_WARN_FLAGS="-Wall -W -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Wmissing-prototypes -Winline -Woverloaded-virtual"
+        CXX_WARN_FLAGS='-Wall -W -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Wmissing-prototypes -Winline -Woverloaded-virtual'
       fi
       ;;
     *)
 #     Not sure what should be a reasonable default.
-      CXX_WARN_FLAGS=""
+      CXX_WARN_FLAGS=''
       ;;
    esac
 fi
@@ -905,11 +936,11 @@ AC_SUBST(F77_WARN_FLAGS)
 if test -z "$F77_WARN_FLAGS" ; then
   case "$F77" in
     g77)
-      F77_WARN_FLAGS="-Wall"
+      F77_WARN_FLAGS='-Wall'
       ;;
     *)
 #     Not sure what should be a reasonable default.
-      F77_WARN_FLAGS=""
+      F77_WARN_FLAGS=''
       ;;
    esac
 fi
@@ -918,7 +949,7 @@ AC_SUBST(F90_WARN_FLAGS)
 
 if test -z "$F90_WARN_FLAGS" ; then
 # Not sure what should be a reasonable default.
-  F90_WARN_FLAGS=""
+  F90_WARN_FLAGS=''
 fi
 
 
@@ -926,7 +957,7 @@ fi
 
 AC_SUBST(CREATEEXE)
 
-: ${CREATEEXE="-o"}
+: ${CREATEEXE='-o'}
 
 # Set the directory seperator for this architecture
 AC_SUBST(DIRSEP)
