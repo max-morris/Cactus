@@ -6,7 +6,7 @@
 #  @desc 
 #  Parses the the configuration files for thorns.
 #  @enddesc 
-#  @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.47 2001-09-16 15:35:22 allen Exp $
+#  @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.48 2002-03-27 15:34:17 tradke Exp $
 #@@*/
 
 # Global parameter to track the number of errors from the CST
@@ -74,7 +74,6 @@ require "$sbin_dir/ProcessConfiguration.pl";
 require "$sbin_dir/create_c_stuff.pl";
 require "$sbin_dir/create_fortran_stuff.pl";
 require "$sbin_dir/GridFuncStuff.pl";
-require "$sbin_dir/output_config.pl";
 require "$sbin_dir/ImpParamConsistency.pl";
 require "$sbin_dir/CSTUtils.pl";
 require "$sbin_dir/MakeUtils.pl";
@@ -99,10 +98,7 @@ print "Parsing configuration files...\n";
 $configuration_database = &CreateConfigurationDatabase(%thorns);
 
 #$debug_configuration = 1;
-if($debug_configuration)
-{
-  &PrintConfigurationDatabase($configuration_database);
-}
+&PrintConfigurationDatabase($configuration_database) if($debug_configuration);
 
 # Restrict the rest of this to thorns with source
 
@@ -113,10 +109,7 @@ print "Parsing interface files...\n";
 %interface_database = &create_interface_database(scalar(keys %system_database), %system_database, %source_thorns);
 
 #$debug_interface = 1;
-if($debug_interface)
-{
-  &print_interface_database(%interface_database);
-}
+&print_interface_database(%interface_database) if($debug_interface);
 
 # Parse the parameter.ccl files
 print "Parsing parameter files...\n";
@@ -129,44 +122,35 @@ print "Parsing schedule files...\n";
 print "Checking consistency...\n";
 %parameter_database = &CheckImpParamConsistency(scalar(keys %interface_database), %interface_database, %parameter_database);
 
-if($debug_parameters)
-{
-  &print_parameter_database(%parameter_database);
-}
+&print_parameter_database(%parameter_database) if($debug_parameters);
 
 #$debug_interface = 1;
-if($debug_interface)
-{
-  &print_interface_database(%interface_database);
-}
+&print_interface_database(%interface_database) if($debug_interface);
 
 #$debug_schedule = 1;
-if($debug_schedule)
-{
-  &print_schedule_database(%schedule_database);
-}
+&print_schedule_database(%schedule_database) if($debug_schedule);
 
 # Create all the bindings
 print "Creating Thorn-Flesh bindings...\n";
 &CreateBindings($bindings_dir, \%parameter_database, \%interface_database, \%schedule_database);
 
 # Create header file of active thorns for the code
-@activethornsheader = &CreateActiveThornsHeader(%source_thorns);
-&OutputFile("$bindings_dir/include/", "thornlist.h", @activethornsheader);
+$activethornsheader = &CreateActiveThornsHeader(%source_thorns);
+&WriteFile("$bindings_dir/include/thornlist.h", \$activethornsheader);
 
 # Create define file of active thorns
-@definethornsheader = &CreateDefineThornsHeader(%source_thorns);
-&OutputFile("$bindings_dir/include/", "cctk_DefineThorn.h", @definethornsheader);
+$definethornsheader = &CreateDefineThornsHeader(%source_thorns);
+&WriteFile("$bindings_dir/include/cctk_DefineThorn.h", \$definethornsheader);
 
 # Create define file for this thorn
-@definethisthornheader = &CreateDefineThisThornHeader(%source_thorns);
-&OutputFile("$bindings_dir/include/", "definethisthorn.h", @definethisthornheader);
+$definethisthornheader = &CreateDefineThisThornHeader(%source_thorns);
+&WriteFile("$bindings_dir/include/definethisthorn.h", \$definethisthornheader);
 
 # Create the header files used by the thorns
 &BuildHeaders($cctk_home,$bindings_dir,%interface_database);
 
 # Finally (must be last), create the make.thornlist file.
-@make_thornlist = &CreateMakeThornlist(\%thorns, \%interface_database);
+$make_thornlist = &CreateMakeThornlist(\%thorns, \%interface_database);
 
 # Stop the make process if there were any errors
 if ($CST_errors)
@@ -189,7 +173,7 @@ if ($CST_errors)
     exit(1);
 }
 
-&OutputFile($config_dir, "make.thornlist", @make_thornlist);
+&WriteFile("$config_dir/make.thornlist", \$make_thornlist);
 
 print "CST finished.\n";
 exit;
@@ -389,7 +373,7 @@ sub CreateMakeThornlist
 
   $thorn_linklist .= ' ' . &CreateThornLinkList($thorns, $interface_database);
 
-  return ("$thornlist", "", "$thorn_linklist", "", "$config_thornlist", "");
+  return ($thornlist . "\n" . $thorn_linklist . "\n" . $config_thornlist);
 }
 
 
@@ -511,7 +495,7 @@ sub CreateActiveThornsHeader
   $header .= "\"\"};\n\n";
   $header .= "static int nthorns = $nthorns;\n\n";
 
-  return ("$header", ""); 
+  return ($header); 
 }
 
 
@@ -552,7 +536,7 @@ sub CreateDefineThornsHeader
     $header .= "#define \U$2"."_"."\U$3\E\n"; 
   }
 
-  return ("$header", ""); 
+  return ($header); 
 }
 
 
@@ -596,7 +580,7 @@ sub CreateDefineThisThornHeader
     $header .= "#endif\n\n";
   }
 
-  return ("$header", ""); 
+  return ($header); 
 }
 
 
@@ -618,16 +602,12 @@ sub CreateDefineThisThornHeader
 sub CreateBindings
 {
   my($bindings_dir, $rhparameter_db, $rhinterface_db, $rhschedule_db) = @_;
-  my($start_dir);
 
   # Create the bindings directory if it doesn't exist.
   if(! -d $bindings_dir)
   {
     mkdir("$bindings_dir", 0755) || die "Unable to create $bindings_dir";
   }
-
-  # Remember where we started.
-  $start_dir = `pwd`;
 
   # Create the bindings for the subsystems.
   print "   Creating implementation bindings...\n";
@@ -642,14 +622,6 @@ sub CreateBindings
   &CreateFunctionBindings($bindings_dir, $rhinterface_db);
 
   # Place an appropriate make.code.defn in the bindings directory.
-  chdir $bindings_dir;
-
-  $dataout  = "SRCS = \n";
-  $dataout .= "SUBDIRS = Functions Implementations Parameters Variables Schedule\n";
-  &WriteFile("make.code.defn",\$dataout);
-    
-  # Go back to where we started.
-  chdir $start_dir;
-  
+  $dataout = "SUBDIRS = Functions Implementations Parameters Variables Schedule";
+  &WriteFile("$bindings_dir/make.code.defn",\$dataout);
 }
-

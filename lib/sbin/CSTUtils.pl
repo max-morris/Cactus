@@ -184,11 +184,9 @@ sub WriteFile
   $data_in = "";
   if (-e $filename) 
   {
-    open(IN, "<$filename");
-    while (<IN>)
-    {
-      $data_in .= $_;
-    }
+    open(IN, "< $filename");
+    $data_in = join ('', <IN>);
+    close IN;
   }
 
   if ($$rdata ne $data_in)   

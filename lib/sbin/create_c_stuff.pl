@@ -3,10 +3,10 @@
 #  @file      create_c_stuff.pl
 #  @date      Mon Jan 11 10:53:22 1999
 #  @author    Tom Goodale
-#  @desc 
-#  
+#  @desc
+#
 #  @enddesc
-#  @version $Id$ 
+#  @version $Id$
 #@@*/
 
 
@@ -14,15 +14,9 @@
 #  @routine    CreateParameterBindingFile
 #  @date       Wed Jan 20 15:20:23 1999
 #  @author     Tom Goodale
-#  @desc 
+#  @desc
 #  Creates the bindings used to link the thorn parameters with the flesh.
-#  @enddesc 
-#  @calls     
-#  @calledby   
-#  @history 
-#
-#  @endhistory 
-#
+#  @enddesc
 #@@*/
 
 sub CreateParameterBindingFile
@@ -33,50 +27,32 @@ sub CreateParameterBindingFile
   my($type, $type_string);
 
   # Header Data
-  $line = "\#include <stdio.h>";
-  push(@data, $line);
-  $line = "\#include <stdlib.h>";
-  push(@data, $line);
-  $line = "\#include <string.h>";
-  push(@data, $line);
-  $line = "\#include <stdarg.h>";
-  push(@data, $line);
-  $line = "\#include \"cctk_Config.h\"";
-  push(@data, $line);
-  $line = "\#include \"CParameterStructNames.h\"";
-  push(@data, $line);
-  $line = "\#include \"cctk_Misc.h\"";
-  push(@data, $line);   
-  $line = "\#include \"ParameterBindings.h\"";
-  push(@data, $line);
-  push(@data, "");
+  push(@data, '#include "cctk_Config.h"');
+  push(@data, '#include "CParameterStructNames.h"');
+  push(@data, '');
 
   # Create the structure
-
-  push(@data,( "struct ", "{"));
+  push(@data, 'struct');
+  push(@data, '{');
 
   foreach $parameter (&order_params($rhparameters,$rhparameter_db))
   {
     $type = $rhparameter_db->{"\U$rhparameters->{$parameter} $parameter\E type"};
-      
     $type_string = &get_c_type_string($type);
 
-    $line = "  " . $type_string ." " .$parameter . ";";
-
-    push(@data, $line);
+    push(@data, "  $type_string$parameter;");
   }
 
   # Some compilers don't like an empty structure.
   if((keys %$rhparameters) == 0)
   {
-    push(@data, "  int dummy_parameter;");
+    push(@data, '  int dummy_parameter;');
   }
 
   push(@data, "} $structure;");
+  push(@data, "\n");   # workaround for perl 5.004_04 to add a trailing newline
 
-  push(@data, "");
-
-  return @data;
+  return join ("\n", @data);
 }
 
 
@@ -84,14 +60,9 @@ sub CreateParameterBindingFile
 #  @routine    get_c_type_string
 #  @date       Mon Jan 11 15:33:50 1999
 #  @author     Tom Goodale
-#  @desc 
+#  @desc
 #  Returns the correct type string for a parameter
-#  @enddesc 
-#  @calls     
-#  @calledby   
-#  @history 
-#
-#  @endhistory 
+#  @enddesc
 #@@*/
 
 sub get_c_type_string
@@ -100,71 +71,65 @@ sub get_c_type_string
   my($type_string);
 
 
-  if($type eq "KEYWORD" ||
-     $type eq "STRING"  ||
-     $type eq "SENTENCE")
+  if($type eq 'KEYWORD' ||
+     $type eq 'STRING'  ||
+     $type eq 'SENTENCE')
   {
-    $type_string = "char *";
+    $type_string = 'char *';
   }
-  elsif($type eq "BOOLEAN")
+  elsif($type eq 'BOOLEAN')
   {
-    $type_string = "CCTK_INT ";
-  } 
-  elsif($type eq "INT")
-  {
-    $type_string = "CCTK_INT ";
+    $type_string = 'CCTK_INT ';
   }
-  elsif($type eq "INT2")
+  elsif($type eq 'INT')
   {
-    $type_string = "CCTK_INT2 ";
+    $type_string = 'CCTK_INT ';
   }
-  elsif($type eq "INT4")
+  elsif($type eq 'INT2')
   {
-    $type_string = "CCTK_INT4 ";
+    $type_string = 'CCTK_INT2 ';
   }
-  elsif($type eq "INT8")
+  elsif($type eq 'INT4')
   {
-    $type_string = "CCTK_INT8 ";
+    $type_string = 'CCTK_INT4 ';
   }
-  elsif($type eq "REAL")
+  elsif($type eq 'INT8')
   {
-    $type_string = "CCTK_REAL ";
+    $type_string = 'CCTK_INT8 ';
   }
-  elsif($type eq "REAL4")
+  elsif($type eq 'REAL')
   {
-    $type_string = "CCTK_REAL4 ";
+    $type_string = 'CCTK_REAL ';
   }
-  elsif($type eq "REAL8")
+  elsif($type eq 'REAL4')
   {
-    $type_string = "CCTK_REAL8 ";
+    $type_string = 'CCTK_REAL4 ';
   }
-  elsif($type eq "REAL16")
+  elsif($type eq 'REAL8')
   {
-    $type_string = "CCTK_REAL16 ";
+    $type_string = 'CCTK_REAL8 ';
+  }
+  elsif($type eq 'REAL16')
+  {
+    $type_string = 'CCTK_REAL16 ';
   }
   else
   {
-      $message = "Unknown parameter type '$type'";
-      &CST_error(0,$message,"",__LINE__,__FILE__);
+    &CST_error(0,"Unknown parameter type '$type'",'',__LINE__,__FILE__);
   }
 
   return $type_string;
-
 }
+
 
 #/*@@
 #  @routine    GetThornParameterList
 #  @date       Wed Jan 20 15:29:40 1999
 #  @author     Tom Goodale
-#  @desc 
+#  @desc
 #  Gets a list of all parameters in a particular block in a thorn.
 #  Returns a hash table.
-#  @enddesc 
-#  @calls     
-#  @calledby   
-#  @history 
-#
-#  @endhistory 
+#  @enddesc
 #@@*/
 
 sub GetThornParameterList
@@ -174,7 +139,7 @@ sub GetThornParameterList
 
   $params = $rhparameter_db->{"\U$thorn $block\E variables"};
 
-  foreach $parameter (split(" ", $params))
+  foreach $parameter (split(' ', $params))
   {
     if($parameter =~ m:[^ ]:)
     {
@@ -184,6 +149,7 @@ sub GetThornParameterList
 
   return %parameter_list;
 }
+
 
 sub CreateCStructureParameterHeader
 {
@@ -195,45 +161,48 @@ sub CreateCStructureParameterHeader
   my(@use);
 
   # Create the structure
-
-  push(@data,("#ifdef __cplusplus", "extern \"C\"", "{", "#endif", ""));
-  push(@data,( "extern struct ", "{"));
+  push(@data, '#ifdef __cplusplus');
+  push(@data, 'extern "C"');
+  push(@data, '{');
+  push(@data, '#endif');
+  push(@data, '');
+  push(@data, 'extern struct');
+  push(@data, '{');
 
   foreach $parameter (&order_params($rhparameters, $rhparameter_db))
   {
     $type = $rhparameter_db->{"\U$rhparameters->{$parameter} $parameter\E type"};
-
     $type_string = &get_c_type_string($type);
 
-    $line = "  ".$type_string ." " .$parameter . ";";
-
-    push(@data, $line);
-
-    $line = "  const $type_string $parameter = $structure.$parameter; \\";
-
-    push(@definition, $line);
-
-    $line = "  cctk_pdummy_pointer = \&$parameter; \\";
-
-    push(@use, $line);
+    push(@data, "  $type_string $parameter;");
+    push(@definition, "  const $type_string $parameter = $structure.$parameter; \\");
+    push(@use, "  (void) ($parameter + 0); \\");
   }
 
   # Some compilers don't like an empty structure.
   if((keys %$rhparameters) == 0)
   {
-    push(@data, "  int dummy_parameter;");
+    push(@data, '  int dummy_parameter;');
   }
 
-  push(@data, "} $structure;", "");
+  push(@data, "} $structure;");
+  push(@data, '');
 
-  push(@data,("#ifdef __cplusplus", "}", "#endif", ""));
+  push(@data, '#ifdef __cplusplus');
+  push(@data, '}');
+  push(@data, '#endif');
+  push(@data, '');
 
-  push(@data, "#define DECLARE_$structure"."_PARAMS \\", @definition);
-  push(@data, "");
-  push(@data, "#define USE_$structure"."_PARAMS \\", @use);
+  push(@data, "#define DECLARE_${structure}_PARAMS \\");
+  push(@data, @definition);
+  push(@data, '');
+  push(@data, "#define USE_${structure}_PARAMS \\");
+  push(@data, @use);
+  push(@data, "\n");   # workaround for perl 5.004_04 to add a trailing newline
 
-  return @data;
+  return join ("\n", @data);
 }
+
 
 sub order_params
 {
@@ -246,87 +215,79 @@ sub order_params
   {
     $type = $rhparameter_db->{"\U$rhparameters->{$parameter} $parameter\E type"};
 
-    if($type eq "KEYWORD" ||
-       $type eq "STRING"  ||
-       $type eq "SENTENCE")
+    if($type eq 'KEYWORD' ||
+       $type eq 'STRING'  ||
+       $type eq 'SENTENCE')
     {
       push(@string_params, $parameter);
     }
-    elsif($type eq "BOOLEAN" ||
-          $type eq "INT")
+    elsif($type eq 'BOOLEAN' ||
+          $type eq 'INT')
     {
       push(@int_params, $parameter);
     }
-    elsif($type eq "REAL")
+    elsif($type eq 'REAL')
     {
       push(@float_params, $parameter);
     }
     else
     {
-        $message = "Unknown parameter type '$type'";
-        &CST_error(0,$message,__LINE__,__FILE__);
+      $message = "Unknown parameter type '$type'";
+      &CST_error(0,$message,__LINE__,__FILE__);
     }
-    
   }
-  
+ 
   return (@float_params, @string_params, @int_params);
 }
 
-sub create_parameter_code
-{
-  my($structure, $implementation,$parameter, $rhparameter_db) = @_;
-  my($type, $type_string);
-  my($line, @lines);
-  my($default);
-  my($temp_default);
 
-  $default = $rhparameter_db->{"\U$implementation $parameter\E default"};
-  $type = $rhparameter_db->{"\U$implementation $parameter\E type"};
+#sub create_parameter_code
+#{
+#  my($structure, $implementation,$parameter, $rhparameter_db) = @_;
+#  my($type, $type_string);
+#  my($line, @lines);
+#  my($default);
+#  my($temp_default);
+#
+#  $default = $rhparameter_db->{"\U$implementation $parameter\E default"};
+#  $type = $rhparameter_db->{"\U$implementation $parameter\E type"};
+#
+#  $type_string = &get_c_type_string($type);
+#
+#  if($type_string eq 'char *')
+#  {
+#    $line = "  $structure.$parameter = malloc(" . (length($default)-1) . '*sizeof(char));';
+#    push(@lines, $line);
+#
+#    push(@lines, "  if ($structure.$parameter)");
+#    push(@lines, "    strcpy($structure.$parameter, $default);");
+#  }
+#  elsif($type eq "BOOLEAN")
+#  {
+#    # Logicals need to be done specially.
+#
+#    # Strip out any quote marks, and spaces at start and end.
+#    $temp_default = $default;
+#    $temp_default =~ s:\"::g;
+#    $temp_default =~ s:\s*$:: ;
+#    $temp_default =~ s:^\s*:: ;
+#
+#    push(@lines, "  CCTK_SetLogical(\&($structure.$parameter),\"$temp_default\");");
+#  }
+#  else
+#  {
+#    push(@lines, "  $structure.$parameter = $default;");
+#  }
+#
+#  $line = "CCTKi_ParameterCreate($parameter, $implementation,
+#                    \"foobar\",\"" . $rhparameter_db->{"\U$implementation $parameter\E type"}."\"
+#                    const char *scope,
+#                    int        steerable,
+#                    const char *description,
+#                    const char *defval,
+#                    void       *data)";
+#
+#  return @lines;
+#}
 
-  $type_string = &get_c_type_string($type);
-
-  if($type_string eq "char *")
-  {
-    $line = "  $structure" .".$parameter = malloc(" 
-      . (length($default)-1). "\*sizeof(char));";
-    push(@lines, $line);
-
-    $line = "  if($structure.$parameter)";
-    push(@lines, $line);
-
-    $line = "    strcpy($structure.$parameter, $default);";
-    push(@lines, $line);
-  }
-  elsif($type eq "BOOLEAN")
-  {
-    # Logicals need to be done specially.
-
-    # Strip out any quote marks, and spaces at start and end.
-    $temp_default = $default;
-    $temp_default =~ s:\"::g;
-    $temp_default =~ s:\s*$:: ;
-    $temp_default =~ s:^\s*:: ;
-
-    $line = "  CCTK_SetLogical(\&($structure.$parameter),\"$temp_default\");";
-    push(@lines, $line);
-  }
-  else
-  {
-    $line = "  $structure.$parameter = $default;";
-    push(@lines, $line);
-  }
-
-      $line = "CCTKi_ParameterCreate($parameter, $implementation,
-                    \"foobar\",\"" . $rhparameter_db->{"\U$implementation $parameter\E type"}."\"
-                    const char *scope,
-                    int        steerable,
-                    const char *description,
-                    const char *defval,
-                    void       *data)";
-
-
-  return @lines;
-}
-  
 1;
-

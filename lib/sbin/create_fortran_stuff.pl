@@ -3,9 +3,9 @@
 #  @file      create_fortran_stuff.pl
 #  @date      Tue Jan 12 09:52:35 1999
 #  @author    Tom Goodale
-#  @desc 
-#   
-#  @enddesc 
+#  @desc
+#
+#  @enddesc
 #@@*/
 
 sub CreateFortranThornParameterBindings
@@ -19,66 +19,66 @@ sub CreateFortranThornParameterBindings
   my(%alias_names);
   my(%num_aliases);
 
-  push(@file, "#define DECLARE_CCTK_PARAMETERS \\");
+  push(@file, '#define DECLARE_CCTK_PARAMETERS \\');
 
   # Generate all global parameters
   %these_parameters = &get_global_parameters($rhparameter_db);
 
   if((keys %these_parameters) > 0)
   {
-    @data = &CreateFortranCommonDeclaration("cctk_params_global", \%these_parameters, $rhparameter_db);
+    @data = &CreateFortranCommonDeclaration('cctk_params_global', \%these_parameters, $rhparameter_db);
 
-    foreach $line (@data)
+    if (@data)
     {
-      push(@file, "$line&&\\");
+      push(@file, join ("&&\\\n", @data) . "&&\\");
     }
   }
 
   # Generate all restricted parameters of this thorn
-  %these_parameters = &GetThornParameterList($thorn, "RESTRICTED", $rhparameter_db);
+  %these_parameters = &GetThornParameterList($thorn, 'RESTRICTED', $rhparameter_db);
 
   if((keys %these_parameters > 0))
   {
     $implementation = $rhinterface_db->{"\U$thorn\E IMPLEMENTS"};
-    
-    @data = &CreateFortranCommonDeclaration("$implementation"."rest", \%these_parameters, $rhparameter_db);
 
-    foreach $line (@data)
+    @data = &CreateFortranCommonDeclaration("${implementation}rest", \%these_parameters, $rhparameter_db);
+
+    if (@data)
     {
-      push(@file, "$line&&\\");
+      push(@file, join ("&&\\\n", @data) . "&&\\");
     }
   }
 
   # Generate all private parameters of this thorn
-  %these_parameters = &GetThornParameterList($thorn, "PRIVATE", $rhparameter_db);
+  %these_parameters = &GetThornParameterList($thorn, 'PRIVATE', $rhparameter_db);
 
   if((keys %these_parameters > 0))
   {
-    @data = &CreateFortranCommonDeclaration("$thorn"."priv", \%these_parameters, $rhparameter_db);
+    @data = &CreateFortranCommonDeclaration("${thorn}priv", \%these_parameters, $rhparameter_db);
 
-    foreach $line (@data)
+    if (@data)
     {
-      push(@file, "$line&&\\");
+      push(@file, join ("&&\\\n", @data) . "&&\\");
     }
   }
 
   # Parameters from friends
 
-  # This number can be local to each thorn - it doesn't matter if 
+  # This number can be local to each thorn - it doesn't matter if
   # members of a common block get different names in different
   # thorns, especially if the variable isn't being used !
   $num_aliases = 0;
 
-  foreach $friend (split(" ",$rhparameter_db->{"\U$thorn\E SHARES implementations"}))
+  foreach $friend (split(' ',$rhparameter_db->{"\U$thorn\E SHARES implementations"}))
   {
 
     # Determine which thorn provides this friend implementation
     $rhinterface_db->{"IMPLEMENTATION \U$friend\E THORNS"} =~ m:([^ ]*):;
-    
+
     $friend_thorn = $1;
-    
-    %these_parameters = &GetThornParameterList($friend_thorn, "RESTRICTED", $rhparameter_db);
-    
+
+    %these_parameters = &GetThornParameterList($friend_thorn, 'RESTRICTED', $rhparameter_db);
+
     %alias_names = ();
 
     foreach $parameter (sort(keys %these_parameters))
@@ -86,29 +86,29 @@ sub CreateFortranThornParameterBindings
       # Alias the parameter unless it is one we want.
       if(($rhparameter_db->{"\U$thorn SHARES $friend\E variables"} =~ m:( )*$parameter( )*:) && (length($1) > 0)||length($2)>0||$1 eq $rhparameter_db->{"\U$thorn SHARES $friend\E variables"})
       {
-        $alias_names{$parameter} = "$parameter";
+        $alias_names{$parameter} = $parameter;
       }
       else
       {
-        $alias_names{$parameter} = "CCTKH".$num_aliases;
+        $alias_names{$parameter} = "CCTKH$num_aliases";
         $num_aliases++;
       }
     }
 
-    @data = &CreateFortranCommonDeclaration("$friend"."rest", \%these_parameters, $rhparameter_db, \%alias_names);
-      
-    foreach $line (@data)
-    {
-      push(@file, "$line&&\\");
-    }
+    @data = &CreateFortranCommonDeclaration("${friend}rest", \%these_parameters, $rhparameter_db, \%alias_names);
 
-    
+    if (@data)
+    {
+      push(@file, join ("&&\\\n", @data) . "&&\\");
+    }
   }
 
-  push(@file, ("",""));
-  
-  return (@file);
+  push(@file, '');
+  push(@file, '');
+
+  return join ("\n", @file);
 }
+
 
 sub CreateFortranCommonDeclaration
 {
@@ -132,43 +132,35 @@ sub CreateFortranCommonDeclaration
 
   $definition = "COMMON /$common_block/";
 
-  $sepchar = "";
+  $sepchar = '';
 
   foreach $parameter (&order_params($rhparameters,$rhparameter_db))
   {
     $type = $rhparameter_db->{"\U$rhparameters->{$parameter} $parameter\E type"};
-      
+
     $type_string = &get_fortran_type_string($type);
 
     if($aliases == 0)
     {
       $line = "$type_string $parameter";
-    }
-    else
-    {
-      $line = "$type_string $rhaliases->{$parameter}";
-    }
-
-    push(@data, $line);
-
-    if($aliases == 0)
-    {
       $definition .= "$sepchar$parameter";
     }
     else
     {
+      $line = "$type_string $rhaliases->{$parameter}";
       $definition .= "$sepchar$rhaliases->{$parameter}";
     }
 
+    push(@data, $line);
 
-    $sepchar = ",";
+    $sepchar = ',';
   }
 
   push(@data, $definition);
 
   return @data;
 }
-  
+
 
 sub get_fortran_type_string
 {
@@ -176,25 +168,25 @@ sub get_fortran_type_string
   my($type_string);
 
 
-  if($type eq "KEYWORD" ||
-     $type eq "STRING"  ||
-     $type eq "SENTENCE")
+  if($type eq 'KEYWORD' ||
+     $type eq 'STRING'  ||
+     $type eq 'SENTENCE')
   {
-    $type_string = "CCTK_STRING ";
-  } 
-  elsif($type eq "BOOLEAN" ||
-        $type eq "INT")
-  {
-    $type_string = "CCTK_INT";
+    $type_string = 'CCTK_STRING ';
   }
-  elsif($type eq "REAL")
+  elsif($type eq 'BOOLEAN' ||
+        $type eq 'INT')
   {
-    $type_string = "CCTK_REAL ";
+    $type_string = 'CCTK_INT';
+  }
+  elsif($type eq 'REAL')
+  {
+    $type_string = 'CCTK_REAL ';
   }
   else
   {
     $message = "Unknown parameter type '$type'";
-    &CST_error(0,$message,"",__LINE__,__FILE__);
+    &CST_error(0,$message,'',__LINE__,__FILE__);
   }
 
   return $type_string;

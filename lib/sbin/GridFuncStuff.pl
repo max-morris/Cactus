@@ -43,8 +43,6 @@ sub CreateVariableBindings
   {
     mkdir("include", 0755) || die "Unable to create include directory";
   }
-  chdir "include";
-
 
   foreach $thorn (split(" ",$rhinterface_db->{"THORNS"}))
   {
@@ -58,7 +56,7 @@ sub CreateVariableBindings
       $dataout .= "$line\n";
     }
 
-    &WriteFile("$thorn\_arguments.h",\$dataout);
+    &WriteFile("include/$thorn\_arguments.h",\$dataout);
   }
 
   $dataout  = "/* get the CCTK datatype definitions */\n";
@@ -66,7 +64,8 @@ sub CreateVariableBindings
   $dataout .= "#ifdef CCODE\n";
   $dataout .= "#define CCTK_ARGUMENTS CCTK_CARGUMENTS\n";
   $dataout .= "#define _CCTK_ARGUMENTS _CCTK_CARGUMENTS\n";
-  $dataout .= "#define DECLARE_CCTK_ARGUMENTS DECLARE_CCTK_CARGUMENTS\n";
+  $dataout .= "#define DECLARE_CCTK_ARGUMENTS DECLARE_CCTK_CARGUMENTS \\\n";
+  $dataout .= "                               USE_CCTK_CARGUMENTS\n";
   $dataout .= "#endif\n\n";
   $dataout .= "#ifdef FCODE\n";
   $dataout .= "#define CCTK_ARGUMENTS CCTK_FARGUMENTS\n";
@@ -86,15 +85,12 @@ sub CreateVariableBindings
     $dataout .= "#endif\n\n";
   }
 
-  &WriteFile("cctk_Arguments.h",\$dataout);
-
-  chdir "..";
+  &WriteFile("include/cctk_Arguments.h",\$dataout);
 
   if(! -d "Variables")
   {
     mkdir("Variables", 0755) || die "Unable to create Variables directory";
   }
-  chdir "Variables";
 
   $filelist = "BindingsVariables.c";
 
@@ -122,7 +118,7 @@ sub CreateVariableBindings
 
   $dataout .= "  return 0;\n}\n\n";
 
-  &WriteFile("BindingsVariables.c",\$dataout);
+  &WriteFile("Variables/BindingsVariables.c",\$dataout);
 
   foreach $thorn (split(" ",$rhinterface_db->{"THORNS"}))
   {
@@ -149,7 +145,7 @@ sub CreateVariableBindings
 
     $dataout .= "  return 0;\n}\n";
 
-    &WriteFile("$thorn.c",\$dataout);
+    &WriteFile("Variables/$thorn.c",\$dataout);
 
     $filelist .= " $thorn.c";
   }
@@ -165,12 +161,12 @@ sub CreateVariableBindings
       $dataout .= "$line\n";
     }
 
-    &WriteFile("$thorn\_FortranWrapper.c",\$dataout);
+    &WriteFile("Variables/$thorn\_FortranWrapper.c",\$dataout);
     $filelist .= " $thorn\_FortranWrapper.c";
   }
 
   $dataout = "SRCS = $filelist\n";
-  &WriteFile("make.code.defn",\$dataout);
+  &WriteFile("Variables/make.code.defn",\$dataout);
 
   chdir $start_dir;
 }
@@ -538,16 +534,14 @@ sub CreateCArgumentUses
           $suffix .= "_p";
         }
 
-        push(@declarations, "cctk_dummy_pointer = \&$argument$suffix;");
+        push(@declarations, "(void) ($argument$suffix + 0);");
 
       }
     }
   }
 
   return @declarations;
-
 }
-
 
 
 #/*@@
