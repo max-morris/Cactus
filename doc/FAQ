@@ -1,7 +1,7 @@
 
 Cactus Code Frequently Asked Questions
 
-$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.61 2003-03-11 07:58:44 allen Exp $
+$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.62 2003-03-17 15:13:07 allen Exp $
 
 Also available at http://www.cactuscode.org/Documentation/FAQ
 
@@ -224,6 +224,11 @@ E12 I'm getting wierd syntax errors in Fortran code, with an extra
 E13 I want to write the value of a KEYWORD parameter in Fortran code to 
     a file, but nothing I try works.
  
+E14 I write my thorns with Fortran, do you have any general advice.
+
+E15 In my Fortran thorn the value of a Cactus integer parameter is totally 
+    wrong when I print it, but when I print it from C it is fine. 
+
 
 ------------------------------------------------------------------------------
 General
@@ -1212,6 +1217,20 @@ E13 I want to write the value of a KEYWORD parameter in Fortran code to
     Fortran string, then you can manipulate them as usual. If you just 
     want to print the value to the standard output there is also the 
     routine CCTK_PrintString.
+
+E14 I write my thorns with Fortran, do you have any general advice.
+
+    Yes. Read the section "Fortran Thorn Writers" in the Users Guide, and 
+    follow these general recommendations
+
+    - use IMPLICIT NONE in your Cactus subroutines and functions, this 
+      will help in finding errors at compile time.
+
+E15 In my Fortran thorn the value of a Cactus integer parameter is totally 
+    wrong when I print it, but when I print it from C it is fine. 
+
+    Check that you remembered to add DECLARE_CCTK_PARAMETERS to the 
+    declaration area of the subroutine. 
 
 
 ------------------------------------------------------------------------------
