@@ -5,6 +5,7 @@
    @desc 
    Default communication routines.
    @enddesc 
+   @version $Header$
  @@*/
 
 
@@ -21,6 +22,10 @@
 #ifdef MPI
 #include "mpi.h"
 #endif
+
+static char *rcsid = "$Header$";
+
+CCTK_FILEVERSION(comm_CactusDefaultComm_c)
 
 #ifdef MPI
 extern char MPI_Active;
@@ -41,9 +46,6 @@ extern char MPI_Active;
                                   } while (0)
 #endif
 
-static char *rcsid = "$Header$";
-
-CCTK_FILEVERSION(comm_CactusDefaultComm_c)
 
  /*@@
    @routine    CactusDefaultSetupGH
