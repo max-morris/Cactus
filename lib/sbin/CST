@@ -6,7 +6,7 @@
 #  @desc 
 #  Parses the the configuration files for thorns.
 #  @enddesc 
-#  @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.30 1999-09-19 14:16:43 goodale Exp $
+#  @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.31 1999-10-24 11:45:00 allen Exp $
 #@@*/
 
 # Global parameter to track the number of errors from the CST
@@ -63,7 +63,6 @@ if (!-e "$sbin_dir/parameter_parser.pl" )
 
 require "$sbin_dir/parameter_parser.pl";
 require "$sbin_dir/interface_parser.pl";
-#require "$sbin_dir/schedule_parser.pl";
 require "$sbin_dir/ScheduleParser.pl";
 require "$sbin_dir/create_c_stuff.pl";
 require "$sbin_dir/create_fortran_stuff.pl";
@@ -74,8 +73,7 @@ require "$sbin_dir/ImpParamConsistency.pl";
 require "$sbin_dir/CSTUtils.pl";
 require "$sbin_dir/CreateParameterBindings.pl";
 require "$sbin_dir/CreateImplementationBindings.pl";
-require "$sbin_dir/NewCreateScheduleBindings.pl";
-#require "$sbin_dir/CreateScheduleBindings.pl";
+require "$sbin_dir/CreateScheduleBindings.pl";
 require "$sbin_dir/BuildHeaders.pl";
 
 #######################################################################
@@ -519,12 +517,9 @@ sub CreateBindings
   # Place an appropriate make.code.defn in the bindings directory.
   chdir $bindings_dir;
 
-  open (OUT, ">make.code.defn") || die "Cannot open make.code.defn";
-
-  print OUT "SRCS = \n";
-  print OUT "SUBDIRS = Implementations Parameters Variables Schedule\n";
-
-  close OUT;
+  $dataout  = "SRCS = \n";
+  $dataout .= "SUBDIRS = Implementations Parameters Variables Schedule\n";
+  &WriteFile("make.code.defn",$dataout);
     
   # Go back to where we started.
   chdir $start_dir;
