@@ -24,7 +24,7 @@ static char *rcsid = "$Id$";
    @endhistory 
 
 @@*/
-void datestamp() {
+void datestamp(void) {
   printf ("  Compiled on %s at %s\n", __DATE__, __TIME__);
 }
 
@@ -42,7 +42,7 @@ void datestamp() {
    @endhistory 
 
 @@*/
-char *compileTime() {
+char *compileTime(void) {
   return (__TIME__);
 }
 
@@ -60,13 +60,13 @@ char *compileTime() {
    @endhistory 
 
 @@*/
-char *compileDate() {
+char *compileDate(void) {
   return (__DATE__);
 }
 
 /*#define MAKETEST*/
 #ifdef MAKETEST
-int main()
+int main(void)
 {
   printf("CCTK maketest compiled on %s\n", compileDate());
 

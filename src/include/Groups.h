@@ -32,6 +32,8 @@ int CCTK_GetVarIndex(const char *variablename);
 
 char *CCTK_GetGroupNameFromVar_ByIndex(int var);
 
+int CCTK_GetGroupIndexFromVar_ByIndex(int var);
+
 char *CCTK_GetFullName(int var);
 
 char *CCTK_GetImplementationFromVar(int var);

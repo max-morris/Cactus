@@ -7,6 +7,8 @@
    @enddesc 
  @@*/
 
+/*#define DEBUG_IO*/
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -409,6 +411,11 @@ int CactusDefaultOutputGH(cGH *GH)
     method = (struct IOMethod *)CCTK_GetHandledData(IOMethods, handle);
     if (method)
     {
+
+#ifdef DEBUG_IO
+    printf("Calling IO method with handle %d \n",handle);
+#endif
+
       method->OutputGH(GH);
     }
     else

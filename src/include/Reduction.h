@@ -24,6 +24,8 @@ int CCTK_Reduce(cGH *GH,
 		int operation_handle,
 		int index, ...);
 
+int CCTK_GetReductionHandle(const char *reduction);
+
 #ifdef __cplusplus
 	   }
 #endif
