@@ -800,7 +800,7 @@ sub FunctionDatabase
       $inargs = $rhinterface_db->{"\U$thorn FUNCTION\E $function ARGS"};
       $inret  = $rhinterface_db->{"\U$thorn FUNCTION\E $function RET"};
 
-      ($nstrings,$types,$c,$fortran,$wrappercall,$wrapperargs,$cargs) = &ParseArguments($inret,$inargs);
+      ($nstrings,$types,$c,$fortran,$wrappercall,$wrapperargs,$cargs) = &ParseArguments($inret,$inargs,$thorn);
 
       if ($function_db->{'FUNCTIONS'} =~ / $function / && $function !~ /^\s*$/)
       {
@@ -918,7 +918,7 @@ sub FunctionDatabase
 
 sub ParseArguments
 {
-  my($ret,$args) = @_;
+  my($ret,$args,$thorn) = @_;
   my($number_args);
 
 #  print "\nParsing Arguments\n";
@@ -995,7 +995,7 @@ sub ParseArguments
     {
       $fortran = 0;
       $c = 0;
-      $message = "Error parsing aliased function argument $arg";
+      $message = "Error parsing aliased function argument $arg in thorn $thorn.";
       &CST_error(1,$message,'',__LINE__,__FILE__);
     }
   }
