@@ -6,7 +6,7 @@
 #   @desc 
 #   
 #   @enddesc
-#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/extras/MPI/MPICH,v 1.6 2000-04-19 14:17:36 goodale Exp $ 
+#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/extras/MPI/MPICH,v 1.7 2000-04-19 16:28:48 goodale Exp $ 
 # @@*/
 
 
@@ -125,5 +125,5 @@ fi
 
 MPI_LIBS="$MPICH_LIB $MPICH_DEVICE_LIBS" 
 MPI_LIB_DIRS="$MPICH_DEVICE_LIB_DIR $MPICH_LIB_DIR"
-MPI_INC_DIRS="$MPICH_DIR/include $MPICH_INC_DIRS/include"
+MPI_INC_DIRS="$MPICH_INC_DIRS"
 
