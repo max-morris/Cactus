@@ -20,14 +20,14 @@ INC_DIRS += $(SRCDIR) $(SRCDIR)/include
 EXTRA_DEFINES += THORN_IS_$(THORN) 
 
 # Include the subdirectory's local include data
-include $(SRCDIR)/make.code.defn
+-include $(SRCDIR)/make.code.defn
 
 # Turn source file names into object file names
 OBJS = $(SRCS:%=%.o)
 
 # Build all the object files
 
-make.checked: $(OBJS)
+$(TARGET): $(OBJS)
 	touch make.checked
 
 # Rules to make the object files

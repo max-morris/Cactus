@@ -17,6 +17,7 @@
 #include "cctk_Flesh.h"
 #include "cctk_Config.h"
 #include "cctk_ActiveThorns.h"
+#include "cctki_ActiveThorns.h"
 #include "cctk_FortranString.h"
 
 static const char *rcsid = "$Header$";
@@ -100,13 +101,75 @@ static int n_imps   = 0;
    -4 - failed to store thorn in tree
    @endreturndesc
 @@*/
-int CCTKi_RegisterThorn(const char *name, const char *imp)
+int CCTKi_RegisterThorn(const struct iAttributeList *attributes)
 {
   int retval;
+  int i,j;
+
   t_sktree *node;
   t_sktree *temp;
 
   struct THORN *thorn;
+
+  const char *name;
+  const char *imp;
+
+#if 0
+  for(i=0; attributes[i].attribute; i++)
+  {
+    if(!strcmp(attributes[i].attribute, "functions"))
+    {
+      printf("Functions: \n");
+      for(j=0; attributes[i].AttributeData.FuncList[j].keyword; j++)
+      {
+        printf("keyword   is %s\n", attributes[i].AttributeData.FuncList[j].keyword);
+        printf("signature is %s\n", attributes[i].AttributeData.FuncList[j].signature);
+        printf("pointer   is %p\n", attributes[i].AttributeData.FuncList[j].func);
+      }
+    }
+    else
+    {
+      printf("attribute is %s\n", attributes[i].attribute);
+      if(attributes[i].AttributeData.StringList)
+      {
+        for(j=0; attributes[i].AttributeData.StringList[j]; j++)
+        {
+          printf("   datapoint %s\n", attributes[i].AttributeData.StringList[j]);
+        }
+      }
+    }
+  }
+#endif /* 0 */
+
+  for(i=0; attributes[i].attribute; i++)
+  {
+    if(!strcmp(attributes[i].attribute, "name"))
+    {
+      if(attributes[i].AttributeData.StringList)
+      {
+        name = attributes[i].AttributeData.StringList[0];
+      }
+    }
+    else if(!strcmp(attributes[i].attribute, "implementation"))
+    {
+      if(attributes[i].AttributeData.StringList)
+      {
+        imp = attributes[i].AttributeData.StringList[0];
+      }
+    }
+    else if(!strcmp(attributes[i].attribute, "ancestors"))
+    {
+      ;
+    }
+    else if(!strcmp(attributes[i].attribute, "friends"))
+    {
+      ;
+    }
+    else
+    {
+      fprintf(stderr, "Unknown/unimplemented thorn attribute %s\n", attributes[i].attribute);
+    }  
+  }
 
   /*  printf("Registering thorn %s, which provides %s\n", name, imp);*/
 

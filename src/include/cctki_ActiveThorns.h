@@ -11,14 +11,30 @@
 #ifndef __CCTKI_ACTIVETHORNS_H_
 #define __CCTKI_ACTIVETHORNS_H_
 
-#include <stdio.h>
-#include "SKBinTree.h"   
-
 #ifdef __cplusplus 
 extern "C" {
 #endif
 
-int CCTKi_RegisterThorn(const char *name, const char *imp);
+struct iFuncList
+{
+  const char *keyword;
+  const char *signature;
+  void (*func)(void);
+};
+
+union iAttributeData
+{
+  const char **StringList;
+  const struct iFuncList *FuncList;
+};
+
+struct iAttributeList
+{
+  const char *attribute;
+  union iAttributeData AttributeData;
+};
+
+int CCTKi_RegisterThorn(const struct iAttributeList *attributes);
 int CCTKi_ActivateThorn(const char *name);
 int CCTKi_PrintThorns(FILE *file, const char *format, int active);
 int CCTKi_PrintImps(FILE *file, const char *format, int active);

@@ -14,6 +14,11 @@ sub CreateImplementationBindings
   my($thorn);
   my(@data);
 
+  if(! $build_dir)
+  {
+    $build_dir = "$bindings_dir/build";
+  }
+
   if(! -d $bindings_dir)
   {
     mkdir("$bindings_dir", 0755) || die "Unable to create $bindings_dir";
@@ -36,18 +41,16 @@ sub CreateImplementationBindings
 
   @data = ();
 
-  push(@data, "#include <stdio.h>\n");
-  push(@data, "/* FIXME - remove when ActiveThorns does not need this */\n");
-  push(@data, "#include \"SKBinTree.h\"\n\n");
-  push(@data, "#include \"cctk_ActiveThorns.h\"\n\n");
-  push(@data, "#include \"cctki_ActiveThorns.h\"\n\n");
+  foreach $thorn (sort split(" ", $rhinterface_db->{"THORNS"}))
+  {
+    push(@data, "int CCTKi_BindingsThorn_$thorn(void);\n") 
+  }
 
   push(@data, "int CCTKi_BindingsImplementationsInitialise(void)\n{\n");
 
   foreach $thorn (sort split(" ", $rhinterface_db->{"THORNS"}))
   {
-    push(@data, "  CCTKi_RegisterThorn(\"$thorn\",\"" . 
-	 $rhinterface_db->{"\U$thorn\E IMPLEMENTS"} ."\");\n");
+    push(@data, "  CCTKi_BindingsThorn_$thorn();\n") 
   }
 
   push(@data, "\n return 0;\n}\n");
@@ -61,8 +64,78 @@ sub CreateImplementationBindings
  
   &WriteFile("make.code.defn",\$dataout);
 
+  if(! -d "$build_dir")
+  {
+    mkdir("$build_dir", 0755) || die "Unable to create $build_dir";
+  }
+  
+  chdir "$build_dir";
 
-  chdir $start_dir;
+  foreach $thorn (sort split(" ", $rhinterface_db->{"THORNS"}))
+  {
+
+    if(! -d "$thorn")
+    {
+      mkdir("$thorn", 0755) || die "Unable to create $build_dir/$thorn";
+    }
+  
+    chdir "$thorn";
+
+    $myimp = $rhinterface_db->{"\U$thorn\E IMPLEMENTS"};
+
+    @data = ();
+
+    push(@data, "#include <stdio.h>\n");
+    push(@data, "#include \"cctki_ActiveThorns.h\"\n\n");
+
+    push(@data, "int CCTKi_BindingsThorn_${thorn}(void)\n{\n");
+
+    push(@data, "  int retval;\n");
+
+    push(@data, "  const char *name[] = {\"$thorn\",0};");
+    push(@data, "  const char *implementation[]={\"$myimp\",0};");
+
+    push(@data, "  const char *ancestors[]=\n  {");
+    foreach $ancestor (split(" ",$rhinterface_db->{"IMPLEMENTATION \U$myimp\E ANCESTORS"}))
+    {
+      push(@data, "    \"$ancestor\",");
+    }
+    push(@data, "    0,");
+    push(@data, "  };\n");
+
+    push(@data, "  const char *friends[]=\n  {");
+    foreach $friend (split(" ",$rhinterface_db->{"IMPLEMENTATION \U$myimp\E FRIENDS"}))
+    {
+      push(@data, "    \"$friend\",");
+    }
+    push(@data, "    0,");
+    push(@data, "  };\n");
+
+    push(@data, "\n  struct iAttributeList attributes[] =");
+    push(@data, "  {");
+    push(@data, "    {\"name\",          {name}},");
+    push(@data, "    {\"implementation\",{implementation}},");
+    push(@data, "    {\"ancestors\",{ancestors}},");
+    push(@data, "    {\"friends\",{friends}},");
+    push(@data, "    {0,{0}},");
+    push(@data, "  };\n");
+
+    push(@data, "  retval = CCTKi_RegisterThorn(attributes);");
+
+    push(@data, "\n  return retval;\n}\n");
+
+    &OutputFile(".", "cctk_ThornBindings.c", @data);
+
+
+    $dataout = "";
+    $dataout .= "\n";
+    $dataout .= "SRCS = cctk_ThornBindings.c\n\n";
+ 
+    &WriteFile("make.code.defn",\$dataout);
+
+    chdir "..";
+  }
+    
 }
 
 1;
