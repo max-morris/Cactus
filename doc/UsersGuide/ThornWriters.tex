@@ -2181,6 +2181,11 @@ of the name string may be necessary for calling C routines from Fortran.
 
 \subsection{Registering Coordinates and Coordinate Properties}
 
+\textbf{The APIs described in this section are deprecated, and will
+probably be phased out fairly soon.
+New code should use the APIs provided by the \texttt{CoordBase} thorn
+instead (this lives in \texttt{CactusBase} arrangement).}
+
 Coordinate systems and their properties can be registered at any time with the Flesh.
 The registration utilities for thorns providing coordinates are:
 \begin{Lentry}
@@ -2257,6 +2262,11 @@ ierr = CCTK_CoordRegisterPhysIndex(cctkGH, loweri, upperi, -1, "y", "cart3d");
 \end{Lentry}
 
 \subsection{Using Coordinates}
+
+\textbf{The APIs described in this section are deprecated, and will
+probably be phased out fairly soon.
+New code should use the APIs provided by the \texttt{CoordBase} thorn
+instead (this lives in \texttt{CactusBase} arrangement).}
 
 The utilities for thorns using coordinates are:
 
