@@ -9,101 +9,275 @@ available from C, not all are currently available from Fortran.
 
 \section{Functions Alphabetically}
 
-\begin{description}
+\begin{Lentry}
 
-\item[CCTK\_ArrayGroupSize] Give the size of the variables in a group, from the name
-\item[CCTK\_Abort]
-\item[CCTK\_ArrayGroupSizeB] Give the size of the variables in a group, from either the name of the index
-\item[CCTK\_ArrayGroupSizeI] Give the size of the variables in a group, from the group index
+\item[CCTK\_ArrayGroupSize] 
+  [\pageref{ArrayGroupSize}]
+  Give the size of the variables in a group, from the name
+
+\item[CCTK\_Abort] 
+  [\pageref{Abort}] 
+
+\item[CCTK\_ArrayGroupSizeB] 
+  [\pageref{ArrayGroupSizeB}] 
+  Give the size of the variables in a group, from either the name of the index
+
+\item[CCTK\_ArrayGroupSizeI] 
+  [\pageref{ArrayGroupSizeI}] 
+  Give the size of the variables in a group, from the group index
 
 \item[CCTK\_Barrier]
+  [\pageref{Barrier}] 
 
-\item[CCTK\_CoordIndex] Give the GF index for a given coordinate name.
-\item[CCTK\_CoordRange] Return the global upper and lower bounds for a given coordinate name
+\item[CCTK\_CoordIndex] 
+  [\pageref{CoordIndex}] 
+  Give the GF index for a given coordinate name.
 
-\item[CCTK\_DecomposeName] Given the full name of a variable/group, separates the name returning both the implementation and the variable/group
-\item[CCTK\_DisableGroupComm] Disable the communication for a group
-\item[CCTK\_DisableGroupStorage] Disable the storage for a group
+\item[CCTK\_CoordRange] 
+  [\pageref{CoordRange}] 
+  Return the global upper and lower bounds for a given coordinate name
 
-\item[CCTK\_EnableGroupComm] Enable the communication for a group
-\item[CCTK\_EnableGroupStorage] Enable the storage for a group
-\item[CCTK\_Equals] Check for equality of strings
+\item[CCTK\_DecomposeName] 
+  [\pageref{DecomposeName}] 
+  Given the full name of a variable/group, separates the name returning both the implementation and the variable/group
+
+\item[CCTK\_DisableGroupComm] 
+  [\pageref{DisableGroupComm}] 
+  Disable the communication for a group
+
+\item[CCTK\_DisableGroupStorage] 
+  [\pageref{DisableGroupStorage}] 
+  Disable the storage for a group
+
+\item[CCTK\_EnableGroupComm] 
+  [\pageref{EnableGroupComm}] 
+  Enable the communication for a group
+
+\item[CCTK\_EnableGroupStorage] 
+  [\pageref{EnableGroupStorage}] 
+  Enable the storage for a group
+
+\item[CCTK\_Equals] 
+  [\pageref{Equals}] 
+  Check for equality of strings
+
 \item[CCTK\_Exit]
+  [\pageref{Equals}] 
 
-\item[CCTK\_FullName] Given a variable index, returns the full name of the variable
-\item[CCTK\_FirstVarIndex] Given a group name returns the first variable index in the group
-\item[CCTK\_FirstVarIndexI] Given a group index returns the first variable index in the group
 
-\item[CCTK\_GHExtensionHandle] Get the handle associated with a extension to the Cactus GH structure
-\item[CCTK\_GroupIndex] Get the index number for a group name
-\item[CCTK\_GroupNameFromVarI] Given a variable index, return the name of the associated group
-\item[CCTK\_GroupIndexFromVarI] Given a variable index, returns the index of the associated group
-\item[CCTK\_GroupIndexFromVar] Given a variable name, returns the index of the associated group
-\item[CCTK\_GroupData] Given a group index, returns information about the variables held in the group
-\item[CCTK\_GroupName] Given a group index, returns the group name
-\item[CCTK\_GroupTypeFromVarI] Provides group type index from the group index
+\item[CCTK\_FullName] 
+  [\pageref{FullName}] 
+  Given a variable index, returns the full name of the variable
 
-\item[CCTK\_ImpFromVarI] Given a variable index, returns the implementation name
-\item[CCTK\_INFO] Prints an information message
-	 
-\item[CCTK\_MaxDim] Get the maximum dimension of any grid variable 
-\item[CCTK\_MyProc] Get the local processor number
+\item[CCTK\_FirstVarIndex]   
+  [\pageref{FirstVarIndex}] 
+  Given a group name returns the first variable index in the group
 
-\item[CCTK\_NumGroups] Get the number of groups of variables compiled in the code
+\item[CCTK\_FirstVarIndexI]   
+  [\pageref{FirstVarIndexI}] 
+  Given a group index returns the first variable index in the group
 
-\item[CCTK\_NumVars] Get the number of grid variables compiled in the code
+\item[CCTK\_GHExtensionHandle]   
+  [\pageref{GHExtensionHandle}] 
+  Get the handle associated with a extension to the Cactus GH structure
 
-\item[CCTK\_NumVarsInGroupI] Provides the number of variables in a group from the group index
-\item[CCTK\_NumVarsInGroup] Provides the number of variables in a group from the group name
-\item[CCTK\_NumTimeLevelsFromVarI] Gives the number of timelevels for a variable
-\item[CCTK\_NumTimeLevelsFromVar] Gives the number of timelevels for a variable
-\item[CCTK\_nProcs]  Get the total number of processors used
+\item[CCTK\_GroupIndex]   
+  [\pageref{GroupIndex}] 
+  Get the index number for a group name
 
+\item[CCTK\_GroupNameFromVarI]   
+  [\pageref{GroupNameFromVarI}] 
+  Given a variable index, return the name of the associated group
+
+\item[CCTK\_GroupIndexFromVarI]   
+  [\pageref{GroupIndexFromVarI}] 
+  Given a variable index, returns the index of the associated group
+
+\item[CCTK\_GroupIndexFromVar]   
+  [\pageref{GroupIndexFromVar}] 
+  Given a variable name, returns the index of the associated group
+
+\item[CCTK\_GroupData]   
+  [\pageref{GroupData}] 
+  Given a group index, returns information about the variables held in the group
+
+\item[CCTK\_GroupName]   
+  [\pageref{GroupName}] 
+  Given a group index, returns the group name
+
+\item[CCTK\_GroupTypeFromVarI]   
+  [\pageref{GroupTypeFromVarI}] 
+  Provides group type index from the group index
+
+\item[CCTK\_ImpFromVarI]   
+  [\pageref{ImpFromVarI}] 
+  Given a variable index, returns the implementation name
+
+\item[CCTK\_INFO]   
+  [\pageref{INFO}] 
+  Prints an information message
+         
+\item[CCTK\_MaxDim]   
+  [\pageref{MaxDim}] 
+  Get the maximum dimension of any grid variable 
+
+\item[CCTK\_MyProc]   
+  [\pageref{MyProc}] 
+  Get the local processor number
+
+\item[CCTK\_NumGroups]   
+  [\pageref{NumGroups}] 
+  Get the number of groups of variables compiled in the code
+
+\item[CCTK\_NumVars]   
+  [\pageref{NumVars}] 
+  Get the number of grid variables compiled in the code
+
+\item[CCTK\_NumVarsInGroupI]   
+  [\pageref{NumVarsInGroupI}] 
+  Provides the number of variables in a group from the group index
+
+\item[CCTK\_NumVarsInGroup]   
+  [\pageref{NumVarsInGroup}] 
+  Provides the number of variables in a group from the group name
+
+\item[CCTK\_NumTimeLevelsFromVarI]   
+  [\pageref{NumTimeLevelsFromVarI}] 
+  Gives the number of timelevels for a variable
+
+\item[CCTK\_NumTimeLevelsFromVar]   
+  [\pageref{NumTimeLevelsFromVar}] 
+  Gives the number of timelevels for a variable
+
+\item[CCTK\_nProcs]    
+  [\pageref{nProcs}] 
+  Get the total number of processors used
 
 \item[CCTK\_OutputVarAsByMethod] 
-\item[CCTK\_OutputGH] 
+  [\pageref{OutputVarAsByMethod}] 
 
+\item[CCTK\_OutputGH] 
+  [\pageref{OutputGH}] 
 
 \item[CCTK\_ParallelInit] 
-\item[CCTK\_PARAMWARN] Prints a warning from parameter checking, and possibly stops the code
-\item[CCTK\_PrintGroup] Prints a group name from its index
-\item[CCTK\_PrintVar] Prints a variable name from its index
+  [\pageref{ParallelInit}] 
 
+\item[CCTK\_PARAMWARN] 
+  [\pageref{PARAMWARN}] 
+  Prints a warning from parameter checking, and possibly stops the code
+
+\item[CCTK\_PrintGroup] 
+  [\pageref{PrintGroup}] 
+  Prints a group name from its index
+
+\item[CCTK\_PrintVar] 
+  [\pageref{PrintVar}] 
+  Prints a variable name from its index
 
 \item[CCTK\_QueryGroupStorage] 
+  [\pageref{QueryGroupStorage}] 
+
 \item[CCTK\_QueryGroupStorageI] 
+  [\pageref{QueryGroupStorageI}] 
 
+\item[CCTK\_Reduce] 
+  [\pageref{Reduce}] 
+  Perform a reduction operation using a registered operator
 
-\item[CCTK\_Reduce] Perform a reduction operation using a registered operator
-\item[CCTK\_ReductionHandle] Get the handle for a registered reduction operator
-\item[CCTK\_RegisterBanner] Register a banner for a thorn
-\item[CCTK\_RegisterCoordI] Register a grid function index as identifying a coordinate with a given coordinate name and direction.
-\item[CCTK\_RegisterCoord] Register a grid function name as identifying a coordinate with a given coordinate name and direction.
-\item[CCTK\_RegisterCoordRange] Saves the global upper and lower bounds for a given coordinate name
-\item[CCTK\_RegisterGHExtension] Register the name of an extension to the Cactus GH.
-\item[CCTK\_RegisterGHExtensionInitGH] Register a routine for providing initialisation for an extension to the Cactus GH
-\item[CCTK\_RegisterGHExtensionSetupGH]  Register a routine for setting up an extension to the Cactus GH
-\item[CCTK\_RegisterGHExtensionrfrTraverseGH] Register a routine for an extension to the Cactus GH which is run before any RFR traverse
-\item[CCTK\_RegisterReductionOperator] Register a function a providing a reduction operation
-\item[CCTK\_RegisterIOMethod] Register an IO method name
+\item[CCTK\_ReductionHandle] 
+  [\pageref{ReductionHandle}] 
+  Get the handle for a registered reduction operator
+
+\item[CCTK\_RegisterBanner] 
+  [\pageref{RegisterBanner}] 
+  Register a banner for a thorn
+
+\item[CCTK\_RegisterCoordI] 
+  [\pageref{RegisterCoordI}] 
+  Register a grid function index as identifying a coordinate with a given coordinate name and direction.
+
+\item[CCTK\_RegisterCoord] 
+  [\pageref{RegisterCoord}] 
+  Register a grid function name as identifying a coordinate with a given coordinate name and direction.
+
+\item[CCTK\_RegisterCoordRange] 
+  [\pageref{RegisterCoordRange}] 
+  Saves the global upper and lower bounds for a given coordinate name
+
+\item[CCTK\_RegisterGHExtension] 
+  [\pageref{RegisterGHExtension}] 
+  Register the name of an extension to the Cactus GH.
+
+\item[CCTK\_RegisterGHExtensionInitGH] 
+  [\pageref{RegisterGHExtensionInitGH}] 
+  Register a routine for providing initialisation for an extension to the Cactus GH
+
+\item[CCTK\_RegisterGHExtensionSetupGH]  
+  [\pageref{RegisterGHExtensionSetupGH}] 
+  Register a routine for setting up an extension to the Cactus GH
+
+\item[CCTK\_RegisterGHExtensionrfrTraverseGH] 
+  [\pageref{RegisterGHExtensionrfrTraverseGH}] 
+  Register a routine for an extension to the Cactus GH which is run before any RFR traverse
+
+\item[CCTK\_RegisterReductionOperator] 
+  [\pageref{RegisterReductionOperator}] 
+  Register a function a providing a reduction operation
+
+\item[CCTK\_RegisterIOMethod] 
+  [\pageref{RegisterIOMethod}] 
+  Register an IO method name
+
 \item[CCTK\_RegisterIOMethodOutputGH] 
+  [\pageref{RegisterIOMethodOutputGH}] 
+
 \item[CCTK\_RegisterIOMethodOutputVarAs] 
-\item[CCTK\_RegisterIOMethodTimeToOutput] Register a routine for deciding if it is time to output for an IO method 
-\item[CCTK\_RegisterIOMethodTriggerOutput] Register a routine for dealing with trigger output for an IO method
+  [\pageref{RegisterIOMethodOutputVarAs}] 
+
+\item[CCTK\_RegisterIOMethodTimeToOutput] 
+  [\pageref{RegisterIOMethodTimeToOutput}] 
+  Register a routine for deciding if it is time to output for an IO method 
+
+\item[CCTK\_RegisterIOMethodTriggerOutput] 
+  [\pageref{RegisterIOMethodTriggerOutput}] 
+  Register a routine for dealing with trigger output for an IO method
 
 \item[CCTK\_SetupGH] 
-\item[CCTK\_SyncGroup] Synchronize the ghost zones for a group of variables
+  [\pageref{SetupGH}] 
 
-\item[CCTK\_VarIndex] Get the index for a variable
-\item[CCTK\_VarName] Given a variable index, returns the variable name
-\item[CCTK\_VarTypeI] Provides variable type index from the variable index
-\item[CCTK\_VarDataPtr]{Returns the data pointer for a grid variable}
-\item[CCTK\_VarDataPtrB]{Returns the data pointer for a grid variable from the variable index or name}
-\item[CCTK\_VarDataPtrI]{Returns the data pointer for a grid variable from the variable index}
+\item[CCTK\_SyncGroup] 
+  [\pageref{SyncGroup}] 
+  Synchronize the ghost zones for a group of variables
 
-\item[CCTK\_WARN] Prints a warning message and possibly stops the code
+\item[CCTK\_VarIndex]
+   [\pageref{VarIndex}] 
+  Get the index for a variable
 
-\end{description}
+\item[CCTK\_VarName] 
+  [\pageref{VarName}] 
+  Given a variable index, returns the variable name
+
+\item[CCTK\_VarTypeI] 
+  [\pageref{VarTypeI}] 
+  Provides variable type index from the variable index
+
+\item[CCTK\_VarDataPtr]
+  [\pageref{VarDataPtr}] 
+  Returns the data pointer for a grid variable
+
+\item[CCTK\_VarDataPtrB]
+  [\pageref{VarDataPtrB}] 
+  Returns the data pointer for a grid variable from the variable index or name
+
+\item[CCTK\_VarDataPtrI]
+  [\pageref{VarDataPtrI}] 
+  Returns the data pointer for a grid variable from the variable index
+
+\item[CCTK\_WARN] 
+  [\pageref{WARN}] 
+  Prints a warning message and possibly stops the code
+
+\end{Lentry}
 
 
 \section{Full Description of Functions}
@@ -115,6 +289,7 @@ available from C, not all are currently available from Fortran.
 
 % CommOverloadables.c
 \begin{CCTKFunc}{CCTK\_Abort}{Exit the code abruptly}
+\label{Abort}
 \subroutine{int}{integer}{istat}
 \argument{cGH *}{CCTK\_POINTER}{cctkGH}
 \showargs
@@ -135,6 +310,7 @@ available from C, not all are currently available from Fortran.
 
 % cctk_Comm.h
 \begin{CCTKFunc}{CCTK\_ArrayGroupSize}{}
+\label{ArrayGroupSize}
 \subroutine{int *}{}{size}
 \argument{cGH *}{}{cctkGH}
 \argument{int}{}{groupindex}
@@ -158,6 +334,7 @@ available from C, not all are currently available from Fortran.
 
 % cctk_Comm.h
 \begin{CCTKFunc}{CCTK\_ArrayGroupSize}{}
+\label{ArrayGroupSize}
 \subroutine{int *}{}{size}
 \argument{cGH *}{}{cctkGH}
 \argument{const char *}{}{groupname}
@@ -178,6 +355,7 @@ available from C, not all are currently available from Fortran.
 
 % CommOverloadables.c
 \begin{CCTKFunc}{CCTK\_ArrayGroupSizeB}{}
+\label{ArrayGroupSizeB}
 \subroutine{int *}{}{size}
 \argument{cGH *}{}{cctkGH}
 \argument{int}{}{groupindex}
@@ -197,6 +375,28 @@ available from C, not all are currently available from Fortran.
 \end{errorcodes}
 \end{CCTKFunc}
 
+% CommOverloadables.c
+\begin{CCTKFunc}{CCTK\_ArrayGroupSizeI}{}
+\label{ArrayGroupSizeI}
+\subroutine{int *}{}{size}
+\argument{cGH *}{}{cctkGH}
+\argument{int}{}{dir}
+\argument{int}{}{index}
+\showargs
+\begin{params}
+\parameter{cctkGH}{pointer to CCTK grid hierarchy}
+\parameter{dir}{coordinate direction}
+\parameter{index}{group index}
+\end{params}
+\begin{discussion}
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
 
 %%%%%
 % BBB
@@ -205,6 +405,7 @@ available from C, not all are currently available from Fortran.
 
 % CommOverloadables.c
 \begin{CCTKFunc}{CCTK\_Barrier}{}
+\label{Barrier}
 \subroutine{int}{integer}{istat}
 \argument{cGH *}{CCTK\_POINTER}{cctkGH}
 \showcargs
@@ -230,6 +431,7 @@ available from C, not all are currently available from Fortran.
 
 % Coord.c
 \begin{CCTKFunc}{CCTK\_CoordIndex}{Give the GF index for a given coordinate name.}
+\label{CoordIndex}
 \subroutine{int}{integer}{index}
 \argument{const char *}{character*(*)}{coordname}
 \showargs
@@ -256,6 +458,7 @@ The coordinate name is independent of the grid function name.
 
 % Coord.c
 \begin{CCTKFunc}{CCTK\_CoordRange}{Return the global upper and lower bounds for a given coordinate name}
+\label{CoordRange}
 \subroutine{int}{integer}{ierr}
 \argument{cGH *}{CCTK\_POINTER}{cctkGH}
 \argument{CCTK\_REAL}{CCTK\_REAL}{lower}
@@ -293,6 +496,7 @@ is registered by {\t CCTK\_RegisterCoordRange}.
 
 % CommOverloadables.c
 \begin{CCTKFunc}{CCTK\_DisableGroupComm}{Turn communications off for a group of grid variables}
+\label{DisableGroupComm}
 \subroutine{int}{integer}{istat}
 \argument{cGH *}{CCTK\_POINTER}{cctkGH}
 \argument{const char *}{character*(*)}{group}
@@ -315,6 +519,7 @@ Turning off communications means that ghost zones will not be communicated durin
 
 % CommOverloadables.c
 \begin{CCTKFunc}{CCTK\_DisableGroupStorage}{Free the storage associated with a group of grid variables}
+\label{DisableGroupStorage}
 \subroutine{int}{integer}{istat}
 \argument{cGH *}{CCTK\_POINTER}{cctkGH}
 \argument{const char *}{character*(*)}{group}
@@ -336,6 +541,7 @@ Turning off communications means that ghost zones will not be communicated durin
 
 % Groups.c
 \begin{CCTKFunc}{CCTK\_DecomposeName}{Given the full name of a variable/group, separates the name returning both the implementation and the variable/group}
+\label{DecomposeName}
 \subroutine{int}{integer}{istat}
 \argument{char *}{}{fullname}
 \argument{char **}{}{imp}
@@ -370,6 +576,7 @@ No Fortran routine exists at the moment.
 
 % CommOverloadables.c
 \begin{CCTKFunc}{CCTK\_EnableGroupComm}{Turn communications on for a group of grid variables}
+\label{EnableGroupComm}
 \subroutine{int}{integer}{istat}
 \argument{cGH *}{CCTK\_POINTER}{cctkGH}
 \argument{const char *}{character*(*)}{group}
@@ -393,6 +600,7 @@ a call to {\tt CCTK\_SyncGroup}.
 
 % CommOverloadables.c
 \begin{CCTKFunc}{CCTK\_EnableGroupStorage}{Assign the storage for a group of grid variables}
+\label{EnableGroupStorage}
 \subroutine{int}{integer}{istat}
 \argument{cGH *}{CCTK\_POINTER}{cctkGH}
 \argument{const char *}{character*(*)}{group}
@@ -413,6 +621,7 @@ a call to {\tt CCTK\_SyncGroup}.
 
 % CommOverloadables.c
 \begin{CCTKFunc}{CCTK\_Exit}{Exit the code cleanly}
+\label{Exit}
 \subroutine{int}{integer}{istat}
 \argument{cGH *}{CCTK\_POINTER}{cctkGH}
 \showargs
@@ -432,6 +641,7 @@ a call to {\tt CCTK\_SyncGroup}.
 
 % CommOverloadables.c
 \begin{CCTKFunc}{CCTK\_Equals}{Check for string equality}
+\label{Equals}
 \function{int}{integer}{istat}
 \argument{const char *}{character*(*)}{string1}
 \argument{const char *}{character*(*)}{string2}
@@ -465,6 +675,7 @@ can be either string literals (`mystring') or CCTK string parameters
 
 % Groups.c
 \begin{CCTKFunc}{CCTK\_FirstVarIndex}{Given a group name returns the first variable index in the group}
+\label{FirstVarIndex}
 \subroutine{int}{integer}{firstvar}
 \argument{const char *}{character*(*)}{group}
 \showargs
@@ -489,6 +700,7 @@ can be either string literals (`mystring') or CCTK string parameters
 
 
 \begin{CCTKFunc}{CCTK\_FirstVarIndexI}{Given a group index returns the first variable index in the group}
+\label{FirstVarIndexI}
 \subroutine{int}{integer}{firstvar}
 \argument{int}{integer}{group}
 \showargs
@@ -517,6 +729,7 @@ can be either string literals (`mystring') or CCTK string parameters
 
 % Groups.c
 \begin{CCTKFunc}{CCTK\_FullName}{Given a variable index, returns the full name of the variable}
+\label{FullName}
 \subroutine{char *}{integer}{fullname}
 \argument{int}{integer}{index}
 \showcargs
@@ -548,6 +761,7 @@ the form {\t <implementation>::<variable>}
 
 % cctk_GHExtensions.h
 \begin{CCTKFunc}{CCTK\_GHExtensionHandle}{Get the handle associated with a extension to the Cactus GH structure}
+\label{GHExtensionHandle}
 \subroutine{int}{integer}{handle}
 \argument{const char *}{character*(*)}{name}
 \showargs
@@ -573,6 +787,7 @@ the form {\t <implementation>::<variable>}
 
 % Groups.c
 \begin{CCTKFunc}{CCTK\_GroupTypeFromVarI}{Provides group type index from the group index}
+\label{GroupTypeFromVarI}
 \subroutine{int}{integer}{type}
 \argument{int}{integer}{index}
 \showargs
@@ -603,6 +818,7 @@ with the Cactus provided macros for {\t GROUP\_SCALAR}, {\t GROUP\_GF}, {\t GROU
 
 % Groups.c
 \begin{CCTKFunc}{CCTK\_GroupName}{Given a group index, returns the group name}
+\label{GroupName}
 \subroutine{char *}{integer}{name}
 \argument{int}{integer}{index}
 \showcargs
@@ -630,6 +846,7 @@ No Fortran routine exists at the moment.
 
 % Groups.c
 \begin{CCTKFunc}{CCTK\_GroupData}{Given a group index, returns information about the variables held in the group.}
+\label{GroupData}
 \subroutine{int}{integer}{istat}
 \argument{int}{integer}{group}
 \argument{int *}{integer}{gtype}
@@ -665,6 +882,7 @@ No Fortran routine exists at the moment.
 
 % Groups.c
 \begin{CCTKFunc}{CCTK\_GroupNameFromVarI}{Given a variable index, return the name of the associated group}
+\label{GroupNameFromVarI}
 \subroutine{char *}{character*(*)}{group}
 \argument{int}{integer}{varindex}
 \showcargs
@@ -689,6 +907,7 @@ No Fortran routine exists at the moment.
 
 % Groups.c
 \begin{CCTKFunc}{CCTK\_GroupIndexFromVarI}{Given a variable index, returns the index of the associated group}
+\label{GroupIndexFromVarI}
 \subroutine{int}{integer}{groupindex}
 \argument{int}{integer}{varindex}
 \showargs
@@ -716,6 +935,7 @@ No Fortran routine exists at the moment.
 
 % Groups.c
 \begin{CCTKFunc}{CCTK\_GroupIndexFromVar}{Given a variable name, returns the index of the associated group}
+\label{GroupIndexFromVar}
 \subroutine{int}{integer}{groupindex}
 \argument{const char *}{character*(*)}{name}
 \showargs
@@ -743,6 +963,7 @@ The variable name should be in the form {\t <implementation>::<variable>}
 
 % Groups.c
 \begin{CCTKFunc}{CCTK\_GroupIndex}{Get the index number for a group name}
+\label{GroupIndex}
 \subroutine{int}{integer}{index}
 \argument{const char *}{character*(*)}{groupname}
 \showargs
@@ -779,6 +1000,7 @@ The group name should be given in the form {\t <implementation>::<group>}
 
 % Groups.c
 \begin{CCTKFunc}{CCTK\_ImpFromVarI}{Given a variable index, returns the implementation name}
+\label{ImpFromVarI}
 \subroutine{char *}{integer}{implementation}
 \argument{int}{integer}{index}
 \showcargs
@@ -806,6 +1028,7 @@ No Fortran routine exists at the moment
 
 % WarnLevel.c
 \begin{CCTKFunc}{CCTK\_INFO}{Prints an information message}
+\label{INFO}
 \subroutine{}{}{}
 \argument{const char *}{character*(*)}{message}
 \showargs
@@ -830,6 +1053,7 @@ No Fortran routine exists at the moment
 
 % cctk_Interp.h
 \begin{CCTKFunc}{CCTK\_Interp}{Perform an interpolatation, using a chosen method}
+\label{Interp}
 \subroutine{int}{integer}{num}
 \argument{cGH *}{CCTK\_POINTER}{cctkGH}
 \argument{int}{integer}{handle}
@@ -879,6 +1103,7 @@ information in the order:
 
 % Groups.c
 \begin{CCTKFunc}{CCTK\_InterpHandle}{Return the handle for a given interpolation operator}
+\label{InterpHandle}
 \subroutine{int}{integer}{handle}
 \argument{const char *}{character*(*)}{operator}
 \showargs
@@ -915,6 +1140,7 @@ information in the order:
 
 % CommOverloadables.c
 \begin{CCTKFunc}{CCTK\_MyProc}{Returns the number of the local processor for a parallel run}
+\label{MyProc}
 \function{int}{integer}{myproc}
 \argument{cGH *}{CCTK\_POINTER}{cctkGH}
 \showargs
@@ -938,6 +1164,7 @@ runs, this call will return $0\leq myproc < {\t CCTK\_nProcs(cctkGH)}$.
 
 % Groups.c
 \begin{CCTKFunc}{CCTK\_MaxDim}{Get the maximum dimension of any grid variable }
+\label{MaxDim}
 \subroutine{int}{integer}{dim}
 \showargs
 \begin{params}
@@ -968,6 +1195,7 @@ and not the active thorn list.
 
 % CommOverloadables.c
 \begin{CCTKFunc}{CCTK\_nProcs}{Returns the number of processors being used for a parallel run}
+\label{nProcs}
 \function{int}{integer}{nprocs}
 \argument{cGH *}{CCTK\_POINTER}{cctkGH}
 \showargs
@@ -989,6 +1217,7 @@ For a single processor run this call will return one.
 
 % Groups.c
 \begin{CCTKFunc}{CCTK\_NumTimeLevelsFromVarI}{Gives the number of timelevels for a variable}
+\label{NumTimeLevelsFromVarI}
 \subroutine{int}{integer}{numlevels}
 \argument{int}{integer}{index}
 \showargs
@@ -1016,6 +1245,7 @@ For a single processor run this call will return one.
 
 % Groups.c
 \begin{CCTKFunc}{CCTK\_NumTimeLevelsFromVar}{Gives the number of timelevels for a variable}
+\label{NumTimeLevelsFromVar}
 \subroutine{int}{integer}{numlevels}
 \argument{const char *}{character*(*)}{name}
 \showargs
@@ -1043,6 +1273,7 @@ The variable name should be in the form {\t <implementation>::<variable>}
 
 % Groups.c
 \begin{CCTKFunc}{CCTK\_NumVarsInGroupI}{Provides the number of variables in a group from the group index}
+\label{NumVarsInGroupI}
 \subroutine{int}{integer}{num}
 \argument{int}{integer}{index}
 \showargs
@@ -1071,6 +1302,7 @@ The variable name should be in the form {\t <implementation>::<variable>}
 
 % Groups.c
 \begin{CCTKFunc}{CCTK\_NumVarsInGroup}{Provides the number of variables in a group from the group name}
+\label{}
 \subroutine{int}{integer}{num}
 \argument{const char *}{character*(*)}{name}
 \showargs
@@ -1097,6 +1329,7 @@ The group name should be given in the form {\t <implementation>::<group>}
 
 % Groups.c
 \begin{CCTKFunc}{CCTK\_NumGroups}{Get the number of groups of variables compiled in the code}
+\label{NumGroups}
 \subroutine{int}{integer}{number}
 \showargs
 \begin{params}
@@ -1119,6 +1352,7 @@ The group name should be given in the form {\t <implementation>::<group>}
 
 % Groups.c
 \begin{CCTKFunc}{CCTK\_NumVars}{Get the number of grid variables compiled in the code}
+\label{NumVars}
 \subroutine{int}{integer}{number}
 \showargs
 \begin{params}
@@ -1148,6 +1382,7 @@ The group name should be given in the form {\t <implementation>::<group>}
 
 % IOOverloadables.h
 \begin{CCTKFunc}{CCTK\_OutputVarAsByMethod}{}
+\label{OutputVarAsByMethod}
 \subroutine{int}{}{istat}
 \argument{cGH *}{}{cctkGH}
 \argument{const char *}{character*(*)}{variable}
@@ -1170,6 +1405,7 @@ The group name should be given in the form {\t <implementation>::<group>}
 
 % IOOverloadables.h
 \begin{CCTKFunc}{CCTK\_OutputGH}{}
+\label{OutputGH}
 \subroutine{int}{integer}{istat}
 \argument{cGH *}{CCTK\_POINTER}{cctkGH}
 \showargs
@@ -1197,6 +1433,7 @@ The group name should be given in the form {\t <implementation>::<group>}
 
 % CommOverloadables.c
 \begin{CCTKFunc}{CCTK\_ParallelInit}{}
+\label{ParallelInit}
 \subroutine{int}{integer}{istat}
 \argument{cGH *}{CCTK\_POINTER}{cctkGH}
 \showcargs
@@ -1217,6 +1454,7 @@ The group name should be given in the form {\t <implementation>::<group>}
 
 % Groups.c
 \begin{CCTKFunc}{CCTK\_PrintGroup}{Prints a group name from its index}
+\label{PrintGroup}
 \subroutine{}{}{}
 \argument{int}{integer}{index}
 \showargs
@@ -1243,6 +1481,7 @@ This routine is for debugging purposes for Fortran programmers.
 
 % Groups.c
 \begin{CCTKFunc}{CCTK\_PrintVar}{Prints a variable name from its index}
+\label{PrintVar}
 \subroutine{}{}{}
 \argument{int}{integer}{index}
 \showargs
@@ -1268,6 +1507,7 @@ This routine is for debugging purposes for Fortran programmers.
 
 % WarnLevel.c
 \begin{CCTKFunc}{CCTK\_PARAMWARN}{Prints a warning from parameter checking, and possibly stops the code}
+\label{PARAMWARN}
 \subroutine{}{}{}
 \argument{const char *}{character*(*)}{message}
 \showargs
@@ -1301,6 +1541,7 @@ checked.
 
 % cctk_Comm.h
 \begin{CCTKFunc}{CCTK\_QueryGroupStorage}{}
+\label{QueryGroupStorage}
 \subroutine{int}{}{storage}
 \argument{cGH *}{}{cctkGH}
 \argument{const char *}{}{groupname}
@@ -1321,6 +1562,7 @@ checked.
 
 % cctk_Comm.h
 \begin{CCTKFunc}{CCTK\_QueryGroupStorageI}{}
+\label{QueryGroupStorageI}
 \subroutine{int}{}{storage}
 \argument{cGH *}{}{cctkGH}
 \argument{int}{}{groupindex}
@@ -1341,6 +1583,7 @@ checked.
 
 % CommOverloadables.h
 \begin{CCTKFunc}{CCTK\_QueryGroupStorageB}{}
+\label{QueryGroupStorageB}
 \subroutine{int}{}{storage}
 \argument{cGH *}{}{cctkGH}
 \argument{int}{}{groupindex}
@@ -1368,6 +1611,7 @@ checked.
 
 % cctk_IOMethods.h
 \begin{CCTKFunc}{CCTK\_RegisterIOMethod}{}
+\label{RegisterIOMethod}
 \function{int}{integer}{handle}
 \argument{const char *}{}{name}
 \showargs
@@ -1389,6 +1633,7 @@ IO methods should be registered at {\t CCTK\_STARTUP}.
 
 % cctk_IOMethods.h
 \begin{CCTKFunc}{CCTK\_RegisterIOMethodOutputGH}{Register a routine for an IO method which will be called from {\tt CCTK\_OutputGH}.}
+\label{RegisterIOMethodOutputGH}
 \function{int}{integer}{istat}
 \argument{int}{}{handle}
 \argument{int}{}{(* func)(cGH *)}
@@ -1409,6 +1654,7 @@ IO methods should be registered at {\t CCTK\_STARTUP}.
 
 % cctk_IOMethods.h
 \begin{CCTKFunc}{CCTK\_RegisterIOMethodTimeToOutput}{Register a routine for an IO method which will decide if it is time for the method to output.}
+\label{RegisterIOMethodTimeToOutput}
 \function{int}{integer}{istat}
 \argument{int}{}{handle}
 \argument{int}{}{(* func)(cGH *,int)}
@@ -1428,6 +1674,7 @@ IO methods should be registered at {\t CCTK\_STARTUP}.
 
 % cctk_IOMethods.h
 \begin{CCTKFunc}{CCTK\_RegisterIOMethodTriggerOutput}{Register a routine for an IO method which will handle trigger output}
+\label{RegisterIOMethodTriggerOutput}
 \function{int}{integer}{istat}
 \argument{int}{}{handle}
 \argument{int}{}{(* func)(cGH *,int)}
@@ -1447,6 +1694,7 @@ IO methods should be registered at {\t CCTK\_STARTUP}.
 
 % cctk_IOMethods.h
 \begin{CCTKFunc}{CCTK\_RegisterIOMethodOutputVarAs}{Register a routine for an IO method which will provide aliased variable output}
+\label{RegisterIOMethodOutputVarAs}
 \function{int}{integer}{istat}
 \argument{int}{}{handle}
 \argument{int}{}{(* func)(cGH *,const char*, const char *)}
@@ -1467,6 +1715,7 @@ IO methods should be registered at {\t CCTK\_STARTUP}.
 
 % cctk_GHExtensions.h
 \begin{CCTKFunc}{CCTK\_RegisterGHExtension}{Register an extension to the CactusGH}
+\label{RegisterGHExtension}
 \function{int}{}{istat}
 \argument{const char *}{}{name}
 \showcargs
@@ -1484,6 +1733,7 @@ IO methods should be registered at {\t CCTK\_STARTUP}.
 
 % cctk_GHExtensions.h
 \begin{CCTKFunc}{CCTK\_RegisterGHExtensionSetupGH}{Register a function which will set up a given extension to the Cactus GH}
+\label{RegisterGHExtensionSetupGH}
 \function{int}{}{istat}
 \argument{int}{}{handle}
 \argument{void *}{}{(*func)(tFleshConfig *, int, cGH *)}
@@ -1502,6 +1752,7 @@ IO methods should be registered at {\t CCTK\_STARTUP}.
 
 % cctk_GHExtensions.h
 \begin{CCTKFunc}{CCTK\_RegisterGHExtensionInitGH}{Register a function which will initialise a given extension to the Cactus GH}
+\label{RegisterGHExtensionInitGH}
 \function{int}{}{istat}
 \argument{int}{}{handle}
 \argument{void *}{}{(*func)(cGH *)}
@@ -1520,6 +1771,7 @@ IO methods should be registered at {\t CCTK\_STARTUP}.
 
 % cctk_GHExtensions.h
 \begin{CCTKFunc}{CCTK\_RegisterGHExtensionrfrTraverseGH}{Register a routine which will be called to fill out an extension to a Cactus GH before a traverse of the RFR tree.}
+\label{RegisterGHExtensionrfrTraverseGH}
 \function{int}{}{istat}
 \argument{int}{}{handle}
 \argument{void *}{}{(*func)(cGH *,int)}
@@ -1541,6 +1793,7 @@ IO methods should be registered at {\t CCTK\_STARTUP}.
 % cctk_Interp.h
 \begin{CCTKFunc}{CCTK\_RegisterInterpOperator}{Register a function
   which will provide an interpolation operator}
+\label{RegisterInterpOperator}
 \subroutine{int}{}{handle}
 \argument{int}{}{(*function)(REGISTER\_INTERP\_ARGLIST)}
 \argument{const char *}{}{name}
@@ -1555,33 +1808,33 @@ The argument list {\t REGISTER\_INTERP\_ARGLIST}
  for the interpolation operator routine is
 \begin{description}
 \item[cGH *GH]
- 	Pointer to CCTK grid hierachy (in)
+        Pointer to CCTK grid hierachy (in)
 \item[int nPoints]
-	Number of points to be interpolated on this processor (in)
+        Number of points to be interpolated on this processor (in)
 \item[int nDims]
-	Number of coordinate dimensions for each point (in)
+        Number of coordinate dimensions for each point (in)
 \item[int nInFields]
-	Number of input fields to interpolate from (in)
+        Number of input fields to interpolate from (in)
 \item[int nOutFields]
-	Number of output fields to interpolate to (in)
+        Number of output fields to interpolate to (in)
 \item[int *dims]
- 	Size nDims array with dimensions of the underlying grid (in)
+        Size nDims array with dimensions of the underlying grid (in)
 \item[void **coords]
-	Void *array of size nDims with coordinates of points to interpolate at (in)
+        Void *array of size nDims with coordinates of points to interpolate at (in)
 \item[int *coordTypes]
-	size ndims array with variable type of coordinate fields (in)
+        size ndims array with variable type of coordinate fields (in)
 \item[void *origin]
-	size ndims array with origin of the underlying grid (in)
+        size ndims array with origin of the underlying grid (in)
 \item[void *delta]
-	size ndims array with gridspacing of the underlying grid (in)
+        size ndims array with gridspacing of the underlying grid (in)
 \item[void **inFields]
-	size nInFields *array of input fields to interpolate on (in)
+        size nInFields *array of input fields to interpolate on (in)
 \item[int *inTypes]
-	size ndims array with variable types of input fields (in)
+        size ndims array with variable types of input fields (in)
 \item[void **outFields]
-	size nOutFields *array of output fields to interpolate to (out)
+        size nOutFields *array of output fields to interpolate to (out)
 \item[int *outTypes]
-	size ndims array with variable types of output fields (in)
+        size ndims array with variable types of output fields (in)
 \end{description}
 \end{discussion}
 \begin{examples}
@@ -1596,6 +1849,7 @@ The argument list {\t REGISTER\_INTERP\_ARGLIST}
 
 % Coord.c
 \begin{CCTKFunc}{CCTK\_RegisterCoordI}{Register a grid function index as identifying a coordinate with a given coordinate name and direction.}
+\label{RegisterCoordI}
 \subroutine{int}{integer}{handle}
 \argument{int}{integer}{direction}
 \argument{int}{integer}{index}
@@ -1628,6 +1882,7 @@ as coordinates.
 
 % Coord.c
 \begin{CCTKFunc}{CCTK\_RegisterCoord}{Register a grid function name as identifying a coordinate with a given coordinate name and direction.}
+\label{RegisterCoord}
 \subroutine{int}{integer}{handle}
 \argument{int}{integer}{direction}
 \argument{const char *}{character*(*)}{gfname}
@@ -1659,6 +1914,7 @@ as coordinates.
 
 % Coord.c
 \begin{CCTKFunc}{CCTK\_RegisterBanner}{Register a banner for a thorn}
+\label{RegisterBanner}
 \subroutine{void}{}{}
 \argument{const char *}{character*(*)}{message}
 \showargs
@@ -1685,6 +1941,7 @@ displayed in the order in which they are registered.
 
 % Coord.c
 \begin{CCTKFunc}{CCTK\_RegisterCoordRange}{Saves the global upper and lower bounds for a given coordinate name}
+\label{RegisterCoordRange}
 \subroutine{int}{integer}{ierr}
 \argument{cGH *}{CCTK\_POINTER}{cctkGH}
 \argument{CCTK\_REAL}{CCTK\_REAL}{lower}
@@ -1725,6 +1982,7 @@ can be accessed by {\t CCTK\_CoordRange}.
 
 % CommOverloadables.c
 \begin{CCTKFunc}{CCTK\_SetupGH}{Setup a new GH}
+\label{SetupGH}
 \subroutine{cGH *}{}{cctkGH}
 \argument{tFleshConfig}{}{config}
 \argument{int}{}{convlevel}
@@ -1746,6 +2004,7 @@ can be accessed by {\t CCTK\_CoordRange}.
 
 % CommOverloadables.c
 \begin{CCTKFunc}{CCTK\_SyncGroup}{Synchronise the ghostzones for a group of grid variables}
+\label{SyncGroup}
 \subroutine{int}{integer}{istat}
 \argument{cGH *}{CCTK\_POINTER}{cctkGH}
 \argument{const char *}{character*(*)}{group}
@@ -1781,6 +2040,7 @@ Only those grid variables who have communication enabled will be synchronised.
 
 % Groups.c
 \begin{CCTKFunc}{CCTK\_VarIndex}{Get the index for a variable}
+\label{VarIndex}
 \subroutine{int}{integer}{index}
 \argument{const char *}{character*(*)}{varname}
 \showargs
@@ -1807,6 +2067,7 @@ The variable name should be given in the form {\t <implementation>::<variable>}
 
 % Groups.c
 \begin{CCTKFunc}{CCTK\_VarName}{Given a variable index, returns the variable name}
+\label{VarName}
 \subroutine{char *}{integer}{name}
 \argument{int}{integer}{index}
 \showcargs
@@ -1833,6 +2094,7 @@ No Fortran routine exists at the moment.
 
 % Groups.c
 \begin{CCTKFunc}{CCTK\_VarTypeI}{Provides variable type index from the variable index}
+\label{VarTypeI}
 \subroutine{int}{integer}{type}
 \argument{int}{integer}{index}
 \showargs
@@ -1860,6 +2122,7 @@ with the Cactus provided macros for {\t CCTK\_VARIABLE\_INT}, {\t CCTK\_VARIABLE
 
 
 \begin{CCTKFunc}{CCTK\_VarDataPtr}{Returns the data pointer for a grid variable}
+\label{VarDataPtr}
 \subroutine{void *}{}{ptr}
 \argument{cGH *}{}{cctkGH}
 \argument{int}{}{timelevel}
@@ -1884,6 +2147,7 @@ The variable name should be in the form {\t <implementation>::<variable>}.
 \end{CCTKFunc}
 
 \begin{CCTKFunc}{CCTK\_VarDataPtrI}{Returns the data pointer for a grid variable from the variable index}
+\label{VarDataPtrI}
 \subroutine{void *}{}{ptr}
 \argument{cGH *}{}{cctkGH}
 \argument{int}{}{timelevel}
@@ -1907,7 +2171,8 @@ The variable name should be in the form {\t <implementation>::<variable>}.
 \end{CCTKFunc}
 
 
-\begin{CCTKFunc}{CCTK\_VarDataPtrI}{Returns the data pointer for a grid variable from the variable index or the variable name}
+\begin{CCTKFunc}{CCTK\_VarDataPtrB}{Returns the data pointer for a grid variable from the variable index or the variable name}
+\label{VarDataPtrB}
 \subroutine{void *}{}{ptr}
 \argument{cGH *}{}{cctkGH}
 \argument{int}{}{timelevel}
@@ -1944,6 +2209,7 @@ If the name if {\t NULL} the index will be used, if the index is negative the na
 
 % WarnLevel.c
 \begin{CCTKFunc}{CCTK\_WARN}{Prints a warning message and possibly stops the code}
+\label{WARN}
 \subroutine{}{}{}
 \argument{int}{integer}{level}
 \argument{const char *}{character*(*)}{warning}
