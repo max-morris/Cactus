@@ -212,7 +212,7 @@ void FMODIFIER FORTRAN_NAME(CCTK_ParamWarn)(TWO_FORTSTRINGS_ARGS)
 
 void CCTK_Info(const char *thorn, const char *message)
 {
-  fprintf(stderr, "INFO (%s): %s\n", thorn, message);
+  fprintf(stdout, "INFO (%s): %s\n", thorn, message);
 }
 
 int FMODIFIER FORTRAN_NAME(CCTK_Info)(TWO_FORTSTRINGS_ARGS)
