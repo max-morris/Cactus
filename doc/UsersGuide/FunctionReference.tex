@@ -4156,7 +4156,7 @@ store a \verb|CCTK_REAL| value in a table
 \begin{Error}{UTIL\_ERROR\_NO\_MEMORY}
 unable to allocate memory
 \end{Error}
-\begin{Error}{UTIL\_ERROR\_TABLE\_BAD\_INPUT}
+\begin{Error}{UTIL\_ERROR\_BAD\_INPUT}
 invalid input: can't parse input string
 \end{Error}
 \begin{Error}{\rm other error codes}
@@ -4272,7 +4272,7 @@ handle is invalid
 #include "util_Table.h"
 
 /* create a table */
-int handle = Util_TableCreate(UTIL_FLAGS_TABLE_DEFAULT);
+int handle = Util_TableCreate(UTIL_TABLE_FLAGS_DEFAULT);
 
 /* do things with the table: put values in it, */
 /* pass its handle to other functions, etc etc */
@@ -4489,7 +4489,7 @@ handle is invalid
 \begin{Error}{UTIL\_ERROR\_TABLE\_BAD\_KEY}
 key contains '/' character
 \end{Error}
-\begin{Error}{UTIL\_ERROR\_TABLE\_BAD\_INPUT}
+\begin{Error}{UTIL\_ERROR\_BAD\_INPUT}
 \verb|array != NULL| and \verb|N_array| $< 0$
 \end{Error}
 \begin{Error}{UTIL\_ERROR\_TABLE\_NO\_SUCH\_KEY}
@@ -5681,7 +5681,7 @@ handle is invalid
 \begin{Error}{UTIL\_ERROR\_TABLE\_BAD\_KEY}
 key contains '/' character
 \end{Error}
-\begin{Error}{UTIL\_ERROR\_TABLE\_BAD\_INPUT}
+\begin{Error}{UTIL\_ERROR\_BAD\_INPUT}
 \verb|N_elements| $< 0$
 \end{Error}
 \begin{Error}{UTIL\_ERROR\_NO\_MEMORY}
