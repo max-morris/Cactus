@@ -375,7 +375,9 @@ Each {\it schedule block} in the file {\t schedule.ccl} must have the syntax:
     switched on for the duration of the function or schedule group.
 
   \item[{\tt TRIGGER}] List of grid variables or groups to be used as
-    triggers for causing an analysis function or analysis group to be executed
+  triggers for causing an analysis function or analysis group to be
+  executed.  Any schedule block for an analysis function or analysis
+  group must contain a non-trivial TRIGGER line.
 
   \item[{\tt SYNCHRONISE}] List of groups to be synchronised as soon
     as the function or schedule group is exited.
