@@ -88,9 +88,6 @@
 /* Define the type of a 4 byte float */
 #undef CCTK_REAL4
 
-/* FIXME: this needs to be removed now */
-typedef CCTK_INT4 Int;
-
 #endif /*CCODE */
 
 #ifdef FCODE
