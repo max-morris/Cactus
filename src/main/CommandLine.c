@@ -195,9 +195,14 @@ void CCTKi_CommandLineVersion(void)
   int argc;
   char **argv;
 
+  const char *version=NULL;
+
   argc = CCTK_GetCommandLine(&argv);
 
-  printf("%s, compiled on %s at %s\n", argv[0], compileDate(), compileTime());
+  version = (const char *)CCTK_FullVersion();
+
+  printf("%s: Version %s.  Compiled on %s at %s\n", argv[0], version, 
+	  compileDate(), compileTime());
 
   exit(1);
 }
