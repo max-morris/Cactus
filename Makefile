@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.59 1999-12-01 22:26:32 lanfer Exp $
+#   @version $Id: Makefile,v 1.60 1999-12-16 09:02:42 allen Exp $
 # @@*/
 
 ##################################################################################
@@ -523,16 +523,16 @@ endif
 %-config:
 	@echo $(DIVIDER)
 	@echo Configuration $(@:%-config=%) does not exist.
-	echo Setup configuration $(@:%-config=%) \(no\)?
+	echo Setup configuration $(@:%-config=%) \(yes\)?
 	read yesno rest ;\
-	if [ "x$$yesno" = "xyes" -o "x$$yesno" = "xy" -o "x$$yesno" = "xYES" -o "x$$yesno" = "xY" ] ;\
+	if [ "x$$yesno" = "xno" -o "x$$yesno" = "xn" -o "x$$yesno" = "xNO" -o "x$$yesno" = "xN" ] ;\
 	then  \
+	echo Setup cancelled ;     \
+	else \
 	echo Setting up new configuration $(@:%-config=%); \
 	$(SETUP_ENV) $(PERL) -s $(SETUP) $(SETUP_OPTIONS) $(@:%-config=%); \
 	echo $(DIVIDER)   ;  \
 	echo Use $(MAKE) $(@:%-config=%) to build the configuration.; \
-	else \
-	echo Setup cancelled ;     \
 	fi 
 	@echo $(DIVIDER)
 
@@ -662,16 +662,16 @@ downsize:
 
 %::
 	@echo $(DIVIDER)
-	echo Setup configuration $@ \(no\)?
+	echo Setup configuration $@ \(yes\)?
 	read yesno rest ;\
-	if [ "x$$yesno" = "xyes" -o "x$$yesno" = "xy" -o "x$$yesno" = "xYES" -o "x$$yesno" = "xY" ] ;\
+	if [ "x$$yesno" = "xno" -o "x$$yesno" = "xn" -o "x$$yesno" = "xNO" -o "x$$yesno" = "xN" ] ;\
 	then  \
+	echo Setup cancelled ;     \
+	else \
 	echo Setting up new configuration $@; \
 	$(SETUP_ENV) $(PERL) -s $(SETUP) $(SETUP_OPTIONS) $@; \
 	echo $(DIVIDER)   ;  \
 	echo Use $(MAKE) $@ to build the configuration.; \
-	else \
-	echo Setup cancelled ;     \
 	fi 
 	@echo $(DIVIDER)
 
