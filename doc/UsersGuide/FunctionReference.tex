@@ -398,5 +398,480 @@ and not the active thorn list.
 
 
 
+% Groups.c
+\begin{CCTKFunc}{CCTK\_GroupIndexFromVarI}{Given a variable index, returns the index of the associated group}
+\subroutine{int}{integer}{groupindex}
+\argument{int}{integer}{varindex}
+\showargs
+\begin{params}
+\parameter{groupindex}{The index of the group}
+\parameter{varindex}{The index of the variable}
+\end{params}
+\begin{discussion}
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\hfill {\bf C} && {\t index = CCTK\_VarIndex(`evolve::phi');} \\
+               && {\t groupindex = CCTK\_GroupIndexFromVarI(index) ;}
+\\
+\hfill {\bf Fortran} && {\t call CCTK\_VARINDEX(`evolve::phi')}\\
+                     &&call {\t CCTK\_GROUPINDEXFROMVARI(groupindex,index)};
+\\
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
+
+
+% Groups.c
+\begin{CCTKFunc}{CCTK\_GroupIndexFromVar}{Given a variable name, returns the index of the associated group}
+\subroutine{int}{integer}{groupindex}
+\argument{const char *}{character*(*)}{name}
+\showargs
+\begin{params}
+\parameter{groupindex}{The index of the group}
+\parameter{name}{The full name of the variable}
+\end{params}
+\begin{discussion}
+The variable name should be in the form {\t <implementation>::<variable>}
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\hfill {\bf C} && {\t groupindex = CCTK\_GroupIndexFromVar(`evolve::phi') ;}
+\\
+\hfill {\bf Fortran} && {\t call CCTK\_GROUPINDEXFROMVAR(groupindex,`evolve::phi')};
+\\
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
+
+
+
+% Groups.c
+\begin{CCTKFunc}{CCTK\_ImpFromVarI}{Given a variable index, returns the implementation name}
+\subroutine{char *}{integer}{implementation}
+\argument{int}{integer}{index}
+\showargs
+\begin{params}
+\parameter{implementation}{The implementation name}
+\parameter{index}{The variable index}
+\end{params}
+\begin{discussion}
+No Fortran routine exists at the moment
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\hfill {\bf C} && {\t index = CCTK\_VarIndex(`evolve::phi')}\\
+               &&{\t implementation = CCTK\_ImpFromVarI(index) ;}
+\\
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
+
+
+
+% Groups.c
+\begin{CCTKFunc}{CCTK\_FullName}{Given a variable index, returns the full name of the variable}
+\subroutine{char *}{integer}{fullname}
+\argument{int}{integer}{index}
+\showargs
+\begin{params}
+\parameter{implementation}{The full variable name}
+\parameter{index}{The variable index}
+\end{params}
+\begin{discussion}
+No Fortran routine exists at the moment. The full variable name is in
+the form {\t <implementation>::<variable>}
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\hfill {\bf C} && {\t index = CCTK\_VarIndex(`evolve::phi')}\\
+               &&{\t fullname = CCTK\_FullName(index) ;}
+\\
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
+
+
+
+
+% Groups.c
+\begin{CCTKFunc}{CCTK\_GroupData}{Given a group index, returns information about the variables held in the group.}
+\subroutine{int}{integer}{istat}
+\argument{int}{integer}{group}
+\argument{int *}{integer}{gtype}
+\argument{int *}{integer}{vtype}
+\argument{int *}{integer}{dim}
+\argument{int *}{integer}{nvars}
+\argument{int *}{integer}{ntimelevels}
+\showargs
+\begin{params}
+\parameter{istat}{Returns one if a group with the given index was found, and zero otherwise}
+\parameter{group}{The group index}
+\parameter{gtype}{The group type}
+\parameter{vtype}{The type of variables in the group}
+\parameter{dim}{The dimension of variables in the group}
+\parameter{nvars}{The number of variables in the group}
+\parameter{ntimelevels}{The number of timelevels for variables in the group}
+\end{params}
+\begin{discussion}
+No Fortran routine exists at the moment. 
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\hfill {\bf C} && {\t index = CCTK\_GroupIndex(`evolve::scalars')}\\
+               &&{\t istat = CCTK\_GroupData(index,gtype,vtype,dim,nvars,ntimelevels);}
+\\
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
+
+
+
+% Groups.c
+\begin{CCTKFunc}{CCTK\_VarName}{Given a variable index, returns the variable name}
+\subroutine{char *}{integer}{name}
+\argument{int}{integer}{index}
+\showargs
+\begin{params}
+\parameter{name}{The  variable name}
+\parameter{index}{The variable index}
+\end{params}
+\begin{discussion}
+No Fortran routine exists at the moment. 
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\hfill {\bf C} && {\t index = CCTK\_VarIndex(`evolve::phi')}\\
+               &&{\t name = CCTK\_VarName(index) ;}
+\\
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
+
+
+
+
+% Groups.c
+\begin{CCTKFunc}{CCTK\_GroupName}{Given a group index, returns the group name}
+\subroutine{char *}{integer}{name}
+\argument{int}{integer}{index}
+\showargs
+\begin{params}
+\parameter{name}{The group name}
+\parameter{index}{The group index}
+\end{params}
+\begin{discussion}
+No Fortran routine exists at the moment. 
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\hfill {\bf C} && {\t index = CCTK\_GroupIndex(`evolve::scalars')}\\
+               &&{\t name = CCTK\_GroupName(index) ;}
+\\
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
+
+
+
+
+% Groups.c
+\begin{CCTKFunc}{CCTK\_DecomposeName}{Given the full name of a variable/group, separates the name returning both the implementation and the variable/group}
+\subroutine{int}{integer}{istat}
+\argument{char *}{}{fullname}
+\argument{char **}{}{imp}
+\argument{char **}{}{name}
+\showargs
+\begin{params}
+\parameter{istat}{Status flag returned by routine}
+\parameter{fullname}{The full name of the group/variable}
+\parameter{imp}{The implementation name}
+\parameter{name}{The group/variable name}
+\end{params}
+\begin{discussion}
+No Fortran routine exists at the moment. 
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\hfill {\bf C} && {\t istat = CCTK\_DecomposeName(`evolve::scalars',imp,name)}\\
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
+
+
+
+
+% Groups.c
+\begin{CCTKFunc}{CCTK\_FirstVarIndexI}{Given a group index returns the first variable index in the group}
+\subroutine{int}{integer}{firstvar}
+\argument{int}{integer}{group}
+\showargs
+\begin{params}
+\parameter{firstvar}{The the first variable index in the given group}
+\parameter{group}{The group index}
+\end{params}
+\begin{discussion}
+
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\hfill {\bf C} && {\t index = CCTK\_GroupIndex(`evolve::scalars')}\\
+               &&{\t firstvar = CCTK\_FirstVarIndexI(index) ;}
+\\
+\hfill {\bf Fortran} && {\t call CCTK\_GroupIndex(index,3)}\\
+\\
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
+
+
+
+
+% Groups.c
+\begin{CCTKFunc}{CCTK\_NumVarsInGroupI}{Provides the number of variables in a group from the group index}
+\subroutine{int}{integer}{num}
+\argument{int}{integer}{index}
+\showargs
+\begin{params}
+\parameter{num}{The number of variables in the group}
+\parameter{group}{The group index}
+\end{params}
+\begin{discussion}
+
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\hfill {\bf C} && {\t index = CCTK\_GroupIndex(`evolve::scalars')}\\
+               &&{\t firstvar = CCTK\_NumVarsInGroupI(index) ;}
+\\
+\hfill {\bf Fortran} && {\t call CCTK\_NUMVARSINGROUPI(firstvar,3)}\\
+\\
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
+
+
+
+% Groups.c
+\begin{CCTKFunc}{CCTK\_NumVarsInGroup}{Provides the number of variables in a group from the group name}
+\subroutine{int}{integer}{num}
+\argument{const char *}{character*(*)}{name}
+\showargs
+\begin{params}
+\parameter{num}{The number of variables in the group}
+\parameter{group}{The full group name}
+\end{params}
+\begin{discussion}
+The group name should be given in the form {\t <implementation>::<group>}
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\hfill {\bf C} && {\t numvars = CCTK\_NumVarsInGroup(`evolve::scalars') ;}
+\\
+\hfill {\bf Fortran} && {\t call CCTK\_NUMVARSINGROUP(numvars,`evolve::scalars')}\\
+\\
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
+
+
+% Groups.c
+\begin{CCTKFunc}{CCTK\_GroupTypeFromVarI}{Provides group type index from the group index}
+\subroutine{int}{integer}{type}
+\argument{int}{integer}{index}
+\showargs
+\begin{params}
+\parameter{type}{The group type index}
+\parameter{group}{The group index}
+\end{params}
+\begin{discussion}
+The group type index indicates the type of variables in the group. 
+Either scalars, grid functions or arrays. The group type can be checked
+with the Cactus provided macros for {\t GROUP\_SCALAR}, {\t GROUP\_GF}, {\t GROUP\_ARRAY}.
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\hfill {\bf C} && {\t index = CCTK\_GroupIndex(`evolve::scalars')}\\
+               &&{\t array = (GROUP\_ARRAY == CCTK\_GroupTypeFromVarI(index)) ;}
+\\
+\hfill {\bf Fortran} && {\t call CCTK\_GROUPTYPEFROMVARI(type,3)}\\
+\\
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
+
+
+% Groups.c
+\begin{CCTKFunc}{CCTK\_VarTypeI}{Provides variable type index from the variable index}
+\subroutine{int}{integer}{type}
+\argument{int}{integer}{index}
+\showargs
+\begin{params}
+\parameter{type}{The variable type index}
+\parameter{group}{The variable index}
+\end{params}
+\begin{discussion}
+The variable type index indicates the type of the variable. 
+Either character, int, complex or real. The group type can be checked
+with the Cactus provided macros for {\t CCTK\_VARIABLE\_INT}, {\t CCTK\_VARIABLE\_REAL}, {\t CCTK\_VARIABLE\_COMPLEX} or {\t CCTK\_VARIABLE\_CHAR}.
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\hfill {\bf C} && {\t index = CCTK\_VarIndex(`evolve::phi')}\\
+               &&{\t real = (CCTK\_VARIABLE\_REAL == CCTK\_VarTypeI(index)) ;}
+\\
+\hfill {\bf Fortran} && {\t call CCTK\_VARTYPEI(type,3)}\\
+\\
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
+
+
+
+
+% Groups.c
+\begin{CCTKFunc}{CCTK\_NumTimeLevelsFromVarI}{Gives the number of timelevels for a variable}
+\subroutine{int}{integer}{numlevels}
+\argument{int}{integer}{index}
+\showargs
+\begin{params}
+\parameter{numlevels}{The number of timelevels}
+\parameter{index}{The variable index}
+\end{params}
+\begin{discussion}
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\hfill {\bf C} && {\t index = CCTK\_VarIndex(`evolve::phi')}\\
+               &&{\t numlevels = CCTK\_NumTimeLevelsFromVarI(index) ;}
+\\
+\hfill {\bf Fortran} && {\t call CCTK\_NUMTIMELEVELSFROMVARI(numlevels,3)}\\
+\\
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
+
+
+
+% Groups.c
+\begin{CCTKFunc}{CCTK\_NumTimeLevelsFromVar}{Gives the number of timelevels for a variable}
+\subroutine{int}{integer}{numlevels}
+\argument{const char *}{character*(*)}{name}
+\showargs
+\begin{params}
+\parameter{name}{The full variable name}
+\parameter{numlevels}{The number of timelevels}
+\end{params}
+\begin{discussion}
+The variable name should be in the form {\t <implementation>::<variable>}
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\hfill {\bf C} && {\t numlevels = CCTK\_NumTimeLevelsFromVar(`evolve::phi') ;}
+\\
+\hfill {\bf Fortran} && {\t call CCTK\_NUMTIMELEVELSFROMVAR(numlevels,`evolve::phi')}\\
+\\
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
+
+
+
+% Groups.c
+\begin{CCTKFunc}{CCTK\_PrintGroup}{Prints a group name from its index}
+\subroutine{}{}{}
+\argument{int}{integer}{index}
+\showargs
+\begin{params}
+\parameter{index}{The group index}
+\end{params}
+\begin{discussion}
+This routine is for debugging purposes for Fortran programmers.
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\hfill {\bf C} && {\t CCTK\_PrintGroup(1) ;}
+\\
+\hfill {\bf Fortran} && {\t call CCTK\_PRINTGROUP(1)}\\
+\\
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
+
+
+
+% Groups.c
+\begin{CCTKFunc}{CCTK\_PrintVar}{Prints a variable name from its index}
+\subroutine{}{}{}
+\argument{int}{integer}{index}
+\showargs
+\begin{params}
+\parameter{index}{The variable index}
+\end{params}
+\begin{discussion}
+This routine is for debugging purposes for Fortran programmers.
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\hfill {\bf C} && {\t CCTK\_PrintVar(1) ;}
+\\
+\hfill {\bf Fortran} && {\t call CCTK\_PRINTVAR(1)}\\
+\\
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
+
+
 
 \end{cactuspart}
