@@ -251,6 +251,12 @@ sub CreateParameterBindings
   {
     mkdir("Parameters", 0755) || die "Unable to create Parameters directory";
   }
+
+  if(! -d "include")
+  {
+    mkdir("include", 0755) || die "Unable to create include directory";
+  }
+
   chdir "Parameters";
 
 
@@ -269,6 +275,25 @@ sub CreateParameterBindings
   close OUT;
 
   $files = "Public.c";
+
+  # Generate the public data header file
+
+  chdir "..";
+  chdir "include";
+
+  @data = &CreateCStructureParameterHeader("CCTK_BindingsParametersPublic", "PUBLIC_PARAMETER_STRUCT", scalar(keys %these_parameters), %these_parameters, %parameter_database);
+
+  open (OUT, ">ParameterCPublic.h") || die "Cannot open ParameterCPublic.h";
+
+  foreach $line (@data)
+  {
+    print OUT "$line\n";
+  }
+
+  close OUT;
+
+  chdir "..";
+  chdir "Parameters";
 
   # Generate all protected parameters
   foreach $implementation (split(" ",$interface_database{"IMPLEMENTATIONS"}))
@@ -295,6 +320,25 @@ sub CreateParameterBindings
       $files .= " $implementation". "_protected.c";
       $routines{"CCTK_BindingsParameters$implementation"."_protected"} = "$implementation";
 
+      # Generate the data header file
+      
+      chdir "..";
+      chdir "include";
+
+      @data = &CreateCStructureParameterHeader("CCTK_BindingsParameters$implementation"."_protected", "PROTECTED_\U$implementation\E_STRUCT", scalar(keys %these_parameters), %these_parameters, %parameter_database);
+      
+      open (OUT, ">ParameterCProtected$implementation".".h") || die "Cannot open ParameterCProtected$implementation".".h";
+
+      foreach $line (@data)
+      {
+	print OUT "$line\n";
+      }
+
+      close OUT;
+
+      chdir "..";
+      chdir "Parameters";
+
     }
   }
 
@@ -318,6 +362,25 @@ sub CreateParameterBindings
 
       $files .= " $thorn". "_private.c";
       $routines{"CCTK_BindingsParameters$thorn"."_private"} = "$thorn";
+
+      # Generate the data header file
+      
+      chdir "..";
+      chdir "include";
+
+      @data = &CreateCStructureParameterHeader("CCTK_BindingsParameters$thorn"."_private", "PRIVATE_\U$thorn\E_STRUCT", scalar(keys %these_parameters), %these_parameters, %parameter_database);
+      
+      open (OUT, ">ParameterCPrivate$thorn".".h") || die "Cannot open ParameterCPrivate$thorn".".h";
+
+      foreach $line (@data)
+      {
+	print OUT "$line\n";
+      }
+
+      close OUT;
+
+      chdir "..";
+      chdir "Parameters";
 
     }
   }

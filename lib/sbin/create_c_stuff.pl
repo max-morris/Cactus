@@ -62,7 +62,7 @@ sub CreateParameterBindingFile
       
     $type_string = &get_c_type_string($type);
 
-    $line = $type_string ." " .$parameter . ";";
+    $line = "  " . $type_string ." " .$parameter . ";";
 
     push(@data, $line);
   }
@@ -283,7 +283,7 @@ sub get_c_type_string
 #  @date       Wed Jan 20 15:29:40 1999
 #  @author     Tom Goodale
 #  @desc 
-#  Gets a list of all parameters in a aprticular block in a thorn.
+#  Gets a list of all parameters in a particular block in a thorn.
 #  Returns a hash table.
 #  @enddesc 
 #  @calls     
@@ -358,5 +358,67 @@ sub create_c_parameter_type_declaration
 }
 
 
+sub CreateThornCParameterHeaders
+{
+  local($thorn, %parameter_database);
+  local(@header);
+
+#
+#  &getpublicparameters();
+#  
+#  generatestructure, getinteface_protected_params, generate structure, get private params, make structure, foreach friend get structure
+#
+#  for each param, point at the appropriate structure
+
+}
+
+sub CreateCStructureParameterHeader
+{
+  local($prefix, $structure, $n_parameters, @rest) = @_;
+  local(%parameter_database);
+  local($line,@data);
+  local(%parameters);
+  local($type, $type_string);
+  local(@data);
+  local(@definition);
+
+  %parameters = @rest[0..2*$n_parameters-1];
+  %parameter_database = @rest[2*$n_parameters..$#rest];
+
+  # Create the structure
+
+  push(@data,( "extern struct ", "{"));
+
+  foreach $parameter (keys %parameters)
+  {
+    $type = $parameter_database{"\U$parameters{$parameter} $parameter\E type"};
+      
+    $type_string = &get_c_type_string($type);
+
+    $line = "  ".$type_string ." " .$parameter . ";";
+
+    push(@data, $line);
+
+    $line = $type_string ." " .$parameter . " = $structure.$parameter;";
+
+    push(@definition, $line)
+  }
+
+  push(@data, "} $structure;");
+
+  push(@data, "");
+
+  
+  push(@data, "#define DECLARE_$structure"."_PARAMS \\");
+  
+  foreach $line (@definition)
+  {
+    push(@data, "  $line \\");
+  }
+
+  push(@data, "");
+
+  return @data;
+}
 
 1;
