@@ -54,20 +54,22 @@ sub CheckImpParamConsistency
 	  # Check that the parameter is in the restricted block.
 	  if($parameter_database{"\U$other_thorn RESTRICTED\E variables"} =~ m:\b$parameter\b:i)
 	  {
-	    # Loop through all the added ranges.
-	    for($range=1; 
-		$range <= $parameter_database{"\U$thorn $parameter\E ranges"}; 
-		$range++)
-	    {
-	      # Increment the number of ranges for the extended parameter
-	      $parameter_database{"\U$other_thorn $parameter\E ranges"}++;
+
+#   This lot is done by C now, and SHOULD NOT BE DONE by the perl
+#	    # Loop through all the added ranges.
+#	    for($range=1; 
+#		$range <= $parameter_database{"\U$thorn $parameter\E ranges"}; 
+#		$range++)
+#	    {
+#	      # Increment the number of ranges for the extended parameter
+#	      $parameter_database{"\U$other_thorn $parameter\E ranges"}++;
 
 	      # Add in the range
-	      $parameter_database{"\U$other_thorn $parameter\E range $parameter_database{\"\U$other_thorn $parameter\E ranges\"} range"} = $parameter_database{"\U$thorn $parameter\E range $range range"};
+#	      $parameter_database{"\U$other_thorn $parameter\E range $parameter_database{\"\U$other_thorn $parameter\E ranges\"} range"} = $parameter_database{"\U$thorn $parameter\E range $range range"};
 
 	      # Add in the range description
-	      $parameter_database{"\U$other_thorn $parameter\E range $parameter_database{\"\U$other_thorn $parameter\E ranges\"} description"} = $parameter_database{"\U$thorn $parameter\E range $range description"};
-	    }
+#	      $parameter_database{"\U$other_thorn $parameter\E range $parameter_database{\"\U$other_thorn $parameter\E ranges\"} description"} = $parameter_database{"\U$thorn $parameter\E range $range description"};
+#	    }
 	  }
 	  else
 	  {
