@@ -36,10 +36,8 @@ CCTK_SRCS :=
 include $(SRCDIR)/make.code.defn
 
 # Some extra stuff to allow make to recurse into subdirectories
-#CCTK_SRCS += $(SRCS)
-
 # Protect the value of SRCS and SUBDIRS of this directory
-#LOCAL_SRCS := $(SRCS)
+
 LOCAL_SUBDIRS := . $(SUBDIRS)
 
 SRCS =
@@ -55,15 +53,13 @@ endif
 
 # Restore the value of SRCS and SUBDIRS of this directory
 SRCS = $(CCTK_SRCS)
+
 SUBDIRS = $(LOCAL_SUBDIRS)
 
 # Turn source file names into object file names
 OBJS = $(SRCS:%=%.o)
 
-# Turn local source file names into object file names
-#LOCAL_OBJS = $(LOCAL_SRCS:%=%.o)
-
-$(NAME): $(addsuffix /make.checked, $(SUBDIRS)) $(LOCAL_OBJS) $(foreach DIR,. $(SUBDIRS), $(SRCDIR)/$(DIR)/make.code.defn)
+$(NAME): $(addsuffix /make.checked, $(SUBDIRS))
 	@echo $(DIVIDER)
 	if [ -r $(NAME) ] ; then echo Updating $(NAME) ; else echo Creating $(NAME) ; fi
 	if [ -r $@ ] ; then rm $@ ; fi
