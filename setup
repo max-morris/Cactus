@@ -1,13 +1,59 @@
 #! /usr/bin/perl
+#/*@@
+#  @file      setup
+#  @date      Fri Jan  8 13:48:48 1999
+#  @author    Tom Goodale
+#  @desc 
+#  Prototype setup file for the CCTK
+#  @enddesc 
+#@@*/
+
+$top = `pwd`;
+
+chop $top;
+
+$configure = "$top/lib/sbin/configure.pl";
 
 $uname = `uname`;
 
 $uname =~ s/(sn\d\d\d\d|jsimpson)/UNICOS\/mk/;
 
-if (! -d "build" || ! -l "build")
+chop $uname;
+
+if($#ARGV > 0)
+{
+  $config = shift(@ARGV);
+}
+else
+{
+  $config = $uname;
+}
+
+if (! -d "build" && ! -l "build")
 {
   print "Completely new cactus build.  Creating config database\n";
 
-  system("mkdir build");
+  mkdir("build", 0755)
   
 }
+
+chdir build;
+
+if (! -d "$config" && ! -l "$config")
+{
+  print "Creating new configuration $config.\n";
+
+  mkdir("$config",0755);
+
+  chdir "$config";
+
+  mkdir("toolkits",0755);
+  mkdir("flesh",0755);
+  mkdir("config-data",0755);
+  mkdir("libraries",0755);
+  
+  system("perl $configure config-data");
+  chdir "..";
+}
+
+
