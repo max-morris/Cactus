@@ -1,7 +1,7 @@
 
 Cactus Code Frequently Asked Questions
 
-$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.77 2004-01-20 12:13:10 schnetter Exp $
+$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.78 2004-03-22 02:29:31 allen Exp $
 
 Also available at http://www.cactuscode.org/Documentation/FAQ
 
@@ -968,21 +968,24 @@ C31 I just want to check that one thorn compiles correctly, can I test
     builds thorns in the order they appear in the list. (Note, this does 
     not link any thorn libraries together).
 
-C32 What is the Cactus c-preprocessor (Cactus cpp) ? 
+C32 What is the Cactus preprocessor (Cactus cpp) ? 
 
     Part of the pre-processing step for Fortran files involves the use of
-    the C-preprocessor.  On some architectures the native CPP does not
+    a C-preprocessor.  On some architectures the native CPP does not
     correctly handle spaces in source files, and thus corrupts the
     resulting file.  On other machines there is no native way to generate
     dependency information for files.  In an attempt to solve these problems
-    we have written a replacement of CPP in perl, which you may use if you
-    configure with
+    we have written a replacement of CPP in perl, which you may use for 
+    all Fortran code if you configure with
 
-      CPP='$${PERL} $${CCTK_HOME}/lib/sbin/cpp.pl'
+      FPP='$${PERL} $${CCTK_HOME}/lib/sbin/cpp.pl'
 
     or in an options file without the quotes
 
-      CPP=$${PERL} $${CCTK_HOME}/lib/sbin/cpp.pl
+      FPP=$${PERL} $${CCTK_HOME}/lib/sbin/cpp.pl
+
+    The Cactus preprocessor may also be used for C files by replacing FPP
+    with CPP in the above statements.
 
     The Cactus preprocessor is still being developed and improved, known 
     problems include
