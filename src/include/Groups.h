@@ -71,6 +71,10 @@ int CCTK_GetVarVType(int var);
 
 int CCTK_GetNumTimeLevels(int var);
 
+int CCTK_GetFirstVarNum(int group);
+
+int CCTK_GetNumVarsInGroup(int group);
+
 #ifdef __cplusplus 
 }
 #endif
