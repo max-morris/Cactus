@@ -66,11 +66,11 @@ if (-e "$defns")
   open(DEFNS,"<$defns");
   while(<DEFNS>)
   {
-    if (/EXE\s*=\s*(\w+)/)
+    if (/EXE\s*=\s*([\w-]+)/)
     {
       $defexename = $1;
     }
-    if (/EXEDIR\s*=\s*(\w+)/)
+    if (/EXEDIR\s*=\s*([\w-]+)/)
     {
       $defexedirname = $1;
     }
