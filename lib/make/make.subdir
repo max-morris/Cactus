@@ -27,7 +27,7 @@ OBJS = $(SRCS:%=%.o)
 
 # Build all the object files
 
-$(TARGET): $(OBJS)
+$(CCTK_TARGET): $(OBJS)
 	touch make.checked
 
 # Rules to make the object files

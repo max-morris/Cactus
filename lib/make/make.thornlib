@@ -80,10 +80,10 @@ $(NAME): $(addsuffix /make.checked, $(SUBDIRS) $(THORNBINDINGS))
 
 $(addsuffix /make.checked, $(SUBDIRS)) : FORCE
 	if [ ! -d $(dir $@) ] ; then $(MKDIR) $(MKDIRFLAGS) $(dir $@) ; fi
-	cd $(dir $@) ; $(MAKE) TARGET=make.checked TOP=$(TOP) CONFIG=$(CONFIG) SRCDIR=$(subst /./,,$(SRCDIR)/$(dir $@)) THORN=$(THORN) -f $(MAKE_DIR)/make.subdir
+	cd $(dir $@) ; $(MAKE) CCTK_TARGET=make.checked TOP=$(TOP) CONFIG=$(CONFIG) SRCDIR=$(subst /./,,$(SRCDIR)/$(dir $@)) THORN=$(THORN) -f $(MAKE_DIR)/make.subdir
 
 cctk_Bindings/make.checked: FORCE
-	cd  cctk_Bindings; $(MAKE) TARGET=make.checked TOP=$(TOP) CONFIG=$(CONFIG) SRCDIR=$(BINDINGS_DIR)/build/$(THORN) THORN=$(THORN) -f $(MAKE_DIR)/make.subdir
+	cd  cctk_Bindings; $(MAKE) CCTK_TARGET=make.checked TOP=$(TOP) CONFIG=$(CONFIG) SRCDIR=$(BINDINGS_DIR)/build/$(THORN) THORN=$(THORN) -f $(MAKE_DIR)/make.subdir
 
 # This one puts a file containing identity info into the build subdirectory
 $(addsuffix /make.identity, $(SUBDIRS) $(THORNBINDINGS)):
