@@ -52,10 +52,50 @@ int RegisterKeyedFunction(void (*array[])(),
   return return_code;
 }
 
+ /*@@
+   @routine    CreateKeyedFunctionArray
+   @date       Tue Sep 29 11:16:51 1998
+   @author     Tom Goodale
+   @desc 
+
+   This creates a keyed function array and initialises it to NULL.
+
+   Function which returns a pointer to a pointer to a function which returns void.
+   (An array of pointers to functions which return void.
+   
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+void  (**(CreateKeyedFunctionArray(int size)))()
+{
+  void (**array)();
+  int i;
+
+  /* Allocate the memory. */
+  array = (void (**)())malloc(size*sizeof(void (*)()));
+
+  if(array)
+  {
+    /* Initialise the data. */
+    for(i = 0; i < size; i++)
+    {
+      array[i] = NULL;
+    };
+  };
+
+  return array;
+}
+    
+
 
 #ifdef TEST_KEYED_FUNCTIONS
 
-static void (*functions[])() = {NULL, NULL, NULL};
+static void (**functions)();
 
 void RegisterTestFunction(int key, void (*func)())
 {
@@ -86,6 +126,16 @@ int main(int argc, char *argv[])
 {
   int i;
   void (*test)();
+
+  functions = CreateKeyedFunctionArray(3);
+
+  if(!functions)
+  {
+    fprintf(stderr, "Function array is still null !\n");
+
+    exit(1);
+  };
+
 
   REGTEST(0);
   REGTEST(1);
