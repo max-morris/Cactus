@@ -545,3 +545,22 @@ int CCTK_DecomposeGroupName(const char *fullname, char **implementation, char **
 {
   return CCTK_SplitString(implementation, name, fullname, "::");
 }
+
+char *CCTK_GetGroupName(int varnum)
+{
+  char *name;
+  int group;
+
+  group = group_of_variable[varnum];
+
+  name = malloc((strlen(groups[group].implementation)+strlen(groups[group].name)+3)*sizeof(char))
+    ;
+  sprintf(name, "%s::%s",groups[group].implementation, groups[group].name);
+
+  return name;
+}
+
+int CCTK_GetFirstVarNum(int group)
+{
+  return groups[group].variables[0].number;
+}
