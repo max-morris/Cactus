@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.67 2000-01-25 11:12:54 allen Exp $
+#   @version $Id: Makefile,v 1.68 2000-01-26 17:23:54 allen Exp $
 # @@*/
 
 ##################################################################################
@@ -271,8 +271,8 @@ else
 	@echo "  -clean         : to clean a configuration."
 	@echo "                  (deletes all object and dependency files in "
 	@echo "                   the configuration)."
-	@echo "  -cleandeps     : to clean a configuration\'s dependency files."
-	@echo "  -cleanobjs     : to clean a configuration\'s object files."
+	@echo "  -cleandeps     : to clean a configuration's dependency files."
+	@echo "  -cleanobjs     : to clean a configuration's object files."
 	@echo "  -config        : to (re)configure a configuration. "
 	@echo "                  (runs or reruns the configuration scripts)."
 	@echo "  -delete        : to delete a configuration." 
