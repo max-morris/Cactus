@@ -59,7 +59,8 @@ case "$LINUX_F90_COMP" in
      : ${LIBS="f90 nagfl90 nag m"} 
      F90FLAGS="$F90FLAGS -N140" ;;
      portland)
-     : ${LIBS="pgf90 pgf90_rpm1 pghpf2 pgf90rtl pgc m"} ;;
+     : ${LIBS="pgf90 pgf90_rpm1 pghpf2 pgf90rtl pgc m"}
+     : ${LIBDIRS='$(PGI)/linux86/lib'} ;;
      fujitsu)
      : ${LIBS="fj9i6 fj9e6 fj9f6"} ;;
      none)
