@@ -31,7 +31,6 @@ static char *rcsid = "$Id$";
 @@*/
 int CCTK_rfrTraverse(cGH *GH, int rfrpoint)
 {
-  rfrTraverse(GH->rfr_top, GH, rfrpoint);
   
   CCTK_rfrTraverseGHExtensions(GH, rfrpoint);
 
@@ -39,6 +38,20 @@ int CCTK_rfrTraverse(cGH *GH, int rfrpoint)
 }
 
 
+ /*@@
+   @routine    CCTK_rfrStorageOn
+   @date       Sat Feb 13 17:06:30 1999
+   @author     Tom Goodale
+   @desc 
+   Routine called by the rfr to switch storage on for a group
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
 int CCTK_rfrStorageOn(void *GH, int group)
 {
   int retcode;
@@ -59,6 +72,20 @@ int CCTK_rfrStorageOn(void *GH, int group)
   return retcode;
 }
 
+ /*@@
+   @routine    CCTK_rfrStorageOff
+   @date       Sat Feb 13 17:06:30 1999
+   @author     Tom Goodale
+   @desc 
+   Routine called by the rfr to switch storage off for a group
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
 int CCTK_rfrStorageOff(void *GH, int group)
 {
   int retcode;
@@ -79,6 +106,20 @@ int CCTK_rfrStorageOff(void *GH, int group)
   return retcode;
 }
 
+ /*@@
+   @routine    CCTK_rfrCommunicationOn
+   @date       Sat Feb 13 17:06:30 1999
+   @author     Tom Goodale
+   @desc 
+   Routine called by the rfr to switch communication on for a group
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
 int CCTK_rfrCommunicationOn(void *GH, int group)
 {
   int retcode;
@@ -99,6 +140,20 @@ int CCTK_rfrCommunicationOn(void *GH, int group)
   return retcode;
 }
 
+ /*@@
+   @routine    CCTK_rfrCommunicationOff
+   @date       Sat Feb 13 17:06:30 1999
+   @author     Tom Goodale
+   @desc 
+   Routine called by the rfr to switch communication off for a group
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
 int CCTK_rfrCommunicationOff(void *GH, int group)
 {
   int retcode;
@@ -134,6 +189,20 @@ int CCTK_rfrTriggerAction(void *GH, int group)
   return 0;
 }
 
+ /*@@
+   @routine    CCTK_rfrCallFunc
+   @date       Sat Feb 13 17:08:39 1999
+   @author     Tom Goodale
+   @desc 
+   Routine called by the rfr to call a function.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
 int CCTK_rfrCallFunc(void *GH, int language, void *function)
 {
 
