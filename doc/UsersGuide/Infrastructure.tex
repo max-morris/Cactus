@@ -99,11 +99,23 @@ Returns the total number of groups in all implementations.
 {\t \#include ``Groups.h''}
 \\
 \noindent
-{\t int CCTK\_GetGroupNum(const char *implementation, const char *group);}
+{\t int CCTK\_GetGroupNum(const char *imp, const char *grp);}
 \vskip .25cm
-Given an implementation name and a group name returns the appropriate
-group index. The group index will lie between 0 and the number of groups
-minus one. The routine returns -1 if no group can be found.
+Returns the group index given either
+\begin{itemize}
+\item{} {\t imp = NULL}, {\t grp = <implementation>::<group>}
+\item{} {\t imp = <implementation>}, {\t grp = <group>}
+\end{itemize}
+ 
+A valided returned group index will lie between 0 and the number of groups
+minus one. The routine returns the error codes
+\begin{itemize}
+\item{} -1 if no group can be found with the given name
+\item{} -2 if both arguments were null
+\item{} -3 if the first argument was null and the second argument did not have 
+           the correct synthax
+\item{} -4 if memory allocation failed
+\end{itemize} 
 
 \vskip .5cm
 
@@ -122,17 +134,27 @@ Returns the total number of variables in all groups.
 {\t \#include ``Groups.h''}
 \\
 \noindent
-{\t int CCTK\_GetVarNum(const char *implementation, const char *group, const char *variable);}
+{\t int CCTK\_GetVarNum(const char *imp, const char *grp, const char *var);}
 \vskip .25cm
-Given an implementation name, an optional group name, and a variable name
-returns the appropriate variable index. The group name should be set to
-{\t NULL} if it is not used.
-The variable index will lie 
-between 0 and the number of variables
-minus one. The routine returns -2 if the implementation contains no group with
-the given group name, and -1 if there is no variable with the variable name 
-in the group.
+Returns the variable index given either:
+\begin{itemize}
+\item{}  {\t imp = NULL}, {\t grp = NULL}, {\t var = <implementation::variable>}
+\item{} {\t imp = <implementation>}, {\t grp = NULL}, {\t var = <variable>}
+\item{} {\t imp = <implementation>}, {\t grp = <group>}, {\t var = <variable>}
+\end{itemize}
 
+A valid returned variable index will lie 
+between 0 and the number of variables
+minus one. The routine returns the error codes
+\begin{itemize}
+\item{} -4 if string memory allocation failed
+\item{} -3 if the first two arguments were {\t NULL} and the 
+           variable name does not contain the implementation
+\item{} -2 if the implementation contains no group with
+the given group name 
+\item{} -1 if there is no variable with the variable name 
+in the group
+\end{itemize}
 
 \vskip .5cm
 
