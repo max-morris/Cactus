@@ -110,6 +110,16 @@ OVERLOADABLE(GroupDynamicData)
 #undef USE_ARGUMENTS
 #undef RETURN_TYPE
 
+#define RETURN_TYPE int
+#define ARGUMENTS cGH *GH, int n_groups,const int *groups,const int *timelevels, int *status 
+#define USE_ARGUMENTS GH = GH; n_groups=n_groups; groups = groups; timelevels = timelevels; status = status;
+OVERLOADABLE(GroupStorageIncrease)
+OVERLOADABLE(GroupStorageDecrease)
+
+#undef ARGUMENTS
+#undef USE_ARGUMENTS
+#undef RETURN_TYPE
+
 #undef OVERLOADABLE_CALL
 #undef OVERLOADABLE_PREFIX
 #undef OVERLOADABLE_DUMMY_PREFIX

@@ -7,7 +7,7 @@
               Uses the overload macros to make sure of consistency and
               to save typing !
    @enddesc
-   @version   $Id$
+   @version   $Header$
  @@*/
 
 #include <stdio.h>
@@ -34,6 +34,12 @@ CCTK_FILEVERSION(comm_OverloadComm_c)
 #define CCTKi_DummynProcs   CactusDefaultnProcs
 #define CCTKi_DummySetupGH  CactusDefaultSetupGH
 
+  /* Need to do some stuff to make sure old routines still work. */
+#define CCTKi_DummyEnableGroupStorage    CactusDefaultEnableGroupStorage
+#define CCTKi_DummyDisableGroupStorage   CactusDefaultDisableGroupStorage
+#define CCTKi_DummyGroupStorageIncrease  CactusDefaultGroupStorageIncrease
+#define CCTKi_DummyGroupStorageDecrease  CactusDefaultGroupStorageDecrease
+
 #include "CommOverloadables.h"
 
   /* Reset the #define to prevent complications. */
@@ -43,6 +49,11 @@ CCTK_FILEVERSION(comm_OverloadComm_c)
 #undef CCTKi_DummyBarrier
 #undef CCTKi_DummyExit
 #undef CCTKi_DummyAbort
+
+#undef CCTKi_DummyEnableGroupStorage
+#undef CCTKi_DummyDisableGroupStorage
+#undef CCTKi_DummyGroupStorageIncrease
+#undef CCTKi_DummyGroupStorageDecrease
 
 #undef OVERLOADABLE
 
@@ -83,6 +94,11 @@ int CCTKi_SetupCommFunctions(void)
 #define CCTKi_DummynProcs  CactusDefaultnProcs
 #define CCTKi_DummySetupGH CactusDefaultSetupGH
 
+#define CCTKi_DummyEnableGroupStorage    CactusDefaultEnableGroupStorage
+#define CCTKi_DummyDisableGroupStorage   CactusDefaultDisableGroupStorage
+#define CCTKi_DummyGroupStorageIncrease  CactusDefaultGroupStorageIncrease
+#define CCTKi_DummyGroupStorageDecrease  CactusDefaultGroupStorageDecrease
+
 #include "CommOverloadables.h"
 
   /* Reset the #define to prevent complications. */
@@ -92,6 +108,11 @@ int CCTKi_SetupCommFunctions(void)
 #undef CCTKi_DummyMyProc  
 #undef CCTKi_DummynProcs
 #undef CCTKi_DummySetupGH  
+
+#undef CCTKi_DummyEnableGroupStorage
+#undef CCTKi_DummyDisableGroupStorage
+#undef CCTKi_DummyGroupStorageIncrease
+#undef CCTKi_DummyGroupStorageDecrease
 
 #undef OVERLOADABLE
 

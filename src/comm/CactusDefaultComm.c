@@ -5,7 +5,7 @@
    @desc
               Default communication routines.
    @enddesc
-   @version   $Id$
+   @version   $Header$
  @@*/
 
 
@@ -15,10 +15,14 @@
 #include "cctk_Flesh.h"
 #include "cctk_Groups.h"
 #include "cctk_Constants.h"
-#include "CactusMainDefaults.h"
+#include "cctk_Comm.h"
+#include "cctk_WarnLevel.h"
+
 #include "cctki_GHExtensions.h"
 
 #include "cctk_ParamCheck.h"
+
+#include "CactusMainDefaults.h"
 
 #ifdef CCTK_MPI
 #include "mpi.h"
@@ -72,6 +76,11 @@ int CactusDefaultnProcs(const cGH *GH);
 int CactusDefaultExit(cGH *GH, int retval);
 int CactusDefaultAbort(cGH *GH, int retval);
 int CactusDefaultBarrier(const cGH *GH);
+
+int CactusDefaultEnableGroupStorage(cGH *GH, const char *group);
+int CactusDefaultDisableGroupStorage(cGH *GH, const char *group);
+int CactusDefaultGroupStorageIncrease(cGH *GH, int n_groups,const int *groups,const int *timelevels, int *status);
+int CactusDefaultGroupStorageDecrease(cGH *GH, int n_groups,const int *groups,const int *timelevels, int *status);
 
 
  /*@@
@@ -425,3 +434,363 @@ int CactusDefaultBarrier (const cGH *GH)
 
   return (0);
 }
+
+ /*@@
+   @routine    CactusDefaultEnableGroupStorage
+   @date       Wed Apr  3 17:01:22 2002
+   @author     Tom Goodale
+   @desc 
+   Default enable group storage routine.
+   The enable group storage routine should allocate memory
+   for a group and return the previous status of that memory.
+   This default checks for the presence of the newer
+   GroupStorageIncrease function, and if that is not available
+   it flags an error.
+   If it is available it makes a call to it, passing -1 as the timelevel
+   argument, which is supposed to mean enable all timelevels, i.e.
+   preserving this obsolete behaviour.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+   @var     GH
+   @vdesc   Pointer to CCTK grid hierarchy
+   @vtype   cGH *
+   @vio     inout
+   @vcomment 
+   A driver should replace the appropriate GV pointers on this
+   structure when they change the storage state of a GV.
+   @endvar 
+   @var     group
+   @vdesc   Group to allocate storage for
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+   This should be a valid group name.
+   @endvar 
+
+   @returntype int
+   @returndesc
+      0 if the group previously had no storage
+      1 if the group previously had storage
+   @endreturndesc
+ @@*/
+int CactusDefaultEnableGroupStorage(cGH *GH, const char *group)
+{
+  int retval;
+
+  /* Has the increase group storage routine been overloaded ? */
+  if(CCTK_GroupStorageIncrease != CactusDefaultGroupStorageIncrease)
+  {
+    int groups[1];
+    int timelevels[1];
+    int status[1];
+
+    groups[0] = CCTK_GroupIndex(group);
+    timelevels[0] = -1;
+
+    CCTK_GroupStorageIncrease(GH, 1, groups, timelevels, status);
+    retval = status[0];
+  }
+  else
+  {
+    CCTK_VWarn (0, __LINE__, __FILE__, "Cactus",
+                "No driver thorn activated to provide storage for variables");
+    retval = -1;
+  }
+
+  return retval;
+}
+
+ /*@@
+   @routine    CactusDefaultDisableGroupStorage
+   @date       Wed Apr  3 17:01:22 2002
+   @author     Tom Goodale
+   @desc 
+   Default disable group storage routine.
+   The disable group storage routine should deallocate memory
+   for a group and return the previous status of that memory.
+   This default checks for the presence of the newer
+   GroupStorageDecrease function, and if that is not available
+   it flags an error.
+   If it is available it makes a call to it, passing -1 as the timelevel
+   argument, which is supposed to mean disable all timelevels, i.e.
+   preserving this obsolete behaviour.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+   @var     GH
+   @vdesc   Pointer to CCTK grid hierarchy
+   @vtype   cGH *
+   @vio     inout
+   @vcomment 
+   A driver should replace the appropriate GV pointers on this
+   structure when they change the storage state of a GV.
+   @endvar 
+   @var     group
+   @vdesc   Group to deallocate storage for
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+   This should be a valid group name.
+   @endvar 
+
+   @returntype int
+   @returndesc
+      0 if the group previously had no storage
+      1 if the group previously had storage
+   @endreturndesc
+ @@*/
+int CactusDefaultDisableGroupStorage(cGH *GH, const char *group)
+{
+  int retval;
+
+  /* Has the decrease group storage routine been overloaded ? */
+  if(CCTK_GroupStorageDecrease != CactusDefaultGroupStorageDecrease)
+  {
+    int groups[1];
+    int timelevels[1];
+    int status[1];
+
+    groups[0] = CCTK_GroupIndex(group);
+    timelevels[0] = -1;
+
+    CCTK_GroupStorageDecrease(GH, 1, groups, timelevels, status);
+    retval = status[0];
+  }
+  else
+  {
+    CCTK_VWarn (0, __LINE__, __FILE__, "Cactus",
+                "No driver thorn activated to provide storage for variables");
+    retval = -1;
+  }
+
+  return retval;
+}
+
+ /*@@
+   @routine    CactusDefaultGroupStorageIncrease
+   @date       Wed Apr  3 17:01:22 2002
+   @author     Tom Goodale
+   @desc 
+   Default increase group storage routine.
+   The increase group storage routine should increase the allocated memory
+   to the specified number of timelevels of each listed group, returning the
+   previous number of timelevels enable for that group in the status array, 
+   if that is not NULL.  It should never decrease the number of timelevels enabled,
+   i.e. if it is asked to enable less timelevels than are already enable it should
+   not change the storage for that group.
+
+   This default checks for the presence of the older
+   EnableGroupStorage function, and if that is not available it flags an error.
+   If it is available it makes a call to it, and puts its return value in the status 
+   flag for the group.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+   @var     GH
+   @vdesc   Pointer to CCTK grid hierarchy
+   @vtype   cGH *
+   @vio     inout
+   @vcomment 
+   A driver should replace the appropriate GV pointers on this
+   structure when they change the storage state of a GV.
+   @endvar 
+   @var     n_groups
+   @vdesc   Number of groups in group array
+   @vtype   int
+   @vio     in
+   @vcomment 
+   
+   @endvar 
+   @var     groups
+   @vdesc   Groups to allocate storage for
+   @vtype   const int *
+   @vio     in
+   @vcomment 
+   This should be a list of group indices. -1 is treated as a flag to ignore this entry.
+   @endvar 
+   @var     timelevels
+   @vdesc   Number of timelevels to allocate storage for for each group.
+   @vtype   const int *
+   @vio     in
+   @vcomment 
+   This array should have n_groups elements.
+   @endvar 
+   @var     status
+   @vdesc   Optional return array to contain previous state of storage for each group.
+   @vtype   const int *
+   @vio     in
+   @vcomment 
+   If this array is not NULL, it will, on return, contain the number of timelevels which
+   were previously allocated storage for each group.
+   @endvar 
+
+   @returntype int
+   @returndesc
+      The total number of timelevels with storage enabled for all groups queried or
+      modified.
+   @endreturndesc
+ @@*/
+int CactusDefaultGroupStorageIncrease(cGH *GH, int n_groups,const int *groups,const int *timelevels, int *status)
+{
+  int retval;
+
+  /* Has the normal group storage been overloaded ? */
+  if(CCTK_EnableGroupStorage != CactusDefaultEnableGroupStorage)
+  {
+    int i;
+    char *groupname;
+    int value;
+
+    retval = 0;
+
+    for(i=0; i < n_groups; i++)
+    {
+      if(groups[i] > -1)
+      {
+        groupname = CCTK_GroupName(groups[i]);
+        value = CCTK_EnableGroupStorage(GH, groupname);
+        retval += value;
+        if(status)
+        {
+          status[i] = value;
+        }
+      }
+    }
+  }
+  else
+  {
+    CCTK_VWarn (0, __LINE__, __FILE__, "Cactus",
+                "No driver thorn activated to provide storage for variables");
+    retval = -1;
+  }
+
+  /* Avoid a warning about timelevels being unused. */
+  timelevels = timelevels;
+
+  return retval;
+}
+
+ /*@@
+   @routine    CactusDefaultGroupStorageDecrease
+   @date       Wed Apr  3 17:01:22 2002
+   @author     Tom Goodale
+   @desc 
+   Default decrease group storage routine.
+   The decrease group storage routine should decrease the memory allocated
+   to the specified number of timelevels for each listed group, returning the
+   previous number of timelevels enable for that group in the status array, 
+   if that is not NULL.  It should never increase the number of timelevels enabled,
+   i.e. if it is asked to reduce to more timelevels than are enable it should
+   not change the storage for that group.
+
+   This default checks for the presence of the older
+   EnableGroupStorage function, and if that is not available it flags an error.
+   If it is available it makes a call to it, and puts its return value in the status 
+   flag for the group.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+   @var     GH
+   @vdesc   Pointer to CCTK grid hierarchy
+   @vtype   cGH *
+   @vio     inout
+   @vcomment 
+   A driver should replace the appropriate GV pointers on this
+   structure when they change the storage state of a GV.
+   @endvar 
+   @var     n_groups
+   @vdesc   Number of groups in group array
+   @vtype   int
+   @vio     in
+   @vcomment 
+   
+   @endvar 
+   @var     groups
+   @vdesc   Groups to reduce storage for
+   @vtype   const int *
+   @vio     in
+   @vcomment 
+   This should be a list of group indices. -1 is treated as a flag to ignore this entry.
+   @endvar 
+   @var     timelevels
+   @vdesc   Number of timelevels to reduce storage for for each group.
+   @vtype   const int *
+   @vio     in
+   @vcomment 
+   This array should have n_groups elements.
+   @endvar 
+   @var     status
+   @vdesc   Optional return array to contain previous state of storage for each group.
+   @vtype   const int *
+   @vio     in
+   @vcomment 
+   If this array is not NULL, it will, on return, contain the number of timelevels which
+   were previously allocated storage for each group.
+   @endvar 
+
+   @returntype int
+   @returndesc
+      The total number of timelevels with storage enabled for all groups queried or
+      modified.
+   @endreturndesc
+ @@*/
+int CactusDefaultGroupStorageDecrease(cGH *GH, int n_groups,const int *groups,const int *timelevels, int *status)
+{
+  int retval;
+
+  /* Has the normal group storage been overloaded ? */
+  if(CCTK_DisableGroupStorage != CactusDefaultDisableGroupStorage)
+  {
+    int i;
+    char *groupname;
+    int value;
+
+    retval = 0;
+    for(i=0; i < n_groups; i++)
+    {
+      /* Bogus entries in group array are marked with -1.*/
+      if(groups[i] > -1)
+      {
+        /* Since the old enable and disable group storage just returned true or false
+         * and did all timelevels, only disable storage if timelevels is 0.
+         */
+        if(timelevels[i] == 0)
+        {
+          groupname = CCTK_GroupName(groups[i]);
+          value = CCTK_DisableGroupStorage(GH, groupname);
+        }
+        else
+        {
+          value = 0;
+        }
+        retval += value;
+        if(status)
+        {
+          status[i] = value;
+        }
+      }
+    }
+  }
+  else
+  {
+    CCTK_VWarn (0, __LINE__, __FILE__, "Cactus",
+                "No driver thorn activated to provide storage for variables");
+    retval = -1;
+  }
+
+  return retval;
+}
+
