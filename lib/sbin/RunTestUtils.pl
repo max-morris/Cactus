@@ -1,3 +1,20 @@
+$top = `pwd` if (! $top);
+$config_dir = "$top/config-data" if (! $config_dir);
+
+# Set up the CCTK home directory
+if(! $cctk_home)
+{
+  $cctk_home = $ENV{'CCTK_HOME'} || "$ENV{HOME}/CCTK";
+  $cctk_home =~ s:/$::g;
+}
+
+$sbin_dir = "$cctk_home/lib/sbin";
+
+die "Unable to find CCTK sbin directory - tried $sbin_dir\n"
+  if (! -e "$sbin_dir/parameter_parser.pl");
+
+require "$sbin_dir/CSTUtils.pl";
+
 sub Configure
 {
   my($config,$home_dir,$prompt) = @_;
@@ -129,57 +146,60 @@ sub ParseParFile
 sub ParseTestConfigs
 {
   my($testdata,$config_data,$runconfig) = @_;
+  my($line_number, $line);
+  my($test, $ABSTOL, $RELTOL);
 
   foreach $thorn (split(" ",$testdata->{"THORNS"}))
   {
     $arrangement = $testdata->{"$thorn ARRANGEMENT"};
+    if (-r "$config_data->{\"CCTK_DIR\"}${sep}arrangements${sep}$arrangement${sep}$thorn${sep}test${sep}test.ccl" && -r "$config_data->{\"CCTK_DIR\"}${sep}arrangements${sep}$arrangement${sep}$thorn${sep}test${sep}config")
+    {
+      print " Thorn $thorn has a test.ccl file and a config file.\n Config files will be deprecated, using test.ccl file.\n";
+      @config = &read_file("$config_data->{\"CCTK_DIR\"}${sep}arrangements${sep}$arrangement${sep}$thorn${sep}test${sep}config");
+    }
+    elsif(-r "$config_data->{\"CCTK_DIR\"}${sep}arrangements${sep}$arrangement${sep}$thorn${sep}test${sep}test.ccl")
+    {
+      @config = &read_file("$config_data->{\"CCTK_DIR\"}${sep}arrangements${sep}$arrangement${sep}$thorn${sep}test${sep}test.ccl");
+    }
+    elsif(-r "$config_data->{\"CCTK_DIR\"}${sep}arrangements${sep}$arrangement${sep}$thorn${sep}test${sep}config")
+    {
+      @config = &read_file("$config_data->{\"CCTK_DIR\"}${sep}arrangements${sep}$arrangement${sep}$thorn${sep}test${sep}config");
+    }
+    else
+    {
+      next;
+    }
 
-    $config = "$config_data->{\"CCTK_DIR\"}${sep}arrangements${sep}$arrangement${sep}$thorn${sep}test${sep}config";
-    if (-e $config)
+
+    if ($config)
     {
       $global = 1;
-      open (CONFIG,"< $config");
-      while (<CONFIG>)
+      for($line_number = 0; $line_number < @config; $line_number++)
       {
-        # Skip comment lines
-        next if (/^\s*(\#.*|\!.*)$/);
-
-        # Remember when we have moved off the global section
-        if (/(.*):\s*/)
-        {
-          $global = 0;
-          $test = $1;
-          next;
-        }
+        $line = $config[$line_number];
 
         # Parse tokens
-        if (/^\s*([^\s]*)\s(.*)$/)
+        if ($line =~ m/^\s*ABSTOL\s*(.*)/i)
         {
-          $token = $1;
-          $value = $2;
+          $ABSTOL = $runconfig->{"$thorn ABSTOL"}=$1;
+        }
+        elsif ($line =~ m/^\s*RELTOL\s*(.*)/i)
+        {
+          $RELTOL = $runconfig->{"$thorn RELTOL"}=$1;
+        }
+        elsif ($line =~ m/^\s*EXTENSIONS\s*(.*)/i)
+        {
+          $testdata->{"EXTENSIONS"} .= $1;
+        }
+        elsif ($line =~ m/^\s*TEST\s*(.*)/i)
+        {
+          ($test, $ABSTOL, $RELTOL, $line_number) = &ParseTestBlock($line_number, \@config);
+          $runconfig->{"$thorn $test ABSTOL"} = $ABSTOL;
+          $runconfig->{"$thorn $test RELTOL"} = $RELTOL;
         }
         else
         {
-          print "  Unrecognised line in config file for thorn $thorn\n";
-        }
-
-        if ($token =~ /EXTENSIONS/)
-        {
-          $testdata->{"EXTENSIONS"} .= "$value ";
-        }
-        elsif ($token =~ /ABSTOL/)
-        {
-          $value =~ /^\s*([^\s]*)\s+(.*)$/;
-          $runconfig->{"$thorn $1 ABSTOL"}=$2;
-        }
-        elsif ($token =~ /RELTOL/)
-        {
-          $value =~ /^\s*([^\s]*)\s+(.*)$/;
-          $runconfig->{"$thorn $1 RELTOL"}=$2;
-        }
-        else
-        {
-          print "  Unrecognised token $token in config file for thorn $thorn\n";
+          print "  Unrecognised token $line in config file for thorn $thorn\n";
         }
       }
     }
@@ -188,6 +208,52 @@ sub ParseTestConfigs
   return $testdata;
 }
 
+sub ParseTestBlock
+{
+  my ($line_number, $data) = @_;
+  my ($Test, $ABSTOL, $RELTOL);
+
+  $Test     = "";
+  $ABSTOL   = "";
+  $RELTOL   = "";
+
+  $data->[$line_number] =~ m/^\s*PROVIDES\s*(.*)/i;
+
+  $Test = $1;
+
+  $line_number++;
+
+  if($data->[$line_number] !~ m/^\s*\{\s*$/)
+  {
+    $line_number++ while($data[$line_number] !~ m:\s*\}\s*:);
+  }
+  else
+  {
+    while($data->[$line_number] !~ m:\s*\}\s*:)
+    {
+      $line_number++;
+      if($data->[$line_number] =~ m/^\s*ABSTOL\s*(.*)$/i)
+      {
+        $ABSTOL = $1;
+        next;
+      }
+      elsif($data->[$line_number] =~ m/^\s*RELTOL[^\s]*\s*(.*)$/i)
+      {
+        $RELTOL = $1;
+        next;
+      }
+      elsif($data->[$line_number] =~ m:\s*\}\s*:)
+      {
+        # do nothing.
+      }
+      else
+      {
+        print STDERR "Error parsing test config block line '$data->[$line_number]'\n";
+      }
+    }
+  }
+  return ($Test, $ABSTOL, $RELTOL, $line_number);
+}
 
 sub FindTestArchiveFiles
 {
@@ -260,7 +326,7 @@ sub FindTestParameterFiles
         }
         else
         {
-          # print "Parameter file $filedir in thorn $thorn but no output directory\n";
+          print "Parameter file $filedir in thorn $thorn but no output directory\n";
         }
       }
     }
@@ -927,7 +993,6 @@ sub CompareTestFiles
 
           next if (($oline =~ /^\s*["\#]/) && ($nline =~ /^\s*["\#]/));
           $numlines++;
-
           # Now lets see if they differ.
           if (!("\U$nline" eq "\U$oline"))
           {
@@ -958,25 +1023,31 @@ sub CompareTestFiles
               {
                 # They diff. But do they differ strongly?
                 $rundata->{"$thorn $test $file NFAILWEAK"}++;
-
-                if (!$runconfig->{"$thorn $test ABSTOL"})
+                if ($runconfig->{"$thorn $test ABSTOL"})
+                {
+                  $abstol = $runconfig->{"$thorn $test ABSTOL"};
+                }
+                elsif ($runconfig->{"$thorn ABSTOL"})
+                {
+                  $abstol = $runconfig->{"$thorn ABSTOL"};
+                }
+                else 
                 {
                   $abstol = $runconfig->{"ABSTOL"};
                 }
-                else
-                {
-                  $abstol = $runconfig->{"$thorn $test ABSTOL"};
-                  print "  Using absolute tolerance $abstol for this test\n";
-                }
 
-                if (!$runconfig->{"$thorn $test RELTOL"})
-                {
-                  $reltol = $runconfig->{"RELTOL"};
-                }
-                else
+
+                if ($runconfig->{"$thorn $test RELTOL"})
                 {
                   $reltol = $runconfig->{"$thorn $test RELTOL"};
-                  print "  Using relative tolerance $reltol for this test\n";
+                }
+                elsif ($runconfig->{"$thorn RELTOL"})
+                {
+                  $reltol = $runconfig->{"$thorn RELTOL"};
+                }
+                else 
+                {
+                  $reltol = $runconfig->{"RELTOL"};
                 }
 
                 $allunder = 1;

@@ -3351,6 +3351,59 @@ in your thorn.
 Document carefully any situations or architectures in which your test
 suite does not give the correct answers.
 
+You can also specify options for running your testsuite by adding an
+optional configuration file called {\tt test.ccl} in the {\tt test}
+directory. These are simple text files and may contain comments
+introduced by the hash `{\tt \#}' character, which indicates that the
+rest of the line is a comment. If the last non-blank character of a
+line in a config file is a backslash `{\tt $\backslash$}', the
+following line is treated as a continuation of the current line.
+Options include test specific absolute and relative tolerances, thorn
+specific absolute and relative tolerances and file extensions. The
+configuration file has the form:
+
+\begin{alltt}
+ABSTOL  <\var{thorn_absolute_tolerance}>
+RELTOL  <\var{thorn_relative_tolerance}>
+EXTENSIONS  <\var{extension_1} \var{extension_2} \var{extension_3}>
+
+TEST <\var{test_example}>
+\{
+  ABSTOL <\var{absolute_tol}>
+  RELTOL <\var{relative_tol}>
+\}
+\end{alltt}
+
+which states that when comparing files of test \verb|test_example|,
+\verb|absolute_tol| and \verb|relative_tol| {\space} should be used as
+the absolute and relative tolerances. For all other tests in the
+thorn, the default value of absolute and relative tolerances are set
+to \verb|thorn_absolute_tolerance| and
+\verb|thorn_relative_tolerance|. The {\tt EXTENSIONS} option adds
+\verb|extension_1|, \verb|extension_2| and \verb|extension_3| to the
+list of file extensions that are compared. This list is global over
+all tests in a configuration.
+
+Test specific tolerances have precedence over all tolerances, next
+come thorn wide tolerances and then cactus default tolerances.
+Absolute and relative tolerances are independent: you can choose to
+use test specific absolute tolerance and thorn specific relative
+tolerance when running a test. For example,
+
+\begin{alltt}
+TEST \var{test_rad}
+\{
+  ABSTOL \var{1e-5}
+\}
+
+ABSTOL  \var{1e-8}
+RELTOL  \var{1e-12}
+\end{alltt}
+
+would use an absolute tolerance of 1e-5 and a relative tolerance of
+1e-12 when running \verb|test_rad| and an absolute tolerance of 1e-8
+and a relative tolerance of 1e-12 when running all other tests.
+
 For details on running the test suites, see Section~\ref{sec:testing}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
