@@ -338,7 +338,7 @@ sub ScheduleBlock
     $CST_errors++;
   }
   
-  $buffer .= "\"" . $rhschedule_db->{"\U$thorn\E BLOCK_$block NAME"} . "\"" . ",\n";
+  $buffer .= "\"" . $rhschedule_db->{"\U$thorn\E BLOCK_$block AS"} . "\"" . ",\n";
   $buffer .= $indent . "\"" . $thorn . "\"" . ",\n";
   $buffer .= $indent . "\"" . $implementation . "\"" . ",\n";
   $buffer .= $indent . "\"" . $rhschedule_db->{"\U$thorn\E BLOCK_$block DESCRIPTION"} . "\"" . ",\n";

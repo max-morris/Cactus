@@ -74,9 +74,9 @@ sub parse_schedule_ccl
   my($buffer);
   my($n_blocks);
   my($n_statements);
-  my($name, $type, $description, $where, $language, 
+  my($name, $as, $type, $description, $where, $language, 
        $mem_groups, $comm_groups, $trigger_groups, $sync_groups,
-       $before_list, $after_list, $while_list);
+       $options, $before_list, $after_list, $while_list);
   my($groups);
 
   $buffer       = "";
@@ -88,11 +88,12 @@ sub parse_schedule_ccl
     if($data[$line_number] =~ m:^\s*schedule\s*:i)
     {
       ($line_number, 
-       $name, $type, $description, $where, $language, 
+       $name, $as, $type, $description, $where, $language, 
        $mem_groups, $comm_groups, $trigger_groups, $sync_groups,
        $options,$before_list, $after_list, $while_list) = &ParseScheduleBlock($line_number, @data);
 
       $schedule_db{"\U$thorn\E BLOCK_$n_blocks NAME"}        = $name;
+      $schedule_db{"\U$thorn\E BLOCK_$n_blocks AS"}          = $as;
       $schedule_db{"\U$thorn\E BLOCK_$n_blocks TYPE"}        = $type;
       $schedule_db{"\U$thorn\E BLOCK_$n_blocks DESCRIPTION"} = $description;
       $schedule_db{"\U$thorn\E BLOCK_$n_blocks WHERE"}       = $where;
@@ -147,9 +148,9 @@ sub parse_schedule_ccl
 sub ParseScheduleBlock
 {
   my($line_number, @data) = @_;
-  my($name, $type, $description, $where, $language, 
-       $mem_groups, $comm_groups, $trigger_groups, $sync_groups,
-       $options, $before_list, $after_list, $while_list);
+  my($name, $as, $type, $description, $where, $language, 
+     $mem_groups, $comm_groups, $trigger_groups, $sync_groups,
+     $options, $before_list, $after_list, $while_list);
   my(@fields);
   my($field);
   my(@before_list)    = ();
@@ -164,6 +165,7 @@ sub ParseScheduleBlock
   my(@current_sched_list) = ();
 
   $where = "";
+  $as    = "";
 
   #Parse the first line of the schedule block
 
@@ -231,6 +233,20 @@ sub ParseScheduleBlock
       else
       {
 	$where = "$fields[$field]";
+      }
+      $field+=2;
+    }
+    elsif($fields[$field] =~ m:^AS$:i)
+    {
+      $field+=2;
+      if($as ne "")
+      {
+	print STDERR "Error parsing schedule block line '$data[$line_number]'\n";
+	print STDERR "Attempt to schedule same block with two names.\n";
+      }
+      else
+      {
+	$as = "$fields[$field]";
       }
       $field+=2;
     }
@@ -336,6 +352,12 @@ sub ParseScheduleBlock
   }
   $line_number++;
 
+  # If no alias is set, just use the name.
+  if($as eq "")
+  {
+    $as = $name;
+  }
+
   # Parse the rest of the block
 
   if($data[$line_number] !~ m:\s*\{\s*:)
@@ -416,7 +438,7 @@ sub ParseScheduleBlock
 
 
   return ($line_number, 
-	  $name, $type, $description, $where, $language, 
+	  $name, $as, $type, $description, $where, $language, 
 	  $mem_groups, $comm_groups, $trigger_groups, $sync_groups,
 	  $options,$before_list, $after_list, $while_list);
 
