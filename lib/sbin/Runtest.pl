@@ -95,17 +95,17 @@ $tests = &defprompt("Run (A)ll tests or go to (M)enu","All");
 
 
 
-# Get the active thorns list and test files with thorns 
+# Get the active thorns list and test files with thorns
 $scratchdir = "$configs_dir$sep$config";
 
 if (!open (AT, "< $scratchdir${sep}ThornList")) {
   print "Can't open $scratchdir/ThornList - no thorn tests";
-} 
-else 
+}
+else
 {
   chdir "arrangements";
-  
-  while (<AT>) 
+
+  while (<AT>)
   {
     next if (m:^\#:);
     $name = $_;
@@ -113,14 +113,14 @@ else
     $name =~ /^\s*([^\s]*)\s*/;
     $T = $1;
     push(@allthorns, $T);
-    
+
     $T =~ m:^.*/([^\s]*)\s*:;
     $database{"\U$T THORN\E"} = $1;
     $T =~ m:^\s*([^\s]*)/:;
-    $database{"\U$T ARRANGEMENT"} = $1; 
-    
+    $database{"\U$T ARRANGEMENT"} = $1;
+
     $number = 0;
-    if (-d "$T${sep}test") 
+    if (-d "$T${sep}test")
     {
       $thisdir = `pwd`;
       chop($thisdir);
@@ -133,31 +133,31 @@ else
         $number++;
       }
       chdir "../../.." || die "Unable to chdir to $thisdir";
-      
+
     }
     $ntests{"$T"} = $number;
     $database{"\U$T NTESTS\E"} = $number;
   }
-  
+
   chdir "..";
 }
 
 # Parse the parameter files for directives
 $ntests = 0;
-foreach $t (@testfiles) 
+foreach $t (@testfiles)
 {
   $file =  "arrangements/$testthorns[$ntests]/test/$t";
   open (IN, "<$file") || die "Can not open $file";
-  
+
   $processing_active = 0;
-  
+
   # Give a default test name in case non is specified in the parameter file.
   $testnames{$ntests} = "$testthorns[$ntests]/test/$t";
-  
+
   while (<IN>)
   {
     $line = $_;
-    
+
     if($processing_active == 1)
     {
       if($line =~ m/(.*)\"/)
@@ -191,7 +191,7 @@ foreach $t (@testfiles)
 $ntests=0;
 $number_missing=0;
 
-foreach $t (@testfiles) 
+foreach $t (@testfiles)
 {
   $haveallthorns = 1;
   $active = $activethorns[$ntests];
@@ -200,7 +200,7 @@ foreach $t (@testfiles)
   {
     $th = "\U$th";
     $foundit = 0;
-    
+
     foreach $tthorn  (@allthorns)
     {
       $tthorn =~ m:.*/(.*)$:;
@@ -209,13 +209,13 @@ foreach $t (@testfiles)
       {
         $foundit = 1;
       }
-    }      
+    }
     if (!$foundit)
     {
       $haveallthorns = 0;
     }
   }
-  
+
   if ($haveallthorns)
   {
     $havethorns{"$t"} = 1;
@@ -225,12 +225,12 @@ foreach $t (@testfiles)
     $havethorns{"$t"} = 0;
     $number_missing++;
   }
-  $ntests++;  
+  $ntests++;
 }
 
-if ($tests =~ /All/) 
+if ($tests =~ /All/)
 {
-  
+
   # Run all parameter files
   $number_failed=0;
   $number_extra=0;
@@ -238,11 +238,11 @@ if ($tests =~ /All/)
   $number_passed1=0;
   $number_passed2=0;
   $ntested = 0;
-  
-  foreach $t (@testfiles) 
+
+  foreach $t (@testfiles)
   {
-    $thorn = $testthorns[$ntested];        
-  
+    $thorn = $testthorns[$ntested];
+
     if ($havethorns{"$t"})
     {
       push(@actually_tested, $testnames[$ntested]);
@@ -255,24 +255,24 @@ if ($tests =~ /All/)
       push(@not_tested_thorns, $thorn);
       print "Ignoring test '$testnames[$ntested]' from thorn '$thorn' - missing thorns.\n";
     }
-    
+
     $ntested++;
   }
-  
+
   # Show the statistics
-  
+
   print "==================================================\n";
   print "All tests run for configuration $config\n\n";
   print "Tested: \n";
   foreach $thorn (keys %ntests)
   {
-    
+
     if ($ntests{"$thorn"} > 0)
     {
       print "  $thorn [$ntests{\"$thorn\"}]\n";
     }
   }
-  
+
   print "\n";
   print "  Total Tests   -> $ntests\n";
   if ($number_missing > 0)
@@ -285,7 +285,7 @@ if ($tests =~ /All/)
     print " (Number passed to only $tolerance digits -> $number_passed2)\n";
   }
   print "  Number failed -> $number_failed\n";
-  
+
   if ($number_failed>0)
   {
     print "\n  Tests failed:\n";
@@ -299,7 +299,7 @@ if ($tests =~ /All/)
   {
     print "  Number with no output files -> $number_zerofiles\n";
   }
-  
+
   print "=======================================================\n\n";
 
   printf("  $ansibold Warnings:  $ansinormal \n\n");
@@ -313,7 +313,7 @@ if ($tests =~ /All/)
     }
     print "\n";
   }
-  
+
   if ($number_extra>0)
   {
     print "  Tests with different numbers of output files:\n";
@@ -326,29 +326,29 @@ if ($tests =~ /All/)
 
   print "=======================================================\n\n";
 
-} 
+}
 
-else 
-  
+else
+
 {
-  
+
   # Show the parameter file menu
-  
+
   $choice = test01;
   $ntests = 0;
-  foreach $t (@testfiles) 
+  foreach $t (@testfiles)
   {
     $t =~ m:([^${sep}]+)\.par$:;
-  $num = $1; 
+  $num = $1;
   $inp{$num} = $t;
   $testnum[$ntests] = $num;
   $ntests++;
 }
-while (!($choice =~ /^q/i) ) 
+while (!($choice =~ /^q/i) )
 {
   print "\n--- Menu ---\n";
   $sp = "     ";
-  for ($i=0;$i<$ntests;$i++) 
+  for ($i=0;$i<$ntests;$i++)
   {
     if($havethorns{$inp{$testnum[$i]}})
     {
@@ -367,7 +367,7 @@ while (!($choice =~ /^q/i) )
   print "\n";
   $ip = $inp{$testnum[$choice-1]};
   $thorn = $testthorns[$choice-1];
-  if (!($choice =~ m/^q/i || $choice =~ m/^\s*$/)) 
+  if (!($choice =~ m/^q/i || $choice =~ m/^\s*$/))
   {
     if($choice > 0 && $choice <= $ntests)
     {
@@ -392,22 +392,22 @@ print "\n";
 
 }
 
-sub runtest 
+sub runtest
 {
   my ($inpf,$inthorn,$num) = @_;
-  
+
   # File name from thorn
   $inpf = "arrangements/$inthorn/test/$inpf";
-  
+
   # Directory for output
   $tsttop = ".${sep}TEST${sep}$config";
   mkdir (TEST,0755);
   mkdir ($tsttop,0755);
-  
+
   $tp = $inpf;
   $tp =~ s:^.*$sep::;
   $tp =~ s/\.par$//;
-  
+
   $test_base_dir = $inpf;
   $test_base_dir =~ s:[^${sep}]*$::;
 
@@ -435,11 +435,11 @@ sub runtest
   $retcode = 0;
   open (CMD, "$cmd |");
   open (LOG, "> $tp.log");
-  
-  while (<CMD>) 
+
+  while (<CMD>)
   {
     print LOG;
-    
+
     if( /Cactus exiting with return code (.*)/)
     {
       $retcode = $1 + 0;
@@ -457,27 +457,31 @@ sub runtest
     print "${ansibold}Cactus exited with error code $retcode $ansinormal \n";
     print "Please check the logfile $tsttop$sep$tp.log\n\n";
     $number_failed++;
-    @which_failed = (@which_failed,$tp); 
+    @which_failed = (@which_failed,$tp);
     @thorn_failed = (@thorn_failed,$inthorn);
     return;
   }
 
   $indir = $inpf;
   $indir =~ s:\.par$:${sep}:g;
-  @oldout = <$indir${sep}*.*l>;
+  opendir (DIR, $indir);
+  @oldout = grep (/\..+l$/, readdir (DIR));
+  closedir (DIR);
   $blewit = 0;
   $reallyblewit = 0;
   $nfiles = 0;
 
   # Count number of files in test directory
-  @newout = <$tsttop$sep$tp${sep}*.*l>;
-  
-  foreach $file (@oldout) 
+  opendir (DIR, "$tsttop$sep$tp");
+  @newout = grep (/\..+l$/, readdir (DIR));
+  closedir (DIR);
+
+  foreach $file (@oldout)
   {
     $nfiles ++;
     $newfile = $file;
     $newfile =~ s:^.*${sep}([^${sep}]+)$:$1:;
-    $newfile = "$tsttop$sep$tp$sep$newfile"; 
+    $newfile = "$tsttop$sep$tp$sep$newfile";
     #       print "Comparing $file with $newfile\n";
 
     if ( -e $newfile)
@@ -486,13 +490,13 @@ sub runtest
       open (INNEW,  "<$newfile");
       $nblow = 0;
       $nrealblow = 0;
-      while ($oline = <INORIG>) 
+      while ($oline = <INORIG>)
       {
         $nline = <INNEW>;
         # Now lets see if they differ.
-        if (!($nline eq $oline)) 
+        if (!($nline eq $oline))
         {
-          
+
           # Check against nans
           if ($nline =~ /nan/i)
           {
@@ -513,19 +517,19 @@ sub runtest
             ($t1,$v1) = split(' ', $nline);
             ($t2,$v2) = split(' ', $oline);
             # Make sure that floating point numbers have 'e' if exponential.
-            $v1 =~ s/[dD]/e/; 
-            $v2 =~ s/[dD]/e/; 
-            
+            $v1 =~ s/[dD]/e/;
+            $v2 =~ s/[dD]/e/;
+
             $vdiff = abs($v1 - $v2);
-            if ($vdiff > 0) 
+            if ($vdiff > 0)
             {
-              
+
               # They diff. But do they differ strongly?
               $nblow ++;
-              
+
               $exp = sprintf("%e",$vdiff);
               $exp =~ s/^.*e-(\d+)/$1/;
-              unless ($exp >= $tolerance) 
+              unless ($exp >= $tolerance)
               {
                 $nrealblow++;
               }
@@ -533,16 +537,16 @@ sub runtest
           }
         } # if
       } #while
-      if ($nblow != 0) 
+      if ($nblow != 0)
       {
         $blewit ++;
         $stripfile = $newfile;
         $stripfile =~ s:^.*${sep}(.*)$:$1:;
-        if ($nrealblow == 0) 
+        if ($nrealblow == 0)
         {
           print "     $stripfile differs at machine precision (which is OK!)\n";
         }
-        else 
+        else
         {
           $reallyblewit ++;
           print "Substantial differences detected in $stripfile\n";
@@ -565,7 +569,7 @@ sub runtest
     printf("\n  $ansibold WARNING: Comparing different numbers of output files ! $ansinormal \n");
     print "            ","Counted ",scalar(@oldout)," in thorn and ";
     print scalar(@newout)," from test\n";
-    foreach $file (@newout) 
+    foreach $file (@newout)
     {
       $oldfile = $file;
       $oldfile =~ s:^.*${sep}([^${sep}]+)$:$1:;
@@ -575,11 +579,11 @@ sub runtest
         print "            $oldfile not in thorn archive\n";
       }
     }
-    foreach $file (@oldout) 
+    foreach $file (@oldout)
     {
       $newfile = $file;
       $newfile =~ s:^.*${sep}([^${sep}]+)$:$1:;
-      $newfile = "$tsttop$sep$tp$sep$newfile"; 
+      $newfile = "$tsttop$sep$tp$sep$newfile";
       if (!-e $newfile)
       {
         print "            $newfile not created in test\n";
@@ -591,47 +595,47 @@ sub runtest
     @thorn_extra = (@thorn_extra,$inthorn);
   }
 
-  if ($nfiles == 0) 
+  if ($nfiles == 0)
   {
     printf("\n  $ansibold WARNING: ZERO files compared ! $ansinormal \n");
     $number_zerofiles++;
   }
-  elsif ($blewit == 0) 
+  elsif ($blewit == 0)
   {
     printf("\n  $ansibold Test succeeded!$ansinormal $nfiles files identical\n");
     $number_passed1++;
-  } 
-  else 
+  }
+  else
   {
-    if ($reallyblewit == 0) 
+    if ($reallyblewit == 0)
     {
       printf "\n  $ansibold Test passed to $tolerance figures:$ansinormal ".
         "$nfiles compared, $blewit files differ in the last digits\n";
       $number_passed1++;
       $number_passed2++;
-    } 
-    else 
+    }
+    else
     {
       printf "\n  $ansibold TEST FAILED!!:$ansinormal ".
          "$nfiles compared, $blewit files differ, $reallyblewit differ significantly\n";
       $number_failed++;
-      @which_failed = (@which_failed,$tp); 
+      @which_failed = (@which_failed,$tp);
       @thorn_failed = (@thorn_failed,$inthorn);
     }
   }
   printf ("\n\n");
 }
 
-sub defprompt 
+sub defprompt
 {
   my ($pr, $de) = @_;
   my ($res);
-  
+
   print "$pr [$de] \n";
   print "   --> ";
-  
+
   $res = <STDIN> if ($prompt eq "yes");
-  if ($res =~ m/^$/) 
+  if ($res =~ m/^$/)
   {
     $res = $de;
   }
@@ -644,7 +648,7 @@ sub defprompt
   return $res;
 }
 
-sub fpabs 
+sub fpabs
 {
   my ($val) = $_[0];
   $val > 0 ? $val:-$val;
