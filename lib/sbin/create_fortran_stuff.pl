@@ -4,8 +4,9 @@
 #  @date      Tue Jan 12 09:52:35 1999
 #  @author    Tom Goodale
 #  @desc
-#
+#  Create the Fortran parameter stuff
 #  @enddesc
+#version $Header$
 #@@*/
 
 sub CreateFortranThornParameterBindings
@@ -69,8 +70,11 @@ sub CreateFortranThornParameterBindings
   # thorns, especially if the variable isn't being used !
   $num_aliases = 0;
 
+#  print "DEBUG ********************************************\n";
+#  print "DEBUG thorn is $thorn\n";
   foreach $friend (split(' ',$rhparameter_db->{"\U$thorn\E SHARES implementations"}))
   {
+#    print "DEBUG friend is $friend\n";
 
     # Determine which thorn provides this friend implementation
     $rhinterface_db->{"IMPLEMENTATION \U$friend\E THORNS"} =~ m:([^ ]*):;
@@ -83,25 +87,30 @@ sub CreateFortranThornParameterBindings
 
     foreach $parameter (sort(keys %these_parameters))
     {
-      # Alias the parameter unless it is one we want.
-      if(($rhparameter_db->{"\U$thorn SHARES $friend\E variables"} =~ m:( )*$parameter( )*:) && 
-         (length($1) > 0)||length($2)>0||$1 eq $rhparameter_db->{"\U$thorn SHARES $friend\E variables"})
-      {
-        # See if we are sharing it AS something
-        my $name = $rhparameter_db->{"\U$thorn $parameter\E alias"};
+#      print "DEBUG parameter is $parameter\n";
+      my $foundit = 0;
+      my $thornparam;
+      my $name = "";
 
-        if(! $name)
+      foreach $thornparam (split(/\s+/,$rhparameter_db->{"\U$thorn SHARES $friend\E variables"}))
+      {
+#        print "DEBUG thorn parameter is $thornparam\n";
+#        print "DEBUG       realname is " . $rhparameter_db->{"\U$thorn $thornparam\E realname"} ."\n";
+          
+        if($rhparameter_db->{"\U$thorn $thornparam\E realname"} =~ m/^$parameter$/i)
         {
-          $name = "$parameter";
+#          print "DEBUG ... " . $rhparameter_db->{"\U$thorn $thornparam\E realname"} . "\n";
+          $name = $thornparam; #$rhparameter_db->{"\U$thorn $thornparam\E realname"};
+          last;
         }
-
-        $alias_names{$parameter} = $name;
       }
-      else
+
+      if($name eq "")
       {
-        $alias_names{$parameter} = "CCTKH$num_aliases";
+        $name = "CCTKH$num_aliases";
         $num_aliases++;
       }
+      $alias_names{$parameter} = "$name";
     }
 
     @data = &CreateFortranCommonDeclaration("${friend}rest", \%these_parameters, $rhparameter_db, \%alias_names);
@@ -158,23 +167,19 @@ sub CreateFortranCommonDeclaration
       $suffix = "($array_size)";
     }
 
-    if($aliases == 0)
-    {
-      my $name = $rhparameter_db->{"\U$rhparameters->{$parameter} $parameter\E alias"};
+    my $name;
 
-      if(! $name)
-      {
-        $name = "$parameter";
-      }
-      
-      $line = "$type_string $name$suffix";
-      $definition .= "$sepchar$name";
+    if($aliases)
+    {
+      $name = $rhaliases->{$parameter};
     }
     else
     {
-      $line = "$type_string $rhaliases->{$parameter}$suffix";
-      $definition .= "$sepchar$rhaliases->{$parameter}";
+      $name = $rhparameter_db->{"\U$rhparameters->{$parameter} $parameter\E realname"};
     }
+      
+    $line = "$type_string $name$suffix";
+    $definition .= "$sepchar$name";
 
     push(@data, $line);
 

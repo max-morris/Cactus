@@ -40,6 +40,8 @@ sub CreateParameterBindingFile
     my $type = $rhparameter_db->{"\U$rhparameters->{$parameter} $parameter\E type"};
     my $type_string = &get_c_type_string($type);
 
+    my $realname = $rhparameter_db->{"\U$rhparameters->{$parameter} $parameter\E realname"};
+
     my $array_size = $rhparameter_db->{"\U$rhparameters->{$parameter} $parameter\E array_size"};
 
     my $suffix = '';
@@ -49,7 +51,7 @@ sub CreateParameterBindingFile
       $suffix = "[$array_size]";
     }
 
-    push(@data, "  $type_string$parameter$suffix;");
+    push(@data, "  $type_string$realname$suffix;");
   }
 
   # Some compilers don't like an empty structure.
@@ -186,24 +188,19 @@ sub CreateCStructureParameterHeader
     my $array_size = $rhparameter_db->{"\U$rhparameters->{$parameter} $parameter\E array_size"};
 
     my $suffix = '';
-    my $prefix = '';
+    my $varprefix = '';
 
     if($array_size)
     {
-      $prefix = '*';
+      $varprefix = '*';
       $suffix = "[$array_size]";
     }
 
-    my $name = $rhparameter_db->{"\U$rhparameters->{$parameter} $parameter\E alias"};
+    my $realname = $rhparameter_db->{"\U$rhparameters->{$parameter} $parameter\E realname"};
 
-    if(! $name)
-    {
-      $name = "$parameter";
-    }
-
-    push(@data, "  $type_string $parameter$suffix;");
-    push(@definition, "  const $type_string $prefix$name = $structure.$parameter; \\");
-    push(@use, "  (void) ($name + 0); \\");
+    push(@data, "  $type_string $realname$suffix;");
+    push(@definition, "  const $type_string $varprefix$parameter = $structure.$realname; \\");
+    push(@use, "  (void) ($parameter + 0); \\");
   }
 
   # Some compilers don't like an empty structure.

@@ -225,19 +225,21 @@ sub CreateParameterBindings
 
       foreach $parameter (split(' ',$rhparameter_db->{"\U$thorn SHARES $friend\E variables"}))
       {
-        $type = $rhparameter_db->{"\U$friend_thorn $parameter\E type"};
+        my $realname = $rhparameter_db->{"\U$thorn $parameter\E realname"};
+
+        $type = $rhparameter_db->{"\U$friend_thorn $realname\E type"};
+        $array = $rhparameter_db->{"\U$friend_thorn $realname\E array_size"};
         $type_string = &get_c_type_string($type);
 
-        # See if we are sharing it AS something
-        my $name = $rhparameter_db->{"\U$thorn $parameter\E alias"};
+        my $varprefix = '';
 
-        if(! $name)
+        if($array_size)
         {
-          $name = "$parameter";
+          $varprefix = '*';
         }
 
-        push(@data, "  const $type_string$name = RESTRICTED_\U$friend\E_STRUCT.$parameter; \\");
-        push(@use, "  (void) ($name + 0); \\");
+        push(@data, "  const $type_string $varprefix$parameter = RESTRICTED_\U$friend\E_STRUCT.$realname; \\");
+        push(@use, "  (void) ($parameter + 0); \\");
       }
     }
 
@@ -499,6 +501,8 @@ sub CreateParameterRegistrationStuff
       &CST_error(0,$message,'',__LINE__,__FILE__);
     }
 
+    my $realname = $rhparameter_db->{"\U$thorn $parameter\E realname"};
+
     my $array_size = $rhparameter_db->{"\U$thorn $parameter\E array_size"};
 
     my $dereference = '';
@@ -534,7 +538,7 @@ sub CreateParameterRegistrationStuff
           "                        $steerable_type,\n" .
           "                        " . $rhparameter_db->{"\U$thorn $parameter\E description"} . ",\n" .
           "                        \"" . $quoted_default . "\",\n" .
-          "                        $dereference($structure.$parameter),\n" .
+          "                        $dereference($structure.$realname),\n" .
           "                        $array_size,\n" .
           "                        $accumulator_expression,\n" .
 #          "                        $accumulator_base,\n" .
@@ -629,7 +633,7 @@ sub CreateParameterAccumulationStuff
     if($accumulator_base)
     {
 
-      print "accumulator_base = $accumulator_base\n";
+#      print "accumulator_base = $accumulator_base\n";
 
       $accumulator_base =~ m/([^:]+)::(.+)/;
 

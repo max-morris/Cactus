@@ -48,11 +48,13 @@ sub CheckImpParamConsistency
       {
 #       print "Parameter is $parameter\n";
 
+        my $realname = $parameter_database{"\U$thorn $parameter\E realname"};
+
         # Check if the parameter exists in the other thorn
-        if($parameter_database{"\U$other_thorn $parameter\E type"})
+        if($parameter_database{"\U$other_thorn $realname\E type"})
         {
           # Check that the parameter is in the restricted block.
-          if($parameter_database{"\U$other_thorn RESTRICTED\E variables"} =~ m:\b$parameter\b:i)
+          if($parameter_database{"\U$other_thorn RESTRICTED\E variables"} =~ m:\b$realname\b:i)
           {
 
 #   This lot is done by C now, and SHOULD NOT BE DONE by the perl
@@ -73,13 +75,13 @@ sub CheckImpParamConsistency
           }
           else
           {
-              $message = "Thorn $thorn attempted to EXTEND or USE non-restricted parameter $parameter from $friend";
+              $message = "Thorn $thorn attempted to EXTEND or USE non-restricted parameter $realname from $friend";
               &CST_error(0,$message,"",__LINE__,__FILE__);
           }
         }
         else
         {
-          $message = "Thorn $thorn attempted to EXTEND or USE non-existent parameter $parameter from $friend";
+          $message = "Thorn $thorn attempted to EXTEND or USE non-existent parameter $realname from $friend";
           &CST_error(0,$message,"",__LINE__,__FILE__);
         }
       }

@@ -1,4 +1,13 @@
 #! /usr/bin/perl
+#/*@@
+#  @file      parameter_parser.pl
+#  @date      Mon 25 May 08:07:40 1998
+#  @author    Tom Goodale
+#  @desc 
+#  Parser for param.ccl files
+#  @enddesc 
+#  @version $Header$
+#@@*/
 
 #%implementations = ("flesh", "flesh", "test1", "test1", "test2", "test2");
  
@@ -180,6 +189,32 @@ sub parse_param_ccl
         }
       }
 
+      my $realname = $variable;
+
+      # First deal with an alias
+
+      if($options =~ m/\bAS\s+([^\s]+)\s*/i)
+      {
+        my $alias = $1;
+        
+        if($alias !~ m/[a-zA-Z]+[a-zA-Z0-9_]*/)
+        {
+          $message = "Invalid alias name '$alias' for  $variable of thorn $thorn";
+          &CST_error(0,$message,"",__LINE__,__FILE__);
+        }
+        elsif($defined_parameters{"\U$alias\E"})
+        {
+          $message = "Invalid alias name '$alias' for $variable of thorn $thorn - parameter of that name already exists";
+          &CST_error(0,$message,"",__LINE__,__FILE__);
+        }
+              
+        $options =~ s/\bAS\s+([^\s])+\s*//i;
+
+        # Rename the variable for internal use
+        $variable = $alias
+      }
+      
+      
       if($defined_parameters{"\U$variable\E"})
       {
 
@@ -228,33 +263,9 @@ sub parse_param_ccl
           $line_number++;
           $line_number++;
         }
-
+        
         # Parse the options
 
-        # First deal with an alias
-#         if($options =~ m/\bAS\s+([^\s]+)\s*/i)
-#         {
-#           my $alias = $1;
-
-#           if($alias !~ m/[a-zA-Z]+[a-zA-Z0-9_]*/)
-#           {
-#             $message = "Invalid alias name '$alias' for  $variable of thorn $thorn";
-#             &CST_error(0,$message,"",__LINE__,__FILE__);
-#           }
-#           elsif($defined_parameters{"\U$alias\E"})
-#           {
-#             $message = "Invalid alias name '$alias' for $variable of thorn $thorn - parameter of that name already exists";
-#             &CST_error(0,$message,"",__LINE__,__FILE__);
-#           }
-#           else
-#           {
-#             $parameter_db{"\U$thorn $variable\E alias"} = $alias;
-#           }
-
-#           $options =~ s/\bAS\s+([^\s])+\s*//i;
-#         }
-
-        # Now parse options of the form option = value
         %options = split(/\s*=\s*|\s+/, $options);
       
         foreach $option (keys %options)
@@ -346,15 +357,8 @@ sub parse_param_ccl
 
         # Store data about this variable.
 
-        if($alias)
-        {
-          $defined_parameters{"\U$alias\E"} = 1;
-        }
-        else
-        {
-          $defined_parameters{"\U$variable\E"} = 1;
-        }
-
+        $defined_parameters{"\U$variable\E"} = 1;
+        $parameter_db{"\U$thorn $variable\E realname"} = $realname;
         $parameter_db{"\U$thorn $block\E variables"} .= $variable." ";
         $parameter_db{"\U$thorn $variable\E type"} = $type;
         $parameter_db{"\U$thorn $variable\E description"} = $description;
