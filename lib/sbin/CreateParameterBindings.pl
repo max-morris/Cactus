@@ -279,6 +279,7 @@ sub CreateParameterBindings
     push(@data, "#ifdef THORN\_IS\_$thorn");
     push(@data, "#include \"${thorn}_CParameters.h\"");
     push(@data, '#endif');
+    push(@data, '');
   }
   push(@data, "\n");  # workaround for perl 5.004_04 to add a trailing newline
   $dataout = join ("\n", @data);
@@ -290,6 +291,7 @@ sub CreateParameterBindings
     push(@data, "#ifdef THORN\_IS\_$thorn");
     push(@data, "#include \"${thorn}_FParameters.h\"");
     push(@data, '#endif');
+    push(@data, '');
   }
   push(@data, "\n");  # workaround for perl 5.004_04 to add a trailing newline
   $dataout = join ("\n", @data);
