@@ -116,11 +116,6 @@ int CactusInitialiseGH(cGH *GH)
   /* Initialise all the extensions. */
   CCTKi_InitGHExtensions(GH);
 
-#define PUGH
-
-#ifdef PUGH
-  /* Do various schedule traversals.  Will tidy up later. */
-
   /* FIXME : PARAM_CHECK SHOULD BE BEFORE HERE */
   CCTK_Traverse(GH, "CCTK_PARAMCHECK");
   CCTKi_FinaliseParamWarn();
@@ -138,8 +133,6 @@ int CactusInitialiseGH(cGH *GH)
   CCTK_Traverse(GH, "CCTK_CPINITIAL");
 
   CCTK_Traverse(GH, "CCTK_POSTSTEP");
-
-#endif
 
   return 1;
 
