@@ -12,7 +12,7 @@
 #include <string.h>
 
 #include "cctk_Flesh.h"
-#include "CactusTimers.h"
+#include "cctk_Timers.h"
 #include "StoreHandledData.h"
 
 
@@ -42,11 +42,11 @@ static int n_timers = 0;
 static cHandledData *timers = NULL;
 
  /*@@
-   @routine    CCTK_TimerRegister
+   @routine    CCTK_ClockRegister
    @date       Wed Sep  1 10:09:27 1999
    @author     Tom Goodale
    @desc 
-   Registers a new timer function.
+   Registers a new timer function (clock).
    @enddesc 
    @calls     
    @calledby   
@@ -55,7 +55,7 @@ static cHandledData *timers = NULL;
    @endhistory 
 
 @@*/
-int CCTK_TimerRegister(const char *name, cTimerFuncs *functions)
+int CCTK_ClockRegister(const char *name, cTimerFuncs *functions)
 {
   int handle;
   cTimerFuncs *newfuncs;
@@ -192,13 +192,19 @@ int CCTK_TimerDestroy(const char *name)
 {
   t_Timer *timer;
   int this_timer;
+  int retval = 0;
 
   if((this_timer = Util_GetHandle(timers, name, (void **)&timer)) > -1)
   {
     CCTKi_TimerDestroy(this_timer, timer);
   }
-
-  return 0;
+  else
+  {
+    CCTK_VWarn(8,__LINE__,__FILE__,"Cactus",
+	       "CCTK_TimerDestroy: Timer %s not found",name);
+    retval = -1;
+  }
+  return retval;
 }
 
  /*@@
@@ -218,12 +224,19 @@ int CCTK_TimerDestroy(const char *name)
 int CCTK_TimerDestroyI(int this_timer)
 {
   t_Timer *timer;
+  int retval = 0;
 
   if((timer = Util_GetHandledData(timers, this_timer)))
   {
     CCTKi_TimerDestroy(this_timer, timer);
   }
-  return 0;
+  else
+  {
+    CCTK_VWarn(8,__LINE__,__FILE__,"Cactus",
+	       "CCTK_TimerDestroyI: Timer %d not found",this_timer);
+    retval = -1;
+  }
+  return retval;
 }
       
  /*@@
@@ -280,24 +293,37 @@ int CCTK_TimerStart(const char *name)
 {
   t_Timer *timer;
   int this_timer;
+  int retval = 0;
 
   if((this_timer = Util_GetHandle(timers, name, (void **)&timer)) > -1)
   {
     CCTKi_TimerStart(this_timer, timer);
   }
-
-  return 0;
+  else
+  {
+    CCTK_VWarn(8,__LINE__,__FILE__,"Cactus",
+	       "CCTK_TimerStart: Timer %s not found",name);
+    retval = -1;
+  }
+  return retval;
 }
 
 int CCTK_TimerStartI(int this_timer)
 {
   t_Timer *timer;
+  int retval = 0;
 
   if((timer = Util_GetHandledData(timers, this_timer)))
   {
     CCTKi_TimerStart(this_timer, timer);
   }
-  return 0;
+  else
+  {
+    CCTK_VWarn(8,__LINE__,__FILE__,"Cactus",
+	       "CCTK_TimerStartI: Timer %d not found",this_timer);
+    retval = -1;
+  }
+  return retval;
 }
 
 static void CCTKi_TimerStart(int this_timer, t_Timer *timer)
@@ -337,23 +363,37 @@ int CCTK_TimerStop(const char *name)
 {
   t_Timer *timer;
   int this_timer;
+  int retval = 0;
 
   if((this_timer = Util_GetHandle(timers, name, (void **)&timer)) > -1)
   {
     CCTKi_TimerStop(this_timer, timer);
   }
-  return 0;
+  else
+  {
+    CCTK_VWarn(8,__LINE__,__FILE__,"Cactus",
+	       "CCTK_TimerStop: Timer %s not found",name);
+    retval = -1;
+  }
+  return retval;
 }
 
 int CCTK_TimerStopI(int this_timer)
 {
   t_Timer *timer;
+  int retval = 0;
 
   if((timer = Util_GetHandledData(timers, this_timer)))
   {
     CCTKi_TimerStop(this_timer, timer);
   }
-  return 0;
+  else
+  {
+    CCTK_VWarn(8,__LINE__,__FILE__,"Cactus",
+	       "CCTK_TimerStopI: Timer %d not found",this_timer);
+    retval = -1;
+  }
+  return retval;
 }
 
 static void CCTKi_TimerStop(int this_timer, t_Timer *timer)
@@ -393,23 +433,37 @@ int CCTK_TimerReset(const char *name)
 {
   t_Timer *timer;
   int this_timer;
+  int retval = 0;
 
   if((this_timer = Util_GetHandle(timers, name, (void **)&timer)) > -1)
   {
     CCTKi_TimerReset(this_timer, timer);
   }
-  return 0;
+  else
+  {
+    CCTK_VWarn(8,__LINE__,__FILE__,"Cactus",
+	       "CCTK_TimerReset: Timer %s not found",name);
+    retval = -1;
+  }
+  return retval;
 }
 
 int CCTK_TimerResetI(int this_timer)
 {
   t_Timer *timer;
+  int retval = 0;
 
   if((timer = Util_GetHandledData(timers, this_timer)))
   {
     CCTKi_TimerReset(this_timer, timer);
   }
-  return 0;
+  else
+  {
+    CCTK_VWarn(8,__LINE__,__FILE__,"Cactus",
+	       "CCTK_TimerResetI: Timer %d not found",this_timer);
+    retval = -1;
+  }
+  return retval;
 }
 
 static void CCTKi_TimerReset(int this_timer, t_Timer *timer)
