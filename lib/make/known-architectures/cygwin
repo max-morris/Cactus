@@ -37,34 +37,40 @@ else
   CCTK_WriteLine cctk_Archdefs.h '/* WIN stuff */'
   CCTK_WriteLine cctk_Archdefs.h '#define WIN32'
 
-# /Gd means use __cdecl, it's /Gz for __stdcall
+  CYGWIN_CC_COMP=
 
-  case "$CC" in
-    cl|icl)
-      : ${CFLAGS="/nologo /Gd"}
-      : ${C_OPTIMISE_FLAGS="/Oxy-"}
-      : ${CCOMPILEONLY="/c /Fo"}
-      : ${OPTIONSEP="# not even a single a single space under cygwin"}
-      ;;
-    *)
-      ;;
-  esac
+  if test "`$CC 2>&1 | grep -i microsoft`" ; then 
+    CYGWIN_CC_COMP=microsoft
+  elif test "`$CC 2>&1 | grep -i intel`" ; then 
+    CYGWIN_CC_COMP=intel
+#  elif test "`$CC 2>&1 | grep -i gcc`" ; then
+#    CYGWIN_CC_COMP=gnu
+  else
+    echo Unknown Windows C compiler.
+    echo Please add appropriate information to 
+    echo $srcdir/known-architectures/cygwin
+    echo and send the updated file to CactusMaint
+    echo We will try anyway ...
+    CYGWIN_CC_COMP=unknown
+  fi
 
-  case "$CXX" in
-    "cl /TP"|"icl /TP")
-      : ${CXXFLAGS="/nologo /Gd"}
-      : ${CXX_OPTIMISE_FLAGS="/Oxy-"}
-      : ${CREATEEXE="/Fe"}
-      : ${CCOMPILEONLY="/c /Fo"}
-      : ${CACTUSLIBLINKLINE='/link /libpath:"$(call TRANSFORM_DIRS,$(CCTK_LIBDIR))" $(foreach lib,$(ALLCACTUSLIBS), $(LIBNAME_PREFIX)$(lib)$(LIBNAME_SUFFIX))'}
-      GENERAL_LIBRARIES='$(LIBDIRS:%=/libpath:"$(call TRANSFORM_DIRS,%)") $(LIBS:%=%.lib) /NODEFAULTLIB:libcd /NODEFAULTLIB:libcmt'
-      : ${OPTIONSEP="# not even a single a single space under cygwin"}
-      ;;
-    *)
-      ;;
-  esac
+  CYGWIN_CXX_COMP=
 
-# Determine which Fortran 90 compiler is in use
+  if test "`$CXX 2>&1 | grep -i microsoft`" ; then 
+    CYGWIN_CXX_COMP=microsoft
+  elif test "`$CXX 2>&1 | grep -i intel`" ; then 
+    CYGWIN_CXX_COMP=intel
+#  elif test "`$CXX 2>&1 | grep -i gcc`" ; then
+#    CYGWIN_CXX_COMP=gnu
+  else
+    echo Unknown Windows C++ compiler.
+    echo Please add appropriate information to 
+    echo $srcdir/known-architectures/cygwin
+    echo and send the updated file to CactusMaint
+    echo We will try anyway ...
+    CYGWIN_CXX_COMP=unknown
+  fi
+
   CYGWIN_F90_COMP=
 
   if test -n "$F90" ; then 
@@ -82,11 +88,38 @@ else
         echo $srcdir/known-architectures/cygwin
         echo and send the updated file to CactusMaint
         echo We will try anyway ...
-       CYGWIN_F90_COMP=none
+       CYGWIN_F90_COMP=unknown
     fi
   else
     CYGWIN_F90_COMP=none
   fi
+
+# /Gd means use __cdecl, it's /Gz for __stdcall
+
+  case "$CYGWIN_CC_COMP" in
+    microsoft|intel)
+      : ${CFLAGS="/nologo /Gd"}
+      : ${C_OPTIMISE_FLAGS="/Oxy-"}
+      : ${CCOMPILEONLY="/c /Fo"}
+      : ${OPTIONSEP="# not even a single a single space under cygwin"}
+      ;;
+    *)
+      ;;
+  esac
+
+  case "$CYGWIN_CXX_COMP" in
+    microsoft|intel)
+      : ${CXXFLAGS="/nologo /Gd"}
+      : ${CXX_OPTIMISE_FLAGS="/Oxy-"}
+      : ${CREATEEXE="/Fe"}
+      : ${CCOMPILEONLY="/c /Fo"}
+      : ${CACTUSLIBLINKLINE='/link /libpath:"$(call TRANSFORM_DIRS,$(CCTK_LIBDIR))" $(foreach lib,$(ALLCACTUSLIBS), $(LIBNAME_PREFIX)$(lib)$(LIBNAME_SUFFIX))'}
+      GENERAL_LIBRARIES='$(LIBDIRS:%=/libpath:"$(call TRANSFORM_DIRS,%)") $(LIBS:%=%.lib) /NODEFAULTLIB:libcd /NODEFAULTLIB:libcmt'
+      : ${OPTIONSEP="# not even a single a single space under cygwin"}
+      ;;
+    *)
+      ;;
+  esac
 
   case "$CYGWIN_F90_COMP" in
      digital)
