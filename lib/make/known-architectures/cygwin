@@ -114,7 +114,7 @@ else
       : ${CREATEEXE="/Fe"}
       : ${CCOMPILEONLY="/c /Fo"}
       : ${CACTUSLIBLINKLINE='/link /libpath:"$(call TRANSFORM_DIRS,$(CCTK_LIBDIR))" $(foreach lib,$(ALLCACTUSLIBS), $(LIBNAME_PREFIX)$(lib)$(LIBNAME_SUFFIX))'}
-      GENERAL_LIBRARIES='$(LIBDIRS:%=/libpath:"$(call TRANSFORM_DIRS,%)") $(LIBS:%=%.lib) /NODEFAULTLIB:libcd /NODEFAULTLIB:libcmt'
+      GENERAL_LIBRARIES='$(foreach i,$(LIBDIRS),/libpath:"$(call TRANSFORM_DIRS,$(i))") $(LIBS:%=%.lib) /NODEFAULTLIB:libcd /NODEFAULTLIB:libcmt'
       : ${OPTIONSEP="# not even a single a single space under cygwin"}
       ;;
     *)
