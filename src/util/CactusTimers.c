@@ -47,9 +47,9 @@ void CCTK_FCALL CCTK_FNAME (CCTK_TimerReset)
                            (int *ierr, ONE_FORTSTRING_ARG);
 void CCTK_FCALL CCTK_FNAME (CCTK_TimerResetI)
                            (int *ierr, int *this_timer);
-void CCTK_FCALL CCTK_FNAME (CCTK_DisplayTimerDataI)
+void CCTK_FCALL CCTK_FNAME (CCTK_TimerPrintDataI)
                            (int *ierr, int *this_timer);
-void CCTK_FCALL CCTK_FNAME (CCTK_DisplayTimerData)
+void CCTK_FCALL CCTK_FNAME (CCTK_TimerPrintData)
                            (int *ierr, ONE_FORTSTRING_ARG);
 
 
@@ -815,17 +815,21 @@ int CCTK_TimerDestroyData(cTimerData *info)
 }
   
 /* Display timer data  (11 Dec 2001, D. Rideout) */
-int CCTK_DisplayTimerDataI(int this_timer) {
+int CCTK_TimerPrintDataI(int this_timer)
+{
   cTimerData *info;
   int i;
 
-  if (Util_GetHandledData(timers, this_timer)) {
+  if (Util_GetHandledData(timers, this_timer)) 
+  {
     info = CCTK_TimerCreateData();
     CCTK_TimerI(this_timer,info); /* return values are always 0 */
 
     printf("Results from timer \"%s\":\n",CCTK_TimerName(this_timer));
-    for (i = 0; i < info->n_vals; i++) {
-      switch (info->vals[i].type) {
+    for (i = 0; i < info->n_vals; i++) 
+    {
+      switch (info->vals[i].type) 
+      {
       case val_int:
         printf("\t%s: %d %s\n", info->vals[i].heading,info->vals[i].val.i, 
                info->vals[i].units);
@@ -843,49 +847,50 @@ int CCTK_DisplayTimerDataI(int this_timer) {
         
       default:
         CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
-               "CCTK_DisplayTimerDataI: Unknown data type for timer info");
+               "CCTK_TimerPrintDataI: Unknown data type for timer info");
         break;
       }
     }
     CCTK_TimerDestroyData(info);
     return 0;
-  } else {
+  } else 
+  {
     CCTK_VWarn(8,__LINE__,__FILE__,"Cactus",
-               "CCTK_DisplayTimerDataI: Timer %d not found",this_timer);
+               "CCTK_TimerPrintDataI: Timer %d not found",this_timer);
     return -1;
   }
 }
 
-void CCTK_FCALL CCTK_FNAME (CCTK_DisplayTimerDataI)
+void CCTK_FCALL CCTK_FNAME (CCTK_TimerPrintDataI)
                            (int *ierr, int *this_timer)
 {
-  *ierr = CCTK_DisplayTimerDataI (*this_timer);
+  *ierr = CCTK_TimerPrintDataI (*this_timer);
 }
 
 
-int CCTK_DisplayTimerData (const char *name)
+int CCTK_TimerPrintData (const char *name)
 {
   int this_timer, retval;
 
   this_timer = Util_GetHandle (timers, name, NULL);
   if (this_timer >= 0)
   {
-    retval = CCTK_DisplayTimerDataI(this_timer);
+    retval = CCTK_TimerPrintDataI(this_timer);
   }
   else
   {
     CCTK_VWarn(8,__LINE__,__FILE__,"Cactus",
-               "CCTK_DisplayTimerData: Timer %s not found",name);
+               "CCTK_TimerPrintData: Timer %s not found",name);
     retval = -1;
   }
 
   return (retval);
 }
 
-void CCTK_FCALL CCTK_FNAME (CCTK_DisplayTimerData)
+void CCTK_FCALL CCTK_FNAME (CCTK_TimerPrintData)
                            (int *ierr, ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_CREATE (name)
-  *ierr = CCTK_DisplayTimerData (name);
+  *ierr = CCTK_TimerPrintData (name);
   free (name);
 }
