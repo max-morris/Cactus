@@ -31,7 +31,7 @@
     _fcd cctk_str1, _fcd cctk_str2, _fcd cctk_str3
 
 #define ONE_FORTSTRING_CREATE(arg1)\
-       int cctk_strlen1 = _fcdlen(cctk_str1); \
+       int cctk_strlen1 = _fcdlen(cctk_str1);\
        char *arg1 = Util_NullTerminateString(_fcdtocp(cctk_str1),cctk_strlen1);
 #define TWO_FORTSTRING_CREATE(arg1,arg2)\
        int  cctk_strlen1    = _fcdlen(cctk_str1);\
@@ -55,6 +55,16 @@
        char *arg1 = _fcdtocp(cctk_str1);\
        char *arg2 = _fcdtocp(cctk_str2);\
        char *arg3 = _fcdtocp(cctk_str3);
+
+#define ONE_FORTSTRING_LEN(len1)\
+       size_t len1 = _fcdlen(cctk_str1);
+#define TWO_FORTSTRING_LEN(len1,len2)\
+       size_t len1  = _fcdlen(cctk_str1);\
+       size_t len2  = _fcdlen(cctk_str2);
+#define THREE_FORTSTRING_LEN(len1,len2,len3)\
+       size_t len1  = _fcdlen(cctk_str1);\
+       size_t len2  = _fcdlen(cctk_str2);\
+       size_t len3  = _fcdlen(cctk_str3);
 
 /* DEPRECATED BETA 10 */
 #define TWO_FORTSTRINGS_ARGS\
@@ -112,6 +122,16 @@
        char *arg2 = cctk_str2;\
        char *arg3 = cctk_str3;
 
+#define ONE_FORTSTRING_LEN(len1)\
+       size_t len1 = cctk_strlen1;
+#define TWO_FORTSTRING_LEN(len1,len2)\
+       size_t len1 = cctk_strlen1;\
+       size_t len2 = cctk_strlen2;
+#define THREE_FORTSTRING_LEN(len1,len2,len3)\
+       size_t len1 = cctk_strlen1;\
+       size_t len2 = cctk_strlen2;\
+       size_t len3 = cctk_strlen3;
+
 /* DEPRECATED BETA 10 */
 #define TWO_FORTSTRINGS_ARGS\
    char *cctk_str1, int cctk_strlen1, char *cctk_str2, int cctk_strlen2
@@ -168,6 +188,16 @@
        char *arg1 = cctk_str1;\
        char *arg2 = cctk_str2;\
        char *arg3 = cctk_str3;
+
+#define ONE_FORTSTRING_LEN(len1)\
+       size_t len1 = cctk_strlen1;
+#define TWO_FORTSTRING_LEN(len1,len2)\
+       size_t len1 = cctk_strlen1;\
+       size_t len2 = cctk_strlen2;
+#define THREE_FORTSTRING_LEN(len1,len2,len3)\
+       size_t len1 = cctk_strlen1;\
+       size_t len2 = cctk_strlen2;\
+       size_t len3 = cctk_strlen3;
 
 /* DEPRECATED BETA 10 */
 #define TWO_FORTSTRINGS_ARGS\
