@@ -8,7 +8,7 @@ print "\n";
 
 print "Type \"help\" at any prompt for a description on how\nto use this script\n\n";
 
-print "Checkout applications, packages or thorns? [packages] : ";
+print "Checkout applications, arrangements or thorns? [arrangements] : ";
     
 $which = <STDIN>;
 
@@ -26,10 +26,10 @@ elsif ($which =~ /^a/i)
 }
 else
 { 
-    &get_packages();
+    &get_arrangements();
 }
 
-print "\nQuit or checkout more applications, packages or thorns [quit] : ";
+print "\nQuit or checkout more applications, arrangements or thorns [quit] : ";
 $dowhat = <STDIN>;
 if ($dowhat !~ /^[tpah]/i )
 {
@@ -54,10 +54,10 @@ while ()
     }
     else
     { 
-	&get_packages();
+	&get_arrangements();
     }
 
-    print "\nQuit or checkout more applications, packages or thorns [quit] : ";
+    print "\nQuit or checkout more applications, arrangements or thorns [quit] : ";
 
     $dowhat = <STDIN>;
     if ($dowhat !~ /^[thpa]/)
@@ -67,21 +67,21 @@ while ()
     }    
 }
 
-sub get_packages
+sub get_arrangements
 {
 
-    print "\nYou already have packages: \n\n";
+    print "\nYou already have arrangements: \n\n";
 
-    &buildthorns("packages/","packages");
+    &buildthorns("arrangements/","arrangements");
     
-    print "\nAvailable packages: \n";
+    print "\nAvailable arrangements: \n";
 
     open(MODULES,"cvs co -s | ");
     
     $count = 0;
     while(<MODULES>)
     {
-	if (/(\w*)\s*PACKAGE/)
+	if (/(\w*)\s*ARRANGEMENT/)
 	{
 	    $count++;
 	    $name{$count} = $1;
@@ -96,10 +96,10 @@ sub get_packages
     
     print "\n";
     
-    print "Checkout packages [1-$count] : ";
+    print "Checkout arrangements [1-$count] : ";
     
-    # Goto target package directory 
-    chdir packages || die "Could not find packages directory";
+    # Goto target arrangement directory 
+    chdir arrangements || die "Could not find arrangements directory";
 
     $range = <STDIN>;
     if ($range =~ /^h/i)
@@ -137,7 +137,7 @@ sub get_thorns
 {
     print "\nYou already have thorns: \n\n";
     
-    &buildthorns("packages/","thorns");
+    &buildthorns("arrangements/","thorns");
     
     print "\nAvailable thorns: \n";
 
@@ -163,8 +163,8 @@ sub get_thorns
     
     print "Checkout thorns [1-$count] : ";
     
-    # Goto target package directory 
-    chdir packages || die "Could not find packages directory\n";
+    # Goto target arrangement directory 
+    chdir arrangements || die "Could not find arrangements directory\n";
 
     $range = <STDIN>;
     if ($range =~ /^h/i)
@@ -210,8 +210,8 @@ sub get_applications
 
   print "Checkout applications [1-$count] : ";
     
-    # Goto target package directory 
-    chdir packages || die "Could not find packages directory\n";
+    # Goto target arrangement directory 
+    chdir arrangements || die "Could not find arrangements directory\n";
 
     $range = <STDIN>;
     if ($range =~ /^h/i)
@@ -240,8 +240,8 @@ sub get_applications
 	  {
 	    # Checkout F90 WaveToy
 	    print("\n");
-	    print("Checking out WaveToy\n");
-	    system("cvs -q checkout CactusApplications/WaveToy");
+	    print("Checking out WaveToyF90\n");
+	    system("cvs -q checkout CactusWave/WaveToyF90");
 	    print("Checking out Boundary\n");
 	    system("cvs -q checkout CactusBase/Boundary");
 	    print("Checking out CartGrid3D\n");
@@ -249,7 +249,7 @@ sub get_applications
 	    print("Checking out IOUtil\n");
 	    system("cvs -q checkout CactusBase/IOUtil");
 	    print("Checking out IOASCII\n");
-	    system("cvs -q checkout CactusPUGH/IOASCII");
+	    system("cvs -q checkout CactusPUGHIO/IOASCII");
 	    print("Checking out PUGH\n");
 	    system("cvs -q checkout CactusPUGH/PUGH");
 	    print("Completed checkout of application Wave F90\n");
@@ -259,7 +259,7 @@ sub get_applications
 	    # Checkout F77 WaveToy
 	    print("\n");
 	    print("Checking out WaveToyF77\n");
-	    system("cvs -q checkout CactusApplications/WaveToyF77");
+	    system("cvs -q checkout CactusWave/WaveToyF77");
 	    print("Checking out Boundary\n");
 	    system("cvs -q checkout CactusBase/Boundary");
 	    print("Checking out CartGrid3D\n");
@@ -267,7 +267,7 @@ sub get_applications
 	    print("Checking out IOUtil\n");
 	    system("cvs -q checkout CactusBase/IOUtil");
 	    print("Checking out IOASCII\n");
-	    system("cvs -q checkout CactusPUGH/IOASCII");
+	    system("cvs -q checkout CactusPUGHIO/IOASCII");
 	    print("Checking out PUGH\n");
 	    system("cvs -q checkout CactusPUGH/PUGH");
 	    print("Completed checkout of application Wave F77\n");
@@ -281,9 +281,9 @@ sub get_applications
 sub print_help
 { 
 
-    print "\nTo select packages or thorns for checking out from CVS, give\n";
-    print "a comma separated list with the numbers of the thorns/packages.\n";
+    print "\nTo select arrangements or thorns for checking out from CVS, give\n";
+    print "a comma separated list with the numbers of the thorns/arrangements.\n";
     print "Ranges can also be given, using a hyphen.\n";
-    print "For example, to checkout thorns/packages 1,2,4,6,7,9 use:\n\n";
+    print "For example, to checkout thorns/arrangements 1,2,4,6,7,9 use:\n\n";
     print "   1-2,4,6-7,9\n\n";
 }
