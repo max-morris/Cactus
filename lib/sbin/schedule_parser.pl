@@ -41,8 +41,8 @@ sub create_schedule_code
 
     $implementation = $interface_database{"\U$thorn\E IMPLEMENTS"};
 
-    $thorn_rfr = "CCTK_".$thorn."_rfr";
-    $thorn_startup = "CCTK_".$thorn."_startup";
+    $thorn_rfr = $thorn."_rfr";
+    $thorn_startup = $thorn."_startup";
 
     open (OUTRFR, ">$dir/Schedule/$thorn_rfr".".c") || die "Cannot open $thorn_rfr".".c";
     open (OUTSTART, ">$dir/Schedule/$thorn_startup".".c") || die "Cannot open $thorn_startup".".c";
