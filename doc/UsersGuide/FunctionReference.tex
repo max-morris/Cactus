@@ -234,17 +234,18 @@ from Fortran.
   [\pageref{CCTK-INFO}]
   Prints an information message
 
-\item[CCTK\_InterpGridArrays]
-  [\pageref{CCTK-InterpLocalArrays}]
-  Performs an interpolation on a list of distributed arrays,
-  using a chosen interpolation operator (this function is currently
-  being implemented; it should be available in early 2002)
+%notyet%\item[CCTK\_InterpGridArrays]
+%notyet%  [\pageref{CCTK-InterpLocalArrays}]
+%notyet%  Performs an interpolation on a list of distributed arrays,
+%notyet%  using a chosen interpolation operator (this function is currently
+%notyet%  being implemented; it should be available in early 2002)
 
 \item[CCTK\_InterpGV]
   [\pageref{CCTK-InterpGV}]
   Performs an interpolation on a list of distributed CCTK grid variables,
-  using a chosen interpolation operator (this function is being phased out;
-  it will eventually be replaced by \verb|CCTK_InterpGridArrays()|)
+  using a chosen interpolation operator
+%notyet%  (this function is being phased out;
+%notyet%  it will eventually be replaced by \verb|CCTK_InterpGridArrays()|)
 
 \item[CCTK\_InterpHandle]
   [\pageref{CCTK-InterpHandle}]
@@ -253,14 +254,15 @@ from Fortran.
 \item[CCTK\_InterpLocal]
   [\pageref{CCTK-InterpLocal}]
   Performs an interpolation on a list of processor-local arrays,
-  using a chosen interpolation operator (this function is being phased out;
-  it will eventually be replaced by \verb|CCTK_InterpLocalArrays()|)
+  using a chosen interpolation operator
+%notyet%  (this function is being phased out;
+%notyet%  it will eventually be replaced by \verb|CCTK_InterpLocalArrays()|)
 
-\item[CCTK\_InterpLocalArrays]
-  [\pageref{CCTK-InterpLocalArrays}]
-  Performs an interpolation on a list of processor-local arrays,
-  using a chosen interpolation operator (this function is currently
-  being implemented; it should be available in early 2002)
+%notyet%\item[CCTK\_InterpLocalArrays]
+%notyet%  [\pageref{CCTK-InterpLocalArrays}]
+%notyet%  Performs an interpolation on a list of processor-local arrays,
+%notyet%  using a chosen interpolation operator (this function is currently
+%notyet%  being implemented; it should be available in early 2002)
 
 \item[CCTK\_InterpRegisterOperatorGV]
   [\pageref{CCTK-InterpRegisterOperatorGV}]
@@ -1818,206 +1820,205 @@ No Fortran routine exists at the moment
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\begin{FunctionDescription}{CCTK\_InterpGridArrays}
-\label{CCTK-InterpGridArrays}
-Interpolate a list of distributed grid arrays.
-(This function is currently being implemented; it should be available
-early in 2002, and will eventually replace \verb|CCTK_InterpGV()|.
-See the Cactus web pages ``Development'' section for further details.)
-
-\begin{Synopsis}{C}
-\begin{verbatim}
-#include "cctk.h"
-int status = CCTK_InterpGridArrays(const cGH *GH,
-                                   int N_dims,
-                                   int operator_handle,
-                                   int param_table_handle,
-                                   int coord_system_handle,
-                                   int N_interp_points,
-                                   const CCTK_INT interp_coord_type_codes[],
-                                   const void *const interp_coords[],
-                                   int N_input_arrays,
-                                   const CCTK_INT
-                                      input_array_variable_indices[],
-                                   int N_output_arrays,
-                                   const CCTK_INT output_array_type_codes[],
-                                   void *const output_arrays[]);
-\end{verbatim}
-\end{Synopsis}
-
-\begin{Result}{\rm 0}
-success
-\end{Result}
-
-\begin{Parameter}{GH ($\ne$ NULL)}
-Pointer to a valid Cactus grid hierarchy.
-\end{Parameter}
-\begin{Parameter}{N\_dims ($\ge 1$)}
-Number of dimensions in which to interpolate.
-Note that this may be less than the number of dimensions of the
-input arrays if the storage is set up appropriately.  For example,
-we might want to interpolate along 1-D lines or in 2-D planes of a
-3-D input array; here \verb|N_dims| would be 1 or 2 respectively.
-See the discussion of the \verb|input_array_strides| optional parameter
-(passed in the parameter table) for details.
-\end{Parameter}
-\begin{Parameter}{operator\_handle ($\ge 0$)}
-\hbox{}
-Handle to the interpolation operator.
-\end{Parameter}
-\begin{Parameter}{param\_table\_handle ($\ge 0$)}
-\hbox{}
-Handle to a key-value table containing additional parameters for
-the interpolator.
-\end{Parameter}
-\begin{Parameter}{coord\_system\_handle ($\ge 0$)}
-\hbox{}
-Cactus coordinate system handle defining the mapping between
-physical coordinates and integer grid subscripts.
-\end{Parameter}
-\begin{Parameter}{N\_interp\_points ($\ge 0$)}
-\hbox{}
-The number of points at which interpolation is to be done.
-\end{Parameter}
-\begin{Parameter}{interp\_coord\_type\_codes ($\ne$ NULL)}
-\hbox{}
-(Pointer to) an array of \verb|N_dims| \verb|CCTK_VARIABLE_|* type codes
-giving the data types of the interpolation-point coordinate arrays
-pointed to by \verb|interp_coords[]|.
-\end{Parameter}
-\begin{Parameter}{interp\_coords ($\ne$ NULL)}
-\hbox{}
-(Pointer to) an array of \verb|N_dims| pointers to arrays giving the
-physical coordinates of the interpolation points.
-\end{Parameter}
-\begin{Parameter}{N\_input\_arrays ($\ge 0$)}
-\hbox{}The number of input arrays to be interpolated.
-Note that if the parameter table entry \verb|operand_indices|
-is used to specify a 1-to-many mapping of input arrays to output arrays,
-only the unique set of input arrays should be given here.
-\end{Parameter}
-\begin{Parameter}{input\_array\_variable\_indices ($\ne$ NULL)}
-\hbox{}
-(Pointer to) an array of \verb|N_input_arrays| Cactus variable
-indices specifying the input grid arrays for the interpolation.
-\end{Parameter}
-\begin{Parameter}{N\_output\_arrays ($\ge 0$)}
-\hbox{}
-The number of output arrays from the interpolation.
-\end{Parameter}
-\begin{Parameter}{output\_array\_type\_codes ($\ne$ NULL)}
-\hbox{}
-(Pointer to) an array of \verb|N_output_arrays| \verb|CCTK_VARIABLE_|*
-type codes giving the data types of the output arrays pointed to by
-\verb|output_arrays[]|.
-\end{Parameter}
-\begin{Parameter}{output\_arrays ($\ne$ NULL)}
-\hbox{}
-(Pointer to) an array of \verb|N_output_arrays| pointers to the
-output arrays for the interpolation.
-\end{Parameter}
-
-\begin{Discussion}
-This function interpolates a list of distributed grid arrays.
-The computation is optimized for the case of interpolating a
-number of arrays at a time; in this case the same coefficients can
-be used for all the arrays.
-
-Details of the operation performed, and what (if any) inputs and/or
-outputs are specified in the parameter table, depend on which driver
-thorn and interpolation operator you use.  See the documentation on
-individual driver thorns (eg.~\verb|PUGHInterp|) for details.
-
-One common parameter-table option, which a number of interpolation
-operators are likely to support, is \verb|order|, a \verb|CCTK_INT|
-specifying the order of the (presumably polynomial) interpolation
-(1=linear, 2=quadratic, 3=cubic, etc).
-\end{Discussion}
-
-\begin{SeeAlso}{Util\_InterpLocalArrays()}
-Interpolate a list of processor-local arrays.
-\end{SeeAlso}
-
-\begin{Error}{UTIL\_ERROR\_BAD\_INPUT}
-one or more of the inputs is invalid (eg.~\verb|NULL| pointer)
-\end{Error}
-\begin{Error}{UTIL\_ERROR\_NO\_MEMORY}
-unable to allocate memory
-\end{Error}
-\begin{Error}{UTIL\_ERROR\_BAD\_HANDLE}
-parameter table handle is invalid
-\end{Error}
-
-\begin{Example}{C}
-Here's a simple example to do quartic 3-D interpolation of a real
-and a complex grid array, at 1000 interpolation points:
-\begin{verbatim}
-#include "cctk.h"
-#include "util_Table.h"
-
-#define N_DIMS          3
-#define N_INTERP_POINTS 1000
-#define N_INPUT_ARRAYS  2
-#define N_OUTPUT_ARRAYS 2
-const cGH *GH;
-int operator_handle, coord_system_handle;
-
-/* interpolation points */
-CCTK_REAL interp_x[N_INTERP_POINTS],
-          interp_y[N_INTERP_POINTS],
-          interp_z[N_INTERP_POINTS];
-static const CCTK_INT interp_coord_type_codes[N_DIMS]
-        = { CCTK_VARIABLE_REAL, CCTK_VARIABLE_REAL, CCTK_VARIABLE_REAL };
-const void *interp_coords[N_DIMS];
-
-/* input and output arrays */
-CCTK_INT input_array_variable_indices[N_INPUT_ARRAYS];
-static const CCTK_INT output_array_type_codes[N_OUTPUT_ARRAYS]
-        = { CCTK_VARIABLE_REAL, CCTK_VARIABLE_COMPLEX };
-void *output_arrays[N_OUTPUT_ARRAYS];
-CCTK_REAL    output_for_real_array   [N_INTERP_POINTS];
-CCTK_COMPLEX output_for_complex_array[N_INTERP_POINTS];
-
-operator_handle = CCTK_InterpHandle("generalized polynomial");
-if (operator_handle < 0)
-        CCTK_WARN(-1, "can't get operator handle!");
-
-coord_system_handle = CCTK_CoordSystemHandle("cart3d");
-if (coord_system_handle < 0)
-        CCTK_WARN(-1, "can't get coordinate-system handle!");
-
-interp_coords[0] = (const void *) interp_x;
-interp_coords[1] = (const void *) interp_y;
-interp_coords[2] = (const void *) interp_z;
-input_array_variable_indices[0] = CCTK_VarIndex("my_thorn::real_array");
-input_array_variable_indices[1] = CCTK_VarIndex("my_thorn::complex_array");
-output_arrays[0] = (void *) output_for_real_array;
-output_arrays[1] = (void *) output_for_complex_array;
-
-if (CCTK_InterpGridArrays(GH, N_DIMS,
-                          operator_handle,
-                          Util_TableCreateFromString("order=4"),
-                          coord_system_handle,
-                          N_INTERP_POINTS, interp_coord_type_codes,
-                                           interp_coords,
-                          N_INPUT_ARRAYS, input_array_variable_indices,
-                          N_OUTPUT_ARRAYS, output_array_type_codes,
-                                           output_arrays) < 0)
-        CCTK_WARN(-1, "error return from interpolator!");
-\end{verbatim}
-\end{Example}
-\end{FunctionDescription}
+%notyet%\begin{FunctionDescription}{CCTK\_InterpGridArrays}
+%notyet%\label{CCTK-InterpGridArrays}
+%notyet%Interpolate a list of distributed grid arrays.
+%notyet%(This function is currently being implemented; it should be available
+%notyet%early in 2002, and will eventually replace \verb|CCTK_InterpGV()|.
+%notyet%See the Cactus web pages ``Development'' section for further details.)
+%notyet%
+%notyet%\begin{Synopsis}{C}
+%notyet%\begin{verbatim}
+%notyet%#include "cctk.h"
+%notyet%int status = CCTK_InterpGridArrays(const cGH *GH,
+%notyet%                                   int N_dims,
+%notyet%                                   int operator_handle,
+%notyet%                                   int param_table_handle,
+%notyet%                                   int coord_system_handle,
+%notyet%                                   int N_interp_points,
+%notyet%                                   const CCTK_INT interp_coord_type_codes[],
+%notyet%                                   const void *const interp_coords[],
+%notyet%                                   int N_input_arrays,
+%notyet%                                   const CCTK_INT
+%notyet%                                      input_array_variable_indices[],
+%notyet%                                   int N_output_arrays,
+%notyet%                                   const CCTK_INT output_array_type_codes[],
+%notyet%                                   void *const output_arrays[]);
+%notyet%\end{verbatim}
+%notyet%\end{Synopsis}
+%notyet%
+%notyet%\begin{Result}{\rm 0}
+%notyet%success
+%notyet%\end{Result}
+%notyet%
+%notyet%\begin{Parameter}{GH ($\ne$ NULL)}
+%notyet%Pointer to a valid Cactus grid hierarchy.
+%notyet%\end{Parameter}
+%notyet%\begin{Parameter}{N\_dims ($\ge 1$)}
+%notyet%Number of dimensions in which to interpolate.
+%notyet%Note that this may be less than the number of dimensions of the
+%notyet%input arrays if the storage is set up appropriately.  For example,
+%notyet%we might want to interpolate along 1-D lines or in 2-D planes of a
+%notyet%3-D input array; here \verb|N_dims| would be 1 or 2 respectively.
+%notyet%See the discussion of the \verb|input_array_strides| optional parameter
+%notyet%(passed in the parameter table) for details.
+%notyet%\end{Parameter}
+%notyet%\begin{Parameter}{operator\_handle ($\ge 0$)}
+%notyet%\hbox{}
+%notyet%Handle to the interpolation operator.
+%notyet%\end{Parameter}
+%notyet%\begin{Parameter}{param\_table\_handle ($\ge 0$)}
+%notyet%\hbox{}
+%notyet%Handle to a key-value table containing additional parameters for
+%notyet%the interpolator.
+%notyet%\end{Parameter}
+%notyet%\begin{Parameter}{coord\_system\_handle ($\ge 0$)}
+%notyet%\hbox{}
+%notyet%Cactus coordinate system handle defining the mapping between
+%notyet%physical coordinates and integer grid subscripts.
+%notyet%\end{Parameter}
+%notyet%\begin{Parameter}{N\_interp\_points ($\ge 0$)}
+%notyet%\hbox{}
+%notyet%The number of points at which interpolation is to be done.
+%notyet%\end{Parameter}
+%notyet%\begin{Parameter}{interp\_coord\_type\_codes ($\ne$ NULL)}
+%notyet%\hbox{}
+%notyet%(Pointer to) an array of \verb|N_dims| \verb|CCTK_VARIABLE_|* type codes
+%notyet%giving the data types of the interpolation-point coordinate arrays
+%notyet%pointed to by \verb|interp_coords[]|.
+%notyet%\end{Parameter}
+%notyet%\begin{Parameter}{interp\_coords ($\ne$ NULL)}
+%notyet%\hbox{}
+%notyet%(Pointer to) an array of \verb|N_dims| pointers to arrays giving the
+%notyet%physical coordinates of the interpolation points.
+%notyet%\end{Parameter}
+%notyet%\begin{Parameter}{N\_input\_arrays ($\ge 0$)}
+%notyet%\hbox{}The number of input arrays to be interpolated.
+%notyet%Note that if the parameter table entry \verb|operand_indices|
+%notyet%is used to specify a 1-to-many mapping of input arrays to output arrays,
+%notyet%only the unique set of input arrays should be given here.
+%notyet%\end{Parameter}
+%notyet%\begin{Parameter}{input\_array\_variable\_indices ($\ne$ NULL)}
+%notyet%\hbox{}
+%notyet%(Pointer to) an array of \verb|N_input_arrays| Cactus variable
+%notyet%indices specifying the input grid arrays for the interpolation.
+%notyet%\end{Parameter}
+%notyet%\begin{Parameter}{N\_output\_arrays ($\ge 0$)}
+%notyet%\hbox{}
+%notyet%The number of output arrays from the interpolation.
+%notyet%\end{Parameter}
+%notyet%\begin{Parameter}{output\_array\_type\_codes ($\ne$ NULL)}
+%notyet%\hbox{}
+%notyet%(Pointer to) an array of \verb|N_output_arrays| \verb|CCTK_VARIABLE_|*
+%notyet%type codes giving the data types of the output arrays pointed to by
+%notyet%\verb|output_arrays[]|.
+%notyet%\end{Parameter}
+%notyet%\begin{Parameter}{output\_arrays ($\ne$ NULL)}
+%notyet%\hbox{}
+%notyet%(Pointer to) an array of \verb|N_output_arrays| pointers to the
+%notyet%output arrays for the interpolation.
+%notyet%\end{Parameter}
+%notyet%
+%notyet%\begin{Discussion}
+%notyet%This function interpolates a list of distributed grid arrays.
+%notyet%The computation is optimized for the case of interpolating a
+%notyet%number of arrays at a time; in this case the same coefficients can
+%notyet%be used for all the arrays.
+%notyet%
+%notyet%Details of the operation performed, and what (if any) inputs and/or
+%notyet%outputs are specified in the parameter table, depend on which driver
+%notyet%thorn and interpolation operator you use.  See the documentation on
+%notyet%individual driver thorns (eg.~\verb|PUGHInterp|) for details.
+%notyet%
+%notyet%One common parameter-table option, which a number of interpolation
+%notyet%operators are likely to support, is \verb|order|, a \verb|CCTK_INT|
+%notyet%specifying the order of the (presumably polynomial) interpolation
+%notyet%(1=linear, 2=quadratic, 3=cubic, etc).
+%notyet%\end{Discussion}
+%notyet%
+%notyet%\begin{SeeAlso}{Util\_InterpLocalArrays()}
+%notyet%Interpolate a list of processor-local arrays.
+%notyet%\end{SeeAlso}
+%notyet%
+%notyet%\begin{Error}{UTIL\_ERROR\_BAD\_INPUT}
+%notyet%one or more of the inputs is invalid (eg.~\verb|NULL| pointer)
+%notyet%\end{Error}
+%notyet%\begin{Error}{UTIL\_ERROR\_NO\_MEMORY}
+%notyet%unable to allocate memory
+%notyet%\end{Error}
+%notyet%\begin{Error}{UTIL\_ERROR\_BAD\_HANDLE}
+%notyet%parameter table handle is invalid
+%notyet%\end{Error}
+%notyet%
+%notyet%\begin{Example}{C}
+%notyet%Here's a simple example to do quartic 3-D interpolation of a real
+%notyet%and a complex grid array, at 1000 interpolation points:
+%notyet%\begin{verbatim}
+%notyet%#include "cctk.h"
+%notyet%#include "util_Table.h"
+%notyet%
+%notyet%#define N_DIMS          3
+%notyet%#define N_INTERP_POINTS 1000
+%notyet%#define N_INPUT_ARRAYS  2
+%notyet%#define N_OUTPUT_ARRAYS 2
+%notyet%const cGH *GH;
+%notyet%int operator_handle, coord_system_handle;
+%notyet%
+%notyet%/* interpolation points */
+%notyet%CCTK_REAL interp_x[N_INTERP_POINTS],
+%notyet%          interp_y[N_INTERP_POINTS],
+%notyet%          interp_z[N_INTERP_POINTS];
+%notyet%static const CCTK_INT interp_coord_type_codes[N_DIMS]
+%notyet%        = { CCTK_VARIABLE_REAL, CCTK_VARIABLE_REAL, CCTK_VARIABLE_REAL };
+%notyet%const void *interp_coords[N_DIMS];
+%notyet%
+%notyet%/* input and output arrays */
+%notyet%CCTK_INT input_array_variable_indices[N_INPUT_ARRAYS];
+%notyet%static const CCTK_INT output_array_type_codes[N_OUTPUT_ARRAYS]
+%notyet%        = { CCTK_VARIABLE_REAL, CCTK_VARIABLE_COMPLEX };
+%notyet%void *output_arrays[N_OUTPUT_ARRAYS];
+%notyet%CCTK_REAL    output_for_real_array   [N_INTERP_POINTS];
+%notyet%CCTK_COMPLEX output_for_complex_array[N_INTERP_POINTS];
+%notyet%
+%notyet%operator_handle = CCTK_InterpHandle("generalized polynomial");
+%notyet%if (operator_handle < 0)
+%notyet%        CCTK_WARN(-1, "can't get operator handle!");
+%notyet%
+%notyet%coord_system_handle = CCTK_CoordSystemHandle("cart3d");
+%notyet%if (coord_system_handle < 0)
+%notyet%        CCTK_WARN(-1, "can't get coordinate-system handle!");
+%notyet%
+%notyet%interp_coords[0] = (const void *) interp_x;
+%notyet%interp_coords[1] = (const void *) interp_y;
+%notyet%interp_coords[2] = (const void *) interp_z;
+%notyet%input_array_variable_indices[0] = CCTK_VarIndex("my_thorn::real_array");
+%notyet%input_array_variable_indices[1] = CCTK_VarIndex("my_thorn::complex_array");
+%notyet%output_arrays[0] = (void *) output_for_real_array;
+%notyet%output_arrays[1] = (void *) output_for_complex_array;
+%notyet%
+%notyet%if (CCTK_InterpGridArrays(GH, N_DIMS,
+%notyet%                          operator_handle,
+%notyet%                          Util_TableCreateFromString("order=4"),
+%notyet%                          coord_system_handle,
+%notyet%                          N_INTERP_POINTS, interp_coord_type_codes,
+%notyet%                                           interp_coords,
+%notyet%                          N_INPUT_ARRAYS, input_array_variable_indices,
+%notyet%                          N_OUTPUT_ARRAYS, output_array_type_codes,
+%notyet%                                           output_arrays) < 0)
+%notyet%        CCTK_WARN(-1, "error return from interpolator!");
+%notyet%\end{verbatim}
+%notyet%\end{Example}
+%notyet%\end{FunctionDescription}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 % Interp.c
 \begin{CCTKFunc}{CCTK\_InterpGV}%%%
 {Perform an interpolation on a list of distributed CCTK grid variables,
-using a chosen interpolation operator%%%
-\\[\baselineskip]
-This function is being phased out; it will eventually be replaced by
-{\t CCTK\_InterpGridArrays()}.}
+using a chosen interpolation operator}
+%notyet%\\[\baselineskip]
+%notyet%This function is being phased out; it will eventually be replaced by
+%notyet%{\t CCTK\_InterpGridArrays()}.
 \label{CCTK-InterpGV}
 \subroutine{int}{integer}{ierr}
 \argument{cGH *}{CCTK\_POINTER}{cctkGH}
@@ -2142,10 +2143,10 @@ A negative value is returned for invalid/unregistered interpolation operator nam
 % Interp.c
 \begin{CCTKFunc}{CCTK\_InterpLocal}%%%
 {Perform an interpolation on a list of processor-local arrays,
-using a chosen interpolation operator%%%
-\\[\baselineskip]
-This function is being phased out; it will eventually be replaced by
-{\t CCTK\_InterpLocalArrays()}.}
+using a chosen interpolation operator}
+%notyet%\\[\baselineskip]
+%notyet%This function is being phased out; it will eventually be replaced by
+%notyet%{\t CCTK\_InterpLocalArrays()}.
 \label{CCTK-InterpLocal}
 \subroutine{int}{integer}{ierr}
 \argument{cGH *}{CCTK\_POINTER}{cctkGH}
@@ -2245,226 +2246,226 @@ A negative return code indicates an error condition:
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\begin{FunctionDescription}{CCTK\_InterpLocalArrays}
-\label{CCTK-InterpLocalArrays}
-Interpolate a list of processor-local arrays.
-(This function is currently being implemented; it should be available
-early in 2002, and will eventually replace \verb|CCTK_InterpLocal()|.
-See the Cactus web pages ``Development'' section for further details.)
-
-\begin{Synopsis}{C}
-\begin{verbatim}
-#include "cctk.h"
-int status = CCTK_InterpLocalArrays(int N_dims,
-                                    int operator_handle,
-                                    int param_table_handle,
-                                    const CCTK_REAL coord_system_origin[],
-                                    const CCTK_REAL grid_spacing[],
-                                    int N_interp_points,
-                                    const CCTK_INT interp_coord_type_codes[],
-                                    const void *const interp_coords[],
-                                    int N_input_arrays,
-                                    const CCTK_INT input_array_dims[],
-                                    const CCTK_INT input_array_type_codes[],
-                                    const void *const input_arrays[],
-                                    int N_output_arrays,
-                                    const CCTK_INT output_array_type_codes[],
-                                    void *const output_arrays[]);
-\end{verbatim}
-\end{Synopsis}
-
-\begin{Result}{\rm 0}
-success
-\end{Result}
-
-\begin{Parameter}{N\_dims ($\ge 1$)}
-Number of dimensions in which to interpolate.
-Note that this may be less than the number of dimensions of the
-input arrays if the storage is set up appropriately.  For example,
-we might want to interpolate along 1-D lines or in 2-D planes of a
-3-D input array; here \verb|N_dims| would be 1 or 2 respectively.
-See the discussion of the \verb|input_array_strides| optional parameter
-(passed in the parameter table) for details.
-\end{Parameter}
-\begin{Parameter}{operator\_handle ($\ge 0$)}
-\hbox{}
-Handle to the interpolation operator.
-\end{Parameter}
-\begin{Parameter}{param\_table\_handle ($\ge 0$)}
-\hbox{}
-Handle to a key-value table containing additional parameters for
-the interpolator.
-\end{Parameter}
-\begin{Parameter}{coord\_system\_origin ($\ne$ NULL)}
-\hbox{}
-(Pointer to) an array giving the physical coordinates of the grid point
-with integer grid subscripts 0, 0, \dots, 0.  (It doesn't matter whether
-or not this grid point actually exists in the grid.)  See the description
-of \verb|grid_spacing| for more on how \verb|coord_system_origin| is
-actually used.
-\end{Parameter}
-\begin{Parameter}{grid\_spacing ($\ne$ NULL)}
-\hbox{}
-(Pointer to) an array giving the physical-coordinate grid spacing.
-Thus, for example, in 3-D the physical coordinates of the grid point
-with integer grid subscripts \verb|i,j,k| are
-$x = \verb|coord_system_origin[0] + i*grid_spacing[0]|$,
-$y = \verb|coord_system_origin[1] + j*grid_spacing[1]|$, and
-$z = \verb|coord_system_origin[2] + k*grid_spacing[2]|$.
-\end{Parameter}
-\begin{Parameter}{N\_interp\_points ($\ge 0$)}
-\hbox{}
-The number of points at which interpolation is to be done.
-\end{Parameter}
-\begin{Parameter}{interp\_coord\_type\_codes ($\ne$ NULL)}
-\hbox{}
-(Pointer to) an array of \verb|N_dims| \verb|CCTK_VARIABLE_|* type codes
-giving the data types of the interpolation-point coordinate arrays
-pointed to by \verb|interp_coords[]|.
-\end{Parameter}
-\begin{Parameter}{interp\_coords ($\ne$ NULL)}
-\hbox{}
-(Pointer to) an array of \verb|N_dims| pointers to arrays giving the
-physical coordinates of the interpolation points.
-\end{Parameter}
-\begin{Parameter}{N\_input\_arrays ($\ge 0$)}
-\hbox{}
-The number of input arrays to be interpolated.
-Note that if the parameter table entry \verb|operand_indices|
-is used to specify a 1-to-many mapping of input arrays to output arrays,
-only the unique set of input arrays should be given here.
-\end{Parameter}
-\begin{Parameter}{input\_array\_dims ($\ne$ NULL)}
-\hbox{}
-(Pointer to) an array of \verb|N_dims| integers giving the dimensions
-of the input array.  By default all the input arrays are taken to have
-these dimensions, with \verb|[0]| the most contiguous axis and
-\verb|[N_dims-1]| the least contiguous axis, and array subscripts in the
-range \verb|0 <= subscript < dims[axis]|.  See the discussion of the
-\verb|input_array_strides| optional parameter (passed in the parameter table)
-for details of how this can be overridden.
-\end{Parameter}
-\begin{Parameter}{input\_array\_type\_codes ($\ne$ NULL)}
-\hbox{}
-(Pointer to) an array of \verb|N_input_arrays| \verb|CCTK_VARIABLE_|*
-type codes giving the data types of the input arrays pointed to by
-\verb|input_arrays[]|.
-\end{Parameter}
-\begin{Parameter}{input\_arrays ($\ne$ NULL)}
-\hbox{}
-(Pointer to) an array of \verb|N_input_arrays| pointers to the
-input arrays for the interpolation.
-\end{Parameter}
-\begin{Parameter}{N\_output\_arrays ($\ge 0$)}
-\hbox{}
-The number of output arrays from the interpolation.
-\end{Parameter}
-\begin{Parameter}{output\_array\_type\_codes ($\ne$ NULL)}
-\hbox{}
-(Pointer to) an array of \verb|N_output_arrays| \verb|CCTK_VARIABLE_|*
-type codes giving the data types of the output arrays pointed to by
-\verb|output_arrays[]|.
-\end{Parameter}
-\begin{Parameter}{output\_arrays ($\ne$ NULL)}
-\hbox{}
-(Pointer to) an array of \verb|N_output_arrays| pointers to the
-output arrays for the interpolation.
-\end{Parameter}
-
-\begin{Discussion}
-This function interpolates a list of processor-local arrays.
-The computation is optimized for the case of interpolating a
-number of arrays at a time; in this case the same coefficients can
-be used for all the arrays.
-
-Details of the operation performed, and what (if any) inputs and/or
-outputs are specified in the parameter table, depend on which driver
-thorn and interpolation operator you use.  See the documentation on
-individual driver thorns (eg.~\verb|PUGHInterp|) for details.
-
-One common parameter-table option, which a number of interpolation
-operators are likely to support, is \verb|order|, a \verb|CCTK_INT|
-specifying the order of the (presumably polynomial) interpolation
-(1=linear, 2=quadratic, 3=cubic, etc).
-\end{Discussion}
-
-\begin{SeeAlso}{Util\_InterpGridArrays()}
-Interpolate a list of distributed grid arrays.
-\end{SeeAlso}
-
-\begin{Error}{UTIL\_ERROR\_BAD\_INPUT}
-one or more of the inputs is invalid (eg.~\verb|NULL| pointer)
-\end{Error}
-\begin{Error}{UTIL\_ERROR\_NO\_MEMORY}
-unable to allocate memory
-\end{Error}
-\begin{Error}{UTIL\_ERROR\_BAD\_HANDLE}
-parameter table handle is invalid
-\end{Error}
-
-\begin{Example}{C}
-Here's a simple example to do quartic 3-D interpolation of a real and
-a complex $20 \times 30 \times 40$ array, at 1000 interpolation points:
-\begin{verbatim}
-#include "cctk.h"
-#include "util_Table.h"
-
-#define N_DIMS          3
-#define NX              20      /* x dimension of input arrays */
-#define NY              30      /* y */
-#define NZ              40      /* z */
-#define N_INTERP_POINTS 1000
-#define N_INPUT_ARRAYS  2
-#define N_OUTPUT_ARRAYS 2
-int operator_handle;
-CCTK_REAL coord_system_origin[N_DIMS], grid_spacing[N_DIMS];
-
-/* interpolation points */
-CCTK_REAL interp_x[N_INTERP_POINTS],
-          interp_y[N_INTERP_POINTS],
-          interp_z[N_INTERP_POINTS];
-static const CCTK_INT interp_coord_type_codes[N_DIMS]
-        = { CCTK_VARIABLE_REAL, CCTK_VARIABLE_REAL, CCTK_VARIABLE_REAL };
-const void *interp_coords[N_DIMS];
-
-/* input and output arrays */
-CCTK_REAL    real_array   [NZ][NY][NX]; /* n.b. x is contiguous */
-CCTK_COMPLEX complex_array[NZ][NY][NX]; /* (Fortran storage order) */
-static const CCTK_INT input_array_dims[N_DIMS] = { NX, NY, NZ };
-static const CCTK_INT input_and_output_array_type_codes[N_OUTPUT_ARRAYS]
-        = { CCTK_VARIABLE_REAL, CCTK_VARIABLE_COMPLEX };
-const void * input_arrays[N_OUTPUT_ARRAYS];
-      void *output_arrays[N_OUTPUT_ARRAYS];
-CCTK_REAL    output_for_real_array   [N_INTERP_POINTS];
-CCTK_COMPLEX output_for_complex_array[N_INTERP_POINTS];
-
-operator_handle = CCTK_InterpHandle("generalized polynomial");
-if (operator_handle < 0)
-        CCTK_WARN(-1, "can't get operator handle!");
-
-interp_coords[0] = (const void *) interp_x;
-interp_coords[1] = (const void *) interp_y;
-interp_coords[2] = (const void *) interp_z;
-input_arrays[0] = (void *) real_array;
-input_arrays[1] = (void *) complex_array;
-output_arrays[0] = (void *) output_for_real_array;
-output_arrays[1] = (void *) output_for_complex_array;
-
-if (CCTK_InterpLocalArrays(N_DIMS,
-                           operator_handle,
-                           Util_TableCreateFromString("order=4"),
-                           coord_system_origin, grid_spacing
-                           N_INTERP_POINTS, interp_coord_type_codes,
-                                            interp_coords,
-                           N_INPUT_ARRAYS, input_array_dims,
-                                           input_array_type_codes,
-                                           input_arrays,
-                           N_OUTPUT_ARRAYS, output_array_type_codes,
-                                            output_arrays) < 0)
-        CCTK_WARN(-1, "error return from interpolator!");
-\end{verbatim}
-\end{Example}
-\end{FunctionDescription}
+%notyet%\begin{FunctionDescription}{CCTK\_InterpLocalArrays}
+%notyet%\label{CCTK-InterpLocalArrays}
+%notyet%Interpolate a list of processor-local arrays.
+%notyet%(This function is currently being implemented; it should be available
+%notyet%early in 2002, and will eventually replace \verb|CCTK_InterpLocal()|.
+%notyet%See the Cactus web pages ``Development'' section for further details.)
+%notyet%
+%notyet%\begin{Synopsis}{C}
+%notyet%\begin{verbatim}
+%notyet%#include "cctk.h"
+%notyet%int status = CCTK_InterpLocalArrays(int N_dims,
+%notyet%                                    int operator_handle,
+%notyet%                                    int param_table_handle,
+%notyet%                                    const CCTK_REAL coord_system_origin[],
+%notyet%                                    const CCTK_REAL grid_spacing[],
+%notyet%                                    int N_interp_points,
+%notyet%                                    const CCTK_INT interp_coord_type_codes[],
+%notyet%                                    const void *const interp_coords[],
+%notyet%                                    int N_input_arrays,
+%notyet%                                    const CCTK_INT input_array_dims[],
+%notyet%                                    const CCTK_INT input_array_type_codes[],
+%notyet%                                    const void *const input_arrays[],
+%notyet%                                    int N_output_arrays,
+%notyet%                                    const CCTK_INT output_array_type_codes[],
+%notyet%                                    void *const output_arrays[]);
+%notyet%\end{verbatim}
+%notyet%\end{Synopsis}
+%notyet%
+%notyet%\begin{Result}{\rm 0}
+%notyet%success
+%notyet%\end{Result}
+%notyet%
+%notyet%\begin{Parameter}{N\_dims ($\ge 1$)}
+%notyet%Number of dimensions in which to interpolate.
+%notyet%Note that this may be less than the number of dimensions of the
+%notyet%input arrays if the storage is set up appropriately.  For example,
+%notyet%we might want to interpolate along 1-D lines or in 2-D planes of a
+%notyet%3-D input array; here \verb|N_dims| would be 1 or 2 respectively.
+%notyet%See the discussion of the \verb|input_array_strides| optional parameter
+%notyet%(passed in the parameter table) for details.
+%notyet%\end{Parameter}
+%notyet%\begin{Parameter}{operator\_handle ($\ge 0$)}
+%notyet%\hbox{}
+%notyet%Handle to the interpolation operator.
+%notyet%\end{Parameter}
+%notyet%\begin{Parameter}{param\_table\_handle ($\ge 0$)}
+%notyet%\hbox{}
+%notyet%Handle to a key-value table containing additional parameters for
+%notyet%the interpolator.
+%notyet%\end{Parameter}
+%notyet%\begin{Parameter}{coord\_system\_origin ($\ne$ NULL)}
+%notyet%\hbox{}
+%notyet%(Pointer to) an array giving the physical coordinates of the grid point
+%notyet%with integer grid subscripts 0, 0, \dots, 0.  (It doesn't matter whether
+%notyet%or not this grid point actually exists in the grid.)  See the description
+%notyet%of \verb|grid_spacing| for more on how \verb|coord_system_origin| is
+%notyet%actually used.
+%notyet%\end{Parameter}
+%notyet%\begin{Parameter}{grid\_spacing ($\ne$ NULL)}
+%notyet%\hbox{}
+%notyet%(Pointer to) an array giving the physical-coordinate grid spacing.
+%notyet%Thus, for example, in 3-D the physical coordinates of the grid point
+%notyet%with integer grid subscripts \verb|i,j,k| are
+%notyet%$x = \verb|coord_system_origin[0] + i*grid_spacing[0]|$,
+%notyet%$y = \verb|coord_system_origin[1] + j*grid_spacing[1]|$, and
+%notyet%$z = \verb|coord_system_origin[2] + k*grid_spacing[2]|$.
+%notyet%\end{Parameter}
+%notyet%\begin{Parameter}{N\_interp\_points ($\ge 0$)}
+%notyet%\hbox{}
+%notyet%The number of points at which interpolation is to be done.
+%notyet%\end{Parameter}
+%notyet%\begin{Parameter}{interp\_coord\_type\_codes ($\ne$ NULL)}
+%notyet%\hbox{}
+%notyet%(Pointer to) an array of \verb|N_dims| \verb|CCTK_VARIABLE_|* type codes
+%notyet%giving the data types of the interpolation-point coordinate arrays
+%notyet%pointed to by \verb|interp_coords[]|.
+%notyet%\end{Parameter}
+%notyet%\begin{Parameter}{interp\_coords ($\ne$ NULL)}
+%notyet%\hbox{}
+%notyet%(Pointer to) an array of \verb|N_dims| pointers to arrays giving the
+%notyet%physical coordinates of the interpolation points.
+%notyet%\end{Parameter}
+%notyet%\begin{Parameter}{N\_input\_arrays ($\ge 0$)}
+%notyet%\hbox{}
+%notyet%The number of input arrays to be interpolated.
+%notyet%Note that if the parameter table entry \verb|operand_indices|
+%notyet%is used to specify a 1-to-many mapping of input arrays to output arrays,
+%notyet%only the unique set of input arrays should be given here.
+%notyet%\end{Parameter}
+%notyet%\begin{Parameter}{input\_array\_dims ($\ne$ NULL)}
+%notyet%\hbox{}
+%notyet%(Pointer to) an array of \verb|N_dims| integers giving the dimensions
+%notyet%of the input array.  By default all the input arrays are taken to have
+%notyet%these dimensions, with \verb|[0]| the most contiguous axis and
+%notyet%\verb|[N_dims-1]| the least contiguous axis, and array subscripts in the
+%notyet%range \verb|0 <= subscript < dims[axis]|.  See the discussion of the
+%notyet%\verb|input_array_strides| optional parameter (passed in the parameter table)
+%notyet%for details of how this can be overridden.
+%notyet%\end{Parameter}
+%notyet%\begin{Parameter}{input\_array\_type\_codes ($\ne$ NULL)}
+%notyet%\hbox{}
+%notyet%(Pointer to) an array of \verb|N_input_arrays| \verb|CCTK_VARIABLE_|*
+%notyet%type codes giving the data types of the input arrays pointed to by
+%notyet%\verb|input_arrays[]|.
+%notyet%\end{Parameter}
+%notyet%\begin{Parameter}{input\_arrays ($\ne$ NULL)}
+%notyet%\hbox{}
+%notyet%(Pointer to) an array of \verb|N_input_arrays| pointers to the
+%notyet%input arrays for the interpolation.
+%notyet%\end{Parameter}
+%notyet%\begin{Parameter}{N\_output\_arrays ($\ge 0$)}
+%notyet%\hbox{}
+%notyet%The number of output arrays from the interpolation.
+%notyet%\end{Parameter}
+%notyet%\begin{Parameter}{output\_array\_type\_codes ($\ne$ NULL)}
+%notyet%\hbox{}
+%notyet%(Pointer to) an array of \verb|N_output_arrays| \verb|CCTK_VARIABLE_|*
+%notyet%type codes giving the data types of the output arrays pointed to by
+%notyet%\verb|output_arrays[]|.
+%notyet%\end{Parameter}
+%notyet%\begin{Parameter}{output\_arrays ($\ne$ NULL)}
+%notyet%\hbox{}
+%notyet%(Pointer to) an array of \verb|N_output_arrays| pointers to the
+%notyet%output arrays for the interpolation.
+%notyet%\end{Parameter}
+%notyet%
+%notyet%\begin{Discussion}
+%notyet%This function interpolates a list of processor-local arrays.
+%notyet%The computation is optimized for the case of interpolating a
+%notyet%number of arrays at a time; in this case the same coefficients can
+%notyet%be used for all the arrays.
+%notyet%
+%notyet%Details of the operation performed, and what (if any) inputs and/or
+%notyet%outputs are specified in the parameter table, depend on which driver
+%notyet%thorn and interpolation operator you use.  See the documentation on
+%notyet%individual driver thorns (eg.~\verb|PUGHInterp|) for details.
+%notyet%
+%notyet%One common parameter-table option, which a number of interpolation
+%notyet%operators are likely to support, is \verb|order|, a \verb|CCTK_INT|
+%notyet%specifying the order of the (presumably polynomial) interpolation
+%notyet%(1=linear, 2=quadratic, 3=cubic, etc).
+%notyet%\end{Discussion}
+%notyet%
+%notyet%\begin{SeeAlso}{Util\_InterpGridArrays()}
+%notyet%Interpolate a list of distributed grid arrays.
+%notyet%\end{SeeAlso}
+%notyet%
+%notyet%\begin{Error}{UTIL\_ERROR\_BAD\_INPUT}
+%notyet%one or more of the inputs is invalid (eg.~\verb|NULL| pointer)
+%notyet%\end{Error}
+%notyet%\begin{Error}{UTIL\_ERROR\_NO\_MEMORY}
+%notyet%unable to allocate memory
+%notyet%\end{Error}
+%notyet%\begin{Error}{UTIL\_ERROR\_BAD\_HANDLE}
+%notyet%parameter table handle is invalid
+%notyet%\end{Error}
+%notyet%
+%notyet%\begin{Example}{C}
+%notyet%Here's a simple example to do quartic 3-D interpolation of a real and
+%notyet%a complex $20 \times 30 \times 40$ array, at 1000 interpolation points:
+%notyet%\begin{verbatim}
+%notyet%#include "cctk.h"
+%notyet%#include "util_Table.h"
+%notyet%
+%notyet%#define N_DIMS          3
+%notyet%#define NX              20      /* x dimension of input arrays */
+%notyet%#define NY              30      /* y */
+%notyet%#define NZ              40      /* z */
+%notyet%#define N_INTERP_POINTS 1000
+%notyet%#define N_INPUT_ARRAYS  2
+%notyet%#define N_OUTPUT_ARRAYS 2
+%notyet%int operator_handle;
+%notyet%CCTK_REAL coord_system_origin[N_DIMS], grid_spacing[N_DIMS];
+%notyet%
+%notyet%/* interpolation points */
+%notyet%CCTK_REAL interp_x[N_INTERP_POINTS],
+%notyet%          interp_y[N_INTERP_POINTS],
+%notyet%          interp_z[N_INTERP_POINTS];
+%notyet%static const CCTK_INT interp_coord_type_codes[N_DIMS]
+%notyet%        = { CCTK_VARIABLE_REAL, CCTK_VARIABLE_REAL, CCTK_VARIABLE_REAL };
+%notyet%const void *interp_coords[N_DIMS];
+%notyet%
+%notyet%/* input and output arrays */
+%notyet%CCTK_REAL    real_array   [NZ][NY][NX]; /* n.b. x is contiguous */
+%notyet%CCTK_COMPLEX complex_array[NZ][NY][NX]; /* (Fortran storage order) */
+%notyet%static const CCTK_INT input_array_dims[N_DIMS] = { NX, NY, NZ };
+%notyet%static const CCTK_INT input_and_output_array_type_codes[N_OUTPUT_ARRAYS]
+%notyet%        = { CCTK_VARIABLE_REAL, CCTK_VARIABLE_COMPLEX };
+%notyet%const void * input_arrays[N_OUTPUT_ARRAYS];
+%notyet%      void *output_arrays[N_OUTPUT_ARRAYS];
+%notyet%CCTK_REAL    output_for_real_array   [N_INTERP_POINTS];
+%notyet%CCTK_COMPLEX output_for_complex_array[N_INTERP_POINTS];
+%notyet%
+%notyet%operator_handle = CCTK_InterpHandle("generalized polynomial");
+%notyet%if (operator_handle < 0)
+%notyet%        CCTK_WARN(-1, "can't get operator handle!");
+%notyet%
+%notyet%interp_coords[0] = (const void *) interp_x;
+%notyet%interp_coords[1] = (const void *) interp_y;
+%notyet%interp_coords[2] = (const void *) interp_z;
+%notyet%input_arrays[0] = (void *) real_array;
+%notyet%input_arrays[1] = (void *) complex_array;
+%notyet%output_arrays[0] = (void *) output_for_real_array;
+%notyet%output_arrays[1] = (void *) output_for_complex_array;
+%notyet%
+%notyet%if (CCTK_InterpLocalArrays(N_DIMS,
+%notyet%                           operator_handle,
+%notyet%                           Util_TableCreateFromString("order=4"),
+%notyet%                           coord_system_origin, grid_spacing
+%notyet%                           N_INTERP_POINTS, interp_coord_type_codes,
+%notyet%                                            interp_coords,
+%notyet%                           N_INPUT_ARRAYS, input_array_dims,
+%notyet%                                           input_array_type_codes,
+%notyet%                                           input_arrays,
+%notyet%                           N_OUTPUT_ARRAYS, output_array_type_codes,
+%notyet%                                            output_arrays) < 0)
+%notyet%        CCTK_WARN(-1, "error return from interpolator!");
+%notyet%\end{verbatim}
+%notyet%\end{Example}
+%notyet%\end{FunctionDescription}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
