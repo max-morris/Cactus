@@ -6,7 +6,7 @@
 #    @desc 
 #   
 #    @enddesc 
-#    @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/irix,v 1.22 2000-09-07 14:50:12 goodale Exp $
+#    @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/irix,v 1.23 2000-09-26 13:09:00 allen Exp $
 #  @@*/
 
 if test "$CCTK_CONFIG_STAGE" = "preferred-compilers" ; then
@@ -59,6 +59,32 @@ if test "$CCTK_CONFIG_STAGE" = "preferred-compilers" ; then
 
 else
 
+
+# Find out which version of the C++ compilers is installed
+
+  IRIX_CVERSION="`versions c++_dev | grep , | tail -1 | sed 's:.*, ::'`"
+
+  IRIX_CMAJ="`echo $IRIX_CVERSION | sed 's:\([^. ]*\)\.\([^. ]*\).*:\1:'`"
+  IRIX_CMIN="`echo $IRIX_CVERSION | sed 's:\([^. ]*\)\.\([^. ]*\).*:\2:'`"
+
+  if test $IRIX_CMAJ -gt 7 -o \( $IRIX_CMAJ -eq 7 -a $IRIX_CMIN -gt 2 \) ; then
+    IRIX_CCOMP="new"
+  else
+    IRIX_CCOMP="old"
+  fi
+
+  case $IRIX_BITS in
+    64)
+      LIBS="$LIBS malloc perfex fpe $IRIX_FLIBS m"
+      ;;
+    32)
+      LIBS="$LIBS malloc fpe $IRIX_FLIBS m"
+      ;;
+    *)
+      ;;
+  esac
+
+
   case "$IRIX_CPU" in
     4???)
        IRIX_FLAGS="-mips3" ;;
@@ -67,7 +93,12 @@ else
     10???)
        IRIX_FLAGS="-mips4 -r10000" ;;
     12???)
-       IRIX_FLAGS="-mips4 -r12000" ;;
+       case "$IRIX_CCOMP" in 
+         "old")
+	    IRIX_FLAGS="-mips4 -r10000" ;; 
+	  *) 
+	    IRIX_FLAGS="-mips4 -r12000" ;;
+       esac ;;
     *)
        IRIX_FLAGS="-mips4" ;;
   esac
@@ -153,6 +184,8 @@ esac
     *)
       ;;
   esac
+
+
 
 # Cache stuff
   if test -z "$L2_CACHELINE_BYTES" ; then
