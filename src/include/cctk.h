@@ -240,17 +240,6 @@ inline int CCTK_GFINDEX4D (const cGH *GH, int i, int j, int k, int l)
                             int *,\
                             cGH *
 
-extern int _cctk_one;
-
-#define CCTK_STORAGESIZE(xGH, cctk_dim, group) \
-                  (CCTK_QueryGroupStorage(xGH, group) ?\
-                  (CCTK_ArrayGroupSize(xGH, cctk_dim, group)) : &_cctk_one)
-
-
-#define CCTK_GROUPLENGTH(xGH, group) \
-                  (CCTK_QueryGroupStorage(xGH, group) ?\
-                  (CCTKi_GroupLengthAsPointer(group)) : &_cctk_one)
-
 #define CCTK_EQUALS(a,b) (CCTK_Equals((a),(b))==1)
 
 #define CCTK_PASS_CTOC cctkGH
