@@ -47,10 +47,10 @@ sub create_schedule_code
     @indata = &read_file("$thorns{$thorn}/schedule.ccl");
 
     # Parse the data and create rfr and startup subroutines
-    @wrapper_files = &parse_schedule_ccl($thorn,"rfr",OUTRFR,PROTO,@indata);
-    push (@compile_files,@wrapper_files);
-    push (@compile_files,$thorn_rfr);
-    push (@compile_files,$thorn_startup);
+    @wrappers = &parse_schedule_ccl($thorn,"rfr",OUTRFR,PROTO,@indata);
+    $wrapper_files .= join(" ",@wrappers);
+    $rfr_files .= " $thorn_rfr";
+    $startup_files .= " $thorn_startup";
 
     &parse_schedule_ccl($thorn,"startup",OUTSTART,PROTO,@indata);
 
@@ -63,7 +63,7 @@ sub create_schedule_code
 
   }
 
-  return  @compile_files;
+  return  ($wrapper_files,$rfr_files,$startup_files);
 
 }
 
@@ -108,15 +108,17 @@ sub write_startup_header {
 }
 
 
-sub create_BindingsScheduleRegisterRFR
+sub create_RegisterRFR
 {
   
   local ($dir,@rfr_routines) = @_;
   local ($rfr_calls,$file,$outfile);
 
-  $outfile = "$dir/Schedule/Cactus_BindingsScheduleRegisterRFR.c";
+  $outfile = "$dir/Schedule/Cactus_RegisterRFR.c";
   open (OUT, ">$outfile") || die "Cannot open $outfile";
 
+  print "HELLO\n\n\n\n\n";
+  print @rfr_routines;
   $rfr_calls = "";
   foreach $file (@rfr_routines) {
     $rfr_calls = "$rfr_calls ".$file."(data);\n";
@@ -124,7 +126,7 @@ sub create_BindingsScheduleRegisterRFR
 
   print OUT <<EOT;
 
-  Cactus_BindingsScheduleRegisterRFR(void *data)
+  Cactus_RegisterRFR(void *data)
   {
    $rfr_calls
   }
@@ -134,13 +136,13 @@ EOT
 
 }
 
-sub create_BindingsScheduleRegisterSTARTUP
+sub create_RegisterSTARTUP
 {
   
   local ($dir,@startup_routines) = @_;
   local ($startup_calls,$file,$outfile);
 
-  $outfile = "$dir/Schedule/Cactus_BindingsScheduleRegisterSTARTUP.c";
+  $outfile = "$dir/Schedule/Cactus_RegisterSTARTUP.c";
   open (OUT, ">$outfile") || die "Cannot open $outfile";
 
   $startup_calls = "";
@@ -150,7 +152,7 @@ sub create_BindingsScheduleRegisterSTARTUP
 
   print OUT <<EOT;
 
-  Cactus_BindingsScheduleRegisterSTARTUP()
+  Cactus_RegisterSTARTUP()
   {
    $startup_calls
   }

@@ -771,14 +771,15 @@ sub CreateScheduleBindings
   }
   chdir "Schedule";
 
-  # Parse the schedule.ccl files
-  @schedule_routines = &create_schedule_code($bindings_dir,%thorns);
+  # Parse the schedule.ccl files 
+  ($wrapper,$rfr,$startup) = &create_schedule_code($bindings_dir,%thorns);
+  
 
   # Write the contents of BindingsScheduleRegisterRFR.c
-  &create_BindingsScheduleRegisterRFR($bindings_dir); 
+  &create_RegisterRFR($bindings_dir,split(" ",$rfr)); 
 
   # Write the contents of BindingsScheduleRegisterSTARTUP.c
-  &create_BindingsScheduleRegisterSTARTUP($bindings_dir); 
+  &create_RegisterSTARTUP($bindings_dir,split(" ",$startup)); 
 
   open (OUT, ">Bindings.c") || die "Cannot open Bindings.c";
 
@@ -794,11 +795,11 @@ sub CreateScheduleBindings
     
     if (CCTK_Equals(type,"STARTUP"))
     {
-      Cactus_BindingsScheduleRegisterSTARTUP();
+      Cactus_RegisterSTARTUP();
     } 
     else if (CCTK_Equals(type,"RFRINIT")) 
     {
-      Cactus_BindingsScheduleRegisterRFR(data);
+      Cactus_RegisterRFR(data);
     } else {
       printf ("Unknown type in CCTK_BindingsScheduleRegister");
     }
@@ -813,11 +814,11 @@ EOT
   open (OUT, ">make.code.defn") || die "Cannot open make.code.defn";
 
   $files = "";
-  foreach $file (@schedule_routines) {
+  foreach $file (split(" ",$rfr),split(" ",$startup),split(" ",$wrapper)) {
     $files = "$files ".$file.".c";
   }
 
-  print OUT "SRCS = Bindings.c Cactus_BindingsScheduleRegisterSTARTUP.c Cactus_BindingsScheduleRegisterRFR.c $files\n";
+  print OUT "SRCS = Bindings.c Cactus_RegisterSTARTUP.c Cactus_RegisterRFR.c $files\n";
 
   close OUT;
 
