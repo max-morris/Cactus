@@ -67,11 +67,11 @@ extern char MPI_Active;
  *********************     External Routines   **********************
  ********************************************************************/
 cGH *CactusDefaultSetupGH(tFleshConfig *config, int convergence_level);
-int CactusDefaultMyProc(cGH *GH);
-int CactusDefaultnProcs(cGH *GH);
+int CactusDefaultMyProc(const cGH *GH);
+int CactusDefaultnProcs(const cGH *GH);
 int CactusDefaultExit(cGH *GH, int retval);
 int CactusDefaultAbort(cGH *GH, int retval);
-int CactusDefaultBarrier(cGH *GH);
+int CactusDefaultBarrier(const cGH *GH);
 
 
  /*@@
@@ -228,7 +228,7 @@ cGH *CactusDefaultSetupGH(tFleshConfig *config, int convergence_level)
 
    @var        GH
    @vdesc      Pointer to CCTK grid hierarchy
-   @vtype      cGH *
+   @vtype      const cGH *
    @vio        unused
    @endvar
 
@@ -237,7 +237,7 @@ cGH *CactusDefaultSetupGH(tFleshConfig *config, int convergence_level)
                the processor number of the caller
    @endreturndesc
 @@*/
-int CactusDefaultMyProc (cGH *GH)
+int CactusDefaultMyProc (const cGH *GH)
 {
   int myproc;
 
@@ -269,7 +269,7 @@ int CactusDefaultMyProc (cGH *GH)
 
    @var        GH
    @vdesc      Pointer to CCTK grid hierarchy
-   @vtype      cGH *
+   @vtype      const cGH *
    @vio        unused
    @endvar
 
@@ -278,7 +278,7 @@ int CactusDefaultMyProc (cGH *GH)
                the total number of processors
    @endreturndesc
 @@*/
-int CactusDefaultnProcs (cGH *GH)
+int CactusDefaultnProcs (const cGH *GH)
 {
   int nprocs;
 
@@ -409,7 +409,7 @@ int CactusDefaultAbort (cGH *GH, int retval)
 
    @var        GH
    @vdesc      Pointer to CCTK grid hierarchy
-   @vtype      cGH *
+   @vtype      const cGH *
    @vio        unused
    @endvar
 
@@ -418,7 +418,7 @@ int CactusDefaultAbort (cGH *GH, int retval)
                0 for success
    @endreturndesc
 @@*/
-int CactusDefaultBarrier (cGH *GH)
+int CactusDefaultBarrier (const cGH *GH)
 {
   /* avoid compiler warning about unused parameter */
   GH = GH;

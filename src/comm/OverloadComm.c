@@ -163,17 +163,17 @@ void CCTK_FCALL CCTK_FNAME(CCTK_DisableGroupStorage)(int *ierr, cGH *GH, ONE_FOR
   free(group_name);
 }
 
-int CCTK_FCALL CCTK_FNAME(CCTK_nProcs)(cGH *GH)
+int CCTK_FCALL CCTK_FNAME(CCTK_nProcs)(const cGH *GH)
 {
   return CCTK_nProcs(GH);
 }
  
-int CCTK_FCALL CCTK_FNAME(CCTK_MyProc)(cGH *GH)
+int CCTK_FCALL CCTK_FNAME(CCTK_MyProc)(const cGH *GH)
 {
   return CCTK_MyProc(GH);
 }
  
-int CCTK_FCALL CCTK_FNAME(CCTK_Barrier)(cGH *GH)
+int CCTK_FCALL CCTK_FNAME(CCTK_Barrier)(const cGH *GH)
 {
   return CCTK_Barrier(GH);
 }

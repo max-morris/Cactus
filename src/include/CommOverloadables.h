@@ -2,11 +2,11 @@
    @header    CommOverloadables.h
    @date      Thu Feb  4 08:11:41 1999
    @author    Tom Goodale
-   @desc 
-   The overloadable functions for the comm layer.
-   See OverloadMacros.h to see how to use these.
-   @enddesc 
-   @version $Header$
+   @desc
+              The overloadable functions for the comm layer.
+              See OverloadMacros.h to see how to use these.
+   @enddesc
+   @version   $Header$
  @@*/
 
 #include "cctk_Flesh.h"
@@ -47,7 +47,7 @@ OVERLOADABLE(EnableGroupComm)
 OVERLOADABLE(DisableGroupComm)
 
 #undef ARGUMENTS
-#define ARGUMENTS cGH *GH
+#define ARGUMENTS const cGH *GH
 OVERLOADABLE(Barrier)
 OVERLOADABLE(MyProc)
 OVERLOADABLE(nProcs)
@@ -58,21 +58,21 @@ OVERLOADABLE(ParallelInit)
 
 #undef ARGUMENTS
 #define ARGUMENTS cGH *GH, int retval
-#undef RETURN_TYPE 
+#undef RETURN_TYPE
 #define RETURN_TYPE int
 OVERLOADABLE(Exit)
 OVERLOADABLE(Abort)
 
 #undef ARGUMENTS
 #define ARGUMENTS tFleshConfig *config, int convergence_level
-#undef RETURN_TYPE 
-#define RETURN_TYPE cGH * 
+#undef RETURN_TYPE
+#define RETURN_TYPE cGH *
 OVERLOADABLE(SetupGH)
 
 #undef ARGUMENTS
 #define ARGUMENTS cGH *GH, int dir, int group, const char *groupname
-#undef RETURN_TYPE 
-#define RETURN_TYPE const int * 
+#undef RETURN_TYPE
+#define RETURN_TYPE const int *
 OVERLOADABLE(ArrayGroupSizeB)
 
 #undef ARGUMENTS
@@ -93,6 +93,3 @@ OVERLOADABLE(GroupDynamicData)
 #undef OVERLOADABLE_CALL
 #undef OVERLOADABLE_PREFIX
 #undef OVERLOADABLE_DUMMY_PREFIX
-
-
-
