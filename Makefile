@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.108 2001-04-11 10:39:17 allen Exp $
+#   @version $Id: Makefile,v 1.109 2001-04-18 13:22:10 goodale Exp $
 # @@*/
 
 ##################################################################################
@@ -794,7 +794,7 @@ UsersGuide.ps: UsersGuide
 UsersGuide: 
 	@echo $(DIVIDER)
 	@echo Creating user documentation UsersGuide.ps
-	(cd doc/UsersGuide; latex UsersGuide.tex > $NULL_DEVICE; latex UsersGuide.tex > $NULL_DEVICE; dvips ./UsersGuide.dvi -o $(CCTK_HOME)/UsersGuide.ps >& $NULL_DEVICE) ; cd $(CCTK_HOME);
+	(cd doc/UsersGuide; latex UsersGuide.tex > /dev/null; latex UsersGuide.tex > /dev/null; dvips ./UsersGuide.dvi -o $(CCTK_HOME)/UsersGuide.ps >& /dev/null) ; cd $(CCTK_HOME);
 	@echo $(DIVIDER)
 
 # Make the ThornGuide, new addition
@@ -806,7 +806,7 @@ ThornGuide.ps: ThornGuide
 ThornGuide: 
 	@echo $(DIVIDER)
 	@echo Creating thorn documentation ThornGuide.ps
-	($(PERL) -s lib/sbin/ParamLatex.pl -processall -grouping=bythorn -outdir=doc/ThornGuide/ -section; $(PERL) -s lib/sbin/ThornGuide.pl -directory=arrangements/ -outdir=doc/ThornGuide/; cd doc/ThornGuide; cp ../UsersGuide/bincactus2.eps bincactus.eps; latex ThornGuide.tex > $NULL_DEVICE; latex ThornGuide.tex > $NULL_DEVICE; dvips ./ThornGuide.dvi -o $(CCTK_HOME)/ThornGuide.ps >& $NULL_DEVICE) ; cd $(CCTK_HOME); 
+	($(PERL) -s lib/sbin/ParamLatex.pl -processall -grouping=bythorn -outdir=doc/ThornGuide/ -section; $(PERL) -s lib/sbin/ThornGuide.pl -directory=arrangements/ -outdir=doc/ThornGuide/; cd doc/ThornGuide; cp ../UsersGuide/bincactus2.eps bincactus.eps; latex ThornGuide.tex > /dev/null; latex ThornGuide.tex > /dev/null; dvips ./ThornGuide.dvi -o $(CCTK_HOME)/ThornGuide.ps >& /dev/null) ; cd $(CCTK_HOME); 
 	@echo $(DIVIDER)
 
 .PHONY: MaintGuide.ps
@@ -816,7 +816,7 @@ MaintGuide.ps: MaintGuide
 MaintGuide:
 	@echo $(DIVIDER)
 	@echo Creating maintainers documentation MaintGuide.ps
-	(cd doc/MaintGuide; latex MaintGuide.tex > $NULL_DEVICE; latex MaintGuide.tex > $NULL_DEVICE; dvips ./MaintGuide.dvi -o $(CCTK_HOME)/MaintGuide.ps >& $NULL_DEVICE) ; cd $(CCTK_HOME); 
+	(cd doc/MaintGuide; latex MaintGuide.tex > /dev/null; latex MaintGuide.tex > /dev/null; dvips ./MaintGuide.dvi -o $(CCTK_HOME)/MaintGuide.ps >& /dev/null) ; cd $(CCTK_HOME); 
 	@echo $(DIVIDER)
 
 # Rule to show thorn information
