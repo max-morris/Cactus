@@ -16,23 +16,10 @@ $config = shift;;
 # Set up RunTest configuration
 %config_data = &Configure($config,$home_dir);
 
-# Get the executable
-$executable = ParseExecutable(%config_data);
-
-# Look to see if MPI is dfined
-$mpi = ParseExtras(%config_data);
-if ($mpi)
-{
-  $numprocs = &defprompt("  Enter number of processors","2");
-  $command = &defprompt("  Enter command to run executable","mpirun -np $numprocs ");
-}
-else
-{
-  $command = &defprompt("  Enter command to run executable"," ");
-}
-
 # Initialise testdata database
 %testdata = &InitialiseTestData();
+
+%runconfig = &InitialiseRunData();
 
 # Find test parameter files
 %testdata = &FindAllTests(%config_data);
@@ -55,6 +42,7 @@ while ($choice !~ /^Q/i)
     print "  --- Menu ---\n\n";
     
     print "  Run entire set of tests [E]\n";
+    print "  Run entire set of tests interactively [I]\n";
     print "  Choose test from [T]horn or [A]rrangement\n";
     print "  Rerun previous test [R]\n";
     print "  Compare all files in the test output directories [O]\n";
@@ -63,11 +51,11 @@ while ($choice !~ /^Q/i)
     $choice = &defprompt("  Select choice: ","E");
     print "\n";
     
-    if ($choice =~ /^[EO]/i) 
+    if ($choice =~ /^[EIO]/i) 
     {
 
       # Reset/Initialise Test Statistics
-      %testdata = &ResetTestStatistics(%testdata);
+      \%rundata = &ResetTestStatistics(\%rundata,%testdata);
 
       # Run all parameter files
       foreach $thorn (split(" ",$testdata{"RUNNABLETHORNS"}))
@@ -78,28 +66,32 @@ while ($choice !~ /^Q/i)
 	  print "    \"$testdata{\"$thorn $test DESC\"}\"\n";
 	  if ($choice !~ /^O/i)
 	  {
-	    %testdata = &RunTest($test,$thorn,%testdata);
+	    %testdata = &RunTest($test,$thorn,\%config_data,%testdata);
 	  }
-	  %testdata = &CompareTestFiles($test,$thorn,%testdata);
-	  %testdata = &ReportOnTest($test,$thorn,%testdata);
+	  %rundata = &CompareTestFiles($test,$thorn,\%runconfig,\%rundata,\%config_data,%testdata);
+	  %rundata = &ReportOnTest($test,$thorn,\%rundata,%testdata);
+	  if ($choice =~ /^I/i)
+	  {
+	    &ViewResults($test,$thorn,\%runconfig,\%rundata,%testdata);
+	  }
 	}
       }
 
       # Write results of all tests
-      &WriteFullResults(%testdata);
+      &WriteFullResults(\%rundata,%testdata);
     } 
     elsif ($choice =~ /^[AT]/i)
     {
-      ($ntests,@tests) = &ChooseTest($choice,%testdata);
+      ($ntests,@tests) = &ChooseTests($choice,%testdata);
       for ($i=0;$i<$ntests;$i++)
       {
 	$test  = $tests[2*$i];
 	$thorn = $tests[2*$i+1];
 	print "  Test $thorn: $test\n";
 	print "    \"$testdata{\"$thorn $test DESC\"}\"\n";
-	%testdata = &RunTest($tests[2*$i],$tests[2*$i+1],%testdata);
-	%testdata = &CompareTestFiles($tests[2*$i],$tests[2*$i+1],%testdata);
-	%testdata = &ReportOnTest($tests[2*$i],$tests[2*$i+1],%testdata);
+	%testdata = &RunTest($tests[2*$i],$tests[2*$i+1],\%config_data,%testdata);
+	%rundata = &CompareTestFiles($tests[2*$i],$tests[2*$i+1],\%runconfig,\%rundata,\%config_data,%testdata);
+	%rundata = &ReportOnTest($tests[2*$i],$tests[2*$i+1],\%rundata,%testdata);
       }
     }
     elsif ($choice =~ /^R/i)
@@ -108,9 +100,9 @@ while ($choice !~ /^Q/i)
       {
 	print "  Test $thorn: $test \n";
 	print "    \"$testdata{\"$thorn $test DESC\"}\"\n";
-	%testdata = &RunTest($test,$thorn,%testdata);
-	%testdata = &CompareTestFiles($test,$thorn,%testdata);
-	%testdata = &ReportOnTest($test,$thorn,%testdata);
+	%testdata = &RunTest($test,$thorn,\%config_data,%testdata);
+	%rundata = &CompareTestFiles($test,$thorn,\%runconfig,\%rundata,\%config_data,%testdata);
+	%rundata = &ReportOnTest($test,$thorn,,\%rundata,%testdata);
       }
       else
       {
@@ -124,11 +116,11 @@ while ($choice !~ /^Q/i)
       {
 	print "    Change tolerance for this run ($test) [R]\n";
       }
-      print "    Change tolerance from $testdata{\"TOLERANCE\"} for all further runs [T]\n";
+      print "    Change tolerance from $rundata->{\"TOLERANCE\"} for all further runs [T]\n";
       $choice = &defprompt("  Select choice: ","");
       if ($choice =~ /T/i)
       {
-	$testdata{"TOLERANCE"} = &defprompt("  New tolerance: ","$testdata{\"TOLERANCE\"}");
+	$rundata->{"TOLERANCE"} = &defprompt("  New tolerance: ","$rundata->{\"TOLERANCE\"}");
       }
     }
     elsif ($choice =~ /^Q/i)
