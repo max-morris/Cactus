@@ -91,7 +91,7 @@ define PREPROCESS_C
 endef
 
 define COMPILE_C
-current_wd=`$(GET_WD)` ; cd $(SCRATCH_BUILD) ; $(CC) $(CFLAGS) $(CCOMPILEONLY)$(OPTIONSEP)$$current_wd$(DIRSEP)$@ $$current_wd$(DIRSEP)$(notdir $<) $(INCLUDE_LINE) $(EXTRA_DEFINES:%=-D%) -DCCODE
+current_wd=`$(GET_WD)` ; cd $(SCRATCH_BUILD) ; $(CC) $(CPPFLAGS) $(CFLAGS) $(CCOMPILEONLY)$(OPTIONSEP)$$current_wd$(DIRSEP)$@ $$current_wd$(DIRSEP)$(notdir $<) $(INCLUDE_LINE) $(EXTRA_DEFINES:%=-D%) -DCCODE
 endef
 
 define POSTPROCESS_C
@@ -104,7 +104,7 @@ define PREPROCESS_CXX
 endef
 
 define COMPILE_CXX
-current_wd=`$(GET_WD)` ; cd $(SCRATCH_BUILD) ; $(CXX) $(CXXFLAGS) $(CCOMPILEONLY)$(OPTIONSEP)$$current_wd$(DIRSEP)$@ $$current_wd$(DIRSEP)$(CXX_WORKING_NAME) $(INCLUDE_LINE) $(EXTRA_DEFINES:%=-D%) -DCCODE
+current_wd=`$(GET_WD)` ; cd $(SCRATCH_BUILD) ; $(CXX) $(CPPFLAGS) $(CXXFLAGS) $(CCOMPILEONLY)$(OPTIONSEP)$$current_wd$(DIRSEP)$@ $$current_wd$(DIRSEP)$(CXX_WORKING_NAME) $(INCLUDE_LINE) $(EXTRA_DEFINES:%=-D%) -DCCODE
 endef
 
 define POSTPROCESS_CXX
