@@ -8,7 +8,7 @@
 #   Does all the work for function aliasing.
 #   Something approximating documentation follows.
 #   @enddesc
-#   @version $Id: CreateFunctionBindings.pl,v 1.17 2003/01/25 15:51:07 tradke Exp
+#   @version $Id$
 # @@*/
 #
 # The structure of function aliasing is described by this piece of
@@ -22,13 +22,14 @@
 #                        /               \
 #                       /                 \
 #                      /                   \
-#               Function pointer      Function pointer
+#               Function                Function
 #                  'bla'            'CCTK_FCALL CCTK_FNAME(bla)'
 #                     |                     |
 #                     |                     |
 #                     |                     |
 #                     |                     |
 #                     |                     |
+#               Function pointer       Function pointer
 #               Thorn_bla_From_C       Thorn_bla_From_F
 #                      \                   /
 #                       \                 /
@@ -43,37 +44,39 @@
 # equivalent, 'CCTK_FCALL CCTK_FNAME(bla)'. However, unlike the Cactus
 # standard, the Fortran wrapper does not call the C function.
 #
-# Instead, in this case both 'bla' and the Fortran version are function
-# pointers, but they WILL point to different functions. They will point
-# to a wrapper to the providing function.
+# Instead, in this case both 'bla' and the Fortran version will call a
+# function pointer, which will point either to the providing function,
+# or to a wrapper to the providing function.
 #
 # The providing function is Thorn_bla. The CST will generate wrappers
 # for this function which work if called from C (Thorn_bla_From_C) or
 # Fortran (Thorn_bla_From_F).
 #
 # Then at run time a "registration" function will set the function
-# pointer 'bla' to point to Thorn_bla_From_C, and 'CCTK_FCALL CCTK_FNAME(bla)'
-# to point to Thorn_bla_From_F.
+# pointers Thorn_bla_From_C and Thorn_bla_From_F to either the
+# providing function itself, or a wrapper for the providing function,
+# as needed.
 #
-# The 'Thorn_bla_From_*' functions will be in C. They know which language
-# they are being called from, and also which language Thorn_bla has, and
-# they know this _at CST time_. So they will change the arguments and
-# calling sequence appropriately.
+# The functions pointer to by the 'Thorn_bla_From_*' pointers will be
+# in C. They know which language they are being called from, and also
+# which language Thorn_bla has, and they know this _at CST time_. So
+# they will change the arguments and calling sequence appropriately.
 #
 # Thus we need the following.
 #
 # 1) For every thorn that PROVIDES a function, generate the following
 #    functions.
 #
-#    a) Thorn_bla_From_C and Thorn_bla_From_F.
-#       These receive their arguments in the appropriate C/Fortran style
-#       and then call Thorn_bla in the (possibly different) C/Fortran style.
+#    a) Wrappers to which Thorn_bla_From_C or Thorn_bla_From_F will
+#       point, as needed.  These receive their arguments in the
+#       appropriate C/Fortran style and then call Thorn_bla in the
+#       (possibly different) C/Fortran style.
 #
 #    b) A function that "registers" all the providing functions.
 #
 # 2) For every function that is USEd, generate the following.
 #
-#    a) A function pointer 'bla' and the Fortran equivalent.
+#    a) A function 'bla' and a Fortran wrapper for it.
 #
 #    b) A "registration" function that sets the appropriate function
 #       pointer. This should return an error if it has already been set.
@@ -85,6 +88,47 @@
 #
 # - For safety, assume that any thorn that PROVIDEs a function also USEs it.
 #   This will ensure that the function pointers etc. exist.
+#
+##########################################################################
+#
+# SOME EXPLANATION OF BINDING FILES GENERATED
+# -------------------------------------------
+# 
+# in <config>/bindings/Functions/AliasedFunctions.c :
+# In this file the actual routines that are called by the USEing thorns are 
+# defined:
+#
+# <CCTK_TYPE> <MyAliasedFunctionName> (<ItsArguments>);
+# <CCTK_TYPE> CCTK_FCALL CCTK_FNAME(<MyAliasedFunctionName>) (<ItsArguments>);
+#
+# Each calls a corresponding C or Fortran function pointer, respectively:
+#
+# static <CCTK_TYPE> (*<MyAliasedFunctionName>_C_Wrapper);
+# static <CCTK_TYPE> (*<MyAliasedFunctionName>_F_Wrapper);
+#
+# The functions:
+#
+# Alias<MyAliasedFunctionName>_C(function_pointer)
+# Alias<MyAliasedFunctionName>_F(function_pointer)
+#
+# set the pointers <MyAliasedFunctionName>_*_Wrapper to the
+# function_pointer argument (for * equal to C and F respectively).
+#
+#
+# in <config>/bindings/Functions/<ThornName>.c :
+#
+# For a function that is provided in C, the function
+# Register_<ThornName>(void) calls
+#
+# Alias<MyAliasedFunctionName>_C( <MyProvidingFunctionName> )
+# Alias<MyAliasedFunctionName>_F( CCTK_Wrapper_CtoF_<MyProvidingFunctionName>)
+#
+# The (somewhat) analogous thing is done for aliased functions that
+# are provided in Fortran.
+#
+# in <config>/bindings/include/<ThornName>_Prototypes.h :
+#
+# The prototypes for USEd aliased functions are located here.
 #
 ##########################################################################
 #
@@ -126,11 +170,11 @@
 # Function pointer: Whether the argument is a function pointer (1/0)
 # Is Array        : Whether the argument is an ARRAY (1/0)
 # String          : Whether the argument is a string (1/0)
-#
+
+my $debug = 0;
 
 sub CreateFunctionBindings
 {
-
   use strict;
 
   my($bindings_dir, $rhinterface_db) = @_;
@@ -189,10 +233,12 @@ sub CreateFunctionBindings
 
   foreach $thorn (keys %{$function_db})
   {
+    $debug and print "thorn is $thorn\n";
+
     my $localfns = keys %{$function_db->{$thorn}};
     if ($localfns)
     {
-#      print " localfns = $localfns\n";
+      $debug and print "  localfns = $localfns\n";
       $dataout = &ProvidedFunctions($thorn,$function_db->{"$thorn"});
       my $filename = "${thorn}_Functions.c";
       &WriteFile("Functions/$filename",\$dataout);
@@ -235,10 +281,6 @@ sub CreateFunctionBindings
 
   foreach $thorn (keys %{$function_db})
   {
-#    if ($thorn =~ /\UCCTK_Cactus/)
-#    {
-#      next;
-#    }
     $dataout = &UsesPrototypes($thorn,$function_db->{"$thorn"});
     my $filename = "${thorn}_Prototypes.h";
     &WriteFile("include/$filename",\$dataout);
@@ -319,10 +361,10 @@ sub FunctionDatabase
           &CST_error(0,$message,'',__LINE__,__FILE__);
       }
 #
-#  FIXME:: the ISO standard says that the a function name should be
+#  FIXME:: the ISO standard says that a function name should be
 #          unique within the first 31 characters, which together with
 #          wrapper stuff gives us only 22 characters to play with.
-#          This could be got around with Tom's registry idea, or by
+#          This could be gotten around with Tom's registry idea, or by
 #          forcing a 22 character limit. But for the moment we just
 #          comment this bit out.
 #
@@ -429,52 +471,56 @@ sub ParseArgumentsList
 
   foreach $DummyArg (@DummyList)
   {
-    my $Arg = &ParseArgument($DummyArg);
-    $Arg->{"Function pointer"} = 0;
-    push(@ArgList,$Arg);
-    if ($Arg->{"Name"} =~ /FPTRARGS/)
+    if ($DummyArg =~ /\S/) # ignore empty argument list
     {
-      $Arg->{"Name"} =~ s/(.*)FPTRARGS/\1/;
-      my $Name = $Arg->{"Name"};
-      $Arg->{"Name"} = {"Name"=>$Name,
-                        "Provided"=>0,
-                        "Used"=>0,
-                        "Return Type"=>$Arg->{"Type"}};
-      my ($extrawarnings,$nstrings,$nstringptrs,@arglist)=&ParseArgumentsList($fptrargs[$nfptrs]);
-      $warnings .= $extrawarnings;
-      $Arg->{"Name"}{"Strings"} = $nstrings;
-      $Arg->{"Name"}{"String pointers"} = $nstringptrs;
-      $Arg->{"Name"}{"Arguments"} = \@arglist;
-      $Arg->{"Function pointer"} = 1;
-      $nfptrs++;
-    }
-    if (!$Arg->{"Is Array"})
-    {
-      $nstrings += $Arg->{"String"};
-    }
-    else
-    {
-      $nstringptrs += $Arg->{"String"};
-    }
-    if ( ($nstrings)&&(!$Arg->{"String"}) )
-    {
-      $warnings .= "The argument list contains CCTK_STRINGs that are not at the end.";
+      my $Arg = &ParseArgument($DummyArg);
+      $Arg->{"Function pointer"} = 0;
+      push(@ArgList,$Arg);
+      if ($Arg->{"Name"} =~ /FPTRARGS/)
+      {
+	$Arg->{"Name"} =~ s/(.*)FPTRARGS/\1/;
+	my $Name = $Arg->{"Name"};
+	$Arg->{"Name"} = {"Name"=>$Name,
+			  "Provided"=>0,
+			  "Used"=>0,
+			  "Return Type"=>$Arg->{"Type"}};
+	my ($extrawarnings,$nstrings,$nstringptrs,@arglist)=&ParseArgumentsList($fptrargs[$nfptrs]);
+	$warnings .= $extrawarnings;
+	$Arg->{"Name"}{"Strings"} = $nstrings;
+	$Arg->{"Name"}{"String pointers"} = $nstringptrs;
+	$Arg->{"Name"}{"Arguments"} = \@arglist;
+	$Arg->{"Function pointer"} = 1;
+	$nfptrs++;
+      }
+      if (!$Arg->{"Is Array"})
+      {
+	$nstrings += $Arg->{"String"};
+      }
+      else
+      {
+	$nstringptrs += $Arg->{"String"};
+      }
+      if ( ($nstrings)&&(!$Arg->{"String"}) )
+      {
+	$warnings .= "The argument list contains CCTK_STRINGs that are not at the end.";
+      }
     }
   }
 
-#  print "ArgList is:\n";
-#  foreach $DummyArg (@ArgList)
-#  {
-#    print $DummyArg->{"Type"}." ".$DummyArg->{"Name"}." ";
-#  }
-#  print "\n";
+  if ($debug) 
+  {
+    print "ArgList is:\n";
+    foreach $DummyArg (@ArgList)
+    {
+      print $DummyArg->{"Type"}." ".$DummyArg->{"Name"}." ";
+    }
+    print "\n";
+  }
 
   if ( ($nstrings > 3) || ($nstringptrs > 3) )
   {
     $warnings .= "The argument list contains more than 3 string arguments.";
   }
-
-#  print "${nstrings} ${warnings}\n";
 
   return ($warnings,$nstrings,$nstringptrs,@ArgList);
 }
@@ -812,7 +858,6 @@ sub AliasedFunctions
   use strict;
 
   my %FunctionDatabase = %{$_[0]};
-#  my $FunctionList={};
   my $thornFunctionList;
 
   my(@data)=();
@@ -839,32 +884,8 @@ sub AliasedFunctions
 
   foreach $thornFunctionList (values %FunctionDatabase)
   {
-#    print "Thorn ",$FunctionDatabase{
-#    if ($thornFunctionList)
-#    {
-#      my $key;
-#      foreach $key (keys %{$thornFunctionList})
-#      {
-#	print "key is $key\n";
-#        $FunctionList->{$key}=$thornFunctionList->{$key};
-#      }
-#    }
-#  }
-
-#  print "keys of FunctionList are ", join(" ",keys %{$FunctionList}),"\n";
-#  print "values of FunctionList are ", values %{$FunctionList},"\n";
-
     if ($thornFunctionList)
     {
-#      my $key;
-#      foreach $key (keys %{$thornFunctionList})
-#      {
-#	print "key is $key\n";
-#        $FunctionList->{$key}=$thornFunctionList->{$key};
-	#print "? is ", $FunctionList->{$key}, $thornFunctionList->{$key}, "\n";
-#      }
-#    }
-#  }      
       my $Function;
       foreach $Function (values %{$thornFunctionList})
       {
@@ -872,7 +893,7 @@ sub AliasedFunctions
 	{
 	  if ($Function->{"Provided"})
 	  {
-#	    print "provided Function is ",$Function->{"Name"},"\n";
+	    $debug and print "provided Function is ",$Function->{"Name"},"\n";
 	    push(@data,"/*");
 	    push(@data," * The function pointers to be set");
 	    push(@data," */");
@@ -1112,12 +1133,10 @@ sub printAliasToWrapper
   my(@data)=();
 
   my @args = &printArgList($type,$Function{"Arguments"});
-#  print "@{args}\n";
   if ( ($type eq "Fortran")&&(($Function{"Strings"})||($Function{"String pointers"})) )
   {
     @args = @{&ConvertStringArguments($Function{"Strings"}+$Function{"String pointers"},\@args)};
 #    unshift @args, "$rettype ierr,";
-#    print "@{args}\n";
   }
   my $rettype = $Function{"Return Type"};
   my $callname;
@@ -1141,8 +1160,6 @@ sub printAliasToWrapper
   {
     push(@data,"  $rettype retval;");
     push(@data,'');
-  } else {
-#    print 'rettype void!!\n';
   }
 
   my $nstrings = "";
@@ -1324,7 +1341,6 @@ sub printIsAliasedPrototypes
 #  @history
 #
 #  @endhistory
-
 #@@*/
 
 sub printIsAliased
@@ -1365,7 +1381,6 @@ sub printIsAliased
 #  @history
 #
 #  @endhistory
-
 #@@*/
 
 sub printRegisterAliasedPrototypes
@@ -1414,7 +1429,6 @@ sub printRegisterAliasedPrototypes
 #  @history
 #
 #  @endhistory
-
 #@@*/
 
 sub printRegisterAliased
@@ -1481,7 +1495,6 @@ sub IsFunctionAliased
   use strict;
 
   my %FunctionDatabase = %{$_[0]};
-#  my $FunctionList;
   my $thornFunctionList;
   my $Function;
 
@@ -1508,16 +1521,6 @@ sub IsFunctionAliased
   # Insert function protypes:
   foreach $thornFunctionList (values %FunctionDatabase)
   {
-#    if ($thornFunctionList)
-#    {
-#      my $key;
-#      foreach $key (keys %{$thornFunctionList})
-#      {
-#	print "      key is $key\n";
-#        $FunctionList->{$key}=$thornFunctionList->{$key};
-#      }
-#    }
-#    foreach $Function (values %{$FunctionList})
     foreach $Function (values %{$thornFunctionList})
     {
       if ($Function)
@@ -1525,7 +1528,6 @@ sub IsFunctionAliased
 	if ($Function->{"Used"})
 	{
 	  my $name = $Function->{"Name"};
-#	  &printIsAliasedPrototypes($name) (Should I use this function instead?)
 	  push(@data, "CCTK_INT IsAliased$name(void);");
 	}
       }
@@ -1543,18 +1545,7 @@ sub IsFunctionAliased
 
   foreach $thornFunctionList (values %FunctionDatabase)
   {
-#    if ($thornFunctionList)
-#    {
-#      my $key;
-#      foreach $key (keys %{$thornFunctionList})
-#      {
-#        $FunctionList->{$key}=$thornFunctionList->{$key};
-#      }
-#    }
-#  }
-
     my $else = "";
-#    foreach $Function (values %{$FunctionList})
     foreach $Function (values %{$thornFunctionList})
     {
       if ($Function)
@@ -1568,7 +1559,6 @@ sub IsFunctionAliased
 	  push(@data, "  }");
 	  $else = "else ";
 	}
-	#push(@data,"");
       }
     }
   }
@@ -1713,17 +1703,15 @@ sub UsesPrototypes
 
   my $Function;
 
-#  print "UsesPrototypes: thorn is $thorn\n";
+  $debug and print "UsesPrototypes: thorn is $thorn\n";
   foreach $Function (values %FunctionList)
   {
-#    print "  Function is ", $Function->{"Name"},"\n";
+    $debug and print "  Function is ", $Function->{"Name"},"\n";
     if ($Function)
     {
       if ($Function->{"Used"})
       {
-#	print "    it is used\n";
         my @cargs = printArgList("C",$Function->{"Arguments"});
-#        push(@data, "extern $Function->{\"Return Type\"} (*$Function->{\"Name\"})(@cargs);");
         push(@data, "$Function->{\"Return Type\"} $Function->{\"Name\"}(@cargs);");
       }
     }
@@ -1844,7 +1832,6 @@ sub ProvidedFunctions
             push(@data,@FnPtrSets);
             push(@data,"");
           }
-#          push(@data,"  return CCTK_FCALL CCTK_FNAME(${provider})(@{fseq});");
 	  if ($rettype ne 'void')
 	  {
 	    push(@data,"  return CCTK_FCALL CCTK_FNAME(${provider})(@{fseq});");
@@ -1909,10 +1896,6 @@ sub ProvidedFunctions
   {
     if ($Function && $Function->{"Provided"})
     {
-#      my $nameC = "Alias".$Function->{"Name"}."_C";
-#      my $nameF = "Alias".$Function->{"Name"}."_F";
-#      push(@data,"$nameC;");
-#      push(@data,"$nameF;");
       push(@data,&printRegisterAliasedPrototypes("C",$Function));
       push(@data,&printRegisterAliasedPrototypes("Fortran",$Function));
     }
@@ -1921,7 +1904,6 @@ sub ProvidedFunctions
   # Definition of Register_<Thorn>:
   push(@data,"CCTK_INT Register_$thorn(void)");
   push(@data,"{");
-
   push(@data,"  CCTK_INT ierr;");
   push(@data,"");
   push(@data,"  ierr = 0;");
@@ -2015,18 +1997,10 @@ sub FunctionPointerWrappers
 
   my @data = ();
 
-#  print "Here1\n";
-
   foreach $Arg (@ArgList)
   {
-#    print "$Arg ";
-#    if (ref($Arg) eq "HASH")
-#    {
-#      print $Arg->{"Name"}." ".$Arg->{"Function pointer"}."\n";
-#    }
     if ($Arg->{"Function pointer"})
     {
-#      print "\n\nHere\n\n";
       my %Function = %{$Arg->{"Name"}};
       my $Rettype = $Arg->{"Type"};
       my $WrapperName = "CCTK_Wrap".$provide.$Function{"Name"};
@@ -2150,7 +2124,6 @@ sub printCallingSequence
   for (my $i=0; $i<@ArgList; $i++)
   {
     $Arg = $ArgList[$i];
-#    if (ref($Arg->{"Name"}) eq "HASH")
     if ($Arg->{"Function pointer"})
     {
 #      my $key;
@@ -2325,6 +2298,12 @@ sub printArgList
     }
   }
 
+  # Check for void arg list
+  if (!@ArgList)
+  {
+    push(@data,"void");
+  }
+
   push(@stringargnames,@stringptrargnames);
 
   if ($nstrings + $nstringpointers == 1)
@@ -2372,7 +2351,6 @@ sub printArg
   my $vartype = $Arg{"Type"};
   my $suffix = "";
 
-#  if (ref($Arg{"Name"}) eq "HASH")
   if ($Arg{"Function pointer"})
   {
 # It's a FPOINTER
