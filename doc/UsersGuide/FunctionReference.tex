@@ -375,6 +375,10 @@ from Fortran.
   [\pageref{CCTK-IsThornActive}]
   Reports whether a thorn was activated in a parameter file
 
+\item[CCTK\_IsThornCompiled]
+  [\pageref{CCTK-IsThornActive}]
+  Reports whether a thorn was activated in a parameter file
+
 \item[CCTK\_MaxDim]
   [\pageref{CCTK-MaxDim}]
   Get the maximum dimension of any grid variable
@@ -399,6 +403,10 @@ from Fortran.
   [\pageref{CCTK-NumIOMethods}]
   Returns the total number of I/O methods registered with the flesh
 
+\item[CCTK\_NumTimeLevels]
+  [\pageref{CCTK-NumTimeLevels}]
+  Gives the number of timelevels for a group
+
 \item[CCTK\_NumTimeLevelsFromVar]
   [\pageref{CCTK-NumTimeLevelsFromVar}]
   Gives the number of timelevels for a variable
@@ -406,6 +414,10 @@ from Fortran.
 \item[CCTK\_NumTimeLevelsFromVarI]
   [\pageref{CCTK-NumTimeLevelsFromVarI}]
   Gives the number of timelevels for a variable
+
+\item[CCTK\_NumTimeLevelsI]
+  [\pageref{CCTK-NumTimeLevelsI}]
+  Gives the number of timelevels for a group
 
 \item[CCTK\_NumVars]
   [\pageref{CCTK-NumVars}]
@@ -3132,11 +3144,11 @@ details)
 \begin{Error}{CCTK\_ERROR\_INTERP\_GRID\_TOO\_SMALL}
 one or more of the dimensions of the input arrays is/are smaller than
 the molecule size chosen by the interpolator (based on the parameter-table
-options, e.g.\hbox{} the interpolation order)
+options, e.g.\ the interpolation order)
 \end{Error}
 \begin{Error}{CCTK\_ERROR\_INTERP\_GHOST\_SIZE\_TOO\_SMALL}
 for a multi-processor run, the size of the interprocessor boundaries (the {\em ghostzone} size) is smaller than the molecule size chosen by the interpolator
-(based on the parameter-table options, e.g. the interpolation order).\\
+(based on the parameter-table options, e.g.\ the interpolation order).\\
 This error code is also returned if a processor's chunk of the global grid
 is smaller than the actual molecule size.
 \end{Error}
@@ -3726,7 +3738,7 @@ in the \verb|src/include/| directory in the Cactus flesh.
 %notyet         = { (const void *) interp_x, (const void *) interp_y };
 %notyet
 %notyet /* input arrays */
-%notyet /* ... note Cactus uses Fortran storage ordering, i.e. X is contiguous */
+%notyet /* ... note Cactus uses Fortran storage ordering, i.e.\ X is contiguous */
 %notyet const CCTK_REAL    input_real   [NY][NX];
 %notyet const CCTK_COMPLEX input_complex[NY][NX];
 %notyet const CCTK_INT input_array_dims[N_DIMS] = { NX, NY };
@@ -3983,7 +3995,7 @@ the LocalInterp thorn for further details)
 \begin{Error}{CCTK\_ERROR\_INTERP\_GRID\_TOO\_SMALL}
 one or more of the dimensions of the input arrays is/are smaller than
 the molecule size chosen by the interpolator (based on the parameter-table
-options, e.g.\hbox{} the interpolation order)
+options, e.g.\ the interpolation order)
 \end{Error}
 \begin{Error}{UTIL\_ERROR\_BAD\_INPUT}
 one or more of the inputs is invalid (eg.~\verb|NULL| pointer)
@@ -4035,7 +4047,7 @@ const CCTK_REAL interp_y[N_INTERP_POINTS];
 const void *interp_coords[N_DIMS];              /* see note above */
 
 /* input arrays */
-/* ... note Cactus uses Fortran storage ordering, i.e. X is contiguous */
+/* ... note Cactus uses Fortran storage ordering, i.e.\ X is contiguous */
 #define NX   10
 #define NY   20
 const CCTK_REAL    input_real   [NY][NX];
@@ -4344,7 +4356,7 @@ in the \verb|src/include/| directory in the Cactus flesh.
 %notyet #define N_OUTPUT_ARRAYS   2
 %notyet
 %notyet /* (x,y) coordinates of data grid points */
-%notyet /* ... note Cactus uses Fortran storage ordering, i.e. X is contiguous */
+%notyet /* ... note Cactus uses Fortran storage ordering, i.e.\ X is contiguous */
 %notyet #define NX   10
 %notyet #define NY   20
 %notyet const CCTK_INT coord_array_dims[N_DIMS] = { NX, NY };
@@ -4360,7 +4372,7 @@ in the \verb|src/include/| directory in the Cactus flesh.
 %notyet         = { (const void *) interp_x, (const void *) interp_y };
 %notyet
 %notyet /* input arrays */
-%notyet /* ... note Cactus uses Fortran storage ordering, i.e. X is contiguous */
+%notyet /* ... note Cactus uses Fortran storage ordering, i.e.\ X is contiguous */
 %notyet const CCTK_REAL    input_real   [NY][NX];
 %notyet const CCTK_COMPLEX input_complex[NY][NX];
 %notyet const CCTK_INT input_array_dims[N_DIMS] = { NX, NY };
@@ -4662,6 +4674,23 @@ was activated in a parameter file, and zero otherwise.
 \end{discussion}
 \end{CCTKFunc}
 
+% ActiveThorns.c
+\begin{CCTKFunc}{CCTK\_IsThornCompiled}{Reports whether a thorn was activated in a parameter file}
+\label{CCTK-IsThornCompiled}
+\function{int}{integer}{istat}
+\argument{const char *}{character*(*)}{thornname}
+\showargs
+\begin{params}
+\parameter{istat}{the return status}
+\parameter{thorname}{the name of the thorn to check}
+\end{params}
+\begin{discussion}
+This function returns a non-zero value if the implementation given by
+{\tt thornname} was compiled into the configuration, and zero
+otherwise.
+\end{discussion}
+\end{CCTKFunc}
+
 
 %%%%%
 % JJJ
@@ -4866,6 +4895,31 @@ Returns the total number of IO methods registered with the flesh.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Groups.c
+
+\begin{CCTKFunc}{CCTK\_NumTimeLevels}{Gives the number of timelevels for a group}
+\label{CCTK-NumTimeLevelsFromVar}
+\subroutine{int}{integer}{numlevels}
+\argument{const char *}{character*(*)}{name}
+\showargs
+\begin{params}
+\parameter{name}{The full group name}
+\parameter{numlevels}{The number of timelevels}
+\end{params}
+\begin{discussion}
+The group name should be in the form {\t <implementation>::<group>}
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\hfill {\bf C} && {\t numlevels = CCTK\_NumTimeLevels("evolve::phivars") ;}
+\\
+\hfill {\bf Fortran} && {\t call CCTK\_NUMTIMELEVELS(numlevels,"evolve::phivars")}\\
+\\
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
 \begin{CCTKFunc}{CCTK\_NumTimeLevelsFromVar}{Gives the number of timelevels for a variable}
 \label{CCTK-NumTimeLevelsFromVar}
 \subroutine{int}{integer}{numlevels}
@@ -4909,6 +4963,32 @@ The variable name should be in the form {\t <implementation>::<variable>}
                &&{\t numlevels = CCTK\_NumTimeLevelsFromVarI(index) ;}
 \\
 \hfill {\bf Fortran} && {\t call CCTK\_NUMTIMELEVELSFROMVARI(numlevels,3)}\\
+\\
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
+
+% Groups.c
+\begin{CCTKFunc}{CCTK\_NumTimeLevelsI}{Gives the number of timelevels for a group}
+\label{CCTK-NumTimeLevelsI}
+\subroutine{int}{integer}{numlevels}
+\argument{int}{integer}{index}
+\showargs
+\begin{params}
+\parameter{numlevels}{The number of timelevels}
+\parameter{index}{The group index}
+\end{params}
+\begin{discussion}
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\hfill {\bf C} && {\t index = CCTK\_GroupIndex("evolve::phivars")}\\
+               &&{\t numlevels = CCTK\_NumTimeLevelsI(index) ;}
+\\
+\hfill {\bf Fortran} && {\t call CCTK\_NUMTIMELEVELSI(numlevels,3)}\\
 \\
 \end{tabular}
 \end{examples}
@@ -6865,7 +6945,7 @@ size_t result_len = Util_Strlcat(char *dst, const char *src, size_t size);
 
 \begin{ResultSection}
 \begin{Result}{result\_len}
-The size of the string the function tried to create, i.e.\hbox{}
+The size of the string the function tried to create, i.e.\
 the initial \verb|strlen(dst)| plus \verb|strlen(src)|.
 \end{Result}
 \end{ResultSection}
@@ -6997,7 +7077,7 @@ size_t result_len = Util_Strlcpy(char *dst, const char *src, size_t size);
 
 \begin{ResultSection}
 \begin{Result}{result\_len}
-The size of the string the function tried to create, i.e.\hbox{}
+The size of the string the function tried to create, i.e.\
 \verb|strlen(src)|.
 \end{Result}
 \end{ResultSection}
@@ -7279,7 +7359,7 @@ We require the flags word to be non-negative so that other
 functions can distinguish flags from (negative) error codes.
 
 Any User-defined flag words should use only bit positions at or above\\
-\verb|UTIL_TABLE_FLAGS_USER_DEFINED_BASE|, i.e. all bit positions
+\verb|UTIL_TABLE_FLAGS_USER_DEFINED_BASE|, i.e.\ all bit positions
 below this are reserved for present of future Cactus use.
 
 At present there is only a single flags-word bit mask defined
