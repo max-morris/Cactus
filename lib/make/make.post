@@ -11,4 +11,4 @@
 # This is a simply expanded variable (i.e. :=, rather than =)
 # and is used to track all source files
 
-CCTK_SRCS += $(addprefix $(CCTK_THIS_SUBDIR)/, $(SRCS))
+CCTK_SRCS += $(subst /./,/,$(addprefix $(CCTK_THIS_SUBDIR)/, $(SRCS)))

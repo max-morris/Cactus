@@ -39,8 +39,10 @@ include $(SRCDIR)/make.code.defn
 CCTK_SRCS += $(SRCS)
 
 # Protect the value of SRCS and SUBDIRS of this directory
-LOCAL_SRCS := $(SRCS)
-LOCAL_SUBDIRS := $(SUBDIRS)
+#LOCAL_SRCS := $(SRCS)
+LOCAL_SUBDIRS := . $(SUBDIRS)
+
+SRCS =
 
 # Include all the make.code.defn files for the subdirectories
 # These have to be wrapped to allow us to concatanate all the
@@ -59,9 +61,9 @@ SUBDIRS = $(LOCAL_SUBDIRS)
 OBJS = $(SRCS:%=%.o)
 
 # Turn local source file names into object file names
-LOCAL_OBJS = $(LOCAL_SRCS:%=%.o)
+#LOCAL_OBJS = $(LOCAL_SRCS:%=%.o)
 
-$(NAME): $(addsuffix .check, $(SUBDIRS)) $(LOCAL_OBJS) $(SRCDIR)/make.code.defn $(foreach DIR,$(SUBDIRS), $(SRCDIR)/$(DIR)/make.code.defn)
+$(NAME): $(addsuffix /make.checked, $(SUBDIRS)) $(LOCAL_OBJS) $(foreach DIR,. $(SUBDIRS), $(SRCDIR)/$(DIR)/make.code.defn)
 	@echo $(DIVIDER)
 	if [ -r $(NAME) ] ; then echo Updating $(NAME) ; else echo Creating $(NAME) ; fi
 	if [ -r $@ ] ; then rm $@ ; fi
@@ -79,11 +81,11 @@ include $(CONFIG)/make.config.rules
 # Extra stuff for allowing make to recurse into directories
 
 # This one makes the object files in the subdirectory
-.PHONY: $(addsuffix .check, $(SUBDIRS))
+.PHONY: FORCE
 
-$(addsuffix .check, $(SUBDIRS)) :
-	if [ ! -d $(basename $@) ] ; then $(MKDIR) $(MKDIRFLAGS) $(basename $@) ; fi
-	cd $(basename $@) ; $(MAKE) TOP=$(TOP) CONFIG=$(CONFIG) SRCDIR=$(SRCDIR)/$(basename $@) THORN=$(THORN) -f $(MAKE_DIR)/make.subdir
+$(addsuffix /make.checked, $(SUBDIRS)) : FORCE
+	if [ ! -d $(dir $@) ] ; then $(MKDIR) $(MKDIRFLAGS) $(dir $@) ; fi
+	cd $(dir $@) ; $(MAKE) TOP=$(TOP) CONFIG=$(CONFIG) SRCDIR=$(subst /./,,$(SRCDIR)/$(dir $@)) THORN=$(THORN) -f $(MAKE_DIR)/make.subdir
 
 # This one puts a file containing identity info into the build subdirectory
 $(addsuffix /make.identity, $(SUBDIRS)):

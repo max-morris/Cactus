@@ -26,9 +26,9 @@ include $(SRCDIR)/make.code.defn
 OBJS = $(SRCS:%=%.o)
 
 # Build all the object files
-.PHONY:all
 
-all: $(OBJS)
+make.checked: $(OBJS)
+	touch make.checked
 
 # Rules to make the object files
 include $(CONFIG)/make.config.rules
