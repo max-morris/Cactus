@@ -17,7 +17,7 @@
 extern "C" {
 #endif
 
-int CCTK_mkdir(const char *dir);
+int CCTK_CreateDirectory(const char *pathname, int mode);
 
 #ifdef __cplusplus 
 }
