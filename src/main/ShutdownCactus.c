@@ -8,8 +8,10 @@
  @@*/
 
 #include <stdio.h>
+#include <stdlib.h>
 
-#include "cctk_Flesh.h"
+#include "cctk.h"
+#include "cctk_parameters.h"
 
 static char *rcsid = "$Id$";
 
@@ -30,5 +32,11 @@ static char *rcsid = "$Id$";
 @@*/
 int ShutdownCactus(tFleshConfig *ConfigData)
 {
+  DECLARE_CCTK_PARAMETERS
+
+  if (CCTK_Equals(cctk_timer_output,"full"))
+  {
+    CCTK_SchedulePrintTimes(NULL);
+  }
   return 0;
 }

@@ -4,6 +4,12 @@
  
 private:
 
+KEYWORD cctk_timer_output  "Provide output from timers"
+{
+ "off"  :: "No timer output"
+ "full" :: "Detailed timer output"
+} "off"
+
 BOOLEAN cctk_full_warnings "Give detailed information for each warning statement"
 {
 } "yes"
