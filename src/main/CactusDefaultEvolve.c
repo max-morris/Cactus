@@ -22,6 +22,13 @@
 #include "cctk_Misc.h"
 #include "cctk_IO.h"
 
+#ifdef HAVE_TIME_GETTIMEOFDAY
+#ifdef HAVE_SYS_TIME_H
+#include <sys/time.h>
+#endif
+#include <unistd.h>
+#endif
+
 static const char *rcsid="$Header$";
 
 CCTK_FILEVERSION(main_CactusDefaultEvolve_c);
@@ -59,7 +66,7 @@ static int cactus_terminate_global = 0;
  ********************* Local Routine Prototypes *********************
  ********************************************************************/
 
-static int DoneMainLoop (cGH *GH, CCTK_REAL cctk_time, int iteration);
+static int DoneMainLoop (const cGH *GH, CCTK_REAL cctk_time, int iteration);
 static void StepGH (cGH *GH);
 
 /********************************************************************
@@ -84,8 +91,9 @@ int CactusDefaultEvolve (tFleshConfig *config);
                DoneMainLoop
                StepGH
    @history
-   @hdate Fri May 12 2000 @hauthor Thomas Radke
-   @hdesc  Moved evolution loop termination check into DoneMainLoop()
+   @hdate      Fri May 12 2000
+   @hauthor    Thomas Radke
+   @hdesc      Moved evolution loop termination check into DoneMainLoop()
    @endhistory
 
    @var        config
@@ -209,14 +217,19 @@ int CactusDefaultEvolve (tFleshConfig *config)
                Check the termination conditions for the evolution loop
    @enddesc
    @calls      CCTK_TerminationReached
+   @history
+   @hdate      Thu 6 Nov 2002
+   @hauthor    Thomas Radke
+   @hdesc      Added max_runtime condition test
+   @endhistory
 
    @var        GH
    @vdesc      pointer to CCTK grid hierarchy
-   @vtype      cGH *
+   @vtype      const cGH *
    @vio        in
    @endvar
-   @var        time
-   @vdesc      current physical time
+   @var        simulation_time
+   @vdesc      current physical simulation time
    @vtype      CCTK_REAL
    @vio        in
    @endvar
@@ -231,41 +244,81 @@ int CactusDefaultEvolve (tFleshConfig *config)
                true (1) or false (0) for done/not done with main loop
    @endreturndesc
 @@*/
-static int DoneMainLoop (cGH *GH, CCTK_REAL time, int iteration)
+static int DoneMainLoop (const cGH *GH, CCTK_REAL simulation_time,int iteration)
 {
+  int max_iteration_reached, max_simulation_time_reached, max_runtime_reached;
   int retval;
+#ifdef HAVE_TIME_GETTIMEOFDAY
+  struct timeval runtime;
+  static struct timeval starttime = {0, 0};
+#endif
   DECLARE_CCTK_PARAMETERS
 
 
-  retval = terminate_next || CCTK_TerminationReached (GH);
-  if (! retval)
+#ifdef HAVE_TIME_GETTIMEOFDAY
+  /* on the first time through, get the start time */
+  if (starttime.tv_sec == 0 && starttime.tv_usec == 0)
   {
-    if (CCTK_Equals (terminate, "never"))
+    gettimeofday (&starttime, NULL);
+  }
+#endif
+
+  retval = terminate_next || CCTK_TerminationReached (GH);
+  if (! retval && ! CCTK_Equals (terminate, "never"))
+  {
+    max_iteration_reached = iteration >= cctk_itlast;
+
+    if (cctk_initial_time < cctk_final_time)
     {
-      retval = 0;
-    }
-    else if (CCTK_Equals (terminate, "iteration"))
-    {
-      retval = iteration >= cctk_itlast;
+      max_simulation_time_reached = simulation_time >= cctk_final_time;
     }
     else
     {
-      if (cctk_initial_time < cctk_final_time)
-      {
-        retval = time >= cctk_final_time;
-      }
-      else
-      {
-        retval = time <= cctk_final_time;
-      }
-      if (CCTK_Equals (terminate, "either"))
-      {
-        retval |= iteration >= cctk_itlast;
-      }
-      else if (CCTK_Equals (terminate, "both"))
-      {
-        retval &= iteration >= cctk_itlast;
-      }
+      max_simulation_time_reached = simulation_time <= cctk_final_time;
+    }
+
+    max_runtime_reached = 0;
+#ifdef HAVE_TIME_GETTIMEOFDAY
+    if (max_runtime > 0)
+    {
+      /* get the elapsed runtime in minutes and compare with max_runtime */
+      gettimeofday (&runtime, NULL);
+      runtime.tv_sec -= starttime.tv_sec;
+      runtime.tv_sec /= 60;
+      max_runtime_reached = runtime.tv_sec >= max_runtime;
+    }
+#endif
+
+    if (CCTK_Equals (terminate, "iteration"))
+    {
+      retval = max_iteration_reached;
+    }
+    else if (CCTK_Equals (terminate, "time"))
+    {
+      retval = max_simulation_time_reached;
+    }
+    else if (CCTK_Equals (terminate, "runtime"))
+    {
+      retval = max_runtime_reached;
+    }
+    else if (CCTK_Equals (terminate, "any"))
+    {
+      retval = max_iteration_reached || max_simulation_time_reached ||
+               max_runtime_reached;
+    }
+    else if (CCTK_Equals (terminate, "all"))
+    {
+      retval = max_iteration_reached && max_simulation_time_reached &&
+               max_runtime_reached;
+    }
+    /* the following two conditions are deprecated in BETA14 */
+    else if (CCTK_Equals (terminate, "either"))
+    {
+      retval = max_iteration_reached || max_simulation_time_reached;
+    }
+    else /* if (CCTK_Equals (terminate, "both")) */
+    {
+      retval = max_iteration_reached && max_simulation_time_reached;
     }
   }
 

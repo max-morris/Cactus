@@ -68,24 +68,33 @@ BOOLEAN terminate_next "Terminate on next iteration?" STEERABLE=ALWAYS
 
 KEYWORD terminate "Condition on which to terminate evolution loop" STEERABLE=ALWAYS
 {
-  "never" :: "Never terminate"
+  "never"     :: "Never terminate"
   "iteration" :: "Take termination condition from iteration number"
-  "time" :: "Take termination condition from coordinate time"
-  "either" :: "Take termination condition from either iteration number or coordinate time"
-  "both" :: "Take termination condition from both iteration number and coordinate time"
+  "time"      :: "Take termination condition from coordinate time"
+  "runtime"   :: "Take termination condition from elapsed runtime"
+  "any"       :: "Take termination condition from any of iteration number, coordinate time, or elapsed runtime"
+  "all"       :: "Take termination condition from all of iteration number, coordinate time, and elapsed runtime"
+  "either"    :: "Take termination condition from either iteration number or coordinate time (DEPRECATED IN BETA14)"
+  "both"      :: "Take termination condition from both iteration number and coordinate time (DEPRECATED IN BETA14)"
 } "iteration"
 
 REAL cctk_initial_time "Initial time for evolution"
 {
- : :: "Anything"
+  : :: "Anything"
 } 0.0
  
 REAL cctk_final_time "Final time for evolution" STEERABLE=ALWAYS
 {
- : :: "Anything"
+  : :: "Anything"
 } -1.0
  
 INT cctk_itlast "Final iteration number" STEERABLE = ALWAYS
 {
-: :: "Any integer"
+  : :: "Any integer"
 } 10
+ 
+INT max_runtime "Terminate evolution loop after a certain elapsed runtime (in minutes)" STEERABLE = ALWAYS
+{
+  0:  :: "Zero disables maximum runtime condition"
+  1:* :: "Run evolution loop for so many minutes, then terminate"
+} 0
