@@ -41,6 +41,7 @@ sub CreateImplementationBindings
 
   @data = ();
 
+  push(@data, "#include <stdio.h>\n");
   push(@data, "#include \"ActiveThorns.h\"\n\n");
 
   push(@data, "int CCTK_BindingsImplementationsInitialise(void)\n{\n");

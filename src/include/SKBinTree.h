@@ -40,6 +40,8 @@ void SKTreePrintNodes(t_sktree *root, int depth, void (*print_node)(void *, int)
 
 t_sktree *SKTreeFindNode(t_sktree *root, const char *key);
 
+t_sktree *SKTreeFindFirst(t_sktree *root);
+
 #ifdef _cplusplus
 	   }
 #endif

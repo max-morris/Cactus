@@ -30,6 +30,8 @@ struct THORN
 struct IMPLEMENTATION
 {
   int active;
+  t_sktree *thornlist;
+  char *activating_thorn;
 };
 
 
@@ -150,6 +152,9 @@ static int CCTKi_RegisterImp(const char *name, const char *thorn)
     {
       imp->active = 0;
 
+      /* Store the name of this thorn in a tree */      
+      imp->thornlist = SKTreeStoreData(NULL,NULL, thorn, NULL);
+
       /* Store the info in the tree. */
       temp = SKTreeStoreData(implist, implist, name, imp);
 
@@ -171,6 +176,9 @@ static int CCTKi_RegisterImp(const char *name, const char *thorn)
   }
   else
   {
+    imp = (struct IMPLEMENTATION *)(node->data);
+    SKTreeStoreData(imp->thornlist,imp->thornlist, thorn, NULL);
+
     retval = -1;
   }
 
@@ -226,11 +234,14 @@ int CCTK_ActivateThorn(const char *name)
 	  printf("Success -> active implementation %s\n", name, thorn->implementation);
 	  thorn->active = 1;
 	  imp->active = 1;
+	  /* Remember which thorn activated this imp. */
+	  imp->activating_thorn = (char *)malloc(sizeof(char)*(strlen(name)+1));
+	  strcpy(imp->activating_thorn, name);
 	  retval = 0;
 	}
 	else
 	{
-	  printf("Failure -> Implementation %s already active\n", thorn->implementation);
+	  printf("Failure -> Implementation %s already activated by %s\n", thorn->implementation, imp->activating_thorn);
 	  retval = -4;
 	}
       }
@@ -330,6 +341,84 @@ int CCTK_IsImplementationActive(const char *name)
     if(imp->active)
     {
       retval = 1;
+    }
+  }
+
+  return retval;
+}
+
+ /*@@
+   @routine    CCTK_ListThorns
+   @date       Mon Jul  5 10:02:15 1999
+   @author     Tom Goodale
+   @desc 
+   Prints a list of thorns.
+   Only lists active ones if the 'active' parameter is true.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+int CCTK_ListThorns(FILE *file, const char *format, int active)
+{
+  int retval;
+  t_sktree *node;
+
+  struct THORN *thorn;
+
+  retval = 0;
+
+  for(node= SKTreeFindFirst(thornlist);
+      node; 
+      node = node->next, retval++)
+  {
+    thorn = (struct THORN *)(node->data);
+
+    if(thorn->active || !active)
+    {
+      fprintf(file, format, node->key);
+    }
+  }
+
+  return retval;
+}
+
+ /*@@
+   @routine    CCTK_ListImplementations
+   @date       Mon Jul  5 10:08:19 1999
+   @author     Tom Goodale
+   @desc 
+   Prints a list of implementations.
+   Only lists active ones if the 'active' parameter is true.   
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+int CCTK_ListImplementations(FILE *file, const char *format, int active)
+{
+  int retval;
+  t_sktree *node;
+
+  struct IMPLEMENTATION *imp;
+
+  retval = 0;
+
+  for(node= SKTreeFindFirst(implist);
+      node; 
+      node = node->next, retval++)
+  {
+    imp = (struct IMPLEMENTATION *)(node->data);
+
+    if(imp->active || !active)
+    {
+      fprintf(file, format, node->key);
     }
   }
 

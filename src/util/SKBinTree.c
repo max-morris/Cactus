@@ -4,6 +4,8 @@
    @author    Tom Goodale
    @desc 
    Routines to deal with binary trees keyed by strings.
+   The tree is a threaded tree, i.e. it can also be
+   traversed, inorder, like a linked list.
    @enddesc 
  @@*/
 
@@ -47,6 +49,7 @@ t_sktree *SKTreeStoreData(t_sktree *root, t_sktree *subtree,
     {
       subtree->left=NULL;
       subtree->right=NULL;
+      subtree->next=NULL;
 
       subtree->data = data;
 
@@ -57,10 +60,13 @@ t_sktree *SKTreeStoreData(t_sktree *root, t_sktree *subtree,
 	if((order = STR_CMP(key, root->key)) < 0)
 	{
 	  root->left = subtree;
+	  subtree->next = root ;
 	}
 	else
 	{
 	  root->right = subtree;
+	  subtree->next = root->next;
+	  root->next = subtree;
 	}
       }
     }
@@ -206,6 +212,20 @@ void SKTreePrintNodes(t_sktree *root, int depth, void (*print_node)(void *, int)
 }
 
 
+ /*@@
+   @routine    SKTreeFindNode
+   @date       Mon Jul  5 10:09:30 1999
+   @author     Tom Goodale
+   @desc 
+   Finds a given node in the tree.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
 t_sktree *SKTreeFindNode(t_sktree *root, const char *key)
 {
   int order;
@@ -236,6 +256,28 @@ t_sktree *SKTreeFindNode(t_sktree *root, const char *key)
 
   return node;
 }  
+
+ /*@@
+   @routine    SKTreeFindFirst
+   @date       Mon Jul  5 10:09:57 1999
+   @author     Tom Goodale
+   @desc 
+   Finds the first node in the tree (the leftmost one).
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+t_sktree *SKTreeFindFirst(t_sktree *root)
+{
+  for(; root->left ; root = root->left);
+
+  return root;
+}
+
 
 
 

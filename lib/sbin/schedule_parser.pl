@@ -124,6 +124,7 @@ sub write_startup_header {
 
 # The header for the thorn STARTUP routine
   print OUTSTART "#define THORN_IS_$thorn\n";
+  print OUTSTART "#include <stdio.h>\n";
   print OUTSTART "#include \"cctk.h\"\n";
   print OUTSTART "#include \"flesh.h\"\n";
   print OUTSTART "#include \"ActiveThorns.h\"\n";
