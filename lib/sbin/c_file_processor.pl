@@ -96,7 +96,7 @@ while(<>)
         {
 	  ($routine=~s/(}\s*$)/  $addmacro1; $1/s)
 	}
-
+        $domacro1=0;  
       }
 ##    Start adding second macro
       if ($domacro2) {
@@ -104,6 +104,7 @@ while(<>)
 	{
 	  ($routine=~s/(}\s*$)/  $addmacro2 $1/s) 
         }
+        $domacro2=0;
       }  
       $n_arg_braces = -2; 
       $sc           =  0;
