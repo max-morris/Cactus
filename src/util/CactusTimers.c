@@ -26,7 +26,7 @@ static void CCTKi_TimerDestroy(int this_timer, t_Timer *timer);
 static void CCTKi_TimerStart(int this_timer, t_Timer *timer);
 static void CCTKi_TimerStop(int this_timer, t_Timer *timer);
 static void CCTKi_TimerReset(int this_timer, t_Timer *timer);
-static void CCTKi_TimerGet(int this_timer, t_Timer *timer, t_TimerInfo *info);
+static void CCTKi_Timer(int this_timer, t_Timer *timer, cTimerData *info);
 
 static int n_timertypes = 0;
 static cHandledData *handles = NULL;
@@ -52,12 +52,12 @@ static cHandledData *timers = NULL;
    @endhistory 
 
 @@*/
-int CCTK_TimerRegister(const char *name, t_TimerFuncs *functions)
+int CCTK_TimerRegister(const char *name, cTimerFuncs *functions)
 {
   int handle;
-  t_TimerFuncs *newfuncs;
+  cTimerFuncs *newfuncs;
 
-  newfuncs = (t_TimerFuncs *)malloc(sizeof(t_TimerFuncs));
+  newfuncs = (cTimerFuncs *)malloc(sizeof(cTimerFuncs));
 
   if(newfuncs)
   {
@@ -97,7 +97,7 @@ int CCTK_TimerCreate(const char *name)
 {
   int retval;
   t_Timer *timer;
-  t_TimerFuncs *funcs;
+  cTimerFuncs *funcs;
   int this_timer;
   int handle;
 
@@ -124,7 +124,7 @@ int CCTK_TimerCreate(const char *name)
         /* Create the timer info for this timer */
         for(handle = 0; handle < n_timertypes; handle++)
         {
-          funcs = (t_TimerFuncs *)Util_GetHandledData(handles, handle);
+          funcs = (cTimerFuncs *)Util_GetHandledData(handles, handle);
 
           timer->data[handle] = funcs->create(this_timer);
         }
@@ -185,7 +185,7 @@ int CCTK_TimerCreateI(void)
    @endhistory 
 
 @@*/
-void CCTK_TimerDestroy(const char *name)
+int CCTK_TimerDestroy(const char *name)
 {
   t_Timer *timer;
   int this_timer;
@@ -194,6 +194,8 @@ void CCTK_TimerDestroy(const char *name)
   {
     CCTKi_TimerDestroy(this_timer, timer);
   }
+
+  return 0;
 }
 
  /*@@
@@ -210,7 +212,7 @@ void CCTK_TimerDestroy(const char *name)
    @endhistory 
 
 @@*/
-void CCTK_TimerDestroyI(int this_timer)
+int CCTK_TimerDestroyI(int this_timer)
 {
   t_Timer *timer;
 
@@ -218,6 +220,7 @@ void CCTK_TimerDestroyI(int this_timer)
   {
     CCTKi_TimerDestroy(this_timer, timer);
   }
+  return 0;
 }
       
  /*@@
@@ -236,7 +239,7 @@ void CCTK_TimerDestroyI(int this_timer)
 @@*/
 static void CCTKi_TimerDestroy(int this_timer, t_Timer *timer)
 {
-  t_TimerFuncs *funcs;
+  cTimerFuncs *funcs;
   int handle;
 
   if(timer)
@@ -246,7 +249,7 @@ static void CCTKi_TimerDestroy(int this_timer, t_Timer *timer)
       /* Destroy the timer info for this timer */
       for(handle = 0; handle < n_timertypes; handle++)
       {
-        funcs = (t_TimerFuncs *)Util_GetHandledData(handles, handle);
+        funcs = (cTimerFuncs *)Util_GetHandledData(handles, handle);
         funcs->destroy(this_timer, timer->data[handle]);
       }
       free(timer->data);
@@ -270,7 +273,7 @@ static void CCTKi_TimerDestroy(int this_timer, t_Timer *timer)
    @endhistory 
 
 @@*/
-void CCTK_TimerStart(const char *name)
+int CCTK_TimerStart(const char *name)
 {
   t_Timer *timer;
   int this_timer;
@@ -279,9 +282,11 @@ void CCTK_TimerStart(const char *name)
   {
     CCTKi_TimerStart(this_timer, timer);
   }
+
+  return 0;
 }
 
-void CCTK_TimerStartI(int this_timer)
+int CCTK_TimerStartI(int this_timer)
 {
   t_Timer *timer;
 
@@ -289,11 +294,12 @@ void CCTK_TimerStartI(int this_timer)
   {
     CCTKi_TimerStart(this_timer, timer);
   }
+  return 0;
 }
 
 static void CCTKi_TimerStart(int this_timer, t_Timer *timer)
 {
-  t_TimerFuncs *funcs;
+  cTimerFuncs *funcs;
   int handle;
 
   if(timer)
@@ -303,7 +309,7 @@ static void CCTKi_TimerStart(int this_timer, t_Timer *timer)
       /* Start the timer info for this timer */
       for(handle = 0; handle < n_timertypes; handle++)
       {
-        funcs = (t_TimerFuncs *)Util_GetHandledData(handles, handle);
+        funcs = (cTimerFuncs *)Util_GetHandledData(handles, handle);
         funcs->start(this_timer, timer->data[handle]);
       }
     }
@@ -324,7 +330,7 @@ static void CCTKi_TimerStart(int this_timer, t_Timer *timer)
    @endhistory 
 
 @@*/
-void CCTK_TimerStop(const char *name)
+int CCTK_TimerStop(const char *name)
 {
   t_Timer *timer;
   int this_timer;
@@ -333,9 +339,10 @@ void CCTK_TimerStop(const char *name)
   {
     CCTKi_TimerStop(this_timer, timer);
   }
+  return 0;
 }
 
-void CCTK_TimerStopI(int this_timer)
+int CCTK_TimerStopI(int this_timer)
 {
   t_Timer *timer;
 
@@ -343,11 +350,12 @@ void CCTK_TimerStopI(int this_timer)
   {
     CCTKi_TimerStop(this_timer, timer);
   }
+  return 0;
 }
 
 static void CCTKi_TimerStop(int this_timer, t_Timer *timer)
 {
-  t_TimerFuncs *funcs;
+  cTimerFuncs *funcs;
   int handle;
 
   if(timer)
@@ -357,7 +365,7 @@ static void CCTKi_TimerStop(int this_timer, t_Timer *timer)
       /* Start the timer info for this timer */
       for(handle = 0; handle < n_timertypes; handle++)
       {
-        funcs = (t_TimerFuncs *)Util_GetHandledData(handles, handle);
+        funcs = (cTimerFuncs *)Util_GetHandledData(handles, handle);
         funcs->stop(this_timer, timer->data[handle]);
       }
     }
@@ -378,7 +386,7 @@ static void CCTKi_TimerStop(int this_timer, t_Timer *timer)
    @endhistory 
 
 @@*/
-void CCTK_TimerReset(const char *name)
+int CCTK_TimerReset(const char *name)
 {
   t_Timer *timer;
   int this_timer;
@@ -387,9 +395,10 @@ void CCTK_TimerReset(const char *name)
   {
     CCTKi_TimerReset(this_timer, timer);
   }
+  return 0;
 }
 
-void CCTK_TimerResetI(int this_timer)
+int CCTK_TimerResetI(int this_timer)
 {
   t_Timer *timer;
 
@@ -397,11 +406,12 @@ void CCTK_TimerResetI(int this_timer)
   {
     CCTKi_TimerReset(this_timer, timer);
   }
+  return 0;
 }
 
 static void CCTKi_TimerReset(int this_timer, t_Timer *timer)
 {
-  t_TimerFuncs *funcs;
+  cTimerFuncs *funcs;
   int handle;
 
   if(timer)
@@ -411,7 +421,7 @@ static void CCTKi_TimerReset(int this_timer, t_Timer *timer)
       /* Start the timer info for this timer */
       for(handle = 0; handle < n_timertypes; handle++)
       {
-        funcs = (t_TimerFuncs *)Util_GetHandledData(handles, handle);
+        funcs = (cTimerFuncs *)Util_GetHandledData(handles, handle);
         funcs->reset(this_timer, timer->data[handle]);
       }
     }
@@ -419,7 +429,7 @@ static void CCTKi_TimerReset(int this_timer, t_Timer *timer)
 }
 
  /*@@
-   @routine    CCTK_TimerGet
+   @routine    CCTK_Timer
    @date       Wed Sep  1 10:10:38 1999
    @author     Tom Goodale
    @desc 
@@ -432,38 +442,38 @@ static void CCTKi_TimerReset(int this_timer, t_Timer *timer)
    @endhistory 
 
 @@*/
-void CCTK_TimerGet(const char *name, t_TimerInfo *info)
+int CCTK_Timer(const char *name, cTimerData *info)
 {
   t_Timer *timer;
   int this_timer;
 
   if((this_timer = Util_GetHandle(timers, name, (void **)&timer)) > -1)
   {
-    CCTKi_TimerGet(this_timer, timer, info);
+    CCTKi_Timer(this_timer, timer, info);
   }
 
-  return;
+  return 0;
 
 }
 
-void CCTK_TimerGetI(int this_timer, t_TimerInfo *info)
+int CCTK_TimerI(int this_timer, cTimerData *info)
 {
   t_Timer *timer;
 
   if((timer = Util_GetHandledData(timers, this_timer)))
   {
-    CCTKi_TimerGet(this_timer, timer, info);
+    CCTKi_Timer(this_timer, timer, info);
   }
 
-  return;
+  return 0;
 }
 
 
 
 
-static void CCTKi_TimerGet(int this_timer, t_Timer *timer, t_TimerInfo *info)
+static void CCTKi_Timer(int this_timer, t_Timer *timer, cTimerData *info)
 {
-  t_TimerFuncs *funcs;
+  cTimerFuncs *funcs;
   int handle;
   int total_vars;
   
@@ -475,7 +485,7 @@ static void CCTKi_TimerGet(int this_timer, t_Timer *timer, t_TimerInfo *info)
       /* Start the timer info for this timer */
       for(handle = 0; handle < n_timertypes; handle++)
       {
-        funcs = (t_TimerFuncs *)Util_GetHandledData(handles, handle);
+        funcs = (cTimerFuncs *)Util_GetHandledData(handles, handle);
         funcs->get(this_timer, timer->data[handle], &(info->vals[total_vars]));
         
         total_vars += funcs->info.n_vals;
@@ -490,17 +500,17 @@ static void CCTKi_TimerGet(int this_timer, t_Timer *timer, t_TimerInfo *info)
 
 }
 
-t_TimerInfo *CCTK_TimerCreateInfo(void)
+cTimerData *CCTK_TimerCreateData(void)
 {
-  t_TimerInfo *retval;
+  cTimerData *retval;
 
-  retval = (t_TimerInfo *)malloc(sizeof(t_TimerInfo));
+  retval = (cTimerData *)malloc(sizeof(cTimerData));
 
   if(retval)
   {
     retval->n_vals = n_timer_vals;
 
-    retval->vals = (t_TimerVal *)malloc(n_timer_vals*sizeof(t_TimerVal));
+    retval->vals = (cTimerVal *)malloc(n_timer_vals*sizeof(cTimerVal));
 
     if(! retval->vals)
     {
@@ -512,7 +522,7 @@ t_TimerInfo *CCTK_TimerCreateInfo(void)
   return retval;
 }
 
-void CCTK_TimerDestroyInfo(t_TimerInfo *info)
+int CCTK_TimerDestroyData(cTimerData *info)
 {
   if(info)
   {
@@ -523,5 +533,6 @@ void CCTK_TimerDestroyInfo(t_TimerInfo *info)
     }
     free(info);
   }
+  return 0;
 }
   
