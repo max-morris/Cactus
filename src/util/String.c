@@ -236,7 +236,7 @@ int Util_SplitString(char **before, char **after, const char *string, const char
    @date       Thu Mar 28 11:20:27 2000
    @author     Gerd Lanfermann
    @desc
-   Homegrown ersion of strdup, since it's not guaranteed to be there.
+   Homegrown version of strdup, since it's not guaranteed to be there.
    @enddesc
    @calls
    @calledby
