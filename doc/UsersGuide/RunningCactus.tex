@@ -674,14 +674,19 @@ locations given in the files in {\tt lib/make/extras/MPI}.
 To compile with HDF5 (\url{http://hdf.ncsa.uiuc.edu/whatishdf5.html}),
 the configure options are
 
-{\tt HDF5 = yes/no [HDF5\_DIR = <dir>] [LIBZ\_DIR = <dir>]}
+{\tt HDF5 = yes/no [HDF5\_DIR = <dir>] [LIBZ\_DIR = <dir>] [LIBSZ\_DIR = <dir>]}
 
 If HDF5\_DIR is not given the configuration process will search for an
 installed HDF5 package in some standard places (defined in
-{\tt lib/make/extras/HDF5}). If the found HDF5 library was compiled with
-libz.a, the configuration process also searches for that library and adds it
-to the linker flags. You may also point directly to an installation of libz.a
-by setting LIBZ\_DIR.
+{\tt lib/make/extras/HDF5}).
+If the found HDF5 library was built with the external deflate I/O filter,
+the configuration process also searches for the {\tt libz} library and adds it
+to the linker flags. You may also point directly to the location of
+{\tt libz.a} by setting LIBZ\_DIR.
+If the found HDF5 library was built with the external szlib I/O filter,
+the configuration process also searches for the {\tt szlib} library and adds it
+to the linker flags. You may also point directly to the location of
+{\tt libsz.a} by setting LIBSZ\_DIR.
 
 
 \subsubsection{LAPACK: Linear Algebra PACKage}
