@@ -55,7 +55,7 @@ OVERLOADABLE(SetupGH)
 #undef ARGUMENTS
 #define ARGUMENTS cGH *GH, int dir, int group, const char *groupname
 #undef RETURN_TYPE 
-#define RETURN_TYPE int * 
+#define RETURN_TYPE const int * 
 OVERLOADABLE(ArrayGroupSizeB)
 
 #undef ARGUMENTS
