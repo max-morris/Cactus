@@ -1082,7 +1082,7 @@ sub parse_interface_ccl
 #      print "Adding $header to $4\n";
       $interface_db{"\U$thorn ADD SOURCE $header TO\E"} = $4;
     }
-    elsif ($line =~ m/^\s*(INCLUDE)S?\s*(HEADER)?S?\s*:\s*(.*)\s+IN\s+(.*)\s*$/i)
+    elsif ($line =~ m/^\s*(INCLUDE)S?\s*(HEADER)?S?\s*:\s*(\S*)\s+IN\s+(\S*)\s*$/i)
     {
       $header = $3;
       $header =~ s/ //g;
