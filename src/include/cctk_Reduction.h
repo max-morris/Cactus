@@ -17,13 +17,13 @@ extern "C"
 #endif
 
 #define REDUCTION_OPERATOR_REGISTER_ARGLIST  \
-          cGH *,  \
-          int,    \
-          int,    \
-          int,    \
-          void *, \
-          int,    \
-          int *    
+          cGH *GH, \
+          int proc, \
+          int num_outvals, \
+          int outtype, \
+          void *outvals, \
+          int num_invars, \
+          int varlist []
 
 #define REDUCTION_ARRAY_OPERATOR_REGISTER_ARGLIST \
   cGH *GH, \
