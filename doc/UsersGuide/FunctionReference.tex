@@ -5878,6 +5878,13 @@ table
 int clone_handle = Util_TableClone(int handle);
 \end{verbatim}
 \end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}
+call Util_TableClone(clone_handle, handle)
+
+integer clone_handle, handle
+\end{verbatim}
+\end{Synopsis}
 \end{SynopsisSection}
 
 \begin{ResultSection}
@@ -5986,6 +5993,13 @@ Creates a new (empty) table
 #include "util_ErrorCodes.h"
 #include "util_Table.h"
 int handle = Util_TableCreate(int flags);
+\end{verbatim}
+\end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}
+call Util_TableCreate(handle, flags)
+
+integer handle, flags
 \end{verbatim}
 \end{Synopsis}
 \end{SynopsisSection}
@@ -6191,6 +6205,14 @@ Deletes a specified key/value entry from a table
 int key_exists = Util_TableDeleteKey(int handle, const char *key);
 \end{verbatim}
 \end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}
+call Util_TableDeleteKey(key_exists, handle, key)
+
+integer        key_exists, handle
+character*(*)  key
+\end{verbatim}
+\end{Synopsis}
 \end{SynopsisSection}
 
 \begin{ResultSection}
@@ -6333,6 +6355,15 @@ where \verb|XXX| is one of
    \verb|REAL|, \verb|REAL4|, \verb|REAL8|, \verb|REAL16|,
    \verb|COMPLEX|, \verb|COMPLEX8|, \verb|COMPLEX16|, \verb|COMPLEX32|
 (not all of these may be supported on any given system)
+\end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}
+call Util_TableGetXxx(N_elements, handle, value, key)
+
+integer        N_elements, handle
+CCTK_XXX       value
+character*(*)  key
+\end{verbatim}
 \end{Synopsis}
 \end{SynopsisSection}
 
@@ -6478,6 +6509,15 @@ where \verb|XXX| is one of
    \verb|REAL|, \verb|REAL4|, \verb|REAL8|, \verb|REAL16|,
    \verb|COMPLEX|, \verb|COMPLEX8|, \verb|COMPLEX16|, \verb|COMPLEX32|
 (not all of these may be supported on any given system)
+\end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}
+call Util_TableGetXxxArray(N_elements, handle, N_array, array, key)
+
+integer        N_elements, handle, N_array
+CCTK_XXX(*)    array
+character*(*)  key
+\end{verbatim}
 \end{Synopsis}
 \end{SynopsisSection}
 
@@ -6626,6 +6666,15 @@ int N_elements = Util_TableGetGeneric(int handle,
                                       int type_code,
                                       void *value,
                                       const char *key);
+\end{verbatim}
+\end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}
+call Util_TableGetGeneric(N_elements, handle, type_code, value, key)
+
+integer        N_elements, handle, type_code
+CCTK_POINTER   value
+character*(*)  key
 \end{verbatim}
 \end{Synopsis}
 \end{SynopsisSection}
@@ -6782,6 +6831,15 @@ int N_elements = Util_TableGetGenericArray(int handle,
                                            int type_code,
                                            int N_array, void *array,
                                            const char *key);
+\end{verbatim}
+\end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}
+call Util_TableGetGenericArray(N_elements, handle, type_code, N_array, array, key)
+
+integer        N_elements, handle, type_code, N_array
+CCTK_POINTER   array
+character*(*)  key
 \end{verbatim}
 \end{Synopsis}
 \end{SynopsisSection}
@@ -7960,6 +8018,13 @@ Query a table's flags word
 int flags = Util_TableQueryFlags(int handle);
 \end{verbatim}
 \end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}
+call Util_TableQueryFlags(flags, handle)
+
+integer  flags, handle
+\end{verbatim}
+\end{Synopsis}
 \end{SynopsisSection}
 
 \begin{ResultSection}
@@ -8033,6 +8098,15 @@ int key_exists =
  Util_TableQueryValueInfo(int handle,
                           CCTK_INT *type_code, CCTK_INT *N_elements,
                           const char *key);
+\end{verbatim}
+\end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}
+call Util_TableQueryValueInfo(key_exists, handle, type_code, N_elements, key)
+
+integer        key_exists, handle
+CCTK_INT       type_code, N_elements
+character*(*)  key
 \end{verbatim}
 \end{Synopsis}
 \end{SynopsisSection}
@@ -8143,6 +8217,13 @@ Query the maximum key length in a table
 int max_key_length = Util_TableQueryMaxKeyLength(int handle);
 \end{verbatim}
 \end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}
+call Util_TableQueryMaxKeyLength(max_key_length, handle)
+
+integer  max_key_length, handle 
+\end{verbatim}
+\end{Synopsis}
 \end{SynopsisSection}
 
 \begin{ResultSection}
@@ -8210,6 +8291,13 @@ Query the number of key/value entries in a table
 int N_Keys = Util_TableQueryNKeys(int handle);
 \end{verbatim}
 \end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}
+call Util_TableQueryNKeys(N_Keys, handle)
+
+integer  N_Keys, handle 
+\end{verbatim}
+\end{Synopsis}
 \end{SynopsisSection}
 
 \begin{ResultSection}
@@ -8255,6 +8343,15 @@ where \verb|XXX| is one of
    \verb|REAL|, \verb|REAL4|, \verb|REAL8|, \verb|REAL16|,
    \verb|COMPLEX|, \verb|COMPLEX8|, \verb|COMPLEX16|, \verb|COMPLEX32|
 (not all of these may be supported on any given system)
+\end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}
+call Util_TableSetXxx(status, handle, value, key)
+
+integer        status, handle
+CCTK_XXX       value
+character*(*)  key
+\end{verbatim}
 \end{Synopsis}
 \end{SynopsisSection}
 
@@ -8389,6 +8486,15 @@ where \verb|XXX| is one of
    \verb|COMPLEX|, \verb|COMPLEX8|, \verb|COMPLEX16|, \verb|COMPLEX32|
 (not all of these may be supported on any given system)
 \end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}
+call Util_TableSetXxxArray(status, handle, N_elements, array, key)
+
+integer        status, handle, N_elements
+CCTK_XXX(*)    array
+character*(*)  key
+\end{verbatim}
+\end{Synopsis}
 \end{SynopsisSection}
 
 \begin{ResultSection}
@@ -8511,6 +8617,14 @@ with ``parameter-file'' semantics
 #include "util_ErrorCodes.h"
 #include "util_Table.h"
 int count = Util_TableSetFromString(int handle, const char *string);
+\end{verbatim}
+\end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}
+call Util_TableSetFromString(count, handle, string)
+
+integer        count, handle
+character*(*)  string
 \end{verbatim}
 \end{Synopsis}
 \end{SynopsisSection}
@@ -8689,6 +8803,15 @@ int status = Util_TableSetGeneric(int handle,
                                   const char *key);
 \end{verbatim}
 \end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}
+call Util_TableSetGeneric(status, handle, type_code, value, key)
+
+integer        status, handle, type_code
+CCTK_POINTER   value
+character*(*)  key
+\end{verbatim}
+\end{Synopsis}
 \end{SynopsisSection}
 
 \begin{ResultSection}
@@ -8830,6 +8953,15 @@ int status = Util_TableSetGenericArray(int handle,
                                        int type_code,
                                        int N_elements, const void *array,
                                        const char *key);
+\end{verbatim}
+\end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}
+call Util_TableSetGenericArray(status, handle, type_code, N_elements, array, key)
+
+integer           status, handle, type_code, N_elements
+CCTK_POINTER(*)   array
+character*(*)     key
 \end{verbatim}
 \end{Synopsis}
 \end{SynopsisSection}
@@ -8978,6 +9110,14 @@ a copy of a specified C-style null-terminated character string
 int status = Util_TableSetString(int handle,
                                  const char *string,
                                  const char *key);
+\end{verbatim}
+\end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}
+call Util_TableSetString(status, handle, string, key)
+
+integer           status, handle
+character*(*)     string, key
 \end{verbatim}
 \end{Synopsis}
 \end{SynopsisSection}
