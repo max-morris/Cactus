@@ -13,6 +13,7 @@
 
 #include "cctk_Flesh.h"
 #include "cctk_Timers.h"
+#include "cctk_WarnLevel.h"
 #include "StoreHandledData.h"
 
 
@@ -31,11 +32,11 @@ static void CCTKi_TimerStop(int this_timer, t_Timer *timer);
 static void CCTKi_TimerReset(int this_timer, t_Timer *timer);
 static void CCTKi_Timer(int this_timer, t_Timer *timer, cTimerData *info);
 
-static int n_timertypes = 0;
-static cHandledData *handles = NULL;
+static int n_clocks = 0;
+static cHandledData *clocks = NULL;
 
-/* The total number of timer values. */
-static int n_timer_vals = 0;
+/* The total number of clock values. */
+static int n_clock_vals = 0;
 
 
 static int n_timers = 0;
@@ -55,16 +56,18 @@ static cHandledData *timers = NULL;
    @endhistory 
 
 @@*/
-int CCTK_ClockRegister(const char *name, cTimerFuncs *functions)
+int CCTK_ClockRegister(const char *name, const cClockFuncs *functions)
 {
+  void *tmp;
   int handle;
-  cTimerFuncs *newfuncs;
+  t_Timer *timer;
+  cClockFuncs *newfuncs;
 
-  newfuncs = (cTimerFuncs *)malloc(sizeof(cTimerFuncs));
+  newfuncs = (cClockFuncs *)malloc(sizeof(cClockFuncs));
 
   if(newfuncs)
   {
-    newfuncs->info.n_vals = functions->info.n_vals;
+    newfuncs->n_vals = functions->n_vals;
     newfuncs->create = functions->create;
     newfuncs->destroy = functions->destroy;
     newfuncs->start = functions->start;
@@ -74,11 +77,70 @@ int CCTK_ClockRegister(const char *name, cTimerFuncs *functions)
     newfuncs->set = functions->set;
   }
 
-  handle = Util_NewHandle(&handles, name, newfuncs);
-  n_timertypes++;
-  n_timer_vals += functions->info.n_vals;
+  /* Add this clock to all existing timers */
+  for (handle = 0; handle < n_timers; handle++)
+  {
+    timer = (t_Timer *) Util_GetHandledData (timers, handle);
+
+    tmp = realloc (timer->data, (n_clocks + 1) * sizeof (void *));
+    if (tmp)
+    {
+      timer->data = (void **) tmp;
+      timer->data[n_clocks] = functions->create (handle);
+    }
+  }
+
+  /* Add this clock to the clock database */
+  handle = Util_NewHandle(&clocks, name, newfuncs);
+  n_clocks++;
+  n_clock_vals += functions->n_vals;
 
   return handle;
+}
+
+
+ /*@@
+   @routine    CCTK_NumTimers
+   @date       Tue 3 Jul 2001
+   @author     Thomas Radke
+   @desc
+               Return the total number of timers.
+   @enddesc
+
+   @returntype int
+   @returndesc
+               the total number of Cactus timers
+   @endreturndesc
+@@*/
+int CCTK_NumTimers (void)
+{
+  return (n_timers);
+}
+
+
+ /*@@
+   @routine    CCTK_TimerName
+   @date       Tue 3 Jul 2001
+   @author     Thomas Radke
+   @desc
+               Return the name of a Cactus timer given by its handle.
+   @enddesc
+
+   @var        timer_handle
+   @vdesc      timer handle
+   @vtype      int
+   @vio        in
+   @endvar
+
+   @returntype int
+   @returndesc
+               the name of the Cactus timer, or NULL if no timer with that
+               handle exists
+   @endreturndesc
+@@*/
+const char *CCTK_TimerName (int timer_handle)
+{
+  return (Util_GetHandleName (timers, timer_handle));
 }
 
 
@@ -100,7 +162,7 @@ int CCTK_TimerCreate(const char *name)
 {
   int retval;
   t_Timer *timer;
-  cTimerFuncs *funcs;
+  const cClockFuncs *funcs;
   int this_timer;
   int handle;
 
@@ -117,17 +179,18 @@ int CCTK_TimerCreate(const char *name)
 
     if(timer)
     {
-      timer->data = (void **)malloc(n_timertypes*sizeof(void *));
+      timer->data = (void **)malloc(n_clocks*sizeof(void *));
 
       if(timer->data)
       {
         /* Store the data structure for this timer */
         this_timer = Util_NewHandle(&timers, name, timer);
+        n_timers++;
 
         /* Create the timer info for this timer */
-        for(handle = 0; handle < n_timertypes; handle++)
+        for(handle = 0; handle < n_clocks; handle++)
         {
-          funcs = (cTimerFuncs *)Util_GetHandledData(handles, handle);
+          funcs = (const cClockFuncs *)Util_GetHandledData(clocks, handle);
 
           timer->data[handle] = funcs->create(this_timer);
         }
@@ -165,9 +228,9 @@ int CCTK_TimerCreate(const char *name)
 int CCTK_TimerCreateI(void)
 {
   int retval;
-  char name[20];
+  char name[40];
 
-  sprintf(name, "timer_%d", n_timers++);
+  sprintf(name, "ANONYMOUS TIMER %d", n_timers);
 
   retval = CCTK_TimerCreate(name);
 
@@ -201,7 +264,7 @@ int CCTK_TimerDestroy(const char *name)
   else
   {
     CCTK_VWarn(8,__LINE__,__FILE__,"Cactus",
-	       "CCTK_TimerDestroy: Timer %s not found",name);
+	           "CCTK_TimerDestroy: Timer %s not found",name);
     retval = -1;
   }
   return retval;
@@ -255,7 +318,7 @@ int CCTK_TimerDestroyI(int this_timer)
 @@*/
 static void CCTKi_TimerDestroy(int this_timer, t_Timer *timer)
 {
-  cTimerFuncs *funcs;
+  const cClockFuncs *funcs;
   int handle;
 
   if(timer)
@@ -263,14 +326,15 @@ static void CCTKi_TimerDestroy(int this_timer, t_Timer *timer)
     if(timer->data)
     {
       /* Destroy the timer info for this timer */
-      for(handle = 0; handle < n_timertypes; handle++)
+      for(handle = 0; handle < n_clocks; handle++)
       {
-        funcs = (cTimerFuncs *)Util_GetHandledData(handles, handle);
+        funcs = (const cClockFuncs *)Util_GetHandledData(clocks, handle);
         funcs->destroy(this_timer, timer->data[handle]);
       }
       free(timer->data);
       free(timer);
       Util_DeleteHandle(timers, this_timer);
+      n_timers--;
     }
   }
 }
@@ -328,7 +392,7 @@ int CCTK_TimerStartI(int this_timer)
 
 static void CCTKi_TimerStart(int this_timer, t_Timer *timer)
 {
-  cTimerFuncs *funcs;
+  const cClockFuncs *funcs;
   int handle;
 
   if(timer)
@@ -336,9 +400,9 @@ static void CCTKi_TimerStart(int this_timer, t_Timer *timer)
     if(timer->data)
     {
       /* Start the timer info for this timer */
-      for(handle = 0; handle < n_timertypes; handle++)
+      for(handle = 0; handle < n_clocks; handle++)
       {
-        funcs = (cTimerFuncs *)Util_GetHandledData(handles, handle);
+        funcs = (const cClockFuncs *)Util_GetHandledData(clocks, handle);
         funcs->start(this_timer, timer->data[handle]);
       }
     }
@@ -398,7 +462,7 @@ int CCTK_TimerStopI(int this_timer)
 
 static void CCTKi_TimerStop(int this_timer, t_Timer *timer)
 {
-  cTimerFuncs *funcs;
+  const cClockFuncs *funcs;
   int handle;
 
   if(timer)
@@ -406,9 +470,9 @@ static void CCTKi_TimerStop(int this_timer, t_Timer *timer)
     if(timer->data)
     {
       /* Start the timer info for this timer */
-      for(handle = 0; handle < n_timertypes; handle++)
+      for(handle = 0; handle < n_clocks; handle++)
       {
-        funcs = (cTimerFuncs *)Util_GetHandledData(handles, handle);
+        funcs = (const cClockFuncs *)Util_GetHandledData(clocks, handle);
         funcs->stop(this_timer, timer->data[handle]);
       }
     }
@@ -468,7 +532,7 @@ int CCTK_TimerResetI(int this_timer)
 
 static void CCTKi_TimerReset(int this_timer, t_Timer *timer)
 {
-  cTimerFuncs *funcs;
+  const cClockFuncs *funcs;
   int handle;
 
   if(timer)
@@ -476,9 +540,9 @@ static void CCTKi_TimerReset(int this_timer, t_Timer *timer)
     if(timer->data)
     {
       /* Start the timer info for this timer */
-      for(handle = 0; handle < n_timertypes; handle++)
+      for(handle = 0; handle < n_clocks; handle++)
       {
-        funcs = (cTimerFuncs *)Util_GetHandledData(handles, handle);
+        funcs = (const cClockFuncs *)Util_GetHandledData(clocks, handle);
         funcs->reset(this_timer, timer->data[handle]);
       }
     }
@@ -530,7 +594,7 @@ int CCTK_TimerI(int this_timer, cTimerData *info)
 
 static void CCTKi_Timer(int this_timer, t_Timer *timer, cTimerData *info)
 {
-  cTimerFuncs *funcs;
+  const cClockFuncs *funcs;
   int handle;
   int total_vars;
   
@@ -540,12 +604,12 @@ static void CCTKi_Timer(int this_timer, t_Timer *timer, cTimerData *info)
     if(timer->data)
     {
       /* Start the timer info for this timer */
-      for(handle = 0; handle < n_timertypes; handle++)
+      for(handle = 0; handle < n_clocks; handle++)
       {
-        funcs = (cTimerFuncs *)Util_GetHandledData(handles, handle);
+        funcs = (const cClockFuncs *)Util_GetHandledData(clocks, handle);
         funcs->get(this_timer, timer->data[handle], &(info->vals[total_vars]));
         
-        total_vars += funcs->info.n_vals;
+        total_vars += funcs->n_vals;
       }
     }
     info->n_vals = total_vars;
@@ -565,9 +629,9 @@ cTimerData *CCTK_TimerCreateData(void)
 
   if(retval)
   {
-    retval->n_vals = n_timer_vals;
+    retval->n_vals = n_clock_vals;
 
-    retval->vals = (cTimerVal *)malloc(n_timer_vals*sizeof(cTimerVal));
+    retval->vals = (cTimerVal *)malloc(n_clock_vals*sizeof(cTimerVal));
 
     if(! retval->vals)
     {
