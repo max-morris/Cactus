@@ -17,6 +17,7 @@ extern "C"
 #endif
 
 int CCTK_CommandLine(char ***outargv);
+int CCTK_ParameterFilename(int len, char *filename);
 
 #ifdef __cplusplus 
 }
