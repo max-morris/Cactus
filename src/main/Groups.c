@@ -12,9 +12,12 @@
 #include <string.h>
 #include <stdarg.h>
 
-#include "cctk.h"
+#include "cctk_Config.h"
+#include "cctk_Groups.h"
+#include "cctk_Types.h"
+#include "cctk_Constants.h"
 #include "cctk_FortranString.h"
-#include "cctk_ParameterFunctions.h"
+#include "cctk_Parameter.h"
 #include "cctki_Stagger.h"
 
 /*#define DEBUG_GROUPS*/
@@ -153,7 +156,7 @@ int CCTK_GroupIndex(const char *fullgroupname)
       /*      char *message;*/
       /*      message = (char *)malloc( (100+strlen(fullgroupname))*sizeof(char) ); */
       /*      sprintf(message,"No group found with the name %s",fullgroupname); */
-      CCTK_VWarn(2,__LINE__,__FILE__,CCTK_THORNSTRING, "No group found with the name %s", fullgroupname);
+      CCTK_VWarn(2,__LINE__,__FILE__,"Cactus", "No group found with the name %s", fullgroupname);
       /*      if (message) free(message); */
       retval = -1;
     }
@@ -238,6 +241,7 @@ int CCTKi_CreateGroup
   int     groupscope;
   int     staggercode;
   int     variable;
+  int     i;
 
   va_list ap;
 
@@ -336,7 +340,6 @@ int CCTKi_CreateGroup
 
       group->size      = CCTKi_ExtractSize(dimension, thorn, size);
       group->ghostsize = CCTKi_ExtractSize(dimension, thorn, ghostsize);
-
     }
   }
   else
@@ -1564,6 +1567,7 @@ static CCTK_INT **CCTKi_ExtractSize(int dimension, const char *thorn, const char
           }
 
           size_array[i] = (CCTK_INT *)CCTK_ParameterGet(tmp, thorn, &type);
+
         }
       }
     }
@@ -1756,3 +1760,41 @@ int CCTK_OldGroupData(int group,
 
   return return_code;
 }
+
+
+ /*@@
+   @routine    CCTK_GroupDimI
+   @date       Wed Feb 2 2000
+   @author     Gabrielle Allen
+   @desc 
+   Given a group index returns the group dimension
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+
+int CCTK_GroupDimI(int group)
+{
+  int retval;
+
+  if (0 <= group && group<n_groups)
+  {
+    retval = groups[group].dim;
+  }
+  else
+  {
+    retval = -1;
+  }
+
+  return retval;
+}
+
+void  FMODIFIER FORTRAN_NAME(CCTK_GroupDimI)(int *dim, int *group)
+{
+  *dim = CCTK_GroupDimI(*group);
+}
+
