@@ -384,6 +384,10 @@ else
         CACHELINE_BYTES=128
         echo "Setting CACHELINE_BYTES to $CACHELINE_BYTES"
         ;;
+       x86_64)
+        CACHELINE_BYTES=64
+        echo "Setting CACHELINE_BYTES to $CACHELINE_BYTES"
+        ;;
        powerpc)
         CACHELINE_BYTES=32
         echo "Setting CACHELINE_BYTES to $CACHELINE_BYTES"
