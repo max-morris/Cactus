@@ -9,22 +9,7 @@
 
 
 #include "flesh.h"
+#include "IOMethods.h"
 
-static char *rcsid = "$Header:";
+static char *rcsid = "$Header$";
 
-int CactusDefaultOutputGH(cGH *GH)
-{
-  printf("I'm in the default OutputGH routine\n");
-  
-  return 0;
-}
-
-int CactusDefaultOutputVarAs(cGH *GH, 
-                             const char *var,   
-                             const char *method, 
-                             const char *alias)
-{
-  printf("I'm in the default OutputVarAs routine\n");
-  
-  return 0;
-}
