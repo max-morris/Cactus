@@ -35,7 +35,7 @@ int CCTK_SetIntInRangeList(CCTK_INT *data, const char *value,
 int CCTK_SetKeywordInRangeList(char **data, const char *value, 
 			       int n_elements, ...);
 int CCTK_SetString(char **data, const char *value);
-int CCTK_SetLogical(int *data, const char *value);
+int CCTK_SetLogical(CCTK_INT *data, const char *value);
 
 #ifdef __cplusplus
            }   
