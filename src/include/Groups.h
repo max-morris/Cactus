@@ -20,6 +20,7 @@ extern "C" {
 int CCTK_CreateGroup(const char *gname, const char *thorn, const char *imp,
 		     const char *gtype,
 		     const char *vtype,
+		     const char *gscope,
 		     int dimension,
 		     int ntimelevels,
 		     int n_variables,
@@ -44,6 +45,8 @@ int CCTK_GetNumGroups(void);
 int CCTK_GTypeNumber(const char *type);
 
 int CCTK_VTypeNumber(const char *type);
+
+int CCTK_GScopeNumber(const char *type);
 
 int CCTK_GetGroupData(int group, 
 		      int *gtype, 
@@ -80,5 +83,9 @@ int CCTK_GetNumVarsInGroup_ByIndex(int group);
 #define GROUP_SCALAR 1
 #define GROUP_GF     2
 #define GROUP_ARRAY  3
+
+#define GROUP_PRIVATE   1
+#define GROUP_PROTECTED 2
+#define GROUP_PUBLIC    3
 
 #endif

@@ -48,6 +48,8 @@ typedef struct
   
   int vtype;
 
+  int gscope;
+
   int dim;
 
   int n_timelevels;
