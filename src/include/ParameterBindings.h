@@ -44,12 +44,14 @@ void CCTKi_ParameterAccumulatorBase(const char *thorn,
 }
 #endif
 
-#define PARAMETER_KEYWORD  1
-#define PARAMETER_STRING   2
-#define PARAMETER_SENTENCE 3
-#define PARAMETER_INT      4
-#define PARAMETER_INTEGER  4
-#define PARAMETER_REAL     5
-#define PARAMETER_BOOLEAN  6
+/* These definitions must be identical to the ones in cctk_Parameter.h */
+#define PARAMETER_FIRST    701
+#define PARAMETER_KEYWORD  701
+#define PARAMETER_STRING   702
+#define PARAMETER_SENTENCE 703
+#define PARAMETER_INT      704
+#define PARAMETER_INTEGER  704
+#define PARAMETER_REAL     705
+#define PARAMETER_BOOLEAN  706
 
 #endif

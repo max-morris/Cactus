@@ -20,17 +20,18 @@
  */
 
 /* Parameter checking levels */
-#define CCTK_PARAMETER_STRICT  0
-#define CCTK_PARAMETER_NORMAL  1
-#define CCTK_PARAMETER_RELAXED 2
+#define CCTK_PARAMETER_STRICT  800
+#define CCTK_PARAMETER_NORMAL  801
+#define CCTK_PARAMETER_RELAXED 802
 
-/* these SCOPE* defines are used as flags fo parameter scopes. */
+/* these SCOPE* defines are used as flags for parameter scopes. */
 
-#define SCOPE_GLOBAL        1 /* parameter is visible everywhere             */
-#define SCOPE_RESTRICTED    2 /* parameter is visible for friend thorns only */
-#define SCOPE_PRIVATE       3 /* parameter is visible for parent thorn only  */
-#define SCOPE_NOT_GLOBAL    4 /* parameter is not visible everywhere         */
-#define SCOPE_ANY           5 /* parameter scope is undefined/arbitrary      */
+#define SCOPE_FIRST       901 /* must be the lowest value                    */
+#define SCOPE_GLOBAL      901 /* parameter is visible everywhere             */
+#define SCOPE_RESTRICTED  902 /* parameter is visible for friend thorns only */
+#define SCOPE_PRIVATE     903 /* parameter is visible for parent thorn only  */
+#define SCOPE_NOT_GLOBAL  904 /* parameter is not visible everywhere         */
+#define SCOPE_ANY         905 /* parameter scope is undefined/arbitrary      */
 
 #ifdef NEED_PARAMETER_SCOPE_STRINGS
 static const char *cctk_parameter_scopes[] = {"GLOBAL", 
@@ -42,13 +43,15 @@ static const char *cctk_parameter_scopes[] = {"GLOBAL",
 
 /* parameter types  */
 
-#define PARAMETER_KEYWORD   1 /* parameter is keyword  */
-#define PARAMETER_STRING    2 /* parameter is string   */
-#define PARAMETER_SENTENCE  3 /* parameter is sentence */
-#define PARAMETER_INT       4 /* parameter is integer  */
-#define PARAMETER_INTEGER   4 /* parameter is integer  */
-#define PARAMETER_REAL      5 /* parameter is float    */
-#define PARAMETER_BOOLEAN   6 /* parameter is bool     */
+/* These definitions must be identical to the ones in ParameterBindings.h */
+#define PARAMETER_FIRST     701 /* must be the lowest value */
+#define PARAMETER_KEYWORD   701 /* parameter is keyword  */
+#define PARAMETER_STRING    702 /* parameter is string   */
+#define PARAMETER_SENTENCE  703 /* parameter is sentence */
+#define PARAMETER_INT       704 /* parameter is integer  */
+#define PARAMETER_INTEGER   704 /* parameter is integer  */
+#define PARAMETER_REAL      705 /* parameter is float    */
+#define PARAMETER_BOOLEAN   706 /* parameter is bool     */
 
 #ifdef NEED_PARAMETER_TYPE_STRINGS
 static const char *cctk_parameter_type_names[] = {"KEYWORD", 

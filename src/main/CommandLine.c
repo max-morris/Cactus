@@ -610,9 +610,9 @@ static void CommandLinePrintParameter (const cParamData *properties)
     }
     printf ("\n");
     printf ("Description: \"%s\"\n", properties->description);
-    printf ("Type:        %s\n", cctk_parameter_type_names[properties->type-1]);
+    printf ("Type:        %s\n", cctk_parameter_type_names[properties->type-PARAMETER_FIRST]);
     printf ("Default:     %s\n", properties->defval);
-    printf ("Scope:       %s\n", cctk_parameter_scopes[properties->scope-1]);
+    printf ("Scope:       %s\n", cctk_parameter_scopes[properties->scope-SCOPE_FIRST]);
 
     for (range = properties->range; range; range = range->next)
     {
