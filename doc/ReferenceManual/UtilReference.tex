@@ -1613,7 +1613,7 @@ where \code{XXX} is one of
 	 This is deprecated as of Cactus 4.0 beta 13.
 	 }%%%
 ,
-   \code{CHAR},
+   \code{CHAR}, \code{BYTE},
    \code{INT}, \code{INT1}, \code{INT2}, \code{INT4}, \code{INT8},
    \code{REAL}, \code{REAL4}, \code{REAL8}, \code{REAL16},
    \code{COMPLEX}, \code{COMPLEX8}, \code{COMPLEX16}, \code{COMPLEX32}
@@ -1628,7 +1628,7 @@ character*(*)  key
 \end{verbatim}
 where \code{CCTK\_XXX} may be any data type supported by C (above)
 except \code{CCTK\_CHAR} (Fortran doesn't have a separate ``character''
-data type; use \code{CCTK\_BYTE} instead, or \verb|Util_TableGetString()|
+data type; use \code{CCTK\_BYTE} instead)
 for a characer string)
 \end{Synopsis}
 \end{SynopsisSection}
@@ -1775,7 +1775,7 @@ where \code{XXX} is one of
 	 This is deprecated as of Cactus 4.0 beta 13.
 	 }%%%
 ,
-   \code{CHAR},
+   \code{CHAR}, \code{BYTE},
    \code{INT}, \code{INT1}, \code{INT2}, \code{INT4}, \code{INT8},
    \code{REAL}, \code{REAL4}, \code{REAL8}, \code{REAL16},
    \code{COMPLEX}, \code{COMPLEX8}, \code{COMPLEX16}, \code{COMPLEX32}
@@ -1788,6 +1788,7 @@ integer        N_elements, handle, N_array
 CCTK_XXX(*)    array
 character*(*)  key
 \end{verbatim}
+where \code{CCTK\_XXX} may be any data type supported by C (above)
 \end{Synopsis}
 \end{SynopsisSection}
 
@@ -3643,8 +3644,7 @@ character*(*)  key
 \end{verbatim}
 where \code{CCTK\_XXX} may be any data type supported by C (above)
 except \code{CCTK\_CHAR} (Fortran doesn't have a separate ``character''
-data type; use \code{CCTK\_BYTE} instead, or \verb|Util_TableSetString()|
-for a characer string)
+data type; use \code{CCTK\_BYTE} instead)
 \end{Synopsis}
 \end{SynopsisSection}
 
@@ -3780,7 +3780,7 @@ where \code{XXX} is one of
 	 This is deprecated as of Cactus 4.0 beta 13.
 	 }%%%
 ,
-   \code{CHAR},
+   \code{CHAR}, \code{BYTE},
    \code{INT}, \code{INT1}, \code{INT2}, \code{INT4}, \code{INT8},
    \code{REAL}, \code{REAL4}, \code{REAL8}, \code{REAL16},
    \code{COMPLEX}, \code{COMPLEX8}, \code{COMPLEX16}, \code{COMPLEX32}
@@ -3793,6 +3793,7 @@ integer        status, handle, N_elements
 CCTK_XXX(*)    array
 character*(*)  key
 \end{verbatim}
+where \code{CCTK\_XXX} may be any data type supported by C (above)
 \end{Synopsis}
 \end{SynopsisSection}
 
