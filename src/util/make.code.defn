@@ -16,4 +16,5 @@ snprintf.c\
 String.c\
 StringList.c\
 Time.c\
-Network.c
+Network.c\
+Expression.c
