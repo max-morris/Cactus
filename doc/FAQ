@@ -1,7 +1,7 @@
 
 Cactus Code Frequently Asked Questions
 
-$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.25 2002-02-28 11:59:24 rideout Exp $
+$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.26 2002-04-08 14:42:52 tradke Exp $
 
 Also available at http://www.cactuscode.org/Documentation/FAQ
 
@@ -148,9 +148,9 @@ Also available at http://www.cactuscode.org/Documentation/FAQ
     "Unknown option -np", what's the problem?
 
     It looks like the MPI implementation on the machine you're using isn't
-    removing it's arguements correctly, so they are being passed to the
+    removing its arguments correctly, so they are being passed to the
     Cactus run. You need to use the "-i" command line option for Cactus to 
-    ignore the MPI arguements, e.g.
+    ignore the MPI arguments, e.g.
 
     mpirun ./cactus_foo foobar.par -i -np 8
 
@@ -361,5 +361,37 @@ Also available at http://www.cactuscode.org/Documentation/FAQ
 
     If C++ isn't being used in any thorn, you can compile Cactus without using
     C++ using the configure option CXX=none.
+
+-------------------------------------------------------------------------------
+
+27. I can build a Cactus configuration using some external libraries such as
+    HDF5 or PETSc without any problems but when I run the executable I get
+    the following error:
+
+      ./cactus_WaveDemo: error while loading shared libraries: libhdf5.so.0:
+      cannot load shared object file: No such file or directory
+
+    This is a problem with using shared libraries on your system:
+    the dynamic loader couldn't locate a shared library on the system
+    you are trying to run on.
+    You can set the LD_LIBRARY_PATH environment variable in your shell setup
+    to point to your local installation of HDF5. For global installations
+    located in a standard place (such as /usr/local/lib), this should ideally
+    be done by your system administrator for you.
+
+    Another possibility to get around the above problem is to use
+    static libraries in favor of shared ones. For this you need to remove
+    the *.so files from your installation directory (leaving the *.a files).
+    Cactus would then link against the static libraries automatically.
+
+-------------------------------------------------------------------------------
+
+28. I can run my non-MPI executable using shared libraries without problems now
+    but still get the same error as in FAQ 27 for MPI jobs started with mpirun.
+
+    This indicates a misconfigured mpirun script. When it starts a shell on
+    other nodes it probably doesn't read in the user's shell setup so that the
+    LD_LIBRARY_PATH environment is not set properly.
+    You should contact your system administrator to get this fixed.
 
 -------------------------------------------------------------------------------
