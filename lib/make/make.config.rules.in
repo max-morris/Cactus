@@ -1,3 +1,4 @@
+
 # /*@@
 #   @file    make.config.rules.in
 #   @date    Sun Jan 17 22:31:16 1999
@@ -32,11 +33,12 @@ INCLUDE_LINE = $(patsubst %,-I"%",$(call TRANSFORM_DIRS,$(INC_DIRS)))
 ifeq ($(strip $(PERL_BACKUP_NECESSARY)),)
 define DEPENDENCY_FIXER
 	$(PERL) -pi -e "s,([^:]*),$(basename $@).o $(basename $@).d, if(m/: /);\
-	 s:\s[^\s]*[/\\\]($(DEP_EXCLUDE_FILES))\b::g" $@
+	 s:\s+\S*[/\\\]($(DEP_EXCLUDE_FILES))\b::g" $@
 endef
 else
 define DEPENDENCY_FIXER
-	$(PERL) -pi.bak -e "s,([^:]*),$(basename $@).o $(basename $@).d, if(m/: /)" $@
+	$(PERL) -pi.bak -e "s,([^:]*),$(basename $@).o $(basename $@).d, if(m/: /);\
+	 s:\s+\S*[/\\\]($(DEP_EXCLUDE_FILES))\b::g" $@
 	rm $@.bak
 endef
 endif
