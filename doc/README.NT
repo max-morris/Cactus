@@ -4,7 +4,7 @@ The aim of this file is to describe the environment necessary to build
 the CCTK on an NT (or Windows 2000) platform.
 
 Apart from the required software noted in the manual, you must install
-the cygwin package available from http://sources.redhat.com/cygwin .
+the cygwin package available from http://www.cygwin.com .
 
 After installing Cygwin, you must make sure that the GNU CPP is
 somewhere on your path, and that the directory path leading to it
