@@ -720,6 +720,7 @@ AC_SUBST(FCOMPILEONLY)
 # Define the type of debugging to use
 
 if test -n "$DEBUG" -a "x$DEBUG" != 'xno' ; then
+  AC_DEFINE(CCTK_DEBUG)
   case "$DEBUG" in
      MEMORY)
        AC_DEFINE(CCTK_TRACEMEMORY)
@@ -733,7 +734,6 @@ if test -n "$DEBUG" -a "x$DEBUG" != 'xno' ; then
      ALL)
       AC_DEFINE(CCTK_TRACEMEMORY)
       DEBUG_FLAGS="yes"
-      AC_DEFINE(CCTK_DEBUG)
       ;;
     *)
       AC_ERROR(Didn't recognize setting of DEBUG=\"$DEBUG\")

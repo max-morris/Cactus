@@ -4437,6 +4437,10 @@ LDFLAGS="$LDFLAGS $KNOWN_LDFLAGS"
 # Define the type of debugging to use
 
 if test -n "$DEBUG" -a "x$DEBUG" != 'xno' ; then
+  cat >> confdefs.h <<\EOF
+#define CCTK_DEBUG 1
+EOF
+
   case "$DEBUG" in
      MEMORY)
        cat >> confdefs.h <<\EOF
@@ -4459,10 +4463,6 @@ EOF
 EOF
 
       DEBUG_FLAGS="yes"
-      cat >> confdefs.h <<\EOF
-#define CCTK_DEBUG 1
-EOF
-
       ;;
     *)
       { echo "configure: error: Didn't recognize setting of DEBUG=\"$DEBUG\"" 1>&2; exit 1; }
