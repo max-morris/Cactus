@@ -8,10 +8,11 @@
    @version $Header$
  @@*/
 
-#include <stdarg.h>
-
 #ifndef _UTIL_STRING_H_
 #define _UTIL_STRING_H_ 1
+
+#include <stdarg.h>
+#include <stddef.h>
 
 #ifdef __cplusplus
 extern "C" 
