@@ -3,8 +3,9 @@
 $sbin_dir = "lib/sbin";
 
 require "$sbin_dir/parameter_parser.pl";
+require "$sbin_dir/CSTUtils.pl";
 
-$thorn{"WaveToy"} = "arrangements/CactusApplications/WaveToy";
+$thorn{"WaveToy"} = "arrangements/CactusWave/IDScalarWave";
 %parameter_database = &create_parameter_database(%thorn);
 
 
