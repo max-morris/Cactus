@@ -4,8 +4,7 @@
 %   @author    Tom Goodale, Gabrielle Allen, Gerd Lanferman
 %   @desc 
 %   How to run Cactus part of the Cactus User's Guide
-%   @enddesc 
-%   @version $Header$      
+%   @enddesc %   @version $Header$      
 % @@*/
 \begin{cactuspart}{1}{Installation and Running}{$RCSfile$}{$Revision$}
 \renewcommand{\thepage}{\Alph{part}\arabic{page}}
@@ -511,13 +510,15 @@ may be specified on the configuration command line):
 Use MPICH ({\tt http://www-unix.mcs.anl.gov/mpi/mpich}). This is controlled
 by the options
   \begin{Lentry}
+  \item [{\tt MPICH\_ARCH} *] machine architecture
   \item [{\tt MPICH\_DIR} *] directory in which {\tt MPICH} is installed.
         If this option is not defined it will be searched for.
   \item [{\tt MPICH\_DEVICE} *] the device used by {\tt MPICH}. If not 
         defined, the configuration process will search for this in a 
         few defined places.
         Supported devices are currently {\tt ch\_p4}, {\tt ch\_shmem}, 
-	and {\tt globus}, and they are searched for in this order.
+	{\tt globus} and {\tt myrinet}, and they are searched for in this 
+        order.
   \end{Lentry}
 
 If {\tt MPICH\_DEVICE} is chosen to be Globus, (www.globus.org), 
