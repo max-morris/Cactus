@@ -80,7 +80,7 @@ int Util_CurrentDate(int len, char *now)
 {
   int retval;
   time_t timep;
-  const char *fmt = "%a %d %b %Y";
+  const char *fmt = "%b %d %Y";
 
   timep = time(NULL);
   strftime(now, 50, fmt, localtime(&timep));
