@@ -36,6 +36,6 @@ int ParameterCreate(const char *name,        /* The parameter name */
 #define PARAMETER_INT      4
 #define PARAMETER_INTEGER  4
 #define PARAMETER_REAL     5
-#define PARAMETER_LOGICAL  6
+#define PARAMETER_BOOLEAN  6
 
 #endif

@@ -4,26 +4,26 @@
  
 private:
 
-LOGICAL cctk_full_warnings "Give detailed information for each warning statement"
+BOOLEAN cctk_full_warnings "Give detailed information for each warning statement"
 {
 } "yes"
 
-LOGICAL cctk_strong_param_check "Die on parameter errors in CCTK_PARAMCHECK"
+BOOLEAN cctk_strong_param_check "Die on parameter errors in CCTK_PARAMCHECK"
 {
  : ::
 } "yes"
 
-LOGICAL cctk_show_rfr_tree "Show the order of the calling tree for the RFR"
+BOOLEAN cctk_show_rfr_tree "Show the order of the calling tree for the RFR"
 {
  : :: 
 } "yes"
 
-LOGICAL cctk_show_banners "Show any registered banners for the different thorns"
+BOOLEAN cctk_show_banners "Show any registered banners for the different thorns"
 {
  : :: 
 } "yes"
  
-LOGICAL cctk_brief_output "Give only brief output"
+BOOLEAN cctk_brief_output "Give only brief output"
 {
  : :: 
 } "no"

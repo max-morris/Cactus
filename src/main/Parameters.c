@@ -134,7 +134,7 @@ static int ParameterSetString(t_parameter *param, const char *value);
 static int ParameterSetSentence(t_parameter *param, const char *value);
 static int ParameterSetInteger(t_parameter *param, const char *value);
 static int ParameterSetReal(t_parameter *param, const char *value);
-static int ParameterSetLogical(t_parameter *param, const char *value);
+static int ParameterSetBoolean(t_parameter *param, const char *value);
 
 
 
@@ -843,12 +843,12 @@ static int ParameterGetType(const char *type)
   PTYPE(SENTENCE);
   PTYPE(INT);
   PTYPE(REAL);
-  PTYPE(LOGICAL);
+  PTYPE(BOOLEAN);
 
 #undef PTYPE
   if(retval == -1)
   {
-    fprintf(stderr, "What on earth kind of a paramter is %s ? \n",type);
+    fprintf(stderr, "What on earth kind of a parameter is %s ? \n",type);
   }
 
   return retval;
@@ -1036,8 +1036,8 @@ static int ParameterSetSimple(t_parameter *param, const char *value)
       retval = ParameterSetInteger(param, value); break;
     case PARAMETER_REAL     :
       retval = ParameterSetReal(param, value); break;
-    case PARAMETER_LOGICAL  :
-      retval = ParameterSetLogical(param, value); break;
+    case PARAMETER_BOOLEAN  :
+      retval = ParameterSetBoolean(param, value); break;
     default            :
       fprintf(stderr, "Unknown parameter type %d\n", param->type);
   }
@@ -1274,17 +1274,17 @@ static int ParameterSetReal(t_parameter *param, const char *value)
   return retval;
 }
 
-static int ParameterSetLogical(t_parameter *param, const char *value)
+static int ParameterSetBoolean(t_parameter *param, const char *value)
 {
   int retval;
 
   retval = -1;
-  retval = CCTK_SetLogical(param->data, value);
+  retval = CCTK_SetBoolean(param->data, value);
 
   if(retval == -1)
   {
     fprintf(stderr, 
-	    "Unable to set logical %s::%s - %s not recognised\n", 
+	    "Unable to set boolean %s::%s - %s not recognised\n", 
 	    param->thorn,
 	    param->name,
 	    value);

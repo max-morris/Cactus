@@ -879,11 +879,11 @@ void FMODIFIER FORTRAN_NAME(CCTK_PrintString)(char **arg1)
 }
 
  /*@@
-   @routine    CCTK_SetLogical
+   @routine    CCTK_SetBoolean
    @date       Thu Jan 21 10:35:11 1999
    @author     Tom Goodale
    @desc 
-   Sets the value of a logical to true or false according to
+   Sets the value of a boolean to true or false according to
    the value of the value string.
    @enddesc 
    @calls     
@@ -893,7 +893,7 @@ void FMODIFIER FORTRAN_NAME(CCTK_PrintString)(char **arg1)
    @endhistory 
 
 @@*/
-int CCTK_SetLogical(CCTK_INT *data, const char *value)
+int CCTK_SetBoolean(CCTK_INT *data, const char *value)
 {
   int retval = 1;
 
@@ -909,7 +909,7 @@ int CCTK_SetLogical(CCTK_INT *data, const char *value)
   }
   else
   {
-    CCTK_Warn(1,__LINE__,__FILE__,"Cactus","Logical not set in CCTK_SetLogical");
+    CCTK_Warn(1,__LINE__,__FILE__,"Cactus","Boolean not set in CCTK_SetBoolean");
     retval = -1;
   }
 
