@@ -8,7 +8,8 @@ StoreNamedData.c\
 Misc.c\
 getopt.c\
 getopt1.c\
-StoreHandledData.c
+StoreHandledData.c\
+gnu_regex.c
 
 
 

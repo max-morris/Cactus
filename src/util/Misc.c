@@ -14,7 +14,7 @@
 #include <ctype.h>
 #include <stdarg.h>
 #include <assert.h>
-#include <regex.h>
+#include "gnu_regex.h"
 
 #include "Misc.h"
 #include "FortranString.h"
