@@ -194,25 +194,9 @@ AC_CHECK_SIZEOF(float)
 # Check for sizes of pointers.  
 AC_CHECK_SIZEOF(char *)
 
-# This may look bizarre, but the cygwin environment
-# emulates /dev/null
-AC_MSG_CHECKING(the NULL device)
+# See if there's a null device, and what it's called
 
-if test -d /dev ; then
-  NULL_DEVICE="/dev/null"
-else
-  cat > NUL <<EOF
-test
-EOF
-
-  if `cat NUL > /dev/null 2>/dev/null` ; then
-    NULL_DEVICE="NUL"
-  else
-    echo "Can't find NULL device !"
-  fi
-fi
-
-AC_MSG_RESULT($NULL_DEVICE)
+CCTK_FIND_NULLDEVICE
 
 # Various flags
 
@@ -232,8 +216,9 @@ AC_CHECK_FUNCS(mkdir gettimeofday getrusage _ftime)
 
 dnl Include file stuff
 
+CCTK_CHECK_HEADERS(sys/time.h)
+CCTK_CHECK_HEADERS(unistd.h)
 AC_HEADER_TIME
-AC_CHECK_HEADERS(sys/time.h)
 
 dnl Misc stuff
 
