@@ -239,3 +239,14 @@ int CactusDefaultnProcs(cGH *GH)
 
   return nprocs;
 }
+
+int CactusDefaultExit(int retval, cGH *GH)
+{
+#ifdef MPI  
+  if(MPI_Active)
+  {
+    CACTUS_MPI_ERROR(MPI_Finalize());
+  }
+#endif
+  exit(retval);
+}
