@@ -2,10 +2,10 @@
    @file      ActiveThorns.c
    @date      Sun Jul  4 16:15:36 1999
    @author    Tom Goodale
-   @desc 
-   Stuff to deal with activethorns.
-   @enddesc 
-   @version $Header$
+   @desc
+              Stuff to deal with activethorns.
+   @enddesc
+   @version   $Id$
  @@*/
 
 #define DEBUG_ACTIVATE
@@ -27,6 +27,7 @@
 
 #include "cctk_ActiveThorns.h"
 #include "cctki_ActiveThorns.h"
+#include "cctki_Parameter.h"
 
 static const char *rcsid = "$Header$";
 
@@ -47,7 +48,7 @@ struct IMPLEMENTATION
   int active;
   t_sktree *thornlist;
   char *activating_thorn;
-  
+
   int n_ancestors;
   char **ancestors;
 
@@ -59,7 +60,7 @@ struct IMPLEMENTATION
  ********************* Local Routine Prototypes *********************
  ********************************************************************/
 
-static int RegisterImp(const char *name, 
+static int RegisterImp(const char *name,
                        const char *thorn,
                        const char **ancestors,
                        const char **friends);
@@ -101,24 +102,24 @@ static int n_imps   = 0;
    @routine    CCTKi_RegisterThorn
    @date       Sun Jul  4 17:44:14 1999
    @author     Tom Goodale
-   @desc 
+   @desc
    Registers a thorn with the flesh.
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   @enddesc
+   @calls
+   @calledby
+   @history
+
+   @endhistory
    @var     attributes
    @vdesc   Thorn attributes
    @vtype   const struct iAttrributeList
    @vio     in
-   @vcomment 
- 
-   @endvar 
+   @vcomment
+
+   @endvar
 
    @returntype int
-   @returndesc 
+   @returndesc
     0 - success
    -1 - Duplicate thorn
    -2 - memory failure storing thorn
@@ -200,7 +201,7 @@ int CCTKi_RegisterThorn(const struct iAttributeList *attributes)
     else
     {
       fprintf(stderr, "Unknown/unimplemented thorn attribute %s\n", attributes[i].attribute);
-    }  
+    }
   }
 
   /*  printf("Registering thorn %s, which provides %s\n", name, imp);*/
@@ -226,7 +227,7 @@ int CCTKi_RegisterThorn(const struct iAttributeList *attributes)
         /* Store the data in the tree */
         temp = SKTreeStoreData(thornlist, thornlist, name, thorn);
 
-        if(!thornlist) 
+        if(!thornlist)
         {
           thornlist = temp;
         }
@@ -266,25 +267,25 @@ int CCTKi_RegisterThorn(const struct iAttributeList *attributes)
    @routine    CCTKi_ActivateThorn
    @date       Sun Jul  4 17:46:15 1999
    @author     Tom Goodale
-   @desc 
+   @desc
    Activates a thorn and the associated implementation assuming
    the implementation isn't already active.
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   @enddesc
+   @calls
+   @calledby
+   @history
+
+   @endhistory
    @var     name
    @vdesc   Name of thorn to activate
    @vtype   const char *
    @vio     in
-   @vcomment 
- 
-   @endvar 
+   @vcomment
+
+   @endvar
 
    @returntype int
-   @returndesc 
+   @returndesc
     0 - success
    -1 - non-existent thorn
    -2 - internal error
@@ -297,7 +298,7 @@ int CCTKi_ActivateThorn(const char *name)
   int retval;
   t_sktree *thornnode;
   t_sktree *impnode;
-  
+
   struct THORN *thorn;
   struct IMPLEMENTATION *imp;
 
@@ -316,7 +317,7 @@ int CCTKi_ActivateThorn(const char *name)
     if(impnode)
     {
       imp = (struct IMPLEMENTATION *)(impnode->data);
-          
+
       if(!thorn->active)
       {
         if(!imp->active)
@@ -362,24 +363,24 @@ int CCTKi_ActivateThorn(const char *name)
    @routine    CCTK_IsThornActive
    @date       Sun Jul  4 17:46:56 1999
    @author     Tom Goodale
-   @desc 
+   @desc
    Checks if a thorn is active.
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   @enddesc
+   @calls
+   @calledby
+   @history
+
+   @endhistory
    @var     name
    @vdesc   Name of thorn
    @vtype   const char *
    @vio     in
-   @vcomment 
- 
-   @endvar 
+   @vcomment
+
+   @endvar
 
    @returntype int
-   @returndesc 
+   @returndesc
    0 - inactive
    1 - active
    @endreturndesc
@@ -388,7 +389,7 @@ int CCTK_IsThornActive(const char *name)
 {
   int retval;
   t_sktree *node;
-  
+
   struct THORN *thorn;
 
   /* Find the thorn */
@@ -413,7 +414,7 @@ int CCTK_FCALL CCTK_FNAME (CCTK_IsThornActive)
                           (ONE_FORTSTRING_ARG)
 {
   int retval;
-  ONE_FORTSTRING_CREATE(name) 
+  ONE_FORTSTRING_CREATE(name)
   retval = CCTK_IsThornActive(name);
   free(name);
   return retval;
@@ -423,24 +424,24 @@ int CCTK_FCALL CCTK_FNAME (CCTK_IsThornActive)
    @routine    CCTK_ThornImplementation
    @date       Sun Oct 17 21:10:19 1999
    @author     Tom Goodale
-   @desc 
+   @desc
    Returns the implementation provided by the thorn.
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   @enddesc
+   @calls
+   @calledby
+   @history
+
+   @endhistory
    @var     name
    @vdesc   Name of the thorn
    @vtype   const char *
    @vio     in
-   @vcomment 
- 
-   @endvar 
+   @vcomment
+
+   @endvar
 
    @returntype const char *
-   @returndesc 
+   @returndesc
    Name of the implementation or NULL
    @endreturndesc
 @@*/
@@ -448,7 +449,7 @@ const char *CCTK_ThornImplementation(const char *name)
 {
   const char *retval;
   t_sktree *node;
-  
+
   struct THORN *thorn;
 
   /* Find the thorn */
@@ -470,24 +471,24 @@ const char *CCTK_ThornImplementation(const char *name)
    @routine    CCTK_ImplementationThorn
    @date       Sun Oct 17 22:04:13 1999
    @author     Tom Goodale
-   @desc 
+   @desc
    Returns the name of one thorn providing an implementation.
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   @enddesc
+   @calls
+   @calledby
+   @history
+
+   @endhistory
    @var     name
    @vdesc   Name of the implementation
    @vtype   const char *
    @vio     in
-   @vcomment 
- 
-   @endvar 
+   @vcomment
+
+   @endvar
 
    @returntype const char *
-   @returndesc 
+   @returndesc
    Name of the thorn or NULL
    @endreturndesc
 @@*/
@@ -496,7 +497,7 @@ const char *CCTK_ImplementationThorn(const char *name)
   const char *retval;
 
   t_sktree *node;
-  
+
   struct IMPLEMENTATION *imp;
 
   /* Find the implementation */
@@ -519,24 +520,24 @@ const char *CCTK_ImplementationThorn(const char *name)
    @routine    CCTK_IsThornCompiled
    @date       Sun Jul  4 17:46:56 1999
    @author     Tom Goodale
-   @desc 
+   @desc
    Checks if a thorn is compiled in.
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   @enddesc
+   @calls
+   @calledby
+   @history
+
+   @endhistory
    @var     name
    @vdesc   Name of thorn
    @vtype   const char *
    @vio     in
-   @vcomment 
- 
-   @endvar 
+   @vcomment
+
+   @endvar
 
    @returntype int
-   @returndesc 
+   @returndesc
    0 - not compiled
    1 - compiled
    @endreturndesc
@@ -545,7 +546,7 @@ int CCTK_IsThornCompiled(const char *name)
 {
   int retval;
   t_sktree *node;
-  
+
   /* Find the thorn */
   node = SKTreeFindNode(thornlist, name);
 
@@ -562,7 +563,7 @@ int CCTK_IsThornCompiled(const char *name)
 void CCTK_FCALL CCTK_FNAME(CCTK_IsThornCompiled)
      (int *retval, ONE_FORTSTRING_ARG)
 {
-  ONE_FORTSTRING_CREATE(name) 
+  ONE_FORTSTRING_CREATE(name)
   *retval = CCTK_IsThornCompiled(name);
   free(name);
 }
@@ -572,24 +573,24 @@ void CCTK_FCALL CCTK_FNAME(CCTK_IsThornCompiled)
    @routine    CCTK_IsImplementationCompiled
    @date       Sun June 3 2001
    @author     Gabrielle Allen
-   @desc 
+   @desc
    Checks if a implementation is compiled in.
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   @enddesc
+   @calls
+   @calledby
+   @history
+
+   @endhistory
    @var     name
    @vdesc   Name of implementation
    @vtype   const char *
    @vio     in
-   @vcomment 
- 
-   @endvar 
+   @vcomment
+
+   @endvar
 
    @returntype int
-   @returndesc 
+   @returndesc
    0 - not compiled
    1 - compiled
    @endreturndesc
@@ -598,7 +599,7 @@ int CCTK_IsImplementationCompiled(const char *name)
 {
   int retval;
   t_sktree *node;
-  
+
   /* Find the thorn */
   node = SKTreeFindNode(implist, name);
 
@@ -615,7 +616,7 @@ int CCTK_IsImplementationCompiled(const char *name)
 void CCTK_FCALL CCTK_FNAME (CCTK_IsImplementationCompiled)
                            (int *retval, ONE_FORTSTRING_ARG)
 {
-  ONE_FORTSTRING_CREATE(name) 
+  ONE_FORTSTRING_CREATE(name)
   *retval = CCTK_IsImplementationCompiled(name);
   free(name);
 }
@@ -625,24 +626,24 @@ void CCTK_FCALL CCTK_FNAME (CCTK_IsImplementationCompiled)
    @routine    CCTK_IsImplementationActive
    @date       Sun Jul  4 17:46:56 1999
    @author     Tom Goodale
-   @desc 
+   @desc
    Checks if an implementation is active.
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   @enddesc
+   @calls
+   @calledby
+   @history
+
+   @endhistory
    @var     name
    @vdesc   Name of implementation
    @vtype   const char *
    @vio     in
-   @vcomment 
- 
-   @endvar 
+   @vcomment
+
+   @endvar
 
    @returntype int
-   @returndesc 
+   @returndesc
    0 - inactive
    1 - active
    @endreturndesc
@@ -652,7 +653,7 @@ int CCTK_IsImplementationActive(const char *name)
   int retval;
 
   t_sktree *node;
-  
+
   struct IMPLEMENTATION *imp;
 
   /* Find the implementation */
@@ -676,7 +677,7 @@ int CCTK_IsImplementationActive(const char *name)
 void CCTK_FCALL CCTK_FNAME (CCTK_IsImplementationActive)
                            (int *retval, ONE_FORTSTRING_ARG)
 {
-  ONE_FORTSTRING_CREATE(name) 
+  ONE_FORTSTRING_CREATE(name)
   *retval = CCTK_IsImplementationActive(name);
   free(name);
 }
@@ -685,39 +686,39 @@ void CCTK_FCALL CCTK_FNAME (CCTK_IsImplementationActive)
    @routine    CCTKi_PrintThorns
    @date       Mon Jul  5 10:02:15 1999
    @author     Tom Goodale
-   @desc 
+   @desc
    Prints a list of thorns.
    Only lists active ones if the 'active' parameter is true.
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   @enddesc
+   @calls
+   @calledby
+   @history
+
+   @endhistory
    @var     file
    @vdesc   File stream to print to
    @vtype   FILE *
    @vio     in
-   @vcomment 
- 
-   @endvar 
+   @vcomment
+
+   @endvar
    @var     format
    @vdesc   format string for file
    @vtype   const char *
    @vio     in
-   @vcomment 
- 
-   @endvar 
+   @vcomment
+
+   @endvar
    @var     active
    @vdesc   Just print active thorns ?
    @vtype   int
    @vio     in
-   @vcomment 
-   Set to 0 to print all thorns. 
-   @endvar 
+   @vcomment
+   Set to 0 to print all thorns.
+   @endvar
 
    @returntype int
-   @returndesc 
+   @returndesc
    0 - success
    @endreturndesc
 @@*/
@@ -731,7 +732,7 @@ int CCTKi_PrintThorns(FILE *file, const char *format, int active)
   retval = 0;
 
   for(node= SKTreeFindFirst(thornlist);
-      node; 
+      node;
       node = node->next, retval++)
   {
     thorn = (struct THORN *)(node->data);
@@ -749,39 +750,39 @@ int CCTKi_PrintThorns(FILE *file, const char *format, int active)
    @routine    CCTKi_PrintImps
    @date       Mon Jul  5 10:08:19 1999
    @author     Tom Goodale
-   @desc 
+   @desc
    Prints a list of implementations.
-   Only lists active ones if the 'active' parameter is true.   
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   Only lists active ones if the 'active' parameter is true.
+   @enddesc
+   @calls
+   @calledby
+   @history
+
+   @endhistory
    @var     file
    @vdesc   File stream to print to
    @vtype   FILE *
    @vio     in
-   @vcomment 
- 
-   @endvar 
+   @vcomment
+
+   @endvar
    @var     format
    @vdesc   format string for file
    @vtype   const char *
    @vio     in
-   @vcomment 
- 
-   @endvar 
+   @vcomment
+
+   @endvar
    @var     active
    @vdesc   Just print active implementations ?
    @vtype   int
    @vio     in
-   @vcomment 
-   Set to 0 to print all implementations. 
-   @endvar 
+   @vcomment
+   Set to 0 to print all implementations.
+   @endvar
 
    @returntype int
-   @returndesc 
+   @returndesc
    0 - success
    @endreturndesc
 @@*/
@@ -795,7 +796,7 @@ int CCTKi_PrintImps(FILE *file, const char *format, int active)
   retval = 0;
 
   for(node= SKTreeFindFirst(implist);
-      node; 
+      node;
       node = node->next, retval++)
   {
     imp = (struct IMPLEMENTATION *)(node->data);
@@ -814,24 +815,24 @@ int CCTKi_PrintImps(FILE *file, const char *format, int active)
    @routine    CCTK_ActivatingThorn
    @date       Thu Oct 14 16:08:42 1999
    @author     Tom Goodale
-   @desc 
-   Finds the thorn which activated a particular implementation 
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   @desc
+   Finds the thorn which activated a particular implementation
+   @enddesc
+   @calls
+   @calledby
+   @history
+
+   @endhistory
    @var     name
    @vdesc   implementation name
    @vtype   const char *
    @vio     in
-   @vcomment 
- 
-   @endvar 
+   @vcomment
+
+   @endvar
 
    @returntype const char *
-   @returndesc 
+   @returndesc
    Name of activating thorn or NULL if inactive
    @endreturndesc
 @@*/
@@ -840,7 +841,7 @@ const char *CCTK_ActivatingThorn(const char *name)
   const char *retval;
 
   t_sktree *node;
-  
+
   struct IMPLEMENTATION *imp;
 
   /* Find the implementation */
@@ -867,25 +868,25 @@ const char *CCTK_ActivatingThorn(const char *name)
    @routine    CCTK_ImpThornList
    @date       Tue Jul 27 09:15:58 1999
    @author     Tom Goodale
-   @desc 
+   @desc
    Return the thorns for an implementation.
    For now return an sktree - FIXME
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   @enddesc
+   @calls
+   @calledby
+   @history
+
+   @endhistory
    @var     name
    @vdesc   Name of implementation
    @vtype   const char *
    @vio     in
-   @vcomment 
- 
-   @endvar 
+   @vcomment
+
+   @endvar
 
    @returntype t_sktree *
-   @returndesc 
+   @returndesc
    Thornlist
    @endreturndesc
 @@*/
@@ -894,9 +895,9 @@ t_sktree *CCTK_ImpThornList(const char *name)
   t_sktree *retval;
 
   t_sktree *node;
-  
+
   struct IMPLEMENTATION *imp;
-  
+
 
   /* Find the implementation */
   node = SKTreeFindNode(implist, name);
@@ -920,17 +921,17 @@ t_sktree *CCTK_ImpThornList(const char *name)
    @routine    CCTK_NumCompiledThorns
    @date       Tue Feb 02 2000
    @author     Thomas Radke
-   @desc 
+   @desc
    Return the number of thorns compiled in.
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   @enddesc
+   @calls
+   @calledby
+   @history
+
+   @endhistory
 
    @returntype int
-   @returndesc 
+   @returndesc
    Number of thorns compiled in
    @endreturndesc
 @@*/
@@ -939,29 +940,29 @@ int CCTK_NumCompiledThorns(void)
   return n_thorns;
 }
 
-  
+
  /*@@
    @routine    CCTK_CompiledThorn
    @date       Tue Feb 02 2000
    @author     Thomas Radke
-   @desc 
+   @desc
    Return the name of the compiled thorn with given index.
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   @enddesc
+   @calls
+   @calledby
+   @history
+
+   @endhistory
    @var     tindex
    @vdesc   thorn index
    @vtype   int
    @vio     in
-   @vcomment 
- 
-   @endvar 
+   @vcomment
+
+   @endvar
 
    @returntype const char *
-   @returndesc 
+   @returndesc
    Name of thorn
    @endreturndesc
 @@*/
@@ -987,22 +988,22 @@ const char *CCTK_CompiledThorn(int tindex)
   return ret_val;
 }
 
-  
+
  /*@@
    @routine    CCTK_NumCompiledImplementations
    @date       Tue Feb 02 2000
    @author     Thomas Radke
-   @desc 
+   @desc
    Return the number of implementations compiled in.
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   @enddesc
+   @calls
+   @calledby
+   @history
+
+   @endhistory
 
    @returntype int
-   @returndesc 
+   @returndesc
    Number of implementations compiled in
    @endreturndesc
 @@*/
@@ -1011,29 +1012,29 @@ int CCTK_NumCompiledImplementations(void)
   return n_imps;
 }
 
-  
+
  /*@@
    @routine    CCTK_CompiledImplementation
    @date       Tue Feb 02 2000
    @author     Thomas Radke
-   @desc 
+   @desc
    Return the name of the compiled implementation with given index.
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   @enddesc
+   @calls
+   @calledby
+   @history
+
+   @endhistory
    @var     tindex
    @vdesc   implementation index
    @vtype   int
    @vio     in
-   @vcomment 
- 
-   @endvar 
+   @vcomment
+
+   @endvar
 
    @returntype const char *
-   @returndesc 
+   @returndesc
    Name of implementation
    @endreturndesc
 @@*/
@@ -1064,17 +1065,17 @@ const char *CCTK_CompiledImplementation(int tindex)
    @routine    CCTK_ImplementationRequires
    @date       Sat Oct 20 2001
    @author     Gabrielle Allen
-   @desc 
+   @desc
    Return the ancestors for an implementation
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   @enddesc
+   @calls
+   @calledby
+   @history
+
+   @endhistory
 
    @returntype int
-   @returndesc 
+   @returndesc
    @endreturndesc
 @@*/
 
@@ -1096,7 +1097,7 @@ uStringList *CCTK_ImplementationRequires(const char *imp)
     CCTK_ImplementationThorn(impdata->ancestors[i]);
     Util_StringListAdd(ancestors,impdata->ancestors[i]);
   }
-      
+
   /* Get friends */
   for(i=0; impdata->friends[i]; i++)
   {
@@ -1111,24 +1112,24 @@ uStringList *CCTK_ImplementationRequires(const char *imp)
    @routine    CCTKi_ActivateThorns
    @date       Mon May 21 22:06:37 2001
    @author     Tom Goodale
-   @desc 
+   @desc
    Activates a list of thorns if they are self consistent.
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   @enddesc
+   @calls
+   @calledby
+   @history
+
+   @endhistory
    @var     activethornlist
    @vdesc   The list of thorns to activate.
    @vtype   const char *
    @vio     in
-   @vcomment 
- 
-   @endvar 
+   @vcomment
+
+   @endvar
 
    @returntype int
-   @returndesc 
+   @returndesc
    -ve Number of errors encountered.
    @endreturndesc
 @@*/
@@ -1182,7 +1183,7 @@ int CCTKi_ActivateThorns(const char *activethornlist)
 
         printf("       However, implementation %s was found and is\n",token);
         printf("       provided by thorn(s):");
-        SKTreeTraverseInorder(impthornlist, 
+        SKTreeTraverseInorder(impthornlist,
                               JustPrintThornName, NULL);
         printf("\n");
       }
@@ -1204,11 +1205,11 @@ int CCTKi_ActivateThorns(const char *activethornlist)
     }
     else if((impnode = SKTreeFindNode(implist, this_imp)))
     {
-      /* Ok, this thorn exists, and isn't active, a duplicate, or provide the same imp as another thorn 
-       * which is active or has just been schedule for activation, so can get on with cataloging 
+      /* Ok, this thorn exists, and isn't active, a duplicate, or provide the same imp as another thorn
+       * which is active or has just been schedule for activation, so can get on with cataloging
        * dependencies.
        */
-      
+
       Util_StringListAdd(required_imps,this_imp);
 
       imp = (struct IMPLEMENTATION *)(impnode->data);
@@ -1222,7 +1223,7 @@ int CCTKi_ActivateThorns(const char *activethornlist)
           Util_StringListAdd(required_imps, imp->ancestors[i]);
         }
       }
-      
+
       /* Look at friends */
       for(i=0; imp->friends[i]; i++)
       {
@@ -1235,7 +1236,7 @@ int CCTKi_ActivateThorns(const char *activethornlist)
     }
     else
     {
-      CCTK_Warn(0, __LINE__, __FILE__, "Cactus", 
+      CCTK_Warn(0, __LINE__, __FILE__, "Cactus",
                 "Internal error :- please report this to cactusmaint@cactuscode.org");
     }
     token = strtok(NULL," \t\n");
@@ -1249,7 +1250,7 @@ int CCTKi_ActivateThorns(const char *activethornlist)
     /* So, let's see if we are requesting all the imps we need */
 
     for(imp1=Util_StringListNext(requested_imps,1),
-          imp2=Util_StringListNext(required_imps,1); 
+          imp2=Util_StringListNext(required_imps,1);
         imp1&&imp2;
         imp1=Util_StringListNext(requested_imps,0),
           imp2=Util_StringListNext(required_imps,0))
@@ -1268,7 +1269,7 @@ int CCTKi_ActivateThorns(const char *activethornlist)
 
             printf("       This implementation is provided by compiled thorns:\n");
             printf("          ");
-            SKTreeTraverseInorder(impthornlist, 
+            SKTreeTraverseInorder(impthornlist,
                               JustPrintThornName, NULL);
             printf("\n");
           }
@@ -1284,7 +1285,7 @@ int CCTKi_ActivateThorns(const char *activethornlist)
         }
       } while((imp2=Util_StringListNext(required_imps,0)));
     }
-    /* Since the requested imps is a subset of the required imps, 
+    /* Since the requested imps is a subset of the required imps,
      * we may still have some required imps to go through.
      */
     while((imp2))
@@ -1296,10 +1297,10 @@ int CCTKi_ActivateThorns(const char *activethornlist)
       if (CCTK_IsImplementationCompiled(imp2))
       {
         impthornlist = CCTK_ImpThornList(imp2);
-        
+
         printf("       This implementation is provided by compiled thorns:\n");
         printf("          ");
-        SKTreeTraverseInorder(impthornlist, 
+        SKTreeTraverseInorder(impthornlist,
                               JustPrintThornName, NULL);
         printf("\n");
       }
@@ -1309,7 +1310,7 @@ int CCTKi_ActivateThorns(const char *activethornlist)
                "compiled thorn\n");
       }
       imp2=Util_StringListNext(required_imps,0);
-    }    
+    }
   }
 
 
@@ -1346,8 +1347,8 @@ int CCTKi_ActivateThorns(const char *activethornlist)
 
   return retval;
 }
-  
-    
+
+
 
 /********************************************************************
  *********************     Local Routines   *************************
@@ -1357,52 +1358,52 @@ int CCTKi_ActivateThorns(const char *activethornlist)
    @routine    RegisterImp
    @date       Sun Jul  4 17:44:42 1999
    @author     Tom Goodale
-   @desc 
+   @desc
    Registers an implementation.
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   @enddesc
+   @calls
+   @calledby
+   @history
+
+   @endhistory
    @var     name
    @vdesc   name of the implementation
    @vtype   const char *
    @vio     in
-   @vcomment 
- 
-   @endvar 
+   @vcomment
+
+   @endvar
    @var     thorn
    @vdesc   name of the thorn
    @vtype   const char *
    @vio     in
-   @vcomment 
- 
-   @endvar 
+   @vcomment
+
+   @endvar
    @var     ancestors
    @vdesc   ancestors of the implementation
    @vtype   const char **
    @vio     in
-   @vcomment 
- 
-   @endvar 
+   @vcomment
+
+   @endvar
    @var     friends
    @vdesc   friends of the implementation
    @vtype   const char **
    @vio     in
-   @vcomment 
- 
-   @endvar 
+   @vcomment
+
+   @endvar
 
    @returntype int
-   @returndesc 
+   @returndesc
     0 - success
    -1 - failed to store thorn in implementation
    -2 - memory failure creating implementation
    -3 - failed to store implementtion in tree
    @endreturndesc
 @@*/
-static int RegisterImp(const char *name, 
+static int RegisterImp(const char *name,
                        const char *thorn,
                        const char **ancestors,
                        const char **friends)
@@ -1428,7 +1429,7 @@ static int RegisterImp(const char *name,
     {
       imp->active = 0;
 
-      /* Store the name of this thorn in a tree */      
+      /* Store the name of this thorn in a tree */
       imp->thornlist = SKTreeStoreData(NULL,NULL, thorn, NULL);
 
       /* Store the info in the tree. */
@@ -1452,7 +1453,7 @@ static int RegisterImp(const char *name,
 
         imp->n_ancestors = count;
         imp->ancestors = (char **)malloc((count+1)*sizeof(char *));
-        
+
         if(imp->ancestors)
         {
           for(count=0; ancestors[count];count++)
@@ -1462,7 +1463,7 @@ static int RegisterImp(const char *name,
           imp->ancestors[count] = NULL;
 
           qsort(imp->ancestors, count, sizeof(char *), CompareStrings);
- 
+
         }
 
         /* Count the friends */
@@ -1470,7 +1471,7 @@ static int RegisterImp(const char *name,
 
         imp->n_friends = count;
         imp->friends = (char **)malloc((count+1)*sizeof(char *));
-        
+
         if(imp->friends)
         {
           for(count=0; friends[count];count++)
@@ -1481,7 +1482,7 @@ static int RegisterImp(const char *name,
 
           qsort(imp->friends, count, sizeof(char *), CompareStrings);
         }
-      }            
+      }
     }
     else
     {
@@ -1503,24 +1504,24 @@ static int RegisterImp(const char *name,
    @routine    ActivateThorn
    @date       Mon May 21 22:09:47 2001
    @author     Tom Goodale
-   @desc 
+   @desc
    Activate one thorn - assumes all error checking done by calling routine.
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   @enddesc
+   @calls
+   @calledby
+   @history
+
+   @endhistory
    @var     name
    @vdesc   Name of thorn to activate
    @vtype   const char *
    @vio     in
-   @vcomment 
- 
-   @endvar 
+   @vcomment
+
+   @endvar
 
    @returntype int
-   @returndesc 
+   @returndesc
    0  - success
    -1 - can't find thorn
    @endreturndesc
@@ -1529,7 +1530,7 @@ static int ActivateThorn(const char *name)
 {
   int retval;
   t_sktree *thornnode;
-  
+
   struct THORN *thorn;
 
   printf("Activating thorn %s...", name);
@@ -1559,31 +1560,31 @@ static int ActivateThorn(const char *name)
    @routine    ActivateImp
    @date       Mon May 21 22:09:47 2001
    @author     Tom Goodale
-   @desc 
+   @desc
    Activate one implementation - assumes all error checking done by calling routine.
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   @enddesc
+   @calls
+   @calledby
+   @history
+
+   @endhistory
    @var     implementation
    @vdesc   Name of implementation to activate
    @vtype   const char *
    @vio     in
-   @vcomment 
- 
-   @endvar 
+   @vcomment
+
+   @endvar
    @var     thorn
    @vdesc   Name of thorn activating this imp
    @vtype   const char *
    @vio     in
-   @vcomment 
- 
-   @endvar 
+   @vcomment
+
+   @endvar
 
    @returntype int
-   @returndesc 
+   @returndesc
    0  - success
    -1 - can't find implementation
    @endreturndesc
@@ -1592,7 +1593,7 @@ static int ActivateImp(const char *implementation, const char *thorn)
 {
   int retval;
   t_sktree *impnode;
-  
+
   struct IMPLEMENTATION *imp;
 
   /* Find the implementation */
@@ -1601,7 +1602,7 @@ static int ActivateImp(const char *implementation, const char *thorn)
   if(impnode)
   {
     imp = (struct IMPLEMENTATION *)(impnode->data);
-          
+
     imp->active = 1;
     /* Remember which thorn activated this imp. */
     imp->activating_thorn = Util_Strdup(thorn);
@@ -1638,14 +1639,14 @@ static int CompareStrings(const void *string1, const void *string2)
    @routine    JustPrintThornName
    @date       Mon Jun  4 19:05:45 2001
    @author     Tom Goodale
-   @desc 
+   @desc
    Print the name of a thorn if it is passed from an sktree.
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   @enddesc
+   @calls
+   @calledby
+   @history
+
+   @endhistory
 
 @@*/
 static int JustPrintThornName(const char *key, void *input, void *dummy)
