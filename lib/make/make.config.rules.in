@@ -25,7 +25,7 @@ DIVIDER =  $(DIVEL)$(DIVEL)$(DIVEL)$(DIVEL)
 # Define how to do dependencies
 
 define DEPENDENCY_FIXER
-	$(PERL) -pi -e "s,([^:]*),$(basename $@).o $(basename $@).d," $@ 
+	$(PERL) -pi -e "s,([^:]*),$(basename $@).o $(basename $@).d, if(m/:/)" $@ 
 endef
 
 define C_DEPENDENCIES
