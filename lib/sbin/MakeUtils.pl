@@ -21,9 +21,9 @@
 
 sub buildthorns
 {
-  local($arrangement_dir,$choice) = @_;
-  local(@arrangements);
-  local(%info);
+  my($arrangement_dir,$choice) = @_;
+  my(@arrangements);
+  my(%info);
 
   chdir $arrangement_dir || die "Can't change directory to $arrangement_dir\n";
 
@@ -127,11 +127,11 @@ sub buildthorns
 #@@*/
 sub ThornInfo
 {
-  local($thorn) = @_;
-  local($implementation) = "";
-  local($friends) = "";
-  local($inherits) = "";
-  local($shares) = "";
+  my($thorn) = @_;
+  my($implementation) = "";
+  my($friends) = "";
+  my($inherits) = "";
+  my($shares) = "";
 
   open(INTERFACE, "<$thorn/interface.ccl") || die "Unable to open $thorn/interface.ccl";
 

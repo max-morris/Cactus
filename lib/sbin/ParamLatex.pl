@@ -26,8 +26,8 @@ $thorn{"WaveToy"} = "arrangements/CactusApplications/WaveToy";
 #@@*/
 sub latex_database
 {
-  local(%parameter_database) = @_;
-  local($field);
+  my(%parameter_database) = @_;
+  my($field);
   
   $nvars = 0;
 

@@ -11,7 +11,7 @@
 
 sub CST_error
 {
-    local($level,$mess,$line,$file) = @_;
+    my($level,$mess,$line,$file) = @_;
 
     if ($full_warnings)
     {
@@ -61,9 +61,9 @@ sub CST_error
 
 sub read_file
 {
-  local($file) = @_;
-  local(@indata);
-  local($line);
+  my($file) = @_;
+  my(@indata);
+  my($line);
 
   open(IN, "<$file") || die("Can't open $file\n");
   
@@ -121,10 +121,10 @@ sub read_file
 
 sub chompme
 {
-    local($in) = @_;
+    my($in) = @_;
 
     $lastchar = chop($in);
-    if ($lastchar == "\n")
+    if ($lastchar eq "\n")
     {
 	return $_;
     }
@@ -150,8 +150,8 @@ sub chompme
 
 sub WriteFile
 {
-  local ($filename,$data) = @_;
-  local ($data_in);
+  my ($filename,$rdata) = @_;
+  my ($data_in);
 
 # Read in file
   $data_in = "";
@@ -164,11 +164,11 @@ sub WriteFile
     }
   }
 
-  if ($data ne $data_in)   
+  if ($$rdata ne $data_in)   
   {
 #    print "Creating new file $filename\n";
     open(OUT, ">$filename") || die("Can't open $filename\n");
-    print OUT $data;
+    print OUT $$rdata;
     close OUT;
   }
 

@@ -18,8 +18,8 @@ require "$sbin_dir/CSTUtils.pl";
 
 sub BuildHeaders
 {
-  local($cctk_home,$bindings_dir,%database) = @_;
-  local($start_dir,$thorn,$inc_file,$inc_file1,$inc_file2);
+  my($cctk_home,$bindings_dir,%database) = @_;
+  my($start_dir,$thorn,$inc_file,$inc_file1,$inc_file2);
 
   $start_dir = `pwd`;
   chdir $bindings_dir;
@@ -34,7 +34,7 @@ sub BuildHeaders
     }
   }
 
-# Add the local headers from thorns
+# Add the my headers from thorns
   foreach $thorn (split(" ",$interface_database{"THORNS"}))
   {
 
@@ -85,7 +85,7 @@ sub BuildHeaders
   {
     foreach $inc_file1 (split(" ",$interface_database{"\U$thorn USES HEADER"}))
     {
-      &WriteFile($inc_file1,$data{"$inc_file1"});
+      &WriteFile($inc_file1,\$data{"$inc_file1"});
     }
   }
 

@@ -10,9 +10,8 @@
 
 sub OutputFile
 {
-  local($directory, $file, @data) = @_;
+  my($directory, $file, @data) = @_;
 
-#  open(OUT, ">$directory/$file") || die "Can't open $file in $directory\n";
   $dataout = "";
 
   foreach $line (@data)
@@ -20,8 +19,7 @@ sub OutputFile
     $dataout .= "$line\n";
   }
 
-  &WriteFile("$directory/$file",$dataout);
-#  close OUT;
+  &WriteFile("$directory/$file",\$dataout);
 
 }
 

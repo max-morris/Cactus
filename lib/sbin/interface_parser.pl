@@ -16,10 +16,10 @@
 
 sub create_interface_database
 {
-  local(%thorns) = @_;
-  local($thorn, @indata);
-  local(@new_interface_data);
-  local(@interface_data);
+  my(%thorns) = @_;
+  my($thorn, @indata);
+  my(@new_interface_data);
+  my(@interface_data);
   
   #  Loop through each  thorn's interface file.
   foreach $thorn (keys %thorns)
@@ -52,13 +52,13 @@ sub create_interface_database
 
 sub cross_index_interface_data
 {
-  local($n_thorns, @indata) = @_;
-  local(@thorns);
-  local(%interface_data);
-  local(%implementations);
-  local($implementation);
-  local(%ancestors);
-  local(%friends);
+  my($n_thorns, @indata) = @_;
+  my(@thorns);
+  my(%interface_data);
+  my(%implementations);
+  my($implementation);
+  my(%ancestors);
+  my(%friends);
 
   @thorns = @indata[0..$n_thorns-1];
   %interface_data = @indata[$n_thorns..$#indata];
@@ -123,12 +123,12 @@ sub cross_index_interface_data
 
 sub get_friends_of_me
 {
-  local($implementation, $n_implementations,@indata) = @_;
-  local(@implementations);
-  local(%interface_data);
-  local($other_implementation);
-  local($thorn);
-  local($friend,$friends);
+  my($implementation, $n_implementations,@indata) = @_;
+  my(@implementations);
+  my(%interface_data);
+  my($other_implementation);
+  my($thorn);
+  my($friend,$friends);
 
   @implementations = @indata[0..$n_implementations-1];
   %interface_data = @indata[$n_implementations..$#indata];
@@ -158,13 +158,13 @@ sub get_friends_of_me
 
 sub get_implementation_friends
 {
-  local($implementation, $n_friends, @indata) = @_;
-  local(%friends);
-  local(%interface_data);
-  local($thorn);
-  local($friend, $friends);
-  local($friends_of_me);
-  local($other_implementation);
+  my($implementation, $n_friends, @indata) = @_;
+  my(%friends);
+  my(%interface_data);
+  my($thorn);
+  my($friend, $friends);
+  my($friends_of_me);
+  my($other_implementation);
 
   if($n_friends > 0)
   {
@@ -204,11 +204,11 @@ sub get_implementation_friends
 
 sub get_implementation_ancestors
 {
-  local($implementation, $n_ancestors, @indata) = @_;
-  local(%ancestors);
-  local(%interface_data);
-  local($thorn);
-  local($ancestor, $ancestors);
+  my($implementation, $n_ancestors, @indata) = @_;
+  my(%ancestors);
+  my(%interface_data);
+  my($thorn);
+  my($ancestor, $ancestors);
 
   if($n_ancestors > 0)
   {
@@ -246,18 +246,18 @@ sub get_implementation_ancestors
 
 sub check_interface_consistency
 {
-  local($implementation, %interface_data) = @_;
-  local(@thorns);
-  local($thorn);
-  local($thing);
-  local(%inherits);
-  local(%friend);
-  local(%public_groups);
-  local(%private_groups);
-  local(%variables);
-  local($n_errors);
-  local($group);
-  local(%attributes);
+  my($implementation, %interface_data) = @_;
+  my(@thorns);
+  my($thorn);
+  my($thing);
+  my(%inherits);
+  my(%friend);
+  my(%public_groups);
+  my(%private_groups);
+  my(%variables);
+  my($n_errors);
+  my($group);
+  my(%attributes);
  
   # Find out which thorns provide this implementation.
   @thorns = split(" ", $interface_data{"IMPLEMENTATION \U$implementation\E THORNS"});
@@ -548,13 +548,13 @@ sub check_interface_consistency
 
 sub parse_interface_ccl
 {
-  local($arrangement, $thorn, @data) = @_;
-  local($line_number, $line, $block, $type, $variable, $description);
-  local($data, %interface_db);
-  local($implementation);
-  local($option,%options);
-  local(%known_groups);
-  local(%known_variables);
+  my($arrangement, $thorn, @data) = @_;
+  my($line_number, $line, $block, $type, $variable, $description);
+  my($data, %interface_db);
+  my($implementation);
+  my($option,%options);
+  my(%known_groups);
+  my(%known_variables);
       
 
   # Initialise some stuff to prevent perl -w from complaining.
@@ -783,8 +783,8 @@ sub parse_interface_ccl
 
 sub print_interface_database
 {
-  local(%database) = @_;
-  local($field);
+  my(%database) = @_;
+  my($field);
   
   foreach $field ( sort keys %database ){
     print "$field has value $database{$field}\n";
@@ -807,9 +807,9 @@ sub print_interface_database
 #@@*/
 sub PrintInterfaceStatistics
 {
-  local($thorn, %interface_database) = @_;
-  local($block);
-  local($sep);
+  my($thorn, %interface_database) = @_;
+  my($block);
+  my($sep);
 
   print "           Implements: " . $interface_database{"\U$thorn IMPLEMENTS"} . "\n";
 

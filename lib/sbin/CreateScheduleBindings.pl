@@ -24,17 +24,12 @@
 #@@*/
 sub CreateScheduleBindings
 {
-  local($bindings_dir, $n_interface_database, @rest) = @_;
-  local(%interface_database);
-  local(%schedule_database);
-  local($start_dir);
-  local($thorn);
-  local($file_list);
+  my($bindings_dir, $rhinterface_db, $rhschedule_db) = @_;
+  my($start_dir);
+  my($thorn);
+  my($file_list);
+  my($rsbuffer);
 
-  # Extract the interface and schedule databases from the arguments.
-  %interface_database = @rest[0..2*$n_interface_database-1];
-  %schedule_database = @rest[2*$n_interface_database..$#rest];
-  
   if(! -d $bindings_dir)
   {
     mkdir("$bindings_dir", 0755) || die "Unable to create $bindings_dir";
@@ -57,37 +52,24 @@ sub CreateScheduleBindings
 
   $file_list = "";
 
-  foreach $thorn (sort split(" ", $interface_database{"THORNS"}))
+  foreach $thorn (sort split(" ", $rhinterface_db->{"THORNS"}))
   {
-    $buffer = &ScheduleCreateFile($thorn, scalar(keys %interface_database), 
-				  %interface_database, %schedule_database);
+    $rsbuffer = &ScheduleCreateFile($thorn, $rhinterface_db, $rhschedule_db);
 
-#    open(OUT, ">Schedule$thorn.c") || die "Unable to open Schedule$thorn.c";
-    
-    &WriteFile("Schedule$thorn.c",$buffer);
-
-#    close OUT;
+    &WriteFile("Schedule$thorn.c",$rsbuffer);
 
     $file_list .= " Schedule$thorn.c";
   }
 
-  $buffer = ScheduleCreateBindings(scalar(keys %interface_database), 
-				  %interface_database, %schedule_database);
+  $rsbuffer = &ScheduleCreateBindings($rhinterface_db, $rhschedule_db);
 
-
-#  open(OUT, ">BindingsSchedule.c") || die "Unable to open BindingsSchedule.c";
-
-  &WriteFile("BindingsSchedule.c",$buffer);
-
-#  close OUT;
+  &WriteFile("BindingsSchedule.c",$rsbuffer);
 
   $file_list .= " BindingsSchedule.c";
 
-#  open(OUT, ">make.code.defn") || die "Unable to open make.code.defn";
+  $line = "SRCS = $file_list\n";
 
-  &WriteFile("make.code.defn","SRCS = $file_list\n");
-
-#  close OUT;
+  &WriteFile("make.code.defn",\$line);
   
   chdir "$start_dir";
 }  
@@ -108,48 +90,41 @@ sub CreateScheduleBindings
 #@@*/
 sub ScheduleCreateFile
 {
-  local($thorn, $n_interface_database, @rest) = @_;
-  local(%interface_database);
-  local(%schedule_database);
+  my($thorn, $rhinterface_db, $rhschedule_db) = @_;
 
-  local($implementation);
-  local($buffer, $prototypes);
-  local($block, $block_buffer, $block_prototype);
-  local($statement, $statement_buffer, $statement_prototype);
-  local($indent, $language, $function);
-  local(@mem_groups);
-  local(@comm_groups);
-  local(@trigger_groups);
-  local(@before_list);
-  local(@after_list);
-  local(@while_list);
-  local($outfile);
-  local($outbuf);
+  my($implementation);
+  my($buffer, $prototypes);
+  my($block, $block_buffer, $block_prototype);
+  my($statement, $statement_buffer, $statement_prototype);
+  my($indent, $language, $function);
+  my(@mem_groups);
+  my(@comm_groups);
+  my(@trigger_groups);
+  my(@before_list);
+  my(@after_list);
+  my(@while_list);
+  my($outfile);
+  my($outbuf);
 
-  # Extract the interface, and schedule databases from the arguments.
-  %interface_database = @rest[0..2*$n_interface_database-1];
-  %schedule_database = @rest[2*$n_interface_database..$#rest];
+  $implementation = $rhinterface_db->{"\U$thorn\E IMPLEMENTS"};
   
-  $implementation = $interface_database{"\U$thorn\E IMPLEMENTS"};
-  
-  $buffer = $schedule_database{"\U$thorn\E FILE"};
+  $buffer = $rhschedule_db->{"\U$thorn\E FILE"};
   
   # Process each schedule block
-  for($block = 0 ; $block < $schedule_database{"\U$thorn\E N_BLOCKS"}; $block++)
+  for($block = 0 ; $block < $rhschedule_db->{"\U$thorn\E N_BLOCKS"}; $block++)
   {
     ($block_buffer, $block_prototype) = &ScheduleBlock($thorn, $implementation, $block,
-						       $n_interface_database, 
-						       @rest);
+						       $rhinterface_db, $rhschedule_db);
     $buffer =~ s:\@BLOCK\@$block:$block_buffer:;
     $prototypes .= "$block_prototype";
   }
 
   # Process each schedule statement
-  for($statement = 0 ; $statement < $schedule_database{"\U$thorn\E N_STATEMENTS"}; $statement++)
+  for($statement = 0 ; $statement < $rhschedule_db->{"\U$thorn\E N_STATEMENTS"}; $statement++)
   {
     ($statement_buffer, $statement_prototype) = &ScheduleStatement($thorn, $implementation, $statement, 
-								   $n_interface_database,
-								   @rest);
+								   $rhinterface_db, $rhschedule_db);
+
     $buffer =~ s:\@STATEMENT\@$statement:$statement_buffer:;
     $prototypes .= "$statement_prototype";
   }
@@ -192,7 +167,7 @@ sub ScheduleCreateFile
   $outbuf .=  "}\n";
   $outbuf .=  "\n";
 
-  return $outbuf;
+  return \$outbuf;
 
 }
 
@@ -213,24 +188,17 @@ sub ScheduleCreateFile
 #@@*/
 sub ScheduleCreateBindings
 {
-  local($n_interface_database, @rest) = @_;
-  local(%interface_database);
-  local(%schedule_database);
+  my($rhinterface_db, $rhschedule_db) = @_;
 
-  local($outbuf);
+  my($outbuf);
 
-  # Extract the interface, and schedule databases from the arguments.
-  %interface_database = @rest[0..2*$n_interface_database-1];
-  %schedule_database = @rest[2*$n_interface_database..$#rest];
-
-  
   $outbuf = "";
   $outbuf .=  "\#include \"SKBinTree.h\"\n";
   $outbuf .=  "\#include \"cctk_ActiveThorns.h\"\n";
   $outbuf =   "\n";
   $outbuf .=  "/* Prototypes for functions to be registered. */";
 
-  foreach $thorn (sort split(" ", $interface_database{"THORNS"}))
+  foreach $thorn (sort split(" ", $rhinterface_db->{"THORNS"}))
   {
     $outbuf .= "void CCTKi_BindingsSchedule_$thorn(void);\n";
   }
@@ -251,7 +219,7 @@ sub ScheduleCreateBindings
   $outbuf .=  "\@\@*/\n";
   $outbuf .=  "int CCTKi_BindingsScheduleInitialise(void)\n";
   $outbuf .=  "{\n";
-  foreach $thorn (sort split(" ", $interface_database{"THORNS"}))
+  foreach $thorn (sort split(" ", $rhinterface_db->{"THORNS"}))
   {
     $outbuf .= "  if(CCTK_IsThornActive(\"$thorn\"))\n";
     $outbuf .= "  {\n";
@@ -262,7 +230,7 @@ sub ScheduleCreateBindings
   $outbuf .=  "}\n";
   $outbuf .=  "\n";
 
-  return $outbuf;
+  return \$outbuf;
 }
 #/*@@
 #  @routine    ScheduleBlock
@@ -280,74 +248,67 @@ sub ScheduleCreateBindings
 #@@*/
 sub ScheduleBlock
 {
-  local($thorn, $implementation, $block, $n_interface_database, @rest) = @_;
-  local(%interface_database);
-  local(%schedule_database);
+  my($thorn, $implementation, $block, $rhinterface_db, $rhschedule_db) = @_;
 
-  local($buffer, $prototype);
-  local($indent, $language, $function);
-  local(@mem_groups);
-  local(@comm_groups);
-  local(@trigger_groups);
-  local(@before_list);
-  local(@after_list);
-  local(@while_list);
-
-
-  # Extract the interface, and schedule databases from the arguments.
-  %interface_database = @rest[0..2*$n_interface_database-1];
-  %schedule_database = @rest[2*$n_interface_database..$#rest];
+  my($buffer, $prototype);
+  my($indent, $language, $function);
+  my(@mem_groups);
+  my(@comm_groups);
+  my(@trigger_groups);
+  my(@before_list);
+  my(@after_list);
+  my(@while_list);
 
   # Extract group and routine information from the databases
   @mem_groups = &ScheduleSelectGroups($thorn, $implementation, 
-				      $schedule_database{"\U$thorn\E BLOCK_$block STOR"},
-				      %interface_database);
+				      $rhschedule_db->{"\U$thorn\E BLOCK_$block STOR"},
+				      $rhinterface_db);
 
   @comm_groups = &ScheduleSelectGroups($thorn, $implementation, 
-				       $schedule_database{"\U$thorn\E BLOCK_$block COMM"},
-				       %interface_database);
+				       $rhschedule_db->{"\U$thorn\E BLOCK_$block COMM"},
+				       $rhinterface_db);
 
   @trigger_groups = &ScheduleSelectGroups($thorn, $implementation, 
-					  $schedule_database{"\U$thorn\E BLOCK_$block TRIG"},
-					  %interface_database);
+					  $rhschedule_db->{"\U$thorn\E BLOCK_$block TRIG"},
+					  $rhinterface_db);
 		
 
   @before_list = &ScheduleSelectRoutines($thorn, $implementation, 
-					 $schedule_database{"\U$thorn\E BLOCK_$block BEFORE"},
-					 %schedule_database);
+					 $rhschedule_db->{"\U$thorn\E BLOCK_$block BEFORE"},
+					 $rhschedule_db);
 
   @after_list = &ScheduleSelectRoutines($thorn, $implementation, 
-					$schedule_database{"\U$thorn\E BLOCK_$block AFTER"},
-					%schedule_database);
+					$rhschedule_db->{"\U$thorn\E BLOCK_$block AFTER"},
+					$rhschedule_db);
 
   @while_list = &ScheduleSelectVars($thorn, $implementation, 
-				    $schedule_database{"\U$thorn\E BLOCK_$block WHILE"},
-				    %interface_database);
+				    $rhschedule_db->{"\U$thorn\E BLOCK_$block WHILE"},
+				    $rhinterface_db);
 
 
   # Start writing out the data 
-  if($schedule_database{"\U$thorn\E BLOCK_$block TYPE"} eq "GROUP")
+  if($rhschedule_db->{"\U$thorn\E BLOCK_$block TYPE"} eq "GROUP")
   {
     $prototype = "";
     $buffer = "  CCTK_ScheduleGroup(";
     $indent = "                     ";
     $language = "";
   }
-  elsif($schedule_database{"\U$thorn\E BLOCK_$block TYPE"} eq "FUNCTION")
+  elsif($rhschedule_db->{"\U$thorn\E BLOCK_$block TYPE"} eq "FUNCTION")
   {
-    if($schedule_database{"\U$thorn\E BLOCK_$block LANG"} =~ m:^\s*C\s*$:i )
+    if($rhschedule_db->{"\U$thorn\E BLOCK_$block LANG"} =~ m:^\s*C\s*$:i )
     {
       $language = "C";
-      $function = $schedule_database{"\U$thorn\E BLOCK_$block NAME"};
+      $function = $rhschedule_db->{"\U$thorn\E BLOCK_$block NAME"};
     }
-    elsif($schedule_database{"\U$thorn\E BLOCK_$block LANG"} =~ m:^\s*(F|F77|FORTRAN|F90)\s*$:i )
+    elsif($rhschedule_db->{"\U$thorn\E BLOCK_$block LANG"} =~ m:^\s*(F|F77|FORTRAN|F90)\s*$:i )
     {
       $language = "Fortran";
-      $function = "FORTRAN_NAME(".$schedule_database{"\U$thorn\E BLOCK_$block NAME"} .")";
+      $function = "FORTRAN_NAME(".$rhschedule_db->{"\U$thorn\E BLOCK_$block NAME"} .")";
     }
     else
     {
-      print STDERR "Unknown language " .$schedule_database{"\U$thorn\E BLOCK_$block LANG"} ."\n";
+      print STDERR "Unknown language " .$rhschedule_db->{"\U$thorn\E BLOCK_$block LANG"} ."\n";
       $CST_errors++;
       return ("", "");
     }
@@ -358,16 +319,16 @@ sub ScheduleBlock
   }
   else
   {
-    print STDERR "Internal error: Unknown schedule block type " . $schedule_database{"\U$thorn\E BLOCK_$block TYPE"} . "\n";
+    print STDERR "Internal error: Unknown schedule block type " . $rhschedule_db->{"\U$thorn\E BLOCK_$block TYPE"} . "\n";
     return ("", "");
     $CST_errors++;
   }
   
-  $buffer .= "\"" . $schedule_database{"\U$thorn\E BLOCK_$block NAME"} . "\"" . ",\n";
+  $buffer .= "\"" . $rhschedule_db->{"\U$thorn\E BLOCK_$block NAME"} . "\"" . ",\n";
   $buffer .= $indent . "\"" . $thorn . "\"" . ",\n";
   $buffer .= $indent . "\"" . $implementation . "\"" . ",\n";
-  $buffer .= $indent . "\"" . $schedule_database{"\U$thorn\E BLOCK_$block DESCRIPTION"} . "\"" . ",\n";
-  $buffer .= $indent . "\"" . $schedule_database{"\U$thorn\E BLOCK_$block WHERE"} . "\"" . ",\n";
+  $buffer .= $indent . "\"" . $rhschedule_db->{"\U$thorn\E BLOCK_$block DESCRIPTION"} . "\"" . ",\n";
+  $buffer .= $indent . "\"" . $rhschedule_db->{"\U$thorn\E BLOCK_$block WHERE"} . "\"" . ",\n";
   if($language ne "")
   {
     $buffer .= $indent . "\"" . $language . "\"" . ",\n";
@@ -406,34 +367,28 @@ sub ScheduleBlock
 #@@*/
 sub ScheduleStatement
 {
-  local($thorn, $implementation, $statement, $n_interface_database, @rest) = @_;
-  local(%interface_database);
-  local(%schedule_database);
+  my($thorn, $implementation, $statement, $rhinterface_db, $rhschedule_db) = @_;
 
-  local($buffer, $prototype);
-  local(@groups);
-  local($group);
-
-  # Extract the interface and schedule databases from the arguments.
-  %interface_database = @rest[0..2*$n_interface_database-1];
-  %schedule_database = @rest[2*$n_interface_database..$#rest];
+  my($buffer, $prototype);
+  my(@groups);
+  my($group);
 
   # Extract the groups.
   @groups = &ScheduleSelectGroups($thorn, $implementation, 
-				  $schedule_database{"\U$thorn\E STATEMENT_$statement GROUPS"},
-				  %interface_database);
+				  $rhschedule_db->{"\U$thorn\E STATEMENT_$statement GROUPS"},
+				  $rhinterface_db);
 
-  if($schedule_database{"\U$thorn\E STATEMENT_$statement TYPE"} eq "STOR")
+  if($rhschedule_db->{"\U$thorn\E STATEMENT_$statement TYPE"} eq "STOR")
   {
     $function = "CCTK_ScheduleGroupStorage(";
   }
-  elsif($schedule_database{"\U$thorn\E STATEMENT_$statement TYPE"} eq "COMM")
+  elsif($rhschedule_db->{"\U$thorn\E STATEMENT_$statement TYPE"} eq "COMM")
   {
     $function = "CCTK_ScheduleGroupComm(";
   }
   else
   {
-    print STDERR "Unknown statement type '" .$schedule_database{"\U$thorn\E STATEMENT_$statement TYPE"} ."'\n";
+    print STDERR "Unknown statement type '" .$rhschedule_db{"\U$thorn\E STATEMENT_$statement TYPE"} ."'\n";
     $CST_errors++;
     return ("", "");
   }
@@ -464,11 +419,11 @@ sub ScheduleStatement
 #@@*/
 sub ScheduleSelectGroups
 {
-  local($thorn, $implementation, $group_list, %interface_database) = @_;
-  local(@groups);
-  local(@temp_list);
-  local($group);
-  local($other_imp, $other_thorn, $foundit, $block);
+  my($thorn, $implementation, $group_list, $rhinterface_db) = @_;
+  my(@groups);
+  my(@temp_list);
+  my($group);
+  my($other_imp, $other_thorn, $foundit, $block);
 
   @temp_list = split(/[,\s\n]+/, $group_list);
 
@@ -487,11 +442,11 @@ sub ScheduleSelectGroups
       {
 	# The name has been given completely specified but it isn't this thorn.
       
-	if($interface_database{"IMPLEMENTATION \U$implementation\E ANCESTORS"} =~ m:\b$other_imp\b:i)
+	if($rhinterface_db->{"IMPLEMENTATION \U$implementation\E ANCESTORS"} =~ m:\b$other_imp\b:i)
 	{
 	  $block = "PUBLIC";
 	}
-	elsif($interface_database{"IMPLEMENTATION \U$implementation\E FRIENDS"} =~ m:\b$other_imp\b:i)
+	elsif($rhinterface_db->{"IMPLEMENTATION \U$implementation\E FRIENDS"} =~ m:\b$other_imp\b:i)
 	{
 	  $block = "PROTECTED";
 	}
@@ -502,10 +457,10 @@ sub ScheduleSelectGroups
 	  next;
 	}
 
-	$interface_database{"IMPLEMENTATION \U$other_imp\E THORNS"} =~ m:(\w+):;
+	$rhinterface_db->{"IMPLEMENTATION \U$other_imp\E THORNS"} =~ m:(\w+):;
 	$other_thorn = $1;
       
-	if($interface_database{"\U$other_thorn\E $block GROUPS"} =~ m:\b$group\b:i)
+	if($rhinterface_db->{"\U$other_thorn\E $block GROUPS"} =~ m:\b$group\b:i)
 	{
 	  push(@groups, "$other_imp\::$group");
 	  next;
@@ -519,15 +474,15 @@ sub ScheduleSelectGroups
       }
     }
 
-    if($interface_database{"\U$thorn\E PRIVATE GROUPS"} =~ m:\b$group\b:i)
+    if($rhinterface_db->{"\U$thorn\E PRIVATE GROUPS"} =~ m:\b$group\b:i)
     {
       push(@groups, "$thorn\::$group");
     }
-    elsif($interface_database{"\U$thorn\E PROTECTED GROUPS"} =~ m:\b$group\b:i)
+    elsif($rhinterface_db->{"\U$thorn\E PROTECTED GROUPS"} =~ m:\b$group\b:i)
     {
       push(@groups, "$implementation\::$group");
     }
-    elsif($interface_database{"\U$thorn\E PUBLIC GROUPS"} =~ m:\b$group\b:i)
+    elsif($rhinterface_db->{"\U$thorn\E PUBLIC GROUPS"} =~ m:\b$group\b:i)
     {
       push(@groups, "$implementation\::$group");
     }
@@ -535,12 +490,12 @@ sub ScheduleSelectGroups
     {
       $foundit = 0;
       # Check ancestors and friends
-      foreach $other_imp (split(" ", $interface_database{"IMPLEMENTATION \U$implementation\E ANCESTORS"}))
+      foreach $other_imp (split(" ", $rhinterface_db->{"IMPLEMENTATION \U$implementation\E ANCESTORS"}))
       {
-	$interface_database{"IMPLEMENTATION \U$other_imp\E THORNS"} =~ m:(\w+):;
+	$rhinterface_db->{"IMPLEMENTATION \U$other_imp\E THORNS"} =~ m:(\w+):;
 	$other_thorn = $1;
 
-	if($interface_database{"\U$other_thorn\E PUBLIC GROUPS"} =~ m:\b$group\b:i)
+	if($rhinterface_db->{"\U$other_thorn\E PUBLIC GROUPS"} =~ m:\b$group\b:i)
 	{
 	  push(@groups, "$other_imp\::$group");
 	  $foundit = 1;
@@ -549,12 +504,12 @@ sub ScheduleSelectGroups
       }
       if(! $foundit)
       {
-	foreach $other_imp (split(" ", $interface_database{"IMPLEMENTATION \U$implementation\E FRIENDS"}))
+	foreach $other_imp (split(" ", $rhinterface_db->{"IMPLEMENTATION \U$implementation\E FRIENDS"}))
 	{
-	  $interface_database{"IMPLEMENTATION \U$other_imp\E THORNS"} =~ m:(\w+):;
+	  $rhinterface_db->{"IMPLEMENTATION \U$other_imp\E THORNS"} =~ m:(\w+):;
 	  $other_thorn = $1;
 
-	  if($interface_database{"\U$other_thorn\E PROTECTED GROUPS"} =~ m:\b$group\b:i)
+	  if($rhinterface_db->{"\U$other_thorn\E PROTECTED GROUPS"} =~ m:\b$group\b:i)
 	  {
 	    push(@groups, "$other_imp\::$group");
 	    $foundit = 1;
@@ -595,10 +550,10 @@ sub ScheduleSelectGroups
 #@@*/
 sub ScheduleSelectRoutines
 {
-  local($thorn, $implementation, $routine_list, %schedule_database) = @_;
-  local(@routines);
-  local(@temp_list);
-  local($routine);
+  my($thorn, $implementation, $routine_list, $rhschedule_db) = @_;
+  my(@routines);
+  my(@temp_list);
+  my($routine);
 
   @temp_list = split(/[,\s\n]+/, $routine_list);
 
@@ -630,10 +585,10 @@ sub ScheduleSelectRoutines
 #@@*/
 sub ScheduleSelectVars
 {
-  local($thorn, $implementation, $var_list, %interface_database) = @_;
-  local(@vars);
-  local(@temp_list);
-  local($var);
+  my($thorn, $implementation, $var_list, $rhinterface_db) = @_;
+  my(@vars);
+  my(@temp_list);
+  my($var);
 
   @temp_list = split(/[,\s\n]+/, $var_list);
 

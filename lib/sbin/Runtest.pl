@@ -264,7 +264,7 @@ else
 }
 
 sub runtest {
-    local ($inpf,$inthorn,$num) = @_;
+    my ($inpf,$inthorn,$num) = @_;
 
     $inpf = "arrangements/$inthorn/test/$inpf";
     $tsttop = ".${sep}TEST";
@@ -400,8 +400,8 @@ sub runtest {
 }
 
 sub defprompt {
-    local ($pr, $de) = @_;
-    local ($res);
+    my ($pr, $de) = @_;
+    my ($res);
     print "$pr [$de] \n";
     print "   --> ";
     $res = <STDIN>;
@@ -414,7 +414,7 @@ sub defprompt {
 }
 
 sub fpabs {
-    local ($val) = $_[0];
+    my ($val) = $_[0];
     $val > 0 ? $val:-$val;
 }
 

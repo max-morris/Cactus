@@ -22,10 +22,10 @@
 
 sub create_parameter_database
 {
-  local(%thorns) = @_;
-  local($thorn, @indata);
-  local(@new_parameter_data);
-  local(@parameter_data);
+  my(%thorns) = @_;
+  my($thorn, @indata);
+  my(@new_parameter_data);
+  my(@parameter_data);
   
   #  Loop through each implementation's parameter file.
   foreach $thorn (keys %thorns)
@@ -51,13 +51,13 @@ sub create_parameter_database
 
 sub cross_index_parameters
 {
-  local($n_thorns, @indata) = @_;
-  local(@thorns);
-  local(%parameter_database);
-  local(@module_file);
-  local($line);
-  local(@data);
-  local($thorn);
+  my($n_thorns, @indata) = @_;
+  my(@thorns);
+  my(%parameter_database);
+  my(@module_file);
+  my($line);
+  my(@data);
+  my($thorn);
   
   @thorns = @indata[0..$n_thorns-1];
   %parameter_database = @indata[$n_thorns..$#indata];
@@ -103,12 +103,12 @@ sub cross_index_parameters
 
 sub parse_param_ccl
 {
-  local($thorn, @data) = @_;
-  local($line_number, $line, $block, $type, $variable, $description);
-  local($current_friend, $new_ranges, $new_desc);
-  local($data, %parameter_db);
-  local(%friends);
-  local(%defined_parameters);
+  my($thorn, @data) = @_;
+  my($line_number, $line, $block, $type, $variable, $description);
+  my($current_friend, $new_ranges, $new_desc);
+  my($data, %parameter_db);
+  my(%friends);
+  my(%defined_parameters);
   
   
   #   The default block is private.
@@ -296,8 +296,8 @@ sub parse_param_ccl
 #@@*/
 sub print_parameter_database
 {
-  local(%parameter_database) = @_;
-  local($field);
+  my(%parameter_database) = @_;
+  my($field);
   
   foreach $field ( sort keys %parameter_database )
   {
@@ -322,9 +322,9 @@ sub print_parameter_database
 #@@*/
 sub PrintParameterStatistics
 {
-  local($thorn, %parameter_database) = @_;
-  local($block);
-  local($sep);
+  my($thorn, %parameter_database) = @_;
+  my($block);
+  my($sep);
 
   $sep = "          ";
   foreach $block ("Global", "Restricted", "Private")

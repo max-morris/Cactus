@@ -73,8 +73,8 @@ while ()
 
 sub get_arrangements
 {   
-    local(%info);
-    local($arrangement);
+    my(%info);
+    my($arrangement);
     print "\nYou already have arrangements: \n\n";
 
     %info = &buildthorns("arrangements/","arrangements");
@@ -151,8 +151,8 @@ sub get_arrangements
 
 sub get_thorns
 {
-    local(%info);
-    local($thorn);
+    my(%info);
+    my($thorn);
 
     print "\nYou already have thorns: \n\n";
     
@@ -353,7 +353,7 @@ sub print_help
 
 sub CheckOut
 {
-  local($file) = @_;
+  my($file) = @_;
 
   print("Checking out $file\n");
   system("cvs -z9 -q checkout $file");

@@ -9,12 +9,12 @@
 
 sub CheckImpParamConsistency
 {
-  local($n_interface_data, @indata) = @_;
-  local(%interface_database);
-  local(%parameter_database);
-  local(@thorns);
-  local($thorn, $friend, $implementation, $other_thorn);
-  local($range);
+  my($n_interface_data, @indata) = @_;
+  my(%interface_database);
+  my(%parameter_database);
+  my(@thorns);
+  my($thorn, $friend, $implementation, $other_thorn);
+  my($range);
 
   # Extract the arguments
   %interface_database = @indata[0..2*$n_interface_data-1];

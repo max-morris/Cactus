@@ -27,9 +27,9 @@
 
 sub CreateVariableBindings
 {
-  local($bindings_dir, %interface_database) = @_;
-  local($thorn, @data);
-  local($line, $block, $filelist);
+  my($bindings_dir, $rhinterface_db) = @_;
+  my($thorn, @data);
+  my($line, $block, $filelist);
 
   if(! -d $bindings_dir)
   {
@@ -46,10 +46,10 @@ sub CreateVariableBindings
   chdir "include";
 
 
-  foreach $thorn (split(" ",$interface_database{"THORNS"}))
+  foreach $thorn (split(" ",$rhinterface_db->{"THORNS"}))
   {
 
-    @data = &CreateThornArgumentHeaderFile($thorn, %interface_database);
+    @data = &CreateThornArgumentHeaderFile($thorn, $rhinterface_db);
 
     $dataout = "";
 #    open(OUT, ">$thorn"."_arguments.h");
@@ -59,14 +59,14 @@ sub CreateVariableBindings
       $dataout .= "$line\n";
     }
 
-    &WriteFile("$thorn\_arguments.h",$dataout);
+    &WriteFile("$thorn\_arguments.h",\$dataout);
 #    close OUT;
   }
 
 #  open(OUT, ">cctk_arguments.h");
     
   $dataout = "";
-  foreach $thorn (split(" ",$interface_database{"THORNS"}))
+  foreach $thorn (split(" ",$rhinterface_db->{"THORNS"}))
   {
     $dataout .= "#ifdef THORN_IS_$thorn\n";
     $dataout .= "#include \"$thorn"."_arguments.h\"\n";
@@ -77,7 +77,7 @@ sub CreateVariableBindings
     $dataout .= "#endif\n\n";
   }
 
-  &WriteFile("cctk_arguments.h",$dataout);
+  &WriteFile("cctk_arguments.h",\$dataout);
 #  close OUT;
       
   chdir "..";
@@ -94,7 +94,7 @@ sub CreateVariableBindings
 
   $dataout = "";
 
-  foreach $thorn (split(" ",$interface_database{"THORNS"}))
+  foreach $thorn (split(" ",$rhinterface_db->{"THORNS"}))
   {
     $dataout .= "int CactusBindingsVariables_$thorn"."_Initialise(void);\n";
   }
@@ -103,18 +103,18 @@ sub CreateVariableBindings
  
   $dataout .= "int CCTKi_BindingsVariablesInitialise(void)\n{\n";
 
-  foreach $thorn (split(" ",$interface_database{"THORNS"}))
+  foreach $thorn (split(" ",$rhinterface_db->{"THORNS"}))
   {
     $dataout .= "  CactusBindingsVariables_$thorn"."_Initialise();\n";
   }
  
   $dataout .= "  return 0;\n}\n\n";
 
-  &WriteFile("BindingsVariables.c",$dataout);
+  &WriteFile("BindingsVariables.c",\$dataout);
 
 #  close OUT;
 
-  foreach $thorn (split(" ",$interface_database{"THORNS"}))
+  foreach $thorn (split(" ",$rhinterface_db->{"THORNS"}))
   {
     $dataout = "";
 
@@ -129,7 +129,7 @@ sub CreateVariableBindings
     $dataout .= "int CactusBindingsVariables_$thorn"."_Initialise(void)\n{\n";
     foreach $block ("PUBLIC", "PROTECTED", "PRIVATE")
     {
-      @data = &CreateThornGroupInitialisers($thorn, $block, %interface_database);
+      @data = &CreateThornGroupInitialisers($thorn, $block, $rhinterface_db);
 
       foreach $line (@data)
       {
@@ -140,13 +140,13 @@ sub CreateVariableBindings
 
     $dataout .= "  return 0;\n};\n";
  
-    &WriteFile("$thorn.c",$dataout);
+    &WriteFile("$thorn.c",\$dataout);
 #    close OUT;
 
     $filelist .= " $thorn.c";
   }
 
-  foreach $thorn (split(" ",$interface_database{"THORNS"}))
+  foreach $thorn (split(" ",$rhinterface_db->{"THORNS"}))
   {
 #    open(OUT, ">$thorn\_FortranWrapper.c") || die "Cannot create $thorn\_FortranWrapper.c";
     $dataout = "";
@@ -158,14 +158,14 @@ sub CreateVariableBindings
       $dataout .= "$line\n";
     }
 
-    &WriteFile("$thorn\_FortranWrapper.c",$dataout);
+    &WriteFile("$thorn\_FortranWrapper.c",\$dataout);
 #    close OUT;
     $filelist .= " $thorn\_FortranWrapper.c";
   }
 
 #  open (OUT, ">make.code.defn") || die "Cannot open make.code.defn";
   $dataout = "SRCS = $filelist\n";
-  &WriteFile("make.code.defn",$dataout);
+  &WriteFile("make.code.defn",\$dataout);
 #  close OUT;
 
   chdir $start_dir;
@@ -189,22 +189,22 @@ sub CreateVariableBindings
 #@@*/
 sub GetThornArguments
 {
-  local($this_thorn, $block, %interface_database) = @_;
-  local(%arguments);
-  local(@other_imps);
-  local($my_imp);
-  local($imp);
-  local($thorn, $group, $variable, $vtype, $gtype, $type);
+  my($this_thorn, $block, $rhinterface_db) = @_;
+  my(%arguments);
+  my(@other_imps);
+  my($my_imp);
+  my($imp);
+  my($thorn, $group, $variable, $vtype, $gtype, $type);
 
-  $my_imp = $interface_database{"\U$this_thorn IMPLEMENTS"};
+  $my_imp = $rhinterface_db->{"\U$this_thorn IMPLEMENTS"};
 
   if($block eq "PUBLIC")
   {
-    @other_imps = split(" ",$interface_database{"IMPLEMENTATION \U$my_imp\E ANCESTORS"});
+    @other_imps = split(" ",$rhinterface_db->{"IMPLEMENTATION \U$my_imp\E ANCESTORS"});
   }
   elsif($block eq "PROTECTED")
   {
-    @other_imps = split(" ", $interface_database{"IMPLEMENTATION \U$my_imp\E FRIENDS"});
+    @other_imps = split(" ", $rhinterface_db->{"IMPLEMENTATION \U$my_imp\E FRIENDS"});
   }
   elsif($block eq "PRIVATE")
   {
@@ -230,16 +230,16 @@ sub GetThornArguments
     }
     else
     {
-      $interface_database{"IMPLEMENTATION \U$imp\E THORNS"} =~ m:([^ ]*):;
+      $rhinterface_db->{"IMPLEMENTATION \U$imp\E THORNS"} =~ m:([^ ]*):;
     
       $thorn = $1;
     }
 
-    foreach $group (split(" ",$interface_database{"\U$thorn $block GROUPS\E"}))
+    foreach $group (split(" ",$rhinterface_db->{"\U$thorn $block GROUPS\E"}))
     {
-      $vtype = $interface_database{"\U$thorn GROUP $group VTYPE\E"};
-      $gtype = $interface_database{"\U$thorn GROUP $group GTYPE\E"};
-      $ntimelevels = $interface_database{"\U$thorn GROUP $group TIMELEVELS\E"};
+      $vtype = $rhinterface_db->{"\U$thorn GROUP $group VTYPE\E"};
+      $gtype = $rhinterface_db->{"\U$thorn GROUP $group GTYPE\E"};
+      $ntimelevels = $rhinterface_db->{"\U$thorn GROUP $group TIMELEVELS\E"};
 
       $type = "$vtype";
 
@@ -247,7 +247,7 @@ sub GetThornArguments
       {
 	$type .= " (";
 	$sep = "";
-	for($dim =0; $dim < $interface_database{"\U$thorn GROUP $group DIM\E"}; $dim++)
+	for($dim =0; $dim < $rhinterface_db->{"\U$thorn GROUP $group DIM\E"}; $dim++)
 	{
 	  $type .= "$sep$group$dim";
 	  $sep = ",";
@@ -276,7 +276,7 @@ sub GetThornArguments
 
 #      print "Group is $group, resulting type is $type\n";
 
-      foreach $variable (split(" ", $interface_database{"\U$thorn GROUP $group\E"}))
+      foreach $variable (split(" ", $rhinterface_db->{"\U$thorn GROUP $group\E"}))
       {
        $arguments{$variable} = $type;
       }
@@ -304,10 +304,10 @@ sub GetThornArguments
 
 sub CreateFortranArgumentDeclarations
 {
-  local(%arguments) = @_;
-  local($argument);
-  local(@declarations) = ();
-  local($suffix);
+  my(%arguments) = @_;
+  my($argument);
+  my(@declarations) = ();
+  my($suffix);
 
   # Put all storage arguments first.
   foreach $argument (sort keys %arguments)
@@ -419,11 +419,11 @@ sub CreateFortranArgumentDeclarations
 
 sub CreateCArgumentDeclarations
 {
-  local(%arguments) = @_;
-  local($argument);
-  local(@declarations) = ();
-  local($suffix);
-  local($imp);
+  my(%arguments) = @_;
+  my($argument);
+  my(@declarations) = ();
+  my($suffix);
+  my($imp);
 
   
   # Now deal with the rest of the arguments
@@ -528,10 +528,10 @@ sub CreateCArgumentDeclarations
 
 sub CreateFortranArgumentList
 {
-  local(%arguments) = @_;
-  local($argument);
-  local($argumentlist) = "";
-  local($sep);
+  my(%arguments) = @_;
+  my($argument);
+  my($argumentlist) = "";
+  my($sep);
 
   $sep = "";
   # Put all storage arguments first.
@@ -603,9 +603,9 @@ sub CreateFortranArgumentList
 
 sub CreateCArgumentStatics
 {
-  local(%arguments) = @_;
-  local($argument);
-  local(@declarations) = ();
+  my(%arguments) = @_;
+  my($argument);
+  my(@declarations) = ();
 
   foreach $argument (sort keys %arguments)
   {
@@ -636,9 +636,9 @@ sub CreateCArgumentStatics
 
 sub CreateCArgumentInitialisers
 {
-  local(%arguments) = @_;
-  local($argument);
-  local(@initialisers) = ();
+  my(%arguments) = @_;
+  my($argument);
+  my(@initialisers) = ();
 
   foreach $argument (sort keys %arguments)
   {
@@ -670,10 +670,10 @@ sub CreateCArgumentInitialisers
 
 sub CreateCArgumentPrototype
 {
-  local(%arguments) = @_;
-  local($argument);
-  local($prototype) = "";
-  local($sep);
+  my(%arguments) = @_;
+  my($argument);
+  my($prototype) = "";
+  my($sep);
   
   $sep = "";
 
@@ -785,10 +785,10 @@ sub CreateCArgumentPrototype
 
 sub CreateCArgumentList
 {
-  local(%arguments) = @_;
-  local($argument);
-  local($arglist) = "";
-  local($sep);
+  my(%arguments) = @_;
+  my($argument);
+  my($arglist) = "";
+  my($sep);
   
   $sep = "";
 
@@ -902,17 +902,17 @@ sub CreateCArgumentList
 
 sub CreateThornArgumentHeaderFile
 {
-  local($thorn, %interface_database) = @_;
-  local($line);
-  local(@returndata) = ();
-  local(%hasvars);
+  my($thorn, $rhinterface_db) = @_;
+  my($line);
+  my(@returndata) = ();
+  my(%hasvars);
 
   # Create the basic thorn block definitions 
 
   foreach $block ("PRIVATE", "PROTECTED", "PUBLIC")
   {
     
-    %data = &GetThornArguments($thorn, $block, %interface_database);
+    %data = &GetThornArguments($thorn, $block, $rhinterface_db);
 
 #    $print_data = 1;
     if ($print_data)
@@ -1186,25 +1186,25 @@ sub CreateThornArgumentHeaderFile
 
 sub CreateThornGroupInitialisers  
 {
-  local($thorn, $block, %interface_database) = @_;
-  local($imp);
-  local($group, @variables);
-  local($line);
-  local(@definitions);
+  my($thorn, $block, $rhinterface_db) = @_;
+  my($imp);
+  my($group, @variables);
+  my($line);
+  my(@definitions);
 
 
-  $imp = $interface_database{"\U$thorn\E IMPLEMENTS"};
+  $imp = $rhinterface_db->{"\U$thorn\E IMPLEMENTS"};
 
-  foreach $group (split(" ", $interface_database{"\U$thorn $block GROUPS"}))
+  foreach $group (split(" ", $rhinterface_db->{"\U$thorn $block GROUPS"}))
   {
-    @variables = split(" ", $interface_database{"\U$thorn GROUP $group\E"});
+    @variables = split(" ", $rhinterface_db->{"\U$thorn GROUP $group\E"});
 
     $line  = "  CCTK_CreateGroup(\"\U$group\",\"$thorn\",\"$imp\",\n" 
-           . "                   \"" . $interface_database{"\U$thorn GROUP $group\E GTYPE"} . "\",\n"
-	   . "                   \"" . $interface_database{"\U$thorn GROUP $group\E VTYPE"} . "\",\n"
+           . "                   \"" . $rhinterface_db->{"\U$thorn GROUP $group\E GTYPE"} . "\",\n"
+	   . "                   \"" . $rhinterface_db->{"\U$thorn GROUP $group\E VTYPE"} . "\",\n"
 	   . "                   \"" . $block . "\",\n"
-	   . "                   " . $interface_database{"\U$thorn GROUP $group\E DIM"} . ",\n"
-	   . "                   " . $interface_database{"\U$thorn GROUP $group\E TIMELEVELS"} . ",\n"
+	   . "                   " . $rhinterface_db->{"\U$thorn GROUP $group\E DIM"} . ",\n"
+	   . "                   " . $rhinterface_db->{"\U$thorn GROUP $group\E TIMELEVELS"} . ",\n"
            . "                   ". scalar(@variables);
     foreach $variable (@variables)
     {
@@ -1222,8 +1222,8 @@ sub CreateThornGroupInitialisers
 
 sub CreateThornFortranWrapper
 {
-  local($thorn) = @_;
-  local(@data);
+  my($thorn) = @_;
+  my(@data);
 
   push(@data, "#define THORN_IS_$thorn");
   push(@data, "#include \"cctk.h\"");

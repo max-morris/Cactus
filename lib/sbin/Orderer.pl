@@ -25,8 +25,8 @@
 
 sub TestOrderList
 {
-  local(%data);
-  local($sorted_things);
+  my(%data);
+  my($sorted_things);
 
   # Create a list of data and rules to sort them.
   %data = ("thorns", "c b a d e f",
@@ -87,11 +87,11 @@ sub TestOrderList
 
 sub OrderList
 {
-  local($error_string, $fieldname, %database) = @_;
-  local(@things);
-  local($thing, $other_thing);
-  local($nerrors);
-  local(@thing_list); 
+  my($error_string, $fieldname, %database) = @_;
+  my(@things);
+  my($thing, $other_thing);
+  my($nerrors);
+  my(@thing_list); 
 
   $nerrors = 0;
   @things = split(" ", $database{$fieldname});
@@ -206,9 +206,9 @@ sub OrderList
 #@@*/
 sub RecurseThings
 {
-  local($thing, $keyword, $nthings, @indata) = @_;
-  local(%things);
-  local(%database);
+  my($thing, $keyword, $nthings, @indata) = @_;
+  my(%things);
+  my(%database);
 
   # Extract the hash tables
   if($nthings > 0)
@@ -280,9 +280,9 @@ sub RecurseThings
 #@@*/
 sub CheckThings
 {
-  local($error_string, $thing, $keyword, %database) = @_;
-  local($other_thing);
-  local($nerrors);
+  my($error_string, $thing, $keyword, %database) = @_;
+  my($other_thing);
+  my($nerrors);
 
   if($database{"\U$thing $keyword"})
   {
@@ -342,10 +342,10 @@ sub CheckThings
 #@@*/
 sub SortThings
 {
-  local($before, $after, $n_things, @rest) = @_;
-  local(@things);
-  local(%database);
-  local(@sorted_things);
+  my($before, $after, $n_things, @rest) = @_;
+  my(@things);
+  my(%database);
+  my(@sorted_things);
 
   # Extract the list of things and the database
   if($n_things)
@@ -409,7 +409,7 @@ sub SortThings
 #@@*/
 sub ThingSorter
 {
-  local($retval);
+  my($retval);
   if($database{"\U$a $before"} =~ m:\b$b\b:i)
   {
 #    print "$b in $a $before list - " . $database{"\U$a $before"} . "\n";

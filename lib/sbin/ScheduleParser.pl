@@ -25,10 +25,10 @@
 #@@*/
 sub create_schedule_database
 {
-  local(%thorns) = @_;
-  local($thorn, @indata);
-  local(@new_schedule_data);
-  local(@schedule_data);
+  my(%thorns) = @_;
+  my($thorn, @indata);
+  my(@new_schedule_data);
+  my(@schedule_data);
   
   #  Loop through each implementation's schedule file.
   foreach $thorn (keys %thorns)
@@ -68,16 +68,16 @@ sub create_schedule_database
 #@@*/
 sub parse_schedule_ccl
 {
-  local($thorn, @data) = @_;
-  local($line_number);
-  local(%schedule_db);
-  local($buffer);
-  local($n_blocks);
-  local($n_statements);
-  local($name, $type, $description, $where, $language, 
+  my($thorn, @data) = @_;
+  my($line_number);
+  my(%schedule_db);
+  my($buffer);
+  my($n_blocks);
+  my($n_statements);
+  my($name, $type, $description, $where, $language, 
        $mem_groups, $comm_groups, $trigger_groups,
        $before_list, $after_list, $while_list);
-  local($type, $groups);
+  my($type, $groups);
 
   $buffer       = "";
   $n_blocks     = 0;
@@ -144,21 +144,21 @@ sub parse_schedule_ccl
 #@@*/
 sub ParseScheduleBlock
 {
-  local($line_number, @data) = @_;
-  local($name, $type, $description, $where, $language, 
+  my($line_number, @data) = @_;
+  my($name, $type, $description, $where, $language, 
        $mem_groups, $comm_groups, $trigger_groups,
        $before_list, $after_list, $while_list);
-  local(@fields);
-  local($field);
-  local(@before_list)    = ();
-  local(@after_list)     = ();
-  local(@while_list)     = ();
-  local(@mem_groups)     = ();
-  local(@comm_groups)    = ();
-  local(@trigger_groups) = ();
-  local($keyword) = "";
-  local(@current_sched_list) = ();
-  local($where) = "";
+  my(@fields);
+  my($field);
+  my(@before_list)    = ();
+  my(@after_list)     = ();
+  my(@while_list)     = ();
+  my(@mem_groups)     = ();
+  my(@comm_groups)    = ();
+  my(@trigger_groups) = ();
+  my($keyword) = "";
+  my(@current_sched_list) = ();
+  my($where) = "";
 
   #Parse the first line of the schedule block
 
@@ -423,8 +423,8 @@ sub ParseScheduleBlock
 #@@*/
 sub ParseScheduleStatement
 {
-  local($line_number, @data) = @_;
-  local($type, $groups);
+  my($line_number, @data) = @_;
+  my($type, $groups);
 
   $data[$line_number] =~ m/^\s*(STOR|COMM)[^:]*:\s*([\w\s\,]*)/i;
 
@@ -450,8 +450,8 @@ sub ParseScheduleStatement
 #@@*/
 sub print_schedule_database
 {
-  local(%schedule_database) = @_;
-  local($field);
+  my(%schedule_database) = @_;
+  my($field);
   
   foreach $field ( sort keys %schedule_database )
   {
@@ -475,7 +475,7 @@ sub print_schedule_database
 #@@*/
 sub PrintScheduleStatistics
 {
-  local($thorn, %schedule_database) = @_;
+  my($thorn, %schedule_database) = @_;
 
   print "          " . $schedule_database{"\U$thorn\E N_BLOCKS"} . " schedule blocks.\n";
 

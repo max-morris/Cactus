@@ -27,15 +27,11 @@
 
 sub CreateParameterBindingFile
 {
-  local($prefix, $structure, $n_parameters, @rest) = @_;
-  local(%parameter_database);
-  local($line,@data);
-  local(%parameters);
-  local($type, $type_string);
-  local(@data);
-
-  %parameters = @rest[0..2*$n_parameters-1];
-  %parameter_database = @rest[2*$n_parameters..$#rest];
+  my($prefix, $structure, $rhparameters, $rhparameter_db) = @_;
+  my($line,@data);
+  my(%parameters);
+  my($type, $type_string);
+  my(@data);
 
   # Header Data
   $line = "\#include <stdio.h>";
@@ -60,9 +56,9 @@ sub CreateParameterBindingFile
 
   push(@data,( "struct ", "{"));
 
-  foreach $parameter (&order_params(scalar(keys %parameters), %parameters,%parameter_database))
+  foreach $parameter (&order_params($rhparameters,$rhparameter_db))
   {
-    $type = $parameter_database{"\U$parameters{$parameter} $parameter\E type"};
+    $type = $rhparameter_db->{"\U$rhparameters->{$parameter} $parameter\E type"};
       
     $type_string = &get_c_type_string($type);
 
@@ -72,32 +68,12 @@ sub CreateParameterBindingFile
   }
 
   # Some compilers don't like an empty structure.
-  if((keys %parameters) == 0)
+  if((keys %$rhparameters) == 0)
   {
     push(@data, "  int dummy_parameter;");
   }
 
   push(@data, "} $structure;");
-
-  push(@data, "");
-
-  # Help subroutine
-
-  push(@data, ("int $prefix"."Help(const char *param, const char *format, FILE *file)", "{"));
-  push(@data, ("  int retval;", "  retval = 1;", ""));
-
-
-  foreach $parameter (sort(keys %parameters))
-  {
-    push(@data, &help_parameter_code($structure,$parameters{$parameter}, 
-				       $parameter, %parameter_database));
-    push(@data, "");
-
-  }    
-
-  push(@data, "  return retval;");
-
-  push(@data, "}");
 
   push(@data, "");
 
@@ -121,8 +97,8 @@ sub CreateParameterBindingFile
 
 sub get_c_type_string
 {
-  local($type) = @_;
-  local($type_string);
+  my($type) = @_;
+  my($type_string);
 
 
   if($type eq "KEYWORD" ||
@@ -194,10 +170,10 @@ sub get_c_type_string
 
 sub GetThornParameterList
 {
-  local($thorn, $block, %parameter_database) = @_;
-  local(%parameter_list);
+  my($thorn, $block, $rhparameter_db) = @_;
+  my(%parameter_list);
 
-  $params = $parameter_database{"\U$thorn $block\E variables"};
+  $params = $rhparameter_db->{"\U$thorn $block\E variables"};
 
   foreach $parameter (split(" ", $params))
   {
@@ -212,25 +188,21 @@ sub GetThornParameterList
 
 sub CreateCStructureParameterHeader
 {
-  local($prefix, $structure, $n_parameters, @rest) = @_;
-  local(%parameter_database);
-  local($line,@data);
-  local(%parameters);
-  local($type, $type_string);
-  local(@data);
-  local(@definition);
-
-  %parameters = @rest[0..2*$n_parameters-1];
-  %parameter_database = @rest[2*$n_parameters..$#rest];
+  my($prefix, $structure, $rhparameters, $rhparameter_db) = @_;
+  my($line,@data);
+  my(%parameters);
+  my($type, $type_string);
+  my(@data);
+  my(@definition);
 
   # Create the structure
 
   push(@data,("#ifdef __cplusplus", "extern \"C\"", "{", "#endif"));
   push(@data,( "extern struct ", "{"));
 
-  foreach $parameter (&order_params(scalar(keys %parameters), %parameters,%parameter_database))
+  foreach $parameter (&order_params($rhparameters, $rhparameter_db))
   {
-    $type = $parameter_database{"\U$parameters{$parameter} $parameter\E type"};
+    $type = $rhparameter_db->{"\U$rhparameters->{$parameter} $parameter\E type"};
 
     $type_string = &get_c_type_string($type);
 
@@ -244,7 +216,7 @@ sub CreateCStructureParameterHeader
   }
 
   # Some compilers don't like an empty structure.
-  if((keys %parameters) == 0)
+  if((keys %$rhparameters) == 0)
   {
     push(@data, "  int dummy_parameter;");
   }
@@ -269,19 +241,14 @@ sub CreateCStructureParameterHeader
 
 sub order_params
 {
-  local($nparams,  @rest) = @_;
-  local(%parameters);
-  local(%parameter_database);
-  local(@float_params) = ();;
-  local(@int_params)   = ();
-  local(@string_params)= ();
+  my($rhparameters, $rhparameter_db) = @_;
+  my(@float_params) = ();;
+  my(@int_params)   = ();
+  my(@string_params)= ();
 
-  %parameters = @rest[0..2*$nparams-1];
-  %parameter_database = @rest[2*$nparams..$#rest];
-
-  foreach $parameter (sort(keys %parameters))
+  foreach $parameter (sort(keys %$rhparameters))
   {
-    $type = $parameter_database{"\U$parameters{$parameter} $parameter\E type"};
+    $type = $rhparameter_db->{"\U$rhparameters->{$parameter} $parameter\E type"};
 
     if($type eq "KEYWORD" ||
        $type eq "STRING"  ||
@@ -309,87 +276,16 @@ sub order_params
   return (@float_params, @string_params, @int_params);
 }
 
-sub get_parameter_code
-{
-  local($structure, $implementation,$parameter, %parameter_database) = @_;
-  local($type, $type_string);
-  local($line, @lines);
-  local($range);
-  local($quoted_range);
-
-  $type = $parameter_database{"\U$implementation $parameter\E type"};
-
-  push(@lines,("  if(CCTK_Equals(param, \"$parameter\"))", "  {"));
-
-  if( $type eq "KEYWORD")
-  {
-    $line  = "    *value = $structure.$parameter;\n" ;
-    $line .= "    retval = PARAMETER_KEYWORD;" ;
-  }
-  elsif( $type eq "STRING")
-  {
-    $line  = "    *value = $structure.$parameter;\n" ;
-    $line .= "    retval = PARAMETER_STRING;" ;
-  }
-  elsif( $type eq "SENTENCE")
-  {
-    $line  = "    *value = $structure.$parameter;\n" ;
-    $line .= "    retval = PARAMETER_SENTENCE;" ;
-  }
-  elsif($type eq "INT")
-  {
-    $line  = "    *value = \&($structure.$parameter);\n" ;
-    $line .= "    retval = PARAMETER_INTEGER;" ;
-  }
-  elsif($type eq "REAL")
-  {
-    $line  = "    *value = \&($structure.$parameter);\n" ;
-    $line .= "    retval = PARAMETER_REAL;" ;
-  }
-  elsif($type eq "BOOLEAN")
-  {
-    $line  = "    *value = \&($structure.$parameter);\n" ;
-    $line .= "    retval = PARAMETER_BOOLEAN;" ;
-  }
-  else
-  {
-    print "Unknown parameter type $type\n";
-  }
-
-  push(@lines, ($line, "  }"));
-    
-  return @lines;
-}
-
-sub help_parameter_code
-{
-  local($structure, $implementation,$parameter, %parameter_database) = @_;
-  local($type, $type_string);
-  local($line, @lines);
-  local($range);
-  local($quoted_range);
-
-  $type = $parameter_database{"\U$implementation $parameter\E type"};
-
-  push(@lines,("  if(param == NULL || CCTK_Equals(param, \"$parameter\"))", "  {"));
-
-  push(@lines, "    printf(\"Help asked for parameter: $implementation\::$parameter.\\n\");");
-  push(@lines, ($line, "  }"));
-    
-  return @lines;
-}
-
-
 sub create_parameter_code
 {
-  local($structure, $implementation,$parameter, %parameter_database) = @_;
-  local($type, $type_string);
-  local($line, @lines);
-  local($default);
-  local($temp_default);
+  my($structure, $implementation,$parameter, $rhparameter_db) = @_;
+  my($type, $type_string);
+  my($line, @lines);
+  my($default);
+  my($temp_default);
 
-  $default = $parameter_database{"\U$implementation $parameter\E default"};
-  $type = $parameter_database{"\U$implementation $parameter\E type"};
+  $default = $rhparameter_db->{"\U$implementation $parameter\E default"};
+  $type = $rhparameter_db->{"\U$implementation $parameter\E type"};
 
   $type_string = &get_c_type_string($type);
 
@@ -425,7 +321,7 @@ sub create_parameter_code
   }
 
       $line = "ParameterCreate($parameter, $implementation,
-                    \"foobar\",\"" . $parameter_database{"\U$implementation $parameter\E type"}."\"
+                    \"foobar\",\"" . $rhparameter_db->{"\U$implementation $parameter\E type"}."\"
                     const char *scope,
                     int        steerable,
                     const char *description,

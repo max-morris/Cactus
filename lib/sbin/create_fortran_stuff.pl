@@ -12,27 +12,22 @@ $BindingsAliasNum = 0;
 
 sub CreateFortranThornParameterBindings
 {
-  local($thorn, $n_param_database, @rest) = @_;
-  local(%parameter_database);
-  local(%interface_database);
-  local($line);
-  local(%these_parameters);
-  local($implementation);
-  local(@data);
-  local(@file);
-  local(%alias_names);
-
-  %parameter_database = @rest[0..(2*$n_param_database)-1];
-  %interface_database = @rest[2*$n_param_database..$#rest];
+  my($thorn, $rhparameter_db, $rhinterface_db) = @_;
+  my($line);
+  my(%these_parameters);
+  my($implementation);
+  my(@data);
+  my(@file);
+  my(%alias_names);
 
   push(@file, "#define DECLARE_CCTK_PARAMETERS \\");
 
   # Generate all global parameters
-  %these_parameters = &get_global_parameters(%parameter_database);
+  %these_parameters = &get_global_parameters($rhparameter_db);
 
   if((keys %these_parameters) > 0)
   {
-    @data = &CreateFortranCommonDeclaration("cctk_params_global", 0, scalar(keys %these_parameters), %these_parameters, %parameter_database);
+    @data = &CreateFortranCommonDeclaration("cctk_params_global", \%these_parameters, $rhparameter_db);
 
     foreach $line (@data)
     {
@@ -41,13 +36,13 @@ sub CreateFortranThornParameterBindings
   }
 
   # Generate all restricted parameters of this thorn
-  %these_parameters = &GetThornParameterList($thorn, "RESTRICTED", %parameter_database);
+  %these_parameters = &GetThornParameterList($thorn, "RESTRICTED", $rhparameter_db);
 
   if((keys %these_parameters > 0))
   {
-    $implementation = $interface_database{"\U$thorn\E IMPLEMENTS"};
+    $implementation = $rhinterface_db->{"\U$thorn\E IMPLEMENTS"};
     
-    @data = &CreateFortranCommonDeclaration("$implementation"."rest", 0, scalar(keys %these_parameters), %these_parameters, %parameter_database);
+    @data = &CreateFortranCommonDeclaration("$implementation"."rest", \%these_parameters, $rhparameter_db);
 
     foreach $line (@data)
     {
@@ -56,11 +51,11 @@ sub CreateFortranThornParameterBindings
   }
 
   # Generate all private parameters of this thorn
-  %these_parameters = &GetThornParameterList($thorn, "PRIVATE", %parameter_database);
+  %these_parameters = &GetThornParameterList($thorn, "PRIVATE", $rhparameter_db);
 
   if((keys %these_parameters > 0))
   {
-    @data = &CreateFortranCommonDeclaration("$thorn"."priv", 0,scalar(keys %these_parameters), %these_parameters, %parameter_database);
+    @data = &CreateFortranCommonDeclaration("$thorn"."priv", \%these_parameters, $rhparameter_db);
 
     foreach $line (@data)
     {
@@ -69,22 +64,22 @@ sub CreateFortranThornParameterBindings
   }
 
   # Parameters from friends
-  foreach $friend (split(" ",$parameter_database{"\U$thorn\E SHARES implementations"}))
+  foreach $friend (split(" ",$rhparameter_db->{"\U$thorn\E SHARES implementations"}))
   {
 
     # Determine which thorn provides this friend implementation
-    $interface_database{"IMPLEMENTATION \U$friend\E THORNS"} =~ m:([^ ]*):;
+    $rhinterface_db->{"IMPLEMENTATION \U$friend\E THORNS"} =~ m:([^ ]*):;
     
     $friend_thorn = $1;
     
-    %these_parameters = &GetThornParameterList($friend_thorn, "RESTRICTED", %parameter_database);
+    %these_parameters = &GetThornParameterList($friend_thorn, "RESTRICTED", $rhparameter_db);
     
     %alias_names = ();
 
     foreach $parameter (sort(keys %these_parameters))
     {
       # Alias the parameter unless it is one we want.
-      if(($parameter_database{"\U$thorn SHARES $friend\E variables"} =~ m:( )*$parameter( )*:) && (length($1) > 0)||length($2)>0||$1 eq $parameter_database{"\U$thorn SHARES $friend\E variables"})
+      if(($rhparameter_db->{"\U$thorn SHARES $friend\E variables"} =~ m:( )*$parameter( )*:) && (length($1) > 0)||length($2)>0||$1 eq $rhparameter_db->{"\U$thorn SHARES $friend\E variables"})
       {
 	$alias_names{$parameter} = "$parameter";
       }
@@ -95,7 +90,7 @@ sub CreateFortranThornParameterBindings
       }
     }
 
-    @data = &CreateFortranCommonDeclaration("$friend"."rest", 1, scalar(keys %these_parameters), %these_parameters, %alias_names, %parameter_database);
+    @data = &CreateFortranCommonDeclaration("$friend"."rest", \%these_parameters, $rhparameter_db, \%alias_names);
       
     foreach $line (@data)
     {
@@ -112,25 +107,20 @@ sub CreateFortranThornParameterBindings
 
 sub CreateFortranCommonDeclaration
 {
-  local($common_block, $aliases, $n_parameters, @rest) = @_;
-  local(%parameter_database);
-  local($line,@data);
-  local(%parameters);
-  local($type, $type_string);
-  local($definition);
-  local(%alias_names);
+  my($common_block, $rhparameters, $rhparameter_db, $rhaliases) = @_;
+  my($line,@data);
+  my(%parameters);
+  my($type, $type_string);
+  my($definition);
+  my($aliases);
 
-  if($aliases == 0)
+  if(defined $rhaliases)
   {
-    %parameters = @rest[0..2*$n_parameters-1];
-    %alias_names = ();
-    %parameter_database = @rest[2*$n_parameters..$#rest];
+    $aliases = scalar(keys %$rhaliases);
   }
   else
   {
-    %parameters = @rest[0..2*$n_parameters-1];
-    %alias_names = @rest[2*$n_parameters..4*$n_parameters-1];
-    %parameter_database = @rest[4*$n_parameters..$#rest];
+    $aliases = 0;
   }
 
   # Create the data
@@ -139,9 +129,9 @@ sub CreateFortranCommonDeclaration
 
   $sepchar = "";
 
-  foreach $parameter (&order_params(scalar(keys %parameters), %parameters,%parameter_database))
+  foreach $parameter (&order_params($rhparameters,$rhparameter_db))
   {
-    $type = $parameter_database{"\U$parameters{$parameter} $parameter\E type"};
+    $type = $rhparameter_db->{"\U$rhparameters->{$parameter} $parameter\E type"};
       
     $type_string = &get_fortran_type_string($type);
 
@@ -151,7 +141,7 @@ sub CreateFortranCommonDeclaration
     }
     else
     {
-      $line = "$type_string $alias_names{$parameter}";
+      $line = "$type_string $rhaliases->{$parameter}";
     }
 
     push(@data, $line);
@@ -162,7 +152,7 @@ sub CreateFortranCommonDeclaration
     }
     else
     {
-      $definition .= "$sepchar$alias_names{$parameter}";
+      $definition .= "$sepchar$rhaliases->{$parameter}";
     }
 
 
@@ -177,8 +167,8 @@ sub CreateFortranCommonDeclaration
 
 sub get_fortran_type_string
 {
-  local($type) = @_;
-  local($type_string);
+  my($type) = @_;
+  my($type_string);
 
 
   if($type eq "KEYWORD" ||

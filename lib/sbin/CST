@@ -6,7 +6,7 @@
 #  @desc 
 #  Parses the the configuration files for thorns.
 #  @enddesc 
-#  @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.31 1999-10-24 11:45:00 allen Exp $
+#  @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.32 1999-10-24 22:55:48 goodale Exp $
 #@@*/
 
 # Global parameter to track the number of errors from the CST
@@ -68,7 +68,6 @@ require "$sbin_dir/create_c_stuff.pl";
 require "$sbin_dir/create_fortran_stuff.pl";
 require "$sbin_dir/GridFuncStuff.pl";
 require "$sbin_dir/output_config.pl";
-require "$sbin_dir/Orderer.pl";
 require "$sbin_dir/ImpParamConsistency.pl";
 require "$sbin_dir/CSTUtils.pl";
 require "$sbin_dir/CreateParameterBindings.pl";
@@ -126,8 +125,7 @@ if($debug_schedule)
 
 # Create all the bindings
 print "Creating Thorn-Flesh bindings...\n";
-&CreateBindings($bindings_dir, scalar(keys %parameter_database), scalar(keys %interface_database), 
-		%parameter_database, %interface_database, %schedule_database);
+&CreateBindings($bindings_dir, \%parameter_database, \%interface_database, \%schedule_database);
 
 # Create header file of active thorns for the code
 @activethornsheader = &CreateActiveThornsHeader(%thorns);
@@ -196,9 +194,9 @@ exit;
 
 sub CreateThornList
 {
-  local($cctk_home, $activethorns) = @_;
-  local(%thornlist);
-  local($thorn, $package, $thorn_name);
+  my($cctk_home, $activethorns) = @_;
+  my(%thornlist);
+  my($thorn, $package, $thorn_name);
 
   open(ACTIVE, "<$activethorns") || die "Cannot open ActiveThorns file $activethorns !";
 
@@ -281,9 +279,9 @@ sub CreateThornList
 
 sub get_global_parameters
 {
-  local(%parameter_database) = @_;
-  local(%global_parameters);
-  local($param);
+  my(%parameter_database) = @_;
+  my(%global_parameters);
+  my($param);
 
   foreach $param (split(/ /,$parameter_database{"GLOBAL PARAMETERS"}))
   {
@@ -315,9 +313,9 @@ sub get_global_parameters
 
 sub CreateMakeThornlist
 {
-  local(%thorns) = @_;
-  local($thorn);
-  local($thornlist);
+  my(%thorns) = @_;
+  my($thorn);
+  my($thornlist);
 
   $thornlist = "THORNS =";
   foreach $thorn (keys %thorns)
@@ -351,8 +349,8 @@ sub CreateMakeThornlist
 
 sub CreateActiveThornsHeader
 {
-  local(%thorns) = @_;
-  local($header,$thorn,$nthorns);
+  my(%thorns) = @_;
+  my($header,$thorn,$nthorns);
 
   $nthorns = 0;
 
@@ -396,8 +394,8 @@ sub CreateActiveThornsHeader
 
 sub CreateDefineThornsHeader
 {
-  local(%thorns) = @_;
-  local($header,$thorn,$nthorns);
+  my(%thorns) = @_;
+  my($header,$thorn,$nthorns);
 
   $nthorns = 0;
 
@@ -437,8 +435,8 @@ sub CreateDefineThornsHeader
 
 sub CreateDefineThisThornHeader
 {
-  local(%thorns) = @_;
-  local($header,$thorn,$nthorns);
+  my(%thorns) = @_;
+  my($header,$thorn,$nthorns);
 
   $nthorns = 0;
 
@@ -479,20 +477,8 @@ sub CreateDefineThisThornHeader
 
 sub CreateBindings
 {
-  local($bindings_dir, $n_param_database, $n_interface_database, @rest) = @_;
-  local(%parameter_database);
-  local(%interface_database);
-  local(%schedule_database);
-  local($start_dir);
-
-  # Extract the parameter,interface, and schedule databases from the arguments.
-  %parameter_database = @rest[0..2*$n_param_database-1];
-  %interface_database = @rest[2*$n_param_database..2*($n_param_database+$n_interface_database)-1];
-  %schedule_database = @rest[2*($n_param_database+$n_interface_database)..$#rest];
-
-  # Extract the parameter and interface databases from the arguments.
-  %parameter_database = @rest[0..2*$n_param_database-1];
-  %interface_database = @rest[2*$n_param_database..$#rest];
+  my($bindings_dir, $rhparameter_db, $rhinterface_db, $rhschedule_db) = @_;
+  my($start_dir);
 
   # Create the bindings directory if it doesn't exist.
   if(! -d $bindings_dir)
@@ -505,21 +491,20 @@ sub CreateBindings
 
   # Create the bindings for the subsystems.
   print "   Creating implementation bindings...\n";
-  &CreateImplementationBindings($bindings_dir, $n_param_database, %parameter_database, %interface_database);
+  &CreateImplementationBindings($bindings_dir, $rhparameter_db, $rhinterface_db);
   print "   Creating parameter bindings...\n";
-  &CreateParameterBindings($bindings_dir, $n_param_database, %parameter_database, %interface_database);
+  &CreateParameterBindings($bindings_dir, $rhparameter_db, $rhinterface_db);
   print "   Creating variable bindings...\n";
-  &CreateVariableBindings($bindings_dir, %interface_database);
+  &CreateVariableBindings($bindings_dir, $rhinterface_db);
   print "   Creating schedule bindings...\n";
-  &CreateScheduleBindings($bindings_dir, scalar(keys %interface_database), 
-			  %interface_database, %schedule_database);
+  &CreateScheduleBindings($bindings_dir, $rhinterface_db, $rhschedule_db);
 
   # Place an appropriate make.code.defn in the bindings directory.
   chdir $bindings_dir;
 
   $dataout  = "SRCS = \n";
   $dataout .= "SUBDIRS = Implementations Parameters Variables Schedule\n";
-  &WriteFile("make.code.defn",$dataout);
+  &WriteFile("make.code.defn",\$dataout);
     
   # Go back to where we started.
   chdir $start_dir;

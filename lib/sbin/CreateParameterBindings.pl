@@ -25,20 +25,16 @@
 
 sub CreateParameterBindings
 {
-  local($bindings_dir, $n_param_database, @rest) = @_;
-  local(%parameter_database);
-  local(%interface_database);
-  local($start_dir);
-  local($line);
-  local(%these_parameters);
-  local($implementation, $thorn);
-  local($files);
-  local(%routines);
-  local($structure, %structures);
-  local(%header_files);
+  my($bindings_dir, $rhparameter_db, $rhinterface_db) = @_;
+  my($start_dir);
+  my($line);
+  my(%these_parameters);
+  my($implementation, $thorn);
+  my($files);
+  my(%routines);
+  my($structure, %structures);
+  my(%header_files);
 
-  %parameter_database = @rest[0..(2*$n_param_database)-1];
-  %interface_database = @rest[2*$n_param_database..$#rest];
 
   if(! -d $bindings_dir)
   {
@@ -62,16 +58,16 @@ sub CreateParameterBindings
 
 
   # Generate all global parameters
-  %these_parameters = &get_global_parameters(%parameter_database);
+  %these_parameters = &get_global_parameters($rhparameter_db);
 
-  @data = &CreateParameterBindingFile("CCTK_BindingsParametersGlobal", "GLOBAL_PARAMETER_STRUCT", scalar(keys %these_parameters), %these_parameters, %parameter_database);
+  @data = &CreateParameterBindingFile("CCTK_BindingsParametersGlobal", "GLOBAL_PARAMETER_STRUCT", \%these_parameters, $rhparameter_db);
 
   $dataout = "";
   foreach $line (@data)
   {
     $dataout .= "$line\n";
   }
-  &WriteFile("Global.c",$dataout);
+  &WriteFile("Global.c",\$dataout);
 
   $files = "Global.c";
   $structures{"GLOBAL_PARAMETER_STRUCT"} = "cctk_params_global";
@@ -81,14 +77,14 @@ sub CreateParameterBindings
   chdir "..";
   chdir "include";
 
-  @data = &CreateCStructureParameterHeader("CCTK_BindingsParametersGlobal", "GLOBAL_PARAMETER_STRUCT", scalar(keys %these_parameters), %these_parameters, %parameter_database);
+  @data = &CreateCStructureParameterHeader("CCTK_BindingsParametersGlobal", "GLOBAL_PARAMETER_STRUCT", \%these_parameters, $rhparameter_db);
 
   $dataout = "";
   foreach $line (@data)
   {
     $dataout .= "$line\n";
   }
-  &WriteFile("ParameterCGlobal.h",$dataout);
+  &WriteFile("ParameterCGlobal.h",\$dataout);
 
   $header_files{"GLOBAL"} = "ParameterCGlobal.h";
 
@@ -96,24 +92,24 @@ sub CreateParameterBindings
   chdir "Parameters";
 
   # Generate all restricted parameters
-  foreach $implementation (split(" ",$interface_database{"IMPLEMENTATIONS"}))
+  foreach $implementation (split(" ",$rhinterface_db->{"IMPLEMENTATIONS"}))
   {
-    $interface_database{"IMPLEMENTATION \U$implementation\E THORNS"} =~ m:([^ ]+):;
+    $rhinterface_db->{"IMPLEMENTATION \U$implementation\E THORNS"} =~ m:([^ ]+):;
 
     $thorn = $1;
 
-    %these_parameters = &GetThornParameterList($thorn, "RESTRICTED", %parameter_database);
+    %these_parameters = &GetThornParameterList($thorn, "RESTRICTED", $rhparameter_db);
 
     if((keys %these_parameters > 0))
     {
-      @data = &CreateParameterBindingFile("CCTK_BindingsParameters$implementation"."_restricted", "RESTRICTED_\U$implementation\E_STRUCT", scalar(keys %these_parameters), %these_parameters, %parameter_database);
+      @data = &CreateParameterBindingFile("CCTK_BindingsParameters$implementation"."_restricted", "RESTRICTED_\U$implementation\E_STRUCT", \%these_parameters, $rhparameter_db);
 
       $dataout = "";
       foreach $line (@data)
       {
 	$dataout .= "$line\n";
       }
-      &WriteFile("\U$implementation\E". "_restricted.c",$dataout);
+      &WriteFile("\U$implementation\E". "_restricted.c",\$dataout);
 
 
       $files .= " \U$implementation\E". "_restricted.c";
@@ -125,7 +121,7 @@ sub CreateParameterBindings
       chdir "..";
       chdir "include";
 
-      @data = &CreateCStructureParameterHeader("CCTK_BindingsParameters$implementation"."_restricted", "RESTRICTED_\U$implementation\E_STRUCT", scalar(keys %these_parameters), %these_parameters, %parameter_database);
+      @data = &CreateCStructureParameterHeader("CCTK_BindingsParameters$implementation"."_restricted", "RESTRICTED_\U$implementation\E_STRUCT", \%these_parameters, $rhparameter_db);
       
 
       $dataout = "";
@@ -133,7 +129,7 @@ sub CreateParameterBindings
       {
 	$dataout .= "$line\n";
       }
-      &WriteFile("ParameterCRestricted\U$implementation\E".".h",$dataout);
+      &WriteFile("ParameterCRestricted\U$implementation\E".".h",\$dataout);
 
       $header_files{"\U$implementation\E RESTRICTED"} = "ParameterCRestricted\U$implementation\E".".h";
 
@@ -144,13 +140,13 @@ sub CreateParameterBindings
   }
 
   # Generate all private parameters
-  foreach $thorn (split(" ",$interface_database{"THORNS"}))
+  foreach $thorn (split(" ",$rhinterface_db->{"THORNS"}))
   {
-    %these_parameters = &GetThornParameterList($thorn, "PRIVATE", %parameter_database);
+    %these_parameters = &GetThornParameterList($thorn, "PRIVATE", $rhparameter_db);
 
     if((keys %these_parameters > 0))
     {
-      @data = &CreateParameterBindingFile("CCTK_BindingsParameters$thorn"."_private", "PRIVATE_\U$thorn\E_STRUCT", scalar(keys %these_parameters), %these_parameters, %parameter_database);
+      @data = &CreateParameterBindingFile("CCTK_BindingsParameters$thorn"."_private", "PRIVATE_\U$thorn\E_STRUCT", \%these_parameters, $rhparameter_db);
 
 
       $dataout = "";
@@ -158,7 +154,7 @@ sub CreateParameterBindings
       {
 	$dataout .= "$line\n";
       }
-      &WriteFile("\U$thorn\E"."_private.c",$dataout);
+      &WriteFile("\U$thorn\E"."_private.c",\$dataout);
 
 
       $files .= " \U$thorn\E". "_private.c";
@@ -169,7 +165,7 @@ sub CreateParameterBindings
       chdir "..";
       chdir "include";
 
-      @data = &CreateCStructureParameterHeader("CCTK_BindingsParameters$thorn"."_private", "PRIVATE_\U$thorn\E_STRUCT", scalar(keys %these_parameters), %these_parameters, %parameter_database);
+      @data = &CreateCStructureParameterHeader("CCTK_BindingsParameters$thorn"."_private", "PRIVATE_\U$thorn\E_STRUCT", \%these_parameters, $rhparameter_db);
 
       $structures{"PRIVATE_\U$thorn\E_STRUCT"} = "$thorn"."priv";
       
@@ -179,7 +175,7 @@ sub CreateParameterBindings
       {
 	$dataout .= "$line\n";
       }
-      &WriteFile("ParameterCPrivate\U$thorn\E".".h",$dataout);
+      &WriteFile("ParameterCPrivate\U$thorn\E".".h",\$dataout);
 
 
       $header_files{"\U$thorn\E PRIVATE"} = "ParameterCPrivate\U$thorn\E".".h";
@@ -202,18 +198,17 @@ sub CreateParameterBindings
   foreach $routine ((keys %routines), "CCTK_BindingsParametersGlobal")
   {
     $dataout .= "int $routine"."Initialise(void);\n";
-    $dataout .= "int $routine"."Help(const char *param, const char *format, FILE *file);\n";
   }
 
   $dataout .= "int CCTKi_BindingsParametersInitialise(void)\n";
   $dataout .= "\{\n\n";
 
-  foreach $thorn (split(" ",$interface_database{"THORNS"}))
+  foreach $thorn (split(" ",$rhinterface_db->{"THORNS"}))
   {
     $dataout .= "  CCTKi_BindingsCreate$thorn"."Parameters();\n\n";
   }
 
-  foreach $thorn (split(" ",$interface_database{"THORNS"}))
+  foreach $thorn (split(" ",$rhinterface_db->{"THORNS"}))
   {
     $dataout .= "  CCTKi_Bindings$thorn"."ParameterExtensions();\n\n";
   }
@@ -221,89 +216,33 @@ sub CreateParameterBindings
   $dataout .= "return 0;\n";
   $dataout .= "}\n\n";
 
-  $dataout .= "int CCTKi_BindingsParameterHelp(const char *identifier, const char *format, FILE *file)\n";
-  $dataout .= "{\n";   
-  $dataout .="  int retval = 1;\n";
-  $dataout .="  int temp_retval;\n";
-  $dataout .="  char *implementation = NULL;\n";
-  $dataout .="  char *param_name = NULL;\n\n";
+  &WriteFile("BindingsParameters.c",\$dataout);
   
-  $dataout .="  if(! identifier )\n";
-  $dataout .="  {\n";
-  $dataout .="    retval = CCTK_BindingsParametersGlobalHelp(identifier, format, file);\n\n";
-
-  foreach $routine (keys %routines, "CCTK_BindingsParametersGlobal")
-  {
-
-    $dataout .= "      temp_retval =  $routine"."Help(param_name, format, file);";
-
-    $dataout .= "\n";
-    $dataout .="    if(!temp_retval)\n";
-    $dataout .="    {\n";
-    $dataout .="      retval = 0;\n";
-    $dataout .="    }\n";
-  }
- 
-  $dataout .="  }\n\n";
-  
-  $dataout .="  Util_SplitString(\&implementation, &param_name, identifier, \"::\");\n\n";
-  
-  $dataout .="  if(!implementation)\n";
-  $dataout .="  {\n";
-  $dataout .="    retval = CCTK_BindingsParametersGlobalHelp(identifier, format, file);\n";
-  $dataout .="  }\n";
-  $dataout .="  else\n";
-  $dataout .="  { \n";
-
-  foreach $routine (keys %routines, "CCTK_BindingsParametersGlobal")
-  {
-    $dataout .= "\n";
-    $dataout .="      if(CCTK_Equals(implementation, \"$routines{$routine}\"))\n";
-    $dataout .="      {\n";
-    $dataout .= "      temp_retval =  $routine"."Help(param_name, format, file);";
-
-    $dataout .= "\n"; 
-    $dataout .="      if(!temp_retval) \n";
-    $dataout .="      {\n";
-    $dataout .="        retval = 0;\n";
-    $dataout .="      }\n";
-    $dataout .="    }\n";
-  }
- 
-  $dataout .="  }\n";
-  $dataout .="\n"; 
-  $dataout .="  free(implementation);\n";
-  $dataout .="  free(param_name);\n";
-  $dataout .="  return retval;\n";
-  $dataout .="}\n\n";
-  
-  &WriteFile("BindingsParameters.c",$dataout);
-  
-  $newfilelist = NewParamStuff($n_param_database, @rest);
+  $newfilelist = NewParamStuff($rhparameter_db, $rhinterface_db);
 
   $dataout = "";
   $dataout .= "SRCS = BindingsParameters.c $files $newfilelist\n";
-  &WriteFile("make.code.defn",$dataout);
+  &WriteFile("make.code.defn",\$dataout);
 
   # Create the appropriate thorn parameter headers
 
   chdir "..";
   chdir "include";
 
-  foreach $thorn (split(" ",$interface_database{"THORNS"}))
+  foreach $thorn (split(" ",$rhinterface_db->{"THORNS"}))
   {
 
-    @data = &CreateFortranThornParameterBindings($thorn, $n_param_database, @rest);
+    @data = &CreateFortranThornParameterBindings($thorn, $rhparameter_db, $rhinterface_db);
 
     $dataout = "";
     foreach $line (@data)
     {
       $dataout .= "$line\n";
     }
-    &WriteFile("\U$thorn\E"."_FParameters.h",$dataout);
+    &WriteFile("\U$thorn\E"."_FParameters.h",\$dataout);
 
     $dataout = "";
-    $implementation = $interface_database{"\U$thorn\E IMPLEMENTS"};
+    $implementation = $rhinterface_db->{"\U$thorn\E IMPLEMENTS"};
     $dataout .= "\#ifndef _\U$thorn\E_PARAMETERS_H_\n\n";
     $dataout .= "\#define _\U$thorn\E_PARAMETERS_H_\n\n";
 
@@ -325,19 +264,19 @@ sub CreateParameterBindings
   $dataout .= "\n";
 
     @data = ();
-    foreach $friend (split(" ",$parameter_database{"\U$thorn\E SHARES implementations"}))
+    foreach $friend (split(" ",$rhparameter_db->{"\U$thorn\E SHARES implementations"}))
     {
-      $friend_implementation = $interface_database{"\U$friend\E IMPLEMENTS"};
+      $friend_implementation = $rhinterface_db->{"\U$friend\E IMPLEMENTS"};
 
       $dataout .= "#include \"ParameterCRestricted\U$friend\E.h\"\n";
 
-      $interface_database{"IMPLEMENTATION \U$friend\E THORNS"} =~ m:([^ ]*):;
+      $rhinterface_db->{"IMPLEMENTATION \U$friend\E THORNS"} =~ m:([^ ]*):;
  
       $friend_thorn = $1;
 
-      foreach $parameter (split(" ",$parameter_database{"\U$thorn SHARES $friend\E variables"}))
+      foreach $parameter (split(" ",$rhparameter_db->{"\U$thorn SHARES $friend\E variables"}))
       {
-	$type = $parameter_database{"\U$friend_thorn $parameter\E type"};
+	$type = $rhparameter_db->{"\U$friend_thorn $parameter\E type"};
 
 	$type_string = &get_c_type_string($type);
 
@@ -375,7 +314,7 @@ sub CreateParameterBindings
 
     $dataout .= "\n";
     $dataout .= "#endif\n";
-    &WriteFile("\U$thorn\E"."_CParameters.h",$dataout);
+    &WriteFile("\U$thorn\E"."_CParameters.h",\$dataout);
 
   }   
 
@@ -401,27 +340,27 @@ sub CreateParameterBindings
   }
   close IN;
 
-  &WriteFile("CParameterStructNames.h",$dataout);
+  &WriteFile("CParameterStructNames.h",\$dataout);
 
 
   $dataout = "";
   $dataout .= "#include \"CParameterStructNames.h\"\n\n";
-  foreach $thorn (split(" ",$interface_database{"THORNS"}))
+  foreach $thorn (split(" ",$rhinterface_db->{"THORNS"}))
   {
     $dataout .= "\#ifdef THORN\_IS\_$thorn\n";
     $dataout .= "\#include \"\U$thorn\E"."\_CParameters.h\"\n";
     $dataout .= "\#endif\n\n";
   }
-  &WriteFile("CParameters.h",$dataout);
+  &WriteFile("CParameters.h",\$dataout);
 
   $dataout = "";
-  foreach $thorn (split(" ",$interface_database{"THORNS"}))
+  foreach $thorn (split(" ",$rhinterface_db->{"THORNS"}))
   {
     $dataout .= "\#ifdef THORN_IS\_$thorn\n";
     $dataout .= "\#include \"\U$thorn\E"."\_FParameters.h\"\n";
     $dataout .= "\#endif\n\n";
   }
-  &WriteFile("FParameters.h",$dataout);
+  &WriteFile("FParameters.h",\$dataout);
 
   $dataout = "";
   $dataout .= "#ifdef CCODE\n";
@@ -430,7 +369,7 @@ sub CreateParameterBindings
   $dataout .= "#ifdef FCODE\n";
   $dataout .= "#include \"FParameters.h\"\n";
   $dataout .= "#endif\n\n";
-  &WriteFile("cctk_parameters.h",$dataout);
+  &WriteFile("cctk_parameters.h",\$dataout);
 
 
   chdir $start_dir;
@@ -440,29 +379,23 @@ sub CreateParameterBindings
 
 sub NewParamStuff
 {
-  local($n_param_database, @rest) = @_;
-  local(%parameter_database);
-  local(%interface_database);
-  local($line);
-  local(%these_parameters);
-  local($implementation, $thorn);
-  local($files);
-  local(%routines);
-  local($structure, %structures);
-  local(%header_files);
-  local($thorn, $block); 
-  local($filelist);
-  local(@creationdata);
-  local(@extensiondata);
-  local(@data);
+  my($rhparameter_db, $rhinterface_db) = @_;
+  my($line);
+  my(%these_parameters);
+  my($implementation, $thorn);
+  my($files);
+  my(%routines);
+  my($structure, %structures);
+  my(%header_files);
+  my($thorn, $block); 
+  my($filelist);
+  my(@creationdata);
+  my(@extensiondata);
+  my(@data);
 
-  %parameter_database = @rest[0..(2*$n_param_database)-1];
-  %interface_database = @rest[2*$n_param_database..$#rest];
-
-
-  foreach $thorn (split(" ",$interface_database{"THORNS"}))
+  foreach $thorn (split(" ",$rhinterface_db->{"THORNS"}))
   {
-    $imp = $interface_database{"\U$thorn\E IMPLEMENTS"};
+    $imp = $rhinterface_db->{"\U$thorn\E IMPLEMENTS"};
 
     push(@data, "#include <stdarg.h>");
     push(@data, "");
@@ -473,7 +406,7 @@ sub NewParamStuff
 
     foreach $block ("GLOBAL", "RESTRICTED", "PRIVATE")
     {
-      %these_parameters = &GetThornParameterList($thorn, $block, %parameter_database);
+      %these_parameters = &GetThornParameterList($thorn, $block, $rhparameter_db);
 
       if((keys %these_parameters > 0))
       {
@@ -495,21 +428,21 @@ sub NewParamStuff
 	}
 
 #	print "Generating $block parameters for $thorn, providing $imp\n";
-	push(@creationdata,&CreateParameterRegistrationStuff($block, $thorn, $imp, scalar(keys %these_parameters), %these_parameters, %parameter_database));
+	push(@creationdata,&CreateParameterRegistrationStuff($block, $thorn, $imp, $rhparameter_db, %these_parameters));
       }
     }
 
 
     # Now the parameter extensions
-#    print $parameter_database{"\U$thorn\E SHARES implementations"} . "\n";
+#    print $rhparameter_db->{"\U$thorn\E SHARES implementations"} . "\n";
 
-    foreach $block (split(" ",$parameter_database{"\U$thorn\E SHARES implementations"}))
+    foreach $block (split(" ",$rhparameter_db->{"\U$thorn\E SHARES implementations"}))
     {
 
       push(@data, "#include \"ParameterCRestricted\U$block\E.h\"");
 
 #      print "Generating $block extension from $thorn\n";
-      push(@extensiondata,&CreateParameterExtensionStuff($block, $thorn, %parameter_database));
+      push(@extensiondata,&CreateParameterExtensionStuff($block, $thorn, $rhparameter_db));
 
     }
 
@@ -534,7 +467,7 @@ sub NewParamStuff
     {
       $dataout .= "$line\n";
     }
-    &WriteFile("Create$thorn"."Parameters.c",$dataout);
+    &WriteFile("Create$thorn"."Parameters.c",\$dataout);
 
     @data=();
     @creationdata=();
@@ -548,15 +481,10 @@ sub NewParamStuff
 
 sub CreateParameterRegistrationStuff
 {
-  local($block, $thorn, $imp, $n_params, @rest) = @_;
-  local(%these_parameters);
-  local(%parameter_database);
-  local(@data);
-  local($line);
-  local($structure, $type, $n_ranges);
-
-  %these_parameters = @rest[0..(2*$n_params)-1];
-  %parameter_database = @rest[2*$n_params..$#rest];
+  my($block, $thorn, $imp, $rhparameter_db, %these_parameters) = @_;
+  my(@data);
+  my($line);
+  my($structure, $type, $n_ranges);
 
   if($block eq "GLOBAL")
   {
@@ -583,15 +511,15 @@ sub CreateParameterRegistrationStuff
 
 #    print "This param is $parameter\n";
 
-    $type = $parameter_database{"\U$thorn $parameter\E type"};
+    $type = $rhparameter_db->{"\U$thorn $parameter\E type"};
     
 #    print "Type is $type\n";
     
-    $n_ranges = $parameter_database{"\U$thorn $parameter\E ranges"};
+    $n_ranges = $rhparameter_db->{"\U$thorn $parameter\E ranges"};
     
 #    print "N_ranges is $n_ranges\n";
     
-    $quoted_default = $parameter_database{"\U$thorn $parameter\E default"};
+    $quoted_default = $rhparameter_db->{"\U$thorn $parameter\E default"};
  
 #    $quoted_default =~ s:\"::g;  The database now strips all unescaped quotes.
 
@@ -600,15 +528,15 @@ sub CreateParameterRegistrationStuff
           "                  \"$type\"       /* The parameter type */,\n".
           "                  \"$block\",     /* The scoping block  */\n".
           "                  0,              /* Is it steerable ?  */\n".
-          "                  " . $parameter_database{"\U$thorn $parameter\E description"} . ", /* The description */\n" .
+          "                  " . $rhparameter_db->{"\U$thorn $parameter\E description"} . ", /* The description */\n" .
           "                  \"" . $quoted_default . "\",  /* The default value */\n" .
           "                  &($structure.$parameter),   /* The actual data pointer */\n".
           "                  $n_ranges       /* How many allowed ranges it has */";
     
     for($range=1; $range <= $n_ranges; $range++)
     {
-      $quoted_range = $parameter_database{"\U$thorn $parameter\E range $range range"};
-      $range_description = $parameter_database{"\U$thorn $parameter\E range $range description"};
+      $quoted_range = $rhparameter_db->{"\U$thorn $parameter\E range $range range"};
+      $range_description = $rhparameter_db{"\U$thorn $parameter\E range $range description"};
 
       if($range_description !~ m:\":)
       {
@@ -637,21 +565,21 @@ sub CreateParameterRegistrationStuff
 
 sub CreateParameterExtensionStuff
 {
-  local($block, $thorn, %parameter_database) = @_;
-  local(@data);
-  local($line);
-  local($structure, $type, $n_ranges, $range, $quoted_range, $range_description);
+  my($block, $thorn, $rhparameter_db) = @_;
+  my(@data);
+  my($line);
+  my($structure, $type, $n_ranges, $range, $quoted_range, $range_description);
  
 #  print "Extending $block from $thorn\n";
 
-  foreach $parameter (split(" ",$parameter_database{"\U$thorn\E SHARES \U$block\E variables"}))
+  foreach $parameter (split(" ",$rhparameter_db->{"\U$thorn\E SHARES \U$block\E variables"}))
   {
-    $n_ranges = $parameter_database{"\U$thorn $parameter\E ranges"};
+    $n_ranges = $rhparameter_db->{"\U$thorn $parameter\E ranges"};
 
     for($range=1; $range <= $n_ranges; $range++)
     {
-      $quoted_range = $parameter_database{"\U$thorn $parameter\E range $range range"};
-      $range_description = $parameter_database{"\U$thorn $parameter\E range $range description"};
+      $quoted_range = $rhparameter_db->{"\U$thorn $parameter\E range $range range"};
+      $range_description = $rhparameter_db->{"\U$thorn $parameter\E range $range description"};
 
       if($range_description !~ m:\":)
       {

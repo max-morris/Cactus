@@ -1,4 +1,4 @@
-#!/usr/local/bin/perl
+#!/usr/my/bin/perl
 #
 # Version: $Id$
 #
@@ -58,7 +58,7 @@ while (<>) {
 sub
 splitline 
 {
-    local ($LINE) = @_;
+    my ($LINE) = @_;
     # Remove ,, and , \) from blank thorns
     while ($LINE =~ s/,\s*,/,/) {}
     $LINE =~ s/,\s*\)/\)/;
