@@ -20,7 +20,7 @@
 
 #include "StoreHandledData.h"
 
-/*$#define MEMDEBUG$*/
+/* #define MEMDEBUG 1 */
 
 /* Undefine malloc */
 #if defined(malloc)
@@ -210,6 +210,12 @@ void *CCTKi_Realloc(void *pointer, size_t size, int line, const char *file)
   }
   else 
   {
+    /* update some static variables */
+    /* must be done before reallocation since the info pointer
+       will be invalid afterwards */
+    pastmem = totmem;
+    totmem  = totmem - info->size + size;
+
     /* reallocate starting at info pointer */
     data = (char*)realloc(info, size+sizeof(t_mallocinfo));
     if (!data)
@@ -219,10 +225,6 @@ void *CCTKi_Realloc(void *pointer, size_t size, int line, const char *file)
 		 "Reallocation called from %s, line %d. \n",file,line);
       /*$CCTK_Abort(NULL);$*/
     }
-
-    /* update some static variables */
-    pastmem = totmem;
-    totmem  = totmem - info->size + size;
 
     /* and update */
     info = (t_mallocinfo*) data;
@@ -312,6 +314,10 @@ void CCTKi_Free(void *pointer, int line, const char *file)
 	     info->size, info->file, info->line, CCTK_TotalMemory());  
 #endif
 
+      /* invalidate the magic number so that we catch things
+         which were malloc'ed externally and got a CCTKi_Free'ed block
+         by accident */
+      info->ok = 0;
       free(info);
   }
 } 
