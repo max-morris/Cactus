@@ -137,11 +137,11 @@ int CCTK_CommandLine(char ***outargv)
 
 
  /*@@
-   @routine    CCTK_CommandLine
-   @date       Wed Feb 17 00:19:30 1999
-   @author     Tom Goodale
+   @routine    CCTK_ParameterFilename
+   @date       Tue Oct 3 2000
+   @author     Gabrielle Allen
    @desc 
-   Gets the command line arguments.
+   Returns the parameter filename
    @enddesc 
    @calls     
    @calledby   
@@ -153,8 +153,23 @@ int CCTK_CommandLine(char ***outargv)
 int CCTK_ParameterFilename(int len, char *filename)
 {
   int retval;
-  strncpy(filename,parameter_file_name,len-1);
+
+  if (CCTK_Equals(parameter_file_name,"-"))
+  {
+    strncpy(filename,"STDIN",len-1);
+  }
+  else
+  {
+    strncpy(filename,parameter_file_name,len-1);
+  }
   retval = strlen(filename);
   retval=retval > len ? 0 : retval;
   return retval;
 }
+
+void CCTK_FCALL CCTK_FNAME(CCTK_ParameterFilename)
+     (int *retval, int *len, char *name)
+{
+  *retval = CCTK_ParameterFilename(*len,name);
+}
+
