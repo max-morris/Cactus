@@ -362,32 +362,43 @@ sub runtest {
         while ($oline = <INORIG>) {
             $nline = <INNEW>;
             # Now lets see if they differ.
-            if ($nline =~ /nan/i)
-            {
-              print "****CAUGHT NAN in $newfile****\n";
-              $nblow ++;
-              $nrealblow ++;
-            }
-            elsif (!($nline eq $oline)) {
+            if (!($nline eq $oline)) {
 
-# This is the new comparison (subtract last two numbers)
-                ($t1,$v1) = split(' ', $nline);
-                ($t2,$v2) = split(' ', $oline);
-# Make sure that floating point numbers have 'e' if exponential.
-                $v1 =~ s/[dD]/e/; 
-                $v2 =~ s/[dD]/e/; 
-
-                $vdiff = abs($v1 - $v2);
-                if ($vdiff > 0) {
-
-                  # They diff. But do they differ strongly?
+# Check against nans
+                if ($nline =~ /nan/i)
+                {
+                  print "****CAUGHT NAN in $newfile****\n";
                   $nblow ++;
+                  $nrealblow ++;
+                }
+# Check against inf
+                elsif ($nline =~ /inf/i)
+                {
+                  print "****CAUGHT INF in $newfile****\n";
+                  $nblow ++;
+                  $nrealblow ++;
+                }
+                else
+                {
+# This is the new comparison (subtract last two numbers)
+                   ($t1,$v1) = split(' ', $nline);
+                   ($t2,$v2) = split(' ', $oline);
+# Make sure that floating point numbers have 'e' if exponential.
+                   $v1 =~ s/[dD]/e/; 
+                   $v2 =~ s/[dD]/e/; 
 
-                  $exp = sprintf("%e",$vdiff);
-                  $exp =~ s/^.*e-(\d+)/$1/;
-                  unless ($exp >= $tolerance) {
-                    $nrealblow++;
-                  } 
+                   $vdiff = abs($v1 - $v2);
+                   if ($vdiff > 0) {
+
+                      # They diff. But do they differ strongly?
+                      $nblow ++;
+
+                      $exp = sprintf("%e",$vdiff);
+                      $exp =~ s/^.*e-(\d+)/$1/;
+                      unless ($exp >= $tolerance) {
+                        $nrealblow++;
+                      } 
+                   }
                 }
             }
         }
