@@ -29,6 +29,7 @@ int  CCTKi_CreateGroup
    int         dimension,
    int         ntimelevels,
    const char* stype,
+   const char* dtype,
    const char* size,
    const char* ghostsize,
    int         n_variables,

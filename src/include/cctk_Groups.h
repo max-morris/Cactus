@@ -15,6 +15,7 @@ typedef struct
 {
   int grouptype;
   int vartype;
+  int disttype;
   int stagtype;
   int dim;
   int numvars;
@@ -85,6 +86,9 @@ int        CCTK_VarTypeSize(int vtype);
 #define GROUP_PRIVATE   1
 #define GROUP_PROTECTED 2
 #define GROUP_PUBLIC    3
+
+#define DISTRIB_CONSTANT 1
+#define DISTRIB_DEFAULT  2
 
 #define CCTK_SCALAR 1
 #define CCTK_GF     2
