@@ -125,7 +125,8 @@ void CCTK_Warn(int level, int line, const char *file, const char *thorn, const c
   {
     if (cctk_full_warnings)
     {
-      fprintf(stderr, "WARNING level %d in thorn %s (line %d of %s): \n", level, thorn, line, file);
+      fprintf(stderr, "WARNING level %d in thorn %s \n  (line %d of %s): \n", 
+	      level, thorn, line, file);
       fprintf(stderr, "  -> %s\n",message);
       fflush(stderr);
     }
@@ -140,6 +141,8 @@ void CCTK_Warn(int level, int line, const char *file, const char *thorn, const c
   {
     exit(99);
   }
+
+  USE_CCTK_PARAMETERS
 
 }
 
@@ -252,7 +255,7 @@ void CCTK_VWarn(int level, int line, const char *file, const char *thorn, const 
     
     if (cctk_full_warnings)
     {
-      fprintf(stderr, "WARNING level %d in thorn %s (line %d of %s): \n", 
+      fprintf(stderr, "WARNING level %d in thorn %s \n  (line %d of %s): \n", 
 	      level, thorn, line, file);
       fprintf(stderr, "  -> ");
       vfprintf(stderr, format, ap);
@@ -274,6 +277,9 @@ void CCTK_VWarn(int level, int line, const char *file, const char *thorn, const 
   {
     exit(99);
   }
+
+  USE_CCTK_PARAMETERS
+
 }  
 
 
@@ -308,6 +314,8 @@ void CCTK_ParamWarn(const char *thorn, const char *message)
   }
 
   param_errors++;
+
+  USE_CCTK_PARAMETERS
 
 }
 
@@ -443,6 +451,8 @@ void CCTKi_FinaliseParamWarn(void)
     }
 
   }
+
+  USE_CCTK_PARAMETERS
 
 }
 
