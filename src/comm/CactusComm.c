@@ -3,9 +3,9 @@
 #include <stdio.h>
 
 #include "cctk.h"
-#include "flesh.h"
-#include "Comm.h"
-#include "GHExtensions.h"
+#include "cctk_Flesh.h"
+#include "cctk_Comm.h"
+#include "cctk_GHExtensions.h"
 
 int *CCTK_ArrayGroupSizeI(cGH *GH, int dir, int index)
 {

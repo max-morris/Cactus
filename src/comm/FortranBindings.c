@@ -8,9 +8,9 @@
  @@*/
 
 #include <stdlib.h>
-#include "flesh.h"
-#include "FortranString.h"
-#include "Comm.h"
+#include "cctk_Flesh.h"
+#include "cctk_FortranString.h"
+#include "cctk_Comm.h"
 
 int FMODIFIER FORTRAN_NAME(CCTK_Exit)(cGH *GH)
 {

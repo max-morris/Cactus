@@ -22,13 +22,13 @@
 #include <stdarg.h>
 
 #include "cctk.h"
-#include "flesh.h"
-#include "FortranString.h"
-#include "Groups.h"
-#include "GroupsOnGH.h"
+#include "cctk_Flesh.h"
+#include "cctk_FortranString.h"
+#include "cctk_Groups.h"
+#include "cctk_GroupsOnGH.h"
 #include "StoreHandledData.h"
-#include "Interp.h"
-#include "WarnLevel.h"
+#include "cctk_Interp.h"
+#include "cctk_WarnLevel.h"
 
 
 static cHandledData *InterpOperators = NULL;

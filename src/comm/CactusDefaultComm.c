@@ -11,10 +11,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "flesh.h"
-#include "Groups.h"
+#include "cctk_Flesh.h"
+#include "cctk_Groups.h"
 #include "CactusMainDefaults.h"
-#include "GHExtensions.h"
+#include "cctk_GHExtensions.h"
 
 #ifdef MPI
 #include "mpi.h"

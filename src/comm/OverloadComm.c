@@ -13,7 +13,7 @@
 #include <stdlib.h>
 #include <stdarg.h>
 
-#include "flesh.h"
+#include "cctk_Flesh.h"
 #include "OverloadMacros.h"
 
 static char *rcsid="$Header$";
