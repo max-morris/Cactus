@@ -1,68 +1,90 @@
+ /*@@
+   @file      MemAllocate.c
+   @date      Tue Mar  7 11:58:03 2000
+   @author    Gerd lanfermann
+   @desc 
+   
+   @enddesc 
+   @version $Header$
+ @@*/
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
-#include <stdarg.h>
 
 #include "cctk_Config.h"
-#include "cctki_Cache.h"
-#include "cctk_Parameters.h"
+#include "cctk_MemAlloc.h"
 
+static char *rcsid = "$Header$";
 
 #define MEMDEBUG 
 
-static int totmem=0, pastmem=0;
+/********************************************************************
+ *********************     Local Data Types   ***********************
+ ********************************************************************/
 
 typedef struct
 {
-  int size;
+  unsigned long int size;
   int line;
   const char *file;
 } iMemData;
 
-void *CCTKi_malloc(size_t size, int line, const char *file)
+
+/********************************************************************
+ *********************     Local Data   *****************************
+ ********************************************************************/
+
+static unsigned long int totmem=0;
+static unsigned long int pastmem=0;
+
+/********************************************************************
+ *********************     External Routines   **********************
+ ********************************************************************/
+
+void *CCTK_Malloc(size_t size, int line, const char *file)
 {
   iMemData *memdata;
-  char *foo;
+  char *data;
   int diffmem;
   
-  foo = (char*)malloc(size+sizeof(iMemData));
-  if (!foo) printf("Allocation error! ");
-  memdata = foo;
+  data = (char*)malloc(size+sizeof(iMemData));
+  if(!data) 
+  {
+    fprintf(stderr, "Allocation error! ");
+  }
+  memdata = (iMemData *)data;
   memdata->size = size;
   memdata->line = line;
   memdata->file = file;
-  pastmem =totmem;
-  totmem +=size;
-  diffmem =totmem-pastmem;
+  pastmem = totmem;
+  totmem += size;
+  diffmem = totmem-pastmem;
 #ifdef MEMDEBUG
-  printf("Allocating %d - by %s in line %d TOTAL: %d\n",
-	 memdata->size,memdata->file,memdata->line, CCTKi_TotalMemory());
+  printf("Allocating %lu - by %s in line %d TOTAL: %lu\n",
+         memdata->size,memdata->file,memdata->line, CCTK_TotalMemory());
 #endif
 
-  return((void*)(foo+sizeof(iMemData)));
+  return((void*)(data+sizeof(iMemData)));
 }
 
-void CCTKi_free(void *foo)
+void CCTK_Free(void *pointer)
 {
   iMemData *memdata;
   int diffmem;
 
-  memdata = ((char*)foo)-sizeof(iMemData);
+  memdata = (iMemData *)((char*)pointer-sizeof(iMemData));
 #ifdef MEMDEBUG
-  printf("Freeing %d - allocated by %s in line %d TOTAL: %d\n",
-
-	 memdata->size,memdata->file,memdata->line, CCTKi_TotalMemory());
+  printf("Freeing %lu - allocated by %s in line %d TOTAL: %lu\n",
+         memdata->size,memdata->file,memdata->line, CCTK_TotalMemory());
 #endif
-  pastmem=totmem;
-  totmem-=memdata->size;
-  diffmem=totmem-pastmem;
+  pastmem  = totmem;
+  totmem  -= memdata->size;
+  diffmem  = totmem-pastmem;
   
   free(memdata);
 }
 
-int CCTK_TotalMemory()
+unsigned long int CCTK_TotalMemory(void)
 {
   return(totmem);
 }

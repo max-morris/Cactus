@@ -8,21 +8,22 @@
    @version $Header$
  @@*/
 
-#ifndef _CCTK_STAGGER_H_
-#define _CCTK_STAGGER_H_
+#ifndef _CCTK_MEMALLOC_H_
+#define _CCTK_MEMALLOC_H_ 1
 
 #ifdef __cplusplus
-extern "C" {
+extern "C" 
+{
 #endif
 
-void *CCTKi_malloc(t_size size, int line, const char *file);
-void CCTKi_free(void *pointer);
-void CCTK_TotalMemory(void);
+void *CCTK_Malloc(size_t size, int line, const char *file);
+void  CCTK_Free(void *pointer);
+unsigned long int CCTK_TotalMemory(void);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif
+#endif /* _CCTK_MEMALLOC_H_ */
 
 
