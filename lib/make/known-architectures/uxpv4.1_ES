@@ -4,12 +4,24 @@
 #    @date      Thu 06 Sep 2001
 #    @author    Thomas Radke
 #    @desc
-#               Known-architectures file for Fujitsu VPP700
+#               Known-architectures file for Fujitsu vector machines
 #    @enddesc
 #    @version   $Header$
 #  @@*/
 
-if test "$CCTK_CONFIG_STAGE" = "preferred-compilers" ; then
+# check the machine hardware type
+# the VPP5000 series has 64bit, all others are assumed 32bit
+uname=`uname -m`
+
+if test "$uname" = '5000'; then
+  FUJITSU_LIBDIR='lib64'
+  FUJITSU_LIBS='fj95fv fj95f fj95 fj95f'
+else
+  FUJITSU_LIBDIR='lib'
+  FUJITSU_LIBS='fj90fv fj90f fj90 fj90f'
+fi
+
+if test "$CCTK_CONFIG_STAGE" = "preferred-compilers"; then
   : ${F90=frt}
 else
   # no way to generate dependencies on this machine
@@ -22,9 +34,10 @@ else
   : ${F_DEPEND_OUT='> /dev/null; touch $@'}
   : ${F77_DEPEND_OUT='> /dev/null; touch $@'}
 
-  # this is needed to compile with modules
+  # '-Am' is needed to compile with modules
+  # '-X9' is needed to compile *.F files as fortran 90 code
   : ${F77FLAGS='-Am'}
-  : ${F90FLAGS='-Am'}
+  : ${F90FLAGS='-Am -X9'}
 
   # some optimization flags
   : ${C_OPTIMISE_FLAGS='-O -K4'}
@@ -36,12 +49,12 @@ else
     vcc | CC)
       # native linker only takes static libs by default
       # but we also want socket lib
-      : ${LIBS="fj90fv fj90f fj90 fj90f"}
-      : ${LDFLAGS="-d y /usr/lib/libsocket.so /usr/lib/libvfl.so"}
+      : ${LIBS="${FUJITSU_LIBS}"}
+      : ${LDFLAGS="-Wl,-J,-P,-dy /usr/${FUJITSU_LIBDIR}/libsocket.so /usr/${FUJITSU_LIBDIR}/libvfl.so"}
       ;;
     cc)
-      : ${LIBS="fj90fv fj90f fj90 fj90f socket vfl elf m gen fjsamp px"}
-      : ${LDFLAGS="-L/usr/lang/lib"}
+      : ${LIBS="${FUJITSU_LIBS} socket vfl elf m gen fjsamp px"}
+      : ${LDFLAGS="-Wl,-J,-P,-L/usr/lang/${FUJITSU_LIBDIR}"}
       ;;
     *)
       echo "Unknown linker $LD, don\'t know what libs to link with."
@@ -50,10 +63,16 @@ else
   esac
 
 # MPI stuff
-  if test -n "$MPI" ; then
-    NATIVE_MPI_INC_DIRS="/usr/lang/mpi/include"
-    NATIVE_MPI_LIB_DIRS="/usr/lang/mpi/lib"
-    NATIVE_MPI_LIBS="mpi mp"
+  if test -n "$MPI"; then
+    if test "$uname" = '5000'; then
+      NATIVE_MPI_INC_DIRS='/usr/lang/mpi2/include64'
+      NATIVE_MPI_LIB_DIRS='/usr/lang/mpi2/lib64'
+      NATIVE_MPI_LIBS='mpi++ mpi mp'
+    else
+      NATIVE_MPI_INC_DIRS='/usr/lang/mpi2/include'
+      NATIVE_MPI_LIB_DIRS='/usr/lang/mpi2/lib'
+      NATIVE_MPI_LIBS='mpi mp'
+    fi
   fi
 
 fi
