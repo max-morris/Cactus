@@ -9,12 +9,12 @@ require "lib/sbin/RunTestUtils.pl";
 $prompt = shift;   
 $prompt =~ tr/A-Z/a-z/;
 $home_dir = shift;
-$config = shift;;
+$config = shift;
 
 &PrintHeader;
 
 # Set up RunTest configuration
-$config_data = &Configure($config,$home_dir);
+$config_data = &Configure($config,$home_dir,$prompt);
 
 # Initialise testdata database
 $testdata = &InitialiseTestData();
@@ -29,6 +29,8 @@ $testdata = &ParseAllParameterFiles($testdata);
 
 # Print database
 #&PrintDataBase($testdata);
+
+$haverunall = 0;
 
 while ($choice !~ /^Q/i)
 {
@@ -49,7 +51,16 @@ while ($choice !~ /^Q/i)
     print "  Compare all files in the test output directories [O]\n";
     print "  Customize testsuite checking [C]\n";
     print "  Quit [Q]\n\n";
-    $choice = &defprompt("  Select choice: ","E");
+
+    if ($haverunall == 1)
+    {
+      $choice = &defprompt("  Select choice: ","Q");
+    }
+    else
+    {
+      $choice = &defprompt("  Select choice: ","E");
+    }
+
     print "\n";
     
     if ($choice =~ /^[EIO]/i) 
@@ -82,6 +93,9 @@ while ($choice !~ /^Q/i)
 
       # Write results of all tests
       &WriteFullResults($rundata,$testdata);
+      
+      $haverunall = 1;
+
     } 
     elsif ($choice =~ /^[AT]/i)
     {

@@ -1,10 +1,13 @@
 sub Configure
 {
-  my($config,$home_dir) = @_;
+  my($config,$home_dir,$prompt) = @_;
   my($configs_dir,$tests_dir);
 
   # Cactus home directory
   $config_data->{"CCTK_DIR"} = $home_dir;
+
+  # Interactive of not
+  $config_data->{"PROMPT"} = $prompt;
 
   # Cactus configurations directory
   if($ENV{"CONFIGS_DIR"})
@@ -259,20 +262,27 @@ sub defprompt
   my ($pr, $de) = @_;
   my ($res);
   
-  print "$pr [$de] \n";
-  print "   --> ";
-  
-  $res = <STDIN> if ($prompt eq "yes");
-  if ($res =~ m/^$/) 
+  if ($config_data->{"PROMPT"} eq "no")
   {
     $res = $de;
   }
-  elsif ($res =~ m/^ $/)
+  else
   {
-    $res = "";
+    print "$pr [$de] \n";
+    print "   --> ";
+  
+    $res = <STDIN> if ($prompt eq "yes");
+    if ($res =~ m/^$/) 
+    {
+      $res = $de;
+    }
+    elsif ($res =~ m/^ $/)
+    {
+      $res = "";
+    }
+    $res =~ s/\n//;
+    print "\n";
   }
-  $res =~ s/\n//;
-  print "\n";
   return $res;
 }
 
@@ -439,13 +449,14 @@ sub WriteFullResults
   my ($rundata,$testdata) = @_;
   my ($separator,$show_warnings);
 
-  $separator = "==========================================================\n\n";
+  $separator1 = "========================================================================\n\n";
+  $separator2 = "------------------------------------------------------------------------\n\n";
 
   $show_warnings = 1;
 
   if ($show_warnings)
   {
-    print $separator;
+    print $separator2;
     print "  Warnings for configuration $config\n  --------\n\n";
 
     # Missing thorns for tests
@@ -491,7 +502,7 @@ sub WriteFullResults
 
   }
 
-  print $separator;
+  print $separator2;
 
   print "  Testsuite Summary for configuration $config\n";
   print "  -----------------\n\n";
@@ -536,7 +547,7 @@ sub WriteFullResults
     print "$nottested\n\n";
   }
 
-  print $separator;
+  print $separator2;
 
   print "  Run details for configuration $config\n\n";
 
@@ -556,7 +567,7 @@ sub WriteFullResults
   }
   print "\n";
 
-  print $separator;
+  print $separator1;
 
   print "  Summary for configuration $config\n\n";
 
@@ -587,7 +598,7 @@ sub WriteFullResults
 
   print "\n";
 
-  print $separator;
+  print $separator1;
 
 }
 
