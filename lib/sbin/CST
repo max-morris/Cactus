@@ -6,7 +6,7 @@
 #  @desc 
 #  Parses the the configuration files for thorns.
 #  @enddesc 
-#  @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.16 1999-06-29 14:17:54 allen Exp $
+#  @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.17 1999-07-03 14:54:56 allen Exp $
 #@@*/
 
 # Global parameter to track the number of errors from the CST
@@ -407,9 +407,6 @@ sub CreateDefineThisThornHeader
 
   foreach $thorn (keys %thorns)
   {
-    # Ignore the main sources - they may confuse
-    next if ($thorn =~ m:Cactus:);
-
     $thorns{$thorn} =~ m:(.*)/(.*)/(.*):;
     $nthorns++;
 
