@@ -217,7 +217,7 @@ CCTK_COMPLEX CCTK_CmplxDiv(CCTK_COMPLEX a,CCTK_COMPLEX b)
   }
   else
   {
-    CCTK_WARN(0,"Divide by zero in CCTK_CmplxDiv");
+    CCTK_Warn(0,__LINE__,__FILE__,"Cactus","Divide by zero in CCTK_CmplxDiv");
     div_ab.Re = 0;
     div_ab.Im = 0;
   }

@@ -4,10 +4,11 @@
 #include <string.h>
 #include <stdarg.h>
 
-#include "cctk.h"
+#include "cctk_Groups.h"
+#include "cctk_Types.h"
 #include "cctk_FortranString.h"
 #include "cctk_ParameterFunctions.h"
-
+#include "cctk_WarnLevel.h"
 
 static int staggered = 0;
 
@@ -62,7 +63,7 @@ int CCTK_StaggerCodeName(const char *stype) {
       default:
         info   = (char*)malloc (256*sizeof(char));
         sprintf(info,"Unknown stagger type: >%s< \n", stype);
-        CCTK_WARN(1,info);
+        CCTK_Warn(1,__LINE__,__FILE__,"Cactus",info);
         free(info);
         return(-1);
     }
@@ -117,7 +118,7 @@ int CCTK_DirStaggerCodeName(int dir, const char *stype) {
 
   sprintf(hs,"%s",stype);
 
-  if (dir>strlen(hs)) CCTK_WARN(1,"Not enough letters in stagger code");
+  if (dir>strlen(hs)) CCTK_Warn(1,__LINE__,__FILE__,"Cactus","Not enough letters in stagger code");
 
   switch (hs[dir])
     {
@@ -127,7 +128,7 @@ int CCTK_DirStaggerCodeName(int dir, const char *stype) {
     default:
         info   = (char*)malloc (256*sizeof(char));
         sprintf(info,"Unknown stagger type: >%s< \n", hs);
-        CCTK_WARN(1,info);
+        CCTK_Warn(1,__LINE__,__FILE__,"Cactus",info);
         free(info);
         return(-1);
     }

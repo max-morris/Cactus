@@ -650,7 +650,7 @@ const char *ParameterWalk(int first,
 
     if (startpoint == NULL)
     {
-      CCTK_WARN (2, "ParameterWalk: Cannot walk through parameter list without "
+      CCTK_Warn(2,__LINE__,__FILE__,"Cactus", "ParameterWalk: Cannot walk through parameter list without "
                     "setting a startpoint at first");
       return NULL;
     }

@@ -141,7 +141,7 @@ int CCTK_CoordRegisterI(int dir, int index, const char*name)
     char *msg;
     msg = (char *)malloc(200*sizeof(char)+strlen(name));
     sprintf(msg,"Coordinate with name -%s- already registered",name);
-    CCTK_WARN(1,msg);
+    CCTK_Warn(1,__LINE__,__FILE__,"Cactus",msg);
     if (msg) free(msg);
     handle = -1;
   }
@@ -310,7 +310,7 @@ int CCTK_CoordIndex(const char *name)
       char *msg;
       msg = (char *)malloc( 100*sizeof(char)+strlen(name) );
       sprintf(msg,"Could not find registered coordinate %s",name);
-      CCTK_WARN(2,msg);
+      CCTK_Warn(2,__LINE__,__FILE__,"Cactus",msg);
       if (msg) free(msg);
       return ERROR_COORDNOTFOUND;
     }
@@ -347,7 +347,7 @@ int CCTK_CoordDir(const char *name)
       char *msg;
       msg = (char *)malloc( 100*sizeof(char)+strlen(name) );
       sprintf(msg,"Could not find registered coordinate %s",name);
-      CCTK_WARN(2,msg);
+      CCTK_Warn(2,__LINE__,__FILE__,"Cactus",msg);
       if (msg) free(msg);
       return ERROR_COORDNOTFOUND;
     }
@@ -516,7 +516,7 @@ int CCTKi_CoordHandle(const char *name)
       char *msg;
       msg = (char *)malloc( 100*sizeof(char)+strlen(name) );
       sprintf(msg,"Could not find registered coordinate %s",name);
-      CCTK_WARN(2,msg);
+      CCTK_Warn(2,__LINE__,__FILE__,"Cactus",msg);
       if (msg) free(msg);
       return ERROR_COORDNOTFOUND;
     }
@@ -542,7 +542,7 @@ struct Coordprops *CCTKi_CoordData(const char *name)
       char *msg;
       msg = (char *)malloc( 100*sizeof(char)+strlen(name) );
       sprintf(msg,"Could not find registered coordinate %s",name);
-      CCTK_WARN(2,msg);
+      CCTK_Warn(2,__LINE__,__FILE__,"Cactus",msg);
       if (msg) free(msg);
       return NULL;
     }
@@ -614,7 +614,7 @@ CCTK_REAL CCTK_CoordOrigin(const char *name)
       char *msg;
       msg = (char *)malloc( 100*sizeof(char)+strlen(name) );
       sprintf(msg,"Could not find registered coordinate %s",name);
-      CCTK_WARN(2,msg);
+      CCTK_Warn(2,__LINE__,__FILE__,"Cactus",msg);
       if (msg) free(msg);
       return ERROR_COORDNOTFOUND;
     }
