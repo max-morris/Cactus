@@ -5,12 +5,12 @@ TOP              := $(shell pwd)
 
 SHELL             = /bin/sh
 MKDIR             = mkdir -p
-CC                = cc
-CXX               = CC
+CC                = egcs
+CXX               = $(CC)
 F90               = f90
 F77               = f77
 CPP               = cc -E -M
-LD                = $(C++)
+LD                = $(CXX)
 AR                = /bin/ar rucs
 RANLIB            = touch
 AWK               = awk
@@ -31,3 +31,9 @@ cctk: $(OBJS)
 	$(CC) $(LDFLAGS) -o $@ $+ $(LOADLIBS)
 
 $(OBJS): $(HEADERS)
+
+clean:
+	find src -name '*.o' -exec rm {} \;
+
+tags:
+	etags `find src -name '*.[ch]' -o -name '*.cc'`

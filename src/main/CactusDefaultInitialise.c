@@ -13,24 +13,33 @@
 
 #include "flesh.h"
 #include "CactusMainDefaults.h"
+#include "parameters.h"
 
 static char *rcsid = "$Id$";
 
 
 int CactusDefaultInitialise(tFleshConfig *config)
 {
-  printf("I'm in the default initialisation routine\n");
+  cGH *newGH;
+  int convergence_level;
+
+  CactusStartTimer(config->timer[INITIALISATION]);
+
+  CactusResetTimer(config->timer[ELLIPTIC]);
+
+  convergence_level = 0;
+  while((GH = SetupGH(config, convergence_level)))
+  {
+    CactusAddGH(config, GH, convergence_level);
+    Initialise(GH);
+    convergence_level++;
+  };
+
+  CactusStopTimer(config->timer, INITIALISATION);
   
   return 0;
 }
 
-
-int CactusDefaultEvolve(tFleshConfig *config)
-{
-  printf("I'm in the default evolution routine\n");
-  
-  return 0;
-}
 
 int CactusDefaultShutdown(tFleshConfig *config)
 {

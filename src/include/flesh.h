@@ -9,6 +9,8 @@
 
 /* $Id$ */
 
+#include "CactusTimers.h"
+
 #ifndef _FLESH_H_
 #define _FLESH_H_
 
@@ -16,20 +18,31 @@
 
 typedef struct
 {
-  char *parameter_file_name;
-} tFleshConfig;
-
-
-typedef struct
-{
   int dummy;
+  char *name;
 } cGF;
 
 
 typedef struct
 {
   int dummy;
+  unsigned long int iteration;
+
+  char *output_prefix;
 } cGH;
+
+
+typedef struct
+{
+  char *parameter_file_name;
+
+  /* Array of pointers to cactus grid hierarchies. */
+  cGH **GH;
+  unsigned int nGHs;
+
+  cTimers *timer[3];
+} tFleshConfig;
+
 
 
 /* Function prototypes */
