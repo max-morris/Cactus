@@ -81,15 +81,9 @@ else
 fi
 
 # Save these for future use.
-
 if test -n "$LIBS" ; then
   KNOWN_LIBS="$LIBS"
   unset LIBS
-fi
-
-if test -n "$LDFLAGS" ; then
-  KNOWN_LDFLAGS="$LDFLAGS"
-  unset LDFLAGS
 fi
 
 dnl Checks for programs.
@@ -163,19 +157,12 @@ fi
 
 
 # Restore the values we saved earlier
-
 if test -n "$KNOWN_LIBS" ; then
   LIBS="$KNOWN_LIBS"
   unset KNOWN_LIBS
 fi
 
-if test -n "$KNOWN_LDFLAGS" ; then
-  LDFLAGS="$KNOWN_LDFLAGS"
-  unset KNOWN_LDFLAGS
-fi
-
 # Include some CCTK auxiliary functions
-
 . $srcdir/CCTK_Functions.sh
 
 # Machine architecture for the build
