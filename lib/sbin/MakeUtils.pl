@@ -36,7 +36,7 @@ else
   chomp ($home);
 }
 
-  chdir $arrangement_dir || die "Can't change directory to $arrangement_dir\n";
+  chdir "$home/$arrangement_dir" || die "Can't change directory to $home/$arrangement_dir\n";
 
   open(ARRANGEMENTS, "ls|");
 
@@ -89,7 +89,8 @@ else
           push(@total_list, "$arrangement/$_");
         }
       }
-      chdir ($arrangement_dir) || die "Can't change directory to $arrangement_dir\n";
+      # print "\nThis directory path is wrong.  cwd=",`pwd`,"\n";
+      chdir "$home/$arrangement_dir" || die "Can't change directory to $home/$arrangement_dir\n";
     }
 
   }
