@@ -159,7 +159,7 @@ The default value is {\t DIM=3}.
         the group is of type {\t ARRAY} or {\t GF}, and can take any positive
         value.
 \item{} {\t SIZE} defines the number grid-points an {\tt ARRAY} has in each direction.
-        This should be a comma-separated list of parameter names.
+        This should be a comma-separated list of positive integer constants or parameter names (optionally with an integer constant added/substracted to/from it).
 \item{} {\t DISTRIB} defines the processor decomposition of an {\tt ARRAY}. 
         {\tt DISTRIB=CONSTANT} implies that {\tt SIZE} grid-points should
         be allocated on each processor.
