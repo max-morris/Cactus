@@ -3,6 +3,7 @@
 # make ThornGuide.dvi
 # make ThornGuide.ps
 # make ThornGuide.pdf
+# make THORNS="CactusWave/IDScalarWave,CactusWave/WaveToyF77" ARRANGEMENTS="CactusBase,CactusPUGHIO"
 
 
 # Make quietly unless told not to
