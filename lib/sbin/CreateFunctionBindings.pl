@@ -171,7 +171,14 @@
 # Is Array        : Whether the argument is an ARRAY (1/0)
 # String          : Whether the argument is a string (1/0)
 
+# For debugging:
 my $debug = 0;
+my $indent_level = 0;
+sub debug_print
+{
+  $debug and print '#'.' 'x$indent_level."@_\n";
+}
+
 
 sub CreateFunctionBindings
 {
@@ -343,7 +350,10 @@ sub FunctionDatabase
       my $warnings;
       my ($ReturnType,$Arguments,@arglist);
       $Arguments = $interface_db->{"\U${thorn} FUNCTION\E $FunctionName ARGS"};
-      ($warnings,$nstrings,$nstringptrs,@arglist)=&ParseArgumentsList($Arguments);
+
+      &debug_print("FunctionDatabase: calling ParseArgumentsList with thorn=[$thorn] FunctionName=[$FunctionName] Arguments=[$Arguments]\n");
+
+      ($warnings,$nstrings,$nstringptrs,@arglist)=&ParseArgumentsList($Arguments, $thorn, $FunctionName);
       $Function->{"Strings"} = $nstrings;
       $Function->{"String pointers"} = $nstringptrs;
       $ReturnType = $interface_db->{"\U${thorn} FUNCTION\E $FunctionName RET"};
@@ -444,7 +454,14 @@ sub ParseArgumentsList
 {
   use strict;
 
-  my($Arguments) = @_;
+  $debug and $indent_level = 2;
+
+  my($Arguments) = shift;
+  my($Thorn) = shift;
+  my($Function) = shift;
+
+  &debug_print("ParseArgumentsList: Arguments=[$Arguments] Thorn=[$Thorn] Function=[$Function]");
+
   my @ArgList=();
 
   my $nfptrs = 0;
@@ -473,7 +490,7 @@ sub ParseArgumentsList
   {
     if ($DummyArg =~ /\S/) # ignore empty argument list
     {
-      my $Arg = &ParseArgument($DummyArg);
+      my $Arg = &ParseArgument($DummyArg, $Thorn, $Function);
       $Arg->{"Function pointer"} = 0;
       push(@ArgList,$Arg);
       if ($Arg->{"Name"} =~ /FPTRARGS/)
@@ -484,7 +501,7 @@ sub ParseArgumentsList
 			  "Provided"=>0,
 			  "Used"=>0,
 			  "Return Type"=>$Arg->{"Type"}};
-	my ($extrawarnings,$nstrings,$nstringptrs,@arglist)=&ParseArgumentsList($fptrargs[$nfptrs]);
+	my ($extrawarnings,$nstrings,$nstringptrs,@arglist)=&ParseArgumentsList($fptrargs[$nfptrs],$Thorn,$Function);
 	$warnings .= $extrawarnings;
 	$Arg->{"Name"}{"Strings"} = $nstrings;
 	$Arg->{"Name"}{"String pointers"} = $nstringptrs;
@@ -551,29 +568,38 @@ sub ParseArgument
 {
   use strict;
 
-  my($DummyArgument) = @_;
+  my($DummyArgument) = shift;
+  my($Thorn) = shift;
+  my($Function) = shift;
 
   my $Argument = {};
 
-  my($type,$name,$fpointer);
+  my($type,$name,$fpointer,$intent);
 
-  if ($DummyArgument =~ /FPOINTER/)
-  {
-    ($type,$fpointer,$name) = split(' ',$DummyArgument);
-  }
-  else
+  if ($DummyArgument =~ /FPTRARGS/)
   {
     ($type,$name) = split(' ',$DummyArgument);
+    $intent = "IN";
   }
-
-  if ($type =~ s/\s*(.*):ARRAY\s*/\1/)
+  elsif ($DummyArgument =~ s/\bARRAY\b//)
   {
+    ($type,$intent,$name) = split(' ',$DummyArgument);
     $Argument->{"Is Array"} = 1;
   }
   else
   {
+    ($type,$intent,$name) = split(' ',$DummyArgument);
     $Argument->{"Is Array"} = 0;
   }
+
+#   if ($type =~ s/\s*(.*):ARRAY\s*/\1/)
+#   {
+#     $Argument->{"Is Array"} = 1;
+#   }
+#   else
+#   {
+#     $Argument->{"Is Array"} = 0;
+#   }
 
   $Argument->{"Type"} = $type;
 
@@ -588,6 +614,21 @@ sub ParseArgument
 
   $Argument->{"Name"} = $name;
 
+  if ($name) # (meaning argument has three whitespace separated components)
+  {
+    if ($intent !~ /(IN|OUT|INOUT)/)
+    {
+      my $message = "Thorn $Thorn, Function $Function:\nThe intent statement must be either IN, OUT or INOUT.\nThe argument \"$DummyArgument\" has the wrong type.";
+      &CST_error(0,$message,'',__LINE__,__FILE__);
+    }
+    $Argument->{"Intent"} = $intent;
+  }
+  else # (usually meaning intent is missing, so $intent holds the name and $name is empty)
+  {
+    my $message = "Thorn $Thorn, Function $Function:\nEvery argument must contain an intent statement of type IN, OUT or INOUT.\n The argument \"$intent\" does not.";
+    &CST_error(0,$message,'',__LINE__,__FILE__);
+  }
+
   if ($fpointer)
   {
     $Argument->{"Function Pointer"} = 1;
@@ -596,9 +637,13 @@ sub ParseArgument
   {
     $Argument->{"Function Pointer"} = 0;
   }
-  if ($type !~ /(CCTK_INT??|CCTK_REAL??|CCTK_POINTER|CCTK_STRING)/)
+  if ($type !~ /(\bCCTK_INT$)|(\bCCTK_REAL$)|(\bCCTK_POINTER$)|(\bCCTK_STRING$)/)
   {
-    my $message = "An argument in an aliased function must be one of the allowed CCTK type.\nThese are CCTK_INT, CCTK_REAL, CCTK_POINTER or CCTK_STRING.\nThe argument ".$Argument->{"Name"}." has type ".$type.".";
+    my $message = "Thorn $Thorn, Function $Function:\nAn argument in an aliased function must be one of the allowed CCTK types.\nThese are CCTK_INT, CCTK_REAL, CCTK_POINTER or CCTK_STRING.\nThe argument ".$Argument->{"Name"}." has type \"$type\".";
+    if ($type =~ /:/)
+    {
+      $message .= "\n(The older \"${type}ARRAY\" should be replaced with \"$type ARRAY\".)";
+    }
     &CST_error(0,$message,'',__LINE__,__FILE__);
   }
   if ( ($type =~ /CCTK_STRING/) && ($Argument->{"Is Array"}) )
@@ -882,57 +927,68 @@ sub AliasedFunctions
   push(@data, '#include "cctk_FortranString.h"');
   push(@data, "");
 
+  my %AliasedFunctionList = {};
+
   foreach $thornFunctionList (values %FunctionDatabase)
   {
     if ($thornFunctionList)
     {
-      my $Function;
-      foreach $Function (values %{$thornFunctionList})
+      my $FunctionKey;
+      foreach $FunctionKey (keys %{$thornFunctionList})
       {
+	my $Function = $thornFunctionList->{$FunctionKey};
 	if ($Function)
 	{
-	  if ($Function->{"Provided"})
+	  if (($Function->{"Provided"})||($Function->{"Used"}))
 	  {
-	    $debug and print "provided Function is ",$Function->{"Name"},"\n";
-	    push(@data,"/*");
-	    push(@data," * The function pointers to be set");
-	    push(@data," */");
-	    push(@data,"");
-	    push(@data,&printAliasPointers("C",$Function));
-	    push(@data,&printAliasPointers("Fortran",$Function));
-	    push(@data,"");
-	    push(@data,"/*");
-	    push(@data," * The functions that are linked to by the USEing thorn");
-	    push(@data," */");
-	    push(@data,"");
-	    push(@data,&printAliasPrototypes("C",$Function));
-	    push(@data,&printAliasToWrapper("C",$Function));
-	    push(@data,"");
-	    push(@data,&printAliasPrototypes("Fortran",$Function));
-	    push(@data,&printAliasToWrapper("Fortran",$Function));
-	    push(@data,"");
-	    push(@data,"/*");
-	    push(@data," * The functions that check if it has been PROVIDEd");
-	    push(@data," */");
-	    push(@data,"");
-	    push(@data,&printIsAliasedPrototypes($Function));
-	    push(@data,&printIsAliased($Function));
-	    push(@data,"");
-	    push(@data,"/*");
-	    push(@data," * The functions that overload the above function pointers.");
-	    push(@data," */");
-	    push(@data,"");
-	    push(@data,&printRegisterAliasedPrototypes("C",$Function));
-	    push(@data,&printRegisterAliased("C",$Function));
-	    push(@data,&printRegisterAliasedPrototypes("Fortran",$Function));
-	    push(@data,&printRegisterAliased("Fortran",$Function));
-	    push(@data,"");
+	    $AliasedFunctionList{$FunctionKey}=$Function;
 	  }
 	}
       }
     }
   }
 
+  my $Function;
+  foreach $Function (values %AliasedFunctionList)
+  {
+    if ($Function)
+    {
+      $debug and print "provided Function is ",$Function->{"Name"},"\n";
+      push(@data,"/*");
+      push(@data," * The function pointers to be set");
+      push(@data," */");
+      push(@data,"");
+      push(@data,&printAliasPointers("C",$Function));
+      push(@data,&printAliasPointers("Fortran",$Function));
+      push(@data,"");
+      push(@data,"/*");
+      push(@data," * The functions that are linked to by the USEing thorn");
+      push(@data," */");
+      push(@data,"");
+      push(@data,&printAliasPrototypes("C",$Function));
+      push(@data,&printAliasToWrapper("C",$Function));
+      push(@data,"");
+      push(@data,&printAliasPrototypes("Fortran",$Function));
+      push(@data,&printAliasToWrapper("Fortran",$Function));
+      push(@data,"");
+      push(@data,"/*");
+      push(@data," * The functions that check if it has been PROVIDEd");
+      push(@data," */");
+      push(@data,"");
+      push(@data,&printIsAliasedPrototypes($Function));
+      push(@data,&printIsAliased($Function));
+      push(@data,"");
+      push(@data,"/*");
+      push(@data," * The functions that overload the above function pointers.");
+      push(@data," */");
+      push(@data,"");
+      push(@data,&printRegisterAliasedPrototypes("C",$Function));
+      push(@data,&printRegisterAliased("C",$Function));
+      push(@data,&printRegisterAliasedPrototypes("Fortran",$Function));
+      push(@data,&printRegisterAliased("Fortran",$Function));
+      push(@data,"");
+    }
+  }
   return join ("\n",@data);
 }
 
@@ -1711,7 +1767,7 @@ sub UsesPrototypes
     {
       if ($Function->{"Used"})
       {
-        my @cargs = printArgList("C",$Function->{"Arguments"});
+        my @cargs = &printArgList("C",$Function->{"Arguments"});
         push(@data, "$Function->{\"Return Type\"} $Function->{\"Name\"}(@cargs);");
       }
     }
@@ -2193,11 +2249,11 @@ sub printCallArg
   {
     $prefix = "";
   }
-  elsif ( ($calltype eq "Fortran")&&( !(($Arg{"Is Array"})||($Arg{"String"})) ) )
+  elsif ( ($calltype eq "Fortran")&&( !(($Arg{"Is Array"})||($Arg{"String"})||($Arg{"Intent"}=~/OUT/)) ) )
   {
     $prefix = "*";
   }
-  elsif ( ($calltype eq "C")&&(!$Arg{"Is Array"}) )
+  elsif ( ($calltype eq "C")&&((!$Arg{"Is Array"})&&($Arg{"Intent"}!~/OUT/)) )
   {
     $prefix = "&";
   }
@@ -2350,6 +2406,7 @@ sub printArg
 
   my $vartype = $Arg{"Type"};
   my $suffix = "";
+  my $prefix = "";
 
   if ($Arg{"Function pointer"})
   {
@@ -2366,13 +2423,18 @@ sub printArg
   }
   else
   {
+#    print "Argument: ".$Arg{"Name"}." ".$Arg{"Is Array"}." ".$Arg{"Intent"}."\n";
     if ( (($type eq "Fortran")&&(!$Arg{"Function"})) ||
-         (($type eq "C")&&($Arg{"Is Array"})) )
+         (($type eq "C")&&(($Arg{"Is Array"})||($Arg{"Intent"}=~/OUT/))) )
     {
       $suffix = "*";
     }
+    if ( ($Arg{"Intent"}=~/IN/) && (!($Arg{"Intent"}=~/OUT/)) )
+    {
+      $prefix = "const ";
+    }
 
-    push(@data,$vartype.$suffix);
+    push(@data,$prefix.$vartype.$suffix);
 
     push(@data, $Arg{"Name"});
 

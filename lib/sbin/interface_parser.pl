@@ -776,43 +776,24 @@ sub parse_interface_ccl
       $rettype  = $1;
       $funcname = $2;
       $rest     = $3;
-#      print "\n\n".$rettype." ".$funcname." ".$rest."\n\n";
-#      if($rest =~ m/(.*)\s*PROVIDED-BY\s*(.+)/i)
-#      {
-#        $funcargs = $1;
-#        $provided_by = $2;
 
-#        if($provided_by =~ m/(.*)\s*LANGUAGE\s*(.+)/i)
-#        {
-#          $provided_by          = $1;
-#          $provided_by_language = $2;
-#        }
-#        else
-#        {
-#          $provided_by_language = "Fortran";
-#          $provided_by_language = "C";        
-#          $message = "The providing function $provided_by in thorn $thorn does not have a specified language. Please add, e.g., \"LANGUAGE C\"";
-#          &CST_error(0,$message,"",__LINE__,__FILE__);
-
-#        }
-#      }
-#      else
-#      {
-        $funcargs = $rest;
-        $provided_by = "";
-#      }
+      $funcargs = $rest;
 
       $interface_db{"\U$thorn FUNCTIONS\E"} .= "${funcname} ";
       $interface_db{"\U$thorn FUNCTION\E $funcname ARGS"} .= "${funcargs} ";
       $interface_db{"\U$thorn FUNCTION\E $funcname RET"} .= "${rettype} ";
+    }
+    elsif ($line =~ m/^\s*SUBROUTINE\s*([a-zA-Z_0-9]+)\s*\((.*)\)\s*$/i)
+    {
+      $rettype  = "void";
+      $funcname = $1;
+      $rest     = $2;
 
-      if($provided_by ne "")
-      {
-        $interface_db{"\U$thorn PROVIDES FUNCTION\E"} .= "$funcname ";
-        $interface_db{"\U$thorn PROVIDES FUNCTION\E $funcname WITH"} .= "$provided_by ";
-        $interface_db{"\U$thorn PROVIDES FUNCTION\E $funcname LANG"} .= "$provided_by_language ";
-#        print "Parsed $thorn:$funcname:$provided_by_language\n";
-      }
+      $funcargs = $rest;
+
+      $interface_db{"\U$thorn FUNCTIONS\E"} .= "${funcname} ";
+      $interface_db{"\U$thorn FUNCTION\E $funcname ARGS"} .= "${funcargs} ";
+      $interface_db{"\U$thorn FUNCTION\E $funcname RET"} .= "${rettype} ";
     }
     elsif ($line =~ m/^\s*(CCTK_)?(CHAR|BYTE|INT|INT2|INT4|INT8|REAL|REAL4|REAL8|REAL16|COMPLEX|COMPLEX8|COMPLEX16|COMPLEX32)\s*(([a-zA-Z]+[a-zA-Z_0-9]*)(\[([^]]+)\])?)\s*(.*)\s*$/i)
     {
