@@ -1779,10 +1779,15 @@ static int CCTKi_SchedulePrintEntry(t_attribute *attribute,
                                     t_sched_data *data)
 {
   /* prevent compiler warnings about unused parameters */
-  attribute = attribute;
   data = data;
 
   indent_level += 2;
+
+  if (attribute && attribute->type == sched_group)
+  {
+    printf("%*s %s\n", indent_level + 11, "begin group",
+           attribute->FunctionData.routine);
+  }
 
   return 1;
 }
@@ -1816,10 +1821,15 @@ static int CCTKi_SchedulePrintExit(t_attribute *attribute,
                                    t_sched_data *data)
 {
   /* prevent compiler warnings about unused parameters */
-  attribute = attribute;
   data = data;
 
-  indent_level -=2;
+  if (attribute && attribute->type == sched_group)
+  {
+    printf("%*s %s\n", indent_level + 2 + 9, "end group",
+           attribute->FunctionData.routine);
+  }
+
+  indent_level -= 2;
 
   return 1;
 }
@@ -1885,16 +1895,17 @@ static int CCTKi_SchedulePrintWhile(int n_whiles,
     {
       if(i > 0)
       {
-        puts(" && ");
+        printf(" && ");
       }
 
-      puts(whiles[i]);
+      printf(whiles[i]);
     }
-
-    puts(")\n");
+    printf(")\n");
+    indent_level += 2;
   }
   else
   {
+    indent_level -= 2;
     printf("%*s\n", indent_level + 9, "end while");
   }
 
