@@ -41,6 +41,8 @@ int CCTK_GroupTypeNumber(const char *type);
 
 int CCTK_VarTypeNumber(const char *type);
 
+char *CCTK_VarTypeName(int vartype);
+
 int CCTK_GroupScopeNumber(const char *type);
 
 int CCTK_GroupData(int group, 
