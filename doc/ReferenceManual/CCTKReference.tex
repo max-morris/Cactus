@@ -46,21 +46,21 @@ from Fortran.
   [\pageref{CCTK-ActiveTimeLevels}]
   Returns the number of active timelevels from a group name
 
-\item[CCTK\_ActiveTimeLevelsGN]
-  [\pageref{CCTK-ActiveTimeLevels}]
-  Returns the number of active timelevels from a group name
-
 \item[CCTK\_ActiveTimeLevelsGI]
   [\pageref{CCTK-ActiveTimeLevels}]
   Returns the number of active timelevels from a group index
 
-\item[CCTK\_ActiveTimeLevelsVN]
+\item[CCTK\_ActiveTimeLevelsGN]
   [\pageref{CCTK-ActiveTimeLevels}]
-  Returns the number of active timelevels from a variable name
+  Returns the number of active timelevels from a group name
 
 \item[CCTK\_ActiveTimeLevelsVI]
   [\pageref{CCTK-ActiveTimeLevels}]
   Returns the number of active timelevels from a variable index
+
+\item[CCTK\_ActiveTimeLevelsVN]
+  [\pageref{CCTK-ActiveTimeLevels}]
+  Returns the number of active timelevels from a variable name
 
 \item[CCTK\_ArrayGroupSize]
   [\pageref{CCTK-ArrayGroupSize}]
@@ -660,18 +660,20 @@ from Fortran.
 % CommOverloadables.c
 \begin{FunctionDescription}{CCTK\_Abort}
 \label{CCTK-Abort}
-Abnormal Cactus termination
+Abnormal Cactus termination.
 
 \begin{SynopsisSection}
 \begin{Synopsis}{C}
 \begin{verbatim}
 #include "cctk.h"
+
 int dummy = CCTK_Abort(const cGH *cctkGH);
 \end{verbatim}
 \end{Synopsis}
 \begin{Synopsis}{Fortran}
 \begin{verbatim}
 #include "cctk.h"
+
 subroutine CCTK_Abort (dummy, cctkGH)
    integer      dummy
    CCTK_POINTER cctkGH
@@ -698,10 +700,10 @@ It never returns to the caller.
 \begin{SeeAlsoSection}
 \begin{SeeAlso2}{CCTK\_Exit}{CCTK-Exit}
 Exit the code cleanly
-\end{SeeAlso}
+\end{SeeAlso2}
 \begin{SeeAlso2}{CCTK\_WARN}{CCTK-WARN}
 Macro to print a single string as a warning message and possibly stop the code
-\end{SeeAlso}
+\end{SeeAlso2}
 \end{SeeAlsoSection}
 
 \begin{ErrorSection}
@@ -728,31 +730,71 @@ call CCTK_Abort (dummy, cctkGH)
 
 
 % cctk_GroupsOnGH.h
-\begin{FunctionDescription}{CCTK\_ActiveTimeLevels}{}
+\begin{FunctionDescription}{CCTK\_ActiveTimeLevels}
 \label{CCTK-ActiveTimeLevels}
 Returns the number of active time levels for a group.
+
 \begin{SynopsisSection}
 \begin{Synopsis}{C}
 \begin{verbatim}
 #include "cctk.h"
+
 int timelevels = CCTK_ActiveTimeLevels(const cGH *cctkGH,
-                                const char *groupname);
+                                       const char *groupname);
+
+int timelevels = CCTK_ActiveTimeLevelsGI(const cGH *cctkGH,
+                                         int groupindex);
+
+int timelevels = CCTK_ActiveTimeLevelsGN(const cGH *cctkGH,
+                                         const char *groupname);
+
+int timelevels = CCTK_ActiveTimeLevelsVI(const cGH *cctkGH,
+                                         int varindex);
+
+int timelevels = CCTK_ActiveTimeLevelsVN(const cGH *cctkGH,
+                                         const char *varname);
 \end{verbatim}
 \end{Synopsis}
 \begin{Synopsis}{Fortran}
 \begin{verbatim}
-call CCTK_ActiveTimeLevels(timelevels, cctkGH, groupname)
+#include "cctk.h"
 
-integer       timelevels
-CCTK_POINTER  cctkGH
-character*(*) groupname
+subroutine CCTK_ActiveTimeLevels(timelevels, cctkGH, groupname)
+   integer       timelevels
+   CCTK_POINTER  cctkGH
+   character*(*) groupname
+end subroutine CCTK_ActiveTimeLevels
+
+subroutine CCTK_ActiveTimeLevelsGI(timelevels, cctkGH, groupindex)
+   integer       timelevels
+   CCTK_POINTER  cctkGH
+   integer       groupindex
+end subroutine CCTK_ActiveTimeLevelsGI
+
+subroutine CCTK_ActiveTimeLevelsGN(timelevels, cctkGH, groupname)
+   integer       timelevels
+   CCTK_POINTER  cctkGH
+   character*(*) groupname
+end subroutine CCTK_ActiveTimeLevelsGN
+
+subroutine CCTK_ActiveTimeLevelsVI(timelevels, cctkGH, varindex)
+   integer       timelevels
+   CCTK_POINTER  cctkGH
+   integer       varindex
+end subroutine CCTK_ActiveTimeLevelsVI
+
+subroutine CCTK_ActiveTimeLevelsVN(timelevels, cctkGH, varname)
+   integer       timelevels
+   CCTK_POINTER  cctkGH
+   character*(*) varname
+end subroutine CCTK_ActiveTimeLevelsVN
 \end{verbatim}
 \end{Synopsis}
 \end{SynopsisSection}
 
 \begin{ResultSection}
-\begin{Result}{NULL}
-The number of timelevels
+\begin{Result}{timelevels}
+The currently active number of timelevels for the group.
 \end{Result}
 \end{ResultSection}
 
@@ -763,24 +805,47 @@ Pointer to a valid Cactus grid hierarchy.
 \begin{Parameter}{groupname}
 Name of the group.
 \end{Parameter}
+\begin{Parameter}{groupindex}
+Index of the group.
+\end{Parameter}
+\begin{Parameter}{varname}
+Name of a variable in the group.
+\end{Parameter}
+\begin{Parameter}{varindex}
+Index of a variable in the group.
+\end{Parameter}
 \end{ParameterSection}
 
 \begin{Discussion}
-This function returns the number of timelevels for which storage has been activated, which is always equal to or less than the maximum number of 
-timelevels which may have storage provided by {\tt CCTK\_MaxTimeLevels}.
+This function returns the number of timelevels for which storage has
+been activated, which is always equal to or less than the maximum
+number of timelevels which may have storage provided by {\tt
+CCTK\_MaxTimeLevels}.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{CCTK-MaxTimeLevels}
-Return the maximum number of timelevels
-\end{SeeAlso}
-\begin{SeeAlso}{CCTK-GroupStorageIncrease}
-Base function overloaded by driver which increase the number of timelevels 
-with storage and also returns the number of active timelevels.
-\end{SeeAlso}
+\begin{SeeAlso2}{CCTK\_MaxTimeLevels}{CCTK-MaxTimeLevels}
+Return the maximum number of active timelevels.
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_NumTimeLevels}{CCTK-NumTimeLevels}
+Same as {\tt CCTK\_ActiveTimeLevels} (deprecated).
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_GroupStorageDecrease}{CCTK-GroupStoragDecrease}
+Base function, overloaded by the driver, which decreases the number of
+active timelevels, and also returns the number of active timelevels.
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_GroupStorageIncrease}{CCTK-GroupStorageIncrease}
+Base function, overloaded by the driver, which increases the number of
+active timelevels, and also returns the number of active timelevels.
+\end{SeeAlso2}
 \end{SeeAlsoSection}
-%\begin{ErrorSection}
-%\end{ErrorSection}
+
+\begin{ErrorSection}
+\begin{Error}{timelevels \textasciiless\ 0}
+Illegal arguments given.
+\end{Error}
+\end{ErrorSection}
+
 %\begin{ExampleSection}
 %\end{ExampleSection}
 \end{FunctionDescription}
