@@ -160,13 +160,13 @@ endef
 # Build rules for C
 
 %.c.o: $(SRCDIR)/%.c
-	@echo $(DIVIDER)
 	@echo Preprocessing $<
 	$(PREPROCESS_C)
 	@echo Compiling $<
 	$(COMPILE_C)
 	@echo Postprocessing $<
 	$(POSTPROCESS_C)
+	@echo $(DIVIDER)
 
 %.c.d: $(SRCDIR)/%.c
 	$(C_DEPENDENCIES)
@@ -174,51 +174,51 @@ endef
 # Build rules for C++
 
 %.cc.o: $(SRCDIR)/%.cc 
-	@echo $(DIVIDER)
 	@echo Preprocessing $<
 	$(PREPROCESS_CXX)
 	@echo Compiling $<
 	$(COMPILE_CXX)
 	@echo Postprocessing $<
 	$(POSTPROCESS_CXX)
+	@echo $(DIVIDER)
 
 %.cc.d: $(SRCDIR)/%.cc
 	$(CXX_DEPENDENCIES)
 
 %.C.o: $(SRCDIR)/%.C 
-	@echo $(DIVIDER)
 	@echo Preprocessing $<
 	$(PREPROCESS_CXX)
 	@echo Compiling $<
 	$(COMPILE_CXX)
 	@echo Postprocessing $<
 	$(POSTPROCESS_CXX)
+	@echo $(DIVIDER)
 
 
 %.C.d: $(SRCDIR)/%.C
 	$(CXX_DEPENDENCIES)
 
 %.cpp.o: $(SRCDIR)/%.cpp 
-	@echo $(DIVIDER)
 	@echo Preprocessing $<
 	$(PREPROCESS_CXX)
 	@echo Compiling $<
 	$(COMPILE_CXX)
 	@echo Postprocessing $<
 	$(POSTPROCESS_CXX)
+	@echo $(DIVIDER)
 
 
 %.cpp.d: $(SRCDIR)/%.cpp
 	$(CXX_DEPENDENCIES)
 
 %.cxx.o: $(SRCDIR)/%.cxx 
-	@echo $(DIVIDER)
 	@echo Preprocessing $<
 	$(PREPROCESS_CXX)
 	@echo Compiling $<
 	$(COMPILE_CXX)
 	@echo Postprocessing $<
 	$(POSTPROCESS_CXX)
+	@echo $(DIVIDER)
 
 
 %.cxx.d: $(SRCDIR)/%.cxx
@@ -227,22 +227,22 @@ endef
 # Build rules for F77
 
 %.F77.o: $(SRCDIR)/%.F77
-	@echo $(DIVIDER)
 	@echo Preprocessing $<
 	$(PREPROCESS_F77)
 	@echo Compiling $<
 	$(COMPILE_F77)
 	@echo Postprocessing $<
 	$(POSTPROCESS_F77)
+	@echo $(DIVIDER)
 
 %.f77.o: $(SRCDIR)/%.f77
-	@echo $(DIVIDER)
 	@echo Copying $<
 	$(PREPROCESS_f77)
 	@echo Compiling $<
 	$(COMPILE_F77)
 	@echo Postprocessing $<
 	$(POSTPROCESS_F77)
+	@echo $(DIVIDER)
 
 %.F77.d: $(SRCDIR)/%.F77
 	$(F77_DEPENDENCIES)
@@ -253,22 +253,22 @@ endef
 # Build rules for F90
 
 %.F.o: $(SRCDIR)/%.F
-	@echo $(DIVIDER)
 	@echo Preprocessing $<
 	$(PREPROCESS_F)
 	@echo Compiling $<
 	$(COMPILE_F)
 	@echo Postprocessing $<
 	$(POSTPROCESS_F)
+	@echo $(DIVIDER)
 
 %.f.o: $(SRCDIR)/%.f
-	@echo $(DIVIDER)
 	@echo Copying $<
 	$(PREPROCESS_f)
 	@echo Compiling $<
 	$(COMPILE_F)
 	@echo Postprocessing $<
 	$(POSTPROCESS_F)
+	@echo $(DIVIDER)
 
 %.F.d: $(SRCDIR)/%.F
 	$(F_DEPENDENCIES)
@@ -279,22 +279,22 @@ endef
 # Build rules for free-format F90
 
 %.F90.o: $(SRCDIR)/%.F90
-	@echo $(DIVIDER)
 	@echo Preprocessing $<
 	$(PREPROCESS_F90)
 	@echo Compiling $<
 	$(COMPILE_F90)
 	@echo Postprocessing $<
 	$(POSTPROCESS_F90)
+	@echo $(DIVIDER)
 
 %.f90.o: $(SRCDIR)/%.f90
-	@echo $(DIVIDER)
 	@echo Copying $<
 	$(PREPROCESS_f90)
 	@echo Compiling $<
 	$(COMPILE_F90)
 	@echo Postprocessing $<
 	$(POSTPROCESS_F90)
+	@echo $(DIVIDER)
 
 %.F90.d: $(SRCDIR)/%.F90
 	$(F90_DEPENDENCIES)

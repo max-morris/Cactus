@@ -67,11 +67,11 @@ SUBDIRS = $(LOCAL_SUBDIRS)
 OBJS = $(SRCS:%=%.o)
 
 $(NAME): $(addsuffix /make.checked, $(SUBDIRS) $(THORNBINDINGS))
-	@echo $(DIVIDER)
 	if [ -r $(NAME) ] ; then echo Updating $(NAME) ; else echo Creating $(NAME) ; fi
 	if [ -r $@ ] ; then rm $@ ; fi
 	$(AR) $(ARFLAGS) $@ $(OBJS)
 	if test "x$(USE_RANLIB)" = "xyes" ; then $(RANLIB) $(RANLIBFLAGS) $@ ; fi
+	@echo $(DIVIDER)
 
 # Extra stuff for allowing make to recurse into directories
 

@@ -91,7 +91,6 @@ main: $(EXEDIR)$(DIRSEP)$(EXE)
 # Build the executable
 
 $(EXEDIR)$(DIRSEP)$(EXE): $(CONFIG)/make.thornlist $(CONFIG)/cctki_version.h $(patsubst %,$(CCTK_LIBDIR)/$(LIBNAME_PREFIX)%$(LIBNAME_SUFFIX),$(notdir $(THORNS) $(CACTUSLIBS)))
-	@echo $(DIVIDER)
 	@echo Creating $(EXE) in $(EXEDIR) from $(THORNS)
 	$(CC) $(OPTIMISE_C) $(DEBUG_C) $(CFLAGS) $(CCOMPILEONLY)$(OPTIONSEP)$(TOP)$(DIRSEP)datestamp.o -I$(subst /,$(DIRSEP),$(CCTK_HOME)/src/include) -I$(CONFIG) $(subst /,$(DIRSEP),$(DATESTAMP))
 	if [ ! -d $(EXEDIR) ]; then $(MKDIR) $(MKDIRFLAGS) $(EXEDIR) ; fi
@@ -120,7 +119,6 @@ $(CONFIG)/cctki_version.h: $(CCTK_HOME)/Makefile
 # directory.
 
 $(CCTK_LIBDIR)/$(LIBNAME_PREFIX)%$(LIBNAME_SUFFIX): update
-	@echo $(DIVIDER)
 	@echo Checking status of $(notdir $@)
     # protect the following mkdir against parallel makes
 	if [ ! -d $(SCRATCH_BUILD) ]; then msg=`$(MKDIR) $(MKDIRFLAGS) $(SCRATCH_BUILD) 2>&1`; if [ -d $(SCRATCH_BUILD) ]; then exit 0; else echo "$$msg"; exit 1; fi; fi
@@ -131,6 +129,7 @@ $(CCTK_LIBDIR)/$(LIBNAME_PREFIX)%$(LIBNAME_SUFFIX): update
 	else src_dir=$(PACKAGE_DIR)/$(@:$(CCTK_LIBDIR)/$(LIBNAME_PREFIX)%$(LIBNAME_SUFFIX)=$(filter %/$(@:$(CCTK_LIBDIR)/$(LIBNAME_PREFIX)%$(LIBNAME_SUFFIX)=%), $(THORNS)))/src ; fi ; fi ;\
 	if [ ! -d $(BUILD_DIR)/$$thorn_name ]; then $(MKDIR) $(MKDIRFLAGS) $(BUILD_DIR)/$$thorn_name ; fi ; \
 	cd $(BUILD_DIR)/$$thorn_name ; \
+	echo $(DIVIDER) ; \
 	if [ -r "$$src_dir/Makefile" ] ; then  make_file=$$src_dir/Makefile ; \
 	                  else make_file=$(MAKE_DIR)/make.thornlib ; fi ; \
 	$(MAKE) TOP=$(TOP) SRCDIR=$$src_dir CONFIG=$(CONFIG) NAME=$@ THORN=$$thorn_name -f $$make_file $(FPARFLAGS)
@@ -240,7 +239,7 @@ UNKNOWN_THORNS = $(filter-out $(ALLCACTUSLIBS), $(BUILDLIST))
 build: $(CONFIG)/make.thornlist $(CONFIG)/cctki_version.h $(patsubst %, $(CCTK_LIBDIR)/$(LIBNAME_PREFIX)%$(LIBNAME_SUFFIX), $(THORN_BUILDLIST))
 	if test "x$(UNKNOWN_THORNS)" != "x"; then \
 	  echo "WARNING: Don't know anything about '$(UNKNOWN_THORNS)' !"; \
-      echo $(DIVIDER); \
+	  echo $(DIVIDER); \
 	fi
 
 
