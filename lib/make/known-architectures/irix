@@ -6,7 +6,7 @@
 #    @desc
 #               Known architectures file for SGI Irix systems
 #    @enddesc
-#    @version   $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/irix,v 1.31 2002-05-08 12:28:40 tradke Exp $
+#    @version   $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/irix,v 1.32 2002-05-28 21:18:07 tradke Exp $
 #  @@*/
 
 if test "$CCTK_CONFIG_STAGE" = 'preferred-compilers' ; then
@@ -120,8 +120,8 @@ else
   : ${F77_DEBUG_FLAGS='-g3'}
   : ${F90_WARN_FLAGS='-fullwarn'}
   : ${F77_WARN_FLAGS='-fullwarn'}
-  : ${F77_DEPEND='$(CC) -E -M $@ $(CPPFLAGS)'}
-  : ${F90_DEPEND='$(CXX) -E -M $@ $(CPPFLAGS)'}
+  : ${F_DEPEND='$(PERL) $(CCTK_HOME)/lib/sbin/cpp.pl -M $(CPPFLAGS)'}
+  : ${F77_DEPEND='$(PERL) $(CCTK_HOME)/lib/sbin/cpp.pl -M $(CPPFLAGS)'}
 
   # Cache stuff
   if test -z "$L2_CACHELINE_BYTES" ; then
