@@ -128,6 +128,59 @@ int CCTK_RegisterGHExtension(const char *name)
   return handle;
 }
 
+ /*@@
+   @routine    CCTK_UnregisterGHExtension
+   @date       Tue May 09 2000
+   @author     Thomas Radke
+   @desc 
+   Unregisters a GH extension.
+   @enddesc 
+   @calls     
+   @calledby   
+   @var        name
+   @vdesc      The name of the GH extension to unregister
+   @vtype      const char *
+   @vio        in
+   @vcomment
+   @endvar
+   @returntype int
+   @returndesc 0 for success, -1 for failure
+   @endreturndesc
+   @history 
+ 
+   @endhistory 
+
+@@*/
+int CCTK_UnregisterGHExtension(const char *name)
+{
+  int handle, ret_val = -1;
+  void *extension;
+
+  /* Check that the extension exists */
+  handle = Util_GetHandle(GHExtensions, name, &extension);
+
+  if(handle >= 0)
+  {
+    /* Delete extension handle and free its associated structure */
+    if (Util_DeleteHandle(GHExtensions, handle) == 0)
+    {
+      free (extension);
+      /* Remember how many extensions there are left */
+      num_extensions--;
+      ret_val = 0;
+
+#ifdef DEBUG
+      printf("CCTK_UnregisterGHExtension: unregistered extension %s with "
+             "handle %d\n", name, handle);
+#endif
+
+    }
+  }
+
+  return ret_val;
+}
+
+
 /***************************************************************************
  *
  *          Function Registration Routines.
@@ -406,33 +459,27 @@ static int CheckAllExtensionsSetup(void)
     /* SetupGH */
     if(!extension->SetupGH)
     {
-      const char *handlename = Util_GetHandleName(GHExtensions, handle);
-      char *message = (char *)malloc(300*sizeof(char));
-      sprintf(message,"GH Extension '%s' has not registered a SetupGH routine",handlename);
-      CCTK_Warn(4,__LINE__,__FILE__,"Cactus",message) ;
-      free(message);
+      CCTK_VWarn(4,__LINE__,__FILE__,"Cactus",
+                 "GH Extension '%s' has not registered a SetupGH routine",
+                 Util_GetHandleName(GHExtensions, handle));
       extension->SetupGH=DummySetupGH;
     }
 
     /*  InitGH */
     if(!extension->InitGH)
     {   
-      const char *handlename = Util_GetHandleName(GHExtensions, handle);
-      char *message = (char *)malloc(300*sizeof(char));
-      sprintf(message,"GH Extension '%s' has not registered a InitGH routine",handlename);
-      CCTK_Warn(4,__LINE__,__FILE__,"Cactus",message) ;
-      free(message);
+      CCTK_VWarn(4,__LINE__,__FILE__,"Cactus",
+                 "GH Extension '%s' has not registered a InitGH routine",
+                 Util_GetHandleName(GHExtensions, handle));
       extension->InitGH=DummyInitGH;
     }
 
     /* ScheduleTraverse */
     if(!extension->ScheduleTraverseGH)
     {
-      const char *handlename = Util_GetHandleName(GHExtensions, handle);
-      char *message = (char *)malloc(300*sizeof(char));
-      sprintf(message,"GH Extension '%s' has not registered a ScheduleTraverse routine",handlename);
-      CCTK_Warn(4,__LINE__,__FILE__,"Cactus",message) ;
-      free(message);
+      CCTK_VWarn(4,__LINE__,__FILE__,"Cactus",
+                 "GH Extension '%s' has not registered a ScheduleTraverse routine",
+                 Util_GetHandleName(GHExtensions, handle));
       extension->ScheduleTraverseGH=DummyScheduleTraverseGH;
     }
 
