@@ -6,7 +6,7 @@
 #    @desc 
 #   
 #    @enddesc 
-#    @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/irix,v 1.7 1999-07-05 14:10:26 allen Exp $
+#    @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/irix,v 1.8 1999-07-06 16:08:21 goodale Exp $
 #  @@*/
 
 # extract the CPU type from hinv output
@@ -28,6 +28,7 @@ case "$IRIX_BITS:$CC" in
     echo gcc can\'t compile 64 bit, changing to cc
     CC=cc
     CXX=CC
+    LD=CC
     ;;
 esac
 
