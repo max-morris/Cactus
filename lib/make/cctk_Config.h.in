@@ -79,6 +79,7 @@
 #undef HAVE_GETOPT_LONG_ONLY
 #undef HAVE_CRYPT
 #undef HAVE_FINITE
+#undef HAVE_ISNAN
 
 /* Do we have mode_t ? */
 
