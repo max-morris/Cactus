@@ -14,6 +14,9 @@
    byte first (like Motorola and SPARC, unlike Intel and VAX).  */
 #undef WORDS_BIGENDIAN
 
+/* Define if standard C headers are available. */
+#undef STDC_HEADERS
+
 /* Size info for various types */
 
 /* The number of bytes in a long int.  */
@@ -50,6 +53,9 @@
 #undef CCTK_INTEGER_PRECISION_4
 #undef CCTK_INTEGER_PRECISION_2
 
+/* Modifier for Fortran function definitions. */
+
+#define FMODIFIER
 
 #ifdef CCODE
 

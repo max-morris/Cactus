@@ -108,6 +108,8 @@ dnl Checks for libraries.
 
 dnl Checks for header files.
 
+AC_HEADER_STDC
+
 dnl Checks for typedefs, structures, and compiler characteristics.
 
 AC_C_BIGENDIAN
@@ -261,6 +263,13 @@ case "x$INTEGER_PRECISION" in
     *)
 	AC_DEFINE_UNQUOTED(CCTK_INTEGER_PRECISION_4, 1) ;;
 esac
+
+# Define any code needed before the definition of a Fortran subroutine
+# This is empty on most architectures.
+
+: ${FMODIFIER=""}
+
+AC_DEFINE_UNQUOTED(FMODIFIER, $FMODIFIER) 
 
 # The perl scripts run by the make system need to have their names
 # changed if under cygwin - e.g. //d/foo needs to be d:/foo
