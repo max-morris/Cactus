@@ -6,7 +6,7 @@
 #  @desc 
 #  Parses the the configuration files for thorns.
 #  @enddesc 
-#  @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.20 1999-07-05 13:05:12 allen Exp $
+#  @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.21 1999-07-18 10:38:29 allen Exp $
 #@@*/
 
 # Global parameter to track the number of errors from the CST
@@ -79,10 +79,20 @@ require "$sbin_dir/CreateImplementationBindings.pl";
 #
 ######################################################################
 
+# $CST_debug = 1;
+
 # Find out which thorns we have and the location of the ccl files.
+if ($CST_debug)
+{
+  print "DEBUG: Creating thorn list\n";
+}
 %thorns = &CreateThornList($cctk_home, $activethorns);
 
 # Parse the interface.ccl files
+if ($CST_debug)
+{
+  print "DEBUG: Creating interface database\n";
+}
 %interface_database = &create_interface_database(%thorns);
 
 if($debug_interface)
@@ -91,8 +101,16 @@ if($debug_interface)
 }
 
 # Parse the parameter.ccl files
+if ($CST_debug)
+{
+  print "DEBUG: Creating parameter database\n";
+}
 %parameter_database = &create_parameter_database(%thorns);
 
+if ($CST_debug)
+{
+  print "DEBUG: Checking parameter consistency\n";
+}
 %parameter_database = &CheckImpParamConsistency(scalar(keys %interface_database), %interface_database, %parameter_database);
 
 if($debug_parameters)
@@ -101,9 +119,17 @@ if($debug_parameters)
 }
 
 # Create all the bindings
+if ($CST_debug)
+{
+  print "DEBUG: Creating all bindings\n";
+}
 &CreateBindings($bindings_dir, scalar(keys %parameter_database), %parameter_database, %interface_database);
 
 # Create header file of active thorns for the code
+if ($CST_debug)
+{
+  print "DEBUG: Creating ThornList\n";
+}
 @activethornsheader = &CreateActiveThornsHeader(%thorns);
 &OutputFile("$bindings_dir/include/", "thornlist.h", @activethornsheader);
 
@@ -112,6 +138,10 @@ if($debug_parameters)
 &OutputFile("$bindings_dir/include/", "definethorn.h", @definethornsheader);
 
 # Create define file for this thorn
+if ($CST_debug)
+{
+  print "DEBUG: Creating thorn define file\n";
+}
 @definethisthornheader = &CreateDefineThisThornHeader(%thorns);
 &OutputFile("$bindings_dir/include/", "definethisthorn.h", @definethisthornheader);
 
@@ -459,9 +489,25 @@ sub CreateBindings
   $start_dir = `pwd`;
 
   # Create the bindings for the subsystems.
+  if ($CST_debug)
+  {
+    print "DEBUG: Creating implementation bindings\n";
+  }
   &CreateImplementationBindings($bindings_dir, $n_param_database, @rest);
+  if ($CST_debug)
+  {
+    print "DEBUG: Creating parameter bindings\n";
+  }
   &CreateParameterBindings($bindings_dir, $n_param_database, @rest);
+  if ($CST_debug)
+  {
+    print "DEBUG: Creating variable bindings\n";
+  }
   &CreateVariableBindings($bindings_dir, %interface_database);
+  if ($CST_debug)
+  {
+    print "DEBUG: Creating schedule bindings\n";
+  }
   &CreateScheduleBindings($bindings_dir, scalar(keys %thorns), %thorns,%interface_database);
 
   # Place an appropriate make.code.defn in the bindings directory.
@@ -1052,16 +1098,28 @@ sub CreateScheduleBindings
   }
   chdir "Schedule";
 
-  # Parse the schedule.ccl files 
+  # Parse the schedule.ccl files
+  if ($CST_debug)
+  {
+    print "DEBUG: Parsing schedule.ccl files\n";
+  }
   ($wrapper,$rfr,$startup, %schedule_data) = &create_schedule_code($bindings_dir,$n_thorns,%thorns,%interface_database);
 
   @rfr_files = split(" ",$rfr);
 
   # Write the contents of BindingsScheduleRegisterRFR.c
+  if ($CST_debug)
+  {
+    print "DEBUG: Creating RFR registration files\n";
+  }
   &create_RegisterRFR($bindings_dir,scalar(@rfr_files), @rfr_files, %schedule_data); 
 
   # Write the contents of BindingsScheduleRegisterSTARTUP.c
   
+  if ($CST_debug)
+  {
+    print "DEBUG: Creating STARTUP registration files\n";
+  }
   &create_RegisterSTARTUP($bindings_dir,split(" ",$startup)); 
 
   open (OUT, ">BindingsSchedule.c") || die "Cannot open BindingsSchedule.c";
