@@ -297,6 +297,17 @@ sub parse_param_ccl
 		  $message = "String default given for $type $variable in $thorn";
                   &CST_error(0,$message,__LINE__,__FILE__);
 	      }
+              elsif ($type =~ m:STRING|KEYWORD: && $default !~ m:".*":)
+              {
+		  $message = "Default given for $type $variable in $thorn is not a string";
+                  &CST_error(0,$message,__LINE__,__FILE__);
+	      }
+              elsif ($type =~ m:LOGICAL: && $default =~ m:": && $default !~ m:".*":)
+	      {
+		  $message = "Default given for $type $variable in $thorn is missing a quote";
+                  &CST_error(0,$message,__LINE__,__FILE__);
+	      }
+
 	      $parameter_db{"\U$thorn $variable\E default"} = $default;
 	  }
 	  else
