@@ -164,15 +164,26 @@ There is a template file in the doc/MaintGuide directory.
 
 \section{Source Files}
 
-Source files should have as their first line after all the include
-files a line containing
+Source files should have as their first lines after all the include
+files:
 
 %\begin{verbatim}
 \vskip .3cm
 {\bf static const char $*$rcsid = "\$Header\$"; }
+\newline
+{\bf CCTK\_FILEVERSION($<$source file$>$)}
 %\end{verbatim}
 \vskip .3cm
-or the expanded rcs version of this.
+or the expanded rcs version of this. The macro {\bf CCTK\_FILEVERSION} is 
+simply there to prevent compiler warnings, and {\bf $<$source file$>$}
+should be replaced by
+\begin{itemize}
+
+\item{} Flesh: {\bf $<$directory$>$\_$<$core filename$>$\_$<$extension$>$} (e.g. {\bf main\_Groups\_c})
+
+\item{} Thorn: {\bf $<$arrangement$>$\_$<$thorn$>$\_$<$core filename$>$\_$<$extension$>$}\\ (e.g. {\bf CactusBase\_CartGrid3D\_CartGrid3D\_c})
+
+\end{itemize}
 
 Globally visable functions should appear before local
 functions.
@@ -192,7 +203,7 @@ All functions used internally by the flesh should have names beginning with
 {\tt CCTKi\_} and then capitalised words with no underscores.
 
 Header files to be included by thorns should have names beginning with
-{\tt cctk\_}.
+{\tt cctk\_}, and followed by capitalised words with no underscores.
 
 Structures which may be used by thorns should have names beginning with
 {\tt c} and then capitalised words, {\it e.g.} {\tt cGroup}. The 
