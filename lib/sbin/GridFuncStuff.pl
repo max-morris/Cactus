@@ -1337,11 +1337,121 @@ sub CheckArraySizes
 
   foreach $par (split(",",$size))
   {
-    # check for size to be a constant
-    next if $par =~ /^\d+$/;
 
-    # check for size to be a parameter
-    if ($par =~ /^([A-Za-z]\w*)(::([A-Za-z]\w*))?([+-]\d+)?$/)
+#     # check for size to be a constant
+#     next if $par =~ /^\d+$/;
+
+#     # check for size to be a parameter
+#     if ($par =~ /^([A-Za-z]\w*)(::([A-Za-z]\w*))?([+-]\d+)?$/)
+#     {
+#       if (defined $2)
+#       {
+#         $thorn = $1;
+#         $base = $3;
+#       }
+#       else
+#       {
+#         $thorn = $thornname;
+#         $base = $1;
+#       }
+
+#       # check if the parameter really exists
+#       if ($rhparameter_db->{"\U$thorn Private\E variables"} !~ m:$base:i &&
+#           $rhparameter_db->{"\U$thorn Global\E variables"} !~ m:$base:i &&
+#           $rhparameter_db->{"\U$thorn Restricted\E variables"} !~ m:$base:i)
+#       {
+#         &CST_error(0,"Array size \'$par\' in $thornname is not a parameter",
+#                    "",__LINE__,__FILE__);
+#       }
+#     }
+#     else
+#     {
+#       &CST_error(0,"Array size \'$par\' in $thornname has invalid syntax",
+#                  "",__LINE__,__FILE__);
+#     }
+
+    &VerifyParameterExpression($par,$thornname,$rhparameter_db);
+  }
+    
+    
+}
+
+#/*@@
+#  @routine    VerifyParameterExpression
+#  @date       Sat Oct 13 16:40:07 2001
+#  @author     Tom Goodale
+#  @desc 
+#  Does some sanity checking on an arithmetic expression 
+#  involving parameter values.
+#  @enddesc 
+#  @calls     
+#  @calledby   
+#  @history 
+#
+#  @endhistory 
+#
+#@@*/
+sub VerifyParameterExpression
+{
+  my($expression,$thornname,$rhparameter_db) = @_;
+  my($i,$count,@fields);
+  
+  # First do some global checks
+  if($expression !~ m%[-+*/a-zA-Z0-9_()]%)
+  {
+    &CST_error(0, "Array size in $thornname is an invalid arithmatic expression \n"
+	       .  "      '$expression' contains invalid characters");
+  }
+
+  $count = 0;
+
+  for $i (split(//,$expression))
+  {
+    $count++ if($i eq "(");
+    $count-- if($i eq ")");
+    
+    if($count < 0)
+    {
+      &CST_error(0, "Array size in $thornname is an invalid arithmatic expression \n"
+		 .  "        '$expression' has too many closing parentheses",
+		"",__LINE__,__FILE__);
+    }
+  }
+  
+    if($count > 0)
+    {
+      &CST_error(0, "Array size in $thornname is an invalid arithmatic expression \n"
+		 .  "        '$expression' has unmatched parentheses",
+                 "",__LINE__,__FILE__);
+    }
+  
+
+  if($expression =~ m:[-+*/]$:)
+  {
+    &CST_error(0, "Array size in $thornname is an invalid arithmatic expression \n"
+	       .  "          '$expression' ends with an operator",
+	       "",__LINE__,__FILE__);
+
+  }
+
+  # Now split the string on operators and parentheses
+  @fields = split(/([-+*\/()]+)/, $expression);
+
+  for $i (@fields)
+  {
+    # Get rid of any empty tokens
+    next if($i =~ m:^\s*$:);
+
+    # Deal with the easy valid cases
+
+    next if($i =~ m:^[-+/*]\(*$:);
+    next if($i =~ m:^\)*[-+/*]$:);
+    next if($i =~ m:^\(+$:);
+    next if($i =~ m:^\)+$:);
+    next if($i =~ m:^\d+$:);
+
+    # Now check if it is a valid parameter name
+    if($i =~ m:^([a-zA-Z][a-zA-Z0-9_]*)(\:\:([a-zA-Z][a-zA-Z0-9_]*))?:)
     {
       if (defined $2)
       {
@@ -1359,17 +1469,47 @@ sub CheckArraySizes
           $rhparameter_db->{"\U$thorn Global\E variables"} !~ m:$base:i &&
           $rhparameter_db->{"\U$thorn Restricted\E variables"} !~ m:$base:i)
       {
-        &CST_error(0,"Array size \'$par\' in $thornname is not a parameter",
+        &CST_error(0,"Array size \'$expression\' in $thornname contains a constant which isn\'t a parameter",
                    "",__LINE__,__FILE__);
       }
     }
+    elsif($i =~ m:^\(\)$:)
+    {
+      # Empty parenthesis - bad
+      &CST_error(0, "Array size in $thornname is an invalid arithmatic expression \n"
+	       .  "          '$expression' contains empty parentheses",
+	       "",__LINE__,__FILE__);
+    }
+    elsif($i =~ m:[-+/*]{2,}:)
+    {
+      # Two operators in a row - bad
+      &CST_error(0, "Array size in $thornname is an invalid arithmatic expression \n"
+	       .  "          '$expression' contains two operators in a row",
+	       "",__LINE__,__FILE__);
+    }
+    elsif($i =~ m:[-+/*]\):)
+    {
+      # Operator followed by closing parenthesis - bad
+      &CST_error(0, "Array size in $thornname is an invalid arithmatic expression \n"
+	       .  "          '$expression' has a missing operand",
+	       "",__LINE__,__FILE__);
+    }
+    elsif($i =~ m:\([-+/*]:)
+    {
+      # Opening parenthesis followed by operator - bad
+      &CST_error(0, "Array size in $thornname is an invalid arithmatic expression \n"
+	       .  "          '$expression' has a missing operand",
+	       "",__LINE__,__FILE__);
+    }
     else
     {
-      &CST_error(0,"Array size \'$par\' in $thornname has invalid syntax",
-                 "",__LINE__,__FILE__);
+      # I've run out of imagination
+      &CST_error(0, "Array size in $thornname is an invalid arithmatic expression \n"
+	       .  "          '$expression' contains unrecognised token '$i'",
+	       "",__LINE__,__FILE__);
     }
   }
-}
 
+}
 
 1;
