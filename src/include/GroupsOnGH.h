@@ -23,10 +23,6 @@ void *CCTK_GetVarDataPtr_ByIndex(cGH *GH, int varindex, int timelevel);
 
 void *CCTK_GetVarDataPtr(cGH *GH, int varindex, char *fullvarname, int timelevel);
 
-int *CCTK_ArrayGroupSize(cGH *GH, const char *group, int dim);
-
-int CCTK_QueryGroupStorage(cGH *GH, const char *group);
-
 #ifdef __cplusplus 
 }
 #endif
