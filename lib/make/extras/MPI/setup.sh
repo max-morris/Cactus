@@ -24,11 +24,11 @@ fi
 
 # Write the data out to the header and make files.
 
-if test -n "$MPI_VERSION" ; then
-  CCTK_WriteLine cctk_Extradefs.h "#define CCTK_MPI $MPI_VERSION"
-else
-  CCTK_WriteLine cctk_Extradefs.h "#define CCTK_MPI $MPI"
+if test -z "$MPI_VERSION" ; then
+  MPI_VERSION="$MPI"
 fi
+CCTK_WriteLine cctk_Extradefs.h "#define CCTK_MPI_$MPI_VERSION 1"
+CCTK_WriteLine cctk_Extradefs.h "#define CCTK_MPI CCTK_MPI_$MPI_VERSION"
 
 CCTK_WriteLine make.extra.defn "MPI_LIBS     = $MPI_LIBS"
 CCTK_WriteLine make.extra.defn "MPI_LIB_DIRS = $MPI_LIB_DIRS"
