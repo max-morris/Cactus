@@ -21,18 +21,9 @@
 /* Define stuff for C. */
 #ifdef CCODE
 
-/* As long as we don't have 'typedef const void *CCTK_CONST_POINTER;'
-   we have CCTK_POINTER as a #define so that one can add a const qualifier
-   if needed. */
-#if 0
 typedef void *CCTK_POINTER;
-#else
-#define CCTK_POINTER void *
-#endif
+typedef const void *CCTK_POINTER_TO_CONST;
 typedef void (*CCTK_FPOINTER)(void);
-
-/* DEPRECATED IN BETA 12 */
-typedef void (*CCTK_FN_POINTER)(void);
 
 #define CCTK_STRING const char *
 
