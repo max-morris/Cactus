@@ -56,17 +56,17 @@ sub CreateConfigurationBindings
   foreach $thorn (sort keys %thorns)
   {
     if ($cfg->{"\U$thorn\E REQUIRES"} || $cfg->{"\U$thorn\E OPTIONAL"})
-    { 
+    {
       if(! -d "$bindings_dir/Configuration/$thorn")
       {
-        mkdir("$bindings_dir/Configuration/$thorn", 0755) || die "Unable to create Thorn $thorn Configuration directory"; 
+        mkdir("$bindings_dir/Configuration/$thorn", 0755) || die "Unable to create Thorn $thorn Configuration directory";
       }
     }
   }
 
-  # this string goes into the cactus executable directly 
-  my $linkerflagdirs = '';
-  my $linkerflaglibs = '';
+  # this string goes into the cactus executable directly
+  my @cap_libdirs = ();
+  my @cap_libs    = ();
 
   # here we put all the PROVIDES to where they belong
   foreach $thorn (sort keys %thorns)
@@ -76,128 +76,74 @@ sub CreateConfigurationBindings
     # and make references to them from the requirements and optional
     # since we can have multiple provides, we make each capability
     # separate
-    if ($cfg->{"\U$thorn\E PROVIDES"})
+    foreach $providedcap (split (' ', $cfg->{"\U$thorn\E PROVIDES"}))
     {
-      my $codedef       = '';
-      my $codedep       = '';
-      my $incdir        = '';
-      my $lib           = '';
-      my $libdir        = '';
-      my $thornDefnFile = '';
-      my $thornDepsFile = '';
+      my $thorn_providedcap = "\U$thorn $providedcap\E";
 
-      foreach $providedcap (split (' ', $cfg->{"\U$thorn\E PROVIDES"}))
+      if ($cfg->{"$thorn_providedcap DEFINE"})
       {
-        $providedcaplist .= $providedcap;
-        if ( $cfg->{"\U$thorn $providedcap\E DEFINE"} )
+        &WriteFile("include/\U$providedcap\E.h",
+                   \$cfg->{"$thorn_providedcap DEFINE"});
+      }
+      if ($cfg->{"$thorn_providedcap MAKE_DEFINITION"})
+      {
+        &WriteFile("Configuration/make.\U$providedcap\E.defn",
+                   \$cfg->{"$thorn_providedcap MAKE_DEFINITION"});
+      }
+      if ($cfg->{"$thorn_providedcap MAKE_DEPENDENCY"})
+      {
+        &WriteFile("Configuration/make.\U$providedcap\E.deps",
+                   \$cfg->{"$thorn_providedcap MAKE_DEPENDENCY"});
+      }
+
+      push (@cap_libs, $cfg->{"$thorn_providedcap LIBRARY"});
+      push (@cap_libdirs, $cfg->{"$thorn_providedcap LIBRARY_DIRECTORY"});
+    }
+  }
+
+  $cap_ldflags  = 'LIBDIRS += ' . join (' ', @cap_libdirs) . "\n";
+  $cap_ldflags .= 'LIBS    += ' . join (' ', @cap_libs);
+
+  &WriteFile("Configuration/make.link",\$cap_ldflags);
+
+  # here we gather all the REQUIRES and OPTIONAL capabilities for each thorn
+  foreach $thorn (sort keys %thorns)
+  {
+    my $thornDefnFile = '';
+    my $thornDepsFile = '';
+    my $requires_optional = $cfg->{"\U$thorn\E REQUIRES"} . ' ' .
+                            $cfg->{"\U$thorn\E OPTIONAL"};
+    foreach $requiredcap (split (' ', $requires_optional))
+    {
+      foreach $provider (sort keys %thorns)
+      {
+        foreach $providedcap (split (' ', $cfg->{"\U$provider\E PROVIDES"}))
         {
-          &WriteFile("include/\U$providedcap\E.h",\$cfg->{"\U$thorn $providedcap\E DEFINE"});    
-        }
-        if ( $cfg->{"\U$thorn $providedcap\E MAKE_DEFINITION"} )
-        {
-          $codedef = $cfg->{"\U$thorn $providedcap\E MAKE_DEFINITION"}; 
-          &WriteFile("$bindings_dir/Configuration/make.\U$providedcap\E.defn",\$cfg->{"\U$thorn $providedcap\E MAKE_DEFINITION"});
-        } 
-        if ( $cfg->{"\U$thorn $providedcap\E MAKE_DEPENDENCY"} )
-        {
-          $codedep = $cfg->{"\U$thorn $providedcap\E MAKE_DEPENDENCY"}; 
-          &WriteFile("$bindings_dir/Configuration/make.\U$providedcap\E.deps",\$cfg->{"\U$thorn $providedcap\E MAKE_DEPENDENCY"});
-        } 
-        if ( $cfg->{"\U$thorn $providedcap\E INCLUDE_DIRECTORY"} )
-        {
-          $incdir = $cfg->{"\U$thorn $providedcap\E INCLUDE_DIRECTORY"};
-        } 
-        if ( $cfg->{"\U$thorn $providedcap\E LIBRARY"} )
-        {
-#          print "\nlibs\n";
-          $lib = $cfg->{"\U$thorn $providedcap\E LIBRARY"};
-        } 
-        if ( $cfg->{"\U$thorn $providedcap\E LIBRARY_DIRECTORY"} )
-        {
-#          print "\ndirs\n";
-          $libdir = $cfg->{"\U$thorn $providedcap\E LIBRARY_DIRECTORY"};
-        }
-        
-        # Now put the stuff from the provide in the required and options
-        foreach $temp (sort keys %thorns)
-        {
-          foreach $requiredcap (split (' ', $cfg->{"\U$temp\E REQUIRES"}))           
-          { 
-            if ( $requiredcap eq $providedcap )
-            { 
-              if ( $codedef ne '' )
-              { 
-                $thornDefnFile .= "-include $bindings_dir/Configuration/make.\U$providedcap\E.defn\n";
-              }
-              if ( $codedep ne '' )
-              {
-                $thornDepsFile .= "-include $bindings_dir/Configuration/make.\U$providedcap\E.deps\n";
-              }
-              if ( $incdir ne '' )
-              { 
-                $thornDefnFile .= "INC_DIRS += $incdir\n";
-              }
-              if ( $libdir ne '' )
-              { 
-                $linkerflagdirs .= $libdir . " ";
-              }
-              if ( $lib ne '' )
-              { 
-                $linkerflaglibs .= $lib . " ";
-              }
-              if(! -d "Configuration/$temp")
-              {
-                mkdir("Configuration/$temp", 0755) || die "Unable to create Configuration/$temp directory";
-              }
-              &WriteFile("$bindings_dir/Configuration/$temp/make.configuration.defn",\$thornDefnFile);
-              &WriteFile("$bindings_dir/Configuration/$temp/make.configuration.deps",\$thornDepsFile);
-            }
+          next if ($requiredcap ne $providedcap);
+
+          my $cap = "\U$provider $providedcap\E";
+
+          if ($cfg->{"$cap MAKE_DEFINITION"})
+          {
+            $thornDefnFile .= "-include \$(BINDINGS_DIR)/Configuration/make.\U$providedcap\E.defn\n";
           }
-          foreach $requiredcap (split (' ', $cfg->{"\U$temp\E OPTIONAL"}))           
-          { 
-            if ( $requiredcap eq $providedcap )
-            { 
-              if ( $codedef ne '' )
-              { 
-                $thornDefnFile .= "-include $bindings_dir/Configuration/make.\U$providedcap\E.defn\n";
-              }
-              if ( $codedep ne '' )
-              {
-                $thornDepsFile .= "-include $bindings_dir/Configuration/make.\U$providedcap\E.deps\n";
-              }
-              if ( $incdir ne '' )
-              { 
-                $thornDefnFile .= "INC_DIRS += $incdir\n";
-              }
-              if ( $libdir ne '' )
-              { 
-                $linkerflagdirs .= $libdir . " ";
-              }
-              if ( $lib ne '' )
-              { 
-                $linkerflaglibs .= $lib . " ";
-              }
-              if(! -d "Configuration/$temp")
-              {
-                mkdir("Configuration/$temp", 0755) || die "Unable to create Configuration/$temp directory";
-              }
-              &WriteFile("$bindings_dir/Configuration/$temp/make.configuration.defn",\$thornDefnFile);
-              &WriteFile("$bindings_dir/Configuration/$temp/make.configuration.deps",\$thornDepsFile);
-            }
+          if ($cfg->{"$cap MAKE_DEPENDENCY"})
+          {
+            $thornDepsFile .= "-include \$(BINDINGS_DIR)/Configuration/make.\U$providedcap\E.deps\n";
+          }
+          if ($cfg->{"$cap INCLUDE_DIRECTORY"})
+          {
+            $thornDefnFile .= 'INC_DIRS += ' . $cfg->{"$cap INCLUDE_DIRECTORY"} . "\n";
           }
         }
       }
     }
-  }  
-  
 
-  $linkerflagdirs = "LIBDIRS += " . $linkerflagdirs;
-  $linkerflaglibs = "LIBS += " . $linkerflaglibs;
-
-  $linkerflagdirs = $linkerflagdirs . "\n" . $linkerflaglibs;
-
-  &WriteFile("$bindings_dir/Configuration/make.link",\$linkerflagdirs);
-
+    &WriteFile("Configuration/$thorn/make.configuration.defn",\$thornDefnFile)
+      if ($thornDefnFile);
+    &WriteFile("Configuration/$thorn/make.configuration.deps",\$thornDepsFile)
+      if ($thornDepsFile);
+  }
 }
 
 return 1;
