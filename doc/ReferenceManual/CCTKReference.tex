@@ -5781,14 +5781,23 @@ A negative error code is returned for an invalid group name.
 \showcargs
 \begin{params}
 \parameter{cctkGH}{pointer to CCTK grid hierarchy}
+\parameter{groupindex}{the group to query, given by its index}
+\parameter{groupname}{the group to query, given by its full name}
+\parameter{istat}{the return code}
 \end{params}
 \begin{discussion}
+This routine queries whether the variables in a group have storage assigned.
+If so it returns true (a non-zero value), otherwise false (zero).
+
+The group can be specified either through the group index {\tt
+groupindex}, or through the group name {\tt groupname}.  The groupname
+takes precedence; only if it is passed as {\tt NULL}, the group index
+is used.
 \end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\end{tabular}
-\end{examples}
 \begin{errorcodes}
+\begin{tabular}{l}
+A negative error code is returned for an invalid group name.
+\end{tabular}
 \end{errorcodes}
 \end{CCTKFunc}
 
