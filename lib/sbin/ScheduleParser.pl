@@ -385,7 +385,16 @@ sub ParseScheduleBlock
     {
       $line_number++;
       if($data[$line_number] =~ m/^\s*STOR[^:]*:\s*(.*)$/i)
-      {
+      { 
+        if ($where eq "CCTK_STARTUP" )
+        {
+          &CST_error(1, "Scheduling storage \"$name\" at startup in thorn \"$thorn\"","Storage cannot be allocated at startup",__LINE__,__FILE__);
+        }
+        elsif ($where eq "CCTK_SHUTDOWN" )
+        {
+          &CST_error(1, "Scheduling storage \"$name\" at shutdown in thorn \"$thorn\"","Storage cannot be allocated at shutdown",__LINE__,__FILE__);
+        }
+
         push(@mem_groups, split(/\s+|\s*,\s*/, $1));
       }
       elsif($data[$line_number] =~ m/^\s*COMM[^:]*:\s*(.*)$/i)
