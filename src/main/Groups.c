@@ -16,6 +16,8 @@
 #include "Misc.h"
 #include "Groups.h"
 
+/*#define GROUPSDEBUG*/
+
 static char *rcsid = "$Header$";
 
 /* Static variables needed to hold group and variable data. */
@@ -120,6 +122,14 @@ int CCTK_CreateGroup(const char *gname, const char *thorn, const char *imp,
   {
     fprintf(stderr, "Error %d in CCTK_CreateGroup\n", retval);
   }
+
+#ifdef GROUPSDEBUG
+  printf("Created group %s\n",gname);
+  printf("  CCTK_GetGroupNum(%s,%s) = %d\n",imp,gname,
+	 CCTK_GetGroupNum(imp,gname));
+  printf("  CCTK_GetGroupName(%d) = %s\n",CCTK_GetGroupNum(imp,gname),
+         CCTK_GetGroupName(CCTK_GetGroupNum(imp,gname)));
+#endif
 
   return retval;
 
@@ -228,13 +238,13 @@ cGroupDefinition *CCTK_SetupGroup(const char *implementation,
 }
 
  /*@@
-   @routine    CCTK_GetGroupNumb
+   @routine    CCTK_GetGroupNum
    @date       Fri Jan 29 08:43:48 1999
    @author     Tom Goodale
    @desc 
    Gets the number for the specified group.
    @enddesc 
-   @calls     
+   @calls CCTK_Equals   
    @calledby   
    @history 
  
@@ -569,15 +579,11 @@ int CCTK_DecomposeGroupName(const char *fullname, char **implementation, char **
   return CCTK_SplitString(implementation, name, fullname, "::");
 }
 
-char *CCTK_GetGroupName(int varnum)
+char *CCTK_GetGroupName(int group)
 {
   char *name;
-  int group;
 
-  group = group_of_variable[varnum];
-
-  name = malloc((strlen(groups[group].implementation)+strlen(groups[group].name)+3)*sizeof(char))
-    ;
+  name = malloc((strlen(groups[group].implementation)+strlen(groups[group].name)+3)*sizeof(char));
   sprintf(name, "%s::%s",groups[group].implementation, groups[group].name);
 
   return name;
