@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.100 2000-12-10 23:29:58 goodale Exp $
+#   @version $Id: Makefile,v 1.101 2000-12-11 18:22:10 goodale Exp $
 # @@*/
 
 ##################################################################################
@@ -184,7 +184,7 @@ DIVEL   =  __________________
 DIVIDER =  $(DIVEL)$(DIVEL)$(DIVEL)$(DIVEL)
 
 # Work out where we are
-export CCTK_HOME := $(shell pwd | sed 's,^//\(.\)/,\1:/,' )
+export CCTK_HOME := $(shell pwd | sed 's,^/cygdrive/\(.\)/,\1:/,' | sed 's,^//\(.\)/,\1:/,' )
 
 # Work out where the configuration directory is
 ifdef CACTUS_CONFIGS_DIR
