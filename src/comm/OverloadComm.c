@@ -131,6 +131,20 @@ int CCTK_FCALL CCTK_FNAME(CCTK_SyncGroup)(cGH *GH, ONE_FORTSTRING_ARG)
   return 0;
 }
 
+int CCTK_FCALL CCTK_FNAME(CCTK_EnableGroupComm)(int *ierr, cGH *GH, ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE(group_name)
+  *ierr = CCTK_EnableGroupComm(GH, group_name); 
+  free(group_name);
+}
+
+int CCTK_FCALL CCTK_FNAME(CCTK_EnableGroupStorage)(int *ierr, cGH *GH, ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE(group_name)
+  *ierr = CCTK_EnableGroupStorage(GH, group_name);
+  free(group_name);
+}
+
 int CCTK_FCALL CCTK_FNAME(CCTK_nProcs)(cGH *GH)
 {
   return CCTK_nProcs(GH);
