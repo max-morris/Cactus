@@ -17,7 +17,7 @@
 #              Added cross-compiling defines
 #   @endhdesc
 #   @endhistory
-#   @version   $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/hiuxwe2,v 1.10 2003-02-13 11:54:12 tradke Exp $
+#   @version   $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/hiuxwe2,v 1.11 2003-04-30 14:20:24 allen Exp $
 # @@*/
 
 if test "$CCTK_CONFIG_STAGE" = 'preferred-compilers' ; then
@@ -88,8 +88,8 @@ else
 
   : ${LIBS='f90s f90 hf90pvmath hf90math m'}
 
-  : ${L2_CACHELINE_BYTES='128'}
-  : ${L2_CACHE_SIZE='128*1024'}
+  : ${CACHELINE_BYTES='128'}
+  : ${CACHE_SIZE='128*1024'}
 
   # MPI stuff
   if test -n "$MPI" ; then

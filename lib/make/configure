@@ -1584,12 +1584,12 @@ else
 #line 1585 "configure"
 #include "confdefs.h"
 #include <stdio.h>
-int main()
+main()
 {
   FILE *f=fopen("conftestval", "w");
-  if (!f) return(1);
+  if (!f) exit(1);
   fprintf(f, "%d\n", sizeof(long long));
-  return(0);
+  exit(0);
 }
 EOF
 if { (eval echo configure:1596: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
@@ -1628,12 +1628,12 @@ else
 #line 1629 "configure"
 #include "confdefs.h"
 #include <stdio.h>
-int main()
+main()
 {
   FILE *f=fopen("conftestval", "w");
-  if (!f) return(1);
+  if (!f) exit(1);
   fprintf(f, "%d\n", sizeof(long int));
-  return(0);
+  exit(0);
 }
 EOF
 if { (eval echo configure:1640: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
@@ -1672,12 +1672,12 @@ else
 #line 1673 "configure"
 #include "confdefs.h"
 #include <stdio.h>
-int main()
+main()
 {
   FILE *f=fopen("conftestval", "w");
-  if (!f) return(1);
+  if (!f) exit(1);
   fprintf(f, "%d\n", sizeof(int));
-  return(0);
+  exit(0);
 }
 EOF
 if { (eval echo configure:1684: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
@@ -1716,12 +1716,12 @@ else
 #line 1717 "configure"
 #include "confdefs.h"
 #include <stdio.h>
-int main()
+main()
 {
   FILE *f=fopen("conftestval", "w");
-  if (!f) return(1);
+  if (!f) exit(1);
   fprintf(f, "%d\n", sizeof(short int));
-  return(0);
+  exit(0);
 }
 EOF
 if { (eval echo configure:1728: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
@@ -1762,12 +1762,12 @@ else
 #line 1763 "configure"
 #include "confdefs.h"
 #include <stdio.h>
-int main()
+main()
 {
   FILE *f=fopen("conftestval", "w");
-  if (!f) return(1);
+  if (!f) exit(1);
   fprintf(f, "%d\n", sizeof(long double));
-  return(0);
+  exit(0);
 }
 EOF
 if { (eval echo configure:1774: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
@@ -1806,12 +1806,12 @@ else
 #line 1807 "configure"
 #include "confdefs.h"
 #include <stdio.h>
-int main()
+main()
 {
   FILE *f=fopen("conftestval", "w");
-  if (!f) return(1);
+  if (!f) exit(1);
   fprintf(f, "%d\n", sizeof(double));
-  return(0);
+  exit(0);
 }
 EOF
 if { (eval echo configure:1818: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
@@ -1851,12 +1851,12 @@ else
 #line 1852 "configure"
 #include "confdefs.h"
 #include <stdio.h>
-int main()
+main()
 {
   FILE *f=fopen("conftestval", "w");
-  if (!f) return(1);
+  if (!f) exit(1);
   fprintf(f, "%d\n", sizeof(float));
-  return(0);
+  exit(0);
 }
 EOF
 if { (eval echo configure:1863: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
@@ -1897,12 +1897,12 @@ else
 #line 1898 "configure"
 #include "confdefs.h"
 #include <stdio.h>
-int main()
+main()
 {
   FILE *f=fopen("conftestval", "w");
-  if (!f) return(1);
+  if (!f) exit(1);
   fprintf(f, "%d\n", sizeof(char *));
-  return(0);
+  exit(0);
 }
 EOF
 if { (eval echo configure:1909: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
@@ -4899,17 +4899,28 @@ fi
 
 # Cache stuff - this will probably change
 
-# L2 Cache
-: ${L2_CACHELINE_BYTES="0"}
-: ${L2_CACHE_SIZE="0"}
+: ${CACHELINE_BYTES="0"}
+: ${CACHE_SIZE="0"}
 
 cat >> confdefs.h <<EOF
-#define CCTK_L2_CACHELINE_BYTES $L2_CACHELINE_BYTES
+#define CCTK_CACHELINE_BYTES $CACHELINE_BYTES
 EOF
 
 cat >> confdefs.h <<EOF
-#define CCTK_L2_CACHE_SIZE $L2_CACHE_SIZE
+#define CCTK_CACHE_SIZE $CACHE_SIZE
 EOF
+
+
+# DEPRECATED IN BETA 13
+cat >> confdefs.h <<EOF
+#define CCTK_L2_CACHELINE_BYTES $CACHELINE_BYTES
+EOF
+
+cat >> confdefs.h <<EOF
+#define CCTK_L2_CACHE_SIZE $CACHE_SIZE
+EOF
+
+
 
 
 #########################################################################

@@ -112,6 +112,10 @@
 
 /* Cache stuff */
 
+#undef CCTK_CACHELINE_BYTES
+#undef CCTK_CACHE_SIZE
+
+/* DEPRECATED IN b13 */
 #undef CCTK_L2_CACHELINE_BYTES
 #undef CCTK_L2_CACHE_SIZE
 

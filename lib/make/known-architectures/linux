@@ -272,19 +272,19 @@ else
 
 # Cache stuff
 
-  if test -z "$L2_CACHELINE_BYTES" ; then
+  if test -z "$CACHELINE_BYTES" ; then
     case "$host_cpu" in 
        i?86)
-        L2_CACHELINE_BYTES=32
-        echo "Setting L2_CACHELINE_BYTES to $L2_CACHELINE_BYTES"
+        CACHELINE_BYTES=32
+        echo "Setting CACHELINE_BYTES to $CACHELINE_BYTES"
         ;;
        ia64)
-        L2_CACHELINE_BYTES=128
-        echo "Setting L2_CACHELINE_BYTES to $L2_CACHELINE_BYTES"
+        CACHELINE_BYTES=128
+        echo "Setting CACHELINE_BYTES to $CACHELINE_BYTES"
         ;;
        powerpc)
-        L2_CACHELINE_BYTES=32
-        echo "Setting L2_CACHELINE_BYTES to $L2_CACHELINE_BYTES"
+        CACHELINE_BYTES=32
+        echo "Setting CACHELINE_BYTES to $CACHELINE_BYTES"
         ;;
        *)
         echo "Don't know cacheline size for cpu $host_cpu"
@@ -292,26 +292,26 @@ else
      esac
   fi
 
-  if test -z "$L2_CACHE_SIZE" ; then
+  if test -z "$CACHE_SIZE" ; then
 
     if test "x$cross_compiling" = "xno" ; then
       if test "$host_cpu" = "ia64"; then
         # for IA64 set it to 2MB for now (actually it's the L3 cache size)
-        L2_CACHE_SIZE=2*1024
+        CACHE_SIZE=2*1024
       else
-        L2_CACHE_SIZE="`cat /proc/cpuinfo | perl -nae 'if(m:cache\D+(\d+): && ! $dunnit) {print $1; $dunnit=1}'`"
-	if test -z "$L2_CACHE_SIZE"; then
-          L2_CACHE_SIZE=0
+        CACHE_SIZE="`cat /proc/cpuinfo | perl -nae 'if(m:cache\D+(\d+): && ! $dunnit) {print $1; $dunnit=1}'`"
+	if test -z "$CACHE_SIZE"; then
+          CACHE_SIZE=0
         fi
       fi
-      if test -n "$L2_CACHE_SIZE" ; then
-        L2_CACHE_SIZE="$L2_CACHE_SIZE*1024"
-        echo "Setting L2_CACHE_SIZE to $L2_CACHE_SIZE bytes"
+      if test -n "$CACHE_SIZE" ; then
+        CACHE_SIZE="$CACHE_SIZE*1024"
+        echo "Setting CACHE_SIZE to $CACHE_SIZE bytes"
       else
-        echo "Unable to determine L2 Cache size on this machine. "
+        echo "Unable to determine Cache size on this machine. "
       fi
     else
-      echo "Cross compiling - unable to determine L2 cache size" 
+      echo "Cross compiling - unable to determine cache size" 
     fi
   fi
 
