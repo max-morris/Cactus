@@ -5,7 +5,7 @@
    @desc 
    List of contributors to Cactus   
    @enddesc 
-   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/CONTRIBUTORS,v 1.4 2002-01-29 15:32:16 allen Exp $
+   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/CONTRIBUTORS,v 1.5 2003-06-05 16:42:53 rideout Exp $
  @@*/
 
 These people and organisations have contributed code, ideas 
@@ -26,6 +26,7 @@ Joan Masso
 Andre Merzky
 Mark Miller
 Thomas Radke
+David Rideout
 Erik Schnetter
 Ed Seidel
 John Shalf
