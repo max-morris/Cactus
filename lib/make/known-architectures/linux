@@ -316,7 +316,8 @@ else
         : ${C_OPTIMISE_FLAGS='-O3 -ip'}
       fi
       : ${C_DEPEND='$(CC) -M $(CPPFLAGS)'}
-      : ${C_WARN_FLAGS='-w2'}
+      # switch on '-w2' to also display remarks
+      # : ${C_WARN_FLAGS='-w2'}
       ;;
     sgicc)
       : ${C_OPTIMISE_FLAGS='-O3'}
