@@ -765,7 +765,7 @@ sub CreateCArgumentList
 
     for($level = 0; $level < $ntimelevels; $level++)
     {
-      push(@arglist, "PASS_REFERENCE($argument, $level)");
+      push(@arglist, "(CCTK_$type *)(PASS_REFERENCE($argument, $level))");
     }
 
     if($type =~ /^(CHAR|BYTE|INT|INT1|INT2|INT4|INT8|REAL|REAL4|REAL8|REAL16|COMPLEX|COMPLEX8|COMPLEX16|COMPLEX32)$/)
