@@ -7474,6 +7474,15 @@ copies of all the original table's key/value pairs.  The two tables
 are completely independent, \ie{} future changes to one won't affect
 the other.
 
+Note that if there are any \verb|CCTK_POINTER| and/or \verb|CCTK_FPOINTER|
+values in the table, they are ``shallow copied'', \ie{} the (pointer)
+values in the table are copied.  This results in the clone table's
+pointer values pointing to the same places as the original table's
+pointer values.  Be careful with this!  In particular,
+if you're using pointer values in the table to keep track of
+\verb|malloc()| memory, be careful not to \verb|free()|
+the same block of memory twice!
+
 Note that table iterators are {\em not\/} guaranteed to sequence
 through the original and clone tables in the same order.  (This
 is a special case of the more general ``non-guarantee'' in
