@@ -73,8 +73,10 @@ else
   while (<AT>) 
   {
     @t = split(' ');
-    foreach $T (@t) {
-      if (-d "arrangements${sep}$T${sep}test") 
+    foreach $T (@t) 
+    {
+      $number = 0;
+      if (-e "arrangements${sep}$T${sep}test${sep}") 
       {
 	$thisdir = `pwd`;
 	chop($thisdir);
@@ -83,9 +85,11 @@ else
 	{
 	  @testfiles = (@testfiles, $file);
 	  @testthorns = (@testthorns, $T);
+	  $number++;
 	}
 	chdir "$thisdir";
       }
+      @ntests{"$T"} = $number;
     }
   }
 }
@@ -99,7 +103,7 @@ foreach $t (@testfiles)
   open (IN, "<$file") || die "Can not open $file";
   while (<IN>)
   {
-    if (/^\s*\#\s*DESC(RIPTION)?\s*\"(.*)\"\s*$/i)
+    if (/^\s*\!\s*DESC(RIPTION)?\s*\"(.*)\"\s*$/i)
     {
       $testnames{$ntests} = $2
     }
@@ -127,6 +131,16 @@ if ($tests =~ /All/) {
 
   print "==================================================\n";
   print "All tests run for configuration $config\n\n";
+  print "Tested: \n";
+  foreach $thorn (keys %ntests)
+  {
+    if ($ntests{"$thorn"} > 0)
+    {
+      print "  $thorn [$ntests{\"$thorn\"}]\n";
+    }
+  }
+
+  print "\n";
   print "  Tests run -> $ntests\n";
   print "  Number passed -> $number_passed1\n";
   if ($number_passed2 > 0)
@@ -140,7 +154,7 @@ if ($tests =~ /All/) {
     print "\n  Tests failed:\n";
     for ($i=0; $i<$number_failed;$i++)
     {
-      print "    ".@which_failed[$i]."\n";
+      print "    ".@which_failed[$i]." (from $testthorns[$i])\n";
     }
   }
   if ($number_zerofiles > 0)
@@ -158,31 +172,41 @@ else
 
   $choice = test01;
   $ntests = 0;
-  foreach $t (@testfiles) {
+  foreach $t (@testfiles) 
+  {
     $ntests++;
     $t =~ m:([^${sep}]+).par$:;
-    $num = $1;
-    $inp{$num} = $t;
-    $testnum{$ntests} = $num;
+  $num = $1; 
+  $inp{$num} = $t;
+  $testnum{$ntests} = $num;
   }
-  while (!($choice =~ /^q/i) ) {
+  while (!($choice =~ /^q/i) ) 
+  {
     print "\n--- Menu ---\n";
     $sp = "     ";
     for ($i=1;$i<$ntests+1;$i++) {
-      print "[$i] ".@testthorns[$i-1]." $testnum{$i}: \n    \"$testnames{$i}\"\n";
+      print "[$i] ".@testthorns[$i-1]." $testnum{$i}: \n      \"$testnames{$i}\"\n";
     }
     print "\n  Enter number of test to run (quit to end) : ";
-   $choice = <STDIN>;
+    $choice = <STDIN>;
     $choice =~ s/\n//;
     $choice =~ s/\s//;
     print "\n";
     $ip = $inp{$testnum{$choice}};
     $thorn = @testthorns[$choice-1];
-    if (!($choice =~ m/quit/i)) 
+    if (!($choice =~ m/^q/i || $choice =~ m/^\s*$/)) 
     {
       &runtest($ip,$thorn,$choice);
     }
+    if (!($choice =~ m/^q/i))
+    {
+      print "  Hit return to continue ";
+      $continue = <STDIN>;
+    }
   }
+
+  print "\n";
+
 }
 
 sub runtest {
