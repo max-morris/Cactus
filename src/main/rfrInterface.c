@@ -13,7 +13,9 @@
 #include "GHExtensions.h"
 #include "Groups.h"
 #include "CactusrfrInterface.h"
+#include "rfr_constants.h"
 #include "CactusCommFunctions.h"
+#include "IOMethods.h"
 
 static char *rcsid = "$Header$";
 
@@ -189,20 +191,39 @@ int CCTK_rfrCommunicationOff(void *GH, int group)
   return retcode;
 }
 
-int CCTK_rfrTriggerable(int variable)
+ /*@@
+   @routine    CCTK_rfrTriggerable
+   @date       Sat March 6 1999
+   @author     Gabrielle Allen
+   @desc 
+   Returns true if this rfr entry point should be triggerable
+   for some event, otherwise returns false in which case none 
+   of the triggers stuff is done.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+   @var     entrypoint 
+   @vdesc   describes the entrypoint of the RFR
+   @vtype   int
+   @vio     in
+   @vcomment RFR entrypoint macros are in src/include/rfr_constants.h
+   @endvar 
+@@*/
+
+int CCTK_rfrTriggerable(int entrypoint)
 {
-  return 0;
+  if (entrypoint == CACTUS_ANALYSIS)
+    {
+      return 1;
+    }
+  else 
+    return 0;
 }
 
-int CCTK_rfrTriggerSaysGo(int variable)
-{
-  return 0;
-}
 
-int CCTK_rfrTriggerAction(void *GH, int group)
-{
-  return 0;
-}
 
  /*@@
    @routine    CCTK_rfrCallFunc
