@@ -738,7 +738,10 @@ is to do.
 
 \begin{itemize}
 
-\item {\tt gmake <CONF>} will create the default (uname) configuration
+\item {\tt gmake <CONF>} builds a configuration. If the configuation doesn't exist
+			it will create it
+
+\item {\tt gmake <CONF>-config} creates a new configuration or reconfigures an old one
 
 \item {\tt gmake <CONF>-clean} removes all object and dependancy files from
   a configuration 
