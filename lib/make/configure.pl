@@ -192,7 +192,7 @@ EOT
   while(<IN>)
   {
     $line = $_;
-    if($line =~ m:(_[\w_]*)+(TEST_COMMON)(_*):i)
+    if($line =~ m:(_[\w_]*)?(TEST_COMMON)(_*):i)
     {
       $prefix = $1;
       $name = $2;
