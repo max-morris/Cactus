@@ -169,7 +169,7 @@ sub ThornInfo
 
   if($inherits =~ /^[\s\t\n]*$/)
   {
-    $inherits = "(none)";
+    $inherits = " ";
   }
   else
   {
@@ -180,7 +180,7 @@ sub ThornInfo
 
   if($friends =~ /^[\s\t\n]*$/)
   {
-    $friends = "(none)";
+    $friends = " ";
   }
   else
   {
@@ -190,7 +190,7 @@ sub ThornInfo
   }
   if($shares =~ /^[\s\t\n]*$/)
   {
-    $shares = "(none)";
+    $shares = " ";
   }
   else
   {
@@ -199,7 +199,7 @@ sub ThornInfo
     $shares =~ s:[\s\t\n]+:,:g;
   }
 
-  return "Implements: $implementation Inherits: $inherits Friends: $friends Shares: $shares";
+  return "$implementation ($inherits) [$friends] {$shares}";
 }
 
     
