@@ -20,7 +20,10 @@
  @@*/
 
 void CCTK_SyncGroupI(cGH *GH, int gi) {
-  CCTK_SyncGroup(GH,CCTK_GroupName(gi));
+  char *groupname = CCTK_GroupName(gi);
+
+  CCTK_SyncGroup(GH,groupname);
+  free(groupname);
 }
 
 void FMODIFIER FORTRAN_NAME(CCTK_SyncGroupI)(cGH *GH, int *gi) {
