@@ -452,6 +452,7 @@ sub NewParamStuff
 
     push(@data, @creationdata);
 
+    push(@data, "  return 0;");
     push(@data, "}");
 
     push(@data, "");
@@ -460,6 +461,7 @@ sub NewParamStuff
 
     push(@data, @extensiondata);
 
+    push(@data, "  return 0;");
     push(@data, "}");
 
     $dataout = "";
