@@ -50,6 +50,7 @@ if test -z "$PETSC_ARCH_LIBS" ; then
     IRIX64) PETSC_ARCH_LIBS='fpe blas complib.sgimath' ;;
     linux)  PETSC_ARCH_LIBS='flapack fblas g2c mpich'  ;;
     linux_intel) PETSC_ARCH_LIBS='mkl_lapack mkl_def guide' ;;
+    linux64_intel) PETSC_ARCH_LIBS='mkl_lapack mkl guide' ;;
     rs6000_64) PETSC_ARCH_LIBS='essl' ;;
     *)           echo "  No PETSc support for architecture '$PETSC_ARCH' !"
                  echo '  Please file a bug report to cactusmaint@cactuscode.org.'
