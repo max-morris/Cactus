@@ -588,6 +588,8 @@ sub CreateParameterExtensionStuff
 
   foreach $parameter (split(' ',$rhparameter_db->{"\U$thorn\E SHARES \U$block\E variables"}))
   {
+    my $realname = $rhparameter_db->{"\U$thorn $parameter\E realname"};
+
     $n_ranges = $rhparameter_db->{"\U$thorn $parameter\E ranges"};
 
     for($range=1; $range <= $n_ranges; $range++)
@@ -606,7 +608,7 @@ sub CreateParameterExtensionStuff
       $quoted_range =~ s:\s*$::;
 
       push(@data, "  CCTKi_ParameterAddRange(\"$block\",");
-      push(@data, "                          \"$parameter\",");
+      push(@data, "                          \"$realname\",");
       push(@data, "                          \"$thorn\",");
       push(@data, "                          \"$quoted_range\",");
       push(@data, "                           $range_description);");
