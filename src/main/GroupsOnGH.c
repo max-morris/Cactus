@@ -78,7 +78,7 @@ void *CCTK_VarDataPtr(cGH *GH, int timelevel, char *varn)
   else
   {
      CCTK_Warn(1,__LINE__,__FILE__,"Cactus",
-	       "Invalid index in CCTK_VarDataPtr");
+               "Invalid index in CCTK_VarDataPtr");
   }
 
 #ifdef DEBUG_GROUPS
@@ -381,9 +381,9 @@ int CCTK_QueryGroupStorage(cGH *GH, const char *groupn)
 @@*/
 
 int CCTK_GrouplbndGI(cGH *cctkGH, 
-		     int dim,
-		     int *lbnd,
-		     int groupindex)
+                     int dim,
+                     int *lbnd,
+                     int groupindex)
 {
   int retval = 0;
   int ierr;
@@ -394,8 +394,8 @@ int CCTK_GrouplbndGI(cGH *cctkGH,
   {
     retval = -3;
     CCTK_VWarn(2,__LINE__,__FILE__,"Cactus",
-	       "CCTK_GrouplbndGI: Grid information called for scalar group %s",
-	       CCTK_GroupName(groupindex));
+               "CCTK_GrouplbndGI: Grid information called for scalar group %s",
+               CCTK_GroupName(groupindex));
   }
   else
   {
@@ -405,11 +405,11 @@ int CCTK_GrouplbndGI(cGH *cctkGH,
     {
       if (data.dim != dim)
       {
-	retval = -1;
-	usedim = (data.dim < dim) ? data.dim : dim;
-	CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
-		   "CCTK_GrouplbndGI: Incorrect dimension %d supplied, group %s has dimension %d, copying %d integers",
-		   dim,data.dim,usedim);
+        retval = -1;
+        usedim = (data.dim < dim) ? data.dim : dim;
+        CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
+                   "CCTK_GrouplbndGI: Incorrect dimension %d supplied, group %s has dimension %d, copying %d integers",
+                   dim,data.dim,usedim);
       }
       memcpy(lbnd,(const int *)data.lbnd,usedim*sizeof(int));
     }
@@ -417,7 +417,7 @@ int CCTK_GrouplbndGI(cGH *cctkGH,
     {
       retval = -2;
       CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
-		 "CCTK_GrouplbndGI: Data not available from driver thorn");
+                 "CCTK_GrouplbndGI: Data not available from driver thorn");
     }
   }
   return retval;
@@ -432,9 +432,9 @@ void CCTK_FCALL CCTK_FNAME(CCTK_GrouplbndGI)
 
 
 int CCTK_GrouplbndGN(cGH *cctkGH, 
-		     int dim,
-		     int *lbnd,
-		     const char *groupname)
+                     int dim,
+                     int *lbnd,
+                     const char *groupname)
 {
   int retval;
   int index = CCTK_GroupIndex(groupname);
@@ -447,7 +447,7 @@ int CCTK_GrouplbndGN(cGH *cctkGH,
   {
     retval = -4;
     CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
-	       "CCTK_GrouplbndGN: Group index not found for %s",groupname);
+               "CCTK_GrouplbndGN: Group index not found for %s",groupname);
   }
 
   return retval;
@@ -464,9 +464,9 @@ void CCTK_FCALL CCTK_FNAME(CCTK_GrouplbndGN)
 
 
 int CCTK_GrouplbndVI(cGH *cctkGH, 
-		     int dim,
-		     int *lbnd,
-		     int varindex)
+                     int dim,
+                     int *lbnd,
+                     int varindex)
 {
   int retval;
   int index = CCTK_GroupIndexFromVarI(varindex);
@@ -479,8 +479,8 @@ int CCTK_GrouplbndVI(cGH *cctkGH,
   {
     retval = -4;
     CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
-	       "CCTK_GrouplbndVI: Group index not found for variable index %d",
-	       varindex);
+               "CCTK_GrouplbndVI: Group index not found for variable index %d",
+               varindex);
   }
 
   return retval;
@@ -495,9 +495,9 @@ void CCTK_FCALL CCTK_FNAME(CCTK_GrouplbndVI)
 
 
 int CCTK_GrouplbndVN(cGH *cctkGH, 
-		     int dim,
-		     int *lbnd,
-		     const char *varname)
+                     int dim,
+                     int *lbnd,
+                     const char *varname)
 {
   int retval;
   int index = CCTK_GroupIndexFromVar(varname);
@@ -510,7 +510,7 @@ int CCTK_GrouplbndVN(cGH *cctkGH,
   {
     retval = -4;
     CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
-	       "CCTK_GrouplbndVN: Group index not found for %s",varname);
+               "CCTK_GrouplbndVN: Group index not found for %s",varname);
   }
 
   return retval;
@@ -546,9 +546,9 @@ void CCTK_FCALL CCTK_FNAME(CCTK_GrouplbndVN)
 @@*/
 
 int CCTK_GroupubndGI(cGH *cctkGH, 
-		     int dim,
-		     int *ubnd,
-		     int groupindex)
+                     int dim,
+                     int *ubnd,
+                     int groupindex)
 {
   int retval = 0;
   int ierr;
@@ -559,8 +559,8 @@ int CCTK_GroupubndGI(cGH *cctkGH,
   {
     retval = -3;
     CCTK_VWarn(2,__LINE__,__FILE__,"Cactus",
-	       "CCTK_GroupubndGI: Grid information called for scalar group %s",
-	       CCTK_GroupName(groupindex));
+               "CCTK_GroupubndGI: Grid information called for scalar group %s",
+               CCTK_GroupName(groupindex));
   }
   else
   {
@@ -570,11 +570,11 @@ int CCTK_GroupubndGI(cGH *cctkGH,
     {
       if (data.dim != dim)
       {
-	retval = -1;
-	usedim = (data.dim < dim) ? data.dim : dim;
-	CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
-		   "CCTK_GroupubndGI: Incorrect dimension %d supplied, group %s has dimension %d, copying %d integers",
-		   dim,data.dim,usedim);
+        retval = -1;
+        usedim = (data.dim < dim) ? data.dim : dim;
+        CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
+                   "CCTK_GroupubndGI: Incorrect dimension %d supplied, group %s has dimension %d, copying %d integers",
+                   dim,data.dim,usedim);
       }
       memcpy(ubnd,(const int *)data.ubnd,usedim*sizeof(int));
     }
@@ -582,7 +582,7 @@ int CCTK_GroupubndGI(cGH *cctkGH,
     {
       retval = -2;
       CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
-		 "CCTK_GroupubndGI: Data not available from driver thorn");
+                 "CCTK_GroupubndGI: Data not available from driver thorn");
     }
   }
   return retval;
@@ -597,9 +597,9 @@ void CCTK_FCALL CCTK_FNAME(CCTK_GroupubndGI)
 
 
 int CCTK_GroupubndGN(cGH *cctkGH, 
-		     int dim,
-		     int *ubnd,
-		     const char *groupname)
+                     int dim,
+                     int *ubnd,
+                     const char *groupname)
 {
   int retval;
   int index = CCTK_GroupIndex(groupname);
@@ -612,7 +612,7 @@ int CCTK_GroupubndGN(cGH *cctkGH,
   {
     retval = -4;
     CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
-	       "CCTK_GroupubndGN: Group index not found for %s",groupname);
+               "CCTK_GroupubndGN: Group index not found for %s",groupname);
   }
 
   return retval;
@@ -629,9 +629,9 @@ void CCTK_FCALL CCTK_FNAME(CCTK_GroupubndGN)
 
 
 int CCTK_GroupubndVI(cGH *cctkGH, 
-		     int dim,
-		     int *ubnd,
-		     int varindex)
+                     int dim,
+                     int *ubnd,
+                     int varindex)
 {
   int retval;
   int index = CCTK_GroupIndexFromVarI(varindex);
@@ -644,8 +644,8 @@ int CCTK_GroupubndVI(cGH *cctkGH,
   {
     retval = -4;
     CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
-	       "CCTK_GroupubndVI: Group index not found for variable index %d",
-	       varindex);
+               "CCTK_GroupubndVI: Group index not found for variable index %d",
+               varindex);
   }
 
   return retval;
@@ -660,9 +660,9 @@ void CCTK_FCALL CCTK_FNAME(CCTK_GroupubndVI)
 
 
 int CCTK_GroupubndVN(cGH *cctkGH, 
-		     int dim,
-		     int *ubnd,
-		     const char *varname)
+                     int dim,
+                     int *ubnd,
+                     const char *varname)
 {
   int retval;
   int index = CCTK_GroupIndexFromVar(varname);
@@ -675,7 +675,7 @@ int CCTK_GroupubndVN(cGH *cctkGH,
   {
     retval = -4;
     CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
-	       "CCTK_GroupubndVN: Group index not found for %s",varname);
+               "CCTK_GroupubndVN: Group index not found for %s",varname);
   }
 
   return retval;
@@ -711,9 +711,9 @@ void CCTK_FCALL CCTK_FNAME(CCTK_GroupubndVN)
 @@*/
 
 int CCTK_GrouplshGI(cGH *cctkGH, 
-		    int dim,
-		    int *lsh,
-		    int groupindex)
+                    int dim,
+                    int *lsh,
+                    int groupindex)
 {
   int retval = 0;
   int ierr;
@@ -724,8 +724,8 @@ int CCTK_GrouplshGI(cGH *cctkGH,
   {
     retval = -3;
     CCTK_VWarn(2,__LINE__,__FILE__,"Cactus",
-	       "CCTK_GrouplshGI: Grid information called for scalar group %s",
-	       CCTK_GroupName(groupindex));
+               "CCTK_GrouplshGI: Grid information called for scalar group %s",
+               CCTK_GroupName(groupindex));
   }
   else
   {
@@ -735,11 +735,11 @@ int CCTK_GrouplshGI(cGH *cctkGH,
     {
       if (data.dim != dim)
       {
-	retval = -1;
-	usedim = (data.dim < dim) ? data.dim : dim;
-	CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
-		   "CCTK_GrouplshGI: Incorrect dimension %d supplied, group %s has dimension %d, copying %d integers",
-		   dim,data.dim,usedim);
+        retval = -1;
+        usedim = (data.dim < dim) ? data.dim : dim;
+        CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
+                   "CCTK_GrouplshGI: Incorrect dimension %d supplied, group %s has dimension %d, copying %d integers",
+                   dim,data.dim,usedim);
       }
       memcpy(lsh,(const int *)data.lsh,usedim*sizeof(int));
     }
@@ -747,7 +747,7 @@ int CCTK_GrouplshGI(cGH *cctkGH,
     {
       retval = -2;
       CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
-		 "CCTK_GrouplshGI: Data not available from driver thorn");
+                 "CCTK_GrouplshGI: Data not available from driver thorn");
     }
   }
   return retval;
@@ -762,9 +762,9 @@ void CCTK_FCALL CCTK_FNAME(CCTK_GrouplshGI)
 
 
 int CCTK_GrouplshGN(cGH *cctkGH, 
-		     int dim,
-		     int *lsh,
-		     const char *groupname)
+                     int dim,
+                     int *lsh,
+                     const char *groupname)
 {
   int retval;
   int index = CCTK_GroupIndex(groupname);
@@ -777,7 +777,7 @@ int CCTK_GrouplshGN(cGH *cctkGH,
   {
     retval = -4;
     CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
-	       "CCTK_GrouplshGN: Group index not found for %s",groupname);
+               "CCTK_GrouplshGN: Group index not found for %s",groupname);
   }
 
   return retval;
@@ -794,9 +794,9 @@ void CCTK_FCALL CCTK_FNAME(CCTK_GrouplshGN)
 
 
 int CCTK_GrouplshVI(cGH *cctkGH, 
-		     int dim,
-		     int *lsh,
-		     int varindex)
+                     int dim,
+                     int *lsh,
+                     int varindex)
 {
   int retval;
   int index = CCTK_GroupIndexFromVarI(varindex);
@@ -809,8 +809,8 @@ int CCTK_GrouplshVI(cGH *cctkGH,
   {
     retval = -4;
     CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
-	       "CCTK_GrouplshVI: Group index not found for variable index %d",
-	       varindex);
+               "CCTK_GrouplshVI: Group index not found for variable index %d",
+               varindex);
   }
 
   return retval;
@@ -825,9 +825,9 @@ void CCTK_FCALL CCTK_FNAME(CCTK_GrouplshVI)
 
 
 int CCTK_GrouplshVN(cGH *cctkGH, 
-		     int dim,
-		     int *lsh,
-		     const char *varname)
+                     int dim,
+                     int *lsh,
+                     const char *varname)
 {
   int retval;
   int index = CCTK_GroupIndexFromVar(varname);
@@ -840,7 +840,7 @@ int CCTK_GrouplshVN(cGH *cctkGH,
   {
     retval = -4;
     CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
-	       "CCTK_GrouplshVN: Group index not found for %s",varname);
+               "CCTK_GrouplshVN: Group index not found for %s",varname);
   }
 
   return retval;
@@ -876,9 +876,9 @@ void CCTK_FCALL CCTK_FNAME(CCTK_GrouplshVN)
 @@*/
 
 int CCTK_GroupgshGI(cGH *cctkGH, 
-		    int dim,
-		    int *gsh,
-		    int groupindex)
+                    int dim,
+                    int *gsh,
+                    int groupindex)
 {
   int retval = 0;
   int ierr;
@@ -889,8 +889,8 @@ int CCTK_GroupgshGI(cGH *cctkGH,
   {
     retval = -3;
     CCTK_VWarn(2,__LINE__,__FILE__,"Cactus",
-	       "CCTK_GroupgshGI: Grid information called for scalar group %s",
-	       CCTK_GroupName(groupindex));
+               "CCTK_GroupgshGI: Grid information called for scalar group %s",
+               CCTK_GroupName(groupindex));
   }
   else
   {
@@ -900,11 +900,11 @@ int CCTK_GroupgshGI(cGH *cctkGH,
     {
       if (data.dim != dim)
       {
-	retval = -1;
-	usedim = (data.dim < dim) ? data.dim : dim;
-	CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
-		   "CCTK_GroupgshGI: Incorrect dimension %d supplied, group %s has dimension %d, copying %d integers",
-		   dim,data.dim,usedim);
+        retval = -1;
+        usedim = (data.dim < dim) ? data.dim : dim;
+        CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
+                   "CCTK_GroupgshGI: Incorrect dimension %d supplied, group %s has dimension %d, copying %d integers",
+                   dim,data.dim,usedim);
       }
       memcpy(gsh,(const int *)data.gsh,usedim*sizeof(int));
     }
@@ -912,7 +912,7 @@ int CCTK_GroupgshGI(cGH *cctkGH,
     {
       retval = -2;
       CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
-		 "CCTK_GroupgshGI: Data not available from driver thorn");
+                 "CCTK_GroupgshGI: Data not available from driver thorn");
     }
   }
   return retval;
@@ -927,9 +927,9 @@ void CCTK_FCALL CCTK_FNAME(CCTK_GroupgshGI)
 
 
 int CCTK_GroupgshGN(cGH *cctkGH, 
-		    int dim,
-		    int *gsh,
-		    const char *groupname)
+                    int dim,
+                    int *gsh,
+                    const char *groupname)
 {
   int retval;
   int index = CCTK_GroupIndex(groupname);
@@ -942,7 +942,7 @@ int CCTK_GroupgshGN(cGH *cctkGH,
   {
     retval = -4;
     CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
-	       "CCTK_GroupgshGN: Group index not found for %s",groupname);
+               "CCTK_GroupgshGN: Group index not found for %s",groupname);
   }
 
   return retval;
@@ -959,9 +959,9 @@ void CCTK_FCALL CCTK_FNAME(CCTK_GroupgshGN)
 
 
 int CCTK_GroupgshVI(cGH *cctkGH, 
-		    int dim,
-		    int *gsh,
-		    int varindex)
+                    int dim,
+                    int *gsh,
+                    int varindex)
 {
   int retval;
   int index = CCTK_GroupIndexFromVarI(varindex);
@@ -974,8 +974,8 @@ int CCTK_GroupgshVI(cGH *cctkGH,
   {
     retval = -4;
     CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
-	       "CCTK_GroupgshVI: Group index not found for variable index %d",
-	       varindex);
+               "CCTK_GroupgshVI: Group index not found for variable index %d",
+               varindex);
   }
 
   return retval;
@@ -990,9 +990,9 @@ void CCTK_FCALL CCTK_FNAME(CCTK_GroupgshVI)
 
 
 int CCTK_GroupgshVN(cGH *cctkGH, 
-		    int dim,
-		    int *gsh,
-		    const char *varname)
+                    int dim,
+                    int *gsh,
+                    const char *varname)
 {
   int retval;
   int index = CCTK_GroupIndexFromVar(varname);
@@ -1005,7 +1005,7 @@ int CCTK_GroupgshVN(cGH *cctkGH,
   {
     retval = -4;
     CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
-	       "CCTK_GroupgshVN: Group index not found for %s",varname);
+               "CCTK_GroupgshVN: Group index not found for %s",varname);
   }
 
   return retval;
@@ -1041,9 +1041,9 @@ void CCTK_FCALL CCTK_FNAME(CCTK_GroupgshVN)
 @@*/
 
 int CCTK_GroupnghostzonesGI(cGH *cctkGH, 
-			    int dim,
-			    int *nghostzones,
-			    int groupindex)
+                            int dim,
+                            int *nghostzones,
+                            int groupindex)
 {
   int retval = 0;
   int ierr;
@@ -1054,8 +1054,8 @@ int CCTK_GroupnghostzonesGI(cGH *cctkGH,
   {
     retval = -3;
     CCTK_VWarn(2,__LINE__,__FILE__,"Cactus",
-	       "CCTK_GroupnghostzonesGI: Grid information called for scalar group %s",
-	       CCTK_GroupName(groupindex));
+               "CCTK_GroupnghostzonesGI: Grid information called for scalar group %s",
+               CCTK_GroupName(groupindex));
   }
   else
   {
@@ -1065,11 +1065,11 @@ int CCTK_GroupnghostzonesGI(cGH *cctkGH,
     {
       if (data.dim != dim)
       {
-	retval = -1;
-	usedim = (data.dim < dim) ? data.dim : dim;
-	CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
-		   "CCTK_GroupnghostzonesGI: Incorrect dimension %d supplied, group %s has dimension %d, copying %d integers",
-		   dim,data.dim,usedim);
+        retval = -1;
+        usedim = (data.dim < dim) ? data.dim : dim;
+        CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
+                   "CCTK_GroupnghostzonesGI: Incorrect dimension %d supplied, group %s has dimension %d, copying %d integers",
+                   dim,data.dim,usedim);
       }
       memcpy(nghostzones,(const int *)data.nghostzones,usedim*sizeof(int));
     }
@@ -1077,7 +1077,7 @@ int CCTK_GroupnghostzonesGI(cGH *cctkGH,
     {
       retval = -2;
       CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
-		 "CCTK_GroupnghostzonesGI: Data not available from driver thorn");
+                 "CCTK_GroupnghostzonesGI: Data not available from driver thorn");
     }
   }
   return retval;
@@ -1092,9 +1092,9 @@ void CCTK_FCALL CCTK_FNAME(CCTK_GroupnghostzonesGI)
 
 
 int CCTK_GroupnghostzonesGN(cGH *cctkGH, 
-			    int dim,
-			    int *nghostzones,
-			    const char *groupname)
+                            int dim,
+                            int *nghostzones,
+                            const char *groupname)
 {
   int retval;
   int index = CCTK_GroupIndex(groupname);
@@ -1107,7 +1107,7 @@ int CCTK_GroupnghostzonesGN(cGH *cctkGH,
   {
     retval = -4;
     CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
-	       "CCTK_GroupnghostzonesGN: Group index not found for %s",groupname);
+               "CCTK_GroupnghostzonesGN: Group index not found for %s",groupname);
   }
 
   return retval;
@@ -1124,9 +1124,9 @@ void CCTK_FCALL CCTK_FNAME(CCTK_GroupnghostzonesGN)
 
 
 int CCTK_GroupnghostzonesVI(cGH *cctkGH, 
-			    int dim,
-			    int *nghostzones,
-			    int varindex)
+                            int dim,
+                            int *nghostzones,
+                            int varindex)
 {
   int retval;
   int index = CCTK_GroupIndexFromVarI(varindex);
@@ -1139,8 +1139,8 @@ int CCTK_GroupnghostzonesVI(cGH *cctkGH,
   {
     retval = -4;
     CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
-	       "CCTK_GroupnghostzonesVI: Group index not found for variable index %d",
-	       varindex);
+               "CCTK_GroupnghostzonesVI: Group index not found for variable index %d",
+               varindex);
   }
 
   return retval;
@@ -1155,9 +1155,9 @@ void CCTK_FCALL CCTK_FNAME(CCTK_GroupnghostzonesVI)
 
 
 int CCTK_GroupnghostzonesVN(cGH *cctkGH, 
-			    int dim,
-			    int *nghostzones,
-			    const char *varname)
+                            int dim,
+                            int *nghostzones,
+                            const char *varname)
 {
   int retval;
   int index = CCTK_GroupIndexFromVar(varname);
@@ -1170,7 +1170,7 @@ int CCTK_GroupnghostzonesVN(cGH *cctkGH,
   {
     retval = -4;
     CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
-	       "CCTK_GroupnghostzonesVN: Group index not found for %s",varname);
+               "CCTK_GroupnghostzonesVN: Group index not found for %s",varname);
   }
 
   return retval;
@@ -1205,9 +1205,9 @@ void CCTK_FCALL CCTK_FNAME(CCTK_GroupnghostzonesVN)
 @@*/
 
 int CCTK_GroupbboxGI(cGH *cctkGH, 
-		     int size,
-		     int *bbox,
-		     int groupindex)
+                     int size,
+                     int *bbox,
+                     int groupindex)
 {
   int retval = 0;
   int ierr;
@@ -1218,8 +1218,8 @@ int CCTK_GroupbboxGI(cGH *cctkGH,
   {
     retval = -3;
     CCTK_VWarn(2,__LINE__,__FILE__,"Cactus",
-	       "CCTK_GroupbboxGI: Grid information called for scalar group %s",
-	       CCTK_GroupName(groupindex));
+               "CCTK_GroupbboxGI: Grid information called for scalar group %s",
+               CCTK_GroupName(groupindex));
   }
   else
   {
@@ -1229,11 +1229,12 @@ int CCTK_GroupbboxGI(cGH *cctkGH,
     {
       if (2*data.dim != size)
       {
-	retval = -1;
-	usesize = (2*data.dim < size) ? 2*data.dim : size;
-	CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
-		   "CCTK_GroupbboxGI: Incorrect size %d supplied, group %s has dimension %d, copying %d integers",
-		   size,data.dim,usesize);
+        retval = -1;
+        usesize = (2*data.dim < size) ? 2*data.dim : size;
+        CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
+                   "CCTK_GroupbboxGI: Incorrect size %d supplied, "
+                   "group %s has dimension %d, copying %d integers",
+                   size, CCTK_GroupName (groupindex), data.dim, usesize);
       }
       memcpy(bbox,(const int *)data.bbox,usesize*sizeof(int));
     }
@@ -1241,7 +1242,7 @@ int CCTK_GroupbboxGI(cGH *cctkGH,
     {
       retval = -2;
       CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
-		 "CCTK_GroupbboxGI: Data not available from driver thorn");
+                 "CCTK_GroupbboxGI: Data not available from driver thorn");
     }
   }
   return retval;
@@ -1256,9 +1257,9 @@ void CCTK_FCALL CCTK_FNAME(CCTK_GroupbboxGI)
 
 
 int CCTK_GroupbboxGN(cGH *cctkGH, 
-		     int size,
-		     int *bbox,
-		     const char *groupname)
+                     int size,
+                     int *bbox,
+                     const char *groupname)
 {
   int retval;
   int index = CCTK_GroupIndex(groupname);
@@ -1271,7 +1272,7 @@ int CCTK_GroupbboxGN(cGH *cctkGH,
   {
     retval = -4;
     CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
-	       "CCTK_GroupbboxGN: Group index not found for %s",groupname);
+               "CCTK_GroupbboxGN: Group index not found for %s",groupname);
   }
 
   return retval;
@@ -1288,9 +1289,9 @@ void CCTK_FCALL CCTK_FNAME(CCTK_GroupbboxGN)
 
 
 int CCTK_GroupbboxVI(cGH *cctkGH, 
-		     int size,
-		     int *bbox,
-		     int varindex)
+                     int size,
+                     int *bbox,
+                     int varindex)
 {
   int retval;
   int index = CCTK_GroupIndexFromVarI(varindex);
@@ -1303,8 +1304,8 @@ int CCTK_GroupbboxVI(cGH *cctkGH,
   {
     retval = -4;
     CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
-	       "CCTK_GroupbboxVI: Group index not found for variable index %d",
-	       varindex);
+               "CCTK_GroupbboxVI: Group index not found for variable index %d",
+               varindex);
   }
 
   return retval;
@@ -1319,9 +1320,9 @@ void CCTK_FCALL CCTK_FNAME(CCTK_GroupbboxVI)
 
 
 int CCTK_GroupbboxVN(cGH *cctkGH, 
-		     int size,
-		     int *bbox,
-		     const char *varname)
+                     int size,
+                     int *bbox,
+                     const char *varname)
 {
   int retval;
   int index = CCTK_GroupIndexFromVar(varname);
@@ -1334,7 +1335,7 @@ int CCTK_GroupbboxVN(cGH *cctkGH,
   {
     retval = -4;
     CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
-	       "CCTK_GroupbboxVN: Group index not found for %s",varname);
+               "CCTK_GroupbboxVN: Group index not found for %s",varname);
   }
 
   return retval;
