@@ -17,6 +17,11 @@ LOGICAL cctk_show_rfr_tree "Show the order of the calling tree for the RFR"
 {
  : :: 
 } "yes"
+
+LOGICAL cctk_show_banners "Show any registered banners for the different thorns"
+{
+ : :: 
+} "yes"
  
 LOGICAL cctk_brief_output "Give only brief output"
 {
