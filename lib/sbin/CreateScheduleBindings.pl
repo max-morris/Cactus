@@ -559,6 +559,14 @@ sub ScheduleBlock
   $buffer .= $indent . scalar(@mem_groups) . ",                       /* Number of STORAGE  groups   */\n";
   $buffer .= $indent . scalar(@comm_groups) . ",                      /* Number of COMM     groups   */\n";
   $buffer .= $indent . scalar(@trigger_groups) . ",                   /* Number of TRIGGERS groups   */\n";
+  if (!scalar(@trigger_groups) && $rhschedule_db->{"\U$thorn\E BLOCK_$block WHERE"} eq "CCTK_ANALYSIS")
+  {
+    $mess = "Schedule error: Scheduling at ANALYSIS in $thorn with no TRIGGERS\n";
+    $help = "Functions or function groups scheduled in the ANALYSIS bin require TRIGGERS to be set.";
+    $help .= "Triggers are grid variables or grid variable group names which are examined by ";
+    $help .= "IO methods to decide whether of not execution should happen.";
+    &CST_error(0,$mess,$help,__LINE__,__FILE__);
+  }
   $buffer .= $indent . scalar(@sync_groups) . ",                      /* Number of SYNC     groups   */\n";
   $buffer .= $indent . scalar(@options) . ",                          /* Number of Options           */\n";
   $buffer .= $indent . scalar(@before_list) . ",                      /* Number of BEFORE  routines  */\n";
