@@ -6,7 +6,7 @@
 #    @desc 
 #   
 #    @enddesc
-#    @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/solaris,v 1.4 2000-06-21 13:02:27 allen Exp $
+#    @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/solaris,v 1.5 2000-11-03 19:16:17 tradke Exp $
 #  @@*/
 
 if test "$CCTK_CONFIG_STAGE" = "preferred-compilers" ; then
@@ -15,7 +15,8 @@ if test "$CCTK_CONFIG_STAGE" = "preferred-compilers" ; then
 
 else
 
-  : ${LIBS="socket nsl fsu fsumai fai sunmath m"}
+  : ${LIBS="socket nsl fsu fsumai fai sunmath m ucb"}
+  : ${LIBDIRS="/usr/ucb"}
 
 
   : ${C_DEPEND='$(CPP) -M $(CPPFLAGS)'}
