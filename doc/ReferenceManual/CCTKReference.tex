@@ -473,6 +473,26 @@ from Fortran.
   [\pageref{CCTK-NumIOMethods}]
   Returns the total number of I/O methods registered with the flesh
 
+\item[CCTK\_NumTimeLevels]
+  [\pageref{CCTK-NumTimeLevels}]
+  Returns the number of active timelevels from a group name (deprecated)
+
+\item[CCTK\_NumTimeLevelsGI]
+  [\pageref{CCTK-NumTimeLevels}]
+  Returns the number of active timelevels from a group index (deprecated)
+
+\item[CCTK\_NumTimeLevelsGN]
+  [\pageref{CCTK-NumTimeLevels}]
+  Returns the number of active timelevels from a group name (deprecated)
+
+\item[CCTK\_NumTimeLevelsVI]
+  [\pageref{CCTK-NumTimeLevels}]
+  Returns the number of active timelevels from a variable index (deprecated)
+
+\item[CCTK\_NumTimeLevelsVN]
+  [\pageref{CCTK-NumTimeLevels}]
+  Returns the number of active timelevels from a variable name (deprecated)
+
 \item[CCTK\_NumVars]
   [\pageref{CCTK-NumVars}]
   Get the number of grid variables compiled in the code
@@ -828,9 +848,9 @@ CCTK\_MaxTimeLevels}.
 Return the maximum number of active timelevels.
 \end{SeeAlso2}
 \begin{SeeAlso2}{CCTK\_NumTimeLevels}{CCTK-NumTimeLevels}
-Same as {\tt CCTK\_ActiveTimeLevels} (deprecated).
+Deprecated; same as {\tt CCTK\_ActiveTimeLevels}.
 \end{SeeAlso2}
-\begin{SeeAlso2}{CCTK\_GroupStorageDecrease}{CCTK-GroupStoragDecrease}
+\begin{SeeAlso2}{CCTK\_GroupStorageDecrease}{CCTK-GroupStorageDecrease}
 Base function, overloaded by the driver, which decreases the number of
 active timelevels, and also returns the number of active timelevels.
 \end{SeeAlso2}
@@ -841,7 +861,7 @@ active timelevels, and also returns the number of active timelevels.
 \end{SeeAlsoSection}
 
 \begin{ErrorSection}
-\begin{Error}{timelevels \textasciiless\ 0}
+\begin{Error}{timelevels $<$ 0}
 Illegal arguments given.
 \end{Error}
 \end{ErrorSection}
@@ -5347,7 +5367,131 @@ Returns the total number of IO methods registered with the flesh.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Groups.c
+
+
+% cctk_GroupsOnGH.h
+\begin{FunctionDescription}{CCTK\_NumTimeLevels}
+\label{CCTK-NumTimeLevels}
+Returns the number of active time levels for a group (deprecated).
+
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+#include "cctk.h"
+
+int timelevels = CCTK_NumTimeLevels(const cGH *cctkGH,
+                                    const char *groupname);
+
+int timelevels = CCTK_NumTimeLevelsGI(const cGH *cctkGH,
+                                      int groupindex);
+
+int timelevels = CCTK_NumTimeLevelsGN(const cGH *cctkGH,
+                                      const char *groupname);
+
+int timelevels = CCTK_NumTimeLevelsVI(const cGH *cctkGH,
+                                      int varindex);
+
+int timelevels = CCTK_NumTimeLevelsVN(const cGH *cctkGH,
+                                      const char *varname);
+\end{verbatim}
+\end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}
+#include "cctk.h"
+
+subroutine CCTK_NumTimeLevels(timelevels, cctkGH, groupname)
+   integer       timelevels
+   CCTK_POINTER  cctkGH
+   character*(*) groupname
+end subroutine CCTK_NumTimeLevels
+
+subroutine CCTK_NumTimeLevelsGI(timelevels, cctkGH, groupindex)
+   integer       timelevels
+   CCTK_POINTER  cctkGH
+   integer       groupindex
+end subroutine CCTK_NumTimeLevelsGI
+
+subroutine CCTK_NumTimeLevelsGN(timelevels, cctkGH, groupname)
+   integer       timelevels
+   CCTK_POINTER  cctkGH
+   character*(*) groupname
+end subroutine CCTK_NumTimeLevelsGN
+
+subroutine CCTK_NumTimeLevelsVI(timelevels, cctkGH, varindex)
+   integer       timelevels
+   CCTK_POINTER  cctkGH
+   integer       varindex
+end subroutine CCTK_NumTimeLevelsVI
+
+subroutine CCTK_NumTimeLevelsVN(timelevels, cctkGH, varname)
+   integer       timelevels
+   CCTK_POINTER  cctkGH
+   character*(*) varname
+end subroutine CCTK_NumTimeLevelsVN
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ResultSection}
+\begin{Result}{timelevels}
+The currently active number of timelevels for the group.
+\end{Result}
+\end{ResultSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{GH ($\ne$ NULL)}
+Pointer to a valid Cactus grid hierarchy.
+\end{Parameter}
+\begin{Parameter}{groupname}
+Name of the group.
+\end{Parameter}
+\begin{Parameter}{groupindex}
+Index of the group.
+\end{Parameter}
+\begin{Parameter}{varname}
+Name of a variable in the group.
+\end{Parameter}
+\begin{Parameter}{varindex}
+Index of a variable in the group.
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{Discussion}
+This function returns the number of timelevels for which storage has
+been activated, which is always equal to or less than the maximum
+number of timelevels which may have storage provided by {\tt
+CCTK\_MaxTimeLevels}.
+
+This function has been superceded by {\tt CCTK\_ActiveTimeLevels} and
+should not be used any more.
+\end{Discussion}
+
+\begin{SeeAlsoSection}
+\begin{SeeAlso2}{CCTK\_ActiveTimeLevels}{CCTK-ActiveTimeLevels}
+Same as {\tt CCTK\_ActiveTimeLevels} (deprecated).
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_MaxTimeLevels}{CCTK-MaxTimeLevels}
+Return the maximum number of active timelevels.
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_GroupStorageDecrease}{CCTK-GroupStoragDecrease}
+Base function, overloaded by the driver, which decreases the number of
+active timelevels, and also returns the number of active timelevels.
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_GroupStorageIncrease}{CCTK-GroupStorageIncrease}
+Base function, overloaded by the driver, which increases the number of
+active timelevels, and also returns the number of active timelevels.
+\end{SeeAlso2}
+\end{SeeAlsoSection}
+
+\begin{ErrorSection}
+\begin{Error}{timelevels \textasciiless\ 0}
+Illegal arguments given.
+\end{Error}
+\end{ErrorSection}
+
+%\begin{ExampleSection}
+%\end{ExampleSection}
+\end{FunctionDescription}
 
 
 
