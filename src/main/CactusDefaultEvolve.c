@@ -15,7 +15,9 @@
 
 #include "cctk_Flesh.h"
 #include "cctk_Parameter.h"
-
+#include "cctk_Groups.h"
+#include "cctk_WarnLevel.h"
+#include "cctk_Termination.h"
 #include "cctk_Main.h"
 #include "cctk_IO.h"
 
@@ -92,16 +94,8 @@ void TerminationStepper(cGH *GH) ;
 int CactusDefaultEvolve(tFleshConfig *config)
 {
   unsigned int convergence_level;
-  unsigned int iteration;
-
-  iteration = CCTK_MainLoopIndex();
-
-#ifdef DEBUG_CCTK
-  CCTK_PRINTSEPARATOR
-  printf("In CactusDefaultEvolve\n----------------------\n");
-  printf("  Initializing iteration = %d\n",iteration);
-  CCTK_PRINTSEPARATOR
-#endif
+  unsigned int iteration = CCTK_MainLoopIndex();
+  int var;
 
 #if 0
   CactusStartTimer(config->timer[OUTPUT]);
@@ -125,24 +119,29 @@ int CactusDefaultEvolve(tFleshConfig *config)
   /*
   CCTK_InfoHeader(config);
   */
-
-
+ 
   while (! DoneMainLoop (config->GH[0],config->GH[0]->cctk_time, iteration))
   {
 
-#ifdef DEBUG_CCTK
-    CCTK_PRINTSEPARATOR
-    printf("In CactusDefaultEvolve\n----------------------\n");
-    printf("  Advancing iteration %d = %d + 1\n",CCTK_MainLoopIndex+1,
-         iteration); 
-    CCTK_PRINTSEPARATOR
-#endif
-
-    iteration++;
-    CCTK_SetMainLoopIndex(iteration);
+    if (iteration == 0)
+    {
+      /* Can only use CactusDefaultEvolve with one timelevel */
+      for (var=0;var<CCTK_NumVars();var++)
+      {
+	if (CCTK_NumTimeLevelsFromVarI(var)>1)
+	{
+	  CCTK_VWarn(0,__LINE__,__FILE__,"Cactus",
+		     "Variable %s has multiple timelevels, default Cactus"
+		     " evolve routine cannot rotate",
+		     CCTK_VarName(var));
+	}
+      }
+    }
+    /* HERE ROTATE TIMELEVELS FOR ALL CONVERGENCE LEVELS */
+ 
+    iteration = CCTK_SetMainLoopIndex(++iteration);
 
     /* Step each convergence level */
-
 
     ForallConvLevels(CCTK_MainLoopIndex(), convergence_level)
     {
@@ -254,17 +253,11 @@ static int DoneMainLoop (cGH *GH, CCTK_REAL cctk_time, int iteration)
 static int StepGH(cGH *GH) 
 {
 
-  /* Advance GH->iteration BEFORE evolving */
-
+  GH->cctk_time = GH->cctk_time + GH->cctk_delta_time;
   GH->cctk_iteration++;
 
   CCTK_Traverse(GH, "CCTK_PRESTEP");
   CCTK_Traverse(GH, "CCTK_EVOL");
-
-  /* Advance GH->time AFTER evolving */
-
-  GH->cctk_time = GH->cctk_time + GH->cctk_delta_time;
-
   CCTK_Traverse(GH, "CCTK_POSTSTEP"); 
 
   return 0;
