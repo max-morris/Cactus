@@ -1539,7 +1539,7 @@ static int ParseOptionList(int n_items,
    0 - success
    @endreturndesc
 @@*/
-int InitialiseOptionList(t_attribute *attribute)
+static int InitialiseOptionList(t_attribute *attribute)
 {
   attribute->FunctionData.global = 0;
 
