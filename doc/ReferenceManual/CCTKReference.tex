@@ -507,7 +507,7 @@ from Fortran.
 
 \item[\code{CCTK\_PointerTo}] [\pageref{CCTK-PointerTo}]
   Returns the address of a variable passed in by reference
-  from a fortran routine
+  from a Fortran routine
 
 \item[\code{CCTK\_PrintGroup}] [\pageref{CCTK-PrintGroup}]
   Prints a group name from its index
@@ -1861,7 +1861,7 @@ It never returns to the caller.
 \showargs
 \begin{params}
 \parameter{nchar}{The number of characters in the C string, not counting the null terminator}
-\parameter{strout}{The fortran string which on output contains the C string as the first nchar characters}
+\parameter{strout}{The Fortran string which on output contains the C string as the first nchar characters}
 \parameter{strin}{The (pointer to the) C string containing the null terminator}
 \end{params}
 \begin{discussion}
@@ -5280,14 +5280,14 @@ a CCTK\_POINTER type variable which is initialized with a C-style NULL pointer
 Fortran doesn't know the concept of pointers so problems arise when a C function
 is to be called which expects a pointer as one (or more) of it(s) argument(s).
 
-In order to pass a NULL pointer from fortran to C, a local CCTK\_POINTER variable should be used which has been initialized before with \code{CCTK\_NullPointer}.
+In order to pass a NULL pointer from Fortran to C, a local CCTK\_POINTER variable should be used which has been initialized before with \code{CCTK\_NullPointer}.
 
-Note that there is only a fortran wrapper available for \code{CCTK\_NullPointer}.
+Note that there is only a Fortran wrapper available for \code{CCTK\_NullPointer}.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
 \begin{SeeAlso}{CCTK\_PointerTo()}
-Returns the address of a variable passed in by reference from a fortran routine.
+Returns the address of a variable passed in by reference from a Fortran routine.
 \end{SeeAlso}
 \end{SeeAlsoSection}
 
@@ -6341,7 +6341,7 @@ checked.
 % util/Misc.c
 \begin{FunctionDescription}{CCTK\_PointerTo}%%%
 \label{CCTK-PointerTo}
-Returns the address of a variable passed in by reference from a fortran routine.
+Returns the address of a variable passed in by reference from a Fortran routine.
 
 \begin{SynopsisSection}
 \begin{Synopsis}{Fortran}
@@ -6363,7 +6363,7 @@ the address of variable {\it var}
 
 \begin{ParameterSection}
 \begin{Parameter}{var}
-variable in the fortran context from which to take the address
+variable in the Fortran context from which to take the address
 \end{Parameter}
 \end{ParameterSection}
 
@@ -6371,10 +6371,10 @@ variable in the fortran context from which to take the address
 Fortran doesn't know the concept of pointers so problems arise when a C function
 is to be called which expects a pointer as one (or more) of it(s) argument(s).
 
-To obtain the pointer to a variable in fortran, one can use \code{CCTK\_PointerTo()} which takes the variable itself as a single argument and returns the
+To obtain the pointer to a variable in Fortran, one can use \code{CCTK\_PointerTo()} which takes the variable itself as a single argument and returns the
 pointer to it.
 
-Note that there is only a fortran wrapper available for \code{CCTK\_PointerTo}.
+Note that there is only a Fortran wrapper available for \code{CCTK\_PointerTo}.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
