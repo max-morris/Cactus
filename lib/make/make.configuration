@@ -105,7 +105,7 @@ $(CONFIG)/cctki_version.h: $(CCTK_HOME)/Makefile
 	echo "#define CCTK_VERSION_MINOR $(CCTK_VERSION_MINOR)" >> $@
 	echo "#define CCTK_VERSION_OTHER $(CCTK_VERSION_OTHER)" >> $@
 	echo "#define CCTK_VERSION       $(CCTK_VERSION)" >> $@
-	echo "#endif /* _CCTKI_VERSION_H_*/" >> $@
+	echo "#endif /* _CCTKI_VERSION_H_ */" >> $@
 
 # Build a thorn library
 # Libraries go into the appropriate library directory
