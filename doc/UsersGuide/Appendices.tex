@@ -743,6 +743,57 @@ in the different timebins which are executed by the Cactus Flesh. This chapter
 describes these standard timebins, and shows the flow of program execution
 through them.
 
+Scheduled functions must be declared as
+\begin{Lentry}
+
+\item[In C:]
+\begin{verbatim}
+#include "cctk_Arguments.h"
+void MyFunction (CCTK_ARGUMENTS);
+\end{verbatim}
+
+\item[In C++:]
+\begin{verbatim}
+#include "cctk_Arguments.h"
+extern "C" void MyFunction (CCTK_ARGUMENTS);
+\end{verbatim}
+
+\item[In Fortran:]
+\begin{verbatim}
+#include "cctk_Arguments.h"
+subroutine MyFunction (CCTK_ARGUMENTS)
+   DECLARE_CCTK_ARGUMENTS
+end
+\end{verbatim}
+\end{Lentry}
+
+Exceptions are the functions that are scheduled in the bins {\tt
+CCTK\_STARTUP} and {\tt CCTK\_SHUTDOWN}.  They do not take arguments,
+but they return an error indicator.  They must be declared as
+\begin{Lentry}
+
+\item[In C:]
+\begin{verbatim}
+int MyFunction (void);
+\end{verbatim}
+
+\item[In C++]
+\begin{verbatim}
+extern "C" int MyFunction ();
+\end{verbatim}
+
+\item[In Fortran:]
+\begin{verbatim}
+integer function MyFunction ()
+end
+\end{verbatim}
+\end{Lentry}
+
+The return value is unused, and might in the future be used to
+indicate whether an error occurred.  You should return 0.
+
+
+
 \begin{Lentry}
 
 \item[{\tt CCTK\_STARTUP}] 
