@@ -8,6 +8,8 @@
    @version $Header$
  @@*/
 
+#include "cctk_Config.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -15,10 +17,13 @@
 #include "SKBinTree.h"
 
 #include "cctk_Flesh.h"
-#include "cctk_Config.h"
+#include "cctk_FortranString.h"
+
+#include "util_String.h"
+#include "util_StringList.h"
+
 #include "cctk_ActiveThorns.h"
 #include "cctki_ActiveThorns.h"
-#include "cctk_FortranString.h"
 
 static const char *rcsid = "$Header$";
 
@@ -39,13 +44,24 @@ struct IMPLEMENTATION
   int active;
   t_sktree *thornlist;
   char *activating_thorn;
+  
+  int n_ancestors;
+  char **ancestors;
+
+  int n_friends;
+  char **friends;
 };
 
 /********************************************************************
  ********************* Local Routine Prototypes *********************
  ********************************************************************/
 
-static int RegisterImp(const char *name, const char *thorn);
+static int RegisterImp(const char *name, 
+                       const char *thorn,
+                       const char **ancestors,
+                       const char **friends);
+
+static int CompareStrings(const void *string1, const void *string2);
 
 /********************************************************************
  ********************* Other Routine Prototypes *********************
@@ -77,16 +93,9 @@ static int n_imps   = 0;
    @history 
  
    @endhistory 
-   @var     name
-   @vdesc   Thorn name
-   @vtype   const char *
-   @vio     in
-   @vcomment 
- 
-   @endvar 
-   @var     imp
-   @vdesc   Implementation name
-   @vtype   const char *
+   @var     attributes
+   @vdesc   Thorn attributes
+   @vtype   const struct iAttrributeList
    @vio     in
    @vcomment 
  
@@ -113,6 +122,9 @@ int CCTKi_RegisterThorn(const struct iAttributeList *attributes)
 
   const char *name;
   const char *imp;
+
+  const char **ancestors;
+  const char **friends;
 
 #if 0
   for(i=0; attributes[i].attribute; i++)
@@ -159,11 +171,11 @@ int CCTKi_RegisterThorn(const struct iAttributeList *attributes)
     }
     else if(!strcmp(attributes[i].attribute, "ancestors"))
     {
-      ;
+      ancestors = attributes[i].AttributeData.StringList;
     }
     else if(!strcmp(attributes[i].attribute, "friends"))
     {
-      ;
+      friends = attributes[i].AttributeData.StringList;
     }
     else
     {
@@ -204,7 +216,7 @@ int CCTKi_RegisterThorn(const struct iAttributeList *attributes)
         {
 
           /* Register the implementation */
-          RegisterImp(imp, name);
+          RegisterImp(imp, name, ancestors, friends);
 
           retval = 0;
         }
@@ -976,6 +988,108 @@ const char *CCTK_CompiledImplementation(int index)
   return ret_val;
 }
 
+int ActivateThorns(const char *thornlist)
+{
+  int retval;
+  char *local_list;
+  uStringList *required_thorns;
+  uStringList *requested_imps;
+  uStringList *required_imps;
+  char *token;
+  const char *this_imp;
+  int n_warnings;
+  int n_errors;
+  int result;
+  t_sktree *impnode;
+  t_sktree *temp;
+  
+  struct IMPLEMENTATION *imp;
+  int i;
+
+  local_list = Util_Strdup(thornlist);
+
+  required_thorns  = Util_StringListCreate(n_thorns);
+  required_imps    = Util_StringListCreate(n_imps);
+  requested_imps   = Util_StringListCreate(n_imps);
+
+  printf("Activation requested for ->%s<-...", thornlist);
+
+  n_errors = 0;
+  n_warnings = 0;
+
+  token = strtok(local_list, " \t\n");
+  while(token)
+  {
+    if(CCTK_IsThornActive(token))
+    {
+      printf("Warning thorn %s already active\n", token);
+      n_warnings++;
+    }
+    else if(! (this_imp = CCTK_ThornImplementation(token)))
+    {
+      printf("Error thorn %s doesn't exist\n", token);
+      n_errors++;
+    }
+    else if(CCTK_IsImplementationActive(this_imp))
+    {
+      printf("Error thorn %s provides implementation %s - already active\n", token, this_imp);
+      n_errors++;
+    }
+    else if(! Util_StringListAdd(required_thorns,token))
+    {
+      printf("Warning thorn %s already scheduled for activation\n", token);
+      n_warnings++;
+    }
+    else if(! Util_StringListAdd(requested_imps,this_imp))
+    {
+      printf("Error thorn %s provides implementation %s which is already scheduled for activation\n", token, this_imp);
+      n_errors++;
+    }
+    else if(! (impnode = SKTreeFindNode(implist, this_imp)))
+    {
+      /* Ok, this thorn exists, and isn't active, a duplicate, or provide the same imp as another thorn 
+       * which is active or has just been schedule for activation, so can get on with cataloging 
+       * dependencies.
+       */
+      
+      imp = (struct IMPLEMENTATION *)(impnode->data);
+
+      /* Look at ancestors */
+      for(i=0; imp->ancestors[i]; i++)
+      {
+        if(!CCTK_IsImplementationActive(imp->ancestors[i]))
+        {
+          /* We need this imp */
+          Util_StringListAdd(required_imps, this_imp);
+        }
+      }
+      
+      /* Look at friends */
+      for(i=0; imp->friends[i]; i++)
+      {
+        if(!CCTK_IsImplementationActive(imp->friends[i]))
+        {
+          /* We need this imp */
+          Util_StringListAdd(required_imps, this_imp);
+        }
+      }
+    }
+    else
+    {
+      CCTK_WARN(0, "Internal error :- please report this to cactusmaint@cactuscode.org");
+    }   
+  }
+
+  /* No longer need the local list */
+  free(local_list);
+
+  
+
+  return retval;
+}
+  
+    
+  
 /********************************************************************
  *********************     Local Routines   *************************
  ********************************************************************/
@@ -1006,6 +1120,20 @@ const char *CCTK_CompiledImplementation(int index)
    @vcomment 
  
    @endvar 
+   @var     ancestors
+   @vdesc   ancestors of the implementation
+   @vtype   const char **
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     friends
+   @vdesc   friends of the implementation
+   @vtype   const char **
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
 
    @returntype int
    @returndesc 
@@ -1015,9 +1143,13 @@ const char *CCTK_CompiledImplementation(int index)
    -3 - failed to store implementtion in tree
    @endreturndesc
 @@*/
-static int RegisterImp(const char *name, const char *thorn)
+static int RegisterImp(const char *name, 
+                       const char *thorn,
+                       const char **ancestors,
+                       const char **friends)
 {
   int retval;
+  int count;
   t_sktree *node;
   t_sktree *temp;
 
@@ -1053,6 +1185,44 @@ static int RegisterImp(const char *name, const char *thorn)
       {
         retval = -3;
       }
+
+      if(!retval)
+      {
+        /* Count the ancestors */
+        for(count=0; ancestors[count];count++);
+
+        imp->n_ancestors = count;
+        imp->ancestors = (char **)malloc((count+1)*sizeof(char *));
+        
+        if(imp->ancestors)
+        {
+          for(count=0; ancestors[count];count++)
+          {
+            imp->ancestors[count] = Util_Strdup(ancestors[count]);
+          }
+          imp->ancestors[count] = NULL;
+
+          qsort(imp->ancestors, count, sizeof(char *), CompareStrings);
+ 
+        }
+
+        /* Count the friends */
+        for(count=0; friends[count];count++);
+
+        imp->n_friends = count;
+        imp->friends = (char **)malloc((count+1)*sizeof(char *));
+        
+        if(imp->friends)
+        {
+          for(count=0; friends[count];count++)
+          {
+            imp->friends[count] = Util_Strdup(friends[count]);
+          }
+          imp->friends[count] = NULL;
+
+          qsort(imp->friends, count, sizeof(char *), CompareStrings);
+        }
+      }            
     }
     else
     {
@@ -1070,3 +1240,21 @@ static int RegisterImp(const char *name, const char *thorn)
   return retval;
 }
 
+/*@@
+   @routine    CompareStrings
+   @date       Thu Sep 14 18:57:52 2000
+   @author     Tom Goodale
+   @desc
+   Case independent string comparison to pass to qsort.
+   @enddesc
+   @calls
+   @calledby
+   @history
+
+   @endhistory
+
+   @@*/
+static int CompareStrings(const void *string1, const void *string2)
+{
+  return Util_StrCmpi(*(const char **)string1, *(const char **)string2);
+}
