@@ -13,13 +13,13 @@
 # @@*/
 
 %.o: $(SRCDIR)/%.c
-	$(CC) $(CFLAGS) -c -o $@ $< $(addprefix -I, $(INC_DIRS))
+	$(CC) $(CFLAGS) -c -o $@ $< $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DCCODE
 
 %.o: $(SRCDIR)/%.cc
-	$(CXX) $(CXXFLAGS) -c -o $@ $< $(addprefix -I, $(INC_DIRS))
+	$(CXX) $(CXXFLAGS) -c -o $@ $< $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DCCODE
 
 %.o: $(SRCDIR)/%.F77
-	$(F77) $(F77FLAGS) -c -o $@ $< $(addprefix -I, $(INC_DIRS))
+	$(F77) $(F77FLAGS) -c -o $@ $< $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DFCODE
 
 %.o: $(SRCDIR)/%.F
-	$(F90) $(F90FLAGS) -c -o $@ $< $(addprefix -I, $(INC_DIRS))
+	$(F90) $(F90FLAGS) -c -o $@ $< $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DFCODE

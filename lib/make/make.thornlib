@@ -9,13 +9,15 @@
 # @@*/
 
 # Silence all but designated output
-.SILENT:
+#.SILENT:
 
 # Include the main make definitions for this configuration
 include $(CONFIG)/make.config.defn
 
 # Add appropriate include lines
-INC_DIRS += $(SRCDIR) $(SRCDIR)/include $(CONFIG) $(CCTK_HOME)/src/include
+INC_DIRS += $(SRCDIR) $(SRCDIR)/include $(CONFIG) $(TOP)/bindings/include $(CCTK_HOME)/src/include
+
+EXTRA_DEFINES += THORN_IS_$(THORN) 
 
 # Define some make variables
 PRE_WRAPPER = make.pre
@@ -63,7 +65,7 @@ include $(CONFIG)/make.config.rules
 
 $(addsuffix .check, $(SUBDIRS)) :
 	if [ ! -d $(basename $@) ] ; then $(MKDIR) $(basename $@) ; fi
-	cd $(basename $@) ; $(MAKE) TOP=$(TOP) CONFIG=$(CONFIG) SRCDIR=$(SRCDIR)/$(basename $@) -f $(MAKE_DIR)/make.subdir
+	cd $(basename $@) ; $(MAKE) TOP=$(TOP) CONFIG=$(CONFIG) SRCDIR=$(SRCDIR)/$(basename $@) THORN=$(THORN) -f $(MAKE_DIR)/make.subdir
 
 # This one puts a file containing identity info into the build subdirectory
 $(addsuffix /make.identity, $(SUBDIRS)):

@@ -9,13 +9,15 @@
 # @@*/
 
 # Silence all but designated output
-.SILENT:
+#.SILENT:
 
 # Include the main make definitions for this configuration
 include $(CONFIG)/make.config.defn
 
 # Add appropriate include lines
-INC_DIRS += $(SRCDIR) $(SRCDIR)/include $(CONFIG) $(CCTK_HOME)/src/include
+INC_DIRS += $(SRCDIR) $(SRCDIR)/include $(CONFIG) $(TOP)/bindings/include $(CCTK_HOME)/src/include
+
+EXTRA_DEFINES += THORN_IS_$(THORN) 
 
 # Include the subdirectories local include data
 include $(SRCDIR)/make.code.defn

@@ -9,7 +9,7 @@
 # @@*/
 
 # Silence all but designated output
-.SILENT:
+.SILENT: 
 
 # Some configuration variables
 CONFIG = $(TOP)/config-data
@@ -64,7 +64,7 @@ $(CCTK_LIBDIR)/lib%.a: update
 	cd $(BUILD_DIR)/$$thorn_name ; \
 	if [ -r "$$src_dir/Makefile" ] ; then  make_file=$$src_dir/Makefile ; \
 	                  else make_file=$(MAKE_DIR)/make.thornlib ; fi ; \
-	$(MAKE) TOP=$(TOP) SRCDIR=$$src_dir CONFIG=$(CONFIG) NAME=$@ -f $$make_file
+	$(MAKE) TOP=$(TOP) SRCDIR=$$src_dir CONFIG=$(CONFIG) NAME=$@ THORN=$$thorn_name -f $$make_file 
 	@echo $(DIVIDER)
 
 
