@@ -22,7 +22,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Required software}
-\label{sec:reqo}
+\label{sec:required_software}
 
 In general, Cactus \emph{requires} the following set of software to function
 in single processor mode. Please refer to the architecture section
@@ -91,8 +91,8 @@ it is useful to install
 \item[{\tt ctags/etags}] These programs enable you browse through the
   calling structure of a program by help of a function call database.
   Navigating the Flesh and arrangements becomes very easy. Emacs and
-  {\tt vi} both support this method. See \ref{sec:usta} for a short guide
-  to ``tags''.
+  {\tt vi} both support this method. See \ref{sec:Appendix.tags} for a short
+  guide to tags.
 \end{Lentry}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -112,7 +112,8 @@ be found at
 \begin{Lentry}
 \item[\textbf{SGI}] 32 or 64 bit running Irix.
 \item[\textbf{Cray T3E}]
-\item[\textbf{Compaq Alpha}]  Compaq operating system and Linux.  Single processor
+\item[\textbf{Compaq Alpha}]  Compaq operating system and Linux. 
+  Single processor
   mode and MPI supported. The Alphas need to have the GNU C/C++
   compilers installed.
 \item[\textbf{IA32}] running Linux or Windows 2000/NT.  Single
@@ -158,7 +159,7 @@ The following machines are only partially supported
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Checkout procedure}
-\label{sec:chpr}
+\label{sec:checkout}
 
 Cactus is distributed, extended, and maintained using the free CVS
 software (\textit{Concurrent Versions System}: \url{http://www.cvshome.org}).
@@ -169,9 +170,9 @@ main CVS site, and from a growing number of user sites, we provide a
 script, described below,  on our web site for checking out the Flesh and thorns.
 The Cactus web site also provides a form interface for direct download.
 
-CVS experts who want to use raw CVS commands are directed to Appendix~\ref{sec:uscv}
-for full instructions. For CVS novices, we also summarize in this
-appendix basic CVS commands.
+CVS experts who want to use raw CVS commands are directed to
+Appendix~\ref{sec:Appendix.cvs} for full instructions. For CVS novices,
+we also summarize in this appendix basic CVS commands.
 
 The space required for an installation depends on the arrangements and
 thorns used. The Flesh on its own requires less than 5 MB.
@@ -184,11 +185,11 @@ from the web site at
 The
 script takes as an argument the name of a file containing a \textit{ThornList},
 that is a list of thorns with the syntax
-{\tt
-\begin{verbatim}
-<arrangement name>/<thorn name>
-\end{verbatim}
-}
+
+\begin{alltt}
+<\var{arrangement name}>/<\var{thorn name}>
+\end{alltt}
+
 If no filename is given, only the Flesh is checked out.
 Optional directives in the ThornList indicate which CVS repository to fetch
 thorns from. The default is to take the thorns from the same repository as
@@ -241,7 +242,7 @@ scratch/cactus\_configs Cactus/configs/}) to the Cactus directory, if your
 filesystem supports soft links.
 \end{itemize}
 
-Configurations are described in detail in section \ref{sec:coaco}.
+Configurations are described in detail in section \ref{sec:configurations}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -254,7 +255,7 @@ system published under the GNU license. We have set up a web interface at
 of problem reports.
 
 A description of the GNATS categories which we use is provided in the appendix
-\ref{sec:usgn}.
+\ref{sec:Appendix.gnats}.
 
 % OK, there is NO emacs at the moment, because the GNATS setup is really stupid
 % and sendpr handles like c.... besides the fact, that the user has to go
@@ -299,7 +300,7 @@ will compile the code.  The first time it generates a compile
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Creating a configuration}
-\label{sec:coaco}
+\label{sec:configurations}
 
 At its simplest, this is done by {\tt gmake <config>}\footnote
 %
@@ -354,7 +355,7 @@ configuration file or the command line will overwrite completely the
 default values.
 
 \subsection{Available options}
-\label{Compilation-Available_Options}
+\label{subsec:Compilation-Available_Options}
 
 There is a plethora of available options.
 
@@ -370,7 +371,7 @@ is automatically created, and the users prompted for any changes.
 
 \item [{\tt THORNLIST}] Name of file containing a list of thorns with
 the syntax {\tt <arrangement name>/<thorn name>}, lines beginning with
-{\tt \#} or {\tt !} are ignored.
+\verb|#| or {\tt !} are ignored.
 
 \item [{\tt THORNLIST\_DIR}] Location of directory containing {\tt THORNLIST}.
 This defaults to the current working directory.
@@ -438,14 +439,14 @@ Whether error messages and debug information in the compiled C and C++
 files should point to the original source file or to an internal file
 created by Cactus.  The only options available are {\tt yes} and {\tt
 no}, the default is {\tt yes}.  Set this to {\tt no} if your compiler
-reports error messages about unrecognised {\tt #} directives.
+reports error messages about unrecognised \verb|#| directives.
 
 \item [{\tt F\_LINE\_DIRECTIVES}]
 Whether error messages and debug information in the compiled Fortran
 files should point to the original source file or to an internal file
 created by Cactus.  The only options available are {\tt yes} and {\tt
 no}, the default is {\tt yes}.  Set this to {\tt no} if your compiler
-reports error messages about unrecognised {\tt #} directives.
+reports error messages about unrecognised \verb|#| directives.
 
 \item [{\tt DEBUG}]
 * Specifies what type of debug mode should be used,
@@ -547,7 +548,7 @@ values will be valid on all architectures.
 \item{Extra packages}
 
 Compiling with extra packages is described fully in
-Section \ref{sec:cowiexpa},
+Section \ref{subsec:cowiexpa},
 which should be consulted for the full range of configuration options.
 
 \begin{Lentry}
@@ -584,10 +585,11 @@ commands that it is executing.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsection{Compiling with extra packages}
-\label{sec:cowiexpa}
+\label{subsec:cowiexpa}
 
 
 \subsubsection{MPI: Message Passing Interface}
+\label{subsubsec:Compiling-MPI}
 
 The \textit{Message Passing Interface} (MPI) provides inter-processor
 communication. It can either be implemented natively on a machine
@@ -691,6 +693,7 @@ Note that the searches for libraries etc. mentioned above use the
 locations given in the files in {\tt lib/make/extras/MPI}.
 
 \subsubsection{HDF5: Hierarchical Data Format version 5}
+\label{subsec:hdf5}
 
 To compile with HDF5 (\url{http://hdf.ncsa.uiuc.edu/whatishdf5.html}),
 the configure options are
@@ -910,7 +913,7 @@ by configure and the {\tt ThornList} file remain.
 \item [{\tt gmake <config>-rebuild}] rebuilds a configuration (reruns the CST).
 
 \item [{\tt gmake <config>-testsuite}] runs the test programs associated with
- each thorn in the configuration. See section \ref{sec:te} for information about the
+ each thorn in the configuration. See section \ref{sec:testing} for information about the
  testsuite mechanism.
 
 \item [{\tt gmake <config>-thornlist}] regenerates the {\tt ThornList} for a configuration.
@@ -943,15 +946,15 @@ you will be shown a list of all the thorns in your arrangement
 directory, and asked if you with to edit them. You can regenerate
 this list at anytime by typing
 
-\begin{verbatim}
-gmake <config>-thornlist
-\end{verbatim}
+\begin{alltt}
+gmake <\var{config}>-thornlist
+\end{alltt}
 
 or you can edit it using
 
-\begin{verbatim}
-gmake <config>-editthorns
-\end{verbatim}
+\begin{alltt}
+gmake <\var{config}>-editthorns
+\end{alltt}
 
 Instead of using the editor to specify the thorns you want to
   have compiled, you can \emph{edit} the {\tt ThornList} outside
@@ -1026,10 +1029,10 @@ the Cactus root directory. % (usually \texttt{Cactus}).
   information and creating template files.
 
 \item [{\tt gmake TAGS}] creates an Emacs style TAGS file. See section
-  \ref{sec:usta} for using tags within Cactus.
+  \ref{sec:Appendix.tags} for using tags within Cactus.
 
 \item [{\tt gmake tags}] creates a {\tt vi} style tags file. See section
-  \ref{sec:usta} for using tags within Cactus.
+  \ref{sec:Appendix.tags} for using tags within Cactus.
 
 \item [{\tt gmake UsersGuide}] runs LaTeX to produce a copy of the Users' Guide.
 
@@ -1044,7 +1047,7 @@ configuration found in user's \texttt{configs} subdirectory.
 
 
 \section{Testing}
-\label{sec:te}
+\label{sec:testing}
 
 Some thorns come with a testsuite, consisting of example parameter files
 and the output files generated by running these. To run the testsuite
@@ -1318,34 +1321,27 @@ As the program runs, the normal output provides the following information:
 shows whether the activation was successful, and if successful gives the
 thorn's implementation. For example
 
-{\tt
 \begin{verbatim}
 Activating thorn idscalarwave...Success -> active implementation idscalarwave
 \end{verbatim}
-}
 
 \item [Failed parameters]
          If any of the parameters in the parameter file does not belong to any of the active thorns, or if the parameter value is not in the allowed range, an
 error is registered. For example, if the parameter is not recognised
 
-{\tt
 \begin{verbatim}
 Unknown parameter time::ddtfacê
 \end{verbatim}
-}
 or if the parameter value is not in the allowed range
 
-{\tt
 \begin{verbatim}
 Unable to set keyword CartGrid3D::type - ByMouth not in any active range
 \end{verbatim}
-}
 
 \item [Scheduling information]
         A complete list of all scheduled routines is given, in the
 order that they will be executed. For example
 
-{\tt
 \begin{verbatim}
 ----------------------------------------------------------------------
   Startup routines
@@ -1377,7 +1373,6 @@ order that they will be executed. For example
   enddo
 ----------------------------------------------------------------------
 \end{verbatim}
-}
 
 \item [Thorn banners]
         Any banners registered from the thorns are displayed.
@@ -1404,6 +1399,7 @@ directory from which the executable is run.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Checkpointing/Recovery}
+\label{sec:checkpointing}
 
 Checkpointing is defined as saving the current state of a run (parameter
 settings, contents of grid variables, and other relevant information) to a file.

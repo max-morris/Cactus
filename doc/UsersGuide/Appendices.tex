@@ -24,16 +24,17 @@ Cactus Users' Guide and the Cactus Reference Manual.
 
 \begin{Lentry}
 
+\item[alias function]
 \item[API]
-  Applications Programming Interface, the externally visible interface
+  \textit{Applications Programming Interface}, the externally visible
+  interface
   provided by some software component.  (An API usually consists of a
   set of subroutine/function calls, but may also include data passed
-  via Cactus key-value tables, grid arrays, or other means.)  For
-  example, the Reference Manual documents most of the Cactus Flesh
-  APIs.
+  via Cactus key-value tables, grid arrays, or other means.)  
+  The Reference Manual documents most of the Cactus Flesh APIs.
 \item[arrangement]
-  A collection of thorns, normally stored in the Cactus
-  \verb|arrangements| directory.
+  A collection of thorns, normally stored in a subdirectory of the Cactus
+  \verb|arrangements| directory.  See Section~\ref{sec:arrangements}.
 \item[autoconf]
   A GNU program which builds a configuration script which can be used
   to make a Makefile.
@@ -42,7 +43,7 @@ Cactus Users' Guide and the Cactus Reference Manual.
   contain boundary data, e.g.\ Dirichlet or Von Neumann data.  (See
   also \textit{symmetry zone}, \textit{ghost zone}.)
 \item[Cactus]
-  A green fleshy plant with lots of thorns, usually painful if
+  A green fleshy plant with lots of thorns, usually inflicting pain if
   touched.
 \item[CCTK]
   \textit{Cactus Computational Tool Kit} (The Cactus Flesh and computational
@@ -50,6 +51,7 @@ Cactus Users' Guide and the Cactus Reference Manual.
 \item[CCL]
   The \textit{Cactus Configuration Language}, this is the language that
   the thorn configuration files are written in.
+  See Section~\ref{sec:Appendix.ccl}.
 \item[configuration]
   The combination of a set of thorns, and all the Cactus configure
   options which affect what binary will be produced when compiling
@@ -60,27 +62,35 @@ Cactus Users' Guide and the Cactus Reference Manual.
   configuration (these flags change what binary is produced), but the
   Cactus \verb|SILENT| and \verb|WARN| configure options aren't part
   of a configuration (they don't change what binary will be produced).
+  See Section~\ref{sec:configurations}.
 \item[checkout]
-  Get a copy of the code or thorns from CVS.
+  Get a copy of source code from CVS.
 \item[checkpointing]
-  Save the entire state of a run to file so that it can be restarted
-  at a later time.
+  Save the entire state of a Cactus run to a file so that the run can be
+  restarted at a later time.
+  See Sections~\ref{sec:checkpointing}, \ref{chap:cp_recovery_methods}.
+\item[computational grid]
 \item[convergence]
   Important, but often neglected.
 \item[CST]
   This stands for \textit{Cactus Specification Tool}, which is the set of Perl
-  scripts which parse the thorns' configuration files (those that have a
-  \texttt{.ccl} extension).
+  scripts which parse the thorns' \texttt{.ccl} files.
 \item[CVS]
-  The \textit{Concurrent Versions System} is the favoured
-  distribution system for Cactus and can be downloaded from your
-  favorite GNU site.
+  The \textit{Concurrent Versions System} is the favoured code
+  distribution system for Cactus.  See Sections~\ref{sec:checkout},
+  \ref{sec:Appendix.cvs}.
 \item[driver]
-  A thorn which creates and handles grid hierarchies.
+  A special kind of thorn which creates and handle grid hierarchies.
+%Drivers are responsible for memory management for grid variables, and for all parallel operations, in response to requests from the scheduler.
+  See Section~\ref{sec:parallelisation}.
+\item[evolution]
 \item[Flesh]
   The routines which hold all the thorns together, this is what you
   get if you check out Cactus from our CVS repository.
-\item[friend]
+\item[friend] Interfaces that are \textit{friends} share their collective
+  set of protected grid variables.
+  See Section~\ref{subsec:interface_ccl}. \ref{sec:Appendix.interface}.
+\item[function aliasing]
 \item[GA]
   Shorthand for a \textit{grid array}.
 \item[GF]
@@ -92,15 +102,19 @@ Cactus Users' Guide and the Cactus Reference Manual.
   enable inter-processor communication of data from processor
   boundaries.  In single processor runs there are no ghost zones.
   Ghost zones should not be confused with symmetry or boundary zones.
+  See Section~\ref{sec:ghost_size}.
+\item[grid]
+  Short for \textit{computational grid}.
 \item[grid array]
-  A \textit{grid variable} whose global size need not be that of the computational
-  grid; instead, the size is declared explicitly in an \verb|interface.ccl|
-  file.  (See also \textit{local array}.)
+  A \textit{grid variable} whose global size need not be that of the
+  computational grid; instead, the size is declared explicitly in an
+  \verb|interface.ccl| file.  
 \item[grid function]
   A \textit{grid variable} whose global size is the size of the
   computational grid.  (See also \textit{local array}.)
 \item[grid hierarchy]
   A computational grid, and the grid variables associated with it.
+\item[grid point]
 \item[grid scalar]
   A \textit{grid variable} which has zero indices,
   i.e.\ it's just a number on each processor.
@@ -110,45 +124,62 @@ Cactus Users' Guide and the Cactus Reference Manual.
   interface; implicitly implies it is related to the computational
   grid rather than being an internal variable of the thorn or one of
   its routines.  \textit{grid scalar}, \textit{grid function}, and \textit{grid
-  array} are all examples of \textit{grid variables}.
+  array} are all examples of \textit{grid variables}. 
+  See Section~\ref{chap:cactus_variables}.
 \item[GNATS]
   The GNU program we use for reporting and tracking bugs, comments and
   suggestions.
+\item[GNU]
+  \textit{GNU's Not Unix}: a freely-distributable code project.  
+  See \url{http://www.gnu.org/}.
 \item[GV]
   Shorthand for a \textit{grid variable}
 \item[handle]
-  A signed integer value $>= 0$. Many Cactus routines return or accept
-  a handle to represent a dynamic data or code object. Handles for the
+  A signed integer value $>= 0$ passed by many Cactus routines and
+  used to represent a dynamic data or code object. Handles for the
   same object class should not be trusted to comprise a consecutive
   sequence of integer values.
 \item[HDF5]
   \textit{Hierarchical Data Format} version~5, an API, subroutine library, and
-  file format for storing multidimensional data.  An HDF5 file can
+  file format for storing structured data.  An HDF5 file can
   store both data (for example Cactus grid variables), and meta data
   (data describing the other data, for example Cactus coordinate
   systems).
+  See Section~\ref{subsec:hdf5}, also \url{http://hdf.ncsa.uiuc.edu/HDF5/}.
 \item[implementation]
-  Defines the interface that a thorn presents to the outside world.
-  See Section~\ref{sec:im}.
-\item[inherit]
+  Defines the interface that a thorn presents to the rest of a Cactus program.
+  See Section~\ref{sec:implementations}.
+\item[inherit] A thorn that \textit{inherits} from another implementation
+  can access all the other implementation's public variables.
+  See Section~\ref{subsec:interface_ccl}. \ref{sec:Appendix.interface}.
+\item[interface]
 \item[interpolation]
-  Given $N$ \textit{grid arrays} and $C$ interpolation points (in the
+  Given $N$ grid arrays and $C$ interpolation points (in the
   grid array coordinate space), return $M$ values on each requested
   processor at each interpolation point.  (See also \textit{local
   interpolation})
 \item[local array]
-  An array that is declared in normal code, as opposed to a \textit{grid
-  array} that is declared in an \verb|interface.ccl|.  Cactus knows
-  nothing about local arrays.
+  An array that is declared in thorn code but not declared in
+  the thorn's \verb|interface.ccl|, as opposed to a \textit{grid
+  array}.
 \item[local interpolation]
   Given $N$ arrays on the current processor
   with a given coordinate system,
   and $C$ interpolation points (in the array coordinate space)
   return $M$ values at each interpolation point.
   (See also \textit{interpolation})
+\item[Makefile]
+  The default input file for \texttt{make} (or \texttt{gmake}).  Includes
+  rules for building targets.
+\item[make] A system for building software.  It uses rules involving
+  dependencies of one part of software on another, and information of what
+  has changed since the last build, to determine what parts need to be
+  built.
 \item[MPI]
   \textit{Message Passing Interface}, an API and software library for sending
   messages between processors in a multiprocessor system.
+  See Sections~\ref{subsec:Compilation-Available_Options},
+  \ref{subsubsec:Compiling-MPI}.
 \item[mutual recursion]
   See \textit{recursion, mutual}.
 \item[NUL character]
@@ -185,32 +216,60 @@ Cactus Users' Guide and the Cactus Reference Manual.
   For further information, see the section ``Null pointers''
   in the (excellent) {\tt comp.lang.c FAQ}, available online at
   \url{http://www.eskimo.com/~scs/C-faq/top.html}.
+\item[parallelisation]
 \item[parameter]
   A variable which remains unchanged throughout the execution of a
   Cactus executable. Parameters all have default values which can be
   changed in a parameter file.
 \item[processor topology]
 \item[PUGH]
-  The default parallel driver for Cactus which uses MPI.
+  The default driver thorn for Cactus which uses MPI.
+  See Section~\ref{sec:required_software}.
 \item[PVM]
-  \textit{Parallel Virtual Machine}, provides interprocessor
-  communication.
+  \textit{Parallel Virtual Machine}, provides interprocessor communication.
+  See Section~\ref{sec:required_software}.
 \item[recursion, mutual]
   See \textit{mutual recursion}.
 \item[reduction]
   Given $N$ grid variables return $M$ output values on each requested
   processor.
+\item[schedule]
+\item[schedule bin]
+\item[schedule group]
+\item[shares] An implementation may \textit{share} restricted parameters
+  with another implementation.  
+  See Section~\ref{subsec:param_ccl}. \ref{sec:Appendix.param}.
+\item[staggering]
+  See Section~\ref{sec:staggering}.
 \item[symmetry zone]
   A symmetry zone is a set of points added to the edge of a grid to
   contain data which is obtained, by some symmetry operation, from
   another part of the grid. (See also \textit{boundary zone},
   \textit{ghost zone}.)
+\item[synchronisation]
 \item[TAGS]
+  See Section~\ref{sec:Appendix.tags}.
 \item[target]
+  A \textit{make target} is the name of a set of rules for 
+  \texttt{make} (or \texttt{gmake}).  When the target is included in the
+  command line for \texttt{make} the rules are executed, usually to
+  build some software.
+\item[test suite]
+  See Sections~\ref{sec:testing}, \ref{sec:adding_test_suite}.
 \item[thorn]
-  A collection of subroutines with a definite interface and purpose.
+  A collection of subroutines defining a Cactus interface.  
+  See Chapters~\ref{chap:thorn_concepts}, \ref{chap:thorn_anatomy}.
+\item[ThornList]
+\item[time bin]
+\item[time level]
+\item[timer]
+\item[trigger]
+\item[unigrid]
 \item[WMPI]
   \textit{Win32 Message Passing Interface}.
+  See Sections~\ref{subsec:Compilation-Available_Options},
+  \ref{subsubsec:Compiling-MPI}.
+\item[wrapper]
 
 \end{Lentry}
 
@@ -219,10 +278,9 @@ Cactus Users' Guide and the Cactus Reference Manual.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \chapter{Configuration file syntax}
-\label{sec:cofisy}
+\label{sec:Appendix.ccl}
 
 \section{General Concepts}
-\label{sec:geco}
 
 Each thorn is configured by three compulsory and one optional files in the
 top level thorn directory:
@@ -242,7 +300,7 @@ case insensitive.
 % course be enclosed in []).
 
 \section{interface.ccl}
-\label{sec:in}
+\label{sec:Appendix.interface}
 
 The interface configuration file consists of
 \begin{itemize}
@@ -254,15 +312,15 @@ thorns, and which include files are provided by this thorn
 \item a series of blocks listing the thorn's global variables.
 \end{itemize}
 (For a more extensive discussion of Cactus variables see Chapter
-\ref{chap:cava}.)
+\ref{chap:cactus_variables}.)
 
 \subsection{Header block}
 The header block has the form:
-\begin{verbatim}
-implements: <implementation>
-inherits: <implementation>, <implementation>
-friend: <implementation>, <implementation>
-\end{verbatim}
+\begin{alltt}
+implements: <\var{implementation}>
+inherits: <\var{implementation}>, <\var{implementation}>
+friend: <\var{implementation}>, <\var{implementation}>
+\end{alltt}
 where
 \begin{itemize}
 \item{} The implementation name must be unique among all thorns, except
@@ -283,13 +341,13 @@ where
 
 \subsection{Include files}
 The include file section has the form:
-\begin{verbatim}
-USES INCLUDE [SOURCE|HEADER]: <file_name>
-INCLUDE[S] [SOURCE|HEADER]: <file_to_include> in <file_name>
-\end{verbatim}
+\begin{alltt}
+USES INCLUDE [SOURCE|HEADER]: <\var{file_name}>
+INCLUDE[S] [SOURCE|HEADER]: <\var{file_to_include}> in <\var{file_name}>
+\end{alltt}
 The former is used when a thorn wishes to use an include file from
 another thorn.  The latter indicates that this thorn adds the code in
-\verb|<file_to_include>| to the include file \verb|<file_name>|.  If
+\texttt{<\var{file\_to\_include}>} to the include file \texttt{<\var{file\_name}>}.  If
 the include file is described as \verb|SOURCE|, the included code is
 only executed if the providing thorn is active.
 Both default to \verb|HEADER|.
@@ -297,42 +355,42 @@ Both default to \verb|HEADER|.
 \subsection{Function aliasing}
 If any aliased function is to be used or provided by the thorn then
 the prototype must be declared with the form:
-\begin{verbatim}
-<return_type> FUNCTION <alias>(<arg1_type> <intent1> [ARRAY] <arg1>, ...)
-\end{verbatim}
-The \verb|<return_type>| must be either \verb|void|, \verb|CCTK_INT|
+\begin{alltt}
+<\var{return_type}> FUNCTION <\var{alias}>(<\var{arg1_type}> <\var{intent1}> [ARRAY] <\var{arg1}>, ...)
+\end{alltt}
+The \texttt{<\var{return\_type}>} must be either \verb|void|, \verb|CCTK_INT|
 or \verb|CCTK_REAL|. The keyword \verb|SUBROUTINE| is equivalent to
-\verb|void FUNCTION|. The name of the aliased function \verb|<alias>|
+\verb|void FUNCTION|. The name of the aliased function \texttt{<\var{alias}>}
 must contain at least one uppercase and one lowercase letter and
 follow the C standard for function names.  The type of each argument,
-\verb|<arg*_type>| must be a \verb|CCTK| type in
+\texttt{<\var{arg*\_type}>} must be a \verb|CCTK| type in
 \verb|INT,REAL,STRING,POINTER|. The intent of each argument,
-\verb|<intent*>| must be either \verb|IN| or \verb|OUT|. An argument
+\texttt{<\var{intent*}>} must be either \verb|IN| or \verb|OUT|. An argument
 should only be modified if it is declared to have intent
 \verb|OUT|. If the argument is an array then the prefix \verb|ARRAY|
 should also be given.
 
-If the argument \verb|<arg*>| is a function pointer then the argument
+If the argument \texttt{<\var{arg*}>} is a function pointer then the argument
 itself (which will preceded by the return type) should be
-\begin{verbatim}
-CCTK_FPOINTER <function_arg1>(<arg1_type> <intent1> <arg1>, ...)
-\end{verbatim}
+\begin{alltt}
+CCTK_FPOINTER <\var{function_arg1}>(<\var{arg1_type}> <\var{intent1}> <\var{arg1}>, ...)
+\end{alltt}
 Function pointers may not be nested. 
 
 If an aliased function is to be used then the block
-\begin{verbatim}
-USES FUNCTION <alias>
-\end{verbatim}
+\begin{alltt}
+USES FUNCTION <\var{alias}>
+\end{alltt}
 is required.
 
 If a function is provided then the block
-\begin{verbatim}
-PROVIDES FUNCTION <alias> WITH <provider> LANGUAGE <providing_language>
-\end{verbatim}
-is required. As with the alias name, \verb|<provider>| must contain at
+\begin{alltt}
+PROVIDES FUNCTION <\var{alias}> WITH <\var{provider}> LANGUAGE <\var{providing_language}>
+\end{alltt}
+is required. As with the alias name, \texttt{<\var{provider}>} must contain at
 least one uppercase and one lowercase letter and follow the C standard
 for function names. Currently the only supported values of
-\verb|<providing_language>| are \verb|C| and \verb|Fortran|.
+\texttt{<\var{providing\_language}>} are \verb|C| and \verb|Fortran|.
 
 
 \subsection{Variable blocks}
@@ -342,37 +400,37 @@ Storage assignment, communication assignment, and ghostzone synchronization
 take place for groups only.
 
 The thorn's variables are defined by:
-{\t
-\begin{verbatim}
-[<access>:]
 
-<data_type> <group_name>[[<number>]] [TYPE=<group_type>] [DIM=<dim>]
-[TIMELEVELS=<num>]
-[SIZE=<size in each direction>] [DISTRIB=<distribution_type>]
-[GHOSTSIZE=<ghostsize>] [STAGGER=<stagger-specification>]
-[TAGS=<string>]  ["<group_description>"]
-[{
- [ <variable_name>[,]<variable_name>
-   <variable_name> ]
-} ["<group_description>"] ]
-\end{verbatim}}
+\begin{alltt}
+[<\var{access}>:]
+
+<\var{data_type}> <\var{group_name}>[[<\var{number}>]] [TYPE=<\var{group_type}>] [DIM=<\var{dim}>]
+[TIMELEVELS=<\var{num}>]
+[SIZE=<\var{size in each direction}>] [DISTRIB=<\var{distribution_type}>]
+[GHOSTSIZE=<\var{ghostsize}>] [STAGGER=<\var{stagger-specification}>]
+[TAGS=<\var{string}>]  ["<\var{group_description}>"]
+[\{
+ [ <\var{variable_name}>[,]<\var{variable_name}>
+   <\var{variable_name}> ]
+\} ["<\var{group_description}>"] ]
+\end{alltt}
 %
-(The options {\t TYPE}, {\t DIM}, etc.\ following {\t <group\_name>}
+(The options {\t TYPE}, {\t DIM}, etc.\ following {\t <\var{group\_name}>}
 must all appear on one line.)  Note that the beginning brace (\{) must
 sit on a line by itself; the ending brace (\}) must be preceded by a
 carriage return.
 %
 \begin{itemize}
-\item{} {\t access} defines which thorns can use the following
-        groups of variables. {\t access} can be either
+\item{} {\t \var{access}} defines which thorns can use the following
+        groups of variables. {\t \var{access}} can be either
         {\t public}, {\t protected} or {\t private}.
-\item{} {\t data\_type} defines the data type of the variables in the
+\item{} {\t \var{data\_type}} defines the data type of the variables in the
 group.  Supported data types are {\t CHAR}, {\t BYTE}, {\t INT}, {\t REAL} and
 {\t COMPLEX}. 
-\item{} {\t group\_name} must be an alphanumeric name (which may also
+\item{} {\t \var{group\_name}} must be an alphanumeric name (which may also
 contain underscores) which is unique across group and variable names
 within the scope of the thorn. A group name is compulsory.
-\item{} {\t [number]}, if present, indicates that this is a \emph{vector}
+\item{} {\t [\var{number}]}, if present, indicates that this is a \emph{vector}
 group.  Such a group does not have named variables (so the \{\} block
 should not be present) but instead appears as a one-dimensional array
 of grid variables.  The first index in the array is the member-index,
@@ -425,7 +483,7 @@ The process of sharing code among thorns using include files is
 discussed in Section~\ref{sec:includefiles}.
 
 \section{param.ccl}
-\label{sec:pa}
+\label{sec:Appendix.param}
 
 The parameter configuration file consists of a list of
 \textit{parameter object specification items} (OSIs) giving the type and
@@ -435,14 +493,14 @@ parameter.  (For a more extensive discussion of Cactus parameters see Chapter
 \ref{chap:capa}.)
 
 \subsection{Parameter data scoping items}
-{\tt
-\begin{verbatim}
-<access>:
-\end{verbatim}
-}
-The key word {\t access} designates that all parameter object specification
+
+\begin{alltt}
+<\var{access}>:
+\end{alltt}
+
+The key word {\t \var{access}} designates that all parameter object specification
 items up to the next parameter data scoping item are in the same
-protection or scoping class. {\tt access} can take the values:
+protection or scoping class. {\tt \var{access}} can take the values:
 \begin{Lentry}
 \item[{\tt global}] all thorns have access to global parameters
 \item[{\tt restricted}] other thorns can have access to these
@@ -458,53 +516,46 @@ on this line.)
 
 
 \subsection{Parameter object specification items}
-\label{sec:paobspit}
 
-{\t
-\begin{verbatim}
-[EXTENDS|USES] <parameter_type> <parameter name>[[<integer>]] "<parameter description>" 
-[AS <alias>] [STEERABLE=<NEVER|ALWAYS|RECOVER>] 
-[ACCUMULATOR=<expression>] [ACCUMULATOR-BASE=<parameter-name>]
-{
-  <PARAMETER_VALUES>
-} <default value>
-\end{verbatim}
-}
-Where the options {\t AS}, {\t STEERABLE}, etc. following {\t <parameter\_description>}
+\begin{alltt}
+[EXTENDS|USES] <\var{parameter_type}> <\var{parameter name}>[[<\var{integer}>]] "<\var{parameter description}>" 
+[AS <\var{alias}>] [STEERABLE=<NEVER|ALWAYS|RECOVER>] 
+[ACCUMULATOR=<\var{expression}>] [ACCUMULATOR-BASE=<\var{parameter-name}>]
+\{
+  <\var{PARAMETER_VALUES}>
+\} <\var{default value}>
+\end{alltt}
+where the options {\t AS}, {\t STEERABLE}, etc. following {\t <\var{parameter\_description}>}
 must all appear on one line.
   Note that the beginning brace ({\t\{}) must
 sit on a line by itself; the ending brace ({\t\}}) must be preceded by a
 carriage return.
 \begin{itemize}
-\item{} Allowed {\t parameter\_type}s are
+\item{} Allowed {\t \var{parameter\_type}}s are
   \begin{Lentry}
-     \item[{\t INT}] The specification of {\t parameter\_value}s takes
+     \item[{\t INT}] The specification of \var{parameter\_value}s takes
      the form of any number of comma-separated blocks of the form:
-{\t
-\begin{verbatim}
-[<low-range>][:[<high-range>][:[<step>]]][::"<range description>"]
-\end{verbatim}
-}
-Where an empty field, or a {\t *} in the place of {\tt low-range} or
-{\t high-range} indicates $-\infty$ and $\infty$ respectively. The
-default value for {\t step} is 1. A number by itself denotes that
+\begin{alltt}
+[<\var{low-range}>][:[<\var{high-range}>][:[<\var{step}>]]][::"<\var{range description}>"]
+\end{alltt}
+where an empty field, or a {\t *} in the place of \var{low-range} or
+\var{high-range} indicates $-\infty$ and $\infty$ respectively. The
+default value for \var{step} is 1. A number by itself denotes that
 this number is the only acceptable value.
      \item[{\t REAL}] The range specification is the same as integers,
-             except that here, no {\t step} implies a continuum of
+             except that here, no \var{step} implies a continuum of
 values.  Note that numeric constants should be expressed as in C
 (e.g.\ {\t 1e-10}).  Note also that one can use the Cactus types such
 as {\t CCTK\_REAL4} to specify the precision of the parameter.
      \item[{\t KEYWORD}] Each entry in the list of acceptable values
              for a keyword has the form
-{\t
-\begin{verbatim}
-"<keyword value>", "<keyword value>" :: "<description>"
-\end{verbatim}
-}
+\begin{alltt}
+"<\var{keyword value}>", "<\var{keyword value}>" :: "<\var{description}>"
+\end{alltt}
      \item[{\t STRING}]  Allowed values for strings should be specified 
      using regular expressions. To allow any string, the regular expression 
      {\tt ".*"} should be used.
-     \item[{\t BOOLEAN}] No {\t PARAMETER\_VALUES} should be specified for a boolean
+     \item[{\t BOOLEAN}] No \var{PARAMETER\_VALUES} should be specified for a boolean
              parameter. The default value for a boolean can be
         \begin{itemize}
            \item{} True: {\t 1}, {\t yes}, {\t y}, {\t t}, {\t true}
@@ -512,7 +563,7 @@ as {\t CCTK\_REAL4} to specify the precision of the parameter.
         \end{itemize}
   \end{Lentry}
 
-\item{} The {\t parameter name} must be unique within the scope of the thorn.
+\item{} The \var{parameter name} must be unique within the scope of the thorn.
 
 \item{} A thorn can declare that it {\t EXTENDS} a parameter of
 another thorn. This allows it to declare additional acceptable values.
@@ -522,13 +573,13 @@ another thorn. This allows it to declare additional acceptable values.
 \item{} If the thorn wants to simply use a parameter from another
 thorn, without declaring additional values, use {\t USES}
 instead.
-\item{} {\tt [integer]}, if present, specifies that this is an {\tt
+\item{} {\tt [\var{integer}]}, if present, specifies that this is an {\tt
          array} parameter. (Note that the notation used above for the 
         parameter specification breaks down here, there must be 
         square brackets around the given integer).
          The parameter is then a one-dimensional
          array of values of the specified type.
-\item{} {\t alias} allows a parameter to appear as a different name in
+\item{} \var{alias} allows a parameter to appear as a different name in
          this thorn than its original name in another thorn.  The name
          as seen in the parameter file is unchanged.
 \item{} {\t STEERABLE} specifies when a parameter value may be
@@ -552,7 +603,7 @@ instead.
 \end{itemize}
 
 \section{schedule.ccl}
-\label{sec:sc}
+\label{sec:Appendix.schedule}
 
 (A more extensive discussion of Cactus scheduling is provided in Chapter
 \ref{chap:scheduling}.) A schedule configuration file consists of
@@ -574,10 +625,9 @@ instead.
 \textit{Assignment statements}, currently only assign storage.
 
 These lines have the form:
-{\t
-\begin{verbatim}[STORAGE: <group>[timelevels], <group>[timelevels]]
-\end{verbatim}
-}
+\begin{alltt}
+[STORAGE: <\var{group}>[\var{timelevels}], <\var{group}>[\var{timelevels}]]
+\end{alltt}
 
 If the thorn is active, storage will be allocated for the given groups
 for the duration of program execution (unless storage is explicitly
@@ -597,36 +647,37 @@ block).
 \subsection{Schedule Blocks}
 
 Each \textit{schedule block} in the file {\t schedule.ccl} must have the syntax:
-{\t
-\begin{verbatim}schedule [GROUP] <function name|group name> AT|IN <time> \
-     [BEFORE|AFTER <function name>] [WHILE <variable>] [AS <alias>]
-{
-  [LANG: <language>]
-  [STORAGE:       <group>[timelevels],<group>[timelevels]...]
-  [TRIGGER:       <group>,<group>...]
-  [SYNCHRONISE:   <group>,<group>...]
-  [OPTIONS:       <option>,<option>...]
-} "Description of function"
-\end{verbatim}
-}
+
+\begin{alltt}
+schedule [GROUP] <\var{function name}|\var{group name}> AT|IN <\var{time}> \verb|\|
+     [BEFORE|AFTER <\var{function name}>] [WHILE <\var{variable}>] [AS <\var{alias}>]
+\{
+  [LANG: <\var{language}>]
+  [STORAGE:       <\var{group}>[\var{timelevels}],<\var{group}>[\var{timelevels}]...]
+  [TRIGGER:       <\var{group}>,<\var{group}>...]
+  [SYNCHRONISE:   <\var{group}>,<\var{group}>...]
+  [OPTIONS:       <\var{option}>,<\var{option}>...]
+\} "\var{Description of function}"
+\end{alltt}
+
 \begin{Lentry}
   \item[{\tt GROUP}] Schedule a schedule group with the same options
   as a schedule function.  The schedule group will be created if it doesn't exist.
 
-  \item[{\tt <function name|group name>}] The name of a function or a
+  \item[{\tt <\var{function name}|\var{group name}>}] The name of a function or a
   schedule group to be scheduled.  Function and schedule group names
   are case sensitive
 
-  \item[{\tt <group>}] A group of grid variables. Variable groups
+  \item[{\tt <\var{group}>}] A group of grid variables. Variable groups
   inherited from other thorns may be used, but they must then be fully
   qualified with the implementation name.
 
   \item[{\tt AT}] Functions can be scheduled to run at the Cactus
   schedule bins, for example {\tt CCTK\_EVOL}, {\tt CCTK\_STARTUP}. A
   complete list and description of these is provided in
-  Appendix~\ref{sec:scbi}.  The initial letters {\tt CCTK\_} are
-  optional. Grid variables cannot be used in the {\tt CCTK\_STARTUP}
-  and {\tt CCTK\_SHUTDOWN} timebins.
+  Appendix~\ref{sec:Appendix.schedule_bins}.  The initial letters
+  {\tt CCTK\_} are optional. Grid variables cannot be used in the
+  {\tt CCTK\_STARTUP} and {\tt CCTK\_SHUTDOWN} timebins.
 
   \item[{\tt IN}] Schedules a function or schedule group to run in a
   schedule group rather than in a Cactus timebin.
@@ -694,14 +745,13 @@ Any schedule block or assignment statements can be optionally
 surrounded by conditional {\t if-elseif-else}
 constructs using the parameter data base. These can be nested,
 and have the general form:
-{\t
-\begin{verbatim}
-if (CCTK_Equals(<parameter>,<string>))
-{
-  [<assignments>]
-  [<schedule blocks>]
-}\end{verbatim}
-}
+
+\begin{alltt}
+if (CCTK_Equals(<\var{parameter}>,<\var{string}>))
+\{
+  [<\var{assignments}>]
+  [<\var{schedule blocks}>]
+\}\end{alltt}
 
 Such conditionals are evaluated only at program startup and are used
 to pick between different static schedule options.  For dynamic
@@ -712,13 +762,13 @@ Conditional constructs cannot be used inside a schedule block.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{configuration.ccl}
-\label{sec:configuration.ccl}
+\label{sec:Appendix.configuration.ccl}
 
 A configuration options file has the form:
 
-\begin{verbatim}
-Requires Thorns: <list of thorns>
-\end{verbatim}
+\begin{alltt}
+Requires Thorns: <\var{list of thorns}>
+\end{alltt}
 
 The \verb|Requires Thorns| configuration option has as its argument a
 case sensitive, space-separated list of thorn names (without the name
@@ -743,7 +793,7 @@ in order to call routines, you should use rather function aliasing.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \chapter{Schedule bins}
-\label{sec:scbi}
+\label{sec:Appendix.schedule_bins}
 
 Using the {\tt schedule.ccl} files, thorn functions can be scheduled to run 
 in the different timebins which are executed by the Cactus Flesh. This chapter
@@ -906,7 +956,6 @@ indicate whether an error occurred.  You should return 0.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \chapter{Flesh parameters}
-\label{sec:ccpa}
 
 The Flesh parameters are defined in the file {\tt src/param.ccl}.
 
@@ -992,6 +1041,7 @@ Terminate on next iteration ? [{\tt no}]
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \chapter{Using GNATS}
+\label{sec:Appendix.gnats}
 GNATS is a freely redistributable set of tools for tracking bug
 reports. It allows users to categorize their problem report and submit
 them to the GNATS. The bug tracker will assign appropriate maintainers
@@ -1043,14 +1093,13 @@ our web site. These commands are compiled to submit Cactus problem
 reports in your shell and from within Emacs, respectively.
 
 
-\label{sec:usgn}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \chapter{Using CVS}
-\label{sec:uscv}
+\label{sec:Appendix.cvs}
 CVS is a version control system, which allows you to  keep
 old versions of files (usually source code), log of
 when, and why changes occurred, and who made them,  etc.
@@ -1388,14 +1437,13 @@ home directory which provides menus to pick arrangements and thorns from.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \chapter{Using Tags}
-\label{sec:usta}
+\label{sec:Appendix.tags}
 Finding your way around in the Cactus structure can be pretty
 difficult to handle. To make life easier there is support for \textit{tags},
 which lets you browse the code easily from within Emacs/XEmacs or {\tt vi}.
 A tags database can be generated with {\tt gmake}:
 
 \section{Tags with Emacs}
-\label{sec:tawiem}
 
 The command {\tt gmake TAGS} will create a database for a routine reference
 table to be used within Emacs. This database can be accessed within
@@ -1434,7 +1482,6 @@ The key strokes to use when you want to browse in read-only mode are:
 \end{enumerate}
 
 \section{Tags with {\tt vi}}
-\label{sec:tawivi}
 
 The commands available are highly dependent upon the version of {\tt vi}, but
 the following is a selection of commands which may work.

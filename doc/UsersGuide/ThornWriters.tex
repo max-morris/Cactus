@@ -38,6 +38,7 @@ you may use to gain extra functionality.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \chapter{Thorn concepts}
+\label{chap:thorn_concepts}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -62,6 +63,7 @@ for arrangement documentation. Arrangement names which start with a
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Arrangements}
+\label{sec:arrangements}
 
 Thorns are grouped into \textit{arrangements}.  This is a logical grouping of
 thorns which is purely for organisational purposes. For example,
@@ -84,7 +86,7 @@ belonging to the arrangement.
 
 \section{Implementations}
 
-\label{sec:im}
+\label{sec:implementations}
 
 One of the key concepts for thorns is the concept of the \textit{implementation}.
 Relationships among thorns are all based upon relationships among the
@@ -113,25 +115,25 @@ the other thorns.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \chapter{Anatomy of a thorn}
-\label{sec:anofath}
+\label{chap:thorn_anatomy}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Thorns}
-\label{sec:th}
 
 A thorn consists of a subdirectory of an arrangement containing four
 administrative files:
 
 \begin{Lentry}
 \item[{\tt interface.ccl}] the Cactus interface, which defines the grid
-functions, variables, etc. See \ref{sec:in}.
+functions, variables, etc. See \ref{sec:Appendix.interface}.
 \item[{\tt param.ccl}] the parameters introduced by this thorn, and the
 parameters needed from other thorns. See
-\ref{sec:pa}.
+\ref{sec:Appendix.param}.
 \item[{\tt schedule.ccl}] scheduling information for routines called by
+the Flesh. See \ref{sec:Appendix.schedule}.
 \item[{\tt configuration.ccl}] configuration options for the thorn. See
-\ref{sec:configuration.ccl}.
+\ref{sec:Appendix.configuration.ccl}.
 \end{Lentry}
 
 Thorns can also contain
@@ -143,7 +145,7 @@ Thorns can also contain
 \item a {\tt doc} directory for documentation
 \item a {\tt par} directory for example parameter files
 \item a {\tt test} subdirectory may also be added, to hold the thorn's
-    test suite. See \ref{sec:adatesu} for details.
+    test suite. See \ref{sec:adding_test_suite} for details.
 \end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -173,8 +175,8 @@ These are:
 \begin{Lentry}
 
 \item [{\tt interface.ccl}]
-This defines the \textit{implementation} (Section~\ref{sec:im}) the thorn
-provides, and the variables the thorn needs, along with their
+This defines the \textit{implementation} (Section~\ref{sec:implementations})
+the thorn provides, and the variables the thorn needs, along with their
 visibility to other implementations.
 
 \item [{\tt param.ccl}]
@@ -201,6 +203,7 @@ non-blank character of a line in a CCL file is a backslash
 following line is treated as a continuation of the current line.
 
 \subsection{The {\tt interface.ccl} file}
+\label{subsec:interface_ccl}
 
 The {\tt interface.ccl} file is used to declare
 
@@ -213,10 +216,10 @@ The {\tt interface.ccl} file is used to declare
 
 
 The implementation is declared by a single line at the top of the file
-\begin{verbatim}
-implements: <name>
-\end{verbatim}
-where {\tt <name>} can be any combination of alphanumeric
+\begin{alltt}
+implements: <\var{name}>
+\end{alltt}
+Where {\tt <\var{name}>} can be any combination of alphanumeric
 characters and underscores, and is case independent.
 
 There are three different access levels available for variables
@@ -235,30 +238,30 @@ Corresponding to the first two access levels there are two relationship
 statements that can be used to get variables from other thorns.
 
 \begin{Lentry}
-\item [{\tt Inherits: <name>}]
-This gets all {\tt Public} variables from implementation {\tt <name>}, and all
-variables that {\tt <name>} has in turn inherited.
+\item [{\tt Inherits: <\var{name}>}]
+This gets all {\tt Public} variables from implementation {\tt <\var{name}>}, and all
+variables that {\tt <\var{name}>} has in turn inherited.
 An implementation may inherit from any number of other implementations.
-\item [{\tt Friend: <name>}]
-This gets all {\tt Protected} variables from implementation {\tt <name>}, but,
+\item [{\tt Friend: <\var{name}>}]
+This gets all {\tt Protected} variables from implementation {\tt <\var{name}>}, but,
 unlike {\tt inherits}, it is symmetric and also defines a transitive relation by
 pushing its own implementation's {\tt Protected} variables onto implementation
-{\tt <name>}.  This keyword is used to define a group of implementations which
+\var{name}.  This keyword is used to define a group of implementations which
 all end up with the same {\tt Protected} variables.
 \end{Lentry}
 
 So, for example, an {\tt interface.ccl} starting
-\begin{verbatim}
+\begin{alltt}
 implements: wavetoy
 inherits:   grid
 friend:     wave_extract
-\end{verbatim}
+\end{alltt}
 declares that the thorn provides an implementation called {\tt wavetoy}, gets
 all the {\tt public} variables declared by an implementation called {\tt grid},
 and shares all {\tt protected} variables with {\tt wave\_extract} and its
 friends.
 
-Cactus variables, described in Chapter~\ref{chap:cava}, are placed
+Cactus variables, described in Chapter~\ref{chap:cactus_variables}, are placed
 in groups with homogeneous attributes, where
 the attributes describe properties such as the data type, group type,
 dimension, ghostsize, number of timelevels, type of staggering and
@@ -293,6 +296,7 @@ changes the access level for any group defined in the file from that point on.
 All variables seen by any one thorn must have distinct names.
 
 \subsection{The {\tt param.ccl} file}
+\label{subsec:param_ccl}
 
 Users control the operation of thorns via parameters given in a file
 at runtime.  The {\tt param.ccl} file
@@ -394,9 +398,9 @@ specification of the form {\tt global:} or {\tt restricted:} (or
 changes the access level for any parameter defined in the file from that point on.
 
 To access {\tt restricted} parameters from another implementation, a line
-containing {\tt shares: <name>} declares that all parameters mentioned in
+containing {\tt shares: <\var{name}>} declares that all parameters mentioned in
 the file from now until the next access specification originate in
-implementation {\tt <name>}. (Note that only one implementation can be
+implementation {\tt <\var{name}>}. (Note that only one implementation can be
 specified on each {\tt shares:} line.)  Each of these parameters must be qualified by the initial token {\tt USES} or {\tt EXTENDS}, where
 \begin{Lentry}
 \item[{\tt USES}] indicates that the parameters range remains unchanged.
@@ -439,18 +443,20 @@ conditions they should be run.
 The specification of routine scheduling is via a schedule block which
 consists of lines of the form
 
-\begin{verbatim}
-schedule <name> at <time bin> [other options]
-{
+\begin{alltt}
+schedule <\var{name}> at <\var{time bin}> [\var{other options}]
+\{
   LANG:     <FORTRAN|C>
-  STORAGE:  [group list with timelevels]
-  TRIGGERS: [group list]
-  SYNC:     [group list]
-} "A description"
-\end{verbatim}
-where {\tt <name>} is the name of the routine, and {\tt <time bin>} is the
-name of a schedule bins (the {\tt CCTK\_} prefix is optional). A list of
-the most useful schedule bins for application thorns is given here, a complete and more descriptive list is provided in Appendix~\ref{sec:scbi}:
+  STORAGE:  [\var{group list with timelevels}]
+  TRIGGERS: [\var{group list}]
+  SYNC:     [\var{group list}]
+\} "\var{A description}"
+\end{alltt}
+where {\tt <\var{name}>} is the name of the routine, and
+{\tt <\var{time bin}>} is the name of a schedule bins (the {\tt CCTK\_}
+prefix is optional). A list of the most useful schedule bins for application
+thorns is given here, a complete and more descriptive list is provided in
+Appendix~\ref{sec:Appendix.schedule_bins}:
 
 \begin{Lentry}
 
@@ -485,10 +491,10 @@ For analysing data.
 
 \end{Lentry}
 
-The {\tt other options} allow finer grained control of the scheduling.  It is
+The \var{other options} allow finer grained control of the scheduling.  It is
 possible to state that the routine must run {\tt BEFORE} or {\tt AFTER}
 another routine. It is also possible to schedule the routine under an
-alias name by using {\tt AS <alias\_name>}.
+alias name by using {\tt AS <\var{alias\_name}>}.
 
 \begin{Lentry}
 
@@ -504,7 +510,8 @@ storage status reverts to its previous status after the routine
 returns. The format of the {\tt STORAGE} statement includes specifying
 the number of timelevels of each group for which storage should be activated.
 
-{\tt STORAGE: <group1>[timelevels1], <group2>[timelevels2]}
+{\tt STORAGE: <\var{group1}>[\var{timelevels1}],
+<\var{group2}>[\var{timelevels2}]}
 
  This number can range from one to the maximum number of timelevels for the group as specified in the group definition in its {\tt interface.ccl} file. If this maximum number is one, the timelevel specification can be omitted from the
 {\tt STORAGE} statement.
@@ -527,8 +534,8 @@ refinement.
 
 \end{Lentry}
 
-Besides schedule blocks it's possible to embed C style {\tt
-if/else} statements in the {\tt schedule.ccl} file.  These can be used to
+Besides schedule blocks it's possible to embed C style {\tt if/else}
+statements in the {\tt schedule.ccl} file.  These can be used to
 schedule things based upon the value of a parameter.
 
 \vskip .5cm
@@ -596,11 +603,9 @@ schedule WaveToyC_Evolution AS WaveToy_Evolution AT evol
   SYNC: scalarfield
 } "Evolution of 3D wave equation"
 \end{verbatim}
-
 The thorn {\tt IDScalarWave} schedules the routine {\tt WaveBinary}
 after the alias {\tt WaveToy\_Evolution}. It is scheduled independently of
 the C or Fortran routine name.
-
 \begin{verbatim}
 schedule WaveBinary AT evol AFTER WaveToy_Evolution
 {
@@ -610,7 +615,6 @@ schedule WaveBinary AT evol AFTER WaveToy_Evolution
 \end{verbatim}
 
 \subsubsection{Storage Outside of Schedule Blocks}
-
 The keyword {\tt STORAGE} can also be used outside of the schedule
 blocks to indicate that storage for these groups should be switched on
 at the start of the run. Note that the storage is only allocated in
@@ -630,12 +634,12 @@ it provides to or requires from other thorns.
 
 Currently there is only one option evaluated from a thorn's {\tt configuration.ccl} file:
 
-\begin{verbatim}
-Requires Thorns: <list of thorns>
-\end{verbatim}
+\begin{alltt}
+Requires Thorns: <\var{list of thorns}>
+\end{alltt}
 
-where {\tt <list of thorns>} is a space-separated list of thorns which this
-thorn requires in order to be compiled and to be activated at runtime.
+where {\tt <\var{list of thorns}>} is a space-separated list of thorns which
+this thorn requires in order to be compiled and to be activated at runtime.
 Thorns must be given by their exact names, without the arrangement name.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -756,18 +760,24 @@ and has a working directory of {\tt <config>/build/<thorn\_name>} .
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \chapter{Cactus Variables}
-\label{chap:cava}
+\label{chap:cactus_variables}
 
-Cactus variables are sorted into \textit{groups}.  All variables in a group
-are of the same type, and have
-the same attributes, and most Cactus operations act on a group as a whole.
+A \textit{grid variable} is Cactus program variable passed among thorns,
+(or routines belonging to the same thorn interface),
+by way of calls to the Flesh.
+They are the only variables known to Cactus.
+Such variables represent values of functions on the computational grid,
+and are therefore often called \textit{grid functions}.
+
+In the Cactus context, grid variables are often referred
+to simply as \textit{variables}.
 
 Cactus variables are used instead of local variables for a number of reasons:
 \begin{itemize}
 \item Cactus variables can be made visible to other thorns, allowing
-thorns to communicate and share data,
-\item Cactus  variables can be distributed and communicated
-        among processors, allowing parallel computation,
+      thorns to communicate and share data,
+\item Cactus variables can be distributed and communicated
+      among processors, allowing parallel computation,
 \item A database of Cactus variables, and their attributes, is held by
       the Flesh, and this information is used by thorns, for example for
       obtaining a list of variables for checkpointing,
@@ -776,18 +786,23 @@ thorns to communicate and share data,
       and their attributes.
 \end{itemize}
 
-The specification for a group declaration
-(fully described in Appendix~\ref{sec:in}) is,
+Cactus variables are collected into \textit{groups}.  All variables in a
+group are of the same data type, and have the same attributes. Most Cactus
+operations act on a group as a whole.  A group must be declared in its
+thorn's \texttt{interface.ccl} file.
 
-\begin{verbatim}
-<data_type> <group_name> [TYPE=<group_type>] [DIM=<dim>] [TIMELEVELS=<num>] \
-   [SIZE=<size in each direction>] [DISTRIB=<distribution_type>] \
-   [GHOSTSIZE=<ghostsize>] [STAGGER=<stagger-specification>]
-[{
- [ <variable_name>[,]<variable_name>
-   <variable_name> ]
-} ["<group_description>"] ]
-\end{verbatim}
+The specification for a group declaration
+(fully described in Appendix~\ref{sec:Appendix.interface}) is,
+
+\begin{alltt}
+<\var{data_type}> <\var{group_name}> [TYPE=<\var{group_type}>] [DIM=<\var{dim}>] [TIMELEVELS=<\var{num}>] 
+   [SIZE=<\var{size in each direction}>] [DISTRIB=<\var{distribution_type}>] 
+   [GHOSTSIZE=<\var{ghostsize}>] [STAGGER=<\var{stagger-specification}>]
+[\{
+ [ <\var{variable_name}>[,]<\var{variable_name}>
+   <\var{variable_name}> ]
+\} ["<\var{group_description}>"] ]
+\end{alltt}
 
 Currently, the names of groups and variables must be distinct.
 
@@ -795,9 +810,9 @@ Currently, the names of groups and variables must be distinct.
 
 \section{Data Type}
 
-Cactus supports integer, real, complex and character variables, in
+Cactus supports integer, real, complex and character variable types, in
 various different sizes.  (Sizes in the following refer to the number of
-bytes the type takes).
+bytes occupied by the a variable of the type).
 
 \begin{Lentry}
 \item[INTEGER]
@@ -815,7 +830,7 @@ This is a 1 byte data type.
 Normally a thorn should use the default types ---
 {\tt CCTK\_INT}, {\tt CCTK\_REAL}, {\tt CCTK\_COMPLEX} --- rather than explicitly setting the size, as this gives maximum
 portability. Also, the defaults can be changed at configuration time (see
-\ref{Compilation-Available_Options}), and this allows people to compile the
+\ref{subsec:Compilation-Available_Options}), and this allows people to compile the
 code with different precisions to test for roundoff effects, or to run more
 quickly with a lower accuracy.
 
@@ -920,6 +935,7 @@ responsible for assigning the size on each processor.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Ghost Size}
+\label{sec:ghost_size}
 
 Cactus is based upon a \textit{distributed computing} paradigm.  That is,
 the problem domain is split into blocks, each of which is assigned to
@@ -976,6 +992,7 @@ ghostzones as your stencil size requires.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Staggering}
+\label{sec:staggering}
 
 The staggering of a gridfunction or array describes the \emph{physical}
 placement of that gridfunction relative to the supporting grid
@@ -997,7 +1014,7 @@ used.
 
 The type of staggering applied to a gridfunction can be specified in
 the {\tt interface.ccl} file by the attribute {\tt stagger} (see
-\ref{sec:in}). Cactus supports three kinds of staggering
+\ref{sec:Appendix.interface}). Cactus supports three kinds of staggering
 per dimension. The physical location of a gridfunction is shifted
 relative to the default position by adding the following values to the
 stagger attribute:
@@ -1040,7 +1057,13 @@ provides a set of querying APIs.
 
 \subsection{Group Information}
 
-Fundamental information about grid functions (e.g.\ local grid size and location, number of ghostzones) is passed through the argument list of scheduled routines (see~\ref{sec:cava2}). To obtain similar information from non-scheduled routines, or for general grid variables, a set of functions are provided, the last two letters of which specify whether the information is requested using a group name ({\tt GN}) or index ({\tt GI}), or a variable name ({\tt VN}) or index ({\tt VI}). 
+Fundamental information about grid functions (e.g.\ local grid size and
+location, number of ghostzones) is passed through the argument list of
+scheduled routines (see~\ref{sec:cactus_variables_c}). To obtain similar information
+from non-scheduled routines, or for general grid variables, a set of
+functions are provided, the last two letters of which specify whether
+the information is requested using a group name ({\tt GN}) or index
+({\tt GI}), or a variable name ({\tt VN}) or index ({\tt VI}). 
 
 \begin{itemize}
 
@@ -1086,15 +1109,15 @@ then the Flesh validates these values against the ranges the thorn writers have
 specified to be valid.  Once validated, parameter values are fixed, and cannot
 be changed (unless the parameter is specified to be \textit{steerable}, see
 below).  For a detailed discussion of the {\tt param.ccl} syntax see
-Appendix \ref{sec:pa}.
+Appendix \ref{sec:Appendix.param}.
 
 The full specification for a parameter declaration is
-\begin{verbatim}
-[EXTENDS|USES] <parameter_type>[[<size>]] <parameter name> "<parameter description>"
-{
-  <PARAMETER_RANGES>
-} <default value>
-\end{verbatim}
+\begin{alltt}
+[EXTENDS|USES] <\var{parameter_type}>[[<\var{size}>]] <\var{parameter name}> "<\var{parameter description}>"
+\{
+  <\var{PARAMETER_RANGES}>
+\} <\var{default value}>
+\end{alltt}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -1119,14 +1142,14 @@ of range is determined by the type of parameter.
 
 The range specification is of the form
 
-\begin{verbatim}
+\begin{alltt}
 
-lower:upper:stride
+\var{lower}:\var{upper}:\var{stride}
 
-\end{verbatim}
+\end{alltt}
 
-where \textit{lower} and \textit{upper} specify the lower and upper allowed
-range, and \textit{stride} allows numbers to be be missed out.  e.g.\
+where \var{lower} and \var{upper} specify the lower and upper allowed
+range, and \var{stride} allows numbers to be be missed out.  e.g.\
 \begin{verbatim}
 1:21:2
 \end{verbatim}
@@ -1139,10 +1162,10 @@ infinity, and the default stride is one.
 \subsection{Real}
 
 The range specification is of the form
-\begin{verbatim}
-lower:upper
-\end{verbatim}
-where \textit{lower} and \textit{upper} specify the lower and upper allowed
+\begin{alltt}
+\var{lower}:\var{upper}
+\end{alltt}
+where \var{lower} and \var{upper} specify the lower and upper allowed
 range.  A missing end of range (or a `{\t *}') implies negative or positive
 infinity.  The above is inclusive of the endpoints.  A `{\tt (}'
 (or `{\tt )}') before (or after) the lower (or upper) range specifies an open
@@ -1194,34 +1217,34 @@ determines if the specifications are inconsistent, but does allow the
 user to schedule a routine with respect to another routine which may not
 exist.
 For a detailed discussion of the {\t schedule.ccl} syntax see
-Appendix~\ref{sec:sc}.
+Appendix~\ref{sec:Appendix.schedule}.
 
 A usual simple specification for a schedule declaration is 
-\begin{verbatim}schedule <function name> AT <schedule bin> 
-{
-  LANG: <language>
-  [STORAGE:       <group>,<group>...]
-} "Description of function"
-\end{verbatim}
+\begin{alltt}schedule <\var{function name}> AT <\var{schedule bin}> 
+\{
+  LANG: <\var{language}>
+  [STORAGE:       <\var{group}>,<\var{group}>...]
+\} "\var{Description of function}"
+\end{alltt}
 
 The full specification for a schedule declaration is
-\begin{verbatim}schedule [GROUP] <function|schedule group name> AT|IN <schedule bin|group name> \
-                 [BEFORE|AFTER <item>] [WHILE <variable>] [AS <alias>]
-{
-  LANG: <language>
-  [STORAGE:       <group>,<group>...]
-  [TRIGGER:       <group>,<group>...]
-  [SYNC:          <group>,<group>...]
-  [OPTIONS:       <option>,<option>...]
-} "Description of function or schedule group"
-\end{verbatim}
+\begin{alltt}schedule [GROUP] <function|\var{schedule group name}> AT|IN <\var{schedule bin}|\var{group name}> 
+         [BEFORE|AFTER <\var{item}>] [WHILE <\var{variable}>] [AS <\var{alias}>]
+\{
+  LANG: <\var{language}>
+  [STORAGE:       <\var{group}>,<\var{group}>...]
+  [TRIGGER:       <\var{group}>,<\var{group}>...]
+  [SYNC:          <\var{group}>,<\var{group}>...]
+  [OPTIONS:       <\var{option}>,<\var{option}>...]
+\} "\var{Description of function or schedule group}"
+\end{alltt}
 
 This full schedule specification consists of a mandatory part, a set
 of options, and the main body limited by braces, referred to as the
-\textit{schedule block}.
+\texttt{schedule block}.
 
 Each schedule item is scheduled either {\tt AT} a particular
-\textit{scheduling bin}, or {\tt IN} a schedule \textit{group}.
+\var{scheduling bin}, or {\tt IN} a schedule \var{group}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -1414,7 +1437,7 @@ A Cactus macro {\tt CCTK\_ARGUMENTS} is defined for each thorn
 to contain:
 \begin{itemize}
 \item General information about the grid hierarchy, for example
-      the number of grid points used. See Section \ref{sec:cava2} for a
+      the number of grid points used. See Section \ref{sec:cactus_variables_c} for a
       complete list.
 \item All the grid variables defined in the thorn's {\tt interface.ccl}
 \item All the grid variables required from other thorns as requested by
@@ -1463,7 +1486,7 @@ provides a mechanism for converting a string parameter to a Fortran string.
 For example, if {\tt operator} is a Cactus string parameter holding the name of a reduction operator whose handle you need to find, you cannot pass it
 directly into the subroutine {\tt CCTK\_ReductionHandle} which is expecting
 a Fortran string. Instead, the following is needed:
-{\tt
+
 \begin{verbatim}
       character*200 fortran_operator
       CCTK_INT      fortran_operator_len
@@ -1472,7 +1495,6 @@ a Fortran string. Instead, the following is needed:
       call CCTK_FortranString(fortran_operator_len,operator,fortran_operator)
       call CCTK_ReductionHandle(handle,fortran_operator(1:fortran_operator_len))
 \end{verbatim}
-}
 
 
 
@@ -1544,11 +1566,10 @@ Fortran 90 modules should be included in a thorn's {\tt make.code.deps} file
 routines which use them. This is especially important for parallel
 building. For example, if a routine in {\tt MyRoutine.F} uses a module
 in {\tt MyModule.F} add the line:
-{\tt
+
 \begin{verbatim}
 $(SYS_OBJD)/MyRoutine.F.o:         $(SYS_OBJD)/MyModule.F.o
 \end{verbatim}
-}
 
 \subsubsection{The {\tt MOD} function}
 
@@ -1585,7 +1606,7 @@ A Cactus macro {\tt CCTK\_ARGUMENTS} is defined for each thorn
 to contain
 \begin{itemize}
 \item General information about the grid hierarchy, for example the
-number of grid points on the processor. See Section \ref{sec:cava2}
+number of grid points on the processor. See Section \ref{sec:cactus_variables_c}
 for a complete list.
 \item All the grid variables defined in the thorn's {\tt interface.ccl}
 \item All the grid variables required from other thorns as requested by
@@ -1684,7 +1705,7 @@ Here, {\tt CCTK\_GFINDEX3D(cctkGH,i,j,k)]} expands to
 \end{verbatim}
 
 \subsection{Cactus Variables}
-\label{sec:cava2}
+\label{sec:cactus_variables_c}
 
 The Cactus variables which are passed through the macro
 {\tt CCTK\_ARGUMENTS} are
@@ -1881,14 +1902,14 @@ treat this case in a easy way is explained below. }
 \end{figure}
 
 When a thorn programmer uses staggered gridpoints, he has to be aware
-of this gridpoint anomaly. This can be done most easily by using the {\tt
-CCTK\_LSSH(<dir\_staggertype>,<direction>)} macro. For a given staggertype
-and direction, this 2d array returns the local number of gridpoints,
-including  ghostzones and the necessary change for the staggering on
-the outermost processor.
+of this gridpoint anomaly. This can be done most easily by using the
+{\tt CCTK\_LSSH(<\var{dir\_staggertype}>,<\var{direction}>)} macro.
+For a given staggertype and direction, this 2d array returns the local
+number of gridpoints, including ghostzones and the necessary change
+for the staggering on the outermost processor.
 
 \begin{Lentry}
-\item[{\tt CCTL\_LSSH(<dir\_staggertype>,<direction>)}]
+\item[{\tt CCTL\_LSSH(<\var{dir\_staggertype}>,<\var{direction}>)}]
 for a given staggertype and a direction this macro returns the number
 of processor local gridpoints, including ghostzones.
 
@@ -1905,18 +1926,18 @@ ranging from $1 \ldots$.}
 Several functions exist to derive the staggertype for a given group
 and for a certain direction.
 \begin{Lentry}
-\item[{\tt int CCTK\_GroupStaggerIndexGI(int group\_index)}] %returns the
+\item[{\tt int CCTK\_GroupStaggerIndexGI(int \var{group\_index})}] %returns the
 %\textit{staggerindex} for a given group index.
-\item[{\tt call CCTK\_GroupStaggerIndexGI(int staggerindex, int
-group\_index)}]  returns the \textit{staggerindex} for a given group index.
+\item[{\tt call CCTK\_GroupStaggerIndexGI(int \var{staggerindex}, int
+\var{group\_index})}]  returns the \var{staggerindex} for a given group index.
 \end{Lentry}
 \vskip .45cm
 
 \begin{Lentry}
-\item[{\tt int CCTK\_GroupStaggerIndexGN(char *group\_name)}] %returns the
+\item[{\tt int CCTK\_GroupStaggerIndexGN(char *\var{group\_name})}] %returns the
 %\textit{staggerindex} for a given group name.
-\item[{\tt call CCTK\_GroupStaggerIndexGN(int staggerindex, char *group\_name)}] returns the
-\textit{staggerindex} for a given group name. \vskip .25cm
+\item[{\tt call CCTK\_GroupStaggerIndexGN(int \var{staggerindex}, char *\var{group\_name})}] returns the
+\var{staggerindex} for a given group name. \vskip .25cm
 \end{Lentry}
 \vskip .45cm
 
@@ -1924,7 +1945,9 @@ group\_index)}]  returns the \textit{staggerindex} for a given group index.
 %\item[{\tt int CCTK\_GroupStaggerIndexVI(int variable\_index)}] %returns the
 %%\textit{staggerindex} for a given variable index.
 %\item[{\tt call CCTK\_GroupStaggerIndexVI(int staggerindex, int variable\_index)}] returns the
+
 %\textit{staggerindex} for a given variable index.
+
 %\end{Lentry}
 %\vskip .45cm
 %
@@ -1932,33 +1955,34 @@ group\_index)}]  returns the \textit{staggerindex} for a given group index.
 %\item[{\tt int CCTK\_GroupStaggerIndexVN(char *variable\_name)}] %returns the
 %%\textit{staggerindex} for a given variable name.
 %\item[{\tt call CCTK\_GroupStaggerIndexVN(int staggerindex, char *variable\_name)}] returns the
+
 %\textit{staggerindex} for a given variable name.
 %\end{Lentry}
 %\vskip .45cm
 
 \begin{Lentry}
-\item[{\tt int CCTK\_StaggerIndex(char *stagger\_string)}] %return the \textit{
+\item[{\tt int CCTK\_StaggerIndex(char *\var{stagger\_string})}] %return the \textit{
 %staggerindex} for a given stagger string.
-\item[{\tt call CCTK\_StaggerIndex(int staggerindex, char *stagger\_string)}] return the \textit{staggerindex} for a given stagger string.
+\item[{\tt call CCTK\_StaggerIndex(int \var{staggerindex}, char *\var{stagger\_string})}] return the \var{staggerindex} for a given stagger string.
 \end{Lentry}
 \vskip .45cm
 
 \begin{Lentry}
-\item[{\tt int CCTK\_DirStaggerIndex(int direction, char *stagger\_string)}]
+\item[{\tt int CCTK\_DirStaggerIndex(int \var{direction}, char *\var{stagger\_string})}]
 %returns the \textit{directional staggerindex} for a given direction and
 %stagger string.
-\item[{\tt call CCTK\_DirStaggerIndex(int dir\_staggerindex, int direction, char *stagger\_string)}]
-returns the \textit{directional staggerindex} for a given direction and
+\item[{\tt call CCTK\_DirStaggerIndex(int \var{dir\_staggerindex}, int \var{direction}, char *\var{stagger\_string})}]
+returns the \var{directional staggerindex} for a given direction and
 stagger string.
 \end{Lentry}
 \vskip .45cm
 
 \begin{Lentry}
-\item[{\tt int CCTK\_DirStaggerIndexI(int direction, char *stagger\_type)}]
+\item[{\tt int CCTK\_DirStaggerIndexI(int \var{direction}, char *\var{stagger\_type})}]
 %returns the \textit{directional staggerindex} for a given direction and
 %staggerindex.
-\item[{\tt call CCTK\_DirStaggerIndexI(int dir\_direction, char *stagger\_type)}]
-returns the \textit{directional staggerindex} for a given direction and
+\item[{\tt call CCTK\_DirStaggerIndexI(int \var{dir\_direction}, char *\var{stagger\_type})}]
+returns the \var{directional staggerindex} for a given direction and
 staggerindex.
 
 \end{Lentry}
@@ -1966,7 +1990,7 @@ staggerindex.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Parallelisation}
-\label{seap}
+\label{sec:parallelisation}
 
 The Flesh itself does not actually set up grid variables. This
 is done by a \textit{driver} thorn. To allow the distribution of
@@ -2003,7 +2027,7 @@ is a parallel unigrid driver.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Coordinates}
-\label{sec:coordinates}
+\label{sec:CactusAPI.coordinates}
 
 The Flesh provides utility routines for registering and querying
 coordinate information. The Flesh does not provide any coordinates
@@ -2031,9 +2055,10 @@ Following conventions for coordinate system and coordinate names
 provides a means for other thorns to use the physical properties of
 coordinate systems, without being tied to a particular thorn.
 
-A registered coordinate system can be referred to by both its name and
-an associated handle. Passing such an integer handle instead of the
-name string may be necessary for calling C routines from Fortran.
+A registered coordinate system can be referred to by either its name or
+an associated integer known as a \textit{handle}. Passing a handle instead
+of the name string may be necessary for calling C routines from Fortran.
+
 
 \subsection{Registering Coordinates and Coordinate Properties}
 
@@ -2209,18 +2234,18 @@ this call returns the {\tt addresses} or the minimum and maximum values.
 For example, the range of the {\tt y} coordinate of the {\tt cart3d}
 coordinate system can be found using
 
-{\tt
-CCTK\_REAL lower, upper;\\
-int ierr;\\
-ierr = CCTK\_CoordRange(cctkGH, \&lower, \&upper, -1, "y", "cart3d");
-}
+\begin{verbatim}
+CCTK_REAL lower, upper;
+int ierr;
+ierr = CCTK_CoordRange(cctkGH, &lower, &upper, -1, "y", "cart3d");
+\end{verbatim}
 or alternatively, using the direction
 
-{\tt
-CCTK\_REAL lower, upper;\\
-int ierr;\\
-ierr = CCTK\_CoordRange(cctkGH, \&lower, \&upper, 2, NULL, "cart3d");
-}
+\begin{verbatim}
+CCTK_REAL lower, upper;
+int ierr;
+ierr = CCTK_CoordRange(cctkGH, &lower, &upper, 2, NULL, "cart3d");
+\end{verbatim}
 
 
 \item[{\tt CCTK\_CoordLocalRange}]
@@ -2230,17 +2255,18 @@ grid hierarchy. WARNING: This utility only currently works for regular
 cartesian grids. For example, the local processor range of the
 {\tt y} coordinate of the {\tt cart3d} coordinate system can be found using
 
-{\tt
-CCTK\_REAL lower, upper;\\
-int ierr;\\
-ierr = CCTK\_CoordLocalRange(cctkGH, \&lower, \&upper, -1, "y", "cart3d");}
+\begin{verbatim}
+CCTK_REAL lower, upper;
+int ierr;
+ierr = CCTK_CoordLocalRange(cctkGH, &lower, &upper, -1, "y", "cart3d");
+\end{verbatim}
 or alternatively, using the direction
 
-{\tt
-CCTK\_REAL lower, upper;\\
-int ierr;\\
-ierr = CCTK\_CoordLocalRange(cctkGH, \&lower, \&upper, 2, NULL, "cart3d");
-}
+\begin{verbatim}
+CCTK_REAL lower, upper;
+int ierr;
+ierr = CCTK_CoordLocalRange(cctkGH, &lower, &upper, 2, NULL, "cart3d");
+\end{verbatim}
 
 \item[{\tt CCTK\_CoordRangePhysIndex}]
 
@@ -2285,7 +2311,7 @@ the following function calls:
 
 \begin{description}
 
-\item {\tt CCTK\_OutputGH (const cGH *GH)}
+\item {\tt CCTK\_OutputGH (const cGH *\var{GH})}
 
 This call loops over all registered IO methods, calling the routine
 that each method has registered for {\t OutputGH}.  The expected
@@ -2295,37 +2321,37 @@ routines (that is, not all methods will supply routines to output all
 different types of variables) and if the method decides it is an
 appropriate time to output.
 
-\item {\tt CCTK\_OutputVar (const cGH *GH, const char *varname)}
+\item {\tt CCTK\_OutputVar (const cGH *\var{GH}, const char *\var{varname})}
 
-Output a variable {\t varname} looping over all registered IO methods.
+Output a variable \var{varname} looping over all registered IO methods.
 The output should take place if at all possible.  If output goes into
 a file and the appropriate file exists the data is appended, otherwise
 a new file is created.
 
-\item {\tt CCTK\_OutputVarAs (const cGH *GH, const char *varname, const char *alias)}
+\item {\tt CCTK\_OutputVarAs (const cGH *\var{GH}, const char *\var{varname}, const char *\var{alias})}
 
-Output a variable {\t varname} looping over all registered IO methods.
+Output a variable \var{varname} looping over all registered IO methods.
 The output should take place if at all possible.  If output goes into
 a file and the appropriate file exists the data is appended, otherwise
-a new file is created.  Uses {\t alias} as the name of the variable
+a new file is created.  Uses \var{alias} as the name of the variable
 for the purpose of constructing a filename.
 
-\item {\tt CCTK\_OutputVarByMethod (const cGH *GH, const char *varname, const char *methodname)}
+\item {\tt CCTK\_OutputVarByMethod (const cGH *\var{GH}, const char *\var{varname}, const char *\var{methodname})}
 
-Output a variable {\t varname} using the IO method {\t methodname} if
+Output a variable \var{varname} using the IO method \var{methodname} if
 it is registered. The output should take place if at all possible.  If
 output goes into a file and the appropriate file exists the data is
 appended, otherwise a new file is created.
 
-\item {\tt CCTK\_OutputVarAsByMethod (const cGH *GH,
-                                     const char *varname,
-                                     const char *methodname,\\
-                                     const char *alias)}
+\item {\tt CCTK\_OutputVarAsByMethod (const cGH *\var{GH},
+                                     const char *\var{varname},
+                                     const char *\var{methodname},\\
+                                     const char *\var{alias})}
 
-Output a variable {\t varname} using the IO method {\t methodname} if
+Output a variable \var{varname} using the IO method \var{methodname} if
 it is registered.  The output should take place if at all possible.
 If output goes into a file and the appropriate file exists the data is
-appended, otherwise a new file is created.  Uses {\t alias} as the
+appended, otherwise a new file is created.  Uses \var{alias} as the
 name of the variable for the purpose of constructing a filename.
 
 \end{description}
@@ -2653,7 +2679,6 @@ variable across multiple processors.  The result of the reduction
 operation can be placed on the specified processor or on all
 processors.
 
-{\t
 \begin{verbatim}
 int CCTK_ReduceLocScalar (const cGH *GH,
                           int processor,
@@ -2670,7 +2695,6 @@ call CCTK_ReduceLocScalar(integer returnvalue,
                           out_scalar,
                           integer data_type)
 \end{verbatim}
-}
 \begin{Lentry}
 \item[{\tt returnvalue}] the return value of the operation.  A
 negative value indicates a failure to perform the reduction.  A zero
@@ -2700,7 +2724,6 @@ communicating. Use the values as specified in \ref{sec:datyansi}.
 reduce a 1d array on all processors to a 1d array.  This reduction is carried
 out element by element. The arrays need to have the same size on all
 processors.
-{\t
 \begin{verbatim}
 int CCTK_ReduceLocArrayToArray1D( const cGH *GH,
                                   int processor,
@@ -2719,7 +2742,6 @@ call CCTK_ReduceLocArrayToArray1D( integer returnvalue
                                   integer xsize,
                                   integer data_type)
 \end{verbatim}
-}
 
 \begin{Lentry}
 \item[{\tt returnvalue}] the return value of the operation.  A
@@ -2747,7 +2769,6 @@ communicating. Use the values as specified in \ref{sec:datyansi}.
 \vskip 0.24cm
 {\bf Reduction of 2d arrays} Use these routines to reduce a 2d array, element by element. The arrays need to have the same size on all
 processors.
-{\t
 \begin{verbatim}
 int CCTK_ReduceLocArrayToArray2D( const cGH *GH,
                                  int processor,
@@ -2769,7 +2790,6 @@ call CCTK_ReduceLocArrayToArray2D( integer returnvalue
                                    integer ysize,
                                    integer data_type)
 \end{verbatim}
-}
 
 \begin{Lentry}
 \item[{\tt returnvalue}] the return value of the operation.  A
@@ -2799,7 +2819,6 @@ communicating. Use the values as specified in \ref{sec:datyansi}.
 \vskip 0.24cm
 {\bf Reduction of 3d arrays} Use these routines to reduce a 3d array, element by element. The arrays need to have the same size on all
 processors.
-{\t
 \begin{verbatim}
 int CCTK_ReduceLocArrayToArray3D(const cGH *GH,
                                  int processor,
@@ -2822,7 +2841,6 @@ call CCTK_ReduceLocArrayToArray3D(integer returnvalue
                                  integer zsize,
                                  integer data_type)
 \end{verbatim}
-}
 
 \begin{Lentry}
 \item[{\tt returnvalue}] the return value of the operation.  A
@@ -2916,7 +2934,7 @@ with ``{\tt //}''),
 should only be used in C++ source code).
 
 The Flesh and the Cactus thorns use the {\tt grdoc} Code Documenting
-System\\(\texttt{http://jean-luc.aei.mpg.de/Codes/grdoc/}) to document
+System\\(\url{http://jean-luc.aei.mpg.de/Codes/grdoc/}) to document
 source code.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -3091,7 +3109,7 @@ copyright details, and a synopsis of what the thorn does.
 
 The LaTeX file {\tt doc/documentation.tex} is included in Thorn Guides
 built by the Cactus make system. (e.g.\ by {\tt gmake
-$<$config$>$-ThornGuide}). Ideally this file should contain complete
+$<$\var{config}$>$-ThornGuide}). Ideally this file should contain complete
 (and \textit{up-to-date}) details about the thorn, exactly what is
 relevant is for the authors to decide, but remember that the Cactus
 make system automatically parses the thorn CCL files to include
@@ -3141,11 +3159,9 @@ documentation:
     included using a relative link, so that updates to the style file
     are applied to all thorns.
 
-{\tt
 \begin{verbatim}
 \usepackage{../../../../doc/latex/cactus}
 \end{verbatim}
-}
 
   \item Aside from the {\tt date}, {\tt author}, and {\tt title} fields,
     all of the documentation to be included in a Thorn Guide should be
@@ -3169,7 +3185,6 @@ and
    Graphics figures should be included using the {\tt includegraphics}
    command (not {\tt epsffig}), with no file extension specified. For example,
 
-{\tt
 \begin{verbatim}
 \begin{figure}[ht]
   \begin{center}
@@ -3179,7 +3194,6 @@ and
   \label{MyArrangement_MyThorn_MyLabel}
 \end{figure}
 \end{verbatim}
-}
 
  \item All {\bf labels}, {\bf citations}, {\bf references}, and {\bf
    graphic images} names should conform to the following guidelines:
@@ -3192,7 +3206,6 @@ and
         bibitem} command, for example, a bibliography section should
         look like:
 
-{\tt
 \begin{verbatim}
 \begin{thebibliography}{9}
   \bibitem{MyArrangement_MyThorn_Author99}
@@ -3200,14 +3213,13 @@ and
   1--16. \url{http://www.nowhere.com/}}
 \end{thebibliography}
 \end{verbatim}
-}
 
 \end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Adding a test suite}
-\label{sec:adatesu}
+\label{sec:adding_test_suite}
 
 To add a test suite to your thorn, devise a series of parameter
 files which use as many aspects of your thorn as possible.
@@ -3222,7 +3234,7 @@ in your thorn.
 Document carefully any situations or architectures in which your test
 suite does not give the correct answers.
 
-For details on running the test suites, see Section~\ref{sec:te}.
+For details on running the test suites, see Section~\ref{sec:testing}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -3356,18 +3368,16 @@ CactusTest/TestTimers}.
 The first action for any timer is to create it, using {\t
 CCTK\_TimerCreate}.  This can be performed at any time, as long as it
 precedes using the timer:
-{\tt
+
 \begin{verbatim}
 #include "cctk_Timers.h"
 ierr = CCTK_TimerCreate(`TimeMyStuff`);
 \end{verbatim}
-}
 
 {\bf Instrumenting a section of code}
 
 Code sections are instrumented using the Start, Stop and Reset functions. These
 functions are applied to the chosen timer using all the registered clocks.
-{\tt
 \begin{verbatim}
 #include "cctk_Timers.h"
 ierr = CCTK_TimerStart(`TimeMyStuff`);
@@ -3375,14 +3385,12 @@ ierr = CCTK_TimerStart(`TimeMyStuff`);
 y = CalculateNewValue(y);
 ierr = CCTK_TimerStop(`TimeMyStuff`);
 \end{verbatim}
-}
 
 {\bf Accessing the timer results}
 
 This is a little bit cumbersome at the moment, since the timer data can be
 of different types.
 
-{\tt
 \begin{verbatim}
 #include "cctk_Timers.h"
 cTimerData *info;
@@ -3416,7 +3424,6 @@ for (i = 0; i < info->n_vals; i++)
 }
 ierr = CCTK_TimerDestroyData(info);
 \end{verbatim}
-}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -3434,9 +3441,9 @@ Any thorn
 which uses the include file must declare this in its
 {\tt interface.ccl} with the line
 
-\begin{verbatim}
-USES INCLUDE [SOURCE|HEADER]: <file_name>
-\end{verbatim}
+\begin{alltt}
+USES INCLUDE [SOURCE|HEADER]: <\var{file_name}>
+\end{alltt}
 
 (If the optional \verb![SOURCE|HEADER]! is omitted, \verb|HEADER| is
 assumed.  Note that this can be dangerous, as included \emph{source}
@@ -3446,9 +3453,9 @@ inactive}.  Thus it is recommended to always include the optional
 \verb![SOURCE|HEADER]! specification.)  Any thorn which wishes to add
 to this include file, declares in its own {\tt interface.ccl}
 
-\begin{verbatim}
-INCLUDE [SOURCE|HEADER]: <file_to_include> in <file_name>
-\end{verbatim}
+\begin{alltt}
+INCLUDE [SOURCE|HEADER]: <\var{file_to_include}> in <\var{file_name}>
+\end{alltt}
 
 \subsubsection{Example}
 
@@ -4016,10 +4023,10 @@ Data Type & Size (bytes) & Variable Type & Fortran Equivalent\\
 In addition Cactus provides three generic numeric data types which map onto
 the compilers' native data types used to represent integer, real, and complex
 values. The size for these generic types can be chosen at configuration time
-(see \ref{Compilation-Available_Options}). This is to allow the code to be
-easily run at different precisions. Note that the effectiveness of running the
-code at a lower or higher precision depends crucially on all thorns being used
-making consistent use of the these generic data types:
+(see \ref{subsec:Compilation-Available_Options}). This is to allow the code to
+be run easily at different precisions. Note that the effectiveness of running
+the code at a lower or higher precision depends crucially on all thorns being
+used making consistent use of the these generic data types:
 
 \begin{center}
 \begin{tabular}{|l|l|l|l|}
