@@ -28,8 +28,6 @@ CCTK_FILEVERSION(IO_FortranBindingsIO_c)
 
 void CCTK_FCALL CCTK_FNAME (CCTK_OutputGH)
                            (int *istat, const cGH *GH);
-void CCTK_FCALL CCTK_FNAME (CCTK_OutputVar)
-     (int *istat, const cGH *GH, ONE_FORTSTRING_ARG);
 void CCTK_FCALL CCTK_FNAME (CCTKi_RegisterIOMethod)
                            (int *handle, TWO_FORTSTRING_ARG);
 
@@ -69,42 +67,6 @@ void CCTK_FCALL CCTK_FNAME (CCTK_OutputGH)
 {
   *istat = CCTK_OutputGH (GH);
 }
-
- /*@@
-   @routine    CCTK_OutputVar
-   @date       
-   @author     
-   @desc
-   Fortran binding for CCTK_OutputVar
-   @enddesc
-   @var        istat
-   @vdesc      error code
-   @vtype      int
-   @vio        out
-   @endva
-   @var        GH
-   @vdesc      grid hierachy
-   @vtype      const GH *
-   @vio        in
-   @endvar
-   @var        name
-   @vdesc      Name of variable to outut
-   @vtype      const char *
-   @vio        in
-   @endvar
-   @returntype int
-   @returndesc
-
-   @endreturndesc
-@@*/
-void CCTK_FCALL CCTK_FNAME (CCTK_OutputVar)
-                           (int *istat, const cGH *GH, ONE_FORTSTRING_ARG)
-{
-  ONE_FORTSTRING_CREATE (var);
-  *istat = CCTK_OutputVar (GH, var);
-  free (var);
-}
-
 
  /*@@
    @routine    CCTKi_RegisterIOMethod

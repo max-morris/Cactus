@@ -52,6 +52,12 @@ void CCTK_FCALL CCTK_FNAME (CCTK_OutputVarAsByMethod)
                            (int *ierr, const cGH *GH, THREE_FORTSTRING_ARG);
 void CCTK_FCALL CCTK_FNAME (CCTK_OutputVarByMethod)
                            (int *ierr, const cGH *GH, TWO_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (CCTK_OutputVar)
+     (int *istat, const cGH *GH, ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (CCTK_OutputVarAs)
+     (int *istat, const cGH *GH, TWO_FORTSTRING_ARG);
+
+
 int CCTKi_TriggerSaysGo (const cGH *GH, int variable);
 int CCTKi_TriggerAction (void *GH, int variable);
 
@@ -384,6 +390,15 @@ int CCTK_OutputVarAs (const cGH *GH, const char *var, const char *alias)
   return (retval);
 }
 
+void CCTK_FCALL CCTK_FNAME (CCTK_OutputVarAs)
+                           (int *istat, const cGH *GH, TWO_FORTSTRING_ARG)
+{
+  TWO_FORTSTRING_CREATE (var,as);
+  *istat = CCTK_OutputVarAs (GH, var,as);
+  free (var);
+  free (as);
+}
+
 
  /*@@
    @routine    CCTK_OutputVar
@@ -419,6 +434,15 @@ int CCTK_OutputVar (const cGH *GH, const char *var)
 
   return (retval);
 }
+
+void CCTK_FCALL CCTK_FNAME (CCTK_OutputVar)
+                           (int *istat, const cGH *GH, ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (var);
+  *istat = CCTK_OutputVar (GH, var);
+  free (var);
+}
+
 
 
  /*@@
