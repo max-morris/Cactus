@@ -3,7 +3,7 @@
 #    @file      aix
 #    @date      Wed Jul 14 12:38:45 1999
 #    @author    Tom Goodale
-#    @desc 
+#    @desc
 #               Known-architectures file for IBM AIX systems
 #    @enddesc
 #    @version   $Header$
@@ -43,7 +43,7 @@ else
   : ${F77_DEBUG_FLAGS='-g'}
 
   : ${F90_SUFFIX='f'}
-  CCTK_WriteLine make.arch.defn 'F90FLAGS += $(AIX_$(subst .,,$(suffix $<))_FLAGS)' 
+  CCTK_WriteLine make.arch.defn 'F90FLAGS += $(AIX_$(subst .,,$(suffix $<))_FLAGS)'
   CCTK_WriteLine make.arch.defn 'AIX_F90_FLAGS ='
   CCTK_WriteLine make.arch.defn 'AIX_f90_FLAGS ='
   CCTK_WriteLine make.arch.defn 'AIX_F_FLAGS = -qfixed'
@@ -54,7 +54,7 @@ else
      : ${C_DEPEND_OUT=' > $@'}
      ;;
     cc|xlc|xlc_r)
-     : ${C_DEPEND='$(CPP) -M $(CPPFLAGS)'}
+     : ${C_DEPEND='$(CC) -E -M $(CPPFLAGS)'}
      : ${C_DEPEND_OUT=' > /dev/null ; mv $(basename $(basename $@)).u $@'}
      : ${CFLAGS="-q$AIX_BITS -qspill=17000 -qmaxmem=-1"}
      ;;
@@ -91,7 +91,7 @@ else
   fi
 
   # MPI stuff
- 
+
   if test -n "$MPI" ; then
     # must not set linker flags for 64-bit configurations
     # (LD will figure these out)
@@ -117,6 +117,6 @@ else
          ;;
       esac
     fi
-  fi          
+  fi
 
 fi
