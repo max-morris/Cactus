@@ -304,73 +304,74 @@ sub get_applications
 	  {
 	    # Checkout F90 WaveToy
 	    print("\n");
-	    &CheckOut("CactusWave/WaveToyF90,$repository");
-	    &CheckOut("CactusWave/IDScalarWave,$repository");
-	    &CheckOut("CactusBase/Boundary,$repository");
-	    &CheckOut("CactusBase/CartGrid3D,$repository");
-	    &CheckOut("CactusBase/IOUtil,$repository");
-	    &CheckOut("CactusBase/IOBasic,$repository");
-	    &CheckOut("CactusBase/Time,$repository");
-	    &CheckOut("CactusPUGHIO/IOASCII,$repository");
-	    &CheckOut("CactusPUGH/PUGH,$repository");
+	    &CheckOut("CactusWave/WaveToyF90",$repository);
+	    &CheckOut("CactusWave/IDScalarWave",$repository);
+	    &CheckOut("CactusBase/Boundary",$repository);
+	    &CheckOut("CactusBase/CartGrid3D",$repository);
+	    &CheckOut("CactusBase/IOUtil",$repository);
+	    &CheckOut("CactusBase/IOBasic",$repository);
+	    &CheckOut("CactusBase/Time",$repository);
+	    &CheckOut("CactusPUGHIO/IOASCII",$repository);
+	    &CheckOut("CactusPUGH/PUGH",$repository);
 	    print("Completed checkout of application Wave F90\n");
 	  }
 	  elsif ($i == 2)
 	  {
 	    # Checkout F77 WaveToy
 	    print("\n");
-	    &CheckOut("CactusWave/WaveToyF77,$repository");
-	    &CheckOut("CactusWave/IDScalarWave,$repository");
-	    &CheckOut("CactusBase/Boundary,$repository");
-	    &CheckOut("CactusBase/CartGrid3D,$repository");
-	    &CheckOut("CactusBase/IOUtil,$repository");
-	    &CheckOut("CactusBase/IOBasic,$repository");
-	    &CheckOut("CactusBase/Time,$repository");
-	    &CheckOut("CactusPUGHIO/IOASCII,$repository");
-	    &CheckOut("CactusPUGH/PUGH,$repository");
+	    &CheckOut("CactusWave/WaveToyF77",$repository);
+	    &CheckOut("CactusWave/IDScalarWave",$repository);
+	    &CheckOut("CactusBase/Boundary",$repository);
+	    &CheckOut("CactusBase/CartGrid3D",$repository);
+	    &CheckOut("CactusBase/IOUtil",$repository);
+	    &CheckOut("CactusBase/IOBasic",$repository);
+	    &CheckOut("CactusBase/Time",$repository);
+	    &CheckOut("CactusPUGHIO/IOASCII",$repository);
+	    &CheckOut("CactusPUGH/PUGH",$repository);
 	    print("Completed checkout of application Wave F77\n");
 	  }	  
 	  elsif ($i == 3)
 	  {
 	    # Checkout C WaveToy
 	    print("\n");
-	    &CheckOut("CactusWave/WaveToyC,$repository");
-	    &CheckOut("CactusWave/IDScalarWave,$repository");
-	    &CheckOut("CactusBase/Boundary,$repository");
-	    &CheckOut("CactusBase/CartGrid3D,$repository");
-	    &CheckOut("CactusBase/IOUtil,$repository");
-	    &CheckOut("CactusBase/IOBasic,$repository");
-	    &CheckOut("CactusBase/Time,$repository");
-	    &CheckOut("CactusPUGHIO/IOASCII,$repository");
-	    &CheckOut("CactusPUGH/PUGH,$repository");
+	    &CheckOut("CactusWave/WaveToyC",$repository);
+	    &CheckOut("CactusWave/IDScalarWave",$repository);
+	    &CheckOut("CactusBase/Boundary",$repository);
+	    &CheckOut("CactusBase/CartGrid3D",$repository);
+	    &CheckOut("CactusBase/IOUtil",$repository);
+	    &CheckOut("CactusBase/IOBasic",$repository);
+	    &CheckOut("CactusBase/Time",$repository);
+	    &CheckOut("CactusPUGHIO/IOASCII",$repository);
+	    &CheckOut("CactusPUGH/PUGH",$repository);
 	    print("Completed checkout of application Wave C\n");
 	  }	  
 	  elsif ($i == 4)
 	  {
 	    # Checkout C++ WaveToy
 	    print("\n");
-	    &CheckOut("CactusWave/WaveToyCXX,$repository");
-	    &CheckOut("CactusWave/IDScalarWaveCXX,$repository");
-	    &CheckOut("CactusBase/Boundary,$repository");
-	    &CheckOut("CactusBase/CartGrid3D,$repository");
-	    &CheckOut("CactusBase/IOUtil,$repository");
-	    &CheckOut("CactusBase/IOBasic,$repository");
-	    &CheckOut("CactusBase/Time,$repository");
-	    &CheckOut("CactusPUGHIO/IOASCII,$repository");
-	    &CheckOut("CactusPUGH/PUGH,$repository");
+	    &CheckOut("CactusWave/WaveToyCXX",$repository);
+	    &CheckOut("CactusWave/IDScalarWaveCXX",$repository);
+	    &CheckOut("CactusBase/Boundary",$repository);
+	    &CheckOut("CactusBase/CartGrid3D",$repository);
+	    &CheckOut("CactusBase/IOUtil",$repository);
+	    &CheckOut("CactusBase/IOBasic",$repository);
+	    &CheckOut("CactusBase/Time",$repository);
+	    &CheckOut("CactusPUGHIO/IOASCII",$repository);
+	    &CheckOut("CactusPUGH/PUGH",$repository);
 	    print("Completed checkout of application Wave C++\n");
 	  }	  
           elsif ($i == 5)
           {
             # Checkout ADM Benchmark
 	    print("\n");
-	    &CheckOut("CactusEinstein/ADM,$repository");
-	    &CheckOut("CactusEinstein/Einstein,$repository");
-	    &CheckOut("CactusBase/Time,$repository");
-	    &CheckOut("CactusBase/CartGrid3D,$repository");
-	    &CheckOut("CactusBase/IOUtil,$repository");
-	    &CheckOut("CactusPUGHIO/IOASCII,$repository");
-	    &CheckOut("CactusPUGH/PUGH,$repository");
+	    &CheckOut("CactusEinstein/ADM",$repository);
+	    &CheckOut("CactusEinstein/Einstein",$repository);
+	    &CheckOut("CactusBase/Boundary",$repository);
+	    &CheckOut("CactusBase/Time",$repository);
+	    &CheckOut("CactusBase/CartGrid3D",$repository);
+	    &CheckOut("CactusBase/IOUtil",$repository);
+	    &CheckOut("CactusPUGHIO/IOASCII",$repository);
+	    &CheckOut("CactusPUGH/PUGH",$repository);
 	    print("Completed checkout of application Benchmark (ADM)\n");
           }     
 	}
