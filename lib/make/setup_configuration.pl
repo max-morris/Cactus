@@ -55,22 +55,22 @@ if (! -d "$configs_dir" && ! -l "$configs_dir")
   
 }
 
-chdir "$configs_dir";
+chdir "$configs_dir" || die "Internal error - could't enter $configs_dir";
 
 # The specified configuration doesn't exist
 if (! -d "$config" && ! -l "$config")
 {
   print "Creating new configuration $config.\n";
 
-  mkdir("$config",0755);
+  mkdir("$config",0755) || die "Internal error - could't create $configs_dir/$config";
 
-  chdir "$config";
+  chdir "$config" || die "Internal error - could't enter $configs_dir/$config";
 
   mkdir("build",0755);
   mkdir("lib",0755);
   mkdir("config-data",0755);
 
-  chdir "config-data";
+  chdir "config-data" || die "Internal error - could't enter $configs_dir/$config/config-data";
 
   &SetConfigureEnv();
 
@@ -84,9 +84,9 @@ if($reconfig)
 {
   print "Reconfiguring $config.\n";
 
-  chdir "$config";
+  chdir "$config" || die "Internal error - could't enter $configs_dir/$config";
 
-  chdir "$configs_dir";
+  chdir "config-data" || die "Internal error - couldn't enter $configs_dir/$config/config-data";
 
   &SetConfigureEnv();
 
