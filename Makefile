@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.120 2001-09-14 14:38:12 allen Exp $
+#   @version $Id: Makefile,v 1.121 2001-09-17 17:55:54 allen Exp $
 # @@*/
 
 ##################################################################################
@@ -226,7 +226,11 @@ endif
 # Target to build a configuration
 .PHONY: $(CONFIGURATIONS)
 
-$(CONFIGURATIONS): int_version
+$(CONFIGURATIONS):
+	if test "x${MAKELEVEL}" = "x0" ; then \
+	  echo $(DIVIDER);\
+	  echo "Cactus - version: $(CCTK_VERSION)"; \
+	fi; \
 	cd $(CONFIGS_DIR)/$@ 
 	$(MAKE) -f $(CCTK_HOME)/lib/make/make.configuration TOP=$(CONFIGS_DIR)/$@ CCTK_HOME=$(CCTK_HOME) $(TPARFLAGS)
 
