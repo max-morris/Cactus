@@ -6,7 +6,7 @@
 #  @desc 
 #  Parses the the configuration files for thorns.
 #  @enddesc 
-#  @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.33 1999-10-25 09:09:26 goodale Exp $
+#  @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.34 1999-11-06 10:40:42 allen Exp $
 #@@*/
 
 # Global parameter to track the number of errors from the CST
@@ -133,7 +133,7 @@ print "Creating Thorn-Flesh bindings...\n";
 
 # Create define file of active thorns
 @definethornsheader = &CreateDefineThornsHeader(%thorns);
-&OutputFile("$bindings_dir/include/", "definethorn.h", @definethornsheader);
+&OutputFile("$bindings_dir/include/", "cctk_DefineThorn.h", @definethornsheader);
 
 # Create define file for this thorn
 @definethisthornheader = &CreateDefineThisThornHeader(%thorns);
