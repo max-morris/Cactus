@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.97 2000-07-28 12:54:29 goodale Exp $
+#   @version $Id: Makefile,v 1.98 2000-09-17 09:46:58 allen Exp $
 # @@*/
 
 ##################################################################################
@@ -585,6 +585,10 @@ $(addsuffix -config,$(CONFIGURATIONS)):
 	  then \
 	    cp $(THORNLIST_DIR)/$(THORNLIST) $(CONFIGS_DIR)/$(@:%-config=%)/ThornList;\
 	  fi ; \
+	  if test -n "$(THORNS)" ; \
+          then \
+            echo $(THORNS) >> $(CONFIGS_DIR)/$@/ThornList ; \
+          fi ; \
 	  echo $(DIVIDER) ; \
 	  if test "x$(PROMPT)" = "xno" ; then \
 	    $(MAKE) $(@:%-config=%) WARN=$(WARN); \
@@ -620,6 +624,10 @@ endif
 	    then \
 	      cp $(THORNLIST_DIR)/$(THORNLIST) $(CONFIGS_DIR)/$(@:%-config=%)/ThornList;\
 	    fi ;\
+      	    if test -n "$(THORNS)" ; \
+            then \
+              echo $(THORNS) >> $(CONFIGS_DIR)/$@/ThornList ; \
+            fi ; \
 	    echo $(DIVIDER)   ;  \
 	    if test "x$(PROMPT)" = "xno" ; then \
 	      $(MAKE) $(@:%-config=%) WARN=$(WARN); \
@@ -845,6 +853,10 @@ downsize:
 	    echo Using ThornList $(THORNLIST_DIR)/$(THORNLIST) ; \
 	    cp $(THORNLIST_DIR)/$(THORNLIST) $(CONFIGS_DIR)/$@/ThornList ; \
 	  fi ; \
+	  if test -n "$(THORNS)" ; \
+          then \
+            echo $(THORNS) >> $(CONFIGS_DIR)/$@/ThornList ; \
+          fi ; \
 	  echo $(DIVIDER) ;  \
 	  if test "x$(PROMPT)" = "xno" ; then \
 	    $(MAKE) $(@:%-config=%) WARN=$(WARN); \
