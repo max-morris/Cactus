@@ -104,6 +104,8 @@ int CCTK_VTypeNumber(const char *type);
 
 int CCTK_GTypeNumber(const char *type);
 
+int CCTK_BindingsImplementationsInitialise(void);
+
 #ifdef __cplusplus
 }
 #endif

@@ -6,7 +6,7 @@
 #  @desc 
 #  Parses the the configuration files for thorns.
 #  @enddesc 
-#  @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.18 1999-07-04 12:35:38 allen Exp $
+#  @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.19 1999-07-04 20:44:58 goodale Exp $
 #@@*/
 
 # Global parameter to track the number of errors from the CST
@@ -71,6 +71,7 @@ require "$sbin_dir/output_config.pl";
 require "$sbin_dir/Orderer.pl";
 require "$sbin_dir/ImpParamConsistency.pl";
 require "$sbin_dir/CSTUtils.pl";
+require "$sbin_dir/CreateImplementationBindings.pl";
 
 #######################################################################
 #
@@ -98,7 +99,6 @@ if($debug_parameters)
 {
   &print_parameter_database(%parameter_database);
 }
-
 
 # Create all the bindings
 &CreateBindings($bindings_dir, scalar(keys %parameter_database), %parameter_database, %interface_database);
@@ -459,6 +459,7 @@ sub CreateBindings
   $start_dir = `pwd`;
 
   # Create the bindings for the subsystems.
+  &CreateImplementationBindings($bindings_dir, $n_param_database, @rest);
   &CreateParameterBindings($bindings_dir, $n_param_database, @rest);
   &CreateVariableBindings($bindings_dir, %interface_database);
   &CreateScheduleBindings($bindings_dir, scalar(keys %thorns), %thorns,%interface_database);
@@ -469,7 +470,7 @@ sub CreateBindings
   open (OUT, ">make.code.defn") || die "Cannot open make.code.defn";
 
   print OUT "SRCS = \n";
-  print OUT "SUBDIRS = Parameters Variables Schedule\n";
+  print OUT "SUBDIRS = Implementations Parameters Variables Schedule\n";
 
   close OUT;
     
@@ -714,6 +715,10 @@ int CCTK_BindingsParameterSet(const char *identifier, const char *value)
   }
   else
   { 
+
+    if(CCTK_IsThornActive(implementation) ||
+       CCTK_IsImplementationActive(implementation))
+    {
 EOT
 
   foreach $routine (keys %routines, "CCTK_BindingsParametersGlobal")
@@ -724,20 +729,26 @@ EOT
     if(CCTK_Equals(implementation, \"$routines{$routine}\"))
     {
 EOT
-      print OUT "      temp_retval =  $routine"."Set(param_name, value);";
+      print OUT "        temp_retval =  $routine"."Set(param_name, value);";
 
     print OUT <<EOT;
  
-      if(!temp_retval) 
-      {
-        retval = 0;
+        if(!temp_retval) 
+        {
+          retval = 0;
+        }  
       }
-    }
 EOT
   }
  
   print OUT <<EOT;
-  }
+    }
+    else
+    {
+       fprintf(stderr, "%s is not active\n", implementation);
+       retval = -2;
+    }
+  }  
  
   free(implementation);
   free(param_name);
@@ -811,8 +822,8 @@ EOT
 
     print OUT <<EOT;
 
-    if(CCTK_Equals(implementation, \"$routines{$routine}\"))
-    {
+      if(CCTK_Equals(implementation, \"$routines{$routine}\"))
+      {
 EOT
       print OUT "      temp_retval =  $routine"."Help(param_name, format, file);";
 
@@ -1046,7 +1057,6 @@ sub CreateScheduleBindings
 
   # Write the contents of BindingsScheduleRegisterSTARTUP.c
   
-  # Joan changes the call to Cactus_Register so it does not send data
   &create_RegisterSTARTUP($bindings_dir,split(" ",$startup)); 
 
   open (OUT, ">BindingsSchedule.c") || die "Cannot open BindingsSchedule.c";

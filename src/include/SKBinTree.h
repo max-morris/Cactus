@@ -1,0 +1,47 @@
+ /*@@
+   @header    BinaryTree.h
+   @date      Mon Oct  5 11:01:20 1998
+   @author    Tom Goodale
+   @desc 
+   Prototypes and data definitions for binary tree routines.
+   @enddesc 
+ @@*/
+
+#ifndef _SKBINTREE_H_
+#define _SKBINTREE_H_
+
+typedef struct T_SKTREE
+{
+  struct T_SKTREE *left;
+  struct T_SKTREE *right;
+  struct T_SKTREE *next;
+
+  char *key;
+
+  void *data;
+} t_sktree;
+
+#ifdef _cplusplus
+extern "C" {
+#endif
+
+t_sktree *SKTreeStoreData(t_sktree *root, 
+			  t_sktree *subtree, 
+			  const char *key, 
+			  void *data);
+
+int SKTreeTraverseInorder(t_sktree *root, int (*process)(void *, void *), void *info);
+
+int SKTreeTraversePreorder(t_sktree *root, int (*process)(void *, void *), void *info);
+
+int SKTreeTraversePostorder(t_sktree *root, int (*process)(void *, void *), void *info);
+
+void SKTreePrintNodes(t_sktree *root, int depth, void (*print_node)(void *, int));
+
+t_sktree *SKTreeFindNode(t_sktree *root, const char *key);
+
+#ifdef _cplusplus
+	   }
+#endif
+
+#endif

@@ -9,7 +9,9 @@ Misc.c\
 getopt.c\
 getopt1.c\
 StoreHandledData.c\
-gnu_regex.c
+gnu_regex.c\
+SKBinTree.c
+
 
 
 

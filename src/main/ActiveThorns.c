@@ -1,0 +1,327 @@
+ /*@@
+   @file      ActiveThorns.c
+   @date      Sun Jul  4 16:15:36 1999
+   @author    Tom Goodale
+   @desc 
+   Stuff to deal with activethorns.
+   @enddesc 
+ @@*/
+
+#include <stdio.h>
+#include <stdlib.h>
+
+#include "ActiveThorns.h"
+#include "SKBinTree.h"
+
+
+static char *rcsid = "$Header$";
+
+
+static int CCTKi_RegisterImp(const char *name, const char *thorn);
+
+struct THORN
+{
+  int active;
+  char *implementation;
+};
+
+struct IMPLEMENTATION
+{
+  int active;
+};
+
+
+static t_sktree *thornlist = NULL;
+static t_sktree *implist   = NULL;
+
+
+ /*@@
+   @routine    CCTK_RegisterThorn
+   @date       Sun Jul  4 17:44:14 1999
+   @author     Tom Goodale
+   @desc 
+   Registers a thorn with the flesh.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+int CCTK_RegisterThorn(const char *name, const char *imp)
+{
+  int retval;
+  t_sktree *node;
+  t_sktree *temp;
+
+  struct THORN *thorn;
+
+  printf("Registering thorn %s, which provides %s\n", name, imp);
+
+  node = SKTreeFindNode(thornlist, name);
+
+  if(!node)
+  {
+    thorn = (struct THORN *)malloc(sizeof(struct THORN));
+
+    if(thorn)
+    {
+      thorn->implementation = (char *)malloc(sizeof(char)*(strlen(imp)+1));
+
+      if(thorn->implementation)
+      {
+	strcpy(thorn->implementation, imp);
+	thorn->active = 0;
+
+	temp = SKTreeStoreData(thornlist, thornlist, name, thorn);
+
+	if(!thornlist) thornlist = temp;
+
+	if(temp)
+	{
+	  CCTKi_RegisterImp(imp, name);
+
+	  retval = 0;
+	}
+	else
+	{
+	  retval = -4;
+	}
+      }
+      else
+      {
+	retval = -3;
+      }
+    }
+    else
+    {
+      retval = -2;
+    }
+  }
+  else
+  {
+    retval = -1;
+  }
+
+
+  printf("Registration retval is %d\n", retval);
+
+  return retval;
+}
+
+ /*@@
+   @routine    CCTK_RegisterImp
+   @date       Sun Jul  4 17:44:42 1999
+   @author     Tom Goodale
+   @desc 
+   Registers an implementation.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+static int CCTKi_RegisterImp(const char *name, const char *thorn)
+{
+  int retval;
+  t_sktree *node;
+  t_sktree *temp;
+
+  struct IMPLEMENTATION *imp;
+
+  printf("Registering implementation %s\n", name);
+
+  node = SKTreeFindNode(implist, name);
+
+  if(!node)
+  {
+    imp = (struct IMPLEMENTATION *)malloc(sizeof(struct IMPLEMENTATION));
+
+    if(imp)
+    {
+      imp->active = 0;
+      temp = SKTreeStoreData(implist, implist, name, imp);
+
+      if(!implist) implist = temp;
+
+      if(temp)
+      {
+	retval = 0;
+      }
+      else
+      {
+	retval = -3;
+      }
+    }
+    else
+    {
+      retval = -2;
+    }
+  }
+  else
+  {
+    retval = -1;
+  }
+
+  printf("Registration retval is %d\n", retval);
+
+  return retval;
+}
+
+
+ /*@@
+   @routine    CCTK_ActivateThorn
+   @date       Sun Jul  4 17:46:15 1999
+   @author     Tom Goodale
+   @desc 
+   Activates a thorn and the associated implementation assuming
+   the implementation isn't already active.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+int CCTK_ActivateThorn(const char *name)
+{
+  int retval;
+  t_sktree *thornnode;
+  t_sktree *impnode;
+  
+  struct THORN *thorn;
+  struct IMPLEMENTATION *imp;
+
+  printf("Activating thorn %s\n", name);
+
+  thornnode = SKTreeFindNode(thornlist, name);
+
+  if(thornnode)
+  {
+    thorn = (struct THORN *)(thornnode->data);
+
+    impnode = SKTreeFindNode(implist, thorn->implementation);
+
+    if(impnode)
+    {
+      imp = (struct IMPLEMENTATION *)(impnode->data);
+          
+      if(!thorn->active)
+      {
+	if(!imp->active)
+	{
+
+	  printf("Active thorn %s -> imp %s\n", name, thorn->implementation);
+	  thorn->active = 1;
+	  imp->active = 1;
+	  retval = 0;
+	}
+	else
+	{
+	  printf("Implementation %s already active\n", thorn->implementation);
+	  retval = -4;
+	}
+      }
+      else
+      {
+	printf("Thorn %s already active\n", name);
+	retval = -3;
+      }
+    }
+    else
+    {
+      printf("Internal error - can't find imp %s from thorn %s\n", thorn->implementation, name);
+      retval = -2;
+    }
+  }
+  else
+  {
+    printf("Tried to activate non-existent thorn %s\n", name);
+    retval = -1;
+  }
+
+  return retval;
+
+}
+
+
+/*@@
+   @routine    CCTK_IsThornActive
+   @date       Sun Jul  4 17:46:56 1999
+   @author     Tom Goodale
+   @desc 
+   Checks if a thorn is active.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+int CCTK_IsThornActive(const char *name)
+{
+  int retval;
+  t_sktree *node;
+  
+  struct THORN *thorn;
+
+  node = SKTreeFindNode(thornlist, name);
+
+  retval = 0;
+
+  if(node)
+  {
+    thorn = (struct THORN *)(node->data);
+
+    if(thorn->active)
+    {
+      retval = 1;
+    }
+  }
+
+  return retval;
+}
+
+/*@@
+   @routine    CCTK_IsImplementationActive
+   @date       Sun Jul  4 17:46:56 1999
+   @author     Tom Goodale
+   @desc 
+   Checks if an implementation is active.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+int CCTK_IsImplementationActive(const char *name)
+{
+  int retval;
+
+  t_sktree *node;
+  
+  struct IMPLEMENTATION *imp;
+
+  node = SKTreeFindNode(implist, name);
+
+  retval = 0;
+
+  if(node)
+  {
+    imp = (struct IMPLEMENTATION *)(node->data);
+
+    if(imp->active)
+    {
+      retval = 1;
+    }
+  }
+
+  return retval;
+}

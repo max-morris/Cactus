@@ -28,13 +28,41 @@ static char *rcsid = "$Id$";
 int CCTK_SetParameter(const char *parameter, const char *value)
 {
   int retval;
+  char thornname[101];
+  const char *position;
+  int length;
   
-  retval = CCTK_BindingsParameterSet(parameter, value);
+  if(CCTK_Equals(parameter, "ActiveThorns"))
+  {
+    position = value;
 
+    while(*position)
+    {
+      length=0;
+
+      for(;*position && *position != ' ';position++)
+      {
+	thornname[length] = *position;
+	if(length < 100) length++;
+      }
+
+      thornname[length] = '\0';
+      CCTK_ActivateThorn(thornname);
+      if(position) position++;
+    }
+      CCTK_ActivateThorn("Cactus");
+  }
+  else
+  {     
+    retval = CCTK_BindingsParameterSet(parameter, value);
+  }
 
   if(retval)
   {
-    fprintf(stderr, "Unknown parameter %s\n", parameter);
+    if(retval == -1)
+    {
+      fprintf(stderr, "Unknown parameter %s\n", parameter);
+    }
   }
 
   return retval;

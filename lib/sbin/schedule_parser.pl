@@ -61,8 +61,8 @@ sub create_schedule_code
     print OUTSTART $out; 
 
    # The footer for the thorn RFR routine
-   print OUTRFR "}\n";
-   print OUTSTART "}\n";
+   print OUTRFR "  }\n}\n";
+   print OUTSTART "  }\n}\n";
 
    close OUTRFR;
    close OUTSTART;
@@ -99,6 +99,7 @@ sub write_rfr_header {
   $header .= "#include \"cctk.h\"\n";
   $header .= "#include \"flesh.h\"\n";
   $header .= "#include \"Comm.h\"\n";
+  $header .= "#include \"ActiveThorns.h\"\n";
   $header .= "#include \"Groups.h\"\n";
   $header .= "#include \"GroupsOnGH.h\"\n";
   $header .= "#include \"rfr_constants.h\"\n";
@@ -110,6 +111,8 @@ sub write_rfr_header {
   $header .= "  DECLARE_CCTK_PARAMETERS\n";
   $header .= "  int index;\n\n";
   $header .= "\n";
+  $header .= "  if(CCTK_IsThornActive(\"$thorn\"))\n";
+  $header .= "  {\n\n";
 
   return $header;
 
@@ -123,6 +126,7 @@ sub write_startup_header {
   print OUTSTART "#define THORN_IS_$thorn\n";
   print OUTSTART "#include \"cctk.h\"\n";
   print OUTSTART "#include \"flesh.h\"\n";
+  print OUTSTART "#include \"ActiveThorns.h\"\n";
   print OUTSTART "#include \"rfr_constants.h\"\n";
   print OUTSTART "#include \"cctk_parameters.h\"\n";
   print OUTSTART "\n";
@@ -130,6 +134,8 @@ sub write_startup_header {
   print OUTSTART "{\n";
   print OUTSTART "  DECLARE_CCTK_PARAMETERS\n";
   print OUTSTART "\n";
+  print OUTSTART  "  if(CCTK_IsThornActive(\"$thorn\"))\n";
+  print OUTSTART "  {\n\n";
 
 
 }

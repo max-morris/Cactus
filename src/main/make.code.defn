@@ -15,7 +15,6 @@ ProcessCommandLine.c\
 ProcessEnvironment.c\
 ProcessParameterDatabase.c\
 RecordImplementation.c\
-RegisterThorn.c\
 SetParams.c\
 ShutdownCactus.c\
 flesh.cc\
@@ -26,4 +25,5 @@ rfrInterface.c\
 OverloadMain.c\
 CommandLine.c\
 GHExtensions.c\
-WarnLevel.c
+WarnLevel.c\
+ActiveThorns.c
