@@ -85,8 +85,8 @@ int CCTKi_RegisterDefaultTimerFunctions(void)
 /* A structure to hold the relevent data */
 typedef struct 
 {
-  double total;
-  double last;
+  struct timeval total;
+  struct timeval last;
 } t_GetTimeOfDayTimer;
 
 static char *GetTimeOfDayHeading = "Data from gettimeofday call";
@@ -114,8 +114,8 @@ void *CCTKi_TimerGetTimeOfDayCreate(int timernum)
 
   if(this)
   {
-    this->total = 0;
-    this->last = 0;
+    this->total.tv_sec  = 0;
+    this->total.tv_usec = 0;
   }
 
   return this;
@@ -169,7 +169,7 @@ void CCTKi_TimerGetTimeOfDayStart(int timernum, void *idata)
 
   gettimeofday(&tp, &tzp);
 
-  data->last = tp.tv_sec + (double)tp.tv_usec/1000000.0;
+  data->last = tp;
 
 #ifdef DEBUG_TIMERS
   printf("Starting gettimeofday timer %d\n", timernum);
@@ -201,7 +201,8 @@ void CCTKi_TimerGetTimeOfDayStop(int timernum, void *idata)
 
   gettimeofday(&tp, &tzp);
 
-  data->total += (tp.tv_sec + (double)tp.tv_usec/1000000.0 - data->last);
+  data->total.tv_sec  += (tp.tv_sec  - data->last.tv_sec);
+  data->total.tv_usec += (tp.tv_usec - data->last.tv_usec);
 
 #ifdef DEBUG_TIMERS
   printf("Stopping gettimeofday timer %d\n", timernum);
@@ -228,8 +229,10 @@ void CCTKi_TimerGetTimeOfDayReset(int timernum, void *idata)
 
   data = (t_GetTimeOfDayTimer *)idata;
 
-  data->last  = 0;
-  data->total = 0;
+  data->last.tv_sec  = 0;
+  data->last.tv_usec  = 0;
+  data->total.tv_sec  = 0;
+  data->total.tv_usec  = 0;
 
 }
 
@@ -256,7 +259,7 @@ void CCTKi_TimerGetTimeOfDayGet(int timernum, void *idata, t_TimerVal *vals)
   vals[0].type    = val_double;
   vals[0].heading = GetTimeOfDayHeading;
   vals[0].units   = GetTimeOfDayUnits;
-  vals[0].val.d   = data->total;
+  vals[0].val.d   = data->total.tv_sec + (double)data->total.tv_usec/1000000.0;
 }
 
  /*@@
@@ -279,7 +282,8 @@ void CCTKi_TimerGetTimeOfDaySet(int timernum, void *idata, t_TimerVal *vals)
 
   data = (t_GetTimeOfDayTimer *)idata;
 
-  data->total = vals[0].val.d;
+  data->total.tv_sec  = (long)vals[0].val.d;
+  data->total.tv_usec = (long)(1000000*vals[0].val.d-data->total.tv_sec);
 }
 
  /*@@
@@ -300,6 +304,7 @@ void CCTKi_RegisterTimersGetTimeOfDay(void)
 {
   t_TimerFuncs functions;
 
+  functions.info.n_vals = 1;
   functions.create  = CCTKi_TimerGetTimeOfDayCreate;
   functions.destroy = CCTKi_TimerGetTimeOfDayDestroy;
   functions.start   = CCTKi_TimerGetTimeOfDayStart;
@@ -325,8 +330,8 @@ void CCTKi_RegisterTimersGetTimeOfDay(void)
 /* A structure to hold the relevent data */
 typedef struct 
 {
-  double total;
-  double last;
+  struct timeval total;
+  struct timeval last;
 } t_GetrUsageTimer;
 
 static char *GetrUsageHeading = "Data from getrusage call";
@@ -354,8 +359,8 @@ void *CCTKi_TimerGetrUsageCreate(int timernum)
 
   if(this)
   {
-    this->total = 0;
-    this->last = 0;
+    this->total.tv_sec  = 0;
+    this->total.tv_usec = 0;
   }
 
   return this;
@@ -408,7 +413,7 @@ void CCTKi_TimerGetrUsageStart(int timernum, void *idata)
 
   getrusage(RUSAGE_SELF, &ru);
 
-  data->last = ru.ru_utime.tv_sec + (double)ru.ru_utime.tv_usec/1000000.0;
+  data->last = ru.ru_utime;
 
 #ifdef DEBUG_TIMERS
   printf("Starting getrusage timer %d\n", timernum);
@@ -439,7 +444,8 @@ void CCTKi_TimerGetrUsageStop(int timernum, void *idata)
 
   getrusage(RUSAGE_SELF, &ru);
 
-  data->total += (ru.ru_utime.tv_sec + (double)ru.ru_utime.tv_usec/1000000.0 - data->last);
+  data->total.tv_sec += ru.ru_utime.tv_sec - data->last.tv_sec;
+  data->total.tv_usec += ru.ru_utime.tv_usec - data->last.tv_usec;
 
 #ifdef DEBUG_TIMERS
   printf("Starting getrusage timer %d\n", timernum);
@@ -466,8 +472,8 @@ void CCTKi_TimerGetrUsageReset(int timernum, void *idata)
 
   data = (t_GetrUsageTimer *)idata;
 
-  data->last  = 0;
-  data->total = 0;
+  data->total.tv_sec  = 0;
+  data->total.tv_usec = 0;
 
 }
 
@@ -494,7 +500,7 @@ void CCTKi_TimerGetrUsageGet(int timernum, void *idata, t_TimerVal *vals)
   vals[0].type    = val_double;
   vals[0].heading = GetrUsageHeading;
   vals[0].units   = GetrUsageUnits;
-  vals[0].val.d   = data->total;
+  vals[0].val.d   = data->total.tv_sec + (double)data->total.tv_usec/1000000.0;
 
 }
 
@@ -518,7 +524,8 @@ void CCTKi_TimerGetrUsageSet(int timernum, void *idata, t_TimerVal *vals)
 
   data = (t_GetrUsageTimer *)idata;
 
-  data->total = vals[0].val.d;
+  data->total.tv_sec  = (long)vals[0].val.d;
+  data->total.tv_usec = (long)(1000000*vals[0].val.d-data->total.tv_sec);
 }
 
  /*@@
@@ -539,6 +546,7 @@ void CCTKi_RegisterTimersGetrUsage(void)
 {
   t_TimerFuncs functions;
 
+  functions.info.n_vals = 1;
   functions.create  = CCTKi_TimerGetrUsageCreate;
   functions.destroy = CCTKi_TimerGetrUsageDestroy;
   functions.start   = CCTKi_TimerGetrUsageStart;
