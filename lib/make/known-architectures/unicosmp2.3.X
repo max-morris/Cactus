@@ -1,12 +1,12 @@
 #! /bin/sh
 #  /*@@
-#    @file      unicosmk2.0.5.X
-#    @date      Wed Apr 12 12:38:45 2000
-#    @author    Tom Goodale
+#    @file      unicosmp2.3.X
+#    @date      Wed Jan 20 12:38:45 2004
+#    @author    John Shalf
 #    @desc 
 #   
 #    @enddesc
-#    @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/unicosmp2.3.X,v 1.1 2004-01-20 01:48:58 jshalf Exp $
+#    @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/unicosmp2.3.X,v 1.2 2004-05-13 21:53:35 jshalf Exp $
 #  @@*/
 
 . $srcdir/known-architectures/unicosmp

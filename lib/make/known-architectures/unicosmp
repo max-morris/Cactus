@@ -1,12 +1,12 @@
 #! /bin/sh
 # /*@@
 #   @file      unicosmp
-#   @date      Thu Feb 25 09:53:22 1999
-#   @author    Tom Goodale
+#   @date      Thu Feb 25 09:53:22 2004
+#   @author    John Shalf
 #   @desc 
 #   
 #   @enddesc 
-#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/unicosmp,v 1.4 2004-04-02 20:03:47 jshalf Exp $
+#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/unicosmp,v 1.5 2004-05-13 21:53:35 jshalf Exp $
 # @@*/
 
 if test "$CCTK_CONFIG_STAGE" = "preferred-compilers" ; then
@@ -25,10 +25,10 @@ else
   : ${CFLAGS=""}
   : ${CXXFLAGS=""}
   : ${FPPFLAGS="-N"}
-  : ${C_OPTIMISE_FLAGS="-O3"}
-  : ${CXX_OPTIMISE_FLAGS="-O3"}
-  : ${F90_OPTIMISE_FLAGS="-O 3"}
-  : ${F77_OPTIMISE_FLAGS="-O 3"}
+  : ${C_OPTIMISE_FLAGS=""} # optimization with C compiler is bad juju. (stick to default -O 2)
+  : ${CXX_OPTIMISE_FLAGS=""} # optimization with C++ compiler is bad juju. (stick to default -O 2)
+  : ${F90_OPTIMISE_FLAGS="-V -F -O inline3,scalar3,vector3,stream3,task0 -rm"}
+  : ${F77_OPTIMISE_FLAGS="-V -F -O inline3,scalar3,vector3,stream3,task0 -rm"}
   : ${C_DEBUG_FLAGS="-g"}
   : ${CXX_DEBUG_FLAGS="-g"}
   : ${F77_DEBUG_FLAGS="-g"}
