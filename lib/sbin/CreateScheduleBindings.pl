@@ -286,7 +286,7 @@ sub ParameterRecoveryCreateFile
   $outbuf .=  "int CCTKi_BindingsParameterRecovery_$thorn(void)\n";
   $outbuf .=  "{\n";
   $outbuf .=  "  DECLARE_CCTK_PARAMETERS\n";
-  $outbuf .=  "  int result = 0;\n\n";
+  $outbuf .=  "  int result = -1;\n\n";
   $outbuf .=  "$buffer\n";
   $outbuf .=  "  return (result);\n";
   $outbuf .=  "  USE_CCTK_PARAMETERS\n";
