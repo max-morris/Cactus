@@ -1138,30 +1138,36 @@ it must be called by all processors otherwise the code will hang.
 % CCC
 %%%%%
 
-\begin{CCTKFunc}{CCTK\_ClockRegister}{Registers a named timer clock
-with the Flesh.}
+\begin{FunctionDescription}{CCTK\_ClockRegister}
 \label{CCTK-ClockRegister}
-\subroutine{int}{}{}
-\showcargs
-\begin{params}
-\parameter{const char *}{name}
-\parameter{const cClockFuncs *}{functions}
-\end{params}
-\begin{discussion}
+Registers a named timer clock with the Flesh.
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{alltt}
+int err = CCTK\_ClockRegister(\var{name}, \var{functions})
+\end{alltt}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{const char * \var{name}}
+The name the clock will be given
+\end{Parameter}
+
+\begin{Parameter}{const cClockFuncs * \var{functions}}
+The structure holding the function pointers that define the clock
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{Discussion}
 The {\t cClockFuncs} structure contains function pointers defined by
 the clock module to be registered.
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t err = CCTK\_ClockRegister("myNewClock", functions)}\\
-\\
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-A negative return value indicates an error.
-\end{errorcodes}
-\end{CCTKFunc}
+\end{Discussion}
 
+\begin{Error}{}
+A negative return value indicates an error.
+\end{Error}
+\end{FunctionDescription}
 
 
 \begin{CCTKFunc}{CCTK\_Cmplx}{Turns two real numbers into a complex number}
@@ -2250,6 +2256,159 @@ the form \code{<implementation>::<variable>}
 %%%%%
 % GGG
 %%%%%
+
+
+\begin{FunctionDescription}{CCTK\_GetClockName}
+\label{CCTK-GetClockName}
+Given a pointer to the {\tt cTimerVal}
+corresponding to a timer clock returns a pointer to a string that is
+the name of the clock
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{alltt}
+const char * CCTK\_GetClockName(\var{val})
+\end{alltt}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{const cTimerVal * \var{val}}
+timer clock value pointer
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{Discussion}
+Do not attempt to free the returned pointer directly.  You must use the
+string before calling {\tt CCTK\_TimerDestroyData} on the containing
+timer info.
+\end{Discussion}
+\end{FunctionDescription}
+
+\begin{FunctionDescription}{CCTK\_GetClockResolution}
+\label{CCTK-GetClockResolution}
+Given a pointer to the
+{\tt cTimerVal} corresponding to a timer clock returns the resolution of
+the clock in seconds. 
+
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{alltt}
+double CCTK\_GetClockResolution(\var{val})
+\end{alltt}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{const cTimerVal * \var{val}}
+timer clock value pointer
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{Discussion}
+Ideally, the resolution should represent a good lower bound on the smallest
+non-zero difference between two consecutive calls of {\t CCTK\_GetClockSeconds}.
+In practice, it is sometimes far smaller than it should be.  Often it just
+represents the smallest value representable due to how the information is
+stored internally.
+\end{Discussion}
+
+\end{FunctionDescription}
+
+
+
+\begin{FunctionDescription}{CCTK\_GetClockSeconds}
+\label{CCTK-GetClockSeconds}
+Given a pointer to the {\tt cTimerVal}
+corresponding to a timer clock returns a the elapsed time in seconds between
+the preceding {\tt CCTK\_TimerStart} and {\tt CCTK\_TimerStop} as recorded
+by the requested clock. 
+
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{alltt}
+double CCTK\_GetClockSeconds(\var{val})
+\end{alltt}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{const cTimerVal * \var{val}}
+timer clock value pointer
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{Discussion}
+Be aware, different clocks measure different things (proper time,
+CPU time spent on this process, etc.), and have varying resolution
+and accuracy.
+\end{Discussion}
+\end{FunctionDescription}
+
+
+\begin{FunctionDescription}{CCTK\_GetClockValue}
+\label{CCTK-GetClockValue}
+Given a name of a clock that is
+in the given {\tt cTimerData} structure,
+returns a pointer to the {\tt cTimerVal} structure holding the clock's value.
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{alltt}
+const cTimerVal * CCTK\_GetClockValue(\var{name}, \var{info})
+\end{alltt}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ParameterSection}
+\begin{Parameter} {const char * \var{name}}
+Name of clock
+\end{Parameter}
+
+\begin{Parameter} {const cTimerData * \var{info}}
+Timer information structure containing clock.
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{Discussion}
+Do not attempt to free the returned pointer directly.
+\end{Discussion}
+\begin{Error}
+A null return value indicates an error.
+\end{Error}
+\end{FunctionDescription}
+
+
+
+\begin{FunctionDescription}{CCTK\_GetClockValueI}
+\label{CCTK-GetClockValueI}
+Given a index of a clock that is
+in the given {\tt cTimerData} structure,
+returns a pointer to the {\tt cTimerVal} structure holding the clock's value.
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{alltt}
+const cTimerVal * CCTK\_GetClockValue(\var{index}, \var{info})
+\end{alltt}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ParameterSection}
+\begin{Parameter} {int \var{index}}
+Index of clock
+\end{Parameter}
+
+\begin{Parameter} {const cTimerData * \var{info}}
+Timer information structure containing clock.
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{Discussion}
+Do not attempt to free the returned pointer directly.
+\end{Discussion}
+\begin{Error}
+A null return value indicates an error.
+\end{Error}
+\end{FunctionDescription}
+
 
 % cctk_GHExtensions.h
 \begin{CCTKFunc}{CCTK\_GHExtension}{Get the pointer to a registered extension to the Cactus GH structure}
@@ -5914,6 +6073,25 @@ Illegal arguments given.
 \end{FunctionDescription}
 
 
+\begin{FunctionDescription}{CCTK\_NumTimerClocks}
+\label{CCTK-NumTimerClocks}
+Given a {\tt cTimerData} structure, returns its number of clocks.
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{alltt}
+int err = CCTK\_NumTimerClocks(\var{info})
+\end{alltt}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ParameterSection}
+\begin{Parameter} {const cTimerData * \var{info}}
+The timer information structure whose clocks are to be counted.
+\end{Parameter}
+\end{ParameterSection}
+
+\end{FunctionDescription}
+
 
 % Groups.c
 \begin{CCTKFunc}{CCTK\_NumVars}{Get the number of grid variables compiled in the code}
@@ -7409,464 +7587,341 @@ Error.
 
 
 
-\begin{CCTKFunc}{CCTK\_TimerCreate}{Creates a timer with a given name,
-returns an index to the timer.}
-\label{CCTK-TimerCreate}
-\subroutine{int}{}{}
-\argument{const char *}{}{name}
-\showcargs
-\begin{params}
-\parameter{name}{C string }
-\end{params}
-\begin{discussion}
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t myTimer = CCTK\_TimerCreate("myTimer")}\\
-\\
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-A negative return value indicates an error.
-\end{errorcodes}
-\end{CCTKFunc}
-
-\begin{CCTKFunc}{CCTK\_TimerCreateI}{Creates an unnamed timer,
-returns an index to the timer.}
-\label{CCTK-TimerCreateI}
-\subroutine{int}{}{}
-\showcargs
-\begin{params}
-\end{params}
-\begin{discussion}
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t myTimer = CCTK\_TimerCreateI()}\\
-\\
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-A negative return value indicates an error.
-\end{errorcodes}
-\end{CCTKFunc}
-
-
-\begin{CCTKFunc}{CCTK\_TimerDestroy}{Reclaims resources used by the
-given timer, specified by name.}
-\label{CCTK-TimerDestroy}
-\subroutine{int}{}{}
-\argument{const char *}{}{name}
-\showcargs
-\begin{params}
-\parameter{name}{C string}
-\end{params}
-\begin{discussion}
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t err = CCTK\_TimerDestroy("myTimer")}\\
-\\
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-A negative return value indicates an error.
-\end{errorcodes}
-\end{CCTKFunc}
-
-
-\begin{CCTKFunc}{CCTK\_TimerDestroyI}{Reclaims resources used by the
-given timer, specified by index.}
-\label{CCTK-TimerDestroyI}
-\subroutine{int}{}{}
-\argument{int}{}{index}
-\showcargs
-\begin{params}
-\parameter{index}{timer index}
-\end{params}
-\begin{discussion}
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t err = CCTK\_TimerDestroy(2)}\\
-\\
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-A negative return value indicates an error.
-\end{errorcodes}
-\end{CCTKFunc}
-
-
-\begin{CCTKFunc}{CCTK\_TimerStart}{Initialises all the clocks in the
-given timer, specified by name.}
-\label{CCTK-TimerStart}
-\subroutine{int}{}{}
-\argument{const char *}{}{name}
-\showcargs
-\begin{params}
-\parameter{name}{C string}
-\end{params}
-\begin{discussion}
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t err = CCTK\_TimerStart("myTimer")}\\
-\\
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-A negative return value indicates an error.
-\end{errorcodes}
-\end{CCTKFunc}
-
-
-\begin{CCTKFunc}{CCTK\_TimerStartI}{Initialises all the clocks in the
-given timer, specified by index.}
-\label{CCTK-TimerStartI}
-\subroutine{int}{}{}
-\argument{int}{}{index}
-\showcargs
-\begin{params}
-\parameter{index}{timer index}
-\end{params}
-\begin{discussion}
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t err = CCTK\_TimerStart(2)}\\
-\\
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-A negative return value indicates an error.
-\end{errorcodes}
-\end{CCTKFunc}
-
-\begin{CCTKFunc}{CCTK\_TimerStop}{Gets values from all the clocks in the
-given timer, specified by name.}
-\label{CCTK-TimerStop}
-\subroutine{int}{}{}
-\argument{const char *}{}{name}
-\showcargs
-\begin{params}
-\parameter{name}{C string}
-\end{params}
-\begin{discussion}
-Call this before getting the values from any of the timer's clocks.
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t err = CCTK\_TimerStop("myTimer")}\\
-\\
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-A negative return value indicates an error.
-\end{errorcodes}
-\end{CCTKFunc}
-
-\begin{CCTKFunc}{CCTK\_TimerStopI}{Gets values from all the clocks in the
-given timer, specified by index.}
-\label{CCTK-TimerStopI}
-\subroutine{int}{}{}
-\argument{int}{}{index}
-\showcargs
-\begin{params}
-\parameter{index}{timer index}
-\end{params}
-\begin{discussion}
-Call this before getting the values from any of the timer's clocks.
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t err = CCTK\_TimerStopI(2)}\\
-\\
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-A negative return value indicates an error.
-\end{errorcodes}
-\end{CCTKFunc}
-
-
-\begin{CCTKFunc}{CCTK\_TimerReset}{Resets all the clocks in the
-given timer, specified by name.}
-\label{CCTK-TimerReset}
-\subroutine{int}{}{}
-\argument{const char *}{}{name}
-\showcargs
-\begin{params}
-\parameter{name}{C string}
-\end{params}
-\begin{discussion}
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t err = CCTK\_TimerReset("myTimer")}\\
-\\
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-A negative return value indicates an error.
-\end{errorcodes}
-\end{CCTKFunc}
-
-\begin{CCTKFunc}{CCTK\_TimerResetI}{Gets values from all the clocks in the
-given timer, specified by index.}
-\label{CCTK-TimerResetI}
-\subroutine{int}{}{}
-\argument{int}{}{index}
-\showcargs
-\begin{params}
-\parameter{index}{timer index}
-\end{params}
-\begin{discussion}
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t err = CCTK\_TimerResetI(2)}\\
-\\
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-A negative return value indicates an error.
-\end{errorcodes}
-\end{CCTKFunc}
-
-
-\begin{CCTKFunc}{CCTK\_TimerCreateData}{Allocates the {\tt cTimerData} 
-structure, which is used to store timer clock info.}
-\label{CCTK-TimerCreateData}
-\subroutine{cTimerData *}{}{ptr}
-\showcargs
-\begin{params}
-\end{params}
-\begin{discussion}
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t cTimerData *data = CCTK\_TimerCreateData()}\\
-\\
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-A null return value indicates an error.
-\end{errorcodes}
-\end{CCTKFunc}
-
-
-\begin{CCTKFunc}{CCTK\_TimerDestroyData}{Releases resources from the 
-{\tt cTimerData} 
-structure, created by {\tt CCTK\_TimerCreateData}.}
-\label{CCTK-TimerDestroyData}
-\subroutine{int}{}{}
-\showcargs
-\begin{params}
-\parameter{cTimerData *}{timer clock info pointer}
-\end{params}
-\begin{discussion}
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t err = CCTK\_TimerDestroyData( data )}\\
-\\
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-A negative return value indicates an error.
-\end{errorcodes}
-\end{CCTKFunc}
-
-\begin{CCTKFunc}{CCTK\_Timer}{Fills a {\tt cTimerData} 
-structure with timer clock info, for the timer specified by name.}
+\begin{FunctionDescription}{CCTK\_Timer}
 \label{CCTK-Timer}
-\subroutine{int}{}{}
-\showcargs
-\begin{params}
-\parameter{const char *}{timer name}
-\parameter{cTimerData *}{timer clock info pointer}
-\end{params}
-\begin{discussion}
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t err = CCTK\_Timer("myTimer", info)}\\
-\\
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-A negative return value indicates an error.
-\end{errorcodes}
-\end{CCTKFunc}
+Fills a {\tt cTimerData} 
+structure with timer clock info, for the timer specified by name.
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{alltt}
+int err = CCTK\_Timer(\var{name},\var{info})
+\end{alltt}
+\end{Synopsis}
+\end{SynopsisSection}
 
-\begin{CCTKFunc}{CCTK\_TimerI}{Fills a {\tt cTimerData} 
-structure with timer clock info, for the timer specified by index.}
+\begin{ParameterSection}
+\begin{Parameter} {const char * \var{name}}
+Timer name
+\end{Parameter}
+
+\begin{Parameter} {cTimerData * \var{info}}
+Timer clock info pointer
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{Error}
+A negative return value indicates an error.
+\end{Error}
+\end{FunctionDescription}
+
+\begin{FunctionDescription}{CCTK\_TimerI}
 \label{CCTK-TimerI}
-\subroutine{int}{}{}
-\showcargs
-\begin{params}
-\parameter{int}{timer index}
-\parameter{cTimerData *}{timer clock info pointer}
-\end{params}
-\begin{discussion}
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t err = CCTK\_Timer(2, info)}\\
-\\
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
+Fills a {\tt cTimerData} 
+structure with timer clock info, for the timer specified by index.
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{alltt}
+int err = CCTK\_TimerI(\var{index},\var{info})
+\end{alltt}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ParameterSection}
+\begin{Parameter} {int \var{index}}
+Timer index
+\end{Parameter}
+
+\begin{Parameter} {cTimerData * \var{info}}
+Timer clock info pointer
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{Error}{}
 A negative return value indicates an error.
-\end{errorcodes}
-\end{CCTKFunc}
+\end{Error}
+\end{FunctionDescription}
+
+\begin{FunctionDescription}{CCTK\_TimerCreate}
+\label{CCTK-TimerCreate}
+Creates a timer with a given name,
+returns an index to the timer.
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{alltt}
+int index = CCTK\_TimerCreate(\var{name})
+\end{alltt}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ParameterSection}
+\begin{Parameter} {const char * \var{name}}
+timer name
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{Error}
+A negative return value indicates an error.
+\end{Error}
+\end{FunctionDescription}
+
+\begin{FunctionDescription}{CCTK\_TimerCreateData}
+\label{CCTK-TimerCreateData}
+Allocates the {\tt cTimerData} 
+structure, which is used to store timer clock info.
+
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{alltt}
+cTimerData * info = CCTK\_TimerCreateData()
+\end{alltt}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{Error}
+A null return value indicates an error.
+\end{Error}
+\end{FunctionDescription}
 
 
-\begin{CCTKFunc}{CCTK\_NumTimerClocks}{Given a {\tt cTimerData} 
-structure, returns its number of clocks.}
-\label{CCTK-NumTimerClocks}
-\subroutine{int}{}{}
-\showcargs
-\begin{params}
-\parameter{const cTimerData *}{timer info pointer}
-\end{params}
-\begin{discussion}
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t nClocks = CCTK\_NumTimerClocks(info)}\\
-\\
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
+\begin{FunctionDescription}{CCTK\_TimerCreateI}
+\label{CCTK-TimerCreateI}
+Creates an unnamed timer, returns an index to the timer.
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{alltt}
+int index = CCTK\_TimerCreate()
+\end{alltt}
+\end{Synopsis}
+\end{SynopsisSection}
 
-\begin{CCTKFunc}{CCTK\_GetClockValue}{Given a name of a clock that is
-in the given {\tt cTimerData} structure,
-returns a pointer to the {\tt cTimerVal} structure holding the clock's value.}
-\label{CCTK-GetClockValue}
-\subroutine{const cTimerVal *}{}{ptr}
-\showcargs
-\begin{params}
-\parameter{const char *}{timer clock name}
-\parameter{const cTimerData *}{timer info pointer}
-\end{params}
-\begin{discussion}
-Do not attempt to free the returned pointer directly.
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t const cTimerVal *myVal = CCTK\_GetClockValue("getrusage", info )}\\
-\\
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
+\begin{Error}
+A negative return value indicates an error.
+\end{Error}
+\end{FunctionDescription}
 
 
-\begin{CCTKFunc}{CCTK\_GetClockValueI}{Given the index of a clock 
-in the given {\tt cTimerData} structure,
-returns a pointer to the {\tt cTimerVal} structure holding the clock's value.}
-\label{CCTK-GetClockValueI}
-\subroutine{const cTimerVal *}{}{ptr}
-\showcargs
-\begin{params}
-\parameter{int}{timer clock index}
-\parameter{const cTimerData *}{timer info pointer}
-\end{params}
-\begin{discussion}
-Do not attempt to free the returned pointer directly.
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t const cTimerVal *myVal = CCTK\_GetClockValueI(0, info )}\\
-\\
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
+\begin{FunctionDescription}{CCTK\_TimerDestroy}
+\label{CCTK-TimerDestroy}
+Reclaims resources used by the
+given timer, specified by name.
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{alltt}
+int err = CCTK\_TimerDestroy(\var{name})
+\end{alltt}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ParameterSection}
+\begin{Parameter} {const char * \var{name}}
+timer name
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{Error}
+A negative return value indicates an error.
+\end{Error}
+\end{FunctionDescription}
 
 
-\begin{CCTKFunc}{CCTK\_GetClockName}{Given a pointer to the {\tt cTimerVal}
-corresponding to a timer clock returns a pointer to a string that is
-the name of the clock}
-\label{CCTK-GetClockName}
-\subroutine{const char *}{}{ptr}
-\showcargs
-\begin{params}
-\parameter{const cTimerVal *}{timer clock value pointer}
-\end{params}
-\begin{discussion}
-Do not attempt to free the returned pointer directly.  You must use the
-string before calling {\tt CCTK\_TimerDestroyData} on the containing
-timer info.
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t const char *name = CCTK\_GetClockName(val)}\\
-\\
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
+\begin{FunctionDescription}{CCTK\_TimerDestroyData}
+\label{CCTK-TimerDestroyData}
+Releases resources from the {\tt cTimerData} 
+structure, created by {\tt CCTK\_TimerCreateData}.
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{alltt}
+int err = CCTK\_TimerDestroyData(\var{info})
+\end{alltt}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ParameterSection}
+\begin{Parameter} {cTimerData * \var{info}}
+Timer clock info pointer
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{Error}
+A negative return value indicates an error.
+\end{Error}
+\end{FunctionDescription}
 
 
-\begin{CCTKFunc}{CCTK\_GetClockSeconds}{Given a pointer to the {\tt cTimerVal}
-corresponding to a timer clock returns a the elapsed time in seconds between
-the preceding {\tt CCTK\_TimerStart} and {\tt CCTK\_TimerStop} as recorded
-by the requested clock. }
-\label{CCTK-GetClockSeconds}
-\subroutine{double}{}{}
-\showcargs
-\begin{params}
-\parameter{const cTimerVal *}{timer clock value pointer}
-\end{params}
-\begin{discussion}
-Be aware, different clocks measure different things (proper time,
-CPU time spent on this process, etc.), and have varying resolution
-and accuracy.
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t double secs = CCTK\_GetClockSeconds(val)}\\
-\\
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
+\begin{FunctionDescription}{CCTK\_TimerDestroyI}
+\label{CCTK-TimerDestroyI}
+Reclaims resources used by the
+given timer, specified by index.
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{alltt}
+int err = CCTK\_TimerDestroyI(\var{index})
+\end{alltt}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ParameterSection}
+\begin{Parameter} {int \var{index}}
+timer index
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{Error}
+A negative return value indicates an error.
+\end{Error}
+\end{FunctionDescription}
 
 
-\begin{CCTKFunc}{CCTK\_GetClockResolution}{Given a pointer to the
-{\tt cTimerVal} corresponding to a timer clock returns the resolution of
-the clock in seconds. }
-\label{CCTK-GetClockResolution}
-\subroutine{double}{}{}
-\showcargs
-\begin{params}
-\parameter{const cTimerVal *}{timer clock value pointer}
-\end{params}
-\begin{discussion}
-Ideally, the resolution should represent a good lower bound on the smallest
-non-zero difference between two consecutive calls of {\t CCTK\_GetClockSeconds}.
-In practice, it is sometimes far smaller than it should be.  Often it just
-represents the smallest value representable due to how the information is
-stored internally.
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t double resolution = CCTK\_GetClockResolution(val)}\\
-\\
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
+\begin{FunctionDescription}{CCTK\_TimerReset}
+\label{CCTK-TimerReset}
+Gets values from all the clocks in the
+given timer, specified by name.
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{alltt}
+int err = CCTK\_TimerReset(\var{name})
+\end{alltt}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ParameterSection}
+\begin{Parameter} {const char * \var{name}}
+timer name
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{Error}
+A negative return value indicates an error.
+\end{Error}
+\end{FunctionDescription}
+
+
+\begin{FunctionDescription}{CCTK\_TimerResetI}
+\label{CCTK-TimerResetI}
+Gets values from all the clocks in the
+given timer, specified by index.
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{alltt}
+int err = CCTK\_TimerResetI(\var{index})
+\end{alltt}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ParameterSection}
+\begin{Parameter} {int \var{index}}
+timer index
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{Error}
+A negative return value indicates an error.
+\end{Error}
+\end{FunctionDescription}
+
+
+\begin{FunctionDescription}{CCTK\_TimerStart}
+\label{CCTK-TimerStart}
+Initialises all the clocks in the
+given timer, specified by name.
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{alltt}
+int err = CCTK\_TimerStart(\var{name})
+\end{alltt}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ParameterSection}
+\begin{Parameter} {const char * \var{name}}
+timer name
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{Error}
+A negative return value indicates an error.
+\end{Error}
+\end{FunctionDescription}
+
+
+\begin{FunctionDescription}{CCTK\_TimerStartI}
+\label{CCTK-TimerStartI}
+Initialises all the clocks in the
+given timer, specified by index.
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{alltt}
+int err = CCTK\_TimerStartI(\var{index})
+\end{alltt}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ParameterSection}
+\begin{Parameter} {int \var{index}}
+timer index
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{Error}
+A negative return value indicates an error.
+\end{Error}
+\end{FunctionDescription}
+
+\begin{FunctionDescription}{CCTK\_TimerStop}
+\label{CCTK-TimerStop}
+Gets values from all the clocks in the
+given timer, specified by name.
+
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{alltt}
+int err = CCTK\_TimerStop(\var{name})
+\end{alltt}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ParameterSection}
+\begin{Parameter} {int \var{name}}
+timer name
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{Discussion}
+Call this before getting the values from any of the timer's clocks.
+\end{Discussion}
+
+\begin{Error}
+A negative return value indicates an error.
+\end{Error}
+
+\begin{FunctionDescription}{CCTK\_TimerStopI}
+\label{CCTK-TimerStopI}
+Gets values from all the clocks in the
+given timer, specified by index.
+
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{alltt}
+int err = CCTK\_TimerStopI(\var{index})
+\end{alltt}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ParameterSection}
+\begin{Parameter} {int \var{index}}
+timer index
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{Discussion}
+Call this before getting the values from any of the timer's clocks.
+\end{Discussion}
+
+\begin{Error}
+A negative return value indicates an error.
+\end{Error}
+\end{FunctionDescription}
+
 
 %%%%%
 
