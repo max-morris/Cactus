@@ -21,77 +21,186 @@
 
 sub buildthorns
 {
-    local($package_dir,$choice) = @_;
-    local(@arrangements);
+  local($arrangement_dir,$choice) = @_;
+  local(@arrangements);
+  local(%info);
 
-    chdir $package_dir || die "Can't change directory to $package_dir\n";
+  chdir $arrangement_dir || die "Can't change directory to $arrangement_dir\n";
 
-    open(PACKAGES, "ls|");
+  open(ARRANGEMENTS, "ls|");
     
-    while(<PACKAGES>)
-    {
-	chop;
+  while(<ARRANGEMENTS>)
+  {
+    chop;
 
+    # Ignore CVS and backup stuff
+    next if (m:^CVS$:);
+    next if (m:^\#:);
+    next if (m:~$:);
+    next if (m:\.bak$:i);
+    next if (m:^\.:);
+    
+    # Just pick directories
+    if( -d $_)
+    {
+      push (@arrangements, $_);
+    }
+  }
+    
+  close ARRANGEMENTS;
+  
+  if ($choice =~ "thorns")
+  {
+    
+    foreach $arrangement (@arrangements)
+    {
+      chdir $arrangement;
+      
+      open(THORNLIST, "ls|");
+      
+      while(<THORNLIST>)
+      {
+	chop;
+		
 	# Ignore CVS and backup stuff
 	next if (m:^CVS$:);
 	next if (m:^\#:);
 	next if (m:~$:);
 	next if (m:\.bak$:i);
 	next if (m:^\.:);
+		
+	# Allow each arrangement to have a documentation directory.
+	next if (m:^doc$:);
 	
 	# Just pick directories
 	if( -d $_)
 	{
-	    push (@arrangements, $_);
+	  push(@total_list, "$arrangement/$_");
 	}
+      }
+      chdir "..";
     }
     
-    close PACKAGES;
-
-    if ($choice =~ "thorns")
-    {
-    
-	foreach $package (@arrangements)
-	{
-	    chdir $package;
-	    
-	    open(THORNLIST, "ls|");
-	    
-	    while(<THORNLIST>)
-	    {
-		chop;
-		
-		# Ignore CVS and backup stuff
-		next if (m:^CVS$:);
-		next if (m:^\#:);
-		next if (m:~$:);
-		next if (m:\.bak$:i);
-		next if (m:^\.:);
-		
-		# Allow each package to have a documentation directory.
-		next if (m:^doc$:);
-		
-		# Just pick directories
-		if( -d $_)
-		{
-		    push(@total_list, "$package/$_");
-		}
-	    }
-	    chdir "..";
-	}
-    
-    }
-    else
-    {
-	@total_list = @arrangements;
-    }
-
+  }
+  else
+  {
+    @total_list = @arrangements;
+  }
+ 
+  if($choice =~ "thorns")
+  {
     foreach $thorn (@total_list)
     {
-	print "$thorn\n";
+      if( -r "$thorn/interface.ccl" && -r "$thorn/param.ccl")
+      {
+	$info{$thorn} = &ThornInfo($thorn);
+      }
+#      print "$thorn \# $info{$thorn}\n";
     }
+  }
+  else
+  {
+    foreach $arrangement (@total_list)
+    {
+      $info{$arrangement} = 1;
+    }
+  }
 
-    chdir "..";
+  chdir "..";
+
+  return %info;
 }
 
+#/*@@
+#  @routine    ThornInfo
+#  @date       Sun Oct 17 15:57:44 1999
+#  @author     Tom Goodale
+#  @desc 
+#  Determines some info about a thorn.
+#  @enddesc 
+#  @calls     
+#  @calledby   
+#  @history 
+#
+#  @endhistory 
+#
+#@@*/
+sub ThornInfo
+{
+  local($thorn) = @_;
+  local($implementation) = "";
+  local($friends) = "";
+  local($inherits) = "";
+  local($shares) = "";
+
+  open(INTERFACE, "<$thorn/interface.ccl") || die "Unable to open $thorn/interface.ccl";
+
+  while(<INTERFACE>)
+  {
+    chop;
+    if (m/^\s*IMPLEMENTS:\s*([a-z]+[a-z_0-9]*)\s*$/i)
+    {
+      $implementation = $1;
+    }
+    elsif (m/^\s*INHERITS\s*:((\s*[a-zA-Z]+[a-zA-Z_0-9]*)*\s*)$/i)
+    {
+      $inherits = $1;
+    }
+    elsif (m/^\s*FRIEND\s*:((\s*[a-zA-Z]+[a-zA-Z_0-9]*)*\s*)$/i)
+    {
+      $friends = $1;
+    }
+  }
+
+  close(INTERFACE);
+
+  open(PARAM, "<$thorn/param.ccl") || die "Unable to open $thorn/param.ccl";
+
+  while(<PARAM>)
+  {
+    chop;
+    if($line =~ m/SHARES\s*:(.*)/i)
+    {
+      $share .= " $1";
+    }
+  }
+
+  close(PARAM);
+
+  if($inherits =~ /^[\s\t\n]*$/)
+  {
+    $inherits = "(none)";
+  }
+  else
+  {
+    $inherits =~ s:^\s*::;
+    $inherits =~ s:\s*$::;
+    $inherits =~ s:[\s\t\n]+:,:g;
+  }
+
+  if($friends =~ /^[\s\t\n]*$/)
+  {
+    $friends = "(none)";
+  }
+  else
+  {
+    $friends =~ s:^\s*::;
+    $friends =~ s:\s*$::;
+    $friends =~ s:[\s\t\n]+:,:g;
+  }
+  if($shares =~ /^[\s\t\n]*$/)
+  {
+    $shares = "(none)";
+  }
+  else
+  {
+    $shares =~ s:^\s*::;
+    $shares =~ s:\s*$::;
+    $shares =~ s:[\s\t\n]+:,:g;
+  }
+
+  return "Implements: $implementation Inherits: $inherits Friends: $friends Shares: $shares";
+}
+
+    
 1;

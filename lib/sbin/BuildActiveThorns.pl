@@ -13,5 +13,9 @@ require "lib/sbin/MakeUtils.pl";
 
 $package_dir = shift(@ARGV);
 
-&buildthorns($package_dir,"thorns");
+%info = &buildthorns($package_dir,"thorns");
 
+foreach $thorn (sort keys %info)
+{
+  printf("%-34s # %s\n",$thorn,$info{$thorn});
+}

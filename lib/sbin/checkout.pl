@@ -72,12 +72,18 @@ while ()
 }
 
 sub get_arrangements
-{
-
+{   
+    local(%info);
+    local($arrangement);
     print "\nYou already have arrangements: \n\n";
 
-    &buildthorns("arrangements/","arrangements");
+    %info = &buildthorns("arrangements/","arrangements");
     
+    foreach $arrangement (sort keys %info)
+    {
+      print "$arrangement\n";
+    }
+
     print "\nAvailable arrangements: \n";
 
     open(MODULES,"cvs co -s | ");
@@ -145,10 +151,18 @@ sub get_arrangements
 
 sub get_thorns
 {
+    local(%info);
+    local($thorn);
+
     print "\nYou already have thorns: \n\n";
     
-    &buildthorns("arrangements/","thorns");
+    %info = &buildthorns("arrangements/","thorns");
     
+    foreach $thorn (sort keys %info)
+    {
+      print "$thorn\n";
+    }
+
     print "\nAvailable thorns: \n";
 
     open(MODULES,"cvs -q co -s | ");
