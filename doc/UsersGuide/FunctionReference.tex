@@ -387,6 +387,10 @@ from Fortran.
   [\pageref{CCTK-nProcs}]
   Get the total number of processors used
 
+\item[CCTK\_NullPointer]
+  [\pageref{CCTK-NullPointer}]
+  Returns a C-style NULL pointer value
+
 \item[CCTK\_NumGroups]
   [\pageref{CCTK-NumGroups}]
   Get the number of groups of variables compiled in the code
@@ -4692,6 +4696,61 @@ For a single processor run this call will return one.
 \end{CCTKFunc}
 
 
+% util/Misc.c
+\begin{FunctionDescription}{CCTK\_NullPointer}%%%
+\label{CCTK-NullPointer}
+Returns a C-style NULL pointer value.
+
+\begin{SynopsisSection}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}
+#include "cctk.h"
+
+CCTK_POINTER pointer_var
+
+pointer_var = CCTK_NullPointer()
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ResultSection}
+\begin{Result}{pointer\_var}
+a CCTK\_POINTER type variable which is initialized with a C-style NULL pointer
+\end{Result}
+\end{ResultSection}
+
+\begin{Discussion}
+Fortran doesn't know the concept of pointers so problems arise when a C function
+is to be called which expects a pointer as one (or more) of it(s) argument(s).
+
+In order to pass a NULL pointer from fortran to C, a local CCTK\_POINTER variable should be used which has been initialized before with {\t CCTK\_NullPointer()}.
+
+Note that there is only a fortran wrapper available for {\t CCTK\_NullPointer()}.
+\end{Discussion}
+
+\begin{SeeAlsoSection}
+\begin{SeeAlso}{CCTK\_PointerTo()}
+Returns the address of a variable passed in by reference from a fortran routine.
+\end{SeeAlso}
+\end{SeeAlsoSection}
+
+\begin{ExampleSection}
+\begin{Example}{Fortran}
+\begin{verbatim}
+#include "cctk.h"
+
+integer      ierror, table_handle
+CCTK_POINTER pointer_var
+
+pointer_var = CCTK_NullPointer()
+
+call Util_TableCreate(table_handle, 0)
+call Util_TableSetPointer(ierror, table_handle, pointer_var, "NULL pointer")
+\end{verbatim}
+\end{Example}
+\end{ExampleSection}
+\end{FunctionDescription}
+
 
 % Groups.c
 \begin{CCTKFunc}{CCTK\_NumGroups}{Get the number of groups of variables compiled in the code}
@@ -5203,6 +5262,12 @@ pointer to it.
 
 Note that there is only a fortran wrapper available for {\t CCTK\_PointerTo()}.
 \end{Discussion}
+
+\begin{SeeAlsoSection}
+\begin{SeeAlso}{CCTK\_NullPointer()}
+Returns a C-style NULL pointer value.
+\end{SeeAlso}
+\end{SeeAlsoSection}
 
 \begin{ExampleSection}
 \begin{Example}{Fortran}
