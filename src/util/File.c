@@ -1,4 +1,3 @@
-
 #include "cctk.h"
 
  /*@@
@@ -31,7 +30,7 @@ static cHandledData *DirNames = NULL;
 
 int CCTK_mkdir(char *dir)
 {
-  int retval;
+  int retval=-1;
   int handle;
   char *command;
   char *message;
@@ -70,11 +69,16 @@ int CCTK_mkdir(char *dir)
     CCTK_Info("Cactus",message);
     free(message);
 
+    /*** FIXME: not sure what a successfull system call look like
+	 across all architecures - ignore for now
+	 and set zero for Cactus success ***/
     retval = system(command);
+    retval = 0;
 
     free(command);
 
-  }
+  } else 
+    retval = -1;
 
   return retval;
 
