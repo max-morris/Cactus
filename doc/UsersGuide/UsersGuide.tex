@@ -1,5 +1,21 @@
-\documentclass{report}
+% /*@@
+%   @file      UsersGuide.tex
+%   @date      
+%   @author    
+%   @desc 
+%   
+%   @enddesc 
+%   @version $Header$	
+% @@*/
 
+\documentclass{report}
+\usepackage{fancyhdr}
+
+\makeatletter
+\@addtoreset{chapter}{part}
+\makeatother
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \parskip = 2 pt
 \oddsidemargin = 0 cm
 \textwidth = 16 cm
@@ -9,8 +25,7 @@
 \def\q{\bf QUERY: }
 \def\t{\tt \obeylines }
 
-\begin{document}
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newenvironment{CCTKroutine}{\newpage}{}
 \newenvironment{CCTKsyn}{\noindent\begin{tabular}{@{}p{3cm}cp{11cm}}&&\\{\bf Synopis} \hfill&&\\}{\end{tabular}}
 \newenvironment{CCTKpar}{\noindent\begin{tabular}{@{}p{3cm}cp{11cm}}&&\\{\bf Parameters} \hfill&&\\}{\end{tabular}}
@@ -125,22 +140,92 @@
         }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Takes three arguments - the name of the document, the revision, and
+% the date.
+% Additionally ther eis an optional first argument with the version number
 
-\date{\verb$Date$}
+\newcommand{\cactustitlepage}[4][4.0]
+{
+\thispagestyle{empty}
+\setlength{\parindent}{0mm}
+\setlength{\parskip}{0mm}
+\vspace*{\stretch{1}}
+\rule{\linewidth}{1mm}
+\begin{flushright}
+  \Huge Cactus #1\\[5mm]
+        #2
+\end{flushright}
+\rule{\linewidth}{1mm}
+\vspace*{\stretch{2}}
+\begin{center}
+   \Large #3 \\[3mm]
+          #4
+\end{center}
+\newpage
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\title{Cactus 4.0 Documentation\\
-\small{\verb$Revision$}
+
+\newenvironment{cactuspart}[4]
+{
+  \clearpage
+  \renewcommand{\thepage}{\Alph{part}\arabic{page}}
+  % Redefine the plain style
+  \fancypagestyle{plain}
+  {
+    \fancyhf{} % Clear all header and footer fields
+    \lfoot{#3}
+    \cfoot{#4}
+    \rfoot{\thepage/\pageref{lastpage:\thepart}}
+    \renewcommand{\headrulewidth}{0.0pt}  
+    \renewcommand{\footrulewidth}{0.4pt}  
+    \renewcommand{\thepage}{\Alph{part}\arabic{page}}
+  }
+
+  % Make sure it's arabic numbering
+  \pagenumbering{arabic}
+  % Start the page counter at 1
+  \setcounter{page}{1}
+  % Start a new part
+  \renewcommand{\thepage}{\Alph{part}\arabic{page}}
+  \part{#2}
+  \setcounter{part}{#1}
+  % Redefine the page
+  % Set up fancy headings.
+  \lfoot{#3}
+  \cfoot{#4}
+  \rfoot{\thepage/\pageref{lastpage:\thepart}}
+  \renewcommand{\headrulewidth}{0.4pt}
+  \renewcommand{\footrulewidth}{0.4pt}
+}
+{
+  % Remember the last page of the 
+  \label{lastpage:\thepart}
+  \clearpage
 }
 
-%\maketitle
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\begin{document}
+
+\cactustitlepage{Users' Guide}{$$Revision$$}{$$Date$$}
+
+\setcounter{page}{1}
+
+% Table of contents
+\pagenumbering{roman}
 
 \tableofcontents
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\renewcommand{\thepart}{\Alph{part}}
+\renewcommand{\thechapter}{\Alph{part}\arabic{chapter}}
+\renewcommand{\thepage}{\Alph{part}\arabic{page}}
 
 \include{RunningCactus}
 
