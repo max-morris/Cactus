@@ -38,19 +38,25 @@ typedef struct
   int *lower_bound;
   int *upper_bound;
 
+  /* The bounding box - 1 => a real boundary, 0 => a local grid boundary. */
   /* bbox[2*dim] */
   int *bbox;
 
+  /* The refinement factor over the top level grid. */
   int levfac;
-
-  void *rfr_top;
 
   /* data[var_num][xyz]*/
   void **data;
 
+  /* The extension array */
   void *extensions;
 
+  /* All the group data for this GH (storage, comm, etc. */
   cGHGroupData *GroupData;
+
+  /* Rfr tree for this GH. */
+  void *rfr_top;
+
 } cGH;
 
 typedef struct 
