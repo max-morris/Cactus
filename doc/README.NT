@@ -1,35 +1,55 @@
 # $Header$
 
-The aim of this file is to describe the environment necessary to
-build the CCTK on an NT platform.
+The aim of this file is to describe the environment necessary to build
+the CCTK on an NT (or Windows 2000) platform.
 
 Apart from the required software noted in the manual, you must install
-the cygwin package version beta 20.1 available from http://www.cygnus.com .
+the cygwin package available from http://sources.redhat.com/cygwin .
 
-After installing Cygwin, you must make sure that the GNU CPP is somewhere
-on your path, and that the directory path leading to it contains no names
-containing spaces - these would confuse the autoconf program 8-(  
-
-You must also install Microsoft Visual C and Digital Visual Fortran.  Other
-compilers may work, but are currently not supported.
+After installing Cygwin, you must make sure that the GNU CPP is
+somewhere on your path, and that the directory path leading to it
+contains no names containing un-escaped spaces - these would confuse
+the autoconf program.
 
 In principle now all you need to do is start bash, checkout the CCTK,
 and run make.
 
-Note that there may be warnings whilst generating dependencies for the C and 
-C++ files, these may be ignored. 
+There may be warnings whilst generating dependencies for the C and C++
+files, these may be ignored.
 
-To link libraries use the full path name in the form e.g.
- 
-LIBS=c:\DirName\libname.lib
- 
-the variables e.g. LIBDIRS are not used.                
+Please note that paths to additional include files or libraries must
+contain no spaces.
 
-Special note for people using non-English versions of NT.  Currently
+
+Tested Software:
+---------------
+
+Cygwin:
+------
+Cygwin beta 20.1.
+Cygwin 1.1.6
+
+Perl:
+----
+perl 5.003_7 (Perl for Win32 build 312)
+ActivePerl-5.6.0.620
+
+C/C++:
+-----
+Microsoft Visual C 6.0
+
+Fortran:
+-------
+Digital Fortran 6.0 
+
+
+SPECIAL NOTE FOR PEOPLE USING NON-ENGLISH VERSIONS OF NT.  Currently
 the include path to find the MS C include files is set for an english
-language version, you will need to modify the SYS_INC_DIRS line in your
-make.config.defn file (in a configuration) to the appropriate one.  It is
-recommended that you use the 8.3 formatted name available from dir /x
-on the command prompt (not bash), so as to get a name with no spaces in -
-this makes life a lot easier 8-(  We are currently trying to find a way
-to automate the process.
+language version, you will need to modify the SYS_INC_DIRS line in
+your make.config.defn file (in a configuration) to the appropriate
+one.  It is recommended that you use the 8.3 formatted name available
+from dir /x on the command prompt (not bash), so as to get a name with
+no spaces in - this makes life a lot easier 8-( We are currently
+trying to find a way to automate the process.
+
+
