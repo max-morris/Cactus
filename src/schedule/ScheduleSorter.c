@@ -228,7 +228,7 @@ signed char **CCTKi_ScheduleCreateArray(int size)
   int i, j;
   signed char **array;
 
-  array = (signed char **)malloc(size*sizeof(signed char *));
+  array = size > 0 ? (signed char **)malloc(size*sizeof(signed char *)) : NULL;
 
   if(array)
   {
@@ -338,7 +338,7 @@ int *CCTKi_ScheduleCreateIVec(int size)
   int i;
   int *vector;
 
-  vector = (int *)malloc(size*sizeof(int));
+  vector = size > 0 ? (int *)malloc(size*sizeof(int)) : NULL;
 
   if(vector)
   {
