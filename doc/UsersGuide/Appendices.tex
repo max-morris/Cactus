@@ -216,13 +216,15 @@ optional, with the default variable type being {\t SCALAR}.
 {\t GF}.  The default value is {\t DIM=3}.
 \item{} {\t TIMELEVELS} defines the number of timelevels a group has if
         the group is of type {\t ARRAY} or {\t GF}, and can take any positive
-        value.
+        value. The default is one timelevel.
 \item{} {\t SIZE} defines the number grid-points an {\tt ARRAY} has in each direction.
         This should be a comma-separated list of valid arithmetical
         expressions consisting of integers or integer-valued parameters.
 \item{} {\t DISTRIB} defines the processor decomposition of an {\tt ARRAY}.
-        {\tt DISTRIB=CONSTANT} implies that {\tt SIZE} grid-points should
-        be allocated on each processor.
+        {\tt DISTRIB=DEFAULT} distributes {\tt SIZE} grid-points
+        across all processors. {\tt DISTRIB=CONSTANT} implies that
+        {\tt SIZE} grid-points should be allocated on each
+        processor. The default value is {\tt DISTRIB=DEFAULT}.
 \item{} {\t GHOSTSIZE} defines number of ghost-zones in each dimension
 of an {\tt ARRAY}.  
 %Does GHOSTSIZE default to one for a GF and zero for a GA?
