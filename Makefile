@@ -12,11 +12,11 @@
 # systems.
 #
 # For information on how to use this makefile, type
-# gmake help.
+# gmake help
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.46 1999-07-30 15:56:40 allen Exp $
+#   @version $Id: Makefile,v 1.47 1999-07-30 19:23:36 allen Exp $
 # @@*/
 
 ##################################################################################
