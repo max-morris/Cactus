@@ -155,22 +155,65 @@ sub CreateVariableBindings
     push(@data, '');
     push(@data, '');
 
-    push(@data, '#include "cctk_Types.h"');
-    push(@data, '#include "cctk_WarnLevel.h"');
+    push(@data, "#define THORN_IS_$thorn 1");
+    push(@data, '');
+    push(@data, '#include "cctk.h"');
+    push(@data, '#include "cctk_Arguments.h"');
     push(@data, '#include "cctk_Parameter.h"');
+    push(@data, '#include "cctk_WarnLevel.h"');
     push(@data, '#include "cctki_Groups.h"');
     push(@data, '#include "cctki_FortranWrappers.h"');
     push(@data, '');
 
-    push(@data, "int CCTKi_BindingsFortranWrapper$thorn(void *GH, void *fpointer);");
-    push(@data, '');
     push(@data, "int CactusBindingsVariables_${thorn}_Initialise(void);");
+    push(@data, "static int CCTKi_BindingsFortranWrapper$thorn(void *_GH, void *fpointer);");
+    push(@data, '');
+    push(@data, "static int CCTKi_BindingsFortranWrapper$thorn(void *_GH, void *fpointer)");
+    push(@data, '{');
+    push(@data, '  cGH *GH = _GH;');
+    push(@data, '  const int _cctk_zero = 0;');
+    push(@data, "  void (*function)(\U$thorn\E_C2F_PROTO);");
+    push(@data, "  DECLARE_\U$thorn\E_C2F");
+    push(@data, "  INITIALISE_\U$thorn\E_C2F");
+    push(@data, '  (void) (_cctk_zero + 0);');
+    push(@data, '');
+    push(@data, "  function = (void (*) (\U$thorn\E_C2F_PROTO)) fpointer;");
+    push(@data, "  function (PASS_\U$thorn\E_C2F (GH));");
+    push(@data, '');
+    push(@data, '  return (0);');
+    push(@data, '}');
+    push(@data, '');
+
     push(@data, "int CactusBindingsVariables_${thorn}_Initialise(void)");
     push(@data, '{');
+    push(@data, '  int warn_mixeddim_gfs;');
+    push(@data, '  const CCTK_INT *allow_mixeddim_gfs;');
+    push(@data, '');
+    push(@data, '');
+    push(@data, '  warn_mixeddim_gfs = 0;');
+    push(@data, '  allow_mixeddim_gfs = CCTK_ParameterGet ("allow_mixeddim_gfs", "Cactus", 0);');
+    push(@data, '');
+
     foreach $block ("PUBLIC", "PROTECTED", "PRIVATE")
     {
       push(@data, &CreateThornGroupInitialisers($thorn, $block, $rhinterface_db, $rhparameter_db));
     }
+    push(@data, '');
+    push(@data, '  if (warn_mixeddim_gfs)');
+    push(@data, '  {');
+    push(@data, '    if (allow_mixeddim_gfs && *allow_mixeddim_gfs)');
+    push(@data, '    {');
+    push(@data, '      CCTK_VWarn (2, __LINE__, __FILE__, "Cactus",');
+    push(@data, '                  "CCTKi_CreateGroup: Working dimension already set, "');
+    push(@data, "                  \"creating GF group '$group' with different dimension $rhinterface_db->{\"\U$thorn GROUP $group\E DIM\"}\");");
+    push(@data, '    }');
+    push(@data, '    else');
+    push(@data, '    {');
+    push(@data, '      CCTK_VWarn (0, __LINE__, __FILE__, "Cactus",');
+    push(@data, '                  "CCTKi_CreateGroup: Working dimension already set,"');
+    push(@data, "                  \" cannot create GF group $group with dimension $rhinterface_db->{\"\U$thorn GROUP $group\E DIM\"}\");");
+    push(@data, '    }');
+    push(@data, ' }');
     push(@data, '');
     push(@data, "  CCTKi_RegisterFortranWrapper(\"$thorn\", CCTKi_BindingsFortranWrapper$thorn);");
 
@@ -185,16 +228,19 @@ sub CreateVariableBindings
     $filelist .= " $thorn.c";
   }
 
-  foreach $thorn (split(" ",$rhinterface_db->{"THORNS"}))
-  {
-    @data = &CreateThornFortranWrapper($thorn);
-    push(@data, "\n");  # workaround for perl 5.004_04 to add a trailing newline
-
-    $dataout = join ("\n", @data);
-    &WriteFile("Variables/$thorn\_FortranWrapper.c",\$dataout);
-
-    $filelist .= " $thorn\_FortranWrapper.c";
-  }
+# TR 24 Jan 2003
+# Fortran wrappers are now defined and registered in "Variables/$thorn.c"
+#
+# foreach $thorn (split(" ",$rhinterface_db->{"THORNS"}))
+# {
+#   @data = &CreateThornFortranWrapper($thorn);
+#   push(@data, "\n");  # workaround for perl 5.004_04 to add a trailing newline
+#
+#   $dataout = join ("\n", @data);
+#   &WriteFile("Variables/$thorn\_FortranWrapper.c",\$dataout);
+#
+#   $filelist .= " $thorn\_FortranWrapper.c";
+# }
 
   $dataout = "SRCS = $filelist\n";
   &WriteFile("Variables/make.code.defn",\$dataout);
@@ -919,14 +965,13 @@ sub CreateThornArgumentHeaderFile
 sub CreateThornGroupInitialisers
 {
   my($thorn, $block, $rhinterface_db, $rhparameter_db) = @_;
-  my(@variables, @definitions);
+  my(@variables, @data);
   my($imp, $line, $group, $dim, $string, $numsize, $message, $type);
 
   $imp = $rhinterface_db->{"\U$thorn\E IMPLEMENTS"};
 
   foreach $group (split(" ", $rhinterface_db->{"\U$thorn $block GROUPS"}))
   {
-
     $type = $rhinterface_db->{"\U$thorn GROUP $group\E GTYPE"};
 
     # Check consistency for arrays
@@ -945,115 +990,126 @@ sub CreateThornGroupInitialisers
       }
     }
 
-    @variables = split(" ", $rhinterface_db->{"\U$thorn GROUP $group\E"});
-
-    $line  = "  if (CCTKi_CreateGroup(\"\U$group\",\"$thorn\",\"$imp\",\n"
-           . "                    \"" . $rhinterface_db->{"\U$thorn GROUP $group\E GTYPE"} . "\",\n"
-           . "                    \"" . $rhinterface_db->{"\U$thorn GROUP $group\E VTYPE"} . "\",\n"
-           . "                    \"" . $block . "\",\n"
-           . "                    " . $rhinterface_db->{"\U$thorn GROUP $group\E DIM"} . ",\n"
-           . "                    " . $rhinterface_db->{"\U$thorn GROUP $group\E TIMELEVELS"} . ",\n"
-           . "                    \"" . $rhinterface_db->{"\U$thorn GROUP $group\E STYPE"} . "\",\n"
-           . "                    \"" . $rhinterface_db->{"\U$thorn GROUP $group\E DISTRIB"} . "\",\n"
-           . "                    \"" . $rhinterface_db->{"\U$thorn GROUP $group\E SIZE"} . "\",\n"
-           . "                    \"" . $rhinterface_db->{"\U$thorn GROUP $group\E GHOSTSIZE"} . "\",\n"
-           . "                    \"" . $rhinterface_db->{"\U$thorn GROUP $group\E TAGS"} . "\",\n";
+    $line = "  if (CCTKi_CreateGroup (\"\U$group\", \"$thorn\", \"$imp\",";
+    push(@data, $line);
+    $line = '                         "'
+          . $rhinterface_db->{"\U$thorn GROUP ${group}\E GTYPE"}
+          . '", "'
+          . $rhinterface_db->{"\U$thorn GROUP ${group}\E VTYPE"}
+          . '", "'
+          . $block
+          . '",';
+    push(@data, $line);
+    $line = '                         '
+          . $rhinterface_db->{"\U$thorn GROUP $group\E DIM"}
+          . ', '
+          . $rhinterface_db->{"\U$thorn GROUP $group\E TIMELEVELS"}
+          . ',';
+    push(@data, $line);
+    $line = '                         "'
+          . $rhinterface_db->{"\U$thorn GROUP $group\E STYPE"}
+          . '", "'
+          . $rhinterface_db->{"\U$thorn GROUP $group\E DISTRIB"}
+          . '",';
+    push(@data, $line);
+    $line = '                         "'
+          . $rhinterface_db->{"\U$thorn GROUP $group\E SIZE"}
+          . '", "'
+          . $rhinterface_db->{"\U$thorn GROUP $group\E GHOSTSIZE"}
+          . '",';
+    push(@data, $line);
+    $line = '                         "'
+          . $rhinterface_db->{"\U$thorn GROUP $group\E TAGS"}
+          . '",';
+    push(@data, $line);
 
     # Is it a vector group ?
+    @variables = split(" ", $rhinterface_db->{"\U$thorn GROUP $group\E"});
     if(defined($rhinterface_db->{"\U$thorn GROUP $group\E VARARRAY_SIZE"}))
     {
       # Check that the size is allowed.
       &CheckArraySizes($rhinterface_db->{"\U$thorn GROUP $group\E VARARRAY_SIZE"},$thorn,$rhparameter_db,$rhinterface_db);
       # Flag Cactus that it is a vector group.
-      $line .= "                    -1";
+      $line = '                         -1,';
     }
     else
     {
-      $line .= "                    " . scalar(@variables);
+      $line = '                         ' . scalar(@variables);
     }
 
     foreach $variable (@variables)
     {
-      $line .= ",\n                   \"$variable\"";
+      $line .= ",\n                         \"$variable\"";
     }
 
     # Pass in the size of the GV array, which may be a valid parameter expression
     if(defined($rhinterface_db->{"\U$thorn GROUP $group\E VARARRAY_SIZE"}))
     {
-      $line .= ",\n                   \"" . $rhinterface_db->{"\U$thorn GROUP $group\E VARARRAY_SIZE"} . "\"";
+      $line .= ',';
+      push(@data, $line);
+      $line  = '                        "';
+      $line .= $rhinterface_db->{"\U$thorn GROUP $group\E VARARRAY_SIZE"};
+      $line .= '"';
     }
 
-    $line  .= ")==1)\n";
+    $line .= ') == 1)';
+    push(@data, $line);
 
-    $line  .= "  {\n";
-    $line  .= "    const CCTK_INT *allow_mixeddim_gfs;\n";
-    $line  .= "    allow_mixeddim_gfs = (const CCTK_INT *) CCTK_ParameterGet(\"allow_mixeddim_gfs\",\"Cactus\",0);\n";
-    $line  .= "    if (allow_mixeddim_gfs && *allow_mixeddim_gfs)\n";
-    $line  .= "    {\n";
-    $line  .= "      CCTK_VWarn(2,__LINE__,__FILE__,\"Cactus\"\n,";
-    $line  .= "      \"CCTKi_CreateGroup: Working dimension already set,\"\n";
-    $line  .= "      \" creating GF group $group with different dimension $rhinterface_db->{\"\U$thorn GROUP $group\E DIM\"}\");\n";
-    $line  .= "    }\n";
-    $line  .= "    else\n";
-    $line  .= "    {\n";
-    $line  .= "      CCTK_VWarn(0,__LINE__,__FILE__,\"Cactus\"\n,";
-    $line  .= "      \"CCTKi_CreateGroup: Working dimension already set,\"\n";
-    $line  .= "      \" cannot create GF group $group with dimension $rhinterface_db->{\"\U$thorn GROUP $group\E DIM\"}\");\n";
-    $line  .= "    }\n";
-    $line  .= "  }\n";
-
-    push(@definitions, $line);
+    push(@data, '  {');
+    push(@data, '    warn_mixeddim_gfs = 1;');
+    push(@data, '  }');
   }
 
-  return @definitions;
-
+  return @data;
 }
 
-sub CreateThornFortranWrapper
-{
-  my($thorn) = @_;
-  my(@data);
-
-  @data = ();
-  push(@data, '/*@@');
-  push(@data, "   \@file    ${thorn}_FortranWrapper.c");
-  push(@data, '   @author  Automatically generated by GridFuncStuff.pl');
-  push(@data, '   @desc');
-  push(@data, "            Defines the fortran wrappers for scheduled fortran routines of thorn $thorn");
-  push(@data, '   @enddesc');
-  push(@data, ' @@*/');
-  push(@data, '');
-  push(@data, '');
-
-  push(@data, "#define THORN_IS_$thorn 1");
-  push(@data, '');
-  push(@data, '#include "cctk.h"');
-  push(@data, '#include "cctk_Flesh.h"');
-  push(@data, '#include "cctk_Groups.h"');
-  push(@data, '#include "cctk_Comm.h"');
-  push(@data, '#include "cctk_Arguments.h"');
-  push(@data, '');
-
-  push(@data, "int CCTKi_BindingsFortranWrapper$thorn(cGH *GH, void *fpointer);");
-  push(@data, '');
-  push(@data, "int CCTKi_BindingsFortranWrapper$thorn(cGH *GH, void *fpointer)");
-  push(@data, '{');
-  push(@data, '  const int _cctk_zero = 0;');
-  push(@data, "  void (*function)(\U$thorn\E_C2F_PROTO);");
-  push(@data, "  DECLARE_\U$thorn\E_C2F");
-  push(@data, "  INITIALISE_\U$thorn\E_C2F");
-  push(@data, '  (void) (_cctk_zero + 0);');
-  push(@data, '');
-
-  push(@data, "  function = (void (*)(\U$thorn\E_C2F_PROTO))fpointer;");
-  push(@data, "  function(PASS_\U$thorn\E_C2F(GH));");
-  push(@data, '');
-  push(@data, '  return 0;');
-  push(@data, '}');
-
-  return (@data);
-}
-
+# TR 24 Jan 2003
+# Fortran wrappers are now defined and registered in "Variables/$thorn.c"
+#
+#sub CreateThornFortranWrapper
+#{
+#  my($thorn) = @_;
+#  my(@data);
+#
+#  @data = ();
+#  push(@data, '/*@@');
+#  push(@data, "   \@file    ${thorn}_FortranWrapper.c");
+#  push(@data, '   @author  Automatically generated by GridFuncStuff.pl');
+#  push(@data, '   @desc');
+#  push(@data, "            Defines the fortran wrappers for scheduled fortran routines of thorn $thorn");
+#  push(@data, '   @enddesc');
+#  push(@data, ' @@*/');
+#  push(@data, '');
+#  push(@data, '');
+#
+#  push(@data, "#define THORN_IS_$thorn 1");
+#  push(@data, '');
+#  push(@data, '#include "cctk.h"');
+#  push(@data, '#include "cctk_Flesh.h"');
+#  push(@data, '#include "cctk_Groups.h"');
+#  push(@data, '#include "cctk_Comm.h"');
+#  push(@data, '#include "cctk_Arguments.h"');
+#  push(@data, '');
+#
+#  push(@data, "int CCTKi_BindingsFortranWrapper$thorn(cGH *GH, CCTK_FPOINTER fpointer);");
+#  push(@data, '');
+#  push(@data, "int CCTKi_BindingsFortranWrapper$thorn(cGH *GH, CCTK_FPOINTER fpointer)");
+#  push(@data, '{');
+#  push(@data, '  const int _cctk_zero = 0;');
+#  push(@data, "  void (*function)(\U$thorn\E_C2F_PROTO);");
+#  push(@data, "  DECLARE_\U$thorn\E_C2F");
+#  push(@data, "  INITIALISE_\U$thorn\E_C2F");
+#  push(@data, '  (void) (_cctk_zero + 0);');
+#  push(@data, '');
+#
+#  push(@data, "  function = (void (*) (\U$thorn\E_C2F_PROTO)) fpointer;");
+#  push(@data, "  function (PASS_\U$thorn\E_C2F (GH));");
+#  push(@data, '');
+#  push(@data, '  return 0;');
+#  push(@data, '}');
+#
+#  return (@data);
+#}
 
 
 #/*@@
