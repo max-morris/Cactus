@@ -5,6 +5,7 @@
    @desc 
    Default cactus evolution stuff.
    @enddesc 
+   @version $Header$
  @@*/
 
 /*#define DEBUG_CCTK*/
@@ -35,18 +36,16 @@ static char *rcsid="$Header$";
                                         };                             \
                                      }
 
- /* Quick stuff for testing purposes. */
-#define EVOLUTION 1
-#define OUTPUT    2
 int cactus_terminate;
+
 static int cactus_terminate_global = 0;
+
 #define TERMINATION_RAISED_BRDCAST 4
 
 /* Local function prototypes. */
 
-int StepGH(cGH *GH);
+static int StepGH(cGH *GH);
  
-
 /* the iteration counter used in the evolution loop */
 static int iteration = 0;
 
@@ -207,9 +206,6 @@ int CactusDefaultEvolve(tFleshConfig *config)
 #endif
 
   return 0;
-
-  USE_CCTK_PARAMETERS
-
 }
 
 /************************************************************************/
@@ -227,108 +223,26 @@ int CactusDefaultEvolve(tFleshConfig *config)
    @calledby main   
  @@*/
 
-int StepGH(cGH *GH) 
+static int StepGH(cGH *GH) 
 {
 
-  void PreStepper(cGH *GH);
-  void EvolStepper(cGH *GH);
-  void PostStepper(cGH *GH);
-
   /* Advance GH->iteration BEFORE evolving */
-#ifdef DEBUG_CCTK
-  CCTK_PRINTSEPARATOR
-  printf("In StepGH\n--------------\n");
-  printf("  Advancing GH->iteration to %lu = %lu + 1\n",(GH->cctk_iteration+1),
-         GH->cctk_iteration);
-  CCTK_PRINTSEPARATOR
-#endif
 
   GH->cctk_iteration++;
 
-  PreStepper(GH);
-  EvolStepper(GH);
+  CCTK_Traverse(GH, "CCTK_PRESTEP");
+  CCTK_Traverse(GH, "CCTK_EVOL");
+
 
   /* Advance GH->time AFTER evolving */
-#ifdef DEBUG_CCTK
-  CCTK_PRINTSEPARATOR
-  printf("In StepGH\n--------------\n");
-  printf("  Advancing GH->cctk_time %f = %f + %f\n",GH->cctk_time+GH->cctk_delta_time,
-         GH->cctk_time,GH->cctk_delta_time);
-  CCTK_PRINTSEPARATOR
-#endif
 
   GH->cctk_time = GH->cctk_time + GH->cctk_delta_time;
 
-  PostStepper(GH);
-
+  CCTK_Traverse(GH, "CCTK_POSTSTEP"); 
 
   return 0;
 }
 
- /*@@
-   @routine    PreStepper
-   @date       Fri Aug 14 12:43:20 1998
-   @author     Gerd Lanfermann
-   @desc 
-     calls PRESTEP
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
-
-@@*/
-
-void PreStepper(cGH *GH) 
-{
-  int Rstep;  
-
-  /* Call the schedular with CCTK_PRESTEP */
-  CCTK_Traverse(GH, "CCTK_PRESTEP");
-}
- /*@@
-   @routine    EvolStepper
-   @date       Fri Aug 14 12:44:00 1998
-   @author     Gerd Lanfermann
-   @desc 
-     calls EVOLUTION, checks for nans, increases physical time
-   @enddesc 
-   @calls     
-   @calledby   
-   @history
-
-   @endhistory
-@@*/
-
-void EvolStepper(cGH *GH) 
-{
-
-  /* Call the schedular with Evolution */
-  CCTK_Traverse(GH, "CCTK_EVOL");
-  /* after Evolution check for NANs */
-
-}
-
- /*@@
-   @routine    PostStepper
-   @date       Fri Aug 14 12:45:39 1998
-   @author     Gerd Lanfermann
-   @desc 
-     calls the routines rgeistered as CCTK_POSSTEPS
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
-
-@@*/
-void PostStepper(cGH *GH) 
-{
-  /* Call the scheduler with post step */
-  CCTK_Traverse(GH, "CCTK_POSTSTEP"); 
-}
 
  /*@@
    @routine    TerminationStepper
