@@ -873,5 +873,564 @@ This routine is for debugging purposes for Fortran programmers.
 
 
 
+% CommOverloadables.c
+\begin{CCTKFunc}{CCTK\_EnableGroupStorage}{}
+\subroutine{int}{integer}{istat}
+\argument{cGH}{CCTK\_POINTER}{cctkGH}
+\argument{const char}{character*(*)}{group}
+\showargs
+\begin{params}
+\end{params}
+\begin{discussion}
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
+
+% CommOverloadables.c
+\begin{CCTKFunc}{CCTK\_DisableGroupStorage}{}
+\subroutine{int}{integer}{istat}
+\argument{cGH}{CCTK\_POINTER}{cctkGH}
+\argument{const char}{character*(*)}{group}
+\showargs
+\begin{params}
+\end{params}
+\begin{discussion}
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
+
+% CommOverloadables.c
+\begin{CCTKFunc}{CCTK\_SyncGroup}{}
+\subroutine{int}{integer}{istat}
+\argument{cGH}{CCTK\_POINTER}{cctkGH}
+\argument{const char}{character*(*)}{group}
+\showargs
+\begin{params}
+\end{params}
+\begin{discussion}
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
+
+
+% CommOverloadables.c
+\begin{CCTKFunc}{CCTK\_EnableGroupComm}{}
+\subroutine{int}{integer}{istat}
+\argument{cGH}{CCTK\_POINTER}{cctkGH}
+\argument{const char}{character*(*)}{group}
+\showargs
+\begin{params}
+\end{params}
+\begin{discussion}
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
+
+% CommOverloadables.c
+\begin{CCTKFunc}{CCTK\_DisableGroupComm}{}
+\subroutine{int}{integer}{istat}
+\argument{cGH}{CCTK\_POINTER}{cctkGH}
+\argument{const char}{character*(*)}{group}
+\showargs
+\begin{params}
+\end{params}
+\begin{discussion}
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
+
+
+% CommOverloadables.c
+\begin{CCTKFunc}{CCTK\_Barrier}{}
+\subroutine{int}{integer}{istat}
+\argument{cGH}{CCTK\_POINTER}{cctkGH}
+\showargs
+\begin{params}
+\end{params}
+\begin{discussion}
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
+
+% CommOverloadables.c
+\begin{CCTKFunc}{CCTK\_nProcs}{}
+\function{int}{integer}{nprocs}
+\argument{cGH}{CCTK\_POINTER}{cctkGH}
+\showargs
+\begin{params}
+\end{params}
+\begin{discussion}
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
+
+% CommOverloadables.c
+\begin{CCTKFunc}{CCTK\_MyProc}{}
+\function{int}{integer}{myproc}
+\argument{cGH}{CCTK\_POINTER}{cctkGH}
+\showargs
+\begin{params}
+\end{params}
+\begin{discussion}
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
+
+
+% CommOverloadables.c
+\begin{CCTKFunc}{CCTK\_ParallelInit}{}
+\subroutine{int}{integer}{istat}
+\argument{cGH}{CCTK\_POINTER}{cctkGH}
+\showargs
+\begin{params}
+\end{params}
+\begin{discussion}
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
+
+
+% CommOverloadables.c
+\begin{CCTKFunc}{CCTK\_Exit}{}
+\subroutine{int}{integer}{istat}
+\argument{cGH}{CCTK\_POINTER}{cctkGH}
+\showargs
+\begin{params}
+\end{params}
+\begin{discussion}
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
+
+
+% CommOverloadables.c
+\begin{CCTKFunc}{CCTK\_Abort}{}
+\subroutine{int}{integer}{istat}
+\argument{cGH}{CCTK\_POINTER}{cctkGH}
+\showargs
+\begin{params}
+\end{params}
+\begin{discussion}
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
+
+% CommOverloadables.c
+\begin{CCTKFunc}{CCTK\_SetupGH}{}
+\subroutine{cGH}{}{GH}
+\argument{tFleshConfig}{}{config}
+\argument{int}{}{convlevel}
+\showargs
+\begin{params}
+\end{params}
+\begin{discussion}
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
+% CommOverloadables.c
+\begin{CCTKFunc}{CCTK\_ArrayGroupSizeB}{}
+\subroutine{int *}{}{size}
+\argument{cGH}{}{GH}
+\argument{int}{}{groupindex}
+\argument{int}{}{dir}
+\argument{const char *}{}{groupname}
+\showargs
+\begin{params}
+\end{params}
+\begin{discussion}
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
+
+
+% CommOverloadables.h
+\begin{CCTKFunc}{CCTK\_QueryGroupStorageB}{}
+\subroutine{int}{}{storage}
+\argument{cGH}{}{GH}
+\argument{int}{}{groupindex}
+\argument{int}{}{groupname}
+\showargs
+\begin{params}
+\end{params}
+\begin{discussion}
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
+
+
+% Comm.h
+\begin{CCTKFunc}{CCTK\_ArrayGroupSize}{}
+\subroutine{int *}{}{size}
+\argument{cGH}{}{GH}
+\argument{int}{}{groupindex}
+\argument{int}{}{dir}
+\showargs
+\begin{params}
+\end{params}
+\begin{discussion}
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
+
+
+% Comm.h
+\begin{CCTKFunc}{CCTK\_QueryGroupStorageI}{}
+\subroutine{int}{}{storage}
+\argument{cGH}{}{GH}
+\argument{int}{}{groupindex}
+\showargs
+\begin{params}
+\end{params}
+\begin{discussion}
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
+
+% Comm.h
+\begin{CCTKFunc}{CCTK\_ArrayGroupSize}{}
+\subroutine{int *}{}{size}
+\argument{cGH}{}{GH}
+\argument{const char *}{}{groupname}
+\showargs
+\begin{params}
+\end{params}
+\begin{discussion}
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
+
+
+% Comm.h
+\begin{CCTKFunc}{CCTK\_QueryGroupStorage}{}
+\subroutine{int}{}{storage}
+\argument{cGH}{}{GH}
+\argument{int}{}{groupname}
+\showargs
+\begin{params}
+\end{params}
+\begin{discussion}
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
+
+% IOOverloadables.h
+\begin{CCTKFunc}{CCTK\_OutputVarAsByMethod}{}
+\subroutine{int}{}{istat}
+\argument{cGH}{}{GH}
+\argument{const char *}{character*(*)}{variable}
+\argument{const char *}{character*(*)}{method}
+\argument{const char *}{character*(*)}{alias}
+\showargs
+\begin{params}
+\end{params}
+\begin{discussion}
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
+
+% IOOverloadables.h
+\begin{CCTKFunc}{CCTK\_OutputGH}{}
+\subroutine{int}{integer}{istat}
+\argument{cGH}{CCTK\_POINTER}{GH}
+\showargs
+\begin{params}
+\end{params}
+\begin{discussion}
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
+
+
+% IOMethods.h
+\begin{CCTKFunc}{CCTK\_RegisterIOMethod}{}
+\function{int}{integer}{istat}
+\argument{const char *}{}{name}
+\showargs
+\begin{params}
+\end{params}
+\begin{discussion}
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
+
+% IOMethods.h
+\begin{CCTKFunc}{CCTK\_RegisterIOMethodOutputGH}{}
+\function{int}{integer}{istat}
+\argument{int}{}{handle}
+\argument{int}{}{(* func)(cGH *)}
+\showargs
+\begin{params}
+\end{params}
+\begin{discussion}
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
+
+
+% IOMethods.h
+\begin{CCTKFunc}{CCTK\_RegisterIOMethodTimeToOutput}{}
+\function{int}{integer}{istat}
+\argument{int}{}{handle}
+\argument{int}{}{(* func)(cGH *,int)}
+\showargs
+\begin{params}
+\end{params}
+\begin{discussion}
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
+
+% IOMethods.h
+\begin{CCTKFunc}{CCTK\_RegisterIOMethodTriggerOutput}{}
+\function{int}{integer}{istat}
+\argument{int}{}{handle}
+\argument{int}{}{(* func)(cGH *,int)}
+\showargs
+\begin{params}
+\end{params}
+\begin{discussion}
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
+
+% IOMethods.h
+\begin{CCTKFunc}{CCTK\_RegisterIOMethodOutputVarAs}{}
+\function{int}{integer}{istat}
+\argument{int}{}{handle}
+\argument{int}{}{(* func)(cGH *,const char*, const char *)}
+\showargs
+\begin{params}
+\end{params}
+\begin{discussion}
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
+
+
+% GHExtensions.h
+\begin{CCTKFunc}{CCTK\_RegisterGHExtension}{}
+\function{int}{}{istat}
+\argument{const char *}{}{name}
+\showcargs
+\begin{params}
+\end{params}
+\begin{discussion}
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
+% GHExtensions.h
+\begin{CCTKFunc}{CCTK\_RegisterGHExtensionSetupGH}{}
+\function{int}{}{istat}
+\argument{int}{}{handle}
+\argument{void *}{}{(*func)(tFleshConfig *, int, cGH *)}
+\showcargs
+\begin{params}
+\end{params}
+\begin{discussion}
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
+% GHExtensions.h
+\begin{CCTKFunc}{CCTK\_RegisterGHExtensionInitGH}{}
+\function{int}{}{istat}
+\argument{int}{}{handle}
+\argument{void *}{}{(*func)(cGH *)}
+\showcargs
+\begin{params}
+\end{params}
+\begin{discussion}
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
+% GHExtensions.h
+\begin{CCTKFunc}{CCTK\_RegisterGHExtensionrfrTraverseGH}{}
+\function{int}{}{istat}
+\argument{int}{}{handle}
+\argument{void *}{}{(*func)(cGH *,int)}
+\showcargs
+\begin{params}
+\end{params}
+\begin{discussion}
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
+
+
+
+
 
 \end{cactuspart}
