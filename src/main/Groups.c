@@ -931,6 +931,77 @@ void  FMODIFIER FORTRAN_NAME(CCTK_VarTypeNumber)(int *number,ONE_FORTSTRING_ARG)
 }
 
 
+
+ /*@@
+   @routine    CCTK_VarTypeName
+   @date       Mon Jan  3 13:50:56 CET 2000
+   @author     Gabrielle Allen
+   @desc 
+   Gets the variable type name associated with a variable type number.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+char *CCTK_VarTypeName(int vtype)
+{
+  char *retval;
+
+  switch(vtype)
+  {
+    case CCTK_VARIABLE_INT: 
+      retval = "CCTK_VARIABLE_INT";
+      break;
+
+    case CCTK_VARIABLE_INT2: 
+      retval = "CCTK_VARIABLE_INT2";
+      break;
+
+    case CCTK_VARIABLE_INT4: 
+      retval = "CCTK_VARIABLE_INT4";
+      break;
+
+    case CCTK_VARIABLE_INT8: 
+      retval = "CCTK_VARIABLE_INT8";
+      break;
+
+    case CCTK_VARIABLE_REAL: 
+      retval = "CCTK_VARIABLE_REAL";
+      break;
+
+    case CCTK_VARIABLE_REAL4: 
+      retval = "CCTK_VARIABLE_REAL4";
+      break;
+
+    case CCTK_VARIABLE_REAL8: 
+      retval = "CCTK_VARIABLE_REAL8";
+      break;
+
+    case CCTK_VARIABLE_COMPLEX: 
+      retval = "CCTK_VARIABLE_COMPLEX";
+      break;
+
+    case CCTK_VARIABLE_CHAR: 
+      retval = "CCTK_VARIABLE_CHAR";
+      break;
+
+    case CCTK_VARIABLE_STRING: 
+      retval = "CCTK_VARIABLE_STRING";
+      break;
+
+    default:
+      retval = NULL;
+      break;
+  }
+
+  return retval;
+
+}
+
+
  /*@@
    @routine    CCTK_GroupScopeNumber
    @date       Tuesday June 22 1999
