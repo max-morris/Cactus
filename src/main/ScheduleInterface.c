@@ -15,6 +15,7 @@ static char *rcsid = "$Header$";
 
 #include "cctk.h"
 #include "cctk_Schedule.h"
+#include "cctki_ScheduleBindings.h"
 #include "cctki_Schedule.h"
 
 #include "cctk_Flesh.h"
@@ -67,7 +68,6 @@ typedef struct
 
   int done_entry;
 
-  int func_type;
 } t_attribute;
 
 typedef struct
@@ -79,6 +79,11 @@ typedef struct
 
   t_TimerInfo *info;
   int print_headers;
+
+  /* Stuff passed in in user calls */
+
+  int (*CallFunction)(cFunctionData *, void *);
+
 } t_sched_data;
 
 
@@ -381,22 +386,22 @@ int CCTKi_ScheduleGroupComm(const char *group)
 
 int CCTKi_ScheduleTraverse(const char *where, 
 			   void *GH,   
-			   int (*calling_function)(void *, void *, void *))
+			   int (*CallFunction)(cFunctionData *, void *))
 {
   t_sched_data data;
 
-  data.GH = (cGH *)GH;
+  int (*calling_function)(void *, t_attribute *, t_sched_data *);
 
-  if(!calling_function)
+  data.GH = (cGH *)GH;
+  data.CallFunction = CallFunction;
+
+  if(CCTK_Equals(where, "CCTK_STARTUP"))
   {
-    if(CCTK_Equals(where, "CCTK_STARTUP"))
-    {
-      calling_function = CCTKi_ScheduleStartupFunction;
-    }
-    else
-    {
-      calling_function = CCTKi_ScheduleCallFunction;
-    }
+    calling_function = CCTKi_ScheduleStartupFunction;
+  }
+  else
+  {
+    calling_function = CCTKi_ScheduleCallFunction;
   }
 
   if(CCTK_Equals(where, "CCTK_ANALYSIS"))
@@ -752,7 +757,7 @@ static t_sched_modifier *CreateTypedModifier(t_sched_modifier *modifier,
   {
     item = va_arg(*ap, const char *);
 
-    modifier = CCTKi_DoScheduleAddModifier(modifier, type, item);
+    modifier = CCTKi_ScheduleAddModifier(modifier, type, item);
   }
 
   return modifier;  
