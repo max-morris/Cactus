@@ -395,7 +395,8 @@ sub FunctionDatabase
       {
         $Function->{"Provided"}=0;
       }
-      if ($interface_db->{"\U$thorn USES FUNCTION"} =~ /$FunctionName/)
+      if ($interface_db->{"\U$thorn USES FUNCTION"} =~ /$FunctionName/
+          || $interface_db->{"\U$thorn PROVIDES FUNCTION"} =~ /$FunctionName/)
       {
         $Function->{"Used"}=1;
         $ThornUses++;
