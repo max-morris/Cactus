@@ -44,7 +44,7 @@ static int FindNextUnused(cHandledData *storage, int first);
 
 @@*/
 
-int CCTK_NewHandle(cHandledData **storage, char *name, void *data)
+int CCTK_NewHandle(cHandledData **storage, const char *name, void *data)
 {
   int return_code;
 
@@ -230,18 +230,26 @@ void *CCTK_GetHandledData(cHandledData *storage, int handle)
 {
   void *data;
 
-  if((handle < storage->array_size)&&
-     (handle >= 0)&&
-     (storage->array[handle].in_use == TRUE))
+  if(storage)
   {
-    /* The data exists */
-    data = storage->array[handle].data;
+    if((handle < storage->array_size)&&
+       (handle >= 0)&&
+       (storage->array[handle].in_use == TRUE))
+    {
+      /* The data exists */
+      data = storage->array[handle].data;
+    }
+    else
+    {
+      /* The data is non-existant. */
+      data = NULL;
+    }
   }
   else
   {
-    /* The data is non-existant. */
+    /* There is no data registered. */
     data = NULL;
-  };
+  }
 
   return data;
 }
@@ -267,16 +275,31 @@ int CCTK_GetHandle(cHandledData *storage, const char *name, void **data)
   int current;
 
   handle = -1;
-  *data = NULL;
 
-  for(current = 0; current < storage->array_size; current++)
+  if(data)
   {
-    if(!strcmp(name, storage->array[current].name))
+    *data = NULL;
+  }
+
+  if(storage)
+  {
+    for(current = 0; current < storage->array_size; current++)
     {
-      handle = current;
-      *data = storage->array[current].data;
-      break;
+      if(!strcmp(name, storage->array[current].name))
+      {
+	handle = current;
+	/* Return the associated data if required. */
+	if(data)
+	{
+	  *data = storage->array[current].data;
+	};
+	break;
+      }
     }
+  }
+  else
+  {
+    handle = -2;
   }
 
   return handle;

@@ -7,6 +7,8 @@ StoreKeyedData.c\
 StoreNamedData.c\
 Misc.c\
 getopt.c\
-getopt1.c
+getopt1.c\
+StoreHandledData.c
+
 
 
