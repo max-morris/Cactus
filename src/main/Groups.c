@@ -1404,8 +1404,8 @@ int CCTK_VarTypeSize (int vtype)
       var_size = sizeof (CCTK_POINTER);
       break;
 
-    case CCTK_VARIABLE_FN_POINTER:
-      var_size = sizeof (CCTK_FN_POINTER);
+    case CCTK_VARIABLE_FPOINTER:
+      var_size = sizeof (CCTK_FPOINTER);
       break;
 
     case CCTK_VARIABLE_INT:
