@@ -392,7 +392,8 @@ sub parse_param_ccl
             # Check description
             if($delim eq "" || ($delim =~ /::/ && $new_desc =~ /^\s*$/))
             {
-	      $message = "Missing range description ($new_ranges) for parameter $variable in param.ccl for thorn $arrangement/$thorn.";
+	      $new_ranges =~ /^\s*(.*)\s*\n/;
+	      $message = "Missing description for range $1 for parameter $variable in param.ccl for thorn $arrangement/$thorn.";
 	      $hint = "Each parameter range line should have the syntax <RANGE> :: <\"DESCRIPTION\">";
               &CST_error(1,$message,$hint,__LINE__,__FILE__);
             }
