@@ -138,8 +138,8 @@ sub ScheduleCreateFile
   $outbuf .=  "\#include <stdarg.h>\n";
   $outbuf .=  "\n";
   $outbuf .=  "\#include \"cctk.h\"\n";
-  $outbuf .=  "\#include \"cctk_parameters.h\"\n";
-  $outbuf .=  "\#include \"cctk_Schedule.h\"\n";
+  $outbuf .=  "\#include \"cctk_Parameters.h\"\n";
+  $outbuf .=  "\#include \"cctki_Schedule.h\"\n";
   $outbuf .=  "\n";
   $outbuf .=  "/* Prototypes for functions to be registered. */\n";
   $outbuf .=  "$prototypes\n";
@@ -263,9 +263,17 @@ sub ScheduleBlock
 				      $rhschedule_db->{"\U$thorn\E BLOCK_$block STOR"},
 				      $rhinterface_db);
 
-  @comm_groups = &ScheduleSelectGroups($thorn, $implementation, 
-				       $rhschedule_db->{"\U$thorn\E BLOCK_$block COMM"},
-				       $rhinterface_db);
+
+  @unused_comm_groups = &ScheduleSelectGroups($thorn, $implementation, 
+					      $rhschedule_db->{"\U$thorn\E BLOCK_$block COMM"},
+					      $rhinterface_db);
+  if (@unused_comm_groups)
+  {
+    print "No need to switch on Communication in $thorn\n";
+    print "Communication automatically assigned for variables with storage\n";
+  }
+
+  @comm_groups = @mem_groups; # Switch on storage for groups with comm
 
   @trigger_groups = &ScheduleSelectGroups($thorn, $implementation, 
 					  $rhschedule_db->{"\U$thorn\E BLOCK_$block TRIG"},
@@ -289,7 +297,7 @@ sub ScheduleBlock
   if($rhschedule_db->{"\U$thorn\E BLOCK_$block TYPE"} eq "GROUP")
   {
     $prototype = "";
-    $buffer = "  CCTK_ScheduleGroup(";
+    $buffer = "  CCTKi_ScheduleGroup(";
     $indent = "                     ";
     $language = "";
   }
@@ -312,7 +320,7 @@ sub ScheduleBlock
       return ("", "");
     }
     $prototype = "extern int $function(void); /* Note that this is a cheat, we just need a function pointer. */\n";
-    $buffer = "  CCTK_ScheduleFunction($function,\n";
+    $buffer = "  CCTKi_ScheduleFunction($function,\n";
     $indent = "                        ";
     $buffer .= "$indent";
   }
@@ -334,9 +342,9 @@ sub ScheduleBlock
   }
 
   $buffer .= $indent . scalar(@mem_groups) . ",                       /* Number of STORAGE groups */\n";
-  $buffer .= $indent . scalar(@comm_groups) . ",                       /* Number of COMM groups */\n";
-  $buffer .= $indent . scalar(@trigger_groups) . ",                       /* Number of TRIGGERS groups */\n";
-  $buffer .= $indent . scalar(@before_list) . ",                       /* Number of BEFORE routines */\n";
+  $buffer .= $indent . scalar(@comm_groups) . ",                      /* Number of COMM groups */\n";
+  $buffer .= $indent . scalar(@trigger_groups) . ",                   /* Number of TRIGGERS groups */\n";
+  $buffer .= $indent . scalar(@before_list) . ",                      /* Number of BEFORE routines */\n";
   $buffer .= $indent . scalar(@after_list) . ",                       /* Number of AFTER routines */\n";
   $buffer .= $indent . scalar(@while_list) . "                        /* Number of WHILE variables */";
   
@@ -379,24 +387,32 @@ sub ScheduleStatement
 
   if($rhschedule_db->{"\U$thorn\E STATEMENT_$statement TYPE"} eq "STOR")
   {
-    $function = "CCTK_ScheduleGroupStorage(";
+    $function = "CCTKi_ScheduleGroupStorage(";
+    $prototype = "";
+
+    foreach $group (@groups)
+    {
+      $buffer .= "  $function " . "\"" . $group . "\"" . ");\n"
+    }
+
+    $function = "CCTKi_ScheduleGroupComm(";
+    $prototype = "";
+
+    foreach $group (@groups)
+    {
+      $buffer .= "  $function " . "\"" . $group . "\"" . ");\n"
+    }
   }
   elsif($rhschedule_db->{"\U$thorn\E STATEMENT_$statement TYPE"} eq "COMM")
   {
-    $function = "CCTK_ScheduleGroupComm(";
+    print "No need to switch on Communication in $thorn\n";
+    print "Communication automatically assigned for variables with storage\n";
   }
   else
   {
     print STDERR "Unknown statement type '" .$rhschedule_db{"\U$thorn\E STATEMENT_$statement TYPE"} ."'\n";
     $CST_errors++;
     return ("", "");
-  }
-
-  $prototype = "";
-
-  foreach $group (@groups)
-  {
-    $buffer .= "  $function " . "\"" . $group . "\"" . ");\n"
   }
 
   return ($buffer, $prototype);
