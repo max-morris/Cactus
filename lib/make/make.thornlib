@@ -58,7 +58,10 @@ SUBDIRS = $(LOCAL_SUBDIRS)
 # Turn source file names into object file names
 OBJS = $(SRCS:%=%.o)
 
-$(NAME): $(addsuffix .check, $(SUBDIRS)) $(OBJS) $(SRCDIR)/make.code.defn $(foreach DIR,$(SUBDIRS), $(SRCDIR)/$(DIR)/make.code.defn)
+# Turn local source file names into object file names
+LOCAL_OBJS = $(LOCAL_SRCS:%=%.o)
+
+$(NAME): $(addsuffix .check, $(SUBDIRS)) $(LOCAL_OBJS) $(SRCDIR)/make.code.defn $(foreach DIR,$(SUBDIRS), $(SRCDIR)/$(DIR)/make.code.defn)
 	@echo $(DIVIDER)
 	if [ -r $(NAME) ] ; then echo Updating $(NAME) ; else echo Creating $(NAME) ; fi
 	if [ -r $@ ] ; then rm $@ ; fi
