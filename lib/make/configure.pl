@@ -40,9 +40,10 @@ sub test_fortran_name
     open(OUT, ">fname_test.f") || die "Cannot open fname_test.f\n";
 
     print OUT <<EOT;
-      subroutine test_name(a)
+      subroutine test(a)
       integer a
       a = 1
+      call test_name(a)
       return
       end
 
