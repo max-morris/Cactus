@@ -200,7 +200,7 @@ void CCTK_CommandLineUsage(void)
 
   argc = CCTK_GetCommandLine(&argv);
 
-  printf("Usage: %s [-h] [-O] [-o paramname] [-x [nprocs]] [-W n] [-E n] [-r] [-A] [-a name] [-v] parameter_file_name>\n", argv[0]);
+  printf("Usage: %s [-h] [-O] [-o paramname] [-x [nprocs]] [-W n] [-E n] [-r] [-T] [-t name] [-v] parameter_file_name>\n", argv[0]);
   exit(1);
 }  
 
