@@ -3,9 +3,9 @@
 #  @file      GridFuncStuff.pl
 #  @date      Tue Jan 12 11:07:45 1999
 #  @author    Tom Goodale
-#  @desc 
-#  
-#  @enddesc 
+#  @desc
+#
+#  @enddesc
 #  @version $Id$
 #@@*/
 
@@ -14,14 +14,14 @@
 #  @routine    CreateVariableBindings
 #  @date       Thu Jan 28 15:14:20 1999
 #  @author     Tom Goodale
-#  @desc 
+#  @desc
 #  Creates all the binding files for the variables.
-#  @enddesc 
-#  @calls     
-#  @calledby   
-#  @history 
+#  @enddesc
+#  @calls
+#  @calledby
+#  @history
 #
-#  @endhistory 
+#  @endhistory
 #
 #@@*/
 
@@ -85,7 +85,7 @@ sub CreateVariableBindings
   }
 
   &WriteFile("cctk_Arguments.h",\$dataout);
-      
+
   chdir "..";
 
   if(! -d "Variables")
@@ -106,7 +106,7 @@ sub CreateVariableBindings
   }
 
   $dataout .= "\n";
- 
+
   $dataout .= "int CCTKi_BindingsVariablesInitialise(void);\n\n";
 
   $dataout .= "int CCTKi_BindingsVariablesInitialise(void)\n{\n";
@@ -117,7 +117,7 @@ sub CreateVariableBindings
     $dataout .= "    CactusBindingsVariables_$thorn"."_Initialise();\n";
     $dataout .= "  }\n";
   }
- 
+
   $dataout .= "  return 0;\n}\n\n";
 
   &WriteFile("BindingsVariables.c",\$dataout);
@@ -140,13 +140,13 @@ sub CreateVariableBindings
 
       foreach $line (@data)
       {
-	$dataout  .= "$line\n";
+        $dataout  .= "$line\n";
       }
     }
     $dataout .= "  CCTKi_RegisterFortranWrapper(\"$thorn\", CCTKi_BindingsFortranWrapper$thorn);\n\n";
 
     $dataout .= "  return 0;\n}\n";
- 
+
     &WriteFile("$thorn.c",\$dataout);
 
     $filelist .= " $thorn.c";
@@ -178,15 +178,15 @@ sub CreateVariableBindings
 #  @routine    GetThornArguments
 #  @date       Thu Jan 28 14:31:38 1999
 #  @author     Tom Goodale
-#  @desc 
-#  Gets a list of all the variables available for a thorn in a 
+#  @desc
+#  Gets a list of all the variables available for a thorn in a
 #  particular block.
-#  @enddesc 
-#  @calls     
-#  @calledby   
-#  @history 
+#  @enddesc
+#  @calls
+#  @calledby
+#  @history
 #
-#  @endhistory 
+#  @endhistory
 #
 #@@*/
 sub GetThornArguments
@@ -211,7 +211,7 @@ sub GetThornArguments
   elsif($block eq "PRIVATE")
   {
     @other_imps = ();
-    
+
   }
   else
   {
@@ -233,7 +233,7 @@ sub GetThornArguments
     else
     {
       $rhinterface_db->{"IMPLEMENTATION \U$imp\E THORNS"} =~ m:([^ ]*):;
-    
+
       $thorn = $1;
     }
 
@@ -247,31 +247,31 @@ sub GetThornArguments
 
       if($gtype eq "GF" || $gtype eq "ARRAY")
       {
-	$type .= " (";
-	$sep = "";
-	for($dim =0; $dim < $rhinterface_db->{"\U$thorn GROUP $group DIM\E"}; $dim++)
-	{
-	  $type .= "$sep$group$dim";
-	  $sep = ",";
-	  if($block eq "PRIVATE")
-	  {
-	    $arguments{"$group$dim"} = "(STORAGESIZE($thorn\::$group, $dim))";
-	  }
-	  else 
-	  {
-	    $arguments{"$group$dim"} = "(STORAGESIZE($imp\::$group, $dim))";
-	  }
-	}
-	$type .= ")";
+        $type .= " (";
+        $sep = "";
+        for($dim =0; $dim < $rhinterface_db->{"\U$thorn GROUP $group DIM\E"}; $dim++)
+        {
+          $type .= "$sep$group$dim";
+          $sep = ",";
+          if($block eq "PRIVATE")
+          {
+            $arguments{"$group$dim"} = "(STORAGESIZE($thorn\::$group, $dim))";
+          }
+          else
+          {
+            $arguments{"$group$dim"} = "(STORAGESIZE($imp\::$group, $dim))";
+          }
+        }
+        $type .= ")";
       }
 
       if($block eq "PRIVATE")
       {
-	$type .= "!$thorn\::$group";
+        $type .= "!$thorn\::$group";
       }
       else
       {
-	$type .= "!$imp\::$group";
+        $type .= "!$imp\::$group";
       }
 
       $type .="!$ntimelevels";
@@ -293,14 +293,14 @@ sub GetThornArguments
 #  @routine    CreateFortranArgumentDeclarations
 #  @date       Thu Jan 28 14:32:57 1999
 #  @author     Tom Goodale
-#  @desc 
+#  @desc
 #  Creates the requisite argument list declarations for Fortran.
-#  @enddesc 
-#  @calls     
-#  @calledby   
-#  @history 
+#  @enddesc
+#  @calls
+#  @calledby
+#  @history
 #
-#  @endhistory 
+#  @endhistory
 #
 #@@*/
 
@@ -319,7 +319,7 @@ sub CreateFortranArgumentDeclarations
       push(@declarations, "INTEGER $argument");
     }
   }
-  
+
   # Now deal with the rest of the arguments
   foreach $argument (sort keys %arguments)
   {
@@ -328,78 +328,42 @@ sub CreateFortranArgumentDeclarations
     {
       $arguments{$argument} =~ m:([^ ]*) ?(.*)?!(.*)!(.*):;
 
+      $type        = $1;
+      $dimensions  = $2;
       $ntimelevels = $4;
 
       for($level = 1; $level <= $ntimelevels; $level++)
       {
-	# Modify the name for the time level 
-	if($level == 1)
-	{
-	  $suffix = "";
-	}
-	else
-	{
-	  $suffix .= "_p";
-	}
+        # Modify the name for the time level
+        if($level == 1)
+        {
+          $suffix = "";
+        }
+        else
+        {
+          $suffix .= "_p";
+        }
 
-	if($1 eq BYTE)
-	{
-	  push(@declarations, "CCTK_BYTE $argument$suffix$2");
-	}
-	elsif($1 eq CHAR)
-	{
-	  # DEPRECATED IN BETA 10
-	  $message = "CCTK_CHAR is replaced by CCTK_BYTE, please change your coe";
-	  &CST_error(1,$message,__LINE__,__FILE__);
-	  push(@declarations, "CCTK_CHAR $argument$suffix$2");
-	}
-	elsif ($1 eq REAL)
-	{
-	  push(@declarations, "CCTK_REAL $argument$suffix$2");
-	}
-	elsif ($1 eq REAL4)
-	{
-	  push(@declarations, "CCTK_REAL4 $argument$suffix$2");
-	}
-	elsif ($1 eq REAL8)
-	{
-	  push(@declarations, "CCTK_REAL8 $argument$suffix$2");
-	}
-	elsif ($1 eq REAL16)
-	{
-	  push(@declarations, "CCTK_REAL16 $argument$suffix$2");
-	}
-	elsif ($1 eq COMPLEX)
-	{
-	  push(@declarations, "CCTK_COMPLEX $argument$suffix$2");
-	}
-	elsif ($1 eq INT)
-	{
-	  push(@declarations, "CCTK_INT $argument$suffix$2");
-	}
-	elsif ($1 eq INT2)
-	{
-	  push(@declarations, "CCTK_INT2 $argument$suffix$2");
-	}
-	elsif ($1 eq INT4)
-	{
-	  push(@declarations, "CCTK_INT4 $argument$suffix$2");
-	}
-	elsif ($1 eq INT8)
-	{
-	  push(@declarations, "CCTK_INT8 $argument$suffix$2");
-	}
-	else
-	{
-	  $message = "Unknown argument type \"$1\"";
-	  &CST_error(0,$message,__LINE__,__FILE__);
-	}
+        if($type =~ /^(CHAR|BYTE|INT|INT2|INT4|INT8|REAL|REAL4|REAL8|REAL16|COMPLEX|COMPLEX8|COMPLEX16|COMPLEX32)$/)
+        {
+          # DEPRECATED IN BETA 10
+          if($type eq 'CHAR')
+          {
+            &CST_error(1,"CCTK_CHAR is replaced by CCTK_BYTE, please change your code",__LINE__,__FILE__);
+          }
+
+          push(@declarations, "CCTK_$type $argument$suffix$dimensions");
+        }
+        else
+        {
+          &CST_error(0,"Unknown argument type \"$type\"",__LINE__,__FILE__);
+        }
       }
     }
   }
 
   return @declarations;
-    
+
 }
 
 
@@ -407,14 +371,14 @@ sub CreateFortranArgumentDeclarations
 #  @routine    CreateCArgumentDeclarations
 #  @date       Jun 29 1999
 #  @author     Tom Goodale, Gabrielle Allen
-#  @desc 
+#  @desc
 #  Creates the requisite argument list declarations for C.
-#  @enddesc 
-#  @calls     
-#  @calledby   
-#  @history 
+#  @enddesc
+#  @calls
+#  @calledby
+#  @history
 #
-#  @endhistory 
+#  @endhistory
 #
 #@@*/
 
@@ -425,8 +389,9 @@ sub CreateCArgumentDeclarations
   my(@declarations) = ();
   my($suffix);
   my($imp);
+  my($type, $thorn, $ntimelevels);
 
-  
+
   # Now deal with the rest of the arguments
   foreach $argument (sort keys %arguments)
   {
@@ -435,93 +400,57 @@ sub CreateCArgumentDeclarations
     {
       $arguments{$argument} =~ m\([^ ]*) ?(.*)?!(.*)::(.*)!(.*)\;
 
+      $type        = $1;
+      $thorn       = $3;
       $ntimelevels = $5;
 
       for($level = 1; $level <= $ntimelevels; $level++)
       {
-	# Modify the name for the time level 
-	if($level == 1)
-	{
-	  $suffix = "";
-	}
-	else
-	{
-	  $suffix .= "_p";
-	}
+        # Modify the name for the time level
+        if($level == 1)
+        {
+          $suffix = "";
+        }
+        else
+        {
+          $suffix .= "_p";
+        }
 
-        $levelmone=$level-1;  
-	if($1 eq "BYTE")
-	{
-	  push(@declarations, "CCTK_BYTE *$argument$suffix=(CCTK_BYTE *)(cctkGH->data[CCTK_VarIndex(\"$3::$argument\")][$levelmone]);");
-	}
-	elsif($1 eq "CHAR")
-	{
-	  # DEPRECATED IN BETA 10 */
-	  $message = "CCTK_CHAR is replaced by CCTK_BYTE, please change your coe";
-	  &CST_error(1,$message,__LINE__,__FILE__);
-	  push(@declarations, "CCTK_CHAR *$argument$suffix=(CCTK_CHAR *)(cctkGH->data[CCTK_VarIndex(\"$3::$argument\")][$levelmone]);");
-	}
-	elsif ($1 eq REAL)
-	{
-	  push(@declarations, "CCTK_REAL *$argument$suffix=(CCTK_REAL *)(cctkGH->data[CCTK_VarIndex(\"$3::$argument\")][$levelmone]);");
-	}
-	elsif ($1 eq REAL4)
-	{
-	  push(@declarations, "CCTK_REAL4 *$argument$suffix=(CCTK_REAL4 *)(cctkGH->data[CCTK_VarIndex(\"$3::$argument\")][$levelmone]);");
-	}
-	elsif ($1 eq REAL8)
-	{
-	  push(@declarations, "CCTK_REAL8 *$argument$suffix=(CCTK_REAL8 *)(cctkGH->data[CCTK_VarIndex(\"$3::$argument\")][$levelmone]);");
-	}
-	elsif ($1 eq REAL16)
-	{
-	  push(@declarations, "CCTK_REAL16 *$argument$suffix=(CCTK_REAL16 *)(cctkGH->data[CCTK_VarIndex(\"$3::$argument\")][$levelmone]);");
-	}
-	elsif ($1 eq COMPLEX)
-	{
-	  push(@declarations, "CCTK_COMPLEX *$argument$suffix=(CCTK_COMPLEX *)(cctkGH->data[CCTK_VarIndex(\"$3::$argument\")][$levelmone]);");
-	}
-	elsif ($1 eq INT)
-	{
-	  push(@declarations, "CCTK_INT *$argument$suffix=(CCTK_INT *)(cctkGH->data[CCTK_VarIndex(\"$3::$argument\")][$levelmone]);");
-	}
-	elsif ($1 eq INT2)
-	{
-	  push(@declarations, "CCTK_INT2 *$argument$suffix=(CCTK_INT2 *)(cctkGH->data[CCTK_VarIndex(\"$3::$argument\")][$levelmone]);");
-	}
-	elsif ($1 eq INT4)
-	{
-	  push(@declarations, "CCTK_INT4 *$argument$suffix=(CCTK_INT4 *)(cctkGH->data[CCTK_VarIndex(\"$3::$argument\")][$levelmone]);");
-	}
-	elsif ($1 eq INT8)
-	{
-	  push(@declarations, "CCTK_INT8 *$argument$suffix=(CCTK_INT8 *)(cctkGH->data[CCTK_VarIndex(\"$3::$argument\")][$levelmone]);");
-	}
-	else
-	{
-	  $message = "Unknown argument type $1";
-	  &CST_error(0,$message,__LINE__,__FILE__);
-	}
+        $levelmone=$level-1;
+        if($type =~ /^(CHAR|BYTE|INT|INT2|INT4|INT8|REAL|REAL4|REAL8|REAL16|COMPLEX|COMPLEX8|COMPLEX16|COMPLEX32)$/)
+        {
+          # DEPRECATED IN BETA 10 */
+          if($type eq 'CHAR')
+          {
+            &CST_error(1,"CCTK_CHAR is replaced by CCTK_BYTE, please change your code",__LINE__,__FILE__);
+          }
+
+          push(@declarations, "CCTK_$type *$argument$suffix=(CCTK_$type *)(cctkGH->data[CCTK_VarIndex(\"$thorn\::$argument\")][$levelmone]);");
+        }
+        else
+        {
+          &CST_error(0,"Unknown argument type $type",__LINE__,__FILE__);
+        }
       }
     }
   }
 
   return @declarations;
-    
+
 }
 
 #/*@@
 #  @routine    CreateCArgumentUses
 #  @date       Nov 5 1999
 #  @author     Gabrielle Allen
-#  @desc 
+#  @desc
 #  Creates the requisite argument list declarations for C.
-#  @enddesc 
-#  @calls     
-#  @calledby   
-#  @history 
+#  @enddesc
+#  @calls
+#  @calledby
+#  @history
 #
-#  @endhistory 
+#  @endhistory
 #
 #@@*/
 
@@ -533,7 +462,7 @@ sub CreateCArgumentUses
   my($suffix);
   my($imp);
 
-  
+
   # Now deal with the rest of the arguments
   foreach $argument (sort keys %arguments)
   {
@@ -546,24 +475,24 @@ sub CreateCArgumentUses
 
       for($level = 1; $level <= $ntimelevels; $level++)
       {
-	# Modify the name for the time level 
-	if($level == 1)
-	{
-	  $suffix = "";
-	}
-	else
-	{
-	  $suffix .= "_p";
-	}
+        # Modify the name for the time level
+        if($level == 1)
+        {
+          $suffix = "";
+        }
+        else
+        {
+          $suffix .= "_p";
+        }
 
-	push(@declarations, "cctk_dummy_pointer = \&$argument$suffix;");
+        push(@declarations, "cctk_dummy_pointer = \&$argument$suffix;");
 
       }
     }
   }
 
   return @declarations;
-    
+
 }
 
 
@@ -572,14 +501,14 @@ sub CreateCArgumentUses
 #  @routine    CreateFortranArgumentList
 #  @date       Thu Jan 28 14:33:50 1999
 #  @author     Tom Goodale
-#  @desc 
+#  @desc
 #  Creates the argument list a Fortran subroutine sees.
-#  @enddesc 
-#  @calls     
-#  @calledby   
-#  @history 
+#  @enddesc
+#  @calls
+#  @calledby
+#  @history
 #
-#  @endhistory 
+#  @endhistory
 #
 #@@*/
 
@@ -609,25 +538,25 @@ sub CreateFortranArgumentList
       $suffix = "";
       if($arguments{$argument} !~ m:STORAGESIZE:)
       {
-	$arguments{$argument} =~ m:([^ ]*) ?(.*)?!(.*)!(.*):;
-	
-	$ntimelevels = $4;
-	
-	for($level = 1; $level <= $ntimelevels; $level++)
-	{
-	  # Modify the name for the time level 
-	  if($level == 1)
-	  {
-	    $suffix = "";
-	  }
-	  else
-	  {
-	    $suffix .= "_p";
-	  }
-	  
-	  $argumentlist .= "$sep$argument$suffix";
-	  $sep = ",";
-	}
+        $arguments{$argument} =~ m:([^ ]*) ?(.*)?!(.*)!(.*):;
+
+        $ntimelevels = $4;
+
+        for($level = 1; $level <= $ntimelevels; $level++)
+        {
+          # Modify the name for the time level
+          if($level == 1)
+          {
+            $suffix = "";
+          }
+          else
+          {
+            $suffix .= "_p";
+          }
+
+          $argumentlist .= "$sep$argument$suffix";
+          $sep = ",";
+        }
       }
     }
   }
@@ -638,15 +567,15 @@ sub CreateFortranArgumentList
 #  @routine    CreateCArgumentStatics
 #  @date       Thu Jan 28 14:33:50 1999
 #  @author     Tom Goodale
-#  @desc 
+#  @desc
 #  Creates the declarations of static variables used to speed up
 #  construction of arguments to pass to Fortran.
-#  @enddesc 
-#  @calls     
-#  @calledby   
-#  @history 
+#  @enddesc
+#  @calls
+#  @calledby
+#  @history
 #
-#  @endhistory 
+#  @endhistory
 #
 #@@*/
 
@@ -667,28 +596,28 @@ sub CreateCArgumentStatics
       $group = $1;
       if ($allgroups !~ / $group /)
       {
-	$allgroups .= " $group ";
-	push(@declarations, "static int CCTKGROUPNUM_$group = -1");
+        $allgroups .= " $group ";
+        push(@declarations, "static int CCTKGROUPNUM_$group = -1");
       }
     }
   }
 
   return @declarations;
-}  
+}
 
 
 #/*@@
 #  @routine    CreateCArgumentInitialisers
 #  @date       Thu Jan 28 14:33:50 1999
 #  @author     Tom Goodale
-#  @desc 
+#  @desc
 #  Creates the code to initialise the statics.
-#  @enddesc 
-#  @calls     
-#  @calledby   
-#  @history 
+#  @enddesc
+#  @calls
+#  @calledby
+#  @history
 #
-#  @endhistory 
+#  @endhistory
 #
 #@@*/
 
@@ -712,8 +641,8 @@ sub CreateCArgumentInitialisers
       $group = $1;
       if ($allgroups !~ / $group /)
       {
-	$allgroups .= " $group ";
-	push(@initialisers, "if(CCTKGROUPNUM_$group == -1) CCTKGROUPNUM_$group = CCTK_GroupIndex(\"$qualifier\::$group\")");
+        $allgroups .= " $group ";
+        push(@initialisers, "if(CCTKGROUPNUM_$group == -1) CCTKGROUPNUM_$group = CCTK_GroupIndex(\"$qualifier\::$group\")");
       }
     }
   }
@@ -725,14 +654,14 @@ sub CreateCArgumentInitialisers
 #  @routine    CreateCArgumentPrototype
 #  @date       Thu Jan 28 14:36:25 1999
 #  @author     Tom Goodale
-#  @desc 
+#  @desc
 #  Creates the prototype needed to call a Fortran function from C.
-#  @enddesc 
-#  @calls     
-#  @calledby   
-#  @history 
+#  @enddesc
+#  @calls
+#  @calledby
+#  @history
 #
-#  @endhistory 
+#  @endhistory
 #
 #@@*/
 
@@ -742,7 +671,8 @@ sub CreateCArgumentPrototype
   my($argument);
   my($prototype) = "";
   my($sep);
-  
+  my($type, $ntimelevels);
+
   $sep = "";
 
   # Put all storage arguments first.
@@ -754,7 +684,7 @@ sub CreateCArgumentPrototype
       $sep = ",";
     }
   }
-  
+
   # Now deal with the rest of the arguments
   foreach $argument (sort keys %arguments)
   {
@@ -766,68 +696,23 @@ sub CreateCArgumentPrototype
       $suffix = "";
       if($arguments{$argument} !~ m:STORAGESIZE:)
       {
-	$arguments{$argument} =~ m:([^ ]*) ?(.*)?!(.*)!(.*):;
-	
-	$ntimelevels = $4;
-	
-	for($level = 1; $level <= $ntimelevels; $level++)
-	{
-	  if($1 eq "CHAR")
-	  {
-	    $prototype .="$sep". "char *";
-	    $sep = ",";
-	  }
-	  elsif ($1 eq REAL)
-	  {
-	    $prototype .="$sep". "CCTK_REAL *";
-	    $sep = ",";	
-	  }
-	  elsif ($1 eq REAL4)
-	  {
-	    $prototype .="$sep". "CCTK_REAL4 *";
-	    $sep = ",";	
-	  }
-	  elsif ($1 eq REAL8)
-	  {
-	    $prototype .="$sep". "CCTK_REAL8 *";
-	    $sep = ",";	
-	  }
-	  elsif ($1 eq REAL16)
-	  {
-	    $prototype .="$sep". "CCTK_REAL16 *";
-	    $sep = ",";	
-	  }
-	  elsif ($1 eq COMPLEX)
-	  {
-	    $prototype .="$sep". "CCTK_COMPLEX *";
-	    $sep = ",";
-	  }
-	  elsif ($1 eq INT)
-	  {
-	    $prototype .="$sep". "CCTK_INT *";
-	    $sep = ",";
-	  }
-	  elsif ($1 eq INT2)
-	  {
-	    $prototype .="$sep". "CCTK_INT2 *";
-	    $sep = ",";
-	  }
-	  elsif ($1 eq INT4)
-	  {
-	    $prototype .="$sep". "CCTK_INT4 *";
-	    $sep = ",";
-	  }
-	  elsif ($1 eq INT8)
-	  {
-	    $prototype .="$sep". "CCTK_INT8 *";
-	    $sep = ",";
-	  }
-	  else
-	  {
-	    $message = "Unknown argument type $1";
-	    &CST_error(0,$message,__LINE__,__FILE__);
-	  }
-	}
+        $arguments{$argument} =~ m:([^ ]*) ?(.*)?!(.*)!(.*):;
+
+        $type        = $1;
+        $ntimelevels = $4;
+
+        for($level = 1; $level <= $ntimelevels; $level++)
+        {
+          if($type =~ /^(CHAR|BYTE|INT|INT2|INT4|INT8|REAL|REAL4|REAL8|REAL16|COMPLEX|COMPLEX8|COMPLEX16|COMPLEX32)$/)
+          {
+            $prototype .="$sep". "CCTK_$type *";
+            $sep = ',';
+          }
+          else
+          {
+            &CST_error(0,"Unknown argument type $type",__LINE__,__FILE__);
+          }
+        }
       }
     }
   }
@@ -840,14 +725,14 @@ sub CreateCArgumentPrototype
 #  @routine    CreateCArgumentList
 #  @date       Thu Jan 28 14:37:07 1999
 #  @author     Tom Goodale
-#  @desc 
+#  @desc
 #  Creates the argument list used to call a Fortran function from C.
-#  @enddesc 
-#  @calls     
-#  @calledby   
-#  @history 
+#  @enddesc
+#  @calls
+#  @calledby
+#  @history
 #
-#  @endhistory 
+#  @endhistory
 #
 #@@*/
 
@@ -857,7 +742,8 @@ sub CreateCArgumentList
   my($argument);
   my($arglist) = "";
   my($sep);
-  
+  my($type, $ntimelevels);
+
   $sep = "";
 
   # Put all storage arguments first.
@@ -869,7 +755,7 @@ sub CreateCArgumentList
       $sep = ",";
     }
   }
-  
+
   # Now deal with the rest of the arguments
   foreach $argument (sort keys %arguments)
   {
@@ -880,94 +766,47 @@ sub CreateCArgumentList
       $suffix = "";
       if($arguments{$argument} !~ m:STORAGESIZE:)
       {
-	$arguments{$argument} =~ m:([^ ]*) ?(.*)?!(.*)!(.*):;
-	
-	$ntimelevels = $4;
-	
-	for($level = 1; $level <= $ntimelevels; $level++)
-	{
-	  if($1 eq "BYTE")
-	  {
-	    $arglist .= "$sep"."(CCTK_BYTE *)(CCTKARGNUM_$argument<0 ? NULL : (xGH)->data[CCTKARGNUM_$argument][$level-1])";
-	    $sep = ",";
-	  }
-	  elsif($1 eq "CHAR")
-	  {
-	    # DEPRECATED IN BETA 10
-	    $message = "CCTK_CHAR is replaced by CCTK_BYTE, please change your coe";
-	    &CST_error(1,$message,__LINE__,__FILE__);
-	    $arglist .= "$sep"."(CCTK_CHAR *)(CCTKARGNUM_$argument<0 ? NULL : (xGH)->data[CCTKARGNUM_$argument][$level-1])";
-	    $sep = ",";
-	  }
-	  elsif ($1 eq REAL)
-	  {
-	    $arglist .= "$sep"."(CCTK_REAL *)(CCTKARGNUM_$argument<0 ? NULL : (xGH)->data[CCTKARGNUM_$argument][$level-1])";
-	    $sep = ",";
-	  }
-	  elsif ($1 eq REAL4)
-	  {
-	    $arglist .= "$sep"."(CCTK_REAL4 *)(CCTKARGNUM_$argument<0 ? NULL : (xGH)->data[CCTKARGNUM_$argument][$level-1])";
-	    $sep = ",";
-	  }
-	  elsif ($1 eq REAL8)
-	  {
-	    $arglist .= "$sep"."(CCTK_REAL8 *)(CCTKARGNUM_$argument<0 ? NULL : (xGH)->data[CCTKARGNUM_$argument][$level-1])";
-	    $sep = ",";
-	  }
-	  elsif ($1 eq REAL16)
-	  {
-	    $arglist .= "$sep"."(CCTK_REAL16 *)(CCTKARGNUM_$argument<0 ? NULL : (xGH)->data[CCTKARGNUM_$argument][$level-1])";
-	    $sep = ",";
-	  }
-	  elsif ($1 eq COMPLEX)
-	  {
-	    $arglist .= "$sep"."(CCTK_COMPLEX *)(CCTKARGNUM_$argument<0 ? NULL : (xGH)->data[CCTKARGNUM_$argument][$level-1])";
-	    $sep = ",";
-	  }
-	  elsif ($1 eq INT)
-	  {
-	    $arglist .= "$sep"."(CCTK_INT *)(CCTKARGNUM_$argument<0 ? NULL : (xGH)->data[CCTKARGNUM_$argument][$level-1])";
-	    $sep = ",";
-	  }
-	  elsif ($1 eq INT2)
-	  {
-	    $arglist .= "$sep"."(CCTK_INT2 *)(CCTKARGNUM_$argument<0 ? NULL : (xGH)->data[CCTKARGNUM_$argument][$level-1])";
-	    $sep = ",";
-	  }
-	  elsif ($1 eq INT4)
-	  {
-	    $arglist .= "$sep"."(CCTK_INT4 *)(CCTKARGNUM_$argument<0 ? NULL : (xGH)->data[CCTKARGNUM_$argument][$level-1])";
-	    $sep = ",";
-	  }
-	  elsif ($1 eq INT8)
-	  {
-	    $arglist .= "$sep"."(CCTK_INT8 *)(CCTKARGNUM_$argument<0 ? NULL : (xGH)->data[CCTKARGNUM_$argument][$level-1])";
-	    $sep = ",";
-	  }
-	  else
-	  {
-	    $message = "Unknown argument type $1";
-	    &CST_error(0,$message,__LINE__,__FILE__);
-	  }
-	}
+        $arguments{$argument} =~ m:([^ ]*) ?(.*)?!(.*)!(.*):;
+
+        $type        = $1;
+        $ntimelevels = $4;
+
+        for($level = 1; $level <= $ntimelevels; $level++)
+        {
+          if($type =~ /^(CHAR|BYTE|INT|INT2|INT4|INT8|REAL|REAL4|REAL8|REAL16|COMPLEX|COMPLEX8|COMPLEX16|COMPLEX32)$/)
+          {
+            # DEPRECATED IN BETA 10
+            if($type eq 'CHAR')
+            {
+              &CST_error(1,"CCTK_CHAR is replaced by CCTK_BYTE, please change your code",__LINE__,__FILE__);
+            }
+
+            $arglist .= "$sep"."(CCTK_$type *)(CCTKARGNUM_$argument<0 ? NULL : (xGH)->data[CCTKARGNUM_$argument][$level-1])";
+            $sep = ',';
+          }
+          else
+          {
+            &CST_error(0,"Unknown argument type $type",__LINE__,__FILE__);
+          }
+        }
       }
     }
   }
   return $arglist;
-}  
+}
 
 #/*@@
 #  @routine    CreateThornArgumentHeaderFile
 #  @date       Thu Jan 28 14:37:58 1999
 #  @author     Tom Goodale
-#  @desc 
+#  @desc
 #  Creates all the argument list stuff necessary to call Fortran from C
-#  @enddesc 
-#  @calls     
-#  @calledby   
-#  @history 
+#  @enddesc
+#  @calls
+#  @calledby
+#  @history
 #
-#  @endhistory 
+#  @endhistory
 #
 #@@*/
 
@@ -978,11 +817,11 @@ sub CreateThornArgumentHeaderFile
   my(@returndata) = ();
   my(%hasvars);
 
-  # Create the basic thorn block definitions 
+  # Create the basic thorn block definitions
 
   foreach $block ("PRIVATE", "PROTECTED", "PUBLIC")
   {
-    
+
     %data = &GetThornArguments($thorn, $block, $rhinterface_db);
 
 #    $print_data = 1;
@@ -990,7 +829,7 @@ sub CreateThornArgumentHeaderFile
     {
       foreach $arg (keys %data)
       {
-	print "$thorn data: $arg : $data{\"$arg\"}\n";
+        print "$thorn data: $arg : $data{\"$arg\"}\n";
       }
     }
     # Remember if there actually are any arguments here.
@@ -1002,7 +841,7 @@ sub CreateThornArgumentHeaderFile
     # Create the fortran argument declarations
 
     @data = &CreateFortranArgumentDeclarations(%data);
-   
+
     push(@returndata, "#define \UDECLARE_$thorn"."_$block"."_FARGUMENTS \\");
 
     foreach $line (@data)
@@ -1012,7 +851,7 @@ sub CreateThornArgumentHeaderFile
 
     push(@returndata, ("",""));
 
-    # Create the fortran argument list 
+    # Create the fortran argument list
 
     push(@returndata, "#define \U$thorn"."_$block"."_FARGUMENTS \\");
 
@@ -1033,7 +872,7 @@ sub CreateThornArgumentHeaderFile
     # Create the C argument declarations
 
     @data = &CreateCArgumentDeclarations(%data);
-   
+
     push(@returndata, "#define \UDECLARE_$thorn"."_$block"."_CARGUMENTS \\");
 
     foreach $line (@data)
@@ -1046,7 +885,7 @@ sub CreateThornArgumentHeaderFile
     # Create code to use each C argument variable
 
     @data = &CreateCArgumentUses(%data);
-   
+
     push(@returndata, "#define \UUSE_$thorn"."_$block"."_CARGUMENTS \\");
 
     foreach $line (@data)
@@ -1136,10 +975,10 @@ sub CreateThornArgumentHeaderFile
   push(@returndata, ("",""));
 
   push(@returndata, "#endif /*FCODE*/");
-  
+
   push(@returndata, ("",""));
 
-  
+
 
   push(@returndata, "#ifdef CCODE");
 
@@ -1172,12 +1011,12 @@ sub CreateThornArgumentHeaderFile
   push(@returndata, ("",""));
 
   push(@returndata, "#endif /*CCODE*/");
-  
+
   push(@returndata, ("",""));
 
 
   ################################################
-  
+
   # Do the C definitions
   push(@returndata, "#ifdef CCODE");
 
@@ -1251,16 +1090,16 @@ sub CreateThornArgumentHeaderFile
 #  {
 #    if($hasvars{$block})
 #    {
-#	push(@returndata, "\UDECLARE_$thorn_$block"."_CARGUMENTS \\");
+#        push(@returndata, "\UDECLARE_$thorn_$block"."_CARGUMENTS \\");
 #    }
 #  }
 
   push(@returndata, ("",""));
 
   push(@returndata, "#endif /*CCODE*/");
-  
+
   push(@returndata, ("",""));
-  
+
   return @returndata;
 }
 
@@ -1270,18 +1109,18 @@ sub CreateThornArgumentHeaderFile
 #  @routine    CreateThornGroupInitialisers
 #  @date       Thu Jan 28 14:38:56 1999
 #  @author     Tom Goodale
-#  @desc 
+#  @desc
 #  Creates the calls used to setup groups for a particular thorn block.
-#  @enddesc 
-#  @calls     
-#  @calledby   
-#  @history 
+#  @enddesc
+#  @calls
+#  @calledby
+#  @history
 #
-#  @endhistory 
+#  @endhistory
 #
 #@@*/
 
-sub CreateThornGroupInitialisers  
+sub CreateThornGroupInitialisers
 {
   my($thorn, $block, $rhinterface_db, $rhparameter_db) = @_;
   my($imp);
@@ -1306,25 +1145,25 @@ sub CreateThornGroupInitialisers
       $numsize = ($string =~ s/,//g)+1;
       if ($dim != $numsize)
       {
-	$message = "Array dimension $dim doesn't match the $numsize array sizes ";
+        $message = "Array dimension $dim doesn't match the $numsize array sizes ";
         $message .= "\n     ($rhinterface_db->{\"\U$thorn GROUP $group\E SIZE\"}) for $group in $thorn";
-	$message .= "\n     (Array sizes must be comma separated list of parameters)";
-	&CST_error(0,$message,__LINE__,__FILE__);
+        $message .= "\n     (Array sizes must be comma separated list of parameters)";
+        &CST_error(0,$message,__LINE__,__FILE__);
       }
     }
 
     @variables = split(" ", $rhinterface_db->{"\U$thorn GROUP $group\E"});
 
-    $line  = "  if (CCTKi_CreateGroup(\"\U$group\",\"$thorn\",\"$imp\",\n" 
+    $line  = "  if (CCTKi_CreateGroup(\"\U$group\",\"$thorn\",\"$imp\",\n"
            . "                    \"" . $rhinterface_db->{"\U$thorn GROUP $group\E GTYPE"} . "\",\n"
-	   . "                    \"" . $rhinterface_db->{"\U$thorn GROUP $group\E VTYPE"} . "\",\n"
-	   . "                    \"" . $block . "\",\n"
-	   . "                    " . $rhinterface_db->{"\U$thorn GROUP $group\E DIM"} . ",\n"
-	   . "                    " . $rhinterface_db->{"\U$thorn GROUP $group\E TIMELEVELS"} . ",\n"
-	   . "                    \"" . $rhinterface_db->{"\U$thorn GROUP $group\E STYPE"} . "\",\n"
-	   . "                    \"" . $rhinterface_db->{"\U$thorn GROUP $group\E DISTRIB"} . "\",\n"
-	   . "                    \"" . $rhinterface_db->{"\U$thorn GROUP $group\E SIZE"} . "\",\n"
-	   . "                    \"" . $rhinterface_db->{"\U$thorn GROUP $group\E GHOSTSIZE"} . "\",\n"
+           . "                    \"" . $rhinterface_db->{"\U$thorn GROUP $group\E VTYPE"} . "\",\n"
+           . "                    \"" . $block . "\",\n"
+           . "                    " . $rhinterface_db->{"\U$thorn GROUP $group\E DIM"} . ",\n"
+           . "                    " . $rhinterface_db->{"\U$thorn GROUP $group\E TIMELEVELS"} . ",\n"
+           . "                    \"" . $rhinterface_db->{"\U$thorn GROUP $group\E STYPE"} . "\",\n"
+           . "                    \"" . $rhinterface_db->{"\U$thorn GROUP $group\E DISTRIB"} . "\",\n"
+           . "                    \"" . $rhinterface_db->{"\U$thorn GROUP $group\E SIZE"} . "\",\n"
+           . "                    \"" . $rhinterface_db->{"\U$thorn GROUP $group\E GHOSTSIZE"} . "\",\n"
            . "                    ". scalar(@variables);
     foreach $variable (@variables)
     {
@@ -1350,13 +1189,13 @@ sub CreateThornGroupInitialisers
     $line  .= "    \" cannot create GF group $group with dimension $rhinterface_db->{\"\U$thorn GROUP $group\E DIM\"}\");\n";
     $line  .= "  }\n";
     $line  .= "}\n\n";
-    
+
 
     push(@definitions, $line);
   }
 
   return @definitions;
-  
+
 }
 
 sub CreateThornFortranWrapper
@@ -1399,14 +1238,14 @@ sub CreateThornFortranWrapper
 #  @routine    CheckArraySize
 #  @date       Thu May 10 2001
 #  @author     Gabrielle Allen
-#  @desc 
+#  @desc
 #  Arrays sizes need to be parameters
-#  @enddesc 
-#  @calls     
-#  @calledby   
-#  @history 
+#  @enddesc
+#  @calls
+#  @calledby
+#  @history
 #
-#  @endhistory 
+#  @endhistory
 #
 #@@*/
 
@@ -1423,13 +1262,13 @@ sub CheckArraySizes
     $base = $1;
     foreach $th (split(" ",$rhinterface_db->{"THORNS"}))
     {
-      if ($rhparameter_db->{"\U$th Private\E variables"} =~ m:$base:i || 
-	  $rhparameter_db->{"\U$th Global\E variables"} =~ m:$base:i  ||
+      if ($rhparameter_db->{"\U$th Private\E variables"} =~ m:$base:i ||
+          $rhparameter_db->{"\U$th Global\E variables"} =~ m:$base:i  ||
           $rhparameter_db->{"\U$th Restricted\E variables"} =~ m:$base:i)
       {
-	$gotit = 1;
-      } 
-    }  
+        $gotit = 1;
+      }
+    }
     if ($gotit == 0)
     {
       $message = "Array size $par in $thorn is not a parameter";
