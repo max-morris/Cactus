@@ -175,7 +175,7 @@ sub ThornInfo
   {
     $inherits =~ s:^\s*::;
     $inherits =~ s:\s*$::;
-    $inherits =~ s:,:\s:g;
+    $inherits =~ s:,: :g;
     $inherits =~ s:[\s\t\n]+:,:g;
   }
 
@@ -188,6 +188,7 @@ sub ThornInfo
   {
     $friends =~ s:^\s*::;
     $friends =~ s:\s*$::;
+    $friends =~ s:,: :g;
     $friends =~ s:[\s\t\n]+:,:g;
   }
   if($shares =~ /^[\s\t\n]*$/)
@@ -198,6 +199,7 @@ sub ThornInfo
   {
     $shares =~ s:^\s*::;
     $shares =~ s:\s*$::;
+    $shares =~ s:,: :g;
     $shares =~ s:[\s\t\n]+:,:g;
   }
 
