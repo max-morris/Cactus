@@ -59,11 +59,12 @@ else
   # MPI stuff
  
   if test -n "$MPI" ; then
+    NATIVE_MPI_LIBS="mpi"
+    NATIVE_MPI_LIB_DIRS="/usr/lpp/ppe.poe/lib"
+    NATIVE_MPI_INC_DIRS="/usr/lpp/ppe.poe/include"
+    if test "$MPI" = "NATIVE" ; then
       case "$CC:$CXX" in 
         "xlc:xlC"|"cc:xlC")
-          NATIVE_MPI_LIBS="mpi"
-          NATIVE_MPI_LIB_DIRS="/usr/lpp/ppe.poe/lib"
-          NATIVE_MPI_INC_DIRS="/usr/lpp/ppe.poe/include"
           LD=mpCC
           ;;
          *)
@@ -72,6 +73,7 @@ else
         exit 1
          ;;
       esac
+    fi
   fi          
 
 fi
