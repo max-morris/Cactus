@@ -1040,9 +1040,7 @@ sub CreateThornGroupInitialisers
     foreach $variable (@variables)
     {
       $line .= ",\n                         \"$variable\"";
-      print "\n\n\n$thorn\n";
-      print "$line\n";
-    }
+     }
 
     # Pass in the size of the GV array, which may be a valid parameter expression
     if(defined($rhinterface_db->{"\U$thorn GROUP $group\E VARARRAY_SIZE"}))
