@@ -104,7 +104,7 @@ int CactusDefaultEvolve(tFleshConfig *config)
   */
 
 
-  while (iteration<cctk_itlast && (cctk_final_time>cctk_initial_time?config->GH[0]->time<cctk_final_time:1)) 
+  while (iteration<cctk_itlast && (cctk_final_time>cctk_initial_time?config->GH[0]->cctk_time<cctk_final_time:1)) 
   {
 
 #ifdef DEBUG_CCTK
@@ -202,12 +202,12 @@ int CCTK_StepGH(cGH *GH)
 #ifdef DEBUG_CCTK
   CCTK_PRINTSEPARATOR
   printf("In CCTK_StepGH\n--------------\n");
-  printf("  Advancing GH->iteration to %lu = %lu + 1\n",(GH->iteration+1),
-	 GH->iteration);
+  printf("  Advancing GH->iteration to %lu = %lu + 1\n",(GH->cctk_iteration+1),
+	 GH->cctk_iteration);
   CCTK_PRINTSEPARATOR
 #endif
 
-  GH->iteration++;
+  GH->cctk_iteration++;
 
   PreStepper(GH);
   EvolStepper(GH);
@@ -218,12 +218,12 @@ int CCTK_StepGH(cGH *GH)
 #ifdef DEBUG_CCTK
   CCTK_PRINTSEPARATOR
   printf("In CCTK_StepGH\n--------------\n");
-  printf("  Advancing GH->time %f = %f + %f\n",GH->time+GH->delta_time,
-	 GH->time,GH->delta_time);
+  printf("  Advancing GH->cctk_time %f = %f + %f\n",GH->cctk_time+GH->cctk_delta_time,
+	 GH->cctk_time,GH->cctk_delta_time);
   CCTK_PRINTSEPARATOR
 #endif
 
-  GH->time = GH->time + GH->delta_time;
+  GH->cctk_time = GH->cctk_time + GH->cctk_delta_time;
 
   return 0;
 }

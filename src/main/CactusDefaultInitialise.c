@@ -96,16 +96,16 @@ int CactusInitialiseGH(cGH *GH)
   */
   
   /* Initialise time */
-  GH->time = cctk_initial_time;
+  GH->cctk_time = cctk_initial_time;
 
   /* Initialise iteration number */
-  GH->iteration = 0;
+  GH->cctk_iteration = 0;
  
 #ifdef DEBUG_CCTK
   CCTK_PRINTSEPARATOR
   printf("In Cactus_Initialise\n--------------------\n");
-  printf("  Initializing GH->time = %f\n",GH->time);
-  printf("  Initializing GH->iteration = %u\n",GH->iteration);
+  printf("  Initializing GH->cctk_time = %f\n",GH->cctk_time);
+  printf("  Initializing GH->cctk_iteration = %u\n",GH->cctk_iteration);
   CCTK_PRINTSEPARATOR
 #endif
   

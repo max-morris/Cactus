@@ -81,24 +81,26 @@ cGH *CactusDefaultSetupGH(tFleshConfig *config, int convergence_level)
 
   if(thisGH)
   {
-    thisGH->dim = CCTK_GetMaxDim();
+    thisGH->cctk_dim = CCTK_GetMaxDim();
 
     /* Need this to be at least one otherwise the memory allocation will fail. */
-    if(thisGH->dim == 0) thisGH->dim = 1;
-    thisGH->iteration = 0;
-    thisGH->global_shape = (int *)malloc(thisGH->dim*sizeof(int));
-    thisGH->local_shape = (int *)malloc(thisGH->dim*sizeof(int));
-    thisGH->lower_bound = (int *)malloc(thisGH->dim*sizeof(int));
-    thisGH->upper_bound = (int *)malloc(thisGH->dim*sizeof(int));
-    thisGH->bbox        = (int *)malloc(2*thisGH->dim*sizeof(int));
-    thisGH->delta_space = (CCTK_REAL *)malloc(thisGH->dim*sizeof(CCTK_REAL));
+    if(thisGH->cctk_dim == 0) thisGH->cctk_dim = 1;
+    thisGH->cctk_iteration = 0;
+    thisGH->cctk_gsh = (int *)malloc(thisGH->cctk_dim*sizeof(int));
+    thisGH->cctk_lsh = (int *)malloc(thisGH->cctk_dim*sizeof(int));
+    thisGH->cctk_lbnd = (int *)malloc(thisGH->cctk_dim*sizeof(int));
+    thisGH->cctk_ubnd = (int *)malloc(thisGH->cctk_dim*sizeof(int));
+    thisGH->cctk_to = (int *)malloc(thisGH->cctk_dim*sizeof(int));
+    thisGH->cctk_from = (int *)malloc(thisGH->cctk_dim*sizeof(int));
+    thisGH->cctk_bbox        = (int *)malloc(2*thisGH->cctk_dim*sizeof(int));
+    thisGH->cctk_nghostzones  = (int *)malloc(2*thisGH->cctk_dim*sizeof(int));
+    thisGH->cctk_levfac       = (int *)malloc(2*thisGH->cctk_dim*sizeof(int));
+    thisGH->cctk_delta_space  = (CCTK_REAL *)malloc(thisGH->cctk_dim*sizeof(CCTK_REAL));
     /* FIXME : Next line goes when coords are done properly */
-    thisGH->origin_space = (CCTK_REAL *)malloc(thisGH->dim*sizeof(CCTK_REAL));
+    thisGH->cctk_origin_space = (CCTK_REAL *)malloc(thisGH->cctk_dim*sizeof(CCTK_REAL));
 
-    thisGH->delta_time = 1;
-    thisGH->levfac = 1;
-    thisGH->convlevel = 1;
-    thisGH->nghostzones = 0;
+    thisGH->cctk_delta_time = 1;
+    thisGH->cctk_convlevel = 1;
 
     n_variables = CCTK_GetNumVars();
 
@@ -139,13 +141,17 @@ cGH *CactusDefaultSetupGH(tFleshConfig *config, int convergence_level)
   }
   
   if(thisGH && 
-     thisGH->global_shape &&
-     thisGH->local_shape &&
-     thisGH->lower_bound &&
-     thisGH->upper_bound &&
-     thisGH->bbox &&
-     thisGH->delta_space &&
-     thisGH->origin_space &&
+     thisGH->cctk_gsh &&
+     thisGH->cctk_lsh &&
+     thisGH->cctk_lbnd &&
+     thisGH->cctk_ubnd &&
+     thisGH->cctk_from &&
+     thisGH->cctk_to &&
+     thisGH->cctk_bbox &&
+     thisGH->cctk_nghostzones &&
+     thisGH->cctk_levfac &&
+     thisGH->cctk_delta_space &&
+     thisGH->cctk_origin_space &&
      thisGH->data &&
      variable == n_variables &&
      thisGH->GroupData)
