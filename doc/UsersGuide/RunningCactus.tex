@@ -764,6 +764,8 @@ is to do. The command {\tt gmake help} lists all gmake targets.
 
 \item [{\tt gmake <config>-editthorns}] edits the ThornList
 
+\item [{\tt gmake <config>-examples}] copies all the example parameter files relevant for this configuration to the directory {\tt examples} in the Cactus home directory. If a file of the same name is already there, it will not overwrite it.
+
 \item [{\tt gmake <config>-realclean}] removes from a configuration
   all object and dependency files, 
   as well as files generated from the CST (that is, only the files
@@ -777,7 +779,7 @@ is to do. The command {\tt gmake help} lists all gmake targets.
 
 \item [{\tt gmake <config>-thornlist}] regenerates the ThornList for a configuration.
 
-\item [{\tt gmake <config>-examples}] copies all the example parameter files relevant for this configuration to the directory {\tt examples} in the Cactus home directory. If a file of the same name is already there, it will not overwrite it.
+\item [{\tt gmake <config>-utils [UTILS$=$<list>]}] builds all utility programs provided by the thorns of a configuration. Individual utilities can be selected by giving their names in the {\tt UTILS} variable.
 
 \item[{\tt gmake <config>-ThornGuide}] builds documentation for the thorns 
 in this configuration.
