@@ -35,5 +35,7 @@ int Cactus_Startup(void)
 
 
   CCTK_RegisterBanner(string);
+  
+  return 0;
 
 }
