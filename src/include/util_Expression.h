@@ -16,66 +16,6 @@ extern "C"
 {
 #endif
 
-  /* These data types are for internal use only. */
-
-  /* Defined operators */
-typedef enum {OP_NONE,
-              OP_EQUALS,
-              OP_LESS_THAN,
-              OP_GREATER_THAN,
-              OP_LEQUALS,
-              OP_GEQUALS,
-              OP_AND,
-              OP_OR,
-              OP_PLUS,
-              OP_MINUS,
-              OP_DIV,
-              OP_TIMES,
-              OP_POWER,
-              OP_ACOS,
-              OP_ASIN,
-              OP_ATAN,
-              OP_CEIL,
-              OP_COS, 
-              OP_COSH,
-              OP_EXP,
-              OP_FABS,
-              OP_FLOOR,
-              OP_LOG,
-              OP_LOG10,
-              OP_SIN,
-              OP_SINH,
-              OP_SQRT,
-              OP_TAN,
-              OP_TANH}
-  uExpressionOpcode;
-
-  /* What sort of expression types we have. */
-typedef enum {val,unary,binary} uExpressionType;
-
-  /* RPN object. */
-typedef struct 
-{
-  uExpressionType type;
-
-  union
-  {
-    uExpressionOpcode opcode;
-    int varnum;
-  } token;
-} uExpressionToken;
-
-  /* Parsed expression object. */
-typedef struct
-{
-  int ntokens;
-  uExpressionToken *tokens;
-  int nvars;
-  const char **vars;
-} uExpressionInternals;
-
-/* Beginning of externally useable objects. */
-
   /* Structure to hold values. */
 typedef struct 
 {
@@ -88,8 +28,10 @@ typedef struct
   } value;
 } uExpressionValue;
 
+#ifndef __UTILI_EXPRESSION_H__
   /* Externally visible representation of the expression. */
-typedef uExpressionInternals *uExpression;
+typedef void *uExpression;
+#endif /*__UTIL_EXPRESSION_H__ */
 
 uExpression Util_ExpressionParse(const char *expression);
 

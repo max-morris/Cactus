@@ -20,6 +20,7 @@
 
 #include <math.h>
 
+#include "utili_Expression.h"
 #include "util_Expression.h"
 
 static const char *rcsid = "$Header$";
@@ -254,10 +255,7 @@ uExpression Util_ExpressionParse(const char *expression)
    @returntype int
    @returndesc
    0   - success
-   The below used to be returned, but now expression is pre-verified.
-   +ve - success but there were this number of remaining operation on the stack.
-   -ve - the number of remaining items on the expression stack when an error was
-   encountered
+   -1  - memory allocation failure
    @endreturndesc
 
 @@*/
@@ -279,98 +277,102 @@ int Util_ExpressionEvaluate(const uExpression buffer,
   /* Assign memory for array to contain all variable values */
   varvals = (uExpressionValue *)malloc(buffer->nvars*sizeof(uExpressionValue));
 
-  if(varvals)
+  if(varvals || ! buffer->nvars)
   {
     /* Evaluate the variables in one go to help people doing parallel ops. */
     eval(buffer->nvars, buffer->vars, varvals, data);
-  }
 
-  /* Tokens are seperated by @ signs */
-  for(position = 0; position < buffer->ntokens; position++)
-  {
-    if(buffer->tokens[position].type == val)
+    /* Tokens are seperated by @ signs */
+    for(position = 0; position < buffer->ntokens; position++)
     {
-      /* Put value on stack */
-      stack[stackpointer] = varvals[buffer->tokens[position].token.varnum];
-
-      stackpointer++;
-    }
-    else
-    {
+      if(buffer->tokens[position].type == val)
+      {
+        /* Put value on stack */
+        stack[stackpointer] = varvals[buffer->tokens[position].token.varnum];
+        
+        stackpointer++;
+      }
+      else
+      {
 #ifdef TEST_EXPRESSION_PARSER
       
-      printf("Stackpointer is %d, ", stackpointer); 
-      if(buffer->tokens[position].type == binary)
-      {
-        switch(stack[stackpointer-2].type)
+        printf("Stackpointer is %d, ", stackpointer); 
+        if(buffer->tokens[position].type == binary)
+        {
+          switch(stack[stackpointer-2].type)
+          {
+            case ival:
+              printf("%d " ,stack[stackpointer-2].value.ival); break;
+            case rval:
+              printf("%f " ,stack[stackpointer-2].value.rval); break;
+            default:
+              ;
+          }
+        }
+        
+        printf("%s ", opname(buffer->tokens[position].token.opcode));
+        switch(stack[stackpointer-1].type)
         {
           case ival:
-            printf("%d " ,stack[stackpointer-2].value.ival); break;
+            printf("%d " ,stack[stackpointer-1].value.ival); break;
           case rval:
-            printf("%f " ,stack[stackpointer-2].value.rval); break;
+            printf("%f " ,stack[stackpointer-1].value.rval); break;
           default:
             ;
         }
-      }
-
-      printf("%s ", opname(buffer->tokens[position].token.opcode));
-      switch(stack[stackpointer-1].type)
-      {
-        case ival:
-          printf("%d " ,stack[stackpointer-1].value.ival); break;
-        case rval:
-          printf("%f " ,stack[stackpointer-1].value.rval); break;
-        default:
-          ;
-      }
-      printf(" = ");
-      fflush(stdout);
+        printf(" = ");
+        fflush(stdout);
 #endif
-      /* Evaluate operation, clear operands from stack and add the result to the stack. */
-      switch(buffer->tokens[position].type)
-      {
-        case binary:
-          EvaluateBinary(&(stack[stackpointer-2]),
-                         &(stack[stackpointer-2]),
-                         buffer->tokens[position].token.opcode,
-                         &(stack[stackpointer-1]));
-          stackpointer--;
-          break;
-        case unary:
+        /* Evaluate operation, clear operands from stack and add the result to the stack. */
+        switch(buffer->tokens[position].type)
+        {
+          case binary:
+            EvaluateBinary(&(stack[stackpointer-2]),
+                           &(stack[stackpointer-2]),
+                           buffer->tokens[position].token.opcode,
+                           &(stack[stackpointer-1]));
+            stackpointer--;
+            break;
+          case unary:
             EvaluateUnary(&(stack[stackpointer-1]),
                           buffer->tokens[position].token.opcode,
                           &(stack[stackpointer-1]));
-          break;
-        default :
-          ;
-      }
-
+            break;
+          default :
+            ;
+        }
+        
 #ifdef TEST_EXPRESSION_PARSER
-      switch(stack[stackpointer-1].type)
-      {
-        case ival:
-          printf("%d\n" ,stack[stackpointer-1].value.ival); break;
-        case rval:
-          printf("%f\n" ,stack[stackpointer-1].value.rval); break;
-        default:
-          ;
-      }
+        switch(stack[stackpointer-1].type)
+        {
+          case ival:
+            printf("%d\n" ,stack[stackpointer-1].value.ival); break;
+          case rval:
+            printf("%f\n" ,stack[stackpointer-1].value.rval); break;
+          default:
+            ;
+        }
 #endif
+      }
     }
+    if(varvals)
+    {
+      free(varvals);
+    }
+
+    *retval=stack[0];
+    /* stackpointer should be 1 at this point if VerifyExpression
+     * was called on the expression.
+     */
+
+    retcode = stackpointer-1;
   }
-  
-  if(varvals)
+  else
   {
-    free(varvals);
+    /* memory failure */
+
+    retcode = -1;
   }
-
-  *retval=stack[0];
-
-  /* stackpointer should be 1 at this point if VerifyExpression
-   * was called on the expression.
-   */
-
-  retcode = stackpointer-1;
 
   return retcode;
 }
@@ -406,7 +408,7 @@ void Util_ExpressionFree(uExpression buffer)
     
     for(i = 0; i < buffer->nvars; i++)
     {
-      free((char *)(buffer->vars[i]));
+      free(buffer->vars[i]);
     }
     free(buffer->vars);
   }
@@ -541,25 +543,33 @@ static pToken *Tokenise(const char *expression)
     /* Create a new token */
     new = newtoken(tokenstart, tokenend);
 
-    /* Insert on list */
-    if(current)
+    if(new)
     {
-      insertafter(current, new);
-    }
-    current = new;
+      /* Insert on list */
+      if(current)
+      {
+        insertafter(current, new);
+      }
+      current = new;
+      
+      if(!start)
+      {
+        start = current;
+      }
 
-    if(!start)
-    {
-      start = current;
-    }
-
-    if(*tokenend)
-    {
-      tokenstart = tokenend+1;
+      if(*tokenend)
+      {
+        tokenstart = tokenend+1;
+      }
+      else
+      {
+        break;
+      }
     }
     else
     {
-      break;
+      fprintf(stderr, "Unable to allocate memory for new token !\n");
+      abort();
     }
   }
     
