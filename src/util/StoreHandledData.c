@@ -285,15 +285,18 @@ int Util_GetHandle(cHandledData *storage, const char *name, void **data)
   {
     for(current = 0; current < storage->array_size; current++)
     {
-      if(!strcmp(name, storage->array[current].name))
+      if(storage->array[current].in_use == TRUE)
       {
-	handle = current;
-	/* Return the associated data if required. */
-	if(data)
-	{
-	  *data = storage->array[current].data;
-	};
-	break;
+        if(!strcmp(name, storage->array[current].name))
+        {
+          handle = current;
+          /* Return the associated data if required. */
+          if(data)
+          {
+            *data = storage->array[current].data;
+          };
+          break;
+        }
       }
     }
   }
