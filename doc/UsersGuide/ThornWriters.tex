@@ -3820,10 +3820,11 @@ USES FUNCTION SumStuff
 }
 
 A prototype of this function will be available to any C routine that
-includes the {\tt cctk.h} header file. However, in a Fortran file that
-uses the {\tt implicit none} declaration the function will have to be
-explicitly declared; a definition will not be included in the {\tt
-  DECLARE\_CCTK\_FUNCTIONS} macro. The keywords {\tt IN} and {\tt OUT}
+includes the {\tt cctk.h} header file. 
+In a Fortran file, the declaration of the function will be included
+in the {\tt DECLARE\_CCTK\_FUNCTIONS} macro, which is available after
+the statement \texttt{\#include "cctk\_Functions.h"}.
+The keywords {\tt IN} and {\tt OUT}
 work in the same fashion as {\tt INTENT} statements in Fortran 90.
 That is, the C prototype will expect an argument with intent {\tt IN}
 to be a value and one with intent {\tt OUT} to be a pointer. There
