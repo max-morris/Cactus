@@ -150,4 +150,6 @@ int CactusInitialiseGH(cGH *GH)
 
   return 1;
 
+  USE_CCTK_PARAMETERS
+
 }

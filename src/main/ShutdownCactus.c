@@ -34,6 +34,7 @@ static char *rcsid = "$Id$";
 @@*/
 int ShutdownCactus(tFleshConfig *ConfigData)
 {
+
   DECLARE_CCTK_PARAMETERS
 
   if (CCTK_Equals(cctk_timer_output,"full"))
@@ -41,4 +42,7 @@ int ShutdownCactus(tFleshConfig *ConfigData)
     CCTK_SchedulePrintTimes(NULL);
   }
   return 0;
+
+  USE_CCTK_PARAMETERS
+
 }

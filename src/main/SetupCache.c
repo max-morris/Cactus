@@ -63,4 +63,7 @@ int CCTKi_SetupCache(void)
   CCTKi_CacheDataSet(cacheline_bytes, cache_size);
 
   return 0;
+
+  USE_CCTK_PARAMETERS
+
 }

@@ -210,6 +210,9 @@ int CactusDefaultEvolve(tFleshConfig *config)
 #endif
 
   return 0;
+
+  USE_CCTK_PARAMETERS
+
 }
 
 /************************************************************************/
