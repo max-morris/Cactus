@@ -26,7 +26,8 @@
 #include <stdio.h>
 
 /* from stdlib.h */
-_CRTIMP char * __cdecl getenv(const char *);
+
+/*_CRTIMP*/ char * /*__cdecl*/ getenv(const char *);
 
 #ifdef HAVE_CONFIG_H
 #if defined (emacs) || defined (CONFIG_BROKETS)
