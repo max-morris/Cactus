@@ -109,6 +109,10 @@ F77_POSTPROCESSING = @F77_POSTPROCESSING@
 F_POSTPROCESSING   = @F_POSTPROCESSING@
 F90_POSTPROCESSING = @F90_POSTPROCESSING@
 
+# Do we need to use ranlib ?
+
+USE_RANLIB = @USE_RANLIB@
+
 # Exclude some files from the dependency lists
 
 DEP_EXCLUDE_FILES = cctk_FunctionAliases\.h|CParameterStructNames\.h|cctk_Arguments\.h|definethisthorn\.h|FParameters.h|CParameters\.h

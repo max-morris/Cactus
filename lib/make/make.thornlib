@@ -68,7 +68,7 @@ $(NAME): $(addsuffix /make.checked, $(SUBDIRS)) $(LOCAL_OBJS) $(foreach DIR,. $(
 	if [ -r $(NAME) ] ; then echo Updating $(NAME) ; else echo Creating $(NAME) ; fi
 	if [ -r $@ ] ; then rm $@ ; fi
 	$(AR) $(ARFLAGS) $@ $(OBJS)
-#	$(RANLIB) $@
+	if test "x$(USE_RANLIB)" = "xyes" ; then $(RANLIB) $@ ; fi
 
 # Rules to make the object files
 include $(CONFIG)/make.config.rules
