@@ -846,27 +846,48 @@ sub SplitArgs
   
   my @thistoken = ();
 
+  my $insstring = 0;
+  my $indstring = 0;
+
   for(my $pos = 0; $pos < @splitargs; $pos++)
   {
-    # Now split at , at the top level
-    if($splitargs[$pos] eq "(")
+    if($splitargs[$pos] eq '\'' || $splitargs[$pos] eq '"' || 
+       $insstring == 1 || $indstring == 1)
     {
+      # Just pass the token through if in a string.
+      if($splitargs[$pos] eq '\'')
+      {
+        if($pos == 0 || ($pos > 0 && $splitargs[$pos-1] ne '\\'))
+        {
+          $insstring = 1 - $insstring;
+        }
+      }
+      if($splitargs[$pos] eq '"')
+      {
+        if($pos == 0 || ($pos > 0 && $splitargs[$pos-1] ne '\\'))
+        {
+          $indstring = 1 - $indstring;
+        }
+      }
+    }
+    elsif($splitargs[$pos] eq "(")
+    {
+      # Increase nesting level
       $nestlevel++;
     }
     elsif($splitargs[$pos] eq ")")
     {
-      $nestlevel++;
+      # Decrease nesting level
+      $nestlevel--;
     }
     elsif($splitargs[$pos] eq "," && $nestlevel == 0)
     {
+      # At top level, and not in a string, so must be end of this arg.
       push(@outargs, join("",@thistoken));
       @thistoken = ();
       next;
     }
-    else
-    {
-      push(@thistoken, $splitargs[$pos]);
-    }
+    push(@thistoken, $splitargs[$pos]);
   }
 
   # Push any remaining token
@@ -928,6 +949,20 @@ sub ParseAndExpand
       my $arg = "";
       if($pos+1 < @splitline)
       {
+	# Eat up whitepace between token and arguments
+	for(my $newpos=$pos+1; $newpos < @splitline; $newpos++)
+	{
+	  next if($splitline[$newpos] =~ m/\s/);
+	  if($splitline[$newpos] eq "(")
+	  {
+	    $pos = $newpos-1;
+	    last;
+	  }
+	  else
+	  {
+	    last;
+	  }
+	}
         # Find any arguments
         if($splitline[$pos+1] eq "(")
         {
@@ -998,19 +1033,27 @@ sub ArgumentSubstitute
   my @splitbody = split(//,$body);
   my @outbody = ();
 
-  my $instring = 0;
+  my $insstring = 0;
+  my $indstring = 0;
 
   for(my $pos = 0 ; $pos < @splitbody; $pos++)
   {
     
     # Just pass through all non-tokens and all tokens in a string.
-    if($splitbody[$pos] !~ m/[A-Za-z_]/ || $instring == 1)
+    if($splitbody[$pos] !~ m/[A-Za-z_]/ || $insstring == 1 || $indstring == 1)
     {
+      if($splitbody[$pos] eq '\'')
+      {
+        if($pos == 0 || ($pos > 0 && $splitbody[$pos-1] ne '\\'))
+        {
+          $insstring = 1 - $insstring;
+        }
+      }
       if($splitbody[$pos] eq '"')
       {
         if($pos == 0 || ($pos > 0 && $splitbody[$pos-1] ne '\\'))
         {
-          $instring = 1 - $instring;
+          $indstring = 1 - $indstring;
         }
       }
       push(@outbody, $splitbody[$pos]);
