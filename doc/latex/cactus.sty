@@ -13,10 +13,16 @@
 
 \IfFileExists{../interface.ccl}
 {
-  \ProvidesPackage{../../../../doc/ThornGuide/cactus}[\CA@styledate \CA@styleversion]
+  \ProvidesPackage{../../../../doc/latex/cactus}[\CA@styledate \CA@styleversion]
 }
 {
-  \ProvidesPackage{cactus}[\CA@styledate \CA@styleversion]
+  \IfFileExists{../FAQ}
+  {
+    \ProvidesPackage{../latex/cactus}[\CA@styledate \CA@styleversion]
+  }
+  {
+    \ProvidesPackage{cactus}[\CA@styledate \CA@styleversion]
+  }
 }
 
 
