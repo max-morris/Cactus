@@ -16,7 +16,7 @@
 #
 #
 #   @enddesc
-#   @version $Id: Makefile,v 1.146 2003-10-13 18:58:00 schnetter Exp $
+#   @version $Id: Makefile,v 1.147 2003-12-29 14:11:16 tradke Exp $
 # @@*/
 
 ##################################################################################
@@ -664,7 +664,7 @@ ifneq ($strip($(CONFIGURATIONS)),)
 $(addsuffix -config,$(CONFIGURATIONS)): int_version
 	if test -z "$(THORNLIST)" || (test -n "$(THORNLIST)" && test -r "$(THORNLIST_DIR)/$(THORNLIST)") ; \
 	then \
-	  if ($(SETUP_ENV) $(PERL) -s $(SETUP) -reconfig=1 $(SETUP_OPTIONS) $(@:%-config=%)) ; then : ; else \
+	  if ($(SETUP_ENV) $(PERL) -s $(SETUP) $(SETUP_OPTIONS) $(@:%-config=%)) ; then : ; else \
             echo "" ;                                                      \
             echo "Error reconfiguring $@" ;                                \
             exit 2                                 ;                       \
