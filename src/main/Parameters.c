@@ -1209,7 +1209,7 @@ static int ParameterSetInteger(t_parameter *param, const char *value)
   int retval;
   t_range *range;
   int inval;
-  int *val;
+  CCTK_INT *val;
 
   inval = atoi(value);
   val = (int *)param->data;
