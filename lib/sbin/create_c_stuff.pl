@@ -38,7 +38,7 @@ sub CreateParameterBindingFile
   foreach $parameter (&order_params($rhparameters,$rhparameter_db))
   {
     my $type = $rhparameter_db->{"\U$rhparameters->{$parameter} $parameter\E type"};
-    my ($type_string) = &get_c_type_string($type);
+    my $type_string = &get_c_type_string($type);
 
     my $realname = $rhparameter_db->{"\U$rhparameters->{$parameter} $parameter\E realname"};
 
@@ -72,24 +72,21 @@ sub CreateParameterBindingFile
 #  @date       Mon Jan 11 15:33:50 1999
 #  @author     Tom Goodale
 #  @desc
-#  Returns the correct type string for a parameter, both for declaring it
-#  as modifiable member of a structure as well as a assign-once local variable
+#  Returns the correct type string for a parameter.
 #  @enddesc
 #@@*/
 
 sub get_c_type_string
 {
   my($type) = @_;
-  my($type_string, $decl_type_string);
+  my $type_string;
 
 
-  $decl_type_string = '';
   if($type eq 'KEYWORD' ||
      $type eq 'STRING'  ||
      $type eq 'SENTENCE')
   {
-    $type_string = 'char *';
-    $decl_type_string = 'char *const';
+    $type_string = 'const char *';
   }
   elsif($type eq 'BOOLEAN')
   {
@@ -131,14 +128,8 @@ sub get_c_type_string
   {
     &CST_error(0,"Unknown parameter type '$type'",'',__LINE__,__FILE__);
   }
-  if (! $decl_type_string)
-  {
-    $decl_type_string = $type_string;
-  }
-  # add the const qualifier for assign-once local variables
-  $decl_type_string = "const $decl_type_string";
 
-  return ($type_string, $decl_type_string);
+  return $type_string;
 }
 
 
@@ -192,7 +183,7 @@ sub CreateCStructureParameterHeader
   foreach $parameter (&order_params($rhparameters, $rhparameter_db))
   {
     my $type = $rhparameter_db->{"\U$rhparameters->{$parameter} $parameter\E type"};
-    my ($type_string, $decl_type_string) = &get_c_type_string($type);
+    my $type_string = &get_c_type_string($type);
 
     my $array_size = $rhparameter_db->{"\U$rhparameters->{$parameter} $parameter\E array_size"};
 
@@ -201,14 +192,14 @@ sub CreateCStructureParameterHeader
 
     if($array_size)
     {
-      $varprefix = '*const ';
+      $varprefix = ' const *';
       $suffix = "[$array_size]";
     }
 
     my $realname = $rhparameter_db->{"\U$rhparameters->{$parameter} $parameter\E realname"};
 
     push(@data, "  $type_string $realname$suffix;");
-    push(@definition, "  $decl_type_string $varprefix$parameter = $structure.$realname; \\");
+    push(@definition, "  $type_string$varprefix const $parameter = $structure.$realname; \\");
     push(@use, "  (void) ($parameter + 0); \\");
   }
 

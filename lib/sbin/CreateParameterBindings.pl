@@ -229,16 +229,16 @@ sub CreateParameterBindings
 
         $type = $rhparameter_db->{"\U$friend_thorn $realname\E type"};
         $array = $rhparameter_db->{"\U$friend_thorn $realname\E array_size"};
-        ($type_string) = &get_c_type_string($type);
+        $type_string = &get_c_type_string($type);
 
         my $varprefix = '';
 
         if($array_size)
         {
-          $varprefix = '*';
+          $varprefix = ' const *';
         }
 
-        push(@data, "  const $type_string $varprefix$parameter = RESTRICTED_\U$friend\E_STRUCT.$realname; \\");
+        push(@data, "  $type_string$varprefix const $parameter = RESTRICTED_\U$friend\E_STRUCT.$realname; \\");
         push(@use, "  (void) ($parameter + 0); \\");
       }
     }
