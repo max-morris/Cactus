@@ -19,10 +19,11 @@
 /* Define some stuff */
 
 #ifdef FCODE
-#define _CCTK_FARGUMENTS  dim, global_sh, sh, lb, ub, bbox, levfac, convlevel, nghostzones, GH
+#define _CCTK_FARGUMENTS  dim, global_sh, sh, lb, ub, bbox, delta_time, time, delta_space, levfac, convlevel, nghostzones, GH
 #define _DECLARE_CCTK_FARGUMENTS INTEGER dim&&\
                            INTEGER global_sh(dim)&&\
                            INTEGER sh(dim), lb(dim), ub(dim), bbox(2*dim)&&\
+                           REAL delta_time, time, delta_space(dim)&&\
                            INTEGER levfac&&\
                            INTEGER convlevel&&\
                            INTEGER nghostzones&&\
@@ -36,6 +37,7 @@
 #define _PASS_CCTK_C2F(xGH) &((xGH)->dim),\
                             (xGH)->global_shape,\
                             (xGH)->local_shape, (xGH)->lower_bound, (xGH)->upper_bound, (xGH)->bbox,\
+                            &((xGH)->delta_time), &((xGH)->time), (xGH)->delta_space,\
                             &((xGH)->levfac),\
                             &((xGH)->convlevel),\
                             &((xGH)->nghostzones),\
@@ -43,6 +45,7 @@
 #define _CCTK_C2F_PROTO     int *,\
                             int *,\
                             int *,int *, int *, int *,\
+                            Double *, Double *, Double *,\
                             int *,\
                             int *,\
                             int *,\
