@@ -12,6 +12,7 @@
 #include <string.h>
 #include <stdarg.h>
 
+#include "cctk.h"
 #include "cctk_Flesh.h"
 #include "cctk_FortranString.h"
 
