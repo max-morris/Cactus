@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.61 2000-01-03 12:15:42 allen Exp $
+#   @version $Id: Makefile,v 1.62 2000-01-03 12:25:07 allen Exp $
 # @@*/
 
 ##################################################################################
@@ -268,16 +268,17 @@ else
 	@echo "                   the configuration)."
 	@echo "  -cleandeps     : to clean a configuration\'s dependency files."
 	@echo "  -cleanobjs     : to clean a configuration\'s object files."
+	@echo "  -config        : to (re)configure a configuration. "
+	@echo "                  (runs or reruns the configuration scripts)."
+	@echo "  -delete        : to delete a configuration." 
+	@echo "  -editthorns    : edits the ThornList file. "
 	@echo "  -realclean     : to restore a configuration to almost a new state. "
 	@echo "                  (deletes all but the config-data directory "
 	@echo "                   and the ThornList file)."
-	@echo "  -delete        : to delete a configuration." 
 	@echo "  -rebuild       : to rebuild a configuration." 
 	@echo "                  (forces the CST to be rerun)."
-	@echo "  -config        : to (re)configure a configuration. "
-	@echo "                  (runs or reruns the configuration scripts)."
+	@echo "  -testsuite     : run the test program."
 	@echo "  -thornlist     : regenerates the ThornList file. "
-	@echo "  -editthorns    : edits the ThornList file. "
 	@echo "  -thornparfiles : copies example parameter files to thornparfiles."
 endif
 	@echo $(DIVIDER)
@@ -291,7 +292,6 @@ endif
 	@echo "  newthorn  - creates a new thorn."
 	@echo "  TAGS      - creates an Emacs TAGS file."
 	@echo "  tags      - creates a Vi TAGS file."
-	@echo "  testsuite - run the test program."
 	@echo "  thorninfo - give information about all available thorns."
 	@echo "  <anything else> prompts to create such a configuration."
 	@echo $(DIVIDER)
