@@ -136,6 +136,11 @@ int CCTK_ParameterWalk(int first,           /* Get first parameter or not */
 const cParamData *CCTK_ParameterData (const char *name, 
                                       const char *thorn);
 
+  /* Return number of times a parameter has been set */
+int CCTK_ParameterQueryTimesSet(const char *name,
+				const char *thorn);
+
+
 #ifdef __cplusplus
 }
 #endif
