@@ -38,6 +38,7 @@ int CCTK_NewHandle(cHandledData **storage, const char *name, void *data);
 int CCTK_DeleteHandle(cHandledData *storage, int handle);
 void *CCTK_GetHandledData(cHandledData *storage, int handle);
 int CCTK_GetHandle(cHandledData *storage, const char *name, void **data);
+char *CCTK_GetHandleName(cHandledData *storage, int handle);
 
 #ifdef _cplusplus 
 }

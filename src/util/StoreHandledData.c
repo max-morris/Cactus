@@ -305,6 +305,48 @@ int CCTK_GetHandle(cHandledData *storage, const char *name, void **data)
   return handle;
 }
 
+ /*@@
+   @routine    CCTK_GetHandleName
+   @date       Wed Feb  3 12:52:53 1999
+   @author     Tom Goodale
+   @desc 
+   Gets the name associated with a handle.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+char *CCTK_GetHandleName(cHandledData *storage, int handle)
+{
+  char *name;
+
+  if(storage)
+  {
+    if((handle < storage->array_size)&&
+       (handle >= 0)&&
+       (storage->array[handle].in_use == TRUE))
+    {
+      /* The data exists */
+      name = storage->array[handle].name;
+    }
+    else
+    {
+      /* The data is non-existant. */
+      name = NULL;
+    }
+  }
+  else
+  {
+    /* There is no data registered. */
+    name = NULL;
+  }
+
+  return name;
+}
+  
 
 /*#define TEST_STOREHANDLEDDATA */
 #ifdef TEST_STOREHANDLEDDATA
