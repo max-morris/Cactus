@@ -294,6 +294,7 @@ static
  *      UTIL_ERROR_BAD_INPUT            array != NULL and N_elements < 0
  *      UTIL_ERROR_TABLE_NO_SUCH_KEY    no such key in table
  *      UTIL_ERROR_TABLE_WRONG_DATA_TYPE value has wrong data type
+ * If any of the error conditions is returned, the value buffer is unchanged.
  */
 static
   int internal_get(int handle,
@@ -671,6 +672,9 @@ return max_length;
                 type_code and N_elements, this function is then a
                 Boolean "is key in table?" predicate.
   @endreturndesc
+  @comment      If any error code is returned, the user's buffers
+                pointed to by type_code and N_elements (if these pointers
+                are non-NULL) are unchanged.
   @@*/
 int Util_TableQueryValueInfo(int handle,
                              CCTK_INT *type_code, CCTK_INT *N_elements,
@@ -740,11 +744,11 @@ return delete_key(thp, key);
 /*@@
   @routine      Util_TableCreateFromString
   @desc         This function creates a new table (with the case-insensitive
-		flag set), and sets values in it based on a string argument.
-		The string is interpreted with "parameter-file" semantics.
+                flag set), and sets values in it based on a string argument.
+                The string is interpreted with "parameter-file" semantics.
 
   @comment      The "Implementation Restriction" of Util_TableSetFromString()
-		applies here as well.
+                applies here as well.
   @endcomment
 
   @var          string
@@ -757,6 +761,8 @@ return delete_key(thp, key);
   @returndesc   a handle to the newly-created table,
                 -ve for error, including
                 UTIL_ERROR_NO_MEMORY    unable to allocate memory
+                UTIL_ERROR_BAD_KEY      invalid input: key contains
+                                        invalid character
                 UTIL_ERROR_BAD_INPUT    invalid input: can't parse input string
                 and any error codes returned by
                 Util_TableCreate() or Util_TableSetFromString()
@@ -782,35 +788,44 @@ return handle;
 /*@@
   @routine      Util_TableSetFromString
   @desc         This function does a sequence of Util_TableSet*() calls
-		to set table entries based on a parameter-file--like
-		string argument.  For example,
-		   Util_TableSetFromString(handle, "order=3 dx=0.1")
-		is equivalent to
-		   Util_TableSetInt(handle, 3, "order");
-		   Util_TableSetReal(handle, 0.1, "dx");
+                to set table entries based on a parameter-file--like
+                string argument.  For example,
+                   Util_TableSetFromString(handle, "order=3 dx=0.1")
+                is equivalent to
+                   Util_TableSetInt(handle, 3, "order");
+                   Util_TableSetReal(handle, 0.1, "dx");
 
   @comment      Implementation Restriction:
                 The present implementation only recognises integer or
                 real values (not complex or character), and only scalars
                 (not arrays).  In more detail, the strings recognized
                 are defined by the following BNF:
-                        string -> assign*
-                        assign -> whitespace* key = value ;? whitespace*
-                        value  -> int_value | real_value
-                        int_value -> contains only chars from int_chars,
-                                     and is recognized as valid by sscanf()
-                                     with a "%d" format
-                        real_value -> contains one or more chars not in
-                                      int_chars, and is recognized as
-                                      valid by sscanf() with a "%lf" format
-                where
-                int_chars is the constant string defined in the code below,
-                * denotes 0 or more repetitions, and
-                ? denotes optional items, i.e. 0 or 1 repetitions.
+                   string -> assign*
+                   assign -> whitespace*
+                   assign -> whitespace* key = value delimiter
+                   key    -> any string not containing '/'
+                             or '=' or ';' or whitespace
+                   value  -> int_value | real_value
+                   int_value -> contains only chars from "-+0123456789"
+                                and is recognized as valid by sscanf()
+                                with a "%d" format
+                   real_value -> contains one or more chars not in
+                                 "-+0123456789", and is recognized as
+                                 valid by sscanf() with a "%lf" format
+                   delimiter -> end-of-string | ';' | whitespace
+                   whitespace --> ' ' | '\t' | '\n' | '\r' | '\f' | '\v'
+                where * denotes 0 or more repetitions and | denotes
+                logical or.
 
                 Notice that whitespace separates "key=value" assignments,
                 and thus that no whitespace may appear with a "key=value"
                 assignment.
+
+                Notice also that the keys allowed by this function
+                are somewhat more restricted than those allowed by
+                the other Util_TableSet*() functions, in that this
+                function disallows keys containing '=', ';', and/or
+                whitespace.
   @endcomment
 
   @var          handle
@@ -821,26 +836,29 @@ return handle;
   @var          string
   @vtype        const char *
   @vdesc        C-style null-terminated string which is parsed as
-		described above to determine the keys and values to be
-		set in the table.
+                described above to determine the keys and values to be
+                set in the table.
   @endvar
 
   @returntype   int
   @returndesc   the number of successful Util_TableSet*() calls made, or
                 -ve for error, including
                 UTIL_ERROR_NO_MEMORY    unable to allocate memory
+                UTIL_ERROR_BAD_KEY      invalid input: key contains
+                                        invalid character
                 UTIL_ERROR_BAD_INPUT    invalid input: can't parse input string
                 and any error codes returned by the Util_TableSet*() functions
-		Note that in the event of an error return, assignments
-		lexicographically earlier in the input string than where
-		the error was detected will already have been made in the
-		table.
+                Note that in the event of an error return, assignments
+                lexicographically earlier in the input string than where
+                the error was detected will already have been made in the
+                table.  Unfortunately, there is no easy way to find out
+                where the error was detected. :(
   @endreturndesc
   @@*/
 int Util_TableSetFromString(int handle, const char string[])
 {
-const char *const delimiters = "; \t\n";
-const char *const whitespace =  " \t\n";
+const char *const delimiters = "; \t\n\r\f\v";
+const char *const whitespace =  " \t\n\r\f\v";
 const char *const int_chars  = "-+0123456789";
 
 #ifdef UTIL_TABLE_DEBUG
@@ -870,6 +888,8 @@ char *p = buffer;
         #ifdef UTIL_TABLE_DEBUG2
         printf("   skipped over delimiters to p-buffer=%d\n", (int) (p-buffer));
         #endif
+        if (*p == '\0')
+           then break;              /* end of string -- nothing more to do */
 
           {
         const char *const key = p;      /* key -> "key=value..." */
@@ -880,6 +900,12 @@ char *p = buffer;
                 return UTIL_ERROR_BAD_INPUT;  /* no '=" in "key=value" string */
                 }
         *q++ = '\0';                    /* key -> "key", q -> "value..." */
+        if (strcspn(key, delimiters) != strlen(key))
+           then {
+                free(buffer);
+                return UTIL_ERROR_TABLE_BAD_KEY;    /* key contains */
+                                                    /* invalid character */
+                }
           {
         char *const value = q;          /* value -> "value..." */
         const size_t value_length = strcspn(value, delimiters);
@@ -940,7 +966,7 @@ char *p = buffer;
                   }
                 }
 
-	++Set_count;
+        ++Set_count;
         p = q;
         #ifdef UTIL_TABLE_DEBUG2
         printf("   after key=value, advanced p to p-buffer=%d\n",
@@ -1069,6 +1095,14 @@ return internal_set(handle,
                 UTIL_ERROR_TABLE_STRING_TRUNCATED   buffer != NULL and
                                                     value was truncated
                                                     to fit in buffer[]
+  @comment      If the error code UTIL_ERROR_TABLE_STRING_TRUNCATED is
+                returned, then the first buffer_length-1 characters of
+                the string are returned in the user's buffer (assuming
+                buffer is non-NULL), followed by a null character to
+                properly terminate the string in the buffer.  If any
+                other error code is returned, the user's value buffer
+                (pointed to by buffer if this is non-NULL) is unchanged.  
+  @endcomment
   @endreturndesc
   @@*/
 int Util_TableGetString(int handle,
@@ -1776,6 +1810,10 @@ return (status == 0)
                 It is also *not* an error for the value to have < N_array
                 elements; again the caller can detect this by comparing the
                 return value with N_array.
+
+                Note also that if any error code is returned, the
+                caller's value buffer (pointed to by  value_buffer)
+                is unchanged.
   @endcomment
   @endreturndesc
   @@*/
@@ -2231,6 +2269,14 @@ return ip->thp->handle;
                 UTIL_ERROR_TABLE_STRING_TRUNCATED  key_buffer != NULL and
                                                    key was truncated
                                                    to fit in key_buffer[]
+  @comment      If the error code UTIL_ERROR_TABLE_STRING_TRUNCATED is
+                returned, then the first key_buffer_length-1 characters of
+                the string are returned in the user's key buffer (assuming
+                key_buffer is non-NULL), followed by a null character to
+                properly terminate the string in the buffer.  If any
+                other error code is returned, the user's key buffer
+                (pointed to by key_buffer if this is non-NULL) is unchanged.  
+  @endcomment
   @endreturndesc
   @@*/
 int Util_TableItQueryKeyValueInfo(int ihandle,
@@ -2477,8 +2523,8 @@ return 0;
                    CCTK_REAL, CCTK_REAL4, CCTK_REAL8, CCTK_REAL16,
                    CCTK_COMPLEX, CCTK_COMPLEX8, CCTK_COMPLEX16, CCTK_COMPLEX32
                 (not all of these may be supported on any given system)
-  @vdesc        the array (a copy of) which is to be associated with
-                the specified key
+  @vdesc        the array (a copy of) which is to be
+                associated with the specified key
   @endvar
 
   @var          key
@@ -2645,6 +2691,10 @@ return return_value;
                 > N_value_buffer elements; in this case only N_value_buffer
                 are stored.  The caller can detect this by comparing the
                 return value with N_value_buffer.
+
+                Note also that if any error code is returned, the
+                caller's value buffer (pointed to by  value_buffer)
+                is unchanged.
   @endcomment
   @endreturndesc
   @@*/
@@ -3151,9 +3201,9 @@ assert( zz[4].Re == -0.25 );    assert( zz[4].Im == -0.75 );            \
 /*
  * This function does a sequence of assert() calls to verify that
  * a table contains the 3 keys
- *	ij = 42
- *	real1 = 3.5
- *	real_e = 2.75
+ *      ij = 42
+ *      real1 = 3.5
+ *      real_e = 2.75
  * inserted in that order.
  *
  * Bugs:
@@ -3838,8 +3888,8 @@ free(key_buffer);
 #ifdef UTIL_TABLE_TEST
 /*
  * This function tests
- *	Util_TableSetFromSTring()
- *	Util_TableCreateFromString()
+ *      Util_TableSetFromSTring()
+ *      Util_TableCreateFromString()
  * It returns the handle of one of the newly-created tables.
  *
  * Bugs:
@@ -3860,8 +3910,12 @@ assert( Util_TableQueryNKeys(handle) == 0 );
  */
 assert( Util_TableSetFromString(handle, "foo" ) == UTIL_ERROR_BAD_INPUT );
 assert( Util_TableSetFromString(handle, "foo/" ) == UTIL_ERROR_BAD_INPUT );
+assert( Util_TableSetFromString(handle, "foo;=12" )
+        == UTIL_ERROR_TABLE_BAD_KEY );
+assert( Util_TableSetFromString(handle, "foo =12" )
+        == UTIL_ERROR_TABLE_BAD_KEY );
 assert( Util_TableSetFromString(handle, "foo/=12" )
-	== UTIL_ERROR_TABLE_BAD_KEY );
+        == UTIL_ERROR_TABLE_BAD_KEY );
 assert( Util_TableSetFromString(handle, "foo= 12") == UTIL_ERROR_BAD_INPUT );
 assert( Util_TableCreateFromString("foo" ) == UTIL_ERROR_BAD_INPUT );
 assert( Util_TableCreateFromString("foo/" ) == UTIL_ERROR_BAD_INPUT );
@@ -3872,7 +3926,7 @@ assert( Util_TableCreateFromString("foo= 12") == UTIL_ERROR_BAD_INPUT );
  * Test some "good" strings
  */
   {
-int handle2 = Util_TableCreateFromString("ij=42 real1=3.5; real_e=2.75");
+int handle2 = Util_TableCreateFromString("  ij=42 real1=3.5; real_e=2.75  ");
 assert( handle2 >= 0 );
 assert( Util_TableQueryFlags(handle2) == UTIL_TABLE_FLAGS_CASE_INSENSITIVE );
 assert( Util_TableQueryNKeys(handle2) == 3 );
