@@ -504,12 +504,13 @@ argument lists).
 \begin{verbatim}
 
 #include ``Reduction.h''
-int CCTK_Reduce(cGH *GH, int retvaltype, int retvalnum, void *retval, int handle, int GFindex, ...);
+int CCTK_Reduce(cGH *GH, int retvaltype, int retvalnum, void *retval, int handle, int index, ...);
 
 \end{verbatim}
 }
 \vskip .25cm
-
+Note that the memory for {\t retval} must be assigned before the reduction
+call is made.
 
 \subsection{IO}
 \label{sec:io}
