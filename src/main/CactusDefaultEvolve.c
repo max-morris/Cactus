@@ -7,7 +7,7 @@
    @enddesc 
  @@*/
 
-#define DEBUG
+/*#define DEBUG*/
 
 #include <stdio.h>
 
@@ -72,10 +72,10 @@ int CactusDefaultEvolve(tFleshConfig *config)
   CactusStartTimer(config->timer[OUTPUT]);
   /*** Call OUTPUT for this GH (this routine    ***/
   /*** checks if output is necessary) and makes ***/
-  /*** an rfrTraverse with CACTUS_ANALYSIS      ***/
+  /*** an rfrTraverse with CCTK_ANALYSIS      ***/
   ForallConvLevels(iteration, convergence_level)
   {
-      CCTK_rfrTraverse(config->GH[convergence_level],CACTUS_ANALYSIS);
+      CCTK_rfrTraverse(config->GH[convergence_level],CCTK_ANALYSIS);
       CCTK_OutputGH(config->GH[convergence_level]);
   }
   EndForallConvLevels;
@@ -116,7 +116,7 @@ int CactusDefaultEvolve(tFleshConfig *config)
     /* Dump out checkpoint data on all levels */
     ForallConvLevels(iteration, convergence_level)
     {
-      CCTK_rfrTraverse(config->GH[convergence_level],CACTUS_CHECKPOINT);
+      CCTK_rfrTraverse(config->GH[convergence_level],CCTK_CHECKPOINT);
     }
     EndForallConvLevels;
 
@@ -124,10 +124,10 @@ int CactusDefaultEvolve(tFleshConfig *config)
     CactusStartTimer(config->timer[OUTPUT]);
     /*** Call OUTPUT for this GH (this routine    ***/
     /*** checks if output is necessary) and makes ***/
-    /*** an rfrTraverse with CACTUS_ANALYSIS      ***/
+    /*** an rfrTraverse with CCTK_ANALYSIS      ***/
     ForallConvLevels(iteration, convergence_level)
     {
-        CCTK_rfrTraverse(config->GH[convergence_level],CACTUS_ANALYSIS);
+        CCTK_rfrTraverse(config->GH[convergence_level],CCTK_ANALYSIS);
 	CCTK_OutputGH(config->GH[convergence_level]);
     }
     EndForallConvLevels;
@@ -205,8 +205,8 @@ int CCTK_StepGH(cGH *GH) {
 void PreStepper(cGH *GH) {
   int Rstep;  
 
-  /* Call the rfr with CACTUS_PRESTEP */
-  for (Rstep = CACTUS_PRESTEP;Rstep <= CACTUS_PRESTEP5; Rstep++)
+  /* Call the rfr with CCTK_PRESTEP */
+  for (Rstep = CCTK_PRESTEP;Rstep <= CCTK_PRESTEP5; Rstep++)
     CCTK_rfrTraverse(GH, Rstep);
 }
  /*@@
@@ -225,7 +225,7 @@ void PreStepper(cGH *GH) {
 
 void EvolStepper(cGH *GH) {
   /* Call the rfr with Evolution */
-  CCTK_rfrTraverse(GH, CACTUS_EVOL);
+  CCTK_rfrTraverse(GH, CCTK_EVOL);
   /* after Evolution check for NANs */
 }
  /*@@
@@ -233,7 +233,7 @@ void EvolStepper(cGH *GH) {
    @date       Fri Aug 14 12:44:58 1998
    @author     Gerd Lanfermann
    @desc 
-     calls RFR-CACTUS_BOUND applies boudnary conditions
+     calls RFR-CCTK_BOUND applies boudnary conditions
    @enddesc 
    @calls     
    @calledby   
@@ -244,7 +244,7 @@ void EvolStepper(cGH *GH) {
 @@*/
 
 void BoundStepper(cGH *GH) {
-  CCTK_rfrTraverse(GH,CACTUS_BOUND);
+  CCTK_rfrTraverse(GH,CCTK_BOUND);
 }
 
  /*@@
@@ -252,7 +252,7 @@ void BoundStepper(cGH *GH) {
    @date       Fri Aug 14 12:45:39 1998
    @author     Gerd Lanfermann
    @desc 
-     calls the routines rgeistered as CACTUS_POSSTEPS
+     calls the routines rgeistered as CCTK_POSSTEPS
    @enddesc 
    @calls     
    @calledby   
@@ -264,7 +264,7 @@ void BoundStepper(cGH *GH) {
 void PostStepper(cGH *GH) {
   int Rstep;  
    /* Call the rfr with post step */
-  for (Rstep = CACTUS_POSTSTEP; Rstep <= CACTUS_POSTSTEP10; Rstep++)
+  for (Rstep = CCTK_POSTSTEP; Rstep <= CCTK_POSTSTEP10; Rstep++)
     CCTK_rfrTraverse(GH, Rstep); 
 }
  /*@@
@@ -303,5 +303,5 @@ void TerminationStepper(cGH *GH) {
     cactus_terminate=TERMINATION_RAISED_BRDCAST;
     printf("RECEIVED GLOBAL TERMINATION SIGNAL \n");
   }
-  CCTK_rfrTraverse(GH,CACTUS_TERMINATE);
+  CCTK_rfrTraverse(GH,CCTK_TERMINATE);
 }

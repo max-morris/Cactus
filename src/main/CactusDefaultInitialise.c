@@ -120,23 +120,23 @@ int Cactus_InitialiseGH(cGH *GH)
   /* Do various rfr traversals.  Will tidy up later. */
 
   /* FIXME : PARAM_CHECK SHOULD BE BEFORE HERE */
-  CCTK_rfrTraverse(GH, CACTUS_PARAMCHECK);
+  CCTK_rfrTraverse(GH, CCTK_PARAMCHECK);
 
-  CCTK_rfrTraverse(GH, CACTUS_BASEGRID); 
-  CCTK_rfrTraverse(GH, CACTUS_INITIAL0);
+  CCTK_rfrTraverse(GH, CCTK_BASEGRID); 
+  CCTK_rfrTraverse(GH, CCTK_INITIAL0);
 
   /* Loops like this should go eventually... */
-  for (Rstep = CACTUS_INITIAL; Rstep <= CACTUS_INITIAL9; Rstep++)
+  for (Rstep = CCTK_INITIAL; Rstep <= CCTK_INITIAL9; Rstep++)
   {
     CCTK_rfrTraverse(GH,Rstep);
   }
 
   /* Ignore checkpointing for now.
-   * CCTK_rfrTraverse(GH,CACTUS_RECOVER);
-   * CCTK_rfrTraverse(GH,CACTUS_CPINITIAL);
+   * CCTK_rfrTraverse(GH,CCTK_RECOVER);
+   * CCTK_rfrTraverse(GH,CCTK_CPINITIAL);
    */
 
-  for (Rstep = CACTUS_POSTSTEP; Rstep <= CACTUS_POSTSTEP10; Rstep++)
+  for (Rstep = CCTK_POSTSTEP; Rstep <= CCTK_POSTSTEP10; Rstep++)
   {
     CCTK_rfrTraverse(GH,Rstep);
   }
