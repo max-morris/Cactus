@@ -11,13 +11,13 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "BinaryTree.h"
+#include "util_BinaryTree.h"
 
 static char *rcsid = "$Header$";
 
 
  /*@@
-   @routine    TreeStoreData
+   @routine    Util_BinTreeStoreData
    @date       Mon Oct  5 11:04:55 1998
    @author     Tom Goodale
    @desc 
@@ -30,14 +30,14 @@ static char *rcsid = "$Header$";
    @endhistory 
 
 @@*/
-t_tree *TreeStoreData(t_tree *root, t_tree *subtree, void *data, int (*compare)(const void *, const void *))
+uBinTree *Util_BinTreeStoreData(uBinTree *root, uBinTree *subtree, void *data, int (*compare)(const void *, const void *))
 {
   int order;
 
   if(!subtree)
   {
     /* Create a new element. */ 
-    subtree = (t_tree *)malloc(sizeof(t_tree));
+    subtree = (uBinTree *)malloc(sizeof(uBinTree));
     if(subtree)
     {
       subtree->left=NULL;
@@ -63,11 +63,11 @@ t_tree *TreeStoreData(t_tree *root, t_tree *subtree, void *data, int (*compare)(
     /* Go down left or right branch. */
     if((order = compare(data, root->data)) < 0)
     {
-      subtree = TreeStoreData(subtree, subtree->left, data, compare);
+      subtree = Util_BinTreeStoreData(subtree, subtree->left, data, compare);
     }
     else if(order > 0) 
     {
-      subtree = TreeStoreData(subtree, subtree->right, data, compare);
+      subtree = Util_BinTreeStoreData(subtree, subtree->right, data, compare);
     }
     else if(order==0)
     {
@@ -85,7 +85,7 @@ t_tree *TreeStoreData(t_tree *root, t_tree *subtree, void *data, int (*compare)(
 }
 
  /*@@
-   @routine    TreeTraverseInorder
+   @routine    Util_BinTreeTraverseInorder
    @date       Mon Oct  5 11:05:54 1998
    @author     Tom Goodale
    @desc 
@@ -98,7 +98,7 @@ t_tree *TreeStoreData(t_tree *root, t_tree *subtree, void *data, int (*compare)(
    @endhistory 
 
 @@*/
-int TreeTraverseInorder(t_tree *root, int (*process)(void *, void *), void *info)
+int Util_BinTreeTraverseInorder(uBinTree *root, int (*process)(void *, void *), void *info)
 {
   int terminate;
 
@@ -106,16 +106,16 @@ int TreeTraverseInorder(t_tree *root, int (*process)(void *, void *), void *info
 
   if(root)
   {
-    terminate = TreeTraverseInorder(root->left, process, info);
+    terminate = Util_BinTreeTraverseInorder(root->left, process, info);
     if(!terminate) terminate = process(root->data,info);
-    if(!terminate) terminate = TreeTraverseInorder(root->right, process, info);
+    if(!terminate) terminate = Util_BinTreeTraverseInorder(root->right, process, info);
   }
 
   return terminate;
 }
 
  /*@@
-   @routine    TreeTraversePreorder
+   @routine    Util_BinTreeTraversePreorder
    @date       Mon Oct  5 11:05:54 1998
    @author     Tom Goodale
    @desc 
@@ -128,7 +128,7 @@ int TreeTraverseInorder(t_tree *root, int (*process)(void *, void *), void *info
    @endhistory 
 
 @@*/
-int TreeTraversePreorder(t_tree *root, int (*process)(void *, void *), void *info)
+int Util_BinTreeTraversePreorder(uBinTree *root, int (*process)(void *, void *), void *info)
 {
   int terminate;
 
@@ -137,15 +137,15 @@ int TreeTraversePreorder(t_tree *root, int (*process)(void *, void *), void *inf
   if(root)
   {
     terminate = process(root->data, info);
-    if(!terminate) terminate = TreeTraversePreorder(root->left, process, info);
-    if(!terminate) terminate = TreeTraversePreorder(root->right, process,info);
+    if(!terminate) terminate = Util_BinTreeTraversePreorder(root->left, process, info);
+    if(!terminate) terminate = Util_BinTreeTraversePreorder(root->right, process,info);
   }
 
   return terminate;
 }
                      
  /*@@
-   @routine    TreeTraversePostorder
+   @routine    Util_BinTreeTraversePostorder
    @date       Mon Oct  5 11:05:54 1998
    @author     Tom Goodale
    @desc 
@@ -158,7 +158,7 @@ int TreeTraversePreorder(t_tree *root, int (*process)(void *, void *), void *inf
    @endhistory 
 
 @@*/
-int TreeTraversePostorder(t_tree *root, int (*process)(void *, void *), void *info)
+int Util_BinTreeTraversePostorder(uBinTree *root, int (*process)(void *, void *), void *info)
 {
   int terminate;
 
@@ -166,8 +166,8 @@ int TreeTraversePostorder(t_tree *root, int (*process)(void *, void *), void *in
 
   if(root)
   {
-    terminate = TreeTraversePostorder(root->left, process, info);
-    if(!terminate) terminate = TreeTraversePostorder(root->right, process, info);
+    terminate = Util_BinTreeTraversePostorder(root->left, process, info);
+    if(!terminate) terminate = Util_BinTreeTraversePostorder(root->right, process, info);
     if(!terminate) terminate = process(root->data, info);
   }
 
@@ -175,7 +175,7 @@ int TreeTraversePostorder(t_tree *root, int (*process)(void *, void *), void *in
 }
 
  /*@@
-   @routine    TreePrintNodes
+   @routine    Util_BinTreePrintNodes
    @date       Mon Oct  5 11:06:52 1998
    @author     Tom Goodale
    @desc 
@@ -188,19 +188,22 @@ int TreeTraversePostorder(t_tree *root, int (*process)(void *, void *), void *in
    @endhistory 
 
 @@*/
-void TreePrintNodes(t_tree *root, int depth, void (*print_node)(void *, int))
+int Util_BinTreePrintNodes(uBinTree *root, 
+			   int depth, 
+			   void (*print_node)(void *, int))
 {
   if(root)
   {
-    TreePrintNodes(root->left, depth+1,print_node);
+    Util_BinTreePrintNodes(root->left, depth+1,print_node);
     print_node(root->data,depth);
-    TreePrintNodes(root->right, depth+1, print_node);
+    Util_BinTreePrintNodes(root->right, depth+1, print_node);
   }
+  return 0;
 }
 
 
  /*@@
-   @routine    TreeFindNode
+   @routine    Util_BinTreeFindNode
    @date       Mon Oct  5 11:06:52 1998
    @author     Tom Goodale
    @desc 
@@ -213,20 +216,20 @@ void TreePrintNodes(t_tree *root, int depth, void (*print_node)(void *, int))
    @endhistory 
 
 @@*/
-t_tree *TreeFindNode(t_tree *root, void *data, int (*compare)(const void *, const void *))
+uBinTree *TreeFindNode(uBinTree *root, void *data, int (*compare)(const void *, const void *))
 {
   int order;
 
-  t_tree *node;
+  uBinTree *node;
 
   /* Go down left or right branch. */
   if((order = compare(data, root->data)) < 0)
   {
-    node = TreeFindNode(root->left, data, compare);
+    node = Util_BinTreeFindNode(root->left, data, compare);
   }
   else if(order > 0) 
   {
-    node = TreeFindNode(root->right, data, compare);
+    node = Util_BinTreeFindNode(root->right, data, compare);
   }
   else if(order==0)
   {
@@ -270,11 +273,11 @@ void print_node(char *data, int depth)
 
 int main(void)
 {
-  t_tree *root;
+  uBinTree *root;
   t_infodata infodata;
   char instring[500];
   char *newstring;
-  t_tree *node;
+  uBinTree *node;
 
   infodata.i=0;
 
@@ -287,22 +290,22 @@ int main(void)
 
     if(!root)
     {
-      root = TreeStoreData(root, root, newstring, (int (*)(const void *, const void *))strcmp);
+      root = Util_BinTreeStoreData(root, root, newstring, (int (*)(const void *, const void *))strcmp);
     }
     else
     {
-      TreeStoreData(root, root, newstring, (int (*)(const void *, const void *))strcmp);
+      Util_BinTreeStoreData(root, root, newstring, (int (*)(const void *, const void *))strcmp);
     }  
   }
 
-  TreeTraverseInorder(root, (int (*)(void *, void *))process, (void *)&infodata);
+  Util_BinTreeTraverseInorder(root, (int (*)(void *, void *))process, (void *)&infodata);
 
-  TreePrintNodes(root, 0, (void (*)(void *, int))print_node);
+  Util_BinTreePrintNodes(root, 0, (void (*)(void *, int))print_node);
 
   printf("String to find ? ");
   scanf("%s", instring);
 
-  node = TreeFindNode(root, instring, (int (*)(const void *, const void *))strcmp);
+  node = Util_BinTreeFindNode(root, instring, (int (*)(const void *, const void *))strcmp);
 
   if(node)
   {

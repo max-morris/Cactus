@@ -11,17 +11,17 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "Hash.h"
+#include "util_Hash.h"
 
 static char *rcsid = "$Header$";
 
 
 /* Local routine prototypes */
-static t_hash_entry *HashFind(t_hash *hash, 
-                              unsigned int klen, 
-                              char *key, 
-                              unsigned int hashval);
-static int HashRehash(t_hash *hash);
+static iHashEntry *HashFind(uHash *hash, 
+			    unsigned int klen, 
+			    char *key, 
+			    unsigned int hashval);
+static int HashRehash(uHash *hash);
 
 /********************************************************************
  ********************    External Routines   ************************
@@ -29,7 +29,7 @@ static int HashRehash(t_hash *hash);
 
 
  /*@@
-   @routine    HashCreate
+   @routine    Util_HashCreate
    @date       Wed Oct 27 23:31:11 1999
    @author     Tom Goodale
    @desc 
@@ -42,11 +42,11 @@ static int HashRehash(t_hash *hash);
    @endhistory 
 
 @@*/
-t_hash *HashCreate(unsigned int initial_size)
+uHash *HashCreate(unsigned int initial_size)
 {
-  t_hash *retval;
+  uHash *retval;
 
-  retval = (t_hash *)malloc(sizeof(t_hash));
+  retval = (uHash *)malloc(sizeof(uHash));
 
   if(retval)
   {
@@ -60,7 +60,7 @@ t_hash *HashCreate(unsigned int initial_size)
     retval->fill = 0;
     retval->keys = 0;
 
-    retval->array = (t_hash_entry **)calloc(sizeof(t_hash_entry *), retval->size);
+    retval->array = (iHashEntry **)calloc(sizeof(iHashEntry *), retval->size);
 
     if(! retval->array)
     {
@@ -75,7 +75,7 @@ t_hash *HashCreate(unsigned int initial_size)
 }
 
  /*@@
-   @routine    HashDestroy
+   @routine    Util_HashDestroy
    @date       Wed Oct 27 23:32:12 1999
    @author     Tom Goodale
    @desc 
@@ -88,12 +88,12 @@ t_hash *HashCreate(unsigned int initial_size)
    @endhistory 
 
 @@*/
-void HashDestroy(t_hash *hash)
+int Util_HashDestroy(uHash *hash)
 {
   unsigned int size;
 
-  t_hash_entry **array;
-  t_hash_entry *entry;
+  iHashEntry **array;
+  iHashEntry *entry;
 
   unsigned int location;
 
@@ -109,10 +109,11 @@ void HashDestroy(t_hash *hash)
     }
   }
   free(hash->array);
+  return 0;
 }
 
  /*@@
-   @routine    HashStore
+   @routine    Util_HashStore
    @date       Wed Oct 27 23:44:14 1999
    @author     Tom Goodale
    @desc 
@@ -125,14 +126,14 @@ void HashDestroy(t_hash *hash)
    @endhistory 
 
 @@*/
-int HashStore(t_hash *hash, 
+int Util_HashStore(uHash *hash, 
               unsigned int klen, 
               char *key, 
               unsigned int hashval,
               void *data)
 {
   int retval;
-  t_hash_entry *entry;
+  iHashEntry *entry;
 
   entry = HashFind(hash, klen, key, hashval);
 
@@ -143,14 +144,14 @@ int HashStore(t_hash *hash,
   }
   else
   {
-    retval = HashAdd(hash, klen, key, hashval, data);
+    retval = Util_HashAdd(hash, klen, key, hashval, data);
   }
 
   return retval;
 }
 
  /*@@
-   @routine    HashAdd
+   @routine    Util_HashAdd
    @date       Wed Oct 27 23:32:40 1999
    @author     Tom Goodale
    @desc 
@@ -163,15 +164,15 @@ int HashStore(t_hash *hash,
    @endhistory 
 
 @@*/
-int HashAdd(t_hash *hash, 
+int Util_HashAdd(uHash *hash, 
             unsigned int klen, 
             char *key, 
             unsigned int hashval, 
             void *data)
 {
   int retval;
-  t_hash_entry *entry;
-  t_hash_entry *lastentry;
+  iHashEntry *entry;
+  iHashEntry *lastentry;
   unsigned int location;
   int duplicate;
   int i;
@@ -179,7 +180,7 @@ int HashAdd(t_hash *hash,
   /* Calculate the hash value if necessary */
   if(!hashval)
   {
-    hashval = HashHash(klen, key);
+    hashval = Util_HashHash(klen, key);
   }
 
   /* Get its location in the table */
@@ -211,7 +212,7 @@ int HashAdd(t_hash *hash,
   if(!duplicate)
   {
     /* Create a new entry */
-    entry = (t_hash_entry *)malloc(sizeof(t_hash_entry));
+    entry = (iHashEntry *)malloc(sizeof(iHashEntry));
 
     if(entry)
     {
@@ -269,7 +270,7 @@ int HashAdd(t_hash *hash,
 }
 
  /*@@
-   @routine    HashDelete
+   @routine    Util_HashDelete
    @date       Wed Oct 27 23:33:42 1999
    @author     Tom Goodale
    @desc 
@@ -282,18 +283,18 @@ int HashAdd(t_hash *hash,
    @endhistory 
 
 @@*/
-int HashDelete(t_hash *hash, 
+int Util_HashDelete(uHash *hash, 
                unsigned int klen, 
                char *key, 
                unsigned int hashval)
 {
-  t_hash_entry *entry;
+  iHashEntry *entry;
   unsigned int location;
 
   /* Calculate the hash value if necessary */
   if(!hashval)
   {
-    hashval = HashHash(klen, key);
+    hashval = Util_HashHash(klen, key);
   }
 
   /* Get its location in the table */
@@ -345,7 +346,7 @@ int HashDelete(t_hash *hash,
 }
 
  /*@@
-   @routine    HashGet
+   @routine    Util_HashData
    @date       Wed Oct 27 23:35:17 1999
    @author     Tom Goodale
    @desc 
@@ -358,13 +359,13 @@ int HashDelete(t_hash *hash,
    @endhistory 
 
 @@*/
-void *HashGet(t_hash *hash, 
+void *Util_HashData(uHash *hash, 
               unsigned int klen, 
               char *key, 
               unsigned int hashval)
 {
   void *retval;
-  t_hash_entry *entry;
+  iHashEntry *entry;
 
   entry = HashFind(hash, klen, key, hashval);
 
@@ -383,11 +384,11 @@ void *HashGet(t_hash *hash,
 
 
  /*@@
-   @routine    HashHash
+   @routine    Util_HashHash
    @date       Wed Oct 27 22:15:17 1999
    @author     Tom Goodale
    @desc 
-   Hashing function.  I took this from the book 
+   Util_Hashing function.  I took this from the book 
       'Advanced Perl Programming' 
    published by O'Reilly, and it is apparently the
    algorithm used in Perl, and that is GPL.
@@ -399,7 +400,7 @@ void *HashGet(t_hash *hash,
    @endhistory 
 
 @@*/
-unsigned int HashHash(unsigned int klen, 
+unsigned int Util_HashHash(unsigned int klen, 
                       char *key)
 {
   unsigned int hash;
@@ -442,18 +443,18 @@ unsigned int HashHash(unsigned int klen,
    @endhistory 
 
 @@*/
-static t_hash_entry *HashFind(t_hash *hash, 
-                              unsigned int klen, 
-                              char *key, 
-                              unsigned int hashval)
+static iHashEntry *HashFind(uHash *hash, 
+			    unsigned int klen, 
+			    char *key, 
+			    unsigned int hashval)
 {
-  t_hash_entry *entry;
+  iHashEntry *entry;
   unsigned int location;
 
   /* Calculate the hash value if necessary */
   if(!hashval)
   {
-    hashval = HashHash(klen, key);
+    hashval = Util_HashHash(klen, key);
   }
 
   /* Get its location in the table */
@@ -489,7 +490,7 @@ static t_hash_entry *HashFind(t_hash *hash,
    @endhistory 
 
 @@*/
-static int HashRehash(t_hash *hash)
+static int HashRehash(uHash *hash)
 {
   int retval;
 
@@ -501,18 +502,18 @@ static int HashRehash(t_hash *hash)
 
   unsigned int new_fill;
 
-  t_hash_entry **oldarray;
-  t_hash_entry **newarray;
+  iHashEntry **oldarray;
+  iHashEntry **newarray;
 
-  t_hash_entry *entry;
-  t_hash_entry *next;
-  t_hash_entry *entry2;
+  iHashEntry *entry;
+  iHashEntry *next;
+  iHashEntry *entry2;
 
   if(hash->keys > hash->fill)
   {
     old_size = hash->size;
     new_size = hash->size*2;
-    newarray = (t_hash_entry **)calloc(sizeof(t_hash_entry *), new_size);
+    newarray = (iHashEntry **)calloc(sizeof(iHashEntry *), new_size);
     oldarray = hash->array;
     new_fill = 0;
 
@@ -578,11 +579,11 @@ static int HashRehash(t_hash *hash)
  *********************     Test Routines    *************************
  ********************************************************************/
   
-#ifdef TEST_HASH
+#ifdef TESUHASH
 
 int main(int argc, char *argv[])
 {
-  t_hash *hash;
+  uHash *hash;
   char key[40];
 
   char *value;
@@ -600,7 +601,7 @@ int main(int argc, char *argv[])
     case 2: n_strings    = atoi(argv[1]);
   } 
 
-  hash = HashCreate(initial_size);
+  hash = Util_HashCreate(initial_size);
 
   for(i = 0; i < n_strings; i++)
   {
@@ -612,27 +613,27 @@ int main(int argc, char *argv[])
 
     printf("Adding key %d\n", i);
 
-    HashStore(hash, strlen(key), key, 0, (void *)value);
+    Util_HashStore(hash, strlen(key), key, 0, (void *)value);
   }
 
   for(i = 0; i < n_strings; i++)
   {
     sprintf(key, "key_%d", i);
 
-    printf("Key %s -> '%s'\n", key, (char *)HashGet(hash, strlen(key), key, 0));
+    printf("Key %s -> '%s'\n", key, (char *)Util_HashData(hash, strlen(key), key, 0));
   }
 
   for(i = 0; i < n_strings; i++)
   {
     sprintf(key, "key_%d", i);
-    HashDelete(hash, strlen(key), key, 0);
+    Util_HashDelete(hash, strlen(key), key, 0);
   }
 
   for(i = 0; i < n_strings; i++)
   {
     sprintf(key, "key_%d", i);
 
-    value = (char *)HashGet(hash, strlen(key), key, 0);
+    value = (char *)Util_HashData(hash, strlen(key), key, 0);
 
     if(value)
     {
