@@ -81,26 +81,26 @@ typedef struct PARAMTREENODE
 } t_paramtreenode;
 
 static t_param *ParameterFind(const char *name, 
-			      const char *thorn, 
-			      int scope);
+                              const char *thorn, 
+                              int scope);
 
 static t_param *ParameterNew(const char *thorn,
-			     const char *name,
-			     const char *type,
-			     const char *scope,
-			     int        steerable,
-			     const char *description,
-			     const char *defval,
-			     void       *data);
+                             const char *name,
+                             const char *type,
+                             const char *scope,
+                             int        steerable,
+                             const char *description,
+                             const char *defval,
+                             void       *data);
 
 static int ParameterCheck(const char *thorn,
-			  const char *name,
-			  const char *type,
-			  const char *scope,
-			  int        steerable,
-			  const char *description,
-			  const char *defval,
-			  void       *data);
+                          const char *name,
+                          const char *type,
+                          const char *scope,
+                          int        steerable,
+                          const char *description,
+                          const char *defval,
+                          void       *data);
 
 static void *ParameterGetSimple (t_param *param, 
                                  int *type);
@@ -214,15 +214,15 @@ static t_sktree *paramtree=NULL;
 
 @@*/
 int CCTKi_ParameterCreate(const char *name,
-			  const char *thorn,
-			  const char *type,
-			  const char *scope,
-			  int        steerable,
-			  const char *description,
-			  const char *defval,
-			  void       *data,
-			  int n_ranges,
-			  ...)
+                          const char *thorn,
+                          const char *type,
+                          const char *scope,
+                          int        steerable,
+                          const char *description,
+                          const char *defval,
+                          void       *data,
+                          int n_ranges,
+                          ...)
 {
   int retval;
   int iscope;
@@ -324,10 +324,10 @@ int CCTKi_ParameterCreate(const char *name,
 
 @@*/
 int CCTKi_ParameterAddRange(const char *implementation, 
-			    const char *name,
-			    const char *range_origin,
-			    const char *range,
-			    const char *range_description)
+                            const char *name,
+                            const char *range_origin,
+                            const char *range,
+                            const char *range_description)
 {
   int retval;
   t_param *param;
@@ -414,8 +414,8 @@ int CCTKi_ParameterAddRange(const char *implementation,
 @@*/
 
 int CCTK_ParameterSet(const char *name,
-		      const char *thorn,
-		      const char *value)
+                      const char *thorn,
+                      const char *value)
 {
   int retval;
   t_param *param;
@@ -1489,7 +1489,7 @@ static int ParameterSetKeyword(t_param *param, const char *value)
     char *msg;
     msg = (char *)malloc( 200*sizeof(char) );
     sprintf(msg,"Unable to set keyword %s::%s - %s not in any active range",
-	    param->props->thorn,
+            param->props->thorn,
             param->props->name,
             value);
     CCTK_Warn(0,__LINE__,__FILE__,"Cactus",msg);
@@ -1532,7 +1532,7 @@ static int ParameterSetString(t_param *param, const char *value)
     char *msg;
     msg = (char *)malloc( 200*sizeof(char) );
     sprintf(msg,"Unable to set string %s::%s - %s not in any active range",
-	    param->props->thorn,
+            param->props->thorn,
             param->props->name,
             value);
     CCTK_Warn(0,__LINE__,__FILE__,"Cactus",msg);
@@ -1578,7 +1578,7 @@ static int ParameterSetSentence(t_param *param, const char *value)
     char *msg;
     msg = (char *)malloc( 200*sizeof(char) );
     sprintf(msg,"Unable to set sentance %s::%s - %s not in any active range",
-	    param->props->thorn,
+            param->props->thorn,
             param->props->name,
             value);
     CCTK_Warn(0,__LINE__,__FILE__,"Cactus",msg);
@@ -1627,7 +1627,7 @@ static int ParameterSetInteger(t_param *param, const char *value)
     char *msg;
     msg = (char *)malloc( 200*sizeof(char) );
     sprintf(msg,"Unable to set integer %s::%s - %s not in any active range",
-	    param->props->thorn,
+            param->props->thorn,
             param->props->name,
             value);
     CCTK_Warn(0,__LINE__,__FILE__,"Cactus",msg);
@@ -1686,7 +1686,7 @@ static int ParameterSetReal(t_param *param, const char *value)
     char *msg;
     msg = (char *)malloc( 200*sizeof(char) );
     sprintf(msg,"Unable to set real %s::%s - %s not in any active range",
-	    param->props->thorn,
+            param->props->thorn,
             param->props->name,
             value);
     CCTK_Warn(0,__LINE__,__FILE__,"Cactus",msg);
@@ -1709,7 +1709,7 @@ static int ParameterSetBoolean(t_param *param, const char *value)
     char *msg;
     msg = (char *)malloc( 200*sizeof(char) );
     sprintf(msg,"Unable to set boolean %s::%s - %s not recognised",
-	    param->props->thorn,
+            param->props->thorn,
             param->props->name,
             value);
     CCTK_Warn(0,__LINE__,__FILE__,"Cactus",msg);
@@ -1732,10 +1732,10 @@ struct
 int main(void)
 {
   CCTKi_ParameterCreate("a", "thorn1", "imp1", "int", "global", 0,
-			"The a param", "2", &(params.a));
+                        "The a param", "2", &(params.a));
 
   CCTKi_ParameterCreate("foo", "thorn2", "imp2", "keyword", "private", 0,
-			"The foo param", "bingo", &(params.foo));
+                        "The foo param", "bingo", &(params.foo));
 
   printf("Testing thorn,null\n");
 

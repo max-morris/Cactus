@@ -24,14 +24,15 @@ typedef struct
 /* Prototypes */
 
 #ifdef __cplusplus 
-extern "C" {
+extern "C" 
+{
 #endif
 
 #include "cctk_Types.h"
 
 int        CCTK_DecomposeName(const char *fullname, 
-			      char **implementation, 
-			      char **name);
+                              char **implementation, 
+                              char **name);
 
 int        CCTK_FirstVarIndex(const char *group);
 int        CCTK_FirstVarIndexI(int group);
@@ -89,4 +90,4 @@ char      *CCTK_VarTypeName(int vartype);
 #define CCTK_PROTECTED 2
 #define CCTK_PUBLIC    3
 
-#endif
+#endif /* _CCTK_GROUPS_H_ */

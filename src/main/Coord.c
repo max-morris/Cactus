@@ -203,7 +203,7 @@ void FMODIFIER FORTRAN_NAME(CCTK_CoordRegisterI)(int *handle, int *dir, int *ind
    @@*/
 
 int CCTK_CoordRegister(int dir, 
-		       const char *gfname, 
+                       const char *gfname, 
                        const char *coordname)
 {
   
@@ -227,8 +227,8 @@ int CCTK_CoordRegister(int dir,
 }
 
 void FMODIFIER FORTRAN_NAME(CCTK_CoordRegister)(int *handle, 
-						int *dir, 
-						TWO_FORTSTRINGS_ARGS)
+                                                int *dir, 
+                                                TWO_FORTSTRINGS_ARGS)
 {
   TWO_FORTSTRINGS_CREATE(gf,name)
   *handle = CCTK_CoordRegister(*dir, gf, name);
@@ -240,8 +240,8 @@ void FMODIFIER FORTRAN_NAME(CCTK_CoordRegister)(int *handle,
 
 
 int CCTK_CoordRegisterRange(cGH *GH, 
-			    CCTK_REAL min, 
-			    CCTK_REAL max, 
+                            CCTK_REAL min, 
+                            CCTK_REAL max, 
                             const char *coordname)
 {
   coord_range *newguy;
@@ -279,9 +279,9 @@ int CCTK_CoordRegisterRange(cGH *GH,
 }
 
 void FMODIFIER FORTRAN_NAME(CCTK_CoordRegisterRange)(cGH *GH, 
-						     CCTK_REAL *lower, 
-						     CCTK_REAL *upper, 
-						     ONE_FORTSTRING_ARG)
+                                                     CCTK_REAL *lower, 
+                                                     CCTK_REAL *upper, 
+                                                     ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_CREATE(name)
   CCTK_CoordRegisterRange (GH,*lower,*upper,name);
@@ -389,9 +389,9 @@ void FMODIFIER FORTRAN_NAME(CCTK_CoordDir)(int *dir, ONE_FORTSTRING_ARG)
    @@*/
 
 int CCTK_CoordRange(cGH *GH, 
-		    CCTK_REAL *lower, 
-		    CCTK_REAL *upper, 
-		    const char *name)
+                    CCTK_REAL *lower, 
+                    CCTK_REAL *upper, 
+                    const char *name)
 {
   coord_range *curr;
 
@@ -409,7 +409,7 @@ int CCTK_CoordRange(cGH *GH,
 
 #ifdef DEBUG_COORD
       printf("Returning range (%f,%f) for %s (from %x)\n",
-	     *lower,*upper,name,curr);
+             *lower,*upper,name,curr);
 #endif
 
       return 0;
@@ -441,7 +441,7 @@ void FMODIFIER FORTRAN_NAME(CCTK_CoordRange)(int *ierr,
    @author     Gabrielle Allen
    @desc 
                Returns the range of the coordinate on this processor
-	       For now this is done in a straightforward manner, assuming
+               For now this is done in a straightforward manner, assuming
                that a regular grid is used and that the coordinate is a
                Grid function.
    @enddesc 
@@ -461,9 +461,9 @@ void FMODIFIER FORTRAN_NAME(CCTK_CoordRange)(int *ierr,
    @@*/
 
 int CCTK_CoordLocalRange(cGH *GH, 
-			 CCTK_REAL *lower, 
-			 CCTK_REAL *upper, 
-			 const char *name)
+                         CCTK_REAL *lower, 
+                         CCTK_REAL *upper, 
+                         const char *name)
 {
 
   CCTK_REAL global_lower;
@@ -480,10 +480,10 @@ int CCTK_CoordLocalRange(cGH *GH,
 }
   
 void FMODIFIER FORTRAN_NAME(CCTK_CoordLocalRange)(int *ierr, 
-						  cGH *GH, 
-						  CCTK_REAL *lower, 
-						  CCTK_REAL *upper, 
-						  ONE_FORTSTRING_ARG)
+                                                  cGH *GH, 
+                                                  CCTK_REAL *lower, 
+                                                  CCTK_REAL *upper, 
+                                                  ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_CREATE(name)
   *ierr = CCTK_CoordLocalRange (GH,lower,upper,name);
@@ -570,17 +570,17 @@ void FMODIFIER FORTRAN_NAME(CCTK_RegisterCoord)(int *handle, int *dir, TWO_FORTS
 }
 
 int CCTK_RegisterCoordRange(cGH *GH, 
-			    CCTK_REAL min, 
-			    CCTK_REAL max, 
+                            CCTK_REAL min, 
+                            CCTK_REAL max, 
                             const char *coordname)
 {
   return CCTK_CoordRegisterRange(GH,min,max,coordname);
 }
 
 void FMODIFIER FORTRAN_NAME(CCTK_RegisterCoordRange)(cGH *GH, 
-						     CCTK_REAL *lower, 
-						     CCTK_REAL *upper, 
-						     ONE_FORTSTRING_ARG)
+                                                     CCTK_REAL *lower, 
+                                                     CCTK_REAL *upper, 
+                                                     ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_CREATE(name)
   CCTK_RegisterCoordRange (GH,*lower,*upper,name);
@@ -588,7 +588,7 @@ void FMODIFIER FORTRAN_NAME(CCTK_RegisterCoordRange)(cGH *GH,
 }
 
 int CCTK_RegisterCoord(int dir, 
-		       const char *gfname, 
+                       const char *gfname, 
                        const char *coordname)
 {
   return CCTK_CoordRegister(dir,gfname,coordname);

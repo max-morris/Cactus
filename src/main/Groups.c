@@ -89,7 +89,7 @@ int _cctk_one = 1;
 
 static cGroupDefinition *CCTKi_SetupGroup(const char *implementation, 
                                           const char *name, 
-					  int staggercode,
+                                          int staggercode,
                                           int n_variables);
 
 static CCTK_INT **CCTKi_ExtractSize(int dimension, const char *thorn, const char *sizestring);
@@ -196,9 +196,9 @@ void CCTKi_PrintGroupInfo(void) {
   for(group_num = 0; group_num < n_groups; group_num++) {
     printf("GROUP INFO: GrpNo./imp_name/name/stag %d   >%s<   >%s<  %d\n",
            group_num,
-	   groups[group_num].implementation,
-	   groups[group_num].name,
-	   groups[group_num].staggertype);
+           groups[group_num].implementation,
+           groups[group_num].name,
+           groups[group_num].staggertype);
   }
 }
 
@@ -369,7 +369,7 @@ int CCTKi_CreateGroup
 @@*/
 static cGroupDefinition *CCTKi_SetupGroup(const char *implementation, 
                                           const char *name,
-					  int staggercode,
+                                          int staggercode,
                                           int n_variables)
 {
   int *temp_int;
@@ -1058,7 +1058,7 @@ int CCTK_GroupScopeNumber(const char *type)
 }
 
 void  FMODIFIER FORTRAN_NAME(CCTK_GroupScopeNumber)(int *number,
-						    ONE_FORTSTRING_ARG)
+                                                    ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_CREATE(type)
   *number = CCTK_GroupScopeNumber(type);

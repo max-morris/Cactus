@@ -12,7 +12,8 @@
 #define _CCTK_REDUCTION_H_
 
 #ifdef __cplusplus
-extern "C" {
+extern "C" 
+{
 #endif
 
 #define REDUCTION_OPERATOR_REGISTER_ARGLIST  \
@@ -67,22 +68,22 @@ int CCTK_ReduceLocalArray1D (cGH *GH, int proc, int operation_handle,
                             int num_in_array1d, int data_type);
 
 int CCTK_ReduceLocScalar(cGH *GH, int proc, int operation_handle,
-			 void *in_scalar, void *out_scalar, int data_type);
+                         void *in_scalar, void *out_scalar, int data_type);
 
 int CCTK_ReduceLocArrayToArray1D(cGH *GH, int proc, int operation_handle,
-				 void *in_array1d, void *out_array1d, 
-				 int num_in_array1d,
-				 int data_type);
+                                 void *in_array1d, void *out_array1d, 
+                                 int num_in_array1d,
+                                 int data_type);
 
 int CCTK_ReduceLocArrayToArray2D(cGH *GH, int proc, int operation_handle,
-				 void *in_array2d, void *out_array2d, 
-				 int xsize, int ysize,
-				 int data_type);
+                                 void *in_array2d, void *out_array2d, 
+                                 int xsize, int ysize,
+                                 int data_type);
 
 int CCTK_ReduceLocArrayToArray3D(cGH *GH, int proc, int operation_handle,
-				 void *in_array3d, void *out_array3d, 
-				 int xsize, int  ysize, int zsize,
-				 int data_type);
+                                 void *in_array3d, void *out_array3d, 
+                                 int xsize, int  ysize, int zsize,
+                                 int data_type);
 
 
 int CCTK_ReduceArray(cGH *GH,
@@ -100,4 +101,4 @@ int CCTK_ReduceArray(cGH *GH,
 }
 #endif
 
-#endif
+#endif /* _CCTK_REDUCTION_H_ */

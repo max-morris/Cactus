@@ -12,16 +12,17 @@
 #define _CCTKI_STAGGER_H_
 
 #ifdef __cplusplus
-extern "C" {
+extern "C" 
+{
 #endif
 
 int CCTKi_ParseStaggerString(int dim,  
-			     const char *imp, 
-			     const char *gname,  
-			     const char *stype); 
+                             const char *imp, 
+                             const char *gname,  
+                             const char *stype); 
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif
+#endif /* _CCTKI_STAGGER_H_ */

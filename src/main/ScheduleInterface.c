@@ -1,4 +1,4 @@
- /*@@
+/*@@
    @file      ScheduleInterface.c
    @date      Thu Sep 16 14:06:21 1999
    @author    Tom Goodale
@@ -213,7 +213,7 @@ int CCTK_CallFunction(void *function,
   return 0;
 }
 
- /*@@
+/*@@
    @routine    CCTKi_ScheduleFunction
    @date       Thu Sep 16 18:19:01 1999
    @author     Tom Goodale
@@ -228,20 +228,20 @@ int CCTK_CallFunction(void *function,
 
 @@*/
 int CCTKi_ScheduleFunction(void *function,
-			   const char *name,
-			   const char *thorn,
-			   const char *implementation,
-			   const char *description,
-			   const char *where,
-			   const char *language,
-			   int n_mem_groups,
-			   int n_comm_groups,
-			   int n_trigger_groups,
-			   int n_before,
-			   int n_after,
-			   int n_while,
-			   ...
-			   )
+                           const char *name,
+                           const char *thorn,
+                           const char *implementation,
+                           const char *description,
+                           const char *where,
+                           const char *language,
+                           int n_mem_groups,
+                           int n_comm_groups,
+                           int n_trigger_groups,
+                           int n_before,
+                           int n_after,
+                           int n_while,
+                           ...
+                           )
 {
   int retcode;
   t_attribute *attribute;
@@ -276,7 +276,7 @@ int CCTKi_ScheduleFunction(void *function,
   return retcode;
 }
 
- /*@@
+/*@@
    @routine    CCTKi_ScheduleGroup
    @date       Thu Sep 16 18:19:18 1999
    @author     Tom Goodale
@@ -291,18 +291,18 @@ int CCTKi_ScheduleFunction(void *function,
 
 @@*/
 int CCTKi_ScheduleGroup(const char *name,
-			const char *thorn,
-			const char *implementation,
-			const char *description,
-			const char *where,
-			int n_mem_groups,
-			int n_comm_groups,
-			int n_trigger_groups,
-			int n_before,
-			int n_after,
-			int n_while,
-			...
-			)
+                        const char *thorn,
+                        const char *implementation,
+                        const char *description,
+                        const char *where,
+                        int n_mem_groups,
+                        int n_comm_groups,
+                        int n_trigger_groups,
+                        int n_before,
+                        int n_after,
+                        int n_while,
+                        ...
+                        )
 {
   int retcode;
   t_attribute *attribute;
@@ -337,7 +337,7 @@ int CCTKi_ScheduleGroup(const char *name,
 }
 
 
- /*@@
+/*@@
    @routine    CCTKi_ScheduleGroupStorage
    @date       Fri Sep 17 18:55:59 1999
    @author     Tom Goodale
@@ -378,7 +378,7 @@ int CCTKi_ScheduleGroupStorage(const char *group)
 }
 
 
- /*@@
+/*@@
    @routine    CCTKi_ScheduleGroupComm
    @date       Fri Sep 17 18:55:59 1999
    @author     Tom Goodale
@@ -419,7 +419,7 @@ int CCTKi_ScheduleGroupComm(const char *group)
 }
 
 
- /*@@
+/*@@
    @routine    CCTKi_ScheduleTraverse
    @date       Fri Sep 17 21:52:44 1999
    @author     Tom Goodale
@@ -435,8 +435,8 @@ int CCTKi_ScheduleGroupComm(const char *group)
 @@*/
 
 int CCTKi_ScheduleTraverse(const char *where, 
-			   void *GH,   
-			   int (*CallFunction)(void *, cFunctionData *, void *))
+                           void *GH,   
+                           int (*CallFunction)(void *, cFunctionData *, void *))
 {
   t_sched_data data;
 
@@ -479,12 +479,12 @@ int CCTKi_ScheduleTraverse(const char *where,
      (int  (*)(int, char **, void *, void *))CCTKi_ScheduleCallWhile, 
      (int (*)(void *, void *, void *))       calling_function, 
      (void *)&data
-    );
+     );
 
   return 0;
 }
 
- /*@@
+/*@@
    @routine    CCTKi_ScheduleGHInit
    @date       Fri Sep 17 21:25:13 1999
    @author     Tom Goodale
@@ -515,7 +515,7 @@ int CCTKi_ScheduleGHInit(void *GH)
   return 0;
 }
 
- /*@@
+/*@@
    @routine    CCTK_SchedulePrint
    @date       Fri Sep 17 21:52:44 1999
    @author     Tom Goodale
@@ -605,7 +605,7 @@ int CCTK_SchedulePrintTimes(const char *where)
   return 0;
 }
 
- /*@@
+/*@@
    @routine    CCTK_TranslateLanguage
    @date       Thu Sep 16 18:18:31 1999
    @author     Tom Goodale
@@ -730,7 +730,7 @@ static t_attribute *CreateAttribute(const char *description,
   return this;
 }
 
- /*@@
+/*@@
    @routine    CreateModifier
    @date       Thu Sep 16 18:23:13 1999
    @author     Tom Goodale
@@ -758,7 +758,7 @@ static t_sched_modifier *CreateModifiers(int n_before,
   return modifier;
 }
 
- /*@@
+/*@@
    @routine    CreateGroupIndexList
    @date       Fri Sep 17 21:51:51 1999
    @author     Tom Goodale
@@ -788,7 +788,7 @@ static int CreateGroupIndexList(int n_items, int *array, va_list *ap)
   return 0;
 }
 
- /*@@
+/*@@
    @routine    CreateTypedModifier
    @date       Fri Sep 17 21:50:59 1999
    @author     Tom Goodale
@@ -821,7 +821,7 @@ static t_sched_modifier *CreateTypedModifier(t_sched_modifier *modifier,
   return modifier;  
 }
 
- /*@@
+/*@@
    @routine    TranslateFunctionType
    @date       Mon Jan 24 16:52:06 2000
    @author     Tom Goodale
@@ -855,7 +855,7 @@ static cFunctionType TranslateFunctionType(const char *where)
   return retcode;
 }
 
- /*@@
+/*@@
    @routine    SchedulePrint
    @date       Sun Sep 19 13:31:23 1999
    @author     Tom Goodale
@@ -889,7 +889,7 @@ static int SchedulePrint(const char *where)
        (int  (*)(int, char **, void *, void *))CCTKi_SchedulePrintWhile, 
        (int (*)(void *, void *, void *))       CCTKi_SchedulePrintFunction, 
        (void *)&data
-      );
+       );
   }
   else
   {
@@ -899,7 +899,7 @@ static int SchedulePrint(const char *where)
   return retcode;
 }
 
- /*@@
+/*@@
    @routine    SchedulePrintTimes
    @date       Fri Oct 22 12:35:06 1999
    @author     Tom Goodale
@@ -927,7 +927,7 @@ static int SchedulePrintTimes(const char *where, t_sched_data *data)
        (int  (*)(int, char **, void *, void *))CCTKi_SchedulePrintTimesWhile, 
        (int (*)(void *, void *, void *))       CCTKi_SchedulePrintTimesFunction, 
        (void *)data
-      );
+       );
   }
   else
   {
@@ -963,7 +963,7 @@ static int CCTKi_SchedulePrintEntry(t_attribute *attribute,
   return 1;
 }
 
- /*@@
+/*@@
    @routine    CCTKi_SchedulePrintExit
    @date       Sun Sep 19 13:31:23 1999
    @author     Tom Goodale
@@ -984,7 +984,7 @@ static int CCTKi_SchedulePrintExit(t_attribute *attribute,
   return 1;
 }
 
- /*@@
+/*@@
    @routine    CCTKi_SchedulePrintWhile
    @date       Sun Sep 19 13:31:23 1999
    @author     Tom Goodale
@@ -1035,7 +1035,7 @@ static int CCTKi_SchedulePrintWhile(int n_whiles,
   return data->whiling;
 }
 
- /*@@
+/*@@
    @routine    CCTKi_SchedulePrintFunction
    @date       Sun Sep 19 13:36:25 1999
    @author     Tom Goodale
@@ -1137,7 +1137,7 @@ static int CCTKi_ScheduleCallEntry(t_attribute *attribute,
   return go;
 }
 
- /*@@
+/*@@
    @routine    CCTKi_ScheduleCallExit
    @date       Sun Sep 19 13:25:24 1999
    @author     Tom Goodale
@@ -1192,7 +1192,7 @@ static int CCTKi_ScheduleCallExit(t_attribute *attribute,
   return 1;
 }
 
- /*@@
+/*@@
    @routine    CCTKi_ScheduleCallWhile
    @date       Sun Sep 19 13:27:53 1999
    @author     Tom Goodale
@@ -1225,7 +1225,7 @@ static int CCTKi_ScheduleCallWhile(int n_whiles,
   return retcode;
 }
 
- /*@@
+/*@@
    @routine    CCTKi_ScheduleCallFunction
    @date       Sun Sep 19 13:29:14 1999
    @author     Tom Goodale
@@ -1335,7 +1335,7 @@ static int CCTKi_SchedulePrintTimesEntry(t_attribute *attribute,
   return 1;
 }
 
- /*@@
+/*@@
    @routine    CCTKi_SchedulePrintTimesExit
    @date       Fri Oct 22 12:26:26 1999
    @author     Tom Goodale
@@ -1356,7 +1356,7 @@ static int CCTKi_SchedulePrintTimesExit(t_attribute *attribute,
   return 1;
 }
 
- /*@@
+/*@@
    @routine    CCTKi_SchedulePrintTimesWhile
    @date       Fri Oct 22 12:26:26 1999
    @author     Tom Goodale
@@ -1409,7 +1409,7 @@ static int CCTKi_SchedulePrintTimesWhile(int n_whiles,
   return data->whiling;
 }
 
- /*@@
+/*@@
    @routine    CCTKi_SchedulePrintTimesFunction
    @date       Fri Oct 22 12:26:26 1999
    @author     Tom Goodale
@@ -1472,8 +1472,8 @@ static void CCTKi_SchedulePrintTimerInfo(t_TimerInfo *info)
         printf("\t%ld", info->vals[i].val.l); break;
       case val_double:
         printf("\t%g", info->vals[i].val.d); break;
-    default:
-      printf("Unknown value type at line %d of %s\n", __LINE__, __FILE__);
+      default:
+        printf("Unknown value type at line %d of %s\n", __LINE__, __FILE__);
     }
   }
 

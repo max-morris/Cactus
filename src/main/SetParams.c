@@ -84,7 +84,7 @@ int CCTKi_SetParameter(const char *parameter, const char *value)
     if(n_errors)
     {
       CCTK_Warn(0,__LINE__,__FILE__,"Cactus",
-		"Errors while activating thorns\n");
+                "Errors while activating thorns\n");
     }
   }
   else

@@ -280,7 +280,7 @@ int CCTKi_SetupGHExtensions(tFleshConfig *config,
                                                     convergence_level, 
                                                     GH);
 #ifdef DEBUG
-	printf("CCTKi_SetupGHExtensions: Set up extension for handle %d\n",handle);
+        printf("CCTKi_SetupGHExtensions: Set up extension for handle %d\n",handle);
 #endif
       }
       return_code = 0;

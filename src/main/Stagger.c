@@ -226,17 +226,17 @@ int CCTK_DirStaggerCodeName(int dir, const char *stype) {
   }
 
   switch (hs[dir])
-    {
+  {
     case 'M': scode = 0; break;
     case 'C': scode = 1; break;
     case 'P': scode = 2; break;
     default:
-        info   = (char*)malloc (256*sizeof(char));
-        sprintf(info,"Unknown stagger type: >%s< \n", hs);
-        CCTK_Warn(1,__LINE__,__FILE__,"Cactus",info);
-        free(info);
-        return(-1);
-    }
+      info   = (char*)malloc (256*sizeof(char));
+      sprintf(info,"Unknown stagger type: >%s< \n", hs);
+      CCTK_Warn(1,__LINE__,__FILE__,"Cactus",info);
+      free(info);
+      return(-1);
+  }
   return(scode);
 }
 
@@ -244,8 +244,10 @@ void FMODIFIER FORTRAN_NAME(CCTK_DirStaggerCodeName)
      (int *ierr, int *dsc, int *dir, ONE_FORTSTRING_ARG) 
 {
   ONE_FORTSTRING_CREATE(sname);
+
   *ierr= 0;
   *dsc = CCTK_DirStaggerCodeName((*dir)-1,sname);
+
   if ((*dsc)>=0) 
   {
     (*dsc)++;
@@ -269,9 +271,9 @@ void FMODIFIER FORTRAN_NAME(CCTK_DirStaggerCodeName)
 @@*/
  
 int CCTKi_ParseStaggerString(int dim,
-			     const char *imp, 
-			     const char *gname,
-			     const char *stype) 
+                             const char *imp, 
+                             const char *gname,
+                             const char *stype) 
 {
   int i,m;
   int base  = 1;

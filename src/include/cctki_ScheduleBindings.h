@@ -51,8 +51,8 @@ int CCTKi_ScheduleGroupStorage(const char *group);
 int CCTKi_ScheduleGroupComm(const char *group);
 
 int CCTKi_ScheduleTraverse(const char *where, 
-			   void *GH,   
-			   int (*CallFunction)(void *, cFunctionData *, void *));
+                           void *GH,   
+                           int (*CallFunction)(void *, cFunctionData *, void *));
 
 int CCTKi_ScheduleGHInit(void *GH);
 

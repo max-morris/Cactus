@@ -1,4 +1,4 @@
- /*@@
+/*@@
    @file      WarnLevel.c
    @date      Wed Feb 17 00:30:09 1999
    @author    Tom Goodale
@@ -101,7 +101,7 @@ int CCTKi_SetWarnLevel(int level)
   return retval;
 }
 
- /*@@
+/*@@
    @routine    CCTK_Warn
    @date       Wed Feb 17 00:45:07 1999
    @author     Tom Goodale
@@ -125,9 +125,9 @@ int CCTK_Warn(int level, int line, const char *file, const char *thorn, const ch
     if (cctk_full_warnings)
     {
       fprintf(stderr, "WARNING level %d in thorn %s \n  (line %d of %s): \n", 
-	      level, thorn, line, file);
+              level, thorn, line, file);
       fprintf(stderr, "  -> %s\n",message);
-      fflush(stderr);
+        fflush(stderr);
     }
     else
     {
@@ -150,6 +150,7 @@ int CCTK_Warn(int level, int line, const char *file, const char *thorn, const ch
 void FMODIFIER FORTRAN_NAME(CCTK_Warn)(int *level, int *line, THREE_FORTSTRINGS_ARGS)
 {
   THREE_FORTSTRINGS_CREATE(file,thorn,message)
+
   CCTK_Warn(*level,*line,file,thorn,message);
   free(thorn);
   free(message); 
@@ -175,8 +176,8 @@ void FMODIFIER FORTRAN_NAME(CCTK_Warn)(int *level, int *line, THREE_FORTSTRINGS_
 @@*/
 
 void CCTKi_ExpectError(int in, int err, int warnonerr, int line,
-		       const char *file, const char *thorn,
-		       const char *message) 
+                       const char *file, const char *thorn,
+                       const char *message) 
 {
   if (in==err) CCTK_Warn(warnonerr, line, file, thorn, message);
 }
@@ -186,12 +187,15 @@ void FMODIFIER FORTRAN_NAME(CCTKi_ExpectError)
      (int *in, int *err, int *warnonerr, int *line, THREE_FORTSTRINGS_ARGS)
 {
   THREE_FORTSTRINGS_CREATE(file,thorn,message)
+
   CCTKi_ExpectError(*in, *err, *warnonerr, *line,
-		    file,thorn,message);
+                    file,thorn,message);
   free(file);
   free(thorn);
   free(message);
 }
+
+
 /*@@
    @routine    CCTKi_ExpectOK
    @date       Thanksgiving 99
@@ -210,8 +214,8 @@ void FMODIFIER FORTRAN_NAME(CCTKi_ExpectError)
 @@*/
 
 void CCTKi_ExpectOK(int in, int ok, int warnonerr, int line,
-		    const char *file, const char *thorn,
-		    const char *message) 
+                    const char *file, const char *thorn,
+                    const char *message) 
 {
   if (in!=ok) CCTK_Warn(warnonerr, line, file, thorn, message);
 }
@@ -220,8 +224,10 @@ void FMODIFIER FORTRAN_NAME(CCTKi_ExpectOK)
      (int *in, int *ok, int *warnonerr, int *line, THREE_FORTSTRINGS_ARGS)
 {
   THREE_FORTSTRINGS_CREATE(file,thorn,message)
+
   CCTKi_ExpectOK(*in, *ok, *warnonerr, *line,
-		 file,thorn,message);
+                   file,thorn,message);
+
   free(file);
   free(thorn);
   free(message);
@@ -257,7 +263,7 @@ int CCTK_VWarn(int level, int line, const char *file, const char *thorn, const c
     if (cctk_full_warnings)
     {
       fprintf(stderr, "WARNING level %d in thorn %s \n  (line %d of %s): \n", 
-	      level, thorn, line, file);
+              level, thorn, line, file);
       fprintf(stderr, "  -> ");
       vfprintf(stderr, format, ap);
       fprintf(stderr, "\n");
@@ -324,6 +330,7 @@ int CCTK_ParamWarn(const char *thorn, const char *message)
 void FMODIFIER FORTRAN_NAME(CCTK_ParamWarn)(TWO_FORTSTRINGS_ARGS)
 {
   TWO_FORTSTRINGS_CREATE(thorn,message)
+
   CCTK_ParamWarn(thorn,message);
   free(thorn);
   free(message); 
@@ -331,7 +338,7 @@ void FMODIFIER FORTRAN_NAME(CCTK_ParamWarn)(TWO_FORTSTRINGS_ARGS)
 
 
 
- /*@@
+/*@@
    @routine    CCTK_Info
    @date       Tue Mar 30 1999
    @author     Gabrielle Allen
@@ -355,13 +362,15 @@ int CCTK_Info(const char *thorn, const char *message)
 void FMODIFIER FORTRAN_NAME(CCTK_Info)(TWO_FORTSTRINGS_ARGS)
 {
   TWO_FORTSTRINGS_CREATE(thorn,message)
+    
+
   CCTK_Info(thorn,message);
   free(thorn);
   free(message); 
 }
 
 
- /*@@
+/*@@
    @routine    CCTKi_SetErrorLevel
    @date       Wed Feb 17 00:48:02 1999
    @author     Tom Goodale
@@ -416,7 +425,7 @@ int CCTKi_SetErrorLevel(int level)
   return retval;
 }
 
- /*@@
+/*@@
    @routine    CCTKi_FinaliseParamWarn
    @date       June 1999
    @author     Gabrielle Allen
@@ -447,9 +456,13 @@ void CCTKi_FinaliseParamWarn(void)
     else
     {
       if (param_errors==1)
+      {
         fprintf(stderr, "\nThere was 1 parameter warning\n\n");
+      }
       else
+      {
         fprintf(stderr, "\nThere were %d parameter warnings\n\n",param_errors);
+      }
       fflush(stderr);
     }
 
@@ -459,7 +472,7 @@ void CCTKi_FinaliseParamWarn(void)
 
 }
 
- /*@@
+/*@@
    @routine    CCTK_MessageFormat
    @date       Mon Jul 26 19:51:26 1999
    @author     Tom Goodale
@@ -523,7 +536,7 @@ void FMODIFIER FORTRAN_NAME(CCTK_VInfo)(int format_number, ...)
 
 }
 
- /*@@
+/*@@
    @routine    CCTK_NotYetImplemented
    @routine    CCTKi_NotYetImplemented
    @date       July 1999
@@ -552,6 +565,7 @@ void CCTKi_NotYetImplemented(const char *message)
 void FMODIFIER FORTRAN_NAME(CCTKi_NotYetImplemented)(ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_CREATE(message)
+
   CCTKi_NotYetImplemented(message);
   free(message); 
 }
