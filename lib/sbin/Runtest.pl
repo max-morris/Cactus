@@ -371,6 +371,10 @@ sub runtest {
 # This is the new comparison (subtract last two numbers)
                 ($t1,$v1) = split(' ', $nline);
                 ($t2,$v2) = split(' ', $oline);
+# Make sure that floating point numbers have 'e' if exponential.
+                $v1 =~ s/[dD]/e/; 
+                $v2 =~ s/[dD]/e/; 
+
                 $vdiff = abs($v1 - $v2);
                 if ($vdiff > 0) {
 
