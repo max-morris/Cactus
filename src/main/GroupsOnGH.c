@@ -278,10 +278,20 @@ void *CCTK_VarDataPtr(const cGH *GH, int timelevel, const char *varname)
 
 void *CCTK_VarDataPtrI(const cGH *GH, int timelevel, int vari)
 {
+  void *retval;
+
   if (vari < 0)
+  {  
     CCTK_Warn(1,__LINE__,__FILE__,"Cactus",
-              "CCTK_VarPtrDataI: calling CCTK_VarDataPtrI with negative index");
-  return GH->data[vari][timelevel];
+              "CCTK_VarPtrDataI: Calling CCTK_VarDataPtrI with negative index");
+    retval = NULL;
+  }
+  else
+  {
+    retval = GH->data[vari][timelevel];
+  }
+
+  return retval;
 }
 
  /*@@
