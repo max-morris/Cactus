@@ -75,13 +75,11 @@ int cctki_paramcheck_nprocs;
    @author     Gabrielle Allen
    @desc
                Tests if a given thorn has been compiled.
-               At the moment the given thorn must be in the format
-               <arrangement name>/<thorn name>
    @enddesc
    @calls      CCTK_IsThornCompiled
 
    @var        argument
-   @vdesc      option argument
+   @vdesc      thorn name
    @vtype      const char *
    @vio        in
    @endvar
