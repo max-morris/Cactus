@@ -67,10 +67,17 @@ enable inter-processor communication of data from processor
 boundaries.  In single processor runs there are no ghost zones.
 Ghost zones should not be confused with symmetry or boundary zones.
 \item[{\tt grid array}]
-\item[{\tt grid function}] A {\it grid variable} whose global size is the size of the
-computational grid
-\item[{\tt grid hierarchy}] A computational grid, and the grid variables associated with it.
+  A {\it grid variable} whose global size need not be that of the computational
+  grid; instead, the size is declared explicitly in an \verb|interface.ccl|
+  file.
+\item[{\tt grid function}]
+  A {\it grid variable} whose global size is the size of the
+  computational grid
+\item[{\tt grid hierarchy}]
+  A computational grid, and the grid variables associated with it.
 \item[{\tt grid scalar}]
+  A {\it grid variable\/} which has zero indices,
+  i.e.\hbox{} it's just a number on each processor.
 \item[{\tt grid variable}] Any variable which can be passed between thorns,
 or routines belonging to the same thorn, but passed through the defined
 flesh interface; implicitly implies it is related to the computational
@@ -103,6 +110,31 @@ the outside world.   See Section~\ref{sec:im}.
 \item[{\tt MPI}] Message Passing Interface, an API and software library
   for sending messages between processors in a multiprocessor system.
 \item[{\tt mutual recursion}] See {\it recursion, mutual}.
+\item[{\tt NUL character}] The C programming language uses a ``NUL character''
+  to terminate character strings.  A NUL character has the integer
+  value zero, but it's useful to write it as \verb|'\0'| to emphasize
+  to human readers that this has type \verb|char| rather than \verb|int|.
+\item[{\tt NULL pointer}] C defines a ``NULL pointer'' which is guaranteed not
+  to point to any object.  You get a NULL pointer by converting the integer
+  constant 0 to a pointer type, e.g.\hbox{} \verb|int* ptr = 0;|.  Note
+  that if you have an expression which has the value zero, but which isn't
+  an integer constant, converting this to a pointer type is {\em not\/}
+  guaranteed to give a NULL pointer, e.g.:
+\begin{verbatim}
+int i = 0;
+int* ptr = i;     /* ptr is NOT guaranteed to be a NULL pointer! */
+\end{verbatim}
+
+  Many programmers prefer to use the predefined macro \verb|NULL|
+  (defined in \verb|<stdlib.h>| and \verb|<stdio.h>|) to create NULL
+  pointers, e.g.\hbox{} \verb|int* ptr = NULL;|, to emphasize to
+  human readers that this is a NULL {\em pointer\/} rather than
+  ``just'' the integer zero.
+
+  Note that it is explicitly {\em not\/} defined whether a NULL pointer
+  is represented by a bit pattern of all zero bits -- this varies from
+  system to system, and there are real-world systems where NULL pointers
+  are in fact {\em not\/} represented this way.
 \item[{\tt parameter}] A variable which remains unchanged throughout the execution of a Cactus executable. Parameters all have default values which can be changed in a parameter file.
 \item[{\tt processor topology}]
 \item[{\tt PUGH}] The default parallel driver for Cactus which uses MPI.
