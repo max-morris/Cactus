@@ -108,6 +108,7 @@ void FMODIFIER FORTRAN_NAME(CCTK_DirStaggerCodeVal)
      ( int *dsc, int *dir, int *gsc) 
 {
   *dsc  = CCTK_DirStaggerCodeVal((*dir)-1, *gsc);
+  if ((*dsc)>=0) (*dsc)++;
 }
 
 
@@ -135,12 +136,13 @@ int CCTK_DirStaggerCodeName(int dir, const char *stype) {
   return(scode);
 }
 
-void FMODIFIER FORTRAN_NAME(CCTK_DirStaggerName)
+void FMODIFIER FORTRAN_NAME(CCTK_DirStaggerCodeName)
      (int *ierr, int *dsc, int *dir, ONE_FORTSTRING_ARG) 
 {
   ONE_FORTSTRING_CREATE(sname);
   *ierr= 0;
-  *dsc = CCTK_DirStaggerCodeName(*dir,sname);
+  *dsc = CCTK_DirStaggerCodeName((*dir)-1,sname);
+  if ((*dsc)>=0) (*dsc)++;
   free(sname);
 }
 
