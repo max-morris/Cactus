@@ -45,7 +45,7 @@ CCTK_FILEVERSION (IO_OverloadIO_c)
 #undef OVERLOADABLE
 
  /*@@
-   @routine    SetupIOFunctions
+   @routine    CCTKi_SetupIOFunctions
    @date       Thu Feb  4 09:58:29 1999
    @author     Tom Goodale
    @desc 
@@ -58,7 +58,7 @@ CCTK_FILEVERSION (IO_OverloadIO_c)
    @endhistory 
 
 @@*/
-int SetupIOFunctions(void)
+int CCTKi_SetupIOFunctions(void)
 {
 
 #define OVERLOADABLE(name) OVERLOADABLE_CHECK(name)
