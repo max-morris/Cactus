@@ -394,8 +394,114 @@ structures for the communication.
 
 
 
-\chapter{Adding an IO layer}
+\chapter{Adding an I/O Method}
 \label{chap:io_methods}
+%
+The flesh does not implement output for grid variables and other data by itself.
+Instead it provides a mechanism for thorns to register their own
+routines as I/O methods, and to invoke these I/O methods by either the
+flesh scheduler or by other thorn routines.
+%
+\section{I/O Method Registration}
+%
+All I/O methods have to be registered with the flesh before they can be used.\\
+The flesh I/O registration API provides a routine {\t CCTK\_RegisterIOMethod()}
+to create a handle for a new I/O method which is identified by its name
+(this name must be unique for all I/O methods).
+With such a handle, a thorn can then register a set of functions (using the
+{\t CCTK\_RegisterIOMethod*()} routines from the flesh) for doing
+periodic, triggered, and/or unconditional output.
+
+The following example shows how a thorn would register an I/O method {\it
+"SimpleIO"} with routines to provide all these different types of output.
+%
+\begin{verbatim}
+  void SimpleIO_Startup (void)
+  {
+    int handle;
+
+
+    handle = CCTK_RegisterIOMethod ("SimpleIO");
+    if (handle >= 0)
+    {
+      CCTK_RegisterIOMethodOutputGH (handle, SimpleIO_OutputGH);
+
+      CCTK_RegisterIOMethodTimeToOutput (handle, SimpleIO_TimeToOutput);
+      CCTK_RegisterIOMethodTriggerOutput (handle, SimpleIO_TriggerOutput);
+
+      CCTK_RegisterIOMethodOutputVarAs (handle, SimpleIO_OutputVarAs);
+    }
+  }
+\end{verbatim}
+%
+%
+\section{Periodic Output of Grid Variables}
+%
+The flesh scheduler will automatically call {\t CCTK\_OutputGH()} at every
+iteration after the CCTK\_ANALYSIS time bin. This function loops over all I/O
+methods and calls their routines registered as {\t OutputGH()} (see also
+\ref{subsec:schedule_ccl}).
+%
+\begin{verbatim}
+  int SimpleIO_OutputGH (const cGH *GH);
+\end{verbatim}
+%
+The {\t OutputGH()} routine itself should loop over all variables living on the
+{\t GH} grid hierarchy, and do all neccessary output if requested (this is
+usually determined by I/O parameter settings).
+
+As its return code it should pass back the number of variables which were output
+at the current iteration, or zero if no output was done by this I/O method.
+%
+%
+\section{Triggered Output of Grid Variables}
+%
+Besides the periodic output at every so many iterations using {\t OutputGH()},
+analysis and output of grid variables can also be done via triggers. For this,
+a {\t TimeToOutput()} routine is registered with an I/O method.
+This routine will be called by the flesh scheduler at every iteration before
+CCTK\_ANALYSIS with the triggering variable(s) as defined in the schedule
+block for all CCTK\_ANALYSIS routines (see \ref{scheduling:schedule_block}).
+
+If the {\t TimeToOutput()} routine decides that it is now time to do output, the
+flesh scheduler will invoke the corresponding analysis routine and also request
+output of the triggering variable(s) using {\t TriggerOutput()}.
+%
+\begin{verbatim}
+  int SimpleIO_TimeToOutput (const cGH *GH, int varindex);
+  int SimpleIO_TriggerOutput (const cGH *GH, int varindex);
+\end{verbatim}
+%
+Both routines get passed the index of a possible triggering grid variable.
+
+{\t TimeToOutput()} should return true (a non-zero value) if analysis and output
+for {\it varindex} should take place at the current iteration, and false (zero)
+otherwise.\\
+{\t TriggerOutput()} should return zero for successful output of variable
+{\it varindex}, and a negative value in case of an error.
+%
+%
+\section{Unconditional Output of Grid Variables}
+
+An I/O method's {\t OutputVarAs()} routine is supposed to do output for a
+specific grid variable if ever possible. It will be invoked by the flesh I/O API
+routines {\t CCTK\_OutputVar*()} for unconditional, non-triggered output of
+grid variables (see also \ref{sec:io}).
+
+A function registered as an {\t OutputVarAs()} routine has the following
+prototype:
+%
+\begin{verbatim}
+  int SimpleIO_OutputVarAs (const cGH *GH, const char *varname, const char *alias);
+\end{verbatim}
+%
+The variable to output, {\it varname}, is given by its full name.
+In addition to that, an {\it alias} string can be passed which then serves
+the purpose of constructing a unique name for the output file.
+
+The {\t OutputVarAs()} routine should return zero if output for {\it varname}
+was done successfully, or a negative error code otherwise.
+
 
 \chapter{Adding a timer}
 
