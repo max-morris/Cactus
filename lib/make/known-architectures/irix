@@ -6,12 +6,27 @@
 #    @desc 
 #   
 #    @enddesc 
-#    @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/irix,v 1.10 1999-07-21 12:51:15 goodale Exp $
+#    @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/irix,v 1.11 1999-07-21 17:29:10 goodale Exp $
 #  @@*/
 
 # extract the CPU type from hinv output
 # (assumes all processors are of equal type :-)
-IRIX_CPU="`hinv -t cpu | tail -n 1 | sed 's/^[^R]*R\([01-9]*\).*$/\1/'`"
+IRIX_CPU="`hinv -t cpu | tail -1 | sed 's/^[^R]*R\([01-9]*\).*$/\1/'`"
+
+
+# Find out which version of the Fortran compilers is installed
+
+IRIX_FVERSION="`versions ftn_dev | grep , | tail -1 | sed 's:.*, ::'`"
+
+IRIX_FMAJ="`echo $IRIX_FVERSION | sed 's:\([^.]*\)\.\([^.]*\).*:\1:'`"
+IRIX_FMIN="`echo $IRIX_FVERSION | sed 's:\([^.]*\)\.\([^.]*\).*:\2:'`"
+
+if test $IRIX_FMAJ -gt 7 -o \( $IRIX_FMAJ -eq 7 -a $IRIX_FMIN -ge 2 \) ; then
+    IRIX_FLIBS="fortran ftn ftn90"
+else
+    IRIX_FLIBS="ftn ftn90"
+fi
+
 
 if test -n "`uname | grep 64`" ; then
    IRIX_BITS=64
@@ -19,14 +34,24 @@ else
    IRIX_BITS=32
 fi
 
-case "$IRIX_BITS:$CC" in
-    64:gcc)
-    echo gcc can\'t compile 64 bit, changing to cc
+#case "$IRIX_BITS:$CC" in
+#    64:gcc)
+#    echo gcc can\'t compile 64 bit, changing to cc
+#    CC=cc
+#    CXX=CC
+#    LD=CC
+#    ;;
+#esac
+
+if test "$CC" = "gcc" ; then
+    echo "There seem to be some problems with the GNU compiler under irix, switching to cc"
+    echo "If you don't like this, you can edit your make.config.defn file."
     CC=cc
     CXX=CC
     LD=CC
-    ;;
-esac
+fi
+
+
 
 case "$IRIX_BITS:$CC" in
     64:cc)
@@ -72,10 +97,10 @@ esac
 
 case $IRIX_BITS in
     64)
-    LIBS="$LIBS malloc perfex fpe fortran ftn ftn90 m"
+    LIBS="$LIBS malloc perfex fpe $IRIX_FLIBS m"
     ;;
     32)
-    LIBS="$LIBS malloc fpe fortran ftn ftn90 m"
+    LIBS="$LIBS malloc fpe $IRIX_FLIBS m"
     ;;
     *)
     ;;
