@@ -45,6 +45,7 @@ $cctk_home  .= '/' if (($cctk_home !~ /\/$/) && (defined $cctk_home));
 # set up the sbin dir, tacking cctk_home on the front
 my $sbin_dir = "${cctk_home}lib/sbin";
 
+my $cactus_style_file = "${cctk_home}doc/latex/cactus";
 ##############
 # REQUIRE(S) #
 ##############
@@ -194,10 +195,10 @@ sub Read_New_Thorn_Doc
       if (/\\title\{(.*?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?.*?)\}/) { $title = $1; if ($title !~ /\w/) { close DOC; return 0;} }
       if (/\\author\{(.*?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?.*?)\}/) { $author = $1;}
       if (/\\date\{(.*?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?.*?)\}/) { $date = $1; $date =~ s/.*Date:(.*?)\$\s*?\$/$1/; }
-      if (/% START CACTUS THORNGUIDE/) {
+      if (/^% START CACTUS THORNGUIDE/) {
          $start = 1;
 
-         while (($_ = <DOC>) && ($_ !~ /% END CACTUS THORNGUIDE/))
+         while (($_ = <DOC>) && ($_ !~ /^% END CACTUS THORNGUIDE/))
          {
             if (/(.*)\\begin\{abstract\}(.*)/) {
                $_ = "$1\\section\{Abstract\}$2";
@@ -474,24 +475,15 @@ sub Output_Top
 {
 
 print OUT  <<EOC;
-\\newif\\ifpdf
-\\ifx\\pdfoutput\\undefined
-   \\pdffalse % we are not running PDFLaTeX
-\\else
-   \\pdfoutput=1 % we are running PDFLaTeX
-   \\pdftrue
-\\fi
-
 \\documentclass{report}
+
+\\usepackage{$cactus_style_file}
+
 \\usepackage{fancyhdr}
-
 \\usepackage{minitoc}
-\\usepackage{latexsym}
-\\usepackage{amssymb}
-\\usepackage{ifthen}
-\\usepackage{calc}
-\\usepackage{graphicx}
 
+
+\% mini  table of contents stuff
 \\setlength{\\mtcindent}{24pt}
 \\renewcommand{\\mtcfont}{\\small\\rm}
 \\setcounter{minitocdepth}{2}
@@ -505,42 +497,6 @@ print OUT  <<EOC;
 \\addtolength{\\cftsecnumwidth}{0.5em}
 \\addtolength{\\cftsubsecnumwidth}{0.5em}
 \\addtolength{\\cftsubsubsecnumwidth}{0.5em}
-
-% macros
-\\def\\text#1{{\\rm #1}}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\\parskip = 2 pt
-\\oddsidemargin = 0 cm
-\\textwidth = 16 cm
-\\topmargin = -1 cm
-\\textheight = 24 cm
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\\def\\q{\\bf QUERY: }
-\\def\\t{\\tt \\obeylines }
-
-% MANPAGE like description setting for options, use as % \\begin{Lentry}
-%\\item[text] text \\end{Lentry} \\usepackage{ifthen,calc}
-\\newcommand{\\entrylabel}[1]{\\mbox{\\textsf{#1}}\\hfil}
-\\newenvironment{entry}
-  {\\begin{list}{}
-    {\\renewcommand{\\makelabel}{\\entrylabel}
-      \\setlength{\\labelwidth}{90pt}
-      \\setlength{\\leftmargin}{\\labelwidth+\\labelsep}
-    }
-  }
-  {\\end{list}} \\newlength{\\Mylen} \\newcommand{\\Lentrylabel}[1]{%
-  \\settowidth{\\Mylen}{\\textsf{#1}}%
-  \\ifthenelse{\\lengthtest{\\Mylen > \\labelwidth}}%
-    {\\parbox[b]{\\labelwidth} % term > labelwidth
-      {\\makebox[0pt][l]{\\textsf{#1}}\\\\}} %
-    {\\textsf{#1}} %
-  \\hfil\\relax} \\newenvironment{Lentry}
-  {\\renewcommand{\\entrylabel}{\\Lentrylabel}
-   \\begin{entry}}
-  {\\end{entry}}
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Takes three arguments - the name of the document, the revision, and
