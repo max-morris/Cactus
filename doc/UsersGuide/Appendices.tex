@@ -793,6 +793,12 @@ through them.
         should allow all functions to be scheduled in the main {\tt CCTK\_EVOL}
         timebin.
 
+\item[{\tt CCTK\_POSTRESTRICT}]
+        This timebin is used only in mesh refinement settings.  It is
+        ignored for unigrid runs.  (With mesh refinemenets, boundary
+        conditions might need to be applied after every
+        ``restriction'' step.)
+
 \item[{\tt CCTK\_ANALYSIS}]
         The analysis timebin is special, in that it is closely coupled 
         with output, and routines which are scheduled here are typically
