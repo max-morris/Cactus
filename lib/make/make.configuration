@@ -96,19 +96,19 @@ $(CCTK_LIBDIR)/lib%.a: update
 
 include $(CONFIG)/make.config.deps
 
-# Rule to build the make.thornlist file from the ActiveThorns file
+# Rule to build the make.thornlist file from the ThornList file
 
-$(CONFIG)/make.thornlist: $(TOP)/ActiveThorns $(foreach lib, $(CCTK_HOME)/src $(THORNS:%=$(PACKAGE_DIR)/%), $(lib)/param.ccl $(lib)/interface.ccl $(lib)/schedule.ccl)
+$(CONFIG)/make.thornlist: $(TOP)/ThornList $(foreach lib, $(CCTK_HOME)/src $(THORNS:%=$(PACKAGE_DIR)/%), $(lib)/param.ccl $(lib)/interface.ccl $(lib)/schedule.ccl)
 	@echo $(DIVIDER)
 	if [ -r $@ ] ; then echo Reconfiguring thorns ; rm $@ ;\
 	else echo Configuring thorns ; fi
 	$(PERL) -s $(CST) -config_dir=$(CONFIG) -cctk_home=$(CCTK_HOME) -top=$(TOP) $< 
 
-# Rule to build ActiveThorns
+# Rule to build ThornList
 
-$(TOP)/ActiveThorns:
+$(TOP)/ThornList:
 	@echo $(DIVIDER)
-	@echo Creating ActiveThorn list containing all thorns in the packages directory
+	@echo Creating compiled ThornList containing all thorns in the packages directory
 	$(PERL) -s $(BUILD_ACTIVETHORNS) $(CCTK_HOME)/packages > $@
 	action="yes"; if [ "x$$EDITOR" = "x" ] ; then EDITOR=vi ; fi; \
 	while [ "x$$action" = "xyes" -o "x$$action" = "xy" -o "x$$action" = "xYES" -o "x$$action" = "xY" ] ; \
