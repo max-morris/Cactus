@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.99 2000-11-21 16:25:04 allen Exp $
+#   @version $Id: Makefile,v 1.100 2000-12-10 23:29:58 goodale Exp $
 # @@*/
 
 ##################################################################################
@@ -625,10 +625,9 @@ endif
 	    then \
 	      cp $(THORNLIST_DIR)/$(THORNLIST) $(CONFIGS_DIR)/$(@:%-config=%)/ThornList;\
 	    fi ;\
-      	    if test -n "$(THORNS)" ; \
-            then \
-              echo $(THORNS) >> $(CONFIGS_DIR)/$@/ThornList ; \
-            fi ; \
+	    if test -n "$(THORNS)" ; then \
+	      echo $(THORNS) >> $(CONFIGS_DIR)/$@/ThornList ; \
+	    fi ; \
 	    echo $(DIVIDER)   ;  \
 	    if test "x$(PROMPT)" = "xno" ; then \
 	      $(MAKE) $(@:%-config=%) WARN=$(WARN); \
