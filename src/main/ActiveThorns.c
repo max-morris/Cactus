@@ -1324,6 +1324,14 @@ int CCTKi_ActivateThorns(const char *activethornlist)
       ActivateThorn(thorn);
     }
 
+    /* Now do any necessary parameter activation */
+    for(thorn = Util_StringListNext(required_thorns, 1);
+        thorn;
+        thorn = Util_StringListNext(required_thorns, 0))
+    {
+      CCTKi_ParameterActivateThornParameters(thorn);
+    }
+
     retval = 0;
   }
   else
