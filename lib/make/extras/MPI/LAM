@@ -6,7 +6,7 @@
 #   @desc 
 #   
 #   @enddesc
-#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/extras/MPI/LAM,v 1.2 2000-10-11 23:22:30 tradke Exp $ 
+#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/extras/MPI/LAM,v 1.3 2000-10-15 17:21:52 tradke Exp $ 
 # @@*/
 
 echo "LAM selected"
@@ -19,9 +19,9 @@ if test -z "$LAM_LIB_DIR" -o -z "$LAM_INC_DIR" ; then
        echo "Unable to locate the LAM directory - please set LAM_DIR"
        exit 2
      fi
-     LAM_LIB_DIR="$LAM_DIR/lib"
-     LAM_INC_DIR="$LAM_DIR/h"
   fi
+  LAM_LIB_DIR="$LAM_DIR/lib"
+  LAM_INC_DIR="$LAM_DIR/h"
 fi
 
 MPI_LIBS="mpi tstdio args t trillium " 
