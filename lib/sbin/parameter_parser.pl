@@ -719,7 +719,7 @@ sub CheckParameterDefault
 #  @author     Tom Goodale
 #  @desc 
 #  Checks that an accumulator parameter's expression is valid.
-#  The expression should communte when applied twice
+#  The expression should commute when applied twice
 #  I.e. if a is the original value of the parameter,
 #          b the first value to add
 #          c the second parameter to add
