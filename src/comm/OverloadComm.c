@@ -107,9 +107,9 @@ int CCTKi_SetupCommFunctions(void)
 
 
 
-int CCTK_FCALL CCTK_FNAME(CCTK_Exit)(int *retval, cGH *GH)
+int CCTK_FCALL CCTK_FNAME(CCTK_Exit)(cGH *GH, int *retval)
 {
-  return CCTK_Exit(*retval, GH);
+  return CCTK_Exit(GH, *retval);
 }
 
 int CCTK_FCALL CCTK_FNAME(CCTK_ParallelInit)(cGH *GH)
@@ -117,9 +117,9 @@ int CCTK_FCALL CCTK_FNAME(CCTK_ParallelInit)(cGH *GH)
   return CCTK_ParallelInit(GH);
 }
 
-int CCTK_FCALL CCTK_FNAME(CCTK_Abort)(cGH *GH)
+int CCTK_FCALL CCTK_FNAME(CCTK_Abort)(cGH *GH, int *retval)
 {
-  CCTK_Abort(GH);
+  CCTK_Abort(GH, *retval);
   return 0;
 }
 
@@ -131,14 +131,14 @@ int CCTK_FCALL CCTK_FNAME(CCTK_SyncGroup)(cGH *GH, ONE_FORTSTRING_ARG)
   return 0;
 }
 
-int CCTK_FCALL CCTK_FNAME(CCTK_EnableGroupComm)(int *ierr, cGH *GH, ONE_FORTSTRING_ARG)
+void CCTK_FCALL CCTK_FNAME(CCTK_EnableGroupComm)(int *ierr, cGH *GH, ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_CREATE(group_name)
   *ierr = CCTK_EnableGroupComm(GH, group_name); 
   free(group_name);
 }
 
-int CCTK_FCALL CCTK_FNAME(CCTK_EnableGroupStorage)(int *ierr, cGH *GH, ONE_FORTSTRING_ARG)
+void CCTK_FCALL CCTK_FNAME(CCTK_EnableGroupStorage)(int *ierr, cGH *GH, ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_CREATE(group_name)
   *ierr = CCTK_EnableGroupStorage(GH, group_name);
