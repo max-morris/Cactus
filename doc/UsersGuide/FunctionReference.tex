@@ -3488,6 +3488,85 @@ the preferred method from synchronising variables.
 %%%%%
 
 
+\begin{CCTKFunc}{CCTK\_VarDataPtr}{Returns the data pointer for a grid variable}
+\label{CCTK-VarDataPtr}
+\subroutine{void *}{}{ptr}
+\argument{cGH *}{}{cctkGH}
+\argument{int}{}{timelevel}
+\argument{char *}{}{name}
+\showcargs
+\begin{params}
+\parameter{cctkGH}{pointer to CCTK grid hierarchy}
+\parameter{timelevel}{The timelevel of the grid variable}
+\parameter{name}{The full name of the variable}
+\end{params}
+\begin{discussion}
+The variable name should be in the form {\t <implementation>::<variable>}.
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\hfill {\bf C} && {\t myVar = (CCTK\_REAL *)(CCTK\_VarDataPtr(GH,0,"imp::realvar"))}\\
+\\
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
+\begin{CCTKFunc}{CCTK\_VarDataPtrB}{Returns the data pointer for a grid variable from the variable index or the variable name}
+\label{CCTK-VarDataPtrB}
+\subroutine{void *}{}{ptr}
+\argument{cGH *}{}{cctkGH}
+\argument{int}{}{timelevel}
+\argument{int}{}{index}
+\argument{char *}{}{name} 
+\showcargs
+\begin{params}
+\parameter{ptr}{a void pointer to the grid variable data}
+\parameter{cctkGH}{}
+\parameter{timelevel}{The timelevel of the grid variable}
+\parameter{index}{The index of the variable}
+\parameter{name}{The full name of the variable}
+\end{params}
+\begin{discussion}
+If the name if {\t NULL} the index will be used, if the index is negative the name will be used.
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\hfill {\bf C} && {\t myVar = (CCTK\_REAL *)(CCTK\_VarDataPtrB(GH,0,CCTK\_VarIndex("imp::realvar"),NULL))}\\
+\\
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
+
+\begin{CCTKFunc}{CCTK\_VarDataPtrI}{Returns the data pointer for a grid variable from the variable index}
+\label{CCTK-VarDataPtrI}
+\subroutine{void *}{}{ptr}
+\argument{cGH *}{}{cctkGH}
+\argument{int}{}{timelevel}
+\argument{int}{}{index}
+\showcargs
+\begin{params}
+\parameter{cctkGH}{}
+\parameter{timelevel}{The timelevel of the grid variable}
+\parameter{index}{The index of the variable}
+\end{params}
+\begin{discussion}
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\hfill {\bf C} && {\t myVar = (CCTK\_REAL *)(CCTK\_VarDataPtr(GH,0,CCTK\_VarIndex("imp::realvar")))}\\
+\\
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
+
 % Groups.c
 \begin{CCTKFunc}{CCTK\_VarIndex}{Get the index for a variable}
 \label{CCTK-VarIndex}
@@ -3563,85 +3642,6 @@ with the Cactus provided macros for {\t CCTK\_VARIABLE\_INT}, {\t CCTK\_VARIABLE
                &&{\t real = (CCTK\_VARIABLE\_REAL == CCTK\_VarTypeI(index)) ;}
 \\
 \hfill {\bf Fortran} && {\t call CCTK\_VARTYPEI(type,3)}\\
-\\
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
-
-
-\begin{CCTKFunc}{CCTK\_VarDataPtr}{Returns the data pointer for a grid variable}
-\label{CCTK-VarDataPtr}
-\subroutine{void *}{}{ptr}
-\argument{cGH *}{}{cctkGH}
-\argument{int}{}{timelevel}
-\argument{char *}{}{name}
-\showcargs
-\begin{params}
-\parameter{cctkGH}{pointer to CCTK grid hierarchy}
-\parameter{timelevel}{The timelevel of the grid variable}
-\parameter{name}{The full name of the variable}
-\end{params}
-\begin{discussion}
-The variable name should be in the form {\t <implementation>::<variable>}.
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t myVar = (CCTK\_REAL *)(CCTK\_VarDataPtr(GH,0,"imp::realvar"))}\\
-\\
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
-
-\begin{CCTKFunc}{CCTK\_VarDataPtrI}{Returns the data pointer for a grid variable from the variable index}
-\label{CCTK-VarDataPtrI}
-\subroutine{void *}{}{ptr}
-\argument{cGH *}{}{cctkGH}
-\argument{int}{}{timelevel}
-\argument{int}{}{index}
-\showcargs
-\begin{params}
-\parameter{cctkGH}{}
-\parameter{timelevel}{The timelevel of the grid variable}
-\parameter{index}{The index of the variable}
-\end{params}
-\begin{discussion}
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t myVar = (CCTK\_REAL *)(CCTK\_VarDataPtr(GH,0,CCTK\_VarIndex("imp::realvar")))}\\
-\\
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
-
-
-\begin{CCTKFunc}{CCTK\_VarDataPtrB}{Returns the data pointer for a grid variable from the variable index or the variable name}
-\label{CCTK-VarDataPtrB}
-\subroutine{void *}{}{ptr}
-\argument{cGH *}{}{cctkGH}
-\argument{int}{}{timelevel}
-\argument{int}{}{index}
-\argument{char *}{}{name} 
-\showcargs
-\begin{params}
-\parameter{ptr}{a void pointer to the grid variable data}
-\parameter{cctkGH}{}
-\parameter{timelevel}{The timelevel of the grid variable}
-\parameter{index}{The index of the variable}
-\parameter{name}{The full name of the variable}
-\end{params}
-\begin{discussion}
-If the name if {\t NULL} the index will be used, if the index is negative the name will be used.
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t myVar = (CCTK\_REAL *)(CCTK\_VarDataPtrB(GH,0,CCTK\_VarIndex("imp::realvar"),NULL))}\\
 \\
 \end{tabular}
 \end{examples}
