@@ -102,6 +102,15 @@ int Util_SplitString(char **before, char **after, const char *string, const char
   return retval;
 }
 
+char *CCTK_Strdup(const char *s) 
+{
+  char *retstr;
+  
+  retstr = (char*) malloc(strlen(s)*sizeof(char));
+  sprintf(retstr,"%s",s);
+  return(retstr);
+}
+
  /*@@
    @routine    CCTK_Equals
    @date       Wed Jan 20 10:25:30 1999
