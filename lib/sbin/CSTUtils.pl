@@ -1,11 +1,20 @@
 #/*@@
+#  @file      CSTUtils.pl
+#  @date      4 July 1999
+#  @author    Gabrielle Allen
+#  @desc 
+#  Various utility routines.
+#  @enddesc
+#  @version $Header$ 
+#@@*/
+
+#/*@@
 #  @routine   CST_error
 #  @date      4 July 1999
 #  @author    Gabrielle Allen
 #  @desc 
 #  Print an error or warning message
 #  @enddesc 
-#  @version $Id$
 #@@*/
 
 sub CST_error
@@ -242,6 +251,126 @@ sub TestName
   }
 
   return $valid;
+}
+
+#/*@@
+#  @routine    SplitWithStrings
+#  @date       Tue May 21 23:45:54 2002
+#  @author     Tom Goodale
+#  @desc 
+#  Splits a string on spaces and = ignoring
+#  any occurence of these in strings.
+#  @enddesc 
+#  @calls     
+#  @calledby   
+#  @history 
+#
+#  @endhistory 
+#
+#  @var     expression
+#  @vdesc   Expression to split
+#  @vtype   string
+#  @vio     in
+#  @endvar 
+#
+#  @returntype list
+#  @returndesc
+#    Split representation of input expression.
+#  @endreturndesc
+#@@*/
+sub SplitWithStrings
+{
+  my ($expression) = @_;
+
+  my $insstring = 0;
+  my $indstring = 0;
+  my $escaping = 0;
+
+  my @tokens = ();
+
+  my $token="";
+
+  # First split the string into string tokens and split tokens we are
+  # allowed to split.
+
+  for $i (split(//,$expression))
+  {
+    if($i eq '\\')
+    {
+      if($escaping)
+      {
+        $token .= $i;
+      }
+      
+      $escaping = 1 - $escaping;
+    }
+    elsif($i eq '"' && ! $insstring && ! $escaping)
+    {
+      if(length $token > 0 || $indstring)
+      {
+        push(@tokens, $token);
+      }
+
+      $token = "";
+      $indstring = 1 - $indstring;
+    }
+    elsif($i eq "'" && ~ $indstring && ! $escaping)
+    {
+      if(length $token > 0 || $insstring)
+      {
+        push(@tokens, $token);
+      }
+
+      $token = "";
+
+      $insstring = 1 - $insstring;
+    }
+    elsif($i =~ /^\s+$/ && ! $insstring && ! $indstring && ! $escaping)
+    {
+      if(length $token > 0 || $insstring)
+      {
+        push(@tokens, $token);
+      }
+
+      $token = "";
+    }
+    elsif($i eq '=' && ! $insstring && ! $indstring && ! $escaping)
+    {
+      if(length $token > 0 || $insstring)
+      {
+        push(@tokens, $token);
+      }
+
+      $token = "";
+    }
+    else
+    {
+      if($escaping)
+      {
+        $token .= "\\";
+        $escaping = 0; 
+      }
+      $token .= "$i";
+    }
+  }
+
+  if($insstring || $indstring)
+  {
+    print "Error: Unterminated string\n"
+  }
+
+  if($escaping)
+  {
+    $token .= '\\';
+  }
+  
+  if(length $token > 0)
+  {
+    push(@tokens, $token);
+  }
+  
+  return @tokens;
+
 }
 
 1;
