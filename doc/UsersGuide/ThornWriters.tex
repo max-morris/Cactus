@@ -1510,13 +1510,21 @@ c     Main code goes here
 
 \subsubsection{Cactus Fortran Functions}
 
-Cactus Fortran functions, for example {\tt CCTK\_MyProc()} and {\tt
-CCTK\_Equals}, can all be declared by adding before any executable code, the
-declaration
+Cactus Fortran functions, for example {\tt CCTK\_MyProc} and {\tt
+CCTK\_Equals}, can all be declared by adding the statement
+
+\begin{verbatim}
+#include "cctk_Functions.h"
+\end{verbatim}
+
+near the top of the file, and adding the declaration
 
 \begin{verbatim}
 DECLARE_CCTK_FUNCTIONS
 \end{verbatim}
+
+to a module or a subroutine after the \texttt{implicit none}
+statement, but before any executable code.
 
 \subsubsection{Fortran 90 Modules}
 
