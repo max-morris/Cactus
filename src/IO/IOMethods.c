@@ -22,21 +22,6 @@ static char *rcsid = "$Header$";
 static cHandledData *IOMethods = NULL;
 static int num_methods = 0;
 
-/* The GH extension structure.
- * This contains pointers to functions which the extension requires.
- *
- * To add a new function, you must:
- *
- *  a) Add it to this structure
- *  b) Initialise it to NULL in CCTK_RegisterGHExtension
- *  c) Check its value in CheckAllExtensionsSetup
- *  d) Provide a dummy function for CheckAllExtensionsSetup to use
- *  e) Provide a registration function.
- *  f) Add a prototype for the registration function to GHExtensions.h
- */
-
-
-
 /* Function which checks that all the functions on all extensions have been 
  * filled in.
  */
@@ -190,127 +175,6 @@ int CCTK_RegisterIOMethodOutputVarAs(int handle, int (*func)(cGH *,
 }
 
 
-/***************************************************************************
- *
- *          Function Calling Routines.
- *
- ***************************************************************************/
-
- /*@@
-   @routine    CCTK_SetupGHExtensions
-   @date       Wed Feb  3 13:32:26 1999
-   @author     Tom Goodale
-   @desc 
-   Sets up all registered GH extensions on a GH.
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
-
-@@*/
-/*int CCTK_SetupGHExtensions(tFleshConfig *config, 
-			   int convergence_level, 
-			   cGH *GH)
-{
-  int return_code;
-  int handle;
-  struct GHExtension *extension;
-
-  if(CheckAllExtensionsSetup())
-  {
-  */  /* Create GHExtension array on the GH. */
-  /*GH->extensions = (void **)malloc(num_extensions*sizeof(void *));
-
-    if(GH->extensions)
-    {
-      for(handle = 0; handle < num_extensions; handle++)
-      {
-  *//* Call the SetupGH routines for each extension. */
-  /*extension =  (struct GHExtension *)CCTK_GetHandledData(GHExtensions, handle);
-	GH->extensions[handle] = extension->SetupGH(config, 
-						    convergence_level, 
-						    GH);
-      }
-      return_code = 0;
-    }
-    else
-    {
-      return_code = 1;
-    }
-  }
-  else
-  {
-    return_code = 2;
-  }
-  
-  return return_code;
-  }*/
-
-
-
-
-
-
- /*@@
-   @routine    CCTK_InitGHExtensions
-   @date       Wed Feb  3 14:12:18 1999
-   @author     Tom Goodale
-   @desc 
-   Calls the initialisation routine for a GH extension.
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
-
-@@*/
-/*int CCTK_InitGHExtensions(cGH *GH)
-{
-  int handle;
-  struct GHExtension *extension;
-
-  for(handle = 0; handle < num_extensions; handle++)
-  {
-    extension =  (struct GHExtension *)CCTK_GetHandledData(GHExtensions, handle);
-    extension->InitGH(GH);
-  }
-
-  return 0;
-  }*/
-
-
- /*@@
-   @routine    CCTK_rfrTraverseGHExtensions
-   @date       Wed Feb  3 14:16:17 1999
-   @author     Tom Goodale
-   @desc 
-   Calls the routines which an extension needs called at an rfr traversal.
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
-
-@@*/
-/*int CCTK_rfrTraverseGHExtensions(cGH *GH, int rfrpoint)
-{
-  int handle;
-  struct GHExtension *extension;
-
-  for(handle = 0; handle < num_extensions; handle++)
-  {
-    extension =  (struct GHExtension *)CCTK_GetHandledData(GHExtensions, handle);
-    extension->rfrTraverseGH(GH, rfrpoint);
-  }
-
-  return 0;
-  }*/
-
-
 /************************************************************************
  *
  *  Dummy functions.  Registered if no real function registered.
@@ -367,8 +231,6 @@ int CactusDefaultOutputGH(cGH *GH)
   int handle;
   struct IOMethod *method;
 
-  printf("I'm in the default OutputGH routine\n");
-  
   for (handle = 0;;handle++)
   {
     method = (struct IOMethod *)CCTK_GetHandledData(IOMethods, handle);
