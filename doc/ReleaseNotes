@@ -1,8 +1,8 @@
 Cactus Release Notices
-CVS Version: $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/ReleaseNotes,v 1.4 2004-05-13 20:50:19 goodale Exp $
+CVS Version: $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/ReleaseNotes,v 1.5 2004-05-13 21:42:27 goodale Exp $
 
 Cactus 4.0 Release Dates:
-  Beta 14 13 April 2004
+  Beta 14 13 May 2004
   Beta 13 30 March 2004
   Beta 12 June 7 2002
   Beta 11 January 28 2002
@@ -25,7 +25,7 @@ http://www.cactuscode.org/Development/ReleaseNotices.html
 
 Release Notices for Cactus 4.0 beta 14
 ======================================
-Date: 13 April 2004
+Date: 13 May 2004
 
 Released modules:
 ================
