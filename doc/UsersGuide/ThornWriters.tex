@@ -95,7 +95,7 @@ the flesh. See \ref{sec:sc}
 Thorns can also contain  
 \begin{itemize}
 \item a subdirectory called {\tt src}, which should hold source files
-	and compilation instructions for the thorn
+        and compilation instructions for the thorn
 \item a subdirectory {\tt src/include} for include files 
 \item a {\tt README} containing a brief description of the thorn
 \item a {\tt doc} directory for documentation
@@ -1049,7 +1049,10 @@ rather unusual; included here for completeness.
 
 \begin{figure}[h]
   \def\epsfsize#1#2{0.45#1}
-  \centerline{\epsfbox{./staggering1.eps}}
+\begin{center}
+\includegraphics[angle=0,width=5cm]{staggering1.eps}
+%  \centerline{\epsfbox{./staggering1.eps}}
+\end{center}
 \caption[]{\small {\bf Staggered gridpoints in 2D} for several
 staggerings. (a) : {\tt MC}, (b): {\tt CM}, (c): {\tt CC}, (d): {\tt
 PP}. Note that the staggering of gridfunctions does change its
@@ -1100,7 +1103,10 @@ x-direction: {\em directional staggerindex} = CCTK\_STAGGER\_C (value 1).
 
 \begin{figure}[h]
   \def\epsfsize#1#2{0.45#1}
-  \centerline{\epsfbox{./staggering2.eps}}
+\begin{center}
+\includegraphics[angle=0,width=5cm]{staggering2.eps}
+%  \centerline{\epsfbox{./staggering2.eps}}
+\end{center}
 \caption[]{\small {\bf Unstaggered and center-staggered gridpoints} with
 ghostzone size of one (above) and two (below). The points are
 distributed across three processors. Note that the number of  
@@ -1366,7 +1372,7 @@ c Get source code from other thorns
       allterms = 0d0
       if (CCTK_IsThornActive("B") then
 c Add this to AllSources.inc
-        allterms = allterms + 1d0	
+        allterms = allterms + 1d0       
       end if
 \end{verbatim}
 
@@ -1601,7 +1607,7 @@ Zero indicates successfull operation.
 \item[{\tt cctkGH}]
 in fortran the pointer to the grid hierachy
 structure. Cannot be used within Fortran but
-can be used from within	
+can be used from within 
 C. Since this name is fixed write it out shown
 above.
 \item[{\tt cGH *GH}]
@@ -1611,8 +1617,8 @@ the processor which collects the
 information, negative value ($-1$) will distribute the data to all
 processors.
 \item[{\tt int operation\_handle}] the number of the reduction operation
-		handle, needs to be found by calling {\tt CCTK\_ReductionHandle} or
-		{\tt CCTK\_ReductionArrayHandle}.
+                handle, needs to be found by calling {\tt CCTK\_ReductionHandle} or
+                {\tt CCTK\_ReductionArrayHandle}.
 \item[{\tt int num\_out\_vals}] integer defining the number of ??
 \item[{\tt int type\_out\_arrays}, {\tt type\_in\_arrays}] 
 specifies the type of the gridfunction 
@@ -1701,7 +1707,7 @@ call CCTK_ReduceLocArrayToArray1D( int returnvalue
 
 \begin{Lentry}
 \item[{\tt in\_array1d}] one dimensional local arrays, to be reduced across a 
-processors, element by element.	
+processors, element by element. 
 \item[{\tt out\_array1d}] array holding the reduction result. out\_array1d[1]
 = Reduction(in\_array[1]).
 \item[{\tt xsize}] the size of the one dimensional array.
@@ -1739,7 +1745,7 @@ call CCTK_ReduceLocArrayToArray2D( int returnvalue
 
 \begin{Lentry}
 \item[{\tt in\_array1d}] two dimensional local arrays, to be reduced across a 
-processors, element by element.	
+processors, element by element. 
 \item[{\tt out\_array1d}] two dimensional array holding the reduction
 result. out\_array2d[i,j]= Reduction(in\_array2d[i,j]).
 \item[{\tt xsize}] the size of the one dimensional array in x direction.
@@ -1778,7 +1784,7 @@ call CCTK_ReduceLocArrayToArray3D(int returnvalue
 
 \begin{Lentry}
 \item[{\tt in\_array3d}] two dimensional local arrays, to be reduced across a 
-processors, element by element.	
+processors, element by element. 
 \item[{\tt out\_array3d}] two dimensional array holding the reduction
 result. out\_array3d[i,j,k]= Reduction(in\_array3d[i,j,k]).
 \item[{\tt xsize}] the size of the one dimensional array in x direction.
