@@ -2,9 +2,9 @@
    @file      Coord.c
    @date      11-12th April 1999
    @author    Gabrielle Allen
-   @desc 
+   @desc
               Routines to deal with cooordinates and coordinate registration
-   @enddesc 
+   @enddesc
    @version   $Id$
  @@*/
 
@@ -40,7 +40,7 @@ struct Coordsystem
 };
 
 struct Coordprops
-{ 
+{
   char *    name;
   int       index;
   struct Coordpropslist *list;
@@ -69,20 +69,20 @@ static cHandledData *CoordSystems = NULL;
  *********************     Fortran Wrappers    **********************
  ********************************************************************/
 void CCTK_FCALL CCTK_FNAME (CCTK_CoordRegisterSystem)
-                           (int *ierr, int *dim, ONE_FORTSTRING_ARG);
+                           (int *ierr, const int *dim, ONE_FORTSTRING_ARG);
 void CCTK_FCALL CCTK_FNAME (CCTK_CoordRegisterData)
-                           (int *handle,int *dir,THREE_FORTSTRINGS_ARGS);
+                           (int *handle,const int *dir,THREE_FORTSTRINGS_ARGS);
 void CCTK_FCALL CCTK_FNAME (CCTK_CoordRegisterRange)
                            (int *ierr,
                             cGH *GH,
-                            CCTK_REAL *lower,
-                            CCTK_REAL *upper,
-                            int *dir,
+                            const CCTK_REAL *lower,
+                            const CCTK_REAL *upper,
+                            const int *dir,
                             TWO_FORTSTRINGS_ARGS);
 void CCTK_FCALL CCTK_FNAME (CCTK_CoordSystemHandle)
                            (int *ierr, ONE_FORTSTRING_ARG);
 void CCTK_FCALL CCTK_FNAME (CCTK_CoordIndex)
-                           (int *vindex, int *dir, TWO_FORTSTRINGS_ARGS);
+                           (int *vindex, const int *dir, TWO_FORTSTRINGS_ARGS);
 void CCTK_FCALL CCTK_FNAME (CCTK_CoordSystemDim)
                            (int *dim, ONE_FORTSTRING_ARG);
 void CCTK_FCALL CCTK_FNAME (CCTK_CoordDir)
@@ -92,14 +92,14 @@ void CCTK_FCALL CCTK_FNAME (CCTK_CoordRange)
                             cGH *GH,
                             CCTK_REAL *lower,
                             CCTK_REAL *upper,
-                            int *dir,
+                            const int *dir,
                             TWO_FORTSTRINGS_ARGS);
 void CCTK_FCALL CCTK_FNAME (CCTK_CoordLocalRange)
                            (int *ierr,
                             cGH *GH,
                             CCTK_REAL *lower,
                             CCTK_REAL *upper,
-                            int *dir,
+                            const int *dir,
                             TWO_FORTSTRINGS_ARGS);
 
 
@@ -111,22 +111,21 @@ void CCTK_FCALL CCTK_FNAME (CCTK_CoordLocalRange)
    @routine    CoordRegisterSystem
    @date       18th June 2000
    @author     Gabrielle Allen
-   @desc 
+   @desc
                Register a coordinate system name and its dimension
-   @enddesc 
-   @calls     
+   @enddesc
+   @calls
 
    @returntype int
-   @returndesc 
+   @returndesc
    Returns 0 for success and negative integer for failure
    0  = success
-   -1 = this system name already registered with different dimension    
+   -1 = this system name already registered with different dimension
    -2 = dimension not valid
    @endreturndesc
 
    @@*/
-
-int CCTK_CoordRegisterSystem (int dim, 
+int CCTK_CoordRegisterSystem (int dim,
                               const char *systemname)
 {
   int retval=-1;
@@ -135,7 +134,7 @@ int CCTK_CoordRegisterSystem (int dim,
 
   /* Check if system already exists */
   Util_GetHandle (CoordSystems, systemname, (void **) &new_system);
-  if (! new_system) 
+  if (! new_system)
   {
     /* Allocate the memory */
     new_system = (struct Coordsystem *) malloc (sizeof (struct Coordsystem));
@@ -167,7 +166,7 @@ int CCTK_CoordRegisterSystem (int dim,
       retval = 0;
       CCTK_VWarn(4,__LINE__,__FILE__,"Cactus",
                  "CCTK_CoordRegisterSystem: System '%s' already registered",
-                 systemname);      
+                 systemname);
     }
     else
     {
@@ -182,9 +181,8 @@ int CCTK_CoordRegisterSystem (int dim,
   return (retval);
 }
 
-
 void CCTK_FCALL CCTK_FNAME (CCTK_CoordRegisterSystem)
-                           (int *ierr, int *dim, ONE_FORTSTRING_ARG)
+                           (int *ierr, const int *dim, ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_CREATE (systemname)
   *ierr = CCTK_CoordRegisterSystem (*dim, systemname);
@@ -196,14 +194,14 @@ void CCTK_FCALL CCTK_FNAME (CCTK_CoordRegisterSystem)
    @routine    CoordRegisterData
    @date       11-12th April 1999
    @author     Gabrielle Allen
-   @desc 
+   @desc
                Register a GF as a coordinate with a name and
                a direction.
-   @enddesc 
-   @calls      
+   @enddesc
+   @calls
 
    @returntype int
-   @returndesc 
+   @returndesc
    Returns 0 for success and negative integer for failure
    0  = success
    -1 = coordinate system not registered
@@ -211,15 +209,13 @@ void CCTK_FCALL CCTK_FNAME (CCTK_CoordRegisterSystem)
    -3 = coordinate name already registered
    -4 = coordinate direction already registered
    @endreturndesc
-
-   @@*/
-
-int CCTK_CoordRegisterData(int dir, 
-                           const char *gfname, 
+@@*/
+int CCTK_CoordRegisterData(int dir,
+                           const char *gfname,
                            const char *coordname,
                            const char *systemname)
 {
-  int i;  
+  int i;
   int retval=0;
   int dup=0;
   struct Coordsystem *coord_system;
@@ -227,7 +223,7 @@ int CCTK_CoordRegisterData(int dir,
 
   /* Check if system exists */
   Util_GetHandle (CoordSystems, systemname, (void **) &coord_system);
-  if (! coord_system) 
+  if (! coord_system)
   {
     CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
                "CCTK_CoordRegisterData: System '%s' not registered",systemname);
@@ -288,9 +284,8 @@ int CCTK_CoordRegisterData(int dir,
   return (retval);
 }
 
-
 void CCTK_FCALL CCTK_FNAME (CCTK_CoordRegisterData)
-                           (int *handle,int *dir,THREE_FORTSTRINGS_ARGS)
+                           (int *handle, const int *dir, THREE_FORTSTRINGS_ARGS)
 {
   THREE_FORTSTRINGS_CREATE (gf, name, systemname)
   *handle = CCTK_CoordRegisterData (*dir, gf, name, systemname);
@@ -300,9 +295,9 @@ void CCTK_FCALL CCTK_FNAME (CCTK_CoordRegisterData)
 }
 
 
-int CCTK_CoordRegisterRange (cGH *GH, 
-                             CCTK_REAL min, 
-                             CCTK_REAL max, 
+int CCTK_CoordRegisterRange (cGH *GH,
+                             CCTK_REAL min,
+                             CCTK_REAL max,
                              int dir,
                              const char *coordname,
                              const char *systemname)
@@ -316,7 +311,7 @@ int CCTK_CoordRegisterRange (cGH *GH,
 
   /* Check if system exists */
   Util_GetHandle (CoordSystems, systemname, (void **) &coord_system);
-  if (! coord_system) 
+  if (! coord_system)
   {
     CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
                "CCTK_CoordRegisterRange: System '%s' not registered",
@@ -333,7 +328,7 @@ int CCTK_CoordRegisterRange (cGH *GH,
                     "CCTK_CoordRegisterRange: Direction %d outside system "
                     "dimension %d", dir, coord_system->dimension);
         retval = -2;
-      }          
+      }
       if (coord_system->coords[dir-1].name)
       {
         vindex = dir-1;
@@ -362,7 +357,7 @@ int CCTK_CoordRegisterRange (cGH *GH,
                     "CCTK_CoordRegisterRange: Coordinate name %s not "
                     "registered", coordname);
         retval = -3;
-      }          
+      }
     }
 
     if (vindex != -1)
@@ -391,13 +386,12 @@ int CCTK_CoordRegisterRange (cGH *GH,
   return (retval);
 }
 
-
 void CCTK_FCALL CCTK_FNAME (CCTK_CoordRegisterRange)
                            (int *ierr,
                             cGH *GH,
-                            CCTK_REAL *lower,
-                            CCTK_REAL *upper,
-                            int *dir,
+                            const CCTK_REAL *lower,
+                            const CCTK_REAL *upper,
+                            const int *dir,
                             TWO_FORTSTRINGS_ARGS)
 {
   TWO_FORTSTRINGS_CREATE (name, systemname)
@@ -487,7 +481,6 @@ const char *CCTK_CoordSystemName (int handle)
   return (systemname);
 }
 
-
 void CCTK_FCALL CCTK_FNAME (CCTK_CoordSystemHandle)
                            (int *ierr, ONE_FORTSTRING_ARG)
 {
@@ -499,42 +492,42 @@ void CCTK_FCALL CCTK_FNAME (CCTK_CoordSystemHandle)
 
  /*@@
    @routine    CoordIndex
-   @date       
+   @date
    @author     Gabrielle Allen
-   @desc 
+   @desc
    Return the index for a grid variable registered as a coordinate, taking
    as input the coordinate system name and either the coordinate name or the
    coordinate direction
-   @enddesc 
-   @calls     
+   @enddesc
+   @calls
 
    @var     dir
-   @vdesc   the direction of the coordinate 
+   @vdesc   the direction of the coordinate
    @vtype   int
    @vio     in
-   @vcomment 
+   @vcomment
    The range of the coordinate direction is (1,coord system dimension)
    If the coord direction is > 0 it is used to calculate the coordinate grid
    variable index, if it is <=0 then the coordinate name is used
-   @endvar 
+   @endvar
    @var     name
    @vdesc   the name of the coordinate (used only if dir <= 0)
    @vtype   const char *
    @vio     in
-   @vcomment 
+   @vcomment
    If the coord direction is > 0 it is used to calculate the coordinate grid
-   variable index, if it is <=0 then the coordinate name is used 
-   @endvar 
+   variable index, if it is <=0 then the coordinate name is used
+   @endvar
    @var     systemname
    @vdesc   the name of the coordinate system
    @vtype   const char *
    @vio     in
-   @vcomment 
- 
-   @endvar 
+   @vcomment
+
+   @endvar
 
    @returntype int
-   @returndesc 
+   @returndesc
    >=0      = grid variable index for coordinate
    -1       = coordinate system not registered
    -2       = coordinate name not found
@@ -553,7 +546,7 @@ int CCTK_CoordIndex (int dir, const char *name, const char *systemname)
 
   /* Check if system exists */
   Util_GetHandle (CoordSystems, systemname, (void **) &coord_system);
-  if (! coord_system) 
+  if (! coord_system)
   {
     CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
                "CCTK_CoordIndex: System '%s' not registered",systemname);
@@ -579,7 +572,7 @@ int CCTK_CoordIndex (int dir, const char *name, const char *systemname)
     {
       for (i = 0; i < coord_system->dimension; i++)
       {
-        if (coord_system->coords[i].name && 
+        if (coord_system->coords[i].name &&
             CCTK_Equals (coord_system->coords[i].name, name))
         {
           foundit = 1;
@@ -599,9 +592,8 @@ int CCTK_CoordIndex (int dir, const char *name, const char *systemname)
   return (vindex);
 }
 
-
 void CCTK_FCALL CCTK_FNAME (CCTK_CoordIndex)
-                           (int *vindex, int *dir, TWO_FORTSTRINGS_ARGS)
+                           (int *vindex, const int *dir, TWO_FORTSTRINGS_ARGS)
 {
   TWO_FORTSTRINGS_CREATE (name, systemname)
   *vindex = CCTK_CoordIndex (*dir, name, systemname);
@@ -618,7 +610,7 @@ int CCTK_CoordSystemDim (const char *systemname)
 
   /* Check if system exists */
   Util_GetHandle (CoordSystems, systemname, (void **) &coord_system);
-  if (! coord_system) 
+  if (! coord_system)
   {
     CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
                "CCTK_CoordSystemDim: System '%s' not registered",systemname);
@@ -631,7 +623,6 @@ int CCTK_CoordSystemDim (const char *systemname)
 
   return (dim);
 }
-
 
 void CCTK_FCALL CCTK_FNAME (CCTK_CoordSystemDim)
                            (int *dim, ONE_FORTSTRING_ARG)
@@ -646,13 +637,13 @@ void CCTK_FCALL CCTK_FNAME (CCTK_CoordSystemDim)
    @routine    CCTK_CoordDir
    @date       18th June 2000
    @author     Gabrielle Allen
-   @desc 
+   @desc
                Supplies the direction of a coordinate
-   @enddesc 
-   @calls     
+   @enddesc
+   @calls
 
    @returntype int
-   @returndesc 
+   @returndesc
    Returns the direction, or a negative integer for an error
    -1 = coordinate system not registered
    -2 = coordinate not found in this system
@@ -660,7 +651,7 @@ void CCTK_FCALL CCTK_FNAME (CCTK_CoordSystemDim)
 
    @@*/
 
-int CCTK_CoordDir (const char *name,const char *systemname)
+int CCTK_CoordDir (const char *name, const char *systemname)
 {
   int i;
   int dir;
@@ -670,7 +661,7 @@ int CCTK_CoordDir (const char *name,const char *systemname)
   /* Check if system exists */
   dir = -1;
   Util_GetHandle (CoordSystems, systemname, (void **) &coord_system);
-  if (! coord_system) 
+  if (! coord_system)
   {
     CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
                "CCTK_CoordDir: System '%s' not registered", systemname);
@@ -690,12 +681,11 @@ int CCTK_CoordDir (const char *name,const char *systemname)
                   "CCTK_CoordDir: Could not find coordinate '%s' in '%s'",
                   name, systemname);
       dir = -2;
-    }    
+    }
   }
 
   return (dir);
 }
-
 
 void CCTK_FCALL CCTK_FNAME (CCTK_CoordDir)
                            (int *dir, TWO_FORTSTRINGS_ARGS)
@@ -711,32 +701,30 @@ void CCTK_FCALL CCTK_FNAME (CCTK_CoordDir)
    @routine    CCTK_CoordRange
    @date       10th January 2000
    @author     Gabrielle Allen
-   @desc 
+   @desc
                Supplies the global range of the named coordinate.
-	       
-	       You specify the direction (coorddir=-1;1,2,...) 
-	       or the name (coordname). The name will be used 
+	
+	       You specify the direction (coorddir=-1;1,2,...)
+	       or the name (coordname). The name will be used
 	       if coordir==-1
-	       
-   @enddesc 
-   @calls     
+	
+   @enddesc
+   @calls
 
-   @var        
-   @vdesc      
-   @vtype      
-   @vio        
-   @vcomment   
-   @endvar 
+   @var
+   @vdesc
+   @vtype
+   @vio
+   @vcomment
+   @endvar
 
    @returntype int
    @returndesc Returns zero for success and negative for error
    @endreturndesc
-
-   @@*/
-
-int CCTK_CoordRange (cGH *GH, 
-                     CCTK_REAL *lower, 
-                     CCTK_REAL *upper, 
+@@*/
+int CCTK_CoordRange (cGH *GH,
+                     CCTK_REAL *lower,
+                     CCTK_REAL *upper,
                      int coorddir,
                      const char *coordname,
                      const char *systemname)
@@ -770,7 +758,7 @@ int CCTK_CoordRange (cGH *GH,
   {
     /* Check if system exists */
     Util_GetHandle (CoordSystems, systemname, (void **) &coord_system);
-    if (! coord_system) 
+    if (! coord_system)
     {
       CCTK_VWarn (2, __LINE__, __FILE__, "Cactus",
                  "CCTK_CoordRange: System '%s' not registered", systemname);
@@ -830,13 +818,12 @@ int CCTK_CoordRange (cGH *GH,
   return (retval);
 }
 
-
 void CCTK_FCALL CCTK_FNAME (CCTK_CoordRange)
                            (int *ierr,
                             cGH *GH,
                             CCTK_REAL *lower,
                             CCTK_REAL *upper,
-                            int *dir,
+                            const int *dir,
                             TWO_FORTSTRINGS_ARGS)
 {
   TWO_FORTSTRINGS_CREATE (name, systemname)
@@ -850,46 +837,43 @@ void CCTK_FCALL CCTK_FNAME (CCTK_CoordRange)
    @routine    CCTK_CoordLocalRange
    @date       10th January 2000
    @author     Gabrielle Allen
-   @desc 
+   @desc
                Returns the range of the coordinate on this processor
                For now this is done in a straightforward manner, assuming
                that a regular grid is used and that the coordinate is a
                Grid function.
-   @enddesc 
-   @calls     
+   @enddesc
+   @calls
 
-   @var        
-   @vdesc      
-   @vtype      
-   @vio        
-   @vcomment   
-   @endvar 
+   @var
+   @vdesc
+   @vtype
+   @vio
+   @vcomment
+   @endvar
 
    @returntype int
    @returndesc
    @endreturndesc
-
-   @@*/
-
-int CCTK_CoordLocalRange(cGH *GH, 
-                         CCTK_REAL *lower, 
-                         CCTK_REAL *upper, 
+@@*/
+int CCTK_CoordLocalRange(cGH *GH,
+                         CCTK_REAL *lower,
+                         CCTK_REAL *upper,
                          int dir,
                          const char *name,
                          const char *systemname)
 {
-
   int retval;
   int realdir;
   CCTK_REAL global_lower;
   CCTK_REAL global_upper;
-  
+
 
   retval = CCTK_CoordRange (GH, &global_lower, &global_upper, dir, name,
                             systemname);
   if (retval >= 0)
   {
-    if (dir > 0) 
+    if (dir > 0)
     {
       realdir = dir;
     }
@@ -908,19 +892,19 @@ int CCTK_CoordLocalRange(cGH *GH,
                "Error finding coordinate range");
   }
 
-#ifdef DEBUG_COORD  
+#ifdef DEBUG_COORD
   printf("Upper/Lower are %f,%f\n",*lower,*upper);
 #endif
 
   return (retval);
 }
-  
+
 void CCTK_FCALL CCTK_FNAME (CCTK_CoordLocalRange)
                            (int *ierr,
                             cGH *GH,
                             CCTK_REAL *lower,
                             CCTK_REAL *upper,
-                            int *dir,
+                            const int *dir,
                             TWO_FORTSTRINGS_ARGS)
 {
   TWO_FORTSTRINGS_CREATE (name, systemname)
