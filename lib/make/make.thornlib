@@ -54,6 +54,7 @@ OBJS = $(patsubst %,%.o,$(basename $(SRCS)))
 $(NAME): $(addsuffix .check, $(SUBDIRS)) $(OBJS) $(SRCDIR)/make.code.defn $(foreach DIR,$(SUBDIRS), $(SRCDIR)/$(DIR)/make.code.defn)
 	@echo $(DIVIDER)
 	if [ -r $(NAME) ] ; then echo Updating $(NAME) ; else echo Creating $(NAME) ; fi
+	rm $@
 	$(AR) $(ARFLAGS) $@ $(OBJS)
 #	$(RANLIB) $@
 
