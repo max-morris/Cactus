@@ -172,7 +172,7 @@ sub GetThornParameterList
 sub CreateCStructureParameterHeader
 {
   my($prefix, $structure, $rhparameters, $rhparameter_db) = @_;
-  my($line,@data);
+  my($line,@data,@use);
   my(%parameters);
   my($type, $type_string);
   my(@definition);
@@ -187,6 +187,7 @@ sub CreateCStructureParameterHeader
   push(@data, 'extern struct');
   push(@data, '{');
 
+  push(@use, "  const void *${structure}_use = ( \\");
   foreach $parameter (&order_params($rhparameters, $rhparameter_db))
   {
     my $type = $rhparameter_db->{"\U$rhparameters->{$parameter} $parameter\E type"};
@@ -207,8 +208,10 @@ sub CreateCStructureParameterHeader
 
     push(@data, "  $type_string $realname$suffix;");
     push(@definition, "  $type_string$varprefix const $parameter = $structure.$realname; \\");
-    push(@use, "  (void) ($parameter + 0); \\");
+    push(@use, "    ${structure}_use = \&$parameter, \\");
   }
+  push(@use, "    &${structure}_use \\");
+  push(@use, '  );');
 
   # Some compilers don't like an empty structure.
   if((keys %$rhparameters) == 0)
@@ -226,9 +229,8 @@ sub CreateCStructureParameterHeader
 
   push(@data, "#define DECLARE_${structure}_PARAMS \\");
   push(@data, @definition);
-  push(@data, '');
-  push(@data, "#define USE_${structure}_PARAMS \\");
   push(@data, @use);
+
   push(@data, "\n");   # workaround for perl 5.004_04 to add a trailing newline
 
   return join ("\n", @data);

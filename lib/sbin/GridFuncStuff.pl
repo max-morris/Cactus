@@ -97,7 +97,7 @@ sub CreateVariableBindings
 
   push(@data, '#define CCTK_ARGUMENTS CCTK_CARGUMENTS');
   push(@data, '#define _CCTK_ARGUMENTS _CCTK_CARGUMENTS');
-  push(@data, '#define DECLARE_CCTK_ARGUMENTS DECLARE_CCTK_CARGUMENTS USE_CCTK_CARGUMENTS');
+  push(@data, '#define DECLARE_CCTK_ARGUMENTS DECLARE_CCTK_CARGUMENTS');
   push(@data, '#endif');
   push(@data, '');
   push(@data, '#ifdef FCODE');
@@ -115,7 +115,6 @@ sub CreateVariableBindings
     push(@data, "#define DECLARE_CCTK_FARGUMENTS DECLARE_\U$thorn" . '_FARGUMENTS');
     push(@data, "#define CCTK_CARGUMENTS \U$thorn" . '_CARGUMENTS');
     push(@data, "#define DECLARE_CCTK_CARGUMENTS DECLARE_\U$thorn" . '_CARGUMENTS');
-    push(@data, "#define USE_CCTK_CARGUMENTS USE_\U$thorn" . '_CARGUMENTS');
     push(@data, '#endif');
   }
   push(@data, "\n");  # workaround for perl 5.004_04 to add a trailing newline
@@ -527,7 +526,7 @@ sub CreateCArgumentDeclarations
 
     for($level = 0; $level < $ntimelevels; $level++)
     {
-      push(@declarations, "CCTK_$type *$varname = (CCTK_$type *) CCTKi_VarDataPtr(cctkGH, $level, $implementation, $var);");
+      push(@declarations, "CCTK_$type *$varname = ($varname = (CCTK_$type *) \&$varname, (CCTK_$type *) CCTKi_VarDataPtr(cctkGH, $level, $implementation, $var));");
 
       # Modify the name for the time level
       $varname .= '_p';
@@ -549,41 +548,6 @@ sub CreateCArgumentDeclarations
 
   return @declarations;
 
-}
-
-#/*@@
-#  @routine    CreateCArgumentUses
-#  @date       Nov 5 1999
-#  @author     Gabrielle Allen
-#  @desc
-#  Creates the requisite argument list declarations for C.
-#  @enddesc
-#@@*/
-sub CreateCArgumentUses
-{
-  my(%arguments) = @_;
-  my($varname, $suffix, $imp);
-  my(@declarations) = ();
-
-  # Now deal with the rest of the arguments
-  foreach $varname (sort keys %arguments)
-  {
-    next if ($arguments{$varname} =~ m:STORAGESIZE|GROUPLENGTH:);
-
-    $arguments{$varname} =~ m\^([^! ]+) ?([^!]*)?!([^!]*)::([^!]*)!([^!]*)\;
-
-    $ntimelevels = $5;
-
-    for($level = 0; $level < $ntimelevels; $level++)
-    {
-      push(@declarations, "(void) ($varname + 0);");
-
-      # Modify the name for the time level
-      $varname .= '_p';
-    }
-  }
-
-  return @declarations;
 }
 
 
@@ -896,12 +860,6 @@ sub CreateThornArgumentHeaderFile
     push(@returndata, join (" \\\n", @data));
     push(@returndata, '');
 
-    # Create code to use each C argument variable
-    push(@returndata, "#define USE_${thorn}_${block}_CARGUMENTS \\");
-    @data = &CreateCArgumentUses(%data);
-    push(@returndata, join (" \\\n", @data));
-    push(@returndata, '');
-
     # Create the C argument variable number statics
     push(@returndata, "#define DECLARE_${thorn}_${block}_C2F \\");
     @data = &CreateCArgumentStatics(%data);
@@ -935,7 +893,6 @@ sub CreateThornArgumentHeaderFile
   $fortran_arguments = "#define ${thorn}_FARGUMENTS _CCTK_FARGUMENTS";
   $fortran_declarations = "#define DECLARE_${thorn}_FARGUMENTS _DECLARE_CCTK_FARGUMENTS";
   $c_declarations = "#define \UDECLARE_${thorn}_CARGUMENTS _DECLARE_CCTK_CARGUMENTS";
-  $c_use_arguments = "#define \UUSE_${thorn}_CARGUMENTS _USE_CCTK_CARGUMENTS";
   $c_argument_prototypes = "#define \U${thorn}_C2F_PROTO _CCTK_C2F_PROTO";
   $c_argument_lists = "#define PASS_\U${thorn}_C2F(GH) _PASS_CCTK_C2F(GH)";
   $c_declare_statics = "#define DECLARE_\U${thorn}_C2F _DECLARE_CCTK_C2F";
@@ -947,7 +904,6 @@ sub CreateThornArgumentHeaderFile
       $fortran_arguments .= ", ${thorn}_${block}_FARGUMENTS";
       $fortran_declarations .= " DECLARE_${thorn}_${block}_FARGUMENTS";
       $c_declarations .= " DECLARE_${thorn}_${block}_CARGUMENTS";
-      $c_use_arguments .= " USE_${thorn}_${block}_CARGUMENTS";
       $c_argument_prototypes .= ", ${thorn}_${block}_C2F_PROTO";
       $c_argument_lists .= ", PASS_${thorn}_${block}_C2F(GH)";
       $c_declare_statics .= " DECLARE_${thorn}_${block}_C2F";
@@ -967,8 +923,6 @@ sub CreateThornArgumentHeaderFile
   # Do the Fortran argument lists
   push(@returndata, '#ifdef CCODE');
   push(@returndata, $c_declarations);
-  push(@returndata, '');
-  push(@returndata, $c_use_arguments);
   push(@returndata, '');
   push(@returndata, $c_argument_prototypes);
   push(@returndata, '');

@@ -5,7 +5,7 @@
 #   @desc 
 #   Timestamp file for forcing rebuilds of configurations
 #   @enddesc 
-#   @version $Id: force-rebuild,v 1.12 2004-04-01 09:03:38 schnetter Exp $
+#   @version $Id: force-rebuild,v 1.13 2004-04-24 15:44:50 tradke Exp $
 # @@*/
 
 6 March 2003: minor changes to CreateFunctionBindings.pl 
@@ -23,3 +23,6 @@
 19 Januar 2004: Compile Cactus and CactusBindings first so that other thorns
                 can access Fortran modules therein
 01 April 2004: Re-enable the consistency check for inheriting
+23 April 2004: Changed DECLARE_CCTK_* macros to use declared
+               parameters/variables in place (without requiring separate
+               USE_CCTK_* macros)

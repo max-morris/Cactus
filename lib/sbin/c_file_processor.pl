@@ -28,9 +28,9 @@ if (! -e "$fortran_name_file" )
 
 require "$fortran_name_file";
 
-$closing_brackets  = '';
 $routine  = '';
-$n_arg_braces = -3;
+$n_arg_left_braces = $n_arg_right_braces = 0;
+$do_fix_fnames = 0;
 
 # parse the file up to a ";\n"
 $/ = ";\n";
@@ -46,37 +46,38 @@ while (<>)
     #  it is not checked if some code follows after the closing '*/')
     if ($mline !~ m/^\s*\/\// && $mline !~ m/^\s*\/\*.*\*\/\s*$/)
     {
-      # check if the DECLARE macros are found on a line
-      if ($mline =~ s/(DECLARE_CCTK_(PARAMETERS|ARGUMENTS))(\s*;)?/$1 {/g)
-      {
-        $closing_brackets = "} /* closing bracket for $1 block */ " . $closing_brackets;
-        $n_arg_braces = -1;
-      }
+      # Remove a ; from after the DECLARE_CCTK_* macros
+      $mline =~ s/(DECLARE_CCTK_(PARAMETERS|ARGUMENTS))(\s*;)?/$1/;
 
       # Remove a ; from after the fileversion macro
       # such a semicolon could lead to warning messages.
       $mline =~ s/^\s*(CCTK_FILEVERSION\s*\([^)]*\))(\s*;)?/$1/;
       $mline =~ s/^\s*((ONE|TWO|THREE|FOUR|FIVE)_FORTSTRING_(CREATE|PTR)\s*\([^)]*\))(\s*;)?/$1/;
 
-      # start counting braces if there has been a DECLARE macro
-      if ($closing_brackets)
-      {
-        $n_arg_braces-- while ($mline =~ m/(})/g);
-        $n_arg_braces++ while ($mline =~ m/({)/g);
-      }
+      # start counting braces
+      $n_arg_left_braces++  while ($mline =~ m/({)/g);
+      $n_arg_right_braces++ while ($mline =~ m/(})/g);
 
-      $mline = "$closing_brackets$mline" if ($n_arg_braces == -1);
+      # check if we have to fix names of fortran wrappers
+      $do_fix_fnames = 1 if ($mline =~ /(CCTK_FNAME|CCTK_FORTRAN_COMMON_NAME)/);
     }
 
     $routine .= $mline . "\n";
 
-    if ($n_arg_braces == -1)
+    if ($n_arg_left_braces > 0 && $n_arg_left_braces - $n_arg_right_braces == 0)
     {
-      $closing_brackets = '';
-      $n_arg_braces = -2;
+      $n_arg_left_braces = $n_arg_right_braces = 0;
 
       # call the fortran namefix routine/reset routine
-      fixfnames ($routine);
+      if ($do_fix_fnames)
+      {
+        fixfnames ($routine);
+        $do_fix_fnames = 0;
+      }
+      else
+      {
+        print $routine;
+      }
       $routine = '';
     }
   }

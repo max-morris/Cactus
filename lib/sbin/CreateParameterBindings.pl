@@ -183,10 +183,8 @@ sub CreateParameterBindings
       push(@data, "#include \"" . $header_files{"\U$implementation\E RESTRICTED"} . "\"");
     }
 
-    if($header_files{"\U$thorn\E PRIVATE"})
-    {
-      push(@data, "#include \"" . $header_files{"\U$thorn\E PRIVATE"} . "\"");
-    }
+    push(@data, "#include \"" . $header_files{"\U$thorn\E PRIVATE"} . "\"")
+      if($header_files{"\U$thorn\E PRIVATE"});
 
     foreach $friend (split(' ',$rhparameter_db->{"\U$thorn\E SHARES implementations"}))
     {
@@ -194,27 +192,15 @@ sub CreateParameterBindings
     }
     push(@data, '');
 
-    @use = ();
     push(@data, '#define DECLARE_CCTK_PARAMETERS \\');
-    push(@use, '#define USE_CCTK_PARAMETERS \\');
-    if($header_files{'GLOBAL'})
-    {
-      push(@data, '  DECLARE_GLOBAL_PARAMETER_STRUCT_PARAMS \\');
-      push(@use, '  USE_GLOBAL_PARAMETER_STRUCT_PARAMS \\');
-    }
+    push(@data, '  DECLARE_GLOBAL_PARAMETER_STRUCT_PARAMS \\')
+      if($header_files{'GLOBAL'});
+    push(@data, "  DECLARE_RESTRICTED_\U$implementation\E_STRUCT_PARAMS \\")
+      if($header_files{"\U$implementation\E RESTRICTED"});
+    push(@data, "  DECLARE_PRIVATE_\U$thorn\E_STRUCT_PARAMS \\")
+      if($header_files{"\U$thorn\E PRIVATE"});
 
-    if($header_files{"\U$implementation\E RESTRICTED"})
-    {
-      push(@data, "  DECLARE_RESTRICTED_\U$implementation\E_STRUCT_PARAMS \\");
-      push(@use, "  USE_RESTRICTED_\U$implementation\E_STRUCT_PARAMS \\");
-    }
-
-    if($header_files{"\U$thorn\E PRIVATE"})
-    {
-      push(@data, "  DECLARE_PRIVATE_\U$thorn\E_STRUCT_PARAMS \\");
-      push(@use, "  USE_PRIVATE_\U$thorn\E_STRUCT_PARAMS \\");
-    }
-
+    @use = ();
     foreach $friend (split(' ',$rhparameter_db->{"\U$thorn\E SHARES implementations"}))
     {
       $rhinterface_db->{"IMPLEMENTATION \U$friend\E THORNS"} =~ m:([^ ]*):;
@@ -236,13 +222,17 @@ sub CreateParameterBindings
         }
 
         push(@data, "  $type_string$varprefix const $parameter = RESTRICTED_\U$friend\E_STRUCT.$realname; \\");
-        push(@use, "  (void) ($parameter + 0); \\");
+        push(@use, "    RESTRICTED_FRIENDS_STRUCT_use = \&$parameter, \\");
       }
     }
 
-    push(@data, '  USE_CCTK_PARAMETERS');
-    push(@data, '');
-    push(@data, @use);
+    if(@use)
+    {
+      push(@data, '  const void *RESTRICTED_FRIENDS_STRUCT_use = ( \\');
+      push(@data, @use);
+      push(@data,  '    RESTRICTED_FRIENDS_STRUCT_use = &RESTRICTED_FRIENDS_STRUCT_use \\');
+      push(@data,  '  );');
+    }
     push(@data, '');
     push(@data, "#endif  /* _\U$thorn\E_PARAMETERS_H_ */");
     push(@data, "\n");  # workaround for perl 5.004_04 to add a trailing newline
