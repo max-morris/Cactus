@@ -15,12 +15,12 @@
 Thorns are grouped into {\em arrangements}.  This is a logical grouping of
 thorns which is purely for organisational purposes. For example, 
 you might wish to keep all your initial data thorns in one arrangement,
-and all your evolution thorns in another arrangement, or to have
-separate arrangements for your development, private and shared 
+and all your evolution thorns in another arrangement, or you may want 
+to have separate arrangements for your developmentsl, private and shared 
 thorns. 
 
 The arrangements live in the {\tt arrangements} directory off the main 
-Cactus directory.  Arrangement names must be unique, and cannot start 
+Cactus directory.  Arrangement names must be unique, and cannot sta 
 with a `\#', or finish
 with `\~{}' or `.bak'.
 
@@ -74,29 +74,30 @@ administrative files
 \begin{Lentry}
 \item[{\tt interface.ccl}] the cactus interface, which defines the grid 
 functions, variables, etc. See \ref{sec:in}.
-\item[{\tt param.ccl}] the parameters introduced by the thorn. See
-\ref{sec:thpa}.
+\item[{\tt param.ccl}] the parameters introduced by this thorn, and the
+parameters needed from other thorns. See
+\ref{sec:pa}.
 \item[{\tt schedule.ccl}] scheduling information for routines called by
-the flesh. See \ref{sec:thsc}
+the flesh. See \ref{sec:sc}
 \end{Lentry}
 
 Thorns can also contain  
 \begin{itemize}
 \item a subdirectory called {\tt src}, which should hold source files
+	and compilation instructions for the thorn
 \item a subdirectory {\tt src/include} for include files 
 \item a {\tt README} containing a brief description of the thorn
 \item a {\tt doc} directory for documentation
 \item a {\tt par} directory for example parameter files
-\item a {\tt test} subdirectory may also be added.  See \ref{sec:testsuites} for details.
+\item a {\tt test} subdirectory may also be added, to hold the thorn's
+    testsuite. See \ref{sec:adatesu} for details.
 \end{itemize}
 
 \section{Creating a thorn}
 
 
 To simplify the creation of a thorn, a make target {\tt
-gmake newthorn} has been provided.
-
-When this is run:
+gmake newthorn} has been provided. When this is run:
 
 \begin{enumerate} 
 \item{} You will be prompted for the name of the new thorn.
@@ -126,7 +127,7 @@ with their visibility to other implementations.
 
 \item [{\tt schedule.ccl}]
 This defines which functions from the thorn are called and when they are 
-called.
+called. It also handles memory and communication assigment for grid variables.
 
 \end{Lentry}
 
@@ -135,13 +136,12 @@ called.
 CCL {\bf Cactus Configuration Language} files are simple text files
 used to define configuration information for a thorn.  CCL files are
 case independent, and may contain comments introduced by the `\#' character,
-which marks the rest of the line to the right of its appearance as a comment.
+which indicates that the rest of the line is a comment.
 
 \subsection{The {\tt interface.ccl}}
 
 The {\tt interface.ccl} file is used to declare the implementation 
 provided by the thorn, and to define the variables provided by it.
-
 The implementation is declared by a single line at the top of the file
 
 \begin{verbatim}
@@ -149,35 +149,34 @@ implements: <name>
 \end{verbatim}
 
 Where {\tt <name>} can be any combination of alphanumeric 
-characters and underscores, and is case independent (as is everything in a CCL file).
-
+characters and underscores, and is case independent.
 There are three different access levels available for variables
 
-\begin{itemize}
-\item {\tt Public}
+\begin{Lentry}
+\item[{\tt Public}]
 Can be `inherited' by other implementations (see below).
-\item {\tt Protected}
+\item[{\tt Protected}]
 Can be shared with other implementations which declare themselves to
 be friends of this one (see below).
-\item {\tt Private}
+\item[{\tt Private}]
 Can only be seen by this thorn.
-\end{itemize}
+\end{Lentry}
 
 Corresponding to the first two access levels there are two relationship
 statements that can be used to get variables from other thorns.
 
-\begin{itemize}
-\item {\tt Inherits: <name>}
-This gets all {\tt Public} variables from implementation {\tt <name>}, plus all
-variables it has in turn inherited.  An implementation may inherit from as
-many thorns as it likes.
-\item {\tt Friend: <name>}
+\begin{Lentry}
+\item [{\tt Inherits: <name>}]
+This gets all {\tt Public} variables from implementation {\tt <name>}, and all
+variables that {\tt <name>} has in turn inherited.  
+An implementation may inherit from any number of thorns.
+\item [{\tt Friend: <name>}]
 This gets all {\tt Protected} variables from implementation {\tt <name>}, but, 
-unlike {\tt inherits} it pushes this implementations {\tt Protected}
+unlike {\tt inherits} it also pushes its own implementations {\tt Protected}
 variables onto implementation {\tt <name>}.  This keyword is used to define
 a group of implementations which all end up with the same {\tt Protected}
 variables.
-\end{itemize}
+\end{Lentry}
 
 So, for example, an interface.ccl starting
 
@@ -188,37 +187,41 @@ friend:     wave_extract
 \end{verbatim}
 
 declares that the thorn provides an implementation called `wavetoy', gets
-all {\tt public} variables declared by an implementation called `grid', and
-shares all {\tt protected} variables with `wave\_extract' and its friends.
+all the {\tt public} variables declared by an implementation called `grid', and
+shares all {\tt protected} variables with {\tt wave\_extract} and its friends.
 
-For convenience variables are placed in groups.  Currently, names of groups
+For convenience variables are placed in groups of homogeneous variables.  
+Currently, names of groups
 and variables must be distinct. The group has several
 attributes:
 
-\begin{itemize}
+\begin{Lentry}
 
-\item {\tt variable type}
+\item [{\tt variable type}]
 e.g. REAL, INT, COMPLEX
 
-\item {\tt name}
+\item [{\tt name}]
 The name of the group
 
-\item {\tt group type}
-\begin{itemize}
-\item {\tt SCALAR}
+\item [{\tt group type}]
+This indicates the kind of variables help by the group (each group can
+only hold one kind of variable).
+\begin{Lentry}
+\item [{\tt SCALAR}]
 This is a single number.
-\item {\tt GF}
-This is an array of the default grid size.
-\item {\tt ARRAY}
+\item [{\tt GF}]
+This is an array with the default grid size (a {\it grid function}).
+\item [{\tt ARRAY}]
 This is an array of any size.
-\end{itemize}
+\end{Lentry}
 
-\item {\tt Dim}
-This is the dimension of the group.  (Meaningless for scalars.)
+\item [{\tt Dim}]
+This is the dimension of the arrays in a group.  (Meaningless for scalars.)
+This defaults to 3
 
-\item {TimeLevels}
-This is the number of timelevels the group has.
-\end{itemize}
+\item [{TimeLevels}]
+This is the number of timelevels the group has. This defaults to 1.
+\end{Lentry}
 
 A group specification consists of the variable type, followed by
 the name of the group, then a space separated list of the form
@@ -239,7 +242,7 @@ REAL fields type=GF TimeLevels=3 Dim=3
 
 \end{verbatim}
 
-defines a group of real GFs of dimension 3 each of which exists on
+defines a group of real grid functions of dimension 3 each of which exists on
 three time levels.
 
 By default all groups are {\tt private}, to change this an access
@@ -251,11 +254,13 @@ All variables seen by any one thorn must have distinct names.
 
 \subsection{The {\tt param.ccl}}
 
-Users control the operation of thorns via parameters.  The {\tt param.ccl}
+Users control the operation of thorns via parameters given in a file
+at runtime.  The {\tt param.ccl}
 is used to specify the parameters used to control an individual thorn, and
 to specify the values these parameters are allowed to take.  When the code
 is run it reads a parameter file and sets the parameters if they fall
-within the allowed values.
+within the allowed values. If a parameter is not assigned in a parameter
+file, it is given its default value.
 
 There are three access levels available for parameters:
 
@@ -271,7 +276,7 @@ These are only seen by this thorn.
 A parameter specification consists of:
 \begin{itemize}
 
-\item the parameter type
+\item the parameter type (each may have an optional {\t CCTL\_} in front)
 \begin{Lentry}
 \item [{\tt REAL}]
 \item [{\tt INT}]
@@ -284,7 +289,7 @@ A boolean type which can take values 1, `t', `true', `yes' or
 0, `f', `false', `no'.
 \end{Lentry}
 
-\item a description of the parameter
+\item a {\tt description} of the parameter
 
 \item an allowed value block
 This consists of a brace delimited block of lines
@@ -297,7 +302,8 @@ This must be one of the allowed values.
 
 \end{itemize}
 
-For the numeric types INT and REAL, a range consists of a string of the
+For the numeric types {\tt INT} and {\tt REAL}, a range consists 
+of a string of the
 forms lower-bound:upper-bound:step where a missing number or a \* denotes
 anything (i.e. infinite bounds or an infinitesimal step).
 
@@ -335,13 +341,13 @@ changes the access level for any parameter defined in the file from that point o
 To access {\tt restricted} parameters from another implementation, a line
 containing {\tt shares: <name>} declares that all parameters mentioned in
 the file from now until the next access specification originate in 
-implementation <name>.  
+implementation {\tt <name>}.  
 
 In contrast to parameter declarations in other access blocks, the default
 value must be omitted - it is impossible to set the default value of any
 parameter not originating in this thorn.
-
-For example
+For example, the following block adds possible values to the keyword
+{\tt initial\_data} originally defined in the implementation {\tt einstein}.
 
 \begin{verbatim}
 
@@ -356,12 +362,14 @@ KEYWORD initial_data ""
 
 \end{verbatim}
 
+Note that you must compile at least one thorn which implements {\tt einstein}.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsection{The {\tt schedule.ccl}}
 
-By default no routine of a thorn will be run.  The schedule.ccl file
+By default no routine of a thorn will be run.  The {\tt schedule.ccl} file
 defines those that should be run and when they should be run.
 
 The specification of this is via a schedule block which consists of
@@ -379,6 +387,7 @@ schedule <name> at <time bin> [other options]
 \end{verbatim}
 
 where {\tt <name>} is the name of the routine, and {\tt <time bin>} is one of
+(in the following the initial {\tt CCTK\_} is optional):
 
 \begin{Lentry}
 
@@ -435,8 +444,9 @@ Convergence stuff.
 These time bins can be given in the {\tt schedule.ccl} file with
 or without the initial {\tt CCTK\_}, and in any case.
 
-The {\tt STORAGE} and {\tt COMM} keywords specify any groups which must have memory 
-allocated for them or communication enabled for the duration of that routine.
+The {\tt STORAGE} and {\tt COMM} keywords specify any groups for 
+which  memory should be
+allocated or communication enabled for the duration of the routine.
 The storage or communication status reverts to its previous status after the 
 routine returns.
 
@@ -486,8 +496,7 @@ a thorn could explicitly switch the storage off.
 \label{nacofosofi}
 
 The make system uses file extensions
-to designate coding language. The following extensions are
-can be handled:
+to designate coding language. The following extensions can be handled:
 
 \begin{center}
 \begin{tabular}{|c|c|}
@@ -508,9 +517,8 @@ Extension & Coding Language \\
 
 The following restrictions apply to file names:
 \begin{itemize}
-\item Root names within each directory must be unique. For example, it is not possible 
-      to have the files {\tt InitialData.c} and {\tt InitialData.F} in the same directory.
-\item Currently all files within a thorn must have distinct names.  We hope
+\item Currently all source files in different subroutines within a 
+thorn must have distinct names.  We hope
 to relax this in future.  Different thorns can have files with the same names. 
 \end{itemize}
 
@@ -526,16 +534,14 @@ yourself.
 
 \subsection{{\tt make.code.defn} based thorn building}
 
-This is the standard way to do it.
-
-If there is no file called {\tt Makefile} in the {\tt src} directory,
-the CCTK make system looks for a file called {\tt make.code.defn} in that
-directory.  At its simplest, this file contains two lines
+This is the standard way to do compile your thorn's source files.
+The Cactus make system looks for a file called {\tt make.code.defn} in that
+directory (if there is no file called {\tt Makefile} in the {\tt src} directory).  At its simplest, this file contains two lines
 
 \begin{itemize}
-\item {\t SRCS = <list of all source files {\em in this directory}>}
+\item {\t SRCS = <list of all source files in this directory>}
 
-\item {\t SUBDIRS = <list of all subdirectories, {\em including subdirectories of subdirectories}>}
+\item {\t SUBDIRS = <list of all subdirectories, including subdirectories of subdirectories>}
 
 \end{itemize}
 
@@ -545,21 +551,22 @@ be ignored.
 
 In addition, each directory can have a {\tt make.code.deps} file, which,
 for files in that directory, can contain additional make rules and dependencies
-for files in that directory.  See the GNU Make documentation for details of the
+for files in that directory.  See the GNU Make documentation for complete details of the
 syntax.
 
 \subsection{{\tt Makefile} based thorn building}
 
-This method gives you ultimate responsibility.  The only requirement is that
-a library called {\tt \$NAME} be created by the Makefile.
+This method gives you the ultimate responsibility.  
+The only requirement is that
+a library called {\tt \$NAME} be created by the {\tt Makefile}.
 
 The makefile is passed the following variables
 
 \begin{Lentry}
 
-\item [{\tt \$(CCTK\_HOME)}]  the main CCTK directory
+\item [{\tt \$(CCTK\_HOME)}]  the main Cactus directory
 
-\item [{\tt \$(TOP)}] the CONF directory
+\item [{\tt \$(TOP)}] the configuration directory
 
 \item [{\tt \$(SRCDIR)}] the directory in which the source files can be found
 
@@ -595,16 +602,21 @@ and has a working directory of {\tt <config>/build/<thorn\_name>} .
 
 \section{What the Flesh provides}
 
-The flesh provides various things to thorns.
+The flesh provides for thorns.
+\begin{Lentry}
+\item [{\tt Variables}]
+\item [{\tt Parameters}]
+\item [{\tt Cactus Functions}]
+
 \begin{itemize}
-\item {\tt Variables}
-\item {\tt Parameters}
-\item {\tt Driver functions}
-\item {\tt IO functions}
-\item {\tt Information functions}
-\item {\tt Reduction}
-\item {\tt Interpolation}
+  \item{} driver (parallelisation) utilities
+  \item{} IO utilities
+  \item{} Coordinates utilities
+  \item{} Reduction utilities
+  \item{} Interpolation utilities
+  \item{} Information utilities
 \end{itemize}
+\end{Lentry}
 
 
 \subsection{Fortran Routines}
@@ -911,7 +923,7 @@ is declared in the {\tt interface.ccl} as {\tt CCTK\_REAL}.
 
 Declaring {\tt local\_var} to have a non-Cactus data type, e.g.
 {\tt REAL*4}, or using one of the other Cactus real data types
-described in Section~\ref{datyansi} could give problems for 
+described in Section~\ref{sec:datyansi} could give problems for 
 different architectures or configurations.
 
 

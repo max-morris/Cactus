@@ -6,43 +6,45 @@
 \begin{Lentry}
 
 \item[{\tt arrangement}] A collection of thorns.
-\item[{\tt autoconf}]
-\item[{\tt Cactus}]
+\item[{\tt autoconf}] A GNU program which builds a configuration 
+   script which can be used to make a Makefile
+\item[{\tt Cactus}] A green fleshy plant with lots of thorns, usually painful if touched.
 \item[{\tt CCTK}] Cactus Computational Tool Kit (The Cactus flesh and
             computational thorns).
 \item[{\tt CCL}] The {\tt Cactus Configuration Language}, this is the language
 that the thorn configuration files are written in.
-\item[{\tt configuration}]
-\item[{\tt checkout}]
-\item[{\tt checkpointing}]
-\item[{\tt convergence}]
-\item[{\tt CVS}] The {\em ``Concurrent Versioning System''} is the
+\item[{\tt configuration}] 
+\item[{\tt checkout}] Get a copy of the code or thorns from CVS
+\item[{\tt checkpointing}] Save the entire state of a run to file so that it can be restarted at a later time
+\item[{\tt convergence}] 
+\item[{\tt CVS}] The {\em "Concurrent Versioning System"} is the
   favoured distribution system for Cactus and can be
   downloaded from your favorite GNU site.  
 \item[{\tt driver}] A thorn which creates and handles grid hierachies
 \item[{\tt flesh}] The routines which hold all the thorns together, this 
 is what you get if you check out {\tt Cactus} from our CVS repository.
-\item[{\tt friend}]
+\item[{\tt friend}] 
 \item[{\tt GF}] Shorthand for a {\tt grid function}
 \item[{\tt gmake}] 
 \item[{\tt ghostzone}]
-\item[{\tt grid function}]
+\item[{\tt grid function}] 
 \item[{\tt grid hierachy}] A computational grid, and the grid variables associated with it.
-\item[{\tt grid scalar}]
+\item[{\tt grid scalar}] 
 \item[{\tt grid variable}]
 \item[{\tt GNATS}] The GNU program we use for reporting and tracking bugs, 
   comments and suggestions.
 \item[{\tt HDF5}] Hierarchical Data Format version 5
 \item[{\tt implementation}]
-\item[{\tt inherit}]
+\item[{\tt inherit}] 
 \item[{\tt interpolation}]
-\item[{\tt MPI}]
+\item[{\tt MPI}] 
 \item[{\tt parameter}] A variable which remains unchanged throughout the executation of a Cactus executable. Parameters all have default values which can be changed in a parameter file.
 \item[{\tt processor topology}]
 \item[{\tt PUGH}] The default parallel driver for Cactus which uses MPI.
-\item[{\tt PVM}]
+\item[{\tt PVM}]  {\tt Parallel Virtual Machine}, provides interprocessor
+  communication
 \item[{\tt reduction}]
-\item[{\tt TAGS}]
+\item[{\tt TAGS}] 
 \item[{\tt target}]
 \item[{\tt thorn}] A collection of subroutines with a definite interface 
              and purpose.
@@ -70,9 +72,18 @@ case insensitive.
 \section{interface.ccl}
 \label{sec:in}
 
-The interface configuration file consists of a header block giving details 
-of the thorns relationship with other thorns, and then a series of blocks 
+The interface configuration file consists of 
+\begin{itemize}
+\item a header block giving details 
+of the thorns relationship with other thorns
+\item a series of blocks 
 listing the thorn's global variables.
+\item details of other interations with thorns:
+\begin{itemize}
+\item building include files
+\end{itemize}
+\end{itemize} 
+
 The header block has the form:
 {\t 
 \begin{verbatim}
@@ -100,32 +111,40 @@ where
         of all your thorns friend's friends.
 \end{itemize} 
 
+The thorn's variables are collected into groups. This is not only
+for convenience, but for collecting like variables together. 
+Storage assignment, communication assignment and ghostzone synchronization
+takes place for groups only.
+
+
 The thorn's variables are defined by:
 {\t
 \begin{verbatim}
 [<access>:]
 
-VTYPE <group name> [TYPE=<gtype>] [DIM=<dim>] 
+<data_type> <group_name> [TYPE=<group_type>] [DIM=<dim>] [TIMELEVELS=<num>]
 [{
-   <variable name>[,]<variable name>
-   <variable name>
-}] [``<group description>'']
+   <variable_name>[,]<variable_name>
+   <variable_name>
+}] ["<group_description>"]
 \end{verbatim}}
 
 \begin{itemize}
-\item{} {\t access} defines which thorns have  use the following 
-        groups, and can be either {\t public}, {\t protected} or {\t private}.
-\item{} {\t VTYPE} defines the data type of the variables in the group.
+\item{} {\t access} defines which thorns can use the following 
+        groups of variables. {\t access} can be either 
+        {\t public}, {\t protected} or {\t private}.
+\item{} {\t data\_type} defines the data type of the variables in the group.
 Supported data types are {\t BOOLEAN}, {\t INTEGER}, {\t CHAR} and {\t REAL}.
 (In the future {\t COMPLEX} will also be supported.)
-\item{} {\t group name} must be a alpha-numeric name (which may also 
+\item{} {\t group\_name} must be a alpha-numeric name (which may also 
 contain underscores) which is unique 
 within the scope of the thorn. A group name is compulsory.
 \item{} {\t TYPE} designates the kind of variables held by the group.
 The choices are {\t GF}, {\t ARRAY} or {\t SCALAR}. This field is 
 optional, with the default variable type being {\t SCALAR}.
-\item{} {\t DIM} defines the spatial dimension if the group is of type
-{\t ARRAY} or {\t GF}, and can take the value {\t 1}, {\t 2}, or {\t 3}.
+\item{} {\t DIM} defines the spatial dimension if the group is 
+	of type {\t ARRAY} or {\t GF}, and can take the value 
+	{\t 1}, {\t 2}, or {\t 3}.
 The default value is {\t DIM=3}.
 \item{} The block following the group declaration line contains a list of
         variables contained in the group. All variables in a group have 
@@ -149,7 +168,7 @@ range of the parameter separated by optional
 {\it parameter data scoping items} (DSIs) which detail access to the
 parameter.
 
-\subsection{Parameter Data Scoping Items}
+\subsection{Parameter data scoping items}
 {\t
 \begin{verbatim}
 <access>:
@@ -158,61 +177,61 @@ parameter.
 The key word {\t access} designates that all parameter object specification
 items up to the next parameter data scoping item are in the same 
 protection or scoping class. {\t access} can take the values:
-\begin{itemize}
-\item{} {\t global} --- all thorns have access to global parameters
-\item{} {\t restricted} --- other thorns can have access to these 
+\begin{Lentry}
+\item[{\t global}] all thorns have access to global parameters
+\item[{\t restricted}] other thorns can have access to these 
                            parameters if they specifically request
                            it in their own param.ccl
-\item{} {\t private} --- only your thorn has access to private parameters
-\item{} {\t uses} --- in this case an {\t implementation} name must follow
+\item[{\t private}] only your thorn has access to private parameters
+\item[{\t uses}] in this case an {\t implementation} name must follow
                         the colon. It declare that all the parameters in 
                         the following scoping block are restricted variables
                         from the specified {\t implementation}.
-\end{itemize}
+\end{Lentry}
 
 
-\subsection{Parameter Object Specification Items}
+\subsection{Parameter object specification items}
 \label{sec:paobspit}
 
 {\t
 \begin{verbatim}
-[EXTENDS|USES] <parameter type> <parameter name> ``<parameter description>'' 
+[EXTENDS|USES] <parameter_type> <parameter name> "<parameter description>" 
 {
-  <PARAMETER VALUES>
+  <PARAMETER_VALUES>
 } <default value>
 \end{verbatim}
 }
 \begin{itemize}
-\item{} Allowed {\t parameter types} are 
-  \begin{itemize}
-     \item{} {\t INTEGER} The specification of parameter values takes 
+\item{} Allowed {\t parameter\_type}s are 
+  \begin{Lentry}
+     \item[{\t INTEGER}] The specification of {\t parameter\_value}s takes 
      the form of any number of comma-separated blocks of the form:
 {\t
 \begin{verbatim}
-[<low-range>][:[<high-range>][:[<step>]]][::``<range description>'']
+[<low-range>][:[<high-range>][:[<step>]]][::"<range description>"]
 \end{verbatim}
 }
 Where an empty field, or a {\t *} in the place of {\t low-range} or
 {\t high-range} indicates $-\infty$ and $\infty$ respectively. The 
 default value for {\t step} is 1. A number by itself denotes that
 this number is the only acceptable value.
-     \item{} {\t REAL} The range specification is the same as integers,
+     \item[{\t REAL}] The range specification is the same as integers,
              except that here, no {\t step} implies a continuum of values.
-     \item{} {\t KEYWORD} Each entry in the list of acceptable values 
+     \item[{\t KEYWORD}] Each entry in the list of acceptable values 
              for a keyword has the form 
 {\t
 \begin{verbatim}
 "<keyword value>", "<keyword value>" :: "<description>"
 \end{verbatim}
 }
-     \item{} {\t STRING}  Allowed values for strings should be specified using regular expressions. To allow any string, the regular expression ".*" should be used.
-     \item{} {\t BOOLEAN} No allowed values should be specified for a boolean
+     \item[{\t STRING}]  Allowed values for strings should be specified using regular expressions. To allow any string, the regular expression ".*" should be used.
+     \item[{\t BOOLEAN}] No {\t PARAMETER\_VALUES} should be specified for a boolean
              parameter. The default value for a boolean can be 
         \begin{itemize}
            \item{} True: {\t 1}, {\t yes}, {\t y}, {\t t}, {\t true}
            \item{} False: {\t 0}, {\t no}, {\t n}, {\t f}, {\t false}
         \end{itemize}
-  \end{itemize}
+  \end{Lentry}
 
 \item{} The {\t parameter name} must be unique within the scope of the thorn.
 
@@ -256,7 +275,7 @@ schedule <function name> at <time>
   [STORAGE: <group>,<group>]
   [COMMUNICATION: <group>,<group>]
   [TRIGGER: <grid function>,<grid function>]
-} ``Description of function''
+} "Description of function"
 \end{verbatim}
 }
 
@@ -277,10 +296,48 @@ if (CCTK_Equals(<parameter>,<string>))
 Conditional constructs cannot be used inside of a schedule block.
 
 
-\chapter{CCTK Parameters}
+\chapter{Flesh parameters}
 \label{sec:ccpa}
 
-\chapter{Using GNATS}
+The flesh parameters are defined in the file {\tt src/par/param.ccl}.
+
+\section{Private parameters}
+
+\begin{Lentry} 
+
+\item[{\tt cctk\_full\_warnings}] 
+Give detailed information for each warning statement [{\tt yes}]
+
+\item[{\tt cctk\_strong\_param\_check}] 
+Die on parameter errors in {\tt CCTK\_PARAMCHECK} [{\tt yes}]
+
+\item [{\tt cctk\_show\_schedule}] 
+Print the scheduling tree to standard output [{\tt yes}]
+
+\item [{\tt cctk\_show\_banners}]
+Show any registered banners for the different thorns [{\tt yes}]
+ 
+\item [{\tt cctk\_brief\_output}]
+Give only brief output [{\tt no}]
+
+\end{Lentry}
+
+\section{Restricted parameters}
+
+\begin{Lentry}
+
+\item[{\tt cctk\_initial\_time}] 
+Initial time for evolution [{\tt 0.0}]
+ 
+\item [{\tt cctk\_final\_time}] Final time for evolution, overriden by
+{\tt cctk\_itlast} unless it is positive [{\tt -1.0}] 
+
+\item [{\tt cctk\_itlast}]
+Final iteration number [{\tt 10}]
+
+\end{Lentry}
+
+\chapter{Using {\tt GNATS}}
 GNATS is a freely redistributable set of tools for tracking bug
 reports. It allows users to categorize their problem report and submit 
 them to the GNATS. The bugtracker will assign appropriate maintainers
@@ -308,18 +365,20 @@ problem you are dealing with.
 
 \item[{\bf submitter ID}] Unused
 
-\item[{\bf Originator}] Your name
+\item[{\bf Originator}] Your name. Anonymous is OK, but you real name 
+   would be best.
 
-\item[{\bf Release}] The Cactus release your are using.
+\item[{\bf Release}] The Cactus release you are using. You can find this
+   out, for example, from an executable by typing {\tt cactus\_<config> -v}.
 
-\item[{\bf Environment}] Very important: specify the environment:
-e.g. {\tt uname -a}, MPI/non-MPI, etc.
+\item[{\bf Environment}] Very important: specify the environment,
+e.g. {\tt uname -a}, {\tt MPI}/non-{\tt MPI}, etc.
 
 \item[{\bf Description}] Describe your problem precisely, if you get a 
 core dump, include the stack trace, give the minimal number of thorns, 
 this problems occurs with.
 
-\item[{\bf How-To-Repeat}] Tell us how to repeat the problem, if it is
+\item[{\bf How-To-Repeat}] Tell us how to repeat the problem if it is
 software related.
 
 \item[{\bf Fix}] If you can provide a fix, let us know.
@@ -332,21 +391,22 @@ reports in your shell and from within emacs, respectively.
 
 \label{sec:usgn}
 
-\chapter{Using CVS}
+\chapter{Using {\tt CVS}}
 \label{sec:uscv}
-CVS is a version control system, which allows you to  keep
-old versions of files (usually source code), keep a log of
-who, when, and why changes occurred,  etc.
-Unlike the simpler systems, CVS does not just operate on one file at a
+{\tt CVS} is a version control system, which allows you to  keep
+old versions of files (usually source code), log of
+when, and why changes occurred, and who made them,  etc.
+Unlike the simpler systems, {\tt CVS} does not just operate on one file at a
 time or one directory at a time,  but 
 operates  on  hierarchical collections of directories consisting of
-version controlled files.  CVS helps to  manage 
+version controlled files.  {\tt CVS} helps to  manage 
 releases  and  to control the concurrent editing of source
-files among multiple  authors. CVS can be obtained from 
+files among multiple  authors. {\tt CVS} can be obtained from 
 {\tt http://www.cyclic.com}. 
 
-A {\em CVS repository}located on a {\em server} may consist of an arbitrary
-number of {\em modules}, which can be checked out independently. The Cactus
+A {\em CVS repository} located on a {\em server} may consist of an arbitrary
+number of {\em modules}, which can be checked out (thst is downloaded) 
+independently. The Cactus flesh and the Cactus
 arrangements are organized as modules, their {\em CVS server} is {\tt cvs.cactuscode.org}.
 
 \subsection{Essential CVS commands}
@@ -358,9 +418,9 @@ password}. This cvs command leaves a file {\tt .cvs-pass} in your
 home directory. There is no need to login every time you issue a cvs 
 command, as long as this file exists. For a Cactus checkout, you have
 to log into the CVS server, using the cvs option {\bf -d} to specify CVSROOT:\\
-{\tt cvs -d :pserver:cvs\_anon@cvs.cactuscode.org:/usr/users/cactus login}
+{\tt cvs -d :pserver:cvs\_anon@cvs.cactuscode.org:/cactus login}
 
-Note, that there is no ``logout'' command: if you log in with
+{\tt Note}: that there is no "logout" command: if you log in with
 administrative rights from an arbitrary account, you should be aware
 that the password file enables subsequent administrative logins from
 that account. {\em Delete the file if necessary}.
@@ -371,8 +431,9 @@ your private copy of the source for {\em modules}. You can work
 with this copy  without  interfering  with  others'
 work.   At  least  one subdirectory level is always created: it does
 not write all files into your current directory but creates a
-directory. For Cactus, you need to include the {\bf -d} options to
-specify the CVSROOT directory and the CVS server (see below). Once you 
+directory. For Cactus, you need to either include the {\bf -d} options to
+specify the CVSROOT directory and the CVS server, or specify them
+with an environment variable (see below). Once you 
 have checked out the repository there is no need to include the {\bf
 -d} option and its rather lengthy argument: the necessary information
 is contained in the local {\tt CVS/} directories.
@@ -383,8 +444,8 @@ source  directory  when  you  wish  to  update your
 copies of source  files  from  changes  that  other
 developers have made to the source in the repository.
 Merges are performed automatically when possible, a warning is issued
-if manual  resolution  is  required  for conflicting  changes. If you
-local copy is several version behind the actual repository copy, CVS
+if manual  resolution  is  required  for conflicting  changes. If your
+local copy is several versions behind the actual repository copy, CVS
 will {\em refetch} the whole file instead of applying multiple
 patches.
 
@@ -401,41 +462,60 @@ checkouts and updates by other users. You cannot commit a
 newly created file unless you have {\it added} it.
 
 \item[{\bf cvs diff} {\tt file}]
-Show differences between files in working directory
-and  source repository, or between two revisions in
+Show differences between a file in your working directory
+and  a file in the source repository, or between two revisions in
 source repository.  (Does not change either repository or working
-directory.) 
+directory.) For example, to see the difference between versions
+{\tt 1.8} and {\tt 1.9} of a file {\tt foobar.c}:
+
+{\tt 
+\begin{verbatim}
+cvs diff -r 1.8 1.9 foobar.c
+\end{verbatim}
+}
 
 \item[{\bf cvs remove} {\tt file}]
 Remove files from the source repository, pending  a {\tt cvs commit} on
 the same files.  
 
-\item[{\bf cvs status}] 
+\item[{\bf cvs status} [file]] 
 This command returns the current status of your local copy relative to 
 the repository: e.g. it indicates local modifications and possible
 updates.
 
 \item[{\bf cvs import} {\tt repository tag1 tag2}]
-Import adds an entire source distribution to the repository directory.
+Import adds an entire source distribution (starting from the
+directory you issue the command in) to the repository directory.
 Use this command to add new arrangements to the Cactus4.0 repository. The
-{\tt repository} argument gives a directory name (or a path to a
+{\tt repository} argument is a directory name (or a path to a
 directory) and the CVS root directory for repositories; to obtain this 
 directory on the CVS server, send a request to {\tt
 cactus@cactuscode.org}. {\tt tag1} and {\tt tag2} are two tags (vendor 
- and release tags) that have to be supplied.
+ and release tags) that have to be supplied. For example, to add {\tt MyThorn}
+to the {\tt MyArrangement} arrangement, which may or maynot already exist on
+the CVS repository
+
+{\tt
+\begin{verbatim}
+cvs -d :pserver:<name>@cvs.cactuscode.org:/cactus import MyArrangement/MyThorn start v1
+\end{verbatim}
+}
+
+After you import a thorn, you should check it out from the repository straight
+away, and only edit this version.
 
 \end{Lentry}
 
 \subsection{CVS Options}
 The CVS command line can include the following:
-\begin{itemize}
-\item{\bf cvs options}, which apply to the overall cvs program
-\item{\bf a cvs command}, which defines a particular task carried out by
+\begin{Lentry}
+\item[{\bf cvs options}] which apply to the overall cvs program
+\item[{\bf a cvs command}]  which defines a particular task carried out by
 cvs
-\item{\bf command options} to specify certain working modes for the cvs
+\item[{\bf command options}] to specify certain working modes for the cvs
 command.
-\item{\bf command arguments} to specify which file to act on.
-\end{itemize}
+\item[{\bf command arguments}] to specify which file to act on.
+\end{Lentry}
 
 The options must be put {\em relative} to the {\it cvs command} as the
 same option name can mean different things: {\em cvs options} go to the
@@ -449,8 +529,8 @@ Use {\em cvs\_root\_directory} as the root directory  pathname  of
 the  master source repository.  Overrides 
 the setting of the  {\em CVSROOT}  environment  variable.
 This value should be specified as an absolute pathname. 
-In the Cactus4.0 checkout procedure, you specify the Cactus CVS server:\\
-{\tt -d :pserver:cvs\_anon@cvs.cactuscode.org:/usr/users/cactus/}
+In the Cactus checkout procedure, you specify the Cactus CVS server:\\
+{\tt -d :pserver:cvs\_anon@cvs.cactuscode.org:/cactus/}
 
 \item[{\bf -z} {\em compression-level}]
 When transferring files across the network use {\tt gzip}
@@ -506,13 +586,13 @@ We list some sample CVS commands to treat the most typical Cactus4.0
 CVS situations. 
 \begin{description}
 \item\textbf{Logging into the server}\newline
-{\tt cvs -d :pserver:cvs\_anon@cvs.cactuscode.org:/usr/users/cactus
+{\tt cvs -d :pserver:cvs\_anon@cvs.cactuscode.org:/cactus
 login} \\ You will be asked for the password for user {\em cvs\_anon}, which is {\tt anon}.
 
 \item\textbf{Checking out the code}\newline
 {\tt cvs -d :pserver:cvs\_anon@cvs.cactuscode.org:/cactus
 checkout Cactus}\\
-check out a CVS module named ``Cactus'', in this case it checks out the
+check out a CVS module named "Cactus", in this case it checks out the
 Cactus Computational Toolkit. A directory {\tt ./Cactus} is created if  
 it doesn't already exits. If you perform a checkout on an already
 existing and locally modified copy of the module, CVS will try to merge the files
@@ -526,7 +606,7 @@ to inform yourself about the necessary updates, etc. To update the
 file issue \\
 {\tt cvs update ./foobar}\\
 If that was file was locally modified, CVS will try to merge the
-changes.Manual merging might be necessary and will be indicated by a
+changes. Manual merging might be necessary and will be indicated by a
 CVS warning.
 
 \item\textbf{Updating a directory}\newline
@@ -541,14 +621,14 @@ To commit changes you have applied to your local copy, your file must be in
 sync with the repository: your changes must be done to the
 latest version, otherwise CVS will instruct you to perform an {\bf
 update} first. To commit changes made to a file {\tt ./foobar}, type\\
-{\tt cvs commit -m ``Reason for the change'' ./foobar}\\
+{\tt cvs commit -m "Reason for the change" ./foobar}\\
 You may specify several files to commit.
 
 \item\textbf{Adding and committing a new file}\newline
 Adding a new file to the repository is a two fold procedure you first
 schedule the file for addition, then you commit it:\\
 {\tt cvs add ./newfoo}\\
-{\tt cvs commit -m ``new few message'' ./newfoo}
+{\tt cvs commit -m "new few message" ./newfoo}
 
 \item\textbf{Creating a new thorn}\newline
 To add a new module to the Cactus repository, (e.g. an additional Cactus
@@ -559,7 +639,7 @@ CVS steps apply as well to adding to a locally hosted CVS repository (except
 that the CVSROOT option has to be changed to your local host).
 To perform the addition, type\\
 {\tt cvs -d :pserver:}{\em your\_login}{\tt
-@cvs.cactuscode.org:/usr/users/cactus }{\em arrangement\_name} {\tt start V1}\\
+@cvs.cactuscode.org:/cactus }{\em arrangement\_name} {\tt start V1}\\
 where {\tt start} and {\tt V1} are the vendor and release tags, which
 have to be supplied. 
 \end{description}
@@ -583,7 +663,7 @@ emacs if you add either of the following lines to your {\tt .emacs} file:\\
 where {\tt CACTUS\_HOME } is your Cactus directory.\\
 
 You can now easily navigate your Cactus Flesh and Toolkits by searching for
-functions or ``tags'':
+functions or "tags":
 \begin{enumerate}
 \item \textbf{ Alt.} will find a tag
 \item \textbf{ Alt,} will find the next matching tag
