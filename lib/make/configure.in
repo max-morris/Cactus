@@ -353,8 +353,11 @@ AC_SUBST(F77FLAGS)
 
 dnl Checks for library functions.
 
-AC_CHECK_FUNCS(mkdir) 
-AC_CHECK_FUNCS(scandir) 
+AC_CHECK_FUNCS(mkdir)
+AC_CHECK_FUNCS(scandir, ,
+               SAVED_LDFLAGS="$LDFLAGS" \
+               LDFLAGS="$LDFLAGS -L/usr/ucblib" \
+               AC_CHECK_LIB(ucb, scandir, AC_DEFINE(HAVE_SCANDIR), LDFLAGS="$SAVED_LDFLAGS"))
 
 # Check if we have mode_t available 
 AC_MSG_CHECKING([if mode_t is defined])
