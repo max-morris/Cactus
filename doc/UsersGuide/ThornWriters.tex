@@ -889,7 +889,7 @@ have stencil size 2, etc.
 Now, if you evolve the above scheme, it becomes apparent that at each iteration the number
 of grid points you can evolve decreases by one at each edge (see figure \ref{fig:noghost}).
 
-\begin{figure}[h]
+\begin{figure}[ht]
 \begin{center}
 \includegraphics[angle=0,width=8cm]{1dnoghost.eps}
 \end{center}
@@ -957,7 +957,7 @@ staggering each direction ({\tt stagger=CC}) is shown in (C). The full
 staggering in (D) ({\tt stagger=PP}) obeyes the same rules, but is
 rather unusual; included here for completeness. 
 
-\begin{figure}[h]
+\begin{figure}[ht]
   \def\epsfsize#1#2{0.45#1}
 \begin{center}
 \includegraphics[angle=0,width=8cm]{staggering1.eps}
@@ -968,7 +968,7 @@ staggerings. (a) : {\tt MC}, (b): {\tt CM}, (c): {\tt CC}, (d): {\tt
 PP}. Note that the staggering of gridfunctions does change its
 index. The staggered gridpoints and the corresponding unstaggered
 points (arrows) are accessed by the same indices.} 
-\label{fig:stagger2}
+\label{fig:stagger1}
 \end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1480,7 +1480,7 @@ x-direction: {\em directional staggerindex} = CCTK\_STAGGER\_C (value 1).
 \end{Lentry}
 
 
-\begin{figure}[h]
+\begin{figure}[ht]
   \def\epsfsize#1#2{0.45#1}
 \begin{center}
 \includegraphics[angle=0,width=10cm]{staggering2.eps}
@@ -1949,7 +1949,7 @@ Provides the local range of a coordinate on a processor for
 
 To allow flexible IO, the flesh itself does not provide 
 any output routines, however it provides a mechanism for 
-thorns to register different routines as IO methods (see chapter \ref{chap:io_methods}).
+thorns to register different routines as IO methods (see chapter \ref{chap:iome}).
 Application thorns can interact with the different IO methods through the
 following function calls:
 

@@ -67,7 +67,7 @@ available from C, not all are currently available from Fortran.
   Returns the Exponentiation of a complex number (only C) [not yet available]
 
 \item[CCTK\_CmplxImag]
-  [\pageref{CmplxReal}]
+  [\pageref{CmplxImag}]
   Returns the imaginary part of a complex number (only C)
 
 \item[CCTK\_CmplxLog]
@@ -291,9 +291,9 @@ available from C, not all are currently available from Fortran.
 \item[CCTK\_QueryGroupStorageI] 
   [\pageref{QueryGroupStorageI}] 
 
-\item[CCTK\_Reduce] 
-  [\pageref{Reduce}] 
-  Perform a reduction operation using a registered operator
+%\item[CCTK\_Reduce] 
+%  [\pageref{Reduce}] 
+%  Perform a reduction operation using a registered operator
 
 \item[CCTK\_ReductionHandle] 
   [\pageref{ReductionHandle}] 
@@ -506,6 +506,319 @@ available from C, not all are currently available from Fortran.
 %%%%%
 % CCC
 %%%%%
+
+
+\begin{CCTKFunc}{CCTK\_Cmplx}{Turns two real numbers into a complex number}
+\label{Cmplx}
+\subroutine{CCTK\_COMPLEX}{}{cmpno}
+\argument{CCTK\_REAL}{}{realpart}
+\argument{CCTK\_REAL}{}{imagpart}
+\showcargs
+\begin{params}
+\parameter{cmpno}{The complex number}
+\parameter{realpart}{The real part of the complex number}
+\parameter{imagpart}{The imaginary part of the complex number}
+\end{params}
+\begin{discussion}
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\hfill {\bf C} && {\t cmpno = CCTK\_Cmplx(re,im)};
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
+
+\begin{CCTKFunc}{CCTK\_CmplxAbs}{Absolute value of a complex number}
+\label{CmplxAbs}
+\subroutine{CCTK\_COMPLEX}{}{absval}
+\argument{CCTK\_COMPLEX}{}{inval}
+\showcargs
+\begin{params}
+\parameter{absval}{The computed absolute value}
+\parameter{realpart}{The complex number who absolute value is to be returned}
+\end{params}
+\begin{discussion}
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\hfill {\bf C} && {\t absval = CCTK\_CmplxAbs(inval)};
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
+
+\begin{CCTKFunc}{CCTK\_CmplxAdd}{Sum of two complex numbers}
+\label{CmplxAdd}
+\subroutine{CCTK\_COMPLEX}{}{addval}
+\argument{CCTK\_COMPLEX}{}{inval1}
+\argument{CCTK\_COMPLEX}{}{inval2}
+\showcargs
+\begin{params}
+\parameter{addval}{The computed added value}
+\parameter{inval1}{The first complex number to be summed}
+\parameter{inval2}{The second complex number to be summed}
+\end{params}
+\begin{discussion}
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\hfill {\bf C} && {\t addval = CCTK\_CmplxAdd(inval1,inval2)};
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
+\begin{CCTKFunc}{CCTK\_CmplxConjg}{Complex conjugate of a complex number}
+\label{CmplxConjg}
+\subroutine{CCTK\_COMPLEX}{}{conjgval}
+\argument{CCTK\_COMPLEX}{}{inval}
+\showcargs
+\begin{params}
+\parameter{conjval}{The computed conjugate}
+\parameter{inval}{The complex number to be conjugated}
+\end{params}
+\begin{discussion}
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\hfill {\bf C} && {\t conjgval = CCTK\_CmplxConjg(inval)};
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
+\begin{CCTKFunc}{CCTK\_CmplxCos}{Cosine of a complex number}
+\label{CmplxCos}
+\subroutine{CCTK\_COMPLEX}{}{cosval}
+\argument{CCTK\_COMPLEX}{}{inval}
+\showcargs
+\begin{params}
+\parameter{cosval}{The computed cosine}
+\parameter{inval}{The complex number to be cosined}
+\end{params}
+\begin{discussion}
+{\bf NOT YET AVAILABLE}
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\hfill {\bf C} && {\t cosval = CCTK\_CmplxCos(inval)};
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
+
+\begin{CCTKFunc}{CCTK\_CmplxDiv}{Division of two complex numbers}
+\label{CmplxDiv}
+\subroutine{CCTK\_COMPLEX}{}{divval}
+\argument{CCTK\_COMPLEX}{}{inval1}
+\argument{CCTK\_COMPLEX}{}{inval2}
+\showcargs
+\begin{params}
+\parameter{divval}{The divided value}
+\parameter{inval1}{The enumerator}
+\parameter{inval1}{The denominator}
+\end{params}
+\begin{discussion}
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\hfill {\bf C} && {\t divval = CCTK\_CmplxDiv(inval1,inval2)};
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
+
+\begin{CCTKFunc}{CCTK\_CmplxExp}{Exponent of a complex number}
+\label{CmplxExp}
+\subroutine{CCTK\_COMPLEX}{}{expval}
+\argument{CCTK\_COMPLEX}{}{inval}
+\showcargs
+\begin{params}
+\parameter{expval}{The computed exponent}
+\parameter{inval}{The complex number to be exponented}
+\end{params}
+\begin{discussion}
+{\bf NOT YET AVAILABLE}
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\hfill {\bf C} && {\t expval = CCTK\_CmplxExp(inval)};
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
+\begin{CCTKFunc}{CCTK\_CmplxImag}{Imaginary part of a complex number}
+\label{CmplxImag}
+\subroutine{CCTK\_REAL}{}{imval}
+\argument{CCTK\_COMPLEX}{}{inval}
+\showcargs
+\begin{params}
+\parameter{imval}{The imaginary part}
+\parameter{inval}{The complex number}
+\end{params}
+\begin{discussion}
+The imaginary part of a complex number $z=a+bi$ is $b$.
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\hfill {\bf C} && {\t imval = CCTK\_CmplxImag(inval)};
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
+\begin{CCTKFunc}{CCTK\_CmplxLog}{Logarithm of a complex number}
+\label{CmplxLog}
+\subroutine{CCTK\_COMPLEX}{}{logval}
+\argument{CCTK\_COMPLEX}{}{inval}
+\showcargs
+\begin{params}
+\parameter{logval}{The computed logarithm}
+\parameter{inval}{The complex number}
+\end{params}
+\begin{discussion}
+{\bf NOT YET AVAILABLE}
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\hfill {\bf C} && {\t logval = CCTK\_CmplxLog(inval)};
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
+\begin{CCTKFunc}{CCTK\_CmplxMul}{Multiplication of two complex numbers}
+\label{CmplxMul}
+\subroutine{CCTK\_COMPLEX}{}{mulval}
+\argument{CCTK\_COMPLEX}{}{inval1}
+\argument{CCTK\_COMPLEX}{}{inval2}
+\showcargs
+\begin{params}
+\parameter{mulval}{The product}
+\parameter{inval1}{First complex number to be multiplied}
+\parameter{inval2}{Second complex number to be multiplied}
+\end{params}
+\begin{discussion}
+The product of two complex numbers $z_1=a_1+b_1 i$ and $z_2=a_2+b_2 i$ is
+$z=(a_1 a_2 - b_1 b_2) + (a_1 b_2 + a_2 b_1)i$.
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\hfill {\bf C} && {\t mulval = CCTK\_CmplxMul(inval1,inval2)};
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
+
+
+\begin{CCTKFunc}{CCTK\_CmplxReal}{Real part of a complex number}
+\label{CmplxReal}
+\subroutine{CCTK\_REAL}{}{reval}
+\argument{CCTK\_COMPLEX}{}{inval}
+\showcargs
+\begin{params}
+\parameter{reval}{The real part}
+\parameter{inval}{The complex number}
+\end{params}
+\begin{discussion}
+The real part of a complex number $z=a+bi$ is $a$.
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\hfill {\bf C} && {\t reval = CCTK\_CmplxReal(inval)};
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
+\begin{CCTKFunc}{CCTK\_CmplxSin}{Sine of a complex number}
+\label{CmplxSin}
+\subroutine{CCTK\_COMPLEX}{}{sinval}
+\argument{CCTK\_COMPLEX}{}{inval}
+\showcargs
+\begin{params}
+\parameter{sinval}{The computed sine}
+\parameter{inval}{The complex number to be Sined}
+\end{params}
+\begin{discussion}
+{\bf NOT YET AVAILABLE}
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\hfill {\bf C} && {\t sinval = CCTK\_CmplxSin(inval)};
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
+
+\begin{CCTKFunc}{CCTK\_CmplxSub}{Subtraction of two complex numbers}
+\label{CmplxSub}
+\subroutine{CCTK\_COMPLEX}{}{subval}
+\argument{CCTK\_COMPLEX}{}{inval1}
+\argument{CCTK\_COMPLEX}{}{inval2}
+\showcargs
+\begin{params}
+\parameter{addval}{The computed subtracted value}
+\parameter{inval1}{The complex number to be subtracted from}
+\parameter{inval2}{The complex number to subtract}
+\end{params}
+\begin{discussion}
+If $z_1=a_1 + b_1 i$ and $z_2 = a_2+ b_2 i$ then 
+$$
+z_1-z_2 = (a_1-a_2)+ (b_1 - b_2)i
+$$
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\hfill {\bf C} && {\t subval = CCTK\_CmplxSub(inval1,inval2)};
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
+\begin{CCTKFunc}{CCTK\_CmplxSqrt}{Square root of a complex number}
+\label{CmplxSqrt}
+\subroutine{CCTK\_COMPLEX}{}{sqrtval}
+\argument{CCTK\_COMPLEX}{}{inval}
+\showcargs
+\begin{params}
+\parameter{expval}{The computed square root}
+\parameter{inval}{The complex number to be square rooted}
+\end{params}
+\begin{discussion}
+{\bf NOT YET AVAILABLE}
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\hfill {\bf C} && {\t sqrtval = CCTK\_CmplxSqrt(inval)};
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
+
 
 \begin{CCTKFunc}{CCTK\_CoordSystemDim}{Give the dimension for a given coordinate system.}
 \label{CoordDim}
@@ -2051,8 +2364,35 @@ checked.
 % RRR
 %%%%%
 
+\begin{CCTKFunc}{CCTK\_ReductionHandle}{Handle for given reduction method}
+\label{ReductionHandle}
+\function{int}{integer}{handle}
+\argument{const char *}{character*(*)}{reduction}
+\showargs
+\begin{params}
+\parameter{handle}{handle returned for this method}
+\parameter{name}{name of the reduction method required}
+\end{params}
+\begin{discussion}
+Reduction methods should be registered at {\t CCTK\_STARTUP}. Note that
+integer reduction handles are used to call {\t CCTK\_Reduce} to avoid
+problems with passing Fortran strings. Note that the name of the reduction
+operator is case dependent.
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\hfill {\bf C} && {\t handle = CCTK\_ReductionHandle("maximum") };
+\\
+\hfill {\bf Fortran} && {\t call CCTK\_ReductionHandle(handle,"maximum")}
+\\
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
 
-% cctk_IOMethods.h
+
+
 \begin{CCTKFunc}{CCTK\_RegisterIOMethod}{}
 \label{RegisterIOMethod}
 \function{int}{integer}{handle}
