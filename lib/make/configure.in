@@ -13,6 +13,9 @@ AC_REVISION($Id$)
 AC_INIT()
 AC_CONFIG_HEADER(config.h)
 
+dnl Check the system type
+AC_CANONICAL_SYSTEM
+
 dnl Checks for programs.
 AC_PROG_MAKE_SET
 AC_PROG_CC
