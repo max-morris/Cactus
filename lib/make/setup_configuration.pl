@@ -150,9 +150,10 @@ sub SetConfigureEnv
   # Set variables from makefile command line first
   $commandline = $ENV{"MAKEFLAGS"};
   $line_number = 0;
-  while ($commandline =~ /^(.*)\s+(\w*)\s*=\s*([_+\-\.\w\\\/\s]*)\s*$/)
+#  while ($commandline =~ /^(.*)\s+(\w+)\s*=\s*([_+\-\.\w\\\/\s]*)\s*/)
+  while ($commandline =~ /^(.*)\s*\b(\w+)\s*=\s*(.*)\s*$/)
   {
-    if ($2 ne "options")
+    if ($2 ne "options" && $2 ne "SILENT")
     {
       if (!$line_number)
       {
@@ -323,8 +324,11 @@ sub AddQuotes
   if ($arg =~ /\\/)
   {
     $arg =~ s:\\::g;
-    $arg = "\"$arg\"";
+    $arg = "\'$arg\'";
   }
+
+  # When we grab an arg off the MAKEFLAGS it has $s doubled.
+  $arg =~ s/\$\$/\$/g;
 
   return $arg;
 }
