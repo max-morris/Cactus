@@ -1639,8 +1639,11 @@ static int ParseOption(t_attribute *attribute,
   }
   else
   {
-    CCTK_Warn(1,__LINE__,__FILE__,"Cactus",
-              "ParseOption: Unknown option for schedule item.\n");
+    CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
+               "ParseOption: Unknown option \"%s\" for schedule item %s::%s (scheduled at %s)",
+               option,
+               attribute->FunctionData.thorn, attribute->FunctionData.routine,
+               attribute->FunctionData.where);
   }
 
   return 0;
