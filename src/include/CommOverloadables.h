@@ -10,6 +10,7 @@
  @@*/
 
 #include "cctk_Flesh.h"
+#include "cctk_GroupsOnGH.h"
 
 #ifdef ARGUMENTS
 #undef ARGUMENTS
@@ -63,6 +64,12 @@ OVERLOADABLE(ArrayGroupSizeB)
 #undef RETURN_TYPE
 #define RETURN_TYPE int
 OVERLOADABLE(QueryGroupStorageB)
+
+#undef ARGUMENTS
+#define ARGUMENTS cGH *GH, int group, cGroupDynamicData *data
+#undef RETURN_TYPE
+#define RETURN_TYPE int
+OVERLOADABLE(GroupDynamicData)
 
 #undef ARGUMENTS
 #undef RETURN_TYPE
