@@ -1,7 +1,7 @@
 
 Cactus Code Frequently Asked Questions
 
-$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.48 2002-09-22 13:58:31 allen Exp $
+$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.49 2002-09-26 06:38:30 allen Exp $
 
 Also available at http://www.cactuscode.org/Documentation/FAQ
 
@@ -129,6 +129,10 @@ C27 (Linux IA64) I get a segmentation violation compiling snprintf.c in
 
 C28 On linking I get an "unresolved text symbol" for a scheduled function 
     called from libCactusBindings.a
+
+C29 (Linux) Using the Intel Fortran compiler I get the error "/usr/bin/ld
+    cannot find -lintrins" on linking.
+
 
 ------------------------------------------------------------------------------
 Running:
@@ -772,6 +776,13 @@ C28 On linking I get an "unresolved text symbol" for a scheduled function
     If this is what happened, touch the relevant source file and try 
     compiling again. It may be that you will need to switch optimisations off
     for this file, or split up the troublesome code into smaller components.
+
+C29 (Linux) Using the Intel Fortran compiler I get the error "/usr/bin/ld
+    cannot find -lintrins" on linking.
+
+    Set the environment variable IA32ROOT to point to the location of your
+    Intel compiler installation (eg /opt/intel/compiler60/ia32). You will
+    need to reconfigure, and then try building your executable again.
 
 
 ------------------------------------------------------------------------------
