@@ -1,7 +1,7 @@
 
 Cactus Code Frequently Asked Questions
 
-$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.7 2000-06-19 14:48:25 allen Exp $
+$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.8 2000-07-11 10:54:36 lanfer Exp $
 
 The latest version of this FAQ is always available from the main Cactus Code web
 site at <http://www.cactuscode.org/Documentation/FAQ
@@ -102,5 +102,14 @@ site at <http://www.cactuscode.org/Documentation/FAQ
    endif
 
    we will try to modify the make system to make more automatic in the future.
+
+-------------------------------------------------------------------------------------
+
+10)On my SUN I start a configuration process with gmake, but on the second 
+   gmake it wants to set up the configuration again and a again .... Why is this ?
+
+   You are using a version of gmake which is too outdated (even though
+   this version may pefectly work on other architectures). We found
+   that GNU Make version 3.79 works fine.
 
 -------------------------------------------------------------------------------------
