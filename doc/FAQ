@@ -1,7 +1,7 @@
 
 Cactus Code Frequently Asked Questions
 
-$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.64 2003-03-24 17:49:00 allen Exp $
+$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.65 2003-07-18 22:33:53 allen Exp $
 
 Also available at http://www.cactuscode.org/Documentation/FAQ
 
@@ -144,35 +144,9 @@ C31 I just want to check that one thorn compiles correctly, can I test
 
 C32 What is the Cactus c-preprocessor (Cactus cpp) ? 
 
-    Part of the pre-processing step for Fortran files involves the use of
-    the C-preprocessor.  On some architectures the native CPP does not
-    correctly handle spaces in source files, and thus corrupts the
-    resulting file.  On other machines there is no native way to generate
-    dependency information for files.  In an attempt to solve these problems
-    we have written a replacement of CPP in perl, which you may use if you
-    configure with
-
-      CPP='$${PERL} $${CCTK_HOME}/lib/sbin/cpp.pl'
-
-    or in an options file without the quotes
-
-      CPP=$${PERL} $${CCTK_HOME}/lib/sbin/cpp.pl
-
-    The Cactus preprocessor is still being developed and improved, known 
-    problems include
-
-      - only currently supports #ifdef, #if defined for a single token and
-        not operations involving more than one token connected by && and ||, 
-        etc
-      - problems with macros whose overall expansion contains the original 
-        macro name
-
-    The Cactus make system does not use the standalone CPP to preprocess C
-    source files, as the first step of a C compilation involves the use of
-    a CPP (normally internal).  In any case we do not recommend the use of
-    this perl CPP to process C files, partly due to the above problems, and
-    partly as the preprocessor does not pre-define certain symbols which
-    the native preprocessor would..
+C33 I'm working on a machine where a compiler problem means that I 
+    need to compile a particular thorn with a lower optimisation level. 
+    Is there an easy way to do this? 
 
 
 ------------------------------------------------------------------------------
@@ -943,6 +917,52 @@ C31 I just want to check that one thorn compiles correctly, can I test
     not link any thorn libraries together).
 
 C32 What is the Cactus c-preprocessor (Cactus cpp) ? 
+
+    Part of the pre-processing step for Fortran files involves the use of
+    the C-preprocessor.  On some architectures the native CPP does not
+    correctly handle spaces in source files, and thus corrupts the
+    resulting file.  On other machines there is no native way to generate
+    dependency information for files.  In an attempt to solve these problems
+    we have written a replacement of CPP in perl, which you may use if you
+    configure with
+
+      CPP='$${PERL} $${CCTK_HOME}/lib/sbin/cpp.pl'
+
+    or in an options file without the quotes
+
+      CPP=$${PERL} $${CCTK_HOME}/lib/sbin/cpp.pl
+
+    The Cactus preprocessor is still being developed and improved, known 
+    problems include
+
+      - only currently supports #ifdef, #if defined for a single token and
+        not operations involving more than one token connected by && and ||, 
+        etc
+      - problems with macros whose overall expansion contains the original 
+        macro name
+
+    The Cactus make system does not use the standalone CPP to preprocess C
+    source files, as the first step of a C compilation involves the use of
+    a CPP (normally internal).  In any case we do not recommend the use of
+    this perl CPP to process C files, partly due to the above problems, and
+    partly as the preprocessor does not pre-define certain symbols which
+    the native preprocessor would..
+
+C33 I'm working on a machine where a compiler problem means that I 
+    need to compile a particular thorn with a lower optimisation level. 
+    Is there an easy way to do this? 
+
+    Yes, if you want to change the optimisation for one thorn, you can 
+    add to the make.code.defn in the thorn, e.g. 
+
+    C_OPTIMISE_FLAGS = <new flags>
+    CXX_OPTIMISE_FLAGS = <new flags>
+    F77_OPTIMISE_FLAGS = <new flags>
+    F90_OPTIMISE_FLAGS = <new flags>
+
+    These flags will then only apply for the particular thorn. These flags
+    will be machine/compiler specific, so you only want to add them for 
+    the problematic machine.
 
 
 ------------------------------------------------------------------------------
