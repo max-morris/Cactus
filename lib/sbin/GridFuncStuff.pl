@@ -1276,7 +1276,7 @@ sub VerifyParameterExpression
   }
 
   # Now split the string on operators and parentheses
-  @fields = split(/([-+*\/()]+)/, $expression);
+  @fields = split(/([-+*\/()])/, $expression);
 
   for $i (@fields)
   {
