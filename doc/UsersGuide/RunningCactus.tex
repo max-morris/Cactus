@@ -299,10 +299,16 @@ will compile the code.  The first time it generates a compile
 \section{Creating a configuration}
 \label{sec:coaco}
 
-At its simplest, this is done by {\tt gmake <config>}.  This generates
-a configuration with the name {\tt config}, doing its best to automatically
-determine the default compilers and compilation flags suitable for the current 
-architecture.
+At its simplest, this is done by {\tt gmake <config>}\footnote
+%
+{A note on the Cactus make system --- if at any point it prompts you
+to enter something, the default value, which will be assumed if you
+simply press enter, is shown in parantheses.}
+%
+.  This generates a
+configuration with the name {\tt config}, doing its best to
+automatically determine the default compilers and compilation flags
+suitable for the current architecture.
 
 There are a number of additional command line arguments which may be supplied 
 to override some parts of the procedure.
@@ -341,7 +347,7 @@ set on the command line will take priority over (potentially
 conflicting) options set in \texttt{\~{ }/.cactus/config}.
 
 It is important to note that these methods cannot be used to, for example, add
-options to the default values for {\tt CFLAGS}.  Setting {\tt CFLAGS} in the
+options to the default values for {\tt CFLAGS}.  Setting any variable in the
 configuration file or the command line will overwrite completely the 
 default values.
 
