@@ -141,13 +141,27 @@ sub get_thorns
     my(%info);
     my($thorn);
 
-    print "\nYou already have thorns: \n\n";
+    print "\nYou already have thorns: ";
     
     %info = &buildthorns("arrangements/","thorns");
     
+    $last_arr = "";
     foreach $thorn (sort keys %info)
     {
-      print "$thorn ";
+      # Parse of the arrangement name
+      $thorn =~ m:(.*)/(.*):;
+      $this_arr = $1;
+      $this_tho = $2;
+      if ($last_arr ne $this_arr)
+      {
+	print "\n\n$this_arr:\n";
+	print "  $this_tho ";
+      }
+      else
+      {
+	print "$this_tho ";
+      }
+      $last_arr = $this_arr;
     }
 
     print "\n\nAvailable thorns: \n";
@@ -504,3 +518,6 @@ sub RepositoryExists
 
 
 }
+
+
+
