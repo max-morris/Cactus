@@ -1132,6 +1132,7 @@ static t_attribute *CreateAttribute(const char *description,
                                     int n_options,
                                     va_list *ap)
 {
+  char *timername;
   t_attribute *this;
 
   this = (t_attribute *)malloc(sizeof(t_attribute));
@@ -1188,8 +1189,10 @@ static t_attribute *CreateAttribute(const char *description,
       this->FunctionData.n_SyncGroups = n_sync_groups;
 
       /* Add a timer to the item */
-
-      this->timer_handle = CCTK_TimerCreateI();
+      timername = (char *) malloc (strlen (thorn) + strlen (description) + 3);
+      sprintf (timername, "%s: %s", thorn, description);
+      this->timer_handle = CCTK_TimerCreate(timername);
+      free (timername);
     }
     else
     {
