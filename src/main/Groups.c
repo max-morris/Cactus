@@ -13,6 +13,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
+#include <regex.h>
 
 #include "cctk_Constants.h"
 #include "cctk_WarnLevel.h"
@@ -93,6 +94,14 @@ void CCTK_FCALL CCTK_FNAME (CCTK_GroupDimFromVarI)
                            (int *dim,
                             const int *vi);
 
+
+/********************************************************************
+ ***********************    Other Routines   ************************
+ ********************************************************************/
+int CCTK_RegexMatch(const char *string,
+                    const char *pattern,
+                    const int nmatch,
+                    regmatch_t *pmatch);
 
 /********************************************************************
  ********************    Internal Typedefs   ************************
@@ -2042,8 +2051,9 @@ static cGroupDefinition *CCTKi_SetupGroup (const char *implementation,
    @date       Sun Nov 28 12:38:38 1999
    @author     Tom Goodale
    @desc
-               Extracts the size array from a comma-separated list
-               of parameter names.
+               Extracts the size array from a comma-separated list of
+               positive integer constants or parameter names (which can
+               have an optional integer constant added/substracted to/from it).
    @enddesc
 
    @returntype CCTK_INT **
@@ -2055,82 +2065,100 @@ static CCTK_INT **CCTKi_ExtractSize (int dimension,
                                      const char *this_thorn,
                                      const char *sizestring)
 {
-  int         i,
-              type;
-  CCTK_INT   *this_size,
-            **size_array;
-  const char *last_comma,
-             *next_comma,
-             *thorn;
-  char       *thorn_impl,
-             *param,
-              tmp[200];
+  int         dim, type;
+  CCTK_INT   *this_size, **size_array;
+  const char *last_comma, *next_comma;
+  char       *thorn, *param, *tmp;
+  regmatch_t  pmatch[5];
 
 
   if (strlen (sizestring))
   {
-
     size_array = (CCTK_INT **) malloc (dimension * sizeof (CCTK_INT *));
 
     next_comma = sizestring;
 
     if (size_array)
     {
-      for (i=0; i < dimension; i++)
+      for (dim = 0; dim < dimension; dim++)
       {
+        /* find the comma as a delimiter for different dimension sizes */
         last_comma = next_comma[0] == ',' ? next_comma+1 : next_comma;
         next_comma = strstr (last_comma, ",");
 
+        /* copy dimension size token into a work string buffer */
+        tmp = strdup (last_comma);
         if (next_comma)
         {
-          strncpy (tmp, last_comma, next_comma-last_comma);
           tmp[next_comma-last_comma] = '\0';
         }
-        else
-        {
-          strcpy (tmp, last_comma);
-        }
 
-        /* check whether the parameter was given with its full name */
-        thorn_impl = param = NULL;
-        if (Util_SplitString (&thorn_impl, &param, tmp, "::") == 0)
-        {
-          thorn = thorn_impl;
-        }
-        else
-        {
-          thorn = this_thorn;
-          param = tmp;
-        }
-
-        /* check if such a parameter exists at all */
-        this_size = (CCTK_INT *) CCTK_ParameterGet (param, thorn, &type);
-        if (! this_size)
+        /* now execute the regex parser on that token
+           This should always succeed since the perl parser did the same
+           check already when creating the variable bindings. */
+        if (CCTK_RegexMatch (tmp, "(^[0-9]+)|([A-Za-z][A-Za-z0-9_]*)"
+                                  "(::[A-Za-z][A-Za-z0-9_]*)?([+-][0-9]+)?",
+                             5, pmatch) <= 0)
         {
           CCTK_VWarn (0, __LINE__, __FILE__, "Cactus",
-                      "CCTKi_ExtractSize: '%s::%s' is not a parameter",
-                      thorn, param);
+                      "CCTKi_ExtractSize: invalid syntax in size specification "
+                      "'%s'", tmp);
         }
 
-        /* check if the parameter is of type INTEGER */
-        if (type != PARAMETER_INTEGER)
+        /* check for constant size */
+        if (pmatch[1].rm_so >= 0)
         {
-          CCTK_VWarn (0, __LINE__, __FILE__, "Cactus",
-                      "CCTKi_ExtractSize: parameter '%s::%s' is not of type "
-                      "INTEGER", thorn, param);
+          size_array[dim] = (CCTK_INT *) malloc (sizeof (CCTK_INT));
+          *size_array[dim] = (CCTK_INT) atoi (tmp + pmatch[0].rm_so);
         }
-
-        /* okay, store the size value */
-        size_array[i] = this_size;
-
-        if (thorn_impl)
+        else
         {
-          free (thorn_impl);
-        }
-        if (param != tmp)
-        {
+          /* it's a parameter name, either given as basename or fullname */
+          if (pmatch[3].rm_so >= 0)
+          {
+            thorn = strdup (tmp + pmatch[2].rm_so);
+            thorn[pmatch[2].rm_eo - pmatch[2].rm_so] = 0;
+            param = strdup (tmp + pmatch[3].rm_so + 2);
+            param[pmatch[3].rm_eo - pmatch[3].rm_so - 2] = 0;
+          }
+          else
+          {
+            thorn = strdup (this_thorn);
+            param = strdup (tmp + pmatch[2].rm_so);
+            param[pmatch[2].rm_eo - pmatch[2].rm_so] = 0;
+          }
+
+          /* check if such a parameter exists at all */
+          this_size = (CCTK_INT *) CCTK_ParameterGet (param, thorn, &type);
+          if (! this_size)
+          {
+            CCTK_VWarn (0, __LINE__, __FILE__, "Cactus",
+                        "CCTKi_ExtractSize: '%s::%s' is not a parameter",
+                        thorn, param);
+          }
+
+          /* check if the parameter is of type INTEGER */
+          if (type != PARAMETER_INTEGER)
+          {
+            CCTK_VWarn (0, __LINE__, __FILE__, "Cactus",
+                        "CCTKi_ExtractSize: parameter '%s::%s' is not of "
+                        "type INTEGER", thorn, param);
+          }
+
+          /* okay, store the size value */
+          size_array[dim] = this_size;
+
+          /* check for an optional constant (includes sign character) */
+          if (pmatch[4].rm_so >= 0)
+          {
+            *size_array[dim] += atoi (tmp + pmatch[2].rm_so);
+          }
+
+          free (thorn);
           free (param);
         }
+
+        free (tmp);
       }
     }
   }
