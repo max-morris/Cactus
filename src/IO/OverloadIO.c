@@ -61,7 +61,7 @@ CCTK_FILEVERSION (IO_OverloadIO_c)
 int CCTKi_SetupIOFunctions(void)
 {
 
-#define OVERLOADABLE(name) OVERLOADABLE_CHECK(name)
+#define OVERLOADABLE(name) OVERLOADABLE_INITIALISE(name)
 
   /* There are default versions for all overloadable IO functions */
 #define CCTKi_DummyOutputGH     CactusDefaultOutputGH
