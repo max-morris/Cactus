@@ -98,13 +98,13 @@ sub BuildHeaders
 	}
          
 	$data{"$inc_file2"} .= "#ifdef FCODE\n";
-#	$data{"$inc_file2"} .= "      if (CCTK_IsThornActive(\"$thorn\").eq.1) then\n";
+	$data{"$inc_file2"} .= "      if (CCTK_IsThornActive(\"$thorn\").eq.1) then\n";
 	$data{"$inc_file2"} .= "#else\n"; 
 	$data{"$inc_file2"} .= "if (CCTK_IsThornActive(\"$thorn\")){\n";
 	$data{"$inc_file2"} .= "#endif\n";           
 	$data{"$inc_file2"} .= "$tmpline\n";
 	$data{"$inc_file2"} .= "#ifdef FCODE\n";
-#	$data{"$inc_file2"} .= "      end if\n";
+	$data{"$inc_file2"} .= "      end if\n";
 	$data{"$inc_file2"} .= "#else\n"; 
 	$data{"$inc_file2"} .= "\n}\n";
 	$data{"$inc_file2"} .= "#endif\n";           
