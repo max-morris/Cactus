@@ -114,7 +114,7 @@ sub read_file
     
     next if(m/^\s+$/);
     
-    chompme($_);
+    &chompme($_);
     
     push(@indata, $_);
   }
