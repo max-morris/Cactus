@@ -91,7 +91,7 @@ sub write_rfr_header {
   $header .= "#include \"declare_parameters.h\"\n";
   $header .= "#include \"declare_arguments.h\"\n";
   $header .= "\n";
-  $header .= "$routine (cGH *GH)\n";
+  $header .= "void $routine (cGH *GH)\n";
   $header .= "{\n";
   $header .= "  DECLARE_PARAMETERS\n";
   $header .= "  int index;\n\n";
@@ -113,7 +113,7 @@ sub write_startup_header {
   print OUTSTART "#include \"rfr_constants.h\"\n";
   print OUTSTART "#include \"declare_parameters.h\"\n";
   print OUTSTART "\n";
-  print OUTSTART "$routine (void *data)\n";
+  print OUTSTART "void $routine (void *data)\n";
   print OUTSTART "{\n";
   print OUTSTART "  DECLARE_PARAMETERS\n";
   print OUTSTART "\n";
@@ -517,7 +517,7 @@ sub fortran_wrapper {
 
    void FORTRAN_NAME($routine)($THORN_C2F_PROTO);
 
-   $wrapper(CCTK_CARGUMENTS) {
+   void $wrapper(CCTK_CARGUMENTS) {
 
    DECLARE_CCTK_CARGUMENTS
    DECLARE_$THORN_C2F
