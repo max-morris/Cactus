@@ -663,17 +663,30 @@ schedule the file for addition, then you commit it:\\
 {\tt cvs commit -m "new few message" ./newfoo}
 
 \item\textbf{Creating a new thorn}\newline
-To add a new module to the Cactus repository, (e.g. an additional Cactus
-arrangement), you have to obtain a directory on the CVS server and a
-login, which gives you administrative rights on your module. Please
-contact the {\tt cactus@cactuscode.org} for details. The following
-CVS steps apply as well to adding to a locally hosted CVS repository (except 
-that the CVSROOT option has to be changed to your local host).
-To perform the addition, type\\
+
+To add a new {\bf module} (e.g. an arrangement) to a Cactus repository we 
+first have to create a directory for you with the right permissions. 
+Please contact {\tt cactus@cactuscode.org} providing the name of the
+requested module, and who should be able to commit changes to the module.
+
+To add the new module, change directory so that you are in the first directory
+that you want to commit to the repository. (e.g. if you want to commit
+a new arrangement called {\tt MyArrange} then change directory to 
+{\tt MyArrange}). Then type\\
 {\tt cvs -d :pserver:}{\em your\_login}{\tt
-@cvs.cactuscode.org:/cactus }{\em arrangement\_name} {\tt start V1}\\
-where {\tt start} and {\tt V1} are the vendor and release tags, which
-have to be supplied. 
+@cvs.cactuscode.org:<repository name> } import {\em module\_name} {\tt start V1}\\
+(where {\tt start} and {\tt V1} are the vendor and release tags, which you could change to something different).
+
+To add a new {\bf directory} {\tt <new dir>} to an existing module (that you have write permissions for), either add the directory using\\
+{\tt cvs add <new dir>}\\
+and then recursing down adding all the new files and directories contained
+inside, or import the directory by changing directory to sit inside it, and then using\\
+{\tt cvs -d :pserver:}{\em your\_login}{\tt
+@cvs.cactuscode.org:<repository\_name> } import {\em relative name} {\tt start V1}\\
+Where {\em <relative name>} means the position of the directory within the module. (For example, if you have a module called {\em AMod} which contains a 
+directory {\em BMod}, and you want to add {\em CMod} inside {\em BMod}, then change directory to {\em BMod}, and use {\em AMod/BMod} for the {\em relative name}).
+
+ 
 \end{description}
 
 
