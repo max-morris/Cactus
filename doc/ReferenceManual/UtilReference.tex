@@ -174,6 +174,10 @@ Concatenate two strings safely.
      [\pageref{Util-Strlcpy}]
 Copy a string safely.
 
+\item[\code{Util\_StrSep}]
+     [\pageref{Util-StrSep}]
+Separate first token from a string.
+
 \end{Lentry}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -954,6 +958,152 @@ if (length >= N_buffer)
         return ERROR_TRUNC;                   /*** ERROR EXIT ***/
 
 return OK;                                    /*** NORMAL RETURN ***/
+}
+\end{verbatim}
+\end{Example}
+\end{ExampleSection}
+\end{FunctionDescription}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{FunctionDescription}{Util\_StrSep}
+\label{Util-StrSep}
+Separate off the first token from a string.
+
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+#include "util_String.h"
+char* token = Util_StrSep(const char** string_ptr, const char* delim_set);
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ResultSection}
+\begin{Result}{token}
+This function returns the original value of \verb|*string_ptr|,
+or NULL if the end of the string is reached.
+\end{Result}
+\end{ResultSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{string\_ptr}
+A non-NULL pointer to a (modifyable) non-NULL pointer to the
+(C-style NUL-terminated) string to operate on.
+\end{Parameter}
+\begin{Parameter}{delim\_set}
+A non-NULL pointer to a (C-style NUL-terminated) string representing a
+set of delimiter characters (the order of these characters doesn't matter).
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{Discussion}
+Many Unix systems define a function \verb|strsep()| which provides
+a clean way of splitting a string into ``words''.  However, some
+systems only provide the older (and inferior-in-several-ways}
+\verb|strtok()| function, so Cactus implements its own \verb|strsep()|
+function, \verb|Util_StrSep()|.
+
+\verb|Util_StrSep()| finds the first occurence in the string pointed
+to by \verb|*string_ptr| of any character in the string pointed to by
+\verb|delim_set| (or the terminating NUL if there is no such character),
+and replaces this by NUL.  The location of the next character after the
+NUL character just stored (or NULL, if the end of the string was reached)
+is stored in \verb|*string_ptr|.
+
+An ``empty'' field, i.e.\ one caused by two adjacent delimiter characters,
+can be detected (after \verb|Util_StrSep()| returns) by the test
+\verb|**string_ptr == '\0'|, or equivalently \verb|strlen(*string_ptr) == 0|.
+
+See the example section below for the typical usage of \verb|Util_StrSep()|.
+\end{Discussion}
+
+\begin{SeeAlsoSection}
+\begin{SeeAlso}{strsep()}
+Some systems provide this in the standard C library
+(prototype in \code{<string.h>}); \verb|Util_StrSep()| is a clone of this.
+\end{SeeAlso}
+\begin{SeeAlso}{strtok()}
+Inferior API for splitting a string into tokens
+(defined by the ANSI/ISO C standard).
+\end{SeeAlso}
+\end{SeeAlsoSection}
+
+\begin{ExampleSection}
+\begin{Example}{C}
+\begin{verbatim}
+#include <stdio.h>
+#include <stdlib.h>
+#include "util_String.h"
+
+/* prototypes */
+int parse_string(char* string,
+                 int N_argv, char* argv[]);
+
+/*
+ * Suppose we have a Cactus parameter  gridfn_list  containing a
+ * whitespace-separated list of grid functions.  This function
+ * "processes" (here just prints the name of) each grid function.
+ */
+void process_gridfn_list(const char* gridfn_list)
+{
+#define MAX_N_GRIDFNS   100
+int N_gridfns;
+int i;
+char* copy_of_gridfn_list;
+char* gridfn[MAX_N_GRIDFNS];
+
+copy_of_gridfn_list = Util_Strdup(gridfn_list);
+N_gridfns = parse_string(copy_of_gridfn_list,
+                         MAX_N_GRIDFNS, gridfn);
+
+        for (i = 0 ; i < N_gridfns ; ++i)
+        {
+        /* "process" (here just print the name of) each gridfn */
+        printf("grid function %d is \"%s\"\n", i, gridfn[i]);
+        }
+
+free(copy_of_gridfn_list);
+}
+
+/*
+ * This function parses a string containing whitespace-separated
+ * tokens into a main()-style argument vector (of size  N_argv ).
+ * This function returns the number of pointers stored into  argv[] .
+ *
+ * Adjacent sequences of whitespace are treated the same as single
+ * whitespace characters.
+ *
+ * Note that this function this modifies its input string; see
+ * Util_Strdup()  if this is a problem
+ */
+int parse_string(char* string,
+                 int N_argv, char* argv[])
+{
+int i;
+
+        for (i = 0 ; i < N_argv ; )
+        {
+        argv[i] = Util_StrSep(&string, " \t\n\r\v");
+        if (argv[i] == NULL)
+                { break; }      /* reached end-of-string */
+
+        if (*argv[i] == '\0')
+                {
+                /*
+                 * found a 0-length "token" (a sequence of
+                 * two or more adjacent whitespace characters)
+                 * ==> skip this "token" (don't store it)
+                 * ==> no-op here
+                 */
+                }
+           else {
+                /* token has length > 0 ==> store it */
+                ++i;
+                }
+        }
+
+return i;
 }
 \end{verbatim}
 \end{Example}
