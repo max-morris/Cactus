@@ -12,6 +12,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 
@@ -153,7 +154,7 @@ int CCTK_CreateDirectory(int mode, const char *pathname)
     if(! retval)
     {
       /* Deal with last component of path */
-      if(path - pathname < strlen(pathname))
+      if((size_t)(path - pathname) < strlen(pathname))
       {
         if(stat(pathname, &statbuf))
         {

@@ -523,7 +523,7 @@ int Util_asprintf(char **buffer, const char *fmt, ...)
 @@*/
 int Util_asnprintf(char **buffer, size_t size, const char *fmt, ...)
 {
-  int count;
+  size_t count;
   va_list args;
 
   va_start(args,fmt);

@@ -114,8 +114,9 @@ uStringList *Util_StringListCreate(int size)
 
    @returntype int
    @returndesc
-   1 - added
-   0 - duplicate
+   1  - added
+   0  - duplicate
+   -1 - internal error
    @endreturndesc
 @@*/
 int Util_StringListAdd(uStringList *list, const char *item)
@@ -134,6 +135,7 @@ int Util_StringListAdd(uStringList *list, const char *item)
   }
   else
   {
+    retval = -1;
     prev=NULL;
     for(this=list->head; this; this=this->next)
     {

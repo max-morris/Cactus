@@ -156,7 +156,7 @@ int Util_DeleteHandle(cHandledData *storage, int handle)
 {
   int return_code;
 
-  if((handle < storage->array_size)&&(handle >= 0))
+  if((handle >= 0)&&((unsigned int)handle < storage->array_size))
   {
     /* It's a valid handle. */
     storage->array[handle].in_use = FALSE;
@@ -164,7 +164,7 @@ int Util_DeleteHandle(cHandledData *storage, int handle)
     free(storage->array[handle].name);
     storage->array[handle].name = NULL;
 
-    if(handle < storage->first_unused)
+    if((unsigned int)handle < storage->first_unused)
     {
       storage->first_unused = handle;
     };
@@ -201,7 +201,7 @@ int Util_DeleteHandle(cHandledData *storage, int handle)
 
 static int FindNextUnused(cHandledData *storage, int first)
 {
-  int current;
+  unsigned int current;
 
   current = first+1;
 
@@ -238,8 +238,8 @@ void *Util_GetHandledData(cHandledData *storage, int handle)
 
   if(storage)
   {
-    if((handle < storage->array_size)&&
-       (handle >= 0)&&
+    if((handle >= 0)&&
+       ((unsigned int)handle < storage->array_size)&&
        (storage->array[handle].in_use == TRUE))
     {
       /* The data exists */
@@ -278,7 +278,7 @@ void *Util_GetHandledData(cHandledData *storage, int handle)
 int Util_GetHandle(cHandledData *storage, const char *name, void **data)
 {
   int handle;
-  int current;
+  unsigned int current;
 
   handle = -1;
 
@@ -334,8 +334,8 @@ char *Util_GetHandleName(cHandledData *storage, int handle)
 
   if(storage)
   {
-    if((handle < storage->array_size)&&
-       (handle >= 0)&&
+    if((handle >= 0)&&
+       ((unsigned int)handle < storage->array_size)&&       
        (storage->array[handle].in_use == TRUE))
     {
       /* The data exists */

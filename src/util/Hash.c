@@ -320,7 +320,7 @@ int Util_HashAdd(uHash *hash,
   /* FIXME: workaround for Hitachi compiler bug */
   volatile unsigned int location;
   int duplicate;
-  int i;
+  unsigned int i;
 
   /* Calculate the hash value if necessary */
   if(!hashval)
