@@ -241,7 +241,7 @@ void CCTKi_CommandLineHelp(void)
 	 "                                      or 1 if not given.\n");
   printf("-W, -warning-level <n>              : Sets the warning level to n.\n");
   printf("-E, -error-level <n>                : Sets the error level to n.\n");
-  printf("-r, -redirect-stderr                : Redirects standard error to files.\n");
+  printf("-r, -redirect-stdout                : Redirects standard output to files.\n");
   printf("-T, -list-thorns                    : Lists the compiled-in thorns.\n");
   printf("-t, -test-thorn-compiled <name>     : Tests for the presence of thorn <name>.\n");
   printf("-v, -version                        : Prints the version.\n");
