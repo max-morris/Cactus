@@ -8,6 +8,20 @@
 #  @version $Header$
 #@@*/
 
+#/*@@
+#  @routine    CreateScheduleBindings
+#  @date       Fri Sep 17 14:16:23 1999
+#  @author     Tom Goodale
+#  @desc 
+#  Creates the schedule bindings.
+#  @enddesc 
+#  @calls     
+#  @calledby   
+#  @history 
+#
+#  @endhistory 
+#
+#@@*/
 sub NewCreateScheduleBindings
 {
   local($bindings_dir, $n_param_database, $n_interface_database, @rest) = @_;
@@ -16,10 +30,7 @@ sub NewCreateScheduleBindings
   local(%schedule_database);
   local($start_dir);
   local($thorn);
-  local($implementation);
-  local($buffer, $prototypes);
-  local($block, $block_buffer, $block_prototype);
-  local($statement, $statement_buffer, $statement_prototype);
+  local($file_list);
 
   # Extract the parameter,interface, and schedule databases from the arguments.
   %parameter_database = @rest[0..2*$n_param_database-1];
@@ -46,45 +57,112 @@ sub NewCreateScheduleBindings
 
   chdir "Schedule";
 
+  $file_list = "";
+
   foreach $thorn (sort split(" ", $interface_database{"THORNS"}))
   {
-    $implementation = $interface_database{"\U$thorn\E IMPLEMENTS"};
+    $buffer = &ScheduleCreateFile($thorn, scalar(%interface_database), 
+				  %interface_database, %schedule_database);
 
-    $buffer = $schedule_database{"\U$thorn\E FILE"};
+    open(OUT, ">Schedule$thorn.c") || die "Unable to open Schedule$thorn.c";
 
-    for($block = 0 ; $block < $schedule_database{"\U$thorn\E N_BLOCKS"}; $block++)
-    {
-      ($block_buffer, $block_prototype) = &ScheduleBlock($thorn, $implementation, $block, 
-							 $n_param_database, $n_interface_database, @rest);
-      $buffer =~ s:\@BLOCK\@$block:$block_buffer:;
-      $prototypes .= "$block_prototype";
-    }
+    print OUT $buffer;
 
-    for($statement = 0 ; $statement < $schedule_database{"\U$thorn\E N_STATEMENTS"}; $statement++)
-    {
-      ($statement_buffer, $statement_prototype) = &ScheduleStatement($thorn, $implementation, $statement, 
-								     $n_param_database, $n_interface_database, @rest);
-      $buffer =~ s:\@STATEMENT\@$statement:$statement_buffer:;
-      $prototypes .= "$statement_prototype";
-    }
-    
-    print "---------------------------------\n";
-    print "$thorn -> $implementation\n";
-    print "Prototypes:\n";
-    print "$prototypes\n";
-    print "Buffer:\n";
-    print "$buffer\n";
-    print "---------------------------------\n";
+    close OUT;
 
+    $file_list .= " Schedule$thorn.c";
   }
 
+  chdir "$start_dir";
 }  
 
+sub ScheduleCreateFile
+{
+  local($thorn, $n_interface_database, @rest) = @_;
+  local(%interface_database);
+  local(%schedule_database);
+
+  local($implementation);
+  local($buffer, $prototypes);
+  local($block, $block_buffer, $block_prototype);
+  local($statement, $statement_buffer, $statement_prototype);
+  local($indent, $language, $function);
+  local(@mem_groups);
+  local(@comm_groups);
+  local(@trigger_groups);
+  local(@before_list);
+  local(@after_list);
+  local(@while_list);
+  local($outfile);
+
+  # Extract the interface, and schedule databases from the arguments.
+  %interface_database = @rest[0..2*$n_interface_database-1];
+  %schedule_database = @rest[2*$n_interface_database..$#rest];
+  
+  $implementation = $interface_database{"\U$thorn\E IMPLEMENTS"};
+  
+  $buffer = $schedule_database{"\U$thorn\E FILE"};
+  
+  for($block = 0 ; $block < $schedule_database{"\U$thorn\E N_BLOCKS"}; $block++)
+  {
+    ($block_buffer, $block_prototype) = &ScheduleBlock($thorn, $implementation, $block,
+						       $n_interface_database, 
+						       %interface_database, %schedule_database);
+    $buffer =~ s:\@BLOCK\@$block:$block_buffer:;
+    $prototypes .= "$block_prototype";
+  }
+
+  for($statement = 0 ; $statement < $schedule_database{"\U$thorn\E N_STATEMENTS"}; $statement++)
+  {
+    ($statement_buffer, $statement_prototype) = &ScheduleStatement($thorn, $implementation, $statement, 
+								   $n_interface_database,
+								   %interface_database, %schedule_database);
+    $buffer =~ s:\@STATEMENT\@$statement:$statement_buffer:;
+    $prototypes .= "$statement_prototype";
+  }
+    
+  print "---------------------------------\n";
+  print "$thorn -> $implementation\n";
+
+  print "\#include <stdarg.h>\n";
+  print "\#define THORN_IS_$thorn\n";
+  print "\#include \"cctk.h\"\n";
+  print "\#include \"cctk_parameters.h\"\n";
+  print "\#include \"cctk_schedule.h\"\n";
+  print "\#include \"cctk_Comm.h\"\n";
+  print "\n";
+  print "/* Prototypes for functions to be registered. */";
+  print "$prototypes\n";
+  print "/*\@\@\n";
+  print "  \@routine    CCTK_BindingsSchedule$thorn\n";
+  print "  \@date       \n";
+  print "  \@author     \n";
+  print "  \@desc \n";
+  print "  Creates the schedule bindings for thorn $thorn\n";
+  print "  \@enddesc \n";
+  print "  \@calls     \n";
+  print "  \@calledby   \n";
+  print "  \@history \n";
+  print "\n";
+  print "  \@endhistory\n"; 
+  print "\n";
+  print "\@\@*/\n";
+  print "void CCTK_BindingsSchedule$thorn(cGH *GH)\n";
+  print "{\n";
+  print "  DECLARE_CCTK_PARAMETERS\n";
+  print "$buffer\n";
+  print "}\n";
+  print "\n";
+
+  print "---------------------------------\n";
+
+  return $buffer;
+
+}
 
 sub ScheduleBlock
 {
-  local($thorn, $implementation, $block, $n_param_database, $n_interface_database, @rest) = @_;
-  local(%parameter_database);
+  local($thorn, $implementation, $block, $n_interface_database, @rest) = @_;
   local(%interface_database);
   local(%schedule_database);
 
@@ -98,10 +176,9 @@ sub ScheduleBlock
   local(@while_list);
 
 
-  # Extract the parameter,interface, and schedule databases from the arguments.
-  %parameter_database = @rest[0..2*$n_param_database-1];
-  %interface_database = @rest[2*$n_param_database..2*($n_param_database+$n_interface_database)-1];
-  %schedule_database = @rest[2*($n_param_database+$n_interface_database)..$#rest];
+  # Extract the interface, and schedule databases from the arguments.
+  %interface_database = @rest[0..2*$n_interface_database-1];
+  %schedule_database = @rest[2*$n_interface_database..$#rest];
 
   # Extract group and routine information from the databases
   @mem_groups = &ScheduleSelectGroups($thorn, $implementation, 
@@ -197,8 +274,7 @@ sub ScheduleBlock
 
 sub ScheduleStatement
 {
-  local($thorn, $implementation, $statement, $n_param_database, $n_interface_database, @rest) = @_;
-  local(%parameter_database);
+  local($thorn, $implementation, $statement, $n_interface_database, @rest) = @_;
   local(%interface_database);
   local(%schedule_database);
 
@@ -206,10 +282,9 @@ sub ScheduleStatement
   local(@groups);
   local($group);
 
-  # Extract the parameter,interface, and schedule databases from the arguments.
-  %parameter_database = @rest[0..2*$n_param_database-1];
-  %interface_database = @rest[2*$n_param_database..2*($n_param_database+$n_interface_database)-1];
-  %schedule_database = @rest[2*($n_param_database+$n_interface_database)..$#rest];
+  # Extract the interface and schedule databases from the arguments.
+  %interface_database = @rest[0..2*$n_interface_database-1];
+  %schedule_database = @rest[2*$n_interface_database..$#rest];
 
   # Extract the groups.
   @groups = &ScheduleSelectGroups($thorn, $implementation, 
