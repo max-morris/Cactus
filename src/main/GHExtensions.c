@@ -624,6 +624,48 @@ void  CCTK_FCALL CCTK_FNAME(CCTK_GHExtensionHandle)
   free(name);
 }
 
+
+ /*@@
+   @routine    CCTK_GHExtension
+   @date       Sun Oct 8 2000
+   @author     Thomas Radke
+   @desc 
+   Gets the pointer to the GH extension.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+   @var     GH
+   @vdesc   The cctk GH
+   @vtype   cGH *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     name
+   @vdesc   Name of the GH extension
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+
+   @returntype const void *
+   @returndesc 
+   The GH extension
+   @endreturndesc
+@@*/
+const void *CCTK_GHExtension(cGH *GH, const char *name)
+{
+  int handle;
+
+  handle = Util_GetHandle(GHExtensions, name, NULL);
+
+  return (handle >= 0 ? GH->extensions[handle] : NULL);
+}
+
 /********************************************************************
  *********************     Local Routines   *************************
  ********************************************************************/
