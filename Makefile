@@ -16,13 +16,29 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.22 1999-04-07 14:20:11 allen Exp $
+#   @version $Id: Makefile,v 1.23 1999-04-15 08:39:01 goodale Exp $
 # @@*/
 
 # Make quietly unless told not to
 ifneq ($(strip $(SILENT)),no)
 .SILENT:
 endif
+
+# Stuff for parallel makes
+# TJOBS is the number of thorns to compile in parallel
+ifeq ($(strip $(TJOBS)), )
+TJOBS = 1
+endif
+
+# FJOBS is the number of files within a thorn to compile in parallel
+ifeq ($(strip $(FJOBS)), )
+FJOBS = 1
+endif
+
+export TJOBS FJOBS
+
+# End of parallel make stuff
+
 
 # Set the options to pass to the setup script
 ifneq ($(strip $(options)),)
@@ -82,7 +98,7 @@ endif
 
 $(CONFIGURATIONS):
 	cd configs/$@ 
-	$(MAKE) -f $(CCTK_HOME)/lib/make/make.configuration TOP=$(CCTK_HOME)/configs/$@ CCTK_HOME=$(CCTK_HOME)
+	$(MAKE) -f $(CCTK_HOME)/lib/make/make.configuration TOP=$(CCTK_HOME)/configs/$@ CCTK_HOME=$(CCTK_HOME) -j $(TJOBS)
 
 # Clean target
 .PHONY: distclean
