@@ -310,7 +310,7 @@ sub ScheduleBlock
 				       %interface_database);
 
   @trigger_groups = &ScheduleSelectGroups($thorn, $implementation, 
-					  $schedule_database{"\U$thorn\E BLOCK_$block TRIGGER"},
+					  $schedule_database{"\U$thorn\E BLOCK_$block TRIGGERS"},
 					  %interface_database);
 		
 
