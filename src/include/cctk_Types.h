@@ -25,7 +25,9 @@ typedef void *CCTK_POINTER;
 typedef const void *CCTK_POINTER_TO_CONST;
 typedef void (*CCTK_FPOINTER)(void);
 
-#define CCTK_STRING const char *
+/* Character types */
+typedef char CCTK_CHAR;
+typedef const char * CCTK_STRING;
 
 /* Structures for complex types */
 
@@ -56,10 +58,7 @@ typedef struct
 } CCTK_COMPLEX8;
 #endif
 
-/* Character type */
-/* DEPRECATED IN BETA 10 */
-typedef unsigned char CCTK_CHAR;
-
+/* Small positive integer type */
 typedef unsigned char CCTK_BYTE;
 
 #endif /* CCODE */
@@ -72,7 +71,12 @@ typedef unsigned char CCTK_BYTE;
 /* TODO: add autoconf for determining the size of function pointers */
 #define CCTK_FPOINTER         integer*SIZEOF_CHAR_P
 
-#define CCTK_STRING CCTK_POINTER
+/* Character types */
+/* A single character does not exist in Fortran; in Fortran, all
+   character types are strings.  Hence we do not define CCTK_CHAR.  */
+/* #define CCTK_CHAR   CHARACTER */
+/* This is a C-string, i.e., only a pointer */
+#define CCTK_STRING CCTK_POINTER_TO_CONST
 
 #ifdef HAVE_CCTK_INT8
 #define CCTK_INT8 INTEGER*8
@@ -105,9 +109,7 @@ typedef unsigned char CCTK_BYTE;
 #define CCTK_COMPLEX8   COMPLEX*8
 #endif
 
-/* DEPRECATED IN BETA 10 */
-#define CCTK_CHAR CHARACTER
-
+/* Should be unsigned, but Fortran doesn't have that */
 #define CCTK_BYTE INTEGER*1
 
 #endif /*FCODE */
