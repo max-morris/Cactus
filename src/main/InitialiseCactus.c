@@ -61,9 +61,9 @@ int InitialiseCactus(int *argc, char ***argv, tFleshConfig *ConfigData)
 
   ProcessEnvironment(argc, argv, ConfigData);
 
-  CactusBanner();
-
   ProcessCommandLine(argc, argv, ConfigData);
+
+  CactusBanner();
 
   InitialiseDataStructures(ConfigData);
 
