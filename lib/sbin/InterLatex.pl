@@ -326,7 +326,7 @@ sub LatexTableElement
          my $var_counter = 0;
          foreach my $group_detail (sort keys %{$thorn{"group details"}->{$group}}) 
          {
-            my $value = ThornUtils::CleanForLatex($thorn{"group details"}->{$group}->{$group_detail});
+            my $value = ThornUtils::CleanForLatex(ThornUtils::CleanFromC($thorn{"group details"}->{$group}->{$group_detail}));
 
             # print nothign as we are dealing with the same group
             if (! $firstpass) {

@@ -338,6 +338,35 @@ sub EndDocument
 }
 
 #/*@@
+#  @routine    CleanFromC
+#  @date       Aug 20 2004
+#  @author     Erik Schnetter
+#  @desc
+#  "Interprets" a C string, i.e., takes something that would be valid
+#  in C (or CST) source code inside double quotes, and return the
+#  string that it represents, i.e., it mainly removes backslashes.
+#  @enddesc 
+#  @calls     
+#  @calledby   
+#  @history 
+#
+#  @endhistory 
+#  
+#@@*/
+sub CleanFromC
+{
+   my $val = shift;
+
+   # unescape special characters
+   $val =~ s,\\\",\",g;
+
+   # do not unescape backslash-letter sequences;
+   # we assume that people want to see them instead of their effects
+
+   return $val;
+}
+
+#/*@@
 #  @routine    CleanForLatex
 #  @date       Sun Mar  3 19:05:41 CET 2002
 #  @author     Ian Kelley 
@@ -359,34 +388,34 @@ sub CleanForLatex
    my $val = shift;
 
    # escape special characters
-   $val =~ s/\\/\{\\textbackslash\}/g;
-   $val =~ s/~/\{\\textasciitilde\}/g;
-   $val =~ s/</\{\\textless\}/g;
-   $val =~ s/>/\{\\textgreater\}/g;
+   $val =~ s,\\,\{\\textbackslash\},g;
+   $val =~ s,~,\{\\textasciitilde\},g;
+   $val =~ s,<,\{\\textless\},g;
+   $val =~ s,>,\{\\textgreater\},g;
 
    # at start of string, remove spaces before and after: "
-   $val =~ s/^\s*?\"\s*?/\"/;
+   $val =~ s,^\s*?\"\s*?,\",;
 
    # at end of string, remove spaces before and after: "
-   $val =~ s/\s*?\"\s*?$/\"/;
+   $val =~ s,\s*?\"\s*?$,\",;
 
    # escape _
-   $val =~ s/\_/\\\_/g;
+   $val =~ s,\_,\\\_,g;
 
    # escape $
-   $val =~ s/\$/\\\$/g;
+   $val =~ s,\$,\\\$,g;
 
    # escape ^
-   $val =~ s/\^/\\\^/g;
+   $val =~ s,\^,\\\^,g;
 
    # escape *
-   $val =~ s/\*/\\\*/g;
+   $val =~ s,\*,\\\*,g;
 
    # escape &
-   $val =~ s/\&/\\\&/g;
+   $val =~ s,\&,\\\&,g;
 
    # escape %
-   $val =~ s/%/\\%/g;
+   $val =~ s,%,\\%,g;
 
    return $val;
 }
