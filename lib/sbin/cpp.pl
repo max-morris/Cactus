@@ -379,7 +379,7 @@ sub ParseFile
       # Parse the if statement and see if the first clause is active
       if($active)
       {
-        $newactive = &ProcessIf($1, $filename, $linumber,$printline);
+        $newactive = &ProcessIf($1, $filename, $linenumber,$printline);
       }
       else
       {
@@ -404,14 +404,14 @@ sub ParseFile
           # Finished
           last;
         }
-        elsif($currentline =~ m/^#elif\s+(.+)/ && ! $foundelse)
+        elsif($currentline =~ m/^#elif(\s+.+)/ && ! $foundelse)
         {
           # Got #elif, is this next clause active ?
           if(! $beenactive)
           {
             if($active)
             {
-              $newactive = &ProcessIf($1, $filename, $linumber);
+              $newactive = &ProcessIf($1, $filename, $linenumber);
             }
             else
             {
@@ -658,9 +658,25 @@ sub ProcessIf
   {
     $retval = defined($defines{$1}) ? 0 : 1;
   }
+  elsif($line =~ m/^\s+([^\s]+)\s*$/)
+  {
+    my $val = $1;
+    if(defined($defines{$val}))
+    {
+      $retval = $defines{$val}
+    }
+    elsif($val =~ m/^\d+$/)
+    {
+      $retval = $val;
+    }
+    else
+    {
+      print STDERR "#if <constant> called on non-digit and non-define $val at $filename\::$linenumber !\n";
+    }      
+  }
   else
   {
-    print STDERR "#if can currently to #ifdef and #ifndef, sorry !\n";
+    print STDERR "#if can currently to #ifdef and #ifndef, sorry ! (At $filename\::$linenumber.)\n";
     $retval = 0;
   }
 
