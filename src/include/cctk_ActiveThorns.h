@@ -21,6 +21,7 @@ extern "C" {
 int         CCTK_IsThornActive(const char *name);
 int         CCTK_IsThornCompiled(const char *name);
 int         CCTK_IsImplementationActive(const char *name);
+int         CCTK_IsImplementationCompiled(const char *name);
 const char *CCTK_ActivatingThorn(const char *imp);
 
 /* FIXME - should return a list or something */
