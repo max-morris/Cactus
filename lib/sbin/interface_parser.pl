@@ -340,8 +340,8 @@ sub check_interface_consistency
       {
 	if(!$n_errors)
 	{
-	  print STDERR "Inconsistent implementations of $implementation\n";
-	  print STDERR "    Implemented by thorns " . join(" ", @thorns) . "\n";
+	  $message = "Inconsistent implementations of $implementation\n    Implemented by thorns " . join(" ", @thorns) . "\n";
+	  &CST_error(0,$message,__LINE,__FILE__);
 	}
 	print STDERR "    Not all are friends of : $thing\n";
 	$n_errors++;
@@ -358,7 +358,7 @@ sub check_interface_consistency
 	  print STDERR "Inconsistent implementations of $implementation\n";
 	  print STDERR "    Implemented by thorns " . join(" ", @thorns) . "\n";
 	}
-	print STDERR "    Not all declare public group: $thing\n";
+	&CST_error(0,"    Not all declare public group: $thing",__LINE__,__FILE__);
 	$n_errors++;
       }
     }
@@ -370,20 +370,19 @@ sub check_interface_consistency
       {
 	if(!$n_errors)
 	{
-	  print STDERR "Inconsistent implementations of $implementation\n";
-	  print STDERR "    Implemented by thorns " . join(" ", @thorns) . "\n";
+	  print STDERR "Inconsistent implementations of $implementation\n       Implemented by thorns " . join(" ", @thorns) . "\n";
 	}
-	print STDERR "    Not all declare potected group: $thing\n";
+	&CST_error(0,"    Not all declare protected group: $thing\n",__LINE__,__FILE__);
 	$n_errors++;
       }
     }
 
     # Stop if any errors discovered so far.
-    if($n_errors)
-    {
-      print STDERR "$n_errors Errors found, please fix before continuing.\n";
-      exit;
-    }
+#    if($n_errors)
+#    {
+#      print STDERR "$n_errors Errors found, please fix before continuing.\n";
+#      exit;
+#    }
 
     # Check consistancy of group definitions
     foreach $group ((keys %public_groups), (keys %protected_groups))
