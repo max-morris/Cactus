@@ -43,6 +43,7 @@ LORENE_INC_DIRS='$(LORENE_DIR)/Export/C++/Include'
 # Write the data out to the header and make files.
 CCTK_WriteLine cctk_Extradefs.h "#define CCTK_LORENE 1"
 
+CCTK_WriteLine make.extra.defn "HAVE_LORENE     = 1"
 CCTK_WriteLine make.extra.defn "LORENE_DIR      = $LORENE_DIR"
 CCTK_WriteLine make.extra.defn "LORENE_LIBS     = $LORENE_LIBS"
 CCTK_WriteLine make.extra.defn "LORENE_LIB_DIRS = $LORENE_LIB_DIRS"
