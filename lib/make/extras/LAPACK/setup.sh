@@ -38,6 +38,7 @@ if test "X$choose_lapack" = "Xyes" ; then
   # write the variables out to the header and makefiles
   CCTK_WriteLine cctk_Extradefs.h '#define CCTK_LAPACK 1'
 
+  CCTK_WriteLine make.extra.defn "HAVE_LAPACK     = 1"
   CCTK_WriteLine make.extra.defn "LAPACK_LIBS     = $LAPACK_LIBS $LAPACK_EXTRA_LIBS m"
   CCTK_WriteLine make.extra.defn "LAPACK_LIB_DIRS = $LAPACK_DIR $LAPACK_EXTRA_LIB_DIRS"
   CCTK_WriteLine make.extra.defn ''
