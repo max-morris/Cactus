@@ -6,7 +6,7 @@
 #   @desc
 #            Configuration options for MPI=MPICH
 #   @enddesc
-#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/extras/MPI/MPICH,v 1.18 2004-06-25 16:13:04 tradke Exp $
+#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/extras/MPI/MPICH,v 1.19 2004-09-23 11:51:40 tradke Exp $
 # @@*/
 
 
@@ -72,8 +72,11 @@ if test -d "$MPICH_DIR/build/$MPICH_ARCH" ; then
   MPICH_LIB_DIR="$MPICH_DIR/build/$MPICH_ARCH/$MPICH_DEVICE/lib"
   MPICH_INC_DIRS="$MPICH_DIR/include $MPICH_DIR/build/$MPICH_ARCH/$MPICH_DEVICE/include"
 else
-  MPICH_LIB_DIR="$MPICH_DIR/lib"
-  MPICH_INC_DIRS="$MPICH_DIR/include"
+  # don't explicitely add standard include search paths
+  if test "$MPICH_DIR" != '/usr' -a "$MPICH_DIR" != '/usr/local'; then
+    MPICH_LIB_DIR="$MPICH_DIR/lib"
+    MPICH_INC_DIRS="$MPICH_DIR/include"
+  fi
 fi
 
 # Select the device and any special options for it.
