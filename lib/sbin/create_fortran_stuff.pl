@@ -80,7 +80,7 @@ sub CreateFortranThornParameterBindings
     
     %alias_names = ();
 
-    foreach $parameter (keys %these_parameters)
+    foreach $parameter (sort(keys %these_parameters))
     {
       # Alias the parameter unless it is one we want.
       if(($parameter_database{"\U$thorn FRIEND $friend\E variables"} =~ m:( )*$parameter( )*:) && (length($1) > 0)||length($2)>0||$1 eq $parameter_database{"\U$thorn FRIEND $friend\E variables"})

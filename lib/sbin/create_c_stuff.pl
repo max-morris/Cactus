@@ -83,7 +83,7 @@ sub CreateParameterBindingFile
   # Initialisation subroutine
   push(@data, ("int $prefix"."Initialise(void)", "{"));
 
-  foreach $parameter (keys %parameters)
+  foreach $parameter (sort(keys %parameters))
   {
 
     push(@data, &set_parameter_default($structure,$parameters{$parameter}, 
@@ -104,7 +104,7 @@ sub CreateParameterBindingFile
   push(@data, ("  int retval;", "  retval = 1;", ""));
 
 
-  foreach $parameter (keys %parameters)
+  foreach $parameter (sort(keys %parameters))
   {
     push(@data, &set_parameter_code($structure,$parameters{$parameter}, 
 				       $parameter, %parameter_database));
@@ -124,7 +124,7 @@ sub CreateParameterBindingFile
   push(@data, ("  int retval;", "  retval = 1;", ""));
 
 
-  foreach $parameter (keys %parameters)
+  foreach $parameter (sort(keys %parameters))
   {
     push(@data, &get_parameter_code($structure,$parameters{$parameter}, 
 				       $parameter, %parameter_database));
@@ -144,7 +144,7 @@ sub CreateParameterBindingFile
   push(@data, ("  int retval;", "  retval = 1;", ""));
 
 
-  foreach $parameter (keys %parameters)
+  foreach $parameter (sort(keys %parameters))
   {
     push(@data, &help_parameter_code($structure,$parameters{$parameter}, 
 				       $parameter, %parameter_database));
@@ -448,7 +448,7 @@ sub order_params
   %parameters = @rest[0..2*$nparams-1];
   %parameter_database = @rest[2*$nparams..$#rest];
 
-  foreach $parameter (keys %parameters)
+  foreach $parameter (sort(keys %parameters))
   {
     $type = $parameter_database{"\U$parameters{$parameter} $parameter\E type"};
 
