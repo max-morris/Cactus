@@ -673,6 +673,9 @@ int CactusDefaultOutputVarAsByMethod (cGH *GH,
   }
   else
   {
+    CCTK_VWarn(8,__LINE__,__FILE__,"Cactus",
+	       "CactusDefaultOutputVarAsByMethod: Method %s not found "
+	       "for output of %s",methodname,var);
     retval = -1;
   }
 
