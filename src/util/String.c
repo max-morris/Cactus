@@ -257,12 +257,14 @@ int Util_SplitString(char **before, char **after, const char *string, const char
 @@*/
 char *Util_Strdup(const char *s) 
 {
-  char *retstr;
+  char *retstr=NULL;
   
   retstr = (char*) malloc((strlen(s)+1)*sizeof(char));
-
-  strcpy(retstr,s);
-
+  if(retstr)
+  {
+    strcpy(retstr,s);
+  }
+    
   return retstr;
 }
 
@@ -375,16 +377,13 @@ int Util_StrCmpi(const char *string1, const char *string2)
 int Util_SplitFilename(char **dir, char **file, const char *string)
 {
   int retval=-1;
-  char *position;
+  char *position=NULL;
   char *copy;
 
-  copy = (char *)malloc(strlen(string)*sizeof(char));
-
-  strcpy(copy,string);
+  copy = Util_Strdup(string);
 
   /* Find location of the seperator */
   position = strrchr(copy, '/');
-
   if(position)
   {
     retval = 0;
