@@ -10,6 +10,7 @@
 /* $Id$ */
 
 /* Be careful changing ordering. Look at tree in rfrInitialize before you do! */
+#define CACTUS_PARAMCHECK  0
 #define CACTUS_BASEGRID  1
 
 #define CACTUS_RECOVER   5
