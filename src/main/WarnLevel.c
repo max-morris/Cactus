@@ -97,7 +97,7 @@ int CCTK_Warn(int level, const char *message)
 
   if(level <= warning_level)
   {
-    fprintf(stderr, "%s", message);
+    fprintf(stderr, "%s\n", message);
     retval = 1;
   }
   else
