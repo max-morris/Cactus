@@ -43,7 +43,11 @@ OPTIMISE_MODE='yes'
 if test -n "$OPTIMISE" ; then
   changequote({, })
   OPTIMISE=`echo $OPTIMISE | tr '[:upper:]' '[:lower:]'`
+  OPTIMIZE=`echo $OPTIMIZE | tr '[:upper:]' '[:lower:]'`
   changequote([, ])
+  if test "$OPTIMISE" != "$OPTIMIZE" ; then
+    AC_ERROR(OPTIMISE=\"$OPTIMISE\" is inconsistent with OPTIMIZE=\"$OPTIMIZE\"!)
+  fi
   if test "$OPTIMISE" != 'yes' -a "$OPTIMISE" != 'no' ; then
     AC_ERROR(Didn't recognize setting of OPTIMISE=\"$OPTIMISE\" (should be either \"yes\" or \"no\"))
   fi
