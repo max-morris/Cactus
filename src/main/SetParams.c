@@ -8,7 +8,7 @@
  @@*/
 
 #include <stdio.h>
-#include <malloc.h>
+#include <stdlib.h>
 
 /* FIXME - remove this when ActiveThorns doesn't need it */
 #include "SKBinTree.h"
