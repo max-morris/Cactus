@@ -6,7 +6,7 @@
 #   @desc
 #            Known architecture stuff for MacOS X (Darwin)
 #   @enddesc
-#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/darwin,v 1.9 2004-03-28 01:41:24 goodale Exp $
+#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/darwin,v 1.10 2004-03-29 05:36:49 goodale Exp $
 # @@*/
 
 if test "$CCTK_CONFIG_STAGE" = 'preferred-compilers' ; then
@@ -63,9 +63,6 @@ else
   MAC_F90_COMP=none
 
   if test -n "$F90" && test "$F90" != 'none' ; then
-# this should really check the path of the IBM compiler
-# to make sure it is the default
-# should use a regexp to match the compiler path
     if test "`$F90 -version 2>&1 | grep xlf`" ; then
 	MAC_F90_COMP=ibm
     elif test "`$F90 -? 2>&1 | grep -i absoft`" ; then
@@ -121,7 +118,11 @@ else
     ibm)
 #      : ${LD='xlC'}
       : ${LIBS='xlf90 xlfmath m'}
-      : ${LIBDIRS='/opt/ibmcmp/lib'}
+
+      if test -z "$LIBDIRS" ; then
+	  LIBDIRS="`which $F90 | sed 's,/bin/.*,/lib,'`"
+      fi
+#      : ${LIBDIRS='/opt/ibmcmp/lib'}
 #      : ${ARFLAGS='-rucs'}
       : ${F90FLAGS=' -qspill=10000 -qmaxmem=-1 -qnullterm -qsuffix=f=f'}
       : ${F77FLAGS='-qfixed -qmaxmem=-1 -qnullterm -qsuffix=f=f'}
