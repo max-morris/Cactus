@@ -6,6 +6,7 @@
 #  @desc 
 #  
 #  @enddesc 
+#  @version $Id$
 #@@*/
 
 #/*@@
@@ -232,9 +233,11 @@ sub GetThornArguments
 	$type .= ")";
       }
 
+      $type .= "!$thorn:$group";
+
 #      print "Group is $group, resulting type is $type\n";
 
-      foreach $variable (split(" ", $interface_data{"\U$thorn GROUP $group\E"}))
+      foreach $variable (split(" ", $interface_database{"\U$thorn GROUP $group\E"}))
       {
        $arguments{$variable} = $type;
       }
@@ -245,5 +248,234 @@ sub GetThornArguments
 }
 
 
+sub CreateFortranArgumentDeclarations
+{
+  local(%arguments) = @_;
+  local($argument);
+  local(@declarations) = ();
 
+  # Put all storage arguments first.
+  foreach $argument (sort keys %arguments)
+  {
+    if($arguments{$argument} =~ m:STORAGESIZE:)
+    {
+      push(@declarations, "INTEGER $argument");
+    }
+  }
+  
+  # Now deal with the rest of the arguments
+  foreach $argument (sort keys %arguments)
+  {
+    if($arguments{$argument} !~ m:STORAGESIZE:)
+    {
+      $arguments{$argument} =~ m:([^ ]*) ?(.*)?!(.*):;
+
+      if($1 eq "CHAR")
+      {
+	push(@declarations, "CHARACTER $argument$2");
+      }
+      elsif ($1 eq REAL)
+      {
+	push(@declarations, "REAL $argument$2");
+      }
+      elsif ($1 eq COMPLEX)
+      {
+	push(@declarations, "COMPLEX $argument$2");
+      }
+      elsif ($1 eq INTEGER)
+      {
+	push(@declarations, "INTEGER $argument$2");
+      }
+      else
+      {
+	print STDERR "Unknown argument type $1\n";
+      }
+    }
+  }
+
+  return @declarations;
+    
+}
+
+sub CreateFortranArgumentList
+{
+  local(%arguments) = @_;
+  local($argument);
+  local($argumentlist) = "";
+  local($sep);
+
+  $sep = "";
+  # Put all storage arguments first.
+  foreach $argument (sort keys %arguments)
+  {
+    if($arguments{$argument} =~ m:STORAGESIZE:)
+    {
+      $argumentlist .= "$sep$argument";
+      $sep = ",";
+    }
+  }
+
+  # Now deal with the rest of the arguments
+  foreach $argument (sort keys %arguments)
+  {
+    if($arguments{$argument} !~ m:STORAGESIZE:)
+    {
+      $argumentlist .= "$sep$argument";
+      $sep = ",";
+    }
+  }
+
+  return $argumentlist;
+}
+
+sub CreateCArgumentStatics
+{
+  local(%arguments) = @_;
+  local($argument);
+  local(@declarations) = ();
+
+  foreach $argument (sort keys %arguments)
+  {
+    if($arguments{$argument} !~ m:STORAGESIZE:)
+    {
+      push(@declarations, "static int CCTKARGNUM_$argument = -1");
+    }
+  }
+
+  return @declarations;
+}  
+
+
+sub CreateCArgumentInitialisers
+{
+  local(%arguments) = @_;
+  local($argument);
+  local(@initialisers) = ();
+
+  foreach $argument (sort keys %arguments)
+  {
+    if($arguments{$argument} !~ m:STORAGESIZE:)
+    {
+      $arguments{$argument} =~ m:([^ ]*) ?(.*)?!(.*):;
+
+      push(@initialisers, "if(CCTKARGNUM_$argument == -1) CCTKARGNUM_$argument = CCTK_GetVarNum(\"$3\")");
+    }
+  }
+
+  return @initialisers;
+}
+
+sub CreateCArgumentPrototype
+{
+  local(%arguments) = @_;
+  local($argument);
+  local($prototype) = "";
+  local($sep);
+  
+  $sep = "";
+
+  # Put all storage arguments first.
+  foreach $argument (sort keys %arguments)
+  {
+    if($arguments{$argument} =~ m:STORAGESIZE:)
+    {
+      $prototype .= "$sep"."int *";
+      $sep = ",";
+    }
+  }
+  
+  # Now deal with the rest of the arguments
+  foreach $argument (sort keys %arguments)
+  {
+    if($arguments{$argument} !~ m:STORAGESIZE:)
+    {
+      $arguments{$argument} =~ m:([^ ]*) ?(.*)?!(.*):;
+
+      if($1 eq "CHAR")
+      {
+	$prototype .="$sep". "char *";
+	$sep = ",";
+      }
+      elsif ($1 eq REAL)
+      {
+	$prototype .="$sep". "Double *";
+	$sep = ",";	
+      }
+      elsif ($1 eq COMPLEX)
+      {
+	$prototype .="$sep". "Complex *";
+	$sep = ",";
+      }
+      elsif ($1 eq INTEGER)
+      {
+	$prototype .="$sep". "int *";
+	$sep = ",";
+      }
+      else
+      {
+	print STDERR "Unknown argument type $1\n";
+      }
+    }
+  }
+
+  return $prototype;
+}
+
+
+sub CreateCArgumentList
+{
+  local(%arguments) = @_;
+  local($argument);
+  local($arglist) = "";
+  local($sep);
+  
+  $sep = "";
+
+  # Put all storage arguments first.
+  foreach $argument (sort keys %arguments)
+  {
+    if($arguments{$argument} =~ m:STORAGESIZE\(([^,]*),\s*(\d+):)
+    {
+      $arglist .= "$sep"."(int *)(CCTK_STORAGESIZE(xGH, \"$1\",$2)";
+      $sep = ",";
+    }
+  }
+  
+  # Now deal with the rest of the arguments
+  foreach $argument (sort keys %arguments)
+  {
+    if($arguments{$argument} !~ m:STORAGESIZE:)
+    {
+      $arguments{$argument} =~ m:([^ ]*) ?(.*)?!(.*):;
+
+      if($1 eq "CHAR")
+      {
+	$arglist .= "$sep"."(char *)((xGH)->data[CCTKARGNUM_$argument])";
+	$sep = ",";
+      }
+      elsif ($1 eq REAL)
+      {
+	$arglist .= "$sep"."(Double *)((xGH)->data[CCTKARGNUM_$argument])";
+	$sep = ",";
+      }
+      elsif ($1 eq COMPLEX)
+      {
+	$arglist .= "$sep"."(Complex *)((xGH)->data[CCTKARGNUM_$argument])";
+	$sep = ",";
+      }
+      elsif ($1 eq INTEGER)
+      {
+	$arglist .= "$sep"."(int *)((xGH)->data[CCTKARGNUM_$argument])";
+	$sep = ",";
+      }
+      else
+      {
+	print STDERR "Unknown argument type $1\n";
+      }
+    }
+  }
+
+  return $arglist;
+
+}  
 1;
