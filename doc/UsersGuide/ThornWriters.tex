@@ -2898,14 +2898,14 @@ out element by element. The arrays need to have the same size on all
 processors.
 {\t
 \begin{verbatim}
-int CCTK_ReduceLocArrayToArrayD( cGH *GH,
-                                 int processor,
-                                 int opertaion_handle,
-                                 in_array_2d,
-                                 out_array2d,
-                                 int xsize,
-                                 int ysize,
-                                 int data_type)
+int CCTK_ReduceLocArrayToArray2D( cGH *GH,
+                                  int processor,
+                                  int opertaion_handle,
+                                  in_array_2d,
+                                  out_array2d,
+                                  int xsize,
+                                  int ysize,
+                                  int data_type)
                                  
 
 call CCTK_ReduceLocArrayToArray2D( int returnvalue
