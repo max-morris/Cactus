@@ -5,7 +5,7 @@
 #   @desc
 #            Timestamp file for forcing reconfiguring configurations
 #   @enddesc
-#   @version $Id: force-reconfigure,v 1.5 2004-10-21 09:38:21 schnetter Exp $
+#   @version $Id: force-reconfigure,v 1.6 2004-11-08 10:50:45 tradke Exp $
 # @@*/
 
 31 Mar 2004: created
@@ -14,3 +14,4 @@
 26 Jun 2004: renamed CCTK_HAVE_* macros into CCTK_HAVE_*
 02 Aug 2004: introduce HAVE_LAPACK and HAVE_BLAS make variables
 07 Oct 2004: change HDF5 to CCTK_HDF5 in cctk_Config.h
+08 Nov 2004: add HAVE_HDF5_STREAM_VFD and HDF5_LFS_FLAGS makefile variables
