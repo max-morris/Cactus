@@ -938,6 +938,7 @@ PROVIDES <\var{Capability}>
 \{
   SCRIPT <\var{Configuration script}>
   LANG <\var{Language}>
+  [OPTIONS [<option>[,<option>]...]] 
 \}
 \end{alltt}
 
@@ -954,6 +955,12 @@ CST stage.
 Scripts can be in any language.  If an interpreter is needed to run
 the script, for example \verb|Perl|, this should be indicated by the
 \verb|LANG| option.
+
+The specified options are checked for in the original configuration
+and any options passed on the command line (including an `options'
+file) at compile time when the thorn is added, or if the CST is
+rerun.  These options need be set only once, and will be remembered
+between builds.
 
 \item
 
