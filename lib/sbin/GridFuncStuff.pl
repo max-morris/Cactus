@@ -907,11 +907,6 @@ sub CreateCArgumentList
 	    $arglist .= "$sep"."(CCTK_REAL *)(CCTKARGNUM_$argument<0 ? NULL : (xGH)->data[CCTKARGNUM_$argument][$level-1])";
 	    $sep = ",";
 	  }
-	  elsif ($1 eq REAL)
-	  {
-	    $arglist .= "$sep"."(CCTK_REAL *)(CCTKARGNUM_$argument<0 ? NULL : (xGH)->data[CCTKARGNUM_$argument][$level-1])";
-	    $sep = ",";
-	  }
 	  elsif ($1 eq REAL4)
 	  {
 	    $arglist .= "$sep"."(CCTK_REAL4 *)(CCTKARGNUM_$argument<0 ? NULL : (xGH)->data[CCTKARGNUM_$argument][$level-1])";
