@@ -73,8 +73,16 @@ sub cross_index_interface_data
       die "Thorn $thorn doesn't specify an implementation.\n";
     }
 
-    $interface_data{"IMPLEMENTATION \U$implementation\E THORNS"} .= "$thorn ";
-  
+    # Put if statement around this to prevent perl -w from complaining.
+    if($interface_data{"IMPLEMENTATION \U$implementation\E THORNS"})
+    {
+      $interface_data{"IMPLEMENTATION \U$implementation\E THORNS"} .= "$thorn ";
+    }
+    else
+    {
+      $interface_data{"IMPLEMENTATION \U$implementation\E THORNS"} = "$thorn ";
+    }
+
     $implementations{"\U$implementation\E"} = "$implementation";
   }
 
@@ -82,7 +90,15 @@ sub cross_index_interface_data
 
   foreach $implementation (keys %implementations)
   {
-    $interface_data{"IMPLEMENTATIONS"} .= $implementations{"\U$implementation\E"} . " ";
+    # Put if statement around this to prevent perl -w from complaining.
+    if($interface_data{"IMPLEMENTATIONS"})
+    {
+      $interface_data{"IMPLEMENTATIONS"} .= $implementations{"\U$implementation\E"} . " ";
+    }
+    else
+    {
+      $interface_data{"IMPLEMENTATIONS"} = $implementations{"\U$implementation\E"} . " ";
+    }
 
     &check_interface_consistency($implementation, %interface_data);
 
@@ -117,7 +133,10 @@ sub get_friends_of_me
 
   @implementations = @indata[0..$n_implementations-1];
   %interface_data = @indata[$n_implementations..$#indata];
-  
+
+  # Initialise to stop perl -w from complaining.
+  $friends = "";
+
   foreach $other_implementation (@implementations)
   {
 
@@ -129,7 +148,7 @@ sub get_friends_of_me
     {
       if($friend =~ m:$implementation:i)
       {
-	$friends .= "$other_implementation ";
+	  $friends .= "$other_implementation ";	
       }
     }
   }
@@ -163,7 +182,6 @@ sub get_implementation_friends
 
   $thorn = $1;
 
-  
   # Recurse
   foreach $friend (split(" ", $interface_data{"\U$thorn\E FRIEND"}), 
 		   split(" ", $interface_data{"IMPLEMENTATION \U$implementation\E FRIENDS"}))
@@ -242,7 +260,15 @@ sub check_interface_consistency
       {
 	if($thing =~ m:\w:)
 	{
-	  $inherits{"\U$thing\E"} .= "$thorn ";
+	  # Put if statement around this to prevent perl -w from complaining.
+	  if($inherits{"\U$thing\E"})
+	  {
+	    $inherits{"\U$thing\E"} .= "$thorn ";
+	  }
+	  else
+	  {
+	    $inherits{"\U$thing\E"} = "$thorn ";
+	  }
 	}
       }
 
@@ -251,7 +277,15 @@ sub check_interface_consistency
       {
 	if($thing =~ m:\w:)
 	{
-	  $friend{"\U$thing\E"} .= "$thorn ";
+	  # Put if statement around this to prevent perl -w from complaining.
+	  if($friend{"\U$thing\E"})
+	  {
+	    $friend{"\U$thing\E"} .= "$thorn ";
+	  }
+	  else
+	  {
+	    $friend{"\U$thing\E"} = "$thorn ";
+	  }	    
 	}
       }
   
@@ -260,7 +294,15 @@ sub check_interface_consistency
       {
 	if($thing =~ m:\w:)
 	{
-	  $public_groups{"\U$thing\E"} .= "$thorn ";
+	  # Put if statement around this to prevent perl -w from complaining.
+	  if($public_groups{"\U$thing\E"})
+	  {
+	    $public_groups{"\U$thing\E"} .= "$thorn ";
+	  }
+	  else
+	  {
+	    $public_groups{"\U$thing\E"} = "$thorn ";
+	  }
 	}
       }
 
@@ -269,7 +311,15 @@ sub check_interface_consistency
       {
 	if($thing =~ m:\w:)
 	{
-	  $protected_groups{"\U$thing\E"} .= "$thorn ";
+	  # Put if statement around this to prevent perl -w from complaining.
+	  if($protected_groups{"\U$thing\E"})
+	  {
+	    $protected_groups{"\U$thing\E"} .= "$thorn ";
+	  }
+	  else
+	  {
+	    $protected_groups{"\U$thing\E"} = "$thorn ";
+	  }
 	}
       }
     }
@@ -354,7 +404,15 @@ sub check_interface_consistency
 	# Remember which variables are defined in this group.
 	foreach $thing (split(" ",$interface_data{"\U$thorn GROUP $group\E"}))
 	{
-	  $variables{"\U$thing\E"} .= "$thorn ";
+	  # Put if statement around this to prevent perl -w from complaining.
+	  if($variables{"\U$thing\E"})
+	  {
+	    $variables{"\U$thing\E"} .= "$thorn ";
+	  }
+	  else
+	  {
+	    $variables{"\U$thing\E"} = "$thorn ";
+	  }
 	}
 
 	# Check variable type definition.
@@ -444,19 +502,28 @@ sub check_interface_consistency
 sub parse_interface_ccl
 {
   local($thorn, @data) = @_;
-  local($linenum, $line, $block, $type, $variable, $description, $nerrors);
+  local($line_number, $line, $block, $type, $variable, $description, $nerrors);
   local($data, %interface_db);
   local($implementation);
   local($option,%options);
   local(%known_groups);
   local(%known_variables);
       
+
+  # Initialise some stuff to prevent perl -w from complaining.
+
+  $interface_db{"\U$thorn INHERITS\E"} = "";
+  $interface_db{"\U$thorn FRIEND\E"} = "";
+  $interface_db{"\U$thorn PUBLIC GROUPS\E"} = "";
+  $interface_db{"\U$thorn PROTECTED GROUPS\E"} = "";
+  $interface_db{"\U$thorn PRIVATE GROUPS\E"} = "";
+
   #   The default block is private.
   $block = "PRIVATE";
   
-  for($linenum = 0; $linenum < @data; $linenum++)
+  for($line_number = 0; $line_number < @data; $line_number++)
   {
-    $line = $data[$linenum];
+    $line = $data[$line_number];
     
     #       Parse the line
     if($line =~ m/^\s*(PUBLIC|PROTECTED|PRIVATE)\s*$/i)
@@ -466,7 +533,7 @@ sub parse_interface_ccl
     } 
     elsif ($line =~ m/^\s*IMPLEMENTS:\s*([a-z]+[a-z_0-9]*)\s*$/i)
     {
-      if($implementation == 0)
+      if(!$implementation)
       {
 	$implementation = $1;
 	$interface_db{"\U$thorn\E IMPLEMENTS"} = $implementation;
@@ -491,16 +558,19 @@ sub parse_interface_ccl
       if($known_groups{"\U$current_group\E"})
       {
 	print STDERR "Duplicate group $2 in thorn $thorn.\n";
-	if($data[linenum+1] =~ m:\{:)
+	if($data[line_number+1] =~ m:\{:)
 	{
 	  print STDERR "...Skipping block ....\n";
-	  $linenum++ until ($data[$linenum] =~ m:\}:);
+	  $line_number++ until ($data[$line_number] =~ m:\}:);
 	}
 	next;
       }
       else
       {
 	$known_groups{"\U$current_group\E"} = 1;
+
+	# Initialise some stuff to prevent perl -w from complaining.
+	$interface_db{"\U$thorn GROUP $current_group\E"} = "";
       }
       
       $interface_db{"\U$thorn $block GROUPS\E"} .= " $2";
@@ -541,22 +611,22 @@ sub parse_interface_ccl
 	print STDERR "Unknown GROUP TYPE " .
 	  $interface_db{"\U$thorn GROUP $current_group\E GTYPE"} .
 	    " for group $current_group of thorn $thorn.\n";
-	if($data[linenum+1] =~ m:\{:)
+	if($data[line_number+1] =~ m:\{:)
 	{
 	  print STDERR "...Skipping block ....\n";
-	  $linenum++ until ($data[$linenum] =~ m:\}:);
+	  $line_number++ until ($data[$line_number] =~ m:\}:);
 	}
 	next;
       }	      
       
       # Fill in data for the scalars/arrays/functions
-      $linenum++;
-      if($data[$linenum] =~ m/^\s*\{\s*$/)
+      $line_number++;
+      if($data[$line_number] =~ m/^\s*\{\s*$/)
       {
-	$linenum++;
-	while($data[$linenum] !~ m:\}:i)
+	$line_number++;
+	while($data[$line_number] !~ m:\}:i)
 	{
-	  @functions = split(/[^a-zA-Z_0-9]+/, $data[$linenum]);
+	  @functions = split(/[^a-zA-Z_0-9]+/, $data[$line_number]);
 	  foreach $function (@functions)
 	  {
 	    $function =~ s:\s*::g;
@@ -575,7 +645,7 @@ sub parse_interface_ccl
 	      }
 	    }
 	  }
-	  $linenum++;
+	  $line_number++;
 	}
       }
       else
@@ -600,7 +670,7 @@ sub parse_interface_ccl
       if($line =~ m:\{:)
       {
 	print STDERR "...Skipping block with missing keyword....\n";
-	$linenum++ until ($data[$linenum] =~ m:\}:);
+	$line_number++ until ($data[$line_number] =~ m:\}:);
       }
       else
       {

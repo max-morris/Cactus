@@ -22,28 +22,28 @@
 
 sub create_parameter_database
 {
-    local(%implementations) = @_;
-    local($imp, @indata);
-    local(@new_parameter_data);
-    local(@parameter_data);
-
-#  Loop through each implementation's parameter file.
-    foreach $imp (keys %implementations)
-    {
-#       Read the data
-	@indata = &read_file("$implementations{$imp}/param.ccl");
-	
-#       Get the parameters from it
-	@new_parameter_data = &parse_param_ccl($imp, @indata);
-
-#       Add the parameters to the master parameter database
-	push (@parameter_data, @new_parameter_data);
-
-    }
-
-    @parameter_data = &cross_index_parameters(scalar(keys %implementations), (keys %implementations), @parameter_data);
-
-    return @parameter_data;
+  local(%implementations) = @_;
+  local($imp, @indata);
+  local(@new_parameter_data);
+  local(@parameter_data);
+  
+  #  Loop through each implementation's parameter file.
+  foreach $imp (keys %implementations)
+  {
+    #       Read the data
+    @indata = &read_file("$implementations{$imp}/param.ccl");
+    
+    #       Get the parameters from it
+    @new_parameter_data = &parse_param_ccl($imp, @indata);
+    
+    #       Add the parameters to the master parameter database
+    push (@parameter_data, @new_parameter_data);
+    
+  }
+  
+  @parameter_data = &cross_index_parameters(scalar(keys %implementations), (keys %implementations), @parameter_data);
+  
+  return @parameter_data;
 }
 
 sub cross_index_parameters
@@ -54,10 +54,12 @@ sub cross_index_parameters
   local(@module_file);
   local($line);
   local(@data);
-
+  
   @implementations = @indata[0..$n_implementations-1];
   %parameter_database = @indata[$n_implementations..$#indata];
-
+  
+  $parameter_database{"PUBLIC PARAMETERS"} = "";
+  
   foreach $imp (@implementations)
   {
     foreach $parameter (split(/ /, $parameter_database{"\U$imp\E PUBLIC variables"}))
@@ -77,7 +79,7 @@ sub cross_index_parameters
       }
     }
   }
-
+  
   return %parameter_database;
 }
 
@@ -100,25 +102,25 @@ sub cross_index_parameters
 
 sub read_file
 {
-    local($file) = @_;
-    local(@indata);
-
-    open(IN, "<$file") || die("Can't open $file\n");
-
-    while(<IN>)
-    {
-	$_ =~ s/\#.*//;
-	
-	next if(m/^\s+$/);
-	
-	chop;
-	
-	push(@indata, $_);
-    }
-
-    close IN;
-
-    return @indata;
+  local($file) = @_;
+  local(@indata);
+  
+  open(IN, "<$file") || die("Can't open $file\n");
+  
+  while(<IN>)
+  {
+    $_ =~ s/\#.*//;
+    
+    next if(m/^\s+$/);
+    
+    chop;
+    
+    push(@indata, $_);
+  }
+  
+  close IN;
+  
+  return @indata;
 }
 
 
@@ -138,121 +140,131 @@ sub read_file
 
 sub parse_param_ccl
 {
-    local($implementation, @data) = @_;
-    local($linenum, $line, $block, $type, $variable, $description, $nerrors);
-    local($current_friend, $new_ranges, $new_desc);
-    local($data, %parameter_db);
-    local(%friends);
-    local(%defined_parameters);
-
-
-#   The default block is private.
-    $block = "PRIVATE";
-
-    for($linenum = 0; $linenum < @data; $linenum++)
+  local($implementation, @data) = @_;
+  local($line_number, $line, $block, $type, $variable, $description, $nerrors);
+  local($current_friend, $new_ranges, $new_desc);
+  local($data, %parameter_db);
+  local(%friends);
+  local(%defined_parameters);
+  
+  
+  #   The default block is private.
+  $block = "PRIVATE";
+  
+  # Initialise, to prevent perl -w from complaining.
+  $parameter_db{"\U$implementation PRIVATE\E variables"} = "";
+  
+  for($line_number = 0; $line_number < @data; $line_number++)
+  {
+    $line = $data[$line_number];
+    
+    #       Parse the line
+    if($line =~ m/(PUBLIC|PROTECTED|PRIVATE|FRIEND)\s*:(.*)/i)
     {
-	$line = $data[$linenum];
-
-#       Parse the line
-	if($line =~ m/(PUBLIC|PROTECTED|PRIVATE|FRIEND)\s*:(.*)/i)
-	{
-#           It's a new block.
-	    $block = "\U$1\E";
-	    if($block eq "FRIEND")
-	    {
-		$current_friend = $2;
-		$current_friend =~ s:\s::;
-
-#               It's a friend block.
-		$block .= " \U$current_friend\E";
-#               Remember this friend, but make the memory unique.
-		$friends{"\U$current_friend\E"} = 1;
-	    }
-	}
-	elsif($line =~ m:(EXTENDS )?\s*(INTEGER|REAL|KEYWORD|STRING)\s*([a-zA-Z]+[a-zA-Z0-9_]*) \s*(\"[^\"]*\"):i)
-	{
-
-#           This is a parameter definition.
-	    $type = "\U$2\E";
-	    $variable = $3;
-	    $description = $4;
-
-	    if($defined_parameters{"\U$variable\E"})
-	    {
-	      print STDERR "Duplicate parameter $variable in implementation $implementation\n";
-	      print STDERR "Ignoring second definition.\n";
-		$nerrors++;
-		$linenum++ until ($data[$linenum] =~ m:\}:);
-	    }
-	    elsif($1 =~ m:EXTENDS:i && $block ne "FRIEND")
-	    {
-#               Can only extend a friend variable.
-		print STDERR "Parse error at line $linenum\n";
-		$nerrors++;
-		$linenum++ until ($data[$linenum] =~ m:\}:);
-	    }
-	    elsif(! $data[$linenum+1] =~ m:^\s*\{\s*$:)
-	    {
-#               Since the data should have no blank lines, the next
-#               line should have { on it.
-		print STDERR "Parse error at line $linenum\n";
-		$nerrors++;
-#               Move past the end of this block.
-		$linenum++ until ($data[$linenum] =~ m:\}:);
-	    }
-	    else
-	    {
-#               Move past {
-		$linenum++;
-		$linenum++;
-
-#               Store data about this variable.
-		$defined_parameters{"\U$variable\E"} = 1;
-
-		$parameter_db{"\U$implementation $block\E variables"} .= $variable." ";
-		$parameter_db{"\U$implementation $variable\E type"} = $type;
-		$parameter_db{"\U$implementation $variable\E description"} = $description;
-		$parameter_db{"\U$implementation $variable\E ranges"} = 0;
-
-#               Parse the allowed values and their descriptions.
-		while(($new_ranges, $new_desc) = $data[$linenum] =~ m/(.*)::(.*)/)
-		{
-		    $parameter_db{"\U$implementation $variable\E ranges"}++;
-		    $parameter_db{"\U$implementation $variable\E range $parameter_db{\"\U$implementation $variable\E ranges\"} range"} = $new_ranges;
-		    $parameter_db{"\U$implementation $variable\E range $parameter_db{\"\U$implementation $variable\E ranges\"} description"} = $new_desc;
-		    $linenum++;
-		}
-		if($block !~ m:FRIEND:)
-		{
-		    if($data[$linenum] =~ m:\s*\}\s*(.+):)
-		    {
-			$parameter_db{"\U$implementation $variable\E default"} = $1;
-		    }
-		    else
-		    {
-			print STDERR "Unable to find default for $variable\n";
-			$nerrors++;
-		    }		
-		}
-	    }
-	}
-	else
-	{
-	    if($line =~ m:\{:)
-	    {
-		print STDERR "...Skipping block with missing keyword....\n";
-		$linenum++ until ($data[$linenum] =~ m:\}:);
-	    }
-	    else
-	    {
-		print STDERR "Unknown line $line!!!\n";
-	    }
-	}
+      #           It's a new block.
+      $block = "\U$1\E";
+      
+      if($block eq "FRIEND")
+      {
+	$current_friend = $2;
+	$current_friend =~ s:\s::;
+	
+	#               It's a friend block.
+	$block .= " \U$current_friend\E";
+	#               Remember this friend, but make the memory unique.
+	$friends{"\U$current_friend\E"} = 1;
+      }
+      
+      # Do some initialisation to prevent perl -w from complaining.
+      if(!$parameter_db{"\U$implementation $block\E variables"})
+      {
+	$parameter_db{"\U$implementation $block\E variables"} = "";
+      }
     }
-
-    $parameter_db{"\U$implementation\E FRIEND implementations"} = join(" ", keys %friends);
-
-    return %parameter_db;
+    elsif($line =~ m:(EXTENDS )?\s*(INTEGER|REAL|KEYWORD|STRING)\s*([a-zA-Z]+[a-zA-Z0-9_]*) \s*(\"[^\"]*\"):i)
+    {
+      
+      #           This is a parameter definition.
+      $type = "\U$2\E";
+      $variable = $3;
+      $description = $4;
+      
+      if($defined_parameters{"\U$variable\E"})
+      {
+	print STDERR "Duplicate parameter $variable in implementation $implementation\n";
+	print STDERR "Ignoring second definition.\n";
+	$nerrors++;
+	$line_number++ until ($data[$line_number] =~ m:\}:);
+      }
+      elsif($1 && $1 =~ m:EXTENDS:i && $block ne "FRIEND")
+      {
+	#               Can only extend a friend variable.
+	print STDERR "Parse error at line $line_number\n";
+	$nerrors++;
+	$line_number++ until ($data[$line_number] =~ m:\}:);
+      }
+      elsif(! $data[$line_number+1] =~ m:^\s*\{\s*$:)
+      {
+	#               Since the data should have no blank lines, the next
+	#               line should have { on it.
+	print STDERR "Parse error at line $line_number\n";
+	$nerrors++;
+	#               Move past the end of this block.
+	$line_number++ until ($data[$line_number] =~ m:\}:);
+      }
+      else
+      {
+	#               Move past {
+	$line_number++;
+	$line_number++;
+	
+	#               Store data about this variable.
+	$defined_parameters{"\U$variable\E"} = 1;
+	
+	$parameter_db{"\U$implementation $block\E variables"} .= $variable." ";
+	$parameter_db{"\U$implementation $variable\E type"} = $type;
+	$parameter_db{"\U$implementation $variable\E description"} = $description;
+	$parameter_db{"\U$implementation $variable\E ranges"} = 0;
+	
+	#               Parse the allowed values and their descriptions.
+	while(($new_ranges, $new_desc) = $data[$line_number] =~ m/(.*)::(.*)/)
+	{
+	  $parameter_db{"\U$implementation $variable\E ranges"}++;
+	  $parameter_db{"\U$implementation $variable\E range $parameter_db{\"\U$implementation $variable\E ranges\"} range"} = $new_ranges;
+	  $parameter_db{"\U$implementation $variable\E range $parameter_db{\"\U$implementation $variable\E ranges\"} description"} = $new_desc;
+	  $line_number++;
+	}
+	if($block !~ m:FRIEND:)
+	{
+	  if($data[$line_number] =~ m:\s*\}\s*(.+):)
+	  {
+	    $parameter_db{"\U$implementation $variable\E default"} = $1;
+	  }
+	  else
+	  {
+	    print STDERR "Unable to find default for $variable\n";
+	    $nerrors++;
+	  }		
+	}
+      }
+    }
+    else
+    {
+      if($line =~ m:\{:)
+      {
+	print STDERR "...Skipping block with missing keyword....\n";
+	$line_number++ until ($data[$line_number] =~ m:\}:);
+      }
+      else
+      {
+	print STDERR "Unknown line $line!!!\n";
+      }
+    }
+  }
+  
+  $parameter_db{"\U$implementation\E FRIEND implementations"} = join(" ", keys %friends);
+  
+  return %parameter_db;
 }
 
 #/*@@
@@ -270,12 +282,13 @@ sub parse_param_ccl
 #@@*/
 sub print_parameter_database
 {
-    local(%parameter_database) = @_;
-    local($field);
-
-    foreach $field ( sort keys %parameter_database ){
-	print "$field has value $parameter_database{$field}\n";
-    }
+  local(%parameter_database) = @_;
+  local($field);
+  
+  foreach $field ( sort keys %parameter_database )
+  {
+    print "$field has value $parameter_database{$field}\n";
+  }
 }
 
 1;
