@@ -239,14 +239,14 @@ from Fortran.
 \item[CCTK\_InterpGridArrays]   
   [\pageref{CCTK-InterpLocalArrays}] 
   Performs an interpolation on a list of distributed arrays,
-  using a chosen interpolation operator (currently being implemented;
-  should be available in early 2002)
+  using a chosen interpolation operator (this function is currently
+  being implemented; it should be available in early 2002)
 
 \item[CCTK\_InterpGV]
   [\pageref{CCTK-InterpGV}]
   Performs an interpolation on a list of distributed CCTK grid variables,
-  using a chosen interpolation operator (being phased out; will be
-  replaced by \verb|CCTK_InterpGridArrays()| in early 2002)
+  using a chosen interpolation operator (this function is being phased out;
+  it will eventually be replaced by \verb|CCTK_InterpGridArrays()|)
 
 \item[CCTK\_InterpHandle]
   [\pageref{CCTK-InterpHandle}]
@@ -255,14 +255,14 @@ from Fortran.
 \item[CCTK\_InterpLocal]   
   [\pageref{CCTK-InterpLocal}] 
   Performs an interpolation on a list of processor-local arrays,
-  using a chosen interpolation operator (being phased out; will be
-  replaced by \verb|CCTK_InterpLocalArrays()| in early 2002)
+  using a chosen interpolation operator (this function is being phased out;
+  it will eventually be replaced by \verb|CCTK_InterpLocalArrays()|)
 
 \item[CCTK\_InterpLocalArrays]   
   [\pageref{CCTK-InterpLocalArrays}] 
   Performs an interpolation on a list of processor-local arrays,
-  using a chosen interpolation operator (currently being implemented;
-  should be available in early 2002)
+  using a chosen interpolation operator (this function is currently
+  being implemented; it should be available in early 2002)
 
 \item[CCTK\_InterpRegisterOperatorGV]
   [\pageref{CCTK-InterpRegisterOperatorGV}]
@@ -1833,7 +1833,7 @@ No Fortran routine exists at the moment
 \begin{FunctionDescription}{CCTK\_InterpGridArrays}
 \label{CCTK-InterpGridArrays}
 Interpolate a list of distributed grid arrays.
-(This is a new API currently being implemented; it should be available
+(This function is currently being implemented; it should be available
 early in 2002, and will eventually replace \verb|CCTK_InterpGV()|.
 See the Cactus web pages ``Development'' section for further details.)
 
@@ -2026,8 +2026,12 @@ if (CCTK_InterpGridArrays(GH, N_DIMS,
 
 
 % Interp.c
-\begin{CCTKFunc}{CCTK\_InterpGV}{Perform an interpolation on a list of
-distributed CCTK grid variables, using a chosen interpolation operator}
+\begin{CCTKFunc}{CCTK\_InterpGV}%%%
+{Perform an interpolation on a list of distributed CCTK grid variables,
+using a chosen interpolation operator%%%
+\\[\baselineskip]
+This function is being phased out; it will eventually be replaced by
+{\t CCTK\_InterpGridArrays()}.}
 \label{CCTK-InterpGV}
 \subroutine{int}{integer}{ierr}
 \argument{cGH *}{CCTK\_POINTER}{cctkGH}
@@ -2150,8 +2154,12 @@ A negative value is returned for invalid/unregistered interpolation operator nam
 
 
 % Interp.c
-\begin{CCTKFunc}{CCTK\_InterpLocal}{Perform an interpolation on a list of
-processor-local arrays, using a chosen interpolation operator}
+\begin{CCTKFunc}{CCTK\_InterpLocal}%%%
+{Perform an interpolation on a list of processor-local arrays,
+using a chosen interpolation operator%%%
+\\[\baselineskip]
+This function is being phased out; it will eventually be replaced by
+{\t CCTK\_InterpLocalArrays()}.}
 \label{CCTK-InterpLocal}
 \subroutine{int}{integer}{ierr}
 \argument{cGH *}{CCTK\_POINTER}{cctkGH}
@@ -2254,7 +2262,7 @@ A negative return code indicates an error condition:
 \begin{FunctionDescription}{CCTK\_InterpLocalArrays}
 \label{CCTK-InterpLocalArrays}
 Interpolate a list of processor-local arrays.
-(This is a new API currently being implemented; it should be available
+(This function is currently being implemented; it should be available
 early in 2002, and will eventually replace \verb|CCTK_InterpLocal()|.
 See the Cactus web pages ``Development'' section for further details.)
 
