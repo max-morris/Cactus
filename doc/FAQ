@@ -1,7 +1,7 @@
 
 Cactus Code Frequently Asked Questions
 
-$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.42 2002-08-29 12:41:02 allen Exp $
+$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.43 2002-09-01 19:58:23 allen Exp $
 
 Also available at http://www.cactuscode.org/Documentation/FAQ
 
@@ -145,10 +145,13 @@ D5  (Irix) I'm using the web server thorn CactusConnect/HTTPD, I compiled with
 D6  I get a segmentation fault running Cactus, right after the schedule
     tree is printed to screen?
 
-D7 (Linux) I'm using the NaNChecker thorn and seeing very strange results.
+D7  (Linux) I'm using the NaNChecker thorn and seeing very strange results.
  
 D8  (Linux) Testsuites for CactusEinstein/AHFinder and CactusBench/BenchADM 
     are failing, but the release notices say that they pass.
+
+D9  How do I run Cactus until a given coordinate time instead of to a 
+    given iteration number? 
 
 
 ------------------------------------------------------------------------------
@@ -808,6 +811,12 @@ D8  (Linux) The testsuites for CactusEinstein/AHFinder and
     for CactusEinstein/AHFinder and CactusBench/BenchADM if
     optimisation is not used.
     
+D9  How do I run Cactus until a given coordinate time instead of to a 
+    given iteration number? 
+
+    Instead of setting cactus::cctk_itlast set cactus::cctk_final_time to 
+    the required coordinate time, and also set cactus::terminate = "time".
+
 
 ------------------------------------------------------------------------------
 Thorn Writing:
