@@ -104,11 +104,24 @@ int CCTK_Equals(const char *string1, const char *string2)
   retval = 1;
 
   /* Check that string1 isn't null */
-  if (!string1 && string2)
+  if (!string1 || !string2)
   {
-    message = (char *)malloc((100+sizeof(string2))*sizeof(char));
-    sprintf(message,"First string null in CCTK_Equals (2nd is %s)",string2); 
-    CCTK_Warn(0,message);
+    if (!string1 && string2)
+    {
+      message = (char *)malloc((100+sizeof(string2))*sizeof(char));
+      sprintf(message,"First string null in CCTK_Equals (2nd is %s)",string2); 
+      CCTK_Warn(0,message);
+    }
+    else if (string1 && !string2)
+    { 
+      message = (char *)malloc((100+sizeof(string1))*sizeof(char));
+      sprintf(message,"Second string null in CCTK_Equals (1st is %s)",string1); 
+      CCTK_Warn(0,message);
+    }     
+    else
+    {
+      CCTK_Warn(0,"Both strings null in CCTK_Equals");
+    }
   }
 
   if(strlen(string1)==strlen(string2))
