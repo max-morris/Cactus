@@ -103,10 +103,10 @@ else
       chdir "$T${sep}test" || die "Unable to chdir to $T${sep}test";
       while ($file=<*.par>)
       {
-	$database{"\U$T TESTFILE\E"} = $file;
-	@testfiles = (@testfiles, $file);
-	@testthorns = (@testthorns, $T);
-	$number++;
+        $database{"\U$T TESTFILE\E"} = $file;
+        @testfiles = (@testfiles, $file);
+        @testthorns = (@testthorns, $T);
+        $number++;
       }
       chdir "../../.." || die "Unable to chdir to $thisdir";
 
@@ -164,15 +164,15 @@ if ($tests =~ /All/) {
       foreach $tthorn  (@allthorns)
       {
         $tthorn =~ m:.*/(.*)$:;
-	$thornpart = "\U$1";
-	if ($thornpart eq $th)
-	{
-	  $foundit = 1;
-	}
+        $thornpart = "\U$1";
+        if ($thornpart eq $th)
+        {
+          $foundit = 1;
+        }
       }      
       if (!$foundit)
       {
-	$haveallthorns = 0;
+        $haveallthorns = 0;
       }
     }
 
@@ -335,9 +335,9 @@ sub runtest {
     {
         print "${ansibold}Cactus exited with error code $retcode $ansinormal \n";
         print "Please check the logfile $tsttop$sep$tp.log\n\n";
-	$number_failed++;
-	@which_failed = (@which_failed,$tp); 
-	@thorn_failed = (@thorn_failed,$inthorn);
+        $number_failed++;
+        @which_failed = (@which_failed,$tp); 
+        @thorn_failed = (@thorn_failed,$inthorn);
         return;
     }
  
@@ -362,11 +362,13 @@ sub runtest {
         while ($oline = <INORIG>) {
             $nline = <INNEW>;
             # Now lets see if they differ.
-	    if ($nline =~ /nan/i)
-	    {
-	      print "****CAUGHT NAN in $newfile****\n";
-	    }
-            if (!($nline eq $oline)) {
+            if ($nline =~ /nan/i)
+            {
+              print "****CAUGHT NAN in $newfile****\n";
+              $nblow ++;
+              $nrealblow ++;
+            }
+            elsif (!($nline eq $oline)) {
 
 # This is the new comparison (subtract last two numbers)
                 ($t1,$v1) = split(' ', $nline);
@@ -381,12 +383,12 @@ sub runtest {
                   # They diff. But do they differ strongly?
                   $nblow ++;
 
-		  $exp = sprintf("%e",$vdiff);
-		  $exp =~ s/^.*e-(\d+)/$1/;
-		  unless ($exp >= $tolerance) {
+                  $exp = sprintf("%e",$vdiff);
+                  $exp =~ s/^.*e-(\d+)/$1/;
+                  unless ($exp >= $tolerance) {
                     $nrealblow++;
-		  } 
-		}
+                  } 
+                }
             }
         }
         if ($nblow != 0) {
@@ -406,12 +408,12 @@ sub runtest {
     if ($nfiles == 0) 
     {
         printf("  $ansibold WARNING: ZERO files compared ! $ansinormal \n");
-	$number_zerofiles++;
+        $number_zerofiles++;
     }
     elsif ($blewit == 0) 
     {
         printf("  $ansibold Test succeeded!$ansinormal $nfiles files identical\n");
-	$number_passed1++;
+        $number_passed1++;
     } 
     else 
     {
@@ -419,14 +421,14 @@ sub runtest {
         {
             printf "\n  $ansibold Test passed to $tolerance figures:$ansinormal ".
                 "$nfiles compared, $blewit files differ in the last digits\n";
-	    $number_passed1++;
-	    $number_passed2++;
+            $number_passed1++;
+            $number_passed2++;
         } else {
             printf "\n  $ansibold TEST FAILED!!:$ansinormal ".
                 "$nfiles compared, $blewit files differ, $reallyblewit differ significantly\n";
-	    $number_failed++;
-	    @which_failed = (@which_failed,$tp); 
-	    @thorn_failed = (@thorn_failed,$inthorn);
+            $number_failed++;
+            @which_failed = (@which_failed,$tp); 
+            @thorn_failed = (@thorn_failed,$inthorn);
         }
     }
     printf ("\n\n");
