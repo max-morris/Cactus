@@ -345,6 +345,12 @@
 % All the subsections are optional.
 %
 % Bugs:
+% - An empty section gives a latex error, eg
+%	\begin{ParameterSection}
+%	% no parameters here
+%	\end{ParameterSection}
+%   doesn't work.  Maybe someone who knows more about LaTeX lists than
+%   I do can figure out how to fix this???
 % - It would be nice if we could avoid having to escape underscore
 %   within arguments.
 % - Error checking: if you have to ask, there isn't enough for you! :)
