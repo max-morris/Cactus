@@ -2144,17 +2144,7 @@ int Util_TableSetChar(int handle, CCTK_CHAR value, const char *key)
 }
 
 #ifdef UTIL_TABLE_FORTRAN_WRAPPERS
-void CCTK_FCALL CCTK_FNAME(Util_TableSetChar)
-                          (int *retval, const int *handle,
-                           const CCTK_CHAR *value, ONE_FORTSTRING_ARG);
-void CCTK_FCALL CCTK_FNAME(Util_TableSetChar)
-                          (int *retval, const int *handle,
-                           const CCTK_CHAR *value, ONE_FORTSTRING_ARG)
-{
-  ONE_FORTSTRING_CREATE(key)
-  *retval = Util_TableSetChar(*handle, *value, key);
-  free(key);
-}
+/*** FIXME: no fortran wrapper yet ***/
 #endif	/* UTIL_TABLE_FORTRAN_WRAPPERS */
 
 /**********************************************************/
@@ -3181,17 +3171,7 @@ int Util_TableGetChar(int handle, CCTK_CHAR *value, const char *key)
 }
 
 #ifdef UTIL_TABLE_FORTRAN_WRAPPERS
-void CCTK_FCALL CCTK_FNAME (Util_TableGetChar)
-                           (int *retval, const int *handle,
-                            CCTK_CHAR *value, ONE_FORTSTRING_ARG);
-void CCTK_FCALL CCTK_FNAME (Util_TableGetChar)
-                           (int *retval, const int *handle,
-                            CCTK_CHAR *value, ONE_FORTSTRING_ARG)
-{
-  ONE_FORTSTRING_CREATE (key)
-  *retval = Util_TableGetChar (*handle, value, key);
-  free (key);
-}
+/*** FIXME: no fortran wrapper yet ***/
 #endif	/* UTIL_TABLE_FORTRAN_WRAPPERS */
 
 /**********************************************************/
