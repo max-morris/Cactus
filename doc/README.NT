@@ -12,6 +12,10 @@ it contains no names containing un-escaped spaces - these would
 confuse the autoconf program.  Failure to do this will result in
 bizarre errors in the dependency generation.
 
+Additionally, if you want the -clean, -realclean, and -cleandeps
+targets to work, you need to make sure that the GNU find comes before
+the microsoft find in your path.
+
 In principle now all you need to do is start bash, checkout the CCTK,
 and run make.
 
