@@ -8,6 +8,7 @@
  @@*/
 
 #include <stdio.h>
+#include <malloc.h>
 
 #include "cctk.h"
 
@@ -20,6 +21,11 @@
 #include "cctk_WarnLevel.h"
 #include "cctk_Misc.h"
 
+int CCTKi_ReallySetParameter(const char *parameter, const char *value);
+int ParameterSet(const char *name,
+                 const char *thorn,
+                 const char *value);
+       
 static char *rcsid = "$Id$";
 
  /*@@
@@ -61,9 +67,13 @@ int CCTKi_SetParameter(const char *parameter, const char *value)
 	if(length < 100) length++;
       }
       
-      thornname[length] = '\0';
-      n_errors += CCTKi_ActivateThorn(thornname) != 0;
+      if (length > 0)
+      {
+	thornname[length] = '\0';
+	n_errors += CCTKi_ActivateThorn(thornname) != 0;
+      }
       if(*position) position++;
+
     }
     
     if(n_errors)
