@@ -17,6 +17,8 @@
 #include "WarnLevel.h"
 #include "Coord.h"
 #include "ErrorCodes.h"
+#include "Groups.h"
+#include "Misc.h"
 
 static cHandledData *coordinates = NULL;
 static int num_coords = 0;
@@ -67,7 +69,6 @@ int CCTK_RegisterCoord_ByIndex(const char *name, int index, int dir)
 
   int handle;
   struct Coordprops *new_coord;
-  char *coordname;
 
   /* Check that the method hasn't already been registered */
   handle = CCTK_GetHandle(coordinates, name, NULL);
