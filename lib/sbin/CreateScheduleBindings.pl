@@ -139,7 +139,7 @@ sub ScheduleCreateFile
   $outbuf .=  "\n";
   $outbuf .=  "\#include \"cctk.h\"\n";
   $outbuf .=  "\#include \"cctk_Parameters.h\"\n";
-  $outbuf .=  "\#include \"cctki_Schedule.h\"\n";
+  $outbuf .=  "\#include \"cctki_ScheduleBindings.h\"\n";
   $outbuf .=  "\n";
   $outbuf .=  "/* Prototypes for functions to be registered. */\n";
   $outbuf .=  "$prototypes\n";
