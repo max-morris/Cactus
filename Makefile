@@ -16,7 +16,7 @@
 #
 #
 #   @enddesc
-#   @version $Id: Makefile,v 1.147 2003-12-29 14:11:16 tradke Exp $
+#   @version $Id: Makefile,v 1.148 2004-01-20 21:29:12 schnetter Exp $
 # @@*/
 
 ##################################################################################
@@ -237,8 +237,7 @@ $(CONFIGURATIONS):
 	  echo "Cactus - version: $(CCTK_VERSION)"; \
 	  echo "Building configuration $@"; \
 	  echo $(DIVIDER);\
-	fi; \
-	cd $(CONFIGS_DIR)/$@
+	fi
 	$(MAKE) -f $(CCTK_HOME)/lib/make/make.configuration TOP=$(CONFIGS_DIR)/$@ CCTK_HOME=$(CCTK_HOME) $(TPARFLAGS)
 
 # Clean target
