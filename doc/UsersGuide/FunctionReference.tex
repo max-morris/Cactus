@@ -2274,6 +2274,7 @@ be used for all the arrays.
 
 \begin{Synopsis}{C}
 \begin{verbatim}
+#include "util_ErrorCodes.h"
 #include "cctk.h"
 int status = CCTK_InterpLocalUniform(int N_dims,
                                      int operator_handle,
@@ -2437,6 +2438,12 @@ Register a \verb|CCTK_InterpLocalUniform()| interpolation operator.
 %notyet%with non-uniformly spaced data points.
 %notyet%\end{SeeAlso}
 
+\begin{Error}{CCTK\_ERROR\_INTERP\_POINT\_X\_RANGE}
+one or more of the interpolation points is out of range
+(in this case additional information about the out-of-range point
+may be reported through the parameter table; see the thorn guide for
+the LocalInterp thorn for further details)
+\end{Error}
 \begin{Error}{UTIL\_ERROR\_BAD\_INPUT}
 one or more of the inputs is invalid (eg.~\verb|NULL| pointer)
 \end{Error}
@@ -2445,6 +2452,11 @@ unable to allocate memory
 \end{Error}
 \begin{Error}{UTIL\_ERROR\_BAD\_HANDLE}
 parameter table handle is invalid
+\end{Error}
+\begin{Error}{other error codes}
+this function may also return any error codes returned by the
+\verb|Util_Table*()| routines used to get parameters from
+(and/or set results in) the parameter table
 \end{Error}
 
 \begin{Example}{C}
