@@ -264,7 +264,7 @@ system.
 
 Once a configuration has been created, by {\tt gmake <config>} as described
 in detail in the next section, a single call to {\tt gmake <config>}
-will compile the code.  The first time generate a compile 
+will compile the code.  The first time it generates a compile 
 {\tt ThornList},  and gives you the chance to edit it before continuing.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -674,7 +674,7 @@ An architecture specific header file containing things which cannot be
 automatically detected, and have thus been hand-coded for this architecture.
 \end{Lentry}
 
-These are the first files which should be checked or modified to suite any
+These are the first files which should be checked or modified to suit any
 peculiarities of this configuration.
 
 In addition the following files may be informative:
@@ -739,7 +739,8 @@ targets and options which are detailed in the following sections.
 
 A target for {\tt gmake} can be naively thought of as an argument
 that tells it which of several things listed in the {\tt Makefile} it
-is to do. The command {\tt gmake help} lists all gmake targets.
+is to do. The command {\tt gmake help} lists all gmake targets:
+% colon clarifies that all (config) targets are listed here
 
 \begin{Lentry}
 
@@ -760,7 +761,7 @@ is to do. The command {\tt gmake help} lists all gmake targets.
 
 \item [{\tt gmake <config>-delete}] deletes a configuration ({\tt rm -r configs/<config>}).
 
-\item [{\tt gmake <config>-editthorns}] edits the ThornList
+\item [{\tt gmake <config>-editthorns}] edits the ThornList.
 
 \item [{\tt gmake <config>-examples}] copies all the example parameter files relevant for this configuration to the directory {\tt examples} in the Cactus home directory. If a file of the same name is already there, it will not overwrite it.
 
@@ -838,11 +839,11 @@ the same.
 
 \begin{Lentry}
 
-\item [{\tt gmake <target> THORNLIST=<file> [THORNLIST\_DIR=<dir>]}] uses the file {\tt dir/file} as the ThornList for the configuration. The directory defaults to the current directory
-\item [{\tt gmake <target> SILENT=no}] print the commands that gmake is executing
+\item [{\tt gmake <target> THORNLIST=<file> [THORNLIST\_DIR=<dir>]}] uses the file {\tt dir/file} as the ThornList for the configuration. The directory defaults to the current directory.
+\item [{\tt gmake <target> SILENT=no}] print the commands that gmake is executing.
 \item [{\tt gmake <target> WARN=yes}] show compiler warnings during compilation.
-\item [{\tt gmake <target> FJOBS=<number>}] compile in parallel, across files within each thorn
-\item [{\tt gmake <target> TJOBS=<number>}] compile in parallel, across thorns 
+\item [{\tt gmake <target> FJOBS=<number>}] compile in parallel, across files within each thorn.
+\item [{\tt gmake <target> TJOBS=<number>}] compile in parallel, across thorns.
 
 \end{Lentry}
 
@@ -859,7 +860,7 @@ Note that with more modern versions of gmake, it is sufficient to pass the norma
 
 \begin{Lentry}
 
-\item [{\tt gmake help}] lists all make options
+\item [{\tt gmake help}] lists all make options.
 
 \item [{\tt gmake checkout}] allows you to easily checkout Cactus arrangements and thorns.
 
@@ -872,8 +873,6 @@ Note that with more modern versions of gmake, it is sufficient to pass the norma
 \item [{\tt gmake default}] creates a new configuration with a default name.
 
 \item [{\tt gmake distclean}] delete your {\tt configs} directory and hence all your configurations.
-
-\item [{\tt gmake doc}] places a postscript version of the Users Guide documentation in your Cactus home directory.
 
 \item [{\tt gmake downsize}] removes non essential files as documents
   and testsuites to allow for minimal installation size.
@@ -985,13 +984,13 @@ Runs the code far enough to check the consistency of the parameters.  If
 given a numeric argument it will attempt to simulate being on that number 
 of processors. [To be implemented]
 \item [{\tt -W <level>} or {\tt -waring-level <level>}]
-Sets the warning level of the code.  All warning messages are given a level--
+Sets the warning level of the code.  All warning messages are given a level ---
 the lower the level the greater the severity.  This parameter controls the
 level of messages to be seen.  The default is a warning level of 1, with 
-0 indicating the only those messages which are (by default) fatal should 
+0 indicating that only those messages which are (by default) fatal should 
 be seen.
 \item [{\tt -E <level} or {\tt -error-level <level>}]
-This works in concert with {\tt -W} - it controls which warning level is
+This works in concert with {\tt -W} --- it controls which warning level is
 treated as a fatal error.  This cannot be set to a higher value than 
 {\tt -W}. The default value is zero.
 \item [{\tt -r} or {\tt -redirect-stout}]
@@ -1010,10 +1009,10 @@ Set the level of parameter checking to be used, either {\tt strict}, {\tt normal
 \label{sec:pafisy}
 
 The parameter file is used to control the behaviour of the code at runtime.
-It is of a text file with lines which are either comments, denoted
+It is a text file with lines which are either comments, denoted
 by a `\#', or parameter statements. A parameter statement consists 
 of one or more parameter names, followed by
-and `=', followed by the value(s) for this (these) parameter(s). 
+an `=', followed by the value(s) for this (these) parameter(s). 
 Note that all string parameters are case insensitive.
 
 The {\tt first parameter} in any parameter file should be {\tt ActiveThorns}.
@@ -1111,7 +1110,7 @@ are usually written to the screen. Standard output provides you
 with information about the run, and standard error reports warnings
 and errors from the flesh and thorns.
 
-As the program runs, the normal output provides the following information
+As the program runs, the normal output provides the following information:
 
 \begin{Lentry}
 
@@ -1139,7 +1138,7 @@ or if the parameter value is not in the allowed range
 
 {\tt
 \begin{verbatim}
-Unable to set keyword CartGrid3D::type - ByMouth not in any active rangey
+Unable to set keyword CartGrid3D::type - ByMouth not in any active range
 \end{verbatim}
 }
 
@@ -1182,7 +1181,7 @@ order that they will be executed. For example
 }
 
 \item [Thorn banners]
-	Any banners registered from the thorns are displayed
+	Any banners registered from the thorns are displayed.
 
 \end{Lentry}
 
