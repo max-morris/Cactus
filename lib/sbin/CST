@@ -6,7 +6,7 @@
 #  @desc
 #             Parses the the configuration files for thorns.
 #  @enddesc
-#  @version   $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.69 2004-05-09 23:01:24 tradke Exp $
+#  @version   $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.70 2004-05-17 11:20:51 tradke Exp $
 #@@*/
 
 # Global parameter to track the number of errors from the CST
@@ -414,7 +414,7 @@ sub CreateThornDependencyList
     # my $line = "USESTHORNS_$thorn = Cactus CactusBindings";
     foreach my $dep (sort (split (' ', $configuration_database->{"\U$thorn\E USES THORNS"})))
     {
-      $line .= " $dep";
+      $line .= " $dep" if ($dep ne $thorn);
     }
     push (@varlist, $line);
     push (@deplist, "\$(CCTK_LIBDIR)/\$(LIBNAME_PREFIX)$thorn\$(LIBNAME_SUFFIX): \$(USESTHORNS_$thorn:%=\$(CCTK_LIBDIR)/\$(LIBNAME_PREFIX)%\$(LIBNAME_SUFFIX))");
@@ -566,18 +566,17 @@ sub TopoSort
   {
     next if ("\U$thorn\E" eq "CACTUS");
 
-    my @temp = split (' ', $cfg->{"\U$thorn\E USES THORNS"});
+    my @uses_thorns = split (' ', $cfg->{"\U$thorn\E USES THORNS"});
 
-    if ($cfg->{"\U$thorn\E USES THORNS"} eq '')
+    my $uses_thorns = '';
+    foreach (@uses_thorns)
     {
-      $data .= "dummy $thorn\n";
+      # ignore if a thorn wants to use only itself
+      # otherwise we'll get a cyclic list later in the topological sort
+      $uses_thorns .= "$thorn $_\n" if ($thorn ne $_);
     }
-
-    $ending_value = scalar(@temp);
-    for($counter=0 ; $counter < $ending_value ; $counter++)
-    {
-      $data .= "$thorn" . " " . "$temp[$counter]" . "\n";
-    }
+    $uses_thorns = "dummy $thorn\n" if (! $uses_thorns);
+    $data .= $uses_thorns;
   }
 
   if ($data)
