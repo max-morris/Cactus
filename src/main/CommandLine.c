@@ -247,7 +247,7 @@ void CCTKi_CommandLineHelp(void)
   argc = CCTK_GetCommandLine(&argv);
 
   printf("%s, compiled on %s at %s\n", argv[0], compileDate(), compileTime());
-  printf("Usage: %s [-h] [-O] [-o paramname] [-x [nprocs]] [-W n] [-E n] [-r] [-T] [-t name] [-v] parameter_file_name>\n", argv[0]);
+  printf("Usage: %s [-h] [-O] [-o paramname] [-x [nprocs]] [-W n] [-E n] [-r] [-T] [-t name] [-v] <parameter_file_name>\n", argv[0]);
 
   printf("\n");
   printf("Valid options:\n");
@@ -288,7 +288,7 @@ void CCTKi_CommandLineUsage(void)
 
   argc = CCTK_GetCommandLine(&argv);
 
-  printf("Usage: %s [-h] [-O] [-o paramname] [-x [nprocs]] [-W n] [-E n] [-r] [-T] [-t name] [-v] parameter_file_name>\n", argv[0]);
+  printf("Usage: %s [-h] [-O] [-o paramname] [-x [nprocs]] [-W n] [-E n] [-r] [-T] [-t name] [-v] <parameter_file_name>\n", argv[0]);
   exit(1);
 }  
 
