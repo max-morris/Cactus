@@ -22,6 +22,7 @@ Groups.c\
 GroupsOnGH.c\
 InitialiseCactus.c\
 InitialiseDataStructures.c\
+Names.c\
 OverloadMain.c\
 Parameters.c\
 ProcessCommandLine.c\
