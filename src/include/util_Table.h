@@ -33,6 +33,12 @@ extern "C"
 /***** Macros for Flags Word **************************************************/
 /******************************************************************************/
 
+/*
+ * The hexadecimal forms are more convenient for thinking about
+ * bitwise-oring, but alas Fortran 77 doesn't seem to support
+ * hexadecimal constants, so we give the actual values in decimal.
+ */
+
 /*@@
   @defines      UTIL_TABLE_FLAGS_DEFAULT
   @desc         flags-word macro: no flags set (default)
@@ -43,7 +49,7 @@ extern "C"
   @defines      UTIL_TABLE_FLAGS_CASE_INSENSITIVE
   @desc         flags-word macro: key comparisons are case-insensitive
   @@*/
-#define UTIL_TABLE_FLAGS_CASE_INSENSITIVE       0x1
+#define UTIL_TABLE_FLAGS_CASE_INSENSITIVE       1	/* 0x1 */
 
 /*@@
   @defines      UTIL_TABLE_FLAGS_USER_DEFINED_BASE
@@ -52,7 +58,7 @@ extern "C"
                 all bit positions below this one are reserved for
                 current or future Cactus use)
   @@*/
-#define UTIL_TABLE_FLAGS_USER_DEFINED_BASE      0x10000
+#define UTIL_TABLE_FLAGS_USER_DEFINED_BASE      65536	/* 0x10000 */
 
 /******************************************************************************/
 /***** Error Codes ************************************************************/
