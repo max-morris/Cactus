@@ -118,7 +118,8 @@ else
   LIBNAME_SUFFIX=".lib"
   CACTUSLIBLINKLINE='/link /libpath:$(subst /,$(DIRSEP),$(CCTK_LIBDIR)) $(foreach lib,$(ALLCACTUSLIBS), $(LIBNAME_PREFIX)$(lib)$(LIBNAME_SUFFIX))'
 
-  GENERAL_LIBRARIES='$(LIBDIRS:%=/link /libpath:$(subst /,$(DIRSEP),%)) $(LIBS:%=%.lib)' 
+# Don't need the /link here since it's already in CACTUSLIBLINKLINE
+  GENERAL_LIBRARIES='$(LIBDIRS:%=/libpath:$(subst /,$(DIRSEP),%)) $(LIBS:%=%.lib) /NODEFAULTLIB:libcd /NODEFAULTLIB:libcmt' 
 
   : ${LIBS="$F90_LIBS wsock32"}
 
