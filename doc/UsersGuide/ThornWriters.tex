@@ -505,8 +505,8 @@ Extension & Coding Language \\
 \hline
 {\t .F} & Fortran90 fixed form \\
 {\t .f} & (no preprocessing) Fortran90 fixed form\\
-{\t .F90} & Fortran90 free form form [To be implemented]\\
-{\t .f90} & (no preprocessing) Fortran90 free form [To be implemented]\\
+{\t .F90} & Fortran90 free form form\\
+{\t .f90} & (no preprocessing) Fortran90 free form\\
 {\t .F77} & Fortran77 \\
 {\t .f77} & (no preprocessing) Fortran77\\
 {\t .c} & C \\
@@ -533,6 +533,7 @@ may instead put a {\tt Makefile} in the {\tt src} directory and do everything
 yourself.
 
 \subsection{{\tt make.code.defn} based thorn building}
+\label{sec:mabathbu}
 
 This is the standard way to do compile your thorn's source files.
 The Cactus make system looks for a file called {\tt make.code.defn} in that
@@ -730,6 +731,19 @@ all be declared by adding before any executable code, the declaration
 \begin{verbatim}
 DECLARE_CCTK_FUNCTIONS
 \end{verbatim}
+
+\subsubsection{Fortran 90 Modules}
+
+Fortran 90 modules should be included in a thorn's {\tt make.code.deps} file
+(\ref{sec:mabathbu}) to ensure they are compiled before the
+routines which use them. This is especially important for parallel 
+building. For example, if a routine in {\tt MyRoutine.F} uses a module
+in {\tt MyModule.F} add the line:
+{\tt
+\begin{verbatim}
+$(SYS_OBJD)/MyRoutine.F.o:         $(SYS_OBJD)/MyModule.F.o  
+\end{verbatim}
+}
 
 
 \subsection{C Routines}
