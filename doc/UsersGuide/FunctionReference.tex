@@ -5602,7 +5602,7 @@ Util_TableSetIntArray(handle, N_DIGITS, pi_digits, "digits of pi");
 Util_TableSetIntArray(handle, 0, pi_digits, "empty array");
 
 /* gets N = 5, x = 3 */
-N = Util_TableGetInt(handle, &x, "the answer");
+N = Util_TableGetInt(handle, &x, "digits of pi");
 
 /* gets N = UTIL_ERROR_TABLE_VALUE_IS_EMPTY */
 N = Util_TableGetInt(handle, &x, "empty array");
@@ -5740,10 +5740,10 @@ CCTK_INT output[N_OUTPUT];
 int N;
 int handle = Util_TableCreate(UTIL_TABLE_FLAGS_DEFAULT);
 
-Util_TableSetIntArray(handle, N_STUFF, stuff, "blah blah blah");
+Util_TableSetIntArray(handle, N_STUFF, stuff, "stuff");
 
 /* gets N = 3, output[0] = 42.0, output[1] = 69.0 */
-N = Util_TableGetRealArray(handle, N_OUTPUT, output, "blah blah blah");
+N = Util_TableGetRealArray(handle, N_OUTPUT, output, "stuff");
 \end{verbatim}
 \end{Example}
 \end{ExampleSection}
