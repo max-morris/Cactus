@@ -1,13 +1,13 @@
 #! /usr/bin/perl
 
-require "parameter_parser.pl";
+#require "parameter_parser.pl";
 
 
-%implementations = ("flesh", "flesh", "test1", "test1", "test2", "test2");
+#%implementations = ("flesh", "flesh", "test1", "test1", "test2", "test2");
 
-%interface_database = create_interface_database(%implementations);
+#%interface_database = create_interface_database(%implementations);
 
-&print_interface_database(%interface_database);
+#&print_interface_database(%interface_database);
 
 #/*@@
 #  @routine    create_interface_database
@@ -162,3 +162,5 @@ sub print_interface_database
 	print "$field has value $database{$field}\n";
     }
 }
+
+1;
