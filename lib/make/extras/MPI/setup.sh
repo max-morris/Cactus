@@ -11,14 +11,14 @@
 
 if test -n "$MPI" -a "$MPI" != 'none' ; then
 
-echo "Configuring with MPI"
+echo 'Configuring with MPI'
 
 # Work out which variation of MPI is installed
 
 if test -r $srcdir/extras/MPI/$MPI ; then
   . $srcdir/extras/MPI/$MPI
 else
-  echo "MPI selected, but no known MPI method - what is \"$MPI\" ?"
+  echo "  MPI selected, but no known MPI method - what is \"$MPI\" ?"
   exit 2
 fi
 
@@ -33,10 +33,7 @@ CCTK_WriteLine cctk_Extradefs.h "#define CCTK_MPI CCTK_MPI_$MPI_VERSION"
 CCTK_WriteLine make.extra.defn "MPI_LIBS     = $MPI_LIBS"
 CCTK_WriteLine make.extra.defn "MPI_LIB_DIRS = $MPI_LIB_DIRS"
 CCTK_WriteLine make.extra.defn "MPI_INC_DIRS = $MPI_INC_DIRS"
-
-CCTK_WriteLine make.extra.defn ""
-CCTK_WriteLine make.extra.defn ""
-
+CCTK_WriteLine make.extra.defn ''
 CCTK_WriteLine make.extra.defn 'LIBS         += $(MPI_LIBS)'
 CCTK_WriteLine make.extra.defn 'LIBDIRS      += $(MPI_LIB_DIRS)'
 CCTK_WriteLine make.extra.defn 'SYS_INC_DIRS += $(MPI_INC_DIRS)'

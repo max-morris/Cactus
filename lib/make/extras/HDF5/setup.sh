@@ -17,13 +17,13 @@ echo "Configuring with HDF5. Blocks with #ifdef HDF5 will be activated"
 # Work out which variation of HDF5 lib
 
 if [ -z "$HDF5_DIR" ] ; then
-  echo "HDF5 selected but no HDF5_DIR set... Checking some places"
+  echo "  HDF5 selected but no HDF5_DIR set. Checking some places..."
   CCTK_Search HDF5_DIR "/usr /usr/local /usr/local/hdf5 /usr/local/packages/hdf5 /usr/local/apps/hdf5 /usr/local/hdf5/serial c:/packages/hdf5" include/hdf5.h
   if [ -z "$HDF5_DIR" ] ; then
-     echo "Unable to locate the HDF5 directory - please set HDF5_DIR"
+     echo "  Unable to locate the HDF5 directory - please set HDF5_DIR"
      exit 2
   fi
-  echo "Found an HDF5 package in $HDF5_DIR"
+  echo "  Found an HDF5 package in $HDF5_DIR"
 fi
 
 
@@ -34,14 +34,14 @@ test_phdf5=$?
 
 if [ -n "$MPI" ] ; then
   if [ $test_phdf5 -eq 0 ] ; then
-    echo "Found parallel HDF5 library, so Cactus will potentially make use of parallel HDF5 support."
+    echo "  Found parallel HDF5 library, so Cactus will potentially make use of parallel HDF5 support."
 #  else
-#    echo "Found serial HDF5 library, so Cactus can't make use of parallel HDF5 support."
+#    echo "  Found serial HDF5 library, so Cactus can't make use of parallel HDF5 support."
   fi
 else
   if [ $test_phdf5 -eq 0 ] ; then
-    echo "Found parallel HDF5 library, but Cactus wasn't configured with MPI."
-    echo "Please set HDF5_DIR to point to a serial HDF5 package, or configure Cactus with MPI."
+    echo "  Found parallel HDF5 library, but Cactus wasn't configured with MPI."
+    echo "  Please set HDF5_DIR to point to a serial HDF5 package, or configure Cactus with MPI."
     exit 2
   fi
 fi
@@ -68,8 +68,8 @@ if test -n "$IRIX_BITS"; then
   if test -n $hdf5_lib; then
     file $hdf5_lib | grep -qe $IRIX_BITS 2> /dev/null
     if test $? -ne 0; then
-      echo "The HDF5 library found in \"$HDF5_LIB_DIRS\" was not compiled as $IRIX_BITS bits !"
-      echo "Please reconfigure Cactus with the correct setting for HDF5_DIR !"
+      echo "  The HDF5 library found in \"$HDF5_LIB_DIRS\" was not compiled as $IRIX_BITS bits !"
+      echo "  Please reconfigure Cactus with the correct setting for HDF5_DIR !"
       exit 1
     fi
   fi
@@ -98,13 +98,13 @@ if [ $test_zlib -eq 0 ] ; then
     libz='zlib.lib'
   fi
   if [ -z "$LIBZ_DIR" -a ! -r /usr/lib/$libz ] ; then
-    echo "HDF5 library was compiled with compression library, searching for $libz ..."
+    echo "  HDF5 library was compiled with compression library, searching for $libz ..."
     CCTK_Search LIBZ_DIR "/usr/local/lib c:/packages/libz/lib c:/packages/hdf5/lib" $libz
     if [ -z "$LIBZ_DIR" ] ; then
-       echo "Unable to locate the library $libz - please set LIBZ_DIR"
+       echo "  Unable to locate the library $libz - please set LIBZ_DIR"
        exit 2
     fi
-    echo "Found library $libz in $LIBZ_DIR"
+    echo "  Found library $libz in $LIBZ_DIR"
   fi
   if [ $is_windows -eq 0 ] ; then
     HDF5_LIBS="$HDF5_LIBS z"
@@ -135,8 +135,8 @@ CCTK_WriteLine make.extra.defn 'SYS_INC_DIRS += $(HDF5_INC_DIRS)'
 
 elif test "X$choose_hdf5" != "Xno" -a "X$choose_hdf5" != "X"; then
 
-  echo "Don't understand the setting \"HDF5=$HDF5\" !"
-  echo 'Please set it to either "yes" or "no", or leave it blank (same as "no") !'
+  echo "  Don't understand the setting \"HDF5=$HDF5\" !"
+  echo '  Please set it to either "yes" or "no", or leave it blank (same as "no") !'
   exit 1
 
 fi

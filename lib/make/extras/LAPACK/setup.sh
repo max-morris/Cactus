@@ -16,16 +16,16 @@ if test "X$choose_lapack" = "Xyes" ; then
 
   # Search for LAPACK installation
   if test -z "$LAPACK_DIR"; then
-    echo 'LAPACK selected but no LAPACK_DIR set... Checking some places'
+    echo '  LAPACK selected but no LAPACK_DIR set... Checking some places'
     CCTK_Search LAPACK_DIR '/usr/lib /usr/local/lib' liblapack.a
     if test -z "$LAPACK_DIR"; then
       CCTK_Search LAPACK_DIR '/usr/lib /usr/local/lib' liblapack.so
     fi
     if test -z "$LAPACK_DIR"; then
-      echo 'Unable to locate the LAPACK library - please set LAPACK_DIR'
+      echo '  Unable to locate the LAPACK library - please set LAPACK_DIR'
       exit 2
     fi
-    echo "Found a LAPACK package in $LAPACK_DIR"
+    echo "  Found a LAPACK package in $LAPACK_DIR"
   elif test "$LAPACK_DIR" = 'none'; then
     # user doesn't want the library path added
     LAPACK_DIR=''
@@ -46,8 +46,8 @@ if test "X$choose_lapack" = "Xyes" ; then
 
 elif test "X$choose_lapack" != "Xno" -a "X$choose_lapack" != "X"; then
 
-  echo "Don't understand the setting \"LAPACK=$LAPACK\" !"
-  echo 'Please set it to either "yes" or "no", or leave it blank (same as "no") !'
+  echo "  Don't understand the setting \"LAPACK=$LAPACK\" !"
+  echo '  Please set it to either "yes" or "no", or leave it blank (same as "no") !'
   exit 1
 
 fi
