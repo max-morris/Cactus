@@ -26,12 +26,12 @@ AC_CANONICAL_SYSTEM
 
 CCTK_CONFIG_STAGE="preferred-compilers"
 
-if test -r $srcdir/known-architectures/$host_os ; then
-. $srcdir/known-architectures/$host_os
+if test -r $srcdir/known-architectures/$target_os ; then
+. $srcdir/known-architectures/$target_os
 else
   echo "Warning: "
-  echo "  Cactus has not been previously compiled on this architecture: "
-  echo "    ($host_os)"
+  echo "  Cactus has not been previously compiled for this architecture: "
+  echo "    ($target_os)"
   echo "  The currently known architectures can be found in "
   echo "    $srcdir/known-architectures"
   echo "  The configuration will try to do its best to work things out."
@@ -56,13 +56,19 @@ fi
 dnl Checks for programs.
 AC_PROG_MAKE_SET
 
-#if test -z "$CC" ; then
-AC_PROG_CC
-#fi
+if test -z "$CC" ; then
+AC_CHECK_PROGS(CC, gcc cc cl xlc)
+fi
 
-#if test -z "$CXX" ; then
-AC_PROG_CXX
-#fi
+CCTK_PROG_CC_WORKS
+AC_PROG_CC_GNU
+
+if test -z "$CXX" ; then
+AC_CHECK_PROGS(CXX, c++ g++ gcc CC cxx cc++ cl xlC)
+fi
+
+CCTK_PROG_CXX_WORKS
+AC_PROG_CXX_GNU
 
 if test -z "$RANLIB" ; then
 AC_PROG_RANLIB
@@ -139,8 +145,8 @@ EOF
 
 CCTK_CONFIG_STAGE="misc"
 
-if test -r $srcdir/known-architectures/$host_os ; then
-. $srcdir/known-architectures/$host_os
+if test -r $srcdir/known-architectures/$target_os ; then
+. $srcdir/known-architectures/$target_os
 fi
 
 # Finish the architecture stuff
@@ -215,27 +221,97 @@ AC_HEADER_STDC
 
 dnl Checks for typedefs, structures, and compiler characteristics.
 
-AC_C_BIGENDIAN
+if test "x$cross_compiling" = "xno" ; then
+  AC_C_BIGENDIAN
+else
+  if test -n "$ENDIAN" ; then
+    if test "$ENDIAN" = "big" ; then
+      AC_DEFINE(WORDS_BIGENDIAN)
+    fi
+  else    
+    AC_MSG_ERROR(Cross-compiling - no value set for endian-ness please set ENDIAN)
+  fi
+fi
+
 AC_C_CONST
 AC_C_INLINE
-AC_C_LONG_DOUBLE
 
 # Check for sizes of integer types
-AC_CHECK_SIZEOF(long int)
-AC_CHECK_SIZEOF(int)
-AC_CHECK_SIZEOF(short int)
+
+if test "x$cross_compiling" = "yes"; then
+  if test -z "SIZEOF_LONG_INT" ; then
+    AC_MSG_ERROR(Cross-compiling - no value set for sizeof(long int) please set SIZEOF_LONG_INT)
+  fi
+fi
+
+AC_CHECK_SIZEOF(long int, $SIZEOF_LONG_INT)
+
+if test "x$cross_compiling" = "yes"; then
+  if test -z "SIZEOF_INT" ; then
+    AC_MSG_ERROR(Cross-compiling - no value set for sizeof(int) please set SIZEOF_INT)
+  fi
+fi
+
+AC_CHECK_SIZEOF(int, $SIZEOF_INT)
+
+if test "x$cross_compiling" = "yes"; then
+  if test -z "SIZEOF_SHORT_INT" ; then
+    AC_MSG_ERROR(Cross-compiling - no value set for sizeof(short int) please set SIZEOF_SHORT_INT)
+  fi
+fi
+
+AC_CHECK_SIZEOF(short int, $SIZEOF_SHORT_INT)
 
 # Check for sizes of floating point types
-AC_CHECK_SIZEOF(long double)
-AC_CHECK_SIZEOF(double)
-AC_CHECK_SIZEOF(float)
+
+if test "x$cross_compiling" = "yes"; then
+  if test -z "SIZEOF_LONG_DOUBLE" ; then
+    AC_MSG_ERROR(Cross-compiling - no value set for sizeof(long double) please set SIZEOF_LONG_DOUBLE)
+  fi
+fi
+
+AC_CHECK_SIZEOF(long double, $SIZEOF_LONG_DOUBLE)
+
+if test "x$cross_compiling" = "yes"; then
+  if test -z "SIZEOF_DOUBLE" ; then
+    AC_MSG_ERROR(Cross-compiling - no value set for sizeof(double) please set SIZEOF_DOUBLE)
+  fi
+fi
+
+AC_CHECK_SIZEOF(double, $SIZEOF_DOUBLE)
+
+
+if test "x$cross_compiling" = "yes"; then
+  if test -z "SIZEOF_FLOAT" ; then
+    AC_MSG_ERROR(Cross-compiling - no value set for sizeof(float) please set SIZEOF_FLOAT)
+  fi
+fi
+
+AC_CHECK_SIZEOF(float, $SIZEOF_FLOAT)
 
 # Check for sizes of pointers.  
-AC_CHECK_SIZEOF(char *)
+
+if test "x$cross_compiling" = "yes"; then
+  if test -z "SIZEOF_POINTER" ; then
+     AC_MSG_ERROR(Cross-compiling - no value set for sizeof(char *) please set SIZEOF_POINTER)
+  fi
+fi
+
+AC_CHECK_SIZEOF(char *, $SIZEOF_POINTER)
+
 
 # See if there's a null device, and what it's called
 
-CCTK_FIND_NULLDEVICE
+if test "x$cross_compiling" = "yes"; then
+  if test -z "NULL_DEVICE" ; then
+     AC_MSG_WARN(Cross-compiling - no value set for location of null device please set NULL_DEVICE)
+     AC_MSG_WARN(Defaulting to /dev/null)
+     NULL_DEVICE="/dev/null"
+  fi
+  eval "cctk_cv_nulldevice=$NULL_DEVICE"
+else
+  CCTK_FIND_NULLDEVICE
+fi
 
 # Find the X libraries in case people need them
 
@@ -438,28 +514,6 @@ AC_DEFINE_UNQUOTED(CCTK_FCALL, $CCTK_FCALL)
 
 AC_DEFINE_UNQUOTED(FMODIFIER, $FMODIFIER) 
 
-# Define the type of debugging to use
-
-if test -n  "$DEBUG" ; then
-  case "$DEBUG" in
-    MEMORY) 
-	AC_DEFINE(CCTK_TRACEMEMORY)
-      ;;
-    FLAGS)
-	AC_DEFINE(CCTK_DEBUG)
-      ;;
-    DEFINES)
-	AC_DEFINE(DEBUG)
-      ;;
-    ALL)
-	AC_DEFINE(CCTK_TRACEMEMORY)
-	AC_DEFINE(CCTK_DEBUG)
-	AC_DEFINE(DEBUG)
-      ;;
-   esac
-
-AC_DEFINE_UNQUOTED(DEBUG, $DEBUG)
-fi
 
 # Define how to make a directory in the config.h file
 
@@ -502,10 +556,31 @@ AC_SUBST(FCOMPILEONLY)
 
 # Set the debug flags if they've not been set by now
 
+# Define the type of debugging to use
+
+if test -n  "$DEBUG" ; then
+  case "$DEBUG" in
+    MEMORY) 
+	AC_DEFINE(CCTK_TRACEMEMORY)
+      ;;
+    FLAGS|yes)
+        DEBUG_FLAGS="yes"
+      ;;
+    DEFINES)
+	AC_DEFINE(DEBUG)
+      ;;
+    ALL)
+	AC_DEFINE(CCTK_TRACEMEMORY)
+        DEBUG_FLAGS="yes"
+	AC_DEFINE(CCTK_DEBUG)
+      ;;
+   esac
+fi
+
 AC_SUBST(DEBUG_MODE)
 
-if test -n "$DEBUG" ; then
-  DEBUG_MODE=$DEBUG
+if test -n "$DEBUG_FLAGS" ; then
+  DEBUG_MODE=$DEBUG_FLAGS
 else
   DEBUG_MODE="no"
 fi
@@ -530,7 +605,7 @@ fi
 
 AC_SUBST(CXX_DEBUG_FLAGS)
 
-if test -z "CXX_DEBUG_FLAGS" ; then
+if test -z "$CXX_DEBUG_FLAGS" ; then
   case "$CXX" in
     g++) 
       CXX_DEBUG_FLAGS="-g"
@@ -547,7 +622,7 @@ fi
 
 AC_SUBST(F77_DEBUG_FLAGS)
 
-if test -z "F77_DEBUG_FLAGS" ; then
+if test -z "$F77_DEBUG_FLAGS" ; then
   case "$F77" in
     g77) 
       F77_DEBUG_FLAGS="-g"
@@ -564,7 +639,7 @@ fi
 
 AC_SUBST(F90_DEBUG_FLAGS) 
 
-if test -z "F90_DEBUG_FLAGS" ; then
+if test -z "$F90_DEBUG_FLAGS" ; then
   case "$F90" in
     pgf90)
       F90_DEBUG_FLAGS="-g"
@@ -603,7 +678,7 @@ fi
 
 AC_SUBST(CXX_OPTIMISE_FLAGS)
 
-if test -z "CXX_OPTIMISE_FLAGS" ; then
+if test -z "$CXX_OPTIMISE_FLAGS" ; then
   case "$CXX" in
     g++) 
       CXX_OPTIMISE_FLAGS="-O2"
@@ -617,7 +692,7 @@ fi
 
 AC_SUBST(F77_OPTIMISE_FLAGS)
 
-if test -z "F77_OPTIMISE_FLAGS" ; then
+if test -z "$F77_OPTIMISE_FLAGS" ; then
   case "$F77" in
     g77) 
       F77_OPTIMISE_FLAGS="-O"
@@ -631,7 +706,7 @@ fi
 
 AC_SUBST(F90_OPTIMISE_FLAGS) 
 
-if test -z "F90_OPTIMISE_FLAGS" ; then
+if test -z "$F90_OPTIMISE_FLAGS" ; then
   case "$F90" in
     *)
 #     Don't know a reasonable default.
@@ -644,7 +719,7 @@ fi
 
 AC_SUBST(C_WARN_FLAGS)
 
-if test -z "C_WARN_FLAGS" ; then
+if test -z "$C_WARN_FLAGS" ; then
   case "$CC" in
     gcc) 
       C_WARN_FLAGS="-Wall"
@@ -658,7 +733,7 @@ fi
 
 AC_SUBST(CXX_WARN_FLAGS) 
 
-if test -z "CXX_WARN_FLAGS" ; then
+if test -z "$CXX_WARN_FLAGS" ; then
   case "$CXX" in
     g++) 
       CXX_WARN_FLAGS="-Wall"
@@ -672,7 +747,7 @@ fi
 
 AC_SUBST(F77_WARN_FLAGS) 
 
-if test -z "F77_WARN_FLAGS" ; then
+if test -z "$F77_WARN_FLAGS" ; then
   case "$F77" in
     g77) 
       F77_WARN_FLAGS="-Wall"
@@ -686,7 +761,7 @@ fi
 
 AC_SUBST(F90_WARN_FLAGS) 
 
-if test -z "F90_WARN_FLAGS" ; then
+if test -z "$F90_WARN_FLAGS" ; then
   case "$F90" in
     *)
 #     Not sure what should be a reasonable default.

@@ -93,7 +93,9 @@ chdir "config-data" || die "Internal error - could't enter $configs_dir/$config/
 
 &SetConfigureEnv();
 
-system("$configure");
+$configure_command = &DetermineConfigureCommand($configure, %ENV);
+
+system("$configure_command");
 
 $retcode = $? >> 8;
 
@@ -168,4 +170,28 @@ sub SetConfigureEnv
 
 }
 
-sub ConfigureConfiguration
+sub DetermineConfigureCommand
+{
+  my($configure, %env) = @_;
+  my($configure_command);
+
+  $configure_command = "$configure";
+
+  if($ENV{"BUILD"})
+  {
+    $configure_command .= " --build=". $ENV{"BUILD"};
+  }
+
+  if($ENV{"TARGET"})
+  {
+    $configure_command .= " --target=". $ENV{"TARGET"};
+  }
+     
+  if($ENV{"HOST"})
+  {
+    $configure_command .= " --host=". $ENV{"HOST"};
+  }
+
+  return $configure_command;
+}
+

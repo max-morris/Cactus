@@ -12,9 +12,6 @@
 
 #endif /* ! defined __cplusplus */
 
-/* Define if the `long double' type works.  */
-#undef HAVE_LONG_DOUBLE
-
 /* Define if your processor stores words with the most significant
    byte first (like Motorola and SPARC, unlike Intel and VAX).  */
 #undef WORDS_BIGENDIAN
@@ -63,11 +60,12 @@
 #undef CCTK_FCALL
 
 /* DEPRECATED IN BETA 9 */
-#undef FMODIFIER
+#define FMODIFIER CCTK_FCALL
 /* END DEPRECATED IN BETA 9 */
 
 /* What debugging options to use */
-#undef DEBUG
+#undef CCTK_DEBUG
+#undef CCTK_TRACEMEMORY
 
 /* How to create a directory */
 
