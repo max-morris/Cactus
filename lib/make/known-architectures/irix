@@ -6,7 +6,7 @@
 #    @desc 
 #   
 #    @enddesc 
-#    @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/irix,v 1.6 1999-04-30 13:35:37 goodale Exp $
+#    @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/irix,v 1.7 1999-07-05 14:10:26 allen Exp $
 #  @@*/
 
 # extract the CPU type from hinv output
@@ -78,7 +78,7 @@ case $IRIX_BITS in
     LIBS="$LIBS malloc perfex fpe fortran ftn ftn90 m"
     ;;
     32)
-    LIBS="$LIBS malloc fpe ftn ftn90 m"
+    LIBS="$LIBS malloc fpe fortran ftn ftn90 m"
     ;;
     *)
     ;;
