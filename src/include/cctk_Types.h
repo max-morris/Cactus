@@ -21,6 +21,9 @@
 /* Define stuff for C. */
 #ifdef CCODE
 
+typedef void *CCTK_POINTER;
+typedef void (*CCTK_FN_POINTER)(void);
+
 #define CCTK_STRING const char *
 
 /* Structures for complex types */
