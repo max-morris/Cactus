@@ -498,7 +498,10 @@ which should be consulted for the full range of configuration options.
         {\tt CUSTOM}, {\tt NATIVE}, {\tt MPICH} or {\tt LAM}
 
 \item [{\tt HDF5}]
-Supported values are YES
+Supported values are {\it yes}
+
+\item [{\tt PTHREADS}]
+Supported values are {\it yes}
 
 \end{Lentry}
 
@@ -628,6 +631,17 @@ to the linker flags. You may also point directly to an installation of libz.a
 by setting LIBZ\_DIR.\\
 
 
+\subsubsection{PTHREADS: POSIX threads}
+
+To enable multithreading support within Cactus using POSIX threads 
+the configure option is
+
+{\tt PTHREADS = yes}
+
+The configuration process will check if a re-entrant C library is available
+and adds it to the linker flags. It will also search for the system's Pthreads
+library (either libpthread or libpthreads) and set preprocessor
+defines necessary for compiling multithreaded code.
 
 
 
