@@ -1192,6 +1192,11 @@ static t_attribute *CreateAttribute(const char *description,
       timername = (char *) malloc (strlen (thorn) + strlen (description) + 3);
       sprintf (timername, "%s: %s", thorn, description);
       this->timer_handle = CCTK_TimerCreate(timername);
+      if (this->timer_handle < 0)
+      {
+        CCTK_VWarn (5, __LINE__, __FILE__, "Cactus",
+                   "Couldn't create timer with name '%s'", timername);
+      }
       free (timername);
     }
     else
@@ -2171,14 +2176,20 @@ static int CCTKi_ScheduleCallFunction(void *function,
                                       t_attribute *attribute,
                                       t_sched_data *data)
 {
-  CCTK_TimerStartI(attribute->timer_handle);
+  if (attribute->timer_handle >= 0)
+  {
+    CCTK_TimerStartI(attribute->timer_handle);
+  }
 
   /* Use whatever has been chosen as the calling function for this
    * function.
    */
   data->synchronised = data->CallFunction(function, &(attribute->FunctionData), data->GH);
 
-  CCTK_TimerStopI(attribute->timer_handle);
+  if (attribute->timer_handle >= 0)
+  {
+    CCTK_TimerStopI(attribute->timer_handle);
+  }
 
   return 1;
 }
@@ -2224,17 +2235,20 @@ static int CCTKi_SchedulePrintTimesFunction(void *function,
   /* prevent compiler warnings about unused parameters */
   function = function;
 
-  CCTK_TimerI(attribute->timer_handle, data->info);
-
-  if(data->print_headers)
+  if (attribute->timer_handle >= 0)
   {
-    CCTKi_SchedulePrintTimerHeaders(data->info);
+    CCTK_TimerI(attribute->timer_handle, data->info);
 
-    data->print_headers = 0;
+    if(data->print_headers)
+    {
+      CCTKi_SchedulePrintTimerHeaders(data->info);
+
+      data->print_headers = 0;
+    }
+
+    CCTKi_SchedulePrintTimerInfo(data->info, data->total_time,
+                                 attribute->thorn, attribute->description);
   }
-
-  CCTKi_SchedulePrintTimerInfo(data->info, data->total_time,
-                               attribute->thorn, attribute->description);
 
   return 1;
 }
