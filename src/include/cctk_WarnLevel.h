@@ -49,4 +49,17 @@ __attribute__ ((format (printf, 2, 3)))
 }
 #endif
 
+/* suggested values for warning levels (courtesy of Steve, PR#1742) */
+#define CCTK_WARN_ABORT    0	/* abort the Cactus run */
+#define CCTK_WARN_ALERT    1	/* the results of this run will probably */
+				/* be wrong, but this isn't quite certain, */
+				/* so we're not going to abort the run */
+#define CCTK_WARN_COMPLAIN 2	/* the user should know about this, but */
+				/* the results of this run are probably ok */
+#define CCTK_WARN_PICKY    3	/* this is for small problems that can */
+				/* probably be ignored, but that careful */
+				/* people may want to know about */
+#define CCTK_WARN_DEBUG    4	/* these messages are probably useful */
+				/* only for debugging purposes */
+
 #endif
