@@ -22,7 +22,9 @@ and run make.
 Please note that paths to additional include files or libraries must
 contain no spaces.  However the INCLUDE and LIB environment variables,
 which are used by the Windows compilers, may include spaces in path
-names.
+names.  The INCLUDE environment variable MUST NOT, however, have a
+semicolon (;) with no text after it, e.g. it must not end with a
+semicolon.
 
 
 Tested Software:
