@@ -539,6 +539,9 @@ Supported values are {\it yes, no}. A blank value is taken as {\it no}.
 \item [{\tt LAPACK}]
 Supported values are {\it yes, no}. A blank value is taken as {\it no}.
 
+\item [{\tt PETSC}]
+Supported values are {\it yes, no}. A blank value is taken as {\it no}.
+
 \item [{\tt PTHREADS}]
 Supported values are {\it yes}.
 
@@ -588,7 +591,7 @@ may be specified on the configuration command line):
 
 \item[{\tt NATIVE}] Use the native {\tt MPI} for this machine, as indicated in
         the {\tt known-architectures} directory
-	({\tt lib/make/known-architectures}).
+        ({\tt lib/make/known-architectures}).
 
 \item[{\tt MPICH}]
 Use MPICH (\url{http://www-unix.mcs.anl.gov/mpi/mpich}). This is controlled
@@ -601,10 +604,10 @@ by the options
         defined, the configuration process will search for this in a
         few defined places.
         Supported devices are currently {\tt ch\_p4}, {\tt ch\_shmem},
-	{\tt globus} and {\tt myrinet}.
-	For versions of MPICH prior to 1.2.0 the devices are searched for
- 	in this order, for 1.2.0 you may need to specify {\tt MPICH\_DEVICE},
-	depending on the installation.
+        {\tt globus} and {\tt myrinet}.
+        For versions of MPICH prior to 1.2.0 the devices are searched for
+         in this order, for 1.2.0 you may need to specify {\tt MPICH\_DEVICE},
+        depending on the installation.
   \end{Lentry}
 
 If {\tt MPICH\_DEVICE} is chosen to be {\tt globus},
@@ -678,7 +681,7 @@ installed HDF5 package in some standard places (defined in
 {\tt lib/make/extras/HDF5}). If the found HDF5 library was compiled with
 libz.a, the configuration process also searches for that library and adds it
 to the linker flags. You may also point directly to an installation of libz.a
-by setting LIBZ\_DIR.\\
+by setting LIBZ\_DIR.
 
 
 \subsubsection{LAPACK: Linear Algebra PACKage}
@@ -694,9 +697,9 @@ LAPACK = yes | no | <blank>
 [ LAPACK_EXTRA_LIBS = <libs> ]
 \end{verbatim}
 
-If LAPACK\_DIR is not given the configuration process will search for a
+If {\t LAPACK\_DIR} is not given the configuration process will search for a
 LAPACK library {\it liblapack.[\{a,so\}]} in some standard places (defined in
-{\tt lib/make/extras/LAPACK}). If {\t LAPACK\_DIR} is set to {\it none} the
+{\tt lib/make/extras/LAPACK}). If {\t LAPACK\_DIR} is set to {\it no} the
 LAPACK library path is assumed to be installed in a standard system location
 (eg. {\i /usr/lib/}) and thus the library path will not be added to the linker's
 command line.
@@ -706,6 +709,24 @@ additional configuration variables to set the name of the lapack library
 ({\t LAPACK\_LIBS}) as well as the name ({\t LAPACK\_EXTRA\_LIBS}) and location
 ({\t LAPACK\_EXTRA\_LIBS\_DIRS}) of extra libraries that are required by
 LAPACK itself.
+
+
+\subsubsection{PETSc: Portable, Extensible Toolkit for Scientific Computation}
+
+To compile with PETSc (\url{http://www-unix.mcs.anl.gov/petsc/petsc-2/index.html}),
+the configure options are
+
+\begin{verbatim}
+PETSC = yes | no | <blank>
+[ PETSC_DIR = <dir> ]
+[ PETSC_ARCH = <architecture> ]
+\end{verbatim}
+
+If {\t PETSC\_DIR} is not given the configuration process will search for an
+installed PETSc package in some standard places (defined in
+{\tt lib/make/extras/PETSC}).
+If {\t PETSC\_ARCH} is not given the configuration process will choose the
+first PETSc configuration found in {\tt \$PETSC\_DIR/lib/libO/}.
 
 
 \subsubsection{PTHREADS: POSIX threads}
@@ -828,7 +849,7 @@ is to do. The command {\tt gmake help} lists all gmake targets:
 \begin{Lentry}
 
 \item [{\tt gmake <config>}]
-	builds a configuration. If the configuration doesn't exist
+        builds a configuration. If the configuration doesn't exist
         it will create it.
 
 \item [{\tt gmake <config>-clean}] removes all object and dependency files from
@@ -1173,17 +1194,18 @@ This is the default, and provides the same warnings as the
 {\tt relaxed} level, with in addition a level 0 warning issued for
 \begin{itemize}
 \item{} An implementation and/or thorn {\tt foo} is active, but the
-	parameter {\tt foo::bar} was not defined.
+        parameter {\tt foo::bar} was not defined.
 \item{} The parameter {\tt foo::bar} was successfully set for both an
-	active implementation {\tt foo} not implemented by a thorn {\tt foo},
-	and to a thorn {\tt foo}.
+        active implementation {\tt foo} not implemented by a thorn {\tt foo},
+        and to a thorn {\tt foo}.
 \end{itemize}
 
 \item [{\tt strict}]
 This provides the same warnings as the {\tt normal} level, with in
 addition a level 0 warning issued for
 \begin{itemize}
-\item{} The parameter {\tt foo::bar} is specified in the parameter file,		but no implementation or thorn with the name {\tt bar} is active.
+\item{} The parameter {\tt foo::bar} is specified in the parameter file,
+        but no implementation or thorn with the name {\tt bar} is active.
 \end{itemize}
 \end{Lentry}
 
@@ -1196,17 +1218,17 @@ each thorn using the command line options {\tt -o} and {\tt -O}
 (Section~\ref{sec:coliop}).
 
 \item{} The parameter file is read {\it sequentially} from top to bottom,
-	this means that if you set the value of a parameter twice in
-	the parameter file, the second value will be used. (This is
-	why the {\tt ActiveThorns} parameter is always first in the file).
+        this means that if you set the value of a parameter twice in
+        the parameter file, the second value will be used. (This is
+        why the {\tt ActiveThorns} parameter is always first in the file).
 
 \item{} Some parameters are {\it steerable} and can be changed during
-	the execution of a code using parameter steering interfaces
-	(for example, thorn {\tt CactusConnect/HTTPD}, or using a
-	parameter file when recovering from a checkpoint file.
+        the execution of a code using parameter steering interfaces
+        (for example, thorn {\tt CactusConnect/HTTPD}, or using a
+        parameter file when recovering from a checkpoint file.
 
 \item{} For examples of parameter files, look in the {\tt par} directory
-	which can be found in most thorns.
+        which can be found in most thorns.
 
 \end{itemize}
 
@@ -1252,7 +1274,7 @@ As the program runs, the normal output provides the following information:
 \begin{Lentry}
 
 \item [Active thorns]
-	A report is made as each of the thorns in the {\tt ActiveThorns} parameters from the parameter file is attempted to be activated. This report
+        A report is made as each of the thorns in the {\tt ActiveThorns} parameters from the parameter file is attempted to be activated. This report
 shows whether the activation was successful, and if successful gives the
 thorn's implementation. For example
 
@@ -1263,7 +1285,7 @@ Activating thorn idscalarwave...Success -> active implementation idscalarwave
 }
 
 \item [Failed parameters]
- 	If any of the parameters in the parameter file does not belong to any of the active thorns, or if the parameter value is not in the allowed range, an
+         If any of the parameters in the parameter file does not belong to any of the active thorns, or if the parameter value is not in the allowed range, an
 error is registered. For example, if the parameter is not recognised
 
 {\tt
@@ -1280,7 +1302,7 @@ Unable to set keyword CartGrid3D::type - ByMouth not in any active range
 }
 
 \item [Scheduling information]
-	A complete list of all scheduled routines is given, in the
+        A complete list of all scheduled routines is given, in the
 order that they will be executed. For example
 
 {\tt
@@ -1318,7 +1340,7 @@ order that they will be executed. For example
 }
 
 \item [Thorn banners]
-	Any banners registered from the thorns are displayed.
+        Any banners registered from the thorns are displayed.
 
 \end{Lentry}
 
