@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.103 2000-12-13 12:14:26 goodale Exp $
+#   @version $Id: Makefile,v 1.104 2000-12-13 12:22:18 goodale Exp $
 # @@*/
 
 ##################################################################################
@@ -251,6 +251,7 @@ TAGS:
 	find src arrangements \( \
 	  -name '*.[chCfF]' -o -name '*.[fF]77' -o -name '*.[fF]90'\
 	  -o -name '*.cc' -o -name '*.cxx' -o -name '*.hh' -o -name '*.[ch]pp' \
+	  -o -name '*.inc' \
 	  \) -print |  xargs etags -a 
 #	find src arrangements \( -name '*.[cChF]' -o -name '*.F77' -o -name '*.cc'\) \
 #          -exec etags --append --regex '/[a-z A-Z \t]*FORTRAN_NAME[^)]*/' {} \;
@@ -265,6 +266,7 @@ tags:
 	find src arrangements \( \
 	  -name '*.[chCfF]' -o -name '*.[fF]77' -o -name '*.[fF]90'\
 	  -o -name '*.cc' -o -name '*.cxx' -o -name '*.hh' -o -name '*.[ch]pp' \
+	  -o -name '*.inc' \
 	  \) -print |  xargs ctags -a 
 	$(PERL) -pi.bak -e 's/(subroutine\s*)([a-zA-Z0-9_]+)/\1\L\2/g;' tags
 	rm tags.bak
