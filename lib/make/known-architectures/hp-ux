@@ -1,0 +1,15 @@
+#! /bin/sh
+# /*@@
+#   @file      
+#   @date      
+#   @author   
+#   @desc 
+#   
+#   @enddesc 
+#   @version $Header: /usr/users/cactus/CCTK/lib/make/known-architectures/hp-ux,
+v 1.1 1999/06/14 15:50:32 allen Exp $
+# @@*/
+
+: ${LIBS="cl F90 "}
+: ${LIBDIRS="+ /opt/fortran90/lib/"}
+
