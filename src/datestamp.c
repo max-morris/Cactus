@@ -15,8 +15,6 @@
 
 static char *rcsid = "$Header$";
 
-CCTK_FILEVERSION(datestamp_c)
-
 const char *CCTKi_version_src_datestamp_c(void);
 const char *CCTKi_version_src_datestamp_c(void) { return rcsid; }
 
