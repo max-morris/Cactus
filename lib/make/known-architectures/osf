@@ -3,10 +3,10 @@
 #    @file      osf
 #    @date      Thu Mar 25 15:38:45 1999
 #    @author    Tom Goodale
-#    @desc 
-#   
+#    @desc
+#               known-architectures file for OSF systems
 #    @enddesc
-#    @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/osf,v 1.6 2001-10-10 14:00:24 allen Exp $
+#    @version   $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/osf,v 1.7 2001-11-06 16:50:26 tradke Exp $
 #  @@*/
 
 if test "$CCTK_CONFIG_STAGE" = "preferred-compilers" ; then
@@ -39,5 +39,12 @@ else
   : ${F90_DEBUG_FLAGS='-g3'}
 
   : ${LIBS="for m"}
+
+  # native MPI stuff
+  if test "x$MPI" = "xNATIVE"; then
+    NATIVE_MPI_LIBS="mpi"
+    NATIVE_MPI_LIB_DIRS="/usr/lib"
+    NATIVE_MPI_INC_DIRS="/usr/include"
+  fi
 
 fi

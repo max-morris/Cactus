@@ -6,7 +6,7 @@
 #    @desc 
 #   
 #    @enddesc 
-#    @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/irix,v 1.27 2001-10-19 11:08:56 tradke Exp $
+#    @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/irix,v 1.28 2001-11-06 16:50:26 tradke Exp $
 #  @@*/
 
 if test "$CCTK_CONFIG_STAGE" = "preferred-compilers" ; then
@@ -189,7 +189,7 @@ esac
   fi
 
   if test -z "$L2_CACHE_SIZE" ; then
-    TEMP_CACHE_SIZE="`hinv | perl -ne 'if (m/Secondary.*cache/) { s/^.*: (.*)( on P.*)?$/$1/ ; s/ Mbyte.*/\*1024/ ; s/ Kbyte.*//; print}'`"
+    TEMP_CACHE_SIZE="`hinv | perl -ne 'if (m/Secondary.*cache/) { s/^.*: (.*)( on P.*)?$/$1/ ; s/ Mbyte.*/\*1024/ ; s/ Kbyte.*//; print}' | sort | head -n1`"
     if test -n "$TEMP_CACHE_SIZE" ; then
       L2_CACHE_SIZE="$TEMP_CACHE_SIZE*1024"
       echo "Setting L2_CACHE_SIZE to $L2_CACHE_SIZE bytes"
