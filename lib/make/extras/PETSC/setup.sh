@@ -47,6 +47,7 @@ fi
 # Set platform-specific libraries
 if test -z "$PETSC_ARCH_LIBS" ; then
   case "$PETSC_ARCH" in
+    alpha) PETSC_ARCH_LIBS='dxml' ;;
     IRIX64) PETSC_ARCH_LIBS='fpe blas complib.sgimath' ;;
     linux)  PETSC_ARCH_LIBS='flapack fblas g2c mpich'  ;;
     linux_intel) PETSC_ARCH_LIBS='mkl_lapack mkl_def guide' ;;
