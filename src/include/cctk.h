@@ -244,7 +244,7 @@ inline int CCTK_GFINDEX4D (const cGH *GH, int i, int j, int k, int l)
                             &((xGH)->cctk_convlevel),\
                             (xGH)->cctk_nghostzones,\
                             &((xGH)->cctk_iteration),\
-                            (xGH)
+                            &(xGH)
 #define _CCTK_C2F_PROTO     int *,\
                             int *,\
                             int *,int *, int *, int *, int *,int *,int *,\
@@ -257,7 +257,7 @@ inline int CCTK_GFINDEX4D (const cGH *GH, int i, int j, int k, int l)
                             int *,\
                             int *,\
                             int *,\
-                            cGH *
+                            cGH **
 
 #define CCTK_EQUALS(a,b) (CCTK_Equals((a),(b)))
 

@@ -26,160 +26,171 @@ static const char *rcsid = "$Header$";
 CCTK_FILEVERSION(main_GroupsOnGH_c);
 
 
+void CCTK_FCALL CCTK_FNAME(CCTK_VarDataPtr)
+     (CCTK_POINTER *res,
+      const cGH **cctkGH,
+      const int *timelevel,
+      ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME(CCTK_VarDataPtrI)
+     (CCTK_POINTER *res,
+      const cGH **cctkGH,
+      const int *timelevel,
+      const int *vindex);
+
 void CCTK_FCALL CCTK_FNAME (CCTK_GrouplbndGI)
                            (int *ierr,
-                            const cGH *cctkGH,
+                            const cGH **cctkGH,
                             const int *dim,
                             int *lbnd,
                             const int *groupindex);
 void CCTK_FCALL CCTK_FNAME (CCTK_GrouplbndGN)
                            (int *ierr,
-                            const cGH *cctkGH,
+                            const cGH **cctkGH,
                             const int *dim,
                             int *lbnd,
                             ONE_FORTSTRING_ARG);
 void CCTK_FCALL CCTK_FNAME (CCTK_GrouplbndVI)
                            (int *ierr,
-                            const cGH *cctkGH,
+                            const cGH **cctkGH,
                             const int *dim,
                             int *lbnd,
                             const int *varindex);
 void CCTK_FCALL CCTK_FNAME (CCTK_GrouplbndVN)
                            (int *ierr,
-                            const cGH *cctkGH,
+                            const cGH **cctkGH,
                             const int *dim,
                             int *lbnd,
                             ONE_FORTSTRING_ARG);
 void CCTK_FCALL CCTK_FNAME (CCTK_GroupubndGI)
                            (int *ierr,
-                            const cGH *cctkGH,
+                            const cGH **cctkGH,
                             const int *dim,
                             int *ubnd,
                             const int *groupindex);
 void CCTK_FCALL CCTK_FNAME (CCTK_GroupubndGN)
                            (int *ierr,
-                            const cGH *cctkGH,
+                            const cGH **cctkGH,
                             const int *dim,
                             int *ubnd,
                             ONE_FORTSTRING_ARG);
 void CCTK_FCALL CCTK_FNAME (CCTK_GroupubndVI)
                            (int *ierr,
-                            const cGH *cctkGH,
+                            const cGH **cctkGH,
                             const int *dim,
                             int *ubnd,
                             const int *varindex);
 void CCTK_FCALL CCTK_FNAME (CCTK_GroupubndVN)
                            (int *ierr,
-                            const cGH *cctkGH,
+                            const cGH **cctkGH,
                             const int *dim,
                             int *ubnd,
                             ONE_FORTSTRING_ARG);
 void CCTK_FCALL CCTK_FNAME (CCTK_GrouplshGI)
                            (int *ierr,
-                            const cGH *cctkGH,
+                            const cGH **cctkGH,
                             const int *dim,
                             int *lsh,
                             const int *groupindex);
 void CCTK_FCALL CCTK_FNAME (CCTK_GrouplshGN)
                            (int *ierr,
-                            const cGH *cctkGH,
+                            const cGH **cctkGH,
                             const int *dim,
                             int *lsh,
                             ONE_FORTSTRING_ARG);
 void CCTK_FCALL CCTK_FNAME (CCTK_GrouplshVI)
                            (int *ierr,
-                            const cGH *cctkGH,
+                            const cGH **cctkGH,
                             const int *dim,
                             int *lsh,
                             const int *varindex);
 void CCTK_FCALL CCTK_FNAME (CCTK_GrouplshVN)
                            (int *ierr,
-                            const cGH *cctkGH,
+                            const cGH **cctkGH,
                             const int *dim,
                             int *lsh,
                             ONE_FORTSTRING_ARG);
 void CCTK_FCALL CCTK_FNAME (CCTK_GroupgshGI)
                            (int *ierr,
-                            const cGH *cctkGH,
+                            const cGH **cctkGH,
                             const int *dim,
                             int *gsh,
                             const int *groupindex);
 void CCTK_FCALL CCTK_FNAME (CCTK_GroupgshGN)
                            (int *ierr,
-                            const cGH *cctkGH,
+                            const cGH **cctkGH,
                             const int *dim,
                             int *gsh,
                             ONE_FORTSTRING_ARG);
 void CCTK_FCALL CCTK_FNAME (CCTK_GroupgshVI)
                            (int *ierr,
-                            const cGH *cctkGH,
+                            const cGH **cctkGH,
                             const int *dim,
                             int *gsh,
                             const int *varindex);
 void CCTK_FCALL CCTK_FNAME (CCTK_GroupgshVN)
                            (int *ierr,
-                            const cGH *cctkGH,
+                            const cGH **cctkGH,
                             const int *dim,
                             int *gsh,
                             ONE_FORTSTRING_ARG);
 void CCTK_FCALL CCTK_FNAME (CCTK_GroupnghostzonesGI)
                            (int *ierr,
-                            const cGH *cctkGH,
+                            const cGH **cctkGH,
                             const int *dim,
                             int *nghostzones,
                             const int *groupindex);
 void CCTK_FCALL CCTK_FNAME (CCTK_GroupnghostzonesGN)
                            (int *ierr,
-                            const cGH *cctkGH,
+                            const cGH **cctkGH,
                             const int *dim,
                             int *nghostzones,
                             ONE_FORTSTRING_ARG);
 void CCTK_FCALL CCTK_FNAME (CCTK_GroupnghostzonesVI)
                            (int *ierr,
-                            const cGH *cctkGH,
+                            const cGH **cctkGH,
                             const int *dim,
                             int *nghostzones,
                             const int *varindex);
 void CCTK_FCALL CCTK_FNAME (CCTK_GroupnghostzonesVN)
                            (int *ierr,
-                            const cGH *cctkGH,
+                            const cGH **cctkGH,
                             const int *dim,
                             int *nghostzones,
                             ONE_FORTSTRING_ARG);
 void CCTK_FCALL CCTK_FNAME (CCTK_GroupbboxGI)
                            (int *ierr,
-                            const cGH *cctkGH,
+                            const cGH **cctkGH,
                             const int *size,
                             int *bbox,
                             const int *groupindex);
 void CCTK_FCALL CCTK_FNAME (CCTK_GroupbboxGN)
                            (int *ierr,
-                            const cGH *cctkGH,
+                            const cGH **cctkGH,
                             const int *size,
                             int *bbox,
                             ONE_FORTSTRING_ARG);
 void CCTK_FCALL CCTK_FNAME (CCTK_GroupbboxVI)
                            (int *ierr,
-                            const cGH *cctkGH,
+                            const cGH **cctkGH,
                             const int *size,
                             int *bbox,
                             const int *varindex);
 void CCTK_FCALL CCTK_FNAME (CCTK_GroupbboxVN)
                            (int *ierr,
-                            const cGH *cctkGH,
+                            const cGH **cctkGH,
                             const int *size,
                             int *bbox,
                             ONE_FORTSTRING_ARG);
 void CCTK_FCALL CCTK_FNAME (CCTK_ActiveTimeLevelsVI)
-                           (int *num, const cGH *cctkGH, const int *var);
+                           (int *num, const cGH **cctkGH, const int *var);
 void CCTK_FCALL CCTK_FNAME (CCTK_ActiveTimeLevelsVN)
-                           (int *num, const cGH *cctkGH, ONE_FORTSTRING_ARG);
+                           (int *num, const cGH **cctkGH, ONE_FORTSTRING_ARG);
 void CCTK_FCALL CCTK_FNAME (CCTK_ActiveTimeLevelsGI)
-                           (int *num, const cGH *cctkGH, const int *var);
+                           (int *num, const cGH **cctkGH, const int *var);
 void CCTK_FCALL CCTK_FNAME (CCTK_ActiveTimeLevelsGN)
-                           (int *num, const cGH *cctk, ONE_FORTSTRING_ARG);
+                           (int *num, const cGH **cctkGH, ONE_FORTSTRING_ARG);
 void CCTK_FCALL CCTK_FNAME (CCTK_ActiveTimeLevels)
-                           (int *num, const cGH *cctkGH, ONE_FORTSTRING_ARG);
+                           (int *num, const cGH **cctkGH, ONE_FORTSTRING_ARG);
 
 
 
@@ -250,6 +261,17 @@ void *CCTK_VarDataPtr(const cGH *GH, int timelevel, const char *varname)
   return retval;
 }
 
+void CCTK_FCALL CCTK_FNAME(CCTK_VarDataPtr)
+     (CCTK_POINTER *res,
+      const cGH **cctkGH,
+      const int *timelevel,
+      ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (varname);
+  *res = CCTK_VarDataPtr (*cctkGH, *timelevel, varname);
+  free (varname);
+}
+
  /*@@
    @routine    CCTK_VarDataPtrI
    @date       Tue 6th April 1999
@@ -311,6 +333,15 @@ void *CCTK_VarDataPtrI(const cGH *GH, int timelevel, int vindex)
   }
 
   return retval;
+}
+
+void CCTK_FCALL CCTK_FNAME(CCTK_VarDataPtrI)
+     (CCTK_POINTER *res,
+      const cGH **cctkGH,
+      const int *timelevel,
+      const int *vindex)
+{
+  *res = CCTK_VarDataPtrI (*cctkGH, *timelevel, *vindex);
 }
 
  /*@@
@@ -506,11 +537,11 @@ int CCTK_ActiveTimeLevels(const cGH *GH, const char *groupname)
 }
 void CCTK_FCALL CCTK_FNAME (CCTK_ActiveTimeLevels)
                            (int *timelevels,
-                            const cGH *cctkGH,
+                            const cGH **cctkGH,
                             ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_CREATE (groupname)
-  *timelevels = CCTK_ActiveTimeLevels (cctkGH, groupname);
+  *timelevels = CCTK_ActiveTimeLevels (*cctkGH, groupname);
   free (groupname);
 }
 
@@ -532,11 +563,11 @@ int CCTK_ActiveTimeLevelsGN(const cGH *GH, const char *groupname)
 }
 void CCTK_FCALL CCTK_FNAME (CCTK_ActiveTimeLevelsGN)
                            (int *timelevels,
-                            const cGH *cctkGH,
+                            const cGH **cctkGH,
                             ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_CREATE (groupname)
-  *timelevels = CCTK_ActiveTimeLevels (cctkGH, groupname);
+  *timelevels = CCTK_ActiveTimeLevels (*cctkGH, groupname);
   free (groupname);
 }
 
@@ -559,10 +590,10 @@ int CCTK_ActiveTimeLevelsGI(const cGH *GH, int gindex)
 }
 void CCTK_FCALL CCTK_FNAME (CCTK_ActiveTimeLevelsGI)
                            (int *timelevels,
-                            const cGH *cctkGH,
+                            const cGH **cctkGH,
                             const int *gindex)
 {
-  *timelevels = CCTK_ActiveTimeLevelsGI (cctkGH, *gindex);
+  *timelevels = CCTK_ActiveTimeLevelsGI (*cctkGH, *gindex);
 }
 
 
@@ -587,11 +618,11 @@ int CCTK_ActiveTimeLevelsVN(const cGH *GH, const char *varname)
 }
 void CCTK_FCALL CCTK_FNAME (CCTK_ActiveTimeLevelsVN)
                            (int *timelevels,
-                            const cGH *cctkGH,
+                            const cGH **cctkGH,
                             ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_CREATE (varname)
-  *timelevels = CCTK_ActiveTimeLevelsVN (cctkGH, varname);
+  *timelevels = CCTK_ActiveTimeLevelsVN (*cctkGH, varname);
   free (varname);
 }
 
@@ -616,10 +647,10 @@ int CCTK_ActiveTimeLevelsVI(const cGH *GH, int vindex)
 }
 void CCTK_FCALL CCTK_FNAME (CCTK_ActiveTimeLevelsVI)
                            (int *timelevels,
-                            const cGH *cctkGH,
+                            const cGH **cctkGH,
                             const int *vindex)
 {
-  *timelevels = CCTK_ActiveTimeLevelsVI (cctkGH, *vindex);
+  *timelevels = CCTK_ActiveTimeLevelsVI (*cctkGH, *vindex);
 }
 
 
@@ -700,12 +731,12 @@ int CCTK_GrouplbndGI(const cGH *cctkGH,
 
 void CCTK_FCALL CCTK_FNAME (CCTK_GrouplbndGI)
                            (int *ierr,
-                            const cGH *cctkGH,
+                            const cGH **cctkGH,
                             const int *dim,
                             int *lbnd,
                             const int *groupindex)
 {
-  *ierr = CCTK_GrouplbndGI (cctkGH, *dim, lbnd, *groupindex);
+  *ierr = CCTK_GrouplbndGI (*cctkGH, *dim, lbnd, *groupindex);
 }
 
 
@@ -734,13 +765,13 @@ int CCTK_GrouplbndGN(const cGH *cctkGH,
 
 void CCTK_FCALL CCTK_FNAME (CCTK_GrouplbndGN)
                            (int *ierr,
-                            const cGH *cctkGH,
+                            const cGH **cctkGH,
                             const int *dim,
                             int *lbnd,
                             ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_CREATE (groupname)
-  *ierr = CCTK_GrouplbndGN (cctkGH, *dim, lbnd, groupname);
+  *ierr = CCTK_GrouplbndGN (*cctkGH, *dim, lbnd, groupname);
   free (groupname);
 }
 
@@ -771,12 +802,12 @@ int CCTK_GrouplbndVI(const cGH *cctkGH,
 
 void CCTK_FCALL CCTK_FNAME (CCTK_GrouplbndVI)
                            (int *ierr,
-                            const cGH *cctkGH,
+                            const cGH **cctkGH,
                             const int *dim,
                             int *lbnd,
                             const int *varindex)
 {
-  *ierr = CCTK_GrouplbndVI (cctkGH, *dim, lbnd, *varindex);
+  *ierr = CCTK_GrouplbndVI (*cctkGH, *dim, lbnd, *varindex);
 }
 
 
@@ -805,13 +836,13 @@ int CCTK_GrouplbndVN(const cGH *cctkGH,
 
 void CCTK_FCALL CCTK_FNAME (CCTK_GrouplbndVN)
                            (int *ierr,
-                            const cGH *cctkGH,
+                            const cGH **cctkGH,
                             const int *dim,
                             int *lbnd,
                             ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_CREATE (varname)
-  *ierr = CCTK_GrouplbndVN (cctkGH, *dim, lbnd, varname);
+  *ierr = CCTK_GrouplbndVN (*cctkGH, *dim, lbnd, varname);
   free (varname);
 }
 
@@ -875,12 +906,12 @@ int CCTK_GroupubndGI(const cGH *cctkGH,
 
 void CCTK_FCALL CCTK_FNAME (CCTK_GroupubndGI)
                            (int *ierr,
-                            const cGH *cctkGH,
+                            const cGH **cctkGH,
                             const int *dim,
                             int *ubnd,
                             const int *groupindex)
 {
-  *ierr = CCTK_GroupubndGI (cctkGH, *dim, ubnd, *groupindex);
+  *ierr = CCTK_GroupubndGI (*cctkGH, *dim, ubnd, *groupindex);
 }
 
 
@@ -909,13 +940,13 @@ int CCTK_GroupubndGN(const cGH *cctkGH,
 
 void CCTK_FCALL CCTK_FNAME (CCTK_GroupubndGN)
                            (int *ierr,
-                            const cGH *cctkGH,
+                            const cGH **cctkGH,
                             const int *dim,
                             int *ubnd,
                             ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_CREATE (groupname)
-  *ierr = CCTK_GroupubndGN (cctkGH, *dim, ubnd, groupname);
+  *ierr = CCTK_GroupubndGN (*cctkGH, *dim, ubnd, groupname);
   free (groupname);
 }
 
@@ -946,12 +977,12 @@ int CCTK_GroupubndVI(const cGH *cctkGH,
 
 void CCTK_FCALL CCTK_FNAME (CCTK_GroupubndVI)
                            (int *ierr,
-                            const cGH *cctkGH,
+                            const cGH **cctkGH,
                             const int *dim,
                             int *ubnd,
                             const int *varindex)
 {
-  *ierr = CCTK_GroupubndVI (cctkGH, *dim, ubnd, *varindex);
+  *ierr = CCTK_GroupubndVI (*cctkGH, *dim, ubnd, *varindex);
 }
 
 
@@ -980,13 +1011,13 @@ int CCTK_GroupubndVN(const cGH *cctkGH,
 
 void CCTK_FCALL CCTK_FNAME (CCTK_GroupubndVN)
                            (int *ierr,
-                            const cGH *cctkGH,
+                            const cGH **cctkGH,
                             const int *dim,
                             int *ubnd,
                             ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_CREATE (varname)
-  *ierr = CCTK_GroupubndVN (cctkGH, *dim, ubnd, varname);
+  *ierr = CCTK_GroupubndVN (*cctkGH, *dim, ubnd, varname);
   free (varname);
 }
 
@@ -1050,12 +1081,12 @@ int CCTK_GrouplshGI(const cGH *cctkGH,
 
 void CCTK_FCALL CCTK_FNAME (CCTK_GrouplshGI)
                            (int *ierr,
-                            const cGH *cctkGH,
+                            const cGH **cctkGH,
                             const int *dim,
                             int *lsh,
                             const int *groupindex)
 {
-  *ierr = CCTK_GrouplshGI (cctkGH, *dim, lsh, *groupindex);
+  *ierr = CCTK_GrouplshGI (*cctkGH, *dim, lsh, *groupindex);
 }
 
 
@@ -1084,13 +1115,13 @@ int CCTK_GrouplshGN(const cGH *cctkGH,
 
 void CCTK_FCALL CCTK_FNAME (CCTK_GrouplshGN)
                            (int *ierr,
-                            const cGH *cctkGH,
+                            const cGH **cctkGH,
                             const int *dim,
                             int *lsh,
                             ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_CREATE (groupname)
-  *ierr = CCTK_GrouplshGN (cctkGH, *dim, lsh, groupname);
+  *ierr = CCTK_GrouplshGN (*cctkGH, *dim, lsh, groupname);
   free (groupname);
 }
 
@@ -1121,12 +1152,12 @@ int CCTK_GrouplshVI(const cGH *cctkGH,
 
 void CCTK_FCALL CCTK_FNAME (CCTK_GrouplshVI)
                            (int *ierr,
-                            const cGH *cctkGH,
+                            const cGH **cctkGH,
                             const int *dim,
                             int *lsh,
                             const int *varindex)
 {
-  *ierr = CCTK_GrouplshVI (cctkGH, *dim, lsh, *varindex);
+  *ierr = CCTK_GrouplshVI (*cctkGH, *dim, lsh, *varindex);
 }
 
 
@@ -1155,13 +1186,13 @@ int CCTK_GrouplshVN(const cGH *cctkGH,
 
 void CCTK_FCALL CCTK_FNAME (CCTK_GrouplshVN)
                            (int *ierr,
-                            const cGH *cctkGH,
+                            const cGH **cctkGH,
                             const int *dim,
                             int *lsh,
                             ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_CREATE (varname)
-  *ierr = CCTK_GrouplshVN (cctkGH, *dim, lsh, varname);
+  *ierr = CCTK_GrouplshVN (*cctkGH, *dim, lsh, varname);
   free (varname);
 }
 
@@ -1225,12 +1256,12 @@ int CCTK_GroupgshGI(const cGH *cctkGH,
 
 void CCTK_FCALL CCTK_FNAME (CCTK_GroupgshGI)
                            (int *ierr,
-                            const cGH *cctkGH,
+                            const cGH **cctkGH,
                             const int *dim,
                             int *gsh,
                             const int *groupindex)
 {
-  *ierr = CCTK_GroupgshGI (cctkGH, *dim, gsh, *groupindex);
+  *ierr = CCTK_GroupgshGI (*cctkGH, *dim, gsh, *groupindex);
 }
 
 
@@ -1259,13 +1290,13 @@ int CCTK_GroupgshGN(const cGH *cctkGH,
 
 void CCTK_FCALL CCTK_FNAME (CCTK_GroupgshGN)
                            (int *ierr,
-                            const cGH *cctkGH,
+                            const cGH **cctkGH,
                             const int *dim,
                             int *gsh,
                             ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_CREATE (groupname)
-  *ierr = CCTK_GroupgshGN (cctkGH, *dim, gsh, groupname);
+  *ierr = CCTK_GroupgshGN (*cctkGH, *dim, gsh, groupname);
   free (groupname);
 }
 
@@ -1296,12 +1327,12 @@ int CCTK_GroupgshVI(const cGH *cctkGH,
 
 void CCTK_FCALL CCTK_FNAME (CCTK_GroupgshVI)
                            (int *ierr,
-                            const cGH *cctkGH,
+                            const cGH **cctkGH,
                             const int *dim,
                             int *gsh,
                             const int *varindex)
 {
-  *ierr = CCTK_GroupgshVI (cctkGH, *dim, gsh, *varindex);
+  *ierr = CCTK_GroupgshVI (*cctkGH, *dim, gsh, *varindex);
 }
 
 
@@ -1330,13 +1361,13 @@ int CCTK_GroupgshVN(const cGH *cctkGH,
 
 void CCTK_FCALL CCTK_FNAME (CCTK_GroupgshVN)
                            (int *ierr,
-                            const cGH *cctkGH,
+                            const cGH **cctkGH,
                             const int *dim,
                             int *gsh,
                             ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_CREATE (varname)
-  *ierr = CCTK_GroupgshVN (cctkGH, *dim, gsh, varname);
+  *ierr = CCTK_GroupgshVN (*cctkGH, *dim, gsh, varname);
   free (varname);
 }
 
@@ -1401,12 +1432,12 @@ int CCTK_GroupnghostzonesGI(const cGH *cctkGH,
 
 void CCTK_FCALL CCTK_FNAME (CCTK_GroupnghostzonesGI)
                            (int *ierr,
-                            const cGH *cctkGH,
+                            const cGH **cctkGH,
                             const int *dim,
                             int *nghostzones,
                             const int *groupindex)
 {
-  *ierr = CCTK_GroupnghostzonesGI (cctkGH, *dim, nghostzones, *groupindex);
+  *ierr = CCTK_GroupnghostzonesGI (*cctkGH, *dim, nghostzones, *groupindex);
 }
 
 
@@ -1435,13 +1466,13 @@ int CCTK_GroupnghostzonesGN(const cGH *cctkGH,
 
 void CCTK_FCALL CCTK_FNAME (CCTK_GroupnghostzonesGN)
                            (int *ierr,
-                            const cGH *cctkGH,
+                            const cGH **cctkGH,
                             const int *dim,
                             int *nghostzones,
                             ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_CREATE (groupname)
-  *ierr = CCTK_GroupnghostzonesGN (cctkGH, *dim, nghostzones, groupname);
+  *ierr = CCTK_GroupnghostzonesGN (*cctkGH, *dim, nghostzones, groupname);
   free (groupname);
 }
 
@@ -1472,12 +1503,12 @@ int CCTK_GroupnghostzonesVI(const cGH *cctkGH,
 
 void CCTK_FCALL CCTK_FNAME (CCTK_GroupnghostzonesVI)
                            (int *ierr,
-                            const cGH *cctkGH,
+                            const cGH **cctkGH,
                             const int *dim,
                             int *nghostzones,
                             const int *varindex)
 {
-  *ierr = CCTK_GroupnghostzonesVI (cctkGH, *dim, nghostzones, *varindex);
+  *ierr = CCTK_GroupnghostzonesVI (*cctkGH, *dim, nghostzones, *varindex);
 }
 
 
@@ -1506,13 +1537,13 @@ int CCTK_GroupnghostzonesVN(const cGH *cctkGH,
 
 void CCTK_FCALL CCTK_FNAME (CCTK_GroupnghostzonesVN)
                            (int *ierr,
-                            const cGH *cctkGH,
+                            const cGH **cctkGH,
                             const int *dim,
                             int *nghostzones,
                             ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_CREATE (varname)
-  *ierr = CCTK_GroupnghostzonesVN (cctkGH, *dim, nghostzones, varname);
+  *ierr = CCTK_GroupnghostzonesVN (*cctkGH, *dim, nghostzones, varname);
   free (varname);
 }
 
@@ -1575,12 +1606,12 @@ int CCTK_GroupbboxGI(const cGH *cctkGH,
 
 void CCTK_FCALL CCTK_FNAME (CCTK_GroupbboxGI)
                            (int *ierr,
-                            const cGH *cctkGH,
+                            const cGH **cctkGH,
                             const int *size,
                             int *bbox,
                             const int *groupindex)
 {
-  *ierr = CCTK_GroupbboxGI (cctkGH, *size, bbox, *groupindex);
+  *ierr = CCTK_GroupbboxGI (*cctkGH, *size, bbox, *groupindex);
 }
 
 
@@ -1609,13 +1640,13 @@ int CCTK_GroupbboxGN(const cGH *cctkGH,
 
 void CCTK_FCALL CCTK_FNAME (CCTK_GroupbboxGN)
                            (int *ierr,
-                            const cGH *cctkGH,
+                            const cGH **cctkGH,
                             const int *size,
                             int *bbox,
                             ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_CREATE(groupname)
-  *ierr = CCTK_GroupbboxGN(cctkGH, *size, bbox, groupname);
+  *ierr = CCTK_GroupbboxGN(*cctkGH, *size, bbox, groupname);
   free(groupname);
 }
 
@@ -1646,12 +1677,12 @@ int CCTK_GroupbboxVI(const cGH *cctkGH,
 
 void CCTK_FCALL CCTK_FNAME (CCTK_GroupbboxVI)
                            (int *ierr,
-                            const cGH *cctkGH,
+                            const cGH **cctkGH,
                             const int *size,
                             int *bbox,
                             const int *varindex)
 {
-  *ierr = CCTK_GroupbboxVI (cctkGH, *size, bbox, *varindex);
+  *ierr = CCTK_GroupbboxVI (*cctkGH, *size, bbox, *varindex);
 }
 
 
@@ -1680,12 +1711,12 @@ int CCTK_GroupbboxVN(const cGH *cctkGH,
 
 void CCTK_FCALL CCTK_FNAME (CCTK_GroupbboxVN)
                            (int *ierr,
-                            const cGH *cctkGH,
+                            const cGH **cctkGH,
                             const int *size,
                             int *bbox,
                             ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_CREATE (varname)
-  *ierr = CCTK_GroupbboxVN (cctkGH, *size, bbox, varname);
+  *ierr = CCTK_GroupbboxVN (*cctkGH, *size, bbox, varname);
   free (varname);
 }

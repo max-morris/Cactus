@@ -87,14 +87,14 @@ void CCTK_FCALL CCTK_FNAME (CCTK_CoordRegisterData)
                            (int *handle,const int *dir,THREE_FORTSTRING_ARG);
 void CCTK_FCALL CCTK_FNAME (CCTK_CoordRegisterRange)
                            (int *ierr,
-                            const cGH *GH,
+                            const cGH **GH,
                             const CCTK_REAL *lower,
                             const CCTK_REAL *upper,
                             const int *dir,
                             TWO_FORTSTRING_ARG);
 void CCTK_FCALL CCTK_FNAME (CCTK_CoordRegisterRangePhysIndex)
                            (int *ierr,
-                            const cGH *GH,
+                            const cGH **GH,
                             const int *lower,
                             const int *upper,
                             const int *dir,
@@ -109,21 +109,21 @@ void CCTK_FCALL CCTK_FNAME (CCTK_CoordDir)
                            (int *dir, TWO_FORTSTRING_ARG);
 void CCTK_FCALL CCTK_FNAME (CCTK_CoordRange)
                            (int *ierr,
-                            const cGH *GH,
+                            const cGH **GH,
                             CCTK_REAL *lower,
                             CCTK_REAL *upper,
                             const int *dir,
                             TWO_FORTSTRING_ARG);
 void CCTK_FCALL CCTK_FNAME (CCTK_CoordRangePhysIndex)
                            (int *ierr,
-                            const cGH *GH,
+                            const cGH **GH,
                             int *lower,
                             int *upper,
                             const int *dir,
                             TWO_FORTSTRING_ARG);
 void CCTK_FCALL CCTK_FNAME (CCTK_CoordLocalRange)
                            (int *ierr,
-                            const cGH *GH,
+                            const cGH **GH,
                             CCTK_REAL *lower,
                             CCTK_REAL *upper,
                             const int *dir,
@@ -494,14 +494,14 @@ int CCTK_CoordRegisterRange (const cGH *GH,
 
 void CCTK_FCALL CCTK_FNAME (CCTK_CoordRegisterRange)
                            (int *ierr,
-                            const cGH *GH,
+                            const cGH **GH,
                             const CCTK_REAL *lower,
                             const CCTK_REAL *upper,
                             const int *dir,
                             TWO_FORTSTRING_ARG)
 {
   TWO_FORTSTRING_CREATE (name, systemname)
-  *ierr = CCTK_CoordRegisterRange (GH, *lower, *upper, *dir, name, systemname);
+  *ierr = CCTK_CoordRegisterRange (*GH, *lower, *upper, *dir, name, systemname);
   free (name);
   free (systemname);
 }
@@ -667,14 +667,14 @@ int CCTK_CoordRegisterRangePhysIndex (const cGH *GH,
 
 void CCTK_FCALL CCTK_FNAME (CCTK_CoordRegisterRangePhysIndex)
                            (int *ierr,
-                            const cGH *GH,
+                            const cGH **GH,
                             const int *lower,
                             const int *upper,
                             const int *dir,
                             TWO_FORTSTRING_ARG)
 {
   TWO_FORTSTRING_CREATE (name, systemname)
-  *ierr = CCTK_CoordRegisterRangePhysIndex (GH, *lower, *upper, *dir, name, systemname);
+  *ierr = CCTK_CoordRegisterRangePhysIndex (*GH, *lower, *upper, *dir, name, systemname);
   free (name);
   free (systemname);
 }
@@ -1136,14 +1136,14 @@ int CCTK_CoordRange (const cGH *GH,
 
 void CCTK_FCALL CCTK_FNAME (CCTK_CoordRange)
                            (int *ierr,
-                            const cGH *GH,
+                            const cGH **GH,
                             CCTK_REAL *lower,
                             CCTK_REAL *upper,
                             const int *dir,
                             TWO_FORTSTRING_ARG)
 {
   TWO_FORTSTRING_CREATE (name, systemname)
-  *ierr = CCTK_CoordRange (GH, lower, upper, *dir, name, systemname);
+  *ierr = CCTK_CoordRange (*GH, lower, upper, *dir, name, systemname);
   free (name);
   free (systemname);
 }
@@ -1313,14 +1313,14 @@ int CCTK_CoordRangePhysIndex (const cGH *GH,
 
 void CCTK_FCALL CCTK_FNAME (CCTK_CoordRangePhysIndex)
                            (int *ierr,
-                            const cGH *GH,
+                            const cGH **GH,
                             int *lower,
                             int *upper,
                             const int *dir,
                             TWO_FORTSTRING_ARG)
 {
   TWO_FORTSTRING_CREATE (name, systemname)
-  *ierr = CCTK_CoordRangePhysIndex (GH, lower, upper, *dir, name, systemname);
+  *ierr = CCTK_CoordRangePhysIndex (*GH, lower, upper, *dir, name, systemname);
   free (name);
   free (systemname);
 }
@@ -1394,14 +1394,14 @@ int CCTK_CoordLocalRange(const cGH *GH,
 
 void CCTK_FCALL CCTK_FNAME (CCTK_CoordLocalRange)
                            (int *ierr,
-                            const cGH *GH,
+                            const cGH **GH,
                             CCTK_REAL *lower,
                             CCTK_REAL *upper,
                             const int *dir,
                             TWO_FORTSTRING_ARG)
 {
   TWO_FORTSTRING_CREATE (name, systemname)
-  *ierr = CCTK_CoordLocalRange (GH, lower, upper, *dir, name, systemname);
+  *ierr = CCTK_CoordLocalRange (*GH, lower, upper, *dir, name, systemname);
   free (name);
   free (systemname);
 }

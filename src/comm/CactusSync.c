@@ -31,11 +31,11 @@ CCTK_FILEVERSION(comm_CactusSync_c);
 /* prototypes for external C routines are declared in header cctk_Groups.h
    here only follow the fortran wrapper prototypes */
 void CCTK_FCALL CCTK_FNAME (CCTK_SyncGroupI)
-                           (int *ierror, const cGH *GH, const int *group);
+                           (int *ierror, const cGH **GH, const int *group);
 void CCTK_FCALL CCTK_FNAME (CCTK_SyncGroupWithVar)
-                           (int *ierror, const cGH *GH, ONE_FORTSTRING_ARG);
+                           (int *ierror, const cGH **GH, ONE_FORTSTRING_ARG);
 void CCTK_FCALL CCTK_FNAME (CCTK_SyncGroupWithVarI)
-                           (int *ierror, const cGH *GH, const int *var);
+                           (int *ierror, const cGH **GH, const int *var);
 
 
  /*@@
@@ -88,9 +88,9 @@ int CCTK_SyncGroupI (const cGH *GH, int group)
 }
 
 void CCTK_FCALL CCTK_FNAME (CCTK_SyncGroupI)
-                           (int *ierror, const cGH *GH, const int *group)
+                           (int *ierror, const cGH **GH, const int *group)
 {
-  CCTK_SyncGroupI (GH, *group);
+  CCTK_SyncGroupI (*GH, *group);
   *ierror = 0;
 }
 
@@ -134,10 +134,10 @@ int CCTK_SyncGroupWithVar (const cGH *GH, const char *varname)
 }
 
 void CCTK_FCALL CCTK_FNAME (CCTK_SyncGroupWithVar)
-                           (int *ierror, const cGH *GH, ONE_FORTSTRING_ARG)
+                           (int *ierror, const cGH **GH, ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_CREATE (varname);
-  *ierror = CCTK_SyncGroupWithVar (GH, varname);
+  *ierror = CCTK_SyncGroupWithVar (*GH, varname);
   free (varname);
 }
 
@@ -179,9 +179,9 @@ int CCTK_SyncGroupWithVarI (const cGH *GH, int var)
 }
 
 void CCTK_FCALL CCTK_FNAME (CCTK_SyncGroupWithVarI)
-                           (int *ierror, const cGH *GH, const int *var)
+                           (int *ierror, const cGH **GH, const int *var)
 {
-  *ierror = CCTK_SyncGroupWithVarI (GH, *var);
+  *ierror = CCTK_SyncGroupWithVarI (*GH, *var);
 }
 
 

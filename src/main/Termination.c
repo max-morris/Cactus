@@ -23,7 +23,7 @@ static int termination_reached = 0;
 /********************************************************************
  *********************     External Routines   **********************
  ********************************************************************/
-void CCTK_FCALL CCTK_FNAME (CCTK_TerminateNext) (const cGH *GH);
+void CCTK_FCALL CCTK_FNAME (CCTK_TerminateNext) (const cGH **GH);
 
 
  /*@@
@@ -72,7 +72,7 @@ void CCTK_TerminateNext (const cGH *GH)
   termination_reached = 1;
 }
 
-void CCTK_FCALL CCTK_FNAME (CCTK_TerminateNext) (const cGH *GH)
+void CCTK_FCALL CCTK_FNAME (CCTK_TerminateNext) (const cGH **GH)
 {
-  CCTK_TerminateNext (GH);
+  CCTK_TerminateNext (*GH);
 }

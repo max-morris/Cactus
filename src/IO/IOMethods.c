@@ -49,13 +49,13 @@ int CactusDefaultOutputVarAsByMethod (const cGH *GH,
                                       const char *alias);
 
 void CCTK_FCALL CCTK_FNAME (CCTK_OutputVarAsByMethod)
-                           (int *ierr, const cGH *GH, THREE_FORTSTRING_ARG);
+                           (int *ierr, const cGH **GH, THREE_FORTSTRING_ARG);
 void CCTK_FCALL CCTK_FNAME (CCTK_OutputVarByMethod)
-                           (int *ierr, const cGH *GH, TWO_FORTSTRING_ARG);
+                           (int *ierr, const cGH **GH, TWO_FORTSTRING_ARG);
 void CCTK_FCALL CCTK_FNAME (CCTK_OutputVar)
-     (int *istat, const cGH *GH, ONE_FORTSTRING_ARG);
+     (int *istat, const cGH **GH, ONE_FORTSTRING_ARG);
 void CCTK_FCALL CCTK_FNAME (CCTK_OutputVarAs)
-     (int *istat, const cGH *GH, TWO_FORTSTRING_ARG);
+     (int *istat, const cGH **GH, TWO_FORTSTRING_ARG);
 
 
 int CCTKi_TriggerSaysGo (const cGH *GH, int variable);
@@ -391,10 +391,10 @@ int CCTK_OutputVarAs (const cGH *GH, const char *var, const char *alias)
 }
 
 void CCTK_FCALL CCTK_FNAME (CCTK_OutputVarAs)
-                           (int *istat, const cGH *GH, TWO_FORTSTRING_ARG)
+                           (int *istat, const cGH **GH, TWO_FORTSTRING_ARG)
 {
   TWO_FORTSTRING_CREATE (var,as);
-  *istat = CCTK_OutputVarAs (GH, var,as);
+  *istat = CCTK_OutputVarAs (*GH, var,as);
   free (var);
   free (as);
 }
@@ -436,10 +436,10 @@ int CCTK_OutputVar (const cGH *GH, const char *var)
 }
 
 void CCTK_FCALL CCTK_FNAME (CCTK_OutputVar)
-                           (int *istat, const cGH *GH, ONE_FORTSTRING_ARG)
+                           (int *istat, const cGH **GH, ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_CREATE (var);
-  *istat = CCTK_OutputVar (GH, var);
+  *istat = CCTK_OutputVar (*GH, var);
   free (var);
 }
 
@@ -487,10 +487,10 @@ int CCTK_OutputVarByMethod (const cGH *GH, const char *var, const char *method)
 }
 
 void CCTK_FCALL CCTK_FNAME (CCTK_OutputVarByMethod)
-                           (int *ierr, const cGH *GH, TWO_FORTSTRING_ARG)
+                           (int *ierr, const cGH **GH, TWO_FORTSTRING_ARG)
 {
   TWO_FORTSTRING_CREATE (var, method);
-  *ierr = CCTK_OutputVarByMethod (GH, var, method);
+  *ierr = CCTK_OutputVarByMethod (*GH, var, method);
   free (var);
   free (method);
 }
@@ -758,11 +758,11 @@ int CactusDefaultOutputVarAsByMethod (const cGH *GH,
 }
 
 void CCTK_FCALL CCTK_FNAME (CCTK_OutputVarAsByMethod)
-                           (int *ierr, const cGH *GH, THREE_FORTSTRING_ARG)
+                           (int *ierr, const cGH **GH, THREE_FORTSTRING_ARG)
 {
   THREE_FORTSTRING_CREATE (var, methodname, alias);
 
-  *ierr = CCTK_OutputVarAsByMethod (GH, var, methodname, alias);
+  *ierr = CCTK_OutputVarAsByMethod (*GH, var, methodname, alias);
 
   free (var);
   free (methodname);

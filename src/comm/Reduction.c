@@ -39,7 +39,7 @@ void CCTK_FCALL CCTK_FNAME(CCTK_ReductionArrayHandle)
      (int *operation_handle, ONE_FORTSTRING_ARG);
 void CCTK_FCALL CCTK_FNAME(CCTK_Reduce)
      (int *fortranreturn,
-      const cGH *GH,
+      const cGH **GH,
       const int *proc,
       const int *operation_handle,
       const int *num_out_vals,
@@ -49,7 +49,7 @@ void CCTK_FCALL CCTK_FNAME(CCTK_Reduce)
       ... );
 void CCTK_FCALL CCTK_FNAME(CCTK_ReduceArray)
      (int *fortran_return,
-      const cGH *GH,
+      const cGH **GH,
       const int *proc,
       const int *operation_handle,
       const int *num_out_vals,
@@ -63,7 +63,7 @@ void CCTK_FCALL CCTK_FNAME(CCTK_ReduceArray)
 /* FIXME: OLD INTERFACE */
 void CCTK_FCALL CCTK_FNAME(CCTK_ReduceLocalScalar)
      (int *fortran_return,
-      const cGH *GH,
+      const cGH **GH,
       const int *proc,
       const int *operation_handle,
       const void *in_scalar,
@@ -71,7 +71,7 @@ void CCTK_FCALL CCTK_FNAME(CCTK_ReduceLocalScalar)
       const int *data_type);
 void CCTK_FCALL CCTK_FNAME(CCTK_ReduceLocScalar)
      (int *fortran_return,
-      const cGH *GH,
+      const cGH **GH,
       const int *proc,
       const int *operation_handle,
       const void *in_scalar,
@@ -79,7 +79,7 @@ void CCTK_FCALL CCTK_FNAME(CCTK_ReduceLocScalar)
       const int *data_type);
 void CCTK_FCALL CCTK_FNAME(CCTK_ReduceLocalArray1D)
      (int *fortran_return,
-      const cGH *GH,
+      const cGH **GH,
       const int *proc,
       const int *operation_handle,
       const void *in_array1d,
@@ -88,7 +88,7 @@ void CCTK_FCALL CCTK_FNAME(CCTK_ReduceLocalArray1D)
       const int *data_type);
 void CCTK_FCALL CCTK_FNAME(CCTK_ReduceLocArrayToArray1D)
      (int *fortran_return,
-      const cGH *GH,
+      const cGH **GH,
       const int *proc,
       const int *operation_handle,
       const void *in_array1d,
@@ -96,7 +96,7 @@ void CCTK_FCALL CCTK_FNAME(CCTK_ReduceLocArrayToArray1D)
       const int *num_in_array1d,
       const int *data_type);
 void CCTK_FCALL  CCTK_FNAME(CCTK_ReduceLocArrayToArray2D)
-     (int  *fortran_return, const cGH *GH,
+     (int  *fortran_return, const cGH **GH,
       const int  *proc,
       const int  *operation_handle,
       const void *in_array2d,
@@ -104,7 +104,7 @@ void CCTK_FCALL  CCTK_FNAME(CCTK_ReduceLocArrayToArray2D)
       const int  *xsize, const int *ysize,
       const int  *data_type);
 void CCTK_FCALL  CCTK_FNAME(CCTK_ReduceLocArrayToArray3D)
-     (int  *fortran_return, const cGH *GH,
+     (int  *fortran_return, const cGH **GH,
       const int  *proc,
       const int  *operation_handle,
       const void *in_array3d,
@@ -340,7 +340,7 @@ int CCTK_Reduce(const cGH *GH,
 
 void CCTK_FCALL CCTK_FNAME(CCTK_Reduce)
      (int *fortranreturn,
-      const cGH *GH,
+      const cGH **GH,
       const int *proc,
       const int *operation_handle,
       const int *num_out_vals,
@@ -389,7 +389,7 @@ void CCTK_FCALL CCTK_FNAME(CCTK_Reduce)
       }
       va_end(indices);
 
-      retval = operator->reduce_operator (GH, *proc, *num_out_vals,
+      retval = operator->reduce_operator (*GH, *proc, *num_out_vals,
                                           *type_out_vals, out_vals,
                                           *num_in_fields,in_fields);
 
@@ -624,7 +624,7 @@ int CCTK_ReduceArray(const cGH *GH,
 
 void CCTK_FCALL CCTK_FNAME(CCTK_ReduceArray)
      (int *fortran_return,
-      const cGH *GH,
+      const cGH **GH,
       const int *proc,
       const int *operation_handle,
       const int *num_out_vals,
@@ -683,7 +683,7 @@ void CCTK_FCALL CCTK_FNAME(CCTK_ReduceArray)
 
   va_end (varargs);
 
-  *fortran_return = data->function (GH, *proc, *num_dims, dims,
+  *fortran_return = data->function (*GH, *proc, *num_dims, dims,
                                     *num_in_arrays, in_arrays, *type_in_arrays,
                                     *num_out_vals, out_vals, *type_out_vals);
   free (in_arrays);
@@ -742,14 +742,14 @@ int CCTK_ReduceLocalScalar (const cGH *GH, int proc, int operation_handle,
 /*** FIXME: OLD INTERFACE gerd ***/
 void CCTK_FCALL CCTK_FNAME(CCTK_ReduceLocalScalar)
      (int *fortran_return,
-      const cGH *GH,
+      const cGH **GH,
       const int *proc,
       const int *operation_handle,
       const void *in_scalar,
       void *out_scalar,
       const int *data_type)
 {
-  *fortran_return = CCTK_ReduceArray (GH, *proc, *operation_handle,
+  *fortran_return = CCTK_ReduceArray (*GH, *proc, *operation_handle,
                                       1, *data_type, out_scalar,
                                       1, 1, *data_type, 1, in_scalar);
 }
@@ -765,14 +765,14 @@ int CCTK_ReduceLocScalar (const cGH *GH, int proc, int operation_handle,
 
 void CCTK_FCALL CCTK_FNAME(CCTK_ReduceLocScalar)
      (int *fortran_return,
-      const cGH *GH,
+      const cGH **GH,
       const int *proc,
       const int *operation_handle,
       const void *in_scalar,
       void *out_scalar,
       const int *data_type)
 {
-  *fortran_return = CCTK_ReduceArray (GH, *proc, *operation_handle,
+  *fortran_return = CCTK_ReduceArray (*GH, *proc, *operation_handle,
                                       1, *data_type, out_scalar,
                                       1, 1, *data_type, 1, in_scalar);
 }
@@ -813,7 +813,7 @@ int CCTK_ReduceLocArrayToArray1D(const cGH *GH, int proc, int operation_handle,
 /*** FIXME: OLD INTERFACE gerd ***/
 void CCTK_FCALL CCTK_FNAME(CCTK_ReduceLocalArray1D)
      (int *fortran_return,
-      const cGH *GH,
+      const cGH **GH,
       const int *proc,
       const int *operation_handle,
       const void *in_array1d,
@@ -821,7 +821,7 @@ void CCTK_FCALL CCTK_FNAME(CCTK_ReduceLocalArray1D)
       const int *num_in_array1d,
       const int *data_type)
 {
-  *fortran_return = CCTK_ReduceArray (GH, *proc, *operation_handle,
+  *fortran_return = CCTK_ReduceArray (*GH, *proc, *operation_handle,
                                       *num_in_array1d, *data_type, out_array1d,
                                       1, 1, *data_type, *num_in_array1d,
                                       in_array1d);
@@ -841,7 +841,7 @@ void CCTK_FCALL CCTK_FNAME(CCTK_ReduceLocalArray1D)
 
 void CCTK_FCALL CCTK_FNAME(CCTK_ReduceLocArrayToArray1D)
      (int *fortran_return,
-      const cGH *GH,
+      const cGH **GH,
       const int *proc,
       const int *operation_handle,
       const void *in_array1d,
@@ -849,7 +849,7 @@ void CCTK_FCALL CCTK_FNAME(CCTK_ReduceLocArrayToArray1D)
       const int *num_in_array1d,
       const int *data_type)
 {
-  *fortran_return = CCTK_ReduceArray (GH, *proc, *operation_handle,
+  *fortran_return = CCTK_ReduceArray (*GH, *proc, *operation_handle,
                                       *num_in_array1d, *data_type, out_array1d,
                                       1, 1, *data_type, *num_in_array1d,
                                       in_array1d);
@@ -881,7 +881,7 @@ int CCTK_ReduceLocArrayToArray2D(const cGH *GH, int proc, int operation_handle,
 }
 
 void CCTK_FCALL  CCTK_FNAME(CCTK_ReduceLocArrayToArray2D)
-     (int  *fortran_return, const cGH *GH,
+     (int  *fortran_return, const cGH **GH,
       const int  *proc,
       const int  *operation_handle,
       const void *in_array2d,
@@ -890,7 +890,7 @@ void CCTK_FCALL  CCTK_FNAME(CCTK_ReduceLocArrayToArray2D)
       const int  *data_type)
 {
   int lin_size = (*xsize)*(*ysize);
-  *fortran_return =  CCTK_ReduceArray (GH, *proc, *operation_handle,
+  *fortran_return =  CCTK_ReduceArray (*GH, *proc, *operation_handle,
                                       lin_size,
                                       *data_type, out_array2d,
                                       2, 1, *data_type,
@@ -924,7 +924,7 @@ int CCTK_ReduceLocArrayToArray3D(const cGH *GH, int proc, int operation_handle,
 }
 
 void CCTK_FCALL  CCTK_FNAME(CCTK_ReduceLocArrayToArray3D)
-     (int  *fortran_return, const cGH *GH,
+     (int  *fortran_return, const cGH **GH,
       const int  *proc,
       const int  *operation_handle,
       const void *in_array3d,
@@ -933,7 +933,7 @@ void CCTK_FCALL  CCTK_FNAME(CCTK_ReduceLocArrayToArray3D)
       const int  *data_type)
 {
   int lin_size =  (*xsize)*(*ysize)*(*zsize);
-  *fortran_return =  CCTK_ReduceArray (GH, *proc, *operation_handle,
+  *fortran_return =  CCTK_ReduceArray (*GH, *proc, *operation_handle,
                                        lin_size,
                                        *data_type, out_array3d,
                                        3, 1, *data_type,

@@ -27,7 +27,7 @@ CCTK_FILEVERSION(IO_FortranBindingsIO_c);
  ********************************************************************/
 
 void CCTK_FCALL CCTK_FNAME (CCTK_OutputGH)
-                           (int *istat, const cGH *GH);
+                           (int *istat, const cGH **GH);
 void CCTK_FCALL CCTK_FNAME (CCTKi_RegisterIOMethod)
                            (int *handle, TWO_FORTSTRING_ARG);
 
@@ -63,9 +63,9 @@ void CCTK_FCALL CCTK_FNAME (CCTKi_RegisterIOMethod)
    @endreturndesc
 @@*/
 void CCTK_FCALL CCTK_FNAME (CCTK_OutputGH)
-                           (int *istat, const cGH *GH)
+                           (int *istat, const cGH **GH)
 {
-  *istat = CCTK_OutputGH (GH);
+  *istat = CCTK_OutputGH (*GH);
 }
 
  /*@@

@@ -561,8 +561,7 @@ sub ParseArgument
 
   if ($DummyArgument =~ /FPTRARGS/)
   {
-    ($type,$name) = split(' ',$DummyArgument);
-    $intent = "IN";
+    ($type,$intent,$name) = split(' ',$DummyArgument);
     # QUERY: is $fpointer supposed to be set here?
     $fpointer = 1;
     &debug_print("$Thorn--ParseArgument: (fn pointer) type=$type name=$name");
@@ -624,9 +623,9 @@ sub ParseArgument
   {
     $Argument->{"Function Pointer"} = 0;
   }
-  if ($type !~ /(\bCCTK_INT$)|(\bCCTK_REAL$)|(\bCCTK_POINTER$)|(\bCCTK_STRING$)/)
+  if ($type !~ /(\bCCTK_INT$)|(\bCCTK_REAL$)|(\bCCTK_POINTER$)|(\bCCTK_POINTER_TO_CONST$)|(\bCCTK_STRING$)/)
   {
-    my $message = "Thorn $Thorn, Function $Function:\nAn argument in an aliased function must be one of the allowed CCTK types.\nThese are CCTK_INT, CCTK_REAL, CCTK_POINTER or CCTK_STRING.\nThe argument ".$Argument->{"Name"}." has type \"$type\".";
+    my $message = "Thorn $Thorn, Function $Function:\nAn argument in an aliased function must be one of the allowed CCTK types.\nThese are CCTK_INT, CCTK_REAL, CCTK_POINTER, CCTK_POINTER_TO_CONST, or CCTK_STRING.\nThe argument ".$Argument->{"Name"}." has type \"$type\".";
     if ($type =~ /:/)
     {
       $message .= "\n(The older \"${type}ARRAY\" should be replaced with \"$type ARRAY\".)";
@@ -2178,7 +2177,7 @@ sub printCallArg
   {
     $prefix = "";
   }
-  elsif ( ($calltype eq "Fortran")&&( !(($Arg{"Is Array"})||($Arg{"String"})||($Arg{"Intent"}=~/OUT/)||($Arg{"Type"} =~ /CCTK_POINTER/)) ) )
+  elsif ( ($calltype eq "Fortran")&&( !(($Arg{"Is Array"})||($Arg{"String"})||($Arg{"Intent"}=~/OUT/)) ) )
   {
     $prefix = "*";
   }
@@ -2324,6 +2323,17 @@ sub printArg
   my $suffix = "";
   my $prefix = "";
 
+  if ( (($type eq "Fortran")&&(!$Arg{"Function pointer"})) ||
+       (($type eq "C")&&(($Arg{"Is Array"})||($Arg{"Intent"}=~/OUT/))) )
+  {
+    &debug_print($Arg{"Name"}." needs a *");
+    $suffix = "*";
+  }
+  if ( ($Arg{"Intent"}=~/IN/) && (!($Arg{"Intent"}=~/OUT/)) )
+  {
+    $prefix = "const ";
+  }
+
   if ($Arg{"Function pointer"})
   {
 # It's a FPOINTER
@@ -2335,28 +2345,11 @@ sub printArg
     push(@data,$vartype);
     my @fptrargs = &printArgList($type,$Arg{"Name"}{"Arguments"});
 #    print "\n@fptrargs\n\n";
-    push(@data,"(*".$Arg{"Name"}{"Name"}.")(@fptrargs)");
+    push(@data,"(*".$prefix.$suffix.$Arg{"Name"}{"Name"}.")(@fptrargs)");
   }
   else
   {
 #    print "Argument: ".$Arg{"Name"}." ".$Arg{"Is Array"}." ".$Arg{"Intent"}."\n";
-    if ( (($type eq "Fortran")&&(!$Arg{"Function"})) ||
-         (($type eq "C")&&(($Arg{"Is Array"})||(($Arg{"Intent"}=~/OUT/)&&($vartype !~ "CCTK_POINTER")))) )
-    {
-      &debug_print($Arg{"Name"}." needs a *");
-      $suffix = "*";
-    }
-    if ( ($Arg{"Intent"}=~/IN/) && (!($Arg{"Intent"}=~/OUT/)) )
-    {
-      $prefix = "const ";
-      # const CCTK_POINTER is read by C as a constant pointer, rather
-      # that a pointer to constant data, so treat this case separately:
-      if ($vartype eq "CCTK_POINTER" && ! $Arg{"Is Array"})
-      {
-        $prefix = "";
-        $vartype = "CCTK_POINTER_TO_CONST";
-      }
-    }
 
     push(@data,$prefix.$vartype.$suffix);
 

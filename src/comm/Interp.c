@@ -58,7 +58,7 @@ void CCTK_FCALL CCTK_FNAME (CCTK_InterpHandle)
                             ONE_FORTSTRING_ARG);
 void CCTK_FCALL CCTK_FNAME (CCTK_InterpGV)
                            (int *fortranreturn,
-                            cGH *GH,
+                            cGH **GH,
                             const int *operator_handle,
                             const int *coord_system_handle,
                             const int *num_points,
@@ -67,7 +67,7 @@ void CCTK_FCALL CCTK_FNAME (CCTK_InterpGV)
                             ...);
 void CCTK_FCALL CCTK_FNAME (CCTK_InterpLocal)
                            (int *fortranreturn,
-                            cGH *GH,
+                            cGH **GH,
                             const int *operator_handle,
                             const int *num_points,
                             const int *num_dims,
@@ -76,7 +76,7 @@ void CCTK_FCALL CCTK_FNAME (CCTK_InterpLocal)
                             ...);
 void CCTK_FCALL CCTK_FNAME (CCTK_InterpGridArrays)
                            (int *ierror,
-                            const cGH *GH,
+                            const cGH **GH,
                             const int *N_dims,
                             const int *local_interp_handle,
                             const int *param_table_handle,
@@ -757,7 +757,7 @@ int CCTK_InterpGV (cGH *GH,
 
 void CCTK_FCALL CCTK_FNAME (CCTK_InterpGV)
                            (int *fortranreturn,
-                            cGH *GH,
+                            cGH **GH,
                             const int *operator_handle,
                             const int *coord_system_handle,
                             const int *num_points,
@@ -815,7 +815,7 @@ void CCTK_FCALL CCTK_FNAME (CCTK_InterpGV)
     VARARGS_TO_ARRAY (out_array_types, int *, *, *num_out_arrays, indices);
     va_end (indices);
 
-    retcode = operator->interp_operator_GV (GH, coord_system, *num_points,
+    retcode = operator->interp_operator_GV (*GH, coord_system, *num_points,
                                             *num_in_array_indices,
                                             *num_out_arrays,
                                             interp_coord_arrays,
@@ -1014,7 +1014,7 @@ int CCTK_InterpLocal (cGH *GH,
 
 void CCTK_FCALL CCTK_FNAME (CCTK_InterpLocal)
                            (int *fortranreturn,
-                            cGH *GH,
+                            cGH **GH,
                             const int *operator_handle,
                             const int *num_points,
                             const int *num_dims,
@@ -1072,7 +1072,7 @@ void CCTK_FCALL CCTK_FNAME (CCTK_InterpLocal)
     VARARGS_TO_ARRAY (out_array_types, int *, *, *num_out_arrays, indices);
     va_end (indices);
 
-    retcode = operator->interp_operator_local (GH, *num_points, *num_dims,
+    retcode = operator->interp_operator_local (*GH, *num_points, *num_dims,
                                                *num_in_arrays, *num_out_arrays,
                                                coord_dims,
                                                coord_arrays, coord_array_types,
@@ -1189,7 +1189,7 @@ void CCTK_FCALL CCTK_FNAME (CCTK_InterpLocal)
 @@*/
 void CCTK_FCALL CCTK_FNAME (CCTK_InterpGridArrays)
                            (int *ierror,
-                            const cGH *GH,
+                            const cGH **GH,
                             const int *N_dims,
                             const int *local_interp_handle,
                             const int *param_table_handle,
@@ -1203,7 +1203,7 @@ void CCTK_FCALL CCTK_FNAME (CCTK_InterpGridArrays)
                               const CCTK_INT output_array_types[],
                               void *const output_arrays[])
 {
-  *ierror = CCTK_InterpGridArrays (GH, *N_dims, *local_interp_handle,
+  *ierror = CCTK_InterpGridArrays (*GH, *N_dims, *local_interp_handle,
                                    *param_table_handle, *coord_system_handle,
                                    *N_interp_points, *interp_coords_type,
                                    interp_coords,
