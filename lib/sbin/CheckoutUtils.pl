@@ -388,22 +388,19 @@ sub GetThorns
       #Get arrangements name
       $arrangement = $th;
       $arrangement =~ s:/[^/]*$::;
-      $command_co_arr = "cvs $cvs_options -d $thorns{\"$th\"} co $tag $arrangement/README |";
+      $command_co_arr = "cvs $cvs_options -d $thorns{\"$th\"} co $tag $arrangement/README 2> /dev/null |";
+      # (discard stderr because it is annoying when looking for a potential 
+      # arragment README)
 
       if ($debug != 1)
       {
 	# Check that the repository exists
 	DIE("Repository $thorns{\"$th\"} not found \n Are you connected to the network?\n Is the repository name spelt right in your thornlist file?") if (!&RepositoryExists($thorns{"$th"}));
 	
-	# Only look for an arrangement-wide README in arrangements whose names
-	# start with 'Cactus'
-	if ($command_co_arr =~ /Cactus\w+/)
+	open(CVSCO,$command_co_arr);
+	while (<CVSCO>)
 	{
-	  open(CVSCO,$command_co_arr);
-	  while (<CVSCO>)
-	  {
-	    print $_;
-	  }
+	  print $_;
 	}
 	open(CVSCO,$command_co);
 	while (<CVSCO>)
