@@ -138,7 +138,7 @@ sub CreateVariableBindings
     }
     $dataout .= "  CCTKi_RegisterFortranWrapper(\"$thorn\", CCTKi_BindingsFortranWrapper$thorn);\n\n";
 
-    $dataout .= "  return 0;\n};\n";
+    $dataout .= "  return 0;\n}\n";
  
     &WriteFile("$thorn.c",\$dataout);
 
