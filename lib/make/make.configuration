@@ -108,7 +108,7 @@ $(TOP)/ActiveThorns:
 	echo $(DIVIDER) ; \
 	cat $@ ; \
 	echo $(DIVIDER) ; \
-	echo Edit this list \(no\) ? ; \
+	echo Edit this list \(no\) \? ; \
 	read action rest ; \
 	if [ "x$$action" = "xyes" -o "x$$action" = "xy" -o "x$$action" = "xYES" -o "x$$action" = "xY" ] ; \
 	then $$EDITOR $@ ; fi ; \
