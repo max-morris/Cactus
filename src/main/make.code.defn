@@ -10,6 +10,7 @@ CactusDefaultEvolve.c\
 CactusDefaultShutdown.c\
 CallStartupFunctions.c\
 CommandLine.c\
+Complex.c\
 ConfigData.c\
 Coord.c\
 DefaultTimers.c\
