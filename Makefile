@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.62 2000-01-03 12:25:07 allen Exp $
+#   @version $Id: Makefile,v 1.63 2000-01-04 11:45:27 allen Exp $
 # @@*/
 
 ##################################################################################
@@ -639,8 +639,7 @@ doc:
 thorninfo:
 	@echo $(DIVIDER)
 	@echo Displaying info for all thorns in the arrangements directory
-	$(PERL) -s $(BUILD_ACTIVETHORNS) $(CCTK_HOME)/arrangements > $@;
-	cat $@;
+	$(PERL) -s $(BUILD_ACTIVETHORNS) $(CCTK_HOME)/arrangements | cat;
 	@echo $(DIVIDER)
 
 
