@@ -16,7 +16,7 @@
 
 #include "SKBinTree.h"
 
-#include "ActiveThorns.h"
+#include "cctk_ActiveThorns.h"
 
 #include "ParameterBindings.h"
 
