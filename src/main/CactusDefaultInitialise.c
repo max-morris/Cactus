@@ -140,23 +140,23 @@ int CactusInitialiseGH(cGH *GH)
   /* Do various rfr traversals.  Will tidy up later. */
 
   /* FIXME : PARAM_CHECK SHOULD BE BEFORE HERE */
-  CCTKi_rfrTraverse(GH, CCTK_PARAMCHECK);
+  CCTK_rfrTraverse(GH, CCTK_PARAMCHECK);
   CCTKi_FinaliseParamWarn();
 
-  CCTKi_rfrTraverse(GH, CCTK_BASEGRID); 
+  CCTK_rfrTraverse(GH, CCTK_BASEGRID); 
 
   /* Traverse routines setting up initial data */
-  CCTKi_rfrTraverse(GH,CCTK_INITIAL);
+  CCTK_rfrTraverse(GH,CCTK_INITIAL);
 
   /* Traverse poststep initial routines which should only be done once */
-  CCTKi_rfrTraverse(GH,CCTK_POSTINITIAL);
+  CCTK_rfrTraverse(GH,CCTK_POSTINITIAL);
 
   /* Ignore checkpointing for now.
-   * CCTKi_rfrTraverse(GH,CCTK_RECOVER);
-   * CCTKi_rfrTraverse(GH,CCTK_CPINITIAL);
+   * CCTK_rfrTraverse(GH,CCTK_RECOVER);
+   * CCTK_rfrTraverse(GH,CCTK_CPINITIAL);
    */
 
-  CCTKi_rfrTraverse(GH,CCTK_POSTSTEP);
+  CCTK_rfrTraverse(GH,CCTK_POSTSTEP);
 
 #endif
 

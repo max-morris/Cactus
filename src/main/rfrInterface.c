@@ -26,7 +26,7 @@ static char *rcsid = "$Header$";
 
 
  /*@@
-   @routine    CCTKi_rfrTraverse
+   @routine    CCTK_rfrTraverse
    @date       Wed Feb  3 14:45:57 1999
    @author     Tom Goodale
    @desc 
@@ -39,10 +39,10 @@ static char *rcsid = "$Header$";
    @endhistory 
 
 @@*/
-int CCTKi_rfrTraverse(cGH *GH, int rfrpoint)
+int CCTK_rfrTraverse(cGH *GH, int rfrpoint)
 {
   
-  CCTKi_rfrTraverseGHExtensions(GH, rfrpoint);
+  CCTK_rfrTraverseGHExtensions(GH, rfrpoint);
 
   return 0;
 }

@@ -323,7 +323,7 @@ int CCTKi_InitGHExtensions(cGH *GH)
 
 
  /*@@
-   @routine    CCTKi_rfrTraverseGHExtensions
+   @routine    CCTK_rfrTraverseGHExtensions
    @date       Wed Feb  3 14:16:17 1999
    @author     Tom Goodale
    @desc 
@@ -336,7 +336,7 @@ int CCTKi_InitGHExtensions(cGH *GH)
    @endhistory 
 
 @@*/
-int CCTKi_rfrTraverseGHExtensions(cGH *GH, int rfrpoint)
+int CCTK_rfrTraverseGHExtensions(cGH *GH, int rfrpoint)
 {
   int handle;
   struct GHExtension *extension;

@@ -16,7 +16,7 @@
 extern "C" {
 #endif
 
-int CCTKi_rfrTraverse(cGH *GH, int rfrpoint);
+int CCTK_rfrTraverse(cGH *GH, int rfrpoint);
 int CCTKi_rfrPrintTree(cGH *GH,void *rfr_top);
 int CCTKi_rfrStorageOn(void *GH, int group);
 int CCTKi_rfrStorageOff(void *GH, int group);

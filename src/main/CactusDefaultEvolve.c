@@ -88,7 +88,7 @@ int CactusDefaultEvolve(tFleshConfig *config)
   /*** an rfrTraverse with CCTK_ANALYSIS      ***/
   ForallConvLevels(iteration, convergence_level)
   {
-      CCTKi_rfrTraverse(config->GH[convergence_level],CCTK_ANALYSIS);
+      CCTK_rfrTraverse(config->GH[convergence_level],CCTK_ANALYSIS);
       CCTK_OutputGH(config->GH[convergence_level]);
   }
   EndForallConvLevels;
@@ -133,7 +133,7 @@ int CactusDefaultEvolve(tFleshConfig *config)
     /* Dump out checkpoint data on all levels */
     ForallConvLevels(iteration, convergence_level)
     {
-      CCTKi_rfrTraverse(config->GH[convergence_level],CCTK_CHECKPOINT);
+      CCTK_rfrTraverse(config->GH[convergence_level],CCTK_CHECKPOINT);
     }
     EndForallConvLevels;
 
@@ -144,7 +144,7 @@ int CactusDefaultEvolve(tFleshConfig *config)
     /*** an rfrTraverse with CCTK_ANALYSIS      ***/
     ForallConvLevels(iteration, convergence_level)
     {
-        CCTKi_rfrTraverse(config->GH[convergence_level],CCTK_ANALYSIS);
+        CCTK_rfrTraverse(config->GH[convergence_level],CCTK_ANALYSIS);
 	CCTK_OutputGH(config->GH[convergence_level]);
     }
     EndForallConvLevels;
@@ -247,7 +247,7 @@ void PreStepper(cGH *GH) {
   int Rstep;  
 
   /* Call the rfr with CCTK_PRESTEP */
-  CCTKi_rfrTraverse(GH, CCTK_PRESTEP);
+  CCTK_rfrTraverse(GH, CCTK_PRESTEP);
 }
  /*@@
    @routine    EvolStepper
@@ -267,7 +267,7 @@ void EvolStepper(cGH *GH)
 {
 
   /* Call the rfr with Evolution */
-  CCTKi_rfrTraverse(GH, CCTK_EVOL);
+  CCTK_rfrTraverse(GH, CCTK_EVOL);
   /* after Evolution check for NANs */
 
 }
@@ -289,7 +289,7 @@ void EvolStepper(cGH *GH)
 @@*/
 
 void BoundStepper(cGH *GH) {
-  CCTKi_rfrTraverse(GH,CCTK_BOUND);
+  CCTK_rfrTraverse(GH,CCTK_BOUND);
 }
 
  /*@@
@@ -309,7 +309,7 @@ void BoundStepper(cGH *GH) {
 void PostStepper(cGH *GH) {
   int Rstep;  
    /* Call the rfr with post step */
-    CCTKi_rfrTraverse(GH, CCTK_POSTSTEP); 
+    CCTK_rfrTraverse(GH, CCTK_POSTSTEP); 
 }
  /*@@
    @routine    TerminationStepper
@@ -349,5 +349,5 @@ void TerminationStepper(cGH *GH) {
     cactus_terminate=TERMINATION_RAISED_BRDCAST;
     printf("RECEIVED GLOBAL TERMINATION SIGNAL \n");
   }
-  CCTKi_rfrTraverse(GH,CCTK_TERMINATE);
+  CCTK_rfrTraverse(GH,CCTK_TERMINATE);
 }
