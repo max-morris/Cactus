@@ -31,10 +31,10 @@ while (<CS>) {
 	  # Get differences between versions
           if ($case =~ /diff/i)
 	  {
-	    print "\n\n*******************************************************************\n\ncvs diff -r $rversion $dir/$file\n\n";
+	    print "\n\n*******************************************************************\n\ncvs diff -u -r $rversion $dir/$file\n\n";
 	    write;
 	    print "\n\n";
-	    open (DIFF, "cvs diff -r $rversion $dir/$file |");
+	    open (DIFF, "cvs diff -u -r $rversion $dir/$file |");
 	    while (<DIFF>) {print;}
 	  }
 	  else
