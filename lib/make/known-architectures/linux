@@ -128,6 +128,12 @@ else
        : ${F90_WARN_FLAGS='-Wall'}
        : ${F77_OPTIMISE_FLAGS='-O3 -funroll-loops'}
        : ${F90_OPTIMISE_FLAGS='-O3 -funroll-loops'}
+       if test "$LD" != "$F90" ; then
+         gnu95_libdir="`$F90 -print-file-name=libgfortran.a`"
+         gnu95_libdir="`dirname $gnu95_libdir`"
+         : ${LIBS='gfortran'}
+         : ${LIBDIRS="$gnu95_libdir"}
+       fi
        ;;
      pacific)
        if test "$LINUX_G77_USES_LIBG2C" = "yes" ; then
