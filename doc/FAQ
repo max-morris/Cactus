@@ -1,7 +1,7 @@
 
 Cactus Code Frequently Asked Questions
 
-$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.70 2003-09-21 12:57:15 allen Exp $
+$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.71 2003-09-27 20:33:40 allen Exp $
 
 Also available at http://www.cactuscode.org/Documentation/FAQ
 
@@ -154,6 +154,10 @@ C33 I'm working on a machine where a compiler problem means that I
 C34 How can I make sure that one file is compiled before another? For example
     to make sure that an F90 module file "module.F90" is available for other
     file "using.F90".
+
+C35 I started building a Cactus configuration and it asked me if
+    I wanted to edit the thornlist, I pressed 'y' and then 'enter'
+    but nothing happened?
 
 
 ------------------------------------------------------------------------------
@@ -1008,6 +1012,14 @@ C34 How can I make sure that one file is compiled before another? For example
     Note that you have to use the source file names and append the suffix ".o".
     This convention is different from the default Makefile rules.
 
+C35 I started building a Cactus configuration and it asked me if
+    I wanted to edit the thornlist, I pressed 'y' and then 'enter'
+    but nothing happened?
+
+    Cactus uses the program defined by the standard EDITOR environment 
+    variable as an editor at this point, check that this variable is 
+    defined and is actually a working editor.
+        
 
 ------------------------------------------------------------------------------
 Running:
