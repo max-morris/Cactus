@@ -46,6 +46,8 @@ sub CreateConfigurationDatabase
         if ($cfg{"\U$thorn\E REQUIRES"});
     }
 
+    $cfg->{"\U$thorn\E USES THORNS"} = '';
+
     # verify that all required thorns are there in the ThornList
     if ($cfg{"\U$thorn\E REQUIRES THORNS"})
     {
@@ -95,9 +97,9 @@ sub CreateConfigurationDatabase
           {
             if ( "\U$cap\E" eq "\U$requiredcap\E" )
             {
-              @foundlist[$foundcap] = $cap;
+              $foundlist[$foundcap] = $cap;
               $foundthorn = $thorncap;
-              $foundcap = $foundcap + 1;
+              $foundcap++;
             }
           }
         }
@@ -117,7 +119,7 @@ sub CreateConfigurationDatabase
             &CST_error (0, "More than one thorn provides the capability $requiredcap. " .
                            "These thorns are: $founderrlist. \nPlease use only one.\n" );
         }
-        $cfg{"\U$thorn\E USES THORNS"} .= $foundthorn, " ";
+        $cfg{"\U$thorn\E USES THORNS"} .= $foundthorn . " ";
       }
     }
   }
@@ -157,7 +159,6 @@ sub ParseConfigurationCCL
   $cfg->{"\U$thorn REQUIRES THORNS\E"} = '';
   $cfg->{"\U$thorn OPTIONAL\E"} = '';
   $cfg->{"\U$thorn OPTIONS\E"}  = '';
-  $cfg->{"\U$thorn\E USES THORNS"} = '';
 
   # Read the data
   @data = &read_file($filename);
