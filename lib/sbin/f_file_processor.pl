@@ -66,12 +66,22 @@ while (<>)
   # Get rid of any tabs
   s/\t/        /g;
   
-  # Ignore some fortran comments (they stay in code)
+  # Chop fortran comments to 72 columns (they stay in code)
+  # removing any quotes
   # (standard c C, or even ! comments)
   if (/^$standard_comments.*$/ || /(.)![^'"]*$/)
   {
-     print;
-     print "\n";
+    # Remove quotes
+    s/['"]//g;
+    if (/(.{72,72}).*/) 
+    {
+      print $1;
+    }
+    else
+    { 
+      print;
+    }
+    print "\n";      
   }
   else 
   {
