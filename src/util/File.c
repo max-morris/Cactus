@@ -18,7 +18,22 @@ int CCTK_mkdir(char *dir)
 
   command = (char *)malloc(1024*sizeof(char));
 
+  /***
+    TR 13/09/99: disabled use of MKDIRFLAGS until it also works for NT
+    This means either
+      - we make sure to always use the bash's mkdir command (which accepts
+        option '-p')
+      - call the dos shell with MKDIRFLAGS set to an empty string
+      - use the POSIX mkdir routine
+    The disadvantage for calling mkdir without '-p' under UNIX is now
+    that we can always create one subdirectory only which needs to be
+    relative to an existing directory.
+   ***/
+#if 0
   sprintf(command, MKDIR MKDIRFLAGS " %s",dir);
+#else
+  sprintf(command, MKDIR " %s",dir);
+#endif
 
   message = (char *)malloc(1024*sizeof(char));
   sprintf(message,"Creating directory: \"%s\"",command);
