@@ -265,6 +265,7 @@ sub get_applications
 	    &CheckOut("CactusBase/CartGrid3D");
 	    &CheckOut("CactusBase/IOUtil");
 	    &CheckOut("CactusBase/IOBasic");
+	    &CheckOut("CactusBase/Time");
 	    &CheckOut("CactusPUGHIO/IOASCII");
 	    &CheckOut("CactusPUGH/PUGH");
 	    print("Completed checkout of application Wave F90\n");
@@ -280,6 +281,7 @@ sub get_applications
 	    &CheckOut("CactusBase/CartGrid3D");
 	    &CheckOut("CactusBase/IOUtil");
 	    &CheckOut("CactusBase/IOBasic");
+	    &CheckOut("CactusBase/Time");
 	    &CheckOut("CactusPUGHIO/IOASCII");
 	    &CheckOut("CactusPUGH/PUGH");
 	    print("Completed checkout of application Wave F77\n");
@@ -295,6 +297,7 @@ sub get_applications
 	    &CheckOut("CactusBase/CartGrid3D");
 	    &CheckOut("CactusBase/IOUtil");
 	    &CheckOut("CactusBase/IOBasic");
+	    &CheckOut("CactusBase/Time");
 	    &CheckOut("CactusPUGHIO/IOASCII");
 	    &CheckOut("CactusPUGH/PUGH");
 	    print("Completed checkout of application Wave C\n");
