@@ -5,7 +5,7 @@
    @desc 
    List of contributors to Cactus   
    @enddesc 
-   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/CONTRIBUTORS,v 1.5 2003-06-05 16:42:53 rideout Exp $
+   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/CONTRIBUTORS,v 1.6 2005-03-10 12:18:19 schnetter Exp $
  @@*/
 
 These people and organisations have contributed code, ideas 
@@ -21,6 +21,7 @@ Gabrielle Allen
 Werner Benger
 Bernd Bruegmann
 Tom Goodale
+Ian Hawke
 Gerd Lanfermann
 Joan Masso
 Andre Merzky
@@ -40,6 +41,8 @@ Paul Walker
 Organisations:
 --------------
 
-Albert Einstein Institut
-NCSA
+Max Planck Institute for Gravitational Physics (Albert Einstein Institute)
+The National Center for Supercomputing Applications (NCSA)
 Washington University
+University of Tuebingen
+Louisiana State University
