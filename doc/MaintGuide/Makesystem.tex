@@ -16,26 +16,26 @@
 The make system has several design criteria:
 
 \begin{itemize}
-\item[]
-Must be able to build the code on all supported platforms
-\item[]
+\item
+Must be able to build the code on all supported platforms.
+\item
 Must allow object files and executables for different architectures to 
 co-exist without conflicts.
-\item[]
+\item{}
 Must allow object files and exectutables for different compiler options to
 co-exist without conflict.
-\item[]
+\item{}
 Must allow object files and executables for different thornsets to 
 co-exist without conflicts.
-\item[]
+\item{}
 Thorn-writers must be able to easily add and remove files from their
 thorns without having to edit files provided by the flesh or other thorns.
-\item[]
+\item{}
 Thorn-writers must be able to control the compilation options and 
 dependencies of their own thorns.
 \end{itemize}
 
-The first criterion is achieved by standarising to the use the the freely
+The first criterion is achieved by standarising to the use of the freely
 available GNU make programme, which is available on all platforms, and
 the use of {\em Autoconf} to detect the specific features of the particular
 machine the user is compiling on.
@@ -53,10 +53,10 @@ or by specifying their own make file.
 Make options can be divided into two classes.
 
 \begin{itemize}
-\item[Configuration-time options]
+\item{Configuration-time options}
 Things which have an effect on the resulting executable. 
 E.g. optimisation or debugging options.
-\item[Make-time options]
+\item{Make-time options}
 Things which don't effect the final executable.
 E.g. warning-flags, flags to make in parallel.
 \end{itemize}
@@ -88,23 +88,23 @@ This is the makefile which actually builds a configuration.
 All built objects for a configuration go into a subdirectory called
 {\em build} of the configuration.
 
-For each each thorn listed in the {\em make.thornlist} file generated
+For each thorn listed in the {\em make.thornlist} file generated
 by the {\em CST} it runs {\em make.thornlib} or a file called {\em makefile} 
 in the thorn's own source directory to generate a library for
 that thorn.  Before running the sub-makefile it changes directory to a subdirectory
 of the {\em build} directory with the same name as the thorn and sets
 
 \begin{itemize}
-\item[TOP]
+\item{TOP}
 The CCTK top-level directory.
-\item[SRCDIR]
+\item{SRCDIR}
 The thorn's source directory.
-\item[CONFIG]
+\item{CONFIG}
 The {\em config} subdirectory of the configuration. 
-\item[NAME]
+\item{NAME}
 The name of the library which should be created for the thorn
 (including directory info).
-\item[THORN]
+\item{THORN}
 The name of the thorn.
 \end{itemize}
 
@@ -126,13 +126,13 @@ thorn's source directory.
 In each source directory of a thorn the author may put two files.
 
 \begin{itemize}
-\item[make.code.defn]
+\item{make.code.defn}
 This should contain a line
 \begin{verbatim}
 SRCS = 
 \end{verbatim}
 which lists the names of source files {\em in that directory}.
-\item[make.code.deps]
+\item{make.code.deps}
 This is an optional file which gives standard make dependency rules
 for the files in that directory.
 \end{itemize}
@@ -193,10 +193,10 @@ in the {\em SRCS} variable and adds the resulting list to the
 \chapter{Autoconf stuff}
 \label{ch:autoconf}
 
-GNU autoconf is a program designed to detec the features available
+GNU autoconf is a program designed to detect the features available
 on a particular platform.  It can be used to determine the 
 compilers available on a platform, what the CPU and operating 
-system are, whate flags the compilers take, and as many other things
+system are, what flags the compilers take, and as many other things
 as m4 macros can be written to cover.
 
 Autoconf is configured by a file {\em configure.in} which autoconf
@@ -236,7 +236,7 @@ Once the set of programs to be used has been detected or chosen, the
 known-architecture files are again checked for specific features
 which would otherwise require the writing of complicated macros to detect.
 (Remember that the goal is that people don't need to write autoconf macros
-or run autuconf themselves.)
+or run autoconf themselves.)
 
 Once that is done it looks at each subdirectory of the {\em extras}
 directory for packages which have their own configuration process.  If a
@@ -281,7 +281,7 @@ However this situation may change in the future if really necessary.
 This file is turned into {\em make.config.deps} in the {\em config-data}
 directory in the configuration.
 
-Currently this file is empty;  it may gain conent later if we need to
+Currently this file is empty;  it may gain content later if we need to
 use autoconf to generate dependency stuff.
 
 \section{aclocal.m4}
@@ -301,25 +301,25 @@ the configure script, or by stuff in the {\em extras} or
 This can be used to search a set of directories for a specific file
 or files and then set a variable as a result.
 
-Usage: CCTK\_Search <variable> <subdirectories to search> <what to search for> [base directory]
+Usage: CCTK\_Search $<$variable$>$ $<$subdirectories to search$>$ $<$what to search for$>$ [base directory]
 
-It will search each of the listed subdirectory of the base directory for the desired
-file or directory, and, if it's found, set the varibale to the name of the subdirectory.
+It will search each of the listed subdirectories of the base directory for the desired
+file or directory, and, if it's found, set the variable to the name of the subdirectory.
 
 \subsection{CCTK\_CreateFile}
 
 Creates a file with specific contents.
 
-Usage: CCTK\_CreateFile <filename> <content> 
+Usage: CCTK\_CreateFile $<$filename$>$ $<$content$>$ 
 
 Note that this can only put one line in the file to begin with.  Additional
-lines can be added ith {\em CCTK\_WriteLine}.
+lines can be added with {\em CCTK\_WriteLine}.
 
 \subsection{CCTK\_WriteLine}
 
 Write one line to a file.
 
-Usage: CCTK\_WriteLine <file> <line> 
+Usage: CCTK\_WriteLine $<$file$>$ $<$line$>$
 
 \section{known-architectures}
 \label{sec:autoconf:knownarch}
@@ -366,11 +366,11 @@ directly to {\em INC\_DIRS}.
 \label{sec:autoconf:subguess}
 
 These files are provided in the autoconf distribution.  They are used to
-determine the host operatings system, cpu, etc and put them into a
+determine the host operating system, cpu, etc and put them into a
 canonical form.
 
 The files distributed with Cactus are slightly modified to allow recognition
-or the Cray T3E, to work with the Portland compilers under Linux, and to
+of the Cray T3E, to work with the Portland compilers under Linux, and to
 not do something stupid with unrecognised HP machines.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -392,7 +392,7 @@ configure script.
 
 This file is called from the configure script to determine the way Fortran
 names are represented for the specified Fortran compiler.  It works out the
-names for subroutines/functions, and for common blocks, and write a
+names for subroutines/functions, and for common blocks, and writes a
 perl script which can be used to convert a name to the appropriate form so
 C and Fortran can be linked together.
 
