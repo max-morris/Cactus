@@ -20,8 +20,7 @@
 #include "cctk_Misc.h"
 #include "cctk_WarnLevel.h"
 #include "cctk_FortranString.h"
-
-#include "cctk_parameters.h"
+#include "cctk_Parameters.h"
 
 static char *rcsid = "$Header$";
 
@@ -116,7 +115,7 @@ int CCTKi_SetWarnLevel(int level)
    @endhistory 
 
 @@*/
-void CCTK_Warn(int level, int line, const char *file, const char *thorn, const char *message)
+int CCTK_Warn(int level, int line, const char *file, const char *thorn, const char *message)
 {
 
   DECLARE_CCTK_PARAMETERS
@@ -143,6 +142,8 @@ void CCTK_Warn(int level, int line, const char *file, const char *thorn, const c
   }
 
   USE_CCTK_PARAMETERS
+
+  return 0;
 
 }
 
@@ -198,7 +199,7 @@ void FMODIFIER FORTRAN_NAME(CCTKi_ExpectError)
    @desc 
       Used by CCTKi_EXPCTOK macro (src/include/cctk.h)
       allows testing for success return value, will return a 
-      warnign statement otherwise
+      warning statement otherwise
    @enddesc 
    @calls     
    @calledby   CCTKi_EXPCTOK
@@ -215,7 +216,6 @@ void CCTKi_ExpectOK(int in, int ok, int warnonerr, int line,
   if (in!=ok) CCTK_Warn(warnonerr, line, file, thorn, message);
 }
 
-
 void FMODIFIER FORTRAN_NAME(CCTKi_ExpectOK)
      (int *in, int *ok, int *warnonerr, int *line, THREE_FORTSTRINGS_ARGS)
 {
@@ -226,6 +226,7 @@ void FMODIFIER FORTRAN_NAME(CCTKi_ExpectOK)
   free(thorn);
   free(message);
 }
+
 
 /*@@
    @routine    CCTK_VWarn
@@ -242,7 +243,7 @@ void FMODIFIER FORTRAN_NAME(CCTKi_ExpectOK)
 
 @@*/
 
-void CCTK_VWarn(int level, int line, const char *file, const char *thorn, const char *format, ...)
+int CCTK_VWarn(int level, int line, const char *file, const char *thorn, const char *format, ...)
 {
   DECLARE_CCTK_PARAMETERS
     
@@ -297,7 +298,7 @@ void CCTK_VWarn(int level, int line, const char *file, const char *thorn, const 
    @endhistory 
 
 @@*/
-void CCTK_ParamWarn(const char *thorn, const char *message)
+int CCTK_ParamWarn(const char *thorn, const char *message)
 {
 
   DECLARE_CCTK_PARAMETERS
@@ -317,6 +318,7 @@ void CCTK_ParamWarn(const char *thorn, const char *message)
 
   USE_CCTK_PARAMETERS
 
+  return 0;
 }
 
 void FMODIFIER FORTRAN_NAME(CCTK_ParamWarn)(TWO_FORTSTRINGS_ARGS)
@@ -344,9 +346,10 @@ void FMODIFIER FORTRAN_NAME(CCTK_ParamWarn)(TWO_FORTSTRINGS_ARGS)
 
 @@*/
 
-void CCTK_Info(const char *thorn, const char *message)
+int CCTK_Info(const char *thorn, const char *message)
 {
   fprintf(stdout, "INFO (%s): %s\n", thorn, message);
+  return 0;
 }
 
 void FMODIFIER FORTRAN_NAME(CCTK_Info)(TWO_FORTSTRINGS_ARGS)
