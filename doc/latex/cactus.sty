@@ -78,12 +78,15 @@
     }
   }
   {\end{list}} \newlength{\Mylen} \newcommand{\Lentrylabel}[1]{%
-  \settowidth{\Mylen}{\textsf{#1}}%
-  \ifthenelse{\lengthtest{\Mylen > \labelwidth}}%
-    {\parbox[b]{\labelwidth} % term > labelwidth
-      {\makebox[0pt][l]{\textsf{#1}}\\}} %
-    {\textsf{#1}} %
-  \hfil\relax} \newenvironment{Lentry}
+% Latex doesn't always like spaces -- sometimes it outputs them, and
+% then they destroy the layout.  Please don't indent the following,
+% nor add spaces, nor remove the percent signs, nor add spaces in
+% front of them.
+\settowidth{\Mylen}{\textsf{#1}}%
+\ifthenelse{\lengthtest{\Mylen > \labelwidth}}%
+{\parbox[b]{\labelwidth}% term > labelwidth
+{\makebox[0pt][l]{\textsf{#1}}\\}}% {\textsf{#1}}%
+\hfil\relax} \newenvironment{Lentry}
   {\renewcommand{\entrylabel}{\Lentrylabel}
    \begin{entry}}
   {\end{entry}}
