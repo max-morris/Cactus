@@ -44,6 +44,8 @@ else
     cc|xlc)
      : ${C_DEPEND='$(CPP) -M $(CPPFLAGS)'}
      : ${C_DEPEND_OUT=' > /dev/null ; mv $(basename $(basename $@)).u $@'}
+     : ${CFLAGS="-qspill=10000"}
+     : $CXXFLAGS="-qspill=10000"}
      ;;
     *)
      ;;
