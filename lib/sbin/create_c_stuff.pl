@@ -59,7 +59,7 @@ sub CreateParameterBindingFile
 
   push(@data,( "struct ", "{"));
 
-  foreach $parameter (order_params(scalar(keys %parameters), %parameters,%parameter_database))
+  foreach $parameter (&order_params(scalar(keys %parameters), %parameters,%parameter_database))
   {
     $type = $parameter_database{"\U$parameters{$parameter} $parameter\E type"};
       
@@ -398,7 +398,7 @@ sub CreateCStructureParameterHeader
 
   push(@data,( "extern struct ", "{"));
 
-  foreach $parameter (order_params(scalar(keys %parameters), %parameters,%parameter_database))
+  foreach $parameter (&order_params(scalar(keys %parameters), %parameters,%parameter_database))
   {
     $type = $parameter_database{"\U$parameters{$parameter} $parameter\E type"};
 
