@@ -48,6 +48,13 @@ CXX_DEBUG_FLAGS          = @CXX_DEBUG_FLAGS@
 F90_DEBUG_FLAGS          = @F90_DEBUG_FLAGS@
 F77_DEBUG_FLAGS          = @F77_DEBUG_FLAGS@
 
+# Optimisation flags
+
+C_OPTIMISE_FLAGS            = @C_OPTIMISE_FLAGS@
+CXX_OPTIMISE_FLAGS          = @CXX_OPTIMISE_FLAGS@
+F90_OPTIMISE_FLAGS          = @F90_OPTIMISE_FLAGS@
+F77_OPTIMISE_FLAGS          = @F77_OPTIMISE_FLAGS@
+
 # Warning flags
 
 C_WARN_FLAGS            = @C_WARN_FLAGS@
@@ -147,6 +154,17 @@ ifeq ($(strip $(CCTK_DEBUG_MODE)),yes)
   CXXFLAGS += $(CXX_DEBUG_FLAGS)
   F77FLAGS += $(F77_DEBUG_FLAGS)
   F90FLAGS += $(F90_DEBUG_FLAGS)
+endif
+
+# Is this a optimising configuration ?
+
+CCTK_OPTIMISE_MODE = @OPTIMISE_MODE@
+
+ifeq ($(strip $(CCTK_OPTIMISE_MODE)),yes)
+  CFLAGS   += $(C_OPTIMISE_FLAGS)
+  CXXFLAGS += $(CXX_OPTIMISE_FLAGS)
+  F77FLAGS += $(F77_OPTIMISE_FLAGS)
+  F90FLAGS += $(F90_OPTIMISE_FLAGS)
 endif
 
 # Are we building with all warnings switched on ?

@@ -2451,8 +2451,8 @@ X_INC_DIR="$x_includes"
 
 
 
-: ${F90FLAGS="$CFLAGS"}
-: ${F77FLAGS="$CFLAGS"}
+#: ${F90FLAGS="$CFLAGS"}
+#: ${F77FLAGS="$CFLAGS"}
 
 
 for ac_func in mkdir
@@ -3108,12 +3108,76 @@ fi
 
 if test -z "F90_DEBUG_FLAGS" ; then
   case "$F90" in
-    pgf77)
+    pgf90)
       F90_DEBUG_FLAGS="-g"
       ;;
     *)
 #     This should be a reasonable default.
       F90_DEBUG_FLAGS="-g"      
+      ;;
+   esac
+fi
+
+# Set the optimization flags if they've not been set by now
+
+
+
+if test -n "$OPTIMISE" ; then
+  OPTIMISE_MODE=$OPTIMISE
+else
+  OPTIMISE_MODE="yes"
+fi
+
+
+
+
+if test -z "$C_OPTIMISE_FLAGS" ; then
+  case "$CC" in
+    gcc) 
+      C_OPTIMISE_FLAGS="-O2"
+      ;;
+    *)
+#     This should be a reasonable default.
+      C_OPTIMISE_FLAGS="-O2"      
+      ;;
+   esac
+fi
+
+
+
+if test -z "CXX_OPTIMISE_FLAGS" ; then
+  case "$CXX" in
+    g++) 
+      CXX_OPTIMISE_FLAGS="-O2"
+      ;;
+    *)
+#     This should be a reasonable default.
+      CXX_OPTIMISE_FLAGS="-O2"      
+      ;;
+   esac
+fi
+
+
+
+if test -z "F77_OPTIMISE_FLAGS" ; then
+  case "$F77" in
+    g77) 
+      F77_OPTIMISE_FLAGS="-O"
+      ;;
+    *)
+#     Don't know a reasonable default.
+      F77_OPTIMISE_FLAGS=""      
+      ;;
+   esac
+fi
+
+ 
+
+if test -z "F90_OPTIMISE_FLAGS" ; then
+  case "$F90" in
+    *)
+#     Don't know a reasonable default.
+      F90_OPTIMISE_FLAGS=""      
       ;;
    esac
 fi
@@ -3436,6 +3500,11 @@ s%@C_DEBUG_FLAGS@%$C_DEBUG_FLAGS%g
 s%@CXX_DEBUG_FLAGS@%$CXX_DEBUG_FLAGS%g
 s%@F77_DEBUG_FLAGS@%$F77_DEBUG_FLAGS%g
 s%@F90_DEBUG_FLAGS@%$F90_DEBUG_FLAGS%g
+s%@OPTIMISE_MODE@%$OPTIMISE_MODE%g
+s%@C_OPTIMISE_FLAGS@%$C_OPTIMISE_FLAGS%g
+s%@CXX_OPTIMISE_FLAGS@%$CXX_OPTIMISE_FLAGS%g
+s%@F77_OPTIMISE_FLAGS@%$F77_OPTIMISE_FLAGS%g
+s%@F90_OPTIMISE_FLAGS@%$F90_OPTIMISE_FLAGS%g
 s%@C_WARN_FLAGS@%$C_WARN_FLAGS%g
 s%@CXX_WARN_FLAGS@%$CXX_WARN_FLAGS%g
 s%@F77_WARN_FLAGS@%$F77_WARN_FLAGS%g

@@ -69,7 +69,8 @@ else
        ;;
      absoft)
        : ${LIBS="f90math fio f77math m"} 
-       F90FLAGS="-s -O" 
+       : ${F90_OPTIMISE_FLAGS="-s -O"}
+       : ${F77_OPTIMISE_FLAGS="-s -O"}
        # Test if it is a version of the absoft compiler which has the library in a custom place.
        if test -n "$ABSOFT" ; then
          : ${LIBDIRS='$(ABSOFT)/lib'}
