@@ -17,7 +17,7 @@ KEYWORD cctk_timer_output  "Provide output from timers"
 
 BOOLEAN cctk_full_warnings "Give detailed information for each warning statement" STEERABLE=ALWAYS
 {
-} "yes"
+} "no"
 
 BOOLEAN cctk_strong_param_check "Die on parameter errors in CCTK_PARAMCHECK"
 {
