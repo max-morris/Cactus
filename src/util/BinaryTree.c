@@ -36,6 +36,44 @@ CCTK_FILEVERSION(util_BinaryTree_c)
    @history 
  
    @endhistory 
+   @var     root
+   @vdesc   Root of tree
+   @vtype   uBinTree *
+   @vio     in
+   @vcomment 
+   This is the root of the tree on entry to the routine.
+   On first entry it should be a NULL variable to create the tree
+   @endvar 
+   @var     subtree
+   @vdesc   Subtree to insert data into
+   @vtype   uBinTree *
+   @vio     in
+   @vcomment 
+   When called by a user this should always be the same as root.
+   When called internally it may be different as the tree gets traversed.
+   @endvar 
+   @var     data
+   @vdesc   data to store
+   @vtype   void *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     compare
+   @vdesc   comparison function
+   @vtype   int (*)(const void *, const void *)
+   @vio     in
+   @vcomment 
+   This function is used to compare two pieces of data.
+   It should return -ve if the first piece is less than the
+   second piece, 0 if the are equal, or +ve if the first is
+   greater than the second.
+   @endvar 
+
+   @returntype uBinTree *
+   @returndesc
+   This is the new root of the tree.
+   @endreturndesc
 
 @@*/
 uBinTree *Util_BinTreeStoreData(uBinTree *root, 
@@ -107,6 +145,34 @@ uBinTree *Util_BinTreeStoreData(uBinTree *root,
    @history 
  
    @endhistory 
+   @var     root
+   @vdesc   Root of the tree
+   @vtype   uBinTree *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     process
+   @vdesc   function to process each data item
+   @vtype   int (*)(void *, void *)
+   @vio     in
+   @vcomment 
+   This function is passed the data item and the info item.
+   If it returns true, this is the last item processed.
+   @endvar 
+   @var     info
+   @vdesc   info data to be passes to process function
+   @vtype   void *
+   @vio     inout
+   @vcomment 
+ 
+   @endvar 
+
+   @returntype int
+   @returndesc
+   True  - terminate this traversal.
+   False - continue the traversal.
+   @endreturndesc
 
 @@*/
 int Util_BinTreeTraverseInorder(uBinTree *root, 
@@ -139,6 +205,34 @@ int Util_BinTreeTraverseInorder(uBinTree *root,
    @history 
  
    @endhistory 
+   @var     root
+   @vdesc   Root of the tree
+   @vtype   uBinTree *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     process
+   @vdesc   function to process each data item
+   @vtype   int (*)(void *, void *)
+   @vio     in
+   @vcomment 
+   This function is passed the data item and the info item.
+   If it returns true, this is the last item processed.
+   @endvar 
+   @var     info
+   @vdesc   info data to be passes to process function
+   @vtype   void *
+   @vio     inout
+   @vcomment 
+ 
+   @endvar 
+
+   @returntype int
+   @returndesc
+   True  - terminate this traversal.
+   False - continue the traversal.
+   @endreturndesc
 
 @@*/
 int Util_BinTreeTraversePreorder(uBinTree *root, 
@@ -171,6 +265,34 @@ int Util_BinTreeTraversePreorder(uBinTree *root,
    @history 
  
    @endhistory 
+   @var     root
+   @vdesc   Root of the tree
+   @vtype   uBinTree *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     process
+   @vdesc   function to process each data item
+   @vtype   int (*)(void *, void *)
+   @vio     in
+   @vcomment 
+   This function is passed the data item and the info item.
+   If it returns true, this is the last item processed.
+   @endvar 
+   @var     info
+   @vdesc   info data to be passes to process function
+   @vtype   void *
+   @vio     inout
+   @vcomment 
+ 
+   @endvar 
+
+   @returntype int
+   @returndesc
+   True  - terminate this traversal.
+   False - continue the traversal.
+   @endreturndesc
 
 @@*/
 int Util_BinTreeTraversePostorder(uBinTree *root, 
@@ -203,7 +325,32 @@ int Util_BinTreeTraversePostorder(uBinTree *root,
    @history 
  
    @endhistory 
+   @var     root
+   @vdesc   Root of tree
+   @vtype   uBinTree *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     depth
+   @vdesc   current depth
+   @vtype   int
+   @vio     in
+   @vcomment 
+   This will normally be 0 when a user calls it.
+   @endvar 
+   @var     print_node
+   @vdesc   Function to print data about a node
+   @vtype   void (*)(void *, int)
+   @vio     in
+   @vcomment 
+   This gets passed the data item and the depth.
+   @endvar 
 
+   @returntype int
+   @returndesc
+   Always 0.
+   @endreturndesc
 @@*/
 int Util_BinTreePrintNodes(uBinTree *root, 
                            int depth, 
@@ -231,6 +378,37 @@ int Util_BinTreePrintNodes(uBinTree *root,
    @history 
  
    @endhistory 
+   @var     root
+   @vdesc   Root of tree
+   @vtype   uBinTree *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     data
+   @vdesc   Data to compare a node against.
+   @vtype   void *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     compare
+   @vdesc   comparison function
+   @vtype   int (*)(const void *, const void *)
+   @vio     in
+   @vcomment 
+   This function is used to compare two pieces of data.
+   It should return -ve if the first piece is less than the
+   second piece, 0 if the are equal, or +ve if the first is
+   greater than the second.
+   This is passed the input data and the data from the node in 
+   that order.
+   @endvar 
+
+   @returntype uBinTree *
+   @returndesc
+   The data if found, otherwise NULL
+   @endreturndesc
 
 @@*/
 uBinTree *Util_BinTreeFindNode(uBinTree *root, 
