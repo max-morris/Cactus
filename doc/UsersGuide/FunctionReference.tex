@@ -7875,7 +7875,7 @@ assign	& whitespace*							\\
 assign	& whitespace* key whitespace* = whitespace* value delimiter     \\
 key	& any string not containing \verb|'/'| or \verb|'='| or whitespace\\
 value	& array $\big|$ int\_value $\big|$ real\_value $\big|$ string\_value\\
-array	& { int\_value* } $\big|$ { real\_value }			\\
+array	& \{ int\_value* \} $\big|$ \{ real\_value \}			\\
 int\_value	& anything recognized as a valid integer by strdol(3)
 		  in base 10						\\
 real\_value	& anything not recognized as a valid integer by strtol(3)
