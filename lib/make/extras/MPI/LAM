@@ -6,7 +6,7 @@
 #   @desc
 #            Configure Cactus to compile with the LAM version of MPI.
 #   @enddesc
-#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/extras/MPI/LAM,v 1.9 2004-10-25 11:27:05 tradke Exp $
+#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/extras/MPI/LAM,v 1.10 2004-11-14 11:55:10 tradke Exp $
 # @@*/
 
 echo '  LAM selected'
@@ -64,12 +64,12 @@ if test -z "$LAM_LIB_DIR" -o -z "$LAM_INC_DIR" ; then
   fi
 
   if test -z "$LAM_INC_DIR"; then
-    echo "  Using no explicit LAM include path"
+    echo '  Using no explicit LAM include path'
   else
     echo "  Using \"$LAM_INC_DIR\" as LAM include path"
   fi
   if test -z "$LAM_LIB_DIR"; then
-    echo "  Using no explicit LAM library path"
+    echo '  Using no explicit LAM library path'
   else
     echo "  Using \"$LAM_LIB_DIR\" as LAM library path"
   fi
@@ -77,9 +77,9 @@ fi
 
 # LAM libs changed in versions newer than 6.4
 if test -r "$LAM_LIB_DIR/libtrillium.a" ; then
-  MPI_LIBS='mpi tstdio args t trillium"'
+  MPI_LIBS='mpi tstdio args t trillium'
 else
-  MPI_LIBS="mpi lam pthread"
+  MPI_LIBS='mpi lam dl pthread'
 fi
 
 MPI_INC_DIRS="$LAM_INC_DIR"
