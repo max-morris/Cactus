@@ -106,6 +106,10 @@ available from C, not all are currently available from Fortran.
   [\pageref{CoordRange}] 
   Return the global upper and lower bounds for a given coordinate name
 
+\item[CCTK\_CreateDirectory]   
+  [\pageref{CreateDirectory}] 
+  Creates a directory
+
 \item[CCTK\_DecomposeName] 
   [\pageref{DecomposeName}] 
   Given the full name of a variable/group, separates the name returning both the implementation and the variable/group
@@ -588,6 +592,40 @@ is registered by {\t CCTK\_RegisterCoordRange}.
 \end{CCTKFunc}
 
 
+% Coord.c
+\begin{CCTKFunc}{CCTK\_CreateDirectory}{Create a directory with required permissions}
+\label{CreateDirectory}
+\subroutine{int}{integer}{ierr}
+\argument{const char *}{character*(*)}{pathname}
+\argument{int}{integer}{mode}
+\showargs
+\begin{params}
+\parameter{ierr}{Error code}
+\parameter{pathname}{Directory to create}
+\parameter{mode}{Permission mode for new directory as an octal number}
+\end{params}
+\begin{discussion}
+To create a directory readable by everyone, but writeable only by the user runnning the code, the permission mode would be 0755.
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\hfill {\bf C} && {\t ierr = CCTK\_CreateDirectory(`Results/New`,0755) };
+\\
+\hfill {\bf Fortran} && {\t call CCTK\_CREATEDIRECTORY(ierr,`Results/New`,0755)};
+\\
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\begin{tabular}{ll}
+0 & Directory successfully created\\
+-1 & Memory allocation failed\\
+-2 & Failed to create directory\\
+-3 & pathname exists but is not a directory\\
+\end{tabular}
+\end{errorcodes}
+\end{CCTKFunc}
+
+
 %%%%%
 % DDD
 %%%%%
@@ -604,7 +642,9 @@ is registered by {\t CCTK\_RegisterCoordRange}.
 \parameter{cctkGH}{pointer to CCTK grid hierarchy}
 \end{params}
 \begin{discussion}
-Turning off communications means that ghost zones will not be communicated during a call to {\tt CCTK\_SyncGroup}. By default communications are all off.
+Turning off communications means that ghost zones will not be
+communicated during a call to {\tt CCTK\_SyncGroup}. By default
+communications are all off.
 \end{discussion}
 \begin{examples}
 \begin{tabular}{@{}p{3cm}cp{11cm}}
