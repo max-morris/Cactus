@@ -4140,6 +4140,9 @@ store a \verb|CCTK_REAL| value in a table
 \begin{Error}{UTIL\_ERROR\_NO\_MEMORY}
 unable to allocate memory
 \end{Error}
+\begin{Error}{UTIL\_ERROR\_BAD\_KEY}
+invalid input: key contains invalid character
+\end{Error}
 \begin{Error}{UTIL\_ERROR\_BAD\_INPUT}
 invalid input: can't parse input string
 \end{Error}
@@ -5764,23 +5767,35 @@ The present implementation only recognises integer or real values
 (not arrays).  To be precise, the string must match the following BNF:\\
 \quad
 \begin{tabular}{l@{\quad$\rightarrow$\quad}p{9cm}}
-string & assign*                                                        \\
-assign & whitespace* key = value ;? whitespace*                         \\
-value  & int\_value                                                     \\
-value  & real\_value                                                    \\
-int\_value & contains only characters \verb|+-0123456789|
-             and is recognized as valid by \verb|sscanf()| with a
-             \verb|"%d"| format                                          \\
-real\_value & contains one or more characters not in \verb|+-0123456789|
-              and is recognized as valid by \verb|sscanf()| with a
-              \verb|"%lf"| format                                        %%%\\
+string	& assign*							\\
+assign	& whitespace*							\\
+assign	& whitespace* key = value delimiter				\\
+key	& any string not containing \verb|'/'|
+	  or \verb|'='| or \verb|';'| or whitespace			\\
+value	& int\_value $\big|$ real\_value				\\
+int\_value	& contains only characters from \verb|+-0123456789|
+		  and is recognized as valid by \verb|sscanf()|
+		  with a \verb|"%d"| format				\\
+real\_value	& contains one or more characters not in
+		  \verb|+-0123456789| and is recognized as valid
+		  by \verb|sscanf()| with a \verb|"%lf"| format		\\
+delimiter	& end-of-string $\big|$ \verb|';'| $\big|$ whitespace	\\
+whitespace	& blank~(\verb|' '|)
+		  $\big|$ tab~(\verb|'\t'|)
+		  $\big|$ newline~(\verb|'\n'|)
+		  $\big|$ carriage-return~(\verb|'\r'|)
+		  $\big|$ form-feed~(\verb|'\f'|)
+		  $\big|$ vertical-tab~(\verb|'\v'|)			%%%\\
 \end{tabular}\\
-where\\[0ex]
-* denotes 0 or more repetitions, and\\
-? denotes optional items, i.e. 0 or 1 repetitions.%%%\\
+where * denotes 0 or more repetitions and $\big|$ denotes logical or.
 \NewPar
 Note that no whitespace may appear within a \verb|key=value| assignment.
 In particular, do {\em not\/} put whitespace around the ``\verb|=|''!
+\NewPar
+Notice also that the keys allowed by this function are somewhat more
+restricted than those allowed by the other \verb|Util_TableSet*()|
+functions, in that this function disallows keys containing \verb|'='|,
+\verb|';'|, and/or whitespace.
 \NewPar
 If any error code is returned, assignments lexicographically earlier
 in the input string than where the error was detected will already
@@ -5818,6 +5833,9 @@ set a character-string value
 
 \begin{Error}{UTIL\_ERROR\_NO\_MEMORY}
 unable to allocate memory
+\end{Error}
+\begin{Error}{UTIL\_ERROR\_BAD\_KEY}
+invalid input: key contains invalid character
 \end{Error}
 \begin{Error}{UTIL\_ERROR\_BAD\_INPUT}
 invalid input: can't parse input string
