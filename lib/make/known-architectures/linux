@@ -16,9 +16,9 @@ if test "$CCTK_CONFIG_STAGE" = "preferred-compilers" ; then
 else
 
 # Determine which Fortran 90 compiler is in use
-  LINUX_F90_COMP=
+  LINUX_F90_COMP=none
 
-  if test -n "$F90" ; then 
+  if test -n "$F90" && test "$F90" != "none" ; then 
     if test "`$F90 -V 2>&1 | grep -i f90 | grep -i vast`" ; then 
         LINUX_F90_COMP=pacific
     elif test "`$F90 -V 2>&1 | grep -i f90 | grep -i absoft`" ; then 
@@ -37,8 +37,6 @@ else
        LINUX_F90_COMP=SGI          
     elif test "`$F90 -V 2>&1 | grep -i intel`" ; then
        LINUX_F90_COMP=Intel          
-    elif test "$F90" = "none" ; then
-       LINUX_F90_COMP=none
     else
         echo Unknown Linux f90 compiler.
         echo Please add appropriate information to 
@@ -60,8 +58,6 @@ else
         echo ad send the updated file to CactusMaint
         echo We will try anyway ...
     fi
-  else
-    LINUX_F90_COMP=none
   fi
 
 # find out if we have egcs or not, LIBS is either g2c or f2c
