@@ -573,7 +573,7 @@ static LDOUBLE abs_val (LDOUBLE value)
   return result;
 }
 
-static LDOUBLE pow10 (int exp)
+static LDOUBLE mypow10 (int exp)
 {
   LDOUBLE result = 1;
 
@@ -680,12 +680,12 @@ static int fmtfp (char *buffer, size_t *currlen, size_t maxlen,
   /* We "cheat" by converting the fractional part to integer by
    * multiplying by a factor of 10
    */
-  fracpart = myround ((pow10 (max)) * (ufvalue - intpart));
+  fracpart = myround ((mypow10 (max)) * (ufvalue - intpart));
 
-  if (fracpart >= pow10 (max))
+  if (fracpart >= mypow10 (max))
   {
     intpart++;
-    fracpart -= pow10 (max);
+    fracpart -= mypow10 (max);
   }
 
 #ifdef DEBUG_SNPRINTF
