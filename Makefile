@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.15 1999-02-15 23:24:12 goodale Exp $
+#   @version $Id: Makefile,v 1.16 1999-02-16 21:30:52 goodale Exp $
 # @@*/
 
 # Comment this out if you want to see what's going on.
@@ -61,7 +61,7 @@ new_setup:
 ifeq ($(strip $(CONFIGURATIONS)),)
 	@echo $(DIVIDER)
 	@echo Setting up cctk
-	$(PERL) $(SETUP)
+	$(PERL) -s $(SETUP)
 	@echo $(DIVIDER)
 	@echo You are now ready to build the CCTK.
 	@echo This is done by $(MAKE) \<configuration\>
@@ -114,7 +114,7 @@ tags:
 config:
 	@echo $(DIVIDER)
 	@echo Running the configuration program
-	$(PERL) $(SETUP)
+	$(PERL) -s $(SETUP)
 	@echo $(DIVIDER)
 
 # The help system.
@@ -132,6 +132,8 @@ else
 	@echo To build a configuration run $(MAKE) followed by the name of a configuration.
 	@echo To clean a configuration run $(MAKE) followed by the name of a configuration suffixed by -clean e.g. Linux-clean.
 	@echo To delete a configuration run $(MAKE) followed by the name of a configuration suffixed by -delete e.g. Linux-delete.
+	@echo To rebuild a configuration run $(MAKE) followed by the name of a configuration suffixed by -rebuild e.g. Linux-rebuild. This forces the CST to be rerun.
+	@echo To reconfigure a configuration run $(MAKE) followed by the name of a configuration suffixed by -reconfig e.g. Linux-reconfig.  This reruns the configuration scripts.
 endif
 	@echo $(DIVIDER)
 	@echo $(MAKE) also knows the following targets
@@ -145,12 +147,18 @@ endif
 	@echo $(DIVIDER)
 
 # Clean a configuration
+
+ifneq ($strip($(CONFIGURATIONS)),)
+.PHONY $(addsuffix -clean,$(CONFIGURATIONS)):
+
 $(addsuffix -clean,$(CONFIGURATIONS)):
 	@echo $(DIVIDER)
 	@echo Cleaning configuration $(@:%-clean=%)
 	cd configs/$(@:%-clean=%)  
 	$(MAKE) -f $(CCTK_HOME)/lib/make/make.configuration TOP=$(CCTK_HOME)/configs/$(@:%-clean=%) CCTK_HOME=$(CCTK_HOME) clean
 	@echo $(DIVIDER)
+
+endif
 
 %-clean:
 	@echo $(DIVIDER)
@@ -159,17 +167,55 @@ $(addsuffix -clean,$(CONFIGURATIONS)):
 
 
 
-# Clean a configuration
+# Delete a configuration
+
+ifneq ($strip($(CONFIGURATIONS)),)
+.PHONY $(addsuffix -delete,$(CONFIGURATIONS)):
+
 $(addsuffix -delete,$(CONFIGURATIONS)):
 	@echo $(DIVIDER)
 	@echo Deleting configuration $(@:%-delete=%)
 	cd configs ; rm -rf $(@:%-delete=%)  
 	@echo $(DIVIDER)
 
+endif
+
 %-delete:
 	@echo $(DIVIDER)
 	@echo Configuration $(@:%-delete=%) does not exist.
 	@echo Deletion aborted.
+
+# Rebuild a configuration
+
+ifneq ($strip($(CONFIGURATIONS)),)
+.PHONY $(addsuffix -rebuild,$(CONFIGURATIONS)):
+
+$(addsuffix -rebuild,$(CONFIGURATIONS)):
+	@echo $(DIVIDER)
+	@echo Rebuilding $(@:%-rebuild=%)
+	if [ -r configs/$(@:%-rebuild=%)/config-data/make.thornlist ] ; then rm  configs/$(@:%-rebuild=%)/config-data/make.thornlist ; fi
+	$(MAKE) $(@:%-rebuild=%)
+endif
+
+%-rebuild:
+	@echo $(DIVIDER)
+	@echo Configuration $(@:%-rebuild=%) does not exist.
+	@echo Rebuild aborted.
+
+# Rerun the configuration script
+
+ifneq ($strip($(CONFIGURATIONS)),)
+.PHONY $(addsuffix -reconfig,$(CONFIGURATIONS)):
+
+$(addsuffix -reconfig,$(CONFIGURATIONS)):
+	@echo $(DIVIDER)
+	$(PERL) -s $(SETUP) -reconfig=1 $(@:%-reconfig=%); 
+endif
+
+%-reconfig:
+	@echo $(DIVIDER)
+	@echo Configuration $(@:%-reconfig=%) does not exist.
+	@echo Reconfiguration aborted.
 
 # Make a new thorn
 
@@ -177,7 +223,7 @@ $(addsuffix -delete,$(CONFIGURATIONS)):
 newthorn:
 	@echo $(DIVIDER)
 	@echo Creating a new thorn
-	$(PERL) $(NEWTHORN);
+	$(PERL) -s $(NEWTHORN);
 	@echo $(DIVIDER)
 
 # Last resort rule.  Assume it is the name of a configuration
@@ -189,7 +235,7 @@ newthorn:
 	if [ "x$$yesno" = "xyes" -o "x$$yesno" = "xy" -o "x$$yesno" = "xYES" -o "x$$yesno" = "xY" ] ;\
 	then  \
 	echo Setting up new configuration $@; \
-	$(PERL) $(SETUP) $@; \
+	$(PERL) -s $(SETUP) $@; \
 	echo $(DIVIDER)   ;  \
 	echo Use $(MAKE) $@ to build the configuration.; \
 	else \
