@@ -30,6 +30,10 @@ typedef struct
   int *lower_bound;
   int *upper_bound;
 
+  /* The grid spacings */
+  Double delta_time;
+  Double *delta_space;
+
   /* The bounding box - 1 => a real boundary, 0 => a local grid boundary. */
   /* bbox[2*dim] */
   int *bbox;
