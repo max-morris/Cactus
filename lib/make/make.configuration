@@ -34,6 +34,11 @@ include $(CONFIG)/make.config.defn
 # it is missing .)
 -include $(CONFIG)/make.thornlist
 
+# Allow each thorn to include some global definitions
+ifneq ($(strip $(THORNS)),)
+-include $(THORNS:%=$(TOOLKIT_DIR)/%/src/make.configuration.defn)
+endif
+
 # Build the executable
 $(EXE): $(CONFIG)/make.thornlist $(patsubst %,$(CCTK_LIBDIR)/lib%.a,$(notdir $(THORNS))) $(CCTK_LIBDIR)/libCactus.a $(CCTK_LIBDIR)/libCactusBindings.a
 	@echo $(DIVIDER)
@@ -103,6 +108,11 @@ $(TOP)/ActiveThorns:
 	then $$EDITOR $@ ; fi ; \
 	done
 	@echo $(DIVIDER)
+
+# Allow each thorn to include some global dependencies
+ifneq ($(strip $(THORNS)),)
+-include $(THORNS:%=$(TOOLKIT_DIR)/%/src/make.configuration.deps)
+endif
 
 # Phony targets.
 
