@@ -49,6 +49,10 @@ INT manual_cacheline_bytes "The size of a cacheline if not set automatically (by
   0: :: "Any whole number"
 } 0
 
+BOOLEAN allow_mixeddim_gfs "Allow use of GFs from different dimensions"
+{
+} "no"
+
 restricted:
 
 BOOLEAN terminate_next "Terminate on next iteration?" STEERABLE=ALWAYS
