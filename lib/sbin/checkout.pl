@@ -207,7 +207,7 @@ sub get_applications
   print "\n";
     
   # Put number of applications here
-  $count = 2;
+  $count = 3;
 
   print "Checkout applications [1-$count] : ";
     
