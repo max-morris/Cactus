@@ -517,11 +517,13 @@ by the options
         defined, the configuration process will search for this in a 
         few defined places.
         Supported devices are currently {\tt ch\_p4}, {\tt ch\_shmem}, 
-	{\tt globus} and {\tt myrinet}, and they are searched for in this 
-        order.
+	{\tt globus} and {\tt myrinet}.
+	For versions of MPICH prior to 1.2.0 the devices are searched for
+ 	in this order, for 1.2.0 you may need to specify {\tt MPICH\_DEVICE},
+	depending on the installation.
   \end{Lentry}
 
-If {\tt MPICH\_DEVICE} is chosen to be Globus, (www.globus.org), 
+If {\tt MPICH\_DEVICE} is chosen to be {\tt globus}, ({\tt www.globus.org}), 
 an additional variable must be set
   \begin{Lentry}
   \item[{\tt GLOBUS\_LIB\_DIR} *] directory in which Globus libraries are installed
