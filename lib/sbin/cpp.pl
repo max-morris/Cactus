@@ -284,7 +284,7 @@ sub FindFile
     }
   }
 
-  # Tidy up the path a bit 
+  # Tidy up the path a bit
   # Get rid of /./ in paths
   $fullpath =~ s,/\./,/,g;
 
@@ -653,15 +653,15 @@ sub ProcessIf
     print "if requested on $line\n";
   }
 
-  if($line =~ m/^def\s+([^\s]+)/)
+  if($line =~ m/^def\s+(\S+)/)
   {
     $retval = defined($defines{$1}) ? 1 : 0;
   }
-  elsif($line =~ m/^ndef\s+([^\s]+)/)
+  elsif($line =~ m/^ndef\s+(\S+)/)
   {
     $retval = defined($defines{$1}) ? 0 : 1;
   }
-  elsif($line =~ m/^\s+(defined\s+)?([^\s]+)\s*$/)
+  elsif($line =~ m/^\s+(defined\s+)?(\S+)\s*$/)
   {
     my $val = $2;
     if($val =~ m/^\d+$/)
@@ -1019,7 +1019,7 @@ sub ParseAndExpand
         print "The macro is '$token'\n";
       }
       my $arg = "";
-      if(@{$defines{$token}{"ARGS"}} > 0 && 
+      if(@{$defines{$token}{"ARGS"}} > 0 &&
          $pos+1 < @splitline)
       {
         # Eat up whitepace between token and arguments
