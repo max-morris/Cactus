@@ -85,6 +85,7 @@
  *   test_delete_table_entry
  *   test_set_create_from_string
  *   test_set_get_string
+ *   test_set_get_pointer
  *   test_clone
  *   check_table_contents
  *   check_table_contents_ij
@@ -425,6 +426,7 @@ static void test_iterators(int handle);
 static void test_delete_table_entry(int handle, bool case_insensitive);
 static int test_set_create_from_string(void);
 static void test_set_get_string(int handle, bool case_insensitive);
+static void test_set_get_pointer(int handle);
 static void test_clone(int handle);
 static void check_table_contents(int handle, bool order_up_flag);
 static void check_table_contents_ij(int handle, int ihandle);
@@ -5321,6 +5323,7 @@ int main(void)
   test_set_get_array(HANDLE);
 
   test_set_get_string(handle, false);
+  test_set_get_pointer(handle);
 
     {
   const int HANDLE2 = test_set_create_from_string();
@@ -6145,6 +6148,28 @@ static
     }
 }
 #endif  /* UTIL_TABLE_TEST */
+
+/******************************************************************************/
+
+#ifdef UTIL_TABLE_TEST
+/*
+ * This function tests  Util_Table{Set,Get}Pointer()
+ */
+static
+  void test_set_get_pointer(int handle)
+{
+  CCTK_INT i, j;
+  assert( Util_TableSetPointer(handle, (CCTK_POINTER) &i, "i_ptr") == 0);
+  assert( Util_TableSetPointer(handle, (CCTK_POINTER) &j, "j_ptr") == 0);
+    {
+    CCTK_POINTER iptr, jptr;
+  assert( Util_TableGetPointer(handle, &iptr, "i_ptr") == 1 );
+  assert( (CCTK_INT*) iptr == &i );
+  assert( Util_TableGetPointer(handle, &jptr, "j_ptr") == 1 );
+  assert( (CCTK_INT*) jptr == &j );
+    }
+}
+#endif	/* UTIL_TABLE_TEST */
 
 /******************************************************************************/
 
