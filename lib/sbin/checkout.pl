@@ -8,6 +8,10 @@ print "\n";
 
 print "Type \"help\" at any prompt for a description on how\nto use this script\n\n";
 
+print "Developmental thorns/arrangements are labelled (dev)\n\n";
+
+print "________________________________________________________________________\n\n";
+
 print "Checkout applications, arrangements or thorns? [arrangements] : ";
     
 $which = <STDIN>;
@@ -81,17 +85,23 @@ sub get_arrangements
     $count = 0;
     while(<MODULES>)
     {
-	if (/(\w*)\s*ARRANGEMENT/)
+	if (/(\w*)\s*ARRANGEMENT(.*)?/)
 	{
-	    $count++;
-	    $name{$count} = $1;
+	  $count++;
+	  $name{$count} = "$1";
+	  $devlev{$count} = "$2";
 	}
     }
     
     
     for ($i=1; $i<$count+1;$i++)
     {
-	print "  [$i] $name{$i}\n";
+        $extra = "";
+        if ($devlev{$i} == 2) 
+	{
+	  $extra = "(dev)";
+	}
+	print "  [$i] $name{$i} $extra\n";
     }
     
     print "\n";
@@ -146,17 +156,23 @@ sub get_thorns
     $count = 0;
     while(<MODULES>)
     {
-	if (/(\w*\/?\w*)\s*THORN/)
+	if (/(\w*\/?\w*)\s*THORN([^\s])\s/)
 	{
 	    $count++;
-	    $name{$count} = $1;
+	    $name{$count} = "$1";
+	    $devlev{$count} = "$2";
 	}
     }
 
 
     for ($i=1; $i<$count+1;$i++)
     {
-	print "  [$i] $name{$i}\n";
+        $extra = "";
+        if ($devlev{$i} == "2") 
+	{
+	  $extra = "(dev)";
+	}
+	print "  [$i] $name{$i} $extra\n";
     }
     
     print "\n";
@@ -203,7 +219,8 @@ sub get_applications
   print "\nAvailable applications: \n";
   print "  [1] Example F90 wave equation evolver\n";
   print "  [2] Example F77 wave equation evolver\n";
-  print "  [3] Benchmark (ADM)\n";
+  print "  [3] Example C   wave equation evolver\n";
+  print "  [4] Benchmark (ADM)\n";
   print "\n";
     
   # Put number of applications here
@@ -234,7 +251,7 @@ sub get_applications
 	else
         {$2=~/-([0-9]*)/; $last=$1}
 	
-	
+	 
 	for ($i=$first; $i<$last+1; $i++)
 	{
 	  if ($i == 1)
@@ -242,21 +259,14 @@ sub get_applications
 	    # Checkout F90 WaveToy
 	    print("\n");
 	    print("Checking out WaveToyF90\n");
-	    system("cvs -q checkout CactusWave/WaveToyF90");
-	    print("Checking out IDScalarWave\n");
-	    system("cvs -q checkout CactusWave/IDScalarWave");
-	    print("Checking out Boundary\n");
-	    system("cvs -q checkout CactusBase/Boundary");
-	    print("Checking out CartGrid3D\n");
-	    system("cvs -q checkout CactusBase/CartGrid3D");
-	    print("Checking out Time\n");
-	    system("cvs -q checkout CactusBase/Time");
-	    print("Checking out IOUtil\n");
-	    system("cvs -q checkout CactusBase/IOUtil");
-	    print("Checking out IOASCII\n");
-	    system("cvs -q checkout CactusPUGHIO/IOASCII");
-	    print("Checking out PUGH\n");
-	    system("cvs -q checkout CactusPUGH/PUGH");
+	    &CheckOut("CactusWave/WaveToyF90");
+	    &CheckOut("CactusWave/IDScalarWave");
+	    &CheckOut("CactusBase/Boundary");
+	    &CheckOut("CactusBase/CartGrid3D");
+	    &CheckOut("CactusBase/IOUtil");
+	    &CheckOut("CactusBase/IOBasic");
+	    &CheckOut("CactusPUGHIO/IOASCII");
+	    &CheckOut("CactusPUGH/PUGH");
 	    print("Completed checkout of application Wave F90\n");
 	  }
 	  elsif ($i == 2)
@@ -264,24 +274,32 @@ sub get_applications
 	    # Checkout F77 WaveToy
 	    print("\n");
 	    print("Checking out WaveToyF77\n");
-	    system("cvs -q checkout CactusWave/WaveToyF77");
-	    print("Checking out IDScalarWave\n");
-	    system("cvs -q checkout CactusWave/IDScalarWave");
-	    print("Checking out Boundary\n");
-	    system("cvs -q checkout CactusBase/Boundary");
-	    print("Checking out CartGrid3D\n");
-	    system("cvs -q checkout CactusBase/CartGrid3D");
-	    print("Checking out Time\n");
-	    system("cvs -q checkout CactusBase/Time");
-	    print("Checking out IOUtil\n");
-	    system("cvs -q checkout CactusBase/IOUtil");
-	    print("Checking out IOASCII\n");
-	    system("cvs -q checkout CactusPUGHIO/IOASCII");
-	    print("Checking out PUGH\n");
-	    system("cvs -q checkout CactusPUGH/PUGH");
+	    &CheckOut("CactusWave/WaveToyF77");
+	    &CheckOut("CactusWave/IDScalarWave");
+	    &CheckOut("CactusBase/Boundary");
+	    &CheckOut("CactusBase/CartGrid3D");
+	    &CheckOut("CactusBase/IOUtil");
+	    &CheckOut("CactusBase/IOBasic");
+	    &CheckOut("CactusPUGHIO/IOASCII");
+	    &CheckOut("CactusPUGH/PUGH");
 	    print("Completed checkout of application Wave F77\n");
 	  }	  
-          elsif ($i == 3)
+	  elsif ($i == 3)
+	  {
+	    # Checkout C WaveToy
+	    print("\n");
+	    print("Checking out WaveToyC\n");
+	    &CheckOut("CactusWave/WaveToyC");
+	    &CheckOut("CactusWave/IDScalarWave");
+	    &CheckOut("CactusBase/Boundary");
+	    &CheckOut("CactusBase/CartGrid3D");
+	    &CheckOut("CactusBase/IOUtil");
+	    &CheckOut("CactusBase/IOBasic");
+	    &CheckOut("CactusPUGHIO/IOASCII");
+	    &CheckOut("CactusPUGH/PUGH");
+	    print("Completed checkout of application Wave C\n");
+	  }	  
+          elsif ($i == 4)
           {
             # Checkout ADM Benchmark
 	    print("\n");
@@ -314,4 +332,12 @@ sub print_help
     print "Ranges can also be given, using a hyphen.\n";
     print "For example, to checkout thorns/arrangements 1,2,4,6,7,9 use:\n\n";
     print "   1-2,4,6-7,9\n\n";
+}
+
+sub CheckOut
+{
+  local($file) = @_;
+
+  print("Checking out $file\n");
+  system("cvs -q checkout $file");
 }
