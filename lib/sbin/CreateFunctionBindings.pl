@@ -132,6 +132,7 @@ sub IsFunctionAliasedBindings
   push(@data, '');
   push(@data, '');
 
+  push(@data, '#include <string.h>');
   push(@data, '#include <stdlib.h>');
   push(@data, '');
   push(@data, '#include "cctk_Flesh.h"');
@@ -147,25 +148,29 @@ sub IsFunctionAliasedBindings
   }
 
   push(@data, 'int CCTK_IsFunctionAliased(const char *function);');
+  push(@data, '');
   push(@data, 'int CCTK_IsFunctionAliased(const char *function)');
   push(@data, '{');
   push(@data, '  int retval = 0;');
   push(@data, '');
-  push(@data, '  (void) (function + 0); /* avoid warnings */');
+  push(@data, '  /* avoid warnings */');
+  push(@data, '  (void) (function + 0);');
   push(@data, '');
 
+  $else = '';
   foreach $function (split(' ',$function_db->{'FUNCTIONS'}))
   {
     if ($function !~ m:^\s*$:)
     {
-      push(@data, "  if (strcmp(function, \"$function\") == 0)");
+      push(@data, "  ${else}if (! strcmp(function, \"$function\"))");
       push(@data, '  {');
       push(@data, "    retval = CCTKBindings_Overload$function(NULL);");
       push(@data, '  }');
-      push(@data, '');
+      $else = 'else ';
     }
   }
 
+  push(@data, '');
   push(@data, '  return retval;');
   push(@data, '}');
   push(@data, '');
