@@ -783,10 +783,11 @@ sub FunctionDatabase
   $function_db->{'FUNCTIONS'}= ' ';
   $function_db->{'PROVIDED FUNCTIONS'}= ' ';
 
+
   # Add used functions to database
   foreach $thorn (split(' ',$rhinterface_db->{'THORNS'}))
   {
-    foreach $function (split(' ',($rhinterface_db->{"\U$thorn USES FUNCTION\E"})))
+    foreach $function (split(' ',($rhinterface_db->{"\U$thorn FUNCTIONS\E"})))
     {
       $inargs = $rhinterface_db->{"\U$thorn FUNCTION\E $function ARGS"};
       $inret  = $rhinterface_db->{"\U$thorn FUNCTION\E $function RET"};
