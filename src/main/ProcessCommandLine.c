@@ -253,7 +253,7 @@ int CCTK_ParameterFilename(int len, char *filename)
   }
   else
   {
-    strncpy(filename,parameter_file_name,len-1);
+    strncpy(filename,parameter_file_name,strlen(parameter_file_name));
   }
   retval = strlen(filename);
   retval=retval > len ? 0 : retval;

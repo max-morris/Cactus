@@ -272,6 +272,7 @@ int ParseFile(FILE *ifp,
 
 	  lpar=((strlen(file)-3)*sizeof(char));
 
+	  /* ignore everything else on the line */
 	  while (!(c==' ' || c=='\t' || c == '\n' || c == EOF)) 
 	  {
 	    c = fgetc(ifp);
@@ -280,6 +281,8 @@ int ParseFile(FILE *ifp,
 #endif
 	  }
 	  strncpy(value,file,lpar);
+	  free(dir);
+	  free(file);
 	  value[strlen(value)-1] = '\0';
           set_function(tokens,value);
 	}
