@@ -10,12 +10,19 @@
 
 choose_hdf5=`echo $HDF5 | tr '[:upper:]' '[:lower:]'`
 
-if [ "X$choose_hdf5" = 'Xyes' ]; then
+if [ "X$choose_hdf5" != 'Xyes' -a "X$choose_hdf5" != "Xno" -a "X$choose_hdf5" != "X" ]; then
+  echo "  Don't understand the setting \"HDF5=$HDF5\" !"
+  echo '  Please set it to either "yes" or "no", or leave it blank (same as "no") !'
+  exit 1
+fi
+
+[ "X$choose_hdf5" != 'Xyes' ] && return 0
+
 
 echo 'Configuring with HDF5.'
 
-# Work out which variation of HDF5 lib
-
+# Work out which variation of HDF5 is installed
+# and set the HDF5 libs, libdirs and includedirs
 if [ -z "$HDF5_DIR" ]; then
   echo '  HDF5 selected but no HDF5_DIR set. Checking some places...'
   CCTK_Search HDF5_DIR '/usr /usr/local /usr/local/hdf5 /usr/local/packages/hdf5 /usr/local/apps/hdf5 /usr/local/hdf5/serial c:/packages/hdf5' include/hdf5.h
@@ -24,13 +31,29 @@ if [ -z "$HDF5_DIR" ]; then
      exit 2
   fi
   echo "  Found an HDF5 package in $HDF5_DIR"
+
+  # don't explicitely add standard include and library search paths
+  if [ "$HDF5_DIR" != '/usr' -a "$HDF5_DIR" != '/usr/local' ]; then
+    HDF5_LIB_DIRS="$HDF5_DIR/lib"
+    HDF5_INC_DIRS="$HDF5_DIR/include"
+  fi
 else
   echo "  Using HDF5 package in $HDF5_DIR"
+
+  HDF5_LIB_DIRS="$HDF5_DIR/lib"
+  HDF5_INC_DIRS="$HDF5_DIR/include"
 fi
+HDF5_LIBS=hdf5
 
+# Check if HDF5 was built with Linux Large File Support (LFS)
+grep -qe _LARGEFILE_SOURCE ${HDF5_LIB_DIRS}/libhdf5.settings 2> /dev/null
+test_LFS=$?
 
-# Check what version we found
+# Check if the Stream VFD was compiled in
+grep -qe '#define H5_HAVE_STREAM 1' ${HDF5_DIR}/include/H5pubconf.h 2> /dev/null
+test_stream_vfd=$?
 
+# Check if the MPI I/O VFD was compiled in
 grep -qe '#define H5_HAVE_PARALLEL 1' ${HDF5_DIR}/include/H5pubconf.h 2> /dev/null
 test_phdf5=$?
 
@@ -47,16 +70,6 @@ else
     exit 2
   fi
 fi
-
-
-# Set the HDF5 libs, libdirs and includedirs
-
-# don't explicitely add standard include and library search paths
-if [ "$HDF5_DIR" != '/usr' ]; then
-  HDF5_LIB_DIRS="$HDF5_DIR/lib"
-  HDF5_INC_DIRS="$HDF5_DIR/include"
-fi
-HDF5_LIBS=hdf5
 
 
 # check that we have the right version of HDF5 under 32/64 bit IRIX
@@ -117,7 +130,6 @@ fi
 
 
 # Check whether we have to link with libz.a
-
 # this is for current versions of HDF5 (starting from 1.4.x)
 grep -qe '#define H5_HAVE_LIBZ 1' ${HDF5_DIR}/include/H5pubconf.h 2> /dev/null
 test_zlib=$?
@@ -157,24 +169,21 @@ if [ $is_windows -eq 0 ]; then
 fi
 
 # Write the data out to the header and make files.
+CCTK_WriteLine cctk_Extradefs.h '#define CCTK_HDF5'
+CCTK_WriteLine make.extra.defn 'HAVE_HDF5            = 1'
+if [ $test_stream_vfd -eq 0 ]; then
+  CCTK_WriteLine make.extra.defn 'HAVE_HDF5_STREAM_VFD = 1'
+fi
+if [ $test_LFS -eq 0 ]; then
+  CCTK_WriteLine make.extra.defn 'HDF5_LFS_FLAGS       = -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64'
+fi
+CCTK_WriteLine make.extra.defn "HDF5_LIBS            = $HDF5_LIBS"
+CCTK_WriteLine make.extra.defn "HDF5_LIB_DIRS        = $HDF5_LIB_DIRS"
+CCTK_WriteLine make.extra.defn "HDF5_INC_DIRS        = $HDF5_INC_DIRS"
 
-CCTK_WriteLine cctk_Extradefs.h "#define CCTK_HDF5"
-CCTK_WriteLine make.extra.defn "HAVE_HDF5     = 1"
-CCTK_WriteLine make.extra.defn "HDF5_LIBS     = $HDF5_LIBS"
-CCTK_WriteLine make.extra.defn "HDF5_LIB_DIRS = $HDF5_LIB_DIRS"
-CCTK_WriteLine make.extra.defn "HDF5_INC_DIRS = $HDF5_INC_DIRS"
-
-CCTK_WriteLine make.extra.defn ""
-CCTK_WriteLine make.extra.defn ""
+CCTK_WriteLine make.extra.defn ''
+CCTK_WriteLine make.extra.defn ''
 
 CCTK_WriteLine make.extra.defn 'LIBS         += $(HDF5_LIBS)'
 CCTK_WriteLine make.extra.defn 'LIBDIRS      += $(HDF5_LIB_DIRS)'
 CCTK_WriteLine make.extra.defn 'SYS_INC_DIRS += $(HDF5_INC_DIRS)'
-
-elif [ "X$choose_hdf5" != "Xno" -a "X$choose_hdf5" != "X" ]; then
-
-  echo "  Don't understand the setting \"HDF5=$HDF5\" !"
-  echo '  Please set it to either "yes" or "no", or leave it blank (same as "no") !'
-  exit 1
-
-fi
