@@ -23,20 +23,29 @@ DIVIDER =  $(DIVEL)$(DIVEL)$(DIVEL)$(DIVEL)
 
 #####################################################################
 # Define how to do dependencies
+
+define DEPENDENCY_FIXER
+	$(PERL) -pi -e "s,([^:]*),$(basename $@).o $(basename $@).d," $@ 
+endef
+
 define C_DEPENDENCIES
 	$(C_DEPEND) $< $(INC_DIRS:%=-I%) $(SYS_INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DCCODE $(C_DEPEND_OUT)
+	$(DEPENDENCY_FIXER)
 endef
 
 define CXX_DEPENDENCIES
 	$(CXX_DEPEND) $< $(INC_DIRS:%=-I%) $(SYS_INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DCCODE $(CXX_DEPEND_OUT)
+	$(DEPENDENCY_FIXER)
 endef
 
 define F77_DEPENDENCIES
 	$(F77_DEPEND) $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DFCODE $< $(F77_DEPEND_OUT)
+	$(DEPENDENCY_FIXER)
 endef
 
 define F_DEPENDENCIES
 	$(F_DEPEND) $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DFCODE $< $(F_DEPEND_OUT)
+	$(DEPENDENCY_FIXER)
 endef
 
 #####################################################################
