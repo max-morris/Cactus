@@ -327,9 +327,17 @@ int CCTKi_SetupGHExtensions(tFleshConfig *config,
   if(CheckAllExtensionsSetup())
   {
     /* Create GHExtension array on the GH. */
-    GH->extensions = (void **)malloc(num_extensions*sizeof(void *));
 
-    if(GH->extensions)
+    if(num_extensions)
+    {
+      GH->extensions = (void **)malloc(num_extensions*sizeof(void *));
+    }
+    else
+    {
+      GH->extensions = NULL;
+    }
+    
+    if(GH->extensions || ! num_extensions)
     {
       for(handle = 0; handle < num_extensions; handle++)
       {
