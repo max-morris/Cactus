@@ -3418,38 +3418,50 @@ For details on running the test suites, see Section~\ref{sec:testing}.
 %The standard timing information available during a simulation was
 %described in Section~\ref{????}.
 %[FIXME: This isn't filled in yet because it is being reworked]
-Cactus provides a flexible mechanism for
-timing different sections of your thorns using various clocks which
-have been registered with the Flesh.  By default, the Flesh provides a
-set of clocks (if they are available), measuring for
-example wall clock time and CPU time. Additional clocks can be
-implemented by thorns and registered with the Flesh (see Chapter
-\ref{chap:clocks}).
+Cactus provides a flexible mechanism for timing different sections of your
+thorns using various \textit{clocks} which have been registered with the Flesh. 
+By default, the Flesh provides two clocks that measure time in different
+ways (provided the underlying functionality is available on your system):
+
+\begin{Lentry}
+
+\item[{\tt GetTimeOfDay}]
+        Provides ``wall clock time'' via the unix \texttt{gettimeofday} function.
+\item[{\tt GetrUsage}]
+	Provides CPU usage time via the unix \texttt{getrusage} function.
+\end{Lentry}
+
+Additional clocks can be implemented by thorns and registered with the
+Flesh (see Chapter \ref{chap:clocks}).
+
+To use Cactus timing, you create a \textit{timer}, which provides time
+information for all the registered clocks.
 
 You can add any number of timers to your thorn source code, providing
-each with a chosen name, for example {\tt TimeMyRoutine}, {\tt TimeNextCalculation}, and then use Cactus functions to switch on the
-timers, stop or reset them, and recover timing information.
-
-Note that we use the word \textit{clock} to describe the timing instrument
-itself, for example the hardware counters on a machine, and the word
-\textit{timer} to describe the calls in your code which collect results
-from the different clocks.
+each with a name of your choice, and then use Cactus timing functions to
+switch on the timers, stop or reset them, and recover timing information.
 
 \subsection{Timing calls}
 
 Many of the timing calls come in two versions, one whose name ends with 
 the letter \texttt{I} and another one.  The calls whose names end in the 
-letter \texttt{I} refer to the timer by index; the other calls
+letter \texttt{I} refer to the timer by index,
+wich is a non-negative \texttt{int} value; the other calls
 refer to a timer by name.  If a timer is created without a name, it can
 be referred to only by its index, otherwise, it can be referred to by name
 or by index.
+
+Typically, a negative return value from a timer function indicates an error.
 
 \begin{Lentry}
 
 \item[{\t CCTK\_TimerCreate}, {\t CCTK\_TimerCreateI}]
 
-Create a timer with a given name ({\t CCTK\_TimerCreate}), or with no name
-({\tt CCTK\_TimerCreateI}) and return a timer index.
+Create a timer with a given name, or with no name (respectively)
+and return a timer index or an error code.
+Negative return values indicate errors. 
+Only one timer with a given name can exist at any given time.
+% what about unnamed timers? %
 
 \item[{\t CCTK\_TimerDestroy}, {\t CCTK\_TimerDestroyI}]
 
@@ -3481,7 +3493,8 @@ Return the number of created timers
 
 \item[{\t CCTK\_TimerName}]
 
-Provide the name of the timer for a given timer index
+Return the name of the timer for a given timer index (or {\t NULL} if 
+the timer is unnamed or any other error occurs.
 
 \end{Lentry}
 
@@ -3536,13 +3549,13 @@ CactusTest/TestTimers}.
 
 {\bf Creating the {\t TimeMyStuff} timer}
 
-The first action for any timer is to create it, using {\t
-CCTK\_TimerCreate}.  This can be performed at any time, as long as it
-precedes using the timer:
+The first action for any timer is to create it, using
+\texttt{ CCTK\_TimerCreate}. 
+This can be performed at any time prior to use of the timer:
 
 \begin{verbatim}
 #include "cctk_Timers.h"
-ierr = CCTK_TimerCreate("TimeMyStuff");
+index = CCTK_TimerCreate("TimeMyStuff");
 \end{verbatim}
 
 {\bf Instrumenting a section of code}
