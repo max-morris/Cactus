@@ -27,6 +27,7 @@ static char *rcsid="$Header$";
 #define CCTKi_DummySetupGH  CactusDefaultSetupGH
 #define CCTKi_DummyMyProc  CactusDefaultMyProc
 #define CCTKi_DummynProcs  CactusDefaultnProcs
+#define CCTKi_DummyExit    CactusDefaultExit
 
 #include "CommOverloadables.h"
 
@@ -34,6 +35,7 @@ static char *rcsid="$Header$";
 #undef CCTKi_DummySetupGH  
 #undef CCTKi_DummyMyProc  
 #undef CCTKi_DummynProcs
+#undef CCTKi_DummyExit
 
 #undef OVERLOADABLE
 
@@ -67,9 +69,10 @@ int CCTKi_SetupCommFunctions(void)
 #define OVERLOADABLE(name) OVERLOADABLE_CHECK(name)
 
   /* Deal seperately with the SetupGH routine */
-#define CCTKi_DummySetupGH  CactusDefaultSetupGH
+#define CCTKi_DummySetupGH CactusDefaultSetupGH
 #define CCTKi_DummyMyProc  CactusDefaultMyProc
 #define CCTKi_DummynProcs  CactusDefaultnProcs
+#define CCTKi_DummyExit    CactusDefaultExit
 
 #include "CommOverloadables.h"
 
@@ -77,6 +80,7 @@ int CCTKi_SetupCommFunctions(void)
 #undef CCTKi_DummySetupGH  
 #undef CCTKi_DummyMyProc  
 #undef CCTKi_DummynProcs
+#undef CCTKi_DummyExit
 
 #undef OVERLOADABLE
 
@@ -96,10 +100,9 @@ int CCTKi_SetupCommFunctions(void)
 
 
 
-int FMODIFIER FORTRAN_NAME(CCTK_Exit)(cGH *GH)
+int FMODIFIER FORTRAN_NAME(CCTK_Exit)(int *retval, cGH *GH)
 {
-  CCTK_Exit(GH);
-  return 0;
+  CCTK_Exit(*retval, GH);
 }
 
 int FMODIFIER FORTRAN_NAME(CCTK_ParallelInit)(cGH *GH)
