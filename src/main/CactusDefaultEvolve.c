@@ -279,7 +279,8 @@ void TerminationStepper(cGH *GH)
                 MPI_INT,MPI_LOR,GH->PUGH_COMM_WORLD);
 #endif
 #endif
-  if (cactus_terminate_global) { 
+  if (cactus_terminate_global) 
+  { 
     cactus_terminate=TERMINATION_RAISED_BRDCAST;
     printf("RECEIVED GLOBAL TERMINATION SIGNAL \n");
   }
