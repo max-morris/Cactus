@@ -31,50 +31,50 @@ extern "C"
 
 #include "cctk_Types.h"
 
-int        CCTK_StaggerVars(void);
+int         CCTK_StaggerVars(void);
 
-int        CCTK_DecomposeName(const char *fullname, 
+int         CCTK_DecomposeName(const char *fullname, 
                               char **implementation, 
                               char **name);
 
-int        CCTK_FirstVarIndex(const char *group);
-int        CCTK_FirstVarIndexI(int group);
-char      *CCTK_FullName(int var);
+int         CCTK_FirstVarIndex(const char *group);
+int         CCTK_FirstVarIndexI(int group);
+char      * CCTK_FullName(int var);
 
-int        CCTK_GroupData(int group, cGroup *gp);
-int        CCTK_GroupDimI(int group);
-int        CCTK_GroupDimFromVarI(int vi);
-int        CCTK_GroupDistribNumber(const char *dtype);
-CCTK_INT **CCTK_GroupGhostsizesI(int group);
-int        CCTK_GroupIndex(const char *groupname);
-int        CCTK_GroupIndexFromVar(const char *var);
-int        CCTK_GroupIndexFromVarI(int var);
-char      *CCTK_GroupName(int varnum);
-char      *CCTK_GroupNameFromVarI(int var);
-int        CCTK_GroupScopeNumber(const char *type);
-CCTK_INT **CCTK_GroupSizesI(int group);
-int        CCTK_GroupTypeFromVarI(int var);
-int        CCTK_GroupTypeNumber(const char *type);
-int        CCTK_GroupTypeI(int group);
+int         CCTK_GroupData(int group, cGroup *gp);
+int         CCTK_GroupDimI(int group);
+int         CCTK_GroupDimFromVarI(int vi);
+int         CCTK_GroupDistribNumber(const char *dtype);
+CCTK_INT ** CCTK_GroupGhostsizesI(int group);
+int         CCTK_GroupIndex(const char *groupname);
+int         CCTK_GroupIndexFromVar(const char *var);
+int         CCTK_GroupIndexFromVarI(int var);
+char      * CCTK_GroupName(int varnum);
+char      * CCTK_GroupNameFromVarI(int var);
+int         CCTK_GroupScopeNumber(const char *type);
+CCTK_INT ** CCTK_GroupSizesI(int group);
+int         CCTK_GroupTypeFromVarI(int var);
+int         CCTK_GroupTypeNumber(const char *type);
+int         CCTK_GroupTypeI(int group);
 
 const char *CCTK_ImpFromVarI(int var);
 
-int        CCTK_MaxDim(void);
+int         CCTK_MaxDim(void);
 
-int        CCTK_NumGroups(void);
-int        CCTK_NumTimeLevelsFromVar(const char *var);
-int        CCTK_NumTimeLevelsFromVarI(int var);
-int        CCTK_NumVars(void);
-int        CCTK_NumVarsInGroup(const char *group);
-int        CCTK_NumVarsInGroupI(int group);
+int         CCTK_NumGroups(void);
+int         CCTK_NumTimeLevelsFromVar(const char *var);
+int         CCTK_NumTimeLevelsFromVarI(int var);
+int         CCTK_NumVars(void);
+int         CCTK_NumVarsInGroup(const char *group);
+int         CCTK_NumVarsInGroupI(int group);
 
-int        CCTK_VarIndex(const char *variablename);
+int         CCTK_VarIndex(const char *variablename);
 const char *CCTK_VarName(int varnum);
-int        CCTK_VarTypeI(int var);
-int        CCTK_VarTypeNumber(const char *type);
+int         CCTK_VarTypeI(int var);
+int         CCTK_VarTypeNumber(const char *type);
 const char *CCTK_VarTypeName(int vartype);
 
-int        CCTK_VarTypeSize(int vtype);
+int         CCTK_VarTypeSize(int vtype);
 
 /* traverse a string of group and/or variable names */
 int CCTK_TraverseString (const char *parsestring,
@@ -91,16 +91,8 @@ int CCTK_TraverseString (const char *parsestring,
 
 /* Group Types */
 
-#define GROUP_SCALAR 1
-#define GROUP_GF     2
-#define GROUP_ARRAY  3
-
-#define GROUP_PRIVATE   1
-#define GROUP_PROTECTED 2
-#define GROUP_PUBLIC    3
-
-#define DISTRIB_CONSTANT 1
-#define DISTRIB_DEFAULT  2
+#define CCTK_DISTRIB_CONSTANT 1
+#define CCTK_DISTRIB_DEFAULT  2
 
 #define CCTK_SCALAR 1
 #define CCTK_GF     2
