@@ -335,10 +335,6 @@ sub CreateFortranArgumentDeclarations
 	}
 	elsif($level == $ntimelevels)
 	{
-	  $suffix = "_n";
-	}
-	elsif($level == $ntimelevels-1)
-	{
 	  $suffix = "";
 	}
 	else
@@ -449,10 +445,6 @@ sub CreateCArgumentDeclarations
 	  $suffix = "";
 	}
 	elsif($level == $ntimelevels)
-	{
-	  $suffix = "_n";
-	}
-	elsif($level == $ntimelevels-1)
 	{
 	  $suffix = "";
 	}
@@ -565,10 +557,6 @@ sub CreateCArgumentUses
 	}
 	elsif($level == $ntimelevels)
 	{
-	  $suffix = "_n";
-	}
-	elsif($level == $ntimelevels-1)
-	{
 	  $suffix = "";
 	}
 	else
@@ -641,10 +629,6 @@ sub CreateFortranArgumentList
 	    $suffix = "";
 	  }
 	  elsif($level == $ntimelevels)
-	  {
-	    $suffix = "_n";
-	  }
-	  elsif($level == $ntimelevels-1)
 	  {
 	    $suffix = "";
 	  }
