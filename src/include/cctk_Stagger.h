@@ -16,11 +16,18 @@ extern "C" {
 #endif
 
 int CCTK_StaggerVars(void);
-int CCTK_StaggerCodeGrpIdx(int gindex);
-int CCTK_StaggerCodeGrp(const char *gname);
-int CCTK_StaggerCodeName(const char *stype);
-int CCTK_DirStaggerCodeVal(int dir, int sc);
-int CCTK_DirStaggerCodeName(int dir, const char *stype);
+int CCTK_GroupStaggerIndexGI(int gindex);
+int CCTK_GroupStaggerIndexGN(const char *gname);
+int CCTK_StaggerIndex(const char *stype);
+int CCTK_StaggerDirIndex(int dir, int sc);
+int CCTK_StaggerDirArray(int *dindex , int dim, int sindex) ;
+int CCTK_GroupStaggerDirArrayGI(int *dindex, int dim, int gi);
+int CCTK_StaggerDirName(int dir, const char *stype);
+
+int CCTKi_ParseStaggerString(int dim,
+                             const char *imp, 
+                             const char *gname,
+                             const char *stype);
 
 #ifdef __cplusplus
 }
