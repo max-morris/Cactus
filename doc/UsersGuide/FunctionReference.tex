@@ -13,7 +13,7 @@
 %               add key/value table functions in that section
 %   @endhistory
 % @@*/
-\begin{cactuspart}{5}{FunctionReference}{$RCSfile$}{$Revision$}
+\begin{cactuspart}{1}{FunctionReference}{$RCSfile$}{$Revision$}
 \renewcommand{\thepage}{\Alph{part}\arabic{page}}
 \label{part:FunctionReference}
 
@@ -4897,7 +4897,7 @@ Returns the total number of IO methods registered with the flesh.
 % Groups.c
 
 \begin{CCTKFunc}{CCTK\_NumTimeLevels}{Gives the number of timelevels for a group}
-\label{CCTK-NumTimeLevelsFromVar}
+\label{CCTK-NumTimeLevels}
 \subroutine{int}{integer}{numlevels}
 \argument{const char *}{character*(*)}{name}
 \showargs
@@ -6254,7 +6254,7 @@ a variable argument list as a warning message to {\t stderr}.
 By default Cactus prints any warning with warning levels $\le 1$ to standard
 error, and would stop the code on a level 0 warning.
 This behaviour can be changed on the command line using
-the flags {\t -W} and {\t -E} (see \ref{sec:coliop} for full details).
+the flags {\t -W} and {\t -E} (see the Users' Guide for full details).
 
 The boolean flesh parameter {\tt cctk\_full\_warnings} determines whether all
 the details about the warning origin (processor ID, line number, source file,
@@ -7245,7 +7245,7 @@ the other.
 Note that table iterators are {\em not\/} guaranteed to sequence
 through the original and clone tables in the same order.  (This
 is a special case of the more general ``non-guarantee'' in
-section~\ref{sect-UtilityRoutines/tables/table-iterators}:
+the Section of table iterators in the Users' Guide:
 the order of table iterators may differ even between different
 tables with identical key/value contents.)
 \end{Discussion}

@@ -16,7 +16,7 @@
 #
 #
 #   @enddesc
-#   @version $Id: Makefile,v 1.142 2002-10-23 22:01:25 allen Exp $
+#   @version $Id: Makefile,v 1.143 2003-07-05 14:33:56 allen Exp $
 # @@*/
 
 ##################################################################################
@@ -909,6 +909,26 @@ UsersGuide:
 	echo "  Running dvips....";                 \
 	dvips -f ./UsersGuide.dvi 2> DVIPS_MESSAGES | $(CCTK_HOME)/lib/sbin/FixPageNumbersInPostscript.pl > $(CCTK_HOME)/doc/UsersGuide.ps
 	@echo "  UsersGuide.ps created in doc directory."
+	@echo "  Done."
+	@echo $(DIVIDER)
+
+# Make the reference manual
+
+.PHONY: Reference.ps
+Reference.ps: Reference
+
+.PHONY: Reference
+Reference:
+	@echo $(DIVIDER)
+	@echo Creating reference documentation Reference.ps
+	cd doc/UsersGuide;                          \
+	echo "  Running LaTeX....";                 \
+	latex  -interaction=nonstopmode Reference.tex > LATEX_MESSAGES 2>&1; \
+	latex  -interaction=nonstopmode Reference.tex > LATEX_MESSAGES 2>&1; \
+	latex  -interaction=nonstopmode Reference.tex > LATEX_MESSAGES 2>&1; \
+	echo "  Running dvips....";                 \
+	dvips -f ./Reference.dvi 2> DVIPS_MESSAGES | $(CCTK_HOME)/lib/sbin/FixPageNumbersInPostscript.pl > $(CCTK_HOME)/doc/Reference.ps
+	@echo "  Reference.ps created in doc directory."
 	@echo "  Done."
 	@echo $(DIVIDER)
 

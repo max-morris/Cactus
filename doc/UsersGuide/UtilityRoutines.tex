@@ -39,8 +39,7 @@ good way to do this.
 
 Key/value tables (``tables'' for short) provide a clean solution
 to these problems.  They're implemented by the \verb|Util_Table|*
-functions (described in detail in
-section~\ref{sect-FunctionReference/UtilityFunctions}).
+functions (described in detail in the Reference Manual).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -98,7 +97,7 @@ various options, via bit flags defined in \verb|"util_Table.h"|.
 For example, the flags word can be used to control whether keys
 should be compared as case-sensitive or case-insensitive strings.
 See the detailed function description of \verb|Util_TableCreate()|
-in section~\ref{sect-FunctionReference/UtilityFunctions} for a list
+in the Reference Manual for a list
 of the possible bit flags and their semantics.  
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -110,7 +109,7 @@ Here's a simple example (in C)%%%
 \footnote{%%%
 	 All (or almost all) of the table routines
 	 are also usable from Fortran.  See the full
-	 descriptions in section~\ref{sect-FunctionReference/UtilityFunctions}
+	 descriptions in the Reference Manual
 	 for details.
 	 }%%%
 {} of how to use a table:
@@ -145,7 +144,7 @@ and only if some sort of error has occured.%%%
 	 you do, there are various error codes defined in
 	 {\t "util\_Table.h"} and {\t "util\_ErrorCodes.h"};
 	 the detailed function descriptions in
-	 section~\ref{sect-FunctionReference/UtilityFunctions}
+	 the Reference Manual
 	 say which error codes each function can return.
 	 }%%%
 {}  So, the above example should be rewritten like this:
@@ -362,7 +361,7 @@ Multiple iterators may point into the same table; they all use the
 same order, and (unlike in Perl) they're all independent.
 
 The detailed function description
-(section~\ref{sect-FunctionReference/UtilityFunctions})
+in the Reference Manual
 for \verb|Util_TableItQueryKeyValueInfo()| has an example of
 using an iterator to print out all the entries in a table.
 
