@@ -496,11 +496,11 @@ int CactusDefaultOutputVarAsByMethod(cGH *GH,
 }
 
 void FMODIFIER FORTRAN_NAME (CCTK_OutputVarAsByMethod)
-                            (cGH *GH, int *ierror, THREE_FORTSTRINGS_ARGS)
+                            (int *ierr, cGH *GH, THREE_FORTSTRINGS_ARGS)
 {
   THREE_FORTSTRINGS_CREATE(var, methodname, alias);
 
-  *ierror = CactusDefaultOutputVarAsByMethod (GH, var, methodname, alias);
+  *ierr = CCTK_OutputVarAsByMethod (GH, var, methodname, alias);
 
   free (var);
   free (methodname);
@@ -669,6 +669,15 @@ int CCTK_OutputVarByMethod(cGH *GH, const char *var, const char *method)
 
   return 0;
 }
+
+void FMODIFIER FORTRAN_NAME(CCTK_OutputVarByMethod)(int *ierr, cGH *GH, TWO_FORTSTRINGS_ARGS)
+{
+  TWO_FORTSTRINGS_CREATE(var,method);
+  *ierr = CCTK_OutputVarByMethod(GH, var, method);
+  free(var);
+  free(method);
+}
+
 
 
 /************************************************************************
