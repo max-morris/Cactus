@@ -138,7 +138,7 @@ sub ThornInfo
   while(<INTERFACE>)
   {
     chop;
-    if (m/^\s*IMPLEMENTS:\s*([a-z]+[a-z_0-9]*)\s*$/i)
+    if (m/^\s*IMPLEMENTS\s*:\s*([a-z]+[a-z_0-9]*)\s*$/i)
     {
       $implementation = $1;
     }

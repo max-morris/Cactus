@@ -622,7 +622,7 @@ sub parse_interface_ccl
       #           It's a new block.
       $block = "\U$1\E";
     } 
-    elsif ($line =~ m/^\s*IMPLEMENTS:\s*([a-z]+[a-z_0-9]*)\s*$/i)
+    elsif ($line =~ m/^\s*IMPLEMENTS\s*:\s*([a-z]+[a-z_0-9]*)\s*$/i)
     {
       if(!$implementation)
       {
