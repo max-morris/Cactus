@@ -6,7 +6,7 @@
 #    @desc 
 #   
 #    @enddesc 
-#    @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/irix,v 1.26 2001-10-17 11:23:57 tradke Exp $
+#    @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/irix,v 1.27 2001-10-19 11:08:56 tradke Exp $
 #  @@*/
 
 if test "$CCTK_CONFIG_STAGE" = "preferred-compilers" ; then
@@ -197,10 +197,6 @@ esac
       echo "Unable to determine L2 Cache size on this machine. "
     fi
   fi
-
-# Fortran dependency stuff
-  F_DEPEND='$(CC) -E -M $(CPPFLAGS)'
-  F77_DEPEND='$(CC) -E -M $(CPPFLAGS)'
 
 # MPI stuff
 
