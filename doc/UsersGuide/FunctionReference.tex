@@ -200,16 +200,16 @@ from Fortran.
   Get the handle associated with a extension to the Cactus GH structure
 
 \item[CCTK\_GroupbboxGI] [\pageref{CCTK-GroupbboxGI}]
-  Given a group index, return an array of the bounding box of the group
+  Given a group index, return an array of the bounding box of the group for each face
 
 \item[CCTK\_GroupbboxGN] [\pageref{CCTK-GroupbboxGN}]
-  Given a group name, return an array of the bounding box of the group
+  Given a group name, return an array of the bounding box of the group for each face
 
 \item[CCTK\_GroupbboxVI] [\pageref{CCTK-GroupbboxVI}]
-  Given a variable index, return an array of the bounding box of the variable
+  Given a variable index, return an array of the bounding box of the variable for each face
 
 \item[CCTK\_GroupbboxVN] [\pageref{CCTK-GroupbboxVN}]
-  Given a variable name, return an array of the bounding box of the variable
+  Given a variable name, return an array of the bounding box of the variable for each face
 
 \item[CCTK\_GroupgshGI] [\pageref{CCTK-GroupgshGI}]
   Given a group index, return an array of the global size of the group in each dimension
@@ -224,16 +224,16 @@ from Fortran.
   Given a variable name, return an array of the global size of the variable in each dimension
 
 \item[CCTK\_GrouplbndGI] [\pageref{CCTK-GrouplbndGI}]
-  Given a group index, return an array of the lower bounds of the group in rach dimension
+  Given a group index, return an array of the lower bounds of the group in each dimension
 
 \item[CCTK\_GrouplbndGN] [\pageref{CCTK-GrouplbndGN}]
-  Given a group name, return an array of the lower bounds of the group in rach dimension
+  Given a group name, return an array of the lower bounds of the group in each dimension
 
 \item[CCTK\_GrouplbndVI] [\pageref{CCTK-GrouplbndVI}]
-  Given a variable index, return an array of the lower bounds of the variable in rach dimension
+  Given a variable index, return an array of the lower bounds of the variable in each dimension
 
 \item[CCTK\_GrouplbndVN] [\pageref{CCTK-GrouplbndVN}]
-  Given a variable name, return an array of the lower bounds of the variable in rach dimension
+  Given a variable name, return an array of the lower bounds of the variable in each dimension
 
 \item[CCTK\_GrouplshVI] [\pageref{CCTK-GrouplshVI}]
   Given a variable index, return an array of the local size of the variable in each dimension
@@ -248,19 +248,23 @@ from Fortran.
   Given a group name, return an array with the number of ghostzones in each dimension of the group
 
 \item[CCTK\_GroupubndGI] [\pageref{CCTK-GroupubndGI}]
-  Given a group index, return an array of the upper bounds of the group in rach dimension
+  Given a group index, return an array of the upper bounds of the group in each dimension
 
 \item[CCTK\_GroupubndGN] [\pageref{CCTK-GroupubndGN}]
-  Given a group name, return an array of the upper bounds of the group in rach dimension
+  Given a group name, return an array of the upper bounds of the group in each dimension
 
 \item[CCTK\_GroupubndVI] [\pageref{CCTK-GroupubndVI}]
-  Given a variable index, return an array of the upper bounds of the variable in rach dimension
+  Given a variable index, return an array of the upper bounds of the variable in each dimension
 
 \item[CCTK\_GroupubndVN] [\pageref{CCTK-GroupubndVN}]
-  Given a variable name, return an array of the upper bounds of the variable in rach dimension
+  Given a variable name, return an array of the upper bounds of the variable in each dimension
 
 \item[CCTK\_GroupData]
   [\pageref{CCTK-GroupData}]
+  Given a group index, returns information about the variables held in the group
+
+\item[CCTK\_GroupDynamicData]
+  [\pageref{CCTK-GroupDynamicData}]
   Given a group index, returns information about the variables held in the group
 
 \item[CCTK\_GroupIndex]
@@ -1739,7 +1743,7 @@ NULL    & A NULL pointer is returned if an invalid extension name was given.
 \begin{FunctionDescription}{CCTK\_GroupbboxGI, CCTK\_GroupbboxGN}
 \label{CCTK-GroupbboxGI}
 \label{CCTK-GroupbboxGN}
-Given a group index or name, return an array of the bounding box of the group
+Given a group index or name, return an array of the bounding box of the group for each face
 
 \begin{SynopsisSection}
 \begin{Synopsis}{C}
@@ -1806,7 +1810,7 @@ Returns the lower bounds for a given variable.
 \begin{FunctionDescription}{CCTK\_GroupbboxVI, CCTK\_GroupbboxVN}
 \label{CCTK-GroupbboxVI}
 \label{CCTK-GroupbboxVN}
-Given a variable index or name, return an array of the bounding box of the variable
+Given a variable index or name, return an array of the bounding box of the variable for each face
 
 \begin{SynopsisSection}
 \begin{Synopsis}{C}
@@ -2538,9 +2542,50 @@ No Fortran routine exists at the moment.
 \begin{examples}
 \begin{tabular}{@{}p{3cm}cp{11cm}}
 \hfill {\bf C} && {\t cGroup pgroup;}\\
-               && {\t index = CCTK\_GroupIndex("evolve::scalars")}\\
+               && {\t index = CCTK\_GroupIndex("evolve::scalars");}\\
                &&{\t ierr = CCTK\_GroupData(index,\&pgroup);}\\
                && {\t vtype = pgroup.vartype;}
+\\
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
+
+% Groups.c
+\begin{CCTKFunc}{CCTK\_GroupDynamicData}{Given a group index, returns information about the variables held in the group.}
+\label{CCTK-GroupDynamicData}
+\function{int}{}{ierr}
+\argument{const cGH *}{}{cctkGH}
+\argument{int}{}{group}
+\argument{cGroupDynamicData *}{}{pdata}
+\showcargs
+\begin{params}
+\parameter{ierr}{0 for success, negative for failure}
+\parameter{cctkGH}{pointer to CCTK grid hierarchy}
+\parameter{group}{group index}
+\parameter{pdata}{returns a pointer to a structure containing group information}
+\end{params}
+\begin{discussion}
+The cGroupDynamicData structure contains the information
+\begin{itemize}
+\item dim: The dimension of variables in the group
+\item gsh[dim]: The global size of the group in each dimension
+\item lsh[dim]: The local size of the group in each dimension
+\item lbnd[dim]: The lower bounds of the group in each dimension
+\item ubnd[dim]: The upper bounds of the group in each dimension
+\item bbox[2*dim]: The bounding box of the group for each face
+\item nghostzones[dim]: The number of ghostzones in each dimension of the group
+\end{itemize}
+No Fortran routine exists at the moment.
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\hfill {\bf C} && {\t cGroupDynamicData pdata;}\\
+               && {\t index = CCTK\_GroupIndex("evolve::scalars");}\\
+               &&{\t ierr = CCTK\_GroupDynamicData(cctkGH,index,\&pgroup);}\\
+               && {\t vdim = pdata.dim;}
 \\
 \end{tabular}
 \end{examples}
