@@ -874,7 +874,7 @@ int CCTK_GetInterpHandle(const char *interp)
   int handle;
   void **data=NULL; /* isn't used here */
 
-  CCTK_WARN(1,"CCTK_GetInterpHandle: ROUTINE DEPRECATED, see Beta8 release notices");
+  CCTK_Warn(1,__LINE__,__FILE__,"Cactus","CCTK_GetInterpHandle: ROUTINE DEPRECATED, see Beta8 release notices");
   handle = Util_GetHandle(InterpOperators, interp, data);
 
 #ifdef DEBUG_INTERP
@@ -926,7 +926,7 @@ int CCTK_RegisterInterpOperator(int (*function)(REGISTER_INTERP_ARGLIST),
   int handle;
 
 
-  CCTK_WARN(1,"CCTK_RegisterInterpOperator: ROUTINE DEPRECATED, see Beta8 release notices");
+  CCTK_Warn(1,__LINE__,__FILE__,"Cactus","CCTK_RegisterInterpOperator: ROUTINE DEPRECATED, see Beta8 release notices");
 
   /* Check that the method hasn't already been registered */
   handle = Util_GetHandle(InterpOperators, name, NULL);
