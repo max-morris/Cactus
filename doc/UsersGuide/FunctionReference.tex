@@ -3116,7 +3116,11 @@ Older API to interpolate a list of processor-local arrays.
 The following list of error
 codes indicates specific error conditions. For the complete list of possible
 error return codes you should refer to the ThornGuide's chapter of the
-corresponding interpolation thorn(s) you are using.
+corresponding interpolation thorn(s) you are using.  To find the numerical
+values of the error codes (or more commonly, to find which error code
+corresponds to a given numerical value), look in the files
+\verb|cctk_Interp.h|, \verb|util_ErrorCodes.h|, and/or \verb|util_Table.h|
+in the \verb|src/include/| directory in the Cactus flesh.
 \end{Error}
 \begin{Error}{CCTK\_ERROR\_INTERP\_POINT\_OUTSIDE}
 one or more of the interpolation points is out of range
@@ -3666,6 +3670,13 @@ A negative return code indicates an error condition:
 %notyet \end{SeeAlsoSection}
 %notyet 
 %notyet \begin{ErrorSection}
+%notyet	\begin{Error}{}
+%notyet	To find the numerical
+%notyet	values of the error codes (or more commonly, to find which error code
+%notyet	corresponds to a given numerical value), look in the files                   
+%notyet	\verb|cctk_Interp.h|, \verb|util_ErrorCodes.h|, and/or \verb|util_Table.h|      
+in the \verb|src/include/| directory in the Cactus flesh.
+%notyet	\end{Error}
 %notyet \begin{Error}{CCTK\_ERROR\_INTERP\_POINT\_OUTSIDE}
 %notyet one or more of the interpolation points is out of range
 %notyet (in this case additional information about the out-of-range point
@@ -3956,6 +3967,13 @@ with non-uniformly spaced data points.
 \end{SeeAlsoSection}
 
 \begin{ErrorSection}
+\begin{Error}{}
+To find the numerical
+values of the error codes (or more commonly, to find which error code
+corresponds to a given numerical value), look in the files                   
+\verb|cctk_Interp.h|, \verb|util_ErrorCodes.h|, and/or \verb|util_Table.h|      
+in the \verb|src/include/| directory in the Cactus flesh.
+\end{Error}
 \begin{Error}{CCTK\_ERROR\_INTERP\_POINT\_OUTSIDE}
 one or more of the interpolation points is out of range
 (in this case additional information about the out-of-range point
@@ -4284,6 +4302,13 @@ if (CCTK_InterpLocalUniform(N_DIMS,
 %notyet \end{SeeAlsoSection}
 %notyet 
 %notyet \begin{ErrorSection}
+%notyet	\begin{Error}{}
+%notyet	To find the numerical
+%notyet	values of the error codes (or more commonly, to find which error code
+%notyet	corresponds to a given numerical value), look in the files                   
+%notyet	\verb|cctk_Interp.h|, \verb|util_ErrorCodes.h|, and/or \verb|util_Table.h|      
+in the \verb|src/include/| directory in the Cactus flesh.
+%notyet	\end{Error}
 %notyet \begin{Error}{CCTK\_ERROR\_INTERP\_POINT\_OUTSIDE}
 %notyet one or more of the interpolation points is out of range
 %notyet (in this case additional information about the out-of-range point
@@ -6292,7 +6317,14 @@ many are C-only.
 
 \section{Functions Alphabetically}
 
-\begin{Lentry}
+Here the functions are listed alphabetically within each section.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% comment this whole section out until it's non-empty
+%%\subsection{Miscellaneous Functions}
+%%
+%%\begin{Lentry}
 
 %%\item[Util\_asprintf]
 %%     [\pageref{Util-asprintf}]
@@ -6387,12 +6419,6 @@ many are C-only.
 %%\item[Util\_SplitString]
 %%     [\pageref{Util-SplitString}]
 
-%%\item[Util\_StrCmpi]
-%%     [\pageref{Util-StrCmpi}]
-
-%%\item[Util\_Strdup]
-%%     [\pageref{Util-Strdup}]
-
 %%\item[Util\_StringListAdd]
 %%     [\pageref{Util-StringListAdd}]
 
@@ -6405,6 +6431,23 @@ many are C-only.
 %%\item[Util\_StringListNext]
 %%     [\pageref{Util-StringListNext}]
 
+%%\end{Lentry}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{String Functions}
+
+\begin{Lentry}
+
+\item[Util\_StrCmpi]
+     [\pageref{Util-StrCmpi}]
+Compare two strings, ignoring upper/lower case.
+
+\item[Util\_Strdup]
+     [\pageref{Util-Strdup}]
+``Duplicate'' a string,
+\ie{} copy it to a newly--\verb|malloc|ed buffer.
+
 \item[Util\_Strlcat]
      [\pageref{Util-Strlcat}]
 Concatenate two strings safely.
@@ -6412,6 +6455,14 @@ Concatenate two strings safely.
 \item[Util\_Strlcpy]
      [\pageref{Util-Strlcpy}]
 Copy a string safely.
+
+\end{Lentry}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Table Functions}
+
+\begin{Lentry}
 
 \item[Util\_TableClone]
      [\pageref{Util-TableClone}]
@@ -6570,6 +6621,235 @@ a copy of a specified C-style null-terminated character string
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\begin{FunctionDescription}{Util\_StrCmpi}
+\label{Util-StrCmpi}
+Compare two strings, ignoring upper/lower case.
+
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+#include "util_String.h"
+int cmp = Util_StrCmpi(const char *str1, const char *str2);
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ResultSection}
+\begin{Result}{cmp}
+An integer which is:\\
+\begin{tabular}{@{}rl}
+$<0$	& if $\verb|str1| < \verb|str2|$ in lexicographic order
+	  ignoring upper/lower case distinctions			\\
+$0$	& if $\verb|str1| = \verb|str2|$
+	  ignoring upper/lower case distinctions			\\
+$>0$	& if $\verb|str1| > \verb|str2|$ in lexicographic order
+	  ignoring upper/lower case distinctions			%%%\\
+\end{tabular}
+\end{Result}
+\end{ResultSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{str1}
+A non-NULL pointer to a (C-style NUL-terminated) string to be compared.
+\end{Parameter}
+\begin{Parameter}{str2}
+A non-NULL pointer to a (C-style NUL-terminated) string to be compared.
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{Discussion}
+The standard C library \verb|strcmp()| function does a {\em case-sensitive\/}
+string comparison, \ie{} \verb|strcmp("cactus", "Cactus")| will find the
+two strings not equal.  Sometimes it's useful to do {\em case-insensitive\/}
+string comparison, where upper/lower case distinctions are ignored.
+Many systems provide a \verb|strcasecmp()| or \verb|strcmpi()|
+function to do this, but some systems don't, and even on those that do,
+the name isn't standardised.  So, Cactus provides its own version,
+\verb|Util_StrCmpi()|.
+
+Notice that the return value of \verb|Util_StrCmpi()|, like that of
+\verb|strcmp()|, is zero (logical ``false'' in C) for equal strings,
+and nonzero (logcla ``true'' in C) for non-equal strings.
+Code of the form
+\begin{verbatim}
+if (Util_StrCmpi(str1, str2))
+        { /* strings differ */ }
+\end{verbatim}
+or
+\begin{verbatim}
+if (!Util_StrCmpi(str1, str2))
+        { /* strings are identical apart from case distinctions */ }
+\end{verbatim}
+may be confusing to readers, because the sense of the comparison
+isn't immediately obvious.  Writing an explicit comparison against zero
+make make things clearer:
+\begin{verbatim}
+if (Util_StrCmpi(str1, str2) != 0)
+        { /* strings differ */ }
+\end{verbatim}
+or
+\begin{verbatim}
+if (Util_StrCmpi(str1, str2) == 0)
+        { /* strings are identical apart from case distinctions */ }
+\end{verbatim}
+
+Unfortunately, the basic concept of ``case-insensitive'' string
+operations doesn't generalize well to non-English character sets,%%%
+\footnote{%%%
+	 Hawaiian and Swahili are apparently the only
+	 other living languages that use solely the
+	 26-letter ``English'' Latin alphabet.
+	 }%%%
+{} where lower-case $\leftrightarrow$ upper-case mappings may be
+context-dependent, many-to-one, and/or time-dependent.%%%
+\footnote{%%%
+	 For example, the (lower-case) German ``\ss''
+	 doesn't have a unique upper-case equivalent:
+	 ``\ss'' usually maps to ``SS''
+	 (for example ``gro\ss'' $\leftrightarrow$ ``GROSS''),
+	 {\em but\/} if that would conflict
+	 with another word, then ``\ss'' maps to ``SZ''
+	 (for example ``ma\ss{}e'' $\leftrightarrow$ ``MASZE''
+	 because there's a different word ``MASSE'').
+	 Or at least that's the way it was prior to 1998.
+	 The 1998 revisions to German orthography
+	 removed the SZ rule, so now (post-1998) the two
+	 distinct German words ``masse'' (English ``mass'')
+	 and ``ma\ss{}e'' (``measures'') have identical
+	 upper-case forms ``MASSE''.  To further complicate
+	 matters, (the German-speaking parts of) Switzerland
+	 have a slightly different orthography, which never
+	 had the SZ rule.
+
+	 French provides another tricky example:
+	 In France ``\'e'' $\leftrightarrow$ ``\'E'' and
+	 ``\`e'' $\leftrightarrow$ ``\`E'',
+	 whereas in (the French-speaking parts of) Canada
+	 there are no accents on upper-case letters, so
+	 ``\'e'' $\leftrightarrow$ ``E'' and
+	 ``\`e'' $\leftrightarrow$ ``E''.
+	 }%%%
+{}  At present Cactus basically ignores these issues. :(
+\end{Discussion}
+
+\begin{SeeAlsoSection}
+\begin{SeeAlso}{strcmp()}
+Standard C library function (prototype in \verb|<string.h>|)
+to compare two strings.
+\end{SeeAlso}
+\end{SeeAlsoSection}
+
+\begin{ExampleSection}
+\begin{Example}{C}
+\begin{verbatim}
+#include "util_String.h"
+
+/* does the Cactus parameter  driver  specify the PUGH driver? */
+/* (Cactus parameters are supposed to be case-insensitive) */
+if (Util_StrCmpi(driver, "pugh") == 0)
+        { /* PUGH code */ }
+else
+        { /* non-PUGH code */ }
+\end{verbatim}
+\end{Example}
+\end{ExampleSection}
+\end{FunctionDescription}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{FunctionDescription}{Util\_Strdup}
+\label{Util-Strdup}
+``Duplicate'' a string, \ie{} copy it to a newly--\verb|malloc|ed buffer.
+
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+#include "util_String.h"
+char* copy = Util_Strdup(const char *str);
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ResultSection}
+\begin{Result}{copy}
+A pointer to a buffer obtained from \verb|malloc()|,
+which this function sets to a copy of the (C-style NUL-terminated)
+string \verb|str|.  This buffer should be freed with \verb|free()|
+when it's not needed any more.
+\end{Result}
+\end{ResultSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{str}
+A non-NULL pointer to a (C-style NUL-terminated) string.
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{Discussion}
+Many systems have a C library function \verb|strdup|, which
+\verb|malloc|s sufficient memory for a copy of its argument string,
+does the copy, and returns a pointer to the copy.  However, some
+systems lack this function, so Cactus provides its own version,
+\verb|Util_Strdup()|.
+\end{Discussion}
+
+\begin{SeeAlsoSection}
+\begin{SeeAlso}{<stdlib.h>}
+System header file containing prototypes for
+\verb|malloc()| and \verb|free()|.
+\end{SeeAlso}
+\begin{SeeAlso}{strcpy()}
+Standard C library function (prototype in \verb|<string.h>|)
+to copy a string to a buffer.
+{\em This does not check that the buffer is big enough to hold the string,
+and is thus very dangerous.  Use \verb|Util_Strlcpy()| instead!}
+\end{SeeAlso}
+\begin{SeeAlso}{Util\_Strlcpy()}
+Safely copy a string.
+\end{SeeAlso}
+\end{SeeAlsoSection}
+
+\begin{ErrorSection}
+\begin{Error}{NULL}
+\verb|malloc()| was unable to allocate memory for the buffer.
+\end{Error}
+\end{ErrorSection}
+
+\begin{ExampleSection}
+\begin{Example}{C}
+\begin{verbatim}
+#include "util_String.h"
+
+/*
+ * return the (positive) answer to a question,
+ * or negative if an error occured
+ */
+int answer_question(const char* question)
+{
+/*
+ * we need to modify the question string in the process of parsing it
+ * but we must not destroy the input ==> copy it and modify the copy
+ *
+ * ... note the const qualifier on  question_copy  says that
+ *     the pointer  question_copy  won't itself change, but
+ *     we can modify the string that it points to
+ */
+char* const question_copy = Util_Strdup(question);
+if (question_copy == NULL)
+        { return -1; }     /* couldn't get memory for copy buffer */
+
+/* code that will modify  question_copy */
+
+free(question_copy);
+return 42;
+}
+\end{verbatim}
+\end{Example}
+\end{ExampleSection}
+\end{FunctionDescription}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \begin{FunctionDescription}{Util\_Strlcat}
 \label{Util-Strlcat}
 Concatenate strings safely. 
@@ -6635,6 +6915,12 @@ destination buffer), and it always leaves \verb|dst| string NUL-terminated.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
+\begin{SeeAlso}{strcat()}
+Standard C library function (prototype in \verb|<string.h>|)
+to concatenate two strings.
+{\em This does not check that the buffer is big enough to hold the result,
+and is thus very dangerous.  Use \verb|Util_Strlcat()| instead!}
+\end{SeeAlso}
 \begin{SeeAlso}{Util\_Strlcpy()}
 Safely copy a string.
 \end{SeeAlso}
@@ -6762,6 +7048,15 @@ the end of the destination buffer with NUL characters.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
+\begin{SeeAlso}{strcpy()}
+Standard C library function (prototype in \verb|<string.h>|)
+to copy a string to a buffer.
+{\em This does not check that the buffer is big enough to hold the string,
+and is thus very dangerous.  Use \verb|Util_Strlcpy()| instead!}
+\end{SeeAlso}
+\begin{SeeAlso}{Util\_Strdup()}
+``Duplicate'' a string, \ie{} copy it to a newly-\verb|malloc|ed buffer.
+\end{SeeAlso}
 \begin{SeeAlso}{Util\_Strlcat()}
 Safely concatenates two strings.
 \end{SeeAlso}
@@ -7007,6 +7302,9 @@ in \verb|"util_Table.h"|:
 \end{Discussion}
 
 \begin{SeeAlsoSection}
+\begin{SeeAlso}{Util\_StrCmpi()}
+compare two strings, ignoring upper/lower case
+\end{SeeAlso}
 \begin{SeeAlso}{Util\_TableClone()}
 create a new table which is a ``clone'' (exact copy) of an existing
 table
@@ -8995,6 +9293,11 @@ handle to the table
 \end{Parameter}
 \end{ParameterSection}
 
+\begin{Discussion}
+See \verb|Util_TableCreate()| for further discussion of the semantics
+of flag words.
+\end{Discussion}
+
 \begin{SeeAlsoSection}
 \begin{SeeAlso}{Util\_TableClone()}
 create a new table which is a ``clone'' (exact copy) of an existing
@@ -9028,7 +9331,7 @@ handle is invalid
 /* case-sensitive/insensitive semantics as a certain table uses */
 int compare_strings(int handle, const char *str1, const char *str2)
 {
-int flags = Util_TableQueryFlags(int handle);
+int flags = Util_TableQueryFlags(handle);
 return (flags & UTIL_TABLE_FLAGS_CASE_INSENSITIVE)
        ? Util_StrCmpi(str1, str2)
        :      strcmp (str1, str2);
