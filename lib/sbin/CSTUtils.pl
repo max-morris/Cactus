@@ -11,20 +11,22 @@
 
 sub CST_error
 {
-    my($level,$mess,$line,$file) = @_;
+    my($level,$mess,$line,$file,$error) = @_;
 
     if ($full_warnings)
     {
 	if ($level == 0)
 	{
 	    $CST_errors++;
-	    print STDERR "CST error in $file (at $line)\n";
-	    print STDERR "  -> $mess\n";
+            $error = "CST error in $file (at $line)\n  -> $mess\n";
+	    print STDERR $error;
+	    $error_string .= $error;
 	}
 	else
 	{
-	    print STDERR "CST warning in $file (at $line)\n";
-	    print STDERR "  -> $mess\n";
+            $error = "CST warning in $file (at $line)\n  -> $mess\n";
+	    print STDERR $error;
+	    $error_string .= $error;
 	}
     }
     else
@@ -32,16 +34,35 @@ sub CST_error
 	if ($level == 0)
 	{
 	    $CST_errors++;
-	    print STDERR "CST error $CST_errors:\n  -> $mess\n";
+            $error = "CST error $CST_errors:\n  -> $mess\n";
+	    print STDERR $error;
+	    $error_string .= $error;
 	}
 	else
 	{
-	    print STDERR "CST warning:\n  -> $mess\n";
+            $error = "CST warning:\n  -> $mess\n";
+	    print STDERR $error;
+	    $error_string .= $error;
 	}	    
     }
     return;
 }
 
+
+#/*@@
+#  @routine   CST_PrintErrors
+#  @date      5 December 1999
+#  @author    Gabrielle Allen
+#  @desc 
+#  Print all the errors and warnings from the CST
+#  @enddesc 
+#  @version $Id$
+#@@*/
+
+sub CST_PrintErrors
+{
+  print $error_string;
+}
 
 
 #/*@@
