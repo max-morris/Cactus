@@ -637,6 +637,8 @@ print OUT  <<EOC;
 \\renewcommand{\\thechapter}{\\Alph{part}\\arabic{chapter}}
 \\renewcommand{\\thepage}{\\Alph{part}\\arabic{page}}
 \\pagestyle{fancy}
+\\parskip = 10pt
+\\parindent = 0pt
 
 \\newlength{\\tableWidth}
 \\newlength{\\maxVarWidth}
