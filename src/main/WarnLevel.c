@@ -219,6 +219,7 @@ void FMODIFIER FORTRAN_NAME(CCTK_Info)(TWO_FORTSTRINGS_ARGS)
 {
   TWO_FORTSTRINGS_CREATE(thorn,message)
   CCTK_Info(thorn,message);
+  free(thorn);
   free(message); 
 }
 
