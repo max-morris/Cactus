@@ -93,9 +93,9 @@
 #
 # SOME EXPLANATION OF BINDING FILES GENERATED
 # -------------------------------------------
-# 
+#
 # in <config>/bindings/Functions/AliasedFunctions.c :
-# In this file the actual routines that are called by the USEing thorns are 
+# In this file the actual routines that are called by the USEing thorns are
 # defined:
 #
 # <CCTK_TYPE> <MyAliasedFunctionName> (<ItsArguments>);
@@ -319,12 +319,6 @@ sub CreateFunctionBindings
 #  It returns just the FunctionDatabase structure.
 #
 #  @enddesc
-#  @calls
-#  @calledby
-#  @history
-#
-#  @endhistory
-#
 #@@*/
 
 sub FunctionDatabase
@@ -441,12 +435,6 @@ sub FunctionDatabase
 #  are required.
 #
 #  @enddesc
-#  @calls
-#  @calledby
-#  @history
-#
-#  @endhistory
-#
 #@@*/
 
 sub ParseArgumentsList
@@ -494,36 +482,36 @@ sub ParseArgumentsList
       push(@ArgList,$Arg);
       if ($Arg->{"Name"} =~ /FPTRARGS/)
       {
-	$Arg->{"Name"} =~ s/(.*)FPTRARGS/\1/;
-	my $Name = $Arg->{"Name"};
-	$Arg->{"Name"} = {"Name"=>$Name,
-			  "Provided"=>0,
-			  "Used"=>0,
-			  "Return Type"=>$Arg->{"Type"}};
-	my ($extrawarnings,$nstrings,$nstringptrs,@arglist)=&ParseArgumentsList($fptrargs[$nfptrs],$Thorn,$Function);
-	$warnings .= $extrawarnings;
-	$Arg->{"Name"}{"Strings"} = $nstrings;
-	$Arg->{"Name"}{"String pointers"} = $nstringptrs;
-	$Arg->{"Name"}{"Arguments"} = \@arglist;
-	$Arg->{"Function pointer"} = 1;
-	$nfptrs++;
+        $Arg->{"Name"} =~ s/(.*)FPTRARGS/\1/;
+        my $Name = $Arg->{"Name"};
+        $Arg->{"Name"} = {"Name"=>$Name,
+                          "Provided"=>0,
+                          "Used"=>0,
+                          "Return Type"=>$Arg->{"Type"}};
+        my ($extrawarnings,$nstrings,$nstringptrs,@arglist)=&ParseArgumentsList($fptrargs[$nfptrs],$Thorn,$Function);
+        $warnings .= $extrawarnings;
+        $Arg->{"Name"}{"Strings"} = $nstrings;
+        $Arg->{"Name"}{"String pointers"} = $nstringptrs;
+        $Arg->{"Name"}{"Arguments"} = \@arglist;
+        $Arg->{"Function pointer"} = 1;
+        $nfptrs++;
       }
       if (!$Arg->{"Is Array"})
       {
-	$nstrings += $Arg->{"String"};
+        $nstrings += $Arg->{"String"};
       }
       else
       {
-	$nstringptrs += $Arg->{"String"};
+        $nstringptrs += $Arg->{"String"};
       }
       if ( ($nstrings)&&(!$Arg->{"String"}) )
       {
-	$warnings .= "The argument list contains CCTK_STRINGs that are not at the end.";
+        $warnings .= "The argument list contains CCTK_STRINGs that are not at the end.";
       }
     }
   }
 
-#  if ($debug) 
+#  if ($debug)
 #  {
 #    print "ArgList is:\n";
 #    foreach $DummyArg (@ArgList)
@@ -555,12 +543,6 @@ sub ParseArgumentsList
 #  as defined above.
 #
 #  @enddesc
-#  @calls
-#  @calledby
-#  @history
-#
-#  @endhistory
-#
 #@@*/
 
 sub ParseArgument
@@ -670,12 +652,6 @@ sub ParseArgument
 #  @desc
 #  A debugging routine that creates a FunctionList.
 #  @enddesc
-#  @calls
-#  @calledby
-#  @history
-#
-#  @endhistory
-#
 #@@*/
 
 #sub FunctionDatabaseFake
@@ -776,12 +752,6 @@ sub ParseArgument
 #  the file in the standard way.
 #
 #  @enddesc
-#  @calls
-#  @calledby
-#  @history
-#
-#  @endhistory
-#
 #@@*/
 
 sub RegisterAllFunctions
@@ -894,12 +864,6 @@ sub RegisterAllFunctions
 #  the file in the standard way.
 #
 #  @enddesc
-#  @calls
-#  @calledby
-#  @history
-#
-#  @endhistory
-#
 #@@*/
 
 
@@ -941,14 +905,14 @@ sub AliasedFunctions
       my $FunctionKey;
       foreach $FunctionKey (keys %{$thornFunctionList})
       {
-	my $Function = $thornFunctionList->{$FunctionKey};
-	if ($Function)
-	{
-	  if (($Function->{"Provided"})||($Function->{"Used"}))
-	  {
-	    $AliasedFunctionList{$FunctionKey}=$Function;
-	  }
-	}
+        my $Function = $thornFunctionList->{$FunctionKey};
+        if ($Function)
+        {
+          if (($Function->{"Provided"})||($Function->{"Used"}))
+          {
+            $AliasedFunctionList{$FunctionKey}=$Function;
+          }
+        }
       }
     }
   }
@@ -1012,12 +976,6 @@ sub AliasedFunctions
 #  in the standard way.
 #
 #  @enddesc
-#  @calls
-#  @calledby
-#  @history
-#
-#  @endhistory
-#
 #@@*/
 
 sub printAliasPointers
@@ -1060,12 +1018,6 @@ sub printAliasPointers
 #  in the standard way.
 #
 #  @enddesc
-#  @calls
-#  @calledby
-#  @history
-#
-#  @endhistory
-#
 #@@*/
 
 sub printAliasPrototypes
@@ -1116,12 +1068,6 @@ sub printAliasPrototypes
 #  it (by reference).
 #
 #  @enddesc
-#  @calls
-#  @calledby
-#  @history
-#
-#  @endhistory
-#
 #@@*/
 
 sub ConvertStringArguments
@@ -1177,12 +1123,6 @@ sub ConvertStringArguments
 #  string list to be printed to a file in the standard way.
 #
 #  @enddesc
-#  @calls
-#  @calledby
-#  @history
-#
-#  @endhistory
-#
 #@@*/
 
 sub printAliasToWrapper
@@ -1360,12 +1300,6 @@ sub printAliasToWrapper
 #  to be printed in the standard way.
 #
 #  @enddesc
-#  @calls
-#  @calledby
-#  @history
-#
-#  @endhistory
-#
 #@@*/
 
 sub printIsAliasedPrototypes
@@ -1397,11 +1331,6 @@ sub printIsAliasedPrototypes
 #  to be printed in the standard way.
 
 #  @enddesc
-#  @calls
-#  @calledby
-#  @history
-#
-#  @endhistory
 #@@*/
 
 sub printIsAliased
@@ -1437,11 +1366,6 @@ sub printIsAliased
 #  string list to be printed to a file in the standard way.
 #
 #  @enddesc
-#  @calls
-#  @calledby
-#  @history
-#
-#  @endhistory
 #@@*/
 
 sub printRegisterAliasedPrototypes
@@ -1485,11 +1409,6 @@ sub printRegisterAliasedPrototypes
 #  function was already PROVIDEd by another thorn.
 #
 #  @enddesc
-#  @calls
-#  @calledby
-#  @history
-#
-#  @endhistory
 #@@*/
 
 sub printRegisterAliased
@@ -1543,12 +1462,6 @@ sub printRegisterAliased
 #  the file in the standard way.
 #
 #  @enddesc
-#  @calls
-#  @calledby
-#  @history
-#
-#  @endhistory
-
 #@@*/
 
 sub IsFunctionAliased
@@ -1586,11 +1499,11 @@ sub IsFunctionAliased
     {
       if ($Function)
       {
-	if ($Function->{"Used"})
-	{
-	  my $name = $Function->{"Name"};
-	  push(@data, "CCTK_INT IsAliased$name(void);");
-	}
+        if ($Function->{"Used"})
+        {
+          my $name = $Function->{"Name"};
+          push(@data, "CCTK_INT IsAliased$name(void);");
+        }
       }
     }
   }
@@ -1611,15 +1524,15 @@ sub IsFunctionAliased
     {
       if ($Function)
       {
-	if ($Function->{"Used"})
-	{
-	  my $name = $Function->{"Name"};
-	  push(@data, "  ${else}if (! strcmp(function, \"$name\"))");
-	  push(@data, "  {");
-	  push(@data, "    retval = IsAliased".$name."();");
-	  push(@data, "  }");
-	  $else = "else ";
-	}
+        if ($Function->{"Used"})
+        {
+          my $name = $Function->{"Name"};
+          push(@data, "  ${else}if (! strcmp(function, \"$name\"))");
+          push(@data, "  {");
+          push(@data, "    retval = IsAliased".$name."();");
+          push(@data, "  }");
+          $else = "else ";
+        }
       }
     }
   }
@@ -1656,12 +1569,6 @@ sub IsFunctionAliased
 #  the file in the standard way.
 #
 #  @enddesc
-#  @calls
-#  @calledby
-#  @history
-#
-#  @endhistory
-
 #@@*/
 
 sub ThornMasterIncludes
@@ -1731,12 +1638,6 @@ sub ThornMasterIncludes
 #  the file in the standard way.
 #
 #  @enddesc
-#  @calls
-#  @calledby
-#  @history
-#
-#  @endhistory
-
 #@@*/
 
 sub UsesPrototypes
@@ -1781,6 +1682,11 @@ sub UsesPrototypes
         my @cargs = &printArgList("C",$Function->{"Arguments"});
         push(@data, "$Function->{\"Return Type\"} $Function->{\"Name\"}(@cargs);");
       }
+      if ($Function->{"Provided"})
+      {
+       my @cargs = &printArgList("C",$Function->{"Arguments"});
+       push(@data, "$Function->{\"Return Type\"} $Function->{\"Provider\"}(@cargs);");
+      }
     }
   }
 
@@ -1815,12 +1721,6 @@ sub UsesPrototypes
 #  the file in the standard way.
 #
 #  @enddesc
-#  @calls
-#  @calledby
-#  @history
-#
-#  @endhistory
-
 #@@*/
 
 sub ProvidedFunctions
@@ -1899,15 +1799,15 @@ sub ProvidedFunctions
             push(@data,@FnPtrSets);
             push(@data,"");
           }
-	  if ($rettype ne 'void')
-	  {
-	    push(@data,"  return CCTK_FCALL CCTK_FNAME(${provider})(@{fseq});");
-	  }
-	  else
-	  {
-	    push(@data,"  CCTK_FCALL CCTK_FNAME(${provider})(@{fseq});");
-	  }
-	  push(@data,"}");
+          if ($rettype ne 'void')
+          {
+            push(@data,"  return CCTK_FCALL CCTK_FNAME(${provider})(@{fseq});");
+          }
+          else
+          {
+            push(@data,"  CCTK_FCALL CCTK_FNAME(${provider})(@{fseq});");
+          }
+          push(@data,"}");
         }
         else # providetype is C
         {
@@ -1940,14 +1840,14 @@ sub ProvidedFunctions
             push(@data,@FnPtrSets);
             push(@data,"");
           }
-	  if ($rettype ne 'void')
-	  {
-	    push(@data,"  return (${provider})(@{cseq});");
-	  }
-	  else
-	  {
-	    push(@data,"  ${provider}(@{cseq});");
-	  }
+          if ($rettype ne 'void')
+          {
+            push(@data,"  return (${provider})(@{cseq});");
+          }
+          else
+          {
+            push(@data,"  ${provider}(@{cseq});");
+          }
           push(@data,"}");
         }
 #            print $WrapperFunctionList{$nameF}{"Provider"};
@@ -2051,12 +1951,6 @@ sub ProvidedFunctions
 #  As usual, the string list to be printed is returned.
 #
 #  @enddesc
-#  @calls
-#  @calledby
-#  @history
-#
-#  @endhistory
-
 #@@*/
 
 sub FunctionPointerWrappers
@@ -2116,12 +2010,6 @@ sub FunctionPointerWrappers
 #  intended to be called at the right place within one that does.
 #
 #  @enddesc
-#  @calls
-#  @calledby
-#  @history
-#
-#  @endhistory
-
 #@@*/
 
 sub FunctionPointerSettings
@@ -2167,12 +2055,6 @@ sub FunctionPointerSettings
 #  As is usual it returns the string list to be printed.
 #
 #  @enddesc
-#  @calls
-#  @calledby
-#  @history
-#
-#  @endhistory
-
 #@@*/
 
 sub printCallingSequence
@@ -2248,12 +2130,6 @@ sub printCallingSequence
 #  Returns a simple scalar string containing the calling sequence.
 #
 #  @enddesc
-#  @calls
-#  @calledby
-#  @history
-#
-#  @endhistory
-
 #@@*/
 
 
@@ -2299,12 +2175,6 @@ sub printCallArg
 #  calling it and returns the standard string list for printing.
 #
 #  @enddesc
-#  @calls
-#  @calledby
-#  @history
-#
-#  @endhistory
-
 #@@*/
 
 sub printArgList
@@ -2371,7 +2241,7 @@ sub printArgList
       push(@data,($ArgType,$ArgName));
       if ($i < $#ArgList)
       {
-        push(@data,",");
+        push(@data,",\n");
       }
     }
   }
@@ -2410,12 +2280,6 @@ sub printArgList
 #  Needs to know the type (language) of the function that calls it,
 #  and the argument itself. Returns the standard string list.
 #  @enddesc
-#  @calls
-#  @calledby
-#  @history
-#
-#  @endhistory
-
 #@@*/
 
 sub printArg
@@ -2447,7 +2311,7 @@ sub printArg
   {
 #    print "Argument: ".$Arg{"Name"}." ".$Arg{"Is Array"}." ".$Arg{"Intent"}."\n";
     if ( (($type eq "Fortran")&&(!$Arg{"Function"})) ||
-         (($type eq "C")&&(($Arg{"Is Array"})||($Arg{"Intent"}=~/OUT/))) )
+         (($type eq "C")&&(($Arg{"Is Array"})||(($Arg{"Intent"}=~/OUT/)&&($vartype !~ "CCTK_POINTER")))) )
     {
       &debug_print($Arg{"Name"}." needs a *");
       $suffix = "*";
@@ -2457,10 +2321,10 @@ sub printArg
       $prefix = "const ";
       # const CCTK_POINTER is read by C as a constant pointer, rather
       # that a pointer to constant data, so treat this case separately:
-      if ($vartype eq "CCTK_POINTER")
+      if ($vartype eq "CCTK_POINTER" && ! $Arg{"Is Array"})
       {
-	$prefix = "";
-	$vartype = "CCTK_POINTER_TO_CONST";
+        $prefix = "";
+        $vartype = "CCTK_POINTER_TO_CONST";
       }
     }
 
@@ -2482,12 +2346,6 @@ sub printArg
 #  A debugging function that's meant to print out the useful
 #  information about a Function structure. Probably obsolete by now.
 #  @enddesc
-#  @calls
-#  @calledby
-#  @history
-#
-#  @endhistory
-
 #@@*/
 
 #sub printFunction
