@@ -948,7 +948,7 @@ static cFunctionType TranslateFunctionType(const char *where)
 {
   cFunctionType retcode;
 
-  if(CCTK_Equals(where, "STARTUP"))
+  if(CCTK_Equals(where, "CCTK_STARTUP"))
   {
     retcode = FunctionNoArgs;
   }
