@@ -14,11 +14,12 @@
 extern "C" {
 #endif
 
-int CCTKi_SetWarnLevel(int level);
-void CCTK_Warn(int level, int line, const char *file, const char *thorn, const char *message);
+void CCTK_Warn(int level, 
+	       int line, 
+	       const char *file, 
+	       const char *thorn, 
+	       const char *message);
 void CCTK_ParamWarn(const char *thorn, const char *message);
-void CCTKi_FinaliseParamWarn(void);
-int CCTKi_SetErrorLevel(int level);
 void CCTK_Info(const char *thorn, const char *message);
  
 #ifdef __cplusplus 
