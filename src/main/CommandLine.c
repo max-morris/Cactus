@@ -61,7 +61,7 @@ int cctki_paramcheck_nprocs;
  *********************        Defines          **********************
  ********************************************************************/
 #define CACTUS_COMMANDLINE_OPTIONS                                            \
-        "[-h] [-O] [-o paramname] [-x [nprocs]] [-W n] [-E n] [-r] [-T] "     \
+        "[-h] [-O] [-o paramname] [-W n] [-E n] [-r] [-T] "     \
         "[-t name] [-parameter-level <level>] [-v] <parameter_file_name>"
 
 
@@ -466,7 +466,6 @@ void CCTKi_CommandLineHelp (void)
     "-h, -help                           : gets this help.\n"
     "-O, -describe-all-parameters        : describes all the parameters.\n"
     "-o, -describe-parameter <paramname> : describe the given parameter.\n"
-    "-x, -test-parameters [nprocs]       : does a quick test of the parameter file\n"
     "                                      pretending to be on nprocs processors, \n"
     "                                      or 1 if not given.\n"
     "-W, -warning-level <n>              : Sets the warning level to n.\n"
@@ -479,6 +478,9 @@ void CCTKi_CommandLineHelp (void)
     "-v, -version                        : Prints the version.\n"
     "-i, -ignore-next                    : Ignores the next argument.\n";
 
+  /* test-parameter option to be added back when implemented 
+    "-x, -test-parameters [nprocs]       : does a quick test of the parameter file\n"
+   */
 
   if (CCTK_MyProc (NULL) == 0)
   {

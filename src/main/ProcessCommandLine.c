@@ -116,7 +116,7 @@ int CCTKi_ProcessCommandLine(int *inargc, char ***inargv, tFleshConfig *ConfigDa
         {"help", no_argument, NULL, 'h'},
         {"describe-all-parameters", optional_argument, NULL, 'O'},
         {"describe-parameter",      required_argument, NULL, 'o'},
-        {"test-parameters",         optional_argument, NULL, 'x'},
+        /*{"test-parameters",         optional_argument, NULL, 'x'},*/
         {"warning-level",           required_argument, NULL, 'W'},
         {"error-level",             required_argument, NULL, 'E'},
         {"parameter-level",         required_argument, NULL, 256},
