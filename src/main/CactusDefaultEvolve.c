@@ -276,9 +276,11 @@ void TerminationStepper(cGH *GH) {
   int cactus_terminate_global; 
   
   cactus_terminate_global=cactus_terminate;
+#ifdef 0
 #ifdef MPI
   MPI_Allreduce(&cactus_terminate,&cactus_terminate_global,1,
 		MPI_INT,MPI_LOR,GH->PUGH_COMM_WORLD);
+#endif
 #endif
   if (cactus_terminate_global) { 
     cactus_terminate=TERMINATION_RAISED_BRDCAST;
