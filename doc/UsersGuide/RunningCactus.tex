@@ -523,6 +523,11 @@ options, although this behaviour will soon change.
 All options may be specified in the options file, an a subset of them on
 the command line.
 
+It is important to note that these methods cannot be used to, for example add
+options to the default values for {\tt CFLAGS}. Setting {\tt CFLAGS} in the
+configuration file, or the command line will overwrite completely the 
+default values.
+
 \subsection{Available options}
 
 There are a plethora of available options.
@@ -622,7 +627,7 @@ values will be valid on all architectures.
 \item {\tt REAL\_PRECISION}
 [CL] Allowed values are 16,8,4 .
 
-\item {INTEGER\_PRECISION}
+\item {\tt INTEGER\_PRECISION}
 [CL] Allowed values are 8,4 and 2 .
 
 \end{itemize}
@@ -715,13 +720,8 @@ configuration, and preprocessed source files.
   wher {\tt CONF} refers to the name of your configuration.
   For a completely new configuration, this directory exists {\em
     after} the first  make phase. 
-\item{} The {\em ThornList} can also contain the name of a
-  CACTUS package. In this case all thorns of the package will be
-  compiled into the executable.
-\item{} If the CCTK {\em cannot find a thorn} you specified, it will
-  repartition you hard disk amd install Windows.
-\item{} {\em GNU make} is required. Error during the build ``{\tt missing
-    seperator}'' are caused by using a different make command.
+\item{} If you see the error during the build ``{\tt missing
+    seperator}'' you are probably not using GNU make. 
 \item{} {\em The EDITOR environment variable}. You may not be aware of
   this, but this thing very often exists and may be set  by default to
   something scary like vi. If you don't know how to use vi or wish to
