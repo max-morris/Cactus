@@ -1530,7 +1530,7 @@ int Util_TableGetGenericArray(int handle,
 
   @var          value
   @vtype        one of
-                   CCTK_POINTER, CCTK_FN_POINTER,
+                   CCTK_POINTER, CCTK_FPOINTER,
                    CCTK_CHAR,
                    CCTK_INT, CCTK_INT2, CCTK_INT4, CCTK_INT8,
                    CCTK_REAL, CCTK_REAL4, CCTK_REAL8, CCTK_REAL16,
@@ -1569,7 +1569,7 @@ int Util_TableSetPointer(int handle, CCTK_POINTER value, const char *key)
   return Util_TableSetPointerArray(handle, 1, &value, key);
 }
 
-int Util_TableSetFnPointer(int handle, CCTK_FN_POINTER value, const char *key)
+int Util_TableSetFnPointer(int handle, CCTK_FPOINTER value, const char *key)
 {
   return Util_TableSetFnPointerArray(handle, 1, &value, key);
 }
@@ -1703,7 +1703,7 @@ int Util_TableSetComplex32(int handle, CCTK_COMPLEX32 value, const char *key)
 
   @var          array
   @vtype        const T[], where T is one of
-                   CCTK_POINTER, CCTK_FN_POINTER,
+                   CCTK_POINTER, CCTK_FPOINTER,
                    CCTK_CHAR,
                    CCTK_INT, CCTK_INT2, CCTK_INT4, CCTK_INT8,
                    CCTK_REAL, CCTK_REAL4, CCTK_REAL8, CCTK_REAL16,
@@ -1749,12 +1749,12 @@ int Util_TableSetPointerArray(int handle,
 }
 
 int Util_TableSetFnPointerArray(int handle,
-                                int N_elements, const CCTK_FN_POINTER array[],
+                                int N_elements, const CCTK_FPOINTER array[],
                                 const char *key)
 {
   return
     internal_set(handle,
-                 CCTK_VARIABLE_FN_POINTER, N_elements, (const void *) array,
+                 CCTK_VARIABLE_FPOINTER, N_elements, (const void *) array,
                  key);
 }
 
@@ -1934,7 +1934,7 @@ int Util_TableSetComplex32Array(int handle,
 
   @var          value
   @vtype        T *, where T is one of
-                   CCTK_POINTER, CCTK_FN_POINTER,
+                   CCTK_POINTER, CCTK_FPOINTER,
                    CCTK_CHAR,
                    CCTK_INT, CCTK_INT2, CCTK_INT4, CCTK_INT8,
                    CCTK_REAL, CCTK_REAL4, CCTK_REAL8, CCTK_REAL16,
@@ -1987,7 +1987,7 @@ int Util_TableGetPointer(int handle, CCTK_POINTER *value, const char *key)
          : status;
 }
 
-int Util_TableGetFnPointer(int handle, CCTK_FN_POINTER *value, const char *key)
+int Util_TableGetFnPointer(int handle, CCTK_FPOINTER *value, const char *key)
 {
   const int status = Util_TableGetFnPointerArray(handle, 1, value, key);
   return (status == 0)
@@ -2150,7 +2150,7 @@ int Util_TableGetComplex32(int handle, CCTK_COMPLEX32 *value, const char *key)
 
   @var          array
   @vtype        T[], where T is one of
-                   CCTK_POINTER, CCTK_FN_POINTER,
+                   CCTK_POINTER, CCTK_FPOINTER,
                    CCTK_CHAR,
                    CCTK_INT, CCTK_INT2, CCTK_INT4, CCTK_INT8,
                    CCTK_REAL, CCTK_REAL4, CCTK_REAL8, CCTK_REAL16,
@@ -2210,11 +2210,11 @@ int Util_TableGetPointerArray(int handle,
 }
 
 int Util_TableGetFnPointerArray(int handle,
-                                int N_elements, CCTK_FN_POINTER array[],
+                                int N_elements, CCTK_FPOINTER array[],
                                 const char *key)
 {
   return internal_get(handle,
-                      CCTK_VARIABLE_FN_POINTER, N_elements, (void *) array,
+                      CCTK_VARIABLE_FPOINTER, N_elements, (void *) array,
                       key);
 }
 
@@ -2974,7 +2974,7 @@ int Util_TableItSetToKey(int ihandle, const char *key)
 
   @var          array
   @vtype        const T[], where T is one of
-                   CCTK_POINTER, CCTK_FN_POINTER,
+                   CCTK_POINTER, CCTK_FPOINTER,
                    CCTK_CHAR,
                    CCTK_INT, CCTK_INT2, CCTK_INT4, CCTK_INT8,
                    CCTK_REAL, CCTK_REAL4, CCTK_REAL8, CCTK_REAL16,
@@ -3086,7 +3086,7 @@ static
 
   @var          value_buffer
   @vtype        T[], where T is one of
-                   CCTK_POINTER, CCTK_FN_POINTER,
+                   CCTK_POINTER, CCTK_FPOINTER,
                    CCTK_CHAR,
                    CCTK_INT, CCTK_INT2, CCTK_INT4, CCTK_INT8,
                    CCTK_REAL, CCTK_REAL4, CCTK_REAL8, CCTK_REAL16,
@@ -3306,7 +3306,7 @@ static
 
   @var          array
   @vtype        const T[], where T is one of
-                   CCTK_POINTER, CCTK_FN_POINTER,
+                   CCTK_POINTER, CCTK_FPOINTER,
                    CCTK_CHAR,
                    CCTK_INT, CCTK_INT2, CCTK_INT4, CCTK_INT8,
                    CCTK_REAL, CCTK_REAL4, CCTK_REAL8, CCTK_REAL16,
