@@ -210,6 +210,8 @@ sub get_thorns
     chdir arrangements || die "Could not find arrangements directory\n";
 
     $range = <STDIN>;
+    print "\n";
+
     if ($range =~ /^h/i)
     {
 	&print_help();
@@ -395,7 +397,11 @@ sub CheckOut
   my($file,$repository) = @_;
 
   print("Checking out $file\n");
-  system("cvs -z9 -q -d $repository checkout $file");
+
+  open(MODULES,"cvs -z9 -q -d $repository checkout $file |");
+  @dummy = <MODULES>;
+  close(MODULES);
+
 }
 
 
