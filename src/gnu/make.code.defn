@@ -5,5 +5,5 @@
 SRCS=\
 getopt.c\
 getopt1.c\
-gnu_regex.c
+regex.c
 

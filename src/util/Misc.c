@@ -5,6 +5,7 @@
    @desc 
    Miscellaneuous routines.
    @enddesc 
+   @version $Header$
  @@*/
 
 /*#define DEBUG_MISC*/
@@ -21,14 +22,14 @@
 #include <math.h>
 #include <float.h>
 
-#include "gnu_regex.h"
+#include "cctk_GNU.h"
 
 #include "cctk_Config.h"
 #include "cctk_Misc.h"
 #include "cctk_FortranString.h"
 #include "cctk_WarnLevel.h"
 
-static char *rcsid = "$Header";
+static char *rcsid = "$Header$";
 
 int CCTK_RegexMatch(const char *string, 
                     const char *pattern, 

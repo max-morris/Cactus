@@ -25,7 +25,7 @@ const char *rcsid="$Header$";
 #include "ParameterBindings.h"
 #include "cctk_Parameter.h"
 
-#include "gnu_regex.h"
+#include "cctk_GNU.h"
 
 int CCTK_RegexMatch(const char *string, 
                     const char *pattern, 

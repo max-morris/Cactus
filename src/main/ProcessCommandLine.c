@@ -11,7 +11,7 @@
 
 #include "CommandLine.h"
 #include "cctk_Flesh.h"
-#include "getopt.h"
+#include "cctk_GNU.h"
 
 static char *rcsid = "$Header$";
 
