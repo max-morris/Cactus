@@ -1,0 +1,26 @@
+#/*@@
+#  @file param.ccl
+#  @date 31 Jan 1999
+#  @author Gabrielle Allen
+#  @desc
+#  Parameters for the main code
+#  @enddesc
+#  @history
+#  @endhistory
+#@@*/
+
+
+public:
+
+INTEGER nx "Grid size in first coordinate direction"
+{
+  1::
+} 10
+INTEGER ny "Grid size in second coordinate direction"
+{
+  1::
+} 10
+INTEGER nz "Grid size in third coordinate direction"
+{
+  1::
+} 10
