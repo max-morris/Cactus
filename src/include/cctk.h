@@ -10,7 +10,7 @@
  @@*/
 
 #ifndef _CCTK_H_
-#define _CCTK_H_
+#define _CCTK_H_ 1
 
 /* Grab the main configuration info. */
 #include "cctk_Config.h"
