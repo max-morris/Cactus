@@ -975,7 +975,7 @@ int CCTK_DecomposeName (const char *fullname,
     if (retval == 1)
     {
       CCTK_VWarn (2, __LINE__, __FILE__, "Cactus",
-                  "CCTK_DecomposeName: Full name %s in wrong format",
+                  "CCTK_DecomposeName: Full name '%s' in wrong format",
                   fullname);
       retval = -3;
     }
@@ -1531,6 +1531,7 @@ int CCTK_TraverseString (const char *parsestring,
   char *splitstring;
   char *optstring;
   int idx, first, last;
+  int selected_all;
 
 
   if (callback == NULL)
@@ -1571,8 +1572,12 @@ int CCTK_TraverseString (const char *parsestring,
         *optstring = '\0';
       }
 
+      /* Look for the token 'all' */
+      selected_all = CCTK_Equals (before, "all");
+
       /* See if this name is "<implementation>::<variable>" */
-      if (selection == CCTK_VAR || selection == CCTK_GROUP_OR_VAR)
+      if (! selected_all &&
+          (selection == CCTK_VAR || selection == CCTK_GROUP_OR_VAR))
       {
         first = last = CCTK_VarIndex (before);
       }
@@ -1584,7 +1589,8 @@ int CCTK_TraverseString (const char *parsestring,
       {
 
         /* See if this name is "<implementation>::<group>" */
-        if (selection == CCTK_GROUP || selection == CCTK_GROUP_OR_VAR)
+        if (! selected_all &&
+            (selection == CCTK_GROUP || selection == CCTK_GROUP_OR_VAR))
         {
           idx = CCTK_GroupIndex (before);
         }
@@ -1598,7 +1604,7 @@ int CCTK_TraverseString (const char *parsestring,
           first = CCTK_FirstVarIndexI (idx);
           last = first + CCTK_NumVarsInGroupI (idx) - 1;
         }
-        else if (CCTK_Equals (before, "all")) /* Look for any special tokens */
+        else if (selected_all)
         {
           first = 0;
           if (selection == CCTK_GROUP)
