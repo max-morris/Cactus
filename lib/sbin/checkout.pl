@@ -372,6 +372,7 @@ sub get_applications
 	    &CheckOut("CactusBase/Time",$repository);
 	    &CheckOut("CactusBase/CartGrid3D",$repository);
 	    &CheckOut("CactusBase/IOUtil",$repository);
+	    &CheckOut("CactusBase/IOBasic",$repository);
 	    &CheckOut("CactusPUGHIO/IOASCII",$repository);
 	    &CheckOut("CactusPUGH/PUGH",$repository);
 	    print("Completed checkout of application Benchmark (ADM)\n");
