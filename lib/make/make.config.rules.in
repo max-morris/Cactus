@@ -45,7 +45,7 @@ cat $< | $(PERL) $(C_FILE_PROCESSOR) $(CONFIG) > $(notdir $<)
 endef
 
 define COMPILE_C 
-current_wd=`$(GET_WD)` ; cd $(SCRATCH_BUILD) ; $(CC) $(CFLAGS) $(CCOMPILEONLY)$(OPTIONSEP)$$current_wd$(DIRSEP)$@ $$current_wd$(DIRSEP)$(notdir $<) $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DCCODE
+current_wd=`$(GET_WD)` ; cd $(SCRATCH_BUILD) ; $(CC) $(DEBUG_C) $(CFLAGS) $(CCOMPILEONLY)$(OPTIONSEP)$$current_wd$(DIRSEP)$@ $$current_wd$(DIRSEP)$(notdir $<) $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DCCODE
 endef
 
 define POSTPROCESS_C
@@ -57,7 +57,7 @@ cat $< | $(PERL) $(CCTK_HOME)/lib/sbin/c_file_processor.pl $(CONFIG) > $(notdir 
 endef
 
 define COMPILE_CXX
-current_wd=`$(GET_WD)` ; cd $(SCRATCH_BUILD) ; $(CXX) $(CXXFLAGS) $(CCOMPILEONLY)$(OPTIONSEP)$$current_wd$(DIRSEP)$@ $$current_wd$(DIRSEP)$(notdir $<) $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DCCODE
+current_wd=`$(GET_WD)` ; cd $(SCRATCH_BUILD) ; $(CXX) $(DEBUG_CXX) $(CXXFLAGS) $(CCOMPILEONLY)$(OPTIONSEP)$$current_wd$(DIRSEP)$@ $$current_wd$(DIRSEP)$(notdir $<) $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DCCODE
 endef
 
 define POSTPROCESS_CXX
@@ -69,7 +69,7 @@ cat $< | sed 's.//.AUTOMATICALLY_GENERATED_CONCATONATION_PROTECTION_STRING.g' | 
 endef
 
 define COMPILE_F77
-current_wd=`$(GET_WD)` ; cd $(SCRATCH_BUILD) ; $(F77) $(F77FLAGS) $(FCOMPILEONLY)$(OPTIONSEP)$$current_wd$(DIRSEP)$@ $$current_wd$(DIRSEP)$(basename $(notdir $<)).f 
+current_wd=`$(GET_WD)` ; cd $(SCRATCH_BUILD) ; $(F77) $(DEBUG_F77) $(F77FLAGS) $(FCOMPILEONLY)$(OPTIONSEP)$$current_wd$(DIRSEP)$@ $$current_wd$(DIRSEP)$(basename $(notdir $<)).f 
 endef
 
 define POSTPROCESS_F77
@@ -81,7 +81,7 @@ cat $< | sed 's.//.AUTOMATICALLY_GENERATED_CONCATONATION_PROTECTION_STRING.g' | 
 endef
 
 define COMPILE_F90
-current_wd=`$(GET_WD)` ; cd $(SCRATCH_BUILD) ; $(F90) $(F90FLAGS) $(FCOMPILEONLY)$(OPTIONSEP)$$current_wd$(DIRSEP)$@ $$current_wd$(DIRSEP)$(basename $(notdir $<)).f  
+current_wd=`$(GET_WD)` ; cd $(SCRATCH_BUILD) ; $(F90) $(DEBUG_F90) $(F90FLAGS) $(FCOMPILEONLY)$(OPTIONSEP)$$current_wd$(DIRSEP)$@ $$current_wd$(DIRSEP)$(basename $(notdir $<)).f  
 endef
 
 define POSTPROCESS_F90
@@ -106,7 +106,7 @@ endef
 	@echo $(DIVIDER)
 	@echo Preprocessing $<
 	$(PREPROCESS_C)
-	@echo Compiling $<
+	@echo Compiling $(DEBUG_C) $<
 	$(COMPILE_C)
 	@echo Postprocessing $<
 	$(POSTPROCESS_C)
@@ -121,7 +121,7 @@ endef
 	@echo $(DIVIDER)
 	@echo Preprocessing $<
 	$(PREPROCESS_CXX)
-	@echo Compiling $<
+	@echo Compiling $(DEBUG_CXX) $<
 	$(COMPILE_CXX)
 	@echo Postprocessing $<
 	$(POSTPROCESS_CXX)
@@ -130,7 +130,7 @@ endef
 	@echo $(DIVIDER)
 	@echo Preprocessing $<
 	$(PREPROCESS_CXX)
-	@echo Compiling $<
+	@echo Compiling $(DEBUG_CXX) $<
 	$(COMPILE_CXX)
 	@echo Postprocessing $<
 	$(POSTPROCESS_CXX)
@@ -147,7 +147,7 @@ endef
 	@echo $(DIVIDER)
 	@echo Preprocessing $<
 	$(PREPROCESS_F77)
-	@echo Compiling $<
+	@echo Compiling $(DEBUG_F77) $<
 	$(COMPILE_F77)
 	@echo Postprocessing $<
 	$(POSTPROCESS_F77)
@@ -156,7 +156,7 @@ endef
 	@echo $(DIVIDER)
 	@echo Copying $<
 	$(PREPROCESS_f77)
-	@echo Compiling $<
+	@echo Compiling $(DEBUG_F77) $<
 	$(COMPILE_F77)
 	@echo Postprocessing $<
 	$(POSTPROCESS_F77)
@@ -174,7 +174,7 @@ endef
 	@echo $(DIVIDER)
 	@echo Preprocessing $<
 	$(PREPROCESS_F90)
-	@echo Compiling $<
+	@echo Compiling $(DEBUG_F90) $<
 	$(COMPILE_F90)
 	@echo Postprocessing $<
 	$(POSTPROCESS_F90)
@@ -183,7 +183,7 @@ endef
 	@echo $(DIVIDER)
 	@echo Copying $<
 	$(PREPROCESS_f)
-	@echo Compiling $<
+	@echo Compiling $(DEBUG_F90) $<
 	$(COMPILE_F90)
 	@echo Postprocessing $<
 	$(POSTPROCESS_F90)
