@@ -109,8 +109,8 @@ sub parse_param_ccl
   my($data, %parameter_db);
   my(%friends);
   my(%defined_parameters);
-  my($use_clause);
-  
+  my($use_or_extend, $use_clause, $skip_range_block);
+  my($message);
   
   #   The default block is private.
   $block = "PRIVATE";
@@ -148,13 +148,15 @@ sub parse_param_ccl
     elsif($line =~ m:(EXTENDS |USES )?\s*(?\:CCTK_)?(INT|REAL|BOOLEAN|KEYWORD|STRING)\s*([a-zA-Z]+[a-zA-Z0-9_]*) \s*(\"[^\"]*\")\s*(.*)$:i)
     {
       # This is a parameter definition.
+
+      $use_or_extend = $1;
       $type = "\U$2\E";
 
       $variable = $3;
       $description = $4;
       $options = $5;
 
-      if($1 =~ m:USES:i)
+      if($use_or_extend =~ m:USES:i)
       {
 	$use_clause = 1;
       }
@@ -171,14 +173,14 @@ sub parse_param_ccl
 
 	$line_number++ until ($data[$line_number] =~ m:\}:);
       }
-      elsif($1 && $1 =~ m:(EXTENDS|USES):i && $block !~ m:SHARES\s*\S:)
+      elsif($use_or_extend && $use_or_extend =~ m:(EXTENDS|USES):i && $block !~ m:SHARES\s*\S:)
       {
 	# Can only extend a friend variable.
 	$message =  "Parse error in $thorn/param.ccl";
 	&CST_error(0,$message,__LINE__,__FILE__);
 	$line_number++ until ($data[$line_number] =~ m:\}:);
       }
-      elsif($data[$line_number+1] !~ m:^\s*\{\s*$:)
+      elsif($data[$line_number+1] !~ m:^\s*\{\s*$: && $use_clause == 0)
       {
 	# Since the data should have no blank lines, the next
 	# line should have { on it.
@@ -189,9 +191,28 @@ sub parse_param_ccl
       }
       else
       {
+	$skip_range_block = 0;
 	# Move past {
-	$line_number++;
-	$line_number++;
+	if($data[$line_number+1] !~ m:\s*\{\s*:)
+	{
+	  if ($use_clause)
+	  {
+	    $skip_range_block = 1;
+	  }
+	  else
+	  {
+#           This message is already given above.
+#	    message = "Missing { at start of range block for parameter $variable pf thorn $thorn";
+#	    &CST_error(0,$message,__LINE__,__FILE__);
+	    die "Internal error in parser: this line should never be reached."
+	  }
+	}
+	else
+	{
+	  $skip_range_block = 0;
+	  $line_number++;
+	  $line_number++;
+	}
 
 	# Parse the options
 	%options = split(/\s*=\s*|\s+/, $options);
@@ -209,7 +230,6 @@ sub parse_param_ccl
 	  }
 	}
 
-
 	# Store data about this variable.
 	$defined_parameters{"\U$variable\E"} = 1;
 	
@@ -218,10 +238,12 @@ sub parse_param_ccl
 	$parameter_db{"\U$thorn $variable\E description"} = $description;
 	$parameter_db{"\U$thorn $variable\E ranges"} = 0;
 	
-	# Parse the allowed values and their descriptions.
-        # The (optional) description is seperated by ::
-	while($data[$line_number] !~ m:\s*\}:)
+	if(! $skip_range_block)
 	{
+	  # Parse the allowed values and their descriptions.
+	  # The (optional) description is seperated by ::
+	  while($data[$line_number] !~ m:\s*\}:)
+	  {
 	    if($data[$line_number] =~ m/::/)
 	    {
 	      ($new_ranges, $delim, $new_desc) = $data[$line_number] =~ m/(.*)(::)(.*)/;
@@ -235,15 +257,15 @@ sub parse_param_ccl
 	    # Strip out any spaces in the range for a numeric parameter.
 	    if($type =~ m:INT|REAL:)
 	    {
-		$new_ranges =~ s/[ \t]+/ /g;
+	      $new_ranges =~ s/[ \t]+/ /g;
 	    }
 	    $parameter_db{"\U$thorn $variable\E range $parameter_db{\"\U$thorn $variable\E ranges\"} range"} = $new_ranges;
- 
+	    
 	    # Check description
 	    if($delim eq "" || ($delim =~ /::/ && $new_desc =~ /^\s*$/))
 	    {
-		$message = "Missing description of range '$new_ranges' for parameter $thorn\::$variable";
-		&CST_error(1,$message,__LINE__,__FILE__);
+	      $message = "Missing description of range '$new_ranges' for parameter $thorn\::$variable";
+	      &CST_error(1,$message,__LINE__,__FILE__);
 	    }
 	    elsif ($new_desc !~ /^\s*\".*\"\s*$/)
 	    {
@@ -252,10 +274,11 @@ sub parse_param_ccl
 	    }
 	    $parameter_db{"\U$thorn $variable\E range $parameter_db{\"\U$thorn $variable\E ranges\"} description"} = $new_desc;
 	    $line_number++;
+	  }
 	}
 
         # Give a warning if no range was given and it was needed
-        if ((! $use_clause)  && ($parameter_db{"\U$thorn $variable\E ranges"}==0 && $type =~ m:INT|REAL:))
+        if (($use_clause == 0)  && ($parameter_db{"\U$thorn $variable\E ranges"}==0 && $type =~ m:INT|REAL:))
         {
 	    $message = "No range given for $variable in $thorn";
 	    &CST_error(0,$message,__LINE__,__FILE__);
