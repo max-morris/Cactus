@@ -22,8 +22,11 @@
 OVERLOADABLE(OutputGH)
 
 #undef ARGUMENTS
-#define ARGUMENTS cGH *GH, const char *group
-OVERLOADABLE(OutputGroup)
+#define ARGUMENTS cGH *GH,            \
+                  const char *var,    \
+                  const char *method, \
+                  const char *alias
+OVERLOADABLE(OutputVarAs)
 
 #undef ARGUMENTS
 #undef RETURN_TYPE
