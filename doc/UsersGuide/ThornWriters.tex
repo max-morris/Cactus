@@ -135,7 +135,7 @@ called.
 CCL {\bf Cactus Configuration Language} files are simple text files
 used to define configuration information for a thorn.  CCL files are
 case independent, and may contain comments introduced by the `\#' character,
-which marks the rest of the line to the right of its appearence as a comment.
+which marks the rest of the line to the right of its appearance as a comment.
 
 \subsection{The {\tt interface.ccl}}
 
@@ -221,9 +221,9 @@ This is the number of timelevels the group has.
 \end{itemize}
 
 A group specification consists of the variable type, followed by
-the name of the group, then a space seperated list of the form
+the name of the group, then a space separated list of the form
 `attribute = value' .  Then a brace delimited block containing
-a comma or newline seperated list of variables in the group.
+a comma or newline separated list of variables in the group.
 A description of the group may be included on the line with the
 closing brace.
 
@@ -299,7 +299,7 @@ This must be one of the allowed values.
 
 For the numeric types INT and REAL, a range consists of a string of the
 forms lower-bound:upper-bound:step where a missing number or a \* denotes
-anything (i.e. infinite bounds or an infinitesmal step).
+anything (i.e. infinite bounds or an infinitesimal step).
 
 For example 
 
@@ -319,7 +319,7 @@ BOOLEAN nice "Nice weather ?"
 # defined in the body)
 KEYWORD confused "Are we getting confused ?"
 {
-  "yes"    :: "absolutley positively"
+  "yes"    :: "absolutely positively"
   "perhaps" :: "we are not sure"
   "never"   :: "never"
 } "never"
@@ -327,7 +327,7 @@ KEYWORD confused "Are we getting confused ?"
 
 defines a REAL parameter, a BOOLEAN parameter, and a KEYWORD.
 
-By default all paramters are {\tt private}, to change this an access
+By default all parameters are {\tt private}, to change this an access
 specification of the form {\tt global:} or {\tt restricted:} (or 
 {\tt private:} to change it back) may be placed on a line by itself.  This
 changes the access level for any parameter defined in the file from that point on.
@@ -338,7 +338,7 @@ the file from now until the next access specification originate in
 implementation <name>.  
 
 In contrast to parameter declarations in other access blocks, the default
-value must be ommitted - it is impossible to set the default value of any
+value must be omitted - it is impossible to set the default value of any
 parameter not originating in this thorn.
 
 For example
@@ -364,7 +364,7 @@ KEYWORD initial_data ""
 By default no routine of a thorn will be run.  The schedule.ccl file
 defines those that should be run and when they should be run.
 
-The specification of this is via a schudule block which consists of
+The specification of this is via a schedule block which consists of
 a line of the form
 
 \begin{verbatim}
@@ -384,7 +384,7 @@ where {\tt <name>} is the name of the routine, and {\tt <time bin>} is one of
 \begin{itemize}
 
 \item {\tt CCTK\_BASEGRID}
-Resposnible for setting up coordinates etc.
+Responsible for setting up coordinates etc.
 
 \item {\tt CCTK\_RECOVER}
 For recovery from checkpoint.
@@ -401,8 +401,8 @@ Tasks which must be applied after initial data is created.
 For recovery of initial data from a checkpoint file.
 
 \item {\tt CCTK\_PRESTEP}
-
 Stuff done before the evolution step.
+
 \item {\tt CCTK\_EVOL}      
 
 The evolution step.
@@ -418,7 +418,7 @@ For checkpointing data
 For analysing data.
 
 \item {\tt CCTK\_TERMINATE}
-Called when cactus teminates.
+Called when cactus terminates.
 
 \item {\tt CCTK\_CONVERGENCE}
 Convergence stuff.
@@ -446,7 +446,7 @@ E.g.
 
 if(evolve_hydro)
 {
-  SCHEDULE hydro_predictor AT evolve AFTER metric_predictor BEFORE metric_corrector 
+  SCHEDULE hydro_predictor AT evol AFTER metric_predictor BEFORE metric_corrector 
   {
     LANG:     FORTRAN
     STORAGE:  hydro_variables
@@ -485,7 +485,7 @@ Extension & Coding Language \\
 
 The following restrictions apply to file names:
 \begin{itemize}
-\item Rootnames within each directory must be unique. For example, it is not possible 
+\item Root names within each directory must be unique. For example, it is not possible 
       to have the files {\tt InitialData.c} and {\tt InitialData.F} in the same directory.
 \item Currently all files within a thorn must have distinct names.  We hope
 to relax this in future.  Different thorns can have files with the same names. 
@@ -607,7 +607,7 @@ top of the file the header
 A Cactus macro {\tt CCTK\_FARGUMENTS} is defined for each thorn
 to contain
 \begin{itemize}
-\item General information about the grid hierachy, for example
+\item General information about the grid hierarchy, for example
       the number of grid points used. See Section \ref{sec:cava} for a 
       complete list.
 \item All the grid variables defined in the thorns {\tt interface.ccl}
@@ -950,7 +950,7 @@ Notes
 \section{Error handling, Warnings and Code Termination}
 \label{sec:erhawancote}
 The Cactus function {\tt CCTK\_WARN} should be used to provide
-warning messages during code executation. Along with the
+warning messages during code execution. Along with the
 warning message, an integer is given to indicate the severity
 of the warning. The warning severity indicates whether the
 message is printed to standard output and whether the code
