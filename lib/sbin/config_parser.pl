@@ -1,4 +1,13 @@
 #! /usr/bin/perl -s
+#/*@@
+#  @file      config_parser.pl
+#  @date      Sep 1998
+#  @author    Tom Goodale
+#  @desc 
+#  Parses the the configuration files for thorns.
+#  @enddesc 
+#  @version $Id$
+#@@*/
 
 if(! $top)
 {
@@ -52,6 +61,7 @@ require "$cctk_home/lib/sbin/interface_parser.pl";
 require "$cctk_home/lib/sbin/create_c_stuff.pl";
 require "$cctk_home/lib/sbin/create_fortran_stuff.pl";
 require "$cctk_home/lib/sbin/GridFuncStuff.pl";
+require "$cctk_home/lib/sbin/output_config.pl";
 
 %thorns = &create_thorn_list($cctk_home, $activethorns);
 
@@ -72,10 +82,10 @@ foreach $thorn (keys %thorns)
 
 @fortran_module_file = &create_fortran_module_file(scalar(@implementations),@implementations,%parameter_database);
 
-foreach $line (@fortran_module_file)
-{
-  print "$line\n";
-}
+#foreach $line (@fortran_module_file)
+#{
+#  print "$line\n";
+#}
 
 #%public_parameters = &get_public_parameters(%parameter_database);
 
@@ -86,12 +96,12 @@ foreach $line (@fortran_module_file)
 
 @c_structures = &create_c_parameter_structures(scalar(@implementations),@implementations,%parameter_database);
 
-foreach $line (@c_structures)
-{
-  print "$line\n";
-}
+#foreach $line (@c_structures)
+#{
+#  print "$line\n";
+#}
 
-@subroutine = &create_c_param_init_subroutine("test2", %parameter_database);
+#@subroutine = &create_c_param_init_subroutine("test2", %parameter_database);
 
 
 
@@ -101,12 +111,12 @@ foreach $line (@c_structures)
 #  print "$line\n";
 #}
 
-@GFstuff = &CreateGroups(%interface_database);
+#@GFstuff = &CreateGroups(%interface_database);
 
-foreach $line (@GFstuff)
-{
-  print "$line\n";
-}
+#foreach $line (@GFstuff)
+#{
+#  print "$line\n";
+#}
 
 @make_thornlist = &CreateMakeThornlist(%thorns);
 
@@ -114,6 +124,8 @@ foreach $line (@make_thornlist)
 {
   print "$line\n";
 }
+
+OutputFile($config_dir, "make.thornlist", @make_thornlist);
       
 sub create_thorn_list
 {
