@@ -9,34 +9,31 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "hll.h"
-#include "hll_internal.h"
+#include <string.h>
+
+#include "StoreHandledData.h"
 
 static char *rcsid="$Id$";
 
-/* Static variables defining the array. */
+/* Purely internal definitions. */
 
-typedef struct 
-{
-  unsigned int in_use;
-  char *name;
-  void *data;
-} cHandleStorage;
+#ifndef TRUE
+#define TRUE 1
+#endif
+#ifndef FALSE
+#define FALSE 0
+#endif
 
-typedef struct
-{
-  cHandleStorage *array;
-  unsigned array_size;
-  unsigned first_unused;
-} cHandledData;
+
+static int FindNextUnused(cHandledData *storage, int first);
 
 
  /*@@
-   @routine    HLLi_AddHierarchy
+   @routine    CCTK_NewHandle
    @date       Fri May  8 12:56:43 1998
    @author     Tom Goodale
    @desc 
-   Adds an HLL Hierarchy object to the array.
+   Adds an data object to the array.
    Resizes the array if necessary.
    @enddesc 
    @calls     
@@ -52,63 +49,82 @@ int CCTK_NewHandle(cHandledData **storage, char *name, void *data)
   int return_code;
 
   void *temp;
-
-  /* Check if the array needs to be resized. */
-  if(hll_first_unused <= hll_array_size)
+  
+  if(*storage == NULL)
   {
-    if(!(temp = (void *)realloc(hll_array, (hll_array_size+1)*sizeof(hll_storage))))
-    {
-      /* Failed to allocate memory for new array element. */
-      *handle = HLL_HANDLE_NULL;
+    *storage = (cHandledData *)malloc(sizeof(cHandledData));
 
-      return_code = HLL_MEMORY_FAILURE;
+    if(*storage)
+    {
+      (*storage)->array = NULL;
+      (*storage)->array_size = 0;
+      (*storage)->first_unused = 0;
     }
     else
     {
-      hll_array = temp;
-
-      /* Fill in data in array. */
-      hll_array[hll_array_size].in_use = TRUE;
-      hll_array[hll_array_size].hierarchy = hierarchy;
-
-      *handle = hll_array_size;
-
-      /* Increase array size counter. */
-      hll_array_size++;
-
-      /* Record position of first unused array element. */
-      hll_first_unused = hll_array_size;
-
-      return_code = HLL_SUCCESS;
-    };
+      return_code = -1;
+    }
   }
-  else
+  
+  if(*storage)
   {
-    /* There's an available element in the array. */
-
-    if(hll_array[hll_first_unused].in_use == TRUE)
+    /* Check if the array needs to be resized. */
+    if((*storage)->first_unused <= (*storage)->array_size)
     {
-      /* The pointers have become corrupted in some fashion.
-       *
-       * Could write a repair function, but probably safer to just
-       * produce an error.
-       */
-      *handle = HLL_HANDLE_NULL;
-
-      return_code = HLL_FATAL_ERROR;
+      if(!(temp = (void *)realloc((*storage)->array, ((*storage)->array_size+1)*sizeof(cHandleStorage))))
+      {
+	/* Failed to allocate memory for new array element. */
+	
+	return_code = -2;
+      }
+      else
+      {
+	(*storage)->array = temp;
+	
+	/* Fill in data in array. */
+	(*storage)->array[(*storage)->array_size].in_use = TRUE;
+	(*storage)->array[(*storage)->array_size].data = data;
+	(*storage)->array[(*storage)->array_size].name = (char *)malloc((strlen(name)+1)*sizeof(char));
+	
+	if((*storage)->array[(*storage)->array_size].name)
+	{
+	  strcpy((*storage)->array[(*storage)->array_size].name, name);
+	}
+	
+	return_code = (*storage)->array_size;
+	
+	/* Increase array size counter. */
+	(*storage)->array_size++;
+	
+	/* Record position of first unused array element. */
+	(*storage)->first_unused = (*storage)->array_size;
+	
+      }
     }
     else
-    {      
-      /* Fill in data in array. */
-      hll_array[hll_first_unused].in_use = TRUE;
-      hll_array[hll_first_unused].hierarchy = hierarchy;
+    {
+      /* There's an available element in the array. */
 
-      *handle = hll_first_unused;
+      if((*storage)->array[(*storage)->first_unused].in_use == TRUE)
+      {
+	/* The pointers have become corrupted in some fashion.
+	 *
+	 * Could write a repair function, but probably safer to just
+	 * produce an error.
+	 */
+	return_code = -2;
+      }
+      else
+      {      
+	/* Fill in data in array. */
+	(*storage)->array[(*storage)->first_unused].in_use = TRUE;
+	(*storage)->array[(*storage)->first_unused].data = data;
       
-      /* Change pointer to first unused array element. */
-      hll_first_unused = HLLi_FindNextUnused(hll_first_unused);
-
-      return_code = HLL_SUCCESS;
+	return_code = (*storage)->first_unused;
+      
+	/* Change pointer to first unused array element. */
+	(*storage)->first_unused = FindNextUnused(*storage, (*storage)->first_unused);
+      };
     };
   };
 
@@ -117,40 +133,42 @@ int CCTK_NewHandle(cHandledData **storage, char *name, void *data)
 }
 
  /*@@
-   @routine    HLLi_RemoveHierarchy
+   @routine    CCTK_DeleteHandle
    @date       Fri May  8 14:13:16 1998
    @author     Tom Goodale
    @desc 
-   Removes an HLL Hierarchy from the array.
+   Removes a data object from the array.
    @enddesc 
    @calls     
-   @calledby   HLL_FreeHierarchy
+   @calledby   
    @history 
  
    @endhistory 
 
 @@*/
-int HLLi_RemoveHierarchy(HLL handle)
+int CCTK_DeleteHandle(cHandledData *storage, int handle)
 {
   int return_code;
 
-  if((handle != HLL_HANDLE_NULL)&&(handle < hll_first_unused)&&(handle >= 0))
+  if((handle < storage->first_unused)&&(handle >= 0))
   {
     /* It's a valid handle. */
-    hll_array[handle].in_use = FALSE;
-    hll_array[handle].hierarchy = NULL;
+    storage->array[handle].in_use = FALSE;
+    storage->array[handle].data = NULL;
+    free(storage->array[handle].name);
+    storage->array[handle].name = NULL;
 
-    if(handle < hll_first_unused)
+    if(handle < storage->first_unused)
     {
-      hll_first_unused = handle;
+      storage->first_unused = handle;
     };
 
-    return_code = HLL_SUCCESS;
+    return_code = 0;
   }
   else
   {
     /* The handle does not exist. */
-    return_code = HLL_HANDLE_INVALID;
+    return_code = 1;
   };
 
   return return_code;
@@ -159,11 +177,11 @@ int HLLi_RemoveHierarchy(HLL handle)
 
 
  /*@@
-   @routine    HLLi_FindNextUnused
+   @routine    FindNextUnused
    @date       Fri May  8 14:09:13 1998
    @author     Tom Goodale
    @desc 
-   Finds the next unused element in the array holding all HLL handles.
+   Finds the next unused element in the handle array.
    Returns the size of the array if all are in use.
    Assumes there are no unused ones before the value of the `first' parameter.
    @enddesc 
@@ -175,7 +193,7 @@ int HLLi_RemoveHierarchy(HLL handle)
 
 @@*/
 
-int HLLi_FindNextUnused(int first)
+static int FindNextUnused(cHandledData *storage, int first)
 {
   int current;
 
@@ -183,9 +201,9 @@ int HLLi_FindNextUnused(int first)
 
   /* Loop until the end of the array. */
 
-  while(current < hll_array_size)
+  while(current < storage->array_size)
   {
-    if(hll_array[current].in_use==FALSE) break;
+    if(storage->array[current].in_use==FALSE) break;
 
     current++;
   }
@@ -195,36 +213,143 @@ int HLLi_FindNextUnused(int first)
 }
     
  /*@@
-   @routine    HLLi_GetHierarchy
+   @routine    CCTK_GetHandledData
    @date       Fri May  8 17:36:33 1998
    @author     Tom Goodale
    @desc 
-   Gets a pointer to the HLL Hierarchy corresponding to the give handle.
+   Gets a pointer to the data corresponding to the give handle.
    @enddesc 
    @calls     
-   @calledby   HLL_InitialiseHierarchy HLL_SetFlags HLL_EvolveHierarchy HLL_FreeHierarchy
+   @calledby
    @history 
  
    @endhistory 
 
 @@*/
-HLL_Hierarchy *HLLi_GetHierarchy(int handle)
+void *CCTK_GetHandledData(cHandledData *storage, int handle)
 {
-  HLL_Hierarchy *hierarchy;
+  void *data;
 
-  if((handle != HLL_HANDLE_NULL)&&
-     (handle < hll_array_size)&&
+  if((handle < storage->array_size)&&
      (handle >= 0)&&
-     (hll_array[handle].in_use == TRUE))
+     (storage->array[handle].in_use == TRUE))
   {
-    /* The hierarchy exists */
-    hierarchy = hll_array[handle].hierarchy;
+    /* The data exists */
+    data = storage->array[handle].data;
   }
   else
   {
-    /* The Hierarchy is non-existant. */
-    hierarchy = NULL;
+    /* The data is non-existant. */
+    data = NULL;
   };
 
-  return hierarchy;
+  return data;
 }
+
+ /*@@
+   @routine    CCTK_GetHandle
+   @date       Tue Feb  2 10:55:34 1999
+   @author     Tom Goodale
+   @desc 
+   Gets the handle associated with a piece of data.  Also returns the data
+   associated with the handle for speed.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+int CCTK_GetHandle(cHandledData *storage, const char *name, void **data)
+{
+  int handle;
+  int current;
+
+  handle = -1;
+  *data = NULL;
+
+  for(current = 0; current < storage->array_size; current++)
+  {
+    if(!strcmp(name, storage->array[current].name))
+    {
+      handle = current;
+      *data = storage->array[current].data;
+      break;
+    }
+  }
+
+  return handle;
+}
+
+
+/*#define TEST_STOREHANDLEDDATA */
+#ifdef TEST_STOREHANDLEDDATA
+
+/* Test routine to allow the above code to be tested independently of
+ * other code. 
+ */
+
+static char first_name[]  = "First Item";
+static char first_data[]  = "First Data";
+static char second_name[] = "Second Item";
+static char second_data[] = "Second Data";
+static char third_name[]  = "Third Item";
+static char third_data[]  = "Third Data";
+
+int main(void)
+{
+  cHandledData *handledata;
+
+  char *data;
+
+  int handle, handle1, handle2, handle3;
+
+  handledata = NULL; 
+
+
+  /* Test creation of the data. */
+  handle1 = CCTK_NewHandle(&handledata, first_name, first_data);
+  handle2 = CCTK_NewHandle(&handledata, second_name, second_data);
+  handle3 = CCTK_NewHandle(&handledata, third_name, third_data);
+
+  /* Test accessing the data. */
+  if((data = CCTK_GetHandledData(handledata, handle1)))
+  {
+    printf("Name %s (%d) has data %s\n", first_name, handle1, data);
+  };
+
+  if((data = CCTK_GetHandledData(handledata, handle2)))
+  {
+    printf("Name %s (%d) has data %s\n", second_name, handle2, data);
+  };
+
+  if((data = CCTK_GetHandledData(handledata, handle3)))
+  {
+    printf("Name %s (%d) has data %s\n", third_name, handle3, data);
+  };
+
+  /* Test getting by name */
+
+  if((handle = CCTK_GetHandle(handledata, first_name, (void **)&data)) > -1)
+  {
+    printf("Name %s (%d, was %d) has data %s\n", first_name, handle, handle1, data);
+  };
+
+  if((handle = CCTK_GetHandle(handledata, second_name, (void **)&data)) > -1)
+  {
+    printf("Name %s (%d, was %d) has data %s\n", second_name, handle, handle2, data);
+  };
+
+  if((handle = CCTK_GetHandle(handledata, third_name, (void **)&data)) > -1)
+  {
+    printf("Name %s (%d, was %d) has data %s\n", third_name, handle, handle3, data);
+  };
+
+
+  return 0;
+
+}
+
+#endif
+  
