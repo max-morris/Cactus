@@ -143,7 +143,7 @@ int CactusDefaultEvolve(tFleshConfig *config)
   */
 
 
-  while (iteration<cctk_itlast && (cctk_final_time>cctk_initial_time?config->GH[0]->cctk_time<cctk_final_time:1)) 
+  while (iteration<cctk_itlast || (cctk_final_time>cctk_initial_time?config->GH[0]->cctk_time<cctk_final_time:0)) 
   {
 
 #ifdef DEBUG_CCTK
