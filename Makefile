@@ -16,7 +16,7 @@
 #
 #
 #   @enddesc
-#   @version $Id: Makefile,v 1.155 2004-06-01 09:58:48 tradke Exp $
+#   @version $Id: Makefile,v 1.156 2004-06-07 14:39:13 tradke Exp $
 # @@*/
 
 ##################################################################################
@@ -578,7 +578,9 @@ $(addsuffix -delete,$(CONFIGURATIONS)):
 	@echo $(DIVIDER)
 	if test "x$(DELETE_CONFIRMATION)" = "xyes" ; then          \
 	  echo "Really delete configuration $(@:%-delete=%) (no)?";\
-	  read yesno rest ;                                        \
+          if ( ! read yesno rest ); then                           \
+            yesno='no';                                            \
+          fi;                                                      \
 	  if test "x$$yesno" = "xyes" ; then                       \
 	    confirm=yes ;                                          \
 	  else                                                     \
@@ -721,11 +723,13 @@ endif
 	@echo Configuration $(@:%-config=%) does not exist.;
 	if test "x$(PROMPT)" = "xyes" ; then \
 	  echo Setup configuration $(@:%-config=%) \(yes\)?; \
-	  read yesno rest ; \
+          if ( ! read yesno rest ); then \
+            yesno='no'; \
+          fi; \
 	fi; \
 	if [ "x$$yesno" = "xno" -o "x$$yesno" = "xn" -o "x$$yesno" = "xNO" -o "x$$yesno" = "xN" ] ;\
 	then \
-	  echo Setup cancelled ;     \
+	  echo Setup of configuration $(@:%-config=%) cancelled ;     \
 	else \
 	  echo Setting up new configuration $(@:%-config=%); \
 	  if test -z "$(THORNLIST)" || (test -n "$(THORNLIST)" && test -r "$(THORNLIST_DIR)/$(THORNLIST)") ; \
@@ -1121,21 +1125,27 @@ cvsdiff:
 downsize:
 	@echo $(DIVIDER)
 	@echo Remove flesh and thorn documentation \(\no\)?
-	read yesno rest ;\
+	if ( ! read yesno rest ); then \
+	  yesno='no'; \
+	fi; \
 	if [ "x$$yesno" = "xyes" -o "x$$yesno" = "xy" -o "x$$yesno" = "xYES" -o "x$$yesno" = "xY" ] ;\
 	then  \
 	rm -rf doc; rm -rf arrangements/*/*/doc; \
 	echo $(DIVIDER)   ;  \
 	fi
 	@echo Remove thorn testsuites \(\no\)?
-	read yesno rest ;\
+	if ( ! read yesno rest ); then \
+	  yesno='no'; \
+	fi; \
 	if [ "x$$yesno" = "xyes" -o "x$$yesno" = "xy" -o "x$$yesno" = "xYES" -o "x$$yesno" = "xY" ] ;\
 	then  \
 	rm -rf arrangements/*/*/test; \
 	echo $(DIVIDER)   ;  \
 	fi
 	@echo Remove all configurations \(\no\)?
-	read yesno rest ;\
+	if ( ! read yesno rest ); then \
+	  yesno='no'; \
+	fi; \
 	if [ "x$$yesno" = "xyes" -o "x$$yesno" = "xy" -o "x$$yesno" = "xYES" -o "x$$yesno" = "xY" ] ;\
 	then  \
 	$(MAKE) distclean; \
@@ -1149,11 +1159,13 @@ downsize:
 	@echo "Cactus - version: $(CCTK_VERSION)"
 	if test "x$(PROMPT)" = "xyes" ; then \
 	  echo Setup configuration $@ \(yes\)?; \
-	  read yesno rest ; \
+          if ( ! read yesno rest ); then \
+            yesno='no'; \
+          fi; \
 	fi; \
 	if [ "x$$yesno" = "xno" -o "x$$yesno" = "xn" -o "x$$yesno" = "xNO" -o "x$$yesno" = "xN" ] ; \
 	then  \
-	  echo Setup cancelled ; \
+	  echo Setup of configuration $@ cancelled ; \
 	else \
 	  echo Setting up new configuration $@ ; \
 	  if test -z "$(THORNLIST)" || (test -n "$(THORNLIST)" && test -r "$(THORNLIST_DIR)/$(THORNLIST)") ; \
