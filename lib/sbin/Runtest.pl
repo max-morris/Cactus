@@ -36,6 +36,8 @@ else
 $current_directory = `pwd`;
 chop($current_directory);
 
+$current_directory =~ s,^//([^/]+)/,$1:/,;
+
 # Look to see if MPI is defined
 $extra = "$current_directory${sep}configs${sep}$config${sep}config-data${sep}cctk_extradefs.h";
 
@@ -173,7 +175,7 @@ sub runtest {
         }
     }
  
-    $cmd = "($command `pwd`$sep..$sep$executable ..$sep$inpf)";
+    $cmd = "($command $current_directory$sep$executable ..$sep$inpf)";
 
     chdir ($tsttop);
 
