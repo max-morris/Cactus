@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.58 1999-11-12 18:32:40 goodale Exp $
+#   @version $Id: Makefile,v 1.59 1999-12-01 22:26:32 lanfer Exp $
 # @@*/
 
 ##################################################################################
@@ -602,6 +602,24 @@ checkout:
 	@echo $(DIVIDER)
 	@echo Running app/arrangement/thorn checkout script
 	$(PERL) ./lib/sbin/checkout.pl
+
+# Create sysinfo file
+
+.PHONY sysinfo:
+
+sysinfo:
+	@echo $(DIVIDER)
+	@echo Please specify a configuration to run sysinfo with.
+	@echo $(DIVIDER)
+
+ifneq ($strip($(CONFIGURATIONS)),) 
+.PHONY $(addsuffix -sysinfo,$(CONFIGURATIONS)):
+
+$(addsuffix -sysinfo,$(CONFIGURATIONS)):
+	@echo $(DIVIDER)
+	@echo Running SystemInfo
+	$(PERL) ./lib/sbin/SystemInfo.pl $(@:%-sysinfo=%) 
+endif
 
 
 # Make the users manuals
