@@ -493,6 +493,9 @@ EOF
     CRAY-2:*:*:*)
 	echo cray2-cray-unicos
         exit 0 ;;
+    "CRAY T3E":*:*:*)
+	echo t3e-cray-unicos${UNAME_RELEASE}
+        exit 0 ;;
     F300:UNIX_System_V:*:*)
         FUJITSU_SYS=`uname -p | tr [A-Z] [a-z] | sed -e 's/\///'`
         FUJITSU_REL=`echo ${UNAME_RELEASE} | sed -e 's/ /_/'`
