@@ -41,11 +41,10 @@ else
     gcc)
      : ${C_DEPEND_OUT=' > $@'}
      ;;
-    cc|xlc)
+    cc|xlc|xlc_r)
      : ${C_DEPEND='$(CPP) -M $(CPPFLAGS)'}
      : ${C_DEPEND_OUT=' > /dev/null ; mv $(basename $(basename $@)).u $@'}
      : ${CFLAGS="-qspill=10000"}
-     : $CXXFLAGS="-qspill=10000"}
      ;;
     *)
      ;;
@@ -55,9 +54,10 @@ else
     "g++"|"c++")
      : ${CXX_DEPEND_OUT=' > $@'}
      ;;
-    xlC)
+    xlC|xlC_r)
      : ${CXX_DEPEND='$(CPP) -M $(CPPFLAGS)'}
      : ${CXX_DEPEND_OUT=' > /dev/null ; mv $(basename $(basename $@)).u $@'}
+     : ${CXXFLAGS="-qspill=10000"}
      ;;
     *)
      ;;
@@ -77,7 +77,7 @@ else
     NATIVE_MPI_INC_DIRS="/usr/lpp/ppe.poe/include"
     if test "$MPI" = "NATIVE" ; then
       case "$CC:$CXX" in 
-        "xlc:xlC"|"cc:xlC")
+        "xlc:xlC"|"cc:xlC"|"xlc_r:xlC_r")
           LD=mpCC
           ;;
          *)
