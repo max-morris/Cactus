@@ -48,6 +48,8 @@ else
       LINUX_F90_COMP=Intel
     elif test "`$F90 -v 2>&1 | grep -i compaq`" ; then
       LINUX_F90_COMP=Compaq
+    elif test "`$F90 -v 2>&1 | grep PathScale`" ; then
+      LINUX_F90_COMP=PathScale
     else
       # Ok, those were the easy ones, now try more obscure things
       echo "      subroutine foo" > foo.f
@@ -77,6 +79,8 @@ else
        LINUX_F90_COMP=Intel
     elif test "`$F90 -v 2>&1 | grep -i compaq`" ; then
        LINUX_F90_COMP=Compaq
+    elif test "`$F90 -v 2>&1 | grep PathScale`" ; then
+       LINUX_F90_COMP=PathScale
     else
       echo 'Unknown Linux f77 compiler.'
       echo 'Please add appropriate information to'
@@ -288,6 +292,13 @@ else
     Compaq)
       : ${LIBS='for m'}
       ;;
+    PathScale)
+#      : ${F77_OPTIMISE_FLAGS='-Ofast'}
+#      : ${F90_OPTIMISE_FLAGS='-Ofast'}
+      : ${F77_WARN_FLAGS='-fullwarn'}
+      : ${F90_WARN_FLAGS='-fullwarn'}
+      : ${LIBS='pathfortran'}
+      ;;
     none)
       : ${LIBS='m'}
       ;;
@@ -330,6 +341,9 @@ else
     pgcc)
       : ${C_OPTIMISE_FLAGS='-fast -O3 -Minfo -Mneginfo -Mvect=assoc'}
       ;;
+    pathcc)
+#      : ${C_OPTIMISE_FLAGS='-O3'}
+      ;;
   esac
 
   case `basename $CXX` in
@@ -360,6 +374,9 @@ else
       if test `basename $LD` = 'pgCC'; then
         : ${LDFLAGS='-Wl,--allow-multiple-definition'}
       fi
+      ;;
+    pathCC)
+#      : ${CXX_OPTIMISE_FLAGS='-O3'}
       ;;
   esac
 
