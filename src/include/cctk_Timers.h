@@ -37,7 +37,7 @@ typedef struct
 
 typedef struct
 {
-  cTimerData info;
+  int  n_vals;
   void *(*create)(int);
   void (*destroy)(int, void *);
   void (*start)(int, void *);
@@ -45,7 +45,7 @@ typedef struct
   void (*reset)(int, void *);
   void (*get)(int, void *, cTimerVal *);
   void (*set)(int, void *, cTimerVal *);
-} cTimerFuncs;
+} cClockFuncs;
 
 
 
@@ -55,7 +55,9 @@ typedef struct
 extern "C" {
 #endif
 
-int CCTK_ClockRegister(const char *name, cTimerFuncs *functions);
+int CCTK_ClockRegister(const char *name, const cClockFuncs *functions);
+int CCTK_NumTimers (void);
+const char *CCTK_TimerName (int timer_handle);
 int CCTK_TimerCreate(const char *name);
 int CCTK_TimerCreateI(void);
 int CCTK_TimerDestroy(const char *name);
