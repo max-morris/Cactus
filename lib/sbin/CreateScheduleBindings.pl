@@ -322,8 +322,8 @@ sub ScheduleBlock
     }
     else
     {
-      print STDERR "Unknown language " .$rhschedule_db->{"\U$thorn\E BLOCK_$block LANG"} ."\n";
-      $CST_errors++;
+      $mess = "Unknown language " .$rhschedule_db->{"\U$thorn\E BLOCK_$block LANG"} ."\n";
+      &CST_error(0,$mess,__LINE__,__FILE__);
       return ("", "");
     }
     $prototype = "extern int $function(void); /* Note that this is a cheat, we just need a function pointer. */\n";
@@ -333,9 +333,9 @@ sub ScheduleBlock
   }
   else
   {
-    print STDERR "Internal error: Unknown schedule block type " . $rhschedule_db->{"\U$thorn\E BLOCK_$block TYPE"} . "\n";
+    $mess = "Internal error: Unknown schedule block type " . $rhschedule_db->{"\U$thorn\E BLOCK_$block TYPE"} . "\n";
+    &CST_error(0,$mess,__LINE__,__FILE__);
     return ("", "");
-    $CST_errors++;
   }
   
   $buffer .= "\"" . $rhschedule_db->{"\U$thorn\E BLOCK_$block AS"} . "\"" . ",\n";
@@ -420,8 +420,9 @@ sub ScheduleStatement
   }
   else
   {
-    print STDERR "Unknown statement type '" .$rhschedule_db{"\U$thorn\E STATEMENT_$statement TYPE"} ."'\n";
-    $CST_errors++;
+
+    $mess = "Unknown statement type '" .$rhschedule_db{"\U$thorn\E STATEMENT_$statement TYPE"} ."'\n";
+    &CST_error(0,$mess,__LINE__,__FILE__);
     return ("", "");
   }
 
@@ -477,8 +478,8 @@ sub ScheduleSelectGroups
 	}
 	else
 	{
-	  print STDERR "Schedule error: Thorn $thorn - group $group doesn't exist.\n";
-	  $CST_errors++;
+	  $mess = "Schedule error: Thorn $thorn - group $group doesn't exist.\n";
+	  &CST_error(0,$mess,__LINE__,__FILE__);
 	  next;
 	}
 
@@ -492,8 +493,8 @@ sub ScheduleSelectGroups
 	}
 	else
 	{
-	  print STDERR "Schedule error: Thorn $thorn - group $group doesn't exist.\n";
-	  $CST_errors++;
+	  $mess = "Schedule error: Thorn $thorn - group $group doesn't exist.\n";
+	  &CST_error(0,$mess,__LINE__,__FILE__);
 	  next;
 	}	
       }
@@ -544,14 +545,16 @@ sub ScheduleSelectGroups
       }
       if(! $foundit)
       {
-	print STDERR "Schedule error: Thorn $thorn - group $group doesn't exist.\n";
-	$CST_errors++;
+	$mess = "Schedule error: Thorn $thorn - group $group doesn't exist.\n";
+	&CST_error(0,$mess,__LINE__,__FILE__);
+	
       }
     }
     else
     {
-      print STDERR "Schedule error: Thorn $thorn - group $group doesn't exist.\n";
-      $CST_errors++;
+      $mess = "Schedule error: Thorn $thorn - group $group doesn't exist.\n";
+      &CST_error(0,$mess,__LINE__,__FILE__);
+
     }
   }
 
