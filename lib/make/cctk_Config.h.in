@@ -59,18 +59,10 @@
 
 #undef CCTK_FCALL
 
-/* DEPRECATED IN BETA 9 */
-#define FMODIFIER CCTK_FCALL
-/* END DEPRECATED IN BETA 9 */
-
 /* What debugging options to use */
+
 #undef CCTK_DEBUG
 #undef CCTK_TRACEMEMORY
-
-/* How to create a directory */
-
-#undef MKDIR
-#undef MKDIRFLAGS
 
 /* Various library functions */
 

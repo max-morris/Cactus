@@ -681,23 +681,6 @@ esac
 
 AC_DEFINE_UNQUOTED(CCTK_FCALL, $CCTK_FCALL) 
 
-# DEPRECATED IN BETA 9
-
-: ${FMODIFIER=""}
-
-AC_DEFINE_UNQUOTED(FMODIFIER, $FMODIFIER) 
-
-
-# Define how to make a directory in the config.h file
-
-AC_DEFINE_UNQUOTED(MKDIR, "$MKDIR") 
-
-AC_SUBST(MKDIRFLAGS)
-
-: ${MKDIRFLAGS="-p"}
-
-AC_DEFINE_UNQUOTED(MKDIRFLAGS, " $MKDIRFLAGS ") 
-
 
 # The perl scripts run by the make system need to have their names
 # changed if under cygwin - e.g. //d/foo needs to be d:/foo
