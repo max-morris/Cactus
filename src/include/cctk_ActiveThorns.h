@@ -12,8 +12,7 @@
 #define __ACTIVETHORNS_H_
 
 #include <stdio.h>
-#include "SKBinTree.h"
-
+#include "SKBinTree.h"   
 
 #ifdef __cplusplus 
 extern "C" {

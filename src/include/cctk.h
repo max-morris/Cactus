@@ -23,6 +23,10 @@
 
 #include "definethisthorn.h"
 
+/* Include the constants */
+
+#include "cctk_constants.h"
+
 /* Define some stuff */
 
 #ifdef FCODE
@@ -68,11 +72,15 @@
 #include "cctk_Flesh.h"
 #include "cctk_IO.h"
 #include "cctk_Comm.h"
+#include "cctk_GHExtensions.h"
 
+#include "cctk_ActiveThorns.h"
 #include "cctk_Banner.h"
 #include "cctk_Coord.h"
 #include "cctk_Groups.h"
 #include "cctk_GroupsOnGH.h"
+#include "cctk_GHExtensions.h"
+#include "cctk_Misc.h"
 #include "cctk_WarnLevel.h"
 
 #define CCTK_GFINDEX3D(GH,i,j,k) ((i) + GH->cctk_lsh[0]*((j)+GH->cctk_lsh[1]*(k)))
@@ -135,7 +143,6 @@
 
 extern int _cctk_one;
 
-#define CCTK_WARN(a,b) CCTK_Warn(a,__LINE__,__FILE__,CCTK_THORNSTRING,b)
 #define CCTK_EQUALS(a,b) (CCTK_Equals(a,b)==1)
 
 #define CCTK_PASS_CTOC cctkGH
@@ -143,20 +150,19 @@ extern int _cctk_one;
 #define CCTK_DELTA_SPACE(x) cctk_delta_space[x]/cctk_levfac[x]
 #define CCTK_DELTA_TIME cctk_delta_time
 
+#define CCTK_WARN(a,b) CCTK_Warn(a,__LINE__,__FILE__,CCTK_THORNSTRING,b)
+
 #endif /*CCODE*/
 
-#define CCTK_VARIABLE_CHAR    1
-#define CCTK_VARIABLE_INT     2
-#define CCTK_VARIABLE_REAL    3
-#define CCTK_VARIABLE_COMPLEX 4
+#define CCTK_INFO(a) CCTK_Info(CCTK_THORNSTRING,a)
+#define CCTK_PARAMWARN(a) CCTK_ParamWarn(CCTK_THORNSTRING,a)
 
-
-/*#define CCTK_MAKESTRING(x) CCTK_REALSTRING(x)
+/*
+#define CCTK_MAKESTRING(x) CCTK_REALSTRING(x)
 #define CCTK_REALSTRING(x) #x
 #define CCTK_WARN(a,b) CCTK_Warn(a,CCTK_MAKESTRING(CCTK_THORN),b,__LINE__,__FILE__)
 */
-#define CCTK_INFO(a) CCTK_Info(CCTK_THORNSTRING,a)
-#define CCTK_PARAMWARN(a) CCTK_ParamWarn(CCTK_THORNSTRING,a)
+
 
 #endif
 

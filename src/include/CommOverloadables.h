@@ -9,6 +9,8 @@
    @version $Header$
  @@*/
 
+#include "cctk_Flesh.h"
+
 #ifdef ARGUMENTS
 #undef ARGUMENTS
 #endif
@@ -42,13 +44,13 @@ OVERLOADABLE(Abort)
 #undef ARGUMENTS
 #define ARGUMENTS tFleshConfig *config, int convergence_level
 #undef RETURN_TYPE 
-#define RETURN_TYPE cGH *
+#define RETURN_TYPE cGH * 
 OVERLOADABLE(SetupGH)
 
 #undef ARGUMENTS
 #define ARGUMENTS cGH *GH, int dir, int group, const char *groupname
 #undef RETURN_TYPE 
-#define RETURN_TYPE int *
+#define RETURN_TYPE int * 
 OVERLOADABLE(ArrayGroupSizeB)
 
 #undef ARGUMENTS
