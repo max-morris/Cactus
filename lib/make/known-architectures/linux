@@ -172,21 +172,19 @@ else
        : ${LIBS="fortran ffio m"} 
        ;;
      Intel)
-       case "$host_cpu" in 
-         i?86)
-           : ${F77FLAGS='-132 -w95'}
-           : ${F90FLAGS='-132 -w95'}
-           : ${F77_OPTIMISE_FLAGS='-O3'}
-           : ${F90_OPTIMISE_FLAGS='-O3'}
-           : ${LIBS="IEPCF90 F90 m"}
-           if test "$CC" != "icc" -a -n "$IA32ROOT" ; then
-             : ${LIBDIRS='$(IA32ROOT)/lib'}
-           fi
-           ;;
-         *)
-           : ${LIBS="IEPCF90 F90 C m"}
-           ;;
-       esac
+       : ${F77FLAGS='-132 -w95'}
+       : ${F90FLAGS='-132 -w95'}
+       : ${F77_OPTIMISE_FLAGS='-O3'}
+       : ${F90_OPTIMISE_FLAGS='-O3'}
+       : ${LIBS="IEPCF90 F90 m"}
+
+       # add the libpath if the linker is not Intel
+       if test "$LD" != "icc" -a -n "$IA32ROOT" ; then
+         : ${LIBDIRS='$(IA32ROOT)/lib'}
+       fi
+       if test "$LD" != "ecc" -a -n "$IA64ROOT" ; then
+         : ${LIBDIRS='$(IA64ROOT)/lib'}
+       fi
        ;;
      Compaq)
        : ${LIBS="for m"}
