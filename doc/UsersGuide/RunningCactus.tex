@@ -341,7 +341,7 @@ For more CVS commands on how to add files, etc. please refer to appendix
 \label{sec:dist}
 
 A fresh CCTK checkout creates a directory {\tt ./CCTK} with the
-following files substructure:
+following files and subdirectories:
 \begin{itemize}
 
 \item{\tt ./CVS/} the CVS book-keeping directory, present in every subdirectory.
@@ -366,64 +366,68 @@ configs directory on scratch space, say {\tt scratch/cactus\_configs/} (where
 {\tt scratch/} is your scratch directory), and soft link ({\tt ln -s
 scratch/cactus\_configs cactus/configs/}) it to the Cactus directory.
 
-When the code has been compiled for some configuration CONF, the
-directory {\tt configs/CONF/} contains the following:
+Configurations are descibed in detail in section \ref{sec:coaco}.
 
-\begin{itemize}
+%When the code has been compiled for some configuration CONF, the
+%directory {\tt configs/CONF/} contains the following:
 
-\item {\tt ActiveThorns} 
+%\begin{itemize}
 
-\item {\tt datestamp.o}
+%\item {\tt ActiveThorns} 
 
-\item {\tt bindings/} contains all the files created by the perl
-scripts, sorted into subdirectories {\tt Parameters}, 
-{\tt Variables}, {\tt Schedule}, {\tt thorn\_***} (one for each thorn).
+%\item {\tt datestamp.o}
 
-\item {\tt build/} contains the post-processed source code, the
-dependencies and the object files, sorted into the subdirectories {\tt
-Cactus}, {\tt CactusBindings} and {\tt thorn\_***}.
+%\item {\tt bindings/} contains all the files created by the perl
+%scripts, sorted into subdirectories {\tt Parameters}, 
+%{\tt Variables}, {\tt Schedule}, {\tt thorn\_***} (one for each thorn).
 
-\item {\tt config-data} : contains the files created by the configure
-script:
+%\item {\tt build/} contains the post-processed source code, the
+%dependencies and the object files, sorted into the subdirectories {\tt
+%Cactus}, {\tt CactusBindings} and {\tt thorn\_***}.
 
-\begin{itemize}
+%\item {\tt config-data} : contains the files created by the configure
+%script:
 
-\item {\tt config.cache}
+%\begin{itemize}
 
-\item {\tt config.h}
+%\item {\tt config.cache}
 
-\item {\tt config.log}
+%\item {\tt config.h}
 
-\item {\tt config.status}
+%\item {\tt config.log}
 
-\item {\tt fortran\_name.pl} (used to determine how fortran routines
-are called from C) 
+%\item {\tt config.status}
 
-\item {\tt make.config.defn} (contains compilers etc. for a configuration)
+%\item {\tt fortran\_name.pl} (used to determine how fortran routines
+%are called from C) 
 
-\item {\tt make.config.deps}
+%\item {\tt make.config.defn} (contains compilers etc. for a configuration)
 
-\item {\tt make.config.rule} (rules to generate object files from source files)
-\end{itemize}
+%\item {\tt make.config.deps}
 
-\item {\tt lib} : contains the libraries built from the object files,
+%\item {\tt make.config.rule} (rules to generate object files from source files)
+%\end{itemize}
 
-\begin{itemize}
+%\item {\tt lib} : contains the libraries built from the object files,
 
-\item {\tt libCactus.a} for the flesh
+%\begin{itemize}
 
-\item{\tt llibCactusBinding.a} for the Bindings 
+%\item {\tt libCactus.a} for the flesh
 
-\item {\tt llib***.a} for each thorn
+%\item{\tt llibCactusBinding.a} for the Bindings 
 
-\end{itemize}
+%\item {\tt llib***.a} for each thorn
 
-{\q It might be useful to give a couple of commands like nm for seeing
-what is in libraries.}
+%\end{itemize}
 
-\item {\tt scratch}: empty at the end.
+%{\q It might be useful to give a couple of commands like nm for seeing
+%what is in libraries.}
 
-\end{itemize}
+%\item {\tt scratch}: empty at the end.
+
+%\end{itemize}
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -457,52 +461,239 @@ system.
     collections} compiled into your executable.
 \end{enumerate}
 
+Once a configuration has been created, by {\tt gmake <confname>} as described
+in detail in the next section, a single call to {\tt gmake} will compile the 
+code.  The first time will display your ActiveThorns list, and give you the
+chance to edit it before continuing.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Compilation and configuartions of the CCTK and its Packages}
-\label{sec:coancoof}
+\section{Creating a configuration}
+\label{sec:coaco}
 
-Building the code with GNU make is easy. Use gmake with the following syntax:
-{\t gmake [configuration options] <CONF>}
+At its simplest, this is done by {\tt gmake <confname>}.  This will generate
+a configuration with the specified name, doing its best to automatically
+determine the compilers and compilation flags suitable for the current 
+architecture.
 
-{\tt gmake} is the GNU make program, {\tt configuration options}
-denotes optional arguments.  The configuration name {\tt CONF}
-references the configuration setting you chose to build. You can pick
-an arbitrary name (e.g. {\tt TEST\_BUILD}), later you can reference this particular
-configuration setting by using that name. The default for {\tt CONF}
-is the name of your operating system (e.g. {\tt LINUX}).
+There are a number of additional command line arguments which may be supplied 
+to override some parts of the procedure.
 
-{\q this is not consistent: the first time I can do gmake and it does
-  NOT ask me, if I want to setup IRIX6, e.g. but takes the
-  default. then I DO have to specify 
-  the CONF. IMHO it shoudl always be obligatory.
-  Also, it prompts me, ``do you really want to ... reminds
-  me of windows:-) }
+\subsection{Configuration options}
 
-{\q What are the configuration-options ?}
+There are two ways to pass options to the configuration process from the
+gmake command line.  
 
-The gmake-process has to be repeated several times.
+Either you can say {\tt options=<file>} and specify a file containing the 
+options, or you can pass them in individually on the command line.
 
-\begin{enumerate}
-\item{}The first gmake-process configures the CCTK system by picking the
-standard compilers, etc and creates a directory tree in {\tt
-  ./configs/CONF} which will later contain the configuration specific
-files. 
-\item{} You will ask to issue {\tt gmake <CONF>} again and you will be
-  presented a list of all thorns the CCTK has found. You will be
-  asked, whether you wish to edit 
-  this list to remove thorns, e.g. Answer {\tt yes} to be able to edit
-  the list with the editor specified in the {\tt \$EDITOR} 
-  environment variable. After closing the editor or answering with {\tt
-    no} the make process will continue. 
-\end{enumerate}
+All options may be specified in the options file, an a subset of them on
+the command line.
 
-The make process will set up subdirectories in the {\tt ./configs}
-directory that contain the configuration specific files. The directory
-structure is 
+\subsection{Available options}
+
+There are a plethora of available options.
+
+\begin{itemize}
+\item {\tt Compiler and tool specification}
+
+These are used to specify which compilers and other tools to use:
+
+\begin{itemize}
+\item {\tt CC}
+The C compiler
+\item {\tt CXX}
+The C++ compiler
+\item {\tt F90}
+The Fortran 90 compiler
+\item {\tt F77}
+The FORTRAN 77 compiler.
+\item {\tt LD}
+The linker.
+\item {\tt AR}
+The archiver used for generating libraries.
+\item {\tt Ranlib}
+The archive indexer to use.
+\item {\tt MKDIR}
+The program to use to create a directory.
+\item {\tt SHELL}
+The shell to use.
+
+\end{itemize}
+
+\item {\tt Compilation and tool flags}
+
+Flags which are passed to the compilers and the tools.
+
+\begin{itemize}
+\item {\tt CFLAGS}
+Flags for the C compiler
+
+\item {\tt CXXFLAGS}
+Flags for the C++ compiler
+
+\item {\tt F90FLAGS}
+Flags for the Fortran 90 compiler
+
+\item {\tt F77FLAGS}
+Flags for the FORTRAN 77 compiler
+
+\item {\tt LDFLAGS}
+Flags for the linker
+
+\item {\tt ARLAGS}
+Flags for the archiver
+
+\end{itemize}
+
+\item {\tt Library flags}
+
+Used to specify auxiliary libraries and directories to find them in.
+
+\begin{itemize}
+
+\item {\tt LIBS}
+The additional libraries.
+
+\item {\tt LIBDIRS}
+Any other library directories.
+
+\end{itemize}
+
+\item {\tt Extra include directories}
+
+\begin{itemize}
+\item {\tt SYS\_INC\_DIRS}
+Used to specify any additional directories for system include files
+\end{itemize}
+
+\item {\tt Compile-only flags}
+
+Used to specify options to compilers to make them only compile.
+
+\begin{itemize}
+\item {\tt CCOMPILEONLY}
+
+\item {\tt FCOMPILEONLY}
+\end{itemize}
+
+\item {\tt Precision options}
+
+\begin{itemize}
+
+Used to specify the precision of the default real and integer data types,
+specified as the number of bytes the data takes up.  Note that not all
+values will be valid on all architectures.
+
+\item {\tt REAL\_PRECISION}
+Allowed values are 16,8,4 .
+
+\item {INTEGER\_PRECISION}
+Allowed values are 8,4 and 2 .
+
+\end{itemize}
+
+\item {\tt Executable name}
+
+\begin{itemize}
+\item {\tt EXE }
+The name of the executable.
+\end{itemize}
+
+\end{itemize}
+
+\subsection{The options file}
+
+This file can contain all the above options.  It consists of lines of the form
 \begin{verbatim}
+<option> [=] ...
 \end{verbatim}
 
-{\bf Notes and Caveats}
+where the = sign is optional.
+
+\subsection{Command line configuration options}
+
+The following options may be passed directly on the command line via
+
+\begin{verbatim}
+<option>=...
+\end{verbatim}
+
+CC,F90,F77,LD,CFLAGS,F90FLAGS,F77FLAGS,
+LDFLAGS,REAL\_PRECISION,INTEGER\_PRECISION .
+
+
+\subsection{File layout after a configuration has been created }
+
+The configuration process sets up various subdirectories and files in the 
+{\tt ./configs} directory to contain the configuration specific files, these
+are placed in a directory with the name of the configuration.
+
+\begin{itemize}
+
+\item {\tt config-data} : contains the files created by the configure
+script:
+
+The most important ones are
+
+\begin{itemize}
+
+\item {\tt make.config.defn} 
+contains compilers and compilation flags for a configuration.  
+
+\item {\tt config.h}
+The main configuration header file, containing architecture specific
+definitions.
+
+\item {\tt cctk\_archdefs.h}
+An architecture specific header file containing things which cannot be
+automatically detected, and have thus been hand-coded for this architecture.
+\end{itemize}
+
+These are the first files which should be checked or modified to suite any
+peculiarities of this configuration.
+
+In addition the following files may be of some use.
+
+\begin{itemize}
+\item {\tt fortran\_name.pl} 
+A perl script used to determine how the Fortran compiler names subroutines.  
+This is used to make some C routines callable from Fortran, and Fortran 
+routines callable from C.
+
+\item {\tt make.config.deps}
+Initially empty.  Can be edited to add extra architecture specific dependencies
+needed to generate the executable.
+
+\item {\tt make.config.rule} 
+Make rules for generating object files from source files.
+
+\end{itemize}
+
+Finally, autoconf generates the following files.
+
+\begin{itemize}
+
+\item {\tt config.log}
+A log of the autoconf process.
+
+\item {\tt config.status}
+A scrit which may be used to regenerate the configuration.
+
+\item {\tt config.cache}
+An internal file used by autoconf.
+
+\end{itemize}
+
+\item {\tt lib} 
+An empty directory which will contain the libraries created for each thorn.
+
+\item {\tt build} 
+An empty directory which will contain the object files generated for this 
+configuration, and preprocessed source files.
+
+\end{itemize}
+
+\subsection{Notes and Caveats}
 \begin{itemize}
 \item{} Instead of using the editor to specify the thorns you want to
   have compiled, you can {\em edit} the {\em ActiveThorns List} outside
@@ -522,10 +713,6 @@ structure is
   something scary like vi. If you don't know how to use vi or wish to
   use your favorite editor instead, reset this environment variable.
 \end{itemize}
-
-{\q move setup file elsewhere.}
-
-{\q move executable elsewhere, and make one for each configuration.}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{gmake targets}
@@ -586,66 +773,13 @@ is to do.
 \section{Compiling in thorns}
 \label{sec:cointh}
 
-{\q This is way to specific for the section ``Compile'' in my opinion.
-This shoudl go with the thorn writing.}
+Cactus compiles in all thorns listed in {\tt configs/CONF/ActiveThorns}, 
+if they have been checked out.
 
-Cactus compiles in all thorns listed in {\tt
-configs/CONF/ActiveThorns}. {\q If the thorn has not been checked
-out...It IGNORES ?} Cactus looks for source code in a thorn's {\tt src}
-directory. It first looks for a file {\tt make.code.defn} which
-should contain
+The {\tt ActiveThorns} file is simply a list of the form
+<package>/<thorn>.  All text on appearing on a line after a \# sign
+is ignored, so comments can be included.
 
-\begin{itemize}
-
-\item {\t SRCS = <list of all source files in this directory>}
-
-\item {\t SUBDIRS = <list of all subdirectories containing source files>}
-
-\end{itemize}
-
-and each subdirectory mentioned should also contain a {\tt
-make.code.defn} file with a {\tt SRCS} line ({\tt SUBDIRS} in a
-subdirectory {\tt make.code.defn} file will be ignored).
-
-The {\tt make.code.defn} file in a directory is included at the top of
-the makefile {\q where does it sit?}  used to build the sources. If a
-file {\tt make.code.deps} exists in the directory {\q where?} it is
-included at the bottom.
-
-The standard make system may be overridden by placing a makefile
-called {\tt Makefile} in the {\tt src/} directory.  This can do
-whatever it likes, but must create a library called
-
-{\tt \$(NAME)}
-
-(which is actually {\tt \$(CCTK\_LIBDIR)/lib<thorn>.a }). {\q We need more detail here. What does ``is
-actually'' mean?}
-
-{\q Watch for CCTK here and elsewhere. Don't remove this query before
-CCTK is gone.}
-
-A makefile is passed the following variables
-
-{\q How many makefiles are involved? Which are created at runtime etc.}
-
-\begin{itemize}
-
-\item {\tt \$(CCTK\_HOME)} - the main CCTK directory
-
-\item {\tt \$(TOP)}    - the CONF directory
-
-\item {\tt \$(SRCDIR)} - the directory in which the source files can be found
-
-\item {\tt \$(CONFIG)} - the directory containing the configuration files
-
-\item {\tt \$(THORN)}  - the thorn name
-
-\item {\tt \$(SCRATCH\_BUILD)} - the scratch directory where f90 module
-files should end up if they need to be seen by other thorns.
-
-\item {\tt \$(NAME)}.
-
-\end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -654,19 +788,6 @@ files should end up if they need to be seen by other thorns.
 
 simple make and test suite
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-
-{\q Tom, this is for you}
-
-        b) Make methodology (dependencies,libraries, thorn make files
-        etc)
-
-      d) Configuration options
-
-      f) (New platforms??)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

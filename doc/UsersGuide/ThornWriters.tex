@@ -6,6 +6,10 @@
 
 \chapter{Thorn concepts} 
 
+
+
+
+
       (This section has to contain enough explanation to make the rest of
        the writers guide readable the first time through)
 (The hardest bugs to find are
@@ -24,6 +28,24 @@ behavior of someone else's thorn.)
       e) Understanding the RFR concept
       f) Understanding the GH concept
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{packages}
+
+Thorns are grouped into {\em packages}.  This is a logical grouping of
+thorns which is purely for administrative purposes.  The compiled
+code knows nothing about packages.
+
+The packages live in the `packages' directory off the main CCTK directory.  
+Package names must be unique, and cannot start with a `\#', or finish
+with `~' or `.bak'.
+
+Inside a package directory there is a directory for each thorn belonging
+to the package.  Thorn names have the same restrictions as package names,
+with the addition that a thorn cannot be called `doc'.  This name is
+reserved for package documentation.
+
 \section{Data Types and Sizes}
 
 Cactus supports the following fixed size data types
@@ -33,16 +55,16 @@ Cactus supports the following fixed size data types
 \hline
 Data Type & Size (bytes) & Variable Type & Fortran Equivalent\\
 \hline
-{\t CCTK\_INT4} & 4 & {\t CCTK\_VARIABLE\_INT4} & {\t integer*4}\\
-{\t CCTK\_INT8} & 8 & {\t CCTK\_VARIABLE\_INT8} & {\t integer*8}\\
-{\t CCTK\_INT16} & 16 & {\t CCTK\_VARIABLE\_INT16} & {\t integer*16}\\
-{\t CCTK\_REAL4} & 4 & {\t CCTK\_VARIABLE\_REAL4} & {\t real*4}\\
-{\t CCTK\_REAL8} & 8 & {\t CCTK\_VARIABLE\_REAL8} & {\t real*8}\\
-{\t CCTK\_REAL16} & 16 & {\t CCTK\_VARIABLE\_REAL16} & {\t real*16}\\
-{\t CCTK\_COMPLEX4} & 4 & {\t CCTK\_VARIABLE\_COMPLEX4} & \\
-{\t CCTK\_COMPLEX8} & 8 & {\t CCTK\_VARIABLE\_COMPLEX8} & \\
-{\t CCTK\_COMPLEX16} & 16 & {\t CCTK\_VARIABLE\_COMPLEX16} & \\
-{\t CCTK\_CHAR} & 4 & {\t CCTK\_VARIABLE\_CHAR} & {\t char} \\ \hline
+{\t CCTK\_INT4}     & 4 & {\t CCTK\_VARIABLE\_INT4}     & {\t integer*4}\\
+{\t CCTK\_INT8}     & 8 & {\t CCTK\_VARIABLE\_INT8}     & {\t integer*8}\\
+{\t CCTK\_INT16}    & 16& {\t CCTK\_VARIABLE\_INT16}    & {\t integer*16}\\
+{\t CCTK\_REAL4}    & 4 & {\t CCTK\_VARIABLE\_REAL4}    & {\t real*4}\\
+{\t CCTK\_REAL8}    & 8 & {\t CCTK\_VARIABLE\_REAL8}    & {\t real*8}\\
+{\t CCTK\_REAL16}   & 16& {\t CCTK\_VARIABLE\_REAL16}   & {\t real*16}\\
+{\t CCTK\_COMPLEX4} & 4 & {\t CCTK\_VARIABLE\_COMPLEX4} & {\t complex*4}\\
+{\t CCTK\_COMPLEX8} & 8 & {\t CCTK\_VARIABLE\_COMPLEX8} & {\t complex*8}\\
+{\t CCTK\_COMPLEX16}& 16& {\t CCTK\_VARIABLE\_COMPLEX16}& {\t complex*16}\\
+{\t CCTK\_CHAR}     & 1 & {\t CCTK\_VARIABLE\_CHAR}     & {\t character} \\ \hline
 \end{tabular}
 \end{center}
 
@@ -57,10 +79,10 @@ of the following data types:
 \begin{center}
 \begin{tabular}{|c|c|c|c|}
 \hline
-Data Type             & Default Size (bytes) & Variable Type & Configuration Option\\
+Data Type          & Default Size (bytes) & Variable Type & Configuration Option\\
 \hline
-{\t CCTK\_INT} & 8 & {\t CCTK\_VARIABLE\_INT} & {\t INT\_PRECISION}\\
-{\t CCTK\_REAL} & 8 & {\t CCTK\_VARIABLE\_REAL} & {\t REAL\_PRECISION}\\
+{\t CCTK\_INT}     & 4 & {\t CCTK\_VARIABLE\_INT} & {\t INTEGER\_PRECISION}\\
+{\t CCTK\_REAL}    & 8 & {\t CCTK\_VARIABLE\_REAL} & {\t REAL\_PRECISION}\\
 {\t CCTK\_COMPLEX} & (8,8) & {\t CCTK\_VARIABLE\_COMPLEX} & Same as real precision\\
 \hline
 \end{tabular}
@@ -72,7 +94,7 @@ variables in the thorn routines. Note that variable declarations in
 thorns should obviously match with definitions in the interface files
 where appropriate.
 
-Also provided, are a set of (FIXME: What are these called???) which
+Also provided, are a set of macros which
 are interpreted by the preprocessor at compile time to signify which
 data size is being used:
 
@@ -93,22 +115,46 @@ Data Type & {\t \#define}\\
 \end{tabular}
 \end{center}
 
-Note that Cactus does not provide unsigned character or integer types, and
+Note that Cactus does not provide integer types, and
 that the corresponding C data types are platform dependent.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
 \chapter{Anatomy of a thorn}
 
-Each thorn must be in a package. Packages are fairly informal. If you
-want, you can just make your own package directory, and stick your new
-thorn into it. The idea is to collect the interdependencies and
-functionality of a set of thorns.
+\section{thorns}
+
+A thorn consists of a subdirectory of a package containing three 
+administrative files
+
+\begin{itemize}
+\item{\tt interface.ccl}: the cactus interface, which defines the grid 
+functions, variables, etc. See \ref{sec:in}.
+\item{\tt param.ccl}: the parameters introduced by the thorn. See
+\ref{param.ccl}.
+\item{\tt schedule.ccl}: scheduling information for routines called by
+the flesh.
+\end{itemize}
+
+and a subdirectory called `src', which should hold source files for
+the thorn.
+
+In addition each thorn should have a `README' containing a brief description
+of the thorn, a `doc' directory for documentation, and a `par' directory
+for example parameter files.
+
+Once the thorn is finished a `test' subdirectory may also be added.  See \ref{sec:testsuites} for details.
 
 \section{Creating a thorn}
-You can use the following gmake target to create a new thorn: {\tt
-gmake newthorn}. 
+
+
+To simplify the creation of a thorn, a make target {\tt
+gmake newthorn} has been provided.
+
+When this is run:
+
 \begin{enumerate} 
 \item{} You will be prompted for the name of the new thorn.
 \item{} You will be prompted for the name of the package you would
@@ -116,38 +162,10 @@ like to include your thorn in. Either enter a new package name or pick
 one from the list of available packages that are shown.
 \end{enumerate}
 
-Cactus creates the following files in {\tt ./package/<package\_name>/<thorn\_name>}:
-\begin{itemize}
-\item{\tt README}: please fill out 
-\item{\tt interface.ccl}: the cactus interface, which defined the grid 
-fucntions, variables, etc. See \ref{sec:in}.
-\item{\tt param.ccl}: the parameter introduced by your thorn. See
-\ref{param.ccl}.
-\item{\tt schedule.ccl}: schedules the routines provided by your thorn 
-with the CCTK registry. Depending on the timing keywords chosen for
-the routines, they will be executed appropriately.
-\end{itemize}
-These sub-directories are created:
-\begin{itemize}
-\item{\tt ./par}: will hold sample parameter files to show the usage
-of your thorn.
-\item{\tt ./doc}: this directory shoudl be used to document your
-thorn.
-\item{\tt ./test}: this directory will hold a {\em testsuite}, a set
-of parameter files and their respective output. This is very important 
-for the maintainers and your colleagues  to be able to support your
-thorn adequately in the case of changes made to the core code or key thorns.
-\item{\tt ./src}: this directory will hold the source and include
-files of your thorn. It comes with file {\tt ./src/make.code.defn}
-which indentifies the source files in this directory to the make
-process.  The can be either in {\em Fortran} ending with {\tt *.F} or
-in {\em C} ending in {\tt *.c}.
-\item{}You may create additional sub-directories in {\tt ./src}, but 
-you have to mention them in {\tt make.code.defn}.
-\end{itemize}
 
+\section{Configuring your thorn}
 
-\section{The {\tt param.ccl}}
+\subsection{The {\tt param.ccl}}
 The {\tt param.ccl} defines the parameters your thorn provides. To
 avoid wrong assumptions by other thorns about your parameters, you have 
 to speciy several informations, which we'll motivate here:
@@ -266,7 +284,7 @@ will report this as an error. Also, you cannot extend the default
 comment, rather document the individual extension in the body.
 \end{itemize}
 
-\section{The {\tt interface.ccl}}
+\subsection{The {\tt interface.ccl}}
 {\bf CAN WE A CONVENTION FOR VARIABLES, GRIDFUNCTION, ...? }
 The interface plays the inportant role of introducing new grid
 function, their storage and communication concepts, new variables,
@@ -377,7 +395,7 @@ for the first group, two scalars are defined ({\tt conformal\_state} and
 metric tensor are defined. The declaration of the variables finishes
 with a descriptive comment.
 
-\section{The {\tt schedule.ccl}}
+\subsection{The {\tt schedule.ccl}}
 The {\tt schedule.ccl} is used to register the routines of your thorn
 with the CCTK and defines the storage characteristics of a group. 
 
@@ -434,52 +452,53 @@ to modify anybody's code. The CCTK currently features a fixed {\em
 skeleton} of timing keywords, which mean that you cannot currently
 register relative to a different thorn.
 
-The timing keywords are actually aliased to numbers, which can be looked 
-up in {\tt ./CCTK/src/include/rfr\_constants}. The current order of
-timing keywords is given here:
-\begin{verbatim}
+The current order of timing keywords is:
 
- CACTUS_BASEGRID 
- CACTUS_RECOVER  
- CACTUS_INITIAL0 
- CACTUS_INITIAL  
- CACTUS_INITIAL2 
- CACTUS_INITIAL3  
- CACTUS_INITIAL4  
- CACTUS_INITIAL5 
- CACTUS_INITIAL6 
- CACTUS_INITIAL7  
- CACTUS_INITIAL8 
- CACTUS_INITIAL9  
+{\q Check order, let's review this }
 
- CACTUS_CPINITIAL
+\begin{itemize}
 
- CACTUS_PRESTEP  
- CACTUS_PRESTEP2 
- CACTUS_PRESTEP3 
- CACTUS_PRESTEP4  
- CACTUS_PRESTEP5 
+\item {\tt CACTUS\_BASEGRID}
+Resposnible for setting up coordinates etc.
 
+\item {\tt CACTUS\_RECOVER}
+For recovery from checkpoint.
 
- CACTUS_POSTSTEP   
- CACTUS_POSTSTEP2 
- CACTUS_POSTSTEP3  
- CACTUS_POSTSTEP4 
- CACTUS_POSTSTEP5 
- CACTUS_POSTSTEP6  
- CACTUS_POSTSTEP7
- CACTUS_POSTSTEP8  
- CACTUS_POSTSTEP9  
- CACTUS_POSTSTEP10 
+\item {\tt CACTUS\_INITIAL}
 
- CACTUS_EVOL      
- CACTUS_BOUND      
- CACTUS_CHECKPOINT 
- CACTUS_ANALYSIS   
- CACTUS_TERMINATE 
- CACTUS_CONVERGENCE
-\end{verbatim}
-{\bf are going to name them CCTK ? Are we going to make a difference
+For generating initial data.
+
+\item {\tt CACTUS\_CPINITIAL}
+For recovery of initial data from a checkpoint file.
+
+\item {\tt CACTUS\_PRESTEP}
+
+Stuff done before the evolution step.
+\item {\tt CACTUS\_EVOL}      
+
+The evolution step.
+
+\item {\tt CACTUS\_POSTSTEP}
+
+Stuff done after the evolution step.
+
+\item {\tt CACTUS\_BOUND}
+
+Boundary stuff. {\q Is this used ? }
+\item {\tt CACTUS\_CHECKPOINT}
+For checkpointing data
+
+\item {\tt CACTUS\_ANALYSIS}
+For analysing data.
+
+\item {\tt CACTUS\_TERMINATE}
+Called when cactus teminates.
+
+\item {\tt CACTUS\_CONVERGENCE}
+Convergence stuff.
+
+\end{itemize}
+{\q are going to name them CCTK ? Are we going to make a difference
 between system keywords and user keywords  ? better yes}
 
 The scheduling together with the storage options in {\tt schedule.ccl}
@@ -529,8 +548,75 @@ parameters {\tt itout1}, ...
 {\bf in EINSTEIN: TRIGGERS: trK,detg. Why don't we use the actual GF
 names ? }
 
+
+{\bf FIXME: talk about before/after. }
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\section{Adding source files}
+
+By default the CCTK looks in the {\tt src} directory of the thorn for source
+files.
+
+There are two ways in which to specify the sources.  The easiest is to use the 
+{\tt make.code.defn} based method in which the CCTK does all the work, but you
+may instead put a {\tt Makefile} in the {\tt src} directory and do everything
+yourself.
+
+\subsection{{\tt make.code.defn} based thorn building}
+
+This is the standard way to do it.
+
+If there is no file called {\tt Makefile} in the {\tt src} directory,
+the CCTK make system looks for a file called {\tt make.code.defn} in that
+directory.  At its simplest, this file contains two lines
+
+\begin{itemize}
+\item
+\item {\t SRCS = <list of all source files {\em in this directory}>}
+
+\item {\t SUBDIRS = <list of all subdirectories, {\em including subdirectories of subdirectories}>}
+
+\end{itemize}
+
+Each subdirectory listed should then have a {\tt make.code.defn} file 
+containing just a {\tt SRCS = } line, a {\tt SUBDIRS = } line will
+be ignored.
+
+In addition, each directory can have a {\tt make.code.deps} file, which,
+for files in that directory, can contain additional make rules and dependencies
+for files in that directory.  See the GNU Make documentation for details of the
+syntax.
+
+\subsection{{\tt Makefile} based thorn building}
+
+This method gives you ultimate responsibility.  The only requirement is that
+a library called {\tt \$NAME} be created by the Makefile.
+
+The makefile is passed the following variables
+
+\begin{itemize}
+
+\item {\tt \$(CCTK\_HOME)} - the main CCTK directory
+
+\item {\tt \$(TOP)}    - the CONF directory
+
+\item {\tt \$(SRCDIR)} - the directory in which the source files can be found
+
+\item {\tt \$(CONFIG)} - the directory containing the configuration files
+
+\item {\tt \$(THORN)}  - the thorn name
+
+\item {\tt \$(SCRATCH\_BUILD)} - the scratch directory where f90 module
+files should end up if they need to be seen by other thorns.
+
+\item {\tt \$(NAME)}.
+
+\end{itemize}
+
+and has a working directory of of <config>/build/<thorn\_name> .
 
 \chapter{Putting code into your thorn}
 
