@@ -1003,7 +1003,8 @@ sub ParseAndExpand
     if($defines{$token})
     {
       my $arg = "";
-      if($pos+1 < @splitline)
+      if(@{$defines{$token}{"ARGS"}} > 0 && 
+         $pos+1 < @splitline)
       {
         # Eat up whitepace between token and arguments
         for(my $newpos=$pos+1; $newpos < @splitline; $newpos++)
