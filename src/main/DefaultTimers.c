@@ -459,7 +459,7 @@ static void CCTKi_RegisterTimersGetTimeOfDay(void)
   functions.get     = CCTKi_TimerGetTimeOfDayGet;
   functions.set     = CCTKi_TimerGetTimeOfDaySet;
 
-  CCTK_ClockRegister("GetrUsage", &functions);
+  CCTK_ClockRegister("GetTimeOfDay", &functions);
 }
     
 #endif /* HAVE_TIME_GETTIMEOFDAY */
