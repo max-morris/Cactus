@@ -6,7 +6,7 @@
 #  @desc
 #             Parses the the configuration files for thorns.
 #  @enddesc
-#  @version   $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.64 2004-03-27 19:35:48 goodale Exp $
+#  @version   $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.65 2004-03-29 16:32:32 tradke Exp $
 #@@*/
 
 # Global parameter to track the number of errors from the CST
@@ -364,7 +364,7 @@ sub CreateThornLinkList
   }
 
   # remove duplicate entries from the list, only keeping the rightmost
-  for ($i = 0; $i <= $#liblist; $i++) 
+  for ($i = 0; $i <= $#liblist; $i++)
   {
     for ($j = 0; $j < $i; $j++)
     {
@@ -382,7 +382,7 @@ sub CreateThornLinkList
 
 #/*@@
 #  @routine    CreateThornDependencyList
-#  @date       Fri 36 Dec 2004
+#  @date       Fri 26 Dec 2004
 #  @author     Erik Schnetter
 #  @desc
 #  Create the list of the thorns' make dependencies
@@ -391,7 +391,7 @@ sub CreateThornLinkList
 sub CreateThornDependencyList
 {
   my (@varlist, @deplist);
-  
+
   # Find list of all thorns
   foreach my $thorn (sort keys %thorns) {
     next if ($configuration_database->{"\U$thorn OPTIONS\E"} eq 'NO_SOURCE'
@@ -399,9 +399,15 @@ sub CreateThornDependencyList
 
     # Add the thorn and the thorn's requirements
     # (The thorn name has to be lower case,
-    # because the Makefile cannot convert its library names to upper case)    
+    # because the Makefile cannot convert its library names to upper case)
 
-    my $line = "USESTHORNS_$thorn = Cactus CactusBindings";
+    my $line = "USESTHORNS_$thorn =";
+    # TR 29 Mar 2004:
+    # commented out following hard-coded dependency of all thorns
+    # on the flesh and bindings (which was necessary while the Fortran 90
+    # interface declarations were still included in the flesh and had to be
+    # compiled before thorns could use them)
+    # my $line = "USESTHORNS_$thorn = Cactus CactusBindings";
     foreach my $dep (sort (split (' ', $configuration_database->{"\U$thorn\E USES THORNS"})))
     {
       $line .= " $dep";
@@ -409,7 +415,7 @@ sub CreateThornDependencyList
     push (@varlist, $line);
     push (@deplist, "\$(CCTK_LIBDIR)/\$(LIBNAME_PREFIX)$thorn\$(LIBNAME_SUFFIX): \$(USESTHORNS_$thorn:%=\$(CCTK_LIBDIR)/\$(LIBNAME_PREFIX)%\$(LIBNAME_SUFFIX))");
   }
-  
+
   return (@varlist, @deplist);
 }
 
@@ -436,7 +442,7 @@ sub RequiredThorns
 
   @result = ();
   foreach $i (split (' ', $config->{"\U$thorn\E USES THORNS"}) )
-  { 
+  {
     if ($i eq $top)
     {
       CST_error (0, "Cross dependency detected between thorns '$thorn' and " .
