@@ -100,7 +100,7 @@ void CCTKi_CommandLineTestThornCompiled(const char *optarg)
     printf("Thorn '%s' unavailable.\n", optarg);
   }
 
-  CCTK_Exit(retval,NULL);
+  CCTK_Exit(NULL,retval);
 }
 
 
@@ -147,7 +147,7 @@ void CCTKi_CommandLineDescribeAllParameters(const char *optarg)
             break;
           default :
             fprintf(stderr, "Unknown verbosity option %s\n", optarg);
-            CCTK_Exit(2,NULL);
+            CCTK_Exit(NULL,2);
         }
       }
       else
@@ -162,7 +162,7 @@ void CCTKi_CommandLineDescribeAllParameters(const char *optarg)
 
   /*  CCTKi_BindingsParameterHelp(NULL,"%s",stdout);*/
  
-  CCTK_Exit(0,NULL);
+  CCTK_Exit(NULL,0);
 }
 
  /*@@
@@ -208,7 +208,7 @@ void CCTKi_CommandLineDescribeParameter(const char *optarg)
 
   CommandLinePrintParameter(properties);
     
-  CCTK_Exit(0,NULL);
+  CCTK_Exit(NULL,0);
 }
 
  /*@@
@@ -333,7 +333,7 @@ void CCTKi_CommandLineListThorns(void)
   printf ("\n---------------Compiled Thorns-------------\n");
   CCTKi_PrintThorns(stdout, "  %s\n", 0);
   printf ("-------------------------------------------\n\n");
-  CCTK_Exit(1,NULL);
+  CCTK_Exit(NULL,1);
 }
 
  /*@@
@@ -363,7 +363,7 @@ void CCTKi_CommandLineVersion(void)
   printf("%s: Version %s.  Compiled on %s at %s\n", argv[0], version, 
           compileDate(), compileTime());
 
-  CCTK_Exit(1,NULL);
+  CCTK_Exit(NULL,1);
 }
 
  /*@@
@@ -404,7 +404,7 @@ void CCTKi_CommandLineHelp(void)
   printf("-t, -test-thorn-compiled <name>     : Tests for the presence of thorn <name>.\n");
   printf("-v, -version                        : Prints the version.\n");
 
-  CCTK_Exit(1,NULL);
+  CCTK_Exit(NULL,1);
 }
 
  /*@@
@@ -428,7 +428,7 @@ void CCTKi_CommandLineUsage(void)
   CCTK_CommandLine(&argv);
 
   printf("Usage: %s [-h] [-O] [-o paramname] [-x [nprocs]] [-W n] [-E n] [-r] [-T] [-t name] [-v] <parameter_file_name>\n", argv[0]);
-  CCTK_Exit(1,NULL);
+  CCTK_Exit(NULL,1);
 }  
 
  /*@@
