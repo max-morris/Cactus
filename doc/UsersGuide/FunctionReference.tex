@@ -186,4 +186,217 @@ can be accessed by {\t CCTK\_CoordRange}.
 
 
 
+
+% WarnLevel.c
+\begin{CCTKFunc}{CCTK\_WARN}{Prints a warning message and possibly stops the code}
+\subroutine{}{}{}
+\argument{int}{integer}{level}
+\argument{const char *}{character*(*)}{warning}
+\showargs
+\begin{params}
+\parameter{level}{The warning level, lower numbers are the severest warnings}
+\parameter{warning}{The warning message}
+\end{params}
+\begin{discussion}
+By default Cactus stops on a level 0 warning, and prints any level 1 warnings.
+This behavious can be changed on the command line.
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\hfill {\bf C} && {\t CCTK\_WARN(1,`This is not a good idea') };
+\\
+\hfill {\bf Fortran} && call {\t CCTK\_WARN(0,`Divide by zero')};
+\\
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
+
+
+% WarnLevel.c
+\begin{CCTKFunc}{CCTK\_INFO}{Prints an information message}
+\subroutine{}{}{}
+\argument{const char *}{character*(*)}{message}
+\showargs
+\begin{params}
+\parameter{message}{The information message}
+\end{params}
+\begin{discussion}
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\hfill {\bf C} && {\t CCTK\_INFO(`Entering interpolator') };
+\\
+\hfill {\bf Fortran} && call {\t CCTK\_INFO(`Inside interpolator')};
+\\
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
+
+
+
+% WarnLevel.c
+\begin{CCTKFunc}{CCTK\_PARAMWARN}{Prints a warning from parameter checking, and possibly stops the code}
+\subroutine{}{}{}
+\argument{const char *}{character*(*)}{message}
+\showargs
+\begin{params}
+\parameter{message}{The warning message}
+\end{params}
+\begin{discussion}
+The call should be used in routines registered at the RFR point {\t CCTK\_PARAMCHECK}
+to indicate that there is parameter error or conflict and the code should 
+terminate. The code will terminate only after all the parameters have been 
+checked.
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\hfill {\bf C} && {\t CCTK\_PARAMWARN(`Mass cannot be negative') };
+\\
+\hfill {\bf Fortran} && call {\t CCTK\_PARAMWARN(`Inside interpolator')};
+\\
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
+
+
+% Groups.c
+\begin{CCTKFunc}{CCTK\_GroupIndex}{Get the index number for a group name}
+\subroutine{int}{integer}{index}
+\argument{const char *}{character*(*)}{groupname}
+\showargs
+\begin{params}
+\parameter{groupname}{The name of the group}
+\end{params}
+\begin{discussion}
+The group name should be given in the form {\t <implementation>::<group>}
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\hfill {\bf C} && {\t index = CCTK\_GroupIndex(`evolve::scalars') };
+\\
+\hfill {\bf Fortran} && call {\t CCTK\_GroupIndex(index,`evolve::scalars')};
+\\
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
+
+
+
+% Groups.c
+\begin{CCTKFunc}{CCTK\_VarIndex}{Get the index for a variable}
+\subroutine{int}{integer}{index}
+\argument{const char *}{character*(*)}{varname}
+\showargs
+\begin{params}
+\parameter{varname}{The name of the variable}
+\end{params}
+\begin{discussion}
+The variable name should be given in the form {\t <implementation>::<variable>}
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\hfill {\bf C} && {\t index = CCTK\_VarIndex(`evolve::phi') };
+\\
+\hfill {\bf Fortran} && call {\t CCTK\_VarIndex(index,`evolve::phi')};
+\\
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
+
+
+
+% Groups.c
+\begin{CCTKFunc}{CCTK\_MaxDim}{Get the maximum dimension of any grid variable }
+\subroutine{int}{integer}{dim}
+\showargs
+\begin{params}
+\parameter{dim}{The maximum dimension}
+\end{params}
+\begin{discussion}
+Note that the maximum dimension will depend on the compiled thorn list,
+and not the active thorn list.
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\hfill {\bf C} && {\t dim = CCTK\_MaxDim() };
+\\
+\hfill {\bf Fortran} && call {\t CCTK\_MaxDim(dim)};
+\\
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
+
+
+
+% Groups.c
+\begin{CCTKFunc}{CCTK\_NumGroups}{Get the number of groups of variables compiled in the code}
+\subroutine{int}{integer}{number}
+\showargs
+\begin{params}
+\parameter{number}{The number of groups compiled from the thorns {\t interface.ccl} files}
+\end{params}
+\begin{discussion}
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\hfill {\bf C} && {\t number = CCTK\_NumGroups() };
+\\
+\hfill {\bf Fortran} && call {\t CCTK\_NumGroups(number)};
+\\
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
+
+
+
+
+
+% Groups.c
+\begin{CCTKFunc}{CCTK\_GroupNameFromVarI}{Given a variable index, return the name of the associated group}
+\subroutine{char *}{character*(*)}{group}
+\argument{int}{integer}{varindex}
+\showargs
+\begin{params}
+\parameter{group}{The name of the group}
+\parameter{varindex}{The index of the variable}
+\end{params}
+\begin{discussion}
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\hfill {\bf C} && {\t index = CCTK\_VarIndex(`evolve::phi');} \\
+               && {\t group = CCTK\_GroupNameFromVarI(index) ;}
+\\
+\hfill {\bf Fortran} && call {\t CCTK\_GROUPNAMEFROMVARI(FIXME)};
+\\
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
+
+
+
 \end{cactuspart}
