@@ -17,7 +17,7 @@
 extern "C" {
 #endif
 
-int CactusDefaultSetupGH(cGH *);
+cGH *CactusDefaultSetupGH(tFleshConfig *, int);
 int CactusDefaultSetupGF(cGH *, cGF *);
 
 int CactusDefaultSyncAllFuncs(cGH *);
