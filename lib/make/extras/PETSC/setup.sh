@@ -10,22 +10,22 @@
 
 choose_petsc=`echo $PETSC | tr '[:upper:]' '[:lower:]'`
 
-if test "X$choose_petsc" = "Xyes" ; then
+if [ "X$choose_petsc" = 'Xyes' ]; then
 
-echo "Configuring with PETSc"
+echo 'Configuring with PETSc'
 
 # Check that MPI is there
-if test -z "$MPI" -o "$MPI" = 'none' ; then
-  echo "  PETSc requires MPI - please configure with MPI"
+if [ -z "$MPI" -o "$MPI" = 'none' ]; then
+  echo '  PETSc requires MPI - please configure with MPI'
   exit 2
 fi
 
 # Work out PETSc's installation directory
-if test -z "$PETSC_DIR" ; then
-  echo "  PETSc selected but no PETSC_DIR set. Checking some places..."
-  CCTK_Search PETSC_DIR "/usr /usr/local /usr/local/petsc /usr/local/packages/petsc /usr/local/apps/petsc" include/petsc.h
+if [ -z "$PETSC_DIR" ]; then
+  echo '  PETSc selected but no PETSC_DIR set. Checking some places...'
+  CCTK_Search PETSC_DIR '/usr /usr/local /usr/local/petsc /usr/local/packages/petsc /usr/local/apps/petsc' include/petsc.h
   if [ -z "$PETSC_DIR" ] ; then
-     echo "  Unable to locate the PETSc directory - please set PETSC_DIR"
+     echo '  Unable to locate the PETSc directory - please set PETSC_DIR'
      exit 2
   fi
   echo "  Found a PETSc package in $PETSC_DIR"
@@ -35,8 +35,12 @@ fi
 
 
 # Check what architecture is available
-if test -z "$PETSC_ARCH" ; then
-  echo "  PETSC_ARCH not set... Determining suitable PETSc architecture"
+if [ -z "$PETSC_ARCH" ]; then
+  echo '  PETSC_ARCH not set... Determining suitable PETSc architecture'
+  if [ ! -d "$PETSC_DIR/lib/libO" ]; then
+    echo "Cannot access PETSc library dir '$PETSC_DIR/lib/libO/' ! Is this a standard PETSc installation ?"
+    exit 2
+  fi
   PETSC_ARCH=`/bin/ls -1 $PETSC_DIR/lib/libO | head -n1`
   echo "  Found PETSc architecture '$PETSC_ARCH'"
 else
@@ -45,7 +49,7 @@ fi
 
 
 # Set platform-specific libraries
-if test -z "$PETSC_ARCH_LIBS" ; then
+if [ -z "$PETSC_ARCH_LIBS" ]; then
   case "$PETSC_ARCH" in
     alpha) PETSC_ARCH_LIBS='dxml' ;;
     IRIX64) PETSC_ARCH_LIBS='fpe blas complib.sgimath' ;;
@@ -80,7 +84,7 @@ CCTK_WriteLine make.extra.defn 'LIBS         += $(PETSC_LIBS) X11 $(MPI_LIBS)'
 CCTK_WriteLine make.extra.defn 'LIBDIRS      += $(PETSC_LIB_DIRS) $(X_LIB_DIR)'
 CCTK_WriteLine make.extra.defn 'SYS_INC_DIRS += $(PETSC_INC_DIRS)'
 
-elif test "X$choose_petsc" != "Xno" -a "X$choose_petsc" != "X"; then
+elif [ "X$choose_petsc" != 'Xno' -a "X$choose_petsc" != 'X' ]; then
 
   echo "  Don't understand the setting \"PETSC=$PETSC\" !"
   echo '  Please set it to either "yes" or "no", or leave it blank (same as "no") !'
