@@ -18,7 +18,7 @@ int CCTK_mkdir(char *dir)
 
   command = (char *)malloc(1024*sizeof(char));
 
-  sprintf(command, MKDIR " %s",dir);
+  sprintf(command, MKDIR MKDIRFLAGS " %s",dir);
 
   message = (char *)malloc(1024*sizeof(char));
   sprintf(message,"Creating directory: \"%s\"",command);
