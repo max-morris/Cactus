@@ -14,33 +14,35 @@ dnl  use AC_TRY_COMPILE rather than AC_TRY_CPP to check for headers.
 dnl  This gets round the problem on cygwin where the gnu cpp finds
 dnl  the gcc headers and not the ones for the actual compiler.
 
-dnl CCTK_CHECK_HEADER(HEADER-FILE, [ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]])
+dnl CCTK_CHECK_HEADER(HEADER-FILE, [ADDITIONAL_CODE [, ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]]])
 AC_DEFUN(CCTK_CHECK_HEADER,
 [dnl Do the transliteration at runtime so arg 1 can be a shell variable.
 cctk_safe=`echo "$1" | sed 'y%./+-%__p_%'`
 AC_MSG_CHECKING([for $1])
 AC_CACHE_VAL(cctk_cv_header_$cctk_safe,
-[AC_TRY_COMPILE([#include <$1>], [return 0;], eval "cctk_cv_header_$cctk_safe=yes",
+[AC_TRY_COMPILE([$2
+#include <$1>], [ ], eval "cctk_cv_header_$cctk_safe=yes",
   eval "cctk_cv_header_$cctk_safe=no")])dnl
 if eval "test \"`echo '$cctk_cv_header_'$cctk_safe`\" = yes"; then
   AC_MSG_RESULT(yes)
-  ifelse([$2], , :, [$2])
+  ifelse([$3], , :, [$3])
 else
   AC_MSG_RESULT(no)
-ifelse([$3], , , [$3
+ifelse([$4], , , [$4
 ])dnl
 fi
 ])
 
-dnl CCTK_CHECK_HEADERS(HEADER-FILE... [, ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]])
+dnl CCTK_CHECK_HEADERS(HEADER-FILE... [, ADDITIONAL_CODE [, ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]]])
 AC_DEFUN(CCTK_CHECK_HEADERS,
 [for cctk_hdr in $1
 do
-CCTK_CHECK_HEADER($cctk_hdr,
+CCTK_CHECK_HEADER($cctk_hdr, 
+[$2 ],
 [changequote(, )dnl
   cctk_tr_hdr=HAVE_`echo $cctk_hdr | sed 'y%abcdefghijklmnopqrstuvwxyz./-%ABCDEFGHIJKLMNOPQRSTUVWXYZ___%'`
 changequote([, ])dnl
-  AC_DEFINE_UNQUOTED($cctk_tr_hdr) $2], $3)dnl
+  AC_DEFINE_UNQUOTED($cctk_tr_hdr) $3], $4)dnl
 done
 ])
 

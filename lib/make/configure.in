@@ -376,15 +376,19 @@ dnl Include file stuff
 
 CCTK_CHECK_HEADERS(time.h)
 CCTK_CHECK_HEADERS(sys/time.h)
+CCTK_CHECK_HEADERS(sys/types.h)
 CCTK_CHECK_HEADERS(unistd.h)
 CCTK_CHECK_HEADERS(string.h)
 CCTK_CHECK_HEADERS(assert.h)
 CCTK_CHECK_HEADERS(sys/stat.h)
 CCTK_CHECK_HEADERS(getopt.h)
 CCTK_HEADER_REGEX
-CCTK_CHECK_HEADERS(sys/types.h)
-CCTK_CHECK_HEADERS(sys/socket.h)
-CCTK_CHECK_HEADERS(netinet/in.h)
+CCTK_CHECK_HEADERS(sys/socket.h,[#ifdef HAVE_SYS_TYPES_H 
+#include <sys/types.h>
+#endif])
+CCTK_CHECK_HEADERS(netinet/in.h,[#ifdef HAVE_SYS_TYPES_H 
+#include <sys/types.h>
+#endif])
 CCTK_CHECK_HEADERS(winsock2.h)
 
 AC_HEADER_TIME
