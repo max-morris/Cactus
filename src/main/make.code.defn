@@ -3,13 +3,15 @@
 # $Header$
 
 SRCS=\
-CactusDefaultEvolve.c\
 CactusDefaultInitialise.c\
+CactusDefaultEvolve.c\
+CactusDefaultShutdown.c\
 CallStartupFunctions.c\
 ConfigData.c\
 InitialiseCactus.c\
 InitialiseDataStructures.c\
 ProcessCommandLine.c\
+ProcessEnvironment.c\
 ProcessParameterDatabase.c\
 RecordImplementation.c\
 RegisterThorn.c\
