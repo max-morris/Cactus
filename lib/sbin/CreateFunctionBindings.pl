@@ -349,7 +349,7 @@ sub FunctionDatabase
       ($warnings,$nstrings,$nstringptrs,@arglist)=&ParseArgumentsList($Arguments, $thorn, $FunctionName);
       $Function->{"Strings"} = $nstrings;
       $Function->{"String pointers"} = $nstringptrs;
-      $ReturnType = $interface_db->{"\U${thorn} FUNCTION\E $FunctionName RET"};
+      $ReturnType = uc $interface_db->{"\U${thorn} FUNCTION\E $FunctionName RET"};
       $FunctionName =~ /([a-zA-Z][a-zA-Z0-9_]*)/;
       $Function->{"Name"}=$1;
       if ($warnings)
