@@ -166,7 +166,7 @@ sub WriteFile
 
   if ($data ne $data_in)   
   {
-    print "Creating new file $filename\n";
+#    print "Creating new file $filename\n";
     open(OUT, ">$filename") || die("Can't open $filename\n");
     print OUT $data;
     close OUT;
