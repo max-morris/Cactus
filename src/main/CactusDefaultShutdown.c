@@ -60,6 +60,12 @@ int CactusDefaultShutdown(tFleshConfig *config)
 {
   int myproc,conv_level;
 
+  /* Execute termination for all convergence levels */
+  for(conv_level = 0 ; conv_level < config->nGHs;  conv_level++) 
+  {    
+    CCTK_Traverse(config->GH[conv_level], "CCTK_TERMINATE"); 
+  }
+ 
   /* Execute shutdown for all convergence levels */
   for(conv_level = 0 ; conv_level < config->nGHs;  conv_level++) 
   {    
