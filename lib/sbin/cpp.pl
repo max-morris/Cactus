@@ -8,6 +8,8 @@
 #  @version $Header$
 #@@*/
 
+#$debug=1;
+
 ###############################################################################
 ###############################################################################
 # Setup some global variables.
@@ -330,6 +332,11 @@ sub ParseFile
     print "Entered ParseFile: $filename:$linenumber, active=$active\n";
   }
 
+  if($printline && $active && $linenumber==0)
+  {
+    print "# 1 \"$filename\"\n";
+  }
+
   while(1)
   {
     ($line, $linenumber) = &ReadLine(*INFILE,$linenumber);
@@ -488,6 +495,11 @@ sub ParseFile
             {
               # Process the new file.  Don't need to pass $active since wouldn't be here if inactive.
               &ProcessFile($1,$filename,$linenumber,$printline);
+
+	      if($printline && $active)
+	      {
+		print "# $linenumber \"$filename\"\n";
+	      }
             }
           }
         }
@@ -633,18 +645,28 @@ sub ProcessIf
 
   my $retval = 0;
 
-  if($line =~ m/^def\s+(.+)/)
+  if($debug)
   {
-    $retval = defined($defines{$1});
+    print "if requested on $line\n";
   }
-  elsif($line =~ m/^ndef\s+(.+)/)
+
+  if($line =~ m/^def\s+([^\s]+)/)
   {
-    $retval = ! defined($defines{$1});
+    $retval = defined($defines{$1}) ? 1 : 0;
+  }
+  elsif($line =~ m/^ndef\s+([^\s]+)/)
+  {
+    $retval = defined($defines{$1}) ? 0 : 1;
   }
   else
   {
     print STDERR "#if can currently to #ifdef and #ifndef, sorry !\n";
     $retval = 0;
+  }
+
+  if($debug)
+  {
+    print "retval is $retval\n";
   }
 
   return $retval;
@@ -925,10 +947,28 @@ sub ParseAndExpand
   my @outline = ();
   my $retcode = 0;
 
+  my $insstring = 0;
+  my $indstring = 0;
+
   for(my $pos = 0 ; $pos < @splitline; $pos++)
   {
-    if($splitline[$pos] !~ m/[A-Za-z_]/)
+    # Pass through anything we're not interested in and anything in a string.
+    if($splitline[$pos] !~ m/[A-Za-z_]/ || $insstring == 1 || $indstring == 1)
     {
+      if($splitline[$pos] eq '\'')
+      {
+        if($pos == 0 || ($pos > 0 && $splitline[$pos-1] ne '\\'))
+        {
+          $insstring = 1 - $insstring;
+        }
+      }
+      if($splitline[$pos] eq '"')
+      {
+        if($pos == 0 || ($pos > 0 && $splitline[$pos-1] ne '\\'))
+        {
+          $indstring = 1 - $indstring;
+        }
+      }
       push(@outline, $splitline[$pos]);
       next;
     }
