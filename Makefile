@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.13 1999-02-14 20:07:59 allen Exp $
+#   @version $Id: Makefile,v 1.14 1999-02-15 15:24:13 allen Exp $
 # @@*/
 
 # Comment this out if you want to see what's going on.
@@ -92,7 +92,7 @@ distclean:
 TAGS:
 	@echo $(DIVIDER)
 	@echo Updating the Emacs TAGS file
-	find src toolkits \( -name '*.[chF]' -o -name '*.F77' \) \
+	find src packages \( -name '*.[chF]' -o -name '*.F77' \) \
           -exec etags --append --regex '/[a-z A-Z \t]*FORTRAN_NAME[^)]*/' {} \;
 	perl -pi -e 's/(subroutine\s*)([a-zA-Z0-9_]+)/\1\L\2/g;' TAGS
 	@echo $(DIVIDER)
@@ -100,7 +100,7 @@ TAGS:
 tags:
 	@echo $(DIVIDER)
 	@echo Updating the vi tags file
-	find src toolkits \( -name '*.[chF]' -o -name '*.F77' \) \
+	find src packages \( -name '*.[chF]' -o -name '*.F77' \) \
           -exec ctags --append {} \;
 	perl -pi -e 's/(subroutine\s*)([a-zA-Z0-9_]+)/\1\L\2/g;' tags
 	@echo $(DIVIDER)
