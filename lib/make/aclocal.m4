@@ -193,52 +193,83 @@ else
 fi
 ])
 
-dnl
-dnl  Figure out if there is socklen_t by checking getsockname
-dnl  -------------------------------------------------------------
-AC_DEFUN(CCTK_CHECK_SOCK_LENGTH_TYPE,
-[
-AC_LANG_SAVE
-AC_LANG_C
+# CCTK_CHECK_FUNCS(FUNCTION..., [ACTION-IF-FOUND], [ACTION-IF-NOT-FOUND])
+# ---------------------------------------------------------------------
+AC_DEFUN([CCTK_CHECK_FUNCS],
+[ac_link='${CC-cc} -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext `CCTK_Wrap "$LIBDIR_PREFIX" "$LIBDIR_SUFFIX" "$LIBDIRS"` `CCTK_Wrap "$LIBLINK_PREFIX" "$LIBLINK_SUFFIX" "$LIBS"` >&5'
+AC_CHECK_FUNCS($1,$2,$3)
+])
 
-dnl Save old libs
-dnl Add the socket and nsl libs if they exist (sun)
-my_LIBS="$LIBS"
-AC_CHECK_LIB(socket,main)
-AC_CHECK_LIB(nsl,main)
+# CCTK_CHECK_FUNC(FUNCTION, [ACTION-IF-FOUND], [ACTION-IF-NOT-FOUND])
+# ---------------------------------------------------------------------
+AC_DEFUN([CCTK_CHECK_FUNC],
+[ac_link='${CC-cc} -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext `CCTK_Wrap "$LIBDIR_PREFIX" "$LIBDIR_SUFFIX" "$LIBDIRS"` `CCTK_Wrap "$LIBLINK_PREFIX" "$LIBLINK_SUFFIX" "$LIBS"` >&5'
+AC_CHECK_FUNC($1,$2,$3)
+])
 
-socket_argtype=
-cat > socketHdrs.h << EOF
-EOF
-AC_CHECK_HEADER(unistd.h, [ echo "#include <unistd.h>" >> socketHdrs.h ])
-AC_CHECK_HEADER(sys/types.h, [ echo "#include <sys/types.h>" >> socketHdrs.h ])
-AC_CHECK_HEADER(sys/socket.h, [ echo "#include <sys/socket.h>" >> socketHdrs.h ])
-if test "$ARCH" = "intelnt" ; then
-        AC_CHECK_HEADER(winsock2.h, [ echo "#include <winsock2.h>" >> socketHdrs.h ])
+
+# CCTK_CHECK_LIB(LIBRARY, FUNCTION,
+#              [ACTION-IF-FOUND], [ACTION-IF-NOT-FOUND],
+#              [OTHER-LIBRARIES])
+# ------------------------------------------------------
+AC_DEFUN(CCTK_CHECK_LIB,
+[AC_MSG_CHECKING([for $2 in library $1])
+dnl Use a cache variable name containing both the library and function name,
+dnl because the test really is for library $1 defining function $2, not
+dnl just for library $1.  Separate tests with the same $1 and different $2s
+dnl may have different results.
+ac_lib_var=`echo $1['_']$2 | sed 'y%./+-%__p_%'`
+AC_CACHE_VAL(ac_cv_lib_$ac_lib_var,
+[ac_link='${CC-cc} -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext `CCTK_Wrap "$LIBDIR_PREFIX" "$LIBDIR_SUFFIX" "$LIBDIRS"` `CCTK_Wrap "$LIBLINK_PREFIX" "$LIBLINK_SUFFIX" "$LIBS"` >&5'
+ac_save_LIBS="$LIBS"
+LIBS="$1 $5 $LIBS"
+AC_TRY_LINK(dnl
+ifelse(AC_LANG, [FORTRAN77], ,
+ifelse([$2], [main], , dnl Avoid conflicting decl of main.
+[/* Override any gcc2 internal prototype to avoid an error.  */
+]ifelse(AC_LANG, CPLUSPLUS, [#ifdef __cplusplus
+extern "C"
+#endif
+])dnl
+[/* We use char because int might match the return type of a gcc2
+    builtin and then its argument prototype would still apply.  */
+char $2();
+])),
+            [$2()],
+            eval "ac_cv_lib_$ac_lib_var=yes",
+            eval "ac_cv_lib_$ac_lib_var=no")
+LIBS="$ac_save_LIBS"
+])dnl
+if eval "test \"`echo '$ac_cv_lib_'$ac_lib_var`\" = yes"; then
+  AC_MSG_RESULT(yes)
+  ifelse([$3], ,
+[changequote(, )dnl
+  ac_tr_lib=HAVE_LIB`echo $1 | sed -e 's/[^a-zA-Z0-9_]/_/g' \
+    -e 'y/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/'`
+changequote([, ])dnl
+  AC_DEFINE_UNQUOTED($ac_tr_lib)
+  LIBS="$1 $LIBS"
+], [$3])
+else
+  AC_MSG_RESULT(no)
+ifelse([$4], , , [$4
+])dnl
 fi
-AC_LANG_SAVE
-AC_LANG_CPLUSPLUS
-
-try="socklen_t"
-AC_TRY_LINK(
-[
-#include <stdio.h>
-#include "socketHdrs.h"
-],
-[
-$try *foo = NULL;
-int i = getsockname(1, (struct sockaddr *)NULL, foo);
-],
-[ ],
-[
-try="int"
 ])
 
-AC_DEFINE_UNQUOTED(CCTK_SOCKLEN_T, $try)
-echo checking third arg to getsockname: is pointer to $try
-rm socketHdrs.h
-LIBS="$my_LIBS"
-AC_LANG_RESTORE
+AC_DEFUN(CCTK_CHECK_LIB_FUNC,
+[CCTK_CHECK_LIB($1, $2,
+ifelse([$3], , [changequote(, )dnl
+  cctk_tr_lib=HAVE_LIB`echo $1 | sed -e 's/[^a-zA-Z0-9_]/_/g' \
+    -e 'y/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/'`
+  cctk_tr_func=HAVE_`echo $2 | sed -e 's/[^a-zA-Z0-9_]/_/g' \
+    -e 'y/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/'`
+changequote([, ])dnl
+  AC_DEFINE_UNQUOTED($cctk_tr_lib)
+  AC_DEFINE_UNQUOTED($cctk_tr_func)
+  LIBS="$1 $LIBS"
+], [$3])dnl
+),
+ifelse([$4], , , [$4
+])dnl
 ])
-
-

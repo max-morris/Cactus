@@ -52,7 +52,6 @@ if test -n "$LDFLAGS" ; then
   unset LDFLAGS
 fi
 
-
 dnl Checks for programs.
 AC_PROG_MAKE_SET
 
@@ -221,6 +220,12 @@ unset LIBS
 KNOWN_LDFLAGS="$LDFLAGS"
 unset LDFLAGS
 
+: ${LIBDIR_PREFIX="-L"}
+: ${LIBDIR_SUFFIX=""}
+
+: ${LIBLINK_PREFIX="-l"}
+: ${LIBLINK_SUFFIX=""}
+
 dnl Checks for libraries.
 
 dnl Checks for header files.
@@ -353,11 +358,12 @@ AC_SUBST(F77FLAGS)
 
 dnl Checks for library functions.
 
-AC_CHECK_FUNCS(mkdir)
-AC_CHECK_FUNCS(scandir, ,
-               SAVED_LDFLAGS="$LDFLAGS" \
-               LDFLAGS="$LDFLAGS -L/usr/ucblib" \
-               AC_CHECK_LIB(ucb, scandir, AC_DEFINE(HAVE_SCANDIR), LDFLAGS="$SAVED_LDFLAGS"))
+CCTK_CHECK_FUNCS(mkdir)
+CCTK_CHECK_FUNCS(scandir, ,
+[SAVED_LIBDIRS="$LIBDIRS"
+LIBDIRS="$LIBDIRS /usr/ucblib" 
+AC_CHECK_LIB(ucb, scandir, AC_DEFINE(HAVE_SCANDIR), LIBDIRS="$SAVED_LIBDIRS")
+])
 
 # Check if we have mode_t available 
 AC_MSG_CHECKING([if mode_t is defined])
@@ -484,7 +490,7 @@ else
 fi
 
 # Do we have gethostbyname
-AC_CHECK_FUNCS(gethostbyname)
+CCTK_CHECK_FUNCS(gethostbyname)
 
 # C++ STL stuff
 
@@ -505,7 +511,7 @@ dnl Misc stuff
 
 dnl Do we need to build the GNU getopt and regex stuff ?
 
-AC_CHECK_FUNCS(getopt_long_only)
+CCTK_CHECK_FUNCS(getopt_long_only)
 
 AC_SUBST(BUILD_GETOPT)
 
@@ -525,7 +531,9 @@ fi
 
 dnl Do we have crypt(3)
 
-AC_CHECK_FUNCS(crypt)
+CCTK_CHECK_FUNC(crypt, ,
+CCTK_CHECK_LIB_FUNC(crypt, crypt))
+
 
 AC_SUBST(LIBDIRS)
 
@@ -698,8 +706,8 @@ AC_SUBST(C_FILE_PROCESSOR)
 C_FILE_PROCESSOR='$(CCTK_HOME)/lib/sbin/c_file_processor.pl'
 
 # Put the libraries from the known-architectures onto the LIB variable.
-LIBS="$KNOWN_LIBS $LIBS"
-LDFLAGS="$KNOWN_LDFLAGS $LDFLAGS"
+LIBS="$LIBS $KNOWN_LIBS"
+LDFLAGS="$LDFLAGS $KNOWN_LDFLAGS"
 
 #Set the compileonly flags if they've not been set by now
 
