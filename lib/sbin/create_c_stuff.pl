@@ -81,69 +81,6 @@ sub CreateParameterBindingFile
 
   push(@data, "");
 
-  # Initialisation subroutine
-#  push(@data, ("int $prefix"."Initialise(void)", "{"));
-#
-#  foreach $parameter (sort(keys %parameters))
-#  {
-#
-#    push(@data, &set_parameter_default($structure,$parameters{$parameter}, 
-#				       $parameter, %parameter_database));
-#    
-#    push(@data, "");
-#
-#    push(@data, &create_parameter_code($structure,$parameters{$parameter}, 
-#				       $parameter, %parameter_database));
-#    
-#    push(@data, "");
-#
-#  }
-#
-#  push(@data, "  return 0;");
-#  push(@data, "}");
-#
-#  push(@data, "");
-
-  # Setting subroutine
-
-#  push(@data, ("int $prefix"."Set(const char *param, const char *value)", "{"));
-#  push(@data, ("  int retval;", "  retval = 1;", ""));
-#
-#
-#  foreach $parameter (sort(keys %parameters))
-#  {
-#    push(@data, &set_parameter_code($structure,$parameters{$parameter}, 
-#				       $parameter, %parameter_database));
-#    push(@data, "");
-#
-#  }    
-#
-#  push(@data, "  return retval;");
-#
-#  push(@data, "}");
-#
-#  push(@data, "");
-
-  # Getting subroutine
-
-#  push(@data, ("int $prefix"."Get(const char *param, void **value)", "{"));
-#  push(@data, ("  int retval;", "  retval = 1;", ""));
-#
-#
-#  foreach $parameter (sort(keys %parameters))
-#  {
-#    push(@data, &get_parameter_code($structure,$parameters{$parameter}, 
-#				       $parameter, %parameter_database));
-#    push(@data, "");
-#
-#  }    
-#
-#  push(@data, "  return retval;");
-#
-#  push(@data, "}");
-#
-#  push(@data, "");
-
   # Help subroutine
 
   push(@data, ("int $prefix"."Help(const char *param, const char *format, FILE *file)", "{"));
@@ -167,143 +104,6 @@ sub CreateParameterBindingFile
   return @data;
 }
 
-
-#/*@@
-#  @routine    set_parameter_code
-#  @date       Wed Jan 20 15:21:31 1999
-#  @author     Tom Goodale
-#  @desc 
-#  Sets the value of a parameter.
-#  @enddesc 
-#  @calls     
-#  @calledby   
-#  @history 
-#
-#  @endhistory 
-#@@*/
-
-sub set_parameter_code
-{
-  local($structure, $implementation,$parameter, %parameter_database) = @_;
-  local($type, $type_string);
-  local($line, @lines);
-  local($range);
-  local($quoted_range);
-
-  $type = $parameter_database{"\U$implementation $parameter\E type"};
-  $n_ranges = $parameter_database{"\U$implementation $parameter\E ranges"};
-
-  push(@lines,("  if(CCTK_Equals(param, \"$parameter\"))", "  {"));
-
-  if( $type ne "STRING" && $type ne "SENTENCE" && $type ne "BOOLEAN")
-  {
-    if( $type eq "KEYWORD")
-    {
-      $line = "    retval = CCTK_SetKeywordInRangeList(\&($structure.$parameter), value, $n_ranges" ;
-    }
-    elsif($type eq "INT")
-    {
-      $line = "    retval = CCTK_SetIntInRangeList(\&($structure.$parameter),value, $n_ranges" ;
-    }
-    elsif($type eq "REAL")
-    {
-      $line = "    retval = CCTK_SetDoubleInRangeList(\&($structure.$parameter),value, $n_ranges" ;
-    }
-    for($range=1; $range <= $n_ranges; $range++)
-    {
-      $quoted_range = $parameter_database{"\U$implementation $parameter\E range $range range"};
-
-      #$quoted_range =~ s:\":\\\":g;
-      $quoted_range =~ s:\"::g;
-      $quoted_range =~ s:^\s*::;
-      $quoted_range =~ s:\s*$::;
-
-      $line .= ",\"".$quoted_range."\"";
-
-    }
-    $line .= ");";
-  }
-  elsif( $type eq "STRING" || $type eq "SENTENCE")
-  {
-    $line = "    retval = CCTK_SetString(\&($structure.$parameter),value);" ;
-  }
-  elsif( $type eq "BOOLEAN")
-  {
-    $line = "    retval = CCTK_SetLogical(\&($structure.$parameter), value);" ;
-
-  }
-  else
-  {
-    print "Unknown parameter type $type\n";
-  }
-
-  push(@lines, ($line, "  }"));
-    
-  return @lines;
-}
-
-    
-
-#/*@@
-#  @routine    set_parameter_default
-#  @date       Mon Jan 11 15:33:26 1999
-#  @author     Tom Goodale
-#  @desc 
-#  Set the default value of a parameter
-#  @enddesc 
-#  @calls     
-#  @calledby   
-#  @history 
-#
-#  @endhistory 
-#@@*/
-
-sub set_parameter_default
-{
-  local($structure, $implementation,$parameter, %parameter_database) = @_;
-  local($type, $type_string);
-  local($line, @lines);
-  local($default);
-  local($temp_default);
-
-  $default = $parameter_database{"\U$implementation $parameter\E default"};
-  $type = $parameter_database{"\U$implementation $parameter\E type"};
-
-  $type_string = &get_c_type_string($type);
-
-  if($type_string eq "char *")
-  {
-    $line = "  $structure" .".$parameter = malloc(" 
-      . (length($default)-1). "\*sizeof(char));";
-    push(@lines, $line);
-
-    $line = "  if($structure.$parameter)";
-    push(@lines, $line);
-
-    $line = "    strcpy($structure.$parameter, $default);";
-    push(@lines, $line);
-  }
-  elsif($type eq "BOOLEAN")
-  {
-    # Logicals need to be done specially.
-
-    # Strip out any quote marks, and spaces at start and end.
-    $temp_default = $default;
-    $temp_default =~ s:\"::g;
-    $temp_default =~ s:\s*$:: ;
-    $temp_default =~ s:^\s*:: ;
-
-    $line = "  CCTK_SetLogical(\&($structure.$parameter),\"$temp_default\");";
-    push(@lines, $line);
-  }
-  else
-  {
-    $line = "  $structure.$parameter = $default;";
-    push(@lines, $line);
-  }
-
-  return @lines;
-}
 
 #/*@@
 #  @routine    get_c_type_string
@@ -425,6 +225,7 @@ sub CreateCStructureParameterHeader
 
   # Create the structure
 
+  push(@data,("#ifdef __cplusplus", "extern \"C\"", "{", "#endif"));
   push(@data,( "extern struct ", "{"));
 
   foreach $parameter (&order_params(scalar(keys %parameters), %parameters,%parameter_database))
@@ -451,6 +252,7 @@ sub CreateCStructureParameterHeader
   push(@data, "} $structure;");
 
   push(@data, "");
+  push(@data,("#ifdef __cplusplus", "}", "#endif"));
 
   
   push(@data, "#define DECLARE_$structure"."_PARAMS \\");

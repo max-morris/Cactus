@@ -5,6 +5,7 @@
 #  @desc 
 #  Parameter binding stuff
 #  @enddesc 
+#  @version $Header$
 #@@*/
 
 #/*@@
@@ -191,28 +192,21 @@ sub CreateParameterBindings
 
 
   $dataout = "";
-$dataout .= "\#include <stdio.h>\n";
-$dataout .= "\#include <stdlib.h>\n";
-$dataout .= "\#include <string.h>\n";
-$dataout .= "\#include \"config.h\"\n";
-$dataout .= "\#include \"cctk_Misc.h\"\n";
-$dataout .= "\#include \"cctk_WarnLevel.h\"\n";
+  $dataout .= "\#include <stdio.h>\n";
+  $dataout .= "\#include <stdlib.h>\n";
+  $dataout .= "\#include <string.h>\n";
+  $dataout .= "\#include \"config.h\"\n";
+  $dataout .= "\#include \"cctk_Misc.h\"\n";
+  $dataout .= "\#include \"cctk_WarnLevel.h\"\n";
 
   foreach $routine ((keys %routines), "CCTK_BindingsParametersGlobal")
   {
     $dataout .= "int $routine"."Initialise(void);\n";
-#    print OUT "int $routine"."Set(const char *param, const char *value);\n";
-#    print OUT "int $routine"."Get(const char *param, void **data);\n";
     $dataout .= "int $routine"."Help(const char *param, const char *format, FILE *file);\n";
   }
 
-$dataout .= "int CCTKi_BindingsParametersInitialise(void)\n";
-$dataout .= "\{\n\n";
-
-#  foreach $routine (keys %routines, "CCTK_BindingsParametersGlobal")
-#  {
-#    print OUT "  $routine"."Initialise();\n";
-#  }
+  $dataout .= "int CCTKi_BindingsParametersInitialise(void)\n";
+  $dataout .= "\{\n\n";
 
   foreach $thorn (split(" ",$interface_database{"THORNS"}))
   {
@@ -224,145 +218,42 @@ $dataout .= "\{\n\n";
     $dataout .= "  CCTKi_Bindings$thorn"."ParameterExtensions();\n\n";
   }
 
-$dataout .= "return 0;\n";
-$dataout .= "}\n\n";
- 
-#int CCTKi_BindingsParameterSet(const char *identifier, const char *value)
-#{
-#  int retval = 1;
-#  int temp_retval;
-#  char *implementation = NULL;
-#  char *param_name = NULL;
+  $dataout .= "return 0;\n";
+  $dataout .= "}\n\n";
 
-#  Util_SplitString(&implementation, &param_name, identifier, "::");
-
-#  if(!implementation)
-#  {
-#    retval = CCTK_BindingsParametersGlobalSet(identifier, value);
-#  }
-#  else
-#  { 
-
-#    if(CCTK_IsThornActive(implementation) ||
-#       CCTK_IsImplementationActive(implementation))
-#    {
-#EOT
-
-#  foreach $routine (keys %routines, "CCTK_BindingsParametersGlobal")
-#  {
-#
-#    print OUT <<EOT;
-#
-#    if(CCTK_Equals(implementation, \"$routines{$routine}\"))
-#    {
-#EOT
-#      print OUT "        temp_retval =  $routine"."Set(param_name, value);";
-#
-#    print OUT <<EOT;
-# 
-#        if(!temp_retval) 
-#        {
-#          retval = 0;
-#        }  
-#      }
-#EOT
-#  }
- 
-#  print OUT <<EOT;
-#    }
-#    else
-#    {
-#       char *message = malloc( (200+strlen(param_name)+strlen(implementation))*sizeof(char) );
-#       sprintf(message, "Can't set %s - %s is not active", param_name, implementation);
-#       CCTK_Warn(0,__LINE__,__FILE__,"CactusBindings",message);
-#       free(message);
-#       retval = -2;
-#    }
-#  }  
-# 
-#  free(implementation);
-#  free(param_name);
-#  return retval;
-#}
- 
-#int CCTKi_BindingsParameterGet(const char *identifier, void **value)
-#{   
-# int retval = 1;
-#  int temp_retval;
-#  char *implementation = NULL;
-#  char *param_name = NULL;
-#
-#  Util_SplitString(&implementation, &param_name, identifier, "::");
-#
-#  if(!implementation)
-#  {
-#    retval = CCTK_BindingsParametersGlobalGet(identifier, value);
-#  }
-#  else
-#  { 
-#EOT
-#
-#  foreach $routine (keys %routines, "CCTK_BindingsParametersGlobal")
-#  {
-#
-#    print OUT <<EOT;
-#
-#    if(CCTK_Equals(implementation, \"$routines{$routine}\"))
-#    {
-#EOT
-#      print OUT "      temp_retval =  $routine"."Get(param_name, value);";
-#
-#    print OUT <<EOT;
-# 
-#      if(!temp_retval) 
-#      {
-#        retval = 0;
-#      }
-#    }
-#EOT
-#  }
-# 
-#  print OUT <<EOT;
-#  }
-# 
-#  free(implementation);
-#  free(param_name);
-#  return retval;
-#}
-
-$dataout .= "int CCTKi_BindingsParameterHelp(const char *identifier, const char *format, FILE *file)\n";
-$dataout .= "{\n";   
-$dataout .="  int retval = 1;\n";
-$dataout .="  int temp_retval;\n";
-$dataout .="  char *implementation = NULL;\n";
-$dataout .="  char *param_name = NULL;\n\n";
-
-$dataout .="  if(! identifier )\n";
-$dataout .="  {\n";
-$dataout .="    retval = CCTK_BindingsParametersGlobalHelp(identifier, format, file);\n\n";
+  $dataout .= "int CCTKi_BindingsParameterHelp(const char *identifier, const char *format, FILE *file)\n";
+  $dataout .= "{\n";   
+  $dataout .="  int retval = 1;\n";
+  $dataout .="  int temp_retval;\n";
+  $dataout .="  char *implementation = NULL;\n";
+  $dataout .="  char *param_name = NULL;\n\n";
+  
+  $dataout .="  if(! identifier )\n";
+  $dataout .="  {\n";
+  $dataout .="    retval = CCTK_BindingsParametersGlobalHelp(identifier, format, file);\n\n";
 
   foreach $routine (keys %routines, "CCTK_BindingsParametersGlobal")
   {
 
     $dataout .= "      temp_retval =  $routine"."Help(param_name, format, file);";
 
-$dataout .= "\n";
-$dataout .="    if(!temp_retval)\n";
-$dataout .="    {\n";
-$dataout .="      retval = 0;\n";
-$dataout .="    }\n";
+    $dataout .= "\n";
+    $dataout .="    if(!temp_retval)\n";
+    $dataout .="    {\n";
+    $dataout .="      retval = 0;\n";
+    $dataout .="    }\n";
   }
  
-$dataout .="  }\n\n";
-
-$dataout .="  Util_SplitString(\&implementation, &param_name, identifier, \"::\");\n\n";
-
-$dataout .="  if(!implementation)\n";
-$dataout .="  {\n";
-$dataout .="    retval = CCTK_BindingsParametersGlobalHelp(identifier, format, file);\n";
-$dataout .="  }\n";
-$dataout .="  else\n";
-$dataout .="  { \n";
+  $dataout .="  }\n\n";
+  
+  $dataout .="  Util_SplitString(\&implementation, &param_name, identifier, \"::\");\n\n";
+  
+  $dataout .="  if(!implementation)\n";
+  $dataout .="  {\n";
+  $dataout .="    retval = CCTK_BindingsParametersGlobalHelp(identifier, format, file);\n";
+  $dataout .="  }\n";
+  $dataout .="  else\n";
+  $dataout .="  { \n";
 
   foreach $routine (keys %routines, "CCTK_BindingsParametersGlobal")
   {
