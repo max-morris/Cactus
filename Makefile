@@ -19,7 +19,7 @@
 #
 #
 #   @enddesc
-#   @version $Id: Makefile,v 1.163 2004-11-04 15:23:08 jthorn Exp $
+#   @version $Id: Makefile,v 1.164 2004-11-08 10:23:45 tradke Exp $
 # @@*/
 
 ##################################################################################
@@ -357,7 +357,9 @@ else
 	@echo "                   the configuration)."
 	@echo "  -cleandeps     : to clean a configuration's dependency files."
 	@echo "  -cleanobjs     : to clean a configuration's object files."
-	@echo "  -config        : to configure a configuration."
+	@echo "  -config        : to create a new configuration or reconfigure an existing one"
+	@echo "                  (overwrites previous configuration options)."
+	@echo "  -configinfo    : to display the configuration options for a configuration."
 	@echo "  -delete        : to delete a configuration."
 	@echo "  -editthorns    : edits the ThornList file."
 	@echo "  -realclean     : to restore a configuration to almost a new state."
@@ -366,7 +368,7 @@ else
 	@echo "  -rebuild       : to rebuild a configuration."
 	@echo "                  (forces the CST to be rerun)."
 	@echo "  -reconfig      : to reconfigure an existing configuration"
-	@echo "                   using the same configuration options."
+	@echo "                   using its previous configuration options."
 	@echo "  -utils         : to build a configuration's utility programs."
 	@echo "  -testsuite     : run the test program."
 	@echo "  -thornlist     : regenerates the ThornList file."
