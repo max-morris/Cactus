@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.118 2001-09-05 13:50:09 allen Exp $
+#   @version $Id: Makefile,v 1.119 2001-09-14 08:10:34 allen Exp $
 # @@*/
 
 ##################################################################################
@@ -324,7 +324,7 @@ else
 	@echo "  -testsuite     : run the test program."
 	@echo "  -thornlist     : regenerates the ThornList file. "
 	@echo "  -ThornGuide    : creates the thorn manual for a specific configuration. "
-        @echo "  -cvsupdate     : updates the files for a specific configuration."
+	@echo "  -cvsupdate     : updates the files for a specific configuration."
 	@echo "  -examples      : copies thorn parameter files to examples directory."
 endif
 	@echo $(DIVIDER)
