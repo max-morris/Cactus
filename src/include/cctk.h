@@ -125,6 +125,7 @@
             cctk_dummy_real=0;\
             cctk_dummy_real+=0;\
             cctk_dummy_pointer=NULL;\
+            cctk_dummy_pointer=(CCTK_REAL *)cctk_dummy_pointer;\
             cctk_dummy_int=cctk_dim;\
             cctk_dummy_pointer=(void *)cctk_gsh;\
             cctk_dummy_pointer=(void *)cctk_lsh;\
