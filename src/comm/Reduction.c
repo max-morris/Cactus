@@ -668,7 +668,7 @@ int CCTK_ReduceLocalArray1D (cGH *GH, int proc, int operation_handle,
 {
   return (CCTK_ReduceArray (GH, proc, operation_handle,
 			    num_in_array1d, data_type, out_array1d,
-			    1, 1, data_type, 1, in_array1d));
+			    1, 1, data_type, num_in_array1d, in_array1d));
 }
 
 void FMODIFIER FORTRAN_NAME(CCTK_ReduceLocalArray1D)(int *fortran_return,
@@ -682,6 +682,7 @@ void FMODIFIER FORTRAN_NAME(CCTK_ReduceLocalArray1D)(int *fortran_return,
 {
   *fortran_return = CCTK_ReduceArray (GH, *proc, *operation_handle,
                                       *num_in_array1d, *data_type, out_array1d,
-				      1, 1, *data_type, 1,in_array1d);
+				      1, 1, *data_type, *num_in_array1d,
+                                      in_array1d);
 }
 
