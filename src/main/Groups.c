@@ -685,6 +685,18 @@ int CCTK_VarTypeNumber (const char *type)
   {
     retval = CCTK_VARIABLE_COMPLEX;
   }
+  else if (! strcmp (type, "COMPLEX8"))
+  {
+    retval = CCTK_VARIABLE_COMPLEX8;
+  }
+  else if (! strcmp (type, "COMPLEX16"))
+  {
+    retval = CCTK_VARIABLE_COMPLEX16;
+  }
+  else if (! strcmp (type, "COMPLEX32"))
+  {
+    retval = CCTK_VARIABLE_COMPLEX32;
+  }
   else if (! strcmp (type, "BYTE"))
   {
     retval = CCTK_VARIABLE_BYTE;
