@@ -6,7 +6,7 @@
 #    @desc
 #               Known architectures file for SGI Irix systems
 #    @enddesc
-#    @version   $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/irix,v 1.30 2002-05-08 12:17:05 tradke Exp $
+#    @version   $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/irix,v 1.31 2002-05-08 12:28:40 tradke Exp $
 #  @@*/
 
 if test "$CCTK_CONFIG_STAGE" = 'preferred-compilers' ; then
@@ -111,7 +111,7 @@ else
     : ${CXX_WARN_FLAGS='-fullwarn'}
   fi
   if test $LD = 'CC'; then
-    : ${LDFLAGS="$IRIX_BITS_FLAG -Wl,\"-woff 84,85\""}
+    : ${LDFLAGS="$IRIX_BITS_FLAG -Wl,\"-woff 84\",\"-woff 85\""}
   fi
 
   : ${F77FLAGS="$F90FLAGS"}
