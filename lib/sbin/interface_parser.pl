@@ -393,7 +393,7 @@ sub check_implementation_consistency
       if(split(" ", $inherits{$thing}) != $n_thorns)
       {
         $message  = "Inconsistent implementations of $implementation. ";
-        $message .= "Implemented by thorns " . join(" ", @thorns);
+        $message .= "Implemented by thorns " . join(" ", @thorns) . "\n";
         $message .= "Not all inherit: $thing";
         &CST_error(0,$message,"",__LINE__,__FILE__);
         $n_errors++;
