@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.35 1999-07-04 14:21:25 allen Exp $
+#   @version $Id: Makefile,v 1.36 1999-07-05 11:08:48 goodale Exp $
 # @@*/
 
 # Make quietly unless told not to
@@ -232,8 +232,8 @@ else
 	@echo "  -delete      : to delete a configuration." 
 	@echo "  -rebuild     : to rebuild a configuration." 
 	@echo "                 (forces the CST to be rerun)."
-	@echo "  -reconfig    : to reconfigure a configuration. "
-	@echo "                 (reruns the configuration scripts)."
+	@echo "  -config      : to (re)configure a configuration. "
+	@echo "                 (runs or reruns the configuration scripts)."
 endif
 	@echo $(DIVIDER)
 	@echo $(MAKE) also knows the following targets
@@ -383,17 +383,28 @@ endif
 # Rerun the configuration script
 
 ifneq ($strip($(CONFIGURATIONS)),)
-.PHONY $(addsuffix -reconfig,$(CONFIGURATIONS)):
+.PHONY $(addsuffix -config,$(CONFIGURATIONS)):
 
-$(addsuffix -reconfig,$(CONFIGURATIONS)):
+$(addsuffix -config,$(CONFIGURATIONS)):
 	@echo $(DIVIDER)
-	$(SETUP_ENV) $(PERL) -s $(SETUP) -reconfig=1 $(SETUP_OPTIONS) $(@:%-reconfig=%); 
+	$(SETUP_ENV) $(PERL) -s $(SETUP) -reconfig=1 $(SETUP_OPTIONS) $(@:%-config=%); 
 endif
 
-%-reconfig:
+%-config:
 	@echo $(DIVIDER)
-	@echo Configuration $(@:%-reconfig=%) does not exist.
-	@echo Reconfiguration aborted.
+	@echo Configuration $(@:%-config=%) does not exist.
+	echo Setup configuration $(@:%-config=%) \(no\)?
+	read yesno rest ;\
+	if [ "x$$yesno" = "xyes" -o "x$$yesno" = "xy" -o "x$$yesno" = "xYES" -o "x$$yesno" = "xY" ] ;\
+	then  \
+	echo Setting up new configuration $(@:%-config=%); \
+	$(SETUP_ENV) $(PERL) -s $(SETUP) $(SETUP_OPTIONS) $(@:%-config=%); \
+	echo $(DIVIDER)   ;  \
+	echo Use $(MAKE) $(@:%-config=%) to build the configuration.; \
+	else \
+	echo Setup cancelled ;     \
+	fi 
+	@echo $(DIVIDER)
 
 # Make a new thorn
 
