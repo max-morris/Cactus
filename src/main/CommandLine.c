@@ -27,13 +27,13 @@ char *compileDate(void);
 int CCTK_GetCommandLine(char ***outargv);
 
 /* FIXME. This shouldn't be in this file */
-int CCTK_IsThornActive(const char *thorn) ;
+int CCTK_IsThornCompiled(const char *thorn) ;
 
 
 /* The functions used to deal with each option. */
 
  /*@@
-   @routine    CCTK_CommandLineTestThornActive
+   @routine    CCTK_CommandLineTestThorncompiled
    @date       Wed Feb 17 10:25:30 1999
    @author     Gabrielle Allen
    @desc 
@@ -41,7 +41,7 @@ int CCTK_IsThornActive(const char *thorn) ;
    At the moment the given thorn must be in the format
    <package name>/<thorn name>
    @enddesc 
-   @calls      CCTK_IsThornActive 
+   @calls      CCTK_IsThornCompiled 
    @calledby   
    @history 
  
@@ -49,9 +49,9 @@ int CCTK_IsThornActive(const char *thorn) ;
 
 @@*/
 
-void CCTK_CommandLineTestThornActive(const char *optarg)
+void CCTK_CommandLineTestThornCompiled(const char *optarg)
 {
-  if(CCTK_IsThornActive(optarg))
+  if(CCTK_IsThornCompiled(optarg))
   {
     printf("Thorn '%s' available.\n", optarg);
   }
@@ -141,10 +141,10 @@ void CCTK_CommandLineRedirectStderr(void)
 {
 
 }
-void CCTK_CommandLineListActiveThorns(void)
+void CCTK_CommandLineListThorns(void)
 {
   int i;
-  printf ("\n---------------Active Thorns---------------\n");
+  printf ("\n---------------Compiled Thorns-------------\n");
   for(i=0; i < nthorns; i++)
   {
     fprintf(stdout, "%s\n", thorn_name[i]);
@@ -173,7 +173,7 @@ void CCTK_CommandLineHelp(void)
   argc = CCTK_GetCommandLine(&argv);
 
   printf("%s, compiled on %s at %s\n", argv[0], compileDate(), compileTime());
-  printf("Usage: %s [-h] [-O] [-o paramname] [-x [nprocs]] [-W n] [-E n] [-r] [-A] [-a name] [-v] parameter_file_name>\n", argv[0]);
+  printf("Usage: %s [-h] [-O] [-o paramname] [-x [nprocs]] [-W n] [-E n] [-r] [-T] [-t name] [-v] parameter_file_name>\n", argv[0]);
 
   printf("\n");
   printf("Valid options:\n");
@@ -186,8 +186,8 @@ void CCTK_CommandLineHelp(void)
   printf("-W, -warning-level <n>              : Sets the warning level to n.\n");
   printf("-E, -error-level <n>                : Sets the error level to n.\n");
   printf("-r, -redirect-stderr                : Redirects standard error to files.\n");
-  printf("-A, -list-active-thorns             : Lists the compiled-in thorns.\n");
-  printf("-a, -test-thorn-active <name>       : Tests for the presence of thorn <name>.\n");
+  printf("-T, -list-thorns                    : Lists the compiled-in thorns.\n");
+  printf("-t, -test-thorn-compiled <name>     : Tests for the presence of thorn <name>.\n");
   printf("-v, -version                        : Prints the version.\n");
 
   exit(1);
@@ -209,7 +209,7 @@ void CCTK_CommandLineUsage(void)
 
 
  /*@@
-   @routine    CCTK_IsThornActive
+   @routine    CCTK_IsThornCompiled
    @date       Sat May 16 14:47:14 1998
    @author     Tom Goodale
    @desc 
@@ -223,7 +223,7 @@ void CCTK_CommandLineUsage(void)
 
 @@*/
 
-int CCTK_IsThornActive(const char *thorn) 
+int CCTK_IsThornCompiled(const char *thorn) 
 {
   int i;
   char full_thorn_name[507];

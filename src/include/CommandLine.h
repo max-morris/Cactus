@@ -14,14 +14,14 @@
 extern "C" {
 #endif
 
-void CCTK_CommandLineTestThornActive(const char *optarg);
+void CCTK_CommandLineTestThornCompiled(const char *optarg);
 void CCTK_CommandLineDescribeAllParameters(void);
 void CCTK_CommandLineDescribeParameter(const char *optarg);
 void CCTK_CommandLineTestParameters(const char *optarg);
 void CCTK_CommandLineWarningLevel(const char *optarg);
 void CCTK_CommandLineErrorLevel(const char *optarg);
 void CCTK_CommandLineRedirectStderr(void);
-void CCTK_CommandLineListActiveThorns(void);
+void CCTK_CommandLineListThorns(void);
 void CCTK_CommandLineVersion(void);
 void CCTK_CommandLineHelp(void);
 void CCTK_CommandLineUsage(void);

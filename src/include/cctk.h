@@ -33,7 +33,7 @@
 
 
 #define _CCTK_FARGUMENTS  cctk_dim, cctk_gsh, cctk_lsh, cctk_lbnd, cctk_ubnd, cctk_from, cctk_to, cctk_bbox, cctk_delta_time, cctk_time, cctk_delta_space, cctk_origin_space, cctk_levfac, cctk_convlevel, cctk_nghostzones, cctk_iteration, cctkGH
-#define _DECLARE_CCTK_FARGUMENTS CCTK_INT cctk_dim&&\
+#define _DECLARE_CCTK_FARGUMENTS INTEGER cctk_dim&&\
                            INTEGER cctk_gsh(cctk_dim),cctk_lsh(cctk_dim)&&\
                            INTEGER cctk_lbnd(cctk_dim),cctk_ubnd(cctk_dim)&&\
                            INTEGER cctk_from(cctk_dim),cctk_to(cctk_dim)&&\

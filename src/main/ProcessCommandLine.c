@@ -60,27 +60,27 @@ int ProcessCommandLine(int *inargc, char ***inargv, tFleshConfig *ConfigData)
 	{"warning-level", required_argument, NULL, 'W'},
 	{"error-level", required_argument, NULL, 'E'},
 	{"redirect-stderr", no_argument, NULL, 'r'},
-	{"list-active-thorns", no_argument, NULL, 'A'},
-	{"test-thorn-active", required_argument, NULL, 'a'},
+	{"list-thorns", no_argument, NULL, 'T'},
+	{"test-thorn-compiled", required_argument, NULL, 't'},
 	{"version", no_argument, NULL, 'v'},
 	{0, 0, 0, 0}
       };
       
-      c = getopt_long_only (argc, argv, "hOo:x::W:E:rAa:v",
+      c = getopt_long_only (argc, argv, "hOo:x::W:E:rTt:v",
 			    long_options, &option_index);
       if (c == -1)
 	break;
   
       switch (c)
       {
-	case 'a': CCTK_CommandLineTestThornActive(optarg); break;
+	case 't': CCTK_CommandLineTestThornCompiled(optarg); break;
 	case 'O': CCTK_CommandLineDescribeAllParameters(); break;
 	case 'o': CCTK_CommandLineDescribeParameter(optarg); break;
 	case 'x': CCTK_CommandLineTestParameters(optarg); break;
 	case 'W': CCTK_CommandLineWarningLevel(optarg); break;
 	case 'E': CCTK_CommandLineErrorLevel(optarg); break;
 	case 'r': CCTK_CommandLineRedirectStderr(); break;
-	case 'A': CCTK_CommandLineListActiveThorns(); break;
+	case 'T': CCTK_CommandLineListThorns(); break;
 	case 'v': CCTK_CommandLineVersion(); break;
 	case 'h': 
 	case '?':
