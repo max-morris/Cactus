@@ -531,6 +531,25 @@ char *CCTK_GroupNameFromVarI (int var)
   return (fullname);
 }
 
+void CCTK_FCALL CCTK_FNAME (CCTK_GroupNameFromVarI) (int *nchars, int *var, ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_PTR (groupnameptr)
+  ONE_FORTSTRING_LEN (groupnamelen)
+  char *groupname;
+
+
+  groupname = CCTK_GroupNameFromVarI (*var);
+  if (!groupname)
+  {
+    *nchars = CCTK_FortranString ("", groupnameptr, groupnamelen);
+  }
+  else
+  {
+    *nchars = CCTK_FortranString (groupname, groupnameptr, groupnamelen);
+    free (groupname);
+  }
+}
+
 
  /*@@
    @routine    CCTK_GroupIndexFromVarI
@@ -607,6 +626,24 @@ const char *CCTK_ImpFromVarI (int var)
           groups[group_of_variable[var]].implementation : NULL);
 }
 
+void CCTK_FCALL CCTK_FNAME (CCTK_ImpFromVarI) (int *nchars, int *var, ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_PTR (impptr)
+  ONE_FORTSTRING_LEN (implen)
+  const char *imp;
+
+
+  imp = CCTK_ImpFromVarI (*var);
+  if (!imp)
+  {
+    *nchars = CCTK_FortranString ("", impptr, implen);
+  }
+  else
+  {
+    *nchars = CCTK_FortranString (imp, impptr, implen);
+  }
+}
+
 
  /*@@
    @routine    CCTK_FullName
@@ -647,6 +684,25 @@ char *CCTK_FullName (int var)
   }
 
   return (fullname);
+}
+
+void CCTK_FCALL CCTK_FNAME (CCTK_Full) (int *nchars, int *var, ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_PTR (fullnameptr)
+  ONE_FORTSTRING_LEN (fullnamelen)
+  char *fullname;
+
+
+  fullname = CCTK_FullName (*var);
+  if (!fullname)
+  {
+    *nchars = CCTK_FortranString ("", fullnameptr, fullnamelen);
+  }
+  else
+  {
+    *nchars = CCTK_FortranString (fullname, fullnameptr, fullnamelen);
+    free (fullname);
+  }
 }
 
 
@@ -887,6 +943,24 @@ const char *CCTK_VarTypeName (int vtype)
   return retval;
 }
 
+void CCTK_FCALL CCTK_FNAME (CCTK_VarTypeName) (int *nchars, int *var, ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_PTR (vartypenameptr)
+  ONE_FORTSTRING_LEN (vartypenamelen)
+  const char *vartypename;
+
+
+  vartypename = CCTK_VarTypeName (*var);
+  if (!vartypename)
+  {
+    *nchars = CCTK_FortranString ("", vartypenameptr, vartypenamelen);
+  }
+  else
+  {
+    *nchars = CCTK_FortranString (vartypename, vartypenameptr, vartypenamelen);
+  }
+}
+
 
  /*@@
    @routine    CCTK_GroupScopeNumber
@@ -1058,6 +1132,24 @@ const char *CCTK_VarName (int var)
           : NULL);
 }
 
+void CCTK_FCALL CCTK_FNAME (CCTK_VarName) (int *nchars, int *var, ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_PTR (varnameptr)
+  ONE_FORTSTRING_LEN (varnamelen)
+  const char *varname;
+
+
+  varname = CCTK_VarName (*var);
+  if (!varname)
+  {
+    *nchars = CCTK_FortranString ("", varnameptr, varnamelen);
+  }
+  else
+  {
+    *nchars = CCTK_FortranString (varname, varnameptr, varnamelen);
+  }
+}
+
 
  /*@@
    @routine    CCTK_DecomposeName
@@ -1149,6 +1241,26 @@ char *CCTK_GroupName (int group)
   return (name);
 }
 
+void CCTK_FCALL CCTK_FNAME (CCTK_GroupName) (int *nchars, int *var, ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_PTR (groupnameptr)
+  ONE_FORTSTRING_LEN (groupnamelen)
+  char *groupname;
+
+
+  groupname = CCTK_GroupName (*var);
+  if (!groupname)
+  {
+    *nchars = CCTK_FortranString ("", groupnameptr, groupnamelen);
+  }
+  else
+  {
+    *nchars = CCTK_FortranString (groupname, groupnameptr, groupnamelen);
+    free (groupname);
+  }
+}
+
+
  /*@@
    @routine    CCTK_GroupTagsTable
    @date       Wed May 22 00:47:58 2002
@@ -1183,6 +1295,16 @@ int CCTK_GroupTagsTable(const char *groupname)
 
   return retval;
 }
+
+void CCTK_FCALL CCTK_FNAME (CCTK_GroupTagsTable) (int *table, ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (groupname)
+
+
+  *table = CCTK_GroupTagsTable (groupname);
+  free (groupname);
+}
+
 
  /*@@
    @routine    CCTK_GroupTagsTableI
@@ -1221,6 +1343,11 @@ int CCTK_GroupTagsTableI(int group)
   }
 
   return retval;
+}
+
+void CCTK_FCALL CCTK_FNAME (CCTK_GroupTagsTableI) (int *table, int *group)
+{
+  *table = CCTK_GroupTagsTableI (*group);
 }
 
  /*@@
@@ -1300,6 +1427,11 @@ int CCTK_NumVarsInGroupI (int group)
   return ((0 <= group && group < n_groups) ? groups[group].n_variables : -1);
 }
 
+void CCTK_FCALL CCTK_FNAME(CCTK_NumVarsInGroupI) (int *numvars, int *group)
+{
+  *numvars = CCTK_NumVarsInGroupI (*group);
+}
+
 
  /*@@
    @routine    CCTK_NumVarsInGroup
@@ -1349,6 +1481,12 @@ int CCTK_GroupTypeFromVarI (int var)
           groups[group_of_variable[var]].gtype : -1);
 }
 
+void CCTK_FCALL CCTK_FNAME (CCTK_GroupTypeFromVarI)
+                           (int *type, const int *var)
+{
+  *type = CCTK_GroupTypeFromVarI (*var);
+}
+
 
  /*@@
    @routine    CCTK_GroupTypeI
@@ -1367,6 +1505,12 @@ int CCTK_GroupTypeFromVarI (int var)
 int CCTK_GroupTypeI (int group)
 {
   return ((0 <= group && group < n_groups) ? groups[group].gtype : -1);
+}
+
+void CCTK_FCALL CCTK_FNAME (CCTK_GroupTypeI)
+                           (int *type, const int *group)
+{
+  *type = CCTK_GroupTypeI (*group);
 }
 
 
@@ -1827,6 +1971,11 @@ int CCTK_VarTypeSize (int vtype)
   }
 
   return (var_size);
+}
+
+void CCTK_FCALL CCTK_FNAME(CCTK_VarTypeSize) (int *size, int *vtype)
+{
+  *size = CCTK_VarTypeSize (*vtype);
 }
 
 
