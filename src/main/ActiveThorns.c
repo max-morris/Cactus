@@ -294,16 +294,12 @@ int CCTKi_RegisterThorn(const struct iAttributeList *attributes)
 int CCTKi_ActivateThorn(const char *name)
 {
   int retval;
-  char filename[500];
   t_sktree *thornnode;
   t_sktree *impnode;
   
   struct THORN *thorn;
   struct IMPLEMENTATION *imp;
 
-  CCTK_ParameterFilename(500,filename);
-
-  printf("Running parameter file %s\n",filename);
   printf("Activating thorn %s...", name);
 
   /* Find the thorn */

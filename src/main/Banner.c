@@ -20,6 +20,8 @@
 #include "cctk_FortranString.h"
 #include "cctk_Parameter.h"
 #include "cctk_Version.h"
+#include "cctk_CommandLine.h"
+#include "util_Network.h"
 
 static const char *rcsid = "$Header$";
 
@@ -28,6 +30,8 @@ CCTK_FILEVERSION(main_Banner_c)
 /********************************************************************
  *********************     Local Data Types   ***********************
  ********************************************************************/
+
+#define DATALENGTH 255
 
 /********************************************************************
  ********************* Local Routine Prototypes *********************
@@ -72,7 +76,7 @@ void CCTKi_CactusBanner(void)
 {
   
   const char *string;
-  char buffer[128];
+  char buffer[DATALENGTH+1];
 
 #define B_1 "       10                                  "
 #define B_2 "  1   0101       ************************  "
@@ -84,18 +88,24 @@ void CCTKi_CactusBanner(void)
 #define B_8 "      0100      GNU Licensed. No Warranty  "
 #define B_9 "      0101                                 "
 
-
 #define B_ANNERLINE B_1 "\n" B_2 "\n" B_3 "\n" B_4 "\n" B_5 "\n" B_6 "\n" B_7 "\n" B_8 "\n" B_9 "\n"
  
-
   string = B_ANNERLINE;
-
-  Util_CurrentDate (sizeof (buffer), buffer);
 
   printf("--------------------------------------------------------------------------------\n");
   printf("%s\n",string); 
-  printf("Version: %s  ",CCTK_FullVersion());
-  printf("Compile Date: %s  Run Date: %s\n",CCTK_CompileDate(),buffer);
+  printf("--------------------------------------------------------------------------------\n");
+  printf("Version:        %s\n",CCTK_FullVersion());
+  printf("Compile date:   %s (%s)\n",CCTK_CompileDate(),CCTK_CompileTime());
+  Util_CurrentDate (DATALENGTH, buffer);
+  printf("Run date:       %s",buffer);
+  Util_CurrentTime (DATALENGTH, buffer);
+  printf(" (%s)\n",buffer);
+  Util_GetHostName(buffer,DATALENGTH);
+  printf("Run host:       %s\n",buffer);
+  CCTK_ParameterFilename(DATALENGTH,buffer);
+  printf("Parameter file: %s\n",buffer);
+  
   printf("--------------------------------------------------------------------------------\n");
 
 }
@@ -207,12 +217,12 @@ int CCTKi_PrintBanners(void)
 {
   int i;
   int param_type;
-  int cctk_show_banners;
+  CCTK_INT *cctk_show_banners;
 
-  cctk_show_banners = (*(CCTK_INT *)CCTK_ParameterGet("cctk_show_banners",
-						 "Cactus",&param_type));
+  cctk_show_banners = (CCTK_INT *)CCTK_ParameterGet("cctk_show_banners",
+						 "Cactus",&param_type);
 
-  if (cctk_show_banners)
+  if (*cctk_show_banners)
   {
     for (i=0;i<number_banners;i++)
     {
