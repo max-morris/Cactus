@@ -15,6 +15,7 @@
 
 #include "cctk_Flesh.h"
 #include "OverloadMacros.h"
+#include "cctk_WarnLevel.h"
 
 static char *rcsid="$Header$";
 
