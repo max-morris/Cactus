@@ -21,8 +21,6 @@ int CCTKi_BindingsScheduleInitialise(void);
 
 int CCTKi_BindingsScheduleRegister(const char *type, void *data);
 
-int CCTKi_BindingsParameterHelp(const char *identifier, const char *format, FILE *file);
-
 #ifdef __cplusplus
 }
 #endif
