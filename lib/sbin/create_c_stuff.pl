@@ -51,6 +51,7 @@ sub CreateParameterBindingFile
   $line = "\#include \"CParameterStructNames.h\"";
   push(@data, $line);
   $line = "\#include \"Misc.h\"";
+  push(@data, $line);	
   $line = "\#include \"ParameterBindings.h\"";
   push(@data, $line);
   push(@data, "");

@@ -84,9 +84,9 @@ sub CreateVariableBindings
   }
   chdir "Variables";
 
-  open (OUT, ">Bindings.c") || die "Cannot open Bindings.c";
+  open (OUT, ">BindingsVariables.c") || die "Cannot open BindingsVariables.c";
 
-  $filelist = "Bindings.c";
+  $filelist = "BindingsVariables.c";
 
   foreach $thorn (split(" ",$interface_database{"THORNS"}))
   {
@@ -109,7 +109,8 @@ sub CreateVariableBindings
   foreach $thorn (split(" ",$interface_database{"THORNS"}))
   {
     open(OUT, ">$thorn.c") || die "Cannot create $thorn.c";
-
+  
+    print OUT "\#include \"Groups.h\"\n";
 #    print OUT "#include \"flesh.h\"\n";
 #    print OUT "#include \"StoreVariableData.h\"\n\n";
 
@@ -898,6 +899,7 @@ sub CreateThornGroupInitialisers
   local($group, @variables);
   local($line);
   local(@definitions);
+
 
   $imp = $interface_database{"\U$thorn\E IMPLEMENTS"};
 

@@ -6,7 +6,7 @@
 #  @desc 
 #  Parses the the configuration files for thorns.
 #  @enddesc 
-#  @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.14 1999-06-24 15:40:09 goodale Exp $
+#  @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.15 1999-06-25 12:25:36 goodale Exp $
 #@@*/
 
 # Global parameter to track the number of errors from the CST
@@ -669,10 +669,11 @@ sub CreateParameterBindings
     }
   }
 
-  open (OUT, ">Bindings.c") || die "Cannot open Bindings.c";
+  open (OUT, ">BindingsParameters.c") || die "Cannot open BindingsParameters.c";
 
   print OUT  <<EOT;
 #include <stdio.h>
+#include <stdlib.h>
 #include "config.h"
 #include "Misc.h"
 
@@ -842,7 +843,7 @@ EOT
 
   open (OUT, ">make.code.defn") || die "Cannot open make.code.defn";
 
-  print OUT "SRCS = Bindings.c $files\n";
+  print OUT "SRCS = BindingsParameters.c $files\n";
 
   close OUT;
 
@@ -1047,11 +1048,14 @@ sub CreateScheduleBindings
   &create_RegisterRFR($bindings_dir,scalar(@rfr_files), @rfr_files, %schedule_data); 
 
   # Write the contents of BindingsScheduleRegisterSTARTUP.c
+  
+  # Joan changes the call to Cactus_Register so it does not send data
   &create_RegisterSTARTUP($bindings_dir,split(" ",$startup)); 
 
-  open (OUT, ">Bindings.c") || die "Cannot open Bindings.c";
+  open (OUT, ">BindingsSchedule.c") || die "Cannot open BindingsSchedule.c";
 
   print OUT  <<EOT;
+#include <stdio.h>
  
   int CCTK_BindingsScheduleInitialise(void)
   {
@@ -1089,7 +1093,7 @@ EOT
     }
   }
 
-  print OUT "SRCS = Bindings.c Cactus_RegisterSTARTUP.c Cactus_RegisterRFR.c $files\n";
+  print OUT "SRCS = BindingsSchedule.c Cactus_RegisterSTARTUP.c Cactus_RegisterRFR.c $files\n";
 
   close OUT;
 

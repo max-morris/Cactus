@@ -120,14 +120,13 @@ sub write_startup_header {
   local($thorn,$routine,$out) = @_;
 
 # The header for the thorn STARTUP routine
-
   print OUTSTART "#define THORN_IS_$thorn\n";
   print OUTSTART "#include \"cctk.h\"\n";
   print OUTSTART "#include \"flesh.h\"\n";
   print OUTSTART "#include \"rfr_constants.h\"\n";
   print OUTSTART "#include \"declare_parameters.h\"\n";
   print OUTSTART "\n";
-  print OUTSTART "void $routine (void *data)\n";
+  print OUTSTART "void $routine ()\n";
   print OUTSTART "{\n";
   print OUTSTART "  DECLARE_PARAMETERS\n";
   print OUTSTART "\n";
@@ -214,7 +213,7 @@ sub create_RegisterSTARTUP
 
   print OUT <<EOT;
 
-  void Cactus_RegisterSTARTUP()
+  int Cactus_RegisterSTARTUP()
   {
    $startup_calls
   }
