@@ -66,7 +66,7 @@ int CCTK_SetParameter(const char *parameter, const char *value)
   }
   else
   {     
-    retval = CCTK_BindingsParameterSet(parameter, value);
+    retval = CCTKi_BindingsParameterSet(parameter, value);
   }
 
   if(retval)

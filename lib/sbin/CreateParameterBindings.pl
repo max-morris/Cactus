@@ -230,7 +230,7 @@ EOT
   return 0;
 }
  
-int CCTK_BindingsParameterSet(const char *identifier, const char *value)
+int CCTKi_BindingsParameterSet(const char *identifier, const char *value)
 {
   int retval = 1;
   int temp_retval;
@@ -288,7 +288,7 @@ EOT
   return retval;
 }
  
-int CCTK_BindingsParameterGet(const char *identifier, void **value)
+int CCTKi_BindingsParameterGet(const char *identifier, void **value)
 {   
   int retval = 1;
   int temp_retval;
