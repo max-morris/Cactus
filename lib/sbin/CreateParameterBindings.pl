@@ -196,7 +196,7 @@ sub CreateParameterBindings
   $dataout .= "\#include <stdio.h>\n";
   $dataout .= "\#include <stdlib.h>\n";
   $dataout .= "\#include <string.h>\n";
-  $dataout .= "\#include \"cctk_config.h\"\n";
+  $dataout .= "\#include \"cctk_Config.h\"\n";
   $dataout .= "\#include \"cctk_Misc.h\"\n";
   $dataout .= "\#include \"cctk_WarnLevel.h\"\n";
 
@@ -300,7 +300,7 @@ sub CreateParameterBindings
     $dataout .= "#define DECLARE_CCTK_PARAMETERS \\\n";
 
     $dataout .= "void      *cctk_pdummy_pointer;\\
-                 int        cctk_pdummy_int;\\
+                 CCTK_INT   cctk_pdummy_int;\\
                  CCTK_REAL  cctk_pdummy_real;\\\n";
 
 
@@ -478,7 +478,7 @@ sub NewParamStuff
 
     push(@data, "#include <stdarg.h>");
     push(@data, "");
-    push(@data, "#include \"cctk_config.h\"");
+    push(@data, "#include \"cctk_Config.h\"");
     push(@data, "#include \"ParameterBindings.h\"");
 
     push(@data, "#include \"CParameterStructNames.h\"");

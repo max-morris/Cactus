@@ -17,7 +17,7 @@ AC_PREREQ(2.13)
 
 dnl Starts here
 AC_INIT()
-AC_CONFIG_HEADER(cctk_config.h)
+AC_CONFIG_HEADER(cctk_Config.h)
 
 dnl Check the system type
 AC_CANONICAL_SYSTEM
@@ -92,7 +92,7 @@ fi
 
 # Create a file to put any #defines etc needed for this architecture
 # known architecture stuff should use cat >> etc to append to this file.
-cat > cctk_archdefs.h <<EOF
+cat > cctk_Archdefs.h <<EOF
 /* Stuff from known architectures */
 #ifndef _CCTK_ARCHDEFS_H_
 #define _CCTK_ARCHDEFS_H_
@@ -105,7 +105,7 @@ if test -r $srcdir/known-architectures/$host_os ; then
 fi
 
 # Finish the architecture stuff
-cat >> cctk_archdefs.h <<EOF
+cat >> cctk_Archdefs.h <<EOF
 #endif /* _CCTK_ARCHDEFS_H_ */
 EOF
 
@@ -113,7 +113,7 @@ EOF
 #########################################################################
 #Check for extra stuff
 #########################################################################
-cat > cctk_extradefs.h <<EOF
+cat > cctk_Extradefs.h <<EOF
 /* Stuff from extra packages */
 #ifndef _CCTK_EXTRADEFS_H_
 #define _CCTK_EXTRADEFS_H_
@@ -128,8 +128,8 @@ do
   if test -d $srcdir/extras/$extra ; then
     if test -x $srcdir/extras/$extra/setup.sh ; then
         # Put some comment lines in the files.
-        CCTK_WriteLine cctk_extradefs.h ""
-        CCTK_WriteLine cctk_extradefs.h "/*$extra definitions*/"
+        CCTK_WriteLine cctk_Extradefs.h ""
+        CCTK_WriteLine cctk_Extradefs.h "/*$extra definitions*/"
         CCTK_WriteLine make.extra.defn ""
         CCTK_WriteLine make.extra.defn "# $extra definitions"
         # Call the setup script
@@ -142,7 +142,7 @@ do
 done
 
 # Finish the cctk_extradefs.h file
-cat >> cctk_extradefs.h <<EOF
+cat >> cctk_Extradefs.h <<EOF
 #endif /*_CCTK_EXTRADEFS_H_*/
 EOF
 
