@@ -79,7 +79,7 @@ include $(CONFIG)/make.config.rules
 .PHONY: $(addsuffix .check, $(SUBDIRS))
 
 $(addsuffix .check, $(SUBDIRS)) :
-	if [ ! -d $(basename $@) ] ; then $(MKDIR) $(basename $@) ; fi
+	if [ ! -d $(basename $@) ] ; then $(MKDIR) $(MKDIRFLAGS) $(basename $@) ; fi
 	cd $(basename $@) ; $(MAKE) TOP=$(TOP) CONFIG=$(CONFIG) SRCDIR=$(SRCDIR)/$(basename $@) THORN=$(THORN) -f $(MAKE_DIR)/make.subdir
 
 # This one puts a file containing identity info into the build subdirectory
