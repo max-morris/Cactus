@@ -13,7 +13,9 @@
 
 #include "SKBinTree.h"
 
+#include "config.h"
 #include "cctk_ActiveThorns.h"
+#include "cctk_FortranString.h"
 
 static char *rcsid = "$Header$";
 
@@ -311,6 +313,15 @@ int CCTK_IsThornActive(const char *name)
   return retval;
 }
 
+/*int FMODIFIER FORTRAN_NAME(CCTK_IsThornActive)(ONE_FORTSTRING_ARG)
+{
+  int retval;
+  ONE_FORTSTRING_CREATE(name) 
+  retval = CCTK_IsThornActive(name);
+  free(name);
+  return retval;
+}
+*/
 /*@@
    @routine    CCTK_IsImplementationActive
    @date       Sun Jul  4 17:46:56 1999
