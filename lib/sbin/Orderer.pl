@@ -139,11 +139,11 @@ sub OrderList
   }
 
   # Stop if there have been any errors.
-  if($nerrors)
-  {
-    print "$error_string: $nerrors errors detected\n";
-    exit;
-  }
+#  if($nerrors)
+#  {
+#    print "$error_string: $nerrors errors detected\n";
+#    exit;
+#  }
 
 #  foreach $field ( sort keys %database )
 #  {
@@ -284,14 +284,15 @@ sub CheckThings
   local($other_thing);
   local($nerrors);
 
-  $nerrors = 0;
   if($database{"\U$thing $keyword"})
   {
     foreach $other_thing (split(" ", $database{"\U$thing $keyword"}))
     {
-      if( $thing =~ m:$other_thing:i)
+      
+      if( $thing =~ m:^$other_thing$:i)
       {
-	print "$error_string:  $thing appears in its own $keyword list !\n";
+	$message = "$error_string:  $thing appears in its own $keyword list";
+	&CST_error(0,$message,__LINE__,__FILE__);
 	$nerrors++;
       }
     }
