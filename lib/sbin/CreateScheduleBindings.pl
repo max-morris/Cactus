@@ -487,7 +487,7 @@ sub ScheduleBlock
 					  $rhschedule_db->{"\U$thorn\E BLOCK_$block SYNC"},
 					  $rhinterface_db);
 
-  @options = split(/,/, $rhschedule_db->{"\U$thorn\E BLOCK_$block SYNC"});
+  @options = split(/,/, $rhschedule_db->{"\U$thorn\E BLOCK_$block OPTIONS"});
 
   @before_list = &ScheduleSelectRoutines($thorn, $implementation, 
 					 $rhschedule_db->{"\U$thorn\E BLOCK_$block BEFORE"},
