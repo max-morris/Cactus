@@ -260,7 +260,7 @@ const char *CCTK_InterpOperatorImplementation(int handle)
                                                                         \
   if (operator_ptr_fnarg == NULL)                                       \
   {                                                                     \
-    CCTK_VWarn(1, __LINE__, __FILE__, "Cactus",                         \
+    CCTK_VWarn(0, __LINE__, __FILE__, "Cactus",                         \
                function_name_string ":\n"                               \
                "   (called from thorn %s)\n"                            \
                "   NULL function pointer passed\n"                      \
@@ -282,7 +282,7 @@ const char *CCTK_InterpOperatorImplementation(int handle)
   /* check that the operator isn't already registered */                \
   if (p_interp_info->struct_field_name != NULL)                         \
   {                                                                     \
-    CCTK_VWarn(1, __LINE__, __FILE__, "Cactus",                         \
+    CCTK_VWarn(0, __LINE__, __FILE__, "Cactus",                         \
                function_name_string ":\n"                               \
                "   (called from thorn %s)\n"                            \
                "   Ignoring attempt to register operator \"%s\"\n"      \
@@ -683,10 +683,16 @@ int CCTK_InterpGV (cGH *GH,
                                                         operator_handle);
   coord_system = CCTK_CoordSystemName (coord_system_handle);
 
-  if (operator == NULL)
+  if ((operator == NULL) || (operator->interp_operator_GV == NULL))
   {
-    CCTK_Warn (3, __LINE__, __FILE__, "Cactus",
-               "CCTK_InterpGV: Invalid interpolation operator handle passed to CCTK_InterpGV");
+    CCTK_VWarn(0, __LINE__, __FILE__, "Cactus",
+"\n"
+"   CCTK_InterpGV(): no interpolation operator is registered\n"
+"                    under the handle %d\n"
+"                    (did you activate PUGHInterp or some other thorn\n"
+"                     providing this interpolation operator?)"
+               ,
+               operator_handle);
     retcode = -1;
   }
   else if (coord_system == NULL)
@@ -758,17 +764,22 @@ void CCTK_FCALL CCTK_FNAME (CCTK_InterpGV)
                                                         *operator_handle);
   coord_system = CCTK_CoordSystemName (*coord_system_handle);
 
-  if (operator == NULL)
+  if ((operator == NULL) || (operator->interp_operator_GV == NULL))
   {
-    CCTK_Warn (3, __LINE__, __FILE__, "Cactus",
-               "CCTK_InterpGV: "
-               "Invalid interpolation operator handle passed to CCTK_InterpGV");
+    CCTK_VWarn(0, __LINE__, __FILE__, "Cactus",
+"\n"
+"   CCTK_InterpGV(): no interpolation operator is registered\n"
+"                    under the handle %d\n"
+"                    (did you activate PUGHInterp or some other thorn\n"
+"                     providing this interpolation operator?)"
+               ,
+               *operator_handle);
     retcode = -1;
   }
   else if (coord_system == NULL)
   {
-    CCTK_Warn (3, __LINE__, __FILE__, "Cactus",
-               "CCTK_InterpGV: Invalid coordinate system handle passed to CCTK_InterpGV");
+    CCTK_Warn (0, __LINE__, __FILE__, "Cactus",
+"CCTK_InterpGV: Invalid coordinate system handle passed to CCTK_InterpGV");
     retcode = -1;
   }
   else
@@ -924,12 +935,14 @@ int CCTK_InterpLocal (cGH *GH,
   /* Get the interpolation operator */
   operator = (struct interp_info *) Util_GetHandledData (interp_operators,
                                                         operator_handle);
-  if (operator == NULL)
+  if ((operator == NULL) || (operator->interp_operator_local == NULL))
   {
-    CCTK_VWarn(3, __LINE__, __FILE__, "Cactus",
+    CCTK_VWarn(0, __LINE__, __FILE__, "Cactus",
 "\n"
 "   CCTK_InterpLocal(): no interpolation operator is registered\n"
-"                       under the handle %d"
+"                       under the handle %d\n"
+"                       (did you activate LocalInterp or some other thorn\n"
+"                        providing this interpolation operator?)"
                ,
                operator_handle);
     retcode = -1;
@@ -1007,12 +1020,14 @@ void CCTK_FCALL CCTK_FNAME (CCTK_InterpLocal)
   /* Get the interpolation operator */
   operator = (struct interp_info *) Util_GetHandledData (interp_operators,
                                                         *operator_handle);
-  if (operator == NULL)
+  if ((operator == NULL) || (operator->interp_operator_local == NULL))
   {
-    CCTK_VWarn(3, __LINE__, __FILE__, "Cactus",
+    CCTK_VWarn(0, __LINE__, __FILE__, "Cactus",
 "\n"
 "   CCTK_InterpLocal(): no interpolation operator is registered\n"
-"                       under the handle %d"
+"                       under the handle %d\n"
+"                       (did you activate LocalInterp or some other thorn\n"
+"                        providing this interpolation operator?)"
                ,
                *operator_handle);
     retcode = -1;
@@ -1209,12 +1224,15 @@ int CCTK_InterpLocalUniform(int N_dims,
   const struct interp_info *p_interp_info
         = (struct interp_info *)Util_GetHandledData(interp_operators,
                                                    operator_handle);
-  if (p_interp_info == NULL)
+  if ( (p_interp_info == NULL)
+       || (p_interp_info->interp_op_local_uniform == NULL) )
     {
-    CCTK_VWarn(3, __LINE__, __FILE__, "Cactus",
+    CCTK_VWarn(0, __LINE__, __FILE__, "Cactus",
 "\n"
 "   CCTK_InterpLocalUniform(): no interpolation operator is registered\n"
-"                              under the handle %d"
+"                              under the handle %d\n"
+"                              (did you activate LocalInterp or some other thorn\n"
+"                               providing this interpolation operator?)"
                ,
                operator_handle);
     return UTIL_ERROR_BAD_HANDLE;
