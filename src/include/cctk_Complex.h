@@ -97,4 +97,4 @@ DECLARE_CMPLX_FUNCTIONS (CCTK_Cmplx32, CCTK_REAL16, CCTK_COMPLEX32)
 }
 #endif
 
-#endif /* __CCTK_COMPLEX_H_ */
+#endif /* _CCTK_COMPLEX_H_ */
