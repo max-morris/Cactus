@@ -54,7 +54,7 @@ processors you also need:
 \begin{Lentry}
 \item[{\tt MPI}] the {\it Message Passing Interface (MPI)} 
 which provides inter-processor communication. 
-Supercomputering sites often supply a native {\tt MPI} implementation with
+Supercomputing sites often supply a native {\tt MPI} implementation with
 which Cactus is very likely to be compatible. Otherwise there are
 various freely available ones available, e.g. the {\tt MPICH}
 version of {\tt MPI} is available for various architectures and operating
@@ -102,8 +102,8 @@ Cactus runs on many machines, under a large number of Unix operating
 systems. Here we list all the machines we have compiled and verified
 Cactus on, including some architecture specific notes. 
 \begin{Lentry} 
-\item[{\bf SGI Origin 2000} running Irix]
-\item[{\bf SGI} 32 or 64 bit running Irix]
+\item[{\bf SGI Origin 2000} running Irix] {}
+\item[{\bf SGI} 32 or 64 bit running Irix] {}
 \item[{\bf Cray T3E}] 
 \item[{\bf Dec Alpha}]  Dec operating system and Linux. Single processor
   mode and {\tt MPI} supported. The Decs need to have the GNU {\tt C/C++} 
@@ -131,80 +131,37 @@ The following machines are only partially supported
 \label{sec:chpr}
 
 Cactus is distributed, extended, and maintained using the free CVS
-software. CVS  allows many
-people to work on a large software project together without getting
-into a tangle. For the beginner, we summarize the basics in appendix
-\ref{sec:uscv}, please refer to this section for a short description of
-the CVS syntax.
+software ({\it Concurrent Versioning System}: {\tt http://www.cvshome.org}). 
+CVS  allows many people to work on a large software project 
+together without getting into a tangle. 
+Since Cactus thorns are distributed from several repositories on the
+main CVS site, and from a growing number of user sites, we provide a
+script, described below,  on our website for checking out the flesh and thorns.
+The Cactus website also provides a form interface for direct download.
+
+CVS experts who want to use raw CVS commands are directed to Appendix~\ref{uscv}
+for full instructions. For CVS novices, we also summarize in this
+appendix basic CVS commands.
 
 The space required for an installation depends on the arrangements and
 thorns used. The flesh on its own requires less than 5 MB.
 
-\begin{Lentry}
-\item[{\bf Login}] Prior to any CVS operation, you need to log into the Cactus
-  repository. For an anonymous checkout, type:\\
-  {\tt
-    cvs -d :pserver:cvs\_anon@cvs.cactuscode.org:/cactus login
-    }
-  You will be prompted for a password which is {\bf anon}. 
-\item[{\bf Checkout}] To obtain a fresh copy of Cactus, move to a directory
-  which does not contain a previously checked out version, and type
-  {\t
-    cvs -z9 -d :pserver:cvs\_anon@cvs.cactuscode.org:/cactus checkout Cactus
-    }
-  The CVS checkout procedure will create a directory called {\bf
-  Cactus} and install the code inside this directory.  From now on we
-  will reference all directory names relative to {\bf Cactus}. 
-
-\noindent
-  If you want to compile Cactus with thorns, you now need to checkout 
-  separately the required arrangements (or {\it arrangements} 
-   into the {\bf arrangements} directory. To see  the 
-  available Cactus arrangements and thorns type
-  {\t 
-    cvs -z9 -d :pserver:cvs\_anon@cvs.cactuscode.org:/cactus checkout -s
-  }
-  To check out a arrangement or thorn type go to the arrangements directory,  {\t cd arrangements},
-  and  for a arrangement type
-{\t 
-  cvs -z9 checkout <arrangement\_name>
-  }
-        or for just one thorn
-{\t 
-cvs -z9 checkout <arrangement\_name/thorn\_name>
+The script for checking out the flesh and thorns, {\tt GetCactus} is available 
+from the website at {\tt http://www.cactuscode.org/Download/GetCactus}. The 
+script takes as an argument the name of a file containing a {\it ThornList},
+that is a list of thorns with the syntax 
+{\tt
+\begin{verbatim}
+<arrangement name>/<thorn name>
+\end{verbatim}
 }
- 
-To simplify this procedure you may use {\t gmake checkout} in the Cactus
-home directory which provides menus to pick arrangements and thorns from.
-  
-  
-\item[{\bf Update}] to update an existing Cactus checkout (to patch in
-  possible changes, etc.), do the following {\em within} the {\tt Cactus} directory.
-  {\t
-    cvs -z9 update
-    }
-  The update process will operate recursively downwards from your current position
-  within the Cactus tree. To update only on certain directories, change
-  into these directories and issue the update command.
-\item{\bf CVS status}: to obtain a status report on the ``age'' of your
-  Cactus or arrangement routines (from your current directory position
-  downward), type
-  {\t
-    cvs status
-    }
-\item[{\bf non-anonymous CVS}] if you have an account at the central
-  repository ({\tt cvs.cactuscode.org}) and would like to perform 
-  any of the operation above
-  {\em non-anonymously}, replace {\tt cvs\_anon} by your login name
-  and provide the appropriate password during the CVS login
-  process. Depending on your permissions, you may then make commits to Cactus
-  or its arrangements.
-\item[{\bf Commits}] you need to perform a personalized login and have
-  proper permissions to commit code to the repository. 
-\end{Lentry}
-For more CVS commands on how to add files, etc. please refer to appendix 
-\ref{sec:uscv}.
+If no filename is given, only the flesh is checked out.
+Optional directives in the ThornList indicate which CVS repository to fetch 
+thorns from. The default is to take the thorns from the same repository as
+the flesh. A full description of ThornList syntax is provided in Appendix~\ref{thsy}.
+ThornLists for example applications are provided on the Cactus website.
 
+    The same script can be used to checkout additional thorns.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -240,7 +197,7 @@ A workaround is to first create a
 configs directory on scratch space, say {\tt scratch/cactus\_configs/} (where
 {\tt scratch/} is your scratch directory), and then either
 \begin{itemize}
-\item{} set the environment variable {\tt CONFIGS\_DIR} to point to 
+\item{} set the environment variable {\tt CACTUS\_CONFIGS\_DIR} to point to 
 this directory
 \end{itemize}
 or
@@ -250,7 +207,7 @@ scratch/cactus\_configs Cactus/configs/}) to the Cactus directory, if your
 file-system supports soft-links.
 \end{itemize}
 
-Configurations are descibed in detail in section \ref{sec:coaco}.
+Configurations are described in detail in section \ref{sec:coaco}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -291,7 +248,7 @@ the source files, and these different configurations coexist in the
 
 \begin{enumerate}
 \item{}Different configurations can be for {\em different
-architectures}. You can keep executables for multiple architecures
+architectures}. You can keep executables for multiple architectures
 based on a single copy of source code, shared on a common file
 system.
 \item{} You can compare different {\em compiler options, debug-modes}.
@@ -357,6 +314,27 @@ default values.
 There is a plethora of available options.
 
 \begin{itemize}
+
+\item {\tt Compiled Thorns}
+
+These specify the chosen set of thorns for compilation. If the thorn choice is not provided
+during configuration, a list containing all thorns in the {\tt arrangements} directory
+is automatically created, and the users prompted for any changes.
+
+\begin{Lentry}
+
+\item [{\tt THORNLIST}] Name of file containing a list of thorns with the syntax
+	{\tt <arrangement name>/<thorn name>}, lines beginning with \# or ! are
+	ignored. NOTE: In Beta 10 this will change to {\tt THORNFILE}.
+
+\item [{\tt THORNLIST\_DIR}] Location of directory containing {\tt THORNLIST}. NOTE: In Beta 10
+	this will change to {\tt THORNFILE\_DIR}
+
+\item [{\tt THORNS}] List of thorns to use for compilation. This option can be used in 
+ 	conjunction with {\tt THORNLIST}. NOTE: In Beta 10 this will change to {\tt THORNLIST}.
+
+\end{Lentry}
+
 \item {\tt Compiler and tool specification}
 
 These are used to specify which compilers and other tools to use. Entries followed
@@ -548,7 +526,7 @@ may be specified on the configuration command line):
 
 \begin{Lentry}
 
-\item[{\tt CUSTOM}] For a custom {\tt MPI} configuation set the variables
+\item[{\tt CUSTOM}] For a custom {\tt MPI} configuration set the variables
   \begin{Lentry}
   \item [{\tt MPI\_LIBS} *] libraries
   \item [{\tt MPI\_LIB\_DIRS} *] library directories
@@ -730,7 +708,7 @@ thorns which should be included. There is a range of  gmake
 targets and options which are detailed in the following sections.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{gmake targets for building and adminstering configurations}
+\subsection{gmake targets for building and administering configurations}
 \label{sec:gmtafobuanadco}
 
 A target for {\tt gmake} can be naively thought of as an argument
@@ -740,7 +718,7 @@ is to do. The command {\tt gmake help} lists all gmake targets.
 \begin{Lentry}
 
 \item [{\tt gmake <config>}] 
-	builds a configuration. If the configuation doesn't exist
+	builds a configuration. If the configuration doesn't exist
         it will create it.
 
 \item [{\tt gmake <config>-clean}] removes all object and dependency files from
@@ -783,9 +761,10 @@ is to do. The command {\tt gmake help} lists all gmake targets.
 Cactus will try to compile all thorns listed in 
 {\tt configs/<config>/ThornList}.
 The {\tt ThornList} file is simply a list of the form
-{\t <arrangement>/<thorn>}.  All text after a \# sign
+{\t <arrangement>/<thorn>}.  All text after a \# or ! sign
 on a line is treated as a comment and ignored.
-The first time that you compile a configuration, 
+The first time that you compile a configuration, if you did 
+not specify a ThornList already during configuration, 
 you will be shown a list of all the thorns in your arrangement
 directory, and asked if you with to edit them. You can regenerate
 this list at anytime by typing
@@ -876,7 +855,7 @@ Note that with more modern versions of gmake, it is sufficient to pass the norma
   \ref{sec:usta} for using TAGS within Cactus.
 
 \item [{\tt gmake UsersGuide}] runs LaTeX to produce a copy of the Users' Guide.
-\item [{\tt gmake MaintGuide}] runs Latex to produce a copy of the Mainainers' Guide.
+\item [{\tt gmake MaintGuide}] runs Latex to produce a copy of the Maintainers' Guide.
 
 \end{Lentry}
 

@@ -37,7 +37,7 @@ is what you get if you check out {\tt Cactus} from our CVS repository.
 \item[{\tt gmake}] 
 \item[{\tt ghostzone}]
 \item[{\tt grid function}] 
-\item[{\tt grid hierachy}] A computational grid, and the grid variables associated with it.
+\item[{\tt grid hierarchy}] A computational grid, and the grid variables associated with it.
 \item[{\tt grid scalar}] 
 \item[{\tt grid variable}]
 \item[{\tt GNATS}] The GNU program we use for reporting and tracking bugs, 
@@ -47,7 +47,7 @@ is what you get if you check out {\tt Cactus} from our CVS repository.
 \item[{\tt inherit}] 
 \item[{\tt interpolation}]
 \item[{\tt MPI}] 
-\item[{\tt parameter}] A variable which remains unchanged throughout the executation of a Cactus executable. Parameters all have default values which can be changed in a parameter file.
+\item[{\tt parameter}] A variable which remains unchanged throughout the execution of a Cactus executable. Parameters all have default values which can be changed in a parameter file.
 \item[{\tt processor topology}]
 \item[{\tt PUGH}] The default parallel driver for Cactus which uses MPI.
 \item[{\tt PVM}]  {\tt Parallel Virtual Machine}, provides interprocessor
@@ -87,7 +87,7 @@ The interface configuration file consists of
 of the thorns relationship with other thorns
 \item a series of blocks 
 listing the thorn's global variables.
-\item details of other interations with thorns:
+\item details of other interactions with thorns:
 \begin{itemize}
 \item building include files
 \end{itemize}
@@ -159,7 +159,7 @@ The default value is {\t DIM=3}.
         the group is of type {\t ARRAY} or {\t GF}, and can take any positive
         value.
 \item{} {\t SIZE} defines the number grid-points an {\tt ARRAY} has in each direction.
-        This should be a comma-seperated list of parameter names.
+        This should be a comma-separated list of parameter names.
 \item{} {\t DISTRIB} defines the processor decomposition of an {\tt ARRAY}. 
         {\tt DISTRIB=CONSTANT} implies that {\tt SIZE} grid-points should
         be allocated on each processor.
@@ -274,7 +274,7 @@ The schedule configuration files consists of
         for array variables at the start of program execution.
 \item{} {\it schedule blocks} which schedule a subroutine from the
         thorn to be called at a specified time during program 
-        executation. Statements within the schedule block can
+        execution. Statements within the schedule block can
         be used to switch on storage and communication for groups
         of variables during the duration that the subroutine is called.
 \item{} Conditional statements
@@ -437,11 +437,11 @@ files among multiple  authors. {\tt CVS} can be obtained from
 {\tt http://www.cyclic.com}. 
 
 A {\em CVS repository} located on a {\em server} may consist of an arbitrary
-number of {\em modules}, which can be checked out (thst is downloaded) 
+number of {\em modules}, which can be checked out (that is downloaded) 
 independently. The Cactus flesh and the Cactus
 arrangements are organized as modules, their {\em CVS server} is {\tt cvs.cactuscode.org}.
 
-\subsection{Essential CVS commands}
+\section{Essential CVS commands}
 
 \begin{Lentry}
 \item[{\bf cvs login}]
@@ -524,7 +524,7 @@ directory) and the CVS root directory for repositories; to obtain this
 directory on the CVS server, send a request to {\tt
 cactus@cactuscode.org}. {\tt tag1} and {\tt tag2} are two tags (vendor 
  and release tags) that have to be supplied. For example, to add {\tt MyThorn}
-to the {\tt MyArrangement} arrangement, which may or maynot already exist on
+to the {\tt MyArrangement} arrangement, which may or may not already exist on
 the CVS repository
 
 {\tt
@@ -538,7 +538,7 @@ away, and only edit this version.
 
 \end{Lentry}
 
-\subsection{CVS Options}
+\section{CVS Options}
 The CVS command line can include the following:
 \begin{Lentry}
 \item[{\bf cvs options}] which apply to the overall cvs program
@@ -613,7 +613,7 @@ files missing during compilation.
 
 \end{Lentry}
 
-\subsection{CVS Examples}
+\section{CVS Examples}
 We list some sample CVS commands to treat the most typical Cactus4.0
 CVS situations. 
 \begin{description}
@@ -689,6 +689,71 @@ directory {\em BMod}, and you want to add {\em CMod} inside {\em BMod}, then cha
  
 \end{description}
 
+\section{Checking out flesh and thorns with CVS}
+
+\begin{Lentry}
+\item[{\bf Login}] Prior to any CVS operation, you need to log into the Cactus
+  repository. For an anonymous checkout, type:\\
+  {\tt
+    cvs -d :pserver:cvs\_anon@cvs.cactuscode.org:/cactus login
+    }
+  You will be prompted for a password which is {\bf anon}. 
+\item[{\bf Checkout}] To obtain a fresh copy of Cactus, move to a directory
+  which does not contain a previously checked out version, and type
+  {\t
+    cvs -z9 -d :pserver:cvs\_anon@cvs.cactuscode.org:/cactus checkout Cactus
+    }
+  The CVS checkout procedure will create a directory called {\bf
+  Cactus} and install the code inside this directory.  From now on we
+  will reference all directory names relative to {\bf Cactus}. 
+
+\noindent
+  If you want to compile Cactus with thorns, you now need to checkout 
+  separately the required arrangements (or {\it arrangements} 
+   into the {\bf arrangements} directory. To see  the 
+  available Cactus arrangements and thorns type
+  {\t 
+    cvs -z9 -d :pserver:cvs\_anon@cvs.cactuscode.org:/cactus checkout -s
+  }
+  To check out a arrangement or thorn type go to the arrangements directory,  {\t cd arrangements},
+  and  for a arrangement type
+{\t 
+  cvs -z9 checkout <arrangement\_name>
+  }
+        or for just one thorn
+{\t 
+cvs -z9 checkout <arrangement\_name/thorn\_name>
+}
+ 
+To simplify this procedure you may use {\t gmake checkout} in the Cactus
+home directory which provides menus to pick arrangements and thorns from.
+  
+  
+\item[{\bf Update}] to update an existing Cactus checkout (to patch in
+  possible changes, etc.), do the following {\em within} the {\tt Cactus} directory.
+  {\t
+    cvs -z9 update
+    }
+  The update process will operate recursively downwards from your current position
+  within the Cactus tree. To update only on certain directories, change
+  into these directories and issue the update command.
+\item{\bf CVS status}: to obtain a status report on the ``age'' of your
+  Cactus or arrangement routines (from your current directory position
+  downward), type
+  {\t
+    cvs status
+    }
+\item[{\bf non-anonymous CVS}] if you have an account at the central
+  repository ({\tt cvs.cactuscode.org}) and would like to perform 
+  any of the operation above
+  {\em non-anonymously}, replace {\tt cvs\_anon} by your login name
+  and provide the appropriate password during the CVS login
+  process. Depending on your permissions, you may then make commits to Cactus
+  or its arrangements.
+\item[{\bf Commits}] you need to perform a personalized login and have
+  proper permissions to commit code to the repository. 
+\end{Lentry}
+
 
 \chapter{Using TAGS}
 \label{sec:usta}
@@ -700,7 +765,7 @@ A TAGS database can be generated with by gmake:
 \section{TAGS with emacs}
 \label{sec:tawiem}
 
-{\tt gmake TAGS} will create a database for a routine reference
+{\tt gmake TAGS} will create a database for a routine reference  
 table to be used within Emacs. This database can be accessed within
 emacs if you add either of the following lines to your {\tt .emacs} file:\\
 {\tt (setq tags-file-name "CACTUS\_HOME/TAGS")} XOR \\
