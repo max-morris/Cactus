@@ -2343,7 +2343,7 @@ X_INC_DIR="$x_includes"
 : ${USE_RANLIB=no}
 
 
-: ${RANLIBFLAGS=cs}
+: ${RANLIBFLAGS=-cs}
 
 
 
