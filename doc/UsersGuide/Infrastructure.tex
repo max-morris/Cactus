@@ -167,7 +167,7 @@ describe in general, but one simple example might be
 struct SimpleExtension
 {
   /* The data assocatiated with each variable */
-  /* data[var][timelevel][ijk]
+  /* data[var][timelevel][ijk]                */
   void ***data
 } ;
 
@@ -177,7 +177,7 @@ with a SetupGH routine like.
 
 \begin{verbatim}
 
-struct SimpleExtension *SimpleSetupGH(t_Fleshconfig *config, int conv_level, cGH *GH)
+struct SimpleExtension *SimpleSetupGH(tFleshConfig *config, int conv_level, cGH *GH)
 {
    struct SimpleExtension *extension;
 
