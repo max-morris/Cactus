@@ -19,7 +19,7 @@
 #include "Groups.h"
 #include "WarnLevel.h"
 
-/* #define DEBUG_GROUPS */
+/*#define DEBUG_GROUPS */
 
 static char *rcsid = "$Header$";
 
@@ -119,6 +119,13 @@ int CCTK_GroupIndex(const char *fullgroupname)
 }
 
 
+void  FMODIFIER FORTRAN_NAME(CCTK_GroupIndex)(int *index,ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE(name)
+  *index = CCTK_GroupIndex(name);
+  free(name);
+}
+
 
 
  /*@@
@@ -160,10 +167,38 @@ int CCTK_CreateGroup(const char *gname, const char *thorn, const char *imp,
   if (groupscope == GROUP_PUBLIC || groupscope == GROUP_PROTECTED)
   {
     group = CCTK_SetupGroup(imp, gname, n_variables);
+
+#ifdef DEBUG_GROUPS
+  {
+    char *fullname = (char *)malloc( (200+strlen(gname)+strlen(imp))*sizeof(char));
+    sprintf(fullname,"%s::%s",imp,gname);
+    printf("Created implementation group %s\n",fullname);
+    printf("  CCTK_GroupIndex(%s) = %d\n",fullname,
+	   CCTK_GroupIndex(fullname));
+    printf("  CCTK_GroupName(%d) = %s\n",CCTK_GroupIndex(fullname),
+	   CCTK_GroupName(CCTK_GroupIndex(fullname)));
+    free(fullname);
+  }
+#endif
+
   }
   else if (groupscope == GROUP_PRIVATE)
   {
     group = CCTK_SetupGroup(thorn, gname, n_variables);
+
+#ifdef DEBUG_GROUPS
+  {
+    char *fullname = (char *)malloc( (200+strlen(gname)+strlen(imp))*sizeof(char));
+    sprintf(fullname,"%s::%s",thorn,gname);
+    printf("Created thorn group %s\n",fullname);
+    printf("  CCTK_GroupIndex(%s) = %d\n",fullname,
+	   CCTK_GroupIndex(fullname));
+    printf("  CCTK_GroupName(%d) = %s\n",CCTK_GroupIndex(fullname),
+	   CCTK_GroupName(CCTK_GroupIndex(fullname)));
+    free(fullname);
+  }
+#endif
+
   }
   else
   {
@@ -219,14 +254,6 @@ int CCTK_CreateGroup(const char *gname, const char *thorn, const char *imp,
   {
     fprintf(stderr, "Error %d in CCTK_CreateGroup\n", retval);
   }
-
-#ifdef DEBUG_GROUPS
-  printf("Created group %s\n",gname);
-  printf("  CCTK_GroupIndex(%s) = %d\n",groupname,
-	 CCTK_GroupIndex(groupname));
-  printf("  CCTK_GroupName(%d) = %s\n",CCTK_GroupIndex(name),
-         CCTK_GroupName(CCTK_GroupIndex(groupname)));
-#endif
 
   return retval;
 
@@ -338,6 +365,10 @@ cGroupDefinition *CCTK_SetupGroup(const char *implementation,
     returndata = &(groups[group_num]);
   }
 
+#ifdef DEBUG_GROUPS
+  printf("Setting up group %s\n",fullname1);
+#endif 
+
   if (fullname1) free(fullname1);
 
   return returndata;
@@ -421,7 +452,6 @@ int CCTK_VarIndex(const char *variable_name)
 #ifdef DEBUG_GROUPS
   printf(" In VarIndex\n"," ------------\n");
   printf("   impname -%s-\n",impname);
-  printf("   group_name -%s-\n",group_name);
   printf("   varname -%s-\n",varname);
 #endif
     

@@ -37,3 +37,14 @@ int FMODIFIER FORTRAN_NAME(CCTK_SyncGroup)(cGH *GH, ONE_FORTSTRING_ARG)
   free(group_name); 
   return 0;
 }
+
+int FMODIFIER FORTRAN_NAME(CCTK_nProcs)(cGH *GH)
+{
+  return CCTK_nProcs(GH);
+}
+ 
+int FMODIFIER FORTRAN_NAME(CCTK_MyProc)(cGH *GH)
+{
+  return CCTK_MyProc(GH);
+}
+ 

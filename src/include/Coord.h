@@ -42,11 +42,10 @@ typedef struct COORD_RANGE {
 
 int CCTK_CoordRange(cGH *GH, CCTK_REAL *lower, CCTK_REAL *upper, const char *name);
 
-int CCTK_RegisterCoord(const char *coordname, 
-		       const char *gfname, 
-		       int dir);
+int CCTK_RegisterCoord(int dir, const char *gfname, 
+		       const char *coordname);
 
-int CCTK_RegisterCoordI(const char *name, int index, int dir);
+int CCTK_RegisterCoordI(int dir, int index, const char *name);
 
 int CCTK_CoordIndex(const char *name);
 

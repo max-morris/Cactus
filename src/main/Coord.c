@@ -29,7 +29,7 @@ struct Coordprops *CCTKi_CoordData(const char *name);
 int CCTKi_CoordHande(const char *name);
 
  /*@@
-   @routine    RegisterCoord_ByIndex
+   @routine    RegisterCoordI
    @date       11-12th April 1999
    @author     Gabrielle Allen
    @desc 
@@ -69,7 +69,7 @@ int CCTKi_CoordHande(const char *name);
 
    @@*/
 
-int CCTK_RegisterCoordI(const char *name, int index, int dir)
+int CCTK_RegisterCoordI(int dir, int index, const char*name)
 {
 
   int handle;
@@ -126,6 +126,14 @@ int CCTK_RegisterCoordI(const char *name, int index, int dir)
 
 }
 
+void FMODIFIER FORTRAN_NAME(CCTK_RegisterCoordI)(int *handle, int *dir, int *index, ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE(name)
+  *handle = CCTK_RegisterCoordI(*dir,*index, name);
+  free(name);
+}
+
+
  /*@@
    @routine    RegisterCoord
    @date       11-12th April 1999
@@ -167,9 +175,8 @@ int CCTK_RegisterCoordI(const char *name, int index, int dir)
 
    @@*/
 
-int CCTK_RegisterCoord(const char *coordname, 
-		       const char *gfname, 
-		       int dir)
+int CCTK_RegisterCoord(int dir, const char *gfname, 
+		       const char *coordname)
 {
   
   int retval;
@@ -179,7 +186,7 @@ int CCTK_RegisterCoord(const char *coordname,
 
   if (index >= 0)
   { 
-     retval = CCTK_RegisterCoordI(coordname,index,dir);
+     retval = CCTK_RegisterCoordI(dir,index,coordname);
   }
   else
   {
@@ -189,6 +196,15 @@ int CCTK_RegisterCoord(const char *coordname,
 
   return retval;
 
+}
+
+
+void FMODIFIER FORTRAN_NAME(CCTK_RegisterCoord)(int *handle, int *dir, TWO_FORTSTRINGS_ARGS)
+{
+  TWO_FORTSTRINGS_CREATE(gf,name)
+  *handle = CCTK_RegisterCoord(*dir, gf, name);
+  free(gf);
+  free(name);
 }
 
 
@@ -363,9 +379,9 @@ int CCTK_CoordRange(cGH *GH, CCTK_REAL *lower, CCTK_REAL *upper, const char *nam
   }
 }
 
-void FMODIFIER FORTRAN_NAME(CCTK_CoordRange)(cGH *GH, CCTK_REAL *lower, CCTK_REAL *upper, ONE_FORTSTRING_ARG)
+void FMODIFIER FORTRAN_NAME(CCTK_CoordRange)(int *ierr,cGH *GH, CCTK_REAL *lower, CCTK_REAL *upper, ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_CREATE(name)
-  CCTK_CoordRange (GH,lower,upper,name);
+  *ierr=CCTK_CoordRange (GH,lower,upper,name);
   free(name);
 }

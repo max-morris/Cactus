@@ -38,7 +38,7 @@ static int warning_level = 1;
 static int error_level    = 0;
 
  /*@@
-   @routine    CCTK_SetWarnLevel
+   @routine    CCTKi_SetWarnLevel
    @date       Wed Feb 17 00:42:16 1999
    @author     Tom Goodale
    @desc 
@@ -51,7 +51,7 @@ static int error_level    = 0;
    @endhistory 
 
 @@*/
-int CCTK_SetWarnLevel(int level)
+int CCTKi_SetWarnLevel(int level)
 {
   int retval;
   int old_level;

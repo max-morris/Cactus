@@ -114,7 +114,7 @@ void CCTKi_CommandLineWarningLevel(const char *optarg)
 
   warninglevel = atoi(optarg);
 
-  CCTK_SetWarnLevel(warninglevel);
+  CCTKi_SetWarnLevel(warninglevel);
 
 }
 
