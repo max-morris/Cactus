@@ -963,29 +963,33 @@ No Fortran routine exists at the moment.
 % Groups.c
 \begin{CCTKFunc}{CCTK\_GroupData}{Given a group index, returns information about the variables held in the group.}
 \label{GroupData}
-\subroutine{cGroup}{}{pgroup}
-\argument{int}{integer}{group}
+\function{int}{}{ierr}
+\argument{int}{}{group}
+\argument{cGroup *}{}{pgroup}
 \showcargs
 \begin{params}
-\parameter{pgroup}{Returns a pointer to a structure containing group information}
+\parameter{ierr}{0 for success, negative for failure}
+\parameter{group}{group index}
+\parameter{pgroup}{returns a pointer to a structure containing group information}
 \end{params}
 \begin{discussion}
 The cGroup structure contains the information
 \begin{itemize}
 \item grouptype: The group type
-\item variabletype: The type of variables in the group
-\item staggertype: The type of grid staggering for arrays
+\item vartype: The type of variables in the group
+\item stagtype: The type of grid staggering for arrays
 \item dim: The dimension of variables in the group
-\item numvariables: The number of variables in the group
+\item numvars: The number of variables in the group
 \item ntimelevels: The number of timelevels for variables in the group
 \end{itemize}
 No Fortran routine exists at the moment. 
 \end{discussion}
 \begin{examples}
 \begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t index = CCTK\_GroupIndex(`evolve::scalars')}\\
-               &&{\t pgroup = CCTK\_GroupData(index);}\\
-               && {\t vtype = pgroup->variabletype}
+\hfill {\bf C} && {\t cGroup pgroup;}\\
+	       && {\t index = CCTK\_GroupIndex(`evolve::scalars')}\\
+               &&{\t ierr = CCTK\_GroupData(index,\&pgroup);}\\
+               && {\t vtype = pgroup.vartype;}
 \\
 \end{tabular}
 \end{examples}

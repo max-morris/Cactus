@@ -57,6 +57,8 @@ statement.
 This brace positioning stategy makes it easy to run ones eye from a closing
 or opening brace to its matching opening or closing brace.
 
+Braces should be used for all {\tt if} and {\tt for} statements.
+
 \section{GRDOC}
 
 All files should start with a grdoc header, and all functions
@@ -115,6 +117,9 @@ extern "C"
 #endif
 \end{verbatim}
 
+The Cactus header files ({\tt cctk\_<name>}) should only include
+information relevant for thorn programmers. 
+
 \section{Source Files}
 
 Source files should have as their first line under the 
@@ -142,6 +147,18 @@ All functions used internally by the flesh should have names beginning with
 
 Header files to be included by thorns should have names beginning with
 {\tt cctk\_}.
+
+Structures which may be used by thorns should have names beginning with
+{\tt c} and then capitalised words, {\it e.g.} {\tt cGroup}. The 
+exception here is structures associated with utility routines which
+are not Cactus specific, there the structure names should start with a
+{\tt t\_}. 
+
+Structures which are purely internal to the flesh should have
+names beginning with {\tt i}.
+
+All Cactus sourcefile names (except general utility files) should 
+use capitilised words without underscores.
 
 
 
