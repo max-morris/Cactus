@@ -91,7 +91,9 @@ cGH *CactusDefaultSetupGH(tFleshConfig *config, int convergence_level)
     thisGH->lower_bound = (int *)malloc(thisGH->dim*sizeof(int));
     thisGH->upper_bound = (int *)malloc(thisGH->dim*sizeof(int));
     thisGH->bbox        = (int *)malloc(2*thisGH->dim*sizeof(int));
+    thisGH->delta_space = (Double *)malloc(thisGH->dim*sizeof(Double));
 
+    thisGH->delta_time = 1;
     thisGH->levfac = 1;
     thisGH->convlevel = 1;
     thisGH->nghostzones = 0;
@@ -140,6 +142,7 @@ cGH *CactusDefaultSetupGH(tFleshConfig *config, int convergence_level)
      thisGH->lower_bound &&
      thisGH->upper_bound &&
      thisGH->bbox &&
+     thisGH->delta_space &&
      thisGH->data &&
      variable == n_variables &&
      thisGH->GroupData)
