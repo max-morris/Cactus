@@ -102,5 +102,5 @@ F_FILE_PROCESSOR = @F_FILE_PROCESSOR@
 EXEDIR = @EXEDIR@
 
 # The name of the executable
-EXE    = $(EXEDIR)/@EXE@
+EXE    = @EXE@
 
