@@ -598,7 +598,7 @@ char *CCTK_GroupNameFromVarI(int var)
   {  
     group_num = group_of_variable[var];
     retval = (char *)malloc( ( strlen(groups[group_num].name) 
-			     + strlen(groups[group_num].implementation) + 2)
+			     + strlen(groups[group_num].implementation) + 3)
 			     * sizeof(char) );
     sprintf(retval,"%s::%s",groups[group_num].implementation,
 	    groups[group_num].name);
