@@ -36,7 +36,7 @@ static int FindNextUnused(cHandledData *storage, int first);
    @date       Fri May  8 12:56:43 1998
    @author     Tom Goodale
    @desc 
-   Adds an data object to the array.
+   Adds a data object to the array.
    Resizes the array if necessary.
    @enddesc 
    @calls     
