@@ -5,8 +5,10 @@
    @desc 
    String routines
    @enddesc 
-   @version $History$
+   @version $Header$
  @@*/
+
+#include <stdarg.h>
 
 #ifndef _UTIL_STRING_H_
 #define _UTIL_STRING_H_ 1
@@ -32,6 +34,12 @@ char *Util_Strdup(const char *s);
 
 int Util_StrCmpi(const char *string1, 
                  const char *string2);
+
+int Util_vsnprintf (char *str, size_t count, const char *fmt, va_list args);
+int Util_snprintf (char *str,size_t count,const char *fmt,...);
+
+int Util_asprintf(char **buffer, const char *fmt, ...);
+int Util_asnprintf(char **buffer, size_t size, const char *fmt, ...);
 
 #ifdef __cplusplus
 }

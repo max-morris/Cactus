@@ -9,6 +9,7 @@
  @@*/
 
 #include <stdlib.h>
+#include <stdarg.h>
 #include <string.h>
 #include <ctype.h>
 
@@ -398,6 +399,160 @@ int Util_SplitFilename(char **dir, char **file, const char *string)
   }
   
   return retval;
+}
+
+ /*@@
+   @routine    Util_asprintf
+   @date       Thu May 24 16:55:26 2001
+   @author     Tom Goodale
+   @desc 
+   Sprintf with memory allocation.  On input
+   the buffer should point to a NULL area of memory.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+   @var     buffer
+   @vdesc   Buffer to which to print the string.
+   @vtype   char **
+   @vio     out
+   @vcomment 
+   *buffer should be NULL on entry.  The routine 
+   allocates the memory, so the previous contents of
+   the pointer are lost.
+   On exit the buffer size will be return-value+1 (i.e 
+   the length of the string plus the \0 ).
+   @endvar 
+   @var     format
+   @vdesc   sprintf format string
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+   This is a standard sprintf format string.
+   @endvar 
+   @var     ...
+   @vdesc   Rest of arguments
+   @vtype   varargs
+   @vio     in
+   @vcomment 
+   These are the arguments necessary for the format string.
+   @endvar 
+
+   @returntype int
+   @returndesc
+   The number of bytes written to the buffer.
+   @endreturndesc
+@@*/
+int Util_asprintf(char **buffer, const char *fmt, ...)
+{
+  int count;
+  va_list args;
+
+  va_start(args,fmt);
+
+  count = Util_vsnprintf(NULL, 0, fmt, args);
+
+  *buffer = (char *)malloc(count+1);
+
+  if(*buffer)
+  {
+    va_start(args,fmt);
+
+    Util_vsnprintf(*buffer,count+1,fmt,args);
+
+    va_end(args);
+  }
+  else
+  {
+    count = 0;
+  }
+
+  return count;
+}
+
+ /*@@
+   @routine    Util_asprintf
+   @date       Thu May 24 16:55:26 2001
+   @author     Tom Goodale
+   @desc 
+   Sprintf with memory allocation if necessary.  On input
+   the buffer should point to an area of memory of length 'size' .
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+   @var     buffer
+   @vdesc   Buffer to which to print the string.
+   @vtype   char **
+   @vio     out
+   @vcomment 
+   Buffer to which to print string.  If the buffer is too
+   small, the buffer is freed and a new buffer big enough to hold 
+   the string and its null-termination is created.
+   @endvar 
+   @var     size
+   @vdesc   initial size of the buffer
+   @vtype   int
+   @vio     in
+   @vcomment 
+   This is the initial size of the buffer.
+   @endvar 
+   @var     format
+   @vdesc   sprintf format string
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+   This is a standard sprintf format string.
+   @endvar 
+   @var     ...
+   @vdesc   Rest of arguments
+   @vtype   varargs
+   @vio     in
+   @vcomment 
+   These are the arguments necessary for the format string.
+   @endvar 
+
+   @returntype int
+   @returndesc
+   The number of bytes written to the buffer.
+   @endreturndesc
+@@*/
+int Util_asnprintf(char **buffer, size_t size, const char *fmt, ...)
+{
+  int count;
+  va_list args;
+
+  va_start(args,fmt);
+
+  count = Util_vsnprintf(NULL, 0, fmt, args);
+
+  if(count+1 > size)
+  {
+    /* Use free followed by malloc as realloc may copy memory
+     * we are not interested in.
+     */
+    free(*buffer);
+    *buffer = (char *)malloc(count+1);
+  }
+
+  if(*buffer)
+  {
+    va_start(args,fmt);
+
+    Util_vsnprintf(*buffer,count+1,fmt,args);
+
+    va_end(args);
+  }
+  else
+  {
+    count = 0;
+  }
+
+  return count;
 }
 
 
