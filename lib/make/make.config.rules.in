@@ -24,9 +24,16 @@ DIVIDER =  $(DIVEL)$(DIVEL)$(DIVEL)$(DIVEL)
 #####################################################################
 # Define how to do dependencies
 
+ifeq ($(strip $(PERL_BACKUP_NECESSARY)),)
 define DEPENDENCY_FIXER
-	$(PERL) -pi -e "s,([^:]*),$(basename $@).o $(basename $@).d, if(m/:/)" $@ 
+	$(PERL) -pi -e "s,([^:]*),$(basename $@).o $(basename $@).d, if(m/: /)" $@ 
 endef
+else
+define DEPENDENCY_FIXER
+	$(PERL) -pi.bak -e "s,([^:]*),$(basename $@).o $(basename $@).d, if(m/: /)" $@ 
+	rm $@.bak
+endef
+endif
 
 define C_DEPENDENCIES
 	$(C_DEPEND) $< $(INC_DIRS:%=-I%) $(SYS_INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DCCODE $(C_DEPEND_OUT)
