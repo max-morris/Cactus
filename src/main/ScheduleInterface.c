@@ -79,7 +79,7 @@ typedef struct
 
   int whiling;
 
-  t_TimerInfo *info;
+  cTimerData *info;
   int print_headers;
 
   /* Stuff passed in in user calls */
@@ -142,8 +142,8 @@ static int CCTKi_SchedulePrintTimesEntry(t_attribute *attribute, t_sched_data *d
 static int CCTKi_SchedulePrintTimesExit(t_attribute *attribute, t_sched_data *data);
 static int CCTKi_SchedulePrintTimesWhile(int n_whiles, char **whiles, t_attribute *attribute, t_sched_data *data);
 static int CCTKi_SchedulePrintTimesFunction(void *function, t_attribute *attribute, t_sched_data *data);
-static void CCTKi_SchedulePrintTimerInfo(t_TimerInfo *info);
-static void CCTKi_SchedulePrintTimerHeaders(t_TimerInfo *info);
+static void CCTKi_SchedulePrintTimerInfo(cTimerData *info);
+static void CCTKi_SchedulePrintTimerHeaders(cTimerData *info);
 
 
 /********************************************************************
@@ -169,7 +169,7 @@ static int *scheduled_comm_groups = NULL;
 static int n_scheduled_storage_groups = 0;
 static int *scheduled_storage_groups = NULL;
 
-static t_TimerInfo *timerinfo = NULL;
+static cTimerData *timerinfo = NULL;
 
 /********************************************************************
  *********************     External Routines   **********************
@@ -588,7 +588,7 @@ int CCTK_SchedulePrintTimes(const char *where)
 
   if(!timerinfo)
   {
-    timerinfo = CCTK_TimerCreateInfo();
+    timerinfo = CCTK_TimerCreateData();
   }
   
   data.info = timerinfo;
@@ -1496,7 +1496,7 @@ static int CCTKi_SchedulePrintTimesFunction(void *function,
   int i;
   for(i=0; i < indent_level; i++) printf(" ");
 
-  CCTK_TimerGetI(attribute->timer_handle, data->info);
+  CCTK_TimerI(attribute->timer_handle, data->info);
 
   if(data->print_headers)
   {
@@ -1512,7 +1512,7 @@ static int CCTKi_SchedulePrintTimesFunction(void *function,
   return 1;  
 }
 
-static void CCTKi_SchedulePrintTimerInfo(t_TimerInfo *info)
+static void CCTKi_SchedulePrintTimerInfo(cTimerData *info)
 {
   int i;
 
@@ -1547,7 +1547,7 @@ static void CCTKi_SchedulePrintTimerInfo(t_TimerInfo *info)
 
 }
 
-static void CCTKi_SchedulePrintTimerHeaders(t_TimerInfo *info)
+static void CCTKi_SchedulePrintTimerHeaders(cTimerData *info)
 {
   int i;
 

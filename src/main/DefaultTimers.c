@@ -251,7 +251,7 @@ void CCTKi_TimerGetTimeOfDayReset(int timernum, void *idata)
    @endhistory 
 
 @@*/
-void CCTKi_TimerGetTimeOfDayGet(int timernum, void *idata, t_TimerVal *vals)
+void CCTKi_TimerGetTimeOfDayGet(int timernum, void *idata, cTimerVal *vals)
 {
   t_GetTimeOfDayTimer *data;
 
@@ -277,7 +277,7 @@ void CCTKi_TimerGetTimeOfDayGet(int timernum, void *idata, t_TimerVal *vals)
    @endhistory 
 
 @@*/
-void CCTKi_TimerGetTimeOfDaySet(int timernum, void *idata, t_TimerVal *vals)
+void CCTKi_TimerGetTimeOfDaySet(int timernum, void *idata, cTimerVal *vals)
 {
   t_GetTimeOfDayTimer *data;
 
@@ -303,7 +303,7 @@ void CCTKi_TimerGetTimeOfDaySet(int timernum, void *idata, t_TimerVal *vals)
 @@*/
 void CCTKi_RegisterTimersGetTimeOfDay(void)
 {
-  t_TimerFuncs functions;
+  cTimerFuncs functions;
 
   functions.info.n_vals = 1;
   functions.create  = CCTKi_TimerGetTimeOfDayCreate;
@@ -492,7 +492,7 @@ void CCTKi_TimerGetrUsageReset(int timernum, void *idata)
    @endhistory 
 
 @@*/
-void CCTKi_TimerGetrUsageGet(int timernum, void *idata, t_TimerVal *vals)
+void CCTKi_TimerGetrUsageGet(int timernum, void *idata, cTimerVal *vals)
 {
   t_GetrUsageTimer *data;
 
@@ -519,7 +519,7 @@ void CCTKi_TimerGetrUsageGet(int timernum, void *idata, t_TimerVal *vals)
    @endhistory 
 
 @@*/
-void CCTKi_TimerGetrUsageSet(int timernum, void *idata, t_TimerVal *vals)
+void CCTKi_TimerGetrUsageSet(int timernum, void *idata, cTimerVal *vals)
 {
   t_GetrUsageTimer *data;
 
@@ -545,7 +545,7 @@ void CCTKi_TimerGetrUsageSet(int timernum, void *idata, t_TimerVal *vals)
 @@*/
 void CCTKi_RegisterTimersGetrUsage(void)
 {
-  t_TimerFuncs functions;
+  cTimerFuncs functions;
 
   functions.info.n_vals = 1;
   functions.create  = CCTKi_TimerGetrUsageCreate;

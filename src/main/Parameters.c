@@ -23,8 +23,7 @@ const char *rcsid="$Header$";
 #include "cctk_ActiveThorns.h"
 
 #include "ParameterBindings.h"
-#include "cctk_ParameterFunctions.h"
-
+#include "cctk_Parameter.h"
 
 #include "gnu_regex.h"
 
@@ -51,7 +50,7 @@ int STR_cmpi(const char *string1, const char *string2);
  */
 typedef struct PARAM
 {
-    t_param_prop*       props;
+    cParamData*       props;
     void*               data;
     
 } t_param;
@@ -926,7 +925,7 @@ int CCTK_ParameterList (const char *thorn, char ***paramlist, int *n_param)
 
 /**********************************************************************/ 
 /*@@
-  @routine    CCTK_ParameterInfo
+  @routine    CCTK_ParameterData
   @date       Tue Aug 31 18:10:46 MSZ 1999
   @author     Andre Merzky
   @desc 
@@ -953,7 +952,7 @@ int CCTK_ParameterList (const char *thorn, char ***paramlist, int *n_param)
  
   @var     param_prop
   @vdesc   parameter descriptions
-  @vtype   t_param_prop *
+  @vtype   cParamData *
   @vio     out
   @vcomment 
   @endvar 
@@ -964,10 +963,10 @@ int CCTK_ParameterList (const char *thorn, char ***paramlist, int *n_param)
   @endreturndesc
 
   @@*/
-t_param_prop *CCTK_ParameterInfo (const char *name, 
-                                  const char *thorn) 
+cParamData *CCTK_ParameterData (const char *name, 
+				const char *thorn) 
 {
-  t_param_prop *retval;
+  cParamData *retval;
 
   t_param *param;
 
@@ -1081,7 +1080,7 @@ static t_param *ParameterNew(const char *thorn,
 
   if(newparam)
   {
-    newparam->props = (t_param_prop*) malloc (sizeof (t_param_prop));
+    newparam->props = (cParamData*) malloc (sizeof (cParamData));
       
     if (newparam->props) 
     {

@@ -21,7 +21,7 @@
 #include "cctk_Misc.h"
 #include "cctki_ActiveThorns.h"
 #include "cctk_ActiveThorns.h"
-#include "cctk_ParameterFunctions.h"
+#include "cctk_Parameter.h"
 #include "cctki_WarnLevel.h"
 
 static char *rcsid = "$Header$";
@@ -33,7 +33,7 @@ char *compileDate(void);
 char *CCTK_FullVersion(void);
 int CCTK_CommandLine(char ***outargv);
 
-static void CommandLinePrintParameter(t_param_prop *properties);
+static void CommandLinePrintParameter(cParamData *properties);
 
 static int redirectsubs;
 
@@ -82,7 +82,7 @@ void CCTKi_CommandLineDescribeAllParameters(const char *optarg)
   int parameter;
   const char *thornname;
   const char *implementation;
-  t_param_prop *properties;
+  cParamData *properties;
 
   n_thorns = CCTK_NumCompiledThorns ();
 
@@ -94,7 +94,7 @@ void CCTKi_CommandLineDescribeAllParameters(const char *optarg)
 
     for(parameter = 0 ; parameter < n_parameters; parameter++)
     {
-      properties = CCTK_ParameterInfo(parameterlist[parameter], thornname);
+      properties = CCTK_ParameterData(parameterlist[parameter], thornname);
 
       if(optarg)
       {
@@ -134,23 +134,23 @@ void CCTKi_CommandLineDescribeParameter(const char *optarg)
 {
   char *thorn;
   char *param;
-  t_param_prop *properties;
+  cParamData *properties;
   const char *cthorn;
 
   Util_SplitString(&thorn, &param, optarg, "::");
 
   if(!param)
   {
-    properties = CCTK_ParameterInfo(optarg, NULL);
+    properties = CCTK_ParameterData(optarg, NULL);
   }
   else
   {
-    properties = CCTK_ParameterInfo(param, thorn);
+    properties = CCTK_ParameterData(param, thorn);
 
     if(!properties)
     {
       cthorn = CCTK_ImplementationThorn(thorn);
-      properties = CCTK_ParameterInfo(param, cthorn);
+      properties = CCTK_ParameterData(param, cthorn);
     }
 
     free(thorn);
@@ -410,7 +410,7 @@ void CCTKi_CommandLineFinished(void)
    @endhistory 
 
 @@*/
-static void CommandLinePrintParameter(t_param_prop *properties)
+static void CommandLinePrintParameter(cParamData *properties)
 {
   t_range *range;
 
