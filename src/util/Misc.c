@@ -30,6 +30,7 @@
 #include "cctk_Misc.h"
 #include "cctk_FortranString.h"
 #include "cctk_WarnLevel.h"
+#include "util_String.h"
 
 static const char *rcsid = "$Header$";
 
@@ -49,6 +50,14 @@ int CCTK_RegexMatch(const char *string,
                     const int nmatch,
                     regmatch_t *pmatch); 
 
+int CCTK_FCALL CCTK_FNAME(CCTK_Equals)
+     (const char **arg1,ONE_FORTSTRING_ARG);
+
+void CCTK_FCALL CCTK_FNAME(CCTK_PrintString)
+     (char **arg1);
+
+void CCTK_FCALL CCTK_FNAME(CCTK_FortranString)
+     (CCTK_INT *nchar,char **cstring,ONE_FORTSTRING_ARG);
 
 /********************************************************************
  ********************* Other Routine Prototypes *********************
@@ -99,7 +108,6 @@ int CCTK_RegexMatch(const char *string,
 int CCTK_Equals(const char *string1, const char *string2)
 {
   int retval;
-  int position;
 
   retval = 1;
 
@@ -781,7 +789,7 @@ int CCTK_SetDoubleInRangeList(CCTK_REAL *data, const char *value,
 {
   int retval;
   char temp[1001];
-  int p;
+  unsigned int p;
   int arg;
   va_list ap;
 
@@ -1350,18 +1358,15 @@ void CCTK_FCALL CCTK_FNAME(CCTK_PrintString)
 void CCTK_FCALL CCTK_FNAME(CCTK_FortranString)
      (CCTK_INT *nchar,char **cstring,ONE_FORTSTRING_ARG)
 {
-  int i;
+  unsigned int i;
   ONE_FORTSTRING_CREATE(fstring)
   ONE_FORTSTRING_PTR(fptr)
 
   if (strlen(*cstring) > cctk_strlen1) 
   {
-    char *message;
-    message = (char *)malloc( (200+strlen(*cstring))*sizeof(char) );
-    sprintf(message,"Cannot output %s to char* of length %d",
-            *cstring,cctk_strlen1);
-    CCTK_Warn (1,__LINE__,__FILE__,"Cactus",message);
-    free(message);
+    CCTK_VWarn (1,__LINE__,__FILE__,"Cactus",
+	       "CCTK_FortranString: Cannot output %s to char* of length %d",
+	       *cstring,cctk_strlen1);
     *nchar = -1;
   }
 
