@@ -1264,8 +1264,8 @@ int CCTK_TimerPrintDataI (int this_timer, int this_clock)
           break;
 
         case val_long:
-          printf ("\t%s: %d %s\n", info->vals[i].heading,
-                  (int) info->vals[i].val.l, info->vals[i].units);
+          printf ("\t%s: %ld %s\n", info->vals[i].heading,
+                  info->vals[i].val.l, info->vals[i].units);
           break;
 
         case val_double:
