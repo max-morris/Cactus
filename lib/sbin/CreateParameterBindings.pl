@@ -638,7 +638,7 @@ sub CreateParameterRegistrationStuff
     for($range=1; $range <= $n_ranges; $range++)
     {
       $quoted_range = $rhparameter_db->{"\U$thorn $parameter\E range $range range"};
-      $range_description = $rhparameter_db{"\U$thorn $parameter\E range $range description"};
+      $range_description = $rhparameter_db->{"\U$thorn $parameter\E range $range description"};
 
       if($range_description !~ m:\":)
       {
