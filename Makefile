@@ -16,11 +16,14 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.14 1999-02-15 15:24:13 allen Exp $
+#   @version $Id: Makefile,v 1.15 1999-02-15 23:24:12 goodale Exp $
 # @@*/
 
 # Comment this out if you want to see what's going on.
+
+ifneq ($(strip $(SILENT)),no)
 .SILENT:
+endif
 
 # Various auxilary programs
 PERL = perl
