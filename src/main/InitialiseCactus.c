@@ -159,6 +159,8 @@ int CCTKi_InitialiseCactus(int *argc, char ***argv, tFleshConfig *ConfigData)
 static int CCTKi_InitialiseScheduler(tFleshConfig *ConfigData)
 {
   int retcode;
+  int param_type;
+  int cctk_show_schedule;
   extern void CCTKi_SetParameterSetMask(int mask);
 
   CCTKi_SetParameterSetMask(PARAMETER_RECOVERY_IN);
@@ -172,9 +174,14 @@ static int CCTKi_InitialiseScheduler(tFleshConfig *ConfigData)
 
   retcode = CCTKi_DoScheduleSortAllGroups();
 
-  CCTK_PRINTSEPARATOR
-  CCTK_SchedulePrint(NULL);
-  CCTK_PRINTSEPARATOR
+  cctk_show_schedule = *((CCTK_INT *)CCTK_ParameterGet("cctk_show_schedule","Cactus",&param_type));
+
+  if (cctk_show_schedule)
+  {
+    CCTK_PRINTSEPARATOR
+    CCTK_SchedulePrint(NULL);
+    CCTK_PRINTSEPARATOR
+  }
 
   return retcode;
 }
