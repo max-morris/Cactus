@@ -1,0 +1,58 @@
+#! /bin/sh
+# /*@@
+#   @file      linux
+#   @date      Thu Jul 15 21:30:04 1999
+#   @author    Tom Goodale
+#   @desc 
+#  
+#   @enddesc
+#   @version $Header$ 
+# @@*/
+
+# Determine which Fortran 90 compiler is in use
+LINUX_F90_COMP=
+
+if test -n "$F90" ; then 
+    if test "`$F90 -V 2>&1 | grep -i f90 | grep -i vast`" ; then 
+	LINUX_F90_COMP=pacific
+    elif test "`$F90 -V 2>&1 | grep -i f90 | grep -i absoft`" ; then 
+	LINUX_F90_COMP=absoft
+    elif test "`$F90 -V 2>&1 | grep -i f90 | grep -i pgf90`" ; then
+	LINUX_F90_COMP=portland
+    else
+	echo Unknown Linux f90 compiler.
+	echo Please add appropriate information to 
+	echo $srcdir/known-architectures/linux-gnu
+	echo and send the updated file to CactusMaint
+	exit 2
+    fi
+else
+    LINUX_F90_COMP=none
+fi
+
+
+#Set the appropriate flags
+case "$LINUX_F90_COMP" in
+     pacific)
+     : ${LIBS="f2c vast90 f2c m"} ;;
+     absoft)
+     : ${LIBS="f90math fio f77math m"} 
+     F90FLAGS="`echo $F90FLAGS | sed 's/O2/O/'`" 
+     # Test if it is a version of the absoft compiler which has the library in a custom place.
+     if test -n "$ABSOFT" ; then
+       : ${LIBDIRS='$(ABSOFT)/lib'}
+     fi ;;
+     nag)
+     : ${LIBS="f90 nagfl90 nag m"} 
+     F90FLAGS="$F90FLAGS -N140" ;;
+     portland)
+     : ${LIBS="pgf90 pgf90_rpm1 pghpf2 pgf90rtl pgc m"} ;;
+     none)
+     : ${LIBS="m"} ;;
+    *)
+    echo Unknown Linux f90 compiler.
+    echo Please add appropriate information to 
+    echo $srcdir/known-architectures/linux-gnu
+    echo and send the updated file to CactusMaint
+    exit 2 ;;
+esac    

@@ -6,7 +6,7 @@
 #    @desc 
 #   
 #    @enddesc
-#    @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/linux-gnulibc1,v 1.1 1999-04-01 17:13:37 allen Exp $
+#    @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/linux-gnulibc1,v 1.2 1999-07-15 20:08:36 goodale Exp $
 #  @@*/
 
-. $srcdir/known-architectures/linux-gnu
+. $srcdir/known-architectures/linux

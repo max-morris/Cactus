@@ -6,48 +6,7 @@
 #   @desc 
 #   
 #   @enddesc 
-#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/linux-gnu,v 1.6 1999-04-27 09:06:42 allen Exp $
+#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/linux-gnu,v 1.7 1999-07-15 20:08:36 goodale Exp $
 # @@*/
 
-# Determine which Fortran 90 compiler is in use
-LINUX_F90_COMP=
-
-if test -n "$F90" ; then 
-    if test "`$F90 -V 2>&1 | grep -i f90 | grep -i vast`" ; then 
-	LINUX_F90_COMP=pacific
-    elif test "`$F90 -V 2>&1 | grep -i f90 | grep -i absoft`" ; then 
-	LINUX_F90_COMP=absoft
-    elif test "`$F90 -V 2>&1 | grep -i f90 | grep -i pgf90`" ; then
-	LINUX_F90_COMP=portland
-    else
-	echo Unknown Linux f90 compiler.
-	echo Please add appropriate information to 
-	echo $srcdir/known-architectures/linux-gnu
-	echo and send the updated file to CactusMaint
-	exit 2
-    fi
-else
-    LINUX_F90_COMP=none
-fi
-
-#Set the appropriate flags
-case "$LINUX_F90_COMP" in
-     pacific)
-     : ${LIBS="f2c vast90 f2c m"} ;;
-     absoft)
-     : ${LIBS="f90math fio f77math m"} 
-     F90FLAGS="`echo $F90FLAGS | sed 's/O2/O/'`" ;;
-     nag)
-     : ${LIBS="f90 nagfl90 nag m"} 
-     F90FLAGS="$F90FLAGS -N140" ;;
-     portland)
-     : ${LIBS="pgf90 pgf90_rpm1 pghpf2 pgf90rtl pgc m"} ;;
-     none)
-     : ${LIBS="m"} ;;
-    *)
-    echo Unknown Linux f90 compiler.
-    echo Please add appropriate information to 
-    echo $srcdir/known-architectures/linux-gnu
-    echo and send the updated file to CactusMaint
-    exit 2 ;;
-esac    
+. $srcdir/known-architectures/linux
