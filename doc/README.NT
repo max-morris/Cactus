@@ -19,11 +19,10 @@ the microsoft find in your path.
 In principle now all you need to do is start bash, checkout the CCTK,
 and run make.
 
-There may be warnings whilst generating dependencies for the C and C++
-files, these may be ignored.
-
 Please note that paths to additional include files or libraries must
-contain no spaces.
+contain no spaces.  However the INCLUDE and LIB environment variables,
+which are used by the Windows compilers, may include spaces in path
+names.
 
 
 Tested Software:
@@ -43,7 +42,7 @@ ActivePerl-5.6.0.620
 C/C++:
 -----
 Microsoft Visual C 6.0
-Intel C/C++ version 4.5
+Intel C/C++ version 4.5 (configure with CC=icl CXX="icl /TP" )
 
 Fortran:
 -------
@@ -51,14 +50,7 @@ Digital Fortran 6.0
 Compaq Fortran 6.1
 Intel Fortran 4.5 
 
-SPECIAL NOTE FOR PEOPLE USING NON-ENGLISH VERSIONS OF NT.  Currently
-the include path to find the MS C include files is set for an english
-language version, you will need to modify the SYS_INC_DIRS line in
-your make.config.defn file (in a configuration) to the appropriate
-one.  It is recommended that you use the 8.3 formatted name available
-from dir /x on the command prompt (not bash), so as to get a name with
-no spaces in - this makes life a lot easier 8-( We are currently
-trying to find a way to automate the process.
+
 
 KNOWN PROBLEMS:
 
