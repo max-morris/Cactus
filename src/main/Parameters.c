@@ -1415,11 +1415,14 @@ static int ParameterSetKeyword(t_param *param, const char *value)
 
   if(retval == -1)
   {
-    fprintf(stderr, 
-            "Unable to set keyword %s::%s - %s not in any active range\n", 
-            param->props->thorn,
+    char *msg;
+    msg = (char *)malloc( 200*sizeof(char) );
+    sprintf(msg,"Unable to set keyword %s::%s - %s not in any active range",
+	    param->props->thorn,
             param->props->name,
             value);
+    CCTK_Warn(0,__LINE__,__FILE__,"Cactus",msg);
+    free(msg);
     if(*((char **)param->data) == NULL)
     {
       fprintf(stderr, "Since this was the default value, setting anyway - please fix!\n");
@@ -1455,11 +1458,14 @@ static int ParameterSetString(t_param *param, const char *value)
 
   if(retval == -1)
   {
-    fprintf(stderr, 
-            "Unable to set string %s::%s - %s not in any active range\n", 
-            param->props->thorn,
+    char *msg;
+    msg = (char *)malloc( 200*sizeof(char) );
+    sprintf(msg,"Unable to set string %s::%s - %s not in any active range",
+	    param->props->thorn,
             param->props->name,
             value);
+    CCTK_Warn(0,__LINE__,__FILE__,"Cactus",msg);
+    free(msg);
 
     if(*((char **)param->data) == NULL)
     {
@@ -1497,11 +1503,15 @@ static int ParameterSetSentence(t_param *param, const char *value)
 
   if(retval == -1)
   {
-    fprintf(stderr, 
-            "Unable to set sentence %s::%s - %s not in any active range\n", 
-            param->props->thorn,
+
+    char *msg;
+    msg = (char *)malloc( 200*sizeof(char) );
+    sprintf(msg,"Unable to set sentance %s::%s - %s not in any active range",
+	    param->props->thorn,
             param->props->name,
             value);
+    CCTK_Warn(0,__LINE__,__FILE__,"Cactus",msg);
+    free(msg);
 
     if(*((char **)param->data) == NULL)
     {
@@ -1543,11 +1553,15 @@ static int ParameterSetInteger(t_param *param, const char *value)
 
   if(retval == -1)
   {
-    fprintf(stderr, 
-            "Unable to set integer %s::%s - %s not in any active range\n", 
-            param->props->thorn,
+    char *msg;
+    msg = (char *)malloc( 200*sizeof(char) );
+    sprintf(msg,"Unable to set integer %s::%s - %s not in any active range",
+	    param->props->thorn,
             param->props->name,
             value);
+    CCTK_Warn(0,__LINE__,__FILE__,"Cactus",msg);
+    free(msg);
+
   }
 
   return retval;
@@ -1598,11 +1612,15 @@ static int ParameterSetReal(t_param *param, const char *value)
 
   if(retval == -1)
   {
-    fprintf(stderr, 
-            "Unable to set real %s::%s - %s not in any active range\n", 
-            param->props->thorn,
+    char *msg;
+    msg = (char *)malloc( 200*sizeof(char) );
+    sprintf(msg,"Unable to set real %s::%s - %s not in any active range",
+	    param->props->thorn,
             param->props->name,
             value);
+    CCTK_Warn(0,__LINE__,__FILE__,"Cactus",msg);
+    free(msg);
+
   }
 
   return retval;
@@ -1617,11 +1635,14 @@ static int ParameterSetBoolean(t_param *param, const char *value)
 
   if(retval == -1)
   {
-    fprintf(stderr, 
-            "Unable to set boolean %s::%s - %s not recognised\n", 
-            param->props->thorn,
+    char *msg;
+    msg = (char *)malloc( 200*sizeof(char) );
+    sprintf(msg,"Unable to set boolean %s::%s - %s not recognised",
+	    param->props->thorn,
             param->props->name,
             value);
+    CCTK_Warn(0,__LINE__,__FILE__,"Cactus",msg);
+    free(msg);
   }
 
   return retval;
