@@ -1319,7 +1319,7 @@ As the program runs, the normal output provides the following information:
         A report is made as each of the thorns in the {\tt ActiveThorns}
 parameters from the parameter file (see Section~\ref{sec:Parameter_File})
 is attempted to be activated. This report
-shows whether the activation was successful, and if successful gives the
+shows whether the thorn activation was successful, and if successful gives the
 thorn's implementation. For example
 
 \begin{verbatim}
@@ -1378,7 +1378,9 @@ are listed, in the order that they will be executed. For example
 \end{verbatim}
 
 \item [Thorn banners]
-        Any banners registered from the thorns are displayed.
+        Usually a thorn registers a short piece of text as a \emph{banner}.
+	This banner of each thorn is displayed in the standard output when
+	the thorn is initialised.
 
 \end{Lentry}
 
@@ -1389,7 +1391,7 @@ Any number of output methods can be used for each run.
 The behaviour of the output thorns in the
 standard arrangements are described in those thorns' documentation.
 
-In general, these thorns decide what to output by parsing a string parameter
+In general, output thorns decide what to output by parsing a string parameter
 containing the names of those grid variables, or groups of variables, for which
 output is required. The names should be fully qualified with the
 implementation and group or variable names.
@@ -1412,14 +1414,12 @@ settings, contents of grid variables, and other relevant information) to a file.
 At a later time, this run can then be restarted from that state by recovering
 all the data from the checkpoint file.
 
-Checkpointing/recovery methods in Cactus are provided by thorns. 
-
+Cactus checkpointing and recovery methods are provided by thorns. 
 In general, these thorns decide how often to generate a checkpoint.
-They also register their recovery routines with the Flesh; the recovery
-routines are then called during initialization to perform the recovery of
-parameters and grid variables
-if requested in the parameter file.
-% SW Where can we read about how to request this in the parameter file?
+They also register their recovery routines with the Flesh; these recovery
+routines may then be called during initialisation of a subsequent run to 
+perform the recovery of the state of the run.
+Such a recovery is requested by setting a parameter in the parameter file.
 
 See Chapter~\ref{chap:cp_recovery_methods} for details of how to create
 your own checkpointing and recovery methods.
