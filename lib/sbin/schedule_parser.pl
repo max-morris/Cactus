@@ -1,11 +1,5 @@
 #! /usr/bin/perl
 
-#%thorns = ("thorn_ADM","thorn_ADM");
-
-#@rfr_file = &create_schedule_code(%thorns);
-
-#print "@rfr_file\n";
-
 #/*@@
 #  @routine create_schedule_code
 #  @date Fri Jan 8 1999
