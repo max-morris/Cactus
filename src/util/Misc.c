@@ -1221,10 +1221,9 @@ void CCTK_FCALL CCTK_FNAME(CCTK_PrintString)
 @@*/
 int CCTK_FortranString (const char *c_string,
                         char *fortran_string,
-                        size_t fortran_length)
+                        int fortran_length)
 {
-  int nchars;
-  size_t c_strlen;
+  int nchars, c_strlen;
 
 
   nchars = c_strlen = strlen (c_string);
