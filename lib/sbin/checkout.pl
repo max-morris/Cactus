@@ -1,20 +1,23 @@
 # /usr/bin/perl -s
 
+$sbin_dir = "lib/sbin";
+
+require "$sbin_dir/MakeUtils.pl";
+
 print "\n";
 
-
-    print "Checkout packages or thorns? [packages] : ";
+print "Checkout packages or thorns? [packages] : ";
     
-    $which = <STDIN>;
+$which = <STDIN>;
 
-    if ($which =~ /^t/i)
-    {
-	&get_thorns();
-    }
-    else
-    { 
-	&get_packages();
-    }
+if ($which =~ /^t/i)
+{
+    &get_thorns();
+}
+else
+{ 
+    &get_packages();
+}
 
 print "\nQuit or checkout more packages or thorns [quit] : ";
 $dowhat = <STDIN>;
@@ -51,123 +54,104 @@ while ()
 sub get_packages
 {
 
+    print "\nYou already have packages: \n\n";
 
-print "\nYou already have packages: \n";
+    &buildthorns("packages/","packages");
+    
+    print "\nAvailable packages: \n";
 
-open(HAVE,"find ./packages -type d -maxdepth 1 |");
-while (<HAVE>)
-{
- if (!/^\.\/CVS$/ && !/^\.$/)
- {
-   /\.\/(.*)/;
-   print "  $1\n";
- }
-}
-
-print "\nAvailable packages: \n";
-
-open(MODULES,"cvs co -s | ");
-
-$count = 0;
-while(<MODULES>)
-{
- if (/(\w*)\s*PACKAGE/)
- {
-   $count++;
-   $name{$count} = $1;
- }
-}
-
-
-for ($i=1; $i<$count+1;$i++)
-{
-  print "  [$i] $name{$i}\n";
-}
-
-print "\n";
-
-print "Checkout packages [1-$count] : ";
-
-$range = <STDIN>;
-
-while ($range =~/^([0-9]+(?:-[0-9]+)?),?/)
-{
- $range = $';
- $1 =~ /^([0-9]*)(-[0-9]*)?$/;
- $first = $1;
- if (!$2) 
+    open(MODULES,"cvs co -s | ");
+    
+    $count = 0;
+    while(<MODULES>)
+    {
+	if (/(\w*)\s*PACKAGE/)
+	{
+	    $count++;
+	    $name{$count} = $1;
+	}
+    }
+    
+    
+    for ($i=1; $i<$count+1;$i++)
+    {
+	print "  [$i] $name{$i}\n";
+    }
+    
+    print "\n";
+    
+    print "Checkout packages [1-$count] : ";
+    
+    $range = <STDIN>;
+    
+    while ($range =~/^([0-9]+(?:-[0-9]+)?),?/)
+    {
+	$range = $';
+	$1 =~ /^([0-9]*)(-[0-9]*)?$/;
+	$first = $1;
+	if (!$2) 
 	{$last=$1}
- else
+	else
         {$2=~/-([0-9]*)/; $last=$1}
-
- for ($i=$first; $i<$last+1; $i++)
- {
-  system("(cd packages; cvs checkout $name{$i}, cd ..)");
- }
-
-}
+	
+	for ($i=$first; $i<$last+1; $i++)
+	{
+	    system("(cd packages; cvs checkout $name{$i}, cd ..)");
+	}
+	
+    }
 }
 
 
 
 sub get_thorns
 {
+    print "\nYou already have thorns: \n\n";
+    
+    &buildthorns("packages/","thorns");
+    
+    print "\nAvailable thorns: \n";
+
+    open(MODULES,"cvs -q co -s | ");
+    
+    $count = 0;
+    while(<MODULES>)
+    {
+	if (/(\w*\/?\w*)\s*THORN/)
+	{
+	    $count++;
+	    $name{$count} = $1;
+	}
+    }
 
 
-print "\nYou already have thorns: \n";
-
-open(HAVE,"find ./packages -type d -maxdepth 2 |");
-while (<HAVE>)
-{
- if (!/CVS$/ && /\.\/\w*\/\w*$/)
- {
-   /\.\/(.*)/;
-   print "  $1\n";
- }
-}
-
-print "\nAvailable thorns: \n";
-
-open(MODULES,"cvs -q co -s | ");
-
-$count = 0;
-while(<MODULES>)
-{
- if (/(\w*\/?\w*)\s*THORN/)
- {
-   $count++;
-   $name{$count} = $1;
- }
-}
-
-
-for ($i=1; $i<$count+1;$i++)
-{
-  print "  [$i] $name{$i}\n";
-}
-
-print "\n";
-
-print "Checkout thorns [1-$count] : ";
-
-$range = <STDIN>;
-
-while ($range =~/^([0-9]+(?:-[0-9]+)?),?/)
-{
- $range = $';
- $1 =~ /^([0-9]*)(-[0-9]*)?$/;
- $first = $1;
- if (!$2) 
+    for ($i=1; $i<$count+1;$i++)
+    {
+	print "  [$i] $name{$i}\n";
+    }
+    
+    print "\n";
+    
+    print "Checkout thorns [1-$count] : ";
+    
+    $range = <STDIN>;
+    
+    while ($range =~/^([0-9]+(?:-[0-9]+)?),?/)
+    {
+	$range = $';
+	$1 =~ /^([0-9]*)(-[0-9]*)?$/;
+	$first = $1;
+	if (!$2) 
 	{$last=$1}
- else
+	else
         {$2=~/-([0-9]*)/; $last=$1}
-
- for ($i=$first; $i<$last+1; $i++)
- {
-  system("(cd ./packages; cvs -q checkout $name{$i}; cd ..)");
- }
-
-}
+	
+	for ($i=$first; $i<$last+1; $i++)
+	{
+	    system("(cd ./packages; cvs -q checkout $name{$i}; cd ..)");
+	}
+	
+    }
 }
 
 
