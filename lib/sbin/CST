@@ -6,7 +6,7 @@
 #  @desc
 #             Parses the the configuration files for thorns.
 #  @enddesc
-#  @version   $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.59 2003-11-21 15:27:24 schnetter Exp $
+#  @version   $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.60 2004-01-19 14:22:04 schnetter Exp $
 #@@*/
 
 # Global parameter to track the number of errors from the CST
@@ -352,7 +352,8 @@ sub CreateThornLinkList
 
     # add this thorn to the thorn liblist
     # as well as any other thorns it requires (directly or indirectly)
-    push (@liblist, $thorn, RequiredThorns ($thorn, $thorn, $config));
+    push (@liblist, $thorn, RequiredThorns ($thorn, $thorn, $config),
+          'Cactus', 'CactusBindings');
   }
 
   # remove duplicate entries from the list, only keeping the rightmost

@@ -4920,6 +4920,15 @@ fi
 
 : ${F_DEPEND_OUT=' > $@'}
 
+# How to generate F90 dependency info for modules
+
+
+: ${F_DEPEND_MODULES='$(CCTK_HOME)/lib/sbin/f_depend_modules.pl'}
+
+
+
+: ${F_DEPEND_MODULES_OUT=' >> $@'}
+
 # Postprocessing of object files.  Most architectures don't need to do this at all.
 
 
@@ -5243,6 +5252,8 @@ s%@F77_DEPEND@%$F77_DEPEND%g
 s%@F77_DEPEND_OUT@%$F77_DEPEND_OUT%g
 s%@F_DEPEND@%$F_DEPEND%g
 s%@F_DEPEND_OUT@%$F_DEPEND_OUT%g
+s%@F_DEPEND_MODULES@%$F_DEPEND_MODULES%g
+s%@F_DEPEND_MODULES_OUT@%$F_DEPEND_MODULES_OUT%g
 s%@C_POSTPROCESSING@%$C_POSTPROCESSING%g
 s%@CXX_POSTPROCESSING@%$CXX_POSTPROCESSING%g
 s%@F77_POSTPROCESSING@%$F77_POSTPROCESSING%g

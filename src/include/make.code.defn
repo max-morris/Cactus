@@ -1,0 +1,20 @@
+# Source file for the src/include directory.
+#
+# $Header$
+
+ifneq ($(strip $(F90)),none)
+
+SRCS=\
+cctk.F90\
+cctk_ActiveThorns.F90\
+cctk_Banner.F90\
+cctk_Cache.F90\
+cctk_Comm.F90\
+cctk_CommandLine.F90\
+cctk_Complex.F90\
+cctk_Constants.F90\
+cctk_Coord.F90
+
+else
+SRCS=
+endif

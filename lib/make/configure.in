@@ -960,6 +960,15 @@ AC_SUBST(F_DEPEND_OUT)
 
 : ${F_DEPEND_OUT=' > $@'}
 
+# How to generate F90 dependency info for modules
+AC_SUBST(F_DEPEND_MODULES)
+
+: ${F_DEPEND_MODULES='$(CCTK_HOME)/lib/sbin/f_depend_modules.pl'}
+
+AC_SUBST(F_DEPEND_MODULES_OUT)
+
+: ${F_DEPEND_MODULES_OUT=' >> $@'}
+
 # Postprocessing of object files.  Most architectures don't need to do this at all.
 
 AC_SUBST(C_POSTPROCESSING)

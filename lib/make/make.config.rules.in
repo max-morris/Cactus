@@ -54,11 +54,13 @@ endef
 define F_DEPENDENCIES
 	$(F_DEPEND) $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DFCODE -DF90CODE $< $(F_DEPEND_OUT)
 	$(DEPENDENCY_FIXER)
+	current_wd=`$(GET_WD)` ; cat $< | sed -e 's.//.(CCTK_AUTOMATICALLY_GENERATED_CONCATENATION_PROTECTION).g' | $(FPP) $(FPPFLAGS) $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DFCODE -DF90CODE | sed -e 's.(CCTK_AUTOMATICALLY_GENERATED_CONCATENATION_PROTECTION).//.g' | $(PERL) $(F_DEPEND_MODULES) $< $(basename $(notdir $<)).F.o $(SRCDIR) $(USESTHORNS:%=$$current_wd/../%) $(F_DEPEND_MODULES_OUT) || { rm $@; exit 1; }
 endef
 
 define F90_DEPENDENCIES
 	$(F_DEPEND) $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DFCODE -DF90CODE $< $(F_DEPEND_OUT)
 	$(DEPENDENCY_FIXER)
+	current_wd=`$(GET_WD)` ; cat $< | sed -e 's.//.(CCTK_AUTOMATICALLY_GENERATED_CONCATENATION_PROTECTION).g' | $(FPP) $(FPPFLAGS) $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DFCODE -DF90CODE | sed -e 's.(CCTK_AUTOMATICALLY_GENERATED_CONCATENATION_PROTECTION).//.g' | $(PERL) $(F_DEPEND_MODULES) $< $(basename $(notdir $<)).F90.o $(SRCDIR) $(USESTHORNS:%=$$current_wd/../%) $(F_DEPEND_MODULES_OUT) || { rm $@; exit 1; }
 endef
 
 # No preprocessing, just create empty dependency file
