@@ -433,7 +433,7 @@ sub ScheduleStatement
   }
   else
   {
-    print STDERR "Unknown statement type ($thorn) '" .$schedule_database{"\U$thorn\E STATEMENT_$statement TYPE"} ."'\n";
+    print STDERR "Unknown statement type '" .$schedule_database{"\U$thorn\E STATEMENT_$statement TYPE"} ."'\n";
     $CST_errors++;
     return ("", "");
   }
