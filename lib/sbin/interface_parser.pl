@@ -702,7 +702,7 @@ sub parse_interface_ccl
   for($line_number = 0; $line_number < @data; $line_number++)
   {
     $line = $data[$line_number];
-    
+
     #       Parse the line
     if($line =~ m/^\s*(PUBLIC|PROTECTED|PRIVATE)\s*$/i)
     {
@@ -1103,7 +1103,8 @@ sub parse_interface_ccl
       }
       else
       {
-        $message = "Unknown line in thorn $arrangement/$thorn\n$line";
+	$line =~ /^(.*)\n+$/;
+        $message = "Unknown line in interface.ccl for thorn $arrangement/$thorn\n\"$line\"";
         &CST_error(0,$message,"",__LINE__,__FILE__);
       }
     }

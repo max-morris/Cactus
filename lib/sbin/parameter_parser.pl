@@ -459,7 +459,8 @@ sub parse_param_ccl
       }
       else
       {
-        $message = "Unknown line \"$line\" in $thorn/param.ccl";
+	$line =~ /^(.*)\n+$/;
+        $message = "Unknown line in param.ccl for thorn $arrangement/$thorn\n\"$1\"";
         &CST_error(0,$message,"",__LINE__,__FILE__);
       }
     }
