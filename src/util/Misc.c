@@ -535,7 +535,7 @@ int Util_DoubleInRange(double inval, const char *range)
     else
     {
       /* No start range given, so use the smallest float available. */
-      start = -FLT_MAX;
+      start = -HUGE_VAL;
     }
 
     /* Next find the end of the range */
@@ -548,7 +548,7 @@ int Util_DoubleInRange(double inval, const char *range)
     else
     {
       /* No end range given, so use the largest float available. */
-      end = FLT_MAX;
+      end = HUGE_VAL;
     }
 
 #if 0
