@@ -40,12 +40,12 @@ sub test_fortran_name
 
   if($compiler_f77 && $compiler_f77 ne "" && $compiler_f77 !~ /none/)
   {
-    ($case, $n_underscores) = &compile_fortran_common_name($compiler_f77,$opts_f77);
+    ($case, $n_underscores) = &compile_fortran_name($compiler_f77,$opts_f77);
     $use_f77 = 1;
   }
   elsif ($compiler_f90 && $compiler_f90 ne "" && $compiler_f90 !~ /none/)
   {
-    ($case, $n_underscores) = &compile_fortran_common_name($compiler_f90,$opts_f90);
+    ($case, $n_underscores) = &compile_fortran_name($compiler_f90,$opts_f90);
     $use_f90 = 1;
   }
   
@@ -385,4 +385,5 @@ EOT
   # Delete the temporary files
   unlink <fname_test.*>;
 
+  return ($case,$n_underscores);
 }
