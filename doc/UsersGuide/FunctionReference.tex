@@ -85,6 +85,10 @@ available from C, not all are currently available from Fortran.
   [\pageref{CmplxSqrt}]
   Returns the square root of a complex number (only C) [not yet available]
 
+\item[CCTK\_CoordDir] 
+  [\pageref{CoordDir}] 
+  Give the direction for a given coordinate name.
+
 \item[CCTK\_CoordIndex] 
   [\pageref{CoordIndex}] 
   Give the GF index for a given coordinate name.
@@ -229,6 +233,10 @@ available from C, not all are currently available from Fortran.
 \item[CCTK\_PrintGroup] 
   [\pageref{PrintGroup}] 
   Prints a group name from its index
+
+\item[CCTK\_PrintString]
+  [\pageref{PrintString}]
+  Prints a Cactus string to screen (from Fortran)
 
 \item[CCTK\_PrintVar] 
   [\pageref{PrintVar}] 
@@ -487,9 +495,31 @@ available from C, not all are currently available from Fortran.
 % CCC
 %%%%%
 
+\begin{CCTKFunc}{CCTK\_CoordDir}{Give the direction for a given coordinate name.}
+\label{CoordIndex}
+\subroutine{int}{integer}{dir}
+\argument{const char *}{character*(*)}{coordname}
+\showargs
+\begin{params}
+\parameter{dir}{The direction of the coordinate}
+\parameter{coordname}{The name assigned to this coordinate}
+\end{params}
+\begin{discussion}
+The coordinate name is independent of the grid function name. 
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\hfill {\bf C} && {\t direction = CCTK\_CoordDir(`xdir')};
+\\
+\hfill {\bf Fortran} && {\t call  CCTK\_COORDDIR(direction,`radius')};
+\\
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
 
 
-% Coord.c
 \begin{CCTKFunc}{CCTK\_CoordIndex}{Give the GF index for a given coordinate name.}
 \label{CoordIndex}
 \subroutine{int}{integer}{index}
@@ -506,7 +536,7 @@ The coordinate name is independent of the grid function name.
 \begin{tabular}{@{}p{3cm}cp{11cm}}
 \hfill {\bf C} && {\t index = CCTK\_CoordIndex(`xdir')};
 \\
-\hfill {\bf Fortran} && {\t call  CCTK\_COORDINDEX(`radius')};
+\hfill {\bf Fortran} && {\t call  CCTK\_COORDINDEX(index,`radius')};
 \\
 \end{tabular}
 \end{examples}
@@ -1555,6 +1585,31 @@ This routine is for debugging purposes for Fortran programmers.
 \hfill {\bf C} && {\t CCTK\_PrintGroup(1) ;}
 \\
 \hfill {\bf Fortran} && {\t call CCTK\_PRINTGROUP(1)}\\
+\\
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
+% Groups.c
+\begin{CCTKFunc}{CCTK\_PrintString}{Prints a Cactus string}
+\label{PrintString}
+\subroutine{}{}{}
+\argument{char *}{CCTK\_STRING}{string}
+\showargs
+\begin{params}
+\parameter{string}{The string to print}
+\end{params}
+\begin{discussion}
+This routine can be used to print Cactus string variables and parameters
+from Fortran.
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\hfill {\bf C} && {\t CCTK\_PrintString(string_param) ;}
+\\
+\hfill {\bf Fortran} && {\t call CCTK\_PRINTGROUP(string_param)}\\
 \\
 \end{tabular}
 \end{examples}
