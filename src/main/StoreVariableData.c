@@ -13,6 +13,15 @@
 #include "flesh.h"
 #include "StoreNamedData.h"
 
+
+/* When passing to fortran, must pass by reference
+ * so need to define the odd global variable to pass 8-(
+ */
+
+int _cctk_one = 1;
+
+
+
 static char *rcsid = "$Id$";
 
 
@@ -181,4 +190,14 @@ int CCTK_GetNVariables(void)
 int CCTK_GetNGroups(void)
 {
   return n_groups;
+}
+
+int CCTK_QueryGroupStorage(cGH *GH, const char *group)
+{
+  return 0;
+}
+
+int CCTK_QueryArrayGroupSize(cGH *GH, const char *group, int dim)
+{
+  return 0;
 }
