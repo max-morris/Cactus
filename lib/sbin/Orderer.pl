@@ -33,3 +33,48 @@ sub OrderList
 
   
   
+  foreach $things (@things)
+  {
+    %complete = &RecurseThings($thing, "ALLBEFORE", 0, %database);
+
+    $database{"\U$thing ALLBEFORE"} = join(" ", keys @complete);
+
+    %complete = &RecurseThings($thing, "ALLAFTER", 0, %database);
+
+    $database{"\U$thing ALLAFTER"} = join(" ", keys @complete);
+
+  }
+
+}
+
+
+sub RecurseThings
+{
+  local($thing, $keyword, $nthings, @indata) = @_;
+  local(%things);
+  local(%database);
+
+  if($nthings > 0)
+  {
+    %things = @indata[0..2*$nthings-1];
+    %database = @indata[2*$nthings..$#indata];
+  }
+  else
+  {
+    %things = ();
+    %database = @indata;
+  }
+
+  # Recurse
+  foreach $other_thing (split(" ", $database{"\U$thing $keyword"}))
+  {
+    if(! $things{"\U$other_thing\E"})
+    {
+      $things{"\U$other_things\E"} = 1;
+      %things = &RecurseThings($other_thing, $keyword, scalar(keys %things), %things,%database);
+    }
+  }
+  
+  return %things;
+
+}
