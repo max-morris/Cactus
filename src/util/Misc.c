@@ -1202,7 +1202,6 @@ int CCTK_SetBoolean(CCTK_INT *data, const char *value)
   }
   else
   {
-    CCTK_Warn(1,__LINE__,__FILE__,"Cactus","Boolean not set in CCTK_SetBoolean");
     retval = -1;
   }
 
