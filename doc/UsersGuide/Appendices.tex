@@ -459,7 +459,7 @@ arrangements are organized as modules, their {\em CVS server} is {\tt cvs.cactus
 \begin{Lentry}
 \item[{\bf cvs login}]
 Logs into the repository. You will be prompted for a {\em
-password}. This cvs command leaves a file {\tt .cvs-pass} in your
+password}. This cvs command leaves a file {\tt .cvspass} in your
 home directory. There is no need to login every time you issue a cvs 
 command, as long as this file exists. For a Cactus checkout, you have
 to log into the CVS server, using the cvs option {\bf -d} to specify CVSROOT:\\
@@ -542,7 +542,8 @@ the CVS repository
 
 {\tt
 \begin{verbatim}
-cvs -d :pserver:<name>@cvs.cactuscode.org:/cactus import MyArrangement/MyThorn start v1
+cvs -d :pserver:<name>@cvs.cactuscode.org:/cactus import MyArrangement/MyThorn
+start v1
 \end{verbatim}
 }
 
@@ -639,7 +640,7 @@ login} \\ You will be asked for the password for user {\em cvs\_anon}, which is 
 checkout Cactus}\\
 check out a CVS module named "Cactus", in this case it checks out the
 Cactus Computational Toolkit. A directory {\tt ./Cactus} is created if  
-it doesn't already exits. If you perform a checkout on an already
+it doesn't already exist. If you perform a checkout on an already
 existing and locally modified copy of the module, CVS will try to merge the files
 with your local copy. 
 
@@ -695,8 +696,8 @@ To add a new {\bf directory} {\tt <new dir>} to an existing module (that you hav
 and then recursing down adding all the new files and directories contained
 inside, or import the directory by changing directory to sit inside it, and then using\\
 {\tt cvs -d :pserver:}{\em your\_login}{\tt
-@cvs.cactuscode.org:<repository\_name> } import {\em relative name} {\tt start V1}\\
-Where {\em <relative name>} means the position of the directory within the module. (For example, if you have a module called {\em AMod} which contains a 
+@cvs.cactuscode.org:<repository\_name> } import {\tt <relative name> start V1}\\
+Where {\tt <relative name>} means the position of the directory within the module. (For example, if you have a module called {\em AMod} which contains a 
 directory {\em BMod}, and you want to add {\em CMod} inside {\em BMod}, then change directory to {\em BMod}, and use {\em AMod/BMod} for the {\em relative name}).
 
  
@@ -722,14 +723,14 @@ directory {\em BMod}, and you want to add {\em CMod} inside {\em BMod}, then cha
 
 \noindent
   If you want to compile Cactus with thorns, you now need to checkout 
-  separately the required arrangements (or {\it arrangements} 
-   into the {\bf arrangements} directory. To see  the 
+  separately the required arrangement (or {\it arrangements})
+   into the {\bf arrangements} directory. To see the 
   available Cactus arrangements and thorns type
   {\t 
     cvs -z9 -d :pserver:cvs\_anon@cvs.cactuscode.org:/cactus checkout -s
   }
-  To check out a arrangement or thorn type go to the arrangements directory,  {\t cd arrangements},
-  and  for a arrangement type
+  To check out an arrangement or thorn go to the arrangements directory,  {\t cd arrangements},
+  and  for an arrangement type
 {\t 
   cvs -z9 checkout <arrangement\_name>
   }
@@ -742,7 +743,7 @@ To simplify this procedure you may use {\t gmake checkout} in the Cactus
 home directory which provides menus to pick arrangements and thorns from.
   
   
-\item[{\bf Update}] to update an existing Cactus checkout (to patch in
+\item[{\bf Update}] To update an existing Cactus checkout (to patch in
   possible changes, etc.), do the following {\em within} the {\tt Cactus} directory.
   {\t
     cvs -z9 update
@@ -750,20 +751,20 @@ home directory which provides menus to pick arrangements and thorns from.
   The update process will operate recursively downwards from your current position
   within the Cactus tree. To update only on certain directories, change
   into these directories and issue the update command.
-\item{\bf CVS status}: to obtain a status report on the ``age'' of your
+\item[{\bf CVS status}] To obtain a status report on the ``age'' of your
   Cactus or arrangement routines (from your current directory position
   downward), type
   {\t
     cvs status
     }
-\item[{\bf non-anonymous CVS}] if you have an account at the central
+\item[{\bf non-anonymous CVS}] If you have an account at the central
   repository ({\tt cvs.cactuscode.org}) and would like to perform 
   any of the operation above
   {\em non-anonymously}, replace {\tt cvs\_anon} by your login name
   and provide the appropriate password during the CVS login
   process. Depending on your permissions, you may then make commits to Cactus
   or its arrangements.
-\item[{\bf Commits}] you need to perform a personalized login and have
+\item[{\bf Commits}] You need to perform a personalized login and have
   proper permissions to commit code to the repository. 
 \end{Lentry}
 
