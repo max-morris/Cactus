@@ -11,7 +11,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdarg.h>
 
 #include "cctk_Comm.h"
 #include "cctk_Flesh.h"
@@ -693,39 +692,29 @@ int CCTK_GrouplbndGI(const cGH *cctkGH,
   char *groupname;
   cGroupDynamicData data;
 
-  groupname = CCTK_GroupName (groupindex);
-  if (CCTK_GroupTypeI(groupindex) == CCTK_SCALAR)
+  ierr = CCTK_GroupDynamicData(cctkGH,groupindex,&data);
+
+  if (ierr == 0 && (data.dim == 0 || data.lbnd))
   {
-    retval = -3;
-    CCTK_VWarn(2,__LINE__,__FILE__,"Cactus",
-               "CCTK_GrouplbndGI: Grid information called for scalar group '%s'",
-               groupname);
+    if (data.dim != dim)
+    {
+      retval = -1;
+      usedim = (data.dim < dim) ? data.dim : dim;
+      groupname = CCTK_GroupName (groupindex);
+      CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
+                 "CCTK_GrouplbndGI: Incorrect dimension %d supplied, "
+                 "group '%s' has dimension %d, copying %d integers",
+                 dim,groupname,data.dim,usedim);
+      free (groupname);
+    }
+    memcpy(lbnd,(const int *)data.lbnd,usedim*sizeof(int));
   }
   else
   {
-    ierr = CCTK_GroupDynamicData(cctkGH,groupindex,&data);
-
-    if (ierr == 0 && data.dim && data.lbnd)
-    {
-      if (data.dim != dim)
-      {
-        retval = -1;
-        usedim = (data.dim < dim) ? data.dim : dim;
-        CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
-                   "CCTK_GrouplbndGI: Incorrect dimension %d supplied, "
-                   "group '%s' has dimension %d, copying %d integers",
-                   dim, groupname, data.dim, usedim);
-      }
-      memcpy(lbnd,(const int *)data.lbnd,usedim*sizeof(int));
-    }
-    else
-    {
-      retval = -2;
-      CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
-                 "CCTK_GrouplbndGI: Data not available from driver thorn");
-    }
+    retval = -2;
+    CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
+               "CCTK_GrouplbndGI: Data not available from driver thorn");
   }
-  free (groupname);
   return retval;
 }
 
@@ -868,38 +857,31 @@ int CCTK_GroupubndGI(const cGH *cctkGH,
   int retval = 0;
   int ierr;
   int usedim = dim;  /* Actual number of integers copied */
+  char *groupname;
   cGroupDynamicData data;
 
-  if (CCTK_GroupTypeI(groupindex) == CCTK_SCALAR)
+  ierr = CCTK_GroupDynamicData(cctkGH,groupindex,&data);
+
+  if (ierr == 0 && (data.dim == 0 || data.ubnd))
   {
-    retval = -3;
-    CCTK_VWarn(2,__LINE__,__FILE__,"Cactus",
-               "CCTK_GroupubndGI: Grid information called for scalar group %s",
-               CCTK_GroupName(groupindex));
+    if (data.dim != dim)
+    {
+      retval = -1;
+      usedim = (data.dim < dim) ? data.dim : dim;
+      groupname = CCTK_GroupName (groupindex);
+      CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
+                 "CCTK_GroupubndGI: Incorrect dimension %d supplied, "
+                 "group '%s' has dimension %d, copying %d integers",
+                 dim,groupname,data.dim,usedim);
+      free (groupname);
+    }
+    memcpy(ubnd,(const int *)data.ubnd,usedim*sizeof(int));
   }
   else
   {
-    ierr = CCTK_GroupDynamicData(cctkGH,groupindex,&data);
-
-    if (ierr == 0 && data.dim && data.ubnd)
-    {
-      if (data.dim != dim)
-      {
-        retval = -1;
-        usedim = (data.dim < dim) ? data.dim : dim;
-        CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
-                   "CCTK_GroupubndGI: Incorrect dimension %d supplied, "
-                   "group %s has dimension %d, copying %d integers",
-                   dim,CCTK_GroupName(groupindex),data.dim,usedim);
-      }
-      memcpy(ubnd,(const int *)data.ubnd,usedim*sizeof(int));
-    }
-    else
-    {
-      retval = -2;
-      CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
-                 "CCTK_GroupubndGI: Data not available from driver thorn");
-    }
+    retval = -2;
+    CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
+               "CCTK_GroupubndGI: Data not available from driver thorn");
   }
   return retval;
 }
@@ -1043,38 +1025,31 @@ int CCTK_GrouplshGI(const cGH *cctkGH,
   int retval = 0;
   int ierr;
   int usedim = dim;  /* Actual number of integers copied */
+  char *groupname;
   cGroupDynamicData data;
 
-  if (CCTK_GroupTypeI(groupindex) == CCTK_SCALAR)
+  ierr = CCTK_GroupDynamicData(cctkGH,groupindex,&data);
+
+  if (ierr == 0 && (data.dim == 0 || data.lsh))
   {
-    retval = -3;
-    CCTK_VWarn(2,__LINE__,__FILE__,"Cactus",
-               "CCTK_GrouplshGI: Grid information called for scalar group %s",
-               CCTK_GroupName(groupindex));
+    if (data.dim != dim)
+    {
+      retval = -1;
+      usedim = (data.dim < dim) ? data.dim : dim;
+      groupname = CCTK_GroupName (groupindex);
+      CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
+                 "CCTK_GrouplshGI: Incorrect dimension %d supplied, "
+                 "group '%s' has dimension %d, copying %d integers",
+                 dim,groupname,data.dim,usedim);
+      free (groupname);
+    }
+    memcpy(lsh,(const int *)data.lsh,usedim*sizeof(int));
   }
   else
   {
-    ierr = CCTK_GroupDynamicData(cctkGH,groupindex,&data);
-
-    if (ierr == 0 && data.dim && data.lsh)
-    {
-      if (data.dim != dim)
-      {
-        retval = -1;
-        usedim = (data.dim < dim) ? data.dim : dim;
-        CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
-                   "CCTK_GrouplshGI: Incorrect dimension %d supplied, "
-                   "group %s has dimension %d, copying %d integers",
-                   dim,CCTK_GroupName(groupindex),data.dim,usedim);
-      }
-      memcpy(lsh,(const int *)data.lsh,usedim*sizeof(int));
-    }
-    else
-    {
-      retval = -2;
-      CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
-                 "CCTK_GrouplshGI: Data not available from driver thorn");
-    }
+    retval = -2;
+    CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
+               "CCTK_GrouplshGI: Data not available from driver thorn");
   }
   return retval;
 }
@@ -1218,38 +1193,31 @@ int CCTK_GroupgshGI(const cGH *cctkGH,
   int retval = 0;
   int ierr;
   int usedim = dim;  /* Actual number of integers copied */
+  char *groupname;
   cGroupDynamicData data;
 
-  if (CCTK_GroupTypeI(groupindex) == CCTK_SCALAR)
+  ierr = CCTK_GroupDynamicData(cctkGH,groupindex,&data);
+
+  if (ierr == 0 && (data.dim == 0 || data.gsh))
   {
-    retval = -3;
-    CCTK_VWarn(2,__LINE__,__FILE__,"Cactus",
-               "CCTK_GroupgshGI: Grid information called for scalar group %s",
-               CCTK_GroupName(groupindex));
+    if (data.dim != dim)
+    {
+      retval = -1;
+      usedim = (data.dim < dim) ? data.dim : dim;
+      groupname = CCTK_GroupName (groupindex);
+      CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
+                 "CCTK_GroupgshGI: Incorrect dimension %d supplied, "
+                 "group '%s' has dimension %d, copying %d integers",
+                 dim,groupname,data.dim,usedim);
+      free (groupname);
+    }
+    memcpy(gsh,(const int *)data.gsh,usedim*sizeof(int));
   }
   else
   {
-    ierr = CCTK_GroupDynamicData(cctkGH,groupindex,&data);
-
-    if (ierr == 0 && data.dim && data.gsh)
-    {
-      if (data.dim != dim)
-      {
-        retval = -1;
-        usedim = (data.dim < dim) ? data.dim : dim;
-        CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
-                   "CCTK_GroupgshGI: Incorrect dimension %d supplied, "
-                   "group %s has dimension %d, copying %d integers",
-                   dim,CCTK_GroupName(groupindex),data.dim,usedim);
-      }
-      memcpy(gsh,(const int *)data.gsh,usedim*sizeof(int));
-    }
-    else
-    {
-      retval = -2;
-      CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
-                 "CCTK_GroupgshGI: Data not available from driver thorn");
-    }
+    retval = -2;
+    CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
+               "CCTK_GroupgshGI: Data not available from driver thorn");
   }
   return retval;
 }
@@ -1393,39 +1361,31 @@ int CCTK_GroupnghostzonesGI(const cGH *cctkGH,
   int retval = 0;
   int ierr;
   int usedim = dim;  /* Actual number of integers copied */
+  char *groupname;
   cGroupDynamicData data;
 
-  if (CCTK_GroupTypeI(groupindex) == CCTK_SCALAR)
+  ierr = CCTK_GroupDynamicData(cctkGH,groupindex,&data);
+
+  if (ierr == 0 && (data.dim == 0 || data.nghostzones))
   {
-    retval = -3;
-    CCTK_VWarn(2,__LINE__,__FILE__,"Cactus",
-               "CCTK_GroupnghostzonesGI: Grid information called "
-               "for scalar group %s",
-               CCTK_GroupName(groupindex));
+    if (data.dim != dim)
+    {
+      retval = -1;
+      usedim = (data.dim < dim) ? data.dim : dim;
+      groupname = CCTK_GroupName (groupindex);
+      CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
+                 "CCTK_GroupnghostzonesGI: Incorrect dimension %d supplied, "
+                 "group '%s' has dimension %d, copying %d integers",
+                 dim,groupname,data.dim,usedim);
+      free (groupname);
+    }
+    memcpy(nghostzones,(const int *)data.nghostzones,usedim*sizeof(int));
   }
   else
   {
-    ierr = CCTK_GroupDynamicData(cctkGH,groupindex,&data);
-
-    if (ierr == 0 && data.dim && data.nghostzones)
-    {
-      if (data.dim != dim)
-      {
-        retval = -1;
-        usedim = (data.dim < dim) ? data.dim : dim;
-        CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
-                   "CCTK_GroupnghostzonesGI: Incorrect dimension %d supplied, "
-                   "group %s has dimension %d, copying %d integers",
-                   dim,CCTK_GroupName(groupindex),data.dim,usedim);
-      }
-      memcpy(nghostzones,(const int *)data.nghostzones,usedim*sizeof(int));
-    }
-    else
-    {
-      retval = -2;
-      CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
-                 "CCTK_GroupnghostzonesGI: Data not available from driver thorn");
-    }
+    retval = -2;
+    CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
+               "CCTK_GroupnghostzonesGI: Data not available from driver thorn");
   }
   return retval;
 }
@@ -1568,38 +1528,31 @@ int CCTK_GroupbboxGI(const cGH *cctkGH,
   int retval = 0;
   int ierr;
   int usesize = size;  /* Actual number of integers copied */
+  char *groupname;
   cGroupDynamicData data;
 
-  if (CCTK_GroupTypeI(groupindex) == CCTK_SCALAR)
+  ierr = CCTK_GroupDynamicData(cctkGH,groupindex,&data);
+
+  if (ierr == 0 && (data.dim == 0 || data.bbox))
   {
-    retval = -3;
-    CCTK_VWarn(2,__LINE__,__FILE__,"Cactus",
-               "CCTK_GroupbboxGI: Grid information called for scalar group %s",
-               CCTK_GroupName(groupindex));
+    if (2*data.dim != size)
+    {
+      retval = -1;
+      usesize = (2*data.dim < size) ? 2*data.dim : size;
+      groupname = CCTK_GroupName (groupindex);
+      CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
+                 "CCTK_GroupbboxGI: Incorrect size %d supplied, "
+                 "group %s has dimension %d, copying %d integers",
+                 size,groupname,data.dim,usesize);
+      free (groupname);
+    }
+    memcpy(bbox,(const int *)data.bbox,usesize*sizeof(int));
   }
   else
   {
-    ierr = CCTK_GroupDynamicData(cctkGH,groupindex,&data);
-
-    if (ierr == 0 && data.dim && data.bbox)
-    {
-      if (2*data.dim != size)
-      {
-        retval = -1;
-        usesize = (2*data.dim < size) ? 2*data.dim : size;
-        CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
-                   "CCTK_GroupbboxGI: Incorrect size %d supplied, "
-                   "group %s has dimension %d, copying %d integers",
-                   size, CCTK_GroupName (groupindex), data.dim, usesize);
-      }
-      memcpy(bbox,(const int *)data.bbox,usesize*sizeof(int));
-    }
-    else
-    {
-      retval = -2;
-      CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
-                 "CCTK_GroupbboxGI: Data not available from driver thorn");
-    }
+    retval = -2;
+    CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
+               "CCTK_GroupbboxGI: Data not available from driver thorn");
   }
   return retval;
 }
