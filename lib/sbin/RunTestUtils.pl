@@ -10,7 +10,7 @@ sub Configure
   if($ENV{"CONFIGS_DIR"})
   {
     $configs_dir = $ENV{"CONFIGS_DIR"};
-  }
+  } 
   else
   {
     $configs_dir = "configs";
@@ -291,7 +291,6 @@ sub InitialiseTestData
   $testdata{"FULL"} = "";
 
   $testdata{"TOLERANCE"} = 13;
-  $testdata{"NFAILED"} = 0;
   $testdata{"NNODATAFILES"} = 0;
   $testdata{"NRUNNABLE"} = 0;
   $testdata{"NUNRUNNABLE"} = 0;
@@ -530,14 +529,16 @@ sub WriteFullResults
   print "  Summary for configuration $config\n\n";
 
   $total = $testdata{"NUNRUNNABLE"}+$testdata{"NRUNNABLE"};
-  print "    Total available tests   -> $total\n";
-  print "    Unrunnable tests        -> $testdata{\"NUNRUNNABLE\"}\n";
-  print "    Runnable tests          -> $testdata{\"NRUNNABLE\"}\n";
-  print "    Total number of thorns  -> ".scalar(split(" ",$testdata{"FULL"}))."\n";
-  print "    Number of tested thorns -> $tested\n";
+  print "    Total available tests    -> $total\n";
+  print "    Unrunnable tests         -> $testdata{\"NUNRUNNABLE\"}\n";
+  print "    Runnable tests           -> $testdata{\"NRUNNABLE\"}\n";
+  print "    Total number of thorns   -> ".scalar(split(" ",$testdata{"FULL"}))."\n";
+  print "    Number of tested thorns  -> $tested\n";
 
-  print "    Number of tests passed  -> $number_passed1\n";
-  print "    Number failed           -> $testdata{\"NFAILED\"}\n";
+  print "    Number of tests passed   -> $testdata{\"NPASSED\"}\n";
+  print "    Number passed only to\n";
+  print "               set tolerance -> $testdata{\"NPASSEDTOTOLERANCE\"}\n";
+  print "    Number failed            -> $testdata{\"NFAILED\"}\n";
   
 
   if ($testdata{"NFAILED"})
@@ -835,7 +836,7 @@ sub CompareTestFiles
   {
     $summary = "Success: $testdata{\"$inthorn $test NDATAFILES\"} files identical";
     printf("\n  $summary\n");
-    $number_passed1++;
+    $testdata{"NPASSED"}++;
   }
   else
   {
@@ -843,8 +844,8 @@ sub CompareTestFiles
     {
       $summary = "Success (to $tolerance figures): $testdata{\"$inthorn $test NDATAFILES\"} compared, $blewit files differ in the last digits";
       printf "\n  $summary\n";
-      $number_passed1++;
-      $number_passed2++;
+      $testdata{"NPASSED"}++;
+      $testdata{"NPASSEDTOTOLERENCE"}++;
     }
     else
     {
@@ -866,6 +867,9 @@ sub ResetTestStatistics
 {
   my(%testdata) = @_;
 
+  $testdata{"NFAILED"} = 0;
+  $testdata{"NPASSED"} = 0;
+  $testdata{"NPASSEDTOTOLERANCE"} = 0;
   foreach $thorn (split(" ",$testdata{"FULL"}))
   {
     $testdata{"$thorn TESTED"} = 0;

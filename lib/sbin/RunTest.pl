@@ -43,121 +43,95 @@ else
 # Parse test parameter files
 %testdata = &ParseAllParameterFiles(%testdata);
 
-# Reset/Initialise Test Statistics
-%testdata = &ResetTestStatistics(%testdata);
-
 # Print database
 #&PrintDataBase(%testdata);
-$loop = 1;
-$run = 1;
 
-$tests = &defprompt("  Run All tests or go to Menu","All");
-
-while ($loop == 1)
+while ($choice !~ /^Q/i)
 {
-  if ($tests =~ /^A/i) 
+  undef($thorn);
+  undef($test);
+  undef($choice);
+  
+  while (!($choice =~ /^Q/i) )
   {
-    # Run all parameter files
-    foreach $thorn (split(" ",$testdata{"RUNNABLETHORNS"}))
-    {
-      foreach $test (split(" ",$testdata{"$thorn RUNNABLE"}))
-      {
-	print "  Test $thorn: $test \n";
-	print "    \"$testdata{\"$thorn $test DESC\"}\"\n";
-	if ($run)
-	{
-	  %testdata = &RunTest($test,$thorn,%testdata);
-	}
-	%testdata = &CompareTestFiles($test,$thorn,%testdata);
-      }
-    }
-
-    # Write results of all tests
-    &WriteFullResults(%testdata);
-
-    $loop = 0;
-  } 
-  elsif ($tests =~ /^M/i)
-  {
-    undef($thorn);
-    undef($test);
-    undef($choice);
-
-    while (!($choice =~ /^[EOQ]/i) )
-    {
-
-      print "\n  --- Menu ---\n\n";
       
-      print "  Choose test from [T]horn or [A]rrangement\n";
-      print "  Rerun previous test [R]\n";
-      print "  Run entire set of tests [E]\n";
-      print "  Compare all files in the test output directories [O]\n";
-      print "  Customize testsuite checking [C]\n";
-      print "  Quit [Q]\n\n";
-      $choice = &defprompt("  Select choice: ","T");
+    print "  --- Menu ---\n\n";
+    
+    print "  Run entire set of tests [E]\n";
+    print "  Choose test from [T]horn or [A]rrangement\n";
+    print "  Rerun previous test [R]\n";
+    print "  Compare all files in the test output directories [O]\n";
+    print "  Customize testsuite checking [C]\n";
+    print "  Quit [Q]\n\n";
+    $choice = &defprompt("  Select choice: ","E");
+    
+    if ($choice =~ /^[EO]/i) 
+    {
 
-      if ($choice =~ /^[ATC]/i)
+      # Reset/Initialise Test Statistics
+      %testdata = &ResetTestStatistics(%testdata);
+
+      # Run all parameter files
+      foreach $thorn (split(" ",$testdata{"RUNNABLETHORNS"}))
       {
-	($test,$thorn) = &ChooseTest($choice,%testdata);
+	foreach $test (split(" ",$testdata{"$thorn RUNNABLE"}))
+	{
+	  print "  Test $thorn: $test \n";
+	  print "    \"$testdata{\"$thorn $test DESC\"}\"\n";
+	  if ($choice =~ /^O/i)
+	  {
+	    %testdata = &RunTest($test,$thorn,%testdata);
+	  }
+	  %testdata = &CompareTestFiles($test,$thorn,%testdata);
+	}
+      }
+
+      # Write results of all tests
+      &WriteFullResults(%testdata);
+    } 
+    elsif ($choice =~ /^[AT]/i)
+    {
+      ($test,$thorn) = &ChooseTest($choice,%testdata);
+      %testdata = &RunTest($test,$thorn,%testdata);
+      %testdata = &CompareTestFiles($test,$thorn,%testdata);
+    }
+    elsif ($choice =~ /^R/i)
+    {
+      if ($thorn && $test)
+      {
+	print "  Running $thorn: $test \n";
+	print "    \"$testdata{\"$thorn $test DESC\"}\"\n";
 	%testdata = &RunTest($test,$thorn,%testdata);
 	%testdata = &CompareTestFiles($test,$thorn,%testdata);
       }
-      elsif ($choice =~ /^R/i)
-      {
-	if ($thorn && $test)
-	{
-	  print "  Running $thorn: $test \n";
-	  print "    \"$testdata{\"$thorn $test DESC\"}\"\n";
-	  %testdata = &RunTest($test,$thorn,%testdata);
-	  %testdata = &CompareTestFiles($test,$thorn,%testdata);
-	}
-	else
-	{
-	  print "  No previous test has been run\n";
-	}
-      }
-      elsif ($choice =~ /^C/i)
-      {
-	print "  Options for customization\n";
-	if ($test)
-	{
-	  print "    Change tolerance for this run ($test) [R]\n";
-	}
-	print "    Change tolerance from $testdata{\"TOLERANCE\"} for all further runs [T]\n";
-	$choice = &defprompt("  Select choice: ","");
-	if ($choice =~ /T/i)
-	{
-	  $testdata{"TOLERANCE"} = &defprompt("  New tolerance: ","$testdata{\"TOLERANCE\"}");
-	}
-      }
-      elsif ($choice =~ /^Q/i)
-      {
-	$loop = 0;
-      }
-      elsif ($choice =~ /^E/i)
-      {
-	$tests = "A";
-      }
-      elsif ($choice =~ /^O/i)
-      {
-	$tests = "A";
-	$run = 0;
-      }
       else
       {
-	print "  Choice not recognized, try again!\n";
+	print "  No previous test has been run\n";
       }
     }
+    elsif ($choice =~ /^C/i)
+    {
+      print "  Options for customization\n";
+      if ($test)
+      {
+	print "    Change tolerance for this run ($test) [R]\n";
+      }
+      print "    Change tolerance from $testdata{\"TOLERANCE\"} for all further runs [T]\n";
+      $choice = &defprompt("  Select choice: ","");
+      if ($choice =~ /T/i)
+      {
+	$testdata{"TOLERANCE"} = &defprompt("  New tolerance: ","$testdata{\"TOLERANCE\"}");
+      }
+    }
+    elsif ($choice =~ /^Q/i)
+    {
+      $loop = 0;
+    }
+    else
+    {
+      print "  Choice not recognized, try again!\n";
+    }
   }
-  elsif ($tests =~ /^Q/i)
-  {
-    $loop = 0;
-  }
-  else
-  {
-    print "  Choice not recognized, try again!\n";
-  }
-
   print "\n";
 }
 
