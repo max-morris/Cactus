@@ -184,7 +184,7 @@ sub SetConfigureEnv
     {
       # Do nothing
     }
-    elsif($config-file != m:^~:)
+    elsif($config-file =~ m:^~:)
     {
       $config_file =~ s/^~/$ENV{"HOME"}/
     }
