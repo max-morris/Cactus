@@ -1885,17 +1885,17 @@ static int CCTKi_SchedulePrintWhile(int n_whiles,
     {
       if(i > 0)
       {
-        printf(" && ");
+        puts(" && ");
       }
 
-      printf("%s", whiles[i]);
+      puts(whiles[i]);
     }
 
-    printf(")\n");
+    puts(")\n");
   }
   else
   {
-    printf("%*s", indent_level + 9, "end while\n");
+    printf("%*s\n", indent_level + 9, "end while");
   }
 
   return first;
