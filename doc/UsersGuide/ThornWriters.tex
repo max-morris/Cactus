@@ -2182,44 +2182,74 @@ The flesh does not provide interpolation routines by itself. Instead
 it offers a general function API to thorns for the registration and
 invocation of interpolation operators.
 
-Interpolation is done on arrays which can be either processor-local or
-distributed among all processors in the computational domain. Thorns
-can register an interpolation operator under a unique name as a set of
-2 routines -- one for each array type. If an operator cannot handle
-both types, the corresponding routine may be left unregistered. At
-registration every interpolation operator gets assigned a unique
-integer number which is used as a handle to refer to the operator
-later on.
-
-Separate flesh routines exist to invoke an interpolation operator for
-either one of these types. The number of points to interpolate along
-with their coordinates are passed in as well as necessary information
-about the coordinate system to use for interpolation.  The flesh
-routines take a variable list of input and output arrays as arguments
-thus allowing operators to be optimized for interpolating multiple
-arrays at the same coordinate points.\\
-
-The flesh registration routines for interpolation operators are:
+There are several different flesh APIs for interpolation, depending
+on whether the data arrays are Cactus grid arrays or processor-local
+``ordinary programming-language'' arrays, and on what assumptions
+are made about the topology and spacing of the grid:
 \begin{Lentry}
-  \item[{\tt CCTK\_InterpRegisterOperatorGV}]
-    Registers a user-supplied routine as an interpolation operator for
-    distributed CCTK variables
-  \item[{\tt CCTK\_InterpRegisterOperatorLocal}]
-    Registers a user-supplied routine as an interpolation operator for
-    processor-local arrays
+\item[{\tt CCTK\_InterpGV()}]
+	Interpolates Cactus grid arrays
+\item[{\tt CCTK\_InterpLocal()}]
+	Interpolate processor-local arrays
+	(old API, being phased out as of early 2002)
+\item[{\tt CCTK\_InterpLocalUniform()}]
+	Interpolates processor-local arrays,
+	with uniformly spaced data points
+	(new API, just being implemented as of early 2002)
 \end{Lentry}
 
-The flesh routines for invoking an interpolation operator are:
+There are separate flesh routines to register operators for each of
+the APIs:
 \begin{Lentry}
-  \item[{\tt CCTK\_InterpHandle}]
-    Provides the handle for a given interpolation operator
-  \item[{\tt CCTK\_InterpGV}]
-    Calls the operator associated with the given handle
-    for interpolating a list of distributed CCTK variables
-  \item[{\tt CCTK\_InterpLocal}]
-    Calls the operator associated with the given handle
-    for interpolating a list of processor-local arrays
+\item[{\tt CCTK\_InterpRegisterOperatorGV()}]
+	Register a \verb|CCTK_InterpGV()| interpolation operator
+\item[{\tt CCTK\_InterpRegisterOperatorLocal()}]
+	Register a \verb|CCTK_InterpLocal()| interpolation operator
+	(old API, being phased out as of early 2002)
+\item[{\tt CCTK\_InterpRegisterOpLocalUniform()}]
+	Register a \verb|CCTK_InterpLocalUniform()| interpolation operator
+	(note this has a different calling sequence than the
+	other registration APIs!)
 \end{Lentry}
+and to invoke the operators:
+\begin{Lentry}
+\item[{\tt CCTK\_InterpGV()}]
+	Calls the \verb|CCTK_InterpGV()| interpolation operator
+	associated with the given handle
+\item[{\tt CCTK\_InterpLocal()}]
+	Calls the \verb|CCTK_InterpLocal()| interpolation operator
+	associated with the given handle
+\item[{\tt CCTK\_InterpLocalUniform()}]
+	Calls the \verb|CCTK_InterpLocalUniform()| interpolation operator
+	associated with the given handle
+\end{Lentry}
+These are described in detail in part~\ref{part-FunctionReference}
+of this manual.
+
+Each operator is registered under a character-string name; at
+registration the name is mapped to a unique integer handle which
+may be used to refer to the operator.  \verb|CCTK_InterpHandle()|
+is used to get the handle corresponding to a given character-string
+name.  In general each name/handle is actually associated with a
+{\em set\/} of interpolation operators, one for each of the
+interpolation APIs.%%%
+\footnote{%%%
+ 	 If (as is often the case) an operator
+	 doesn't support all the APIs, the unused
+	 ones should be be left unregistered.
+	 }%%%
+{}  The combination of a name/handle and an API must be globally
+unique with a Cactus binary, and uniquely identifies the interpolation
+operator.
+
+For example, suppose thorn~A registers \verb|CCTK_InterpGV()| and
+\verb|CCTK_InterpLocal()| interpolation operators under the name
+"interpolator A", and thorn~B registers \verb|CCTK_InterpLocal()| and
+\verb|CCTK_InterpLocalUniform()| interpolation operators under the
+name "B's new interpolator".  Then any thorn may still register a
+\verb|CCTK_InterpLocalUniform()| interpolation operator under the
+name "interpolator A", or a \verb|CCTK_InterpGV()| interpolation
+operator under then name "B's new interpolator".
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
