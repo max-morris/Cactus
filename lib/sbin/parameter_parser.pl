@@ -145,7 +145,7 @@ sub parse_param_ccl
         $parameter_db{"\U$thorn $block\E variables"} = "";
       }
     }
-    elsif($line =~ m:(EXTENDS |USES )?\s*(?\:CCTK_)?(INT|REAL|BOOLEAN|KEYWORD|STRING)\s+([a-zA-Z]+[a-zA-Z0-9_]*)\s+(\"[^\"]*\")?\s*(.*)$:i)
+    elsif($line =~ m:(EXTENDS |USES )?\s*(?\:CCTK_)?(INT|REAL|BOOLEAN|KEYWORD|STRING)\s+([a-zA-Z]+[a-zA-Z0-9_]*)(\s+\"[^\"]*\")?\s*(.*)$:i)
     {
       # This is a parameter definition.
 
@@ -154,6 +154,8 @@ sub parse_param_ccl
 
       $variable = $3;
       $description = $4;
+      $description =~ s:^\s*::;
+
       $options = $5;
 
       if($use_or_extend =~ m:USES:i)
