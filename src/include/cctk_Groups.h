@@ -58,12 +58,14 @@ CCTK_INT ** CCTK_GroupSizesI(int group);
 int         CCTK_GroupTypeFromVarI(int var);
 int         CCTK_GroupTypeNumber(const char *type);
 int         CCTK_GroupTypeI(int group);
+int         CCTK_NumTimeLevelsI(int group);
 
 const char *CCTK_ImpFromVarI(int var);
 
 int         CCTK_MaxDim(void);
 
 int         CCTK_NumGroups(void);
+int         CCTK_NumTimeLevels(const char *group);
 int         CCTK_NumTimeLevelsFromVar(const char *var);
 int         CCTK_NumTimeLevelsFromVarI(int var);
 int         CCTK_NumVars(void);
