@@ -1,6 +1,6 @@
 # Source files for the src/main directory.
 #
-# $Id$
+# $Header$
 
 SRCS=\
 CactusDefaultEvolve.c\
@@ -17,7 +17,6 @@ SetParams.c\
 ShutdownCactus.c\
 flesh.cc\
 Groups.c\
-Variables.c\
 Dummies.c\
 rfrInterface.c\
 Overload.c
