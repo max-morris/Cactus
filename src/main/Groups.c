@@ -1844,3 +1844,25 @@ void  FMODIFIER FORTRAN_NAME(CCTK_GroupDimI)(int *dim, int *group)
   *dim = CCTK_GroupDimI(*group);
 }
 
+int CCTK_GroupDimFromVarI(int vi)
+{
+  int retval,group;
+  
+  group = CCTK_GroupIndexFromVarI(vi);
+
+  if (0 <= group && group<n_groups)
+  {
+    retval = groups[group].dim;
+  }
+  else
+  {
+    retval = -1;
+  }
+
+  return retval;
+}
+
+void  FMODIFIER FORTRAN_NAME(CCTK_GroupDimFromVarI)(int *dim, int *vi)
+{
+  *dim = CCTK_GroupDimFromVarI(*vi);
+}
