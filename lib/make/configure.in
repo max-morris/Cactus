@@ -486,7 +486,9 @@ AC_DEFINE(HAVE_BOOL))
   AC_LANG_RESTORE
 fi
 
-dnl Misc stuff
+dnl #######################################################################
+dnl ############################ Misc stuff ###############################
+dnl #######################################################################
 
 dnl Do we need to build the GNU getopt and regex stuff ?
 
@@ -510,8 +512,11 @@ fi
 
 dnl Do we have crypt(3)
 
-CCTK_CHECK_FUNC(crypt, ,
-CCTK_CHECK_LIB_FUNC(crypt, crypt))
+CCTK_CHECK_FUNC(crypt, , CCTK_CHECK_LIB_FUNC(crypt, crypt))
+
+dnl Do we have finite(3)
+
+CCTK_CHECK_FUNCS(finite, , CCTK_CHECK_LIB_FUNC(m, finite))
 
 
 dnl Checks for availability of pthreads library.
