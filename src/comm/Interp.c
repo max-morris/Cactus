@@ -152,7 +152,7 @@ int CCTK_InterpRegisterOperatorGV (cInterpOperatorGV operator_GV,
       {
         CCTK_Warn (1, __LINE__, __FILE__, "Cactus",
                    "Couldn't allocate interpolation operator handle");
-        handle = -1;
+        handle = -2;
       }
     }
     else if (operator->interp_operator_GV == NULL)
@@ -165,7 +165,7 @@ int CCTK_InterpRegisterOperatorGV (cInterpOperatorGV operator_GV,
       CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
                   "Interpolation operator '%s' already exists",
                   name);
-      handle = -1;
+      handle = -3;
     }
   }
 
@@ -235,7 +235,7 @@ int CCTK_InterpRegisterOperatorLocal (cInterpOperatorLocal operator_local,
       {
         CCTK_Warn (1, __LINE__, __FILE__, "Cactus",
                    "Couldn't allocate interpolation operator handle");
-        handle = -1;
+        handle = -2;
       }
     }
     else if (operator->interp_operator_local == NULL)
@@ -248,7 +248,7 @@ int CCTK_InterpRegisterOperatorLocal (cInterpOperatorLocal operator_local,
       CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
                   "Interpolation operator '%s' already exists",
                   name);
-      handle = -1;
+      handle = -3;
     }
   }
 
