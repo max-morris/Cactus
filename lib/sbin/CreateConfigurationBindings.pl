@@ -57,16 +57,16 @@ sub CreateConfigurationBindings
   {
     if ($cfg->{"\U$thorn\E REQUIRES"} || $cfg->{"\U$thorn\E OPTIONAL"})
     { 
-        if(! -d "$bindings_dir/Configuration/$thorn")
-        {
-          mkdir("$bindings_dir/Configuration/$thorn", 0755) || die "Unable to create Thorn $thorn Configuration directory"; 
-        }
+      if(! -d "$bindings_dir/Configuration/$thorn")
+      {
+        mkdir("$bindings_dir/Configuration/$thorn", 0755) || die "Unable to create Thorn $thorn Configuration directory"; 
+      }
     }
   }
 
   # this string goes into the cactus executable directly 
-  $linkerflagdirs = 'LDFLAGS +=';
-  $linkerflaglibs = '';
+  my $linkerflagdirs = '';
+  my $linkerflaglibs = '';
 
   # here we put all the PROVIDES to where they belong
   foreach $thorn (sort keys %thorns)
@@ -78,13 +78,13 @@ sub CreateConfigurationBindings
     # separate
     if ($cfg->{"\U$thorn\E PROVIDES"})
     {
-      $codedef = '';
-      $codedep = '';
-      $incdir = '';
-      $lib = '';
-      $libdir = '';
-      $thornDefnFile = '';
-      $thornDepsFile = '';
+      my $codedef       = '';
+      my $codedep       = '';
+      my $incdir        = '';
+      my $lib           = '';
+      my $libdir        = '';
+      my $thornDefnFile = '';
+      my $thornDepsFile = '';
 
       foreach $providedcap (split (' ', $cfg->{"\U$thorn\E PROVIDES"}))
       {
@@ -96,7 +96,7 @@ sub CreateConfigurationBindings
         if ( $cfg->{"\U$thorn $providedcap\E DEFINITION"} )
         {
           $codedef = $cfg->{"\U$thorn $providedcap\E DEFINITION"}; 
-          &WriteFile("$bindings_dir/Configuration/make.$\Uprovidedcap\E.defn",\$cfg->{"\U$thorn $providedcap\E DEFINITION"});
+          &WriteFile("$bindings_dir/Configuration/make.\U$providedcap\E.defn",\$cfg->{"\U$thorn $providedcap\E DEFINITION"});
         } 
         if ( $cfg->{"\U$thorn $providedcap\E DEPENDENCY"} )
         {
@@ -109,10 +109,12 @@ sub CreateConfigurationBindings
         } 
         if ( $cfg->{"\U$thorn $providedcap\E LIBRARY"} )
         {
+#          print "\nlibs\n";
           $lib = $cfg->{"\U$thorn $providedcap\E LIBRARY"};
         } 
         if ( $cfg->{"\U$thorn $providedcap\E LIBRARY_DIRECTORY"} )
         {
+#          print "\ndirs\n";
           $libdir = $cfg->{"\U$thorn $providedcap\E LIBRARY_DIRECTORY"};
         }
         
@@ -183,14 +185,17 @@ sub CreateConfigurationBindings
               &WriteFile("$bindings_dir/Configuration/$temp/make.configuration.deps",\$thornDepsFile);
             }
           }
-
-
-        }   
+        }
       }
-
     }
   }  
-  $linkerflagdirs .= $linkerflaglibs;
+  
+
+  $linkerflagdirs = "LIBDIRS += " . $linkerflagdirs;
+  $linkerflaglibs = "LIBS += " . $linkerflaglibs;
+
+  $linkerflagdirs = $linkerflagdirs . "\n" . $linkerflaglibs;
+
   &WriteFile("$bindings_dir/Configuration/make.link",\$linkerflagdirs);
 
 }
