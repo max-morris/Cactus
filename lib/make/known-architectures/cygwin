@@ -42,7 +42,8 @@ C_DEPEND='$(CPP) -E -MM -nostdinc $(CPPFLAGS) '
 
 CXX_DEPEND='$(CPP) -E -MM -nostdinc $(CPPFLAGS) '
 
-MKDIR="mkdir -p"
+MKDIR="mkdir "
+MKDIRFLAGS=" -p "
 
 CACTUSLIBLINKLINE='$(addsuffix .a,$(addprefix $(subst /,$(DIRSEP),$(CCTK_LIBDIR))$(DIRSEP)lib,$(notdir $(ALLCACTUSLIBS))))'
 
