@@ -146,6 +146,7 @@ int CactusInitialiseGH(cGH *GH)
   CCTKi_rfrTraverse(GH, CCTK_BASEGRID); 
 
   /* Traverse routines setting up initial data */
+  CCTKi_rfrTraverse(GH,CCTK_INITIAL0);
   CCTKi_rfrTraverse(GH,CCTK_INITIAL);
 
   /* Traverse poststep initial routines which should only be done once */
