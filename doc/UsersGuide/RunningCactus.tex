@@ -1043,11 +1043,11 @@ Short Version & Long Version \\
 \hline
  -O[v] & -describe-all-parameters \\
 \hline
- -o <param> & -describe-parameter <param> \\
+ -o<param> & -describe-parameter=<param> \\
 \hline
  -T & -list-thorns\\
 \hline
- -t <arrangement/thorn>& -test-thorn-compiled <arrangement/thorn>\\
+ -t<arrangement/thorn>& -test-thorn-compiled=<arrangement/thorn>\\
 \hline
  -h,-? & -help\\
 \hline
@@ -1055,15 +1055,15 @@ Short Version & Long Version \\
 \hline
 % -x [<nprocs>] & -test-parameters [<nprocs>] \\
 %\hline
- -W <level> & -warning-level <level> \\
+ -W<level> & -warning-level=<level> \\
 \hline
- -E <level> & -error-level <level> \\
+ -E<level> & -error-level=<level> \\
 \hline
- -r & -redirect-stdout \\
+ -r[o|e|oe|eo] & -redirect=[o|e|oe|eo]\\
 \hline
  -i & -ignore-next \\
 \hline
-    & -parameter-level <level> \\
+    & -parameter-level=<level> \\
 \hline
 \end{tabular}
 }
@@ -1074,13 +1074,13 @@ Produces a full list of all parameters from all thorns which were compiled,
 along with descriptions and allowed values.  This can take an optional extra
 parameter {\tt v}  (i.e. {\tt -Ov} to give verbose information about
 all parameters).
-\item [{\tt -o <param>} or {\tt -describe-parameter <param>}]
+\item [{\tt -o<param>} or {\tt -describe-parameter=<param>}]
 Produces the description and allowed values for a given parameter --- takes one
 argument.
 \item [{\tt -T} or {\tt -list-thorns}]
 Produces a list of all the thorns which were compiled in.
-\item [{\tt -t <arrangement or thorn>} or {\tt -test-thorn-compiled <arrangement or thorn>} ]
-Checks if a given thorn was compiled in - takes one argument.
+\item [{\tt -t<arrangement or thorn>} or {\tt -test-thorn-compiled=<arrangement or thorn>} ]
+Checks if a given thorn was compiled in --- takes one argument.
 \item [{\tt -h}, {\tt -?} or {\tt -help}]
 Produces a help message.
 \item [{\tt -v} or {\tt -version}]
@@ -1089,22 +1089,23 @@ Produces version information of the code.
 %Runs the code far enough to check the consistency of the parameters.  If
 %given a numeric argument it will attempt to simulate being on that number
 %of processors. [To be implemented.]
-\item [{\tt -W <level>} or {\tt -waring-level <level>}]
+\item [{\tt -W<level>} or {\tt -waring-level=<level>}]
 Sets the warning level of the code.  All warning messages are given a level ---
 the lower the level the greater the severity.  This parameter controls the
 level of messages to be seen, with all warnings of value {\tt <level>} or higher printed to standard out.  The default is a warning level of 1, with
 0 indicating that only those messages which are (by default) fatal should
 be seen.
-\item [{\tt -E <level} or {\tt -error-level <level>}]
+\item [{\tt -E<level} or {\tt -error-level=<level>}]
 This works in concert with {\tt -W} --- it controls which warning level is
 treated as a fatal error.  This cannot be set to a higher value than
 {\tt -W}. The default value is zero.
-\item [{\tt -r} or {\tt -redirect-stout}]
-This redirects the standard output of each processor to a file.  By default
-the output from processors other than processor 0 is discarded.
+\item [{\tt -r[o|e|oe|eo]} or {\tt -redirect=[o|e|oe|eo]}]
+This redirects the standard output (`\texttt{o}') and/or standard error
+(`\texttt{e}') of each processor to a file.  By default
+the standard outputs from processors other than processor 0 are discarded.
 \item [{\tt -i} or {\tt -ignore-next}]
 Ignore the next argument on the command line.
-\item [{\tt -parameter-level}]
+\item [{\tt -parameter-level=<level>}]
 Set the level of parameter checking to be used, either {\tt strict}, {\tt normal} (the default), or {\tt relaxed}. See Section~\ref{sec:pafisy}.
 \end{Lentry}
 
