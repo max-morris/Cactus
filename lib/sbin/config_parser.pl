@@ -44,7 +44,6 @@ require "lib/sbin/interface_parser.pl";
 
 %parameter_database = create_parameter_database(%thorns);
 
-
 @parameter_structure = &create_c_parameter_structure(%parameter_database);
 
 
@@ -60,7 +59,7 @@ require "lib/sbin/interface_parser.pl";
 #  print "$line\n";
 #}
 
-#&print_parameter_database(%parameter_database);
+&print_parameter_database(%parameter_database);
 
 #&print_interface_database(%interface_database);
 
@@ -93,7 +92,9 @@ require "lib/sbin/interface_parser.pl";
 #  print "$line\n";
 #}
 
+
 @implementations = (keys %thorns);
+
 
 @fortran_module_file = &create_fortran_module_file(scalar(@implementations),@implementations,%parameter_database);
 
@@ -102,6 +103,12 @@ foreach $line (@fortran_module_file)
   print "$line\n";
 }
 
+%public_parameters = &get_public_parameters(%parameter_database);
+
+foreach $param (keys %public_parameters)
+{
+  print "param $param from " . $public_parameters{"$param"}. "\n";
+}
 
 sub create_fortran_module_file
 {
@@ -528,3 +535,27 @@ sub create_fortran_parameter_type_declaration
 
   return @type_declaration;
 }
+
+
+sub get_public_parameters
+{
+  local(%parameter_database) = @_;
+  local(%public_parameters);
+  local($param);
+
+  foreach $param (split(/ /,$parameter_database{"PUBLIC PARAMETERS"}))
+  {
+    if($param =~ m/(.*)::(.*)/)
+    {
+      $public_parameters{"$2"} = $1;
+    }
+  }
+
+  return %public_parameters;
+}
+
+    
+  
+
+    
+  

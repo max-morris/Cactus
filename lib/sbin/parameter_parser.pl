@@ -41,8 +41,47 @@ sub create_parameter_database
 
     }
 
+    @parameter_data = &cross_index_parameters(scalar(keys %implementations), (keys %implementations), @parameter_data);
+
     return @parameter_data;
 }
+
+sub cross_index_parameters
+{
+  local($n_implementations, @indata) = @_;
+  local(@implementations);
+  local(%parameter_database);
+  local(@module_file);
+  local($line);
+  local(@data);
+
+  @implementations = @indata[0..$n_implementations-1];
+  %parameter_database = @indata[$n_implementations..$#indata];
+
+  foreach $imp (@implementations)
+  {
+    foreach $parameter (split(/ /, $parameter_database{"\U$imp\E PUBLIC variables"}))
+    {
+      if($public_parameters{"\U$parameter\E"})
+      {
+	print STDERR "Duplicate public parameter $parameter\n";
+	print STDERR "Parameter defined in $imp and in " . 
+	  $public_parameters{"\Uparameter\E"};
+	die("****Fatal error***");
+      }
+      else
+      {
+	$public_parameters{"\Uparameter\E"} = "$imp";
+	
+	$parameter_database{"PUBLIC PARAMETERS"} .= "$imp\::$parameter ";
+      }
+    }
+  }
+
+  return %parameter_database;
+}
+
+
 
 
 #/*@@
