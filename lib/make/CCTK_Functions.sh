@@ -10,6 +10,7 @@
 #
 # @@*/
 
+_CCTKI_FILES=""
 
 # /*@@
 #   @routine    CCTK_Search
@@ -70,7 +71,17 @@ CCTK_Search()
 
 CCTK_CreateFile()
 {
-  echo $2 > $1
+  # Remove old file
+  if test -f "$1.tmp" ; then
+    rm $1.tmp
+  fi
+
+  # Create temporary file
+  echo "$2" > $1.tmp
+
+  # Remember this file  
+  _CCTKI_FILES="$_CCTKI_FILES $1"
+
   return
 }
 
@@ -91,7 +102,7 @@ CCTK_CreateFile()
 
 CCTK_WriteLine()
 {
-  echo "$2" >> $1
+  echo "$2" >> $1.tmp
   return
 }
 
@@ -186,4 +197,38 @@ CCTK_Wrap()
   echo "$_cctk_wrap_retval"
     
   unset _cctk_wrap_retval
+}
+
+# /*@@
+#   @file      CCTK_Functions.sh
+#   @date      Mon Jun 25 13:14:08 2001
+#   @author    Tom Goodale
+#   @desc 
+#   Write out all files created with CCTK_CreateFile.
+#   Compares against old version and only overwrites
+#   if the file and its contents is genuinely new.
+#   @enddesc 
+# @@*/
+CCTK_FinishFiles()
+{
+  if test -n "$_CCTKI_FILES" ; then
+    for i in $_CCTKI_FILES ; do
+      echo "creating $i"
+    done
+    for i in $_CCTKI_FILES ; do
+      if test -f $i ; then
+        if cmp -s $i $i.tmp 2>/dev/null ; then
+          echo "$i is unchanged"
+          rm $i.tmp
+        else
+          rm $i         
+          mv $i.tmp $i
+        fi
+      else
+        mv $i.tmp $i
+      fi
+    done
+  fi
+
+  return
 }

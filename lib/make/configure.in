@@ -139,16 +139,12 @@ fi
 # change the things detected later.
 
 # Create a file to put any #defines etc needed for this architecture
-# known architecture stuff should use cat >> etc to append to this file.
-cat > cctk_Archdefs.h <<EOF
-/* Stuff from known architectures */
-#ifndef _CCTK_ARCHDEFS_H_
-#define _CCTK_ARCHDEFS_H_
-EOF
+# known architecture stuff should use CCTK_WriteLine cctk_Archdefs "foo" to append to this file.
+CCTK_CreateFile cctk_Archdefs.h '/* Stuff from known architectures */'
+CCTK_WriteLine  cctk_Archdefs.h "#ifndef _CCTK_ARCHDEFS_H_"
+CCTK_WriteLine  cctk_Archdefs.h "#define _CCTK_ARCHDEFS_H_"
 
-cat > make.arch.defn <<EOF
-# Stuff from known architectures 
-EOF
+CCTK_CreateFile make.arch.defn "# Stuff from known architectures "
 
 CCTK_CONFIG_STAGE="misc"
 
@@ -157,10 +153,7 @@ if test -r $srcdir/known-architectures/$host_os ; then
 fi
 
 # Finish the architecture stuff
-cat >> cctk_Archdefs.h <<EOF
-#endif /* _CCTK_ARCHDEFS_H_ */
-EOF
-
+CCTK_WriteLine cctk_Archdefs.h '#endif /* _CCTK_ARCHDEFS_H_ */'
 
 ##########################################################################
 #########################################################################
@@ -1074,15 +1067,11 @@ AC_DEFINE_UNQUOTED(CCTK_L2_CACHE_SIZE, $L2_CACHE_SIZE)
 #########################################################################
 #Check for extra stuff
 #########################################################################
-cat > cctk_Extradefs.h <<EOF
-/* Stuff from extra packages */
-#ifndef _CCTK_EXTRADEFS_H_
-#define _CCTK_EXTRADEFS_H_
-EOF
+CCTK_CreateFile cctk_Extradefs.h '/* Stuff from extra packages */'
+CCTK_WriteLine  cctk_Extradefs.h "#ifndef _CCTK_EXTRADEFS_H_"
+CCTK_WriteLine  cctk_Extradefs.h "#define _CCTK_EXTRADEFS_H_"
 
-cat > make.extra.defn <<EOF
-# Stuff from extra packages 
-EOF
+CCTK_CreateFile make.extra.defn "# Stuff from extra packages "
 
 for extra in `ls $srcdir/extras`
 do
@@ -1103,11 +1092,7 @@ do
 done
 
 # Finish the cctk_Extradefs.h file
-cat >> cctk_Extradefs.h <<EOF
-#endif /*_CCTK_EXTRADEFS_H_*/
-EOF
-
-
+CCTK_WriteLine cctk_Extradefs.h '#endif /*_CCTK_EXTRADEFS_H*/'
 
 dnl Run any other scripts necessary
 
@@ -1124,6 +1109,8 @@ if test -z "$F77" ; then
 fi
 
 dnl Output everything
+CCTK_FinishFiles
 AC_OUTPUT(make.config.defn make.config.deps make.config.rules)
+
 
 
