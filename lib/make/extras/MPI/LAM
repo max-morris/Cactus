@@ -6,7 +6,7 @@
 #   @desc
 #            Configure Cactus to compile with the LAM version of MPI.
 #   @enddesc
-#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/extras/MPI/LAM,v 1.6 2003-08-29 15:59:38 tradke Exp $
+#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/extras/MPI/LAM,v 1.7 2004-06-25 16:13:04 tradke Exp $
 # @@*/
 
 echo '  LAM selected'
@@ -21,7 +21,7 @@ if test -z "$LAM_LIB_DIR" -o -z "$LAM_INC_DIR" ; then
       lam_libs='/usr/local/lib/lam'
       lam_includes='/usr/local/include/lam'
     else
-      CCTK_Search LAM_DIR '/usr /usr/local /usr/local/lam /usr/local/packages/lam /usr/local/apps/lam' include/lam_config.h
+      CCTK_Search LAM_DIR "/usr /usr/local /usr/local/lam /usr/local/packages/lam /usr/local/apps/lam $HOME" include/lam_config.h
       if test -z "$LAM_DIR" ; then
         echo '  Unable to locate LAM installation - please set LAM_DIR or {LAM_INC_DIR, LAM_LIB_DIR}'
         exit 2

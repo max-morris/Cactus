@@ -6,7 +6,7 @@
 #   @desc
 #            Configuration options for MPI=PACX
 #   @enddesc
-#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/extras/MPI/PACX,v 1.2 2003-08-29 15:59:38 tradke Exp $
+#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/extras/MPI/PACX,v 1.3 2004-06-25 16:13:04 tradke Exp $
 # @@*/
 
 echo '  PACX selected'
@@ -34,7 +34,7 @@ fi
 
 if test -z "$PACX_DIR" ; then
    echo '  PACX selected but no PACX_DIR set. Checking some places...'
-   CCTK_Search PACX_DIR '/usr /usr/local /usr/local/pacx /usr/local/packages/pacx /usr/local/apps/pacx' include/pacx.h
+   CCTK_Search PACX_DIR "/usr /usr/local /usr/local/pacx /usr/local/packages/pacx /usr/local/apps/pacx $HOME" include/pacx.h
    if test -z "$PACX_DIR" ; then
        echo '  Unable to locate the PACX directory - please set PACX_DIR'
        exit 2
