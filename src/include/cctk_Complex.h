@@ -77,6 +77,7 @@ DECLARE_CMPLX_FUNCTIONS (CCTK_Cmplx32, CCTK_REAL16, CCTK_COMPLEX32)
 #define CCTK_Cmplx_(precision, function)   CCTK_Cmplx__(precision, function)
 #define CCTK_Cmplx__(precision, function)  CCTK_Cmplx##precision##function
 
+#undef NOTHING
 
 #ifdef __cplusplus
 }
