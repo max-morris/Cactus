@@ -34,6 +34,8 @@ int dummy(tFleshConfig *);
 int CallStartupFunctions(tFleshConfig *ConfigData)
 {
 
+  CCTK_BindingsScheduleRegister("STARTUP", NULL);
+
   /*
   RegisterMainFunction(0, dummy);
   RegisterMainFunction(1, dummy);
@@ -42,6 +44,8 @@ int CallStartupFunctions(tFleshConfig *ConfigData)
   */
   SetupMainFunctions();
   SetupCommFunctions();
+  SetupIOFunctions();
+
   return 0;
 }
   

@@ -16,12 +16,6 @@
 
 static char *rcsid = "$Id$";
 
-int CCTK_ExtractImplementation(char **imp, char **name, const char *parameter);
-int CCTK_FindImpOfGlobalParam(char **imp, char **name, const char *parameter);
-int CCTK_SetImplementationParameter(const char *imp, 
-				    const char *name, 
-				    const char *value);
-
  /*@@
    @routine    CCTK_SetParameter
    @date       Tue Jan 12 19:25:37 1999
@@ -39,28 +33,14 @@ int CCTK_SetImplementationParameter(const char *imp,
 int CCTK_SetParameter(const char *parameter, const char *value)
 {
   int retval;
-  char *imp;
-  char *name;
   
-  CCTK_ExtractImplementation(&imp, &name, parameter);
+  retval = CCTK_BindingsParameterSet(parameter, value);
 
-  if(!imp)
-  {
-    CCTK_FindImpOfGlobalParam(&imp, &name, parameter);
-  }
 
-  if(imp)
-  {
-    retval = CCTK_SetImplementationParameter(imp, name, value);
-  }
-  else
+  if(!retval)
   {
     fprintf(stderr, "Unknown parameter %s\n", parameter);
-    retval = 1;
   }
-
-  free(imp);
-  free(name);
 
   return retval;
 }
@@ -125,71 +105,3 @@ int CCTK_ExtractImplementation(char **imp, char **name, const char *parameter)
   return retval;
 }
 
- /*@@
-   @routine    CCTK_FindImpOfGlobalParam
-   @date       Wed Jan 13 11:25:00 1999
-   @author     Tom Goodale
-   @desc 
-   Finds the implementation name of a global (public) parameter.
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
-
-@@*/
-int CCTK_FindImpOfGlobalParam(char **imp, char **name, const char *parameter)
-{
-  *imp = NULL;
-  *name = NULL;
-
-  
-  return 1;
-}
-
-
- /*@@
-   @routine    CCTK_SetImplementationParameter
-   @date       Wed Jan 13 11:25:53 1999
-   @author     Tom Goodale
-   @desc 
-   Sets the value of the parameter in an implementation.
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
-
-@@*/
-int CCTK_SetImplementationParameter(const char *imp, 
-				    const char *name, 
-				    const char *value)
-{
-  int n_thorns;
-  int thorn;
-
-  char **thornlist;
-  t_thorndata *thorndata;
-
-  if((n_thorns = GetImplementationThorns(imp, &thornlist)))
-  {
-    for(thorn = 0; thorn < n_thorns; thorn++)
-    {
-      if(GetThornData(thornlist[thorn], &thorndata))
-      {
-	thorndata->param_set(name, value);
-      }
-    }
-  }
-  else
-  {
-    if(GetThornData(imp, &thorndata))
-    {
-      thorndata->param_set(name, value);
-    }
-  }
-
-  return 0;
-}
