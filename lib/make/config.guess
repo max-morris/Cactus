@@ -1,5 +1,6 @@
 #! /bin/sh
 #
+# CCTK_MODIFICATION:  21/4/2000 Added elf_i?86 for pgcc recognition.  Tom Goodale
 # CCTK_MODIFICATION:  19/4/2000 Added info for sr8000.  Tom Goodale
 #
 # Attempt to guess a canonical system name.
@@ -695,6 +696,10 @@ EOF
 		;;
 	  m68klinux)
 		echo "${UNAME_MACHINE}-unknown-linux-gnuaout"
+		exit 0
+		;;
+	  elf_i?86)
+		echo "${UNAME_MACHINE}-pc-linux"
 		exit 0
 		;;
 	  elf32ppc | elf32ppclinux)
