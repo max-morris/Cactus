@@ -822,6 +822,9 @@ int CCTK_SchedulePrint(const char *where)
     SchedulePrint("CCTK_POSTINITIAL$ENTRY");
     SchedulePrint("CCTK_POSTINITIAL");
     SchedulePrint("CCTK_POSTINITIAL$EXIT");
+    SchedulePrint("CCTK_POSTSTEP$ENTRY");
+    SchedulePrint("CCTK_POSTSTEP");
+    SchedulePrint("CCTK_POSTSTEP$EXIT");
     printf ("    if (recover)\n");
     indent_level +=2;
     SchedulePrint("CCTK_RECOVER_VARIABLES");
@@ -832,9 +835,6 @@ int CCTK_SchedulePrint(const char *where)
     SchedulePrint("CCTK_CPINITIAL");
     indent_level -=2;
     printf ("    endif\n");
-    SchedulePrint("CCTK_POSTSTEP$ENTRY");
-    SchedulePrint("CCTK_POSTSTEP");
-    SchedulePrint("CCTK_POSTSTEP$EXIT");
     printf ("    if (analysis)\n");
     indent_level +=2;
     SchedulePrint("CCTK_ANALYSIS$ENTRY");
