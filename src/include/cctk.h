@@ -53,6 +53,8 @@
 
 #define CCTK_WARN(a,b) CCTK_Warn(a,__LINE__,__FORTRANFILE__,CCTK_THORNSTRING,b)
 
+#define CCTK_CoordRegisterSystem(a,b,c) CCTKi_CoordRegisterSystem(a,b,CCTK_THORNSTRING,c)
+
 #define CCTKi_EXPECTERR(in,err,warnonerr,message) CCTKi_ExpectError(in,err,warnonerr,__LINE__,__FORTRANFILE__,CCTK_THORNSTRING,message)
 
 #define CCTKi_EXPECTOK(in,ok,warnonerr,message)  CCTKi_ExpectOK(in,ok,warnonerr,__LINE__,__FORTRANFILE__,CCTK_THORNSTRING,message)

@@ -16,25 +16,14 @@ extern "C"
 {
 #endif
 
-int CCTK_CoordRegisterSystem(int dim, const char *systemname);
-
-int CCTK_CoordRegisterData(int dir,
-                           const char *gv,
-                           const char *name,
-                           const char *systemname);
+int CCTK_CoordDir(const char *name,
+                  const char *systemname);
 
 int CCTK_CoordIndex(int dir,
                     const char *name,
                     const char *systemname);
 
-int CCTK_CoordDir(const char *name,
-                  const char *systemname);
-
-int CCTK_CoordSystemDim(const char *systemname);
-
-int CCTK_CoordSystemHandle(const char *systemname);
-
-const char *CCTK_CoordSystemName(int handle);
+const char *CCTK_CoordName (int dir, const char *systemname);
 
 int CCTK_CoordRange(const cGH  *GH,
                     CCTK_REAL  *coord_lower,
@@ -49,6 +38,23 @@ int CCTK_CoordRangePhysIndex (const cGH *GH,
                               int coorddir,
                               const char *coordname,
                               const char *systemname);
+
+int CCTK_CoordRegisterData(int dir,
+                           const char *gv,
+                           const char *name,
+                           const char *systemname);
+
+#define CCTK_CoordRegisterSystem(a,b) \
+        CCTKi_CoordRegisterSystem (a,CCTK_THORNSTRING,b)
+int CCTKi_CoordRegisterSystem(int dim, 
+			      const char *implementation, 
+			      const char *systemname);
+
+int CCTK_CoordSystemDim(const char *systemname);
+
+int CCTK_CoordSystemHandle(const char *systemname);
+
+const char *CCTK_CoordSystemName(int handle);
 
 int CCTK_CoordLocalRange(const cGH  *GH,
                          CCTK_REAL  *lower,
@@ -70,6 +76,10 @@ int CCTK_CoordRegisterRangePhysIndex(cGH        *GH,
                                      int         coord_dir,
                                      const char *coord_name,
                                      const char *system_name);
+
+int CCTK_NumCoordSystems (void);
+
+const char *CCTK_CoordSystemImplementation (int handle);
 
 #ifdef __cplusplus
 }
