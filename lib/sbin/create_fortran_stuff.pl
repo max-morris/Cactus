@@ -46,7 +46,7 @@ sub CreateFortranThornParameterBindings
   {
     $implementation = $interface_database{"\U$thorn\E IMPLEMENTS"};
 
-    @data = &CreateFortranCommonDeclaration("cctk_params_$implementation"."_prptected", 0, scalar(keys %these_parameters), %these_parameters, %parameter_database);
+    @data = &CreateFortranCommonDeclaration("cctk_params_$implementation"."_protected", 0, scalar(keys %these_parameters), %these_parameters, %parameter_database);
 
     foreach $line (@data)
     {
@@ -59,7 +59,7 @@ sub CreateFortranThornParameterBindings
 
   if((keys %these_parameters > 0))
   {
-    @data = &CreateFortranCommonDeclaration("cctk_params_$thorn"."_private", 0,scalar(keys %these_parameters), %these_parameters, %parameter_database);
+    @data = &CreateFortranCommonDeclaration("$thorn"."priv", 0,scalar(keys %these_parameters), %these_parameters, %parameter_database);
 
     foreach $line (@data)
     {
@@ -90,7 +90,7 @@ sub CreateFortranThornParameterBindings
       }
     }
      
-    @data = &CreateFortranCommonDeclaration("cctk_params_$friend_thorn"."_protected", 1, scalar(keys %these_parameters), %these_parameters, @alias_names, %parameter_database);
+    @data = &CreateFortranCommonDeclaration("$friend_thorn"."prot", 1, scalar(keys %these_parameters), %these_parameters, @alias_names, %parameter_database);
       
     foreach $line (@data)
     {
