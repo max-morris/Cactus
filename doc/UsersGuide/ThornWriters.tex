@@ -248,7 +248,7 @@ declares that the thorn provides an implementation called `wavetoy', gets
 all the {\tt public} variables declared by an implementation called `grid', and
 shares all {\tt protected} variables with {\tt wave\_extract} and its friends.
 
-Cactus variables, described in Section~\ref{sec:cava} are placed
+Cactus variables, described in Chapter~\ref{chap:cava} are placed
 in groups with homogeneous attributes, where
 the attributes describe properties such as the data type, group type,
 dimenension, ghostsize, number of timelevels, type of staggering and
@@ -371,14 +371,15 @@ changes the access level for any parameter defined in the file from that point o
 To access {\tt restricted} parameters from another implementation, a line
 containing {\tt shares: <name>} declares that all parameters mentioned in
 the file from now until the next access specification originate in
-implementation {\tt <name>}. Each of these parameters must be qualified by the initial token {\tt USES} or {\tt EXTENDS}, where
+implementation {\tt <name>}. (Note that only one implementation can be
+specified on each {\tt shares:} line.)  Each of these parameters must be qualified by the initial token {\tt USES} or {\tt EXTENDS}, where
 \begin{Lentry}
 \item[{\tt USES}] indicates that the parameters range remains unchanged.
 \item[{\tt EXTENDS}] indicates that the parameters range is going to be extended.
 \end{Lentry}
 
 In contrast to parameter declarations in other access blocks, the default
-value must be omitted - it is impossible to set the default value of any
+value must be omitted --- it is impossible to set the default value of any
 parameter not originating in this thorn.
 For example, the following block adds possible values to the keyword
 {\tt initial\_data} originally defined in the implementation {\tt einstein},
@@ -709,7 +710,7 @@ and has a working directory of {\tt <config>/build/<thorn\_name>} .
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \chapter{Cactus Variables}
-\label{sec:cava}
+\label{chap:cava}
 
 Cactus variables are sorted into {\tt groups}.  All variables in a group
 are of the same type, and have
@@ -730,7 +731,7 @@ thorns to communicate and share data,
 \end{itemize}
 
 The specification for a group declaration
-(fully described in Section~\ref{sec:in}) is,
+(fully described in Appendix~\ref{sec:in}) is,
 
 \begin{verbatim}
 <data_type> <group_name> [TYPE=<group_type>] [DIM=<dim>] [TIMELEVELS=<num>] \
@@ -997,12 +998,15 @@ points (arrows) are accessed by the same indices.}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \chapter{Cactus Parameters}
+\label{chap:capa}
 
 Parameters are the means by which the user specifies the run-time behaviour of
 the code.  The user specifies values for parameters in the parameter file, and
 then the flesh validates these values against the ranges the thorn writers have
 specified to be valid.  Once validated, parameter values are fixed, and cannot
-be changed (unless the parameter is specified to be steerable, see below).
+be changed (unless the parameter is specified to be steerable, see
+below).  For a detailed discussion of the {\tt param.ccl} syntax see
+Appendix \ref{sec:pa}.
 
 The full specification for a parameter decalaration is
 \begin{verbatim}
@@ -1060,7 +1064,16 @@ lower:upper
 where {\em lower} and {\em upper} specify the lower and upper allowed
 range.  A missing end of range (or a `*') implies negative or positive
 infinity.  The above is inclusive of the end-points.  A '(' (or ')')
-before (or after) the lower (or upper) range specifies an open end-point.
+before (or after) the lower (or upper) range specifies an open
+end-point.
+
+The numbers written in a param.ccl file are interpreted as C code.
+To express a number in `scientific notation', use
+e.g. ``1e-10'', which is a double precision constant in C.  (If the
+floating precision of the variable to which it is assigned is not
+double, then C will typecast appropriately.  If you \emph{really} want to
+specify a single precision floating constant, or a long double
+constant, append the number with {\t f} or {\t l} respectively.)
 
 \subsection{Keyword}
 
@@ -1099,6 +1112,8 @@ routines from which thorn are run in which order.  The scheduler
 determines if the specifications are inconsistent, but does allow the
 user to schedule a routine with respect to another routine which may not
 exist.
+For a detailed discussion of the {\t schedule.ccl} syntax see
+Appendix \ref{sec:sc}.
 
 The full specification for a schedule declaration is
 \begin{verbatim}
@@ -2316,8 +2331,8 @@ CCTK variables (grid functions, arrays, scalars) and arbitrary
 of a one element array).
 
 The reduction interface is currently under revision, and in the future
-should closely resemble that of the new interpolator interface.  See
-e.g. \ref{CTK-InterpLocalArrays} or \ref{CCTK-InterpGridArrays}.
+should closely resemble that of the new interpolator interface.  
+%See e.g. \ref{CTK-InterpLocalArrays} or \ref{CCTK-InterpGridArrays}.
 
 \vskip .24cm
 {\bf Obtaining the reduction handle}
