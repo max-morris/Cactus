@@ -165,7 +165,7 @@ int Util_TableGetGenericArray(int handle,
 
 /* pointers */
 int Util_TableSetPointer(int handle, CCTK_POINTER value, const char *key);
-int Util_TableSetFnPointer(int handle, CCTK_FN_POINTER value, const char *key);
+int Util_TableSetFnPointer(int handle, CCTK_FPOINTER value, const char *key);
 
 /* a single character */
 int Util_TableSetChar(int handle, CCTK_CHAR value, const char *key);
@@ -213,7 +213,7 @@ int Util_TableSetPointerArray(int handle,
                               int N_elements, const CCTK_POINTER array[],
                               const char *key);
 int Util_TableSetFnPointerArray(int handle,
-                                int N_elements, const CCTK_FN_POINTER array[],
+                                int N_elements, const CCTK_FPOINTER array[],
                                 const char *key);
 
 /* arrays of characters (i.e. character strings with known length) */
@@ -290,7 +290,7 @@ int Util_TableSetComplex32Array(int handle,
 
 /* pointers */
 int Util_TableGetPointer(int handle, CCTK_POINTER *value, const char *key);
-int Util_TableGetFnPointer(int handle, CCTK_FN_POINTER *value, const char *key);
+int Util_TableGetFnPointer(int handle, CCTK_FPOINTER *value, const char *key);
 
 /* a single character */
 int Util_TableGetChar(int handle, CCTK_CHAR *value, const char *key);
@@ -338,7 +338,7 @@ int Util_TableGetPointerArray(int handle,
                               int N_elements, CCTK_POINTER array[],
                               const char *key);
 int Util_TableGetFnPointerArray(int handle,
-                                int N_elements, CCTK_FN_POINTER array[],
+                                int N_elements, CCTK_FPOINTER array[],
                                 const char *key);
 
 /* arrays of characters (i.e. character strings of known length) */

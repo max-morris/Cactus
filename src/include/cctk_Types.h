@@ -22,6 +22,9 @@
 #ifdef CCODE
 
 typedef void *CCTK_POINTER;
+typedef void (*CCTK_FPOINTER)(void);
+
+/* DEPRECATED IN BETA 12 */
 typedef void (*CCTK_FN_POINTER)(void);
 
 #define CCTK_STRING const char *
