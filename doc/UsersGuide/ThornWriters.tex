@@ -176,11 +176,12 @@ to specify which thorn has declared this parameter initially. This
 (see above) in order for you to modify its value range. A typical
 delcaration for would look like:
 \begin{verbatim}
+
 #We inherit this parameter form thorn Einstein and add several models
 #Only einstein and our thorn see this parameter. ******TRUE ???
-#BTW: No need to add a new comment
-friend:einstein
+#BTW: No need to add a new comment 
 
+friend:einstein
 EXTENDS KEYWORD initial_data ""
 {
   "bl_bh"         :: "Brill Lindquist black holes"
@@ -188,7 +189,9 @@ EXTENDS KEYWORD initial_data ""
   "schwarzschild" :: "One Schwarzshild black hole"
 }
 \end{verbatim}
-{\bf Can I reset the default, when I extend ?}
+Note, that you {\em cannot} reset the default value. The {\em ccl}
+will report this as an error. Also, you cannot extend the default 
+comment, rather document the individual extension in the body.
 \end{itemize}
 
 \section{The {\tt interface.ccl}}
@@ -206,26 +209,253 @@ thorns.}
 \item{On which other thorns (implementations) does the thorn depend,
 because of parameter extension, grid functions, etc.}
 \item{What are the grid functions to implement and how are they grouped ? A 
-group tries to collect as many common feature as possible. That way
-certain operation can be carried out an group by group basis, instead
-time consuming function by functions}.
-\item{Do function need to be communicated between different processors 
+group should try to collect as many common feature as possible. Some
+common features are mandatory, eg. the storage of the variables
+belonging to the same group has to be equal.{\bf What else ?} That way
+certain operation can be carried out on a group by group basis, instead
+time consuming function by function.}.
+\item{Do functions need to be communicated between different processors 
 or are they local ?}
 \item{Do variables need storage turned on all the time or are they
 just used at a certain instance, for example for analysis.}
 \end{enumerate}
 
-The {\tt interface.ccl} defines all the specific information. 
+The {\tt interface.ccl} defines all these specific information. The
+syntax is described in appendix \ref{syntax_interface.ccl}, please see 
+there for all possible options. Here we will introduce the general
+idea behind the interface.ccl.
+
+Here we show a sample taken from the thorn {\tt Einstein}, which
+implements the ADM variables:
+\begin{verbatim}
+implements: einstein
+inherits:   grid
+
+public:
+
+integer flags type = SCALAR
+{
+  conformal_state
+  shift_state
+} "State information"
+
+real metric type = GF
+{
+  gxx,gxy,gxz,gyy,gyz,gzz
+} "ADM 3-metric"
+
+\end{verbatim}
+
+The first lines in an {\em interface.ccl} file name the
+implementation, which this thorns adds or expands and declare the
+implementations this thorn depends on. In this case the thorn
+implements {\em ``einstein''} and depends on the public and protected
+variables of the {\em ``grid''} implementation, which add grids
+specific data.
+
+The gridfunctions and scalar variables, which will
+be declared next, can be grouped in three classes -- very
+similiar to the parameter declarations: the classes {\em public}, {\em 
+protected} and {\em private} can be used to inform the system about
+the scope of the individual varibles and gridfunctions:
+\begin{enumerate}
+\item{\tt public} grid functions, arrays or scalars defined in this
+class can be {\em read and written} by all thorns, whitout having to
+declare themselves as friends. This class should be used very
+restrictive since unathourized altering of a varibable can cause sever 
+confusion.
+\item{\tt protected} grid functions of this can class can be read/modified by
+other thorns, if these thorns have registered your implementation in
+the {\tt inherit:} section.  In our example, you would be able to
+access all variables of class protected of the {\tt grid}
+implementation. The {\em heritage}-concept was developed in response
+to the growing naming and access confusion in a growing pool of
+thorns. It was not designed to give the thorn programmer a hard life,
+but to make him think twice about possible sideeffects his
+implementation will bring about.
+\item{\tt private} grid functions in this class can only be
+rad/modified by the {\bf IMPLEMENTATION} or {\bf THORN} itself.
+\end{enumerate}
+
+In this case all variables are of class {\em public} which means that
+{\em all} other thorns can read and modify the values of these grids
+functions/scalars. One should be very restrictive about the use of the 
+{\em public} class. In general, declarations as {\em protected} and/pr 
+{\em private} will serve as well but reduce the confusion on who owns
+which variable significantly.
+
+The variable/grid function can be of the following types: {\tt real}, {\tt
+integer}, {\tt complex}. After the type declaration the {\em groupname} 
+is given, so that certain operation can be carried out on a time
+efficient group by group basis. In our example, the group names are
+{\em ``flags''} and {\em ``metric''}. The next keywords denotes,
+what kind of variable we have: {\tt type = }
+\begin{enumerate}
+\item{\tt SCALAR}: a scalar variable
+\item{\tt GF}: a grid function of the size of the grid.
+\item{\tt ARRAY}: an array of the size \ldots
+{\bf {\tt grace} uses keywords DIM TIMELEVEL, how do they work and are 
+there others ?}
+\end{enumerate}
+
+The actual varibables are declared in the body of the full variable
+statement, enclosed by {\tt ``\{``} / {\tt ``\}''}. In our example,
+for the first group, two scalars are defined ({\tt conformal\_state} and
+{\tt shift\_state}), for the second group, the six components of the
+metric tensor are defined. The declaration of the variables finishes
+with a descriptive comment.
 
 \section{The {\tt schedule.ccl}}
+The {\tt schedule.ccl} is used to register the routines of your thorn
+with the CCTK and defines the storage characteristics of a group. 
 
-      a) Creating a thorn (gmake new thorn)
-      b) Thorn directory structure
-      c) Thorn make files
-      d) Thorn configuration
-         (i)   Parameters (param.ccl)
-         (ii)  Variables (interface.ccl)
-         (iii) Scheduler (schedule.ccl)
+We will first describe the storage concepts. There is no good reason
+to keep memory allocated for variables which are only used
+intermittendly in the course of the simulation, eg. during output or
+analysis, or are not used at all depending on parameter settings. The
+CCTK allows for a flexible memory allocation:  
+\begin{enumerate}
+\item{} Variable memory can be turned on at all times, for example by
+\begin{verbatim}
+STORAGE: metric
+\end{varbatim}, which would turn on storage for the group we defined
+in the example above. 
+\item{}All-time memory can turned on depending on parameter
+settings. This can be done in the same way, the parameters are acessed 
+within a C or Fortran code: by explicit use of the parameter variables 
+in the case of integer/real/logical (see \ref{sec:parameter_types}) or
+by use of the {\tt CCTK\_Equals()} function (see
+\ref{sec:CCTK_Equals}). For example:
+\begin{verbatim}
+# reserve memory for the group ``shift'' if parameter 
+# shift NOT set to ``none'' 
+if (!CCTK_Equals(shift,"none"))
+{
+  STORAGE: shift 
+}
+
+# allocate memory for the groups ``confac'',...
+# if the LOGICAL parameter ``use_conformal'' was set to ``yes''
+if (use_conformal) {
+  STORAGE: confac,confac_1derivs,confac_2derivs
+}
+\end{verbatim}
+\item{} The third options lets you associate the memory allocation
+with a routine call: storage is allocated when the routine is called
+by the CCTK. This options is explained in connection with the {\em
+RFR} below.
+\item{} A modification of \#3 is the options to have storage enabled,
+when a certain variable is computed for output.  This options is
+explained in connection with the {\em RFR} below.
+\end{enumerate}
+
+
+The {\em runtime function registry (RFR)} registers the different routines a 
+a thorn provides with the CCTK depending on the timing keyword
+chosen. You can assign timing keywords to your routines out of a 
+set of ordered keywords and register your routine with the
+CCTK. During the evolution the CCTK will loop through this ordered
+set of keywords and execute the registered thorn routines. This way,
+you can hook your thorns at well defined locations into the main
+iteration loop without having 
+to modify anybody's code. The CCTK currently features a fixed {\em
+skeleton} of timing keywords, which mean that you cannot currently
+register relative to a different thorn.
+
+The timing keywords are actually aliased to numbers, which can be looked 
+up in {\tt ./CCTK/src/include/rfr\_constants}. The current order of
+timing keywords is given here:
+\begin{verbatim}
+
+ CACTUS_BASEGRID 
+ CACTUS_RECOVER  
+ CACTUS_INITIAL0 
+ CACTUS_INITIAL  
+ CACTUS_INITIAL2 
+ CACTUS_INITIAL3  
+ CACTUS_INITIAL4  
+ CACTUS_INITIAL5 
+ CACTUS_INITIAL6 
+ CACTUS_INITIAL7  
+ CACTUS_INITIAL8 
+ CACTUS_INITIAL9  
+
+ CACTUS_CPINITIAL
+
+ CACTUS_PRESTEP  
+ CACTUS_PRESTEP2 
+ CACTUS_PRESTEP3 
+ CACTUS_PRESTEP4  
+ CACTUS_PRESTEP5 
+
+
+ CACTUS_POSTSTEP   
+ CACTUS_POSTSTEP2 
+ CACTUS_POSTSTEP3  
+ CACTUS_POSTSTEP4 
+ CACTUS_POSTSTEP5 
+ CACTUS_POSTSTEP6  
+ CACTUS_POSTSTEP7
+ CACTUS_POSTSTEP8  
+ CACTUS_POSTSTEP9  
+ CACTUS_POSTSTEP10 
+
+ CACTUS_EVOL      
+ CACTUS_BOUND      
+ CACTUS_CHECKPOINT 
+ CACTUS_ANALYSIS   
+ CACTUS_TERMINATE 
+ CACTUS_CONVERGENCE
+\end{verbatim}
+{\bf are going to name them CCTK ? Are we going to make a difference
+between system keywords and user keywords  ? better yes}
+
+The scheduling together with the storage options in {\tt schedule.ccl}
+is described here in examples (please the ccl-syntax
+\ref{syntax_schedule.ccl} for all possible options).
+\begin{verbatim}
+
+schedule initial at CACTUS_INITIAL
+{
+  LANG: Fortran
+} "Initialisation for Einstein methods"
+
+
+schedule metric_carttosphere at CACTUS_ANALYSIS
+{
+  STORAGE: spherical_metric
+  LANG: Fortran
+} "Calculate the spherical metric in r,theta(q), phi(p)"
+
+schedule evaltrK at CACTUS_ANALYSIS
+{
+  STORAGE: trace_of_K,detofg
+  LANG: Fortran
+  TRIGGERS: trK,detg
+} "Compute the trace of the extrinsic curvature"
+
+\end{verbatim}
+In the first example, the initialization routine {\tt initial}  is
+schedules at instance {\tt CACTUS\_INITIAL}. The body of the 
+declaration specifies the language used for this routine: options are
+{\tt C} or {\tt FORTRAN}. This routines has no impact 
+on storage behavior.
+
+The second example registers the routine {\tt metric\_carttosphere} is
+scheduled at {\tt CACTUS\_ANALYSIS}. (This routine converts the
+cartesian metric to a spherical metric). The routine requests storage
+when it is executed by the RFR. Memory is freed after the calculation.
+
+The third example demonstrates yet another way qualifying execution
+behavior: while CACTUS\_ANALYSIS registered routines are called on
+every iteration, you wish to calculate certain variables only when
+they are output. And this may not be needed on every iteration. By
+placing the {\tt TRIGGER} keyword in the schedule-declaration, you
+only excute this routine at CACTUS\_ANALYSIS, if there will be actually 
+output: that is, when the current iteration number matches the
+parameters {\tt itout1}, ...
+{\bf in EINSTEIN: TRIGGERS: trK,detg. Why don't we use the actual GF
+names ? }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
