@@ -1293,8 +1293,7 @@ int CCTK_Interp (cGH *GH,
       for (i = 0; i < nDims; i++)
       {
         switch (coordTypes [i]) {
-          case CCTK_VARIABLE_CHAR:
-            /* CCTK_CHAR will be promoted to int */
+          case CCTK_VARIABLE_BYTE:
             if (i == 0)
               origin = malloc (nDims * sizeof (int));
             ((int *) origin) [i] = va_arg (indices, int);
@@ -1330,8 +1329,7 @@ int CCTK_Interp (cGH *GH,
       for (i = 0; i < nDims; i++)
       {
         switch (coordTypes [i]) {
-          case CCTK_VARIABLE_CHAR:
-            /* CCTK_CHAR will be promoted to int */
+          case CCTK_VARIABLE_BYTE:
             if (i == 0)
               delta = malloc (nDims * sizeof (int));
             ((int *) delta) [i] = va_arg (indices, int);
@@ -1472,8 +1470,7 @@ void CCTK_FCALL CCTK_FNAME(CCTK_Interp)
 
       for (i = 0; i < *nDims; i++)
         switch (coordTypes [i]) {
-          case CCTK_VARIABLE_CHAR:
-            /* CCTK_CHAR will be promoted to int */
+          case CCTK_VARIABLE_BYTE:
             if (i == 0)
               origin = malloc (*nDims * sizeof (int));
             ((int *) origin) [i] = *va_arg (indices, int *);
@@ -1506,8 +1503,7 @@ void CCTK_FCALL CCTK_FNAME(CCTK_Interp)
 
       for (i = 0; i < *nDims; i++)
         switch (coordTypes [i]) {
-          /* CCTK_CHAR will be promoted to int */
-          case CCTK_VARIABLE_CHAR:
+          case CCTK_VARIABLE_BYTE:
             if (i == 0)
               delta = malloc (*nDims * sizeof (int));
             ((int *) delta) [i] = *va_arg (indices, int *);
