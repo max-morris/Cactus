@@ -910,7 +910,8 @@ sub parse_interface_ccl
         {
           &CST_error(0,"Unknown option \"$option\" in group $current_group in interface.ccl for " .
                      "of thorn $thorn\n     Perhaps you forgot a '\\' at the " .
-                     "end of a continued line?",'',
+                     "end of a continued line?\n" .
+                     "The offending line is '$line'\n",'',
                      __LINE__,__FILE__);
         }
       }
