@@ -7,6 +7,7 @@
    @enddesc 
  @@*/
 
+#define DEBUG_CCTK
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -91,9 +92,16 @@ int Cactus_InitialiseGH(cGH *GH)
   /* Initialise time */
   GH->time = cctk_initial_time;
 
-  /* FIXME */
-  GH->iteration = 1;
-
+  /* Initialise iteration number */
+  GH->iteration = 0;
+ 
+#ifdef DEBUG_CCTK
+  CCTK_PRINTSEPARATOR
+  printf("In Cactus_Initialise\n--------------------\n");
+  printf("  Initializing GH->time = %f\n",GH->time);
+  printf("  Initializing GH->iteration = %lu\n",GH->iteration);
+  CCTK_PRINTSEPARATOR
+#endif
   
   /* Setup the rfr_top on this GH */
 
@@ -142,5 +150,7 @@ int Cactus_InitialiseGH(cGH *GH)
   {
     CCTK_rfrTraverse(GH,Rstep);
   }
+
+  return 1;
 
 }

@@ -7,7 +7,7 @@
    @enddesc 
  @@*/
 
-/*#define DEBUG*/
+#define DEBUG_CCTK
 
 #include <stdio.h>
 
@@ -68,6 +68,13 @@ int CactusDefaultEvolve(tFleshConfig *config)
 
   iteration = 0;
 
+#ifdef DEBUG_CCTK
+  CCTK_PRINTSEPARATOR
+  printf("In CactusDefaultEvolve\n----------------------\n");
+  printf("  Initializing iteration = %d\n",iteration);
+  CCTK_PRINTSEPARATOR
+#endif
+
 
   CactusStartTimer(config->timer[OUTPUT]);
   /*** Call OUTPUT for this GH (this routine    ***/
@@ -94,6 +101,14 @@ int CactusDefaultEvolve(tFleshConfig *config)
   while (iteration<cctk_itlast && (cctk_final_time>cctk_initial_time?config->GH[0]->time<cctk_final_time:1)) 
   {
 
+#ifdef DEBUG_CCTK
+    CCTK_PRINTSEPARATOR
+    printf("In CactusDefaultEvolve\n----------------------\n");
+    printf("  Advancing iteration %d = %d + 1\n",iteration+1,
+	 iteration); 
+    CCTK_PRINTSEPARATOR
+#endif
+
     iteration++;
 
     /* Step each convergence level */
@@ -101,10 +116,6 @@ int CactusDefaultEvolve(tFleshConfig *config)
 
     ForallConvLevels(iteration, convergence_level)
     {
-
-#ifdef DEBUG
-    printf("Iteration number ... %d (t=%f)\n",iteration,config->GH[convergence_level]->time);
-#endif
 
       CCTK_StepGH(config->GH[convergence_level]);
       /*
@@ -172,17 +183,39 @@ int CactusDefaultEvolve(tFleshConfig *config)
  @@*/
 
 int CCTK_StepGH(cGH *GH) {
+
   void PreStepper(cGH *GH);
   void EvolStepper(cGH *GH);
   void PostStepper(cGH *GH);
   void BoundStepper(cGH *GH);
+
+
+  /* Advance GH->iteration BEFORE evolving */
+#ifdef DEBUG_CCTK
+  CCTK_PRINTSEPARATOR
+  printf("In CCTK_StepGH\n--------------\n");
+  printf("  Advancing GH->iteration to %lu = %lu + 1\n",(GH->iteration+1),
+	 GH->iteration);
+  CCTK_PRINTSEPARATOR
+#endif
+
+  GH->iteration++;
+
   PreStepper(GH);
   EvolStepper(GH);
   BoundStepper(GH);
   PostStepper(GH);
 
+  /* Advance GH->time AFTER evolving */
+#ifdef DEBUG_CCTK
+  CCTK_PRINTSEPARATOR
+  printf("In CCTK_StepGH\n--------------\n");
+  printf("  Advancing GH->time %f = %f + %f\n",GH->time+GH->delta_time,
+	 GH->time,GH->delta_time);
+  CCTK_PRINTSEPARATOR
+#endif
+
   GH->time = GH->time + GH->delta_time;
-  GH->iteration++;
 
   return 0;
 }
@@ -223,11 +256,16 @@ void PreStepper(cGH *GH) {
    @endhistory
 @@*/
 
-void EvolStepper(cGH *GH) {
+void EvolStepper(cGH *GH) 
+{
+
   /* Call the rfr with Evolution */
   CCTK_rfrTraverse(GH, CCTK_EVOL);
   /* after Evolution check for NANs */
+
 }
+
+
  /*@@
    @routine    BoundStepper
    @date       Fri Aug 14 12:44:58 1998
