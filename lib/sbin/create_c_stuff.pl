@@ -41,7 +41,7 @@ sub CreateParameterBindingFile
   foreach $parameter (&order_params($rhparameters,$rhparameter_db))
   {
     my $type = $rhparameter_db->{"\U$rhparameters->{$parameter} $parameter\E type"};
-    my $type_string = &get_c_type_string($type);
+    my $type_string = &get_c_type_string($type,$parameter);
 
     my $realname = $rhparameter_db->{"\U$rhparameters->{$parameter} $parameter\E realname"};
 
@@ -81,7 +81,7 @@ sub CreateParameterBindingFile
 
 sub get_c_type_string
 {
-  my($type) = @_;
+  my($type,$parameter) = @_;
   my $type_string;
 
 
@@ -133,7 +133,7 @@ sub get_c_type_string
   }
   else
   {
-    &CST_error(0,"Unknown parameter type '$type'",'',__LINE__,__FILE__);
+    &CST_error(0,"Unknown parameter type '$type' for parameter '$parameter'",'',__LINE__,__FILE__);
   }
 
   return $type_string;
