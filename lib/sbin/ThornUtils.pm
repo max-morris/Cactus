@@ -643,7 +643,7 @@ sub AddQuotes {
 #  @enddesc 
 #  @version 
 #@@*/
-sub AddQuotes {
+sub RemoveQuotes {
    my $var = shift;
    $var =~ s/^\s*?\"(.*)\"\s*?$/$1/;
    return $var;
