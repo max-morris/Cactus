@@ -43,21 +43,27 @@ extern char MPI_Active;
  /*@@
    @routine    CactusDefaultShutdown
    @date       Tue Sep 29 12:45:04 1998
-   @author     Tom Goodale
+   @author     Tom Goodale 
    @desc 
    DEfault shutdown routine.
    @enddesc 
    @calls     
    @calledby   
-   @history 
+   @history introducing CCTK_SHUTDOWN scheduling [03/00  Gerd Lanfermann]
  
    @endhistory 
 
 @@*/
 int CactusDefaultShutdown(tFleshConfig *config)
 {
-  int myproc;
+  int myproc,conv_level;
 
+  /* Execute shutdown for all convergence levels */
+  for(conv_level = 0 ; conv_level < config->nGHs;  conv_level++) 
+  {    
+    CCTK_Traverse(config->GH[conv_level], "CCTK_SHUTDOWN"); 
+  }
+ 
   myproc = CCTK_MyProc(config->GH[0]);
 
 #ifdef MPI
@@ -69,8 +75,8 @@ int CactusDefaultShutdown(tFleshConfig *config)
 
   if(myproc == 0)
   {
-    /* printf("Goodbye! Adeu! Adios! Tchuess! Au Revoir! Ciao! Math sin leat!\n"); */
-    printf("--------------------------------------------------------------------------------\n");
+    /*    printf("Goodbye! Adeu! Adios! Tchuess! Au Revoir! Ciao! Math sin leat! Holt di fluegge \n");
+    printf("--------------------------------------------------------------------------------\n"); */
     printf("Done.\n");
   }
 
