@@ -46,9 +46,23 @@ export PERLINTERP = $(shell echo $(PERL) | sed 's,^/cygdrive/\(.\)/,\1:/,' | sed
 # Use a phony main target to make sure we print a nice ending message 8-)
 .PHONY: main
 
-main: $(EXEDIR)$(DIRSEP)$(EXE)
+main: checklibs $(EXEDIR)$(DIRSEP)$(EXE)
 	@echo All done !
 	@echo $(DIVIDER)
+
+
+# Check whether the system libraries clash with the thorn libraries
+.PHONY: checklibs
+
+# Which Cactus libraries have the same name as system libraries?
+CLASHINGLIBS = $(strip $(foreach lib, $(ALLCACTUSLIBS), $(findstring $(lib), $(LIBS))))
+
+checklibs:
+	if test "$(CLASHINGLIBS)x" != "x"; then\
+	  echo "The thorn(s) '$(CLASHINGLIBS)' have the same names as sytem libraries.";\
+	  echo "This is not possible.";\
+	  exit 1;\
+	fi
 
 
 # Put this in temporarily to make sure that people with existing
