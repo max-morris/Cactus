@@ -989,6 +989,11 @@ sub parse_interface_ccl
             @functions = split(/[^a-zA-Z_0-9]+/, $data[$line_number]);
             foreach $function (@functions)
             {
+	      if ($function eq $current_group)
+              {
+                &CST_error(1,"Group and variable $function in thorn $thorn should be distinct",'',
+                           __LINE__,__FILE__);      
+              }
               $function =~ s:\s*::g;
 
               if($function =~ m:[^\s]+:)
