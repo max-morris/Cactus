@@ -682,8 +682,11 @@ Initial time for evolution [{\tt 0.0}]
 \item [{\tt cctk\_itlast}]
 Final iteration number [{\tt 10}]
 
+\item [{\tt max\_runtime}]
+Terminate evolution loop after a certain elapsed runtime (in minutes); set to zero to disable this termination condition [{\tt 0}]
+
 \item [{\tt terminate}]
-Condition on which to terminate evolution loop [{\tt iteration}] \{{\tt never, iteration, time, either, both}\}
+Condition on which to terminate evolution loop [{\tt iteration}] \{{\tt never, iteration, time, runtime, any, all}\}
 
 \item [{\tt terminate\_next}]
 Terminate on next iteration ? [{\tt no}]
