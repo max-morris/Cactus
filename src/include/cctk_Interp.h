@@ -23,12 +23,12 @@
 #ifndef _CCTK_INTERP_H_
 #define _CCTK_INTERP_H_
 
+#ifdef CCODE
+
 #ifdef __cplusplus
 extern "C"
 {
 #endif
-
-#ifdef CCODE
 
 /*
  * typedefs for interpolation operator routines
@@ -88,6 +88,11 @@ int CCTK_InterpLocalUniform (int N_dims,
                              int N_output_arrays,
                              const CCTK_INT output_array_type_codes[],
                              void *const output_arrays[]);
+
+#ifdef __cplusplus
+}
+#endif
+
 #endif /* ifdef CCODE */
 
 /*
@@ -115,9 +120,5 @@ int CCTK_InterpLocalUniform (int N_dims,
 
 /* an interpolation point is in (or too close to) an excised region */
 #define CCTK_ERROR_INTERP_POINT_EXCISED (-1003)
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif  /* _INTERP_H_ */
