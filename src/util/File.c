@@ -3,9 +3,9 @@
    @date      September 6th 1999
    @author    Gabrielle Allen
    @desc
-   File Handling routines
+              File Handling routines
    @enddesc
-   @version $Header$
+   @version   $Id$
  @@*/             
 
 #include "cctk.h"
@@ -26,19 +26,7 @@ static const char *rcsid = "$Header$";
 CCTK_FILEVERSION(util_File_c)
 
 /********************************************************************
- *********************     Local Data Types   ***********************
- ********************************************************************/
-
-/********************************************************************
- ********************* Local Routine Prototypes *********************
- ********************************************************************/
-
-/********************************************************************
- ********************* Other Routine Prototypes *********************
- ********************************************************************/
-
-/********************************************************************
- *********************     Local Data   *****************************
+ *********************    Macro Definitions   ***********************
  ********************************************************************/
 
 /* some systems (eg. Windows NT) don't define this macro */
@@ -51,46 +39,46 @@ CCTK_FILEVERSION(util_File_c)
 #define MKDIR_WRAPPER(a,b) mkdir(a,b)
 #else
 #define MKDIR_WRAPPER(a,b) mkdir(a)
-#endif /* HAVE_MODE_T */
+#endif
+
 
 /********************************************************************
- *********************     External Routines   **********************
+ *********************    External Functions   **********************
  ********************************************************************/
+void CCTK_FCALL CCTK_FNAME (CCTK_CreateDirectory)
+                           (int *ierr, int *mode, ONE_FORTSTRING_ARG);
+
 
  /*@@
    @routine    CCTK_CreateDirectory
    @date       Tue May  2 21:38:48 2000
    @author     Tom Goodale
-   @desc 
-   Makes all directories necessary for the path to exist.
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
-   @var     mode
-   @vdesc   permissions of the directory to be created
-   @vtype   int
-   @vio     in
-   @vcomment 
-   This is the unix mode, e.g. 0755
-   @endvar 
-   @var     pathname
-   @vdesc   Name of directory to create
-   @vtype   const char *
-   @vio     in
-   @vcomment 
- 
+   @desc
+               Makes all directories necessary for the path to exist.
+   @enddesc
+   @calls      mkdir
+
+   @var        mode
+   @vdesc      permissions of the directory to be created
+   @vtype      int
+   @vio        in
+   @vcomment   This is the unix mode, e.g. 0755
+   @endvar
+   @var        pathname
+   @vdesc      Name of directory path to create
+   @vtype      const char *
+   @vio        in
    @endvar 
 
    @returntype int
-   @returndesc
-   0  - success
-   -1 - failure
+   @returndesc  1 - directory path already exists
+                0 - directory path successfully created
+               -1 - failed to allocate some temporary memory
+               -2 - failed to create a directory path component
+               -3 - directory path component exists but is not a directory
    @endreturndesc
 @@*/
-int CCTK_CreateDirectory(int mode, const char *pathname)
+int CCTK_CreateDirectory (int mode, const char *pathname)
 {
   int retval;
   const char *path;
@@ -98,107 +86,99 @@ int CCTK_CreateDirectory(int mode, const char *pathname)
   const char *token;
   struct stat statbuf;
 
-  path = pathname;
 
-  retval = 0;
- 
-  current = (char *)malloc((strlen(pathname)+1)*sizeof(char));
-  
-  if(current)
+  current = (char *) malloc (strlen (pathname) + 1);
+  if (current)
   {
+    retval = 0;
     current[0] = '\0';
 
-    while((token = Util_StrSep(&path, "/")))
+    path = pathname;
+    while ((token = Util_StrSep (&path, "/")))
     {
       /* Treat first token carefully. */
-      if(*current == '\0')
+      if (*current)
       {
-        if(*token == '\0')
-        {
-          strcpy(current, "/");
-        }
-        else
-        {
-          strcpy(current,token);
-        }
+        sprintf (current, "%s/%s", current, token);
       }
       else
       {
-        sprintf(current,"%s/%s", current, token);
+        strcpy (current, *token ? token : "/");
       }
 
-      if(stat(current, &statbuf))
+      if (stat (current, &statbuf))
       {
-        CCTK_VInfo("Cactus","Creating directory: \"%s\"", current);
-        if(MKDIR_WRAPPER(current, mode) == -1)
+        CCTK_VInfo ("Cactus", "Creating directory: '%s'", current);
+        if (MKDIR_WRAPPER (current, mode) == -1)
         {
-          CCTK_VWarn(0,__LINE__,__FILE__,"Cactus","Failed to create directory \"%s\"", current);
+          CCTK_VWarn (0, __LINE__, __FILE__, "Cactus",
+                      "Failed to create directory '%s'", current);
           retval = -2;
         }
       }
+      else if (! S_ISDIR (statbuf.st_mode))
+      {
+        CCTK_VWarn (0, __LINE__, __FILE__, "Cactus",
+                    "'%s' exists but is not a directory", current);
+        retval = -3;
+      }
       else
       {
-        if(! S_ISDIR(statbuf.st_mode))
-        {
-          CCTK_VWarn(0,__LINE__,__FILE__,"Cactus","\"%s\" exists but is not a directory", current);
-          retval = -3;
-        }
+        retval = 1;
       }
 
-      if(retval)
+      if (retval < 0)
       {
         break;
       }
     }
 
-    if(! retval)
+    if (retval >= 0)
     {
       /* Deal with last component of path */
-      if((size_t)(path - pathname) < strlen(pathname))
+      if ((size_t) (path - pathname) < strlen (pathname))
       {
-        if(stat(pathname, &statbuf))
+        if (stat (pathname, &statbuf))
         {
-          CCTK_VInfo("Cactus","Creating directory: \"%s\"", pathname);
-          if(MKDIR_WRAPPER(pathname, mode) == -1)
+          CCTK_VInfo ("Cactus", "Creating directory: '%s'", pathname);
+          if (MKDIR_WRAPPER (pathname, mode) == -1)
           {
-            CCTK_VWarn(0,__LINE__,__FILE__,"Cactus","Failed to create directory \"%s\"", pathname);
+            CCTK_VWarn (0, __LINE__, __FILE__, "Cactus",
+                        "Failed to create directory '%s'", pathname);
             retval = -2;
           }
         }
+        else if (! S_ISDIR (statbuf.st_mode))
+        {
+          CCTK_VWarn (0, __LINE__, __FILE__, "Cactus",
+                      "'%s' exists but is not a directory", pathname);
+          retval = -3;
+        }
         else
         {
-          if(! S_ISDIR(statbuf.st_mode))
-          {
-            CCTK_VWarn(0,__LINE__,__FILE__,"Cactus", "\"%s\" exists but is not a directory", pathname);
-            retval = -3;
-          }
+          retval = 1;
         }
       }
     }
 
-    free(current);
+    free (current);
 
   }     
   else
   {
-    CCTK_Warn(0,__LINE__,__FILE__,"Cactus", "Failed to allocate some temporary memory");
+    CCTK_Warn (0, __LINE__, __FILE__, "Cactus",
+               "Failed to allocate some temporary memory");
     retval = -1;
   }
 
-  return retval;
-
+  return (retval);
 }
 
-void CCTK_FCALL CCTK_FNAME(CCTK_CreateDirectory)
-     (int *ierr, int *mode, ONE_FORTSTRING_ARG)
+
+void CCTK_FCALL CCTK_FNAME (CCTK_CreateDirectory)
+                           (int *ierr, int *mode, ONE_FORTSTRING_ARG)
 {
-  ONE_FORTSTRING_CREATE(arg1)
-  *ierr = CCTK_CreateDirectory(*mode,arg1);
-  free(arg1); 
+  ONE_FORTSTRING_CREATE (dirname)
+  *ierr = CCTK_CreateDirectory (*mode, dirname);
+  free (dirname); 
 }
-
-/********************************************************************
- *********************     Local Routines   *************************
- ********************************************************************/
-
-
