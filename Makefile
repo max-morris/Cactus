@@ -16,7 +16,7 @@
 #
 #
 #   @enddesc
-#   @version $Id: Makefile,v 1.135 2002-04-26 21:20:17 allen Exp $
+#   @version $Id: Makefile,v 1.136 2002-04-27 11:44:46 allen Exp $
 # @@*/
 
 ##################################################################################
@@ -962,8 +962,8 @@ $(addsuffix -ThornGuide,$(CONFIGURATIONS)):
 	if test -r $(CONFIGS_DIR)/$(@:%-ThornGuide=%)/ThornList ; then \
 	  rm -f  $(CONFIGS_DIR)/$(@:%-ThornGuide=%)/doc/build/*.*; \
 	  cd  $(CONFIGS_DIR)/$(@:%-ThornGuide=%)/doc/build; \
-	  $(MAKE) -f $(CCTK_HOME)/doc/ThornGuide/Makefile THORNLIST=$(CONFIGS_DIR)/$(@:%-ThornGuide=%)/ThornList CCTK_HOME=$(CCTK_HOME) PERL=$(PERL); \
-	  cp ThornGuide.ps $(CCTK_HOME)/ThornGuide-$(@:%-ThornGuide=%).ps; \
+	  $(MAKE) -f $(CCTK_HOME)/doc/ThornGuide/Makefile THORNLIST=$(CONFIGS_DIR)/$(@:%-ThornGuide=%)/ThornList CCTK_HOME=$(CCTK_HOME) PERL=$(PERL) MASTER_FILE=ThornGuide-$(@:%-ThornGuide=%); \
+	  cp ThornGuide-$(@:%-ThornGuide=%).ps $(CCTK_HOME)/ThornGuide-$(@:%-ThornGuide=%).ps; \
 	fi
 	@echo "  Done."
 endif
