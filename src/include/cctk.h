@@ -13,7 +13,7 @@
 
 /* Grab the main configuration info. */
 
-#include "cctk_config.h"
+#include "cctk_Config.h"
 
 /* Define which thorn the file is in */
 
@@ -21,7 +21,7 @@
 
 /* Include the constants */
 
-#include "cctk_constants.h"
+#include "cctk_Constants.h"
 
 /* Define some stuff */
 
@@ -81,6 +81,7 @@
 #include "cctk_ActiveThorns.h"
 #include "cctk_Banner.h"
 #include "cctk_Cache.h"
+#include "cctk_Complex.h"
 #include "cctk_Coord.h"
 #include "cctk_File.h"
 #include "cctk_Groups.h"
@@ -103,7 +104,7 @@
 
 #define _DECLARE_CCTK_CARGUMENTS \
             void      *cctk_dummy_pointer;\
-            int        cctk_dummy_int;\
+            CCTK_INT   cctk_dummy_int;\
             CCTK_REAL  cctk_dummy_real;\
             int        cctk_dim=cctkGH->cctk_dim;\
             int       *cctk_gsh=cctkGH->cctk_gsh;\

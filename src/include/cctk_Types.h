@@ -4,7 +4,7 @@
    @author    Tom Goodale
    @desc 
    Defines the appropriate types based upon the precision.
-   Should be included by cctk_config.h .
+   Should be included by cctk_Config.h .
    @enddesc 
  @@*/
 
@@ -15,7 +15,7 @@
  * this by hand.
  */
 #ifndef _CCTK_CONFIG_H_
-#include "cctk_config.h"
+#include "cctk_Config.h"
 #endif
 
 /* Define stuff for C. */

@@ -9,7 +9,6 @@
  @@*/
 
 #include "CactusTimers.h"
-#include "cctk.h"
 #include "cGH.h"
 
 
@@ -17,7 +16,6 @@
 #define _CCTK_FLESH_H_
 
 /*  Typedefs */
-
 
 typedef struct
 {

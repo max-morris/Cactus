@@ -12,7 +12,7 @@
 #define _CGH_H_
 
 #ifndef _CCTK_TYPES_H
-#include "cctk_types.h"
+#include "cctk_Types.h"
 #endif
 
 typedef struct

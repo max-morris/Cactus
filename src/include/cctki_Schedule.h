@@ -1,5 +1,5 @@
  /*@@
-   @header    cctki_schedule.h
+   @header    cctki_Schedule.h
    @date      Wed Sep 15 22:49:24 1999
    @author    Tom Goodale
    @desc 

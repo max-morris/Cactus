@@ -1,5 +1,5 @@
  /*@@
-   @header    cctk_constants.h
+   @header    cctk_Constants.h
    @date      Fri Oct 15 21:29:23 CEST 1999
    @author    Gabrielle Allen
    @desc 

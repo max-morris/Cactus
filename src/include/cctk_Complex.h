@@ -1,15 +1,15 @@
  /*@@
-   @header    cctk_complex.h
+   @header    cctk_Complex.h
    @date      Tue Dec 14 12:28:05 1999
    @author    Tom Goodale
    @desc 
-   Routines for complex numbers.
+   Prototypes for complex numbers.
    @enddesc 
    @version $Header$
  @@*/
 
-#ifndef __CCTK_COMPLEX_H_
-#define __CCTK_COMPLEX_H_
+#ifndef _CCTK_COMPLEX_H_
+#define _CCTK_COMPLEX_H_
 
 #ifdef __cplusplus 
 extern "C" 
