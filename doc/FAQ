@@ -1,7 +1,7 @@
 
 Cactus Code Frequently Asked Questions
 
-$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.54 2003-02-01 00:06:50 allen Exp $
+$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.55 2003-02-06 07:05:06 allen Exp $
 
 Also available at http://www.cactuscode.org/Documentation/FAQ
 
@@ -210,6 +210,11 @@ E11 The functions CCTK_Exit and CCTK_Abort require cctkGH as an argument.
     How can I call these functions deep inside my thorns where this pointer
     is not available?
 
+E12 I'm getting wierd syntax errors in Fortran code, with an extra
+    garbage character (often $ or &) stuck in the middle of a CCTK_INFO()
+    or CCTK_WARN() or CCTK_EQUALS() call after it has been processed.  
+
+
 ------------------------------------------------------------------------------
 General
 
@@ -237,7 +242,6 @@ F7  Why don't you use compilers mpicc, mpiCC etc when they exist on parallel
 
 F8  How does Cactus manage to so seamlessly call Fortran routines from 
     C, and vice versa?
-
 
 ------------------------------------------------------------------------------
 Documentation:
@@ -1101,6 +1105,38 @@ E11 The functions CCTK_Exit and CCTK_Abort require cctkGH as an argument.
     you need to include a mechanism to obtain the cctkGH deep inside your
     thorns code.
     
+E12 I'm getting wierd syntax errors in Fortran code, with an extra
+    garbage character (often $ or &) stuck in the middle of a CCTK_INFO()
+    or CCTK_WARN() or CCTK_EQUALS() call after it has been processed.  
+
+    You have probably used Fortran (either 77 or 90) line continuation
+    in a macro call
+
+        c example of broken Fortran code fragment
+        if      (CCTK_EQUALS(test,"on")) then
+           test_state = 1
+        else if (CCTK_EQUALS(test,
+     $                       "off")) then
+           test_state = 3
+        end if
+
+    The $ is in column 6 is the Fortran 77 standard way of doing
+    a line continuation.  This doesn't work, because CCTK_EQUALS()
+    is a macro, and macros use C lexical conventions (regardless of
+    what language your code is written in).  To continue a line in a
+    macro, use the same technique you would in C, i.e. put a backslash
+    ( \ ) at the end of the line to be continued (note there must *not*
+    be any whitespace after the \ !!).  For example, the above code
+    should be written
+
+        c example of valid Fortran code fragment
+        if      (CCTK_EQUALS(test,"on")) then
+           test_state = 1
+        else if (CCTK_EQUALS(test, \
+                             "off")) then
+           test_state = 0
+        end if
+
 
 ------------------------------------------------------------------------------
 General
