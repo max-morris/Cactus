@@ -19,7 +19,7 @@
 /* The number of bytes in a long int.  */
 #undef SIZEOF_LONG_INT
 
-/* The number of bytes in a short int.  */
+/* The number of bytes in a long long.  */
 #undef SIZEOF_LONG_LONG
 
 /* The number of bytes in a long double.  */
