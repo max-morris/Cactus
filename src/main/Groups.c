@@ -501,7 +501,6 @@ int CCTK_VarIndex(const char *variable_name)
   int gnum;
   int variable;
   int ierr;
-  char *message;
   char *realimpname;
   char *realvarname;
   const char *impname;
@@ -1084,7 +1083,7 @@ void  CCTK_FCALL CCTK_FNAME(CCTK_GroupScopeNumber)
    @date       Tuesday June 22 1999
    @author     Gabrielle Allen
    @desc 
-   Gets the scope number associated with a group.
+   Gets the distribution number associated with a group.
    @enddesc 
    @calls     
    @calledby   
@@ -1733,7 +1732,6 @@ int CCTK_VarTypeSize(int vtype)
 {
 
   int var_size=0;
-  char *msg;
 
   switch(vtype)
   {

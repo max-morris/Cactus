@@ -118,7 +118,6 @@ void CCTK_FCALL CCTK_FNAME(CCTK_GroupStaggerIndexGN)
 int CCTK_StaggerIndex(const char *stype) 
 {
   int i,scode,base,dim,m;
-  char *info;
 
   base = 1;
   scode= 0;
@@ -313,7 +312,7 @@ void CCTK_FCALL CCTK_FNAME(CCTK_GroupStaggerDirArrayGI)
 int CCTK_StaggerDirName(int dir, const char *stype) 
 {
   int scode;
-  char hs[7]="MMMMMM",*info;
+  char hs[7]="MMMMMM";
 
   sprintf(hs,"%s",stype);
 
@@ -378,7 +377,7 @@ int CCTKi_ParseStaggerString(int dim,
   int i,m;
   int base  = 1;
   int scode = 0;
-  char *hs, *info;
+  char *hs;
 
   if (dim>10) 
   {
