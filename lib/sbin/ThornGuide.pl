@@ -65,6 +65,9 @@ chomp ($start_directory);
 # what file are we looking for? 
 my $file = "documentation.tex";
 
+# for putting all the bibs at the end
+my $bibliography = "";
+
 # specify output file 
 $outfile ||= "ThornGuide.tex";
 
@@ -182,6 +185,13 @@ sub Read_Thorn_Doc
       if (/\\title\{(.*?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?.*?)\}/) { $title = $1; }
       if (/\\author\{(.*?)\}/) { $author = $1; }
       if (/\\date\{(.*?)\}/) { $date = $1; }
+      if (/\\begin\{thebibliography/) {
+         my $line;
+         while (($line = <DOC>) && ($line !~ /\\end\{thebibliography/)) {
+            $bibliography .= $line;
+         }
+         next;
+      }
 
       next if (/^\s*?\\tableofcontents\s*?$/);
 
@@ -318,7 +328,15 @@ EOC
 #@@*/
 sub Output_Bottom 
 {
+   if ($bibliography =~ /\w/) {
+      #$bibliography = "\\addcontentsline\{toc\}\{chapter\}\{Bibliography\}\n\\begin\{thebibliography\}\{9\}\n$bibliography\n\\end\{thebibliography\}";
+      &Start_Arr("References", $counter);
+      $bibliography = "\\begin\{thebibliography\}\{9\}\n$bibliography\n\\end\{thebibliography\}";
+   }
+
 print OUT <<EOC;
+
+$bibliography
 
 \\end{document}
 EOC
@@ -421,7 +439,7 @@ print OUT  <<EOC;
 \\rule{\\linewidth}{1mm}
 \\vspace*{\\stretch{2}}
 \\begin{center}
-\\includegraphics[angle=0,width=5cm]{bincactus.eps}
+\\includegraphics[angle=0,width=5cm]{bincactus}
 \\end{center}
 \\vspace*{\\stretch{2}}
 \\begin{center}
