@@ -118,6 +118,7 @@ foreach my $arrangement (sort keys %arrangements)
 
    &Start_Arr($arrangement, $counter);
 
+   print OUT &Read_Thorn_Doc($arrangements_dir, $arrangement);
    # now each thorn in the given arrangement
    foreach my $thorn (@{$arrangements{$arrangement}})
    {
