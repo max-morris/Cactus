@@ -6,7 +6,7 @@
 #    @desc 
 #   
 #    @enddesc 
-#    @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/irix,v 1.28 2001-11-06 16:50:26 tradke Exp $
+#    @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/irix,v 1.29 2002-01-05 19:16:38 allen Exp $
 #  @@*/
 
 if test "$CCTK_CONFIG_STAGE" = "preferred-compilers" ; then
@@ -111,6 +111,8 @@ else
       : ${CXX_OPTIMISE_FLAGS="-O3 -INLINE -LNO -OPT:Olimit=100000"}
       : ${C_DEBUG_FLAGS="-g3"}
       : ${CXX_DEBUG_FLAGS="-g3"}
+      : ${C_WARN_FLAGS="-fullwarn"}
+      : ${CXX_WARN_FLAGS="-fullwarn"}
       ;;
     32:cc)
       : ${CFLAGS="$CFLAGS -n32 $IRIX_FLAGS"}
@@ -119,6 +121,8 @@ else
       : ${CXX_OPTIMISE_FLAGS="-O3 -INLINE -LNO -OPT:Olimit=100000"}
       : ${C_DEBUG_FLAGS="-g3"}
       : ${CXX_DEBUG_FLAGS="-g3"}
+      : ${C_WARN_FLAGS="-fullwarn"}
+      : ${CXX_WARN_FLAGS="-fullwarn"}
       ;;
     *)
       ;;
@@ -132,6 +136,8 @@ else
       : ${F77_OPTIMISE_FLAGS="$F90_OPTIMISE_FLAGS"}
       : ${F90_DEBUG_FLAGS="-g3"}
       : ${F77_DEBUG_FLAGS="-g3"}
+      : ${F90_WARN_FLAGS="-fullwarn"}
+      : ${F77_WARN_FLAGS="-fullwarn"}
       ;;
     32)
       : ${F90FLAGS="-n32 -mips3"}
@@ -140,6 +146,8 @@ else
       : ${F77_OPTIMISE_FLAGS="-O3 -OPT:roundoff=3:IEEE_arithmetic=3:fold_arith_limit=10000:const_copy_limit=100000"}
       : ${F90_DEBUG_FLAGS="-g3"}
       : ${F77_DEBUG_FLAGS="-g3"}
+      : ${F90_WARN_FLAGS="-fullwarn"}
+      : ${F77_WARN_FLAGS="-fullwarn"}
       ;;
     *)
       ;;
