@@ -45,13 +45,15 @@ void *CCTK_Malloc(size_t size, int line, const char *file)
 {
   iMemData *memdata;
   char *data;
-  int diffmem;
+  unsigned long int diffmem;
   
   data = (char*)malloc(size+sizeof(iMemData));
+
   if(!data) 
   {
     fprintf(stderr, "Allocation error! ");
   }
+
   memdata = (iMemData *)data;
   memdata->size = size;
   memdata->line = line;
@@ -59,6 +61,7 @@ void *CCTK_Malloc(size_t size, int line, const char *file)
   pastmem = totmem;
   totmem += size;
   diffmem = totmem-pastmem;
+
 #ifdef MEMDEBUG
   printf("Allocating %lu - by %s in line %d TOTAL: %lu\n",
          memdata->size,memdata->file,memdata->line, CCTK_TotalMemory());
