@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.91 2000-05-05 12:14:59 allen Exp $
+#   @version $Id: Makefile,v 1.92 2000-05-15 08:10:59 goodale Exp $
 # @@*/
 
 ##################################################################################
@@ -46,15 +46,19 @@ endif
 # Stuff for parallel makes
 # TJOBS is the number of thorns to compile in parallel
 ifeq ($(strip $(TJOBS)), )
-TJOBS = 1
+TPARFLAGS = 
+else
+TPARFLAGS = -j $(TJOBS)
 endif
 
 # FJOBS is the number of files within a thorn to compile in parallel
 ifeq ($(strip $(FJOBS)), )
-FJOBS = 1
+FPARFLAGS = 
+else
+FPARFLAGS = -j $(FJOBS)
 endif
 
-export TJOBS FJOBS
+export TPARFLAGS FPARFLAGS
 
 # Directory for configuration options
 ifeq ($(strip $(THORNLIST_DIR)), )
@@ -224,7 +228,7 @@ endif
 
 $(CONFIGURATIONS):
 	cd $(CONFIGS_DIR)/$@ 
-	$(MAKE) -f $(CCTK_HOME)/lib/make/make.configuration TOP=$(CONFIGS_DIR)/$@ CCTK_HOME=$(CCTK_HOME) -j $(TJOBS)
+	$(MAKE) -f $(CCTK_HOME)/lib/make/make.configuration TOP=$(CONFIGS_DIR)/$@ CCTK_HOME=$(CCTK_HOME) $(TPARFLAGS)
 
 # Clean target
 .PHONY: distclean
