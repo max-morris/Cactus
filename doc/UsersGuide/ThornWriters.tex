@@ -915,6 +915,7 @@ quickly with a lower accuracy.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Group Types}
+\label{sec:cactus_variables-groups}
 
 Groups can be either \textit{scalars}, \textit{grid functions} (GFs), or
 \textit{grid arrays}. Different attributes are relevant for the different group
@@ -3441,15 +3442,18 @@ You can add any number of timers to your thorn source code, providing
 each with a name of your choice, and then use Cactus timing functions to
 switch on the timers, stop or reset them, and recover timing information.
 
+Setting the Flesh parameter \texttt{cactus::cctk\_timer\_output = "full"}
+will cause some summary timing information to be printed at the end of a run. 
+Some other thorns have their own timer printing parameters as well.
+
 \subsection{Timing calls}
 
 Many of the timing calls come in two versions, one whose name ends with 
-the letter \texttt{I} and another one.  The calls whose names end in the 
-letter \texttt{I} refer to the timer by index,
-wich is a non-negative \texttt{int} value; the other calls
-refer to a timer by name.  If a timer is created without a name, it can
-be referred to only by its index, otherwise, it can be referred to by name
-or by index.
+the letter \texttt{I} and one without.  The calls whose names end with the 
+letter \texttt{I} refer to the timer or clock by index, which is a
+non-negative \texttt{int} value; the other calls refer to a timer by name. 
+If a timer is created without a name, it can be referred to only by its index,
+otherwise, it can be referred to by name or by index.
 
 Typically, a negative return value from a timer function indicates an error.
 
@@ -3465,7 +3469,7 @@ Only one timer with a given name can exist at any given time.
 
 \item[{\t CCTK\_TimerDestroy}, {\t CCTK\_TimerDestroyI}]
 
-Destroy a timer.
+Reclaim resources used by a timer.
 
 \item[{\t CCTK\_TimerStart}, {\t CCTK\_TimerStartI}]
 
@@ -3479,13 +3483,15 @@ Stop the given timer on all registered clocks.
 
 Reset the given timer on all registered clocks.
 
-\item[{\t CCTK\_TimerCreateData}, {\t CCTK\_Timer}, {\t CCTK\_TimerI}, {\t CCTK\_TimerDestroyData}]
+\item[{\t CCTK\_TimerCreateData}, {\t CCTK\_TimerDestroyData}]
 
-Access the actual timing results, which are passed back as a
-structure, {\t cTimerData} described below, in {\t CCTK\_Timer}.
-Since the timing data is dynamic, before it can be assessed, the structure
-must be allocated with a call to {\t CCTK\_TimerCreateData}. A similar function
-is provided to destroy the structure
+Allocate and reclaim (respectively) resources for a {\t cTimerData} structure,
+which will be used to hold clock values.
+
+\item[{\t CCTK\_Timer}, {\t CCTK\_TimerI}]
+
+Fill the given {\t cTimerData} structure with clock values as of
+the last call to {\t CCTK\_TimerStop}.
 
 \item[{\t CCTK\_NumTimers}]
 
@@ -3494,46 +3500,66 @@ Return the number of created timers
 \item[{\t CCTK\_TimerName}]
 
 Return the name of the timer for a given timer index (or {\t NULL} if 
-the timer is unnamed or any other error occurs.
+the timer is unnamed or any other error occurs).
+
+\item[{\t CCTK\_NumTimerClocks}]
+
+Take a pointer to {\t cTimerData} and return the number of clocks 
+recorded in a timer measurement
+
+\item[{\t CCTK\_GetClockValue}, {\t CCTK\_GetClockValueI}]
+
+Given a clock referred to by name or index, respectively, and a 
+{\t cTimerData} pointer, return a {\t cTimerVal} pointer representing
+the value of the clock when the timer was stopped
+
+\item[{\t CCTK\_TimerClockName}]
+
+Return the name of the clock given by the {\t cTimerVal} pointer argument.
+
+\item[{\t CCTK\_TimerClockSeconds}]
+
+Return the floating-point value of the measurement in seconds 
+from the {\t cTimerVal} pointer argument.
 
 \end{Lentry}
 
-\subsection{The {\tt cTimerData} Structure}
-\label{subsec:cTimerData}
-
-The structure holding the timing data, {\tt cTimerData}, contains
-the number of collected times (one measurement for each registered clock),
-and the measured time for each clock. The measured time is held in
-a structure of type {\tt cTimerVal} which contains the data type
-of the measured value, a description of the clock, and the units used
-for the measurements. Hopefully additional interfaces will soon be added
-to avoid detailed knowledge of these structures, but for now here are
-the gory details:
-
-{\tt
-\begin{verbatim}
-typedef enum {val_none, val_int, val_long, val_double} cTimerValType;
-
-typedef struct
-{
-  cTimerValType type;
-  const char *heading;
-  const char *units;
-  union
+%\subsection{The {\tt cTimerData} Structure}
+%\label{subsec:cTimerData}
+%
+%The structure holding the timing data, {\tt cTimerData}, contains
+%the number of collected times (one measurement for each registered clock),
+%and the measured time for each clock. The measured time is held in
+%a structure of type {\tt cTimerVal} which contains the data type
+%of the measured value, a description of the clock, and the units used
+%for the measurements. Hopefully additional interfaces will soon be added
+%to avoid detailed knowledge of these structures, but for now here are
+%the gory details:
+%
+%{\tt
+%\begin{verbatim}
+%typedef enum {val_none, val_int, val_long, val_double} cTimerValType;
+%
+%typedef struct
+%{
+%  cTimerValType type;
+%  const char *heading;
+%  const char *units;
+%%  union
   {
-    int        i;
-    long int   l;
-    double     d;
-  } val;
-} cTimerVal;
-
-typedef struct
-{
-  int n_vals;
-  cTimerVal *vals;
-} cTimerData;
-\end{verbatim}
-}
+%    int        i;
+%    long int   l;
+%    double     d;
+%  } val;
+%} cTimerVal;
+%
+%typedef struct
+%{
+%  int n_vals;
+%  cTimerVal *vals;
+%} cTimerData;
+%\end{verbatim}
+%}
 
 \subsection{How to insert timers in your code}
 
@@ -3542,15 +3568,15 @@ include file {\tt cctk\_Timers.h}, which is included in the standard
 thorn header file {\tt cctk.h}. At the moment the timer calls are only
 available from C.
 
-The following example, which uses a timer called {\t TimeMyStuff} to
+The following example, which uses a timer  to
 instrument a section of code, illustrates how timers are used by
-application thorns. A working example is available in the thorn {\tt
-CactusTest/TestTimers}.
+application thorns. A working example is available in the thorn
+{\tt CactusTest/TestTimers}.
 
-{\bf Creating the {\t TimeMyStuff} timer}
+{\bf Creating a timer}
 
 The first action for any timer is to create it, using
-\texttt{ CCTK\_TimerCreate}. 
+\texttt{CCTK\_TimerCreate}. 
 This can be performed at any time prior to use of the timer:
 
 \begin{verbatim}
@@ -3563,50 +3589,41 @@ index = CCTK_TimerCreate("TimeMyStuff");
 Code sections are instrumented using the Start, Stop and Reset functions. These
 functions are applied to the chosen timer using all the registered clocks.
 \begin{verbatim}
-#include "cctk_Timers.h"
 ierr = CCTK_TimerStart("TimeMyStuff");
-/* Piece of code to time */
-y = CalculateNewValue(y);
+do_procedure_to_be_timed();
 ierr = CCTK_TimerStop("TimeMyStuff");
 \end{verbatim}
 
 {\bf Accessing the timer results}
 
-This is a little bit cumbersome at the moment, since the timer data can be
-of different types.
+After calling {\t CCTK\_TimerStop}, you then get the time value from
+any of the registered clocks.
+
+The procedure is to allocate a {\t cTimerData} structure,
+and read the information from your timer into this structure
+using {\t CCTK\_Timer}, then to extract time data of the desired clock from
+this structure.  After using the structure, you should destroy it.
 
 \begin{verbatim}
-#include "cctk_Timers.h"
-cTimerData *info;
+  cTimerData *info = CCTK_TimerCreateData();
+  ing ierr = CCTK_Timer("TimeMyStuff",info);
 
-info = CCTK_TimerCreateData();
-ierr = CCTK_Timer("TimeMyStuff",info);
-
-for (i = 0; i < info->n_vals; i++)
-{
-  switch (info->vals[i].type)
-  {
-    case val_int:
-    printf("%s: %d %s", info->vals[i].heading,info->vals[i].val.i,
-                        info->vals[i].units);
-    break;
-
-    case val_long:
-    printf("%s: %d %s", info->vals[i].heading,(int) info->vals[i].val.l,
-                        info->vals[i].units);
-    break;
-
-    case val_double:
-    printf("%s: %.3f %s", info->vals[i].heading,info->vals[i].val.d,
-                          info->vals[i].units);
-    break;
-
-    default:
-    CCTK_WARN(1, "Unknown data type for timer info");
-    break;
+  /*  You can refer to a particular clock by name.  */
+  const cTimerVal   *clock = CCTK_GetClockValue( "gettimeofday", info );
+  if( clock ){
+    printf ("\t%s: %.3f %s\n", "gettimeofday",
+                               CCTK_TimerClockSeconds( clock ), "secs" );
   }
-}
-ierr = CCTK_TimerDestroyData(info);
+
+  /*  To get results from all available clocks, refer to them by index.*/
+  nclocks = CCTK_NumTimerClocks( info );
+
+  for (i = 0; i < numclocks; i++) {
+    const cTimerVal   *clock = CCTK_GetClockValueI( i, info );
+    printf ("\t%s: %.3f %s\n", CCTK_TimerClockName( clock ),
+                               CCTK_TimerClockSeconds( clock ), "secs" );
+  }
+  CCTK_TimerDestroyData (info);
 \end{verbatim}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -3992,6 +4009,7 @@ strings from C.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Function aliasing}
+\label{sec:function_aliasing}
 
 As well as calling functions in a different language, Cactus offers a
 mechanism for calling a function in a different thorn where you need
@@ -4016,8 +4034,8 @@ declarations.
 
 \subsection{Using an aliased function}
 
-To use an aliased function you must first declare it in your {\tt
-interface.ccl} file. Declare the prototype as, for example,
+To use an aliased function you must first declare it in your 
+\tt{ interface.ccl} file. Declare the prototype as, for example,
 \begin{verbatim}
 CCTK_REAL FUNCTION SumStuff(CCTK_REAL IN x, CCTK_REAL IN y)
 \end{verbatim}

@@ -25,6 +25,7 @@ Cactus Users' Guide and the Cactus Reference Manual.
 \begin{Lentry}
 
 \item[alias function]
+  See \textit{function aliasing}.
 \item[AMR]
   \textit{Automatic Mesh Refinement}
 \item[analysis]
@@ -94,6 +95,9 @@ Cactus Users' Guide and the Cactus Reference Manual.
   distribution system for Cactus.  See Sections~\ref{sec:checkout},
   \ref{sec:Appendix.cvs}.
 \item[domain decomposition]
+  The technique of breaking up a large computational problem into parts
+  that are easier to solve.  In Cactus, refers especially to a decomposition
+  wherein the parts are solved in parallel on separate computer processors.
 \item[driver]
   A special kind of thorn which creates and handles grid hierarchies 
   and grid variables.
@@ -110,6 +114,11 @@ Cactus Users' Guide and the Cactus Reference Manual.
   set of protected grid variables.
   See Section~\ref{subsec:interface_ccl}. \ref{sec:Appendix.interface}.
 \item[function aliasing]
+  The process of referring to a function to be provided by an interface
+  independently of which thorn actually contains the function, or what
+  language the function is written in.  The function is called an
+  \textit{alias function}.  See Section~\ref{sec:function_aliasing},
+  \ref{subsec:Appendix.interface.function_aliasing}.
 \item[GA]
   Shorthand for a \textit{grid array}.
 \item[GF]
@@ -429,6 +438,7 @@ only executed if the providing thorn is active.
 Both default to \verb|HEADER|.
 
 \subsection{Function aliasing}
+\label{subsec:Appendix.interface.function_aliasing}
 If any aliased function is to be used or provided by the thorn then
 the prototype must be declared with the form:
 \begin{alltt}
