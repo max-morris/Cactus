@@ -142,11 +142,11 @@ sub ThornInfo
     {
       $implementation = $1;
     }
-    elsif (m/^\s*INHERITS\s*:((\s*[a-zA-Z]+[a-zA-Z_0-9]*)*\s*)$/i)
+    elsif (m/^\s*INHERITS\s*:((\s*[a-zA-Z]+[a-zA-Z_0-9,]*)*\s*)$/i)
     {
       $inherits = $1;
     }
-    elsif (m/^\s*FRIEND\s*:((\s*[a-zA-Z]+[a-zA-Z_0-9]*)*\s*)$/i)
+    elsif (m/^\s*FRIEND\s*:((\s*[a-zA-Z]+[a-zA-Z_0-9,]*)*\s*)$/i)
     {
       $friends = $1;
     }
@@ -159,9 +159,9 @@ sub ThornInfo
   while(<PARAM>)
   {
     chomp;
-    if($line =~ m/SHARES\s*:(.*)/i)
+    if(m/SHARES\s*:(.*)/i)
     {
-      $share .= " $1";
+      $shares .= " $1";
     }
   }
 
