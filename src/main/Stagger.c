@@ -60,7 +60,7 @@ int CCTK_GroupStaggerIndexGI(int gindex)
   return(sc);
 }
 
-void FMODIFIER FORTRAN_NAME(CCTK_GroupStaggerIndexGI)
+void CCTK_FCALL CCTK_FNAME(CCTK_GroupStaggerIndexGI)
      (int *stagcode, int *gindex) 
 {
   *stagcode = CCTK_GroupStaggerIndexGI(*gindex);
@@ -88,7 +88,8 @@ int CCTK_GroupStaggerIndexGN(const char *gname)
   return(CCTK_GroupStaggerIndexGI(gindex));
 }
 
-void FMODIFIER FORTRAN_NAME(CCTK_GroupStaggerIndexGN)(int *scode, ONE_FORTSTRING_ARG)
+void CCTK_FCALL CCTK_FNAME(CCTK_GroupStaggerIndexGN)
+     (int *scode, ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_CREATE(gname)
   int gindex;
@@ -143,7 +144,8 @@ int CCTK_StaggerIndex(const char *stype)
   return(scode);
 }
 
-void FMODIFIER FORTRAN_NAME(CCTK_StaggerIndex)(int *scode, ONE_FORTSTRING_ARG)
+void CCTK_FCALL CCTK_FNAME(CCTK_StaggerIndex)
+     (int *scode, ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_CREATE(sname);
   *scode = CCTK_StaggerIndex(sname);
@@ -196,7 +198,7 @@ int CCTK_StaggerDirIndex(int dir, int si)
 
 
 
-void FMODIFIER FORTRAN_NAME(CCTK_StaggerDirIndex)
+void CCTK_FCALL CCTK_FNAME(CCTK_StaggerDirIndex)
      ( int *dsi, int *dir, int *gsi) 
 {
   /* accept fortran indexing [1..]: decrease the directional index
@@ -251,7 +253,7 @@ int CCTK_StaggerDirArray(int *dindex , int dim, int sindex)
 }
 
 
-void FMODIFIER FORTRAN_NAME(CCTK_GroupStaggerDirArray)
+void CCTK_FCALL CCTK_FNAME(CCTK_GroupStaggerDirArray)
      (int *ierr, int *dindex, int *dim, int *gsc) 
 {
   /* accept fortran indexing [1..]: decrease the directional index
@@ -284,7 +286,7 @@ int CCTK_GroupStaggerDirArrayGI(int *dindex, int dim, int gi)
   return ierr;
 }
 
-void FMODIFIER FORTRAN_NAME(CCTK_GroupStaggerDirArrayGI)
+void CCTK_FCALL CCTK_FNAME(CCTK_GroupStaggerDirArrayGI)
      (int *ierr, int *dindex, int *dim, int *gi) 
 {
   *ierr = CCTK_GroupStaggerDirArrayGI(dindex, *dim, *gi);
@@ -334,7 +336,7 @@ int CCTK_StaggerDirName(int dir, const char *stype)
   return(scode);
 }
 
-void FMODIFIER FORTRAN_NAME(CCTK_StaggerDirName)
+void CCTK_FCALL CCTK_FNAME(CCTK_StaggerDirName)
      (int *dsc, int *dir, ONE_FORTSTRING_ARG) 
 {
   ONE_FORTSTRING_CREATE(sname);

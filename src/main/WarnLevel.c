@@ -151,7 +151,8 @@ int CCTK_Warn(int level, int line, const char *file, const char *thorn, const ch
 
 }
 
-void FMODIFIER FORTRAN_NAME(CCTK_Warn)(int *level, int *line, THREE_FORTSTRINGS_ARGS)
+void CCTK_FCALL CCTK_FNAME(CCTK_Warn)
+     (int *level, int *line, THREE_FORTSTRINGS_ARGS)
 {
   THREE_FORTSTRINGS_CREATE(file,thorn,message)
 
@@ -187,7 +188,7 @@ void CCTKi_ExpectError(int in, int err, int warnonerr, int line,
 }
 
 
-void FMODIFIER FORTRAN_NAME(CCTKi_ExpectError)
+void CCTK_FCALL CCTK_FNAME(CCTKi_ExpectError)
      (int *in, int *err, int *warnonerr, int *line, THREE_FORTSTRINGS_ARGS)
 {
   THREE_FORTSTRINGS_CREATE(file,thorn,message)
@@ -224,7 +225,7 @@ void CCTKi_ExpectOK(int in, int ok, int warnonerr, int line,
   if (in!=ok) CCTK_Warn(warnonerr, line, file, thorn, message);
 }
 
-void FMODIFIER FORTRAN_NAME(CCTKi_ExpectOK)
+void CCTK_FCALL CCTK_FNAME(CCTKi_ExpectOK)
      (int *in, int *ok, int *warnonerr, int *line, THREE_FORTSTRINGS_ARGS)
 {
   THREE_FORTSTRINGS_CREATE(file,thorn,message)
@@ -328,7 +329,8 @@ int CCTK_ParamWarn(const char *thorn, const char *message)
   return 0;
 }
 
-void FMODIFIER FORTRAN_NAME(CCTK_ParamWarn)(TWO_FORTSTRINGS_ARGS)
+void CCTK_FCALL CCTK_FNAME(CCTK_ParamWarn)
+     (TWO_FORTSTRINGS_ARGS)
 {
   TWO_FORTSTRINGS_CREATE(thorn,message)
 
@@ -361,7 +363,8 @@ int CCTK_Info(const char *thorn, const char *message)
   return 0;
 }
 
-void FMODIFIER FORTRAN_NAME(CCTK_Info)(TWO_FORTSTRINGS_ARGS)
+void CCTK_FCALL CCTK_FNAME(CCTK_Info)
+     (TWO_FORTSTRINGS_ARGS)
 {
   TWO_FORTSTRINGS_CREATE(thorn,message)
     
@@ -518,7 +521,8 @@ void CCTKi_FinaliseParamWarn(void)
    @endhistory 
 
 @@*/
-int FMODIFIER FORTRAN_NAME(CCTK_MessageFormat)(ONE_FORTSTRING_ARG)
+int CCTK_FCALL CCTK_FNAME(CCTK_MessageFormat)
+     (ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_CREATE(format)
   
@@ -527,7 +531,8 @@ int FMODIFIER FORTRAN_NAME(CCTK_MessageFormat)(ONE_FORTSTRING_ARG)
   return n_formats-1;
 }
 
-void FMODIFIER FORTRAN_NAME(CCTK_VInfo)(int format_number, ...)
+void CCTK_FCALL CCTK_FNAME(CCTK_VInfo)
+     (int format_number, ...)
 {
   char *format_string;
   char *message;
@@ -592,7 +597,8 @@ void CCTKi_NotYetImplemented(const char *message)
 
 }
 
-void FMODIFIER FORTRAN_NAME(CCTKi_NotYetImplemented)(ONE_FORTSTRING_ARG)
+void CCTK_FCALL CCTK_FNAME(CCTKi_NotYetImplemented)
+     (ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_CREATE(message)
 

@@ -131,7 +131,8 @@ int CCTK_RegisterBanner(const char *string)
 
 }
 
-void  FMODIFIER FORTRAN_NAME(CCTK_RegisterBanner)(int *ierr,ONE_FORTSTRING_ARG)
+void  CCTK_FCALL CCTK_FNAME(CCTK_RegisterBanner)
+     (int *ierr,ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_CREATE(message)
   *ierr=CCTK_RegisterBanner(message);

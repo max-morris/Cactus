@@ -466,7 +466,8 @@ int CCTK_GHExtensionHandle(const char *name)
   return Util_GetHandle(GHExtensions, name, NULL);
 }
 
-void  FMODIFIER FORTRAN_NAME(CCTK_GHExtensionHandle)(int *handle,ONE_FORTSTRING_ARG)
+void  CCTK_FCALL CCTK_FNAME(CCTK_GHExtensionHandle)
+     (int *handle,ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_CREATE(name)
   *handle = CCTK_GHExtensionHandle(name);

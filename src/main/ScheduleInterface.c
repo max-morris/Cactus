@@ -851,7 +851,7 @@ static t_attribute *CreateAttribute(const char *description,
       CreateGroupIndexList(n_comm_groups,    this->comm_groups, ap);
       CreateGroupIndexList(n_trigger_groups, this->trigger_groups, ap);
       CreateGroupIndexList(n_sync_groups,    this->FunctionData.SyncGroups, ap);
-      
+
       /* Check the miscellaneous options */
 
       InitialiseOptionList(this);
@@ -1443,7 +1443,6 @@ static int CCTKi_ScheduleCallExit(t_attribute *attribute,
     }
 
     /* Synchronise variable groups associated with this schedule group. */
-
     CCTK_SyncGroupsI(data->GH, 
                      attribute->FunctionData.n_SyncGroups,  
                      attribute->FunctionData.SyncGroups);

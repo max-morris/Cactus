@@ -194,10 +194,9 @@ int CactusDefaultEvolve(tFleshConfig *config)
 
 #if 0
     ConvergenceReport(config->GH, iteration);
-
     TerminationStepper(config->GH[0]);
-
 #endif
+
     /* Termination has been raised and broadcasted, exit loop*/
     if (cactus_terminate==TERMINATION_RAISED_BRDCAST) break;
 

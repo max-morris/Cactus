@@ -316,7 +316,8 @@ int CCTK_IsThornActive(const char *name)
   return retval;
 }
 
-void FMODIFIER FORTRAN_NAME(CCTK_IsThornActive)(int *retval, ONE_FORTSTRING_ARG)
+void CCTK_FCALL CCTK_FNAME(CCTK_IsThornActive)
+     (int *retval, ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_CREATE(name) 
   *retval = CCTK_IsThornActive(name);
@@ -429,7 +430,8 @@ int CCTK_IsThornCompiled(const char *name)
   return retval;
 }
 
-void FMODIFIER FORTRAN_NAME(CCTK_IsThornCompiled)(int *retval, ONE_FORTSTRING_ARG)
+void CCTK_FCALL CCTK_FNAME(CCTK_IsThornCompiled)
+     (int *retval, ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_CREATE(name) 
   *retval = CCTK_IsThornCompiled(name);
@@ -477,7 +479,7 @@ int CCTK_IsImplementationActive(const char *name)
   return retval;
 }
 
-void FMODIFIER FORTRAN_NAME(CCTK_IsImplementationActive)
+void CCTK_FCALL CCTK_FNAME(CCTK_IsImplementationActive)
      (int *retval, ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_CREATE(name) 

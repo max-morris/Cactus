@@ -144,11 +144,8 @@ int CCTK_CoordRegisterI(int dir, int index, const char*name)
   else
   {
     /* Method already exists. */
-    char *msg;
-    msg = (char *)malloc(200*sizeof(char)+strlen(name));
-    sprintf(msg,"Coordinate with name -%s- already registered",name);
-    CCTK_Warn(1,__LINE__,__FILE__,"Cactus",msg);
-    if (msg) free(msg);
+    CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
+	       "Coordinate with name -%s- already registered",name);
     handle = -1;
   }
     
@@ -156,7 +153,8 @@ int CCTK_CoordRegisterI(int dir, int index, const char*name)
 
 }
 
-void FMODIFIER FORTRAN_NAME(CCTK_CoordRegisterI)(int *handle, int *dir, int *index, ONE_FORTSTRING_ARG)
+void CCTK_FCALL CCTK_FNAME(CCTK_CoordRegisterI)
+     (int *handle, int *dir, int *index, ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_CREATE(name)
   *handle = CCTK_CoordRegisterI(*dir,*index, name);
@@ -232,9 +230,8 @@ int CCTK_CoordRegister(int dir,
 
 }
 
-void FMODIFIER FORTRAN_NAME(CCTK_CoordRegister)(int *handle, 
-                                                int *dir, 
-                                                TWO_FORTSTRINGS_ARGS)
+void CCTK_FCALL CCTK_FNAME(CCTK_CoordRegister)
+     (int *handle,int *dir,TWO_FORTSTRINGS_ARGS)
 {
   TWO_FORTSTRINGS_CREATE(gf,name)
   *handle = CCTK_CoordRegister(*dir, gf, name);
@@ -274,20 +271,16 @@ int CCTK_CoordRegisterRange(cGH *GH,
   }
   else
   {
-    char *msg = (char *) malloc (200*sizeof(char));
-    sprintf (msg, "Cannot allocate data for coordinate range\n");
-    CCTK_Warn (0,__LINE__,__FILE__,"Cactus", msg);
-    free (msg);
+    CCTK_Warn (0,__LINE__,__FILE__,"Cactus",
+		"Cannot allocate data for coordinate range");
   }
 
   return retval;
 
 }
 
-void FMODIFIER FORTRAN_NAME(CCTK_CoordRegisterRange)(cGH *GH, 
-                                                     CCTK_REAL *lower, 
-                                                     CCTK_REAL *upper, 
-                                                     ONE_FORTSTRING_ARG)
+void CCTK_FCALL CCTK_FNAME(CCTK_CoordRegisterRange)
+     (cGH *GH,CCTK_REAL *lower,CCTK_REAL *upper,ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_CREATE(name)
   CCTK_CoordRegisterRange (GH,*lower,*upper,name);
@@ -313,18 +306,16 @@ int CCTK_CoordIndex(const char *name)
     }
     else
     {
-      char *msg;
-      msg = (char *)malloc( 100*sizeof(char)+strlen(name) );
-      sprintf(msg,"Could not find registered coordinate %s",name);
-      CCTK_Warn(2,__LINE__,__FILE__,"Cactus",msg);
-      if (msg) free(msg);
+      CCTK_VWarn(2,__LINE__,__FILE__,"Cactus",
+		 "Could not find registered coordinate %s",name);
       return ERROR_COORDNOTFOUND;
     }
     
   }
 }
 
-void FMODIFIER FORTRAN_NAME(CCTK_CoordIndex)(int *index, ONE_FORTSTRING_ARG)
+void CCTK_FCALL CCTK_FNAME(CCTK_CoordIndex)
+     (int *index, ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_CREATE(name)
   *index = CCTK_CoordIndex (name);
@@ -350,18 +341,16 @@ int CCTK_CoordDir(const char *name)
     }
     else
     {
-      char *msg;
-      msg = (char *)malloc( 100*sizeof(char)+strlen(name) );
-      sprintf(msg,"Could not find registered coordinate %s",name);
-      CCTK_Warn(2,__LINE__,__FILE__,"Cactus",msg);
-      if (msg) free(msg);
+      CCTK_VWarn(2,__LINE__,__FILE__,"Cactus",
+		"Could not find registered coordinate %s",name);
       return ERROR_COORDNOTFOUND;
     }
     
   }
 }
 
-void FMODIFIER FORTRAN_NAME(CCTK_CoordDir)(int *dir, ONE_FORTSTRING_ARG)
+void CCTK_FCALL CCTK_FNAME(CCTK_CoordDir)
+     (int *dir, ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_CREATE(name)
   *dir = CCTK_CoordDir(name);
@@ -426,11 +415,8 @@ int CCTK_CoordRange(cGH *GH,
 
 }
 
-void FMODIFIER FORTRAN_NAME(CCTK_CoordRange)(int *ierr, 
-                                             cGH *GH, 
-                                             CCTK_REAL *lower, 
-                                             CCTK_REAL *upper, 
-                                             ONE_FORTSTRING_ARG)
+void CCTK_FCALL CCTK_FNAME(CCTK_CoordRange)
+     (int *ierr,cGH *GH,CCTK_REAL *lower,CCTK_REAL *upper,ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_CREATE(name)
   *ierr = CCTK_CoordRange (GH,lower,upper,name);
@@ -489,11 +475,8 @@ int CCTK_CoordLocalRange(cGH *GH,
 
 }
   
-void FMODIFIER FORTRAN_NAME(CCTK_CoordLocalRange)(int *ierr, 
-                                                  cGH *GH, 
-                                                  CCTK_REAL *lower, 
-                                                  CCTK_REAL *upper, 
-                                                  ONE_FORTSTRING_ARG)
+void CCTK_FCALL CCTK_FNAME(CCTK_CoordLocalRange)
+     (int *ierr,cGH *GH,CCTK_REAL *lower,CCTK_REAL *upper,ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_CREATE(name)
   *ierr = CCTK_CoordLocalRange (GH,lower,upper,name);
@@ -523,11 +506,8 @@ int CCTKi_CoordHandle(const char *name)
     }
     else
     {
-      char *msg;
-      msg = (char *)malloc( 100*sizeof(char)+strlen(name) );
-      sprintf(msg,"Could not find registered coordinate %s",name);
-      CCTK_Warn(2,__LINE__,__FILE__,"Cactus",msg);
-      if (msg) free(msg);
+      CCTK_VWarn(2,__LINE__,__FILE__,"Cactus",
+		"Could not find registered coordinate %s",name);
       return ERROR_COORDNOTFOUND;
     }
     
@@ -549,11 +529,8 @@ struct Coordprops *CCTKi_CoordData(const char *name)
     }
     else
     {
-      char *msg;
-      msg = (char *)malloc( 100*sizeof(char)+strlen(name) );
-      sprintf(msg,"Could not find registered coordinate %s",name);
-      CCTK_Warn(2,__LINE__,__FILE__,"Cactus",msg);
-      if (msg) free(msg);
+      CCTK_VWarn(2,__LINE__,__FILE__,"Cactus",
+		"Could not find registered coordinate %s",name);
       return NULL;
     }
     
@@ -571,7 +548,8 @@ int CCTK_RegisterCoordI(int dir, int index, const char*name)
   return CCTK_CoordRegisterI(dir,index,name);
 }
 
-void FMODIFIER FORTRAN_NAME(CCTK_RegisterCoord)(int *handle, int *dir, TWO_FORTSTRINGS_ARGS)
+void CCTK_FCALL CCTK_FNAME(CCTK_RegisterCoord)
+     (int *handle, int *dir, TWO_FORTSTRINGS_ARGS)
 {
   TWO_FORTSTRINGS_CREATE(gf,name)
   *handle = CCTK_RegisterCoord(*dir, gf, name);
@@ -587,10 +565,8 @@ int CCTK_RegisterCoordRange(cGH *GH,
   return CCTK_CoordRegisterRange(GH,min,max,coordname);
 }
 
-void FMODIFIER FORTRAN_NAME(CCTK_RegisterCoordRange)(cGH *GH, 
-                                                     CCTK_REAL *lower, 
-                                                     CCTK_REAL *upper, 
-                                                     ONE_FORTSTRING_ARG)
+void CCTK_FCALL CCTK_FNAME(CCTK_RegisterCoordRange)
+     (cGH *GH,CCTK_REAL *lower,CCTK_REAL *upper,ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_CREATE(name)
   CCTK_RegisterCoordRange (GH,*lower,*upper,name);
@@ -621,11 +597,8 @@ CCTK_REAL CCTK_CoordOrigin(const char *name)
     }
     else
     {
-      char *msg;
-      msg = (char *)malloc( 100*sizeof(char)+strlen(name) );
-      sprintf(msg,"Could not find registered coordinate %s",name);
-      CCTK_Warn(2,__LINE__,__FILE__,"Cactus",msg);
-      if (msg) free(msg);
+      CCTK_VWarn(2,__LINE__,__FILE__,"Cactus",
+		"Could not find registered coordinate %s",name);
       return ERROR_COORDNOTFOUND;
     }
     
