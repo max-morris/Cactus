@@ -1030,7 +1030,7 @@ int CCTK_DecomposeName (const char *fullname,
   {
     if (retval == 1)
     {
-      CCTK_VWarn (2, __LINE__, __FILE__, "Cactus",
+      CCTK_VWarn (8, __LINE__, __FILE__, "Cactus",
                   "CCTK_DecomposeName: Full name '%s' in wrong format",
                   fullname);
       retval = -3;
@@ -1977,6 +1977,29 @@ int CCTKi_CreateGroup (const char *gname,
   return (retval);
 }
 
+
+ /*@@
+   @routine    CCTK_GroupImpI
+   @date       20 Oct 2001
+   @author     Gabrielle Allen
+   @desc
+   Return the implementation which created a group
+   @enddesc
+
+   @returntype const char *
+   @returndesc
+   Thorn name
+   @endreturndesc
+@@*/
+
+const char *CCTK_GroupImplementationI(int group)
+{
+  const char *imp;
+  
+  imp = groups[group].implementation;
+
+  return imp;
+}
 
 /********************************************************************
  ********************    Internal Routines   ************************
