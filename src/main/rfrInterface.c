@@ -94,8 +94,8 @@ int CCTK_rfrPrintTree(cGH *GH,void *rfr_top)
 
     rfrPrintDescs(rfr_top,GH,CCTK_BASEGRID,"CCTK_BASEGRID","");
     rfrPrintDescs(rfr_top,GH,CCTK_INITIAL, "CCTK_INITIAL","");
-    rfrPrintDescs(rfr_top,GH,CCTK_INITIAL, "CCTK_POSTINITIAL","");
-    printf ("\n  (Don't forget CCTK_POSTSTEP* is here too...)\n");
+    rfrPrintDescs(rfr_top,GH,CCTK_POSTINITIAL, "CCTK_POSTINITIAL","");
+    printf ("\n  (Don't forget CCTK_POSTSTEP is here too...)\n");
     printf ("\n  do loop over timesteps\n");
     rfrPrintDescs(rfr_top,GH,CCTK_PRESTEP,"CCTK_PRESTEP","   ");
     rfrPrintDescs(rfr_top,GH,CCTK_EVOL,"CCTK_EVOL","   ");
