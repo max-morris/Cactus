@@ -1,7 +1,7 @@
 
 Cactus Code Frequently Asked Questions
 
-$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.66 2003-07-18 23:03:40 allen Exp $
+$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.67 2003-07-24 10:29:54 allen Exp $
 
 Also available at http://www.cactuscode.org/Documentation/FAQ
 
@@ -35,27 +35,6 @@ B4  When running GetCactus it tells me it is refusing to update my thorn
     because it is installed from a different repository.
 
 B5  Tell me how I can get thorns?
-
-    The best way is to use CVS, all the Cactus thorns and most other 
-    public community thorns are distributed this way.
-
-    - If you already have the Cactus flesh installed and want to 
-      install a standard Cactus thorn just type 
-
-      gmake checkout
-
-      for a list of thorns you can then download
-
-    - If you have a thornlist annotated with CVS information get
-      hold of the GetCactus script, e.g.
-
-      wget http://www.cactuscode.org/Download/GetCactus
-
-      and use this with your thornlist, if you already have the flesh
-      installed it will just checkout the thorns (the script needs to be 
-      run in the directory above your checked out Cactus at the moment)
-
-      GetCactus <thornlist>
 
 
 ------------------------------------------------------------------------------
@@ -431,6 +410,29 @@ B4  When running GetCactus it tells me it is refusing to update my thorn
     for the initial checkout, and then using cvs.cactuscode.org for an update.
 
     To fix this problem, simply be consistent with repository locations.
+
+B5  Tell me how I can get thorns?
+
+    The best way is to use CVS, all the Cactus thorns and most other 
+    public community thorns are distributed this way.
+
+    - If you already have the Cactus flesh installed and want to 
+      install a standard Cactus thorn just type 
+
+      gmake checkout
+
+      for a list of thorns you can then download
+
+    - If you have a thornlist annotated with CVS information get
+      hold of the GetCactus script, e.g.
+
+      wget http://www.cactuscode.org/Download/GetCactus
+
+      and use this with your thornlist, if you already have the flesh
+      installed it will just checkout the thorns (the script needs to be 
+      run in the directory above your checked out Cactus at the moment)
+
+      GetCactus <thornlist>
 
 
 ------------------------------------------------------------------------------
