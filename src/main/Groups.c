@@ -2156,10 +2156,9 @@ static CCTK_INT **CCTKi_ExtractSize (int dimension,
   const char *last_comma, *next_comma;
   char       *thorn, *param, *tmp;
   regmatch_t  pmatch[5];
-/*** FIXME: TR 23 Oct 2001 - switch back to old regex parsing
-            the parameter expression parser has a bug for parsing tokens
-            like '<parameter>+<constant>' (try AHFinder testsuites) ***/
-#define USE_REGEX_PARSER 1
+
+  /*#define USE_REGEX_PARSER 1*/
+
 #ifndef USE_REGEX_PARSER
   CCTK_INT size;
 #endif
