@@ -28,11 +28,11 @@ static char *rcsid = "$Header$";
 
 /* Prototypes for registration functions */
 
-#ifdef HAVE_GETTIMEOFDAY
+#ifdef HAVE_TIME_GETTIMEOFDAY
 void CCTKi_RegisterTimersGetTimeOfDay(void);
 #endif
 
-#ifdef HAVE_GETRUSAGE
+#ifdef HAVE_TIME_GETRUSAGE
 void CCTKi_RegisterTimersGetrUsage(void);
 #endif
 
@@ -55,11 +55,11 @@ void CCTKi_RegisterTimersGetrUsage(void);
 int CCTKi_RegisterDefaultTimerFunctions(void)
 {
 
-#ifdef HAVE_GETTIMEOFDAY
+#ifdef HAVE_TIME_GETTIMEOFDAY
   CCTKi_RegisterTimersGetTimeOfDay();
 #endif
 
-#ifdef HAVE_GETRUSAGE
+#ifdef HAVE_TIME_GETRUSAGE
   CCTKi_RegisterTimersGetrUsage();
 #endif
 
@@ -77,7 +77,7 @@ int CCTKi_RegisterDefaultTimerFunctions(void)
  ****************   gettimeofday based timer     *********************
  *********************************************************************/
 
-#ifdef HAVE_GETTIMEOFDAY
+#ifdef HAVE_TIME_GETTIMEOFDAY
 
 #include <unistd.h>
 
@@ -280,14 +280,14 @@ void CCTKi_RegisterTimersGetTimeOfDay(void)
 
 }
     
-#endif /* HAVE_GETTIMEOFDAY */
+#endif /* HAVE_TIME_GETTIMEOFDAY */
 
 
 /*********************************************************************
  ****************       getrusage based timers     *******************
  *********************************************************************/
 
-#ifdef HAVE_GETRUSAGE
+#ifdef HAVE_TIME_GETRUSAGE
 
 #include <sys/resource.h>
 
@@ -488,4 +488,4 @@ void CCTKi_RegisterTimersGetrUsage(void)
 
 }
 
-#endif /* HAVE_GETRUSAGE */
+#endif /* HAVE_TIME_GETRUSAGE */
