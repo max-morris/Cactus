@@ -1,7 +1,7 @@
 
 Cactus Code Frequently Asked Questions
 
-$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.56 2003-02-07 10:45:53 allen Exp $
+$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.57 2003-02-11 11:45:55 tradke Exp $
 
 Also available at http://www.cactuscode.org/Documentation/FAQ
 
@@ -26,7 +26,7 @@ Distributions and CVS Checkout:
 B1  When doing a cvs update I get 'not enough slashes in ...' .
 
 B2  I want to recreate a Cactus executable from last year, I have a thorn list
-    but when I try and check it out from the /cactus or /cactusdevcvs 
+    but when I try and check it out from the /cactus or /cactusdevcvs
     repository I don't get some of the thorns.
 
 B3  How do I checkout an earlier version of Cactus ?
@@ -38,32 +38,32 @@ B4  When running GetCactus it tells me it is refusing to update my thorn
 ------------------------------------------------------------------------------
 Configuring and Building:
 
-C1  The make system says "Checking status of libXXX.a" and then just 
+C1  The make system says "Checking status of libXXX.a" and then just
     sits there.  What can I do ?
 
 C2  Compilation of Cactus fails with the error:
-	 identifier "DECLARE_CCTK_PARAMETERS" is undefined?
+         identifier "DECLARE_CCTK_PARAMETERS" is undefined?
 
 C3 (Linux) I get 'g77: cannot specify -o with -c or -S and multiple
    compilations' when compiling with the Pacific VAST90 compiler.
 
 C4  How do I compile with MPI? Why isn't it automatic like in Cactus 3?
 
-C5  I can't compile because the compiler complains that a routine name has 
+C5  I can't compile because the compiler complains that a routine name has
     been previously defined ... but I can't find it repeated?
 
-C6  How can I make sure that one thorn is compiled before another? For example 
-    to make sure that F90 module files from  ArrangementA/ThornA are available 
+C6  How can I make sure that one thorn is compiled before another? For example
+    to make sure that F90 module files from  ArrangementA/ThornA are available
     for ArrangementB/ThornB.
 
-C7  (Solaris) I start a configuration process with gmake, but on the second 
-    gmake it wants to set up the configuration again and again .... 
+C7  (Solaris) I start a configuration process with gmake, but on the second
+    gmake it wants to set up the configuration again and again ....
 
 C8  How do I compile Cactus in 32 bit mode on a 64 bit irix machine?
 
 C9  What can I do if I don't have enough disk space to compile Cactus?
 
-C10 When I compile Cactus I get an error with "unterminated character 
+C10 When I compile Cactus I get an error with "unterminated character
     constants", but on typing gmake again it proceeds without problem.
 
 C11 Sometimes when I compile in parallel with TJOBS or FJOBS the compilation
@@ -81,59 +81,63 @@ C12 I get the following error when compiling?
     gmake: *** [wave] Error 2
 
 C13 Compiling files in Cactus seems to involve three steps, preprocessing,
-    compiling, and then postprocessing. What is the postprocessing step for? 
+    compiling, and then postprocessing. What is the postprocessing step for?
 
-C14 When trying to create the Cactus executable I get the error the 
-    error <Unresolved text symbol "SetCartSymVN" -- 1st referenced 
+C14 When trying to create the Cactus executable I get the error the
+    error <Unresolved text symbol "SetCartSymVN" -- 1st referenced
     by /data2/Cactus/configs/origin/lib/libADMBase.a>
 
-C15 My thorn is calling directly a function from another thorn. Both thorns 
+C15 My thorn is calling directly a function from another thorn. Both thorns
     are in my ThornList, but on linking I get the error
 
     Startup.c.o(.text+0x4d): undefined reference to `OtherThornsFunction'
 
-C16 (Linux) When trying the new gcc 3.1.1 compiler, I received a lot of 
-    warnings about the compiler flag "-I/usr/local/include". 
+C16 (Linux) When trying the new gcc 3.1.1 compiler, I received a lot of
+    warnings about the compiler flag "-I/usr/local/include".
 
 C17 (OpenBSD) The system linker /usr/bin/ld crashes when linking C++ thorns.
 
 C18 (Linux) When I compile Fortran I get errors because characters
     are in the first 5 columns, but I can't see anything wrong in the
     source code.
-  
+
 C19 (Linux) I get internal errors using the Pacific-Sierra Fortran 90 compiler
 
-C20 (Linux) I get the linking error "/usr/bin/ld: cannot find -lIEPCF90" 
+C20 (Linux) I get the linking error "/usr/bin/ld: cannot find -lIEPCF90"
     with the Intel fortran compiler.
 
-C21 (Solaris) Building PUGHReduce under Solaris 2.8 gives several errors 
+C21 (Solaris) Building PUGHReduce under Solaris 2.8 gives several errors
     with macro recursion.
 
 C22 (MacOS) Compiling with the Absoft F90 compiler I get error messages
     about large "fixups"
 
-C23 How can I see the commands which Cactus is actually using to build 
+C23 How can I see the commands which Cactus is actually using to build
     the executable?
 
-C24 My configuration takes forever to build, are there any ways to speed 
+C24 My configuration takes forever to build, are there any ways to speed
     this up?
 
-C25 On compiling Fortran code I get errors like "dummy argument CCTK_DIM has 
-    not been given a type", but I'm not using CCTK_DIM in the routine? 
+C25 On compiling Fortran code I get errors like "dummy argument CCTK_DIM has
+    not been given a type", but I'm not using CCTK_DIM in the routine?
 
 C26 I'm passing arguments to my scheduled routine using CCTK_ARGUMENTS and
     I get the compile error "identifier DECLARE_CCTK_ARGUMENTS is undefined"
 
-C27 (Linux IA64) I get a segmentation violation compiling snprintf.c in
+C27 I have a code block commented out by '#if 0  ...  #endif' in a C/C++ routine
+    which uses the DECLARE_CCTK_ARGUMENTS and/or DECLARE_CCTK_PARAMETERS macro.
+    The compiler stops with a parsing error on this piece of code.
+
+C28 (Linux IA64) I get a segmentation violation compiling snprintf.c in
     the Cactus flesh?
 
-C28 On linking I get an "unresolved text symbol" for a scheduled function 
+C29 On linking I get an "unresolved text symbol" for a scheduled function
     called from libCactusBindings.a
 
-C29 (Linux) Using the Intel Fortran compiler I get the error "/usr/bin/ld
+C30 (Linux) Using the Intel Fortran compiler I get the error "/usr/bin/ld
     cannot find -lintrins" on linking.
 
-C30 Why can't I use different F90 and F77 compilers with Cactus? 
+C31 Why can't I use different F90 and F77 compilers with Cactus?
 
 C31 I just want to check that one thorn compiles correctly, can I test 
     this without compiling all the thorns which come before it?
@@ -145,7 +149,7 @@ Running:
 D1  I'm trying to run Cactus with MPI using "mpirun", but I just get an error
     "Unknown option -np"?
 
-D2  I'm running Cactus on a parallel system with missing C++ libraries on some 
+D2  I'm running Cactus on a parallel system with missing C++ libraries on some
     nodes. Cactus compiles but it won't run?
 
 D3  I can build a Cactus configuration using some external libraries (eg HDF5,
@@ -161,12 +165,12 @@ D6  I get a segmentation fault running Cactus, right after the schedule
     tree is printed to screen?
 
 D7  (Linux) I'm using the NaNChecker thorn and seeing very strange results.
- 
-D8  (Linux) Testsuites for CactusEinstein/AHFinder and CactusBench/BenchADM 
+
+D8  (Linux) Testsuites for CactusEinstein/AHFinder and CactusBench/BenchADM
     are failing, but the release notices say that they pass.
 
-D9  How do I run Cactus until a given coordinate time instead of to a 
-    given iteration number? 
+D9  How do I run Cactus until a given coordinate time instead of to a
+    given iteration number?
 
 D10 Output to screen using the Info IO method of IOBasic doesn't work.
 
@@ -178,30 +182,30 @@ E1  While implementing some MPI code in Cactus, I came across the problem of
     getting an MPI communicator.  I basically have the choice between using
     MPI_COMM_WORLD, assuming that no processors have been set aside by the
     driver, or tying myself to a certain driver, such as PUGH, and using the
-    driver's internal data structures.  Both choices are clearly not 
+    driver's internal data structures.  Both choices are clearly not
     desirable.
 
-E2  How can I communicate the value of a local scalar on one processor to all 
+E2  How can I communicate the value of a local scalar on one processor to all
     processors? There doesn't seem to be an API for this in Cactus.
 
 E3  What about if I only want to send a local scalar to a single processor?
 
-E4  Why shouldn't I make direct calls to MPI from my thorns? Your default 
+E4  Why shouldn't I make direct calls to MPI from my thorns? Your default
     driver uses MPI.
 
 E5  What is the difference between using "const cGH *cctkGH" and "cGH *cctkGH"
     for argument declarations? What about "const cGH* const cctkGH"?
 
-E6  On compiling Fortran code I get errors like "dummy argument CCTK_DIM has 
-    not been given a type", but I'm not using CCTK_DIM in the routine? 
+E6  On compiling Fortran code I get errors like "dummy argument CCTK_DIM has
+    not been given a type", but I'm not using CCTK_DIM in the routine?
 
-E7  If I have two grid array groups with identical sizes (and ghost zones, 
-    distributions, etc.), are they guaranteed to be distributed in the same 
-    way?  That is, can I count on the fact that their local shapes (lsh) 
-    will be the same?  It is true empirically. What if the grid arrays have 
+E7  If I have two grid array groups with identical sizes (and ghost zones,
+    distributions, etc.), are they guaranteed to be distributed in the same
+    way?  That is, can I count on the fact that their local shapes (lsh)
+    will be the same?  It is true empirically. What if the grid arrays have
     different variable types or numbers of time levels?
 
-E8  Is there anyway to only compile certain lines of source code if a 
+E8  Is there anyway to only compile certain lines of source code if a
     particular thorn is in the compiled ThornList?
 
 E9  How can I find out in make.configuration.defn, whether MPI is being
@@ -221,35 +225,35 @@ E12 I'm getting wierd syntax errors in Fortran code, with an extra
 ------------------------------------------------------------------------------
 General
 
-F1  Why do I have to use e.g. "mpirun -np 1 ./exe/cactus_myconfig -O" to see 
-    the compiled parameters, can't the parameters be output before MPI is 
+F1  Why do I have to use e.g. "mpirun -np 1 ./exe/cactus_myconfig -O" to see
+    the compiled parameters, can't the parameters be output before MPI is
     initialised?
 
 F2  Why isn't a BOOLEAN parameter a LOGICAL in Fortran?
 
-F3  Why is there an MPI call in the Flesh (MPI_Init)? I thought that the 
+F3  Why is there an MPI call in the Flesh (MPI_Init)? I thought that the
     Cactus flesh was independent of any parallel protocol, why isn't this
     call made from a driver thorn?
 
 F4  Is there any way to tell what CVS version of individual source files
     was used to build an executable?
 
-F5  Why is the main routine of Cactus written in C++ (src/main/flesh.cc) when 
+F5  Why is the main routine of Cactus written in C++ (src/main/flesh.cc) when
     the rest of the flesh is standard ANSI C? More strangely, why does Cactus
     still compile when I have no C++ compiler on my system?
 
 F6  Are there grid scalars of type STRING ?
 
-F7  Why don't you use compilers mpicc, mpiCC etc when they exist on parallel 
+F7  Why don't you use compilers mpicc, mpiCC etc when they exist on parallel
     machines?
 
-F8  How does Cactus manage to so seamlessly call Fortran routines from 
+F8  How does Cactus manage to so seamlessly call Fortran routines from
     C, and vice versa?
 
 ------------------------------------------------------------------------------
 Documentation:
 
-G1  How can I build the ThornGuide documentation for single thorns or 
+G1  How can I build the ThornGuide documentation for single thorns or
     arrangements?
 
 
@@ -277,35 +281,35 @@ Background:
 A1  How did Cactus start?
 
     Cactus originated in the Numerical Relativity community to realise
-    the largescale computing needs and collaborative working practises 
-    required to model objects such as black holes, neutron stars and 
+    the largescale computing needs and collaborative working practises
+    required to model objects such as black holes, neutron stars and
     and gravitational waves using Einsteins Theory of General Relativity.
 
-    In particular, Cactus grew out of codes, experiences, and ideas of 
+    In particular, Cactus grew out of codes, experiences, and ideas of
     members of the NCSA and AEI numerical relativity groups together with
     a number of friends and collaborators. Since the first Beta release
-    of Cactus 4.0 many suggestions and contributions have also been made 
+    of Cactus 4.0 many suggestions and contributions have also been made
     by the users.
- 
+
 
 A2  Who develops and maintains Cactus?
 
     Cactus is primarily developed and maintained at the Max Planck Institute
     for Gravitational Physics (Albert Einstein Institute) in Potsdam, Germany.
-    The funding for this support is mainly obtained through independent 
+    The funding for this support is mainly obtained through independent
     grants for projects in both computer science and physics which focus
-    around Cactus. 
+    around Cactus.
 
 
 A3  How can I get involved?
 
-    First, if you use Cactus, send bug reports, bug fixes, comments, 
-    suggestions, documentation to cactusmaint@cactuscode.org, or use 
-    the bug tracking/feature request system. 
+    First, if you use Cactus, send bug reports, bug fixes, comments,
+    suggestions, documentation to cactusmaint@cactuscode.org, or use
+    the bug tracking/feature request system.
 
-    If you have written thorns which could be useful to other people, 
-    make them available for others to use (if you have a web page, 
-    send us the link to put on our page). 
+    If you have written thorns which could be useful to other people,
+    make them available for others to use (if you have a web page,
+    send us the link to put on our page).
 
     To find out about any existing or upcoming research programmer or
     student positions associated with Cactus development please contact
@@ -317,25 +321,25 @@ Distributions and CVS Checkout:
 
 B1  When doing a cvs update I get 'not enough slashes in ...' .
 
-    It seems that CVS sometimes gets confused with multiple repositories.  
-    Check that you are using the latest version of CVS, otherwise moving into 
-    the arrangements directory and performing another 'cvs update', followed 
+    It seems that CVS sometimes gets confused with multiple repositories.
+    Check that you are using the latest version of CVS, otherwise moving into
+    the arrangements directory and performing another 'cvs update', followed
     by a final one in the toplevel directory should complete your update.
 
-    There is now a Cactus make target "gmake cvsupdate" which avoids this 
+    There is now a Cactus make target "gmake cvsupdate" which avoids this
     problem by updating the flesh and checked out thorns explicitly.
 
 
 B2  I want to recreate a Cactus executable from last year, I have a thorn list
-    but when I try and check it out from the /cactus or /cactusdevcvs 
+    but when I try and check it out from the /cactus or /cactusdevcvs
     repository I don't get some of the thorns.
 
-    This is probably because the thorns moved arrangement, or were rewritten. 
-    To checkout the right code, look in doc/ReleaseNotes to decide which 
-    release the thorn was in, and then checkout the thorn from the /cactus 
+    This is probably because the thorns moved arrangement, or were rewritten.
+    To checkout the right code, look in doc/ReleaseNotes to decide which
+    release the thorn was in, and then checkout the thorn from the /cactus
     repository, eg. if the thorn "OldThorn" was last in the Beta 7 release use:
 
-    cvs -d :pserver:cvs_anon@cvs.cactuscode.org:/cactus co -d OldThorn \ 
+    cvs -d :pserver:cvs_anon@cvs.cactuscode.org:/cactus co -d OldThorn \
                                                              beta7/OldThorn
 
 
@@ -345,7 +349,7 @@ B3  How do I checkout an earlier version of Cactus ?
     the flesh for Beta 10 use:
 
     cvs -d :pserver:cvs_anon@cvs.cactuscode.org:/cactus checkout -r \
-		Cactus_4_0_Beta_10 Cactus
+                Cactus_4_0_Beta_10 Cactus
 
     [to see a list of possible tags go to the Cactus home directory
      and type "cvs status -v Makefile"]
@@ -363,7 +367,7 @@ B4  When running GetCactus it tells me it is refusing to update my thorn
 
     What GetCactus does is look in the thorn's CVS/Root to get the repository
     that it was originally installed from.  If the repository specified in
-    your thornlist (using the !REPOSITORY_LOCATION directive) is not the same, 
+    your thornlist (using the !REPOSITORY_LOCATION directive) is not the same,
     then GetCactus will refuse to update your thorn.
 
     This problem commonly occurs when people interchange repository locations
@@ -376,61 +380,61 @@ B4  When running GetCactus it tells me it is refusing to update my thorn
 ------------------------------------------------------------------------------
 Configuring and Building:
 
-C1  The make system says "Checking status of libXXX.a" and then just 
+C1  The make system says "Checking status of libXXX.a" and then just
     sits there.  What can I do ?
 
-    The first thing to do whenever a problem arises from the make system 
+    The first thing to do whenever a problem arises from the make system
     is to run with the "SILENT=no" option.
 
-    In this case, though, first check that the clocks on the machine on 
-    which you are editing files and the clock on the machine you are compiling 
-    on are synchronised.  If the compilation machine's clock is slow, then the 
-    newly made dependency files will still be `older' than the file you 
+    In this case, though, first check that the clocks on the machine on
+    which you are editing files and the clock on the machine you are compiling
+    on are synchronised.  If the compilation machine's clock is slow, then the
+    newly made dependency files will still be `older' than the file you
     edited, and the system will loop until this situation changes.
 
 
 C2  Compilation of Cactus fails with the error:
-	 identifier "DECLARE_CCTK_PARAMETERS" is undefined?
+         identifier "DECLARE_CCTK_PARAMETERS" is undefined?
 
-    You need to include the header: 
-	#include "cctk_Parameters.h"
+    You need to include the header:
+        #include "cctk_Parameters.h"
 
 
-C3  (Linux) I get 'g77: cannot specify -o with -c or -S and multiple 
+C3  (Linux) I get 'g77: cannot specify -o with -c or -S and multiple
     compilations' when compiling with the Pacific VAST90 compiler.
 
-    If the libvast90.a library is in the same directory as your F90 script, 
-    F90 passes -lvast90 to the underlying G77 compile, which is of course only 
-    a valid switch when linking.  The solution is to seperate these files, 
+    If the libvast90.a library is in the same directory as your F90 script,
+    F90 passes -lvast90 to the underlying G77 compile, which is of course only
+    a valid switch when linking.  The solution is to seperate these files,
     e.g. into bin and lib directories.
 
 
 C4  How do I compile with MPI? Why isn't it automatic like in Cactus 3?
-              
-    The standard MPI driver (PUGH) is in a thorn now (CactusPUGH/PUGH), so 
-    there is now the possibility to add other parallel drivers using 
-    alternative message passing schemes as separate thorns. To compile with 
+
+    The standard MPI driver (PUGH) is in a thorn now (CactusPUGH/PUGH), so
+    there is now the possibility to add other parallel drivers using
+    alternative message passing schemes as separate thorns. To compile with
     MPI, when you make a configuration, use
 
-    gmake <configuration>-config MPI=<MPI_TYPE> 
+    gmake <configuration>-config MPI=<MPI_TYPE>
 
-    where the allowed values of MPI_TYPE are discussed in the documentation. 
-    For machines where Cactus 3 used to use MPI by default, the correct option 
-    is probably MPI=NATIVE 
+    where the allowed values of MPI_TYPE are discussed in the documentation.
+    For machines where Cactus 3 used to use MPI by default, the correct option
+    is probably MPI=NATIVE
 
 
-C5  I can't compile because the compiler complains that a routine name has 
+C5  I can't compile because the compiler complains that a routine name has
     been previously defined ... but I can't find it repeated?
 
-    If it is a C routine, whose name is either all in capitals or all in 
-    lowercase, and the routine has a Fortran wrapper, then it could be that 
-    the compiler doesn't attach underscores to the Fortran name and there is a 
-    conflict. To remove this possibility always use mixed case names for C 
+    If it is a C routine, whose name is either all in capitals or all in
+    lowercase, and the routine has a Fortran wrapper, then it could be that
+    the compiler doesn't attach underscores to the Fortran name and there is a
+    conflict. To remove this possibility always use mixed case names for C
     routines with Fortran wrappers.
-   
 
-C6  How can I make sure that one thorn is compiled before another? For example 
-    to make sure that F90 module files from  ArrangementA/ThornA are available 
+
+C6  How can I make sure that one thorn is compiled before another? For example
+    to make sure that F90 module files from  ArrangementA/ThornA are available
     for ArrangementB/ThornB.
 
     Add a dependency to a ThornB's make.configuration.deps file, for example
@@ -439,12 +443,12 @@ C6  How can I make sure that one thorn is compiled before another? For example
     $(CCTK_LIBDIR)$(DIRSEP)libThornB.a : $(CCTK_LIBDIR)$(DIRSEP)libThornA.a
     endif
 
-    we will try to modify the make system to make this more automatic in the 
+    we will try to modify the make system to make this more automatic in the
     future.
 
 
-C7  (Solaris) I start a configuration process with gmake, but on the second 
-    gmake it wants to set up the configuration again and again .... 
+C7  (Solaris) I start a configuration process with gmake, but on the second
+    gmake it wants to set up the configuration again and again ....
 
     You are using a version of gmake which is too outdated (even though
     this version may work perfectly on other architectures). We found
@@ -459,7 +463,7 @@ C8  How do I compile Cactus in 32 bit mode on a 64 bit irix machine?
 C9  What can I do if I don't have enough disk space to compile Cactus?
 
     If you have access to some scratch space, or temporary space, you can
-    instruct Cactus to put the "configs" directory there (with all the 
+    instruct Cactus to put the "configs" directory there (with all the
     object files and intermediate files).
 
     For example, to use the directory /scratch/myconfigs with csh or tcsh,
@@ -474,23 +478,23 @@ C9  What can I do if I don't have enough disk space to compile Cactus?
 
 C10 When I compile Cactus I get an error like
 
-    /home/allen/Cactus/arrangements/MineStuff/Test/src/metric.F90:3: 
+    /home/allen/Cactus/arrangements/MineStuff/Test/src/metric.F90:3:
                 unterminated character constant
-    make[2]: *** [metric.F90.d] Error 33                                
+    make[2]: *** [metric.F90.d] Error 33
 
     But then when I type gmake again the compilation proceeds without problem.
 
-    You are probably using Linux, and the C preprocessor is complaining 
+    You are probably using Linux, and the C preprocessor is complaining
     about single apostrophes in a Fortran comment line when it is creating the
-    dependency file for metric.F90. Make continues the second time because 
-    the dependency file now exists (although it won't necessarily contain 
+    dependency file for metric.F90. Make continues the second time because
+    the dependency file now exists (although it won't necessarily contain
     the right information).
 
     We could remove this problem by removing comments from Fortran files
     before using the C preprocessor, but we don't want to add this overhead
-    at the moment, since we are writing a Cactus preprocessor which won't 
-    have this problem (and will solve a number of other preprocessing 
-    problems). 
+    at the moment, since we are writing a Cactus preprocessor which won't
+    have this problem (and will solve a number of other preprocessing
+    problems).
 
     Your choices for getting past this for now are
 
@@ -499,8 +503,8 @@ C10 When I compile Cactus I get an error like
      - use gmake twice and live with possibly bad dependency information
        for these files
 
-     - if you are using Linux, try using the option "-traditional" 
-       with the GNU cpp which does ignore the apostrophes.  
+     - if you are using Linux, try using the option "-traditional"
+       with the GNU cpp which does ignore the apostrophes.
 
     Unfortunately, cpp is broken in Red Hat's version 2.96, and in the
     official releases 3.0 up to 3.0.3.  The versions 2.95.x and 3.0.4
@@ -519,19 +523,19 @@ C11 Sometimes when I compile in parallel with TJOBS or FJOBS the compilation
 
     Compiling in parallel using TJOBS/FJOBS is not always failsafe. Usually
     simply issuing your gmake command again will complete the compilation
-    and produce an executable. Occasionally you may see link errors 
+    and produce an executable. Occasionally you may see link errors
     in the last stage of compilation, if this happens remove the libraries
-    
+
     rm configs/<config>/lib/*
 
     and issue gmake once more.
 
-    Problems with TJOBS/FJOBS can be avoided if your version of gmake 
+    Problems with TJOBS/FJOBS can be avoided if your version of gmake
     supports parallel make (this happened somewhere between 3.74 and3.78.1),
     in which case you can use instead the more robust:
 
     gmake <config> -j <number of processors>
-    
+
 
 C12 I get the following error when compiling?
 
@@ -545,7 +549,7 @@ C12 I get the following error when compiling?
     gmake: *** [wave] Error 2
 
     This is because an include file which was used in your previous compile is
-    no longer there (in this case the file IOJpeg.h was renamed ioJpeg.h). 
+    no longer there (in this case the file IOJpeg.h was renamed ioJpeg.h).
     To solve this, delete the dependency information by issuing
 
     gmake <config>-cleandeps
@@ -555,7 +559,7 @@ C12 I get the following error when compiling?
 
 C13 Compiling files in Cactus seems to involve three steps, preprocessing,
     compiling, and then postprocessing. What is the postprocessing step
-    for? 
+    for?
 
     This is for architecture dependent things which come up. For example,
     some machines don't allow using a "-o" flag for naming the resulting
@@ -565,26 +569,26 @@ C13 Compiling files in Cactus seems to involve three steps, preprocessing,
 C14 When trying to create the Cactus executable I get the error
 
     Creating cactus_origin in /data2/convCactus/exe from
-    CactusBase/IOASCII CactusBase/Boundary CactusPUGH/PUGHInterp 
+    CactusBase/IOASCII CactusBase/Boundary CactusPUGH/PUGHInterp
     CactusBase/CartGrid3D CactusEinstein/StaticConformal CactusPUGH/PUGHReduce
     CactusEinstein/ADMBase CactusBase/Time CactusPUGH/PUGH CactusPUGH/PUGHSlab
     CactusBase/IOUtil CactusElliptic/EllBase CactusBase/IOBasic
-    ld64: ERROR   33 : Unresolved text symbol "SetCartSymVN" -- 1st referenced 
+    ld64: ERROR   33 : Unresolved text symbol "SetCartSymVN" -- 1st referenced
     by /data2/Cactus/configs/origin/lib/libADMBase.a\
     (InitSymBound.c.o)
 
-    In this case ADMBase is probably not inheriting from the thorn which 
-    contains the SetCartSymVN function which it is using. When Cactus makes 
-    up the link line order it then doesn't know to list the ADMBase library 
+    In this case ADMBase is probably not inheriting from the thorn which
+    contains the SetCartSymVN function which it is using. When Cactus makes
+    up the link line order it then doesn't know to list the ADMBase library
     before the library containing this function. To test this and/or to get an
     executable, find the link line used by issuing
 
     gmake origin SILENT=no
-  
-    and add the missing library to the end of the link line. 
+
+    and add the missing library to the end of the link line.
 
 
-C15 My thorn is calling directly a function from another thorn. Both thorns 
+C15 My thorn is calling directly a function from another thorn. Both thorns
     are in my ThornList, but on linking I get the error
 
     Startup.c.o(.text+0x4d): undefined reference to `OtherThornsFunction'
@@ -594,28 +598,28 @@ C15 My thorn is calling directly a function from another thorn. Both thorns
     the libraries in the right order for linking.
 
 
-C16 (Linux) When trying the new gcc 3.1.1 compiler, I received a lot of 
-    warnings about the compiler flag "-I/usr/local/include". 
+C16 (Linux) When trying the new gcc 3.1.1 compiler, I received a lot of
+    warnings about the compiler flag "-I/usr/local/include".
 
     This is because HDF5 is installed on this machine in what we
     would consider to be a sub-optimal place. HDF5 is preferably
-    installed in own installation directory with (optionally) sym-links to 
-    the system directories. Cactus configurations should use the HDF5 
+    installed in own installation directory with (optionally) sym-links to
+    the system directories. Cactus configurations should use the HDF5
     installation directory itself.
 
-    It is a matter of office debate as to whether it would be really be a 
-    good idea or not to check for and remove system directories, we can come 
-    up with pathological examples both if they are left or if they are 
+    It is a matter of office debate as to whether it would be really be a
+    good idea or not to check for and remove system directories, we can come
+    up with pathological examples both if they are left or if they are
     removed.
 
 
-C17 (OpenBSD) The system linker /usr/bin/ld (called by gcc's collect2) 
+C17 (OpenBSD) The system linker /usr/bin/ld (called by gcc's collect2)
     crashes when linking C++ thorns if GNU ar is used to create the
     libraries.
 
     collect2: ld terminated with signal 11 [Segmentation fault]
     ld: /home/jonathan/cactus/Cactus/configs/test-interp2/lib/ \
-    libTestInterp2.a(driver.cc.o): unexpected multiple definitions \ 
+    libTestInterp2.a(driver.cc.o): unexpected multiple definitions \
     of symbol `axis_list::string(void) const', type 0xf
 
     The workaround is to use the system's ar if you have any C++ thorns.
@@ -624,7 +628,7 @@ C17 (OpenBSD) The system linker /usr/bin/ld (called by gcc's collect2)
 C18 (Linux) When I compile Fortran I get errors because characters
     are in the first 5 columns, but I can't see anything wrong in the
     source code.
-  
+
     The C preprocessor /lib/cpp distributed with Redhat 7.x causes
     problems with Fortran code (Fortran source code is by default
     passed through a preprocessor). The C preprocessor can change the
@@ -635,7 +639,7 @@ C18 (Linux) When I compile Fortran I get errors because characters
     Preprocessing
     /Cactus_hydratest/arrangements/CactusPUGH/Interp/src/interp3.F
     Compiling
-    /Cactus_hydratest/arrangements/CactusPUGH/Interp/src/interp3.F 
+    /Cactus_hydratest/arrangements/CactusPUGH/Interp/src/interp3.F
     Pacific-Sierra Research vf90 Personal V3.4N5 12:49:17 10/31/01 f90 to f77
      subroutine INTERP3_CCTK_REAL
     Syntax, line 140: Non-blank characters in columns 1-5 of continuation line
@@ -687,7 +691,7 @@ C19 (Linux) I get internal errors using the Pacific-Sierra Fortran 90 compiler
     size, or move to a different compiler.
 
 
-C20 (Linux) I get the linking error "/usr/bin/ld: cannot find -lIEPCF90" 
+C20 (Linux) I get the linking error "/usr/bin/ld: cannot find -lIEPCF90"
     with the Intel fortran compiler.
 
     If you get the linking error
@@ -699,8 +703,8 @@ C20 (Linux) I get the linking error "/usr/bin/ld: cannot find -lIEPCF90"
     file (e.g. .cshrc) or alternatively there is a script
     $IA32ROOT/bin/iccvars.csh which does this for you.
 
-       
-C21 (Solaris) Building PUGHReduce under Solaris 2.8 gives several errors 
+
+C21 (Solaris) Building PUGHReduce under Solaris 2.8 gives several errors
     with macro recursion.
 
     Checking status of libPUGHReduce.a
@@ -743,23 +747,23 @@ C22 (MacOS) Compiling with the Absoft F90 compiler I get error messages
     endif
 
 
-C23 How can I see the commands which Cactus is actually using to build 
+C23 How can I see the commands which Cactus is actually using to build
     the executable?
 
     Add SILENT=no to the end of the compile command and the actual commands
     will be echoed to standard output.
 
 
-C24 My configuration takes forever to build, are there any ways to speed 
+C24 My configuration takes forever to build, are there any ways to speed
     this up?
 
     If you are developing and testing, you could build executables without
-    using optimisation ... but remember that they will run much slower. To 
+    using optimisation ... but remember that they will run much slower. To
     do this configure Cactus with OPTIMISE=no.
 
 
-C25 On compiling Fortran code I get errors like "dummy argument CCTK_DIM has 
-    not been given a type", but I'm not using CCTK_DIM in the routine? 
+C25 On compiling Fortran code I get errors like "dummy argument CCTK_DIM has
+    not been given a type", but I'm not using CCTK_DIM in the routine?
 
     Look to see if you are passing CCTK_ARGUMENTS into your routine, if so
     you need to use DECLARE_CCTK_ARGUMENTS in the declarations for the routine.
@@ -769,48 +773,83 @@ C26 I'm passing arguments to my scheduled routine using CCTK_ARGUMENTS and
     I get the compile error "identifier DECLARE_CCTK_ARGUMENTS is undefined"
 
     Make sure you have the lines
-  
+
     #include "cctk.h"
     #include "cctk_Arguments.h"
 
     at the top of your source file
 
-C27 (Linux IA64) I get a segmentation violation compiling snprintf.c in
+C27 I have a code block commented out by '#if 0  ...  #endif' in a C/C++ routine
+    which uses the DECLARE_CCTK_ARGUMENTS and/or DECLARE_CCTK_PARAMETERS macro.
+    The compiler stops with a parsing error on this piece of code.
+
+    For C/C++ code, these two macros expand into (a list of) declarations
+    of local variables, with the same names of the arguments/parameters,
+    and their initialization statements, plus a single opening curly bracket.
+    This bracket starts a new block for the statements following the macros.
+    The matching closing bracket is automatically inserted during the
+    preprocessing phase by the CST's c_file_preprocessor.pl program at the end
+    of a routine's body. This is simply determined as the closing bracket
+    matching the opening bracket of the routine's body.
+    Because the c_file_preprocessor.pl program is run before $CPP and doesn't
+    understand $CPP directives itself, it would not correctly detect the end of
+    the routine's body in the following (legal C code) example:
+
+      int bla(void)
+      {
+        DECLARE_CCTK_PARAMETERS
+
+
+      #if 0
+        if (1) {
+      #endif
+
+        return (0);
+      }
+
+    The automatically inserted closing bracket would be added outside of the
+    routine's body and thus cause a syntax error in the code following.
+
+    As a solution, you should make sure that all the statements in your routine
+    (including those which you have commented out via '#if 0 ...  #endif')
+    are always properly enclosed in blocks of matching curly brackets.
+
+C28 (Linux IA64) I get a segmentation violation compiling snprintf.c in
     the Cactus flesh?
 
     Compiling /home/Cactus/src/util//snprintf.c
     /home/Cactus/configs/admeccy/build/Cactus/util/snprintf.c
-    ecc: error: Fatal error in /usr/local/intel/compiler60/ia64/bin/mcpcom, 
+    ecc: error: Fatal error in /usr/local/intel/compiler60/ia64/bin/mcpcom,
       terminated by segmentation violation
-    compilation aborted for 
-    /home/Cactus/configs/admeccy/build/Cactus/util/snprintf.c 
+    compilation aborted for
+    /home/Cactus/configs/admeccy/build/Cactus/util/snprintf.c
     (code 1)
 
-    The Intel C++ compiler (Version 6.0, Build 20020320) has problems 
-    dealing with this file, which needs to be compiled without the -ip 
-    option. Either run gmake with the option SILENT=no then cut and paste 
-    the compile statement to the command line and remove the -ip option 
+    The Intel C++ compiler (Version 6.0, Build 20020320) has problems
+    dealing with this file, which needs to be compiled without the -ip
+    option. Either run gmake with the option SILENT=no then cut and paste
+    the compile statement to the command line and remove the -ip option
     before executing it, and then continue to build the executable as normal.
- 
+
     Alternatively configure with the -O1 option. (Note, so far our benchmarks
     have indicated that -O1 actually executes faster than -O3, although this
     may be just for our particular benchmarks).
 
-C28 On linking I get an "unresolved text symbol" for a scheduled function 
+C29 On linking I get an "unresolved text symbol" for a scheduled function
     called from libCactusBindings.a
 
-    Check the size of the object file which was created for the source 
-    file containing this function in configs/<config>/build/<thorn>. 
-    With some compilers, making object files for complicated source files 
-    can fail because it takes too much memory, and an empty object file 
+    Check the size of the object file which was created for the source
+    file containing this function in configs/<config>/build/<thorn>.
+    With some compilers, making object files for complicated source files
+    can fail because it takes too much memory, and an empty object file
     will be created and the make process will fail. If you continue the
     make process Cactus will not realise that the object file is empty.
-  
-    If this is what happened, touch the relevant source file and try 
+
+    If this is what happened, touch the relevant source file and try
     compiling again. It may be that you will need to switch optimisations off
     for this file, or split up the troublesome code into smaller components.
 
-C29 (Linux) Using the Intel Fortran compiler I get the error "/usr/bin/ld
+C30 (Linux) Using the Intel Fortran compiler I get the error "/usr/bin/ld
     cannot find -lintrins" on linking.
 
     Set the environment variable IA32ROOT to point to the location of your
@@ -834,13 +873,13 @@ D1  I'm trying to run Cactus with MPI using "mpirun", but I just get an error
 
     It looks like the MPI implementation on the machine you're using isn't
     removing its arguments correctly, so they are being passed to the
-    Cactus run. You need to use the "-i" command line option for Cactus to 
+    Cactus run. You need to use the "-i" command line option for Cactus to
     ignore the MPI arguments, e.g.
 
     mpirun ./cactus_foo foobar.par -i -np 8
 
 
-D2  I'm running Cactus on a parallel system with missing C++ libraries on some 
+D2  I'm running Cactus on a parallel system with missing C++ libraries on some
     nodes.  Cactus compiles but it won't run.  Is there anything I can do?
 
     If C++ isn't being used in any thorn, you can compile Cactus without using
@@ -877,15 +916,15 @@ D4  I can run my non-MPI executable using shared libraries without problems now
     You should contact your system administrator to get this fixed.
 
 
-D5  I'm using the web server thorn CactusConnect/HTTPD on an Irix machine, I 
-    compiled with PTHREADS=yes to get better response, but the executable 
+D5  I'm using the web server thorn CactusConnect/HTTPD on an Irix machine, I
+    compiled with PTHREADS=yes to get better response, but the executable
     just hangs (even with the httpd::use_pthreads="no" in the parameter file)
 
     SGI/Irix machines with native MPI cannot make use of Pthreads (the native
     MPI uses some Irix threads which are incompatible with Pthreads), and the
     executable hangs on the first call to a pthread routine.
 
-    You could instead use MPICH on your Irix machine instead of native MPI. 
+    You could instead use MPICH on your Irix machine instead of native MPI.
     Note that native MPI will probably be better optimised for you application
     than  MPICH though.
 
@@ -894,47 +933,47 @@ D6  I get a segmentation fault running Cactus, right after the schedule
     tree is printed to screen?
 
     Check to see if you are passing CCTK_ARGUMENTS into any routines
-    registered at CCTK_STARTUP, if so these need to be removed and void 
-    used instead. The STARTUP timebin is run before the driver sets up 
-    any grid variables, and the segmentation fault occurs in 
-    CCTK_DECLARE_ARGUMENTS when these undefined variables are accessed. 
+    registered at CCTK_STARTUP, if so these need to be removed and void
+    used instead. The STARTUP timebin is run before the driver sets up
+    any grid variables, and the segmentation fault occurs in
+    CCTK_DECLARE_ARGUMENTS when these undefined variables are accessed.
     Parameters can however be used in STARTUP routines.
 
 
 D7 (Linux) I'm using the NaNChecker thorn and seeing very strange results.
- 
+
     There is a bug in the isnan function with the Fortran Intel
     compiler (for IA32 and IA64). This bug means that any thorn using
     isnan (for example CactusUtils/NaNChecker) will produce
     inconsistent results.
 
 
-D8  (Linux) The testsuites for CactusEinstein/AHFinder and 
+D8  (Linux) The testsuites for CactusEinstein/AHFinder and
     CactusBench/BenchADM fail for me, but the release notices say that they
     pass.
 
     The Absoft fortran compiler (Version 6) produces the wrong answers
     for CactusEinstein/AHFinder and CactusBench/BenchADM if
     optimisation is not used.
-    
-D9  How do I run Cactus until a given coordinate time instead of to a 
-    given iteration number? 
 
-    Instead of setting cactus::cctk_itlast set cactus::cctk_final_time to 
+D9  How do I run Cactus until a given coordinate time instead of to a
+    given iteration number?
+
+    Instead of setting cactus::cctk_itlast set cactus::cctk_final_time to
     the required coordinate time, and also set cactus::terminate = "time".
 
 D10 Output to screen using the Info IO method of IOBasic doesn't work.
 
-    I want to watch min/max values for 'wavetoy::phi' during a cactus run 
+    I want to watch min/max values for 'wavetoy::phi' during a cactus run
     on stdout.  For that, I added
 
     IOBasic::outInfo_every = 10
     IOBasic::outInfo_vars  = "wavetoy::phi"
- 
-    to my parameterfile. Thorn IOBasic is active, but I only get the 
+
+    to my parameterfile. Thorn IOBasic is active, but I only get the
     iteration number and coordinate time printed to screen.
 
-    You need to activate a thorn which implements the min/max reductions, 
+    You need to activate a thorn which implements the min/max reductions,
     for example CactusPUGH/PUGHReduce.
 
 
@@ -945,66 +984,66 @@ E1  While implementing some MPI code in Cactus, I came across the problem of
     getting an MPI communicator.  I basically have the choice between using
     MPI_COMM_WORLD, assuming that no processors have been set aside by the
     driver, or tying myself to a certain driver, such as PUGH, and using the
-    driver's internal data structures.  Both choices are clearly not 
+    driver's internal data structures.  Both choices are clearly not
     desirable.
 
-    We are aware of this, and in fact, it is the reason why some of the 
+    We are aware of this, and in fact, it is the reason why some of the
     I/O thorns are directly dependent on the PUGH driver.
     The solution for all this will be the Cactus Communication
-    Infrastructure (CCI: http://www.cactuscode.org/Development/Specs/CCI.txt) 
-    which will eventually be integrated into the flesh and will provide a 
-    generic function interface for communicating data. 
-    Thus when you plug in different communication drivers, I/O thorns 
+    Infrastructure (CCI: http://www.cactuscode.org/Development/Specs/CCI.txt)
+    which will eventually be integrated into the flesh and will provide a
+    generic function interface for communicating data.
+    Thus when you plug in different communication drivers, I/O thorns
     won't need to be changed if they use the CCI routines.
 
 
-E2  How can I communicate the value of a local scalar on one processor to all 
+E2  How can I communicate the value of a local scalar on one processor to all
     processors? There doesn't seem to be an API for this in Cactus.
 
-    There isn't a general broadcast API in Cactus at the moment, this is 
+    There isn't a general broadcast API in Cactus at the moment, this is
     planned as part of a new Cactus Communication Interface (CCI) layer
-    in the 4.1 release (see the Specs web page for more information about 
+    in the 4.1 release (see the Specs web page for more information about
     this).
 
-    Until then, the best way to communicate your variable is to use the the 
-    CCTK reduction API. For example, make a call to CCTK_ReduceLocalScalar() 
-    with the "sum" reduction operator, and set your local variable to zero 
-    on all processors except for the one with the value you want to have 
+    Until then, the best way to communicate your variable is to use the the
+    CCTK reduction API. For example, make a call to CCTK_ReduceLocalScalar()
+    with the "sum" reduction operator, and set your local variable to zero
+    on all processors except for the one with the value you want to have
     communicated.
 
 
 E3  What about if I only want to send a local scalar to a single processor?
 
-    This type of point-to-point communication is not possible with Cactus 
-    APIs right now. Any CCTK_Reduce*() is a global communication so far, 
+    This type of point-to-point communication is not possible with Cactus
+    APIs right now. Any CCTK_Reduce*() is a global communication so far,
     and all processors must take part in that communication.
 
     For doing point-to-point communication you should use the appropriate API
     of an underlying communication layer like MPI.
 
 
-E4  Why shouldn't I make direct calls to MPI from my thorns? Your default 
+E4  Why shouldn't I make direct calls to MPI from my thorns? Your default
     driver uses MPI.
 
     Keeping all MPI calls in the driver thorn keeps the code modular, allowing
     for you to use alternate drivers when they become available, for example
-    using PVM or some other communication layer. 
+    using PVM or some other communication layer.
 
-    Also, since not all underlying MPI implementations provide the same 
-    fortran bindings it is best to use a C wrapper for making MPI calls, 
+    Also, since not all underlying MPI implementations provide the same
+    fortran bindings it is best to use a C wrapper for making MPI calls,
     and this is automatically done for you if you use the Cactus APIs.
 
 
-E5  I am writing a thorn, what is the difference between using 
-    "const cGH *cctkGH" and "cGH *cctkGH" for argument declarations? 
+E5  I am writing a thorn, what is the difference between using
+    "const cGH *cctkGH" and "cGH *cctkGH" for argument declarations?
     And what about "const cGH* const cctkGH"?
 
     'cGH *' is a pointer to a cGH structure which can be modified. This is
     necessary eg. in routines which initialize a cGH.
 
-    'const cGH *' is a pointer to a cGH structure which is marked as 
-    constant (ie. read-only). The code is not allowed to change the cGH 
-    using such a pointer. The compiler should refuse to compile it otherwise, 
+    'const cGH *' is a pointer to a cGH structure which is marked as
+    constant (ie. read-only). The code is not allowed to change the cGH
+    using such a pointer. The compiler should refuse to compile it otherwise,
     or at least print a warning.
 
     Our policy now is to use "const cGH*" for all CCTK_ calls, and it is
@@ -1013,46 +1052,46 @@ E5  I am writing a thorn, what is the difference between using
     some exceptions).
 
     [Note: August 2002: We have still to implement const cGH* in a few
-           CCTK_ calls, namely   
+           CCTK_ calls, namely
                 * calls to CCTK_Sync()
-  	        * calls to CCTK_Reduce()
-  	        * calls to CCTK_Interp() (the old API)
+                  * calls to CCTK_Reduce()
+                  * calls to CCTK_Interp() (the old API)
            and it is still a matter of debate whether the const qualifier
-	   should be used for CCTK_Sync calls.]
+           should be used for CCTK_Sync calls.]
 
-    Finally, the additional const qualifier in 'const cGH * const GH' says 
-    that the pointer variable itself cannot be changed (it's just a 
-    one-time-only assignment). For instance, no pointer arithmetic is 
-    allowed on such a pointer. In principle, one could declare all local 
-    variables as const if they aren't changed afterwards. But it's doesn't 
-    have any benefit in writing cleaner code. I think this is just 
+    Finally, the additional const qualifier in 'const cGH * const GH' says
+    that the pointer variable itself cannot be changed (it's just a
+    one-time-only assignment). For instance, no pointer arithmetic is
+    allowed on such a pointer. In principle, one could declare all local
+    variables as const if they aren't changed afterwards. But it's doesn't
+    have any benefit in writing cleaner code. I think this is just
     overkill and using just 'const cGH *' is fine.
 
-E6  On compiling Fortran code I get errors like "dummy argument CCTK_DIM has 
-    not been given a type", but I'm not using CCTK_DIM in the routine? 
+E6  On compiling Fortran code I get errors like "dummy argument CCTK_DIM has
+    not been given a type", but I'm not using CCTK_DIM in the routine?
 
     Check if you have passed CCTK_ARGUMENTS in the argument list for the
     routine, is do you must have a line
 
-    DECLARE_CCTK_ARGUMENTS 
+    DECLARE_CCTK_ARGUMENTS
 
     in your declarations section.
 
-E7  If I have two grid array groups with identical sizes (and ghost zones, 
-    distributions, etc.), are they guaranteed to be distributed in the same 
-    way?  That is, can I count on the fact that their local shapes (lsh) 
-    will be the same?  It is true empirically. What if the grid arrays have 
+E7  If I have two grid array groups with identical sizes (and ghost zones,
+    distributions, etc.), are they guaranteed to be distributed in the same
+    way?  That is, can I count on the fact that their local shapes (lsh)
+    will be the same?  It is true empirically. What if the grid arrays have
     different variable types or numbers of time levels?
 
     Yes to all.
- 
-E8  Is there anyway to only compile certain lines of source code if a 
+
+E8  Is there anyway to only compile certain lines of source code if a
     particular thorn is in the compiled ThornList?
 
     Yes, but this is not a good idea for a number of reasons
 
-    - it adds hidden dependencies between thorns, and can easily lead to 
-      unexpected and hard to track down behaviour when a thorn is compiled 
+    - it adds hidden dependencies between thorns, and can easily lead to
+      unexpected and hard to track down behaviour when a thorn is compiled
       but not active
 
     - it breaks all kinds of modularity infrastructure in Cactus
@@ -1067,28 +1106,28 @@ E8  Is there anyway to only compile certain lines of source code if a
     In your code use
 
     #ifdef ARRANGEMENTNAME_THORNNAME
-	<your source code>
+        <your source code>
     #endif
 
     If appropriate, to give yourself some protection, use the function
-    CCTK_IsThornActive to only execute the source code if the thorn was 
+    CCTK_IsThornActive to only execute the source code if the thorn was
     actually activated (and not just compiled in).
 
     Add a comment to your README/Documentation.tex to remind yourself, and
     others of what you have done.
 
 E9  How can I find out in make.configuration.defn, whether MPI is being
-    used or not?  The thorn EllPETSc checks whether the makefile variable 
-    MPI_LIBS is empty.  This doesn't work on systems where using MPI does 
-    not require any explicitely specified libraries, such as when using the 
+    used or not?  The thorn EllPETSc checks whether the makefile variable
+    MPI_LIBS is empty.  This doesn't work on systems where using MPI does
+    not require any explicitely specified libraries, such as when using the
     mpicc script to compile.  Is there a better way?
 
     You can grep for MPI in the file
 
         configs/<your_config>/config-data/cctk_Extradefs.h
 
-    see for example CactusPUGHIO/IOPanda/src/make.configuration.deps 
-      
+    see for example CactusPUGHIO/IOPanda/src/make.configuration.deps
+
        if test -z "`grep CCTK_MPI $(CONFIG)/cctk_Extradefs.h`" ; then
           echo "IOPanda requires MPI";   \
           exit 2;                        \
@@ -1099,7 +1138,7 @@ E10 How can I see in source code whether MPI is being used?
     Check whether the preprocessor macro CCTK_MPI exists, for example,
 
     #ifdef CCTK_MPI
-	/* Only included if MPI is being used */
+        /* Only included if MPI is being used */
     #else
         /* Only included if MPI is *not* being used */
     #endif
@@ -1152,45 +1191,45 @@ E12 I'm getting wierd syntax errors in Fortran code, with an extra
 ------------------------------------------------------------------------------
 General
 
-F1  Why do I have to use e.g. "mpirun -np 1 ./exe/cactus_myconfig -O" to see 
-    the compiled parameters, can't the parameters be output before MPI is 
+F1  Why do I have to use e.g. "mpirun -np 1 ./exe/cactus_myconfig -O" to see
+    the compiled parameters, can't the parameters be output before MPI is
     initialised?
 
-    Alas some MPIs add their own command-line options, so we need to do 
-    MPI_Init before parsing the command line, or parse it twice, once before 
+    Alas some MPIs add their own command-line options, so we need to do
+    MPI_Init before parsing the command line, or parse it twice, once before
     the MPI_Init and once after, to detect invalid options.
 
 
 F2  Why isn't a BOOLEAN parameter a LOGICAL in Fortran?
 
-    There is no way we can guarantee the way the Fortran logical type is 
-    represented at machine level, and since all Fortran variables need 
+    There is no way we can guarantee the way the Fortran logical type is
+    represented at machine level, and since all Fortran variables need
     to be mapped internally to C data structures, we use integers to ensure
-    portability. 
+    portability.
 
-           
-F3  Why is there an MPI call in the Flesh (MPI_Init)? I thought that the 
+
+F3  Why is there an MPI call in the Flesh (MPI_Init)? I thought that the
     Cactus flesh was independent of any parallel protocol, why isn't this
     call made from a driver thorn?
 
     We would love to get rid of the last remaining MPI calls from the flesh,
-    unfortunately in MPI 1, MPI implementations are allowed to play around 
-    with the argument list, so we need to call MPI_Init before parsing the 
-    command line argument, and this makes it very difficult to have it 
-    called from the driver, since we don't even know what the parameter 
+    unfortunately in MPI 1, MPI implementations are allowed to play around
+    with the argument list, so we need to call MPI_Init before parsing the
+    command line argument, and this makes it very difficult to have it
+    called from the driver, since we don't even know what the parameter
     file is at that stage, so we don't even know which driver to activate!
 
-    MPI 2 allows NULL to be passed to MPI_Init, which gets around the 
-    problem, but the only machines currently with MPI 2 are Japanese 
+    MPI 2 allows NULL to be passed to MPI_Init, which gets around the
+    problem, but the only machines currently with MPI 2 are Japanese
     supercomputers.
 
-    It is the only MPI call made before the driver is activated, and it 
-    sets a global variable to tell you it's been done, so it isn't a 
-    major problem apart from being extremely ugly.  You can even turn 
-    it off with an environment variable, but then if you run with MPICH 
-    you'll find the code complaining about unknown command line arguments 
-    like -p4grp. If we had a precise list of the arguments passed by each 
-    MPI implementation we could guard against them, but that's an even 
+    It is the only MPI call made before the driver is activated, and it
+    sets a global variable to tell you it's been done, so it isn't a
+    major problem apart from being extremely ugly.  You can even turn
+    it off with an environment variable, but then if you run with MPICH
+    you'll find the code complaining about unknown command line arguments
+    like -p4grp. If we had a precise list of the arguments passed by each
+    MPI implementation we could guard against them, but that's an even
     uglier option.
 
 
@@ -1210,14 +1249,14 @@ F4  Is there any way to tell what CVS version of individual source files
     (Note that this only works for files using the CCTK_FILEVERSION macro.)
 
 
-F5  Why is the main routine of Cactus written in C++ (src/main/flesh.cc) when 
+F5  Why is the main routine of Cactus written in C++ (src/main/flesh.cc) when
     the rest of the flesh is standard ANSI C? More strangely, why does Cactus
     still compile when I have no C++ compiler on my system?
 
-    The main routine of the flesh is written in C++, since any static C++ 
+    The main routine of the flesh is written in C++, since any static C++
     classes need to be initialised before the main routine is called. So if
     there is a C++ compiler available we use this for compiling flesh.cc.
-    Since we use only ANSI C in flesh.cc, if there is no C++ compiler 
+    Since we use only ANSI C in flesh.cc, if there is no C++ compiler
     available on your machine (and so you are not trying to compile any thorns
     containing C++), we use the C compiler instead.
 
@@ -1228,7 +1267,7 @@ F6  Are there grid scalars of type STRING ?
     with DISTRIB=CONSTANT with a maximum length.
 
 
-F7  Why don't you use compilers mpicc, mpiCC etc when they exist on parallel 
+F7  Why don't you use compilers mpicc, mpiCC etc when they exist on parallel
     machines?
 
     The compilers mpicc etc are scripts for compilation which are site
@@ -1237,21 +1276,21 @@ F7  Why don't you use compilers mpicc, mpiCC etc when they exist on parallel
     underlying compiler is being used, which in turn leads to problems
     adding the correct compilation flags.
 
-    So far we have found it more convenient and transparent to manually add 
+    So far we have found it more convenient and transparent to manually add
     libraries and options to the configure system than to rely on
     mpicc behaving well on all platforms. At some point we will be
     reinvestigating this.
 
 
-F8  How does Cactus manage to so seamlessly call Fortran routines from 
+F8  How does Cactus manage to so seamlessly call Fortran routines from
     C, and vice versa?
 
-    Part of the configuration step on a machine involves automatically 
-    deducing the convention which the fortran compiler uses for its symbols 
-    (for example, upper or lower case and the addition of underscores). 
+    Part of the configuration step on a machine involves automatically
+    deducing the convention which the fortran compiler uses for its symbols
+    (for example, upper or lower case and the addition of underscores).
 
-    This information is then used to construct the macros which are used 
-    at preprocessing to translate Fortran names to C-callable routines. 
+    This information is then used to construct the macros which are used
+    at preprocessing to translate Fortran names to C-callable routines.
 
     We also use macros to facilitate passing strings from Fortran into
     C. Strings must always be at the end of argument lists for this
@@ -1264,14 +1303,14 @@ F8  How does Cactus manage to so seamlessly call Fortran routines from
 ------------------------------------------------------------------------------
 Documentation:
 
-G1  How can I build the ThornGuide documentation for single thorns or 
+G1  How can I build the ThornGuide documentation for single thorns or
     arrangements?
 
     Give the names of the thorns or arrangements on the make line, e.g.
 
     gmake ThornGuide THORNS="CactusBase/Boundary"
 
-    gmake ThornGuide ARRANGEMENTS="CactusBase"   
+    gmake ThornGuide ARRANGEMENTS="CactusBase"
 
 
 ------------------------------------------------------------------------------
@@ -1280,9 +1319,9 @@ I/O:
 H1  I want to run an old parameter file, but none of the I/O parameters are
     recognised!
 
-    In Beta 13 the "old" I/O parameter names were finally fully removed in 
-    favour of "new" more consister parameter names across the I/O thorns in 
-    the computational toolkit. A complete list of I/O parameters which 
+    In Beta 13 the "old" I/O parameter names were finally fully removed in
+    favour of "new" more consister parameter names across the I/O thorns in
+    the computational toolkit. A complete list of I/O parameters which
     changed is contained in the following mail:
 
     http://www.cactuscode.org/archives_html/users/msg00278.html
