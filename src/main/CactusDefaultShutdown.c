@@ -79,6 +79,10 @@ int CactusDefaultShutdown(tFleshConfig *config)
   {    
     CCTK_Traverse(config->GH[conv_level], "CCTK_SHUTDOWN"); 
   }
+
+  printf("--------------------------------------------------------------------------------\n"); 
+  printf("Done.\n");
+  fflush(stdout);
  
 #ifdef CCTK_MPI
   if(MPI_Active)
@@ -86,12 +90,6 @@ int CactusDefaultShutdown(tFleshConfig *config)
     CACTUS_MPI_ERROR(MPI_Finalize());
   }
 #endif
-
-  if(myproc == 0)
-  {
-    printf("--------------------------------------------------------------------------------\n"); 
-    printf("Done.\n");
-  }
 
   return 0;
 }
