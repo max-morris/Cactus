@@ -387,17 +387,11 @@ sub check_implementation_consistency
     {
       if(split(' ', $inherits{$thing}) != $n_thorns)
       {
-### Thomas Radke, 2 Sep 2003
-### If this consistency check fails, only a warning should be issued
-### rather than stopping the CST with an error message.
-### This allows thorns providing the same implementation to have different
-### inherits.
-#        $n_errors++;
-#        &CST_error(0,
-        &CST_error(1,
+        &CST_error(0,
                    "Inconsistent implementation of '$implementation' " .
                    "provided by thorns '@thorns': not all inherit '$thing'",
                    '', __LINE__, __FILE__);
+        $n_errors++;
       }
     }
 
