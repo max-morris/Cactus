@@ -329,11 +329,11 @@ sub get_c_type_string
      $type eq "STRING"  ||
      $type eq "SENTENCE")
   {
-    $type_string = "char *";
+    $type_string = "CCTK_CHAR *";
   }
   elsif($type eq "LOGICAL")
   {
-    $type_string = "int ";
+    $type_string = "CCTK_INT ";
   } 
   elsif($type eq "INT")
   {
