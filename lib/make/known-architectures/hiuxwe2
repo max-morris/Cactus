@@ -17,7 +17,7 @@
 #              Added cross-compiling defines
 #   @endhdesc
 #   @endhistory
-#   @version   $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/hiuxwe2,v 1.9 2002-07-23 14:03:09 tradke Exp $
+#   @version   $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/hiuxwe2,v 1.10 2003-02-13 11:54:12 tradke Exp $
 # @@*/
 
 if test "$CCTK_CONFIG_STAGE" = 'preferred-compilers' ; then
@@ -49,8 +49,16 @@ else
     F90FLAGS="$F90FLAGS -64"
   fi
 
-  : ${F77_OPTIMISE_FLAGS='-opt=ss -nopredicate -pvfunc=2 -noparallel -model=F1'}
-  : ${F90_OPTIMISE_FLAGS='-opt=ss -nopredicate -pvfunc=2 -noparallel -model=F1 -noscope'}
+  # For debug configurations, disallow the generation of conditional
+  # load/store ops which may cause problems on array accesses
+  # which have been passed in from C to Fortran as a NULL pointer.
+  if test -n "$DEBUG" -a "x$DEBUG" != 'xno' ; then
+    : ${F77_OPTIMISE_FLAGS='-opt=ss -nopredicate -pvfunc=2 -noparallel -model=F1'}
+    : ${F90_OPTIMISE_FLAGS='-opt=ss -nopredicate -pvfunc=2 -noparallel -model=F1 -noscope'}
+  else
+    : ${F77_OPTIMISE_FLAGS='-opt=ss -pvfunc=2 -noparallel -model=F1'}
+    : ${F90_OPTIMISE_FLAGS='-opt=ss -pvfunc=2 -noparallel -model=F1 -noscope'}
+  fi
 
   : ${F77_WARN_FLAGS='-fullmsg'}
   : ${F90_WARN_FLAGS='-fullmsg'}
