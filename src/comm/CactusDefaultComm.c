@@ -627,6 +627,7 @@ int CactusDefaultGroupStorageIncrease (cGH *GH, int n_groups, const int *groups,
                                        const int *timelevels, int *status)
 {
   int i, value, retval;
+  char *gname;
 
 
   /* Avoid a warning about timelevels being unused. */
@@ -639,7 +640,9 @@ int CactusDefaultGroupStorageIncrease (cGH *GH, int n_groups, const int *groups,
     {
       if(groups[i] >= 0)
       {
-        value = CCTK_EnableGroupStorage(GH, CCTK_GroupName(groups[i]));
+        gname = CCTK_GroupName(groups[i]);
+        value = CCTK_EnableGroupStorage(GH, gname);
+        free (gname);
         retval += value;
         if(status)
         {
