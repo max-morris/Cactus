@@ -1,76 +1,134 @@
+% *======================================================================*
+%  Cactus Thorn template for ThornGuide documentation
+%  Author: Ian Kelley
+%  Date: Sun Jun 02, 2002
+%  $Header$                                                             
+%
+%  Thorn documentation in the latex file doc/documentation.tex 
+%  will be included in ThornGuides built with the Cactus make system.
+%  The scripts employed by the make system automatically include 
+%  pages about variables, parameters and scheduling parsed from the 
+%  relevent thorn CCL files.
+%  
+%  This template contains guidelines which help to assure that your     
+%  documentation will be correctly added to ThornGuides. More 
+%  information is available in the Cactus UsersGuide.
+%                                                    
+%  Guidelines:
+%   - Do not change anything before the line
+%       % BEGIN CACTUS THORNGUIDE",
+%     except for filling in the title, author, date etc. fields.
+%   - You can define your own macros are OK, but they must appear after
+%     the BEGIN CACTUS THORNGUIDE line, and do not redefine standard 
+%     latex commands.
+%   - To avoid name clashes with other thorns, 'labels', 'citations', 
+%     'references', and 'image' names should conform to the following 
+%     convention:          
+%       ARRANGEMENT_THORN_LABEL
+%     For example, an image wave.eps in the arrangement CactusWave and 
+%     thorn WaveToyC should be renamed to CactusWave_WaveToyC_wave.eps
+%   - Graphics should only be included using the graphix package. 
+%     More specifically, with the "includegraphics" command. Do
+%     not specify any graphic file extensions in your .tex file. This 
+%     will allow us (later) to create a PDF version of the ThornGuide
+%     via pdflatex. |
+%   - References should be included with the latex "bibitem" command.  
+%   - For the benefit of our Perl scripts, and for future extensions, 
+%     please use simple latex.     
+%
+% *======================================================================* 
+% 
+% Example of including a graphic image:
+%    \begin{figure}[ht]
+% 	\begin{center}
+%    	   \includegraphics[width=6cm]{MyArrangement_MyThorn_MyFigure}
+% 	\end{center}
+% 	\caption{Illustration of this and that}
+% 	\label{MyArrangement_MyThorn_MyLabel}
+%    \end{figure}
+%
+% Example of using a label:
+%   \label{MyArrangement_MyThorn_MyLabel}
+%
+% Example of a citation:
+%    \cite{MyArrangement_MyThorn_Author99}
+%
+% Example of including a reference
+%   \bibitem{MyArrangement_MyThorn_Author99}
+%   {J. Author, {\em The Title of the Book, Journal, or periodical}, 1 (1999), 
+%   1--16. {\tt http://www.nowhere.com/}}
+%
+% *======================================================================* 
+
 \documentclass{article}
 
-% Comment out this line if you do not have this style file, or download
-% it from www.cactuscode.org
+% Use the Cactus ThornGuide style file
+% (Automatically used from Cactus distribution, if you have a 
+%  thorn without the Cactus Flesh download this from the Cactus
+%  homepage at www.cactuscode.org)
 \usepackage{../../../../doc/ThornGuide/cactus}
 
 \begin{document}
 
 % The author of the documentation
-\author{Your Name} 
+\author{} 
 
 % The title of the document (not necessarily the name of the Thorn)
-\title{The Title of This Document}
+\title{}
 
-\date{The Date of The Last Change}
+% the date your document was last changed, if your document is in CVS, 
+% please us:
+%    \date{$ $Date$ $}
+\date{}
 
-% the following 3 lines will be ignored when the ThornGuide is constructed
 \maketitle
 
-\section{Abstract}
-This thorn can do this and that, in three different ways. 
+% Do not delete next line
+% START CACTUS THORNGUIDE
 
-\tableofcontents
+% Add all definitions used in this documentation here 
+%   \def\mydef etc
+
+% Add an abstract for this thorn's documentation
+\begin{abstract}
+
+\end{abstract}
+
+% The following sections are suggestive only.
+% Remove them or add your own.
 
 \section{Introduction}
 
-Introductory kind of stuff
+\section{Physical System}
 
-\section{Physics and Equations}
+\section{Numerical Implementation}
 
-Very important to describe any physical system which your thorn is modelling,
-this is hard to work out from code.
+\section{Using This Thorn}
 
-If you want to include figures you {\it have} to use the following
-structure for now. Name the figure with the name of your arrangement
-and thorn as below in~\ref{MyArrangement_MyThorn_MyLabel}, to avoid
-name clashes. Don't include the extension in the figure name,
+\subsection{Obtaining This Thorn}
 
-\begin{figure}
-\begin{verbatim}
-\begin{figure}[ht]
-\begin{center}
-   \includegraphics[width=6cm]{MyArrangement_MyThorn_MyFigure}
-\end{center}
-\caption{Illustration of this and that}
-\label{MyArrangement_MyThorn_MyLabel}
-\end{figure}
-\end{verbatim}
-\caption{This is how you include figures}
-\label{MyArrangement_MyThorn_MyLabel}
-\end{figure}
+\subsection{Basic Usage}
 
-Note that you should also include the arrangement name and thorn name in 
-any labels you use, again to avoid name clashes with other thorns. Ditto 
-for~\cite{MyArrangement_MyThorn_Author99} labels for and citations.
+\subsection{Special Behaviour}
 
-\section{Numerical Methods}
+\subsection{Interaction With Other Thorns}
 
-You probably want to say something about the numerical methods you are using.
+\subsection{Support and Feedback}
 
-\section{How to Use This Thorn}
+\section{History}
 
-As well as any special instructions on how to get hold of and use the 
-thorn, and how it interacts with other thorns. Note that when the 
-ThornGuide is constructed, sections are automatically included from 
-the information in the CCL files.
+\subsection{Thorn Source Code}
+
+\subsection{Thorn Documentation}
+
+\subsection{Acknowledgements}
+
 
 \begin{thebibliography}{9}
 
-\bibitem{MyArrangement_MyThorn_Author99}
-{J. Author, {\em The Title of the Book, Journal, or periodical}, 1 (1999), 
-1--16. {\tt http://www.nowhere.com/}}
-
 \end{thebibliography}
+
+% Do not delete next line
+% END CACTUS THORNGUIDE
 
 \end{document}
