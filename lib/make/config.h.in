@@ -1,0 +1,28 @@
+/* config.h.in.  Generated automatically from configure.in by autoheader.  */
+
+/* Define to empty if the keyword does not work.  */
+#undef const
+
+/* Define if the `long double' type works.  */
+#undef HAVE_LONG_DOUBLE
+
+/* Define as __inline if that's what the C compiler calls it.  */
+#undef inline
+
+/* Define if your processor stores words with the most significant
+   byte first (like Motorola and SPARC, unlike Intel and VAX).  */
+#undef WORDS_BIGENDIAN
+
+/* The number of bytes in a int.  */
+#undef SIZEOF_INT
+
+/* The number of bytes in a short int.  */
+#undef SIZEOF_SHORT_INT
+
+#if SIZEOF_INT==4
+#define Int int
+#elif SIZEOF_SHORT_INT==4
+#define Int short int
+#else
+#error "Unable to find a 4 byte integer type. "
+#endif

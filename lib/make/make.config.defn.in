@@ -1,0 +1,28 @@
+SHELL             = @SHELL@
+MKDIR             = @MKDIR@
+CC                = @CC@
+CXX               = @CXX@
+F90               = @F90@
+F77               = @F77@
+CPP               = @CPP@
+LD                = @LD@
+AR                = @AR@
+RANLIB            = @RANLIB@
+PERL              = @PERL@
+
+INC_DIRS          = 
+
+CFLAGS            = @CFLAGS@
+CXXFLAGS          = @CXXFLAGS@
+F90FLAGS          = @F90FLAGS@
+F77FLAGS          = @F77FLAGS@
+
+LDFLAGS           = @LDFLAGS@
+
+TOOLKIT_DIR = $(TOP)/@TOOLKIT_DIR@
+BUILD_DIR   = $(TOP)/@BUILD_DIR@
+CCTK_LIBDIR = $(TOP)/@CCTK_LIBDIR@
+
+EXE    = @EXE@
+
+THORNS = testkit/test

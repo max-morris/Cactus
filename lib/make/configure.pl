@@ -1,4 +1,4 @@
-#!/bin/perl
+#! /usr/bin/perl -s
 #/*@@
 #  @file      configure.pl
 #  @date      Fri Jan  8 15:06:22 1999
@@ -9,6 +9,11 @@
 #@@*/
 
 $tmphome = shift(@ARGV);
+
+if(! $compiler)
+{
+  $compiler="f90"
+}
 
 print "Determining number of fortran underscores...\n";
 
@@ -27,7 +32,8 @@ EOT
 close OUT;
 
 # Compile the test file
-system("f90 -c fname_test.f");
+print "Compiling test file with $compiler...\n";
+system("$compiler -c fname_test.f");
 
 $retcode = $? >> 8;
 

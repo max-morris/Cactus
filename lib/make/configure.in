@@ -1,0 +1,66 @@
+dnl @@
+dnl    @file      configure.in
+dnl    @date      Sun Jan 17 15:54:23 1999
+dnl    @author    Tom Goodale
+dnl    @desc 
+dnl    
+dnl    @enddesc 
+dnl  @@
+dnl Process this file with autoconf to produce a configure script.
+AC_REVISION($Id$)
+AC_INIT()
+AC_CONFIG_HEADER(config.h)
+
+dnl Checks for programs.
+AC_PROG_MAKE_SET
+AC_PROG_CC
+AC_PROG_CPP
+AC_PROG_CXX
+AC_PROG_RANLIB
+AC_PATH_PROGS(PERL, perl)
+AC_PATH_PROGS(F90, f90 pgf90)
+AC_PATH_PROGS(F77, f77 pgf77 g77 f90 pgf90)
+AC_PATH_PROGS(AR, ar)
+AC_PATH_PROGS(MKDIR, mkdir)
+AC_PATH_PROGS(SHELL, sh bash)
+
+AC_SUBST(LD)
+LD=$CXX
+
+dnl Checks for libraries.
+
+dnl Checks for header files.
+
+dnl Checks for typedefs, structures, and compiler characteristics.
+
+AC_C_BIGENDIAN
+AC_C_CONST
+AC_C_INLINE
+AC_C_LONG_DOUBLE
+AC_CHECK_SIZEOF(int)
+AC_CHECK_SIZEOF(short int)
+
+AC_SUBST(F90FLAGS)
+AC_SUBST(F77FLAGS)
+
+F90FLAGS=$CFLAGS
+F77FLAGS=$CFLAGS
+
+dnl Checks for library functions.
+
+dnl Misc stuff
+
+AC_SUBST(TOOLKIT_DIR)
+AC_SUBST(BUILD_DIR)
+AC_SUBST(CCTK_LIBDIR)
+AC_SUBST(EXE)
+
+TOOLKIT_DIR=../toolkits
+BUILD_DIR=build
+CCTK_LIBDIR=lib
+
+dnl Run any other scripts necessary
+AC_OUTPUT_COMMANDS(,$PERL -s $srcdir/configure.pl -compiler=$F90 .)
+
+dnl Output everything
+AC_OUTPUT(make.config.defn)
