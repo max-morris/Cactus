@@ -53,7 +53,7 @@ endef
 
 # Define how to do a C++ compilation
 define PREPROCESS_CXX
-cat $< | $(PERL) $(CCTK_HOME)/lib/sbin/c_file_processor.pl $(CONFIG) > $(notdir $<)
+cat $< | $(PERL) $(C_FILE_PROCESSOR) $(CONFIG) > $(notdir $<)
 endef
 
 define COMPILE_CXX

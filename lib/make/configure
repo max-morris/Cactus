@@ -2339,9 +2339,9 @@ BUILD_ACTIVETHORNS=`echo $srcdir/../sbin/BuildActiveThorns.pl | sed 's,^//\(.\)/
 CST=`echo $srcdir/../sbin/CST | sed 's,^//\(.\)/,\1:/,'`
 
 
-F_FILE_PROCESSOR=`echo $srcdir/../sbin/f_file_processor.pl | sed 's,^//\(.\)/,\1:/,'`
+F_FILE_PROCESSOR='${CCTK_HOME}/lib/sbin/f_file_processor.pl'
 
-C_FILE_PROCESSOR=`echo $srcdir/../sbin/c_file_processor.pl | sed 's,^//\(.\)/,\1:/,'`
+C_FILE_PROCESSOR='${CCTK_HOME}/lib/sbin/c_file_processor.pl'
 
 
 

@@ -338,9 +338,9 @@ AC_SUBST(CST)
 CST=`echo $srcdir/../sbin/CST | sed 's,^//\(.\)/,\1:/,'`
 
 AC_SUBST(F_FILE_PROCESSOR)
-F_FILE_PROCESSOR=`echo $srcdir/../sbin/f_file_processor.pl | sed 's,^//\(.\)/,\1:/,'`
+F_FILE_PROCESSOR='${CCTK_HOME}/lib/sbin/f_file_processor.pl'
 AC_SUBST(C_FILE_PROCESSOR)
-C_FILE_PROCESSOR=`echo $srcdir/../sbin/c_file_processor.pl | sed 's,^//\(.\)/,\1:/,'`
+C_FILE_PROCESSOR='${CCTK_HOME}/lib/sbin/c_file_processor.pl'
 
 
 
