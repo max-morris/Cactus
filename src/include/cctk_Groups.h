@@ -39,6 +39,7 @@ int        CCTK_FirstVarIndexI(int group);
 char      *CCTK_FullName(int var);
 
 int        CCTK_GroupData(int group, cGroup *gp);
+int        CCTK_GroupDimI(int group);
 CCTK_INT **CCTK_GroupGhostsizesI(int group);
 int        CCTK_GroupIndex(const char *groupname);
 int        CCTK_GroupIndexFromVar(const char *var);

@@ -92,6 +92,7 @@
 #include "cctk_Interp.h"
 #include "cctk_IOMethods.h"
 #include "cctk_Misc.h"
+#include "cctk_Parameter.h"
 #include "cctk_Reduction.h"
 #include "cctk_WarnLevel.h"
 
