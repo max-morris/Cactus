@@ -1,3 +1,4 @@
+
 #! /bin/sh
 #/*@@
 #  @file   setup.sh
@@ -68,7 +69,7 @@ fi
 
 # Set version-specific libraries
 # (version 2.2.0 and newer do not have libpetscsles.a any more)
-if [ -e $(PETSC_DIR)/lib/libO/$(PETSC_ARCH)/libpetscksp.a ]; then
+if [ -e $PETSC_DIR/lib/libO/$PETSC_ARCH/libpetscksp.a ]; then
   PETSC_SLES_LIBS="petscksp"
 else
   PETSC_SLES_LIBS="petscsles"
