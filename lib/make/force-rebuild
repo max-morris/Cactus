@@ -5,7 +5,7 @@
 #   @desc 
 #   Timestamp file for forcing rebuilds of configurations
 #   @enddesc 
-#   @version $Id: force-rebuild,v 1.8 2003-11-06 10:33:53 schnetter Exp $
+#   @version $Id: force-rebuild,v 1.9 2003-11-19 16:47:40 schnetter Exp $
 # @@*/
 
 6 March 2003: minor changes to CreateFunctionBindings.pl 
@@ -17,3 +17,4 @@
 27 October 2003: Provide function prototypes for both Fortran and C
 28 October 2003: Correct passing of pointers between C and Fortran.
 6 November 2003: Treat scalars as rank 0 arrays.
+19 November 2003: Change include mechanism for cctk_Functions.h
