@@ -118,6 +118,12 @@ Data Type & {\t \#define}\\
 Note that Cactus does not provide integer types, and
 that the corresponding C data types are platform dependent.
 
+\subsection{Fortran Thorn Writers}
+
+Cactus provides a further data type {\tt CCTK\_POINTER} 
+for use in Fortran code to declare a pointer passed from C. 
+For example, the variable {\tt cctkGH} is of this type.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -138,14 +144,15 @@ functions, variables, etc. See \ref{sec:in}.
 the flesh.
 \end{itemize}
 
-and a subdirectory called `src', which should hold source files for
-the thorn.
-
-In addition each thorn should have a `README' containing a brief description
-of the thorn, a `doc' directory for documentation, and a `par' directory
-for example parameter files.
-
-Once the thorn is finished a `test' subdirectory may also be added.  See \ref{sec:testsuites} for details.
+Thorns can also contain  
+\begin{itemize}
+\item a subdirectory called {\tt src}, which should hold source files
+\item a subdirectory {\tt src/include} for include files 
+\item a `README' containing a brief description of the thorn
+\item a `doc' directory for documentation
+\item a `par' directory for example parameter files
+\item a `test' subdirectory may also be added.  See \ref{sec:testsuites} for details.
+\end{itemize}
 
 \section{Creating a thorn}
 
