@@ -561,15 +561,6 @@ from Fortran.
 \item[\code{CCTK\_PARAMWARN}] [\pageref{CCTK-PARAMWARN}]
   Prints a warning from parameter checking, and possibly stops the code
 
-\item[\code{CCTK\_PointerTo}] [\pageref{CCTK-PointerTo}]
-\item[\code{CCTK\_ReduceGridArrays}] [\pageref{CCTK-ReduceGridArrays}]
-  Reduces a list of local arrays (new grid array reduction API)
-
-\item[\code{CCTK\_ReduceLocalArrays}] [\pageref{CCTK-ReduceLocalArrays}]
-  Reduces a list of local arrays (new local array reduction API)
-  Returns the address of a variable passed in by reference
-  from a Fortran routine
-
 \item[\code{CCTK\_PrintGroup}] [\pageref{CCTK-PrintGroup}]
   Prints a group name from its index
 
@@ -588,6 +579,15 @@ from Fortran.
 \item[\code{CCTK\_QueryGroupStorageI}] [\pageref{CCTK-QueryGroupStorageI}]
   Queries storage for a group given by its group index
 
+
+\item[\code{CCTK\_PointerTo}] [\pageref{CCTK-PointerTo}]
+\item[\code{CCTK\_ReduceGridArrays}] [\pageref{CCTK-ReduceGridArrays}]
+  Reduces a list of local arrays (new grid array reduction API)
+
+\item[\code{CCTK\_ReduceLocalArrays}] [\pageref{CCTK-ReduceLocalArrays}]
+  Reduces a list of local arrays (new local array reduction API)
+  Returns the address of a variable passed in by reference
+  from a Fortran routine
 
 %\item[\code{CCTK\_Reduce}]
 %  [\pageref{CCTK-Reduce}]
@@ -2875,16 +2875,16 @@ this structure.
 \begin{Discussion}
 The {\t cGroup} structure%%%
 \footnote{%%%
-	 {\t cGroup} is is a {\t typedef} for a structure.
-	 It's defined in {\t "cctk\_Group.h"}, which is
-	 {\t #include}d by {\t "cctk.h"}.
-	 }%%%
+         {\t cGroup} is is a {\t typedef} for a structure.
+         It's defined in {\t "cctk\_Group.h"}, which is
+         {\t #include}d by {\t "cctk.h"}.
+         }%%%
 {} contains (at least) the following members:%%%
 \footnote{%%%
-	 Note that the members are {\bf not\/}
-	 guaranteed to be declared in the order
-	 listed here.
-	 }%%%
+         Note that the members are {\bf not\/}
+         guaranteed to be declared in the order
+         listed here.
+         }%%%
 \begin{verbatim}
   int grouptype;      /* group type, as returned by CCTK_GroupTypeNumber() */
   int vartype;        /* variable type, as returned by CCTK_VarTypeNumber() */
@@ -7461,6 +7461,7 @@ communication can be done together.
 #include "cctk.h"
 
 int status = CCTK_ReduceGridArrays(const cGH *GH,
+                          int dest_processor,
                           int local_reduce_handle,
                           int param_table_handle,
                           int N_input_arrays,
@@ -7474,6 +7475,7 @@ int status = CCTK_ReduceGridArrays(const cGH *GH,
 \begin{verbatim}
 call CCTK_ReduceGridArrays(status,
 .                          GH,
+.                          dest_processor,
 .                          local_reduce_handle,
 .                          param_table_handle,
 .                          N_input_arrays,
@@ -7483,6 +7485,7 @@ call CCTK_ReduceGridArrays(status,
 .                          output_values)
 integer                  status
 CCTK_POINTER_TO_CONST    GH
+integer                  dest_processor
 integer                  local_reduce_handle
 integer                  param_table_handle
 integer                  N_input_arrays
@@ -7502,6 +7505,9 @@ CCTK_POINTER             output_values(M_output_values)
 \begin{ParameterSection}
 \begin{Parameter}{cctkGH ($\ne$ NULL)}
 Pointer to a valid Cactus grid hierarchy.
+\end{Parameter}
+\begin{Parameter}{dest\_processor}
+The destination processor. $-1$ will distribute the result to all processors.
 \end{Parameter}
 \begin{Parameter}{local\_reduce\_handle}
 Handle to the local reduction operator as returned by \newline
