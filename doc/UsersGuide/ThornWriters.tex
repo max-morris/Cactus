@@ -517,7 +517,7 @@ routine {\tt metric\_predictor} and before {\tt metric\_corrector}, if
 the parameter {\tt evolve\_hydro} has been set.
 \begin{verbatim}
 
-if(CCTK_Equals(evolve_hydro,''yes''))
+if(CCTK_Equals(evolve_hydro,"yes"))
 {
   SCHEDULE hydro_predictor AT evol AFTER metric_predictor BEFORE metric_corrector 
   {
@@ -1112,15 +1112,15 @@ AT} the main schedule bins.  (I.e. groups may be nested.)
 The options define various charactertics of the schedule item.
 
 \begin{Lentry}
-\item[BEFORE or AFTER]
+\item[{\tt BEFORE or AFTER}]
 These specify a function or group before or after which this item will 
 be scheduled.
-\item[WHILE]
+\item[{\tt WHILE}]
 This specifies a {\em CCTK\_INT} grid scalar which is used to control
 the execution of this item.  If the grid scalar has a non-zero value
 the schedule item will be executed, otherwise the item will be
 ignored.  This allows iteration within the scheduler.
-\item[AS]
+\item[{\tt AS}]
 This assigns a new name to a function for scheduling purposes.  This
 is used, for instance, to allow a thorn to schedule something before
 or after a routine from another implementation;  two thorns providing this
@@ -1768,80 +1768,270 @@ is a parallel unigrid driver.
 \section{Coordinates}
 \label{sec:co}
 
-The flesh provides utility routines for registering and querying coordinate 
-information. The flesh does not provide any coordinates itself, these must be
-supplied by a thorn. Thorns are not required to register coordinates to the
-flesh, but registering coordinates provides a means for infrastructure thorns
-to make use of coordinate information.
+The flesh provides utility routines for registering and querying
+coordinate information. The flesh does not provide any coordinates
+itself, these must be supplied by a thorn. Thorns are not required to
+register coordinates to the flesh, but registering coordinates
+provides a means for infrastructure thorns to make use of coordinate
+information.
 
-Coordinate support is still being developed in the Cactus flesh. At the moment,
-it is assumed that coordinates will usually be grid functions. 
+Coordinate support is still being developed in the Cactus flesh. At
+the moment, it is assumed that coordinates will usually be grid
+functions.
 
-Coordinates are grouped into {\it coordinate systems}, which have a specified
-dimension. Any number of coordinate systems can be registered with the flesh,
-and a coordinate system must be registered before any coordinates can be
-registered, since they must be associated with their corresponding system. 
-Coordinates can be registered, with any chosen name, with an existing coordinate
-system, along with their direction or index in the coordinate system.
-Optionally, the coordinate can also be associated with a given grid variable.
-A separate call can register the global range for a coordinate on a given grid
-hierarchy. 
+Coordinates are grouped into {\it coordinate systems}, which have a
+specified dimension. Any number of coordinate systems can be
+registered with the flesh, and a coordinate system must be registered
+before any coordinates can be registered, since they must be
+associated with their corresponding system.  Coordinates can be
+registered, with any chosen name, with an existing coordinate system,
+along with their direction or index in the coordinate system.
+Optionally, the coordinate can also be associated with a given grid
+variable.  A separate call can register the global range for a
+coordinate on a given grid hierarchy.
 
-A registered coordinate system can be refered to by both its name and an
-associated handle. Passing such an integer handle instead of the name string
-is necessary for calling C routines from Fortran.\\
+Following conventions for coordinate system and coordinate names
+provides a means for other thorns to use the physical properties of
+coordinate systems, without being tied to a particular thorn.
 
+A registered coordinate system can be refered to by both its name and
+an associated handle. Passing such an integer handle instead of the
+name string may be necessary for calling C routines from Fortran.
+
+\subsection{Registering Coordinates and Coordinate Properties}
+
+Coordinate systems and their properties can be registered at any time with the Flesh.
 The registration utilities for thorns providing coordinates are:
 \begin{Lentry}
 
 \item[{\tt CCTK\_CoordRegisterSystem}]
 
-Assigns a coordinate system with a chosen name and dimension
+Assigns a coordinate system with a chosen name and dimension. For example,
+a 3-dimensional Cartesian coordinate system could be registered with the
+name {\tt cart3d} using the call from C
+
+{\tt 
+int ierr;\\
+int dim=3;\\
+ierr = CCTK\_CoordRegisterSystem(dim,"cart3d");
+}
 
 \item[{\tt CCTK\_CoordRegisterData}]
 
 Defines a coordinate in a given coordinate system, with a given 
 	direction and name, and optionally associates it to a grid variable.
+The directions of the coordinates range from 1 to the dimension of the
+coordinate system. For example, to register the grid variable {\it grid::y3d} 
+to have the coordinate name {\tt y} in the {\tt cart3d} system
+
+{\tt 
+int ierr;\\
+int dir=2;\\
+ierr = CCTK\_CoordRegisterData(dir,"grid::y3d","y","cart3d");
+}
 
 \item[{\tt CCTK\_CoordRegisterRange}]
 
-Assigns the global maximum and minimum for a coordinate 
-            	on a grid hierachy, that is in a {\tt cctkGH}.
+Assigns the global computational maximum and minimum for a coordinate
+on a grid hierachy, that is in a {\tt cctkGH}. At this time the
+maximum and minimum values have to be of type {\tt CCTK\_REAL}. For
+example, if the {\tt y} coordinate for the {\tt cart3d} system ranges
+between zero and one
+
+{\tt 
+CCTK\_REAL lower=0;\\
+CCTK\_REAL upper=1;\\
+int ierr;\\
+ierr = CCTK\_CoordRegisterRange(cctkGH, lower, upper, -1, "y", "cart3d");
+}
+
+Note that the API allows either the coordinate name or the direction to 
+be used, so that the following is also valid
+
+{\tt 
+CCTK\_REAL lower=0;\\
+CCTK\_REAL upper=1;\\
+int ierr;\\
+ierr = CCTK\_CoordRegisterRange(cctkGH, lower, upper, 2, NULL, "cart3d");
+}
+
+\item[{\tt CCTK\_CoordRegisterPhysIndex}]
+
+Implementing such things as symmetry properties for a grid leads to 
+the need to know the details of the {\it physical} section of a grid.
+Such information is typically needed by IO thorns. The following call
+illustrates how To register the 
+indices 3 and 25 as supplying the physical range of the {\tt y} 
+coordinate in the {\tt cart3d} system 
+
+{\tt 
+int loweri=3;\\
+int upperi=25;\\
+int ierr;\\
+ierr = CCTK\_CoordRegisterPhysIndex(cctkGH, loweri, upperi, -1, "y", "cart3d");
+}
+
+
 
 \end{Lentry}
+
+\subsection{Using Coordinates}
 
 The utilities for thorns using coordinates are:
 
 \begin{Lentry}
 
-\item[{\tt CCTK\_CoordSystemDim}]
+\item[{\tt CCTK\_NumCoordSystems}]
 
-Provides the dimension of a coordinate system
+Returns the number of coordinate systems registered with the Flesh. For example,
 
-\item[{\tt CCTK\_CoordSystemHandle}]
-
-Provides the integer handle for a given coordinate system name
+{\tt int num;\\
+num = CCTK\_NumCoordSystems();
+}
 
 \item[{\tt CCTK\_CoordSystemName}]
 
-Provides the name string for a given coordinate system handle
+Provides the name of a registered coordinate system, given the integer 
+handle (or index) for the system in the Flesh's coordinate data base.
+Note that the handle ranges between zero and the number of coordinate systems minus one: $0 \le \mbox{handle} \le \mbox{\tt CCTK\_NumCoordSystems()}-1$. 
+It is important to remember that the handle given to a coordinate system
+depends on the order in which systems are registered, and can be different
+from one simulation to the next.
+
+For example, to print the names of all registered coordinate systems:
+
+{\tt for (i=0; i<CCTK\_NumCoordSystems(); i++) \\
+ printf("\%s ",CCTK\_CoordSystemNName(i));}
+
+\item[{\tt CCTK\_CoordSystemDim}]
+
+Provides the dimension of a coordinate system. For example, if 
+the {\tt cart3d} system was registered as having 3 dimensions, the
+variable {\tt dim} below will now be set to 3,
+
+{\tt int dim;\\
+dim = CCTK\_CoordSystemDim("cart3d");
+}
+
+\item[{\tt CCTK\_CoordSystemHandle}]
+
+Provides the integer handle for a given coordinate system name. The handle describes
+the index for the coordinate system in the Flesh coordinate database, and its value
+will range between zero and the number of registered systems minus one. For example, 
+the handle for the {\tt cart3d} coordinate system can be found using
+
+{\tt int handle;\\
+handle = CCTK\_CoordSystemHandle("cart3d");}
+
+\item[{\tt CCTK\_CoordSystemName}]
+
+The inverse to the previous function call, this provides the name for a given coordinate system handle. 
+For example to find the first coordinate system in the Flesh database
+
+{\tt int handle = 0;\\
+const char *name = CCTK\_CoordSystemName(handle);
+}
 
 \item[{\tt CCTK\_CoordIndex}]
 
-Provides the grid variable index for a given coordinate
+Provides the grid variable index for a given coordinate. Notethat it is
+not necessary for a registered coordinate to have an associated grid variable,
+and if no such grid variable is found a negative integer will be returned.
+For example, to find the grid variable index associated with the {\tt y}
+coordinate of the {\tt cart3d} system, either of the two following
+calls could be made
+
+{\tt int index;\\
+index = CCTK\_CoordIndex(2,NULL,"cart3d");}
+
+{\tt int index;\\
+index = CCTK\_CoordIndex(-1,"y","cart3d");}
+
 
 \item[{\tt CCTK\_CoordDir}]
 
-Provides the direction for a given coordinate
+Provides the direction for a given coordinate. Directions are integers
+ranging from one to the number of dimensions for the coordinate system.
+For example, to return the direction of the {\tt y} coordinate in 
+the {\tt cart3d} system
+
+{\tt int dir;\\
+dir = CCTK\_CoordDir("y","cart3d");
+}
+
+The return of a negative integer indicates that the coordinate direction
+could not be found.
 
 \item[{\tt CCTK\_CoordRange}]
 
-Provides the global range of a coordinate on a given grid hierachy
+Provides the global range (that is, the minumum and maximum values across
+the complete grid) of a coordinate on a given grid hierachy. Currently
+the minumum and maximum values must be of type {\tt CCTK\_REAL}. The
+coordinate can be specified either by name or by its direction. Note that
+this call returns the {\tt addresses} or the minumum and maximum values.
+For example, the range of the {\tt y} coordinate of the {\tt cart3d} 
+coordinate system can be found using
+
+{\tt
+CCTK\_REAL lower, upper;\\
+int ierr;\\
+ierr = CCTK\_CoordRange(cctkGH, \&lower, \&upper, -1, "y", "cart3d");
+}
+or alternatively, using the direction
+
+{\tt
+CCTK\_REAL lower, upper;\\
+int ierr;\\
+ierr = CCTK\_CoordRange(cctkGH, \&lower, \&upper, 2, NULL, "cart3d");
+}
+
 
 \item[{\tt CCTK\_CoordLocalRange}]
 
-Provides the local range of a coordinate on a processor for 
-	a given grid hierachy. WARNING: This utility only currently works for regular cartesian grids.
+Provides the local range of a coordinate on a processor for a given
+grid hierachy. WARNING: This utility only currently works for regular
+cartesian grids. For example, the local processor range of the 
+{\tt y} coordinate of the {\tt cart3d} coordinate system can be found using
+
+{\tt
+CCTK\_REAL lower, upper;\\
+int ierr;\\
+ierr = CCTK\_CoordLocalRange(cctkGH, \&lower, \&upper, -1, "y", "cart3d");}
+or alternatively, using the direction
+
+{\tt
+CCTK\_REAL lower, upper;\\
+int ierr;\\
+ierr = CCTK\_CoordLocalRange(cctkGH, \&lower, \&upper, 2, NULL, "cart3d");
+}
+
+\item[{\tt CCTK\_CoordRangePhysIndex}]
+
+For a given coordinate, provides the indices describing the {\it physical}
+range of the coordinate. A negative return value signifies that no such range 
+was registered for the coordinate.
+
+This index range provides a mechanism for describing 
+grid points which should not be considered part of the simulation results (for example, 
+grid points used for different boundary conditions). The physical range of the 
+{\tt y} coordinate of the {\tt cart3d} system can be found using
+
+{\tt
+int ilower, iupper;\\
+int ierr;\\
+ierr = CCTK\_CoordRangePhysIndex(cctkGH,\&ilower,\&iupper, -1, "y", "cart3d");}
+or using the coordinate direction
+{\tt
+int ilower, iupper;\\
+int ierr;\\
+ierr = CCTK\_CoordRangePhysIndex(cctkGH,\&ilower,\&iupper, 2, NULL, "cart3d");}
+
+\item[{\tt CCTK\_CoordSystemImplementation}]
+
+This call returns the name of the implementation which registered a coordinate system.
+Note that there is no guarantee that a thorn which registered a coordinate system is 
+the same thorn which registers each of the coordinates in the system, although this 
+should usually be the case.
 
 \end{Lentry}
 
