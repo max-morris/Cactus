@@ -169,8 +169,8 @@ $(CCTK_LIBDIR)/$(LIBNAME_PREFIX)%$(LIBNAME_SUFFIX): update
 	else \
 		make_file=$(MAKE_DIR)/make.thornlib ; \
 	fi ; \
-	$(MAKE) TOP=$(TOP) SRCDIR=$$src_dir CONFIG=$(CONFIG) NAME=$@ THORN=$$thorn_name USESTHORNS="$(USESTHORNS_$(@:$(CCTK_LIBDIR)/$(LIBNAME_PREFIX)%$(LIBNAME_SUFFIX)=%))" -f $$make_file $(FPARFLAGS) ; \
-	echo $(DIVIDER)
+	$(MAKE) TOP=$(TOP) SRCDIR=$$src_dir CONFIG=$(CONFIG) NAME=$@ THORN=$$thorn_name USESTHORNS="$(USESTHORNS_$(@:$(CCTK_LIBDIR)/$(LIBNAME_PREFIX)%$(LIBNAME_SUFFIX)=%))" -f $$make_file $(FPARFLAGS)
+	@echo $(DIVIDER)
 
 
 # Include any extra dependencies
