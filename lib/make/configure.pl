@@ -268,11 +268,11 @@ sub determine_transformation
     $underscore_suffix = "__";
   }
 
-  if($case = 0)
+  if($case == 0)
   {
     $case_prefix = "\\L";
   }
-  if($case = 1)
+  if($case == 1)
   {
     $case_prefix = "\\U";
   }
