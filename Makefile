@@ -16,7 +16,7 @@
 #
 #
 #   @enddesc
-#   @version $Id: Makefile,v 1.130 2002-03-25 16:01:12 tradke Exp $
+#   @version $Id: Makefile,v 1.131 2002-04-08 09:48:56 tradke Exp $
 # @@*/
 
 ##################################################################################
@@ -973,7 +973,7 @@ $(addsuffix -ThornGuide,$(CONFIGURATIONS)):
 	  latex -interaction=nonstopmode ThornGuide.tex > LATEX_MESSAGES 2>&1;                             \
 	  latex -interaction=nonstopmode ThornGuide.tex > LATEX_MESSAGES 2>&1;                             \
 	  echo "  Running dvips....";                                                                      \
-	  dvips ./ThornGuide.dvi -o $(CCTK_HOME)/ThornGuide-$(@:%-ThornGuide=%).ps > DVIPS_MESSAGES 2>&1 ; \
+	  dvips -f ./ThornGuide.dvi 2> DVIPS_MESSAGES | $(CCTK_HOME)/lib/sbin/FixPageNumbersInPostscript.pl > $(CCTK_HOME)/ThornGuide-$(@:%-ThornGuide=%).ps; \
 	fi
 	@echo "  Done."
 endif
