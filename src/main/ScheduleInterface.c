@@ -842,6 +842,7 @@ int CCTK_SchedulePrint(const char *where)
     SchedulePrint("CCTK_ANALYSIS$EXIT");
     indent_level -=2;
     puts ("    endif");
+    puts ("    Do periodic output of grid variables");
     putchar ('\n');
     puts ("  do loop over timesteps");
     puts ("    Rotate timelevels");
@@ -866,6 +867,7 @@ int CCTK_SchedulePrint(const char *where)
     SchedulePrint("CCTK_ANALYSIS$EXIT");
     indent_level -=2;
     puts ("    endif");
+    puts ("    Do periodic output of grid variables");
     puts ("  enddo");
     putchar ('\n');
     puts ("  Termination routines");
