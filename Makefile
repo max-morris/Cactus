@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.92 2000-05-15 08:10:59 goodale Exp $
+#   @version $Id: Makefile,v 1.93 2000-05-16 08:51:35 goodale Exp $
 # @@*/
 
 ##################################################################################
@@ -463,10 +463,22 @@ ifneq ($strip($(CONFIGURATIONS)),)
 
 $(addsuffix -delete,$(CONFIGURATIONS)):
 	@echo $(DIVIDER)
-	@echo Deleting configuration $(@:%-delete=%)
-	cd $(CONFIGS_DIR) ; rm -rf $(@:%-delete=%)  
+	if test "x$(DELETE_CONFIRMATION)" = "xyes" ; then          \
+	  echo "Really delete configuration $(@:%-delete=%) (no)?";\
+	  read yesno rest ;                                        \
+	  if test "x$$yesno" = "xyes" ; then                       \
+	    confirm=yes ;                                          \
+	  else                                                     \
+	    confirm=no ;                                           \
+	  fi ;                                                     \
+	else                                                       \
+	  confirm=yes ;                                            \
+	fi ;                                                       \
+	if test "x$$confirm" = "xyes" ; then                       \
+	  echo Deleting configuration $(@:%-delete=%);             \
+	  cd $(CONFIGS_DIR) ; rm -rf $(@:%-delete=%) ;             \
+	fi 
 	@echo $(DIVIDER)
-
 endif
 
 %-delete:
