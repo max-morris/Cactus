@@ -16,6 +16,9 @@
 #include "cctk_GHExtensions.h"
 #include "cctk_Bindings.h"
 #include "cctk_Parameters.h"
+#include "cctki_ScheduleBindings.h"
+#include "cctki_GHExtensions.h"
+#include "cctki_WarnLevel.h"
 
 #include "CactusrfrInterface.h"
 #include "CactusMainDefaults.h"
@@ -90,7 +93,6 @@ int CactusInitialiseGH(cGH *GH)
   
   DECLARE_CCTK_PARAMETERS
 
-  int Rstep;
 
   /*
   SetupFortranArrays(GH);

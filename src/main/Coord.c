@@ -474,8 +474,12 @@ int CCTK_CoordLocalRange(cGH *GH,
 
   *lower = global_lower+GH->cctk_lbnd[dir-1]*GH->cctk_delta_space[dir-1];
   *upper = global_lower+GH->cctk_ubnd[dir-1]*GH->cctk_delta_space[dir-1];
-  
+
+#ifdef DEBUG  
   printf("Upper/Lower are %f,%f\n",*lower,*upper);
+#endif
+
+  return 0;
 
 }
   

@@ -187,7 +187,7 @@ void FMODIFIER FORTRAN_NAME(CCTK_StaggerIndex)(int *scode, ONE_FORTSTRING_ARG)
  
 int CCTK_StaggerDirIndex(int dir, int si) 
 {
-  int val,b,dsi;
+  int val,b,dsi=0;
   static int hash[4],hashed=0;
 
   if (hashed==0) 
@@ -299,6 +299,7 @@ int CCTK_GroupStaggerDirArrayGI(int *dindex, int dim, int gi)
   int si,ierr;
   si  = CCTK_GroupStaggerIndexGI(gi);
   ierr= CCTK_StaggerDirArray(dindex, dim, si);
+  return ierr;
 }
 
 void FMODIFIER FORTRAN_NAME(CCTK_GroupStaggerDirArrayGI)

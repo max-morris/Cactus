@@ -289,7 +289,7 @@ int CCTK_VWarn(int level, int line, const char *file, const char *thorn, const c
   }
 
   USE_CCTK_PARAMETERS
-
+  return 0;
 }  
 
 
@@ -503,10 +503,8 @@ void FMODIFIER FORTRAN_NAME(CCTK_VInfo)(int format_number, ...)
 {
   char *format_string;
   char *message;
-  char format[100];
   int message_length;
   int current_place;
-  va_list args;
   
   if(format_number < n_formats)
   {

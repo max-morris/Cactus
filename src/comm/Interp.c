@@ -718,7 +718,8 @@ void FMODIFIER FORTRAN_NAME(CCTK_Interp)(int *fortranreturn,
             break;
 
           default:
-            CCTK_WARN (1, "Invalid variable type for coordinates");
+            CCTK_Warn (1,__LINE__,__FILE__,"Cactus",
+		       "Invalid variable type for coordinates");
             retcode = -1;
             break;
         }

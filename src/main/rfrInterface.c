@@ -13,7 +13,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "cctk.h"
 #include "cctk_WarnLevel.h"
 #include "cctk_Flesh.h"
 #include "cctk_GHExtensions.h"
@@ -21,6 +20,7 @@
 #include "rfrConstants.h"
 #include "rfrInterface.h"
 #include "cctk_Schedule.h"
+#include "cctki_GHExtensions.h"
 
 static char *rcsid = "$Header$";
 
@@ -42,7 +42,8 @@ static char *rcsid = "$Header$";
 int CCTK_rfrTraverse(cGH *GH, int rfrpoint)
 {
 
-  CCTK_WARN(1, "CCTK_rfrTraverse is deprecated, please use CCTK_Traverse");
+  CCTK_Warn(1,__LINE__,__FILE__,"Cactus",
+	    "CCTK_rfrTraverse is deprecated, please use CCTK_Traverse");
   
   CCTKi_rfrTraverseGHExtensions(GH, rfrpoint);
 
@@ -56,7 +57,8 @@ int CCTK_rfrTraverse(cGH *GH, int rfrpoint)
 void rfrTraverse(void *rfr_top, void *data, int when) 
 {
 
-  CCTK_WARN(1, "rfrTraverse is deprecated, please use CCTK_ScheduleTraverse");
+  CCTK_Warn(1,__LINE__,__FILE__,"Cactus",
+	    "rfrTraverse is deprecated, please use CCTK_ScheduleTraverse");
 
   switch(when)
   {

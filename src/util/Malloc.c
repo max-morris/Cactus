@@ -13,6 +13,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "cctk_WarnLevel.h"
 #include "cctk_Malloc.h"
 #include "StoreHandledData.h"
 
@@ -146,7 +147,7 @@ void *CCTKi_Malloc(size_t size, int line, const char *file)
 
 void *CCTKi_Realloc(void *pointer, size_t size, int line, const char *file)
 {
-  t_mallocinfo tmp,*info;
+  t_mallocinfo *info;
   char *data;
   char mess[256];
  
@@ -415,11 +416,12 @@ long int CCTK_MemTicketCash(int this_ticket)
   t_memticket *tmem;
 
   if (tmem = (t_memticket*) Util_GetHandledData(ticketDB, this_ticket))
-    {
-      tsize = tmem->size;
-      tdiff = CCTK_TotalMemory() - tsize;
-    }
-  else {
+  {
+    tsize = tmem->size;
+    tdiff = CCTK_TotalMemory() - tsize;
+  }
+  else 
+  {
     printf("CCTK_MemTicketCash: Cannot find ticket %d \n", this_ticket);
     tdiff = 42;
   }

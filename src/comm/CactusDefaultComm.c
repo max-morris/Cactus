@@ -16,6 +16,7 @@
 #include "cctk_Constants.h"
 #include "CactusMainDefaults.h"
 #include "cctk_GHExtensions.h"
+#include "cctki_GHExtensions.h"
 
 #ifdef MPI
 #include "mpi.h"
@@ -68,7 +69,6 @@ cGH *CactusDefaultSetupGH(tFleshConfig *config, int convergence_level)
   int variable;
   int ntimelevels;
   int level;
-  int i;
   int cctk_dim;
 
   retval = NULL;

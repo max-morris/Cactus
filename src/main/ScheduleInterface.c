@@ -14,12 +14,15 @@ static char *rcsid = "$Header$";
 #include <stdlib.h>
 #include <stdarg.h>
 
-#include "cctk.h"
+
+#include "cctk_Flesh.h"
+#include "cctk_WarnLevel.h"
+#include "cctk_Misc.h"
+
 #include "cctk_Schedule.h"
 #include "cctki_ScheduleBindings.h"
 #include "cctki_Schedule.h"
 
-#include "cctk_Flesh.h"
 #include "cctk_Comm.h"
 #include "cctk_Sync.h"
 
@@ -215,11 +218,11 @@ int CCTK_CallFunction(void *function,
           fdata->FortranCaller(data, function);
           break;
         default :
-          CCTK_WARN(1, "Unknown language.");
+          CCTK_Warn(1,__LINE__,__FILE__,"Cactus", "Unknown language.");
       }
       break;
     default :
-      CCTK_WARN(1, "Unknown function type.");
+      CCTK_Warn(1,__LINE__,__FILE__,"Cactus","Unknown function type.");
   }
 
   /* Return 0, meaning didn't synchronise */
@@ -893,7 +896,7 @@ static int ParseOption(t_attribute *attribute,
   }
   else
   {
-    CCTK_WARN(1, "Unknown option for schedule group.\n");
+    CCTK_Warn(1,__LINE__,__FILE__,"Cactus", "Unknown option for schedule group.\n");
   }
 
   return 0;
