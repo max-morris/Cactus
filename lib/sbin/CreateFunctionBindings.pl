@@ -460,7 +460,7 @@ sub ParseArgumentsList
   my @fptrargs = ();
   if ($Arguments =~ s/CCTK_FPOINTER//)
   {
-    while ($Arguments =~ s/(.*?)\s*(\(.*\s.*?\))(.*)/\1FPTRARGS\3/g)
+    while ($Arguments =~ s/(.*?)\s*(\(.*\s.*?\))(.*)/\1FPTRARGS\3/)
     {
       my $tempargs = $2;
       $tempargs =~ s/\((.*)\)/\1/;
