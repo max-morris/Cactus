@@ -22,7 +22,7 @@ struct IOMethod
   int    (*OutputVarAs)(cGH *, const char *, const char *);
   int    (*TriggerOutput)(cGH *, int);
   int    (*TimeToOutput)(cGH *,int);
-}
+};
 
 #define CCTK_RegisterIOMethod(a) CCTKi_RegisterIOMethod(CCTK_THORNSTRING, a)
 int CCTKi_RegisterIOMethod(const char *thorn, const char *name);
