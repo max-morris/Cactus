@@ -51,7 +51,12 @@ if (!$debug)
   close (CS);
 }
 
+$home = `pwd`;
+chomp ($home);
+
 ($arrangement_dir, $thornlist) = @ARGV;
+
+$arrangement_dir = "$home/$arrangement_dir";
 
 if ($thornlist =~ /^$/) {
    %info = &buildthorns($arrangement_dir,"thorns");
@@ -59,11 +64,9 @@ if ($thornlist =~ /^$/) {
    %info = &ReadThornlist($thornlist);
 }
 
-$home = `pwd`;
-chomp ($home);
 foreach $thorn (sort keys %info)
 {
-  if( ! -d "$thorn/CVS")
+  if( ! -d "$arrangement_dir/$thorn/CVS")
   {
     print "Ignoring $thorn - no CVS directory\n";
     next;
@@ -99,7 +102,7 @@ foreach $thorn (sort keys %info)
     }
   }
 }
-  chdir $home) || die "Cannot change back to Cactus home directory '$home'\n";
+  chdir $home || die "Cannot change back to Cactus home directory '$home'\n";
 
 
 exit;
