@@ -1,0 +1,33 @@
+ /*@@
+   @header    Misc.h
+   @date      Wed Jan 20 10:39:01 1999
+   @author    Tom Goodale
+   @desc 
+   header file for miscellaneous routines.
+   @enddesc 
+   @version $Id$
+ @@*/
+
+#ifndef _MISC_H_
+#define _MISC_H_
+
+#ifdef _cplusplus
+extern "C" {
+#endif
+
+int CCTK_SplitString(char **before, char **after, const char *string, const char *sep);
+
+int CCTK_Equals(const char *string1, const char *string2);
+
+int CCTK_InList(const char *string1, int n_elements, ...);
+
+int CCTK_IntInRange(int inval, const char *range);
+int CCTK_DoubleInRange(double inval, const char *range);
+int CCTK_IntInRangeList(int inval, int n_elements, ...);
+int CCTK_DoubleInRangeList(double inval, int n_elements, ...);
+
+#ifdef _cplusplus
+           }   
+#endif
+
+#endif
