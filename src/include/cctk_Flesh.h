@@ -48,6 +48,10 @@ int CCTKi_CallStartupFunctions(tFleshConfig *ConfigData);
 
 int CCTKi_AddGH(tFleshConfig *config, int convergence_level, cGH *GH);
 
+int CCTKi_InitialiseCactus(int *argc, char ***argv, tFleshConfig *ConfigData);
+
+int CCTKi_ShutdownCactus(tFleshConfig *ConfigData);
+
 #ifdef __cplusplus
 }
 #endif
