@@ -238,7 +238,7 @@ sub check_interface_consistency
   local($n_errors);
   local($group);
   local(%attributes);
-    
+ 
   # Find out which thorns provide this implementation.
   @thorns = split(" ", $interface_data{"IMPLEMENTATION \U$implementation\E THORNS"});
 
@@ -280,7 +280,7 @@ sub check_interface_consistency
 	}
       }
   
-      # Record the piblic groups
+      # Record the public groups
       foreach $thing (split(" ", $interface_data{"\U$thorn\E PUBLIC GROUPS"}))
       {
 	if($thing =~ m:\w:)
@@ -654,6 +654,9 @@ sub parse_interface_ccl
 	  print STDERR "Duplicate variable $function in thorn $thorn\n";
 	}
 	
+	# Decrement the line number, since the line is the first line of the next CCL statement.
+	$line_number--;
+	
       }
     }
     else
@@ -661,6 +664,7 @@ sub parse_interface_ccl
       if($line =~ m:\{:)
       {
 	print STDERR "...Skipping interface block with missing keyword....\n";
+
 	$line_number++ until ($data[$line_number] =~ m:\}:);
       }
       else
