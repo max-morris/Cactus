@@ -11,13 +11,9 @@
 
 #include "flesh.h"
 
+#include "CactusRegister.h"
+
 static char *rcsid = "$Id$";
-
-int (*Initialise)(tFleshConfig *);
-
-int (*Evolve)(tFleshConfig *);
-
-int (*Shutdown)(tFleshConfig *);
 
 int dummy(tFleshConfig *);
 
@@ -37,13 +33,14 @@ int dummy(tFleshConfig *);
 @@*/
 int CallStartupFunctions(tFleshConfig *ConfigData)
 {
-  
-  Initialise = dummy;
-  
-  Evolve = dummy;
 
-  Shutdown = dummy;
+  RegisterMainFunction(0, dummy);
+  RegisterMainFunction(1, dummy);
+  RegisterMainFunction(2, dummy);
 
+
+  SetupMainFunctions();
+  
   return 0;
 }
   
