@@ -31,7 +31,7 @@ static char *rcsid="$Header$";
   /* Reset the #define to prevent complications. */
 #undef CCTK_DummySetupGH  
 #undef CCTK_DummyGetMyProc  
-#undef CCTK_DummySetGetnProcs
+#undef CCTK_DummyGetnProcs
 
 #undef OVERLOADABLE(name)
 
