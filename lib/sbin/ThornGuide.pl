@@ -68,8 +68,15 @@ my $file = "documentation.tex";
 # specify output file 
 $outfile ||= "ThornGuide.tex";
 
+my $configname = "";
+
+if ($outfile =~ /ThornGuide\-?(.*?)\.tex/) {
+   $configname = ": $1";
+}
+
 # get the date for printing out on the first page of the documentation
 my $TODAYS_DATE = `date +%B%d%Y`;
+chomp $TODAYS_DATE;
 $TODAYS_DATE =~ s/(.*?)(\d{2})(\d{4})/$1 $2, $3/;
 
 # set some variables in ThornUtils(.pm) namespace
@@ -161,11 +168,19 @@ sub Read_Thorn_Doc
 
    my $path = "$arrangements_dir$arrangement/$thorn/doc";
    my $pathandfile = "$path/$file";
+  
+   my $title = "";
+   my $author = "";
+   my $date = "";
 
    open (DOC, "<$pathandfile") || print STDERR "\nCould not find documentation in $path";
 
    while (<DOC>)                            # loop through thorn doc.
    {
+      if (/\\title\{(.*?)\}/) { $title = $1; }
+      if (/\\author\{(.*?)\}/) { $author = $1; }
+      if (/\\date\{(.*?)\}/) { $date = $1; }
+
       if (/\\end\{document\}/) {            # stop reading
          $stop = 1;
          $contents .= "\n\\include{${arrangement}_${thorn}_param}\n";
@@ -207,7 +222,13 @@ sub Read_Thorn_Doc
    
    close DOC;
 
-   return $contents;
+   my $cnts = "";
+   $cnts .= "\n\"$title\"\n" if ($title =~ /\w/) && (lc($title) ne lc($thorn));
+   $cnts .= "\n\{\\bf Author(s):\} $author\n" if ($author =~ /\w/);
+   $cnts .= "\n\{\\bf Date:\} $date\n" if ($date =~ /\w/);
+   $cnts .= "\n\\minitoc";
+
+   return "$cnts\n$contents";
 }
 
 #/*@@
@@ -229,7 +250,6 @@ $thorn = ThornUtils::CleanForLatex($thorn);
 print OUT <<EOC;
 
 \\chapter{$thorn}
-\\minitoc
 
 $contents
 EOC
@@ -451,7 +471,7 @@ print OUT  <<EOC;
 
 
 \\begin{document}
-\\cactustitlepage{Thorn Guide}{Date of Creation:}{$TODAYS_DATE}
+\\cactustitlepage{Thorn Guide$configname}{Date of Creation:}{$TODAYS_DATE}
 \\dominitoc
 
 \\setcounter{page}{1}
