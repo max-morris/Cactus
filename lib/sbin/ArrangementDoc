@@ -1,7 +1,7 @@
 #! /bin/sh
 # Create all arrangement documentations
 # (C) 2003-07-21 Erik Schnetter <schnetter@uni-tuebingen.de>
-# $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/ArrangementDoc,v 1.1 2003-10-13 18:58:00 schnetter Exp $
+# $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/ArrangementDoc,v 1.1 2003-10-13 19:03:56 schnetter Exp $
 
 echo "Creating arrangement documentations..."
 
