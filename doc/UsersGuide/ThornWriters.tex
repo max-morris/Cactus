@@ -2167,9 +2167,9 @@ different routines as IO methods (see chapter \ref{chap:io_methods}).
 Application thorns can interact with the different IO methods through
 the following function calls:
 
-\begin{Lentry}
+\begin{description}
 
-\item[{\tt CCTK\_OutputGH (const cGH *GH)}]
+\item {\tt CCTK\_OutputGH (const cGH *GH)}
 
 This call loops over all registered IO methods, calling the routine
 that each method has registered for {\t OutputGH}.  The expected
@@ -2179,14 +2179,14 @@ routines (that is, not all methods will supply routines to output all
 different types of variables) and if the method decides it is an
 appropriate time to output.
 
-\item[{\tt CCTK\_OutputVar (const cGH *GH, const char *varname)}]
+\item {\tt CCTK\_OutputVar (const cGH *GH, const char *varname)}
 
 Output a variable {\t varname} looping over all registered IO methods.
 The output should take place if at all possible.  If output goes into
 a file and the appropriate file exists the data is appended, otherwise
 a new file is created.
 
-\item[{\tt CCTK\_OutputVarAs (const cGH *GH, const char *varname, const char *alias)}]
+\item {\tt CCTK\_OutputVarAs (const cGH *GH, const char *varname, const char *alias)}
 
 Output a variable {\t varname} looping over all registered IO methods.
 The output should take place if at all possible.  If output goes into
@@ -2194,17 +2194,17 @@ a file and the appropriate file exists the data is appended, otherwise
 a new file is created.  Uses {\t alias} as the name of the variable
 for the purpose of constructing a filename.
 
-\item[{\tt CCTK\_OutputVarByMethod (const cGH *GH, const char *varname, const char *methodname)}]
+\item {\tt CCTK\_OutputVarByMethod (const cGH *GH, const char *varname, const char *methodname)}
 
 Output a variable {\t varname} using the IO method {\t methodname} if
 it is registered. The output should take place if at all possible.  If
 output goes into a file and the appropriate file exists the data is
 appended, otherwise a new file is created.
 
-\item[{\tt CCTK\_OutputVarAsByMethod (const cGH *GH,
+\item {\tt CCTK\_OutputVarAsByMethod (const cGH *GH,
                                      const char *varname,
-                                     const char *methodname,
-                                     const char *alias)}]
+                                     const char *methodname,\\
+                                     const char *alias)}
 
 Output a variable {\t varname} using the IO method {\t methodname} if
 it is registered.  The output should take place if at all possible.
@@ -2212,7 +2212,7 @@ If output goes into a file and the appropriate file exists the data is
 appended, otherwise a new file is created.  Uses {\t alias} as the
 name of the variable for the purpose of constructing a filename.
 
-\end{Lentry}
+\end{description}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
