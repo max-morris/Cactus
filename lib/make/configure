@@ -581,7 +581,7 @@ if test -n "$WARN" ; then
   
   WARN=`echo $WARN | tr '[:upper:]' '[:lower:]'`
   
-  if test "$WARN" != "yes" -a "$WARN" != "no" ; then
+  if test "$WARN" != 'yes' -a "$WARN" != 'no' ; then
     { echo "configure: error: Didn't recognize setting of WARN=\"$WARN\" (should be either \"yes\" or \"no\")" 1>&2; exit 1; }
   fi
   WARN_MODE=$WARN
@@ -661,20 +661,20 @@ echo "$ac_t""$host" 1>&6
 
 # See if there are any preferred compilers for this system
 
-CCTK_CONFIG_STAGE="preferred-compilers"
+CCTK_CONFIG_STAGE='preferred-compilers'
 
 if test -r $srcdir/known-architectures/$host_os ; then
-. $srcdir/known-architectures/$host_os
+  . $srcdir/known-architectures/$host_os
 else
-  echo "Warning: "
-  echo "  Cactus has not been previously compiled for this architecture: "
+  echo 'Warning: '
+  echo '  Cactus has not been previously compiled for this architecture:'
   echo "    ($host_os)"
-  echo "  The currently known architectures can be found in "
+  echo '  The currently known architectures can be found in'
   echo "    $srcdir/known-architectures"
-  echo "  The configuration will try to do its best to work things out."
-  echo "  If you create a known-architectures file for this architecture, "
-  echo "  please send it to cactusmaint@cactuscode.org and we'll include "
-  echo "  it in the next release."
+  echo '  The configuration will try to do its best to work things out.'
+  echo '  If you create a known-architectures file for this architecture,'
+  echo "  please send it to cactusmaint@cactuscode.org and we'll include"
+  echo '  it in the next release.'
 fi
 
 # Save these for future use.
@@ -718,7 +718,7 @@ fi
 
 
 if test -z "$CC" ; then
-for ac_prog in gcc cc cl xlc
+  for ac_prog in gcc cc cl xlc
 do
 # Extract the first word of "$ac_prog", so it can be a program name with args.
 set dummy $ac_prog; ac_word=$2
@@ -820,7 +820,7 @@ fi
 
 echo "$ac_t""$ac_cv_prog_gcc" 1>&6
 
-if test "x$CXX" != "xnone" ; then
+if test "x$CXX" != 'xnone' ; then
   if test -z "$CXX" ; then
     for ac_prog in c++ g++ gcc CC cxx cc++ cl xlC
 do
@@ -1274,7 +1274,7 @@ fi
 
 
 if test -z "$LD" ; then
-  if test "x$CXX" != "xnone" ; then
+  if test "x$CXX" != 'xnone' ; then
     LD=$CXX
   else
     LD=$CC
@@ -1320,12 +1320,12 @@ EOF
 # Create a file to put any #defines etc needed for this architecture
 # known architecture stuff should use CCTK_WriteLine cctk_Archdefs "foo" to append to this file.
 CCTK_CreateFile cctk_Archdefs.h '/* Stuff from known architectures */'
-CCTK_WriteLine  cctk_Archdefs.h "#ifndef _CCTK_ARCHDEFS_H_"
-CCTK_WriteLine  cctk_Archdefs.h "#define _CCTK_ARCHDEFS_H_"
+CCTK_WriteLine  cctk_Archdefs.h '#ifndef _CCTK_ARCHDEFS_H_'
+CCTK_WriteLine  cctk_Archdefs.h '#define _CCTK_ARCHDEFS_H_'
 
-CCTK_CreateFile make.arch.defn "# Stuff from known architectures "
+CCTK_CreateFile make.arch.defn '# Stuff from known architectures '
 
-CCTK_CONFIG_STAGE="misc"
+CCTK_CONFIG_STAGE='misc'
 
 if test -r $srcdir/known-architectures/$host_os ; then
 . $srcdir/known-architectures/$host_os
@@ -1339,7 +1339,7 @@ CCTK_WriteLine cctk_Archdefs.h '#endif /* _CCTK_ARCHDEFS_H_ */'
 
 # Deal with the Fortran compiler issues.
 # If there's a Fortran 90 compiler use that for all the Fortran.
-if test "x$F90" != "x" -a "x$F90" != "xnone" -a "x$F77" != "xnone" ; then
+if test "x$F90" != 'x' -a "x$F90" != 'xnone' -a "x$F77" != 'xnone' ; then
   F77=$F90
   : {F77FLAGS=$F90FLAGS}
 fi
@@ -1354,11 +1354,11 @@ unset LIBS
 KNOWN_LDFLAGS="$LDFLAGS"
 unset LDFLAGS
 
-: ${LIBDIR_PREFIX="-L"}
-: ${LIBDIR_SUFFIX=""}
+: ${LIBDIR_PREFIX='-L'}
+: ${LIBDIR_SUFFIX=''}
 
-: ${LIBLINK_PREFIX="-l"}
-: ${LIBLINK_SUFFIX=""}
+: ${LIBLINK_PREFIX='-l'}
+: ${LIBLINK_SUFFIX=''}
 
 
 
@@ -1548,7 +1548,7 @@ fi
 
 
 
-if test "x$cross_compiling" = "xno" ; then
+if test "x$cross_compiling" = 'xno' ; then
   echo $ac_n "checking whether byte ordering is bigendian""... $ac_c" 1>&6
 echo "configure:1554: checking whether byte ordering is bigendian" >&5
 if eval "test \"`echo '$''{'ac_cv_c_bigendian'+set}'`\" = set"; then
@@ -1641,7 +1641,7 @@ fi
 
 else
   if test -n "$ENDIAN" ; then
-    if test "$ENDIAN" = "big" ; then
+    if test "$ENDIAN" = 'big' ; then
       cat >> confdefs.h <<\EOF
 #define WORDS_BIGENDIAN 1
 EOF
@@ -1654,7 +1654,7 @@ fi
 
 # Check for sizes of integer types
 
-if test "x$cross_compiling" = "xyes" -a -z "$SIZEOF_LONG_LONG" ; then
+if test "x$cross_compiling" = 'xyes' -a -z "$SIZEOF_LONG_LONG" ; then
   { echo "configure: error: Cross-compiling - no value set for sizeof(long long) please set SIZEOF_LONG_LONG" 1>&2; exit 1; }
 fi
 
@@ -1698,7 +1698,7 @@ EOF
 
 
 
-if test "x$cross_compiling" = "xyes" -a -z "$SIZEOF_LONG_INT" ; then
+if test "x$cross_compiling" = 'xyes' -a -z "$SIZEOF_LONG_INT" ; then
   { echo "configure: error: Cross-compiling - no value set for sizeof(long int) please set SIZEOF_LONG_INT" 1>&2; exit 1; }
 fi
 
@@ -1742,7 +1742,7 @@ EOF
 
 
 
-if test "x$cross_compiling" = "xyes" -a -z "$SIZEOF_INT" ; then
+if test "x$cross_compiling" = 'xyes' -a -z "$SIZEOF_INT" ; then
   { echo "configure: error: Cross-compiling - no value set for sizeof(int) please set SIZEOF_INT" 1>&2; exit 1; }
 fi
 
@@ -1786,7 +1786,7 @@ EOF
 
 
 
-if test "x$cross_compiling" = "xyes" -a -z "$SIZEOF_SHORT_INT" ; then
+if test "x$cross_compiling" = 'xyes' -a -z "$SIZEOF_SHORT_INT" ; then
   { echo "configure: error: Cross-compiling - no value set for sizeof(short int) please set SIZEOF_SHORT_INT" 1>&2; exit 1; }
 fi
 
@@ -1832,7 +1832,7 @@ EOF
 
 # Check for sizes of floating point types
 
-if test "x$cross_compiling" = "xyes" -a -z "$SIZEOF_LONG_DOUBLE" ; then
+if test "x$cross_compiling" = 'xyes' -a -z "$SIZEOF_LONG_DOUBLE" ; then
   { echo "configure: error: Cross-compiling - no value set for sizeof(long double) please set SIZEOF_LONG_DOUBLE" 1>&2; exit 1; }
 fi
 
@@ -1876,7 +1876,7 @@ EOF
 
 
 
-if test "x$cross_compiling" = "xyes" -a -z "$SIZEOF_DOUBLE" ; then
+if test "x$cross_compiling" = 'xyes' -a -z "$SIZEOF_DOUBLE" ; then
   { echo "configure: error: Cross-compiling - no value set for sizeof(double) please set SIZEOF_DOUBLE" 1>&2; exit 1; }
 fi
 
@@ -1921,7 +1921,7 @@ EOF
 
 
 
-if test "x$cross_compiling" = "xyes" -a -z "$SIZEOF_FLOAT" ; then
+if test "x$cross_compiling" = 'xyes' -a -z "$SIZEOF_FLOAT" ; then
   { echo "configure: error: Cross-compiling - no value set for sizeof(float) please set SIZEOF_FLOAT" 1>&2; exit 1; }
 fi
 
@@ -1967,7 +1967,7 @@ EOF
 
 # Check for sizes of pointers.
 
-if test "x$cross_compiling" = "xyes" -a -z "$SIZEOF_POINTER" ; then
+if test "x$cross_compiling" = 'xyes' -a -z "$SIZEOF_POINTER" ; then
    { echo "configure: error: Cross-compiling - no value set for sizeof(char *) please set SIZEOF_POINTER" 1>&2; exit 1; }
 fi
 
@@ -2013,11 +2013,11 @@ EOF
 
 # See if there's a null device, and what it's called
 
-if test "x$cross_compiling" = "xyes"; then
+if test "x$cross_compiling" = 'xyes'; then
   if test -z "$NULL_DEVICE" ; then
      echo "configure: warning: Cross-compiling - no value set for location of null device please set NULL_DEVICE" 1>&2
      echo "configure: warning: Defaulting to /dev/null" 1>&2
-     NULL_DEVICE="/dev/null"
+     NULL_DEVICE='/dev/null'
   fi
   eval "cctk_cv_nulldevice=$NULL_DEVICE"
   cat >> confdefs.h <<EOF
@@ -2455,7 +2455,7 @@ rm -f conftest*
 
 fi
 
-if test "$cctk_cv_have_mode_t" = "yes"; then
+if test "$cctk_cv_have_mode_t" = 'yes'; then
   cat >> confdefs.h <<\EOF
 #define HAVE_MODE_T 1
 EOF
@@ -3473,7 +3473,7 @@ rm -f conftest*
 
 fi
 
-if test "$cctk_cv_have_socklen_t" = "yes"; then
+if test "$cctk_cv_have_socklen_t" = 'yes'; then
   cat >> confdefs.h <<\EOF
 #define HAVE_SOCKLEN_T 1
 EOF
@@ -3523,7 +3523,7 @@ rm -f conftest*
 
 fi
 
-if test "$cctk_cv_have_SOCKET" = "yes"; then
+if test "$cctk_cv_have_SOCKET" = 'yes'; then
   cat >> confdefs.h <<\EOF
 #define HAVE_SOCKET_TYPE 1
 EOF
@@ -3560,8 +3560,8 @@ rm -f conftest*
 
 fi
 
-if test "$cctk_cv_have___int64" = "yes"; then
-  CCTK_INT8="__int64"
+if test "$cctk_cv_have___int64" = 'yes'; then
+  CCTK_INT8='__int64'
   echo "$ac_t""yes" 1>&6
 else
   echo "$ac_t""no" 1>&6
@@ -3569,7 +3569,7 @@ fi
 
 # C++ STL stuff
 
-if test "x$CXX" != "xnone" ; then
+if test "x$CXX" != 'xnone' ; then
   
   ac_ext=C
 # CXXFLAGS is not in ac_cpp because -g, -O, etc. are not valid cpp options.
@@ -3690,7 +3690,7 @@ done
 
 
 
-if test "x$cctk_cv_header_getopt_h" = "xyes" -a "x$ac_cv_func_getopt_long_only" = "xyes"; then
+if test "x$cctk_cv_header_getopt_h" = 'xyes' -a "x$ac_cv_func_getopt_long_only" = 'xyes'; then
   BUILD_GETOPT=no
 else
   BUILD_GETOPT=yes
@@ -3698,7 +3698,7 @@ fi
 
 
 
-if test "x$cctk_cv_header_regex_h" = "xyes" ; then
+if test "x$cctk_cv_header_regex_h" = 'xyes' ; then
   BUILD_REGEX=no
 else
   BUILD_REGEX=yes
@@ -4443,7 +4443,7 @@ done
 
 
 
-if test "X$PTHREADS" = "Xyes"; then
+if test "X$PTHREADS" = 'Xyes'; then
   PTHREAD_LIBS=
   echo $ac_n "checking for main in library c_r""... $ac_c" 1>&6
 echo "configure:4450: checking for main in library c_r" >&5
@@ -4577,42 +4577,42 @@ fi
 # Integer types
 
 case "x$ac_cv_sizeof_long_long" in
-    "x8")
-      CCTK_INT8="long long" ;;
-    "x4")
-      CCTK_INT4="long long" ;;
-    "x2")
-      CCTK_INT2="long long" ;;
+    'x8')
+      CCTK_INT8='long long' ;;
+    'x4')
+      CCTK_INT4='long long' ;;
+    'x2')
+      CCTK_INT2='long long' ;;
 esac
 
 case "x$ac_cv_sizeof_long_int" in
-    "x8")
-      CCTK_INT8="long int" ;;
-    "x4")
-      CCTK_INT4="long int" ;;
-    "x2")
-      CCTK_INT2="long int" ;;
+    'x8')
+      CCTK_INT8='long int' ;;
+    'x4')
+      CCTK_INT4='long int' ;;
+    'x2')
+      CCTK_INT2='long int' ;;
 esac
 
 case "x$ac_cv_sizeof_int" in
-    "x8")
-      CCTK_INT8="int" ;;
-    "x4")
-      CCTK_INT4="int" ;;
-    "x2")
-      CCTK_INT2="int" ;;
+    'x8')
+      CCTK_INT8='int' ;;
+    'x4')
+      CCTK_INT4='int' ;;
+    'x2')
+      CCTK_INT2='int' ;;
 esac
 
 case "x$ac_cv_sizeof_short_int" in
-    "x8")
-      CCTK_INT8="short int" ;;
-    "x4")
-      CCTK_INT4="short int" ;;
-    "x2")
-      CCTK_INT2="short int" ;;
+    'x8')
+      CCTK_INT8='short int' ;;
+    'x4')
+      CCTK_INT4='short int' ;;
+    'x2')
+      CCTK_INT2='short int' ;;
 esac
 
-CCTK_INT1="signed char"
+CCTK_INT1='signed char'
 
 if test -n "$CCTK_INT8" ; then
   cat >> confdefs.h <<EOF
@@ -4661,30 +4661,30 @@ fi
 # Float types
 
 case "x$ac_cv_sizeof_long_double" in
-    "x16")
-      CCTK_REAL16="long double" ;;
-    "x8")
-      CCTK_REAL8="long double" ;;
-    "x4")
-      CCTK_REAL4="long double" ;;
+    'x16')
+      CCTK_REAL16='long double' ;;
+    'x8')
+      CCTK_REAL8='long double' ;;
+    'x4')
+      CCTK_REAL4='long double' ;;
 esac
 
 case "x$ac_cv_sizeof_double" in
-    "x16")
-      CCTK_REAL16="double" ;;
-    "x8")
-      CCTK_REAL8="double" ;;
-    "x4")
-      CCTK_REAL4="double" ;;
+    'x16')
+      CCTK_REAL16='double' ;;
+    'x8')
+      CCTK_REAL8='double' ;;
+    'x4')
+      CCTK_REAL4='double' ;;
 esac
 
 case "x$ac_cv_sizeof_float" in
-    "x16")
-      CCTK_REAL16="float" ;;
-    "x8")
-      CCTK_REAL8="float" ;;
-    "x4")
-      CCTK_REAL4="float" ;;
+    'x16')
+      CCTK_REAL16='float' ;;
+    'x8')
+      CCTK_REAL8='float' ;;
+    'x4')
+      CCTK_REAL4='float' ;;
 esac
 
 if test -n "$CCTK_REAL16" ; then
@@ -4723,17 +4723,17 @@ fi
 
 # Define the default floating point and integer precisions
 case "x$REAL_PRECISION" in
-  "x16")
+  'x16')
     cat >> confdefs.h <<\EOF
 #define CCTK_REAL_PRECISION_16 1
 EOF
  ;;
-  "x8")
+  'x8')
     cat >> confdefs.h <<\EOF
 #define CCTK_REAL_PRECISION_8 1
 EOF
  ;;
-  "x4")
+  'x4')
     cat >> confdefs.h <<\EOF
 #define CCTK_REAL_PRECISION_4 1
 EOF
@@ -4746,17 +4746,17 @@ EOF
 esac
 
 case "x$INTEGER_PRECISION" in
-  "x8")
+  'x8')
     cat >> confdefs.h <<\EOF
 #define CCTK_INTEGER_PRECISION_8 1
 EOF
  ;;
-  "x4")
+  'x4')
     cat >> confdefs.h <<\EOF
 #define CCTK_INTEGER_PRECISION_4 1
 EOF
  ;;
-  "x2")
+  'x2')
     cat >> confdefs.h <<\EOF
 #define CCTK_INTEGER_PRECISION_2 1
 EOF
@@ -4770,9 +4770,7 @@ esac
 
 # Define any code needed before the definition of a Fortran subroutine
 # This is empty on most architectures.
-
-: ${CCTK_FCALL=""}
-
+: ${CCTK_FCALL=''}
 cat >> confdefs.h <<EOF
 #define CCTK_FCALL $CCTK_FCALL
 EOF
@@ -4816,18 +4814,13 @@ EOF
 
 
 
-
 # Define how to make a directory in the config.h file
-
 cat >> confdefs.h <<EOF
 #define MKDIR "$MKDIR"
 EOF
 
 
-
-
-: ${MKDIRFLAGS="-p"}
-
+: ${MKDIRFLAGS='-p'}
 cat >> confdefs.h <<EOF
 #define MKDIRFLAGS " $MKDIRFLAGS "
 EOF
@@ -4836,10 +4829,8 @@ EOF
 
 # The perl scripts run by the make system need to have their names
 # changed if under cygwin - e.g. //d/foo needs to be d:/foo
-
 PERL_CONFIGURE_SCRIPT="$srcdir/configure.pl"
-
-if test "$host_os" = "cygwin" ; then
+if test "$host_os" = 'cygwin' ; then
   PERL_CONFIGURE_SCRIPT=`echo $PERL_CONFIGURE_SCRIPT | sed 's,^/cygdrive/\(.\)/,\1:/,' | sed 's,^//\(.\)/,\1:/,'`
 fi
 
@@ -4862,19 +4853,13 @@ LDFLAGS="$LDFLAGS $KNOWN_LDFLAGS"
 #Set the compileonly flags if they've not been set by now
 
 
+: ${CCOMPILEONLY='-c -o'}
+: ${FCOMPILEONLY='-c -o'}
 
-
-: ${CCOMPILEONLY="-c -o"}
-: ${FCOMPILEONLY="-c -o"}
-
-# Set the debug flags if they've not been set by now
-
-# Define the type of debugging to use
 
 #######################################################################
 # determine DEBUG_MODE from the DEBUG option
 # if this option isn't set DEBUG_MODE will default to 'no'
-
 if test -n "$DEBUG" ; then
   
   DEBUG=`echo $DEBUG | tr '[:upper:]' '[:lower:]'`
@@ -4916,146 +4901,84 @@ EOF
 fi
 
 
-
 DEBUG_MODE='no'
 if test -n "$DEBUG_FLAGS"; then
   DEBUG_MODE=$DEBUG_FLAGS
 fi
 
+# Set the debug flags if they've not been set by now
+# (using '-g' as a reasonable default)
+
+: ${C_DEBUG_FLAGS='-g'}
 
 
-if test -z "$C_DEBUG_FLAGS" ; then
-# This should be a reasonable default.
-  C_DEBUG_FLAGS='-g'
-fi
+: ${CXX_DEBUG_FLAGS='-g'}
 
 
-
-if test -z "$CXX_DEBUG_FLAGS" ; then
-# This should be a reasonable default.
-  CXX_DEBUG_FLAGS='-g'
-fi
+: ${F77_DEBUG_FLAGS='-g'}
 
 
-
-if test -z "$F77_DEBUG_FLAGS" ; then
-# This should be a reasonable default.
-  F77_DEBUG_FLAGS='-g'
-fi
-
-
-
-if test -z "$F90_DEBUG_FLAGS" ; then
-# This should be a reasonable default.
-  F90_DEBUG_FLAGS='-g'
-fi
+: ${F90_DEBUG_FLAGS='-g'}
 
 # Set the warn flags
 
 
 # Set the optimization flags if they've not been set by now
+# (using '-O2' as a reasonable default)
 
 
 
+: ${C_OPTIMISE_FLAGS='-O2'}
 
-if test -z "$C_OPTIMISE_FLAGS" ; then
-# This should be a reasonable default.
-  C_OPTIMISE_FLAGS='-O2'
+
+: ${CXX_OPTIMISE_FLAGS='-O2'}
+
+
+if test -z "$F77_OPTIMISE_FLAGS" -a "$F77" = 'g77' ; then
+  F77_OPTIMISE_FLAGS='-O2'
+else
+  : ${F77_OPTIMISE_FLAGS=''}
 fi
 
 
-
-if test -z "$CXX_OPTIMISE_FLAGS" ; then
-# This should be a reasonable default.
-  CXX_OPTIMISE_FLAGS='-O2'
-fi
-
-
-
-if test -z "$F77_OPTIMISE_FLAGS" ; then
-  case "$F77" in
-    g77)
-      F77_OPTIMISE_FLAGS='-O2'
-      ;;
-    *)
-#     Don't know a reasonable default.
-      F77_OPTIMISE_FLAGS=''
-      ;;
-   esac
-fi
-
-
-
-if test -z "$F90_OPTIMISE_FLAGS" ; then
-# Don't know a reasonable default.
-  F90_OPTIMISE_FLAGS=''
-fi
+: ${F90_OPTIMISE_FLAGS=''}
 
 # Set the warning flags if they've not been set by now
+# (using GNU compiler warning flags as a reasonable default)
 
-
-
-if test -z "$C_WARN_FLAGS" ; then
-  case "$CC" in
-    gcc)
-      C_WARN_FLAGS='-Wall -W -Wshadow -Wpointer-arith -Wbad-function-cast -Wcast-qual -Wcast-align -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Winline'
-      ;;
-    *)
-#     Not sure what should be a reasonable default.
-      C_WARN_FLAGS=''
-      ;;
-   esac
+if test -z "$C_WARN_FLAGS" -a "$CC" = 'gcc' ; then
+  C_WARN_FLAGS='-Wall -W -Wshadow -Wpointer-arith -Wbad-function-cast -Wcast-qual -Wcast-align -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Winline'
+else
+  : ${C_WARN_FLAGS=''}
 fi
 
 
-
-if test -z "$CXX_WARN_FLAGS" ; then
-  case "$CXX" in
-    c++ | g++)
-      CXX_WARN_FLAGS='-Wall -W -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Wstrict-prototypes -Wmissing-prototypes -Winline -Woverloaded-virtual'
-      ;;
-    *)
-#     Not sure what should be a reasonable default.
-      CXX_WARN_FLAGS=''
-      ;;
-   esac
+if test -z "$CXX_WARN_FLAGS" -a \( "$CXX" = 'c++' -o "$CXX" = 'g++' \) ; then
+  CXX_WARN_FLAGS='-Wall -W -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Wstrict-prototypes -Wmissing-prototypes -Winline -Woverloaded-virtual'
+else
+  : ${CXX_WARN_FLAGS=''}
 fi
 
 
-
-if test -z "$F77_WARN_FLAGS" ; then
-  case "$F77" in
-    g77)
-      F77_WARN_FLAGS='-Wall'
-      ;;
-    *)
-#     Not sure what should be a reasonable default.
-      F77_WARN_FLAGS=''
-      ;;
-   esac
+if test -z "$F77_WARN_FLAGS" -a "$F77" = 'g77' ; then
+  F77_WARN_FLAGS='-Wall'
+else
+  : ${F77_WARN_FLAGS=''}
 fi
 
 
-
-if test -z "$F90_WARN_FLAGS" ; then
-# Not sure what should be a reasonable default.
-  F90_WARN_FLAGS=''
-fi
+: ${F90_WARN_FLAGS=''}
 
 
 # Set the createexe flag if it's not been set by now
-
-
 
 : ${CREATEEXE='-o'}
 
 # Set the directory seperator for this architecture
 
-
-: ${DIRSEP="/"}
+: ${DIRSEP='/'}
 
 # Set the option seperator for this architecture.  Hopefully it is the same for all compilers.
-
 
 : ${OPTIONSEP='$(EMPTY_VAR) # a single space'}
 
@@ -5067,91 +4990,58 @@ fi
 
 # How to link the cactus libraries
 
-
 : ${CACTUSLIBLINKLINE='-L$(CCTK_LIBDIR) $(addprefix -l, $(ALLCACTUSLIBS))'}
 
-# How to generate C dependency info
-
+# How to generate dependency info
 
 : ${C_DEPEND='$(CC) -E -M $(CPPFLAGS)'}
 
-
-
 : ${C_DEPEND_OUT=' > $@'}
-
-# How to generate C++ dependency info
 
 
 : ${CXX_DEPEND='$(CXX) -E -M $(CPPFLAGS)'}
 
-
-
 : ${CXX_DEPEND_OUT=' > $@'}
-
-# How to generate F77 dependency info
 
 
 : ${F77_DEPEND='$(FPP) -M $(FPPFLAGS)'}
 
-
-
 : ${F77_DEPEND_OUT=' > $@'}
-
-# How to generate F90 dependency info
 
 
 : ${F_DEPEND='$(FPP) -M $(FPPFLAGS)'}
-
-
 
 : ${F_DEPEND_OUT=' > $@'}
 
 # How to generate F90 dependency info for modules
 
-
 : ${F_DEPEND_MODULES='$(CCTK_HOME)/lib/sbin/f_depend_modules.pl'}
-
-
 
 : ${F_DEPEND_MODULES_OUT=' >> $@'}
 
 # Postprocessing of object files.  Most architectures don't need to do this at all.
 
+: ${C_POSTPROCESSING=''}
 
+: ${CXX_POSTPROCESSING=''}
 
-: ${C_POSTPROCESSING=""}
+: ${F77_POSTPROCESSING=''}
 
+: ${F_POSTPROCESSING=''}
 
-
-: ${CXX_POSTPROCESSING=""}
-
-
-
-: ${F77_POSTPROCESSING=""}
-
-
-
-: ${F_POSTPROCESSING=""}
-
-
-
-: ${F90_POSTPROCESSING=""}
+: ${F90_POSTPROCESSING=''}
 
 # How to generate an intermediate C++ name (some compilers are very picky).
-
-
 
 : ${CXX_WORKING_NAME='$(notdir $<)'}
 
 # What is the suffix for freeformat f90 names (some compilers are very picky).
 
-
-
 : ${F90_SUFFIX='f90'}
 
 # How to get the current working directory when in the shell
 
-: ${GET_WD="pwd"}
+: ${GET_WD='pwd'}
 
 # Way for Make to transofrm things like include directories
 # into a form suitable for the compiler.
@@ -5160,7 +5050,7 @@ fi
 
 # Any additional system include directories.
 
-: ${SYS_INC_DIRS=" "}
+: ${SYS_INC_DIRS=' '}
 
 # How to link in the non-Cactus libraries
 
@@ -5169,14 +5059,11 @@ fi
 
 # Do we need to make sure Perl makes a backup when editting in place ?
 
-
-: ${PERL_BACKUP_NECESSARY=""}
+: ${PERL_BACKUP_NECESSARY=''}
 
 # Cache stuff - this will probably change
-
-: ${CACHELINE_BYTES="0"}
-: ${CACHE_SIZE="0"}
-
+: ${CACHELINE_BYTES='0'}
+: ${CACHE_SIZE='0'}
 cat >> confdefs.h <<EOF
 #define CCTK_CACHELINE_BYTES $CACHELINE_BYTES
 EOF
@@ -5186,41 +5073,30 @@ cat >> confdefs.h <<EOF
 EOF
 
 
-# DEPRECATED IN BETA 13
-cat >> confdefs.h <<EOF
-#define CCTK_L2_CACHELINE_BYTES $CACHELINE_BYTES
-EOF
-
-cat >> confdefs.h <<EOF
-#define CCTK_L2_CACHE_SIZE $CACHE_SIZE
-EOF
-
-
-
 
 #########################################################################
 #Check for extra stuff
 #########################################################################
 CCTK_CreateFile cctk_Extradefs.h '/* Stuff from extra packages */'
-CCTK_WriteLine  cctk_Extradefs.h "#ifndef _CCTK_EXTRADEFS_H_"
-CCTK_WriteLine  cctk_Extradefs.h "#define _CCTK_EXTRADEFS_H_"
+CCTK_WriteLine  cctk_Extradefs.h '#ifndef _CCTK_EXTRADEFS_H_'
+CCTK_WriteLine  cctk_Extradefs.h '#define _CCTK_EXTRADEFS_H_'
 
-CCTK_CreateFile make.extra.defn "# Stuff from extra packages "
+CCTK_CreateFile make.extra.defn '# Stuff from extra packages '
 
 for extra in `ls $srcdir/extras`
 do
   if test -d $srcdir/extras/$extra ; then
     if test -x $srcdir/extras/$extra/setup.sh ; then
         # Put some comment lines in the files.
-        CCTK_WriteLine cctk_Extradefs.h ""
-        CCTK_WriteLine cctk_Extradefs.h "/*$extra definitions*/"
-        CCTK_WriteLine make.extra.defn ""
-        CCTK_WriteLine make.extra.defn "# $extra definitions"
+        CCTK_WriteLine cctk_Extradefs.h ''
+        CCTK_WriteLine cctk_Extradefs.h '/* $extra definitions */'
+        CCTK_WriteLine make.extra.defn ''
+        CCTK_WriteLine make.extra.defn "# start of $extra definitions"
         # Call the setup script
         . $srcdir/extras/$extra/setup.sh
         # Put some more comments in
-        CCTK_WriteLine make.extra.defn "#End of $extra definitions"
-        CCTK_WriteLine make.extra.defn ""
+        CCTK_WriteLine make.extra.defn "# end of $extra definitions"
+        CCTK_WriteLine make.extra.defn ''
     fi
   fi
 done
@@ -5234,11 +5110,11 @@ CCTK_WriteLine cctk_Extradefs.h '#endif /*_CCTK_EXTRADEFS_H*/'
 # Set default Fortran compilers
 
 if test -z "$F90" ; then
-  F90="none"
+  F90='none'
 fi
 
 if test -z "$F77" ; then
-  F77="none"
+  F77='none'
 fi
 
 CCTK_FinishFiles
