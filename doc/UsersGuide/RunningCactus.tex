@@ -502,9 +502,13 @@ is to do.
 
 \begin{itemize}
 
-\item {\tt gmake CONF} will create the default (uname) configuration
+\item {\tt gmake <CONF>} will create the default (uname) configuration
 
 \item {\tt gmake <CONF>-clean} cleans a configuration (rm -r *.o)
+
+\item {\tt gmake <CONF>-rebuild} rebuilds a configuration (reruns the CST)
+
+\item {\tt gmake <CONF>-reconfig} reconfigures a configuration
 
 \item {\tt gmake <CONF>-delete} deletes a configuration ({\tt rm -r configs/<CONF>})
 
