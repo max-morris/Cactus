@@ -460,6 +460,11 @@ int Util_IntInRange(int inval, const char *range)
    @desc
    This routine will determine if a double is in the range specified
    in the range string.
+
+   Valid ranges are of the form start:end:step
+   possibly preceeded by a [ or ( and ended by a ) or ] to indicate
+   closure.  The end and step are optional.  A * can also be used
+   to indicate any value.
    @enddesc
 
    @var     inval
@@ -487,11 +492,7 @@ int Util_DoubleInRange(double inval, const char *range)
 
   retval = 0;
 
-  /* Valid ranges are of the form start:end:step
-   * possibly preceeded by a [ or ( and ended by a ) or ] to indicate
-   * closure.  The end and step are optional.  A * can also be used
-   * to indicate any value.
-   *
+  /*
    * The following regular expression may match five substrings:
    *
    * 1 - [ or (
