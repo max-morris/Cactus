@@ -76,6 +76,30 @@ fi
 
 . $srcdir/CCTK_Functions.sh
 
+
+#########################################################################
+# If this is a known architecture, setup any specific flags.
+# This has to be done here as flags given to the compiler may
+# change the things detected later.
+
+# Create a file to put any #defines etc needed for this architecture
+# known architecture stuff should use cat >> etc to append to this file.
+cat > cctk_archdefs.h <<EOF
+/* Stuff from known architectures */
+#ifndef _CCTK_ARCHDEFS_H_
+#define _CCTK_ARCHDEFS_H_
+EOF
+
+if test -r $srcdir/known-architectures/$host_os ; then
+. $srcdir/known-architectures/$host_os
+fi
+
+# Finish the architecture stuff
+cat >> cctk_archdefs.h <<EOF
+#endif /* _CCTK_ARCHDEFS_H_ */
+EOF
+
+
 #########################################################################
 #Check for extra stuff
 #########################################################################
@@ -113,27 +137,6 @@ cat >> cctk_extradefs.h <<EOF
 EOF
 
 
-#########################################################################
-# If this is a known architecture, setup any specific flags.
-# This has to be done here as flags given to the compiler may
-# change the things detected later.
-
-# Create a file to put any #defines etc needed for this architecture
-# known architecture stuff should use cat >> etc to append to this file.
-cat > cctk_archdefs.h <<EOF
-/* Stuff from known architectures */
-#ifndef _CCTK_ARCHDEFS_H_
-#define _CCTK_ARCHDEFS_H_
-EOF
-
-if test -r $srcdir/known-architectures/$host_os ; then
-. $srcdir/known-architectures/$host_os
-fi
-
-# Finish the architecture stuff
-cat >> cctk_archdefs.h <<EOF
-#endif /* _CCTK_ARCHDEFS_H_ */
-EOF
 
 ##########################################################################
 #########################################################################
