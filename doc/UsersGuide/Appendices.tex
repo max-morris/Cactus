@@ -149,9 +149,10 @@ The thorn's variables are defined by:
 \begin{verbatim}
 [<access>:]
 
-<data_type> <group_name> [TYPE=<group_type>] [DIM=<dim>] [TIMELEVELS=<num>]
+<data_type> <group_name>[[<number>] [TYPE=<group_type>] [DIM=<dim>] [TIMELEVELS=<num>]
 [SIZE=<size in each direction>] [DISTRIB=<distribution_type>]
 [GHOSTSIZE=<ghostsize>] [STAGGER=<stagger-specification>]
+[TAGS=<string>]
 [{
  [ <variable_name>[,]<variable_name>
    <variable_name> ]
@@ -173,6 +174,13 @@ group.  Supported data types are {\t INT}, {\t CHAR}, {\t REAL} and
 \item{} {\t group\_name} must be an alpha-numeric name (which may also
 contain underscores) which is unique
 within the scope of the thorn. A group name is compulsory.
+\item{} {\t [number]}, if present, indicates that this is a {\bf vector}
+group.  Such a group does not have named variables (so the \{\} block
+should not be present) but instead appears as a one-dimensional array
+of grid variables.  The first index in the array is the mumber-index,
+and any other indices are the normal spatial indices for a group of
+this type and dimension.  The number can be any valid arithmetical
+expression consisting of integers or integer-valued parameters.
 \item{} {\t TYPE} designates the kind of variables held by the group.
 The choices are {\t GF}, {\t ARRAY} or {\t SCALAR}. This field is
 optional, with the default variable type being {\t SCALAR}.
@@ -182,7 +190,8 @@ optional, with the default variable type being {\t SCALAR}.
         the group is of type {\t ARRAY} or {\t GF}, and can take any positive
         value.
 \item{} {\t SIZE} defines the number grid-points an {\tt ARRAY} has in each direction.
-        This should be a comma-separated list of positive integer constants or parameter names (optionally with an integer constant added/substracted to/from it).
+        This should be a comma-separated list of valid arithmetical
+        expressions consisting of integers or integer-valued parameters.
 \item{} {\t DISTRIB} defines the processor decomposition of an {\tt ARRAY}.
         {\tt DISTRIB=CONSTANT} implies that {\tt SIZE} grid-points should
         be allocated on each processor.
@@ -192,9 +201,13 @@ optional, with the default variable type being {\t SCALAR}.
         of the letters {\tt M}, {\tt C}, {\tt P} depending on whether the layout in
         that direction is on the {\tt M}inus face, {\tt C}entre, or {\tt P}lus face
         of the cell in that dimension.
+\item{} {\t TAGS} defines an optional string which is used to create a
+        set of key-value pairs associated witn the group.  The keys
+        are case independent.
 \item{} The (optional) block following the group declaration line
 contains a list of variables contained in the group. All variables in
-a group have the same data type, variable type and dimension. The list
+a group have the same data type, variable type, dimension and
+distrubution. The list
 can be separated by spaces, commas, or new lines. The variable names
 must be unique within the scope of the thorn.  A variable can only be
 a member of one group. The block must be delimited by brackets on new
@@ -246,12 +259,18 @@ on this line.)
 
 {\t
 \begin{verbatim}
-[EXTENDS|USES] <parameter_type> <parameter name> "<parameter description>"
+[EXTENDS|USES] <parameter_type>[[<integer]>] <parameter name> "<parameter description>" 
+[AS <alias>] [STEERABLE=<NEVER|ALWAYS|RECOVER>] 
+[ACCUMULATOR=<expression>] [ACCUMULATOR-BASE=<parameter-name>]
 {
   <PARAMETER_VALUES>
 } <default value>
 \end{verbatim}
 }
+(The options {\t AS}, {\t STEERABLE}, etc. following {\t <parameter\_description>}
+must all appear on one line.)  Note that the beginning brace (\{) must
+sit on a line by itself; the ending brace (\} must be preceded by a
+carriage return.
 \begin{itemize}
 \item{} Allowed {\t parameter\_type}s are
   \begin{Lentry}
@@ -297,9 +316,31 @@ another thorn. This allows it to declare additional acceptable values.
 \item{} If the thorn wants to simply use a parameter from another
 thorn, without declaring additional values, use {\t USES}
 instead.
-
+\item{} {\tt [integer]}, if present, specifies that this is an {\bf
+         array} parameter.  The parameter is then a one-dimensional
+         array of values of the specified type.
+\item{} {\t alias} allows a parameter to appear as a different name in
+         this thorn than its original name in another thorn.  The name
+         as seen in the parameter file is unchanged.
+\item{} {\t STEERABLE} specifies when a parameter value may be
+        changed.  By default parameters may not be changed after the
+        parameter file has been read, or on restarting from
+        checkpoint.  This option relaxes this restricting, specifying that
+        the parameter may be changed at recovery time or at any time.
+\item{} {\t ACCUMULATOR} specifies that this is an {\bf accumulator}
+         parameter.  Such parameters cannot be set directly, but are
+         set by other parameters who specify this one as an {\bf
+         ACCUMULATOR-BASE}.  The expression is a two parameter
+         arithemetical expression of $X$ and $y$.  Setting the
+         parameter consists of evaluating this expression
+         successively, with $x$ being the current value of the
+         parameter (at the first iteration this is the default value)
+         and $y$ the value of the setting parameter.
+         This procedure is repeated, starting from the default value
+         of the parameter, each time one of the setting parameters changes.
+\item{} {\t ACCUMULATOR-BASE} specifies the name of an 
+        {\bf ACCUMULATOR} parameter which this parameter sets.
 \end{itemize}
-
 
 \section{schedule.ccl}
 \label{sec:sc}
