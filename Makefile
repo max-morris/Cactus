@@ -16,7 +16,7 @@
 #
 #
 #   @enddesc
-#   @version $Id: Makefile,v 1.151 2004-05-11 20:13:13 goodale Exp $
+#   @version $Id: Makefile,v 1.152 2004-05-12 04:11:42 goodale Exp $
 # @@*/
 
 ##################################################################################
@@ -232,7 +232,17 @@ endif
 .PHONY: $(CONFIGURATIONS)
 
 $(CONFIGURATIONS):
-	if 0  ; then \
+	if test ! -f "$(CONFIGS_DIR)/$@/config-data/cctk_Config.h" ; then \
+	  echo $(DIVIDER);\
+	  echo "Cactus - version: $(CCTK_VERSION)";\
+	  echo "Error: Configuration $@ is incomplete.";\
+	  echo "Please check the files in $(CONFIGS_DIR)/$@/config-data for error messages.";\
+	  echo "You can try again to configure using $(MAKE) $@-config";\
+	  echo "or delete this configuration with $(MAKE) $@-delete.";\
+	  echo $(DIVIDER);\
+	  exit 1; \
+	fi
+	if test -z "FIXME"  ; then \
 	  echo $(DIVIDER);\
 	  echo "Cactus - version: $(CCTK_VERSION)";\
 	  echo "Error: Configuration $@ is out of date.";\
