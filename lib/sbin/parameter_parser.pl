@@ -270,7 +270,7 @@ sub parse_param_ccl
 	    # Strip out any spaces in the range for a numeric parameter.
 	    if($type =~ m:INT|REAL:)
 	    {
-	      $new_ranges =~ s/[ \t]+/ /g;
+	      $new_ranges =~ s/\s//g;
 	    }
 	    
 	    $parameter_db{"\U$thorn $variable\E range $parameter_db{\"\U$thorn $variable\E ranges\"} range"} = $new_ranges;
