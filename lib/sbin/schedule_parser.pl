@@ -620,7 +620,7 @@ sub fortran_wrapper {
 #include \"cctk.h\"
 #include \"flesh.h\"
 #include \"Groups.h\"
-#include \"GroupsOnGH.h\"
+#include \"Comm.h\"
 #include \"declare_arguments.h\"
 
    void FORTRAN_NAME($routine)($THORN_C2F_PROTO);
