@@ -49,14 +49,14 @@ sub create_schedule_code
     @indata = &read_file("$thorns{$thorn}/schedule.ccl");
 
     # Parse the data and create rfr and startup subroutines
-    ($proto,$out,$wrapper_files, @retscheduledata) = &parse_schedule_ccl($thorn,$implementation,"rfr",@indata);
+    ($proto,$out,$wrapper_files, @retscheduledata) = &parse_schedule_ccl(1,$thorn,$implementation,"rfr",@indata);
     print OUTRFR $proto;
     print OUTRFR $out; 
     $rfr_files .= " $thorn_rfr";
     $startup_files .= " $thorn_startup";
     push(@schedule_data, @retscheduledata);
 
-    ($proto,$out,$schedule_wrappers) = &parse_schedule_ccl($thorn,$implementation,"startup",@indata);
+    ($proto,$out,$schedule_wrappers) = &parse_schedule_ccl(2,$thorn,$implementation,"startup",@indata);
     print OUTSTART $proto;
     print OUTSTART $out; 
 
@@ -243,7 +243,7 @@ EOT
 
 sub parse_schedule_ccl
 {
-  local($thorn,$implementation,$type,@data) = @_;
+  local($number,$thorn,$implementation,$type,@data) = @_;
   local($proto,$out,$line,$line_number,@compile_files);
   local(%schedule_ordering);
   local($routine);
@@ -261,7 +261,7 @@ sub parse_schedule_ccl
       $routine = $1;
       @options = split(" ", $2);
 
-      ($wrapper_file,$proto_block,$out_block, $routine) = &parse_schedule_block($thorn,$implementation,$type,@data);
+      ($wrapper_file,$proto_block,$out_block, $routine) = &parse_schedule_block($number,$thorn,$implementation,$type,@data);
 
       $proto .= "$proto_block"; 
       $out .= "$out_block";
@@ -368,7 +368,7 @@ sub parse_schedule_ccl
 
 sub find_schedule_block
 {
-  local(@data) = @_;
+  local($number,@data) = @_;
   local(@block);
   local($i,$line);
 
@@ -379,7 +379,6 @@ sub find_schedule_block
   $line =~ m/\s*schedule\s*(\w*)\s*at\s*(\w*)/i;
   $routine = $1;
   $rfr_entry = $2;
-
   for ($i=$line_number+1; $i<@data; $i++)
   {
     $line = @data[$i];
@@ -393,8 +392,11 @@ sub find_schedule_block
       }
       else
       {
-	print STDERR "No description listed for routine '$routine' registered at '$rfr_entry'\n";
-	$desc = "\"Please write a description of what this routine does.\"";
+	  if ($number == 1)
+          {
+	      print STDERR "No description listed for routine $routine registered at $rfr_entry\n";
+	  }
+	  $desc = "\"Please write a description of what this routine does.\"";
       }
       return ($routine,$rfr_entry,$desc,@block);
     }
@@ -422,7 +424,7 @@ sub find_schedule_block
 
 sub parse_schedule_block
 {
-  local($thorn,$implementation,$type,@data)=@_;
+  local($number,$thorn,$implementation,$type,@data)=@_;
   local($proto,$out);
   local($wrapper_file, $proto, $out);
 
@@ -430,7 +432,7 @@ sub parse_schedule_block
   $proto = "";
   $out = "";
 
-  ($routine,$when,$desc,@block) = &find_schedule_block(@data);
+  ($routine,$when,$desc,@block) = &find_schedule_block($number,@data);
 
   # At the moment can schedule at RFR entry points of at STARTUP
   if ($type eq "startup" && $when =~ /\s*STARTUP\s*/i) {
