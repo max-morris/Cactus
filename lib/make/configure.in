@@ -228,6 +228,13 @@ AC_SUBST(F77FLAGS)
 
 dnl Checks for library functions.
 
+AC_CHECK_FUNCS(mkdir gettimeofday getrusage _ftime) 
+
+dnl Include file stuff
+
+AC_HEADER_TIME
+AC_CHECK_HEADERS(sys/time.h)
+
 dnl Misc stuff
 
 AC_SUBST(LIBDIRS)
@@ -359,7 +366,7 @@ AC_DEFINE_UNQUOTED(FMODIFIER, $FMODIFIER)
 
 # Define how to make a directory in the config.h file
 
-AC_DEFINE_UNQUOTED(MKDIR, "$MKDIR ") 
+AC_DEFINE_UNQUOTED(MKDIR, "$MKDIR") 
 
 AC_SUBST(MKDIRFLAGS)
 
@@ -456,6 +463,10 @@ AC_SUBST(SYS_INC_DIRS)
 
 AC_SUBST(GENERAL_LIBRARIES)
 : ${GENERAL_LIBRARIES='$(LIBDIRS:%=-L%) $(LIBS:%=-l%)'}
+
+AC_SUBST(PERL_BACKUP_NECESSARY)
+
+: ${PERL_BACKUP_NECESSARY=""}
 
 dnl Run any other scripts necessary
 

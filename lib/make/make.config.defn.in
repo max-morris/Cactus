@@ -85,6 +85,10 @@ GENERAL_LIBRARIES = @GENERAL_LIBRARIES@
 
 SYS_INC_DIRS += @SYS_INC_DIRS@
 
+# Annoying stuff for some file systems.
+
+PERL_BACKUP_NECESSARY = @PERL_BACKUP_NECESSARY@
+
 # Stuff for the architecture
 
 OS     = @host_os@

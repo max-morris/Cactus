@@ -62,6 +62,17 @@
 #undef MKDIR
 #undef MKDIRFLAGS
 
+/* Various library functions */
+
+#undef HAVE_MKDIR
+#undef HAVE_GETTIMEOFDAY
+#undef HAVE_GETRUSAGE
+#undef HAVE__FTIME
+
+/* Some include things */
+#undef TIME_WITH_SYS_TIME
+#undef HAVE_TIME_H
+
 /******************************************************************************/
 
 #ifdef CCODE
