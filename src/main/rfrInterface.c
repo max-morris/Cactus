@@ -16,6 +16,7 @@
 #include "rfr_constants.h"
 #include "CactusCommFunctions.h"
 #include "IOMethods.h"
+#include "declare_parameters.h"
 
 static char *rcsid = "$Header$";
 
@@ -42,6 +43,96 @@ int CCTK_rfrTraverse(cGH *GH, int rfrpoint)
   return 0;
 }
 
+
+ /*@@
+   @routine    rfrPrintTree
+   @date       14 Mar 1999
+   @author     Gabrielle Allen
+   @desc 
+               Prints the order of the RFR calling tree
+   @enddesc 
+   @calls      
+   @history 
+   @endhistory
+ 
+   @var        
+   @vdesc      
+   @vtype      
+   @vio        
+   @vcomment 
+   @endvar 
+
+   @returntype int
+   @returndesc
+      0 = routine did not print rfr tree
+      1 = routine did print rfr tree
+   @endreturndesc
+
+   @version    $Header$
+@@*/
+
+int CCTK_rfrPrintTree(cGH *GH,void *rfr_top)
+{
+  DECLARE_PARAMETERS
+
+  static int showed_tree = 0;
+
+  /* Return if the users doesn't want to see the tree */
+  if (!cctk_show_rfr_tree || cctk_brief_output) return 0;
+
+  if (!showed_tree) 
+  {
+
+    showed_tree = 1;
+
+    printf ("\nEvolution tree from the RFR\n\n");
+
+    rfrPrintDescs(rfr_top,GH,CACTUS_BASEGRID,"CACTUS_BASEGRID","");
+    
+    rfrPrintDescs(rfr_top,GH,CACTUS_INITIAL0,"CACTUS_INITIAL0","");
+    rfrPrintDescs(rfr_top,GH,CACTUS_INITIAL, "CACTUS_INITIAL","");
+    rfrPrintDescs(rfr_top,GH,CACTUS_INITIAL2,"CACTUS_INITIAL2","");
+    rfrPrintDescs(rfr_top,GH,CACTUS_INITIAL3,"CACTUS_INITIAL3","");
+    rfrPrintDescs(rfr_top,GH,CACTUS_INITIAL4,"CACTUS_INITIAL4","");
+    rfrPrintDescs(rfr_top,GH,CACTUS_INITIAL5,"CACTUS_INITIAL5","");
+    rfrPrintDescs(rfr_top,GH,CACTUS_INITIAL6,"CACTUS_INITIAL6","");
+    rfrPrintDescs(rfr_top,GH,CACTUS_INITIAL7,"CACTUS_INITIAL7","");
+    rfrPrintDescs(rfr_top,GH,CACTUS_INITIAL8,"CACTUS_INITIAL8","");
+    rfrPrintDescs(rfr_top,GH,CACTUS_INITIAL9,"CACTUS_INITIAL9","");
+    printf ("\n  (Don't forget CACTUS_POSTSTEP* is here too...)\n");
+    printf ("\n  do loop over timesteps\n");
+    rfrPrintDescs(rfr_top,GH,CACTUS_PRESTEP,"CACTUS_PRESTEP","   ");
+    rfrPrintDescs(rfr_top,GH,CACTUS_PRESTEP2,"CACTUS_PRESTEP2","   ");
+    rfrPrintDescs(rfr_top,GH,CACTUS_PRESTEP3,"CACTUS_PRESTEP3","   ");
+    rfrPrintDescs(rfr_top,GH,CACTUS_PRESTEP4,"CACTUS_PRESTEP4","   ");
+    rfrPrintDescs(rfr_top,GH,CACTUS_PRESTEP5,"CACTUS_PRESTEP5","   ");
+    
+    rfrPrintDescs(rfr_top,GH,CACTUS_EVOL,"CACTUS_EVOL","   ");
+    rfrPrintDescs(rfr_top,GH,CACTUS_BOUND,"CACTUS_BOUND","   ");
+    
+    printf ("     t = t+dt\n");
+    
+    rfrPrintDescs(rfr_top,GH,CACTUS_POSTSTEP,"CACTUS_POSTSTEP","   ");
+    rfrPrintDescs(rfr_top,GH,CACTUS_POSTSTEP2,"CACTUS_POSTSTEP2","   ");
+    rfrPrintDescs(rfr_top,GH,CACTUS_POSTSTEP3,"CACTUS_POSTSTEP3","   ");
+    rfrPrintDescs(rfr_top,GH,CACTUS_POSTSTEP4,"CACTUS_POSTSTEP4","   ");
+    rfrPrintDescs(rfr_top,GH,CACTUS_POSTSTEP5,"CACTUS_POSTSTEP5","   ");
+    rfrPrintDescs(rfr_top,GH,CACTUS_POSTSTEP6,"CACTUS_POSTSTEP6","   ");
+    rfrPrintDescs(rfr_top,GH,CACTUS_POSTSTEP7,"CACTUS_POSTSTEP7","   ");
+    rfrPrintDescs(rfr_top,GH,CACTUS_POSTSTEP8,"CACTUS_POSTSTEP8","   ");
+    rfrPrintDescs(rfr_top,GH,CACTUS_POSTSTEP9,"CACTUS_POSTSTEP9","   ");
+    rfrPrintDescs(rfr_top,GH,CACTUS_POSTSTEP10,"CACTUS_POSTSTEP10","   ");
+    
+    printf ("     if (time-for-output)\n");
+    rfrPrintDescs(rfr_top,GH,CACTUS_ANALYSIS,"CACTUS_ANALYSIS","      ");
+    printf ("     endif\n");
+    printf ("   enddo\n");
+    printf ("End of tree from RFR\n\n");
+  }
+
+  return 1;
+
+}
 
  /*@@
    @routine    CCTK_rfrStorageOn

@@ -107,6 +107,8 @@ int Cactus_InitialiseGH(cGH *GH)
   /* Do the rfr initialisation on this GH */
   CCTK_BindingsScheduleRegister("RFRINIT", (void *)GH);
 
+  /* Report the rfr tree */
+  CCTK_rfrPrintTree(GH,GH->rfr_top);
 
   /* Initialise all the extensions. */
   CCTK_InitGHExtensions(GH);

@@ -5,6 +5,16 @@ public:
  
 public:
 
+LOGICAL cctk_show_rfr_tree "Show the order of the calling tree for the RFR"
+{
+ : :: 
+} "yes"
+ 
+LOGICAL cctk_brief_output "Give only brief output"
+{
+ : :: 
+} "no"
+
 REAL cctk_initial_time "Initial time for evolution"
 {
  : :: "Anything"
