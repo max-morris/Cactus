@@ -394,7 +394,7 @@ int CactusDefaultExit (cGH *GH, int retval)
    @returntype int
    @returndesc
                This function should never return.
-               But if it does it will return 0.
+               But if it does it will return the return code to abort with.
    @endreturndesc
 @@*/
 int CactusDefaultAbort (cGH *GH, int retval)
@@ -414,10 +414,9 @@ int CactusDefaultAbort (cGH *GH, int retval)
 #else
   /* FIXME */
   /*abort();*/
-  retval = retval;
 #endif
-  exit (0);
-  return (0);
+  exit (retval);
+  return (retval);
 }
 
 
