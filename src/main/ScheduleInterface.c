@@ -190,6 +190,8 @@ static int n_scheduled_storage_groups = 0;
 static int *scheduled_storage_groups = NULL;
 
 static cTimerData *timerinfo = NULL;
+static int total_timer = -1;
+
 
 /********************************************************************
  *********************     External Routines   **********************
@@ -751,6 +753,20 @@ int CCTKi_ScheduleGHInit(void *GH)
 {
   int i;
 
+
+  /* create and start the CCTK total timer */
+  total_timer = CCTK_TimerCreate ("CCTK total time");
+  if (total_timer >= 0)
+  {
+    CCTK_TimerStartI (total_timer);
+  }
+  else
+  {
+    CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
+                "Couldn't create CCTK total timer. "
+                "No timing information will be available.");
+  }
+
   for(i = 0; i < n_scheduled_storage_groups; i++)
   {
     CCTK_EnableGroupStorageI(GH,scheduled_storage_groups[i]);
@@ -950,6 +966,17 @@ int CCTK_SchedulePrintTimes(const char *where)
   }
 
   CCTK_TimerDestroyData(data.total_time);
+
+  /* also print total time at the bottom */
+  if (total_timer >= 0)
+  {
+    CCTK_TimerStopI (total_timer);
+    CCTK_TimerI (total_timer, timerinfo);
+    CCTKi_SchedulePrintTimerInfo (timerinfo, NULL, "", "Total time");
+
+    /* just in case this is not at termination yet ... */
+    CCTK_TimerStartI (total_timer);
+  }
 
   return 0;
 }
