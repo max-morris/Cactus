@@ -118,6 +118,13 @@ static int CCTKi_ScheduleCallFunction(void *function, t_attribute *attribute, t_
 
 static int CCTKi_ScheduleStartupFunction(void *function, t_attribute *attribute, t_sched_data *data);
 
+static int SchedulePrintTimes(const char *where);
+
+static int CCTKi_SchedulePrintTimesEntry(t_attribute *attribute, t_sched_data *data);
+static int CCTKi_SchedulePrintTimesExit(t_attribute *attribute, t_sched_data *data);
+static int CCTKi_SchedulePrintTimesWhile(int n_whiles, char **whiles, t_attribute *attribute, t_sched_data *data);
+static int CCTKi_SchedulePrintTimesFunction(void *function, t_attribute *attribute, t_sched_data *data);
+
 /********************************************************************
  *********************     Local Data   *****************************
  ********************************************************************/
@@ -130,8 +137,6 @@ static int *scheduled_comm_groups = NULL;
 
 static int n_scheduled_storage_groups = 0;
 static int *scheduled_storage_groups = NULL;
-
-static int n_schedule_timers = 0;
 
 /********************************************************************
  *********************     External Routines   **********************
@@ -501,7 +506,6 @@ static t_attribute *CreateAttribute(const char *description,
                                     va_list *ap)
 {
   t_attribute *this;
-  char timerid[20];
 
   this = (t_attribute *)malloc(sizeof(t_attribute));
 
@@ -550,8 +554,7 @@ static t_attribute *CreateAttribute(const char *description,
 
       /* Add a timer to the item */
       
-      sprintf(timerid,"schedule_%d", n_schedule_timers++);
-      this->timer_handle = CCTK_TimerCreate(timerid);
+      this->timer_handle = CCTK_TimerCreateI();
     }
     else
     {
@@ -691,6 +694,21 @@ static t_lang_type TranslateLanguage(const char *sval)
   return retcode;
 }
 
+ /*@@
+   @routine    SchedulePrint
+   @date       Sun Sep 19 13:31:23 1999
+   @author     Tom Goodale
+   @desc 
+   Traverses the schedule data for a particular entry point and
+   prints out the data.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
 static int SchedulePrint(const char *where)
 {
   int retcode;
@@ -706,6 +724,45 @@ static int SchedulePrint(const char *where)
                                      (int (*)(void *, void *))               CCTKi_SchedulePrintExit, 
                                      (int  (*)(int, char **, void *, void *))CCTKi_SchedulePrintWhile, 
                                      (int (*)(void *, void *, void *))       CCTKi_SchedulePrintFunction, 
+                                     (void *)&data);
+  }
+  else
+  {
+    retcode = 0;
+  }
+
+  return retcode;
+}
+
+ /*@@
+   @routine    SchedulePrintTimes
+   @date       Fri Oct 22 12:35:06 1999
+   @author     Tom Goodale
+   @desc 
+   Prints the times for a particular schedule entry point.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+static int SchedulePrintTimes(const char *where)
+{
+  int retcode;
+  t_sched_data data;
+
+  data.GH = NULL;
+  data.schedpoint = schedpoint_misc;
+
+  if(where)
+  {
+    retcode = CCTKi_ScheduleTraverse(where,
+                                     (int (*)(void *, void *))               CCTKi_SchedulePrintTimesEntry, 
+                                     (int (*)(void *, void *))               CCTKi_SchedulePrintTimesExit, 
+                                     (int  (*)(int, char **, void *, void *))CCTKi_SchedulePrintTimesWhile, 
+                                     (int (*)(void *, void *, void *))       CCTKi_SchedulePrintTimesFunction, 
                                      (void *)&data);
   }
   else
@@ -743,7 +800,7 @@ static int CCTKi_SchedulePrintEntry(t_attribute *attribute,
 }
 
  /*@@
-   @routine    CCTKi_SchedulePrintEntry
+   @routine    CCTKi_SchedulePrintExit
    @date       Sun Sep 19 13:31:23 1999
    @author     Tom Goodale
    @desc 
@@ -764,7 +821,7 @@ static int CCTKi_SchedulePrintExit(t_attribute *attribute,
 }
 
  /*@@
-   @routine    CCTKi_SchedulePrintEntry
+   @routine    CCTKi_SchedulePrintWhile
    @date       Sun Sep 19 13:31:23 1999
    @author     Tom Goodale
    @desc 
@@ -1078,4 +1135,130 @@ static int CCTKi_ScheduleStartupFunction(void *function,
   calledfunc();
 
   return 1;
+}
+
+
+/********************************************************************
+ ****************     Timer Printing Routines   *********************
+ ********************************************************************/
+
+ /*@@
+   @routine    CCTKi_SchedulePrintTimesEntry
+   @date       Fri Oct 22 12:26:26 1999
+   @author     Tom Goodale
+   @desc 
+   Routine called on entry to a group when traversing for printing.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+static int CCTKi_SchedulePrintTimesEntry(t_attribute *attribute, 
+                                         t_sched_data *data)
+{
+  /*  indent_level += 2;*/
+  return 1;
+}
+
+ /*@@
+   @routine    CCTKi_SchedulePrintTimesExit
+   @date       Fri Oct 22 12:26:26 1999
+   @author     Tom Goodale
+   @desc 
+   Routine called on exit to a group when traversing for printing.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+static int CCTKi_SchedulePrintTimesExit(t_attribute *attribute, 
+                                        t_sched_data *data)
+{
+  /*  indent_level -=2; */
+  return 1;
+}
+
+ /*@@
+   @routine    CCTKi_SchedulePrintTimesWhile
+   @date       Fri Oct 22 12:26:26 1999
+   @author     Tom Goodale
+   @desc 
+   Routine called for while ofo a group when traversing for printing.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+static int CCTKi_SchedulePrintTimesWhile(int n_whiles, 
+                                         char **whiles, 
+                                         t_attribute *attribute, 
+                                         t_sched_data *data)
+{
+  int i;
+
+#if 0
+  if(!data->whiling)
+  {
+    for(i=0; i < indent_level+2; i++) printf(" ");
+
+    printf("while (");
+  
+    for(i = 0; i < n_whiles; i++)
+    {
+      if(i > 0)
+      {
+        printf(" && ");
+      }
+
+      printf("%s", whiles[i]);
+    }
+    
+    printf(")\n");
+  }
+  else
+  {
+    for(i=0; i < indent_level; i++) printf(" ");
+
+    printf("end while\n");
+  }
+#endif
+
+  data->whiling = !data->whiling;
+
+  return data->whiling;
+}
+
+ /*@@
+   @routine    CCTKi_SchedulePrintTimesFunction
+   @date       Fri Oct 22 12:26:26 1999
+   @author     Tom Goodale
+   @desc 
+   Function which actually prints out data about a group or a function.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+static int CCTKi_SchedulePrintTimesFunction(void *function, 
+                                            t_attribute *attribute, 
+                                            t_sched_data *data)
+{
+  int i;
+  for(i=0; i < indent_level; i++) printf(" ");
+
+  printf("%s: %s\n", attribute->thorn, attribute->description);
+
+  return 1;  
 }
