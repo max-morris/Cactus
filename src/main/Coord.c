@@ -3,8 +3,9 @@
    @date      11-12th April 1999
    @author    Gabrielle Allen
    @desc 
-   Routines to deal with cooordinates and coordinate registration
+              Routines to deal with cooordinates and coordinate registration
    @enddesc 
+   @version   $Id$
  @@*/
 
 /*#define DEBUG_COORD*/
@@ -19,7 +20,7 @@
 #include "cctk_Groups.h"
 #include "cctk_WarnLevel.h"
 
-#include "util_Hash.h"
+#include "StoreHandledData.h"
 #include "ErrorCodes.h"
 
 static char *rcsid = "$Header$";
@@ -34,6 +35,7 @@ CCTK_FILEVERSION(main_Coord_c)
 struct Coordsystem
 {
   int dimension;
+  char *systemname;
   struct Coordprops *coords;
 };
 
@@ -60,9 +62,45 @@ struct Coordpropslist
  *********************     Local Data   *****************************
  ********************************************************************/
 
-#define INITIAL_HASH_SIZE    64
+static cHandledData *CoordSystems = NULL;
 
-static uHash *CoordSystemHash = NULL;
+
+/********************************************************************
+ *********************     Fortran Wrappers    **********************
+ ********************************************************************/
+void CCTK_FCALL CCTK_FNAME (CCTK_CoordRegisterSystem)
+                           (int *ierr, int *dim, ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (CCTK_CoordRegisterData)
+                           (int *handle,int *dir,THREE_FORTSTRINGS_ARGS);
+void CCTK_FCALL CCTK_FNAME (CCTK_CoordRegisterRange)
+                           (int *ierr,
+                            cGH *GH,
+                            CCTK_REAL *lower,
+                            CCTK_REAL *upper,
+                            int *dir,
+                            TWO_FORTSTRINGS_ARGS);
+void CCTK_FCALL CCTK_FNAME (CCTK_CoordSystemHandle)
+                           (int *ierr, ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (CCTK_CoordIndex)
+                           (int *vindex, int *dir, TWO_FORTSTRINGS_ARGS);
+void CCTK_FCALL CCTK_FNAME (CCTK_CoordSystemDim)
+                           (int *dim, ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (CCTK_CoordDir)
+                           (int *dir, TWO_FORTSTRINGS_ARGS);
+void CCTK_FCALL CCTK_FNAME (CCTK_CoordRange)
+                           (int *ierr,
+                            cGH *GH,
+                            CCTK_REAL *lower,
+                            CCTK_REAL *upper,
+                            int *dir,
+                            TWO_FORTSTRINGS_ARGS);
+void CCTK_FCALL CCTK_FNAME (CCTK_CoordLocalRange)
+                           (int *ierr,
+                            cGH *GH,
+                            CCTK_REAL *lower,
+                            CCTK_REAL *upper,
+                            int *dir,
+                            TWO_FORTSTRINGS_ARGS);
 
 
 /********************************************************************
@@ -88,44 +126,30 @@ static uHash *CoordSystemHash = NULL;
 
    @@*/
 
-int CCTK_CoordRegisterSystem(int dim, 
-                             const char *systemname)
+int CCTK_CoordRegisterSystem (int dim, 
+                              const char *systemname)
 {
-  int i;
   int retval=-1;
-  struct Coordsystem *data;
+  struct Coordsystem *new_system;
 
-  /* Create hash table if not already done */
-  if (!CoordSystemHash)
-  {
-    CoordSystemHash = Util_HashCreate(INITIAL_HASH_SIZE);
-  }
 
   /* Check if system already exists */
-  data = (struct Coordsystem *)Util_HashData(CoordSystemHash, 
-                                             strlen(systemname),
-                                             systemname,
-                                             0);
-  if (!data) 
+  Util_GetHandle (CoordSystems, systemname, (void **) &new_system);
+  if (! new_system) 
   {
     /* Allocate the memory */
-    data = (struct Coordsystem *)malloc(sizeof(struct Coordsystem));
-    
+    new_system = (struct Coordsystem *) malloc (sizeof (struct Coordsystem));
+
     /* Set the data and store */
-    if (data && CoordSystemHash)
+    if (new_system)
     {
       if (dim > 0)
       {
-        data->dimension = dim;
-        data->coords = (struct Coordprops *)malloc
-          ((data->dimension)*sizeof(struct Coordprops));
-        for (i=0;i<dim;i++)
-        {
-          data->coords[i].name = NULL;
-          data->coords[i].list = NULL;
-        }
-        retval = Util_HashStore(CoordSystemHash,strlen(systemname),
-                                systemname,0,data);
+        new_system->dimension  = dim;
+        new_system->systemname = strdup (systemname);
+        new_system->coords = (struct Coordprops *) calloc (dim,
+                                                     sizeof(struct Coordprops));
+        retval = Util_NewHandle (&CoordSystems, systemname, new_system);
       }
       else
       {
@@ -138,33 +162,34 @@ int CCTK_CoordRegisterSystem(int dim,
   }
   else
   {
-    if (data->dimension == dim)
+    if (new_system->dimension == dim)
     {
       retval = 0;
       CCTK_VWarn(4,__LINE__,__FILE__,"Cactus",
-                 "CCTK_CoordRegisterSystem: System %s already registered",
+                 "CCTK_CoordRegisterSystem: System '%s' already registered",
                  systemname);      
     }
     else
     {
       retval = -1;
       CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
-                 "CCTK_CoordRegisterSystem: System %s already registered with different dimension",
+                 "CCTK_CoordRegisterSystem: System '%s' already registered "
+                 "with different dimension",
                  systemname);
     }
   }
 
-  return retval;
+  return (retval);
 }
 
-void CCTK_FCALL CCTK_FNAME(CCTK_CoordRegisterSystem)
-     (int *ierr,int *dim,ONE_FORTSTRING_ARG)
+
+void CCTK_FCALL CCTK_FNAME (CCTK_CoordRegisterSystem)
+                           (int *ierr, int *dim, ONE_FORTSTRING_ARG)
 {
-  ONE_FORTSTRING_CREATE(systemname)
-  *ierr=CCTK_CoordRegisterSystem (*dim,systemname);
-  free(systemname);
+  ONE_FORTSTRING_CREATE (systemname)
+  *ierr = CCTK_CoordRegisterSystem (*dim, systemname);
+  free (systemname);
 }
-
 
 
  /*@@
@@ -181,11 +206,10 @@ void CCTK_FCALL CCTK_FNAME(CCTK_CoordRegisterSystem)
    @returndesc 
    Returns 0 for success and negative integer for failure
    0  = success
-   -1 = no coordinate systems registered
-   -2 = this coordinate system not registered
-   -3 = direction outside system dimension
-   -4 = coordinate name already registered
-   -5 = coordinate direction already registered
+   -1 = coordinate system not registered
+   -2 = direction outside system dimension
+   -3 = coordinate name already registered
+   -4 = coordinate direction already registered
    @endreturndesc
 
    @@*/
@@ -197,217 +221,280 @@ int CCTK_CoordRegisterData(int dir,
 {
   int i;  
   int retval=0;
-  int index;
   int dup=0;
-  struct Coordsystem *data=NULL;
+  struct Coordsystem *coord_system;
 
-  if (CoordSystemHash)
+
+  /* Check if system exists */
+  Util_GetHandle (CoordSystems, systemname, (void **) &coord_system);
+  if (! coord_system) 
   {
-    /* Get structure for this system name */
-    data = (struct Coordsystem *)Util_HashData(CoordSystemHash, 
-                                               strlen(systemname),
-                                               systemname,
-                                               0);
-    
-    if (data)
-    {
-      
-      /* Check direction correct */
-      if (dir<1 || dir>data->dimension)
-      {
-        retval = -3;
-        CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
-                   "CCTK_CoordRegisterData: Direction %d outside system dimension %d",
-                   dir,data->dimension);
-      }
-      else
-      {
-
-        /* Check name not already registered */
-        for (i=0;i<data->dimension;i++)
-        {
-          if (data->coords[i].name)
-          {
-            if (CCTK_Equals(data->coords[i].name,coordname))
-            {
-              dup = 1;
-              retval = -4;
-              CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
-                         "CCTK_CoordRegisterData: Coordinate name %s already registered",coordname);
-            }
-          }
-        }
-        /* Check direction not already registered */
-        if (data->coords[dir-1].name)
-        {
-          dup = 1;
-          retval = -5;
-          CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
-                     "CCTK_CoordRegisterData: Coordinate direction %d already registered",dir);
-        }
-
-        if (dup == 0)
-        {
-          /* Register name */
-          data->coords[dir-1].name = strdup(coordname);
-          /* Register index if grid variable */
-          index = CCTK_VarIndex(gfname);
-          if (index >= 0)
-          {  
-            data->coords[dir-1].index=index;
-          }
-          else
-          {
-            data->coords[dir-1].index=-1;
-            CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
-                       "CCTK_CoordRegisterData: No grid variable registered");
-          }
-        }
-      }
-    }
-    else
-    {
-      retval = -2;
-      CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
-                 "CCTK_CoordRegisterData: System %s not registered",systemname);
-    }
+    CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
+               "CCTK_CoordRegisterData: System '%s' not registered",systemname);
+    retval = -1;
   }
   else
   {
-    retval = -1;
-    CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
-               "CCTK_CoordRegisterData: No coordinate systems registered",systemname);
+    /* Check direction correct */
+    if (dir < 1 || dir > coord_system->dimension)
+    {
+      CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
+                  "CCTK_CoordRegisterData: Direction %d outside system "
+                  "dimension %d",
+                  dir, coord_system->dimension);
+      retval = -2;
+    }
+    else
+    {
+
+      /* Check name not already registered */
+      for (i = 0; i < coord_system->dimension; i++)
+      {
+        if (coord_system->coords[i].name &&
+            CCTK_Equals (coord_system->coords[i].name, coordname))
+        {
+          CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
+                      "CCTK_CoordRegisterData: Coordinate name '%s' already "
+                      "registered", coordname);
+          dup = 1;
+          retval = -3;
+        }
+      }
+      /* Check direction not already registered */
+      if (coord_system->coords[dir-1].name)
+      {
+        CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
+                    "CCTK_CoordRegisterData: Coordinate direction %d already "
+                    "registered", dir);
+        dup = 1;
+        retval = -4;
+      }
+
+      if (dup == 0)
+      {
+        /* Register name */
+        coord_system->coords[dir-1].name = strdup (coordname);
+        /* Register index if grid variable */
+        coord_system->coords[dir-1].index = CCTK_VarIndex (gfname);
+        if (coord_system->coords[dir-1].index < 0)
+        {
+          CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
+                      "CCTK_CoordRegisterData: No grid variable registered");
+        }
+      }
+    }
   }
 
-  return retval;
-
+  return (retval);
 }
 
-void CCTK_FCALL CCTK_FNAME(CCTK_CoordRegisterData)
-     (int *handle,int *dir,THREE_FORTSTRINGS_ARGS)
+
+void CCTK_FCALL CCTK_FNAME (CCTK_CoordRegisterData)
+                           (int *handle,int *dir,THREE_FORTSTRINGS_ARGS)
 {
-  THREE_FORTSTRINGS_CREATE(gf,name,systemname)
-  *handle = CCTK_CoordRegisterData(*dir, gf, name,systemname);
-  free(gf);
-  free(name);
-  free(systemname);
+  THREE_FORTSTRINGS_CREATE (gf, name, systemname)
+  *handle = CCTK_CoordRegisterData (*dir, gf, name, systemname);
+  free (gf);
+  free (name);
+  free (systemname);
 }
 
 
-
-int CCTK_CoordRegisterRange(cGH *GH, 
-                            CCTK_REAL min, 
-                            CCTK_REAL max, 
-                            int dir,
-                            const char *coordname,
-                            const char *systemname)
+int CCTK_CoordRegisterRange (cGH *GH, 
+                             CCTK_REAL min, 
+                             CCTK_REAL max, 
+                             int dir,
+                             const char *coordname,
+                             const char *systemname)
 {
   int i;
   int retval = 0;
-  int index = -1;
+  int vindex = -1;
   struct Coordpropslist *newguy;
-  struct Coordsystem *data;
+  struct Coordsystem *coord_system;
 
-  if (CoordSystemHash)
+
+  /* Check if system exists */
+  Util_GetHandle (CoordSystems, systemname, (void **) &coord_system);
+  if (! coord_system) 
   {
-    data = (struct Coordsystem *)Util_HashData(CoordSystemHash, 
-                                               strlen(systemname),
-                                               systemname,
-                                               0);
-    if (data)
+    CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
+               "CCTK_CoordRegisterRange: System '%s' not registered",
+               systemname);
+    retval = -1;
+  }
+  else
+  {
+    if (dir > -1)
     {
-      if (dir>-1)
+      if (dir == 0 || dir > coord_system->dimension)
       {
-        if (dir == 0 || dir > data->dimension)
-        {
-          retval = -3;
-          CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
-                     "CCTK_CoordRegisterRange: Direction %d outside system dimension %d",
-                     dir,data->dimension);
-        }          
-        if (data->coords[dir-1].name)
-        {
-          index = dir-1;
-        }
-        else
-        {
-          retval = -5;
-          CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
-                     "CCTK_CoordRegisterRange: Coordinate direction %d not registered",dir);
-        }
+        CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
+                    "CCTK_CoordRegisterRange: Direction %d outside system "
+                    "dimension %d", dir, coord_system->dimension);
+        retval = -2;
+      }          
+      if (coord_system->coords[dir-1].name)
+      {
+        vindex = dir-1;
       }
       else
       {
-        for (i=0;i<data->dimension;i++)
-        {
-          if (data->coords[i].name && 
-              CCTK_Equals(data->coords[i].name,coordname))
-          {
-            index = i;
-          }
-        }
-        if (index == -1)
-        {
-          retval = -4;
-          CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
-                     "CCTK_CoordRegisterRange: Coordinate name %s not registered",coordname);
-        }          
-      }
-
-      if (index != -1)
-      {
-        /* New coord_range */
-        newguy = (struct Coordpropslist *)
-          malloc(sizeof(struct Coordpropslist));
-      
-        if (newguy)
-        {
-          newguy->GH    = GH;
-          newguy->lower = min;
-          newguy->upper = max;
-          newguy->next  = data->coords[index].list;
-          data->coords[index].list = newguy;
-        }
-        else
-        {
-          retval = -6;
-          CCTK_Warn (1,__LINE__,__FILE__,"Cactus",
-                     "CCTK_CoordRegisterRange: Cannot allocate data for coordinate range");
-        }
+        CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
+                    "CCTK_CoordRegisterRange: Coordinate direction %d "
+                    "not registered", dir);
+        retval = -4;
       }
     }
     else
     {
-      retval = -2;
-      CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
-                 "CCTK_CoordRegisterRange: System %s not registered",systemname);
+      for (i = 0; i < coord_system->dimension; i++)
+      {
+        if (coord_system->coords[i].name &&
+            CCTK_Equals(coord_system->coords[i].name,coordname))
+        {
+          vindex = i;
+        }
+      }
+      if (vindex == -1)
+      {
+        CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
+                    "CCTK_CoordRegisterRange: Coordinate name %s not "
+                    "registered", coordname);
+        retval = -3;
+      }          
     }
+
+    if (vindex != -1)
+    {
+      /* New coord_range */
+      newguy = (struct Coordpropslist *) malloc (sizeof(struct Coordpropslist));
+
+      if (! newguy)
+      {
+        CCTK_Warn (1, __LINE__, __FILE__, "Cactus",
+                   "CCTK_CoordRegisterRange: Cannot allocate data "
+                   "for coordinate range");
+        retval = -5;
+      }
+      else
+      {
+        newguy->GH    = GH;
+        newguy->lower = min;
+        newguy->upper = max;
+        newguy->next  = coord_system->coords[vindex].list;
+        coord_system->coords[vindex].list = newguy;
+      }
+    }
+  }
+
+  return (retval);
+}
+
+
+void CCTK_FCALL CCTK_FNAME (CCTK_CoordRegisterRange)
+                           (int *ierr,
+                            cGH *GH,
+                            CCTK_REAL *lower,
+                            CCTK_REAL *upper,
+                            int *dir,
+                            TWO_FORTSTRINGS_ARGS)
+{
+  TWO_FORTSTRINGS_CREATE (name, systemname)
+  *ierr = CCTK_CoordRegisterRange (GH, *lower, *upper, *dir, name, systemname);
+  free (name);
+  free (systemname);
+}
+
+
+ /*@@
+   @routine    CCTK_CoordSystemHandle
+   @date       Fri 02 Feb 2001
+   @author     Thomas Radke
+   @desc
+               Returns the handle for a coordinate system
+   @enddesc
+   @calls      Util_GetHandle
+
+   @var        systemname
+   @vdesc      name of the coordinate system
+   @vtype      const char *
+   @vio        in
+   @endvar
+
+   @returntype int
+   @returndesc
+               >= 0 handle for coordinate system
+               <  0 no such coordinate system found
+   @endreturndesc
+@@*/
+int CCTK_CoordSystemHandle (const char *systemname)
+{
+  int handle;
+
+
+  handle = Util_GetHandle (CoordSystems, systemname, NULL);
+
+  if (handle < 0)
+  {
+    CCTK_VWarn (3, __LINE__, __FILE__, "Cactus",
+                "No coordinate system '%s' registered",
+                systemname);
+  }
+
+  return (handle);
+}
+
+
+ /*@@
+   @routine    CCTK_CoordSystemName
+   @date       Fri 02 Feb 2001
+   @author     Thomas Radke
+   @desc
+               Returns the name of a coordinate system
+   @enddesc
+   @calls      Util_GetHandle
+
+   @var        handle
+   @vdesc      handle for the coordinate system
+   @vtype      int
+   @vio        in
+   @endvar
+
+   @returntype const char *
+   @returndesc
+               the coordinate system name or NULL if handle is invalid
+   @endreturndesc
+@@*/
+const char *CCTK_CoordSystemName (int handle)
+{
+  const char *systemname;
+  struct Coordsystem *coord_system;
+
+
+  /* Check if system exists */
+  coord_system = (struct Coordsystem *)
+                 Util_GetHandledData (CoordSystems, handle);
+  if (coord_system)
+  {
+    systemname = (const char *) coord_system->systemname;
   }
   else
   {
-    retval = -1;
-    CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
-               "CCTK_CoordRegisterRange: No coordinate systems registered",systemname);
+    systemname = NULL;
   }
 
-  return retval;
-
+  return (systemname);
 }
 
-void CCTK_FCALL CCTK_FNAME(CCTK_CoordRegisterRange)
-     (int *ierr,
-      cGH *GH,
-      CCTK_REAL *lower,
-      CCTK_REAL *upper,
-      int *dir,
-      TWO_FORTSTRINGS_ARGS)
+
+void CCTK_FCALL CCTK_FNAME (CCTK_CoordSystemHandle)
+                           (int *ierr, ONE_FORTSTRING_ARG)
 {
-  TWO_FORTSTRINGS_CREATE(name,systemname)
-  *ierr=CCTK_CoordRegisterRange (GH,*lower,*upper,*dir,name,systemname);
-  free(name);
-  free(systemname);
+  ONE_FORTSTRING_CREATE (systemname)
+  *ierr = CCTK_CoordSystemHandle (systemname);
+  free (systemname);
 }
-
 
 
  /*@@
@@ -449,140 +536,114 @@ void CCTK_FCALL CCTK_FNAME(CCTK_CoordRegisterRange)
    @returntype int
    @returndesc 
    >=0      = grid variable index for coordinate
-   -1       = no coordinate systems registered
-   -2       = coordinate system not registered
-   -3       = coordinate name not found
-   -4       = coordinate direction greater than system dimension
+   -1       = coordinate system not registered
+   -2       = coordinate name not found
+   -3       = coordinate direction greater than system dimension
    @endreturndesc
 
    @@*/
 
-int CCTK_CoordIndex(int dir, const char *name, const char *systemname)
+int CCTK_CoordIndex (int dir, const char *name, const char *systemname)
 {
   int i;
-  int index=-1;
+  int vindex=-1;
   int foundit = 0;
-  struct Coordsystem *data;
+  struct Coordsystem *coord_system;
 
-  if (CoordSystemHash)
+
+  /* Check if system exists */
+  Util_GetHandle (CoordSystems, systemname, (void **) &coord_system);
+  if (! coord_system) 
   {
-    data = (struct Coordsystem *)Util_HashData(CoordSystemHash, 
-                                               strlen(systemname),
-                                               systemname,
-                                               0);
-    if (data)
+    CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
+               "CCTK_CoordIndex: System '%s' not registered",systemname);
+    vindex = -1;
+  }
+  else
+  {
+    if (dir > 0)
     {
-      if (dir>0)
+      if (dir > coord_system->dimension)
       {
-        if (dir>data->dimension)
-        {
-          index = -4;
-          CCTK_VWarn(2,__LINE__,__FILE__,"Cactus",
-                     "CCTK_CoordIndex: Direction %d outside dimension %d",
-                     dir,data->dimension);
-        }
-        else
-        {
-          index = data->coords[dir-1].index;
-        }
+        CCTK_VWarn (2, __LINE__, __FILE__, "Cactus",
+                    "CCTK_CoordIndex: Direction %d outside dimension %d",
+                    dir, coord_system->dimension);
+        vindex = -3;
       }
       else
       {
-        for (i=0;i<data->dimension;i++)
-        {
-          if (data->coords[i].name && 
-              CCTK_Equals(data->coords[i].name,name))
-          {
-            foundit = 1;
-            index = data->coords[i].index;
-          }
-        }
-        if (foundit == 0)
-        {
-          index = -3;
-          CCTK_VWarn(4,__LINE__,__FILE__,"Cactus",
-                     "CCTK_CoordIndex: Coordinate name %s not found",
-                     name);
-        }
+        vindex = coord_system->coords[dir-1].index;
       }
     }
     else
     {
-      index = -2;
-      CCTK_VWarn(4,__LINE__,__FILE__,"Cactus",
-                 "CCTK_CoordIndex: System %s not registered",systemname);
+      for (i = 0; i < coord_system->dimension; i++)
+      {
+        if (coord_system->coords[i].name && 
+            CCTK_Equals (coord_system->coords[i].name, name))
+        {
+          foundit = 1;
+          vindex = coord_system->coords[i].index;
+        }
+      }
+      if (foundit == 0)
+      {
+        CCTK_VWarn (4, __LINE__, __FILE__, "Cactus",
+                    "CCTK_CoordIndex: Coordinate name '%s' not found",
+                    name);
+        vindex = -2;
+      }
     }
   }
-  else
-  {
-    CCTK_Warn(4,__LINE__,__FILE__,"Cactus",
-              "CCTK_CoordIndex: No coordinate systems registered");
-    index = -1;
-  }
 
-  return index;
+  return (vindex);
 }
 
-void CCTK_FCALL CCTK_FNAME(CCTK_CoordIndex)
-     (int *index, int *dir, TWO_FORTSTRINGS_ARGS)
+
+void CCTK_FCALL CCTK_FNAME (CCTK_CoordIndex)
+                           (int *vindex, int *dir, TWO_FORTSTRINGS_ARGS)
 {
-  TWO_FORTSTRINGS_CREATE(name,systemname)
-  *index = CCTK_CoordIndex (*dir,name,systemname);
-  free(name);
-  free(systemname);
+  TWO_FORTSTRINGS_CREATE (name, systemname)
+  *vindex = CCTK_CoordIndex (*dir, name, systemname);
+  free (name);
+  free (systemname);
 }
 
 
-
-
-
-
-int CCTK_CoordSystemDim(const char *systemname)
+int CCTK_CoordSystemDim (const char *systemname)
 {
   int dim;
-  struct Coordsystem *data;
+  struct Coordsystem *coord_system;
 
-  if (CoordSystemHash)
+
+  /* Check if system exists */
+  Util_GetHandle (CoordSystems, systemname, (void **) &coord_system);
+  if (! coord_system) 
   {
-    data = (struct Coordsystem *)Util_HashData(CoordSystemHash, 
-                                               strlen(systemname),
-                                               systemname,
-                                               0);
-    
-    if (data)
-    {
-      dim = data->dimension;
-    }
-    else
-    {
-      CCTK_VWarn(2,__LINE__,__FILE__,"Cactus",
-                 "CCTK_CoordSystemDim: System %s not registered",systemname);
-      dim = -2;
-    }
+    CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
+               "CCTK_CoordSystemDim: System '%s' not registered",systemname);
+    dim = -1;
   }
   else
   {
-    CCTK_Warn(2,__LINE__,__FILE__,"Cactus",
-              "CCTK_CoordSystemDim: No coordinate systems registered");
-    dim = -1;
+    dim = coord_system->dimension;
   }
-  
-  return dim;
+
+  return (dim);
 }
 
-void CCTK_FCALL CCTK_FNAME(CCTK_CoordSystemDim)
-     (int *dim, ONE_FORTSTRING_ARG)
+
+void CCTK_FCALL CCTK_FNAME (CCTK_CoordSystemDim)
+                           (int *dim, ONE_FORTSTRING_ARG)
 {
-  ONE_FORTSTRING_CREATE(systemname)
-  *dim = CCTK_CoordSystemDim(systemname);
-  free(systemname);
+  ONE_FORTSTRING_CREATE (systemname)
+  *dim = CCTK_CoordSystemDim (systemname);
+  free (systemname);
 }
-
-
 
 
  /*@@
-   @routine    CoordDir
+   @routine    CCTK_CoordDir
    @date       18th June 2000
    @author     Gabrielle Allen
    @desc 
@@ -599,58 +660,55 @@ void CCTK_FCALL CCTK_FNAME(CCTK_CoordSystemDim)
 
    @@*/
 
-int CCTK_CoordDir(const char *name,const char *systemname)
+int CCTK_CoordDir (const char *name,const char *systemname)
 {
   int i;
-  int dir = -1;
-  struct Coordsystem *data;
+  int dir;
+  struct Coordsystem *coord_system;
 
-  data = (struct Coordsystem *)Util_HashData(CoordSystemHash, 
-                                             strlen(systemname),
-                                             systemname,
-                                             0);
 
-  if (data)
+  /* Check if system exists */
+  dir = -1;
+  Util_GetHandle (CoordSystems, systemname, (void **) &coord_system);
+  if (! coord_system) 
   {
-    for (i=0;i<data->dimension;i++)
+    CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
+               "CCTK_CoordDir: System '%s' not registered", systemname);
+  }
+  else
+  {
+    for (i = 0; i < coord_system->dimension; i++)
     {
-      if (CCTK_Equals(data->coords[i].name,name))
+      if (CCTK_Equals (coord_system->coords[i].name, name))
       {
         dir = i+1;
       }
     }
     if (dir < 1)
     {
+      CCTK_VWarn (2, __LINE__, __FILE__, "Cactus",
+                  "CCTK_CoordDir: Could not find coordinate '%s' in '%s'",
+                  name, systemname);
       dir = -2;
-      CCTK_VWarn(2,__LINE__,__FILE__,"Cactus",
-                "CCTK_CoordDir: Could not find coordinate %s in %s",
-                 name,systemname);
     }    
   }
-  else
-  {
-    dir = -1;
-    CCTK_VWarn(2,__LINE__,__FILE__,"Cactus",
-               "CCTK_CoordSystemDim: System %s not registered",systemname);
-  }
-  return dir;
+
+  return (dir);
 }
 
-void CCTK_FCALL CCTK_FNAME(CCTK_CoordDir)
-     (int *dir, TWO_FORTSTRINGS_ARGS)
+
+void CCTK_FCALL CCTK_FNAME (CCTK_CoordDir)
+                           (int *dir, TWO_FORTSTRINGS_ARGS)
 {
-  TWO_FORTSTRINGS_CREATE(name,systemname)
-  *dir = CCTK_CoordDir(name,systemname);
-  free(name);
-  free(systemname);
+  TWO_FORTSTRINGS_CREATE (name, systemname)
+  *dir = CCTK_CoordDir (name, systemname);
+  free (name);
+  free (systemname);
 }
-
-
-
 
 
  /*@@
-   @routine    CoordRange
+   @routine    CCTK_CoordRange
    @date       10th January 2000
    @author     Gabrielle Allen
    @desc 
@@ -660,7 +718,6 @@ void CCTK_FCALL CCTK_FNAME(CCTK_CoordDir)
 	       or the name (coordname). The name will be used 
 	       if coordir==-1
 	       
-
    @enddesc 
    @calls     
 
@@ -677,17 +734,17 @@ void CCTK_FCALL CCTK_FNAME(CCTK_CoordDir)
 
    @@*/
 
-int CCTK_CoordRange(cGH *GH, 
-                    CCTK_REAL *lower, 
-                    CCTK_REAL *upper, 
-                    int coorddir,
-                    const char *coordname,
-                    const char *systemname)
+int CCTK_CoordRange (cGH *GH, 
+                     CCTK_REAL *lower, 
+                     CCTK_REAL *upper, 
+                     int coorddir,
+                     const char *coordname,
+                     const char *systemname)
 {
   int i;
   int retval=0;
   struct Coordpropslist *curr;
-  struct Coordsystem    *data;
+  struct Coordsystem    *coord_system;
   struct Coordprops     *coord;
 
 
@@ -709,41 +766,44 @@ int CCTK_CoordRange(cGH *GH,
                "CCTK_CoordRange: No coordinate system name given");
     retval = -3;
   }
-  else if (CoordSystemHash)
+  else
   {
-    data = (struct Coordsystem *)Util_HashData(CoordSystemHash, 
-                                               strlen(systemname),
-                                               systemname,
-                                               0);
-
-    if (data)
+    /* Check if system exists */
+    Util_GetHandle (CoordSystems, systemname, (void **) &coord_system);
+    if (! coord_system) 
     {
-      if (coorddir>0)
+      CCTK_VWarn (2, __LINE__, __FILE__, "Cactus",
+                 "CCTK_CoordRange: System '%s' not registered", systemname);
+      retval = -1;
+    }
+    else
+    {
+      if (coorddir > 0)
       {
-        coord = &data->coords[coorddir-1];
+        coord = &coord_system->coords[coorddir-1];
       }
       else
       {
         coord = NULL;
-        for (i=0;i<data->dimension;i++)
+        for (i = 0; i < coord_system->dimension; i++)
         {
-          if (CCTK_Equals(data->coords[i].name,coordname))
+          if (CCTK_Equals (coord_system->coords[i].name, coordname))
           {
-            coord = &data->coords[i];
+            coord = &coord_system->coords[i];
             break;
           }
         }
         if (coord == NULL)
         {
-          CCTK_VWarn(2, __LINE__, __FILE__, "Cactus",
-                     "CCTK_CoordRange: Coordinate name '%s' not registered",
-                     coordname);
+          CCTK_VWarn (2, __LINE__, __FILE__, "Cactus",
+                      "CCTK_CoordRange: Coordinate name '%s' not registered",
+                      coordname);
           retval = -4;
         }
       }
       if (coord)
       {
-        for (curr=coord->list;curr;curr=curr->next)
+        for (curr = coord->list; curr; curr = curr->next)
         {
 
 #ifdef DEBUG_COORD
@@ -765,44 +825,29 @@ int CCTK_CoordRange(cGH *GH,
         }
       }
     }
-    else
-    {
-      CCTK_VWarn(2, __LINE__, __FILE__, "Cactus",
-                 "CCTK_CoordRange: Coordinate system '%s' not registered",
-                 systemname);
-      retval = -5;
-    }
-  }
-  else
-  {
-    CCTK_Warn(2, __LINE__, __FILE__, "Cactus",
-              "CCTK_CoordRange: No coordinate systems registered");
-    retval = -6;
   }
 
-  return retval;
+  return (retval);
 }
 
-void CCTK_FCALL CCTK_FNAME(CCTK_CoordRange)
-     (int *ierr,
-      cGH *GH,
-      CCTK_REAL *lower,
-      CCTK_REAL *upper,
-      int *dir,
-      TWO_FORTSTRINGS_ARGS)
+
+void CCTK_FCALL CCTK_FNAME (CCTK_CoordRange)
+                           (int *ierr,
+                            cGH *GH,
+                            CCTK_REAL *lower,
+                            CCTK_REAL *upper,
+                            int *dir,
+                            TWO_FORTSTRINGS_ARGS)
 {
-  TWO_FORTSTRINGS_CREATE(name,systemname)
-  *ierr = CCTK_CoordRange (GH,lower,upper,*dir,name,systemname);
-  free(name);
-  free(systemname);
+  TWO_FORTSTRINGS_CREATE (name, systemname)
+  *ierr = CCTK_CoordRange (GH, lower, upper, *dir, name, systemname);
+  free (name);
+  free (systemname);
 }
-
-
-
 
 
  /*@@
-   @routine    CoordLocalRange
+   @routine    CCTK_CoordLocalRange
    @date       10th January 2000
    @author     Gabrielle Allen
    @desc 
@@ -834,14 +879,15 @@ int CCTK_CoordLocalRange(cGH *GH,
                          const char *systemname)
 {
 
-  int ierr;
+  int retval;
   int realdir;
   CCTK_REAL global_lower;
   CCTK_REAL global_upper;
   
-  ierr = CCTK_CoordRange(GH,&global_lower,&global_upper,dir,name,systemname);
 
-  if (ierr >= 0)
+  retval = CCTK_CoordRange (GH, &global_lower, &global_upper, dir, name,
+                            systemname);
+  if (retval >= 0)
   {
     if (dir > 0) 
     {
@@ -849,37 +895,36 @@ int CCTK_CoordLocalRange(cGH *GH,
     }
     else
     {
-      realdir = CCTK_CoordDir(name,systemname);
+      realdir = CCTK_CoordDir (name, systemname);
     }
     *lower = global_lower +
-              GH->cctk_lbnd[realdir-1] * GH->cctk_delta_space[realdir-1];
+             GH->cctk_lbnd[realdir-1] * GH->cctk_delta_space[realdir-1];
     *upper = global_lower +
-             (GH->cctk_ubnd[realdir-1] + 1) * GH->cctk_delta_space[realdir-1];
+            (GH->cctk_ubnd[realdir-1] + 1) * GH->cctk_delta_space[realdir-1];
   }
   else
   {
-    CCTK_Warn(4,__LINE__,__FILE__,"Cactus","Error finding coordinate range");
+    CCTK_Warn (4, __LINE__, __FILE__, "Cactus",
+               "Error finding coordinate range");
   }
 
 #ifdef DEBUG_COORD  
   printf("Upper/Lower are %f,%f\n",*lower,*upper);
 #endif
 
-  return 0;
-
+  return (retval);
 }
   
-void CCTK_FCALL CCTK_FNAME(CCTK_CoordLocalRange)
-     (int *ierr,
-      cGH *GH,
-      CCTK_REAL *lower,
-      CCTK_REAL *upper,
-      int *dir,
-      TWO_FORTSTRINGS_ARGS)
+void CCTK_FCALL CCTK_FNAME (CCTK_CoordLocalRange)
+                           (int *ierr,
+                            cGH *GH,
+                            CCTK_REAL *lower,
+                            CCTK_REAL *upper,
+                            int *dir,
+                            TWO_FORTSTRINGS_ARGS)
 {
-  TWO_FORTSTRINGS_CREATE(name,systemname)
-  *ierr = CCTK_CoordLocalRange (GH,lower,upper,*dir,name,systemname);
-  free(name);
-  free(systemname);
+  TWO_FORTSTRINGS_CREATE (name, systemname)
+  *ierr = CCTK_CoordLocalRange (GH, lower, upper, *dir, name, systemname);
+  free (name);
+  free (systemname);
 }
-
