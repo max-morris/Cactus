@@ -76,7 +76,7 @@ mkdir("test", 0755);
 open(OUT, ">interface.ccl") || die "Cannot create interface.ccl";
 
 print OUT "# Interface definition for thorn $thorn_name\n";
-print OUT "# \$" . "Header:\$\n\n";
+print OUT "# \$" . "Header\$\n\n";
 print OUT "implements:\n";
 print OUT "inherits:\n";
 
@@ -85,20 +85,20 @@ close OUT;
 open(OUT, ">param.ccl") || die "Cannot create param.ccl";
 
 print OUT "# Parameter definitions for thorn $thorn_name\n";
-print OUT "# \$" . "Header:\$\n";
+print OUT "# \$" . "Header\$\n";
 
 close OUT;
 
 open(OUT, ">schedule.ccl") || die "Cannot create schedule.ccl";
 
 print OUT "# Schedule definitions for thorn $thorn_name\n";
-print OUT "# \$" . "Header:\$\n";
+print OUT "# \$" . "Header\$\n";
 
 close OUT;
 
 open(OUT, ">README") || die "Cannot create README";
 
-print OUT "CVS info   : \$" . "Header:\$\n\n";
+print OUT "CVS info   : \$" . "Header\$\n\n";
 print OUT "Cactus Code Thorn $thorn_name\n";
 print OUT "Thorn Author(s)     : ";
 for ($i = 0; $i < (@author_names); $i++) {
@@ -127,14 +127,13 @@ chdir("src");
 open(OUT, ">make.code.defn") || die "Cannot create make.code.defn";
 
 print OUT "# Main make.code.defn file for thorn $thorn_name\n";
-print OUT "# \$" . "Header:\$\n";
+print OUT "# \$" . "Header\$\n";
 print OUT "\n";
 print OUT "# Source files in this directory\n";
 print OUT "SRCS = \n";
 print OUT "\n";
 print OUT "# Subdirectories containing source files\n";
 print OUT "SUBDIRS = \n";
-print OUT "\n";
 
 close OUT;
 
@@ -166,7 +165,7 @@ while (<IN>) {
 }
 #system("cp $documentation_inputfile $documentation_outputfile");
 
-print "All done.  \nPlease remember to fill out the README and doc/documentation.tex files.\n";
+print "All done.\nPlease remember to fill out the README and doc/documentation.tex files.\n";
 
 exit;
 
