@@ -570,6 +570,7 @@ int CCTKi_ScheduleGroup(const char *realname,
 
     if(retcode == -2)
     {
+
       CCTK_VWarn (0, __LINE__, __FILE__, "Cactus",
                   "Tried to schedule duplicate item '%s' from thorn '%s' in '%s'",
                   name, thorn, where);
@@ -857,37 +858,47 @@ int CCTK_SchedulePrint(const char *where)
     puts ("  endif");
     putchar ('\n');
     puts ("  Startup routines");
+    puts ("    [CCTK_STARTUP]");
     SchedulePrint("CCTK_STARTUP");
     putchar ('\n');
     puts ("  Startup routines which need an existing GH");
     SchedulePrint("CCTK_WRAGH");
     puts ("  Parameter checking routines");
+    puts ("    [CCTK_PARAMCHECK]");
     SchedulePrint("CCTK_PARAMCHECK");
     putchar ('\n');
-    puts("  Initialisation");
+    puts ("  Initialisation");
+    puts ("    [CCTK_BASEGRID]");
     SchedulePrint("CCTK_BASEGRID$ENTRY");
     SchedulePrint("CCTK_BASEGRID");
     SchedulePrint("CCTK_BASEGRID$EXIT");
     puts ("    if (NOT (recover initial data AND recovery_mode is 'strict'))");
     indent_level +=2;
+    puts ("      [CCTK_INITIAL]");
     SchedulePrint("CCTK_INITIAL$ENTRY");
     SchedulePrint("CCTK_INITIAL");
     SchedulePrint("CCTK_INITIAL$EXIT");
+    puts ("      [CCTK_POSTINITIAL]");
     SchedulePrint("CCTK_POSTINITIAL$ENTRY");
     SchedulePrint("CCTK_POSTINITIAL");
     SchedulePrint("CCTK_POSTINITIAL$EXIT");
+    puts ("      [CCTK_POSTSTEP]");
     SchedulePrint("CCTK_POSTSTEP$ENTRY");
     SchedulePrint("CCTK_POSTSTEP");
     SchedulePrint("CCTK_POSTSTEP$EXIT");
     puts ("    endif");
     puts ("    if (recover initial data)");
+    puts ("      [CCTK_RECOVER_VARIABLES]");
     SchedulePrint("CCTK_RECOVER_VARIABLES");
+    puts ("      [CCTK_POST_RECOVER_VARIABLES]");
     SchedulePrint("CCTK_POST_RECOVER_VARIABLES");
     puts ("    endif");
     puts ("    if (checkpoint initial data)");
+    puts ("      [CCTK_CPINITIAL]");
     SchedulePrint("CCTK_CPINITIAL");
     puts ("    endif");
     puts ("    if (analysis)");
+    puts ("      [CCTK_ANALYSIS]");
     SchedulePrint("CCTK_ANALYSIS$ENTRY");
     SchedulePrint("CCTK_ANALYSIS");
     SchedulePrint("CCTK_ANALYSIS$EXIT");
@@ -899,20 +910,25 @@ int CCTK_SchedulePrint(const char *where)
     puts ("    Rotate timelevels");
     puts ("    iteration = iteration + 1");
     puts ("    t = t+dt");
+    puts ("    [CCTK_PRESTEP]");
     SchedulePrint("CCTK_PRESTEP$ENTRY");
     SchedulePrint("CCTK_PRESTEP");
     SchedulePrint("CCTK_PRESTEP$EXIT");
+    puts ("    [CCTK_EVOL]");
     SchedulePrint("CCTK_EVOL$ENTRY");
     SchedulePrint("CCTK_EVOL");
     SchedulePrint("CCTK_EVOL$EXIT");
+    puts ("    [CCTK_POSTSTEP]");
     SchedulePrint("CCTK_POSTSTEP$ENTRY");
     SchedulePrint("CCTK_POSTSTEP");
     SchedulePrint("CCTK_POSTSTEP$EXIT");
     puts ("    if (checkpoint)");
     indent_level +=2;
+    puts ("      [CCTK_CHECKPOINT]");
     SchedulePrint("CCTK_CHECKPOINT");
     puts ("    endif");
     puts ("    if (analysis)");
+    puts ("      [CCTK_ANALYSIS]");
     SchedulePrint("CCTK_ANALYSIS$ENTRY");
     SchedulePrint("CCTK_ANALYSIS");
     SchedulePrint("CCTK_ANALYSIS$EXIT");
@@ -922,9 +938,11 @@ int CCTK_SchedulePrint(const char *where)
     puts ("  enddo");
     putchar ('\n');
     puts ("  Termination routines");
+    puts ("    [CCTK_TERMINATE]");
     SchedulePrint("CCTK_TERMINATE");
     putchar ('\n');
     puts ("  Shutdown routines");
+    puts ("    [CCTK_SHUTDOWN]");
     SchedulePrint("CCTK_SHUTDOWN");
   }
   else
@@ -1130,7 +1148,7 @@ static int ScheduleTraverse(const char *where,
   CCTKi_DoScheduleTraverse(where,
      (int (*)(void *, void *))                    CCTKi_ScheduleCallEntry,
      (int (*)(void *, void *))                    CCTKi_ScheduleCallExit,
-     (int  (*)(int, char **, void *, void *, int))CCTKi_ScheduleCallWhile,
+     (int (*)(int, char **, void *, void *, int)) CCTKi_ScheduleCallWhile,
      (int (*)(void *, void *, void *))            calling_function,
      (void *)&data);
 
@@ -1591,7 +1609,7 @@ static int ParseOption(t_attribute *attribute,
   else
   {
     CCTK_Warn(1,__LINE__,__FILE__,"Cactus",
-              "ParseOption: Unknown option for schedule group.\n");
+              "ParseOption: Unknown option for schedule item.\n");
   }
 
   return 0;
@@ -1868,7 +1886,7 @@ static int CCTKi_SchedulePrintEntry(t_attribute *attribute,
 
   if (attribute && attribute->type == sched_group)
   {
-    printf("%*s %s: %s\n", indent_level + 6, "GROUP",
+    printf("%*s %s: %s\n", indent_level + 5, "GROUP",
            attribute->FunctionData.routine,attribute->description);
   }
 
