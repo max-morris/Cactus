@@ -1,0 +1,25 @@
+#! /bin/sh
+# /*@@
+#   @file      SERIAL
+#   @date      Fri Jul 30 1999
+#   @author    Thomas Radke
+#   @desc 
+#              Sets up HDF5 includes and libs
+#   @enddesc
+#   @version $Header:
+# @@*/
+
+echo "SERIAL selected"
+
+if test -z "$HDF5_DIR" ; then
+   echo "HDF5 selected but no HDF5_DIR set... Checking some places"
+   CCTK_Search HDF5_DIR "/usr /usr/local /usr/local/hdf5 /usr/local/packages/hdf5 /usr/local/apps/hdf5 c:/packages/hdf5" include/hdf5.h
+   if test -z "$HDF5_DIR" ; then
+       echo "Unable to locate the HDF5 directory - please set HDF5_DIR"
+       exit 2
+   fi
+fi
+
+HDF5_LIBS=hdf5
+HDF5_LIB_DIRS="$HDF5_DIR/lib"
+HDF5_INC_DIRS="$HDF5_DIR/include"
