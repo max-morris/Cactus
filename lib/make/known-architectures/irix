@@ -6,7 +6,7 @@
 #    @desc
 #               Known architectures file for SGI Irix systems
 #    @enddesc
-#    @version   $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/irix,v 1.32 2002-05-28 21:18:07 tradke Exp $
+#    @version   $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/irix,v 1.33 2002-05-29 12:35:39 tradke Exp $
 #  @@*/
 
 if test "$CCTK_CONFIG_STAGE" = 'preferred-compilers' ; then
@@ -24,19 +24,25 @@ if test "$CCTK_CONFIG_STAGE" = 'preferred-compilers' ; then
   fi
 
   # use the native SGI compilers by default
+  if test -z "$CPP"; then
+    CPP='$(PERL) $(CCTK_HOME)/lib/sbin/cpp.pl'
+    echo Setting CPP compiler to $CPP
+  fi
+
+  # use the native SGI compilers by default
   if test -z "$CC"; then
-    echo Setting C compiler to cc
     CC='cc'
+    echo Setting C compiler to $CC
   fi
 
   if test -z "$CXX"; then
-    echo Setting C++ compiler to CC
     CXX='CC'
+    echo Setting C++ compiler to $CXX
   fi
 
   if test -z "$LD"; then
-    echo Setting linker to CC
     LD='CC'
+    echo Setting linker to $LD
   fi
 
 
@@ -120,8 +126,6 @@ else
   : ${F77_DEBUG_FLAGS='-g3'}
   : ${F90_WARN_FLAGS='-fullwarn'}
   : ${F77_WARN_FLAGS='-fullwarn'}
-  : ${F_DEPEND='$(PERL) $(CCTK_HOME)/lib/sbin/cpp.pl -M $(CPPFLAGS)'}
-  : ${F77_DEPEND='$(PERL) $(CCTK_HOME)/lib/sbin/cpp.pl -M $(CPPFLAGS)'}
 
   # Cache stuff
   if test -z "$L2_CACHELINE_BYTES" ; then
