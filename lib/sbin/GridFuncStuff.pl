@@ -106,6 +106,8 @@ sub CreateVariableBindings
 
   $dataout .= "\n";
  
+  $dataout .= "int CCTKi_BindingsVariablesInitialise(void);\n\n";
+
   $dataout .= "int CCTKi_BindingsVariablesInitialise(void)\n{\n";
 
   foreach $thorn (split(" ",$rhinterface_db->{"THORNS"}))
