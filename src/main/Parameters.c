@@ -701,8 +701,8 @@ char *CCTK_ParameterValString (const char *param_name,
    @endreturndesc
 
 @@*/
-const char *CCTK_ParameterWalk(int first,
-                          const char *origin)
+char *CCTK_ParameterWalk(int first,
+                         const char *origin)
 {
   int             return_found;
   t_sktree        *tnode;
@@ -732,7 +732,7 @@ const char *CCTK_ParameterWalk(int first,
  
   /* say whether the startpoint should be returned (if found)
      or the next matching parameter */
-  return_found = startpoint == NULL;
+  return_found = 0; startpoint == NULL;
 
 
   /* begin the search */
@@ -775,7 +775,7 @@ const char *CCTK_ParameterWalk(int first,
           /* save the last startpoint */
           prev_startpoint_all = prev_startpoint_thorn = startpoint;
 
-          return (const char *) retval;
+          return retval;
 
         }
         else

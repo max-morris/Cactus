@@ -113,8 +113,8 @@ char *CCTK_ParameterValString (const char *name,   /* The name of the parameter 
                                const char *thorn); /* The originating thorn      */
 
 /* walk through list of parameters */
-const char *CCTK_ParameterWalk(int first,     /* Get first parameter or not */
-                               const char *origin); /* Origin of this walk  */
+char *CCTK_ParameterWalk(int first,           /* Get first parameter or not */
+                         const char *origin); /* Origin of this walk  */
 
 /* get list of parameter names for given thorn */
 int CCTK_ParameterList (const char* thorn, char ***paramlist, int *n_param);
