@@ -422,18 +422,17 @@ schedule <name> at <time bin> [other options]
   SYNC:     [group list]
 } "A description"
 \end{verbatim}
-where {\tt <name>} is the name of the routine, and
-
-\begin{Lentry}
-
-\item[{\tt <time bin>}] is one of
-(in the following the initial {\tt CCTK\_} is optional):
+where {\tt <name>} is the name of the routine, and {\tt <time bin>} is one of
+the following schedule bins (the {\tt CCTK\_} prefix is optional):
 
 \begin{Lentry}
 
 \item [{\tt CCTK\_STARTUP}]
 For routines run before the grid hierachy is set up, for example function
 registration.
+
+\item [{\tt CCTK\_RECOVER\_PARAMETERS}]
+When restarting Cactus from a checkpoint, routines scheduled at {\tt CCTK\_RECOVER\_PARAMETERS} are called to recover the parameters from the checkpoint file.
 
 \item [{\tt CCTK\_PARAMCHECK}]
 For routines which check parameter combinations, routines registered here
@@ -450,6 +449,9 @@ Tasks which must be applied after initial data is created.
 
 \item [{\tt CCTK\_RECOVER\_VARIABLES}]
 For recovery of grid variables from a checkpoint.
+
+\item [{\tt CCTK\_POST\_RECOVER\_VARIABLES}]
+For functions which want to modify grid variables after recovery.
 
 \item [{\tt CCTK\_CPINITIAL}]
 For checkpointing initial data.
@@ -480,6 +482,18 @@ Cactus final shutdown routines.
 %
 \end{Lentry}
 
+The {\tt other options} allow finer grained control of the scheduling.  It is
+possible to state that the routine must run {\tt BEFORE} or {\tt AFTER}
+another routine. It is also possible to schedule the routine under an
+alias name by using {\tt AS <alias\_name>}.
+
+\begin{Lentry}
+
+\item[{\tt LANG}]
+The {\tt LANG} keyword specifies the linkage of the scheduled routine
+which determines how to call it from the scheduler.
+C and Fortran linkage are possible here. C++ routines should be defined as
+{\tt extern "C"} and registered as {\tt LANG: C}.
 
 \item[{\tt STORAGE}] The {\tt STORAGE} keyword specifies any groups for
 which  memory should be
@@ -503,18 +517,7 @@ provides the Flesh with more information about the behaviour of your code,
 and in particular is a requirement for using a driver with adaptive mesh
 refinement.
 
-\item[{\tt other options}]
-The `other options' allow finer grained control of the scheduling.  It is
-possible to state that the routine must run {\tt BEFORE} or {\tt AFTER}
-another routine. It is also possible to schedule the routine under an
-alias name by using {\tt AS <alias\_name>}.
-
 \end{Lentry}
-
-The {\tt LANG} keyword specifies the linkage of the scheduled routine
-which determines how to call it from the scheduler.
-C and Fortran linkage are possible here. C++ routines should be defined as
-{\tt extern "C"} and registered as {\tt LANG: C}.
 
 As well as schedule blocks it's possible to embed C style {\tt if/else}
 statements in the schedule.ccl.
