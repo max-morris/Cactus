@@ -13,7 +13,7 @@ $package_dir = "arrangements";
 
 $thorn_name = shift(@ARGV);
 
-if(!$thorn_name)
+while(&TestName(1,$thorn_name)==0)
 {
   $thorn_name = &prompt("Thorn name");
 }
@@ -28,7 +28,10 @@ if(!$package)
     print "$package\n";
   }
   print "Pick one, or create a new one.\n";
-  $package = &prompt("Arrangement");
+  while (&TestName(0,$package)==0)
+  {
+    $package = &prompt("arrangement");
+  }
 }
 
 chdir $package_dir;
@@ -211,4 +214,49 @@ sub GetToolkits
   chdir $start_dir;
 
   return @arrangements;
+}
+
+#/*@@
+#  @routine    TestName
+#  @date       Sat Dec 16 1.48
+#  @author     Gabrielle Allen
+#  @desc 
+#  Check thorn/arrangement name is valid
+#  @enddesc 
+#  @calls     
+#  @calledby   
+#  @history 
+#
+#  @endhistory 
+#@@*/
+
+sub TestName
+{
+  local($thorn,$name) = @_;
+  local($valid);
+
+  $valid = 1;
+
+  if (!$name)
+  {
+    $valid = 0;
+  }
+  elsif ($name !~ /^[a-zA-Z]/)
+  {
+    print STDERR "Name must begin with a letter!\n\n";
+    $valid = 0;
+  }
+  elsif ($name !~ /^[a-zA-Z0-9_]*$/)
+  {
+    print STDERR "Name can only contain letters, numbers or underscores!\n\n";
+    $valid = 0;
+  }
+
+  if ($thorn && $name eq "doc")
+  {
+    print STDERR "Thorn name doc is not allowed!\n\n";
+    $valid = 0;
+  }
+
+  return $valid;
 }
