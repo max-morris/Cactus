@@ -42,7 +42,7 @@ endef
 
 # Define how to do a F77 compilation
 define PREPROCESS_F77
-cat $< | $(PERL) $(CCTK_HOME)/lib/sbin/f_file_processor.pl $(CONFIG) > $(notdir $<)
+$(CPP) $(CPPFLAGS) $< | $(PERL) $(CCTK_HOME)/lib/sbin/f_file_processor.pl $(CONFIG) > $(notdir $<)
 endef
 
 define COMPILE_F77
@@ -54,7 +54,7 @@ endef
 
 # Define how to do a F90 compilation
 define PREPROCESS_F90
-cat $< | $(PERL) $(CCTK_HOME)/lib/sbin/f_file_processor.pl $(CONFIG) > $(notdir $<)
+$(CPP) $(CPPFLAGS) $< | $(PERL) $(CCTK_HOME)/lib/sbin/f_file_processor.pl $(CONFIG) > $(notdir $<)
 endef
 
 define COMPILE_F90
