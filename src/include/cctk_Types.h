@@ -29,7 +29,7 @@ typedef void (*CCTK_FPOINTER)(void);
 
 /* Structures for complex types */
 
-#if CCTK_HAVE_REAL16
+#ifdef CCTK_HAVE_REAL16
 #define CCTK_HAVE_COMPLEX32 1
 typedef struct
 {
@@ -38,7 +38,7 @@ typedef struct
 } CCTK_COMPLEX32;
 #endif
 
-#if CCTK_HAVE_REAL8
+#ifdef CCTK_HAVE_REAL8
 #define CCTK_HAVE_COMPLEX16 1
 typedef struct
 {
@@ -47,7 +47,7 @@ typedef struct
 } CCTK_COMPLEX16;
 #endif
 
-#if CCTK_HAVE_REAL4
+#ifdef CCTK_HAVE_REAL4
 #define CCTK_HAVE_COMPLEX8 1
 typedef struct
 {
@@ -92,11 +92,13 @@ typedef unsigned char CCTK_BYTE;
 #define CCTK_HAVE_COMPLEX32 1
 #define CCTK_COMPLEX32  COMPLEX*32
 #endif
+
 #ifdef CCTK_HAVE_REAL8
 #define CCTK_REAL8  REAL*8
 #define CCTK_HAVE_COMPLEX16 1
 #define CCTK_COMPLEX16  COMPLEX*16
 #endif
+
 #ifdef CCTK_HAVE_REAL4
 #define CCTK_REAL4  REAL*4
 #define CCTK_HAVE_COMPLEX8 1
