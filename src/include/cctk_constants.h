@@ -15,6 +15,7 @@
 #define CCTK_VARIABLE_INT     2
 #define CCTK_VARIABLE_REAL    3
 #define CCTK_VARIABLE_COMPLEX 4
+#define CCTK_VARIABLE_STRING  5
 
 #endif
 
