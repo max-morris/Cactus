@@ -12,9 +12,9 @@
 sub CST_error
 {
     my($level,$mess,$help,$line,$file) = @_;
-    my($help,$error,$error_string);
+    my($error);
 
-    if ($help ne /$\s*^/)
+    if ($help !~ /^\s*$/)
     {
       $help = "     HINT: $help\n";
     }
@@ -51,6 +51,7 @@ sub CST_error
 	    $error_string .= "$error$help\n";
 	}	    
     }
+
     return;
 }
 
