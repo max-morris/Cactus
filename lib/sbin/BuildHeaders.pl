@@ -89,7 +89,7 @@ sub BuildHeaders
         }
         elsif (-e "$cctk_home/arrangements/$arrangement/$thorn/src/include/$inc_file1")
         {
-          $tmpline = "#include \"$arrangement/$thorn/src/include/$inc_file1\"\n}\n";
+          $tmpline = "#include \"$arrangement/$thorn/src/include/$inc_file1\"\n";
         }
         else
         {
