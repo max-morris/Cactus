@@ -115,7 +115,7 @@ int CCTK_RegisterCoordI(int dir, int index, const char*name)
   {
     /* Method already exists. */
     char *msg;
-    msg = (char *)malloc(200*sizeof(char)+sizeof(name));
+    msg = (char *)malloc(200*sizeof(char)+strlen(name));
     sprintf(msg,"Coordinate with name -%s- already registered",name);
     CCTK_WARN(1,msg);
     if (msg) free(msg);
@@ -257,7 +257,7 @@ int CCTKi_CoordHandle(const char *name)
     else
     {
       char *msg;
-      msg = (char *)malloc( 100*sizeof(char)+sizeof(name) );
+      msg = (char *)malloc( 100*sizeof(char)+strlen(name) );
       sprintf(msg,"Could not find registered coordinate %s",name);
       CCTK_WARN(2,msg);
       if (msg) free(msg);
@@ -283,7 +283,7 @@ struct Coordprops *CCTKi_CoordData(const char *name)
     else
     {
       char *msg;
-      msg = (char *)malloc( 100*sizeof(char)+sizeof(name) );
+      msg = (char *)malloc( 100*sizeof(char)+strlen(name) );
       sprintf(msg,"Could not find registered coordinate %s",name);
       CCTK_WARN(2,msg);
       if (msg) free(msg);
@@ -309,7 +309,7 @@ int CCTK_CoordIndex(const char *name)
     else
     {
       char *msg;
-      msg = (char *)malloc( 100*sizeof(char)+sizeof(name) );
+      msg = (char *)malloc( 100*sizeof(char)+strlen(name) );
       sprintf(msg,"Could not find registered coordinate %s",name);
       CCTK_WARN(2,msg);
       if (msg) free(msg);
@@ -343,7 +343,7 @@ CCTK_REAL CCTK_CoordOrigin(const char *name)
     else
     {
       char *msg;
-      msg = (char *)malloc( 100*sizeof(char)+sizeof(name) );
+      msg = (char *)malloc( 100*sizeof(char)+strlen(name) );
       sprintf(msg,"Could not find registered coordinate %s",name);
       CCTK_WARN(2,msg);
       if (msg) free(msg);
