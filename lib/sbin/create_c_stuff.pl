@@ -82,67 +82,67 @@ sub CreateParameterBindingFile
   push(@data, "");
 
   # Initialisation subroutine
-  push(@data, ("int $prefix"."Initialise(void)", "{"));
-
-  foreach $parameter (sort(keys %parameters))
-  {
-
-    push(@data, &set_parameter_default($structure,$parameters{$parameter}, 
-				       $parameter, %parameter_database));
-    
-    push(@data, "");
-
-    push(@data, &create_parameter_code($structure,$parameters{$parameter}, 
-				       $parameter, %parameter_database));
-    
-    push(@data, "");
-
-  }
-
-  push(@data, "  return 0;");
-  push(@data, "}");
-
-  push(@data, "");
+#  push(@data, ("int $prefix"."Initialise(void)", "{"));
+#
+#  foreach $parameter (sort(keys %parameters))
+#  {
+#
+#    push(@data, &set_parameter_default($structure,$parameters{$parameter}, 
+#				       $parameter, %parameter_database));
+#    
+#    push(@data, "");
+#
+#    push(@data, &create_parameter_code($structure,$parameters{$parameter}, 
+#				       $parameter, %parameter_database));
+#    
+#    push(@data, "");
+#
+#  }
+#
+#  push(@data, "  return 0;");
+#  push(@data, "}");
+#
+#  push(@data, "");
 
   # Setting subroutine
 
-  push(@data, ("int $prefix"."Set(const char *param, const char *value)", "{"));
-  push(@data, ("  int retval;", "  retval = 1;", ""));
-
-
-  foreach $parameter (sort(keys %parameters))
-  {
-    push(@data, &set_parameter_code($structure,$parameters{$parameter}, 
-				       $parameter, %parameter_database));
-    push(@data, "");
-
-  }    
-
-  push(@data, "  return retval;");
-
-  push(@data, "}");
-
-  push(@data, "");
+#  push(@data, ("int $prefix"."Set(const char *param, const char *value)", "{"));
+#  push(@data, ("  int retval;", "  retval = 1;", ""));
+#
+#
+#  foreach $parameter (sort(keys %parameters))
+#  {
+#    push(@data, &set_parameter_code($structure,$parameters{$parameter}, 
+#				       $parameter, %parameter_database));
+#    push(@data, "");
+#
+#  }    
+#
+#  push(@data, "  return retval;");
+#
+#  push(@data, "}");
+#
+#  push(@data, "");
 
   # Getting subroutine
 
-  push(@data, ("int $prefix"."Get(const char *param, void **value)", "{"));
-  push(@data, ("  int retval;", "  retval = 1;", ""));
-
-
-  foreach $parameter (sort(keys %parameters))
-  {
-    push(@data, &get_parameter_code($structure,$parameters{$parameter}, 
-				       $parameter, %parameter_database));
-    push(@data, "");
-
-  }    
-
-  push(@data, "  return retval;");
-
-  push(@data, "}");
-
-  push(@data, "");
+#  push(@data, ("int $prefix"."Get(const char *param, void **value)", "{"));
+#  push(@data, ("  int retval;", "  retval = 1;", ""));
+#
+#
+#  foreach $parameter (sort(keys %parameters))
+#  {
+#    push(@data, &get_parameter_code($structure,$parameters{$parameter}, 
+#				       $parameter, %parameter_database));
+#    push(@data, "");
+#
+#  }    
+#
+#  push(@data, "  return retval;");
+#
+#  push(@data, "}");
+#
+#  push(@data, "");
 
   # Help subroutine
 

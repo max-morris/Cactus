@@ -328,6 +328,8 @@ sub parse_param_ccl
 		  $message = "Default given for $type $variable in $thorn is missing a quote";
                   &CST_error(0,$message,__LINE__,__FILE__);
 	      }
+	      
+	      $default = $1 if ($default =~ m:\"(((\\\")|[^\"])*)\":);
 
 	      $parameter_db{"\U$thorn $variable\E default"} = $default;
 	  }
