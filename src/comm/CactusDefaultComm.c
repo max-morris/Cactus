@@ -19,6 +19,20 @@
 static char *rcsid = "$Id$";
 
 
+ /*@@
+   @routine    CactusDefaultSetupGH
+   @date       Tue Sep 29 15:06:22 1998
+   @author     Tom Goodale
+   @desc 
+   Default cactus SetupGH routine.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
 cGH *CactusDefaultSetupGH(tFleshConfig *config, int convergence_level)
 {
   cGH *retval;

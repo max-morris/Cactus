@@ -13,8 +13,8 @@
 #include <stdarg.h>
 
 #include "flesh.h"
+#include "Misc.h"
 
-int CCTK_ExtractImplementation(char **imp, char **name, const char *parameter);
 cGroupDefinition *CCTK_SetupGroup(const char *implementation, const char *group_name, int n_variables);
 
 
@@ -53,7 +53,7 @@ int CCTK_CreateGroup(const char *fullname,
   int variable;
 
   /* Find the name of the implementation and of the group. */
-  CCTK_ExtractImplementation(&implementation, &group_name, fullname);
+  CCTK_SplitString(&implementation, &group_name, fullname, "::");
 
   if(implementation)
   {

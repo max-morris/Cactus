@@ -38,8 +38,6 @@ int ProcessParameterDatabase(tFleshConfig *ConfigData)
   int retval;
   FILE *parameter_file;
 
-  CCTK_InitialiseParameters(ConfigData);
-
   if((parameter_file = fopen(ConfigData->parameter_file_name, "r")))
   {
     ParseFile(parameter_file, CCTK_SetParameter);
@@ -56,7 +54,3 @@ int ProcessParameterDatabase(tFleshConfig *ConfigData)
   return 0;
 }
 
-int CCTK_InitialiseParameters(tFleshConfig *ConfigData)
-{
-  return 1;
-}

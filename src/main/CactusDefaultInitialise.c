@@ -19,6 +19,20 @@
 static char *rcsid = "$Id$";
 
 
+ /*@@
+   @routine    CactusDefaultInitialise
+   @date       Tue Sep 29 12:45:04 1998
+   @author     Tom Goodale
+   @desc 
+   Default initialisation routine.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
 int CactusDefaultInitialise(tFleshConfig *config)
 {
   cGH *GH;
@@ -44,6 +58,21 @@ int CactusDefaultInitialise(tFleshConfig *config)
 }
 
 
+
+ /*@@
+   @routine    CactusDefaultShutdown
+   @date       Tue Sep 29 12:45:04 1998
+   @author     Tom Goodale
+   @desc 
+   DEfault shutdown routine.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
 int CactusDefaultShutdown(tFleshConfig *config)
 {
   printf("I'm in the default shutdown routine\n");
