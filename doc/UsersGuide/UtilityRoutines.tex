@@ -162,6 +162,45 @@ if (Util_TableGetReal(handle, &pi_value, "pi") < 0)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\section{Convenience Routines}
+
+There are also convenience routines for the common case of setting
+values in a table based on a string.
+
+For example, the following code sets up exactly the same table as the
+previous example:
+
+\begin{verbatim}
+#include <util_Table.h>
+
+/* create a table and set some values in it */
+int handle = Util_TableCreate(UTIL_TABLE_FLAGS_DEFAULT);
+if (handle < 0)
+        CCTK_WARN(-1, "couldn't create table!");
+
+/* try to set two_value = 2 and set pi_value = 3.14 */
+if (Util_TableSetFromString(handle, "two=2 pi=3.14") != 2)
+        CCTK_WARN(-1, "couldn't set values in table!");
+\end{verbatim}
+
+There is also an even higher-level convenience function
+\verb|Util_TableCreateFromString()|: this creates a table with the
+case-insensitive flag set (to match Cactus parameter-file semantics),
+then (assuming no errors occured) calls \verb|Util_TableSetFromString()|
+to set values in the table.  For example, apart from the case-insensitive
+flag, the following code sets up exactly the same table as the
+previous two examples:
+
+\begin{verbatim}
+#include <util_Table.h>
+
+int handle = Util_TableCreateFromString("two=2 pi=3.14");
+if (handle < 0)
+        CCTK_WARN(-1, "couldn't create table from string!");
+\end{verbatim}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \section{Arrays as Table Values}
 
 As well as a single numbers (or characters or pointers), tables can
