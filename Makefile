@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.77 2000-03-10 14:09:55 allen Exp $
+#   @version $Id: Makefile,v 1.78 2000-03-10 16:23:00 goodale Exp $
 # @@*/
 
 ##################################################################################
@@ -754,7 +754,7 @@ downsize:
 %::
 	@echo $(DIVIDER)
 	if test "x$(PROMPT)" = "xyes" ; then \
-	@echo Setup configuration $@ \(yes\)?; \
+	echo Setup configuration $@ \(yes\)?; \
 	read yesno rest ; \
 	fi; \
 	if [ "x$$yesno" = "xno" -o "x$$yesno" = "xn" -o "x$$yesno" = "xNO" -o "x$$yesno" = "xN" ] ; \
