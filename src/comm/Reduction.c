@@ -197,13 +197,10 @@ static int num_reductions_array = 0;
 
 static cHandledData *LocalArrayReductionOperators = NULL;
 static int num_local_array_reductions = 0;
-static cHandledData *LocalArrayReductionParameters = NULL;
-static int num_local_array_reduction_parameters = 0;
 
 static cHandledData *GridArrayReductionOperators = NULL;
 static int num_GA_reductions = 0;
-static cHandledData *GridArrayReductionParameters = NULL;
-static int num_GA_reduction_parameters = 0;
+
 static cGridArrayReduceOperator GA_reduc = NULL;
 static char global[] ="c";
 
@@ -1271,7 +1268,7 @@ int CCTK_NumReduceOperators()
    @endreturndesc
 @@*/
 
-int CCTK_NumLocalArrayReduceOperators()
+int CCTK_NumLocalArrayReduceOperators(void)
 {
   return num_local_array_reductions;
 }
@@ -1519,7 +1516,7 @@ int CCTK_ReduceGridArrays(const cGH *GH,
                           void* const output_values[])
 {
   int retval;
-  t_grid_array_reduce_operator *operator;
+
   /* Get the pointer to the reduction operator */
   if (num_GA_reductions == 0)
   {
@@ -1550,7 +1547,7 @@ void CCTK_FCALL CCTK_FNAME(CCTK_ReduceGridArrays)
       void* const output_values[])
 {
   int retval;
-  t_grid_array_reduce_operator *operator;
+
   /* Get the pointer to the reduction operator */
   if (num_GA_reductions == 0)
   {
@@ -1582,7 +1579,7 @@ void CCTK_FCALL CCTK_FNAME(CCTK_ReduceGridArrays)
    @endreturndesc
 @@*/
 
-int CCTK_NumGridArrayReductionOperators()
+int CCTK_NumGridArrayReductionOperators(void)
 {
   return num_GA_reductions;
 }
