@@ -63,6 +63,8 @@ static void CCTKi_RegisterTimersGetrUsage(void);
 /********************************************************************
  *********************     External Routines   **********************
  ********************************************************************/
+int CCTKi_RegisterDefaultTimerFunctions(void);
+
 
  /*@@
    @routine    CCTKi_RegisterDefaultTimerFunctions
@@ -158,6 +160,8 @@ static void *CCTKi_TimerGetTimeOfDayCreate(int timernum)
 {
   t_GetTimeOfDayTimer *this;
 
+  timernum = timernum;
+
   this = malloc(sizeof(t_GetTimeOfDayTimer));
 
   if(this)
@@ -199,6 +203,7 @@ static void *CCTKi_TimerGetTimeOfDayCreate(int timernum)
 @@*/
 static void CCTKi_TimerGetTimeOfDayDestroy(int timernum, void *data)
 {
+  timernum = timernum;
   if(data)
   {
     free(data);
@@ -241,6 +246,7 @@ static void CCTKi_TimerGetTimeOfDayStart(int timernum, void *idata)
   struct timeval tp;
   struct timezone tzp;
 
+  timernum = timernum;
   data = (t_GetTimeOfDayTimer *)idata;
 
   gettimeofday(&tp, &tzp);
@@ -287,6 +293,7 @@ static void CCTKi_TimerGetTimeOfDayStop(int timernum, void *idata)
   struct timeval tp;
   struct timezone tzp;
 
+  timernum = timernum;
   data = (t_GetTimeOfDayTimer *)idata;
 
   gettimeofday(&tp, &tzp);
@@ -331,6 +338,7 @@ static void CCTKi_TimerGetTimeOfDayReset(int timernum, void *idata)
 {
   t_GetTimeOfDayTimer *data;
 
+  timernum = timernum;
   data = (t_GetTimeOfDayTimer *)idata;
 
   data->last.tv_sec  = 0;
@@ -379,6 +387,7 @@ static void CCTKi_TimerGetTimeOfDayGet(int timernum, void *idata, cTimerVal *val
 {
   t_GetTimeOfDayTimer *data;
 
+  timernum = timernum;
   data = (t_GetTimeOfDayTimer *)idata;
 
   vals[0].type    = val_double;
@@ -426,6 +435,7 @@ static void CCTKi_TimerGetTimeOfDaySet(int timernum, void *idata, cTimerVal *val
 {
   t_GetTimeOfDayTimer *data;
 
+  timernum = timernum;
   data = (t_GetTimeOfDayTimer *)idata;
 
   data->total.tv_sec  = (long)vals[0].val.d;
@@ -448,9 +458,9 @@ static void CCTKi_TimerGetTimeOfDaySet(int timernum, void *idata, cTimerVal *val
 @@*/
 static void CCTKi_RegisterTimersGetTimeOfDay(void)
 {
-  cTimerFuncs functions;
+  cClockFuncs functions;
 
-  functions.info.n_vals = 1;
+  functions.n_vals  = 1;
   functions.create  = CCTKi_TimerGetTimeOfDayCreate;
   functions.destroy = CCTKi_TimerGetTimeOfDayDestroy;
   functions.start   = CCTKi_TimerGetTimeOfDayStart;
@@ -513,6 +523,7 @@ static void *CCTKi_TimerGetrUsageCreate(int timernum)
 {
   t_GetrUsageTimer *this;
 
+  timernum = timernum;
   this = malloc(sizeof(t_GetrUsageTimer));
 
   if(this)
@@ -554,6 +565,7 @@ static void *CCTKi_TimerGetrUsageCreate(int timernum)
 @@*/
 static void CCTKi_TimerGetrUsageDestroy(int timernum, void *data)
 {
+  timernum = timernum;
   if(data)
   {
     free(data);
@@ -595,6 +607,7 @@ static void CCTKi_TimerGetrUsageStart(int timernum, void *idata)
 
   struct rusage ru;
 
+  timernum = timernum;
   data = (t_GetrUsageTimer *)idata;
 
   getrusage(RUSAGE_SELF, &ru);
@@ -640,6 +653,7 @@ static void CCTKi_TimerGetrUsageStop(int timernum, void *idata)
 
   struct rusage ru;
 
+  timernum = timernum;
   data = (t_GetrUsageTimer *)idata;
 
   getrusage(RUSAGE_SELF, &ru);
@@ -684,6 +698,7 @@ static void CCTKi_TimerGetrUsageReset(int timernum, void *idata)
 {
   t_GetrUsageTimer *data;
 
+  timernum = timernum;
   data = (t_GetrUsageTimer *)idata;
 
   data->total.tv_sec  = 0;
@@ -733,6 +748,8 @@ static void CCTKi_TimerGetrUsageGet(int timernum, void *idata, cTimerVal *vals)
 
   data = (t_GetrUsageTimer *)idata;
 
+  timernum = timernum;
+
   vals[0].type    = val_double;
   vals[0].heading = GetrUsageHeading;
   vals[0].units   = GetrUsageUnits;
@@ -779,6 +796,8 @@ static void CCTKi_TimerGetrUsageSet(int timernum, void *idata, cTimerVal *vals)
 {
   t_GetrUsageTimer *data;
 
+  timernum = timernum;
+
   data = (t_GetrUsageTimer *)idata;
 
   data->total.tv_sec  = (long)vals[0].val.d;
@@ -801,9 +820,9 @@ static void CCTKi_TimerGetrUsageSet(int timernum, void *idata, cTimerVal *vals)
 @@*/
 static void CCTKi_RegisterTimersGetrUsage(void)
 {
-  cTimerFuncs functions;
+  cClockFuncs functions;
 
-  functions.info.n_vals = 1;
+  functions.n_vals  = 1;
   functions.create  = CCTKi_TimerGetrUsageCreate;
   functions.destroy = CCTKi_TimerGetrUsageDestroy;
   functions.start   = CCTKi_TimerGetrUsageStart;
