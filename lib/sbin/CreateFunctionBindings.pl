@@ -439,6 +439,7 @@ sub FunctionDatabase
 	    if (&CompareArguments($KnownFunction{"Arguments"},
 				 $Function->{"Arguments"}))
 	    {
+              &debug_print("The prototypes for the aliased function \'".$KnownFunction{"Name"}."\'\n     given by thorns \'".$thorn."\' and \'".$KnownThorn."\' are inconsistent.\n     The argument lists disagree.");
 	      &CST_error(1,"The prototypes for the aliased function \'".$KnownFunction{"Name"}."\'\n     given by thorns \'".$thorn."\' and \'".$KnownThorn."\' are inconsistent.\n     The argument lists disagree.");
 	    }
 	  }
