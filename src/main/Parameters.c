@@ -5,7 +5,7 @@
    @desc
               Routines to deal with the parameters.
    @enddesc
-   @version   $Header$
+   @version   $Id$
  @@*/
 
 #include <stdlib.h>
@@ -159,11 +159,11 @@ static int ParameterSetBoolean  (t_param *param, const char *value);
 static void GetBaseName(const char *name, char **basename, int *array_index);
 static char *ArrayParamName(const char *basename,int array_index);
 static int AccVarEvaluator(int nvars, const char * const *vars, uExpressionValue *vals, void *data);
-static void AddAccumulators(t_param *base, 
+static void AddAccumulators(t_param *base,
                             t_param *extra,
-                            const char *thorn, 
-                            const char *parameter, 
-                            const char *imp, 
+                            const char *thorn,
+                            const char *parameter,
+                            const char *imp,
                             const char *baseparam);
 static int LinkAccumulators(t_param *base, t_param *extra);
 static void ParameterActivate(t_param *param);
@@ -313,7 +313,7 @@ int CCTKi_ParameterCreate (const char *name,
     }
 
     if(array)
-    {     
+    {
       retval = 0;
       for(i = 0; i < array; i++)
       {
@@ -420,14 +420,10 @@ int CCTKi_ParameterAddRange (const char *implementation,
    @routine    CCTKi_ParameterAccumulatorBase
    @date       Mon May 20 02:57:55 2002
    @author     Tom Goodale
-   @desc 
+   @desc
    Sets the accumulator base for a parameter.
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   @enddesc
+
    @var     thorn
    @vdesc   Name of thorn providing an extra value to accumulator
    @vtype   const char *
@@ -437,8 +433,8 @@ int CCTKi_ParameterAddRange (const char *implementation,
    @vdesc   Name of parameter providing an extra value to accumulator
    @vtype   const char *
    @vio     in
-   @vcomment   
-   @endvar 
+   @vcomment
+   @endvar
    @var     importhorn
    @vdesc   Name of thorn or implementation providing accumulator
    @vtype   const char *
@@ -448,8 +444,8 @@ int CCTKi_ParameterAddRange (const char *implementation,
    @vdesc   Name of parameter providing accumulator
    @vtype   const char *
    @vio     in
-   @vcomment   
-   @endvar 
+   @vcomment
+   @endvar
 
  @@*/
 void CCTKi_ParameterAccumulatorBase(const char *thorn,
@@ -459,7 +455,7 @@ void CCTKi_ParameterAccumulatorBase(const char *thorn,
 {
   t_param *param;
   t_param *accumulator_base;
- 
+
   param = ParameterFind (parameter, thorn, SCOPE_ANY);
 
 
@@ -492,7 +488,7 @@ void CCTKi_ParameterAccumulatorBase(const char *thorn,
       }
     }
   }
-}    
+}
 
 /*@@
    @routine    CCTK_ParameterSet
@@ -899,13 +895,14 @@ int CCTK_ParameterWalk (int first,
                         const cParamData **pdata)
 {
   int             return_found;
+  const char     *prefix;
   t_sktree        *tnode;
   t_paramtreenode *node;
   t_paramlist     *paramlist;
   t_param         *startpoint;
   static t_param  *prev_startpoint_all = NULL;
   static t_param  *prev_startpoint_thorn = NULL;
-
+  static int      next_index = 0;
   /* FIXME : This routine has become extremely ugly:
    *         It should only have one return in it.
    *         The malloc failure should be flagged.
@@ -923,8 +920,18 @@ int CCTK_ParameterWalk (int first,
                  "without setting a startpoint at first");
       return (-1);
     }
-    /* return next match AFTER startpoint */
-    return_found = 0;
+    if (startpoint->props->array_size > 0 &&
+        startpoint->props->array_size > next_index)
+    {
+      /* return next (array parameter) match at this startpoint */
+      return_found = 1;
+    }
+    else
+    {
+      /* return next match AFTER startpoint */
+      next_index = 0;
+      return_found = 0;
+    }
   }
   else
   {
@@ -958,7 +965,8 @@ int CCTK_ParameterWalk (int first,
            If not prepare finding the next matching param. */
         if (return_found)
         {
-          const char *prefix;
+          /* save the last startpoint */
+          prev_startpoint_all = prev_startpoint_thorn = startpoint;
 
           if (pfullname)
           {
@@ -968,11 +976,16 @@ int CCTK_ParameterWalk (int first,
               prefix = CCTK_ThornImplementation (prefix);
             }
 
-            *pfullname = (char *) malloc (strlen (prefix) +
-                                      strlen (startpoint->props->name) + 3);
+            if (startpoint->props->array_size > 0)
+            {
+              startpoint = &startpoint->array[next_index++];
+            }
+            *pfullname = malloc (strlen (prefix) +
+                                 strlen (startpoint->props->name) + 3);
             if(*pfullname)
             {
-              sprintf (*pfullname, "%s::%s", prefix, startpoint->props->name);
+                sprintf (*pfullname, "%s::%s",
+                         prefix, startpoint->props->name);
             }
           }
 
@@ -980,9 +993,6 @@ int CCTK_ParameterWalk (int first,
           {
             *pdata = startpoint->props;
           }
-
-          /* save the last startpoint */
-          prev_startpoint_all = prev_startpoint_thorn = startpoint;
 
           return (0);
         }
@@ -1002,19 +1012,15 @@ int CCTK_ParameterWalk (int first,
    @routine    CCTKi_ParameterActivateThornParameters
    @date       Mon May 20 07:00:59 2002
    @author     Tom Goodale
-   @desc 
+   @desc
    Does any activations necessary for a thorn's parameters
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   @enddesc
+
    @var     thorn
    @vdesc   The thorn who's parameters are to be activated
    @vtype   const char *
    @vio     in
-   @endvar 
+   @endvar
 
  @@*/
 void CCTKi_ParameterActivateThornParameters(const char *thorn)
@@ -1033,7 +1039,7 @@ void CCTKi_ParameterActivateThornParameters(const char *thorn)
     for (paramlist = node->paramlist; paramlist; paramlist = paramlist->next)
     {
       current = paramlist->param;
- 
+
       if(CCTK_Equals(current->props->thorn, thorn))
       {
         ParameterActivate(current);
@@ -1105,7 +1111,7 @@ static t_param *ParameterFind (const char *name,
   int   array_index;
 
   GetBaseName(name, &basename, &array_index);
-  
+
   node = ParameterPTreeNodeFind (paramtree, basename);
 
   free(basename);
@@ -1175,59 +1181,59 @@ static t_param *ParameterFind (const char *name,
    @calls      ParameterGetScope
                ParameterGetType
                ParameterInsert
-   @history 
- 
-   @endhistory 
+   @history
+
+   @endhistory
    @var     thorn
    @vdesc   Name of the thorn
    @vtype   const char *
    @vio     in
-   @endvar 
+   @endvar
    @var     name
    @vdesc   Name of the parameter
    @vtype   const char *
    @vio     in
-   @endvar 
+   @endvar
    @var     type
    @vdesc   Parameter type
    @vtype   int
    @vio     in
-   @endvar 
+   @endvar
    @var     scope
    @vdesc   Parameter scope
    @vtype   int
    @vio     in
-   @endvar 
+   @endvar
    @var     steerable
-   @vdesc   Is the parameter steerable 
+   @vdesc   Is the parameter steerable
    @vtype   int
    @vio     in
-   @endvar 
+   @endvar
    @var     description
    @vdesc   Description of the parameter
    @vtype   const char *
    @vio     in
-   @endvar 
+   @endvar
    @var     defval
    @vdesc   Default value of the parameter
    @vtype   const char *
    @vio     in
-   @endvar 
+   @endvar
    @var     data
-   @vdesc   Pointer to parameter data 
+   @vdesc   Pointer to parameter data
    @vtype   void *
    @vio     inout
-   @endvar 
+   @endvar
    @var     arraysize
    @vdesc   Size of parameter array, if any
    @vtype   int
    @vio     in
-   @endvar 
+   @endvar
    @var     accumulator_expression
    @vdesc   expression to accumulate on
    @vtype   const char *
    @vio     in
-   @endvar 
+   @endvar
 
    @returntype t_param *
    @returndesc
@@ -1266,7 +1272,7 @@ static t_param *ParameterNew (const char *thorn,
       newparam->props->n_set       = 0;
       newparam->props->array_size  = arraysize;
       newparam->props->array_index = -1;
-    
+
       if(accumulator_expression)
       {
         newparam->props->accumulator_expression = Util_Strdup(accumulator_expression);
@@ -1323,7 +1329,7 @@ static t_param *ParameterNew (const char *thorn,
             newparam->array[i].accumulator_bases     = NULL;
 
             newparam->array[i].array            = NULL;
-            
+
             switch(newparam->props->type)
             {
               case PARAMETER_BOOLEAN : /*Fall through */
@@ -1349,65 +1355,61 @@ static t_param *ParameterNew (const char *thorn,
    @routine    ParamDataNew
    @date       Mon May 20 07:15:40 2002
    @author     Tom Goodale
-   @desc 
+   @desc
    Creates a new cParamData structure, just setting
-   the values to its inputs rather than duplicating them. 
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   the values to its inputs rather than duplicating them.
+   @enddesc
+
    @var     thorn
    @vdesc   Name of the thorn
    @vtype   char *
    @vio     in
-   @endvar 
+   @endvar
    @var     name
    @vdesc   Name of the parameter
    @vtype   char *
    @vio     in
-   @endvar 
+   @endvar
    @var     description
    @vdesc   Description of the parameter
    @vtype   char *
    @vio     in
-   @endvar 
+   @endvar
    @var     defval
    @vdesc   Default value of the parameter
    @vtype   char *
    @vio     in
-   @endvar 
+   @endvar
    @var     scope
    @vdesc   Parameter scope
    @vtype   int
    @vio     in
-   @endvar 
+   @endvar
    @var     type
    @vdesc   Parameter type
    @vtype   int
    @vio     in
-   @endvar 
+   @endvar
    @var     steerable
-   @vdesc   Is the parameter steerable 
+   @vdesc   Is the parameter steerable
    @vtype   int
    @vio     in
-   @endvar 
+   @endvar
    @var     array_size
    @vdesc   Size of parameter array, if any
    @vtype   int
    @vio     in
-   @endvar 
+   @endvar
    @var     array_index
    @vdesc   Index into parameter array
    @vtype   int
    @vio     in
-   @endvar 
+   @endvar
    @var     accumulator_expression
    @vdesc   expression to accumulate on
    @vtype   const char *
    @vio     in
-   @endvar 
+   @endvar
 
    @returntype cParamData *
    @returndesc
@@ -1426,7 +1428,7 @@ static cParamData *ParamDataNew(char *thorn,
                                 char *accumulator_expression)
 {
   cParamData *props;
-  
+
   props = (cParamData *) malloc (sizeof (cParamData));
 
   if(props)
@@ -1442,13 +1444,13 @@ static cParamData *ParamDataNew(char *thorn,
     props->n_set       = 0;
     props->array_size  = array_size;
     props->array_index = array_index;
-    
+
     props->accumulator_expression = accumulator_expression;
   }
-  
+
   return props;
 }
-                                
+
 static t_paramtreenode *ParameterPTreeNodeFind (t_sktree *tree,
                                                 const char *name)
 {
@@ -1532,7 +1534,6 @@ static int ParameterGetType (const char *type)
    @desc
 
    @enddesc
-   @calls
 @@*/
 static int ParameterInsert (t_sktree **tree, t_param *newparam)
 {
@@ -1602,7 +1603,6 @@ static const void *ParameterGetSimple (const t_param *param, int *type)
    @desc
                Adds a range to a parameter.
    @enddesc
-   @calls
 @@*/
 static int ParameterExtend (t_param *param,
                             const char *range_origin,
@@ -1679,28 +1679,24 @@ static int ParameterExtend (t_param *param,
    @routine    ParameterSet
    @date       Mon May 20 07:08:03 2002
    @author     Tom Goodale
-   @desc 
+   @desc
    Sets the value of a parameter
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   @enddesc
+
    @var     param
    @vdesc   The parameter to be set
    @vtype   t_param *
    @vio     in
-   @endvar 
+   @endvar
    @var     value
    @vdesc   The value to set the parameter to
    @vtype   const char *
    @vio     in
-   @endvar 
+   @endvar
 
    @returntype int
    @returndesc
-    The return code of ParameterSetSimple or 
+    The return code of ParameterSetSimple or
     ParameterSetAccumulator
    @endreturndesc
  @@*/
@@ -1745,10 +1741,10 @@ static int ParameterSet(t_param *param, const char *value)
         ParameterSetSimple(param, oldval);
       }
     }
-    
+
     free(oldval);
   }
-  
+
   return retval;
 }
 
@@ -1757,20 +1753,16 @@ static int ParameterSet(t_param *param, const char *value)
    @routine    ParameterSetAccumulator
    @date       Mon May 20 07:10:53 2002
    @author     Tom Goodale
-   @desc 
+   @desc
    Sets the value of an accumulator parameter.
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   @enddesc
+
    @var     param
    @vdesc   The parameter to be set
    @vtype   t_param *
    @vio     in
-   @endvar 
- 
+   @endvar
+
    @returntype int
    @returndesc
      0 - success
@@ -1804,7 +1796,7 @@ static int ParameterSetAccumulator(t_param *param)
     default :
       retval = -7;
   }
-  
+
   if(! retval)
   {
     int i;
@@ -1820,19 +1812,19 @@ static int ParameterSetAccumulator(t_param *param)
             xy[1].type = ival;
             xy[1].value.ival = *((CCTK_INT *)param->accumulates_from[i]->data);
             break;
-            
+
           case PARAMETER_REAL :
             xy[1].type = rval;
             xy[1].value.rval = *((CCTK_REAL *)param->accumulates_from[i]->data);;
             break;
-            
+
           default :
             retval = -8;
         }
 
         retval = Util_ExpressionEvaluate(parsed_expression,
                                          &value,
-                                         AccVarEvaluator, 
+                                         AccVarEvaluator,
                                          (void *)xy);
 
         xy[0] = value;
@@ -1859,7 +1851,7 @@ static int ParameterSetAccumulator(t_param *param)
     }
 
   }
-   
+
   return retval;
 }
 
@@ -1867,24 +1859,20 @@ static int ParameterSetAccumulator(t_param *param)
    @routine    ParameterSet
    @date       Mon May 20 07:08:03 2002
    @author     Tom Goodale
-   @desc 
+   @desc
    Sets the value of a parameter
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   @enddesc
+
    @var     param
    @vdesc   The parameter to be set
    @vtype   t_param *
    @vio     in
-   @endvar 
+   @endvar
    @var     value
    @vdesc   The value to set the parameter to
    @vtype   const char *
    @vio     in
-   @endvar 
+   @endvar
 
    @returntype int
    @returndesc
@@ -1967,7 +1955,7 @@ static int ParameterSetKeyword (t_param *param, const char *value)
   {
     CCTK_VWarn (2, __LINE__, __FILE__, "Cactus",
                 "ParameterSetKeyword: Unable to set keyword '%s::%s', "
-		"new value '%s' is not in any active range",
+                "new value '%s' is not in any active range",
                 param->props->thorn, param->props->name, value);
 
     if (*(char **) param->data == NULL)
@@ -2010,7 +1998,7 @@ static int ParameterSetString (t_param *param, const char *value)
   {
     CCTK_VWarn (2, __LINE__, __FILE__, "Cactus",
                 "ParameterSetString: Unable to set string '%s::%s', "
-		"new value '%s' is not in any active range",
+                "new value '%s' is not in any active range",
                 param->props->thorn, param->props->name, value);
 
     if (*(char **) param->data == NULL)
@@ -2115,7 +2103,7 @@ static int ParameterSetInteger (t_param *param, const char *value)
                 "ParameterSetInteger: Unable to set integer '%s::%s' - '%s' "
                 "is not a valid integer",
                 param->props->thorn, param->props->name, value);
-  }    
+  }
 
   return (retval);
 }
@@ -2171,7 +2159,7 @@ static int ParameterSetReal (t_param *param, const char *value)
   }
 
   free (temp);
-  
+
   if (retval == -1)
   {
     CCTK_VWarn (2, __LINE__, __FILE__, "Cactus",
@@ -2218,14 +2206,10 @@ void CCTKi_SetParameterSetMask (int mask)
    @routine    GetBaseName
    @date       Sun May 19 19:08:28 2002
    @author     Tom Goodale
-   @desc 
+   @desc
    Gets the basename of a (possibly) array parameter.
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   @enddesc
+
    @var     name
    @vdesc   Parameter name
    @vtype   const char *
@@ -2272,15 +2256,11 @@ static void GetBaseName(const char *name, char **basename, int *array_index)
    @routine    ArrayParamName
    @date       Sun May 19 22:03:44 2002
    @author     Tom Goodale
-   @desc 
+   @desc
    Takes the basename of an array parameter, and an array index,
    and returns the name in the form basename[index].
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   @enddesc
+
    @var     basename
    @vdesc   Basename of an array parameter
    @vtype   const char *
@@ -2291,7 +2271,7 @@ static void GetBaseName(const char *name, char **basename, int *array_index)
    @vtype   int
    @vio     in
    @endvar
- 
+
    @returntype char *
    @returndesc
     string contining the name of the array parameter.
@@ -2309,7 +2289,7 @@ static char *ArrayParamName(const char *basename,int array_index)
   {
     sprintf(retval, "%s[%d]",basename,array_index);
   }
-  
+
   return retval;
 }
 
@@ -2317,44 +2297,40 @@ static char *ArrayParamName(const char *basename,int array_index)
    @routine    AccVarEvaluator
    @date       Mon May 20 07:04:03 2002
    @author     Tom Goodale
-   @desc 
+   @desc
    Routine called from the expression parser to evaluate
    the vars in an accumulator expression
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
-    @var     nvars
+   @enddesc
+
+   @var     nvars
    @vdesc   Number of variables to evaluate
    @vtype   int
    @vio     in
-   @vcomment 
- 
-   @endvar 
+   @vcomment
+
+   @endvar
    @var     vars
    @vdesc   an array of variable names
    @vtype   const char * const *
    @vio     in
-   @vcomment 
+   @vcomment
    Should be just x and y.
    @endvar
    @var     vals
    @vdesc   Output array to hold values
    @vtype   uExpressionValue *
    @vio     out
-   @vcomment 
- 
-   @endvar 
+   @vcomment
+
+   @endvar
    @var     data
    @vdesc   Data passed from expression evaluator
    @vtype   void *
    @vio     in
-   @vcomment 
+   @vcomment
      Should be an array of two uExpressionValues,
      one for x, one for y.
-   @endvar 
+   @endvar
 
    @returntype int
    @returndesc
@@ -2393,51 +2369,47 @@ static int AccVarEvaluator(int nvars, const char * const *vars, uExpressionValue
    @routine    AddAccumulators
    @date       Mon May 20 07:27:09 2002
    @author     Tom Goodale
-   @desc 
+   @desc
    Adds accumulator data to parameters
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   @enddesc
+
    @var     base
    @vdesc   accumulator base parameter
    @vtype   t_param *
    @vio     in
-   @endvar 
+   @endvar
    @var     extra
    @vdesc   accumulator source parameter
    @vtype   t_param *
    @vio     in
-   @endvar 
+   @endvar
    @var     thorn
    @vdesc   thorn providing source parameter
    @vtype   const char *
    @vio     in
-   @endvar 
+   @endvar
    @var     parameter
    @vdesc   source parameter
    @vtype   const char *
    @vio     in
-   @endvar 
+   @endvar
    @var     imp
    @vdesc   implementationm or thorn providing base parameter
    @vtype   const char *
    @vio     in
-   @endvar 
+   @endvar
    @var     baseparam
    @vdesc   base parameter
    @vtype   const char *
    @vio     in
-   @endvar 
+   @endvar
 
  @@*/
-static void AddAccumulators(t_param *base, 
+static void AddAccumulators(t_param *base,
                             t_param *extra,
-                            const char *thorn, 
-                            const char *parameter, 
-                            const char *imp, 
+                            const char *thorn,
+                            const char *parameter,
+                            const char *imp,
                             const char *baseparam)
 {
   int errcode;
@@ -2446,12 +2418,12 @@ static void AddAccumulators(t_param *base,
 
   if(! errcode)
   {
-    /* If the base parameter is an array parameter, copy data to its members. */ 
+    /* If the base parameter is an array parameter, copy data to its members. */
     if(base->array && extra->array &&
        base->props->array_size == extra->props->array_size)
     {
       int i;
-      
+
       for(i=0; i < base->props->array_size; i++)
       {
         if(LinkAccumulators(&(base->array[i]),&(extra->array[i])))
@@ -2479,25 +2451,21 @@ static void AddAccumulators(t_param *base,
    @routine    LinkAccumulators
    @date       Mon May 20 07:29:48 2002
    @author     Tom Goodale
-   @desc 
+   @desc
    Links the accumulator data on two parameters.
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   @enddesc
+
    @var     base
    @vdesc   accumulator base parameter
    @vtype   t_param *
    @vio     in
-   @endvar 
+   @endvar
    @var     extra
    @vdesc   accumulator source parameter
    @vtype   t_param *
    @vio     in
-   @endvar 
- 
+   @endvar
+
    @returntype int
    @returndesc
    0  - success
@@ -2508,10 +2476,10 @@ static void AddAccumulators(t_param *base,
 static int LinkAccumulators(t_param *base, t_param *extra)
 {
   int retcode;
-  
+
   t_param **temp;
 
-  temp = (t_param **)realloc(base->accumulates_from, 
+  temp = (t_param **)realloc(base->accumulates_from,
                              (base->n_accumulator_sources+1)*sizeof(t_param *));
 
   if(temp)
@@ -2521,7 +2489,7 @@ static int LinkAccumulators(t_param *base, t_param *extra)
     base->accumulates_from[base->n_accumulator_sources++] = extra;
 
     /* Update the extra parameter */
-    temp = (t_param **)realloc(extra->accumulator_bases, 
+    temp = (t_param **)realloc(extra->accumulator_bases,
                                (extra->n_accumulator_bases+1)*sizeof(t_param *));
 
 
@@ -2551,19 +2519,15 @@ static int LinkAccumulators(t_param *base, t_param *extra)
    @routine    ParameterActivate
    @date       Mon May 20 06:59:51 2002
    @author     Tom Goodale
-   @desc 
+   @desc
    Does any necessary activations on a parameter
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   @enddesc
+
    @var     param
    @vdesc   parameter to be activated
    @vtype   t_param *
    @vio     in
-   @endvar 
+   @endvar
 
  @@*/
 static void ParameterActivate(t_param *param)
@@ -2576,7 +2540,7 @@ static void ParameterActivate(t_param *param)
     {
       ParameterActivate(&(param->array[i]));
     }
-    
+
   }
   else if(param->accumulator_bases)
   {
@@ -2599,11 +2563,7 @@ static void ParameterActivate(t_param *param)
    range origins, and default value.
 
    @enddesc
-   @calls
-   @calledby
-   @history
 
-   @endhistory
    @var     name
    @vdesc   The name of the parameter
    @vtype   const char *
