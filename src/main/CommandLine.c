@@ -77,7 +77,7 @@ int cctki_paramcheck_nprocs;
  ********************************************************************/
 
  /*@@
-   @routine    CCTK_CommandLineTestThorncompiled
+   @routine    CCTKi_CommandLineTestThorncompiled
    @date       Wed Feb 17 10:25:30 1999
    @author     Gabrielle Allen
    @desc
