@@ -625,7 +625,9 @@ end subroutine CCTK_Abort
 \end{SynopsisSection}
 
 \begin{ResultSection}
+\begin{Result}{}
 The function never returns, and hence never produces a result.
+\end{Result}
 \end{ResultSection}
 
 \begin{ParameterSection}
@@ -656,7 +658,9 @@ message to standard error and possibly stops the code
 \end{SeeAlsoSection}
 
 \begin{ErrorSection}
+\begin{Error}{}
 The function never returns, and hence never reports an error.
+\end{Error}
 \end{ErrorSection}
 
 \begin{ExampleSection}
@@ -3247,8 +3251,8 @@ Pointer to a valid Cactus grid hierarchy.
 \begin{Parameter}{N\_dims ($\ge 1$)}
 Number of dimensions in which to interpolate.
 This must be $\leq$ the dimensionality of the coordinate system defined
-by \code{coord_system\_handle}.  The default case is that it's $=$; see
-the discussion of the \code{interpolation_hyperslab\_handle} parameter-table
+by \code{coord\_system\_handle}.  The default case is that it's $=$; see
+the discussion of the \code{interpolation\_hyperslab\_handle} parameter-table
 entry for the $<$ case.
 \end{Parameter}
 \begin{Parameter}{local\_interp\_handle ($\ge 0$)}
@@ -3269,7 +3273,7 @@ Cactus coordinate system handle defining the mapping between
 The number of interpolation points requested by this processor.
 \end{Parameter}
 \begin{Parameter}{interp\_coords\_type\_code}
-One of the \code{CCTK_VARIABLE\_*} type codes, giving the data type of the
+One of the \code{CCTK\_VARIABLE\_*} type codes, giving the data type of the
 interpolation-point coordinate arrays pointed to by \code{interp\_coords[]}.
 All interpolation-point coordinate arrays must be of the same data type.
 \end{Parameter}
@@ -3277,7 +3281,7 @@ All interpolation-point coordinate arrays must be of the same data type.
 (Pointer to) an array of \code{N\_dims} pointers to 1-D arrays giving the
 coordinates of the interpolation points requested by this processor.
 These coordinates are with respect to the coordinate system defined by
-\code{coord_system\_handle}.
+\code{coord\_system\_handle}.
 \end{Parameter}
 \begin{Parameter}{N\_input\_arrays ($\ge 0$)}
 The number of input arrays to be interpolated.
@@ -3289,7 +3293,7 @@ only the
 unique set of input arrays should be given here.
 \end{Parameter}
 \begin{Parameter}{input\_array\_variable\_indices ($\ne$ NULL)}
-(Pointer to) an array of \code{N_input\_arrays} CCTK grid array indices (as
+(Pointer to) an array of \code{N\_input\_arrays} CCTK grid array indices (as
 returned by \code{CCTK\_VarIndex}) specifying the input grid arrays for the
 interpolation. For any element with an index value of -1 in the grid array
 indices array, that interpolation is skipped. This may be useful if the main
@@ -3306,12 +3310,12 @@ If such a mapping is specified, only the unique set of output arrays
 should be given in the \code{output\_arrays} argument.
 \end{Parameter}
 \begin{Parameter}{output\_array\_type\_codes ($\ne$ NULL)}
-(Pointer to) an array of \code{N_output_arrays} \code{CCTK_VARIABLE\_*}
+(Pointer to) an array of \code{N\_output\_arrays} \code{CCTK\_VARIABLE\_*}
 type codes giving the data types of the 1-D output arrays pointed to by
 \code{output\_arrays[]}.
 \end{Parameter}
 \begin{Parameter}{output\_arrays ($\ne$ NULL)}
-(Pointer to) an array of \code{N_output\_arrays} pointers to the
+(Pointer to) an array of \code{N\_output\_arrays} pointers to the
 (user-supplied) 1-D output arrays for the interpolation.
 If any of the pointers in the \code{output\_arrays} array is NULL, then that
 interpolation is skipped. This may be useful if the main purpose of the call
@@ -3359,7 +3363,7 @@ interpolator supports any optional parameter-table entries that
 requires from the global interpolator.
 }
 These will overwrite any entries
-with the same keys in the \code{param_table\_handle} table.
+with the same keys in the \code{param\_table\_handle} table.
 Finally, the parameter table can be used to pass back arbitrary information by the local
 and/or global interpolation routine(s) by adding/modifying appropriate
 key/value pairs.
@@ -3401,7 +3405,7 @@ its molecules near interprocessor boundaries.  (This ensures that the
 interpolation results are independent of the interprocessor decomposition,
 at least up to floating-point roundoff errors.)
 If the ghost-zone size is too small, the interpolator should return
-the \code{CCTK_ERROR_INTERP_GHOST_SIZE_TOO\_SMALL} error code.
+the \code{CCTK\_ERROR\_INTERP\_GHOST\_SIZE\_TOO\_SMALL} error code.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
@@ -3436,7 +3440,7 @@ error return codes you should refer to the ThornGuide's chapter of the
 corresponding interpolation thorn(s) you are using.  To find the numerical
 values of the error codes (or more commonly, to find which error code
 corresponds to a given numerical value), look in the files
-\code{cctk_Interp.h}, \code{util_ErrorCodes.h}, and/or \code{util\_Table.h}
+\code{cctk\_Interp.h}, \code{util\_ErrorCodes.h}, and/or \code{util\_Table.h}
 in the \code{src/include/} directory in the Cactus flesh.
 \end{Error}
 \begin{Error}{CCTK\_ERROR\_INTERP\_POINT\_OUTSIDE}
@@ -3786,7 +3790,7 @@ A negative return code indicates an error condition:
 %notyet Interpolate a list of processor-local arrays
 %notyet which define a nonuniformly spaced data grid (not implemented yet)
 %notyet
-%notyet (\code{CCTK_InterpLocalNonUniform}, \code{CCTK\_InterpLocalUniform},
+%notyet (\code{CCTK\_InterpLocalNonUniform}, \code{CCTK\_InterpLocalUniform},
 %notyet and \code{CCTK\_InterpLocalWarped} will eventually replace
 %notyet \code{CCTK\_InterpLocal}.)
 %notyet
@@ -3855,7 +3859,7 @@ A negative return code indicates an error condition:
 %notyet \end{Parameter}
 %notyet \begin{Parameter}{coord\_arrays\_type\_code}
 %notyet \hbox{}
-%notyet One of the \code{CCTK_VARIABLE\_*} type codes, giving the data type of the
+%notyet One of the \code{CCTK\_VARIABLE\_*} type codes, giving the data type of the
 %notyet 1-D coordinate arrays pointed to by \code{coord\_arrays[]}.
 %notyet \end{Parameter}
 %notyet \begin{Parameter}{coord\_array\_dims ($\ne$ NULL)}
@@ -3875,7 +3879,7 @@ A negative return code indicates an error condition:
 %notyet \end{Parameter}
 %notyet \begin{Parameter}{interp\_coords\_type\_code}
 %notyet \hbox{}
-%notyet One of the \code{CCTK_VARIABLE\_*} type codes, giving the data type
+%notyet One of the \code{CCTK\_VARIABLE\_*} type codes, giving the data type
 %notyet of the 1-D interpolation-point-coordinate arrays pointed to by
 %notyet \code{interp\_coords[]}.
 %notyet \end{Parameter}
@@ -3898,19 +3902,19 @@ A negative return code indicates an error condition:
 %notyet of the \code{N\_dims}-D input arrays.  By default all the input arrays
 %notyet are taken to have these dimensions, with \code{[0]} the most contiguous
 %notyet axis and \code{[N\_dims-1]} the least contiguous axis, and array subscripts
-%notyet in the range \code{0 <= subscript < input_array\_dims[axis]}.  See the
-%notyet discussion of the \code{input_array\_strides} optional parameter (passed
+%notyet in the range \code{0 <= subscript < input\_array\_dims[axis]}.  See the
+%notyet discussion of the \code{input\_array\_strides} optional parameter (passed
 %notyet in the parameter table) for details of how this can be overridden.
 %notyet \end{Parameter}
 %notyet \begin{Parameter}{input\_array\_type\_codes ($\ne$ NULL)}
 %notyet \hbox{}
-%notyet (Pointer to) an array of \code{N_input_arrays} \code{CCTK_VARIABLE\_*}
+%notyet (Pointer to) an array of \code{N\_input\_arrays} \code{CCTK\_VARIABLE\_*}
 %notyet type codes giving the data types of the \code{N\_dims}-D input arrays
 %notyet pointed to by \code{input\_arrays[]}.
 %notyet \end{Parameter}
 %notyet \begin{Parameter}{input\_arrays ($\ne$ NULL)}
 %notyet \hbox{}
-%notyet (Pointer to) an array of \code{N_input\_arrays} pointers to the
+%notyet (Pointer to) an array of \code{N\_input\_arrays} pointers to the
 %notyet \code{N\_dims}-D input arrays for the interpolation.
 %notyet \end{Parameter}
 %notyet \begin{Parameter}{N\_output\_arrays ($\ge 0$)}
@@ -3919,13 +3923,13 @@ A negative return code indicates an error condition:
 %notyet \end{Parameter}
 %notyet \begin{Parameter}{output\_array\_type\_codes ($\ne$ NULL)}
 %notyet \hbox{}
-%notyet (Pointer to) an array of \code{N_output_arrays} \code{CCTK_VARIABLE\_*}
+%notyet (Pointer to) an array of \code{N\_output\_arrays} \code{CCTK\_VARIABLE\_*}
 %notyet type codes giving the data types of the 1-D output arrays pointed to by
 %notyet \code{output\_arrays[]}.
 %notyet \end{Parameter}
 %notyet \begin{Parameter}{output\_arrays ($\ne$ NULL)}
 %notyet \hbox{}
-%notyet (Pointer to) an array of \code{N_output\_arrays} pointers to the
+%notyet (Pointer to) an array of \code{N\_output\_arrays} pointers to the
 %notyet (user-supplied) 1-D output arrays for the interpolation.
 %notyet \end{Parameter}
 %notyet \end{ParameterSection}
@@ -3991,7 +3995,7 @@ A negative return code indicates an error condition:
 %notyet	To find the numerical
 %notyet	values of the error codes (or more commonly, to find which error code
 %notyet	corresponds to a given numerical value), look in the files
-%notyet	\code{cctk_Interp.h}, \code{util_ErrorCodes.h}, and/or \code{util\_Table.h}
+%notyet	\code{cctk\_Interp.h}, \code{util\_ErrorCodes.h}, and/or \code{util\_Table.h}
 in the \code{src/include/} directory in the Cactus flesh.
 %notyet	\end{Error}
 %notyet \begin{Error}{CCTK\_ERROR\_INTERP\_POINT\_OUTSIDE}
@@ -4094,7 +4098,7 @@ in the \code{src/include/} directory in the Cactus flesh.
 Interpolate a list of processor-local arrays
 which define a uniformly-spaced data grid
 
-(\code{CCTK_InterpLocalNonUniform}, \code{CCTK\_InterpLocalUniform},
+(\code{CCTK\_InterpLocalNonUniform}, \code{CCTK\_InterpLocalUniform},
 and \code{CCTK\_InterpLocalWarped} will eventually replace
 \code{CCTK\_InterpLocal}.)
 
@@ -4179,7 +4183,7 @@ The number of points at which interpolation is to be done.
 \end{Parameter}
 \begin{Parameter}{interp\_coords\_type\_code}
 \hbox{}
-One of the \code{CCTK_VARIABLE\_*} type codes, giving the data type
+One of the \code{CCTK\_VARIABLE\_*} type codes, giving the data type
 of the 1-D interpolation-point-coordinate arrays pointed to by
 \code{interp\_coords[]}.
 \end{Parameter}
@@ -4203,19 +4207,19 @@ only the unique set of input arrays should be given here.
 of the \code{N\_dims}-D input arrays.  By default all the input arrays
 are taken to have these dimensions, with \code{[0]} the most contiguous
 axis and \code{[N\_dims-1]} the least contiguous axis, and array subscripts
-in the range \code{0 <= subscript < input_array\_dims[axis]}.  See the
-discussion of the \code{input_array\_strides} optional parameter (passed
+in the range \code{0 <= subscript < input\_array\_dims[axis]}.  See the
+discussion of the \code{input\_array\_strides} optional parameter (passed
 in the parameter table) for details of how this can be overridden.
 \end{Parameter}
 \begin{Parameter}{input\_array\_type\_codes ($\ne$ NULL)}
 \hbox{}
-(Pointer to) an array of \code{N_input_arrays} \code{CCTK_VARIABLE\_*}
+(Pointer to) an array of \code{N\_input\_arrays} \code{CCTK\_VARIABLE\_*}
 type codes giving the data types of the \code{N\_dims}-D input arrays
 pointed to by \code{input\_arrays[]}.
 \end{Parameter}
 \begin{Parameter}{input\_arrays ($\ne$ NULL)}
 \hbox{}
-(Pointer to) an array of \code{N_input\_arrays} pointers to the
+(Pointer to) an array of \code{N\_input\_arrays} pointers to the
 \code{N\_dims}-D input arrays for the interpolation.  If any
 \code{input\_arrays[in]} pointer is NULL, that interpolation is skipped.
 \end{Parameter}
@@ -4225,13 +4229,13 @@ The number of output arrays to be returned from the interpolation.
 \end{Parameter}
 \begin{Parameter}{output\_array\_type\_codes ($\ne$ NULL)}
 \hbox{}
-(Pointer to) an array of \code{N_output_arrays} \code{CCTK_VARIABLE\_*}
+(Pointer to) an array of \code{N\_output\_arrays} \code{CCTK\_VARIABLE\_*}
 type codes giving the data types of the 1-D output arrays pointed to by
 \code{output\_arrays[]}.
 \end{Parameter}
 \begin{Parameter}{output\_arrays ($\ne$ NULL)}
 \hbox{}
-(Pointer to) an array of \code{N_output\_arrays} pointers to the
+(Pointer to) an array of \code{N\_output\_arrays} pointers to the
 (user-supplied) 1-D output arrays for the interpolation.  If any
 \code{output\_arrays[out]} pointer is NULL, that interpolation is skipped.
 \end{Parameter}
@@ -4245,9 +4249,9 @@ processor-local arrays when the data points'~$xyz$ coordinates are
 of dimensions should be obvious).  The \code{coord\_origin[]} and
 \code{coord\_delta[]} arguments specify these linear functions:
 \begin{flushleft}
-$x = \code{coord_origin[0] + i*coord\_delta[0]}$ \\
-$y = \code{coord_origin[1] + j*coord\_delta[1]}$ \\
-$z = \code{coord_origin[2] + k*coord\_delta[2]}$ %%%\\
+$x = \code{coord\_origin[0] + i*coord\_delta[0]}$ \\
+$y = \code{coord\_origin[1] + j*coord\_delta[1]}$ \\
+$z = \code{coord\_origin[2] + k*coord\_delta[2]}$ %%%\\
 \end{flushleft}
 The $(x,y,z)$ coordinates are used for the interpolation
 (\ie{}~the interpolator may internally use polynomials in these
@@ -4288,7 +4292,7 @@ with non-uniformly spaced data points.
 To find the numerical
 values of the error codes (or more commonly, to find which error code
 corresponds to a given numerical value), look in the files
-\code{cctk_Interp.h}, \code{util_ErrorCodes.h}, and/or \code{util\_Table.h}
+\code{cctk\_Interp.h}, \code{util\_ErrorCodes.h}, and/or \code{util\_Table.h}
 in the \code{src/include/} directory in the Cactus flesh.
 \end{Error}
 \begin{Error}{CCTK\_ERROR\_INTERP\_POINT\_OUTSIDE}
@@ -4326,7 +4330,7 @@ using cubic interpolation.
 
 Note that since C allows arrays to be initialized only if the
 initializer values are compile-time constants, we have to declare the
-\code{interp_coords[]}, \code{input_arrays[]}, and \code{output\_arrays[]}
+\code{interp\_coords[]}, \code{input\_arrays[]}, and \code{output\_arrays[]}
 arrays as non-\code{const}, and set their values with ordinary (run-time)
 assignment statements.  In \Cplusplus, there's no restriction on
 initializer values, so we could declare the arrays \code{const} and
@@ -4413,7 +4417,7 @@ if (CCTK_InterpLocalUniform(N_DIMS,
 %notyet Interpolate a list of processor-local arrays
 %notyet which define a curvilinearly-warped data grid
 %notyet
-%notyet (\code{CCTK_InterpLocalWarped}, \code{CCTK\_InterpLocalUniform},
+%notyet (\code{CCTK\_InterpLocalWarped}, \code{CCTK\_InterpLocalUniform},
 %notyet and \code{CCTK\_InterpLocalWarped} will eventually replace
 %notyet \code{CCTK\_InterpLocal}.)
 %notyet
@@ -4481,8 +4485,8 @@ if (CCTK_InterpLocalUniform(N_DIMS,
 %notyet \end{Parameter}
 %notyet \begin{Parameter}{coord\_arrays\_type\_code}
 %notyet \hbox{}
-%notyet One of the \code{CCTK_VARIABLE\_*} type codes, giving the data type of the
-%notyet \code{N_dims}-D coordinate arrays pointed to by \code{coord\_arrays[]}.
+%notyet One of the \code{CCTK\_VARIABLE\_*} type codes, giving the data type of the
+%notyet \code{N\_dims}-D coordinate arrays pointed to by \code{coord\_arrays[]}.
 %notyet \end{Parameter}
 %notyet \begin{Parameter}{coord\_array\_dims ($\ne$ NULL)}
 %notyet \hbox{}
@@ -4490,13 +4494,13 @@ if (CCTK_InterpLocalUniform(N_DIMS,
 %notyet of the coordinate arrays.  All the coordinate arrays are taken to have
 %notyet these dimensions, with (by default) \code{[0]} the most contiguous axis
 %notyet and \code{[N\_dims-1]} the least contiguous axis, and array subscripts
-%notyet in the range \code{0 <= subscript < coord_array\_dims[axis]}.  See the
-%notyet discussion of the \code{coord_array\_strides} optional parameter (passed
+%notyet in the range \code{0 <= subscript < coord\_array\_dims[axis]}.  See the
+%notyet discussion of the \code{coord\_array\_strides} optional parameter (passed
 %notyet in the parameter table) for details of how this can be overridden.
 %notyet \end{Parameter}
 %notyet \begin{Parameter}{coord\_arrays ($\ne$ NULL)}
 %notyet \hbox{}
-%notyet (Pointer to) an array of \code{N_dims} pointers to \code{N\_dims}-D arrays
+%notyet (Pointer to) an array of \code{N\_dims} pointers to \code{N\_dims}-D arrays
 %notyet giving the coordinates of the interpolation points.  See the ``Discussion''
 %notyet section below for more on the semantics of this.
 %notyet \end{Parameter}
@@ -4506,13 +4510,13 @@ if (CCTK_InterpLocalUniform(N_DIMS,
 %notyet \end{Parameter}
 %notyet \begin{Parameter}{interp\_coords\_type\_code}
 %notyet \hbox{}
-%notyet One of the \code{CCTK_VARIABLE\_*} type codes, giving the data type
+%notyet One of the \code{CCTK\_VARIABLE\_*} type codes, giving the data type
 %notyet of the 1-D interpolation-point-coordinate arrays pointed to by
 %notyet \code{interp\_coords[]}.
 %notyet \end{Parameter}
 %notyet \begin{Parameter}{interp\_coords ($\ne$ NULL)}
 %notyet \hbox{}
-%notyet (Pointer to) an array of \code{N_dims} pointers to \code{N\_dims}-D arrays
+%notyet (Pointer to) an array of \code{N\_dims} pointers to \code{N\_dims}-D arrays
 %notyet giving the coordinates of the interpolation points.  These coordinates are
 %notyet with respect to the coordinate system defined by \code{coord\_arrays[]}.
 %notyet \end{Parameter}
@@ -4529,19 +4533,19 @@ if (CCTK_InterpLocalUniform(N_DIMS,
 %notyet of the input arrays.  By default all the input arrays are taken to have
 %notyet these dimensions, with \code{[0]} the most contiguous axis and
 %notyet \code{[N\_dims-1]} the least contiguous axis, and array subscripts in the
-%notyet range \code{0 <= subscript < input_array\_dims[axis]}.  See the discussion
-%notyet of the \code{input_array\_strides} optional parameter (passed in the
+%notyet range \code{0 <= subscript < input\_array\_dims[axis]}.  See the discussion
+%notyet of the \code{input\_array\_strides} optional parameter (passed in the
 %notyet parameter table) for details of how this can be overridden.
 %notyet \end{Parameter}
 %notyet \begin{Parameter}{input\_array\_type\_codes ($\ne$ NULL)}
 %notyet \hbox{}
-%notyet (Pointer to) an array of \code{N_input_arrays} \code{CCTK_VARIABLE\_*}
+%notyet (Pointer to) an array of \code{N\_input\_arrays} \code{CCTK\_VARIABLE\_*}
 %notyet type codes giving the data types of the \code{N\_dims}-D input arrays
 %notyet pointed to by \code{input\_arrays[]}.
 %notyet \end{Parameter}
 %notyet \begin{Parameter}{input\_arrays ($\ne$ NULL)}
 %notyet \hbox{}
-%notyet (Pointer to) an array of \code{N_input\_arrays} pointers to the
+%notyet (Pointer to) an array of \code{N\_input\_arrays} pointers to the
 %notyet \code{N\_dims}-D input arrays for the interpolation.
 %notyet \end{Parameter}
 %notyet \begin{Parameter}{N\_output\_arrays ($\ge 0$)}
@@ -4550,13 +4554,13 @@ if (CCTK_InterpLocalUniform(N_DIMS,
 %notyet \end{Parameter}
 %notyet \begin{Parameter}{output\_array\_type\_codes ($\ne$ NULL)}
 %notyet \hbox{}
-%notyet (Pointer to) an array of \code{N_output_arrays} \code{CCTK_VARIABLE\_*}
+%notyet (Pointer to) an array of \code{N\_output\_arrays} \code{CCTK\_VARIABLE\_*}
 %notyet type codes giving the data types of the 1-D output arrays pointed to by
 %notyet \code{output\_arrays[]}.
 %notyet \end{Parameter}
 %notyet \begin{Parameter}{output\_arrays ($\ne$ NULL)}
 %notyet \hbox{}
-%notyet (Pointer to) an array of \code{N_output\_arrays} pointers to the
+%notyet (Pointer to) an array of \code{N\_output\_arrays} pointers to the
 %notyet (user-supplied) 1-D output arrays for the interpolation.
 %notyet \end{Parameter}
 %notyet \end{ParameterSection}
@@ -4623,7 +4627,7 @@ if (CCTK_InterpLocalUniform(N_DIMS,
 %notyet	To find the numerical
 %notyet	values of the error codes (or more commonly, to find which error code
 %notyet	corresponds to a given numerical value), look in the files
-%notyet	\code{cctk_Interp.h}, \code{util_ErrorCodes.h}, and/or \code{util\_Table.h}
+%notyet	\code{cctk\_Interp.h}, \code{util\_ErrorCodes.h}, and/or \code{util\_Table.h}
 in the \code{src/include/} directory in the Cactus flesh.
 %notyet	\end{Error}
 %notyet \begin{Error}{CCTK\_ERROR\_INTERP\_POINT\_OUTSIDE}
@@ -4726,7 +4730,7 @@ in the \code{src/include/} directory in the Cactus flesh.
 
 % Interp.c
 \begin{CCTKFunc}{CCTK\_InterpRegisterOperatorGV}%%%
-{Register a routine as a \codeCCTK\_InterpGV} interpolation operator}
+{Register a routine as a \code{CCTK\_InterpGV} interpolation operator}
 \label{CCTK-InterpRegisterOperatorGV}
 \subroutine{int}{}{ierr}
 \argument{cInterpOperatorGV}{}{operator}
@@ -5433,7 +5437,7 @@ Illegal arguments given.
 \subroutine{int}{integer}{number}
 \showargs
 \begin{params}
-\parameter{number}{The number of grid variables compiled from the thorn's \cite{interface.ccl} files}
+\parameter{number}{The number of grid variables compiled from the thorn's \code{interface.ccl} files}
 \end{params}
 \begin{discussion}
 \end{discussion}
