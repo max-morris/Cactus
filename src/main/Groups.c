@@ -26,7 +26,7 @@
 #include "cctki_Stagger.h"
 #include "cctki_Groups.h"
 
-#include "cctki_Expression.h"
+#include "util_Expression.h"
 
 #include "util_String.h"
 
@@ -194,7 +194,6 @@ static CCTK_INT **CCTKi_ExtractSize (int dimension,
                                      const char *thorn,
                                      const char *sizestring);
 
-static int ExtractNVars(const char *parameter);
 static int CCTKi_ParamExpressionToInt(const char *expression, const char *thorn);
 
  /*@@
@@ -2361,10 +2360,24 @@ const int *CCTKi_GroupLengthAsPointer(const char *fullgroupname)
    @history 
  
    @endhistory 
-   @var     parameter
-   @vdesc   The parameter name
-   @vtype   const char *
+   @var     nvars
+   @vdesc   Number of variables to evaluate
+   @vtype   int
    @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     vars
+   @vdesc   an array of parameter names or integers
+   @vtype   const char * const *
+   @vio     in
+   @vcomment 
+ 
+   @endvar
+   @var     vals
+   @vdesc   Output array to hold values
+   @vtype   uExpressionValue *
+   @vio     out
    @vcomment 
  
    @endvar 
@@ -2378,12 +2391,15 @@ const int *CCTKi_GroupLengthAsPointer(const char *fullgroupname)
 
    @returntype int
    @returndesc
-     The value of the parameter
+   0
    @endreturndesc
 @@*/
-static int IntParameterEvaluator(const char *parameter, void *data)
+static int IntParameterEvaluator(int nvars, 
+                                 const char * const *vars, 
+                                 uExpressionValue *vals, 
+                                 void *data)
 {
-  int retval;
+  int i;
 
   char *tmp;
   char *endptr;
@@ -2394,50 +2410,54 @@ static int IntParameterEvaluator(const char *parameter, void *data)
   const char *use_param;
   int type;
   
-  tmp = Util_Strdup(parameter);
-
-  retval = strtol(tmp,&endptr,0);
-
-  if(endptr == tmp)
+  for(i=0; i < nvars; i++)
   {
-    if(CCTK_DecomposeName (parameter,&thorn,&param))
+    vals[i].type = ival;
+    tmp = Util_Strdup(vars[i]);
+
+    vals[i].value.ival = strtol(tmp,&endptr,0);
+
+    if(endptr == tmp)
     {
-      thorn = NULL;
-      param = NULL;
-      use_thorn = (const char *)data;
-      use_param = parameter;
-    }
-    else
-    {
-      use_thorn = thorn;
-      use_param = param;
+      if(CCTK_DecomposeName (tmp,&thorn,&param))
+      {
+        thorn = NULL;
+        param = NULL;
+        use_thorn = (const char *)data;
+        use_param = tmp;
+      }
+      else
+      {
+        use_thorn = thorn;
+        use_param = param;
+      }
+
+      paramval = (const CCTK_INT *) CCTK_ParameterGet (use_param, use_thorn, &type);
+
+      if(paramval && type==PARAMETER_INTEGER)
+      {
+        vals[i].value.ival = *paramval;
+      }
+      else if(!paramval)
+      {
+        CCTK_VWarn (0, __LINE__, __FILE__, "Cactus",
+                    "IntParameterEvaluator: '%s::%s' is not a parameter",
+                    use_thorn, use_param);
+      }
+      else
+      {
+        CCTK_VWarn (0, __LINE__, __FILE__, "Cactus",
+                    "IntParameterEvaluator: '%s::%s' is not an integer parameter",
+                    use_thorn, use_param);
+      }
+      free(thorn);
+      free(param);
     }
 
-    paramval = (const CCTK_INT *) CCTK_ParameterGet (use_param, use_thorn, &type);
-
-    if(paramval && type==PARAMETER_INTEGER)
-    {
-      retval = *paramval;
-    }
-    else if(!paramval)
-    {
-      CCTK_VWarn (0, __LINE__, __FILE__, "Cactus",
-                  "IntParameterEvaluator: '%s::%s' is not a parameter",
-                  use_thorn, use_param);
-    }
-    else
-    {
-      CCTK_VWarn (0, __LINE__, __FILE__, "Cactus",
-                  "IntParameterEvaluator: '%s::%s' is not an integer parameter",
-                  use_thorn, use_param);
-    }
-    free(thorn);
-    free(param);
+    free(tmp);
   }
 
-  free(tmp);
-
-  return retval;
+  return 0;
 }
   
  /*@@
@@ -2476,19 +2496,23 @@ static int IntParameterEvaluator(const char *parameter, void *data)
 static int CCTKi_ParamExpressionToInt(const char *expression, const char *thorn)
 {
   int retval;
-  char *parsed_expression;
+  uExpression parsed_expression;
+  uExpressionValue value;
   char *this_thorn;
 
   this_thorn = Util_Strdup(thorn);
 
-  parsed_expression = CCTKi_ExpressionParse(expression);
+  parsed_expression = Util_ExpressionParse(expression);
 
-  if(parsed_expression && strlen(parsed_expression) > 0)
+  if(parsed_expression)
   {
     /* Evaluate the expression */
-    retval = CCTKi_ExpressionEvaluate(parsed_expression, IntParameterEvaluator, this_thorn);
+    retval = Util_ExpressionEvaluate(parsed_expression,
+                                     &value,
+                                     IntParameterEvaluator, 
+                                     this_thorn);
 
-    free(parsed_expression);
+    Util_ExpressionFree(parsed_expression);
   }
   else
   {
@@ -2499,6 +2523,17 @@ static int CCTKi_ParamExpressionToInt(const char *expression, const char *thorn)
   }
 
   free(this_thorn);
+
+  if(retval == 0)
+  {
+    retval = value.value.ival;
+  }
+  else
+  {
+    CCTK_VWarn (0, __LINE__, __FILE__, "Cactus",
+                "Unable to evaluate parameter expression '%s'",
+                expression);
+  }    
 
   return retval;
 }
