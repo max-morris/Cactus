@@ -1432,10 +1432,14 @@ static int ParameterSetString(t_param *param, const char *value)
   {
     if(CCTK_IsThornActive(range->origin)||CCTK_Equals(param->props->thorn, range->origin))
     {
+#ifndef CCTK_PARAMUNCHECKED
       if(CCTK_RegexMatch(value, range->range, 0, NULL))
       {
+#endif
         retval = CCTK_SetString(param->data, value);
+#ifndef CCTK_PARAMUNCHECKED
       }
+#endif
       break;
     }
   }
@@ -1470,10 +1474,14 @@ static int ParameterSetSentence(t_param *param, const char *value)
   {
     if(CCTK_IsThornActive(range->origin)||CCTK_Equals(param->props->thorn, range->origin))
     {
+#ifndef CCTK_PARAMUNCHECKED
       if(CCTK_RegexMatch(value, range->range, 0, NULL))
       {
+#endif
         retval = CCTK_SetString(param->data, value);
+#ifndef CCTK_PARAMUNCHECKED
       }
+#endif
       break;
     }
   }
@@ -1511,11 +1519,15 @@ static int ParameterSetInteger(t_param *param, const char *value)
   {
     if(CCTK_IsThornActive(range->origin)||CCTK_Equals(param->props->thorn, range->origin))
     {
+#ifndef CCTK_PARAMUNCHECKED
       if(Util_IntInRange(inval, range->range))
       {
+#endif
         *val = inval;
         retval = 0;
+#ifndef CCTK_PARAMUNCHECKED
       }
+#endif
       break;
     }
   }
@@ -1546,11 +1558,15 @@ static int ParameterSetReal(t_param *param, const char *value)
   {
     if(CCTK_IsThornActive(range->origin)||CCTK_Equals(param->props->thorn, range->origin))
     {
+#ifndef CCTK_PARAMUNCHECKED
       if(Util_DoubleInRange(inval, range->range)||CCTK_Equals(param->props->thorn, range->origin))
       {
+#endif
         *val = inval;
         retval = 0;
+#ifndef CCTK_PARAMUNCHECKED
       }
+#endif
       break;
     }
   }
