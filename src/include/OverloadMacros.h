@@ -9,7 +9,7 @@
  @@*/
 
 #ifndef _OVERLOADMACROS_H_
-#define _OVERLOADMACROS_H_
+#define _OVERLOADMACROS_H_ 1
 
 /* These are a load of macros used to make overloadable functions. 
  *
@@ -20,6 +20,14 @@
  * Defining OVERLOADABLE(name) as OVERLOADABLE_<macro>(name)
  * and then including the header will create functions, prototypes
  * dummy functions or some checking code as required.
+ * 
+ * One must also define
+ *
+ *  #define OVERLOADABLE_CALL prefix for calling overload functions 
+ *  #define OVERLOADABLE_PREFIX prefix for real functions 
+ *  #define OVERLOADABLE_DUMMY_PREFIX prefix for dummy functions
+ *
+ * to apply prefices to the functions.
  */
 
 /* This macro defines a global variable with the name of the function
@@ -27,58 +35,83 @@
  *
  * The function can only be called twice - to set the default, and to overload it.
  */
-#define OVERLOADABLE_FUNCTION(name)                               \
-RETURN_TYPE (*CCTK_##name)(ARGUMENTS) = NULL;                     \
-int CCTK_Overload##name(RETURN_TYPE (*func)(ARGUMENTS))           \
-{                                                                 \
-  int return_code;                                                \
-  static int overloaded = 0;                                      \
-  if(overloaded < 2)                                              \
-  {                                                               \
-     CCTK_##name = func;                                          \
-     overloaded++;                                                \
-     return_code = overloaded;                                    \
-  }                                                               \
-  else                                                            \
-  {                                                               \
-     char *message = malloc( (200+strlen(#name))*sizeof(char) );  \
-     sprintf(message,                                             \
-             "Warning: Attempted to overload function %s twice\n",\
-             #name);                                              \
-     CCTK_Warn(1,__LINE__,__FILE__,"Cactus",message);             \
-     free(message);                                               \
-     return_code = 0;                                             \
-  }                                                               \
-                                                                  \
-  return return_code;                                             \
+#define OVERLOADABLE_FUNCTION(name)   \
+       _OVERLOADABLE_FUNCTION(OVERLOADABLE_CALL,OVERLOADABLE_PREFIX, OVERLOADABLE_DUMMY_PREFIX, name)
+#define _OVERLOADABLE_FUNCTION(call, prefix, dummy_prefix, name)   \
+       __OVERLOADABLE_FUNCTION(call, prefix, dummy_prefix, name)
+
+#define __OVERLOADABLE_FUNCTION(call, prefix, dummy_prefix, name)   \
+RETURN_TYPE (*prefix##name)(ARGUMENTS) = NULL;                      \
+int call##Overload##name(RETURN_TYPE (*func)(ARGUMENTS))            \
+{                                                                   \
+  int return_code;                                                  \
+  static int overloaded = 0;                                        \
+  if(overloaded < 2)                                                \
+  {                                                                 \
+     prefix##name = func;                                           \
+     overloaded++;                                                  \
+     return_code = overloaded;                                      \
+  }                                                                 \
+  else                                                              \
+  {                                                                 \
+     char *message = malloc( (200+strlen(#name))*sizeof(char) );    \
+     sprintf(message,                                               \
+             "Warning: Attempted to overload function %s%s twice\n",\
+             #prefix, #name);                                       \
+     CCTK_Warn(1,__LINE__,__FILE__,"Cactus",message);               \
+     free(message);                                                 \
+     return_code = 0;                                               \
+  }                                                                 \
+                                                                    \
+  return return_code;                                               \
 }
 
 /* This macro creates an extern declaration for an overloadable function */
-#define OVERLOADABLE_PROTOTYPE(name)                              \
-extern RETURN_TYPE (*CCTK_##name)(ARGUMENTS);
+
+#define OVERLOADABLE_PROTOTYPE(name)   _OVERLOADABLE_PROTOTYPE(OVERLOADABLE_PREFIX, OVERLOADABLE_DUMMY_PREFIX, name)
+#define _OVERLOADABLE_PROTOTYPE(prefix, dummy_prefix, name)   __OVERLOADABLE_PROTOTYPE(prefix, dummy_prefix, name)
+
+#define __OVERLOADABLE_PROTOTYPE(prefix, dummy_prefix, name)       \
+extern RETURN_TYPE (*prefix##name)(ARGUMENTS);
 
 /* This macro defines a dummy function */
-#define OVERLOADABLE_DUMMY(name)                                  \
-RETURN_TYPE CCTKi_Dummy##name(ARGUMENTS)                           \
-{                                                                 \
-  fprintf(stderr, "Dummy %s called.\n", #name);                   \
-  return 0;                                                       \
+#define OVERLOADABLE_DUMMY(name)   _OVERLOADABLE_DUMMY(OVERLOADABLE_PREFIX, OVERLOADABLE_DUMMY_PREFIX, name)
+#define _OVERLOADABLE_DUMMY(prefix, dummy_prefix, name)   __OVERLOADABLE_DUMMY(prefix, dummy_prefix, name)
+
+#define __OVERLOADABLE_DUMMY(prefix, dummy_prefix, name)        \
+RETURN_TYPE dummy_prefix##name(ARGUMENTS)                       \
+{                                                               \
+  fprintf(stderr, "Dummy %s%s called.\n", #dummy_prefix,#name); \
+  return 0;                                                     \
 }
 
 /* This macro defines the prototype for a dummy function. */
-#define OVERLOADABLE_DUMMYPROTOTYPE(name)                         \
-RETURN_TYPE CCTKi_Dummy##name(ARGUMENTS);
+#define OVERLOADABLE_DUMMYPROTOTYPE(name)   _OVERLOADABLE_DUMMYPROTOTYPE(OVERLOADABLE_PREFIX, OVERLOADABLE_DUMMY_PREFIX, name)
+#define _OVERLOADABLE_DUMMYPROTOTYPE(prefix, dummy_prefix, name)   __OVERLOADABLE_DUMMYPROTOTYPE(prefix, dummy_prefix, name)
+
+#define __OVERLOADABLE_DUMMYPROTOTYPE(prefix, dummy_prefix, name)        \
+RETURN_TYPE dummy_prefix##name(ARGUMENTS);
 
 /* This macro defines a check line which will set the overloadable
  * function to be the dummy if it hasn't been set.
  */
-#define OVERLOADABLE_CHECK(name)                                  \
-  if(!CCTK_##name) CCTK_##name = CCTKi_Dummy##name;
+
+#define OVERLOADABLE_CHECK(name)   _OVERLOADABLE_CHECK(OVERLOADABLE_PREFIX, OVERLOADABLE_DUMMY_PREFIX, name)
+#define _OVERLOADABLE_CHECK(prefix, dummy_prefix, name)   __OVERLOADABLE_CHECK(prefix, dummy_prefix, name)
+
+#define __OVERLOADABLE_CHECK(prefix, dummy_prefix, name)        \
+  if(!prefix##name) prefix##name = dummy_prefix##name;
 
 
 /* This macro defines the prototype for the overloading function itself */
-#define OVERLOADABLE_OVERLOADPROTO(name)                          \
-int CCTK_Overload##name(RETURN_TYPE (*func)(ARGUMENTS));
+
+#define OVERLOADABLE_OVERLOADPROTO(name)   \
+       _OVERLOADABLE_OVERLOADPROTO(OVERLOADABLE_CALL,OVERLOADABLE_PREFIX, OVERLOADABLE_DUMMY_PREFIX, name)
+#define _OVERLOADABLE_OVERLOADPROTO(call,prefix, dummy_prefix, name) \
+       __OVERLOADABLE_OVERLOADPROTO(call,prefix, dummy_prefix, name)
+
+#define __OVERLOADABLE_OVERLOADPROTO(call,prefix, dummy_prefix, name)        \
+int call##Overload##name(RETURN_TYPE (*func)(ARGUMENTS));
 
 
-#endif
+#endif /* _OVERLOADMACROS_H_ */

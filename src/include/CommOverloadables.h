@@ -12,6 +12,22 @@
 #include "cctk_Flesh.h"
 #include "cctk_GroupsOnGH.h"
 
+#ifdef OVERLOADABLE_CALL
+#undef OVERLOADABLE_CALL
+#endif
+
+#ifdef OVERLOABLE_PREFIX
+#undef OVERLOADABLE_PREFIX
+#endif
+
+#ifdef OVERLOABLE_DUMMY_PREFIX
+#undef OVERLOADABLE_DUMMY_PREFIX
+#endif
+
+#define OVERLOADABLE_CALL CCTK_
+#define OVERLOADABLE_PREFIX CCTK_
+#define OVERLOADABLE_DUMMY_PREFIX CCTKi_Dummy
+
 #ifdef ARGUMENTS
 #undef ARGUMENTS
 #endif
@@ -74,6 +90,9 @@ OVERLOADABLE(GroupDynamicData)
 #undef ARGUMENTS
 #undef RETURN_TYPE
 
+#undef OVERLOADABLE_CALL
+#undef OVERLOADABLE_PREFIX
+#undef OVERLOADABLE_DUMMY_PREFIX
 
 
 
