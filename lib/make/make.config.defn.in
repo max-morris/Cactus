@@ -40,6 +40,7 @@ MKDIRFLAGS          = @MKDIRFLAGS@
 LDFLAGS           = @LDFLAGS@
 
 ARFLAGS           = @ARFLAGS@
+RANLIBFLAGS       = @RANLIBFLAGS@
 
 # Debug flags
 
