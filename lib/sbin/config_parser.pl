@@ -493,14 +493,29 @@ EOT
 \#ifndef _\U$thorn\E_PARAMETERS_H_
  
 \#define _\U$thorn\E_PARAMETERS_H_
- 
-\#include "ParameterCPublic.h"
- 
-\#include "ParameterCProtected$implementation.h"
- 
-\#include "ParameterCPrivate$thorn.h"
- 
+
 EOT
+
+  $header =  "ParameterCPublic.h";
+  if( -r $header)
+  {
+    print OUT "#include \"$header\"\n";
+  }
+ 
+  $header =  "ParameterCProtected$implementation.h";
+  if( -r $header)
+  {
+    print OUT "#include \"$header\"\n";
+  }
+
+  $header =  "ParameterCPrivate$thorn.h";
+  if( -r $header)
+  {
+    print OUT "#include \"$header\"\n";
+  }
+ 
+  print OUT "\n";
+
     @data = ();
     foreach $friend (split(" ",$parameter_database{"\U$thorn\E FRIEND implementations"}))
     {
@@ -525,13 +540,28 @@ EOT
       }
     }
 
-    print OUT <<EOT;
+    print OUT "#define DECLARE_PARSER \\\n";
 
-\#define DECLARE_PARSER \\
-DECLARE_PUBLIC_PARAMETER_STRUCT_PARAMS  \\
-DECLARE_PROTECTED_\U$implementation\E_STRUCT_PARAMS  \\
-DECLARE_PRIVATE_\U$thorn\E_STRUCT_PARAMS  \\
-EOT
+    $header =  "ParameterCPublic.h";
+    $decl =  "DECLARE_PUBLIC_PARAMETER_STRUCT_PARAMS";
+    if( -r $header)
+    {
+      print OUT "$decl \\\n";
+    }
+ 
+    $header =  "ParameterCProtected$implementation.h";
+    $decl = "DECLARE_PROTECTED_\U$implementation\E_STRUCT_PARAMS";
+    if( -r $header)
+    {
+      print OUT "$decl \\\n";
+    }
+
+    $header =  "ParameterCPrivate$thorn.h";
+    $decl = "DECLARE_PRIVATE_\U$thorn\E_STRUCT_PARAMS";
+    if( -r $header)
+    {
+      print OUT "$decl \\\n";
+    }
 
     foreach $line (@data)
     {
@@ -549,7 +579,7 @@ EOT
 
   foreach $thorn (split(" ",$interface_database{"THORNS"}))
   {
-    print OUT "#if THISTHORN==$thorn\n";
+    print OUT "#ifdef THORN_IS_$thorn\n";
     print OUT "#include \"$thorn"."_CParameters.h\"\n";
     print OUT "#endif\n\n";
   }
