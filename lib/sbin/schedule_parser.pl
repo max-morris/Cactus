@@ -635,6 +635,10 @@ sub fortran_wrapper {
    DECLARE_$THORN_C2F
    INITIALISE_$THORN_C2F
 
+#ifdef DEBUG
+   printf(\"Calling \%s from rfr wrapper\\n\");
+#endif
+
    FORTRAN_NAME($routine)(PASS_$THORN_C2F(GH));
 
 }
