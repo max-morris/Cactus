@@ -6,7 +6,7 @@
 #   @desc
 #            Configuration options for MPI=MPICH
 #   @enddesc
-#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/extras/MPI/MPICH,v 1.21 2005-01-13 15:41:13 tradke Exp $
+#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/extras/MPI/MPICH,v 1.22 2005-02-04 11:58:14 tradke Exp $
 # @@*/
 
 
@@ -132,6 +132,7 @@ case "$MPICH_DEVICE" in
     mpichlib_conf_file="$MPICH_DIR/etc/mpichlib.conf"
     if test -r "$mpichlib_conf_file" ; then
       base_lib_list=`grep BASE_LIB_LIST $mpichlib_conf_file | perl -ne 's/BASE_LIB_LIST="(.+)"/\1/; print'`
+      MPI_WITH_PMPI=`grep MPI_WITH_PMPI $mpichlib_conf_file | perl -ne 's/MPI_WITH_PMPI="(.+)"/\1/; print'`
       MPICH_DEVICE_LIB_DIR=`echo "$base_lib_list" | perl -nae '@libdirs = (); foreach $libdir (@F) { push (@libdirs, $libdir) if ($libdir =~ s/^-L(.+)/\1/) } print "@libdirs"'`
       MPICH_DEVICE_LIBS=`echo "$base_lib_list" | perl -nae '@libs = (); foreach $lib (@F) { push (@libs, $lib) if ($lib =~ s/^-l(.+)/\1/) } print "@libs"'`
     else
@@ -143,9 +144,12 @@ esac
 
 # Work out what the MPICH library is called
 if test -r "$MPICH_LIB_DIRS/libmpi.a" ; then
-  MPICH_LIB=mpi
+  MPICH_LIB='mpi'
 else
-  MPICH_LIB=mpich
+  MPICH_LIB='mpich'
+  if test "$MPI_WITH_PMPI" = 'no'; then
+    MPICH_LIB="$MPICH_LIB pmpich"
+  fi
 fi
 
 # Set the MPI version name
@@ -153,5 +157,5 @@ MPI_VERSION="MPICH_$MPICH_DEVICE"
 
 # Finally set the library lines.
 MPI_LIBS="$MPICH_LIB $MPICH_DEVICE_LIBS"
-MPI_LIB_DIRS="$MPICH_DEVICE_LIB_DIR $MPICH_LIB_DIR"
+MPI_LIB_DIRS="$MPICH_LIB_DIR $MPICH_DEVICE_LIB_DIR"
 MPI_INC_DIRS="$MPICH_INC_DIRS"
