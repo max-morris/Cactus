@@ -52,7 +52,7 @@ $(MASTER_FILE).ps: $(MASTER_FILE).dvi
 
 $(MASTER_FILE).dvi: $(MASTER_FILE).tex
 	@echo "  Latexing $<"
-	latex -interaction=nonstopmode $< >  LOG_NULL 2>&1; \
+	latex -interaction=nonstopmode $< > LOG_NULL 2>&1; \
 	latex -interaction=nonstopmode $< > LOG_NULL 2>&1; \
 	latex -interaction=nonstopmode $< > LOG_NULL 2>&1; \
 	latex -interaction=nonstopmode $< | grep -v Underfull | grep -v Overfull | grep -v OT1 > LOG_LATEX_MSGS 2>&1;  \
@@ -65,7 +65,7 @@ $(MASTER_FILE).dvi: $(MASTER_FILE).tex
 $(MASTER_FILE).pdf: $(MASTER_FILE).tex
 	@echo "  Running pdflatex on $<"
 
-	pdflatex -interaction=nonstopmode $< >  LOG_NULL 2>&1; \
+	pdflatex -interaction=nonstopmode $< > LOG_NULL 2>&1; \
 	pdflatex -interaction=nonstopmode $< > LOG_NULL 2>&1; \
 	pdflatex -interaction=nonstopmode $< > LOG_NULL 2>&1; \
 	pdflatex -interaction=nonstopmode $< | grep -v Underfull | grep -v Overfull | grep -v OT1 > LOG_PDFLATEX_MSGS 2>&1
@@ -76,7 +76,7 @@ $(MASTER_FILE).pdf: $(MASTER_FILE).tex
 	   echo "  Cannot find $@, an error must have occured."; \
 	fi ;                                                  
 
-$(MASTER_FILE).tex:  $(foreach thorn, $(THORNS), $(thorn)/param.ccl $(thorn)/interface.ccl $(thorn)/schedule.ccl)
+$(MASTER_FILE).tex:  $(foreach thorn, $(THORN_DEPENDENCIES), $(thorn)/param.ccl $(thorn)/interface.ccl $(thorn)/schedule.ccl) $(THORNLIST)
 	@echo "  Creating thorn documentation $(MASTER_FILE).tex"
 	@echo "    Processing ..."
 	@echo "       param.ccl ..."
@@ -92,8 +92,8 @@ $(MASTER_FILE).tex:  $(foreach thorn, $(THORNS), $(thorn)/param.ccl $(thorn)/int
 	fi ; 
 
 make.thornlist: $(THORNLIST) 
-	THORNS=`$(PERL) -s $(CCTK_HOME)/lib/sbin/ThornList.pl -arrangements_dir=$(ARRANGEMENTS_DIR) -thornlist=$(THORNLIST)`
+	THORN_DEPENDENCIES=`$(PERL) -s $(CCTK_HOME)/lib/sbin/ThornList.pl -arrangements_dir=$(ARRANGEMENTS_DIR) -thornlist=$(THORNLIST)`
 
-allthorns.th:
+$(THORNLIST):
 	@echo "Creating $@ ..."
-	$(PERL) -s $(CCTK_HOME)/lib/sbin/ThornList.pl -arrangements_dir=$(ARRANGEMENTS_DIR) > $@ 
+	$(PERL) -s $(CCTK_HOME)/lib/sbin/ThornList.pl -arrangements_dir=$(ARRANGEMENTS_DIR) -thorns=$(THORNS) -arrangements=$(ARRANGEMENTS)> $@ 
