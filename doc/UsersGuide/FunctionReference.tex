@@ -5076,23 +5076,28 @@ many are C-only.
 %%\item[Util\_StringListNext]
 %%     [\pageref{Util-StringListNext}]
 
+\item[Util\_TableClone]
+     [\pageref{Util-TableClone}]
+Create a new table which is a ``clone'' (exact copy) of an existing
+table
+
 \item[Util\_TableCreate]
      [\pageref{Util-TableCreate}]
-Creates a new (empty) table
+Create a new (empty) table
 
 \item[Util\_TableCreateFromString]
      [\pageref{Util-TableCreateFromString}]
-Creates a new table (with the case-insensitive flag set) and sets
+Create a new table (with the case-insensitive flag set) and sets
 values in it based on a string argument (interpreted with
 ``parameter-file'' semantics)
 
 \item[Util\_TableDeleteKey]
      [\pageref{Util-TableDeleteKey}]
-Deletes a specified key/value entry from a table
+Delete a specified key/value entry from a table
 
 \item[Util\_TableDestroy]
      [\pageref{Util-TableDestroy}]
-Destroys a table
+Destroy a table
 
 \item[Util\_TableGet*]
      [\pageref{Util-TableGet*}]
@@ -5128,6 +5133,11 @@ in a specified character string
 \item[Util\_TableItAdvance]
      [\pageref{Util-TableItAdvance}]
 Advance a table iterator to the next entry in the table
+
+\item[Util\_TableItClone]
+     [\pageref{Util-TableItClone}]
+Creates a new table iterator which is a ``clone'' (exact copy) of an
+existing table iterator
 
 \item[Util\_TableItCreate]
      [\pageref{Util-TableItCreate}]
@@ -5223,6 +5233,117 @@ a copy of a specified C-style null-terminated character string
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\begin{FunctionDescription}{Util\_TableClone}
+\label{Util-TableClone}
+Creates a new table which is a ``clone'' (exact copy) of an existing
+table
+
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+#include "util_ErrorCodes.h"
+#include "util_Table.h"
+int clone_handle = Util_TableClone(int handle);
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ResultSection}
+\begin{Result}{clone\_handle ($\ge 0$)}
+A handle to the clone table
+\end{Result}
+\end{ResultSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{handle}
+Handle to the table to be cloned
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{Discussion}
+Viewing a table as a set of key/value pairs, this function creates
+a new table (with the same flags word as the original) containing
+copies of all the original table's key/value pairs.  The two tables
+are completely independent, \ie{} future changes to one won't affect
+the other.
+
+Note that table iterators are {\em not\/} guaranteed to sequence
+through the original and clone tables in the same order.  (This
+is a special case of the more general ``non-guarantee'' in
+section~\ref{sect-UtilityRoutines/tables/table-iterators}:
+the order of table iterators may differ even between different
+tables with identical key/value contents.)
+\end{Discussion}
+
+\begin{SeeAlsoSection}
+\begin{SeeAlso}{Util\_TableCreate()}
+create a table
+\end{SeeAlso}
+\begin{SeeAlso}{Util\_TableCreateFromString()}
+convenience routine to create a table and set key/value entries
+in it based on a parameter-file--like character string
+\end{SeeAlso}
+\begin{SeeAlso}{Util\_TableDestroy()}
+destroy a table
+\end{SeeAlso}
+\end{SeeAlsoSection}
+
+\begin{ErrorSection}
+\begin{Error}{UTIL\_ERROR\_NO\_MEMORY}
+unable to allocate memory
+\end{Error}
+\begin{Error}{UTIL\_ERROR\_TABLE\_BAD\_FLAGS}
+flags word is negative in the to-be-cloned table
+(this indicates an internal error in the table routines,
+and should never happen)
+\end{Error}
+\end{ErrorSection}
+
+\begin{ExampleSection}
+\begin{Example}{C}
+\begin{verbatim}
+#include "util_ErrorCodes.h"
+#include "util_Table.h"
+
+/*
+ * This function is passed (a handle to) a table containing some entries.
+ * It needs to set some additional entries and pass the table to some
+ * other function(s), but it also needs to leave the original table
+ * intact for other use by the caller.  The solution is to clone the
+ * original table and work on the clone, leaving the original table
+ * unchanged.
+ */
+int my_function(int handle, int x, int y)
+{
+int status;
+
+/* clone the table */
+const int clone_handle = Util_TableClone(handle)
+if (clone_handle < 0)
+        return clone_handle;               /* error in cloning table */
+
+/* now set our entries in the clone table */
+status = Util_TableSetInt(clone_handle, x, "x");
+if (status < 0)
+        return status;                     /* error in setting x */
+status = Util_TableSetInt(clone_handle, y, "y");
+if (status < 0)
+        return status;                     /* error in setting y */
+
+/* ... code to use the clone table ... */
+/* ... eg pass clone_handle to other functions ... */
+
+/* we're done with the clone now */
+Util_TableDestroy(clone_handle);
+return 0;
+}
+\end{verbatim}
+\end{Example}
+\end{ExampleSection}
+\end{FunctionDescription}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \begin{FunctionDescription}{Util\_TableCreate}
 \label{Util-TableCreate}
 Creates a new (empty) table
@@ -5262,6 +5383,10 @@ below this are reserved for present of future Cactus use.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
+\begin{SeeAlso}{Util\_TableClone()}
+create a new table which is a ``clone'' (exact copy) of an existing
+table
+\end{SeeAlso}
 \begin{SeeAlso}{Util\_TableCreateFromString()}
 convenience routine to create a table and set key/value entries
 in it based on a parameter-file--like character string
@@ -5329,6 +5454,10 @@ for a full description of the syntax and semantics of this string
 \end{ParameterSection}
 
 \begin{SeeAlsoSection}
+\begin{SeeAlso}{Util\_TableClone()}
+Create a new table which is a ``clone'' (exact copy) of an existing
+table
+\end{SeeAlso}
 \begin{SeeAlso}{Util\_TableCreate()}
 create a table
 \end{SeeAlso}
@@ -5462,6 +5591,10 @@ Of course, this function invalidates any and all iterators for the table. :)
 \end{Discussion}
 
 \begin{SeeAlsoSection}
+\begin{SeeAlso}{Util\_TableClone()}
+Create a new table which is a ``clone'' (exact copy) of an existing
+table
+\end{SeeAlso}
 \begin{SeeAlso}{Util\_TableCreate()}
 create a table
 \end{SeeAlso}
@@ -6346,6 +6479,131 @@ Util_TableItDestroy(ihandle);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\begin{FunctionDescription}{Util\_TableItClone}
+\label{Util-TableItClone}
+Creates a new table iterator which is a ``clone'' (exact copy) of an
+existing table iterator
+
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+#include "util_ErrorCodes.h"
+#include "util_Table.h"
+int clone_ihandle = Util_TableItClone(int ihandle);
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ResultSection}
+\begin{Result}{clone\_ihandle ($\ge 0$)}
+A handle to the clone table iterator
+\end{Result}
+\end{ResultSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{ihandle}
+Handle to the table iterator to be cloned
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{Discussion}
+This function creates a new iterator which points to the same place
+in the same table as the original iterator.  If the original iterator
+is in the ``null-pointer'' state, then the clone is also in this state.
+
+Note that bad things (garbage results, core dumps) may happen if
+you call this function on an iterator which has been invalidated
+by a change in the table's contents.
+\end{Discussion}
+
+\begin{SeeAlsoSection}
+\begin{SeeAlso}{Util\_TableClone()}
+create a new table which is a ``clone'' (exact copy) of an existing
+table
+\end{SeeAlso}
+\begin{SeeAlso}{Util\_TableItCreate()}
+create a table iterator
+\end{SeeAlso}
+\begin{SeeAlso}{Util\_TableItDestroy()}
+destroy a table iterator
+\end{SeeAlso}
+\end{SeeAlsoSection}
+
+\begin{ErrorSection}
+\begin{Error}{UTIL\_ERROR\_BAD\_HANDLE}
+iterator handle to be cloned, is invalid
+\end{Error}
+\begin{Error}{UTIL\_ERROR\_NO\_MEMORY}
+unable to allocate memory
+\end{Error}
+\end{ErrorSection}
+
+\begin{ExampleSection}
+\begin{Example}{C}
+\begin{verbatim}
+#include "util_ErrorCodes.h"
+#include "util_Table.h"
+
+/*
+ * Apart from efficiency and slight differences in error return codes,
+ * Util_TableItClone() could be simulated by the following code.
+ */
+int Util_TableItClone(int ihandle)
+{
+int status;
+
+/* to what table does the to-be-cloned iterator point? */
+const int handle = Util_TableQueryTableHandle(ihandle);
+if (handle < 0)
+        return handle;                /* error in querying table handle */
+
+/* create the to-be-cloned iterator */
+/* (pointing into the same table as the original iterator) */
+  {
+const int clone_ihandle = Util_TableItCreate(handle);
+if (clone_ihandle < 0)
+        return clone_ihandle;       /* error in creating clone iterator */
+
+/* how long is the key to which the to-be-cloned iterator points? */
+  {
+const int key_length = Util_TableItQueryKeyValueInfo(ihandle,
+                                                     0, NULL,
+                                                     NULL, NULL);
+if (key_length == UTIL_TABLE_ITERATOR_IS_NULL)
+        {
+        /* to-be-cloned iterator is in "null-pointer" state */
+        Util_TableItSetToNull(clone_ihandle);
+        return clone_ihandle;                          /* normal return */
+        }
+if (key_length < 0)
+        return key_length;   /* error in querying to-be-cloned iterator */
+
+/* to what key does the to-be-cloned iterator point? */
+  {
+const int key_buffer_length = key_length + 1;
+char *const key_buffer = (char *) malloc(key_buffer_length);
+if (key_buffer == NULL)
+        return UTIL_ERROR_NO_MEMORY;
+status = Util_TableItQueryKeyValueInfo(ihandle,
+                                       key_buffer_length, key_buffer);
+if (status < 0)
+        return status;       /* error in querying to-be-cloned iterator */
+
+/* set the clone iterator to point to the same key as the original */
+status = Util_TableItSetToKey(clone_ihandle, key_buffer);
+free(key_buffer);
+return clone_ihandle;                                  /* normal return */
+  }
+  }
+  }
+}
+\end{verbatim}
+\end{Example}
+\end{ExampleSection}
+\end{FunctionDescription}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \begin{FunctionDescription}{Util\_TableItCreate}
 \label{Util-TableItCreate}
 Create a new table iterator
@@ -6926,7 +7184,7 @@ handle to the iterator
 This function has the same effect as calling \verb|Util_TableItResetToStart()|
 followed by calling \verb|Util_TableItAdvance()| zero or more times
 to make the iterator point to the desired table entry.  However, this
-function will typically be more efficient than that sequence.
+function will typically be (much) more efficient than that sequence.
 
 Note that it is always ok to call this function, regardless of
 whether or not the iterator is in the ``null-pointer'' state.
@@ -7038,6 +7296,10 @@ handle to the table
 \end{ParameterSection}
 
 \begin{SeeAlsoSection}
+\begin{SeeAlso}{Util\_TableClone()}
+create a new table which is a ``clone'' (exact copy) of an existing
+table
+\end{SeeAlso}
 \begin{SeeAlso}{Util\_TableCreate()}
 create a table (flags word specified explicitly)
 \end{SeeAlso}
