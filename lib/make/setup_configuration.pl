@@ -32,19 +32,30 @@ else
   $config = $uname;
 }
 
+# Work out where the config directory is
+
+if($ENV{"CONFIGS_DIR"})
+{
+  $configs_dir = $ENV{"CONFIGS_DIR"};
+}
+else
+{
+  $configs_dir = "configs";
+}
+
 # Replace slashes with underscores.
 $config =~ s:[/\\]:_:g;
 
 # The configs directory doesn't exist.
-if (! -d "configs" && ! -l "configs")
+if (! -d "$configs_dir" && ! -l "$configs_dir")
 {
   print "Completely new cactus build.  Creating config database\n";
 
-  mkdir("configs", 0755)
+  mkdir("$configs_dir", 0755)
   
 }
 
-chdir "configs";
+chdir "$configs_dir";
 
 # The specified configuration doesn't exist
 if (! -d "$config" && ! -l "$config")
@@ -75,7 +86,7 @@ if($reconfig)
 
   chdir "$config";
 
-  chdir "config-data";
+  chdir "$configs_dir";
 
   &SetConfigureEnv();
 

@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.38 1999-07-05 15:39:17 goodale Exp $
+#   @version $Id: Makefile,v 1.39 1999-07-18 19:53:42 goodale Exp $
 # @@*/
 
 # Make quietly unless told not to
@@ -123,9 +123,17 @@ DIVIDER =  $(DIVEL)$(DIVEL)$(DIVEL)$(DIVEL)
 # Work out where we are
 export CCTK_HOME := $(shell pwd | sed 's,^//\(.\)/,\1:/,' )
 
+# Work out where the configuration directory is
+ifdef CACTUS_CONFIGS_DIR
+CONFIGS_DIR = $(CACTUS_CONFIGS_DIR)
+else
+CONFIGS_DIR = $(CCTK_HOME)/configs
+endif
+
+export CONFIGS_DIR
 
 # Work out which configurations are available
-CONFIGURATIONS = $(patsubst configs/%,%,$(wildcard configs/*))
+CONFIGURATIONS = $(patsubst $(CONFIGS_DIR)/%,%,$(wildcard $(CONFIGS_DIR)/*))
 
 # Default target does nothing. 
 # Used to set up a default based upon uname or something.
@@ -152,8 +160,8 @@ endif
 .PHONY: $(CONFIGURATIONS)
 
 $(CONFIGURATIONS):
-	cd configs/$@ 
-	$(MAKE) -f $(CCTK_HOME)/lib/make/make.configuration TOP=$(CCTK_HOME)/configs/$@ CCTK_HOME=$(CCTK_HOME) -j $(TJOBS)
+	cd $(CONFIGS_DIR)/$@ 
+	$(MAKE) -f $(CCTK_HOME)/lib/make/make.configuration TOP=$(CONFIGS_DIR)/$@ CCTK_HOME=$(CCTK_HOME) -j $(TJOBS)
 
 # Clean target
 .PHONY: distclean
@@ -161,7 +169,7 @@ $(CONFIGURATIONS):
 distclean:
 	@echo $(DIVIDER)
 	@echo Deleting all your configurations !
-	rm -rf configs
+	rm -rf $(CONFIGS_DIR)
 	@echo $(DIVIDER)
 
 # Targets to make tags files
@@ -235,6 +243,7 @@ else
 	@echo "                 (forces the CST to be rerun)."
 	@echo "  -config      : to (re)configure a configuration. "
 	@echo "                 (runs or reruns the configuration scripts)."
+	@echo "  -thornlist   : regenerates the ThornList file. "
 endif
 	@echo $(DIVIDER)
 	@echo $(MAKE) also knows the following targets
@@ -253,14 +262,21 @@ endif
 
 # Clean a configuration
 
+.PHONY clean:
+
+clean:
+	@echo $(DIVIDER)
+	@echo Please specify a configuration to clean.
+	@echo $(DIVIDER)
+
 ifneq ($strip($(CONFIGURATIONS)),)
 .PHONY $(addsuffix -clean,$(CONFIGURATIONS)):
 
 $(addsuffix -clean,$(CONFIGURATIONS)):
 	@echo $(DIVIDER)
 	@echo Cleaning configuration $(@:%-clean=%)
-	cd configs/$(@:%-clean=%)  
-	$(MAKE) -f $(CCTK_HOME)/lib/make/make.configuration TOP=$(CCTK_HOME)/configs/$(@:%-clean=%) CCTK_HOME=$(CCTK_HOME) clean
+	cd $(CONFIGS_DIR)/$(@:%-clean=%)  
+	$(MAKE) -f $(CCTK_HOME)/lib/make/make.configuration TOP=$(CONFIGS_DIR)/$(@:%-clean=%) CCTK_HOME=$(CCTK_HOME) clean
 	@echo $(DIVIDER)
 
 endif
@@ -273,14 +289,21 @@ endif
 
 # Clean just dependency files
 
+.PHONY cleandeps:
+
+cleandeps:
+	@echo $(DIVIDER)
+	@echo Please specify a configuration to clean the dependencies of.
+	@echo $(DIVIDER)
+
 ifneq ($strip($(CONFIGURATIONS)),)
 .PHONY $(addsuffix -cleandeps,$(CONFIGURATIONS)):
 
 $(addsuffix -cleandeps,$(CONFIGURATIONS)):
 	@echo $(DIVIDER)
 	@echo Cleaning configuration $(@:%-cleandeps=%)
-	cd configs/$(@:%-cleandeps=%)  
-	$(MAKE) -f $(CCTK_HOME)/lib/make/make.configuration TOP=$(CCTK_HOME)/configs/$(@:%-cleandeps=%) CCTK_HOME=$(CCTK_HOME) cleandeps
+	cd $(CONFIGS_DIR)/$(@:%-cleandeps=%)  
+	$(MAKE) -f $(CCTK_HOME)/lib/make/make.configuration TOP=$(CONFIGS_DIR)/$(@:%-cleandeps=%) CCTK_HOME=$(CCTK_HOME) cleandeps
 	@echo $(DIVIDER)
 
 endif
@@ -290,7 +313,16 @@ endif
 	@echo Configuration $(@:%-cleandeps=%) does not exist.
 	@echo Cleaning dependencies aborted.
 
+
 # Clean just object files
+
+.PHONY cleanobjs:
+
+cleanobjs:
+	@echo $(DIVIDER)
+	@echo Please specify a configuration to clean the object files of.
+	@echo $(DIVIDER)
+
 
 ifneq ($strip($(CONFIGURATIONS)),)
 .PHONY $(addsuffix -cleanobjs,$(CONFIGURATIONS)):
@@ -298,8 +330,8 @@ ifneq ($strip($(CONFIGURATIONS)),)
 $(addsuffix -cleanobjs,$(CONFIGURATIONS)):
 	@echo $(DIVIDER)
 	@echo Cleaning configuration $(@:%-cleanobjs=%)
-	cd configs/$(@:%-cleanobjs=%)  
-	$(MAKE) -f $(CCTK_HOME)/lib/make/make.configuration TOP=$(CCTK_HOME)/configs/$(@:%-cleanobjs=%) CCTK_HOME=$(CCTK_HOME) cleanobjs
+	cd $(CONFIGS_DIR)/$(@:%-cleanobjs=%)  
+	$(MAKE) -f $(CCTK_HOME)/lib/make/make.configuration TOP=$(CONFIGS_DIR)/$(@:%-cleanobjs=%) CCTK_HOME=$(CCTK_HOME) cleanobjs
 	@echo $(DIVIDER)
 
 endif
@@ -312,24 +344,40 @@ endif
 
 # Clean away all produced files (doesn't delete ThornList)
 
+.PHONY realclean:
+
+realclean:
+	@echo $(DIVIDER)
+	@echo Please specify a configuration to really clean.
+	@echo $(DIVIDER)
+
+
 ifneq ($strip($(CONFIGURATIONS)),)
 .PHONY $(addsuffix -realclean,$(CONFIGURATIONS)):
 
 $(addsuffix -realclean,$(CONFIGURATIONS)):
 	@echo $(DIVIDER)
 	@echo Cleaning configuration $(@:%-realclean=%)
-	cd configs/$(@:%-realclean=%)  
-	$(MAKE) -f $(CCTK_HOME)/lib/make/make.configuration TOP=$(CCTK_HOME)/configs/$(@:%-realclean=%) CCTK_HOME=$(CCTK_HOME) realclean
+	cd $(CONFIGS_DIR)/$(@:%-realclean=%)  
+	$(MAKE) -f $(CCTK_HOME)/lib/make/make.configuration TOP=$(CONFIGS_DIR)/$(@:%-realclean=%) CCTK_HOME=$(CCTK_HOME) realclean
 	@echo $(DIVIDER)
 
 endif
 
 %-realclean:
 	@echo $(DIVIDER)
-	@echo Configuration $(@:%-cleanreal=%) does not exist.
+	@echo Configuration $(@:%-realclean=%) does not exist.
 	@echo Cleaning aborted.
 
 # Delete a configuration
+
+.PHONY delete:
+
+delete:
+	@echo $(DIVIDER)
+	@echo Please specify a configuration to delete.
+	@echo $(DIVIDER)
+
 
 ifneq ($strip($(CONFIGURATIONS)),)
 .PHONY $(addsuffix -delete,$(CONFIGURATIONS)):
@@ -337,7 +385,7 @@ ifneq ($strip($(CONFIGURATIONS)),)
 $(addsuffix -delete,$(CONFIGURATIONS)):
 	@echo $(DIVIDER)
 	@echo Deleting configuration $(@:%-delete=%)
-	cd configs ; rm -rf $(@:%-delete=%)  
+	cd $(CONFIGS_DIR) ; rm -rf $(@:%-delete=%)  
 	@echo $(DIVIDER)
 
 endif
@@ -349,13 +397,20 @@ endif
 
 # Rebuild a configuration
 
+.PHONY rebuild:
+
+rebuild:
+	@echo $(DIVIDER)
+	@echo Please specify a configuration to rebuild.
+	@echo $(DIVIDER)
+
 ifneq ($strip($(CONFIGURATIONS)),)
 .PHONY $(addsuffix -rebuild,$(CONFIGURATIONS)):
 
 $(addsuffix -rebuild,$(CONFIGURATIONS)):
 	@echo $(DIVIDER)
 	@echo Rebuilding $(@:%-rebuild=%)
-	if [ -r configs/$(@:%-rebuild=%)/config-data/make.thornlist ] ; then rm  configs/$(@:%-rebuild=%)/config-data/make.thornlist ; fi
+	if [ -r $(CONFIGS_DIR)/$(@:%-rebuild=%)/config-data/make.thornlist ] ; then rm  $(CONFIGS_DIR)/$(@:%-rebuild=%)/config-data/make.thornlist ; fi
 	$(MAKE) $(@:%-rebuild=%)
 endif
 
@@ -366,13 +421,21 @@ endif
 
 # Regenerate the compiled thorns list
 
+.PHONY thornlist:
+
+thornlist:
+	@echo $(DIVIDER)
+	@echo Please specify a configuration to regenerate the thornlist of.
+	@echo $(DIVIDER)
+
+
 ifneq ($strip($(CONFIGURATIONS)),) 
 .PHONY $(addsuffix -thornlist,$(CONFIGURATIONS)):
 
 $(addsuffix -thornlist,$(CONFIGURATIONS)):
 	@echo $(DIVIDER)
 	@echo Regenerating compiled ThornList $(@:%-thornlist=%)
-	if [ -r configs/$(@:%-thornlist=%)/ThornList ] ; then rm configs/$(@:%-thornlist=%)/ThornList ; fi
+	if [ -r $(CONFIGS_DIR)/$(@:%-thornlist=%)/ThornList ] ; then rm $(CONFIGS_DIR)/$(@:%-thornlist=%)/ThornList ; fi
 	$(MAKE) $(@:%-thornlist=%)
 endif
 
@@ -382,6 +445,14 @@ endif
 	@echo Regeneration of compiled ThornList aborted.
 
 # Rerun the configuration script
+
+.PHONY config:
+
+config:
+	@echo $(DIVIDER)
+	@echo Please specify a configuration to configure.
+	@echo $(DIVIDER)
+
 
 ifneq ($strip($(CONFIGURATIONS)),)
 .PHONY $(addsuffix -config,$(CONFIGURATIONS)):
@@ -419,13 +490,21 @@ newthorn:
 
 # Run the testsuite
 
+.PHONY testsuite:
+
+testsuite:
+	@echo $(DIVIDER)
+	@echo Please specify a configuration to test.
+	@echo $(DIVIDER)
+
+
 ifneq ($strip($(CONFIGURATIONS)),) 
 .PHONY $(addsuffix -testsuite,$(CONFIGURATIONS)):
 
 $(addsuffix -testsuite,$(CONFIGURATIONS)):
 	@echo $(DIVIDER)
 	@echo Running test suite $(@:%-thornlist=%)
-	if [ -r configs/$(@:%-testsuite=%)/ThornList ] ; then $(PERL) lib/sbin/Runtest.pl $(@:%-testsuite=%) ; fi
+	if [ -r $(CONFIGS_DIR)/$(@:%-testsuite=%)/ThornList ] ; then $(PERL) lib/sbin/Runtest.pl $(@:%-testsuite=%) ; fi
 endif
 
 %-testsuite:
@@ -451,8 +530,6 @@ doc:
 	@echo Creating user documentation UsersGuide.ps
 	(cd doc/UsersGuide; latex UsersGuide.tex; cd $(CCTK_HOME); dvips doc/UsersGuide/UsersGuide.dvi -o UsersGuide.ps) ;
 	@echo $(DIVIDER)
-
-
 
 # Remove non-essential files
 
