@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.33 1999-07-03 12:59:43 allen Exp $
+#   @version $Id: Makefile,v 1.34 1999-07-03 16:31:51 allen Exp $
 # @@*/
 
 # Make quietly unless told not to
@@ -240,13 +240,14 @@ endif
 	@echo
 	@echo "  TAGS      - creates an Emacs TAGS file."
 	@echo "  tags      - creates a Vi TAGS file."
+	@echo "  checkout  - checkout public packages/thorns."
 	@echo "  default   - creates a new configuration with a default name."
 	@echo "  newthorn  - creates a new thorn."
 	@echo "  distclean - deletes all existing configurations."
 	@echo "  testsuite - run the test program."
 	@echo "  downsize  - remove non-essential files."
 	@echo "  doc       - creates UserGuide.ps"
-	@echo "  \<anything else\> prompts to create such a configuration."
+	@echo "  <anything else> prompts to create such a configuration."
 	@echo $(DIVIDER)
 
 # Clean a configuration
@@ -419,6 +420,15 @@ endif
 	@echo $(DIVIDER)
 	@echo Configuration $(@:%-testsuite=%) does not exist.
 	@echo Test suite aborted.
+
+
+# Checkout public thorns and packages
+
+.PHONY: checkout
+checkout:
+	@echo $(DIVIDER)
+	@echo Running package/thorn checkout script
+	$(PERL) ./lib/sbin/checkout.pl
 
 
 # Make the users manuals
