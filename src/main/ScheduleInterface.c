@@ -17,13 +17,18 @@ static char *rcsid = "$Header$";
 #include "cctk_schedule.h"
 #include "cctki_schedule.h"
 
+#include "cctk_Flesh.h"
+#include "cctk_Comm.h"
+
+#include "cctk_Groups.h"
+
 /********************************************************************
  *********************     Local Data Types   ***********************
  ********************************************************************/
 
 typedef enum {sched_none, sched_group, sched_function} t_sched_type;
 typedef enum {lang_none, lang_c, lang_fortran} t_lang_type;
-
+typedef enum {schedpoint_misc, schedpoint_analysis} t_schedpoint;
 
 typedef struct 
 {
@@ -44,15 +49,13 @@ typedef struct
   int n_trigger_groups;
   int *trigger_groups;
 
-  int n_trigger_vars;
-  int *trigger_vars;
-
 } t_attribute;
 
 typedef struct
 {
   cGH *GH;
-  int analysis;
+  t_schedpoint schedpoint;
+  
 } t_sched_data;
 
 
@@ -88,6 +91,8 @@ static int CCTKi_ScheduleCallEntry(t_attribute *attribute, t_sched_data *data);
 static int CCTKi_ScheduleCallExit(t_attribute *attribute, t_sched_data *data);
 static int CCTKi_ScheduleCallWhile(int n_whiles, char **whiles, t_attribute *attribute, t_sched_data *data);
 static int CCTKi_ScheduleCallFunction(void *function, t_attribute *attribute, t_sched_data *data);
+
+static int CCTKi_ScheduleStartupFunction(void *function, t_attribute *attribute, t_sched_data *data);
 
 /********************************************************************
  *********************     Local Data   *****************************
@@ -149,7 +154,7 @@ int CCTK_ScheduleFunction(void *function,
 
   va_end(ap);
 
-  if(attribute && modifier)
+  if(attribute && (modifier || (n_before == 0 && n_after == 0 && n_while == 0)))
   {
     retcode = CCTKi_ScheduleFunction(where, name, function, modifier, (void *)attribute);
   }
@@ -294,6 +299,86 @@ int CCTK_ScheduleGroupComm(const char *group)
 
 }
 
+ /*@@
+   @routine    CCTK_ScheduleTraverse
+   @date       Fri Sep 17 21:52:44 1999
+   @author     Tom Goodale
+   @desc 
+   Traverses the given schedule point.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+int CCTK_ScheduleTraverse(const char *where, void *GH)
+{
+  t_sched_data data;
+
+  int (*calling_function)(void *, t_attribute *, t_sched_data *);
+  
+  data.GH = (cGH *)GH;
+  
+  if(CCTK_Equals(where, "CCTK_STARTUP"))
+  {
+    calling_function = CCTKi_ScheduleStartupFunction;
+  }
+  else
+  {
+    calling_function = CCTKi_ScheduleCallFunction;
+  }
+
+  if(CCTK_Equals(where, "CCTK_ANALYSIS"))
+  {
+    data.schedpoint = schedpoint_analysis;
+  }
+  else
+  {
+    data.schedpoint = schedpoint_misc;
+  }
+  
+  CCTKi_ScheduleTraverse(where,
+                         (int (*)(void *, void *))               CCTKi_ScheduleCallEntry, 
+                         (int (*)(void *, void *))               CCTKi_ScheduleCallExit, 
+                         (int  (*)(int, char **, void *, void *))CCTKi_ScheduleCallWhile, 
+                         (int (*)(void *, void *, void *))       calling_function, 
+                         (void *)&data);
+
+  return 0;
+}
+
+ /*@@
+   @routine    CCTK_ScheduleGHInit
+   @date       Fri Sep 17 21:25:13 1999
+   @author     Tom Goodale
+   @desc 
+   Does any scheduling stuff setup which requires a GH.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+int CCTK_ScheduleGHInit(void *GH)
+{
+  int i;
+
+  /* FIXME - there really should be an enable storage, etc from group index ! */
+  for(i = 0; i < n_scheduled_storage_groups; i++)
+  {
+    CCTK_EnableGroupStorage(GH,CCTK_GroupName(scheduled_storage_groups[i]));
+  }
+
+  for(i = 0; i < n_scheduled_comm_groups; i++)
+  {
+    CCTK_EnableGroupComm(GH,CCTK_GroupName(scheduled_comm_groups[i]));
+  }
+}
+
 /********************************************************************
  *********************     Local Routines   *************************
  ********************************************************************/
@@ -360,6 +445,10 @@ static t_attribute *CreateAttribute(const char *description,
       CreateGroupIndexList(n_comm_groups,    this->comm_groups, ap);
       CreateGroupIndexList(n_trigger_groups, this->trigger_groups, ap);
 
+      this->n_mem_groups     = n_mem_groups;
+      this->n_comm_groups    = n_comm_groups;
+      this->n_trigger_groups = n_trigger_groups;
+
     }
     else
     {
@@ -402,6 +491,21 @@ static t_sched_modifier *CreateModifiers(int n_before,
   return modifier;
 }
 
+ /*@@
+   @routine    CreateGroupIndexList
+   @date       Fri Sep 17 21:51:51 1999
+   @author     Tom Goodale
+   @desc 
+   Gets the next n_items group names from the variable argument list
+   and converts them to indices.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
 static int CreateGroupIndexList(int n_items, int *array, va_list *ap)
 {
   int i;
@@ -417,6 +521,21 @@ static int CreateGroupIndexList(int n_items, int *array, va_list *ap)
   return 0;
 }
 
+ /*@@
+   @routine    CreateTypedModifier
+   @date       Fri Sep 17 21:50:59 1999
+   @author     Tom Goodale
+   @desc 
+   Adds the next n_items items from the variable argument list
+   onto the modifer.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
 static t_sched_modifier *CreateTypedModifier(t_sched_modifier *modifier,
                                              const char *type,
                                              int n_items,
@@ -546,6 +665,26 @@ static int CCTKi_ScheduleCallFunction(void *function,
   /* Call the function. */
   
   calledfunc(data->GH);
+
+  return 1;
+}
+
+/********************************************************************
+ ***************  Specialised Startup Routines   ********************
+ ********************************************************************/
+
+static int CCTKi_ScheduleStartupFunction(void *function, 
+                                         t_attribute *attribute, 
+                                         t_sched_data *data)
+{
+
+  int (*calledfunc)(void);
+
+  calledfunc = (int (*)(void))function;
+
+  /* Call the function. */
+  
+  calledfunc();
 
   return 1;
 }
