@@ -9,7 +9,7 @@
 % @@*/
 
 \documentclass{report}
-\usepackage{fancyhdr}
+\usepackage{fancyhdr,ifthen,calc}
 
 \makeatletter
 \@addtoreset{chapter}{part}
@@ -44,6 +44,38 @@
 \newsavebox{\cctkcprefix}
 \newsavebox{\cctkfprefix}
 \newsavebox{\cctkparambox}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% MANPAGE like description setting for options, use as 
+% \begin{Lentry} \item[text] text  \end{Lentry}
+
+\newcommand{\entrylabel}[1]{\mbox{\textsf{#1}}\hfil}
+\newenvironment{entry}
+  {\begin{list}{}
+    {\renewcommand{\makelabel}{\entrylabel}
+      \setlength{\labelwidth}{90pt}
+      \setlength{\leftmargin}{\labelwidth+\labelsep}
+    }
+  }
+  {\end{list}}
+
+\newlength{\Mylen}
+\newcommand{\Lentrylabel}[1]{%
+  \settowidth{\Mylen}{\textsf{#1}}%
+  \ifthenelse{\lengthtest{\Mylen > \labelwidth}}%
+    {\parbox[b]{\labelwidth} %  term > labelwidth
+      {\makebox[0pt][l]{\textsf{#1}}\\}} %
+    {\textsf{#1}} %
+
+  \hfil\relax}
+\newenvironment{Lentry}
+  {\renewcommand{\entrylabel}{\Lentrylabel}
+   \begin{entry}}
+  {\end{entry}}
+%%%%%%
+
+
 
 \newenvironment{CCTKFunc}[2]
         {\sbox{\cctkbox}{#1}
@@ -164,7 +196,6 @@
 \newpage
 }
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 \newenvironment{cactuspart}[4]
 {
