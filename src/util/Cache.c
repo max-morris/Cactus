@@ -1,11 +1,11 @@
  /*@@
-   @file      Cache.c
-   @date      Tue Nov 30 08:07:12 1999
-   @author    Tom Goodale
+   @file    Cache.c
+   @date    Tue Nov 30 08:07:12 1999
+   @author  Tom Goodale
    @desc
-   Routines dealing with cache alignment.
+            Routines dealing with cache alignment.
    @enddesc
-   @version $Header$
+   @version $Id$
  @@*/
 
 #include <stdlib.h>
@@ -44,9 +44,9 @@ static int cache_set = 0;
    Allocates memory aligned on the 'index'ed cache line.
    @enddesc
 
-   @var     index
+   @var     idx
    @vdesc   cache line index
-   @vtype   int
+   @vtype   unsigned int
    @vio     in
    @vcomment
    The cache line to align on
@@ -72,7 +72,7 @@ static int cache_set = 0;
    @endreturndesc
 
 @@*/
-void *Util_CacheMalloc(unsigned index,
+void *Util_CacheMalloc(unsigned int idx,
                        unsigned long size,
                        void **realstart)
 {
@@ -102,7 +102,7 @@ void *Util_CacheMalloc(unsigned index,
       /* Find which cache line in the cache it is in */
       initial_index = ((unsigned long)data%cache_size)/cacheline_bytes;
 
-      pad = ((index-initial_index)*cacheline_bytes + cacheline_bytes - offset)%cache_size;
+      pad = ((idx-initial_index)*cacheline_bytes + cacheline_bytes - offset)%cache_size;
     }
 
     retval = data + pad;
