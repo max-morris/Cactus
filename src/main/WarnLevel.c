@@ -44,7 +44,7 @@ static int error_level    = 0;
 
 /* Store a list of format strings */
 
-static n_formats = 0;
+static int n_formats = 0;
 static pKeyedData *formatlist = NULL;
 
 
