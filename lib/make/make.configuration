@@ -122,7 +122,8 @@ $(CONFIG)/cctki_version.h: $(CCTK_HOME)/Makefile
 $(CCTK_LIBDIR)/$(LIBNAME_PREFIX)%$(LIBNAME_SUFFIX): update
 	@echo $(DIVIDER)
 	@echo Checking status of $(notdir $@)
-	if [ ! -d $(SCRATCH_BUILD) ]; then $(MKDIR) $(MKDIRFLAGS) $(SCRATCH_BUILD) ; fi
+    # protect the following mkdir against parallel makes
+	if [ ! -d $(SCRATCH_BUILD) ]; then sleep 3; msg=`$(MKDIR) $(MKDIRFLAGS) $(SCRATCH_BUILD) 2>&1`; if [ -d $(SCRATCH_BUILD) ]; then exit 0; else echo "$$msg"; exit 1; fi; fi
 	if [ ! -d $(BUILD_DIR) ]; then $(MKDIR) $(MKDIRFLAGS) $(BUILD_DIR) ; fi
 	thorn_name=$(@:$(CCTK_LIBDIR)/$(LIBNAME_PREFIX)%$(LIBNAME_SUFFIX)=%); \
 	if [ "$$thorn_name" = "Cactus" ] ; then src_dir=$(CCTK_HOME)/src ; \
