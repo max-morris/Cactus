@@ -498,6 +498,8 @@ prototype:
 \end{alltt}
 %
 The variable to output, \var{varname}, is given by its full name.
+The full name may have appended an optional I/O options string enclosed in
+curly braces (with no space between the full name and the opening curly brace).
 In addition to that, an \var{alias} string can be passed which then serves
 the purpose of constructing a unique name for the output file.
 
@@ -560,7 +562,7 @@ provides distinct timebins for recovery routines to be scheduled at:
     The default is not to execute these initial time bins during recovery
     because the initial data will be set up from the checkpoint file during the
     following {\t CCTK\_RECOVER\_VARIABLES} time bin.
-  \item[{\t CCTK\_RECOVER\_VARIABLES}] 
+  \item[{\t CCTK\_RECOVER\_VARIABLES}]
     Recovery routines scheduled for this time bin are responsible for restoring
     the contents of all grid variables with storage assigned from the
     checkpoint.\\

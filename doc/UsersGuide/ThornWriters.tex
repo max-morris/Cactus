@@ -2452,6 +2452,7 @@ appropriate time to output.
 \item {\tt CCTK\_OutputVar (const cGH *\var{GH}, const char *\var{varname})}
 
 Output a variable \var{varname} looping over all registered IO methods.
+\var{varname} may have an optional I/O options string appended.
 The output should take place if at all possible.  If output goes into
 a file and the appropriate file exists the data is appended, otherwise
 a new file is created.
@@ -2459,6 +2460,7 @@ a new file is created.
 \item {\tt CCTK\_OutputVarAs (const cGH *\var{GH}, const char *\var{varname}, const char *\var{alias})}
 
 Output a variable \var{varname} looping over all registered IO methods.
+\var{varname} may have an optional I/O options string appended.
 The output should take place if at all possible.  If output goes into
 a file and the appropriate file exists the data is appended, otherwise
 a new file is created.  Uses \var{alias} as the name of the variable
@@ -2466,8 +2468,9 @@ for the purpose of constructing a filename.
 
 \item {\tt CCTK\_OutputVarByMethod (const cGH *\var{GH}, const char *\var{varname}, const char *\var{methodname})}
 
-Output a variable \var{varname} using the IO method \var{methodname} if
-it is registered. The output should take place if at all possible.  If
+Output a variable \var{varname} using the IO method \var{methodname} if it is
+registered. \var{varname} may have an optional I/O options string appended.
+The output should take place if at all possible.  If
 output goes into a file and the appropriate file exists the data is
 appended, otherwise a new file is created.
 
@@ -2476,8 +2479,9 @@ appended, otherwise a new file is created.
                                      const char *\var{methodname},\\
                                      const char *\var{alias})}
 
-Output a variable \var{varname} using the IO method \var{methodname} if
-it is registered.  The output should take place if at all possible.
+Output a variable \var{varname} using the IO method \var{methodname} if it is
+registered. \var{varname} may have an optional I/O options string appended.
+The output should take place if at all possible.
 If output goes into a file and the appropriate file exists the data is
 appended, otherwise a new file is created.  Uses \var{alias} as the
 name of the variable for the purpose of constructing a filename.
