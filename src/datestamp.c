@@ -7,6 +7,7 @@
    @enddesc 
  @@*/
 #include <stdio.h>
+#include "cctk_version.h"
 
 static char *rcsid = "$Id$";
 
@@ -62,6 +63,34 @@ char *compileTime(void) {
 @@*/
 char *compileDate(void) {
   return (__DATE__);
+}
+
+
+/* Macros to turn things into strings. */
+
+#define STRINGIFY(a) REALSTRINGIFY(a)
+
+#define REALSTRINGIFY(a) #a
+
+
+char *CCTK_FullVersion()
+{
+  return (STRINGIFY(CCTK_VERSION));
+}
+
+char *CCTK_MajorVersion()
+{
+  return (STRINGIFY(CCTK_VERSION_MAJOR));
+}
+
+char *CCTK_MinorVersion()
+{
+  return (STRINGIFY(CCTK_VERSION_MINOR));
+}
+
+char *CCTK_OtherVersion()
+{
+  return (STRINGIFY(CCTK_VERSION_OTHER));
 }
 
 /*#define MAKETEST*/
