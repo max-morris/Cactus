@@ -61,7 +61,9 @@ sub cross_index_interface_data
     $implementation = $interface_data{"\U$thorn\E IMPLEMENTS"};
     if($implementation =~ m:^\s*$:)
     {
-      die "Thorn $thorn doesn't specify an implementation.\n";
+      print "Thorn $thorn doesn't specify an implementation.\n";
+      $CST_errors++;
+      next;
     }
 
     # Put if statement around this to prevent perl -w from complaining.
