@@ -2164,7 +2164,7 @@ EOF
 
 
 
-: ${PACKAGE_DIR=packages}
+: ${PACKAGE_DIR=arrangements}
 : ${BUILD_DIR=build}
 : ${CCTK_LIBDIR=lib}
 : ${EXEDIR='$(CCTK_HOME)/exe'}
