@@ -57,17 +57,31 @@ if (!-e "$sbin_dir/parameter_parser.pl" )
 
 require "$sbin_dir/parameter_parser.pl";
 require "$sbin_dir/interface_parser.pl";
+require "$sbin_dir/schedule_parser.pl";
 require "$sbin_dir/create_c_stuff.pl";
 require "$sbin_dir/create_fortran_stuff.pl";
 require "$sbin_dir/GridFuncStuff.pl";
 require "$sbin_dir/output_config.pl";
 
+<<<<<<< config_parser.pl
+%thorns = &create_thorn_list($cctk_home, $activethorns);
 
+%interface_database = &create_interface_database(%thorns);
+
+%parameter_database = &create_parameter_database(%thorns);
+
+# Create calls to routines from scheduler
+=======
+>>>>>>> 1.27
+
+<<<<<<< config_parser.pl
+=======
 #######################################################################
 #
 #                     Main Program
 #
 ######################################################################
+>>>>>>> 1.27
 
 # Find out which thorns we have and the location of the ccl files.
 %thorns = &CreateThornList($cctk_home, $activethorns);
@@ -652,7 +666,7 @@ EOT
       }
     }
 
-    print OUT "#define DECLARE_PARSER \\\n";
+    print OUT "#define DECLARE_PARAMETERS \\\n";
 
     $header =  "ParameterCPublic.h";
     $decl =  "DECLARE_PUBLIC_PARAMETER_STRUCT_PARAMS";
@@ -738,6 +752,87 @@ EOT
 }
 
 
+<<<<<<< config_parser.pl
+sub CreateVariableBindings
+{
+  local($bindings_dir, %interface_database) = @_;
+
+  if(! -d $bindings_dir)
+  {
+    mkdir("$bindings_dir", 0755) || die "Unable to create $bindings_dir";
+  }
+  $start_dir = `pwd`;
+  chdir $bindings_dir;
+
+  # Create the header files
+  if(! -d "include")
+  {
+    mkdir("include", 0755) || die "Unable to create include directory";
+  }
+  chdir "include";
+
+
+  foreach $thorn (split(" ",$interface_database{"THORNS"}))
+  {
+
+    @data = &CreateThornArgumentHeaderFile($thorn, %interface_database);
+
+    open(OUT, ">$thorn"."_arguments.h");
+
+    foreach $line (@data)
+    {
+      print OUT "$line\n";
+    }
+
+    close OUT;
+  }
+
+  open(OUT, ">declare_arguments.h");
+    
+  foreach $thorn (split(" ",$interface_database{"THORNS"}))
+  {
+    print OUT "#ifdef THORN_IS_$thorn\n";
+    print OUT "#include \"$thorn"."_arguments.h\"\n";
+    print OUT "#define CCTK_FARGUMENTS \U$thorn"."_FARGUMENTS\n";
+    print OUT "#define DECLARE_CCTK_FARGUMENTS DECLARE_\U$thorn"."_FARGUMENTS\n";
+    print OUT "#define CCTK_CARGUMENTS \U$thorn"."_CARGUMENTS\n";
+    print OUT "#define DECLARE_CCTK_CARGUMENTS DECLARE_\U$thorn"."_CARGUMENTS\n";
+    print OUT "#endif\n\n";
+  }
+
+  close OUT;
+      
+  chdir "..";
+
+  if(! -d "Variables")
+  {
+    mkdir("Variables", 0755) || die "Unable to create Variables directory";
+  }
+  chdir "Variables";
+
+  open (OUT, ">Bindings.c") || die "Cannot open Bindings.c";
+
+  print OUT  <<EOT;
+ 
+  int CCTK_BindingsVariablesInitialise(void)
+  {
+    return 0;
+  }
+ 
+EOT
+
+  close OUT;
+
+  open (OUT, ">make.code.defn") || die "Cannot open make.code.defn";
+
+  print OUT "SRCS = Bindings.c\n";
+
+  close OUT;
+
+  chdir $start_dir;
+}
+=======
+>>>>>>> 1.27
 
 #/*@@
 #  @routine    CreateParameterBindings
@@ -755,7 +850,7 @@ EOT
 #@@*/
 sub CreateScheduleBindings
 {
-  local($bindings_dir) = @_;
+  local($bindings_dir,$schedule_code) = @_;
 
   if(! -d $bindings_dir)
   {
@@ -770,6 +865,15 @@ sub CreateScheduleBindings
   }
   chdir "Schedule";
 
+  # Parse the schedule.ccl files
+  @schedule_routines = &create_schedule_code($bindings_dir,%thorns);
+
+  # Write the contents of BindingsScheduleRegisterRFR.c
+  &create_BindingsScheduleRegisterRFR($bindings_dir); 
+
+  # Write the contents of BindingsScheduleRegisterSTARTUP.c
+  &create_BindingsScheduleRegisterSTARTUP($bindings_dir); 
+
   open (OUT, ">Bindings.c") || die "Cannot open Bindings.c";
 
   print OUT  <<EOT;
@@ -781,6 +885,18 @@ sub CreateScheduleBindings
 
   int CCTK_BindingsScheduleRegister(const char *type, void *data)
   {
+    
+    if (CCTK_Equals(type,"STARTUP"))
+    {
+      Cactus_BindingsScheduleRegisterSTARTUP();
+    } 
+    else if (CCTK_Equals(type,"RFRINIT")) 
+    {
+      Cactus_BindingsScheduleRegisterRFR(data);
+    } else {
+      printf ("Unknown type in CCTK_BindingsScheduleRegister");
+    }
+
     return 0;
   }
  
@@ -790,7 +906,12 @@ EOT
 
   open (OUT, ">make.code.defn") || die "Cannot open make.code.defn";
 
-  print OUT "SRCS = Bindings.c\n";
+  $files = "";
+  foreach $file (@schedule_routines) {
+    $files = "$files ".$file.".c";
+  }
+
+  print OUT "SRCS = Bindings.c Cactus_BindingsScheduleRegisterSTARTUP.c Cactus_BindingsScheduleRegisterRFR.c $files\n";
 
   close OUT;
 
