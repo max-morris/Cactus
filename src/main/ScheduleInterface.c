@@ -1250,9 +1250,9 @@ static int CCTKi_SchedulePrintTimesWhile(int n_whiles,
                                          t_attribute *attribute, 
                                          t_sched_data *data)
 {
-  int i;
 
 #if 0
+  int i;
   if(!data->whiling)
   {
     for(i=0; i < indent_level+2; i++) printf(" ");
