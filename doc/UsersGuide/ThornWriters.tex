@@ -3969,7 +3969,11 @@ interface.ccl} file. Declare the prototype as, for example,
 \begin{verbatim}
 CCTK_REAL FUNCTION SumStuff(CCTK_REAL IN x, CCTK_REAL IN y)
 \end{verbatim}
-\noindent and that this function will be used in your thorn by
+\noindent and that this function will be either required in your thorn by
+\begin{verbatim}
+REQUIRES FUNCTION SumStuff
+\end{verbatim}
+\noindent or optionally used in your thorn by
 \begin{verbatim}
 USES FUNCTION SumStuff
 \end{verbatim}
@@ -3984,6 +3988,8 @@ That is, the C prototype will expect an argument with intent {\tt IN}
 to be a value and one with intent {\tt OUT} to be a pointer. There
 also exists the {\tt ARRAY} keyword for passing arrays of any
 dimension.
+Functions which are required by some thorn (which doesn't provide it itself)
+are checked at startup to be provided by some other thorn.
 
 
 \subsection{Providing a function}

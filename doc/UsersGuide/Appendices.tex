@@ -397,7 +397,13 @@ CCTK_FPOINTER <\var{function_arg1}>(<\var{arg1_type}> <\var{intent1}> <\var{arg1
 \end{alltt}
 Function pointers may not be nested. 
 
-If an aliased function is to be used then the block
+If an aliased function is to be required then the block
+\begin{alltt}
+REQUIRES FUNCTION <\var{alias}>
+\end{alltt}
+is required.
+
+If an aliased function is to be (optionally) used then the block
 \begin{alltt}
 USES FUNCTION <\var{alias}>
 \end{alltt}
