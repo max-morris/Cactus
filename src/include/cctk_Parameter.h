@@ -19,6 +19,11 @@
  * ParameterBindings.h, which in turn includes this file.
  */
 
+/* Parameter checking levels */
+#define CCTK_PARAMETER_STRICT  0
+#define CCTK_PARAMETER_NORMAL  1
+#define CCTK_PARAMETER_RELAXED 2
+
 /* these SCOPE* defines are used as flags fo parameter scopes. */
 
 #define SCOPE_GLOBAL        1 /* parameter is visible everywhere             */
@@ -110,6 +115,9 @@ typedef struct PARAM_PROPS
 extern "C" 
 {
 #endif
+
+/* return the parameter checking level */ 
+int CCTK_ParameterLevel(void);
 
 /* set the value of a parameter */
 int CCTK_ParameterSet (const char *name,      /* The name of the parameter  */
