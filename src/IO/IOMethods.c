@@ -75,7 +75,7 @@ static int num_methods = 0;
  ************************************************************************/
 
  /*@@
-   @routine    CCTKi_RegisterIOMethod
+   @routine    CCTK_RegisterIOMethod
    @date       Wed Feb  3 13:33:09 1999
    @author     Tom Goodale
    @desc
@@ -641,12 +641,9 @@ static int DummyTriggerOutput (const cGH *GH, int var)
 
    @returntype int
    @returndesc
-               positive for the number of I/O methods which successfully
-               did output for GH, or<BR>
-               -1 if no I/O methods were found
-               logical or'ed return codes of all I/O methods'
-               OutputGH() routines, or<BR>
-               -2 if no I/O methods were found
+               >= 0 for the total number of variables for which output was
+                    was done by all I/O methods, or<BR>
+               -1   if no I/O methods were found
    @endreturndesc
 @@*/
 int CactusDefaultOutputGH (const cGH *GH)
@@ -660,9 +657,9 @@ int CactusDefaultOutputGH (const cGH *GH)
     for (handle = retval = 0; handle < num_methods; handle++)
     {
       method = (struct IOMethod *) Util_GetHandledData (IOMethods, handle);
-      if (method && method->OutputGH (GH) == 0)
+      if (method)
       {
-        retval++;
+        retval += method->OutputGH (GH);
       }
     }
   }
