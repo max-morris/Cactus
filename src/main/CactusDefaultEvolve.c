@@ -13,7 +13,7 @@
 #include <stdio.h>
 
 #include "cctk_Flesh.h"
-#include "cctk_Parameters.h"
+#include "cctk_Parameter.h"
 
 #include "CactusIOFunctions.h"
 
@@ -124,8 +124,8 @@ int CactusDefaultEvolve(tFleshConfig *config)
   /*** a Traverse with CCTK_ANALYSIS      ***/
   ForallConvLevels(iteration, convergence_level)
   {
-      CCTK_Traverse(config->GH[convergence_level], "CCTK_ANALYSIS");
-      CCTK_OutputGH(config->GH[convergence_level]);
+    CCTK_Traverse(config->GH[convergence_level], "CCTK_ANALYSIS");
+    CCTK_OutputGH(config->GH[convergence_level]);
   }
   EndForallConvLevels;
 
@@ -224,7 +224,17 @@ int CactusDefaultEvolve(tFleshConfig *config)
 @@*/
 static int DoneMainLoop (CCTK_REAL cctk_time, int iteration)
 {
-  DECLARE_CCTK_PARAMETERS
+  int param_type;
+  CCTK_INT  cctk_itlast;
+  CCTK_REAL cctk_initial_time;
+  CCTK_REAL cctk_final_time;
+
+  cctk_initial_time = (*(CCTK_REAL *)CCTK_ParameterGet("cctk_initial_time",
+						       "Cactus",&param_type));
+  cctk_final_time   = (*(CCTK_REAL *)CCTK_ParameterGet("cctk_final_time",
+						       "Cactus",&param_type));
+  cctk_itlast       = (*(CCTK_INT *)CCTK_ParameterGet("cctk_itlast",
+						      "Cactus",&param_type));
 
   return (! (iteration < cctk_itlast ||
             (cctk_final_time > cctk_initial_time ?
@@ -254,7 +264,6 @@ static int StepGH(cGH *GH)
 
   CCTK_Traverse(GH, "CCTK_PRESTEP");
   CCTK_Traverse(GH, "CCTK_EVOL");
-
 
   /* Advance GH->time AFTER evolving */
 

@@ -12,10 +12,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "cctk_Bindings.h"
 #include "cctk_Flesh.h"
 #include "cctk_GHExtensions.h"
-#include "cctk_Bindings.h"
-#include "cctk_Parameters.h"
+#include "cctk_Parameter.h"
+
 #include "cctki_ScheduleBindings.h"
 #include "cctki_GHExtensions.h"
 #include "cctki_WarnLevel.h"
@@ -91,14 +92,12 @@ int CactusDefaultInitialise(tFleshConfig *config)
 @@*/
 int CactusInitialiseGH(cGH *GH)
 {
-  
-  DECLARE_CCTK_PARAMETERS
+  int param_type;
+  CCTK_REAL cctk_initial_time;
 
+  cctk_initial_time = (*(CCTK_REAL *)CCTK_ParameterGet("cctk_initial_time",
+						       "Cactus",&param_type));
 
-  /*
-  SetupFortranArrays(GH);
-  */
-  
   /* Initialise time */
   GH->cctk_time = cctk_initial_time;
 

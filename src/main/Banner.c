@@ -13,11 +13,11 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "cctk_Banner.h"
 #include "cctk_Config.h"
 #include "cctk_Flesh.h"
-#include "cctk_Parameters.h"
-#include "cctk_Banner.h"
 #include "cctk_FortranString.h"
+#include "cctk_Parameter.h"
 
 static char *rcsid = "$Header$";
 
@@ -156,10 +156,12 @@ void  CCTK_FCALL CCTK_FNAME(CCTK_RegisterBanner)
 
 int CCTKi_PrintBanners(void)
 {
-
-  DECLARE_CCTK_PARAMETERS
-
   int i;
+  int param_type;
+  int cctk_show_banners;
+
+  cctk_show_banners = (*(int *)CCTK_ParameterGet("cctk_show_banners",
+						 "Cactus",&param_type));
 
   if (cctk_show_banners)
   {

@@ -11,8 +11,9 @@
 
 #include "cctk_Config.h"
 #include "cctk_Flesh.h"
+#include "cctk_Parameter.h"
+
 #include "cctki_Cache.h"
-#include "cctk_Parameters.h"
 
 static char *rcsid = "$Header$";
 
@@ -43,16 +44,22 @@ CCTK_FILEVERSION(main_SetupCache_c)
 @@*/
 int CCTKi_SetupCache(void)
 {
-  DECLARE_CCTK_PARAMETERS
+  int param_type;
+  int manual_cache_setup;
 
   unsigned long cache_size;
   unsigned long cacheline_bytes;
 
+  manual_cache_setup = (*(int *)CCTK_ParameterGet("manual_cache_setup",
+						  "Cactus",&param_type));
+
   if(manual_cache_setup)
   {
-    cache_size = manual_cache_size;
-    cacheline_bytes = manual_cacheline_bytes;
-  }
+    cache_size = (*(int *)CCTK_ParameterGet("manual_cache_size",
+					    "Cactus",&param_type));
+    cacheline_bytes = (*(int *)CCTK_ParameterGet("manual_cacheline_bytes",
+						 "Cactus",&param_type));
+  } 
   else
   {
     /* FIXME:  Remove this check for release */

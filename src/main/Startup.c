@@ -31,9 +31,7 @@ int CactusStartup(void)
 
 #define B_ANNERLINE B_1 "\n" B_2 "\n" B_3 "\n" B_4 "\n" B_5 "\n" B_6 "\n" B_7 "\n" B_8 "\n" B_9 "\n"
  
-
   string = B_ANNERLINE;
-
 
   CCTK_RegisterBanner(string);
   
