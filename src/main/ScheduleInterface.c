@@ -229,11 +229,13 @@ int CCTK_CallFunction(void *function,
           fdata->FortranCaller(data, function);
           break;
         default :
-          CCTK_Warn(1,__LINE__,__FILE__,"Cactus", "Unknown language.");
+          CCTK_Warn(1,__LINE__,__FILE__,"Cactus", 
+		    "CCTK_CallFunction: Unknown language.");
       }
       break;
     default :
-      CCTK_Warn(1,__LINE__,__FILE__,"Cactus","Unknown function type.");
+      CCTK_Warn(1,__LINE__,__FILE__,"Cactus",
+		"CCTK_CallFunction: Unknown function type.");
   }
 
   /* Return 0, meaning didn't synchronise */
@@ -1018,7 +1020,8 @@ static int ParseOption(t_attribute *attribute,
   }
   else
   {
-    CCTK_Warn(1,__LINE__,__FILE__,"Cactus", "Unknown option for schedule group.\n");
+    CCTK_Warn(1,__LINE__,__FILE__,"Cactus", 
+	      "ParseOption: Unknown option for schedule group.\n");
   }
 
   return 0;
