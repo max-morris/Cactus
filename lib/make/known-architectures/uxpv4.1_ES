@@ -27,14 +27,22 @@ else
   : ${F77_OPTIMISE_FLAGS='-Kfast -Of'}
   : ${F90_OPTIMISE_FLAGS='$(F77_OPTIMISE_FLAGS)'}
 
-  if test "$LD" = "CC" ; then
-    # C++ compiler only takes static libs by default
-    # but we also want socket lib
-    : ${LIBS="fj90fv fj90f fj90 fj90f"}
-    : ${LDFLAGS="-d y /usr/lib/libsocket.so /usr/lib/libvfl.so"}
-  else
-    : ${LIBS="fj90fv fj90f fj90 socket"}
-  fi
+  case "$LD" in
+    vcc | CC)
+      # native linker only takes static libs by default
+      # but we also want socket lib
+      : ${LIBS="fj90fv fj90f fj90 fj90f"}
+      : ${LDFLAGS="-d y /usr/lib/libsocket.so /usr/lib/libvfl.so"}
+      ;;
+    cc)
+      : ${LIBS="fj90fv fj90f fj90 fj90f socket vfl elf m gen fjsamp px"}
+      : ${LDFLAGS="-L/usr/lang/lib"}
+      ;;
+    *)
+      echo "Unknown linker $LD, don\'t know what libs to link with."
+      exit 2
+      ;;
+  esac
 
 # MPI stuff
   if test -n "$MPI" ; then
@@ -44,4 +52,3 @@ else
   fi
 
 fi
-
