@@ -2,8 +2,13 @@
 #
 # $Header$
 
-SRCS=\
-getopt.c\
-getopt1.c\
-regex.c
+SRCS=
+
+ifeq ($(strip $(BUILD_GETOPT)),yes)
+SRCS += getopt.c getopt1.c
+endif
+
+ifeq ($(strip $(BUILD_REGEX)),yes)
+SRCS += regex.c
+endif
 
