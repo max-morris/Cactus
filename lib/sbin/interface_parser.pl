@@ -60,6 +60,7 @@ sub cross_index_interface_data
   local(%implementations);
   local($implementation);
   local(%ancestors);
+  local(%friends);
 
   @thorns = @indata[0..$n_thorns-1];
   %interface_data = @indata[$n_thorns..$#indata];
@@ -72,7 +73,7 @@ sub cross_index_interface_data
       die "Thorn $thorn doesn't specify an implementation.\n";
     }
 
-    $interface_data{"IMPLEMENTATION \U$implementation\E THORNS"} .= " $thorn";
+    $interface_data{"IMPLEMENTATION \U$implementation\E THORNS"} .= "$thorn ";
   
     $implementations{"\U$implementation\E"} = "$implementation";
   }
@@ -89,8 +90,6 @@ sub cross_index_interface_data
 
     $interface_data{"IMPLEMENTATION \U$implementation\E ANCESTORS"} = join(" ",( keys %ancestors));
 
-#    $interface_data{"IMPLEMENTATION \U$implementation\E FRIENDS"} = &get_implementation_friends($implementation, %interface_data);
-    
   }
 
   return %interface_data;
@@ -98,31 +97,42 @@ sub cross_index_interface_data
 
 sub get_implementation_friends
 {
-  local($implementation, %interface_data);
+  local($implementation, $n_friends, @indata) = @_;
+  local(%friends);
+  local(%interface_data);
   local($thorn);
   local($friend, $friends);
-  local(%ancestors);
+  local($friends_of_me);
+  local($other_implementation);
+
+  if($n_friends > 0)
+  {
+    %friends = @indata[0..2*$n_friends-1];
+    %interface_data = @indata[2*$n_friends..$#indata];
+  }
+  else
+  {
+    %friends = ();
+    %interface_data = @indata;
+  }
 
   $interface_data{"IMPLEMENTATION \U$implementation\E THORNS"} =~ m:(\w+):;
 
   $thorn = $1;
 
-  # Recurse.  This needs to be made robust against loops.
-  foreach $ancestor (split(" ", $interface_data{"\U$thorn\E INHERITS"}))
+  
+  # Recurse
+  foreach $friend (split(" ", $interface_data{"\U$thorn\E FRIEND"}))
   {
-    $ancestors .= &get_implementation_ancestors($ancestor, %interface_data);
-    $ancestors .= "$ancestor ";
+    if(! $friends{"\U$friend\E"})
+    {
+      $friends{"\U$friend\E"} = 1;
+      %friends = &get_implementation_friends($friend, scalar(keys %friends), %friends,%interface_data);
+    }
   }
   
-  # Uniquify the list.
-  foreach $ancestor (split(" ", $ancestors))
-  {
-    $ancestors{"\U$ancestor\E"} = 1;
-  }
+  return %friends;
 
-  $ancestors = join(" ", %ancestors);
-
-  return $ancestors;
 }
 
 sub get_implementation_ancestors
@@ -148,7 +158,7 @@ sub get_implementation_ancestors
 
   $thorn = $1;
 
-  # Recurse.  This needs to be made robust against loops.
+  # Recurse.
   foreach $ancestor (split(" ", $interface_data{"\U$thorn\E INHERITS"}))
   {
     if(! $ancestors{"\U$ancestor\E"})
