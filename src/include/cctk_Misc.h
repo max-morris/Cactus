@@ -37,6 +37,8 @@ int CCTK_SetKeywordInRangeList(char **data, const char *value,
 int CCTK_SetString(char **data, const char *value);
 int CCTK_SetBoolean(CCTK_INT *data, const char *value);
 
+int CCTK_RunTime(void);
+
 #ifdef __cplusplus
 }   
 #endif
