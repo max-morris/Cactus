@@ -41,8 +41,11 @@ include $(CONFIG)/make.config.defn
 # Put this in temporarily to make sure that people with existing
 # configurations aren't disturbed
 
-ifeq ($(strip $(GENERAL_LIBRARIES)),)
-GENERAL_LIBRARIES = $(LIBDIRS:%=-L%) $(LIBS:%=-l%)
+ifeq ($(strip $(LIBNAME_PREFIX)),)
+ifeq ($(strip $(LIBNAME_SUFFIX)),)
+LIBNAME_PREFIX = lib#
+LIBNAME_SUFFIX = .a
+endif
 endif
 
 # Include the list of thorns to be built 
@@ -72,7 +75,7 @@ endif
 UTIL_DIR=$(EXEDIR)$(DIRSEP)$(CONFIG_NAME)
 
 # Build the executable
-$(EXEDIR)$(DIRSEP)$(EXE): $(CONFIG)/make.thornlist $(CONFIG)/cctk_version.h $(patsubst %,$(CCTK_LIBDIR)/lib%.a,$(notdir $(THORNS) $(CACTUSLIBS))) 
+$(EXEDIR)$(DIRSEP)$(EXE): $(CONFIG)/make.thornlist $(CONFIG)/cctk_version.h $(patsubst %,$(CCTK_LIBDIR)/$(LIBNAME_PREFIX)%$(LIBNAME_SUFFIX),$(notdir $(THORNS) $(CACTUSLIBS))) 
 	@echo $(DIVIDER)
 	@echo Creating $(EXE) in $(EXEDIR) from $(THORNS)
 	$(CC) $(OPTIMISE_C) $(DEBUG_C) $(CFLAGS) $(CCOMPILEONLY)$(OPTIONSEP)$(TOP)$(DIRSEP)datestamp.o -I$(CONFIG) $(subst /,$(DIRSEP),$(DATESTAMP))
@@ -103,15 +106,15 @@ $(CONFIG)/cctk_version.h: $(CCTK_HOME)/Makefile
 # Checks if the library is Cactus, in which case it uses the main source 
 # directory.
 
-$(CCTK_LIBDIR)/lib%.a: update
+$(CCTK_LIBDIR)/$(LIBNAME_PREFIX)%$(LIBNAME_SUFFIX): update
 	@echo $(DIVIDER)
 	@echo Checking status of $(notdir $@)
 	if [ ! -d $(SCRATCH_BUILD) ]; then $(MKDIR) $(MKDIRFLAGS) $(SCRATCH_BUILD) ; fi
 	if [ ! -d $(BUILD_DIR) ]; then $(MKDIR) $(MKDIRFLAGS) $(BUILD_DIR) ; fi
-	thorn_name=$(@:$(CCTK_LIBDIR)/lib%.a=%); \
+	thorn_name=$(@:$(CCTK_LIBDIR)/$(LIBNAME_PREFIX)%$(LIBNAME_SUFFIX)=%); \
 	if [ "$$thorn_name" = "Cactus" ] ; then src_dir=$(CCTK_HOME)/src ; \
 	else if [ "$$thorn_name" = "CactusBindings" ] ; then src_dir=$(BINDINGS_DIR) ; \
-	else src_dir=$(PACKAGE_DIR)/$(@:$(CCTK_LIBDIR)/lib%.a=$(filter %/$(@:$(CCTK_LIBDIR)/lib%.a=%), $(THORNS)))/src ; fi ; fi ;\
+	else src_dir=$(PACKAGE_DIR)/$(@:$(CCTK_LIBDIR)/$(LIBNAME_PREFIX)%$(LIBNAME_SUFFIX)=$(filter %/$(@:$(CCTK_LIBDIR)/$(LIBNAME_PREFIX)%$(LIBNAME_SUFFIX)=%), $(THORNS)))/src ; fi ; fi ;\
 	if [ ! -d $(BUILD_DIR)/$$thorn_name ]; then $(MKDIR) $(MKDIRFLAGS) $(BUILD_DIR)/$$thorn_name ; fi ; \
 	cd $(BUILD_DIR)/$$thorn_name ; \
 	if [ -r "$$src_dir/Makefile" ] ; then  make_file=$$src_dir/Makefile ; \

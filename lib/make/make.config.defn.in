@@ -79,6 +79,9 @@ OPTIONSEP = @OPTIONSEP@
 
 # Some architectures need to do something special for linking in libraries
 
+LIBNAME_PREFIX= @LIBNAME_PREFIX@# Make sure there is no space at end.
+LIBNAME_SUFFIX= @LIBNAME_SUFFIX@
+
 CACTUSLIBLINKLINE= @CACTUSLIBLINKLINE@
 
 C_DEPEND       = @C_DEPEND@

@@ -898,6 +898,12 @@ AC_SUBST(OPTIONSEP)
 
 : ${OPTIONSEP='$(EMPTY_VAR) # a single space'}
 
+# How to name libraries for this system
+AC_SUBST(LIBNAME_PREFIX)
+: ${LIBNAME_PREFIX='lib'}
+AC_SUBST(LIBNAME_SUFFIX)
+: ${LIBNAME_SUFFIX='.a'}
+
 # How to link the cactus libraries
 AC_SUBST(CACTUSLIBLINKLINE)
 
@@ -978,6 +984,7 @@ AC_SUBST(SYS_INC_DIRS)
 # How to link in the non-Cactus libraries
 AC_SUBST(GENERAL_LIBRARIES)
 : ${GENERAL_LIBRARIES='$(LIBDIRS:%=-L%) $(LIBS:%=-l%)'}
+
 
 # Do we need to make sure Perl makes a backup when editting in place ?
 AC_SUBST(PERL_BACKUP_NECESSARY)

@@ -4130,6 +4130,12 @@ fi
 
 : ${OPTIONSEP='$(EMPTY_VAR) # a single space'}
 
+# How to name libraries for this system
+
+: ${LIBNAME_PREFIX='lib'}
+
+: ${LIBNAME_SUFFIX='.a'}
+
 # How to link the cactus libraries
 
 
@@ -4210,6 +4216,7 @@ fi
 # How to link in the non-Cactus libraries
 
 : ${GENERAL_LIBRARIES='$(LIBDIRS:%=-L%) $(LIBS:%=-l%)'}
+
 
 # Do we need to make sure Perl makes a backup when editting in place ?
 
@@ -4420,6 +4427,8 @@ s%@F90_WARN_FLAGS@%$F90_WARN_FLAGS%g
 s%@CREATEEXE@%$CREATEEXE%g
 s%@DIRSEP@%$DIRSEP%g
 s%@OPTIONSEP@%$OPTIONSEP%g
+s%@LIBNAME_PREFIX@%$LIBNAME_PREFIX%g
+s%@LIBNAME_SUFFIX@%$LIBNAME_SUFFIX%g
 s%@CACTUSLIBLINKLINE@%$CACTUSLIBLINKLINE%g
 s%@C_DEPEND@%$C_DEPEND%g
 s%@C_DEPEND_OUT@%$C_DEPEND_OUT%g
