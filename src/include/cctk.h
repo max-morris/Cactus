@@ -30,15 +30,16 @@
 #define CCTK_PRINTSEPARATOR\
   print *,"-----------------------------------------------------------"
 
-#define _CCTK_FARGUMENTS  cctk_dim, cctk_gsh, cctk_lsh, cctk_lbnd,        \
-                          cctk_ubnd, cctk_from, cctk_to, cctk_bbox,       \
-                          cctk_delta_time, cctk_time, cctk_delta_space,   \
-                          cctk_origin_space, cctk_levfac, cctk_convlevel, \
+#define _CCTK_FARGUMENTS  cctk_dim, cctk_gsh, cctk_lsh, cctk_lbnd,\
+                          cctk_ubnd, cctk_lssh, cctk_from, cctk_to, cctk_bbox,\
+                          cctk_delta_time, cctk_time, cctk_delta_space,\
+                          cctk_origin_space, cctk_levfac, cctk_convlevel,\
                           cctk_nghostzones, cctk_iteration, cctkGH
 
 #define _DECLARE_CCTK_FARGUMENTS INTEGER cctk_dim&&\
                            INTEGER cctk_gsh(cctk_dim),cctk_lsh(cctk_dim)&&\
                            INTEGER cctk_lbnd(cctk_dim),cctk_ubnd(cctk_dim)&&\
+                           INTEGER cctk_lssh(3,cctk_dim)&&\
                            INTEGER cctk_from(cctk_dim),cctk_to(cctk_dim)&&\
                            INTEGER cctk_bbox(2*cctk_dim)&&\
                            CCTK_REAL cctk_delta_time, cctk_time&&\
@@ -106,6 +107,7 @@
             int       *cctk_lsh=cctkGH->cctk_lsh;\
             int       *cctk_lbnd=cctkGH->cctk_lbnd;\
             int       *cctk_ubnd=cctkGH->cctk_ubnd;\
+            int       *cctk_lssh=cctkGH->cctk_lssh;\
             int       *cctk_from=cctkGH->cctk_from;\
             int       *cctk_to=cctkGH->cctk_to;\
             int       *cctk_bbox=cctkGH->cctk_bbox;\
@@ -131,6 +133,7 @@
             cctk_dummy_pointer=(void *)cctk_lsh;\
             cctk_dummy_pointer=(void *)cctk_lbnd;\
             cctk_dummy_pointer=(void *)cctk_ubnd;\
+            cctk_dummy_pointer=(void *)cctk_lssh;\
             cctk_dummy_pointer=(void *)cctk_from;\
             cctk_dummy_pointer=(void *)cctk_to;\
             cctk_dummy_pointer=(void *)cctk_bbox;\
@@ -148,6 +151,7 @@
 #define _PASS_CCTK_C2F(xGH) &((xGH)->cctk_dim),\
                             (xGH)->cctk_gsh,(xGH)->cctk_lsh, \
                             (xGH)->cctk_lbnd,(xGH)->cctk_ubnd, \
+                            (xGH)->cctk_lssh,\
                             (xGH)->cctk_from,(xGH)->cctk_to, \
                             (xGH)->cctk_bbox,\
                             &((xGH)->cctk_delta_time), \
@@ -160,7 +164,7 @@
                             (xGH)
 #define _CCTK_C2F_PROTO     int *,\
                             int *,\
-                            int *,int *, int *, int *,int *,int *,\
+                            int *,int *, int *, int *, int *,int *,int *,\
                             CCTK_REAL *, CCTK_REAL *, CCTK_REAL *,\
                             CCTK_REAL *,\
                             int *,\

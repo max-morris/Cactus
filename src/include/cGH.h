@@ -31,11 +31,14 @@ typedef struct
   int *cctk_lsh;
   int *cctk_lbnd;
   int *cctk_ubnd;
-  
-  /* The physical domain */
-  int *cctk_from;
-  int *cctk_to;
 
+  /* local stagger shape lssh[3][dim] (3 staggerings) */
+  int *cctk_lssh[3];
+
+  /* unused */
+  int *cctk_to;
+  int *cctk_from;
+  
   /* The grid spacings */
   CCTK_REAL cctk_delta_time;
   CCTK_REAL *cctk_delta_space;
