@@ -1,7 +1,7 @@
 
 Cactus Code Frequently Asked Questions
 
-$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.53 2003-01-27 15:31:07 allen Exp $
+$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.54 2003-02-01 00:06:50 allen Exp $
 
 Also available at http://www.cactuscode.org/Documentation/FAQ
 
@@ -206,6 +206,9 @@ E9  How can I find out in make.configuration.defn, whether MPI is being
 
 E10 How can I see in source code whether MPI is being used?
 
+E11 The functions CCTK_Exit and CCTK_Abort require cctkGH as an argument. 
+    How can I call these functions deep inside my thorns where this pointer
+    is not available?
 
 ------------------------------------------------------------------------------
 General
@@ -1086,6 +1089,18 @@ E10 How can I see in source code whether MPI is being used?
         /* Only included if MPI is *not* being used */
     #endif
 
+E11 The functions CCTK_Exit and CCTK_Abort require cctkGH as an argument. 
+    How can I call these functions deep inside my thorns where this pointer
+    is not available?
+
+    These routines are overloaded by a driver, and the reason for passing
+    in a cctkGH is to allow the driver to tidy up before exiting. If the 
+    particular driver you are using allows a NULL pointer to be passed you 
+    can pass this instead of the cctkGH pointer. (The worst that will happen 
+    should be a segfault if the driver cannot handle NULL). Alternatively, 
+    you need to include a mechanism to obtain the cctkGH deep inside your
+    thorns code.
+    
 
 ------------------------------------------------------------------------------
 General
