@@ -232,6 +232,56 @@ Conditional constructs cannot be used inside of a schedule block.
 \label{sec:ccpa}
 
 \chapter{Using GNATS}
+GNATS is a freely redistributable set of tools for tracking bug
+reports. It allows users to categorize their problem report and submit 
+them to the GNATS. The bugtracker will assign appropriate maintainers
+to analyze and solve the problem.
+We are currently supporting a web based interface at {\tt
+http://www.cactuscode.org} which lets you
+interactively file a bug report. Here, we briefly
+describe the main categories when creating a Cactus
+problem report.
+\begin{Lentry}
+\item[{\bf Reporters email}] Your email address so we can get in
+contact with you.
+\item[{\bf Category}] there is currently a category for each of the
+Cactus thorns and packages, also a category for the old Cactus3.x and
+some general subjects like Web,etc. Select whatever category fits
+best.
+\item[{\bf Synopsis}] A brief and informative subject line.
+
+\item[{\bf Confidential}] Unused, all PRs are public.
+
+\item[{\bf Severity}] Pick one three levels.
+
+\item[{\bf Class}] In the selected category, specify what kind of
+problem you are dealing with.
+
+\item[{\bf submitter ID}] Unused
+
+\item[{\bf Originator}] Your name
+
+\item[{\bf Release}] The Cactus release your are using.
+%Type {\tt gmake version} FIXME
+
+\item[{\bf Environment}] Very important: specify the environment:
+e.g. {\tt uname -a}, MPI/non-MPI, etc.
+
+\item[{\bf Description}] Describe your problem precisely, if you get a 
+core dump, include the stack trace, give the minimal number of thorns, 
+this problems occurs with.
+
+\item[{\bf How-To-Repeat}] Tell us how to repeat the problem, if it is
+software related.
+
+\item[{\bf Fix}] If you can provide a fix, let us know.
+\end{Lentry}
+
+We also provide the customized {\tt send-pr} and {\tt send-pr.el} programs at
+our website. These commands are compiled to submit Cactus problem
+reports in your shell and from within emacs, respectively.
+
+
 \label{sec:usgn}
 
 \chapter{Using CVS}
@@ -407,7 +457,7 @@ files missing during compilation.
 We list some sample CVS commands to treat the most typical Cactus4.0
 CVS situations. 
 \begin{description}
-\item\textbf{Loging into the server}\newline
+\item\textbf{Logging into the server}\newline
 {\tt cvs -d :pserver:cvs\_anon@cvs.cactuscode.org:/usr/users/cactus
 login} \\ You will be asked for the password for user {\em cvs\_anon}, which is {\tt anon}.
 
