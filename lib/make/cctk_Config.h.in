@@ -135,6 +135,19 @@
 
 /******************************************************************************/
 
+/* Integer sizes */
+#undef CCTK_HAVE_INT8
+#undef CCTK_HAVE_INT4
+#undef CCTK_HAVE_INT2
+#undef CCTK_HAVE_INT1
+
+/* Float sizes */
+#undef CCTK_HAVE_REAL16
+#undef CCTK_HAVE_REAL8
+#undef CCTK_HAVE_REAL4
+
+/******************************************************************************/
+
 #ifdef CCODE
 
 /* Integer sizes */

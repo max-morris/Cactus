@@ -590,7 +590,7 @@ fi
 
 #######################################################################
 # determine OPTIMISE_MODE from the OPTIMISE/OPTIMIZE option
-# if this option isn't set OPTIMISE_MODE will default to 'yes' 
+# if this option isn't set OPTIMISE_MODE will default to 'yes'
 
 OPTIMISE_MODE='yes'
 if test -n "$OPTIMISE" ; then
@@ -4619,11 +4619,19 @@ if test -n "$CCTK_INT8" ; then
 #define CCTK_INT8 $CCTK_INT8
 EOF
 
+  cat >> confdefs.h <<\EOF
+#define CCTK_HAVE_INT8 1
+EOF
+
 fi
 
 if test -n "$CCTK_INT4" ; then
   cat >> confdefs.h <<EOF
 #define CCTK_INT4 $CCTK_INT4
+EOF
+
+  cat >> confdefs.h <<\EOF
+#define CCTK_HAVE_INT4 1
 EOF
 
 fi
@@ -4633,11 +4641,19 @@ if test -n "$CCTK_INT2" ; then
 #define CCTK_INT2 $CCTK_INT2
 EOF
 
+  cat >> confdefs.h <<\EOF
+#define CCTK_HAVE_INT2 1
+EOF
+
 fi
 
 if test -n "$CCTK_INT1" ; then
   cat >> confdefs.h <<EOF
 #define CCTK_INT1 $CCTK_INT1
+EOF
+
+  cat >> confdefs.h <<\EOF
+#define CCTK_HAVE_INT1 1
 EOF
 
 fi
@@ -4676,6 +4692,10 @@ if test -n "$CCTK_REAL16" ; then
 #define CCTK_REAL16 $CCTK_REAL16
 EOF
 
+  cat >> confdefs.h <<\EOF
+#define CCTK_HAVE_REAL16 1
+EOF
+
 fi
 
 if test -n "$CCTK_REAL8" ; then
@@ -4683,11 +4703,19 @@ if test -n "$CCTK_REAL8" ; then
 #define CCTK_REAL8 $CCTK_REAL8
 EOF
 
+  cat >> confdefs.h <<\EOF
+#define CCTK_HAVE_REAL8 1
+EOF
+
 fi
 
 if test -n "$CCTK_REAL4" ; then
   cat >> confdefs.h <<EOF
 #define CCTK_REAL4 $CCTK_REAL4
+EOF
+
+  cat >> confdefs.h <<\EOF
+#define CCTK_HAVE_REAL4 1
 EOF
 
 fi

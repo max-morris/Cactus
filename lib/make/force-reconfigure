@@ -1,12 +1,13 @@
 # /*@@
-#   @file      force-reconfigure
-#   @date      Wed Mar 31 2004
-#   @author    Erik Schnetter
-#   @desc 
-#   Timestamp file for forcing reconfiguring configurations
-#   @enddesc 
-#   @version $Id: force-reconfigure,v 1.1 2004-04-10 19:57:02 schnetter Exp $
+#   @file    force-reconfigure
+#   @date    Wed Mar 31 2004
+#   @author  Erik Schnetter
+#   @desc
+#            Timestamp file for forcing reconfiguring configurations
+#   @enddesc
+#   @version $Id: force-reconfigure,v 1.2 2004-06-20 12:53:30 tradke Exp $
 # @@*/
 
 31 Mar 2004: created
 10 Apr 2004: thorns now check for FFTW, MPI, and PETSc in a more reliable way
+20 Jun 2004: introduce CCTK_HAVE_INT* and CCTK_HAVE_REAL* macros

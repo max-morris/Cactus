@@ -37,7 +37,7 @@ fi
 
 #######################################################################
 # determine OPTIMISE_MODE from the OPTIMISE/OPTIMIZE option
-# if this option isn't set OPTIMISE_MODE will default to 'yes' 
+# if this option isn't set OPTIMISE_MODE will default to 'yes'
 
 OPTIMISE_MODE='yes'
 if test -n "$OPTIMISE" ; then
@@ -621,18 +621,22 @@ CCTK_INT1="signed char"
 
 if test -n "$CCTK_INT8" ; then
   AC_DEFINE_UNQUOTED(CCTK_INT8, $CCTK_INT8)
+  AC_DEFINE(CCTK_HAVE_INT8)
 fi
 
 if test -n "$CCTK_INT4" ; then
   AC_DEFINE_UNQUOTED(CCTK_INT4, $CCTK_INT4)
+  AC_DEFINE(CCTK_HAVE_INT4)
 fi
 
 if test -n "$CCTK_INT2" ; then
   AC_DEFINE_UNQUOTED(CCTK_INT2, $CCTK_INT2)
+  AC_DEFINE(CCTK_HAVE_INT2)
 fi
 
 if test -n "$CCTK_INT1" ; then
   AC_DEFINE_UNQUOTED(CCTK_INT1, $CCTK_INT1)
+  AC_DEFINE(CCTK_HAVE_INT1)
 fi
 
 # Float types
@@ -666,14 +670,17 @@ esac
 
 if test -n "$CCTK_REAL16" ; then
   AC_DEFINE_UNQUOTED(CCTK_REAL16, $CCTK_REAL16)
+  AC_DEFINE(CCTK_HAVE_REAL16)
 fi
 
 if test -n "$CCTK_REAL8" ; then
   AC_DEFINE_UNQUOTED(CCTK_REAL8, $CCTK_REAL8)
+  AC_DEFINE(CCTK_HAVE_REAL8)
 fi
 
 if test -n "$CCTK_REAL4" ; then
   AC_DEFINE_UNQUOTED(CCTK_REAL4, $CCTK_REAL4)
+  AC_DEFINE(CCTK_HAVE_REAL4)
 fi
 
 
