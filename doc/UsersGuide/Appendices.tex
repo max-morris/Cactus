@@ -25,13 +25,15 @@ Cactus Users' Guide and the Cactus Reference Manual.
 \begin{Lentry}
 
 \item[alias function]
+\item[AMR]
+  \textit{Automatic Mesh Refinement}
+\item[analysis]
 \item[API]
-  \textit{Applications Programming Interface}, the externally visible
-  interface
-  provided by some software component.  (An API usually consists of a
-  set of subroutine/function calls, but may also include data passed
-  via Cactus key-value tables, grid arrays, or other means.)  
-  The Reference Manual documents most of the Cactus Flesh APIs.
+  \textit{Applications Programming Interface}, the interface provided by
+  some software component to programmers who use the component. 
+  An API usually consists of subroutine/function calls, but may also include
+  structure definitions and definition of constant values.
+  The Cactus Reference Manual documents most of the Cactus Flesh APIs.
 \item[arrangement]
   A collection of thorns, stored in a subdirectory of the Cactus
   \verb|arrangements| directory.  See Section~\ref{sec:arrangements}.
@@ -39,9 +41,10 @@ Cactus Users' Guide and the Cactus Reference Manual.
   A GNU program which builds a configuration script which can be used
   to make a Makefile.
 \item[boundary zone]
-  A boundary zone is a set of points added to the edge of a grid to
-  contain boundary data, e.g.\ Dirichlet or Von Neumann data.  (See
-  also \textit{symmetry zone}, \textit{ghost zone}.)
+  A boundary zone is a set of points at the edge of a grid, interpreted as
+  the boundary of the physical problem, and which contains boundary data,
+  e.g.\ Dirichlet conditions or von Neumann conditions.
+  (See also \textit{symmetry zone}, \textit{ghost zone}.)
 \item[Cactus]
   A green fleshy plant with lots of thorns, usually inflicting pain if
   touched.
@@ -64,8 +67,8 @@ Cactus Users' Guide and the Cactus Reference Manual.
   of a configuration (they don't change what binary will be produced).
   See Section~\ref{sec:configurations}.
 \item[checkout]
-  Get a copy of source code from CVS.
-\item[checkpointing]
+  Get a copy of source code from CVS.  See Section~\ref{sec:checkout}.
+\item[checkpoint]
   Save the entire state of a Cactus run to a file so that the run can be
   restarted at a later time.
   See Sections~\ref{sec:checkpointing}, \ref{chap:cp_recovery_methods}.
@@ -75,23 +78,33 @@ Cactus Users' Guide and the Cactus Reference Manual.
   Historically Cactus has required these points to be uniformly spaced
   (we say the grid is uniformly spaced), but we are now starting to add
   support for non-uniform spacings (we say the grid is non-uniformly spaced).
+
+  The grid consists of the physical domain and the boundary and symmetry
+  points.
+
   See \textit{grid functions} for the typical use of grid points.
 \item[convergence]
   Important, but often neglected.
 \item[CST]
-  This stands for \textit{Cactus Specification Tool}, which is the set of Perl
-  scripts which parse the thorns' \texttt{.ccl} files.
+  The \textit{Cactus Specification Tool}, which is the set of Perl
+  scripts which parse the thorns' \texttt{.ccl} files and generates the
+  code that binds the thorn source files with the Flesh.
 \item[CVS]
   The \textit{Concurrent Versions System} is the favoured code
   distribution system for Cactus.  See Sections~\ref{sec:checkout},
   \ref{sec:Appendix.cvs}.
+\item[domain decomposition]
 \item[driver]
-  A special kind of thorn which creates and handle grid hierarchies.
+  A special kind of thorn which creates and handles grid hierarchies 
+  and grid variables.
 %Drivers are responsible for memory management for grid variables, and for all parallel operations, in response to requests from the scheduler.
   See Section~\ref{sec:parallelisation}.
 \item[evolution]
+  An iteration interpreted as a step through time.  Also, a particular Cactus
+  schedule bin for executing routines when evolution occurs.
 \item[Flesh]
-  The routines which hold all the thorns together, this is what you
+  The Cactus routines which hold the thorns together, allowing them to 
+  communicate and scheduling things to happen with them. This is what you
   get if you check out Cactus from our CVS repository.
 \item[friend] Interfaces that are \textit{friends} share their collective
   set of protected grid variables.
@@ -103,11 +116,15 @@ Cactus Users' Guide and the Cactus Reference Manual.
   Shorthand for a \textit{grid function}.
 \item[gmake]
   GNU version of the {\tt make} utility.
-\item[ghostzone] 
-  A ghostzone is a set of points added for parallelisation purposes to
-  enable inter-processor communication of data from processor
-  boundaries.  In single processor runs there are no ghost zones.
-  Ghost zones should not be confused with symmetry or boundary zones.
+\item[ghost zone] 
+  A set of points added for parallelisation purposes to a block of a
+  grid lying on one processor, corresponding to points on the boundary
+  of an adjoining block of the grid lying on another processor.
+  Points from the boundary of the one block are copied (via an
+  inter-processor communication mechanism) during synchronization (see)
+  to the corresponding ghost zone of the other block, and vice-versa.
+  In single processor runs there are no ghost zones.
+  Contrast with symmetry or boundary zones.
   See Section~\ref{sec:ghost_size}.
 \item[grid]
   Short for \textit{computational grid}.
@@ -120,25 +137,28 @@ Cactus Users' Guide and the Cactus Reference Manual.
   computational grid.  (See also \textit{local array}.)
   From another perspective,
   \textit{grid functions} are functions (of any of the Cactus
-  datatypes (see section~\ref{sect-ThornWriting/DataTypes})
+  data types (see section~\ref{sect-ThornWriting/DataTypes})
   defined on the domain of grid points.
   Typically grid functions are used to discretely approximate functions
   defined on the domain $\Re^n$, with \textit{finite differencing}
   used to approximate partial derivatives.
 \item[grid hierarchy]
-  A computational grid, and the grid variables associated with it.
+  A \textit{computational grid}, and the \textit{grid variables} associated
+  with it.
 \item[grid point]
+  A spatial point in the \textit{computational grid}.
 \item[grid scalar]
-  A \textit{grid variable} which has zero indices,
-  i.e.\ it's just a number on each processor.
+  A \textit{grid variable} with index zero,
+  \textit{i.e.} just a number on each processor.
 \item[grid variable]
-  Any variable which can be passed between thorns, or routines
-  belonging to the same thorn, but passed through the defined Flesh
-  interface; implicitly implies it is related to the computational
-  grid rather than being an internal variable of the thorn or one of
-  its routines.  \textit{grid scalar}, \textit{grid function}, and \textit{grid
-  array} are all examples of \textit{grid variables}. 
-  See Section~\ref{chap:cactus_variables}.
+  A variable which is passed through the Flesh interface, either between 
+  thorns or between routines of the same thorn.
+  This implies the variable is related to the computational grid as opposed
+  to being an internal variable of the thorn or one of its routines. 
+  \textit{grid scalar}, \textit{grid function}, and \textit{grid array}
+  are all examples of \textit{grid variables}. 
+  See Sections~\ref{sec:cactus_variables-groups},
+  \ref{subsec:Appendix.interface-variables}
 \item[GNATS]
   The GNU program we use for reporting and tracking bugs, comments and
   suggestions.
@@ -146,12 +166,10 @@ Cactus Users' Guide and the Cactus Reference Manual.
   \textit{GNU's Not Unix}: a freely-distributable code project.  
   See \url{http://www.gnu.org/}.
 \item[GV]
-  Shorthand for a \textit{grid variable}
+  Shorthand for \textit{grid variable}.
 \item[handle]
   A signed integer value $>= 0$ passed by many Cactus routines and
-  used to represent a dynamic data or code object. Handles for the
-  same object class should not be trusted to comprise a consecutive
-  sequence of integer values.
+  used to represent a dynamic data or code object.
 \item[HDF5]
   \textit{Hierarchical Data Format} version~5, an API, subroutine library, and
   file format for storing structured data.  An HDF5 file can
@@ -167,20 +185,20 @@ Cactus Users' Guide and the Cactus Reference Manual.
   See Section~\ref{subsec:interface_ccl}. \ref{sec:Appendix.interface}.
 \item[interface]
 \item[interpolation]
-  Given $N$ grid arrays and $C$ interpolation points (in the
-  grid array coordinate space), return $M$ values on each requested
-  processor at each interpolation point.  (See also \textit{local
-  interpolation})
+  Given a set of grid variables and interpolation points (points in the
+  grid coordinate space which are typically distinct from the grid points)
+  interpolation is the act of producing values for the grid variables 
+  at each interpolation point over the entire grid hierarchy.  
+  (Contrast with \textit{local interpolation}.)
 \item[local array]
-  An array that is declared in thorn code but not declared in
-  the thorn's \verb|interface.ccl|, as opposed to a \textit{grid
-  array}.
+  An array that is declared in thorn code but not declared in the thorn's
+  \verb|interface.ccl|, as opposed to a \textit{grid array}.
 \item[local interpolation]
-  Given $N$ arrays on the current processor
-  with a given coordinate system,
-  and $C$ interpolation points (in the array coordinate space)
-  return $M$ values at each interpolation point.
-  (See also \textit{interpolation})
+  Given a set of grid variables and interpolation points (points in the
+  grid coordinate space which are typically distinct from the grid points)
+  interpolation is the act of producing values for the grid variables
+  at each interpolation point on a particular grid.  
+  (Contrast with \textit{interpolation}.)
 \item[Makefile]
   The default input file for \texttt{make} (or \texttt{gmake}).  Includes
   rules for building targets.
@@ -193,6 +211,7 @@ Cactus Users' Guide and the Cactus Reference Manual.
   messages between processors in a multiprocessor system.
   See Sections~\ref{subsec:Compilation-Available_Options},
   \ref{subsubsec:Compiling-MPI}.
+\item[multi-patch]
 \item[mutual recursion]
   See \textit{recursion, mutual}.
 \item[NUL character]
@@ -231,9 +250,12 @@ Cactus Users' Guide and the Cactus Reference Manual.
   \url{http://www.eskimo.com/~scs/C-faq/top.html}.
 \item[parallelisation]
 \item[parameter]
-  A variable which remains unchanged throughout the execution of a
-  Cactus executable. Parameters have default values which can be
-  set in a \textit{parameter file}.
+  A variable that controls the run time behaviour of the Cactus executable.
+  Parameters have default values which can be set in a
+  \textit{parameter file} (See Chapter~\ref{chap:Cactus_parameters}).
+  The Flesh has parameters; thorn parameters are made available to the rest
+  of Cactus by describing them in the thorn's 
+  {\tt param.ccl} file (See Appendix~\ref{sec:Appendix.param}).
 \item[parameter file]
   (Also called \textit{par file}.) A text file used as the input of a
   Cactus program, specifying initial values of thorn parameters.
@@ -248,25 +270,49 @@ Cactus Users' Guide and the Cactus Reference Manual.
 \item[recursion, mutual]
   See \textit{mutual recursion}.
 \item[reduction]
-  Given $N$ grid variables return $M$ output values on each requested
-  processor.
-\item[schedule]
+  Given a set of grid variables on a computational grid, \textit{reduction} 
+  is the process of producing values for the variables on a proper subset of
+  points from the grid.
+\item[scheduler]
+  The part of the Cactus Flesh that determines the order and circumstances
+  in which to execute Cactus routines.  Thorn functions and schedule groups 
+  are registered with the Flesh via the thorn's {\tt schedule.ccl} file to
+  be executed in a certain schedule bin, before or after another function 
+  or group executes, and so forth.  See Chapter~\ref{chap:scheduling},
+  and Section \ref{sec:Appendix.schedule}.
 \item[schedule bin]
+  One of a set of special timebins pre-defined by Cactus.
+  See Section \ref{sec:Appendix.schedule_bins} for a list.
 \item[schedule group]
+  A timebin defined by a thorn, in its {\tt schedule.ccl} file (see
+  Appendix \ref{sec:Appendix.schedule}).
+  Each schedule group must be defined to occur in a Cactus schedule bin or
+  another schedule group.  
+  See Chapter~\ref{chap:scheduling}, \ref{scheduling:schedule_bins}.
 \item[shares] An implementation may \textit{share} restricted parameters
-  with another implementation.  
+  with another implementation, which means the other implementation can
+  get the parameter values, and if the parameters are steerable, it can
+  change them.
   See Section~\ref{subsec:param_ccl}. \ref{sec:Appendix.param}.
 \item[staggering]
   See Section~\ref{sec:staggering}.
 \item[steerable parameter]
   A parameter which can be changed at any time after the program has been
   initialised.  See Section~\ref{sec:Cactus_parameters.steerable}.
+\item[symmetry operation]
+  A grid operation that is a manifestation of a geometrical symmetry,
+  especially rotation or reflection.
 \item[symmetry zone]
-  A symmetry zone is a set of points added to the edge of a grid to
-  contain data which is obtained, by some symmetry operation, from
-  another part of the grid. (See also \textit{boundary zone},
-  \textit{ghost zone}.)
+  A set of points laying at the edge of the computational grid and
+  containing data obtained by some symmetry operation from
+  another part of the same grid.
+  (Contrast with \textit{boundary zone}, \textit{ghost zone}.)
 \item[synchronisation]
+  The process of copying information from the outer part of a 
+  computational interior on one processor to the corresponding ghost zone 
+  (see) on another processor.  Also refers to a special Cactus timebin
+  corresponding to the occurrence of this process. 
+  See Section~\ref{sec:ghost_size}.
 \item[TAGS]
   See Section~\ref{sec:Appendix.tags}.
 \item[target]
@@ -280,9 +326,19 @@ Cactus Users' Guide and the Cactus Reference Manual.
   A collection of subroutines defining a Cactus interface.  
   See Chapters~\ref{chap:thorn_concepts}, \ref{chap:thorn_anatomy}.
 \item[ThornList]
+  A file used by the Cactus CST to determine which thorns to compile 
+  into a Cactus executable
+  (see Section~\ref{sec:gmtafobuanadco}, \ref{sec:cointh}). 
+  Can also be used to determine which thorns
+  to check out from CVS (see Section~\ref{sec:checkout}).
+  A ThornList for each Cactus configuration lies in the configuration
+  subdirectory of the Cactus {\tt configs} directory.
 \item[time bin]
+  A time interval in the duration of a Cactus run wherein the Flesh 
+  runs specified routines.  See \texit{scheduler}, \textit{schedule bin}.
 \item[time level]
 \item[timer]
+  A Cactus API for reporting time.  See Section~\ref{sec:timers}.
 \item[trigger]
 \item[unigrid]
 \item[WMPI]
@@ -420,6 +476,7 @@ for function names. Currently the only supported values of
 
 
 \subsection{Variable blocks}
+\label{subsec:Appendix.interface-variables}
 The thorn's variables are collected into groups. This is not only
 for convenience, but for collecting like variables together.
 Storage assignment, communication assignment, and ghostzone synchronization
@@ -912,7 +969,7 @@ macro \verb|macro| will be defined and given the value ``1''.
 
 The configuration script may tell the CST to add certain features to
 the Cactus environment --- either to the make system or to header
-files included by thorns.  It does this by outputing lines to its
+files included by thorns.  It does this by outputting lines to its
 standard output:
 
 \begin{itemize}
@@ -1129,7 +1186,7 @@ indicate whether an error occurred.  You should return 0.
         multiple grid patches.  It is ignored for unigrid runs.  This bin is
         executed whenever the grid hierarchy or patch setup has changed.  It
         is, e.g., necessary to re-apply the boundary conditions or
-        re-calculate the grid points' coordinates after every changing the
+        recalculate the grid points' coordinates after every changing the
         grid hierarchy.
 
 \item[{\tt CCTK\_ANALYSIS}]
