@@ -462,11 +462,57 @@ names ? }
 
 \chapter{Putting code into your thorn}
 
-\section{What the F***h provides}
+\section{What the Flesh provides}
 
 Header files, macros ...
 
+\subsection{Reduction Operators}
+\label{sec:reop}
+
+Reduction operators are operators which process grid functions
+and return, either on just one processor or on each processor,
+a 1-Dimensional array of scalars. Examples of reduction operators
+could include simple operations such as the maximum value of a 
+grid function across the grid, or complex operations such as
+{\bf FIXME: Think of a good example, Gab}.
+
+The flesh itself does not provide any reduction operators,
+instead providing a mechanism for thorns to register their
+own routines as reduction operators, labelled by a given name.
+For details of writing reduction operators see ????. Application
+thorns can interact with the different registered reduction 
+operators through the following function calls:
+
+{\t
+\begin{verbatim}
+
+#include ``Reduction.h''
+int CCTK_GetReductionHandle(const char *reduction);
+
+\end{verbatim}
+}
+\vskip .25cm
+
+Get a integer handle corresponding to a given reduction operator. 
+(Note that although it would appear to be far more convenient to 
+pass the name of the reduction operator directly to the following
+function call to {\t CCTK\_Reduce} this causes problems with the
+translation of strings from {\t FORTRAN} to {\t C} with variable
+argument lists).
+
+{\t
+\begin{verbatim}
+
+#include ``Reduction.h''
+int CCTK_Reduce(cGH *GH, int retvaltype, int retvalnum, void *retval, int handle, int GFindex, ...);
+
+\end{verbatim}
+}
+\vskip .25cm
+
+
 \subsection{IO}
+\label{sec:io}
 
 To allow flexible IO, the flesh itself does not provide 
 any output routines, however it provides a mechanism for 
@@ -482,11 +528,10 @@ function calls:
 int CCTK_OutputGH(cGH *GH);
 
 #include ``cctk.h''
-CCTK_OutputGH(GH)
+call CCTK_OutputGH(GH)
     CCTK_POINTER GH
 \end{verbatim}
 }
-
 \vskip .25cm
 
 This call loops over all registered IO methods, calling 
@@ -506,7 +551,7 @@ output.
 int CCTK_OutputVarAsByMethod(cGH *GH, const char *varname, const char *alias, const char *methodname);
 
 #include ``cctk.h''
-CCTK_OutputVarAsByMethod(GH,varname,alias,methodname)
+call CCTK_OutputVarAsByMethod(GH,varname,alias,methodname)
     CCTK_POINTER GH
     char* varname
     char* alias
@@ -528,7 +573,7 @@ file is created.
 int CCTK_OutputVarByMethod(cGH *GH, const char *varname, const char *methodname);
 
 #include ``cctk.h''
-CCTK_OutputVarByMethod(GH,varname,methodname)
+call CCTK_OutputVarByMethod(GH,varname,methodname)
     CCTK_POINTER GH
     char* varname
     char* methodname
@@ -547,7 +592,7 @@ file is created.
 int CCTK_OutputVarAs(cGH *GH, const char *varname, const char *alias);
 
 #include ``cctk.h''
-CCTK_OutputVarAs(GH,varname,alias)
+call CCTK_OutputVarAs(GH,varname,alias)
     CCTK_POINTER GH
     char* varname
     char* alias
@@ -567,7 +612,7 @@ of constructing a filename.
 int CCTK_OutputVar(cGH *GH, const char *varname);
 
 #include ``cctk.h''
-CCTK_OutputVarAs(GH,varname)
+call CCTK_OutputVarAs(GH,varname)
     CCTK_POINTER GH
     char* varname
 \end{verbatim}
@@ -581,6 +626,7 @@ file is created.
 
 
 \section{Argument lists and parameters}
+\label{sec:arlianpa}
 
 \section{A First Example (Baloney)}
 
@@ -614,14 +660,78 @@ The error codes are detailed in the following table:
 {\bf ACTION: Fill in the table QUERY}.
 
 \section{Calls between different programming languages}
+\label{sec:cabedipr}
+
 \subsection{Calling C routines from FORTRAN}
+\label{sec:cacrofr}
+
 \subsection{Calling FORTRAN routines from C}
+\label{sec:caforofr}
+
+To call a utility Fortran routine from C use
+
+{\tt
+
+void FORTRAN\_NAME(<Fortran routine name>)(<argument list>)
+}
 
 \section{Programming Style Guidelines and Recommendations}
+\label{sec:prstguan}
 
 \section{Adding a test suite}
+\label{sec:adatesu}
 
 \section{Sharing your thorns/packages with others}
+\label{sec:shyothwi}
+
+\section{Naming conventions}
+
+{\bf FIXME I just want to get this down. Gab}
+
+\begin{itemize}
+
+\item{} Thorn names must not start with the word ``Cactus'' (in
+        any case).
+\item{} Packages will be ignored if their names start with \# or .
+        or end in \~ .bak or .BAK 
+\item{} Thorns will be ignored if they are called doc or start with
+        \# or . or end in \~ .bak or .BAK
+\item{} Routine names have to be unique among all thorns. 
+\item{} Sourcecode filenames do not have to be unique, but you
+        cannot have the same root filename used by different languages.
+        (For example, you cannot have initial.c and initial.F)
+
+
+\end{itemize}
+
+
+\section{Providing a Reduction Operator}
+\label{sec:prareop}
+
+{\bf QUERY: Where should this go ... infrastructure or thorn writer?
+     Interface with driver layer? Gab}
+
+To provide a reduction operator, you must provide a routine with 
+the following interface
+
+{\t
+\begin{verbatim}
+
+int MyReductionOperator(cGH *GH, int proc, int retvaltype, int numretval, void *retvals, int numinfields, int *infields);
+
+\end{verbatim}
+}
+\vskip .25cm
+
+\begin{itemize}
+\item{} {\t int proc} If this argument is negative, the result should
+        be returned to all processors, if it is positive the result
+        need {\bf QUERY : Must? Gab} only be calculated and returned
+        on one processor.
+\item{} {\t int retvaltype} {\bf FIXME}
+\item{} {\t int numretval} The number of values of type {\t retvaltype}
+        being returned in the array {\t retvals}.
+\end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
