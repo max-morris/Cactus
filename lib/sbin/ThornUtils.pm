@@ -356,13 +356,32 @@ sub CleanForLatex
 {
    my $val = shift;
 
+   # escape \
    #$val =~ s/\\/\\\\/g;
+
+   # at start of string, remove spaces before and after: "
    $val =~ s/^\s*?\"\s*?/\"/;
+   
+   # at end of string, remove spaces before and after: "
    $val =~ s/\s*?\"\s*?$/\"/;
+   
+   # escape _
    $val =~ s/\_/\\\_/g;
+
+   # escape $
    $val =~ s/\$/\\\$/g;
+
+   # escape ^
    $val =~ s/\^/\\\^/g;
+
+   # escape *
    $val =~ s/\*/\\\*/g;
+
+
+   # UNescape "
+   # latex gets very angry when it sees: \"
+   # so we are replacing it with: "
+   $val =~ s/\\\"/\"/g;
 
    return $val;
 }
