@@ -21,6 +21,7 @@ static char *rcsid = "$Header$";
 
 #include "cctk_Flesh.h"
 #include "cctk_Comm.h"
+#include "cctk_Sync.h"
 
 #include "cctk_Groups.h"
 #include "cctk_GroupsOnGH.h"
@@ -210,6 +211,7 @@ int CCTK_CallFunction(void *function,
       CCTK_WARN(1, "Unknown function type.");
   }
 
+  /* Return 0, meaning didn't synchronise */
   return 0;
 }
 
@@ -1244,14 +1246,24 @@ static int CCTKi_ScheduleCallFunction(void *function,
                                       t_attribute *attribute, 
                                       t_sched_data *data)
 {
+  int synchronised;
+
   CCTK_TimerStartI(attribute->timer_handle);
 
   /* Use whatever has been chosen as the calling function for this 
    * function. 
    */
-  data->CallFunction(function, &(attribute->FunctionData), data->GH);
+  synchronised = data->CallFunction(function, &(attribute->FunctionData), data->GH);
 
   CCTK_TimerStopI(attribute->timer_handle);
+
+  /* Synchronise the groups if necessary */
+  if(!synchronised)
+  {
+    CCTK_SyncGroupsI(data->GH, 
+                     attribute->FunctionData.n_SyncGroups,  
+                     attribute->FunctionData.SyncGroups);
+  }
 
   return 1;
 }
