@@ -461,7 +461,7 @@ sub parse_param_ccl
         {
           if($data[$line_number] =~ m:\s*\}\s*([^\s].*)\s*:)
           {
-            $message = "Cannot change default when sharing or extending variable: $variable in $thorn";
+            $message = "param.ccl of thorn '$thorn' attempts to change default value of shared or extended parameter '$variable'";
             &CST_error(0,$message,"",__LINE__,__FILE__);
           }             
         }
