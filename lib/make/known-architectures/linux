@@ -3,10 +3,10 @@
 #   @file      linux
 #   @date      Thu Jul 15 21:30:04 1999
 #   @author    Tom Goodale
-#   @desc 
+#   @desc
 #              known-architectures file for systems running Linux
 #   @enddesc
-#   @version   $Header$ 
+#   @version   $Header$
 # @@*/
 
 if test "$CCTK_CONFIG_STAGE" = "preferred-compilers" ; then
@@ -18,14 +18,14 @@ else
 # Determine which Fortran 90 compiler is in use
   LINUX_F90_COMP=none
 
-  if test -n "$F90" && test "$F90" != "none" ; then 
-    if test "`$F90 -V 2>&1 | grep -i f90 | grep -i vast`" ; then 
+  if test -n "$F90" && test "$F90" != "none" ; then
+    if test "`$F90 -V 2>&1 | grep -i f90 | grep -i vast`" ; then
         LINUX_F90_COMP=pacific
-    elif test "`$F90 -V 2>&1 | grep -i f90 | grep -i absoft`" ; then 
+    elif test "`$F90 -V 2>&1 | grep -i f90 | grep -i absoft`" ; then
         LINUX_F90_COMP=absoft
-    elif test "`$F90 -V 2>&1 | grep NAGWare`" ; then 
+    elif test "`$F90 -V 2>&1 | grep NAGWare`" ; then
         LINUX_F90_COMP=nag
-    elif test "`$F90 -V 2>&1 | grep -i fujitsu`" ; then 
+    elif test "`$F90 -V 2>&1 | grep -i fujitsu`" ; then
         LINUX_F90_COMP=fujitsu
     elif test "`$F90 -V 2>&1 | grep -i f90 | grep -i pgf90`" ; then
         LINUX_F90_COMP=portland
@@ -34,34 +34,34 @@ else
     elif test "`$F90 -? 2>&1 | grep -i absoft`" ; then
         LINUX_F90_COMP=absoft77
     elif test "`$F90 --version 2>&1 | grep -i lahey/fujitsu`" ; then
-       LINUX_F90_COMP=lahey          
+       LINUX_F90_COMP=lahey
     elif test "`$F90 -v 2>&1 | grep -i SGIcc`" ; then
-       LINUX_F90_COMP=SGI          
+       LINUX_F90_COMP=SGI
     elif test "`$F90 -V 2>&1 | grep -i intel`" ; then
-       LINUX_F90_COMP=Intel          
+       LINUX_F90_COMP=Intel
     elif test "`$F90 -v 2>&1 | grep -i compaq`" ; then
        LINUX_F90_COMP=Compaq
     else
         echo Unknown Linux f90 compiler.
-        echo Please add appropriate information to 
+        echo Please add appropriate information to
         echo $srcdir/known-architectures/linux-gnu
         echo and send the updated file to CactusMaint
         echo We will try anyway ...
     fi
-  elif test -n "$F77" ; then 
+  elif test -n "$F77" ; then
     if test "`$F77 -v 2>&1 | grep -i 'gcc version'`" ; then
         LINUX_F90_COMP=gnu77
     elif test "`$F77 -? 2>&1 | grep -i absoft`" ; then
         LINUX_F90_COMP=absoft77
-    elif test "`$F77 -V 2>&1 | grep NAGWare`" ; then 
+    elif test "`$F77 -V 2>&1 | grep NAGWare`" ; then
         LINUX_F90_COMP=nag
     elif test "`$F90 -V 2>&1 | grep -i intel`" ; then
-       LINUX_F90_COMP=Intel          
+       LINUX_F90_COMP=Intel
     elif test "`$F90 -v 2>&1 | grep -i compaq`" ; then
        LINUX_F90_COMP=Compaq
     else
         echo Unknown Linux f77 compiler.
-        echo Please add appropriate information to 
+        echo Please add appropriate information to
         echo $srcdir/known-architectures/linux-gnu
         echo and send the updated file to CactusMaint
         echo We will try anyway ...
@@ -85,14 +85,14 @@ else
   case "$LINUX_F90_COMP" in
      gnu77)
        if test "$LINUX_G77_USES_LIBG2C" = "yes" ; then
-         : ${LIBS="g2c m"} 
+         : ${LIBS="g2c m"}
        fi
        if test "$LINUX_G77_USES_LIBG2C" = "no" ; then
-	 if test "$host_cpu" = "powerpc" ; then
+         if test "$host_cpu" = "powerpc" ; then
          : ${LIBS="m"}
-	 else
+         else
          : ${LIBS="f2c m"}
-	 fi
+         fi
        fi
        : ${F77_DEBUG_FLAGS="-g"}
        : ${F90_DEBUG_FLAGS="-g"}
@@ -101,10 +101,10 @@ else
        ;;
      pacific)
        if test "$LINUX_G77_USES_LIBG2C" = "yes" ; then
-         : ${LIBS="vast90 g2c m"} 
+         : ${LIBS="vast90 g2c m"}
        fi
        if test "$LINUX_G77_USES_LIBG2C" = "no" ; then
-         : ${LIBS="vast90 f2c m"} 
+         : ${LIBS="vast90 f2c m"}
        fi
        : ${F77_DEBUG_FLAGS="-g"}
        : ${F90_DEBUG_FLAGS="-g"}
@@ -112,13 +112,13 @@ else
        : ${F90_WARN_FLAGS="-Wall"}
        ;;
      absoft)
-       : ${LIBS="f90math fio f77math m"} 
+       : ${LIBS="f90math fio f77math m"}
        : ${F90_OPTIMISE_FLAGS="-s -O"}
        : ${F77_OPTIMISE_FLAGS="-s -O"}
        # Test if it is a version of the absoft compiler which has the library in a custom place.
        if test -n "$ABSOFT" ; then
          : ${LIBDIRS='$(ABSOFT)/lib'}
-       fi 
+       fi
        : ${F77_DEBUG_FLAGS="-g"}
        : ${F90_DEBUG_FLAGS="-g"}
        : ${F77_WARN_FLAGS="-m0"}
@@ -131,7 +131,7 @@ else
        # Test if it is a version of the absoft compiler which has the library in a custom place.
        if test -n "$ABSOFT" ; then
          : ${LIBDIRS='$(ABSOFT)/lib'}
-       fi 
+       fi
        : ${F77_DEBUG_FLAGS="-g"}
        : ${F90_DEBUG_FLAGS="-g"}
        : ${F77_WARN_FLAGS="-m0"}
@@ -145,14 +145,14 @@ else
        ;;
      portland)
        : ${LIBS="pgf90rtl pgf90 pgftnrtl pgf90_rpm1 pghpf2 pgc m"}
-       : ${LIBDIRS='$(PGI)/linux86/lib'} 
+       : ${LIBDIRS='$(PGI)/linux86/lib'}
        : ${F77_OPTIMISE_FLAGS='-fast'}
        : ${F90_OPTIMISE_FLAGS='$(F77_OPTIMISE_FLAGS)'}
        : ${F77_DEBUG_FLAGS="-g"}
        : ${F90_DEBUG_FLAGS="-g"}
        ;;
      fujitsu)
-       : ${LIBS="fj9i6 fj9e6 fj9f6"} 
+       : ${LIBS="fj9i6 fj9e6 fj9f6"}
        ;;
      lahey)
        : ${F77_DEBUG_FLAGS="-g --chk"}
@@ -160,14 +160,14 @@ else
        : ${F77_WARN_FLAGS="--warn"}
        : ${F90_WARN_FLAGS="--warn"}
        : ${F77_OPTIMISE_FLAGS="-O"}
-       : ${F90_OPTIMISE_FLAGS="-O"}         
+       : ${F90_OPTIMISE_FLAGS="-O"}
        if test -n "$LAHEY" ; then
          : ${LIBDIRS="$LAHEY/lib"}
        else
          if test -d '/usr/local/lf9555/lib' ; then
-	   : ${LIBDIRS="/usr/local/lf9555/lib"}
+           : ${LIBDIRS="/usr/local/lf9555/lib"}
          elif test -d '/usr/local/lf9560/lib' ; then
-	   : ${LIBDIRS="/usr/local/lf9560/lib"}
+           : ${LIBDIRS="/usr/local/lf9560/lib"}
          fi
        fi
        if test -z "${LIBDIRS}" ; then
@@ -178,8 +178,8 @@ else
        if test -f "${LIBDIRS}/libfccx86_6a.a" ; then
          : ${LIBS="fj9i6 fj9f6 fj9e6 fccx86_6a"}
        else
-         : ${LIBS="fj9i6 fj9e6 fj9f6"} 
-       fi       
+         : ${LIBS="fj9i6 fj9e6 fj9f6"}
+       fi
        ;;
      SGI)
        : ${F77_WARN_FLAGS='-fullwarn'}
@@ -188,7 +188,7 @@ else
        : ${F90_DEBUG_FLAGS='-g3'}
        : ${F77_OPTIMISE_FLAGS='-O3'}
        : ${F90_OPTIMISE_FLAGS='-O3'}
-       : ${LIBS="fortran ffio m"} 
+       : ${LIBS="fortran ffio m"}
        ;;
      Intel)
        if test "$OPTIMISE" = "no"; then
@@ -200,12 +200,23 @@ else
        fi
        : ${F77_OPTIMISE_FLAGS='-O3 -ip'}
        : ${F90_OPTIMISE_FLAGS='-O3 -ip'}
-       : ${LIBS='intrins IEPCF90 F90 imf m irc cxa cprts cxa'}
+
+       # add the necessary libraries according to the compiler version
+       if test "`$F90 -V 2>&1 | grep Version | sed 's/.*Version //' | sed 's/\..*//'`" -ge 8; then
+         : ${LIBS='ifcore imf m irc cxa cprts cxa unwind'}
+       else
+         : ${LIBS='intrins IEPCF90 F90 imf m irc cxa cprts cxa'}
+       fi
 
        # add the libpath if the linker is not Intel
-       if test "$LD" != "icc" -a -n "$IA32ROOT" ; then
-         : ${LIBDIRS='$(IA32ROOT)/lib'}
-         : ${LDFLAGS='-Qy $(IA32ROOT)/lib/icrt.link'}
+       if test "$LD" != 'icc' ; then
+         if test -z "$IA32ROOT" ; then
+           IA32ROOT="$(dirname $(dirname $(which $F90)))"
+         fi
+         if test -d "$IA32ROOT" ; then
+           : ${LIBDIRS="$IA32ROOT/lib"}
+           : ${LDFLAGS="-Qy $IA32ROOT/lib/icrt.link"}
+         fi
        fi
        if test "$LD" != "ecc" -a "$LD" != "ecpc" -a -n "$IA64ROOT" ; then
          : ${LIBDIRS='$(IA64ROOT)/lib'}
@@ -217,16 +228,16 @@ else
        : ${LIBS="for m"}
        ;;
      none)
-       : ${LIBS="m"} 
+       : ${LIBS="m"}
        ;;
      *)
        echo Unknown Linux f90 compiler.
-       echo Please add appropriate information to 
+       echo Please add appropriate information to
        echo $srcdir/known-architectures/linux-gnu
        echo and send the updated file to CactusMaint
        echo We will try anyway ...
        ;;
-  esac    
+  esac
 
 # C compiler
 
@@ -275,7 +286,7 @@ else
 # Cache stuff
 
   if test -z "$CACHELINE_BYTES" ; then
-    case "$host_cpu" in 
+    case "$host_cpu" in
        i?86)
         CACHELINE_BYTES=32
         echo "Setting CACHELINE_BYTES to $CACHELINE_BYTES"
@@ -302,7 +313,7 @@ else
         CACHE_SIZE=2*1024
       else
         CACHE_SIZE="`cat /proc/cpuinfo | perl -nae 'if(m:cache\D+(\d+): && ! $dunnit) {print $1; $dunnit=1}'`"
-	if test -z "$CACHE_SIZE"; then
+        if test -z "$CACHE_SIZE"; then
           CACHE_SIZE=0
         fi
       fi
@@ -313,7 +324,7 @@ else
         echo "Unable to determine Cache size on this machine. "
       fi
     else
-      echo "Cross compiling - unable to determine cache size" 
+      echo "Cross compiling - unable to determine cache size"
     fi
   fi
 
