@@ -6,7 +6,7 @@
 #   @desc  Optimazations by Peter Diener
 #   Configuration file for the Hitachi SR8000-F1
 #   @enddesc 
-#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/hiuxmpp,v 1.6 2001-04-05 14:36:15 tradke Exp $
+#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/hiuxmpp,v 1.7 2001-04-05 16:45:31 tradke Exp $
 # @@*/
 
 if test "$CCTK_CONFIG_STAGE" = "preferred-compilers" ; then
@@ -77,7 +77,6 @@ else
 # PTHREADS stuff
 
   if test "X$PTHREADS" = "Xyes"; then
-    PTHREADS_CFLAGS="-D_PTHREADS_D10"
-    PTHREADS_CXXFLAGS="$PTHREADS_CFLAGS"
+    PTHREADS_DEFINE="_PTHREADS_D10"
   fi
 fi
