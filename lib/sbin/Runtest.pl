@@ -16,6 +16,7 @@ $ansinormal  = "\033[0m";
 $ansibold    =  "\033[1m";
 
 print <<EOT;
+
 -------------------------------
  Cactus Code Test Suite Tool
  Paul Walker + Joan Masso
@@ -33,7 +34,7 @@ else
   $configs_dir = "configs";
 }
 
-$executable = &defprompt("Enter executable name (relative to Cactus home dir)",".${sep}cactus_$config");
+$executable = &defprompt("Enter executable name (relative to Cactus home dir)",".${sep}exe${sep}cactus_$config");
 $command = &defprompt("Enter command to run executable"," ");
 
 $tests = &defprompt("Run All tests or go to Menu",
