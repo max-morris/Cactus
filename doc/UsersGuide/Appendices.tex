@@ -1,6 +1,54 @@
 \begin{cactuspart}{5}{Appendices}{$RCSfile$}{$Revision$}
 \renewcommand{\thepage}{\Alph{part}\arabic{page}}
 
+\chapter{Glossary}
+
+\begin{Lentry}
+
+\item[{\tt arrangement}] A collection of thorns.
+\item[{\tt autoconf}]
+\item[{\tt Cactus}]
+\item[{\tt CCTK}] Cactus Computational Tool Kit (The Cactus flesh and
+            computational thorns).
+\item[{\tt CCL}] The {\tt Cactus Configuration Language}, this is the language
+that the thorn configuration files are written in.
+\item[{\tt configuration}]
+\item[{\tt checkout}]
+\item[{\tt checkpointing}]
+\item[{\tt convergence}]
+\item[{\tt CVS}] The {\em ``Concurrent Versioning System''} is the
+  favoured distribution system for Cactus and can be
+  downloaded from your favorite GNU site.  
+\item[{\tt flesh}] The routines which hold all the thorns together, this 
+is what you get if you check out {\tt Cactus} from our CVS repository.
+\item[{\tt friend}]
+\item[{\tt GF}] Shorthand for a {\tt grid function}
+\item[{\tt gmake}] 
+\item[{\tt ghostzone}]
+\item[{\tt grid function}]
+\item[{\tt grid hierachy}] A computational grid, and the grid variables associated with it.
+\item[{\tt grid scalar}]
+\item[{\tt grid variable}]
+\item[{\tt GNATS}] The GNU program we use for reporting and tracking bugs, 
+  comments and suggestions.
+\item[{\tt HDF5}] Hierarchical Data Format version 5
+\item[{\tt implementation}]
+\item[{\tt inherit}]
+\item[{\tt interpolation}]
+\item[{\tt MPI}]
+\item[{\tt parameter}] A variable which remains unchanged throughout the executation of a Cactus executable. Parameters all have default values which can be changed in a parameter file.
+\item[{\tt processor topology}]
+\item[{\tt PVM}]
+\item[{\tt reduction}]
+\item[{\tt TAGS}]
+\item[{\tt target}]
+\item[{\tt thorn}] A collection of subroutines with a definite interface 
+             and purpose.
+\item[{\tt WMPI}] Win32 Message Passing Interface
+
+\end{Lentry}
+
+
 \chapter{Configuration file syntax}
 \label{sec:cofisy}    
 
@@ -10,9 +58,9 @@
 Each thorn is configured by three compulsory files in the top level thorn
 directory:
 \begin{itemize}
-\item{} interface.ccl
-\item{} param.ccl
-\item{} schedule.ccl
+\item{} {\tt interface.ccl}
+\item{} {\tt param.ccl}
+\item{} {\tt schedule.ccl}
 \end{itemize}
 These files are written in the {\it Cactus Configuration Language} which is
 case insensitive.
@@ -460,10 +508,10 @@ CVS situations.
 login} \\ You will be asked for the password for user {\em cvs\_anon}, which is {\tt anon}.
 
 \item\textbf{Checking out the code}\newline
-{\tt cvs -d :pserver:cvs\_anon@cvs.cactuscode.org:/usr/users/cactus
-checkout CCTK}\\
-check out a CVS module named ``CCTK'', in this case it checks out the
-Cactus Computational Toolkit. A directory {\tt ./CCTK} is created if  
+{\tt cvs -d :pserver:cvs\_anon@cvs.cactuscode.org:/cactus
+checkout Cactus}\\
+check out a CVS module named ``Cactus'', in this case it checks out the
+Cactus Computational Toolkit. A directory {\tt ./Cactus} is created if  
 it doesn't already exits. If you perform a checkout on an already
 existing and locally modified copy of the module, CVS will try to merge the files
 with your local copy. 
@@ -528,11 +576,11 @@ A TAGS database can be generated with by gmake:
 {\tt gmake TAGS} will create a database for a routine reference
 table to be used within Emacs. This database can be accessed within
 emacs if you add either of the following lines to your {\tt .emacs} file:\\
-{\tt (setq tags-file-name "CCTK\_dir/TAGS")} XOR \\
-{\tt (setq tag-table-alist '(("CCTK\_dir" . "CCTK\_dir/TAGS")))}\\
-where {\tt CCTK\_dir } is your CCTK directory.\\
+{\tt (setq tags-file-name "CACTUS\_HOME/TAGS")} XOR \\
+{\tt (setq tag-table-alist '(("CACTUS\_HOME" . "CACTUS\_HOME/TAGS")))}\\
+where {\tt CACTUS\_HOME } is your Cactus directory.\\
 
-You can now easily navigate the CCTK and Toolkits by searching for
+You can now easily navigate your Cactus Flesh and Toolkits by searching for
 functions or ``tags'':
 \begin{enumerate}
 \item \textbf{ Alt.} will find a tag
