@@ -1,10 +1,9 @@
 
 Cactus Code Frequently Asked Questions
 
-$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.12 2000-12-08 08:26:02 allen Exp $
+$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.13 2001-01-14 15:08:51 allen Exp $
 
-The latest version of this FAQ is always available from the main Cactus Code 
-web site at <http://www.cactuscode.org/Documentation/FAQ
+Also available at http://www.cactuscode.org/Documentation/FAQ
 
 -------------------------------------------------------------------------------
 
@@ -140,3 +139,60 @@ web site at <http://www.cactuscode.org/Documentation/FAQ
     portability. 
 
 -------------------------------------------------------------------------------
+
+13) I'm trying to run Cactus with MPI using "mpirun", but I just get an error
+    "Unknown option -np", what's the problem?
+
+    It looks like the MPI implementation on the machine you're using isn't
+    removing it's arguements correctly, so they are being passed to the
+    Cactus run. You need to use the "-i" command line option for Cactus to 
+    ignore the MPI arguements, e.g.
+
+    mpirun ./cactus_foo foobar.par -i -np 8
+
+-------------------------------------------------------------------------------
+           
+14) Why is there an MPI call in the Flesh (MPI_Init)? I thought that the 
+    Cactus flesh was independent of any parallel protocol, why isn't this
+    call made from a driver thorn?
+
+    We would love to get rid of the last remaining MPI calls from the flesh,
+    unfortunately in MPI 1, MPI implementations are allowed to play around 
+    with the argument list, so we need to call MPI_Init before parsing the 
+    command line argument, and this makes it very difficult to have it 
+    called from the driver, since we don't even know what the parameter 
+    file is at that stage, so we don't even know which driver to activate!
+
+    MPI 2 allows NULL to be passed to MPI_Init, which gets around the 
+    problem, but the only machines currently with MPI 2 are Japanese 
+    supercomputers.
+
+    It is the only MPI call made before the driver is activated, and it 
+    sets a global variable to tell you it's been done, so it isn't a 
+    major problem apart from being extremely ugly.  You can even turn 
+    it off with an environment variable, but then if you run with MPICH 
+    you'll find the code complaining about unknown command line arguments 
+    like -p4grp. If we had a precise list of the arguments passed by each 
+    MPI implementation we could guard against them, but that's an even 
+    uglier option.
+
+-------------------------------------------------------------------------------
+ 
+15. While implementing some MPI code in Cactus, I came across the problem of
+    getting an MPI communicator.  I basically have the choice between using
+    MPI_COMM_WORLD, assuming that no processors have been set aside by the
+    driver, or tying myself to a certain driver, such as PUGH, and using the
+    driver's internal data structures.  Both choices are clearly not 
+    desirable.
+
+    We are aware of this, and in fact, it is the reason why some of the 
+    I/O thorns are directly dependent on the PUGH driver.
+    The solution for all this will be the Cactus Communication
+    Infrastructure (CCI: http://www.cactuscode.org/Development/Specs/CCI.txt) 
+    which will eventually be integrated into the flesh and will provide a 
+    generic function interface for communicating data. 
+    Thus when you plug in different communication drivers, I/O thorns 
+    won't need to be changed if they use the CCI routines.
+
+-------------------------------------------------------------------------------
+    
