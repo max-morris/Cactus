@@ -34,9 +34,9 @@ test_phdf5=$?
 
 if [ -n "$MPI" ] ; then
   if [ $test_phdf5 -eq 0 ] ; then
-    echo "Found parallel HDF5 library, so Cactus will make use of parallel HDF5 support."
-  else
-    echo "Found serial HDF5 library, so Cactus can't make use of parallel HDF5 support."
+    echo "Found parallel HDF5 library, so Cactus will potentially make use of parallel HDF5 support."
+#  else
+#    echo "Found serial HDF5 library, so Cactus can't make use of parallel HDF5 support."
   fi
 else
   if [ $test_phdf5 -eq 0 ] ; then
@@ -77,25 +77,21 @@ fi
 
 # Check whether we have to link with libz.a
 
-# this is for 1.3.x versions of HDF5
-grep -qe '#define H5_HAVE_COMPRESS2 1' ${HDF5_DIR}/include/H5pubconf.h 2> /dev/null
-test_compress2=$?
-
-# this is for 1.2.x versions of HDF5
-if [ $test_compress2 -ne 0 ] ; then
-  grep -qe '#define HAVE_COMPRESS2 1' ${HDF5_DIR}/include/H5config.h 2> /dev/null
-  test_compress2=$?
-fi
-
-# this is for old 1.0.x versions of HDF5 where they used different defines for zlib
-grep -qe '#define HAVE_LIBZ 1' ${HDF5_DIR}/include/H5config.h 2> /dev/null
+# this is for current versions of HDF5 (starting from 1.4.x)
+grep -qe '#define H5_HAVE_LIBZ 1' ${HDF5_DIR}/include/H5pubconf.h 2> /dev/null
 test_zlib=$?
+
+# this is for old versions of HDF5 (before 1.4.x)
+if [ $test_zlib -ne 0 ] ; then
+  grep -qe '#define HAVE_LIBZ 1' ${HDF5_DIR}/include/H5config.h 2> /dev/null
+  test_zlib=$?
+fi
 
 # check whether we run Windows or not
 $PERL -we 'exit (`uname` =~ /^CYGWIN/)'
 is_windows=$?
 
-if [ $test_compress2 -eq 0 -o $test_zlib -eq 0 ] ; then
+if [ $test_zlib -eq 0 ] ; then
   if [ $is_windows -eq 0 ] ; then
     libz='libz.a'
   else
