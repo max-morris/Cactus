@@ -73,22 +73,22 @@ char *compileDate(void) {
 #define REALSTRINGIFY(a) #a
 
 
-char *CCTK_FullVersion()
+char *CCTK_FullVersion(void)
 {
   return (STRINGIFY(CCTK_VERSION));
 }
 
-char *CCTK_MajorVersion()
+char *CCTK_MajorVersion(void)
 {
   return (STRINGIFY(CCTK_VERSION_MAJOR));
 }
 
-char *CCTK_MinorVersion()
+char *CCTK_MinorVersion(void)
 {
   return (STRINGIFY(CCTK_VERSION_MINOR));
 }
 
-char *CCTK_OtherVersion()
+char *CCTK_OtherVersion(void)
 {
   return (STRINGIFY(CCTK_VERSION_OTHER));
 }
