@@ -1014,6 +1014,7 @@ int CCTK_GroupData (int group, cGroup *gp)
       gp->vectorlength  = groups[group].vectorlength;
       gp->numtimelevels = groups[group].n_timelevels;
       gp->stagtype      = groups[group].staggertype;
+      gp->tagstable     = groups[group].tags_table;
 
       if(groups[group].vararraysize)
       {

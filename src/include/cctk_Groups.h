@@ -22,6 +22,7 @@ typedef struct
   int numtimelevels;
   int vectorgroup;
   int vectorlength;
+  int tagstable;
 } cGroup;
 
 /* Prototypes */
