@@ -117,7 +117,6 @@ sub create_thorn_list
 
   while(<ACTIVE>)
   {
-    s/thorn_//g;
     s/\#(.*)$//g;
     s/\n//g;		# Different from chop...
     next if (m:^\s*$:);
@@ -127,7 +126,8 @@ sub create_thorn_list
 
       $toolkit = $1;
       $thorn_name = $2;
-
+      $thorn_name =~ s/thorn_//;
+      
       if( -r "$cctk_home/toolkits/$thorn/param.ccl" &&
 	  -r "$cctk_home/toolkits/$thorn/interface.ccl" &&
 	  -r "$cctk_home/toolkits/$thorn/schedule.ccl")
@@ -283,7 +283,7 @@ EOT
 
   close OUT;
 
-  open (OUT, ">make.code.defn") || die "Cannot open ake.code.defn";
+  open (OUT, ">make.code.defn") || die "Cannot open make.code.defn";
 
   print OUT "SRCS = Bindings.c\n";
 
