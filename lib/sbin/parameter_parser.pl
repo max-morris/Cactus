@@ -220,7 +220,15 @@ sub parse_param_ccl
         # The (optional) description is seperated by ::
 	while($data[$line_number] !~ m:\s*\}:)
 	{
-	    ($new_ranges, $delim, $new_desc) = $data[$line_number] =~ m/(.*)(::)(.*)/;
+	    if($data[$line_number] =~ m/::/)
+	    {
+	      ($new_ranges, $delim, $new_desc) = $data[$line_number] =~ m/(.*)(::)(.*)/;
+	    }
+	    else
+	    {
+	      ($new_ranges, $delim, $new_desc) = ($data[$line_number],"","");
+	    }       
+
 	    # Increment the number of ranges found (ranges)
 	    $parameter_db{"\U$thorn $variable\E ranges"}++;
 	    # Strip out any spaces in the range for a numeric parameter.
@@ -230,7 +238,7 @@ sub parse_param_ccl
 	    }
 	    $parameter_db{"\U$thorn $variable\E range $parameter_db{\"\U$thorn $variable\E ranges\"} range"} = $new_ranges;
 	    # Give a warning if no description has been given
-	    if(! $delim)
+	    if($delim eq "")
 	    {
 		$message = "Missing description of range '$new_ranges' for parameter $thorn\::$variable";
 		&CST_error(1,$message,__LINE__,__FILE__);
