@@ -118,6 +118,13 @@ sub parse_schedule_ccl
       $buffer .= "\@STATEMENT\@$n_statements\n";
       $n_statements++;
     }
+    elsif($data[$line_number] =~ m/^\s*(STOR|COMM).*/i)
+    {
+      $hint = "Line should be of format STORAGE: <group>, <group>";
+      $message = "Format error in STORAGE statement of $thorn\nLine is: $data[$line_number]";
+      &CST_error(0,$message,$hint,__LINE__,__FILE__);
+	
+    }
     else
     {
       $buffer .= "$data[$line_number]\n";
