@@ -17,11 +17,20 @@ extern "C" {
 
 int CCTK_RegisterGHExtension(const char *name);
 
-int CCTK_RegisterGHExtensionInitialiser(int handle, int (*func)(cGH *));
+int CCTK_RegisterGHExtensionSetupGH(int handle, 
+				    void *(*func)(tFleshConfig *, int, cGH *));
+
+int CCTK_RegisterGHExtensionInitGH(int handle, int (*func)(cGH *));
+
+int CCTK_RegisterGHExtensionrfrTraverseGH(int handle, int (*func)(cGH *, int));
 
 int CCTK_SetupGHExtensions(tFleshConfig *config, 
 			   int convergence_level, 
 			   cGH *GH);
+
+int CCTK_InitGHExtensions(cGH *GH);
+
+int CCTK_rfrTraverseGHExtensions(cGH *GH, int rfrpoint);
 
 #ifdef _cplusplus
 }
