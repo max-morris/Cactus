@@ -5,6 +5,7 @@
    @desc 
    Routines to deal with binary trees
    @enddesc 
+   @version $Header$
  @@*/
 
 #include <stdio.h>
@@ -14,6 +15,10 @@
 #include "util_BinaryTree.h"
 
 static char *rcsid = "$Header$";
+
+/********************************************************************
+ ********************    External Routines   ************************
+ ********************************************************************/
 
 
  /*@@
@@ -30,7 +35,10 @@ static char *rcsid = "$Header$";
    @endhistory 
 
 @@*/
-uBinTree *Util_BinTreeStoreData(uBinTree *root, uBinTree *subtree, void *data, int (*compare)(const void *, const void *))
+uBinTree *Util_BinTreeStoreData(uBinTree *root, 
+                                uBinTree *subtree, 
+                                void *data, 
+                                int (*compare)(const void *, const void *))
 {
   int order;
 
@@ -98,7 +106,9 @@ uBinTree *Util_BinTreeStoreData(uBinTree *root, uBinTree *subtree, void *data, i
    @endhistory 
 
 @@*/
-int Util_BinTreeTraverseInorder(uBinTree *root, int (*process)(void *, void *), void *info)
+int Util_BinTreeTraverseInorder(uBinTree *root, 
+                                int (*process)(void *, void *), 
+                                void *info)
 {
   int terminate;
 
@@ -128,7 +138,9 @@ int Util_BinTreeTraverseInorder(uBinTree *root, int (*process)(void *, void *), 
    @endhistory 
 
 @@*/
-int Util_BinTreeTraversePreorder(uBinTree *root, int (*process)(void *, void *), void *info)
+int Util_BinTreeTraversePreorder(uBinTree *root, 
+                                 int (*process)(void *, void *), 
+                                 void *info)
 {
   int terminate;
 
@@ -158,7 +170,9 @@ int Util_BinTreeTraversePreorder(uBinTree *root, int (*process)(void *, void *),
    @endhistory 
 
 @@*/
-int Util_BinTreeTraversePostorder(uBinTree *root, int (*process)(void *, void *), void *info)
+int Util_BinTreeTraversePostorder(uBinTree *root, 
+                                  int (*process)(void *, void *), 
+                                  void *info)
 {
   int terminate;
 
@@ -189,8 +203,8 @@ int Util_BinTreeTraversePostorder(uBinTree *root, int (*process)(void *, void *)
 
 @@*/
 int Util_BinTreePrintNodes(uBinTree *root, 
-			   int depth, 
-			   void (*print_node)(void *, int))
+                           int depth, 
+                           void (*print_node)(void *, int))
 {
   if(root)
   {
@@ -216,7 +230,9 @@ int Util_BinTreePrintNodes(uBinTree *root,
    @endhistory 
 
 @@*/
-uBinTree *TreeFindNode(uBinTree *root, void *data, int (*compare)(const void *, const void *))
+uBinTree *Util_BinTreeFindNode(uBinTree *root, 
+                               void *data, 
+                               int (*compare)(const void *, const void *))
 {
   int order;
 

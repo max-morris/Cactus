@@ -5,6 +5,7 @@
    @desc 
    Generic hash stuff.
    @enddesc 
+   @version $Header$
  @@*/
 
 #include <stdio.h>
@@ -18,9 +19,9 @@ static char *rcsid = "$Header$";
 
 /* Local routine prototypes */
 static iHashEntry *HashFind(uHash *hash, 
-			    unsigned int klen, 
-			    char *key, 
-			    unsigned int hashval);
+                            unsigned int klen, 
+                            char *key, 
+                            unsigned int hashval);
 static int HashRehash(uHash *hash);
 
 /********************************************************************
@@ -444,9 +445,9 @@ unsigned int Util_HashHash(unsigned int klen,
 
 @@*/
 static iHashEntry *HashFind(uHash *hash, 
-			    unsigned int klen, 
-			    char *key, 
-			    unsigned int hashval)
+                            unsigned int klen, 
+                            char *key, 
+                            unsigned int hashval)
 {
   iHashEntry *entry;
   unsigned int location;

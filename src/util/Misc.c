@@ -63,8 +63,8 @@ int Util_SplitString(char **before, char **after, const char *string, const char
   if(position)
   {
     /*Allocate memory for return strings. */
-    *before  = (char *)malloc((position-string+1)*sizeof(char));
-    *after = (char *)malloc((strlen(string)-(position-string)-strlen(sep)+1)*sizeof(char));
+    *before = (char *)malloc((size_t)((position-string+1)*sizeof(char)));
+    *after  = (char *)malloc((size_t)((strlen(string)-(position-string)-strlen(sep)+1)*sizeof(char)));
 
     /* Check that the allocation succeeded. */
     if(!*before || !*after)
