@@ -238,6 +238,10 @@ void CCTK_FCALL CCTK_FNAME (CCTK_Warn)
    @author     Tom Goodale
    @desc
                Warning routine with variable argument list
+
+               If the given warning level is less or equal to the current one,
+               it will print the given warning message to stderr.
+               On processors other than 0 it will also print it to stdout.
    @enddesc
    @calls      CCTK_ParameterGet
 
@@ -302,16 +306,33 @@ int CCTK_VWarn (int level,
                        "  (line %d of %s): \n"
                        "  -> ",
                level, thorn, myproc, line, file);
+      if (myproc)
+      {
+        fprintf (stdout, "WARNING level %d in thorn %s processor %d\n"
+                         "  (line %d of %s): \n"
+                         "  -> ",
+                 level, thorn, myproc, line, file);
+      }
     }
     else
     {
       fprintf (stderr, "WARNING[L%d,P%d] (%s): ", level, myproc, thorn);
+      if (myproc)
+      {
+        fprintf (stdout, "WARNING[L%d,P%d] (%s): ", level, myproc, thorn);
+      }
     }
 
     va_start (ap, format);
     vfprintf (stderr, format, ap);
     fprintf (stderr, "\n");
     fflush (stderr);
+    if (myproc)
+    {
+      vfprintf (stdout, format, ap);
+      fprintf (stdout, "\n");
+      fflush (stdout);
+    }
     va_end (ap);
   }
 
