@@ -32,8 +32,14 @@ typedef struct
   int meta;
   int global;
   int level;
-  int local;
   int singlemap;
+  int local;
+
+  int loop_meta;
+  int loop_global;
+  int loop_level;
+  int loop_singlemap;
+  int loop_local;
 
   /* The last items should be considered volatile and may not stay here */
 

@@ -1585,6 +1585,13 @@ static int InitialiseOptionList(t_attribute *attribute)
   attribute->FunctionData.global = 0;
   attribute->FunctionData.level = 0;
   attribute->FunctionData.singlemap = 0;
+  attribute->FunctionData.local = 0;
+
+  attribute->FunctionData.loop_meta = 0;
+  attribute->FunctionData.loop_global = 0;
+  attribute->FunctionData.loop_level = 0;
+  attribute->FunctionData.loop_singlemap = 0;
+  attribute->FunctionData.loop_local = 0;
 
   return 0;
 }
@@ -1636,6 +1643,26 @@ static int ParseOption(t_attribute *attribute,
   else if(CCTK_Equals(option, "LOCAL"))
   {
     attribute->FunctionData.local = 1;
+  }
+  else if(CCTK_Equals(option, "LOOP-META"))
+  {
+    attribute->FunctionData.loop_meta = 1;
+  }
+  else if(CCTK_Equals(option, "LOOP-GLOBAL"))
+  {
+    attribute->FunctionData.loop_global = 1;
+  }
+  else if(CCTK_Equals(option, "LOOP-LEVEL"))
+  {
+    attribute->FunctionData.loop_level = 1;
+  }
+  else if(CCTK_Equals(option, "LOOP-SINGLEMAP"))
+  {
+    attribute->FunctionData.loop_singlemap = 1;
+  }
+  else if(CCTK_Equals(option, "LOOP-LOCAL"))
+  {
+    attribute->FunctionData.loop_local = 1;
   }
   else
   {
