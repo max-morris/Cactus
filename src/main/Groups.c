@@ -1558,7 +1558,7 @@ static CCTK_INT **CCTKi_ExtractSize(int dimension, const char *thorn, const char
           
           if(next_comma)
           {
-            strncpy(tmp, last_comma, (next_comma-last_comma));
+            strncpy(tmp, last_comma, (size_t)(next_comma-last_comma));
             tmp[next_comma-last_comma] = '\0';
           }
           else
