@@ -457,6 +457,14 @@ sub parse_param_ccl
             &CST_error(0,$message,$hint,__LINE__,__FILE__);
           }             
         }
+        if($block =~ m:SHARES:i)
+        {
+          if($data[$line_number] =~ m:\s*\}\s*([^\s].*)\s*:)
+          {
+            $message = "Cannot change default when sharing or extending variable: $variable in $thorn";
+            &CST_error(0,$message,"",__LINE__,__FILE__);
+          }             
+        }
       }
     }
     else
