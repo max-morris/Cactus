@@ -6,7 +6,7 @@
 #   @desc
 #            Known architecture stuff for the SX-5
 #   @enddesc
-#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/superux,v 1.14 2003-09-25 18:29:47 tradke Exp $
+#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/superux,v 1.15 2003-09-26 15:35:54 tradke Exp $
 # @@*/
 
 if test "$CCTK_CONFIG_STAGE" = 'preferred-compilers' ; then
@@ -26,12 +26,12 @@ else
 
   : ${CXX_WARN_FLAGS=''}
 
-  : ${LIBS='i90sx f90sxe v90sxe_sv i90sxe m90sxe m'}
+  : ${LIBS='i90sx f90sxe v90sxe_sv i90sxe m90sxe u90sx m'}
 
   # dependencies are a bit awkward to generate on the SX-5
   if test "x$cross_compiling" = 'xyes' ; then
-    : ${C_DEPEND='${CPP} -M ${CPPFLAGS}'}
-    : ${CXX_DEPEND='${C_DEPEND}'}
+    : ${C_DEPEND='$(CPP) -M $(CPPFLAGS)'}
+    : ${CXX_DEPEND='$(C_DEPEND)'}
   else
     : ${C_DEPEND='$(CPP) -H$@ $(CPPFLAGS)'}
     : ${CXX_DEPEND='$(C_DEPEND)'}
