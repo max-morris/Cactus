@@ -17,6 +17,8 @@ if test -n "$F90" ; then
 	LINUX_F90_COMP=pacific
     elif test "`$F90 -V 2>&1 | grep -i f90 | grep -i absoft`" ; then 
 	LINUX_F90_COMP=absoft
+    elif test "`$F90 -V 2>&1 | grep -i fujitsu`" ; then 
+	LINUX_F90_COMP=fujitsu
     elif test "`$F90 -V 2>&1 | grep -i f90 | grep -i pgf90`" ; then
 	LINUX_F90_COMP=portland
     elif test "`$F90 -v 2>&1 | grep -i g77`" ; then
@@ -58,6 +60,8 @@ case "$LINUX_F90_COMP" in
      F90FLAGS="$F90FLAGS -N140" ;;
      portland)
      : ${LIBS="pgf90 pgf90_rpm1 pghpf2 pgf90rtl pgc m"} ;;
+     fujitsu)
+     : ${LIBS="fj9i6 fj9e6 fj9f6"} ;;
      none)
      : ${LIBS="m"} ;;
     *)
