@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.90 2000-04-20 12:53:45 goodale Exp $
+#   @version $Id: Makefile,v 1.91 2000-05-05 12:14:59 allen Exp $
 # @@*/
 
 ##################################################################################
@@ -571,7 +571,7 @@ $(addsuffix -config,$(CONFIGURATIONS)):
 	  fi ; \
 	  echo $(DIVIDER) ; \
 	  if test "x$(PROMPT)" = "xno" ; then \
-	    gmake $(@:%-config=%) WARN=$(WARN); \
+	    $(MAKE) $(@:%-config=%) WARN=$(WARN); \
 	  else \
 	    echo Use $(MAKE) $(@:%-config=%) to build the configuration. ; \
 	  fi; \
@@ -606,7 +606,7 @@ endif
 	    fi ;\
 	    echo $(DIVIDER)   ;  \
 	    if test "x$(PROMPT)" = "xno" ; then \
-	      gmake $(@:%-config=%) WARN=$(WARN); \
+	      $(MAKE) $(@:%-config=%) WARN=$(WARN); \
 	    else \
 	      echo Use $(MAKE) $(@:%-config=%) to build the configuration.; \
 	    fi; \
@@ -761,7 +761,7 @@ downsize:
 	read yesno rest ;\
 	if [ "x$$yesno" = "xyes" -o "x$$yesno" = "xy" -o "x$$yesno" = "xYES" -o "x$$yesno" = "xY" ] ;\
 	then  \
-	gmake distclean; \
+	$(MAKE) distclean; \
 	echo $(DIVIDER)   ;  \
 	fi 
 
@@ -792,7 +792,7 @@ downsize:
 	  fi ; \
 	  echo $(DIVIDER) ;  \
 	  if test "x$(PROMPT)" = "xno" ; then \
-	    gmake $(@:%-config=%) WARN=$(WARN); \
+	    $(MAKE) $(@:%-config=%) WARN=$(WARN); \
 	  else \
 	    echo Use $(MAKE) $@ to build the configuration. ; \
 	  fi; \
