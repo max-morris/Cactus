@@ -21,7 +21,6 @@
 #include <malloc.h>
 #include <stdarg.h>
 
-#include "cctk.h"
 #include "cctk_Types.h"
 #include "cctk_Constants.h"
 #include "cctk_Flesh.h"
@@ -77,7 +76,8 @@ int CCTK_RegisterInterpOperator(int (*function)(REGISTER_INTERP_ARGLIST),
   else
   {
     /* Interpolation operator with this name already exists. */
-    CCTK_Warn(1,__LINE__,__FILE__,"Cactus","Interpolation operator with this name already exists");
+    CCTK_Warn(1,__LINE__,__FILE__,"Cactus",
+	      "Interpolation operator with this name already exists");
     handle = -1;
   }
 
@@ -231,9 +231,10 @@ int CCTK_InterpGF (cGH *GH,
 
   /* Get the pointer to the interpolation operator */
   if (operation_handle < 0)
-
-    CCTK_Warn(3,__LINE__,__FILE__,"Cactus","Invalid handle passed to CCTK_Interp");
-
+  {
+    CCTK_Warn(3,__LINE__,__FILE__,
+	      "Cactus","Invalid handle passed to CCTK_Interp");
+  }
   else
   {
     function = (int (*)(REGISTER_INTERP_ARGLIST))
@@ -253,40 +254,59 @@ int CCTK_InterpGF (cGH *GH,
       /* Fill in the arrays from the variable argument list */
       va_start (indices, nOutFields);
       for (i = 0; i < nDims; i++)
+      {
         coords [i] = va_arg (indices, void *);
+      }
       for (i = 0; i < nDims; i++)
+      {
         coordTypes [i] = va_arg (indices, int);
-      for (i = 0; i < nInFields; i++) {
+      }
+      for (i = 0; i < nInFields; i++) 
+      {
         index = va_arg (indices, int);
         timelevel = CCTK_NumTimeLevelsFromVarI (index);
         retcode = 0;
-        if (timelevel < 0) {
-          CCTK_Warn (1, __LINE__,__FILE__,"Cactus","Invalid variable index in CCTK_InterpGF()");
+        if (timelevel < 0) 
+	{
+          CCTK_Warn (1, __LINE__,__FILE__,
+		     "Cactus","Invalid variable index in CCTK_InterpGF()");
           retcode = -1;
-        } else {
+        } 
+	else 
+	{
           if (--timelevel > 0)
+	  {
              --timelevel;
+	  }
           inFields [i] = CCTK_VarDataPtrI (GH, timelevel, index);
           inFieldTypes [i] = CCTK_VarTypeI (index);
         }
       }
       for (i = 0; i < nOutFields; i++)
+      {
         outFields [i] = va_arg (indices, void *);
+      }
       for (i = 0; i < nOutFields; i++)
+      {
         outFieldTypes [i] = va_arg (indices, int);
+      }
       va_end (indices);
 
       /* compute processor-local origin */
       for (i = 0; i < nDims; i++)
+      {
         origin [i] = GH->cctk_origin_space [i] +
                      GH->cctk_lbnd [i] * GH->cctk_delta_space [i];
+      }
 
       if (! retcode)
+      {
         retcode = function(GH, nPoints, nDims, nInFields, nOutFields,
                            GH->cctk_lsh, coords, coordTypes,
                            origin, GH->cctk_delta_space,
                            inFields, inFieldTypes, outFields, outFieldTypes);
-      
+      }
+
       free (origin);
       free (outFieldTypes);
       free (outFields);
@@ -502,7 +522,7 @@ int CCTK_Interp (cGH *GH,
   int *dims;
   void **coords;
   int *coordTypes;
-  void *origin, *delta;
+  void *origin=NULL, *delta=NULL;
   void **inFields, **outFields;
   int *inFieldTypes, *outFieldTypes;
   int (*function)(REGISTER_INTERP_ARGLIST)=NULL; 
@@ -511,9 +531,10 @@ int CCTK_Interp (cGH *GH,
 
   /* Get the pointer to the interpolation operator */
   if (operation_handle < 0)
-
-    CCTK_Warn(3,__LINE__,__FILE__,"Cactus","Invalid handle passed to CCTK_Interp");
-
+  {
+    CCTK_Warn(3,__LINE__,__FILE__,"Cactus",
+	      "Invalid handle passed to CCTK_Interp");
+  }
   else
   {
     function = (int (*)(REGISTER_INTERP_ARGLIST))
@@ -534,13 +555,20 @@ int CCTK_Interp (cGH *GH,
       /* Fill in the arrays from the variable argument list */
       va_start (indices, nOutFields);
       for (i = 0; i < nDims; i++)
+      {
         dims [i] = va_arg (indices, int);
+      }
       for (i = 0; i < nDims; i++)
+      {
         coords [i] = va_arg (indices, void *);
+      }
       for (i = 0; i < nDims; i++)
+      {
         coordTypes [i] = va_arg (indices, int);
+      }
 
       for (i = 0; i < nDims; i++)
+      {
         switch (coordTypes [i]) {
           case CCTK_VARIABLE_CHAR:
             if (i == 0)
@@ -571,8 +599,10 @@ int CCTK_Interp (cGH *GH,
             retcode = -1;
             break;
         }
+      }
 
       for (i = 0; i < nDims; i++)
+      {
         switch (coordTypes [i]) {
           case CCTK_VARIABLE_CHAR:
             if (i == 0)
@@ -603,22 +633,33 @@ int CCTK_Interp (cGH *GH,
             retcode = -1;
             break;
         }
+      }
 
       for (i = 0; i < nInFields; i++)
+      {
         inFields [i] = va_arg (indices, void *);
+      }
       for (i = 0; i < nInFields; i++)
+      {
         inFieldTypes [i] = va_arg (indices, int);
+      }
       for (i = 0; i < nOutFields; i++)
+      {
         outFields [i] = va_arg (indices, void *);
+      }
       for (i = 0; i < nOutFields; i++)
+      {
         outFieldTypes [i] = va_arg (indices, int);
+      }
       va_end (indices);
 
       if (! retcode)
+      {
         retcode = function(GH, nPoints, nDims, nInFields, nOutFields,
                            dims, coords, coordTypes, origin, delta,
                            inFields, inFieldTypes, outFields, outFieldTypes);
-      
+      }
+
       free (outFieldTypes);
       free (outFields);
       free (inFieldTypes);
@@ -631,7 +672,10 @@ int CCTK_Interp (cGH *GH,
       
     }
     else
-      CCTK_Warn(3,__LINE__,__FILE__,"Cactus","Interpolation operation is not registered and cannot be called");
+    {
+      CCTK_Warn(3,__LINE__,__FILE__,"Cactus",
+		"Interpolation operation is not registered and cannot be called");
+    }
   }
 
   return retcode;
@@ -652,7 +696,7 @@ void FMODIFIER FORTRAN_NAME(CCTK_Interp)(int *fortranreturn,
   int *dims;
   void **coords;
   int *coordTypes;
-  void *origin, *delta;
+  void *origin=NULL, *delta=NULL;
   void **inFields, **outFields;
   int *inFieldTypes, *outFieldTypes;
   int (*function)(REGISTER_INTERP_ARGLIST)=NULL; 
