@@ -17,59 +17,59 @@
 In general, Cactus {\em requires} the following set of software to function
 in single processor mode. Please refer to the architecture section
 \ref{sec:suar} for architecture specific items.
-\begin{itemize}
-\item{\tt Perl5.0} Perl is used extensively during the Cactus
+\begin{Lentry}
+\item[{\tt Perl5.0}] Perl is used extensively during the Cactus
   thorn configuration phase. Perl is available for nearly all
   operating systems known to man and can be obtained at
   {\tt http://www.perl.org}
-\item{\tt GNU make} The make
+\item[{\tt GNU make}] The make
   process works with the GNU make utility (referred to as {\bf gmake} 
   henceforth). While other make utilities may also work, this is not 
   guaranteed. Gmake can be obtained from your favorite GNU site or
   from {\tt www.gnu.org}
-\item{\tt C/C++} C and C++ compiler. For example, the GNU compilers. These
+\item[{\tt C/C++}] C and C++ compiler. For example, the GNU compilers. These
  are available for most supported platforms.  Platform specific compilers 
  should also work. 
-\item{\tt CVS} The {\em ``Concurrent Versioning System''} is not needed
+\item[{\tt CVS}] The {\em ``Concurrent Versioning System''} is not needed
   to run/compile Cactus, but you are strongly encourage to install
   this software to take advantage of the update procedures. It can be
   downloaded from your favorite GNU site.  Tar files of each release are
   also available.
-\end{itemize}
+\end{Lentry}
 
 \noindent
-To use Cactus, with the default driver (CactusPUGH/PUGH) on multiple
-processers you also need:
-\begin{itemize}
-\item{\tt MPI} the {\it Message Passing Interface (MPI)} 
+To use Cactus, with the default driver ({\tt CactusPUGH/PUGH}) on multiple
+processors you also need:
+\begin{Lentry}
+\item[{\tt MPI}] the {\it Message Passing Interface (MPI)} 
 which provides inter-processor communication. 
-Supercomputering sites often supply a native MPI implementation with
+Supercomputering sites often supply a native {\tt MPI} implementation with
 which Cactus is very likely to be compatible. Otherwise there are
 various freely available ones available, e.g. the {\tt MPICH}
-version of MPI is available for various architectures and operating
+version of {\tt MPI} is available for various architectures and operating
 systems at {\tt http://www-unix.mcs.anl.gov/mpi/}. 
-\end{itemize}
+\end{Lentry}
 
 \noindent
 If you are using any thorns containing routines 
 written in {\tt FORTRAN} you also need
-\begin{itemize}
-\item{\tt F90/F77} For routines written in F77, either an F90 or an F77
+\begin{Lentry}
+\item[{\tt F90/F77}] For routines written in F77, either an F90 or an F77
  compiler can be used. For routines written in F90 a F90 compiler is
  obviously
  required. There is a very limited set of free F90 compilers available
  for the different architectures.
-\end{itemize}
+\end{Lentry}
 
 \noindent
 While not required for compiling or running Cactus, for thorn development
 it is useful to install
-\begin{itemize}
-\item{\tt ctags/etags}: The program Tags enables you browse through the calling structure
+\begin{Lentry}
+\item[{\tt ctags/etags}] The program Tags enables you browse through the calling structure
   of a program by help of function call database. Navigating the flesh and
   arrangements becomes very easy. Emacs and vi both support this method. See
   \ref{sec:usta} for a short guide to ``tags''.
-\end{itemize}
+\end{Lentry}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -84,13 +84,14 @@ Cactus on, including some architecture specific notes.
 \item[{\bf SGI} 32 or 64 bit running Irix]
 \item[{\bf Cray T3E}] 
 \item[{\bf Dec Alpha}]  Dec operating system and Linux. Single processor
-  mode and MPI supported. The Decs need to have the GNU {\tt C/C++} 
+  mode and {\tt MPI} supported. The Decs need to have the GNU {\tt C/C++} 
   compilers installed 
 \item[{\bf Intel Linux}] There is a
   free Linux F90 compiler available from  {\tt http://www.psrv.com}
-  -- the only free we know of. Single processor mode and MPICH
+  -- the only free we know of. Single processor mode and {\tt MPICH}, {\tt LAM}
   supported.
-\item[{\bf Windows NT}] Compiles with Cygwin version B20, Digital Fortran Compiler and Microsoft Visual C++ compiler.
+\item[{\bf Windows NT}] Compiles with Cygwin version B20, Digital Fortran Compiler and Microsoft Visual C++ compiler. Single processor mode and {\tt WMPI}, 
+{\tt HPVM} supported.
 \end{Lentry}
 
 The following machines are only partially supported
@@ -436,59 +437,20 @@ values will be valid on all architectures.
 The name of the executable.
 \end{Lentry}
 
-\item {\tt Compile System Vagueries}
-
-The following options are required to accomodate the odd behaviour 
-of compilers on a few platforms
-
-\begin{Lentry}
-
-\item {\tt CCOMPILEONLY} Flag to instruct the C compiler to compile to an object file and not to invoke the linker
-
-\item {\tt FCOMPILEONLY} Flag to instruct the Fortran compiler to compile to an object file and not to invoke the linker
-
-\item [{\tt CREATEEXE}] Flag for naming executable, most compilers use 
-	{\tt -o}, but alas some don't
-
-\item [{\tt DIRSEP}] Directory name separator
-
-\item [{\tt EMPTY\_VAR}] {\bf FIXME: What is this} 
-
-\item [{\tt OPTIONSEP}] {\bf FIXME: What is this}
-
-\item [{\tt CACTUSLIBLINKLINE}] Some architectures need something special for linking in libraries
-
-\item [{\tt C\_DEPEND}]
-\item [{\tt CXX\_DEPEND}]
-\item [{\tt F\_DEPEND}]
-\item [{\tt F77\_DEPEND}]
-
-\item [{\tt C\_DEPEND\_OUT}]
-\item [{\tt CXX\_DEPEND\_OUT}]
-\item [{\tt F\_DEPEND\_OUT}]
-\item [{\tt F77\_DEPEND\_OUT}]
-
-\item [{\tt GET\_WD}] Command to get the current working directory
-
-\item [{\tt GENERAL\_LIBRARIES}] Command to generate the link line for libraries
-
-\end{Lentry}
-
 \item{\tt Extra packages}
 
 Compiling with extra packages is described fully in 
 Section \ref{sec:cowiexpa},
 which should be consulted for the full range of configuration options.
 
-\begin{itemize}
-\item {\tt MPI}
-*The MPI package to use, if required. Supported values are
-        CUSTOM, NATIVE, MPICH or LAM
+\begin{Lentry}
+\item [{\tt MPI} *] The {\tt MPI} package to use, if required. Supported values are
+        {\tt CUSTOM}, {\tt NATIVE}, {\tt MPICH} or {\tt LAM}
 
-\item {\tt HDF5}
+\item [{\tt HDF5}]
 Supported values are YES
 
-\end{itemize}
+\end{Lentry}
 
 \end{itemize}
 
@@ -516,53 +478,53 @@ To compile with MPI, the configure option is
 where {\tt <MPI\_TYPE>} can take the values (entries followed by * 
 may be specified on the configuration command line):
 
-\begin{itemize}
+\begin{Lentry}
 
-\item{} CUSTOM For a custom MPI configuation set the variables
-  \begin{itemize}
-  \item {\tt MPI\_LIBS} * libraries
-  \item {\tt MPI\_LIB\_DIRS} * library directories
-  \item {\tt MPI\_INC\_DIRS} * include file directories
-  \end{itemize}
+\item[{\tt CUSTOM}] For a custom {\tt MPI} configuation set the variables
+  \begin{Lentry}
+  \item [{\tt MPI\_LIBS} *] libraries
+  \item [{\tt MPI\_LIB\_DIRS} *] library directories
+  \item [{\tt MPI\_INC\_DIRS} *] include file directories
+  \end{Lentry}
 
-\item{} NATIVE Use the native MPI for this machine, as indicated in
+\item[{\tt NATIVE}] Use the native {\tt MPI} for this machine, as indicated in
         the {\tt known-architectures} directory 
 	({\tt lib/make/known-architectures})
 
-\item{} MPICH 
+\item[{\tt MPICH}] 
 Use MPICH ({\tt http://www-unix.mcs.anl.gov/mpi/mpich}). This is controlled
 by the options
-  \begin{itemize}
-  \item {\tt MPICH\_DIR} * directory in which MPICH is installed.
+  \begin{Lentry}
+  \item [{\tt MPICH\_DIR} *] directory in which {\tt MPICH} is installed.
         If this option is not defined it will be searched for.
-  \item {\tt MPICH\_DEVICE} * the device used by MPICH. If not 
+  \item [{\tt MPICH\_DEVICE} *] the device used by {\tt MPICH}. If not 
         defined, the configuration process will search for this in a 
         few defined places.
         Supported devices are currently {\tt ch\_p4}, {\tt ch\_shmem}, 
 	and {\tt globus}, and they are searched for in this order.
-  \end{itemize}
+  \end{Lentry}
 
 If {\tt MPICH\_DEVICE} is chosen to be Globus, (www.globus.org), 
 an additional variable must be set
-  \begin{itemize}
-  \item{} {\tt GLOBUS\_LIB\_DIR} * directory in which Globus libraries are installed
-  \end{itemize}
+  \begin{Lentry}
+  \item[{\tt GLOBUS\_LIB\_DIR} *] directory in which Globus libraries are installed
+  \end{Lentry}
 
-\item{} LAM
-Use LAM (Local Area Multicomputer, {\tt http://www.mpi.nd.edu/lam/}). This is 
+\item[{\tt LAM}]
+Use {\tt LAM} (Local Area Multicomputer, {\tt http://www.mpi.nd.edu/lam/}). This is 
 controlled by the variable 
-  \begin{itemize}
-  \item{} {\tt LAM\_DIR} * directory in which LAM is installed. This 
+  \begin{Lentry}
+  \item[{\tt LAM\_DIR} *] directory in which {\tt LAM} is installed. This 
      will be searched for, in a few provided places,  if not given.
-  \end{itemize}
+  \end{Lentry}
 
-\item{} WMPI 
+\item[{\tt WMPI}] 
 Use WMPI (Win32 Message Passing Interface, {\tt http://dsg.dei.uc.pt/w32mpi/intro.html}). This is controlled by the variable
-  \begin{itemize}
-  \item{} {\tt WMPI\_DIR} * directory in which WMPI is installed.
-  \end{itemize}
+  \begin{Lentry}
+  \item[{\tt WMPI\_DIR} *] directory in which {\tt WMPI} is installed.
+  \end{Lentry}
 
-\end{itemize}
+\end{Lentry}
 
 Note that the searches for libraries etc. mentions above use the 
 locations given in the files in {\tt lib/make/extras/MPI}.
@@ -762,13 +724,13 @@ An {\it option} for gmake can be thought of as an argument which tells
 it how it should make a {\tt target}. Note that the final result is always
 the same.
 
-\begin{itemize}
+\begin{Lentry}
 
-\item {\tt gmake <target> SILENT=no} prints the commands that gmake is executing
-\item {\tt gmake <target> TJOBS=<number>} compile in parallel, across thorns 
-\item {\tt gmake <target> FJOBS=<number>} compile in parallel, across files within each thorn
+\item [{\tt gmake <target> SILENT=no}] prints the commands that gmake is executing
+\item [{\tt gmake <target> TJOBS=<number>}] compile in parallel, across thorns 
+\item [{\tt gmake <target> FJOBS=<number>}] compile in parallel, across files within each thorn
 
-\end{itemize}
+\end{Lentry}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -779,27 +741,26 @@ the same.
 
 \section{Other gmake targets}
 
-\begin{itemize}
+\begin{Lentry}
 
+\item [{\tt gmake help}] lists all make options
 
-\item {\tt gmake help} lists all make options
-
-\item {\tt gmake tags} creates a {\tt vi} style tags file. See section
+\item [{\tt gmake tags}] creates a {\tt vi} style tags file. See section
   \ref{sec:usta} for using TAGS within Cactus.
 
-\item {\tt gmake TAGS} creates an Emacs style TAGS file. See section
+\item [{\tt gmake TAGS}] creates an Emacs style TAGS file. See section
   \ref{sec:usta} for using TAGS within Cactus.
 
-\item {\tt gmake doc} places a postscript version of the Users Guide documentation in your Cactus home directory.
+\item [{\tt gmake doc}] places a postscript version of the Users Guide documentation in your Cactus home directory.
 
-\item {\tt gmake checkout} allows you to easily checkout Cactus arrangements and thorns.
+\item [{\tt gmake checkout}] allows you to easily checkout Cactus arrangements and thorns.
 
-\item {\tt gmake distclean} delete your {\tt configs} directory and hence all your configurations.
+\item [{\tt gmake distclean}] delete your {\tt configs} directory and hence all your configurations.
 
-\item {\tt gmake downsize} removes non essential files as documents
+\item [{\tt gmake downsize}] removes non essential files as documents
   and testsuites to allow for minimal installation size.
 
-\end{itemize}
+\end{Lentry}
 
 
 \section{Testing} 
@@ -815,14 +776,14 @@ for the thorns you have compiled use
 
 These testsuites serve the dual purpose of
 
-\begin{itemize}
-\item {\tt Regression testing}
+\begin{Lentry}
+\item [Regression testing]
 i.e. making sure that changes to the thorn or the flesh don't affect the
 output from a known parameter file.
-\item {\tt Portability testing}
+\item [Portability testing]
 i.e. checking that the results are independent of the architecture - this
 is also of use when trying to get Cactus to work on a new architecture.
-\end{itemize}
+\end{Lentry}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -990,7 +951,7 @@ order that they will be executed. For example
 
 {\tt
 \begin{verbatim}
---------------------------------------------------------------------------------
+----------------------------------------------------------------------
   Startup routines
     Cactus: Register banner for Cactus
     CartGrid3D: Register GH Extension for GridSymmetry
@@ -1018,7 +979,7 @@ order that they will be executed. For example
     if (analysis)
     endif
   enddo
---------------------------------------------------------------------------------
+----------------------------------------------------------------------
 \end{verbatim}
 }
 

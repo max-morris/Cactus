@@ -1,80 +1,59 @@
 \begin{cactuspart}{3}{Infrastructure Thorn Writer's Guide}{$RCSfile$}{$Revision$}
 \renewcommand{\thepage}{\Alph{part}\arabic{page}}
 
-\begin{enumerate}
+\chapter{Introduction} 
+\label{sec:in}
 
- \item{} Concepts and Terminology (Overloading and registration of functions)
+\begin{itemize}
+ \item{} Concepts and terminology (Overloading and registration of functions)
  \item{} The cGH structure --- what it is and how to use it
  \item{} Extending the cGH structure
- \item{} Querying Group and Variable Information
+ \item{} Querying group and variable information
  \item{} Providing an IO layer
  \item{} Providing a communication layer
- \item{} Doing more --- replacing the rest of the code
- \item{} Appendices
- \begin{itemize}
-  \item{} Overloadable Functions in the F***h
-  \begin{itemize}
-   \item{} Main
-   \begin{itemize}
-    \item{} {\t int CCTK\_Initialise(tFleshConfig *)}
-    \item{} {\t int CCTK\_Evolve(tFleshConfig *)} 
-    \item{} {\t int CCTK\_Shutdown(tFleshconfig *)}
-    \item{} Defaults
-   \end{itemize}
-   \item{} IO
-   \begin{itemize}
-    \item{} {\t int CCTK\_OutputGH(cGH *GH)}
-    \item{} {\t int CCTK\_OutputVarAsByMethod(cGH *GH, const char *var,
-          const char *method, const char *alias)}
-    \item{} Defaults
-    \begin{itemize}
-     \item{} {\t CCTK\_OutputGH}
-     \item{} {\t CCTK\_OutputVarAsByMethod}
-    \end{itemize}
-   \end{itemize}
-   \item{} Comm
-   \begin{itemize}
-    \item{} {\t int CCTK\_SyncGroup(cGH *GH, const char *group)}
-    \item{} {\t int CCTK\_EnableGroupStorage(cGH *GH, const char *group)}
-    \item{} {\t int CCTK\_DisableGroupStorage(cGH *GH, const char *group)}
-    \item{} {\t int CCTK\_EnableGroupComm(cGH *GH, const char *group)}
-    \item{} {\t int CCTK\_DisableGroupComm(cGH *GH, const char *group)}
-    \item{} {\t int CCTK\_Barrier(cGH *GH)}
-    \item{} {\t int CCTK\_Reduce(cGH *GH, const char *operation, 
-            int n\_infields, int n\_outfields,
-            int out\_type, void **outarray, ...)}
-    \item{} {\t int CCTK\_Interp(cGH *GH, const char *operation, 
-            int n\_coords, int n\_infields, int n\_outfields,
-            int n\_points, int type, ...)}
-    \item{} {\t int CCTK\_ParallelInit(cGH *GH)}
-    \item{} {\t int CCTK\_Init(cGH *GH)}
-    \item{} {\t int CCTK\_Exit(cGH *GH)}
-    \item{} {\t int CCTK\_Abort(cGH *GH)}
-    \item{} {\t cGH *CCTK\_SetupGH(tFleshConfig *config, int convergence\_level)}
-    \item{} Defaults
-    \begin{itemize}
-     \item{} {\t CCTK\_SetupGH} 
-    \end{itemize}
-   \end{itemize}
-  \end{itemize}
-  \item{} Registerable Functions in the F***h
-  \begin{itemize}
-   \item{} Main
-   \begin{itemize}
-    \item{} Defaults
-   \end{itemize}
-   \item{} IO
-   \begin{itemize}
-    \item{} Defaults
-   \end{itemize}
-   \item{} Comm
-   \begin{itemize}
-    \item{} Defaults
-   \end{itemize}
-  \end{itemize}
- \end{itemize}
-\end{enumerate}
+ \item{} Providing a reduction operator
+ \item{} Providing an interpolation operator
+ \item{} Overloadable functions
+\end{itemize}
 
+
+ \section{Overloadable functions}
+
+ \subsection{Core functions}
+ \begin{tabular}{|l|l|}
+   \hline  {\bf Function} & {\bf Default} \\
+   \hline {\t CCTK\_Initialise} 	&\\
+   \hline {\t CCTK\_Evolve}	&\\
+   \hline {\t CCTK\_Shutdown}	&\\
+   \hline
+ \end{tabular}
+
+ \subsection{IO Functions}
+ \begin{tabular}{|l|l|} 
+   \hline {\bf Function} & {\bf Default} \\
+   \hline {\t CCTK\_OutputGH} & \\
+   \hline {\t CCTK\_OutputVarAsByMethod} & \\
+   \hline
+ \end{tabular}
+
+  \subsection{Driver functions}
+  \begin{tabular}{|l|l|}
+   \hline {\bf Function} & {\bf Default} \\
+   \hline {\t CCTK\_SyncGroup} 		&\\
+   \hline {\t CCTK\_EnableGroupStorage}	&\\
+   \hline {\t CCTK\_DisableGroupStorage}	&\\
+   \hline {\t CCTK\_EnableGroupComm}		&\\
+   \hline {\t CCTK\_DisableGroupComm}		&\\
+   \hline {\t CCTK\_Barrier}			&\\
+   \hline {\t CCTK\_Reduce}			&\\
+   \hline {\t CCTK\_Interp} 			&\\
+   \hline {\t CCTK\_ParallelInit}		&\\
+   \hline {\t CCTK\_Init}			&\\
+   \hline {\t CCTK\_Exit}			&\\
+   \hline {\t CCTK\_Abort}			&\\
+   \hline {\t CCTK\_SetupGH}			&\\
+   \hline
+  \end{tabular}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

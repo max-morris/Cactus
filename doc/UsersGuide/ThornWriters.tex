@@ -19,7 +19,7 @@ and all your evolution thorns in another arrangement, or to have
 separate arrangements for your development, private and shared 
 thorns. 
 
-The arrangements live in the `arrangements' directory off the main 
+The arrangements live in the {\tt arrangements} directory off the main 
 Cactus directory.  Arrangement names must be unique, and cannot start 
 with a `\#', or finish
 with `\~{}' or `.bak'.
@@ -43,7 +43,7 @@ without affecting any other thorn.
 
 An {\bf implementation} defines a group of variables and parameters which
 are used to implement some functionality.  For example the thorn 
-{\tt CactusPUGH/PUGH} provides the implementation {\tt driver}.  This 
+{\tt CactusPUGH/PUGH} provides the implementation {\it driver}.  This 
 implementation is responsible for providing memory for grid variables and
 for communication.  Another thorn can also implement {\tt driver}, 
 and both thorns can be compiled in {\em at the same time}.  
@@ -113,22 +113,22 @@ by various configuration files.
 
 These consist of:
 
-\begin{itemize}
+\begin{Lentry}
 
-\item {\tt interface.ccl}
+\item [{\tt interface.ccl}]
 This defines the {\bf implementation} (Section~\ref{sec:im}) the thorn 
 provides, and the variables the thorn needs, along with their 
 visibility to other implementations.
 
-\item {\tt param.ccl}
+\item [{\tt param.ccl}]
 This defines the parameters that are used to control the thorn, along
 with their visibility to other implementations.
 
-\item {\tt schedule.ccl}
+\item [{\tt schedule.ccl}]
 This defines which functions from the thorn are called and when they are 
 called.
 
-\end{itemize}
+\end{Lentry}
 
 \subsection{General syntax of CCL files}
 
