@@ -64,6 +64,11 @@
 
 /* This shouldn't be here, but need it externally visable. */
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 int rfrInitTree(void **rfr_top,   
 		int (*StorageOn)(void *, int),
 		int (*StorageOff)(void *, int),
@@ -74,3 +79,7 @@ int rfrInitTree(void **rfr_top,
 		int (*TriggerAction)(void *, int),
 		int (*CallFunc)(void *, int, void *));
 
+
+#ifdef __cplusplus
+}
+#endif
