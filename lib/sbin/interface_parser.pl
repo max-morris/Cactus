@@ -353,12 +353,10 @@ sub check_interface_consistency
     {
       if(split(" ", $inherits{$thing}) != $n_thorns)
       {
-	if(!$n_errors)
-	{
-	    $message = "Inconsistent implementations of $implementation. Implemented by thorns " . join(" ", @thorns);
-	    &CST_error(0,$message,__LINE,__FILE__);
-	}
-	print STDERR "    Not all inherit:         $thing\n";
+	$message  = "Inconsistent implementations of $implementation. \n";
+	$message .= "Implemented by thorns " . join(" ", @thorns) . "\n";
+	$message .= "Not all inherit: $thing";
+	&CST_error(0,$message,__LINE,__FILE__);
 	$n_errors++;
       }
     }
@@ -368,12 +366,10 @@ sub check_interface_consistency
     {
       if(split(" ", $friend{$thing}) != $n_thorns)
       {
-	if(!$n_errors)
-	{
-	  $message = "Inconsistent implementations of $implementation\n    Implemented by thorns " . join(" ", @thorns) . "\n";
-	  &CST_error(0,$message,__LINE,__FILE__);
-	}
-	print STDERR "    Not all are friends of : $thing\n";
+	$message  = "Inconsistent implementations of $implementation\n";
+	$message .= "Implemented by thorns " . join(" ", @thorns) . "\n";
+	$message .= "Not all are friends of: $thing";
+	&CST_error(0,$message,__LINE,__FILE__);
 	$n_errors++;
       }
     }
@@ -383,13 +379,11 @@ sub check_interface_consistency
     {
       if(split(" ", $public_groups{$thing}) != $n_thorns)
       {
-	if(!$n_errors)
-	{
-	  print STDERR "Inconsistent implementations of $implementation\n";
-	  print STDERR "    Implemented by thorns " . join(" ", @thorns) . "\n";
-	}
-	&CST_error(0,"    Not all declare public group: $thing",__LINE__,__FILE__);
-	$n_errors++;
+	  $message  = "Inconsistent implementations of $implementation\n";
+	  $message .= "Implemented by thorns " . join(" ", @thorns) . "\n";
+	  $message .= "Not all declare public group: $thing";
+	  &CST_error(0,$message,__LINE__,__FILE__);
+	  $n_errors++;
       }
     }
 
@@ -398,21 +392,13 @@ sub check_interface_consistency
     {
       if(split(" ", $protected_groups{$thing}) != $n_thorns)
       {
-	if(!$n_errors)
-	{
-	  print STDERR "Inconsistent implementations of $implementation\n       Implemented by thorns " . join(" ", @thorns) . "\n";
-	}
-	&CST_error(0,"    Not all declare protected group: $thing\n",__LINE__,__FILE__);
+	$message  = "Inconsistent implementations of $implementation\n";
+	$message .= "Implemented by thorns " . join(" ", @thorns) . "\n";
+	$message .= "Not all declare protected group: $thing";
+	&CST_error(0,$message,__LINE__,__FILE__);
 	$n_errors++;
       }
     }
-
-    # Stop if any errors discovered so far.
-#    if($n_errors)
-#    {
-#      print STDERR "$n_errors Errors found, please fix before continuing.\n";
-#      exit;
-#    }
 
     # Check consistancy of group definitions
     foreach $group ((keys %public_groups), (keys %protected_groups))
@@ -441,12 +427,10 @@ sub check_interface_consistency
 	{
 	  if($attributes{"VTYPE"} ne $interface_data{"\U$thorn GROUP $group\E VTYPE"})
 	  {
-	    if(!$n_errors)
-	    {
-	      print STDERR "Inconsistent implementations of $implementation\n";
-	      print STDERR "    Implemented by thorns " . join(" ", @thorns) . "\n";
-	    }
-	    print STDERR "      Group $group has inconsistent variable type.\n";
+	    $message  = "Inconsistent implementations of $implementation\n";
+	    $message .= "Implemented by thorns " . join(" ", @thorns) . "\n";
+	    $message .= "Group $group has inconsistent variable type";
+	    &CST_error(0,$message,__LINE__,__FILE__);
 	    $n_errors++;
 	  }
 	}
@@ -460,12 +444,10 @@ sub check_interface_consistency
 	{
 	  if($attributes{"GTYPE"} ne $interface_data{"\U$thorn GROUP $group\E GTYPE"})
 	  {
-	    if(!$n_errors)
-	    {
-	      print STDERR "Inconsistent implementations of $implementation\n";
-	      print STDERR "    Implemented by thorns " . join(" ", @thorns) . "\n";
-	    }
-	    print STDERR "      Group $group has inconsistent group type.\n";
+	    $message  = "Inconsistent implementations of $implementation\n";
+	    $message .= "Implemented by thorns " . join(" ", @thorns) . "\n";
+	    $message .= "Group $group has inconsistent group type";
+	    &CST_error(0,$message,__LINE__,__FILE__);
 	    $n_errors++;
 	  }
 	}
@@ -479,12 +461,10 @@ sub check_interface_consistency
 	{
 	  if($attributes{"TIMELEVELS"} ne $interface_data{"\U$thorn GROUP $group\E TIMELEVELS"})
 	  {
-	    if(!$n_errors)
-	    {
-	      print STDERR "Inconsistent implementations of $implementation\n";
-	      print STDERR "    Implemented by thorns " . join(" ", @thorns) . "\n";
-	    }
-	    print STDERR "      Group $group has inconsistent time levels.\n";
+	    $message  = "Inconsistent implementations of $implementation\n";
+	    $message .= "Implemented by thorns " . join(" ", @thorns) . "\n";
+	    $message .= "Group $group has inconsistent time levels";
+	    &CST_error(0,$message,__LINE__,__FILE__);
 	    $n_errors++;
 	  }
 	}
@@ -498,12 +478,10 @@ sub check_interface_consistency
 	{
 	  if($attributes{"SIZE"} ne $interface_data{"\U$thorn GROUP $group\E SIZE"})
 	  {
-	    if(!$n_errors)
-	    {
-	      print STDERR "Inconsistent implementations of $implementation\n";
-	      print STDERR "    Implemented by thorns " . join(" ", @thorns) . "\n";
-	    }
-	    print STDERR "      Group $group has inconsistent size.\n";
+	    $message  = "Inconsistent implementations of $implementation\n";
+	    $message .= "Implemented by thorns " . join(" ", @thorns) . "\n";
+	    $message .= "Group $group has inconsistent size";
+	    &CST_error(0,$message,__LINE__,__FILE__);
 	    $n_errors++;
 	  }
 	}
@@ -517,12 +495,10 @@ sub check_interface_consistency
 	{
 	  if($attributes{"GHOSTSIZE"} ne $interface_data{"\U$thorn GROUP $group\E GHOSTSIZE"})
 	  {
-	    if(!$n_errors)
-	    {
-	      print STDERR "Inconsistent implementations of $implementation\n";
-	      print STDERR "    Implemented by thorns " . join(" ", @thorns) . "\n";
-	    }
-	    print STDERR "      Group $group has inconsistent ghostsize.\n";
+	    $message  = "Inconsistent implementations of $implementation\n";
+	    $message .= "Implemented by thorns " . join(" ", @thorns) . "\n";
+	    $message .= "Group $group has inconsistent ghostsize";
+	    &CST_error(0,$message,__LINE__,__FILE__);
 	    $n_errors++;
 	  }
 	}
@@ -536,12 +512,10 @@ sub check_interface_consistency
 	{
 	  if($attributes{"DISTRIB"} ne $interface_data{"\U$thorn GROUP $group\E DISTRIB"})
 	  {
-	    if(!$n_errors)
-	    {
-	      print STDERR "Inconsistent implementations of $implementation\n";
-	      print STDERR "    Implemented by thorns " . join(" ", @thorns) . "\n";
-	    }
-	    print STDERR "      Group $group has inconsistent distribution.\n";
+	    $message  = "Inconsistent implementations of $implementation\n";
+	    $message .= "Implemented by thorns " . join(" ", @thorns) . "\n";
+	    $message .= "      Group $group has inconsistent distribution";
+	    &CST_error(0,$message,__LINE__,__FILE__);
 	    $n_errors++;
 	  }
 	}
@@ -555,12 +529,10 @@ sub check_interface_consistency
 	{
 	  if($attributes{"DIM"} ne $interface_data{"\U$thorn GROUP $group\E DIM"})
 	  {
-	    if(!$n_errors)
-	    {
-	      print STDERR "Inconsistent implementations of $implementation\n";
-	      print STDERR "    Implemented by thorns " . join(" ", @thorns) . "\n";
-	    }
-	    print STDERR "      Group $group has inconsistent dimension.\n";
+	    $message  = "Inconsistent implementations of $implementation\n";
+	    $message .= "Implemented by thorns " . join(" ", @thorns) . "\n";
+	    $message .= "Group $group has inconsistent dimension";
+	    &CST_error(0,$message,__LINE__,__FILE__);
 	    $n_errors++;
 	  }
 	}	  
@@ -574,12 +546,10 @@ sub check_interface_consistency
 	{
 	  if($attributes{"STYPE"} ne $interface_data{"\U$thorn GROUP $group\E STYPE"})
 	  {
-	    if(!$n_errors)
-	    {
-	      print STDERR "Inconsistent implementations of $implementation\n";
-	      print STDERR "    Implemented by thorns " . join(" ", @thorns) . "\n";
-	    }
-	    print STDERR "      Group $group has inconsistent staggering type.\n";
+	    $message  = "Inconsistent implementations of $implementation\n";
+	    $message .= "Implemented by thorns " . join(" ", @thorns) . "\n";
+	    $message .= "Group $group has inconsistent staggering type";
+	    &CST_error(0,$message,__LINE__,__FILE__);
 	    $n_errors++;
 	  }
 	}	  
@@ -952,7 +922,7 @@ sub parse_interface_ccl
       }
       else
       {
-	$message = "Unknown line $line";
+	$message = "Unknown line in thorn $arrangement/$thorn\n$line";
 	&CST_error(0,$message,__LINE__,__FILE__);
       }
     }

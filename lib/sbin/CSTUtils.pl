@@ -18,13 +18,13 @@ sub CST_error
 	if ($level == 0)
 	{
 	    $CST_errors++;
-            $error = "CST error in $file (at $line)\n  -> $mess\n";
+            $error = "\nCST error in $file (at $line)\n  -> $mess\n";
 	    print STDERR $error;
 	    $error_string .= $error;
 	}
 	else
 	{
-            $error = "CST warning in $file (at $line)\n  -> $mess\n";
+            $error = "\nCST warning in $file (at $line)\n  -> $mess\n";
 	    print STDERR $error;
 	    $error_string .= $error;
 	}
@@ -34,13 +34,13 @@ sub CST_error
 	if ($level == 0)
 	{
 	    $CST_errors++;
-            $error = "CST error $CST_errors:\n  -> $mess\n";
+            $error = "\nCST error $CST_errors:\n  -> $mess\n";
 	    print STDERR $error;
 	    $error_string .= $error;
 	}
 	else
 	{
-            $error = "CST warning:\n  -> $mess\n";
+            $error = "\nCST warning:\n  -> $mess\n";
 	    print STDERR $error;
 	    $error_string .= $error;
 	}	    
@@ -61,7 +61,7 @@ sub CST_error
 
 sub CST_PrintErrors
 {
-  print $error_string;
+  print "$error_string";
 }
 
 

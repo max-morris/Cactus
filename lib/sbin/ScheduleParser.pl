@@ -90,7 +90,7 @@ sub parse_schedule_ccl
       ($line_number, 
        $name, $as, $type, $description, $where, $language, 
        $mem_groups, $comm_groups, $trigger_groups, $sync_groups,
-       $options,$before_list, $after_list, $while_list) = &ParseScheduleBlock($line_number, @data);
+       $options,$before_list, $after_list, $while_list) = &ParseScheduleBlock($thorn,$line_number, @data);
 
       $schedule_db{"\U$thorn\E BLOCK_$n_blocks NAME"}        = $name;
       $schedule_db{"\U$thorn\E BLOCK_$n_blocks AS"}          = $as;
@@ -147,7 +147,7 @@ sub parse_schedule_ccl
 #@@*/
 sub ParseScheduleBlock
 {
-  my($line_number, @data) = @_;
+  my($thorn,$line_number, @data) = @_;
   my($name, $as, $type, $description, $where, $language, 
      $mem_groups, $comm_groups, $trigger_groups, $sync_groups,
      $options, $before_list, $after_list, $while_list);
@@ -400,8 +400,12 @@ sub ParseScheduleBlock
       {
 	if($language ne "")
 	{
-	  print STDERR "Error parsing schedule block line '$data[$line_number]'\n";
-	  print STDERR "Attempt to specify language more than once.\n";
+	  $thisline = $data[$line_number];
+	  $thisline =~ s/^\s*([^\s])\s$/$1/;
+	  $message  = "Error parsing schedule block in $thorn\n";
+	  $message .= "Attempt to specify language more than once\n";
+	  $message .= "Line: $thisline";
+	  &CST_error(0,$message,__LINE__,__FILE__);
 	}
 	else
 	{
