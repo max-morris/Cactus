@@ -3086,8 +3086,9 @@ Details of the operation performed, and what (if any) inputs and/or
 outputs are specified in the parameter table, depend on which driver-specific
 interpolation thorn and interpolation operator (provided by a local
 interpolation thorn) you use.  See the documentation on individual interpolator
-thorns (eg. {\tt PUGHInterp} in the {\tt CactusPUGH} arrangement and
-{\tt LocalInterp} in the {\tt CactusBase} arrangement) for details.
+thorns (eg. {\tt PUGHInterp} in the {\tt CactusPUGH} arrangement,
+{\tt LocalInterp} in the {\tt CactusBase} arrangement, and/or
+{\tt AEILocalInterp} in the {\tt AEIThorns} arrangement) for details.
 
 Note that in a multiprocessor Cactus run, it's the user's responsibility
 to choose the interprocessor ghost-zone size (\verb|driver::ghost_size|)
@@ -3529,7 +3530,7 @@ A negative return code indicates an error condition:
 %notyet we might want to interpolate along 1-D lines or in 2-D planes of a
 %notyet 3-D input array; here \verb|N_dims| would be 1 or 2 respectively.
 %notyet For details, see the section on ``Non-Contiguous Input Arrays''
-%notyet in the Thorn Guide for thorn LocalInterp.
+%notyet in the Thorn Guide for thorn AEILocalInterp.
 %notyet \end{Parameter}
 %notyet \begin{Parameter}{operator\_handle ($\ge 0$)}
 %notyet \hbox{}
@@ -3546,7 +3547,7 @@ A negative return code indicates an error condition:
 %notyet specifying the order of the (presumably polynomial) interpolation
 %notyet (1=linear, 2=quadratic, 3=cubic, etc).
 %notyet
-%notyet See the Thorn Guide for the LocalInterp thorn for other parameters.
+%notyet See the Thorn Guide for the AEILocalInterp thorn for other parameters.
 %notyet \end{Parameter}
 %notyet \begin{Parameter}{coord\_arrays\_type\_code}
 %notyet \hbox{}
@@ -3657,7 +3658,7 @@ A negative return code indicates an error condition:
 %notyet
 %notyet Details of the operation performed, and what (if any) inputs and/or
 %notyet outputs are specified in the parameter table, depend on which interpolation
-%notyet operator you use.  See the Thorn Guide for the LocalInterp thorn for
+%notyet operator you use.  See the Thorn Guide for the AEILocalInterp thorn for
 %notyet further discussion.
 %notyet \end{Discussion}
 %notyet
@@ -3693,7 +3694,7 @@ in the \verb|src/include/| directory in the Cactus flesh.
 %notyet one or more of the interpolation points is out of range
 %notyet (in this case additional information about the out-of-range point
 %notyet may be reported through the parameter table; see the Thorn Guide for
-%notyet the LocalInterp thorn for further details)
+%notyet the AEILocalInterp thorn for further details)
 %notyet \end{Error}
 %notyet \begin{Error}{UTIL\_ERROR\_BAD\_INPUT}
 %notyet one or more of the inputs is invalid (eg.~\verb|NULL| pointer)
@@ -3836,7 +3837,7 @@ input arrays if the storage is set up appropriately.  For example,
 we might want to interpolate along 1-D lines or in 2-D planes of a
 3-D input array; here \verb|N_dims| would be 1 or 2 respectively.
 For details, see the section on ``Non-Contiguous Input Arrays''
-in the Thorn Guide for thorn LocalInterp.
+in the Thorn Guide for thorn AEILocalInterp.
 \end{Parameter}
 \begin{Parameter}{operator\_handle ($\ge 0$)}
 \hbox{}
@@ -3852,7 +3853,7 @@ operators are likely to support, is \verb|order|, a \verb|CCTK_INT|
 specifying the order of the (presumably polynomial) interpolation
 (1=linear, 2=quadratic, 3=cubic, etc).
 
-See the Thorn Guide for the LocalInterp thorn for other parameters.
+See the Thorn Guide for the AEILocalInterp thorn for other parameters.
 \end{Parameter}
 \begin{Parameter}{coord\_origin ($\ne$ NULL)}
 \hbox{}
@@ -3951,7 +3952,7 @@ same coordinate system.
 
 Details of the operation performed, and what (if any) inputs and/or
 outputs are specified in the parameter table, depend on which interpolation
-operator you use.  See the Thorn Guide for the LocalInterp thorn for
+operator you use.  See the Thorn Guide for the AEILocalInterp thorn for
 further discussion.
 \end{Discussion}
 
@@ -3990,7 +3991,7 @@ in the \verb|src/include/| directory in the Cactus flesh.
 one or more of the interpolation points is out of range
 (in this case additional information about the out-of-range point
 may be reported through the parameter table; see the Thorn Guide for
-the LocalInterp thorn for further details)
+the AEILocalInterp thorn for further details)
 \end{Error}
 \begin{Error}{CCTK\_ERROR\_INTERP\_GRID\_TOO\_SMALL}
 one or more of the dimensions of the input arrays is/are smaller than
@@ -4155,7 +4156,7 @@ if (CCTK_InterpLocalUniform(N_DIMS,
 %notyet we might want to interpolate along 1-D lines or in 2-D planes of a
 %notyet 3-D input array; here \verb|N_dims| would be 1 or 2 respectively.
 %notyet For details, see the section on ``Non-Contiguous Input Arrays''
-%notyet in the Thorn Guide for thorn LocalInterp.
+%notyet in the Thorn Guide for thorn AEILocalInterp.
 %notyet \end{Parameter}
 %notyet \begin{Parameter}{operator\_handle ($\ge 0$)}
 %notyet \hbox{}
@@ -4172,7 +4173,7 @@ if (CCTK_InterpLocalUniform(N_DIMS,
 %notyet specifying the order of the (presumably polynomial) interpolation
 %notyet (1=linear, 2=quadratic, 3=cubic, etc).
 %notyet
-%notyet See the Thorn Guide for the LocalInterp thorn for other parameters.
+%notyet See the Thorn Guide for the AEILocalInterp thorn for other parameters.
 %notyet \end{Parameter}
 %notyet \begin{Parameter}{coord\_arrays\_type\_code}
 %notyet \hbox{}
@@ -4289,7 +4290,7 @@ if (CCTK_InterpLocalUniform(N_DIMS,
 %notyet
 %notyet Details of the operation performed, and what (if any) inputs and/or
 %notyet outputs are specified in the parameter table, depend on which interpolation
-%notyet operator you use.  See the Thorn Guide for the LocalInterp thorn for
+%notyet operator you use.  See the Thorn Guide for the AEILocalInterp thorn for
 %notyet further discussion.
 %notyet \end{Discussion}
 %notyet
@@ -4325,7 +4326,7 @@ in the \verb|src/include/| directory in the Cactus flesh.
 %notyet one or more of the interpolation points is out of range
 %notyet (in this case additional information about the out-of-range point
 %notyet may be reported through the parameter table; see the Thorn Guide for
-%notyet the LocalInterp thorn for further details)
+%notyet the AEILocalInterp thorn for further details)
 %notyet \end{Error}
 %notyet \begin{Error}{UTIL\_ERROR\_BAD\_INPUT}
 %notyet one or more of the inputs is invalid (eg.~\verb|NULL| pointer)
@@ -4592,27 +4593,27 @@ Interpolation operator with this name already exists
 \begin{Example}{C}
 \begin{verbatim}
 /* prototype for function we want to register */
-int LocalInterp_InterpLocalUniform(int N_dims,
-                                   int param_table_handle,
-                                   /***** coordinate system *****/
-                                   const CCTK_REAL coord_origin[],
-                                   const CCTK_REAL coord_delta[],
-                                   /***** interpolation points *****/
-                                   int N_interp_points,
-                                   int interp_coords_type_code,
-                                   const void *const interp_coords[],
-                                   /***** input arrays *****/
-                                   int N_input_arrays,
-                                   const CCTK_INT input_array_dims[],
-                                   const CCTK_INT input_array_type_codes[],
-                                   const void *const input_arrays[],
-                                   /***** output arrays *****/
-                                   int N_output_arrays,
-                                   const CCTK_INT output_array_type_codes[],
-                                   void *const output_arrays[]);
+int AEILocalInterp_InterpLocalUniform(int N_dims,
+                                      int param_table_handle,
+                                    /***** coordinate system *****/
+                                      const CCTK_REAL coord_origin[],
+                                      const CCTK_REAL coord_delta[],
+                                    /***** interpolation points *****/
+                                      int N_interp_points,
+                                      int interp_coords_type_code,
+                                      const void *const interp_coords[],
+                                    /***** input arrays *****/
+                                      int N_input_arrays,
+                                      const CCTK_INT input_array_dims[],
+                                      const CCTK_INT input_array_type_codes[],
+                                      const void *const input_arrays[],
+                                    /***** output arrays *****/
+                                      int N_output_arrays,
+                                      const CCTK_INT output_array_type_codes[],
+                                      void *const output_arrays[]);
 
 /* register it! */
-CCTK_InterpRegisterOpLocalUniform(LocalInterp_InterpLocalUniform,
+CCTK_InterpRegisterOpLocalUniform(AEILocalInterp_InterpLocalUniform,
                                   "generalized polynomial interpolation",
                                   CCTK_THORNSTRING);
 \end{verbatim}
