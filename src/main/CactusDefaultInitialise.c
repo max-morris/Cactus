@@ -132,7 +132,9 @@ int CactusInitialiseGH(cGH *GH)
   /* Initialise all the extensions. */
   CCTK_InitGHExtensions(GH);
 
+#define PUGH
 
+#ifdef PUGH
   /* Do various rfr traversals.  Will tidy up later. */
 
   /* FIXME : PARAM_CHECK SHOULD BE BEFORE HERE */
@@ -156,6 +158,8 @@ int CactusInitialiseGH(cGH *GH)
   {
     CCTK_rfrTraverse(GH,Rstep);
   }
+
+#endif
 
   return 1;
 
