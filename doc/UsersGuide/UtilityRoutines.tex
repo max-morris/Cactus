@@ -51,7 +51,9 @@ functions (described in detail in the Reference Manual).
 
 Basically, a table is an object which maps strings to almost arbitrary
 user-defined data.  (If you know Perl, a table is very much like a
-Perl hash table.)%%%
+Perl hash table.  Alternatively, if you know Unix shells, a table is
+like the set of all environment variables.  As yet another analogy,
+if you know Awk, a table is like an Awk associative array.)%%%
 \footnote{%%%
 	 However, the present Cactus tables implementation
 	 is optimized for a relatively small number of
@@ -76,17 +78,23 @@ described in section~\ref{sect-ThornWriting/DataTypes}.
 A string can be stored by treating it as a 1-dimensional array of
 \verb|CCTK_CHAR| (there's an example of this below).
 
-The basic ``life cycle'' of a table is that you first create it
-with \verb|Util_TableCreate()| or \verb|Util_TableClone()|, then
-set entries in it using one or more of the \verb|Util_TableSet*()|,
-\verb|Util_TableSet*Array()|, \verb|Util_TableSetGeneric()|,
-\verb|Util_TableSetGenericArray()|, and/or \verb|Util_TableSetString()|
-functions.  Then, at a later time some other piece of code can get
-(copies of) the values you set, using one or more of the
-\verb|Util_TableGet*()|, \verb|Util_TableGet*Array()|,
-\verb|Util_TableGetGeneric()|, \verb|Util_TableGetGenericArray()|,
-and/or \verb|Util_TableGetString()| functions.  Finally, when you're
-through with a table you destroy it with \verb|Util_TableDestroy()|.
+The basic ``life cycle'' of a table looks like this:
+\begin{enumerate}
+\item	Some code creates it with \verb|Util_TableCreate()|
+	or \verb|Util_TableClone()|.
+\item	Some code (often the same piece of code, but maybe some
+	other piece) sets entries in it using one or more of
+	the \verb|Util_TableSet*()|, \verb|Util_TableSet*Array()|,
+	\verb|Util_TableSetGeneric()|, \verb|Util_TableSetGenericArray()|,
+	and/or \verb|Util_TableSetString()| functions.
+\item	Some other piece or pieces of code can get (copies of)
+	the values which were set, using one or more of the
+	\verb|Util_TableGet*()|, \verb|Util_TableGet*Array()|,
+	\verb|Util_TableGetGeneric()|, \verb|Util_TableGetGenericArray()|,
+	and/or \verb|Util_TableGetString()| functions.
+\item	When everyone is through with a table, some (single)
+	piece of code should destroy it with \verb|Util_TableDestroy()|.
+\end{enumerate}
 
 There are also convenience functions \verb|Util_TableSetFromString()|
 to set entries in a table based on a parameter-file-style string,
