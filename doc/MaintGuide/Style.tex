@@ -213,5 +213,10 @@ All functions should have a grdoc header.
 They should have a single place of return at the end of the function to
 make it easy to tidy up and work out what is going on.
 
+Where possible variables should be declared at the top of the function with
+no initialisation, and then initialised after all variable declarations. Of
+course this can't apply to static variables, 'though these should be kept to
+a minimum so we can make a thread-safe version of Cactus later.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \end{cactuspart}
