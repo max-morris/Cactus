@@ -96,6 +96,10 @@ typedef struct
  ********************* Local Routine Prototypes *********************
  ********************************************************************/
 
+static int ScheduleTraverse(const char *where, 
+                            void *GH,   
+                            int (*CallFunction)(void *, cFunctionData *, void *));
+
 static t_attribute *CreateAttribute(const char *description, 
                                     const char *language, 
                                     const char *name,
@@ -201,11 +205,17 @@ int CCTK_CallFunction(void *function,
 
   int (*noargsfunc)(void);
 
+  int (*oneargfunc)(void *);
+
   switch(fdata->type)
   {
     case FunctionNoArgs:
       noargsfunc = (int (*)(void))function;
       noargsfunc();
+      break;
+    case FunctionOneArg:
+      oneargfunc = (int (*)(void *))function;
+      oneargfunc(data);
       break;
     case FunctionStandard:
       switch(fdata->language)
@@ -441,12 +451,12 @@ int CCTKi_ScheduleGroupComm(const char *group)
 }
 
 
-/*@@
-   @routine    CCTK_ScheduleTraverse
-   @date       Fri Sep 17 21:52:44 1999
+ /*@@
+   @routine    CCTK_ScheduleTraveres
+   @date       Tue Apr  4 08:05:27 2000
    @author     Tom Goodale
    @desc 
-   Traverses the given schedule point.
+   Traverses a schedule point, and its entry and exit points if necessary.
    @enddesc 
    @calls     
    @calledby   
@@ -455,49 +465,69 @@ int CCTKi_ScheduleGroupComm(const char *group)
    @endhistory 
 
 @@*/
-
 int CCTK_ScheduleTraverse(const char *where, 
                           void *GH,   
                           int (*CallFunction)(void *, cFunctionData *, void *))
 {
-  t_sched_data data;
+  int retcode;
 
-  int (*calling_function)(void *, t_attribute *, t_sched_data *);
+  int special;
+  const char *current;
 
-  data.GH = (cGH *)GH;
-  
-  if(CallFunction)
+  static char *current_point = NULL;
+  static int current_length = 0;
+  char *temp;
+
+  special=0;
+
+  /* Special entry points have $ in them */
+  for(current=where; *current; current++)
   {
-    data.CallFunction = CallFunction;
+    if(*current == '$')
+    {
+      special = 1;
+      break;
+    }
+  }
+
+  retcode = 0;
+
+  if(special)
+  {
+    ScheduleTraverse(where, GH, CallFunction);
   }
   else
   {
-    data.CallFunction = CCTK_CallFunction;
-  }
+    if(current_length < strlen(where) + 7)
+    {
+      current_length = strlen(where)+7;
 
-  if(CCTK_Equals(where, "CCTK_ANALYSIS"))
-  {
-    data.schedpoint = schedpoint_analysis;
-  }
-  else
-  {
-    data.schedpoint = schedpoint_misc;
-  }
-
-  calling_function = CCTKi_ScheduleCallFunction;
+      temp = realloc(current_point, current_length);
   
-  CCTKi_DoScheduleTraverse
-    (
-     where,
-     (int (*)(void *, void *))               CCTKi_ScheduleCallEntry, 
-     (int (*)(void *, void *))               CCTKi_ScheduleCallExit, 
-     (int  (*)(int, char **, void *, void *))CCTKi_ScheduleCallWhile, 
-     (int (*)(void *, void *, void *))       calling_function, 
-     (void *)&data
-     );
+      if(temp)
+      {
+        current_point = temp;
+      }
+      else
+      {
+        retcode = 1;
+      }
+    }
+    if(retcode == 0)
+    {
+      sprintf(current_point, "%s$%s", where, "ENTRY");
+      ScheduleTraverse(current_point, GH, CallFunction);
 
-  return 0;
+      ScheduleTraverse(where, GH, CallFunction);
+
+      sprintf(current_point, "%s$%s", where, "EXIT");
+      ScheduleTraverse(current_point, GH, CallFunction);
+    }
+  }
+
+  return retcode;
 }
+
 
 /*@@
    @routine    CCTKi_ScheduleGHInit
@@ -555,19 +585,35 @@ int CCTK_SchedulePrint(const char *where)
     SchedulePrint("CCTK_PARAMCHECK");
     printf("\n");
     printf("  Initialisation\n");
+    SchedulePrint("CCTK_BASEGRID$ENTRY");
     SchedulePrint("CCTK_BASEGRID");
+    SchedulePrint("CCTK_BASEGRID$EXIT");
+    SchedulePrint("CCTK_INITIAL$ENTRY");
     SchedulePrint("CCTK_INITIAL");
+    SchedulePrint("CCTK_INITIAL$EXIT");
+    SchedulePrint("CCTK_POSTINITIAL$ENTRY");
     SchedulePrint("CCTK_POSTINITIAL");
+    SchedulePrint("CCTK_POSTINITIAL$EXIT");
+    SchedulePrint("CCTK_POSTSTEP$ENTRY");
     SchedulePrint("CCTK_POSTSTEP");
+    SchedulePrint("CCTK_POSTSTEP$EXIT");
     printf("\n");
     printf ("  do loop over timesteps\n");
+    SchedulePrint("CCTK_PRESTEP$ENTRY");
     SchedulePrint("CCTK_PRESTEP");
+    SchedulePrint("CCTK_PRESTEP$EXIT");
+    SchedulePrint("CCTK_EVOL$ENTRY");
     SchedulePrint("CCTK_EVOL");
+    SchedulePrint("CCTK_EVOL$EXIT");
     printf ("    t = t+dt\n");
+    SchedulePrint("CCTK_POSTSTEP$ENTRY");
     SchedulePrint("CCTK_POSTSTEP");
+    SchedulePrint("CCTK_POSTSTEP$EXIT");
     printf ("    if (analysis)\n");
     indent_level +=2;
+    SchedulePrint("CCTK_ANALYSIS$ENTRY");
     SchedulePrint("CCTK_ANALYSIS");
+    SchedulePrint("CCTK_ANALYSIS$EXIT");
     indent_level -=2;
     printf ("    endif\n");
     printf ("  enddo\n");
@@ -604,15 +650,29 @@ int CCTK_SchedulePrintTimes(const char *where)
     printf("\n");
     SchedulePrintTimes("CCTK_PARAMCHECK", &data);
     printf("\n");
+    SchedulePrintTimes("CCTK_BASEGRID$ENTRY", &data);
     SchedulePrintTimes("CCTK_BASEGRID", &data);
+    SchedulePrintTimes("CCTK_BASEGRID$EXIT", &data);
+    SchedulePrintTimes("CCTK_INITIAL$ENTRY", &data);
     SchedulePrintTimes("CCTK_INITIAL", &data);
+    SchedulePrintTimes("CCTK_INITIAL$EXIT", &data);
+    SchedulePrintTimes("CCTK_POSTINITIAL$ENTRY", &data);
     SchedulePrintTimes("CCTK_POSTINITIAL", &data);
+    SchedulePrintTimes("CCTK_POSTINITIAL$EXIT", &data);
+    SchedulePrintTimes("CCTK_POSTSTEP$ENTRY", &data);
     SchedulePrintTimes("CCTK_POSTSTEP", &data);
+    SchedulePrintTimes("CCTK_POSTSTEP$EXIT", &data);
     printf("\n");
+    SchedulePrintTimes("CCTK_PRESTEP$ENTRY", &data);
     SchedulePrintTimes("CCTK_PRESTEP", &data);
+    SchedulePrintTimes("CCTK_PRESTEP$EXIT", &data);
+    SchedulePrintTimes("CCTK_EVOL$ENTRY", &data);
     SchedulePrintTimes("CCTK_EVOL", &data);
+    SchedulePrintTimes("CCTK_EVOL$EXIT", &data);
     printf("\n");
+    SchedulePrintTimes("CCTK_ANALYSIS$ENTRY", &data);    
     SchedulePrintTimes("CCTK_ANALYSIS", &data);    
+    SchedulePrintTimes("CCTK_ANALYSIS$EXIT", &data);    
     printf("\n");
     SchedulePrintTimes("CCTK_SHUTDOWN", &data);
   }
@@ -662,6 +722,64 @@ cLanguage CCTK_TranslateLanguage(const char *sval)
 /********************************************************************
  *********************     Local Routines   *************************
  ********************************************************************/
+
+/*@@
+   @routine    ScheduleTraverse
+   @date       Fri Sep 17 21:52:44 1999
+   @author     Tom Goodale
+   @desc 
+   Traverses the given schedule point.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+
+static int ScheduleTraverse(const char *where, 
+                            void *GH,   
+                            int (*CallFunction)(void *, cFunctionData *, void *))
+{
+  t_sched_data data;
+
+  int (*calling_function)(void *, t_attribute *, t_sched_data *);
+
+  data.GH = (cGH *)GH;
+  
+  if(CallFunction)
+  {
+    data.CallFunction = CallFunction;
+  }
+  else
+  {
+    data.CallFunction = CCTK_CallFunction;
+  }
+
+  if(CCTK_Equals(where, "CCTK_ANALYSIS"))
+  {
+    data.schedpoint = schedpoint_analysis;
+  }
+  else
+  {
+    data.schedpoint = schedpoint_misc;
+  }
+
+  calling_function = CCTKi_ScheduleCallFunction;
+  
+  CCTKi_DoScheduleTraverse
+    (
+     where,
+     (int (*)(void *, void *))               CCTKi_ScheduleCallEntry, 
+     (int (*)(void *, void *))               CCTKi_ScheduleCallExit, 
+     (int  (*)(int, char **, void *, void *))CCTKi_ScheduleCallWhile, 
+     (int (*)(void *, void *, void *))       calling_function, 
+     (void *)&data
+     );
+
+  return 0;
+}
 
  /*@@
    @routine    CreateAttribute
@@ -955,7 +1073,26 @@ static cFunctionType TranslateFunctionType(const char *where)
 {
   cFunctionType retcode;
 
-  if(CCTK_Equals(where, "CCTK_STARTUP"))
+  int special;
+  const char *current;
+
+  special = 0;
+
+  /* Special entry points have $ in them */
+  for(current=where; *current; current++)
+  {
+    if(*current == '$')
+    {
+      special = 1;
+      break;
+    }
+  }
+
+  if(special)
+  {
+    retcode = FunctionOneArg;
+  }    
+  else if(CCTK_Equals(where, "CCTK_STARTUP"))
   {
     retcode = FunctionNoArgs;
   }

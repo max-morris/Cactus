@@ -13,7 +13,7 @@
 
 typedef enum {LangNone, LangC, LangFortran} cLanguage;
 
-typedef enum {FunctionNoArgs, FunctionStandard} cFunctionType;
+typedef enum {FunctionNoArgs, FunctionOneArg, FunctionStandard} cFunctionType;
 
 typedef struct
 {
