@@ -73,7 +73,7 @@ sub MissingThorns
 }
 
 
-sub ParseParFile($thorn,$arrangement,$parfile,$config_data)
+sub ParseParFile
 {
   my($thorn,$arrangement,$parfile,$config_data) = @_;
   my($line,$file,$processing_active);
