@@ -1545,13 +1545,13 @@ int CCTK_ReduceGridArrays(const cGH *GH,
 
 void CCTK_FCALL CCTK_FNAME(CCTK_ReduceGridArrays)
      (int *fortranreturn,
-      const cGH *GH,
-      int dest_proc,
-      int local_reduce_handle,
-      int param_table_handle,
-      int N_input_arrays,
+      const cGH **GH,
+      int *dest_proc,
+      int *local_reduce_handle,
+      int *param_table_handle,
+      int *N_input_arrays,
       const CCTK_INT input_array_variable_indices[],
-      int M_output_values,
+      int *M_output_values,
       const CCTK_INT output_value_type_codes[],
       void* const output_values[])
 {
@@ -1566,11 +1566,11 @@ void CCTK_FCALL CCTK_FNAME(CCTK_ReduceGridArrays)
   }
   else
   {
-    retval = GA_reduc (GH,
-                       dest_proc,
-                       local_reduce_handle, param_table_handle,
-                       N_input_arrays, input_array_variable_indices,
-                       M_output_values, output_value_type_codes,
+    retval = GA_reduc (*GH,
+                       *dest_proc,
+                       *local_reduce_handle, *param_table_handle,
+                       *N_input_arrays, input_array_variable_indices,
+                       *M_output_values, output_value_type_codes,
                        output_values);
   }
   *fortranreturn = retval;
