@@ -1,7 +1,7 @@
 
 Cactus Code Frequently Asked Questions
 
-$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.62 2003-03-17 15:13:07 allen Exp $
+$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.63 2003-03-19 12:30:26 allen Exp $
 
 Also available at http://www.cactuscode.org/Documentation/FAQ
 
@@ -81,7 +81,7 @@ C12 I get the following error when compiling?
     gmake: *** [wave] Error 2
 
 C13 Compiling files in Cactus seems to involve three steps, preprocessing,
-    compiling, and then postprocessing. What is the postprocessing step for?
+    compiling, and then postprocessing. What are they doing?
 
 C14 When trying to create the Cactus executable I get the error the
     error <Unresolved text symbol "SetCartSymVN" -- 1st referenced
@@ -141,6 +141,38 @@ C31 Why can't I use different F90 and F77 compilers with Cactus?
 
 C31 I just want to check that one thorn compiles correctly, can I test 
     this without compiling all the thorns which come before it?
+
+C32 What is the Cactus c-preprocessor (Cactus cpp) ? 
+
+    Part of the pre-processing step for Fortran files involves the use of
+    the C-preprocessor.  On some architectures the native CPP does not
+    correctly handle spaces in source files, and thus corrupts the
+    resulting file.  On other machines there is no native way to generate
+    dependency information for files.  In an attempt to solve these problems
+    we have written a replacement of CPP in perl, which you may use if you
+    configure with
+
+      CPP='$${PERL} $${CCTK_HOME}/lib/sbin/cpp.pl'
+
+    or in an options file without the quotes
+
+      CPP=$${PERL} $${CCTK_HOME}/lib/sbin/cpp.pl
+
+    The Cactus preprocessor is still being developed and improved, known 
+    problems include
+
+      - only currently supports #ifdef, #if defined for a single token and
+        not operations involving more than one token connected by && and ||, 
+        etc
+      - problems with macros whose overall expansion contains the original 
+        macro name
+
+    The Cactus make system does not use the standalone CPP to preprocess C
+    source files, as the first step of a C compilation involves the use of
+    a CPP (normally internal).  In any case we do not recommend the use of
+    this perl CPP to process C files, partly due to the above problems, and
+    partly as the preprocessor does not pre-define certain symbols which
+    the native preprocessor would..
 
 
 ------------------------------------------------------------------------------
@@ -579,13 +611,32 @@ C12 I get the following error when compiling?
 
 
 C13 Compiling files in Cactus seems to involve three steps, preprocessing,
-    compiling, and then postprocessing. What is the postprocessing step
-    for?
+    compiling, and then postprocessing. What are they doing?
 
-    This is for architecture dependent things which come up. For example,
-    some machines don't allow using a "-o" flag for naming the resulting
+    Cactus specific preprocessing is performed for most source files, for 
+    example to expand c-preprocessor macros (e.g. DECLARE_CCTK_PARAMETERS) 
+    in .F, .F90 and .F77 files or to set correct names for calling Fortran 
+    functions in C files.  At the end of the preprocessing stage the
+    resulting source file is placed into the
+
+       configs/<config>/build/<thorn>
+
+    directory and if ready to be passed to the compiler.
+
+    Once a file has been preprocessed, the resulting source file is
+    compiled, with the working directory set to
+
+      configs/<config>/scratch
+
+    (which ensures, for example, that all F90 modules can be found by
+    the compiler).
+
+    After the file is compiled, some architectures may require
+    postprocessing of the object files, for example,some machines
+    don't allow the use of a "-o" flag for naming the resulting
     object file, in which case part of postprocessing would involve
     renaming and moving the file.
+
 
 C14 When trying to create the Cactus executable I get the error
 
@@ -884,6 +935,8 @@ C31 I just want to check that one thorn compiles correctly, can I test
 
     builds thorns in the order they appear in the list. (Note, this does 
     not link any thorn libraries together).
+
+C32 What is the Cactus c-preprocessor (Cactus cpp) ? 
 
 
 ------------------------------------------------------------------------------
