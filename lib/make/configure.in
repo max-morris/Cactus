@@ -34,6 +34,32 @@ AC_PATH_PROGS(SHELL, sh bash)
 AC_SUBST(LD)
 LD=$CXX
 
+
+# If this is a known architecture, setup any specific flags.
+# This has to be done here as flags given to the compiler may
+# change the things detected later.
+
+if test -r $srcdir/known-architectures/$host_os ; then
+. $srcdir/known-architectures/$host_os
+fi
+
+# Deal with the Fortran compiler issues.
+# If there's a Fortran 90 compiler use that for all the Fortran.
+if test "x$F90" != "x" ; then
+F77=$F90 
+F77FLAGS=$F90FLAGS ;
+fi
+
+# The known architecture stuff has probably set the LIBS variable
+# So remember what it is and set it to blank to prevent any problems with the
+# rest of the configure stuff.
+
+KNOWN_LIBS="$LIBS"
+LIBS=
+
+KNOWN_LDFLAGS="$LDFLAGS"
+LDFLAGS=
+
 dnl Checks for libraries.
 
 dnl Checks for header files.
@@ -96,22 +122,14 @@ F_FILE_PROCESSOR=`echo $srcdir/../sbin/f_file_processor.pl | sed 's,^//\(.\)/,\1
 AC_SUBST(C_FILE_PROCESSOR)
 C_FILE_PROCESSOR=`echo $srcdir/../sbin/c_file_processor.pl | sed 's,^//\(.\)/,\1:/,'`
 
-# Deal with the Fortran compiler issues.
-# If there's a Fortran 90 compiler use that for all the Fortran.
-if test "x$F90" != "x" ; then
-F77=$F90 
-F77FLAGS=$F90FLAGS ;
-fi
 
 
 AC_SUBST(CCOMPILEONLY)
 AC_SUBST(FCOMPILEONLY)
 
-# If this is a known architecture, setup any specific flags
-
-if test -r $srcdir/known-architectures/$host_os ; then
-. $srcdir/known-architectures/$host_os
-fi
+# Put the libraries from the known-architectures onto the LIB variable.
+LIBS="$KNOWN_LIBS $LIBS"
+LDFLAGS="$KNOWN_LDFLAGS $LDFLAGS"
 
 #Set the compileonly flags if they've not been set by now
 
