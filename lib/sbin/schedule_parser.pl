@@ -27,7 +27,11 @@ sub create_schedule_code
   local($thorn);
   local(@rfr_file);
   local(@indata,$implementation);
-
+  local($schedule_wrappers, $wrapper_files);
+  local(%schedule_ordering);
+  local(@schedule_data);
+  local(@retschedule_data);
+    
   %thorns = @rest[0..2*$n_thorns-1];
   %interface_database = @rest[2*$n_thorns..$#rest];
 
@@ -51,14 +55,14 @@ sub create_schedule_code
     @indata = &read_file("$thorns{$thorn}/schedule.ccl");
 
     # Parse the data and create rfr and startup subroutines
-    ($proto,$out,@wrappers) = &parse_schedule_ccl($thorn,$implementation,"rfr",@indata);
+    ($proto,$out,$wrapper_files, @retscheduledata) = &parse_schedule_ccl($thorn,$implementation,"rfr",@indata);
     print OUTRFR $proto;
     print OUTRFR $out; 
-    $wrapper_files .= join(" ",@wrappers);
     $rfr_files .= " $thorn_rfr";
     $startup_files .= " $thorn_startup";
+    push(@schedule_data, @retscheduledata);
 
-    ($proto,$out,@wrappers) = &parse_schedule_ccl($thorn,$implementation,"startup",@indata);
+    ($proto,$out,$schedule_wrappers) = &parse_schedule_ccl($thorn,$implementation,"startup",@indata);
     print OUTSTART $proto;
     print OUTSTART $out; 
 
@@ -71,7 +75,9 @@ sub create_schedule_code
 
   }
 
-  return  ($wrapper_files,$rfr_files,$startup_files);
+  %schedule_ordering = @schedule_data;
+
+  return  ($wrapper_files,$rfr_files,$startup_files, %schedule_ordering);
 
 }
 
@@ -195,6 +201,7 @@ sub parse_schedule_ccl
 {
   local($thorn,$implementation,$type,@data) = @_;
   local($proto,$out,$line,$line_number,@compile_files);
+  local(%schedule_ordering);
 
 # Parse the data from the thorns schedule.ccl file
   for ($line_number=0; $line_number<@data; $line_number++)
@@ -202,12 +209,33 @@ sub parse_schedule_ccl
     $line = @data[$line_number];
 
     # Parse the entire schedule block
-    if ($line =~ m/\s*schedule\s*(.*)\s*at\s*.*/i)
+    if ($line =~ m/\s*schedule\s*(.*)\s*at\s*(.*)/i)
     {
       ($wrapper_file,$proto_block,$out_block) = &parse_schedule_block($thorn,$implementation,$type,@data);
       $proto .= "$proto_block"; 
       $out .= "$out_block";
-      push(@compile_files," $wrapper_file");
+      $compile_files .= " $wrapper_file";
+
+      $routine = $1;
+      if($2)
+      {
+	$schedule_ordering{"\U$thorn"} .= " $routine";
+
+	@options = split(" ", $2);
+	for($option = 0; $option < $#options; $option++)
+	{
+	  if($options[$option] =~ m:\bBEFORE\b:i)
+	  {
+	    $schedule_ordering{"\U%thorn BEFORE"} .= " $options[$option+1]";
+	    $option++;
+	  }
+	  elsif($options[$option] =~ m:\bAFTER\b:i)
+	  {
+	    $schedule_ordering{"\U%thorn \U$routine AFTER"} .= " $options[$option+1]";
+	    $option++;
+	  }
+	}
+      }
     }
 
     # Parse the non-schedule storage line
@@ -259,7 +287,7 @@ sub parse_schedule_ccl
 
   }  
 
-  return ($proto,$out,@compile_files);
+  return ($proto,$out,$compile_files, %schedule_ordering);
 
 }
 
