@@ -120,20 +120,11 @@ static int n_imps   = 0;
 @@*/
 int CCTKi_RegisterThorn(const struct iAttributeList *attributes)
 {
-  int retval;
-  int i;
-
-  t_sktree *node;
-  t_sktree *temp;
-
+  int i, retval;
+  t_sktree *node, *temp;
   struct THORN *thorn;
-
-  const char *name;
-  const char *imp;
-
-  const char **ancestors;
-  const char **friends;
-  const char **requires_thorns;
+  const char *name, *imp;
+  const char **ancestors, **friends, **requires_thorns;
 
 
   name = imp = NULL;
@@ -177,15 +168,15 @@ int CCTKi_RegisterThorn(const struct iAttributeList *attributes)
 
   /* Does the thorn already exist ? */
   node = SKTreeFindNode(thornlist, name);
-
   if(!node)
   {
     n_thorns++;
-    /* Create the structure to hold thorn info. */
-    thorn = (struct THORN *)malloc(sizeof(struct THORN));
 
+    /* Create the structure to hold thorn info. */
+    thorn = malloc (sizeof(struct THORN));
     if(thorn)
     {
+      thorn->requires_thorns = NULL;
       if (requires_thorns)
       {
         /* count the number of thorns */
@@ -215,7 +206,6 @@ int CCTKi_RegisterThorn(const struct iAttributeList *attributes)
 
         if(temp)
         {
-
           /* Register the implementation */
           RegisterImp(imp, name, ancestors, friends);
 
@@ -281,17 +271,15 @@ int CCTKi_ActivateThorn(const char *name)
 
   /* Find the thorn */
   thornnode = SKTreeFindNode(thornlist, name);
-
   if(thornnode)
   {
-    thorn = (struct THORN *)(thornnode->data);
+    thorn = thornnode->data;
 
     /* Find the implementation */
     impnode = SKTreeFindNode(implist, thorn->implementation);
-
     if(impnode)
     {
-      imp = (struct IMPLEMENTATION *)(impnode->data);
+      imp = impnode->data;
 
       if(!thorn->active)
       {
@@ -299,8 +287,8 @@ int CCTKi_ActivateThorn(const char *name)
         {
           /* Activate the thorn. */
           printf("Success -> active implementation %s\n", thorn->implementation);
-          thorn->active = 1;
-          imp->active = 1;
+          thorn->active = imp->active = 1;
+
           /* Remember which thorn activated this imp. */
           imp->activating_thorn = Util_Strdup(name);
           retval = 0;
@@ -330,7 +318,6 @@ int CCTKi_ActivateThorn(const char *name)
   }
 
   return retval;
-
 }
 
 
@@ -585,16 +572,13 @@ int CCTKi_PrintThorns(FILE *file, const char *format, int active)
 {
   int retval;
   const t_sktree *node;
-  const struct THORN *thorn;
 
 
   for(node = SKTreeFindFirst(thornlist), retval = 0;
       node;
       node = node->next, retval++)
   {
-    thorn = (struct THORN *)(node->data);
-
-    if(thorn->active || !active)
+    if(((struct THORN *) node->data)->active || !active)
     {
       fprintf(file, format, node->key);
     }
@@ -602,6 +586,7 @@ int CCTKi_PrintThorns(FILE *file, const char *format, int active)
 
   return retval;
 }
+
 
  /*@@
    @routine    CCTKi_PrintImps
@@ -639,16 +624,13 @@ int CCTKi_PrintImps(FILE *file, const char *format, int active)
 {
   int retval;
   const t_sktree *node;
-  const struct IMPLEMENTATION *imp;
 
 
   for(node = SKTreeFindFirst(implist), retval = 0;
       node;
       node = node->next, retval++)
   {
-    imp = (struct IMPLEMENTATION *)(node->data);
-
-    if(imp->active || !active)
+    if(((struct IMPLEMENTATION *) node->data)->active || !active)
     {
       fprintf(file, format, node->key);
     }
@@ -681,20 +663,11 @@ const char *CCTK_ActivatingThorn(const char *name)
 {
   const char *retval;
   const t_sktree *node;
-  const struct IMPLEMENTATION *imp;
 
-
-  retval = NULL;
 
   node = SKTreeFindNode(implist, name);
-  if (node)
-  {
-    imp = (const struct IMPLEMENTATION *) node->data;
-    if (imp->active)
-    {
-      retval = imp->activating_thorn;
-    }
-  }
+  retval = node && ((struct IMPLEMENTATION *) node->data)->active ?
+           ((struct IMPLEMENTATION *) node->data)->activating_thorn : NULL;
 
   return (retval);
 }
@@ -773,9 +746,7 @@ const char *CCTK_CompiledThorn(int tindex)
 {
   int i;
   t_sktree *node;
-  const char *ret_val;
 
-  ret_val = NULL;
 
   for(node = SKTreeFindFirst(thornlist), i = 0;
       node;
@@ -783,12 +754,11 @@ const char *CCTK_CompiledThorn(int tindex)
   {
     if (i == tindex)
     {
-      ret_val = node->key;
-      break;
+      return (node->key);
     }
   }
 
-  return ret_val;
+  return (NULL);
 }
 
 
@@ -834,9 +804,7 @@ const char *CCTK_CompiledImplementation(int tindex)
 {
   int i;
   t_sktree *node;
-  const char *ret_val;
 
-  ret_val = NULL;
 
   for(node = SKTreeFindFirst(implist), i = 0;
       node;
@@ -844,12 +812,11 @@ const char *CCTK_CompiledImplementation(int tindex)
   {
     if (i == tindex)
     {
-      ret_val = node->key;
-      break;
+      return (node->key);
     }
   }
 
-  return ret_val;
+  return (NULL);
 }
 
 
@@ -869,26 +836,23 @@ const char *CCTK_CompiledImplementation(int tindex)
 uStringList *CCTK_ImplementationRequires(const char *imp)
 {
   int i;
-  t_sktree *impnode;
   struct IMPLEMENTATION *impdata;
   uStringList *ancestors;
 
-  impnode = SKTreeFindNode(implist, imp);
-  impdata = (struct IMPLEMENTATION *)(impnode->data);
+
+  impdata = SKTreeFindNode(implist, imp)->data;
 
   ancestors = Util_StringListCreate(n_thorns);
 
   /* Get ancestors */
   for(i=0; impdata->ancestors[i]; i++)
   {
-    CCTK_ImplementationThorn(impdata->ancestors[i]);
     Util_StringListAdd(ancestors,impdata->ancestors[i]);
   }
 
   /* Get friends */
   for(i=0; impdata->friends[i]; i++)
   {
-    CCTK_ImplementationThorn(impdata->friends[i]);
     Util_StringListAdd(ancestors,impdata->ancestors[i]);
   }
 
@@ -1255,14 +1219,12 @@ static int RegisterImp(const char *name,
 
   /* Does the implementation already exist ? */
   node = SKTreeFindNode(implist, name);
-
   if(!node)
   {
     n_imps++;
 
     /* Create the structure to hold info about it. */
-    imp = (struct IMPLEMENTATION *)malloc(sizeof(struct IMPLEMENTATION));
-
+    imp = malloc(sizeof(struct IMPLEMENTATION));
     if(imp)
     {
       imp->active = 0;
@@ -1282,7 +1244,7 @@ static int RegisterImp(const char *name,
         for(count=0; ancestors && ancestors[count];count++);
 
         imp->n_ancestors = count;
-        imp->ancestors = (char **)malloc((count+1)*sizeof(char *));
+        imp->ancestors = malloc((count+1)*sizeof(char *));
 
         if(imp->ancestors)
         {
@@ -1300,7 +1262,7 @@ static int RegisterImp(const char *name,
         for(count=0; friends && friends[count];count++);
 
         imp->n_friends = count;
-        imp->friends = (char **)malloc((count+1)*sizeof(char *));
+        imp->friends = malloc((count+1)*sizeof(char *));
 
         if(imp->friends)
         {
@@ -1321,7 +1283,7 @@ static int RegisterImp(const char *name,
   }
   else
   {
-    imp = (struct IMPLEMENTATION *)(node->data);
+    imp = node->data;
     SKTreeStoreData(imp->thornlist,imp->thornlist, thorn, NULL);
 
     retval = -1;
@@ -1329,6 +1291,7 @@ static int RegisterImp(const char *name,
 
   return retval;
 }
+
 
  /*@@
    @routine    ActivateThorn
@@ -1361,10 +1324,9 @@ static int ActivateThorn(const char *name)
 
   /* Find the thorn */
   thornnode = SKTreeFindNode(thornlist, name);
-
   if(thornnode)
   {
-    thorn = (struct THORN *)(thornnode->data);
+    thorn = thornnode->data;
 
     thorn->active = 1;
 
@@ -1379,6 +1341,7 @@ static int ActivateThorn(const char *name)
 
   return retval;
 }
+
 
  /*@@
    @routine    ActivateImp
@@ -1414,7 +1377,7 @@ static int ActivateImp(const char *implementation, const char *thorn)
   impnode = SKTreeFindNode(implist, implementation);
   if(impnode)
   {
-    imp = (struct IMPLEMENTATION *)(impnode->data);
+    imp = impnode->data;
 
     imp->active = 1;
     /* Remember which thorn activated this imp. */
