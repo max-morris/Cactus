@@ -23,7 +23,7 @@ static char *rcsid = "$Id$";
    going to be any c++ at all in your program.
    
    @enddesc 
-   @calls     InitialiseCactus Initialise Evolve Shutdown ShutdownCactus
+   @calls     CCTKi_InitialiseCactus Initialise Evolve Shutdown ShutdownCactus
    @calledby   
    @history 
  
@@ -50,7 +50,7 @@ int main(int argc, char **argv)
 
   /* Initialise any cactus specific stuff.
    */
-  InitialiseCactus(&argc, &argv, &ConfigData);
+  CCTKi_InitialiseCactus(&argc, &argv, &ConfigData);
 
   /* This is a (c-linkage) routine which has been registered by a thorn.
    */
@@ -66,7 +66,7 @@ int main(int argc, char **argv)
 
   /* Shut down any cactus specific stuff.
    */
-  ShutdownCactus(&ConfigData);
+  CCTKi_ShutdownCactus(&ConfigData);
 
   return 0;
 }

@@ -14,17 +14,22 @@
 #include "SKBinTree.h"
 
 #include "cctk_Types.h"
+#include "cctki_ActiveThorns.h"
 #include "cctk_ActiveThorns.h"
 #include "cctk_WarnLevel.h"
 #include "cctk_Misc.h"
 
 #include "ParameterBindings.h"
 
-
-int CCTKi_ReallySetParameter(const char *parameter, const char *value);
-int ParameterSet(const char *name,
-                 const char *thorn,
-                 const char *value);
+static int ReallySetParameter(
+   const char *parameter, 
+   const char *value
+   );
+int CCTK_ParameterSet(
+   const char *name,
+   const char *thorn,
+   const char *value
+   );
        
 static char *rcsid = "$Id$";
 
@@ -85,7 +90,7 @@ int CCTKi_SetParameter(const char *parameter, const char *value)
   else
   {     
     /*   retval = CCTKi_BindingsParameterSet(parameter, value);*/
-    retval = CCTKi_ReallySetParameter(parameter, value); 
+    retval = ReallySetParameter(parameter, value); 
   }
   
   if(retval)
@@ -103,7 +108,7 @@ int CCTKi_SetParameter(const char *parameter, const char *value)
   return retval;
 }
 
-int CCTKi_ReallySetParameter(const char *parameter, const char *value)
+static int ReallySetParameter(const char *parameter, const char *value)
 {
   int retval;
   const char *thorn;
@@ -125,7 +130,7 @@ int CCTKi_ReallySetParameter(const char *parameter, const char *value)
 
   if(!param)
   {
-    retval = ParameterSet(parameter, imp, value);
+    retval = CCTK_ParameterSet(parameter, imp, value);
   }
   else
   {
@@ -133,7 +138,7 @@ int CCTKi_ReallySetParameter(const char *parameter, const char *value)
     if(CCTK_IsImplementationActive(imp))
     {
       thorn = CCTK_ActivatingThorn(imp);
-      retval_imp = ParameterSet(param, thorn, value);
+      retval_imp = CCTK_ParameterSet(param, thorn, value);
     }
     else
     {
@@ -147,7 +152,7 @@ int CCTKi_ReallySetParameter(const char *parameter, const char *value)
     {
       if(CCTK_IsThornActive(imp))
       {
-        retval_thorn = ParameterSet(param, imp, value);
+        retval_thorn = CCTK_ParameterSet(param, imp, value);
       }
       else
       {

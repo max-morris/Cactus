@@ -13,7 +13,7 @@ static char *rcsid = "$Header$";
 
 
  /*@@
-   @routine    InitialiseSubsystemDefaults
+   @routine    CCTKi_InitialiseSubsystemDefaults
    @date       Fri Jul 23 14:39:53 1999
    @author     Tom Goodale
    @desc 
@@ -26,10 +26,11 @@ static char *rcsid = "$Header$";
    @endhistory 
 
 @@*/
-int InitialiseSubsystemDefaults(void)
+
+int CCTKi_InitialiseSubsystemDefaults(void)
 {
-  SetupMainFunctions();
-  SetupCommFunctions();
+  CCTKi_SetupMainFunctions();
+  CCTKi_SetupCommFunctions();
   SetupIOFunctions();
 
   CCTKi_BindingsImplementationsInitialise();

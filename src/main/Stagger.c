@@ -12,24 +12,74 @@
 
 static int staggered = 0;
 
-int CCTK_StaggeredGrids(void) {
+ /*@@
+   @routine    CCTK_StaggerVars
+   @date       
+   @author     Gerd Lanfermann
+   @desc 
+
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+
+int CCTK_StaggerVars(void) 
+{
   return(staggered);
 }
 
-int CCTK_StaggerCodeGrpIdx(int gindex) {
+
+ /*@@
+   @routine    
+   @date       
+   @author     
+   @desc 
+
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+
+int CCTK_StaggerCodeGrpIdx(int gindex) 
+{
   cGroup group;
   int sc;
   CCTK_GroupData(gindex, &group);
   sc = group.stagtype;
   return(sc);
 }
- 
-void FMODIFIER FORTRAN_NAME(CCTK_StaggerCodeGrpIdx)(int *stagcode, int *gindex) 
+
+void FMODIFIER FORTRAN_NAME(CCTK_StaggerCodeGrpIdx)
+     (int *stagcode, int *gindex) 
 {
   *stagcode = CCTK_StaggerCodeGrpIdx(*gindex);
 }
 
-int CCTK_StaggerCodeGrp(const char *gname) {
+ /*@@
+   @routine    
+   @date       
+   @author     Gerd Lanfermann
+   @desc 
+
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+ 
+int CCTK_StaggerCodeGrp(const char *gname) 
+{
   int gindex;
   gindex = CCTK_GroupIndex(gname);
   return(CCTK_StaggerCodeGrpIdx(gindex));
@@ -45,7 +95,23 @@ void FMODIFIER FORTRAN_NAME(CCTK_StaggerCodeGrp)(int *stagcode, ONE_FORTSTRING_A
 }
   
 
-int CCTK_StaggerCodeName(const char *stype) {
+ /*@@
+   @routine    
+   @date       
+   @author     Gerd Lanfermann
+   @desc 
+
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+ 
+int CCTK_StaggerCodeName(const char *stype) 
+{
   int i,scode,base,dim,m;
   char *info;
 
@@ -53,7 +119,8 @@ int CCTK_StaggerCodeName(const char *stype) {
   scode=0;
   dim  =strlen(stype);
 
-  for (i=0;i<dim;i++) {
+  for (i=0;i<dim;i++) 
+  {
 
     switch (stype[i])
     {
@@ -81,11 +148,28 @@ void FMODIFIER FORTRAN_NAME(CCTK_StaggerCodeName)(int *scode, ONE_FORTSTRING_ARG
 }
 
 
-int CCTK_DirStaggerCodeVal(int dir, int sc) {
+ /*@@
+   @routine    
+   @date       
+   @author     Gerd Lanfermann
+   @desc 
+
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+ 
+int CCTK_DirStaggerCodeVal(int dir, int sc) 
+{
   int val,b,dsc;
   static int hash[4],hashed=0;
 
-  if (hashed==0) {
+  if (hashed==0) 
+  {
     hash[0]= 1;
     hash[1]= 3;
     hash[2]= 9;
@@ -93,10 +177,12 @@ int CCTK_DirStaggerCodeVal(int dir, int sc) {
     hashed = 1;
   }
 
-  for (b=3;b>=0;b--) {
+  for (b=3;b>=0;b--) 
+  {
     val = (int)(sc / hash[b]);
     sc  = sc % hash[b];
-    if (dir==b) {
+    if (dir==b) 
+    {
       dsc = val;
       break;
     }
@@ -113,13 +199,31 @@ void FMODIFIER FORTRAN_NAME(CCTK_DirStaggerCodeVal)
 
 
 
+ /*@@
+   @routine    
+   @date       
+   @author     Gerd Lanfermann
+   @desc 
+
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+ 
 int CCTK_DirStaggerCodeName(int dir, const char *stype) {
   int scode;
   char hs[7]="MMMMMM",*info;
 
   sprintf(hs,"%s",stype);
 
-  if (dir>strlen(hs)) CCTK_Warn(1,__LINE__,__FILE__,"Cactus","Not enough letters in stagger code");
+  if (dir>strlen(hs)) 
+  {
+    CCTK_Warn(1,__LINE__,__FILE__,"Cactus","Not enough letters in stagger code");
+  }
 
   switch (hs[dir])
     {
@@ -142,7 +246,71 @@ void FMODIFIER FORTRAN_NAME(CCTK_DirStaggerCodeName)
   ONE_FORTSTRING_CREATE(sname);
   *ierr= 0;
   *dsc = CCTK_DirStaggerCodeName((*dir)-1,sname);
-  if ((*dsc)>=0) (*dsc)++;
+  if ((*dsc)>=0) 
+  {
+    (*dsc)++;
+  }
   free(sname);
 }
 
+ /*@@
+   @routine    
+   @date       
+   @author     Gerd Lanfermann
+   @desc 
+
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+ 
+int CCTKi_ParseStaggerString(int dim,
+			     const char *imp, 
+			     const char *gname,
+			     const char *stype) 
+{
+  int i,m;
+  int base  = 1;
+  int scode = 0;
+  char hs[7]="MMMMMM", *info;
+
+  /* change possible SHORTCUTS into the official notation, allow for dim=6 */
+  if (strcmp(stype,"NONE")==0)
+  {
+    strncpy(hs,"MMMMMM",dim);
+  }
+  else if (strcmp(stype,"CELL")==0) 
+  {
+    strncpy(hs,"CCCCCC",dim);
+  }
+  else 
+  {
+    sprintf(hs,"%s",stype);
+  }
+
+  for (i=0;i<dim;i++) 
+  {
+    switch (hs[i])
+    {
+      case 'M':m=0; break;
+      case 'C':m=1; break;
+      case 'P':m=2; break;
+      default:
+        info   = (char*)malloc (256*sizeof(char));
+        sprintf(info,
+              "Unknown stagger type: >%s< for group: >%s::%s< \n",
+              stype,imp,gname);
+        CCTK_Warn(1,__LINE__,__FILE__,"Cactus",info);
+        free(info);
+        return(-1);
+    }
+    scode+= m*base;
+    base  = 3 * base;
+  }
+
+  return(scode);
+}

@@ -7,15 +7,10 @@
    @enddesc 
  @@*/
 
-int Cactus_Startup(void)
+int CactusStartup(void)
 {
   
   const char *string;
-
-#if 0
-  /* Old startup */
-  string = "        \\ |/\n        /--\\\n      \\|   .|-                    \\  |  |  |  /  \n       | .  |\n       | .  |-                   -  Cactus 4.0  -\n      -|    |\n       |  / |                     /  |  |  |  \\\n      \\|    |/\n       | .  |           Thorny problems in Numerical Relativity and Beyond\n       |    |-\n       \\    /     Credits: Tom Goodale, Joan Masso, Paul Walker and Gabrielle Allen\n      --------        Including contributions from many worldwide collaborators\n      \\______/\n                ";
-#endif
 
 #define B_1 "       10                                  "
 #define B_2 "  1   0101       ************************  "

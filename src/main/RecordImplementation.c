@@ -25,7 +25,7 @@ static pNamedData *implementation_data = NULL;
 
 
  /*@@
-   @routine    CCTK_RecordImplementation
+   @routine    CCTKi_RegisterImplementation
    @date       Wed Jan 13 23:23:00 1999
    @author     Tom Goodale
    @desc 
@@ -38,7 +38,7 @@ static pNamedData *implementation_data = NULL;
    @endhistory 
 
 @@*/
-int CCTK_RecordImplementation(const char *implementation,
+int CCTKi_RegisterImplementation(const char *implementation,
                               const char *thorn)
 {
   int retval;

@@ -9,9 +9,11 @@
 
 static char *rcsid = "$Header$";
 
-#include "cctk.h"
+#include <stdlib.h>
+
+#include "cctk_Config.h"
 #include "cctki_Cache.h"
-#include "cctk_parameters.h"
+#include "cctk_Parameters.h"
 
 /********************************************************************
  *********************   CCTK Local Routines   **********************
@@ -60,7 +62,7 @@ int CCTKi_SetupCache(void)
 #endif
   }
 
-  CCTKi_CacheDataSet(cacheline_bytes, cache_size);
+  Utili_CacheDataSet(cacheline_bytes, cache_size);
 
   return 0;
 

@@ -39,7 +39,7 @@ static char *rcsid = "$Header$";
 char MPI_Active = 0;
 #endif
 
-int ProcessEnvironment(int *argc, char ***argv,tFleshConfig *ConfigData)
+int CCTKi_ProcessEnvironment(int *argc, char ***argv,tFleshConfig *ConfigData)
 {
   
   /* Check if MPI compiled in but choosing not to use MPI. */  

@@ -448,7 +448,7 @@ sub CreateParameterBindings
   $dataout .= "#ifdef FCODE\n";
   $dataout .= "#include \"FParameters.h\"\n";
   $dataout .= "#endif\n\n";
-  &WriteFile("cctk_parameters.h",\$dataout);
+  &WriteFile("cctk_Parameters.h",\$dataout);
 
 
   chdir $start_dir;
@@ -604,10 +604,10 @@ sub CreateParameterRegistrationStuff
  
 #    $quoted_default =~ s:\"::g;  The database now strips all unescaped quotes.
 
-    $line="  ParameterCreate(\"$parameter\", /* The parameter name */\n".
-          "                  \"$thorn\",     /* The thorn          */\n". 
-          "                  \"$type\"       /* The parameter type */,\n".
-          "                  \"$block\",     /* The scoping block  */\n".
+    $line="  CCTKi_ParameterCreate(\"$parameter\", /* The parameter name */\n".
+          "                        \"$thorn\",     /* The thorn          */\n".
+          "                        \"$type\",       /* The parameter type*/\n".
+          "                        \"$block\",     /* The scoping block  */\n".
           "                  0,              /* Is it steerable ?  */\n".
           "                  " . $rhparameter_db->{"\U$thorn $parameter\E description"} . ", /* The description */\n" .
           "                  \"" . $quoted_default . "\",  /* The default value */\n" .
@@ -672,11 +672,11 @@ sub CreateParameterExtensionStuff
       $quoted_range =~ s:^\s*::;
       $quoted_range =~ s:\s*$::;
 
-      push(@data, "  ParameterAddRange(\"$block\",");
-      push(@data, "                    \"$parameter\",");
-      push(@data, "                    \"$thorn\",");
-      push(@data, "                    \"$quoted_range\",");
-      push(@data, "                    $range_description);");
+      push(@data, "  CCTKi_ParameterAddRange(\"$block\",");
+      push(@data, "                          \"$parameter\",");
+      push(@data, "                          \"$thorn\",");
+      push(@data, "                          \"$quoted_range\",");
+      push(@data, "                          $range_description);");
       push(@data, "");
 
 

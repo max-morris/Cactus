@@ -20,7 +20,7 @@ static int argc;
 static char **argv;
 
  /*@@
-   @routine    ProcessCommandLine
+   @routine    CCTKi_ProcessCommandLine
    @date       Thu Sep 24 10:33:31 1998
    @author     Tom Goodale
    @desc 
@@ -33,11 +33,10 @@ static char **argv;
    @endhistory 
 
 @@*/
-int ProcessCommandLine(int *inargc, char ***inargv, tFleshConfig *ConfigData)
+int CCTKi_ProcessCommandLine(int *inargc, char ***inargv, tFleshConfig *ConfigData)
 {
 
   int option_index = 0;
-  int test_nprocs = 1;
   int c;
 
   /* Store the command line */
@@ -111,7 +110,7 @@ int ProcessCommandLine(int *inargc, char ***inargv, tFleshConfig *ConfigData)
 
 
  /*@@
-   @routine    CCTK_GetCommandLine
+   @routine    CCTK_CommandLine
    @date       Wed Feb 17 00:19:30 1999
    @author     Tom Goodale
    @desc 
@@ -124,7 +123,7 @@ int ProcessCommandLine(int *inargc, char ***inargv, tFleshConfig *ConfigData)
    @endhistory 
 
 @@*/
-int CCTK_GetCommandLine(char ***outargv)
+int CCTK_CommandLine(char ***outargv)
 {
   *outargv = argv;
 

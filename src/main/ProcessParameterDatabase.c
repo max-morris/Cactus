@@ -20,7 +20,7 @@ int ParseFile(FILE *ifp,
 
 
  /*@@
-   @routine    ProcessParameterDatabase
+   @routine    CCTKi_ProcessParameterDatabase
    @date       Thu Sep 24 10:37:07 1998
    @author     Tom Goodale
    @desc 
@@ -33,7 +33,7 @@ int ParseFile(FILE *ifp,
    @endhistory 
 
 @@*/
-int ProcessParameterDatabase(tFleshConfig *ConfigData)
+int CCTKi_ProcessParameterDatabase(tFleshConfig *ConfigData)
 {
   int retval;
   FILE *parameter_file;

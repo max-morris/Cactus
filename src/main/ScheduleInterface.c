@@ -25,7 +25,7 @@ static char *rcsid = "$Header$";
 
 #include "rfrInterface.h"
 
-#include "cctk_FortranWrappers.h"
+#include "cctki_FortranWrappers.h"
 
 #include "CactusTimers.h"
 
@@ -159,7 +159,7 @@ static t_TimerInfo *timerinfo = NULL;
  ********************************************************************/
 
  /*@@
-   @routine    CCTK_ScheduleFunction
+   @routine    CCTKi_ScheduleFunction
    @date       Thu Sep 16 18:19:01 1999
    @author     Tom Goodale
    @desc 
@@ -172,20 +172,21 @@ static t_TimerInfo *timerinfo = NULL;
    @endhistory 
 
 @@*/
-int CCTK_ScheduleFunction(void *function,
-                          const char *name,
-                          const char *thorn,
-                          const char *implementation,
-                          const char *description,
-                          const char *where,
-                          const char *language,
-                          int n_mem_groups,
-                          int n_comm_groups,
-                          int n_trigger_groups,
-                          int n_before,
-                          int n_after,
-                          int n_while,
-                          ...)
+int CCTKi_ScheduleFunction(void *function,
+			   const char *name,
+			   const char *thorn,
+			   const char *implementation,
+			   const char *description,
+			   const char *where,
+			   const char *language,
+			   int n_mem_groups,
+			   int n_comm_groups,
+			   int n_trigger_groups,
+			   int n_before,
+			   int n_after,
+			   int n_while,
+			   ...
+			   )
 {
   int retcode;
   t_attribute *attribute;
@@ -204,7 +205,8 @@ int CCTK_ScheduleFunction(void *function,
   {
     attribute->FunctionData.type = TranslateFunctionType(where);
 
-    retcode = CCTKi_ScheduleFunction(where, name, function, modifier, (void *)attribute);
+    retcode = CCTKi_DoScheduleFunction(where, name, function, modifier, (void *)attribute);
+
 #ifdef DEBUG
     fprintf(stderr, "Scheduled %s at %s\n", name, where);
 #endif
@@ -220,7 +222,7 @@ int CCTK_ScheduleFunction(void *function,
 }
 
  /*@@
-   @routine    CCTK_ScheduleGroup
+   @routine    CCTKi_ScheduleGroup
    @date       Thu Sep 16 18:19:18 1999
    @author     Tom Goodale
    @desc 
@@ -233,18 +235,19 @@ int CCTK_ScheduleFunction(void *function,
    @endhistory 
 
 @@*/
-int CCTK_ScheduleGroup(const char *name,
-                       const char *thorn,
-                       const char *implementation,
-                       const char *description,
-                       const char *where,
-                       int n_mem_groups,
-                       int n_comm_groups,
-                       int n_trigger_groups,
-                       int n_before,
-                       int n_after,
-                       int n_while,
-                       ...)
+int CCTKi_ScheduleGroup(const char *name,
+			const char *thorn,
+			const char *implementation,
+			const char *description,
+			const char *where,
+			int n_mem_groups,
+			int n_comm_groups,
+			int n_trigger_groups,
+			int n_before,
+			int n_after,
+			int n_while,
+			...
+			)
 {
   int retcode;
   t_attribute *attribute;
@@ -261,7 +264,7 @@ int CCTK_ScheduleGroup(const char *name,
 
   if(attribute && (modifier || (n_before == 0 && n_after == 0 && n_while == 0)))
   {
-    retcode = CCTKi_ScheduleGroup(where, name, modifier, (void *)attribute);
+    retcode = CCTKi_DoScheduleGroup(where, name, modifier, (void *)attribute);
 #ifdef DEBUG
     fprintf(stderr, "Scheduled %s at %s\n", name, where);
 #endif
@@ -278,8 +281,9 @@ int CCTK_ScheduleGroup(const char *name,
 
 }
 
+
  /*@@
-   @routine    CCTK_ScheduleGroupStorage
+   @routine    CCTKi_ScheduleGroupStorage
    @date       Fri Sep 17 18:55:59 1999
    @author     Tom Goodale
    @desc 
@@ -292,7 +296,7 @@ int CCTK_ScheduleGroup(const char *name,
    @endhistory 
 
 @@*/
-int CCTK_ScheduleGroupStorage(const char *group)
+int CCTKi_ScheduleGroupStorage(const char *group)
 {
   int retcode;
   int *temp;
@@ -318,8 +322,9 @@ int CCTK_ScheduleGroupStorage(const char *group)
 
 }
 
+
  /*@@
-   @routine    CCTK_ScheduleGroupComm
+   @routine    CCTKi_ScheduleGroupComm
    @date       Fri Sep 17 18:55:59 1999
    @author     Tom Goodale
    @desc 
@@ -332,7 +337,7 @@ int CCTK_ScheduleGroupStorage(const char *group)
    @endhistory 
 
 @@*/
-int CCTK_ScheduleGroupComm(const char *group)
+int CCTKi_ScheduleGroupComm(const char *group)
 {
   int retcode;
   int *temp;
@@ -358,8 +363,9 @@ int CCTK_ScheduleGroupComm(const char *group)
 
 }
 
+
  /*@@
-   @routine    CCTK_ScheduleTraverse
+   @routine    CCTKi_ScheduleTraverse
    @date       Fri Sep 17 21:52:44 1999
    @author     Tom Goodale
    @desc 
@@ -372,9 +378,10 @@ int CCTK_ScheduleGroupComm(const char *group)
    @endhistory 
 
 @@*/
-int CCTK_ScheduleTraverse(const char *where, 
-                          void *GH,   
-                          int (*calling_function)(void *, void *, void *))
+
+int CCTKi_ScheduleTraverse(const char *where, 
+			   void *GH,   
+			   int (*calling_function)(void *, void *, void *))
 {
   t_sched_data data;
 
@@ -401,18 +408,21 @@ int CCTK_ScheduleTraverse(const char *where,
     data.schedpoint = schedpoint_misc;
   }
   
-  CCTKi_ScheduleTraverse(where,
-                         (int (*)(void *, void *))               CCTKi_ScheduleCallEntry, 
-                         (int (*)(void *, void *))               CCTKi_ScheduleCallExit, 
-                         (int  (*)(int, char **, void *, void *))CCTKi_ScheduleCallWhile, 
-                         (int (*)(void *, void *, void *))       calling_function, 
-                         (void *)&data);
+  CCTKi_DoScheduleTraverse
+    (
+     where,
+     (int (*)(void *, void *))               CCTKi_ScheduleCallEntry, 
+     (int (*)(void *, void *))               CCTKi_ScheduleCallExit, 
+     (int  (*)(int, char **, void *, void *))CCTKi_ScheduleCallWhile, 
+     (int (*)(void *, void *, void *))       calling_function, 
+     (void *)&data
+    );
 
   return 0;
 }
 
  /*@@
-   @routine    CCTK_ScheduleGHInit
+   @routine    CCTKi_ScheduleGHInit
    @date       Fri Sep 17 21:25:13 1999
    @author     Tom Goodale
    @desc 
@@ -425,7 +435,7 @@ int CCTK_ScheduleTraverse(const char *where,
    @endhistory 
 
 @@*/
-int CCTK_ScheduleGHInit(void *GH)
+int CCTKi_ScheduleGHInit(void *GH)
 {
   int i;
 
@@ -624,7 +634,7 @@ static t_attribute *CreateAttribute(const char *description,
       {
         this->type = sched_function;
         this->FunctionData.language = CCTK_TranslateLanguage(language);
-        this->FunctionData.FortranCaller = (int (*)(cGH *,void *))CCTK_FortranWrapper(thorn);
+        this->FunctionData.FortranCaller = (int (*)(cGH *,void *))CCTKi_FortranWrapper(thorn);
       }
       else
       {
@@ -742,7 +752,7 @@ static t_sched_modifier *CreateTypedModifier(t_sched_modifier *modifier,
   {
     item = va_arg(*ap, const char *);
 
-    modifier = CCTKi_ScheduleAddModifier(modifier, type, item);
+    modifier = CCTKi_DoScheduleAddModifier(modifier, type, item);
   }
 
   return modifier;  
@@ -806,12 +816,15 @@ static int SchedulePrint(const char *where)
 
   if(where)
   {
-    retcode = CCTKi_ScheduleTraverse(where,
-                                     (int (*)(void *, void *))               CCTKi_SchedulePrintEntry, 
-                                     (int (*)(void *, void *))               CCTKi_SchedulePrintExit, 
-                                     (int  (*)(int, char **, void *, void *))CCTKi_SchedulePrintWhile, 
-                                     (int (*)(void *, void *, void *))       CCTKi_SchedulePrintFunction, 
-                                     (void *)&data);
+    retcode = CCTKi_DoScheduleTraverse
+      (
+       where,
+       (int (*)(void *, void *))               CCTKi_SchedulePrintEntry, 
+       (int (*)(void *, void *))               CCTKi_SchedulePrintExit, 
+       (int  (*)(int, char **, void *, void *))CCTKi_SchedulePrintWhile, 
+       (int (*)(void *, void *, void *))       CCTKi_SchedulePrintFunction, 
+       (void *)&data
+      );
   }
   else
   {
@@ -841,12 +854,15 @@ static int SchedulePrintTimes(const char *where, t_sched_data *data)
 
   if(where)
   {
-    retcode = CCTKi_ScheduleTraverse(where,
-                                     (int (*)(void *, void *))               CCTKi_SchedulePrintTimesEntry, 
-                                     (int (*)(void *, void *))               CCTKi_SchedulePrintTimesExit, 
-                                     (int  (*)(int, char **, void *, void *))CCTKi_SchedulePrintTimesWhile, 
-                                     (int (*)(void *, void *, void *))       CCTKi_SchedulePrintTimesFunction, 
-                                     (void *)data);
+    retcode = CCTKi_DoScheduleTraverse
+      (
+       where,
+       (int (*)(void *, void *))               CCTKi_SchedulePrintTimesEntry, 
+       (int (*)(void *, void *))               CCTKi_SchedulePrintTimesExit, 
+       (int  (*)(int, char **, void *, void *))CCTKi_SchedulePrintTimesWhile, 
+       (int (*)(void *, void *, void *))       CCTKi_SchedulePrintTimesFunction, 
+       (void *)data
+      );
   }
   else
   {
