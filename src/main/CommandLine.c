@@ -21,8 +21,12 @@
 #include "cctk_Misc.h"
 #include "cctki_ActiveThorns.h"
 #include "cctk_ActiveThorns.h"
-#include "cctk_Parameter.h"
 #include "cctki_WarnLevel.h"
+
+#define NEED_PARAMETER_SCOPE_STRINGS
+#define NEED_PARAMETER_TYPE_STRINGS
+
+#include "cctk_Parameter.h"
 
 static char *rcsid = "$Header$";
 
