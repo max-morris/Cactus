@@ -16,7 +16,7 @@
 #
 #
 #   @enddesc
-#   @version $Id: Makefile,v 1.139 2002-06-07 18:28:12 allen Exp $
+#   @version $Id: Makefile,v 1.140 2002-08-19 17:29:07 allen Exp $
 # @@*/
 
 ##################################################################################
@@ -907,7 +907,8 @@ UsersGuide:
 	latex  -interaction=nonstopmode UsersGuide.tex > LATEX_MESSAGES 2>&1; \
 	latex  -interaction=nonstopmode UsersGuide.tex > LATEX_MESSAGES 2>&1; \
 	echo "  Running dvips....";                 \
-	dvips -f ./UsersGuide.dvi 2> DVIPS_MESSAGES | $(CCTK_HOME)/lib/sbin/FixPageNumbersInPostscript.pl > $(CCTK_HOME)/UsersGuide.ps
+	dvips -f ./UsersGuide.dvi 2> DVIPS_MESSAGES | $(CCTK_HOME)/lib/sbin/FixPageNumbersInPostscript.pl > $(CCTK_HOME)/doc/UsersGuide.ps
+	@echo "  UsersGuide.ps created in doc directory."
 	@echo "  Done."
 	@echo $(DIVIDER)
 
@@ -926,7 +927,8 @@ MaintGuide:
 	latex MaintGuide.tex > LATEX_MESSAGES 2>&1; \
 	latex MaintGuide.tex > LATEX_MESSAGES 2>&1; \
 	echo "  Running dvips....";                 \
-	dvips -f ./MaintGuide.dvi 2> DVIPS_MESSAGES | $(CCTK_HOME)/lib/sbin/FixPageNumbersInPostscript.pl > $(CCTK_HOME)/MaintGuide.ps
+	dvips -f ./MaintGuide.dvi 2> DVIPS_MESSAGES | $(CCTK_HOME)/lib/sbin/FixPageNumbersInPostscript.pl > $(CCTK_HOME)/doc/MaintGuide.ps
+	@echo "  MaintGuide.ps created in doc directory."
 	@echo "  Done."
 	@echo $(DIVIDER)
 
@@ -944,7 +946,8 @@ ThornGuide:
 	@echo "  Processing...."
 	cd $(CCTK_HOME)/doc/ThornGuide/build; \
 	$(MAKE) -f $(CCTK_HOME)/doc/ThornGuide/Makefile PERL=$(PERL) CCTK_HOME=$(CCTK_HOME); \
-	cp ThornGuide.ps $(CCTK_HOME)/ThornGuide.ps 
+	cp ThornGuide.ps $(CCTK_HOME)/doc/ThornGuide.ps 
+	@echo "  ThornGuide.ps created in doc directory."
 	@echo "  Done."
 	@echo $(DIVIDER)
 
@@ -957,7 +960,8 @@ ThornGuide.pdf:
 	@echo "  Processing...."
 	cd $(CCTK_HOME)/doc/ThornGuide/build; \
 	$(MAKE) -f $(CCTK_HOME)/doc/ThornGuide/Makefile ThornGuide.pdf PERL=$(PERL) CCTK_HOME=$(CCTK_HOME); \
-	cp ThornGuide.pdf $(CCTK_HOME)/ThornGuide.pdf 
+	cp ThornGuide.pdf $(CCTK_HOME)/doc/ThornGuide.pdf 
+	@echo "  ThornGuide.pdf created in doc directory."
 	@echo "  Done."
 	@echo $(DIVIDER)
 
@@ -975,8 +979,9 @@ $(addsuffix -ThornGuide,$(CONFIGURATIONS)):
 	if test -r $(CONFIGS_DIR)/$(@:%-ThornGuide=%)/ThornList ; then \
 	  cd  $(CONFIGS_DIR)/$(@:%-ThornGuide=%)/doc/build; \
 	  $(MAKE) -f $(CCTK_HOME)/doc/ThornGuide/Makefile THORNLIST=$(CONFIGS_DIR)/$(@:%-ThornGuide=%)/ThornList CCTK_HOME=$(CCTK_HOME) PERL=$(PERL) MASTER_FILE=ThornGuide-$(@:%-ThornGuide=%); \
-	  cp ThornGuide-$(@:%-ThornGuide=%).ps $(CCTK_HOME)/ThornGuide-$(@:%-ThornGuide=%).ps; \
+	  cp ThornGuide-$(@:%-ThornGuide=%).ps $(CCTK_HOME)/doc/ThornGuide-$(@:%-ThornGuide=%).ps; \
 	fi
+	@echo "  ThornGuide-$(@:%-ThornGuide=%).ps created in doc directory."
 	@echo "  Done."
 endif
 
