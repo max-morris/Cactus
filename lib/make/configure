@@ -4119,9 +4119,12 @@ EOF
 # The perl scripts run by the make system need to have their names
 # changed if under cygwin - e.g. //d/foo needs to be d:/foo
 
+PERL_CONFIGURE_SCRIPT="$srcdir/configure.pl"
+
 if test "$host_os" = "cygwin" ; then
-  PERL_CONFIGURE_SCRIPT=`echo $srcdir/configure.pl | sed 's,^/cygdrive/\(.\)/,\1:/,' | sed 's,^//\(.\)/,\1:/,'`
+  PERL_CONFIGURE_SCRIPT=`echo $PERL_CONFIGURE_SCRIPT | sed 's,^/cygdrive/\(.\)/,\1:/,' | sed 's,^//\(.\)/,\1:/,'`
 fi
+
 
 
 BUILD_ACTIVETHORNS='$(CCTK_HOME)/lib/sbin/BuildActiveThorns.pl'
