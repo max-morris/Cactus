@@ -1314,8 +1314,12 @@ ANALYSIS timebin first a check is made to see if the routine should
 actually be called on this timestep. For this, all grid variables in the
 trigger groups for the routine are checked with all registered output
 methods to determine if it is time to output any triggers. The routine
-will only be called if at least one is due to be output. Routines from
-all other timebins are always called.
+will only be called if at least one is due to be output. Note that once
+a grid variable has been analyzed it gets marked as such and will not
+be analyzed again during this iteration. Thus if more than one analysis
+routine should be triggered on the same trigger variable(s) they must
+be scheduled in a single group.\\
+Routines from all timebins other than ANALYSIS are always called.
 
 Next storage is assigned for any required variables, remembering the
 original state of storage.
