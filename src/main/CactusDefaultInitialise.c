@@ -48,7 +48,7 @@ int CactusDefaultInitialise(tFleshConfig *config)
   cGH *GH;
   int convergence_level;
 
-  CCTKi_PrintBanners();
+  CCTK_PrintBanners();
 
   CactusResetTimer(config->timer[INITIALISATION]);
   CactusResetTimer(config->timer[EVOLUTION]);

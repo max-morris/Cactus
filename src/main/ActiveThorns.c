@@ -19,7 +19,7 @@ static char *rcsid = "$Header$";
 
 
 /* Local routine */
-static int CCTKi_RegisterImp(const char *name, const char *thorn);
+static int CCTK_RegisterImp(const char *name, const char *thorn);
 
 /* Structures used to store data */
 struct THORN
@@ -92,7 +92,7 @@ int CCTKi_RegisterThorn(const char *name, const char *imp)
 	{
 
 	  /* Register the implementation */
-	  CCTKi_RegisterImp(imp, name);
+	  CCTK_RegisterImp(imp, name);
 
 	  retval = 0;
 	}
@@ -133,7 +133,7 @@ int CCTKi_RegisterThorn(const char *name, const char *imp)
    @endhistory 
 
 @@*/
-static int CCTKi_RegisterImp(const char *name, const char *thorn)
+static int CCTK_RegisterImp(const char *name, const char *thorn)
 {
   int retval;
   t_sktree *node;

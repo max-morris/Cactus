@@ -16,6 +16,7 @@
 #define CCTK_RECOVER   5
 
 /* Be sure to keep the INITIAL*, POSTSTEP*, etc... contiguous */
+#define CCTK_INITIAL0  10
 #define CCTK_INITIAL   11
 #define CCTK_POSTINITIAL   12
 

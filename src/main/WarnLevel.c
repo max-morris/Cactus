@@ -38,7 +38,7 @@ static int warning_level = 1;
 static int error_level    = 0;
 
  /*@@
-   @routine    CCTKi_SetWarnLevel
+   @routine    CCTK_SetWarnLevel
    @date       Wed Feb 17 00:42:16 1999
    @author     Tom Goodale
    @desc 
@@ -51,7 +51,7 @@ static int error_level    = 0;
    @endhistory 
 
 @@*/
-int CCTKi_SetWarnLevel(int level)
+int CCTK_SetWarnLevel(int level)
 {
   int retval;
   int old_level;
@@ -213,7 +213,7 @@ int FMODIFIER FORTRAN_NAME(CCTK_Info)(TWO_FORTSTRINGS_ARGS)
 
 
  /*@@
-   @routine    CCTKi_SetErrorLevel
+   @routine    CCTK_SetErrorLevel
    @date       Wed Feb 17 00:48:02 1999
    @author     Tom Goodale
    @desc 
@@ -226,7 +226,7 @@ int FMODIFIER FORTRAN_NAME(CCTK_Info)(TWO_FORTSTRINGS_ARGS)
    @endhistory 
 
 @@*/
-int CCTKi_SetErrorLevel(int level)
+int CCTK_SetErrorLevel(int level)
 {
   int retval;
   int old_level;
@@ -309,7 +309,7 @@ void CCTKi_FinaliseParamWarn(void)
 }
 
  /*@@
-   @routine    CCTKi_NotYetImplemented
+   @routine    CCTK_NotYetImplemented
    @date       July 1999
    @author     Gabrielle Allen
    @desc 
@@ -323,7 +323,7 @@ void CCTKi_FinaliseParamWarn(void)
 
 @@*/
 
-void CCTKi_NotYetImplemented(void)
+void CCTK_NotYetImplemented(void)
 {
 
 printf("\n\n This planned feature is not yet implemented in the code.\n If you need this feature please contact the Cactus maintainers.\n");

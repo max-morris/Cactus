@@ -189,6 +189,16 @@ int CCTK_RegisterCoord(const char *coordname,
 }
 
 
+int CCTK_RegisterCoordRange(cGH *GH, CCTK_REAL min, CCTK_REAL max, 
+			    const char *coordname)
+{
+  int retval;
+  
+  return retval;
+
+}
+
+
 int CCTK_CoordIndex(const char *name)
 {
   int handle;

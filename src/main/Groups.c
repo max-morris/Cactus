@@ -42,7 +42,7 @@ static int maxdim = 0;
 int _cctk_one = 1;
 
 
-cGroupDefinition *CCTKi_SetupGroup(const char *implementation, const char *group_name, int n_variables);
+cGroupDefinition *CCTK_SetupGroup(const char *implementation, const char *group_name, int n_variables);
 
 
 
@@ -122,7 +122,7 @@ int CCTK_GroupIndex(const char *fullgroupname)
 
 
  /*@@
-   @routine    CCTKi_CreateGroup
+   @routine    CCTK_CreateGroup
    @date       Thu Jan 14 15:25:54 1999
    @author     Tom Goodale
    @desc 
@@ -135,7 +135,7 @@ int CCTK_GroupIndex(const char *fullgroupname)
    @endhistory 
 
 @@*/
-int CCTKi_CreateGroup(const char *gname, const char *thorn, const char *imp,
+int CCTK_CreateGroup(const char *gname, const char *thorn, const char *imp,
 		     const char *gtype,
 		     const char *vtype,
 		     const char *gscope,
@@ -156,26 +156,26 @@ int CCTKi_CreateGroup(const char *gname, const char *thorn, const char *imp,
   retval = 0;
 
   /* Allocate storage for the group */
-  groupscope = CCTKi_GroupScopeNumber(gscope);
+  groupscope = CCTK_GroupScopeNumber(gscope);
   if (groupscope == GROUP_PUBLIC || groupscope == GROUP_PROTECTED)
   {
-    group = CCTKi_SetupGroup(imp, gname, n_variables);
+    group = CCTK_SetupGroup(imp, gname, n_variables);
   }
   else if (groupscope == GROUP_PRIVATE)
   {
-    group = CCTKi_SetupGroup(thorn, gname, n_variables);
+    group = CCTK_SetupGroup(thorn, gname, n_variables);
   }
   else
   {
-    CCTK_WARN(1,"Unrecognised group scope in CCTKi_CreateGroup");
+    CCTK_WARN(1,"Unrecognised group scope in CCTK_CreateGroup");
   }
 
   /* Allocate storage for the group and setup some stuff. */
   if(group)
   {
     group->dim = dimension;
-    group->gtype = CCTKi_GroupTypeNumber(gtype);
-    group->vtype = CCTKi_VarTypeNumber(vtype);
+    group->gtype = CCTK_GroupTypeNumber(gtype);
+    group->vtype = CCTK_VarTypeNumber(vtype);
     group->gscope = groupscope;
 
     group->n_timelevels = ntimelevels;
@@ -217,7 +217,7 @@ int CCTKi_CreateGroup(const char *gname, const char *thorn, const char *imp,
 
   if(retval)
   {
-    fprintf(stderr, "Error %d in CCTKi_CreateGroup\n", retval);
+    fprintf(stderr, "Error %d in CCTK_CreateGroup\n", retval);
   }
 
 #ifdef DEBUG_GROUPS
@@ -233,7 +233,7 @@ int CCTKi_CreateGroup(const char *gname, const char *thorn, const char *imp,
 }
 
  /*@@
-   @routine    CCTKi_SetupGroup
+   @routine    CCTK_SetupGroup
    @date       Thu Jan 14 16:38:40 1999
    @author     Tom Goodale
    @desc 
@@ -246,7 +246,7 @@ int CCTKi_CreateGroup(const char *gname, const char *thorn, const char *imp,
    @endhistory 
 
 @@*/
-cGroupDefinition *CCTKi_SetupGroup(const char *implementation, 
+cGroupDefinition *CCTK_SetupGroup(const char *implementation, 
 				  const char *name, 
 				  int n_variables)
 {
@@ -697,7 +697,7 @@ char *CCTK_FullName(int var)
 
 
  /*@@
-   @routine    CCTKi_GroupTypeNumber
+   @routine    CCTK_GroupTypeNumber
    @date       Mon Feb  8 14:44:45 1999
    @author     Tom Goodale
    @desc 
@@ -711,7 +711,7 @@ char *CCTK_FullName(int var)
 
 @@*/
 
-int CCTKi_GroupTypeNumber(const char *type)
+int CCTK_GroupTypeNumber(const char *type)
 {
   int retval=-1;
 
@@ -733,16 +733,16 @@ int CCTKi_GroupTypeNumber(const char *type)
   return retval;
 }
 
-void  FMODIFIER FORTRAN_NAME(CCTKi_GroupTypeNumber)(int *number,ONE_FORTSTRING_ARG)
+void  FMODIFIER FORTRAN_NAME(CCTK_GroupTypeNumber)(int *number,ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_CREATE(type)
-  *number = CCTKi_GroupTypeNumber(type);
+  *number = CCTK_GroupTypeNumber(type);
   free(type);
 }
 
 
  /*@@
-   @routine    CCTKi_VarTypeNumber
+   @routine    CCTK_VarTypeNumber
    @date       Mon Feb  8 14:44:45 1999
    @author     Tom Goodale
    @desc 
@@ -755,7 +755,7 @@ void  FMODIFIER FORTRAN_NAME(CCTKi_GroupTypeNumber)(int *number,ONE_FORTSTRING_A
    @endhistory 
 
 @@*/
-int CCTKi_VarTypeNumber(const char *type)
+int CCTK_VarTypeNumber(const char *type)
 {
   int retval=-1;
 
@@ -782,16 +782,16 @@ int CCTKi_VarTypeNumber(const char *type)
   return retval;
 }
 
-void  FMODIFIER FORTRAN_NAME(CCTKi_VarTypeNumber)(int *number,ONE_FORTSTRING_ARG)
+void  FMODIFIER FORTRAN_NAME(CCTK_VarTypeNumber)(int *number,ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_CREATE(type)
-  *number = CCTKi_VarTypeNumber(type);
+  *number = CCTK_VarTypeNumber(type);
   free(type);
 }
 
 
  /*@@
-   @routine    CCTKi_GroupScopeNumber
+   @routine    CCTK_GroupScopeNumber
    @date       Tuesday June 22 1999
    @author     Gabrielle Allen
    @desc 
@@ -804,7 +804,7 @@ void  FMODIFIER FORTRAN_NAME(CCTKi_VarTypeNumber)(int *number,ONE_FORTSTRING_ARG
    @endhistory 
 
 @@*/
-int CCTKi_GroupScopeNumber(const char *type)
+int CCTK_GroupScopeNumber(const char *type)
 {
   int retval=-1;
 
@@ -826,10 +826,10 @@ int CCTKi_GroupScopeNumber(const char *type)
   return retval;
 }
 
-void  FMODIFIER FORTRAN_NAME(CCTKi_GroupScopeNumber)(int *number,ONE_FORTSTRING_ARG)
+void  FMODIFIER FORTRAN_NAME(CCTK_GroupScopeNumber)(int *number,ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_CREATE(type)
-  *number = CCTKi_GroupScopeNumber(type);
+  *number = CCTK_GroupScopeNumber(type);
   free(type);
 }
 
@@ -1053,7 +1053,7 @@ void  FMODIFIER FORTRAN_NAME(CCTK_NumVarsInGroup)(int *num,ONE_FORTSTRING_ARG)
 
 
  /*@@
-   @routine    CCTKi_GroupTypeFromVarI
+   @routine    CCTK_GroupTypeFromVarI
    @date       
    @author     
    @desc 

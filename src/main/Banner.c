@@ -18,7 +18,7 @@ static char *rcsis = "$Header$";
 static int number_banners = 0;
 static const char **banner_strings;
 
-void CCTKi_PrintBanners(void);
+void CCTK_PrintBanners(void);
 
 
  /*@@
@@ -66,7 +66,7 @@ void CCTK_RegisterBanner(const char *string)
 
 
  /*@@
-   @routine    CCTKi_PrintBanners
+   @routine    CCTK_PrintBanners
    @date       July 16 00:11:26 1999
    @author     Gabrielle Allen
    @desc 
@@ -80,7 +80,7 @@ void CCTK_RegisterBanner(const char *string)
    @endvar 
 @@*/
 
-void CCTKi_PrintBanners(void)
+void CCTK_PrintBanners(void)
 {
 
   DECLARE_CCTK_PARAMETERS

@@ -30,7 +30,6 @@ int CCTKi_rfrTriggerAction(void *GH, int group);
 
 int CCTKi_rfrCallFunc(void *GH, int language, void *function);
 
-
 #ifdef __cplusplus
 }
 #endif
