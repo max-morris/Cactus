@@ -7,8 +7,8 @@
    @enddesc 
  @@*/
 
-#ifndef _PARAMTERBINDINGS_H_
-#define _PARAMTERBINDINGS_H_
+#ifndef _PARAMETERBINDINGS_H_
+#define _PARAMETERBINDINGS_H_
 
 #define PARAMETER_KEYWORD  1
 #define PARAMETER_STRING   2
