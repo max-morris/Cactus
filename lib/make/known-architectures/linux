@@ -227,7 +227,7 @@ else
 
        case "$host_cpu" in
        i?86)
-       if test "$OPTIMISE" = 'no' -o "$OPTIMIZE" = 'no'; then
+       if test "$OPTIMISE" = 'no'; then
          : ${F77FLAGS='-align -w95 -O0'}
          : ${F90FLAGS='-align -w95 -O0'}
        else
@@ -266,7 +266,7 @@ else
 
        ia64)
        # Below is taken from IA32 settings and may be wrong for different versions etc
-       if test "$OPTIMISE" = 'no' -o "$OPTIMIZE" = 'no'; then
+       if test "$OPTIMISE" = 'no'; then
          : ${F77FLAGS='-align -w95 -O0'}
          : ${F90FLAGS='-align -w95 -O0'}
        else
@@ -325,7 +325,7 @@ else
       : ${C_OPTIMISE_FLAGS='-O3'}
       ;;
     [ei]cc)
-      if test "$OPTIMISE" = 'no' -o "$OPTIMIZE" = 'no'; then
+      if test "$OPTIMISE" = 'no'; then
         : ${CFLAGS='-O0 -restrict'}
       else
         : ${CFLAGS='-restrict'}
@@ -351,7 +351,7 @@ else
       : ${CXX_OPTIMISE_FLAGS='-O3'}
       ;;
     [ei]cc | [ei]cpc)
-      if test "$OPTIMISE" = 'no' -o "$OPTIMIZE" = 'no'; then
+      if test "$OPTIMISE" = 'no'; then
         : ${CXXFLAGS='-restrict -O0'}
       else
         : ${CXXFLAGS='-restrict'}
