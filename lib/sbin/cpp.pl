@@ -1144,7 +1144,7 @@ sub ArgumentSubstitute
 
     for(my $arg = 0; $arg < $nargs; $arg++)
     {
-      if($token =~ m/^$args[$arg]$/)
+      if($token eq "$args[$arg]$")
       {
         $token = $args[$arg+$nargs];
         last;
