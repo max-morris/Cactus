@@ -31,6 +31,7 @@ available from C, not all are currently available from Fortran.
 \item[CCTK\_Exit]
 
 \item[CCTK\_FullName] Given a variable index, returns the full name of the variable
+\item[CCTK\_FirstVarIndex] Given a group name returns the first variable index in the group
 \item[CCTK\_FirstVarIndexI] Given a group index returns the first variable index in the group
 
 \item[CCTK\_GHExtensionHandle] Get the handle associated with a extension to the Cactus GH structure
@@ -49,6 +50,9 @@ available from C, not all are currently available from Fortran.
 \item[CCTK\_MyProc] Get the local processor number
 
 \item[CCTK\_NumGroups] Get the number of groups of variables compiled in the code
+
+\item[CCTK\_NumVars] Get the number of grid variables compiled in the code
+
 \item[CCTK\_NumVarsInGroupI] Provides the number of variables in a group from the group index
 \item[CCTK\_NumVarsInGroup] Provides the number of variables in a group from the group name
 \item[CCTK\_NumTimeLevelsFromVarI] Gives the number of timelevels for a variable
@@ -460,6 +464,30 @@ can be either string literals (`mystring') or CCTK string parameters
 
 
 % Groups.c
+\begin{CCTKFunc}{CCTK\_FirstVarIndex}{Given a group name returns the first variable index in the group}
+\subroutine{int}{integer}{firstvar}
+\argument{const char *}{character*(*)}{group}
+\showargs
+\begin{params}
+\parameter{firstvar}{The the first variable index in the given group}
+\parameter{group}{The group name}
+\end{params}
+\begin{discussion}
+
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\hfill {\bf C} && {\t firstvar = CCTK\_FirstVarIndex(`evolve::scalars') ;}
+\\
+\hfill {\bf Fortran} && {\t call CCTK\_GroupIndex(index,`evolve::scalars')}\\
+\\
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
+
 \begin{CCTKFunc}{CCTK\_FirstVarIndexI}{Given a group index returns the first variable index in the group}
 \subroutine{int}{integer}{firstvar}
 \argument{int}{integer}{group}
@@ -1089,6 +1117,28 @@ The group name should be given in the form {\t <implementation>::<group>}
 \end{CCTKFunc}
 
 
+% Groups.c
+\begin{CCTKFunc}{CCTK\_NumVars}{Get the number of grid variables compiled in the code}
+\subroutine{int}{integer}{number}
+\showargs
+\begin{params}
+\parameter{number}{The number of grid variables compiled from the thorns {\t interface.ccl} files}
+\end{params}
+\begin{discussion}
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\hfill {\bf C} && {\t number = CCTK\_NumVars() };
+\\
+\hfill {\bf Fortran} && call {\t CCTK\_NumVars(number)};
+\\
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
+
 
 
 %%%%%
@@ -1610,13 +1660,13 @@ as coordinates.
 % Coord.c
 \begin{CCTKFunc}{CCTK\_RegisterBanner}{Register a banner for a thorn}
 \subroutine{void}{}{}
-\argument{const char *}{character}{message}
+\argument{const char *}{character*(*)}{message}
 \showargs
 \begin{params}
-\parameter{banner}{String which will be displayed as a banner}
+\parameter{message}{String which will be displayed as a banner}
 \end{params}
 \begin{discussion}
-The banner must be register during {\t CCTK\_STARTUP}. The banners are
+The banner must be registered during {\t CCTK\_STARTUP}. The banners are
 displayed in the order in which they are registered.
 \end{discussion}
 \begin{examples}
