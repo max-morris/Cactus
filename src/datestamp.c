@@ -100,7 +100,7 @@ const char *CCTK_MinorVersion(void)
 
 const char *CCTK_MicroVersion(void)
 {
-  return (STRINGIFY(CCTK_VERSION_MICRO));
+  return (STRINGIFY(CCTK_VERSION_OTHER));
 }
 
 /*#define MAKETEST*/
