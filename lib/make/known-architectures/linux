@@ -224,10 +224,10 @@ else
        : ${LIBS="fortran ffio m"}
        ;;
      Intel)
-     
+
        case "$host_cpu" in
        i?86)
-       if test "$OPTIMISE" = "no"; then
+       if test "$OPTIMISE" = 'no' -o "$OPTIMIZE" = 'no'; then
          : ${F77FLAGS='-align -w95 -O0'}
          : ${F90FLAGS='-align -w95 -O0'}
        else
@@ -235,20 +235,22 @@ else
          : ${F90FLAGS='-align -w95'}
        fi
 
+       # add the necessary libraries according to the compiler version
+       if test "`$F90 -V 2>&1 | grep Version | sed 's/.*Version //' | sed 's/\..*//'`" -ge 8; then
+         intel_p4_opt_flag='-xN'
+         : ${LIBS='ifcore imf svml m cxa cprts cxa irc unwind'}
+       else
+         intel_p4_opt_flag='-xW'
+         : ${LIBS='intrins IEPCF90 F90 imf svml m irc cxa cprts cxa'}
+       fi
+
        # check if the processor is a Pentium4 (ie. supports SSE2 instructions)
        default_intel_fopt_flags='-O3 -ip'
        if test "`grep -w flags /proc/cpuinfo 2>&1 | grep -w sse2`"; then
-         default_intel_fopt_flags='-O2 -xN -ip'
+         default_intel_fopt_flags="-O2 $intel_p4_opt_flag -ip"
        fi
        : ${F77_OPTIMISE_FLAGS="$default_intel_fopt_flags"}
        : ${F90_OPTIMISE_FLAGS="$default_intel_fopt_flags"}
-
-       # add the necessary libraries according to the compiler version
-       if test "`$F90 -V 2>&1 | grep Version | sed 's/.*Version //' | sed 's/\..*//'`" -ge 8; then
-         : ${LIBS='ifcore imf svml m cxa cprts cxa irc unwind'}
-       else
-         : ${LIBS='intrins IEPCF90 F90 imf svml m irc cxa cprts cxa'}
-       fi
 
        # add the libpath if the linker is not Intel
        if test "$LD" != 'icc' ; then
@@ -259,12 +261,12 @@ else
            : ${LIBDIRS="$IA32ROOT/lib"}
            : ${LDFLAGS="-Qy $IA32ROOT/lib/icrt.link"}
          fi
-       fi       
+       fi
        ;;
-        
+
        ia64)
        # Below is taken from IA32 settings and may be wrong for different versions etc
-       if test "$OPTIMISE" = "no"; then
+       if test "$OPTIMISE" = 'no' -o "$OPTIMIZE" = 'no'; then
          : ${F77FLAGS='-align -w95 -O0'}
          : ${F90FLAGS='-align -w95 -O0'}
        else
@@ -291,7 +293,7 @@ else
          : ${LIBDIRS='$(IA64ROOT)/lib'}
 # No longer needed for V6 (would also be pointing in wrong place)
 #         : ${LDFLAGS='$(IA64ROOT)/../../compiler50/ia64/lib/icrt.link'}
-       fi       
+       fi
         ;;
        *)
         echo "Don't know compiler options for cpu $host_cpu"
@@ -323,7 +325,7 @@ else
       : ${C_OPTIMISE_FLAGS='-O3'}
       ;;
     [ei]cc)
-      if test "$OPTIMISE" = "no"; then
+      if test "$OPTIMISE" = 'no' -o "$OPTIMIZE" = 'no'; then
         : ${CFLAGS='-O0 -restrict'}
       else
         : ${CFLAGS='-restrict'}
@@ -348,8 +350,8 @@ else
       : ${CXXFLAGS='-pipe'}
       : ${CXX_OPTIMISE_FLAGS='-O3'}
       ;;
-    [ei]cc | ecpc)
-      if test "$OPTIMISE" = "no"; then
+    [ei]cc | [ei]cpc)
+      if test "$OPTIMISE" = 'no' -o "$OPTIMIZE" = 'no'; then
         : ${CXXFLAGS='-restrict -O0'}
       else
         : ${CXXFLAGS='-restrict'}
