@@ -13,8 +13,8 @@
  @@*/
 
 
-#ifndef _INTERP_H_
-#define _INTERP_H_
+#ifndef _CCTK_INTERP_H_
+#define _CCTK_INTERP_H_
 
 #ifdef __cplusplus
 extern "C" {

@@ -10,8 +10,8 @@
 /* $Id$ */
 
 
-#ifndef _REDUCTION_H_
-#define _REDUCTION_H_
+#ifndef _CCTK_REDUCTION_H_
+#define _CCTK_REDUCTION_H_
 
 #ifdef __cplusplus
 extern "C" {
