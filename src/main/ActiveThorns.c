@@ -831,7 +831,7 @@ const char *CCTK_CompiledThorn(int tindex)
       node;
       node = node->next, i++)
   {
-    if (i == index)
+    if (i == tindex)
     {
       ret_val = node->key;
       break;
