@@ -5,5 +5,7 @@
 #   @desc 
 #   Timestamp file for forcing rebuilds of configurations
 #   @enddesc 
-#   @version $Id: force-rebuild,v 1.1 2003-02-27 17:06:19 allen Exp $
+#   @version $Id: force-rebuild,v 1.2 2003-03-12 10:07:23 rideout Exp $
 # @@*/
+
+6 March 2003: minor changes to CreateFunctionBindings.pl
