@@ -18,6 +18,9 @@
 \item[{\tt arrangement}] A collection of thorns.
 \item[{\tt autoconf}] A GNU program which builds a configuration
    script which can be used to make a Makefile.
+\item[{\tt boundary zone}] A boundary zone is a set of points added to
+the edge of a grid to contain boundary data.  E.g Dirichlet or Von
+Neumann data.  (See also: symmetry zone, ghost zone.)
 \item[{\tt Cactus}] A green fleshy plant with lots of thorns, usually painful if touched.
 \item[{\tt CCTK}] Cactus Computational Tool Kit (The Cactus flesh and
             computational thorns).
@@ -39,7 +42,11 @@ is what you get if you check out {\tt Cactus} from our CVS repository.
 \item[{\tt friend}]
 \item[{\tt GF}] Shorthand for a {\tt grid function}.
 \item[{\tt gmake}]
-\item[{\tt ghostzone}]
+\item[{\tt ghostzone}] 
+A ghostzone is a set of points added for parallelisation purposes to
+enable inter-processor communication of data from processor
+boundaries.  In single processor runs there are no ghost zones.
+Ghost zones should not be confused with symmetry or boundary zones.
 \item[{\tt grid function}]
 \item[{\tt grid hierarchy}] A computational grid, and the grid variables associated with it.
 \item[{\tt grid scalar}]
@@ -61,6 +68,9 @@ is what you get if you check out {\tt Cactus} from our CVS repository.
 \item[{\tt PVM}]  {\tt Parallel Virtual Machine}, provides interprocessor
   communication.
 \item[{\tt reduction}]
+\item[{\tt symmetry zone}] A symmetry zone is a set of points added to
+the edge of a grid to contain data which is obtained, by some symmetry
+operation, from another part of the grid. (See also: symmetry zone, ghost zone.)
 \item[{\tt TAGS}]
 \item[{\tt target}]
 \item[{\tt thorn}] A collection of subroutines with a definite interface
