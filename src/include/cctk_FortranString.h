@@ -36,14 +36,14 @@
 #define TWO_FORTSTRING_CREATE(arg1,arg2)\
        int  cctk_strlen1    = _fcdlen(cctk_str1);\
        int  cctk_strlen2    = _fcdlen(cctk_str2);\
-       char *arg1 = Util_NullTerminateString(_fcdtocp(cctk_str1),cctk_strlen1)\
+       char *arg1 = Util_NullTerminateString(_fcdtocp(cctk_str1),cctk_strlen1);\
        char *arg2 = Util_NullTerminateString(_fcdtocp(cctk_str2),cctk_strlen2);
 #define THREE_FORTSTRING_CREATE(arg1,arg2,arg3)\
        int  cctk_strlen1    = _fcdlen(cctk_str1);\
        int  cctk_strlen2    = _fcdlen(cctk_str2);\
        int  cctk_strlen3    = _fcdlen(cctk_str3);\
-       char *arg1 = Util_NullTerminateString(_fcdtocp(cctk_str1),cctk_strlen1)\
-       char *arg2 = Util_NullTerminateString(_fcdtocp(cctk_str2),cctk_strlen2)\
+       char *arg1 = Util_NullTerminateString(_fcdtocp(cctk_str1),cctk_strlen1);\
+       char *arg2 = Util_NullTerminateString(_fcdtocp(cctk_str2),cctk_strlen2);\
        char *arg3 = Util_NullTerminateString(_fcdtocp(cctk_str3),cctk_strlen3);
 
 #define ONE_FORTSTRING_PTR(arg1)\
@@ -64,14 +64,14 @@
 #define TWO_FORTSTRINGS_CREATE(arg1,arg2)\
        int  cctk_strlen1    = _fcdlen(cctk_str1);\
        int  cctk_strlen2    = _fcdlen(cctk_str2);\
-       char *arg1 = Util_NullTerminateString(_fcdtocp(cctk_str1),cctk_strlen1)\
+       char *arg1 = Util_NullTerminateString(_fcdtocp(cctk_str1),cctk_strlen1);\
        char *arg2 = Util_NullTerminateString(_fcdtocp(cctk_str2),cctk_strlen2);
 #define THREE_FORTSTRINGS_CREATE(arg1,arg2,arg3)\
        int  cctk_strlen1    = _fcdlen(cctk_str1);\
        int  cctk_strlen2    = _fcdlen(cctk_str2);\
        int  cctk_strlen3    = _fcdlen(cctk_str3);\
-       char *arg1 = Util_NullTerminateString(_fcdtocp(cctk_str1),cctk_strlen1)\
-       char *arg2 = Util_NullTerminateString(_fcdtocp(cctk_str2),cctk_strlen2)\
+       char *arg1 = Util_NullTerminateString(_fcdtocp(cctk_str1),cctk_strlen1);\
+       char *arg2 = Util_NullTerminateString(_fcdtocp(cctk_str2),cctk_strlen2);\
        char *arg3 = Util_NullTerminateString(_fcdtocp(cctk_str3),cctk_strlen3);
 /* END DEPRECATED */
 
