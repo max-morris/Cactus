@@ -67,6 +67,12 @@ sub CreateParameterBindingFile
     push(@data, $line);
   }
 
+  # Some compilers don't like an empty structure.
+  if((keys %parameters) == 0)
+  {
+    push(@data, "  int dummy_parameter;");
+  }
+
   push(@data, "} $structure;");
 
   push(@data, "");
@@ -346,6 +352,12 @@ sub CreateCStructureParameterHeader
     $line = $type_string ." " .$parameter . " = $structure.$parameter;";
 
     push(@definition, $line)
+  }
+
+  # Some compilers don't like an empty structure.
+  if((keys %parameters) == 0)
+  {
+    push(@data, "  int dummy_parameter;");
   }
 
   push(@data, "} $structure;");
