@@ -499,6 +499,11 @@ alias name by using {\tt AS <alias\_name>}.
 
 \end{Lentry}
 
+The {\tt LANG} keyword specifies the linkage of the scheduled routine
+which determines how to call it from the scheduler.
+C and Fortran linkage are possible here. C++ routines should be defined as
+{\tt extern "C"} and registered as {\tt LANG: C}.
+
 As well as schedule blocks it's possible to embed C style {\tt if/else} 
 statements in the schedule.ccl.
 These can be used to schedule things based upon the value of a parameter.
@@ -524,7 +529,7 @@ if(CCTK_Equals(evolve_hydro,''yes''))
 \vskip .5cm
 {\bf Example II:}
 
-The thorns {\tt WaveToy77} and {\tt WaveToyC} each provide an
+The thorns {\tt WaveToy77} and {\tt WaveToyC} each provide a
 routine to evolve the 3D wave equation: {\tt WaveToyF77\_Evolution} and
 {\tt WaveToyC\_Evolution}. The routine names have to be different, so
 that both thorns can be compiled at the same time, their functionlity
@@ -539,16 +544,15 @@ change depending on the activation in the parameter file).
 
 In both cases the group of variables {\tt scalarfield} are synchronised
 across processes when the routine is exited.
-{\tt 
+
+\begin{verbatim}
 schedule WaveToyF77\_Evolution AS WaveToy\_Evolution AT evol \\
 { \\
   LANG: Fortran \\
   STORAGE: scalartmps \\
   SYNC: scalarfield \\
 } "Evolution of 3D wave equation" \\
-}
 
-\begin{verbatim}
 schedule WaveToyC_Evolution AS WaveToy_Evolution AT evol
 {
   LANG: C
