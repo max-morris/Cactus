@@ -341,14 +341,15 @@ sub ScheduleBlock
     $buffer .= $indent . "\"" . $language . "\"" . ",\n";
   }
 
-  $buffer .= $indent . scalar(@mem_groups) . ",                       /* Number of STORAGE groups */\n";
-  $buffer .= $indent . scalar(@comm_groups) . ",                      /* Number of COMM groups */\n";
+  $buffer .= $indent . scalar(@mem_groups) . ",                       /* Number of STORAGE  groups */\n";
+  $buffer .= $indent . scalar(@comm_groups) . ",                      /* Number of COMM     groups */\n";
   $buffer .= $indent . scalar(@trigger_groups) . ",                   /* Number of TRIGGERS groups */\n";
-  $buffer .= $indent . scalar(@before_list) . ",                      /* Number of BEFORE routines */\n";
-  $buffer .= $indent . scalar(@after_list) . ",                       /* Number of AFTER routines */\n";
-  $buffer .= $indent . scalar(@while_list) . "                        /* Number of WHILE variables */";
+  $buffer .= $indent . scalar(@sync_groups) . ",                      /* Number of SYNC     groups */\n";
+  $buffer .= $indent . scalar(@before_list) . ",                      /* Number of BEFORE  routines */\n";
+  $buffer .= $indent . scalar(@after_list) . ",                       /* Number of AFTER   routines */\n";
+  $buffer .= $indent . scalar(@while_list) . "                        /* Number of WHILE   variables */";
   
-  foreach $item (@mem_groups, @comm_groups, @trigger_groups, @before_list, @after_list, @while_list)
+  foreach $item (@mem_groups, @comm_groups, @trigger_groups, @sync_groups, @before_list, @after_list, @while_list)
   {
     $buffer .= ",\n" . $indent . "\"" . $item . "\"" ;
   }

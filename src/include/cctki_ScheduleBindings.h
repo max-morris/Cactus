@@ -28,10 +28,12 @@ int CCTKi_ScheduleFunction(void *function,
                            int n_mem_groups,
                            int n_comm_groups,
                            int n_trigger_groups,
+                           int n_sync_groups,
                            int n_before,
                            int n_after,
                            int n_while,
-                           ...);
+                           ...
+                           );
 
 int CCTKi_ScheduleGroup(const char *name,
                         const char *thorn,
@@ -41,6 +43,7 @@ int CCTKi_ScheduleGroup(const char *name,
                         int n_mem_groups,
                         int n_comm_groups,
                         int n_trigger_groups,
+                        int n_sync_groups,
                         int n_before,
                         int n_after,
                         int n_while,

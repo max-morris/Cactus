@@ -75,7 +75,7 @@ sub parse_schedule_ccl
   my($n_blocks);
   my($n_statements);
   my($name, $type, $description, $where, $language, 
-       $mem_groups, $comm_groups, $trigger_groups,
+       $mem_groups, $comm_groups, $trigger_groups, $sync_groups,
        $before_list, $after_list, $while_list);
   my($groups);
 
@@ -89,7 +89,7 @@ sub parse_schedule_ccl
     {
       ($line_number, 
        $name, $type, $description, $where, $language, 
-       $mem_groups, $comm_groups, $trigger_groups,
+       $mem_groups, $comm_groups, $trigger_groups, $sync_groups,
        $before_list, $after_list, $while_list) = &ParseScheduleBlock($line_number, @data);
 
       $schedule_db{"\U$thorn\E BLOCK_$n_blocks NAME"}        = $name;
@@ -100,6 +100,7 @@ sub parse_schedule_ccl
       $schedule_db{"\U$thorn\E BLOCK_$n_blocks STOR"}        = $mem_groups;
       $schedule_db{"\U$thorn\E BLOCK_$n_blocks COMM"}        = $comm_groups;
       $schedule_db{"\U$thorn\E BLOCK_$n_blocks TRIG"}        = $trigger_groups;
+      $schedule_db{"\U$thorn\E BLOCK_$n_blocks SYNC"}        = $sync_groups;
       $schedule_db{"\U$thorn\E BLOCK_$n_blocks BEFORE"}      = $before_list;
       $schedule_db{"\U$thorn\E BLOCK_$n_blocks AFTER"}       = $after_list;
       $schedule_db{"\U$thorn\E BLOCK_$n_blocks WHILE"}       = $while_list;
@@ -146,7 +147,7 @@ sub ParseScheduleBlock
 {
   my($line_number, @data) = @_;
   my($name, $type, $description, $where, $language, 
-       $mem_groups, $comm_groups, $trigger_groups,
+       $mem_groups, $comm_groups, $trigger_groups, $sync_groups,
        $before_list, $after_list, $while_list);
   my(@fields);
   my($field);
@@ -156,6 +157,7 @@ sub ParseScheduleBlock
   my(@mem_groups)     = ();
   my(@comm_groups)    = ();
   my(@trigger_groups) = ();
+  my(@sync_groups) = ();
   my($keyword) = "";
   my(@current_sched_list) = ();
 
@@ -358,6 +360,10 @@ sub ParseScheduleBlock
       {
 	push(@trigger_groups, split(/\s,/, $1));
       }
+      elsif($data[$line_number] =~ m/^\s*SYNC[^:]*:\s*(.*)$/i)
+      {
+	push(@sync_groups, split(/\s,/, $1));
+      }
       elsif($data[$line_number] =~ m/^\s*LANG[^:]*:\s*(.*)$/i)
       {
 	if($language ne "")
@@ -396,6 +402,7 @@ sub ParseScheduleBlock
   $mem_groups     = join(",", @mem_groups);
   $comm_groups    = join(",", @comm_groups);
   $trigger_groups = join(",", @trigger_groups);
+  $sync_groups    = join(",", @sync_groups);
   $before_list    = join(",", @before_list);
   $after_list     = join(",", @after_list);
   $while_list     = join(",", @while_list);
@@ -403,7 +410,7 @@ sub ParseScheduleBlock
 
   return ($line_number, 
 	  $name, $type, $description, $where, $language, 
-	  $mem_groups, $comm_groups, $trigger_groups,
+	  $mem_groups, $comm_groups, $trigger_groups, $sync_groups,
 	  $before_list, $after_list, $while_list);
 
 }

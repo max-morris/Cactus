@@ -99,6 +99,7 @@ static t_attribute *CreateAttribute(const char *description,
                                     int n_mem_groups, 
                                     int n_comm_groups, 
                                     int n_trigger_groups, 
+                                    int n_sync_groups, 
                                     va_list *ap);
 static t_sched_modifier *CreateModifiers(int n_before, 
                                          int n_after, 
@@ -122,8 +123,6 @@ static int CCTKi_ScheduleCallEntry(t_attribute *attribute, t_sched_data *data);
 static int CCTKi_ScheduleCallExit(t_attribute *attribute, t_sched_data *data);
 static int CCTKi_ScheduleCallWhile(int n_whiles, char **whiles, t_attribute *attribute, t_sched_data *data);
 static int CCTKi_ScheduleCallFunction(void *function, t_attribute *attribute, t_sched_data *data);
-
-static int CCTKi_ScheduleStartupFunction(void *function, t_attribute *attribute, t_sched_data *data);
 
 static int SchedulePrintTimes(const char *where, t_sched_data *data);
 
@@ -238,6 +237,7 @@ int CCTKi_ScheduleFunction(void *function,
                            int n_mem_groups,
                            int n_comm_groups,
                            int n_trigger_groups,
+                           int n_sync_groups,
                            int n_before,
                            int n_after,
                            int n_while,
@@ -252,7 +252,8 @@ int CCTKi_ScheduleFunction(void *function,
   va_start(ap, n_while);
   
   attribute = CreateAttribute(description, language, thorn, implementation, 
-                              n_mem_groups, n_comm_groups, n_trigger_groups, &ap);
+                              n_mem_groups, n_comm_groups, n_trigger_groups, 
+                              n_sync_groups, &ap);
   modifier  = CreateModifiers(n_before, n_after, n_while, &ap);
 
   va_end(ap);
@@ -299,6 +300,7 @@ int CCTKi_ScheduleGroup(const char *name,
                         int n_mem_groups,
                         int n_comm_groups,
                         int n_trigger_groups,
+                        int n_sync_groups,
                         int n_before,
                         int n_after,
                         int n_while,
@@ -313,7 +315,8 @@ int CCTKi_ScheduleGroup(const char *name,
   va_start(ap, n_while);
   
   attribute = CreateAttribute(description, NULL, thorn, implementation,
-                              n_mem_groups, n_comm_groups, n_trigger_groups, &ap);
+                              n_mem_groups, n_comm_groups, n_trigger_groups, 
+                              n_sync_groups, &ap);
   modifier  = CreateModifiers(n_before, n_after, n_while, &ap);
 
   va_end(ap);
@@ -659,6 +662,7 @@ static t_attribute *CreateAttribute(const char *description,
                                     int n_mem_groups, 
                                     int n_comm_groups, 
                                     int n_trigger_groups, 
+                                    int n_sync_groups,
                                     va_list *ap)
 {
   t_attribute *this;
@@ -673,15 +677,17 @@ static t_attribute *CreateAttribute(const char *description,
     this->mem_groups     = (int *)malloc(n_mem_groups*sizeof(int));
     this->comm_groups    = (int *)malloc(n_comm_groups*sizeof(int));
     this->trigger_groups = (int *)malloc(n_trigger_groups*sizeof(int));
+    this->FunctionData.SyncGroups = (int *)malloc(n_sync_groups*sizeof(int));
     this->StorageOnEntry = (int *)malloc(n_mem_groups*sizeof(int));
     this->CommOnEntry    = (int *)malloc(n_comm_groups*sizeof(int));
 
     if(this->description     && 
        this->thorn           &&
        this->implementation  &&
-       (this->mem_groups || n_mem_groups==0)      &&
-       (this->comm_groups || n_comm_groups==0)    &&
-       (this->trigger_groups || n_trigger_groups==0))
+       (this->mem_groups || n_mem_groups==0)         &&
+       (this->comm_groups || n_comm_groups==0)       &&
+       (this->trigger_groups || n_trigger_groups==0) &&
+       (this->FunctionData.SyncGroups || n_sync_groups==0))
     {
       strcpy(this->description,    description);
       strcpy(this->thorn,          thorn);
@@ -702,10 +708,12 @@ static t_attribute *CreateAttribute(const char *description,
       CreateGroupIndexList(n_mem_groups,     this->mem_groups, ap);
       CreateGroupIndexList(n_comm_groups,    this->comm_groups, ap);
       CreateGroupIndexList(n_trigger_groups, this->trigger_groups, ap);
+      CreateGroupIndexList(n_sync_groups,    this->FunctionData.SyncGroups, ap);
 
       this->n_mem_groups     = n_mem_groups;
       this->n_comm_groups    = n_comm_groups;
       this->n_trigger_groups = n_trigger_groups;
+      this->FunctionData.n_SyncGroups = n_sync_groups;
 
       /* Add a timer to the item */
       
@@ -716,6 +724,7 @@ static t_attribute *CreateAttribute(const char *description,
       free(this->description);
       free(this->comm_groups);
       free(this->trigger_groups);
+      free(this->FunctionData.SyncGroups);
       free(this);
       this = NULL;
     }
