@@ -52,6 +52,7 @@
                            CCTK_POINTER cctkGH&&\
 
 #define CCTK_WARN(a,b) CCTK_Warn(a,__LINE__,__FORTRANFILE__,CCTK_THORNSTRING,b)
+#define CCTK_RegisterIOMethod(a) CCTKi_RegisterIOMethod(CCTK_THORNSTRING,a
 
 #define CCTKi_EXPECTERR(in,err,warnonerr,message) CCTKi_ExpectError(in,err,warnonerr,__LINE__,__FORTRANFILE__,CCTK_THORNSTRING,message)
 
