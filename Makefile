@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.48 1999-07-31 00:29:27 allen Exp $
+#   @version $Id: Makefile,v 1.49 1999-09-14 11:29:56 allen Exp $
 # @@*/
 
 ##################################################################################
@@ -543,6 +543,30 @@ endif
 	@echo $(DIVIDER)
 	@echo Configuration $(@:%-testsuite=%) does not exist.
 	@echo Test suite aborted.
+
+
+ifneq ($strip($(CONFIGURATIONS)),) 
+.PHONY $(addsuffix -thornparfiles,$(CONFIGURATIONS)):
+
+# Copy thorn parameter files
+.PHONY thornparfiles:
+
+thornparfiles:
+	@echo $(DIVIDER)
+	@echo Please specify a configuration.
+	@echo $(DIVIDER)
+
+
+$(addsuffix -thornparfiles,$(CONFIGURATIONS)):
+	@echo $(DIVIDER)
+	@echo Copying parameter files $(@:%-thornparfiles=%)
+	if [ -r $(CONFIGS_DIR)/$(@:%-thornparfiles=%)/ThornList ] ; then $(PERL) lib/sbin/CopyParFiles.pl $(@:%-thornparfiles=%) ; fi
+endif
+
+%-thornparfiles:
+	@echo $(DIVIDER)
+	@echo Configuration $(@:%-thornparfiles=%) does not exist.
+	@echo Parameter file copying aborted.
 
 
 # Checkout public thorns and arrangements
