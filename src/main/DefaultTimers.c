@@ -332,6 +332,8 @@ static void CCTKi_TimerGetTimeOfDayGet(int timernum, void *idata, cTimerVal *val
   vals[0].heading = GetTimeOfDayHeading;
   vals[0].units   = GetTimeOfDayUnits;
   vals[0].val.d   = data->total.tv_sec + (double)data->total.tv_usec/1000000.0;
+  vals[0].seconds = vals[0].val.d;
+  vals[0].resolution = 1.e-6;
 }
 
 
@@ -605,6 +607,8 @@ static void CCTKi_TimerGetrUsageGet(int timernum, void *idata, cTimerVal *vals)
   vals[0].heading = GetrUsageHeading;
   vals[0].units   = GetrUsageUnits;
   vals[0].val.d   = data->total.tv_sec + (double)data->total.tv_usec/1000000.0;
+  vals[0].seconds = vals[0].val.d;
+  vals[0].resolution = 1.e-6;
 }
 
 

@@ -1208,6 +1208,7 @@ int CCTK_TimerDestroyData (cTimerData *info)
                0 for success, or -1 if timer handle is invalid
    @endreturndesc
 @@*/
+
 int CCTK_TimerPrintDataI (int this_timer, int this_clock)
 {
   cTimerData *info;
@@ -1372,3 +1373,203 @@ void CCTK_FCALL CCTK_FNAME (CCTK_TimerPrintData)
   free (timer);
   free (clock);
 }
+
+/* ------------------ Clock value information ------------------------ */
+
+ /*@@
+   @routine    CCTK_NumTimerClocks
+   @date       Aug 5, 2004
+   @author     Steve White
+   @desc
+               Return the number of clocks for the given timer.
+   @enddesc
+   @calls      
+
+   @var        info
+   @vdesc      timer pointer
+   @vtype      const cTimerData *info
+   @vio        in
+   @endvar
+
+   @returntype unsigned int
+   @returndesc
+               The number of clocks for the given timer.
+   @endreturndesc
+@@*/
+unsigned int
+CCTK_NumTimerClocks( const cTimerData *info )
+{
+	return info->n_vals;
+}
+
+ /*@@
+   @routine    CCTK_GetClockValueI
+   @date       Aug 5, 2004
+   @author     Steve White
+   @desc
+               Return the clock of the given index for the given timer.
+   @enddesc
+   @calls      
+
+   @var        valno
+   @vdesc      clock index
+   @vtype      int
+   @vio        in
+   @endvar
+
+   @var        info
+   @vdesc      timer pointer
+   @vtype      const cTimerData *info
+   @vio        in
+   @endvar
+
+   @returntype const cTimerVal *
+   @returndesc
+               A pointer to a structure holding time values for the
+               indexed clock.  This structure is contained in the timer,
+               so there's no need to delete it, but it must be used 
+               before destroying the timer.
+   @endreturndesc
+@@*/
+const cTimerVal *
+CCTK_GetClockValueI( int valno, const cTimerData *info )
+{
+	if( valno < info->n_vals )
+		return (cTimerVal *)&info->vals[valno];
+	else
+		return NULL;
+}
+
+ /*@@
+   @routine    CCTK_GetClockValue
+   @date       Aug 5, 2004
+   @author     Steve White
+   @desc
+               Return the named clock for the given timer. 
+               A call to CCTK_TimerStop should precede this function.
+   @enddesc
+   @calls      
+
+   @var        clockName
+   @vdesc      clock name
+   @vtype      const char *
+   @vio        in
+   @endvar
+
+   @var        info
+   @vdesc      timer pointer
+   @vtype      const cTimerData *info
+   @vio        in
+   @endvar
+
+   @returntype cTimerVal *
+   @returndesc
+               A pointer to a structure holding time values for the
+               named clock, or NULL if an error occurs. 
+               This structure is contained in the timer,
+               so there's no need to delete it, but it must be used 
+               before destroying the timer.
+   @endreturndesc
+@@*/
+const cTimerVal *
+CCTK_GetClockValue( const char * clockName, const cTimerData *info )
+{
+	int i;
+
+	for (i = 0; i < info->n_vals; i++)
+		if( strcmp( clockName, info->vals[i].heading ) == 0 )
+			return (cTimerVal *)&info->vals[i];
+
+	return NULL;
+}
+
+ /*@@
+   @routine    CCTK_TimerClockSeconds
+   @date       Aug 5, 2004
+   @author     Steve White
+   @desc
+               The time interval in seconds since the last call.
+   @enddesc
+   @calls      
+
+   @var        clockVal
+   @vdesc      clock pointer
+   @vtype      const cTimerval *
+   @vio        in
+   @endvar
+
+   @returntype double
+   @returndesc
+               The time interval in seconds since the last call,
+               or 0.0 if it's the first call.
+   @endreturndesc
+@@*/
+double
+CCTK_TimerClockSeconds( const cTimerVal *clockVal )
+{
+	if( clockVal != NULL )
+		return clockVal->seconds;
+	return 0.0;
+}
+
+ /*@@
+   @routine    CCTK_TimerClockResolution
+   @date       Aug 5, 2004
+   @author     Steve White
+   @desc
+               Return the resolution of the given clock. 
+               This should be a lower bound of the smallest non-zero
+               difference in value the clock can exhibit. 
+               For example, it might reflect that the clock value is stored
+               internally as an integer representing milliseconds.
+   @enddesc
+   @calls      
+
+   @var        clockVal
+   @vdesc      clock pointer
+   @vtype      const cTimerval *
+   @vio        in
+   @endvar
+
+   @returntype double
+   @returndesc
+               The resolution of the clock, in seconds.
+   @endreturndesc
+@@*/
+double
+CCTK_TimerClockResolution( const cTimerVal *clockVal )
+{
+	if( clockVal != NULL )
+		return clockVal->resolution;
+	return 0.0;
+}
+
+ /*@@
+   @routine    CCTK_TimerClockName
+   @date       Aug 5, 2004
+   @author     Steve White
+   @desc
+               Return the name of the given clock
+   @enddesc
+   @calls      
+
+   @var        clockVal
+   @vdesc      clock pointer
+   @vtype      const cTimerval *
+   @vio        in
+   @endvar
+
+   @returntype const char *
+   @returndesc
+               A string inside the cTimerVal.  So no need to delete it,
+               but be sure to use it before deleting the clock!
+   @endreturndesc
+@@*/
+const char *
+CCTK_TimerClockName( const cTimerVal *clockVal )
+{
+	if( clockVal != NULL )
+		return clockVal->heading;
+	return NULL;
+}
+

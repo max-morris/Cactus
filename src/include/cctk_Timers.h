@@ -15,7 +15,9 @@
 
 typedef enum {val_none, val_int, val_long, val_double} cTimerValType;
 
-typedef struct
+typedef struct cTimerValTAG cTimerVal;
+
+typedef struct cTimerValTAG
 {
   cTimerValType type;
   const char *heading;
@@ -26,7 +28,9 @@ typedef struct
     long int   l;
     double     d;
   } val;
-} cTimerVal;
+  double seconds;
+  double resolution;
+} cTimerValPLACEHOLDER;
 
 typedef struct
 {
@@ -46,6 +50,7 @@ typedef struct
   void (*reset)(int, void *);
   void (*get)(int, void *, cTimerVal *);
   void (*set)(int, void *, cTimerVal *);
+  double (*seconds)(int, void *, cTimerVal *);
 } cClockFuncs;
 
 
@@ -81,6 +86,13 @@ int CCTK_TimerDestroyData(cTimerData *info);
 int CCTK_TimerPrintData (const char *ntimer, const char *nclock);
 int CCTK_TimerPrintDataI(int this_timer, int this_clock);
 
+/* Clock value routines */
+unsigned int CCTK_NumTimerClocks(const cTimerData *info);
+const cTimerVal * CCTK_GetClockValueI(int valno, const cTimerData *info);
+const cTimerVal * CCTK_GetClockValue(const char * name, const cTimerData *info);
+double CCTK_TimerClockSeconds(const cTimerVal *clockVal);
+double CCTK_TimerClockResolution(const cTimerVal *clockVal);
+const char * CCTK_TimerClockName(const cTimerVal *clockVal);
 #ifdef __cplusplus
 }
 #endif
