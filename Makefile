@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.113 2001-05-21 11:56:03 goodale Exp $
+#   @version $Id: Makefile,v 1.114 2001-06-12 05:54:20 allen Exp $
 # @@*/
 
 ##################################################################################
@@ -804,8 +804,8 @@ UsersGuide:
 	@echo Creating user documentation UsersGuide.ps
 	cd doc/UsersGuide;                          \
 	echo "  Running LaTeX....";                 \
-	latex UsersGuide.tex > LATEX_MESSAGES 2>&1; \
-	latex UsersGuide.tex > LATEX_MESSAGES 2>&1; \
+	latex  -interaction=nonstopmode UsersGuide.tex > LATEX_MESSAGES 2>&1; \
+	latex  -interaction=nonstopmode UsersGuide.tex > LATEX_MESSAGES 2>&1; \
 	echo "  Running dvips....";                 \
 	dvips ./UsersGuide.dvi -o $(CCTK_HOME)/UsersGuide.ps > DVIPS_MESSAGES 2>&1
 	@echo "  Done."
