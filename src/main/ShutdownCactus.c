@@ -12,6 +12,7 @@
 
 #include "cctk_Flesh.h"
 #include "cctk_Misc.h"
+#include "cctk_Parameter.h"
 #include "cctk_Schedule.h"
 
 static char *rcsid = "$Header$";
