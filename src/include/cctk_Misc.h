@@ -8,6 +8,8 @@
    @version $Header$
  @@*/
 
+#include "cctk_Types.h"
+
 #ifndef _CCTK_MISC_H_
 #define _CCTK_MISC_H_
 
