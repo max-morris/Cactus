@@ -178,10 +178,21 @@ sub SetConfigureEnv
   {
     # The user has specified a configuration file
     print "Adding configuration options from $config_file...\n";
-    if($config_file !~ m:^/:)
+
+    # Turn path to options file to an absolute path
+    if($config_file =~ m:^/:)
+    {
+      # Do nothing
+    }
+    elsif($config-file != m:^~:)
+    {
+      $config_file =~ s/^~/$ENV{"HOME"}/
+    }
+    else
     {
       $config_file = "$top/$config_file";
     }
+
     open(INFILE, "<$config_file") || die "Cannot open configuration file $config_file";
 
     $line_number = 0;
