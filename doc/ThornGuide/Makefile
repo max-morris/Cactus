@@ -49,8 +49,8 @@ $(MASTER_FILE).ps: $(MASTER_FILE).dvi
 $(MASTER_FILE).dvi: $(MASTER_FILE).tex
 	@echo "  Latexing $<"
 	latex -interaction=nonstopmode $< >  LOG_NULL 2>&1; \
-	latex -interaction=nonstopmode $< >> LOG_NULL 2>&1; \
-	latex -interaction=nonstopmode $< >> LOG_NULL 2>&1; \
+	latex -interaction=nonstopmode $< > LOG_NULL 2>&1; \
+	latex -interaction=nonstopmode $< > LOG_NULL 2>&1; \
 	latex -interaction=nonstopmode $< | grep -v Underfull | grep -v Overfull | grep -v OT1 > LOG_LATEX_MSGS 2>&1;  \
 	if test -e "$@"; then                                  \
 	   echo "     $@ created.";                              \
@@ -61,10 +61,10 @@ $(MASTER_FILE).dvi: $(MASTER_FILE).tex
 $(MASTER_FILE).pdf: $(MASTER_FILE).tex
 	@echo "  Running pdflatex on $<"
 
-	pdflatex -interaction=nonstopmode $< >  LOG_PDFLATEX_MSGS 2>&1; \
-	pdflatex -interaction=nonstopmode $< >> LOG_PDFLATEX_MSGS 2>&1; \
-	pdflatex -interaction=nonstopmode $< >> LOG_PDFLATEX_MSGS 2>&1; \
-	pdflatex -interaction=nonstopmode $< >> LOG_PDFLATEX_MSGS 2>&1
+	pdflatex -interaction=nonstopmode $< >  LOG_NULL 2>&1; \
+	pdflatex -interaction=nonstopmode $< > LOG_NULL 2>&1; \
+	pdflatex -interaction=nonstopmode $< > LOG_NULL 2>&1; \
+	pdflatex -interaction=nonstopmode $< | grep -v Underfull | grep -v Overfull | grep -v OT1 > LOG_PDFLATEX_MSGS 2>&1
 
 	if test -e "$@"; then                                  \
 	   echo "     $@ created.";                              \
