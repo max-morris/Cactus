@@ -98,7 +98,7 @@
 #include "cctk_Parameter.h"
 #include "cctk_Reduction.h"
 #include "cctk_WarnLevel.h"
-#include "cctk_MemAlloc.h"
+#include "cctk_Malloc.h"
 
 #define CCTK_GFINDEX3D(GH,i,j,k) ((i) + (GH)->cctk_lsh[0]*((j)+(GH)->cctk_lsh[1]*(k)))
 #define CCTK_GFINDEX2D(GH,i,j)   ((i) + (GH)->cctk_lsh[0]*((j)))

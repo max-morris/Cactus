@@ -1,0 +1,30 @@
+ /*@@
+   @header    cctk_MemAlloc.h
+   @date      Thu Jan 20 2000
+   @author    Gerd Lanfermann
+   @desc
+   Prototypes for Cactus MemAlloc functions.
+   @enddesc
+   @version $Header$
+ @@*/
+
+#ifndef _CCTK_STAGGER_H_
+#define _CCTK_STAGGER_H_
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+/* void *CCTKi_Malloc(t_size size, int line, const char *file);
+   void CCTKi_Free(void *pointer); */
+
+void CCTK_MemStat(void);
+unsigned long int  CCTK_TotalMemory(void);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif
+
+
