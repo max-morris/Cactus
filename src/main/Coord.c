@@ -15,6 +15,7 @@
 #include <string.h>
 
 #include "cctk_Flesh.h"
+#include "cctk_ActiveThorns.h"
 #include "cctk_Coord.h"
 #include "cctk_FortranString.h"
 #include "cctk_Groups.h"
@@ -33,8 +34,9 @@ CCTK_FILEVERSION(main_Coord_c)
 
 struct Coordsystem
 {
+  const char *implementation;
   int dimension;
-  char *systemname;
+  const char *systemname;
   struct Coordprops *coords;
 };
 
@@ -74,13 +76,13 @@ struct Coordpropslistphysi
  ********************************************************************/
 
 static cHandledData *CoordSystems = NULL;
-
+static int num_systems = 0;
 
 /********************************************************************
  *********************     Fortran Wrappers    **********************
  ********************************************************************/
-void CCTK_FCALL CCTK_FNAME (CCTK_CoordRegisterSystem)
-                           (int *ierr, const int *dim, ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (CCTKi_CoordRegisterSystem)
+                           (int *ierr, const int *dim, TWO_FORTSTRING_ARG);
 void CCTK_FCALL CCTK_FNAME (CCTK_CoordRegisterData)
                            (int *handle,const int *dir,THREE_FORTSTRING_ARG);
 void CCTK_FCALL CCTK_FNAME (CCTK_CoordRegisterRange)
@@ -150,8 +152,9 @@ void CCTK_FCALL CCTK_FNAME (CCTK_CoordLocalRange)
    @endreturndesc
 
    @@*/
-int CCTK_CoordRegisterSystem (int dim,
-                              const char *systemname)
+int CCTKi_CoordRegisterSystem (int dim,
+                              const char *thorn,
+			      const char *systemname)
 {
   int retval=-1;
   struct Coordsystem *new_system;
@@ -170,10 +173,15 @@ int CCTK_CoordRegisterSystem (int dim,
       if (dim > 0)
       {
         new_system->dimension  = dim;
+	new_system->implementation = CCTK_ThornImplementation (thorn);
         new_system->systemname = strdup (systemname);
         new_system->coords = (struct Coordprops *) calloc (dim,
                                                      sizeof(struct Coordprops));
         retval = Util_NewHandle (&CoordSystems, systemname, new_system);
+
+	/* Remember how many systems there are */
+	num_systems++;
+
       }
       else
       {
@@ -206,12 +214,13 @@ int CCTK_CoordRegisterSystem (int dim,
   return (retval);
 }
 
-void CCTK_FCALL CCTK_FNAME (CCTK_CoordRegisterSystem)
-                           (int *ierr, const int *dim, ONE_FORTSTRING_ARG)
+void CCTK_FCALL CCTK_FNAME (CCTKi_CoordRegisterSystem)
+                           (int *ierr, const int *dim, TWO_FORTSTRING_ARG)
 {
-  ONE_FORTSTRING_CREATE (systemname)
-  *ierr = CCTK_CoordRegisterSystem (*dim, systemname);
+  TWO_FORTSTRING_CREATE (thorn,systemname)
+  *ierr = CCTKi_CoordRegisterSystem (*dim, thorn, systemname);
   free (systemname);
+  free (thorn);
 }
 
 
@@ -1015,6 +1024,7 @@ void CCTK_FCALL CCTK_FNAME (CCTK_CoordDir)
       -3 = no coordinate system name provided
       -4 = coordinate name not registered
       -5 = NULL pointer(s) passed for lower/upper
+      -6 = no range registered
    @endreturndesc
 @@*/
 
@@ -1027,10 +1037,10 @@ int CCTK_CoordRange (const cGH *GH,
 {
   int i;
   int retval=0;
+  int gotrange;
   struct Coordpropslistcomp *curr;
   struct Coordsystem    *coord_system;
   struct Coordprops     *coord;
-
 
   if (lower == NULL || upper == NULL)
   {
@@ -1087,6 +1097,7 @@ int CCTK_CoordRange (const cGH *GH,
       }
       if (coord)
       {
+	gotrange = 0;
         for (curr = coord->listcomp; curr; curr = curr->next)
         {
 
@@ -1099,6 +1110,7 @@ int CCTK_CoordRange (const cGH *GH,
 
           if (curr->GH == GH)
           {
+	    gotrange = 1;
             *lower = curr->lower;
             *upper = curr->upper;
 
@@ -1107,6 +1119,10 @@ int CCTK_CoordRange (const cGH *GH,
 #endif
           }
         }
+	if (!gotrange)
+	{
+	  retval = -6;
+	}
       }
     }
   }
@@ -1385,3 +1401,100 @@ void CCTK_FCALL CCTK_FNAME (CCTK_CoordLocalRange)
   free (name);
   free (systemname);
 }
+
+
+ /*@@
+   @routine    CCTK_NumCoordSystems
+   @date       Sat Dec 29 2001
+   @author     Gabrielle Allen
+   @desc
+               The number of coord systems registered
+   @enddesc
+   @returntype int
+   @returndesc
+               number of coordinate systems
+   @endreturndesc
+@@*/
+
+int CCTK_NumCoordSystems (void)
+{
+  return (num_systems);
+}
+
+
+ /*@@
+   @routine    CCTK_CoordSystemImplementation
+   @date       Sat Dec 29 2001
+   @author     Gabrielle Allen
+   @desc
+               Provide the implementation which registered a coordinate
+	       system
+   @enddesc
+   @var        handle
+   @vdesc      handle of coordinate system
+   @vtype      int
+   @vio        in
+   @endvar
+
+   @returntype const char *
+   @returndesc
+               Implementation which registered this system
+   @endreturndesc
+@@*/
+const char *CCTK_CoordSystemImplementation (int handle)
+{
+  struct Coordsystem *coord_system;
+
+  coord_system = (struct Coordsystem *) 
+    Util_GetHandledData (CoordSystems, handle);
+
+  return (coord_system ? coord_system->implementation : NULL);
+}
+
+
+ /*@@
+   @routine    CCTK_CoordName
+   @date       Sat Dec 29 2001
+   @author     Gabrielle
+   @desc
+               Returns the name of a coordinate from a given system
+   @enddesc
+   @calls      Util_GetHandle
+
+   @var        dir
+   @vdesc      coordinate direction in system
+   @vtype      int
+   @vio        in
+   @endvar
+   @var        system
+   @vdesc      name of coordinate system
+   @vtype      const char *
+   @vio        in
+   @endvar
+
+   @returntype const char *
+   @returndesc
+               the coordinate name or NULL if handle is coordinate name
+	       cannot be found
+   @endreturndesc
+@@*/
+const char *CCTK_CoordName (int dir, const char *systemname)
+{
+  struct Coordsystem *coord_system;
+  const char *retval;
+
+  Util_GetHandle (CoordSystems, systemname, (void **) &coord_system);
+  if (! coord_system)
+  {
+    CCTK_VWarn (4, __LINE__, __FILE__, "Cactus",
+		"CCTK_CoordName: System '%s' not registered", systemname);
+      retval = NULL;
+  }
+  else
+  {
+    retval = (const char *) coord_system->coords[dir-1].name;
+  }
+
+  return (retval);
+}
+
