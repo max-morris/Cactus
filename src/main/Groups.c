@@ -12,6 +12,7 @@
 #include <string.h>
 #include <stdarg.h>
 
+#include "cctk_WarnLevel.h"
 #include "cctk_Config.h"
 #include "cctk_Groups.h"
 #include "cctk_Types.h"
@@ -51,6 +52,8 @@ typedef struct
   int vtype;
 
   int gscope;
+
+  int dtype;
 
   int dim;
 
@@ -220,22 +223,21 @@ void CCTKi_PrintGroupInfo(void) {
    @endhistory 
 
 @@*/
-int CCTKi_CreateGroup
-  (
-   const char *gname, 
-   const char *thorn, 
-   const char *imp,
-   const char *gtype,
-   const char *vtype,
-   const char *gscope,
-   int         dimension,
-   int         ntimelevels,
-   const char *stype,
-   const char *size,
-   const char *ghostsize,
-   int         n_variables,
-   ...
-  )
+int CCTKi_CreateGroup(const char *gname, 
+		      const char *thorn, 
+		      const char *imp,
+		      const char *gtype,
+		      const char *vtype,
+		      const char *gscope,
+		      int         dimension,
+		      int         ntimelevels,
+		      const char *stype,
+		      const char *dtype,
+		      const char *size,
+		      const char *ghostsize,
+		      int         n_variables,
+		      ...
+		      )
 {
   int     retval;
   int     groupscope;
@@ -258,53 +260,26 @@ int CCTKi_CreateGroup
   if (groupscope == GROUP_PUBLIC || groupscope == GROUP_PROTECTED)
   {
     group = CCTKi_SetupGroup(imp, gname, staggercode, n_variables);
-
-#ifdef DEBUG_GROUPS
-  {
-    char *fullname = (char *)malloc( (200+strlen(gname)+strlen(imp))*sizeof(char));
-    sprintf(fullname,"%s::%s",imp,gname);
-    printf("Created implementation group %s\n",fullname);
-    printf("  CCTK_GroupIndex(%s) = %d\n",fullname,
-           CCTK_GroupIndex(fullname));
-    printf("  CCTK_GroupName(%d) = %s\n",CCTK_GroupIndex(fullname),
-           CCTK_GroupName(CCTK_GroupIndex(fullname)));
-    free(fullname);
-  }
-#endif
-
   }
   else if (groupscope == GROUP_PRIVATE)
   {
     group = CCTKi_SetupGroup(thorn, gname, staggercode, n_variables);
-
-#ifdef DEBUG_GROUPS
-  {
-    char *fullname = (char *)malloc( (200+strlen(gname)+strlen(imp))*sizeof(char));
-    sprintf(fullname,"%s::%s",thorn,gname);
-    printf("Created thorn group %s\n",fullname);
-    printf("  CCTK_GroupIndex(%s) = %d\n",fullname,
-           CCTK_GroupIndex(fullname));
-    printf("  CCTK_GroupName(%d) = %s\n",CCTK_GroupIndex(fullname),
-           CCTK_GroupName(CCTK_GroupIndex(fullname)));
-    free(fullname);
-  }
-#endif
-
   }
   else
   {
-    CCTK_Warn(1,__LINE__,__FILE__,"Cactus","Unrecognised group scope in CCTK_CreateGroup");
+    CCTK_Warn(1,__LINE__,__FILE__,"Cactus",
+	      "Unrecognised group scope in CCTK_CreateGroup");
   }
 
   /* Allocate storage for the group and setup some stuff. */
   if(group)
   {
-    group->dim        = dimension;
-    group->gtype      = CCTK_GroupTypeNumber(gtype);
-    group->vtype      = CCTK_VarTypeNumber(vtype);
-    group->gscope     = groupscope;
-    group->staggertype= staggercode;
-
+    group->dim          = dimension;
+    group->gtype        = CCTK_GroupTypeNumber(gtype);
+    group->vtype        = CCTK_VarTypeNumber(vtype);
+    group->gscope       = groupscope;
+    group->staggertype  = staggercode;
+    group->dtype        = CCTK_GroupDistribNumber(dtype);
     group->n_timelevels = ntimelevels;
     
     /* Extract the variable names from the argument list. */
@@ -314,7 +289,8 @@ int CCTKi_CreateGroup
     {
       variable_name = va_arg(ap, char *);
 
-      group->variables[variable].name = (char *)malloc((strlen(variable_name)+1*sizeof(char)));
+      group->variables[variable].name = 
+	(char *)malloc((strlen(variable_name)+1*sizeof(char)));
       
       if(group->variables[variable].name)
       {
@@ -334,9 +310,14 @@ int CCTKi_CreateGroup
     }
     else
     {
-      if (dimension > maxdim) maxdim    = dimension;
-      if (staggercode > 0)    staggered = 1;
-
+      if (dimension > maxdim) 
+      {
+	maxdim    = dimension;
+      }
+      if (staggercode > 0)    
+      {
+	staggered = 1;
+      }
       group->size      = CCTKi_ExtractSize(dimension, thorn, size);
       group->ghostsize = CCTKi_ExtractSize(dimension, thorn, ghostsize);
     }
@@ -1069,6 +1050,48 @@ void  FMODIFIER FORTRAN_NAME(CCTK_GroupScopeNumber)(int *number,
 
 
  /*@@
+   @routine    CCTK_GroupScopeNumber
+   @date       Tuesday June 22 1999
+   @author     Gabrielle Allen
+   @desc 
+   Gets the scope number associated with a group.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+int CCTK_GroupDistribNumber(const char *dtype)
+{
+  int retval;
+
+  retval = -1;
+ 
+  if(!strcmp(dtype, "CONSTANT"))
+  {
+    retval = DISTRIB_CONSTANT;
+  }
+
+  if(!strcmp(dtype, "DEFAULT"))
+  {
+    retval = DISTRIB_DEFAULT;
+  }
+
+  return retval;
+}
+
+void  FMODIFIER FORTRAN_NAME(CCTK_GroupDistribNumber)(int *number,
+						      ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE(type)
+  *number = CCTK_GroupDistribNumber(type);
+  free(type);
+}
+
+
+ /*@@
    @routine    CCTK_GroupData
    @date       Mon Feb  8 15:56:01 1999
    @author     Tom Goodale
@@ -1092,6 +1115,7 @@ int CCTK_GroupData(int group, cGroup *gp)
   {
       gp->grouptype     = groups[group].gtype;
       gp->vartype       = groups[group].vtype;
+      gp->disttype      = groups[group].dtype;
       gp->dim           = groups[group].dim;
       gp->numvars       = groups[group].n_variables;
       gp->numtimelevels = groups[group].n_timelevels;
