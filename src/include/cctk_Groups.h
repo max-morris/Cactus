@@ -76,6 +76,14 @@ const char *CCTK_VarTypeName(int vartype);
 
 int        CCTK_VarTypeSize(int vtype);
 
+/* traverse a string of group and/or variable names */
+int CCTK_TraverseString (const char *parsestring,
+                         void (*callback) (int index,
+                                           const char *optstring,
+                                           void *callback_arg),
+                         void *callback_arg,
+                         int selection);
+
 #ifdef __cplusplus 
 }
 #endif
