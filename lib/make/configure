@@ -4508,6 +4508,9 @@ cat >> confdefs.h <<EOF
 EOF
  
 
+
+ 
+
 # Set default Fortran compilers
 
 if test -z "$F90" ; then
@@ -4517,9 +4520,6 @@ fi
 if test -z "$F77" ; then
   F77="F77_NOT_SET"
 fi
-
-
- 
 
 trap '' 1 2 15
 cat > confcache <<\EOF

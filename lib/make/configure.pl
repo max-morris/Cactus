@@ -34,7 +34,7 @@ sub test_fortran_name
   local($retcode, $line, $name, $case, $n_underscores);
   local($underscore_suffix, $normal_suffix, $case_prefix);
 
-  if($compiler && $compiler ne "")
+  if($compiler && $compiler ne "" && $compiler !~ /NOT_SET/)
   {
     # Create a test file
     open(OUT, ">fname_test.f") || die "Cannot open fname_test.f\n";
@@ -173,7 +173,7 @@ sub test_fortran_common_name
   local($retcode, $line, $name, $case, $n_underscores);
   local($underscore_suffix, $normal_suffix, $case_prefix);
 
-  if($compiler && $compiler ne "")
+  if($compiler && $compiler ne "" && $compiler !~ /NOT_SET/)
   {
     # Create a test file
     open(OUT, ">fname_test.f") || die "Cannot open fname_test.f\n";
