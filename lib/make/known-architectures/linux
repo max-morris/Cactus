@@ -49,11 +49,24 @@ else
     elif test "`$F90 -v 2>&1 | grep -i compaq`" ; then
        LINUX_F90_COMP=Compaq
     else
-        echo Unknown Linux f90 compiler.
-        echo Please add appropriate information to
-        echo $srcdir/known-architectures/linux-gnu
-        echo and send the updated file to CactusMaint
-        echo We will try anyway ...
+	# Ok, those were the easy ones, now try more
+	# obscure things
+
+	
+	echo "      subroutine foo" > foo.f
+	echo "      end subroutine foo" >> foo.f
+
+	if test "`/opt/absoft/bin/f95 -V foo.f 2>&1 | grep Absoft`" ; then
+	    LINUX_F90_COMP=absoft
+	else
+
+	    echo Unknown Linux f90 compiler.
+	    echo Please add appropriate information to
+	    echo $srcdir/known-architectures/linux-gnu
+	    echo and send the updated file to CactusMaint
+	    echo We will try anyway ...
+	fi
+	rm foo.f
     fi
   elif test -n "$F77" ; then
     if test "`$F77 -v 2>&1 | grep -i 'gcc version'`" ; then
