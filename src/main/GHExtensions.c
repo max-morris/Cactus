@@ -7,6 +7,8 @@
    @enddesc 
  @@*/
 
+/*#define DEBUG*/
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -95,6 +97,10 @@ int CCTK_RegisterGHExtension(const char *name)
     {
       /* Get a handle for it. */
       handle = Util_NewHandle(&GHExtensions, name, new_extension);
+
+#ifdef DEBUG
+      printf("CCTK_RegisterGHExtension: Extension %s gets handle %d\n",name,handle);
+#endif
 
       /* Initialise the extension structure. */
       new_extension->InitGH = NULL;
