@@ -23,8 +23,12 @@ if test "$CCTK_CONFIG_STAGE" = "preferred-compilers" ; then
 
 else
 
-  : ${F90FLAGS="-g -O2 -qfixed"}
-  : ${F77FLAGS="-g -O2 -qfixed"}
+  : ${F90FLAGS="-qfixed"}
+  : ${F77FLAGS="-qfixed"}
+  : ${F90_OPTIMISE_FLAGS="-O2"}
+  : ${F77_OPTIMISE_FLAGS="-O2"}
+  : ${F90_DEBUG_FLAGS="-g"}
+  : ${F77_DEBUG_FLAGS="-g"}
 
   case "$CC" in
     gcc)
@@ -65,7 +69,7 @@ else
     if test "$MPI" = "NATIVE" ; then
       case "$CC:$CXX" in 
         "xlc:xlC"|"cc:xlC")
-          LD=mpCC
+          : ${LD=mpCC}
           ;;
          *)
         echo "NATIVE MPI requires xlc and xlC"
