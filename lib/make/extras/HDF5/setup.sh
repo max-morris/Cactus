@@ -83,7 +83,7 @@ if [ $test_compress2 -eq 0 -o $test_zlib -eq 0 ] ; then
 fi
 
 # Finally, add the math lib which might not be linked against by default
-HDF5_LIBS += m
+HDF5_LIBS="$HDF5_LIBS m"
 
 # Write the data out to the header and make files.
 
