@@ -466,6 +466,20 @@ else
   AC_MSG_RESULT(no)
 fi
 
+# Check if we have __int64 
+AC_MSG_CHECKING([if __int64 is defined])
+AC_CACHE_VAL(cctk_cv_have___int64,
+[AC_TRY_COMPILE(,
+[__int64 foo; return 0], eval "cctk_cv_have___int64=yes",
+eval "cctk_cv_have___int64=no")
+])
+if test "$cctk_cv_have___int64" = "yes"; then
+  CCTK_INT8="__int64"
+  AC_MSG_RESULT(yes)
+else
+  AC_MSG_RESULT(no)
+fi
+
 # Do we have gethostbyname
 AC_CHECK_FUNCS(gethostbyname)
 
