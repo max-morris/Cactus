@@ -1,7 +1,7 @@
 
 Cactus Code Frequently Asked Questions
 
-$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.10 2000-11-30 20:46:36 allen Exp $
+$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.11 2000-12-07 22:42:04 goodale Exp $
 
 The latest version of this FAQ is always available from the main Cactus Code 
 web site at <http://www.cactuscode.org/Documentation/FAQ
@@ -50,15 +50,7 @@ web site at <http://www.cactuscode.org/Documentation/FAQ
 
 -------------------------------------------------------------------------------
 
-5) Parallel make sometimes fails.
-
-   It seems that the make program sometimes gets confused in parallel makes.
-   Just doing gmake <config> again will let it continue.  You should be able
-   to continue with another parallel make afterwards.
-
--------------------------------------------------------------------------------
-
-6) When doing a cvs update I get 'not enough slashes in ...' .
+5) When doing a cvs update I get 'not enough slashes in ...' .
 
    It seems that CVS sometimes gets confused with multiple repositories.  
    Check that you are using the latest version of CVS, otherwise moving into 
@@ -67,7 +59,7 @@ web site at <http://www.cactuscode.org/Documentation/FAQ
 
 -------------------------------------------------------------------------------
 
-7) How do I compile with MPI? Why isn't it automatic like in Cactus 3?
+6) How do I compile with MPI? Why isn't it automatic like in Cactus 3?
               
    The standard MPI driver (PUGH) is in a thorn now (CactusPUGH/PUGH), so 
    there is now the possibility to add other parallel drivers using 
@@ -82,7 +74,7 @@ web site at <http://www.cactuscode.org/Documentation/FAQ
 
 -------------------------------------------------------------------------------
 
-8) I can't compile because the compiler complains that a routine name has been 
+7) I can't compile because the compiler complains that a routine name has been 
    previously defined ... but I can't find it repeated?
 
    If it is a C routine, whose name is either all in capitals or all in 
@@ -93,7 +85,7 @@ web site at <http://www.cactuscode.org/Documentation/FAQ
    
 -------------------------------------------------------------------------------
 
-9) How can I make sure that one thorn is compiled before another? For example 
+8) How can I make sure that one thorn is compiled before another? For example 
    to make sure that F90 module files from  ArrangementA/ThornA are available 
    for ArrangementB/ThornB.
 
@@ -107,7 +99,7 @@ web site at <http://www.cactuscode.org/Documentation/FAQ
 
 -------------------------------------------------------------------------------
 
-10) On my SUN I start a configuration process with gmake, but on the second 
+9) On my SUN I start a configuration process with gmake, but on the second 
     gmake it wants to set up the configuration again and again .... 
     Why is this ?
 
@@ -117,13 +109,13 @@ web site at <http://www.cactuscode.org/Documentation/FAQ
 
 -------------------------------------------------------------------------------
 
-11) How do I compile Cactus in 32 bit mode on a 64 bit irix machine?
+10) How do I compile Cactus in 32 bit mode on a 64 bit irix machine?
 
     gmake <config>-config IRIX_BITS=32
 
 -------------------------------------------------------------------------------
 
-12) What can I do if I don't have enough disk space to compile Cactus?
+11) What can I do if I don't have enough disk space to compile Cactus?
 
     If you have access to some scratch space, or temporary space, you can
     instruct Cactus to put the "configs" directory there (with all the 
