@@ -19,6 +19,8 @@
 #include "cctk_Coord.h"
 #include "cctk_FortranString.h"
 #include "cctk_Groups.h"
+#include "cctk_Comm.h"
+#include "cctk_GroupsOnGH.h"
 #include "cctk_WarnLevel.h"
 
 #include "StoreHandledData.h"
@@ -1356,10 +1358,10 @@ int CCTK_CoordLocalRange(const cGH *GH,
                          const char *name,
                          const char *systemname)
 {
-  int retval;
-  int realdir;
-  CCTK_REAL global_lower;
-  CCTK_REAL global_upper;
+  int realdir, retval;
+  CCTK_REAL global_lower, global_upper, delta_space;
+  int vindex, group;
+  cGroupDynamicData gdata;
 
 
   retval = CCTK_CoordRange (GH, &global_lower, &global_upper, dir, name,
@@ -1374,10 +1376,13 @@ int CCTK_CoordLocalRange(const cGH *GH,
     {
       realdir = CCTK_CoordDir (name, systemname);
     }
-    *lower = global_lower +
-             GH->cctk_lbnd[realdir-1] * GH->cctk_delta_space[realdir-1];
-    *upper = global_lower +
-            (GH->cctk_ubnd[realdir-1] + 1) * GH->cctk_delta_space[realdir-1];
+    vindex = CCTK_CoordIndex (realdir, NULL, systemname);
+    group = CCTK_GroupIndexFromVarI (vindex);
+    CCTK_GroupDynamicData (GH, group, &gdata);
+
+    delta_space = (global_upper - global_lower) / (gdata.gsh[realdir-1] - 1);
+    *lower = global_lower +  gdata.lbnd[realdir-1] * delta_space;
+    *upper = global_lower + (gdata.ubnd[realdir-1] + 1) * delta_space;
   }
   else
   {
