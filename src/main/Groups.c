@@ -8,6 +8,7 @@
    @version   $Id$
  @@*/
 
+#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -1511,13 +1512,13 @@ void CCTK_FCALL CCTK_FNAME (CCTK_GroupDimFromVarI)
    @desc
                Traverse through all variables and/or groups whose names
                appear in the given string, and call the callback routine
-               with those indices and an optstring string appended the
-               the variable/group name.
+               with those indices and an optional option string appended
+               to the variable/group name enclosed in square braces.
                The special keyword "all" in the string can be used to
                indicate that the callback should be called for all
                variables/groups.
    @enddesc
-   @var        string
+   @var        traverse_string
    @vdesc      list of variable and/or group names
    @vtype      const char *
    @vio        in
@@ -1542,155 +1543,195 @@ void CCTK_FCALL CCTK_FNAME (CCTK_GroupDimFromVarI)
    @returntype int
    @returndesc
                positive for the number of traversed variables, or
-               -1 if no callback routine was given
+               -1 no callback routine was given<BR>
+               -2 option string is not associated with a group or variable<BR>
+               -3 unterminated option string<BR>
+               -4 garbage found at end of option string
    @endreturndesc
 @@*/
-int CCTK_TraverseString (const char *parsestring,
+int CCTK_TraverseString (const char *traverse_string,
                          void (*callback) (int idx,
                                            const char *optstring,
                                            void *callback_arg),
                          void *callback_arg,
                          int selection)
 {
-  int retval;
-  char *before;
-  char *after;
-  char *optstring;
-  int idx, first, last;
-  int selected_all;
-  union
-  {
-    char *string;
-    const char *const_string;
-  } splitstring;
+  int retval, nesting, vindex, gindex, first, last, selected_all;
+  char delimiter, *string, *parse_string, *group_var_string, *option_string;
 
 
   if (callback == NULL)
   {
-    CCTK_VWarn (1, __LINE__, __FILE__, "Cactus", 
-		"CCTK_TraverseString: No callback given");
+    CCTK_VWarn (5, __LINE__, __FILE__, "Cactus", 
+                "CCTK_TraverseString: No callback given");
     return (-1);
   }
 
   retval = 0;
 
-  /* avoid the compiler warning "cast discards `const' from pointer
-     target type" */
-  splitstring.const_string = parsestring;
-  after = NULL;
+  /* create a work copy of the string to traverse
+     which we can edit in-place */
+  parse_string = strdup (traverse_string);
 
-  while (splitstring.string && *splitstring.string)
+  /* parse it token by token */
+  string = parse_string;
+  while (string && *string)
   {
 
-    if (Util_SplitString (&before, &after, splitstring.string, " "))
+    /* skip leading spaces */
+    while (*string && isspace (*string))
     {
-      before = splitstring.string;
-      if (after)
+      string++;
+    }
+    if (! *string)
+    {
+      break;
+    }
+
+    /* find end of group/varname string (can be either EOS,
+       space before next token, or following option string) */
+    group_var_string = string;
+    while (*string)
+    {
+      if (! *string || isspace (*string) || *string == '[')
       {
-        free (after);
-        after = NULL;
+        break;
+      }
+      string++;
+    }
+
+    /* mark end of group/varname string */
+    delimiter = *string;
+    *string = 0;
+
+    /* parse the option string if there is one */
+    option_string = delimiter == '[' ? string + 1: NULL;
+    if (option_string)
+    {
+      /* find end of option string (matching bracket) */
+      nesting = 1;
+      while (*(++string))
+      {
+        if (*string == '[')
+        {
+          nesting++;
+        }
+        else if (*string == ']')
+        {
+          if (--nesting == 0)
+          {
+            break;
+          }
+        }
+      }
+      delimiter = *string;
+      *string = 0;
+      if (option_string == group_var_string + 1)
+      {
+        CCTK_VWarn (5, __LINE__, __FILE__, "Cactus", 
+                    "CCTK_TraverseString: option string '%s' not associated "
+                    "with a group or variable name", option_string);
+        retval = -2;
+        break;
+      }
+      else if (! (delimiter == ']' && nesting == 0))
+      {
+        CCTK_VWarn (5, __LINE__, __FILE__, "Cactus", 
+                    "CCTK_TraverseString: unterminated option string '%s'",
+                    option_string);
+        retval = -3;
+        break;
+      }
+      else if (! (string[1] == 0 || isspace (string[1])))
+      {
+        CCTK_VWarn (5, __LINE__, __FILE__, "Cactus", 
+                    "CCTK_TraverseString: garbage at end of option string '%s'",
+                    option_string);
+        retval = -4;
+        break;
       }
     }
 
 #ifdef DEBUG_GROUPS
-    printf ("   String is '%s'\n", splitstring.string);
-    printf ("   Split is '%s' and '%s'\n", before, after);
+    printf ("group/varname is '%s', option string is '%s'\n",
+            group_var_string, option_string ? option_string : "(null)");
 #endif
 
-    if (strlen (before) > 0)
+    /* Look for the token 'all' */
+    selected_all = CCTK_Equals (group_var_string, "all");
+
+    /* See if this name is "<implementation>::<variable>" */
+    if (! selected_all &&
+        (selection == CCTK_VAR || selection == CCTK_GROUP_OR_VAR))
+    {
+      first = last = CCTK_VarIndex (group_var_string);
+    }
+    else
+    {
+      first = last = -1;
+    }
+    if (first < 0)
     {
 
-      optstring = strchr (before, '[');
-      if (optstring)
-      {
-        *optstring = '\0';
-      }
-
-      /* Look for the token 'all' */
-      selected_all = CCTK_Equals (before, "all");
-
-      /* See if this name is "<implementation>::<variable>" */
+      /* See if this name is "<implementation>::<group>" */
       if (! selected_all &&
-          (selection == CCTK_VAR || selection == CCTK_GROUP_OR_VAR))
+          (selection == CCTK_GROUP || selection == CCTK_GROUP_OR_VAR))
       {
-        first = last = CCTK_VarIndex (before);
+        gindex = CCTK_GroupIndex (group_var_string);
+      }
+      else
+      {
+        gindex = -1;
+      }
+      if (gindex >= 0)
+      {
+        /* We have a group so now need all the variables in the group */
+        first = CCTK_FirstVarIndexI (gindex);
+        last = first + CCTK_NumVarsInGroupI (gindex) - 1;
+      }
+      else if (selected_all)
+      {
+        first = 0;
+        if (selection == CCTK_GROUP)
+        {
+          last = CCTK_NumGroups () - 1;
+        }
+        else
+        {
+          last = CCTK_NumVars () - 1;
+        }
       }
       else
       {
         first = last = -1;
       }
-      if (first < 0)
-      {
-
-        /* See if this name is "<implementation>::<group>" */
-        if (! selected_all &&
-            (selection == CCTK_GROUP || selection == CCTK_GROUP_OR_VAR))
-        {
-          idx = CCTK_GroupIndex (before);
-        }
-        else
-        {
-          idx = -1;
-        }
-        if (idx >= 0)
-        {
-          /* We have a group so now need all the variables in the group */
-          first = CCTK_FirstVarIndexI (idx);
-          last = first + CCTK_NumVarsInGroupI (idx) - 1;
-        }
-        else if (selected_all)
-        {
-          first = 0;
-          if (selection == CCTK_GROUP)
-          {
-            last = CCTK_NumGroups () - 1;
-          }
-          else
-          {
-            last = CCTK_NumVars () - 1;
-          }
-        }
-        else
-        {
-          first = last = -1;
-        }
-      }
-
-      if (optstring)
-      {
-        *optstring = '[';
-      }
-      if (first >= 0)
-      {
-        for (idx = first; idx <= last; idx++)
-        {
-          (*callback) (idx, optstring, callback_arg);
-        }
-        retval += last - first + 1;
-      }
-      else
-      {
-        CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
-                    "CCTK_TraverseString: "
-		    "Ignoring '%s' in string (invalid token)", before);
-      }
     }
 
-    if (before != splitstring.string)
+    /* invoke the callback */
+    if (first >= 0)
     {
-      free (before);
+      for (vindex = first; vindex <= last; vindex++)
+      {
+        (*callback) (vindex, option_string, callback_arg);
+      }
+      retval += last - first + 1;
     }
-    if (splitstring.string != parsestring)
+    else
     {
-      free (splitstring.string);
+      CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
+                  "CCTK_TraverseString: Ignoring '%s' in string "
+                  "(invalid token)", group_var_string);
     }
-    splitstring.string = after;
-  }
 
-  if (after)
-  {
-    free (after);
-  }
+    /* advance the parse string pointer */
+    if (delimiter)
+    {
+      string++;
+    }
+  } /* end of while loop over all tokens in parse string */
+
+  /* clean up */
+  free (parse_string);
 
   return (retval);
 }
@@ -1845,14 +1886,14 @@ int CCTKi_CreateGroup (const char *gname,
     {
       if (gfdim > 0)
       {
-	if (group->dim != gfdim)
-	{
-	  retval = 1;
-	}
+        if (group->dim != gfdim)
+        {
+          retval = 1;
+        }
       }
       else
       {
-	gfdim = group->dim;
+        gfdim = group->dim;
       }
     }
    
