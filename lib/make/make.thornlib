@@ -31,6 +31,8 @@ include $(SRCDIR)/make.code.defn
 # Some extra stuff to allow make to recurse into subdirectories
 CCTK_SRCS += $(SRCS)
 
+LOCAL_SRCS := $(SRCS)
+
 # Include all the make.code.defn files for the subdirectories
 # These have to be wrapped to allow us to concatanate all the
 # SRCS definitions, complete with subdirectory names.
@@ -71,3 +73,9 @@ $(addsuffix .check, $(SUBDIRS)) :
 $(addsuffix /make.identity, $(SUBDIRS)):
 	if [ ! -d $(dir $@) ] ; then mkdir $(dir $@) ; fi
 	echo CCTK_THIS_SUBDIR := $(dir $@) > $@
+
+# Dependency stuff
+
+ifneq ($(strip $(LOCAL_SRCS)),)
+-include $(patsubst %,%.d,$(basename $(LOCAL_SRCS)))
+endif

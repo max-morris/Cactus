@@ -38,3 +38,8 @@ include $(CONFIG)/make.config.rules
 # warnings if it is missing.
 -include $(SRCDIR)/make.code.deps
 
+# Dependency stuff
+
+ifneq ($(strip $(SRCS)),)
+-include $(patsubst %,%.d,$(basename $(SRCS)))
+endif
