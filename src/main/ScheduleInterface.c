@@ -623,10 +623,10 @@ int CCTKi_ScheduleGroupStorage(const char *group, int timelevels)
   int *temp;
   int *temp2;
 
-  temp = (int *) realloc(scheduled_storage_groups,
-                         (n_scheduled_storage_groups+1) * sizeof(int));
-  temp2 = (int *) realloc(scheduled_storage_groups_timelevels,
-                         (n_scheduled_storage_groups+1) * sizeof(int));
+  temp = realloc(scheduled_storage_groups,
+                 (n_scheduled_storage_groups+1) * sizeof(int));
+  temp2 = realloc(scheduled_storage_groups_timelevels,
+                  (n_scheduled_storage_groups+1) * sizeof(int));
 
   if(temp && temp2)
   {
@@ -665,8 +665,8 @@ int CCTKi_ScheduleGroupComm(const char *group)
 {
   int *temp;
 
-  temp = (int *) realloc(scheduled_comm_groups,
-                         (n_scheduled_comm_groups+1) * sizeof(int));
+  temp = realloc(scheduled_comm_groups,
+                 (n_scheduled_comm_groups+1) * sizeof(int));
   if(temp)
   {
     temp[n_scheduled_comm_groups++] = CCTK_GroupIndex(group);
@@ -1243,36 +1243,33 @@ static t_attribute *CreateAttribute(const char *where,
   t_attribute *this;
   int i;
 
-  this = (t_attribute *)calloc(1, sizeof(t_attribute));
+  this = calloc(1, sizeof(t_attribute));
 
   if(this)
   {
-    this->FunctionData.where = (char *)malloc((strlen(where)+1)*sizeof(char));
-    this->FunctionData.routine = (char *)malloc((strlen(name)+1)*sizeof(char));
-    this->description    =
-      (char *)malloc((strlen(description)+1)*sizeof(char));
-    this->FunctionData.thorn = (char *)malloc((strlen(thorn)+1)*sizeof(char));
-    this->implementation =
-      (char *)malloc((strlen(implementation)+1)*sizeof(char));
+    this->FunctionData.where = malloc((strlen(where)+1)*sizeof(char));
+    this->FunctionData.routine = malloc((strlen(name)+1)*sizeof(char));
+    this->description    = malloc((strlen(description)+1)*sizeof(char));
+    this->FunctionData.thorn = malloc((strlen(thorn)+1)*sizeof(char));
+    this->implementation = malloc((strlen(implementation)+1)*sizeof(char));
     if (n_mem_groups > 0)
     {
-      this->mem_groups     = (int *)malloc(n_mem_groups*sizeof(int));
-      this->timelevels     = (int *)malloc(n_mem_groups*sizeof(int));
-      this->StorageOnEntry = (int *)malloc(n_mem_groups*sizeof(int));
+      this->mem_groups     = malloc(n_mem_groups*sizeof(int));
+      this->timelevels     = malloc(n_mem_groups*sizeof(int));
+      this->StorageOnEntry = malloc(n_mem_groups*sizeof(int));
     }
     if (n_trigger_groups > 0)
     {
-      this->FunctionData.TriggerGroups =
-        (int *)malloc(n_trigger_groups*sizeof(int));
+      this->FunctionData.TriggerGroups = malloc(n_trigger_groups*sizeof(int));
     }
     if (n_sync_groups > 0)
     {
-      this->FunctionData.SyncGroups = (int *)malloc(n_sync_groups*sizeof(int));
+      this->FunctionData.SyncGroups = malloc(n_sync_groups*sizeof(int));
     }
     if (n_comm_groups > 0)
     {
-      this->comm_groups    = (int *)malloc(n_comm_groups*sizeof(int));
-      this->CommOnEntry    = (int *)malloc(n_comm_groups*sizeof(int));
+      this->comm_groups    = malloc(n_comm_groups*sizeof(int));
+      this->CommOnEntry    = malloc(n_comm_groups*sizeof(int));
     }
 
     if(this->FunctionData.where &&
@@ -1325,13 +1322,14 @@ static t_attribute *CreateAttribute(const char *where,
       this->FunctionData.n_SyncGroups = n_sync_groups;
 
       /* Add a timer to the item */
-      timername = (char *) malloc (strlen (thorn) + strlen (description) + 3);
-      sprintf (timername, "%s: %s", thorn, description);
+      timername = malloc (strlen (thorn) + strlen (description) +
+                          strlen (where) + 7);
+      sprintf (timername, "%s: %s at %s", thorn, description, where);
       this->timer_handle = CCTK_TimerCreate(timername);
       if (this->timer_handle < 0)
       {
-        CCTK_VWarn (5, __LINE__, __FILE__, "Cactus",
-                   "Couldn't create timer with name '%s'", timername);
+        CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
+                    "Couldn't create timer with name '%s'", timername);
       }
       free (timername);
     }
@@ -1831,7 +1829,7 @@ static int SchedulePrintTimes(const char *where, t_sched_data *data)
         data->total_time->vals[i].units = data->info->vals[i].units;
         data->total_time->vals[i].heading = data->info->vals[i].heading;
       }
-      description = (char *) malloc (strlen (where) + 16);
+      description = malloc (strlen (where) + 16);
       sprintf (description, "Total time for %s", where);
       CCTKi_SchedulePrintTimerInfo(data->total_time, NULL, "", description);
       free (description);
@@ -2434,6 +2432,10 @@ static int CCTKi_SchedulePrintTimesFunction(void *function,
     CCTKi_SchedulePrintTimerInfo(data->info, data->total_time,
                                  attribute->FunctionData.thorn,
                                  attribute->description);
+  }
+  else
+  {
+    data->total_time->n_vals = 0;
   }
 
   return 1;
