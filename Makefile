@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.87 2000-04-18 09:49:48 goodale Exp $
+#   @version $Id: Makefile,v 1.88 2000-04-18 12:10:50 allen Exp $
 # @@*/
 
 ##################################################################################
@@ -595,9 +595,9 @@ endif
 	  echo Setting up new configuration $(@:%-config=%); \
 	  if test -z "$(THORNLIST)" || (test -n "$(THORNLIST)" && test -e "$(THORNLIST_DIR)/$(THORNLIST)") ; \
 	  then \
-	    if ($(SETUP_ENV) $(PERL) -s $(SETUP) $(SETUP_OPTIONS) $@) ; then : ; else \
+	    if ($(SETUP_ENV) $(PERL) -s $(SETUP) $(SETUP_OPTIONS) $(@:%-config=%)) ; then : ; else \
               echo "" ;                                                      \
-              echo "Error creating configuration $@" ;                       \
+              echo "Error creating configuration $(@;%-config=%)" ;                       \
               exit 2                                 ;                       \
             fi ;                                                             \
 	    if test -n "$(THORNLIST)"; \
