@@ -308,7 +308,7 @@ sub parse_schedule_ccl
     }
 
     # Parse the non-schedule storage line
-    elsif ($line =~ m/\s*STORAGE\s*:\s*(.*)/i)
+    elsif ($line =~ m/\s*STORAGE\s*:\s*(.*)\s*$/i)
     {
       if ($type eq "rfr")
       {
