@@ -1,4 +1,4 @@
-#! /usr/bin/perl -s
+#! /usr/bin/perl -sw
 #/*@@
 #  @file    setup_configuration.pl
 #  @date    Fri Jan  8 13:48:48 1999
@@ -11,17 +11,9 @@
 #  @version $Header$
 #@@*/
 
-$top = `pwd`;
-
-chop $top;
+chop ($top = `pwd`);
 
 $configure = "sh $top/lib/make/configure";
-
-$uname = `uname`;
-
-$uname =~ s/(sn\d\d\d\d|jsimpson)/UNICOS\/mk/;
-
-chop $uname;
 
 if($#ARGV > -1)
 {
@@ -29,50 +21,39 @@ if($#ARGV > -1)
 }
 else
 {
-  $config = $uname;
+  chop ($config = `uname`);
 }
+# Replace slashes with underscores.
+$config =~ s:[/\\]:_:g;
 
 # Work out if there is a user default file
-
-if($ENV{"CACTUSRC_DIR"})
+if($ENV{CACTUSRC_DIR})
 {
-  if (-e $ENV{"CACTUSRC_DIR"}."/.cactus/config")
+  if (-e "$ENV{CACTUSRC_DIR}/.cactus/config")
   {
-    $default_file = $ENV{"CACTUSRC_DIR"}."/.cactus/config";
+    $default_file = "$ENV{CACTUSRC_DIR}/.cactus/config";
   }
 }
-elsif (-e $ENV{"HOME"}."/.cactus/config")
+elsif (-e "$ENV{HOME}/.cactus/config")
 {
-  if (-e $ENV{"HOME"}."/.cactus/config")
-  {
-    $default_file = $ENV{"HOME"}."/.cactus/config";
-  }
+  $default_file = "$ENV{HOME}/.cactus/config";
 }
 
 # Work out where the config directory is
-
-if($ENV{"CONFIGS_DIR"})
-{
-  $configs_dir = $ENV{"CONFIGS_DIR"};
-}
-else
-{
-  $configs_dir = "configs";
-}
-
-# Replace slashes with underscores.
-$config =~ s:[/\\]:_:g;
+$configs_dir = $ENV{CONFIGS_DIR};
+$configs_dir = 'configs' if (! $configs_dir);
 
 # The configs directory doesn't exist.
 if (! -d "$configs_dir" && ! -l "$configs_dir")
 {
   print "Completely new cactus build.  Creating config database\n";
 
-  mkdir("$configs_dir", 0755)
-
+  mkdir("$configs_dir", 0755) ||
+    die "Internal error - could't create '$configs_dir'\n";
 }
 
-chdir "$configs_dir" || die "Internal error - could't enter $configs_dir";
+chdir "$configs_dir" ||
+  die "Internal error - could't enter '$configs_dir'\n";
 
 # The specified configuration doesn't exist
 if (! -d "$config" && ! -l "$config")
@@ -83,49 +64,41 @@ if (! -d "$config" && ! -l "$config")
   {
     mkdir("$dir",0755) || die "Internal error - could't create $dir";
   }
-
 }
 else
 {
   print "Reconfiguring $config.\n";
-  $reconfiguring = 1;
 }
 
 
-chdir "$config" || die "Internal error - could't enter $configs_dir/$config";
-
-chdir "config-data" || die "Internal error - could't enter $configs_dir/$config/config-data";
-
 %CONFIGURED = &SetConfigureEnv();
 
-$configure_command = &DetermineConfigureCommand($configure, %ENV);
+$configure_command = &DetermineConfigureCommand($configure);
+
+chdir "$config/config-data" ||
+  die "Internal error - could't enter '$configs_dir/$config/config-data'\n";
 
 # remove cached configure options
 unlink 'config.cache' if (-f 'config.cache');
 
 system("$configure_command");
-
 $retcode = $? >> 8;
 
-chdir "..";
+chdir '..';
 
-open(INFO, ">config-info") || die "Internal error - couldn't create $configs_dir/$config/config-info";
+open(INFO, ">config-info") ||
+  die "Internal error - couldn't create '$configs_dir/$config/config-info'\n";
 
 print INFO "CONFIG        : $config\n";
-print INFO "CONFIG-FLAGS  : ";
+print INFO 'CONFIG-FLAGS  : ';
 foreach $setting (keys %CONFIGURED)
 {
-  print INFO "$setting=$CONFIGURED{\"$setting\"} ";
+  print INFO "$setting=$CONFIGURED{$setting} ";
 }
 print INFO "\n";
 print INFO "CONFIG-DATE   : " . gmtime(time()) . "\n";
-
-$host = `hostname`;
-
-chop $host;
-
-print INFO "CONFIG-HOST   : " . $host . "\n";
-
+chop ($hostname = `hostname`);
+print INFO "CONFIG-HOST   : $hostname\n";
 print INFO "CONFIG-STATUS : $retcode\n\n";
 
 close(INFO);
@@ -153,166 +126,114 @@ sub SetConfigureEnv
 #  while ($commandline =~ /^(.*)\s+(\w+)\s*=\s*([_+\-\.\w\\\/\s]*)\s*/)
   while ($commandline =~ /^(.*)\s*\b(\w+)\s*=\s*(.*)\s*$/)
   {
-    if ($2 ne "options" && $2 ne "SILENT")
+    if ($2 ne 'options' && $2 ne 'SILENT')
     {
-      if (!$line_number)
-      {
-        print "Using configuration options from configure line\n";
-      }
+      print "Using configuration options from configure line\n"
+        if (!$line_number);
       $line_number++;
       # Remember it for writing to config-info
       $option = AddQuotes($3);
-      $CONFIGURED{"$2"} = $option;
+      $CONFIGURED{$2} = $option;
 
-      print "Setting $2 to '$option'\n";
+      print "  Setting $2 to '$option'\n";
     }
     $commandline=$1;
     #  print "New commandline = <$commandline>\n";
   }
-  if ($line_number)
-  {
-    print "End of options from configure line\n";
-  }
+  print "End of options from configure line\n"
+    if ($line_number);
 
   # Add variables from user configuration options file
   if($config_file)
   {
-    # The user has specified a configuration file
-    print "Adding configuration options from $config_file...\n";
-
     # Turn path to options file to an absolute path
+    $filename = $config_file;
     if($config_file =~ m:^/:)
     {
       # Do nothing
     }
     elsif($config_file =~ m:^~:)
     {
-      $config_file =~ s/^~/$ENV{"HOME"}/
+      $filename =~ s/^~/$ENV{"HOME"}/
     }
     else
     {
-      $config_file = "$top/$config_file";
+      $filename = "$top/$config_file";
     }
 
-    open(INFILE, "<$config_file") || die "Cannot open configuration file $config_file";
-
-    $line_number = 0;
-    while(<INFILE>)
-    {
-      $line_number++;
-
-      #Ignore comments.
-      s/\#(.*)$//g;
-
-      #Remove spaces at end of lines
-      s/\s*$//;
-      s/\n//g;                # Different from chop...
-
-      #Ignore blank lines
-      next if (m:^\s*$:);
-
-      # Match lines of the form
-      #     keyword value
-      # or  keyword = value
-      m/\s*([^\s=]*)([\s]*=?\s*)(.*)\s*/;
-
-      if($1 && $2)
-      {
-        # only set it if it wasn't already
-        if(! $CONFIGURED{"$1"})
-        {
-          print "Setting $1 to '$3'\n";
-          $ENV{"$1"} = $3;
-          # Remember it for writing to config-info
-          $option = AddQuotes($3);
-          $CONFIGURED{"$1"} = $option;
-        }
-      }
-      else
-      {
-        print "Could not parse configuration line $line_number...\n'$_'\n";
-      }
-
-    }
-    print "End of options from $config_file.\n";
-
-    close(INFILE);
+    # The user has specified a configuration file
+    print "Adding configuration options from '$config_file'...\n";
+    ParseOptionsFile ($filename, \%ENV, \%CONFIGURED);
+    print "End of options from '$config_file'.\n";
   }
 
   # Add variables from user default file
   if ($default_file)
   {
     print "Adding configuration options from user defaults...\n";
-
-    open(INFILE, "<$default_file") || die "Cannot open configuration file $config_file";
-
-    $line_number = 0;
-    while(<INFILE>)
-    {
-      $line_number++;
-
-      #Ignore comments.
-      s/\#(.*)$//g;
-
-      #Remove spaces at end of lines
-      s/\s*$//;
-      s/\n//g;                # Different from chop...
-
-      #Ignore blank lines
-      next if (m:^\s*$:);
-
-      # Match lines of the form
-      #     keyword value
-      # or  keyword = value
-      m/\s*([^\s=]*)([\s]*=?\s*)(.*)\s*/;
-
-      if($1 && $2)
-      {
-        # only set it if it wasn't already
-        if(! $CONFIGURED{"$1"})
-        {
-          print "Setting $1 to '$3'\n";
-          $ENV{$1} = $3;
-          # Remember it for writing to config-info
-          $option = AddQuotes($3);
-          $CONFIGURED{"$1"} = $option;
-        }
-      }
-      else
-      {
-        print "Could not parse configuration line $line_number...\n'$_'\n";
-      }
-    }
+    ParseOptionsFile ($default_file, \%ENV, \%CONFIGURED);
     print "End of options from user defaults.\n";
-
-    close(INFILE);
   }
 
   return %CONFIGURED;
+}
 
+sub ParseOptionsFile
+{
+  my($file, $env, $options) = @_;
+  my($line_number);
+
+
+  open(INFILE, "< $file") || die "Cannot open configuration file '$file'\n";
+
+  $line_number = 0;
+  while(<INFILE>)
+  {
+    $line_number++;
+
+    #Ignore comments.
+    s/\#(.*)$//g;
+
+    #Remove spaces at end of lines
+    s/\s*$//;
+    s/\n//g;                # Different from chop...
+
+    #Ignore blank lines
+    next if (m:^\s*$:);
+
+    # Match lines of the form
+    #     keyword value
+    # or  keyword = value
+    if (/^\s*(\w+)[=\s]+(.*)\s*/)
+    {
+      # only set it if it wasn't already
+      if(! $options->{$1})
+      {
+        print "  Setting $1 to '$2'\n";
+        $env->{$1} = $2;
+        # Remember it for writing to config-info
+        $options->{$1} = AddQuotes($2);
+      }
+    }
+    else
+    {
+      print "Could not parse configuration line $line_number...\n'$_'\n";
+    }
+  }
+  close(INFILE);
 }
 
 sub DetermineConfigureCommand
 {
-  my($configure, %env) = @_;
-  my($configure_command);
+  my($configure_command) = @_;
 
-  $configure_command = "$configure";
 
-  if($ENV{"BUILD_MACHINE"})
-  {
-    $configure_command .= " --build=". $ENV{"BUILD_MACHINE"};
-  }
-
-  if($ENV{"TARGET_MACHINE"})
-  {
-    $configure_command .= " --target=". $ENV{"TARGET_MACHINE"};
-  }
-
-  if($ENV{"HOST_MACHINE"})
-  {
-    $configure_command .= " --host=". $ENV{"HOST_MACHINE"};
-  }
+  $configure_command .= ' --build='  . $ENV{BUILD_MACHINE}
+    if($ENV{BUILD_MACHINE});
+  $configure_command .= ' --target=' . $ENV{TARGET_MACHINE}
+    if($ENV{TARGET_MACHINE});
+  $configure_command .= ' --host='   . $ENV{HOST_MACHINE}
+    if($ENV{HOST_MACHINE});
 
   return $configure_command;
 }
