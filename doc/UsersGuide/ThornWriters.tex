@@ -689,7 +689,7 @@ top of the file the header
 #include "cctk_Arguments.h"
 \end{verbatim}
 
-A Cactus macro {\tt CCTK\_FARGUMENTS} is defined for each thorn
+A Cactus macro {\tt CCTK\_ARGUMENTS} is defined for each thorn
 to contain
 \begin{itemize}
 \item General information about the grid hierarchy, for example
@@ -700,11 +700,11 @@ to contain
       the {\tt inherits} and {\tt friend} lines in the {\tt interface.ccl}
 \end{itemize}
 These variables must be declared at the start of the routine using
-the macro {\tt DECLARE\_CCTK\_FARGUMENTS}. 
+the macro {\tt DECLARE\_CCTK\_ARGUMENTS}. 
 
 To pass the arguments to another routine in the same thorn use the macro 
 {\tt CCTK\_PASS\_FTOF} in the calling routine, and again the macro 
-{\tt CCTK\_FARGUMENTS} in the receiving routine.
+{\tt CCTK\_ARGUMENTS} in the receiving routine.
 
 
 \subsubsection{Parameters}
@@ -742,12 +742,12 @@ well as the standard Cactus variables. The source file should look like
 #include "cctk_Arguments.h"
 #include "cctk_Parameters.h"
 
-      subroutine MyFRoutine(CCTK_FARGUMENTS)
+      subroutine MyFRoutine(CCTK_ARGUMENTS)
 
 c     I'm very cautious, so I want to declare all variables
       implicit none 
 
-      DECLARE_CCTK_FARGUMENTS
+      DECLARE_CCTK_ARGUMENTS
 
       integer flag
 
@@ -757,11 +757,11 @@ c     I'm very cautious, so I want to declare all variables
       return 
       end
 
-      subroutine MyNewRoutine(CCTK_FARGUMENTS,flag)
+      subroutine MyNewRoutine(CCTK_ARGUMENTS,flag)
 
       implicit none 
 
-      DECLARE_CCTK_FARGUMENTS
+      DECLARE_CCTK_ARGUMENTS
       DECLARE_CCTK_PARAMETERS
       integer flag
 
@@ -826,7 +826,7 @@ top of the file the header
 #include "cctk_Arguments.h"
 \end{verbatim}
 
-A Cactus macro {\tt CCTK\_CARGUMENTS} is defined for each thorn
+A Cactus macro {\tt CCTK\_ARGUMENTS} is defined for each thorn
 to contain
 \begin{itemize}
 \item General information about the grid hierachy, for example
@@ -837,12 +837,12 @@ to contain
       the {\tt inherits} and {\tt friend} lines in the {\tt interface.ccl}
 \end{itemize}
 These variables must be declared at the start of the routine using
-the macro {\tt DECLARE\_CCTK\_CARGUMENTS}. This macro should always be the
+the macro {\tt DECLARE\_CCTK\_ARGUMENTS}. This macro should always be the
 first line of the routine.
 
 To pass the arguments to another routine in the same thorn use the macro 
 {\tt CCTK\_PASS\_CTOC} in the calling routine, and again the macro 
-{\tt CCTK\_CARGUMENTS} in the receiving routine.
+{\tt CCTK\_ARGUMENTS} in the receiving routine.
 
 
 \subsubsection{Parameters}
@@ -870,9 +870,9 @@ and uses Cactus parameters. The source file should look like
 #include "cctk_Arguments.h"
 #include "cctk_Parameters.h"
 
-void MyCRoutine(CCTK_CARGUMENTS)
+void MyCRoutine(CCTK_ARGUMENTS)
 {
-  DECLARE_CCTK_CARGUMENTS
+  DECLARE_CCTK_ARGUMENTS
   DECLARE_CCTK_PARAMETERS
 
   /* Here goes your code */
@@ -927,7 +927,7 @@ Here, {\tt CCTK\_GFINDEX3D(cctkGH,i,j,k)]} expands to
 \label{sec:cava}
 
 The Cactus variables which are passed through the macros
-{\tt CCTK\_FARGUMENTS}, {\tt CCTK\_CARGUMENTS}, etc are
+{\tt CCTK\_ARGUMENTS}, {\tt CCTK\_ARGUMENTS}, etc are
 \begin{Lentry}
 \item [{\tt cctk\_dim}] An integer with the number of dimensions
       used for this grid hierarchy
@@ -1004,9 +1004,9 @@ In the following example {\tt MyScalar} is a grid scalar which
 is declared in the {\tt interface.ccl} as {\tt CCTK\_REAL}.
 
 \begin{verbatim}
-      subroutine InitialData(CCTK_FARGUMENTS)
+      subroutine InitialData(CCTK_ARGUMENTS)
 
-      DECLARE_CCTK_FARGUMENTS
+      DECLARE_CCTK_ARGUMENTS
 
       CCTK_REAL local_var
       
