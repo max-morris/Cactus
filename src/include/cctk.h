@@ -26,8 +26,10 @@
 
 #ifdef FCODE
 
+#include "cctk_Faces.h"
+
 #define CCTK_PRINTSEPARATOR\
-  print *,"-----------------------------------------------------------"
+  print '("--------------------------------------------------------------------------------")'
 
 #define _CCTK_FARGUMENTS  cctk_dim, cctk_gsh, cctk_lsh, cctk_lbnd,\
                           cctk_ubnd, cctk_lssh, cctk_from, cctk_to, cctk_bbox,\
@@ -90,6 +92,7 @@
 #include "cctk_Comm.h"
 #include "cctk_CommandLine.h"
 #include "cctk_Complex.h"
+#include "cctk_Faces.h"
 #include "cctk_File.h"
 #include "cctk_Flesh.h"
 #include "cctk_FunctionAliases.h"
