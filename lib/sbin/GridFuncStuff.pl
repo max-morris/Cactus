@@ -913,7 +913,7 @@ sub CreateThornGroupInitialisers
            . "                   ". scalar(@variables);
     foreach $variable (@variables)
     {
-      $line .= ",\n                   \"\U$variable\E\"";
+      $line .= ",\n                   \"$variable\"";
     }
 
     $line  .= ");\n\n";
