@@ -94,7 +94,11 @@ int CCTKi_SetParameter(const char *parameter, const char *value)
   const char *position;
   int length;
   int n_errors;
-  
+  int param_type;
+  int parameter_check;
+
+  parameter_check = CCTK_ParameterLevel();
+
   retval = 0;
   
   if(CCTK_Equals(parameter, "ActiveThorns"))
@@ -131,18 +135,77 @@ int CCTKi_SetParameter(const char *parameter, const char *value)
   {     
     retval = ReallySetParameter(parameter, value); 
   }
-  
-  if(retval)
+
+  if (retval == -1)
+  {
+    CCTK_VWarn(0,__LINE__,__FILE__,"Cactus",
+	       "CCTKi_SetParameter: Range error setting parameter %s to %s\n",
+	       parameter,value);
+  }
+  else if (retval == -2)
+  {
+    /* Parameter not defined in thorn */
+    if (parameter_check==CCTK_PARAMETER_RELAXED)
+    {
+      CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
+		 "CCTKi_SetParameter: Parameter %s not found",
+		 parameter);
+    }
+    else 
+    {
+      CCTK_VWarn(0,__LINE__,__FILE__,"Cactus",
+		 "CCTKi_SetParameter: Parameter %s not found",
+		 parameter);
+    }
+  }
+  else if (retval == -4)
+  {
+    /* Setting parameter twice */
+    if (parameter_check==CCTK_PARAMETER_RELAXED)
+    {
+      CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
+		 "CCTKi_SetParameter: Parameter %s "
+		 "set in two different thorns",
+		 parameter);
+    }
+    else 
+    {
+      CCTK_VWarn(0,__LINE__,__FILE__,"Cactus",
+		 "CCTKi_SetParameter: Parameter %s "
+		 "set in two different thorns",
+		 parameter);
+    }
+  }
+  else if (retval == -5)
+  {
+    /* Parameter not defined by any active thorn */
+    if (parameter_check==CCTK_PARAMETER_STRICT)
+    {
+      CCTK_VWarn(0,__LINE__,__FILE__,"Cactus",
+		 "CCTKi_SetParameter: Parameter %s "
+		 "is not associated with an active thorn",
+		 parameter);
+    }
+    else if (parameter_check==CCTK_PARAMETER_NORMAL)
+    {
+      CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
+		 "CCTKi_SetParameter: Parameter %s "
+		 "is not associated with an active thorn",
+		 parameter);
+    }
+  }
+
+  /*  if(retval)
   {
     if(retval == -1)
     {
-      fprintf(stderr, "Unknown parameter %s\n", parameter);
+	fprintf(stderr, "Unknown parameter %s\n", parameter);
     }
     else
     {
       fprintf(stderr, "Error setting parameter %s to %s\n", parameter, value);
     }
-  }
+    }*/
 
   return retval;
 }
@@ -181,70 +244,76 @@ int CCTKi_SetParameter(const char *parameter, const char *value)
 
    @returntype int
    @returndesc
-   0  - success
-   -1 - unknown parameter
+   0  = success
+   -5 = thorn/imp not active
+   -4 = tried to set parameter in two different thorns
+   -3 = tried to steer nonsteerable parameter
+   -2 = parameter not defined in the active thorn
+   -1 = parameter out of range
    @endreturndesc
 @@*/
 static int ReallySetParameter(const char *parameter, const char *value)
 {
   int retval;
+  int retval_thorn=0;
+  int found = 0;
+  int retval_imp=0;
   const char *thorn;
   char *param;
   char *imp;
 
-  int retval_imp;
-  int retval_thorn;
-
-
   Util_SplitString(&imp, &param, parameter, "::");
 
-  retval = -1;
-
-  /* If param is null, there were no colons in the input */
-  if(!param)
+  if (!param)
   {
+    /* must be global parameter */
     retval = CCTK_ParameterSet(parameter, imp, value);
   }
-  else
+  else 
   {
-    /* Set if this is an implementation one */
-    if(CCTK_IsImplementationActive(imp))
+    /* try and set parameter from implementation */
+    if (CCTK_IsImplementationActive(imp))
     {
       thorn = CCTK_ActivatingThorn(imp);
-      retval_imp = CCTK_ParameterSet(param, thorn, value);
-    }
-    else
-    {
-      thorn = NULL;
-      retval_imp = -1;
-    }
-
-
-    /* Set if this is a thorn one. */
-    if(!thorn || !CCTK_Equals(thorn,imp))
-    {
-      if(CCTK_IsThornActive(imp))
+      /* only do it if the thorn name is different to the imp */
+      if (!CCTK_Equals(thorn,imp))
       {
-        retval_thorn = CCTK_ParameterSet(param, imp, value);
-      }
-      else
-      {
-        retval_thorn = -1;
+	found++;
+	retval_imp = CCTK_ParameterSet(param, thorn, value);
       }
     }
-    else
+
+    /* try and set parameter from thorn */
+    if (CCTK_IsThornActive(imp))
     {
-      /* Don't need to set it twice if the name of the imp is the same as the thorn providing it */
-      retval_thorn = retval_imp;
+      found++;
+      retval_thorn = CCTK_ParameterSet(param, imp, value);
     }
 
-    if(!retval_imp || !retval_thorn)
+    if (!found)
     {
-      retval = 0;
+      /* imp or thorn not found */
+      retval = -5;
     }
-    else
+    else if (found==2 && retval_imp>-1 && retval_thorn >-1)
     {
-      retval = retval_imp ? retval_imp : retval_thorn;
+      /* tried to set parameter for both imp and thorn */
+      retval = -4;
+    }
+    else if (found==2 && retval_imp<0 && retval_thorn <0)
+    {
+      /* failed to set parameter for both imp and thorn */
+      /* FIXME: returning imp but loosing thorn info*/
+      retval = retval_imp;
+    }
+    else if (found==2)
+    {
+      /* Only one succeeded */
+      retval = (retval_imp>-1 ? retval_imp : retval_thorn);
+    }
+    else if (found==1)
+    {
+      retval = retval_imp + retval_thorn;
     }
   }
 

@@ -441,6 +441,9 @@ int CCTKi_ParameterAddRange(const char *implementation,
    @returntype int
    @returndesc
    negative in case of errors
+   -1 = parameter out of range
+   -2 = parameter not found
+   -3 = trying to steer non steerable parameter
    @endreturndesc
 
 @@*/
@@ -459,25 +462,31 @@ int CCTK_ParameterSet(const char *name,
     /* before parameter recovery (which is while parsing the parameter file)
        all parameters can be set */
 
-    /* after parameter recovery only steerable parameters can be set */
     if(cctk_parameter_set_mask == PARAMETER_RECOVERY_POST &&
        param->props->steerable != CCTK_STEERABLE_ALWAYS)
     {
-      CCTK_VWarn(1, __LINE__, __FILE__, "Cactus",
-                 "CCTK_ParameterSet: Cannot set parameter '%s::%s' (non-steerable)",
-                 thorn, name);
-      retval = -2;
-    }
 
-    /* during parameter recovery STEERABLE_NEVER parameters which were set
-       from the parameter file are overwritten by the checkpoint file */
-    if(cctk_parameter_set_mask == PARAMETER_RECOVERY_IN &&
-       param->props->n_set > 0)
+      /* after parameter recovery only steerable parameters can be set */
+
+      CCTK_VWarn(1, __LINE__, __FILE__, "Cactus",
+                 "CCTK_ParameterSet: Cannot set parameter '%s::%s' "
+		 "(non-steerable)",
+                 thorn, name);
+      retval = -3;
+
+    }
+    else if(cctk_parameter_set_mask == PARAMETER_RECOVERY_IN 
+	    && param->props->n_set > 0)
     {
+
+      /* during parameter recovery STEERABLE_NEVER parameters which were set
+       from the parameter file are overwritten by the checkpoint file */
+
       if (param->props->steerable == CCTK_STEERABLE_NEVER)
       {
         CCTK_VWarn(1, __LINE__, __FILE__, "Cactus",
-                   "CCTK_ParameterSet: Parameter '%s::%s' is non-steerable and will be "
+                   "CCTK_ParameterSet: Parameter '%s::%s' "
+		   "is non-steerable and will be "
                    "overwritten by its value from the checkpoint file",
                    thorn, name);
       }
@@ -485,17 +494,11 @@ int CCTK_ParameterSet(const char *name,
       {
         retval = 1;            /* do not restore the original value */
       }
-    }
 
-    if (retval == 0)
+    }
+    else
     {
       retval = ParameterSetSimple(param, value);
-      if (retval < 0)
-      {
-	CCTK_VWarn(0,__LINE__,__FILE__,"Cactus",
-		   "CCTK_ParameterSet: Error setting parameter %s to %s\n",
-		   name,value);
-      }
 
       /* register another set operation */
       param->props->n_set++;
@@ -504,7 +507,7 @@ int CCTK_ParameterSet(const char *name,
   }
   else
   {
-    retval = -1;
+    retval = -2;
   }
 
   return retval;
