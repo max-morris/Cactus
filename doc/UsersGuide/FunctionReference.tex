@@ -1,14 +1,16 @@
 \begin{cactuspart}{4}{FunctionReference}{$RCSfile$}{$Revision$}
 \renewcommand{\thepage}{\Alph{part}\arabic{page}}
 
-\section{Cactus Functions Alphabetically}
+\chapter{Cactus Functions}
+
+\section{Functions Alphabetically}
 
 \begin{description}
 
-\item[CCTK\_ArrayGroupSize]
+\item[CCTK\_ArrayGroupSize] Give the size of the variables in a group, from the name
 \item[CCTK\_Abort]
-\item[CCTK\_ArrayGroupSizeB]
-\item[CCTK\_ArrayGroupSize]
+\item[CCTK\_ArrayGroupSizeB] Give the size of the variables in a group, from either the name of the index
+\item[CCTK\_ArrayGroupSizeI] Give the size of the variables in a group, from the group index
 
 \item[CCTK\_Barrier]
 
@@ -16,11 +18,11 @@
 \item[CCTK\_CoordRange] Return the global upper and lower bounds for a given coordinate name
 
 \item[CCTK\_DecomposeName] Given the full name of a variable/group, separates the name returning both the implementation and the variable/group
-\item[CCTK\_DisableGroupComm]
-\item[CCTK\_DisableGroupStorage]
+\item[CCTK\_DisableGroupComm] Disable the communication for a group
+\item[CCTK\_DisableGroupStorage] Disable the storage for a group
 
-\item[CCTK\_EnableGroupComm]
-\item[CCTK\_EnableGroupStorage]
+\item[CCTK\_EnableGroupComm] Enable the communication for a group
+\item[CCTK\_EnableGroupStorage] Enable the storage for a group
 \item[CCTK\_Exit]
 
 \item[CCTK\_FullName] Given a variable index, returns the full name of the variable
@@ -38,14 +40,14 @@
 \item[CCTK\_INFO] Prints an information message
 	 
 \item[CCTK\_MaxDim] Get the maximum dimension of any grid variable 
-\item[CCTK\_MyProc] 
+\item[CCTK\_MyProc] Get the local processor number
 
 \item[CCTK\_NumGroups] Get the number of groups of variables compiled in the code
 \item[CCTK\_NumVarsInGroupI] Provides the number of variables in a group from the group index
 \item[CCTK\_NumVarsInGroup] Provides the number of variables in a group from the group name
 \item[CCTK\_NumTimeLevelsFromVarI] Gives the number of timelevels for a variable
 \item[CCTK\_NumTimeLevelsFromVar] Gives the number of timelevels for a variable
-\item[CCTK\_nProcs] 
+\item[CCTK\_nProcs]  Get the total number of processors used
 
 
 \item[CCTK\_OutputVarAsByMethod] 
@@ -61,21 +63,22 @@
 \item[CCTK\_QueryGroupStorage] 
 \item[CCTK\_QueryGroupStorageI] 
 
+\item[CCTK\_RegisterBanner] Register a banner for a thorn
 \item[CCTK\_RegisterCoordI] Register a grid function index as identifying a coordinate with a given coordinate name and direction.
 \item[CCTK\_RegisterCoord] Register a grid function name as identifying a coordinate with a given coordinate name and direction.
 \item[CCTK\_RegisterCoordRange] Saves the global upper and lower bounds for a given coordinate name
-\item[CCTK\_RegisterIOMethod] 
+\item[CCTK\_RegisterIOMethod] Register an IO method name
 \item[CCTK\_RegisterIOMethodOutputGH] 
-\item[CCTK\_RegisterIOMethodTimeToOutput] 
-\item[CCTK\_RegisterIOMethodTriggerOutput] 
+\item[CCTK\_RegisterIOMethodTimeToOutput] Register a routine for deciding if it is time to output for an IO method 
+\item[CCTK\_RegisterIOMethodTriggerOutput] Register a routine for dealing with trigger output for an IO method
 \item[CCTK\_RegisterIOMethodOutputVarAs] 
-\item[CCTK\_RegisterGHExtension] 
-\item[CCTK\_RegisterGHExtensionSetupGH] 
-\item[CCTK\_RegisterGHExtensionInitGH] 
-\item[CCTK\_RegisterGHExtensionrfrTraverseGH] 
+\item[CCTK\_RegisterGHExtension] Register the name of an extension to the Cactus GH.
+\item[CCTK\_RegisterGHExtensionSetupGH]  Register a routine for setting up an extension to the Cactus GH
+\item[CCTK\_RegisterGHExtensionInitGH] Register a routine for providing initialisation for an extension to the Cactus GH
+\item[CCTK\_RegisterGHExtensionrfrTraverseGH] Register a routine for an extension to the Cactus GH which is run before any RFR traverse
 
 \item[CCTK\_SetupGH] 
-\item[CCTK\_SyncGroup] 
+\item[CCTK\_SyncGroup] Synchronize the ghost zones for a group of variables
 
 \item[CCTK\_VarIndex] Get the index for a variable
 \item[CCTK\_VarName] Given a variable index, returns the variable name
@@ -86,7 +89,28 @@
 \end{description}
 
 
-\section{Cactus Functions}
+\section{Full Description of Functions}
+
+% CommOverloadables.c
+\begin{CCTKFunc}{CCTK\_ArrayGroupSizeB}{}
+\subroutine{int *}{}{size}
+\argument{cGH *}{}{GH}
+\argument{int}{}{groupindex}
+\argument{int}{}{dir}
+\argument{const char *}{}{groupname}
+\showargs
+\begin{params}
+\end{params}
+\begin{discussion}
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
 
 %\begin{CCTKFunc}{}{}
 %\function{int}{CCTK\_INT}{storage}
@@ -169,6 +193,31 @@ as coordinates.
 \hfill {\bf C} && handle = {\t CCTK\_RegisterCoord(1,`MyImp::MyGF',`xdir')};
 \\
 \hfill {\bf Fortran} && call {\t CCTK\_REGISTERCOORD(handle,0,`MyImp::MyGF',`radius')};
+\\
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
+
+% Coord.c
+\begin{CCTKFunc}{CCTK\_RegisterBanner}{Register a banner for a thorn}
+\subroutine{void}{}{}
+\argument{const char *}{character}{message}
+\showargs
+\begin{params}
+\parameter{banner}{String which will be displayed as a banner}
+\end{params}
+\begin{discussion}
+The banner must be register during {\t CCTK\_STARTUP}. The banners are
+displayed in the order in which they are registered.
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\hfill {\bf C} && {\t CCTK\_RegisterBanner(`My Thorn: Does Something Useful')};
+\\
+\hfill {\bf Fortran} && call {\t CCTK\_REGISTERBANNER(`*** MY THORN ***')};
 \\
 \end{tabular}
 \end{examples}
@@ -462,7 +511,7 @@ and not the active thorn list.
 \begin{CCTKFunc}{CCTK\_GroupNameFromVarI}{Given a variable index, return the name of the associated group}
 \subroutine{char *}{character*(*)}{group}
 \argument{int}{integer}{varindex}
-\showargs
+\showcargs
 \begin{params}
 \parameter{group}{The name of the group}
 \parameter{varindex}{The index of the variable}
@@ -542,7 +591,7 @@ The variable name should be in the form {\t <implementation>::<variable>}
 \begin{CCTKFunc}{CCTK\_ImpFromVarI}{Given a variable index, returns the implementation name}
 \subroutine{char *}{integer}{implementation}
 \argument{int}{integer}{index}
-\showargs
+\showcargs
 \begin{params}
 \parameter{implementation}{The implementation name}
 \parameter{index}{The variable index}
@@ -568,7 +617,7 @@ No Fortran routine exists at the moment
 \begin{CCTKFunc}{CCTK\_FullName}{Given a variable index, returns the full name of the variable}
 \subroutine{char *}{integer}{fullname}
 \argument{int}{integer}{index}
-\showargs
+\showcargs
 \begin{params}
 \parameter{implementation}{The full variable name}
 \parameter{index}{The variable index}
@@ -601,7 +650,7 @@ the form {\t <implementation>::<variable>}
 \argument{int *}{integer}{dim}
 \argument{int *}{integer}{nvars}
 \argument{int *}{integer}{ntimelevels}
-\showargs
+\showcargs
 \begin{params}
 \parameter{istat}{Returns one if a group with the given index was found, and zero otherwise}
 \parameter{group}{The group index}
@@ -632,7 +681,7 @@ No Fortran routine exists at the moment.
 \begin{CCTKFunc}{CCTK\_VarName}{Given a variable index, returns the variable name}
 \subroutine{char *}{integer}{name}
 \argument{int}{integer}{index}
-\showargs
+\showcargs
 \begin{params}
 \parameter{name}{The  variable name}
 \parameter{index}{The variable index}
@@ -659,7 +708,7 @@ No Fortran routine exists at the moment.
 \begin{CCTKFunc}{CCTK\_GroupName}{Given a group index, returns the group name}
 \subroutine{char *}{integer}{name}
 \argument{int}{integer}{index}
-\showargs
+\showcargs
 \begin{params}
 \parameter{name}{The group name}
 \parameter{index}{The group index}
@@ -688,7 +737,7 @@ No Fortran routine exists at the moment.
 \argument{char *}{}{fullname}
 \argument{char **}{}{imp}
 \argument{char **}{}{name}
-\showargs
+\showcargs
 \begin{params}
 \parameter{istat}{Status flag returned by routine}
 \parameter{fullname}{The full name of the group/variable}
@@ -962,9 +1011,9 @@ This routine is for debugging purposes for Fortran programmers.
 % CommOverloadables.c
 \begin{CCTKFunc}{CCTK\_EnableGroupStorage}{}
 \subroutine{int}{integer}{istat}
-\argument{cGH}{CCTK\_POINTER}{cctkGH}
-\argument{const char}{character*(*)}{group}
-\showargs
+\argument{cGH *}{CCTK\_POINTER}{cctkGH}
+\argument{const char *}{character*(*)}{group}
+\showcargs
 \begin{params}
 \end{params}
 \begin{discussion}
@@ -981,9 +1030,9 @@ This routine is for debugging purposes for Fortran programmers.
 % CommOverloadables.c
 \begin{CCTKFunc}{CCTK\_DisableGroupStorage}{}
 \subroutine{int}{integer}{istat}
-\argument{cGH}{CCTK\_POINTER}{cctkGH}
-\argument{const char}{character*(*)}{group}
-\showargs
+\argument{cGH *}{CCTK\_POINTER}{cctkGH}
+\argument{const char *}{character*(*)}{group}
+\showcargs
 \begin{params}
 \end{params}
 \begin{discussion}
@@ -1000,8 +1049,8 @@ This routine is for debugging purposes for Fortran programmers.
 % CommOverloadables.c
 \begin{CCTKFunc}{CCTK\_SyncGroup}{}
 \subroutine{int}{integer}{istat}
-\argument{cGH}{CCTK\_POINTER}{cctkGH}
-\argument{const char}{character*(*)}{group}
+\argument{cGH *}{CCTK\_POINTER}{cctkGH}
+\argument{const char *}{character*(*)}{group}
 \showargs
 \begin{params}
 \end{params}
@@ -1020,9 +1069,9 @@ This routine is for debugging purposes for Fortran programmers.
 % CommOverloadables.c
 \begin{CCTKFunc}{CCTK\_EnableGroupComm}{}
 \subroutine{int}{integer}{istat}
-\argument{cGH}{CCTK\_POINTER}{cctkGH}
-\argument{const char}{character*(*)}{group}
-\showargs
+\argument{cGH *}{CCTK\_POINTER}{cctkGH}
+\argument{const char *}{character*(*)}{group}
+\showcargs
 \begin{params}
 \end{params}
 \begin{discussion}
@@ -1039,9 +1088,9 @@ This routine is for debugging purposes for Fortran programmers.
 % CommOverloadables.c
 \begin{CCTKFunc}{CCTK\_DisableGroupComm}{}
 \subroutine{int}{integer}{istat}
-\argument{cGH}{CCTK\_POINTER}{cctkGH}
-\argument{const char}{character*(*)}{group}
-\showargs
+\argument{cGH *}{CCTK\_POINTER}{cctkGH}
+\argument{const char *}{character*(*)}{group}
+\showcargs
 \begin{params}
 \end{params}
 \begin{discussion}
@@ -1059,8 +1108,8 @@ This routine is for debugging purposes for Fortran programmers.
 % CommOverloadables.c
 \begin{CCTKFunc}{CCTK\_Barrier}{}
 \subroutine{int}{integer}{istat}
-\argument{cGH}{CCTK\_POINTER}{cctkGH}
-\showargs
+\argument{cGH *}{CCTK\_POINTER}{cctkGH}
+\showcargs
 \begin{params}
 \end{params}
 \begin{discussion}
@@ -1077,7 +1126,7 @@ This routine is for debugging purposes for Fortran programmers.
 % CommOverloadables.c
 \begin{CCTKFunc}{CCTK\_nProcs}{}
 \function{int}{integer}{nprocs}
-\argument{cGH}{CCTK\_POINTER}{cctkGH}
+\argument{cGH *}{CCTK\_POINTER}{cctkGH}
 \showargs
 \begin{params}
 \end{params}
@@ -1095,7 +1144,7 @@ This routine is for debugging purposes for Fortran programmers.
 % CommOverloadables.c
 \begin{CCTKFunc}{CCTK\_MyProc}{}
 \function{int}{integer}{myproc}
-\argument{cGH}{CCTK\_POINTER}{cctkGH}
+\argument{cGH *}{CCTK\_POINTER}{cctkGH}
 \showargs
 \begin{params}
 \end{params}
@@ -1114,8 +1163,8 @@ This routine is for debugging purposes for Fortran programmers.
 % CommOverloadables.c
 \begin{CCTKFunc}{CCTK\_ParallelInit}{}
 \subroutine{int}{integer}{istat}
-\argument{cGH}{CCTK\_POINTER}{cctkGH}
-\showargs
+\argument{cGH *}{CCTK\_POINTER}{cctkGH}
+\showcargs
 \begin{params}
 \end{params}
 \begin{discussion}
@@ -1133,7 +1182,7 @@ This routine is for debugging purposes for Fortran programmers.
 % CommOverloadables.c
 \begin{CCTKFunc}{CCTK\_Exit}{}
 \subroutine{int}{integer}{istat}
-\argument{cGH}{CCTK\_POINTER}{cctkGH}
+\argument{cGH *}{CCTK\_POINTER}{cctkGH}
 \showargs
 \begin{params}
 \end{params}
@@ -1152,7 +1201,7 @@ This routine is for debugging purposes for Fortran programmers.
 % CommOverloadables.c
 \begin{CCTKFunc}{CCTK\_Abort}{}
 \subroutine{int}{integer}{istat}
-\argument{cGH}{CCTK\_POINTER}{cctkGH}
+\argument{cGH *}{CCTK\_POINTER}{cctkGH}
 \showargs
 \begin{params}
 \end{params}
@@ -1169,30 +1218,10 @@ This routine is for debugging purposes for Fortran programmers.
 
 % CommOverloadables.c
 \begin{CCTKFunc}{CCTK\_SetupGH}{}
-\subroutine{cGH}{}{GH}
+\subroutine{cGH *}{}{GH}
 \argument{tFleshConfig}{}{config}
 \argument{int}{}{convlevel}
-\showargs
-\begin{params}
-\end{params}
-\begin{discussion}
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
-
-% CommOverloadables.c
-\begin{CCTKFunc}{CCTK\_ArrayGroupSizeB}{}
-\subroutine{int *}{}{size}
-\argument{cGH}{}{GH}
-\argument{int}{}{groupindex}
-\argument{int}{}{dir}
-\argument{const char *}{}{groupname}
-\showargs
+\showcargs
 \begin{params}
 \end{params}
 \begin{discussion}
@@ -1210,10 +1239,10 @@ This routine is for debugging purposes for Fortran programmers.
 % CommOverloadables.h
 \begin{CCTKFunc}{CCTK\_QueryGroupStorageB}{}
 \subroutine{int}{}{storage}
-\argument{cGH}{}{GH}
+\argument{cGH *}{}{GH}
 \argument{int}{}{groupindex}
-\argument{int}{}{groupname}
-\showargs
+\argument{const char *}{}{groupname}
+\showcargs
 \begin{params}
 \end{params}
 \begin{discussion}
@@ -1231,10 +1260,10 @@ This routine is for debugging purposes for Fortran programmers.
 % Comm.h
 \begin{CCTKFunc}{CCTK\_ArrayGroupSize}{}
 \subroutine{int *}{}{size}
-\argument{cGH}{}{GH}
+\argument{cGH *}{}{GH}
 \argument{int}{}{groupindex}
 \argument{int}{}{dir}
-\showargs
+\showcargs
 \begin{params}
 \end{params}
 \begin{discussion}
@@ -1252,9 +1281,9 @@ This routine is for debugging purposes for Fortran programmers.
 % Comm.h
 \begin{CCTKFunc}{CCTK\_QueryGroupStorageI}{}
 \subroutine{int}{}{storage}
-\argument{cGH}{}{GH}
+\argument{cGH *}{}{GH}
 \argument{int}{}{groupindex}
-\showargs
+\showcargs
 \begin{params}
 \end{params}
 \begin{discussion}
@@ -1271,9 +1300,9 @@ This routine is for debugging purposes for Fortran programmers.
 % Comm.h
 \begin{CCTKFunc}{CCTK\_ArrayGroupSize}{}
 \subroutine{int *}{}{size}
-\argument{cGH}{}{GH}
+\argument{cGH *}{}{GH}
 \argument{const char *}{}{groupname}
-\showargs
+\showcargs
 \begin{params}
 \end{params}
 \begin{discussion}
@@ -1291,9 +1320,9 @@ This routine is for debugging purposes for Fortran programmers.
 % Comm.h
 \begin{CCTKFunc}{CCTK\_QueryGroupStorage}{}
 \subroutine{int}{}{storage}
-\argument{cGH}{}{GH}
-\argument{int}{}{groupname}
-\showargs
+\argument{cGH *}{}{GH}
+\argument{const char *}{}{groupname}
+\showcargs
 \begin{params}
 \end{params}
 \begin{discussion}
@@ -1310,7 +1339,7 @@ This routine is for debugging purposes for Fortran programmers.
 % IOOverloadables.h
 \begin{CCTKFunc}{CCTK\_OutputVarAsByMethod}{}
 \subroutine{int}{}{istat}
-\argument{cGH}{}{GH}
+\argument{cGH *}{}{GH}
 \argument{const char *}{character*(*)}{variable}
 \argument{const char *}{character*(*)}{method}
 \argument{const char *}{character*(*)}{alias}
@@ -1331,7 +1360,7 @@ This routine is for debugging purposes for Fortran programmers.
 % IOOverloadables.h
 \begin{CCTKFunc}{CCTK\_OutputGH}{}
 \subroutine{int}{integer}{istat}
-\argument{cGH}{CCTK\_POINTER}{GH}
+\argument{cGH *}{CCTK\_POINTER}{GH}
 \showargs
 \begin{params}
 \end{params}

@@ -562,11 +562,11 @@ can be handled:
 Extension & Coding Language \\
 \hline
 {\t .F} & Fortran90 fixed form \\
-{\t .f} & (no preprocessing) Fortran90 fixed form [FIXME: To be implemented]\\
-{\t .F90} & Fortran90 free form form [FIXME: To be implemented]\\
-{\t .f90} & (no preprocessing) Fortran90 free form [FIXME: To be implemented]\\
+{\t .f} & (no preprocessing) Fortran90 fixed form\\
+{\t .F90} & Fortran90 free form form [To be implemented]\\
+{\t .f90} & (no preprocessing) Fortran90 free form [To be implemented]\\
 {\t .F77} & Fortran77 \\
-{\t .f77} & (no preprocessing) Fortran77  [FIXME: To be implemented]\\
+{\t .f77} & (no preprocessing) Fortran77\\
 {\t .c} & C \\
 {\t .cc} or {\t .C} & C++ \\
 \hline
@@ -656,7 +656,6 @@ and has a working directory of <config>/build/<thorn\_name> .
 \item F90FLAGS
 \item F77FLAGS
 \item LD
-\item \ldots FIXME
 \end{itemize}
 
 
@@ -814,8 +813,7 @@ Reduction operators are operators which process grid functions
 and return, either on just one processor or on each processor,
 a 1-Dimensional array of scalars. Examples of reduction operators
 could include simple operations such as the maximum value of a 
-grid function across the grid, or complex operations such as
-{\bf FIXME: Think of a good example, Gab}.
+grid function across the grid, or more complex operations
 
 The flesh itself does not provide any reduction operators,
 instead providing a mechanism for thorns to register their
@@ -914,8 +912,6 @@ void FMODIFIER FORTRAN\_NAME(<Fortran routine name>)(<argument list>)
 
 \section{Naming conventions}
 
-{\bf FIXME I just want to get this down. Gab}
-
 \begin{itemize}
 
 \item{} Thorn names must not start with the word ``Cactus'' (in
@@ -928,7 +924,6 @@ void FMODIFIER FORTRAN\_NAME(<Fortran routine name>)(<argument list>)
 \item{} Sourcecode filenames do not have to be unique, but you
         cannot have the same root filename used by different languages.
         (For example, you cannot have initial.c and initial.F)
-
 
 \end{itemize}
 
@@ -954,9 +949,9 @@ int MyReductionOperator(cGH *GH, int proc, int retvaltype, int numretval, void *
 \begin{itemize}
 \item{} {\t int proc} If this argument is negative, the result should
         be returned to all processors, if it is positive the result
-        need {\bf QUERY : Must? Gab} only be calculated and returned
+        need  only be calculated and returned
         on one processor.
-\item{} {\t int retvaltype} {\bf FIXME}
+\item{} {\t int retvaltype} 
 \item{} {\t int numretval} The number of values of type {\t retvaltype}
         being returned in the array {\t retvals}.
 \end{itemize}
