@@ -1,7 +1,7 @@
 
 Cactus Code Frequently Asked Questions
 
-$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.76 2004-01-16 12:32:07 schnetter Exp $
+$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.77 2004-01-20 12:13:10 schnetter Exp $
 
 Also available at http://www.cactuscode.org/Documentation/FAQ
 
@@ -597,7 +597,7 @@ C10 When I compile Cactus I get an error like
     In order to use a different cpp and to pass the option
     "-traditional", use for example
 
-    CPP = /home/user/gcc/bin/cpp -traditional
+    FPP = /home/user/gcc/bin/cpp -traditional
 
     when you configure your application.
 
@@ -761,12 +761,12 @@ C18 (Linux) When I compile Fortran I get errors because characters
     architecture independent Cactus preprocessor which we are
     developing by configuring with
 
-    make <config>-config CPP='$${PERL} $${CCTK_HOME}/lib/sbin/cpp.pl'
+    make <config>-config FPP='$${PERL} $${CCTK_HOME}/lib/sbin/cpp.pl'
 
     2. Another way around this problem is to get hold of a copy of
     cpp from an earlier RedHat distribution (here is cpp from 6.2)
     and either replace the original cpp, or place it somewhere else
-    and add the option CPP=<location of new cpp> when you configure
+    and add the option FPP=<location of new cpp> when you configure
     Cactus.
 
 
@@ -823,7 +823,7 @@ C21 (Solaris) Building PUGHReduce under Solaris 2.8 gives several errors
 
     As a solution, you could try using the Cactus preprocessor:
 
-       make -config CPP='$${PERL} $${CCTK_HOME}/lib/sbin/cpp.pl'
+       make -config FPP='$${PERL} $${CCTK_HOME}/lib/sbin/cpp.pl'
 
     which has the advantage that it doesn't stop for errors but prints
     a warning message. Be wary though, it isn't perfect yet and may
