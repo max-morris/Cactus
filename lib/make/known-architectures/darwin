@@ -1,0 +1,28 @@
+#! /bin/sh
+# /*@@
+#   @file    darwin
+#   @date    Thu 10 May 2001
+#   @author  Thomas Radke
+#   @desc
+#            Known architecture stuff for MacOS X (Darwin)
+#   @enddesc
+#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/darwin,v 1.1 2001-05-13 22:50:43 tradke Exp $
+# @@*/
+
+if test "$CCTK_CONFIG_STAGE" = "preferred-compilers" ; then
+
+  :
+
+else
+
+# Darwin's ar command doesn't understand the '-s' flag
+# so we have to use ranlib to add a table of contents to libraries
+  : ${ARFLAGS='ruc'}
+  : ${USE_RANLIB='yes'}
+
+# MPI stuff
+#
+# Darwin has no native MPI, so we don't set any NATIVE_MPI_XXX variables.
+# This is caught later on by lib/make/extras/MPI/NATIVE.
+
+fi
