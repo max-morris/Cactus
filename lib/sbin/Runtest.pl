@@ -19,7 +19,6 @@ print <<EOT;
 
 -------------------------------
  Cactus Code Test Suite Tool
- Paul Walker + Joan Masso
 -------------------------------
 
 EOT
@@ -34,9 +33,37 @@ else
   $configs_dir = "configs";
 }
 
-$executable = &defprompt("Enter executable name (relative to Cactus home dir)",".${sep}exe${sep}cactus_$config");
-$command = &defprompt("Enter command to run executable"," ");
+$current_directory = `pwd`;
+chop($current_directory);
 
+# Look to see if MPI is defined
+$extra = "$current_directory${sep}configs${sep}$config${sep}config-data${sep}cctk_extradefs.h";
+
+$mpi = 0;
+if (-e "$extra")
+{
+  open(EXTRA,"<$extra");
+  while(<EXTRA>)
+  {
+    if (/\#define MPI/)
+    {
+      $mpi = 1
+    }
+  }
+}
+
+
+$executable = &defprompt("Enter executable name (relative to Cactus home dir)","exe${sep}cactus_$config");
+
+if ($mpi)
+{
+  $numprocs = &defprompt("Enter number of processors","2");
+  $command = &defprompt("Enter command to run executable","mpirun -np $numprocs ");
+}
+else
+{
+  $command = &defprompt("Enter command to run executable"," ");
+}
 $tests = &defprompt("Run All tests or go to Menu",
                         "All");
 
@@ -92,7 +119,7 @@ if ($tests =~ /All/) {
       print "[$i] $testnum{$i}: $testnames{$i}\n";
     }
     print "\n  Enter number of test to run (quit to end) : ";
-    $choice = <STDIN>;
+   $choice = <STDIN>;
     $choice =~ s/\n//;
     $choice =~ s/\s//;
     print "\n";
