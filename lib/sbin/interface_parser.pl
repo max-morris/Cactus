@@ -636,18 +636,18 @@ sub check_interface_consistency
     }
     foreach $private_group (split " ",$interface_data{"\U$thorn\E PRIVATE GROUPS"})
     {
-      if ($interface_data{"\U$ancestor_thorn\E PUBLIC GROUPS"} =~ m:([\^\s]+$private_group[$\s]+):)
+      if ($interface_data{"\U$ancestor_thorn\E PUBLIC GROUPS"} =~ m:(\b$private_group\b):)
       {
-        $message = "Private group $private_group in thorn $thorn has same name as \n     public group in ancestor implementation $ancestor_imp (i.e. thorn $ancestor_thorn)";
+        $message = "Private group $private_group in thorn $thorn has same name as \n     public group in ancestor implementation $ancestor_imp (e.g. thorn $ancestor_thorn)";
         &CST_error(0,$message,"",__LINE__,__FILE__);
       }
       foreach $var (split " ", $interface_data{"\U$thorn\E GROUP \U$private_group\E"})
       {
         foreach $pub_anc(split " ", $interface_data{"\U$ancestor_thorn\E PUBLIC GROUPS"})
         { 
-          if ($interface_data{"\U$ancestor_thorn\E GROUP \U$pub_anc\E"} =~  /$var/i)
+          if ($interface_data{"\U$ancestor_thorn\E GROUP \U$pub_anc\E"} =~  m/\b$var\b/i)
           {
-            $message = "Private variable $var in group $private_group in thorn $thorn has same name as \n     a variable in public group: $pub_anc in ancestor implementation $ancestor_imp (i.e. thorn $ancestor_thorn)";
+            $message = "Private variable $var in group $private_group in thorn $thorn has same name as \n     a variable in public group: $pub_anc in ancestor implementation $ancestor_imp (e.g. thorn $ancestor_thorn)";
             &CST_error(0,$message,"",__LINE__,__FILE__);  
           }
 
