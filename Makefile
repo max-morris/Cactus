@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.9 1999-01-19 14:08:41 goodale Exp $
+#   @version $Id: Makefile,v 1.10 1999-01-20 16:03:41 goodale Exp $
 # @@*/
 
 # Comment this out if you want to see what's going on.
@@ -84,6 +84,10 @@ distclean:
 	@echo $(DIVIDER)
 
 # Targets to make tags files
+
+# Mark these targets phony to force an update when gmake TAGS is done.
+.PHONY: TAGS tags
+
 TAGS:
 	@echo $(DIVIDER)
 	@echo Updating the Emacs TAGS file
