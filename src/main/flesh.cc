@@ -12,17 +12,9 @@
 #include "cctk_Flesh.h"
 #include "CactusMainFunctions.h"
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-
 static const char *rcsid = "$Header$";
 CCTK_FILEVERSION(main_flesh_cc);
 
-#ifdef __cplusplus
-} // extern "C"
-#endif
 
  /*@@
    @routine    main
