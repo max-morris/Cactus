@@ -88,7 +88,10 @@ int Cactus_InitialiseGH(cGH *GH)
   
   /* Initialise time */
   GH->time = cctk_initial_time;
-  
+
+  /* FIXME */
+  GH->iteration = 1;
+
   
   /* Setup the rfr_top on this GH */
 
@@ -116,8 +119,11 @@ int Cactus_InitialiseGH(cGH *GH)
 
   /* Do various rfr traversals.  Will tidy up later. */
 
+  /* FIXME : PARAM_CHECK SHOULD BE BEFORE HERE */
+  CCTK_rfrTraverse(GH, CACTUS_PARAMCHECK);
+
   CCTK_rfrTraverse(GH, CACTUS_BASEGRID); 
-  CCTK_rfrTraverse(GH,CACTUS_INITIAL0);
+  CCTK_rfrTraverse(GH, CACTUS_INITIAL0);
 
   /* Loops like this should go eventually... */
   for (Rstep = CACTUS_INITIAL; Rstep <= CACTUS_INITIAL9; Rstep++)
