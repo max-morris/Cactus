@@ -52,7 +52,7 @@ fi
 # Set the HDF5 libs, libdirs and includedirs
 
 # don't explicitely add standard include and library search paths
-if [ "$HDF5_DIR" != '/usr' -a "$HDF5_DIR" != '/usr/local' ]; then
+if [ "$HDF5_DIR" != '/usr' ]; then
   HDF5_LIB_DIRS="$HDF5_DIR/lib"
   HDF5_INC_DIRS="$HDF5_DIR/include"
 fi
