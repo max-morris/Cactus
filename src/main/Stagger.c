@@ -250,7 +250,7 @@ int CCTK_StaggerDirArray(int *dindex , int dim, int sindex)
   {
     val       = (int)(sindex / hash[b]);
     sindex    = sindex % hash[b];
-    if (dim<b)  dindex[b] = val;
+    if (b<dim) dindex[b] = val;
   }
   return(0);
 }
