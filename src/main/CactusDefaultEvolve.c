@@ -270,8 +270,7 @@ static int StepGH(cGH *GH)
 
 void TerminationStepper(cGH *GH) 
 {
-  int cactus_terminate_global; 
-  
+  /*  int cactus_terminate_global; */  
   cactus_terminate_global=cactus_terminate;
 
 #if 0
