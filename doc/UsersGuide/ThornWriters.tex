@@ -131,8 +131,7 @@ parameters needed from other thorns. See
 \ref{sec:pa}.
 \item[{\tt schedule.ccl}] scheduling information for routines called by
 \item[{\tt configuration.ccl}] configuration options for the thorn. See
-\ref{sec:co}.
-the Flesh. See \ref{sec:sc}.
+\ref{sec:configuration.ccl}.
 \end{Lentry}
 
 Thorns can also contain
@@ -1921,21 +1920,21 @@ group\_index)}]  returns the \textit{staggerindex} for a given group index.
 \end{Lentry}
 \vskip .45cm
 
-\begin{Lentry}
-\item[{\tt int CCTK\_GroupStaggerIndexVI(int variable\_index)}] %returns the
+%\begin{Lentry}
+%\item[{\tt int CCTK\_GroupStaggerIndexVI(int variable\_index)}] %returns the
+%%\textit{staggerindex} for a given variable index.
+%\item[{\tt call CCTK\_GroupStaggerIndexVI(int staggerindex, int variable\_index)}] returns the
 %\textit{staggerindex} for a given variable index.
-\item[{\tt call CCTK\_GroupStaggerIndexVI(int staggerindex, int variable\_index)}] returns the
-\textit{staggerindex} for a given variable index.
-\end{Lentry}
-\vskip .45cm
-
-\begin{Lentry}
-\item[{\tt int CCTK\_GroupStaggerIndexVN(char *variable\_name)}] %returns the
+%\end{Lentry}
+%\vskip .45cm
+%
+%\begin{Lentry}
+%\item[{\tt int CCTK\_GroupStaggerIndexVN(char *variable\_name)}] %returns the
+%%\textit{staggerindex} for a given variable name.
+%\item[{\tt call CCTK\_GroupStaggerIndexVN(int staggerindex, char *variable\_name)}] returns the
 %\textit{staggerindex} for a given variable name.
-\item[{\tt call CCTK\_GroupStaggerIndexVN(int staggerindex, char *variable\_name)}] returns the
-\textit{staggerindex} for a given variable name.
-\end{Lentry}
-\vskip .45cm
+%\end{Lentry}
+%\vskip .45cm
 
 \begin{Lentry}
 \item[{\tt int CCTK\_StaggerIndex(char *stagger\_string)}] %return the \textit{
@@ -2004,7 +2003,7 @@ is a parallel unigrid driver.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Coordinates}
-\label{sec:co}
+\label{sec:coordinates}
 
 The Flesh provides utility routines for registering and querying
 coordinate information. The Flesh does not provide any coordinates
