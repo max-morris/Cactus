@@ -508,15 +508,18 @@ sub ParseArgumentsList
   my $nfptrs = 0;
   my $warnings = "";
   my @fptrargs = ();
-  if ($Arguments =~ s/CCTK_FPOINTER//)
+  if ($Arguments =~ s/CCTK_FPOINTER//g)
   {
-    while ($Arguments =~ s/(.*?)\s*(\(.*\s.*?\))(.*)/\1FPTRARGS\3/)
+    &debug_print("$Thorn:$Function:$Arguments\n");
+    while ($Arguments =~ s/(.*?)\s*(\(.*?\))(.*)/\1FPTRARGS\3/)
     {
+      &debug_print("$Thorn:$Function:$Arguments\n");
       my $tempargs = $2;
       $tempargs =~ s/\((.*)\)/\1/;
       push(@fptrargs,$tempargs);
       $nfptrs++; # QUERY: This is set but never used.
     }
+    &debug_print("$Thorn:$Function:$Arguments\n");
   }
 
   my @DummyList = split(',',$Arguments);
@@ -529,6 +532,7 @@ sub ParseArgumentsList
 
   foreach $DummyArg (@DummyList)
   {
+    &debug_print("$Thorn:$Function:$DummyArg\n");
     if ($DummyArg =~ /\S/) # ignore empty argument list
     {
       my $Arg = &ParseArgument($DummyArg, $Thorn, $Function);
