@@ -9,8 +9,8 @@
 
 /*#define DEBUG_BANNER*/
 
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "config.h"
 #include "cctk_parameters.h"
@@ -20,7 +20,7 @@
 static char *rcsis = "$Header$";
 
 static int number_banners = 0;
-static const char **banner_strings;
+static const char **banner_strings = NULL;
 
 void CCTK_PrintBanners(void);
 
@@ -80,10 +80,11 @@ void CactusBanner(void)
 
 void CCTK_RegisterBanner(const char *string)
 {
-
   const char **temp = NULL;
+  const char *newstring;
   number_banners++;
 
+  /* Resize the array of banner strings */
   if (number_banners == 1)
   {
     banner_strings = (const char **)malloc( number_banners*sizeof(const char *));  
@@ -97,11 +98,25 @@ void CCTK_RegisterBanner(const char *string)
     {
       banner_strings = temp;
     }
+    else
+    {
+      number_banners--;
+    }
   }
 
+  /* If this was succesful, copy the data into the array */
   if(temp)
   {
-    banner_strings[number_banners-1] = string;
+    newstring = malloc((strlen(string)+1)*sizeof(const char));
+    if(newstring)
+    {
+      strcpy(newstring, string);
+      banner_strings[number_banners-1] = newstring;
+    }
+    else
+    {
+      number_banners--;
+    }
   }
 
 #ifdef DEBUG_BANNER
@@ -114,7 +129,7 @@ void  FMODIFIER FORTRAN_NAME(CCTK_RegisterBanner)(ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_CREATE(message)
   CCTK_RegisterBanner(message);
-  /* Don't free0 "message" or it will disappear */
+  free(message);
 }
 
  /*@@
