@@ -12,19 +12,20 @@ if test -n "$HDF5" ; then
 	
 echo "Configuring with HDF5. Blocks with #ifdef HDF5 will be activated"
 
-CCTK_WriteLine cctk_Extradefs.h "#define HDF5"
-
 # Work out which variation of HDF5 lib
     
 if test -z "$HDF5_DIR" ; then
    echo "HDF5 selected but no HDF5_DIR set... Checking some places"
-   CCTK_Search HDF5_DIR "/usr /usr/local /usr/local/hdf5 /usr/local/packages/hdf5 /usr/local/apps/hdf5 c:/packages/hdf5" include/hdf5.h
+   CCTK_Search HDF5_DIR "/usr /usr/local /usr/local/hdf5 /usr/local/packages/hdf5 /usr/local/apps/hdf5 /usr/local/hdf5/serial c:/packages/hdf5" include/hdf5.h
    if test -z "$HDF5_DIR" ; then
        echo "Unable to locate the HDF5 directory - please set HDF5_DIR"
        exit 2
    fi
    echo "Found an HDF5 package in $HDF5_DIR"
 fi
+
+
+# Check what version we found
 
 grep -qe '#define HAVE_PARALLEL 1' ${HDF5_DIR}/include/H5config.h 2> /dev/null
 test_phdf5=$?
@@ -43,17 +44,36 @@ else
    fi
 fi
 
+
 # Set the HDF5 libs, libdirs and includedirs
 
 HDF5_LIBS=hdf5
-if test `uname` = "Linux" ; then
-  HDF5_LIBS="hdf5 z"
-fi
 HDF5_LIB_DIRS="$HDF5_DIR/lib"
 HDF5_INC_DIRS="$HDF5_DIR/include"
 
+
+# Check whether we have to link with libz.a
+
+grep -qe '#define HAVE_COMPRESS2 1' ${HDF5_DIR}/include/H5config.h 2> /dev/null
+test_compress2=$?
+
+if [ $test_compress2 -eq 0 ] ; then
+   if test -z "$LIBZ_DIR" ; then
+      echo "HDF5 library was compiled with libz, searching for libz.a ..."
+      CCTK_Search LIBZ_DIR "/usr/lib /usr/local/lib c:/packages/libz" libz.a
+      if test -z "$LIBZ_DIR" ; then
+          echo "Unable to locate the library libz.a - please set LIBZ_DIR"
+          exit 2
+      fi
+      echo "Found library libz.a in $LIBZ_DIR"
+   fi
+   HDF5_LIBS="$HDF5_LIBS z"
+   HDF5_LIB_DIRS="$HDF5_LIB_DIRS $LIBZ_DIR"
+fi
+
 # Write the data out to the header and make files.
 
+CCTK_WriteLine cctk_Extradefs.h "#define HDF5"
 CCTK_WriteLine make.extra.defn "HDF5_LIBS     = $HDF5_LIBS"
 CCTK_WriteLine make.extra.defn "HDF5_LIB_DIRS = $HDF5_LIB_DIRS"
 CCTK_WriteLine make.extra.defn "HDF5_INC_DIRS = $HDF5_INC_DIRS"
