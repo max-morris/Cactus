@@ -45,6 +45,7 @@ Fortran:
 -------
 Digital Fortran 6.0 
 Compaq Fortran 6.1
+Intel Fortran 4.5 
 
 SPECIAL NOTE FOR PEOPLE USING NON-ENGLISH VERSIONS OF NT.  Currently
 the include path to find the MS C include files is set for an english
