@@ -1,7 +1,7 @@
 % /*@@
 %   @file      ThornWriters.tex
 %   @date      27 Jan 1999
-%   @author    Tom Goodale, Gabrielle Allen, Gerd Lanferman
+%   @author    Gabrielle Allen, Tom Goodale, Gerd Lanfermann
 %   @desc 
 %   Thorn writer's guide part of the Cactus User's Guide
 %   @enddesc 
@@ -9,6 +9,7 @@
 % @@*/
 
 \begin{cactuspart}{2}{Application thorn writing}{$RCSfile$}{$Revision$}
+
 \renewcommand{\thepage}{\Alph{part}\arabic{page}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -245,9 +246,10 @@ This is the number of timelevels the group has. This defaults to 1.
 \item [{\tt stagger}]
 This attribute defines the stagger for a grid function. Specify a
 string of length {\tt Dim}, where each character indicates the type of 
-staggering in that direction (yxz ordered):
+staggering in that direction (yxz ordered). If you use default
+staggering ({\tt MMM}), you can ommit this attribute.
 \begin{Lentry}
-\item[{\tt M}] no staggerign (``minus'' face, relative to default gridpoint).
+\item[{\tt M}] no staggering (``minus'' face, relative to default gridpoint).
 \item[{\tt C}] center staggering
 \item[{\tt P}] full staggering by one grid spacing (``plus'' face,
 relative to default)
@@ -1015,6 +1017,8 @@ space. Still the indexing (or bookeeping)  is kept the same for all
 types of staggerings: the indexing of the default unstaggered grids is 
 used.
 
+\vskip .25cm
+
 {\bf Specifying the staggertype}
 
 The type of staggering applied to a gridfunction can be specified in
@@ -1024,7 +1028,8 @@ per dimension. The physical location of a gridfunction is shifted
 relative to the default position by adding the following values to the 
 stagger attribute:
 \begin{Lentry}
-\item[{\tt M}] no staggering, default. M refers to minus. 
+\item[{\tt M}] no staggering, default. Refers to the ``minus'' face
+relative to  the default gridpoint. 
 \item[{\tt C}] center staggering. The physical location is offset by
 half of the grid spacing in the positive direction (or to the right).
 \item[{\tt P}] full staggerd. P refers to plus. The physical location
@@ -1042,6 +1047,8 @@ staggering each direction ({\tt stagger=CC}) is shown in (C). The full
 staggering in (D) ({\tt stagger=PP}) obeyes the same rules, but is
 rather unusual; included here for completeness. 
 
+\vskip .25cm
+
 {\bf Indexing, ghostzones, etc.}
 Note that staggering does not make any changes to the indexing of a
 gridfunction: the black solid circles in diagramm XX and their
@@ -1052,7 +1059,7 @@ location (it's only addressed by indeces) why add staggering if the
 indexing is the same ?  
 
 Indeed, you could roll your own, but there compelling reasons:
-Readabilty and you are eable to query the staggertype of a
+Readabilty and you are able to query the staggertype of a
 gridfunction. More important: in the way the grid is laid out, there is one grid
 point {\em less} for {\tt M} and {\tt P} staggered grid functions. This is
 illustrated in picture YY, which shows 15 gridpoints distributed
@@ -1062,14 +1069,119 @@ Note that the number of center staggered gridpoints (fat crosses)
 corresponds to the number of default gridpoint on all processors but
 the last one. (Same is true for full staggered gridpoints).
 
+\vskip .25cm
+
+{\bf Staggertypes}
+The string specifying the staggering is encoded in a number called
+the {\em staggerindex}. With the 3 supported staggerings, the string
+is converted into a base-3 number. Several routines exist, to extract the
+staggering in a specific direction, called {\em directional
+staggerindex}. E.g. {\tt stagger = MCM}: {\em staggerindex} = 3, in the 
+x-direction: {\em directional staggerindex} = CCTK\_STAGGER\_M (value 0),  in the 
+x-direction: {\em directional staggerindex} = CCTK\_STAGGER\_C (value 1).
+
+\begin{Lentry}
+\item[{\tt CCTK\_STAGGER\_M}]  value used for M-type staggering
+\item[{\tt CCTK\_STAGGER\_C}]  value used for C-type staggering
+\item[{\tt CCTK\_STAGGER\_P}]  value used for P-type staggering
+\item[{\tt CCTK\_NO\_STAGGER}] value to indicate no staggering
+\item[{\tt CCTK\_STAGGER}]    value to indicate staggering
+\item[{\tt CCTK\_NSTAGGER}]   number of coded staggerings (3)
+\item[{\tt CCTK\_STAGGER\_ERROR}] failed stagger operation , negative
+\end{Lentry}
+
+
 When a thorn programmer uses staggered gridpoints, he has to be aware
 of this gridpoint anomaly. This can be done easiest by using the {\tt
-cctk\_lssh[staggertype][direction]} variable. For a given staggertype
+CCTL\_LSSH(<dir\_staggertype>,<direction>)} macro. For a given staggertype
 and direction, this 2d array returns the local number of gridpoints,
 including  ghostzones and the necessary change for the staggering on
-the outermost processor.
+the outermost processor. 
 
+\begin{Lentry}
+\item[{\tt CCTL\_LSSH(<dir\_staggertype>,<direction>)}]
+for a given staggertype and a direction this macro returns the number
+of processor local gridpoints, including ghostzones. 
 
+\begin{itemize}
+\item{macro has to be in capital letters}
+\item{This macro is C/Fortran indexing aware:
+can specify the dimension in C ranging from $0 \ldots$ and in Fortan
+ranging from $1 \ldots$.}
+\end{itemize}
+\end{Lentry}
+
+\vskip .25cm
+
+Several functions exist to derive the staggertype for a given group
+and for a certain direction.
+\begin{Lentry}
+\item[{\tt int CCTK\_GroupStaggerIndexGI(int group\_index)}] returns the
+{\em staggerindex} for a given group index. 
+\item[{\tt call CCTK\_GroupStaggerIndexGI(int staggerindex, int
+group\_index)}]  returns the {\em staggerindex} for a given group index. 
+\end{Lentry}
+\vskip .45cm
+
+\begin{Lentry}
+\item[{\tt int CCTK\_GroupStaggerIndexGN(char *group\_name)}] returns the
+{\em staggerindex} for a given group name. 
+\item[{\tt call CCTK\_GroupStaggerIndexGN(int staggerindex, char *group\_name)}] returns the
+{\em staggerindex} for a given group name. \vskip .25cm
+\end{Lentry}
+\vskip .45cm
+
+\begin{Lentry}
+\item[{\tt int CCTK\_GroupStaggerIndexVI(int variable\_index)}] returns the
+{\em staggerindex} for a given variable index. 
+\item[{\tt call CCTK\_GroupStaggerIndexVI(int staggerindex, int variable\_index)}] returns the
+{\em staggerindex} for a given variable index. 
+\end{Lentry}
+\vskip .45cm
+
+\begin{Lentry}
+\item[{\tt int CCTK\_GroupStaggerIndexVN(char *variable\_name)}] returns the
+{\em staggerindex} for a given variable name. 
+\item[{\tt call CCTK\_GroupStaggerIndexVN(int staggerindex, char *variable\_name)}] returns the
+{\em staggerindex} for a given variable name. 
+\end{Lentry}
+\vskip .45cm
+
+\begin{Lentry}
+\item[{\tt int CCTK\_StaggerIndex(char *stagger\_string)}] return the {\em
+staggerindex} for a given stagger string.
+\item[{\tt call CCTK\_StaggerIndex(int staggerindex, char *stagger\_string)}] return the {\em
+staggerindex} for a given stagger string. 
+\end{Lentry}
+\vskip .45cm
+
+\begin{Lentry}
+\item[{\tt int CCTK\_StaggerIndex(char *stagger\_string)}] return the {\em
+staggerindex} for a given stagger string.
+\item[{\tt call CCTK\_StaggerIndex(int staggerindex, char *stagger\_string)}] return the {\em
+staggerindex} for a given stagger string.
+\end{Lentry}
+\vskip .45cm
+
+\begin{Lentry}
+\item[{\tt int CCTK\_DirStaggerIndex(int direction, char *stagger\_string)}] 
+returns the {\em directional staggerindex} for a given direction and
+stagger string.
+\item[{\tt call CCTK\_DirStaggerIndex(int dir\_staggerindex, int direction, char *stagger\_string)}] 
+returns the {\em directional staggerindex} for a given direction and
+stagger string.
+\end{Lentry}
+\vskip .45cm
+
+\begin{Lentry}
+\item[{\tt int CCTK\_DirStaggerIndexI(int direction, char *stagger\_type)}]
+returns the {\em directional staggerindex} for a given direction and 
+staggerindex.
+\item[{\tt call CCTK\_DirStaggerIndexI(int dir\_direction, char *stagger\_type)}]
+returns the {\em directional staggerindex} for a given direction and 
+staggerindex.
+
+\end{Lentry}
 
 \subsection{Providing Run Time Information}
 
