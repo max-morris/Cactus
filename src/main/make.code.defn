@@ -19,6 +19,7 @@ SetParams.c\
 ShutdownCactus.c\
 flesh.cc\
 Groups.c\
+GroupsOnGH.c\
 Dummies.c\
 rfrInterface.c\
 Overload.c\

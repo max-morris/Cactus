@@ -1,5 +1,5 @@
  /*@@
-   @file      Groups_on_GH.c
+   @file      GroupsOnGH.c
    @date      Tues April 6
    @author    Gabrielle Allen
    @desc 
@@ -15,6 +15,7 @@
 #include "flesh.h"
 #include "Misc.h"
 #include "Groups.h"
+#include "GroupsOnGH.h"
 
 /*#define GROUPSDEBUG*/
 
@@ -36,7 +37,7 @@ static char *rcsid = "$Header$";
 @@*/
 void *CCTK_GetVarDataPtr_ByName(cGH *GH, char *fullvarname, int timelevel)
 {
-  return GH->data[CCTK_VarIndex(fullvarname)][timelevel];
+  return (GH->data[CCTK_VarIndex(fullvarname)][timelevel]);
 }
 
  /*@@
@@ -75,11 +76,11 @@ void *CCTK_GetVarDataPtr(cGH *GH, int varindex, char *fullvarname, int timelevel
 {
   if (fullvarname) 
   {
-    return CCTK_GetVarDataPtr_ByName(cGH *GH, char *fullvarname, int timelevel);
+    return CCTK_GetVarDataPtr_ByName(GH, fullvarname, timelevel);
   }
   else
   {
-    return CCTK_GetVarDataPtr_ByIndex(cGH *GH, int varindex, int timelevel);
+    return CCTK_GetVarDataPtr_ByIndex(GH, varindex, timelevel);
   }
 }
 

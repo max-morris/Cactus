@@ -295,9 +295,25 @@ int CCTK_GetVarNum(const char *implementation,
   int retval;
   int gnum,group_num;
   int variable;
+  int fullname = 0;
+  char *impname;
+  char *varname;
 
   retval = -1;
 
+  if (group_name == NULL && implementation == NULL)
+  {
+    fullname = 1;
+    /* variable_name must be of the form <implementation>::<variable> */
+    /* FIXME : Error checking */
+    CCTK_DecomposeName(variable_name,&impname,&varname);
+  }
+  else
+  {
+    impname = implementation;
+    varname = variable_name;
+  }
+      
   if (group_name == NULL)
   {	
     for (gnum = 0; gnum < n_groups; gnum++)
@@ -305,8 +321,8 @@ int CCTK_GetVarNum(const char *implementation,
       
       for(variable=0; variable<groups[gnum].n_variables;variable++)
       {
-	if(CCTK_Equals(variable_name, groups[gnum].variables[variable].name)
-	   && CCTK_Equals(implementation,groups[gnum].implementation))
+	if(CCTK_Equals(varname, groups[gnum].variables[variable].name)
+	   && CCTK_Equals(impname,groups[gnum].implementation))
 	{
 	  retval  = groups[gnum].variables[variable].number;
 	  break;
@@ -317,13 +333,13 @@ int CCTK_GetVarNum(const char *implementation,
   else
 
   {
-    group_num = CCTK_GetGroupNum(implementation, group_name);
+    group_num = CCTK_GetGroupNum(impname, group_name);
     
     if(group_num > -1)
     {
       for(variable=0; variable<groups[group_num].n_variables;variable++)
       {
-	if(CCTK_Equals(variable_name, groups[group_num].variables[variable].name))
+	if(CCTK_Equals(varname, groups[group_num].variables[variable].name))
 	{
 	  retval  = groups[group_num].variables[variable].number;
 	  break;
@@ -336,6 +352,12 @@ int CCTK_GetVarNum(const char *implementation,
     }
   }
 
+  if (fullname)
+  {
+    free(impname);
+    free(varname);
+  }
+    
   return retval;
 }
 
@@ -502,48 +524,6 @@ char *CCTK_GetFullName(int var)
 }
 
 
- /*@@
-   @routine    CCTK_ArrayGroupSize
-   @date       Mon Feb  8 12:05:50 1999
-   @author     Tom Goodale
-   @desc 
-   Gets the size of a array in a specific direction.
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
-
-@@*/
-int *CCTK_ArrayGroupSize(cGH *GH, const char *group, int dir)
-{
-  /* Quick fudge */
-  return &(GH->local_shape[dir]);
-}
-
- /*@@
-   @routine    CCTK_QueryGroupStorage
-   @date       
-   @author     Tom Goodale
-   @desc 
-
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
-
-@@*/
-int CCTK_QueryGroupStorage(cGH *GH, const char *group)
-{
-  /* Quick fudge */  
-  return 1;
-}
-
-
- 
  /*@@
    @routine    CCTK_GTypeNumber
    @date       Mon Feb  8 14:44:45 1999
