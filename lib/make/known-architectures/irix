@@ -1,0 +1,54 @@
+#! /bin/sh
+#  /*@@
+#    @file      irix
+#    @date      Thu Feb 25 12:20:53 1999
+#    @author    Tom Goodale
+#    @desc 
+#   
+#    @enddesc 
+#    @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/irix,v 1.1 1999-02-25 18:42:12 goodale Exp $
+#  @@*/
+
+IRIX_CPU="hinv | grep CPU | sed 's/^[^R]*R\([01-9]*\).*$/\1/'"
+
+case "$IRIX_CPU:$CC" in
+    10000:gcc)
+    CFLAGS="$CFLAGS -mips4" 
+    ;;
+    10000:cc)
+    CFLAGS="$CFLAGS -O3 -64 -mips4 -r10000"
+    CXXFLAGS="$CFLAGS -O2 -64 -mips4 -r10000"
+    ;;
+    *)
+    ;;
+esac
+
+case "$IRIX_CPU:$CC" in
+    10000:c++)
+    CXXFLAGS="$CXXFLAGS -mips4" 
+    ;;
+    *)
+    ;;
+esac
+
+case "$IRIX_CPU" in
+    10000)
+    F90FLAGS="$F90FLAGS -O3  \
+	-OPT:roundoff=3:IEEE_arithmetic=3:const_copy_limit=100000 \
+	-r10000 -TARG:proc=r10000 \
+	-64 -mips4"
+    F77FLAGS="$F90FLAGS" 
+    ;;
+    *)
+    ;;
+esac
+
+case "$IRIX_CPU:$LD" in
+    10000:c++)
+    LDFLAGS="$LDFLAGS -mips4"
+    10000:CC)
+    LDFLAGS="$LDFLAGS -64 -Wl,\"-woff 84\",\"-woff 85\""
+    ;;
+    *)
+    ;;
+esac
