@@ -9,11 +9,16 @@
 
 #include <stdio.h>
 
-#include "cctk.h"
 #include "cctk_Flesh.h"
-
+#include "cctk_Parameter.h"
 #include "cctk_Schedule.h"
+#include "cctk_WarnLevel.h"
+
+#include "cctki_Banner.h"
 #include "cctki_Schedule.h"
+
+#define CCTK_PRINTSEPARATOR \
+  printf("--------------------------------------------------------------------------------\n");
 
 static char *rcsid = "$Header$";
 
@@ -108,7 +113,7 @@ int CCTKi_InitialiseScheduler(tFleshConfig *ConfigData)
   CCTKi_SetParameterSetMask(PARAMETER_RECOVERY_IN);
 
   if(CCTKi_BindingsParameterRecoveryInitialise() < 0)
-    CCTK_WARN(0, "Failed to recover parameters");
+    CCTK_Warn(0,__LINE__,__FILE__,"Cactus","Failed to recover parameters");
 
   CCTKi_SetParameterSetMask(PARAMETER_RECOVERY_POST);
 
