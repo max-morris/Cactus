@@ -1,18 +1,18 @@
 # Parameter definitions for flesh
 # $Header$
 
- 
+
 private:
 
-STRING cctk_run_title "Description of this simulation" 
+STRING cctk_run_title "Description of this simulation"
 {
   ".*" :: "Any string"
 } ""
 
 KEYWORD cctk_timer_output  "Provide output from timers"
 {
- "off"  :: "No timer output"
- "full" :: "Detailed timer output"
+  "off"  :: "No timer output"
+  "full" :: "Detailed timer output"
 } "off"
 
 # FIXME: this should be deprecated in favor of a new  warn_format
@@ -58,7 +58,7 @@ BOOLEAN cctk_show_schedule "Print the scheduling tree to standard output"
 BOOLEAN cctk_show_banners "Show any registered banners for the different thorns"
 {
 } "yes"
- 
+
 BOOLEAN cctk_brief_output "Give only brief output"
 {
 } "no"
@@ -84,7 +84,7 @@ BOOLEAN allow_mixeddim_gfs "Allow use of GFs from different dimensions"
 KEYWORD recovery_mode "How to behave when recovering from a checkpoint" STEERABLE=RECOVER
 {
   "strict"  :: "All CCTK variables must be recovered successfully, no INITIAL timebins will be scheduled"
-  "relaxed" :: "Recover variables if possible, schedule INITIAL timebins afterwards"
+  "relaxed" :: "Recover variables if possible, after INITIAL timebins have been scheduled"
 } "strict"
 
 
@@ -110,17 +110,17 @@ REAL cctk_initial_time "Initial time for evolution"
 {
   : :: "Anything"
 } 0.0
- 
+
 REAL cctk_final_time "Final time for evolution" STEERABLE=ALWAYS
 {
   : :: "Anything"
 } -1.0
- 
+
 INT cctk_itlast "Final iteration number" STEERABLE = ALWAYS
 {
   : :: "Any integer"
 } 10
- 
+
 REAL max_runtime "Terminate evolution loop after a certain elapsed runtime (in minutes)" STEERABLE = ALWAYS
 {
   0.0: :: "Zero disables maximum runtime condition"
