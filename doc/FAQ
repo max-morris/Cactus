@@ -1,7 +1,7 @@
 
 Cactus Code Frequently Asked Questions
 
-$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.34 2002-06-25 13:22:11 allen Exp $
+$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.35 2002-06-25 13:24:21 allen Exp $
 
 Also available at http://www.cactuscode.org/Documentation/FAQ
 
@@ -429,20 +429,7 @@ Also available at http://www.cactuscode.org/Documentation/FAQ
 
 -------------------------------------------------------------------------------
 
-31. I have a single Cactus thorn which schedules a simple routine at STARTUP,
-    which prints output to the screen. If I schedule this routine at 
-    EVOL though I don't see any output.
-
-    You need a driver thorn activated for anything other than routines
-    scheduled at STARTUP to run. Drivers provide memory for grid 
-    variables, etc.
-
-    If you add e.g. CactusPUGH/PUGH to your ActiveThorns parameter things 
-    should work as you expect.
-
--------------------------------------------------------------------------------
-
-32. Compiling files in Cactus seems to involve three steps, preprocessing,
+31. Compiling files in Cactus seems to involve three steps, preprocessing,
     compiling, and then postprocessing. What is the postprocessing step
     for? 
 
@@ -453,7 +440,7 @@ Also available at http://www.cactuscode.org/Documentation/FAQ
 
 -------------------------------------------------------------------------------
 
-33. How does Cactus manage to so seamlessly call Fortran routines from 
+32. How does Cactus manage to so seamlessly call Fortran routines from 
     C, and vice versa?
 
     Part of the configuration step on a machine involves automatically 
@@ -472,7 +459,7 @@ Also available at http://www.cactuscode.org/Documentation/FAQ
 
 -------------------------------------------------------------------------------
 
-34. When trying to create the Cactus executable I get the error
+33. When trying to create the Cactus executable I get the error
 
     Creating cactus_origin in /data2/convCactus/exe from
     CactusBase/IOASCII CactusBase/Boundary CactusPUGH/PUGHInterp 
@@ -494,7 +481,7 @@ Also available at http://www.cactuscode.org/Documentation/FAQ
 
 -------------------------------------------------------------------------------
 
-35. When running GetCactus it tells me it is refusing to update my thorn
+34. When running GetCactus it tells me it is refusing to update my thorn
     because it is installed from a different repository.
 
     What GetCactus does is look in the thorn's CVS/Root to get the repository
@@ -510,7 +497,7 @@ Also available at http://www.cactuscode.org/Documentation/FAQ
 
 -------------------------------------------------------------------------------
 
-36. I get a segmentation fault running Cactus, right after the schedule
+35. I get a segmentation fault running Cactus, right after the schedule
     tree is printed to screen?
 
     Check to see if you are passing CCTK_ARGUMENTS into any routines
