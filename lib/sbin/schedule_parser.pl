@@ -400,8 +400,18 @@ sub parse_schedule_at_RFR {
       @list = split(",",$1);
       foreach $group (@list) 
       {
-       $out .= "  index = CCTK_GetGroupNum(\"$implementation\",\"$group\");\n";
-       $out .= "  rfrRegisterStorage(GH->rfr_top,GH,index,$routine);\n";
+	# Take of implementation if it is there
+	if ($group =~ /(.*)::(.*)/)
+	{
+	  $implementation = $1;
+	  $group = $2;
+	}
+	$out .= "  index = CCTK_GetGroupNum(\"$implementation\",\"$group\");\n";
+	$out .= "  if (index < 0) {\n";
+	$out .= "    printf(\"CCTK_GetGroupNum failed in ".$thorn."_rfr.c\\n\");\n";
+        $out .= "  } else {\n"; 
+	$out .= "    rfrRegisterStorage(GH->rfr_top,GH,$routine,index);\n";
+        $out .= "  }\n";
       }
     }
   }
