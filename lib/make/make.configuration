@@ -74,9 +74,10 @@ include $(CONFIG)/make.config.deps
 
 # Rule to build the make.thornlist file from the ActiveThorns file
 
-$(CONFIG)/make.thornlist: $(TOP)/ActiveThorns
+$(CONFIG)/make.thornlist: $(TOP)/ActiveThorns $(foreach lib, $(CCTK_HOME)/src $(THORNS:%=$(TOOLKIT_DIR)/%), $(lib)/param.ccl $(lib)/interface.ccl $(lib)/schedule.ccl)
 	@echo $(DIVIDER)
-	@echo Configuring thorns
+	if [ -r $@ ] ; then echo Reconfiguring thorns ; rm $@ ;\
+	else echo Configuring thorns ; fi
 	$(PERL) -s $(CCTK_HOME)/lib/sbin/config_parser.pl -config_dir=$(CONFIG) -cctk_home=$(CCTK_HOME) -top=$(TOP) $< 
 
 # Rule to build ActiveThorns
