@@ -51,6 +51,11 @@
                            CCTK_POINTER cctkGH&&\
 
 #define CCTK_WARN(a,b) CCTK_Warn(a,__LINE__,__FORTRANFILE__,CCTK_THORNSTRING,b)
+
+#define CCTKi_EXPECTERR(in,err,warnonerr,message) CCTKi_ExpectError(in,err,warnonerr,__LINE__,__FORTRANFILE__,CCTK_THORNSTRING,message)
+
+#define CCTKi_EXPECTOK(in,ok,warnonerr,message)  CCTKi_ExpectOK(in,ok,warnonerr,__LINE__,__FORTRANFILE__,CCTK_THORNSTRING,message)
+
 #define CCTK_EQUALS(a,b) (CCTK_Equals(a,b).eq.1)
 
 #define CCTK_PASS_FTOF CCTK_FARGUMENTS
@@ -169,6 +174,10 @@ extern int _cctk_one;
 #define CCTK_DELTA_TIME cctk_delta_time
 
 #define CCTK_WARN(a,b) CCTK_Warn(a,__LINE__,__FILE__,CCTK_THORNSTRING,b)
+
+#define CCTKi_EXPCTERR(in,err,warnonerr,message) CCTKi_ExpectError(in,err,warnonerr,__LINE__,__FORTRANFILE__,CCTK_THORNSTRING,message)
+
+#define CCTKi_EXPCTOK(in,ok,onerr,message) CCTKi_ExpectOK(in,ok,warnonerr,__LINE__,__FORTRANFILE__,CCTK_THORNSTRING,message)
 
 #endif /*CCODE*/
 
