@@ -288,6 +288,9 @@ else
         L2_CACHE_SIZE=2*1024
       else
         L2_CACHE_SIZE="`cat /proc/cpuinfo | perl -nae 'if(m:cache: && ! $dunnit) {print $F[3]; $dunnit=1}'`"
+	if test -z "$L2_CACHE_SIZE"; then
+          L2_CACHE_SIZE=0
+        fi
       fi
       if test -n "$L2_CACHE_SIZE" ; then
         L2_CACHE_SIZE="$L2_CACHE_SIZE*1024"
