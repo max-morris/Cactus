@@ -7,7 +7,6 @@
         This is documented in
            http://www.cactuscode.org/Development/Specs/KeyValueLookup.txt
         FIXME: this is a bit out of date :(
-        FIXME: should write some latex docs
   @enddesc
   @seefile      seefile Table.c
   @version      $Header$
