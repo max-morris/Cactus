@@ -10,6 +10,7 @@
 
 #include "flesh.h"
 #include "rfr_constants.h"
+#include "CactusIOFunctions.h"
 
 static char *rcsid="$Id$";
 
@@ -64,6 +65,8 @@ int CactusDefaultEvolve(tFleshConfig *config)
   CCTK_InfoHeader(config);
   */
 
+  iteration = 0;
+  itlast = 1;
   while (iteration<itlast) 
   {
     iteration++;
@@ -94,9 +97,8 @@ int CactusDefaultEvolve(tFleshConfig *config)
     /*** an rfrTraverse with CACTUS_ANALYSIS      ***/
     ForallConvLevels(iteration, convergence_level)
       {
-#ifdef 0
-	outputGH(config->GH[convergence_level]);
-#endif
+        CCTK_rfrTraverse(config->GH[convergence_level],CACTUS_ANALYSIS);
+	CCTK_OutputGH(config->GH[convergence_level]);
       }
     EndForallConvLevels;
       
