@@ -1484,7 +1484,7 @@ static int CCTKi_ScheduleCallWhile(int n_whiles,
   /* FIXME - should do a lot of validation either here or on registration */
   for(i = 0; i < n_whiles; i++)
   {
-    retcode = retcode && *((int *)CCTK_VarDataPtr(data->GH, 0, whiles[i]));
+    retcode = retcode && *((CCTK_INT *)CCTK_VarDataPtr(data->GH, 0, whiles[i]));
   }
 
   return retcode;
