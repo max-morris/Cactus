@@ -18,8 +18,13 @@ open(TOOLKITS, "ls|");
 while(<TOOLKITS>)
 {
   chop;
-  next if (m:^CVS$:);
 
+  # Ignore CVS and backup stuff
+  next if (m:^CVS$:);
+  next if (m:^\#:);
+  next if (m:~$:);
+
+  # Just pick directories
   if( -d $_)
   {
     push (@toolkits, $_);
@@ -37,6 +42,13 @@ foreach $toolkit (@toolkits)
   while(<THORNLIST>)
   {
     chop;
+
+    # Ignore CVS and backup stuff
+    next if (m:^CVS$:);
+    next if (m:^\#:);
+    next if (m:~$:);
+
+    # Just pick directories
     if( -d $_)
     {
       push(@total_thornlist, "$toolkit/$_");
