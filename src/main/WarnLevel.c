@@ -300,7 +300,7 @@ int CCTK_VWarn (int level,
     cctk_full_warnings = (const CCTK_INT *)
                          CCTK_ParameterGet ("cctk_full_warnings", "Cactus",
                                             &param_type);
-    if ((level <= error_level) || (*cctk_full_warnings && cctk_full_warnings))
+    if ((level <= error_level) || (cctk_full_warnings && *cctk_full_warnings))
     {
       fprintf (stderr, "WARNING level %d in thorn %s processor %d\n"
                        "  (line %d of %s): \n"
