@@ -1144,6 +1144,17 @@ data;  such a routine should only be called once however many
 sub-grids the driver may have broken the problem into.
 \end{Lentry}
 
+\section{How Cactus Calls Scheduled Functions}
+
+For each scheduled function called, the flesh performs a variety of jobs at entry and exit. 
+
+On entry to a scheduled routine, if the routine is being called at the ANALYSIS timebin first a check is made to see if the routine should actually be called on this timestep. For this, all grid variables in the trigger groups for the routine are checked with all registered output methods to determine if it is time to output any triggers. The routine will only be called if at least one is due to be output. Routines from all other timebins are always called.
+
+Next storage is assigned for any required variables, remembering the original state of storage.
+
+The routine is then called, and on exit, any required grid variables are 
+first synchronised. Following synchronization, any required output methods are called for the triggers. Finally, the storage of grid variables is returned to the original state.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -2584,6 +2595,14 @@ structure, {\t cTimerData} described below, in {\t CCTK\_Timer}.
 Since the timing data is dynamic, before it can be assessed, the structure 
 must be allocated with a call to {\t CCTK\_TimerCreateData}. A similar function
 is provided to destroy the stucture
+
+\item[{\t CCTK\_NumTimers}]
+
+Return the number of created timers
+
+\item[{\t CCTK\_TimerName}]
+
+Provide the name of the timer for a given timer index
 
 \end{Lentry}
 
