@@ -191,4 +191,52 @@ else
 fi
 ])
 
+dnl
+dnl  Figure out if there is socklen_t by checking getsockname
+dnl  -------------------------------------------------------------
+AC_DEFUN(CCTK_CHECK_SOCK_LENGTH_TYPE,
+[
+AC_LANG_SAVE
+AC_LANG_C
+
+dnl Save old libs
+dnl Add the socket and nsl libs if they exist (sun)
+ac_save_LIBS="$LIBS"
+AC_CHECK_LIB(socket,main)
+AC_CHECK_LIB(nsl,main)
+
+socket_argtype=
+cat > socketHdrs.h << EOF
+EOF
+AC_CHECK_HEADER(unistd.h, [ echo "#include <unistd.h>" >> socketHdrs.h ])
+AC_CHECK_HEADER(sys/types.h, [ echo "#include <sys/types.h>" >> socketHdrs.h ])
+AC_CHECK_HEADER(sys/socket.h, [ echo "#include <sys/socket.h>" >> socketHdrs.h ])
+if test "$ARCH" = "intelnt" ; then
+        AC_CHECK_HEADER(winsock2.h, [ echo "#include <winsock2.h>" >> socketHdrs.h ])
+fi
+AC_LANG_SAVE
+AC_LANG_CPLUSPLUS
+
+try="socklen_t"
+AC_TRY_LINK(
+[
+#include <stdio.h>
+#include "socketHdrs.h"
+],
+[
+$try *foo = NULL;
+int i = getsockname(1, (struct sockaddr *)NULL, foo);
+],
+[ ],
+[
+try="int"
+])
+
+AC_DEFINE_UNQUOTED(CCTK_SOCKLEN_T, $try)
+echo checking third arg to getsockname: is pointer to $try
+rm socketHdrs.h
+LIBS="$ac_save_LIBS"
+AC_LANG_RESTORE
+])
+
 

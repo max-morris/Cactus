@@ -377,6 +377,9 @@ CCTK_HEADER_REGEX
 
 AC_HEADER_TIME
 
+#Check type of socklen
+CCTK_CHECK_SOCK_LENGTH_TYPE
+
 # C++ STL stuff
 
 AC_LANG_SAVE
