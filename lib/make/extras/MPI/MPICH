@@ -1,0 +1,85 @@
+#! /bin/sh
+# /*@@
+#   @file      CUSTOM
+#   @date      Wed Jul 21 13:27:07 1999
+#   @author    Tom Goodale
+#   @desc 
+#   
+#   @enddesc
+#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/extras/MPI/MPICH,v 1.1 1999-07-21 12:25:02 goodale Exp $ 
+# @@*/
+
+
+echo "MPICH selected"
+
+# MPICH is pretty configerable itself
+
+# Find the directory.
+if test -z "$MPICH_DIR" ; then
+   echo "MPICH selected but no MPICH_DIR set... Checking some places"
+   CCTK_Search MPICH_DIR "/usr /usr/local /usr/local/mpich /usr/local/packages/mpich /usr/local/apps/mpich" include/mpe.h
+    if test -z "$MPICH_DIR" ; then
+       echo "Unable to locate the MPICH directory - please set MPICH_DIR"
+       exit 2
+   fi
+fi
+
+# Find the MPICH architecture
+
+if test -x "$MPICH_DIR/bin/tarch" ; then
+  MPICH_ARCH=`$MPICH_DIR/bin/tarch`
+  echo "MPICH architecture is $MPICH_ARCH"
+else
+  echo "Cannot execute $MPICH_DIR/bin/tarch"
+  exit 2
+fi
+
+# Find the MPICH device
+
+if test -z "$MPICH_DEVICE" ; then
+   echo "MPICH selected but no MPICH_DEVICE set... Checking for one"
+   CCTK_Search MPICH_DEVICE "ch_shmem ch_p4 globus" lib $MPICH_DIR/build/$MPICH_ARCH/$MPICH_DEVICE
+    if test -z "$MPICH_DEVICE" ; then
+       echo "Unable to locate the MPICH device - please set MPICH_DEVICE"
+       exit 2
+   fi
+fi
+
+
+# Select the device and any special options for it.
+
+case "$MPICH_DEVICE" in
+  globus)
+   if test -z "$GLOBUS_DIR" ; then
+     echo "GLOBUS selected, but GLOBUS_DIR not set !"
+     exit 2
+   fi
+   MPICH_DEVICE_LIB_DIR="$GLOBUS_DIR"
+   MPICH_DEVICE_LIBS="globus_common globus_dc globus_duct_control \
+                      globus_duct_runtime globus_duroc_bootstrap globus_duroc_control\
+                      globus_duroc_runtime globus_gass_cache globus_gass_client \
+                      globus_gass_file globus_gass_server globus_gass_server_ez \
+                      globus_gram_client globus_gram_myjob globus_gss globus_gss_assist \
+                      globus_hbm_client globus_hbm_datacollector globus_mp globus_nexus \
+                      globus_rsl globus_utp lber ldap ldif netperf"
+   ;;
+  *)
+   MPICH_DEVICE_LIB_DIR=""
+   MPICH_DEVICE_LIBS=""
+   ;;
+esac
+
+# Work out what the MPICH library is called
+
+if test -r "$MPICH_DIR/build/$MPICH_ARCH/$MPICH_DEVICE/lib/libmpi.a" ; then
+   MPICH_LIB=mpi
+else
+   MPICH_LIB=mpich
+fi
+
+# Finally set the library lines.
+
+MPI_LIBS="$MPICH_LIB $MPICH_DEVICE_LIBS" 
+MPI_LIB_DIRS="$MPICH_DEVICE_LIB_DIR $MPICH_DIR/build/$MPICH_ARCH/$MPICH_DEVICE/lib"
+MPI_INC_DIRS="$MPICH_DIR/include $MPICH_DIR/build/$MPICH_ARCH/$MPICH_DEVICE/include"
+

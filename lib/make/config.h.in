@@ -57,11 +57,6 @@
 
 #undef FMODIFIER
 
-/******************************************************************************
- *********************** MPI stuff ********************************************
- ******************************************************************************/
-
-#undef MPI
 
 /******************************************************************************/
 
@@ -103,5 +98,8 @@ typedef CCTK_INT4 Int;
 
 /* Include any other stuff which is specific to this architecture */
 #include "cctk_archdefs.h"
+
+/* Include any extra stuff from optional extra packages. */
+#include "cctk_extradefs.h"
 
 #endif /* _CONFIG_H_ */

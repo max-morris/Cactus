@@ -72,165 +72,48 @@ AC_SUBST(LD)
 LD=$CXX
 fi
 
-dnl Has the user asked for MPI ?
+# Include some CCTK auxiliary functions
 
-if test -n "$MPI" ; then
+. $srcdir/CCTK_Functions.sh
 
-echo "Configuring with MPI"
+#########################################################################
+#Check for extra stuff
+#########################################################################
+cat > cctk_extradefs.h <<EOF
+/* Stuff from extra packages */
+#ifndef _CCTK_EXTRADEFS_H_
+#define _CCTK_EXTRADEFS_H_
+EOF
 
-AC_DEFINE(MPI)
+cat > make.extra.defn <<EOF
+# Stuff from extra packages 
+EOF
 
-case "$MPI" in
-
-    CUSTOM)
-    # Allow the user to completely specify at the command line,
-    echo "Custom MPI selected"
-
-    MPI_LIBS="$MPI_LIBS" 
-    MPI_LIB_DIRS="$MPI_LIB_DIRS"
-    MPI_INC_DIRS="$MPI_INC_DIRS"
-
-   ;;
-
-    MPICH)
-
-    echo "MPICH selected"
-    # MPICH is pretty configerable itself
-    if test -z "$MPICH_DIR" ; then
-       echo "MPICH selected but no MPICH_DIR set... Checking some places"
-
-       DIR_FOUND=""
-       for MPICH_DIR in /usr /usr/local /usr/local/mpich /usr/local/packages/mpich /usr/local/apps/mpich  
-       do
-           echo $ac_n "Looking in $MPICH_DIR""...$ac_c" 1>&6
-           if test -r "$MPICH_DIR/include/mpe.h" ; then
-              echo "$ac_t""...Found" 1>&6
-              DIR_FOUND="yes"
-              break
-           fi
-           echo "$ac_t""No" 1>&6
-       done
-
-       if test -z "$DIR_FOUND" ; then
-           echo "Unable to locate the MPICH directory - please set MPICH_DIR"
-           exit 2
-       fi
+for extra in `ls $srcdir/extras`
+do
+  if test -d $srcdir/extras/$extra ; then
+    if test -x $srcdir/extras/$extra/setup.sh ; then
+        # Put some comment lines in the files.
+        CCTK_WriteLine cctk_extradefs.h ""
+        CCTK_WriteLine cctk_extradefs.h "/*$extra definitions*/"
+        CCTK_WriteLine make.extra.defn ""
+        CCTK_WriteLine make.extra.defn "# $extra definitions"
+        # Call the setup script
+        . $srcdir/extras/$extra/setup.sh
+        # Put some more comments in
+        CCTK_WriteLine make.extra.defn "#End of $extra definitions"
+        CCTK_WriteLine make.extra.defn ""
     fi
+  fi
+done
 
-    if test -x "$MPICH_DIR/bin/tarch" ; then
-      MPICH_ARCH=`$MPICH_DIR/bin/tarch`
-      echo "MPICH architecture is $MPICH_ARCH"
-    else
-      echo "Cannot execute $MPICH_DIR/bin/tarch"
-      exit 2
-    fi
-
-    if test -z "$MPICH_DEVICE" ; then
-       echo "MPICH selected but no MPICH_DEVICE set... Checking for one"
-
-       DIR_FOUND=""
-       for MPICH_DEVICE in ch_shmem ch_p4 globus  
-       do
-           echo $ac_n "Looking for $MPICH_DEVICE""...$ac_c" 1>&6
-           if test -d "$MPICH_DIR/build/$MPICH_ARCH/$MPICH_DEVICE" ; then
-              echo "$ac_t""...Found" 1>&6
-              DIR_FOUND="yes"
-              break
-           fi
-           echo "$ac_t""No" 1>&6
-       done
-
-       if test -z "$DIR_FOUND" ; then
-           echo "Unable to locate the MPICH device - please set MPICH_DEVICE"
-           exit 2
-       fi
-    fi
-
-    case "$MPICH_DEVICE" in
-      globus)
-       if test -z "$GLOBUS_DIR" ; then
-         echo "GLOBUS selected, but GLOBUS_DIR not set !"
-         exit 2
-       fi
-       MPICH_DEVICE_LIB_DIR="$GLOBUS_DIR"
-       MPICH_DEVICE_LIBS="globus_common globus_dc globus_duct_control \
-                          globus_duct_runtime globus_duroc_bootstrap globus_duroc_control\
-                          globus_duroc_runtime globus_gass_cache globus_gass_client \
-                          globus_gass_file globus_gass_server globus_gass_server_ez \
-                          globus_gram_client globus_gram_myjob globus_gss globus_gss_assist \
-                          globus_hbm_client globus_hbm_datacollector globus_mp globus_nexus \
-                          globus_rsl globus_utp lber ldap ldif netperf"
-       ;;
-      *)
-       MPICH_DEVICE_LIB_DIR=""
-       MPICH_DEVICE_LIBS=""
-       ;;
-    esac
-    if test -r "$MPICH_DIR/build/$MPICH_ARCH/$MPICH_DEVICE/lib/libmpi.a" ; then
-       MPICH_LIB=mpi
-    else
-       MPICH_LIB=mpich
-    fi
-
-    MPI_LIBS="$MPICH_LIB $MPICH_DEVICE_LIBS" 
-    MPI_LIB_DIRS="$MPICH_DEVICE_LIB_DIR $MPICH_DIR/build/$MPICH_ARCH/$MPICH_DEVICE/lib"
-    MPI_INC_DIRS="$MPICH_DIR/include $MPICH_DIR/build/$MPICH_ARCH/$MPICH_DEVICE/include"
-
-    ;;
-
-    LAM)
-    echo "LAM selected"
-
-    if test -z "$LAM_DIR" ; then
-       echo "LAM selected but no LAM_DIR set... Checking some places"
-
-       DIR_FOUND=""
-       for LAM_DIR in /usr /usr/local /usr/local/lam /usr/local/packages/lam /usr/local/apps/lam  
-       do
-           echo $ac_n "Looking in $LAM_DIR""...$ac_c" 1>&6
-           if test -r "$LAM_DIR/h/lam.h" ; then
-              echo "$ac_t""...Found" 1>&6
-              DIR_FOUND="yes"
-              break
-           fi
-           echo "$ac_t""No" 1>&6
-       done
-
-       if test -z "$DIR_FOUND" ; then
-           echo "Unable to locate the LAM directory - please set LAM_DIR"
-           exit 2
-       fi
-    fi
-  
-    MPI_LIBS="mpi tstdio args t trillium " 
-    MPI_LIB_DIRS="$LAM_DIR/lib"
-    MPI_INC_DIRS="$LAM_DIR/h"
-
-    ;;
-
-    NATIVE)
-
-    echo "Native MPI selected"
-    # This should be filled out by the know-architecture stuff.
-    MPI_LIBS="" 
-    MPI_LIB_DIRS=""
-    MPI_INC_DIRS=""
-    ;; 
-
-    *)
-    echo "MPI selected, but no known MPI method - what is $withval ?"
-    exit 2;
-    ;;
-
-esac
-
-fi
-
-AC_SUBST(MPI_LIBS)
-AC_SUBST(MPI_LIB_DIRS)
-AC_SUBST(MPI_INC_DIRS)
+# Finish the cctk_extradefs.h file
+cat >> cctk_extradefs.h <<EOF
+#endif /*_CCTK_EXTRADEFS_H_*/
+EOF
 
 
+#########################################################################
 # If this is a known architecture, setup any specific flags.
 # This has to be done here as flags given to the compiler may
 # change the things detected later.
@@ -251,6 +134,9 @@ fi
 cat >> cctk_archdefs.h <<EOF
 #endif /* _CCTK_ARCHDEFS_H_ */
 EOF
+
+##########################################################################
+#########################################################################
 
 # Deal with the Fortran compiler issues.
 # If there's a Fortran 90 compiler use that for all the Fortran.

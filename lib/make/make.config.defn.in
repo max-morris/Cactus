@@ -11,6 +11,11 @@
 #   @version $Id$
 # @@*/
 
+# Include stuff defined by optional extra packages
+
+include $(TOP)/config-data/make.extra.defn
+
+
 # Compiler/executable info
 
 SHELL             = @SHELL@
@@ -66,21 +71,14 @@ F77_DEPEND_OUT = @F77_DEPEND_OUT@
 # Command used to get the working directory
 GET_WD = @GET_WD@
 
-# MPI stuff
-
-MPI_LIBS      = @MPI_LIBS@
-MPI_LIB_DIRS  = @MPI_LIB_DIRS@
-MPI_INC_DIRS  = @MPI_INC_DIRS@
-
-
 # Library info
 
-LIBS    = $(MPI_LIBS) @LIBS@
-LIBDIRS = $(MPI_LIB_DIRS) @LIBDIRS@
+LIBS    += @LIBS@
+LIBDIRS += @LIBDIRS@
 
 # System include directories
 
-SYS_INC_DIRS = $(MPI_INC_DIRS) @SYS_INC_DIRS@
+SYS_INC_DIRS += @SYS_INC_DIRS@
 
 # Stuff for the architecture
 

@@ -1,0 +1,25 @@
+#! /bin/sh
+# /*@@
+#   @file      LAM
+#   @date      Wed Jul 21 13:27:07 1999
+#   @author    Tom Goodale
+#   @desc 
+#   
+#   @enddesc
+#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/extras/MPI/LAM,v 1.1 1999-07-21 12:25:02 goodale Exp $ 
+# @@*/
+
+echo "LAM selected"
+
+if test -z "$LAM_DIR" ; then
+   echo "LAM selected but no LAM_DIR set... Checking some places"
+   CCTK_Search LAM_DIR "/usr /usr/local /usr/local/lam /usr/local/packages/lam /usr/local/apps/lam" h/lam.h
+   if test -z "$LAM_DIR" ; then
+       echo "Unable to locate the LAM directory - please set LAM_DIR"
+       exit 2
+   fi
+fi
+  
+MPI_LIBS="mpi tstdio args t trillium " 
+MPI_LIB_DIRS="$LAM_DIR/lib"
+MPI_INC_DIRS="$LAM_DIR/h"
