@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.78 2000-03-10 16:23:00 goodale Exp $
+#   @version $Id: Makefile,v 1.79 2000-03-13 09:26:27 goodale Exp $
 # @@*/
 
 ##################################################################################
@@ -558,7 +558,7 @@ $(addsuffix -config,$(CONFIGURATIONS)):
 	cp $(THORNLIST_DIR)/$(THORNLIST) $(CONFIGS_DIR)/$(@:%-config=%)/ThornList;\
 	fi ; \
 	echo $(DIVIDER) ; \
-	if test "x$(PROMPT)" = "xno ; then \
+	if test "x$(PROMPT)" = "xno" ; then \
 	gmake $(@:%-config=%); \
 	else \
 	echo Use $(MAKE) $(@:%-config=%) to build the configuration. ; \
