@@ -1561,8 +1561,10 @@ static int ParseOptionList(int n_items,
 @@*/
 static int InitialiseOptionList(t_attribute *attribute)
 {
-  attribute->FunctionData.level = 0;
+  attribute->FunctionData.meta = 0;
   attribute->FunctionData.global = 0;
+  attribute->FunctionData.level = 0;
+  attribute->FunctionData.singlemap = 0;
 
   return 0;
 }
@@ -1595,13 +1597,21 @@ static int InitialiseOptionList(t_attribute *attribute)
 static int ParseOption(t_attribute *attribute,
                        const char *option)
 {
-  if(CCTK_Equals(option, "GLOBAL"))
+  if(CCTK_Equals(option, "META"))
+  {
+    attribute->FunctionData.meta = 1;
+  }
+  else if(CCTK_Equals(option, "GLOBAL"))
   {
     attribute->FunctionData.global = 1;
   }
   else if(CCTK_Equals(option, "LEVEL"))
   {
     attribute->FunctionData.level = 1;
+  }
+  else if(CCTK_Equals(option, "SINGLEMAP"))
+  {
+    attribute->FunctionData.singlemap = 1;
   }
   else
   {

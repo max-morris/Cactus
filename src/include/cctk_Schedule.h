@@ -29,8 +29,10 @@ typedef struct
 
   /* Option Flags */
 
+  int meta;
   int global;
   int level;
+  int singlemap;
 
   /* The last items should be considered volatile and may
      not stay here */
