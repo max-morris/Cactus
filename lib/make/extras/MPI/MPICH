@@ -6,7 +6,7 @@
 #   @desc 
 #   
 #   @enddesc
-#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/extras/MPI/MPICH,v 1.14 2001-09-13 10:35:40 tradke Exp $
+#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/extras/MPI/MPICH,v 1.15 2001-09-13 13:29:56 tradke Exp $
 # @@*/
 
 
@@ -89,7 +89,7 @@ case "$MPICH_DEVICE" in
      exit 2
    fi
    GLOBUS_MPICH_MAKEFILE="$GLOBUS_LIB_DIR/../etc/Makefile.mpich"
-   if ! test -r "$GLOBUS_MPICH_MAKEFILE" ; then
+   if test ! -r "$GLOBUS_MPICH_MAKEFILE" ; then
      echo "No Makefile \"$GLOBUS_MPICH_MAKEFILE\" found !"
      echo "Did you set GLOBUS_LIB_DIR correctly ?"
      exit 2
