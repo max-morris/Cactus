@@ -32,11 +32,12 @@
   print *,"----------------------------------------------------------------"
 
 
-#define _CCTK_FARGUMENTS  cctk_dim, cctk_gsh, cctk_lsh, cctk_lbnd, cctk_ubnd, cctk_from, cctk_to, cctk_bbox, cctk_delta_time, cctk_time, cctk_delta_space, cctk_origin_space, cctk_levfac, cctk_convlevel, cctk_nghostzones, cctk_iteration, GH
+#define _CCTK_FARGUMENTS  cctk_dim, cctk_gsh, cctk_lsh, cctk_lbnd, cctk_ubnd, cctk_from, cctk_to, cctk_bbox, cctk_delta_time, cctk_time, cctk_delta_space, cctk_origin_space, cctk_levfac, cctk_convlevel, cctk_nghostzones, cctk_iteration, cctkGH
 #define _DECLARE_CCTK_FARGUMENTS CCTK_INT cctk_dim&&\
                            INTEGER cctk_gsh(cctk_dim),cctk_lsh(cctk_dim)&&\
                            INTEGER cctk_lbnd(cctk_dim),cctk_ubnd(cctk_dim)&&\
-                           INTEGER cctk_from(cctk_dim),cctk_to(cctk_dim),cctk_bbox(2*cctk_dim)&&\
+                           INTEGER cctk_from(cctk_dim),cctk_to(cctk_dim)&&\
+                           INTEGER cctk_bbox(2*cctk_dim)&&\
                            CCTK_REAL cctk_delta_time, cctk_time&&\
                            CCTK_REAL cctk_delta_space(cctk_dim)&&\
 			   CCTK_REAL cctk_origin_space(cctk_dim)&&\
@@ -44,7 +45,7 @@
                            INTEGER cctk_convlevel&&\
                            INTEGER cctk_nghostzones(cctk_dim)&&\
                            INTEGER cctk_iteration&&\
-                           CCTK_POINTER GH&&\
+                           CCTK_POINTER cctkGH&&\
 
 #endif /*FCODE*/
 
@@ -58,9 +59,12 @@
 #define _INITIALISE_CCTK_C2F
 #define _DECLARE_CCTK_C2F 
 #define _PASS_CCTK_C2F(xGH) &((xGH)->cctk_dim),\
-                            (xGH)->cctk_gsh,\
-                            (xGH)->cctk_lsh, (xGH)->cctk_lbnd, (xGH)->cctk_ubnd, (xGH)->cctk_from,(xGH)->cctk_to,(xGH)->cctk_bbox,\
-                            &((xGH)->cctk_delta_time), &((xGH)->cctk_time), (xGH)->cctk_delta_space,\
+                            (xGH)->cctk_gsh,(xGH)->cctk_lsh, \
+                            (xGH)->cctk_lbnd,(xGH)->cctk_ubnd, \
+                            (xGH)->cctk_from,(xGH)->cctk_to, \
+                            (xGH)->cctk_bbox,\
+                            &((xGH)->cctk_delta_time), \
+                            &((xGH)->cctk_time), (xGH)->cctk_delta_space,\
 			    (xGH)->cctk_origin_space,\
                             (xGH)->cctk_levfac,\
                             &((xGH)->cctk_convlevel),\
@@ -78,8 +82,9 @@
                             int *,\
                             cGH *
 
-#define CCTK_STORAGESIZE(xGH, group, cctk_dim) (CCTK_QueryGroupStorage(xGH,group) ?\
-                           (CCTK_ArrayGroupSize(xGH, group, cctk_dim)) : &(_cctk_one))
+#define CCTK_STORAGESIZE(xGH, group, cctk_dim) \
+                  (CCTK_QueryGroupStorage(xGH,group) ?\
+                  (CCTK_ArrayGroupSize(xGH, group, cctk_dim)) : &(_cctk_one))
 
 
 extern int _cctk_one;
@@ -96,6 +101,8 @@ extern int _cctk_one;
 #define CCTK_WARN(a,b) CCTK_Warn(a,CCTK_MAKESTRING(CCTK_THORN),b)
 */
 #define CCTK_WARN(a,b) CCTK_Warn(a,CCTK_THORNSTRING,b)
+#define CCTK_INFO(a) CCTK_Info(CCTK_THORNSTRING,a)
+#define CCTK_PARAMWARN(a) CCTK_ParamWarn(CCTK_THORNSTRING,a)
 
 #endif
 
