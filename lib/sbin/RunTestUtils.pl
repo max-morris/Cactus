@@ -532,7 +532,7 @@ sub FindFiles
 
 sub WriteFullResults
 {
-  my ($rundata,$testdata) = @_;
+  my ($rundata,$testdata,$config_data) = @_;
   my ($separator,$show_warnings);
 
   $separator1 = "========================================================================\n\n";
@@ -543,7 +543,7 @@ sub WriteFullResults
   if ($show_warnings)
   {
     print $separator2;
-    print "  Warnings for configuration $config\n  --------\n\n";
+    print "  Warnings for configuration $config_data->{\"CONFIG\"}\n  --------\n\n";
 
     # Missing thorns for tests
     
@@ -590,7 +590,7 @@ sub WriteFullResults
 
   print $separator2;
 
-  print "  Testsuite Summary for configuration $config\n";
+  print "  Testsuite Summary for configuration $config_data->{\"CONFIG\"}\n";
   print "  -----------------\n\n";
 
   print "  Suitable testsuite parameter files found in:\n\n";
@@ -662,7 +662,7 @@ sub WriteFullResults
 
   print $separator2;
 
-  print "  Run details for configuration $config\n\n";
+  print "  Run details for configuration $config_data->{\"CONFIG\"}\n\n";
 
   foreach $thorn (split(" ",$testdata->{"RUNNABLETHORNS"}))
   {
@@ -682,7 +682,7 @@ sub WriteFullResults
 
   print $separator1;
 
-  print "  Summary for configuration $config\n\n";
+  print "  Summary for configuration $config_data->{\"CONFIG\"}\n\n";
 
   $total = $testdata->{"NUNRUNNABLE"}+$testdata->{"NRUNNABLE"};
   print "    Total available tests    -> $total\n";

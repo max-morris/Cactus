@@ -105,7 +105,7 @@ while ($choice !~ /^Q/i)
       }
 
       # Write results of all tests
-      &WriteFullResults($rundata,$testdata);
+      &WriteFullResults($rundata,$testdata,$config_data);
       
       $haverunall = 1;
 
