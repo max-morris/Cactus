@@ -447,32 +447,32 @@ int CCTK_CoordRegisterRange (cGH *GH,
       /* Is range already registered */
       if (coord_system->coords[vindex].listcomp)
       {
-	CCTK_VWarn (3, __LINE__, __FILE__, "Cactus",
-		    "CCTK_CoordRange: Range already registered", systemname);
-	coord_system->coords[vindex].listcomp->lower = min;
-	coord_system->coords[vindex].listcomp->upper = max;
+        CCTK_VWarn (3, __LINE__, __FILE__, "Cactus",
+                    "CCTK_CoordRange: Range already registered", systemname);
+        coord_system->coords[vindex].listcomp->lower = min;
+        coord_system->coords[vindex].listcomp->upper = max;
       }
       else
       {
-	/* New coord_range */
-	newguy = (struct Coordpropslistcomp *) 
-	  malloc (sizeof(struct Coordpropslistcomp));
+        /* New coord_range */
+        newguy = (struct Coordpropslistcomp *) 
+          malloc (sizeof(struct Coordpropslistcomp));
 
-	if (! newguy)
-	{
-	  CCTK_Warn (1, __LINE__, __FILE__, "Cactus",
-		     "CCTK_CoordRegisterRange: Cannot allocate data "
-		     "for coordinate range");
-	  retval = -5;
-	}
-	else
-	{
-	  newguy->GH    = GH;
-	  newguy->lower = min;
-	  newguy->upper = max;
-	  newguy->next  = coord_system->coords[vindex].listcomp;
-	  coord_system->coords[vindex].listcomp = newguy;
-	}
+        if (! newguy)
+        {
+          CCTK_Warn (1, __LINE__, __FILE__, "Cactus",
+                     "CCTK_CoordRegisterRange: Cannot allocate data "
+                     "for coordinate range");
+          retval = -5;
+        }
+        else
+        {
+          newguy->GH    = GH;
+          newguy->lower = min;
+          newguy->upper = max;
+          newguy->next  = coord_system->coords[vindex].listcomp;
+          coord_system->coords[vindex].listcomp = newguy;
+        }
       }
     }
   }
@@ -501,7 +501,7 @@ void CCTK_FCALL CCTK_FNAME (CCTK_CoordRegisterRange)
    @author     Gabrielle Allen
    @desc
                Register the physical range for a coordinate by 
-	       global grid index
+               global grid index
    @enddesc
    @calls
 
@@ -547,14 +547,12 @@ void CCTK_FCALL CCTK_FNAME (CCTK_CoordRegisterRange)
    -5 = memory allocation failed
    @endreturndesc
 @@*/
-
-
 int CCTK_CoordRegisterRangePhysIndex (cGH *GH,
-				      int min,
-				      int max,
-				      int dir,
-				      const char *coordname,
-				      const char *systemname)
+                                      int min,
+                                      int max,
+                                      int dir,
+                                      const char *coordname,
+                                      const char *systemname)
 {
   int i;
   int retval = 0;
@@ -568,7 +566,7 @@ int CCTK_CoordRegisterRangePhysIndex (cGH *GH,
   if (! coord_system)
   {
     CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
-		"CCTK_CoordRegisterRangePhysIndex: System '%s' not registered",
+                "CCTK_CoordRegisterRangePhysIndex: System '%s' not registered",
                systemname);
     retval = -1;
   }
@@ -591,7 +589,7 @@ int CCTK_CoordRegisterRangePhysIndex (cGH *GH,
       {
         CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
                     "CCTK_CoordRegisterRangePhysIndex: "
-		    "Coordinate direction %d "
+                    "Coordinate direction %d "
                     "not registered", dir);
         retval = -4;
       }
@@ -621,33 +619,33 @@ int CCTK_CoordRegisterRangePhysIndex (cGH *GH,
       /* Is range already registered */
       if (coord_system->coords[vindex].listphysi)
       {
-	CCTK_VWarn (3, __LINE__, __FILE__, "Cactus",
-		    "CCTK_CoordRegisterRangePhysIndex: "
-		    "Range already registered", systemname);
-	coord_system->coords[vindex].listphysi->lower = min;
-	coord_system->coords[vindex].listphysi->upper = max;
+        CCTK_VWarn (3, __LINE__, __FILE__, "Cactus",
+                    "CCTK_CoordRegisterRangePhysIndex: "
+                    "Range already registered", systemname);
+        coord_system->coords[vindex].listphysi->lower = min;
+        coord_system->coords[vindex].listphysi->upper = max;
       }
       else
       {
-	/* New coord_range */
-	newguy = (struct Coordpropslistphysi *) 
-	  malloc (sizeof(struct Coordpropslistphysi));
+        /* New coord_range */
+        newguy = (struct Coordpropslistphysi *) 
+          malloc (sizeof(struct Coordpropslistphysi));
 
-	if (! newguy)
-	{
-	  CCTK_Warn (1, __LINE__, __FILE__, "Cactus",
-		     "CCTK_CoordRegisterRangePhysIndex: Cannot allocate data "
-		     "for coordinate range");
-	  retval = -5;
-	}
-	else
-	{
-	  newguy->GH    = GH;
-	  newguy->lower = min;
-	  newguy->upper = max;
-	  newguy->next  = coord_system->coords[vindex].listphysi;
-	  coord_system->coords[vindex].listphysi = newguy;
-	}
+        if (! newguy)
+        {
+          CCTK_Warn (1, __LINE__, __FILE__, "Cactus",
+                     "CCTK_CoordRegisterRangePhysIndex: Cannot allocate data "
+                     "for coordinate range");
+          retval = -5;
+        }
+        else
+        {
+          newguy->GH    = GH;
+          newguy->lower = min;
+          newguy->upper = max;
+          newguy->next  = coord_system->coords[vindex].listphysi;
+          coord_system->coords[vindex].listphysi = newguy;
+        }
       }
     }
   }
@@ -972,11 +970,11 @@ void CCTK_FCALL CCTK_FNAME (CCTK_CoordDir)
    @author     Gabrielle Allen
    @desc
                Supplies the global range of the named coordinate.
-	
-	       You specify the direction (coorddir=-1;1,2,...)
-	       or the name (coordname). The name will be used
-	       if coordir==-1
-	
+        
+               You specify the direction (coorddir=-1;1,2,...)
+               or the name (coordname). The name will be used
+               if coordir==-1
+        
    @enddesc
    @calls
 
@@ -1138,12 +1136,12 @@ void CCTK_FCALL CCTK_FNAME (CCTK_CoordRange)
    @author     Gabrielle Allen
    @desc
                Supplies the global physical range of the named coordinate
-	       by index
-	
-	       You specify the direction (coorddir=-1;1,2,...)
-	       or the name (coordname). The name will be used
-	       if coordir==-1
-	
+               by index
+        
+               You specify the direction (coorddir=-1;1,2,...)
+               or the name (coordname). The name will be used
+               if coordir==-1
+        
    @enddesc
    @calls
 
@@ -1180,20 +1178,20 @@ void CCTK_FCALL CCTK_FNAME (CCTK_CoordRange)
 
    @returntype int
    @returndesc Returns zero for success and negative for error
-      -1 = coordinate system not registered 
-      -2 = no coordinate name provided
-      -3 = no coordinate system name provided
-      -4 = coordinate name not registered
-      -5 = NULL pointer(s) passed for lower/upper
+      -1 = NULL pointer(s) passed for lower and/or upper
+      -2 = no coordinate name given
+      -3 = no coordinate system name given
+      -4 = coordinate system not registered 
+      -5 = coordinate name not registered
+      -6 = physical coordinate range not registered
    @endreturndesc
 @@*/
-
 int CCTK_CoordRangePhysIndex (cGH *GH,
-			      int *lower,
-			      int *upper,
-			      int coorddir,
-			      const char *coordname,
-			      const char *systemname)
+                              int *lower,
+                              int *upper,
+                              int coorddir,
+                              const char *coordname,
+                              const char *systemname)
 {
   int i;
   int retval=0;
@@ -1206,7 +1204,7 @@ int CCTK_CoordRangePhysIndex (cGH *GH,
   {
     CCTK_Warn (2, __LINE__, __FILE__, "Cactus",
                "CCTK_CoordRangePhysIndex: NULL pointer(s) passed "
-	       "for lower/upper");
+               "for lower/upper");
     retval = -1;
   }
   else if (coorddir <= 0 && coordname == NULL)
@@ -1229,7 +1227,7 @@ int CCTK_CoordRangePhysIndex (cGH *GH,
     {
       CCTK_VWarn (2, __LINE__, __FILE__, "Cactus",
                  "CCTK_CoordRangePhysIndex: System '%s' not registered", systemname);
-      retval = -1;
+      retval = -4;
     }
     else
     {
@@ -1253,7 +1251,7 @@ int CCTK_CoordRangePhysIndex (cGH *GH,
           CCTK_VWarn (2, __LINE__, __FILE__, "Cactus",
                       "CCTK_CoordRangePhysIndex: Coordinate name '%s' not registered",
                       coordname);
-          retval = -4;
+          retval = -5;
         }
       }
       if (coord)
@@ -1270,13 +1268,22 @@ int CCTK_CoordRangePhysIndex (cGH *GH,
 
           if (curr->GH == GH)
           {
-            *lower = curr->lower;
-            *upper = curr->upper;
-
 #ifdef DEBUG_COORD
             printf("Returning range (%d,%d) (from %p)\n", *lower,*upper,curr);
 #endif
+
+            *lower = curr->lower;
+            *upper = curr->upper;
+            break;
           }
+        }
+        if (curr == NULL)
+        {
+          CCTK_VWarn (2, __LINE__, __FILE__, "Cactus",
+                      "CCTK_CoordRangePhysIndex: no physical range registered "
+                      "for coordinate '%s' in system '%s'",
+                      coord->name, systemname);
+          retval = -6;
         }
       }
     }
