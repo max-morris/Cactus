@@ -18,6 +18,8 @@
 #include "cctk_GHExtensions.h"
 #include "StoreHandledData.h"
 #include "cctk_WarnLevel.h"
+#include "cctk_Schedule.h"
+#include "cctki_GHExtensions.h"
 
 static const char *rcsid = "$Header$";
 
@@ -69,6 +71,8 @@ static int DummyScheduleTraverseGH(cGH *GH,
 /********************************************************************
  ********************* Other Routine Prototypes *********************
  ********************************************************************/
+void CCTK_FCALL CCTK_FNAME (CCTK_GHExtensionHandle)
+                           (int *handle, ONE_FORTSTRING_ARG);
 
 /********************************************************************
  *********************     Local Data   *****************************
@@ -559,25 +563,34 @@ int CCTKi_InitGHExtensions(cGH *GH)
 
    @returntype int
    @returndesc
+   return code of @seeroutine CCTK_ScheduleTraverse, or
    0 - success
    @endreturndesc
 @@*/
 int CCTKi_ScheduleTraverseGHExtensions(cGH *GH,
                                        const char *where)
 {
-  int handle;
+  int handle, retval;
   struct GHExtension *extension;
 
-  for(handle = 0; handle < num_extensions; handle++)
+  if (num_extensions <= 0)
   {
-    extension =  (struct GHExtension *)Util_GetHandledData(GHExtensions, handle);
-    if(extension)
+    retval = CCTK_ScheduleTraverse(where, GH, NULL);
+  }
+  else
+  {
+    for(handle = 0; handle < num_extensions; handle++)
     {
-      extension->ScheduleTraverseGH(GH, where);
+      extension = (struct GHExtension *)Util_GetHandledData(GHExtensions, handle);
+      if(extension)
+      {
+        extension->ScheduleTraverseGH(GH, where);
+      }
     }
+    retval = 0;
   }
 
-  return 0;
+  return (retval);
 }
 
 /************************************************************************
@@ -616,12 +629,12 @@ int CCTK_GHExtensionHandle(const char *name)
   return Util_GetHandle(GHExtensions, name, NULL);
 }
 
-void  CCTK_FCALL CCTK_FNAME(CCTK_GHExtensionHandle)
-     (int *handle,ONE_FORTSTRING_ARG)
+void CCTK_FCALL CCTK_FNAME (CCTK_GHExtensionHandle)
+                           (int *handle, ONE_FORTSTRING_ARG)
 {
-  ONE_FORTSTRING_CREATE(name)
-  *handle = CCTK_GHExtensionHandle(name);
-  free(name);
+  ONE_FORTSTRING_CREATE (name)
+  *handle = CCTK_GHExtensionHandle (name);
+  free (name);
 }
 
 
@@ -791,6 +804,9 @@ static void *DummySetupGH(tFleshConfig *config,
                           int convergence_level,
                           cGH *GH)
 {
+  config = config;
+  convergence_level = convergence_level;
+  GH = GH;
   return NULL;
 }
 
@@ -822,6 +838,7 @@ static void *DummySetupGH(tFleshConfig *config,
 @@*/
 static int DummyInitGH(cGH *GH)
 {
+  GH = GH;
   return 0;
 }
 
@@ -861,5 +878,7 @@ static int DummyInitGH(cGH *GH)
 static int DummyScheduleTraverseGH(cGH *GH,
                                    const char *where)
 {
+  GH = GH;
+  where = where;
   return 0;
 }
