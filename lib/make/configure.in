@@ -421,9 +421,38 @@ esac
 # Define any code needed before the definition of a Fortran subroutine
 # This is empty on most architectures.
 
+: ${CCTK_FCALL=""}
+
+AC_DEFINE_UNQUOTED(CCTK_FCALL, $CCTK_FCALL) 
+
+# DEPRECATED IN BETA 9
+
 : ${FMODIFIER=""}
 
 AC_DEFINE_UNQUOTED(FMODIFIER, $FMODIFIER) 
+
+# Define the type of debugging to use
+
+if test -n  "$DEBUG" ; then
+  case "$DEBUG" in
+    MEMORY) 
+	AC_DEFINE(CCTK_TRACEMEMORY)
+      ;;
+    FLAGS)
+	AC_DEFINE(CCTK_DEBUG)
+      ;;
+    DEFINES)
+	AC_DEFINE(DEBUG)
+      ;;
+    ALL)
+	AC_DEFINE(CCTK_TRACEMEMORY)
+	AC_DEFINE(CCTK_DEBUG)
+	AC_DEFINE(DEBUG)
+      ;;
+   esac
+
+AC_DEFINE_UNQUOTED(DEBUG, $DEBUG)
+fi
 
 # Define how to make a directory in the config.h file
 

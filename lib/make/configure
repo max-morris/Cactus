@@ -3125,12 +3125,65 @@ esac
 # Define any code needed before the definition of a Fortran subroutine
 # This is empty on most architectures.
 
+: ${CCTK_FCALL=""}
+
+cat >> confdefs.h <<EOF
+#define CCTK_FCALL $CCTK_FCALL
+EOF
+ 
+
+# DEPRECATED IN BETA 9
+
 : ${FMODIFIER=""}
 
 cat >> confdefs.h <<EOF
 #define FMODIFIER $FMODIFIER
 EOF
  
+
+# Define the type of debugging to use
+
+if test -n  "$DEBUG" ; then
+  case "$DEBUG" in
+    MEMORY) 
+	cat >> confdefs.h <<\EOF
+#define CCTK_TRACEMEMORY 1
+EOF
+
+      ;;
+    FLAGS)
+	cat >> confdefs.h <<\EOF
+#define CCTK_DEBUG 1
+EOF
+
+      ;;
+    DEFINES)
+	cat >> confdefs.h <<\EOF
+#define DEBUG 1
+EOF
+
+      ;;
+    ALL)
+	cat >> confdefs.h <<\EOF
+#define CCTK_TRACEMEMORY 1
+EOF
+
+	cat >> confdefs.h <<\EOF
+#define CCTK_DEBUG 1
+EOF
+
+	cat >> confdefs.h <<\EOF
+#define DEBUG 1
+EOF
+
+      ;;
+   esac
+
+cat >> confdefs.h <<EOF
+#define DEBUG $DEBUG
+EOF
+
+fi
 
 # Define how to make a directory in the config.h file
 

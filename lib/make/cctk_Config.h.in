@@ -60,7 +60,14 @@
 
 /* Modifier for Fortran function definitions. */
 
+#undef CCTK_FCALL
+
+/* DEPRECATED IN BETA 9 */
 #undef FMODIFIER
+/* END DEPRECATED IN BETA 9 */
+
+/* What debugging options to use */
+#undef DEBUG
 
 /* How to create a directory */
 
