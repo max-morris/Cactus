@@ -1114,19 +1114,18 @@ void CCTK_FCALL CCTK_FNAME(Util_TableCreateFromString)
                 In more detail, the strings recognized are defined by the
                 following BNF:<BR>
                 <BLOCKQUOTE>
-                   string -> assign*<BR>
-                   assign -> whitespace*<BR>
-                   assign -> whitespace* key whitespace* =
-                                             whitespace* value delimiter<BR>
+                   string -> whitespace* assign*<BR>
+                   assign -> key whitespace* '=' whitespace* value delimiter<BR>
                    key    -> any string not containing '/' or '=' or
                              whitespace<BR>
                    value  -> array | int_value | real_value | string_value<BR>
-                   array  -> { int_value* } | { real_value* }<BR>
+                   array  -> { whitespace* (int_value  whitespace* [',' whitespace*])* }
+                           | { whitespace* (real_value whitespace* [',' whitespace*])* }<BR>
                    int_value    -> anything recognized as a valid integer
-                                   by strdol(3) in base 10<BR>
+                                   by strtol(3) in base 10<BR>
                    real_value   -> anything not recognized as a valid integer
                                    by strtol(3) but recognized as valid by
-                                   strdod(3)<BR>
+                                   strtod(3)<BR>
                    string_value -> a C-style string enclosed in "double quotes"
                                    (C-style character escape codes are allowed
                                    ie. '\a', '\b', '\f', '\n', '\r', '\t',
@@ -1135,10 +1134,14 @@ void CCTK_FCALL CCTK_FNAME(Util_TableCreateFromString)
                                    (C-style character escape codes are *not*
                                     allowed, ie. every character within the
                                     string is interpreted literally)<BR>
-                   delimiter -> end-of-string | whitespace<BR>
+                   delimiter -> end-of-string | whitespace+
+                              | whitespace* ',' whitespace*<BR>
                    whitespace --> ' ' | '\t' | '\n' | '\r' | '\f' | '\v'<BR>
                 </BLOCKQUOTE>
-                where * denotes 0 or more repetitions and | denotes logical or.
+                where * denotes 0 or more repetitions,
+                      + denotes 1 or more repetitions,
+                      [] denotes 0 or 1 repetitions (i.e. an optional part),
+                      and | denotes logical or.
                 <P>
                 Notice also that the keys allowed by this function are
                 somewhat more restricted than those allowed by the other
@@ -1180,7 +1183,7 @@ void CCTK_FCALL CCTK_FNAME(Util_TableCreateFromString)
   @@*/
 int Util_TableSetFromString(int handle, const char string[])
 {
-#define WHITESPACE " \t\n\r\f\v"
+#define WHITESPACE           " \t\n\r\f\v"
   struct scalar_value scalar;
 
   #ifdef UTIL_TABLE_DEBUG
@@ -1200,15 +1203,15 @@ int Util_TableSetFromString(int handle, const char string[])
   int Set_count = 0, status = 0;
   char *p = buffer;
 
+  /* skip leading whitespace */
+  p += strspn(p, WHITESPACE);
+
   while (*p != '\0' && status >= 0)
   {
     /*
      * each pass through this loop processes a single key=value
      * assignment starting at p, creating a table entry for it
      */
-
-    /* skip leading whitespaces */
-    p += strspn(p, WHITESPACE);
 
     #ifdef UTIL_TABLE_DEBUG2
     printf("   skipped over delimiters to p-buffer=%d\n", (int) (p-buffer));
@@ -1225,6 +1228,7 @@ int Util_TableSetFromString(int handle, const char string[])
     p = q + strspn (q, WHITESPACE);           /* p   -> "= value..." */
     if (*p != '=')
     {
+      assert (status >= 0);
       status = UTIL_ERROR_BAD_INPUT;          /* no '=" in "key=value" string */
       break;
     }
@@ -1234,6 +1238,7 @@ int Util_TableSetFromString(int handle, const char string[])
     p += strspn (p, WHITESPACE);              /* p   -> "value..." */
     if (*p == '\0')
     {
+      assert (status >= 0);
       status = UTIL_ERROR_BAD_INPUT;          /* no value supplied */
       break;
     }
@@ -1243,9 +1248,10 @@ int Util_TableSetFromString(int handle, const char string[])
 
     /* split "value..." into "value" and "..." */
 
-    /* check the type of value which is either
+    /*
+     * check the type of value which is either
      *   - a string enclosed in single or double quotes
-     *   - an array of scalars enclosed in round brackets
+     *   - an array of scalars enclosed in curly braces
      *   - a scalar (integer or real)
      */
     if (*value == '\'' || *value == '"' || *value == '{')
@@ -1268,6 +1274,7 @@ int Util_TableSetFromString(int handle, const char string[])
 
       if (*p != *q)
       {
+        assert (status >= 0);
         status = UTIL_ERROR_BAD_INPUT;   /* no closing delimiter found */
         break;                           /* in string or array value */
       }
@@ -1296,10 +1303,11 @@ int Util_TableSetFromString(int handle, const char string[])
             }
           }
           q++;
-        }
+        } /* while */
 
         if (p != q)
         {
+          assert (status >= 0);
           status = UTIL_ERROR_BAD_INPUT;   /* invalid escape code found */
           break;
         }
@@ -1312,7 +1320,7 @@ int Util_TableSetFromString(int handle, const char string[])
       /*
        * this block handles numbers
        */
-      p += strcspn (value, WHITESPACE);
+      p += strcspn (value, WHITESPACE ",");
       q = value;
     }
 
@@ -1330,6 +1338,7 @@ int Util_TableSetFromString(int handle, const char string[])
        */
       if (*q == '\'' || *q == '"')
       {
+        assert (status >= 0);
         status = Util_TableSetString(handle, value, key);
       }
       else
@@ -1337,14 +1346,17 @@ int Util_TableSetFromString(int handle, const char string[])
         convert_string_to_number (value, &scalar);
         if (scalar.datatype == CCTK_VARIABLE_INT)
         {
+          assert (status >= 0);
           status = Util_TableSetInt(handle, scalar.value.int_scalar, key);
         }
         else if (scalar.datatype == CCTK_VARIABLE_REAL)
         {
+          assert (status >= 0);
           status = Util_TableSetReal(handle, scalar.value.real_scalar, key);
         }
         else
         {
+          assert (status >= 0);
           status = UTIL_ERROR_BAD_INPUT;   /* can't parse scalar value */
         }
       }
@@ -1370,6 +1382,8 @@ int Util_TableSetFromString(int handle, const char string[])
       int datatypesize = 0;
       char *array = NULL;
 
+      /* skip leading whitespace */
+      value += strspn (value, WHITESPACE);
 
       while (*value)
       {
@@ -1380,11 +1394,8 @@ int Util_TableSetFromString(int handle, const char string[])
          * and pushing it to the resulting generic array buffer
          */
 
-        /* skip leading whitespaces */
-        value += strspn (value, WHITESPACE);
-
         /* split "value..." into "value" and "..." */
-        q = value + strcspn (value, WHITESPACE);
+        q = value + strcspn (value, WHITESPACE ",");
         if (*q != '\0')         /* if we're already at the end of the list */
                                 /* we don't want to advance further */
         {
@@ -1395,6 +1406,7 @@ int Util_TableSetFromString(int handle, const char string[])
         if (scalar.datatype == -1)
         {
           datatype = scalar.datatype;
+          assert (status >= 0);
           status = UTIL_ERROR_BAD_INPUT;   /* can't parse array value */
           break;
         }
@@ -1407,6 +1419,7 @@ int Util_TableSetFromString(int handle, const char string[])
         {
           /* all array values must have the same datatype */
           datatype = -1;
+          assert (status >= 0);
           status = UTIL_ERROR_TABLE_NO_MIXED_TYPE_ARRAY;
           break;
         }
@@ -1427,6 +1440,7 @@ int Util_TableSetFromString(int handle, const char string[])
           }
           if (array == NULL)
           {
+            assert (status >= 0);
             status = UTIL_ERROR_NO_MEMORY;
             break;
           }
@@ -1441,10 +1455,20 @@ int Util_TableSetFromString(int handle, const char string[])
 
         nvals++;
         value = q;
-      }
+
+        /* skip whitespace* [',' whitespace*] */
+        value += strspn (value, WHITESPACE);
+        if (*p == ',')
+        {
+          ++p;
+          value += strspn (value, WHITESPACE);
+        }
+
+      } /* while (*value) */
 
       if (datatype == CCTK_VARIABLE_INT || datatype == CCTK_VARIABLE_REAL)
       {
+        assert (status >= 0);
         status = Util_TableSetGenericArray(handle, datatype, nvals, array, key);
       }
 
@@ -1452,12 +1476,21 @@ int Util_TableSetFromString(int handle, const char string[])
       {
         free (array);
       }
-    }
+    } /* if this block handles array values */
 
     ++Set_count;
       }
       }
-  }
+
+    /* skip whitespace* [',' whitespace*] */
+    p += strspn (p, WHITESPACE);
+    if (*p == ',')
+    {
+      ++p;
+      p += strspn (p, WHITESPACE);
+    }
+
+  } /* loop over all assignments */
 
   #ifdef UTIL_TABLE_DEBUG2
   printf("   returning with code %d\n", status >= 0 ? Set_count : status);
@@ -6367,6 +6400,7 @@ static
   assert( Util_TableSetFromString(handle, "foo/" ) == UTIL_ERROR_BAD_INPUT );
 
   assert( Util_TableCreateFromString("foo" ) == UTIL_ERROR_BAD_INPUT );
+  assert( Util_TableCreateFromString("foo," ) == UTIL_ERROR_BAD_INPUT );
   assert( Util_TableCreateFromString("foo/" ) == UTIL_ERROR_BAD_INPUT );
   assert( Util_TableCreateFromString("foo=" ) == UTIL_ERROR_BAD_INPUT );
   assert( Util_TableCreateFromString("foo/=12" ) == UTIL_ERROR_TABLE_BAD_KEY );
@@ -6382,7 +6416,15 @@ static
   assert( Util_TableCreateFromString("foo={bar}" ) == UTIL_ERROR_BAD_INPUT );
   assert( Util_TableCreateFromString(" foo = { \"\r\t\n\v\" } " ) ==
           UTIL_ERROR_BAD_INPUT );
+  assert( Util_TableCreateFromString(" foo = { \"\r\t\n\v\", } " ) ==
+          UTIL_ERROR_BAD_INPUT );
   assert( Util_TableCreateFromString("foo={0 1.0}" ) ==
+          UTIL_ERROR_TABLE_NO_MIXED_TYPE_ARRAY );
+  assert( Util_TableCreateFromString("foo={0, 1.0}" ) ==
+          UTIL_ERROR_TABLE_NO_MIXED_TYPE_ARRAY );
+  assert( Util_TableCreateFromString("foo={0, 1.0,}" ) ==
+          UTIL_ERROR_TABLE_NO_MIXED_TYPE_ARRAY );
+  assert( Util_TableCreateFromString("foo={0 1.0 ,}" ) ==
           UTIL_ERROR_TABLE_NO_MIXED_TYPE_ARRAY );
 
   /*
@@ -6438,8 +6480,19 @@ static
   assert( int_array[0] == -1 && int_array[1] == 2 &&
           int_array[2] == -3 && int_array[3] == 4 );
 
+  assert( Util_TableSetFromString(handle, " foo = {\t-1, +2, -3, +4,\t} " ) == 1 );
+  assert( Util_TableGetIntArray (handle, 5, int_array, "foo") == 4 );
+  assert( int_array[0] == -1 && int_array[1] == 2 &&
+          int_array[2] == -3 && int_array[3] == 4 );
+
   assert( Util_TableSetFromString(handle,
                                   " foo = {\t-1.1\t+2.2\t-3.3\t+4.4\t} ") == 1);
+  assert( Util_TableGetRealArray (handle, 100, real_array, "foo") == 4 );
+  assert( real_array[0] == -1.1 && real_array[1] == 2.2 &&
+          real_array[2] == -3.3 && real_array[3] == 4.4 );
+
+  assert( Util_TableSetFromString(handle,
+                                  " foo = {\t-1.1,\t+2.2\t,-3.3\t+4.4\t,\t} ") == 1);
   assert( Util_TableGetRealArray (handle, 100, real_array, "foo") == 4 );
   assert( real_array[0] == -1.1 && real_array[1] == 2.2 &&
           real_array[2] == -3.3 && real_array[3] == 4.4 );

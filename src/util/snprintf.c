@@ -586,7 +586,7 @@ static LDOUBLE pow10 (int exp)
   return result;
 }
 
-static long round (LDOUBLE value)
+static long myround (LDOUBLE value)
 {
   long intpart;
 
@@ -680,7 +680,7 @@ static int fmtfp (char *buffer, size_t *currlen, size_t maxlen,
   /* We "cheat" by converting the fractional part to integer by
    * multiplying by a factor of 10
    */
-  fracpart = round ((pow10 (max)) * (ufvalue - intpart));
+  fracpart = myround ((pow10 (max)) * (ufvalue - intpart));
 
   if (fracpart >= pow10 (max))
   {

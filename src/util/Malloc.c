@@ -9,6 +9,7 @@
    @version $Header$
  @@*/
 
+#include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -24,25 +25,10 @@
 /* #define MEMDEBUG 1 */
 
 /* Undefine malloc */
-#if defined(malloc)
 #undef malloc
-#define malloc malloc
-#endif
-
-#if defined(realloc)
 #undef realloc
-#define realloc realloc
-#endif
-
-#if defined(calloc)
 #undef calloc
-#define calloc calloc
-#endif
-
-#if defined(free)
 #undef free
-#define free free
-#endif
 
 static const char *rcsid = "$Header$";
 
@@ -55,8 +41,7 @@ CCTK_FILEVERSION(util_Malloc_c);
 /* Datastructure to track the allocation per file */
 typedef struct
 {
-  unsigned long int size;
-  unsigned long int tsize;
+  size_t size;
   const char *file;
 } t_memhash;
 
@@ -67,21 +52,29 @@ typedef struct
 */
 typedef struct
 {
-  unsigned long int ok;      /* magic number */
-  unsigned long int size;    /* requested size */
-  unsigned long int tsize;   /* requested size + database */
+  size_t size;               /* requested size */
   unsigned int line;         /* allocated on line # */
   const char *file;          /* allocated by file # */
+  unsigned long int ok;      /* magic number */
 } t_mallocinfo;
 
 /* used for integrity checking of the data */
 #define OK_INTEGRITY 424242
 
+/* The t_mallocinfo structure needs to be padded to a multiple of
+   whatever the architecture requires */
+/* 16 seems a reasonable number; other reasonable numbers might be 32
+   or 64.  This should really be autodetected, but probably isn't
+   worth the trouble */
+#define PADDING_BASE 16
+/* We have to pad the t_mallocinfo to this length */
+#define PADDED_MALLOCINFO_LENGTH ((sizeof(t_mallocinfo) + (PADDING_BASE) - 1) / (PADDING_BASE) * (PADDING_BASE))
+
 /* Datastructure to track the allocation size at ticket
    request time */
 typedef struct
 {
-  unsigned long int size;
+  size_t size;
 } t_memticket;
 
 
@@ -94,8 +87,8 @@ static cHandledData *memfileDB = NULL;
 
 static int n_tickets = 0;
 
-static unsigned long int totmem=0;
-static unsigned long int pastmem=0;
+static size_t totmem=0;
+static size_t pastmem=0;
 
 /********************************************************************
  *********************   internal prototypes     ********************
@@ -130,7 +123,7 @@ void *CCTKi_Malloc(size_t size, int line, const char *file)
   t_mallocinfo *info;
   char *data;
 
-  data = (char*)malloc(size+sizeof(t_mallocinfo));
+  data = (char*)malloc(size+PADDED_MALLOCINFO_LENGTH);
   if(!data)
   {
     fprintf(stderr, "Allocation error! ");
@@ -138,7 +131,6 @@ void *CCTKi_Malloc(size_t size, int line, const char *file)
   info = (t_mallocinfo*) data;
   info->ok   = OK_INTEGRITY;
   info->size = size;
-  info->tsize= size+sizeof(t_mallocinfo);
   info->line = line;
   info->file = file;
 
@@ -154,12 +146,12 @@ void *CCTKi_Malloc(size_t size, int line, const char *file)
   */
 
 #ifdef MEMDEBUG
-  printf("Allocating %lu - by %s in line %d TOTAL: %lu\n",
-         info->size, info->file, info->line, CCTK_TotalMemory());
+  printf("Allocating %f - by %s in line %ud TOTAL: %f\n",
+         (double)info->size, info->file, info->line, (double)CCTK_TotalMemory());
 #endif
 
   /* return the pointer plus an OFFSET (t_mallocinfo) to hide the info*/
-  return((void*)(data+sizeof(t_mallocinfo)));
+  return((void*)(data+PADDED_MALLOCINFO_LENGTH));
 }
 
 
@@ -197,7 +189,7 @@ void *CCTKi_Realloc(void *pointer, size_t size, int line, const char *file)
   }
 
   /* get the info section */
-  info = (t_mallocinfo *)((char*)pointer-sizeof(t_mallocinfo));
+  info = (t_mallocinfo *)((char*)pointer-PADDED_MALLOCINFO_LENGTH);
 
   /* make a sanity check: memory could have be allocated with standard malloc */
   if (info->ok!=OK_INTEGRITY)
@@ -219,31 +211,30 @@ void *CCTKi_Realloc(void *pointer, size_t size, int line, const char *file)
     totmem  = totmem - info->size + size;
 
     /* reallocate starting at info pointer */
-    data = (char*)realloc(info, size+sizeof(t_mallocinfo));
+    data = (char*)realloc(info, size+padded_mallaocinfo_length);
     if (!data)
     {
       CCTK_VWarn(0,__LINE__,__FILE__,"Cactus",
                  "CCTKi_Realloc: Could not reallocate memory.  "
-                 "Reallocation called from %s, line %d. \n",file,line);
+                 "Reallocation called from %s, line %d.\n",file,line);
       /*$CCTK_Abort(NULL);$*/
     }
 
     /* and update */
     info = (t_mallocinfo*) data;
     info->size = size;
-    info->tsize= size+sizeof(t_mallocinfo);
 
 
     /*$CCTKi_UpdateMemByFile(info->size, line, file);$*/
 
 
 #ifdef MEMDEBUG
-    printf("ReAllocating %lu - by %s in line %d TOTAL: %lu\n",
-           info->size, info->file, info->line, CCTK_TotalMemory());
+    printf("ReAllocating %f - by %s in line %ud TOTAL: %f\n",
+           (double)info->size, info->file, info->line, (double)CCTK_TotalMemory());
 #endif
 
     /* return the pointer starting at the datasection, behind the info section */
-    return((void*)(data+sizeof(t_mallocinfo)));
+    return((void*)(data+PADDED_MALLOCINFO_LENGTH));
   }
 }
 
@@ -295,7 +286,7 @@ void CCTKi_Free(void *pointer, int line, const char *file)
     return;
   }
 
-  info = (t_mallocinfo *)((char*)pointer-sizeof(t_mallocinfo));
+  info = (t_mallocinfo *)((char*)pointer-PADDED_MALLOCINFO_LENGTH);
 
   if (info->ok!=OK_INTEGRITY)
   {
@@ -312,8 +303,8 @@ void CCTKi_Free(void *pointer, int line, const char *file)
       totmem  -= info->size;
 
 #ifdef MEMDEBUG
-      printf("Freeing %lu - allocated by %s in line %d TOTAL: %lu\n",
-             info->size, info->file, info->line, CCTK_TotalMemory());
+      printf("Freeing %f - allocated by %s in line %ld TOTAL: %f\n",
+             (double)info->size, info->file, info->line, (double)CCTK_TotalMemory());
 #endif
 
       /* invalidate the magic number so that we catch things
@@ -342,6 +333,7 @@ void CCTKi_Free(void *pointer, int line, const char *file)
 
 int CCTKi_UpdateMemByFile(int size, int line, const char *file)
 {
+  void *tmp;
   t_memhash *memfile;
   int handle, retval=-1;
 
@@ -349,7 +341,7 @@ int CCTKi_UpdateMemByFile(int size, int line, const char *file)
   /* avoid compiler warning about unused parameter */
   line = line;
 
-  if ((handle=Util_GetHandle(memfileDB, file, (void**)&memfile)) > -1)
+  if ((handle=Util_GetHandle(memfileDB, file, &tmp)) > -1)
   {
     memfile = (t_memhash*) Util_GetHandledData(memfileDB, handle);
 
@@ -357,7 +349,6 @@ int CCTKi_UpdateMemByFile(int size, int line, const char *file)
     if (memfile)
     {
       memfile->size +=size;
-      memfile->tsize+=size;
       retval = 0;
     }
     else
@@ -372,7 +363,6 @@ int CCTKi_UpdateMemByFile(int size, int line, const char *file)
     if (memfile)
     {
       memfile->size += size;
-      memfile->tsize+= size+sizeof(t_memhash);
       memfile->file  = file;
       retval = Util_NewHandle(&memfileDB, file, memfile);
     }
@@ -410,12 +400,13 @@ int CCTKi_UpdateMemByFile(int size, int line, const char *file)
 int CCTK_MemTicketRequest(void)
 {
   int this_ticket;
+  void *tmp;
   t_memticket *tmem;
   char tname[20];
 
   sprintf(tname, "ticket_%d",n_tickets++);
 
-  if (Util_GetHandle(ticketDB, tname, (void**)&tmem)>-1)
+  if (Util_GetHandle(ticketDB, tname, &tmp)>-1)
   {
     this_ticket=-3;
   }
@@ -453,23 +444,23 @@ int CCTK_MemTicketRequest(void)
 
 @@*/
 
-long int CCTK_MemTicketCash(int this_ticket)
+ptrdiff_t CCTK_MemTicketCash(int this_ticket)
 {
-  long int tdiff;
-  unsigned long int tsize;
+  ptrdiff_t tdiff;
+  size_t size;
   t_memticket *tmem;
 
   tmem = (t_memticket*) Util_GetHandledData(ticketDB, this_ticket);
 
   if (tmem)
   {
-    tsize = tmem->size;
-    tdiff = CCTK_TotalMemory() - tsize;
+    size = tmem->size;
+    tdiff = CCTK_TotalMemory() - size;
   }
   else
   {
     CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
-               "CCTK_MemTicketCash: Cannot find ticket %d \n",this_ticket);
+               "CCTK_MemTicketCash: Cannot find ticket %d\n",this_ticket);
     tdiff = 666;
   }
   return(tdiff);
@@ -517,7 +508,7 @@ int CCTK_MemTicketDelete(int this_ticket)
    @date       Wed Mar  8 12:47:23 2000
    @author     Gerd Lanfermann
    @desc
-     prints a info string, statign current, past total memory
+     prints a info string, stating current, past total memory
      and difference.
    @enddesc
    @calls
@@ -530,8 +521,8 @@ int CCTK_MemTicketDelete(int this_ticket)
 
 void CCTK_MemStat(void)
 {
-  printf("CCTK_Memstat: total: %lu  past: %lu  diff %+ld \n",
-          totmem, pastmem, totmem-pastmem);
+  printf("CCTK_Memstat: total: %f  past: %f  diff %f\n",
+         (double)totmem, (double)pastmem, (double)totmem-pastmem);
 }
 
  /*@@
@@ -549,7 +540,7 @@ void CCTK_MemStat(void)
    @endhistory
 
 @@*/
-unsigned long int CCTK_TotalMemory(void)
+size_t CCTK_TotalMemory(void)
 {
   return(totmem);
 }
@@ -585,18 +576,18 @@ int main(int argc, char *argv[])
   printf("### Start Allocating ...\n");
   ticket[0]=CCTKi_MemTicketRequest();
   myint   = (int*)   CCTKi_Malloc(n*sizeof(int),42,"My int");
-  printf("check Ticket1:  %d\n",CCTK_MemTicketCash(ticket[0]));
+  printf("check Ticket1:  %f\n",(double)CCTK_MemTicketCash(ticket[0]));
 
   ticket[1]=CCTKi_MemTicketRequest();
   mydouble= (double*)CCTKi_Malloc(n*sizeof(double), 42,"My double");
-  printf("check Ticket1:  %d\n",CCTK_MemTicketCash(ticket[0]));
-  printf("check Ticket2:  %d\n",CCTK_MemTicketCash(ticket[1]));
+  printf("check Ticket1:  %f\n",(double)CCTK_MemTicketCash(ticket[0]));
+  printf("check Ticket2:  %f\n",(double)CCTKCCTK_MemTicketCash(ticket[1]));
 
   ticket[2]=CCTKi_MemTicketRequest();
   mychar  = (char*)  CCTKi_Malloc(n*sizeof(char), 42, "My char");
-  printf("check Ticket1:  %d\n",CCTK_MemTicketCash(ticket[0]));
-  printf("check Ticket2:  %d\n",CCTK_MemTicketCash(ticket[1]));
-  printf("check Ticket3:  %d\n",CCTK_MemTicketCash(ticket[2]));
+  printf("check Ticket1:  %f\n",(double)CCTKCCTK_MemTicketCash(ticket[0]));
+  printf("check Ticket2:  %f\n",(double)CCTKCCTK_MemTicketCash(ticket[1]));
+  printf("check Ticket3:  %f\n",(double)CCTKCCTK_MemTicketCash(ticket[2]));
 
   for (i=0;i<n;i++)
   {
@@ -611,11 +602,11 @@ int main(int argc, char *argv[])
   CCTKi_Free(mydouble, 43, "My double");
   CCTKi_Free(mychar, 43, "My char");
 
-  printf("check Ticket1:  %d\n",CCTK_MemTicketCash(ticket[0]));
-  printf("check Ticket2:  %d\n",CCTK_MemTicketCash(ticket[1]));
-  printf("check Ticket3:  %d\n",CCTK_MemTicketCash(ticket[2]));
+  printf("check Ticket1:  %f\n",(double)CCTK_MemTicketCash(ticket[0]));
+  printf("check Ticket2:  %f\n",(double)CCTK_MemTicketCash(ticket[1]));
+  printf("check Ticket3:  %f\n",(double)CCTK_MemTicketCash(ticket[2]));
 
-  printf("Total Memory allocated: %d ", CCTK_TotalMemory);
+  printf("Total Memory allocated: %f ", (double)CCTK_TotalMemory());
 
   CCTK_MemTicketDelete(ticket[0]);
   CCTK_MemTicketDelete(ticket[1]);
