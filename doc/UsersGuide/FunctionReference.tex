@@ -3918,9 +3918,9 @@ Creates a new (empty) table
 
 \item[Util\_TableCreateFromString]
      [\pageref{Util-TableCreateFromString}]
-Creates a new table based on a string argument, which is interpreted
-with ``parameter-file'' semantics (the table has the case-insensitive
-flag set)
+Creates a new table (with the case-insensitive flag set) and sets
+values in it based on a string argument (interpreted with
+``parameter-file'' semantics)
 
 \item[Util\_TableDeleteKey]
      [\pageref{Util-TableDeleteKey}]
@@ -4018,6 +4018,11 @@ This is a family of functions, one for each Cactus data type,
 to set the value associated with a specified key to be a copy
 of a specified array
 
+\item[Util\_TableSetFromString]
+     [\pageref{Util-TableSetFromString}]
+Sets values in a table based on a string argument (interpreted with
+``parameter-file'' semantics)
+
 \item[Util\_TableSetString]
      [\pageref{Util-TableSetString}]
 Sets the value associated with a specified key in a table, to be
@@ -4064,8 +4069,8 @@ below this are reserved for present of future Cactus use.
 \end{Discussion}
 
 \begin{SeeAlso}{Util\_TableCreateFromString()}
-simplified interface to create a table and populate it
-with entries based on a parameter-file--like character string
+convenience routine to create a table and set key/value entries
+in it based on a parameter-file--like character string
 \end{SeeAlso}
 \begin{SeeAlso}{Util\_TableDestroy()}
 destroy a table
@@ -4096,9 +4101,9 @@ int handle2 = Util_TableCreate(UTIL_TABLE_FLAGS_CASE_INSENSITIVE);
 
 \begin{FunctionDescription}{Util\_TableCreateFromString}
 \label{Util-TableCreateFromString}
-Creates a new table based on a string argument, which is interpreted
-with ``parameter-file'' semantics (the table has the case-insensitive
-flag set)
+Creates a new table (with the case-insensitive flag set) and sets
+values in it based on a string argument (interpreted with
+``parameter-file'' semantics)
 
 \begin{Synopsis}{C}
 \begin{verbatim}
@@ -4114,37 +4119,15 @@ a handle to the newly-created table
 
 \begin{Parameter}{string}
 a pointer to a C-style null-terminated string specifying the table
-contents.
+contents; see the description for \verb|Util_TableSetFromString()|
+for a full description of the syntax and semantics of this string
 \end{Parameter}
-
-\begin{Discussion}
-The present implementation only recognises integer or real values
-(not pointer, complex, character, or string), and only scalars
-(not arrays).  In more detail, the strings recognized are defined by
-the following BNF:\\
-\quad
-\begin{tabular}{l@{\quad$\rightarrow$\quad}p{9cm}}
-string & assign*                                                        \\
-assign & whitespace* key = value ;? whitespace*                         \\
-value  & int\_value                                                     \\
-value  & real\_value                                                    \\
-int\_value & contains only characters \verb|+-0123456789|
-             and is recognized as valid by \verb|sscanf()| with a
-             \verb|"%d"| format                                          \\
-real\_value & contains one or more characters not in \verb|+-0123456789|
-              and is recognized as valid by \verb|sscanf()| with a
-              \verb|"%lf"| format                                        %%%\\
-\end{tabular}\\
-where\\[0ex]
-* denotes 0 or more repetitions, and\\
-? denotes optional items, i.e. 0 or 1 repetitions.\\
-
-Notice that whitespace separates \verb|key=value| assignments, and
-thus that no whitespace may appear within a \verb|key=value| assignment.
-\end{Discussion}
 
 \begin{SeeAlso}{Util\_TableCreate()}
 create a table
+\end{SeeAlso}
+\begin{SeeAlso}{Util\_TableSetFromString()}
+sets values in a table based on a string argument
 \end{SeeAlso}
 \begin{SeeAlso}{Util\_TableSetInt()}
 store a \verb|CCTK_INT| value in a table
@@ -4161,8 +4144,7 @@ invalid input: can't parse input string
 \end{Error}
 \begin{Error}{\rm other error codes}
 this function may also return any error codes returned by
-\verb|Util_TableCreate()|, \verb|Util_TableSetInt()|, or
-\verb|Util_TableSetReal()|.
+\verb|Util_TableCreate()| or \verb|Util_TableSetFromString()|
 \end{Error}
 
 \begin{Example}{C}
@@ -4170,18 +4152,16 @@ this function may also return any error codes returned by
 #include "util_ErrorCodes.h"
 #include "util_Table.h"
 
-/* simple example */
-int table_handle = Util_TableCreateFromString("order=3");
-CCTK_SomeCactusFunction(..., table_handle, ...);
-Util_TableDestroy(table_handle);
+int handle = Util_TableCreateFromString("order=3 myparam=42.314159");
 
-/* larger example */
-int table_handle = Util_TableCreate(UTIL_TABLE_FLAGS_CASE_INSENSITIVE);
-Util_TableSetInt(table_handle, 3, "n");
-Util_TableSetReal(table_handle, 3.0e-5, "dx");
+/* equivalent code to the above */
+int handle = Util_TableCreate(UTIL_TABLE_FLAGS_CASE_INSENSITIVE);
+Util_TableSetFromString(handle, "order=3 myparam=42.314159");
 
-/* this is equivalent to the previous 3 lines of code */
-int table_handle = Util_TableCreateFromString("n=3 dx=3.0e-5");
+/* also equivalent to the above */
+int handle = Util_TableCreate(UTIL_TABLE_FLAGS_CASE_INSENSITIVE);
+Util_TableSetInt(handle, 3, "order");
+Util_TableSetReal(handle, 42.314159, myparam);
 \end{verbatim}
 \end{Example}
 \end{FunctionDescription}
@@ -4257,9 +4237,8 @@ Of course, this function invalidates any and all iterators for the table. :)
 create a table
 \end{SeeAlso}
 \begin{SeeAlso}{Util\_TableCreateFromString()}
-simplified interface to create a table and set \verb|CCTK_INT|
-and/or \verb|CCTK_REAL| values in it based on a parameter-file--like
-character string
+convenience routine to create a table and set key/value entries
+in it based on a parameter-file--like character string
 \end{SeeAlso}
 
 \begin{Error}{UTIL\_ERROR\_BAD\_HANDLE}
@@ -4341,9 +4320,8 @@ to get.
 \end{Discussion}
 
 \begin{SeeAlso}{Util\_TableCreateFromString()}
-simplified interface to create a table and set \verb|CCTK_INT|
-and/or \verb|CCTK_REAL| values in it based on a parameter-file--like
-character string
+convenience routine to create a table and set key/value entries
+in it based on a parameter-file--like character string
 \end{SeeAlso}
 \begin{SeeAlso}{Util\_TableGet*Array()}
 get an array value
@@ -4356,6 +4334,10 @@ set a single (1-element array) value
 \end{SeeAlso}
 \begin{SeeAlso}{Util\_TableSet*Array()}
 set an array value
+\end{SeeAlso}
+\begin{SeeAlso}{Util\_TableSetFromString()}
+convenience routine to set key/value entries in a table based on a
+parameter-file--like character string
 \end{SeeAlso}
 \begin{SeeAlso}{Util\_TableSetString()}
 set a character-string value
@@ -4462,9 +4444,8 @@ comparing the return value with \verb|N_array|.
 \end{Discussion}
 
 \begin{SeeAlso}{Util\_TableCreateFromString()}
-simplified interface to create a table and set \verb|CCTK_INT|
-and/or \verb|CCTK_REAL| values in it based on a parameter-file--like
-character string
+convenience routine to create a table and set key/value entries
+in it based on a parameter-file--like character string
 \end{SeeAlso}
 \begin{SeeAlso}{Util\_TableGet*()}
 get a single (1-element array) value,
@@ -4478,6 +4459,10 @@ set a single (1-element array) value
 \end{SeeAlso}
 \begin{SeeAlso}{Util\_TableSet*Array()}
 set an array value
+\end{SeeAlso}
+\begin{SeeAlso}{Util\_TableSetFromString()}
+convenience routine to set key/value entries in a table based on a
+parameter-file--like character string
 \end{SeeAlso}
 \begin{SeeAlso}{Util\_TableSetString()}
 set a character-string value
@@ -4576,9 +4561,8 @@ and it explicitly checks for the string being too long to fit in the buffer
 \end{Discussion}
 
 \begin{SeeAlso}{Util\_TableCreateFromString()}
-simplified interface to create a table and set \verb|CCTK_INT|
-and/or \verb|CCTK_REAL| values in it based on a parameter-file--like
-character string
+convenience routine to create a table and set key/value entries
+in it based on a parameter-file--like character string
 \end{SeeAlso}
 \begin{SeeAlso}{Util\_TableGet*()}
 get a single (1-element array) value,
@@ -4598,6 +4582,10 @@ set an array value
 \end{SeeAlso}
 \begin{SeeAlso}{Util\_TableSetString()}
 set a character-string value
+\end{SeeAlso}
+\begin{SeeAlso}{Util\_TableSetFromString()}
+convenience routine to set key/value entries in a table based on a
+parameter-file--like character string
 \end{SeeAlso}
 \begin{SeeAlso}{Util\_TableSetCharArray()}
 set an array-of-\verb|CCTK_CHAR| value
@@ -5285,7 +5273,9 @@ handle to the table
 create a table (flags word specified explicitly)
 \end{SeeAlso}
 \begin{SeeAlso}{Util\_TableCreateFromString()}
-create a table (flags word specified implicitly)
+convenience routine to create a table (with certain default flags)
+and set key/value entries in it based on a parameter-file--like
+character string
 \end{SeeAlso}
 
 \begin{Error}{UTIL\_ERROR\_BAD\_HANDLE}
@@ -5548,9 +5538,8 @@ not in the ``null-pointer'' state.
 \end{Discussion}
 
 \begin{SeeAlso}{Util\_TableCreateFromString()}
-simplified interface to create a table and set \verb|CCTK_INT|
-and/or \verb|CCTK_REAL| values in it based on a parameter-file--like
-character string
+convenience routine to create a table and set key/value entries
+in it based on a parameter-file--like character string
 \end{SeeAlso}
 \begin{SeeAlso}{Util\_TableGet*()}
 get a single (1-element array) value,
@@ -5564,6 +5553,10 @@ get a character-string value
 \end{SeeAlso}
 \begin{SeeAlso}{Util\_TableSet*Array()}
 set an array value
+\end{SeeAlso}
+\begin{SeeAlso}{Util\_TableSetFromString()}
+convenience routine to set key/value entries in a table based on a
+parameter-file--like character string
 \end{SeeAlso}
 \begin{SeeAlso}{Util\_TableSetString()}
 set a character-string value
@@ -5654,9 +5647,8 @@ not in the ``null-pointer'' state.
 \end{Discussion}
 
 \begin{SeeAlso}{Util\_TableCreateFromString()}
-simplified interface to create a table and set \verb|CCTK_INT|
-and/or \verb|CCTK_REAL| values in it based on a parameter-file--like
-character string
+convenience routine to create a table and set key/value entries
+in it based on a parameter-file--like character string
 \end{SeeAlso}
 \begin{SeeAlso}{Util\_TableGet*()}
 get a single (1-element array) value,
@@ -5670,6 +5662,10 @@ get a character-string value
 \end{SeeAlso}
 \begin{SeeAlso}{Util\_TableSet*()}
 set a single (1-element array) value
+\end{SeeAlso}
+\begin{SeeAlso}{Util\_TableSetFromString()}
+convenience routine to set key/value entries in a table based on a
+parameter-file--like character string
 \end{SeeAlso}
 \begin{SeeAlso}{Util\_TableSetString()}
 set a character-string value
@@ -5698,6 +5694,118 @@ static const CCTK_INT pi_digits[N_DIGITS] = {3, 14, 159, 2653, 58979};
 int handle = Util_TableCreate(UTIL_TABLE_FLAGS_DEFAULT);
 
 Util_TableSetIntArray(handle, N_DIGITS, pi_digits, "digits of pi");
+\end{verbatim}
+\end{Example}
+\end{FunctionDescription}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{FunctionDescription}{Util\_TableSetFromString}
+\label{Util-TableSetFromString}
+Sets values in a table based on a string argument, which is interpreted
+with ``parameter-file'' semantics
+
+\begin{Synopsis}{C}
+\begin{verbatim}
+#include "util_ErrorCodes.h"
+#include "util_Table.h"
+int count = Util_TableSetFromString(int handle, const char *string);
+\end{verbatim}
+\end{Synopsis}
+
+\begin{Result}{count ($\ge 0$)}
+the number of key/value entries set
+\end{Result}
+
+\begin{Parameter}{string}
+a pointer to a C-style null-terminated string specifying the table
+entries to be set (see below for details on the string contents)
+\end{Parameter}
+
+\begin{Discussion}
+The string should contain a sequence of zero or more \verb|key=value|
+``assignments'', separated by whitespace.  This function processes
+these assignments in left-to-right order, setting corresponding key/value
+entries in the table.\\
+
+The present implementation only recognises integer or real values
+(not pointer, complex, character, or string), and only scalars
+(not arrays).  To be precise, the string must match the following BNF:\\
+\quad
+\begin{tabular}{l@{\quad$\rightarrow$\quad}p{9cm}}
+string & assign*                                                        \\
+assign & whitespace* key = value ;? whitespace*                         \\
+value  & int\_value                                                     \\
+value  & real\_value                                                    \\
+int\_value & contains only characters \verb|+-0123456789|
+             and is recognized as valid by \verb|sscanf()| with a
+             \verb|"%d"| format                                          \\
+real\_value & contains one or more characters not in \verb|+-0123456789|
+              and is recognized as valid by \verb|sscanf()| with a
+              \verb|"%lf"| format                                        %%%\\
+\end{tabular}\\
+where\\[0ex]
+* denotes 0 or more repetitions, and\\
+? denotes optional items, i.e. 0 or 1 repetitions.\\
+
+Note that no whitespace may appear within a \verb|key=value| assignment.
+In particular, do {\em not\/} put whitespace around the ``\verb|=|''!
+\end{Discussion}
+
+\begin{SeeAlso}{Util\_TableCreateFromString()}
+convenience routine to create a table and set key/value entries
+in it based on a parameter-file--like character string
+\end{SeeAlso}
+\begin{SeeAlso}{Util\_TableGet*()}
+get a single (1-element array) value,
+or more generally the first array element of an array value
+\end{SeeAlso}
+\begin{SeeAlso}{Util\_TableGet*Array()}
+get an array value
+\end{SeeAlso}
+\begin{SeeAlso}{Util\_TableGet*String()}
+get a character-string value
+\end{SeeAlso}
+\begin{SeeAlso}{Util\_TableSet*()}
+set a single (1-element array) value
+\end{SeeAlso}
+\begin{SeeAlso}{Util\_TableSet*Array()}
+set an array value
+\end{SeeAlso}
+\begin{SeeAlso}{Util\_TableSetFromString()}
+convenience routine to set key/value entries in a table based on a
+parameter-file--like character string
+\end{SeeAlso}
+\begin{SeeAlso}{Util\_TableSetString()}
+set a character-string value
+\end{SeeAlso}
+
+\begin{Error}{UTIL\_ERROR\_NO\_MEMORY}
+unable to allocate memory
+\end{Error}
+\begin{Error}{UTIL\_ERROR\_BAD\_INPUT}
+invalid input: can't parse input string
+\end{Error}
+\begin{Error}{\rm other error codes}
+this function may also return any error codes returned by
+\verb|Util_TableSetInt()| or \verb|Util_TableSetReal()|.
+\end{Error}
+
+\begin{Example}{C}
+\begin{verbatim}
+#include "util_ErrorCodes.h"
+#include "util_Table.h"
+
+/* suppose we have a table referred to by  handle */
+
+/* then the call... */
+int count = Util_TableSetFromString(handle, "n=6 dx=4.0e-5 pi=3.1");
+/* ... will return count=3 ... */
+
+/* ... and is otherwise equivalent to the three calls ... */
+Util_TableSetInt(handle, 6, "n");
+Util_TableSetReal(handle, 4.0e-5, "dx");
+Util_TableSetReal(handle, 3.1, "pi");
 \end{verbatim}
 \end{Example}
 \end{FunctionDescription}
@@ -5754,9 +5862,8 @@ not in the ``null-pointer'' state.
 \end{Discussion}
 
 \begin{SeeAlso}{Util\_TableCreateFromString()}
-simplified interface to create a table and set \verb|CCTK_INT|
-and/or \verb|CCTK_REAL| values in it based on a parameter-file--like
-character string
+convenience routine to create a table and set key/value entries
+in it based on a parameter-file--like character string
 \end{SeeAlso}
 \begin{SeeAlso}{Util\_TableGet*()}
 get a single (1-element array) value,
