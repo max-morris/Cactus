@@ -205,14 +205,14 @@ REAL Coeff "Important coefficient"
 0:3.14 :: ``Range has to be from zero to Pi, default is zero''
 } 0.0
 
-INTEGER hitch ``The hitch-hiker parameter''
+INT hitch ``The hitch-hiker parameter''
 {
 -42:42 :: ``Ranges from -42 to 42, default is zero''
 } 0
 
 #If you omitt the range, it will look a bit strange.
 #better put a range!
-INTEGER hitch_nolimits ``The confusing hitch-hiker parameter''
+INT hitch_nolimits ``The confusing hitch-hiker parameter''
 {
 : :: ``We are confused, what is the range?''
 } 0
@@ -838,14 +838,14 @@ from within your thorn:
 \item{} To shut the code down cleanly, use
 {\t
 \begin{verbatim}
-CCTK_Stop(pointer GH, INTEGER return_code)
+CCTK_Stop(pointer GH, int return_code)
 CCTK_Stop(cGH *GH, int return_code);
 \end{verbatim}
 }
 \item{} To shut the code down more violently, use
 {\t
 \begin{verbatim}
-CCTK_Abort(pointer GH, INTEGER return_code)
+CCTK_Abort(pointer GH, int return_code)
 CCTK_Abort(cGH *GH, int return_code);
 \end{verbatim}
 }
