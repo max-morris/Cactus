@@ -125,10 +125,14 @@ sub CreateVariableBindings
   foreach $thorn (split(" ",$rhinterface_db->{"THORNS"}))
   {
     $dataout = "";
+    $dataout .= "\#include \"cctk_Types.h\"\n";
+    $dataout .= "\#include \"cctk_WarnLevel.h\"\n";
+    $dataout .= "\#include \"cctk_Parameter.h\"\n";
     $dataout .= "\#include \"cctki_Groups.h\"\n";
     $dataout .= "\#include \"cctki_FortranWrappers.h\"\n";
-    $dataout .= "int CCTKi_BindingsFortranWrapper$thorn(void *GH, void *fpointer);";
+    $dataout .= "int CCTKi_BindingsFortranWrapper$thorn(void *GH, void *fpointer);\n";
 
+    $dataout .= "int CactusBindingsVariables_$thorn"."_Initialise(void);\n";
     $dataout .= "int CactusBindingsVariables_$thorn"."_Initialise(void)\n{\n";
     foreach $block ("PUBLIC", "PROTECTED", "PRIVATE")
     {
@@ -1324,7 +1328,7 @@ sub CreateThornGroupInitialisers
 
     @variables = split(" ", $rhinterface_db->{"\U$thorn GROUP $group\E"});
 
-    $line  = "  CCTKi_CreateGroup(\"\U$group\",\"$thorn\",\"$imp\",\n" 
+    $line  = "  if (CCTKi_CreateGroup(\"\U$group\",\"$thorn\",\"$imp\",\n" 
            . "                    \"" . $rhinterface_db->{"\U$thorn GROUP $group\E GTYPE"} . "\",\n"
 	   . "                    \"" . $rhinterface_db->{"\U$thorn GROUP $group\E VTYPE"} . "\",\n"
 	   . "                    \"" . $block . "\",\n"
@@ -1340,7 +1344,26 @@ sub CreateThornGroupInitialisers
       $line .= ",\n                   \"$variable\"";
     }
 
-    $line  .= ");\n\n";
+    $line  .= ")==1)\n";
+
+    $line  .= "{\n";
+    $line  .= "  int param_type;\n";
+    $line  .= "  CCTK_INT *allow_mixeddim_gfs;\n";
+    $line  .= "  allow_mixeddim_gfs = (CCTK_INT *) CCTK_ParameterGet(\"allow_mixeddim_gfs\",\"Cactus\",\&param_type);\n";
+    $line  .= "  if (*allow_mixeddim_gfs)\n";
+    $line  .= "  {\n";
+    $line  .= "    CCTK_VWarn(2,__LINE__,__FILE__,\"Cactus\"\n,";
+    $line  .= "    \"CCTKi_CreateGroup: Working dimension already set,\"\n";
+    $line  .= "    \" creating GF group $group with different dimension $rhinterface_db->{\"\U$thorn GROUP $group\E DIM\"}\");\n";
+    $line  .= "  }\n";
+    $line  .= "  else";
+    $line  .= "  {\n";
+    $line  .= "    CCTK_VWarn(0,__LINE__,__FILE__,\"Cactus\"\n,";
+    $line  .= "    \"CCTKi_CreateGroup: Working dimension already set,\"\n";
+    $line  .= "    \" cannot create GF group $group with dimension $rhinterface_db->{\"\U$thorn GROUP $group\E DIM\"}\");\n";
+    $line  .= "  }\n";
+    $line  .= "}\n\n";
+    
 
     push(@definitions, $line);
   }
@@ -1362,7 +1385,7 @@ sub CreateThornFortranWrapper
   push(@data, "#include \"cctk_Arguments.h\"");
   push(@data, "");
 
-  push(@data, "int CCTKi_BindingsFortranWrapper$thorn(cGH *GH, void *fpointer);");
+  push(@data, "int CCTKi_BindingsFortranWrapper$thorn(cGH *GH, void *fpointer);\n");
   push(@data, "int CCTKi_BindingsFortranWrapper$thorn(cGH *GH, void *fpointer)");
   push(@data, "{");
   push(@data, "  void (*function)(\U$thorn\E_C2F_PROTO);");
