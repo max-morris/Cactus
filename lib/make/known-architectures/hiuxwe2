@@ -3,10 +3,21 @@
 #   @file      hiuxwe2
 #   @date      Wed Apr 19 17:58:22 2000
 #   @author    Tom Goodale
-#   @desc  Optimazations by Peter Diener
-#   Configuration file for the Hitachi SR8000-F1
-#   @enddesc 
-#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/hiuxwe2,v 1.5 2001-06-20 13:28:34 tradke Exp $
+#   @desc
+#              Configuration file for the Hitachi SR8000-F1
+#   @enddesc
+#   @history
+#   @hauthor   Peter Diener
+#   @hdesc
+#              Added better optimization options
+#   @endhdesc
+#   @hauthor   Frank Herrmann
+#   @hdate     Wed 20 Mar 2002
+#   @hdesc
+#              Added cross-compiling defines
+#   @endhdesc
+#   @endhistory
+#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/hiuxwe2,v 1.6 2002-03-20 16:12:14 tradke Exp $
 # @@*/
 
 if test "$CCTK_CONFIG_STAGE" = "preferred-compilers" ; then
@@ -44,7 +55,7 @@ else
   : ${F77_WARN_FLAGS="-fullmsg"}
   : ${F90_WARN_FLAGS="-fullmsg"}
 
-  if test "$CC" = "cc" ; then
+  if test "$CC" = "cc" -o "$CC" = "xcc" ; then
     CFLAGS="$CFLAGS -64"
     : ${C_OPTIMISE_FLAGS="-O4 -pvec -pvfunc -predicate -model=F1"}
   fi
@@ -89,4 +100,24 @@ else
   if test "X$PTHREADS" = "Xyes"; then
     PTHREADS_DEFINE="_PTHREADS_D10"
   fi
+
+
+# stuff for cross-compiling
+  if test "x$cross_compiling" = "xyes" ; then
+    ENDIAN=big
+
+    SIZEOF_SHORT_INT=2
+    SIZEOF_INT=4
+    SIZEOF_LONG_INT=8
+    SIZEOF_LONG_LONG=8
+
+    SIZEOF_FLOAT=4
+    SIZEOF_DOUBLE=8
+    SIZEOF_LONG_DOUBLE=16
+
+    SIZEOF_POINTER=8
+
+    NULL_DEVICE="/dev/null"
+  fi
+
 fi
