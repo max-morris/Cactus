@@ -177,19 +177,19 @@ sub DetermineConfigureCommand
 
   $configure_command = "$configure";
 
-  if($ENV{"BUILD"})
+  if($ENV{"BUILD_MACHINE"})
   {
-    $configure_command .= " --build=". $ENV{"BUILD"};
+    $configure_command .= " --build=". $ENV{"BUILD_MACHINE"};
   }
 
-  if($ENV{"TARGET"})
+  if($ENV{"TARGET_MACHINE"})
   {
-    $configure_command .= " --target=". $ENV{"TARGET"};
+    $configure_command .= " --target=". $ENV{"TARGET_MACHINE"};
   }
      
-  if($ENV{"HOST"})
+  if($ENV{"HOST_MACHINE"})
   {
-    $configure_command .= " --host=". $ENV{"HOST"};
+    $configure_command .= " --host=". $ENV{"HOST_MACHINE"};
   }
 
   return $configure_command;
