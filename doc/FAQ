@@ -1,7 +1,7 @@
 
 Cactus Code Frequently Asked Questions
 
-$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.52 2003-01-27 13:20:59 allen Exp $
+$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.53 2003-01-27 15:31:07 allen Exp $
 
 Also available at http://www.cactuscode.org/Documentation/FAQ
 
@@ -249,6 +249,12 @@ I/O:
 H1  I want to run an old parameter file, but none of the I/O parameters are
     recognised!
 
+
+------------------------------------------------------------------------------
+Configuration Files:
+
+I1  The size of array parameters is specified by a integer number in the
+    param.ccl file. Why can't a parameter itself be used here?
 
 
 ==============================================================================
@@ -1225,3 +1231,11 @@ H1  I want to run an old parameter file, but none of the I/O parameters are
     http://www.cactuscode.org/Development/Release/FixParametersForBETA13.pl
 
 
+------------------------------------------------------------------------------
+Configuration Files:
+
+I1  The size of array parameters is specified by a integer number in the
+    param.ccl file. Why can't a parameter itself be used here?
+
+    The size of the array has to be fixed at compile time to accomodate
+    the use of parameters in Fortran thorns.
