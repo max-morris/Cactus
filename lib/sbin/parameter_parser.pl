@@ -272,6 +272,7 @@ sub parse_param_ccl
 	    {
 	      $new_ranges =~ s/[ \t]+/ /g;
 	    }
+	    
 	    $parameter_db{"\U$thorn $variable\E range $parameter_db{\"\U$thorn $variable\E ranges\"} range"} = $new_ranges;
 	    
 	    # Check description
@@ -280,7 +281,7 @@ sub parse_param_ccl
 	      $message = "Missing description of range '$new_ranges' for parameter $thorn\::$variable";
 	      &CST_error(1,$message,__LINE__,__FILE__);
 	    }
-	    elsif ($new_desc !~ /^\s*\".*\"\s*$/)
+	    elsif ($new_desc =~ /^\s*\".*[^\s\"]\s*$|^\s*[^\s\"].*\"\s*$/)
 	    {
 	      $message = "Description of range for $thorn\::$variable has misplaced quotes ($new_desc)";
 	      &CST_error(0,$message,__LINE__,__FILE__);
@@ -318,6 +319,8 @@ sub parse_param_ccl
 	      }
 	      
 	      $default = $1 if ($default =~ m:\"(((\\\")|[^\"])*)\":);
+	   
+	      &CheckParameterDefault($thorn,$variable,$default,%parameter_db);
 
 	      $parameter_db{"\U$thorn $variable\E default"} = $default;
 	  }
@@ -404,6 +407,175 @@ sub PrintParameterStatistics
 
   print " parameters\n";
 
+  return;
+}
+
+
+#/*@@
+#  @routine    CheckParameterDefault
+#  @date       Sun Dec 17 18.20
+#  @author     Gabrielle Allen
+#  @desc 
+#  Check default in allowed range
+#  @enddesc 
+#  @calls     
+#  @calledby   
+#  @history 
+#
+#  @endhistory 
+#
+#@@*/
+
+sub CheckParameterDefault
+{
+  my($thorn,$variable,$default,%parameter_db) = @_;
+  my($foundit,$message,$i,$range,$minok,$maxok);
+
+  # Check that boolean default is correct
+  if ($parameter_db{"\U$thorn $variable\E type"} =~ /BOOLEAN/)
+  {
+    if ($default !~ m:^yes|no|1|0$:i)
+      {
+	$message = "Default ($default) for boolean incorrect for $variable in $thorn";
+	&CST_error(0,$message,__LINE__,__FILE__);
+      }
+  }
+
+  # Check that keyword default is correct
+  if ($parameter_db{"\U$thorn $variable\E type"} =~ /KEYWORD/)
+  {
+    $foundit = 0;
+    $nranges=$parameter_db{"\U$thorn $variable\E ranges"};
+    for ($i=1; $i<=$nranges; $i++)
+    {
+      $range = $parameter_db{"\U$thorn $variable\E range $i range"};
+      $range =~ s/^\s*//;
+      $range =~ s/\s*$//;
+      $range =~ s/^"(.*)"$/$1/;
+      # Key words don't use pattern matching
+      $range = quotemeta $range;
+      if ($default =~ m:$range:i)
+      {
+	$foundit = 1;
+      }
+    }
+    if ($foundit == 0)
+    {
+      $message = "Default ($default) for keyword incorrect for $variable in $thorn";
+      &CST_error(0,$message,__LINE__,__FILE__);
+    }
+  }
+  
+  # Check that string default is correct 
+  if ($parameter_db{"\U$thorn $variable\E type"} =~ /STRING/)
+  {
+    $foundit = 0;
+    $nranges=$parameter_db{"\U$thorn $variable\E ranges"};
+    for ($i=1; $i<=$nranges; $i++)
+    {
+      $range = $parameter_db{"\U$thorn $variable\E range $i range"};
+      $range =~ s/^\s*//;
+      $range =~ s/\s*$//;
+      $range =~ s/^"(.*)"$/$1/;
+
+      if ($default =~ m:$range:i)
+      {
+	$foundit = 1;
+      }
+    }
+    if ($foundit == 0)
+    {
+      $message = "Default ($default) for string incorrect for $variable in $thorn";
+      &CST_error(0,$message,__LINE__,__FILE__);
+    }
+  }
+  
+  # Check that integer default is correct 
+  if ($parameter_db{"\U$thorn $variable\E type"} =~ /INT/)
+  {
+    $nranges=$parameter_db{"\U$thorn $variable\E ranges"};
+    for ($i=1; $i<=$nranges; $i++)
+    {
+      $minok=0;
+      $maxok=0;
+      $range = $parameter_db{"\U$thorn $variable\E range $i range"};
+      $range =~ s/^\s*//;
+      $range =~ s/\s*$//;
+      $range =~ s/^"(.*)"$/$1/;
+      $range =~ /^([\s\*0-9]*):([\s\*0-9]*)/;
+      $min = $1;
+      $max = $2;
+      if ($min =~ /^\s*[\*\s]*\s*$/)
+      {
+	$minok=1;
+      }
+      elsif ($default >= $min)
+      {
+	$minok=1;
+      }
+      if ($max =~ /^\s*[\*\s]*\s*$/)
+      {
+	$maxok=1;
+      }
+      elsif ($default <= $max)
+      {
+	$maxok=1;
+      }
+      if ($minok == 1 && $maxok == 1)
+      {
+	$foundit = 1;
+      }
+    }
+    if ($foundit == 0)
+    {
+      $message = "Default ($default) for integer incorrect for $variable in $thorn";
+      &CST_error(0,$message,__LINE__,__FILE__);
+    }
+  }
+  
+  # Check that real default is correct 
+  if ($parameter_db{"\U$thorn $variable\E type"} =~ /REAL/)
+  {
+    $nranges=$parameter_db{"\U$thorn $variable\E ranges"};
+    for ($i=1; $i<=$nranges; $i++)
+    {
+      $minok=0;
+      $maxok=0;
+      $range = $parameter_db{"\U$thorn $variable\E range $i range"};
+      $range =~ s/^\s*//;
+      $range =~ s/\s*$//;
+      $range =~ s/^"(.*)"$/$1/;
+      $range =~ /^([\s\*0-9\.]*):([\s\*0-9\.]*)/;
+      $min = $1;
+      $max = $2;
+      if ($min =~ /^\s*[\*\s]*\s*$/)
+      {
+	$minok=1;
+      }
+      elsif ($default >= $min)
+      {
+	$minok=1;
+      }
+      if ($max =~ /^\s*[\*\s]*\s*$/)
+      {
+	$maxok=1;
+      }
+      elsif ($default <= $max)
+      {
+	$maxok=1;
+      }
+      if ($minok == 1 && $maxok == 1)
+      {
+	$foundit = 1;
+      }
+    }
+    if ($foundit == 0)
+    {
+      $message = "Default ($default) for real incorrect for $variable in $thorn";
+      &CST_error(0,$message,__LINE__,__FILE__);
+    }
+  }
+  
   return;
 }
 
