@@ -50,7 +50,8 @@ typedef struct
   /* The coordinate time */
   Double time;
 
-  /* data[var_num][xyz]*/
+  /* data[var_num][TIMELEVEL][xyz]*/
+  /* TIMELEVEL  I believe, xyz is linear */
   void ***data;
 
   /* The extension array */
