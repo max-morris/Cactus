@@ -52,8 +52,8 @@ EOT
     close OUT;
     
     # Compile the test file
-    print "Compiling test file with $compiler...\n";
-    system("$compiler -c fname_test.f");
+    print "Compiling test file with $compiler $opts...\n";
+    system("$compiler $opts -c fname_test.f");
 
     $retcode = $? >> 8;
 
@@ -191,8 +191,8 @@ EOT
     close OUT;
 
     # Compile the test file
-    print "Compiling test file with $compiler...\n";
-    system("$compiler -c fname_test.f");
+    print "Compiling test file with $compiler $opts...\n";
+    system("$compiler $opts -c fname_test.f");
     
     $retcode = $? >> 8;
     
