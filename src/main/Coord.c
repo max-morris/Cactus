@@ -66,7 +66,7 @@ static int num_coords = 0;
 
    @@*/
 
-int CCTK_RegisterCoord_ByIndex(const char *name, int index, int dir)
+int CCTK_RegisterCoordI(const char *name, int index, int dir)
 {
 
   int handle;
@@ -89,12 +89,13 @@ int CCTK_RegisterCoord_ByIndex(const char *name, int index, int dir)
       new_coord->name      = (char *)name;
       new_coord->index     = index;
       new_coord->direction = dir;
+      new_coord->origin    = 0;
 
       /* Remember how many methods there are */
       num_coords++;
 
 #ifdef DEBUG_COORD
-      printf(" In CCTK_RegisterCoord_ByIndex\n");
+      printf(" In CCTK_RegisterCoordI\n");
       printf(" -----------------------------\n");
       printf("   handle %d, name %s,\n",handle,name);
       printf("   index %d, direction %d\n",index,dir);
@@ -130,7 +131,7 @@ int CCTK_RegisterCoord_ByIndex(const char *name, int index, int dir)
                Register a GF as a coordinate with a name and
                a direction.
    @enddesc 
-   @calls      CCTK_RegisterCoord_ByIndex, CCTK_VarIndex
+   @calls      CCTK_RegisterCoordI, CCTK_VarIndex
 
    @var        name        
    @vdesc      Name coordinate is registered as
@@ -175,7 +176,7 @@ int CCTK_RegisterCoord(const char *coordname,
 
   if (index >= 0)
   { 
-     retval = CCTK_RegisterCoord_ByIndex(coordname,index,dir);
+     retval = CCTK_RegisterCoordI(coordname,index,dir);
   }
   else
   {
@@ -188,7 +189,7 @@ int CCTK_RegisterCoord(const char *coordname,
 }
 
 
-int CCTK_GetCoordIndex(const char *name)
+int CCTK_CoordIndex(const char *name)
 {
   int handle;
   struct Coordprops *coord;
@@ -214,9 +215,37 @@ int CCTK_GetCoordIndex(const char *name)
   }
 }
 
-void FMODIFIER FORTRAN_NAME(CCTK_GetCoordIndex)(int *handle, ONE_FORTSTRING_ARG)
+void FMODIFIER FORTRAN_NAME(CCTK_CoordIndex)(int *handle, ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_CREATE(name)
-  *handle = CCTK_GetCoordIndex (name);
+  *handle = CCTK_CoordIndex (name);
   free(name);
+}
+
+
+CCTK_REAL CCTK_CoordOrigin(const char *name)
+{
+  int handle;
+  struct Coordprops *coord;
+
+  for (handle = 0;;handle++)
+  {
+    coord = (struct Coordprops *)CCTK_GetHandledData(coordinates, handle);
+    if (coord)
+    {
+      if (CCTK_Equals(name,(const char *)coord->name))
+	return coord->origin;
+    }
+    else
+    {
+      char *msg;
+      msg = (char *)malloc( 100*sizeof(char)+sizeof(name) );
+      sprintf(msg,"Could not find registered coordinate %s",name);
+      CCTK_WARN(2,msg);
+      if (msg) free(msg);
+      return ERROR_COORDNOTFOUND;
+    }
+    
+  }
+
 }
