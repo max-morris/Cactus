@@ -10,6 +10,11 @@
    @enddesc
  @@*/             
 
+#include <malloc.h>
+#include <stdio.h>
+
+#include "cctk_WarnLevel.h"
+
 int CCTK_mkdir(char *dir)
 {
   int retval;
