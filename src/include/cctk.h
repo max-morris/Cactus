@@ -71,6 +71,7 @@
             CCTK_REAL cctk_delta_time=cctkGH->cctk_delta_time;\
             CCTK_REAL cctk_time=cctkGH->cctk_time;\
             CCTK_REAL *cctk_delta_space=cctkGH->cctk_delta_space;\
+            CCTK_REAL *cctk_origin_space=cctkGH->cctk_origin_space;\
             int *cctk_levfac=cctkGH->cctk_levfac;\
             int cctk_convlevel=cctkGH->cctk_convlevel;\
             int *cctk_nghostzones=cctkGH->cctk_nghostzones;\
