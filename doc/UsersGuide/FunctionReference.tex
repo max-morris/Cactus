@@ -4314,10 +4314,13 @@ The rationale for this design is that the caller may know or suspect
 that the value is a large array, but may only want the first array
 element; in this case this design avoids the caller having to allocate
 a large buffer unnecessarily.
-
-In contrast, it {\em is\/} an error for the value to actually be
-an empty (0-length) array, because then there is no ``first array element''
+\NewPar
+In contrast, it {\em is\/} an error for the value to actually be an
+empty (0-length) array, because then there is no ``first array element''
 to get.
+\NewPar
+If any error code is returned, the user's value buffer
+(pointed to by \verb|value| if this is non-NULL) is unchanged.
 \end{Discussion}
 
 \begin{SeeAlso}{Util\_TableCreateFromString()}
@@ -4438,10 +4441,13 @@ The rationale for this design is that the caller may know or suspect
 that the value is a large array, but may only want the first few array
 elements; in this case this design avoids the caller having to allocate
 a large buffer unnecessarily.
-
+\NewPar
 It is also {\em not\/} an error for the value to actually have
 $< \verb|N_array|$ array elements; again the caller can detect this by
 comparing the return value with \verb|N_array|.
+\NewPar
+If any error code is returned, the user's value buffer
+(pointed to by \verb|array| if this is non-NULL) is unchanged.
 \end{Discussion}
 
 \begin{SeeAlso}{Util\_TableCreateFromString()}
@@ -4559,6 +4565,13 @@ This function differs from \verb|Util_TableGetCharArray()| in two ways:
 It explicitly provides a terminating null character for C-style strings,
 and it explicitly checks for the string being too long to fit in the buffer
 (in which case it returns \verb|UTIL_ERROR_TABLE_STRING_TRUNCATED|).
+\NewPar
+If the error code \verb|UTIL_ERROR_TABLE_STRING_TRUNCATED| is returned,
+then the first \verb|buffer_length-1| characters of the string are
+returned in the user's buffer (assuming \verb|buffer| is non-NULL),
+followed by a null character to properly terminate the string in the
+buffer.  If any other error code is returned, the user's value buffer
+(pointed to by \verb|buffer| if this is non-NULL) is unchanged.
 \end{Discussion}
 
 \begin{SeeAlso}{Util\_TableCreateFromString()}
@@ -4980,6 +4993,13 @@ action based on the results.
 Note that bad things (garbage results, core dumps) may happen if
 you call this function on an iterator which has been invalidated
 by a change in the table's contents.
+\NewPar
+If the error code \verb|UTIL_ERROR_TABLE_STRING_TRUNCATED| is returned,
+then the first \verb|key_buffer_length-1| characters of the key are
+returned in the user's key buffer (assuming \verb|key_buffer| is non-NULL),
+followed by a null character to properly terminate the string in the
+buffer.  If any other error code is returned, the user's key buffer
+(pointed to by \verb|key_buffer| if this is non-NULL) is unchanged.
 \end{Discussion}
 
 \begin{SeeAlso}{Util\_TableQueryValueInfo()}
@@ -5351,6 +5371,10 @@ Unlike all the other table query functions, this function returns
 0 for ``no such key in table''.  The rationale for this design is that
 by passing NULL pointers for \verb|type_code| and \verb|N_elements|, this
 function is then a Boolean ``is key in table?'' predicate.
+\NewPar
+If any error code is returned, the user's buffers (pointed to by
+\verb|type_code| and \verb|N_elements| if these are non-NULL) are
+unchanged.
 \end{Discussion}
 
 \begin{SeeAlso}{Util\_TableItQueryKeyValueInfo()}
@@ -5727,8 +5751,8 @@ entries to be set (see below for details on the string contents)
 The string should contain a sequence of zero or more \verb|key=value|
 ``assignments'', separated by whitespace.  This function processes
 these assignments in left-to-right order, setting corresponding key/value
-entries in the table.\\
-
+entries in the table.
+\NewPar
 The present implementation only recognises integer or real values
 (not pointer, complex, character, or string), and only scalars
 (not arrays).  To be precise, the string must match the following BNF:\\
@@ -5747,10 +5771,15 @@ real\_value & contains one or more characters not in \verb|+-0123456789|
 \end{tabular}\\
 where\\[0ex]
 * denotes 0 or more repetitions, and\\
-? denotes optional items, i.e. 0 or 1 repetitions.\\
-
+? denotes optional items, i.e. 0 or 1 repetitions.%%%\\
+\NewPar
 Note that no whitespace may appear within a \verb|key=value| assignment.
 In particular, do {\em not\/} put whitespace around the ``\verb|=|''!
+\NewPar
+If any error code is returned, assignments lexicographically earlier
+in the input string than where the error was detected will already
+have been made in the table.  Unfortunately, there is no easy way to
+find out where the error was detected. :(
 \end{Discussion}
 
 \begin{SeeAlso}{Util\_TableCreateFromString()}
