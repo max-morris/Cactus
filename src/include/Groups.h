@@ -32,9 +32,9 @@ int CCTK_GetVarNum(const char *implementation,
 		   const char *group_name,
 		   const char *variable_name);
 
-const char *CCTK_GetGroupFromVar(int var);
+char *CCTK_GetGroupFromVar(int var);
 
-const char *CCTK_GetImplementationFromVar(int var);
+char *CCTK_GetImplementationFromVar(int var);
 
 int CCTK_GetMaxDim(void);
 
