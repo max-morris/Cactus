@@ -16,7 +16,7 @@
 #
 #
 #   @enddesc
-#   @version $Id: Makefile,v 1.143 2003-07-05 14:33:56 allen Exp $
+#   @version $Id: Makefile,v 1.144 2003-07-20 11:08:39 jthorn Exp $
 # @@*/
 
 ##################################################################################
@@ -358,7 +358,8 @@ endif
 	@echo "  tags             - creates a Vi TAGS file."
 	@echo "  thorninfo        - give information about all available "
 	@echo "                     thorns."
-	@echo "  UsersGuide       - creates users manual UsersGuide.ps."
+	@echo "  UsersGuide       - creates users guide UsersGuide.ps."
+	@echo "  ReferenceManual  - creates reference manual ReferenceManual.ps."
 	@echo "  ThornGuide       - creates the thorn manual ThornGuide.ps"
 	@echo "  <anything else>  - prompts to create such a configuration."
 	@echo $(DIVIDER)
@@ -892,7 +893,7 @@ endif
 #                      Documentation targets
 ###############################################################################
 
-# Make the users manual
+# Make the Users Guide
 
 .PHONY: UsersGuide.ps
 UsersGuide.ps: UsersGuide
@@ -912,27 +913,27 @@ UsersGuide:
 	@echo "  Done."
 	@echo $(DIVIDER)
 
-# Make the reference manual
+# Make the Reference Manual
 
-.PHONY: Reference.ps
-Reference.ps: Reference
+.PHONY: ReferenceManual.ps
+ReferenceManual.ps: ReferenceManual
 
-.PHONY: Reference
-Reference:
+.PHONY: ReferenceManual
+ReferenceManual:
 	@echo $(DIVIDER)
-	@echo Creating reference documentation Reference.ps
-	cd doc/UsersGuide;                          \
+	@echo Creating user reference manual ReferenceManual.ps
+	cd doc/ReferenceManual;                          \
 	echo "  Running LaTeX....";                 \
-	latex  -interaction=nonstopmode Reference.tex > LATEX_MESSAGES 2>&1; \
-	latex  -interaction=nonstopmode Reference.tex > LATEX_MESSAGES 2>&1; \
-	latex  -interaction=nonstopmode Reference.tex > LATEX_MESSAGES 2>&1; \
+	latex  -interaction=nonstopmode ReferenceManual.tex > LATEX_MESSAGES 2>&1; \
+	latex  -interaction=nonstopmode ReferenceManual.tex > LATEX_MESSAGES 2>&1; \
+	latex  -interaction=nonstopmode ReferenceManual.tex > LATEX_MESSAGES 2>&1; \
 	echo "  Running dvips....";                 \
-	dvips -f ./Reference.dvi 2> DVIPS_MESSAGES | $(CCTK_HOME)/lib/sbin/FixPageNumbersInPostscript.pl > $(CCTK_HOME)/doc/Reference.ps
-	@echo "  Reference.ps created in doc directory."
+	dvips -f ./ReferenceManual.dvi 2> DVIPS_MESSAGES | $(CCTK_HOME)/lib/sbin/FixPageNumbersInPostscript.pl > $(CCTK_HOME)/doc/ReferenceManual.ps
+	@echo "  ReferenceManual.ps created in doc directory."
 	@echo "  Done."
 	@echo $(DIVIDER)
 
-# Make the Maintainers' guide
+# Make the Maintainers' Guide
 
 .PHONY: MaintGuide.ps
 MaintGuide.ps: MaintGuide
