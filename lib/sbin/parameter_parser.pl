@@ -299,7 +299,7 @@ sub parse_param_ccl
         }
         if($block !~ m:SHARES:)
         {
-          if($data[$line_number] =~ m:\s*\}\s*(.+):)
+          if($data[$line_number] =~ m:\s*\}\s*([^\s].*):)
           {
               $default = $1;
               if ($type =~ m:INT|REAL: && $default =~ m:":)
@@ -326,8 +326,9 @@ sub parse_param_ccl
           }
           else
           {
-            $message =  "Unable to find default for $variable";
-            &CST_error(0,$message,"",__LINE__,__FILE__);
+            $message =  "Unable to find default value for parameter $variable";
+	    $hint = "Last line of parameter block should be } <default value>";
+            &CST_error(0,$message,$hint,__LINE__,__FILE__);
           }             
         }
       }
