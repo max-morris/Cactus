@@ -1,4 +1,4 @@
-This directory contains directories refered to as 'arrangements'.
+This directory contains directories referred to as 'arrangements'.
 Each arrangement contains further directories holding the 'thorns'.
 
 The build system searches for thorns and creates a 'ThornList' in 
@@ -9,4 +9,3 @@ can subsequently be hand-edited.
 In any compiled Cactus executable all thorns must have unique names.
 This implies that each thorn should appear in one, and only one,
 arrangement.
-
