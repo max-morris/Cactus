@@ -47,6 +47,9 @@ foreach $toolkit (@toolkits)
     next if (m:^CVS$:);
     next if (m:^\#:);
     next if (m:~$:);
+    
+    # Allow each toolkit to have a documentation directory.
+    next if (m:^doc$:);
 
     # Just pick directories
     if( -d $_)
