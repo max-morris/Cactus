@@ -34,7 +34,8 @@ while (<>)
   if ($last_line =~ /eop$/ && /^%%Page: (\d+) (\d+)$/)
   {
     $part++ if ($1 == 1);
-    $_ = "%%Page: ${part_letters[$part]}$1 $2\n";
+    $_ = "%%Page: ${part_letters[$part]}$1 $2\n"
+      if defined(${part_letters[$part]});
   }
 
   print;
