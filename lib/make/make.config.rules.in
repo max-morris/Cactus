@@ -50,7 +50,7 @@ cat $< | sed 's.//.AUTOMATICALLY_GENERATED_CONCATONATION_PROTECTION_STRING.g' | 
 endef
 
 define COMPILE_F77
-current_wd=`$(GET_WD)` ; cd $(SCRATCH_BUILD) ; $(F77) $(F77FLAGS) $(FCOMPILEONLY)$(OPTIONSEP)$$current_wd$(DIRSEP)$@ $$current_wd$(DIRSEP)$(notdir $<) $(INC_DIRS:%=-I%) 
+current_wd=`$(GET_WD)` ; cd $(SCRATCH_BUILD) ; $(F77) $(F77FLAGS) $(FCOMPILEONLY)$(OPTIONSEP)$$current_wd$(DIRSEP)$@ $$current_wd$(DIRSEP)$(notdir $<) 
 endef
 
 define POSTPROCESS_F77
@@ -62,7 +62,7 @@ cat $< | sed 's.//.AUTOMATICALLY_GENERATED_CONCATONATION_PROTECTION_STRING.g' | 
 endef
 
 define COMPILE_F90
-current_wd=`$(GET_WD)` ; cd $(SCRATCH_BUILD) ; $(F90) $(F90FLAGS) $(FCOMPILEONLY)$(OPTIONSEP)$$current_wd$(DIRSEP)$@ $$current_wd$(DIRSEP)$(basename $(notdir $<)).f $(INC_DIRS:%=-I%) 
+current_wd=`$(GET_WD)` ; cd $(SCRATCH_BUILD) ; $(F90) $(F90FLAGS) $(FCOMPILEONLY)$(OPTIONSEP)$$current_wd$(DIRSEP)$@ $$current_wd$(DIRSEP)$(basename $(notdir $<)).f  
 endef
 
 define POSTPROCESS_F90

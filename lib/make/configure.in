@@ -10,6 +10,12 @@ dnl  @@
 dnl Process this file with autoconf to produce a configure script.
 
 AC_REVISION($Id$)
+
+dnl It looks like older versions of Autoconf don't quite qork properly under 
+dnl cygwin.
+AC_PREREQ(2.13)
+
+dnl Starts here
 AC_INIT()
 AC_CONFIG_HEADER(config.h)
 

@@ -33,18 +33,19 @@ FCOMPILEONLY="/compile_only /object:"
 
 CREATEEXE="-exe:"
 
-SYS_INC_DIRS="\"PROGRA~1\MICROS~1\VC98/INCLUDE\""
+SYS_INC_DIRS="/PROGRA~/MICROS~1/VC98/INCLUDE"
 
 DIRSEP="\\\\"
 
 OPTIONSEP="# not even a single a single space under cygwin"
 
 # Convert //a to a: 
-GET_WD="pwd | sed 's,^//\(.\)/,\1:/,' | sed 's,/,\\\,g' "
+GET_WD="pwd | sed 's,^//\(.\)/,\1:/,' | sed 's,/,\\\\\\,g' "
 
-C_DEPEND='$(CPP) -E -M $(CPPFLAGS) '
+C_DEPEND='$(CPP) -E -MM -nostdinc $(CPPFLAGS) '
 
-CXX_DEPEND='$(CPP) -E -M $(CPPFLAGS) '
+CXX_DEPEND='$(CPP) -E -MM -nostdinc $(CPPFLAGS) '
 
 MKDIR="mkdir -p"
 
+CACTUSLIBLINKLINE='$(addsuffix .a,$(addprefix $(subst /,$(DIRSEP),$(CCTK_LIBDIR))$(DIRSEP)lib,$(notdir $(ALLCACTUSLIBS))))'
