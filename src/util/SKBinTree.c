@@ -291,7 +291,8 @@ t_sktree *SKTreeFindFirst(t_sktree *root)
    @calls     
    @calledby   
    @history 
- 
+   @hdate Wed Oct 13 15:30:57 1999 @hauthor Tom Goodale
+   @hdesc Checks the length of the two string first. 
    @endhistory 
 
 @@*/
@@ -299,16 +300,19 @@ int STR_cmpi(const char *string1, const char *string2)
 {
   int retval;
   int position;
+ 
+  retval = strlen(string1) - strlen(string2);
 
-  retval = 1;
-
-  for(position = 0; 
-      position < strlen(string1)+1 && position < strlen(string2)+1;
-      position++)
+  if(! retval)
   {
-    if((retval = (tolower(string1[position]) - tolower(string2[position]))))
+    for(position = 0; 
+        string1[position] && string2[position];
+        position++)
     {
-      break;
+      if((retval = (tolower(string1[position]) - tolower(string2[position]))))
+      {
+        break;
+      }
     }
   }
 
