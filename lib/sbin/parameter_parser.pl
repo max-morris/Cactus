@@ -22,47 +22,48 @@
 
 sub create_parameter_database
 {
-  local(%implementations) = @_;
-  local($imp, @indata);
+  local(%thorns) = @_;
+  local($thorn, @indata);
   local(@new_parameter_data);
   local(@parameter_data);
   
   #  Loop through each implementation's parameter file.
-  foreach $imp (keys %implementations)
+  foreach $thorn (keys %thorns)
   {
     #       Read the data
-    @indata = &read_file("$implementations{$imp}/param.ccl");
+    @indata = &read_file("$thorns{$thorn}/param.ccl");
     
     #       Get the parameters from it
-    @new_parameter_data = &parse_param_ccl($imp, @indata);
+    @new_parameter_data = &parse_param_ccl($thorn, @indata);
     
     #       Add the parameters to the master parameter database
     push (@parameter_data, @new_parameter_data);
     
   }
   
-  @parameter_data = &cross_index_parameters(scalar(keys %implementations), (keys %implementations), @parameter_data);
+  @parameter_data = &cross_index_parameters(scalar(keys %thorns), (keys %thorns), @parameter_data);
   
   return @parameter_data;
 }
 
 sub cross_index_parameters
 {
-  local($n_implementations, @indata) = @_;
-  local(@implementations);
+  local($n_thorns, @indata) = @_;
+  local(@thorns);
   local(%parameter_database);
   local(@module_file);
   local($line);
   local(@data);
+  local($thorn);
   
-  @implementations = @indata[0..$n_implementations-1];
-  %parameter_database = @indata[$n_implementations..$#indata];
+  @thorns = @indata[0..$n_thorns-1];
+  %parameter_database = @indata[$n_thorns..$#indata];
   
   $parameter_database{"PUBLIC PARAMETERS"} = "";
   
-  foreach $imp (@implementations)
+  foreach $thorn (@thorns)
   {
-    foreach $parameter (split(/ /, $parameter_database{"\U$imp\E PUBLIC variables"}))
+    foreach $parameter (split(/ /, $parameter_database{"\U$thorn\E PUBLIC variables"}))
     {
       if($public_parameters{"\U$parameter\E"})
       {
@@ -73,9 +74,9 @@ sub cross_index_parameters
       }
       else
       {
-	$public_parameters{"\Uparameter\E"} = "$imp";
+	$public_parameters{"\Uparameter\E"} = "$thorn";
 	
-	$parameter_database{"PUBLIC PARAMETERS"} .= "$imp\::$parameter ";
+	$parameter_database{"PUBLIC PARAMETERS"} .= "$thorn\::$parameter ";
       }
     }
   }
@@ -140,7 +141,7 @@ sub read_file
 
 sub parse_param_ccl
 {
-  local($implementation, @data) = @_;
+  local($thorn, @data) = @_;
   local($line_number, $line, $block, $type, $variable, $description, $nerrors);
   local($current_friend, $new_ranges, $new_desc);
   local($data, %parameter_db);
@@ -152,7 +153,7 @@ sub parse_param_ccl
   $block = "PRIVATE";
   
   # Initialise, to prevent perl -w from complaining.
-  $parameter_db{"\U$implementation PRIVATE\E variables"} = "";
+  $parameter_db{"\U$thorn PRIVATE\E variables"} = "";
   
   for($line_number = 0; $line_number < @data; $line_number++)
   {
@@ -176,9 +177,9 @@ sub parse_param_ccl
       }
       
       # Do some initialisation to prevent perl -w from complaining.
-      if(!$parameter_db{"\U$implementation $block\E variables"})
+      if(!$parameter_db{"\U$thorn $block\E variables"})
       {
-	$parameter_db{"\U$implementation $block\E variables"} = "";
+	$parameter_db{"\U$thorn $block\E variables"} = "";
       }
     }
     elsif($line =~ m:(EXTENDS )?\s*(INTEGER|REAL|KEYWORD|STRING)\s*([a-zA-Z]+[a-zA-Z0-9_]*) \s*(\"[^\"]*\"):i)
@@ -191,7 +192,7 @@ sub parse_param_ccl
       
       if($defined_parameters{"\U$variable\E"})
       {
-	print STDERR "Duplicate parameter $variable in implementation $implementation\n";
+	print STDERR "Duplicate parameter $variable in thorn $thorn\n";
 	print STDERR "Ignoring second definition.\n";
 	$nerrors++;
 	$line_number++ until ($data[$line_number] =~ m:\}:);
@@ -221,24 +222,24 @@ sub parse_param_ccl
 	#               Store data about this variable.
 	$defined_parameters{"\U$variable\E"} = 1;
 	
-	$parameter_db{"\U$implementation $block\E variables"} .= $variable." ";
-	$parameter_db{"\U$implementation $variable\E type"} = $type;
-	$parameter_db{"\U$implementation $variable\E description"} = $description;
-	$parameter_db{"\U$implementation $variable\E ranges"} = 0;
+	$parameter_db{"\U$thorn $block\E variables"} .= $variable." ";
+	$parameter_db{"\U$thorn $variable\E type"} = $type;
+	$parameter_db{"\U$thorn $variable\E description"} = $description;
+	$parameter_db{"\U$thorn $variable\E ranges"} = 0;
 	
 	#               Parse the allowed values and their descriptions.
 	while(($new_ranges, $new_desc) = $data[$line_number] =~ m/(.*)::(.*)/)
 	{
-	  $parameter_db{"\U$implementation $variable\E ranges"}++;
-	  $parameter_db{"\U$implementation $variable\E range $parameter_db{\"\U$implementation $variable\E ranges\"} range"} = $new_ranges;
-	  $parameter_db{"\U$implementation $variable\E range $parameter_db{\"\U$implementation $variable\E ranges\"} description"} = $new_desc;
+	  $parameter_db{"\U$thorn $variable\E ranges"}++;
+	  $parameter_db{"\U$thorn $variable\E range $parameter_db{\"\U$thorn $variable\E ranges\"} range"} = $new_ranges;
+	  $parameter_db{"\U$thorn $variable\E range $parameter_db{\"\U$thorn $variable\E ranges\"} description"} = $new_desc;
 	  $line_number++;
 	}
 	if($block !~ m:FRIEND:)
 	{
 	  if($data[$line_number] =~ m:\s*\}\s*(.+):)
 	  {
-	    $parameter_db{"\U$implementation $variable\E default"} = $1;
+	    $parameter_db{"\U$thorn $variable\E default"} = $1;
 	  }
 	  else
 	  {
@@ -262,7 +263,7 @@ sub parse_param_ccl
     }
   }
   
-  $parameter_db{"\U$implementation\E FRIEND implementations"} = join(" ", keys %friends);
+  $parameter_db{"\U$thorn\E FRIEND implementations"} = join(" ", keys %friends);
   
   return %parameter_db;
 }
