@@ -1,4 +1,5 @@
 SRCS=\
-Overload.c\
-CactusDefaultIO.c
+CactusDefaultIO.c\
+IOMethods.c\
+Overload.c
 
