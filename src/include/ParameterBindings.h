@@ -26,6 +26,18 @@ int ParameterCreate(const char *name,        /* The parameter name */
                     int n_ranges,            /* How many allowed ranges it has */
 		    ...);
 
+int ParameterSet   (const char *name,        /* The name of the parameter  */
+                    const char *thorn,       /* The originating thorn      */
+                    const char *value);      /* The value of the parameter */
+
+void *ParameterGet (const char *name,        /* The name of the parameter  */
+                    const char *thorn,       /* The originating thorn      */
+                    int *type);              /* Holds type of parameter    */
+
+const char *ParameterWalk(
+                    int first,               /* Get first parameter or not */
+                    const char *origin);     /* The origin of this walk    */
+
 #ifdef __cplusplus
 }
 #endif
