@@ -82,8 +82,13 @@ static int parameter_level = CCTK_PARAMETER_NORMAL;
 /* Store the number of parameter errors */
 static int param_errors = 0;
 
+/* Store the logging level - warnings of this severity or worse will
+ * be reported on stdout
+ */
+static int logging_level = 0;
+
 /* Store the warning level - warnings of this severity or worse will
- * be reported
+ * be reported on stderr
  */
 static int warning_level = 1;
 
@@ -260,7 +265,6 @@ int CCTK_VInfo (const char *thorn, const char *format, ...)
   fprintf (stdout, "INFO (%s): ", thorn);
   vfprintf (stdout, format, ap);
   fprintf (stdout, "\n");
-  fflush (stdout);
   va_end (ap);
 
   return (0);
@@ -390,90 +394,86 @@ int CCTK_VWarn (int level,
   int myproc;
   va_list ap;
 
-  if (level <= warning_level)
+  if (level <= warning_level || level <= logging_level)
   {
 
-    fflush(stdout);
     myproc = CCTK_MyProc(NULL);
 
     cctk_full_warnings =
       CCTK_ParameterGet ("cctk_full_warnings", "Cactus", &param_type);
     highlight_warning_messages =
       CCTK_ParameterGet ("highlight_warning_messages", "Cactus", &param_type);
-    if (level <= error_level || cctk_full_warnings)
+
+    va_start (ap, format);
+
+    /* print to stderr if necessary */
+    if (level <= warning_level)
     {
+
       if (*highlight_warning_messages)
       {
-        fprintf (stderr, BOLD_ON "WARNING level %d in thorn %s processor %d"
-                         BOLD_OFF "\n"
-                         "  (line %d of %s): \n"
-                         "  -> ",
-                 level, thorn, myproc, line, file);
+        fprintf (stderr, BOLD_ON);
       }
-      else
+
+      if (level <= error_level || cctk_full_warnings)
       {
         fprintf (stderr, "WARNING level %d in thorn %s processor %d\n"
                          "  (line %d of %s): \n"
-                         "  -> ",
-                 level, thorn, myproc, line, file);
-      }
-      if (myproc)
-      {
-        if (*highlight_warning_messages)
-        {
-          fprintf (stdout, BOLD_ON "WARNING level %d in thorn %s processor %d"
-                           BOLD_OFF "\n"
-                           "  (line %d of %s): \n"
-                           "  -> ",
-                   level, thorn, myproc, line, file);
-        }
-        else
-        {
-          fprintf (stdout, "WARNING level %d in thorn %s processor %d\n"
-                           "  (line %d of %s): \n"
-                           "  -> ",
-                   level, thorn, myproc, line, file);
-        }
-      }
-    }
-    else
-    {
-      if (*highlight_warning_messages)
-      {
-        fprintf (stderr, BOLD_ON "WARNING[L%d,P%d] (%s):" BOLD_OFF " ",
-                 level, myproc, thorn);
+                         "  ->",
+                         level, thorn, myproc, line, file);
       }
       else
       {
-        fprintf (stderr, "WARNING[L%d,P%d] (%s): ",
-                 level, myproc, thorn);
+        fprintf (stderr, "WARNING[L%d,P%d] (%s):",
+                         level, myproc, thorn);
       }
-      if (myproc)
+
+      if (*highlight_warning_messages)
       {
-        if (*highlight_warning_messages)
-        {
-          fprintf (stdout, BOLD_ON "WARNING[L%d,P%d] (%s):" BOLD_OFF " ",
-                   level, myproc, thorn);
-        }
-        else
-        {
-          fprintf (stdout, "WARNING[L%d,P%d] (%s): ",
-                   level, myproc, thorn);
-        }
+        fprintf (stderr, BOLD_OFF);
       }
+
+      fprintf (stderr, " ");
+      vfprintf (stderr, format, ap);
+      fprintf (stderr, "\n");
+
     }
 
-    va_start (ap, format);
-    vfprintf (stderr, format, ap);
-    fprintf (stderr, "\n");
-    fflush (stderr);
-    if (myproc)
+    /* print to stdout if necessary */
+    if (level <= logging_level || (myproc && level <= warning_level))
     {
+
+      if (*highlight_warning_messages)
+      {
+        fprintf (stdout, BOLD_ON);
+      }
+
+      if (level <= error_level || cctk_full_warnings)
+      {
+        fprintf (stdout, "WARNING level %d in thorn %s processor %d\n"
+                         "  (line %d of %s): \n"
+                         "  ->",
+                         level, thorn, myproc, line, file);
+      }
+      else
+      {
+        fprintf (stdout, "WARNING[L%d,P%d] (%s):",
+                         level, myproc, thorn);
+      }
+
+      if (*highlight_warning_messages)
+      {
+        fprintf (stdout, BOLD_OFF);
+      }
+
+      fprintf (stdout, " ");
       vfprintf (stdout, format, ap);
       fprintf (stdout, "\n");
-      fflush (stdout);
+
     }
+
     va_end (ap);
+
   }
 
   if (level <= error_level)
@@ -538,7 +538,6 @@ int CCTK_ParamWarn (const char *thorn, const char *message)
                                                "Cactus", &param_type);
   highlight_warning_messages = CCTK_ParameterGet ("highlight_warning_messages",
                                                   "Cactus", &param_type);
-  fflush (stdout);
   if (*highlight_warning_messages)
   {
     fprintf (stderr, BOLD_ON "PARAM %s (%s):" BOLD_OFF " %s\n",
@@ -549,7 +548,6 @@ int CCTK_ParamWarn (const char *thorn, const char *message)
     fprintf (stderr, "PARAM %s (%s): %s\n",
              *cctk_strong_param_check ? "ERROR" : "WARNING", thorn, message);
   }
-  fflush (stderr);
   param_errors++;
 
   return (0);
@@ -608,7 +606,6 @@ int CCTK_VParamWarn (const char *thorn,
                                                "Cactus", &param_type);
   highlight_warning_messages = CCTK_ParameterGet ("highlight_warning_messages",
                                                   "Cactus", &param_type);
-  fflush (stdout);
   if (*highlight_warning_messages)
   {
     fprintf (stderr, BOLD_ON "PARAM %s (%s)" BOLD_OFF ": ",
@@ -623,7 +620,6 @@ int CCTK_VParamWarn (const char *thorn,
   va_start (ap, format);
   vfprintf (stderr, format, ap);
   fprintf (stderr, "\n");
-  fflush (stderr);
   va_end (ap);
 
   param_errors++;
@@ -703,6 +699,52 @@ int CCTKi_SetParameterLevel (int level)
   }
 
   return (parameter_level);
+}
+
+
+ /*@@
+   @routine    CCTKi_SetLogLevel
+   @date       Thu Dec 30 2004
+   @author     Erik Schnetter
+   @desc
+               Sets the logging level
+   @enddesc
+   @calls      CCTK_VWarn
+               CCTK_VInfo
+
+   @var        level
+   @vdesc      logging level to set
+   @vtype      int
+   @vio        in
+   @endvar
+
+   @returntype int
+   @returndesc
+                1 - increased logging level <BR>
+                0 - logging level unchanged <BR>
+               -1 - decreased logging level
+   @endreturndesc
+@@*/
+int CCTKi_SetLogLevel (int level)
+{
+  int retval;
+
+
+  if (logging_level != level)
+  {
+    retval = level > logging_level ? +1 : -1;
+    CCTK_VInfo ("Cactus", "%s logging level from %d to %d",
+                retval > 0 ? "Increasing" : "Decreasing", logging_level, level);
+    logging_level = level;
+  }
+  else
+  {
+    CCTK_VInfo ("Cactus",
+                "Logging level is already %d", level);
+    retval = 0;
+  }
+
+  return (retval);
 }
 
 
@@ -836,11 +878,9 @@ void CCTKi_FinaliseParamWarn (void)
   {
     cctk_strong_param_check = CCTK_ParameterGet ("cctk_strong_param_check",
                                                  "Cactus", &param_type);
-    fflush (stdout);
     if (*cctk_strong_param_check)
     {
       fprintf (stderr, "\nFailed parameter check (%d errors)\n\n", param_errors);
-      fflush (stderr);
       CCTK_Abort (NULL, 99);
     }
     else
@@ -853,7 +893,6 @@ void CCTKi_FinaliseParamWarn (void)
       {
         fprintf (stderr, "\nThere were %d parameter warnings\n\n", param_errors);
       }
-      fflush (stderr);
     }
   }
 }

@@ -18,6 +18,7 @@ void CCTKi_CommandLineTestThornCompiled(const char *argument);
 void CCTKi_CommandLineDescribeAllParameters(const char *argument);
 void CCTKi_CommandLineDescribeParameter(const char *argument);
 void CCTKi_CommandLineTestParameters(const char *argument);
+void CCTKi_CommandLineLoggingLevel(const char *argument);
 void CCTKi_CommandLineWarningLevel(const char *argument);
 void CCTKi_CommandLineErrorLevel(const char *argument);
 void CCTKi_CommandLineParameterLevel(const char *argument);

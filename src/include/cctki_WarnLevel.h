@@ -16,6 +16,7 @@ extern "C"
 {
 #endif
 
+int  CCTKi_SetLogLevel (int level);
 int  CCTKi_SetWarnLevel (int level);
 int  CCTKi_SetParameterLevel (int level);
 int  CCTKi_SetErrorLevel (int level);

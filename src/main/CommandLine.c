@@ -61,7 +61,7 @@ int cctki_paramcheck_nprocs;
  *********************        Defines          **********************
  ********************************************************************/
 #define CACTUS_COMMANDLINE_OPTIONS                                     \
-        "[-h] [-O] [-o paramname] [-W n] [-E n] [-r[o|e|oe|eo]] [-T] " \
+        "[-h] [-O] [-o paramname] [-L n] [-W n] [-E n] [-r[o|e|oe|eo]] [-T] " \
         "[-t name] [-parameter-level <level>] [-v] <parameter_file_name>"
 
 
@@ -272,6 +272,40 @@ void CCTKi_CommandLineTestParameters (const char *argument)
 
 
 /*@@
+   @routine    CCTKi_CommandLineLoggingLevel
+   @date       Thu Dec 30 2004
+   @author     Erik Schnetter
+   @desc
+               Sets the CCTK logging level from a command line argument.
+   @enddesc
+   @calls      CCTKi_SetLoggingLevel
+               CCTKi_CommandLineUsage
+
+   @var        argument
+   @vdesc      option argument
+   @vtype      const char *
+   @vio        in
+   @endvar
+@@*/
+void CCTKi_CommandLineLoggingLevel (const char *argument)
+{
+  char *endptr;
+  long int logginglevel;
+
+
+  logginglevel = strtol (argument, &endptr, 10);
+  if (endptr && *endptr == 0)
+  {
+    CCTKi_SetLogLevel (logginglevel);
+  }
+  else
+  {
+    CCTKi_CommandLineUsage ();
+  }
+}
+
+
+/*@@
    @routine    CCTKi_CommandLineWarningLevel
    @date       Wed Feb 17 00:58:56 1999
    @author     Tom Goodale
@@ -303,6 +337,7 @@ void CCTKi_CommandLineWarningLevel (const char *argument)
     CCTKi_CommandLineUsage ();
   }
 }
+
 
  /*@@
    @routine    CCTKi_CommandLineErrorLevel
@@ -495,6 +530,7 @@ void CCTKi_CommandLineHelp (void)
     "-o, -describe-parameter <paramname> : describe the given parameter.\n"
     "                                      pretending to be on nprocs processors, \n"
     "                                      or 1 if not given.\n"
+    "-L, -logging-level <n>              : Sets the logging level to n.\n"
     "-W, -warning-level <n>              : Sets the warning level to n.\n"
     "-E, -error-level <n>                : Sets the error level to n.\n"
     "-r, -redirect [o|e|oe|eo]           : Redirects standard output and/or standard\n"

@@ -1108,6 +1108,8 @@ Short Version & Long Version \\
 \hline
 % -x [<nprocs>] & -test-parameters [<nprocs>] \\
 %\hline
+ -L<level> & -logging-level=<level> \\
+\hline
  -W<level> & -warning-level=<level> \\
 \hline
  -E<level> & -error-level=<level> \\
@@ -1142,18 +1144,23 @@ Produces version information of the code.
 %Runs the code far enough to check the consistency of the parameters.  If
 %given a numeric argument it will attempt to simulate being on that number
 %of processors. [To be implemented.]
+\item [{\tt -L<level>} or {\tt -logging-level=<level>}]
+Sets the logging level of the code.  All warning messages are given a
+level --- the lower the level the greater the severity.  This
+parameter {\tt -L} controls the level of messages to be seen, with all
+warnings of level $\le$ {\tt <level>} printed to standard output.  The
+default is a logging level of~0, meaning that only level~0 messages
+should be printed to standard output.
 \item [{\tt -W<level>} or {\tt -warning-level=<level>}]
-Sets the warning level of the code.  All warning messages are given a level ---
-the lower the level the greater the severity.  This parameter controls the
-level of messages to be seen, with all warnings of level $\le$ {\tt <level>}
-printed to standard output (warnings with level $>$ {\tt <level>} are
-silently discarded).  The default is a warning level of~1,
-meaning that only level~0 and level~1 messages should be printed.
+This is similar to {\tt -W}, but for standard error instead of
+standard output.  All warnings of level $\le$ {\tt <level>} are
+printed to standard error.  The default is a warning level of~1,
+meaning that level~0 and level~1 messages should be printed to
+standard error.
 \item [{\tt -E<level} or {\tt -error-level=<level>}]
-This is similar to {\tt -W}, but for fatal errors:
-Cactus treats all warnings with level $\le$ {\tt <level>} as fatal
-errors, and aborts the Cactus run immediately (after printing the
-warning message%%%
+This is similar to {\tt -W}, but for fatal errors: Cactus treats all
+warnings with level $\le$ {\tt <level>} as fatal errors, and aborts
+the Cactus run immediately (after printing the warning message%%%
 \footnote{%%%
 	 Cactus imposes the constraints that
 	 $\hbox{the {\tt -W} level} \ge \hbox{the {\tt -E} level} \ge 0$,

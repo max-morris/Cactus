@@ -58,7 +58,7 @@ static char **argv = NULL;
    @desc 
    Processes the command line arguments.
    @enddesc 
-   @calls    CCTKi_CommandLineTestThornCompiled CCTKi_CommandLineDescribeAllParameters CCTKi_CommandLineDescribeParameter CCTKi_CommandLineTestParameters CCTKi_CommandLineWarningLevel CCTKi_CommandLineErrorLevel CCTKi_CommandLineParameterLevel CCTKi_CommandLineRedirectStdout CCTKi_CommandLineListThorns() CCTKi_CommandLineVersion() CCTKi_CommandLineHelp
+   @calls    CCTKi_CommandLineTestThornCompiled CCTKi_CommandLineDescribeAllParameters CCTKi_CommandLineDescribeParameter CCTKi_CommandLineTestParameters CCTKi_CommandLineLoggingLevel CCTKi_CommandLineWarningLevel CCTKi_CommandLineErrorLevel CCTKi_CommandLineParameterLevel CCTKi_CommandLineRedirectStdout CCTKi_CommandLineListThorns() CCTKi_CommandLineVersion() CCTKi_CommandLineHelp
    @calledby   
    @history 
  
@@ -117,6 +117,7 @@ int CCTKi_ProcessCommandLine(int *inargc, char ***inargv, tFleshConfig *ConfigDa
         {"describe-all-parameters", optional_argument, NULL, 'O'},
         {"describe-parameter",      required_argument, NULL, 'o'},
         /*{"test-parameters",         optional_argument, NULL, 'x'},*/
+        {"logging-level",           required_argument, NULL, 'L'},
         {"warning-level",           required_argument, NULL, 'W'},
         {"error-level",             required_argument, NULL, 'E'},
         {"parameter-level",         required_argument, NULL, 256},
@@ -128,7 +129,7 @@ int CCTKi_ProcessCommandLine(int *inargc, char ***inargv, tFleshConfig *ConfigDa
         {0, 0, 0, 0}
       };
       
-      c = getopt_long_only (argc, argv, "hO::o:x::W:E:r::Tt:vi",
+      c = getopt_long_only (argc, argv, "hO::o:x::L:W:E:r::Tt:vi",
                             long_options, &option_index);
       if (c == -1)
         break;
@@ -141,6 +142,7 @@ int CCTKi_ProcessCommandLine(int *inargc, char ***inargv, tFleshConfig *ConfigDa
           case 'O': CCTKi_CommandLineDescribeAllParameters(optarg); break;
           case 'o': CCTKi_CommandLineDescribeParameter(optarg); break;
           case 'x': CCTKi_CommandLineTestParameters(optarg); break;
+          case 'L': CCTKi_CommandLineLoggingLevel(optarg); break;
           case 'W': CCTKi_CommandLineWarningLevel(optarg); break;
           case 'E': CCTKi_CommandLineErrorLevel(optarg); break;
           case 256: CCTKi_CommandLineParameterLevel(optarg); break;
