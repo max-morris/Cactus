@@ -64,12 +64,13 @@ else
   MKDIR="mkdir "
   MKDIRFLAGS=" -p "
 
-  CACTUSLIBLINKLINE='$(addsuffix .a,$(addprefix $(subst /,$(DIRSEP),$(CCTK_LIBDIR))$(DIRSEP)lib,$(notdir $(ALLCACTUSLIBS))))'
+  LIBNAME_PREFIX=""
+  LIBNAME_SUFFIX=".lib"
+  CACTUSLIBLINKLINE='/link /libpath:$(subst /,$(DIRSEP),$(CCTK_LIBDIR)) $(foreach lib,$(ALLCACTUSLIBS), $(LIBNAME_PREFIX)$(lib)$(LIBNAME_SUFFIX))'
 
-# Windows libraries have to explicitly appear on the link line with full name
-# So ignore the LIBDIRS variable and don't put flags on.
+  GENERAL_LIBRARIES='$(LIBDIRS:%=/link /libpath:$(subst /,$(DIRSEP),%)) $(LIBS:%=%.lib)' 
 
-  GENERAL_LIBRARIES='$(LIBS)' 
+  : $(LIBS="wsock32")
 
 # The Windows file system requires perl backup files to be made when
 # doing inplace editing
