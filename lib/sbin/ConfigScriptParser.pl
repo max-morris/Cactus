@@ -40,6 +40,7 @@ sub ParseConfigScript
     $line = $data[$line_number];
 
     chomp $line;
+    next if (! $line);
 
     # Parse the line
     if($line =~ m/^\s*BEGIN\s+DEFINE\s*/i)
@@ -110,30 +111,30 @@ sub ParseConfigScript
         chomp $line;
       }
     }
-    elsif($line =~ m/^\s*INCLUDE_DIRECTORY[^\s]*\s*(.*)$/i)
+    elsif($line =~ m/^\s*INCLUDE_DIRECTORY\s+(.*)$/i)
     {
-      $cfg->{"\U$thorn $provides\E INCLUDE_DIRECTORY"} .=' ' . $1;
+      $cfg->{"\U$thorn $provides\E INCLUDE_DIRECTORY"} .= $1 . ' ';
     }
-    elsif($line =~ m/^\s*LIBRARY_DIRECTORY[^\s]*\s*(.*)$/i)
+    elsif($line =~ m/^\s*LIBRARY_DIRECTORY\s+(.*)$/i)
     {
-      $cfg->{"\U$thorn $provides\E LIBRARY_DIRECTORY"} .= ' ' . $1;
+      $cfg->{"\U$thorn $provides\E LIBRARY_DIRECTORY"} .= $1 . ' ';
     }
-    elsif($line =~ m/^\s*LIBRARY[^\s]*\s*(.*)$/i)
+    elsif($line =~ m/^\s*LIBRARY\s+(.*)$/i)
     {
-      $cfg->{"\U$thorn $provides\E LIBRARY"} .= ' ' . $1;
+      $cfg->{"\U$thorn $provides\E LIBRARY"} .= $1 . ' ';
     }
-     else
+    else
     {
-      &CST_error (0, "Unrecognised line in ConfigScriptParser.ccl '$line'");
+      &CST_error (0, "Unrecognised line '$line' in configuration script '$script'");
     }
   }
 
   chomp ($error_msg = $cfg->{"\U$thorn $provides\E ERROR"});
-  $error_msg = $error_msg ? "     Error message: '$error_msg'" : 
+  $error_msg = $error_msg ? "     Error message: '$error_msg'" :
                             '     (no error message)';
 
   print $cfg->{"\U$thorn $provides\E MESSAGE"};
-          
+
   $msg = "Configuration script for thorn $thorn ";
   &CST_error (0, $msg . "returned exit code $exit_value\n$error_msg")
     if ($exit_value);
