@@ -641,24 +641,24 @@ sub ParseArgument
 
   my $Argument = {};
 
-  my($type,$name,$fpointer,$intent);
+  my($type,$name,$fpointer,$intent,$extra);
 
   if ($DummyArgument =~ /FPTRARGS/)
   {
-    ($type,$intent,$name) = split(' ',$DummyArgument);
+    ($type,$intent,$name,$extra) = split(' ',$DummyArgument);
     # QUERY: is $fpointer supposed to be set here?
     $fpointer = 1;
     &debug_print("$Thorn--ParseArgument: (fn pointer) type=$type name=$name");
   }
   elsif ($DummyArgument =~ s/\bARRAY\b//)
   {
-    ($type,$intent,$name) = split(' ',$DummyArgument);
+    ($type,$intent,$name,$extra) = split(' ',$DummyArgument);
     $Argument->{"Is Array"} = 1;
     &debug_print("$Thorn--ParseArgument: $name is ARRAY");
   }
   else
   {
-    ($type,$intent,$name) = split(' ',$DummyArgument);
+    ($type,$intent,$name,$extra) = split(' ',$DummyArgument);
     $Argument->{"Is Array"} = 0;
   }
 
@@ -698,6 +698,12 @@ sub ParseArgument
     $intent =~ s/FPTRARGS//; #strip off the FPTARGS if this happens for a function pointer
     my $message = "Thorn $Thorn, Function $Function:\nEvery argument must contain an intent statement of type IN, OUT or INOUT.\n The argument \"$intent\" does not.";
     &CST_error(0,$message,'',__LINE__,__FILE__);
+  }
+
+  if ($extra) # too many arguments; probably a comma missed (see PR 1886)
+  {
+    my $message = "Thorn $Thorn, Function $Function:\nThe argument has too many specifications: should be type - intent - name.\nThe argument \"$DummyArgument\" has too many.";
+      &CST_error(0,$message,'',__LINE__,__FILE__);
   }
 
   if ($fpointer)
