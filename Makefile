@@ -19,7 +19,7 @@
 #
 #
 #   @enddesc
-#   @version $Id: Makefile,v 1.164 2004-11-08 10:23:45 tradke Exp $
+#   @version $Id: Makefile,v 1.165 2005-01-13 10:58:18 tradke Exp $
 # @@*/
 
 ##################################################################################
@@ -42,21 +42,21 @@ endif
 export PROMPT
 
 # Make quietly unless told not to
-ifneq ($(strip $(SILENT)),no)
+ifneq ($(shell echo $(strip $(SILENT)) | tr '[:upper:]' '[:lower:]'),no)
 .SILENT:
 endif
 
 # Stuff for parallel makes
 # TJOBS is the number of thorns to compile in parallel
 ifeq ($(strip $(TJOBS)), )
-TPARFLAGS = 
+TPARFLAGS =
 else
 TPARFLAGS = -j $(TJOBS)
 endif
 
 # FJOBS is the number of files within a thorn to compile in parallel
 ifeq ($(strip $(FJOBS)), )
-FPARFLAGS = 
+FPARFLAGS =
 else
 FPARFLAGS = -j $(FJOBS)
 endif
@@ -75,13 +75,13 @@ endif
 ifneq ($(strip $(options)),)
 SETUP_OPTIONS = -config_file=$(options)
 else
-SETUP_OPTIONS = 
+SETUP_OPTIONS =
 endif
 
 
 # Allow various options to be passed to the configure script
 
-SETUP_ENV = 
+SETUP_ENV =
 
 ifdef CC
 ifneq ($(strip $(origin CC)), default)
@@ -1063,11 +1063,11 @@ ThornGuide:
 	@echo $(DIVIDER)
 	@echo Creating thorn documentation ThornGuide.ps
 	rm -rf $(CCTK_HOME)/doc/ThornGuide/build;
-	mkdir $(CCTK_HOME)/doc/ThornGuide/build; 
+	mkdir $(CCTK_HOME)/doc/ThornGuide/build;
 	@echo "  Processing...."
 	cd $(CCTK_HOME)/doc/ThornGuide/build; \
 	$(MAKE) -f $(CCTK_HOME)/doc/ThornGuide/Makefile PERL=$(PERL) CCTK_HOME=$(CCTK_HOME) THORNS=$(THORNS) ARRANGEMENTS=$(ARRANGEMENTS) TOCDEPTH=$(TOCDEPTH); \
-	cp ThornGuide.ps $(CCTK_HOME)/doc/ThornGuide.ps 
+	cp ThornGuide.ps $(CCTK_HOME)/doc/ThornGuide.ps
 	@echo "  ThornGuide.ps created in doc directory."
 	@echo "  Done."
 	@echo $(DIVIDER)
@@ -1077,11 +1077,11 @@ ThornGuide.pdf:
 	@echo $(DIVIDER)
 	@echo Creating thorn documentation ThornGuide.pdf
 	rm -rf $(CCTK_HOME)/doc/ThornGuide/build;
-	mkdir $(CCTK_HOME)/doc/ThornGuide/build; 
+	mkdir $(CCTK_HOME)/doc/ThornGuide/build;
 	@echo "  Processing...."
 	cd $(CCTK_HOME)/doc/ThornGuide/build; \
 	$(MAKE) -f $(CCTK_HOME)/doc/ThornGuide/Makefile ThornGuide.pdf PERL=$(PERL) CCTK_HOME=$(CCTK_HOME) THORNS=$(THORNS) ARRANGEMENTS=$(ARRANGEMENTS) TOCDEPTH=$(TOCDEPTH); \
-	cp ThornGuide.pdf $(CCTK_HOME)/doc/ThornGuide.pdf 
+	cp ThornGuide.pdf $(CCTK_HOME)/doc/ThornGuide.pdf
 	@echo "  ThornGuide.pdf created in doc directory."
 	@echo "  Done."
 	@echo $(DIVIDER)
@@ -1094,7 +1094,7 @@ ifneq ($strip($(CONFIGURATIONS)),)
 $(addsuffix -ThornGuide,$(CONFIGURATIONS)):
 	@echo $(DIVIDER)
 	@echo Creating ThornGuide for $(@:%-ThornGuide=%)
-	if test ! -d $(CONFIGS_DIR)/$(@:%-ThornGuide=%)/doc ; then mkdir $(CONFIGS_DIR)/$(@:%-ThornGuide=%)/doc; fi 
+	if test ! -d $(CONFIGS_DIR)/$(@:%-ThornGuide=%)/doc ; then mkdir $(CONFIGS_DIR)/$(@:%-ThornGuide=%)/doc; fi
 	rm -rf  $(CONFIGS_DIR)/$(@:%-ThornGuide=%)/doc/build
 	mkdir $(CONFIGS_DIR)/$(@:%-ThornGuide=%)/doc/build
 	if test -r $(CONFIGS_DIR)/$(@:%-ThornGuide=%)/ThornList ; then \
