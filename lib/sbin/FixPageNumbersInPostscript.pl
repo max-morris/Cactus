@@ -8,7 +8,14 @@
 #              Cactus UsersGuide, ThornGuide, and MaintGuide
 #  @enddesc
 #  @version    $Header$
-#@@*/
+#  @history
+#  @date       Sat Jul  5 17:55:07 CEST 2003
+#  @author     Jonathan Thornburg <jthorn@aei.mpg.de>
+#  @desc       Fix "previous line in file was end of previous page"
+#              to also recognize the slightly different dvips output of
+#              dvips(k) 5.92b (part of the teTeX 2.01 distribution)
+#  @endhistory
+#  @@*/
 
 # $part counts the parts (chapters) in the postscript file
 $part = 0;
@@ -31,7 +38,9 @@ while (<>)
 
 while (<>)
 {
-  if ($last_line =~ /eop$/ && /^%%Page: (\d+) (\d+)$/)
+  my $previous_line_was_eop
+	= (($last_line =~ /eop$/) || ($last_line =~ /eop end$/));
+  if ($previous_line_was_eop && (/^%%Page: (\d+) (\d+)$/))
   {
     $part++ if ($1 == 1);
     $_ = "%%Page: ${part_letters[$part]}$1 $2\n"
