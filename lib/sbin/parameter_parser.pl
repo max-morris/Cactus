@@ -114,7 +114,7 @@ sub read_file
     
     next if(m/^\s+$/);
     
-    chomp;
+    chompme($_);
     
     push(@indata, $_);
   }
@@ -124,6 +124,37 @@ sub read_file
   return @indata;
 }
 
+
+#/*@@
+#  @routine    chompme
+#  @date       Mon 26th April 1999
+#  @author     Gabrielle Allen
+#  @desc 
+#  Implements a version of the perl5 chomp function,
+#  returning the string passed in with the last character
+#  removed unless it is a newline
+#  @enddesc 
+#  @calls     
+#  @calledby   
+#  @history 
+# 
+#  @endhistory 
+#@@*/
+
+sub chompme
+{
+    local($in) = @_;
+
+    $lastchar = chop($in);
+    if ($lastchar == "\n")
+    {
+	return $_;
+    }
+    else
+    {
+	return $in;
+    }
+}
 
 #/*@@
 #  @routine    parse_param_ccl
