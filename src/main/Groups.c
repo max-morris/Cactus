@@ -101,7 +101,7 @@ int CCTK_GetGroupIndex(const char *fullgroupname)
     else
     {
       char *message;
-      message = (char *)malloc( (100+sizeof(fullgroupname))*sizeof(char) ); 
+      message = (char *)malloc( (100+strlen(fullgroupname))*sizeof(char) ); 
       sprintf(message,"No group found with the name %s",fullgroupname);
       CCTK_Warn(2,"CCTK",message);
       if (message) free(message);
@@ -384,7 +384,7 @@ int CCTK_GetVarIndex(const char *variable_name)
   }
   else if (ierr == 1)
   {
-    message = (char *)malloc( (100+sizeof(variable_name))*sizeof(char) );
+    message = (char *)malloc( (100+strlen(variable_name))*sizeof(char) );
     sprintf(message,"Full name %s in wrong format in CCTK_GetVarNum",
 	    variable_name);
     CCTK_Warn(2,"CCTK",message);
