@@ -29,6 +29,7 @@
 #include "cctk_Interp.h"
 #include "cctk_WarnLevel.h"
 #include "cctk_Coord.h"
+#include "cctk_ActiveThorns.h"
 
 static const char *rcsid = "$Header$";
 
@@ -89,6 +90,7 @@ void CCTK_FCALL CCTK_FNAME (CCTK_InterpLocal)
 /* structure holding the routines for a registered interpolation operator */
 typedef struct
 {
+  const char *implementation;
   cInterpOperatorGV interp_operator_GV;
   cInterpOperatorLocal interp_operator_local;
 } t_interp_operator;
@@ -104,7 +106,7 @@ static int num_interp_operators = 0;
 
 
  /*@@
-   @routine    CCTK_InterpRegisterOperatorGV
+   @routine    CCTKi_InterpRegisterOperatorGV
    @date       Mon 12 Feb 2001
    @author     Thomas Radke
    @desc
@@ -131,8 +133,9 @@ static int num_interp_operators = 0;
                -3 interpolation operator by given name already exists
    @endreturndesc
 @@*/
-int CCTK_InterpRegisterOperatorGV (cInterpOperatorGV operator_GV,
-                                   const char *name)
+int CCTKi_InterpRegisterOperatorGV (const char *thorn,
+				    cInterpOperatorGV operator_GV,
+				    const char *name)
 {
   int handle;
   t_interp_operator *operator;
@@ -156,6 +159,7 @@ int CCTK_InterpRegisterOperatorGV (cInterpOperatorGV operator_GV,
       operator = (t_interp_operator *) malloc (sizeof (t_interp_operator));
       if (operator)
       {
+	operator->implementation = CCTK_ThornImplementation(thorn);
         operator->interp_operator_GV = operator_GV;
         operator->interp_operator_local = NULL;
         handle = Util_NewHandle (&interp_operators, name, operator);
@@ -189,7 +193,7 @@ int CCTK_InterpRegisterOperatorGV (cInterpOperatorGV operator_GV,
 
 
  /*@@
-   @routine    CCTK_InterpRegisterOperatorLocal
+   @routine    CCTKi_InterpRegisterOperatorLocal
    @date       Mon 12 Feb 2001
    @author     Thomas Radke
    @desc
@@ -216,8 +220,9 @@ int CCTK_InterpRegisterOperatorGV (cInterpOperatorGV operator_GV,
                -3 interpolation operator by given name already exists
    @endreturndesc
 @@*/
-int CCTK_InterpRegisterOperatorLocal (cInterpOperatorLocal operator_local,
-                                      const char *name)
+int CCTKi_InterpRegisterOperatorLocal (const char *thorn, 
+				       cInterpOperatorLocal operator_local,
+				       const char *name)
 {
   int handle;
   t_interp_operator *operator;
@@ -241,6 +246,7 @@ int CCTK_InterpRegisterOperatorLocal (cInterpOperatorLocal operator_local,
       operator = (t_interp_operator *) malloc (sizeof (t_interp_operator));
       if (operator)
       {
+	operator->implementation = CCTK_ThornImplementation(thorn);
         operator->interp_operator_local = operator_local;
         operator->interp_operator_GV = NULL;
         handle = Util_NewHandle (&interp_operators, name, operator);
@@ -424,13 +430,13 @@ int CCTK_InterpGV (cGH *GH,
   if (operator == NULL)
   {
     CCTK_Warn (3, __LINE__, __FILE__, "Cactus",
-               "Invalid interpolation operator handle passed to CCTK_InterpGV");
+               "CCTK_Interp: Invalid interpolation operator handle passed to CCTK_InterpGV");
     retcode = -1;
   }
   else if (coord_system == NULL)
   {
     CCTK_Warn (3, __LINE__, __FILE__, "Cactus",
-               "Invalid coordinate system handle passed to CCTK_InterpGV");
+               "CCTK_Interp: Invalid coordinate system handle passed to CCTK_InterpGV");
     retcode = -2;
   }
   else
@@ -791,3 +797,51 @@ void CCTK_FCALL CCTK_FNAME (CCTK_InterpLocal)
 
   *fortranreturn = retcode;
 }
+
+ /*@@
+   @routine    CCTK_NumInterpOperators
+   @date       Mon Oct 22 2001
+   @author     Gabrielle Allen
+   @desc
+               The number of interp operators registered
+   @enddesc
+   @returntype int
+   @returndesc
+               number of interpolation operators
+   @endreturndesc
+@@*/
+
+int CCTK_NumInterpOperators()
+{
+  return num_interp_operators;
+}
+
+ /*@@
+   @routine    CCTK_InterpOperatorImplementation
+   @date       Mon Oct 22 2001
+   @author     Gabrielle Allen
+   @desc
+   Provide the implementation which provides an interpolation operator
+   @enddesc
+   @returntype int
+   @returndesc
+               Implementation which supplied the interpolation operator
+   @endreturndesc
+@@*/
+
+const char *CCTK_InterpOperatorImplementation(int handle)
+{
+  t_interp_operator *operator;
+  const char *imp=NULL;
+
+  operator = (t_interp_operator *) 
+    Util_GetHandledData (interp_operators, handle);
+  
+  if (operator)
+  {
+    imp = operator->implementation;
+  }
+
+  return imp;
+}
+

@@ -37,7 +37,7 @@ typedef int (*cInterpOperatorGV) (cGH *GH,
 /* prototype for interpolation operator routine
    working on local arrays */
 typedef int (*cInterpOperatorLocal) (cGH *GH,
-                                     int num_points,
+				     int num_points,
                                      int num_dims,
                                      int num_in_arrays,
                                      int num_out_arrays,
@@ -53,11 +53,15 @@ typedef int (*cInterpOperatorLocal) (cGH *GH,
 
 int CCTK_InterpHandle (const char *name);
 
-int CCTK_InterpRegisterOperatorGV (cInterpOperatorGV operator_GV,
-                                   const char *name);
+#define CCTK_InterpRegisterOperatorGV(a,b) CCTKi_InterpRegisterOperatorGV(CCTK_THORNSTRING,a,b)
+int CCTKi_InterpRegisterOperatorGV (const char *thorn,
+				    cInterpOperatorGV operator_GV,
+				    const char *name);
 
-int CCTK_InterpRegisterOperatorLocal (cInterpOperatorLocal operator_local,
-                                      const char *name);
+#define CCTK_InterpRegisterOperatorLocal(a,b) CCTKi_InterpRegisterOperatorLocal(CCTK_THORNSTRING,a,b)
+int CCTKi_InterpRegisterOperatorLocal (const char *thorn,
+				       cInterpOperatorLocal operator_local,
+				       const char *name);
 
 int CCTK_InterpGV (cGH *GH,
                    int operator_handle,
@@ -74,6 +78,10 @@ int CCTK_InterpLocal (cGH *GH,
                       int num_in_arrays,
                       int num_out_arrays,
                       ...);
+
+const char *CCTK_InterpOperatorImplementation(int handle);
+
+int CCTK_NumInterpOperators(void);
 
 #ifdef __cplusplus
 }
