@@ -484,6 +484,17 @@ EOT
   foreach $thorn (split(" ",$interface_database{"THORNS"}))
   {
 
+    @data = &CreateFortranThornParameterBindings($thorn, $n_param_database, @rest);
+
+    open(OUT, ">$thorn"."_FParameters.h") || die "Cannot open $thorn"."_FParameters.h";
+
+    foreach $line (@data)
+    {
+      print OUT "$line\n";
+    }
+
+    close OUT;
+
     open(OUT, ">$thorn"."_CParameters.h") || die "Cannot open $thorn"."_CParameters.h";
 
     $implementation = $interface_database{"\U$thorn\E IMPLEMENTS"};
@@ -521,14 +532,14 @@ EOT
     {
       $friend_implementation = $interface_database{"\U$friend\E IMPLEMENTS"};
 
-      print OUT "#include \"ParameterCProtected$friend_implementation.h\"\n";
+      print OUT "#include \"ParameterCProtected$friend.h\"\n";
+
+      $interface_database{"IMPLEMENTATION \U$friend\E THORNS"} =~ m:([^ ]*):;
+ 
+      $friend_thorn = $1;
 
       foreach $parameter (split(" ",$parameter_database{"\U$thorn FRIEND $friend\E variables"}))
       {
-	$interface_database{"IMPLEMENTATION \U$friend\E THORNS"} =~ m:([^ ]*):;
- 
-	$friend_thorn = $1;
-
 	$type = $parameter_database{"\U$friend_thorn $parameter\E type"};
 
 	$type_string = &get_c_type_string($type);
@@ -581,6 +592,17 @@ EOT
   {
     print OUT "#ifdef THORN_IS_$thorn\n";
     print OUT "#include \"$thorn"."_CParameters.h\"\n";
+    print OUT "#endif\n\n";
+  }
+
+  close OUT;
+
+  open(OUT, ">FParameters.h") || die "Cannot open FParameters.h";
+
+  foreach $thorn (split(" ",$interface_database{"THORNS"}))
+  {
+    print OUT "#ifdef THORN_IS_$thorn\n";
+    print OUT "#include \"$thorn"."_FParameters.h\"\n";
     print OUT "#endif\n\n";
   }
 

@@ -8,339 +8,169 @@
 #  @enddesc 
 #@@*/
 
-#/*@@
-#  @routine    create_fortran_module_file
-#  @date       Tue Jan 12 09:53:04 1999
-#  @author     Tom Goodale
-#  @desc 
-#  
-#  @enddesc 
-#  @calls     
-#  @calledby   
-#  @history 
-#
-#  @endhistory 
-#@@*/
 
-sub create_fortran_module_file
+sub CreateFortranThornParameterBindings
 {
-  local($n_implementations, @indata) = @_;
-  local(@implementations);
+  local($thorn, $n_param_database, @rest) = @_;
   local(%parameter_database);
-  local(@module_file);
+  local(%interface_database);
   local($line);
+  local(%these_parameters);
+  local($implementation);
   local(@data);
+  local(@file);
+  local(@alias_names);
 
-  @implementations = @indata[0..$n_implementations-1];
-  %parameter_database = @indata[$n_implementations..$#indata];
+  %parameter_database = @rest[0..(2*$n_param_database)-1];
+  %interface_database = @rest[2*$n_param_database..$#rest];
 
-  push(@module_file, &create_cctk_param_types_module($n_implementations, @indata));
+  push(@file, "#define DECLARE_PARAMETERS\\");
 
+  # Generate all public parameters
+  %these_parameters = &get_public_parameters(%parameter_database);
 
-  $line = "";
-  push(@module_file, $line);
-
-  foreach $implementation (@implementations)
+  if((keys %these_parameters) > 0)
   {
-    $line = "";
-    push(@module_file, $line);
+    @data = &CreateFortranCommonDeclaration("cctk_params_public", 0, scalar(keys %these_parameters), %these_parameters, %parameter_database);
 
-    push(@module_file, &create_fortran_param_module($implementation, %parameter_database));
-
-    $line = "";
-    push(@module_file, $line);
+    foreach $line (@data)
+    {
+      push(@file, "$line&&\\");
+    }
   }
 
-  $line = "SUBROUTINE CCTK_PARAMS_INIT(cctk_parameters)";
-  push(@module_file, $line);
+  # Generate all protected parameters of this thorn
+  %these_parameters = &GetThornParameterList($thorn, "PROTECTED", %parameter_database);
 
-
-  $line = "  USE CCTK_PARAM_TYPES";
-  push(@module_file, $line);
-
-  $line = "  TYPE (CCTK_PARAMS) :: cctk_parameters";
-  push(@module_file, $line);
-  
-
-  foreach $implementation (@implementations)
+  if((keys %these_parameters > 0))
   {
-    $line = "";
-    push(@module_file, $line);
+    $implementation = $interface_database{"\U$thorn\E IMPLEMENTS"};
 
-    $line = "  CALL CCTK_\U$implementation\E_PARAMS_INIT(cctk_parameters)";
-    push(@module_file, $line);
+    @data = &CreateFortranCommonDeclaration("cctk_params_$implementation"."_public", 0, scalar(keys %these_parameters), %these_parameters, %parameter_database);
 
-    $line = "";
-    push(@module_file, $line);
+    foreach $line (@data)
+    {
+      push(@file, "$line&&\\");
+    }
   }
 
-  $line = "END SUBROUTINE CCTK_PARAMS_INIT";
-  push(@module_file, $line);
+  # Generate all private parameters of this thorn
+  %these_parameters = &GetThornParameterList($thorn, "PRIVATE", %parameter_database);
 
-  $line = "";
-  push(@module_file, $line);
-  
-  foreach $implementation (@implementations)
+  if((keys %these_parameters > 0))
   {
-    $line = "";
-    push(@module_file, $line);
+    @data = &CreateFortranCommonDeclaration("cctk_params_$thorn"."_private", 0,scalar(keys %these_parameters), %these_parameters, %parameter_database);
 
-    push(@module_file, &create_fortran_param_init_subroutine($implementation, %parameter_database));
-
-    $line = "";
-    push(@module_file, $line);
+    foreach $line (@data)
+    {
+      push(@file, "$line&&\\");
+    }
   }
-  
-  return @module_file;
 
-}
+  foreach $friend (split(" ",$parameter_database{"\U$thorn\E FRIEND implementations"}))
+  {
+    $interface_database{"IMPLEMENTATION \U$friend\E THORNS"} =~ m:([^ ]*):;
     
-
-#/*@@
-#  @routine    create_fortran_param_init_subroutine
-#  @date       Tue Jan 12 09:53:54 1999
-#  @author     Tom Goodale
-#  @desc 
-#  
-#  @enddesc 
-#  @calls     
-#  @calledby   
-#  @history 
-#
-#  @endhistory 
-#@@*/
-
-sub create_fortran_param_init_subroutine
-{
-  local($implementation,%parameter_database) = @_;
-  local(@subroutine);
-  local($line);
-  local($friend, $block, $parameter);
-  local(%public_parameters);
-
-  $line = "SUBROUTINE CCTK_\U$implementation\E_PARAMS_INIT(cctk_parameters)";
-  push(@subroutine, $line);
-
-  $line = "  USE CCTK_PARAM_TYPES";
-  push(@subroutine, $line);
-
-  $line = "  USE CCTK_\U$implementation\E_PARAMS";
-  push(@subroutine, $line);
-  
-  $line = "  TYPE (CCTK_PARAMS) :: cctk_parameters";
-  push(@subroutine, $line);
-  
-
-  # Deal with variables defined in this thorn. 
-  foreach $block ("PUBLIC", "PRIVATE", "PROTECTED")
-  {
-    $entry = "\U$implementation $block\E variables";
-    foreach $parameter (split(/ /, $parameter_database{$entry}))
-    {
-      
-      $line = "  $parameter" . 
-	" = cctk_parameters%" . "\U$implementation\E%\L$parameter\E";
-      push(@subroutine, $line);
-    }
-  }
-
-  # Deal with friend variables. 
-  foreach $friend (split(/ /,$parameter_database{"\U$implementation\E FRIEND implementations"}))
-  {
-    $other_implementation = "\U$friend\E";
-    $entry = "\U$implementation FRIEND $friend\E variables";
-    foreach $parameter (split(/ /, $parameter_database{$entry}))
-    {
-      $line = "  $parameter" . 
-	" = cctk_parameters%" . "\U$other_implementation\E%\L$parameter\E";
-      push(@subroutine, $line);
-    }
-  }	  
-  # Deal with all public parameters not declared in this implementation.
-  %public_parameters = &get_public_parameters(%parameter_database);
-
-  foreach $parameter (keys %public_parameters)
-  {
-    $other_implementation = "\U$public_parameters{$parameter}\E";
-    if($other_implementation ne "\U$implementation\E")
-    {
-      $line = "  $parameter" . 
-	" = cctk_parameters%" . "\U$other_implementation\E%\L$parameter\E";
-      push(@subroutine, $line);
-    }
-  }
-  
-  $line = "END SUBROUTINE CCTK_\U$implementation\E_PARAMS_INIT";
-  push(@subroutine, $line);
-
-  return @subroutine;
-}
-
-
-
-sub create_fortran_param_module
-{
-  local($implementation,%parameter_database) = @_;
-  local(@declarations);
-  local(@module);
-  local($line);
-
-  $line = "MODULE CCTK_\U$implementation\E_PARAMS";
-  push(@module, $line);
-
-  @declarations = &create_fortran_parameter_declarations($implementation,%parameter_database);
-  
-  foreach $line (@declarations)
-  {
-    $line = "  " . $line;
-    push(@module, $line);
-  }
-  
-  $line = "END MODULE CCTK_\U$implementation\E_PARAMS";
-  push(@module, $line);
-
-  return @module;
-}
+    $friend_thorn = $1;
     
+    %these_parameters = &GetThornParameterList($friend_thorn, "PROTECTED", %parameter_database);
+    
+    @alias_names = ();
 
-sub create_cctk_param_types_module
-{
-  local(@module);
+    foreach $parameter (keys %these_parameters)
+    {
+      # Alias the parameter unless it is one we want.
+      if(($parameter_database{"\U$thorn FRIEND $friend\E variables"} =~ m:( )*$parameter( )*:) && (length($1) > 0)||length($2)>0||$1 eq $parameter_database{"\U$thorn FRIEND $friend\E variables"})
+      {
+	push(@alias_names, $parameter);
+      }
+      else
+      {
+	push(@alias_names, "CCTKH".scalar(@alias_names));
+      }
+    }
+     
+    @data = &CreateFortranCommonDeclaration("cctk_params_$friend_thorn"."_protected", 1, scalar(keys %these_parameters), %these_parameters, @alias_names, %parameter_database);
+      
+    foreach $line (@data)
+    {
+      push(@file, "$line&&\\");
+    }
 
-  push(@module, "MODULE CCTK_PARAM_TYPES");
-  push(@module, &create_fortran_parameter_structures(@_));
-  push(@module, "END MODULE CCTK_PARAM_TYPES");
+    
+  }
 
-  return @module;
+  push(@file, ("",""));
+  
+  return (@file);
 }
 
-
-
-sub create_fortran_parameter_declarations
+sub CreateFortranCommonDeclaration
 {
-  local($implementation,%parameter_database) = @_;
-  local(@declarations);
-  local($line);
-  local($type, $type_string, $friend, $block, $parameter);
-  local(%public_parameters);
-
-  # Deal with variables defined in this thorn. 
-  foreach $block ("PUBLIC", "PRIVATE", "PROTECTED")
-  {
-    $entry = "\U$implementation $block\E variables";
-    foreach $parameter (split(/ /, $parameter_database{$entry}))
-    {
-      $type = @parameter_database{"\U$implementation $parameter\E type"};
-      
-      $type_string = &get_fortran_type_string($type);
-      
-      $line = $type_string .", save :: " .$parameter ;
-      push(@declarations, $line);
-    }
-  }
-
-  # Deal with friend variables. 
-  foreach $friend (split(/ /,$parameter_database{"\U$implementation\E FRIEND implementations"}))
-  {
-    $other_implementation = "\U$friend\E";
-    $entry = "\U$implementation FRIEND $friend\E variables";
-    foreach $parameter (split(/ /, $parameter_database{$entry}))
-    {
-      $type = @parameter_database{"\U$other_implementation $parameter\E type"};
-      
-      $type_string = &get_fortran_type_string($type);
-      
-      $line = $type_string .", save :: " .$parameter ;
-      push(@declarations, $line);
-    }
-  }
-	  
-  # Deal with all public parameters not declared in this implementation.
-  %public_parameters = &get_public_parameters(%parameter_database);
-
-  foreach $parameter (keys %public_parameters)
-  {
-    $other_implementation = "\U$public_parameters{$parameter}\E";
-
-    if($other_implementation ne "\U$implementation\E")
-    {
-      $type = @parameter_database{"\U$other_implementation $parameter\E type"};
-    
-      $type_string = &get_fortran_type_string($type);
-    
-      $line = $type_string .", save :: " .$parameter ;
-      push(@declarations, $line);
-    }
-  }
-  return @declarations;
-}
-
-
-sub create_fortran_parameter_structures
-{
-  local($n_implementations, @indata) = @_;
-  local(@implementations);
+  local($common_block, $aliases, $n_parameters, @rest) = @_;
   local(%parameter_database);
-  local(@structures);
-  local(@data);
-  local($line, $entry, $thorn, $parameter, $type_string);
+  local($line,@data);
+  local(%parameters);
+  local($type, $type_string);
+  local($definition);
+  local(@alias_names);
+  local($n);
 
-  @implementations = @indata[0..$n_implementations-1];
-  %parameter_database = @indata[$n_implementations..$#indata];
-
-  # Create types for each implementation
-  foreach $implementation (@implementations)
+  if($aliases == 0)
   {
-    push(@structures, &create_fortran_parameter_type_declaration($implementation, %parameter_database));
-    push(@strucures,"");
+    %parameters = @rest[0..2*$n_parameters-1];
+    %parameter_database = @rest[2*$n_parameters..$#rest];
+  }
+  else
+  {
+    %parameters = @rest[0..2*$n_parameters-1];
+    @alias_names = @rest[2*$n_parameters..3*$n_parameters-1];
+    %parameter_database = @rest[3*$n_parameters..$#rest];
   }
 
-  $line = "TYPE CCTK_PARAMS ";
-  push(@structures, $line);
+  # Create the data
 
-  foreach $implementation (@implementations)
+  $definition = "COMMON /$common_block/";
+
+  $sepchar = "";
+
+  $n = 0;
+  foreach $parameter (keys %parameters)
   {
-    $line = "TYPE (CCTK_\U$implementation\E_PARAM_TYPE) :: \U$implementation\E";
-    push(@structures, $line);
-  }
+    $type = $parameter_database{"\U$parameters{$parameter} $parameter\E type"};
+      
+    $type_string = &get_fortran_type_string($type);
 
-  $line = "END TYPE CCTK_PARAMS";
-  push(@structures, $line);
-  
-  return @structures;
-}
-
-sub create_fortran_parameter_type_declaration
-{
-  local($implementation,%parameter_database) = @_;
-  local(@type_declaration);
-  local($line);
-  local($type, $type_string, $friend, $block, $parameter);
-  
-  $line = "TYPE CCTK_\U$implementation\E_PARAM_TYPE";
-  push(@type_declaration, $line);
- 
-  # Deal with variables defined in this thorn. 
-  foreach $block ("PUBLIC", "PRIVATE", "PROTECTED")
-  {
-    $entry = "\U$implementation $block\E variables";
-    foreach $parameter (split(/ /, $parameter_database{$entry}))
+    if($aliases == 0)
     {
-      $type = @parameter_database{"\U$implementation $parameter\E type"};
-      
-      $type_string = &get_fortran_type_string($type);
-      
-      $line = $type_string ." :: " .$parameter ;
-      push(@type_declaration, $line);
+      $line = "$type_string $parameter";
     }
+    else
+    {
+      $line = "$type_string $alias_names[$n]";
+    }
+
+    push(@data, $line);
+
+    if($aliases == 0)
+    {
+      $definition .= "$sepchar$parameter";
+    }
+    else
+    {
+      $definition .= "$sepchar$alias_names[$n]";
+    }
+
+
+    $sepchar = ",";
+    $n++;
   }
 
+  push(@data, $definition);
 
-  $line = "END TYPE CCTK_\U$implementation\E_PARAM_TYPE";
-  push(@type_declaration, $line);
-
-  return @type_declaration;
+  return @data;
 }
+  
 
 sub get_fortran_type_string
 {
@@ -352,7 +182,7 @@ sub get_fortran_type_string
      $type eq "STRING"  ||
      $type eq "SENTENCE")
   {
-    $type_string = "CACTUS_STRING ";
+    $type_string = "CCTK_STRING ";
   }
   elsif($type eq "LOGICAL" ||
 	$type eq "INTEGER")
