@@ -16,7 +16,7 @@
 #
 #
 #   @enddesc
-#   @version $Id: Makefile,v 1.145 2003-10-13 17:22:43 schnetter Exp $
+#   @version $Id: Makefile,v 1.146 2003-10-13 18:58:00 schnetter Exp $
 # @@*/
 
 ##################################################################################
@@ -341,6 +341,11 @@ else
 	@echo "  -examples      : copies thorn parameter files to examples directory."
 endif
 	@echo $(DIVIDER)
+	@echo There are options available to act on thorns.
+	@echo These are activated by $(MAKE) \<thorn-name\>-\<option\>
+	@echo Valid options are
+	@echo "  -ThornDoc      : produces the documentation for the thorn."
+	@echo $(DIVIDER)
 	@echo $(MAKE) also knows the following targets
 	@echo
 	@echo "  checkout         - checkout public arrangements/thorns."
@@ -359,9 +364,12 @@ endif
 	@echo "  tags             - creates a Vi TAGS file."
 	@echo "  thorninfo        - give information about all available "
 	@echo "                     thorns."
-	@echo "  UsersGuide       - creates users guide UsersGuide.ps."
-	@echo "  ReferenceManual  - creates reference manual ReferenceManual.ps."
-	@echo "  ThornGuide       - creates the thorn manual ThornGuide.ps"
+	@echo "  UsersGuide       - creates users manual doc/UsersGuide.ps."
+	@echo "  ReferenceManual  - creates reference manual doc/ReferenceManual.ps."
+	@echo "  ThornGuide       - creates the thorn manual doc/ThornGuide.ps"
+	@echo "  ThornDoc         - creates documentation for all thorns in doc/ThornDoc"
+	@echo "  ArrangementDoc   - creates documentation for all arrangements"
+	@echo "                     in doc/ArrangementDoc"
 	@echo "  <anything else>  - prompts to create such a configuration."
 	@echo $(DIVIDER)
 
@@ -1011,6 +1019,22 @@ endif
 	@echo $(DIVIDER)
 	@echo Configuration $(@:%-ThornGuide=%) does not exist.
 	@echo Thorn Guide creation aborted.
+
+# Make the ThornGuide
+
+.PHONY: ThornDoc
+%-ThornDoc:
+	@echo "$(DIVIDER)"
+	@lib/sbin/ThornDoc $(@:%-ThornDoc=%)
+	@echo $(DIVIDER)
+ThornDoc:
+	@echo "$(DIVIDER)"
+	@lib/sbin/ThornDoc
+	@echo $(DIVIDER)
+ArrangementDoc:
+	@echo "$(DIVIDER)"
+	@lib/sbin/ArrangementDoc
+	@echo $(DIVIDER)
 
 ###############################################################################
 #                      End of documentation targets
