@@ -5198,12 +5198,12 @@ static
     free(tep);
     return UTIL_ERROR_BAD_INPUT;        /* unknown  type_code */
   }
+  {
   const size_t sizeof_value = N_elements * element_size;
   #ifdef UTIL_TABLE_DEBUG2
   printf("   allocating new buffer of size sizeof_value=%d bytes\n",
          (int) sizeof_value);
   #endif
-    {
   void *const buffer = malloc(sizeof_value);
   /*
    * A 0-sized array is (or should be) legal for the table routines.
