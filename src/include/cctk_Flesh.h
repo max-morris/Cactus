@@ -54,6 +54,8 @@ int CCTKi_InitialiseCactus(int *argc, char ***argv, tFleshConfig *ConfigData);
 
 int CCTKi_ShutdownCactus(tFleshConfig *ConfigData);
 
+int CCTKi_DummyExit(int retval, cGH *GH);
+
 #ifdef __cplusplus
 }
 #endif

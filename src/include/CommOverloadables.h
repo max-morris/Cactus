@@ -38,8 +38,13 @@ OVERLOADABLE(nProcs)
 #undef ARGUMENTS
 #define ARGUMENTS cGH *GH
 OVERLOADABLE(ParallelInit)
-OVERLOADABLE(Exit)
 OVERLOADABLE(Abort)
+
+#undef ARGUMENTS
+#define ARGUMENTS int retval, cGH *GH
+#undef RETURN_TYPE 
+#define RETURN_TYPE int
+OVERLOADABLE(Exit)
 
 #undef ARGUMENTS
 #define ARGUMENTS tFleshConfig *config, int convergence_level

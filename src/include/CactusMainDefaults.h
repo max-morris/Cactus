@@ -18,7 +18,7 @@ extern "C" {
 int CactusDefaultInitialise(tFleshConfig *);
 int CactusDefaultEvolve(tFleshConfig *);
 int CactusDefaultShutdown(tFleshConfig *);
-
+int CactusDefaultExit(int retval, cGH *GH);
 #ifdef __cplusplus
 }
 #endif
