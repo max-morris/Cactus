@@ -26,7 +26,7 @@ OBJS = $(patsubst %,%.o,$(basename $(SRCS)))
 $(NAME): $(OBJS)
 	echo Creating or updating $(NAME)
 	$(AR) $(ARFLAGS) $@ $(OBJS)
-	$(RANLIB) $@
+#	$(RANLIB) $@
 
 # Rules to make the object files
 include $(CONFIG)/make.config.rules

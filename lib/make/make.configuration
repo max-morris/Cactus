@@ -25,17 +25,17 @@ include $(CONFIG)/make.config.defn
 include $(CONFIG)/make.thornlist
 
 # Silence all but designated output
-#.SILENT:
+.SILENT:
 
 # Build the executable
 $(EXE): $(CONFIG)/make.thornlist $(patsubst %,$(CCTK_LIBDIR)/lib%.a,$(notdir $(THORNS))) $(CCTK_LIBDIR)/libCCTK.a
-	echo $(DIVIDER)
-	echo Creating $(EXE) from $(THORNS)
+	@echo $(DIVIDER)
+	@echo Creating $(EXE) from $(THORNS)
 	$(CC) -c $(DATESTAMP) -o $(TOP)/datestamp.o
-	$(CC) -o $@ $(LDFLAGS) $(TOP)/datestamp.o $(LIBDIRS:%=-L%) $(LIBS:%=-l%) -L$(CCTK_LIBDIR) $(addprefix -l,$(notdir $(THORNS))) -lCCTK
-	echo $(DIVIDER)
-	echo All done !
-	echo $(DIVIDER)
+	$(CC) -o $@ $(LDFLAGS) $(TOP)/datestamp.o  -L$(CCTK_LIBDIR) $(addprefix -l,$(notdir $(THORNS))) -lCCTK $(LIBDIRS:%=-L%) $(LIBS:%=-l%)
+	@echo $(DIVIDER)
+	@echo All done !
+	@echo $(DIVIDER)
 
 # Build a thorn library
 # Libraries go into the appropriate library directory
@@ -45,8 +45,8 @@ $(EXE): $(CONFIG)/make.thornlist $(patsubst %,$(CCTK_LIBDIR)/lib%.a,$(notdir $(T
 # src directory, and calls that rather than the default makefile
 # used for making thorn libraries.
 $(CCTK_LIBDIR)/lib%.a: update
-	echo $(DIVIDER)
-	echo Checking status of $(notdir $@)
+	@echo $(DIVIDER)
+	@echo Checking status of $(notdir $@)
 	if [ ! -d $(BUILD_DIR) ]; then $(MKDIR) $(BUILD_DIR) ; fi
 	if [ ! -d $(@:$(CCTK_LIBDIR)/lib%.a=$(BUILD_DIR)/%) ]; then $(MKDIR) $(@:$(CCTK_LIBDIR)/lib%.a=$(BUILD_DIR)/%) ; fi
 	cd $(@:$(CCTK_LIBDIR)/lib%.a=$(BUILD_DIR)/%); \
@@ -54,14 +54,14 @@ $(CCTK_LIBDIR)/lib%.a: update
 	then $(MAKE) TOP=$(TOP) SRCDIR=$(@:$(CCTK_LIBDIR)/lib%.a=$(TOOLKIT_DIR)/$(filter %$(@:$(CCTK_LIBDIR)/lib%.a=%),$(THORNS))/src) CONFIG=$(CONFIG) NAME=$@ -f $(@:$(CCTK_LIBDIR)/lib%.a=$(TOOLKIT_DIR)/$(filter %$(@:$(CCTK_LIBDIR)/lib%.a=%),$(THORNS))/src)/Makefile ; \
 	else $(MAKE) TOP=$(TOP) SRCDIR=$(@:$(CCTK_LIBDIR)/lib%.a=$(TOOLKIT_DIR)/$(filter %$(@:$(CCTK_LIBDIR)/lib%.a=%),$(THORNS))/src) CONFIG=$(CONFIG) NAME=$@ -f $(MAKE_DIR)/make.thornlib ; \
 	fi
-	echo $(DIVIDER)
+	@echo $(DIVIDER)
 
 
 # Slightly modified rule for the flesh.
 # Also makes sure all the subdirectories are made.
 $(CCTK_LIBDIR)/libCCTK.a: update
-	echo $(DIVIDER)
-	echo Checking status of the flesh
+	@echo $(DIVIDER)
+	@echo Checking status of the flesh
 	if [ ! -d $(BUILD_DIR) ]; then $(MKDIR) $(BUILD_DIR) ; fi
 	if [ ! -d $(@:$(CCTK_LIBDIR)/lib%.a=$(BUILD_DIR)/%) ]; then $(MKDIR) $(@:$(CCTK_LIBDIR)/lib%.a=$(BUILD_DIR)/%) ; \
 	for dir in IO comm main util rfr ; \
@@ -69,13 +69,24 @@ $(CCTK_LIBDIR)/libCCTK.a: update
 	done ; fi 
 	cd $(@:$(CCTK_LIBDIR)/lib%.a=$(BUILD_DIR)/%); \
 	$(MAKE) TOP=$(TOP) SRCDIR=$(CCTK_HOME)/src CONFIG=$(CONFIG) NAME=$@ -f $(MAKE_DIR)/make.thornlib
-	echo $(DIVIDER)
+	@echo $(DIVIDER)
 
 
 # Include any extra dependencies
 
 include $(CONFIG)/make.config.deps
 
+# Rule to build the make.thornlist file from the ActiveThorns file
+
+$(CONFIG)/make.thornlist: $(TOP)/ActiveThorns
+	@echo Currently $@ must be edited by hand.
+	if [ ! -r $@ ] ; then touch $@ ; fi
+
+# Rule to build ActiveThorns
+
+$(TOP)/ActiveThorns:
+	@echo Currently $@ must be created by hand and has no effect !
+	if [ ! -r $@ ] ; then echo This file doesn\'t do anything yet > $@ ; fi
 
 # Phony targets.
 
