@@ -22,8 +22,6 @@
 #@@*/
 sub CreateConfigurationDatabase
 {
-  
-
   my($config_dir, %thorns) = @_;
   my(%cfg) = ();
   my($thorn, $required, @missing, @foundlist, $founderrlist, $filename, %thorncap, $foundcap, $temp,$cap);
@@ -37,90 +35,79 @@ sub CreateConfigurationDatabase
     # Get the configuration data from it
     &ParseConfigurationCCL($config_dir, $thorn, \%cfg, \%thorns, $filename);
 
-    if($debug)
-    {
-      print "   $thorn\n";
-      print "           Provides: ", $cfg{"\U$thorn\E PROVIDES"}, "\n"
-        if ($cfg{"\U$thorn\E PROVIDES"});
-      print "           Requires: ", $cfg{"\U$thorn\E REQUIRES"}, "\n"
-        if ($cfg{"\U$thorn\E REQUIRES"});
-    }
+#    if($debug)
+#    {
+#      print "   $thorn\n";
+#      print "           Provides: ", $cfg{"\U$thorn\E PROVIDES"}, "\n"
+#        if ($cfg{"\U$thorn\E PROVIDES"});
+#      print "           Requires: ", $cfg{"\U$thorn\E REQUIRES"}, "\n"
+#        if ($cfg{"\U$thorn\E REQUIRES"});
+#    }
 
     $cfg->{"\U$thorn\E USES THORNS"} = '';
 
     # verify that all required thorns are there in the ThornList
-    if ($cfg{"\U$thorn\E REQUIRES THORNS"})
+    next if (! $cfg{"\U$thorn\E REQUIRES THORNS"});
+
+    @missing = ();
+    foreach $required (split (' ', $cfg{"\U$thorn\E REQUIRES THORNS"}))
     {
-      @missing = ();
-      foreach $required (split (' ', $cfg{"\U$thorn\E REQUIRES THORNS"}))
-      {
-        if ((! $thorns{"$required"}) && (! $thorns{"\U$required\E"}))
-        {
-          push (@missing, $required);
-        }
-      }
-      if (@missing)
-      {
-        if (@missing == 1)
-        {
-          &CST_error (0, "Thorn $thorn requires thorn @missing. " .
-                         'Please add this thorn to your ThornList or remove ' .
-                         "$thorn from it !");
-        }
-        else
-        {
-          &CST_error (0, "Thorn $thorn requires thorns '@missing'. " .
-                         'Please add these thorns to your ThornList or ' .
-                         "remove $thorn from it !");
-        }
-      }
-      else
-      {
-        $cfg{"\U$thorn\E USES THORNS"} .= $cfg{"\U$thorn\E REQUIRES THORNS"} . " ";
-      }
+      push (@missing, $required)
+        if ((! $thorns{"$required"}) && (! $thorns{"\U$required\E"}));
     }
+    if (@missing == 1)
+    {
+      &CST_error (0, "Thorn $thorn requires thorn @missing. " .
+                     'Please add this thorn to your ThornList or remove ' .
+                     "$thorn from it !");
+    }
+    elsif (@missing > 1)
+    {
+      &CST_error (0, "Thorn $thorn requires thorns '@missing'. " .
+                     'Please add these thorns to your ThornList or ' .
+                     "remove $thorn from it !");
+    }
+
+    $cfg{"\U$thorn\E USES THORNS"} .= $cfg{"\U$thorn\E REQUIRES THORNS"} . " ";
   }
- 
+
   foreach $thorn (sort keys %thorns)
   {
     # verify that all required capabilities are there in the ThornList
-    if ( $cfg{"\U$thorn\E REQUIRES"})
-    {
-      foreach $requiredcap (split (' ', $cfg{"\U$thorn\E REQUIRES"}))
-      {
-        $foundcap = 0;
-        @foundlist = ();
+    next if (! $cfg{"\U$thorn\E REQUIRES"});
 
-        foreach $thorncap (sort keys %thorns)
+    foreach $requiredcap (split (' ', $cfg{"\U$thorn\E REQUIRES"}))
+    {
+      $foundcap = 0;
+      @foundlist = ();
+
+      foreach $thorncap (sort keys %thorns)
+      {
+        foreach $cap (split (' ', $cfg{"\U$thorncap\E PROVIDES"}))
         {
-          foreach $cap (split (' ', $cfg{"\U$thorncap\E PROVIDES"}))
+          if ( "\U$cap\E" eq "\U$requiredcap\E" )
           {
-            if ( "\U$cap\E" eq "\U$requiredcap\E" )
-            {
-              $foundlist[$foundcap] = $cap;
-              $foundthorn = $thorncap;
-              $foundcap++;
-            }
+            $foundlist[$foundcap++] = $cap;
+            $foundthorn = $thorncap;
           }
         }
-        if ($foundcap == 0)
-        {
-            &CST_error (0, "Thorn $thorn requires the capability $requiredcap. " .
-                           "Please add a thorn that provides $requiredcap " .
-                           "to your ThornList or remove ".
-                           "$thorn from it !");
-        }
-        if ($foundcap > 1)
-        {
-           foreach $thorncap (@foundlist)
-           {
-             $founderrlist .= "$thorncap ";     
-           } 
-            &CST_error (0, "More than one thorn provides the capability $requiredcap. " .
-                           "These thorns are: $founderrlist. \nPlease use only one.\n" );
-        }
-        $cfg{"\U$thorn\E USES THORNS"} .= $foundthorn . " ";
       }
+
+      &CST_error (0, "Thorn $thorn requires the capability $requiredcap. " .
+                     "Please add a thorn that provides $requiredcap " .
+                     "to your ThornList or remove $thorn from it !")
+        if ($foundcap == 0);
+
+      if ($foundcap > 1)
+      {
+        foreach $thorncap (@foundlist)
+        {
+          $founderrlist .= "$thorncap ";
+        }
+        &CST_error (0, "More than one thorn provides the capability $requiredcap. " .
+                       "These thorns are: $founderrlist. \nPlease use only one.\n" );
+      }
+      $cfg{"\U$thorn\E USES THORNS"} .= $foundthorn . " ";
     }
   }
 
@@ -130,7 +117,7 @@ sub CreateConfigurationDatabase
 #     {
 #       print "$field has value ", $cfg{$field}, "\n";
 #     }
-    
+
 
   return \%cfg;
 }
@@ -154,11 +141,11 @@ sub ParseConfigurationCCL
 
   # Initialise some stuff to prevent perl -w from complaining.
 
-  $cfg->{"\U$thorn PROVIDES\E"} = '';
-  $cfg->{"\U$thorn REQUIRES\E"} = '';
-  $cfg->{"\U$thorn REQUIRES THORNS\E"} = '';
-  $cfg->{"\U$thorn OPTIONAL\E"} = '';
-  $cfg->{"\U$thorn OPTIONS\E"}  = '';
+  $cfg->{"\U$thorn\E PROVIDES"} = '';
+  $cfg->{"\U$thorn\E REQUIRES"} = '';
+  $cfg->{"\U$thorn\E REQUIRES THORNS"} = '';
+  $cfg->{"\U$thorn\E OPTIONAL"} = '';
+  $cfg->{"\U$thorn\E OPTIONS"}  = '';
 
   # Read the data
   @data = &read_file($filename);
@@ -169,12 +156,15 @@ sub ParseConfigurationCCL
     # Parse the line
     if($line =~ m/^\s*PROVIDES\s*/i)
     {
+      $lang = $script = '';
       ($provides, $script, $lang, $line_number) = &ParseProvidesBlock($line_number, \@data);
       $cfg->{"\U$thorn\E PROVIDES"} .= "$provides ";
-      $cfg->{"\U$thorn\E PROVIDES \U$provides\E SCRIPT"} = "$script";
-      $cfg->{"\U$thorn\E PROVIDES \U$provides\E LANG"} = "$lang";
-      
-      $cfg = &ParseConfigScript($config_dir, $provides, $lang, $script ,$thorn, $cfg, $thorns, $filename);
+      $cfg->{"\U$thorn\E PROVIDES \U$provides\E SCRIPT"} = $script;
+      $cfg->{"\U$thorn\E PROVIDES \U$provides\E LANG"} = $lang;
+
+      $cfg = &ParseConfigScript($config_dir, $provides, $lang, $script,
+                                $thorn, $cfg, $thorns, $filename)
+        if ($script ne '');
 
       next;
     }
@@ -183,11 +173,11 @@ sub ParseConfigurationCCL
       $cfg->{"\U$thorn\E REQUIRES THORNS"} .= "$1";
       if ($cfg->{"\U$thorn\E REQUIRES THORNS"})
       {
-        &CST_error (3, '\'Requires Thorns\' will not be supported in release beta-14' . 
+        &CST_error (3, '\'Requires Thorns\' will not be supported in release beta-14' .
         "\n Please adjust thorn \U$thorn\E to use \'Requires\' instead.");
       }
     }
-    elsif($line =~ m/^\s*REQUIRES\s*(.*)/i) 
+    elsif($line =~ m/^\s*REQUIRES\s*(.*)/i)
     {
       $cfg->{"\U$thorn\E REQUIRES"} .= "$1 ";
     }
