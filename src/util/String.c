@@ -15,11 +15,19 @@
 
 #include "util_String.h"
 
-#include "cctk_Flesh.h"
-
 static const char *rcsid = "$Header$";
 
-CCTK_FILEVERSION(util_String_c);
+#if defined(TEST_UTIL_STRSEP) \
+    || defined(TEST_UTIL_STRLCPY) || defined(TEST_UTIL_STRLCAT)
+  /*
+   * we're just compiling a standalone test driver
+   * ==> we don't need CCTK_FILEVERSION()
+   * ==> we don't need "cctk_Flesh.h"
+   */
+#else
+  #include "cctk_Flesh.h"      /* need this for CCTK_FILEVERSION() */
+  CCTK_FILEVERSION(util_String_c);
+#endif
 
 /********************************************************************
  *********************     Local Data Types   ***********************
@@ -267,6 +275,112 @@ char *Util_Strdup(const char *s)
   }
 
   return retstr;
+}
+
+
+/*@@
+  @routine  Util_Strlcpy
+  @date     1.Feb.2003
+  @author   Jonathan Thornburg <jthorn@aei.mpg.de>
+  @desc     This function implements the  strlcpy()  function described in
+               http://www.openbsd.org/papers/strlcpy-paper.ps
+
+            The strlcpy(3) function copies up to  size-1  characters
+            from the null-terminated string  src  to  dst , followed
+            by a null character (so  dst  is always null-terminated).
+
+            The strlcpy(3) API is intended to replace strncpy(3).  In
+            comparison to strncpy(3), strlcpy(3) is safer and easier to
+            use (it guarantees null termination of the destination buffer),
+            and faster (it doesn't have to fill the entire buffer with
+            null characters).
+  @enddesc
+
+  @var      dst
+  @vdesc    A non-null pointer to the destination buffer.
+  @vtype    char * 
+  @endvar
+
+  @var      src
+  @vdesc    A non-null pointer to the source string.
+  @vtype    const char *
+  @endvar
+
+  @var      dst_size
+  @vdesc    The size of the destination buffer.
+  @vtype    size_t
+  @endvar
+
+  @returntype   size_t
+  @returndesc   This function returns strlen(src).
+  @endreturndesc
+@@*/
+size_t Util_Strlcpy(char* dst, const char* src, size_t dst_size)
+{
+  const size_t src_size = strlen(src);
+  if (src_size < dst_size)
+  {
+    strcpy(dst, src);
+  }
+  else
+  {
+    strncpy(dst, src, dst_size-1);
+    dst[dst_size-1] = '\0';
+  }
+  return src_size;
+}
+
+/*@@
+  @routine  Util_Strlcat
+  @date     16.Feb.2003
+  @author   Jonathan Thornburg <jthorn@aei.mpg.de>
+  @desc     This function implements the  strcat()  function described in
+               http://www.openbsd.org/papers/strlcpy-paper.ps
+
+            The strlcat(3) function appends the null-terminated string
+            src to the end of dst.  It will append at most
+                size - strlen(dst) - 1
+            characters, and always null-terminates the result.
+            (Hence this function never overflows the destination buffer.)
+
+            The strlcat(3) is intended to replace strncat(3).  In
+            comparison to strncat(3), strlcat(3) is safer and easier to
+            use: it guarantees null termination of the destination buffer,
+            and the size parameter is easy to specify without danger
+            of off-by-one errors.
+  @enddesc
+
+  @var      dst
+  @vdesc    A non-null pointer to the destination buffer.
+  @vtype    char *
+  @endvar
+
+  @var      src
+  @vdesc    A non-null pointer to the source string.
+  @vtype    const char *
+  @endvar
+
+  @var      dst_size
+  @vdesc    The size of the destination buffer.
+  @vtype    size_t
+  @endvar
+
+  @returntype   size_t
+  @returndesc   This function returns the length of the string it
+                tries to create, i.e.  strlen(src) + strlen(dst() .
+  @endreturndesc
+@@*/
+size_t Util_Strlcat(char* dst, const char* src, size_t dst_size)
+{
+  const size_t src_len = strlen(src);
+  const size_t dst_len = strlen(dst);
+  const int dst_remaining = dst_size - dst_len - 1;
+  if (dst_remaining > 0)
+  {
+    strncat(dst, src, dst_remaining);
+  }
+
+  return src_len + dst_len;
 }
 
  /*@@
@@ -546,7 +660,7 @@ int Util_asnprintf(char **buffer, size_t size, const char *fmt, ...)
 
 
 
-#ifdef TEST_Util_STRSEP
+#ifdef TEST_UTIL_STRSEP
 
 #include <stdio.h>
 
@@ -578,4 +692,180 @@ int main(int argc, char *argv[])
   return 0;
 
 }
-#endif /*TEST_CCTK_STRSEP */
+#endif /*TEST_UTIL_STRSEP */
+
+/******************************************************************************/
+
+#ifdef TEST_UTIL_STRLCPY
+/* test_strlcpy -- test driver for Util_Strlcpy() */
+
+#include <string.h>
+#include <stdio.h>
+
+/**************************************/
+
+/* prototypes */
+size_t tryit(size_t dst_size, const char* src);
+void nprint(int n_print, const char* buf);
+
+/* global data structures */
+static char buffer[100];
+
+/**************************************/
+
+/*
+ * This program is a test driver for  Util_Strlcpy() .
+ */
+
+int main(void)
+{
+size_t n;
+
+n = tryit(9, "hello");
+printf("bufsize=9: result=%d buffer=", (int) n);
+nprint(9, buffer);
+
+n = tryit(6, "hello");
+printf("bufsize=6: result=%d buffer=", (int) n);
+nprint(6, buffer);
+
+n = tryit(5, "hello");
+printf("bufsize=5: result=%d buffer=", (int) n);
+nprint(5, buffer);
+
+n = tryit(4, "hello");
+printf("bufsize=4: result=%d buffer=", (int) n);
+nprint(4, buffer);
+
+return 0;
+}
+
+/**************************************/
+
+size_t tryit(size_t dst_size, const char* src)
+{
+strcpy(buffer, "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
+return Util_Strlcpy(buffer, src, dst_size);
+}
+
+/**************************************/
+
+/* print n_print characters of buf[], with visible indication of '\0' */
+void nprint(int n_print, const char* buf)
+{
+  int i;
+
+  printf("\"");
+    for (i = 0 ; i < n_print ; ++i)
+    {
+      if (buf[i] == '\0')
+      {
+        printf("\\0");
+      }
+      else
+      {
+        printf("%c", buf[i]);
+      }
+    }
+  printf("\"\n");
+}
+#endif /* TEST_UTIL_STRLCPY */
+
+/******************************************************************************/
+
+#ifdef TEST_UTIL_STRLCAT
+/* test_strlcat -- test driver for Util_Strlcpy() */
+
+#include <string.h>
+#include <stdio.h>
+
+/**************************************/
+
+/* prototypes */
+size_t tryit(size_t dst_size, const char* src);
+void nprint(int n_print, const char* buf);
+
+/* global data structures */
+static char buffer[100];
+
+/**************************************/
+
+/*
+ * This program is a test driver for  Util_Strlcpy() .
+ */
+
+int main(void)
+{
+size_t n;
+
+n = tryit(15, "world");
+printf("bufsize=15: result=%d buffer=", (int) n);
+nprint(20, buffer);
+
+n = tryit(11, "world");
+printf("bufsize=11: result=%d buffer=", (int) n);
+nprint(20, buffer);
+
+n = tryit(10, "world");
+printf("bufsize=10: result=%d buffer=", (int) n);
+nprint(20, buffer);
+
+n = tryit(9, "world");
+printf("bufsize=9: result=%d buffer=", (int) n);
+nprint(20, buffer);
+
+n = tryit(6, "world");
+printf("bufsize=6: result=%d buffer=", (int) n);
+nprint(20, buffer);
+
+n = tryit(5, "world");
+printf("bufsize=5: result=%d buffer=", (int) n);
+nprint(20, buffer);
+
+n = tryit(4, "world");
+printf("bufsize=4: result=%d buffer=", (int) n);
+nprint(20, buffer);
+
+return 0;
+}
+
+/**************************************/
+
+size_t tryit(size_t dst_size, const char* src)
+{
+const char hello[] = "hello\0xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
+memcpy(buffer, hello, sizeof(hello));
+return Util_Strlcat(buffer, src, dst_size);
+}
+
+/**************************************/
+
+/* print n_print characters of buf[], with visible indication of '\0' */
+void nprint(int n_print, const char* buf)
+{
+  int i;
+  int i_null = -1;
+
+  printf("\"");
+    for (i = 0 ; i < n_print ; ++i)
+    {
+      if (buf[i] == '\0')
+      {
+        if (i_null == -1)
+        {
+          i_null = i;
+        }
+        printf("\\0");
+      }
+      else
+      {
+        printf("%c", buf[i]);
+      }
+    }
+  if (i_null >= 0)
+  {
+    printf(" [null at i=%d]", i_null);
+  }
+  printf("\"\n");
+}
+#endif /* TEST_UTIL_STRLCAT */

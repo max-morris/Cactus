@@ -32,6 +32,9 @@ int Util_SplitFilename(char **dir,
 
 char *Util_Strdup(const char *s);
 
+size_t Util_Strlcpy(char* dst, const char* src, size_t dst_size);
+size_t Util_Strlcat(char* dst, const char* src, size_t dst_size);
+
 int Util_StrCmpi(const char *string1, 
                  const char *string2);
 
