@@ -27,6 +27,10 @@ typedef struct PNamedData
 
 /* Function prototypes. */
 
+#ifdef _cplusplus
+extern "C" {
+#endif
+
 /* Store the data. */
 int StoreNamedData(pNamedData **list, const char *name, void *data);
 
@@ -35,5 +39,9 @@ void *GetNamedData(pNamedData *list, const char *name);
 
 /* destroy the data. */
 void DestroyNamedDataList(pNamedData *list);
+
+#ifdef _cplusplus
+}
+#endif
 
 #endif
