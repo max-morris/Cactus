@@ -1,5 +1,5 @@
 #!/usr/local/bin/perl -w
-# $Id: tsort,v 1.1 2004-05-03 16:38:41 goodale Exp $
+# $Id: tsort,v 1.2 2004-05-10 13:13:35 tradke Exp $
 
 use strict;
 
@@ -9,9 +9,9 @@ my $usage = "usage: $0 [-b|-d] [filename]\n";
 getopts("bd") or die $usage;
 die $usage if ($opt_b && $opt_d);
 
-my %pairs;	# all pairs ($l, $r)
-my %npred;	# number of predecessors
-my %succ;	# list of successors
+my %pairs;        # all pairs ($l, $r)
+my %npred;        # number of predecessors
+my %succ;        # list of successors
 
 while (<>) {
     my ($l, $r) = my @l = split;
@@ -30,11 +30,11 @@ while (@list) {
     $_ = pop @list;
     print "$_\n";
     foreach my $child (@{$succ{$_}}) {
-	if ($opt_b) {	# breadth-first
-	    unshift @list, $child unless --$npred{$child};
-	} else {	# depth-first (default)
-	    push @list, $child unless --$npred{$child};
-	}
+        if ($opt_b) {        # breadth-first
+            unshift @list, $child unless --$npred{$child};
+        } else {        # depth-first (default)
+            push @list, $child unless --$npred{$child};
+        }
 
     }
 }
