@@ -126,6 +126,7 @@ void CCTK_FCALL CCTK_FNAME (CCTK_EnableGroupComm) (int *ierr, cGH *GH, ONE_FORTS
 void CCTK_FCALL CCTK_FNAME (CCTK_DisableGroupComm) (int *ierr, cGH *GH, ONE_FORTSTRING_ARG);
 void CCTK_FCALL CCTK_FNAME (CCTK_EnableGroupStorage) (int *ierr, cGH *GH, ONE_FORTSTRING_ARG);
 void CCTK_FCALL CCTK_FNAME (CCTK_DisableGroupStorage) (int *ierr, cGH *GH, ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (CCTK_QueryGroupStorage) (int *ierr, const cGH *GH, ONE_FORTSTRING_ARG);
 
 
 /* Fortran bindings definitions for the comm functions */
@@ -203,5 +204,12 @@ void CCTK_FCALL CCTK_FNAME (CCTK_DisableGroupStorage) (int *ierr, cGH *GH, ONE_F
 {
   ONE_FORTSTRING_CREATE (group_name)
   *ierr = CCTK_DisableGroupStorage (GH, group_name);
+  free (group_name);
+}
+
+void CCTK_FCALL CCTK_FNAME (CCTK_QueryGroupStorage) (int *ierr, const cGH *GH, ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (group_name)
+  *ierr = CCTK_QueryGroupStorage (GH, group_name);
   free (group_name);
 }
