@@ -93,15 +93,15 @@ sub CreateConfigurationBindings
         {
           &WriteFile("include/\U$providedcap\E.h",\$cfg->{"\U$thorn $providedcap\E DEFINE"});    
         }
-        if ( $cfg->{"\U$thorn $providedcap\E DEFINITION"} )
+        if ( $cfg->{"\U$thorn $providedcap\E MAKE_DEFINITION"} )
         {
-          $codedef = $cfg->{"\U$thorn $providedcap\E DEFINITION"}; 
-          &WriteFile("$bindings_dir/Configuration/make.\U$providedcap\E.defn",\$cfg->{"\U$thorn $providedcap\E DEFINITION"});
+          $codedef = $cfg->{"\U$thorn $providedcap\E MAKE_DEFINITION"}; 
+          &WriteFile("$bindings_dir/Configuration/make.\U$providedcap\E.defn",\$cfg->{"\U$thorn $providedcap\E MAKE_DEFINITION"});
         } 
-        if ( $cfg->{"\U$thorn $providedcap\E DEPENDENCY"} )
+        if ( $cfg->{"\U$thorn $providedcap\E MAKE_DEPENDENCY"} )
         {
-          $codedep = $cfg->{"\U$thorn $providedcap\E DEPENDENCY"}; 
-          &WriteFile("$bindings_dir/Configuration/make.\U$providedcap\E.deps",\$cfg->{"\U$thorn $providedcap\E DEPENDENCY"});
+          $codedep = $cfg->{"\U$thorn $providedcap\E MAKE_DEPENDENCY"}; 
+          &WriteFile("$bindings_dir/Configuration/make.\U$providedcap\E.deps",\$cfg->{"\U$thorn $providedcap\E MAKE_DEPENDENCY"});
         } 
         if ( $cfg->{"\U$thorn $providedcap\E INCLUDE_DIRECTORY"} )
         {

@@ -162,9 +162,14 @@ sub ParseConfigurationCCL
       $cfg->{"\U$thorn\E PROVIDES \U$provides\E SCRIPT"} = $script;
       $cfg->{"\U$thorn\E PROVIDES \U$provides\E LANG"} = $lang;
 
-      $cfg = &ParseConfigScript($config_dir, $provides, $lang, $script,
-                                $thorn, $cfg, $thorns, $filename)
-        if ($script ne '');
+      if ($script)
+      {
+        print "Running configuration script '$script'\n";
+
+        $cfg = &ParseConfigScript($config_dir, $provides, $lang, $script,
+                                  $thorn, $cfg, $thorns, $filename);
+        print "\n";
+      }
 
       next;
     }

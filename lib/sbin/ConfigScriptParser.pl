@@ -38,60 +38,74 @@ sub ParseConfigScript
   for($line_number = 0; $line_number < @data; $line_number++)
   {
     $line = $data[$line_number];
+
+    chomp $line;
+
     # Parse the line
     if($line =~ m/^\s*BEGIN\s+DEFINE\s*/i)
     {
       $line_number++;
       $line = $data[$line_number];
+      chomp $line;
       while($line !~ m/^\s*END\s+DEFINE\s*/i)
       {
         $cfg->{"\U$thorn $provides\E DEFINE"} .= $line;
         $line_number++;
         $line = $data[$line_number];
+        chomp $line;
+
       }
     }
     elsif($line =~ m/^\s*BEGIN\s+ERROR\s*/i)
     {
       $line_number++;
       $line = $data[$line_number];
+      chomp $line;
       while($line !~ m/^\s*END\s+ERROR\s*/i)
       {
-        $cfg->{"\U$thorn $provides\E ERROR"} .= $line;
+        $cfg->{"\U$thorn $provides\E ERROR"} .= $line . "\n";
         $line_number++;
         $line = $data[$line_number];
+        chomp $line;
       }
     }
     elsif($line =~ m/^\s*BEGIN\s+MESSAGE\s*/i)
     {
       $line_number++;
       $line = $data[$line_number];
+      chomp $line;
       while($line !~ m/^\s*END\s+MESSAGE\s*/i)
       {
-        $cfg->{"\U$thorn $provides\E MESSAGE"} .= $line;
+        $cfg->{"\U$thorn $provides\E MESSAGE"} .= "  " . $line . "\n";
         $line_number++;
         $line = $data[$line_number];
+        chomp $line;
       }
     }
-    elsif($line =~ m/^\s*BEGIN\s+DEFINITION\s*/i)
+    elsif($line =~ m/^\s*BEGIN\s+MAKE_DEFINITION\s*/i)
     {
       $line_number++;
       $line = $data[$line_number];
-      while($line !~ m/^\s*END\s+DEFINITION\s*/i)
+      chomp $line;
+      while($line !~ m/^\s*END\s+MAKE_DEFINITION\s*/i)
       {
-        $cfg->{"\U$thorn $provides\E DEFINITION"} .= $line;
+        $cfg->{"\U$thorn $provides\E MAKE_DEFINITION"} .= $line;
         $line_number++;
         $line = $data[$line_number];
+        chomp $line;
       }
     }
-    elsif($line =~ m/^\s*BEGIN\s+DEPENDENCY\s*/i)
+    elsif($line =~ m/^\s*BEGIN\s+MAKE_DEPENDENCY\s*/i)
     {
       $line_number++;
       $line = $data[$line_number];
-      while($line !~ m/^\s*END\s+DEPENDENCY\s*/i)
+      chomp $line;
+      while($line !~ m/^\s*END\s+MAKE_DEPENDENCY\s*/i)
       {
-        $cfg->{"\U$thorn $provides\E DEPENDENCY"} .= $line;
+        $cfg->{"\U$thorn $provides\E MAKE_DEPENDENCY"} .= $line;
         $line_number++;
         $line = $data[$line_number];
+        chomp $line;
       }
     }
     elsif($line =~ m/^\s*INCLUDE_DIRECTORY[^\s]*\s*(.*)$/i)
@@ -116,6 +130,8 @@ sub ParseConfigScript
   $error_msg = $error_msg ? "     Error message: '$error_msg'" : 
                             '     (no error message)';
 
+  print $cfg->{"\U$thorn $provides\E MESSAGE"};
+          
   $msg = "Configuration script for thorn $thorn ";
   &CST_error (0, $msg . "returned exit code $exit_value\n$error_msg")
     if ($exit_value);
