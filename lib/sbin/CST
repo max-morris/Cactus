@@ -6,7 +6,7 @@
 #  @desc 
 #  Parses the the configuration files for thorns.
 #  @enddesc 
-#  @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.17 1999-07-03 14:54:56 allen Exp $
+#  @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.18 1999-07-04 12:35:38 allen Exp $
 #@@*/
 
 # Global parameter to track the number of errors from the CST
@@ -70,7 +70,7 @@ require "$sbin_dir/GridFuncStuff.pl";
 require "$sbin_dir/output_config.pl";
 require "$sbin_dir/Orderer.pl";
 require "$sbin_dir/ImpParamConsistency.pl";
-
+require "$sbin_dir/CSTUtils.pl";
 
 #######################################################################
 #
@@ -203,8 +203,8 @@ sub CreateThornList
       {
 	if( $thornlist{"$thorn_name"} )
 	{
-	  print "Duplicate thorn $thorn_name\n";
-          $CST_errors++;
+	  $message = "Duplicate thorn $thorn_name";
+          &CST_error(0,$message,__LINE__,__FILE__);
 	}
 	else
 	{
@@ -226,11 +226,11 @@ sub CreateThornList
 
 
 #/*@@
-#  @routine    get_public_parameters
+#  @routine    get_global_parameters
 #  @date       Thu Jan 28 15:21:52 1999
 #  @author     Tom Goodale
 #  @desc 
-#  Gets a list of all public parameters and the throns they are in.
+#  Gets a list of all global parameters and the thorns they are in.
 #  @enddesc 
 #  @calls     
 #  @calledby   
@@ -240,21 +240,21 @@ sub CreateThornList
 #
 #@@*/
 
-sub get_public_parameters
+sub get_global_parameters
 {
   local(%parameter_database) = @_;
-  local(%public_parameters);
+  local(%global_parameters);
   local($param);
 
-  foreach $param (split(/ /,$parameter_database{"PUBLIC PARAMETERS"}))
+  foreach $param (split(/ /,$parameter_database{"GLOBAL PARAMETERS"}))
   {
     if($param =~ m/(.*)::(.*)/)
     {
-      $public_parameters{"$2"} = $1;
+      $global_parameters{"$2"} = $1;
     }
   }
 
-  return %public_parameters;
+  return %global_parameters;
 }
 
     
@@ -531,12 +531,12 @@ sub CreateParameterBindings
   chdir "Parameters";
 
 
-  # Generate all public parameters
-  %these_parameters = &get_public_parameters(%parameter_database);
+  # Generate all global parameters
+  %these_parameters = &get_global_parameters(%parameter_database);
 
-  @data = &CreateParameterBindingFile("CCTK_BindingsParametersPublic", "PUBLIC_PARAMETER_STRUCT", scalar(keys %these_parameters), %these_parameters, %parameter_database);
+  @data = &CreateParameterBindingFile("CCTK_BindingsParametersGlobal", "GLOBAL_PARAMETER_STRUCT", scalar(keys %these_parameters), %these_parameters, %parameter_database);
 
-  open (OUT, ">Public.c") || die "Cannot open Public.c";
+  open (OUT, ">Global.c") || die "Cannot open Global.c";
 
   foreach $line (@data)
   {
@@ -545,17 +545,17 @@ sub CreateParameterBindings
 
   close OUT;
 
-  $files = "Public.c";
-  $structures{"PUBLIC_PARAMETER_STRUCT"} = "cctk_params_public";
+  $files = "Global.c";
+  $structures{"GLOBAL_PARAMETER_STRUCT"} = "cctk_params_global";
 
-  # Generate the public data header file
+  # Generate the global data header file
 
   chdir "..";
   chdir "include";
 
-  @data = &CreateCStructureParameterHeader("CCTK_BindingsParametersPublic", "PUBLIC_PARAMETER_STRUCT", scalar(keys %these_parameters), %these_parameters, %parameter_database);
+  @data = &CreateCStructureParameterHeader("CCTK_BindingsParametersGlobal", "GLOBAL_PARAMETER_STRUCT", scalar(keys %these_parameters), %these_parameters, %parameter_database);
 
-  open (OUT, ">ParameterCPublic.h") || die "Cannot open ParameterCPublic.h";
+  open (OUT, ">ParameterCGlobal.h") || die "Cannot open ParameterCGlobal.h";
 
   foreach $line (@data)
   {
@@ -564,25 +564,25 @@ sub CreateParameterBindings
 
   close OUT;
 
-  $header_files{"PUBLIC"} = "ParameterCPublic.h";
+  $header_files{"GLOBAL"} = "ParameterCGlobal.h";
 
   chdir "..";
   chdir "Parameters";
 
-  # Generate all protected parameters
+  # Generate all restricted parameters
   foreach $implementation (split(" ",$interface_database{"IMPLEMENTATIONS"}))
   {
     $interface_database{"IMPLEMENTATION \U$implementation\E THORNS"} =~ m:([^ ]+):;
 
     $thorn = $1;
 
-    %these_parameters = &GetThornParameterList($thorn, "PROTECTED", %parameter_database);
+    %these_parameters = &GetThornParameterList($thorn, "RESTRICTED", %parameter_database);
 
     if((keys %these_parameters > 0))
     {
-      @data = &CreateParameterBindingFile("CCTK_BindingsParameters$implementation"."_protected", "PROTECTED_\U$implementation\E_STRUCT", scalar(keys %these_parameters), %these_parameters, %parameter_database);
+      @data = &CreateParameterBindingFile("CCTK_BindingsParameters$implementation"."_restricted", "RESTRICTED_\U$implementation\E_STRUCT", scalar(keys %these_parameters), %these_parameters, %parameter_database);
 
-      open (OUT, ">\U$implementation\E". "_protected.c") || die "Cannot open \U$implementation\E"."_protected.c";
+      open (OUT, ">\U$implementation\E". "_restricted.c") || die "Cannot open \U$implementation\E"."_restricted.c";
       
       foreach $line (@data)
       {
@@ -591,18 +591,18 @@ sub CreateParameterBindings
     
       close OUT;
 
-      $files .= " \U$implementation\E". "_protected.c";
-      $routines{"CCTK_BindingsParameters$implementation"."_protected"} = "$implementation";
-      $structures{"PROTECTED_\U$implementation\E_STRUCT"} = "$implementation"."prot";
+      $files .= " \U$implementation\E". "_restricted.c";
+      $routines{"CCTK_BindingsParameters$implementation"."_restricted"} = "$implementation";
+      $structures{"RESTRICTED_\U$implementation\E_STRUCT"} = "$implementation"."rest";
 
       # Generate the data header file
       
       chdir "..";
       chdir "include";
 
-      @data = &CreateCStructureParameterHeader("CCTK_BindingsParameters$implementation"."_protected", "PROTECTED_\U$implementation\E_STRUCT", scalar(keys %these_parameters), %these_parameters, %parameter_database);
+      @data = &CreateCStructureParameterHeader("CCTK_BindingsParameters$implementation"."_restricted", "RESTRICTED_\U$implementation\E_STRUCT", scalar(keys %these_parameters), %these_parameters, %parameter_database);
       
-      open (OUT, ">ParameterCProtected\U$implementation\E".".h") || die "Cannot open ParameterCProtected\U$implementation\E".".h";
+      open (OUT, ">ParameterCRestricted\U$implementation\E".".h") || die "Cannot open ParameterCRestricted\U$implementation\E".".h";
 
       foreach $line (@data)
       {
@@ -611,7 +611,7 @@ sub CreateParameterBindings
 
       close OUT;
 
-      $header_files{"\U$implementation\E PROTECTED"} = "ParameterCProtected\U$implementation\E".".h";
+      $header_files{"\U$implementation\E RESTRICTED"} = "ParameterCRestricted\U$implementation\E".".h";
 
       chdir "..";
       chdir "Parameters";
@@ -676,7 +676,7 @@ sub CreateParameterBindings
 
 EOT
 
-  foreach $routine ((keys %routines), "CCTK_BindingsParametersPublic")
+  foreach $routine ((keys %routines), "CCTK_BindingsParametersGlobal")
   {
     print OUT "int $routine"."Initialise(void);\n";
     print OUT "int $routine"."Set(const char *param, const char *value);\n";
@@ -691,7 +691,7 @@ int CCTK_BindingsParametersInitialise(void)
 
 EOT
 
-  foreach $routine (keys %routines, "CCTK_BindingsParametersPublic")
+  foreach $routine (keys %routines, "CCTK_BindingsParametersGlobal")
   {
     print OUT "  $routine"."Initialise();\n";
   }
@@ -710,13 +710,13 @@ int CCTK_BindingsParameterSet(const char *identifier, const char *value)
 
   if(!implementation)
   {
-    retval = CCTK_BindingsParametersPublicSet(identifier, value);
+    retval = CCTK_BindingsParametersGlobalSet(identifier, value);
   }
   else
   { 
 EOT
 
-  foreach $routine (keys %routines, "CCTK_BindingsParametersPublic")
+  foreach $routine (keys %routines, "CCTK_BindingsParametersGlobal")
   {
 
     print OUT <<EOT;
@@ -755,13 +755,13 @@ int CCTK_BindingsParameterGet(const char *identifier, void **value)
 
   if(!implementation)
   {
-    retval = CCTK_BindingsParametersPublicGet(identifier, value);
+    retval = CCTK_BindingsParametersGlobalGet(identifier, value);
   }
   else
   { 
 EOT
 
-  foreach $routine (keys %routines, "CCTK_BindingsParametersPublic")
+  foreach $routine (keys %routines, "CCTK_BindingsParametersGlobal")
   {
 
     print OUT <<EOT;
@@ -800,13 +800,13 @@ int CCTK_BindingsParameterHelp(const char *identifier, const char *format, FILE 
 
   if(!implementation)
   {
-    retval = CCTK_BindingsParametersPublicHelp(identifier, format, file);
+    retval = CCTK_BindingsParametersGlobalHelp(identifier, format, file);
   }
   else
   { 
 EOT
 
-  foreach $routine (keys %routines, "CCTK_BindingsParametersPublic")
+  foreach $routine (keys %routines, "CCTK_BindingsParametersGlobal")
   {
 
     print OUT <<EOT;
@@ -875,14 +875,14 @@ EOT
 
 EOT
 
-  if($header_files{"PUBLIC"})
+  if($header_files{"GLOBAL"})
   {
-    print OUT "#include \"". $header_files{"PUBLIC"} ."\"\n";
+    print OUT "#include \"". $header_files{"GLOBAL"} ."\"\n";
   }
  
-  if($header_files{"\U$implementation\E PROTECTED"})
+  if($header_files{"\U$implementation\E RESTRICTED"})
   {
-    print OUT "#include \"". $header_files{"\U$implementation\E PROTECTED"}."\"\n";
+    print OUT "#include \"". $header_files{"\U$implementation\E RESTRICTED"}."\"\n";
   }
 
   if($header_files{"\U$thorn\E PRIVATE"})
@@ -893,23 +893,23 @@ EOT
   print OUT "\n";
 
     @data = ();
-    foreach $friend (split(" ",$parameter_database{"\U$thorn\E FRIEND implementations"}))
+    foreach $friend (split(" ",$parameter_database{"\U$thorn\E SHARES implementations"}))
     {
       $friend_implementation = $interface_database{"\U$friend\E IMPLEMENTS"};
 
-      print OUT "#include \"ParameterCProtected\U$friend\E.h\"\n";
+      print OUT "#include \"ParameterCRestricted\U$friend\E.h\"\n";
 
       $interface_database{"IMPLEMENTATION \U$friend\E THORNS"} =~ m:([^ ]*):;
  
       $friend_thorn = $1;
 
-      foreach $parameter (split(" ",$parameter_database{"\U$thorn FRIEND $friend\E variables"}))
+      foreach $parameter (split(" ",$parameter_database{"\U$thorn SHARES $friend\E variables"}))
       {
 	$type = $parameter_database{"\U$friend_thorn $parameter\E type"};
 
 	$type_string = &get_c_type_string($type);
 
-	$line = "  ".$type_string ." " .$parameter . " = PROTECTED_\U$friend\E_STRUCT.$parameter;";
+	$line = "  ".$type_string ." " .$parameter . " = RESTRICTED_\U$friend\E_STRUCT.$parameter;";
 
 	push(@data, $line);
 
@@ -918,14 +918,14 @@ EOT
 
     print OUT "#define DECLARE_CCTK_PARAMETERS \\\n";
 
-    $decl =  "DECLARE_PUBLIC_PARAMETER_STRUCT_PARAMS";
-    if($header_files{"PUBLIC"})
+    $decl =  "DECLARE_GLOBAL_PARAMETER_STRUCT_PARAMS";
+    if($header_files{"GLOBAL"})
     {
       print OUT "$decl \\\n";
     }
  
-    $decl = "DECLARE_PROTECTED_\U$implementation\E_STRUCT_PARAMS";
-    if($header_files{"\U$implementation\E PROTECTED"})
+    $decl = "DECLARE_RESTRICTED_\U$implementation\E_STRUCT_PARAMS";
+    if($header_files{"\U$implementation\E RESTRICTED"})
     {
       print OUT "$decl \\\n";
     }
@@ -1097,3 +1097,5 @@ EOT
   chdir $start_dir;
 }
 
+
+	

@@ -353,8 +353,8 @@ sub CreateFortranArgumentDeclarations
 	}
 	else
 	{
-	  $CST_errors++;
-	  print STDERR "Unknown argument type \"$1\"\n";
+	  $message = "Unknown argument type \"$1\"";
+	  &CST_error(0,$message,__LINE__,__FILE__);
 	}
       }
     }
@@ -461,8 +461,8 @@ sub CreateCArgumentDeclarations
 	}
 	else
 	{
-	  $CST_errors++;
-	  print STDERR "Unknown argument type $1\n";
+	  $message = "Unknown argument type $1";
+	  &CST_error(0,$message,__LINE__,__FILE__);
 	}
       }
     }
@@ -719,8 +719,8 @@ sub CreateCArgumentPrototype
 	  }
 	  else
 	  {
-	    $CST_errors++;
-	    print STDERR "Unknown argument type $1\n";
+	    $message = "Unknown argument type $1";
+	    &CST_error(0,$message,__LINE__,__FILE__);
 	  }
 	}
       }
@@ -838,8 +838,8 @@ sub CreateCArgumentList
 	  }
 	  else
 	  {
-	    $CST_errors++;
-	    print STDERR "Unknown argument type $1\n";
+	    $message = "Unknown argument type $1";
+	    &CST_error(0,$message,__LINE__,__FILE__);
 	  }
 	}
       }

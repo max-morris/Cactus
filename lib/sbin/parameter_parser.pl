@@ -59,24 +59,22 @@ sub cross_index_parameters
   @thorns = @indata[0..$n_thorns-1];
   %parameter_database = @indata[$n_thorns..$#indata];
   
-  $parameter_database{"PUBLIC PARAMETERS"} = "";
+  $parameter_database{"GLOBAL PARAMETERS"} = "";
   
   foreach $thorn (@thorns)
   {
-    foreach $parameter (split(/ /, $parameter_database{"\U$thorn\E PUBLIC variables"}))
+    foreach $parameter (split(/ /, $parameter_database{"\U$thorn\E GLOBAL variables"}))
     {
       if($public_parameters{"\U$parameter\E"})
       {
-	print STDERR "Duplicate public parameter $parameter\n";
-	print STDERR "Parameter defined in $imp and in " . 
-	  $public_parameters{"\Uparameter\E"};
-	die("****Fatal error***");
+	  $message = "Duplicate public parameter $parameter, defined in $imp and ".$public_parameters{"\Uparameter\E"};
+	  &CST_error(0,$message,__LINE__,__FILE__);
       }
       else
       {
 	$public_parameters{"\Uparameter\E"} = "$thorn";
 	
-	$parameter_database{"PUBLIC PARAMETERS"} .= "$thorn\::$parameter ";
+	$parameter_database{"GLOBAL PARAMETERS"} .= "$thorn\::$parameter ";
       }
     }
   }
@@ -191,12 +189,12 @@ sub parse_param_ccl
     $line = $data[$line_number];
     
     #       Parse the line
-    if($line =~ m/(PUBLIC|PROTECTED|PRIVATE|FRIEND)\s*:(.*)/i)
+    if($line =~ m/(GLOBAL|RESTRICTED|PRIVATE|SHARES)\s*:(.*)/i)
     {
       #           It's a new block.
       $block = "\U$1\E";
       
-      if($block eq "FRIEND")
+      if($block eq "SHARES")
       {
 	$current_friend = $2;
 	$current_friend =~ s:\s::;
@@ -213,7 +211,7 @@ sub parse_param_ccl
 	$parameter_db{"\U$thorn $block\E variables"} = "";
       }
     }
-    elsif($line =~ m:(EXTENDS )?\s*(?\:CCTK_)?(INT|REAL|LOGICAL|KEYWORD|STRING)\s*([a-zA-Z]+[a-zA-Z0-9_]*) \s*(\"[^\"]*\"):i)
+    elsif($line =~ m:(EXTENDS |USES )?\s*(?\:CCTK_)?(INT|REAL|LOGICAL|KEYWORD|STRING)\s*([a-zA-Z]+[a-zA-Z0-9_]*) \s*(\"[^\"]*\"):i)
     {
 
       # This is a parameter definition.
@@ -223,24 +221,25 @@ sub parse_param_ccl
       
       if($defined_parameters{"\U$variable\E"})
       {
-	print STDERR "Duplicate parameter $variable in thorn $thorn\n";
-	print STDERR "Ignoring second definition.\n";
-	$CST_errors++;
+
+	$message = "Duplicate parameter $variable in thorn $thorn. Ignoring second definition";
+	&CST_error(1,$message,__LINE__,__FILE__);
+
 	$line_number++ until ($data[$line_number] =~ m:\}:);
       }
-      elsif($1 && $1 =~ m:EXTENDS:i && $block !~ m:FRIEND\s*\S:)
+      elsif($1 && $1 =~ m:(EXTENDS|USES):i && $block !~ m:SHARES\s*\S:)
       {
 	# Can only extend a friend variable.
-	print STDERR "Parse error at line $line_number\n";
-	$CST_errors++;
+	$message =  "Parse error in $thorn/param.ccl";
+	&CST_error(0,$message,__LINE__,__FILE__);
 	$line_number++ until ($data[$line_number] =~ m:\}:);
       }
       elsif(! $data[$line_number+1] =~ m:^\s*\{\s*$:)
       {
 	# Since the data should have no blank lines, the next
 	# line should have { on it.
-	print STDERR "Parse error at line $line_number\n";
-	$CST_errors++;
+	$message = "Parse error in $thorn/param.ccl";
+	&CST_error(0,$message,__LINE__,__FILE__);
 	# Move past the end of this block.
 	$line_number++ until ($data[$line_number] =~ m:\}:);
       }
@@ -262,46 +261,47 @@ sub parse_param_ccl
         # The (optional) description is seperated by ::
 	while($data[$line_number] !~ m:\s*\}:)
 	{
-	  ($new_ranges, $delim, $new_desc) = $data[$line_number] =~ m/(.*)(::)(.*)/;
-          # Increment the number of ranges found (ranges)
-	  $parameter_db{"\U$thorn $variable\E ranges"}++;
-	  # Strip out any spaces in the range for a numeric parameter.
-	  if($type =~ m:INT|REAL:)
-	  {
-	    $new_ranges =~ s/[ \t]+/ /g;
-	  }
-	  $parameter_db{"\U$thorn $variable\E range $parameter_db{\"\U$thorn $variable\E ranges\"} range"} = $new_ranges;
-	  # Give a warning if no description has been given
-	  if(! $delim)
-	  {
-	    print STDERR "Missing description of range '$new_ranges' for parameter $thorn\::$variable\n";
-	  }
-	  $parameter_db{"\U$thorn $variable\E range $parameter_db{\"\U$thorn $variable\E ranges\"} description"} = $new_desc;
-	  $line_number++;
+	    ($new_ranges, $delim, $new_desc) = $data[$line_number] =~ m/(.*)(::)(.*)/;
+	    # Increment the number of ranges found (ranges)
+	    $parameter_db{"\U$thorn $variable\E ranges"}++;
+	    # Strip out any spaces in the range for a numeric parameter.
+	    if($type =~ m:INT|REAL:)
+	    {
+		$new_ranges =~ s/[ \t]+/ /g;
+	    }
+	    $parameter_db{"\U$thorn $variable\E range $parameter_db{\"\U$thorn $variable\E ranges\"} range"} = $new_ranges;
+	    # Give a warning if no description has been given
+	    if(! $delim)
+	    {
+		$message = "Missing description of range '$new_ranges' for parameter $thorn\::$variable";
+		&CST_error(1,$message,__LINE__,__FILE__);
+	    }
+	    $parameter_db{"\U$thorn $variable\E range $parameter_db{\"\U$thorn $variable\E ranges\"} description"} = $new_desc;
+	    $line_number++;
 	}
+
         # Give a warning if no range was given and it was needed
         if ($parameter_db{"\U$thorn $variable\E ranges"}==0 && $type =~ m:INT|REAL:)
         {
-	    print STDERR "No range given for $variable in $thorn\n";
-            $CST_errors++;
+	    $message = "No range given for $variable in $thorn";
+	    &CST_error(0,$message,__LINE__,__FILE__);
         }
-	if($block !~ m:FRIEND:)
+	if($block !~ m:SHARES:)
 	{
 	  if($data[$line_number] =~ m:\s*\}\s*(.+):)
 	  {
 	      $default = $1;
-#	      print "type is $type, default is $default\n";
 	      if ($type =~ m:INT|REAL: && $default =~ m:":)
 	      {
-		  print STDERR "String default given for $type $variable in $thorn\n";
-		  $CST_errors++;
+		  $message = "String default given for $type $variable in $thorn";
+                  &CST_error(0,$message,__LINE__,__FILE__);
 	      }
 	      $parameter_db{"\U$thorn $variable\E default"} = $default;
 	  }
 	  else
 	  {
-	    print STDERR "Unable to find default for $variable\n";
-	    $CST_errors++;
+	    $message =  "Unable to find default for $variable";
+	    &CST_error(0,$message,__LINE,__FILE);
 	  }		
 	}
       }
@@ -310,18 +310,19 @@ sub parse_param_ccl
     {
       if($line =~ m:\{:)
       {
-	print STDERR "...Skipping parameter block with missing keyword....\n";
+	$message = "Skipping parameter block in $thorn with missing keyword";
+        &CST_error(1,$message,__LINE__,__FILE__);
 	$line_number++ until ($data[$line_number] =~ m:\}:);
       }
       else
       {
-        $CST_errors++;
-	print STDERR "Unknown line $line\n";
+	$message = "Unknown line \"$line\" in $thorn/param.ccl";
+        &CST_error(0,$message,__LINE__,__FILE__);
       }
     }
   }
   
-  $parameter_db{"\U$thorn\E FRIEND implementations"} = join(" ", keys %friends);
+  $parameter_db{"\U$thorn\E SHARES implementations"} = join(" ", keys %friends);
   
   return %parameter_db;
 }
@@ -346,8 +347,11 @@ sub print_parameter_database
   
   foreach $field ( sort keys %parameter_database )
   {
-    print "$field has value $parameter_database{$field}\n";
+    print "$field has value $parameter_database{$field}";
   }
 }
 
+
 1;
+
+

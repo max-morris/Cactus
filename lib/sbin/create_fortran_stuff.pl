@@ -27,12 +27,12 @@ sub CreateFortranThornParameterBindings
 
   push(@file, "#define DECLARE_CCTK_PARAMETERS \\");
 
-  # Generate all public parameters
-  %these_parameters = &get_public_parameters(%parameter_database);
+  # Generate all global parameters
+  %these_parameters = &get_global_parameters(%parameter_database);
 
   if((keys %these_parameters) > 0)
   {
-    @data = &CreateFortranCommonDeclaration("cctk_params_public", 0, scalar(keys %these_parameters), %these_parameters, %parameter_database);
+    @data = &CreateFortranCommonDeclaration("cctk_params_global", 0, scalar(keys %these_parameters), %these_parameters, %parameter_database);
 
     foreach $line (@data)
     {
@@ -40,14 +40,14 @@ sub CreateFortranThornParameterBindings
     }
   }
 
-  # Generate all protected parameters of this thorn
-  %these_parameters = &GetThornParameterList($thorn, "PROTECTED", %parameter_database);
+  # Generate all restricted parameters of this thorn
+  %these_parameters = &GetThornParameterList($thorn, "RESTRICTED", %parameter_database);
 
   if((keys %these_parameters > 0))
   {
     $implementation = $interface_database{"\U$thorn\E IMPLEMENTS"};
     
-    @data = &CreateFortranCommonDeclaration("$implementation"."prot", 0, scalar(keys %these_parameters), %these_parameters, %parameter_database);
+    @data = &CreateFortranCommonDeclaration("$implementation"."rest", 0, scalar(keys %these_parameters), %these_parameters, %parameter_database);
 
     foreach $line (@data)
     {
@@ -69,7 +69,7 @@ sub CreateFortranThornParameterBindings
   }
 
   # Parameters from friends
-  foreach $friend (split(" ",$parameter_database{"\U$thorn\E FRIEND implementations"}))
+  foreach $friend (split(" ",$parameter_database{"\U$thorn\E SHARES implementations"}))
   {
 
     # Determine which thorn provides this friend implementation
@@ -77,14 +77,14 @@ sub CreateFortranThornParameterBindings
     
     $friend_thorn = $1;
     
-    %these_parameters = &GetThornParameterList($friend_thorn, "PROTECTED", %parameter_database);
+    %these_parameters = &GetThornParameterList($friend_thorn, "RESTRICTED", %parameter_database);
     
     %alias_names = ();
 
     foreach $parameter (sort(keys %these_parameters))
     {
       # Alias the parameter unless it is one we want.
-      if(($parameter_database{"\U$thorn FRIEND $friend\E variables"} =~ m:( )*$parameter( )*:) && (length($1) > 0)||length($2)>0||$1 eq $parameter_database{"\U$thorn FRIEND $friend\E variables"})
+      if(($parameter_database{"\U$thorn SHARES $friend\E variables"} =~ m:( )*$parameter( )*:) && (length($1) > 0)||length($2)>0||$1 eq $parameter_database{"\U$thorn SHARES $friend\E variables"})
       {
 	$alias_names{$parameter} = "$parameter";
       }
@@ -95,7 +95,7 @@ sub CreateFortranThornParameterBindings
       }
     }
 
-    @data = &CreateFortranCommonDeclaration("$friend"."prot", 1, scalar(keys %these_parameters), %these_parameters, %alias_names, %parameter_database);
+    @data = &CreateFortranCommonDeclaration("$friend"."rest", 1, scalar(keys %these_parameters), %these_parameters, %alias_names, %parameter_database);
       
     foreach $line (@data)
     {

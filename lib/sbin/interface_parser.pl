@@ -61,8 +61,8 @@ sub cross_index_interface_data
     $implementation = $interface_data{"\U$thorn\E IMPLEMENTS"};
     if($implementation =~ m:^\s*$:)
     {
-      print "Thorn $thorn doesn't specify an implementation.\n";
-      $CST_errors++;
+      $message = "Thorn $thorn doesn't specify an implementation";
+      &CST_error(0,$message,__LINE__,__FILE__);
       next;
     }
 
@@ -325,8 +325,8 @@ sub check_interface_consistency
       {
 	if(!$n_errors)
 	{
-	  print STDERR "Inconsistent implementations of $implementation\n";
-	  print STDERR "    Implemented by thorns " . join(" ", @thorns) . "\n";
+	    $message = "Inconsistent implementations of $implementation. Implemented by thorns " . join(" ", @thorns);
+	    &CST_error(0,$message,__LINE,__FILE__);
 	}
 	print STDERR "    Not all inherit:         $thing\n";
 	$n_errors++;
@@ -551,8 +551,8 @@ sub parse_interface_ccl
       }
       else
       {
-	  $CST_errors++;
-	  print STDERR "Error:  Only one implements line allowed.\n";
+	  $message = "Only one implements line allowed in $thorn";
+	  &CST_error(0,$message,__LINE__,__FILE__);
       }
     }
     elsif ($line =~ m/^\s*(INHERITS|FRIEND)\s*:((\s*[a-zA-Z]+[a-zA-Z_0-9]*)*\s*)$/i)
@@ -569,12 +569,13 @@ sub parse_interface_ccl
       
       if($known_groups{"\U$current_group\E"})
       {
-	print STDERR "Duplicate group $2 in thorn $thorn.\n";
-	$CST_errors++;
+	$message = "Duplicate group $2 in thorn $thorn";
+	&CST_error(0,$message,__LINE__,__FILE__);
 	if($data[line_number+1] =~ m:\{:)
 	{
-	  print STDERR "...Skipping interface block ....\n";
-	  $line_number++ until ($data[$line_number] =~ m:\}:);
+	    $message = "Skipping interface block";
+	    &CST_error(1,$message,__LINE__,__FILE__);
+	    $line_number++ until ($data[$line_number] =~ m:\}:);
 	}
 	next;
       }
@@ -607,8 +608,8 @@ sub parse_interface_ccl
 	}
 	else
 	{
-	  $CST_errors++;
-	  print STDERR "Unknown option $option in group $current_group of thorn $thorn.\n";
+	  $message = "Unknown option $option in group $current_group of thorn $thorn";
+	  &CST_error(0,$message,__LINE__,__FILE__);
 	}
       }
 
@@ -636,15 +637,16 @@ sub parse_interface_ccl
       # Check that it is a known group type
       if($interface_db{"\U$thorn GROUP $current_group\E GTYPE"} !~ m:SCALAR|GF|ARRAY:)
       {
-	$CST_errors++;
-	print STDERR "Unknown GROUP TYPE " .
+	  $message =  "Unknown GROUP TYPE " .
 	  $interface_db{"\U$thorn GROUP $current_group\E GTYPE"} .
-	    " for group $current_group of thorn $thorn.\n";
-	if($data[line_number+1] =~ m:\{:)
-	{
-	  print STDERR "...Skipping interface block ....\n";
-	  $line_number++ until ($data[$line_number] =~ m:\}:);
-	}
+	    " for group $current_group of thorn $thorn";
+	  &CST_error(0,$message,__LINE,__FILE__);
+	  if($data[line_number+1] =~ m:\{:)
+	  {
+	      $message = "Skipping interface block in $thorn";
+	      &CST_error(1,$message,__LINE__,__FILE__);
+	      $line_number++ until ($data[$line_number] =~ m:\}:);
+	  }
 	next;
       }	      
       
@@ -670,8 +672,8 @@ sub parse_interface_ccl
 	      }	    
 	      else
 	      {
-		$CST_errors++;
-		print STDERR "Duplicate variable $function in thorn $thorn\n";
+		$message = "Duplicate variable $function in thorn $thorn";
+		&CST_error(0,$message,__LINE__,__FILE__);
 	      }
 	    }
 	  }
@@ -690,8 +692,8 @@ sub parse_interface_ccl
 	}
 	else
 	{
-	  $CST_errors++;
-	  print STDERR "Duplicate variable $function in thorn $thorn\n";
+	  $message = "Duplicate variable $function in thorn $thorn";
+	  &CST_error(0,$message,__LINE__,__FILE__);
 	}
 	
 	# Decrement the line number, since the line is the first line of the next CCL statement.
@@ -703,15 +705,15 @@ sub parse_interface_ccl
     {
       if($line =~ m:\{:)
       {
-	$CST_errors;
-	print STDERR "...Skipping interface block with missing keyword....\n";
+	$message = "...Skipping interface block with missing keyword....";
+	&CST_error(0,$message,__LINE__,__FILE__);
 
 	$line_number++ until ($data[$line_number] =~ m:\}:);
       }
       else
       {
-	$CST_errors++;
-	print STDERR "Unknown line $line\n";
+	$message = "Unknown line $line";
+	&CST_error(0,$message,__LINE__,__FILE__);
       }
     }
   }

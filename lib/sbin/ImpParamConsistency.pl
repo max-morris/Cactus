@@ -26,7 +26,7 @@ sub CheckImpParamConsistency
   {
 #    print "Processing thorn $thorn\n";
 
-    foreach $friend (split(" ", $parameter_database{"\U$thorn\E FRIEND implementations"}))
+    foreach $friend (split(" ", $parameter_database{"\U$thorn\E SHARES implementations"}))
     {
 #      print "Friend is $friend\n";
       # Find a thorn providing this implementation
@@ -34,15 +34,15 @@ sub CheckImpParamConsistency
 
 #      print "Other thorn is $other_thorn\n";
 
-      foreach $parameter (split(" ", $parameter_database{"\U$thorn FRIEND $friend\E variables"}))
+      foreach $parameter (split(" ", $parameter_database{"\U$thorn SHARES $friend\E variables"}))
       {
 #	print "Parameter is $parameter\n";
 
 	# Check if the parameter exists in the other thorn
 	if($parameter_database{"\U$other_thorn $parameter\E type"})
 	{
-	  # Check that the parameter is in the protected block.
-	  if($parameter_database{"\U$other_thorn PROTECTED\E variables"} =~ m:\b$parameter\b:i)
+	  # Check that the parameter is in the restricted block.
+	  if($parameter_database{"\U$other_thorn RESTRICTED\E variables"} =~ m:\b$parameter\b:i)
 	  {
 	    # Loop through all the added ranges.
 	    for($range=1; 
@@ -61,12 +61,12 @@ sub CheckImpParamConsistency
 	  }
 	  else
 	  {
-	    print STDERR "Thorn $thorn attempted to EXTEND non-protected parameter $parameter from $friend\n";
+	    print STDERR "Thorn $thorn attempted to EXTEND non-restricted parameter $parameter from $friend\n";
 	  }
 	}
 	else
 	{
-	  print STDERR "Thorn $thorn attempted to EXTEND non-existent parameter $parameter from $friend\n";
+	  print STDERR "Thorn $thorn attempted to EXTEND non-existant parameter $parameter from $friend\n";
 	}
       }
     }
