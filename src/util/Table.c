@@ -4,15 +4,15 @@
 /*@@
  @file          Table.c
  @seeheader     util_Table.h
- @version       $Id$
  @date          Wed Oct 31 16:17:45 MET 2001
  @author        Jonathan Thornburg <jthorn@aei.mpg.de>
  @desc
-        This program implements the key-value table API defined
-        in util_Table.h and in the Cactus User's Guide.  A slightly
-        earlier version of this is documented in
-           http://www.cactuscode.org/Development/Specs/KeyValueLookup.txt
+                This program implements the key-value table API defined
+                in util_Table.h and in the Cactus User's Guide.  A slightly
+                earlier version of this is documented in
+                  http://www.cactuscode.org/Development/Specs/KeyValueLookup.txt
  @enddesc
+ @version       $Id$
  @@*/
 
 /*
@@ -412,7 +412,9 @@ static void check_table_contents_real_e(int handle, int ihandle);
 
 /*@@
   @routine      Util_TableCreate
-  @desc         This function creates a new (empty) table.
+  @desc
+                This function creates a new (empty) table.
+  @enddesc
 
   @var          flags
   @vtype        int
@@ -421,16 +423,17 @@ static void check_table_contents_real_e(int handle, int ihandle);
                 since the bit masks are all disjoint)
   @endvar
 
-  @comment      We require flags >= 0 so other functions can distinguish
+  @comment
+                We require flags >= 0 so other functions can distinguish
                 flags from (negative) error codes
   @endcomment
 
   @returntype   int
-  @returndesc   a handle to the newly-created table,
-                -ve for error, including
-                UTIL_ERROR_NO_MEMORY            unable to allocate memory
+  @returndesc
+                a handle to the newly-created table,<BR>
+                -ve for error, including<BR>
+                UTIL_ERROR_NO_MEMORY            unable to allocate memory<BR>
                 UTIL_ERROR_TABLE_BAD_FLAGS      flags < 0
-
   @endreturndesc
   @@*/
 int Util_TableCreate(int flags)
@@ -509,9 +512,11 @@ int Util_TableCreate(int flags)
 
 /*@@
   @routine      Util_TableClone
-  @desc         This function clones (makes an exact copy of) a table.
+  @desc
+                This function clones (makes an exact copy of) a table.
                 (N.b. the order in which an interator sequences through
                 a table may differ in the clone.)
+  @enddesc
 
   @var          handle
   @vtype        int
@@ -519,8 +524,9 @@ int Util_TableCreate(int flags)
   @endvar
 
   @returntype   int
-  @returndesc   a handle to the clone table, or
-                UTIL_ERROR_NO_MEMORY            unable to allocate memory
+  @returndesc
+                a handle to the clone table, or<BR>
+                UTIL_ERROR_NO_MEMORY            unable to allocate memory<BR>
                 UTIL_ERROR_TABLE_BAD_FLAGS      flags < 0 in the to-be-cloned
                                                 table (this should never happen)
   @endreturndesc
@@ -578,9 +584,10 @@ int Util_TableClone(int handle)
 
 /*@@
   @routine      Util_TableDestroy
-  @desc         This function destroys a table.
-
+  @desc
+                This function destroys a table.
                 (Of course, this invalidates any iterators for this table.)
+  @enddesc
 
   @var          handle
   @vtype        int
@@ -588,8 +595,9 @@ int Util_TableClone(int handle)
   @endvar
 
   @returntype   int
-  @returndesc   0 for ok,
-                -ve for error, including
+  @returndesc
+                0 for ok,<BR>
+                -ve for error, including<BR>
                 UTIL_ERROR_BAD_HANDLE           handle is invalid
   @endreturndesc
   @@*/
@@ -622,7 +630,9 @@ int Util_TableDestroy(int handle)
 
 /*@@
   @routine      Util_TableQueryFlags
-  @desc         This function queries a table's flags word.
+  @desc
+                This function queries a table's flags word.
+  @enddesc
 
   @var          handle
   @vtype        int
@@ -630,8 +640,9 @@ int Util_TableDestroy(int handle)
   @endvar
 
   @returntype   int
-  @returndesc   flags if table exists,
-                -ve for error, including
+  @returndesc
+                flags if table exists,<BR>
+                -ve for error, including<BR>
                 UTIL_ERROR_BAD_HANDLE           handle is invalid
   @endreturndesc
   @@*/
@@ -650,8 +661,10 @@ int Util_TableQueryFlags(int handle)
 
 /*@@
   @routine      Util_TableQueryNKeys
-  @desc         This function queries the total number of key/value entries
+  @desc
+                This function queries the total number of key/value entries
                 in a table.
+  @enddesc
 
   @var          handle
   @vtype        int
@@ -659,8 +672,9 @@ int Util_TableQueryFlags(int handle)
   @endvar
 
   @returntype   int
-  @returndesc   number of entries (>= 0),
-                -ve for error, including
+  @returndesc
+                number of entries (>= 0),<BR>
+                -ve for error, including<BR>
                 UTIL_ERROR_BAD_HANDLE           handle is invalid
   @endreturndesc
   @@*/
@@ -688,7 +702,9 @@ int Util_TableQueryNKeys(int handle)
 
 /*@@
   @routine      Util_TableQueryMaxKeyLength
-  @desc         This function queries the maximum key length in a table.
+  @desc
+                This function queries the maximum key length in a table.
+  @enddesc
 
   @var          handle
   @vtype        int
@@ -696,8 +712,9 @@ int Util_TableQueryNKeys(int handle)
   @endvar
 
   @returntype   int
-  @returndesc   maximum key length (>= 0),
-                -ve for error, including
+  @returndesc
+                maximum key length (>= 0),<BR>
+                -ve for error, including<BR>
                 UTIL_ERROR_BAD_HANDLE           handle is invalid
   @endreturndesc
   @@*/
@@ -729,10 +746,12 @@ int Util_TableQueryMaxKeyLength(int handle)
 
 /*@@
   @routine      Util_TableQueryValueInfo
-  @desc         This function queries the type and number of elements
+  @desc
+                This function queries the type and number of elements
                 of the value corresponding to a specified key in a table.
                 It can also be used to "just" determine whether or not
                 a specified key is present in a table.
+  @enddesc
 
   @var          handle
   @vtype        int
@@ -760,21 +779,26 @@ int Util_TableQueryMaxKeyLength(int handle)
   @endvar
 
   @returntype   int
-  @returndesc   1 for key is in table,
+  @returndesc
+                1 for key is in table,<BR>
                 0 for no such key in table
-                  (in this case nothing is stored in *type and *N_elements)
-                -ve for error, including
-                UTIL_ERROR_BAD_HANDLE           handle is invalid
+                  (in this case nothing is stored in *type and *N_elements)<BR>
+                -ve for error, including<BR>
+                UTIL_ERROR_BAD_HANDLE           handle is invalid<BR>
                 UTIL_ERROR_TABLE_BAD_KEY        key contains '/' character
-  @comment      Unlike all the other query functions, this function
+  @endreturndesc
+
+  @comment
+                Unlike all the other query functions, this function
                 returns 0 for no such key in table.  The rationale
                 for this design is that by passing NULL pointers for
                 type_code and N_elements, this function is then a
                 Boolean "is key in table?" predicate.
-  @endreturndesc
-  @comment      If any error code is returned, the user's buffers
+
+                If any error code is returned, the user's buffers
                 pointed to by type_code and N_elements (if these pointers
                 are non-NULL) are unchanged.
+  @endcomment
   @@*/
 int Util_TableQueryValueInfo(int handle,
                              CCTK_INT *type_code, CCTK_INT *N_elements,
@@ -814,10 +838,12 @@ int Util_TableQueryValueInfo(int handle,
 
 /*@@
   @routine      Util_TableDeleteKey
-  @desc         This function deletes a key (and the corresponding value)
+  @desc
+                This function deletes a key (and the corresponding value)
                 from a table.
 
                 Note that this invalidates any iterators for this table.
+  @enddesc
 
   @var          handle
   @vtype        int
@@ -830,11 +856,12 @@ int Util_TableQueryValueInfo(int handle,
   @endvar
 
   @returntype   int
-  @returndesc   0 for ok (key existed before this call,
-                          and has now been deleted)
-                -ve for error, including
-                UTIL_ERROR_BAD_HANDLE           handle is invalid
-                UTIL_ERROR_TABLE_BAD_KEY        key contains '/' character
+  @returndesc
+                0 for ok (key existed before this call,
+                          and has now been deleted)<BR>
+                -ve for error, including<BR>
+                UTIL_ERROR_BAD_HANDLE           handle is invalid<BR>
+                UTIL_ERROR_TABLE_BAD_KEY        key contains '/' character<BR>
                 UTIL_ERROR_TABLE_NO_SUCH_KEY    no such key in table
   @endreturndesc
   @@*/
@@ -858,11 +885,14 @@ int Util_TableDeleteKey(int handle, const char *key)
 
 /*@@
   @routine      Util_TableCreateFromString
-  @desc         This function creates a new table (with the case-insensitive
+  @desc
+                This function creates a new table (with the case-insensitive
                 flag set), and sets values in it based on a string argument.
                 The string is interpreted with "parameter-file" semantics.
+  @enddesc
 
-  @comment      The "Implementation Restriction" of Util_TableSetFromString()
+  @comment
+                The "Implementation Restriction" of Util_TableSetFromString()
                 applies here as well.
   @endcomment
 
@@ -873,12 +903,14 @@ int Util_TableDeleteKey(int handle, const char *key)
   @endvar
 
   @returntype   int
-  @returndesc   a handle to the newly-created table,
-                -ve for error, including
-                UTIL_ERROR_NO_MEMORY    unable to allocate memory
+  @returndesc
+                a handle to the newly-created table,<BR>
+                -ve for error, including<BR>
+                UTIL_ERROR_NO_MEMORY    unable to allocate memory<BR>
                 UTIL_ERROR_BAD_KEY      invalid input: key contains
-                                        invalid character
-                UTIL_ERROR_BAD_INPUT    invalid input: can't parse input string
+                                        invalid character<BR>
+                UTIL_ERROR_BAD_INPUT    invalid input: can't parse input
+                                        string<BR>
                 and any error codes returned by
                 Util_TableCreate() or Util_TableSetFromString()
   @endreturndesc
@@ -906,40 +938,45 @@ int Util_TableCreateFromString(const char string[])
 
 /*@@
   @routine      Util_TableSetFromString
-  @desc         This function does a sequence of Util_TableSet*() calls
+  @desc
+                This function does a sequence of Util_TableSet*() calls
                 to set table entries based on a parameter-file--like
                 string argument.  For example,
                    Util_TableSetFromString(handle, "order=3 dx=0.1")
                 is equivalent to
                    Util_TableSetInt(handle, 3, "order");
                    Util_TableSetReal(handle, 0.1, "dx");
+  @enddesc
 
-  @comment      Implementation Restriction:
+  @comment
+                Implementation Restriction:<BR>
                 The present implementation only recognises integer or
                 real values (not complex or character), and only scalars
                 (not arrays).  In more detail, the strings recognized
-                are defined by the following BNF:
-                   string -> assign*
-                   assign -> whitespace*
-                   assign -> whitespace* key = value delimiter
+                are defined by the following BNF:<BR>
+                <BLOCKQUOTE>
+                   string -> assign*<BR>
+                   assign -> whitespace*<BR>
+                   assign -> whitespace* key = value delimiter<BR>
                    key    -> any string not containing '/'
-                             or '=' or ';' or whitespace
-                   value  -> int_value | real_value
+                             or '=' or ';' or whitespace<BR>
+                   value  -> int_value | real_value<BR>
                    int_value -> contains only chars from "-+0123456789"
                                 and is recognized as valid by sscanf()
-                                with a "%d" format
+                                with a "%d" format<BR>
                    real_value -> contains one or more chars not in
                                  "-+0123456789", and is recognized as
-                                 valid by sscanf() with a "%lf" format
-                   delimiter -> end-of-string | ';' | whitespace
-                   whitespace --> ' ' | '\t' | '\n' | '\r' | '\f' | '\v'
+                                 valid by sscanf() with a "%lf" format<BR>
+                   delimiter -> end-of-string | ';' | whitespace<BR>
+                   whitespace --> ' ' | '\t' | '\n' | '\r' | '\f' | '\v'<BR>
+                </BLOCKQUOTE>
                 where * denotes 0 or more repetitions and | denotes
                 logical or.
-
+                <P>
                 Notice that whitespace separates "key=value" assignments,
                 and thus that no whitespace may appear with a "key=value"
                 assignment.
-
+                <P>
                 Notice also that the keys allowed by this function
                 are somewhat more restricted than those allowed by
                 the other Util_TableSet*() functions, in that this
@@ -960,12 +997,14 @@ int Util_TableCreateFromString(const char string[])
   @endvar
 
   @returntype   int
-  @returndesc   the number of successful Util_TableSet*() calls made, or
-                -ve for error, including
-                UTIL_ERROR_NO_MEMORY    unable to allocate memory
+  @returndesc
+                the number of successful Util_TableSet*() calls made, or<BR>
+                -ve for error, including<BR>
+                UTIL_ERROR_NO_MEMORY    unable to allocate memory<BR>
                 UTIL_ERROR_BAD_KEY      invalid input: key contains
-                                        invalid character
-                UTIL_ERROR_BAD_INPUT    invalid input: can't parse input string
+                                        invalid character<BR>
+                UTIL_ERROR_BAD_INPUT    invalid input: can't parse input
+                                        string<BR>
                 and any error codes returned by the Util_TableSet*() functions
                 Note that in the event of an error return, assignments
                 lexicographically earlier in the input string than where
@@ -1109,17 +1148,19 @@ int Util_TableSetFromString(int handle, const char string[])
 
 /*@@
   @routine      Util_TableSetString
-  @desc         This function sets the value associated with a specified
+  @desc
+                This function sets the value associated with a specified
                 key to be (a copy of) a specified character string.
 
                 Note that this invalidates any iterators for this table.
+  @enddesc
 
-  @comment      This function stores the value as array of strlen(string)
+  @comment
+                This function stores the value as array of strlen(string)
                 CCTK_CHARs; the stored value does *not* include a terminating
                 null character.  (This is convenient for Fortran.)
-  @endcomment
 
-  @comment      The implementation assumes (as is presently the case)
+                The implementation assumes (as is presently the case)
                 that a string is in fact an array of CCTK_CHAR, i.e.
                 that CCTK_CHAR is the same type as (or at least
                 compatible with) char.
@@ -1141,16 +1182,17 @@ int Util_TableSetFromString(int handle, const char string[])
   @endvar
 
   @returntype   int
-  @returndesc   Same as all the other  Util_TableSet*  functions, namely
+  @returndesc
+                Same as all the other  Util_TableSet*  functions, namely<BR>
                 1 for key was already in table before this call
                   (old value was replaced)
                   (it doesn't matter what the old value's type_code and
                    N_elements were, i.e. these do *not* have to match the
-                   new value),
-                0 for key was not in table before this call,
-                -ve for error, including
-                UTIL_ERROR_BAD_HANDLE           handle is invalid
-                UTIL_ERROR_TABLE_BAD_KEY        key contains '/' character
+                   new value),<BR>
+                0 for key was not in table before this call,<BR>
+                -ve for error, including<BR>
+                UTIL_ERROR_BAD_HANDLE           handle is invalid<BR>
+                UTIL_ERROR_TABLE_BAD_KEY        key contains '/' character<BR>
                 UTIL_ERROR_NO_MEMORY            unable to allocate memory
   @endreturndesc
   @@*/
@@ -1167,16 +1209,18 @@ int Util_TableSetString(int handle,
 
 /*@@
   @routine      Util_TableGetString
-  @desc         This function gets a copy of the character-string value
+  @desc
+                This function gets a copy of the character-string value
                 associated with a specified key, and stores it (or at least
                 as much of it as will fit) in a specified character string.
+  @enddesc
 
-  @comment      This function assumes that the value stored in the table
+  @comment
+                This function assumes that the value stored in the table
                 is an array of CCTK_CHARs, which does *not* include a
                 terminating null character.
-  @endcomment
 
-  @comment      The implementation assumes (as is presently the case)
+                The implementation assumes (as is presently the case)
                 that a string is in fact an array of CCTK_CHAR, i.e.
                 that CCTK_CHAR is the same type as (or at least
                 compatible with) char.
@@ -1206,19 +1250,23 @@ int Util_TableSetString(int handle,
   @endvar
 
   @returntype   int
-  @returndesc   the string length of the value (as per strlen()),
-                -ve for error, including
-                UTIL_ERROR_BAD_HANDLE           handle is invalid
-                UTIL_ERROR_TABLE_BAD_KEY        key contains '/' character
+  @returndesc
+                the string length of the value (as per strlen()),<BR>
+                -ve for error, including<BR>
+                UTIL_ERROR_BAD_HANDLE           handle is invalid<BR>
+                UTIL_ERROR_TABLE_BAD_KEY        key contains '/' character<BR>
                 UTIL_ERROR_BAD_INPUT            buffer != NULL
-                                                and buffer_length <= 0
-                UTIL_ERROR_TABLE_NO_SUCH_KEY    no such key in table
+                                                and buffer_length <= 0<BR>
+                UTIL_ERROR_TABLE_NO_SUCH_KEY    no such key in table<BR>
                 UTIL_ERROR_TABLE_WRONG_DATA_TYPE    value has data type
-                                                    other than CCTK_CHAR
+                                                    other than CCTK_CHAR<BR>
                 UTIL_ERROR_TABLE_STRING_TRUNCATED   buffer != NULL and
                                                     value was truncated
                                                     to fit in buffer[]
-  @comment      If the error code UTIL_ERROR_TABLE_STRING_TRUNCATED is
+  @endreturndesc
+
+  @comment
+                If the error code UTIL_ERROR_TABLE_STRING_TRUNCATED is
                 returned, then the first buffer_length-1 characters of
                 the string are returned in the user's buffer (assuming
                 buffer is non-NULL), followed by a null character to
@@ -1226,7 +1274,6 @@ int Util_TableSetString(int handle,
                 other error code is returned, the user's value buffer
                 (pointed to by buffer if this is non-NULL) is unchanged.
   @endcomment
-  @endreturndesc
   @@*/
 int Util_TableGetString(int handle,
                         int buffer_length, char buffer[],
@@ -1263,11 +1310,13 @@ int Util_TableGetString(int handle,
 
 /*@@
   @routine      Util_TableSetGeneric
-  @desc         This function sets the value associated with a specified
+  @desc
+                This function sets the value associated with a specified
                 key to be a specified value (treated as a 1-element array),
                 whose datatype is specified by a CCTK_VARIABLE_* type code.
 
                 Note that this invalidates any iterators for this table.
+  @enddesc
 
   @var          handle
   @vtype        int
@@ -1291,15 +1340,16 @@ int Util_TableGetString(int handle,
   @endvar
 
   @returntype   int
-  @returndesc   1 for key was already in table before this call
+  @returndesc
+                1 for key was already in table before this call
                   (old value was replaced)
                   (it doesn't matter what the old value's type_code and
                    N_elements were, i.e. these do *not* have to match the
-                   new value),
-                0 for key was not in table before this call,
-                -ve for error, including
-                UTIL_ERROR_BAD_HANDLE           handle is invalid
-                UTIL_ERROR_TABLE_BAD_KEY        key contains '/' character
+                   new value),<BR>
+                0 for key was not in table before this call,<BR>
+                -ve for error, including<BR>
+                UTIL_ERROR_BAD_HANDLE           handle is invalid<BR>
+                UTIL_ERROR_TABLE_BAD_KEY        key contains '/' character<BR>
                 UTIL_ERROR_NO_MEMORY            unable to allocate memory
   @endreturndesc
   @@*/
@@ -1314,11 +1364,13 @@ int Util_TableSetGeneric(int handle,
 
 /*@@
   @routine      Util_TableSetGenericArray
-  @desc         This function sets the value associated with a specified
+  @desc
+                This function sets the value associated with a specified
                 key to be (a copy of) a specified array, whose datatype is
                 specified by a CCTK_VARIABLE_* type code.
 
                 Note that this invalidates any iterators for this table.
+  @enddesc
 
   @var          handle
   @vtype        int
@@ -1348,16 +1400,17 @@ int Util_TableSetGeneric(int handle,
   @endvar
 
   @returntype   int
-  @returndesc   1 for key was already in table before this call
+  @returndesc
+                1 for key was already in table before this call
                   (old value was replaced)
                   (it doesn't matter what the old value's type_code and
                    N_elements were, i.e. these do *not* have to match the
-                   new value),
-                0 for key was not in table before this call,
-                -ve for error, including
-                UTIL_ERROR_BAD_HANDLE           handle is invalid
-                UTIL_ERROR_TABLE_BAD_KEY        key contains '/' character
-                UTIL_ERROR_BAD_INPUT            N_elements < 0
+                   new value),<BR>
+                0 for key was not in table before this call,<BR>
+                -ve for error, including<BR>
+                UTIL_ERROR_BAD_HANDLE           handle is invalid<BR>
+                UTIL_ERROR_TABLE_BAD_KEY        key contains '/' character<BR>
+                UTIL_ERROR_BAD_INPUT            N_elements < 0<BR>
                 UTIL_ERROR_NO_MEMORY            unable to allocate memory
   @endreturndesc
   @@*/
@@ -1374,11 +1427,13 @@ int Util_TableSetGenericArray(int handle,
 
 /*@@
   @routine      Util_TableGetGeneric
-  @desc         This function gets the value of the scalar (1-element array)
+  @desc
+                This function gets the value of the scalar (1-element array)
                 value, or more generally the first array element of the value,
                 associated with a specified key.  The value may be of any
                 supported datatype; the caller specifies the expected type
                 by a CCTK_VARIABLE_* type code.
+  @enddesc
 
   @var          handle
   @vtype        int
@@ -1404,15 +1459,19 @@ int Util_TableSetGenericArray(int handle,
   @endvar
 
   @returntype   int
-  @returndesc   the number of elements in the value,
-                -ve for error, including
-                UTIL_ERROR_BAD_HANDLE           handle is invalid
-                UTIL_ERROR_TABLE_BAD_KEY        key contains '/' character
-                UTIL_ERROR_TABLE_NO_SUCH_KEY    no such key in table
-                UTIL_ERROR_TABLE_WRONG_DATA_TYPE value has wrong data type
+  @returndesc
+                the number of elements in the value,<BR>
+                -ve for error, including<BR>
+                UTIL_ERROR_BAD_HANDLE           handle is invalid<BR>
+                UTIL_ERROR_TABLE_BAD_KEY        key contains '/' character<BR>
+                UTIL_ERROR_TABLE_NO_SUCH_KEY    no such key in table<BR>
+                UTIL_ERROR_TABLE_WRONG_DATA_TYPE value has wrong data type<BR>
                 UTIL_ERROR_TABLE_VALUE_IS_EMPTY value is an empty
                                                 (0-element) array
-  @comment      Note that it is *not* an error for the value to actually
+  @endreturndesc
+
+  @comment
+                Note that it is *not* an error for the value to actually
                 be an array with > 1 elements elements; in this case only
                 the first element is stored.
 
@@ -1426,7 +1485,6 @@ int Util_TableSetGenericArray(int handle,
                 be an empty (0-length) array, because then there is no
                 ``first array element'' to get.
   @endcomment
-  @endreturndesc
   @@*/
 int Util_TableGetGeneric(int handle,
                          int type_code, void *value_ptr,
@@ -1443,10 +1501,12 @@ int Util_TableGetGeneric(int handle,
 
 /*@@
   @routine      Util_TableGetGenericArray
-  @desc         This is a family of functions, one for each Cactus data type,
+  @desc
+                This is a family of functions, one for each Cactus data type,
                 to get a copy of the value associated with a specified key
                 (or at least as much of the value as will fit into the
                 caller's array).
+  @enddesc
 
   @var          handle
   @vtype        int
@@ -1478,14 +1538,19 @@ int Util_TableGetGeneric(int handle,
   @endvar
 
   @returntype   int
-  @returndesc   the number of elements in the value,
-                -ve for error, including
-                UTIL_ERROR_BAD_HANDLE           handle is invalid
-                UTIL_ERROR_TABLE_BAD_KEY        key contains '/' character
-                UTIL_ERROR_BAD_INPUT            array != NULL and N_elements < 0
-                UTIL_ERROR_TABLE_NO_SUCH_KEY    no such key in table
+  @returndesc
+                the number of elements in the value,<BR>
+                -ve for error, including<BR>
+                UTIL_ERROR_BAD_HANDLE           handle is invalid<BR>
+                UTIL_ERROR_TABLE_BAD_KEY        key contains '/' character<BR>
+                UTIL_ERROR_BAD_INPUT            array != NULL and
+                                                N_elements < 0<BR>
+                UTIL_ERROR_TABLE_NO_SUCH_KEY    no such key in table<BR>
                 UTIL_ERROR_TABLE_WRONG_DATA_TYPE value has wrong data type
-  @comment      Note that it is *not* an error for the value to have
+  @endreturndesc
+
+  @comment
+                Note that it is *not* an error for the value to have
                 > N_elements elements; in this case only N_elements are
                 stored.  The caller can detect this by comparing the
                 return value with N_elements.
@@ -1504,7 +1569,6 @@ int Util_TableGetGeneric(int handle,
                 caller's value buffer (pointed to by  value_buffer)
                 is unchanged.
   @endcomment
-  @endreturndesc
   @@*/
 int Util_TableGetGenericArray(int handle,
                               int type_code, int N_elements, void *array,
@@ -1519,11 +1583,13 @@ int Util_TableGetGenericArray(int handle,
 
 /*@@
   @routine      Util_TableSet*
-  @desc         This is a family of functions, one for each Cactus data type,
+  @desc
+                This is a family of functions, one for each Cactus data type,
                 to set the value associated with a specified key to be a
                 specified value (treated as a 1-element array).
 
                 Note that this invalidates any iterators for this table.
+  @enddesc
 
   @var          handle
   @vtype        int
@@ -1547,15 +1613,16 @@ int Util_TableGetGenericArray(int handle,
   @endvar
 
   @returntype   int
-  @returndesc   1 for key was already in table before this call
+  @returndesc
+                1 for key was already in table before this call
                   (old value was replaced)
                   (it doesn't matter what the old value's type_code and
                    N_elements were, i.e. these do *not* have to match the
-                   new value),
-                0 for key was not in table before this call,
-                -ve for error, including
-                UTIL_ERROR_BAD_HANDLE           handle is invalid
-                UTIL_ERROR_TABLE_BAD_KEY        key contains '/' character
+                   new value),<BR>
+                0 for key was not in table before this call,<BR>
+                -ve for error, including<BR>
+                UTIL_ERROR_BAD_HANDLE           handle is invalid<BR>
+                UTIL_ERROR_TABLE_BAD_KEY        key contains '/' character<BR>
                 UTIL_ERROR_NO_MEMORY            unable to allocate memory
   @endreturndesc
   @@*/
@@ -1687,11 +1754,13 @@ int Util_TableSetComplex32(int handle, CCTK_COMPLEX32 value, const char *key)
 
 /*@@
   @routine      Util_TableSet*Array
-  @desc         This is a family of functions, one for each Cactus data type,
+  @desc
+                This is a family of functions, one for each Cactus data type,
                 to set the value associated with the specified key to be
                 (a copy of) a specified array.
 
                 Note that this invalidates any iterators for this table.
+  @enddesc
 
   @var          handle
   @vtype        int
@@ -1721,16 +1790,17 @@ int Util_TableSetComplex32(int handle, CCTK_COMPLEX32 value, const char *key)
   @endvar
 
   @returntype   int
-  @returndesc   1 for key was already in table before this call
+  @returndesc
+                1 for key was already in table before this call
                   (old value was replaced)
                   (it doesn't matter what the old value's type_code and
                    N_elements were, i.e. these do *not* have to match the
-                   new value),
-                0 for key was not in table before this call,
-                -ve for error, including
-                UTIL_ERROR_BAD_HANDLE           handle is invalid
-                UTIL_ERROR_TABLE_BAD_KEY        key contains '/' character
-                UTIL_ERROR_BAD_INPUT            N_elements < 0
+                   new value),<BR>
+                0 for key was not in table before this call,<BR>
+                -ve for error, including<BR>
+                UTIL_ERROR_BAD_HANDLE           handle is invalid<BR>
+                UTIL_ERROR_TABLE_BAD_KEY        key contains '/' character<BR>
+                UTIL_ERROR_BAD_INPUT            N_elements < 0<BR>
                 UTIL_ERROR_NO_MEMORY            unable to allocate memory
   @endreturndesc
   @@*/
@@ -1924,10 +1994,12 @@ int Util_TableSetComplex32Array(int handle,
 
 /*@@
   @routine      Util_TableGet*
-  @desc         This is a family of functions, one for each Cactus data type,
+  @desc
+                This is a family of functions, one for each Cactus data type,
                 to get a copy of the scalar (1-element array) value, or more
                 generally the first array element of the value, associated
                 with a specified key.
+  @enddesc
 
   @var          handle
   @vtype        int
@@ -1953,15 +2025,19 @@ int Util_TableSetComplex32Array(int handle,
   @endvar
 
   @returntype   int
-  @returndesc   the number of elements in the value,
-                -ve for error, including
-                UTIL_ERROR_BAD_HANDLE           handle is invalid
-                UTIL_ERROR_TABLE_BAD_KEY        key contains '/' character
-                UTIL_ERROR_TABLE_NO_SUCH_KEY    no such key in table
-                UTIL_ERROR_TABLE_WRONG_DATA_TYPE value has wrong data type
+  @returndesc
+                the number of elements in the value,<BR>
+                -ve for error, including<BR>
+                UTIL_ERROR_BAD_HANDLE           handle is invalid<BR>
+                UTIL_ERROR_TABLE_BAD_KEY        key contains '/' character<BR>
+                UTIL_ERROR_TABLE_NO_SUCH_KEY    no such key in table<BR>
+                UTIL_ERROR_TABLE_WRONG_DATA_TYPE value has wrong data type<BR>
                 UTIL_ERROR_TABLE_VALUE_IS_EMPTY value is an empty
                                                 (0-element) array
-  @comment      Note that it is *not* an error for the value to actually
+  @endreturndesc
+
+  @comment
+                Note that it is *not* an error for the value to actually
                 be an array with > 1 elements elements; in this case only
                 the first element is stored.
 
@@ -1975,7 +2051,6 @@ int Util_TableSetComplex32Array(int handle,
                 be an empty (0-length) array, because then there is no
                 ``first array element'' to get.
   @endcomment
-  @endreturndesc
   @@*/
 
 /**************************************/
@@ -2135,10 +2210,12 @@ int Util_TableGetComplex32(int handle, CCTK_COMPLEX32 *value, const char *key)
 
 /*@@
   @routine      Util_TableGet*Array
-  @desc         This is a family of functions, one for each Cactus data type,
+  @desc
+                This is a family of functions, one for each Cactus data type,
                 to get a copy of the value associated with a specified key
                 (or at least as much of the value as will fit into the
                 caller's array).
+  @enddesc
 
   @var          handle
   @vtype        int
@@ -2169,15 +2246,8 @@ int Util_TableGetComplex32(int handle, CCTK_COMPLEX32 *value, const char *key)
   @vdesc        pointer to the key (a C-style null-terminated string)
   @endvar
 
-  @returntype   int
-  @returndesc   the number of elements in the value,
-                -ve for error, including
-                UTIL_ERROR_BAD_HANDLE           handle is invalid
-                UTIL_ERROR_TABLE_BAD_KEY        key contains '/' character
-                UTIL_ERROR_BAD_INPUT            array != NULL and N_elements < 0
-                UTIL_ERROR_TABLE_NO_SUCH_KEY    no such key in table
-                UTIL_ERROR_TABLE_WRONG_DATA_TYPE value has wrong data type
-  @comment      Note that it is *not* an error for the value to have
+  @comment
+                Note that it is *not* an error for the value to have
                 > N_elements elements; in this case only N_elements are
                 stored.  The caller can detect this by comparing the
                 return value with N_elements.
@@ -2196,6 +2266,16 @@ int Util_TableGetComplex32(int handle, CCTK_COMPLEX32 *value, const char *key)
                 caller's value buffer (pointed to by  value_buffer)
                 is unchanged.
   @endcomment
+
+  @returntype   int
+  @returndesc
+                the number of elements in the value,<BR>
+                -ve for error, including<BR>
+                UTIL_ERROR_BAD_HANDLE           handle is invalid<BR>
+                UTIL_ERROR_TABLE_BAD_KEY        key contains '/' character<BR>
+                UTIL_ERROR_BAD_INPUT            array != NULL and N_elements < 0<BR>
+                UTIL_ERROR_TABLE_NO_SUCH_KEY    no such key in table<BR>
+                UTIL_ERROR_TABLE_WRONG_DATA_TYPE value has wrong data type
   @endreturndesc
   @@*/
 
@@ -2373,8 +2453,10 @@ int Util_TableGetComplex32Array(int handle,
 
 /*@@
   @routine      Util_TableItCreate
-  @desc         This function creates a new table iterator.  The iterator
+  @desc
+                This function creates a new table iterator.  The iterator
                 points to the starting entry in the table's traversal order.
+  @enddesc
 
   @var          handle
   @vtype        int
@@ -2382,9 +2464,10 @@ int Util_TableGetComplex32Array(int handle,
   @endvar
 
   @returntype   int
-  @returndesc   a handle to the newly-created iterator,
-                -ve for error, including
-                UTIL_ERROR_BAD_HANDLE           table handle is invalid
+  @returndesc
+                a handle to the newly-created iterator,<BR>
+                -ve for error, including<BR>
+                UTIL_ERROR_BAD_HANDLE           table handle is invalid<BR>
                 UTIL_ERROR_NO_MEMORY            unable to allocate memory
   @endreturndesc
   @@*/
@@ -2468,9 +2551,11 @@ int Util_TableItCreate(int handle)
 
 /*@@
   @routine      Util_TableItClone
-  @desc         This function clones (makes an exact copy of) a table
+  @desc
+                This function clones (makes an exact copy of) a table
                 iterator.  That is, it creates a new iterator which points
                 to the same table entry as an existing iterator.
+  @enddesc
 
   @var          ihandle
   @vtype        int
@@ -2478,9 +2563,10 @@ int Util_TableItCreate(int handle)
   @endvar
 
   @returntype   int
-  @returndesc   a handle to the newly-created iterator,
-                -ve for error, including
-                UTIL_ERROR_BAD_HANDLE           iterator handle is invalid
+  @returndesc
+                a handle to the newly-created iterator,<BR>
+                -ve for error, including<BR>
+                UTIL_ERROR_BAD_HANDLE           iterator handle is invalid<BR>
                 UTIL_ERROR_NO_MEMORY            unable to allocate memory
   @endreturndesc
   @@*/
@@ -2511,7 +2597,9 @@ int Util_TableItClone(int ihandle)
 
 /*@@
   @routine      Util_TableItDestroy
-  @desc         This function destroys a table iterator.
+  @desc
+                This function destroys a table iterator.
+  @enddesc
 
   @var          ihandle
   @vtype        int
@@ -2519,8 +2607,9 @@ int Util_TableItClone(int ihandle)
   @endvar
 
   @returntype   int
-  @returndesc   0 for ok,
-                -ve for error, including
+  @returndesc
+                0 for ok,<BR>
+                -ve for error, including<BR>
                 UTIL_ERROR_BAD_HANDLE           iterator handle is invalid
   @endreturndesc
   @@*/
@@ -2547,13 +2636,15 @@ int Util_TableItDestroy(int ihandle)
 
 /*@@
   @routine      Util_TableItQueryIsNull
-  @desc         This function queries whether a table iterator is in the
+  @desc
+                This function queries whether a table iterator is in the
                 "null-pointer" state, i.e. whether it does *not* point
                 to some table entry.
 
                 Bad things (garbage results, core dumps) may happen if
                 you call this function on a table iterator which has been
                 invalidated by a change in the table's contents.
+  @enddesc
 
   @var          ihandle
   @vtype        int
@@ -2561,9 +2652,10 @@ int Util_TableItDestroy(int ihandle)
   @endvar
 
   @returntype   int
-  @returndesc   1 for iterator is in "null-pointer" state,
-                0 for iterator points to some table entry,
-                -ve for error, including
+  @returndesc
+                1 for iterator is in "null-pointer" state,<BR>
+                0 for iterator points to some table entry,<BR>
+                -ve for error, including<BR>
                 UTIL_ERROR_BAD_HANDLE           iterator handle is invalid
   @endreturndesc
   @@*/
@@ -2584,13 +2676,15 @@ int Util_TableItQueryIsNull(int ihandle)
 
 /*@@
   @routine      Util_TableItQueryIsNonNull
-  @desc         This function queries whether a table iterator is *not* in
+  @desc
+                This function queries whether a table iterator is *not* in
                 the "null-pointer" state, i.e. whether it points to some
                 table entry.
 
                 Bad things (garbage results, core dumps) may happen if
                 you call this function on an iterator which has been
                 invalidated by a change in the table's contents.
+  @enddesc
 
   @var          ihandle
   @vtype        int
@@ -2598,9 +2692,10 @@ int Util_TableItQueryIsNull(int ihandle)
   @endvar
 
   @returntype   int
-  @returndesc   1 for iterator points to some table entry,
-                0 for iterator is in "null-pointer" state,
-                -ve for error, including
+  @returndesc
+                1 for iterator points to some table entry,<BR>
+                0 for iterator is in "null-pointer" state,<BR>
+                -ve for error, including<BR>
                 UTIL_ERROR_BAD_HANDLE           iterator handle is invalid
   @endreturndesc
   @@*/
@@ -2621,12 +2716,14 @@ int Util_TableItQueryIsNonNull(int ihandle)
 
 /*@@
   @routine      Util_TableItQueryTableHandle
-  @desc         This function queries which table a table iterator points
+  @desc
+                This function queries which table a table iterator points
                 into.
 
                 Note that this is always well-defined, even if the iterator
                 is in the "null-pointer" state, and even if the iterator
                 has been invalidated by a change in the table's contents.
+  @enddesc
 
   @var          ihandle
   @vtype        int
@@ -2634,8 +2731,9 @@ int Util_TableItQueryIsNonNull(int ihandle)
   @endvar
 
   @returntype   int
-  @returndesc   table handle,
-                -ve for error, including
+  @returndesc
+                table handle,<BR>
+                -ve for error, including<BR>
                 UTIL_ERROR_BAD_HANDLE           iterator handle is invalid
   @endreturndesc
   @@*/
@@ -2654,7 +2752,8 @@ int Util_TableItQueryTableHandle(int ihandle)
 
 /*@@
   @routine      Util_TableItQueryKeyValueInfo
-  @desc         This function queries the key and the type and number of
+  @desc
+                This function queries the key and the type and number of
                 elements of the value corresponding to that key, of the
                 table entry to which an iterator points.  This is in fact
                 the main purpose of iterators.
@@ -2662,6 +2761,7 @@ int Util_TableItQueryTableHandle(int ihandle)
                 Bad things (garbage results, core dumps) may happen if
                 you call this function on an iterator which has been
                 invalidated by a change in the table's contents.
+  @enddesc
 
   @var          ihandle
   @vtype        int
@@ -2697,15 +2797,19 @@ int Util_TableItQueryTableHandle(int ihandle)
   @endvar
 
   @returntype   int
-  @returndesc   the string length of the key (as per strlen()),
-                -ve for error, including
-                UTIL_ERROR_BAD_HANDLE           iterator handle is invalid
+  @returndesc
+                the string length of the key (as per strlen()),<BR>
+                -ve for error, including<BR>
+                UTIL_ERROR_BAD_HANDLE           iterator handle is invalid<BR>
                 UTIL_ERROR_TABLE_ITERATOR_IS_NULL  iterator is in
-                                                   "null-pointer" state
+                                                   "null-pointer" state<BR>
                 UTIL_ERROR_TABLE_STRING_TRUNCATED  key_buffer != NULL and
                                                    key was truncated
                                                    to fit in key_buffer[]
-  @comment      If the error code UTIL_ERROR_TABLE_STRING_TRUNCATED is
+  @endreturndesc
+
+  @comment
+                If the error code UTIL_ERROR_TABLE_STRING_TRUNCATED is
                 returned, then the first key_buffer_length-1 characters of
                 the string are returned in the user's key buffer (assuming
                 key_buffer is non-NULL), followed by a null character to
@@ -2713,7 +2817,6 @@ int Util_TableItQueryTableHandle(int ihandle)
                 other error code is returned, the user's key buffer
                 (pointed to by key_buffer if this is non-NULL) is unchanged.
   @endcomment
-  @endreturndesc
   @@*/
 int Util_TableItQueryKeyValueInfo(int ihandle,
                                   int key_buffer_length, char key_buffer[],
@@ -2776,12 +2879,14 @@ int Util_TableItQueryKeyValueInfo(int ihandle,
 
 /*@@
   @routine      Util_TableItAdvance
-  @desc         This function advances a table iterator to the next entry
+  @desc
+                This function advances a table iterator to the next entry
                 in the table's traversal order.
 
                 Bad things (garbage results, core dumps) may happen if
                 you call this function on an iterator which has been
                 invalidated by a change in the table's contents.
+  @enddesc
 
   @var          ihandle
   @vtype        int
@@ -2789,14 +2894,15 @@ int Util_TableItQueryKeyValueInfo(int ihandle,
   @endvar
 
   @returntype   int
-  @returndesc   same as that of Util_TableItQueryNonNull(ihandle)
-                after advancing the iterator, i.e.
-                1 for ok and iterator now points to some table element,
+  @returndesc
+                same as that of Util_TableItQueryNonNull(ihandle)
+                after advancing the iterator, i.e.<BR>
+                1 for ok and iterator now points to some table element,<BR>
                 0 for advance-past-last-entry
-                  (sets iterator to "null-pointer" state),
+                  (sets iterator to "null-pointer" state),<BR>
                 0 if iterator was already in "null-pointer" state)
-                  (in this case this call is a no-op),
-                -ve for error, including
+                  (in this case this call is a no-op),<BR>
+                -ve for error, including<BR>
                 UTIL_ERROR_BAD_HANDLE           iterator handle is invalid
   @endreturndesc
   @@*/
@@ -2825,12 +2931,14 @@ int Util_TableItAdvance(int ihandle)
 
 /*@@
   @routine      Util_TableItResetToStart
-  @desc         This function resets a table iterator to point to the
+  @desc
+                This function resets a table iterator to point to the
                 starting entry in the table's traversal order.
 
                 Note that it is always ok to call this function, even
                 if the iterator has been invalidated by a change in the
                 table's contents.
+  @enddesc
 
   @var          ihandle
   @vtype        int
@@ -2838,12 +2946,13 @@ int Util_TableItAdvance(int ihandle)
   @endvar
 
   @returntype   int
-  @returndesc   same as that of Util_TableItQueryNonNull(ihandle)
-                after resetting the iterator, i.e.
-                1 for ok and iterator now points to some table element,
+  @returndesc
+                same as that of Util_TableItQueryNonNull(ihandle)
+                after resetting the iterator, i.e.<BR>
+                1 for ok and iterator now points to some table element,<BR>
                 0 for ok and iterator is now in "null-pointer" state
-                  (means table is empty)
-                -ve for error, including
+                  (means table is empty)<BR>
+                -ve for error, including<BR>
                 UTIL_ERROR_BAD_HANDLE           iterator handle is invalid
   @endreturndesc
   @@*/
@@ -2866,12 +2975,14 @@ int Util_TableItResetToStart(int ihandle)
 
 /*@@
   @routine      Util_TableItSetToNull
-  @desc         This function sets a table iterator to the "null-pointer"
+  @desc
+                This function sets a table iterator to the "null-pointer"
                 state.
 
                 Note that it is always ok to call this function, even
                 if the iterator has been invalidated by a change in the
                 table's contents.
+  @enddesc
 
   @var          ihandle
   @vtype        int
@@ -2879,8 +2990,9 @@ int Util_TableItResetToStart(int ihandle)
   @endvar
 
   @returntype   int
-  @returndesc   0 for ok,
-                -ve for error, including
+  @returndesc
+                0 for ok,<BR>
+                -ve for error, including<BR>
                 UTIL_ERROR_BAD_HANDLE           iterator handle is invalid
   @endreturndesc
   @@*/
@@ -2900,7 +3012,8 @@ int Util_TableItSetToNull(int ihandle)
 
 /*@@
   @routine      Util_TableItSetToKey
-  @desc         This function sets a table iterator to point to a
+  @desc
+                This function sets a table iterator to point to a
                 specified table entry.  It has the same effect as
                 Util_TableItResetToStart() followed by repeatedly
                 calling Util_TableItAdvance() until the iterator
@@ -2909,6 +3022,7 @@ int Util_TableItSetToNull(int ihandle)
                 Note that it is always ok to call this function, even
                 if the iterator has been invalidated by a change in the
                 table's contents.
+  @enddesc
 
   @var          ihandle
   @vtype        int
@@ -2921,9 +3035,10 @@ int Util_TableItSetToNull(int ihandle)
   @endvar
 
   @returntype   int
-  @returndesc   0 for ok,
-                UTIL_ERROR_BAD_HANDLE           iterator handle is invalid
-                UTIL_ERROR_TABLE_BAD_KEY        key contains '/' character
+  @returndesc
+                0 for ok,<BR>
+                UTIL_ERROR_BAD_HANDLE           iterator handle is invalid<BR>
+                UTIL_ERROR_TABLE_BAD_KEY        key contains '/' character<BR>
                 UTIL_ERROR_TABLE_NO_SUCH_KEY    no such key in table
   @endreturndesc
   @@*/
@@ -2955,7 +3070,8 @@ int Util_TableItSetToKey(int ihandle, const char *key)
 
 /*@@
   @routine      internal_set
-  @desc         This is the internal function implementing all the
+  @desc
+                This is the internal function implementing all the
                         Util_TableSet*()
                         Util_TableSet*Array()
                 functions except Util_TableSetString().  It sets the
@@ -2963,6 +3079,7 @@ int Util_TableItSetToKey(int ihandle, const char *key)
                 of a specified array.
 
                 Note that this invalidates any iterators for this table.
+  @enddesc
 
   @var          handle
   @vtype        int
@@ -2992,16 +3109,17 @@ int Util_TableItSetToKey(int ihandle, const char *key)
   @endvar
 
   @returntype   int
-  @returndesc   1 for key was already in table before this call
+  @returndesc
+                1 for key was already in table before this call
                   (old value was replaced)
                   (it doesn't matter what the old value's type_code and
                    N_elements were, i.e. these do *not* have to match the
-                   new value),
-                0 for key was not in table before this call,
-                -ve for error, including
-                UTIL_ERROR_BAD_HANDLE           handle is invalid
-                UTIL_ERROR_TABLE_BAD_KEY        key contains '/' character
-                UTIL_ERROR_BAD_INPUT            N_elements < 0
+                   new value),<BR>
+                0 for key was not in table before this call,<BR>
+                -ve for error, including<BR>
+                UTIL_ERROR_BAD_HANDLE           handle is invalid<BR>
+                UTIL_ERROR_TABLE_BAD_KEY        key contains '/' character<BR>
+                UTIL_ERROR_BAD_INPUT            N_elements < 0<BR>
                 UTIL_ERROR_NO_MEMORY            unable to allocate memory
   @endreturndesc
   @@*/
@@ -3069,12 +3187,14 @@ static
 
 /*@@
   @routine      internal_get
-  @desc         This is the internal function implementing all the
+  @desc
+                This is the internal function implementing all the
                         Util_TableGet*()
                         Util_TableGet*Array()
                 functions except for Util_TableGetString().  It copies
                 up to N_elements of the value associated with a specified
                 key, into a user-supplied buffer.
+  @enddesc
 
   @var          handle
   @vtype        int
@@ -3106,16 +3226,20 @@ static
   @endvar
 
   @returntype   int
-  @returndesc   number of elements in the value,
-                -ve for error, including
-                UTIL_ERROR_BAD_HANDLE           handle is invalid
-                UTIL_ERROR_TABLE_BAD_KEY        key contains '/' character
-                UTIL_ERROR_BAD_INPUT            N_value_buffer < 0
+  @returndesc
+                number of elements in the value,<BR>
+                -ve for error, including<BR>
+                UTIL_ERROR_BAD_HANDLE           handle is invalid<BR>
+                UTIL_ERROR_TABLE_BAD_KEY        key contains '/' character<BR>
+                UTIL_ERROR_BAD_INPUT            N_value_buffer < 0<BR>
                 UTIL_ERROR_BAD_INPUT            value_buffer != NULL
-                                                and N_value_buffer < 0
-                UTIL_ERROR_TABLE_NO_SUCH_KEY    no such key in table
+                                                and N_value_buffer < 0<BR>
+                UTIL_ERROR_TABLE_NO_SUCH_KEY    no such key in table<BR>
                 UTIL_ERROR_TABLE_WRONG_DATA_TYPE value has wrong data type
-  @comment      Note that it is *not* an error for the value to have
+  @endreturndesc
+
+  @comment
+                Note that it is *not* an error for the value to have
                 > N_value_buffer elements; in this case only N_value_buffer
                 are stored.  The caller can detect this by comparing the
                 return value with N_value_buffer.
@@ -3124,7 +3248,6 @@ static
                 caller's value buffer (pointed to by  value_buffer)
                 is unchanged.
   @endcomment
-  @endreturndesc
   @@*/
 static
   int internal_get(int handle,
@@ -3279,10 +3402,12 @@ static
 
 /*@@
   @routine      insert_table_entry
-  @desc         This is an internal function used in implementing
+  @desc
+                This is an internal function used in implementing
                 Util_TableClone() and internal_set().  It allocates
                 a new table entry and sets the fields in it to be
                 copies of the arguments.
+  @enddesc
 
   @var          thp
   @vtype        struct table_header *
@@ -3319,7 +3444,8 @@ static
   @endvar
 
   @returntype   int
-  @returndesc   0 for ok,
+  @returndesc
+                0 for ok,<BR>
                 UTIL_ERROR_NO_MEMORY            unable to allocate memory
   @endreturndesc
   @@*/
@@ -4282,7 +4408,7 @@ static
   assert( strcmp(key_buffer, "int_x") == 0 );
   assert( type_code == CCTK_VARIABLE_INT );
   assert( N_elements == 1 );
-  
+
   /* int_x */
   type_code = 123456;
   N_elements = 54321;
@@ -4621,7 +4747,7 @@ void test_clone(int handle)
 
   /* check the clone */
   check_table_contents(clone_handle, false);
-  
+
   /*
    * check that the tables are now distinct by
    * changing each of them and checking that the other is unchanged
