@@ -358,9 +358,7 @@ void FMODIFIER FORTRAN_NAME(CCTK_ParamWarn)(TWO_FORTSTRINGS_ARGS)
 
 int CCTK_Info(const char *thorn, const char *message)
 {
-  if (CCTK_MyProc(NULL)==0) {
-    fprintf(stdout, "INFO (%s): %s\n", thorn, message);
-  }
+  fprintf(stdout, "INFO (%s): %s\n", thorn, message);
  
   return 0;
 }
