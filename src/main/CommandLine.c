@@ -7,22 +7,28 @@
    @enddesc 
  @@*/
 
-/* Joan */
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "CommandLine.h"
-#include "thornlist.h"
 #include "WarnLevel.h"
+#include "CCTK_Bindings.h"
+
+/* FIXME. This shouldn't be here !*/
+#include "thornlist.h"
 
 static char *rcsid = "$Header$";
 
 /*Prototypes for some functions */
 
-char *compileTime();
-char *compileDate();
+char *compileTime(void);
+char *compileDate(void);
 int CCTK_GetCommandLine(char ***outargv);
+
+/* FIXME. This shouldn't be in this file */
+int CCTK_IsThornActive(const char *thorn) ;
+
 
 /* The functions used to deal with each option. */
 
@@ -58,12 +64,13 @@ void CCTK_CommandLineTestThornActive(const char *optarg)
 
 void CCTK_CommandLineDescribeAllParameters(void)
 {
-
+  CCTK_BindingsParameterHelp(NULL,"%s",stdout);
+  exit(1);
 }
 
 void CCTK_CommandLineDescribeParameter(const char *optarg)
 {
-  CCTK_BindingsParameterHelp(optarg,NULL,NULL);
+  CCTK_BindingsParameterHelp(optarg,"%s",stdout);
   exit(1);
 }
 
@@ -160,7 +167,30 @@ void CCTK_CommandLineVersion(void)
 
 void CCTK_CommandLineHelp(void)
 {
-  CCTK_CommandLineUsage();
+  int argc;
+  char **argv;
+
+  argc = CCTK_GetCommandLine(&argv);
+
+  printf("%s, compiled on %s at %s\n", argv[0], compileDate(), compileTime());
+  printf("Usage: %s [-h] [-O] [-o paramname] [-x [nprocs]] [-W n] [-E n] [-r] [-A] [-a name] [-v] parameter_file_name>\n", argv[0]);
+
+  printf("\n");
+  printf("Valid options:\n");
+  printf("-h, -help                           : gets this help.\n");
+  printf("-O, -describe-all-parameters        : describes all the parameters.\n");
+  printf("-o, -describe-parameter <paramname> : describe the given parameter.\n");
+  printf("-x, -test-parameters [nprocs]       : does a quick test of the parameter file\n"
+	 "                                      pretending to be on nprocs processors, \n"
+	 "                                      or 1 if not given.\n");
+  printf("-W, -warning-level <n>              : Sets the warning level to n.\n");
+  printf("-E, -error-level <n>                : Sets the error level to n.\n");
+  printf("-r, -redirect-stderr                : Redirects standard error to files.\n");
+  printf("-A, -list-active-thorns             : Lists the compiled-in thorns.\n");
+  printf("-a, -test-thorn-active <name>       : Tests for the presence of thorn <name>.\n");
+  printf("-v, -version                        : Prints the version.\n");
+
+  exit(1);
 }
 
 void CCTK_CommandLineUsage(void)
@@ -170,7 +200,7 @@ void CCTK_CommandLineUsage(void)
 
   argc = CCTK_GetCommandLine(&argv);
 
-  printf("Usage: %s <parameter_file_name>\n", argv[0]);
+  printf("Usage: %s [-h] [-O] [-o paramname] [-x [nprocs]] [-W n] [-E n] [-r] [-A] [-a name] [-v] parameter_file_name>\n", argv[0]);
   exit(1);
 }  
 
