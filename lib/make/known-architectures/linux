@@ -49,7 +49,7 @@ else
         echo We will try anyway ...
     fi
   elif test -n "$F77" ; then 
-    if test "`$F77 -v 2>&1 | grep -i g77`" ; then
+    if test "`$F77 -v 2>&1 | grep -i 'gcc version'`" ; then
         LINUX_F90_COMP=gnu77
     elif test "`$F77 -? 2>&1 | grep -i absoft`" ; then
         LINUX_F90_COMP=absoft77
