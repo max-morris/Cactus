@@ -72,7 +72,20 @@ EOT
       {
 	$name = $1;
 	$underscores = $2;
-      
+
+	# Extremely quick hack to sort out problems later on with common block
+	# names.
+
+	if($_ =~ m:_TEST_NAME:i)
+	{
+	  $symbols_preceeded_by_underscores=1;
+	}
+	else
+	{
+	  $symbols_preceeded_by_underscores=0;
+	}
+
+	# Find out suffices.
 	if($name =~ m:TEST_NAME:)
 	{
 	  print "Uppercase - ";
@@ -197,7 +210,18 @@ EOT
       $prefix = $1;
       $name = $2;
       $underscores = $3;
-      
+
+      # This is a pain.  If all symbols have underscores, need to remove
+      # the first one here.
+
+      if($symbols_preceeded_by_underscores)
+      {
+	if($prefix =~ m:^_(.*):)
+	{
+	  $prefix = $1;
+	}
+      }
+
       if($name =~ m:TEST_COMMON:)
       {
 	print "Uppercase - ";
