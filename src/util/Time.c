@@ -1,0 +1,97 @@
+ /*@@
+   @file      Time.c
+   @date      Wed Sep 17 2000
+   @author    Gabrielle Allen
+   @desc 
+   Date and time routines
+   @enddesc 
+   @version $Header$
+ @@*/
+
+/* #define DEBUG_TIME */
+
+#include <time.h>
+#include <string.h>
+
+#include "cctk_Flesh.h"
+
+static char *rcsid = "$Header$";
+
+CCTK_FILEVERSION(util_Time_c)
+
+
+/********************************************************************
+ *********************     External Routines   **********************
+ ********************************************************************/
+
+ /*@@
+   @routine    Util_CurrentTime
+   @date       Tue Sep 19
+   @author     Gabrielle Allen
+   @desc 
+   Fills string with current local time, returning the number
+   of characters filled.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+
+int Util_CurrentTime(int len, char *now)
+{
+  int retval;
+  time_t timep;
+  const char *fmt = "%X";
+
+  timep = time(NULL);
+  strftime(now, len, fmt, localtime(&timep));
+
+  retval = strlen(now);
+  retval=retval > len ? 0 : retval;
+
+#ifdef DEBUG_TIME
+  printf("CurrentTime = %s\n",now);
+#endif
+
+  return retval;
+}
+
+
+ /*@@
+   @routine    Util_CurrentDate
+   @date       Tue Sep 19
+   @author     Gabrielle Allen
+   @desc 
+   Fills string with current local date, returning the number of
+   characters filled.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+
+int Util_CurrentDate(int len, char *now)
+{
+  int retval;
+  time_t timep;
+  const char *fmt = "%a %d %b %Y";
+
+  timep = time(NULL);
+  strftime(now, 50, fmt, localtime(&timep));
+
+  retval = strlen(now);
+  retval=retval > len ? 0 : retval;
+
+#ifdef DEBUG_TIME
+  printf("CurrentDate = %s\n",thedate);
+#endif
+
+  return retval;
+}
+
