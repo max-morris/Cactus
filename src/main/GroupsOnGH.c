@@ -328,7 +328,7 @@ void *CCTK_VarDataPtrI(const cGH *GH, int timelevel, int vindex)
   else
   {
     CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
-               "CCTK_VarPtrDataI: Invalid index %d given", vindex);
+               "CCTK_VarDataPtrI: Invalid index %d given", vindex);
   }
 
   return retval;
