@@ -683,6 +683,15 @@ int timelevels = CCTK_ActiveTimeLevels(const cGH *cctkGH,
                                 const char *groupname);
 \end{verbatim}
 \end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}
+call CCTK_ActiveTimeLevels(timelevels, cctkGH, groupname)
+
+integer       timelevels
+CCTK_POINTER  cctkGH
+character*(*) groupname
+\end{verbatim}
+\end{Synopsis}
 \end{SynopsisSection}
 
 \begin{ResultSection}
