@@ -104,7 +104,7 @@ int CCTK_GroupIndex(const char *fullgroupname)
       char *message;
       message = (char *)malloc( (100+strlen(fullgroupname))*sizeof(char) ); 
       sprintf(message,"No group found with the name %s",fullgroupname);
-      CCTK_WARN(2,message);
+      CCTK_WARN(6,message);
       if (message) free(message);
       retval = -1;
     }
