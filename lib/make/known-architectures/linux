@@ -248,7 +248,8 @@ else
     case "$host_cpu" in
       i?86)
         ENDIAN=little
-        SIZEOF_LONG_INT=8
+        SIZEOF_LONG_LONG=8
+        SIZEOF_LONG_INT=4
         SIZEOF_INT=4
         SIZEOF_SHORT_INT=2
 
@@ -260,6 +261,7 @@ else
       ;;
       ia64)
         ENDIAN=little
+        SIZEOF_LONG_LONG=8
         SIZEOF_LONG_INT=8
         SIZEOF_INT=4
         SIZEOF_SHORT_INT=2

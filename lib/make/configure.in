@@ -20,7 +20,7 @@ AC_INIT()
 AC_CONFIG_HEADER(cctk_Config.h)
 
 dnl Check the system type
-AC_CANONICAL_SYSTEM
+AC_CANONICAL_HOST
 
 # See if there are any preferred compilers for this system
 
@@ -245,6 +245,14 @@ AC_C_CONST
 AC_C_INLINE
 
 # Check for sizes of integer types
+
+if test "x$cross_compiling" = "xyes"; then
+  if test -z "$SIZEOF_LONG_LONG" ; then
+    AC_MSG_ERROR(Cross-compiling - no value set for sizeof(long long) please set SIZEOF_LONG_LONG)
+  fi
+fi
+
+AC_CHECK_SIZEOF(long long, $SIZEOF_LONG_LONG)
 
 if test "x$cross_compiling" = "xyes"; then
   if test -z "$SIZEOF_LONG_INT" ; then
@@ -490,6 +498,15 @@ AC_SUBST(EXE)
 : ${EXE=cactus-unknown}
 
 # Integer types
+
+case "x$ac_cv_sizeof_long_long" in
+    "x8")
+      CCTK_INT8="long long" ;;
+    "x4")
+      CCTK_INT4="long long" ;;
+    "x2")
+      CCTK_INT2="long long" ;;
+esac
 
 case "x$ac_cv_sizeof_long_int" in
     "x8")
