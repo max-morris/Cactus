@@ -42,7 +42,9 @@ CCTK_FILEVERSION(util_File_c)
 
 #endif /* HAVE_MODE_T */
 
-int CCTK_MkDirs(const char *pathname, int mode);
+int CCTK_CreateDirectory(const char *pathname, int mode);
+
+/* DEPRECATED IN BETA 9 */
 
  /*@@
    @routine   CCTK_mkdir
@@ -110,21 +112,23 @@ int CCTK_mkdir(const char *dir)
   retval = 0;
 #endif
 
-  retval = CCTK_MkDirs(dir, 0755);
+  retval = CCTK_CreateDirectory(dir, 0755);
 
   return retval;
 
 }
 
-void FMODIFIER FORTRAN_NAME(CCTK_mkdir)(int *ierr, ONE_FORTSTRING_ARG)
+void CCTK_FCALL CCTK_FNAME(CCTK_mkdir)
+     (int *ierr, ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_CREATE(arg1)
   *ierr = CCTK_mkdir(arg1);
   free(arg1); 
 }
+/* END DEPRECATED IN BETA 9 */
 
  /*@@
-   @routine    CCTK_MkDirs
+   @routine    CCTK_CreateDirectory
    @date       Tue May  2 21:38:48 2000
    @author     Tom Goodale
    @desc 
@@ -137,7 +141,7 @@ void FMODIFIER FORTRAN_NAME(CCTK_mkdir)(int *ierr, ONE_FORTSTRING_ARG)
    @endhistory 
 
 @@*/
-int CCTK_MkDirs(const char *pathname, int mode)
+int CCTK_CreateDirectory(const char *pathname, int mode)
 {
   int retval;
   const char *path;
@@ -234,4 +238,13 @@ int CCTK_MkDirs(const char *pathname, int mode)
 
   return retval;
 
+}
+
+void CCTK_FCALL CCTK_FNAME(CCTK_CreateDirectory)
+     (int *ierr, TWO_FORTSTRINGS_ARGS)
+{
+  TWO_FORTSTRINGS_CREATE(arg1,arg2)
+  *ierr = CCTK_CreateDirectory(arg1,arg2);
+  free(arg1); 
+  free(arg2);
 }

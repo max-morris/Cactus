@@ -102,7 +102,8 @@ int CCTK_Equals(const char *string1, const char *string2)
   return retval;
 }
 
-int FMODIFIER FORTRAN_NAME(CCTK_Equals)(const char **arg1,ONE_FORTSTRING_ARG)
+int CCTK_FCALL CCTK_FNAME(CCTK_Equals)
+     (const char **arg1,ONE_FORTSTRING_ARG)
 {
   int retval;
   ONE_FORTSTRING_CREATE(arg2)
@@ -821,7 +822,8 @@ void CCTK_PrintString(char *data)
   printf("%s\n",data);
 }
 
-void FMODIFIER FORTRAN_NAME(CCTK_PrintString)(char **arg1)
+void CCTK_FCALL CCTK_FNAME(CCTK_PrintString)
+     (char **arg1)
 {
   CCTK_PrintString(*arg1);
 }
@@ -915,9 +917,8 @@ int CCTK_RegexMatch(const char *string,
 @@*/
  
  
-void FORTRAN_NAME(CCTK_FortranString)(CCTK_INT *nchar, 
-                                      char **cstring, 
-                                      ONE_FORTSTRING_ARG)
+void CCTK_FCALL CCTK_FNAME(CCTK_FortranString)
+     (CCTK_INT *nchar,char **cstring,ONE_FORTSTRING_ARG)
 {
   int i;
   ONE_FORTSTRING_CREATE(fstring)
