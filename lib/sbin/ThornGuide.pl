@@ -333,7 +333,7 @@ sub Read_Thorn_Doc
    while (<DOC>)                            # loop through thorn doc.
    {
       if (/\\title\{(.*?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?.*?)\}/) { $title = $1; if ($title !~ /\w/)  {$start = 0; last;}}
-      if (/\\author\{(.*?)\}/) { $author = $1; }
+      if (/\\author\{(.*?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?.*?)\}/) { $author = $1; }
       if (/\\date\{(.*?)\}/) { $date = $1; $date =~ s/.*Date:(.*?)\$\s*?\$/$1/; }
       if (/\\begin\{thebibliography/) {
          my $line;
@@ -463,7 +463,6 @@ sub Start_Arr
 print OUT <<EOC;
 
 \\begin{cactuspart}{$partnum}{$arr}{}{}
-\\renewcommand{\\thepage}{\\arabic{part}:\\arabic{page}}
 EOC
 }  
 
@@ -509,25 +508,37 @@ sub Output_Top
 print OUT  <<EOC;
 \\documentclass{report}
 
+\\usepackage[
+pdftitle={Cactus Thorn Guide},
+pdfpagelabels,
+pdfstartview=FitV,
+hypertexnames=false,
+plainpages=false,
+colorlinks=true,
+linkcolor=blue,
+citecolor=blue,
+urlcolor=blue
+]{hyperref}
+
 \\usepackage{$cactus_style_file}
 
 \\usepackage{minitoc}
 
 
-\% mini  table of contents stuff
+\% mini table of contents stuff
 \\setlength{\\mtcindent}{24pt}
 \\renewcommand{\\mtcfont}{\\small\\rm}
 \\setcounter{minitocdepth}{2}
 
+\\usepackage{tocloft}
+\\addtolength{\\cftchapnumwidth}{1.0em}
+\\addtolength{\\cftsecnumwidth}{1.0em}
+\\addtolength{\\cftsubsecnumwidth}{1.0em}
+\\addtolength{\\cftsubsubsecnumwidth}{1.0em}
+
 \\makeatletter
 \\\@addtoreset{chapter}{part}
 \\makeatother
-
-\\usepackage{tocloft}
-\\addtolength{\\cftchapnumwidth}{1.5em}
-\\addtolength{\\cftsecnumwidth}{1.5em}
-\\addtolength{\\cftsubsecnumwidth}{1.5em}
-\\addtolength{\\cftsubsubsecnumwidth}{1.5em}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -545,12 +556,10 @@ print OUT  <<EOC;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\\renewcommand{\\thepart}{\\arabic{part}}
-\\renewcommand{\\thechapter}{\\arabic{part}:\\arabic{chapter}}
-\\renewcommand{\\thepage}{\\arabic{part}:\\arabic{page}}
+\\renewcommand{\\thepart}{\\BigAlph{part}}
+\\renewcommand{\\thechapter}{\\BigAlph{part}\\arabic{chapter}}
+\\renewcommand{\\thepage}{\\BigAlph{part}\\arabic{page}}
 \\pagestyle{fancy}
-\\parskip = 10pt
-\\parindent = 0pt
 
 \\newlength{\\tableWidth}
 \\newlength{\\maxVarWidth}
