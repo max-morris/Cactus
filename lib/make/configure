@@ -4469,6 +4469,12 @@ fi
 
 : ${CXX_WORKING_NAME='$(notdir $<)'}
 
+# What is the suffix for freeformat f90 names (some compilers are very picky).
+
+
+
+: ${F90_SUFFIX='f90'}
+
 # How to get the current working directory when in the shell
 
 : ${GET_WD="pwd"}
@@ -4708,6 +4714,7 @@ s%@F77_POSTPROCESSING@%$F77_POSTPROCESSING%g
 s%@F_POSTPROCESSING@%$F_POSTPROCESSING%g
 s%@F90_POSTPROCESSING@%$F90_POSTPROCESSING%g
 s%@CXX_WORKING_NAME@%$CXX_WORKING_NAME%g
+s%@F90_SUFFIX@%$F90_SUFFIX%g
 s%@GET_WD@%$GET_WD%g
 s%@SYS_INC_DIRS@%$SYS_INC_DIRS%g
 s%@GENERAL_LIBRARIES@%$GENERAL_LIBRARIES%g
