@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.121 2001-09-17 17:55:54 allen Exp $
+#   @version $Id: Makefile,v 1.122 2001-09-17 18:04:25 allen Exp $
 # @@*/
 
 ##################################################################################
@@ -230,6 +230,7 @@ $(CONFIGURATIONS):
 	if test "x${MAKELEVEL}" = "x0" ; then \
 	  echo $(DIVIDER);\
 	  echo "Cactus - version: $(CCTK_VERSION)"; \
+	  echo "Building configuration $@"; \
 	fi; \
 	cd $(CONFIGS_DIR)/$@ 
 	$(MAKE) -f $(CCTK_HOME)/lib/make/make.configuration TOP=$(CONFIGS_DIR)/$@ CCTK_HOME=$(CCTK_HOME) $(TPARFLAGS)
@@ -530,7 +531,7 @@ ifneq ($strip($(CONFIGURATIONS)),)
 .PHONY: $(addsuffix -rebuild,$(CONFIGURATIONS))
 
 $(addsuffix -rebuild,$(CONFIGURATIONS)): int_version
-	@echo Rebuilding $(@:%-rebuild=%)
+	@echo Rebuilding configuration $(@:%-rebuild=%)
 	if [ -r $(CONFIGS_DIR)/$(@:%-rebuild=%)/config-data/make.thornlist ] ; then rm  $(CONFIGS_DIR)/$(@:%-rebuild=%)/config-data/make.thornlist ; fi
 	$(MAKE) $(@:%-rebuild=%)
 endif
