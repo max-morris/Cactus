@@ -22,14 +22,12 @@ export SCRATCH_BUILD=$(TOP)/scratch
 
 DATESTAMP = $(CCTK_HOME)/src/datestamp.c
 
+export MAKE_DIR  = $(CCTK_HOME)/lib/make
+
 FLESHLIB = Cactus
 BINDINGSLIB= CactusBindings
 
 CACTUSLIBS = $(FLESHLIB) $(BINDINGSLIB)
-
-export MAKE_DIR  = $(CCTK_HOME)/lib/make
-
-ALLCACTUSLIBS = $(notdir $(CACTUSLIBS) $(THORNS) $(THORNS) $(CACTUSLIBS))
 
 # Dividers to make the screen output slightly nicer
 DIVEL   =  __________________
@@ -73,6 +71,14 @@ override UTILS = $(ALL_UTILS)
 endif
 
 UTIL_DIR=$(EXEDIR)$(DIRSEP)$(CONFIG_NAME)
+
+# REMOVE IN BETA 12
+ifeq ($(strip $(THORN_LINKLIST)),)
+THORN_LINKLIST = $(THORNS) $(THORNS)
+endif
+
+# Build the list of all libraries
+ALLCACTUSLIBS = $(notdir $(CACTUSLIBS) $(THORN_LINKLIST) $(CACTUSLIBS))
 
 
 # Use a phony main target to make sure we print a nice ending message 8-)
