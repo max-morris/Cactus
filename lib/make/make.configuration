@@ -150,7 +150,6 @@ $(CONFIG)/make.thornlist: $(TOP)/ThornList $(foreach lib, $(CCTK_HOME)/src $(THO
 # Rule to build ThornList
 
 $(TOP)/ThornList:
-	@echo $(DIVIDER)
 	@echo Creating compiled ThornList containing all thorns in the arrangements directory
 	$(PERL) -s $(BUILD_ACTIVETHORNS) $(CCTK_HOME)/arrangements > $@
 	if test "x$(PROMPT)" = "xyes" ; then \
@@ -192,7 +191,6 @@ $(foreach lib, $(CCTK_HOME)/src $(THORNS:%=$(PACKAGE_DIR)/%), $(lib)/param.ccl $
 update:
 
 editthorns:
-	@echo $(DIVIDER)
 	if test ! -r $(TOP)/ThornList ; then \
 	echo "Creating compiled ThornList containing all thorns in the arrangements directory" \
 	$(PERL) -s $(BUILD_ACTIVETHORNS) $(CCTK_HOME)/arrangements > $@ ; fi
