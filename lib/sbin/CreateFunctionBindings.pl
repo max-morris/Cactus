@@ -349,7 +349,11 @@ sub FunctionDatabase
       ($warnings,$nstrings,$nstringptrs,@arglist)=&ParseArgumentsList($Arguments, $thorn, $FunctionName);
       $Function->{"Strings"} = $nstrings;
       $Function->{"String pointers"} = $nstringptrs;
-      $ReturnType = uc $interface_db->{"\U${thorn} FUNCTION\E $FunctionName RET"};
+
+      # turn all return types except 'void' into upper-case as defined by CCTK
+      $ReturnType = $interface_db->{"\U${thorn} FUNCTION\E $FunctionName RET"};
+      $ReturnType = uc $ReturnType if ($ReturnType ne 'void ');
+
       $FunctionName =~ /([a-zA-Z][a-zA-Z0-9_]*)/;
       $Function->{"Name"}=$1;
       if ($warnings)
