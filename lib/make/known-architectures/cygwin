@@ -23,8 +23,7 @@ if test "$CCTK_CONFIG_STAGE" = "preferred-compilers" ; then
   fi
 
   if test -z "$LD"; then
-    echo Setting linker to f90
-    LD="f90"
+    LD='$(CC)'
   fi
 
 else
@@ -39,14 +38,37 @@ else
     CXXFLAGS="/nologo /Oxy- /Gd"
   fi
 
-  if test -z "$F90FLAGS" ; then 
-    F90FLAGS="/fast /iface:cref"
+  CREATEEXE="/Fe"
+  CCOMPILEONLY="/c /Fo"
+
+# Determine which Fortran 90 compiler is in use
+  CYGWIN_F90_COMP=
+
+  if test -n "$F90" ; then 
+    if test "`$F90 | grep -i digital`" ; then 
+        CYGWIN_F90_COMP=digital
+    else
+        echo Unknown Windows f90 compiler.
+        echo Please add appropriate information to 
+        echo $srcdir/known-architectures/cygwin
+        echo and send the updated file to CactusMaint
+        echo We will try anyway ...
+       CYGWIN_F90_COMP=none
+    fi
+  else
+    CYGWIN_F90_COMP=none
   fi
 
-  CCOMPILEONLY="/c /Fo"
-  FCOMPILEONLY="/compile_only /object:"
-
-  CREATEEXE="-exe:"
+  case "$CYGWIN_F90_COMP" in
+     digital)
+     : ${F90_LIBS="dfconsol dfport"} 
+     : ${FCOMPILEONLY="/compile_only /object:"}
+     : ${F90FLAGS="/fast /iface:cref"}
+     ;;
+     *)
+     :
+     ;;
+  esac
 
   SYS_INC_DIRS="/PROGRA~/MICROS~1/VC98/INCLUDE"
 
@@ -55,7 +77,7 @@ else
   OPTIONSEP="# not even a single a single space under cygwin"
 
 # Convert //a to a: 
-  GET_WD="pwd | sed 's,^//\(.\)/,\1:/,' | sed 's,/,\\\\\\,g' "
+  GET_WD="pwd | sed 's,^/cygdrive/\(.\)/,\1:/,' | sed 's,^//\(.\)/,\1:/,' | sed 's,/,\\\\\\,g' "
 
   C_DEPEND='$(CPP) -E -MM -nostdinc $(CPPFLAGS) '
 
@@ -70,7 +92,7 @@ else
 
   GENERAL_LIBRARIES='$(LIBDIRS:%=/link /libpath:$(subst /,$(DIRSEP),%)) $(LIBS:%=%.lib)' 
 
-  : $(LIBS="wsock32")
+  : $(LIBS="$F90_LIBS wsock32")
 
 # The Windows file system requires perl backup files to be made when
 # doing inplace editing
