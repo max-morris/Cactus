@@ -74,7 +74,7 @@ sub create_schedule_code
 
    # The footer for the thorn RFR routine
    print OUTRFR "  }\n}\n";
-   print OUTSTART "  }\n}\n";
+   print OUTSTART " }\n}\n";
 
    close OUTRFR;
    close OUTSTART;
@@ -142,6 +142,7 @@ sub write_startup_header {
   print OUTSTART "#include <stdio.h>\n";
   print OUTSTART "#include \"cctk.h\"\n";
   print OUTSTART "#include \"cctk_Flesh.h\"\n";
+  print OUTSTART "#include \"cctk_WarnLevel.h\"\n";
   print OUTSTART "/* FIXME - remove when ActiveThorns does not need this */\n";
   print OUTSTART "#include \"SKBinTree.h\"\n\n";
   print OUTSTART "#include \"cctk_ActiveThorns.h\"\n";
@@ -354,16 +355,15 @@ sub parse_schedule_ccl
     }
 
     # Parse the non-schedule communication line
-    elsif ($line =~ m/\s*COMMUNICATION\s*:\s*(.*)/i)
+    elsif ($line =~ m/\s*COMM(UNICATION)?\s*:\s*(.*)/i)
     {
       if ($type eq "rfr")
       {
-        @list = split(",",$1);
+        @list = split(",",$2);
         foreach $group (@list) 
         {
 	  # Strip of any spaces 
-	  $group =~ /^\s*(.*)\s*$/;
-	  $group = $1;
+	  $group =~ s/ //g;
 
 	  $this_imp = $implementation;
 	  $this_group = $group;
@@ -553,8 +553,7 @@ sub parse_schedule_at_RFR {
       {
 
 	# Strip of any spaces 
-	$group =~ /^\s*(.*)\s*$/;
-	$group = $1;
+	$group =~ s/ //g;
 
 	# Take of implementation if it is there
 	$this_imp = $implementation;
@@ -588,15 +587,14 @@ sub parse_schedule_at_RFR {
   for ($i=0; $i<@block; $i++) 
   {
     $line = @block[$i];
-    if ($line =~ m/\s*COMMUNICATION\s*:\s*(.*)\s*/i)
+    if ($line =~ m/\s*COMM(UNICATION)?\s*:\s*(.*)\s*/i)
     {
-      @list = split(",",$1);
+      @list = split(",",$2);
       foreach $group (@list) 
       {
 
 	# Strip of any spaces 
-	$group =~ /^\s*(.*)\s*$/;
-	$group = $1;
+	$group =~  s/ //g;
 
 	# Take of implementation if it is there
 	$this_imp = $implementation;
@@ -630,14 +628,13 @@ sub parse_schedule_at_RFR {
   for ($i=0; $i<@block; $i++) 
   {
     $line = @block[$i];
-    if ($line =~ m/\s*TRIGGERS\s*:\s*(.*)\s*/i)
+    if ($line =~ m/\s*TRIGGER(S)?\s*:\s*(.*)\s*/i)
     {
-      @list = split(",",$1);
+      @list = split(",",$2);
       foreach $var (@list) 
       {
 	# Strip of any spaces 
-	$var =~ /^\s*(.*)\s*$/;
-	$var = $1;
+	$var =~ s/ //g;
 
 	# Take of implementation if it is there
 	$this_imp = $implementation;
