@@ -86,13 +86,22 @@ void CCTKi_CommandLineDescribeParameter(const char *optarg)
  
   Util_SplitString(&thorn, &param, optarg, "::");
 
-  ParameterPrintDescription(param,
-			    thorn, /*const char *thorn,*/
-                            "..%s..%s\n",/*  const char *format,*/
-                            stdout);
-
+  if(!param)
+  {
+    ParameterPrintDescription(optarg,
+                              NULL, /*const char *thorn,*/
+                              "..%s..%s\n",/*  const char *format,*/
+                              stdout);
+  }
+  else
+  {
+    ParameterPrintDescription(param,
+                              thorn, /*const char *thorn,*/
+                              "..%s..%s\n",/*  const char *format,*/
+                              stdout);
   free(thorn);
   free(param);
+  }
 
   exit(1);
 }
