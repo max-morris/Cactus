@@ -85,7 +85,8 @@ sub cross_index_interface_data
     if($implementation =~ m:^\s*$:)
     {
       $message = "Thorn $thorn doesn't specify an implementation";
-      &CST_error(0,$message,"",__LINE__,__FILE__);
+      $hint = "All compiled thorns must specify an implementation in their interface.ccl file with the format IMPLEMENTS: <implementation>";
+      &CST_error(0,$message,$hint,__LINE__,__FILE__);
       next;
     }
 
@@ -391,8 +392,8 @@ sub check_implementation_consistency
     {
       if(split(" ", $inherits{$thing}) != $n_thorns)
       {
-	$message  = "Inconsistent implementations of $implementation. \n";
-	$message .= "Implemented by thorns " . join(" ", @thorns) . "\n";
+	$message  = "Inconsistent implementations of $implementation. ";
+	$message .= "Implemented by thorns " . join(" ", @thorns);
 	$message .= "Not all inherit: $thing";
 	&CST_error(0,$message,"",__LINE__,__FILE__);
 	$n_errors++;
@@ -465,10 +466,11 @@ sub check_implementation_consistency
 	{
 	  if($attributes{"VTYPE"} ne $interface_data{"\U$thorn GROUP $group\E VTYPE"})
 	  {
-	    $message  = "Inconsistent implementations of $implementation\n";
-	    $message .= "Implemented by thorns " . join(" ", @thorns) . "\n";
-	    $message .= "Group $group has inconsistent variable type";
-	    &CST_error(0,$message,"",__LINE__,__FILE__);
+	    $message  = "Inconsistent implementations of $implementation";
+	    $message .= " in thorns " . join(" ", @thorns) . ". ";
+	    $message .= "Group $group has inconsistent variable type ($attributes{\"VTYPE\"} and $interface_data{\"\\U$thorn GROUP $group\\E VTYPE\"}). ";
+     	    $hint = "All public and protected groups implementing $implementation must have groups with consistent properties";
+	    &CST_error(0,$message,$hint,__LINE__,__FILE__);
 	    $n_errors++;
 	  }
 	}
@@ -482,10 +484,11 @@ sub check_implementation_consistency
 	{
 	  if($attributes{"GTYPE"} ne $interface_data{"\U$thorn GROUP $group\E GTYPE"})
 	  {
-	    $message  = "Inconsistent implementations of $implementation\n";
-	    $message .= "Implemented by thorns " . join(" ", @thorns) . "\n";
-	    $message .= "Group $group has inconsistent group type";
-	    &CST_error(0,$message,"",__LINE__,__FILE__);
+	    $message  = "Inconsistent implementations of $implementation";
+	    $message .= " in thorns " . join(" ", @thorns) . ". ";
+	    $message .= "Group $group has inconsistent group type ($attributes{\"GTYPE\"} and $interface_data{\"\U$thorn GROUP $group\E GTYPE\"}). ";
+     	    $hint = "All public and protected groups implementing $implementation must have groups with consistent properties";
+	    &CST_error(0,$message,$hint,__LINE__,__FILE__);
 	    $n_errors++;
 	  }
 	}
@@ -706,17 +709,27 @@ sub parse_interface_ccl
       #           It's a new block.
       $block = "\U$1\E";
     } 
-    elsif ($line =~ m/^\s*IMPLEMENTS\s*:\s*([a-z]+[a-z_0-9]*)\s*$/i)
+    elsif ($line =~ m/^\s*IMPLEMENTS\s*:/i)
     {
-      if(!$implementation)
+      if ($line =~ m/^\s*IMPLEMENTS\s*:\s*([a-z]+[a-z_0-9]*)\s*$/i)
       {
-	$implementation = $1;
-	$interface_db{"\U$thorn\E IMPLEMENTS"} = $implementation;
+	if(!$implementation)
+        {
+	  $implementation = $1;
+	  $interface_db{"\U$thorn\E IMPLEMENTS"} = $implementation;
+	}
+	else
+	{
+	  $message = "Multiple implementations specified in $thorn";
+	  $hint = "A thorn can only specify one implementation in it's interface.ccl file, with the format implements:<implementation>";
+	  &CST_error(0,$message,$hint,__LINE__,__FILE__);
+	}
       }
       else
       {
-	  $message = "Only one implements line allowed in $thorn";
-	  &CST_error(0,$message,"",__LINE__,__FILE__);
+	$message = "Implementation line has wrong format in $thorn";
+	$hint = "A thorn must specify one implementation in it's interface.ccl file with the format IMPLEMENTS: <implementation>";
+	&CST_error(0,$message,$hint,__LINE__,__FILE__);
       }
     }
     # implementation names can be sepeated by ,\s, where , are stripped out below
@@ -889,12 +902,13 @@ sub parse_interface_ccl
       }
       
       # Check that it is a known group type
-      if($interface_db{"\U$thorn GROUP $current_group\E GTYPE"} !~ m:SCALAR|GF|ARRAY:)
+      if($interface_db{"\U$thorn GROUP $current_group\E GTYPE"} !~ m:^\s*(SCALAR|GF|ARRAY)\s*$:)
       {
 	  $message =  "Unknown GROUP TYPE " .
 	  $interface_db{"\U$thorn GROUP $current_group\E GTYPE"} .
 	    " for group $current_group of thorn $thorn";
-	  &CST_error(0,$message,"",__LINE__,__FILE__);
+	  $hint = "Allowed group types are SCALAR, GF or ARRAY";
+	  &CST_error(0,$message,$hint,__LINE__,__FILE__);
 	  if($data[$line_number+1] =~ m:\{:)
 	  {
 	      $message = "Skipping interface block in $thorn";
@@ -910,6 +924,7 @@ sub parse_interface_ccl
 	  $message =  "Unknown DISTRIB TYPE " .
 	  $interface_db{"\U$thorn GROUP $current_group\E DISTRIB"} .
 	    " for group $current_group of thorn $thorn";
+	  $hint = "Allowed distribution types are DEFAULT or CONSTANT";
 	  &CST_error(0,$message,"",__LINE__,__FILE__);
 	  if($data[$line_number+1] =~ m:\{:)
 	  {
