@@ -773,7 +773,11 @@ int CCTK_VarTypeNumber (const char *type)
   int retval;
 
 
-  if (! strcmp (type, "INT"))
+  if (! strcmp (type, "BYTE"))
+  {
+    retval = CCTK_VARIABLE_BYTE;
+  }
+  else if (! strcmp (type, "INT"))
   {
     retval = CCTK_VARIABLE_INT;
   }
@@ -825,15 +829,6 @@ int CCTK_VarTypeNumber (const char *type)
   {
     retval = CCTK_VARIABLE_COMPLEX32;
   }
-  else if (! strcmp (type, "BYTE"))
-  {
-    retval = CCTK_VARIABLE_BYTE;
-  }
-  /* UNDER CONSIDERATION WHETHER OR NOT TO DEPRECATE CHAR */
-  else if (! strcmp (type, "CHAR"))
-  {
-    retval = CCTK_VARIABLE_CHAR;
-  }
   else
   {
     retval = -1;
@@ -872,6 +867,10 @@ const char *CCTK_VarTypeName (int vtype)
 
   switch (vtype)
   {
+    case CCTK_VARIABLE_BYTE:
+      retval = "CCTK_VARIABLE_BYTE";
+      break;
+
     case CCTK_VARIABLE_INT:
       retval = "CCTK_VARIABLE_INT";
       break;
@@ -920,19 +919,20 @@ const char *CCTK_VarTypeName (int vtype)
       retval = "CCTK_VARIABLE_COMPLEX32";
       break;
 
-    case CCTK_VARIABLE_BYTE:
-      retval = "CCTK_VARIABLE_BYTE";
-      break;
-
-#if 0
-    /* UNDER CONSIDERATION WHETHER OR NOT TO DEPRECATE CHAR */
     case CCTK_VARIABLE_CHAR:
       retval = "CCTK_VARIABLE_CHAR";
       break;
-#endif
 
     case CCTK_VARIABLE_STRING:
       retval = "CCTK_VARIABLE_STRING";
+      break;
+
+    case CCTK_VARIABLE_POINTER:
+      retval = "CCTK_VARIABLE_POINTER";
+      break;
+
+    case CCTK_VARIABLE_FPOINTER:
+      retval = "CCTK_VARIABLE_FPOINTER";
       break;
 
     default:
@@ -1869,14 +1869,6 @@ int CCTK_VarTypeSize (int vtype)
       var_size = sizeof (CCTK_BYTE);
       break;
 
-    case CCTK_VARIABLE_POINTER:
-      var_size = sizeof (CCTK_POINTER);
-      break;
-
-    case CCTK_VARIABLE_FPOINTER:
-      var_size = sizeof (CCTK_FPOINTER);
-      break;
-
     case CCTK_VARIABLE_INT:
       var_size = sizeof (CCTK_INT);
       break;
@@ -1942,6 +1934,18 @@ int CCTK_VarTypeSize (int vtype)
       var_size = sizeof (CCTK_COMPLEX32);
       break;
 #endif
+
+    case CCTK_VARIABLE_CHAR:
+      var_size = sizeof (CCTK_CHAR);
+      break;
+
+    case CCTK_VARIABLE_POINTER:
+      var_size = sizeof (CCTK_POINTER);
+      break;
+
+    case CCTK_VARIABLE_FPOINTER:
+      var_size = sizeof (CCTK_FPOINTER);
+      break;
 
     default:
       CCTK_VWarn (4, __LINE__, __FILE__, "Cactus",

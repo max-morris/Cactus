@@ -182,6 +182,7 @@ int Util_TableSetFnPointer(int handle, CCTK_FPOINTER value, const char *key);
 int Util_TableSetChar(int handle, CCTK_CHAR value, const char *key);
 
 /* integers */
+int Util_TableSetByte(int handle, CCTK_BYTE value, const char *key);
 int Util_TableSetInt(int handle, CCTK_INT value, const char *key);
 #ifdef HAVE_CCTK_INT1
 int Util_TableSetInt1(int handle, CCTK_INT1 value, const char *key);
@@ -244,6 +245,9 @@ int Util_TableSetCharArray(int handle,
                            const char *key);
 
 /* arrays of integers */
+int Util_TableSetByteArray(int handle,
+                           int N_elements, const CCTK_BYTE array[],
+                           const char *key);
 int Util_TableSetIntArray(int handle,
                           int N_elements, const CCTK_INT array[],
                           const char *key);
@@ -327,6 +331,7 @@ int Util_TableGetFnPointer(int handle, CCTK_FPOINTER *value, const char *key);
 int Util_TableGetChar(int handle, CCTK_CHAR *value, const char *key);
 
 /* integers */
+int Util_TableGetByte(int handle, CCTK_BYTE *value, const char *key);
 int Util_TableGetInt(int handle, CCTK_INT *value, const char *key);
 #ifdef HAVE_CCTK_INT1
 int Util_TableGetInt1(int handle, CCTK_INT1 *value, const char *key);
@@ -389,6 +394,9 @@ int Util_TableGetCharArray(int handle,
                            const char *key);
 
 /* integers */
+int Util_TableGetByteArray(int handle,
+                           int N_elements, CCTK_BYTE array[],
+                           const char *key);
 int Util_TableGetIntArray(int handle,
                           int N_elements, CCTK_INT array[],
                           const char *key);

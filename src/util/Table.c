@@ -2033,6 +2033,7 @@ void CCTK_FCALL CCTK_FNAME(Util_TableGetGenericArray)
   @vtype        one of
                    CCTK_POINTER, CCTK_FPOINTER,
                    CCTK_CHAR,
+                   CCTK_BYTE,
                    CCTK_INT, CCTK_INT1, CCTK_INT2, CCTK_INT4, CCTK_INT8,
                    CCTK_REAL, CCTK_REAL4, CCTK_REAL8, CCTK_REAL16,
                    CCTK_COMPLEX, CCTK_COMPLEX8, CCTK_COMPLEX16, CCTK_COMPLEX32
@@ -2152,6 +2153,27 @@ int Util_TableSetChar(int handle, CCTK_CHAR value, const char *key)
 /*
  * integers
  */
+
+int Util_TableSetByte(int handle, CCTK_BYTE value, const char *key)
+{
+  return Util_TableSetByteArray(handle, 1, &value, key);
+}
+
+#ifdef UTIL_TABLE_FORTRAN_WRAPPERS
+void CCTK_FCALL CCTK_FNAME(Util_TableSetByte)
+                          (int *retval, const int *handle,
+                           const CCTK_BYTE *value, ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME(Util_TableSetByte)
+                          (int *retval, const int *handle,
+                           const CCTK_BYTE *value, ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE(key)
+  *retval = Util_TableSetByte(*handle, *value, key);
+  free(key);
+}
+#endif	/* UTIL_TABLE_FORTRAN_WRAPPERS */
+
+/**************************************/
 
 int Util_TableSetInt(int handle, CCTK_INT value, const char *key)
 {
@@ -2478,6 +2500,7 @@ void CCTK_FCALL CCTK_FNAME(Util_TableSetComplex32)
   @vtype        const T[], where T is one of
                    CCTK_POINTER, CCTK_FPOINTER,
                    CCTK_CHAR,
+                   CCTK_BYTE,
                    CCTK_INT, CCTK_INT1, CCTK_INT2, CCTK_INT4, CCTK_INT8,
                    CCTK_REAL, CCTK_REAL4, CCTK_REAL8, CCTK_REAL16,
                    CCTK_COMPLEX, CCTK_COMPLEX8, CCTK_COMPLEX16, CCTK_COMPLEX32
@@ -2634,6 +2657,33 @@ void CCTK_FCALL CCTK_FNAME(Util_TableSetCharArray)
 /*
  * arrays of integers
  */
+
+int Util_TableSetByteArray(int handle,
+                           int N_elements, const CCTK_BYTE array[],
+                           const char *key)
+{
+  return internal_set(handle,
+                      CCTK_VARIABLE_BYTE, N_elements, (const void *) array,
+                      key);
+}
+
+#ifdef UTIL_TABLE_FORTRAN_WRAPPERS
+void CCTK_FCALL CCTK_FNAME(Util_TableSetByteArray)
+                          (int *retval, const int *handle,
+                           const int *N_elements,
+                           const CCTK_BYTE array[], ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME(Util_TableSetByteArray)
+                          (int *retval, const int *handle,
+                           const int *N_elements,
+                           const CCTK_BYTE array[], ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE(key)
+  *retval = Util_TableSetByteArray(*handle, *N_elements, array, key);
+  free(key);
+}
+#endif	/* UTIL_TABLE_FORTRAN_WRAPPERS */
+
+/**************************************/
 
 int Util_TableSetIntArray(int handle,
                           int N_elements, const CCTK_INT array[],
@@ -3033,6 +3083,7 @@ void CCTK_FCALL CCTK_FNAME(Util_TableSetComplex32Array)
   @vtype        T *, where T is one of
                    CCTK_POINTER, CCTK_FPOINTER,
                    CCTK_CHAR,
+                   CCTK_BYTE,
                    CCTK_INT, CCTK_INT1, CCTK_INT2, CCTK_INT4, CCTK_INT8,
                    CCTK_REAL, CCTK_REAL4, CCTK_REAL8, CCTK_REAL16,
                    CCTK_COMPLEX, CCTK_COMPLEX8, CCTK_COMPLEX16, CCTK_COMPLEX32
@@ -3179,6 +3230,30 @@ int Util_TableGetChar(int handle, CCTK_CHAR *value, const char *key)
 /*
  * integers
  */
+
+int Util_TableGetByte(int handle, CCTK_BYTE *value, const char *key)
+{
+  const int status = Util_TableGetByteArray(handle, 1, value, key);
+  return (status == 0)
+         ? UTIL_ERROR_TABLE_VALUE_IS_EMPTY
+         : status;
+}
+
+#ifdef UTIL_TABLE_FORTRAN_WRAPPERS
+void CCTK_FCALL CCTK_FNAME (Util_TableGetByte)
+                           (int *retval, const int *handle,
+                            CCTK_BYTE *value, ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (Util_TableGetByte)
+                           (int *retval, const int *handle,
+                            CCTK_BYTE *value, ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (key)
+  *retval = Util_TableGetByte (*handle, value, key);
+  free (key);
+}
+#endif	/* UTIL_TABLE_FORTRAN_WRAPPERS */
+
+/**************************************/
 
 int Util_TableGetInt(int handle, CCTK_INT *value, const char *key)
 {
@@ -3543,6 +3618,7 @@ void CCTK_FCALL CCTK_FNAME (Util_TableGetComplex32)
   @vtype        T[], where T is one of
                    CCTK_POINTER, CCTK_FPOINTER,
                    CCTK_CHAR,
+                   CCTK_BYTE,
                    CCTK_INT, CCTK_INT1, CCTK_INT2, CCTK_INT4, CCTK_INT8,
                    CCTK_REAL, CCTK_REAL4, CCTK_REAL8, CCTK_REAL16,
                    CCTK_COMPLEX, CCTK_COMPLEX8, CCTK_COMPLEX16, CCTK_COMPLEX32
@@ -3716,6 +3792,33 @@ void CCTK_FCALL CCTK_FNAME (Util_TableGetCharArray)
 /*
  * arrays of integers
  */
+
+int Util_TableGetByteArray(int handle,
+                           int N_elements, CCTK_BYTE array[],
+                           const char *key)
+{
+  return internal_get(handle,
+                      CCTK_VARIABLE_BYTE, N_elements, (void *) array,
+                      key);
+}
+
+#ifdef UTIL_TABLE_FORTRAN_WRAPPERS
+void CCTK_FCALL CCTK_FNAME (Util_TableGetByteArray)
+                           (int *retval, const int *handle,
+                            const int *N_elements, CCTK_BYTE array[],
+                            ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (Util_TableGetByteArray)
+                           (int *retval, const int *handle,
+                            const int *N_elements, CCTK_BYTE array[],
+                            ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (key)
+  *retval = Util_TableGetByteArray (*handle, *N_elements, array, key);
+  free (key);
+}
+#endif	/* UTIL_TABLE_FORTRAN_WRAPPERS */
+
+/**************************************/
 
 int Util_TableGetIntArray(int handle,
                           int N_elements, CCTK_INT array[],
@@ -4742,6 +4845,7 @@ int Util_TableItSetToKey(int ihandle, const char *key)
   @vtype        const T[], where T is one of
                    CCTK_POINTER, CCTK_FPOINTER,
                    CCTK_CHAR,
+                   CCTK_BYTE,
                    CCTK_INT, CCTK_INT1, CCTK_INT2, CCTK_INT4, CCTK_INT8,
                    CCTK_REAL, CCTK_REAL4, CCTK_REAL8, CCTK_REAL16,
                    CCTK_COMPLEX, CCTK_COMPLEX8, CCTK_COMPLEX16, CCTK_COMPLEX32
@@ -4857,6 +4961,7 @@ static
   @vtype        T[], where T is one of
                    CCTK_POINTER, CCTK_FPOINTER,
                    CCTK_CHAR,
+                   CCTK_BYTE,
                    CCTK_INT, CCTK_INT1, CCTK_INT2, CCTK_INT4, CCTK_INT8,
                    CCTK_REAL, CCTK_REAL4, CCTK_REAL8, CCTK_REAL16,
                    CCTK_COMPLEX, CCTK_COMPLEX8, CCTK_COMPLEX16, CCTK_COMPLEX32
@@ -5082,6 +5187,7 @@ static
   @vtype        const T[], where T is one of
                    CCTK_POINTER, CCTK_FPOINTER,
                    CCTK_CHAR,
+                   CCTK_BYTE,
                    CCTK_INT, CCTK_INT1, CCTK_INT2, CCTK_INT4, CCTK_INT8,
                    CCTK_REAL, CCTK_REAL4, CCTK_REAL8, CCTK_REAL16,
                    CCTK_COMPLEX, CCTK_COMPLEX8, CCTK_COMPLEX16, CCTK_COMPLEX32
@@ -5376,6 +5482,16 @@ static
       int i;
       switch  (tep->type_code)
       {
+        case CCTK_VARIABLE_BYTE:
+          printf("\t[byte]");
+            {
+          const CCTK_BYTE *const value_ptr_byte = (const CCTK_BYTE *) tep->value;
+          for (i = 0 ; i < tep->N_elements ; ++i)
+          {
+            printf("\t%d", (int) value_ptr_byte[i]);
+          }
+            }
+          break;
         case CCTK_VARIABLE_INT:
           printf("\t[int]");
             {
@@ -5967,6 +6083,8 @@ static
   /* integers */
   CHECK_SET_GET_INT_ARRAY(handle, CCTK_CHAR, 0,
                           Util_TableSetCharArray, Util_TableGetCharArray);
+  CHECK_SET_GET_BYTE_ARRAY(handle, CCTK_BYTE, 1,
+                           Util_TableSetByteArray, Util_TableGetByteArray);
   CHECK_SET_GET_INT_ARRAY(handle, CCTK_INT, 1,
                           Util_TableSetIntArray, Util_TableGetIntArray);
   #ifdef CCTK_INT1
