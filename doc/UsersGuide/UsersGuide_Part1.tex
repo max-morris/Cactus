@@ -169,6 +169,7 @@ user access to all earlier versions.)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \chapter{Installation} 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -180,18 +181,18 @@ in a single processor mode. Please refer to the architecture section
 \ref{sec:architecture} for architecture specific items.
 \begin{itemize}
 \item{\tt Perl5.0} Perl is used extensively during the CCTK
-  configuration phase. {\tt Perl} is available for nearly all
-  operating systems known to man and can be obtained at {\tt
-    http://www.perl.org}.
-\item{\tt gmake} The GNU make utility needs to be installed. Errors
- {\q wanna name them here ?} during the make process  are often caused
- by not using {\tt gmake}. {\tt gmake} can be obtained from any
- friendly GNU site.
-\item{\tt C/C++} A C/C++ compiler. These can be the GNU compilers as well.
-\item{\tt Fortran 90} 
+  configuration phase. Perl is available for nearly all
+  operating systems known to man and can be obtained at
+  http://www.perl.org
+\item{\tt gmake} The GNU make utility has to be installed. The make
+  process will not work with anything else the GNU.
+  Gmake can be obtained from your favorite GNU site.
+\item{\tt C/C++} A C/C++ compiler. These can be the GNU compilers as
+  well, but don't have to.
 \item{\tt CVS} The {\em ``Concurrent Versioning System''} is not needed
   to run/compile the CCTK, but you are strongly encourage to install
-  this software to take advantage of the update procedures.
+  this software to take advantage of the update procedures. It can be
+  downloaded from your favorite GNU site.
 \end{itemize}
 
 \noindent
@@ -212,7 +213,7 @@ basic CCTK installation on track. Its listed in the order of importance.
 \item{\tt TAGS}: Tags enables you browse through the calling structure
   of a program by help of function call database. Navigating the CCTK and
   Toolkits becomes very easy. Emacs and vi both support this database. See
-  \ref{sec:tags} how to install {\tt TAGS}.
+  \ref{sec:tags} how to install ``tags''.
 \end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -264,7 +265,7 @@ The installation requires about {\q HOW MANY MEGS ? }. See section
 
 \begin{itemize}
 \item{\bf Login}: Prior to any CVS operation, you need to log into the central
-  repository. For an  anonymous checkout, type:\\
+  repository. For an anonymous checkout, type:\\
   {\tt
     cvs -d :pserver:cvs\_anon@hod.aei-potsdam.mpg.de:/usr/users/cactus login
     }
@@ -300,10 +301,8 @@ The installation requires about {\q HOW MANY MEGS ? }. See section
 \item{\bf Commits}: you need to perform a personalized login and have
   proper permissions to commit code to the repository. 
 \end{itemize}
+For more CVS commands on how to add files, etc. please refer to appendix \ref{sec:CVS}.
 
-For more CVS commands please refer to appendix \ref{sec:CVS}.
-
-{\q Change CCTK to cactus in the distribution}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -401,77 +400,139 @@ what is in libraries.}
 Cactus Maint and GNATS
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\section{Testing} 
-
-simple make and test suite
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \chapter{Compilation} 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Compilation of the flesh, and configurations}
 
 Cactus can be built in different configurations from the same copy of
 the source files, and these different configurations coexist in the
-{\tt cactus/} directory. Different configurations can be for different
-machines. This is useful when your {\tt cactus/} directory is mounted
-on different machines in a cluster, and you want to run cactus on all
-these machines while only keeping and updating a single copy of the
-source files. It is also useful if you want to compile cactus with
-different compilers or optimization settings on the same machine, and
-compare one against the other. As a third example, you may want to
-compile with different sets of thorns.  As a final example, you might
-want to build cactus using different multi-processor communication
-protocols, such as MPI (currently the cactus standard) or GLOBUS.
+{\tt cactus/} directory. Here are several cases, where this can be
+useful:
 
-Building the code should be easy. Just type
+\begin{enumerate}
+\item{}Different configurations can be for {\em different
+architectures}. You can keep executables for multiple architecures
+based on a single copy of soiruce code, shared on a common file
+system.
+\item{} You can compare different {\em compiler options, debug-modes}.
+  You migth want to compile different communication protocols
+  (MPI/GLOBUS) or leave them out all together.
+\item{} You can have different configuration for {\em different thorns
+    collections} compiled into your executable.
+\end{enumerate}
 
-{\t gmake <configuration options> <CONF>}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Compilation and configuartions of the CCTK and its Toolkits}
 
-where {\tt <...>} denotes optional arguments. {\tt gmake} is the gnu
-make program. Note that {\tt make} will not work (if you try, you'll
-get funny error messages.) Without any arguments, the make process
-picks a default configuration (looking for standard compilers and so
-on) and gives this configuration a default name (typically the name of
-your operating system). It then runs configuration scripts (in {\tt
-lib/make/}) which figure out details of your computer.
+Building the code with GNU make is easy. Use gmake with the following syntax:
+{\t gmake [configuration options] <CONF>}
 
-You'll see that the make process has created a {\tt build/} directory,
-and in it a directory {\tt build/CONF}, where {\tt CONF} is the name
-of the configuration, in this case the default name chosen for you.
-Inside {\tt CONF}, {\tt CONF/config-data/} now contains the results of
-the configuration process. To actually compile with this
-configuration, type
+{\tt gmake} is the GNU make program, {\tt configuration options}
+denotes optional arguments.  The configuration name {\tt CONF}
+references the configuration setting you chose to build. You can pick
+an arbitrary name (e.g. {\tt TEST_BUIILD}), later you can reference this particular
+configuration setting by using that name. The default for {\tt CONF}
+is the name of your operating system (e.g. {\tt LINUX}).
 
-{\t gmake CONF}
+{\q this is not consistent: the first time I can do gmake and it does
+  NOT ask me, if I want to setup IRIX6, e.g. but takes the
+  default. then I DO have to specify 
+  the CONF. IMHO it shoudl always be obligatory.
+  Also, it prompts me, ``do you really want to ... reminds
+  me of windows:-) }
 
-where {\tt CONF} is the name of the configuration. The argument {\tt
-CONF} is now obligatory. 
+{\q What are the configuration-options ?}
 
-gmake will ask if you want to edit the file {\tt
-CONF/ActiveThorns}. As the name says, it contains the names of all the
-thorns you want compiled in. By default it contains all the thorns you
-have checked out. If you say {\tt yes}, gmake opens the editor
-specified in your {\tt EDITOR} shell variable. gmake continues when
-you close the editor. Alternatively, you could have created {\tt
-CONF/ActiveThorns} beforehand. {\tt ActiveThorns} can contain the
-names of individual thorns or entire toolkits {\q Implement this}.
+The gmake-process has to be repeated several times.
+
+\begin{enumerate}
+\item{}The first gmake-process configures the CCTK system by picking the
+standard compilers, etc and creates a directory tree in {\tt
+  ./build/CONF} which will later contain the configuration specific
+files. 
+\item{} You will ask to issue {\tt gmake <CONF>} again and you will be
+  presented a list of all thorns the CCTK has found. You will be
+  asked, whether you wish to edit 
+  this list to remove thorns, e.g. Answer {\tt yes} to be able to edit
+  the list with the editor specified in the {\tt \$EDITOR} 
+  environment variable. After closing the editor or answering with {\tt
+    no} the make process will continue. 
+\end{itemize}
+
+The make process will set up subdirectories in the {\tt ./build}
+directory that contain the configuration specific files. The directory
+structure is 
+\begin{verbatim}
+\end{verbatim}
+
+{\bf Notes and Caveats}
+\begin{itemize}
+\item{} Instead of using the editor to specify the thorns you want to
+  have compiled, you can {\em edit} the {\em ActiveThorns List} outside
+  the make process. It is located in {\tt build/CONF/ActiveThorns},
+  wher {\tt CONF} refers to the name of your configuration.
+  For a completely new configuration, this directory exists {\em
+    after} the first  make phase. 
+\item{} The {\em ActiveThorns List} can also contain the name of a
+  CACTUS Toolkit. In this case all thorns of the Toolkit will be
+  compiled into the executable.
+\item{} If the CCTK {\em cannot find a thorn} you specified, it will
+  repartition you hard disk amd install Windows.
+\item{} {\em GNU make} is required. Error during the build ``{\tt missing
+    seperator}'' are caused by using a different make command.
+\item{} {\em The EDITOR environment variable}. You may not be aware of
+  this, but this thing very often exists and may be set  by default to
+  something scary like vi. If you don't know how to use vi or wish to
+  use your favorite editor instead, reset this environment variable.
+\end{itemize}
 
 {\q move setup file elsewhere.}
 
 {\q move executable elsewhere, and make one for each configuration.}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{gmake targets}
+
+A target for {\tt gmake} can be naively thought of as an argument
+that tells it which of several things listed in the {\tt Makefile} it
+is to do.
+
+\begin{itemize}
+
+\item {\tt gmake CONF} will create the default (uname) configuration
+
+\item {\tt gmake <CONF>-clean} cleans a configuration (rm -r *.o)
+
+\item {\tt gmake <CONF>-delete} deletes a configuration ({\tt rm -r build/<CONF>})
+
+\item {\tt gmake help} lists all make options
+
+\item {\tt gmake tags} creates a {\tt vi} style tags file. See section
+  \ref{sec:TAGS} for using TAGS within Cactus.
+
+\item {\tt gmake TAGS} creates an Emacs style TAGS file. See section
+  \ref{sec:TAGS} for using TAGS within Cactus.
+
+\item {\tt gmake distclean} nukes your build directory.
+
+\item {\tt gmake downsize} removes non essential files as documents
+  and testsuites to allow for minimal installation size.
+
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Compiling in thorns}
 
+{\q This is way to specific for the section ``Compile'' in my opinion.
+This shoudl go with the thorn writing.}
+
 Cactus compiles in all thorns listed in {\tt
 build/CONF/ActiveThorns}. {\q If the thorn has not been checked
-out...} Cactus looks for source code in a thorn's {\tt src}
+out...It IGNORES ?} Cactus looks for source code in a thorn's {\tt src}
 directory. It first looks for a file {\tt make.code.defn} which
 should contain
 
@@ -527,32 +588,15 @@ files should end up if they need to be seen by other thorns.
 
 \end{itemize}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Testing} 
+
+simple make and test suite
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section {gmake targets}
-
-(A target for {\tt gmake} can be naively thought of as an argument
-that tells it which of several things listed in the {\tt Makefile} it
-is to do.)
-
-\begin{itemize}
-
-\item {\tt gmake config} will create the default (uname) configuration
-
-\item {\tt gmake <config>-clean} cleans a configuration (rm -r *.o)
-
-\item {\tt gmake <config>-delete} deletes a configuration (rm -r build/<config>)
-
-\item {\tt gmake help} lists all make options
-
-\item {\tt gmake tags} creates a {\tt vi} style tags file
-
-\item {\tt gmake TAGS} creates an Emacs style TAGS file
-
-\item {\tt gmake distclean} nukes your build directory.
-
-\end{itemize}
 
 
 {\q Tom, this is for you}
