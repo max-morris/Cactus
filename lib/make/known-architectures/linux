@@ -172,7 +172,21 @@ else
        : ${LIBS="fortran ffio m"} 
        ;;
      Intel)
-       : ${LIBS="IEPCF90 F90 C m"}
+       case "$host_cpu" in 
+         i?86)
+           : ${F77FLAGS='-132 -w95'}
+           : ${F90FLAGS='-132 -w95'}
+           : ${F77_OPTIMISE_FLAGS='-O3'}
+           : ${F90_OPTIMISE_FLAGS='-O3'}
+           : ${LIBS="IEPCF90 F90 m"}
+           if test "$CC" != "icc" -a -n "$IA32ROOT" ; then
+             : ${LIBDIRS='$(IA32ROOT)/lib'}
+           fi
+           ;;
+         *)
+           : ${LIBS="IEPCF90 F90 C m"}
+           ;;
+       esac
        ;;
      Compaq)
        : ${LIBS="for m"}
@@ -194,14 +208,22 @@ else
 # Set the appropriate dependency, warning, and debugging flags
 # Note that the defaults settings are for gcc/g++ and they are set by configure
   case "$CC" in
-    ecc)
-      : ${C_DEPEND='$(CC) -M $(CPPFLAGS)'}
+    [ei]cc)
+      : ${C_OPTIMISE_FLAGS='-O3'}
+      : ${C_DEPEND='$(CPP) -M $(CPPFLAGS)'}
       : ${C_WARN_FLAGS="-w2"}
       ;;
     pgcc)
       : ${C_OPTIMISE_FLAGS="-fast"}
       ;;
       *)
+      ;;
+  esac
+
+  case "$CXX" in
+    [ei]cc)
+      : ${CXX_OPTIMISE_FLAGS='-O3'}
+      : ${CXX_DEPEND='$(CPP) -M $(CPPFLAGS)'}
       ;;
   esac
 
