@@ -29,12 +29,15 @@ CCTK_CONFIG_STAGE="preferred-compilers"
 if test -r $srcdir/known-architectures/$host_os ; then
 . $srcdir/known-architectures/$host_os
 else
-  echo "Warning: Cactus has not been previously compiled on this architecture ($host_os)"
-  echo "         The currently known architectures can be found in $srcdir/known-architectures"
-  echo "         The configuration will try to do its best to work things out."
-  echo "         If you create a known-architectures file for this architecture, please send it to"
-  echo "                            cactusmaint@cactuscode.org"
-  echo "         and we'll include it in the next release."
+  echo "Warning: "
+  echo "  Cactus has not been previously compiled on this architecture: "
+  echo "    ($host_os)"
+  echo "  The currently known architectures can be found in "
+  echo "    $srcdir/known-architectures"
+  echo "  The configuration will try to do its best to work things out."
+  echo "  If you create a known-architectures file for this architecture, "
+  echo "  please send it to cactusmaint@cactuscode.org and we'll include "
+  echo "  it in the next release."
 fi
 
 # Save these for future use.
