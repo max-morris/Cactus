@@ -12,7 +12,7 @@
 #  @date       Mon May  8 16:04:59 2000
 #  @author     Tom Goodale
 #  @desc 
-#  Splits the thorns hash intto those with source and those without source
+#  Splits the thorns hash into those with source and those without source
 #  @enddesc 
 #  @calls     
 #  @calledby   
