@@ -468,6 +468,7 @@ void CCTKi_CommandLineHelp(void)
     printf("-T, -list-thorns                    : Lists the compiled-in thorns.\n");
     printf("-t, -test-thorn-compiled <name>     : Tests for the presence of thorn <name>.\n");
     printf("-v, -version                        : Prints the version.\n");
+    printf("-i, -ignore-next                    : Ignores the next argument.\n");
   }
 
   CCTK_Exit(NULL,1);
@@ -495,7 +496,7 @@ void CCTKi_CommandLineUsage(void)
   {
     CCTK_CommandLine(&argv);
 
-    printf("Usage: %s [-h] [-O] [-o paramname] [-x [nprocs]] [-W n] [-E n] [-r] [-T] [-t name] [-v] <parameter_file_name>\n", argv[0]);
+    printf("Usage: %s [-h] [-O] [-o paramname] [-x [nprocs]] [-W n] [-E n] [-r] [-T] [-t name] [-v] [-i] <parameter_file_name>\n", argv[0]);
   }
 
   CCTK_Exit(NULL,1);
