@@ -122,11 +122,13 @@ the schedule tree.
    \hline
  \end{tabular}
 
-\chapter{Adding a Driver}
+\chapter{Drivers}
 
 The Flesh knows nothing about memory allocation for grid variables, or about how
 to communicate data when synchronisation is called for.  It knows nothing about
 multiple patches or adaptive mesh refinement.  All this is the job of a driver.
+
+This chapter describes how to add a driver to your code.
 
 \section{Anatomy}
 
@@ -396,13 +398,16 @@ they flag that communication is to be done on that group or not, and may
 initialise data structures for the communication.
 
 
-\chapter{Adding an I/O Method}
+\chapter{I/O Methods}
 \label{chap:io_methods}
 %
-The Flesh does not implement output for grid variables and other data by itself.
+The Flesh by itself does not provide output for grid variables or other data.
 Instead it provides a mechanism for thorns to register their own
 routines as I/O methods, and to invoke these I/O methods by either the
 Flesh scheduler or by other thorn routines.
+
+This chapter explains how to implement I/O your own methods and register
+them with the Flesh.
 %
 \section{I/O Method Registration}
 %
@@ -508,14 +513,17 @@ was done successfully, or a negative error code otherwise.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{Adding a Checkpointing/Recovery Method}
+\chapter{Checkpointing/Recovery Methods}
 \label{chap:cp_recovery_methods}
 
 Like for I/O methods, checkpointing/recovery functionality must be implemented
 by thorns. The Flesh only provides specific time bins at which the scheduler
 will call thorns' routines in order to perform checkpointing and/or recovery.
 
-\section{Invocation of Checkpointing Routines}
+This chapter explains how to implement checkpointing and recovery methods
+in your thorn.
+
+\section{Checkpointing Invocation}
 
 Thorns register their checkpointing routines at {\t CCTK\_CPINITIAL} and/or
 {\t CCTK\_CHECKPOINT}. These time bins are scheduled right after all initial
@@ -537,7 +545,7 @@ state. Such information would include
 \end{itemize}
 
 
-\section{Invocation of Recovery Routines}
+\section{Recovery Invocation}
 
 Recovering from a checkpoint is a two-phase operation for which the Flesh
 provides distinct timebins for recovery routines to be scheduled at:
@@ -576,11 +584,11 @@ provides distinct timebins for recovery routines to be scheduled at:
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{Adding a timer clock}
+\chapter{Clocks for Timing}
 \label{chap:clocks}
 
-To add a Cactus timer clock you need to write several functions to provide the
-clock functionality (see Section \ref{sec:timers}), and then register these
+To add a Cactus clock you need to write several functions to provide the
+timer functionality (see Section \ref{sec:timers}), and then register these
 functions with the Flesh as a named clock.
 
 The function pointers are placed in function pointer fields of a 
@@ -616,9 +624,9 @@ The \texttt{n\_vals} field holds the number of elements in the
 used by your timer.
 
 To name and register the clock with the Flesh, call the function
-\begin{verbatim}
-	CCTK_ClockRegister( "my_clock_name", &clock_func ).
-\end{verbatim}
+\begin{alltt}
+	CCTK_ClockRegister( "\var{my_clock_name}", &\var{clock_func} ).
+\end{alltt}
 
 
 

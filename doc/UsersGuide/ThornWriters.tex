@@ -3437,27 +3437,31 @@ from the different clocks.
 
 \subsection{Timing calls}
 
+Many of the timing calls come in two versions, one whose name ends with 
+the letter \texttt{I} and another one.  The calls whose names end in the 
+letter \texttt{I} refer to the timer by index; the other calls
+refer to a timer by name.  If a timer is created without a name, it can
+be referred to only by its index, otherwise, it can be referred to by name
+or by index.
+
 \begin{Lentry}
 
 \item[{\t CCTK\_TimerCreate}, {\t CCTK\_TimerCreateI}]
 
 Create a timer with a given name ({\t CCTK\_TimerCreate}), or with no name
-({\tt CCTK\_TimerCreateI})  and give back a timer index.
-If no name is provided for the timer, future calls
-should be made using the returned timer index.
+({\tt CCTK\_TimerCreateI}) and return a timer index.
 
 \item[{\t CCTK\_TimerDestroy}, {\t CCTK\_TimerDestroyI}]
 
-Destroy a timer using either the timer name or timer index.
+Destroy a timer.
 
 \item[{\t CCTK\_TimerStart}, {\t CCTK\_TimerStartI}]
 
-Start the given timer (identified by name or index), using all registered
-clocks.
+Start the given timer, using all registered clocks.
 
 \item[{\t CCTK\_TimerStop}, {\t CCTK\_TimerStopI}]
 
-Stop the given timer (identified by name or index) on all registered clocks.
+Stop the given timer on all registered clocks.
 
 \item[{\t CCTK\_TimerReset}, {\t CCTK\_TimerResetI}]
 
@@ -3538,7 +3542,7 @@ precedes using the timer:
 
 \begin{verbatim}
 #include "cctk_Timers.h"
-ierr = CCTK_TimerCreate(`TimeMyStuff`);
+ierr = CCTK_TimerCreate("TimeMyStuff");
 \end{verbatim}
 
 {\bf Instrumenting a section of code}
@@ -3547,10 +3551,10 @@ Code sections are instrumented using the Start, Stop and Reset functions. These
 functions are applied to the chosen timer using all the registered clocks.
 \begin{verbatim}
 #include "cctk_Timers.h"
-ierr = CCTK_TimerStart(`TimeMyStuff`);
+ierr = CCTK_TimerStart("TimeMyStuff");
 /* Piece of code to time */
 y = CalculateNewValue(y);
-ierr = CCTK_TimerStop(`TimeMyStuff`);
+ierr = CCTK_TimerStop("TimeMyStuff");
 \end{verbatim}
 
 {\bf Accessing the timer results}
@@ -3563,7 +3567,7 @@ of different types.
 cTimerData *info;
 
 info = CCTK_TimerCreateData();
-ierr = CCTK_Timer('TimeMyStuff',info);
+ierr = CCTK_Timer("TimeMyStuff",info);
 
 for (i = 0; i < info->n_vals; i++)
 {
