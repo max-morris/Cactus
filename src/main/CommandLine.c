@@ -352,12 +352,11 @@ void CCTKi_CommandLineListThorns(void)
 @@*/
 void CCTKi_CommandLineVersion(void)
 {
-  int argc;
   char **argv;
 
   const char *version=NULL;
 
-  argc = CCTK_CommandLine(&argv);
+  CCTK_CommandLine(&argv);
 
   version = (const char *)CCTK_FullVersion();
 
@@ -383,10 +382,9 @@ void CCTKi_CommandLineVersion(void)
 @@*/
 void CCTKi_CommandLineHelp(void)
 {
-  int argc;
   char **argv;
 
-  argc = CCTK_CommandLine(&argv);
+  CCTK_CommandLine(&argv);
 
   printf("%s, compiled on %s at %s\n", argv[0], compileDate(), compileTime());
   printf("Usage: %s [-h] [-O] [-o paramname] [-x [nprocs]] [-W n] [-E n] [-r] [-T] [-t name] [-v] <parameter_file_name>\n", argv[0]);
@@ -425,10 +423,9 @@ void CCTKi_CommandLineHelp(void)
 @@*/
 void CCTKi_CommandLineUsage(void)
 {
-  int argc;
   char **argv;
 
-  argc = CCTK_CommandLine(&argv);
+  CCTK_CommandLine(&argv);
 
   printf("Usage: %s [-h] [-O] [-o paramname] [-x [nprocs]] [-W n] [-E n] [-r] [-T] [-t name] [-v] <parameter_file_name>\n", argv[0]);
   CCTK_Exit(1,NULL);
