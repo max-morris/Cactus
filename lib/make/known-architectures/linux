@@ -72,11 +72,13 @@ else
   LINUX_G77_USES_LIBG2C=
 
   if test "$LINUX_F90_COMP" = "gnu77" -o "$LINUX_F90_COMP" = "pacific" ; then
-    if test -n "`$F77 -v 2>&1 | grep g2c`" ; then
+    touch foo.f
+    if test -n "`$F77 -v 2>&1 foo.f | grep collect | grep g2c`" ; then
       LINUX_G77_USES_LIBG2C=yes
     else
       LINUX_G77_USES_LIBG2C=no
     fi
+    rm foo.f
   fi
 
 #Set the appropriate flags
