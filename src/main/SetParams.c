@@ -94,7 +94,6 @@ int CCTKi_SetParameter(const char *parameter, const char *value)
   const char *position;
   int length;
   int n_errors;
-  int param_type;
   int parameter_check;
 
   parameter_check = CCTK_ParameterLevel();
