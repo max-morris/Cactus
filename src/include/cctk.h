@@ -51,6 +51,9 @@
 
 #define CCTK_PASS_FTOF CCTK_FARGUMENTS
 
+#define CCTK_DELTA_SPACE(x) cctk_delta_space(x)/cctk_levfac(x)
+#define CCTK_DELTA_TIME cctk_delta_time
+
 #endif /*FCODE*/
 
 #ifdef CCODE
@@ -58,6 +61,8 @@
 #include "cGH.h"
 
 #define CCTK_GFINDEX3D(GH,i,j,k) ((i) + GH->cctk_lsh[0]*((j)+GH->cctk_lsh[1]*(k)))
+#define CCTK_GFINDEX2D(GH,i,j)   ((i) + GH->cctk_lsh[0]*((j)))
+#define CCTK_GFINDEX1D(GH,i)     (i)
 
 
 #define CCTK_PRINTSEPARATOR \
@@ -120,12 +125,16 @@ extern int _cctk_one;
 
 #define CCTK_PASS_CTOC cctkGH
 
+#define CCTK_DELTA_SPACE(x) cctk_delta_space[x]/cctk_levfac[x]
+#define CCTK_DELTA_TIME cctk_delta_time
+
 #endif /*CCODE*/
 
 #define CCTK_VARIABLE_CHAR    1
 #define CCTK_VARIABLE_INT     2
 #define CCTK_VARIABLE_REAL    3
 #define CCTK_VARIABLE_COMPLEX 4
+
 
 /*#define CCTK_MAKESTRING(x) CCTK_REALSTRING(x)
 #define CCTK_REALSTRING(x) #x
