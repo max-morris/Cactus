@@ -322,12 +322,16 @@ The file should contain lines of the form:
 
 The equals sign is optional.
 
-\item{} Add the options to a configuration file and use,\\
-{\tt gmake <config>-config  options=<filename>}
-The options file has the same format as {\tt \~/.cactus/config}.
+\item{} Add the options to a configuration file and use,
 
-\item{} Pass the options individually on the command line,\\
+{\tt gmake <config>-config  options=<filename>}
+
+The options file has the same format as {\tt \~{ }/.cactus/config}.
+
+\item{} Pass the options individually on the command line,
+
 {\tt gmake <configuration name>-config  <option name>=<chosen value>, ...}
+
 Not all configuration options can be set on the command line.  Those that can
 be set are indicated in the table below.
 \end{enumerate}
@@ -335,11 +339,8 @@ be set are indicated in the table below.
 They are listed here in order of increasing precedence, e.g. options
 set on the command line will take priority over (potentially
 conflicting) options set in \texttt{\~{ }/.cactus/config}.
-%Note that if a configuration file is used, and options are also passed
-%on the command line, the command line options will override those from
-%the configuration file.
 
-It is important to note that these methods cannot be used to, for example add
+It is important to note that these methods cannot be used to, for example, add
 options to the default values for {\tt CFLAGS}.  Setting {\tt CFLAGS} in the
 configuration file or the command line will overwrite completely the 
 default values.
