@@ -348,7 +348,6 @@ void FMODIFIER FORTRAN_NAME(CCTK_CoordIndex)(int *handle, ONE_FORTSTRING_ARG)
 }
 
 
-/*
 CCTK_REAL CCTK_CoordOrigin(const char *name)
 {
   int handle;
@@ -375,7 +374,6 @@ CCTK_REAL CCTK_CoordOrigin(const char *name)
   }
 
 }
-*/
 
 
 int CCTK_CoordRange(cGH *GH, CCTK_REAL *lower, CCTK_REAL *upper, const char *name)
