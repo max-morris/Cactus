@@ -141,6 +141,7 @@ int CCTK_FindImpOfGlobalParam(char **imp, char **name, const char *parameter)
   *imp = NULL;
   *name = NULL;
 
+  
   return 1;
 }
 
@@ -163,5 +164,7 @@ int CCTK_SetImplementationParameter(const char *imp,
 				    const char *name, 
 				    const char *value)
 {
+
+
   return 1;
 }

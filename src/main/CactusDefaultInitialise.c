@@ -32,8 +32,8 @@ int CactusDefaultInitialise(tFleshConfig *config)
   {
 #ifdef 0
     CactusAddGH(config, GH, convergence_level);
-#endif
     Initialise(GH);
+#endif
     convergence_level++;
   };
 
