@@ -296,8 +296,10 @@ int CCTK_GetVarNum(const char *implementation,
   int gnum,group_num;
   int variable;
   int fullname = 0;
-  char *impname;
-  char *varname;
+  char *realimpname;
+  char *realvarname;
+  const char *impname;
+  const char *varname;
 
   retval = -1;
 
@@ -306,10 +308,16 @@ int CCTK_GetVarNum(const char *implementation,
     fullname = 1;
     /* variable_name must be of the form <implementation>::<variable> */
     /* FIXME : Error checking */
-    CCTK_DecomposeName(variable_name,&impname,&varname);
+    CCTK_DecomposeName(variable_name,&realimpname,&realvarname);
+
+    /* Store the pointers to these strings in const char *s */
+    impname = realimpname;
+    varname = realvarname;
   }
   else
   {
+
+    /* Can only assign a const char * to a const char * */
     impname = implementation;
     varname = variable_name;
   }
@@ -354,8 +362,9 @@ int CCTK_GetVarNum(const char *implementation,
 
   if (fullname)
   {
-    free(impname);
-    free(varname);
+    /* Had to allocate new strings, so free them. */
+    free(realimpname);
+    free(realvarname);
   }
     
   return retval;
