@@ -678,6 +678,7 @@ sub parse_interface_ccl
   $interface_db{"\U$thorn USES HEADER\E"} = "";
   $interface_db{"\U$thorn FUNCTIONS\E"} = "";
   $interface_db{"\U$thorn PROVIDES FUNCTION\E"} = "";
+  $interface_db{"\U$thorn REQUIRES FUNCTION\E"} = "";
   $interface_db{"\U$thorn USES FUNCTION\E"} = "";
   $interface_db{"\U$thorn ARRANGEMENT\E"} = "$arrangement";
 
@@ -750,6 +751,11 @@ sub parse_interface_ccl
       $interface_db{"\U$thorn PROVIDES FUNCTION\E $funcname WITH"} .= "$provided_by ";
       $interface_db{"\U$thorn PROVIDES FUNCTION\E $funcname LANG"} .= "$provided_by_language ";
 
+    }
+    elsif ($line =~ m/^\s*REQUIRES\s*FUNCTION\s*([a-zA-Z_0-9]+)\s*$/i)
+    {
+      $funcname = $1;
+      $interface_db{"\U$thorn REQUIRES FUNCTION\E"} .= "$funcname ";
     }
     elsif ($line =~ m/^\s*USES\s*FUNCTION\s*([a-zA-Z_0-9]+)\s*$/i)
     {

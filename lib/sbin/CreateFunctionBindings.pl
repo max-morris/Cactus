@@ -150,7 +150,8 @@
 #                   is probably redundant, but simpler to keep here as
 #                   well (plus may be some whitespace stripped). (String)
 # Return Type     : The return type. This MUST be a scalar type. (String)
-# Used            : Whether this function is USED by this thorn (1/0)
+# Used            : Whether this function is REQUIRED/USED/not needed
+#                   by this thorn (2/1/0)
 # Provided        : Whether this function is PROVIDED by this thorn (1/0)
 # Provider        : The name of the providing function. ONLY EXISTS if
 #                   Provided = 1. (String)
@@ -199,6 +200,8 @@ sub CreateFunctionBindings
 ######################################################################
 
   $function_db = &FunctionDatabase($rhinterface_db);
+
+  CheckRequiredFunctions($function_db);
 
 ###
 # This should have returned a FunctionList (as defined above)
@@ -382,9 +385,9 @@ sub FunctionDatabase
 #          my $message = "An aliased function name must be less than 21 characters.\n The function ".$Function->{"Name"}." is not.";
 #          &CST_error(0,$message,'',__LINE__,__FILE__);
 #      }
-      if ($interface_db->{"\U$thorn PROVIDES FUNCTION\E"} =~ /$FunctionName/)
+      $Function->{"Provided"} = $interface_db->{"\U$thorn\E PROVIDES FUNCTION"} =~ /$FunctionName/;
+      if ($Function->{"Provided"})
       {
-        $Function->{"Provided"}=1;
         my $provider = $interface_db->{"\U$thorn PROVIDES FUNCTION\E $FunctionName WITH"};
         my $language = $interface_db->{"\U$thorn PROVIDES FUNCTION\E $FunctionName LANG"};
         $provider =~ /([a-zA-Z][a-zA-Z0-9_]*)/;
@@ -393,14 +396,11 @@ sub FunctionDatabase
         $Function->{"Provider Language"}=$1;
         $ThornProvides++;
       }
-      else
+      if ($interface_db->{"\U$thorn\E USES FUNCTION"} =~ /$FunctionName/
+          || $interface_db->{"\U$thorn\E REQUIRES FUNCTION"} =~ /$FunctionName/
+          || $interface_db->{"\U$thorn\E PROVIDES FUNCTION"} =~ /$FunctionName/)
       {
-        $Function->{"Provided"}=0;
-      }
-      if ($interface_db->{"\U$thorn USES FUNCTION"} =~ /$FunctionName/
-          || $interface_db->{"\U$thorn PROVIDES FUNCTION"} =~ /$FunctionName/)
-      {
-        $Function->{"Used"}=1;
+        $Function->{"Used"} = $interface_db->{"\U$thorn\E REQUIRES FUNCTION"} =~ /$FunctionName/ ? 2 : 1;
         $ThornUses++;
       }
       else
@@ -423,6 +423,53 @@ sub FunctionDatabase
   return $FunctionDatabase;
 
 }
+
+#/*@@
+#  @routine    CheckRequiredFunctions
+#  @date       Fri 23 April 2004
+#  @author     Thomas Radke
+#  @desc
+#  Checks that aliased functions which are REQUIRED by some thorn
+#  are also provided by some other.
+#  @enddesc
+#@@*/
+
+sub CheckRequiredFunctions
+{
+  use strict;
+  my %FunctionDatabase = %{$_[0]};
+
+  foreach my $thorn (keys %FunctionDatabase)
+  {
+    foreach my $Function (values %{$FunctionDatabase{$thorn}})
+    {
+      # need to check only if this thorn doesn't provide the function itself
+      if ($Function->{'Used'} == 2 && ! $Function->{'Provided'})
+      {
+        my $is_provided = 0;
+
+        # now go through the function database again to find the providing thorn
+        foreach my $provider (keys %FunctionDatabase)
+        {
+          next if ($provider eq $thorn);
+
+          foreach my $ProvidingFunction (values %{$FunctionDatabase{$provider}})
+          {
+            $is_provided = $Function->{'Name'} eq $ProvidingFunction->{'Name'}
+                           && $ProvidingFunction->{'Provided'};
+            last if ($is_provided);
+          }
+          last if ($is_provided);
+        }
+        &CST_error(0,"Aliased function \'$Function->{'Name'}\' required " .
+                   "by thorn '$thorn' is not provided by any thorn\n",
+                   '',__LINE__,__FILE__);
+          if (! $is_provided);
+      }
+    }
+  }
+}
+
 
 #/*@@
 #  @routine    ParseArgumentsList
@@ -764,11 +811,75 @@ sub ParseArgument
 sub RegisterAllFunctions
 {
   use strict;
-
   my %FunctionDatabase = %{$_[0]};
-  my $FunctionList;
+  my(@data,@prototypes,@register)=();
 
-  my(@data)=();
+  # generate code to register aliased functions for all active thorns
+  foreach my $thorn (sort keys %FunctionDatabase)
+  {
+    foreach my $Function (values %{$FunctionDatabase{$thorn}})
+    {
+      if ($Function && $Function->{'Provided'})
+      {
+        push(@prototypes,"CCTK_INT Register_${thorn}(void);");
+        push(@register,"  if (CCTK_IsThornActive(\"$thorn\"))");
+        push(@register,'  {');
+        push(@register,"    retval += Register_${thorn}();");
+        push(@register,'  }');
+        last;
+      }
+    }
+  }
+
+  # generate code to check that all aliased functions which are REQUIRED
+  # by active thorns are also provided
+  my @check_required_fns = ();
+  foreach my $thorn (sort keys %FunctionDatabase)
+  {
+    my @required = ();
+    foreach my $Function (values %{$FunctionDatabase{$thorn}})
+    {
+      if ($Function && $Function->{'Used'} == 2 && ! $Function->{'Provided'})
+      {
+        # go through the function database again to find all providing thorns
+        my @providing_thorns = ();
+        foreach my $provider (keys %FunctionDatabase)
+        {
+          next if ($provider eq $thorn);
+
+          foreach my $providing_fn (values %{$FunctionDatabase{$provider}})
+          {
+            if ($Function->{'Name'} eq $providing_fn->{'Name'}
+                && $providing_fn->{'Provided'})
+            {
+              push(@providing_thorns, $provider);
+              last;
+            }
+          }
+        }
+
+        if (! @required)
+        {
+          push(@required,"  if (CCTK_IsThornActive(\"$thorn\"))");
+          push(@required,'  {');
+        }
+        push(@required,"    if (! CCTK_IsFunctionAliased(\"$Function->{Name}\"))");
+        push(@required,'    {');
+        push(@required,'      CCTK_Warn(1, __LINE__, __FILE__, "Bindings",');
+        push(@required,'                "The aliased function ' .
+                       "'$Function->{'Name'}'" .
+                       ' has not been provided by any active thorn !\n"');
+        push(@required,'                "Please activate one of the following '.
+                       'thorns which provide this function:\n"');
+        push(@required,'                "  ' . join(', ', @providing_thorns) .
+                       '");');
+        push(@required,'      retval++;');
+        push(@required,'    }');
+      }
+    }
+    push(@required,'  }') if (@required);
+    push(@check_required_fns, @required) if (@required);
+  }
 
   push(@data, '/*@@');
   push(@data, '   @file    RegisterThornFunctions.c');
@@ -784,66 +895,33 @@ sub RegisterAllFunctions
   push(@data, '#include "cctk_ActiveThorns.h"');
   push(@data, '');
 
-  my $thorn;
+  push(@prototypes,'CCTK_INT CCTKBindings_RegisterThornFunctions(void);');
+  push(@data,@prototypes);
+  push(@data,'');
 
-  foreach $thorn (sort keys %FunctionDatabase)
-  {
-    my $Function;
-    my $AddThisThorn = 0;
-    foreach $Function (values %{$FunctionDatabase{$thorn}})
-    {
-      if ($Function)
-      {
-        if ($Function->{"Provided"})
-        {
-          $AddThisThorn++;
-        }
-      }
-    }
-    if ($AddThisThorn)
-    {
-      push(@data,"CCTK_INT Register_${thorn}(void);");
-    }
-  }
-  push(@data,"CCTK_INT CCTKBindings_RegisterThornFunctions(void);");
-  push(@data,"");
-  push(@data,"CCTK_INT CCTKBindings_RegisterThornFunctions(void)");
-  push(@data,"{");
-  push(@data,"  CCTK_INT retval;");
-  push(@data,"");
-  push(@data,"  retval = 0;");
-  push(@data,"");
+  push(@data,'CCTK_INT CCTKBindings_RegisterThornFunctions(void)');
+  push(@data,'{');
+  push(@data,'  CCTK_INT retval;');
+  push(@data,'');
+  push(@data,'  retval = 0;');
+  push(@data,'');
 
-  foreach $thorn (sort keys %FunctionDatabase)
+  # add the registry calls
+  push(@data,@register);
+
+  # add the provide checks if there are any function aliases required
+  if (@check_required_fns)
   {
-    my $AddThisThorn = 0;
-    my $Function;
-    my $localfns = keys %{$FunctionDatabase{$thorn}};
-    if ($localfns)
-    {
-      foreach $Function (values %{$FunctionDatabase{$thorn}})
-      {
-        if ($Function)
-        {
-          if ($Function->{"Provided"})
-          {
-            $AddThisThorn++;
-          }
-        }
-      }
-    }
-    if ($AddThisThorn)
-    {
-      push(@data,"  if (CCTK_IsThornActive(\"$thorn\"))");
-      push(@data,"  {");
-      push(@data,"    retval += Register_${thorn}();");
-      push(@data,"  }");
-      push(@data,"");
-    }
+    push(@data, '');
+    push(@data, '  /* verify that all aliased functions which are REQUIRED');
+    push(@data, '     by active thorns are also provided by someone */');
+    push(@data, @check_required_fns);
   }
-  push(@data,"  return retval;");
-  push(@data,"}");
-  push(@data,"");
+
+  push(@data, '');
+  push(@data,'  return retval;');
+  push(@data,'}');
+  push(@data,'');
 
   return join ("\n",@data);
 }
