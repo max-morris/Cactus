@@ -1332,6 +1332,7 @@ sub CreateThornGroupInitialisers
 	   . "                    " . $rhinterface_db->{"\U$thorn GROUP $group\E DIM"} . ",\n"
 	   . "                    " . $rhinterface_db->{"\U$thorn GROUP $group\E TIMELEVELS"} . ",\n"
 	   . "                    \"" . $rhinterface_db->{"\U$thorn GROUP $group\E STYPE"} . "\",\n"
+	   . "                    \"" . $rhinterface_db->{"\U$thorn GROUP $group\E DISTRIB"} . "\",\n"
 	   . "                    \"" . $rhinterface_db->{"\U$thorn GROUP $group\E SIZE"} . "\",\n"
 	   . "                    \"" . $rhinterface_db->{"\U$thorn GROUP $group\E GHOSTSIZE"} . "\",\n"
            . "                    ". scalar(@variables);

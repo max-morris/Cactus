@@ -531,6 +531,25 @@ sub check_interface_consistency
 	  $attributes{"GHOSTSIZE"} = $interface_data{"\U$thorn GROUP $group\E GHOSTSIZE"};
 	}
 
+	# Check the distribution of arrays are consistent.
+	if($attributes{"DISTRIB"})
+	{
+	  if($attributes{"DISTRIB"} ne $interface_data{"\U$thorn GROUP $group\E DISTRIB"})
+	  {
+	    if(!$n_errors)
+	    {
+	      print STDERR "Inconsistent implementations of $implementation\n";
+	      print STDERR "    Implemented by thorns " . join(" ", @thorns) . "\n";
+	    }
+	    print STDERR "      Group $group has inconsistent distribution.\n";
+	    $n_errors++;
+	  }
+	}
+	else
+	{
+	  $attributes{"GHOSTSIZE"} = $interface_data{"\U$thorn GROUP $group\E GHOSTSIZE"};
+	}
+
 	# Check the dimensions are consistant
 	if($attributes{"DIM"} && $attributes{"GTYPE"} ne "SCALAR")
 	{
@@ -549,6 +568,7 @@ sub check_interface_consistency
 	{
 	  $attributes{"DIM"} = $interface_data{"\U$thorn GROUP $group\E DIM"};
 	}
+
 	# Check the staggering are consistant
 	if($attributes{"STYPE"})
 	{
@@ -703,6 +723,10 @@ sub parse_interface_ccl
 	{
 	  $interface_db{"\U$thorn GROUP $current_group\E GHOSTSIZE"} = "\U$options{$option}\E";
 	}
+	elsif($option =~ m:DISTRIB:i)
+	{
+	  $interface_db{"\U$thorn GROUP $current_group\E DISTRIB"} = "\U$options{$option}\E";
+	}
 	elsif($option =~ m:SIZE:i)
 	{
 	  $interface_db{"\U$thorn GROUP $current_group\E SIZE"} = "\U$options{$option}\E";
@@ -740,11 +764,32 @@ sub parse_interface_ccl
 	$interface_db{"\U$thorn GROUP $current_group\E STYPE"} = "NONE";
       }
       
+      if(! $interface_db{"\U$thorn GROUP $current_group\E DISTRIB"})
+      {
+	$interface_db{"\U$thorn GROUP $current_group\E DISTRIB"} = "DEFAULT";
+      }
+      
       # Check that it is a known group type
       if($interface_db{"\U$thorn GROUP $current_group\E GTYPE"} !~ m:SCALAR|GF|ARRAY:)
       {
 	  $message =  "Unknown GROUP TYPE " .
 	  $interface_db{"\U$thorn GROUP $current_group\E GTYPE"} .
+	    " for group $current_group of thorn $thorn";
+	  &CST_error(0,$message,__LINE,__FILE__);
+	  if($data[$line_number+1] =~ m:\{:)
+	  {
+	      $message = "Skipping interface block in $thorn";
+	      &CST_error(1,$message,__LINE__,__FILE__);
+	      $line_number++ until ($data[$line_number] =~ m:\}:);
+	  }
+	next;
+      }	      
+
+      # Check that it is a known distribution type
+      if($interface_db{"\U$thorn GROUP $current_group\E DISTRIB"} !~ m:DEFAULT|CONSTANT:)
+      {
+	  $message =  "Unknown DISTRIB TYPE " .
+	  $interface_db{"\U$thorn GROUP $current_group\E DISTRIB"} .
 	    " for group $current_group of thorn $thorn";
 	  &CST_error(0,$message,__LINE,__FILE__);
 	  if($data[$line_number+1] =~ m:\{:)
