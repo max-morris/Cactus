@@ -5,7 +5,6 @@
 #  @desc 
 #     Updates Cactus checkout
 #     (avoids problems with different versions of cvs client)
-#     $Header$
 #  @enddesc 
 #  @version $Header$
 #@@*/
