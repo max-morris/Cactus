@@ -154,7 +154,7 @@ sub parse_param_ccl
   
   # Initialise, to prevent perl -w from complaining.
   $parameter_db{"\U$thorn PRIVATE\E variables"} = "";
-  
+
   for($line_number = 0; $line_number < @data; $line_number++)
   {
     $line = $data[$line_number];
@@ -182,9 +182,9 @@ sub parse_param_ccl
 	$parameter_db{"\U$thorn $block\E variables"} = "";
       }
     }
-    elsif($line =~ m:(EXTENDS )?\s*(INTEGER|REAL|KEYWORD|STRING)\s*([a-zA-Z]+[a-zA-Z0-9_]*) \s*(\"[^\"]*\"):i)
+    elsif($line =~ m:(EXTENDS )?\s*(INTEGER|REAL|LOGICAL|KEYWORD|STRING)\s*([a-zA-Z]+[a-zA-Z0-9_]*) \s*(\"[^\"]*\"):i)
     {
-      
+
       #           This is a parameter definition.
       $type = "\U$2\E";
       $variable = $3;
@@ -197,7 +197,7 @@ sub parse_param_ccl
 	$nerrors++;
 	$line_number++ until ($data[$line_number] =~ m:\}:);
       }
-      elsif($1 && $1 =~ m:EXTENDS:i && $block ne "FRIEND")
+      elsif($1 && $1 =~ m:EXTENDS:i && $block !~ m:FRIEND\s*\S:)
       {
 	#               Can only extend a friend variable.
 	print STDERR "Parse error at line $line_number\n";
