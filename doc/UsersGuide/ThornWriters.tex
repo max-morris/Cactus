@@ -3352,7 +3352,7 @@ The final file for thorn A  which is compiled will contain the code
 \begin{verbatim}
 c Get source code from other thorns
       allterms = 0d0
-      if (CCTK_IsThornActive("B").eq.0) then
+      if (CCTK_IsThornActive("B").ne.0) then
 c Add this to AllSources.inc
         allterms = allterms + 1d0
       end if
