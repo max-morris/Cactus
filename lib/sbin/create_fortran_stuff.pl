@@ -85,7 +85,7 @@ sub CreateFortranThornParameterBindings
 
     %alias_names = ();
 
-    foreach $parameter (sort(keys %these_parameters))
+    foreach $parameter (sort keys %these_parameters)
     {
 #      print "DEBUG parameter is $parameter\n";
       my $foundit = 0;
