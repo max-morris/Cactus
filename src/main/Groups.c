@@ -2443,10 +2443,11 @@ static cGroupDefinition *CCTKi_SetupGroup (const char *implementation,
       temp_int = (int *) realloc (group_of_variable,
                                   (total_variables+n_variables) * sizeof (int));
 
-      if (groups[n_groups].implementation &&
-          groups[n_groups].name &&
-          groups[n_groups].variables &&
-          temp_int)
+      if ((n_variables==0 || (groups[n_groups].implementation &&
+                              groups[n_groups].name &&
+                              groups[n_groups].variables))
+          &&
+          ((total_variables+n_variables==0) || (temp_int)))
       {
         /* Fill in the data structures. */
         group_of_variable = temp_int;
@@ -2539,6 +2540,11 @@ static CCTK_INT **CCTKi_ExtractSize (int dimension,
   CCTK_INT   **size_array;
 
 
+  if (dimension < 0)
+  {
+    CCTK_Warn (0, __LINE__, __FILE__, "Cactus","Illegal dimension specified");
+  }
+
   if (strlen (sizestring))
   {
     next_comma = sizestring;
@@ -2547,29 +2553,32 @@ static CCTK_INT **CCTKi_ExtractSize (int dimension,
 
     if (size_array)
     {
-      size_array[0] = (CCTK_INT *) malloc (dimension * sizeof (CCTK_INT));
-
-      for (dim = 1; dim < dimension; dim++)
+      if (dimension > 0)
       {
-        size_array[dim] = size_array[0] + dim;
-      }
-
-      for (dim = 0; dim < dimension; dim++)
-      {
-        /* find the comma as a delimiter for different dimension sizes */
-        last_comma = next_comma[0] == ',' ? next_comma+1 : next_comma;
-        next_comma = strstr (last_comma, ",");
-
-        /* copy dimension size token into a work string buffer */
-        tmp = strdup (last_comma);
-        if (next_comma)
+        size_array[0] = (CCTK_INT *) malloc (dimension * sizeof (CCTK_INT));
+  
+        for (dim = 1; dim < dimension; dim++)
         {
-          tmp[next_comma-last_comma] = '\0';
+          size_array[dim] = size_array[0] + dim;
         }
-
-        *size_array[dim] = CCTKi_ParamExpressionToInt (tmp, this_thorn);
-   
-        free (tmp);
+  
+        for (dim = 0; dim < dimension; dim++)
+        {
+          /* find the comma as a delimiter for different dimension sizes */
+          last_comma = next_comma[0] == ',' ? next_comma+1 : next_comma;
+          next_comma = strstr (last_comma, ",");
+  
+          /* copy dimension size token into a work string buffer */
+          tmp = strdup (last_comma);
+          if (next_comma)
+          {
+            tmp[next_comma-last_comma] = '\0';
+          }
+  
+          *size_array[dim] = CCTKi_ParamExpressionToInt (tmp, this_thorn);
+     
+          free (tmp);
+        }
       }
     }
   }
