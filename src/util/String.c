@@ -224,6 +224,52 @@ int Util_StrCmpi(const char *string1, const char *string2)
   return retval;
 }
 
+ /*@
+   @routine    Util_SplitFilename
+   @date       Wed Jan 20 10:14:00 1999
+   @author     Tom Goodale
+   @desc 
+   Splits a string into two parts at the given seperator.
+   Assigns memory for the two resulting strings, so this should be freed 
+   when no longer needed.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+int Util_SplitFilename(char **dir, char **file, const char *string)
+{
+  int retval=-1;
+  char *position;
+  char *copy;
+
+  copy = (char *)malloc(strlen(string)*sizeof(char));
+
+  strcpy(copy,string);
+
+  /* Find location of the seperator */
+  position = strrchr(copy, '/');
+
+  if(position)
+  {
+    retval = 0;
+    *file = position+1;
+    *dir = copy;
+    strcpy(position,"");
+  }
+  else
+  {
+    *file = copy;
+    *dir = NULL;
+  }
+  
+  return retval;
+}
+
+
 
 #ifdef TEST_Util_STRSEP
 
