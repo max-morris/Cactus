@@ -19,7 +19,7 @@
  * ParameterBindings.h, which in turn includes this file.
  */
 
-/* thes SCOPE* defines are used as flags fo parameter scopes. */
+/* these SCOPE* defines are used as flags fo parameter scopes. */
 
 #define SCOPE_GLOBAL        1 /* parameter is visible everywhere             */
 #define SCOPE_RESTRICTED    2 /* parameter is visible for friend thorns only */
@@ -93,7 +93,8 @@ typedef struct PARAM_PROPS
 } cParamData;
 
 #ifdef __cplusplus
-extern "C" {
+extern "C" 
+{
 #endif
 
 /* set the value of a parameter */
@@ -109,7 +110,7 @@ void *CCTK_ParameterGet (const char *name,    /* The name of the parameter  */
 /* get the string representation of a parameter's value
    (string should be freed afterwards) */
 char *CCTK_ParameterValString (const char *name,   /* The name of the parameter  */
-                          const char *thorn); /* The originating thorn      */
+                               const char *thorn); /* The originating thorn      */
 
 /* walk through list of parameters */
 const char *CCTK_ParameterWalk(int first,     /* Get first parameter or not */
