@@ -239,7 +239,11 @@ else
         i?86 | x86_64)
           # add the necessary libraries according to the compiler version
           if test "`$F90 -V 2>&1 | grep Version | sed 's/.*Version //' | sed 's/\..*//'`" -ge 8; then
-            intel_p4_opt_flag='-xN'
+            if test "`$F90 -V 2>&1 | grep EM64T`"; then
+              intel_p4_opt_flag='-xP'
+            else
+              intel_p4_opt_flag='-xN'
+            fi
             : ${LIBS='ifcore imf svml m'}
           else
             intel_p4_opt_flag='-xW'
