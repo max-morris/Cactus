@@ -159,7 +159,7 @@ cp -r /cactusdevcvs/Cactus{,Base,Connect,Einstein,X,X,X} .
 \end{verbatim}
 \item[{\em Fix permissions on new module files}]
 \begin{verbatim}
-find Cactus{,Base,Connect,Einstein,X,X,X} -type d -exec chmod 777 \;
+find Cactus{,Base,Connect,Einstein,X,X,X} -type d -exec chmod 777 {} \;
 Setperms.pl public Cactus{,Base,Connect,Einstein,X,X,X}
 \end{verbatim}
 \item[{\em Update CVS {\tt modules} file for new modules}]
@@ -179,7 +179,10 @@ The relase notes should be sent out to the cactus mailing lists and
 any other relevant places such as linux-announce and Freshmeat.
 \item[{\em Update web page}]
 The release should be noted in the news section of the web page.
-Additionally the html versions of the documentation should be updated.
+Most information such as generating documentation takes place automatically 
+for the web pages, the only thing which needs to be done manually is to
+checkout any new arrangements in the Stable Release in the relevent 
+directories in the {\tt CheckOut} directory as {\tt cactus\_web}.
 \item[{\em Close PRs}]
 Any problem reports which were closed in the beta relase should be
 audited for correct entries in the {\tt Fix} field and then their
