@@ -156,7 +156,7 @@ sub fortran_name
 {
   local(\$old_name) = \@_;
 
-  return \"\$old_name\";
+  return \"\\L\$old_name\";
 
 }
 ";
@@ -293,7 +293,7 @@ sub fortran_common_name
 {
   local(\$old_name) = \@_;
 
-  return \"\$old_name\";
+  return \"\\L\$old_name\";
 
 }
 ";
