@@ -20,6 +20,10 @@
 
 #include "definethorn.h"
 
+/* Define which thorn the file is in */
+
+#include "definethisthorn.h"
+
 /* Define some stuff */
 
 #ifdef FCODE
@@ -73,5 +77,7 @@ typedef struct
 extern int _cctk_one;
 
 #endif /*CCODE*/
+
+#define CCTK_WARN(a,b) CCTK_Warn(a,CCTK_THORNSTRING,b)
 
 #endif

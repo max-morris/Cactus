@@ -1,5 +1,5 @@
  /*@@
-   @header    Coords.h
+   @header    Coord.h
    @date      Mon April 12 1999
    @author    Gabrielle Allen
    @desc 
@@ -8,14 +8,23 @@
    @version $Header$
  @@*/
 
-#ifndef _COORDS_H_
-#define _COORDS_H_
+#ifndef _COORD_H_
+#define _COORD_H_
 
 /* Prototypes */
 
 #ifdef __cplusplus 
 extern "C" {
 #endif
+
+
+struct Coordprops
+{
+  char * name;
+  int    index;
+  int    direction;
+};
+
 
 
 #ifdef __cplusplus 
