@@ -2683,12 +2683,12 @@ No Fortran routine exists at the moment.
 \begin{discussion}
 The group's group type index indicates the type of variables in the group.
 Either scalars, grid functions or arrays. The group type can be checked
-with the Cactus provided macros for {\t GROUP\_SCALAR}, {\t GROUP\_GF}, {\t GROUP\_ARRAY}.
+with the Cactus provided macros for {\t CCTK\_SCALAR}, {\t CCTK\_GF}, {\t CCTK\_ARRAY}.
 \end{discussion}
 \begin{examples}
 \begin{tabular}{@{}p{3cm}cp{11cm}}
 \hfill {\bf C} && {\t index = CCTK\_GroupIndex("evolve::scalars")}\\
-               &&{\t array = (GROUP\_ARRAY == CCTK\_GroupTypeFromVarI(index)) ;}
+               &&{\t array = (CCTK\_ARRAY == CCTK\_GroupTypeFromVarI(index)) ;}
 \\
 \hfill {\bf Fortran} && {\t call CCTK\_GROUPTYPEFROMVARI(type,3)}\\
 \\
@@ -2726,7 +2726,7 @@ Group index.
 A group's group type index indicates the type of variables in the
 group.  The three group types are scalars, grid functions, and grid
 arrays. The group type can be checked with the Cactus provided macros
-for {\t GROUP\_SCALAR}, {\t GROUP\_GF}, {\t GROUP\_ARRAY}.
+for {\t CCTK\_SCALAR}, {\t CCTK\_GF}, {\t CCTK\_ARRAY}.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
