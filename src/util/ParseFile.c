@@ -495,7 +495,7 @@ static void CheckBuf(int p, int l)
     fprintf(stderr,"WARNING: Parser buffer overflow on line %d\n",
             l);
     fprintf(stderr,"This indicates either an incorrect parm file or\n");
-    fprintf(stderr,"the need to recompile doParse.C with a bigger\n");
+    fprintf(stderr,"the need to recompile " __FILE__ " with a bigger\n");
     fprintf(stderr,"BUF_SZ parm.\n");
 
     assert(0);
