@@ -365,10 +365,9 @@ By default no routine of a thorn will be run.  The schedule.ccl file
 defines those that should be run and when they should be run.
 
 The specification of this is via a schedule block which consists of
-a line of the form
+ lines of the form
 
 \begin{verbatim}
-
 schedule <name> at <time bin> [other options] 
 {
   LANG:     <FORTRAN|C>
@@ -425,20 +424,26 @@ Convergence stuff.
 
 \end{itemize}
 
-The STORAGE and COMM keywords specify any groups which must have memory 
+These time bins can be given in the {\tt schedule.ccl} file with
+or without the initial {\tt CCTK\_}, and in any case.
+
+The {\tt STORAGE} and {\tt COMM} keywords specify any groups which must have memory 
 allocated for them or communication enabled for the duration of that routine.
 The storage or communication status reverts to its previous status after the 
 routine returns.
 
-TRIGGERS is used when the routine is registered at ANALYSIS --- this is a 
+{\tt TRIGGERS} is used when the routine is registered at {\tt ANALYSIS} --- 
+this is a 
 special time bin, a routine registered here will only be called if one of
-the variables from a group in TRIGGERS is due for output.
+the variables from a group in {\tt TRIGGERS} is due for output.
 
 The `other options' allow finer grained control of the scheduling.  It is
-possible to state that the routine must run BEFORE or AFTER another routine.
+possible to state that the routine must run {\tt BEFORE} or {\tt AFTER} 
+another routine.
 
-As well as schedule blocks it's possible to embed C code in the schedule.ccl.
-This can be used to schedule things based upon the value of a parameter.
+As well as schedule blocks it's possible to embed C style {\tt if/else} 
+statements in the schedule.ccl.
+These can be used to schedule things based upon the value of a parameter.
 
 E.g.
 
@@ -454,6 +459,16 @@ if(evolve_hydro)
   } "Do a predictor step on the hydro variables"
 }
 \end{verbatim}
+
+\subsubsection{Storage and Communication Outside of Schedule Blocks}
+
+The keywords {\tt STORAGE} and {\tt COMM} can also be used outside
+of the schedule blocks to indicate that storage/communication for these
+groups should be switched on at the start of the run. Note that
+the storage/communication is only allocated in this way at the start,
+a thorn could explicitly switch the storage off.
+
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
