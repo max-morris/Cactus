@@ -6,7 +6,7 @@
 #  @desc 
 #  Parses the the configuration files for thorns.
 #  @enddesc 
-#  @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.19 1999-07-04 20:44:58 goodale Exp $
+#  @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.20 1999-07-05 13:05:12 allen Exp $
 #@@*/
 
 # Global parameter to track the number of errors from the CST
@@ -672,8 +672,10 @@ sub CreateParameterBindings
   print OUT  <<EOT;
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "config.h"
 #include "Misc.h"
+#include "WarnLevel.h"
 
 EOT
 
@@ -745,7 +747,10 @@ EOT
     }
     else
     {
-       fprintf(stderr, "%s is not active\n", implementation);
+       char *message = malloc( (200+strlen(param_name)+strlen(implementation))*sizeof(char) );
+       sprintf(message, "Can't set %s - %s is not active", param_name, implementation);
+       CCTK_ParamWarn("CactusBindings",message);
+       free(message);
        retval = -2;
     }
   }  
