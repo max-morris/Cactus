@@ -79,7 +79,7 @@ elsif (! defined $thornlist)
       @thorns = &FindDirectories("$arrangements_dir$arrangement");
 
       foreach my $thorn (@thorns) {
-         print "\n$arrangement/$thorn" if ($thorn ne "doc");
+         print "$arrangement/$thorn\n" if ($thorn ne "doc");
       }
    }
 } 
