@@ -1453,7 +1453,7 @@ Here, {\tt CCTK\_GFINDEX3D(cctkGH,i,j,k)]} expands to
 \label{sec:cava2}
 
 The Cactus variables which are passed through the macros
-{\tt CCTK\_ARGUMENTS}, {\tt CCTK\_ARGUMENTS}, etc are
+{\tt CCTK\_ARGUMENTS}, etc are
 \begin{Lentry}
 \item [{\tt cctk\_dim}] An integer with the number of dimensions
       used for this grid hierarchy
@@ -2323,11 +2323,11 @@ the reduction call is made.
 
 Note that since most source files (see Section~\ref{nacofosofi} for
 exceptions) pass through a C preprocessor, C style comments can be
-used in Fortran code. C++ comments (that is //), should not be used in
-Fortran code, since they indicate the string concatenation operator in
-Fortran.
+used in Fortran code. (Note that C++ comments (that is //), 
+should only be used in C++ source code).
 
-The Flesh and the Cactus thorns use {\tt grdoc} to document the code.
+The Flesh and the Cactus thorns use the {\tt grdoc} Code Documenting System
+({\tt http://jean-luc.aei.mpg.de/Codes/grdoc/} to document source code.
 
 
 \section{Providing Run Time Information}
@@ -2518,27 +2518,36 @@ suite does not give the correct answers.
 For details on running the test suites, see Section~\ref{sec:te}.
 
 
+
+
 \chapter{Advanced Thorn Writing}
-
-
 
 \section{Using Cactus Timers}
 
 \subsection{What are timers?}
 
-The standard timing information available during a simulation was
-described in Section~\ref{????}.
-Cactus provides a flexible mechanism for timing different sections of 
-your thorns using all the clocks which have been registered with the Flesh.
-By default, the Flesh provides two clocks (if they are available on 
-your achitecture), measuring wall clock time and CPU time. Additional 
-clocks are implemented by thorns and registered with the flesh (see 
-Section~\ref{????} on how to write and register your own clock).
+Cactus Timers can only currently be used in C or C++ source code,
+although the API's for Fortran code are currently being added [FIXME].
 
-You can add any number of timers to your thorn source code, providing each with
-a chosen name, for example {\t TimeMyRoutine}, {\t TimeNextCalculation}, and
-then use Cactus functions to switch on the timers, stop then, reset them, 
-and recover timing information from them.
+The standard timing information available during a simulation was
+described in Section~\ref{????}. [FIXME: This isn't filled in yet
+because it is being reworked] Cactus provides a flexible mechanism for
+timing different sections of your thorns using various clocks which
+have been registered with the Flesh.  By default, the Flesh provides a
+set of clocks (if they are available), measuring for
+example wall clock time and CPU time. Additional clocks can be 
+implemented by thorns and registered with the Flesh (see
+Section~\ref{????} [FIXME: clock registration to be added]
+on how to write and register your own clock).
+
+You can add any number of timers to your thorn source code, providing
+each with a chosen name, for example {\tt TimeMyRoutine}, {\tt TimeNextCalculation}, and then use Cactus functions to switch on the
+timers, stop or reset them, and recover timing information.
+
+Note that we use the word {\it Clock} to describe the timing instrument
+itself, for example the hardware counters on a machine, and the word
+{\it Timer} to describe the calls in your code which collect results
+from the different {\it Clocks}.
 
 \subsection{Timing calls}
 
@@ -2546,13 +2555,14 @@ and recover timing information from them.
 
 \item[{\t CCTK\_TimerCreate}, {\t CCTK\_TimerCreateI}]
 
-Create a timer with a provided name  (or with no name)  and give back
-a timer index. If no name is provided for the function, future interactions
-with the timer should be made using the returned timer index.
+Create a timer with a given name ({\t CCTK\_TimerCreate}), or with no name
+({\tt CCTK\_TimerCreateI})  and give back a timer index. 
+If no name is provided for the timer, future calls 
+should be made using the returned timer index.
 
 \item[{\t CCTK\_TimerDestroy}, {\t CCTK\_TimerDestroyI}]
 
-Destroy a timer using either the timer name or timer index. This 
+Destroy a timer using either the timer name or timer index. 
 
 \item[{\t CCTK\_TimerStart}, {\t CCTK\_TimerStartI}]
 
@@ -2565,9 +2575,9 @@ Stop the given timer (identified by name or index) on all registered clocks.
 
 \item[{\t CCTK\_TimerReset}, {\t CCTK\_TimerResetI}]
 
-Reset the given timer.
+Reset the given timer on all registered clocks.
 
-\item[{\t CCTK\_TimerCreateData}, {\t CCTK\_Timer}, {\t CCTK\_TimerDestroyData}]
+\item[{\t CCTK\_TimerCreateData}, {\t CCTK\_Timer}, {\t CCTK\_TimerI}, {\t CCTK\_TimerDestroyData}]
 
 Access the actual timing results, which are passed back as a 
 structure, {\t cTimerData} described below, in {\t CCTK\_Timer}. 
@@ -2577,24 +2587,62 @@ is provided to destroy the stucture
 
 \end{Lentry}
 
+\subsection{The {\t cTimerData} Structure}
+
+The structure holding the timing data, {\t cTimerData}, contains
+the number of collected times (one measurement for each registered clock),
+and the measured time for each clock. The measured time is held in 
+a structure of type {\t cTimerVal} which contains the data type 
+of the measured value, a description of the clock, and the units used
+for the measurements. Hopefully additional interfaces will soon be added
+to avoid detailed knowledge of these structures, but for now here are
+the gory details:
+
+{\tt
+\begin{verbatim}
+typedef enum {val_none, val_int, val_long, val_double} cTimerValType;
+
+typedef struct
+{
+  cTimerValType type;
+  const char *heading;
+  const char *units;
+  union
+  {
+    int        i;
+    long int   l;
+    double     d;
+  } val;
+} cTimerVal;
+
+typedef struct
+{
+  int n_vals;
+  cTimerVal *vals;
+} cTimerData;
+\end{verbatim}
+}
 
 \subsection{How to insert timers in your code}
 
 The function prototypes and structure definitions are contained in the
-include file {\t CCTK\_Timers.h}, which is included in the standard thorn header file {\t cctk.h}. At the moment the timer calls are only 
-available from C. 
+include file {\tt cctk\_Timers.h}, which is included in the standard
+thorn header file {\tt cctk.h}. At the moment the timer calls are only
+available from C.
 
-The following example, which uses a timer called {\t TimeMyStuff} to 
-instrument a section of code, illustrates how timers are used by application
-thorns:
+The following example, which uses a timer called {\t TimeMyStuff} to
+instrument a section of code, illustrates how timers are used by
+application thorns. A working example is available in the thorn {\tt
+CactusTest/TestTimers}.
 
 {\bf Creating the {\t TimeMyStuff} timer}
 
-The first action for any timer is to create it, using {\t CCTK\_TimerCreate}.
-This can be performed at any time, as long as it precedes using the timer:
+The first action for any timer is to create it, using {\t
+CCTK\_TimerCreate}.  This can be performed at any time, as long as it
+precedes using the timer: 
 {\tt
 \begin{verbatim}
-#include ``cctk_Timers.h''
+#include "cctk_Timers.h"
 ierr = CCTK_TimerCreate(`TimeMyStuff`);
 \end{verbatim}
 }
@@ -2605,11 +2653,12 @@ Code sections are instrumented using the Start, Stop and Reset functions. These
 functions are applied to the chosen timer using all the registered clocks.
 {\tt
 \begin{verbatim}
-#include ``cctk_Timers.h''
+#include "cctk_Timers.h"
 ierr = CCTK_TimerStart(`TimeMyStuff`);
 \* Piece of code to time *\
 y = CalculateNewValue(y);
 ierr = CCTK_TimerStop(`TimeMyStuff`);
+\end{verbatim}
 }
 
 {\bf Accessing the timer results}
@@ -2619,10 +2668,10 @@ of different types.
 
 {\tt
 \begin{verbatim}
-#include ``cctk_Timers.h''
+#include "cctk_Timers.h"
 cTimerData *info;
 
-info = CCTK_TimerDataCreate();
+info = CCTK_TimerCreateData();
 ierr = CCTK_Timer('TimeMyStuff',info);
 
 for (i = 0; i < info->n_vals; i++)
@@ -2630,22 +2679,22 @@ for (i = 0; i < info->n_vals; i++)
   switch (info->vals[i].type)
   {
     case val_int:
-    printf(``%s: %d %s'', info->vals[i].heading,info->vals[i].val.i, 
-                          info->vals[i].units);
+    printf("%s: %d %s", info->vals[i].heading,info->vals[i].val.i, 
+                        info->vals[i].units);
     break;
 
     case val_long:
-    printf(``%s: %d %s'', info->vals[i].heading,(int) info->vals[i].val.l, 
-                          info->vals[i].units);
+    printf("%s: %d %s", info->vals[i].heading,(int) info->vals[i].val.l, 
+                        info->vals[i].units);
     break;
 
     case val_double:
-    printf(``%s: %.3f %s'', info->vals[i].heading,info->vals[i].val.d, 
-                            info->vals[i].units);
+    printf("%s: %.3f %s", info->vals[i].heading,info->vals[i].val.d, 
+                          info->vals[i].units);
     break;
 
     default:
-    CCTK_WARN(1, ``Unknown data type for timer info'');
+    CCTK_WARN(1, "Unknown data type for timer info");
     break;
   }
 }
@@ -2726,19 +2775,20 @@ the declaration {\tt DECLARE\_CCTK\_FUNCTIONS}.
 \section{Memory Tracing}
 \label{sec:metr}
 
-Cactus provides a mechanism for overriding the standard C memory allocation 
-routines ({\tt malloc, free,} \ldots) with Cactus specific routines, 
-that track the amount of memory allocated and from where the
-allocation call was made. This information can be accessed by the user to
-provide an understanding of the memory consumption between two instances and
-to track down possible memory leaks. This feature is available in C only.
+Cactus provides a mechanism for overriding the standard C memory
+allocation routines ({\tt malloc, free,} \ldots) with Cactus specific
+routines, that track the amount of memory allocated and from where the
+allocation call was made. This information can be accessed by the user
+to provide an understanding of the memory consumption between two
+instances and to track down possible memory leaks. This feature is
+available in C only.
 
 \subsection{Activating Memory Tracing}
 \label{sec:acmetr}
 
-Memory tracing has to be activated at configure time. The
-standard malloc statements are overriden with macros ({\tt CCTK\_MALLOC}). 
-To activate memory tracing use either
+Memory tracing has to be activated at configure time. The standard
+malloc statements are overriden with macros ({\tt CCTK\_MALLOC}).  To
+activate memory tracing use either
 
 \begin{Lentry}
 \item[{\tt DEBUG=all}]  Enables all debug options (compiler debug
@@ -2755,9 +2805,9 @@ machine> gmake bigbuild DEBUG=yes
  
 machine> gmake bigbuild-config DEBUG=memory
 \end{verbatim}
-The new configuration {\tt bigbuild} is configured with all debugging features
-turned on. The already existing configuration {\tt bigbuild} is
-reconfigured with memory tracing only.
+The new configuration {\tt bigbuild} is configured with all debugging
+features turned on. The already existing configuration {\tt bigbuild}
+is reconfigured with memory tracing only.
 
 \subsection{Using Memory Tracing}
 \label{sec:usmetr}
