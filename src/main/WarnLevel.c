@@ -288,25 +288,26 @@ int CCTK_VWarn (int level,
 {
   CCTK_INT *cctk_full_warnings;
   int param_type;
-
-
+  int myproc;
   va_list ap;
 
   if (level <= warning_level)
   {
+    myproc = CCTK_MyProc(NULL);
+
     cctk_full_warnings = (CCTK_INT *) CCTK_ParameterGet ("cctk_full_warnings",
                                                          "Cactus",
                                                          &param_type);
-    if (cctk_full_warnings && *cctk_full_warnings)
+    if ((level <= error_level) || (*cctk_full_warnings && cctk_full_warnings))
     {
-      fprintf (stderr, "WARNING level %d in thorn %s\n"
+      fprintf (stderr, "WARNING level %d in thorn %s processor %d\n"
                        "  (line %d of %s): \n"
                        "  -> ",
-               level, thorn, line, file);
+               level, thorn, myproc, line, file);
     }
     else
     {
-      fprintf (stderr, "WARNING[%d] (%s): ", level, thorn);
+      fprintf (stderr, "WARNING[L%d,P%d] (%s): ", level, myproc, thorn);
     }
 
     va_start (ap, format);
@@ -507,12 +508,11 @@ int CCTKi_SetWarnLevel (int level)
   }
   else
   {
-    CCTK_VWarn (3, __LINE__, __FILE__, "Cactus",
+    CCTK_VInfo ("Cactus",
                 "Warning level is already %d", level);
     retval = 0;
   }
 
-  /* FIXME Is this right? Gab. */
   if (warning_level < error_level)
   {
     error_level = warning_level;
@@ -531,7 +531,7 @@ int CCTKi_SetWarnLevel (int level)
    @desc
                Sets the error level
    @enddesc
-   @calls      CCTK_VWarn
+   @calls      CCTK_VWarn               
                CCTK_VInfo
 
    @var        level
@@ -551,7 +551,6 @@ int CCTKi_SetErrorLevel (int level)
 {
   int retval;
 
-
   if (level <= warning_level)
   {
     if (error_level != level)
@@ -570,9 +569,12 @@ int CCTKi_SetErrorLevel (int level)
   }
   else
   {
-    CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
-                "Error level cannot be higher than current warning level %d",
-                warning_level);
+    retval = level > error_level ? +1 : -1;
+    error_level = level;
+    CCTK_VInfo ("Cactus",
+                "Increasing warning level from %d to match error level %d",
+                warning_level,error_level);
+    warning_level = level;
     retval = 0;
   }
 
