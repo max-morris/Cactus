@@ -782,7 +782,7 @@ sub CreateCArgumentPrototype
   {
     if($arguments{$argument} =~ m:STORAGESIZE:)
     {
-      $prototype .= "$sep"."int *";
+      $prototype .= "$sep"."const int *";
       $sep = ",";
     }
   }
