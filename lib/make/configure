@@ -4348,6 +4348,23 @@ EOF
  
 
 
+# Define how to make a directory in the config.h file
+
+cat >> confdefs.h <<EOF
+#define MKDIR "$MKDIR"
+EOF
+ 
+
+
+
+: ${MKDIRFLAGS="-p"}
+
+cat >> confdefs.h <<EOF
+#define MKDIRFLAGS " $MKDIRFLAGS "
+EOF
+ 
+
+
 # The perl scripts run by the make system need to have their names
 # changed if under cygwin - e.g. //d/foo needs to be d:/foo
 
@@ -4954,6 +4971,7 @@ s%@BUILD_DIR@%$BUILD_DIR%g
 s%@CCTK_LIBDIR@%$CCTK_LIBDIR%g
 s%@EXEDIR@%$EXEDIR%g
 s%@EXE@%$EXE%g
+s%@MKDIRFLAGS@%$MKDIRFLAGS%g
 s%@BUILD_ACTIVETHORNS@%$BUILD_ACTIVETHORNS%g
 s%@CST@%$CST%g
 s%@F_FILE_PROCESSOR@%$F_FILE_PROCESSOR%g
