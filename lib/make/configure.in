@@ -48,11 +48,11 @@ AC_CHECK_PROGS(PERL, perl)
 fi
 
 if test -z "$F90" ; then
-AC_CHECK_PROGS(F90, f90 pgf90)
+AC_CHECK_PROGS(F90, f90 pgf90 xlf90)
 fi
 
 if test -z "$F77" ; then
-AC_CHECK_PROGS(F77, f77 pgf77 g77 f90 pgf90)
+AC_CHECK_PROGS(F77, f77 pgf77 g77 f90 pgf90 xlf90)
 fi
 
 if test -z "$AR" ; then
@@ -330,9 +330,33 @@ AC_SUBST(C_DEPEND)
 
 : ${C_DEPEND='$(CC) -E -M $(CPPFLAGS)'}
 
+AC_SUBST(C_DEPEND_OUT)
+
+: ${C_DEPEND_OUT=' > $@'}
+
 AC_SUBST(CXX_DEPEND)
 
 : ${CXX_DEPEND='$(CXX) -E -M $(CPPFLAGS)'}
+
+AC_SUBST(CXX_DEPEND_OUT)
+
+: ${CXX_DEPEND_OUT=' > $@'}
+
+AC_SUBST(F77_DEPEND)
+
+: ${F77_DEPEND='$(CPP) -M $(CPPFLAGS)'}
+
+AC_SUBST(F77_DEPEND_OUT)
+
+: ${F77_DEPEND_OUT=' > $@'}
+
+AC_SUBST(F_DEPEND)
+
+: ${F_DEPEND='$(CPP) -M $(CPPFLAGS)'}
+
+AC_SUBST(F_DEPEND_OUT)
+
+: ${F_DEPEND_OUT=' > $@'}
 
 AC_SUBST(GET_WD)
 : ${GET_WD="pwd"}

@@ -20,6 +20,25 @@
 DIVEL   =  __________________
 DIVIDER =  $(DIVEL)$(DIVEL)$(DIVEL)$(DIVEL)
 
+#####################################################################
+# Define how to do dependencies
+define C_DEPENDENCIES
+	$(C_DEPEND) $< $(INC_DIRS:%=-I%) $(SYS_INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DCCODE $(C_DEPEND_OUT)
+endef
+
+define CXX_DEPENDENCIES
+	$(CXX_DEPEND) $< $(INC_DIRS:%=-I%) $(SYS_INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DCCODE $(CXX_DEPEND_OUT)
+endef
+
+define F77_DEPENDENCIES
+	$(F77_DEPEND) $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DFCODE $< $(F77_DEPEND_OUT)
+endef
+
+define F_DEPENDENCIES
+	$(F_DEPEND) $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DFCODE $< $(F_DEPEND_OUT)
+endef
+
+#####################################################################
 # Define how to do a C compilation
 define PREPROCESS_C
 cat $< | $(PERL) $(C_FILE_PROCESSOR) $(CONFIG) > $(notdir $<)
@@ -82,7 +101,7 @@ endef
 
 
 %.d: $(SRCDIR)/%.c
-	$(C_DEPEND) $< $(INC_DIRS:%=-I%) $(SYS_INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DCCODE > $@
+	$(C_DEPENDENCIES)
 
 # Build rules for C++
 
@@ -105,10 +124,10 @@ endef
 	$(POSTPROCESS_CXX)
 
 %.d: $(SRCDIR)/%.cc
-	$(CXX_DEPEND) $< $(INC_DIRS:%=-I%) $(SYS_INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DCCODE > $@
+	$(CXX_DEPENDENCIES)
 
 %.d: $(SRCDIR)/%.C
-	$(CXX) -E -M $(CPPFLAGS) $< $(INC_DIRS:%=-I%) $(SYS_INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DCCODE > $@
+	$(CXX_DEPENDENCIES)
 
 # Build rules for F77
 
@@ -123,18 +142,19 @@ endef
 
 %.o: $(SRCDIR)/%.f77
 	@echo $(DIVIDER)
-	@echo Preprocessing $<
-	$(PREPROCESS_F77)
+#	@echo Preprocessing $<
+#	$(PREPROCESS_F77)
 	@echo Compiling $<
 	$(COMPILE_F77)
 	@echo Postprocessing $<
 	$(POSTPROCESS_F77)
 
 %.d: $(SRCDIR)/%.F77
-	$(CPP) -M $(CPPFLAGS) $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DFCODE $< > $@
+	$(F77_DEPENDENCIES)
 
 %.d: $(SRCDIR)/%.f77
-	$(CPP) -M $(CPPFLAGS) $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DFCODE $< > $@
+	$(F77_DEPENDENCIES)
+
 
 # Build rules for F90
 
@@ -149,15 +169,16 @@ endef
 
 %.o: $(SRCDIR)/%.f
 	@echo $(DIVIDER)
-	@echo Preprocessing $<
-	$(PREPROCESS_F90)
+#	@echo Preprocessing $<
+#	$(PREPROCESS_F90)
 	@echo Compiling $<
 	$(COMPILE_F90)
 	@echo Postprocessing $<
 	$(POSTPROCESS_F90)
 
 %.d: $(SRCDIR)/%.F
-	$(CPP) -M $(CPPFLAGS) $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DFCODE $< > $@
+	$(F_DEPENDENCIES)
 
 %.d: $(SRCDIR)/%.f
-	$(CPP) -M $(CPPFLAGS) $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DFCODE $< > $@
+	$(F_DEPENDENCIES)
+
