@@ -11,9 +11,17 @@
 
 static char *rcsid = "$Id$";
 
-int CCTK_TraverseGHExtensions(tFleshConfig *config, 
-			      int convergence_level, 
-			      cGH *GH)
+int CCTK_TraverseGHExtensions(cGH *GH, const char *when)
 {
   return 0;
+}
+
+int CCTK_RegisterGHExtension(cGH *GH, const char *name)
+{
+  return -1;
+}
+
+int CCTK_RegisterGHExtensionInitialiser(int handle, void (*func)())
+{
+  return -1;
 }
