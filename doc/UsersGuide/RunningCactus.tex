@@ -388,7 +388,10 @@ by * may be specified on the command line.
 \item [{\tt CXX}]    The C++ compiler.
 \item [{\tt F90}]  * The Fortran 90 compiler.
 \item [{\tt F77}]  * The Fortran 77 compiler.
-\item [{\tt CPP}]    The preprocessor used to generate dependencies and to preprocess Fortran code.
+\item [{\tt CPP}]    The preprocessor used to generate dependencies
+for and to preprocess C and C++ code.
+\item [{\tt FPP}]    The preprocessor used to generate dependencies
+for and to preprocess Fortran code.
 \item [{\tt LD}]   * The linker.
 \item [{\tt AR}]     The archiver used for generating libraries.
 \item [{\tt RANLIB}] The archive indexer to use.
@@ -415,10 +418,15 @@ Flags for the C++ compiler.
 
 \item [{\tt CPPFLAGS}]
 Flags for the preprocessor (used to generate compilation dependencies
-and preprocess Fortran code).
+for and preprocess C and C++ code).
+
+\item [{\tt FPPFLAGS}]
+Flags for the preprocessor (used to generate compilation dependencies
+for and preprocess Fortran code).
 
 \item [{\tt MKDIRFLAGS}]
   Flags for {\tt MKDIR} so that no error is given if the directory exists.
+
 \item [{\tt LDFLAGS}]
 * Flags for the linker.
 
