@@ -284,8 +284,7 @@ static int DoneMainLoop (const cGH *GH, CCTK_REAL simulation_time,int iteration)
       /* get the elapsed runtime in minutes and compare with max_runtime */
       gettimeofday (&runtime, NULL);
       runtime.tv_sec -= starttime.tv_sec;
-      runtime.tv_sec /= 60;
-      max_runtime_reached = runtime.tv_sec >= max_runtime;
+      max_runtime_reached = ((CCTK_REAL) runtime.tv_sec / 60.0) >= max_runtime;
     }
 #endif
 
