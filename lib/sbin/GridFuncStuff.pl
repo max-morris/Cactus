@@ -313,7 +313,7 @@ sub CreateFortranArgumentDeclarations
 
 	if($1 eq "CHAR")
 	{
-	  push(@declarations, "CHARACTER $argument$suffix$2");
+	  push(@declarations, "CCTK_CHAR $argument$suffix$2");
 	}
 	elsif ($1 eq REAL)
 	{
@@ -321,11 +321,11 @@ sub CreateFortranArgumentDeclarations
 	}
 	elsif ($1 eq COMPLEX)
 	{
-	  push(@declarations, "COMPLEX $argument$suffix$2");
+	  push(@declarations, "CCTK_COMPLEX $argument$suffix$2");
 	}
 	elsif ($1 eq INTEGER)
 	{
-	  push(@declarations, "INTEGER $argument$suffix$2");
+	  push(@declarations, "CCTK_INT $argument$suffix$2");
 	}
 	else
 	{
@@ -338,6 +338,92 @@ sub CreateFortranArgumentDeclarations
   return @declarations;
     
 }
+
+
+#/*@@
+#  @routine    CreateCArgumentDeclarations
+#  @date       Jun 29 1999
+#  @author     Tom Goodale, Gabrielle Allen
+#  @desc 
+#  Creates the requisite argument list declarations for C.
+#  @enddesc 
+#  @calls     
+#  @calledby   
+#  @history 
+#
+#  @endhistory 
+#
+#@@*/
+
+sub CreateCArgumentDeclarations
+{
+  local(%arguments) = @_;
+  local($argument);
+  local(@declarations) = ();
+  local($suffix);
+  local($imp);
+
+  
+  # Now deal with the rest of the arguments
+  foreach $argument (sort keys %arguments)
+  {
+    $suffix = "";
+    if($arguments{$argument} !~ m:STORAGESIZE:)
+    {
+      $arguments{$argument} =~ m\([^ ]*) ?(.*)?!(.*)::(.*)!(.*)\;
+
+      $ntimelevels = $5;
+
+      for($level = $ntimelevels; $level > 0; $level--)
+      {
+	# Modify the name for the time level 
+	if($ntimelevels == 1)
+	{
+	  $suffix = "";
+	}
+	elsif($level == $ntimelevels)
+	{
+	  $suffix = "_n";
+	}
+	elsif($level == $ntimelevels-1)
+	{
+	  $suffix = "";
+	}
+	else
+	{
+	  $suffix .= "_p";
+	}
+
+	if($1 eq "CHAR")
+	{
+	  push(@declarations, "CCTK_CHAR *$argument$suffix=(CCTK_CHAR *)(cctkGH->data[CCTK_GetVarIndex(\"$3::$argument\")][0]);");
+	}
+	elsif ($1 eq REAL)
+	{
+	  
+	  push(@declarations, "CCTK_REAL *$argument$suffix=(CCTK_REAL *)(cctkGH->data[CCTK_GetVarIndex(\"$3::$argument\")][0]);");
+	}
+	elsif ($1 eq COMPLEX)
+	{
+	  push(@declarations, "CCTK_COMPLEX *$argument$suffix=(CCTK_COMPLEX *)(cctkGH->data[CCTK_GetVarIndex(\"$3::$argument\")][0]);");
+	}
+	elsif ($1 eq INTEGER)
+	{
+	  push(@declarations, "CCTK_INT *$argument$suffix=(CCTK_INT *)(cctkGH->data[CCTK_GetVarIndex(\"$3::$argument\")][0]);");
+	}
+	else
+	{
+	  print STDERR "Unknown argument type $1\n";
+	}
+      }
+    }
+  }
+
+  return @declarations;
+    
+}
+
+
 
 #/*@@
 #  @routine    CreateFortranArgumentList
@@ -617,7 +703,7 @@ sub CreateCArgumentList
 	{
 	  if($1 eq "CHAR")
 	  {
-	    $arglist .= "$sep"."(char *)((xGH)->data[CCTKARGNUM_$argument][$level-1])";
+	    $arglist .= "$sep"."(CCTK_CHAR *)((xGH)->data[CCTKARGNUM_$argument][$level-1])";
 	    $sep = ",";
 	  }
 	  elsif ($1 eq REAL)
@@ -627,12 +713,12 @@ sub CreateCArgumentList
 	  }
 	  elsif ($1 eq COMPLEX)
 	  {
-	    $arglist .= "$sep"."(Complex *)((xGH)->data[CCTKARGNUM_$argument][$level-1])";
+	    $arglist .= "$sep"."(CCTK_COMPLEX *)((xGH)->data[CCTKARGNUM_$argument][$level-1])";
 	    $sep = ",";
 	  }
 	  elsif ($1 eq INTEGER)
 	  {
-	    $arglist .= "$sep"."(int *)((xGH)->data[CCTKARGNUM_$argument][$level-1])";
+	    $arglist .= "$sep"."(CCTK_INT *)((xGH)->data[CCTKARGNUM_$argument][$level-1])";
 	    $sep = ",";
 	  }
 	  else
@@ -711,6 +797,19 @@ sub CreateThornArgumentHeaderFile
 
     # Do the C definitions
     push(@returndata, "#ifdef CCODE");
+
+    # Create the C argument declarations
+
+    @data = &CreateCArgumentDeclarations(%data);
+   
+    push(@returndata, "#define \UDECLARE_$thorn"."_$block"."_CARGUMENTS \\");
+
+    foreach $line (@data)
+    {
+      push(@returndata, "$line \\");
+    }
+
+    push(@returndata, ("",""));
 
     # Create the C argument variable number statics
 
@@ -795,6 +894,29 @@ sub CreateThornArgumentHeaderFile
   
   push(@returndata, ("",""));
 
+  
+
+  push(@returndata, "#ifdef CCODE");
+
+  # Don't need C arguments
+
+  # Do the C declarations
+  push(@returndata, "#define \UDECLARE_$thorn"."_CARGUMENTS _DECLARE_CCTK_CARGUMENTS \\");
+
+  foreach $block ("PRIVATE", "PROTECTED", "PUBLIC")
+  {
+    if($hasvars{$block})
+    {
+      push(@returndata, "DECLARE_\U$thorn"."_$block"."_CARGUMENTS \\");
+    }
+  }
+
+  push(@returndata, ("",""));
+
+  push(@returndata, "#endif /*CCODE*/");
+  
+  push(@returndata, ("",""));
+
 
   ################################################
   
@@ -865,8 +987,17 @@ sub CreateThornArgumentHeaderFile
 
   push(@returndata, "#define \U$thorn"."_CARGUMENTS cGH *cctkGH ");
 
-  push(@returndata, "#define \UDECLARE_$thorn"."_CARGUMENTS ");
-  
+#  push(@returndata, "#define \UDECLARE_$thorn"."_CARGUMENTS \\");
+
+#  foreach $block ("PRIVATE", "PROTECTED", "PUBLIC")
+#  {
+#    if($hasvars{$block})
+#    {
+#	push(@returndata, "\UDECLARE_$thorn_$block"."_CARGUMENTS \\");
+#    }
+#  }
+
+  push(@returndata, ("",""));
 
   push(@returndata, "#endif /*CCODE*/");
   
