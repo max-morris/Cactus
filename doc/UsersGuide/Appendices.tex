@@ -41,16 +41,18 @@ that have a \texttt{.ccl} extension).
 is what you get if you check out {\tt Cactus} from our CVS repository.
 \item[{\tt friend}]
 \item[{\tt GF}] Shorthand for a {\tt grid function}.
-\item[{\tt gmake}]
+\item[{\tt gmake}] GNU version of make utility.
 \item[{\tt ghostzone}] 
 A ghostzone is a set of points added for parallelisation purposes to
 enable inter-processor communication of data from processor
 boundaries.  In single processor runs there are no ghost zones.
 Ghost zones should not be confused with symmetry or boundary zones.
+\item[{\tt grid array}]
 \item[{\tt grid function}]
 \item[{\tt grid hierarchy}] A computational grid, and the grid variables associated with it.
 \item[{\tt grid scalar}]
-\item[{\tt grid variable}]
+\item[{\tt grid variable}] A {\tt grid scalar}, {\tt grid function},
+or {\tt grid array}.
 \item[{\tt GNATS}] The GNU program we use for reporting and tracking bugs,
   comments and suggestions.
 \item[{\tt handle}] A signed integer value $>= 0$. Many Cactus routines return
@@ -61,7 +63,7 @@ Ghost zones should not be confused with symmetry or boundary zones.
 \item[{\tt implementation}] See Section \ref{sec:im}.
 \item[{\tt inherit}]
 \item[{\tt interpolation}]
-\item[{\tt MPI}]
+\item[{\tt MPI}] Message Passing Interface.
 \item[{\tt parameter}] A variable which remains unchanged throughout the execution of a Cactus executable. Parameters all have default values which can be changed in a parameter file.
 \item[{\tt processor topology}]
 \item[{\tt PUGH}] The default parallel driver for Cactus which uses MPI.
@@ -70,7 +72,7 @@ Ghost zones should not be confused with symmetry or boundary zones.
 \item[{\tt reduction}]
 \item[{\tt symmetry zone}] A symmetry zone is a set of points added to
 the edge of a grid to contain data which is obtained, by some symmetry
-operation, from another part of the grid. (See also: symmetry zone, ghost zone.)
+operation, from another part of the grid. (See also: boundary zone, ghost zone.)
 \item[{\tt TAGS}]
 \item[{\tt target}]
 \item[{\tt thorn}] A collection of subroutines with a definite interface
