@@ -28,7 +28,7 @@
 #define SCOPE_ANY           5 /* parameter scope is undefined/arbitrary      */
 
 #ifdef NEED_PARAMETER_SCOPE_STRINGS
-static char *cctk_parameter_scopes[] = {"GLOBAL", 
+static const char *cctk_parameter_scopes[] = {"GLOBAL", 
                                         "RESTRICTED", 
                                         "PRIVATE", 
                                         "NOT GLOBAL", 
