@@ -72,13 +72,13 @@ int CCTK_GetGroupIndex(const char *fullgroupname)
   {
   case 1:
 
-    CCTK_Warn(2,"CCTK","Group name not in correct format implementation::group");
+    CCTK_WARN(2,"Group name not in correct format implementation::group");
     retval = -3;
     break;
 
   case 2:
 
-    CCTK_Warn(2,"CCTK","Memory allocation failed");
+    CCTK_WARN(2,"Memory allocation failed");
     retval = -4;
     break;
 
@@ -102,7 +102,7 @@ int CCTK_GetGroupIndex(const char *fullgroupname)
       char *message;
       message = (char *)malloc( (100+strlen(fullgroupname))*sizeof(char) ); 
       sprintf(message,"No group found with the name %s",fullgroupname);
-      CCTK_Warn(2,"CCTK",message);
+      CCTK_WARN(2,message);
       if (message) free(message);
       retval = -1;
     }
@@ -165,7 +165,7 @@ int CCTK_CreateGroup(const char *gname, const char *thorn, const char *imp,
   }
   else
   {
-    CCTK_Warn(1,"CCTK","Unrecognised group scope in CCTK_CreateGroup");
+    CCTK_WARN(1,"Unrecognised group scope in CCTK_CreateGroup");
   }
 
   /* Allocate storage for the group and setup some stuff. */
@@ -402,18 +402,18 @@ int CCTK_GetVarIndex(const char *variable_name)
     message = (char *)malloc( (100+strlen(variable_name))*sizeof(char) );
     sprintf(message,"Full name %s in wrong format in CCTK_GetVarNum",
 	    variable_name);
-    CCTK_Warn(2,"CCTK",message);
+    CCTK_WARN(2,message);
     if (message) free(message);
     retval = -3; 
   }
   else if (ierr == 2)
   {
-    CCTK_Warn(2,"CCTK","Memory allocation failed");
+    CCTK_WARN(2,"Memory allocation failed");
     retval = -4;
   }
   else
   {
-    CCTK_Warn(1,"CCTK","Error failed to be caught");
+    CCTK_WARN(1,"Error failed to be caught");
   }
 
 #ifdef DEBUG_GROUPS
@@ -677,7 +677,7 @@ int CCTK_VTypeNumber(const char *type)
 
   if(!strcmp(type, "INT"))
   {
-    retval = CCTK_VARIABLE_INTEGER;
+    retval = CCTK_VARIABLE_INT;
   }
 
   if(!strcmp(type, "REAL"))

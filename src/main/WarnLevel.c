@@ -64,19 +64,19 @@ int CCTK_SetWarnLevel(int level)
   if(level > old_level)
   {
     sprintf(warning_message, "Increasing warning level from %d to %d\n", old_level, level);
-    CCTK_Warn(1,"CCTK", warning_message);
+    CCTK_Warn(1, __LINE__,__FILE__,"Cactus",warning_message);
     retval = 1;
   }
   else if(level == old_level)
   {
     sprintf(warning_message, "Warning level is already %d\n", level);
-    CCTK_Warn(1,"CCTK", warning_message);
+    CCTK_Warn(1, __LINE__,__FILE__,"Cactus",warning_message);
     retval = 0;
   }
   else
   {
     sprintf(warning_message, "Decreasing warning level from %d to %d\n", old_level, level);
-    CCTK_Warn(1,"CCTK", warning_message);
+    CCTK_Warn(1,__LINE__,__FILE__,"Cactus", warning_message);
     retval = -1;
   }
 
@@ -85,7 +85,7 @@ int CCTK_SetWarnLevel(int level)
   {
     error_level = warning_level;
     sprintf(warning_message, "Decreasing error level to warning_level\n");
-    CCTK_Warn(2, "CCTK", warning_message);
+    CCTK_Warn(2, __LINE__,__FILE__,"Cactus",warning_message);
   }
   return retval;
 }
@@ -104,15 +104,28 @@ int CCTK_SetWarnLevel(int level)
    @endhistory 
 
 @@*/
-int CCTK_Warn(int level, const char *thorn, const char *message)
+int CCTK_Warn(int level, int line, const char *file, const char *thorn, const char *message)
 {
+
+  DECLARE_CCTK_PARAMETERS
+
   int retval;
 
   if(level <= warning_level)
   {
-    fprintf(stderr, "WARNING (%s): %s\n", thorn, message);
-    fflush(stderr);
-    retval = 1;
+    if (cctk_full_warnings)
+    {
+      fprintf(stderr, "WARNING level %d in thorn %s (line %d of %s): \n", level, thorn, line, file);
+      fprintf(stderr, "  -> %s\n",message);
+      fflush(stderr);
+      retval = 1;
+    }
+    else
+    {
+      fprintf(stderr, "WARNING (%s): %s\n", thorn, message);
+      fflush(stderr);
+      retval = 1;
+    }
   }
   else
   {
@@ -127,13 +140,14 @@ int CCTK_Warn(int level, const char *thorn, const char *message)
   return retval;
 }
 
-int FMODIFIER FORTRAN_NAME(CCTK_Warn)(int *level, TWO_FORTSTRINGS_ARGS)
+int FMODIFIER FORTRAN_NAME(CCTK_Warn)(int *level, int *line, THREE_FORTSTRINGS_ARGS)
 {
-  TWO_FORTSTRINGS_CREATE(thorn,message)
+  THREE_FORTSTRINGS_CREATE(file,thorn,message)
   int retval;
-  retval = CCTK_Warn(*level,thorn,message);
+  retval = CCTK_Warn(*level,*line,file,thorn,message);
   free(thorn);
   free(message); 
+  free(file);
   return(retval);
 }
 
@@ -238,26 +252,26 @@ int CCTK_SetErrorLevel(int level)
     if(level > old_level)
     {
       sprintf(warning_message, "Increasing error level from %d to %d\n", old_level, level);
-      CCTK_Warn(1,"CCTK", warning_message);
+      CCTK_Warn(1, __LINE__,__FILE__,"Cactus",warning_message);
       retval = 1;
     }
     else if(level == old_level)
     {
       sprintf(warning_message, "Error level is already %d\n", level);
-      CCTK_Warn(3, "CCTK", warning_message);
+      CCTK_Warn(3, __LINE__,__FILE__,"Cactus",warning_message);
       retval = 0;
     }
     else
     {
       sprintf(warning_message, "Decreasing error level from %d to %d\n", old_level, level);
-      CCTK_Warn(1, "CCTK", warning_message);
+      CCTK_Warn(1,__LINE__,__FILE__,"Cactus", warning_message);
       retval = -1;
     }
   }
   else
   {
     sprintf(warning_message, "Error level cannot be higher than warning level\n");
-    CCTK_Warn(1, "CCTK", warning_message);
+    CCTK_Warn(1,__LINE__,__FILE__,"Cactus", warning_message);
     retval = 0;
   }
 

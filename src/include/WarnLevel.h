@@ -15,7 +15,7 @@ extern "C" {
 #endif
 
 int CCTK_SetWarnLevel(int level);
-int CCTK_Warn(int level, const char *thorn, const char *message);
+int CCTK_Warn(int level, int line, const char *file, const char *thorn, const char *message);
 void CCTK_ParamWarn(const char *thorn, const char *message);
 void CCTKi_FinaliseParamWarn(void);
 int CCTK_SetErrorLevel(int level);

@@ -4,6 +4,10 @@
  
 private:
 
+LOGICAL cctk_full_warnings "Give detailed information for each warning statement"
+{
+} "yes"
+
 LOGICAL cctk_strong_param_check "Die on parameter errors in CCTK_PARAMCHECK"
 {
  : ::

@@ -17,14 +17,28 @@
 extern "C" {
 #endif
 
+#define REGISTER_ARGLIST  \
+	  cGH *,  \
+          int,    \
+          int,    \
+          int,    \
+          void *, \
+          int,    \
+          int *    
+
 int CCTK_Reduce(cGH *GH,
-		int retvaltype,
-		int retvalnum,
-		void *retval,
+		int proc,
 		int operation_handle,
-		int index, ...);
+		int num_out_vals,
+		int type_out_vals,
+		void *out_vals,
+		int num_in_fields, ...);
 
 int CCTK_GetReductionHandle(const char *reduction);
+
+int CCTK_RegisterReductionOperator(void (*function)(REGISTER_ARGLIST),
+				   const char *name);
+
 
 #ifdef __cplusplus
 	   }

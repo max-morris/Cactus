@@ -75,7 +75,7 @@ void *CCTK_GetVarDataPtr_ByName(cGH *GH, int timelevel, char *fullvarname)
      retval = GH->data[index][timelevel];
   }
   else
-     CCTK_Warn(1,"CCTK","Invalid index in CCTK_GetVarDataPtr_ByName");
+     CCTK_WARN(1,"Invalid index in CCTK_GetVarDataPtr_ByName");
 
 #ifdef DEBUG_GROUPS
   CCTK_PRINTSEPARATOR

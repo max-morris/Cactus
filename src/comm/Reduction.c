@@ -69,7 +69,7 @@ int CCTK_RegisterReductionOperator(void (*function)(REGISTER_ARGLIST),
   else
   {
     /* Reduction operator with this name already exists. */
-    CCTK_Warn(1,"CCTK","Reduction operator with this name already exists");
+    CCTK_WARN(1,"Reduction operator with this name already exists");
     handle = -1;
   }
 
@@ -104,7 +104,7 @@ int CCTK_GetReductionHandle(const char *reduction)
 #endif
 
   if (handle < 0)
-    CCTK_Warn(1,"CCTK","No handle found for this reduction operator");
+    CCTK_WARN(1,"No handle found for this reduction operator");
 
   return handle;
 
@@ -124,30 +124,43 @@ int CCTK_Reduce(  cGH *GH,
   va_list indices;
   int i;
   int *in_fields = malloc(num_in_fields*sizeof(int));
-  void (*function)(REGISTER_ARGLIST); 
+  void (*function)(REGISTER_ARGLIST)=NULL; 
 
   /* Get the pointer to the reduction operator */
-  function = (void (*)(REGISTER_ARGLIST))
-    CCTK_GetHandledData(ReductionOperators,operation_handle);
 
-  if (function)
-  {
 
-    /* Fill in the array of variable indices from the variable argument list */
-    va_start(indices, num_in_fields);
-    for (i=0; i<num_in_fields; i++)
-      in_fields[i] = va_arg(indices,int);
-    va_end(indices);
-    
-    function(GH,proc,num_out_vals,type_out_vals,out_vals,num_in_fields,in_fields);
+  if (operation_handle < 0)
 
-    if (in_fields) free(in_fields);
+    CCTK_WARN(3,"Invalid handle passed to CCTK_Reduce");
 
-  }
   else
-    CCTK_Warn(3,"CCTK","Reduction operation is not registered and cannot be called");
-  
+  {
+    function = (void (*)(REGISTER_ARGLIST))
+      CCTK_GetHandledData(ReductionOperators,operation_handle);
+    
+    if (function)
+      {
+	
+	/* Fill in the array of variable indices from the variable argument list */
+	va_start(indices, num_in_fields);
+	for (i=0; i<num_in_fields; i++)
+	  in_fields[i] = va_arg(indices,int);
+	va_end(indices);
+	
+	function(GH,proc,num_out_vals,type_out_vals,out_vals,num_in_fields,in_fields);
+	
+	if (in_fields) free(in_fields);
+	
+      }
+    else
+      CCTK_WARN(3,"Reduction operation is not registered and cannot be called");
+  }
+
+  return 1;
+
 }
+
+
 
 
 

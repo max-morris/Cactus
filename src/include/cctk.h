@@ -47,6 +47,9 @@
                            INTEGER cctk_iteration&&\
                            CCTK_POINTER cctkGH&&\
 
+#define CCTK_WARN(a,b) CCTK_Warn(a,__LINE__,"unknown file",CCTK_THORNSTRING,b)
+
+
 #endif /*FCODE*/
 
 #ifdef CCODE
@@ -107,18 +110,20 @@
 
 extern int _cctk_one;
 
+#define CCTK_WARN(a,b) CCTK_Warn(a,__LINE__,__FILE__,CCTK_THORNSTRING,b)
+
+
 #endif /*CCODE*/
 
 #define CCTK_VARIABLE_CHAR    1
-#define CCTK_VARIABLE_INTEGER 2
+#define CCTK_VARIABLE_INT     2
 #define CCTK_VARIABLE_REAL    3
 #define CCTK_VARIABLE_COMPLEX 4
 
 /*#define CCTK_MAKESTRING(x) CCTK_REALSTRING(x)
 #define CCTK_REALSTRING(x) #x
-#define CCTK_WARN(a,b) CCTK_Warn(a,CCTK_MAKESTRING(CCTK_THORN),b)
+#define CCTK_WARN(a,b) CCTK_Warn(a,CCTK_MAKESTRING(CCTK_THORN),b,__LINE__,__FILE__)
 */
-#define CCTK_WARN(a,b) CCTK_Warn(a,CCTK_THORNSTRING,b)
 #define CCTK_INFO(a) CCTK_Info(CCTK_THORNSTRING,a)
 #define CCTK_PARAMWARN(a) CCTK_ParamWarn(CCTK_THORNSTRING,a)
 

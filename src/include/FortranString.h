@@ -24,6 +24,13 @@
     _fcd fcdarg
 #define TWO_FORTSTRINGS_ARGS\
     _fcd fcd_n, _fcd fcd_w
+#define THREE_FORTSTRINGS_ARGS\
+   const char *CCTK_str1,\
+   const char *CCTK_str2,\
+   const char *CCTK_str3,\
+   unsigned int CCTK_len1,\
+   unsigned int CCTK_len2,\
+   unsigned int CCTK_len3
 #define ONE_FORTSTRING_CREATE(argn)\
        int len = _fcdlen(fcdarg); \
        char *argn    = CCTK_NullTerminateString(_fcdtocp(fcdarg),len);;
@@ -32,6 +39,10 @@
        int  wl    = _fcdlen(fcd_w);\
        char *argn = CCTK_NullTerminateString(_fcdtocp(fcd_n),nl);\
        char *argw = CCTK_NullTerminateString(_fcdtocp(fcd_w),wl);
+#define THREE_FORTSTRINGS_CREATE(arg1,arg2,arg3)\
+   char *arg1 = CCTK_NullTerminateString(CCTK_str1,CCTK_len1);\
+   char *arg2 = CCTK_NullTerminateString(CCTK_str2,CCTK_len2);\
+   char *arg3 = CCTK_NullTerminateString(CCTK_str3,CCTK_len3);
 
 #elif defined WIN32
 
@@ -39,11 +50,22 @@
    char *n, unsigned int nl
 #define TWO_FORTSTRINGS_ARGS\
    char *n, int nl, char *w, int wl
+#define THREE_FORTSTRINGS_ARGS\
+   const char *CCTK_str1,\
+   const char *CCTK_str2,\
+   const char *CCTK_str3,\
+   unsigned int CCTK_len1,\
+   unsigned int CCTK_len2,\
+   unsigned int CCTK_len3
 #define ONE_FORTSTRING_CREATE(argn)\
         char *argn = CCTK_NullTerminateString(n,nl);
 #define TWO_FORTSTRINGS_CREATE(argn,argw)\
     char *argn = CCTK_NullTerminateString(n,nl);\
     char *argw = CCTK_NullTerminateString(w,wl);
+#define THREE_FORTSTRINGS_CREATE(arg1,arg2,arg3)\
+   char *arg1 = CCTK_NullTerminateString(CCTK_str1,CCTK_len1);\
+   char *arg2 = CCTK_NullTerminateString(CCTK_str2,CCTK_len2);\
+   char *arg3 = CCTK_NullTerminateString(CCTK_str3,CCTK_len3);
 
 #else
 

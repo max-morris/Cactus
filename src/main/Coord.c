@@ -111,7 +111,7 @@ int CCTK_RegisterCoord_ByIndex(const char *name, int index, int dir)
     char *msg;
     msg = (char *)malloc(200*sizeof(char)+sizeof(name));
     sprintf(msg,"Coordinate with name -%s- already registered",name);
-    CCTK_Warn(1,"CCTK",msg);
+    CCTK_WARN(1,msg);
     if (msg) free(msg);
     handle = -1;
   }
@@ -204,7 +204,7 @@ int CCTK_GetCoordIndex(const char *name)
       char *msg;
       msg = (char *)malloc( 100*sizeof(char)+sizeof(name) );
       sprintf(msg,"Could not find registered coordinate %s",name);
-      CCTK_Warn(2,"CCTK",msg);
+      CCTK_WARN(2,msg);
       if (msg) free(msg);
       return ERROR_COORDNOTFOUND;
     }
