@@ -26,6 +26,7 @@ use vars qw($h $help $cctk_home $thornlist $directory $outdir $verbose $debug $o
 #################
 if ($help || $h) {
    print "--> ThornGuide.pl <--\n";
+   print "This script will parse the documentation.tex files in thorns and arrangement directories.  It adds the \\include statements to include the output of SchedLatex.pl, ParamLatex.pl, and InterLatex.pl, which parse the interface.ccl, param.ccl, and schedule.ccl files of a given thorn.  Basically this script is the 'glue' that finally adds together and creates a 'ThornGuide'\n\n"; 
    print "Options:\n";
    print "\t-directory= : (semi opt) directory to process\n";
    print "\t-thornlist= : (semi opt) thornlist to process\n";
@@ -35,7 +36,7 @@ if ($help || $h) {
    print "\t-h/-help    : (opt) this screen\n";
 
    print "Example:\n";
-   print "\tperl -s /lib/sbin/ThornGuide.pl -thornlist=configs/test/ThornList -outfile=cactus.tex -outdir=configs/test/doc -verbose\n";
+   print "\t\$ perl -s /lib/sbin/ThornGuide.pl -thornlist=configs/test/ThornList -outfile=cactus.tex -outdir=configs/test/doc -verbose\n";
    exit 0;  
 }
 
@@ -77,10 +78,14 @@ $tocdepth = 1 if (! defined $tocdepth);
 
 my $configname = "";
 
-if ($outfile =~ /ThornGuide\-?(.*?)\.tex/) {
+# here we get the "NAME" we will call the thornguide
+if ($outfile =~ /ThornGuide\-?(.*?)\.tex/) 
+{
    $configname = $1;
    $configname = ThornUtils::CleanForLatex($configname);
-   $configname = ": $configname";
+   if ($configname =~ /\w/) {
+      $configname = ": $configname"; 
+   }
 }
 
 # get the date for printing out on the first page of the documentation
@@ -98,6 +103,7 @@ $ThornUtils::debug              = $debug;
 $outdir                 = ThornUtils::SetupOutputDirectory($outdir);
 my $arrangements_dir    = ThornUtils::GetArrangementsDir($directory);
 
+# define some global variables
 my %thorns;
 my %arrangements;
 my @listOfThorns;
@@ -125,24 +131,38 @@ foreach my $arrangement (sort keys %arrangements)
 {
    print "\n$arrangement" if ($debug);
 
+   # starts a new latex chapter of name $arrangement, with a chapter counter of $counter
    &Start_Arr($arrangement, $counter);
 
-   print OUT &Read_Thorn_Doc($arrangements_dir, $arrangement, "donotshowwarnings");
-   # now each thorn in the given arrangement
+   # include any documentation for a given ARRANGEMENT, if no documentation exists,
+   # we do NOT throw any errors.
+   print OUT &Read_Thorn_Doc($arrangements_dir, $arrangement, "");
+
+   # now each THORN in the given arrangement
    foreach my $thorn (sort @{$arrangements{$arrangement}})
    {
       print "\n\t$thorn" if ($debug);
  
+      # try to parse out the "NEW" format of latex documentation
       my $contents = &Read_New_Thorn_Doc($arrangements_dir, $arrangement, $thorn);   
+  
+      # we could not sucessfully parse the "NEW" format, try the old format
       if (! $contents) {
          $contents = &Read_Thorn_Doc($arrangements_dir, $arrangement, $thorn);   
       }
+
+      # add the documentation from the thorn as a Section in the Chapter (arrangement)
       &Add_Section($thorn, $contents); 
    }
+
+   # ends the latex chapter
    &End_Arr;
+
+   # increments the chapter count
    $counter++;
 }
 
+# Finish any latex output
 &Output_Bottom;
 print "\nFinished.\n";
 
@@ -224,9 +244,9 @@ sub Read_New_Thorn_Doc
       }
    }
 
-      $contents .= "\n\\include{${arrangement}_${thorn}_param}\n";
-      $contents .= "\n\\include{" . ThornUtils::ToLower("${arrangement}_${thorn}_inter") . "\}\n";
-      $contents .= "\n\\include{${arrangement}_${thorn}_schedule}\n";
+   $contents .= "\n\\include{${arrangement}_${thorn}_param}\n";
+   $contents .= "\n\\include{" . ThornUtils::ToLower("${arrangement}_${thorn}_inter") . "\}\n";
+   $contents .= "\n\\include{${arrangement}_${thorn}_schedule}\n";
 
    # if it never started reading, then we print some error message
    if (! $start) {
@@ -341,30 +361,30 @@ sub Read_Thorn_Doc
 
    # if it never started reading, then we print some error message
    if (! $start) {
-      if ($thorn ne "donotshowwarnings") {
-      my $tmp = ThornUtils::CleanForLatex("$arrangement/$thorn");  
+      if ($thorn ne "") 
+      {
+         my $tmp = ThornUtils::CleanForLatex("$arrangement/$thorn");  
 
-      if (-e $pathandfile) {
-         $contents = "Could not parse latex documentation for $tmp ($file)";
-      } else {
-         $contents = "Could not find latex documentation for $tmp ($file)";
+         if (-e $pathandfile) {
+            $contents = "Could not parse latex documentation for $tmp ($file)";
+         } else {
+            $contents = "Could not find latex documentation for $tmp ($file)";
+         }
+         $contents .= "\n\n\\include{${arrangement}\_${thorn}\_param}\n";
+         $contents .= "\n\\include{" . ThornUtils::ToLower("${arrangement}_${thorn}_inter") . "\}\n";
+         $contents .= "\n\\include{${arrangement}\_${thorn}\_schedule}\n";
       }
-      $contents .= "\n\n\\include{${arrangement}\_${thorn}\_param}\n";
-      $contents .= "\n\\include{" . ThornUtils::ToLower("${arrangement}_${thorn}_inter") . "\}\n";
-      $contents .= "\n\\include{${arrangement}\_${thorn}\_schedule}\n";
-      }
-   }
-   
-   else {
-   $cnts .= "\n\{\\Large\n";
-   $cnts .= "\n\\begin\{tabbing\}\n";
-   $cnts .= "\n\{\\bf Author(s):\} \\= \\kill \\\\\n";
-   $cnts .= "\n\{\\bf Title:\} \\> $title \\\\\n" if ($title =~ /\w/) && (lc($title) ne lc($thorn));
-   $cnts .= "\n\{\\bf Author(s):\} \\> $author \\\\\n" if ($author =~ /\w/);
-   $cnts .= "\n\{\\bf Date:\} \\> $date \\\\\n" if ($date =~ /\w/);
-   $cnts .= "\n\\end\{tabbing\}\n";
-   $cnts .= "\n\}\n";
-   $cnts .= "\n\\minitoc";
+   } else {
+   # we sucessfully parsed the information.  So we print out the author & title & date, etc.
+      $cnts .= "\n\{\\Large\n";
+      $cnts .= "\n\\begin\{tabbing\}\n";
+      $cnts .= "\n\{\\bf Author(s):\} \\= \\kill \\\\\n";
+      $cnts .= "\n\{\\bf Title:\} \\> $title \\\\\n" if ($title =~ /\w/) && (lc($title) ne lc($thorn));
+      $cnts .= "\n\{\\bf Author(s):\} \\> $author \\\\\n" if ($author =~ /\w/);
+      $cnts .= "\n\{\\bf Date:\} \\> $date \\\\\n" if ($date =~ /\w/);
+      $cnts .= "\n\\end\{tabbing\}\n";
+      $cnts .= "\n\}\n";
+      $cnts .= "\n\\minitoc";
    }
    close DOC;
 
