@@ -66,6 +66,7 @@ static int ActivateThorn(const char *name);
 static int ActivateImp(const char *implementation, const char *thorn);
 
 static int CompareStrings(const void *string1, const void *string2);
+static int JustPrintThornName(const char *key,void *input, void *dummy);
 
 /********************************************************************
  ********************* Other Routine Prototypes *********************
@@ -555,6 +556,59 @@ void CCTK_FCALL CCTK_FNAME(CCTK_IsThornCompiled)
 
 
 /*@@
+   @routine    CCTK_IsImplementationCompiled
+   @date       Sun June 3 2001
+   @author     Gabrielle Allen
+   @desc 
+   Checks if a implementation is compiled in.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+   @var     name
+   @vdesc   Name of implementation
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+
+   @returntype int
+   @returndesc 
+   0 - not compiled
+   1 - compiled
+   @endreturndesc
+@@*/
+int CCTK_IsImplementationCompiled(const char *name)
+{
+  int retval;
+  t_sktree *node;
+  
+  /* Find the thorn */
+  node = SKTreeFindNode(implist, name);
+
+  retval = 0;
+
+  if(node)
+  {
+    retval = 1;
+  }
+
+  return retval;
+}
+
+void CCTK_FCALL CCTK_FNAME(CCTK_IsImplementationCompiled)
+     (int *retval, ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE(name) 
+  *retval = CCTK_IsImplementationCompiled(name);
+  free(name);
+}
+
+
+/*@@
    @routine    CCTK_IsImplementationActive
    @date       Sun Jul  4 17:46:56 1999
    @author     Tom Goodale
@@ -1031,6 +1085,7 @@ int CCTKi_ActivateThorns(const char *thornlist)
   int result;
   t_sktree *impnode;
   t_sktree *temp;
+  t_sktree *impthornlist;
 
   struct IMPLEMENTATION *imp;
   int i;
@@ -1061,6 +1116,17 @@ int CCTKi_ActivateThorns(const char *thornlist)
     {
       printf("Error: thorn %s doesn't exist\n", token);
       n_errors++;
+      /*  Give some more help */
+      if (CCTK_IsImplementationCompiled(token))
+      {
+        impthornlist = CCTK_ImpThornList(token);
+
+        printf("       Implementation %s does exist\n",token);
+        printf("       Provided by :");
+        SKTreeTraverseInorder(impthornlist, 
+                              JustPrintThornName, NULL);
+        printf("\n");
+      }
     }
     else if(CCTK_IsImplementationActive(this_imp))
     {
@@ -1134,7 +1200,18 @@ int CCTKi_ActivateThorns(const char *thornlist)
         if(Util_StrCmpi(imp1,imp2))
         {
           printf("Error: required implementation %s not requested\n", imp2);
-           n_errors++;
+          n_errors++;
+          /*  Give some more help */
+          if (CCTK_IsImplementationCompiled(imp2))
+          {
+            impthornlist = CCTK_ImpThornList(imp2);
+
+            printf("       This implementation is compiled in\n");
+            printf("       Provided by :");
+            SKTreeTraverseInorder(impthornlist, 
+                              JustPrintThornName, NULL);
+            printf("\n");
+          }
         }
         else
         {
@@ -1149,6 +1226,17 @@ int CCTKi_ActivateThorns(const char *thornlist)
     {
       printf("Error: required implementation %s not requested\n", imp2);
       n_errors++;
+      /*  Give some more help */
+      if (CCTK_IsImplementationCompiled(imp2))
+      {
+        impthornlist = CCTK_ImpThornList(imp2);
+        
+        printf("       This implementation is compiled in\n");
+        printf("       Provided by :");
+        SKTreeTraverseInorder(impthornlist, 
+                              JustPrintThornName, NULL);
+        printf("\n");
+      }
     }    
   }
 
@@ -1464,4 +1552,25 @@ static int ActivateImp(const char *implementation, const char *thorn)
 static int CompareStrings(const void *string1, const void *string2)
 {
   return Util_StrCmpi(*(const char **)string1, *(const char **)string2);
+}
+
+ /*@@
+   @routine    JustPrintThornName
+   @date       Mon Jun  4 19:05:45 2001
+   @author     Tom Goodale
+   @desc 
+   Print the name of a thorn if it is passed from an sktree.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+static int JustPrintThornName(const char *key, void *input, void *dummy)
+{
+  printf(" %s", key);
+
+  return 0;
 }
