@@ -1,7 +1,7 @@
 
 Cactus Code Frequently Asked Questions
 
-$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.15 2001-03-01 00:00:49 allen Exp $
+$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.16 2001-04-15 08:02:52 allen Exp $
 
 Also available at http://www.cactuscode.org/Documentation/FAQ
 
@@ -199,4 +199,30 @@ Also available at http://www.cactuscode.org/Documentation/FAQ
     won't need to be changed if they use the CCI routines.
 
 -------------------------------------------------------------------------------
+
+16. When I compile Cactus I get an error like
+
+
+    /home/allen/Cactus/arrangements/MineStuff/Test/src/metric.F90:3: 
+                unterminated character constant
+    make[2]: *** [metric.F90.d] Error 33                                
+
+
+    But then when I type gmake again the compilation proceeds without problem?
+
+    You are probably using Linux, and the C preprocessor is complaining 
+    about single apostrophes in a Fortran comment line when it is creating the
+    dependency file for metric.F90. Make continues the second time because 
+    the dependency file now exists (although it won't necessarily contain 
+    the right information).
+
+    We could remove this problem by removing comments from Fortran files
+    before using the C preprocessor, but we don't want to add this overhead
+    at the moment, since we are writing a Cactus preprocessor which won't 
+    have this problem (and will solve a number of other preprocessing 
+    problems). You should try and remove any single apostrophes in 
+    Fortran comments for now, or use gmake twice.
+
+-------------------------------------------------------------------------------
+
     
