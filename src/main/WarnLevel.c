@@ -15,6 +15,17 @@
 #include <stdarg.h>
 #include <string.h>
 
+#if TIME_WITH_SYS_TIME
+# include <sys/time.h>
+# include <time.h>
+#else
+# if HAVE_SYS_TIME_H
+#  include <sys/time.h>
+# elif HAVE_TIME_H
+#  include <time.h>
+# endif
+#endif
+
 #include "StoreKeyedData.h"
 
 #include "cctk_Comm.h"
@@ -119,6 +130,12 @@ void CCTK_FCALL CCTK_FNAME (CCTK_Info)
                Info output routine with variable argument list
    @enddesc
 
+   @history
+   @date       Mon Aug  4 17:56:06 CEST 2003
+   @author     Jonathan Thornburg
+   @hdesc      add  cactus::info_format  parameter
+   @endhistory
+
    @var        thorn
    @vdesc      Name of originating thorn
    @vtype      const char *
@@ -144,14 +161,92 @@ int CCTK_VInfo (const char *thorn, const char *format, ...)
 {
   va_list ap;
 
+  static int info_format_decoded = 0;   /* are the following two flags valid? */
+  /* Boolean flags decoded from  cactus::info_format */
+  static int info_format_numeric = 0;         /* print a numeric timestamp? */
+  static int info_format_human_readable = 0;  /* print a human-readable timestamp? */
 
+  /*
+   * if we haven't already decoded  cactus::info_format  into the
+   * Boolean flags, do so
+   */
+  if (! info_format_decoded)
+  {
+    /* get cactus::info_format  and decode it into Boolean flags */
+    const char* const info_format =
+	* ( (const char*const *)
+	    CCTK_ParameterGet("info_format", "Cactus", NULL) );
+
+    if      (CCTK_Equals(info_format, "basic"))
+    {
+      /* "basic" :: "INFO (ThornName): message" */
+      info_format_numeric = 0;
+      info_format_human_readable = 0;
+    }
+    else if (CCTK_Equals(info_format, "numeric time stamp"))
+    {
+      /* "numeric time stamp" :: "numeric_timestamp\tINFO (ThornName): message" */
+      info_format_numeric = 1;
+      info_format_human_readable = 0;
+    }
+    else if (CCTK_Equals(info_format, "human-readable time stamp"))
+    {
+      /* "human-readable time stamp" :: "human readable timestamp: INFO (ThornName): message" */
+      info_format_numeric = 0;
+      info_format_human_readable = 1;
+    }
+    else if (CCTK_Equals(info_format, "full time stamp"))
+    {
+      /* "full time stamp" :: "numeric_timestamp\thuman readable timestamp: INFO (ThornName): message" */
+      info_format_numeric = 1;
+      info_format_human_readable = 1;
+    }
+    info_format_decoded = 1;
+  }
+
+  /*
+   * print any time stamps desired
+   */
+  if (info_format_numeric || info_format_human_readable)
+  {
+    double numeric_time;
+
+    /* get the timing info */
+#ifdef HAVE_TIME_GETTIMEOFDAY
+    /* use  gettimeofday()  to get (up to) microsecond-level timing info */
+    #define NUMERIC_TIME_FORMAT "%.6f"
+    struct timeval timeval;
+    gettimeofday(&timeval, NULL);
+    numeric_time = timeval.tv_sec + 1.0e-6*timeval.tv_usec;
+#else
+    /* fall back to  time() ; this is ISO C, so everyone should have it */
+    #define NUMERIC_TIME_FORMAT "%.0f"
+    numeric_time = (double) time(NULL);
+#endif
+
+    if (info_format_numeric)
+    {
+      fprintf(stdout, NUMERIC_TIME_FORMAT "\t", numeric_time);
+    }
+
+    if (info_format_human_readable)
+    {
+      /*                                123456789 123456789 1234    */
+      /* time_buffer --> a string like "Thu Nov 24 18:22:48 1986\n" */
+      const time_t time_t_numeric_time = (time_t) numeric_time;
+      const char* const time_buffer = ctime(& time_t_numeric_time);
+      fprintf(stdout, "%.24s: ", time_buffer);
+    }
+  }
+
+  /*
+   * print the INFO message itself
+   */
   va_start (ap, format);
-
   fprintf (stdout, "INFO (%s): ", thorn);
   vfprintf (stdout, format, ap);
   fprintf (stdout, "\n");
   fflush (stdout);
-
   va_end (ap);
 
   return (0);

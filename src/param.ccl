@@ -15,9 +15,37 @@ KEYWORD cctk_timer_output  "Provide output from timers"
  "full" :: "Detailed timer output"
 } "off"
 
+# FIXME: this should be deprecated in favor of a new  warn_format
+#        parameter analogous to  info_format
 BOOLEAN cctk_full_warnings "Give detailed information for each warning statement" STEERABLE=ALWAYS
 {
 } "no"
+
+KEYWORD info_format "What information do CCTK_INFO() and CCTK_VInfo() print?"
+{
+# This is the traditional Cactus INFO output.
+"basic" :: "INFO (ThornName): message"
+
+# This prefixes each line with a numeric wall-clock time stamp, in
+# units of seconds, followed by a tab ("\t") character.  The time stamp
+# might be either an integer or a floating-point number, depending
+# on the timing resolution available.  The time stamp is placed at
+# the start of the line, and delimited by a tab character, to make
+# it easy to use various data analysis tools on the resulting output.
+"numeric time stamp" :: "numeric_timestamp\tINFO (ThornName): message"
+
+# This prefixes each line with a human-readable time stamp in the
+# format returned by  ctime(3) , followed by a ": ".
+"human-readable time stamp" :: \
+    "human readable timestamp: INFO (ThornName): message"
+
+# This prefixes each line with a numeric wall-clock time stamp, in
+# units of seconds, followed by a tab ("\t") character, followed by
+# a human-readable time stamp in the format returned by  ctime(3) ,
+# followed by a ": ".
+"full time stamp" :: \
+    "numeric_timestamp\thuman readable timestamp: INFO (ThornName): message"
+} "basic"
 
 BOOLEAN cctk_strong_param_check "Die on parameter errors in CCTK_PARAMCHECK"
 {
