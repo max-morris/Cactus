@@ -324,8 +324,8 @@ A boolean type which can take values 1, `t', `true', `yes' or
 \item a {\tt description} of the parameter
 
 \item an allowed value block --- This consists of a brace delimited
-block of lines\footnote{The begining brace (\{) must sit on a line by
-itself; the ending brace (\}) must be preceeded by a carriage return.}
+block of lines\footnote{The beginning brace (\{) must sit on a line by
+itself; the ending brace (\}) must be preceded by a carriage return.}
 describing the allowed values of the parameter.  Each range may have a
 description associated with it by placing a :: on the line and putting
 the description afterwards.
@@ -741,9 +741,9 @@ The specification for a group declaration
    [SIZE=<size in each direction>] [DISTRIB=<distribution_type>] \
    [GHOSTSIZE=<ghostsize>] [STAGGER=<stagger-specification>]
 [{
-   <variable_name>[,]<variable_name>
-   <variable_name>
-}] ["<group_description>"]
+ [ <variable_name>[,]<variable_name>
+   <variable_name> ]
+} ["<group_description>"] ]
 \end{verbatim}
 
 Currently, the names of groups and variables must be distinct.
@@ -760,7 +760,7 @@ bytes the type takes).
 \item[INTEGER]
 CCTK\_INT, CCTK\_INT2, CCTK\_INT4, CCTK\_INT8.  (CCTK\_INT defaults to being CCTK\_INT4).
 \item[REAL]
-CCTK\_REAL, CCTK\_REAL4, CCTK\_REAL8, CCTK\_INT16.  (CCTK\_REAL defaults to being CCTK\_REAL8).
+CCTK\_REAL, CCTK\_REAL4, CCTK\_REAL8, CCTK\_REAL16.  (CCTK\_REAL defaults to being CCTK\_REAL8).
 \item[COMPLEX]
 CCTK\_COMPLEX, CCTK\_COMPLEX8, CCTK\_COMPLEX16, CCTK\_COMPLEX32.
 (CCTK\_COMPLEX defaults to being CCTK\_COMPLEX16).
@@ -787,7 +787,7 @@ This is just a single number, e.g. the total energy of some field.  These
 variables aren't communicated between processors --- what would be the
 result of such communication?
 \item[GF]
-This is the most common group type.  A GF is a an array with a
+This is the most common group type.  A GF is an array with a
 specific size, set at run-time in the parameter file, which is distributed
 across processors.  All GFs have the same size, and the same number of
 ghostzones. Groups of GFs can also specify a dimension,

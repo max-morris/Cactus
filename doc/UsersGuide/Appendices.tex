@@ -139,15 +139,19 @@ The thorn's variables are defined by:
 \begin{verbatim}
 [<access>:]
 
-<data_type> <group_name> [TYPE=<group_type>] [DIM=<dim>] [TIMELEVELS=<num>] 
+<data_type> <group_name> [TYPE=<group_type>] [DIM=<dim>] [TIMELEVELS=<num>]
 [SIZE=<size in each direction>] [DISTRIB=<distribution_type>]  
 [GHOSTSIZE=<ghostsize>] [STAGGER=<stagger-specification>]
 [{
  [ <variable_name>[,]<variable_name>
    <variable_name> ]
-} "<group_description>"]
+} ["<group_description>"] ]
 \end{verbatim}}
-(The options {\t TYPE}, {\t DIM}, etc. following {\t <group\_name>} must all appear on one line.)
+%
+(The options {\t TYPE}, {\t DIM}, etc. following {\t <group\_name>}
+must all appear on one line.)  Note that the beginning brace (\{) must
+sit on a line by itself; the ending brace (\} must be preceded by a
+carriage return.
 %
 \begin{itemize}
 \item{} {\t access} defines which thorns can use the following
