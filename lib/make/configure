@@ -3946,7 +3946,7 @@ fi
 echo "$ac_t""$cctk_cv_have_c_bool" 1>&6
 if test "$cctk_cv_have_c_bool" = "yes" ; then
    cat >> confdefs.h <<\EOF
-#define CCTK_HAVE_C_BOOL 1
+#define HAVE_CCTK_C_BOOL 1
 EOF
 
 fi
@@ -3996,7 +3996,7 @@ fi
 echo "$ac_t""$cctk_cv_have_cxx_bool" 1>&6
 if test "$cctk_cv_have_cxx_bool" = "yes" ; then
    cat >> confdefs.h <<\EOF
-#define CCTK_HAVE_CXX_BOOL 1
+#define HAVE_CCTK_CXX_BOOL 1
 EOF
 
 fi
@@ -4620,7 +4620,7 @@ if test -n "$CCTK_INT8" ; then
 EOF
 
   cat >> confdefs.h <<\EOF
-#define CCTK_HAVE_INT8 1
+#define HAVE_CCTK_INT8 1
 EOF
 
 fi
@@ -4631,7 +4631,7 @@ if test -n "$CCTK_INT4" ; then
 EOF
 
   cat >> confdefs.h <<\EOF
-#define CCTK_HAVE_INT4 1
+#define HAVE_CCTK_INT4 1
 EOF
 
 fi
@@ -4642,7 +4642,7 @@ if test -n "$CCTK_INT2" ; then
 EOF
 
   cat >> confdefs.h <<\EOF
-#define CCTK_HAVE_INT2 1
+#define HAVE_CCTK_INT2 1
 EOF
 
 fi
@@ -4653,7 +4653,7 @@ if test -n "$CCTK_INT1" ; then
 EOF
 
   cat >> confdefs.h <<\EOF
-#define CCTK_HAVE_INT1 1
+#define HAVE_CCTK_INT1 1
 EOF
 
 fi
@@ -4693,7 +4693,7 @@ if test -n "$CCTK_REAL16" ; then
 EOF
 
   cat >> confdefs.h <<\EOF
-#define CCTK_HAVE_REAL16 1
+#define HAVE_CCTK_REAL16 1
 EOF
 
 fi
@@ -4704,7 +4704,7 @@ if test -n "$CCTK_REAL8" ; then
 EOF
 
   cat >> confdefs.h <<\EOF
-#define CCTK_HAVE_REAL8 1
+#define HAVE_CCTK_REAL8 1
 EOF
 
 fi
@@ -4715,7 +4715,7 @@ if test -n "$CCTK_REAL4" ; then
 EOF
 
   cat >> confdefs.h <<\EOF
-#define CCTK_HAVE_REAL4 1
+#define HAVE_CCTK_REAL4 1
 EOF
 
 fi

@@ -2,10 +2,10 @@ dnl /*@@
 dnl   @file      aclocal.m4
 dnl   @date      Thu Oct 21 00:05:58 1999
 dnl   @author    Tom Goodale
-dnl   @desc 
+dnl   @desc
 dnl   Local Cactus macros
 dnl   @enddesc
-dnl   @version $Header$ 
+dnl   @version $Header$
 dnl @@*/
 
 
@@ -37,7 +37,7 @@ dnl CCTK_CHECK_HEADERS(HEADER-FILE... [, ADDITIONAL_CODE [, ACTION-IF-FOUND [, A
 AC_DEFUN(CCTK_CHECK_HEADERS,
 [for cctk_hdr in $1
 do
-CCTK_CHECK_HEADER($cctk_hdr, 
+CCTK_CHECK_HEADER($cctk_hdr,
 [$2 ],
 [changequote(, )dnl
   cctk_tr_hdr=HAVE_`echo $cctk_hdr | sed 'y%abcdefghijklmnopqrstuvwxyz./-%ABCDEFGHIJKLMNOPQRSTUVWXYZ___%'`
@@ -49,7 +49,7 @@ done
 
 dnl CCTK_FIND_NULLDEVICE
 dnl Have to do it in this rather bizarre way
-dnl as cygwin emulates /dev/null 
+dnl as cygwin emulates /dev/null
 AC_DEFUN(CCTK_FIND_NULLDEVICE,
 [AC_MSG_CHECKING([for the null device])
 AC_CACHE_VAL(cctk_cv_nulldevice,
@@ -79,7 +79,7 @@ AC_CACHE_VAL(cctk_cv_time_ftime,
 [AC_TRY_LINK([#include <stdio.h>
 #include <time.h>
 #include <sys/types.h>
-#include <sys/timeb.h>], 
+#include <sys/timeb.h>],
 [  struct _timeb timebs;
   _ftime(&timebs);
   printf("%f\n",(double)(timebs.time + timebs.millitm/1000.0));
@@ -99,7 +99,7 @@ AC_CACHE_VAL(cctk_cv_time_getrusage,
 [AC_TRY_LINK([#include <stdio.h>
 #include <sys/time.h>
 #include <sys/resource.h>
-#include <unistd.h>], 
+#include <unistd.h>],
 [struct rusage ru;
  getrusage(RUSAGE_SELF, &ru);
  printf("%f\n",(double)(ru.ru_utime.tv_sec + (double)ru.ru_utime.tv_usec/1000000.0));
@@ -116,7 +116,7 @@ fi
 AC_DEFUN(CCTK_TIME_GETTIMEOFDAY,
 [AC_MSG_CHECKING([for availability of gettimeofday timing])
 AC_CACHE_VAL(cctk_cv_time_gettimeofday,
-[AC_TRY_LINK([], 
+[AC_TRY_LINK([],
 [gettimeofday();
  return 0;], eval "cctk_cv_time_gettimeofday=yes",
   eval "cctk_cv_time_gettimeofday=no")])dnl
@@ -132,7 +132,7 @@ if eval "test \"`echo '$cctk_cv_time_gettimeofday'`\" = yes"; then
 AC_CACHE_VAL(cctk_cv_time_gettimeofday_timezone,
 [AC_TRY_LINK([#include <stdio.h>
 #include <sys/time.h>
-#include <unistd.h>], 
+#include <unistd.h>],
 [struct timeval tp;
  struct timezone tzp;
  gettimeofday(&tp, &tzp);
@@ -314,7 +314,7 @@ AC_DEFUN(CCTK_C_BOOL,
 AC_TRY_COMPILE(, bool foo;, cctk_cv_have_c_bool=yes, cctk_cv_have_c_bool=no)
 ])
 if test "$cctk_cv_have_c_bool" = "yes" ; then
-   AC_DEFINE(CCTK_HAVE_C_BOOL)
+   AC_DEFINE(HAVE_CCTK_C_BOOL)
 fi
 ])
 
@@ -327,6 +327,6 @@ AC_TRY_COMPILE(, bool foo;, cctk_cv_have_cxx_bool=yes, cctk_cv_have_cxx_bool=no)
 AC_LANG_RESTORE
 ])
 if test "$cctk_cv_have_cxx_bool" = "yes" ; then
-   AC_DEFINE(CCTK_HAVE_CXX_BOOL)
+   AC_DEFINE(HAVE_CCTK_CXX_BOOL)
 fi
 ])

@@ -108,15 +108,15 @@
 #undef CCTK_INTEGER_PRECISION_1
 
 /* Integer sizes */
-#undef CCTK_HAVE_INT8
-#undef CCTK_HAVE_INT4
-#undef CCTK_HAVE_INT2
-#undef CCTK_HAVE_INT1
+#undef HAVE_CCTK_INT8
+#undef HAVE_CCTK_INT4
+#undef HAVE_CCTK_INT2
+#undef HAVE_CCTK_INT1
 
 /* Float sizes */
-#undef CCTK_HAVE_REAL16
-#undef CCTK_HAVE_REAL8
-#undef CCTK_HAVE_REAL4
+#undef HAVE_CCTK_REAL16
+#undef HAVE_CCTK_REAL8
+#undef HAVE_CCTK_REAL4
 
 /******************************************************************************/
 
@@ -151,13 +151,18 @@
 #endif
 
 /* Some C compilers (e.g. c99 ones) define bool */
-#undef CCTK_HAVE_C_BOOL
+#undef HAVE_CCTK_C_BOOL
+
+/* deprecated in beta15 */
+#ifdef HAVE_CCTK_C_BOOL
+#define CCTK_HAVE_C_BOOL
+#endif
 
 /* Since this is non-standard leave commented out for the moment */
 #if 0
-#ifndef CCTK_HAVE_C_BOOL
+#ifndef HAVE_CCTK_C_BOOL
 typedef enum {false, true} bool;
-#endif /* CCTK_HAVE_CXX_BOOL */
+#endif /* HAVE_CCTK_CXX_BOOL */
 #endif
 
 #endif /* ! defined __cplusplus */
@@ -169,10 +174,13 @@ typedef enum {false, true} bool;
 #ifdef __cplusplus
 
 /* Some C++ compilers don't have bool ! */
-#undef CCTK_HAVE_CXX_BOOL
+#undef HAVE_CCTK_CXX_BOOL
 
-#ifndef CCTK_HAVE_CXX_BOOL
+#ifndef HAVE_CCTK_CXX_BOOL
 typedef enum {false, true} bool;
+#else
+/* deprecated in beta15 */
+#define CCTK_HAVE_CXX_BOOL
 #endif
 
 /* Some C++ compilers recognise the restrict keyword */
