@@ -2033,7 +2033,7 @@ int CCTKi_CreateGroup (const char *gname,
     }
     else
     {
-      group->vararraysize = Util_Strdup(va_arg (ap, char *));
+      group->vararraysize = vararraysize;
 
       for (variable = 0; variable < n_variables; variable++)
       {
