@@ -1065,6 +1065,7 @@ it.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \chapter{Scheduling}
+\label{chap:scheduling}
 
 Cactus contains a rule-based scheduling system, which determines which
 routines from which thorn are run in which order.  The scheduler 
@@ -1092,11 +1093,13 @@ Each schedule item is scheduled either {\em AT} a particular {\em
 scheduling bin}, or {\em IN} a schedule {\em group}.
 
 \section{Schedule Bins}
+\label{scheduling:schedule_bins}
 
 These are the main points at which scheduled functions are run.
 These are listed in \ref{subsec:schedule_ccl}.
 
 \section{Groups}
+\label{scheduling:groups}
 
 If the optional {\tt GROUP} specifier is used, the item is a schedule
 group rather than a normal function.  Schedule groups are effectively
@@ -1105,6 +1108,7 @@ scheduled {\em IN} these in the same way as they are scheduled {\em
 AT} the main schedule bins.  (I.e. groups may be nested.)
 
 \section{Schedule Options}
+\label{scheduling:schedule_options}
 The options define various charactertics of the schedule item.
 
 \begin{Lentry}
@@ -1125,6 +1129,7 @@ allowing other thorns to operate independently of which one is active.
 \end{Lentry}
 
 \section{The Schedule Block}
+\label{scheduling:schedule_block}
 
 The schedule block specifies further details of the scheduled function
 or group.
@@ -1153,6 +1158,7 @@ sub-grids the driver may have broken the problem into.
 \end{Lentry}
 
 \section{How Cactus Calls Scheduled Functions}
+\label{scheduling:calling_scheduled_functions}
 
 For each scheduled function called, the flesh performs a variety of jobs at entry and exit. 
 
@@ -1851,7 +1857,7 @@ the following function calls:
 
 \begin{Lentry}
 
-\item[{\tt CCTK\_OutputGH (cGH *GH)}]
+\item[{\tt CCTK\_OutputGH (const cGH *GH)}]
 
 This call loops over all registered IO methods, calling the routine
 that each method has registered for {\t OutputGH}.  The expected
@@ -1861,14 +1867,14 @@ routines (that is, not all methods will supply routines to output all
 different types of variables) and if the method decides it is an
 appropriate time to output.
 
-\item[{\tt CCTK\_OutputVar (cGH *GH, const char *varname)}]
+\item[{\tt CCTK\_OutputVar (const cGH *GH, const char *varname)}]
 
 Output a variable {\t varname} looping over all registered IO methods.
 The output should take place if at all possible.  If output goes into
 a file and the appropriate file exists the data is appended, otherwise
 a new file is created.
 
-\item[{\tt CCTK\_OutputVarAs (cGH *GH, const char *varname, const char *alias)}]
+\item[{\tt CCTK\_OutputVarAs (const cGH *GH, const char *varname, const char *alias)}]
 
 Output a variable {\t varname} looping over all registered IO methods.
 The output should take place if at all possible.  If output goes into
@@ -1876,14 +1882,14 @@ a file and the appropriate file exists the data is appended, otherwise
 a new file is created.  Uses {\t alias} as the name of the variable
 for the purpose of constructing a filename.
 
-\item[{\tt CCTK\_OutputVarByMethod (cGH *GH, const char *varname, const char *methodname)}]
+\item[{\tt CCTK\_OutputVarByMethod (const cGH *GH, const char *varname, const char *methodname)}]
 
 Output a variable {\t varname} using the IO method {\t methodname} if
 it is registered. The output should take place if at all possible.  If
 output goes into a file and the appropriate file exists the data is
 appended, otherwise a new file is created.
 
-\item[{\tt CCTK\_OutputVarAsByMethod (cGH *GH,
+\item[{\tt CCTK\_OutputVarAsByMethod (const cGH *GH,
                                      const char *varname,
                                      const char *methodname,
                                      const char *alias)}]
