@@ -88,7 +88,8 @@ sub CreateImplementationBindings
     push(@data, "#include <stdio.h>\n");
     push(@data, "#include \"cctki_ActiveThorns.h\"\n\n");
 
-    push(@data, "int CCTKi_BindingsThorn_${thorn}(void)\n{\n");
+   push(@data, "int CCTKi_BindingsThorn_${thorn}(void);\n");
+   push(@data, "int CCTKi_BindingsThorn_${thorn}(void)\n{\n");
 
     push(@data, "  int retval;\n");
 
