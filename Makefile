@@ -1,8 +1,8 @@
-# /*@@  
+# /*@@
 #   @file      Makefile
 #   @date      Sun Jan 17 22:26:05 1999
 #   @author    Tom Goodale
-#   @desc 
+#   @desc
 #   gnu Makefile for the CCTK.
 #
 # WARNING: This makefile may not function with "make".  Errors like
@@ -14,9 +14,9 @@
 # For information on how to use this makefile, type
 # gmake help
 #
-#   
-#   @enddesc 
-#   @version $Id: Makefile,v 1.125 2001-10-11 07:37:38 allen Exp $
+#
+#   @enddesc
+#   @version $Id: Makefile,v 1.126 2002-01-03 22:41:56 tradke Exp $
 # @@*/
 
 ##################################################################################
@@ -200,20 +200,20 @@ export CONFIGS_DIR
 CONFIGURATIONS = $(patsubst $(CONFIGS_DIR)/%,%,$(wildcard $(CONFIGS_DIR)/*))
 CONFIGINFOS = $(wildcard $(CONFIGS_DIR)/*/config-info)
 
-# Default target does nothing. 
+# Default target does nothing.
 # Used to set up a default based upon uname or something.
 .PHONY:default-target
 
 default-target:
 ifeq ($(strip $(CONFIGURATIONS)),)
 	@echo $(DIVIDER)
-	@echo No configurations defined. 
+	@echo No configurations defined.
 	@echo Please use \'$(MAKE) \<name\>\' to setup a configuration called \<name\>.
 	@echo $(DIVIDER)
 	@echo \'$(MAKE) help\' lists all $(MAKE) options.
 else
 ifeq ($(words $(CONFIGURATIONS)), 1)
-	@echo Please use $(MAKE) $(CONFIGURATIONS) 
+	@echo Please use $(MAKE) $(CONFIGURATIONS)
 	@echo $(DIVIDER)
 	@echo \'$(MAKE) help\' lists all $(MAKE) options.
 else
@@ -234,7 +234,7 @@ $(CONFIGURATIONS):
 	  echo "Cactus - version: $(CCTK_VERSION)"; \
 	  echo "Building configuration $@"; \
 	fi; \
-	cd $(CONFIGS_DIR)/$@ 
+	cd $(CONFIGS_DIR)/$@
 	$(MAKE) -f $(CCTK_HOME)/lib/make/make.configuration TOP=$(CONFIGS_DIR)/$@ CCTK_HOME=$(CCTK_HOME) $(TPARFLAGS)
 
 # Clean target
@@ -254,12 +254,12 @@ distclean:
 TAGS:
 	@echo $(DIVIDER)
 	@echo Updating the Emacs TAGS file
-	rm -f TAGS ; touch TAGS 
+	rm -f TAGS ; touch TAGS
 	find src arrangements \( \
 	  -name '*.[chCfF]' -o -name '*.[fF]77' -o -name '*.[fF]90'\
 	  -o -name '*.cc' -o -name '*.cxx' -o -name '*.hh' -o -name '*.[ch]pp' \
 	  -o -name '*.inc' \
-	  \) -print |  xargs etags -a 
+	  \) -print |  xargs etags -a
 #	find src arrangements \( -name '*.[cChF]' -o -name '*.F77' -o -name '*.cc'\) \
 #          -exec etags --append --regex '/[a-z A-Z \t]*FORTRAN_NAME[^)]*/' {} \;
 	$(PERL) -pi.bak -e 's/(subroutine\s*)([a-zA-Z0-9_]+)/\1\L\2/g;' TAGS
@@ -269,12 +269,12 @@ TAGS:
 tags:
 	@echo $(DIVIDER)
 	@echo Updating the vi tags file
-	rm -f tags ; touch tags 
+	rm -f tags ; touch tags
 	find src arrangements \( \
 	  -name '*.[chCfF]' -o -name '*.[fF]77' -o -name '*.[fF]90'\
 	  -o -name '*.cc' -o -name '*.cxx' -o -name '*.hh' -o -name '*.[ch]pp' \
 	  -o -name '*.inc' \
-	  \) -print |  xargs ctags -a 
+	  \) -print |  xargs ctags -a
 	$(PERL) -pi.bak -e 's/(subroutine\s*)([a-zA-Z0-9_]+)/\1\L\2/g;' tags
 	rm tags.bak
 	sort tags > sortedtags ; mv sortedtags tags
@@ -286,7 +286,7 @@ tags:
 default:
 	@echo $(DIVIDER)
 	@echo Running the configuration program
-	$(SETUP_ENV) $(PERL) -s $(SETUP) $(SETUP_OPTIONS) 
+	$(SETUP_ENV) $(PERL) -s $(SETUP) $(SETUP_OPTIONS)
 	@echo $(DIVIDER)
 	@echo You are now ready to build the CCTK.
 	@echo This is done by $(MAKE) \<configuration\>
@@ -305,7 +305,7 @@ ifeq ($(strip $(CONFIGURATIONS)),)
 	@echo \'$(MAKE) \<name\>\' will run a setup script to setup a configuration called \'\<name\>\'.
 else
 	@echo The following configurations are currently specified
-	@echo 
+	@echo
 	@echo "  $(CONFIGURATIONS)"
 	@echo $(DIVIDER)
 	@echo "To build a configuration: "
@@ -314,6 +314,7 @@ else
 	@echo There is a range of options available to act on a configuration.
 	@echo These are activated by $(MAKE) \<conf-name\>-\<option\>
 	@echo Valid options are
+	@echo "  -build         : to build individual thorns of a configuration."
 	@echo "  -clean         : to clean a configuration."
 	@echo "                  (deletes all object and dependency files in "
 	@echo "                   the configuration)."
@@ -321,12 +322,12 @@ else
 	@echo "  -cleanobjs     : to clean a configuration's object files."
 	@echo "  -config        : to (re)configure a configuration. "
 	@echo "                  (runs or reruns the configuration scripts)."
-	@echo "  -delete        : to delete a configuration." 
+	@echo "  -delete        : to delete a configuration."
 	@echo "  -editthorns    : edits the ThornList file. "
-	@echo "  -realclean     : to restore a configuration to almost a new state. "
+	@echo "  -realclean     : to restore a configuration to almost a new state."
 	@echo "                  (deletes all but the config-data directory "
 	@echo "                   and the ThornList file)."
-	@echo "  -rebuild       : to rebuild a configuration." 
+	@echo "  -rebuild       : to rebuild a configuration."
 	@echo "                  (forces the CST to be rerun)."
 	@echo "  -testsuite     : run the test program."
 	@echo "  -thornlist     : regenerates the ThornList file. "
@@ -374,11 +375,42 @@ int_version:
 	@echo "Cactus - version: $(CCTK_VERSION)"
 
 
-# Clean a configuration
+############################################
+# Build individual thorns of a configuration
+############################################
+.PHONY: build
 
+build: int_version
+	@echo Please specify a configuration to build.
+	@echo $(DIVIDER)
+
+ifneq ($strip($(CONFIGURATIONS)),)
+.PHONY: $(addsuffix -build, $(CONFIGURATIONS))
+
+$(addsuffix -build, $(CONFIGURATIONS)): int_version
+	if test "x$(BUILDLIST)" = "x"; then \
+	  echo $(DIVIDER); \
+	  echo "Please specify the thorns to build with \"BUILDLIST=<list of thorns>\""; \
+	  echo $(DIVIDER); \
+	else \
+	  echo Building thorns \'$(BUILDLIST)\' of configuration $(@:%-build=%); \
+	  cd $(CONFIGS_DIR)/$(@:%-build=%); \
+	  $(MAKE) -f $(CCTK_HOME)/lib/make/make.configuration TOP=$(CONFIGS_DIR)/$(@:%-build=%) CCTK_HOME=$(CCTK_HOME) build; \
+	fi;
+endif
+
+%-build:
+	@echo $(DIVIDER)
+	@echo Configuration $(@:%-build=%) does not exist.
+	@echo Build aborted.
+
+
+#######################
+# Clean a configuration
+#######################
 .PHONY: clean
 
-clean: 
+clean:
 	@echo $(DIVIDER)
 	@echo Please specify a configuration to clean.
 	@echo $(DIVIDER)
@@ -389,7 +421,7 @@ ifneq ($strip($(CONFIGURATIONS)),)
 $(addsuffix -clean,$(CONFIGURATIONS)):
 	@echo $(DIVIDER)
 	@echo Cleaning configuration $(@:%-clean=%)
-	cd $(CONFIGS_DIR)/$(@:%-clean=%)  
+	cd $(CONFIGS_DIR)/$(@:%-clean=%)
 	$(MAKE) -f $(CCTK_HOME)/lib/make/make.configuration TOP=$(CONFIGS_DIR)/$(@:%-clean=%) CCTK_HOME=$(CCTK_HOME) clean
 	@echo $(DIVIDER)
 
@@ -401,8 +433,9 @@ endif
 	@echo Cleaning aborted.
 
 
+#############################
 # Clean just dependency files
-
+#############################
 .PHONY: cleandeps
 
 cleandeps:
@@ -416,7 +449,7 @@ ifneq ($strip($(CONFIGURATIONS)),)
 $(addsuffix -cleandeps,$(CONFIGURATIONS)):
 	@echo $(DIVIDER)
 	@echo Cleaning configuration $(@:%-cleandeps=%)
-	cd $(CONFIGS_DIR)/$(@:%-cleandeps=%)  
+	cd $(CONFIGS_DIR)/$(@:%-cleandeps=%)
 	$(MAKE) -f $(CCTK_HOME)/lib/make/make.configuration TOP=$(CONFIGS_DIR)/$(@:%-cleandeps=%) CCTK_HOME=$(CCTK_HOME) cleandeps
 	@echo $(DIVIDER)
 
@@ -428,8 +461,9 @@ endif
 	@echo Cleaning dependencies aborted.
 
 
+#########################
 # Clean just object files
-
+#########################
 .PHONY: cleanobjs
 
 cleanobjs:
@@ -444,7 +478,7 @@ ifneq ($strip($(CONFIGURATIONS)),)
 $(addsuffix -cleanobjs,$(CONFIGURATIONS)):
 	@echo $(DIVIDER)
 	@echo Cleaning configuration $(@:%-cleanobjs=%)
-	cd $(CONFIGS_DIR)/$(@:%-cleanobjs=%)  
+	cd $(CONFIGS_DIR)/$(@:%-cleanobjs=%)
 	$(MAKE) -f $(CCTK_HOME)/lib/make/make.configuration TOP=$(CONFIGS_DIR)/$(@:%-cleanobjs=%) CCTK_HOME=$(CCTK_HOME) cleanobjs
 	@echo $(DIVIDER)
 
@@ -456,8 +490,9 @@ endif
 	@echo Cleaning object files aborted.
 
 
+##########################################################
 # Clean away all produced files (doesn't delete ThornList)
-
+##########################################################
 .PHONY: realclean
 
 realclean:
@@ -472,7 +507,7 @@ ifneq ($strip($(CONFIGURATIONS)),)
 $(addsuffix -realclean,$(CONFIGURATIONS)):
 	@echo $(DIVIDER)
 	@echo Cleaning configuration $(@:%-realclean=%)
-	cd $(CONFIGS_DIR)/$(@:%-realclean=%)  
+	cd $(CONFIGS_DIR)/$(@:%-realclean=%)
 	$(MAKE) -f $(CCTK_HOME)/lib/make/make.configuration TOP=$(CONFIGS_DIR)/$(@:%-realclean=%) CCTK_HOME=$(CCTK_HOME) realclean
 	@echo $(DIVIDER)
 
@@ -483,8 +518,10 @@ endif
 	@echo Configuration $(@:%-realclean=%) does not exist.
 	@echo Cleaning aborted.
 
-# Delete a configuration
 
+########################
+# Delete a configuration
+########################
 .PHONY: delete
 
 delete:
@@ -512,7 +549,7 @@ $(addsuffix -delete,$(CONFIGURATIONS)):
 	if test "x$$confirm" = "xyes" ; then                       \
 	  echo Deleting configuration $(@:%-delete=%);             \
 	  cd $(CONFIGS_DIR) ; rm -rf $(@:%-delete=%) ;             \
-	fi 
+	fi
 	@echo $(DIVIDER)
 endif
 
@@ -521,8 +558,10 @@ endif
 	@echo Configuration $(@:%-delete=%) does not exist.
 	@echo Deletion aborted.
 
-# Rebuild a configuration
 
+#########################
+# Rebuild a configuration
+#########################
 .PHONY: rebuild
 
 rebuild: int_version
@@ -542,17 +581,19 @@ endif
 	@echo Configuration $(@:%-rebuild=%) does not exist.
 	@echo Rebuild aborted.
 
-# Regenerate the compiled thorns list
 
+#####################################
+# Regenerate the compiled thorns list
+#####################################
 .PHONY: thornlist
 
-thornlist: 
+thornlist:
 	@echo $(DIVIDER)
 	@echo Please specify a configuration to regenerate the thornlist of.
 	@echo $(DIVIDER)
 
 
-ifneq ($strip($(CONFIGURATIONS)),) 
+ifneq ($strip($(CONFIGURATIONS)),)
 .PHONY: $(addsuffix -thornlist,$(CONFIGURATIONS))
 
 $(addsuffix -thornlist,$(CONFIGURATIONS)):
@@ -567,8 +608,10 @@ endif
 	@echo Configuration $(@:%-thornlist=%) does not exist.
 	@echo Regeneration of compiled ThornList aborted.
 
-# Edit the thornlist
 
+####################
+# Edit the thornlist
+####################
 .PHONY: editthorn
 
 editthorns:
@@ -577,7 +620,7 @@ editthorns:
 	@echo $(DIVIDER)
 
 
-ifneq ($strip($(CONFIGURATIONS)),) 
+ifneq ($strip($(CONFIGURATIONS)),)
 .PHONY: $(addsuffix -editthorns,$(CONFIGURATIONS))
 
 $(addsuffix -editthorns,$(CONFIGURATIONS)):
@@ -591,8 +634,10 @@ endif
 	@echo Configuration $(@:%-editthorns=%) does not exist.
 	@echo Editing of compiled ThornList aborted.
 
-# Rerun the configuration script
 
+################################
+# Rerun the configuration script
+################################
 .PHONY: config
 
 config: int_version
@@ -626,12 +671,12 @@ $(addsuffix -config,$(CONFIGURATIONS)): int_version
 	  fi; \
 	  else \
 	  echo "ThornList $(THORNLIST_DIR)/$(THORNLIST) does not exist" ; \
-	fi 
+	fi
 	@echo $(DIVIDER)
 endif
 
 %-config:
-	@echo Configuration $(@:%-config=%) does not exist.; 
+	@echo Configuration $(@:%-config=%) does not exist.;
 	if test "x$(PROMPT)" = "xyes" ; then \
 	  echo Setup configuration $(@:%-config=%) \(yes\)?; \
 	  read yesno rest ; \
@@ -664,9 +709,13 @@ endif
 	  else \
 	    echo "ThornList $(THORNLIST_DIR)/$(THORNLIST) does not exist" ; \
 	  fi ; \
-	fi 
+	fi
 	@echo $(DIVIDER)
 
+
+#####################
+# Build the utilities
+#####################
 .PHONY: utils
 
 utils:
@@ -681,7 +730,7 @@ ifneq ($strip($(CONFIGURATIONS)),)
 $(addsuffix -utils,$(CONFIGURATIONS)):
 	@echo $(DIVIDER)
 	@echo Building utilities for $(@:%-utils=%)
-	cd $(CONFIGS_DIR)/$(@:%-utils=%)  
+	cd $(CONFIGS_DIR)/$(@:%-utils=%)
 	$(MAKE) -f $(CCTK_HOME)/lib/make/make.configuration TOP=$(CONFIGS_DIR)/$(@:%-utils=%) CCTK_HOME=$(CCTK_HOME) utils UTILS=$(UTILS) CONFIG_NAME=$(@:%-utils=%)
 	@echo $(DIVIDER)
 
@@ -692,8 +741,10 @@ endif
 	@echo Configuration $(@:%-utils=%) does not exist.
 	@echo Building of utilities aborted.
 
-# Make a new thorn
 
+##################
+# Make a new thorn
+##################
 .PHONY: newthorn
 newthorn:
 	@echo $(DIVIDER)
@@ -701,9 +752,10 @@ newthorn:
 	$(PERL) -s $(NEWTHORN);
 	@echo $(DIVIDER)
 
-###############################
-# Run the testsuite
 
+###################
+# Run the testsuite
+###################
 .PHONY: testsuite
 
 testsuite: int_version
@@ -711,7 +763,7 @@ testsuite: int_version
 	@echo $(DIVIDER)
 
 
-ifneq ($strip($(CONFIGURATIONS)),) 
+ifneq ($strip($(CONFIGURATIONS)),)
 .PHONY: $(addsuffix -testsuite,$(CONFIGURATIONS))
 
 $(addsuffix -testsuite,$(CONFIGURATIONS)):
@@ -727,7 +779,7 @@ endif
 
 ##########################################
 
-ifneq ($strip($(CONFIGURATIONS)),) 
+ifneq ($strip($(CONFIGURATIONS)),)
 .PHONY: $(addsuffix -examples,$(CONFIGURATIONS))
 
 # Copy thorn parameter files
@@ -766,14 +818,14 @@ checkout:
 configinfo:
 ifeq ($(strip $(CONFIGURATIONS)),)
 	@echo $(DIVIDER)
-	@echo No configurations defined. 
+	@echo No configurations defined.
 	@echo $(DIVIDER)
 else
 	cat $(CONFIGINFOS)
 endif
 	@echo $(DIVIDER)
 
-ifneq ($strip($(CONFIGURATIONS)),) 
+ifneq ($strip($(CONFIGURATIONS)),)
 .PHONY: $(addsuffix -configinfo,$(CONFIGURATIONS))
 
 $(addsuffix -configinfo,$(CONFIGURATIONS)):
@@ -797,13 +849,13 @@ sysinfo:
 	@echo Please specify a configuration to run sysinfo with.
 	@echo $(DIVIDER)
 
-ifneq ($strip($(CONFIGURATIONS)),) 
+ifneq ($strip($(CONFIGURATIONS)),)
 .PHONY: $(addsuffix -sysinfo,$(CONFIGURATIONS))
 
 $(addsuffix -sysinfo,$(CONFIGURATIONS)):
 	@echo $(DIVIDER)
 	@echo Running SystemInfo
-	$(PERL) ./lib/sbin/SystemInfo.pl $(@:%-sysinfo=%) 
+	$(PERL) ./lib/sbin/SystemInfo.pl $(@:%-sysinfo=%)
 endif
 
 %-sysinfo:
@@ -820,11 +872,11 @@ bugreport:
 	$(SHELL) ./lib/sbin/cctkbug
 
 
-ifneq ($strip($(CONFIGURATIONS)),) 
+ifneq ($strip($(CONFIGURATIONS)),)
 .PHONY: $(addsuffix -bugreport,$(CONFIGURATIONS))
 
 $(addsuffix -bugreport,$(CONFIGURATIONS)):
-	$(SHELL) ./lib/sbin/cctkbug -c $(CONFIGS_DIR)/$(@:%-bugreport=%) 
+	$(SHELL) ./lib/sbin/cctkbug -c $(CONFIGS_DIR)/$(@:%-bugreport=%)
 endif
 
 %-bugreport:
@@ -842,7 +894,7 @@ endif
 UsersGuide.ps: UsersGuide
 
 .PHONY: UsersGuide
-UsersGuide: 
+UsersGuide:
 	@echo $(DIVIDER)
 	@echo Creating user documentation UsersGuide.ps
 	cd doc/UsersGuide;                          \
@@ -870,7 +922,7 @@ MaintGuide:
 	latex MaintGuide.tex > LATEX_MESSAGES 2>&1; \
 	latex MaintGuide.tex > LATEX_MESSAGES 2>&1; \
 	echo "  Running dvips....";                 \
-	dvips ./MaintGuide.dvi -o $(CCTK_HOME)/MaintGuide.ps > DVIPS_MESSAGES 2>&1 
+	dvips ./MaintGuide.dvi -o $(CCTK_HOME)/MaintGuide.ps > DVIPS_MESSAGES 2>&1
 	@echo "  Done."
 	@echo $(DIVIDER)
 
@@ -880,27 +932,27 @@ MaintGuide:
 ThornGuide.ps: ThornGuide
 
 .PHONY: ThornGuide
-ThornGuide: 
+ThornGuide:
 	@echo $(DIVIDER)
 	@echo Creating thorn documentation ThornGuide.ps
-	if test ! -d doc/ThornGuide ; then mkdir doc/ThornGuide ; fi 
+	if test ! -d doc/ThornGuide ; then mkdir doc/ThornGuide ; fi
 	rm -f doc/ThornGuide/*;
 	@echo "  Processing...."
-	$(PERL) -s lib/sbin/ParamLatex.pl -processall -grouping=bythorn -outdir=doc/ThornGuide/ -section -sort=scope > doc/ThornGuide/PARAMLATEX_MESSAGES 2>&1; $(PERL) -s lib/sbin/ThornGuide.pl -directory=arrangements/ -outdir=doc/ThornGuide/  
+	$(PERL) -s lib/sbin/ParamLatex.pl -processall -grouping=bythorn -outdir=doc/ThornGuide/ -section -sort=scope > doc/ThornGuide/PARAMLATEX_MESSAGES 2>&1; $(PERL) -s lib/sbin/ThornGuide.pl -directory=arrangements/ -outdir=doc/ThornGuide/
 	cd doc/ThornGuide; cp ../UsersGuide/bincactus2.eps bincactus.eps;    \
 	echo "  Running LaTeX....";                                          \
 	latex -interaction=nonstopmode ThornGuide.tex > LATEX_MESSAGES 2>&1; \
 	latex -interaction=nonstopmode ThornGuide.tex > LATEX_MESSAGES 2>&1; \
 	latex -interaction=nonstopmode ThornGuide.tex > LATEX_MESSAGES 2>&1; \
 	echo "  Running dvips....";                                          \
-	dvips ./ThornGuide.dvi -o $(CCTK_HOME)/ThornGuide.ps > DVIPS_MESSAGES 2>&1 
+	dvips ./ThornGuide.dvi -o $(CCTK_HOME)/ThornGuide.ps > DVIPS_MESSAGES 2>&1
 	@echo "  Done."
 	@echo $(DIVIDER)
 
 
 # Run ThornGuide on a configuration
 
-ifneq ($strip($(CONFIGURATIONS)),) 
+ifneq ($strip($(CONFIGURATIONS)),)
 .PHONY: $(addsuffix -ThornGuide,$(CONFIGURATIONS))
 
 $(addsuffix -ThornGuide,$(CONFIGURATIONS)):
@@ -945,7 +997,7 @@ thorninfo:
 .PHONY: cvsstatus
 
 cvsstatus:
-	$(PERL) -s $(CCTK_HOME)/lib/sbin/CVSStatus.pl     
+	$(PERL) -s $(CCTK_HOME)/lib/sbin/CVSStatus.pl
 
 # run cvsudpate on a configuration
 
@@ -954,8 +1006,8 @@ cvsstatus:
 cvsupdate:
 	$(PERL) -s $(CCTK_HOME)/lib/sbin/CVSUpdate.pl arrangements
 
- 
-ifneq ($strip($(CONFIGURATIONS)),) 
+
+ifneq ($strip($(CONFIGURATIONS)),)
 .PHONY $(addsuffix -cvsupdate,$(CONFIGURATIONS)):
 
 $(addsuffix -cvsupdate,$(CONFIGURATIONS)):
@@ -967,14 +1019,14 @@ $(addsuffix -cvsupdate,$(CONFIGURATIONS)):
         fi
 	@echo " Done."
 endif
- 
+
 %-cvsupdate:
 	@echo $(DIVIDER)
 	@echo Configuration $(@:%-cvsupdate=%) does not exist.
 	@echo CVS Update aborted.
 
 .PHONY: cvsdiff
- 
+
 cvsdiff:
 	$(PERL) -s $(CCTK_HOME)/lib/sbin/CVSStatus.pl -case=diff
 
@@ -989,21 +1041,21 @@ downsize:
 	then  \
 	rm -rf doc; rm -rf arrangements/*/*/doc; \
 	echo $(DIVIDER)   ;  \
-	fi 
+	fi
 	@echo Remove thorn testsuites \(\no\)?
 	read yesno rest ;\
 	if [ "x$$yesno" = "xyes" -o "x$$yesno" = "xy" -o "x$$yesno" = "xYES" -o "x$$yesno" = "xY" ] ;\
 	then  \
 	rm -rf arrangements/*/*/test; \
 	echo $(DIVIDER)   ;  \
-	fi 
+	fi
 	@echo Remove all configurations \(\no\)?
 	read yesno rest ;\
 	if [ "x$$yesno" = "xyes" -o "x$$yesno" = "xy" -o "x$$yesno" = "xYES" -o "x$$yesno" = "xY" ] ;\
 	then  \
 	$(MAKE) distclean; \
 	echo $(DIVIDER)   ;  \
-	fi 
+	fi
 
 # Last resort rule.  Assume it is the name of a configuration
 
@@ -1044,6 +1096,6 @@ downsize:
 	  else \
 	    echo "ThornList $(THORNLIST_DIR)/$(THORNLIST) does not exist" ; \
 	  fi ; \
-	fi 
+	fi
 	@echo $(DIVIDER)
 

@@ -2,14 +2,14 @@
 #  @file      make.configuration
 #  @date      Sun Jan 17 22:15:23 1999
 #  @author    Tom Goodale
-#  @desc 
+#  @desc
 #  Makes the CCTK executable for a particular configuration
-#  @enddesc 
+#  @enddesc
 #  @version $Id$
 # @@*/
 
 # Silence all but designated output
-#.SILENT: 
+#.SILENT:
 
 # Some configuration variables
 CONFIG = $(TOP)/config-data
@@ -46,7 +46,7 @@ LIBNAME_SUFFIX = .a
 endif
 endif
 
-# Include the list of thorns to be built 
+# Include the list of thorns to be built
 # (Use -include to prevent warnings messages, as the file will be built if
 # it is missing .)
 # We don't want to include this file if doing something like a make clean
@@ -58,6 +58,10 @@ ifeq ($(strip $(MAKECMDGOALS)),)
 endif
 
 ifeq ($(strip $(MAKECMDGOALS)), utils)
+-include $(CONFIG)/make.thornlist
+endif
+
+ifeq ($(strip $(MAKECMDGOALS)), build)
 -include $(CONFIG)/make.thornlist
 endif
 
@@ -95,7 +99,7 @@ $(EXEDIR)$(DIRSEP)$(EXE): $(CONFIG)/make.thornlist $(CONFIG)/cctki_version.h $(p
 	@echo Creating $(EXE) in $(EXEDIR) from $(THORNS)
 	$(CC) $(OPTIMISE_C) $(DEBUG_C) $(CFLAGS) $(CCOMPILEONLY)$(OPTIONSEP)$(TOP)$(DIRSEP)datestamp.o -I$(subst /,$(DIRSEP),$(CCTK_HOME)/src/include) -I$(CONFIG) $(subst /,$(DIRSEP),$(DATESTAMP))
 	if [ ! -d $(EXEDIR) ]; then $(MKDIR) $(MKDIRFLAGS) $(EXEDIR) ; fi
-	$(LD) $(CREATEEXE)$(OPTIONSEP)$(subst /,$(DIRSEP),$@) $(DEBUG_LD) $(LDFLAGS) $(EXTRAFLAGS) $(subst /,$(DIRSEP), $(TOP)/datestamp.o) $(CACTUSLIBLINKLINE) $(GENERAL_LIBRARIES) 
+	$(LD) $(CREATEEXE)$(OPTIONSEP)$(subst /,$(DIRSEP),$@) $(DEBUG_LD) $(LDFLAGS) $(EXTRAFLAGS) $(subst /,$(DIRSEP), $(TOP)/datestamp.o) $(CACTUSLIBLINKLINE) $(GENERAL_LIBRARIES)
 	@echo $(DIVIDER)
 
 # Version file
@@ -116,7 +120,7 @@ $(CONFIG)/cctki_version.h: $(CCTK_HOME)/Makefile
 # src directory, and calls that rather than the default makefile
 # used for making thorn libraries.
 #
-# Checks if the library is Cactus, in which case it uses the main source 
+# Checks if the library is Cactus, in which case it uses the main source
 # directory.
 
 $(CCTK_LIBDIR)/$(LIBNAME_PREFIX)%$(LIBNAME_SUFFIX): update
@@ -146,7 +150,7 @@ include $(CONFIG)/make.config.deps
 $(CONFIG)/make.thornlist: $(TOP)/ThornList $(foreach lib, $(CCTK_HOME)/src $(THORNS:%=$(PACKAGE_DIR)/%), $(lib)/param.ccl $(lib)/interface.ccl $(lib)/schedule.ccl) $(CONFIG_THORNS:%=$(PACKAGE_DIR)/%/configuration.ccl)
 	if [ -r $@ ] ; then echo Reconfiguring thorns ; rm $@ ;\
 	else echo Processing CCL files ; fi
-	$(PERL) -s $(CST) -config_dir=$(CONFIG) -cctk_home=$(CCTK_HOME) -top=$(TOP) $< 
+	$(PERL) -s $(CST) -config_dir=$(CONFIG) -cctk_home=$(CCTK_HOME) -top=$(TOP) $<
 
 # Rule to build ThornList
 
@@ -178,7 +182,7 @@ endif
 $(foreach lib, $(CCTK_HOME)/src $(THORNS:%=$(PACKAGE_DIR)/%), $(lib)/param.ccl $(lib)/interface.ccl $(lib)/schedule.ccl) $(CONFIG_THORNS:%=$(PACKAGE_DIR)/%/configuration.ccl):
 	@echo "Missing file $@"
 	@echo "Possibly from a thorn deleted from an arrangement"
-	@echo "Deleting make.thornlist" 
+	@echo "Deleting make.thornlist"
 	rm  $(CONFIG)/make.thornlist
 	@echo "Please try building again"
 	exit 1
@@ -186,7 +190,7 @@ $(foreach lib, $(CCTK_HOME)/src $(THORNS:%=$(PACKAGE_DIR)/%), $(lib)/param.ccl $
 
 # Phony targets.
 
-.PHONY:update editthorns clean cleandeps cleanobjs realclean
+.PHONY:update editthorns clean cleandeps cleanobjs realclean build
 
 # This phony target forces an update.
 update:
@@ -232,9 +236,21 @@ realclean:
 	rm -rf $(TOP)/scratch/*
 	rm -f datestamp.o
 
+# This target will build only a subset of the thorns for a given configuration.
+# It also warns about thorns which don't exist.
+THORN_BUILDLIST = $(filter $(ALLCACTUSLIBS), $(BUILDLIST))
+UNKNOWN_THORNS = $(filter-out $(ALLCACTUSLIBS), $(BUILDLIST))
+
+build: $(CONFIG)/make.thornlist $(CONFIG)/cctki_version.h $(patsubst %, $(CCTK_LIBDIR)/$(LIBNAME_PREFIX)%$(LIBNAME_SUFFIX), $(THORN_BUILDLIST))
+	if test "x$(UNKNOWN_THORNS)" != "x"; then \
+	  echo "WARNING: Don't know anything about '$(UNKNOWN_THORNS)' !"; \
+      echo $(DIVIDER); \
+	fi
+
+
 # This target allows thorns to add to $(ALL_UTILS) and then
 # have them built by a make utils
 
-.PHONY: utils 
+.PHONY: utils
 
 utils: $(UTILS:%=$(UTIL_DIR)$(DIRSEP)%)
