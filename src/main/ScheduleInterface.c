@@ -757,6 +757,7 @@ static int SchedulePrint(const char *where)
 
   data.GH = NULL;
   data.schedpoint = schedpoint_misc;
+  data.whiling = 0;
 
   if(where)
   {

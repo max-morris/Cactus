@@ -64,7 +64,8 @@ int CCTKi_RegisterDefaultTimerFunctions(void)
   CCTKi_RegisterTimersGetrUsage();
 #endif
 
-}
+  return 0;
+} 
 
 
 

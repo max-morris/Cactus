@@ -9,6 +9,8 @@
 
 /*#define DEBUG_COORD*/
 
+static char *rcsid = "$Header$";
+
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -29,7 +31,8 @@ struct Coordprops
   int    direction;
 };
 
-typedef struct COORD_RANGE {
+typedef struct COORD_RANGE 
+{
 
   cGH *GH;
 
@@ -396,9 +399,11 @@ int CCTK_CoordRange(cGH *GH, CCTK_REAL *lower, CCTK_REAL *upper, const char *nam
       printf("Returning range (%f,%f) for %s (from %x)\n",*lower,*upper,name,curr);
 #endif
 
-      return;
+      return 0;
     }
   }
+
+  return -1;
 }
 
 

@@ -191,9 +191,13 @@ void CCTKi_ScheduleDestroyArray(int size, signed char **array)
 {
   int i;
 
-  for(i=size-1; i >=0; i--)
+  if(array)
   {
-    free(array[i]);
+    for(i=size-1; i >=0; i--)
+    {
+      free(array[i]);
+    }
+    free(array);
   }
 }
 

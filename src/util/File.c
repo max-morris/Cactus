@@ -9,8 +9,8 @@
    @enddesc
  @@*/             
 
-#include <malloc.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "cctk_WarnLevel.h"
 #include "cctk_FortranString.h"
@@ -75,10 +75,13 @@ int CCTK_mkdir(char *dir)
     retval = system(command);
     retval = 0;
 
-    free(command);
-
-  } else 
+  } 
+  else
+  { 
     retval = -1;
+  }
+
+  free(command);
 
   return retval;
 
