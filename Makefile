@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.8 1999-01-19 12:46:12 goodale Exp $
+#   @version $Id: Makefile,v 1.9 1999-01-19 14:08:41 goodale Exp $
 # @@*/
 
 # Comment this out if you want to see what's going on.
@@ -168,7 +168,7 @@ $(addsuffix -delete,$(CONFIGURATIONS)):
 	@echo $(DIVIDER)
 	echo Setup configuration $@ \(no\)?
 	read yesno rest ;\
-	if [ $$yesno = "yes" -o $$yesno = "y" -o $$yesno = "YES" -o $$yesno = "Y" ] ;\
+	if [ "x$$yesno" = "xyes" -o "x$$yesno" = "xy" -o "x$$yesno" = "xYES" -o "x$$yesno" = "xY" ] ;\
 	then  \
 	echo Setting up new configuration $@; \
 	$(PERL) $(SETUP) $@; \
