@@ -32,7 +32,13 @@ include $(CONFIG)/make.config.defn
 # Include the list of thorns to be built 
 # (Use -include to prevent warnings messages, as the file will be built if
 # it is missing .)
+# We don't want to include this file if doing something like a make clean
+# as if the file didn't exist it would first be made, which would be
+# pretty confusing during a make clean !
+
+ifeq ($strip($(MAKECMDGOALS)),)
 -include $(CONFIG)/make.thornlist
+endif
 
 # Allow each thorn to include some global definitions
 ifneq ($(strip $(THORNS)),)
@@ -116,9 +122,24 @@ endif
 
 # Phony targets.
 
-.PHONY:update clean
+.PHONY:update clean cleandeps cleanobjs realclean
 update:
 
 clean:
+	@echo Deleting all object and dependency files in $(TOP)
+	find $(TOP) \( -name '*.[od]' -o -name '*.a' \) -exec rm {} \;
+
+cleandeps:
+	@echo Deleting all dependency files in $(TOP)
+	find $(TOP) \( -name '*.[d]' -o -name '*.a' \) -exec rm {} \;
+
+cleanobjs:
 	@echo Deleting all object files in $(TOP)
-	find $(TOP) \( -name '*.o' -o -name '*.a' \) -exec rm {} \;
+	find $(TOP) \( -name '*.[o]' -o -name '*.a' \) -exec rm {} \;
+
+realclean:
+	@echo Deleting all built files in $(TOP)
+	rm -rf $(TOP)/build
+	rm -rf $(TOP)/bindings
+	rm -rf $(TOP)/lib/*
+	rm -f datestamp.o

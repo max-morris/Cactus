@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.17 1999-02-20 17:26:48 goodale Exp $
+#   @version $Id: Makefile,v 1.18 1999-02-21 15:37:05 goodale Exp $
 # @@*/
 
 # Make quietly unless told not to
@@ -136,7 +136,10 @@ else
 	@echo The following configurations are currently specified
 	@echo $(CONFIGURATIONS)
 	@echo To build a configuration run $(MAKE) followed by the name of a configuration.
-	@echo To clean a configuration run $(MAKE) followed by the name of a configuration suffixed by -clean e.g. Linux-clean.
+	@echo To clean a configuration run $(MAKE) followed by the name of a configuration suffixed by -clean e.g. Linux-clean.  This deletes all object and dependency files in the configuration.
+	@echo To clean a configuration\'s dependency files run $(MAKE) followed by the name of a configuration suffixed by -cleandeps e.g. Linux-cleandeps.
+	@echo To clean a configuration\'s object files run $(MAKE) followed by the name of a configuration suffixed by -cleanobjs e.g. Linux-cleanobjs.
+	@echo To restore a configuration to almost a new state run $(MAKE) followed by the name of a configuration suffixed by -realclean e.g. Linux-realclean. This deletes all but the config-data directory and the ActiveThorns file.
 	@echo To delete a configuration run $(MAKE) followed by the name of a configuration suffixed by -delete e.g. Linux-delete.
 	@echo To rebuild a configuration run $(MAKE) followed by the name of a configuration suffixed by -rebuild e.g. Linux-rebuild. This forces the CST to be rerun.
 	@echo To reconfigure a configuration run $(MAKE) followed by the name of a configuration suffixed by -reconfig e.g. Linux-reconfig.  This reruns the configuration scripts.
@@ -172,6 +175,63 @@ endif
 	@echo Cleaning aborted.
 
 
+# Clean just dependency files
+
+ifneq ($strip($(CONFIGURATIONS)),)
+.PHONY $(addsuffix -cleandeps,$(CONFIGURATIONS)):
+
+$(addsuffix -cleandeps,$(CONFIGURATIONS)):
+	@echo $(DIVIDER)
+	@echo Cleaning configuration $(@:%-cleandeps=%)
+	cd configs/$(@:%-cleandeps=%)  
+	$(MAKE) -f $(CCTK_HOME)/lib/make/make.configuration TOP=$(CCTK_HOME)/configs/$(@:%-cleandeps=%) CCTK_HOME=$(CCTK_HOME) cleandeps
+	@echo $(DIVIDER)
+
+endif
+
+%-cleandeps:
+	@echo $(DIVIDER)
+	@echo Configuration $(@:%-cleandeps=%) does not exist.
+	@echo Cleaning dependencies aborted.
+
+# Clean just object files
+
+ifneq ($strip($(CONFIGURATIONS)),)
+.PHONY $(addsuffix -cleanobjs,$(CONFIGURATIONS)):
+
+$(addsuffix -cleanobjs,$(CONFIGURATIONS)):
+	@echo $(DIVIDER)
+	@echo Cleaning configuration $(@:%-cleanobjs=%)
+	cd configs/$(@:%-cleanobjs=%)  
+	$(MAKE) -f $(CCTK_HOME)/lib/make/make.configuration TOP=$(CCTK_HOME)/configs/$(@:%-cleanobjs=%) CCTK_HOME=$(CCTK_HOME) cleanobjs
+	@echo $(DIVIDER)
+
+endif
+
+%-cleanobjs:
+	@echo $(DIVIDER)
+	@echo Configuration $(@:%-cleanobjs=%) does not exist.
+	@echo Cleaning object files aborted.
+
+
+# Clean away all produced files (doesn't delete ActiveThorns)
+
+ifneq ($strip($(CONFIGURATIONS)),)
+.PHONY $(addsuffix -realclean,$(CONFIGURATIONS)):
+
+$(addsuffix -realclean,$(CONFIGURATIONS)):
+	@echo $(DIVIDER)
+	@echo Cleaning configuration $(@:%-realclean=%)
+	cd configs/$(@:%-realclean=%)  
+	$(MAKE) -f $(CCTK_HOME)/lib/make/make.configuration TOP=$(CCTK_HOME)/configs/$(@:%-realclean=%) CCTK_HOME=$(CCTK_HOME) realclean
+	@echo $(DIVIDER)
+
+endif
+
+%-realclean:
+	@echo $(DIVIDER)
+	@echo Configuration $(@:%-cleanreal=%) does not exist.
+	@echo Cleaning aborted.
 
 # Delete a configuration
 
