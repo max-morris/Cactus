@@ -9,7 +9,7 @@
 #  @version $Id$ 
 #@@*/
 
-$toolkit_dir = "toolkits";
+$package_dir = "packages";
 
 $thorn_name = shift(@ARGV);
 
@@ -18,37 +18,37 @@ if(!$thorn_name)
   $thorn_name = &prompt("Thorn name");
 }
 
-if(!$toolkit)
+if(!$package)
 {
-  @toolkits = &GetToolkits($toolkit_dir);
+  @packages = &GetToolkits($package_dir);
   
-  print "The following toolkits are available:\n";
-  foreach $toolkit (@toolkits)
+  print "The following packages are available:\n";
+  foreach $package (@packages)
   {
-    print "$toolkit\n";
+    print "$package\n";
   }
   print "Pick one, or create a new one.\n";
-  $toolkit = &prompt("Toolkit");
+  $package = &prompt("Toolkit");
 }
 
-chdir $toolkit_dir;
+chdir $package_dir;
 
-if(! -d "$toolkit")
+if(! -d "$package")
 {
-  print "Creating new toolkit $toolkit\n";
+  print "Creating new package $package\n";
   
-  mkdir($toolkit, 0755);
+  mkdir($package, 0755);
 
 }
 
-chdir $toolkit;
+chdir $package;
 
 if( -e $thorn_name)
 {
   die "Thorn $thorn_name already exists !";
 }
 
-print "Creating thorn $thorn_name in $toolkit\n";
+print "Creating thorn $thorn_name in $package\n";
 mkdir($thorn_name, 0755);
 
 chdir $thorn_name;
@@ -182,7 +182,7 @@ sub prompt {
 #  @date       Wed Feb  3 16:45:22 1999
 #  @author     Tom Goodale
 #  @desc 
-#  Gets a list of the current toolkits.
+#  Gets a list of the current packages.
 #  @enddesc 
 #  @calls     
 #  @calledby   
@@ -193,17 +193,17 @@ sub prompt {
 
 sub GetToolkits
 {
-  local($toolkit_dir) = @_;
+  local($package_dir) = @_;
   local($start_dir);
-  local(@toolkits);
+  local(@packages);
 
   $start_dir = `pwd`;
 
-  chdir $toolkit_dir;
+  chdir $package_dir;
 
-  open(TOOLKITS, "ls|");
+  open(PACKAGES, "ls|");
 
-  while(<TOOLKITS>)
+  while(<PACKAGES>)
   {
     chop;
 
@@ -215,13 +215,13 @@ sub GetToolkits
     # Just pick directories
     if( -d $_)
     {
-      push (@toolkits, $_);
+      push (@packages, $_);
     }
   }
 
-  close TOOLKITS;
+  close PACKAGES;
 
   chdir $start_dir;
 
-  return @toolkits;
+  return @packages;
 }

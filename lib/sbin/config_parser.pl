@@ -127,7 +127,7 @@ sub CreateThornList
 {
   local($cctk_home, $activethorns) = @_;
   local(%thornlist);
-  local($thorn, $toolkit, $thorn_name);
+  local($thorn, $package, $thorn_name);
 
   open(ACTIVE, "<$activethorns") || die "Cannot open ActiveThorns file $activethorns !";
 
@@ -151,14 +151,14 @@ sub CreateThornList
     {
       $thorn =~ m:(.*)[/\\](.*):;
 
-      $toolkit = $1;
+      $package = $1;
       $thorn_name = $2;
       # No longer strip thorn_ off the beginning of a thorn name.
       #      $thorn_name =~ s/thorn_//;
       
-      if( -r "$cctk_home/toolkits/$thorn/param.ccl" &&
-	  -r "$cctk_home/toolkits/$thorn/interface.ccl" &&
-	  -r "$cctk_home/toolkits/$thorn/schedule.ccl")
+      if( -r "$cctk_home/packages/$thorn/param.ccl" &&
+	  -r "$cctk_home/packages/$thorn/interface.ccl" &&
+	  -r "$cctk_home/packages/$thorn/schedule.ccl")
       {
 	if( $thornlist{"$thorn_name"} )
 	{
@@ -166,7 +166,7 @@ sub CreateThornList
 	}
 	else
 	{
-	  $thornlist{"$thorn_name"} = "$cctk_home/toolkits/$thorn";
+	  $thornlist{"$thorn_name"} = "$cctk_home/packages/$thorn";
 	}
       }
       else
@@ -246,7 +246,7 @@ sub CreateMakeThornlist
 
     $thorns{$thorn} =~ m:(.*)/(.*)/(.*):;
 
-    # Onlu place toolkit_name/thorn_name in the file.
+    # Onlu place package_name/thorn_name in the file.
     $thornlist .= " $2/$3";
   }
 

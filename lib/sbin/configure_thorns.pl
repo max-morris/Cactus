@@ -17,7 +17,7 @@ chdir $top;
 
 chdir $config;
 
-chdir "toolkits";
+chdir "packages";
 
 foreach $thorn (keys %activethorns)
 {

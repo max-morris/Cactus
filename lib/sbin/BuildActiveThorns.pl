@@ -9,13 +9,13 @@
 #  @version $Id$
 #@@*/
 
-$toolkit_dir = shift(@ARGV);
+$package_dir = shift(@ARGV);
 
-chdir $toolkit_dir;
+chdir $package_dir;
 
-open(TOOLKITS, "ls|");
+open(PACKAGES, "ls|");
 
-while(<TOOLKITS>)
+while(<PACKAGES>)
 {
   chop;
 
@@ -27,15 +27,15 @@ while(<TOOLKITS>)
   # Just pick directories
   if( -d $_)
   {
-    push (@toolkits, $_);
+    push (@packages, $_);
   }
 }
 
-close TOOLKITS;
+close PACKAGES;
 
-foreach $toolkit (@toolkits)
+foreach $package (@packages)
 {
-  chdir $toolkit;
+  chdir $package;
 
   open(THORNLIST, "ls|");
   
@@ -48,13 +48,13 @@ foreach $toolkit (@toolkits)
     next if (m:^\#:);
     next if (m:~$:);
     
-    # Allow each toolkit to have a documentation directory.
+    # Allow each package to have a documentation directory.
     next if (m:^doc$:);
 
     # Just pick directories
     if( -d $_)
     {
-      push(@total_thornlist, "$toolkit/$_");
+      push(@total_thornlist, "$package/$_");
     }
   }
   chdir "..";

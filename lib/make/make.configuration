@@ -36,7 +36,7 @@ include $(CONFIG)/make.config.defn
 
 # Allow each thorn to include some global definitions
 ifneq ($(strip $(THORNS)),)
--include $(THORNS:%=$(TOOLKIT_DIR)/%/src/make.configuration.defn)
+-include $(THORNS:%=$(PACKAGE_DIR)/%/src/make.configuration.defn)
 endif
 
 # Build the executable
@@ -68,7 +68,7 @@ $(CCTK_LIBDIR)/lib%.a: update
 	thorn_name=$(@:$(CCTK_LIBDIR)/lib%.a=%); \
 	if [ "$$thorn_name" = "Cactus" ] ; then src_dir=$(CCTK_HOME)/src ; \
 	else if [ "$$thorn_name" = "CactusBindings" ] ; then src_dir=$(BINDINGS_DIR) ; \
-	else src_dir=$(TOOLKIT_DIR)/$(@:$(CCTK_LIBDIR)/lib%.a=$(filter %/$(@:$(CCTK_LIBDIR)/lib%.a=%), $(THORNS)))/src ; fi ; fi ;\
+	else src_dir=$(PACKAGE_DIR)/$(@:$(CCTK_LIBDIR)/lib%.a=$(filter %/$(@:$(CCTK_LIBDIR)/lib%.a=%), $(THORNS)))/src ; fi ; fi ;\
 	if [ ! -d $(BUILD_DIR)/$$thorn_name ]; then $(MKDIR) $(BUILD_DIR)/$$thorn_name ; fi ; \
 	cd $(BUILD_DIR)/$$thorn_name ; \
 	if [ -r "$$src_dir/Makefile" ] ; then  make_file=$$src_dir/Makefile ; \
@@ -83,7 +83,7 @@ include $(CONFIG)/make.config.deps
 
 # Rule to build the make.thornlist file from the ActiveThorns file
 
-$(CONFIG)/make.thornlist: $(TOP)/ActiveThorns $(foreach lib, $(CCTK_HOME)/src $(THORNS:%=$(TOOLKIT_DIR)/%), $(lib)/param.ccl $(lib)/interface.ccl $(lib)/schedule.ccl)
+$(CONFIG)/make.thornlist: $(TOP)/ActiveThorns $(foreach lib, $(CCTK_HOME)/src $(THORNS:%=$(PACKAGE_DIR)/%), $(lib)/param.ccl $(lib)/interface.ccl $(lib)/schedule.ccl)
 	@echo $(DIVIDER)
 	if [ -r $@ ] ; then echo Reconfiguring thorns ; rm $@ ;\
 	else echo Configuring thorns ; fi
@@ -93,8 +93,8 @@ $(CONFIG)/make.thornlist: $(TOP)/ActiveThorns $(foreach lib, $(CCTK_HOME)/src $(
 
 $(TOP)/ActiveThorns:
 	@echo $(DIVIDER)
-	@echo Creating ActiveThorn list containing all thorns in the toolkits directory
-	$(PERL) -s $(BUILD_ACTIVETHORNS) $(CCTK_HOME)/toolkits > $@
+	@echo Creating ActiveThorn list containing all thorns in the packages directory
+	$(PERL) -s $(BUILD_ACTIVETHORNS) $(CCTK_HOME)/packages > $@
 	action="yes"; if [ "x$$EDITOR" = "x" ] ; then EDITOR=vi ; fi; \
 	while [ "x$$action" = "xyes" -o "x$$action" = "xy" -o "x$$action" = "xYES" -o "x$$action" = "xY" ] ; \
 	do \
@@ -111,7 +111,7 @@ $(TOP)/ActiveThorns:
 
 # Allow each thorn to include some global dependencies
 ifneq ($(strip $(THORNS)),)
--include $(THORNS:%=$(TOOLKIT_DIR)/%/src/make.configuration.deps)
+-include $(THORNS:%=$(PACKAGE_DIR)/%/src/make.configuration.deps)
 endif
 
 # Phony targets.

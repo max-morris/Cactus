@@ -59,12 +59,12 @@ dnl Checks for library functions.
 
 dnl Misc stuff
 
-AC_SUBST(TOOLKIT_DIR)
+AC_SUBST(PACKAGE_DIR)
 AC_SUBST(BUILD_DIR)
 AC_SUBST(CCTK_LIBDIR)
 AC_SUBST(EXE)
 
-TOOLKIT_DIR=toolkits
+PACKAGE_DIR=packages
 BUILD_DIR=build
 CCTK_LIBDIR=lib
 
