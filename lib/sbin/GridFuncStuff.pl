@@ -193,10 +193,8 @@ sub GetThornArguments
     next if (! defined $imp);
 
     $interface_database{"IMPLEMENTATION \U$imp\E THORNS"} =~ m:([^ ]*):;
-
+    
     $thorn = $1;
-
-#    print "This thorn is $thorn, implementation $imp\n";
 
     foreach $group (split(" ",$interface_database{"\U$thorn $block GROUPS\E"}))
     {
@@ -216,7 +214,7 @@ sub GetThornArguments
 	  $sep = ",";
 	  if($block eq "PRIVATE")
 	  {
-	    $arguments{"$group$dim"} = "STORAGESIZE($thorn\::$group, $dim)";
+	    $arguments{"$group$dim"} = "STORAGESIZE($this_thorn\::$group, $dim)";
 	  }
 	  else
 	  {
@@ -228,7 +226,7 @@ sub GetThornArguments
 
       if($block eq "PRIVATE")
       {
-	$type .= "!$thorn\::$group";
+	$type .= "!$this_thorn\::$group";
       }
       else
       {
@@ -877,6 +875,14 @@ sub CreateThornArgumentHeaderFile
     
     %data = &GetThornArguments($thorn, $block, %interface_database);
 
+    $print_data = 0;
+    if ($print_data)
+    {
+      foreach $arg (keys data)
+      {
+	print "$thorn data: $arg : $data{\"$arg\"}\n";
+      }
+    }
     # Remember if there actually are any arguments here.
     $hasvars{$block} = 1 if(keys %data > 0) ;
 
