@@ -14,8 +14,7 @@
 CC := gcc
 CFLAGS := -Wall -W -Wno-unused -Wshadow -Winline -Wpointer-arith \
           -Wbad-function-cast -Wcast-align -Wcast-qual \
-          -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations \
-          -pedantic -ansi
+          -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations
 EXTRA_CFLAGS :=
 
 CONFIG_DATA_DIR := $(firstword $(wildcard ../../configs/*/config-data))
