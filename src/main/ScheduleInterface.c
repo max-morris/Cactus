@@ -1278,6 +1278,7 @@ static t_attribute *CreateAttribute(const char *where,
        this->implementation  &&
        (this->mem_groups || n_mem_groups==0)         &&
        (this->timelevels || n_mem_groups==0)         &&
+       (this->StorageOnEntry || n_mem_groups==0)         &&
        (this->comm_groups || n_comm_groups==0)       &&
        (this->FunctionData.TriggerGroups || n_trigger_groups==0) &&
        (this->FunctionData.SyncGroups || n_sync_groups==0))
