@@ -91,7 +91,7 @@ void *Util_CacheMalloc(unsigned index,
     cache_size = 0;
   }
 
-  data = malloc(size+cache_size);
+  data = (char *)malloc(size+cache_size);
 
   if(data)
   {
