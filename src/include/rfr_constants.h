@@ -79,6 +79,7 @@ int rfrInitTree(void **rfr_top,
 		int (*TriggerAction)(void *, int),
 		int (*CallFunc)(void *, int, void *));
 
+void rfrPrintDescs(void *rfr_top, void *data, int when, char *tag, char *spacing);
 
 #ifdef __cplusplus
 }
