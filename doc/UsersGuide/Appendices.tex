@@ -85,10 +85,10 @@
 \item[{\tt grid array}]
   A {\it grid variable} whose global size need not be that of the computational
   grid; instead, the size is declared explicitly in an \verb|interface.ccl|
-  file.
+  file.  (See also {\it local array}.)
 \item[{\tt grid function}]
   A {\it grid variable} whose global size is the size of the
-  computational grid
+  computational grid.  (See also {\it local array}.)
 \item[{\tt grid hierarchy}]
   A computational grid, and the grid variables associated with it.
 \item[{\tt grid scalar}]
@@ -126,6 +126,10 @@
   grid array coordinate space), return $M$ values on each requested
   processor at each interpolation point.  (See also {\it local
   interpolation})
+\item[{\tt local array}]
+  An array that is declared in normal code, as opposed to a {\it grid
+  array} that is declared in an \verb|interface.ccl|.  Cactus knows
+  nothing about local arrays.
 \item[{\tt local interpolation}]
   Given $N$ arrays on the current processor
   with a given coordinate system,
