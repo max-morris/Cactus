@@ -7,12 +7,15 @@
    @enddesc 
  @@*/
 
+#define RFRDEBUG
+
 #include "flesh.h"
 #include "GHExtensions.h"
 #include "Groups.h"
 #include "CactusrfrInterface.h"
+#include "CactusCommFunctions.h"
 
-static char *rcsid = "$Id$";
+static char *rcsid = "$Header$";
 
 
  /*@@
@@ -58,10 +61,13 @@ int CCTK_rfrStorageOn(void *GH, int group)
   char *group_name;
 
   group_name = CCTK_GetGroupName(group);
+
   if(group_name)
   {
+#ifdef RFRDEBUG
+    printf("Turning on storage in rfrInterface.c for group %s (%d)\n",group_name,group);
+#endif
     retcode = CCTK_EnableGroupStorage(GH, group_name);
-
     free(group_name);
   }
   else
@@ -94,6 +100,9 @@ int CCTK_rfrStorageOff(void *GH, int group)
   group_name = CCTK_GetGroupName(group);
   if(group_name)
   {
+#ifdef RFRDEBUG
+    printf("Turning off storage in rfrInterface.c for group %s (%d)\n",group_name,group);
+#endif
     retcode = CCTK_DisableGroupStorage(GH, group_name);
 
     free(group_name);
@@ -128,6 +137,9 @@ int CCTK_rfrCommunicationOn(void *GH, int group)
   group_name = CCTK_GetGroupName(group);
   if(group_name)
   {
+#ifdef RFRDEBUG
+    printf("Turning on comm in rfrInterface.c for group %s (%d)\n",group_name,group);
+#endif
     retcode = CCTK_EnableGroupComm(GH, group_name);
 
     free(group_name);
@@ -162,6 +174,9 @@ int CCTK_rfrCommunicationOff(void *GH, int group)
   group_name = CCTK_GetGroupName(group);
   if(group_name)
   {
+#ifdef RFRDEBUG
+    printf("Turning off comm in rfrInterface.c for group %s (%d)\n",group_name,group);
+#endif
     retcode = CCTK_DisableGroupComm(GH, group_name);
 
     free(group_name);
