@@ -295,6 +295,7 @@ int CactusDefaultExit(int retval, cGH *GH)
   }
 #endif
   exit(retval);
+  return (0);
 }
 
  /*@@

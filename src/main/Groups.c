@@ -364,12 +364,10 @@ static cGroupDefinition *CCTKi_SetupGroup(const char *implementation,
   int variable;
   int group_num;
   char *fullname1;
-  const char *fullname2;
 
   fullname1 = (char *) malloc( (strlen(implementation)+strlen(name)+2)
                                     *sizeof(const char *));
   sprintf(fullname1,"%s::%s",implementation,name); 
-  fullname2 = (const char *)fullname1;
 
   if((group_num = CCTK_GroupIndex(fullname1)) == -1)
   {
