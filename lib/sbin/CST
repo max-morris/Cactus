@@ -6,7 +6,7 @@
 #  @desc
 #             Parses the the configuration files for thorns.
 #  @enddesc
-#  @version   $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.65 2004-03-29 16:32:32 tradke Exp $
+#  @version   $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.66 2004-05-03 16:38:41 goodale Exp $
 #@@*/
 
 # Global parameter to track the number of errors from the CST
@@ -71,6 +71,7 @@ require "$sbin_dir/CreateFunctionBindings.pl";
 require "$sbin_dir/BuildHeaders.pl";
 require "$sbin_dir/CreateConfigurationBindings.pl";
 require "$sbin_dir/ConfigScriptParser.pl";
+require "$sbin_dir/Logger.pl";
 
 #######################################################################
 #
@@ -82,7 +83,7 @@ require "$sbin_dir/ConfigScriptParser.pl";
 print "Reading ThornList...\n";
 %thorns = &CreateThornList($cctk_home, $thornlist);
 
-# Parse the interface.ccl files
+# Parse the configuration.ccl files
 print "Parsing configuration files...\n";
 $configuration_database = &CreateConfigurationDatabase($config_dir, %thorns);
 
@@ -124,6 +125,7 @@ print "Checking consistency...\n";
 # Create all the bindings
 print "Creating Thorn-Flesh bindings...\n";
 &CreateBindings($bindings_dir, \%parameter_database, \%interface_database, \%schedule_database, $configuration_database);
+&CreateConfigurationBindings($bindings_dir, $configuration_database,\%thorns);
 
 # Create header files of compiled thorns for the code
 ($thornsheader, $definethornsheader, $definethisthornheader) =
@@ -134,6 +136,9 @@ print "Creating Thorn-Flesh bindings...\n";
 
 # Create the header files used by the thorns
 &BuildHeaders($cctk_home,$bindings_dir,%interface_database);
+
+# Wrie configuration scripts messages/errors to log file
+&CreateLogFile($config_dir, $configuration_database,\%thorns);
 
 # Finally (must be last), create the make.thornlist file.
 $make_thornlist = &CreateMakeThornlist(\%thorns, $configuration_database);
@@ -164,7 +169,6 @@ else
 }
 
 &WriteFile("$config_dir/make.thornlist", \$make_thornlist);
-&CreateConfigurationBindings($bindings_dir, $configuration_database,\%thorns);
 
 print "CST finished.\n";
 exit;
@@ -331,7 +335,7 @@ sub CreateMakeThornlist
     }
   }
 
-  $thorn_linklist .= ' ' . &CreateThornLinkList($thorns, $config);
+  $thorn_linklist .= ' ' . &TopoSort(\%thorns, $config);
 
   $thorn_dependencies = join ("\n", &CreateThornDependencyList($thorns, $config));
   return ($thornlist . "\n" . $thorn_linklist . "\n" . $config_thornlist . "\n" . $thorn_dependencies . "\n");
@@ -540,4 +544,62 @@ sub CreateBindings
   # Place an appropriate make.code.defn in the bindings directory.
   $data = 'SUBDIRS = Functions Implementations Parameters Variables Schedule';
   &WriteFile("$bindings_dir/make.code.defn", \$data);
+}
+
+#/*@@
+#  @routine    TopoSort
+#  @date       20 Apr 2004       
+#  @author     Yaakoub Y El-Khamra
+#  @desc
+#  Here we perform a topological sort of thorns.
+#  @enddesc
+#@@*/
+sub TopoSort
+{
+  my($thorns, $cfg)= @_;
+  my($data) = '';
+  my($nouse) = '';
+  my $thorn;
+  my($exit_value, $signal_num, $dumped_core);
+  
+  foreach $thorn (sort keys %thorns)
+  {
+    next if ("\U$thorn\E" eq "CACTUS");
+
+    my @temp = split (' ', $cfg->{"\U$thorn\E USES THORNS"});
+
+    if ($cfg->{"\U$thorn\E USES THORNS"} eq '')
+    {
+      $data .= "dummy $thorn\n";
+    }
+
+    $ending_value = scalar(@temp);
+    for($counter=0 ; $counter < $ending_value ; $counter++)
+    {
+      $data .= "$thorn" . " " . "$temp[$counter]" . "\n";
+    }
+  }
+
+  &WriteFile("$bindings_dir/linklist", \$data);
+
+  $data = `perl $sbin_dir/tsort $bindings_dir/linklist`;
+
+  if ($data eq "cycle deteced")
+  {
+    &CST_error (0,  "Cyclic dependency detected");
+  }
+
+  $exit_value  = $? >> 8;
+  $signal_num  = $? & 127;
+  $dumped_core = $? & 128;
+
+  &CST_error (0,  "Tsort script returned $exit_value\n") if $exit_value;
+  &CST_error (0,  "Tsort script received signal $signal_num\n") if $signal_num;
+  &CST_error (0,  "Tsort script dumped core\n" ) if $dumped_core;
+ 
+  $data =  join(' ', split("\n", $data));
+  $data =~ s/dummy//;
+  $data =~ s/  / /;
+
+  return $data;
 }

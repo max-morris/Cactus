@@ -20,8 +20,9 @@
 sub ParseConfigScript
 {
   my($config_dir, $provides, $lang, $script, $thorn, $cfg, $thorns, $filename)=@_;
-  my($line_number, $temp);
- 
+  my($line_number, $line, $temp);
+  my($exit_value, $signal_num, $dumped_core);
+
   my $start_dir = `pwd`;
   chdir $config_dir;  
 
@@ -30,18 +31,13 @@ sub ParseConfigScript
   {
     @data=`$lang $thorns{$thorn}/$script`;
   }
-  
-  my $exit_value  = $? >> 8;
-  my $signal_num  = $? & 127;
-  my $dumped_core = $? & 128;
-
-  &CST_error (0,  "Configuration script for thorn $thorn returned $exit_value\n") if $exit_value;
-  &CST_error (0,  "Configuration script for thorn $thorn received signal $signal_num\n") if $signal_num;
-  &CST_error (0,  "Configuration script for thorn $thorn dumped core\n" ) if $dumped_core;
+  $exit_value  = $? >> 8;
+  $signal_num  = $? & 127;
+  $dumped_core = $? & 128;
 
   for($line_number = 0; $line_number < @data; $line_number++)
   {
-    my $line = $data[$line_number];
+    $line = $data[$line_number];
 
     # Parse the line
     if($line =~ m/^\s*BEGIN\s+DEFINE\s*/i)
@@ -51,6 +47,28 @@ sub ParseConfigScript
       while($line !~ m/^\s*END\s+DEFINE\s*/i)
       {
         $cfg->{"\U$thorn $provides\E DEFINE"} .= $line;
+        $line_number++;
+        $line = $data[$line_number];
+      }
+    }
+    elsif($line =~ m/^\s*BEGIN\s+ERROR\s*/i)
+    {
+      $line_number++;
+      $line = $data[$line_number];
+      while($line !~ m/^\s*END\s+ERROR\s*/i)
+      {
+        $cfg->{"\U$thorn $provides\E ERROR"} .= $line;
+        $line_number++;
+        $line = $data[$line_number];
+      }
+    }
+    elsif($line =~ m/^\s*BEGIN\s+MESSAGE\s*/i)
+    {
+      $line_number++;
+      $line = $data[$line_number];
+      while($line !~ m/^\s*END\s+MESSAGE\s*/i)
+      {
+        $cfg->{"\U$thorn $provides\E MESSAGE"} .= $line;
         $line_number++;
         $line = $data[$line_number];
       }
@@ -94,6 +112,11 @@ sub ParseConfigScript
       &CST_error (0, "Unrecognised line in ConfigScriptParser.ccl '$line'");
     }
   }
+  &CST_error (0,  "Configuration script for thorn $thorn returned $exit_value\n Error message: ", $cfg->{"\U$thorn $provides\E ERROR"}) if $exit_value;
+  &CST_error (0,  "Configuration script for thorn $thorn received signal $signal_num\n Error message: ", $cfg->{"\U$thorn $provides\E ERROR"}) if $signal_num;
+  &CST_error (0,  "Configuration script for thorn $thorn dumped core\n Error message: ", $cfg->{"\U$thorn $provides\E ERROR"} ) if $dumped_core;
+
+
   return ($cfg );
 }
 
