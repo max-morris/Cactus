@@ -79,6 +79,7 @@ uStringList *Util_StringListCreate(int size)
     this->list=calloc(size+1,sizeof(struct iInternalStringList));
 
     this->current = NULL;
+    this->head = NULL;
     this->fill=0;
   }
 
