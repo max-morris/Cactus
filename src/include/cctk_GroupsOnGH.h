@@ -23,6 +23,11 @@ void *CCTK_VarDataPtrI(cGH *GH, int timelevel, int varindex);
 
 void *CCTK_VarDataPtrB(cGH *GH, int timelevel, int varindex, char *fullvarname);
 
+int CCTK_DisableGroupStorageI(void *GH, int group);
+int CCTK_DisableGroupCommI(void *GH, int group);
+int CCTK_EnableGroupStorageI(void *GH, int group);
+int CCTK_EnableGroupCommI(void *GH, int group);
+
 #ifdef __cplusplus 
 }
 #endif

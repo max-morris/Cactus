@@ -22,20 +22,18 @@
 #  @endhistory 
 #
 #@@*/
-sub NewCreateScheduleBindings
+sub CreateScheduleBindings
 {
-  local($bindings_dir, $n_param_database, $n_interface_database, @rest) = @_;
-  local(%parameter_database);
+  local($bindings_dir, $n_interface_database, @rest) = @_;
   local(%interface_database);
   local(%schedule_database);
   local($start_dir);
   local($thorn);
   local($file_list);
 
-  # Extract the parameter,interface, and schedule databases from the arguments.
-  %parameter_database = @rest[0..2*$n_param_database-1];
-  %interface_database = @rest[2*$n_param_database..2*($n_param_database+$n_interface_database)-1];
-  %schedule_database = @rest[2*($n_param_database+$n_interface_database)..$#rest];
+  # Extract the interface and schedule databases from the arguments.
+  %interface_database = @rest[0..2*$n_interface_database-1];
+  %schedule_database = @rest[2*$n_interface_database..$#rest];
   
   if(! -d $bindings_dir)
   {

@@ -10,6 +10,7 @@
 #include <stdio.h>
 
 #include "cctk_Flesh.h"
+#include "cctk_schedule.h"
 
 static char *rcsid = "$Id$";
 
@@ -32,7 +33,7 @@ int dummy(tFleshConfig *);
 int CallStartupFunctions(tFleshConfig *ConfigData)
 {
 
-  CCTKi_BindingsScheduleRegister("STARTUP", NULL);
+  CCTK_ScheduleTraverse("CCTK_STARTUP", NULL);
 
   return 0;
 }

@@ -17,6 +17,7 @@
 #include "cctk_Groups.h"
 #include "cctk_WarnLevel.h"
 #include "cctk_GroupsOnGH.h"
+#include "cctk_Comm.h"
 
 /*#define DEBUG_GROUPS*/
 
@@ -195,3 +196,150 @@ void *CCTK_VarDataPtrB(cGH *GH, int timelevel, int varindex, char *fullvarname)
   }
 }
 
+ /*@@
+   @routine    CCTK_EnableGroupCommI
+   @date       Sat Feb 13 17:06:30 1999
+   @author     Tom Goodale
+   @desc 
+   Enables communication for a group based upon its name.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+int CCTK_EnableGroupCommI(void *GH, int group)
+{
+  int retcode;
+  char *group_name;
+
+  group_name = CCTK_GroupName(group);
+  if(group_name)
+  {
+#ifdef DEBUG
+    printf("Turning on comm in %s for group %s (%d)\n",__FILE__group_name,group);
+#endif
+    retcode = CCTK_EnableGroupComm(GH, group_name);
+
+    free(group_name);
+  }
+  else
+  {
+    retcode = 0;
+  }
+
+  return retcode;
+}
+
+ /*@@
+   @routine    CCTK_EnableGroupStorageI
+   @date       Sat Feb 13 17:06:30 1999
+   @author     Tom Goodale
+   @desc 
+   Enables storage for a group based upon its name.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+int CCTK_EnableGroupStorageI(void *GH, int group)
+{
+  int retcode;
+  char *group_name;
+
+  group_name = CCTK_GroupName(group);
+  if(group_name)
+  {
+#ifdef DEBUG
+    printf("Turning on storage in %s for group %s (%d)\n",__FILE__group_name,group);
+#endif
+    retcode = CCTK_EnableGroupStorage(GH, group_name);
+
+    free(group_name);
+  }
+  else
+  {
+    retcode = 0;
+  }
+
+  return retcode;
+}
+
+ /*@@
+   @routine    CCTK_DisableGroupCommI
+   @date       Sat Feb 13 17:06:30 1999
+   @author     Tom Goodale
+   @desc 
+   Routine to switch communication off for a group based upon its index
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+int CCTK_DisableGroupCommI(void *GH, int group)
+{
+  int retcode;
+  char *group_name;
+
+  group_name = CCTK_GroupName(group);
+  if(group_name)
+  {
+#ifdef DEBUG
+    printf("Turning off comm in %s for group %s (%d)\n",__FILE__,group_name,group);
+#endif
+    retcode = CCTK_DisableGroupComm(GH, group_name);
+
+    free(group_name);
+  }
+  else
+  {
+    retcode = 0;
+  }
+
+  return retcode;
+}
+
+ /*@@
+   @routine    CCTK_DisableGroupStorageI
+   @date       Sat Feb 13 17:06:30 1999
+   @author     Tom Goodale
+   @desc 
+   Routine to switch storage off for a group based upon its index
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+int CCTK_DisableGroupStorageI(void *GH, int group)
+{
+  int retcode;
+  char *group_name;
+
+  group_name = CCTK_GroupName(group);
+  if(group_name)
+  {
+#ifdef DEBUG
+    printf("Turning off storage in %s for group %s (%d)\n",__FILE__,group_name,group);
+#endif
+    retcode = CCTK_DisableGroupStorage(GH, group_name);
+
+    free(group_name);
+  }
+  else
+  {
+    retcode = 0;
+  }
+
+  return retcode;
+}

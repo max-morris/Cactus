@@ -39,6 +39,8 @@ sub create_schedule_database
     
     #       Get the schedule stuff from it
     @new_schedule_data = &parse_schedule_ccl($thorn, @indata);
+
+    &PrintScheduleStatistics($thorn, @new_schedule_data);
     
     #       Add the schedule stuff to the master schedule database
     push (@schedule_data, @new_schedule_data);
@@ -155,7 +157,8 @@ sub ParseScheduleBlock
   local(@comm_groups)    = ();
   local(@trigger_groups) = ();
   local($keyword) = "";
-  local(@current_sched_list);
+  local(@current_sched_list) = ();
+  local($where) = "";
 
   #Parse the first line of the schedule block
 
@@ -194,7 +197,7 @@ sub ParseScheduleBlock
     if($fields[$field] =~ m:^AT$:i)
     {
       $field+=2;
-      if($keyword ne "")
+      if($where ne "")
       {
 	print STDERR "Error parsing schedule block line '$data[$line_number]'\n";
 	print STDERR "Attempt to schedule same block at/in two places.\n";
@@ -215,7 +218,7 @@ sub ParseScheduleBlock
     elsif($fields[$field] =~ m:^IN$:i)
     {
       $field+=2;
-      if($keyword ne "")
+      if($where ne "")
       {
 	print STDERR "Error parsing schedule block line '$data[$line_number]'\n";
 	print STDERR "Attempt to schedule same block at/in two places.\n";
@@ -308,18 +311,21 @@ sub ParseScheduleBlock
 	push(@while_list, $fields[$field]);
       }
       $field++;
+      $keyword = "";
     }
     elsif(($keyword eq "") && ($field == $#fields) && ($fields[$field] =~ m:\s*\{\s*:))
     {
       # This bit matches a { at the end of a line
       # I don't like it, but it seems to be already in use 8-(
       $line_number--;
+      $keyword = "";
       last;
     }
     else
     {
       print STDERR "Error parsing schedule block line '$data[$line_number]'\n";
       $CST_errors++;
+      $keyword = "";
       $field++;
     }      
   }
@@ -450,6 +456,29 @@ sub print_schedule_database
   {
     print "$field has value $schedule_database{$field}\n";
   }
+}
+
+#/*@@
+#  @routine    PrintScheduleStatistics
+#  @date       Sun Sep 19 13:07:08 1999
+#  @author     Tom Goodale
+#  @desc 
+#  Prints out statistics about a thorn's schedule.ccl
+#  @enddesc 
+#  @calls     
+#  @calledby   
+#  @history 
+#
+#  @endhistory 
+#
+#@@*/
+sub PrintScheduleStatistics
+{
+  local($thorn, %schedule_database) = @_;
+
+  print "          " . $schedule_database{"\U$thorn\E N_BLOCKS"} . " schedule blocks.\n";
+
+  return;
 }
 
 1;

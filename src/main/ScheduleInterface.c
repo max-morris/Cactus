@@ -1,4 +1,3 @@
-#define DEBUG
  /*@@
    @file      ScheduleInterface.c
    @date      Thu Sep 16 14:06:21 1999
@@ -70,7 +69,9 @@ typedef struct
 {
   cGH *GH;
   t_schedpoint schedpoint;
-  
+
+  int whiling;
+
 } t_sched_data;
 
 
@@ -180,9 +181,8 @@ int CCTK_ScheduleFunction(void *function,
   }
   else
   {
-#ifdef DEBUG
-    fprintf(stderr, "Failed to schedule %s at %s!!!\n", name, where);
-#endif
+    fprintf(stderr, "Internal error: Failed to schedule %s at %s!!!\n", name, where);
+    exit(2);
     retcode = -1;
   }
 
@@ -429,32 +429,33 @@ int CCTK_SchedulePrint(const char *where)
 
   data.GH = NULL;
   data.schedpoint = schedpoint_misc;
+  data.whiling = 0;
 
   if(!where)
   {
-    printf ("Startup routines\n");
+    printf ("  Startup routines\n");
     SchedulePrint("CCTK_STARTUP");
     printf("\n");
-    printf ("Parameter checking routines\n");
+    printf ("  Parameter checking routines\n");
     SchedulePrint("CCTK_PARAMCHECK");
     printf("\n");
-    printf("Initialisation\n");
+    printf("  Initialisation\n");
     SchedulePrint("CCTK_INITIAL");
     SchedulePrint("CCTK_POSTINITIAL");
     SchedulePrint("CCTK_POSTSTEP");
     printf("\n");
-    printf ("do loop over timesteps\n");
+    printf ("  do loop over timesteps\n");
     SchedulePrint("CCTK_PRESTEP");
     SchedulePrint("CCTK_EVOL");
     SchedulePrint("CCTK_BOUND");
-    printf ("  t = t+dt\n");
+    printf ("    t = t+dt\n");
     SchedulePrint("CCTK_POSTSTEP");
-    printf ("  if (analysis)\n");
+    printf ("    if (analysis)\n");
     indent_level +=2;
     SchedulePrint("CCTK_ANALYSIS");
     indent_level -=2;
-    printf ("  endif\n");
-    printf ("enddo\n");
+    printf ("    endif\n");
+    printf ("  enddo\n");
   }
   else
   {
@@ -707,28 +708,113 @@ static int SchedulePrint(const char *where)
  ********************************************************************/
 
 
+ /*@@
+   @routine    CCTKi_SchedulePrintEntry
+   @date       Sun Sep 19 13:31:23 1999
+   @author     Tom Goodale
+   @desc 
+   Routine called on entry to a group when traversing for printing.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
 static int CCTKi_SchedulePrintEntry(t_attribute *attribute, 
                                     t_sched_data *data)
 {
-  indent_level++;
+  indent_level += 2;
   return 1;
 }
 
+ /*@@
+   @routine    CCTKi_SchedulePrintEntry
+   @date       Sun Sep 19 13:31:23 1999
+   @author     Tom Goodale
+   @desc 
+   Routine called on exit to a group when traversing for printing.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
 static int CCTKi_SchedulePrintExit(t_attribute *attribute, 
                                    t_sched_data *data)
 {
-  indent_level--;
+  indent_level -=2;
   return 1;
 }
 
+ /*@@
+   @routine    CCTKi_SchedulePrintEntry
+   @date       Sun Sep 19 13:31:23 1999
+   @author     Tom Goodale
+   @desc 
+   Routine called for while ofo a group when traversing for printing.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
 static int CCTKi_SchedulePrintWhile(int n_whiles, 
                                     char **whiles, 
                                     t_attribute *attribute, 
                                     t_sched_data *data)
 {
-  return 0;
+  int i;
+
+  if(!data->whiling)
+  {
+    for(i=0; i < indent_level+2; i++) printf(" ");
+
+    printf("while (");
+  
+    for(i = 0; i < n_whiles; i++)
+    {
+      if(i > 0)
+      {
+        printf(" && ");
+      }
+
+      printf("%s", whiles[i]);
+    }
+    
+    printf(")\n");
+  }
+  else
+  {
+    for(i=0; i < indent_level; i++) printf(" ");
+
+    printf("end while\n");
+  }
+
+  data->whiling = !data->whiling;
+
+  return data->whiling;
 }
 
+ /*@@
+   @routine    CCTKi_SchedulePrintFunction
+   @date       Sun Sep 19 13:36:25 1999
+   @author     Tom Goodale
+   @desc 
+   Function which actually prints out data about a group or a function.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
 static int CCTKi_SchedulePrintFunction(void *function, 
                                        t_attribute *attribute, 
                                        t_sched_data *data)
@@ -747,6 +833,20 @@ static int CCTKi_SchedulePrintFunction(void *function,
  ********************************************************************/
 
 
+ /*@@
+   @routine    CCTKi_ScheduleCallEntry
+   @date       Sun Sep 19 13:24:06 1999
+   @author     Tom Goodale
+   @desc 
+   Routine called when a schedule group is entered.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
 static int CCTKi_ScheduleCallEntry(t_attribute *attribute, 
                                    t_sched_data *data)
 {
@@ -761,6 +861,7 @@ static int CCTKi_ScheduleCallEntry(t_attribute *attribute,
 
     if(data->schedpoint == schedpoint_analysis)
     {
+      /* In analysis, so check triggers */
       for (i = 0; i < attribute->n_trigger_groups ; i++) 
       { 
         index = CCTK_FirstVarIndexI(attribute->trigger_groups[i]);
@@ -778,17 +879,20 @@ static int CCTKi_ScheduleCallEntry(t_attribute *attribute,
 
     if(go)
     {
+      /* Switch on storage for groups */
       for(i = 0; i < attribute->n_mem_groups; i++)
       {
         attribute->StorageOnEntry[i] = CCTK_EnableGroupStorageI(data->GH,attribute->mem_groups[i]);
       }
 
+      /* Switch on communication for groups. */
       for(i = 0; i < attribute->n_comm_groups; i++)
       {
         attribute->CommOnEntry[i] = CCTK_EnableGroupCommI(data->GH,attribute->comm_groups[i]);
       }
     }
 
+    /* Remember if we have switched on storage and comm or not. */
     attribute->done_entry = go;
   }
   else
@@ -799,6 +903,20 @@ static int CCTKi_ScheduleCallEntry(t_attribute *attribute,
   return go;
 }
 
+ /*@@
+   @routine    CCTKi_ScheduleCallExit
+   @date       Sun Sep 19 13:25:24 1999
+   @author     Tom Goodale
+   @desc 
+   Routine called on exit from a schedule group.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
 static int CCTKi_ScheduleCallExit(t_attribute *attribute, 
                                   t_sched_data *data)
 {
@@ -806,11 +924,13 @@ static int CCTKi_ScheduleCallExit(t_attribute *attribute,
   int index;
   int last;
 
+  /* Only do this if the entry routine did stuff. */
   if(attribute && attribute->done_entry)
   {
 
     if(data->schedpoint == schedpoint_analysis)
     {
+      /* In analysis, so do any trigger actions. */
       for (i = 0; i < attribute->n_trigger_groups ; i++) 
       { 
         index = CCTK_FirstVarIndexI(attribute->trigger_groups[i]);
@@ -822,12 +942,13 @@ static int CCTKi_ScheduleCallExit(t_attribute *attribute,
       }
     }
 
-
+    /* Switch off storage if it was switched on in entry. */
     for(i = 0; i < attribute->n_mem_groups; i++)
     {
       if(!attribute->StorageOnEntry[i]) CCTK_DisableGroupStorageI(data->GH,attribute->mem_groups[i]);
     }
 
+    /* Switch off communication if it was done in entry. */
     for(i = 0; i < attribute->n_comm_groups; i++)
     {
       if(!attribute->CommOnEntry[i]) CCTK_DisableGroupCommI(data->GH,attribute->comm_groups[i]);
@@ -837,14 +958,53 @@ static int CCTKi_ScheduleCallExit(t_attribute *attribute,
   return 1;
 }
 
+ /*@@
+   @routine    CCTKi_ScheduleCallWhile
+   @date       Sun Sep 19 13:27:53 1999
+   @author     Tom Goodale
+   @desc 
+   Routine called to check variables to see if a group or function should be executed.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
 static int CCTKi_ScheduleCallWhile(int n_whiles, 
                                    char **whiles, 
                                    t_attribute *attribute, 
                                    t_sched_data *data)
 {
-  return 0;
+  int i;
+  int retcode;
+
+  retcode = 1;
+
+  /* FIXME - should do a lot of validation either here or on registration */
+  for(i = 0; i < n_whiles; i++)
+  {
+    retcode = retcode && *((int *)CCTK_VarDataPtr(data->GH, 0, whiles[i]));
+  }
+
+  return retcode;
 }
 
+ /*@@
+   @routine    CCTKi_ScheduleCallFunction
+   @date       Sun Sep 19 13:29:14 1999
+   @author     Tom Goodale
+   @desc 
+   The routine which actually calls a function.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
 static int CCTKi_ScheduleCallFunction(void *function, 
                                       t_attribute *attribute, 
                                       t_sched_data *data)
@@ -873,6 +1033,21 @@ static int CCTKi_ScheduleCallFunction(void *function,
  ***************  Specialised Startup Routines   ********************
  ********************************************************************/
 
+ /*@@
+   @routine    CCTKi_ScheduleStartupFunction
+   @date       Sun Sep 19 13:30:00 1999
+   @author     Tom Goodale
+   @desc 
+   Startup routines take no arguments, so use this calling function instead
+   of the one generally used.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
 static int CCTKi_ScheduleStartupFunction(void *function, 
                                          t_attribute *attribute, 
                                          t_sched_data *data)

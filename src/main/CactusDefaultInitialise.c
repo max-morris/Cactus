@@ -115,21 +115,8 @@ int CactusInitialiseGH(cGH *GH)
 
   GH->rfr_top = NULL;
 
-  rfrInitTree(&(GH->rfr_top), 
-	      CCTKi_rfrStorageOn,
-	      CCTKi_rfrStorageOff,
-	      CCTKi_rfrCommunicationOn,
-	      CCTKi_rfrCommunicationOff,
-	      CCTKi_rfrTriggerable,
-	      CCTKi_rfrTriggerSaysGo,
-	      CCTKi_rfrTriggerAction,
-	      CCTKi_rfrCallFunc);
-
   /* Do the rfr initialisation on this GH */
-  CCTKi_BindingsScheduleRegister("RFRINIT", (void *)GH);
-
-  /* Report the rfr tree */
-  CCTKi_rfrPrintTree(GH,GH->rfr_top);
+  CCTK_ScheduleGHInit((void *)GH);
 
   /* Initialise all the extensions. */
   CCTKi_InitGHExtensions(GH);

@@ -24,7 +24,7 @@ sub create_interface_database
   #  Loop through each  thorn's interface file.
   foreach $thorn (keys %thorns)
   {
-
+    print "   $thorn\n";
     #       Get the arrangement name for the thorn
     $thorns{$thorn} =~ m:.*/arrangements/([^/]*)/[^/]*:;
     $arrangement = $1;
@@ -34,6 +34,8 @@ sub create_interface_database
     
     #       Get the interface data from it
     @new_interface_data = &parse_interface_ccl($arrangement,$thorn, @indata);
+
+    &PrintInterfaceStatistics($thorn, @new_interface_data);
     
     #       Add the interface to the master interface database
     push (@interface_data, @new_interface_data);
@@ -748,6 +750,50 @@ sub print_interface_database
   foreach $field ( sort keys %database ){
     print "$field has value $database{$field}\n";
   }
+}
+
+#/*@@
+#  @routine    PrintInterfaceStatistics
+#  @date       Sun Sep 19 13:03:23 1999
+#  @author     Tom Goodale
+#  @desc 
+#  Prints out some statistics about a thorn's interface.ccl  
+#  @enddesc 
+#  @calls     
+#  @calledby   
+#  @history 
+#
+#  @endhistory 
+#
+#@@*/
+sub PrintInterfaceStatistics
+{
+  local($thorn, %interface_database) = @_;
+  local($block);
+  local($sep);
+
+  print "           Implements: " . $interface_database{"\U$thorn IMPLEMENTS"} . "\n";
+
+  if($interface_database{"\U$thorn INHERITS"} ne "")
+  {
+    print "           Inherits:  " . $interface_database{"\U$thorn INHERITS"} . "";
+  }
+
+  if($interface_database{"\U$thorn FRIEND"} ne "")
+  {
+    print "           Friend of: " . $interface_database{"\U$thorn FRIEND"} . "";
+  }
+
+  $sep = "           ";
+  foreach $block ("Public", "Protected", "Private")
+  {
+    print $sep . scalar(split(" ", $interface_database{"\U$thorn $block\E GROUPS"})) . " $block";
+    $sep = ", ";
+  }
+
+  print " variable groups\n";
+
+  return;
 }
 
 1;

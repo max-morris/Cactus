@@ -111,8 +111,10 @@ sub CreateVariableBindings
     open(OUT, ">$thorn.c") || die "Cannot create $thorn.c";
   
     print OUT "\#include \"cctk_Groups.h\"\n";
+    print OUT "\#include \"cctk_FortranWrappers.h\"\n";
 #    print OUT "#include \"cctk_Flesh.h\"\n";
 #    print OUT "#include \"StoreVariableData.h\"\n\n";
+    print OUT "int CCTKi_BindingsFortranWrapper$thorn(void *GH, void *fpointer);";
 
     print OUT "int CactusBindingsVariables_$thorn"."_Initialise(void)\n{\n";
     foreach $block ("PUBLIC", "PROTECTED", "PRIVATE")
@@ -124,11 +126,27 @@ sub CreateVariableBindings
 	print OUT "$line\n";
       }
     }
+    print OUT "  CCTK_RegisterFortranWrapper(\"$thorn\", CCTKi_BindingsFortranWrapper$thorn);\n\n";
 
     print OUT "  return 0;\n};\n";
     close OUT;
 
     $filelist .= " $thorn.c";
+  }
+
+  foreach $thorn (split(" ",$interface_database{"THORNS"}))
+  {
+    open(OUT, ">$thorn\_FortranWrapper.c") || die "Cannot create $thorn\_FortranWrapper.c";
+  
+    @data = &CreateThornFortranWrapper($thorn);
+
+    foreach $line (@data)
+    {
+      print OUT "$line\n";
+    }
+
+    close OUT;
+    $filelist .= " $thorn\_FortranWrapper.c";
   }
 
   open (OUT, ">make.code.defn") || die "Cannot open make.code.defn";
@@ -886,7 +904,7 @@ sub CreateThornArgumentHeaderFile
 #    $print_data = 1;
     if ($print_data)
     {
-      foreach $arg (keys data)
+      foreach $arg (keys %data)
       {
 	print "$thorn data: $arg : $data{\"$arg\"}\n";
       }
@@ -1187,6 +1205,39 @@ sub CreateThornGroupInitialisers
 
   return @definitions;
   
+}
+
+sub CreateThornFortranWrapper
+{
+  local($thorn) = @_;
+  local(@data);
+
+  push(@data, "#define THORN_IS_$thorn");
+  push(@data, "#include \"cctk.h\"");
+  push(@data, "#include \"cctk_Flesh.h\"");
+  push(@data, "#include \"cctk_Groups.h\"");
+  push(@data, "#include \"cctk_Comm.h\"");
+  push(@data, "#include \"cctk_arguments.h\"");
+  push(@data, "");
+
+  push(@data, "int CCTKi_BindingsFortranWrapper$thorn(cGH *GH, void *fpointer)");
+  push(@data, "{");
+  push(@data, "  void (*function)(\U$thorn\E_C2F_PROTO);");
+  push(@data, "");
+  push(@data, "  DECLARE_\U$thorn\E_C2F");
+  push(@data, "  INITIALISE_\U$thorn\E_C2F");
+  push(@data, "");
+
+  push(@data, "  function = (void (*)(\U$thorn\E_C2F_PROTO))fpointer;");
+  push(@data, "");
+  push(@data, "  function(PASS_\U$thorn\E_C2F(GH));");
+  push(@data, "");
+  push(@data, "  return 0;");
+  push(@data, "");
+
+  push(@data, "}");
+
+  return (@data);
 }
 
 1;

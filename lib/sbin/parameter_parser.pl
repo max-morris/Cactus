@@ -30,12 +30,15 @@ sub create_parameter_database
   #  Loop through each implementation's parameter file.
   foreach $thorn (keys %thorns)
   {
+    print "   $thorn\n";
     #       Read the data
     @indata = &read_file("$thorns{$thorn}/param.ccl");
     
     #       Get the parameters from it
     @new_parameter_data = &parse_param_ccl($thorn, @indata);
-    
+
+    &PrintParameterStatistics($thorn, @new_parameter_data);
+
     #       Add the parameters to the master parameter database
     push (@parameter_data, @new_parameter_data);
     
@@ -83,97 +86,6 @@ sub cross_index_parameters
 }
 
 
-
-
-#/*@@
-#  @routine    read_file
-#  @date       Wed Sep 16 11:54:38 1998
-#  @author     Tom Goodale
-#  @desc 
-#  Reads a file deleting comments and blank lines. 
-#  @enddesc 
-#  @calls     
-#  @calledby   
-#  @history 
-#  @hdate Fri Sep 10 10:25:47 1999 @hauthor Tom Goodale
-#  @hdesc Allows a \ to escape the end of a line. 
-#  @endhistory 
-#@@*/
-
-sub read_file
-{
-  local($file) = @_;
-  local(@indata);
-  local($line);
-
-  open(IN, "<$file") || die("Can't open $file\n");
-  
-  $line = "";
-
-  while(<IN>)
-  {
-    $_ =~ s/\#.*//;
-    
-    next if(m/^\s+$/);
- 
-    &chompme($_);
-
-    # Add to the currently processed line.
-    $line .= $_;
-
-    # Check the line for line-continuation
-    if(m:[^\\]\\$:)
-    {
-      $line =~ s:\\$::;
-    }
-    else
-    {
-      push(@indata, $line);
-      $line = "";
-    }
-  }
-  
-  # Make sure to dump out the last line, even if it ends in a \
-  if($line ne "")
-  {
-    push(@indata, $line);
-  }
-  close IN;
-  
-  return @indata;
-}
-
-
-#/*@@
-#  @routine    chompme
-#  @date       Mon 26th April 1999
-#  @author     Gabrielle Allen
-#  @desc 
-#  Implements a version of the perl5 chomp function,
-#  returning the string passed in with the last character
-#  removed unless it is a newline
-#  @enddesc 
-#  @calls     
-#  @calledby   
-#  @history 
-# 
-#  @endhistory 
-#@@*/
-
-sub chompme
-{
-    local($in) = @_;
-
-    $lastchar = chop($in);
-    if ($lastchar == "\n")
-    {
-	return $_;
-    }
-    else
-    {
-	return $in;
-    }
-}
 
 #/*@@
 #  @routine    parse_param_ccl
@@ -386,6 +298,38 @@ sub print_parameter_database
   }
 }
 
+
+#/*@@
+#  @routine    PrintParameterStatistics
+#  @date       Sun Sep 19 13:04:18 1999
+#  @author     Tom Goodale
+#  @desc 
+#  Prints out some statistics about a thorn's param.ccl
+#  @enddesc 
+#  @calls     
+#  @calledby   
+#  @history 
+#
+#  @endhistory 
+#
+#@@*/
+sub PrintParameterStatistics
+{
+  local($thorn, %parameter_database) = @_;
+  local($block);
+  local($sep);
+
+  $sep = "          ";
+  foreach $block ("Global", "Restricted", "Private")
+  {
+    print $sep . scalar(split(" ", $parameter_database{"\U$thorn $block\E variables"})) . " $block";
+    $sep = ", ";
+  }
+
+  print " parameters\n";
+
+  return;
+}
 
 1;
 

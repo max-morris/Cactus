@@ -1,2 +1,2 @@
 SRCS =
-SUBDIRS = IO comm rfr util main
+SUBDIRS = IO comm util main schedule

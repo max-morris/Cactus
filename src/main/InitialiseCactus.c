@@ -9,7 +9,9 @@
 
 #include <stdio.h>
 
+#include "cctk.h"
 #include "cctk_Flesh.h"
+#include "cctki_schedule.h"
 
 int ProcessCommandLine(int *inargc, char ***inargv, tFleshConfig *ConfigData);
 int ProcessEnvironment(int *argc, char ***argv,tFleshConfig *ConfigData);
@@ -65,12 +67,41 @@ int InitialiseCactus(int *argc, char ***argv, tFleshConfig *ConfigData)
 
   ProcessParameterDatabase(ConfigData);
 
+  InitialiseScheduler(ConfigData);
+
   CallStartupFunctions(ConfigData);
 
   return 0;
 }
 
+ /*@@
+   @routine    InitialiseScheduler
+   @date       Fri Sep 17 19:34:55 1999
+   @author     Tom Goodale
+   @desc 
+   Initialise all scheduled items
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
 
+@@*/
+int InitialiseScheduler(tFleshConfig *ConfigData)
+{
+  int retcode;
+  
+  CCTKi_BindingsScheduleInitialise();
+
+  retcode = CCTKi_ScheduleSortAllGroups();
+
+  CCTK_PRINTSEPARATOR
+  CCTK_SchedulePrint(NULL);
+  CCTK_PRINTSEPARATOR
+
+  return retcode;
+}
 
 
 

@@ -52,7 +52,7 @@ int InitialiseDataStructures(tFleshConfig *ConfigData)
   CCTKi_BindingsImplementationsInitialise();
   /*  CCTKi_BindingsParametersInitialise();*/
   CCTKi_BindingsVariablesInitialise();
-  CCTKi_BindingsScheduleInitialise();
+  /*CCTKi_BindingsScheduleInitialise();*/
 
   CCTKi_ActivateThorn("Cactus");
 

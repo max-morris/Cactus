@@ -29,6 +29,8 @@ GHExtensions.c\
 WarnLevel.c\
 ActiveThorns.c\
 Parameters.c\
-Subsystems.c
+Subsystems.c\
+ScheduleInterface.c\
+FortranWrappers.c
 
 
