@@ -21,5 +21,8 @@ if test -z "$HDF5_DIR" ; then
 fi
 
 HDF5_LIBS=hdf5
+if test `uname` = "Linux" ; then
+  HDF5_LIBS="hdf5 z"
+fi
 HDF5_LIB_DIRS="$HDF5_DIR/lib"
 HDF5_INC_DIRS="$HDF5_DIR/include"
