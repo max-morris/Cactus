@@ -166,7 +166,7 @@ update:
 
 editthorns:
 	@echo $(DIVIDER)
-	if test ! -e $(TOP)/ThornList ; then \
+	if test ! -r $(TOP)/ThornList ; then \
 	echo "Creating compiled ThornList containing all thorns in the arrangements directory" \
 	$(PERL) -s $(BUILD_ACTIVETHORNS) $(CCTK_HOME)/arrangements > $@ ; fi
 	action="yes"; if [ "x$$EDITOR" = "x" ] ; then EDITOR=vi ; fi; \
