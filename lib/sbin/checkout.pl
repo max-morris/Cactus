@@ -434,6 +434,7 @@ sub choose_repository
   {
     print "Custom repository : ";
     $rep[2] = <STDIN>;
+    chop($rep[2]);
   }
 
   if ($dowhat !~ /^h/i)
@@ -476,20 +477,13 @@ sub CVSFound
 sub RepositoryExists
 {
   my($repository) = @_;
-  my($existsif);
+  my $dummy;
 
-  $existsif = 0;
-  open(MODULES,"cvs -d $repository co -s | ");
-  while (<MODULES>)
-  {
-    if (/Cactus/)
-    {
-      $existsif = 1;
-      last;
-    }
-  }
+  open(MODULES,"cvs -d $_[0] co -s |");
+  $dummy = <MODULES>;
   close(MODULES);
 
-  return $existsif;
+  return !$?;
+
 
 }
