@@ -102,9 +102,9 @@ sub read_file
     $line .= $_;
 
     # Check the line for line-continuation
-    if(m:[^\\]\\$:)
+    if(m:[^\\]\\\s*$:)
     {
-      $line =~ s:\\$::;
+      $line =~ s:\\\s*$::;
     }
     else
     {
