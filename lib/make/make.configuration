@@ -238,7 +238,7 @@ $(TOP)/ThornList:
 
 # Allow each thorn to include some global dependencies
 ifneq ($(strip $(THORNS)),)
--include $(THORNS:%=$(PACKAGE_DIR)/%/src/make.configuration.deps) $(THORNS:%=$(BINDINGS_DIR)/Configuration/%/src/make.configuration.deps)
+-include $(THORNS:%=$(PACKAGE_DIR)/%/src/make.configuration.deps) $(THORNS:%=$(BINDINGS_DIR)/Configuration/%/make.configuration.deps)
 endif
 
 # Catch the special case of a thorn being removed from the disk entirely.
