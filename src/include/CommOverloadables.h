@@ -111,10 +111,46 @@ OVERLOADABLE(GroupDynamicData)
 #undef RETURN_TYPE
 
 #define RETURN_TYPE int
-#define ARGUMENTS cGH *GH, int n_groups,const int *groups,const int *timelevels, int *status 
+#define ARGUMENTS cGH *GH, int n_groups,const int *groups,const int *timelevels, int *status
 #define USE_ARGUMENTS GH = GH; n_groups=n_groups; groups = groups; timelevels = timelevels; status = status;
 OVERLOADABLE(GroupStorageIncrease)
 OVERLOADABLE(GroupStorageDecrease)
+
+#undef ARGUMENTS
+#undef USE_ARGUMENTS
+#undef RETURN_TYPE
+
+/* overloadable routine CCTK_InterpGridArrays() */
+#define RETURN_TYPE int
+#define ARGUMENTS const cGH *GH,                                              \
+                  int N_dims,                                                 \
+                  int global_param_table_handle,                              \
+                  int local_param_table_handle,                               \
+                  int local_interp_handle,                                    \
+                  int coord_system_handle,                                    \
+                  int N_interp_points,                                        \
+                    int interp_coords_type,                                   \
+                    const void *const interp_coords[],                        \
+                  int N_input_arrays,                                         \
+                    const CCTK_INT input_array_indices[],                     \
+                  int N_output_arrays,                                        \
+                    const CCTK_INT output_array_types[],                      \
+                    void *const output_arrays[]
+#define USE_ARGUMENTS (void) (GH + 0);                                        \
+                      (void) (N_dims + 0);                                    \
+                      (void) (global_param_table_handle + 0);                 \
+                      (void) (local_param_table_handle + 0);                  \
+                      (void) (local_interp_handle + 0);                       \
+                      (void) (coord_system_handle + 0);                       \
+                      (void) (N_interp_points + 0);                           \
+                      (void) (interp_coords_type + 0);                        \
+                      (void) (interp_coords + 0);                             \
+                      (void) (N_input_arrays + 0);                            \
+                      (void) (input_array_indices + 0);                       \
+                      (void) (N_output_arrays + 0);                           \
+                      (void) (output_array_types + 0);                        \
+                      (void) (output_arrays + 0);
+OVERLOADABLE(InterpGridArrays)
 
 #undef ARGUMENTS
 #undef USE_ARGUMENTS
