@@ -689,7 +689,7 @@ sub ParseArgument
 
   if ($name) # (meaning argument has three whitespace separated components)
   {
-    if ($intent !~ /(IN|OUT|INOUT)/)
+    if ($intent !~ /^(IN|OUT|INOUT)$/)
     {
       my $message = "Thorn $Thorn, Function $Function:\nThe intent statement must be either IN, OUT or INOUT.\nThe argument \"$DummyArgument\" has the wrong type.";
       &CST_error(0,$message,'',__LINE__,__FILE__);
