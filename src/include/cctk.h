@@ -63,7 +63,7 @@
 
 #define CCTK_CoordRegisterSystem(a,b,c) CCTKi_CoordRegisterSystem(a,b,CCTK_THORNSTRING,c)
 
-#define CCTK_EQUALS(a,b) (CCTK_Equals(a,b).eq.1)
+#define CCTK_EQUALS(a,b) (CCTK_Equals(a,b) .eq. 1)
 
 #define CCTK_PASS_FTOF CCTK_FARGUMENTS
 
