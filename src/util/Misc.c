@@ -109,6 +109,10 @@ int CCTK_Equals(const char *string1, const char *string2)
       }
     }
   }
+  else
+  {
+    retval = 0;
+  }
 
   return retval;
 }
