@@ -43,7 +43,7 @@ char      *CCTK_FullName(int var);
 
 int        CCTK_GroupData(int group, cGroup *gp);
 int        CCTK_GroupDimI(int group);
-int        CCTK_GroupDimFromVarI(int vi)
+int        CCTK_GroupDimFromVarI(int vi);
 CCTK_INT **CCTK_GroupGhostsizesI(int group);
 int        CCTK_GroupIndex(const char *groupname);
 int        CCTK_GroupIndexFromVar(const char *var);
