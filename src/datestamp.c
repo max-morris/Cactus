@@ -9,6 +9,7 @@
  @@*/
 
 #include <stdio.h>
+#include <string.h>
 
 #include "cctk_Version.h"
 #include "cctki_version.h"
