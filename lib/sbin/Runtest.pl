@@ -294,7 +294,14 @@ sub runtest {
 
     unlink(<$tsttop${sep}$tp${sep}*.*>);
 
-    $cmd = "($command $current_directory$sep$executable $current_directory$sep$inpf)";
+    # Check executable exists
+    $exe = "$current_directory$sep$executable";
+    if (!-e $exe)
+    {
+      die "Cactus executable doesn't exist\n\n";
+    }
+
+    $cmd = "($command $exe $current_directory$sep$inpf)";
 
     chdir ($tsttop);
 
