@@ -814,7 +814,7 @@ AC_SUBST(F77_OPTIMISE_FLAGS)
 if test -z "$F77_OPTIMISE_FLAGS" ; then
   case "$F77" in
     g77)
-      F77_OPTIMISE_FLAGS="-O"
+      F77_OPTIMISE_FLAGS="-O2"
       ;;
     *)
 #     Don't know a reasonable default.
