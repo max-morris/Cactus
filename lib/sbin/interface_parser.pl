@@ -31,7 +31,7 @@ sub create_interface_database
 
     #       Read the data
     @indata = &read_file("$thorns{$thorn}/interface.ccl");
-    
+
     #       Get the interface data from it
     @new_interface_data = &parse_interface_ccl($arrangement,$thorn, @indata);
 
@@ -612,9 +612,11 @@ sub parse_interface_ccl
 	  &CST_error(0,$message,__LINE__,__FILE__);
       }
     }
-    elsif ($line =~ m/^\s*(INHERITS|FRIEND)\s*:((\s*[a-zA-Z]+[a-zA-Z_0-9]*)*\s*)$/i)
+    # implementation names can be sepeated by ,;:\s, where ,;: are stripped out below
+    elsif ($line =~ m/^\s*(INHERITS|FRIEND)\s*:(([,;:\s]*[a-zA-Z]+[a-zA-Z_0-9]*)*[,;:\s]*)$/i)
     {
       $interface_db{"\U$thorn $1\E"} .= $2;
+      $interface_db{"\U$thorn $1\E"}=~s/[,;:]/ /g;
     }
     elsif ($line =~ m/^\s*(PUBLIC|PROTECTED|PRIVATE)\s*:\s*$/i)
     {
