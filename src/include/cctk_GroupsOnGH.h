@@ -67,6 +67,12 @@ int CCTK_GroupnghostzonesVN(const cGH *GH, int dim, int *nghostzones, const char
 int CCTK_GroupnghostzonesGI(const cGH *GH, int dim, int *nghostzones, int groupindex);
 int CCTK_GroupnghostzonesVI(const cGH *GH, int dim, int *nghostzones, int varindex);
 
+int CCTK_ActiveTimeLevels(const cGH *GH, const char *groupname);
+int CCTK_ActiveTimeLevelsGN(const cGH *GH, const char *groupname);
+int CCTK_ActiveTimeLevelsGI(const cGH *GH, int groupindex);
+int CCTK_ActiveTimeLevelsVN(const cGH *GH, const char *varname);
+int CCTK_ActiveTimeLevelsVI(const cGH *GH, int varindex);
+
 #ifdef __cplusplus 
 }
 #endif

@@ -172,6 +172,7 @@ void CCTK_FCALL CCTK_FNAME (CCTK_GroupbboxVN)
                             ONE_FORTSTRING_ARG);
 
 
+
  /*@@
    @routine    CCTK_VarDataPtr
    @date       Tue 6th April 1999
@@ -468,6 +469,154 @@ const int *CCTK_ArrayGroupSize(const cGH *GH, int dir, const char *groupn)
   return CCTK_ArrayGroupSizeB(GH,dir,-1,groupn);
 }
 
+
+/********************************************************************
+ ********************    ActiveTimeLevels    ************************
+ ********************************************************************/
+
+ /*@@
+   @routine    CCTK_ActiveTimeLevels
+   @date       Thu July 17 2003
+   @author     Gabrielle Allen
+   @desc
+   Return number of active timelevels for a group
+   @enddesc
+@@*/
+int CCTK_ActiveTimeLevels(const cGH *GH, const char *groupname)
+{
+  int gindex;
+  int timelevels;
+  int increase=0;
+
+  gindex = CCTK_GroupIndex(groupname);
+
+  timelevels = CCTK_GroupStorageIncrease(GH, 1, &gindex, &increase, NULL);
+
+  return timelevels;
+}
+void CCTK_FCALL CCTK_FNAME (CCTK_ActiveTimeLevels)
+                           (int *timelevels,
+                            const cGH *cctkGH,
+                            ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (groupname)
+  *timelevels = CCTK_ActiveTimeLevels (cctkGH, groupname);
+  free (groupname);
+}
+
+ /*@@
+   @routine    CCTK_ActiveTimeLevelsGN
+   @date       Thu July 17 2003
+   @author     Gabrielle Allen
+   @desc
+   Return number of active timelevels for a group
+   @enddesc
+@@*/
+int CCTK_ActiveTimeLevelsGN(const cGH *GH, const char *groupname)
+{
+  int timelevels;
+
+  timelevels = CCTK_ActiveTimeLevels(GH, groupname);
+
+  return timelevels;
+}
+void CCTK_FCALL CCTK_FNAME (CCTK_ActiveTimeLevelsGN)
+                           (int *timelevels,
+                            const cGH *cctkGH,
+                            ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (groupname)
+  *timelevels = CCTK_ActiveTimeLevels (cctkGH, groupname);
+  free (groupname);
+}
+
+ /*@@
+   @routine    CCTK_ActiveTimeLevelsGI
+   @date       Thu July 17 2003
+   @author     Gabrielle Allen
+   @desc
+   Return number of active timelevels for a group
+   @enddesc
+@@*/
+int CCTK_ActiveTimeLevelsGI(const cGH *GH, int gindex)
+{
+  int increase=0;
+  int timelevels;
+
+  timelevels = CCTK_GroupStorageIncrease(GH, 1, &gindex, &increase, NULL);
+
+  return timelevels;
+}
+void CCTK_FCALL CCTK_FNAME (CCTK_ActiveTimeLevelsGI)
+                           (int *timelevels,
+                            const cGH *cctkGH,
+                            int *gindex)
+{
+  *timelevels = CCTK_ActiveTimeLevelsGI (cctkGH, *gindex);
+}
+
+
+ /*@@
+   @routine    CCTK_ActiveTimeLevelsVN
+   @date       Thu July 17 2003
+   @author     Gabrielle Allen
+   @desc
+   Return number of active timelevels for a group
+   @enddesc
+@@*/
+int CCTK_ActiveTimeLevelsVN(const cGH *GH, const char *varname)
+{
+  int timelevels;
+  int gindex;
+
+  gindex = CCTK_GroupIndexFromVar(varname);
+  
+  timelevels = CCTK_ActiveTimeLevelsGI(GH, gindex);
+
+  return timelevels;
+}
+void CCTK_FCALL CCTK_FNAME (CCTK_ActiveTimeLevelsVN)
+                           (int *timelevels,
+                            const cGH *cctkGH,
+                            ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (varname)
+  *timelevels = CCTK_ActiveTimeLevelsVN (cctkGH, varname);
+  free (varname);
+}
+
+
+ /*@@
+   @routine    CCTK_ActiveTimeLevelsVI
+   @date       Thu July 17 2003
+   @author     Gabrielle Allen
+   @desc
+   Return number of active timelevels for a group
+   @enddesc
+@@*/
+int CCTK_ActiveTimeLevelsVI(const cGH *GH, int vindex)
+{
+  int timelevels;
+  int gindex;
+
+  gindex = CCTK_GroupIndexFromVarI(vindex);
+  timelevels = CCTK_ActiveTimeLevelsGI(GH, gindex);
+
+  return timelevels;
+}
+void CCTK_FCALL CCTK_FNAME (CCTK_ActiveTimeLevelsVI)
+                           (int *timelevels,
+                            const cGH *cctkGH,
+                            int *vindex)
+{
+  *timelevels = CCTK_ActiveTimeLevelsVI (cctkGH, *vindex);
+}
+
+
+/********************************************************************
+ ********************    QueryGroupStorage   ************************
+ ********************************************************************/
+
 int CCTK_QueryGroupStorageI(const cGH *GH, int groupi)
 {
   return CCTK_QueryGroupStorageB(GH,groupi,NULL);
@@ -477,6 +626,8 @@ int CCTK_QueryGroupStorage(const cGH *GH, const char *groupn)
 {
   return CCTK_QueryGroupStorageB(GH, -1, groupn);
 }
+
+
 
 /********************************************************************
  ********************    Group Lower Bound    ***********************
