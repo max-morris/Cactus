@@ -1,0 +1,189 @@
+\begin{cactuspart}{4}{FunctionReference}{$RCSfile$}{$Revision$}
+\renewcommand{\thepage}{\Alph{part}\arabic{page}}
+
+
+%\begin{CCTKFunc}{}{}
+%\function{int}{CCTK\_INT}{storage}
+%\subroutine{int}{CCTK\_INT}{storage}
+%\argument{cGH *}{CCTK\_INT}{GH}
+%\argument{const char *}{CCTK\_STRING}{group}
+%\showargs
+%\begin{params}
+%\parameter{}{}
+%\end{params}
+%\begin{discussion}
+%\end{discussion}
+%\begin{examples}
+%\begin{tabular}{@{}p{3cm}cp{11cm}}
+%\hfill {\bf C} && storage = {\t CCTK\_EnableGroupStorage(GH,``imp::group'')};
+%\\
+%\hfill {\bf Fortran} && call {\t CCTK\_ENABLEGROUPSTORAGE(istorage,GH,``imp::gro
+%up'')};
+%\\
+%\end{tabular}
+%\end{examples}
+%\begin{errorcodes}
+%\errorcode{FIXME:CCTK\_NOSUCHVARIABLE}{The variable doesn't exist}
+%\end{errorcodes}
+%\end{CCTKFunc}
+
+
+% Coord.c
+\begin{CCTKFunc}{CCTK\_RegisterCoordI}{Register a grid function index as identifying a coordinate with a given coordinate name and direction.}
+\subroutine{int}{integer}{handle}
+\argument{int}{integer}{direction}
+\argument{int}{integer}{index}
+\argument{const char *}{character*(*)}{name}
+\showargs
+\begin{params}
+\parameter{handle}{On success returns zero or a positive registration handle. Error codes have negative values.}
+\parameter{direction}{The coordinate cartesian direction}
+\parameter{index}{The index of the grid function representing the coordinate}
+\parameter{name}{The name of the coordinate}
+\end{params}
+\begin{discussion}
+The coordinate name is independent of the grid function name. The direction should be given 
+as zero for a non-cartesian index. Currently only CCTK\_REAL grid functions can be registered 
+as coordinates.
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\hfill {\bf C} && index = CCTK\_VarIndex(``MyImp::MyGF''); \\
+               && handle = {\t CCTK\_RegisterCoordI(1,index,`xdir')};
+\\
+\hfill {\bf Fortran} && call {\t CCTK\_REGISTERCOORDI(handle,0,14,`radius')};
+\\
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
+
+% Coord.c
+\begin{CCTKFunc}{CCTK\_RegisterCoord}{Register a grid function name as identifying a coordinate with a given coordinate name and direction.}
+\subroutine{int}{integer}{handle}
+\argument{int}{integer}{direction}
+\argument{const char *}{character*(*)}{gfname}
+\argument{const char *}{character*(*)}{coordname}
+\showargs
+\begin{params}
+\parameter{handle}{On success returns zero or a positive registration handle. Error codes have negative values.}
+\parameter{direction}{The coordinate cartesian direction}
+\parameter{gfname}{The full name of the grid function representing the coordinate}
+\parameter{coordname}{The name of the coordinate}
+\end{params}
+\begin{discussion}
+The coordinate name is independent of the grid function name. The direction should be given 
+as zero for a non-cartesian index. Currently only CCTK\_REAL grid functions can be registered 
+as coordinates.
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\hfill {\bf C} && handle = {\t CCTK\_RegisterCoord(1,`MyImp::MyGF',`xdir')};
+\\
+\hfill {\bf Fortran} && call {\t CCTK\_REGISTERCOORD(handle,0,`MyImp::MyGF',`radius')};
+\\
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
+
+
+
+% Coord.c
+\begin{CCTKFunc}{CCTK\_CoordIndex}{Give the GF index for a given coordinate name.}
+\subroutine{int}{integer}{index}
+\argument{const char *}{character*(*)}{coordname}
+\showargs
+\begin{params}
+\parameter{index}{The coordinates associated GF index}
+\parameter{coordname}{The name assigned to this coordinate}
+\end{params}
+\begin{discussion}
+The coordinate name is independent of the grid function name. 
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\hfill {\bf C} && index = {\t CCTK\_CoordIndex(`xdir')};
+\\
+\hfill {\bf Fortran} && call {\t CCTK\_COORDINDEX(`radius')};
+\\
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
+
+
+% Coord.c
+\begin{CCTKFunc}{CCTK\_CoordRange}{Return the global upper and lower bounds for a given coordinate name}
+\subroutine{int}{integer}{ierr}
+\argument{CCTK\_REAL}{CCTK\_REAL}{lower}
+\argument{CCTK\_REAL}{CCTK\_REAL}{upper}
+\argument{const char *}{character*(*)}{coordname}
+\showargs
+\begin{params}
+\parameter{ierr}{Error code}
+\parameter{lower}{Global lower bound of the coordinate}
+\parameter{upper}{Global upper bound of the coordinate}
+\parameter{coordname}{Coordinate name}
+\end{params}
+\begin{discussion}
+The coordinate name is independent of the grid function name. The coordinate range
+is registered by {\t CCTK\_RegisterCoordRange}.
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\hfill {\bf C} && ierr = {\t CCTK\_CoordRange(xmin,xmax,`xdir') };
+\\
+\hfill {\bf Fortran} && call {\t CCTK\_COORDRANGE(ierr,Rmin,Rmax,`radius')};
+\\
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
+
+
+
+% Coord.c
+\begin{CCTKFunc}{CCTK\_RegisterCoordRange}{Saves the global upper and lower bounds for a given coordinate name}
+\subroutine{int}{integer}{ierr}
+\argument{CCTK\_REAL}{CCTK\_REAL}{lower}
+\argument{CCTK\_REAL}{CCTK\_REAL}{upper}
+\argument{const char *}{character*(*)}{coordname}
+\showargs
+\begin{params}
+\parameter{ierr}{Error code}
+\parameter{lower}{Global lower bound of the coordinate}
+\parameter{upper}{Global upper bound of the coordinate}
+\parameter{coordname}{Coordinate name}
+\end{params}
+\begin{discussion}
+The coordinate name is independent of the grid function name. There must already
+be a coordinate registered with the given name, with {\t CCTK\_RegisterCoord}. 
+The coordinate range
+can be accessed by {\t CCTK\_CoordRange}. 
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\hfill {\bf C} && ierr = {\t CCTK\_RegisterCoordRange(xmin,xmax,`xdir') };
+\\
+\hfill {\bf Fortran} && call {\t CCTK\_REGISTERCOORDRANGE(ierr,Rmin,Rmax,`radius')};
+\\
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
+
+
+
+
+\end{cactuspart}

@@ -5,7 +5,7 @@
 %   @desc 
 %   
 %   @enddesc 
-%   @version $Header$	
+%   @version $Header$      
 % @@*/
 
 \documentclass{report}
@@ -80,17 +80,17 @@
 \newenvironment{CCTKFunc}[2]
         {\sbox{\cctkbox}{#1}
          \newpage
-         \noindent{\t #1}\hrule	
+         \noindent{\t #1}\hrule 
          \vskip .3cm \noindent #2\\
 %Clear the saveboxes - this may not be neccessary
-	 \sbox{\cctkcargbox}{}
-	 \sbox{\cctkfargbox}{}
-	 \sbox{\cctkfargdefs}{}
-	 \sbox{\cctkcsepbox}{}
-	 \sbox{\cctkfsepbox}{}
+         \sbox{\cctkcargbox}{}
+         \sbox{\cctkfargbox}{}
+         \sbox{\cctkfargdefs}{}
+         \sbox{\cctkcsepbox}{}
+         \sbox{\cctkfsepbox}{}
          \sbox{\cctkfdefssep}{}
-	 \sbox{\cctkcprefix}{}
-	 \sbox{\cctkfprefix}{}
+         \sbox{\cctkcprefix}{}
+         \sbox{\cctkfprefix}{}
 %A command to add an argument - takes ctype, ftype, name
          \newcommand{\argument}[3]
          {\sbox{\cctkcargbox}{\usebox{\cctkcargbox}\usebox{\cctkcsepbox} ##1 ##3} 
@@ -259,11 +259,14 @@
 \renewcommand{\thepage}{\Alph{part}\arabic{page}}
 \pagestyle{fancy}
 
+
 \include{RunningCactus}
 
 \include{ThornWriters}
 
 \include{Infrastructure}
+
+\include{FunctionReference}
 
 \include{Appendices}
 
