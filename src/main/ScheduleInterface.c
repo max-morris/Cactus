@@ -62,9 +62,6 @@ typedef struct
   int n_comm_groups;
   int *comm_groups;
 
-  int n_trigger_groups;
-  int *trigger_groups;
-
   /* Timer data */
 
   int timer_handle;
@@ -1173,12 +1170,15 @@ static t_attribute *CreateAttribute(const char *where,
   {
     this->FunctionData.where = (char *)malloc((strlen(where)+1)*sizeof(char));
     this->FunctionData.routine = (char *)malloc((strlen(name)+1)*sizeof(char));
-    this->description    = (char *)malloc((strlen(description)+1)*sizeof(char));
+    this->description    = 
+      (char *)malloc((strlen(description)+1)*sizeof(char));
     this->FunctionData.thorn = (char *)malloc((strlen(thorn)+1)*sizeof(char));
-    this->implementation = (char *)malloc((strlen(implementation)+1)*sizeof(char));
+    this->implementation = 
+      (char *)malloc((strlen(implementation)+1)*sizeof(char));
     this->mem_groups     = (int *)malloc(n_mem_groups*sizeof(int));
     this->comm_groups    = (int *)malloc(n_comm_groups*sizeof(int));
-    this->trigger_groups = (int *)malloc(n_trigger_groups*sizeof(int));
+    this->FunctionData.TriggerGroups = 
+      (int *)malloc(n_trigger_groups*sizeof(int));
     this->FunctionData.SyncGroups = (int *)malloc(n_sync_groups*sizeof(int));
     this->StorageOnEntry = (int *)malloc(n_mem_groups*sizeof(int));
     this->CommOnEntry    = (int *)malloc(n_comm_groups*sizeof(int));
@@ -1190,7 +1190,7 @@ static t_attribute *CreateAttribute(const char *where,
        this->implementation  &&
        (this->mem_groups || n_mem_groups==0)         &&
        (this->comm_groups || n_comm_groups==0)       &&
-       (this->trigger_groups || n_trigger_groups==0) &&
+       (this->FunctionData.TriggerGroups || n_trigger_groups==0) &&
        (this->FunctionData.SyncGroups || n_sync_groups==0))
     {
       strcpy(this->FunctionData.where,where);
@@ -1213,7 +1213,7 @@ static t_attribute *CreateAttribute(const char *where,
       /* Create the lists of indices of groups we're interested in. */
       CreateGroupIndexList(n_mem_groups,     this->mem_groups, ap);
       CreateGroupIndexList(n_comm_groups,    this->comm_groups, ap);
-      CreateGroupIndexList(n_trigger_groups, this->trigger_groups, ap);
+      CreateGroupIndexList(n_trigger_groups, this->FunctionData.TriggerGroups, ap);
       CreateGroupIndexList(n_sync_groups,    this->FunctionData.SyncGroups, ap);
 
       /* Check the miscellaneous options */
@@ -1223,7 +1223,7 @@ static t_attribute *CreateAttribute(const char *where,
 
       this->n_mem_groups     = n_mem_groups;
       this->n_comm_groups    = n_comm_groups;
-      this->n_trigger_groups = n_trigger_groups;
+      this->FunctionData.n_TriggerGroups = n_trigger_groups;
       this->FunctionData.n_SyncGroups = n_sync_groups;
 
       /* Add a timer to the item */
@@ -1243,7 +1243,7 @@ static t_attribute *CreateAttribute(const char *where,
       free(this->FunctionData.routine);
       free(this->description);
       free(this->comm_groups);
-      free(this->trigger_groups);
+      free(this->FunctionData.TriggerGroups);
       free(this->FunctionData.SyncGroups);
       free(this);
       this = NULL;
@@ -1992,10 +1992,10 @@ static int CCTKi_ScheduleCallEntry(t_attribute *attribute,
     if(data->schedpoint == schedpoint_analysis)
     {
       /* In analysis, so check triggers */
-      for (i = 0; i < attribute->n_trigger_groups ; i++)
+      for (i = 0; i < attribute->FunctionData.n_TriggerGroups ; i++)
       {
-        indx = CCTK_FirstVarIndexI(attribute->trigger_groups[i]);
-        last  = indx + CCTK_NumVarsInGroupI(attribute->trigger_groups[i]) -1;
+        indx = CCTK_FirstVarIndexI(attribute->FunctionData.TriggerGroups[i]);
+        last  = indx + CCTK_NumVarsInGroupI(attribute->FunctionData.TriggerGroups[i]) -1;
         for(; indx <= last ; indx++)
         {
           go = go || CCTKi_TriggerSaysGo(data->GH, indx);
@@ -2084,12 +2084,13 @@ static int CCTKi_ScheduleCallExit(t_attribute *attribute,
     if(data->schedpoint == schedpoint_analysis)
     {
       /* In analysis, so do any trigger actions. */
-      for (i = 0; i < attribute->n_trigger_groups ; i++)
+      for (i = 0; i < attribute->FunctionData.n_TriggerGroups ; i++)
       {
-        vindex = CCTK_FirstVarIndexI(attribute->trigger_groups[i]);
-        last  = vindex + CCTK_NumVarsInGroupI(attribute->trigger_groups[i]) - 1;
+        vindex = CCTK_FirstVarIndexI(attribute->FunctionData.TriggerGroups[i]);
+        last  = vindex + CCTK_NumVarsInGroupI(attribute->FunctionData.TriggerGroups[i]) - 1;
         for(; vindex <= last ; vindex++)
         {
+	  printf("Triggering for group %s\n",CCTK_GroupName(attribute->FunctionData.TriggerGroups[i]));
           CCTKi_TriggerAction(data->GH, vindex);
         }
       }

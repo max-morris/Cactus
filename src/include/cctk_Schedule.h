@@ -19,10 +19,6 @@ typedef struct
 {
   cLanguage language;
   
-  char *where;
-  
-  char *routine;
-  
   int (*FortranCaller)(cGH *, void *);
 
   cFunctionType type;
@@ -35,6 +31,13 @@ typedef struct
 
   int global;
 
+  /* The last items should be considered volatile and may
+     not stay here */
+
+  int n_TriggerGroups;
+  int *TriggerGroups;
+  char *where;
+  char *routine;
   char *thorn;
 
 } cFunctionData;
