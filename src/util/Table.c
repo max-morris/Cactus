@@ -278,13 +278,6 @@ void **ip_array = NULL;
 
 #define min(x,y)        ((x < y) ? (x) : (y))
 
-/******************************************************************************/
-/***** Prototypes for Fortran Wrappers ****************************************/
-/******************************************************************************/
-void CCTK_FCALL CCTK_FNAME (Util_TableCreateFromString)
-                           (int *retval, ONE_FORTSTRING_ARG);
-void CCTK_FCALL CCTK_FNAME (Util_TableDestroy)
-                           (int *retval, const int *handle);
 
 /******************************************************************************/
 /***** Prototypes for Functions Private to This File **************************/
@@ -541,6 +534,14 @@ int Util_TableCreate(int flags)
     }
 }
 
+void CCTK_FCALL CCTK_FNAME (Util_TableCreate)
+                           (int *retval, const int *flags);
+void CCTK_FCALL CCTK_FNAME (Util_TableCreate)
+                           (int *retval, const int *flags)
+{
+  *retval = Util_TableCreate (*flags);
+}
+
 /******************************************************************************/
 
 /*@@
@@ -613,6 +614,14 @@ int Util_TableClone(int handle)
     }
 }
 
+void CCTK_FCALL CCTK_FNAME (Util_TableClone)
+                           (int *retval, const int *handle);
+void CCTK_FCALL CCTK_FNAME (Util_TableClone)
+                           (int *retval, const int *handle)
+{
+  *retval = Util_TableClone (*handle);
+}
+
 /******************************************************************************/
 
 /*@@
@@ -660,6 +669,8 @@ int Util_TableDestroy(int handle)
 }
 
 void CCTK_FCALL CCTK_FNAME (Util_TableDestroy)
+                           (int *retval, const int *handle);
+void CCTK_FCALL CCTK_FNAME (Util_TableDestroy)
                            (int *retval, const int *handle)
 {
   *retval = Util_TableDestroy (*handle);
@@ -694,6 +705,14 @@ int Util_TableQueryFlags(int handle)
   }
 
   return thp->flags;
+}
+
+void CCTK_FCALL CCTK_FNAME (Util_TableQueryFlags)
+                           (int *retval, const int *handle);
+void CCTK_FCALL CCTK_FNAME (Util_TableQueryFlags)
+                           (int *retval, const int *handle)
+{
+  *retval = Util_TableQueryFlags (*handle);
 }
 
 /******************************************************************************/
@@ -735,6 +754,14 @@ int Util_TableQueryNKeys(int handle)
 
   return N;
     }
+}
+
+void CCTK_FCALL CCTK_FNAME (Util_TableQueryNKeys)
+                           (int *retval, const int *handle);
+void CCTK_FCALL CCTK_FNAME (Util_TableQueryNKeys)
+                           (int *retval, const int *handle)
+{
+  *retval = Util_TableQueryNKeys (*handle);
 }
 
 /******************************************************************************/
@@ -779,6 +806,14 @@ int Util_TableQueryMaxKeyLength(int handle)
 
   return max_length;
     }
+}
+
+void CCTK_FCALL CCTK_FNAME (Util_TableQueryMaxKeyLength)
+                           (int *retval, const int *handle);
+void CCTK_FCALL CCTK_FNAME (Util_TableQueryMaxKeyLength)
+                           (int *retval, const int *handle)
+{
+  *retval = Util_TableQueryMaxKeyLength (*handle);
 }
 
 /******************************************************************************/
@@ -873,6 +908,20 @@ int Util_TableQueryValueInfo(int handle,
     }
 }
 
+void CCTK_FCALL CCTK_FNAME (Util_TableQueryValueInfo)
+                           (int *retval, const int *handle,
+                            CCTK_INT *type_code, CCTK_INT *N_elements,
+                            ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (Util_TableQueryValueInfo)
+                           (int *retval, const int *handle,
+                            CCTK_INT *type_code, CCTK_INT *N_elements,
+                            ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (key)
+  *retval = Util_TableQueryValueInfo (*handle, type_code, N_elements, key);
+  free (key);
+}
+
 /******************************************************************************/
 
 /*@@
@@ -918,6 +967,16 @@ int Util_TableDeleteKey(int handle, const char *key)
   }
 
   return delete_table_entry_by_key(thp, key);
+}
+
+void CCTK_FCALL CCTK_FNAME (Util_TableDeleteKey)
+                           (int *retval, const int *handle, ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (Util_TableDeleteKey)
+                           (int *retval, const int *handle, ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (key)
+  *retval = Util_TableDeleteKey (*handle, key);
+  free (key);
 }
 
 /******************************************************************************/
@@ -973,6 +1032,8 @@ int Util_TableCreateFromString(const char string[])
     }
 }
 
+void CCTK_FCALL CCTK_FNAME (Util_TableCreateFromString)
+                           (int *retval, ONE_FORTSTRING_ARG);
 void CCTK_FCALL CCTK_FNAME (Util_TableCreateFromString)
                            (int *retval, ONE_FORTSTRING_ARG)
 {
@@ -1363,6 +1424,16 @@ int Util_TableSetFromString(int handle, const char string[])
     }
 }
 
+void CCTK_FCALL CCTK_FNAME (Util_TableSetFromString)
+                           (int *retval, const int *handle, ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (Util_TableSetFromString)
+                           (int *retval, const int *handle, ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (string)
+  *retval = Util_TableSetFromString (*handle, string);
+  free (string);
+}
+
 /******************************************************************************/
 
 /*@@
@@ -1422,6 +1493,16 @@ int Util_TableSetString(int handle,
   return internal_set(handle,
                       CCTK_VARIABLE_CHAR, strlen(string), (const void *) string,
                       key);
+}
+
+void CCTK_FCALL CCTK_FNAME (Util_TableSetString)
+                           (int *retval, const int *handle, TWO_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (Util_TableSetString)
+                           (int *retval, const int *handle, TWO_FORTSTRING_ARG)
+{
+  TWO_FORTSTRING_CREATE (string, key)
+  *retval = Util_TableSetString (*handle, string, key);
+  free (string); free (key);
 }
 
 /******************************************************************************/
@@ -1524,6 +1605,7 @@ int Util_TableGetString(int handle,
          ? UTIL_ERROR_TABLE_STRING_TRUNCATED
          : string_length;
 }
+/*** FIXME: no fortran wrapper yet ***/
 
 /******************************************************************************/
 
@@ -1577,6 +1659,20 @@ int Util_TableSetGeneric(int handle,
                          const char *key)
 {
   return Util_TableSetGenericArray(handle, type_code, 1, value_ptr, key);
+}
+
+void CCTK_FCALL CCTK_FNAME (Util_TableSetGeneric)
+                           (int *retval, const int *handle,
+                            const int *type_code, const CCTK_POINTER *value,
+                            ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (Util_TableSetGeneric)
+                           (int *retval, const int *handle,
+                            const int *type_code, const CCTK_POINTER *value,
+                            ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (key)
+  *retval = Util_TableSetGeneric (*handle, *type_code, value, key);
+  free (key);
 }
 
 /******************************************************************************/
@@ -1640,6 +1736,21 @@ int Util_TableSetGenericArray(int handle,
   return internal_set(handle,
                       type_code, N_elements, array,
                       key);
+}
+
+void CCTK_FCALL CCTK_FNAME (Util_TableSetGenericArray)
+                           (int *retval, const int *handle,
+                            const int *type_code, const int *N_elements,
+                            const CCTK_POINTER array[], ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (Util_TableSetGenericArray)
+                           (int *retval, const int *handle,
+                            const int *type_code, const int *N_elements,
+                            const CCTK_POINTER array[], ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (key)
+  *retval = Util_TableSetGenericArray (*handle, *type_code, *N_elements,
+                                       array, key);
+  free (key);
 }
 
 /******************************************************************************/
@@ -1714,6 +1825,20 @@ int Util_TableGetGeneric(int handle,
   return (status == 0)
          ? UTIL_ERROR_TABLE_VALUE_IS_EMPTY
          : status;
+}
+
+void CCTK_FCALL CCTK_FNAME (Util_TableGetGeneric)
+                           (int *retval, const int *handle,
+                            const int *type_code, CCTK_POINTER *value,
+                            ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (Util_TableGetGeneric)
+                           (int *retval, const int *handle,
+                            const int *type_code, CCTK_POINTER *value,
+                            ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (key)
+  *retval = Util_TableGetGeneric (*handle, *type_code, value, key);
+  free (key);
 }
 
 /******************************************************************************/
@@ -1798,6 +1923,21 @@ int Util_TableGetGenericArray(int handle,
                       key);
 }
 
+void CCTK_FCALL CCTK_FNAME (Util_TableGetGenericArray)
+                           (int *retval, const int *handle,
+                            const int *type_code, const int *N_elements,
+                            CCTK_POINTER array[], ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (Util_TableGetGenericArray)
+                           (int *retval, const int *handle,
+                            const int *type_code, const int *N_elements,
+                            CCTK_POINTER array[], ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (key)
+  *retval = Util_TableGetGenericArray (*handle, *type_code, *N_elements,
+                                       array, key);
+  free (key);
+}
+
 /******************************************************************************/
 
 /*@@
@@ -1857,9 +1997,33 @@ int Util_TableSetPointer(int handle, CCTK_POINTER value, const char *key)
   return Util_TableSetPointerArray(handle, 1, &value, key);
 }
 
+void CCTK_FCALL CCTK_FNAME (Util_TableSetPointer)
+                           (int *retval, const int *handle,
+                            const CCTK_POINTER *value, ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (Util_TableSetPointer)
+                           (int *retval, const int *handle, const CCTK_POINTER *value,
+                            ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (key)
+  *retval = Util_TableSetPointer (*handle, *value, key);
+  free (key);
+}
+
 int Util_TableSetFnPointer(int handle, CCTK_FPOINTER value, const char *key)
 {
   return Util_TableSetFnPointerArray(handle, 1, &value, key);
+}
+
+void CCTK_FCALL CCTK_FNAME (Util_TableSetFnPointer)
+                           (int *retval, const int *handle,
+                            const CCTK_FPOINTER *value, ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (Util_TableSetFnPointer)
+                           (int *retval, const int *handle,
+                            const CCTK_FPOINTER *value, ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (key)
+  *retval = Util_TableSetFnPointer (*handle, *value, key);
+  free (key);
 }
 
 /**************************************/
@@ -1873,6 +2037,18 @@ int Util_TableSetChar(int handle, CCTK_CHAR value, const char *key)
   return Util_TableSetCharArray(handle, 1, &value, key);
 }
 
+void CCTK_FCALL CCTK_FNAME (Util_TableSetChar)
+                           (int *retval, const int *handle,
+                            const CCTK_CHAR *value, ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (Util_TableSetChar)
+                           (int *retval, const int *handle,
+                            const CCTK_CHAR *value, ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (key)
+  *retval = Util_TableSetChar (*handle, *value, key);
+  free (key);
+}
+
 /**************************************/
 
 /*
@@ -1884,10 +2060,34 @@ int Util_TableSetInt(int handle, CCTK_INT value, const char *key)
   return Util_TableSetIntArray(handle, 1, &value, key);
 }
 
+void CCTK_FCALL CCTK_FNAME (Util_TableSetInt)
+                           (int *retval, const int *handle,
+                            const CCTK_INT *value, ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (Util_TableSetInt)
+                           (int *retval, const int *handle,
+                            const CCTK_INT *value, ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (key)
+  *retval = Util_TableSetInt (*handle, *value, key);
+  free (key);
+}
+
 #ifdef CCTK_INTEGER_PRECISION_2
 int Util_TableSetInt2(int handle, CCTK_INT2 value, const char *key)
 {
   return Util_TableSetInt2Array(handle, 1, &value, key);
+}
+
+void CCTK_FCALL CCTK_FNAME (Util_TableSetInt2)
+                           (int *retval, const int *handle,
+                            const CCTK_INT2 *value, ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (Util_TableSetInt2)
+                           (int *retval, const int *handle,
+                            const CCTK_INT2 *value, ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (key)
+  *retval = Util_TableSetInt2 (*handle, *value, key);
+  free (key);
 }
 #endif
 
@@ -1896,12 +2096,36 @@ int Util_TableSetInt4(int handle, CCTK_INT4 value, const char *key)
 {
   return Util_TableSetInt4Array(handle, 1, &value, key);
 }
+
+void CCTK_FCALL CCTK_FNAME (Util_TableSetInt4)
+                           (int *retval, const int *handle,
+                            const CCTK_INT4 *value, ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (Util_TableSetInt4)
+                           (int *retval, const int *handle,
+                            const CCTK_INT4 *value, ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (key)
+  *retval = Util_TableSetInt4 (*handle, *value, key);
+  free (key);
+}
 #endif
 
 #ifdef CCTK_INTEGER_PRECISION_8
 int Util_TableSetInt8(int handle, CCTK_INT8 value, const char *key)
 {
   return Util_TableSetInt8Array(handle, 1, &value, key);
+}
+
+void CCTK_FCALL CCTK_FNAME (Util_TableSetInt8)
+                           (int *retval, const int *handle,
+                            const CCTK_INT8 *value, ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (Util_TableSetInt8)
+                           (int *retval, const int *handle,
+                            const CCTK_INT8 *value, ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (key)
+  *retval = Util_TableSetInt8 (*handle, *value, key);
+  free (key);
 }
 #endif
 
@@ -1916,10 +2140,34 @@ int Util_TableSetReal(int handle, CCTK_REAL value, const char *key)
   return Util_TableSetRealArray(handle, 1, &value, key);
 }
 
+void CCTK_FCALL CCTK_FNAME (Util_TableSetReal)
+                           (int *retval, const int *handle,
+                            const CCTK_REAL *value, ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (Util_TableSetReal)
+                           (int *retval, const int *handle,
+                            const CCTK_REAL *value, ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (key)
+  *retval = Util_TableSetReal (*handle, *value, key);
+  free (key);
+}
+
 #ifdef CCTK_REAL_PRECISION_4
 int Util_TableSetReal4(int handle, CCTK_REAL4 value, const char *key)
 {
   return Util_TableSetReal4Array(handle, 1, &value, key);
+}
+
+void CCTK_FCALL CCTK_FNAME (Util_TableSetReal4)
+                           (int *retval, const int *handle,
+                            const CCTK_REAL4 *value, ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (Util_TableSetReal4)
+                           (int *retval, const int *handle,
+                            const CCTK_REAL4 *value, ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (key)
+  *retval = Util_TableSetReal4 (*handle, *value, key);
+  free (key);
 }
 #endif
 
@@ -1928,12 +2176,36 @@ int Util_TableSetReal8(int handle, CCTK_REAL8 value, const char *key)
 {
   return Util_TableSetReal8Array(handle, 1, &value, key);
 }
+
+void CCTK_FCALL CCTK_FNAME (Util_TableSetReal8)
+                           (int *retval, const int *handle,
+                            const CCTK_REAL8 *value, ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (Util_TableSetReal8)
+                           (int *retval, const int *handle,
+                            const CCTK_REAL8 *value, ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (key)
+  *retval = Util_TableSetReal8 (*handle, *value, key);
+  free (key);
+}
 #endif
 
 #ifdef CCTK_REAL_PRECISION_16
 int Util_TableSetReal16(int handle, CCTK_REAL16 value, const char *key)
 {
   return Util_TableSetReal16Array(handle, 1, &value, key);
+}
+
+void CCTK_FCALL CCTK_FNAME (Util_TableSetReal16)
+                           (int *retval, const int *handle,
+                            const CCTK_REAL16 *value, ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (Util_TableSetReal16)
+                           (int *retval, const int *handle,
+                            const CCTK_REAL16 *value, ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (key)
+  *retval = Util_TableSetReal16 (*handle, *value, key);
+  free (key);
 }
 #endif
 
@@ -1948,10 +2220,34 @@ int Util_TableSetComplex(int handle, CCTK_COMPLEX value, const char *key)
   return Util_TableSetComplexArray(handle, 1, &value, key);
 }
 
+void CCTK_FCALL CCTK_FNAME (Util_TableSetComplex)
+                           (int *retval, const int *handle,
+                            const CCTK_COMPLEX *value, ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (Util_TableSetComplex)
+                           (int *retval, const int *handle,
+                            const CCTK_COMPLEX *value, ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (key)
+  *retval = Util_TableSetComplex (*handle, *value, key);
+  free (key);
+}
+
 #ifdef CCTK_COMPLEX_PRECISION_8
 int Util_TableSetComplex8(int handle, CCTK_COMPLEX8 value, const char *key)
 {
   return Util_TableSetComplex8Array(handle, 1, &value, key);
+}
+
+void CCTK_FCALL CCTK_FNAME (Util_TableSetComplex8)
+                           (int *retval, const int *handle,
+                            const CCTK_COMPLEX8 *value, ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (Util_TableSetComplex8)
+                           (int *retval, const int *handle,
+                            const CCTK_COMPLEX8 *value, ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (key)
+  *retval = Util_TableSetComplex8 (*handle, *value, key);
+  free (key);
 }
 #endif
 
@@ -1960,12 +2256,36 @@ int Util_TableSetComplex16(int handle, CCTK_COMPLEX16 value, const char *key)
 {
   return Util_TableSetComplex16Array(handle, 1, &value, key);
 }
+
+void CCTK_FCALL CCTK_FNAME (Util_TableSetComplex16)
+                           (int *retval, const int *handle,
+                            const CCTK_COMPLEX16 *value, ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (Util_TableSetComplex16)
+                           (int *retval, const int *handle,
+                            const CCTK_COMPLEX16 *value, ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (key)
+  *retval = Util_TableSetComplex16 (*handle, *value, key);
+  free (key);
+}
 #endif
 
 #ifdef CCTK_COMPLEX_PRECISION_32
 int Util_TableSetComplex32(int handle, CCTK_COMPLEX32 value, const char *key)
 {
   return Util_TableSetComplex32Array(handle, 1, &value, key);
+}
+
+void CCTK_FCALL CCTK_FNAME (Util_TableSetComplex32)
+                           (int *retval, const int *handle,
+                            const CCTK_COMPLEX32 *value, ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (Util_TableSetComplex32)
+                           (int *retval, const int *handle,
+                            const CCTK_COMPLEX32 *value, ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (key)
+  *retval = Util_TableSetComplex32 (*handle, *value, key);
+  free (key);
 }
 #endif
 
@@ -2039,6 +2359,20 @@ int Util_TableSetPointerArray(int handle,
                       key);
 }
 
+void CCTK_FCALL CCTK_FNAME (Util_TableSetPointerArray)
+                           (int *retval, const int *handle,
+                            const int *N_elements,
+                            const CCTK_POINTER array[], ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (Util_TableSetPointerArray)
+                           (int *retval, const int *handle,
+                            const int *N_elements,
+                            const CCTK_POINTER array[], ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (key)
+  *retval = Util_TableSetPointerArray (*handle, *N_elements, array, key);
+  free (key);
+}
+
 int Util_TableSetFnPointerArray(int handle,
                                 int N_elements, const CCTK_FPOINTER array[],
                                 const char *key)
@@ -2047,6 +2381,20 @@ int Util_TableSetFnPointerArray(int handle,
     internal_set(handle,
                  CCTK_VARIABLE_FPOINTER, N_elements, (const void *) array,
                  key);
+}
+
+void CCTK_FCALL CCTK_FNAME (Util_TableSetFnPointerArray)
+                           (int *retval, const int *handle,
+                            const int *N_elements,
+                            const CCTK_FPOINTER array[], ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (Util_TableSetFnPointerArray)
+                           (int *retval, const int *handle,
+                            const int *N_elements,
+                            const CCTK_FPOINTER array[], ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (key)
+  *retval = Util_TableSetFnPointerArray (*handle, *N_elements, array, key);
+  free (key);
 }
 
 /**************************************/
@@ -2064,6 +2412,20 @@ int Util_TableSetCharArray(int handle,
                       key);
 }
 
+void CCTK_FCALL CCTK_FNAME (Util_TableSetCharArray)
+                           (int *retval, const int *handle,
+                            const int *N_elements,
+                            const CCTK_CHAR array[], ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (Util_TableSetCharArray)
+                           (int *retval, const int *handle,
+                            const int *N_elements,
+                            const CCTK_CHAR array[], ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (key)
+  *retval = Util_TableSetCharArray (*handle, *N_elements, array, key);
+  free (key);
+}
+
 /**************************************/
 
 /*
@@ -2079,6 +2441,20 @@ int Util_TableSetIntArray(int handle,
                       key);
 }
 
+void CCTK_FCALL CCTK_FNAME (Util_TableSetIntArray)
+                           (int *retval, const int *handle,
+                            const int *N_elements,
+                            const CCTK_INT array[], ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (Util_TableSetIntArray)
+                           (int *retval, const int *handle,
+                            const int *N_elements,
+                            const CCTK_INT array[], ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (key)
+  *retval = Util_TableSetIntArray (*handle, *N_elements, array, key);
+  free (key);
+}
+
 #ifdef CCTK_INTEGER_PRECISION_2
 int Util_TableSetInt2Array(int handle,
                            int N_elements, const CCTK_INT2 array[],
@@ -2087,6 +2463,20 @@ int Util_TableSetInt2Array(int handle,
   return internal_set(handle,
                       CCTK_VARIABLE_INT2, N_elements, (const void *) array,
                       key);
+}
+
+void CCTK_FCALL CCTK_FNAME (Util_TableSetInt2Array)
+                           (int *retval, const int *handle,
+                            const int *N_elements,
+                            const CCTK_INT2 array[], ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (Util_TableSetInt2Array)
+                           (int *retval, const int *handle,
+                            const int *N_elements,
+                            const CCTK_INT2 array[], ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (key)
+  *retval = Util_TableSetInt2Array (*handle, *N_elements, array, key);
+  free (key);
 }
 #endif
 
@@ -2099,6 +2489,20 @@ int Util_TableSetInt4Array(int handle,
                       CCTK_VARIABLE_INT4, N_elements, (const void *) array,
                       key);
 }
+
+void CCTK_FCALL CCTK_FNAME (Util_TableSetInt4Array)
+                           (int *retval, const int *handle,
+                            const int *N_elements,
+                            const CCTK_INT4 array[], ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (Util_TableSetInt4Array)
+                           (int *retval, const int *handle,
+                            const int *N_elements,
+                            const CCTK_INT4 array[], ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (key)
+  *retval = Util_TableSetInt4Array (*handle, *N_elements, array, key);
+  free (key);
+}
 #endif
 
 #ifdef CCTK_INTEGER_PRECISION_8
@@ -2109,6 +2513,20 @@ int Util_TableSetInt8Array(int handle,
   return internal_set(handle,
                       CCTK_VARIABLE_INT8, N_elements, (const void *) array,
                       key);
+}
+
+void CCTK_FCALL CCTK_FNAME (Util_TableSetInt8Array)
+                           (int *retval, const int *handle,
+                            const int *N_elements,
+                            const CCTK_INT8 array[], ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (Util_TableSetInt8Array)
+                           (int *retval, const int *handle,
+                            const int *N_elements,
+                            const CCTK_INT8 array[], ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (key)
+  *retval = Util_TableSetInt8Array (*handle, *N_elements, array, key);
+  free (key);
 }
 #endif
 
@@ -2128,6 +2546,20 @@ int Util_TableSetRealArray(int handle,
                     key);
 }
 
+void CCTK_FCALL CCTK_FNAME (Util_TableSetRealArray)
+                           (int *retval, const int *handle,
+                            const int *N_elements,
+                            const CCTK_REAL array[], ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (Util_TableSetRealArray)
+                           (int *retval, const int *handle,
+                            const int *N_elements,
+                            const CCTK_REAL array[], ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (key)
+  *retval = Util_TableSetRealArray (*handle, *N_elements, array, key);
+  free (key);
+}
+
 #ifdef CCTK_REAL_PRECISION_4
 int Util_TableSetReal4Array(int handle,
                             int N_elements, const CCTK_REAL4 array[],
@@ -2136,6 +2568,20 @@ int Util_TableSetReal4Array(int handle,
   return internal_set(handle,
                       CCTK_VARIABLE_REAL4, N_elements, (const void *) array,
                       key);
+}
+
+void CCTK_FCALL CCTK_FNAME (Util_TableSetReal4Array)
+                           (int *retval, const int *handle,
+                            const int *N_elements,
+                            const CCTK_REAL4 array[], ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (Util_TableSetReal4Array)
+                           (int *retval, const int *handle,
+                            const int *N_elements,
+                            const CCTK_REAL4 array[], ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (key)
+  *retval = Util_TableSetReal4Array (*handle, *N_elements, array, key);
+  free (key);
 }
 #endif
 
@@ -2148,6 +2594,20 @@ int Util_TableSetReal8Array(int handle,
                       CCTK_VARIABLE_REAL8, N_elements, (const void *) array,
                       key);
 }
+
+void CCTK_FCALL CCTK_FNAME (Util_TableSetReal8Array)
+                           (int *retval, const int *handle,
+                            const int *N_elements,
+                            const CCTK_REAL8 array[], ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (Util_TableSetReal8Array)
+                           (int *retval, const int *handle,
+                            const int *N_elements,
+                            const CCTK_REAL8 array[], ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (key)
+  *retval = Util_TableSetReal8Array (*handle, *N_elements, array, key);
+  free (key);
+}
 #endif
 
 #ifdef CCTK_REAL_PRECISION_16
@@ -2158,6 +2618,20 @@ int Util_TableSetReal16Array(int handle,
   return internal_set(handle,
                       CCTK_VARIABLE_REAL16, N_elements, (const void *) array,
                       key);
+}
+
+void CCTK_FCALL CCTK_FNAME (Util_TableSetReal16Array)
+                           (int *retval, const int *handle,
+                            const int *N_elements,
+                            const CCTK_REAL16 array[], ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (Util_TableSetReal16Array)
+                           (int *retval, const int *handle,
+                            const int *N_elements,
+                            const CCTK_REAL16 array[], ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (key)
+  *retval = Util_TableSetReal16Array (*handle, *N_elements, array, key);
+  free (key);
 }
 #endif
 
@@ -2176,6 +2650,20 @@ int Util_TableSetComplexArray(int handle,
                       key);
 }
 
+void CCTK_FCALL CCTK_FNAME (Util_TableSetComplexArray)
+                           (int *retval, const int *handle,
+                            const int *N_elements,
+                            const CCTK_COMPLEX array[], ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (Util_TableSetComplexArray)
+                           (int *retval, const int *handle,
+                            const int *N_elements,
+                            const CCTK_COMPLEX array[], ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (key)
+  *retval = Util_TableSetComplexArray (*handle, *N_elements, array, key);
+  free (key);
+}
+
 #ifdef CCTK_COMPLEX_PRECISION_8
 int Util_TableSetComplex8Array(int handle,
                                int N_elements, const CCTK_COMPLEX8 array[],
@@ -2184,6 +2672,20 @@ int Util_TableSetComplex8Array(int handle,
   return internal_set(handle,
                       CCTK_VARIABLE_COMPLEX8, N_elements, (const void *) array,
                       key);
+}
+
+void CCTK_FCALL CCTK_FNAME (Util_TableSetComplex8Array)
+                           (int *retval, const int *handle,
+                            const int *N_elements,
+                            const CCTK_COMPLEX8 array[], ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (Util_TableSetComplex8Array)
+                           (int *retval, const int *handle,
+                            const int *N_elements,
+                            const CCTK_COMPLEX8 array[], ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (key)
+  *retval = Util_TableSetComplex8Array (*handle, *N_elements, array, key);
+  free (key);
 }
 #endif
 
@@ -2196,6 +2698,20 @@ int Util_TableSetComplex16Array(int handle,
                       CCTK_VARIABLE_COMPLEX16, N_elements, (const void *) array,
                       key);
 }
+
+void CCTK_FCALL CCTK_FNAME (Util_TableSetComplex16Array)
+                           (int *retval, const int *handle,
+                            const int *N_elements,
+                            const CCTK_COMPLEX16 array[], ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (Util_TableSetComplex16Array)
+                           (int *retval, const int *handle,
+                            const int *N_elements,
+                            const CCTK_COMPLEX16 array[], ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (key)
+  *retval = Util_TableSetComplex16Array (*handle, *N_elements, array, key);
+  free (key);
+}
 #endif
 
 #ifdef CCTK_COMPLEX_PRECISION_32
@@ -2206,6 +2722,20 @@ int Util_TableSetComplex32Array(int handle,
   return internal_set(handle,
                       CCTK_VARIABLE_COMPLEX32, N_elements, (const void *) array,
                       key);
+}
+
+void CCTK_FCALL CCTK_FNAME (Util_TableSetComplex32Array)
+                           (int *retval, const int *handle,
+                            const int *N_elements,
+                            const CCTK_COMPLEX32 array[], ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (Util_TableSetComplex32Array)
+                           (int *retval, const int *handle,
+                            const int *N_elements,
+                            const CCTK_COMPLEX32 array[], ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (key)
+  *retval = Util_TableSetComplex32Array (*handle, *N_elements, array, key);
+  free (key);
 }
 #endif
 
@@ -2283,12 +2813,36 @@ int Util_TableGetPointer(int handle, CCTK_POINTER *value, const char *key)
          : status;
 }
 
+void CCTK_FCALL CCTK_FNAME (Util_TableGetPointer)
+                           (int *retval, const int *handle,
+                            CCTK_POINTER *value, ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (Util_TableGetPointer)
+                           (int *retval, const int *handle,
+                            CCTK_POINTER *value, ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (key)
+  *retval = Util_TableGetPointer (*handle, value, key);
+  free (key);
+}
+
 int Util_TableGetFnPointer(int handle, CCTK_FPOINTER *value, const char *key)
 {
   const int status = Util_TableGetFnPointerArray(handle, 1, value, key);
   return (status == 0)
          ? UTIL_ERROR_TABLE_VALUE_IS_EMPTY
          : status;
+}
+
+void CCTK_FCALL CCTK_FNAME (Util_TableGetFnPointer)
+                           (int *retval, const int *handle,
+                            CCTK_FPOINTER *value, ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (Util_TableGetFnPointer)
+                           (int *retval, const int *handle,
+                            CCTK_FPOINTER *value, ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (key)
+  *retval = Util_TableGetFnPointer (*handle, value, key);
+  free (key);
 }
 
 /**************************************/
@@ -2302,6 +2856,18 @@ int Util_TableGetChar(int handle, CCTK_CHAR *value, const char *key)
          : status;
 }
 
+void CCTK_FCALL CCTK_FNAME (Util_TableGetChar)
+                           (int *retval, const int *handle,
+                            CCTK_CHAR *value, ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (Util_TableGetChar)
+                           (int *retval, const int *handle,
+                            CCTK_CHAR *value, ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (key)
+  *retval = Util_TableGetChar (*handle, value, key);
+  free (key);
+}
+
 /**************************************/
 
 /* integers */
@@ -2313,6 +2879,18 @@ int Util_TableGetInt(int handle, CCTK_INT *value, const char *key)
          : status;
 }
 
+void CCTK_FCALL CCTK_FNAME (Util_TableGetInt)
+                           (int *retval, const int *handle,
+                            CCTK_INT *value, ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (Util_TableGetInt)
+                           (int *retval, const int *handle,
+                            CCTK_INT *value, ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (key)
+  *retval = Util_TableGetInt (*handle, value, key);
+  free (key);
+}
+
 #ifdef CCTK_INTEGER_PRECISION_2
 int Util_TableGetInt2(int handle, CCTK_INT2 *value, const char *key)
 {
@@ -2320,6 +2898,18 @@ int Util_TableGetInt2(int handle, CCTK_INT2 *value, const char *key)
   return (status == 0)
          ? UTIL_ERROR_TABLE_VALUE_IS_EMPTY
          : status;
+}
+
+void CCTK_FCALL CCTK_FNAME (Util_TableGetInt2)
+                           (int *retval, const int *handle,
+                            CCTK_INT2 *value, ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (Util_TableGetInt2)
+                           (int *retval, const int *handle,
+                            CCTK_INT2 *value, ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (key)
+  *retval = Util_TableGetInt2 (*handle, value, key);
+  free (key);
 }
 #endif
 
@@ -2331,6 +2921,18 @@ int Util_TableGetInt4(int handle, CCTK_INT4 *value, const char *key)
          ? UTIL_ERROR_TABLE_VALUE_IS_EMPTY
          : status;
 }
+
+void CCTK_FCALL CCTK_FNAME (Util_TableGetInt4)
+                           (int *retval, const int *handle,
+                            CCTK_INT4 *value, ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (Util_TableGetInt4)
+                           (int *retval, const int *handle,
+                            CCTK_INT4 *value, ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (key)
+  *retval = Util_TableGetInt4 (*handle, value, key);
+  free (key);
+}
 #endif
 
 #ifdef CCTK_INTEGER_PRECISION_8
@@ -2340,6 +2942,18 @@ int Util_TableGetInt8(int handle, CCTK_INT8 *value, const char *key)
   return (status == 0)
          ? UTIL_ERROR_TABLE_VALUE_IS_EMPTY
          : status;
+}
+
+void CCTK_FCALL CCTK_FNAME (Util_TableGetInt8)
+                           (int *retval, const int *handle,
+                            CCTK_INT8 *value, ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (Util_TableGetInt8)
+                           (int *retval, const int *handle,
+                            CCTK_INT8 *value, ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (key)
+  *retval = Util_TableGetInt8 (*handle, value, key);
+  free (key);
 }
 #endif
 
@@ -2354,6 +2968,18 @@ int Util_TableGetReal(int handle, CCTK_REAL *value, const char *key)
          : status;
 }
 
+void CCTK_FCALL CCTK_FNAME (Util_TableGetReal)
+                           (int *retval, const int *handle,
+                            CCTK_REAL *value, ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (Util_TableGetReal)
+                           (int *retval, const int *handle,
+                            CCTK_REAL *value, ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (key)
+  *retval = Util_TableGetReal (*handle, value, key);
+  free (key);
+}
+
 #ifdef CCTK_REAL_PRECISION_4
 int Util_TableGetReal4(int handle, CCTK_REAL4 *value, const char *key)
 {
@@ -2361,6 +2987,18 @@ int Util_TableGetReal4(int handle, CCTK_REAL4 *value, const char *key)
   return (status == 0)
          ? UTIL_ERROR_TABLE_VALUE_IS_EMPTY
          : status;
+}
+
+void CCTK_FCALL CCTK_FNAME (Util_TableGetReal4)
+                           (int *retval, const int *handle,
+                            CCTK_REAL4 *value, ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (Util_TableGetReal4)
+                           (int *retval, const int *handle,
+                            CCTK_REAL4 *value, ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (key)
+  *retval = Util_TableGetReal4 (*handle, value, key);
+  free (key);
 }
 #endif
 
@@ -2372,6 +3010,18 @@ int Util_TableGetReal8(int handle, CCTK_REAL8 *value, const char *key)
          ? UTIL_ERROR_TABLE_VALUE_IS_EMPTY
          : status;
 }
+
+void CCTK_FCALL CCTK_FNAME (Util_TableGetReal8)
+                           (int *retval, const int *handle,
+                            CCTK_REAL8 *value, ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (Util_TableGetReal8)
+                           (int *retval, const int *handle,
+                            CCTK_REAL8 *value, ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (key)
+  *retval = Util_TableGetReal8 (*handle, value, key);
+  free (key);
+}
 #endif
 
 #ifdef CCTK_REAL_PRECISION_16
@@ -2381,6 +3031,18 @@ int Util_TableGetReal16(int handle, CCTK_REAL16 *value, const char *key)
   return (status == 0)
          ? UTIL_ERROR_TABLE_VALUE_IS_EMPTY
          : status;
+}
+
+void CCTK_FCALL CCTK_FNAME (Util_TableGetReal16)
+                           (int *retval, const int *handle,
+                            CCTK_REAL4 *value, ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (Util_TableGetReal16)
+                           (int *retval, const int *handle,
+                            CCTK_REAL16 *value, ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (key)
+  *retval = Util_TableGetReal16 (*handle, value, key);
+  free (key);
 }
 #endif
 
@@ -2395,6 +3057,18 @@ int Util_TableGetComplex(int handle, CCTK_COMPLEX *value, const char *key)
          : status;
 }
 
+void CCTK_FCALL CCTK_FNAME (Util_TableGetComplex)
+                           (int *retval, const int *handle,
+                            CCTK_COMPLEX *value, ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (Util_TableGetComplex)
+                           (int *retval, const int *handle,
+                            CCTK_COMPLEX *value, ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (key)
+  *retval = Util_TableGetComplex (*handle, value, key);
+  free (key);
+}
+
 #ifdef CCTK_COMPLEX_PRECISION_8
 int Util_TableGetComplex8(int handle, CCTK_COMPLEX8 *value, const char *key)
 {
@@ -2402,6 +3076,18 @@ int Util_TableGetComplex8(int handle, CCTK_COMPLEX8 *value, const char *key)
   return (status == 0)
          ? UTIL_ERROR_TABLE_VALUE_IS_EMPTY
          : status;
+}
+
+void CCTK_FCALL CCTK_FNAME (Util_TableGetComplex8)
+                           (int *retval, const int *handle,
+                            CCTK_COMPLEX8 *value, ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (Util_TableGetComplex8)
+                           (int *retval, const int *handle,
+                            CCTK_COMPLEX8 *value, ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (key)
+  *retval = Util_TableGetComplex8 (*handle, value, key);
+  free (key);
 }
 #endif
 
@@ -2413,6 +3099,18 @@ int Util_TableGetComplex16(int handle, CCTK_COMPLEX16 *value, const char *key)
          ? UTIL_ERROR_TABLE_VALUE_IS_EMPTY
          : status;
 }
+
+void CCTK_FCALL CCTK_FNAME (Util_TableGetComplex16)
+                           (int *retval, const int *handle,
+                            CCTK_COMPLEX16 *value, ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (Util_TableGetComplex16)
+                           (int *retval, const int *handle,
+                            CCTK_COMPLEX16 *value, ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (key)
+  *retval = Util_TableGetComplex16 (*handle, value, key);
+  free (key);
+}
 #endif
 
 #ifdef CCTK_COMPLEX_PRECISION_32
@@ -2422,6 +3120,18 @@ int Util_TableGetComplex32(int handle, CCTK_COMPLEX32 *value, const char *key)
   return (status == 0)
          ? UTIL_ERROR_TABLE_VALUE_IS_EMPTY
          : status;
+}
+
+void CCTK_FCALL CCTK_FNAME (Util_TableGetComplex32)
+                           (int *retval, const int *handle,
+                            CCTK_COMPLEX32 *value, ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (Util_TableGetComplex32)
+                           (int *retval, const int *handle,
+                            CCTK_COMPLEX32 *value, ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (key)
+  *retval = Util_TableGetComplex32 (*handle, value, key);
+  free (key);
 }
 #endif
 
@@ -2510,6 +3220,20 @@ int Util_TableGetPointerArray(int handle,
                       key);
 }
 
+void CCTK_FCALL CCTK_FNAME (Util_TableGetPointerArray)
+                           (int *retval, const int *handle,
+                            const int *N_elements, CCTK_POINTER array[],
+                            ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (Util_TableGetPointerArray)
+                           (int *retval, const int *handle,
+                            const int *N_elements, CCTK_POINTER array[],
+                            ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (key)
+  *retval = Util_TableGetPointerArray (*handle, *N_elements, array, key);
+  free (key);
+}
+
 int Util_TableGetFnPointerArray(int handle,
                                 int N_elements, CCTK_FPOINTER array[],
                                 const char *key)
@@ -2517,6 +3241,20 @@ int Util_TableGetFnPointerArray(int handle,
   return internal_get(handle,
                       CCTK_VARIABLE_FPOINTER, N_elements, (void *) array,
                       key);
+}
+
+void CCTK_FCALL CCTK_FNAME (Util_TableGetFnPointerArray)
+                           (int *retval, const int *handle,
+                            const int *N_elements, CCTK_FPOINTER array[],
+                            ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (Util_TableGetFnPointerArray)
+                           (int *retval, const int *handle,
+                            const int *N_elements, CCTK_FPOINTER array[],
+                            ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (key)
+  *retval = Util_TableGetFnPointerArray (*handle, *N_elements, array, key);
+  free (key);
 }
 
 /**************************************/
@@ -2531,6 +3269,20 @@ int Util_TableGetCharArray(int handle,
                       key);
 }
 
+void CCTK_FCALL CCTK_FNAME (Util_TableGetCharArray)
+                           (int *retval, const int *handle,
+                            const int *N_elements, CCTK_CHAR array[],
+                            ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (Util_TableGetCharArray)
+                           (int *retval, const int *handle,
+                            const int *N_elements, CCTK_CHAR array[],
+                            ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (key)
+  *retval = Util_TableGetCharArray (*handle, *N_elements, array, key);
+  free (key);
+}
+
 /**************************************/
 
 /* integers */
@@ -2543,6 +3295,20 @@ int Util_TableGetIntArray(int handle,
                       key);
 }
 
+void CCTK_FCALL CCTK_FNAME (Util_TableGetIntArray)
+                           (int *retval, const int *handle,
+                            const int *N_elements, CCTK_INT array[],
+                            ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (Util_TableGetIntArray)
+                           (int *retval, const int *handle,
+                            const int *N_elements, CCTK_INT array[],
+                            ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (key)
+  *retval = Util_TableGetIntArray (*handle, *N_elements, array, key);
+  free (key);
+}
+
 #ifdef CCTK_INTEGER_PRECISION_2
 int Util_TableGetInt2Array(int handle,
                            int N_elements, CCTK_INT2 array[],
@@ -2551,6 +3317,20 @@ int Util_TableGetInt2Array(int handle,
   return internal_get(handle,
                       CCTK_VARIABLE_INT2, N_elements, (void *) array,
                       key);
+}
+
+void CCTK_FCALL CCTK_FNAME (Util_TableGetInt2Array)
+                           (int *retval, const int *handle,
+                            const int *N_elements, CCTK_INT2 array[],
+                            ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (Util_TableGetInt2Array)
+                           (int *retval, const int *handle,
+                            const int *N_elements, CCTK_INT2 array[],
+                            ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (key)
+  *retval = Util_TableGetInt2Array (*handle, *N_elements, array, key);
+  free (key);
 }
 #endif
 
@@ -2563,6 +3343,20 @@ int Util_TableGetInt4Array(int handle,
                       CCTK_VARIABLE_INT4, N_elements, (void *) array,
                       key);
 }
+
+void CCTK_FCALL CCTK_FNAME (Util_TableGetInt4Array)
+                           (int *retval, const int *handle,
+                            const int *N_elements, CCTK_INT4 array[],
+                            ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (Util_TableGetInt4Array)
+                           (int *retval, const int *handle,
+                            const int *N_elements, CCTK_INT4 array[],
+                            ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (key)
+  *retval = Util_TableGetInt4Array (*handle, *N_elements, array, key);
+  free (key);
+}
 #endif
 
 #ifdef CCTK_INTEGER_PRECISION_8
@@ -2573,6 +3367,20 @@ int Util_TableGetInt8Array(int handle,
   return internal_get(handle,
                       CCTK_VARIABLE_INT8, N_elements, (void *) array,
                       key);
+}
+
+void CCTK_FCALL CCTK_FNAME (Util_TableGetInt8Array)
+                           (int *retval, const int *handle,
+                            const int *N_elements, CCTK_INT8 array[],
+                            ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (Util_TableGetInt8Array)
+                           (int *retval, const int *handle,
+                            const int *N_elements, CCTK_INT8 array[],
+                            ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (key)
+  *retval = Util_TableGetInt8Array (*handle, *N_elements, array, key);
+  free (key);
 }
 #endif
 
@@ -2587,6 +3395,20 @@ int Util_TableGetRealArray(int handle,
                       CCTK_VARIABLE_REAL, N_elements, (void *) array,
                       key);
 }
+
+void CCTK_FCALL CCTK_FNAME (Util_TableGetRealArray)
+                           (int *retval, const int *handle,
+                            const int *N_elements, CCTK_REAL array[],
+                            ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (Util_TableGetRealArray)
+                           (int *retval, const int *handle,
+                            const int *N_elements, CCTK_REAL array[],
+                            ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (key)
+  *retval = Util_TableGetRealArray (*handle, *N_elements, array, key);
+  free (key);
+}
 #ifdef CCTK_REAL_PRECISION_4
 
 int Util_TableGetReal4Array(int handle,
@@ -2596,6 +3418,20 @@ int Util_TableGetReal4Array(int handle,
   return internal_get(handle,
                       CCTK_VARIABLE_REAL4, N_elements, (void *) array,
                       key);
+}
+
+void CCTK_FCALL CCTK_FNAME (Util_TableGetReal4Array)
+                           (int *retval, const int *handle,
+                            const int *N_elements, CCTK_REAL4 array[],
+                            ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (Util_TableGetReal4Array)
+                           (int *retval, const int *handle,
+                            const int *N_elements, CCTK_REAL4 array[],
+                            ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (key)
+  *retval = Util_TableGetReal4Array (*handle, *N_elements, array, key);
+  free (key);
 }
 #endif
 
@@ -2608,6 +3444,20 @@ int Util_TableGetReal8Array(int handle,
                       CCTK_VARIABLE_REAL8, N_elements, (void *) array,
                       key);
 }
+
+void CCTK_FCALL CCTK_FNAME (Util_TableGetReal8Array)
+                           (int *retval, const int *handle,
+                            const int *N_elements, CCTK_REAL8 array[],
+                            ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (Util_TableGetReal8Array)
+                           (int *retval, const int *handle,
+                            const int *N_elements, CCTK_REAL8 array[],
+                            ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (key)
+  *retval = Util_TableGetReal8Array (*handle, *N_elements, array, key);
+  free (key);
+}
 #endif
 
 #ifdef CCTK_REAL_PRECISION_16
@@ -2618,6 +3468,20 @@ int Util_TableGetReal16Array(int handle,
   return internal_get(handle,
                       CCTK_VARIABLE_REAL16, N_elements, (void *) array,
                       key);
+}
+
+void CCTK_FCALL CCTK_FNAME (Util_TableGetReal16Array)
+                           (int *retval, const int *handle,
+                            const int *N_elements, CCTK_REAL16 array[],
+                            ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (Util_TableGetReal16Array)
+                           (int *retval, const int *handle,
+                            const int *N_elements, CCTK_REAL16 array[],
+                            ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (key)
+  *retval = Util_TableGetReal16Array (*handle, *N_elements, array, key);
+  free (key);
 }
 #endif
 
@@ -2632,6 +3496,20 @@ int Util_TableGetComplexArray(int handle,
                       CCTK_VARIABLE_COMPLEX, N_elements, (void *) array,
                       key);
 }
+
+void CCTK_FCALL CCTK_FNAME (Util_TableGetComplexArray)
+                           (int *retval, const int *handle,
+                            const int *N_elements, CCTK_COMPLEX array[],
+                            ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (Util_TableGetComplexArray)
+                           (int *retval, const int *handle,
+                            const int *N_elements, CCTK_COMPLEX array[],
+                            ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (key)
+  *retval = Util_TableGetComplexArray (*handle, *N_elements, array, key);
+  free (key);
+}
 #ifdef CCTK_COMPLEX_PRECISION_8
 
 int Util_TableGetComplex8Array(int handle,
@@ -2641,6 +3519,20 @@ int Util_TableGetComplex8Array(int handle,
   return internal_get(handle,
                       CCTK_VARIABLE_COMPLEX8, N_elements, (void *) array,
                       key);
+}
+
+void CCTK_FCALL CCTK_FNAME (Util_TableGetComplex8Array)
+                           (int *retval, const int *handle,
+                            const int *N_elements, CCTK_COMPLEX8 array[],
+                            ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (Util_TableGetComplex8Array)
+                           (int *retval, const int *handle,
+                            const int *N_elements, CCTK_COMPLEX8 array[],
+                            ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (key)
+  *retval = Util_TableGetComplex8Array (*handle, *N_elements, array, key);
+  free (key);
 }
 #endif
 
@@ -2653,6 +3545,20 @@ int Util_TableGetComplex16Array(int handle,
                       CCTK_VARIABLE_COMPLEX16, N_elements, (void *) array,
                       key);
 }
+
+void CCTK_FCALL CCTK_FNAME (Util_TableGetComplex16Array)
+                           (int *retval, const int *handle,
+                            const int *N_elements, CCTK_COMPLEX16 array[],
+                            ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (Util_TableGetComplex16Array)
+                           (int *retval, const int *handle,
+                            const int *N_elements, CCTK_COMPLEX16 array[],
+                            ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (key)
+  *retval = Util_TableGetComplex16Array (*handle, *N_elements, array, key);
+  free (key);
+}
 #endif
 
 #ifdef CCTK_COMPLEX_PRECISION_32
@@ -2663,6 +3569,20 @@ int Util_TableGetComplex32Array(int handle,
   return internal_get(handle,
                       CCTK_VARIABLE_COMPLEX16, N_elements, (void *) array,
                       key);
+}
+
+void CCTK_FCALL CCTK_FNAME (Util_TableGetComplex32Array)
+                           (int *retval, const int *handle,
+                            const int *N_elements, CCTK_COMPLEX32 array[],
+                            ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (Util_TableGetComplex32Array)
+                           (int *retval, const int *handle,
+                            const int *N_elements, CCTK_COMPLEX32 array[],
+                            ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (key)
+  *retval = Util_TableGetComplex32Array (*handle, *N_elements, array, key);
+  free (key);
 }
 #endif
 
