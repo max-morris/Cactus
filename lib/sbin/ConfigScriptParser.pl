@@ -29,7 +29,7 @@ sub ParseConfigScript
   # Run the configuration script in the config_dir folder
   if ($lang ne '' && $script ne '')
   {
-    @data=`$lang $thorns{$thorn}/$script`;
+    @data=`$lang $thorns->{$thorn}/$script`;
   }
   $exit_value  = $? >> 8;
   $signal_num  = $? & 127;
