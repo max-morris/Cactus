@@ -92,7 +92,7 @@ case insensitive.
 The interface configuration file consists of
 \begin{itemize}
 \item a header block giving details
-of the thorns relationship with other thorns
+of the thorn's relationship with other thorns.
 \item a series of blocks
 listing the thorn's global variables.
 \item details of other interactions with thorns:
@@ -120,49 +120,49 @@ where
         A thorn cannot inherit from itself. Inheritance is associative and
         recursive, but not commutative.
 \item{} Being a friend of another implementation makes all that
-        implementations
+        implementation's
         protected variables available to your thorn. At least one thorn
         providing an implementation for each friend must be present at
         compile time. A thorn cannot be its own friend. Friendship is
         associative and commutative. Note that your thorn is also a friend
-        of all your thorns friend's friends.
+        of all your thorn's friends' friends.
 \end{itemize}
 
 The thorn's variables are collected into groups. This is not only
 for convenience, but for collecting like variables together.
-Storage assignment, communication assignment and ghostzone synchronization
-takes place for groups only.
-
+Storage assignment, communication assignment, and ghostzone synchronization
+take place for groups only.
 
 The thorn's variables are defined by:
 {\t
 \begin{verbatim}
 [<access>:]
 
-<data_type> <group_name> [TYPE=<group_type>] [DIM=<dim>] [TIMELEVELS=<num>] [SIZE=<size in each direction>] [DISTRIB=<distribution_type>] [GHOSTSIZE=<ghostsize>] [STAGGER=<stagger-specification>]
+<data_type> <group_name> [TYPE=<group_type>] [DIM=<dim>] [TIMELEVELS=<num>] 
+[SIZE=<size in each direction>] [DISTRIB=<distribution_type>]  
+[GHOSTSIZE=<ghostsize>] [STAGGER=<stagger-specification>]
 [{
-   <variable_name>[,]<variable_name>
-   <variable_name>
-}] ["<group_description>"]
+ [ <variable_name>[,]<variable_name>
+   <variable_name> ]
+} "<group_description>"]
 \end{verbatim}}
+(The options following <group\_name> must all appear on one line.)
 
 \begin{itemize}
 \item{} {\t access} defines which thorns can use the following
         groups of variables. {\t access} can be either
         {\t public}, {\t protected} or {\t private}.
-\item{} {\t data\_type} defines the data type of the variables in the group.
-Supported data types are {\t BOOLEAN}, {\t INTEGER}, {\t CHAR} and {\t REAL}.
-(In the future {\t COMPLEX} will also be supported.)
-\item{} {\t group\_name} must be a alpha-numeric name (which may also
+\item{} {\t data\_type} defines the data type of the variables in the
+group.  Supported data types are {\t INT}, {\t CHAR}, {\t REAL} and
+{\t COMPLEX}.
+\item{} {\t group\_name} must be an alpha-numeric name (which may also
 contain underscores) which is unique
 within the scope of the thorn. A group name is compulsory.
 \item{} {\t TYPE} designates the kind of variables held by the group.
 The choices are {\t GF}, {\t ARRAY} or {\t SCALAR}. This field is
 optional, with the default variable type being {\t SCALAR}.
-\item{} {\t DIM} defines the spatial dimension if the group is
-	of type {\t ARRAY} or {\t GF}, and can take the value
-	{\t 1}, {\t 2}, or {\t 3}.
-The default value is {\t DIM=3}.
+\item{} {\t DIM} defines the spatial dimension of the {\t ARRAY} or
+{\t GF}.  The default value is {\t DIM=3}.
 \item{} {\t TIMELEVELS} defines the number of timelevels a group has if
         the group is of type {\t ARRAY} or {\t GF}, and can take any positive
         value.
@@ -177,18 +177,22 @@ The default value is {\t DIM=3}.
         of the letters {\tt M}, {\tt C}, {\tt P} depending on whether the layout in
         that direction is on the {\tt M}inus face, {\tt C}entre, or {\tt P}lus face
         of the cell in that dimension.
-\item{} The (optional) block following the group declaration line contains a list of
-        variables contained in the group. All variables in a group have
-        the same data type, variable type and dimension. The list can be
-        separated by spaces, commas, or new lines. The variable names
-        must be unique within the scope of the thorn.
-        A variable can only be a member of
-        one group. The block must be delimited by brackets on new lines.
-        If no block is given after a group declaration line, a
-        variable with the same name as the group is created.
-\item{} An optional description of the group can be given on the last line,
-        at the moment this description is not used for any purpose.
+\item{} The (optional) block following the group declaration line
+contains a list of variables contained in the group. All variables in
+a group have the same data type, variable type and dimension. The list
+can be separated by spaces, commas, or new lines. The variable names
+must be unique within the scope of the thorn.  A variable can only be
+a member of one group. The block must be delimited by brackets on new
+lines.  If no block is given after a group declaration line, a
+variable with the same name as the group is created.
+\item{} An optional description of the group can be given on the last
+	line, at the moment this description is not used for any purpose.
+	(Note that the variable block is required if you want to give a
+	group description.)
 \end{itemize}
+
+The process of sharing code among thorns using include files is
+discussed in Section \ref{sec:includefiles}.
 
 \section{param.ccl}
 \label{sec:pa}
@@ -284,7 +288,7 @@ The schedule configuration files consists of
         thorn to be called at a specified time during program
         execution. Statements within the schedule block can
         be used to switch on storage and communication for groups
-        of variables during the duration that the subroutine is called.
+        of variables for the duration that the subroutine is called.
 \item{} Conditional statements
 \end{itemize}
 
@@ -300,7 +304,7 @@ Each {\it schedule block} in the file {\t schedule.ccl} must have
 the syntax:
 {\t
 \begin{verbatim}
-schedule [GROUP] <function name> AT|IN <time> [BEFORE|AFTER <group>] [WHILE <variable>] [AS <alias>]
+schedule <function name> AT|IN <time> [BEFORE|AFTER <group>] [WHILE <variable>] [AS <alias>]
 {
   LANG: <language>
   [STORAGE:       <group>,<group>...]
@@ -311,8 +315,9 @@ schedule [GROUP] <function name> AT|IN <time> [BEFORE|AFTER <group>] [WHILE <var
 \end{verbatim}
 }
 
-The keywords {\t STORAGE} and {\t COMMUNICATION} as well as the options keywords
-inside of a schedule block are significant with their first four letters.
+The keywords {\t STORAGE} and {\t COMMUNICATION} as well as the
+options keywords inside of a schedule block are significant to their
+first four letters.
 
 Any schedule block or assignment statements can be optionally
 surrounded by conditional {\t if-elseif-else}
@@ -787,7 +792,7 @@ home directory which provides menus to pick arrangements and thorns from.
 Finding your way around in the Cactus structure can be pretty
 difficult to handle. To make life easier there is support for TAGS,
 which lets you browse the code easily from within Emacs/XEmacs or vi.
-A TAGS database can be generated with by gmake:
+A TAGS database can be generated with gmake:
 
 \section{TAGS with emacs}
 \label{sec:tawiem}
@@ -797,7 +802,7 @@ table to be used within Emacs. This database can be accessed within
 emacs if you add either of the following lines to your {\tt .emacs} file:\\
 {\tt (setq tags-file-name "CACTUS\_HOME/TAGS")} XOR \\
 {\tt (setq tag-table-alist '(("CACTUS\_HOME" . "CACTUS\_HOME/TAGS")))}\\
-where {\tt CACTUS\_HOME } is your Cactus directory.\\
+where {\tt CACTUS\_HOME} is your Cactus directory.\\
 
 You can now easily navigate your Cactus Flesh and Toolkits by searching for
 functions or ``tags'':
@@ -863,7 +868,6 @@ Return to previous location before jump to tag (not widely implemented).
 \label{chap:th}
 
 This section still needs to be written.
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
