@@ -949,5 +949,6 @@ void CCTK_FCALL CCTK_FNAME(CCTK_FortranString)
 
   *nchar = strlen(*cstring);
 
+  free(fstring);
 }
                            
