@@ -384,6 +384,12 @@ AC_LANG_CPLUSPLUS
 CCTK_CHECK_HEADERS(vector vector.h)
 AC_LANG_RESTORE
 
+AC_LANG_SAVE
+AC_LANG_CPLUSPLUS
+AC_TRY_COMPILE(, bool foo;,
+AC_DEFINE(HAVE_BOOL))
+AC_LANG_RESTORE
+
 dnl Misc stuff
 
 dnl Do we need to build the GNU getopt and regex stuff ?

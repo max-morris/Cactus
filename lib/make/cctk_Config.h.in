@@ -141,6 +141,18 @@
 /* Define the type of a 4 byte float */
 #undef CCTK_REAL4
 
+#ifdef __cplusplus
+
+/* Some C++ compilers don't have bool ! */
+#undef HAVE_BOOL
+
+#ifndef HAVE_BOOL
+typedef enum {false, true} bool;
+#endif /* HAVE_BOOL */
+
+#endif /* __cplusplus */
+
+
 #endif /*CCODE */
 
 #ifdef FCODE
