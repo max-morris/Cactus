@@ -10,11 +10,11 @@
 
 #include "CactusTimers.h"
 #include "cctk.h"
+#include "cGH.h"
+
 
 #ifndef _FLESH_H_
 #define _FLESH_H_
-
-#include "cGH.h"
 
 /*  Typedefs */
 
@@ -34,10 +34,19 @@ typedef struct
 /* Function prototypes */
 
 #ifdef __cplusplus
-extern "C" {
+extern "C" 
+{
 #endif
 
 int InitialiseCactus(int *, char ***, tFleshConfig *);
+
+int InitialiseSubsystemDefaults(void);
+
+void CactusBanner(void);
+
+int InitialiseScheduler(tFleshConfig *ConfigData);
+
+void CCTK_PrintBanners(void);
 
 int CCTKi_SetParameter(const char *parameter, const char *value);
 
@@ -64,10 +73,19 @@ int CCTK_VarTypeNumber(const char *type);
 int CCTK_GroupTypeNumber(const char *type);
 
 int CCTKi_BindingsImplementationsInitialise(void);
+int CCTKi_BindingsScheduleInitialise(void);
+int CCTKi_BindingsVariablesInitialise(void);
+int CCTKi_BindingsParametersInitialise(void);
+
+int CCTKi_RegisterDefaultTimerFunctions(void);
 
 int CCTK_MainLoopIndex (void);
 
 int CCTK_SetMainLoopIndex (int main_loop_index);
+
+int SetupMainFunctions(void);
+int SetupCommFunctions(void);
+int SetupIOFunctions(void);
 
 #ifdef __cplusplus
 }

@@ -19,6 +19,7 @@
 #include "cctk_Misc.h"
 #include "cctk_Groups.h"
 #include "cctk_WarnLevel.h"
+#include "cctk_ParameterFunctions.h"
 
 /*#define DEBUG_GROUPS*/
 

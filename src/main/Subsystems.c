@@ -7,7 +7,9 @@
    @enddesc 
  @@*/
 
+static char *rcsid = "$Header$";
 
+#include "cctk_Flesh.h"
 
 
  /*@@

@@ -12,7 +12,8 @@
 #define _CCTK_WARNLEVEL_H_
 
 #ifdef __cplusplus 
-extern "C" {
+extern "C" 
+{
 #endif
 
 void CCTK_Warn(int level, 
@@ -27,6 +28,8 @@ void CCTK_VWarn(int level,
                 const char *format, ...);
 void CCTK_ParamWarn(const char *thorn, const char *message);
 void CCTK_Info(const char *thorn, const char *message);
+
+void CCTKi_NotYetImplemented(const char *message);
  
 #ifdef __cplusplus 
 }

@@ -7,16 +7,19 @@
    @enddesc 
  @@*/
 
+static char *rcsid = "$Header$";
+
 #include <stdio.h>
 
 #include "cctk.h"
 #include "cctk_Flesh.h"
+
+#include "cctk_schedule.h"
 #include "cctki_schedule.h"
 
 int ProcessCommandLine(int *inargc, char ***inargv, tFleshConfig *ConfigData);
 int ProcessEnvironment(int *argc, char ***argv,tFleshConfig *ConfigData);
 
-static char *rcsid = "$Header$";
 
 
  /*@@

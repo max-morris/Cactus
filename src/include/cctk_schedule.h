@@ -50,6 +50,8 @@ int CCTK_ScheduleTraverse(const char *where, void *GH);
 
 int CCTK_ScheduleGHInit(void *GH);
 
+int CCTK_SchedulePrint(const char *where);
+int CCTK_SchedulePrintTimes(const char *where);
 
 #ifdef __cplusplus
 }

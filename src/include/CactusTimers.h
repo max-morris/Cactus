@@ -73,7 +73,7 @@ t_TimerInfo *CCTK_TimerCreateInfo(void);
 void CCTK_TimerDestroyInfo(t_TimerInfo *info);
 
 #ifdef __cplusplus
-           }
+}
 #endif
 
 #define INITIALISATION 0

@@ -7,6 +7,8 @@
    @enddesc 
  @@*/
 
+const char *rcsid="$Header$";
+
 #include "config.h"
 
 #include <stdio.h>
@@ -23,7 +25,14 @@
 #include "ParameterBindings.h"
 #include "cctk_ParameterFunctions.h"
 
-const char *rcsid="$Header$";
+
+#include "gnu_regex.h"
+
+int CCTK_RegexMatch(const char *string, 
+                    const char *pattern, 
+                    const int nmatch,
+                    regmatch_t *pmatch);
+
 
 int STR_cmpi(const char *string1, const char *string2);
 

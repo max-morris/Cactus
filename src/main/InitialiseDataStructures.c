@@ -7,6 +7,8 @@
    @enddesc 
  @@*/
 
+static char *rcsid = "$Id$";
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -18,8 +20,7 @@
 
 #include "cctk_ActiveThorns.h"
 
-static char *rcsid = "$Id$";
-
+#include "cctki_Cache.h"
 
  /*@@
    @routine    InitialiseDataStructures
@@ -59,6 +60,7 @@ int InitialiseDataStructures(tFleshConfig *ConfigData)
   /*CCTKi_BindingsScheduleInitialise();*/
 
   CCTKi_ActivateThorn("Cactus");
+  CCTKi_SetupCache();
 
   return 0;
 }

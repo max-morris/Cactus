@@ -38,7 +38,7 @@ void TreePrintNodes(t_tree *root, int depth, void (*print_node)(void *, int));
 t_tree *TreeFindNode(t_tree *root, void *data, int (*compare)(const void *, const void *));
 
 #ifdef _cplusplus
-           }
+}
 #endif
 
 #endif

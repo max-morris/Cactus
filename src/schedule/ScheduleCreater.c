@@ -492,8 +492,12 @@ static int ScheduleSortGroup(t_sched_group *group)
   signed char **array;
   int number;
   int mod;
-  int i, j;
+  int i;
   int errcode;
+
+#ifdef DEBUG_SCHEDULAR
+  int j;
+#endif
 
   /* Create the data staructures */
   array      = CCTKi_ScheduleCreateArray(group->n_scheditems);

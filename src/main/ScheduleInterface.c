@@ -129,6 +129,17 @@ static int CCTKi_SchedulePrintTimesFunction(void *function, t_attribute *attribu
 static void CCTKi_SchedulePrintTimerInfo(t_TimerInfo *info);
 static void CCTKi_SchedulePrintTimerHeaders(t_TimerInfo *info);
 
+
+/********************************************************************
+ ********************* Other Routine Prototypes *********************
+ ********************************************************************/
+
+/* FIXME: these should be renamed and put in a header somewhere */
+
+int CCTKi_rfrTriggerSaysGo(cGH *GH, int variable);
+int CCTKi_rfrTriggerAction(void *GH, int variable);
+
+
 /********************************************************************
  *********************     Local Data   *****************************
  ********************************************************************/
