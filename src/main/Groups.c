@@ -90,6 +90,8 @@ static cGroupDefinition *CCTKi_SetupGroup(const char *implementation,
                                           const char *name, 
                                           int n_variables);
 
+static CCTK_INT **CCTKi_SetupGroupSize(int dimension, const char *thorn, const char *sizestring);
+
 
  /*@@
    @routine    CCTK_GroupIndex
@@ -198,7 +200,7 @@ void CCTK_DumpGroupInfo(void) {
 
 
  /*@@
-   @routine    CCTK_CreateGroup
+   @routine    CCTKi_CreateGroup
    @date       Thu Jan 14 15:25:54 1999
    @author     Tom Goodale
    @desc 
@@ -314,6 +316,9 @@ int CCTKi_CreateGroup(const char *gname, const char *thorn, const char *imp,
     else
     {
       if (dimension > maxdim) maxdim=dimension;
+
+      group->size = CCTKi_SetupGroupSize(dimension, thorn, size);
+
     }
   }
   else
@@ -814,7 +819,9 @@ char *CCTK_FullName(int var)
 
 int CCTK_GroupTypeNumber(const char *type)
 {
-  int retval=-1;
+  int retval;
+
+  retval = -1;
 
   if(!strcmp(type, "SCALAR"))
   {
@@ -858,7 +865,9 @@ void  FMODIFIER FORTRAN_NAME(CCTK_GroupTypeNumber)(int *number,ONE_FORTSTRING_AR
 @@*/
 int CCTK_VarTypeNumber(const char *type)
 {
-  int retval=-1;
+  int retval;
+
+  retval = -1;
 
   if(!strcmp(type, "INT"))
   {
@@ -907,8 +916,10 @@ void  FMODIFIER FORTRAN_NAME(CCTK_VarTypeNumber)(int *number,ONE_FORTSTRING_ARG)
 @@*/
 int CCTK_GroupScopeNumber(const char *type)
 {
-  int retval=-1;
+  int retval;
 
+  retval = -1;
+ 
   if(!strcmp(type, "PRIVATE"))
   {
     retval = GROUP_PRIVATE;
@@ -1090,14 +1101,18 @@ char *CCTK_GroupName(int group)
 
 int CCTK_FirstVarIndexI(int group)
 {
+  int retval;
+
   if (0 <= group && group<n_groups)
   {
-    return groups[group].variables[0].number;
+    retval = groups[group].variables[0].number;
   }
   else
   {
-    return -1;
+    retval = -1;
   }
+
+  return retval;
 }
 
 void  FMODIFIER FORTRAN_NAME(CCTK_FirstVarIndexI)(int *first, int *group)
@@ -1114,14 +1129,18 @@ int CCTK_FirstVarIndex(const char *groupname)
 
 int CCTK_NumVarsInGroupI(int group)
 {
+  int retval;
+
   if (0 <= group && group<n_groups)
   {
-    return groups[group].n_variables;
+    retval =  groups[group].n_variables;
   }
   else
   {
-    return -1;
+    retval = -1;
   }
+
+  return retval;
 }
 
 
@@ -1356,4 +1375,95 @@ void CCTK_PrintVar(int var)
 void  FMODIFIER FORTRAN_NAME(CCTK_PrintVar)(int *var)
 {
   CCTK_PrintGroup(*var);
+}
+
+ /*@@
+   @routine    CCTKi_SetupGroupSize
+   @date       Sun Nov 28 12:38:38 1999
+   @author     Tom Goodale
+   @desc 
+   Extracts the size of an array group from a comma-seperated list.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+static CCTK_INT **CCTKi_SetupGroupSize(int dimension, const char *thorn, const char *sizestring)
+{
+  int i;
+  CCTK_INT **size_array;
+  const char *last_comma;
+  const char *next_comma;  
+  char tmp[200];
+  int type;
+
+  if(strlen(sizestring))
+  {
+    size_array = (CCTK_INT **)malloc(dimension*sizeof(CCTK_INT *));
+    
+    next_comma = sizestring;
+    
+    if(size_array)
+    {
+      for(i=0; i < dimension; i++)
+      {
+        {
+          last_comma = next_comma[0] == ',' ? next_comma+1 : next_comma;
+          next_comma = strstr(last_comma, ",");
+          
+          if(next_comma)
+          {
+            strncpy(tmp, last_comma, (next_comma-last_comma));
+            tmp[next_comma-last_comma] = '\0';
+          }
+          else
+          {
+            strcpy(tmp, last_comma);
+          }
+
+          size_array[i] = (CCTK_INT *)ParameterGet(tmp, thorn, &type);
+        }
+      }
+    }
+  }
+  else
+  {
+    /* No size specified */
+    size_array = NULL;
+  }
+
+  return size_array;
+}
+
+ /*@@
+   @routine    CCTK_GroupSizesI
+   @date       Sun Nov 28 12:56:44 1999
+   @author     Tom Goodale
+   @desc 
+   Returns the size array for a group.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+CCTK_INT **CCTK_GroupSizesI(int group)
+{
+  CCTK_INT **retval;
+
+  if (0 <= group && group<n_groups)
+  {
+    retval = groups[group].size;
+  }
+  else
+  {
+    retval = NULL;
+  }
+
+  return retval;
 }
