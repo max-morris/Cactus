@@ -508,17 +508,18 @@ sub Output_Top
 print OUT  <<EOC;
 \\documentclass{report}
 
-\\usepackage[
-pdftitle={Cactus Thorn Guide},
-pdfpagelabels,
-pdfstartview=FitV,
-hypertexnames=false,
-plainpages=false,
-colorlinks=true,
-linkcolor=blue,
-citecolor=blue,
-urlcolor=blue
-]{hyperref}
+\% no hyperref, because it does not work with minitoc on some machines
+\%\\usepackage[
+\%pdftitle={Cactus Thorn Guide},
+\%pdfpagelabels,
+\%pdfstartview=FitV,
+\%hypertexnames=false,
+\%plainpages=false,
+\%colorlinks=true,
+\%linkcolor=blue,
+\%citecolor=blue,
+\%urlcolor=blue
+\%]{hyperref}
 
 \\usepackage{$cactus_style_file}
 
