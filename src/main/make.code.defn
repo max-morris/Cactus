@@ -17,6 +17,7 @@ DefaultTimers.c\
 Dummies.c\
 flesh.cc\
 FortranWrappers.c\
+Functions.c\
 GHExtensions.c\
 Groups.c\
 GroupsOnGH.c\
