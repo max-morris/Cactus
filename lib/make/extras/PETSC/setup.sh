@@ -29,14 +29,18 @@ if test -z "$PETSC_DIR" ; then
      exit 2
   fi
   echo "  Found a PETSc package in $PETSC_DIR"
+else
+  echo "  Using PETSc package in $PETSC_DIR"
 fi
 
 
 # Check what architecture is available
 if test -z "$PETSC_ARCH" ; then
   echo "  PETSC_ARCH not set... Determining suitable PETSc architecture"
-  PETSC_ARCH=`/bin/ls $PETSC_DIR/lib/libO | cut -f1`
+  PETSC_ARCH=`/bin/ls -1 $PETSC_DIR/lib/libO | head -n1`
   echo "  Found PETSc architecture '$PETSC_ARCH'"
+else
+  echo "  Using PETSc architecture '$PETSC_ARCH'"
 fi
 
 
@@ -45,6 +49,7 @@ case "$PETSC_ARCH" in
   IRIX64) PETSC_ARCH_LIBS='fpe blas complib.sgimath' ;;
   linux)  PETSC_ARCH_LIBS='flapack fblas g2c mpich'  ;;
   linux_intel) PETSC_ARCH_LIBS='mkl_lapack mkl_def guide' ;;
+  rs6000_64) PETSC_ARCH_LIBS='essl' ;;
   *)           echo "  No PETSc support for architecture '$PETSC_ARCH' !"
                echo '  Please file a bug report to cactusmaint@cactuscode.org.'
                exit 2
