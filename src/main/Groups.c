@@ -760,7 +760,7 @@ void  FMODIFIER FORTRAN_NAME(CCTK_GroupIndexFromVar)(int *index,ONE_FORTSTRING_A
    @endhistory 
 
 @@*/
-char *CCTK_ImpFromVarI(int var)
+const char *CCTK_ImpFromVarI(int var)
 {
   char *retval;
   int group_num;
@@ -798,7 +798,7 @@ char *CCTK_ImpFromVarI(int var)
 char *CCTK_FullName(int var)
 {
   char *impname;
-  char *varname;
+  const char *varname;
   int group_num;
   char *fullname=NULL;
 
@@ -963,7 +963,7 @@ void  FMODIFIER FORTRAN_NAME(CCTK_VarTypeNumber)(int *number,ONE_FORTSTRING_ARG)
    @endhistory
 
 @@*/
-char *CCTK_VarTypeName(int vtype)
+const char *CCTK_VarTypeName(int vtype)
 {
   char *retval;
 
@@ -1121,7 +1121,7 @@ int CCTK_GroupData(int group, cGroup *gp)
 
 @@*/
 
-char *CCTK_VarName(int varnum)
+const char *CCTK_VarName(int varnum)
 {
   char *name;
   int group;

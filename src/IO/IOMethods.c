@@ -795,7 +795,7 @@ int CCTKi_rfrTriggerSaysGo(cGH *GH, int variable)
 
 int CCTKi_rfrTriggerAction(void *GH, int variable)
 {
-  char *varname;
+  const char *varname;
   char *fullvarname;
   int handle;
   int nmethods;

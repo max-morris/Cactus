@@ -51,7 +51,7 @@ int        CCTK_GroupTypeFromVarI(int var);
 int        CCTK_GroupTypeNumber(const char *type);
 int        CCTK_GroupTypeI(int group);
 
-char      *CCTK_ImpFromVarI(int var);
+const char *CCTK_ImpFromVarI(int var);
 
 int        CCTK_MaxDim(void);
 
@@ -63,10 +63,10 @@ int        CCTK_NumVarsInGroup(const char *group);
 int        CCTK_NumVarsInGroupI(int group);
 
 int        CCTK_VarIndex(const char *variablename);
-char      *CCTK_VarName(int varnum);
+const char *CCTK_VarName(int varnum);
 int        CCTK_VarTypeI(int var);
 int        CCTK_VarTypeNumber(const char *type);
-char      *CCTK_VarTypeName(int vartype);
+const char *CCTK_VarTypeName(int vartype);
 
 int        CCTK_VarTypeSize(int vtype);
 
