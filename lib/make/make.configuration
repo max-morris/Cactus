@@ -18,12 +18,26 @@ FLESH_DIR = $(CCTK_HOME)/src
 
 # Some empty strings yye00 fills from configuration.ccl files
 #ConfigInc =
-#ConfigLibdir = 
-#ConfigLib =  
+#ConfigLibdir =
+#ConfigLib =
 
 # Scratch build area - need this to make sure F90 module files end up all
 # in one directory.
 export SCRATCH_BUILD=$(TOP)/scratch
+
+
+# Check if the user specified options which are only used at configure time
+# We only check some obvious configuration options here.
+ifneq ($(strip $(DEBUG)), )
+  $(warning "You specified 'DEBUG=$(DEBUG)'. This option is evaluated only at configuration time and will be ignored at compile time.")
+endif
+ifneq ($(strip $(OPTIMISE)), )
+  $(warning "You specified 'OPTIMISE=$(OPTIMISE)'. This option is evaluated only at configuration time and will be ignored at compile time.")
+endif
+ifneq ($(strip $(OPTIMIZE)), )
+  $(warning "You specified 'OPTIMIZE=$(OPTIMIZE)'. This option is evaluated only at configuration time and will be ignored at compile time.")
+endif
+
 
 DATESTAMP = $(CCTK_HOME)/src/datestamp.c
 
@@ -83,7 +97,7 @@ endif
 # pretty confusing during a make clean !
 
 ifeq ($(strip $(MAKECMDGOALS)),)
--include $(CONFIG)/make.thornlist 
+-include $(CONFIG)/make.thornlist
 endif
 
 ifeq ($(strip $(MAKECMDGOALS)), utils)
@@ -96,7 +110,7 @@ endif
 
 # Allow each thorn to include some global definitions
 ifneq ($(strip $(THORNS)),)
--include $(THORNS:%=$(PACKAGE_DIR)/%/src/make.configuration.defn) 
+-include $(THORNS:%=$(PACKAGE_DIR)/%/src/make.configuration.defn)
 endif
 
 ifeq ($(strip $(UTILS)),)
