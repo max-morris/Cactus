@@ -125,9 +125,9 @@ int CCTK_ParameterSet (const char *name,      /* The name of the parameter  */
                        const char *value);    /* The value of the parameter */
 
 /* get the data pointer to and type of a parameter's value */
-void *CCTK_ParameterGet (const char *name,    /* The name of the parameter  */
-                         const char *thorn,   /* The originating thorn      */
-                         int *type);          /* Holds type of parameter    */
+const void *CCTK_ParameterGet (const char *name,  /* The name of the parameter*/
+                               const char *thorn, /* The originating thorn    */
+                               int *type);        /* Holds type of parameter  */
 
 /* get the string representation of a parameter's value
    (string should be freed afterwards) */
