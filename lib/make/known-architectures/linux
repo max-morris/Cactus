@@ -200,7 +200,7 @@ else
          : ${LIBDIRS='$(IA32ROOT)/lib'}
          : ${LDFLAGS='-Qy $(IA32ROOT)/lib/icrt.link'}
        fi
-       if test "$LD" != "ecc" -a -n "$IA64ROOT" ; then
+       if test "$LD" != "ecc" -a "$LD" != "ecpc" -a -n "$IA64ROOT" ; then
          : ${LIBDIRS='$(IA64ROOT)/lib'}
          : ${LDFLAGS='-Qy $(IA64ROOT)/lib/icrt.link'}
        fi
