@@ -1,7 +1,7 @@
 
 Cactus Code Frequently Asked Questions
 
-$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.21 2001-09-14 15:17:03 allen Exp $
+$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.22 2001-09-17 16:06:50 allen Exp $
 
 Also available at http://www.cactuscode.org/Documentation/FAQ
 
@@ -318,4 +318,27 @@ Also available at http://www.cactuscode.org/Documentation/FAQ
 
 --------------------------------------------------------------------------------
 
+23. Are there grid scalars of type STRING ?
+
+    No, there is only a CCTK_CHAR type. You can however define an array
+    with DISTRIB=CONSTANT with a maximum length.
+
+--------------------------------------------------------------------------------
+
+24. How do I checkout an earlier version of Cactus ?
+
+    Cactus is "tagged" in CVS for each release, so to checkout for example
+    the flesh for Beta 10 use:
+
+    cvs -d :pserver:cvs_anon@cvs.cactuscode.org:/cactus checkout -r \
+		Cactus_4_0_Beta_10 Cactus
+
+    To checkout from a particular date, for example the 7th July 2000, use
+
+    cvs -d :pserver:cvs_anon@cvs.cactuscode.org:/cactus checkout -D \
+                "7 July 2000"
+
+    Also look at FAQ No. 18
+
+--------------------------------------------------------------------------------    
 
