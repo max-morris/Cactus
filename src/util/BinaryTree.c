@@ -200,7 +200,7 @@ void TreePrintNodes(t_tree *root, int depth, void (*print_node)(void *, int))
 
 /* Stuff to test the routines. */
 
-#define TEST_BinaryTree
+/*#define TEST_BinaryTree*/
 #ifdef TEST_BinaryTree
 
 typedef struct 
