@@ -42,7 +42,7 @@ endef
 
 # Define how to do a F77 compilation
 define PREPROCESS_F77
-$(CPP) $(CPPFLAGS) $< | $(PERL) $(CCTK_HOME)/lib/sbin/f_file_processor.pl $(CONFIG) > $(notdir $<)
+cat $< | $(CPP) $(CPPFLAGS) $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DFCODE - | $(PERL) $(CCTK_HOME)/lib/sbin/f_file_processor.pl > $(notdir $<)
 endef
 
 define COMPILE_F77
@@ -54,7 +54,7 @@ endef
 
 # Define how to do a F90 compilation
 define PREPROCESS_F90
-$(CPP) $(CPPFLAGS) $< | $(PERL) $(CCTK_HOME)/lib/sbin/f_file_processor.pl $(CONFIG) > $(notdir $<)
+cat $< | $(CPP) $(CPPFLAGS) $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DFCODE - | $(PERL) $(CCTK_HOME)/lib/sbin/f_file_processor.pl > $(notdir $<)
 endef
 
 define COMPILE_F90
@@ -105,7 +105,7 @@ endef
 	@echo Postprocessing $<
 	$(POSTPROCESS_F77)
 
-%.d: $(SRCDIR)/%.F77
+%.d: $(SRCDIR)/%.F77 
 	$(CPP) -M $(F77FLAGS) $< $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DFCODE > $@
 
 # Build rules for F90
@@ -120,5 +120,5 @@ endef
 	$(POSTPROCESS_F90)
 
 %.d: $(SRCDIR)/%.F
-	$(CPP) -M $(F77FLAGS) $< $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DFCODE > $@
+	cat $< | $(CPP) -M $(F90FLAGS) $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DFCODE - > $@
 
