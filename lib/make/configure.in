@@ -11,7 +11,7 @@ dnl Process this file with autoconf to produce a configure script.
 
 AC_REVISION($Id$)
 
-dnl It looks like older versions of Autoconf don't quite qork properly under 
+dnl It looks like older versions of Autoconf don't quite work properly under 
 dnl cygwin.
 AC_PREREQ(2.13)
 
@@ -28,6 +28,13 @@ CCTK_CONFIG_STAGE="preferred-compilers"
 
 if test -r $srcdir/known-architectures/$host_os ; then
 . $srcdir/known-architectures/$host_os
+else
+  echo "Warning: Cactus has not been previously compiled on this architecture ($host_os)"
+  echo "         The currently known architectures can be found in $srcdir/known-architectures"
+  echo "         The configuration will try to do its best to work things out."
+  echo "         If you create a known-architectures file for this architecture, please send it to"
+  echo "                            cactusmaint@cactuscode.org"
+  echo "         and we'll include it in the next release."
 fi
 
 dnl Checks for programs.
@@ -227,6 +234,7 @@ AC_SUBST(F77FLAGS)
 dnl Checks for library functions.
 
 AC_CHECK_FUNCS(mkdir) 
+AC_CHECK_FUNCS(scandir) 
 
 dnl Check some timing stuff
 
@@ -239,6 +247,7 @@ dnl Include file stuff
 CCTK_CHECK_HEADERS(sys/time.h)
 CCTK_CHECK_HEADERS(unistd.h)
 CCTK_CHECK_HEADERS(string.h)
+CCTK_CHECK_HEADERS(wchan.h)
 
 AC_HEADER_TIME
 

@@ -70,12 +70,14 @@
 /* Various library functions */
 
 #undef HAVE_MKDIR
+#undef HAVE_SCANDIR
 
 /* Some include things */
 #undef TIME_WITH_SYS_TIME
 #undef HAVE_TIME_H
 #undef HAVE_UNISTD_H
 #undef HAVE_STRING_H
+#undef HAVE_WCHAN_H
 
 /* Timing stuff */
 
