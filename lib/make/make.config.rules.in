@@ -105,10 +105,10 @@ endef
 	$(POSTPROCESS_CXX)
 
 %.d: $(SRCDIR)/%.cc
-	$(CC) -E -M $(CPPFLAGS) $< $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DCCODE > $@
+	$(CXX) -E -M $(CPPFLAGS) $< $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DCCODE > $@
 
 %.d: $(SRCDIR)/%.C
-	$(CC) -E -M $(CPPFLAGS) $< $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DCCODE > $@
+	$(CXX) -E -M $(CPPFLAGS) $< $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DCCODE > $@
 
 # Build rules for F77
 
