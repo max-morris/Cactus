@@ -35,8 +35,8 @@ while (<>) {
     s/\&\&\s*/\n      /g;
     s/\&\!\s*/\n/g;
 
-    # Get rid of standard c C comments
-    s/^[cC].*$/\n/g;
+    # Get rid of standard c C, or even ! comments
+    s/^[cC!].*$/\n/g;
     
     # Get rid of ! comments : a bit tricky as ! may appear inside strings
     s/(.)![^'"]*$/\1\n/g;
