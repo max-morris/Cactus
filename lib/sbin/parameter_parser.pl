@@ -103,6 +103,7 @@ sub parse_param_ccl
     local($linenum, $line, $block, $type, $variable, $description, $nerrors);
     local($current_friend, $new_ranges, $new_desc);
     local($data, %parameter_db);
+    local(%friends);
 
 #   The default block is private.
     $block = "PRIVATE";
@@ -123,6 +124,8 @@ sub parse_param_ccl
 
 #               It's a friend block.
 		$block .= " \U$current_friend\E";
+#               Remember this friend, but make the memory unique.
+		$friends{"\U$current_friend\E"} = 1;
 	    }
 	}
 	elsif($line =~ m:(EXTENDS )?\s*(INTEGER|REAL|KEYWORD|STRING)\s*([a-zA-Z]+[a-zA-Z0-9_]*) \s*(\"[^\"]*\"):i)
@@ -196,6 +199,8 @@ sub parse_param_ccl
 	    }
 	}
     }
+
+    $parameter_db{"\U$implementations\E FRIEND implementations"} = join(" ", keys %friends);
 
     return %parameter_db;
 }

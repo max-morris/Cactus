@@ -53,28 +53,66 @@ foreach $line (@parameter_structure)
   print "$line\n";
 }
 
-@parameter_declarations = &create_parameter_declarations(%parameter_database);
+@c_parameter_declarations = &create_c_parameter_declarations("test2",%parameter_database);
 
+foreach $line (@c_parameter_declarations)
+{
+  print "$line\n";
+}
 
 #&print_parameter_database(%parameter_database);
 
 #&print_interface_database(%interface_database);
 
-sub create_parameter_declarations
+sub create_c_parameter_declarations
 {
-  local(@paramater_database) = @_;
+  local($implementation,%parameter_database) = @_;
+  local(@declarations);
+  local($line);
+  local($type, $type_string, $friend, $block);
 
-  foreach $entry (@parameter_database)
+  # Deal with variables defined in this thorn. 
+  foreach $block ("PUBLIC", "PRIVATE", "PROTECTED")
   {
+    $entry = "\U$implementation $block\E variables";
+    foreach $parameter (split(/ /, $parameter_database{$entry}))
+    {
+      $type = @parameter_database{"\U$implementation $parameter\E type"};
+      
+      $type_string = &get_c_type_string($type);
+      
+      $line = "  ". $type_string .$parameter . 
+	" = _cctk_params." . "\U$implementation\E_\L$parameter\E;";
+      
+      push(@declarations, $line);
+    }
   }
 
+  # Deal with friend variables. 
+  foreach $friend (split(/ /,$parameter_database{"\U$implementations\E FRIEND implementations"}))
+  {
+    $other_implementation = "\U$friend\E";
+    $entry = "\U$implementation FRIEND $friend\E variables";
+    foreach $parameter (split(/ /, $parameter_database{$entry}))
+    {
+      $type = @parameter_database{"\U$other_implementation $parameter\E type"};
+      
+      $type_string = &get_c_type_string($type);
+      
+      $line = "  ". $type_string .$parameter . 
+	" = _cctk_params." . "\U$other_implementation\E_\L$parameter\E;";
+      
+      push(@declarations, $line);
+    }
+  }	  
+  return @declarations;
 }
 
 sub create_parameter_structure
 {
   local(%parameter_database) = @_;
   local(@structure);
-  local($line, $entry, $thorn, $parameter, $type);
+  local($line, $entry, $thorn, $parameter, $type_string);
 
   $line = "struct CCTK_PARAMS {";
 
@@ -86,27 +124,9 @@ sub create_parameter_structure
     {
       $thorn = $1;
       $parameter = "\L$2\E";
-      if($parameter_database{$entry} eq "KEYWORD" ||
-	 $parameter_database{$entry} eq "STRING"  ||
-	 $parameter_database{$entry} eq "SENTENCE")
-      {
-	$type = "char *";
-      }
-      elsif($parameter_database{$entry} eq "LOGICAL" ||
-	    $parameter_database{$entry} eq "INTEGER")
-      {
-	$type = "int ";
-      }
-      elsif($parameter_database{$entry} eq "REAL")
-      {
-	$type = "Double ";
-      }
-      else
-      {
-	die("Unknown parameter type '$parameter_database{$entry}'");
-      }
+      $type_string = &get_c_type_string($parameter_database{$entry});
 
-      $line = "  ". $type . $thorn . "_". $parameter .";";
+      $line = "  ". $type_string . $thorn . "_". $parameter .";";
 
       push(@structure, $line);
     }
@@ -123,4 +143,34 @@ sub create_thorn_list
   return ("flesh", "toolkits/test/flesh", 
 	   "test1", "toolkits/test/test1", 
 	   "test2", "toolkits/test/test2");
+}
+
+sub get_c_type_string
+{
+  local($type) = @_;
+  local($type_string);
+
+
+  if($type eq "KEYWORD" ||
+     $type eq "STRING"  ||
+     $type eq "SENTENCE")
+  {
+    $type_string = "char *";
+  }
+  elsif($type eq "LOGICAL" ||
+	$type eq "INTEGER")
+  {
+    $type_string = "int ";
+  }
+  elsif($type eq "REAL")
+  {
+    $type_string = "Double ";
+  }
+  else
+  {
+    die("Unknown parameter type '$type'");
+  }
+
+  return $type_string;
+
 }
