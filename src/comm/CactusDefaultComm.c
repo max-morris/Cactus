@@ -298,6 +298,36 @@ int CactusDefaultExit(cGH *GH, int retval)
   return (0);
 }
 
+
+
+ /*@@
+   @routine    CactusDefaultAbort
+   @date       Saturday July 15 2000
+   @author     Gabrielle Allen
+   @desc 
+   The default for when people call CCTK_Abort
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+int CactusDefaultAbort(cGH *GH, int retval)
+{
+#ifdef CCTK_MPI
+  if(MPI_Active)
+  {
+    CACTUS_MPI_ERROR(MPI_Abort(MPI_COMM_WORLD,retval));
+  }
+#else
+  assert(0);
+#endif
+  exit(0);
+  return(0);
+}
+
  /*@@
    @routine    CactusDefaultBarrier
    @date       Tue Apr 18 15:21:42 2000

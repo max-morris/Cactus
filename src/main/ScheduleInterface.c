@@ -1659,7 +1659,7 @@ static int CCTKi_SchedulePrintTimesFunction(void *function,
     data->print_headers = 0;
   }
 
-  printf("%-16s: %-50s\t", attribute->thorn, attribute->description);
+  printf("%-10.10s: %-40.40s", attribute->thorn, attribute->description);
 
   CCTKi_SchedulePrintTimerInfo(data->info);
 
@@ -1670,9 +1670,10 @@ static void CCTKi_SchedulePrintTimerInfo(cTimerData *info)
 {
   int i;
 
-  switch(info->vals[0].type)
+  /*  switch(info->vals[0].type) */
+  for(i=0;i < info->n_vals; i++)
   {
-    case val_int:
+    /*   case val_int:
       printf("%d", info->vals[0].val.i); break;
     case val_long:
       printf("%ld", info->vals[0].val.l); break;
@@ -1683,7 +1684,7 @@ static void CCTKi_SchedulePrintTimerInfo(cTimerData *info)
   }
 
   for(i = 1; i < info->n_vals; i++)
-  {
+  {*/
     switch(info->vals[i].type)
     {
       case val_int:

@@ -27,11 +27,12 @@ CCTK_FILEVERSION(comm_OverloadComm_c)
 #define OVERLOADABLE(name) OVERLOADABLE_DUMMYPROTOTYPE(name)
 
   /* Deal seperately with the SetupGH routine */
+#define CCTKi_DummyAbort    CactusDefaultAbort
+#define CCTKi_DummyBarrier  CactusDefaultBarrier
+#define CCTKi_DummyExit     CactusDefaultExit
+#define CCTKi_DummyMyProc   CactusDefaultMyProc
+#define CCTKi_DummynProcs   CactusDefaultnProcs
 #define CCTKi_DummySetupGH  CactusDefaultSetupGH
-#define CCTKi_DummyMyProc  CactusDefaultMyProc
-#define CCTKi_DummynProcs  CactusDefaultnProcs
-#define CCTKi_DummyBarrier CactusDefaultBarrier
-#define CCTKi_DummyExit    CactusDefaultExit
 
 #include "CommOverloadables.h"
 
@@ -41,6 +42,7 @@ CCTK_FILEVERSION(comm_OverloadComm_c)
 #undef CCTKi_DummynProcs
 #undef CCTKi_DummyBarrier
 #undef CCTKi_DummyExit
+#undef CCTKi_DummyAbort
 
 #undef OVERLOADABLE
 
@@ -74,20 +76,22 @@ int CCTKi_SetupCommFunctions(void)
 #define OVERLOADABLE(name) OVERLOADABLE_CHECK(name)
 
   /* Deal seperately with the SetupGH routine */
-#define CCTKi_DummySetupGH CactusDefaultSetupGH
-#define CCTKi_DummyMyProc  CactusDefaultMyProc
-#define CCTKi_DummynProcs  CactusDefaultnProcs
+#define CCTKi_DummyAbort   CactusDefaultAbort
 #define CCTKi_DummyBarrier CactusDefaultBarrier
 #define CCTKi_DummyExit    CactusDefaultExit
+#define CCTKi_DummyMyProc  CactusDefaultMyProc
+#define CCTKi_DummynProcs  CactusDefaultnProcs
+#define CCTKi_DummySetupGH CactusDefaultSetupGH
 
 #include "CommOverloadables.h"
 
   /* Reset the #define to prevent complications. */
-#undef CCTKi_DummySetupGH  
-#undef CCTKi_DummyMyProc  
-#undef CCTKi_DummynProcs
+#undef CCTKi_DummyAbort
 #undef CCTKi_DummyBarrier
 #undef CCTKi_DummyExit
+#undef CCTKi_DummyMyProc  
+#undef CCTKi_DummynProcs
+#undef CCTKi_DummySetupGH  
 
 #undef OVERLOADABLE
 
