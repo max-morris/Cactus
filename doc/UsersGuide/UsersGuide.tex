@@ -46,6 +46,7 @@
 
 \def\q{\bf QUERY: }
 \def\t{\tt \obeylines }
+\def\ie{\hbox{i.e.\hbox{}}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newenvironment{CCTKroutine}{\newpage}{}
@@ -97,7 +98,7 @@
   {\end{entry}}
 %%%%%%
 
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \newenvironment{CCTKFunc}[2]
         {\sbox{\cctkbox}{#1}
@@ -189,6 +190,7 @@
     {
      \end{tabular}\\\\
     }
+
 %Environment for describing errors
      \newenvironment{errorcodes}
     {\noindent
@@ -202,9 +204,234 @@
 \\
 }
 
-}
-        {
-        }
+}% end of \begin{CCTKFunc} expansion
+{}% \end{CCTKFunc} expansion
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%
+% Alternate environments/macros to define function descriptions
+% (can/should be used to replace CCTKFunc environment)
+% Jonathan Thornburg, 10 Nov 2001
+%
+% Usage:
+%	\begin{FunctionDescription}{name}
+%	\label{label}
+%	Synopsis for this function			(running text rules)
+%
+%	\begin{Synopsis}{C}
+%	text of C function synopsis			(running text rules)
+%	\end{Synopsis}
+%	\begin{Synopsis}{Fortran}
+%	text of Fortran function synopsis		(running text rules)
+%	\end{Synopsis}
+%
+%	\begin{ResultNote}
+%	note to go at the beginning of all results	(running text rules
+%	(this is optional; omit the ResultNote environment if not needed)
+%	\end{ResultNote}
+%	\begin{Result}{name or value (automatically in \tt font)}
+%	desription of what the result means in general,
+%	or of what this particular result value means	(running text rules)
+%	\end{Result}
+%
+%	\begin{Parameter}{name (automatically in \tt font)}
+%	desription of parameter				(running text rules)
+%	\end{Parameter}
+%	\begin{Parameter}{name2 (automatically in \tt font)}
+%	desription of another parameter			(running text rules)
+%	\end{Parameter}
+%	\begin{Discussion}
+%	discussion					(running text rules)
+%	\NewPar
+%	another paragraph of discussion			(running text rules)
+%	\NewPar
+%	yet another paragraph of discussion		(running text rules)
+%	\end{Discussion}
+%
+%	\begin{SeeAlso}{name (automatically in \tt font)
+%	cross-references to other function of that name (running text rules)
+%	\end{SeeAlso}
+%	\begin{SeeAlso}{name2 (automatically in \tt font)
+%	cross-references to another function            (running text rules)
+%	\end{SeeAlso}
+%
+%	\begin{Error}{error\_code (automatically in \tt font)}
+%	description of what this error code means	(running text rules)
+%	\end{Error}
+%	\begin{Error}{error\_code2 (automatically in \tt font)}
+%	description of what next error code means	(running text rules)
+%	\end{Error}
+%
+%	\begin{Example}{C}
+%	example C code					(running text rules)
+%	\end{Example}
+%	\begin{Example}{Fortran}
+%	example Fortran code				(running text rules)
+%	\end{Example}
+%
+% For arguments which are automatically in \tt font, \rm may be used
+% to switch back to normal Roman font (eg for a numerical value), and
+% $...$ may be used for math mode (eg  ($\ge 0$)  to mark a result
+% which is always non-negative).
+%
+% Each "running text rules" item is the body of a latex environment,
+% so it may include multiple lines or even paragraphs.  Normally
+% underscore must be escaped (\_), but  \verb|...|  and/or
+%	\begin{verbatim}
+%	...
+%	\end{verbatim}
+% or similar constructs (which can't be used inside a macro argument)
+% may also be used (in which case _ { } \ etc need not be escaped).
+%
+% Within a multi-paragraph "running text rules" item, \NewPar should be
+% used at the start of each new paragraph.
+%
+% All the subsections are optional.
+%
+% Bugs:
+% - There are various hardcoded lengths which should ideally be global
+%   style parameters, and/or be determined from other style parameters
+%   and \textwidth
+% - It would be nice if we could avoid having to escape underscore
+%   within arguments.
+% - Error checking: if you have to ask, there isn't enough for you! :)
+% - The vertical spacing is a bit of a hack.  Notably, having to use
+%   \NewPar is an awful kludge -- \par should be redefined to do this
+%   automagically.
+% - There are no controls to prevent a page break falling between the
+%   line "C" or "Fortran", and an immediately following example generated
+%   by the Example subenvironment.  In fact, LaTeX seems to like doing
+%   this. :(
+% - It would be nice to have a "...continued" legend at the bottom of
+%   all but the last page of a multi-page description.
+% - The running header giving the function name, only appears for the
+%   first page of a multi-page description.
+% - In some ideal world, "See Also" would generate pdf hotlinks.
+% - Footnotes don't work properly -- they come out at the bottom of
+%   the individual section, not at the bottom of the page.
+%   
+\newenvironment{FunctionDescription}[1]
+{
+\def\NewPar{\vskip0.5\baselineskip}
+\newpage
+\noindent{\t #1}
+\vskip1mm
+\hrule 
+\vskip3mm
+%
+% We define all the subenvironments inside the main one, so they won't
+% interfere with any conflicting global definitions.
+%
+% We want to generate a heading for the *first* Synopsis, Result, Parameter,
+% SeeAlso, Error, or Example environment, but not for later ones, so for
+% each of these environments we first \gdef the desired heading, then have
+% the environment redefine it to be empty (or just some vspace).
+%
+\gdef\SynopsisHeading{{\bf Synopsis}\\}%%%
+\newenvironment{Synopsis}[1]
+               {%%%
+               \par
+               \noindent\SynopsisHeading
+               \gdef\SynopsisHeading{{\bf \ }\\[-0.5\baselineskip]}%%%
+               \hbox to 25mm{\hfill\bf ##1}\quad\begin{minipage}[t]{125mm}
+               }
+               {%%%
+               \end{minipage}
+               \hrule height0ex depth0ex	% advance vertically down to
+				               % end of above minipage box
+               }
+\gdef\ResultHeading{{\bf Result}\\}%%%
+\newenvironment{ResultNote}
+               {%%%
+               \par
+               \noindent\ResultHeading
+               \gdef\ResultHeading{{\bf \ }\\[-0.5\baselineskip]}%%%
+               \begin{minipage}[t]{150mm}
+               }
+               {%%%
+               \end{minipage}
+               \hrule height0ex depth0ex	% advance vertically down to
+						% end of above minipage box
+               }
+\newenvironment{Result}[1]
+               {%%%
+               \par
+               \noindent\ResultHeading
+               \gdef\ResultHeading{{\bf \ }\\[-0.5\baselineskip]}%%%
+               \hbox to 25mm{\hfill\t ##1}\quad\begin{minipage}[t]{125mm}
+               }
+               {%%%
+               \end{minipage}
+               \hrule height0ex depth0ex	% advance vertically down to
+						% end of above minipage box
+               }
+\gdef\ParameterHeading{{\bf Parameters}\\}%%%
+\newenvironment{Parameter}[1]
+               {%%%
+               \par
+               \noindent\ParameterHeading
+               \gdef\ParameterHeading{{\bf \ }\\[-0.5\baselineskip]}%%%
+               \hbox to 25mm{\hfill\t ##1}\quad\begin{minipage}[t]{125mm}
+               }
+               {%%%
+               \end{minipage}
+               \hrule height0ex depth0ex	% advance vertically down to
+						% end of above minipage box
+               }
+\newenvironment{Discussion}
+               {%%%
+               \par
+               \noindent{\bf Discussion}\\
+               \hbox to 25mm{\hfill}\quad\begin{minipage}[t]{125mm}
+               }
+               {%%%
+               \end{minipage}
+               \hrule height0ex depth0ex	% advance vertically down to
+						% end of above minipage box
+               }
+\gdef\SeeAlsoHeading{{\bf See Also}\\}%%%
+\newenvironment{SeeAlso}[1]
+               {%%%
+               \par
+               \noindent\SeeAlsoHeading
+               \gdef\SeeAlsoHeading{{\bf \ }\\[-0.5\baselineskip]}%%%
+               \hbox to 55mm{\hfill\t ##1}\quad\begin{minipage}[t]{95mm}
+               }
+               {%%%
+               \end{minipage}
+               \hrule height0ex depth0ex	% advance vertically down to
+						% end of above minipage box
+               }
+\gdef\ErrorHeading{{\bf Errors}\\}%%%
+\newenvironment{Error}[1]
+               {%%%
+               \par
+               \ErrorHeading
+               \gdef\ErrorHeading{{\bf \ }\\[-0.5\baselineskip]}%%%
+               \hbox to 55mm{\hfill\t ##1}\quad\begin{minipage}[t]{95mm}
+               }
+               {%%%
+               \end{minipage}
+               \hrule height0ex depth0ex	% advance vertically down to
+						% end of above minipage box
+               }
+\gdef\ExampleHeading{{\bf Examples}\\}%%%
+\newenvironment{Example}[1]
+               {%%%
+               \par
+               \ExampleHeading
+               \gdef\ExampleHeading{{\bf \ }\\[-0.5\baselineskip]}%%%
+               \hbox to 25mm{\hfill\bf ##1}\\	% put #1 on a line by itself
+               \hbox to 25mm{\hfill}\quad\begin{minipage}[t]{125mm}
+               }
+               {%%%
+               \end{minipage}
+               \hrule height0ex depth0ex	% advance vertically down to
+						% end of above minipage box
+               }
+}% end of \begin{FunctionDescription} expansion
+{}% \end{FunctionDescription} expansion is empty
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Takes three arguments - the name of the document, the revision, and
