@@ -73,14 +73,6 @@ void CCTK_FCALL CCTK_FNAME (CCTK_NumVarsInGroup)
                            (int *num, ONE_FORTSTRING_ARG);
 void CCTK_FCALL CCTK_FNAME (CCTK_VarTypeI)
                            (int *type, const int *var);
-void CCTK_FCALL CCTK_FNAME (CCTK_NumTimeLevelsFromVarI)
-                           (int *num, const int *var);
-void CCTK_FCALL CCTK_FNAME (CCTK_NumTimeLevelsFromVar)
-                           (int *num, ONE_FORTSTRING_ARG);
-void CCTK_FCALL CCTK_FNAME (CCTK_NumTimeLevelsI)
-                           (int *num, const int *var);
-void CCTK_FCALL CCTK_FNAME (CCTK_NumTimeLevels)
-                           (int *num, ONE_FORTSTRING_ARG);
 void CCTK_FCALL CCTK_FNAME (CCTK_PrintGroup)
                            (const int *group);
 void CCTK_FCALL CCTK_FNAME (CCTK_PrintVar)
@@ -89,6 +81,26 @@ void CCTK_FCALL CCTK_FNAME (CCTK_GroupDimI)
                            (int *dim, const int *group);
 void CCTK_FCALL CCTK_FNAME (CCTK_GroupDimFromVarI)
                            (int *dim, const int *vi);
+void CCTK_FCALL CCTK_FNAME (CCTK_MaxTimeLevelsVI)
+                           (int *num, const int *var);
+void CCTK_FCALL CCTK_FNAME (CCTK_MaxTimeLevelsVN)
+                           (int *num, ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (CCTK_MaxTimeLevelsGI)
+                           (int *num, const int *group);
+void CCTK_FCALL CCTK_FNAME (CCTK_MaxTimeLevelsGN)
+                           (int *num, ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (CCTK_MaxTimeLevels)
+                           (int *num, ONE_FORTSTRING_ARG);
+
+/* DEPRECATED IN BETA 13 */
+void CCTK_FCALL CCTK_FNAME (CCTK_NumTimeLevelsFromVarI)
+                           (int *num, const int *var);
+void CCTK_FCALL CCTK_FNAME (CCTK_NumTimeLevelsFromVar)
+                           (int *num, ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (CCTK_NumTimeLevelsI)
+                           (int *num, const int *var);
+void CCTK_FCALL CCTK_FNAME (CCTK_NumTimeLevels)
+                           (int *num, ONE_FORTSTRING_ARG);
 
 /* prototype for CCTKi_VarDataPtr() doesn't appear in a header file because it
    is only used in the variable bindings (see grdoc for CCTKi_VarDataPtr()) */
@@ -1362,11 +1374,147 @@ void CCTK_FCALL CCTK_FNAME (CCTK_VarTypeI)
 
 
  /*@@
+   @routine    CCTK_MaxTimeLevelsGI
+   @date       July 16 2003
+   @author     Gabrielle Allen
+   @desc
+               Given a group index return the maximum number of timelevels
+   @enddesc
+
+   @returntype int
+   @returndesc
+               the number of timelevels of variables in the group, or
+               -1 if given group index is invalid
+   @endreturndesc
+@@*/
+int CCTK_MaxTimeLevelsGI (int group)
+{
+  return ((0 <= group && group < n_groups) ?
+          groups[group].n_timelevels : -1);
+}
+
+void CCTK_FCALL CCTK_FNAME (CCTK_MaxTimeLevelsGI)
+                           (int *num, const int *group)
+{
+  *num = CCTK_MaxTimeLevelsGI (*group);
+}
+
+
+ /*@@
+   @routine    CCTK_MaxTimeLevelsVI
+   @date       3 July 1999
+   @author     Gabrielle Allen
+   @desc
+               Given a variable index return the maximum number of timelevels
+   @enddesc
+
+   @returntype int
+   @returndesc
+               the number of timelevels of the given variable, or
+               -1 if given variable index is invalid
+   @endreturndesc
+@@*/
+int CCTK_MaxTimeLevelsVI (int var)
+{
+  return ((0 <= var && var < total_variables) ?
+          groups[group_of_variable[var]].n_timelevels : -1);
+}
+
+void CCTK_FCALL CCTK_FNAME (CCTK_MaxTimeLevelsVI)
+                           (int *num, const int *var)
+{
+  *num = CCTK_MaxTimeLevelsVI (*var);
+}
+
+
+ /*@@
+   @routine    CCTK_MaxTimeLevels
+   @date       8 June 2003
+   @author     Gabrielle Allen
+   @desc
+               Given a group name return the maximum number of timelevels
+   @enddesc
+
+   @returntype int
+   @returndesc
+               return code of @seeroutine CCTK_MaxTimeLevelsI
+   @endreturndesc
+@@*/
+int CCTK_MaxTimeLevels (const char *group)
+{
+  return CCTK_MaxTimeLevelsGI (CCTK_GroupIndex (group));
+}
+
+void CCTK_FCALL CCTK_FNAME (CCTK_MaxTimeLevels)
+                           (int *num, ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (group)
+  *num = CCTK_MaxTimeLevels (group);
+  free (group);
+}
+
+ /*@@
+   @routine    CCTK_MaxTimeLevelsGN
+   @date       8 June 2003
+   @author     Gabrielle Allen
+   @desc
+               Given a group name return the number of timelevels
+   @enddesc
+
+   @returntype int
+   @returndesc
+               return code of @seeroutine CCTK_MaxTimeLevelsGI
+   @endreturndesc
+@@*/
+int CCTK_MaxTimeLevelsGN (const char *group)
+{
+  return CCTK_MaxTimeLevelsGI (CCTK_GroupIndex (group));
+}
+
+void CCTK_FCALL CCTK_FNAME (CCTK_MaxTimeLevelsGN)
+                           (int *num, ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (group)
+  *num = CCTK_MaxTimeLevelsGN (group);
+  free (group);
+}
+
+ /*@@
+   @routine    CCTK_MaxTimeLevelsVN
+   @date       3 July 1999
+   @author     Gabrielle Allen
+   @desc
+               Given a variable name return the maximum number of timelevels
+   @enddesc
+
+   @returntype int
+   @returndesc
+               return code of @seeroutine CCTK_MaxTimeLevelsVI
+   @endreturndesc
+@@*/
+int CCTK_MaxTimeLevelsVN (const char *var)
+{
+  return CCTK_MaxTimeLevelsVI (CCTK_VarIndex (var));
+}
+
+void CCTK_FCALL CCTK_FNAME (CCTK_MaxTimeLevelsVN)
+                           (int *num, ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (var)
+  *num = CCTK_MaxTimeLevelsVN (var);
+  free (var);
+}
+
+
+
+
+ /*@@
    @routine    CCTK_NumTimeLevelsI
    @date       3 July 1999
    @author     Gabrielle Allen
    @desc
-               Given a group index return the number of timelevels
+               DEPRECATED BETA 13
+	       Given a group index return the number of timelevels
    @enddesc
 
    @returntype int
@@ -1393,6 +1541,7 @@ void CCTK_FCALL CCTK_FNAME (CCTK_NumTimeLevelsI)
    @date       3 July 1999
    @author     Gabrielle Allen
    @desc
+               DEPRECATED BETA 13
                Given a variable index return the number of timelevels
    @enddesc
 
@@ -1420,6 +1569,7 @@ void CCTK_FCALL CCTK_FNAME (CCTK_NumTimeLevelsFromVarI)
    @date       8 June 2003
    @author     Gabrielle Allen
    @desc
+               DEPRECATED BETA 13
                Given a group name return the number of timelevels
    @enddesc
 
@@ -1446,6 +1596,7 @@ void CCTK_FCALL CCTK_FNAME (CCTK_NumTimeLevels)
    @date       3 July 1999
    @author     Gabrielle Allen
    @desc
+               DEPRECATED BETA 13
                Given a variable name return the number of timelevels
    @enddesc
 
@@ -1466,6 +1617,11 @@ void CCTK_FCALL CCTK_FNAME (CCTK_NumTimeLevelsFromVar)
   *num = CCTK_NumTimeLevelsFromVar (var);
   free (var);
 }
+
+
+
+
+
 
 
  /*@@

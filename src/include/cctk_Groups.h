@@ -65,9 +65,20 @@ const char *CCTK_ImpFromVarI(int var);
 int         CCTK_MaxDim(void);
 
 int         CCTK_NumGroups(void);
-int         CCTK_NumTimeLevels(const char *group);
+
+/* DEPRECATED BETA 13 */
 int         CCTK_NumTimeLevelsFromVar(const char *var);
 int         CCTK_NumTimeLevelsFromVarI(int var);
+int         CCTK_NumTimeLevels(const char *group);
+int         CCTK_NumTimeLevelsI(int group);
+
+int         CCTK_MaxTimeLevels(const char *group);
+int         CCTK_MaxTimeLevelsVN(const char *var);
+int         CCTK_MaxTimeLevelsVI(int var);
+int         CCTK_MaxTimeLevelsGN(const char *group);
+int         CCTK_MaxTimeLevelsGI(int group);
+
+
 int         CCTK_NumVars(void);
 int         CCTK_NumVarsInGroup(const char *group);
 int         CCTK_NumVarsInGroupI(int group);
