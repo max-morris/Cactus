@@ -54,7 +54,7 @@ int CCTK_RegexMatch(const char *string,
 @@*/
 int Util_SplitString(char **before, char **after, const char *string, const char *sep)
 {
-  int retval;
+  int retval=0;
   char *position;
 
   /* Find location of the seperator */
