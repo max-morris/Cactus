@@ -94,7 +94,7 @@ print OUT "This thorn does ...\n";
 print OUT "\n";
 print OUT "2. Dependencies of the thorn\n";
 print OUT "\n";
-print OUT "This thorn additionally requires thorns ...\n";
+print OUT "This thorn additionally requires implementations and thorns ...\n";
 print OUT "\n";
 print OUT "3. Thorn distribution\n";
 print OUT "\n";
