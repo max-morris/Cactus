@@ -16,6 +16,7 @@
 
 #include "Misc.h"
 #include "FortranString.h"
+#include "WarnLevel.h"
 
  /*@@
    @routine    CCTK_SplitString
@@ -127,6 +128,7 @@ int FORTRAN_NAME(CCTK_Equals)(const char *arg1,ONE_FORTSTRING_ARG)
   free(arg2); 
   return(retval);
 }
+
 
 /*@@
   @routine CCTK_NullTerminateString
@@ -575,6 +577,7 @@ int CCTK_SetLogical(int *data, const char *value)
   }
   else
   {
+    CCTK_Warn(1,"Logical not set in CCTK_SetLogical");
     retval = -1;
   }
 
