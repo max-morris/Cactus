@@ -34,8 +34,9 @@ static char *rcsid="$Id$";
  /* Quick stuff for testing purposes. */
 #define EVOLUTION 1
 #define OUTPUT    2
-static int itlast =0;
 int cactus_terminate;
+int cctk_itfirst = 0;
+int cctk_itlast = 5;
 static int cactus_terminate_global = 0;
 #define TERMINATION_RAISED_BRDCAST 4
  
@@ -65,9 +66,9 @@ int CactusDefaultEvolve(tFleshConfig *config)
   CCTK_InfoHeader(config);
   */
 
-  iteration = 0;
-  itlast = 1;
-  while (iteration<itlast) 
+  iteration = cctk_itfirst;
+
+  while (iteration<=cctk_itlast) 
   {
     iteration++;
 
