@@ -1015,13 +1015,27 @@ sub CreateThornGroupInitialisers
       $dim = $rhinterface_db->{"\U$thorn GROUP $group\E DIM"};
       $string = $rhinterface_db->{"\U$thorn GROUP $group\E SIZE"};
       &CheckArraySizes($string,$thorn,$rhparameter_db,$rhinterface_db);
-      $numsize = ($string =~ s/,//g)+1;
+      if ($string !~ /,/)
+      {
+	$numsize = 0;
+      }
+      else
+      {
+	$numsize = ($string =~ s/,//g)+1;
+      }
       if ($dim != $numsize)
       {
-        $message = "Array dimension $dim doesn't match the $numsize array sizes ";
+	if ($numsize == 0)
+	{
+	  $message = "Array sizes not provided for $group in $thorn";
+	}
+	else
+	{
+	  $message = "Array dimension $dim doesn't match the $numsize array sizes ";
         $message .= "\n     ($rhinterface_db->{\"\U$thorn GROUP $group\E SIZE\"}) for $group in $thorn";
-        $message .= "\n     (Array sizes must be comma separated list of parameters)";
-        &CST_error(0,$message,"",__LINE__,__FILE__);
+	}
+        $hint = "Array sizes must be comma separated list of $dim parameters";
+        &CST_error(0,$message,$hint,__LINE__,__FILE__);
       }
     }
 
