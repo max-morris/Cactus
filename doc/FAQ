@@ -1,7 +1,7 @@
 
 Cactus Code Frequently Asked Questions
 
-$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.47 2002-09-22 13:56:59 allen Exp $
+$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.48 2002-09-22 13:58:31 allen Exp $
 
 Also available at http://www.cactuscode.org/Documentation/FAQ
 
@@ -1112,4 +1112,8 @@ Documentation:
 G1  How can I build the ThornGuide documentation for single thorns or 
     arrangements?
 
-    gmake Thorn
+    Give the names of the thorns or arrangements on the make line, e.g.
+
+    gmake ThornGuide THORNS="CactusBase/Boundary"
+
+    gmake ThornGuide ARRANGEMENTS="CactusBase"   
