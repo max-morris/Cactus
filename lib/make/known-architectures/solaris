@@ -6,7 +6,7 @@
 #    @desc 
 #   
 #    @enddesc
-#    @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/solaris,v 1.7 2001-11-02 23:30:15 tradke Exp $
+#    @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/solaris,v 1.8 2001-11-09 13:21:08 tradke Exp $
 #  @@*/
 
 if test "$CCTK_CONFIG_STAGE" = "preferred-compilers" ; then
@@ -16,9 +16,12 @@ if test "$CCTK_CONFIG_STAGE" = "preferred-compilers" ; then
 
 else
 
-  if test -n "$F90" ; then
-    SOLARIS_F90_LIBDIR="`find /opt/SUNWspro/ -name libfsu.a | grep lib/libfsu.a | tail -1 | sed -e 's:/libfsu.a::'`"
-    SOLARIS_F90_LIBS="fsu fsumai fminvai fmaxvai fai sunmath mvec"
+  if test "x$F90" = 'xf90'; then
+    f90_path="`which f90 | sed -e 's:/bin/f90::'`"
+    SOLARIS_F90_LIBDIR="`find $f90_path -name libfsu.a | grep lib/libfsu.a | sed -e 's:/libfsu.a::'`"
+    if test -n "$SOLARIS_F90_LIBDIR"; then
+      SOLARIS_F90_LIBS="fsu fsumai fminvai fmaxvai fai sunmath mvec"
+    fi
   fi
 
   : ${LIBS="socket nsl $SOLARIS_F90_LIBS m ucb"}
