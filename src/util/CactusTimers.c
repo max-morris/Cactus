@@ -318,7 +318,7 @@ const char *CCTK_TimerName (int timer_handle)
    @calls      CCTKi_TimerCreate
 
    @var        timer name
-   @vdesc      name for the timer 
+   @vdesc      name for the timer
    @vtype      const char *
    @vio        in
    @endvar
@@ -389,7 +389,7 @@ void CCTK_FCALL CCTK_FNAME (CCTK_TimerCreateI)
    @enddesc
 
    @var        timername
-   @vdesc      name of the timer 
+   @vdesc      name of the timer
    @vtype      const char *
    @vio        in
    @endvar
@@ -600,7 +600,7 @@ static void CCTKi_TimerDestroy (int this_timer, t_Timer *timer)
    @calls      CCTKi_TimerStart
 
    @var        timer name
-   @vdesc      name for the timer 
+   @vdesc      name for the timer
    @vtype      const char *
    @vio        in
    @endvar
@@ -649,7 +649,7 @@ void CCTK_FCALL CCTK_FNAME (CCTK_TimerStart)
    @calls      CCTKi_TimerStart
 
    @var        this_timer
-   @vdesc      handle for the timer 
+   @vdesc      handle for the timer
    @vtype      int
    @vio        in
    @endvar
@@ -1130,12 +1130,12 @@ cTimerData *CCTK_TimerCreateData (void)
   cTimerData *retval;
 
 
-  retval = (cTimerData *) malloc (sizeof (cTimerData));
+  retval = malloc (sizeof (cTimerData));
   if (retval)
   {
     retval->n_vals = n_clock_vals;
 
-    retval->vals = (cTimerVal *) malloc (n_clock_vals * sizeof (cTimerVal));
+    retval->vals = calloc (n_clock_vals, sizeof (cTimerVal));
     if (! retval->vals)
     {
       free (retval);
