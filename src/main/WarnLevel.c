@@ -69,7 +69,7 @@ int CCTK_SetWarnLevel(int level)
   if(warning_level < error_level)
   {
     error_level = warning_level;
-    sprintf(warning_message, "Decreasing error level to warning_level\n", old_level, level);
+    sprintf(warning_message, "Decreasing error level to warning_level\n");
     CCTK_Warn(2, warning_message);
   }
   return retval;
@@ -155,7 +155,7 @@ int CCTK_SetErrorLevel(int level)
     }
     else if(level == old_level)
     {
-      sprintf(warning_message, "Error level is already\n", level);
+      sprintf(warning_message, "Error level is already %d\n", level);
       CCTK_Warn(3, warning_message);
       retval = 0;
     }
@@ -168,7 +168,7 @@ int CCTK_SetErrorLevel(int level)
   }
   else
   {
-    sprintf(warning_message, "Error level cannot be higher than warning level\n", level);
+    sprintf(warning_message, "Error level cannot be higher than warning level\n");
     CCTK_Warn(1, warning_message);
     retval = 0;
   }
