@@ -797,14 +797,12 @@ int CCTKi_TriggerSaysGo(cGH *GH, int variable)
 
 int CCTKi_TriggerAction(void *GH, int variable)
 {
-  const char *varname;
   char *fullvarname;
   int handle;
   int nmethods;
   struct IOMethod *method;
 
   fullvarname = CCTK_FullName(variable);
-  varname = CCTK_VarName(variable);
 
   /* Count the number of methods used */
   nmethods = 0;
