@@ -1,3 +1,7 @@
+# Source files for the src/main directory.
+#
+# $Id$
+
 SRCS=\
 CactusDefaultEvolve.c\
 CactusDefaultInitialise.c\
@@ -16,5 +20,6 @@ ShutdownCactus.c\
 StoreVariableData.c\
 flesh.cc\
 Groups.c\
-Variables.c
+Variables.c\
+Dummies.c
 
