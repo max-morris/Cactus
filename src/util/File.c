@@ -42,7 +42,7 @@ CCTK_FILEVERSION(util_File_c)
 
 #endif /* HAVE_MODE_T */
 
-int CCTK_CreateDirectory(const char *pathname, int mode);
+int CCTK_CreateDirectory(int mode,const char *pathname);
 
 /* DEPRECATED IN BETA 9 */
 
@@ -112,7 +112,7 @@ int CCTK_mkdir(const char *dir)
   retval = 0;
 #endif
 
-  retval = CCTK_CreateDirectory(dir, 0755);
+  retval = CCTK_CreateDirectory(0755, dir);
 
   return retval;
 
@@ -141,7 +141,7 @@ void CCTK_FCALL CCTK_FNAME(CCTK_mkdir)
    @endhistory 
 
 @@*/
-int CCTK_CreateDirectory(const char *pathname, int mode)
+int CCTK_CreateDirectory(int mode, const char *pathname)
 {
   int retval;
   const char *path;
@@ -241,10 +241,9 @@ int CCTK_CreateDirectory(const char *pathname, int mode)
 }
 
 void CCTK_FCALL CCTK_FNAME(CCTK_CreateDirectory)
-     (int *ierr, TWO_FORTSTRINGS_ARGS)
+     (int *ierr, int *mode, ONE_FORTSTRING_ARG)
 {
-  TWO_FORTSTRINGS_CREATE(arg1,arg2)
-  *ierr = CCTK_CreateDirectory(arg1,arg2);
+  ONE_FORTSTRINGS_CREATE(arg1)
+  *ierr = CCTK_CreateDirectory(mode,arg1);
   free(arg1); 
-  free(arg2);
 }
