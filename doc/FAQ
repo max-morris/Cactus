@@ -1,7 +1,7 @@
 
 Cactus Code Frequently Asked Questions
 
-$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.49 2002-09-26 06:38:30 allen Exp $
+$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.50 2002-10-08 20:15:04 allen Exp $
 
 Also available at http://www.cactuscode.org/Documentation/FAQ
 
@@ -195,6 +195,9 @@ E7  If I have two grid array groups with identical sizes (and ghost zones,
     way?  That is, can I count on the fact that their local shapes (lsh) 
     will be the same?  It is true empirically. What if the grid arrays have 
     different variable types or numbers of time levels?
+
+E8  Is there anyway to only compile certain lines of source code if a 
+    particular thorn is in the compiled ThornList?
 
 
 ------------------------------------------------------------------------------
@@ -1005,6 +1008,38 @@ E7  If I have two grid array groups with identical sizes (and ghost zones,
 
     Yes to all.
  
+E8  Is there anyway to only compile certain lines of source code if a 
+    particular thorn is in the compiled ThornList?
+
+    Yes, but this is not a good idea for a number of reasons
+
+    - it adds hidden dependencies between thorns, and can easily lead to 
+      unexpected and hard to track down behaviour when a thorn is compiled 
+      but not active
+
+    - it breaks all kinds of modularity infrastructure in Cactus
+
+    - the include file you need to use will cause your source code to be
+      recompiled when other thorns change
+
+    But if you insist, and accept the consequences, this is how you do it,
+
+    Include the header file cctk_DefineThorn.h
+
+    In your code use
+
+    #ifdef ARRANGEMENTNAME_THORNNAME
+	<your source code>
+    #endif
+
+    If appropriate, to give yourself some protection, use the function
+    CCTK_IsThornActive to only execute the source code if the thorn was 
+    actually activated (and not just compiled in).
+
+    Add a comment to your README/Documentation.tex to remind yourself, and
+    others of what you have done.
+
+
 ------------------------------------------------------------------------------
 General
 
