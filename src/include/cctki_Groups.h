@@ -32,7 +32,8 @@ int  CCTKi_CreateGroup(const char *gname,
                        const char *size,
                        const char *ghostsize,
                        const char *tags,
-                       int         n_variables,
+                       const char *vararraysize,
+                       int         n_basevars,
                        ...);
 
 #ifdef __cplusplus 

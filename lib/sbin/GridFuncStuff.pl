@@ -349,7 +349,7 @@ sub GetThornArguments
       my $vararraysize = $rhinterface_db->{"\U$thorn GROUP $group\E VARARRAY_SIZE"};
       my $compactgroup = $rhinterface_db->{"\U$thorn GROUP $group\E COMPACT"};
 
-      if($gtype eq 'GF' || $gtype eq 'ARRAY')
+      if($gtype eq 'GF' || $gtype eq 'ARRAY' || ($gtype eq 'SCALAR' && defined($vararraysize)))
       {
         $type .= ' (';
 
@@ -1078,28 +1078,24 @@ sub CreateThornGroupInitialisers
     {
       # Check that the size is allowed.
       &CheckArraySizes($rhinterface_db->{"\U$thorn GROUP $group\E VARARRAY_SIZE"},$thorn,$rhparameter_db,$rhinterface_db);
-      # Flag Cactus that it is a vector group.
-      $line = '                         -1';
+      # Pass in the size of the GV array, which may be a valid parameter expression
+      $line = '                         "'
+            . $rhinterface_db->{"\U$thorn GROUP $group\E VARARRAY_SIZE"}
+            . '",';
+      push(@data, $line);
     }
     else
     {
-      $line = '                         ' . scalar(@variables);
+      $line = '                         NULL,';
+      push(@data, $line);
     }
+
+    $line = '                         ' . scalar(@variables);
 
     foreach $variable (@variables)
     {
       $line .= ",\n                         \"$variable\"";
      }
-
-    # Pass in the size of the GV array, which may be a valid parameter expression
-    if(defined($rhinterface_db->{"\U$thorn GROUP $group\E VARARRAY_SIZE"}))
-    {
-      $line .= ',';
-      push(@data, $line);
-      $line  = '                        "';
-      $line .= $rhinterface_db->{"\U$thorn GROUP $group\E VARARRAY_SIZE"};
-      $line .= '"';
-    }
 
     $line .= ') == 1)';
     push(@data, $line);

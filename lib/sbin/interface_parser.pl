@@ -786,7 +786,7 @@ sub parse_interface_ccl
       $interface_db{"\U$thorn FUNCTION\E $funcname ARGS"} .= "${funcargs} ";
       $interface_db{"\U$thorn FUNCTION\E $funcname RET"} .= "${rettype} ";
     }
-    elsif ($line =~ m/^\s*(CCTK_)?(CHAR|BYTE|INT|INT1|INT2|INT4|INT8|REAL|REAL4|REAL8|REAL16|COMPLEX|COMPLEX8|COMPLEX16|COMPLEX32)\s*(([a-zA-Z]+[a-zA-Z_0-9]*)(\[([^]]+)\])?)\s*(.*)\s*$/i)
+    elsif ($line =~ m/^\s*(CCTK_)?(CHAR|BYTE|INT|INT1|INT2|INT4|INT8|REAL|REAL4|REAL8|REAL16|COMPLEX|COMPLEX8|COMPLEX16|COMPLEX32)\s*(([a-zA-Z][a-zA-Z_0-9]*)\s*(\[([^]]+)\])?)\s*(.*)\s*$/i)
     {
 #      for($i = 1; $i < 10; $i++)
 #      {
@@ -912,11 +912,6 @@ sub parse_interface_ccl
         $interface_db{"\U$thorn GROUP $current_group\E DIM"} = 3;
       }
 
-      if($interface_db{"\U$thorn GROUP $current_group\E GTYPE"} eq "SCALAR")
-      {
-        $interface_db{"\U$thorn GROUP $current_group\E DIM"} = 0;
-      }
-
       if(! $interface_db{"\U$thorn GROUP $current_group\E TIMELEVELS"})
       {
         $interface_db{"\U$thorn GROUP $current_group\E TIMELEVELS"} = 1;
@@ -935,6 +930,13 @@ sub parse_interface_ccl
       if(! $interface_db{"\U$thorn GROUP $current_group\E COMPACT"})
       {
         $interface_db{"\U$thorn GROUP $current_group\E COMPACT"} = 0;
+      }
+
+      # Override defaults for scalars
+      if($interface_db{"\U$thorn GROUP $current_group\E GTYPE"} eq "SCALAR")
+      {
+        $interface_db{"\U$thorn GROUP $current_group\E DIM"} = 0;
+        $interface_db{"\U$thorn GROUP $current_group\E DISTRIB"} = "CONSTANT";
       }
 
       # Check that it is a known group type
@@ -971,37 +973,12 @@ sub parse_interface_ccl
         next;
       }
 
-      # Is it is a vararray ?
-
+      # Is it a vararray?
       if($isgrouparray)
       {
-        # Create a variable with the same name as the group
-        $function = $current_group;
-
-        if(! $known_variables{"\U$function\E"})
-        {
-          $known_variables{"\U$function\E"} = 1;
-
-          $interface_db{"\U$thorn GROUP $current_group\E"} .= " $function";
-        }
-        else
-        {
-          &CST_error(0,"Duplicate variable $function in thorn $thorn",'',
-                     __LINE__,__FILE__);
-        }
-
         # get its size
-
         $interface_db{"\U$thorn GROUP $current_group\E VARARRAY_SIZE"} = $grouparray_size;
-
-        if($data[$line_number+1] =~ m/^\s*\{\s*$/)
-        {
-          &CST_error(1,"Can't give explicit list of array names with an array group - ignoring list","",__LINE__,__FILE__);
-          $line_number++ until ($data[$line_number] =~ m:\}:);
-        }
       }
-      else
-      {
         # Fill in data for the scalars/arrays/functions
         $line_number++;
         if($data[$line_number] =~ m/^\s*\{\s*$/)
@@ -1055,7 +1032,6 @@ sub parse_interface_ccl
           $line_number--;
         }
         $interface_db{"\U$thorn GROUP $current_group\E DESCRIPTION"} = $description;
-      }
     }
     elsif ($line =~ m/^\s*(USES\s*INCLUDE)S?\s*(SOURCE)S?\s*:\s*(.*)\s*$/i)
     {

@@ -4824,10 +4824,7 @@ fi
 # How to link the cactus libraries
 
 
-# Currently (2003-10-07) the dependencies from the configure.ccl file are
-# not handled correctly.  As a temporary work-around, we re-enable the
-# old behaviour.
-: ${CACTUSLIBLINKLINE='-L$(CCTK_LIBDIR) $(addprefix -l, $(ALLCACTUSLIBS) $(ALLCACTUSLIBS))'}
+: ${CACTUSLIBLINKLINE='-L$(CCTK_LIBDIR) $(addprefix -l, $(ALLCACTUSLIBS))'}
 
 # How to generate C dependency info
 

@@ -144,6 +144,8 @@ typedef struct
 
   int n_variables;
 
+  int vectorlength;
+
   /* *size[dim]  - pointers to parameter data*/
   CCTK_INT **size;
 
@@ -190,7 +192,8 @@ static int staggered = 0;
 static cGroupDefinition *CCTKi_SetupGroup (const char *implementation,
                                            const char *name,
                                            int staggercode,
-                                           int n_variables);
+                                           int n_variables,
+                                           int vectorlength);
 static CCTK_INT **CCTKi_ExtractSize (int dimension,
                                      const char *thorn,
                                      const char *sizestring);
@@ -1008,6 +1011,7 @@ int CCTK_GroupData (int group, cGroup *gp)
       gp->disttype      = groups[group].dtype;
       gp->dim           = groups[group].dim;
       gp->numvars       = groups[group].n_variables;
+      gp->vectorlength  = groups[group].vectorlength;
       gp->numtimelevels = groups[group].n_timelevels;
       gp->stagtype      = groups[group].staggertype;
 
@@ -2167,7 +2171,8 @@ int CCTKi_CreateGroup (const char *gname,
                        const char *size,
                        const char *ghostsize,
                        const char *tags,
-                       int         n_variables,
+                       const char *vararraysize,
+                       int         n_basevars,
                        ...
                        )
 {
@@ -2176,33 +2181,35 @@ int CCTKi_CreateGroup (const char *gname,
   int staggercode;
   int variable;
 
+  int vectorlength;
+  int elem;
+
   va_list ap;
 
   char *variable_name;
-  char *vararraysize;
 
   cGroupDefinition *group;
 
+  vectorlength = 1;
+
   group = NULL;
   variable_name = NULL;
-  vararraysize = NULL;
 
   retval = 0;
 
-  va_start (ap, n_variables);
+  va_start (ap, n_basevars);
 
   /* get the staggercode */
   staggercode = CCTKi_ParseStaggerString (dimension, imp, gname, stype);
 
-  if(n_variables == -1)
+  if (vararraysize)
   {
-    variable_name = va_arg (ap, char *);
-      
-    vararraysize = Util_Strdup(va_arg (ap, char *));
+    vararraysize = Util_Strdup(vararraysize);
+    assert (vararraysize);
 
-    n_variables = CCTKi_ParamExpressionToInt(vararraysize,thorn);
+    vectorlength = CCTKi_ParamExpressionToInt(vararraysize,thorn);
 
-    if(n_variables < 0)
+    if(vectorlength < 0)
     {
       CCTK_VWarn (0, __LINE__, __FILE__, "Cactus",
                   "CCTKi_CreateGroup: length of group %s less than 0 !",
@@ -2214,11 +2221,13 @@ int CCTKi_CreateGroup (const char *gname,
   groupscope = CCTK_GroupScopeNumber (gscope);
   if (groupscope == CCTK_PUBLIC || groupscope == CCTK_PROTECTED)
   {
-    group = CCTKi_SetupGroup (imp, gname, staggercode, n_variables);
+    group = CCTKi_SetupGroup (imp, gname, staggercode,
+                              n_basevars * vectorlength, vectorlength);
   }
   else if (groupscope == CCTK_PRIVATE)
   {
-    group = CCTKi_SetupGroup (thorn, gname, staggercode, n_variables);
+    group = CCTKi_SetupGroup (thorn, gname, staggercode,
+                              n_basevars * vectorlength, vectorlength);
   }
   else
   {
@@ -2248,58 +2257,41 @@ int CCTKi_CreateGroup (const char *gname,
     
     /* Extract the variable names from the argument list. */
 
-    if(!vararraysize)
+    group->vararraysize = vararraysize;
+    
+    for (variable = 0; variable < n_basevars; variable++)
     {
-      group->vararraysize = NULL;
-      for (variable = 0; variable < n_variables; variable++)
-      {
-        variable_name = va_arg (ap, char *);
+      variable_name = va_arg (ap, char *);
 
-        group->variables[variable].name =
-          (char *)malloc ((strlen (variable_name)+1)*sizeof (char));
-        
-        if (group->variables[variable].name)
-        {
-          strcpy (group->variables[variable].name, variable_name);
-        }
-        else
-        {
-          break;
-        }
+      if (!vararraysize)
+      {
+        assert (vectorlength == 1);
+        group->variables[variable].name = Util_Strdup(variable_name);
       }
-    }
-    else
-    {
-      group->vararraysize = vararraysize;
-
-      for (variable = 0; variable < n_variables; variable++)
+      else
       {
-        char *name = NULL;
-        Util_asprintf(&name, "%s[%d]", variable_name, variable);
-
-        group->variables[variable].name = name;
+        for (elem = 0; elem < vectorlength; elem++)
+        {
+          char *name = NULL;
+          Util_asprintf(&name, "%s[%d]", variable_name, elem);
+          
+          group->variables[variable * vectorlength + elem].name = name;
+        }
       }
     }
 
     va_end (ap);
 
-    if (variable < n_variables)
+    if (dimension > maxdim)
     {
-      retval = 3;
+      maxdim    = dimension;
     }
-    else
+    if (staggercode > 0)
     {
-      if (dimension > maxdim)
-      {
-        maxdim    = dimension;
-      }
-      if (staggercode > 0)
-      {
-        staggered = 1;
-      }
-      group->size      = CCTKi_ExtractSize (dimension, thorn, size);
-      group->ghostsize = CCTKi_ExtractSize (dimension, thorn, ghostsize);
+      staggered = 1;
     }
+    group->size      = CCTKi_ExtractSize (dimension, thorn, size);
+    group->ghostsize = CCTKi_ExtractSize (dimension, thorn, ghostsize);
 
     /* Only typically have GFs in a single dimension */
     if (group->gtype == CCTK_GF)
@@ -2376,7 +2368,8 @@ const char *CCTK_GroupImplementationI(int group)
 static cGroupDefinition *CCTKi_SetupGroup (const char *implementation,
                                            const char *name,
                                            int staggercode,
-                                           int n_variables)
+                                           int n_variables,
+                                           int vectorlength)
 {
   int *temp_int;
   void *temp;
@@ -2426,9 +2419,10 @@ static cGroupDefinition *CCTKi_SetupGroup (const char *implementation,
         strcpy (groups[n_groups].implementation, implementation);
         strcpy (groups[n_groups].name, name);
 
-        groups[n_groups].number     = n_groups;
-        groups[n_groups].staggertype= staggercode;
-        groups[n_groups].n_variables= n_variables;
+        groups[n_groups].number       = n_groups;
+        groups[n_groups].staggertype  = staggercode;
+        groups[n_groups].n_variables  = n_variables;
+        groups[n_groups].vectorlength = vectorlength;
 
         /* Fill in global variable numbers. */
         for (variable = 0; variable < n_variables; variable++)

@@ -6,7 +6,7 @@
 #  @desc
 #             Parses the the configuration files for thorns.
 #  @enddesc
-#  @version   $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.58 2003-11-18 18:27:28 tradke Exp $
+#  @version   $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.59 2003-11-21 15:27:24 schnetter Exp $
 #@@*/
 
 # Global parameter to track the number of errors from the CST
@@ -326,7 +326,7 @@ sub CreateMakeThornlist
 
   $thorn_linklist .= ' ' . &CreateThornLinkList($thorns, $config);
 
-  return ($thornlist . "\n" . $thorn_linklist . "\n" . $config_thornlist);
+  return ($thornlist . "\n" . $thorn_linklist . "\n" . $config_thornlist . "\n");
 }
 
 

@@ -21,6 +21,7 @@ typedef struct
   int numvars;
   int numtimelevels;
   int vectorgroup;
+  int vectorlength;
 } cGroup;
 
 /* Prototypes */
