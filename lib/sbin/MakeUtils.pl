@@ -31,7 +31,7 @@ sub buildthorns
     
   while(<ARRANGEMENTS>)
   {
-    chop;
+    chomp;
 
     # Ignore CVS and backup stuff
     next if (m:^CVS$:);
@@ -60,7 +60,7 @@ sub buildthorns
       
       while(<THORNLIST>)
       {
-	chop;
+	chomp;
 		
 	# Ignore CVS and backup stuff
 	next if (m:^CVS$:);
@@ -137,7 +137,7 @@ sub ThornInfo
 
   while(<INTERFACE>)
   {
-    chop;
+    chomp;
     if (m/^\s*IMPLEMENTS\s*:\s*([a-z]+[a-z_0-9]*)\s*$/i)
     {
       $implementation = $1;
@@ -158,7 +158,7 @@ sub ThornInfo
 
   while(<PARAM>)
   {
-    chop;
+    chomp;
     if($line =~ m/SHARES\s*:(.*)/i)
     {
       $share .= " $1";
