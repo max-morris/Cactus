@@ -2448,7 +2448,6 @@ parameter table handle is invalid
 \end{Error}
 
 \begin{Example}{C}
-\begin{verbatim}
 Here's a simple example of interpolating a \verb|CCTK_REAL| and a
 \verb|CCTK_COMPLEX| $10 \times 20$ 2-D array, at 5 interpolation points,
 using cubic interpolation.
@@ -2500,9 +2499,6 @@ if (operator_handle < 0)
 param_table_handle = Util_TableCreateFromString("order=3");
 if (param_table_handle < 0)
         CCTK_WARN(-1, "can't create parameter table!");
-\end{verbatim}
-\newpage
-\begin{verbatim}
 if (CCTK_InterpLocalUniform(N_DIMS,
                             operator_handle, param_table_handle,
                             origin, delta,
