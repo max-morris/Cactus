@@ -10,15 +10,17 @@
 
 /* Size info for various types */
 
-/* The number of bytes in a long int.  */
-#undef SIZEOF_LONG_INT
+/* The number of bytes in a short int.  */
+#undef SIZEOF_SHORT_INT
 
 /* The number of bytes in a int.  */
 #undef SIZEOF_INT
 
-/* The number of bytes in a short int.  */
-#undef SIZEOF_SHORT_INT
+/* The number of bytes in a long int.  */
+#undef SIZEOF_LONG_INT
 
+/* The number of bytes in a short int.  */
+#undef SIZEOF_LONG_LONG
 
 /* The number of bytes in a long double.  */
 #undef SIZEOF_LONG_DOUBLE
@@ -155,18 +157,9 @@
 #undef CCTK_BUILD_CPU
 #undef CCTK_BUILD_VENDOR
 
-#ifdef __cplusplus
-
-/* Some C++ compilers don't have bool ! */
-#undef HAVE_BOOL
-
-#ifndef HAVE_BOOL
-typedef enum {false, true} bool;
-#endif /* HAVE_BOOL */
-
-#endif /* __cplusplus */
-
-/* These are definitely there in C++ */
+/****************************************************************************/
+/* C specific stuff */
+/****************************************************************************/
 #ifndef __cplusplus
 
 /* Define as __inline if that's what the C compiler calls it.  */
@@ -175,10 +168,51 @@ typedef enum {false, true} bool;
 /* Define to empty if the keyword does not work.  */
 #undef const
 
+#undef CCTK_C_RESTRICT
+
 /* Define to empty if the keyword does not work.  */
-#undef restrict
+#ifdef CCTK_C_RESTRICT
+#define restrict CCTK_C_RESTRICT
+#endif
+
+/* Some C compilers (e.g. c99 ones) define bool */
+#undef CCTK_HAVE_C_BOOL
+
+/* Since this is non-standard leave commented out for the moment */
+#if 0
+#ifndef CCTK_HAVE_C_BOOL
+typedef enum {false, true} bool;
+#endif /* CCTK_HAVE_CXX_BOOL */
+#endif /* 0 */
 
 #endif /* ! defined __cplusplus */
+/****************************************************************************/
+
+/****************************************************************************/
+/* C++ specific stuff */
+/****************************************************************************/
+#ifdef __cplusplus
+
+/* Some C++ compilers don't have bool ! */
+#undef CCTK_HAVE_CXX_BOOL
+
+#ifndef CCTK_HAVE_CXX_BOOL
+typedef enum {false, true} bool;
+#endif /* CCTK_HAVE_CXX_BOOL */
+
+/* Some C++ compilers recognise the restrict keyword */
+#undef CCTK_CXX_RESTRICT
+
+/* Since this is non-standard leave commented out for the moment */
+#if 0
+/* Define to empty if the keyword does not work. */
+#ifdef CCTK_CXX_RESTRICT
+#define restrict CCTK_CXX_RESTRICT
+#endif
+#endif /* 0 */
+
+#endif /* __cplusplus */
+/****************************************************************************/
 
 #endif /*CCODE */
 

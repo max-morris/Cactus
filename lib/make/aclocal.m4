@@ -273,3 +273,60 @@ changequote([, ])dnl
 ifelse([$4], , , [$4
 ])dnl
 ])
+
+dnl Do nothing if the compiler accepts the restrict keyword.
+dnl Otherwise define restrict to __restrict__ or __restrict if one of
+dnl those work, otherwise define restrict to be empty.
+AC_DEFUN(CCTK_CHECK_C_RESTRICT,
+[AC_CACHE_CHECK([for C restrict], cctk_cv_c_restrict,
+[cctk_cv_c_restrict=no
+for ac_kw in restrict __restrict__ __restrict; do
+  AC_TRY_COMPILE(, [double * $ac_kw foo;], [cctk_cv_c_restrict=$ac_kw; break])
+done
+])
+case "$cctk_cv_c_restrict" in
+  restrict | yes) ;;
+  no) AC_DEFINE(CCTK_C_RESTRICT, ) ;;
+  *)  AC_DEFINE_UNQUOTED(CCTK_C_RESTRICT, $cctk_cv_c_restrict) ;;
+esac
+])
+
+AC_DEFUN(CCTK_CHECK_CXX_RESTRICT,
+[AC_CACHE_CHECK([for C++ restrict], cctk_cv_cxx_restrict,
+[cctk_cv_cxx_restrict=no
+AC_LANG_SAVE
+AC_LANG_CPLUSPLUS
+for ac_kw in restrict __restrict__ __restrict; do
+  AC_TRY_COMPILE(, [double * $ac_kw foo;], [cctk_cv_cxx_restrict=$ac_kw; break])
+done
+AC_LANG_RESTORE
+])
+case "$cctk_cv_cxx_restrict" in
+  restrict | yes) ;;
+  no) AC_DEFINE(CCTK_CXX_RESTRICT, ) ;;
+  *)  AC_DEFINE_UNQUOTED(CCTK_CXX_RESTRICT, $cctk_cv_cxx_restrict) ;;
+esac
+])
+
+AC_DEFUN(CCTK_C_BOOL,
+[AC_CACHE_CHECK([for C bool], cctk_cv_have_c_bool,
+[cctk_cv_have_c_bool=no
+AC_TRY_COMPILE(, bool foo;, cctk_cv_have_c_bool=yes, cctk_cv_have_c_bool=no)
+])
+if test "$cctk_cv_have_c_bool" = "yes" ; then
+   AC_DEFINE(CCTK_HAVE_C_BOOL)
+fi
+])
+
+AC_DEFUN(CCTK_CXX_BOOL,
+[AC_CACHE_CHECK([for CXX bool], cctk_cv_have_cxx_bool,
+[cctk_cv_have_cxx_bool=no
+AC_LANG_SAVE
+AC_LANG_CPLUSPLUS
+AC_TRY_COMPILE(, bool foo;, cctk_cv_have_cxx_bool=yes, cctk_cv_have_cxx_bool=no)
+AC_LANG_RESTORE
+])
+if test "$cctk_cv_have_cxx_bool" = "yes" ; then
+   AC_DEFINE(CCTK_HAVE_CXX_BOOL)
+fi
+])
