@@ -15,7 +15,6 @@
 #include "cctk_Flesh.h"
 #include "cctk_ActiveThorns.h"
 #include "cctki_ActiveThorns.h"
-#include "cctki_Cache.h"
 
 static const char *rcsid = "$Header$";
 
@@ -84,7 +83,6 @@ int CCTKi_InitialiseDataStructures(tFleshConfig *ConfigData)
 #endif
 
   CCTKi_ActivateThorn("Cactus");
-  CCTKi_SetupCache();
 
   return 0;
 }
@@ -92,4 +90,3 @@ int CCTKi_InitialiseDataStructures(tFleshConfig *ConfigData)
 /********************************************************************
  *********************     Local Routines   *************************
  ********************************************************************/
-
