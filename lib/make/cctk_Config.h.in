@@ -90,6 +90,10 @@
 #undef CCTK_L2_CACHELINE_BYTES
 #undef CCTK_L2_CACHE_SIZE
 
+/* The name of the NULL device for redirecting things to */
+
+#undef NULL_DEVICE
+
 /******************************************************************************/
 
 #ifdef CCODE
