@@ -94,7 +94,7 @@ sub get_packages
     chdir packages || die "Could not find packages directory";
 
     $range = <STDIN>;
-    if ($range =! /^h/i)
+    if ($range =~ /^h/i)
     {
 	&print_help();
     }
