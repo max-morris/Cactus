@@ -319,3 +319,28 @@ void CCTKi_FinaliseParamWarn(void)
 
 }
 
+ /*@@
+   @routine    CCTKi_NotYetImplemented
+   @date       July 1999
+   @author     Gabrielle Allen
+   @desc 
+               Report on features not yet added to code
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+
+void CCTKi_NotYetImplemented(void)
+{
+
+printf("\n\n This planned feature is not yet implemented in the code.
+          \n If you need this feature please contact the Cactus 
+             maintainers.\n");
+
+CCTK_Warn(0,__LINE__,__FILE__,"Cactus","Feature not implemented");
+
+}
