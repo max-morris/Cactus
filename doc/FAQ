@@ -1,7 +1,7 @@
 
 Cactus Code Frequently Asked Questions
 
-$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.72 2003-11-12 14:38:11 schnetter Exp $
+$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.73 2003-12-02 02:54:59 allen Exp $
 
 Also available at http://www.cactuscode.org/Documentation/FAQ
 
@@ -158,6 +158,9 @@ C34 How can I make sure that one file is compiled before another? For example
 C35 I started building a Cactus configuration and it asked me if
     I wanted to edit the thornlist, I pressed 'y' and then 'enter'
     but nothing happened?
+
+C36 (Linux) Compiling Cactus with Redhat 8 or 9 it fails in CactusBase/IOUtil
+    because the system failed to find <sys/stat.h>
 
 
 ------------------------------------------------------------------------------
@@ -1022,6 +1025,43 @@ C35 I started building a Cactus configuration and it asked me if
     variable as an editor at this point, check that this variable is 
     defined and is actually a working editor.
         
+C36 (Linux) Compiling Cactus with Redhat 8 or 9 with Intel compilers my build 
+    fails in CactusBase/IOUtil because configure failed to find <sys/stat.h>
+
+    Intel supports their compilers only for RedHat 7.x, and gives no guarantees 
+    for their compilers to work properly with newer releases. On RH 8/9.x there 
+    is a problem with the include order of system header files with the new 
+    glibc (you should see this in your configuration's config.log file) and 
+    some other header needs to be included before <sys/stat.h>. The same 
+    problem occurs with Debian Sarge.
+    One way to fix this is to ask your sys admin to edit the corresponding 
+    Intel header file, or wait until Intel provides a patch. As a starting 
+    point, here is a diff which worked for one user ...
+
+--- /opt/intel/compiler70/ia32/substitute_headers/sys/stat.h~   2003-05-09 20:45:49.000000000 +0200
++++ /opt/intel/compiler70/ia32/substitute_headers/sys/stat.h    2003-09-23 23:26:42.000000000 +0200
+@@ -27,10 +27,17 @@
+ 
+ #include <bits/types.h>                /* For __mode_t and __dev_t.  */
+ 
+-#ifdef __USE_XOPEN
+-# define __need_time_t
+-# include <time.h>             /* For time_t.  */
++#if defined __USE_XOPEN || defined __USE_MISC
++# ifdef __USE_XOPEN
++#  define __need_time_t
++# endif
++# ifdef __USE_MISC
++#  define __need_timespec
++# endif
++# include <time.h>             /* For time_t resp. timespec.  */
++#endif
+ 
++#ifdef __USE_XOPEN
+ /* The Single Unix specification says that some more types are
+    available here.  */
+ # ifndef __dev_t_defined
+
 
 ------------------------------------------------------------------------------
 Running:
