@@ -1,5 +1,6 @@
 SRCS=\
 CactusDefaultComm.c\
 GHExtensions.c\
-Overload.c
+Overload.c\
+FortranBindings.c
 
