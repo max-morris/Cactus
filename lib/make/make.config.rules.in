@@ -46,7 +46,7 @@ cat $< | $(CPP) $(CPPFLAGS) $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DFCODE - |
 endef
 
 define COMPILE_F77
-current_wd=`pwd` ; cd $(SCRATCH_BUILD) ; $(F77) $(F77FLAGS) -c -o $$current_wd/$@ $$current_wd/$(notdir $<) $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DFCODE
+current_wd=`pwd` ; cd $(SCRATCH_BUILD) ; $(F77) $(F77FLAGS) -c -o $$current_wd/$@ $$current_wd/$(notdir $<) $(INC_DIRS:%=-I%) 
 endef
 
 define POSTPROCESS_F77
@@ -58,7 +58,7 @@ cat $< | $(CPP) $(CPPFLAGS) $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DFCODE - |
 endef
 
 define COMPILE_F90
-current_wd=`pwd` ; cd $(SCRATCH_BUILD) ; $(F90) $(F90FLAGS) -c -o $$current_wd/$@ $$current_wd/$(notdir $<) $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DFCODE
+current_wd=`pwd` ; cd $(SCRATCH_BUILD) ; $(F90) $(F90FLAGS) -c -o $$current_wd/$@ $$current_wd/$(notdir $<) $(INC_DIRS:%=-I%) 
 endef
 
 define POSTPROCESS_F90
