@@ -209,6 +209,7 @@ sub free_format_splitline
 
   # Remove trailing spaces
   $LINE =~ s/\s*$//;
+  $LINE =~ s/\s*\&$/\&/;
 
   # Some preprocessors put extraneous spaces in 8-(
   $LINE =~ s:\. ([a-zA-Z]+) \.:\.$1\.:ig;
