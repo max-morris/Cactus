@@ -191,9 +191,32 @@ EXTENDS KEYWORD initial_data ""
 {\bf Can I reset the default, when I extend ?}
 \end{itemize}
 
-
-
 \section{The {\tt interface.ccl}}
+{\bf CAN WE A CONVENTION FOR VARIABLES, GRIDFUNCTION, ...? }
+The interface plays the inportant role of introducing new grid
+function, their storage and communication concepts, new variables,
+etc. to the CCTK infrastructure. While this interface convention looks 
+difficult at first sight, it ensures the proper compatability of
+thorns we can't even imagine at this point. And it is fairly easy to
+learn. The thorn writer should question the impact and scope of his
+implementation in the following way:
+\begin{enumerate}
+\item{What is the name of the implementation, so it can be referenced by other 
+thorns.}
+\item{On which other thorns (implementations) does the thorn depend,
+because of parameter extension, grid functions, etc.}
+\item{What are the grid functions to implement and how are they grouped ? A 
+group tries to collect as many common feature as possible. That way
+certain operation can be carried out an group by group basis, instead
+time consuming function by functions}.
+\item{Do function need to be communicated between different processors 
+or are they local ?}
+\item{Do variables need storage turned on all the time or are they
+just used at a certain instance, for example for analysis.}
+\end{enumerate}
+
+The {\tt interface.ccl} defines all the specific information. 
+
 \section{The {\tt schedule.ccl}}
 
       a) Creating a thorn (gmake new thorn)
