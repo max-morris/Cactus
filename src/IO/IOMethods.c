@@ -118,6 +118,7 @@ int CCTKi_RegisterIOMethod (const char *thorn, const char *name)
 
       /* Initialise the I/O method structure with dummy routines */
       new_method->implementation = CCTK_ThornImplementation (thorn);
+      new_method->name           = name;
       new_method->OutputGH       = DummyOutputGH;
       new_method->OutputVarAs    = DummyOutputVarAs;
       new_method->TriggerOutput  = DummyTriggerOutput;
@@ -517,6 +518,34 @@ const char *CCTK_IOMethodImplementation (int handle)
   method = (struct IOMethod *) Util_GetHandledData (IOMethods, handle);
 
   return (method ? method->implementation : NULL);
+}
+
+
+ /*@@
+   @routine    CCTK_IOMethod
+   @date       Thu Dec 27 2001
+   @author     Gabrielle Allen
+   @desc
+               Provide the IO Method name
+   @enddesc
+   @var        handle
+   @vdesc      handle of I/O method
+   @vtype      int
+   @vio        in
+   @endvar
+
+   @returntype const char *
+   @returndesc
+               IO Method
+   @endreturndesc
+@@*/
+const char *CCTK_IOMethod (int handle)
+{
+  struct IOMethod *method;
+
+  method = (struct IOMethod *) Util_GetHandledData (IOMethods, handle);
+
+  return (method ? method->name : NULL);
 }
 
 
