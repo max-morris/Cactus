@@ -27,13 +27,23 @@ print <<EOT;
 
 EOT
 
+# Work out where the config directory is
+if($ENV{"CONFIGS_DIR"})
+{
+  $configs_dir = $ENV{"CONFIGS_DIR"};
+}
+else
+{
+  $configs_dir = "configs";
+}
+
 $command = &defprompt("Enter Command to run cactus code","./cactus_$config");
 
 $tests = &defprompt("Run All tests or go to Menu",
                         "All");
 
 # Get the active thorns list and test files with thorns 
-$scratchdir = "configs$sep$config";
+$scratchdir = "$configs_dir$sep$config";
  
 if (!open (AT, "< $scratchdir${sep}ThornList")) {
     print "Can't open $scratchdir/ThornList - no thorn tests";
