@@ -9,7 +9,6 @@
  @@*/
 
 #include "cctk.h"
-#include "util_Network.h"
 
 #include <string.h>
 
