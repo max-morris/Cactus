@@ -1265,19 +1265,14 @@ void CCTK_FCALL CCTK_FNAME (CCTK_GroupName) (int *nchars, int *var, ONE_FORTSTRI
    @routine    CCTK_GroupTagsTable
    @date       Wed May 22 00:47:58 2002
    @author     Tom Goodale
-   @desc 
+   @desc
    Returns the TAGS table for a group.
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   @enddesc
    @var     groupname
    @vdesc   The group name
    @vtype   int
    @vio     in
-   @endvar 
+   @endvar
 
    @returntype int
    @returndesc
@@ -1310,19 +1305,14 @@ void CCTK_FCALL CCTK_FNAME (CCTK_GroupTagsTable) (int *table, ONE_FORTSTRING_ARG
    @routine    CCTK_GroupTagsTableI
    @date       Wed May 22 00:47:58 2002
    @author     Tom Goodale
-   @desc 
+   @desc
    Returns the TAGS table for a group.
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   @enddesc
    @var     group
    @vdesc   The group index
    @vtype   int
    @vio     in
-   @endvar 
+   @endvar
 
    @returntype int
    @returndesc
@@ -1682,7 +1672,7 @@ void CCTK_FCALL CCTK_FNAME (CCTK_MaxTimeLevelsVN)
    @author     Gabrielle Allen
    @desc
                DEPRECATED BETA 13
-	       Given a group index return the number of timelevels
+               Given a group index return the number of timelevels
    @enddesc
 
    @returntype int
@@ -2091,7 +2081,7 @@ int CCTK_TraverseString (const char *traverse_string,
 
   if (callback == NULL)
   {
-    CCTK_VWarn (5, __LINE__, __FILE__, "Cactus", 
+    CCTK_VWarn (5, __LINE__, __FILE__, "Cactus",
                 "CCTK_TraverseString: No callback given");
     return (-1);
   }
@@ -2181,7 +2171,7 @@ int CCTK_TraverseString (const char *traverse_string,
       *string = 0;
       if (option_string == group_var_string + 1)
       {
-        CCTK_VWarn (5, __LINE__, __FILE__, "Cactus", 
+        CCTK_VWarn (5, __LINE__, __FILE__, "Cactus",
                     "CCTK_TraverseString: option string '%s' not associated "
                     "with a group or variable name", option_string);
         retval = -2;
@@ -2189,7 +2179,7 @@ int CCTK_TraverseString (const char *traverse_string,
       }
       else if (! (delimiter == options_end && nesting == 0))
       {
-        CCTK_VWarn (5, __LINE__, __FILE__, "Cactus", 
+        CCTK_VWarn (5, __LINE__, __FILE__, "Cactus",
                     "CCTK_TraverseString: unterminated option string '%s'",
                     option_string);
         retval = -3;
@@ -2197,7 +2187,7 @@ int CCTK_TraverseString (const char *traverse_string,
       }
       else if (! (string[1] == 0 || isspace (string[1])))
       {
-        CCTK_VWarn (5, __LINE__, __FILE__, "Cactus", 
+        CCTK_VWarn (5, __LINE__, __FILE__, "Cactus",
                     "CCTK_TraverseString: garbage at end of option string '%s'",
                     option_string);
         retval = -4;
@@ -2305,12 +2295,6 @@ int CCTK_TraverseString (const char *traverse_string,
    @desc
      Debugging info on the Groups.
    @enddesc
-   @calls
-   @calledby
-   @history
-
-   @endhistory
-
 @@*/
 
 void CCTKi_PrintGroupInfo (void)
@@ -2438,11 +2422,11 @@ int CCTKi_CreateGroup (const char *gname,
                   "CCTKi_CreateGroup: Failed to create TAGS table for group '%s' from thorn '%s'",
                   gname, thorn);
     }
-    
+
     /* Extract the variable names from the argument list. */
 
     group->vararraysize = vararraysize;
-    
+
     for (variable = 0; variable < n_basevars; variable++)
     {
       variable_name = va_arg (ap, char *);
@@ -2458,7 +2442,7 @@ int CCTKi_CreateGroup (const char *gname,
         {
           char *name = NULL;
           Util_asprintf(&name, "%s[%d]", variable_name, elem);
-          
+
           group->variables[variable * vectorlength + elem].name = name;
         }
       }
@@ -2492,7 +2476,7 @@ int CCTKi_CreateGroup (const char *gname,
         gfdim = group->dim;
       }
     }
-   
+
   }
   else
   {
@@ -2525,7 +2509,7 @@ int CCTKi_CreateGroup (const char *gname,
 const char *CCTK_GroupImplementationI(int group)
 {
   const char *imp;
-  
+
   imp = groups[group].implementation;
 
   return imp;
@@ -2705,27 +2689,27 @@ static CCTK_INT **CCTKi_ExtractSize (int dimension,
       if (dimension > 0)
       {
         size_array[0] = (CCTK_INT *) malloc (dimension * sizeof (CCTK_INT));
-  
+
         for (dim = 1; dim < dimension; dim++)
         {
           size_array[dim] = size_array[0] + dim;
         }
-  
+
         for (dim = 0; dim < dimension; dim++)
         {
           /* find the comma as a delimiter for different dimension sizes */
           last_comma = next_comma[0] == ',' ? next_comma+1 : next_comma;
           next_comma = strstr (last_comma, ",");
-  
+
           /* copy dimension size token into a work string buffer */
           tmp = strdup (last_comma);
           if (next_comma)
           {
             tmp[next_comma-last_comma] = '\0';
           }
-  
+
           *size_array[dim] = CCTKi_ParamExpressionToInt (tmp, this_thorn);
-     
+
           free (tmp);
         }
       }
@@ -2744,21 +2728,16 @@ static CCTK_INT **CCTKi_ExtractSize (int dimension,
    @routine    CCTKi_GroupLengthAsPointer
    @date       Sun Oct  7 03:58:44 2001
    @author     Tom Goodale
-   @desc 
-   
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   @desc
+               Get the number of variables in a group,
+               or the number of elements in a vector group
+   @enddesc
+
    @var     fullgroupname
    @vdesc   The full name of a GV group
    @vtype   const char *
    @vio     in
-   @vcomment 
- 
-   @endvar 
+   @endvar
 
    @returntype const int *
    @returndesc
@@ -2774,10 +2753,8 @@ const int *CCTKi_GroupLengthAsPointer(const char *fullgroupname)
 
 
   retval = NULL;
-  impname = NULL;
-  groupname = NULL;
+  impname = groupname = NULL;
 
-  
   if (! CCTK_DecomposeName (fullgroupname, &impname, &groupname))
   {
     for (group = 0; group < n_groups; group++)
@@ -2785,7 +2762,8 @@ const int *CCTKi_GroupLengthAsPointer(const char *fullgroupname)
       if (CCTK_Equals (impname, groups[group].implementation) &&
           CCTK_Equals (groupname, groups[group].name))
       {
-        retval = &groups[group].n_variables;
+        retval = groups[group].vectorlength ?
+                 &groups[group].vectorlength : &groups[group].n_variables;
         break;
       }
     }
@@ -2799,14 +2777,8 @@ const int *CCTKi_GroupLengthAsPointer(const char *fullgroupname)
   }
 
   /* Free memory from CCTK_DecomposeName */
-  if (impname)
-  {
-    free (impname);
-  }
-  if (groupname)
-  {
-    free (groupname);
-  }
+  free (impname);
+  free (groupname);
 
   return retval;
 }
@@ -2815,51 +2787,40 @@ const int *CCTKi_GroupLengthAsPointer(const char *fullgroupname)
    @routine    IntParameterEvaluator
    @date       Fri Oct 12 10:01:32 2001
    @author     Tom Goodale
-   @desc 
+   @desc
    Evaluates integer parameters for the expression parser.
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   @enddesc
    @var     nvars
    @vdesc   Number of variables to evaluate
    @vtype   int
    @vio     in
-   @vcomment 
- 
-   @endvar 
+   @endvar
    @var     vars
    @vdesc   an array of parameter names or integers
    @vtype   const char * const *
    @vio     in
-   @vcomment 
- 
    @endvar
    @var     vals
    @vdesc   Output array to hold values
    @vtype   uExpressionValue *
    @vio     out
-   @vcomment 
- 
-   @endvar 
+   @endvar
    @var     data
    @vdesc   Data passed from expression evaluator
    @vtype   void *
    @vio     in
-   @vcomment 
+   @vcomment
      Should be a char * with the thorn name.
-   @endvar 
+   @endvar
 
    @returntype int
    @returndesc
    0
    @endreturndesc
 @@*/
-static int IntParameterEvaluator(int nvars, 
-                                 const char * const *vars, 
-                                 uExpressionValue *vals, 
+static int IntParameterEvaluator(int nvars,
+                                 const char * const *vars,
+                                 uExpressionValue *vals,
                                  void *data)
 {
   int i;
@@ -2872,7 +2833,7 @@ static int IntParameterEvaluator(int nvars,
   const char *use_thorn;
   const char *use_param;
   int type;
-  
+
   for(i=0; i < nvars; i++)
   {
     vals[i].type = ival;
@@ -2930,34 +2891,27 @@ static int IntParameterEvaluator(int nvars,
 
   return 0;
 }
-  
+
  /*@@
    @routine    CCTKi_ParamExpressionToInt
    @date       Fri Oct 12 10:04:18 2001
    @author     Tom Goodale
-   @desc 
+   @desc
    Parses an arithmetic expression involving integer parameter names and
    returns the final integer
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   @enddesc
    @var     expression
    @vdesc   The expression to be parsed
    @vtype   const char *
    @vio     in
-   @vcomment 
- 
-   @endvar 
+   @endvar
    @var     thorn
    @vdesc   The thorn name
    @vtype   const char *
    @vio     in
-   @vcomment 
+   @vcomment
      Used for parameters which aren't fully qualified.
-   @endvar 
+   @endvar
 
    @returntype int
    @returndesc
@@ -2980,7 +2934,7 @@ static int CCTKi_ParamExpressionToInt(const char *expression, const char *thorn)
     /* Evaluate the expression */
     retval = Util_ExpressionEvaluate(parsed_expression,
                                      &value,
-                                     IntParameterEvaluator, 
+                                     IntParameterEvaluator,
                                      this_thorn);
 
     Util_ExpressionFree(parsed_expression);
@@ -3004,7 +2958,7 @@ static int CCTKi_ParamExpressionToInt(const char *expression, const char *thorn)
     CCTK_VWarn (0, __LINE__, __FILE__, "Cactus",
                 "Unable to evaluate parameter expression '%s'",
                 expression);
-  }    
+  }
 
   return retval;
 }
