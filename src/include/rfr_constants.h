@@ -69,7 +69,7 @@ int rfrInitTree(void **rfr_top,
 		int (*CommunicationOn)(void *, int),
 		int (*CommunicationOff)(void *, int),
 		int (*Triggerable)(int),
-		int (*TriggerSaysGo)(int),
+		int (*TriggerSaysGo)(void *, int),
 		int (*TriggerAction)(void *, int),
 		int (*CallFunc)(void *, int, void *));
 
