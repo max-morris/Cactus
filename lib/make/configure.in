@@ -141,7 +141,7 @@ do
   fi
 done
 
-# Finish the cctk_extradefs.h file
+# Finish the cctk_Extradefs.h file
 cat >> cctk_Extradefs.h <<EOF
 #endif /*_CCTK_EXTRADEFS_H_*/
 EOF

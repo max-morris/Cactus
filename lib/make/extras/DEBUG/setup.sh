@@ -12,7 +12,7 @@ if test -n "$DEBUG" ; then
 	
 echo "Configuring with DEBUG. Blocks with #ifdef CCTK_DEBUG will be activated"
 
-CCTK_WriteLine cctk_extradefs.h "#define CCTK_DEBUG"
+CCTK_WriteLine cctk_Extradefs.h "#define CCTK_DEBUG"
 
 # Work out which variation of DEBUG
     

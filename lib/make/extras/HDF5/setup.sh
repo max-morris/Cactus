@@ -12,7 +12,7 @@ if test -n "$HDF5" ; then
 	
 echo "Configuring with HDF5. Blocks with #ifdef HDF5 will be activated"
 
-CCTK_WriteLine cctk_extradefs.h "#define HDF5"
+CCTK_WriteLine cctk_Extradefs.h "#define HDF5"
 
 # Work out which variation of HDF5 lib
     

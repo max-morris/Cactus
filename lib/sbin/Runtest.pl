@@ -30,7 +30,7 @@ $current_directory =~ s,^//([^/]+)/,$1:/,;
 &print_header;
 
 # Look to see if MPI is defined
-$extra = "$current_directory${sep}configs${sep}$config${sep}config-data${sep}cctk_extradefs.h";
+$extra = "$current_directory${sep}configs${sep}$config${sep}config-data${sep}cctk_Extradefs.h";
 
 $mpi = 0;
 if (-e "$extra")
