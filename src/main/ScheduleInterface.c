@@ -2524,7 +2524,7 @@ static void CCTKi_SchedulePrintTimerInfo(cTimerData *timer,
   /* print delimiter line */
   if (*where == 0)
   {
-    PrintDelimiterLine ('-', timer);
+    PrintDelimiterLine ('=', timer);
   }
 }
 
