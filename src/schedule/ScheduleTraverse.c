@@ -21,19 +21,21 @@ static int ScheduleTraverseGroup(cHandledData *schedule_groups,
                                  void *attributes,
                                  int n_whiles,
                                  char **whiles,
-                                 void (*item_entry)(void *),
-                                 void (*item_exit)(void *),
-                                 int  (*while_check)(int, char **, void *),
-                                 void (*function_process)(void *, void *));
+                                 int (*item_entry)(void *, void *),
+                                 int (*item_exit)(void *, void *),
+                                 int  (*while_check)(int, char **, void *, void *),
+                                 int (*function_process)(void *, void *, void *),
+                                 void *data);
 
 static int ScheduleTraverseFunction(void *function,
                                     void *attributes,
                                     int n_whiles,
                                     char **whiles,
-                                    void (*item_entry)(void *),
-                                    void (*item_exit)(void *),
-                                    int  (*while_check)(int, char **, void *),
-                                    void (*function_process)(void *, void *));
+                                    int (*item_entry)(void *, void *),
+                                    int (*item_exit)(void *, void *),
+                                    int  (*while_check)(int, char **, void *, void *),
+                                    int (*function_process)(void *, void *, void *),
+                                    void *data);
 
 /********************************************************************
  ********************    External Routines   ************************
@@ -54,10 +56,11 @@ static int ScheduleTraverseFunction(void *function,
 
 @@*/
 int CCTKi_ScheduleTraverse(const char *group_name,
-                           void (*item_entry)(void *),
-                           void (*item_exit)(void *),
-                           int  (*while_check)(int, char **, void *),
-                           void (*function_process)(void *, void *))
+                           int (*item_entry)(void *, void *),
+                           int (*item_exit)(void *, void *),
+                           int  (*while_check)(int, char **, void *, void *),
+                           int (*function_process)(void *, void *, void *),
+                           void *data)
 {
   cHandledData *schedule_groups;
   t_sched_group *group;
@@ -78,7 +81,8 @@ int CCTKi_ScheduleTraverse(const char *group_name,
                                     item_entry, 
                                     item_exit, 
                                     while_check, 
-                                    function_process);
+                                    function_process,
+                                    data);
   }
   else
   {
@@ -111,10 +115,11 @@ static int ScheduleTraverseGroup(cHandledData *schedule_groups,
                                  void *attributes,
                                  int n_whiles,
                                  char **whiles,
-                                 void (*item_entry)(void *),
-                                 void (*item_exit)(void *),
-                                 int  (*while_check)(int, char **, void *),
-                                 void (*function_process)(void *, void *))
+                                 int (*item_entry)(void *, void *),
+                                 int (*item_exit)(void *, void *),
+                                 int  (*while_check)(int, char **, void *, void *),
+                                 int (*function_process)(void *, void *, void *),
+                                 void *data)
 {
   int item;
   int doit;
@@ -127,7 +132,7 @@ static int ScheduleTraverseGroup(cHandledData *schedule_groups,
 
   if(n_whiles > 0 && while_check)
   {
-    doit = while_check(n_whiles, whiles, attributes);
+    doit = while_check(n_whiles, whiles, attributes, data);
   }
   else
   {
@@ -141,7 +146,7 @@ static int ScheduleTraverseGroup(cHandledData *schedule_groups,
 
     if(item_entry)
     {
-      item_entry(attributes);
+      doit = item_entry(attributes, data);
     }
   }
   else
@@ -166,7 +171,8 @@ static int ScheduleTraverseGroup(cHandledData *schedule_groups,
                                    item_entry,
                                    item_exit,                                  
                                    while_check,
-                                   function_process);
+                                   function_process,
+                                   data);
           break;
         case sched_group :
           newgroup = (t_sched_group *)Util_GetHandledData(schedule_groups, 
@@ -179,7 +185,8 @@ static int ScheduleTraverseGroup(cHandledData *schedule_groups,
                                 item_entry, 
                                 item_exit, 
                                 while_check, 
-                                function_process);
+                                function_process,
+                                data);
           break;
         default :
           fprintf(stderr, "Unknown schedule item type %d\n", group->scheditems[group->order[item]].type);
@@ -189,7 +196,7 @@ static int ScheduleTraverseGroup(cHandledData *schedule_groups,
     /* Check the while_list again. */
     if(n_whiles > 0 && while_check)
     {
-      doit = while_check(n_whiles, whiles, attributes) ;
+      doit = while_check(n_whiles, whiles, attributes, data) ;
     }
     else
     {
@@ -202,7 +209,7 @@ static int ScheduleTraverseGroup(cHandledData *schedule_groups,
   {
     if(item_exit)
     {
-      item_exit(attributes);
+      item_exit(attributes, data);
     }
   }
 
@@ -227,10 +234,11 @@ static int ScheduleTraverseFunction(void *function,
                                     void *attributes,
                                     int n_whiles,
                                     char **whiles,
-                                    void (*item_entry)(void *),
-                                    void (*item_exit)(void *),
-                                    int  (*while_check)(int, char **, void *),
-                                    void (*function_process)(void *, void *))
+                                    int (*item_entry)(void *, void *),
+                                    int (*item_exit)(void *, void *),
+                                    int  (*while_check)(int, char **, void *, void *),
+                                    int (*function_process)(void *, void *, void *),
+                                    void *data)
 {
   int doit;
   int called_item_entry;
@@ -241,7 +249,7 @@ static int ScheduleTraverseFunction(void *function,
 
   if(n_whiles > 0 && while_check)
   {
-    doit = while_check(n_whiles, whiles, attributes);
+    doit = while_check(n_whiles, whiles, attributes, data);
   }
   else
   {
@@ -255,7 +263,7 @@ static int ScheduleTraverseFunction(void *function,
 
     if(item_entry)
     {
-      item_entry(attributes);
+      doit = item_entry(attributes, data);
     }
   }
   else
@@ -266,13 +274,14 @@ static int ScheduleTraverseFunction(void *function,
   /* Now traverse the . */
   while(doit )
   {
-      
-    function_process(function, attributes);
+    
+    /* Now actually do something with the function. */
+    function_process(function, attributes, data);
 
     /* Check the while_list again. */
     if(n_whiles > 0 && while_check)
     {
-      doit = while_check(n_whiles, whiles, attributes) ;
+      doit = while_check(n_whiles, whiles, attributes, data) ;
     }
     else
 
@@ -286,7 +295,7 @@ static int ScheduleTraverseFunction(void *function,
   {
     if(item_exit)
     {
-      item_exit(attributes);
+      item_exit(attributes, data);
     }
   }
 
@@ -306,7 +315,7 @@ func_x(a)
 func_x(b)
 func_x(c)
 
-void fprocess(void *function, void *attributes)
+int fprocess(void *function, void *attributes, void *data)
 {
   int (*func)(void);
 
@@ -314,6 +323,7 @@ void fprocess(void *function, void *attributes)
 
   func();
 
+  return 1;
 }
 
 int main(int argc, char *argv[])
@@ -332,7 +342,7 @@ int main(int argc, char *argv[])
 
   CCTKi_ScheduleSortAllGroups();
 
-  CCTKi_ScheduleTraverse("group_a", NULL, NULL, NULL, fprocess);
+  CCTKi_ScheduleTraverse("group_a", NULL, NULL, NULL, fprocess, NULL);
 
   return 0;
 }
