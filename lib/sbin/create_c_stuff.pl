@@ -192,6 +192,7 @@ sub CreateCStructureParameterHeader
   my(%parameters);
   my($type, $type_string);
   my(@definition);
+  my(@use);
 
   # Create the structure
 
@@ -210,8 +211,14 @@ sub CreateCStructureParameterHeader
 
     $line = $type_string ." " .$parameter . " = $structure.$parameter;";
 
-    push(@definition, $line)
+    push(@definition, $line);
+
+    $line = "(void *) $parameter;";
+    
+    push(@use, $line);
+     
   }
+
 
   # Some compilers don't like an empty structure.
   if((keys %$rhparameters) == 0)
@@ -233,6 +240,13 @@ sub CreateCStructureParameterHeader
   }
 
   push(@data, "");
+
+  push(@data, "#define USE_$structure"."_PARAMS \\");
+  
+  foreach $line (@use)
+  {
+    push(@data, "  $line \\");
+  }
 
   return @data;
 }
