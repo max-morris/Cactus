@@ -4,7 +4,7 @@ The aim of this file is to describe the environment necessary to
 build the CCTK on an NT platform.
 
 Apart from the required software noted in the manual, you must install
-the cygwin package available from http://www.cynus.com (FIXME ?).
+the cygwin package version beta 20.1 available from http://www.cygnus.com .
 
 After installing Cygwin, you must make sure that the GNU CPP is somewhere
 on your path, and that the directory path leading to it contains no names
@@ -18,6 +18,12 @@ and run make.
 
 Note that there may be warnings whilst generating dependencies for the C and 
 C++ files, these may be ignored. 
+
+To link libraries use the full path name in the form e.g.
+ 
+LIBS=c:\DirName\libname.lib
+ 
+the variables e.g. LIBDIRS are not used.                
 
 Special note for people using non-English versions of NT.  Currently
 the include path to find the MS C include files is set for an english
