@@ -971,7 +971,7 @@ int CCTK_SchedulePrintTimes(const char *where)
   {
     CCTK_TimerStopI (total_timer);
     CCTK_TimerI (total_timer, timerinfo);
-    CCTKi_SchedulePrintTimerInfo (timerinfo, NULL, "", "Total time");
+    CCTKi_SchedulePrintTimerInfo (timerinfo, NULL, "", "Total time for simulation");
 
     /* just in case this is not at termination yet ... */
     CCTK_TimerStartI (total_timer);
@@ -2090,7 +2090,6 @@ static int CCTKi_ScheduleCallExit(t_attribute *attribute,
         last  = vindex + CCTK_NumVarsInGroupI(attribute->FunctionData.TriggerGroups[i]) - 1;
         for(; vindex <= last ; vindex++)
         {
-	  printf("Triggering for group %s\n",CCTK_GroupName(attribute->FunctionData.TriggerGroups[i]));
           CCTKi_TriggerAction(data->GH, vindex);
         }
       }
