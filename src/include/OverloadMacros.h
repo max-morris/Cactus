@@ -30,7 +30,7 @@ RETURN_TYPE (*CCTK_##name)(ARGUMENTS) = NULL;                     \
 int CCTK_Overload##name(RETURN_TYPE (*func)(ARGUMENTS))           \
 {                                                                 \
   int return_code;                                                \
-  if(CCTK_##name)                                                 \
+  if(! CCTK_##name)                                               \
   {                                                               \
      CCTK_##name = func;                                          \
      return_code = 1;                                             \
