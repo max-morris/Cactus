@@ -28,6 +28,8 @@ int CCTKi_CreateGroup(const char *gname, const char *thorn, const char *imp,
 
 int CCTK_GroupIndex(const char *groupname);
 
+void CCTK_DumpGroupInfo(void);
+
 int CCTK_VarIndex(const char *variablename);
 
 char *CCTK_GroupNameFromVarI(int var);

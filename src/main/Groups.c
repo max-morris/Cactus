@@ -126,6 +126,30 @@ void  FMODIFIER FORTRAN_NAME(CCTK_GroupIndex)(int *index,ONE_FORTSTRING_ARG)
   free(name);
 }
 
+/*@@
+   @routine    CCTK_DumpGroupInfo
+   @date       Thu Jan 14 15:25:54 1999
+   @author     Gerd Lanfermann
+   @desc
+     Debugging info on the Groups.
+   @enddesc
+   @calls
+   @calledby
+   @history
+
+   @endhistory
+
+@@*/
+
+void CCTK_DumpGroupInfo(void) {
+  int group_num;
+
+  for(group_num = 0; group_num < n_groups; group_num++) {
+    printf("GROUP INFO: GrpNo./imp_name/name:  %d   >%s<   >%s<\n",
+           group_num,groups[group_num].implementation,groups[group_num].name);
+  }
+}
+
 
 
  /*@@
