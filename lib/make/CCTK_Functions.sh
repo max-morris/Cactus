@@ -26,7 +26,7 @@
 #
 #@@*/
 
-function CCTK_Search
+CCTK_Search()
 {
   eval  $1=""
   if test -z $4 ; then
@@ -53,13 +53,13 @@ function CCTK_Search
   return
 }
 
-function CCTK_CreateFile
+CCTK_CreateFile()
 {
   echo $2 > $1
   return
 }
 
-function CCTK_WriteLine
+CCTK_WriteLine()
 {
   echo $2 >> $1
   return
