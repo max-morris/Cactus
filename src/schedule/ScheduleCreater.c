@@ -46,7 +46,7 @@ static cHandledData *schedule_groups = NULL;
  ********************************************************************/
 
  /*@@
-   @routine    CCTKi_ScheduleAddModifer
+   @routine    CCTKi_DoScheduleAddModifer
    @date       Thu Sep  9 21:45:25 1999
    @author     Tom Goodale
    @desc 
@@ -59,7 +59,7 @@ static cHandledData *schedule_groups = NULL;
    @endhistory 
 
 @@*/
-t_sched_modifier *CCTKi_ScheduleAddModifier(t_sched_modifier *orig, 
+t_sched_modifier *CCTKi_DoScheduleAddModifier(t_sched_modifier *orig, 
                                             const char *modifier, 
                                             const char *argument)
 {
@@ -89,7 +89,7 @@ t_sched_modifier *CCTKi_ScheduleAddModifier(t_sched_modifier *orig,
 }
 
  /*@@
-   @routine    CCTKi_ScheduleFunction
+   @routine    CCTKi_DoScheduleFunction
    @date       Thu Sep  9 21:42:58 1999
    @author     Tom Goodale
    @desc 
@@ -102,7 +102,7 @@ t_sched_modifier *CCTKi_ScheduleAddModifier(t_sched_modifier *orig,
    @endhistory 
 
 @@*/
-int CCTKi_ScheduleFunction(const char *gname, 
+int CCTKi_DoScheduleFunction(const char *gname, 
                            const char *fname, 
                            void *func, 
                            t_sched_modifier *modifiers, 
@@ -144,7 +144,7 @@ int CCTKi_ScheduleFunction(const char *gname,
 }
     
  /*@@
-   @routine    CCTKi_ScheduleGroup
+   @routine    CCTKi_DoScheduleGroup
    @date       Thu Sep  9 21:43:44 1999
    @author     Tom Goodale
    @desc 
@@ -157,7 +157,7 @@ int CCTKi_ScheduleFunction(const char *gname,
    @endhistory 
 
 @@*/
-int CCTKi_ScheduleGroup(const char *gname, 
+int CCTKi_DoScheduleGroup(const char *gname, 
                         const char *thisname, 
                         t_sched_modifier *modifiers, 
                         void *attributes)
@@ -208,7 +208,7 @@ int CCTKi_ScheduleGroup(const char *gname,
 }
 
  /*@@
-   @routine    CCTKi_ScheduleSortAllGroups
+   @routine    CCTKi_DoScheduleSortAllGroups
    @date       Wed Sep 15 22:37:49 1999
    @author     Tom Goodale
    @desc 
@@ -221,7 +221,7 @@ int CCTKi_ScheduleGroup(const char *gname,
    @endhistory 
 
 @@*/
-int CCTKi_ScheduleSortAllGroups(void)
+int CCTKi_DoScheduleSortAllGroups(void)
 {
   int group;
   t_sched_group *gdata;
@@ -251,7 +251,7 @@ int CCTKi_ScheduleSortAllGroups(void)
   return -n_errors;
 }
 
-cHandledData *CCTKi_ScheduleGetGroups(void)
+cHandledData *CCTKi_DoScheduleGetGroups(void)
 {
   return schedule_groups;
 }
@@ -722,17 +722,17 @@ int main(int argc, char *argv[])
 {
   t_sched_modifier *modifier;
 
-  modifier = CCTKi_ScheduleAddModifier(NULL, "before", "c");
-  modifier = CCTKi_ScheduleAddModifier(modifier, "after",  "a");
+  modifier = CCTKi_DoScheduleAddModifier(NULL, "before", "c");
+  modifier = CCTKi_DoScheduleAddModifier(modifier, "after",  "a");
 
-  CCTKi_ScheduleFunction("group_a", "c", func_c, NULL, NULL);
-  CCTKi_ScheduleFunction("group_a", "b", func_b, modifier, NULL);
-  CCTKi_ScheduleFunction("group_a", "a", func_a, NULL, NULL);
-  CCTKi_ScheduleFunction("group_b", "a", func_a, NULL, NULL);
-  CCTKi_ScheduleFunction("group_b", "b", func_b, NULL, NULL);
-  CCTKi_ScheduleGroup("group_a", "group_b", modifier, NULL);
+  CCTKi_DoScheduleFunction("group_a", "c", func_c, NULL, NULL);
+  CCTKi_DoScheduleFunction("group_a", "b", func_b, modifier, NULL);
+  CCTKi_DoScheduleFunction("group_a", "a", func_a, NULL, NULL);
+  CCTKi_DoScheduleFunction("group_b", "a", func_a, NULL, NULL);
+  CCTKi_DoScheduleFunction("group_b", "b", func_b, NULL, NULL);
+  CCTKi_DoScheduleGroup("group_a", "group_b", modifier, NULL);
 
-  CCTKi_ScheduleSortAllGroups();
+  CCTKi_DoScheduleSortAllGroups();
 
   return 0;
 }

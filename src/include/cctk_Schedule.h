@@ -33,7 +33,7 @@ typedef struct
 extern "C" {
 #endif
 
-int CCTK_ScheduleFunction(void *function,
+  /*int CCTK_ScheduleFunction(void *function,
                           const char *name,
                           const char *thorn,
                           const char *implementation,
@@ -70,6 +70,7 @@ int CCTK_ScheduleTraverse(const char *where,
                           int (*calling_function)(void *, void *, void *));
 
 int CCTK_ScheduleGHInit(void *GH);
+  */
 
 int CCTK_SchedulePrint(const char *where);
 int CCTK_SchedulePrintTimes(const char *where);

@@ -16,7 +16,7 @@
 extern "C" {
 #endif
 
-int ParameterCreate(const char *name,        /* The parameter name */
+int CCTKi_ParameterCreate(const char *name,        /* The parameter name */
                     const char *thorn,       /* The thorn          */ 
                     const char *type,       /* The parameter type */
                     const char *scope,       /* The scoping block  */
@@ -27,7 +27,7 @@ int ParameterCreate(const char *name,        /* The parameter name */
                     int n_ranges,            /* How many allowed ranges it has */
                     ...);
 
-int ParameterAddRange(const char *implementation, 
+int CCTKi_ParameterAddRange(const char *implementation, 
                       const char *name,
                       const char *range_origin,
                       const char *range,

@@ -16,7 +16,7 @@ extern "C"
 {
 #endif
 
-void *CCTK_CacheMalloc(unsigned index, 
+void *Util_CacheMalloc(unsigned index, 
                        unsigned long size, 
                        void **realstart);
 

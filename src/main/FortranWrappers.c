@@ -11,14 +11,14 @@ static char *rcsid = "$Header$";
 
 #include <stdlib.h>
 
-#include "cctk_FortranWrappers.h"
+#include "cctki_FortranWrappers.h"
 
 #include "StoreNamedData.h"
 
 static pNamedData *registry = NULL;
 
  /*@@
-   @routine    CCTK_RegisterFortranWrapper
+   @routine    CCTKi_RegisterFortranWrapper
    @date       Sat Sep 18 00:51:21 1999
    @author     Tom Goodale
    @desc 
@@ -31,7 +31,7 @@ static pNamedData *registry = NULL;
    @endhistory 
 
 @@*/
-int CCTK_RegisterFortranWrapper(const char *name, int (*function)(void *, void *))
+int CCTKi_RegisterFortranWrapper(const char *name, int (*function)(void *, void *))
 {
   int retcode;
   retcode = StoreNamedData(&registry, name, (void *)function);
@@ -40,7 +40,7 @@ int CCTK_RegisterFortranWrapper(const char *name, int (*function)(void *, void *
 }
 
  /*@@
-   @routine    CCTK_FortranWrapper
+   @routine    CCTKi_FortranWrapper
    @date       Sat Sep 18 00:51:57 1999
    @author     Tom Goodale
    @desc 
@@ -54,7 +54,7 @@ int CCTK_RegisterFortranWrapper(const char *name, int (*function)(void *, void *
    @endhistory 
 
 @@*/
-int (*CCTK_FortranWrapper(const char *name))(void *, void *)
+int (*CCTKi_FortranWrapper(const char *name))(void *, void *)
 {
   return (int (*)(void *,void *))GetNamedData(registry, name);
 }

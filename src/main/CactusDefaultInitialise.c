@@ -13,15 +13,15 @@
 #include <stdlib.h>
 
 #include "cctk_Flesh.h"
+#include "cctk_GHExtensions.h"
+#include "cctk_Bindings.h"
+#include "cctk_Parameters.h"
+
+#include "CactusrfrInterface.h"
 #include "CactusMainDefaults.h"
 #include "CactusCommFunctions.h"
-#include "cctk_GHExtensions.h"
 #include "rfrConstants.h"
-#include "CactusrfrInterface.h"
-#include "cctk_Bindings.h"
 #include "rfrInterface.h"
-
-#include "cctk_parameters.h"
 
 static char *rcsid = "$Id$";
 
@@ -118,7 +118,7 @@ int CactusInitialiseGH(cGH *GH)
   GH->rfr_top = NULL;
 
   /* Do the rfr initialisation on this GH */
-  CCTK_ScheduleGHInit((void *)GH);
+  CCTKi_ScheduleGHInit((void *)GH);
 
   /* Initialise all the extensions. */
   CCTKi_InitGHExtensions(GH);
@@ -141,7 +141,7 @@ int CactusInitialiseGH(cGH *GH)
   CCTK_rfrTraverse(GH,CCTK_POSTINITIAL);
 
   /* Traverse recovery and ID checkpoint routines */
-  CCTK_rfrTraverse(GH,CCTK_RECOVER);
+  CCTK_rfrTraverse(GH,CCTK_RECOVER_VARIABLES);
   CCTK_rfrTraverse(GH,CCTK_CPINITIAL);
 
   CCTK_rfrTraverse(GH,CCTK_POSTSTEP);

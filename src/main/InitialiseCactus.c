@@ -21,9 +21,8 @@ int ProcessCommandLine(int *inargc, char ***inargv, tFleshConfig *ConfigData);
 int ProcessEnvironment(int *argc, char ***argv,tFleshConfig *ConfigData);
 
 
-
  /*@@
-   @routine    InitialiseCactus
+   @routine    CCTKi_InitialiseCactus
    @date       Fri Sep 18 14:05:21 1998
    @author     Tom Goodale
    @desc 
@@ -57,32 +56,33 @@ int ProcessEnvironment(int *argc, char ***argv,tFleshConfig *ConfigData);
    @endvar 
 
 @@*/
-int InitialiseCactus(int *argc, char ***argv, tFleshConfig *ConfigData)
+int CCTKi_InitialiseCactus(int *argc, char ***argv, tFleshConfig *ConfigData)
 {
 
-  InitialiseSubsystemDefaults();
+  CCTKi_InitialiseSubsystemDefaults();
 
-  ProcessEnvironment(argc, argv, ConfigData);
+  CCTKi_ProcessEnvironment(argc, argv, ConfigData);
 
-  ProcessCommandLine(argc, argv, ConfigData);
+  CCTKi_ProcessCommandLine(argc, argv, ConfigData);
 
-  CactusBanner();
+  CCTKi_CactusBanner();
 
-  InitialiseDataStructures(ConfigData);
+  CCTKi_InitialiseDataStructures(ConfigData);
 
-  ProcessParameterDatabase(ConfigData);
+  CCTKi_ProcessParameterDatabase(ConfigData);
 
-  InitialiseScheduler(ConfigData);
+  CCTKi_InitialiseScheduler(ConfigData);
 
-  CallStartupFunctions(ConfigData);
+  CCTKi_CallStartupFunctions(ConfigData);
 
-  CCTK_PrintBanners();
+  CCTKi_PrintBanners();
 
   return 0;
 }
 
+
  /*@@
-   @routine    InitialiseScheduler
+   @routine    CCTKi_InitialiseScheduler
    @date       Fri Sep 17 19:34:55 1999
    @author     Tom Goodale
    @desc 
@@ -95,13 +95,14 @@ int InitialiseCactus(int *argc, char ***argv, tFleshConfig *ConfigData)
    @endhistory 
 
 @@*/
-int InitialiseScheduler(tFleshConfig *ConfigData)
+
+int CCTKi_InitialiseScheduler(tFleshConfig *ConfigData)
 {
   int retcode;
   
   CCTKi_BindingsScheduleInitialise();
 
-  retcode = CCTKi_ScheduleSortAllGroups();
+  retcode = CCTKi_DoScheduleSortAllGroups();
 
   CCTK_PRINTSEPARATOR
   CCTK_SchedulePrint(NULL);

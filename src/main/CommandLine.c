@@ -19,6 +19,7 @@
 #include "cctk_WarnLevel.h"
 #include "cctk_Bindings.h"
 #include "cctk_Misc.h"
+#include "cctki_ActiveThorns.h"
 #include "cctk_ActiveThorns.h"
 #include "cctk_ParameterFunctions.h"
 #include "cctki_WarnLevel.h"
@@ -30,9 +31,9 @@ static char *rcsid = "$Header$";
 char *compileTime(void);
 char *compileDate(void);
 char *CCTK_FullVersion(void);
-int CCTK_GetCommandLine(char ***outargv);
+int CCTK_CommandLine(char ***outargv);
 
-static void CCTKi_CommandLinePrintParameter(t_param_prop *properties);
+static void CommandLinePrintParameter(t_param_prop *properties);
 
 static int redirectsubs;
 
@@ -83,7 +84,7 @@ void CCTKi_CommandLineDescribeAllParameters(const char *optarg)
   const char *implementation;
   t_param_prop *properties;
 
-  CCTK_ThornList(0, &thornlist, &n_thorns);
+  CCTKi_ThornList(0, &thornlist, &n_thorns);
 
   for(thorn = 0; thorn < n_thorns; thorn++)
   {
@@ -99,7 +100,7 @@ void CCTKi_CommandLineDescribeAllParameters(const char *optarg)
         switch(*optarg)
         {
           case 'v':
-            CCTKi_CommandLinePrintParameter(properties);
+            CommandLinePrintParameter(properties);
             break;
           default :
             fprintf(stderr, "Unknown verbosity option %s\n", optarg);
@@ -157,7 +158,7 @@ void CCTKi_CommandLineDescribeParameter(const char *optarg)
     free(param);
   }
 
-  CCTKi_CommandLinePrintParameter(properties);
+  CommandLinePrintParameter(properties);
     
   exit(0);
 }
@@ -250,7 +251,7 @@ void CCTKi_CommandLineRedirectStdout(void)
 void CCTKi_CommandLineListThorns(void)
 {
   printf ("\n---------------Compiled Thorns-------------\n");
-  CCTKi_ListThorns(stdout, "  %s\n", 0);
+  CCTKi_PrintThorns(stdout, "  %s\n", 0);
   printf ("-------------------------------------------\n\n");
   exit(1);
 }
@@ -276,7 +277,7 @@ void CCTKi_CommandLineVersion(void)
 
   const char *version=NULL;
 
-  argc = CCTK_GetCommandLine(&argv);
+  argc = CCTK_CommandLine(&argv);
 
   version = (const char *)CCTK_FullVersion();
 
@@ -305,7 +306,7 @@ void CCTKi_CommandLineHelp(void)
   int argc;
   char **argv;
 
-  argc = CCTK_GetCommandLine(&argv);
+  argc = CCTK_CommandLine(&argv);
 
   printf("%s, compiled on %s at %s\n", argv[0], compileDate(), compileTime());
   printf("Usage: %s [-h] [-O] [-o paramname] [-x [nprocs]] [-W n] [-E n] [-r] [-T] [-t name] [-v] <parameter_file_name>\n", argv[0]);
@@ -347,7 +348,7 @@ void CCTKi_CommandLineUsage(void)
   int argc;
   char **argv;
 
-  argc = CCTK_GetCommandLine(&argv);
+  argc = CCTK_CommandLine(&argv);
 
   printf("Usage: %s [-h] [-O] [-o paramname] [-x [nprocs]] [-W n] [-E n] [-r] [-T] [-t name] [-v] <parameter_file_name>\n", argv[0]);
   exit(1);
@@ -397,7 +398,7 @@ void CCTKi_CommandLineFinished(void)
 
 
  /*@@
-   @routine    CCTKi_CommandLinePrintParameter
+   @routine    CommandLinePrintParameter
    @date       Sun Oct 17 22:11:31 1999
    @author     Tom Goodale
    @desc 
@@ -410,7 +411,7 @@ void CCTKi_CommandLineFinished(void)
    @endhistory 
 
 @@*/
-static void CCTKi_CommandLinePrintParameter(t_param_prop *properties)
+static void CommandLinePrintParameter(t_param_prop *properties)
 {
   t_range *range;
 

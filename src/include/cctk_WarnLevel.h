@@ -16,21 +16,19 @@ extern "C"
 {
 #endif
 
-void CCTK_Warn(int level, 
+int CCTK_Warn(int level, 
                int line, 
                const char *file, 
                const char *thorn, 
                const char *message);
-void CCTK_VWarn(int level, 
+int CCTK_VWarn(int level, 
                 int line, 
                 const char *file, 
                 const char *thorn, 
                 const char *format, ...);
-void CCTK_ParamWarn(const char *thorn, const char *message);
-void CCTK_Info(const char *thorn, const char *message);
+int CCTK_ParamWarn(const char *thorn, const char *message);
+int CCTK_Info(const char *thorn, const char *message);
 
-void CCTKi_NotYetImplemented(const char *message);
- 
 #ifdef __cplusplus 
 }
 #endif

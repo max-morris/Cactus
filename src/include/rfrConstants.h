@@ -15,7 +15,9 @@
 #define CCTK_PARAMCHECK  0
 #define CCTK_BASEGRID  1
 
-#define CCTK_RECOVER   5
+#define CCTK_RECOVER
+#define CCTK_RECOVER_PARAMETERS   4
+#define CCTK_RECOVER_VARIABLES   5
 
 /* Be sure to keep the INITIAL*, POSTSTEP*, etc... contiguous */
 #define CCTK_INITIAL   11

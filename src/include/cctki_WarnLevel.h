@@ -17,7 +17,8 @@ extern "C" {
 int CCTKi_SetWarnLevel(int level);
 void CCTKi_FinaliseParamWarn(void);
 int CCTKi_SetErrorLevel(int level);
- 
+void CCTKi_NotYetImplemented(const char *message);
+  
 #ifdef __cplusplus 
 }
 #endif

@@ -28,7 +28,7 @@ void CCTK_PrintBanners(void);
 
 
  /*@@
-   @routine    CactusBanner
+   @routine    CCTKi_CactusBanner
    @date       Wed Oct 13 21:41:28 CEST 1999
    @author     Gabrielle Allen
    @desc 
@@ -36,7 +36,7 @@ void CCTK_PrintBanners(void);
    @enddesc 
 @@*/
 
-void CactusBanner(void)
+void CCTKi_CactusBanner(void)
 {
   
   const char *string;
@@ -134,7 +134,7 @@ void  FMODIFIER FORTRAN_NAME(CCTK_RegisterBanner)(ONE_FORTSTRING_ARG)
 }
 
  /*@@
-   @routine    CCTK_PrintBanners
+   @routine    CCTKi_PrintBanners
    @date       July 16 00:11:26 1999
    @author     Gabrielle Allen
    @desc 
@@ -148,7 +148,7 @@ void  FMODIFIER FORTRAN_NAME(CCTK_RegisterBanner)(ONE_FORTSTRING_ARG)
    @endvar 
 @@*/
 
-void CCTK_PrintBanners(void)
+int CCTKi_PrintBanners(void)
 {
 
   DECLARE_CCTK_PARAMETERS
@@ -167,6 +167,8 @@ void CCTK_PrintBanners(void)
     }
     printf("--------------------------------------------------------------------------------\n"); 
   }
+
+  return 0;
 
   USE_CCTK_PARAMETERS
 

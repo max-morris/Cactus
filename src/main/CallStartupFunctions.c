@@ -1,5 +1,5 @@
  /*@@
-   @file      CallStartupFunctions.c
+   @file      CCTKi_CallStartupFunctions.c
    @date      Mon Sep 28 14:16:19 1998
    @author    Tom Goodale
    @desc 
@@ -13,10 +13,11 @@ static char *rcsid = "$Header$";
 #include <stdio.h>
 
 #include "cctk_Flesh.h"
-#include "cctk_Schedule.h"
+#include "cctki_Schedule.h"
+
 
  /*@@
-   @routine    CallStartupFunctions
+   @routine    CCTKi_CallStartupFunctions
    @date       Mon Sep 28 14:24:39 1998
    @author     Tom Goodale
    @desc 
@@ -29,10 +30,11 @@ static char *rcsid = "$Header$";
    @endhistory 
 
 @@*/
-int CallStartupFunctions(tFleshConfig *ConfigData)
+
+int CCTKi_CallStartupFunctions(tFleshConfig *ConfigData)
 {
 
-  CCTK_ScheduleTraverse("CCTK_STARTUP", NULL, NULL);
+  CCTKi_ScheduleTraverse("CCTK_STARTUP", NULL, NULL);
 
   return 0;
 }

@@ -81,6 +81,7 @@
 #include "cctk_ActiveThorns.h"
 #include "cctk_Banner.h"
 #include "cctk_Cache.h"
+#include "cctk_CommandLine.h"
 #include "cctk_Complex.h"
 #include "cctk_Coord.h"
 #include "cctk_File.h"

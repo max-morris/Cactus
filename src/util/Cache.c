@@ -33,7 +33,7 @@ static int cache_set = 0;
  ********************************************************************/
 
  /*@@
-   @routine    CCTK_CacheMalloc
+   @routine    Util_CacheMalloc
    @date       Tue Nov 30 08:13:03 1999
    @author     Tom Goodale
    @desc 
@@ -73,7 +73,7 @@ static int cache_set = 0;
    @endreturndesc
 
 @@*/
-void *CCTK_CacheMalloc(unsigned index, 
+void *Util_CacheMalloc(unsigned index, 
                        unsigned long size, 
                        void **realstart)
 {
@@ -85,7 +85,7 @@ void *CCTK_CacheMalloc(unsigned index,
   unsigned long initial_index;
   unsigned long pad;
 
-  if(CCTKi_CacheDataGet(&cacheline_bytes, &cache_size))
+  if(Utili_CacheDataGet(&cacheline_bytes, &cache_size))
   {
     cacheline_bytes = 0;
     cache_size = 0;
@@ -126,7 +126,7 @@ void *CCTK_CacheMalloc(unsigned index,
  ********************************************************************/
 
  /*@@
-   @routine    CCTKi_CacheDataSet
+   @routine    Utili_CacheDataSet
    @date       Tue Nov 30 08:12:05 1999
    @author     Tom Goodale
    @desc 
@@ -159,7 +159,7 @@ void *CCTK_CacheMalloc(unsigned index,
    @endreturndesc
 
 @@*/
-int CCTKi_CacheDataSet(unsigned long cacheline_bytes,
+int Utili_CacheDataSet(unsigned long cacheline_bytes,
                        unsigned long cache_size)
 {
   cache_data.cacheline_bytes = cacheline_bytes;
@@ -171,7 +171,7 @@ int CCTKi_CacheDataSet(unsigned long cacheline_bytes,
 }
 
  /*@@
-   @routine    CCTKi_CacheDataGet
+   @routine    Utili_CacheDataGet
    @date       Tue Nov 30 08:12:41 1999
    @author     Tom Goodale
    @desc 
@@ -205,7 +205,7 @@ int CCTKi_CacheDataSet(unsigned long cacheline_bytes,
    @endreturndesc
 
 @@*/
-int CCTKi_CacheDataGet(unsigned long *cacheline_bytes,
+int Utili_CacheDataGet(unsigned long *cacheline_bytes,
                        unsigned long *cache_size)
 {
   int retcode;

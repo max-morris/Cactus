@@ -42,7 +42,7 @@ static int ScheduleTraverseFunction(void *function,
  ********************************************************************/
 
  /*@@
-   @routine    CCTKi_ScheduleTraverse
+   @routine    CCTKi_DoScheduleTraverse
    @date       Thu Sep 16 09:05:23 1999
    @author     Tom Goodale
    @desc 
@@ -55,7 +55,7 @@ static int ScheduleTraverseFunction(void *function,
    @endhistory 
 
 @@*/
-int CCTKi_ScheduleTraverse(const char *group_name,
+int CCTKi_DoScheduleTraverse(const char *group_name,
                            int (*item_entry)(void *, void *),
                            int (*item_exit)(void *, void *),
                            int  (*while_check)(int, char **, void *, void *),
@@ -67,7 +67,7 @@ int CCTKi_ScheduleTraverse(const char *group_name,
   int handle;
   int retcode;
 
-  schedule_groups = CCTKi_ScheduleGetGroups();
+  schedule_groups = CCTKi_DoScheduleGetGroups();
 
   handle = Util_GetHandle(schedule_groups, group_name, (void *)&group);
 
@@ -330,19 +330,19 @@ int main(int argc, char *argv[])
 {
   t_sched_modifier *modifier;
 
-  modifier = CCTKi_ScheduleAddModifer(NULL, "before", "c");
-  modifier = CCTKi_ScheduleAddModifer(modifier, "after",  "a");
+  modifier = CCTKi_DoScheduleAddModifer(NULL, "before", "c");
+  modifier = CCTKi_DoScheduleAddModifer(modifier, "after",  "a");
 
-  CCTKi_ScheduleFunction("group_a", "c", func_c, NULL, NULL);
-  CCTKi_ScheduleFunction("group_a", "b", func_b, modifier, NULL);
-  CCTKi_ScheduleFunction("group_a", "a", func_a, NULL, NULL);
-  CCTKi_ScheduleFunction("group_b", "a", func_a, NULL, NULL);
-  CCTKi_ScheduleFunction("group_b", "b", func_b, NULL, NULL);
-  CCTKi_ScheduleGroup("group_a", "group_b", modifier, NULL);
+  CCTKi_DoScheduleFunction("group_a", "c", func_c, NULL, NULL);
+  CCTKi_DoScheduleFunction("group_a", "b", func_b, modifier, NULL);
+  CCTKi_DoScheduleFunction("group_a", "a", func_a, NULL, NULL);
+  CCTKi_DoScheduleFunction("group_b", "a", func_a, NULL, NULL);
+  CCTKi_DoScheduleFunction("group_b", "b", func_b, NULL, NULL);
+  CCTKi_DoScheduleGroup("group_a", "group_b", modifier, NULL);
 
-  CCTKi_ScheduleSortAllGroups();
+  CCTKi_DoScheduleSortAllGroups();
 
-  CCTKi_ScheduleTraverse("group_a", NULL, NULL, NULL, fprocess, NULL);
+  CCTKi_DoScheduleTraverse("group_a", NULL, NULL, NULL, fprocess, NULL);
 
   return 0;
 }

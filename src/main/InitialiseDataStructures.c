@@ -14,16 +14,16 @@ static char *rcsid = "$Id$";
 #include <string.h>
 
 #include "cctk_Flesh.h"
+#include "cctk_ActiveThorns.h"
+#include "cctki_ActiveThorns.h"
+#include "cctki_Cache.h"
 
 /* FIXME - remove this when ActiveThorns doesn't need it */
 #include "SKBinTree.h"
 
-#include "cctk_ActiveThorns.h"
-
-#include "cctki_Cache.h"
 
  /*@@
-   @routine    InitialiseDataStructures
+   @routine    CCTKi_InitialiseDataStructures
    @date       Wed Jan 20 09:27:56 1999
    @author     Tom Goodale
    @desc 
@@ -37,7 +37,7 @@ static char *rcsid = "$Id$";
 
 @@*/
 
-int InitialiseDataStructures(tFleshConfig *ConfigData)
+int CCTKi_InitialiseDataStructures(tFleshConfig *ConfigData)
 {
 
   CCTKi_RegisterDefaultTimerFunctions();

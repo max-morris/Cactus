@@ -12,8 +12,7 @@
 #include <stdio.h>
 
 #include "cctk_Flesh.h"
-#include "cctk.h"
-#include "cctk_parameters.h"
+#include "cctk_Parameters.h"
 #include "rfrConstants.h"
 #include "rfrInterface.h"
 
@@ -47,7 +46,7 @@ static int cactus_terminate_global = 0;
 
 /* Local function prototypes. */
 
-int CCTK_StepGH(cGH *GH);
+int StepGH(cGH *GH);
  
 
 /* the iteration counter used in the evolution loop */
@@ -162,7 +161,7 @@ int CactusDefaultEvolve(tFleshConfig *config)
     ForallConvLevels(iteration, convergence_level)
     {
 
-      CCTK_StepGH(config->GH[convergence_level]);
+      StepGH(config->GH[convergence_level]);
       /*
       CCTK_InfoOutput(config->GH[convergence_level], convergence_level);
       */
@@ -217,14 +216,8 @@ int CactusDefaultEvolve(tFleshConfig *config)
 
 /************************************************************************/
 
-/* The following routines have been nicked from 3.0 for the moment. */
-
-
-
-
-
  /*@@
-   @routine    CStepper
+   @routine    StepGH
    @date       Fri Aug 14 12:39:49 1998
    @author     Gerd Lanfermann
    @desc 
@@ -236,7 +229,7 @@ int CactusDefaultEvolve(tFleshConfig *config)
    @calledby main   
  @@*/
 
-int CCTK_StepGH(cGH *GH) 
+int StepGH(cGH *GH) 
 {
 
   void PreStepper(cGH *GH);
@@ -246,7 +239,7 @@ int CCTK_StepGH(cGH *GH)
   /* Advance GH->iteration BEFORE evolving */
 #ifdef DEBUG_CCTK
   CCTK_PRINTSEPARATOR
-  printf("In CCTK_StepGH\n--------------\n");
+  printf("In StepGH\n--------------\n");
   printf("  Advancing GH->iteration to %lu = %lu + 1\n",(GH->cctk_iteration+1),
          GH->cctk_iteration);
   CCTK_PRINTSEPARATOR
@@ -260,7 +253,7 @@ int CCTK_StepGH(cGH *GH)
   /* Advance GH->time AFTER evolving */
 #ifdef DEBUG_CCTK
   CCTK_PRINTSEPARATOR
-  printf("In CCTK_StepGH\n--------------\n");
+  printf("In StepGH\n--------------\n");
   printf("  Advancing GH->cctk_time %f = %f + %f\n",GH->cctk_time+GH->cctk_delta_time,
          GH->cctk_time,GH->cctk_delta_time);
   CCTK_PRINTSEPARATOR

@@ -15,10 +15,10 @@ extern "C"
 {
 #endif
 
-int CCTKi_CacheDataSet(unsigned long cacheline_bytes,
+int Utili_CacheDataSet(unsigned long cacheline_bytes,
                        unsigned long cache_size);
 
-int CCTKi_CacheDataGet(unsigned long *cacheline_bytes,
+int Utili_CacheDataGet(unsigned long *cacheline_bytes,
                        unsigned long *cache_size);
 
 #ifdef __cplusplus

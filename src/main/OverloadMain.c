@@ -45,7 +45,7 @@ static char *rcsid="$Header$";
 #undef OVERLOADABLE
 
  /*@@
-   @routine    SetupMainFunctions
+   @routine    CCTKi_SetupMainFunctions
    @date       Thu Feb  4 09:02:49 1999
    @author     Tom Goodale
    @desc 
@@ -58,7 +58,7 @@ static char *rcsid="$Header$";
    @endhistory 
 
 @@*/
-int SetupMainFunctions(void)
+int CCTKi_SetupMainFunctions(void)
 {
 
 #define OVERLOADABLE(name) OVERLOADABLE_CHECK(name)

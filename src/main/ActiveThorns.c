@@ -20,7 +20,7 @@
 static char *rcsid = "$Header$";
 
 /* Local routine */
-static int CCTK_RegisterImp(const char *name, const char *thorn);
+static int RegisterImp(const char *name, const char *thorn);
 
 /* Structures used to store data */
 struct THORN
@@ -95,7 +95,7 @@ int CCTKi_RegisterThorn(const char *name, const char *imp)
         {
 
           /* Register the implementation */
-          CCTK_RegisterImp(imp, name);
+          RegisterImp(imp, name);
 
           retval = 0;
         }
@@ -123,7 +123,7 @@ int CCTKi_RegisterThorn(const char *name, const char *imp)
 }
 
  /*@@
-   @routine    CCTK_RegisterImp
+   @routine    RegisterImp
    @date       Sun Jul  4 17:44:42 1999
    @author     Tom Goodale
    @desc 
@@ -136,7 +136,7 @@ int CCTKi_RegisterThorn(const char *name, const char *imp)
    @endhistory 
 
 @@*/
-static int CCTK_RegisterImp(const char *name, const char *thorn)
+static int RegisterImp(const char *name, const char *thorn)
 {
   int retval;
   t_sktree *node;
@@ -483,7 +483,7 @@ void FMODIFIER FORTRAN_NAME(CCTK_IsImplementationActive)
 }
 
  /*@@
-   @routine    CCTKi_ListThorns
+   @routine    CCTKi_PrintThorns
    @date       Mon Jul  5 10:02:15 1999
    @author     Tom Goodale
    @desc 
@@ -497,7 +497,7 @@ void FMODIFIER FORTRAN_NAME(CCTK_IsImplementationActive)
    @endhistory 
 
 @@*/
-int CCTKi_ListThorns(FILE *file, const char *format, int active)
+int CCTKi_PrintThorns(FILE *file, const char *format, int active)
 {
   int retval;
   t_sktree *node;
@@ -522,7 +522,7 @@ int CCTKi_ListThorns(FILE *file, const char *format, int active)
 }
 
  /*@@
-   @routine    CCTKi_ListImplementations
+   @routine    CCTKi_PrintImps
    @date       Mon Jul  5 10:08:19 1999
    @author     Tom Goodale
    @desc 
@@ -536,7 +536,7 @@ int CCTKi_ListThorns(FILE *file, const char *format, int active)
    @endhistory 
 
 @@*/
-int CCTKi_ListImplementations(FILE *file, const char *format, int active)
+int CCTKi_PrintImps(FILE *file, const char *format, int active)
 {
   int retval;
   t_sktree *node;
@@ -561,7 +561,7 @@ int CCTKi_ListImplementations(FILE *file, const char *format, int active)
 }
 
  /*@@
-   @routine    CCTK_ImplementationList
+   @routine    CCTKi_ImplementationList
    @date       Thu Oct 14 16:14:22 1999
    @author     Andre Merzky
    @desc 
@@ -574,7 +574,7 @@ int CCTKi_ListImplementations(FILE *file, const char *format, int active)
    @endhistory 
 
 @@*/
-int CCTK_ImplementationList(int active, char ***list, int *n_implementations)
+int CCTKi_ImplementationList(int active, char ***list, int *n_implementations)
 {
   int retval;
   t_sktree *node;
@@ -605,7 +605,7 @@ int CCTK_ImplementationList(int active, char ***list, int *n_implementations)
 
 
  /*@@
-   @routine    CCTK_ThornList
+   @routine    CCTKi_ThornList
    @date       Sun Oct 17 17:49:23 1999
    @author     Tom Goodale
    @desc 
@@ -618,7 +618,7 @@ int CCTK_ImplementationList(int active, char ***list, int *n_implementations)
    @endhistory 
 
 @@*/
-int CCTK_ThornList(int active, char ***list, int *n_items)
+int CCTKi_ThornList(int active, char ***list, int *n_items)
 {
   int retval;
   t_sktree *node;
@@ -649,7 +649,7 @@ int CCTK_ThornList(int active, char ***list, int *n_items)
 
 
  /*@@
-   @routine    CCTK_ImplementationThornList
+   @routine    CCTKi_ImplementationThornList
    @date       Thu Oct 14 16:04:59 1999
    @author     Andre Merzky
    @desc 
@@ -662,7 +662,7 @@ int CCTK_ThornList(int active, char ***list, int *n_items)
    @endhistory 
 
 @@*/
-int CCTK_ImplementationThornList (const char *imp, char ***list, int *n_items)
+int CCTKi_ImplementationThornList (const char *imp, char ***list, int *n_items)
 {
   int       retval;
   t_sktree *node;

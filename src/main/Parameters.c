@@ -81,26 +81,26 @@ typedef struct PARAMTREENODE
 } t_paramtreenode;
 
 static t_param *ParameterFind(const char *name, 
-                                  const char *thorn, 
-                                  int scope);
+			      const char *thorn, 
+			      int scope);
 
 static t_param *ParameterNew(const char *thorn,
-                                 const char *name,
-                                 const char *type,
-                                 const char *scope,
-                                 int        steerable,
-                                 const char *description,
-                                 const char *defval,
-                                 void       *data);
+			     const char *name,
+			     const char *type,
+			     const char *scope,
+			     int        steerable,
+			     const char *description,
+			     const char *defval,
+			     void       *data);
 
-static int ParameterCheck       (const char *thorn,
-                                 const char *name,
-                                 const char *type,
-                                 const char *scope,
-                                 int        steerable,
-                                 const char *description,
-                                 const char *defval,
-                                 void       *data);
+static int ParameterCheck(const char *thorn,
+			  const char *name,
+			  const char *type,
+			  const char *scope,
+			  int        steerable,
+			  const char *description,
+			  const char *defval,
+			  void       *data);
 
 static void *ParameterGetSimple (t_param *param, 
                                  int *type);
@@ -143,7 +143,7 @@ static int ParameterSetBoolean  (t_param *param, const char *value);
 static t_sktree *paramtree=NULL;
 
 /*@@
-   @routine    ParameterCreate
+   @routine    CCTKi_ParameterCreate
    @date       Tue Jun 29 10:08:56 1999
    @author     Tom Goodale
    @desc 
@@ -213,16 +213,16 @@ static t_sktree *paramtree=NULL;
    @endreturndesc
 
 @@*/
-int ParameterCreate(const char *name,
-                    const char *thorn,
-                    const char *type,
-                    const char *scope,
-                    int        steerable,
-                    const char *description,
-                    const char *defval,
-                    void       *data,
-                    int n_ranges,
-                    ...)
+int CCTKi_ParameterCreate(const char *name,
+			  const char *thorn,
+			  const char *type,
+			  const char *scope,
+			  int        steerable,
+			  const char *description,
+			  const char *defval,
+			  void       *data,
+			  int n_ranges,
+			  ...)
 {
   int retval;
   int iscope;
@@ -269,7 +269,7 @@ int ParameterCreate(const char *name,
 }
 
 /*@@
-   @routine    ParameterAddRange
+   @routine    CCTKi_ParameterAddRange
    @date       Tue Jun 29 10:15:53 1999
    @author     Tom Goodale
    @desc 
@@ -323,11 +323,11 @@ int ParameterCreate(const char *name,
    @endreturndesc
 
 @@*/
-int ParameterAddRange(const char *implementation, 
-                      const char *name,
-                      const char *range_origin,
-                      const char *range,
-                      const char *range_description)
+int CCTKi_ParameterAddRange(const char *implementation, 
+			    const char *name,
+			    const char *range_origin,
+			    const char *range,
+			    const char *range_description)
 {
   int retval;
   t_param *param;
@@ -412,9 +412,10 @@ int ParameterAddRange(const char *implementation,
    @endreturndesc
 
 @@*/
-int ParameterSet(const char *name,
-                 const char *thorn,
-                 const char *value)
+
+int CCTK_ParameterSet(const char *name,
+		      const char *thorn,
+		      const char *value)
 {
   int retval;
   t_param *param;
@@ -1730,11 +1731,11 @@ struct
 
 int main(void)
 {
-  ParameterCreate("a", "thorn1", "imp1", "int", "global", 0,
-                  "The a param", "2", &(params.a));
+  CCTKi_ParameterCreate("a", "thorn1", "imp1", "int", "global", 0,
+			"The a param", "2", &(params.a));
 
-  ParameterCreate("foo", "thorn2", "imp2", "keyword", "private", 0,
-                  "The foo param", "bingo", &(params.foo));
+  CCTKi_ParameterCreate("foo", "thorn2", "imp2", "keyword", "private", 0,
+			"The foo param", "bingo", &(params.foo));
 
   printf("Testing thorn,null\n");
 
