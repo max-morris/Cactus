@@ -389,11 +389,11 @@ sub RunCactus
       $retcode = $1 + 0;
     }
   }
-  print STDOUT "\n\n" if ($output =~ /stdout/);
-
   close LOG;
   close CMD;
   $retcode = $? >> 8 if($retcode==0);
+
+  print STDOUT "\n\n" if ($output =~ /stdout/);
  
   return $retcode;
 }
@@ -810,7 +810,7 @@ sub CompareTestFiles
     $newfile = "$test_dir$sep$file"; 
     $oldfile = "$testdata->{\"$inthorn TESTSDIR\"}${sep}${test}${sep}$file";
 
-    if ( -e $newfile)
+    if ( -e $newfile && -s $newfile && -s $oldfile)
     {
       open (INORIG, "<$oldfile") || print "Warning: Archive file $oldfile not found";
       open (INNEW,  "<$newfile") || print "Warning: Test file $newfile not found";
@@ -930,11 +930,31 @@ sub CompareTestFiles
       } #while
 
     }
-    else
+    elsif (-e $newfile && -z $oldfile && -s $newfile)
     {
-      print "     $newfile not there for comparison\n";
+      print "     $file in archive but not in test\n";
       $rundata->{"$inthorn $test NFAILWEAK"}++;
       $rundata->{"$inthorn $test NFAILSTRONG"}++;
+    }
+    elsif (-e $newfile && -s $oldfile && -z $newfile)
+    {
+      print "     $file is empty\n";
+      $rundata->{"$inthorn $test NFAILWEAK"}++;
+      $rundata->{"$inthorn $test NFAILSTRONG"}++;
+    }
+    elsif (-e $newfile && -z $oldfile && -z $newfile)      
+    {
+      print "     $file empty in both test and archive\n";
+    }
+    elsif (-e $newfile && -s $oldfile && -s $newfile)      
+    {
+      print "     $file not created for comparison\n";
+      $rundata->{"$inthorn $test NFAILWEAK"}++;
+      $rundata->{"$inthorn $test NFAILSTRONG"}++;
+    }
+    else
+    {
+      print "     TESTSUITE ERROR: $newfile not compared\n";
     }
 
     for ($count = 0; $count < $nold; $count++)
@@ -942,7 +962,14 @@ sub CompareTestFiles
       if ($maxdiff[$count])
       {
         $rundata->{"$inthorn $test $file MAXABSDIFF $count"} = $maxdiff[$count];
-        $rundata->{"$inthorn $test $file MAXRELDIFF $count"} = $maxdiff[$count]/$valmax[$count];
+	if ($valmax[$count] > 0)
+	{
+	  $rundata->{"$inthorn $test $file MAXRELDIFF $count"} = $maxdiff[$count]/$valmax[$count];
+	}
+	else
+	{
+	  print "ERROR: How did I get here, maximum difference is $maxdiff[$count] and maximum value if $valmax[$count]\n";
+	}
       }
       else
       {
