@@ -649,7 +649,7 @@ which is run by the CST to detect features and write any configuration
 files;  the script may output lines to its standard output to inform
 the CST of features to: add to the header files included by thorns
 using this capability; add to the make files used to build thorns
-using this capability; or to the main Cactus link line.  The script
+using this capability; or add to the main Cactus link line.  The script
 may also indicate that this capability is not present by returning a
 non-zero exit code --- e.g., if the thorn is providing access to an
 external library, it should return an error if the library is not
@@ -690,7 +690,7 @@ in the ThornList, and, if a thorn providing
 \verb|Yet_Another_Capability| is in the ThornList, the preprocessor
 macro \verb|macro| will be defined, and set to 1.
 
-As and example a thorn A may be able to use PVM for parallelism if it is
+As an example a thorn A may be able to use PVM for parallelism if it is
 present, but can still work in the absence of it.  There could be a
 thorn providing PVM, and thorn A would then have
 
