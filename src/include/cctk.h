@@ -13,7 +13,7 @@
 
 /* Grab the main configuration info. */
 
-#include "config.h"
+#include "cctk_config.h"
 
 /* Define which thorn the file is in */
 
@@ -107,7 +107,7 @@
             int       *cctk_lsh=cctkGH->cctk_lsh;\
             int       *cctk_lbnd=cctkGH->cctk_lbnd;\
             int       *cctk_ubnd=cctkGH->cctk_ubnd;\
-            int       *cctk_lssh=cctkGH->cctk_lssh;\
+            int      **cctk_lssh=cctkGH->cctk_lssh;\
             int       *cctk_from=cctkGH->cctk_from;\
             int       *cctk_to=cctkGH->cctk_to;\
             int       *cctk_bbox=cctkGH->cctk_bbox;\
