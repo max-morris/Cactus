@@ -30,14 +30,13 @@ CCTK_FILEVERSION(util_File_c)
 
 /* Some systems don't have mode_t and only pass one argument to mkdir. */
 #ifdef HAVE_MODE_T
-#define mkdir(a,b) mkdir(a,b)
+#define MKDIR_WRAPPER(a,b) mkdir(a,b)
 #else
 
 /* FIXME: Temporary kludge until everyone has reconfigured */ 
 #ifdef WIN32
-#define mkdir(a,b) mkdir(a)
+#define MKDIR_WRAPPER(a,b) mkdir(a)
 #else
-#define mkdir(a,b) mkdir(a,b)
 /* Should just be the clause with one argument, this one should go. */
 #endif /* WIN32 */
 
@@ -178,7 +177,7 @@ int CCTK_MkDirs(const char *pathname, int mode)
       if(stat(current, &statbuf))
       {
         CCTK_VInfo("Cactus","Creating directory: \"%s\"", current);
-        if(mkdir(current, mode) == -1)
+        if(MKDIR_WRAPPER(current, mode) == -1)
         {
           CCTK_VWarn(0,__LINE__,__FILE__,"Cactus","Failed to create directory \"%s\"", current);
           retval = -2;
@@ -207,7 +206,7 @@ int CCTK_MkDirs(const char *pathname, int mode)
         if(stat(pathname, &statbuf))
         {
           CCTK_VInfo("Cactus","Creating directory: \"%s\"", pathname);
-          if(mkdir(pathname, mode) == -1)
+          if(MKDIR_WRAPPER(pathname, mode) == -1)
           {
             CCTK_VWarn(0,__LINE__,__FILE__,"Cactus","Failed to create directory \"%s\"", pathname);
             retval = -2;
