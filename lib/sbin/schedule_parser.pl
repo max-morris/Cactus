@@ -164,7 +164,7 @@ sub create_RegisterSTARTUP
 
   print OUT <<EOT;
 
-  Cactus_RegisterSTARTUP()
+  void Cactus_RegisterSTARTUP()
   {
    $startup_calls
   }
