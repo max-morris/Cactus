@@ -21,7 +21,7 @@
 #include "cctk_FortranString.h"
 #include "cctk_IO.h"
 
-static char *rcsid = "$Header$";
+static const char *rcsid = "$Header$";
 
 CCTK_FILEVERSION (IO_IOMethods_c)
 

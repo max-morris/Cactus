@@ -22,7 +22,7 @@
 #include "cctk_Stagger.h"
 #include "cctki_Stagger.h"
 
-static char *rcsid = "$Header$";
+static const char *rcsid = "$Header$";
 
 CCTK_FILEVERSION(main_Stagger_c)
 

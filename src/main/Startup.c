@@ -9,7 +9,7 @@
 
 #include "cctk_Flesh.h"
 
-static char *rcsid = "$Header$";
+static const char *rcsid = "$Header$";
 
 CCTK_FILEVERSION(main_Startup_c)
 

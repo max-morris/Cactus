@@ -11,7 +11,7 @@
 #include "cctk_Flesh.h"
 #include "CactusRegister.h"
 
-static char *rcsid = "$Header$";
+static const char *rcsid = "$Header$";
 
 CCTK_FILEVERSION(main_Subsystems_c)
 

@@ -31,7 +31,7 @@
 #include "cctk_FortranString.h"
 #include "cctk_WarnLevel.h"
 
-static char *rcsid = "$Header$";
+static const char *rcsid = "$Header$";
 
 CCTK_FILEVERSION(util_Misc_c)
 

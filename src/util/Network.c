@@ -22,7 +22,7 @@
 #include <winsock2.h>
 #endif /* HAVE_WINSOCK2_H */
 
-static char *rcsid = "$Header$";
+static const char *rcsid = "$Header$";
 
 CCTK_FILEVERSION(util_Network_c)
 

@@ -9,7 +9,7 @@
 
 #include "cctk.h"
 
-static char *rcsid = "$Header$";
+static const char *rcsid = "$Header$";
 
 CCTK_FILEVERSION(main_CactusDefaultMainLoopIndex_c)
 

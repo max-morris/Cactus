@@ -16,7 +16,7 @@
 #include "StoreNamedData.h"
 #include "cctk_Flesh.h"
 
-static char *rcsid = "$Header$";
+static const char *rcsid = "$Header$";
 
 CCTK_FILEVERSION(util_StoreNamedData_c)
  

@@ -23,7 +23,7 @@
 #include "cctk_WarnLevel.h"
 #include "cctki_WarnLevel.h"
 
-static char *rcsid = "$Header$";
+static const char *rcsid = "$Header$";
 CCTK_FILEVERSION(main_WarnLevel_c)
 
 

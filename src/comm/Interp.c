@@ -31,7 +31,7 @@
 #include "cctk_WarnLevel.h"
 #include "cctk_Coord.h"
 
-static char *rcsid = "$Header$";
+static const char *rcsid = "$Header$";
 
 CCTK_FILEVERSION(comm_Interp_c)
 

@@ -15,7 +15,7 @@
 #include "cctk_Schedule.h"
 #include "cctk_Parameter.h"
 
-static char *rcsid = "$Header$";
+static const char *rcsid = "$Header$";
 
 CCTK_FILEVERSION(main_MainUtils_c)
 

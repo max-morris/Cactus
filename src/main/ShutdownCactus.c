@@ -15,7 +15,7 @@
 #include "cctk_Parameter.h"
 #include "cctk_Schedule.h"
 
-static char *rcsid = "$Header$";
+static const char *rcsid = "$Header$";
 
 CCTK_FILEVERSION(main_ShutdownCactus_c)
 

@@ -26,7 +26,7 @@
 
 /*#define DEBUG_GROUPS*/
 
-static char *rcsid = "$Header$";
+static const char *rcsid = "$Header$";
 CCTK_FILEVERSION(main_Groups_c)
 
 

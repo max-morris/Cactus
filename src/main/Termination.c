@@ -17,7 +17,7 @@
 #include "cctk_Main.h"
 #include "cctk_IO.h"
 
-static char *rcsid="$Header$";
+static const char *rcsid="$Header$";
 
 CCTK_FILEVERSION(main_Termination_c)
 

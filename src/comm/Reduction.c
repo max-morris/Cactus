@@ -23,7 +23,7 @@
 
 #include "StoreHandledData.h"
 
-static char *rcsid = "$Header$";
+static const char *rcsid = "$Header$";
 
 CCTK_FILEVERSION(comm_Reduction_c)
 

@@ -13,7 +13,7 @@
 #include "cctk_Version.h"
 #include "cctki_version.h"
 
-static char *rcsid = "$Header$";
+static const char *rcsid = "$Header$";
 
 const char *CCTKi_version_src_datestamp_c(void);
 const char *CCTKi_version_src_datestamp_c(void) { return rcsid; }

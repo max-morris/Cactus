@@ -24,7 +24,7 @@
 #include "CactusMainDefaults.h"
 #include "CactusCommFunctions.h"
 
-static char *rcsid = "$Id$";
+static const char *rcsid = "$Id$";
 
 CCTK_FILEVERSION(main_CactusDefaultInitialise_c)
 

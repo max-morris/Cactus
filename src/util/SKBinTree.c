@@ -21,7 +21,7 @@ int STR_cmpi(const char *string1, const char *string2);
 
 #define STR_CMP(a,b) STR_cmpi(a,b)
 
-static char *rcsid = "$Header$";
+static const char *rcsid = "$Header$";
 
 CCTK_FILEVERSION(util_SKBinTree_c)
 

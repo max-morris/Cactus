@@ -18,7 +18,7 @@
 #include "StoreHandledData.h"
 #include "Schedule.h"
 
-static char *rcsid="$Header$";
+static const char *rcsid="$Header$";
 
 CCTK_FILEVERSION(schedule_ScheduleCreater_c)
 

@@ -17,7 +17,7 @@
 #include "cctki_ActiveThorns.h"
 #include "cctki_Cache.h"
 
-static char *rcsid = "$Header$";
+static const char *rcsid = "$Header$";
 
 CCTK_FILEVERSION(main_InitialiseDataStructures_c)
 

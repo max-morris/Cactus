@@ -19,7 +19,7 @@
 #include "cctk_ActiveThorns.h"
 #include "cctk_FortranString.h"
 
-static char *rcsid = "$Header$";
+static const char *rcsid = "$Header$";
 
 CCTK_FILEVERSION(main_ActiveThorns_c)
 
