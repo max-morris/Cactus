@@ -965,6 +965,13 @@ The following variable is needed for grid refinement methods
 \item {\tt cctk\_levfac} The factor by which the local grid is refined
         with respect to the base grid.
 \end{itemize}
+
+The following variable is used for identifing convergence levels. {\tt NOTE:} Convergence is not currently implemented by Cactus, so that {\tt cctk\_convlevel} is currently always 0.
+\begin{itemize}
+\item {\tt cctk\_convlevel} The convergence level of this grid hierachy. 
+ 	The base level is 0, and every level above that is currently coarsened 	       by a factor of 2.
+\end{itemize}
+ 
 The variables {\tt cctk\_delta\_space} and {\tt cctk\_delta\_time}
 denote the grid spacings on the {\em base} grid. If you are using 
 a grid refinement method, you need yo calculate the grid spacings
