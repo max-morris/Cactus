@@ -564,7 +564,7 @@ sub parse_schedule_at_RFR {
 
 	$out .= "  index = CCTK_GroupIndex(\"$use_imp\:\:$this_group\");\n";
 	$out .= "  if (index < 0) {\n";
-	$out .= "    printf(\"CCTK_GroupIndex failed in ".$thorn."_rfr.c\\n\");\n";
+	$out .= "    printf(\"CCTK_GroupIndex(\\\"$use_imp\:\:$this_group\\\") failed in ".$thorn."_rfr.c\\n\");\n";
         $out .= "  } else {\n"; 
 	$out .= "    rfrRegisterStorage(GH->rfr_top,GH,$routine,index);\n";
         $out .= "  }\n";
@@ -595,7 +595,7 @@ sub parse_schedule_at_RFR {
 	}
 	$out .= "  index = CCTK_GroupIndex(\"$this_imp\:\:$this_group\");\n";
 	$out .= "  if (index < 0) {\n";
-	$out .= "    printf(\"CCTK_GroupIndex failed in ".$thorn."_rfr.c\\n\");\n";
+	$out .= "    printf(\"CCTK_GroupIndex(\\\"$this_imp\:\:$this_group\\\") failed in ".$thorn."_rfr.c\\n\");\n";
         $out .= "  } else {\n";
         $out .= "    rfrRegisterCommunication(GH->rfr_top,GH,$routine,index);\n";
         $out .= "  }\n";
