@@ -330,14 +330,10 @@ sub CreateFortranArgumentDeclarations
 
       $ntimelevels = $4;
 
-      for($level = $ntimelevels; $level > 0; $level--)
+      for($level = 1; $level <= $ntimelevels; $level++)
       {
 	# Modify the name for the time level 
-	if($ntimelevels == 1)
-	{
-	  $suffix = "";
-	}
-	elsif($level == $ntimelevels)
+	if($level == 1)
 	{
 	  $suffix = "";
 	}
@@ -441,14 +437,10 @@ sub CreateCArgumentDeclarations
 
       $ntimelevels = $5;
 
-      for($level = $ntimelevels; $level > 0; $level--)
+      for($level = 1; $level <= $ntimelevels; $level++)
       {
 	# Modify the name for the time level 
-	if($ntimelevels == 1)
-	{
-	  $suffix = "";
-	}
-	elsif($level == $ntimelevels)
+	if($level == 1)
 	{
 	  $suffix = "";
 	}
@@ -552,14 +544,10 @@ sub CreateCArgumentUses
 
       $ntimelevels = $5;
 
-      for($level = $ntimelevels; $level > 0; $level--)
+      for($level = 1; $level <= $ntimelevels; $level++)
       {
 	# Modify the name for the time level 
-	if($ntimelevels == 1)
-	{
-	  $suffix = "";
-	}
-	elsif($level == $ntimelevels)
+	if($level == 1)
 	{
 	  $suffix = "";
 	}
@@ -625,14 +613,10 @@ sub CreateFortranArgumentList
 	
 	$ntimelevels = $4;
 	
-	for($level = $ntimelevels; $level > 0; $level--)
+	for($level = 1; $level <= $ntimelevels; $level++)
 	{
 	  # Modify the name for the time level 
-	  if($ntimelevels == 1)
-	  {
-	    $suffix = "";
-	  }
-	  elsif($level == $ntimelevels)
+	  if($level == 1)
 	  {
 	    $suffix = "";
 	  }
@@ -786,7 +770,7 @@ sub CreateCArgumentPrototype
 	
 	$ntimelevels = $4;
 	
-	for($level = $ntimelevels; $level > 0; $level--)
+	for($level = 1; $level <= $ntimelevels; $level++)
 	{
 	  if($1 eq "CHAR")
 	  {
@@ -900,7 +884,7 @@ sub CreateCArgumentList
 	
 	$ntimelevels = $4;
 	
-	for($level = $ntimelevels; $level > 0; $level--)
+	for($level = 1; $level <= $ntimelevels; $level++)
 	{
 	  if($1 eq "BYTE")
 	  {
