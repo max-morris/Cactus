@@ -288,6 +288,9 @@ from Fortran.
   [\pageref{CCTK-NumGroups}] 
   Get the number of groups of variables compiled in the code
 
+\item[CCTK\_NumIOMethods] 
+  [\pageref{CCTK-_NumIOMethods}] 
+
 \item[CCTK\_NumTimeLevelsFromVarI]   
   [\pageref{CCTK-NumTimeLevelsFromVarI}] 
   Gives the number of timelevels for a variable
@@ -2834,141 +2837,194 @@ The group name should be given in the form {\t <implementation>::<group>}
 % OOO
 %%%%%
 
+\begin{FunctionDescription}{CCTK\_NumIOMethods}
+\label{CCTK-NumIOMethods}
+\begin{Synopsis}{C}
+\begin{verbatim}
+int num_methods = CCTK_NumIOMethods (void);
+\end{verbatim}
+\end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}
+call CCTK_NumIOMethods (num_methods)
+
+integer num_methods
+\end{verbatim}
+\end{Synopsis}
+\begin{Parameter}{num\_methods}number of registered IO methods\end{Parameter}
+\begin{Discussion}
+Returns the total number of IO methods registered with the flesh.
+\end{Discussion}
+\end{FunctionDescription}
+
 
 % IOOverloadables.h
-\begin{CCTKFunc}{CCTK\_OutputVarAs}{}
+\begin{FunctionDescription}{CCTK\_OutputVarAs}
 \label{CCTK-OutputVarAs}
-\subroutine{int}{}{istat}
-\argument{cGH *}{}{cctkGH}
-\argument{const char *}{character*(*)}{variable}
-\argument{const char *}{character*(*)}{alias}
-\showargs
-\begin{params}
-\parameter{istat}{return flag}
-\parameter{cctkGH}{pointer to CCTK grid hierarchy}
-\parameter{variable}{full name of variable to output}
-\parameter{alias}{name to base output file on}
-\end{params}
-\begin{discussion}
-Output a variable {\t variable} looping over all registered methods. 
-The output should take place if at all possible,
-if the appropriate file exists the data is appended, otherwise a new
+\begin{Synopsis}{C}
+\begin{verbatim}
+int istat = CCTK_OutputVarAs (const cGH *cctkGH,
+                              const char *variable,
+                              const char *alias);
+\end{verbatim}
+\end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}
+call CCTK_OutputVarAsByMethod (istat, cctkGH, variable, alias)
+
+integer istat
+CCTK_POINTER cctkGH
+character*(*) variable
+character*(*) alias
+\end{verbatim}
+\end{Synopsis}
+\begin{Parameter}{istat}return status\end{Parameter}
+\begin{Parameter}{cctkGH}pointer to CCTK grid hierarchy\end{Parameter}
+\begin{Parameter}{variable}full name of variable to output\end{Parameter}
+\begin{Parameter}{alias}alias name to base the output filename on\end{Parameter}
+\begin{Discussion}
+Output a variable {\t variable} looping over all registered IO methods. 
+The output should take place if at all possible.
+If the appropriate file exists the data is appended, otherwise a new
 file is created. Uses {\t alias} as the name of the variable for the purpose
 of constructing a filename.
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
+\end{Discussion}
+\begin{Error}{positive}the number of IO methods which did output of {\t variable}\end{Error}
+\begin{Error}{0}for success\end{Error}
+\begin{Error}{negative}if no IO methods were registered\end{Error}
+\end{FunctionDescription}
 
 
 % IOOverloadables.h
-\begin{CCTKFunc}{CCTK\_OutputVarAsByMethod}{}
+\begin{FunctionDescription}{CCTK\_OutputVarAsByMethod}
 \label{CCTK-OutputVarAsByMethod}
-\subroutine{int}{}{istat}
-\argument{cGH *}{}{cctkGH}
-\argument{const char *}{character*(*)}{variable}
-\argument{const char *}{character*(*)}{method}
-\argument{const char *}{character*(*)}{alias}
-\showargs
-\begin{params}
-\parameter{istat}{return flag}
-\parameter{cctkGH}{pointer to CCTK grid hierarchy}
-\parameter{variable}{full name of variable to output}
-\parameter{method}{method to use for output}
-\parameter{alias}{name to base output file on}
-\end{params}
-\begin{discussion}
+\begin{Synopsis}{C}
+\begin{verbatim}
+int istat = CCTK_OutputVarAsByMethod (const cGH *cctkGH,
+                                      const char *variable,
+                                      const char *method,
+                                      const char *alias);
+\end{verbatim}
+\end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}
+call CCTK_OutputVarAsByMethod (istat, cctkGH, variable, method, alias)
+
+integer istat
+CCTK_POINTER cctkGH
+character*(*) variable
+character*(*) method
+character*(*) alias
+\end{verbatim}
+\end{Synopsis}
+\begin{Parameter}{istat}return status\end{Parameter}
+\begin{Parameter}{cctkGH}pointer to CCTK grid hierarchy\end{Parameter}
+\begin{Parameter}{variable}full name of variable to output\end{Parameter}
+\begin{Parameter}{method}method to use for output\end{Parameter}
+\begin{Parameter}{alias}alias name to base the output filename on\end{Parameter}
+\begin{Discussion}
 Output a variable {\t variable} using the method {\t method} if it is 
 registered. Uses {\t alias} as the name of the variable for the purpose
-of constructing a filename. The output should take place if at all possible,
-if the appropriate file exists the data is appended, otherwise a new
+of constructing a filename. The output should take place if at all possible.
+If the appropriate file exists the data is appended, otherwise a new
 file is created.
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
+\end{Discussion}
+\begin{Error}{0}for success\end{Error}
+\begin{Error}{negative}indicating some error (eg. IO method is not registered)\end{Error}
+\end{FunctionDescription}
 
 % IOOverloadables.h
-\begin{CCTKFunc}{CCTK\_OutputVarByMethod}{}
+\begin{FunctionDescription}{CCTK\_OutputVarByMethod}
 \label{CCTK-OutputVarByMethod}
-\subroutine{int}{}{istat}
-\argument{cGH *}{}{cctkGH}
-\argument{const char *}{character*(*)}{variable}
-\argument{const char *}{character*(*)}{method}
-\showargs
-\begin{params}
-\parameter{istat}{return flag}
-\parameter{cctkGH}{pointer to CCTK grid hierarchy}
-\parameter{variable}{full name of variable to output}
-\parameter{method}{method to use for output}
-\end{params}
-\begin{discussion}
-Output a variable {\t variable} using the method {\t method} if it is 
-registered. The output should take place if at all possible,
+\begin{Synopsis}{C}
+\begin{verbatim}
+int istat = CCTK_OutputVarByMethod (const cGH *cctkGH,
+                                    const char *variable,
+                                    const char *method);
+\end{verbatim}
+\end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}
+call CCTK_OutputVarByMethod (istat, cctkGH, variable, method)
+
+integer istat
+CCTK_POINTER cctkGH
+character*(*) variable
+character*(*) method
+\end{verbatim}
+\end{Synopsis}
+\begin{Parameter}{istat}return status\end{Parameter}
+\begin{Parameter}{cctkGH}pointer to CCTK grid hierarchy\end{Parameter}
+\begin{Parameter}{variable}full name of variable to output\end{Parameter}
+\begin{Parameter}{method}method to use for output\end{Parameter}
+\begin{Discussion}
+Output a variable {\t variable} using the IO method {\t method} if it is 
+registered. The output should take place if at all possible.
 if the appropriate file exists the data is appended, otherwise a new
 file is created.
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
+\end{Discussion}
+\begin{Error}{0}for success\end{Error}
+\begin{Error}{negative}indicating some error (eg. IO method is not registered)\end{Error}
+\end{FunctionDescription}
 
 % IOOverloadables.h
-\begin{CCTKFunc}{CCTK\_OutputVar}{}
+\begin{FunctionDescription}{CCTK\_OutputVar}
 \label{CCTK-OutputVar}
-\subroutine{int}{}{istat}
-\argument{cGH *}{}{cctkGH}
-\argument{const char *}{character*(*)}{variable}
-\showargs
-\begin{params}
-\parameter{istat}{return flag}
-\parameter{cctkGH}{pointer to CCTK grid hierarchy}
-\parameter{variable}{full name of variable to output}
-\end{params}
-\begin{discussion}
+\begin{Synopsis}{C}
+\begin{verbatim}
+int istat = CCTK_OutputVar (const cGH *cctkGH,
+                            const char *variable);
+\end{verbatim}
+\end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}
+call CCTK_OutputVar (istat, cctkGH, variable)
+
+integer istat
+CCTK_POINTER cctkGH
+character*(*) variable
+\end{verbatim}
+\end{Synopsis}
+\begin{Parameter}{istat}return status\end{Parameter}
+\begin{Parameter}{cctkGH}pointer to CCTK grid hierarchy\end{Parameter}
+\begin{Parameter}{variable}full name of variable to output\end{Parameter}
+\begin{Discussion}
 Output a variable {\t variable} looping over all registered methods. 
-The output should take place if at all possible,
-if the appropriate file exists the data is appended, otherwise a new
+The output should take place if at all possible.
+If the appropriate file exists the data is appended, otherwise a new
 file is created.
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
+\end{Discussion}
+\begin{Error}{0}for success\end{Error}
+\begin{Error}{negative}for some error condition (eg. IO method is not registered)\end{Error}
+\end{FunctionDescription}
 
 
 % IOOverloadables.h
-\begin{CCTKFunc}{CCTK\_OutputGH}{}
+\begin{FunctionDescription}{CCTK\_OutputGH}
 \label{CCTK-OutputGH}
-\subroutine{int}{integer}{istat}
-\argument{cGH *}{CCTK\_POINTER}{cctkGH}
-\showargs
-\begin{params}
-\parameter{cctkGH}{pointer to CCTK grid hierarchy}
-\end{params}
-\begin{discussion}
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
+\begin{Synopsis}{C}
+\begin{verbatim}
+int istat = CCTK_OutputGH (const cGH *cctkGH);
+\end{verbatim}
+\end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}
+call CCTK_OutputGH (istat, cctkGH)
+
+integer istat
+CCTK_POINTER cctkGH
+\end{verbatim}
+\end{Synopsis}
+\begin{Parameter}{istat}return status\end{Parameter}
+\begin{Parameter}{cctkGH}pointer to CCTK grid hierarchy\end{Parameter}
+\begin{Discussion}
+Output all variables living on the GH looping over all registered IO methods.
+The IO methods decide themselfes whether it is time to do output now or not.
+\end{Discussion}
+\begin{Error}{positive}total number of variables for which output was done by all IO methods\end{Error}
+\begin{Error}{0}if it wasn't time to output anything yet by any IO method\end{Error}
+\begin{Error}{-1}if no IO methods were registered\end{Error}
+\end{FunctionDescription}
 
 
 
