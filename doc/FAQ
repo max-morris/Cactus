@@ -1,7 +1,7 @@
 
 Cactus Code Frequently Asked Questions
 
-$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.74 2003-12-23 06:01:09 allen Exp $
+$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.75 2003-12-31 03:14:25 allen Exp $
 
 Also available at http://www.cactuscode.org/Documentation/FAQ
 
@@ -140,8 +140,6 @@ C29 On linking I get an "unresolved text symbol" for a scheduled function
 C30 (Linux) Using the Intel Fortran compiler I get the error "/usr/bin/ld
     cannot find -lintrins" on linking.
 
-C31 Why can't I use different F90 and F77 compilers with Cactus?
-
 C31 I just want to check that one thorn compiles correctly, can I test 
     this without compiling all the thorns which come before it?
 
@@ -161,6 +159,8 @@ C35 I started building a Cactus configuration and it asked me if
 
 C36 (Linux) Compiling Cactus with Redhat 8 or 9 it fails in CactusBase/IOUtil
     because the system failed to find <sys/stat.h>
+
+C37 Why can't I use different F90 and F77 compilers with Cactus?
 
 
 ------------------------------------------------------------------------------
@@ -1070,6 +1070,16 @@ C36 (Linux) Compiling Cactus with Redhat 8 or 9 with Intel compilers my build
  /* The Single Unix specification says that some more types are
     available here.  */
  # ifndef __dev_t_defined
+
+C37 Why can't I use different F90 and F77 compilers with Cactus?
+
+    Because Cactus does some automatic name mangling to allow you to call 
+    Fortran routines from C and vice-versa, and different compilers will use 
+    different conventions for the way that they generate routine names in 
+    the object files. This means that you would only be able to use different 
+    compilers for F90 and F77 if they used the same conventions. In 
+    principle we could check to make sure that they are compatible, but for 
+    now we require you to use the same compiler for both F77 and F90 code.
 
 
 ------------------------------------------------------------------------------
