@@ -55,7 +55,7 @@ else
      : ${CXX_DEPEND_OUT=' > $@'}
      ;;
     xlC|xlC_r)
-     : ${CXX_DEPEND='$(CPP) -M $(CPPFLAGS)'}
+     : ${CXX_DEPEND='$(CXX) -E -M $(CPPFLAGS)'}
      : ${CXX_DEPEND_OUT=' > /dev/null ; mv $(basename $(basename $@)).u $@'}
      : ${CXXFLAGS="-qspill=10000"}
      ;;
