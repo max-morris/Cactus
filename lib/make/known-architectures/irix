@@ -6,10 +6,12 @@
 #    @desc 
 #   
 #    @enddesc 
-#    @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/irix,v 1.4 1999-04-14 09:14:57 goodale Exp $
+#    @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/irix,v 1.5 1999-04-30 13:32:46 tradke Exp $
 #  @@*/
 
-IRIX_CPU="`hinv | grep CPU | sed 's/^[^R]*R\([01-9]*\).*$/\1/`"
+# extract the CPU type from hinv output
+# (assumes all processors are of equal type :-)
+IRIX_CPU="`hinv -t cpu | tail -n 1 | sed 's/^[^R]*R\([01-9]*\).*$/\1/'`"
 
 case $IRIX_CPU in
     10000)
