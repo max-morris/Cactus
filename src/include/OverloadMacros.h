@@ -51,7 +51,6 @@ int call##Overload##name(RETURN_TYPE (*func)(ARGUMENTS))            \
   {                                                                 \
     if(overloaded < 2)                                              \
     {                                                               \
-       printf("Overloading %s%s\n",#prefix,#name);                  \
        prefix##name = func;                                         \
        overloaded++;                                                \
        return_code = overloaded;                                    \
