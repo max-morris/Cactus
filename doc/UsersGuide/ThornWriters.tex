@@ -516,10 +516,11 @@ the number of timelevels of each group for which storage should be activated.
  This number can range from one to the maximum number of timelevels for the group as specified in the group definition in its {\tt interface.ccl} file. If this maximum number is one, the timelevel specification can be omitted from the
 {\tt STORAGE} statement.
 
-\item[{\tt TRIGGERS}] {\tt TRIGGERS} is used when the routine is registered at {\tt ANALYSIS} ---
-this is a
-special time bin, a routine registered here will only be called if one of
-the variables from a group in {\tt TRIGGERS} is due for output.
+\item[{\tt TRIGGERS}] {\tt TRIGGERS} is used when the routine is
+registered at {\tt ANALYSIS}.  This is a special time bin; a routine
+registered here will only be called if one of the variables from a
+group in {\tt TRIGGERS} is due for output.  (A routine without {\tt
+TRIGGERS} declaration will always be called.)
 
 \item[{\tt SYNC}]
 The keyword {\tt SYNC} specifies groups of variables which should be
@@ -1316,9 +1317,10 @@ which memory should be allocated for the duration of the routine or
 schedule group.  The storage status reverts to its previous status
 after completion of the routine or schedule group.
 \item[\texttt{TRIGGER}]
-This is only used for items scheduled at timebin {\tt CCTK\_ANALYSIS}.  The
-item will only be executed if output is due for at least one
-variable in one of the listed groups.
+This is only used for items scheduled at timebin {\tt CCTK\_ANALYSIS}.
+The item will only be executed if output is due for at least one
+variable in one of the listed groups.  (The item will also be called
+if there is no group listed.)
 \item[\texttt{SYNC}]
 On exit from this item the ghost zones of the listed groups will be
 exchanged.
@@ -1345,7 +1347,9 @@ trigger groups for the routine are checked with all registered output
 methods to determine if it is time to output any triggers. The routine
 will only be called if at least one is due to be output. Note that once
 a grid variable has been analyzed it gets marked as such and will not
-be analyzed again during this iteration. Thus if more than one analysis
+be analyzed again during this iteration.
+(Note that a routine without any trigger groups will also be called.)
+Thus if more than one analysis
 routine should be triggered on the same trigger variable(s) they must
 be scheduled in a single group.\\
 Routines from all timebins other than {\tt ANALYSIS} are always called.
