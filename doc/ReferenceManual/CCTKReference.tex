@@ -3282,7 +3282,8 @@ The number of input arrays to be interpolated.
 If {\tt N\_input\_arrays} is zero then no interpolation is done; such a call
 may be useful for setup, interpolator querying, etc.
 Note that if the parameter table entry \verb|operand_indices| is used to specify
-a nontrivial (eg. 1-to-many) mapping of input arrays to output arrays, only the
+a nontrivial (e.g.\ one-to-many) mapping of input arrays to output arrays,
+only the
 unique set of input arrays should be given here.
 \end{Parameter}
 \begin{Parameter}{input\_array\_variable\_indices ($\ne$ NULL)}
@@ -3290,15 +3291,15 @@ unique set of input arrays should be given here.
 returned by \verb|CCTK_VarIndex()|) specifying the input grid arrays for the
 interpolation. For any element with an index value of -1 in the grid array
 indices array, that interpolation is skipped. This may be useful if the main
-purpose of the call is eg. to do some query or setup computation.
+purpose of the call is e.g.\ to do some query or setup computation.
 \end{Parameter}
 \begin{Parameter}{N\_output\_arrays ($\ge 0$)}
 The number of output arrays to be returned from the interpolation.
 If {\tt N\_output\_arrays} is zero then no interpolation is done; such a call
 may be useful for setup, interpolator querying, etc.
-Note that {\tt N\_output\_arrays} may differ from {\tt N\_input\_arrays}, eg.
+Note that {\tt N\_output\_arrays} may differ from {\tt N\_input\_arrays}, e.g.\
 if the {\tt operand\_indices} parameter-table entry is used to specify a
-nontrivial (eg. many-to-1) mapping of input arrays to output arrays.
+nontrivial (e.g.\ many-to-1) mapping of input arrays to output arrays.
 If such a mapping is specified, only the unique set of output arrays
 should be given in the {\tt output\_arrays} argument.
 \end{Parameter}
@@ -3312,7 +3313,7 @@ type codes giving the data types of the 1-D output arrays pointed to by
 (user-supplied) 1-D output arrays for the interpolation.
 If any of the pointers in the {\tt output\_arrays} array is NULL, then that
 interpolation is skipped. This may be useful if the main purpose of the call
-is eg. to do some query or setup computation.
+is e.g.\ to do some query or setup computation.
 \end{Parameter}
 \end{ParameterSection}
 
@@ -3387,7 +3388,7 @@ Details of the operation performed, and what (if any) inputs and/or
 outputs are specified in the parameter table, depend on which driver-specific
 interpolation thorn and interpolation operator (provided by a local
 interpolation thorn) you use.  See the documentation on individual interpolator
-thorns (eg. {\tt PUGHInterp} in the {\tt CactusPUGH} arrangement,
+thorns (e.g.\ {\tt PUGHInterp} in the {\tt CactusPUGH} arrangement,
 {\tt LocalInterp} in the {\tt CactusBase} arrangement, and/or
 {\tt AEILocalInterp} in the {\tt AEIThorns} arrangement) for details.
 
@@ -3455,7 +3456,7 @@ This error code is also returned if a processor's chunk of the global grid
 is smaller than the actual molecule size.
 \end{Error}
 \begin{Error}{UTIL\_ERROR\_BAD\_INPUT}
-one or more of the input arguments is invalid (eg.~\verb|NULL| pointer)
+one or more of the input arguments is invalid (e.g.~\verb|NULL| pointer)
 \end{Error}
 \begin{Error}{UTIL\_ERROR\_NO\_MEMORY}
 unable to allocate memory
@@ -3998,7 +3999,7 @@ in the \verb|src/include/| directory in the Cactus flesh.
 %notyet the AEILocalInterp thorn for further details)
 %notyet \end{Error}
 %notyet \begin{Error}{UTIL\_ERROR\_BAD\_INPUT}
-%notyet one or more of the inputs is invalid (eg.~\verb|NULL| pointer)
+%notyet one or more of the inputs is invalid (e.g.~\verb|NULL| pointer)
 %notyet \end{Error}
 %notyet \begin{Error}{UTIL\_ERROR\_NO\_MEMORY}
 %notyet unable to allocate memory
@@ -4300,7 +4301,7 @@ the molecule size chosen by the interpolator (based on the parameter-table
 options, e.g.\ the interpolation order)
 \end{Error}
 \begin{Error}{UTIL\_ERROR\_BAD\_INPUT}
-one or more of the inputs is invalid (eg.~\verb|NULL| pointer)
+one or more of the inputs is invalid (e.g.~\verb|NULL| pointer)
 \end{Error}
 \begin{Error}{UTIL\_ERROR\_NO\_MEMORY}
 unable to allocate memory
@@ -4630,7 +4631,7 @@ in the \verb|src/include/| directory in the Cactus flesh.
 %notyet the AEILocalInterp thorn for further details)
 %notyet \end{Error}
 %notyet \begin{Error}{UTIL\_ERROR\_BAD\_INPUT}
-%notyet one or more of the inputs is invalid (eg.~\verb|NULL| pointer)
+%notyet one or more of the inputs is invalid (e.g.~\verb|NULL| pointer)
 %notyet \end{Error}
 %notyet \begin{Error}{UTIL\_ERROR\_NO\_MEMORY}
 %notyet unable to allocate memory
@@ -5596,7 +5597,7 @@ file is created.
 for success
 \end{Error}
 \begin{Error}{negative}
-for some error condition (eg. IO method is not registered)
+for some error condition (e.g.\ IO method is not registered)
 \end{Error}
 \end{ErrorSection}
 \end{FunctionDescription}
@@ -5693,7 +5694,7 @@ file is created.
 
 \begin{ErrorSection}
 \begin{Error}{\rm 0}for success\end{Error}
-\begin{Error}{negative}indicating some error (eg. IO method is not registered)\end{Error}
+\begin{Error}{negative}indicating some error (e.g.\ IO method is not registered)\end{Error}
 \end{ErrorSection}
 \end{FunctionDescription}
 
@@ -5737,7 +5738,7 @@ file is created.
 
 \begin{ErrorSection}
 \begin{Error}{\rm 0}for success\end{Error}
-\begin{Error}{negative}indicating some error (eg. IO method is not registered)\end{Error}
+\begin{Error}{negative}indicating some error (e.g.\ IO method is not registered)\end{Error}
 \end{ErrorSection}
 \end{FunctionDescription}
 
