@@ -101,16 +101,17 @@ static int ScheduleTraverse(const char *where,
                             int (*CallFunction)(void *, cFunctionData *, void *));
 
 static t_attribute *CreateAttribute(const char *where,
-                                    const char *routine,
+                                    const char *name,
                                     const char *description,
                                     const char *language,
-                                    const char *name,
                                     const char *thorn,
+                                    const char *implementation,
                                     int n_mem_groups,
                                     int n_comm_groups,
                                     int n_trigger_groups,
                                     int n_sync_groups,
                                     int n_options,
+                                    const int *timelevels,
                                     va_list *ap);
 
 static int ParseOptionList(int n_items,
@@ -357,6 +358,10 @@ int CCTK_CallFunction(void *function,
    @vtype   int
    @vio     in
    @endvar
+   @var     timelevels
+   @vdesc   The number of timelevels of the storage groups to enable.
+   @vtype   const int *
+   @vio     in
    @var     ...
    @vdesc   remaining options
    @vtype   multiple const char *
@@ -384,6 +389,7 @@ int CCTKi_ScheduleFunction(void *function,
                            int n_before,
                            int n_after,
                            int n_while,
+                           const int *timelevels, 
                            ...
                            )
 {
@@ -392,11 +398,11 @@ int CCTKi_ScheduleFunction(void *function,
   t_sched_modifier *modifier;
   va_list ap;
 
-  va_start(ap, n_while);
+  va_start(ap, timelevels);
 
   attribute = CreateAttribute(where,name,description, language, thorn, implementation,
                               n_mem_groups, n_comm_groups, n_trigger_groups,
-                              n_sync_groups, n_options, &ap);
+                              n_sync_groups, n_options, timelevels, &ap);
   modifier  = CreateModifiers(n_before, n_after, n_while, &ap);
 
   va_end(ap);
@@ -497,6 +503,9 @@ int CCTKi_ScheduleFunction(void *function,
    @vtype   int
    @vio     in
    @endvar
+   @var     timelevels
+   @vdesc   The number of timelevels of the storage groups to enable.
+   @vtype   const int *
    @var     ...
    @vdesc   remaining options
    @vtype   multiple const char *
@@ -522,6 +531,7 @@ int CCTKi_ScheduleGroup(const char *name,
                         int n_before,
                         int n_after,
                         int n_while,
+                        const int *timelevels, 
                         ...
                         )
 {
@@ -530,11 +540,11 @@ int CCTKi_ScheduleGroup(const char *name,
   t_sched_modifier *modifier;
   va_list ap;
 
-  va_start(ap, n_while);
+  va_start(ap, timelevels);
 
   attribute = CreateAttribute(where,name,description, NULL, thorn, implementation,
                               n_mem_groups, n_comm_groups, n_trigger_groups,
-                              n_sync_groups, n_options, &ap);
+                              n_sync_groups, n_options, timelevels, &ap);
   modifier  = CreateModifiers(n_before, n_after, n_while, &ap);
 
   va_end(ap);
@@ -575,14 +585,18 @@ int CCTKi_ScheduleGroup(const char *name,
    @vtype   const char *
    @vio     in
    @endvar
-
+   @var     timelevels
+   @vdesc   The number of timelevels of this group to enable.
+   @vtype   int
+   @vio     in
+ 
    @returntype int
    @returndesc
    Group index or
    -1 - memory failure
    @endreturndesc
 @@*/
-int CCTKi_ScheduleGroupStorage(const char *group)
+int CCTKi_ScheduleGroupStorage(const char *group, int timelevels)
 {
   int *temp;
   int *temp2;
@@ -598,8 +612,7 @@ int CCTKi_ScheduleGroupStorage(const char *group)
     scheduled_storage_groups = temp;
     scheduled_storage_groups_timelevels = temp2;
 
-    /* FIXME: set to -1 (enable all) until the info is passed in from the ccl*/
-    scheduled_storage_groups_timelevels[n_scheduled_storage_groups-1] = -1;    
+    scheduled_storage_groups_timelevels[n_scheduled_storage_groups-1] = timelevels;    
   }
 
   return (temp && temp2  ? temp[n_scheduled_storage_groups-1] : -1);
@@ -1149,6 +1162,9 @@ static int ScheduleTraverse(const char *where,
    @vtype   int
    @vio     in
    @endvar
+   @var     timelevels
+   @vdesc   The number of timelevels of the storage groups to enable.
+   @vtype   const int *
    @var     ap
    @vdesc   options
    @vtype   va_list of multiple const char *
@@ -1173,6 +1189,7 @@ static t_attribute *CreateAttribute(const char *where,
                                     int n_trigger_groups,
                                     int n_sync_groups,
                                     int n_options,
+                                    const int *timelevels,
                                     va_list *ap)
 {
   char *timername;
@@ -1233,10 +1250,9 @@ static t_attribute *CreateAttribute(const char *where,
       CreateGroupIndexList(n_trigger_groups, this->FunctionData.TriggerGroups, ap);
       CreateGroupIndexList(n_sync_groups,    this->FunctionData.SyncGroups, ap);
 
-      /* FIXME: this is a temporary hack until we read the timelevel data in */
       for(i=0; i< n_mem_groups; i++)
       {
-        this->timelevels[i] = -1;
+        this->timelevels[i] = timelevels[i];
       }
 
       /* Check the miscellaneous options */

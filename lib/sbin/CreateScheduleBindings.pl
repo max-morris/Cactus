@@ -512,12 +512,28 @@ sub ScheduleBlock
                                     $rhinterface_db);
 
 
+  # Create a block so that we can have local variables.
+  $buffer = "  {\n";
+
+  # Create the timelevel array
+  $buffer .= "    int cctkschedulei_tlevelarray[] = {";
+
+  foreach $i (@$tlist)
+  {
+    $buffer .= "$i,";
+  }
+
+  # Add a final number to make sure we have at least one number in array
+  # Can also be used to detect end of array.
+
+  $buffer .= "0};\n";
+  
   # Start writing out the data 
   if($rhschedule_db->{"\U$thorn\E BLOCK_$block TYPE"} eq "GROUP")
   {
     $prototype = "";
-    $buffer = "  CCTKi_ScheduleGroup(";
-    $indent = "                     ";
+    $buffer .= "    CCTKi_ScheduleGroup(";
+    $indent = "                       ";
     $language = "";
   }
   elsif($rhschedule_db->{"\U$thorn\E BLOCK_$block TYPE"} eq "FUNCTION")
@@ -539,8 +555,8 @@ sub ScheduleBlock
       return ("", "");
     }
     $prototype = "extern int $function(void); /* Note that this is a cheat, we just need a function pointer. */\n";
-    $buffer = "  CCTKi_ScheduleFunction((void *)$function,\n";
-    $indent = "                        ";
+    $buffer .= "    CCTKi_ScheduleFunction((void *)$function,\n";
+    $indent = "                          ";
     $buffer .= "$indent";
   }
   else
@@ -575,7 +591,8 @@ sub ScheduleBlock
   $buffer .= $indent . scalar(@options) . ",                          /* Number of Options           */\n";
   $buffer .= $indent . scalar(@before_list) . ",                      /* Number of BEFORE  routines  */\n";
   $buffer .= $indent . scalar(@after_list) . ",                       /* Number of AFTER   routines  */\n";
-  $buffer .= $indent . scalar(@while_list) . "                        /* Number of WHILE   variables */";
+  $buffer .= $indent . scalar(@while_list) . ",                        /* Number of WHILE   variables */\n";
+  $buffer .= $indent . "cctkschedulei_tlevelarray                    /* Array of timelevel data for storage groups */";
   
   foreach $item (@$mem_groups, @$comm_groups, @$trigger_groups, @$sync_groups, 
                  @options, @before_list, @after_list, @while_list)
@@ -584,6 +601,9 @@ sub ScheduleBlock
   }
 
   $buffer .= ");\n\n";
+
+  # Close this block.
+  $buffer .= "  }\n";
 
   return ($buffer, $prototype);
 }
@@ -609,7 +629,6 @@ sub ScheduleStatement
   my($buffer, $prototype);
   my($groups);
   my($misc);
-  my($group);
 
   # Extract the groups.
   ($groups,$misc) = &ScheduleSelectGroups($thorn, $implementation, 
@@ -623,17 +642,14 @@ sub ScheduleStatement
     $function = "CCTKi_ScheduleGroupStorage(";
     $prototype = "";
 
-    foreach $group (@$groups)
-    {
-      $buffer .= "  $function " . "\"" . $group . "\"" . ");\n"
-    }
+    my $i;
 
-    $function = "CCTKi_ScheduleGroupComm(";
-    $prototype = "";
-
-    foreach $group (@$groups)
+    for($i=0; $i < @$groups; $i++)
     {
-      $buffer .= "  $function " . "\"" . $group . "\"" . ");\n"
+      my $group     = $$groups[$i];
+      my $timelevel = $$misc[$i];
+
+      $buffer .= "  $function\"$group\",$timelevel);\n"
     }
   }
   elsif($rhschedule_db->{"\U$thorn\E STATEMENT_$statement TYPE"} eq "COMM")
@@ -883,6 +899,20 @@ sub ScheduleSelectVars
   return @vars;
 }
 
+#/*@@
+#  @routine    ScheduleValidateTimeLevels
+#  @date       Tue Apr 16 15:22:02 2002
+#  @author     Tom Goodale
+#  @desc 
+#  Validate the timelevel specifiers for a group list.
+#  @enddesc 
+#  @calls     
+#  @calledby   
+#  @history 
+#
+#  @endhistory 
+#
+#@@*/
 sub ScheduleValidateTimeLevels
 {
   my($thorn, $implementation, $groups,$timelevels_list, $rhinterface_db) = @_;
