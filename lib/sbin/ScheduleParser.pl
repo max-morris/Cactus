@@ -579,7 +579,7 @@ sub check_schedule_database
 	if ($rhschedule_db->{"\U$thorn\E BLOCK_$block WHERE"} !~ m:CCTK_(STARTUP|PARAMCHECK|BASEGRID|INITIAL|POSTINITIAL|RECOVER_VARIABLES|POST_RECOVER_VARIABLES|RECOVER_PARAMETERS|CHECKPOINT|CPINITIAL|PRESTEP|EVOL|POSTSTEP|ANALYSIS|TERMINATE|SHUTDOWN):)
 	{
 	  $message = "Scheduling routine $rhschedule_db->{\"\U$thorn\E BLOCK_$block NAME\"} from thorn $thorn in non-existent group or timebin $rhschedule_db->{\"\U$thorn\E BLOCK_$block WHERE\"}";
-	  $hint = "If this routine should be scheduled check the spelling of the group or timebin name. Note that scheduling IN must use full names for standard timebins (e.g. CCTK_EVOL and not EVOL)";
+	  $hint = "If this routine should be scheduled check the spelling of the group or timebin name. Note that scheduling IN must be used to schedule a routine to run in a thorn-defined schedule group, whereas scheduling AT is used for a usual timebin. (Schedule IN may also be used with the usual timebins, but in this case the full name of the bin must be used, e.g. CCTK_EVOL and not EVOL)";
 	  &CST_error(1,$message,$hint,__LINE__,__FILE__);
 	}
       }
