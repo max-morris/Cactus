@@ -13,7 +13,6 @@
 #include "cctk_Flesh.h"
 #include "cctk_Misc.h"
 #include "cctk_Schedule.h"
-#include "cctk_Parameters.h"
 
 static char *rcsid = "$Header$";
 
@@ -35,8 +34,10 @@ CCTK_FILEVERSION(main_ShutdownCactus_c)
 @@*/
 int CCTKi_ShutdownCactus(tFleshConfig *ConfigData)
 {
+  int param_type;
+  const char *cctk_timer_output;
 
-  DECLARE_CCTK_PARAMETERS
+  cctk_timer_output = (*(const char **)CCTK_ParameterGet("cctk_timer_output","Cactus",&param_type));
 
   if (CCTK_Equals(cctk_timer_output,"full"))
   {
