@@ -4,15 +4,11 @@
 # Version: $Id$
 #
 
-$config = $ARGV[0];
+# Fix this for NT
+$sep = "/";
+$seps = "/";
 
-if ($machine eq "CYGWIN_NT-4.0" || $machine eq "CYGWIN32_NT") {
-    $sep = "\\";
-    $seps = "\\\\";
-} else {
-    $sep = "/";
-    $seps = "/";
-}
+$config = $ARGV[0];
 
 $tolerance = 13;
 
@@ -37,7 +33,8 @@ else
   $configs_dir = "configs";
 }
 
-$command = &defprompt("Enter Command to run cactus code","./cactus_$config");
+$executable = &defprompt("Enter executable name (relative to Cactus home dir)",".${sep}cactus_$config");
+$command = &defprompt("Enter command to run executable"," ");
 
 $tests = &defprompt("Run All tests or go to Menu",
                         "All");
@@ -59,45 +56,54 @@ if (!open (AT, "< $scratchdir${sep}ThornList")) {
     }
 }
 
+$ntests = 0;
 foreach $t (@testfiles) {
+    $ntests++;
     open (IN, "< $t") || die "$t";
     $j = <IN>;
     $name = <IN>;
     close IN;
     $name =~ s/\#//;
     $name =~ s/\n//;
-    $testnames{$t} = $name;
+    $testnames{$ntests} = $name;
 }
 
 if ($tests =~ /All/) {
-    foreach $t (@testfiles) {
-        &runtest($t);
-    }
+  $ntests=0;
+  foreach $t (@testfiles) {
+    $ntests++;
+    &runtest($t,$ntests);
+  }
 } else {
-    $choice = test01;
-    while (!($choice =~ /quit/i) ) {
-        print "\n--- Menu ---\n";
-        foreach $t (@testfiles) {
-            $t =~ m:${seps}([^${seps}]+).par$:;
-            $num = $1;
-            $inp{$num} = $t;
-            $sp = "     ";
-            print "$num:$sp$testnames{$t}\n";
-        }
-        print "\n  Enter Choice, eg test01 (quit to end) : ";
-        $choice = <STDIN>;
-        $choice =~ s/\n//;
-        $choice =~ s/\s//;
-        print "\n";
-        $ip = $inp{$choice};
-        if (!($choice =~ m/quit/i)) {
-            &runtest($ip);
-        }
+  $choice = test01;
+  $ntests = 0;
+  foreach $t (@testfiles) {
+    $ntests++;
+    $t =~ m:${seps}([^${seps}]+).par$:;
+    $num = $1;
+    $inp{$num} = $t;
+    $testnum{$ntests} = $num;
+  }
+  while (!($choice =~ /quit/i) ) {
+    print "\n--- Menu ---\n";
+    $sp = "     ";
+    for ($i=1;$i<$ntests+1;$i++) {
+      print "[$i] $testnum{$num}: $testnames{$i}\n";
     }
+    print "\n  Enter Choice, eg test01 (quit to end) : ";
+    $choice = <STDIN>;
+    $choice =~ s/\n//;
+    $choice =~ s/\s//;
+    print "\n";
+    $ip = $inp{$testnum{$choice}};
+    if (!($choice =~ m/quit/i)) {
+      &runtest($ip,$choice);
+    }
+  }
 }
 
 sub runtest {
-    local ($inpf) = @_;
+    local ($inpf,$num) = @_;
     $tsttop = ".${sep}TEST";
     mkdir ($tsttop,0755);
 
@@ -105,39 +111,13 @@ sub runtest {
     $tp =~ s:^.*$seps::;
     $tp =~ s/.par//;
  
-    if ($testnames{$inpf} =~ /SINGLE PROC/ && $nprocs > 1) {
-        print "Test $tp: $testnames{$inpf}\n";
-        print "  This test only runs on a single processor\n";
-        print "$ansibold  Test skipped on $nprocs processors$ansinormal\n";
-        print "\n\n";
-        return;
-    }
-
-    if ($ENV{'CACTUS_PRECISION'} eq 'SINGLE') {
-        if ($testnames{$inpf} !~ /SINGLE PRECISION/) {
-            print "Test $tp: $testnames{$inpf}\n";
-            print "  This test works only in double precision\n";
-            print "$ansibold  Test skipped$ansinormal\n";
-            print "\n\n";
-            return;
-        }
-    } else {
-        if ($testnames{$inpf} =~ /SINGLE PRECISION/) {
-            print "Test $tp: $testnames{$inpf}\n";
-            print "  This test works only in single precision\n";
-            print "$ansibold  Test skipped$ansinormal\n";
-            print "\n\n";
-            return;
-        }
-    }
-
     $test_base_dir = $inpf;
     $test_base_dir =~ s:[^${seps}]*$::;
 
     $pretest  = "$test_base_dir$tp.pretest";
     $posttest = "$test_base_dir$tp.posttest";
 
-    print "Running $tp: $testnames{$inpf}\n";
+    print "Running $tp: $testnames{$num}\n";
 
     unlink(<$tsttop${sep}$tp${sep}*.*>);
 
@@ -164,7 +144,7 @@ sub runtest {
         }
     }
  
-    $cmd = "(..$sep$command ..$sep$inpf)";
+    $cmd = "($command `pwd`$sep..$sep$executable ..$sep$inpf)";
 
     chdir ($tsttop);
 
