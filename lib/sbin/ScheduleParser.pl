@@ -254,7 +254,8 @@ sub ParseScheduleBlock
     {
       if($keyword ne "")
       {
-	print STDERR "Error parsing schedule block line '$data[$line_number]'\n";
+	$message = "Error parsing schedule block line '$data[$line_number]'\n";
+	&CST_error(0,$message,__LINE,__FILE__);
 	$CST_errors++;
       }
       $keyword = "BEFORE";
@@ -264,7 +265,8 @@ sub ParseScheduleBlock
     {
       if($keyword ne "")
       {
-	print STDERR "Error parsing schedule block line '$data[$line_number]'\n";
+	$message="Error parsing schedule block line '$data[$line_number]'\n";
+	&CST_error(0,$message,__LINE,__FILE__);
 	$CST_errors++;
       }
       $keyword = "AFTER";
@@ -274,7 +276,8 @@ sub ParseScheduleBlock
     {
       if($keyword ne "")
       {
-	print STDERR "Error parsing schedule block line '$data[$line_number]'\n";
+	$message="Error parsing schedule block line '$data[$line_number]'\n";
+	&CST_error(0,$message,__LINE,__FILE__);
 	$CST_errors++;
       }
       $keyword = "WHILE";
@@ -344,7 +347,8 @@ sub ParseScheduleBlock
     }
     else
     {
-      print STDERR "Error parsing schedule block line '$data[$line_number]'\n";
+      $message="Error parsing schedule block line '$data[$line_number]'\n";
+      &CST_error(0,$message,__LINE,__FILE__);
       $CST_errors++;
       $keyword = "";
       $field++;
@@ -362,8 +366,8 @@ sub ParseScheduleBlock
 
   if($data[$line_number] !~ m:\s*\{\s*:)
   {
-    print STDERR "Error parsing schedule block line '$data[$line_number]'\n";
-    print STDERR "Missing { at start of block\n";
+    $message="Error parsing schedule block line '$data[$line_number]'\nMissing { at start of block\n";
+    &CST_error(0,$message,__LINE,__FILE__);
     $CST_errors++;
     $line_number++ while($data[$line_number] !~ m:\s*\}\s*:);
   }
@@ -410,8 +414,8 @@ sub ParseScheduleBlock
       }
       else
       {
-	print STDERR "Error parsing schedule block line '$data[$line_number]'\n";
-	print STDERR "Unrecognised statement\n";
+	$message = "Error parsing schedule block line '$data[$line_number]'\nUnrecognised statement";
+	&CST_error(0,$message,__LINE,__FILE__);
 	$CST_errors++;
       }
     }
@@ -422,7 +426,8 @@ sub ParseScheduleBlock
   }
   else
   {
-    print STDERR "Error: Missing description at end of schedule block\n";
+    $message = "Error: Missing description at end of schedule block\n";
+    &CST_error(0,$message,__LINE,__FILE__);
     $CST_errors++;
   }
 
