@@ -512,7 +512,7 @@ sub CreateCArgumentList
   {
     if($arguments{$argument} =~ m:STORAGESIZE\(([^,]*),\s*(\d+):)
     {
-      $arglist .= "$sep"."(int *)(CCTK_STORAGESIZE(xGH, \"$1\",$2)";
+      $arglist .= "$sep"."(int *)(CCTK_STORAGESIZE(xGH, \"$1\",$2))";
       $sep = ",";
     }
   }
@@ -713,13 +713,13 @@ sub CreateThornArgumentHeaderFile
 
   # Argument prototypes
   push(@returndata, "#define \U$thorn"."_C2F_PROTO CCTK_C2F_PROTO\\");
+  $sep = ",";
 
   foreach $block ("PRIVATE", "PROTECTED", "PUBLIC")
   {
     if($hasvars{$block})
     {
       push(@returndata, "$sep"."\U$thorn"."_$block"."_C2F_PROTO\\");
-      $sep = ",";
     }
   }
 
@@ -729,13 +729,13 @@ sub CreateThornArgumentHeaderFile
   $sep = "";
 
   push(@returndata, "#define PASS_\U$thorn"."_C2F(xGH) PASS_CCTK_C2F(xGH)\\");
+  $sep = ",";
 
   foreach $block ("PRIVATE", "PROTECTED", "PUBLIC")
   {
     if($hasvars{$block})
     {
       push(@returndata, "$sep"."PASS_\U$thorn"."_$block"."_C2F(xGH)\\");
-      $sep = ",";
     }
   }
 
@@ -750,7 +750,6 @@ sub CreateThornArgumentHeaderFile
     if($hasvars{$block})
     {
       push(@returndata, "DECLARE_\U$thorn"."_$block"."_C2F\\");
-      $sep = ",";
     }
   }
 
@@ -765,7 +764,6 @@ sub CreateThornArgumentHeaderFile
     if($hasvars{$block})
     {
       push(@returndata, "INITIALISE_\U$thorn"."_$block"."_C2F\\");
-      $sep = ",";
     }
   }
 
@@ -773,9 +771,9 @@ sub CreateThornArgumentHeaderFile
 
   # Dummy C declarations
 
-  push(@returndata, "#define \U$thorn"."_CARGS cGH *GH");
+  push(@returndata, "#define \U$thorn"."_CARGUMENTS cGH *GH");
 
-  push(@returndata, "#define \UDECLARE_$thorn"."_CARGS");
+  push(@returndata, "#define \UDECLARE_$thorn"."_CARGUMENTS");
   
 
   push(@returndata, "#endif /*CCODE*/");
