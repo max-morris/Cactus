@@ -752,44 +752,17 @@ sub DummyThornFunctions
 	push(@data, $line);
 	
 	# Make sure we use all arguments to avoid warnings
-	$line = "  CCTK_INT cctk_dummy_int;\n";
+	$line = "  const void *cctk_dummy_pointer;\n";
 	push(@data, $line);
-	$line = "  CCTK_REAL cctk_dummy_real;\n";
-	push(@data, $line);
-	$line = "  void *cctk_dummy_pointer;\n";
-	push(@data, $line);
-	$line = "  cctk_dummy_int=0;\n";
-	push(@data, $line);
-	$line = "  cctk_dummy_int+=0;\n";
-	push(@data, $line);
-	$line = "  cctk_dummy_real=0;\n";
-	push(@data, $line);
-	$line = "  cctk_dummy_real+=0;\n";
-	push(@data, $line);
-	$line = "  cctk_dummy_pointer=NULL;\n";
-	push(@data, $line);
-	$line = "  cctk_dummy_pointer=(CCTK_REAL *)cctk_dummy_pointer;\n";
+	$line = "  cctk_dummy_pointer = cctk_dummy_pointer;\n";
 	push(@data, $line);
 	foreach $arg (split(",",$function_db->{"$function CARGS"}))
 	{
 	  $arg =~ m:(.*\s+\**)([^\s*\*]+)\s*:;
-	  $type=$1;
+#	  $type=$1;
 	  $name=$2;
-	  if ($type =~ /[^\*]*\*\s*/ && $type !~ "const")
-	  {
-	    $line = "  cctk_dummy_pointer=(void *)$name;\n";
-	    push(@data, $line);
-	  }
-	  elsif ($type =~ /int/i)
-	  {
-	    $line = "  cctk_dummy_int=$name;\n";
-	    push(@data, $line);
-	  }
-	  elsif ($type =~ /real/i)
-	  {
-	    $line = "  cctk_dummy_real=$name;\n";
-	    push(@data, $line);
-	  }
+	  $line = "  cctk_dummy_pointer = \&$name;\n";
+	  push(@data, $line);
 	}
 	$line = "  CCTK_Warn(1,__LINE__,__FILE__,\"Bindings\",\n";
 	push(@data, $line);

@@ -556,7 +556,7 @@ sub CreateCArgumentUses
 	  $suffix .= "_p";
 	}
 
-	push(@declarations, "cctk_dummy_pointer =$argument$suffix;");
+	push(@declarations, "cctk_dummy_pointer = \&$argument$suffix;");
 
       }
     }

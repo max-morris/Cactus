@@ -196,7 +196,7 @@ sub CreateCStructureParameterHeader
 
   # Create the structure
 
-  push(@data,("#ifdef __cplusplus", "extern \"C\"", "{", "#endif"));
+  push(@data,("#ifdef __cplusplus", "extern \"C\"", "{", "#endif", ""));
   push(@data,( "extern struct ", "{"));
 
   foreach $parameter (&order_params($rhparameters, $rhparameter_db))
@@ -209,52 +209,14 @@ sub CreateCStructureParameterHeader
 
     push(@data, $line);
 
-    $line = $type_string ." " .$parameter . " = $structure.$parameter;";
+    $line = "  const $type_string $parameter = $structure.$parameter; \\";
 
     push(@definition, $line);
 
-    $line = "";
-    if ($type_string =~ /CCTK_REAL16/)
-    {
-      $line = "cctk_pdummy_real16=$parameter;";
-    }
-    elsif ($type_string =~ /CCTK_REAL8/)
-    {
-      $line = "cctk_pdummy_real8=$parameter;";
-    }
-    elsif ($type_string =~ /CCTK_REAL4/)
-    {
-      $line = "cctk_pdummy_real4=$parameter;";
-    }
-    elsif ($type_string =~ /CCTK_REAL/)
-    {
-      $line = "cctk_pdummy_real=$parameter;";
-    }
-    elsif ($type_string =~ /CCTK_INT8/)
-    {
-      $line = "cctk_pdummy_int8=$parameter;";
-    }
-    elsif ($type_string =~ /CCTK_INT4/)
-    {
-      $line = "cctk_pdummy_int4=$parameter;";
-    }
-    elsif ($type_string =~ /CCTK_INT2/)
-    {
-      $line = "cctk_pdummy_int2=$parameter;";
-    }
-    elsif ($type_string =~ /CCTK_INT/)
-    {
-      $line = "cctk_pdummy_int=$parameter;";
-    }
-    else
-    {
-      $line = "cctk_pdummy_pointer=(void *)$parameter;";
-    }
+    $line = "  cctk_pdummy_pointer = \&$parameter; \\";
 
     push(@use, $line);
-     
   }
-
 
   # Some compilers don't like an empty structure.
   if((keys %$rhparameters) == 0)
@@ -262,27 +224,13 @@ sub CreateCStructureParameterHeader
     push(@data, "  int dummy_parameter;");
   }
 
-  push(@data, "} $structure;");
+  push(@data, "} $structure;", "");
 
+  push(@data,("#ifdef __cplusplus", "}", "#endif", ""));
+
+  push(@data, "#define DECLARE_$structure"."_PARAMS \\", @definition);
   push(@data, "");
-  push(@data,("#ifdef __cplusplus", "}", "#endif"));
-
-  
-  push(@data, "#define DECLARE_$structure"."_PARAMS \\");
-  
-  foreach $line (@definition)
-  {
-    push(@data, "  const $line \\");
-  }
-
-  push(@data, "");
-
-  push(@data, "#define USE_$structure"."_PARAMS \\");
-  
-  foreach $line (@use)
-  {
-    push(@data, "  $line \\");
-  }
+  push(@data, "#define USE_$structure"."_PARAMS \\", @use);
 
   return @data;
 }
