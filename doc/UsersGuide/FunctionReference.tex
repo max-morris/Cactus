@@ -251,11 +251,20 @@ available from C, not all are currently available from Fortran.
   [\pageref{nProcs}] 
   Get the total number of processors used
 
+\item[CCTK\_OutputGH] 
+  [\pageref{OutputGH}] 
+
+\item[CCTK\_OutputVar] 
+  [\pageref{OutputVar}] 
+
+\item[CCTK\_OutputVarAs] 
+  [\pageref{OutputVarAs}] 
+
 \item[CCTK\_OutputVarAsByMethod] 
   [\pageref{OutputVarAsByMethod}] 
 
-\item[CCTK\_OutputGH] 
-  [\pageref{OutputGH}] 
+\item[CCTK\_OutputVarByMethod] 
+  [\pageref{OutputVarByMethod}] 
 
 \item[CCTK\_ParallelInit] 
   [\pageref{ParallelInit}] 
@@ -906,28 +915,6 @@ the Cactus scheduler via a thorn's {\tt schedule.ccl} file.
 
 
 % CommOverloadables.c
-\begin{CCTKFunc}{CCTK\_Exit}{Exit the code cleanly}
-\label{Exit}
-\subroutine{int}{integer}{istat}
-\argument{cGH *}{CCTK\_POINTER}{cctkGH}
-\argument{int}{integer}{value}
-\showargs
-\begin{params}
-\parameter{cctkGH}{pointer to CCTK grid hierarchy}
-\parameter{value}{error code}
-\end{params}
-\begin{discussion}
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
-
-
-% CommOverloadables.c
 \begin{CCTKFunc}{CCTK\_Equals}{Check for string equality}
 \label{Equals}
 \function{int}{integer}{istat}
@@ -952,38 +939,33 @@ and zero if they differ.
 \end{errorcodes}
 \end{CCTKFunc}
 
-
-
-%%%%%
-% FFF
-%%%%%
-
-\begin{CCTKFunc}{CCTK\_FortranString}{Changes a C string into a Fortran string}
-\label{FortranString}
-\subroutine{int}{integer}{nchar}
-\argument{const char *}{character*(*)}{strout}
-\argument{const char *}{CCTK\_STRING}{strin}
+% CommOverloadables.c
+\begin{CCTKFunc}{CCTK\_Exit}{Exit the code cleanly}
+\label{Exit}
+\subroutine{int}{integer}{istat}
+\argument{cGH *}{CCTK\_POINTER}{cctkGH}
+\argument{int}{integer}{value}
 \showargs
 \begin{params}
-\parameter{nchar}{The number of characters in the C string, not counting the null terminator}
-\parameter{strout}{The fortran string which on output contains the C string as the first nchar characters}
-\parameter{strin}{The (pointer to the) C string containing the null terminator}
+\parameter{cctkGH}{pointer to CCTK grid hierarchy}
+\parameter{value}{error code}
 \end{params}
 \begin{discussion}
-String or keyword parameters in Cactus are passed into Fortran routines as 
-pointers to C strings. This means that they cannot be directly used as Fortran
-strings. This routine allows a Fortran string to be created from such a C string. Note that the Fortran string must be defined to have at least the same expected length as the C string. This routine is only callable from Fortran.
 \end{discussion}
 \begin{examples}
 \begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf Fortran} && \\
-\\
 \end{tabular}
 \end{examples}
 \begin{errorcodes}
 \end{errorcodes}
 \end{CCTKFunc}
 
+
+
+
+%%%%%
+% FFF
+%%%%%
 
 
 % Groups.c
@@ -1030,6 +1012,33 @@ strings. This routine allows a Fortran string to be created from such a C string
                &&{\t firstvar = CCTK\_FirstVarIndexI(index) ;}
 \\
 \hfill {\bf Fortran} && {\t call CCTK\_GroupIndex(index,3)}\\
+\\
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
+
+\begin{CCTKFunc}{CCTK\_FortranString}{Changes a C string into a Fortran string}
+\label{FortranString}
+\subroutine{int}{integer}{nchar}
+\argument{const char *}{character*(*)}{strout}
+\argument{const char *}{CCTK\_STRING}{strin}
+\showargs
+\begin{params}
+\parameter{nchar}{The number of characters in the C string, not counting the null terminator}
+\parameter{strout}{The fortran string which on output contains the C string as the first nchar characters}
+\parameter{strin}{The (pointer to the) C string containing the null terminator}
+\end{params}
+\begin{discussion}
+String or keyword parameters in Cactus are passed into Fortran routines as 
+pointers to C strings. This means that they cannot be directly used as Fortran
+strings. This routine allows a Fortran string to be created from such a C string. Note that the Fortran string must be defined to have at least the same expected length as the C string. This routine is only callable from Fortran.
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\hfill {\bf Fortran} && \\
 \\
 \end{tabular}
 \end{examples}
@@ -1697,6 +1706,36 @@ The group name should be given in the form {\t <implementation>::<group>}
 
 
 % IOOverloadables.h
+\begin{CCTKFunc}{CCTK\_OutputVarAs}{}
+\label{OutputVarAs}
+\subroutine{int}{}{istat}
+\argument{cGH *}{}{cctkGH}
+\argument{const char *}{character*(*)}{variable}
+\argument{const char *}{character*(*)}{alias}
+\showargs
+\begin{params}
+\parameter{istat}{return flag}
+\parameter{cctkGH}{pointer to CCTK grid hierarchy}
+\parameter{variable}{full name of variable to output}
+\parameter{alias}{name to base output file on}
+\end{params}
+\begin{discussion}
+Output a variable {\t variable} looping over all registered methods. 
+The output should take place if at all possible,
+if the appropriate file exists the data is appended, otherwise a new
+file is created. Uses {\t alias} as the name of the variable for the purpose
+of constructing a filename.
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
+
+% IOOverloadables.h
 \begin{CCTKFunc}{CCTK\_OutputVarAsByMethod}{}
 \label{OutputVarAsByMethod}
 \subroutine{int}{}{istat}
@@ -1706,9 +1745,72 @@ The group name should be given in the form {\t <implementation>::<group>}
 \argument{const char *}{character*(*)}{alias}
 \showargs
 \begin{params}
+\parameter{istat}{return flag}
 \parameter{cctkGH}{pointer to CCTK grid hierarchy}
+\parameter{variable}{full name of variable to output}
+\parameter{method}{method to use for output}
+\parameter{alias}{name to base output file on}
 \end{params}
 \begin{discussion}
+Output a variable {\t variable} using the method {\t method} if it is 
+registered. Uses {\t alias} as the name of the variable for the purpose
+of constructing a filename. The output should take place if at all possible,
+if the appropriate file exists the data is appended, otherwise a new
+file is created.
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
+% IOOverloadables.h
+\begin{CCTKFunc}{CCTK\_OutputVarByMethod}{}
+\label{OutputVarAsMethod}
+\subroutine{int}{}{istat}
+\argument{cGH *}{}{cctkGH}
+\argument{const char *}{character*(*)}{variable}
+\argument{const char *}{character*(*)}{method}
+\showargs
+\begin{params}
+\parameter{istat}{return flag}
+\parameter{cctkGH}{pointer to CCTK grid hierarchy}
+\parameter{variable}{full name of variable to output}
+\parameter{method}{method to use for output}
+\end{params}
+\begin{discussion}
+Output a variable {\t variable} using the method {\t method} if it is 
+registered. The output should take place if at all possible,
+if the appropriate file exists the data is appended, otherwise a new
+file is created.
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
+% IOOverloadables.h
+\begin{CCTKFunc}{CCTK\_OutputVar}{}
+\label{OutputVar}
+\subroutine{int}{}{istat}
+\argument{cGH *}{}{cctkGH}
+\argument{const char *}{character*(*)}{variable}
+\showargs
+\begin{params}
+\parameter{istat}{return flag}
+\parameter{cctkGH}{pointer to CCTK grid hierarchy}
+\parameter{variable}{full name of variable to output}
+\end{params}
+\begin{discussion}
+Output a variable {\t variable} looping over all registered methods. 
+The output should take place if at all possible,
+if the appropriate file exists the data is appended, otherwise a new
+file is created.
 \end{discussion}
 \begin{examples}
 \begin{tabular}{@{}p{3cm}cp{11cm}}

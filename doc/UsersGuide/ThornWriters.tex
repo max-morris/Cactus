@@ -428,28 +428,37 @@ changes the access level for any parameter defined in the file from that point o
 To access {\tt restricted} parameters from another implementation, a line
 containing {\tt shares: <name>} declares that all parameters mentioned in
 the file from now until the next access specification originate in 
-implementation {\tt <name>}.  
+implementation {\tt <name>}. Each of these parameters must be qualified by the initial token {\tt USES} or {\tt EXTENDS}, where
+\begin{Lentry}
+\item[{\tt USES}] indicates that the parameters range remains unchanged.
+\item[{\tt EXTENDS}] indicates that the parameters range is going to be extended.
+\end{Lentry}
 
 In contrast to parameter declarations in other access blocks, the default
 value must be omitted - it is impossible to set the default value of any
 parameter not originating in this thorn.
 For example, the following block adds possible values to the keyword
-{\tt initial\_data} originally defined in the implementation {\tt einstein}.
+{\tt initial\_data} originally defined in the implementation {\tt einstein}, 
+and uses the real parameter {\tt speed}.
 
 \begin{verbatim}
-
 shares:einstein
 
-KEYWORD initial_data ""
+EXTENDS KEYWORD initial_data ""
 {
   "bl_bh"         :: "Brill Lindquist black holes"
   "misner_bh"     :: "Misner black holes"
   "schwarzschild" :: "One Schwarzschild black hole"
 }
 
+USES CCTK_REAL speed ""
+{
+}
+
 \end{verbatim}
 
 Note that you must compile at least one thorn which implements {\tt einstein}.
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1360,7 +1369,9 @@ the global grid.
 \item {\tt cctk\_bbox} 
       An array of 2*{\tt cctk\_dim} integers 
       which indicate whether the boundaries are internal boundaries
-      (e.g. between processors), or physical boundaries.
+      (e.g. between processors), or physical boundaries. A value of 1 indicates
+      a physical (outer) boundary at the edge of the computational grid, 
+      and 0 indicates an internal boundary.
 \end{itemize}
 
 The following variable is needed for grid refinement methods
@@ -1994,43 +2005,51 @@ file is created.
 A reduction operation can be defined as an operation on variables
 distributed  across multiple processor resulting in a single number.
 Typical reduction operations are: sum, minimum/maximum value, boolean
-operations. A typical applications is e.g. the maximum reduction on
-a processor local error estimates, therefor making the previous
-processor local error known to all processors. 
+operations. A typical application is, for example, 
+finding the maximum reduction from processor local error estimates, 
+therefor making the previous processor local error known to all processors. 
 
 The exchange of
 information across processors needs the functionality of a
-communication layer eg. PUGH. For this reason, the
+communication layer eg. {\tt CactusPUGH/PUGH}. For this reason, the
 reduction operation itself is not part of the flesh, instead Cactus (again)
 provides a registration mechanism for thorns to register routines they 
 provide as reduction operators. The different operators are
-identified by their name and a unique number, called a {\em handle}.
+identified by their name and/or a unique number, called a {\em handle}.
 
 The registration mechanism gives the advantage of a common
 interface while hiding the individual communication calls in the
 layer.
 
-In Cactus, reduction operators can be applied to gridfunctions, grid
-scalars and distributed arrays, as well as local variables/arrays. 
+In Cactus, reduction operators can in principle be applied to 
+grid functions, arrays and scalars, as well as to local arrays. Note that 
+different implementations of reduction operators may be limited in 
+the objects they can be applied to.
 There is a fundamental difference between the reduction operation on
 grid functions and quantities as arrays.
 
+\vskip .25cm
 
 {\bf Obtaining the reduction handle}
+
 Before calling the routine which performs the reduction operation,
 the handle, which indentifies the operation must be derived from its
 registered name.
 
 \begin{verbatim}
 
-int CCTK_GetReductionHandle(const char *reduction_name);
+int CCTK_ReductionHandle(const char *reduction_name);
 
-call CCTK_ReductionHandle(int reduction_handle, character reduction_name)
+integer       reduction_handle
+character*(*) reduction_name
+call CCTK_ReductionHandle(reduction_handle, reduction_name)
 
 
 int CCTK_GetReductionArrayHandle(const char *reduction_name);
 
-call CCTK_ReductionArrayHandle(int reduction_handle, character reduction_name)
+integer       reduction_handle
+character*(*) reduction_name
+call CCTK_ReductionArrayHandle(reduction_handle, reduction_name)
 
 \end{verbatim}
 
@@ -2044,12 +2063,12 @@ contain the handle value after the call. In C this value is the
 function value.
 \item[{\tt reduction\_name}] 
 is the name under which the operator has
-been registered by the providind thorn. Currently only PUGH is
-providing reduction operations.
+been registered by the providing thorn. The only thorn in the standard
+Computational Toolkit release which provides reduction operators is
+{\tt CactusPUGH/PUGHReduce}.
 \item[{\bf error checking}] 
 negative handle value indicates failure to
-identify the correct operator. Possible causes: misspelled operator
-name, operator not registered properly.
+identify the correct operator. 
 \end{Lentry}
 
 Get a integer handle corresponding to a given reduction operator.
