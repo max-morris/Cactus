@@ -469,7 +469,7 @@ sub runtest
   $nfiles = 0;
 
   # Count number of files in test directory
-  @newout = <"$tsttop$sep$tp${sep}"*.*l>;
+  @newout = <$tsttop$sep$tp${sep}*.*l>;
   
   foreach $file (@oldout) 
   {
