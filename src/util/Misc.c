@@ -120,11 +120,11 @@ int CCTK_Equals(const char *string1, const char *string2)
   return retval;
 }
 
-int FORTRAN_NAME(CCTK_Equals)(const char *arg1,ONE_FORTSTRING_ARG)
+int FORTRAN_NAME(CCTK_Equals)(const char **arg1,ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_CREATE(arg2)
   int retval;
-  retval = CCTK_Equals(arg1,arg2);
+  retval = CCTK_Equals(*arg1,arg2);
   free(arg2); 
   return(retval);
 }
