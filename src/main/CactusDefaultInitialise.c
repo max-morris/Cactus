@@ -48,6 +48,8 @@ int CactusDefaultInitialise(tFleshConfig *config)
   cGH *GH;
   int convergence_level;
 
+  CCTKi_PrintBanners();
+
   CactusResetTimer(config->timer[INITIALISATION]);
   CactusResetTimer(config->timer[EVOLUTION]);
   CactusResetTimer(config->timer[ELLIPTIC]);
@@ -142,23 +144,19 @@ int CactusInitialiseGH(cGH *GH)
   CCTKi_FinaliseParamWarn();
 
   CCTK_rfrTraverse(GH, CCTK_BASEGRID); 
-  CCTK_rfrTraverse(GH, CCTK_INITIAL0);
 
-  /* Loops like this should go eventually... */
-  for (Rstep = CCTK_INITIAL; Rstep <= CCTK_INITIAL9; Rstep++)
-  {
-    CCTK_rfrTraverse(GH,Rstep);
-  }
+  /* Traverse routines setting up initial data */
+  CCTK_rfrTraverse(GH,CCTK_INITIAL);
+
+  /* Traverse poststep initial routines which should only be done once */
+  CCTK_rfrTraverse(GH,CCTK_POSTINITIAL);
 
   /* Ignore checkpointing for now.
    * CCTK_rfrTraverse(GH,CCTK_RECOVER);
    * CCTK_rfrTraverse(GH,CCTK_CPINITIAL);
    */
 
-  for (Rstep = CCTK_POSTSTEP; Rstep <= CCTK_POSTSTEP10; Rstep++)
-  {
-    CCTK_rfrTraverse(GH,Rstep);
-  }
+  CCTK_rfrTraverse(GH,CCTK_POSTSTEP);
 
 #endif
 

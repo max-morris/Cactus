@@ -247,8 +247,7 @@ void PreStepper(cGH *GH) {
   int Rstep;  
 
   /* Call the rfr with CCTK_PRESTEP */
-  for (Rstep = CCTK_PRESTEP;Rstep <= CCTK_PRESTEP5; Rstep++)
-    CCTK_rfrTraverse(GH, Rstep);
+  CCTK_rfrTraverse(GH, CCTK_PRESTEP);
 }
  /*@@
    @routine    EvolStepper
@@ -310,8 +309,7 @@ void BoundStepper(cGH *GH) {
 void PostStepper(cGH *GH) {
   int Rstep;  
    /* Call the rfr with post step */
-  for (Rstep = CCTK_POSTSTEP; Rstep <= CCTK_POSTSTEP10; Rstep++)
-    CCTK_rfrTraverse(GH, Rstep); 
+    CCTK_rfrTraverse(GH, CCTK_POSTSTEP); 
 }
  /*@@
    @routine    TerminationStepper
