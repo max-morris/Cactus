@@ -13,7 +13,11 @@
 #define _CCTK_FACES_H_ 1
 
 /* The set of all faces */
-#define CCTK_ALL_FACES 0
+#define CCTK_ALL_FACES 1073741823
+/* (This is 2^30-1, so it will set the 'last' 30 bits to 1.)
+ * (The 'top' two bits are useless because there is no unsigned int in
+ * Fortran, and face bits come in pairs.)
+ */
 
 /* Here will be placed macros which provide a user friendly interface
  * to a general specification for expressing sets of faces of an
@@ -28,7 +32,6 @@
  * #define FACE1 1>>1
  * etc.
  *
- * where FACE0 may be the negative x-face, FACE1 the positive x-face, etc.
- */
+ * where FACE0 may be the negative x-face, FACE1 the positive x-face, etc.  */
 
 #endif /* _CCTK_FACES_H_ */
