@@ -1,36 +1,33 @@
+
                      ********************************
                         Welcome to the Cactus Code
-                               Version 4.0
                      ********************************
 
-All Cactus source code is (c) Copyright by the Authors listed in the
-respective README and source files that you will find scattered thru
-the directory structure of all the thorns. This is a truly
-collaborative development project that benefits from input of many
-people worldwide and we try our best to give credit to every
-contribution. The cactus code web page at
-                    http://www.cactuscode.org 
-contains an extensive list of authors to all the thorns that are
-part of the Cactus Code project. 
+The Cactus Code is a truly collaborative development project that continues
+to benefit from the input of many people worldwide. We try our best to give
+credit to every contribution, the Cactus Code web page at
+                    http://www.cactuscode.org
+and the CONTRIBUTORS file, contains an extensive list of authors,
+designers and supporters of the project.
 
-The flesh of the Cactus Code and the design of the project is (c)
-Copyright 1997-99 by Gabrielle Allen, Tom Goodale, Joan Masso and Paul
-Walker from the Numerical Relativity group of the Max-Planck-Institut
-fuer Gravitationphysik / Albert Einstein Institute
-(http://www.aei-potsdam.mpg.de).
+The Cactus Code consists of the "Flesh" and separate "Thorns".
 
-The Cactus Code is distributed under the GNU general public license
-version 2 which is available below. All thorns distributed with Cactus
-follow this license unless it is explicitly stated otherwise in the
-corresponding README files.
+The Flesh of the Cactus Code is (c) Copyright by the authors
+listed in the source code.
 
-Please, take a look at the documentation in the main doc directory or
-check the cactus web page for instructions on how to run the code,
-report bugs, give feedback, etc. 
+The Cactus Users Guide and Cactus Maintainers Guide are copyright the
+authors, and are freely distributable for noncommercial use.
 
-Thanks for using cactus. We hope you find it useful. Love it or hate
-it, please let us know what you think.
-- The Cactus Team <cactus@cactuscode.org>
+The Cactus Flesh, apart from the documentation described above or where
+otherwise stated, is distributed under the GNU general public license
+version 2 which is available below.
+
+The thorns are considered to be entirely separate entities from the flesh,
+and are distributed under conditions described in each thorn.  Linking to
+or using infrastructure from the Flesh should not be considered grounds
+for the GPL to apply to a thorn.
+
+- The Cactus Team <cactusmaint@cactuscode.org>
 
 **************************************************************************
 
