@@ -582,7 +582,7 @@ sub CreateThornArgumentHeaderFile
 
   $sep = "";
 
-  push(@returndata, "#define \U$thorn"."_FARGUMENTS CCTKARGS\\");
+  push(@returndata, "#define \U$thorn"."_FARGUMENTS CCTK_FARGS\\");
 
   foreach $block ("PRIVATE", "PROTECTED", "PUBLIC")
   {
@@ -596,7 +596,7 @@ sub CreateThornArgumentHeaderFile
   push(@returndata, ("",""));
 
   # Do the fortran declarations
-  push(@returndata, "#define \UDECLARE_$thorn"."_FARGUMENTS DECLARE_CCTKARGS\\");
+  push(@returndata, "#define \UDECLARE_$thorn"."_FARGUMENTS DECLARE_CCTK_FARGS\\");
 
   foreach $block ("PRIVATE", "PROTECTED", "PUBLIC")
   {
@@ -621,7 +621,7 @@ sub CreateThornArgumentHeaderFile
   $sep = "";
 
   # Argument prototypes
-  push(@returndata, "#define \U$thorn"."_C2F_PROTO CCTKARGS_C2FPROTO\\");
+  push(@returndata, "#define \U$thorn"."_C2F_PROTO CCTK_C2F_PROTO\\");
 
   foreach $block ("PRIVATE", "PROTECTED", "PUBLIC")
   {
@@ -637,7 +637,7 @@ sub CreateThornArgumentHeaderFile
   # Argument lists
   $sep = "";
 
-  push(@returndata, "#define PASS_\U$thorn"."_C2F(xGH) PASS_CCTKARGS_C2F(xGH)\\");
+  push(@returndata, "#define PASS_\U$thorn"."_C2F(xGH) PASS_CCTK_C2F(xGH)\\");
 
   foreach $block ("PRIVATE", "PROTECTED", "PUBLIC")
   {
@@ -652,7 +652,7 @@ sub CreateThornArgumentHeaderFile
 
   # Declare statics
 
-  push(@returndata, "#define DECLARE_\U$thorn"."_C2F DECLARE_CCTKARGS_C2F \\");
+  push(@returndata, "#define DECLARE_\U$thorn"."_C2F DECLARE_CCTK_C2F \\");
 
   foreach $block ("PRIVATE", "PROTECTED", "PUBLIC")
   {
@@ -667,7 +667,7 @@ sub CreateThornArgumentHeaderFile
 
   # Initialise statics
 
-  push(@returndata, "#define INITIALISE_\U$thorn"."_C2F INITIALISE_CCTKARGS_C2F \\");
+  push(@returndata, "#define INITIALISE_\U$thorn"."_C2F INITIALISE_CCTK_C2F \\");
 
   foreach $block ("PRIVATE", "PROTECTED", "PUBLIC")
   {
