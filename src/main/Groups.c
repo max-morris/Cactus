@@ -13,12 +13,7 @@
 #include <stdarg.h>
 
 #include "cctk.h"
-#include "cctk_Flesh.h"
 #include "cctk_FortranString.h"
-
-#include "cctk_Misc.h"
-#include "cctk_Groups.h"
-#include "cctk_WarnLevel.h"
 #include "cctk_ParameterFunctions.h"
 
 /*#define DEBUG_GROUPS*/
@@ -1104,7 +1099,8 @@ int CCTK_GroupScopeNumber(const char *type)
   return retval;
 }
 
-void  FMODIFIER FORTRAN_NAME(CCTK_GroupScopeNumber)(int *number,ONE_FORTSTRING_ARG)
+void  FMODIFIER FORTRAN_NAME(CCTK_GroupScopeNumber)(int *number,
+						    ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_CREATE(type)
   *number = CCTK_GroupScopeNumber(type);
@@ -1126,31 +1122,30 @@ void  FMODIFIER FORTRAN_NAME(CCTK_GroupScopeNumber)(int *number,ONE_FORTSTRING_A
    @endhistory 
 
 @@*/
-int CCTK_GroupData(int group, 
-                      int *gtype, 
-                      int *vtype, 
-                      int *dim, 
-                      int *n_variables,
-                      int *n_timelevels)
+
+cGroup *CCTK_GroupData(int group)
 {
-  int return_code;
+  cGroup *gp;
 
-  if(group >=0 && group < n_groups)
+  gp = (cGroup *)malloc(sizeof(cGroup));
+
+  if (gp) 
   {
-    *gtype = groups[group].gtype;
-    *vtype = groups[group].vtype;
-    *dim   = groups[group].dim;
-    *n_variables = groups[group].n_variables;
-    *n_timelevels = groups[group].n_timelevels;
-
-    return_code = 1;
+    if(group >=0 && group < n_groups)
+    {
+	gp->grouptype = groups[group].gtype;
+	gp->variabletype = groups[group].vtype;
+	gp->dim   = groups[group].dim;
+	gp->numvariables = groups[group].n_variables;
+	gp->numtimelevels = groups[group].n_timelevels;
+	gp->staggertype = 0;
+    }
+    else
+    {
+      gp = NULL;
+    }
   }
-  else
-  {
-    return_code = 0;
-  }
-
-  return return_code;
+  return gp;
 }
 
 
@@ -1720,4 +1715,34 @@ int CCTK_VarTypeSize(vtype)
 
   return var_size;
 
+}
+
+
+/* DEPRECATED: 4.0b6 */
+
+int CCTK_OldGroupData(int group, 
+                      int *gtype, 
+                      int *vtype, 
+                      int *dim, 
+                      int *n_variables,
+                      int *n_timelevels)
+{
+  int return_code;
+
+  if(group >=0 && group < n_groups)
+  {
+    *gtype = groups[group].gtype;
+    *vtype = groups[group].vtype;
+    *dim   = groups[group].dim;
+    *n_variables = groups[group].n_variables;
+    *n_timelevels = groups[group].n_timelevels;
+
+    return_code = 1;
+  }
+  else
+  {
+    return_code = 0;
+  }
+
+  return return_code;
 }
