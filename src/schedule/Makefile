@@ -1,7 +1,7 @@
 CC = gcc
-CFLAGS = -g -Wall -DDEBUG_SCHEDULAR -DTEST_SCHEDULECREATOR
+CFLAGS = -g -Wall -DDEBUG_SCHEDULAR -DTEST_SCHEDULETRAVERSE
 
-SRCS = ScheduleCreater.c ScheduleSorter.c ../util/StoreHandledData.c
+SRCS = ScheduleCreater.c ScheduleSorter.c ScheduleTraverse.c ../util/StoreHandledData.c
 INCDIRS = ../include
 
 EXE = schedtest

@@ -11,40 +11,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "Schedule.h"
 #include "StoreHandledData.h"
-
-/* Internal type data */
-
-typedef enum {sched_item_none, sched_group, sched_function} t_sched_item_type;
-
-typedef struct
-{
-  char *name;
-  
-  t_sched_item_type type;
-
-  void *function;
-  int group;
-
-  int n_whiles;
-  char **whiles;
-
-  void *attributes;
-
-  t_sched_modifier *modifiers;
-} t_sched_item;
-
-typedef struct 
-{
-  char *name;
-  int *order;
-  
-  int n_scheditems;
-  
-  t_sched_item *scheditems;
-
-} t_sched_group;
+#include "Schedule.h"
 
 /* Internal routine prototypes */
 
@@ -196,9 +164,11 @@ int CCTKi_ScheduleGroup(const char *gname,
 {
   int retcode;
   int handle;
+  int thishandle;
   t_sched_group *this_group;
   t_sched_item *newitem;
 
+  /* Find the group within which to schedule this group */
   handle = Util_GetHandle(schedule_groups, gname, (void **)&this_group);
 
   if(handle < 0)
@@ -206,7 +176,15 @@ int CCTKi_ScheduleGroup(const char *gname,
     handle = ScheduleCreateGroup(gname);
   }
 
-  if(handle < 0)
+  /* Find this group */
+  thishandle = Util_GetHandle(schedule_groups, thisname, (void **)&this_group);
+
+  if(thishandle < 0)
+  {
+    thishandle = ScheduleCreateGroup(thisname);
+  }
+
+  if(handle < 0 || thishandle < 0)
   {
     retcode = -1;
   }
@@ -217,7 +195,7 @@ int CCTKi_ScheduleGroup(const char *gname,
     if(newitem)
     {
       newitem->type = sched_group;
-      newitem->group = handle;
+      newitem->group = thishandle;
       retcode = ScheduleAddItem(handle, newitem);
     }
     else
@@ -271,6 +249,11 @@ int CCTKi_ScheduleSortAllGroups(void)
   }
    
   return -n_errors;
+}
+
+cHandledData *CCTKi_ScheduleGetGroups(void)
+{
+  return schedule_groups;
 }
 
 /********************************************************************
@@ -742,7 +725,7 @@ int main(int argc, char *argv[])
   CCTKi_ScheduleFunction("group_a", "b", func_b, modifier, NULL);
   CCTKi_ScheduleFunction("group_a", "a", func_a, NULL, NULL);
   CCTKi_ScheduleFunction("group_b", "a", func_a, NULL, NULL);
-  CCTKi_ScheduleFunction("group_b", "b", func_a, NULL, NULL);
+  CCTKi_ScheduleFunction("group_b", "b", func_b, NULL, NULL);
   CCTKi_ScheduleGroup("group_a", "group_b", modifier, NULL);
 
   CCTKi_ScheduleSortAllGroups();

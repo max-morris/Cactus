@@ -9,6 +9,7 @@
  @@*/
 
 #include "cctki_schedule.h"
+#include "StoreHandledData.h"
 
 #ifndef _SCHEDULE_H_
 #define _SCHEDULE_H_
@@ -31,8 +32,43 @@ int CCTKi_ScheduleAddRow(int size,
 
 int CCTKi_ScheduleSort(int size, signed char **array, int *order);
 
+cHandledData *CCTKi_ScheduleGetGroups(void);
+
 #ifdef __cplusplus
 }
 #endif
+
+/* Internal type data */
+
+typedef enum {sched_item_none, sched_group, sched_function} t_sched_item_type;
+
+typedef struct
+{
+  char *name;
+  
+  t_sched_item_type type;
+
+  void *function;
+  int group;
+
+  int n_whiles;
+  char **whiles;
+
+  void *attributes;
+
+  t_sched_modifier *modifiers;
+} t_sched_item;
+
+typedef struct 
+{
+  char *name;
+  int *order;
+  
+  int n_scheditems;
+  
+  t_sched_item *scheditems;
+
+} t_sched_group;
+
 
 #endif
