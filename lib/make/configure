@@ -1,6 +1,6 @@
 #! /bin/sh
 
-# From configure.in Id
+# From configure.in Id: configure.in
 # Guess values for system-dependent variables and create Makefiles.
 # Generated automatically using autoconf version 2.12 
 # Copyright (C) 1992, 93, 94, 95, 96 Free Software Foundation, Inc.
@@ -1491,6 +1491,9 @@ EOF
 
 
 
+ARFLAGS=rucs
+
+
 
 
 F90FLAGS=$CFLAGS
@@ -1503,7 +1506,7 @@ F77FLAGS=$CFLAGS
 
 
 
-TOOLKIT_DIR=../toolkits
+TOOLKIT_DIR=toolkits
 BUILD_DIR=build
 CCTK_LIBDIR=lib
 
@@ -1609,7 +1612,7 @@ done
 
 ac_given_srcdir=$srcdir
 
-trap 'rm -fr `echo "make.config.defn config.h" | sed "s/:[^ ]*//g"` conftest*; exit 1' 1 2 15
+trap 'rm -fr `echo "make.config.defn make.config.deps make.config.rules config.h" | sed "s/:[^ ]*//g"` conftest*; exit 1' 1 2 15
 EOF
 cat >> $CONFIG_STATUS <<EOF
 
@@ -1651,6 +1654,7 @@ s%@AR@%$AR%g
 s%@MKDIR@%$MKDIR%g
 s%@SHELL@%$SHELL%g
 s%@LD@%$LD%g
+s%@ARFLAGS@%$ARFLAGS%g
 s%@F90FLAGS@%$F90FLAGS%g
 s%@F77FLAGS@%$F77FLAGS%g
 s%@TOOLKIT_DIR@%$TOOLKIT_DIR%g
@@ -1698,7 +1702,7 @@ EOF
 
 cat >> $CONFIG_STATUS <<EOF
 
-CONFIG_FILES=\${CONFIG_FILES-"make.config.defn"}
+CONFIG_FILES=\${CONFIG_FILES-"make.config.defn make.config.deps make.config.rules"}
 EOF
 cat >> $CONFIG_STATUS <<\EOF
 for ac_file in .. $CONFIG_FILES; do if test "x$ac_file" != x..; then

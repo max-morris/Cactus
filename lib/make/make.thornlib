@@ -1,16 +1,35 @@
+# /*@@
+#   @file      make.thornlib
+#   @date      Sun Jan 17 22:20:45 1999
+#   @author    Tom Goodale
+#   @desc 
+#   Creates the library for a particular thorn
+#   @enddesc 
+#   @version $Id$
+# @@*/
+
+# Silence all but designated output
+.SILENT:
+
+# Include the main make definitions for this configuration
 include $(CONFIG)/make.config.defn
 
-INC_DIRS += $(SRCDIR) $(SRCDIR)/include
+# Add appropriate include lines
+INC_DIRS += $(SRCDIR) $(SRCDIR)/include $(CONFIG) $(CCTK_HOME)/src/include
 
+# Include the thorn's local include data
 include $(SRCDIR)/make.code.defn
 
-THORN_SRCS = $(SRCS:%=$(SRCDIR)/%)
+# Turn source file names into object file names
+OBJS = $(patsubst %,%.o,$(basename $(SRCS)))
 
-OBJS = $(patsubst $(SRCDIR)/%.c,%.o,$(THORN_SRCS))
-
-$(CCTK_LIBDIR)/libtest.a: $(OBJS)
+$(NAME): $(OBJS)
+	echo Creating or updating $(NAME)
 	$(AR) $(ARFLAGS) $@ $(OBJS)
+	$(RANLIB) $@
 
+# Rules to make the object files
 include $(CONFIG)/make.config.rules
 
+# Extra thorn-specific dependencies
 include $(SRCDIR)/make.code.deps

@@ -5,8 +5,10 @@ dnl    @author    Tom Goodale
 dnl    @desc 
 dnl    
 dnl    @enddesc 
+dnl    @version $Id$
 dnl  @@
 dnl Process this file with autoconf to produce a configure script.
+
 AC_REVISION($Id$)
 AC_INIT()
 AC_CONFIG_HEADER(config.h)
@@ -40,6 +42,9 @@ AC_C_LONG_DOUBLE
 AC_CHECK_SIZEOF(int)
 AC_CHECK_SIZEOF(short int)
 
+AC_SUBST(ARFLAGS)
+ARFLAGS=rucs
+
 AC_SUBST(F90FLAGS)
 AC_SUBST(F77FLAGS)
 
@@ -55,7 +60,7 @@ AC_SUBST(BUILD_DIR)
 AC_SUBST(CCTK_LIBDIR)
 AC_SUBST(EXE)
 
-TOOLKIT_DIR=../toolkits
+TOOLKIT_DIR=toolkits
 BUILD_DIR=build
 CCTK_LIBDIR=lib
 
@@ -63,4 +68,4 @@ dnl Run any other scripts necessary
 AC_OUTPUT_COMMANDS(,$PERL -s $srcdir/configure.pl -compiler=$F90 .)
 
 dnl Output everything
-AC_OUTPUT(make.config.defn)
+AC_OUTPUT(make.config.defn make.config.deps make.config.rules)

@@ -1,25 +1,70 @@
-CONFIG = $(TOP)/config-stuff
+#/*@@
+#  @file      make.configuration
+#  @date      Sun Jan 17 22:15:23 1999
+#  @author    Tom Goodale
+#  @desc 
+#  Makes the CCTK executable for a particulare configuration
+#  @enddesc 
+#  @version $Id$
+# @@*/
+
+# Some configuration variables
+CONFIG = $(TOP)/config-data
+
+DATESTAMP = $(CCTK_HOME)/src/datestamp.c
+MAKE_DIR  = $(CCTK_HOME)/lib/make
+
+# Dividers to make the screen output slightly nicer
+DIVEL   =  __________________
+DIVIDER =  $(DIVEL)$(DIVEL)$(DIVEL)$(DIVEL)
 
 # Include the definitions for this configuration
-
 include $(CONFIG)/make.config.defn
+
+# Include the list of thorns to be built
+include $(CONFIG)/make.thornlist
 
 # Silence all but designated output
 #.SILENT:
 
 # Build the executable
-$(EXE): datestamp.o $(patsubst %,$(CCTK_LIBDIR)/lib%.a,$(notdir $(THORNS)))
+$(EXE): $(CONFIG)/make.thornlist $(patsubst %,$(CCTK_LIBDIR)/lib%.a,$(notdir $(THORNS))) $(CCTK_LIBDIR)/libCCTK.a
+	echo $(DIVIDER)
 	echo Creating $(EXE) from $(THORNS)
-	$(CC) -c datestamp.c
-	$(CC) -o $@ $(LDFLAGS) datestamp.o $(LIBDIRS:%=-L%) $(LIBS:%=-l%) -L$(CCTK_LIBDIR) $(addprefix -l,$(notdir $(THORNS)))
+	$(CC) -c $(DATESTAMP) -o $(TOP)/datestamp.o
+	$(CC) -o $@ $(LDFLAGS) $(TOP)/datestamp.o $(LIBDIRS:%=-L%) $(LIBS:%=-l%) -L$(CCTK_LIBDIR) $(addprefix -l,$(notdir $(THORNS))) -lCCTK
+	echo $(DIVIDER)
+	echo All done !
+	echo $(DIVIDER)
 
 # Build a thorn library
 # Libraries go into the appropriate library directory
 # Each thorn's object files go into $(BUILD_DIR)/<thorn>
+# This makes sure the appropriate build directories exist
 $(CCTK_LIBDIR)/lib%.a: update
+	echo $(DIVIDER)
 	echo Checking status of $(notdir $@)
+	if [ ! -d $(BUILD_DIR) ]; then $(MKDIR) $(BUILD_DIR) ; fi
+	if [ ! -d $(@:$(CCTK_LIBDIR)/lib%.a=$(BUILD_DIR)/%) ]; then $(MKDIR) $(@:$(CCTK_LIBDIR)/lib%.a=$(BUILD_DIR)/%) ; fi
 	cd $(@:$(CCTK_LIBDIR)/lib%.a=$(BUILD_DIR)/%); \
-	$(MAKE) TOP=$(TOP) SRCDIR=$(@:$(CCTK_LIBDIR)/lib%.a=$(TOOLKIT_DIR)/$(filter %$(@:$(CCTK_LIBDIR)/lib%.a=%),$(THORNS))) CONFIG=$(CONFIG) -f $(MAKE_DIR)/make.thornlib
+	$(MAKE) TOP=$(TOP) SRCDIR=$(@:$(CCTK_LIBDIR)/lib%.a=$(TOOLKIT_DIR)/$(filter %$(@:$(CCTK_LIBDIR)/lib%.a=%),$(THORNS))/src) CONFIG=$(CONFIG) NAME=$@ -f $(MAKE_DIR)/make.thornlib
+	echo $(DIVIDER)
+
+
+# Slightly modified rule for the flesh.
+# Also makes sure all the subdirectories are made.
+$(CCTK_LIBDIR)/libCCTK.a: update
+	echo $(DIVIDER)
+	echo Checking status of the flesh
+	if [ ! -d $(BUILD_DIR) ]; then $(MKDIR) $(BUILD_DIR) ; fi
+	if [ ! -d $(@:$(CCTK_LIBDIR)/lib%.a=$(BUILD_DIR)/%) ]; then $(MKDIR) $(@:$(CCTK_LIBDIR)/lib%.a=$(BUILD_DIR)/%) ; \
+	for dir in IO comm main util rfr ; \
+	do if [ ! -d $(@:$(CCTK_LIBDIR)/lib%.a=$(BUILD_DIR)/%)/$$dir ] ; then $(MKDIR) $(@:$(CCTK_LIBDIR)/lib%.a=$(BUILD_DIR)/%)/$$dir ; fi ; \
+	done ; fi 
+	cd $(@:$(CCTK_LIBDIR)/lib%.a=$(BUILD_DIR)/%); \
+	$(MAKE) TOP=$(TOP) SRCDIR=$(CCTK_HOME)/src CONFIG=$(CONFIG) NAME=$@ -f $(MAKE_DIR)/make.thornlib
+	echo $(DIVIDER)
+
 
 # Include any extra dependencies
 

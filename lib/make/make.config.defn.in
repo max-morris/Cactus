@@ -1,3 +1,16 @@
+# /*@@
+#   @file      make.config.defn.in
+#   @date      Sun Jan 17 22:33:51 1999
+#   @author    Tom Goodale
+#   @desc 
+#   Make definition file for a configuration
+#   Defines the conpilers, etc.
+#
+#   Should be run through autoconf to produce make.config.defn
+#   @enddesc 
+#   @version $Id$
+# @@*/
+
 SHELL             = @SHELL@
 MKDIR             = @MKDIR@
 CC                = @CC@
@@ -19,10 +32,13 @@ F77FLAGS          = @F77FLAGS@
 
 LDFLAGS           = @LDFLAGS@
 
-TOOLKIT_DIR = $(TOP)/@TOOLKIT_DIR@
+ARFLAGS           = @ARFLAGS@
+
+# Where the CCTK puts things
+TOOLKIT_DIR = $(CCTK_HOME)/@TOOLKIT_DIR@
 BUILD_DIR   = $(TOP)/@BUILD_DIR@
 CCTK_LIBDIR = $(TOP)/@CCTK_LIBDIR@
 
+# The name of the executable
 EXE    = @EXE@
 
-THORNS = testkit/test

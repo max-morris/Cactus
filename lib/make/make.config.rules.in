@@ -1,0 +1,25 @@
+# /*@@
+#   @file      make.config.rules.in
+#   @date      Sun Jan 17 22:31:16 1999
+#   @author    Tom Goodale
+#   @desc 
+#   Rules to generate object files from source files in another directory.
+#
+#   Note that, due to the (IMHO) rather bizarre way in which Make
+#   deals with directories in the target names, this will
+#   not work if the target is in a subdirectory.
+#
+#   @enddesc 
+# @@*/
+
+%.o: $(SRCDIR)/%.c
+	$(CC) $(CFLAGS) -c -o $@ $< $(addprefix -I, $(INC_DIRS))
+
+%.o: $(SRCDIR)/%.cc
+	$(CXX) $(CXXFLAGS) -c -o $@ $< $(addprefix -I, $(INC_DIRS))
+
+%.o: $(SRCDIR)/%.F77
+	$(F77) $(F77FLAGS) -c -o $@ $< $(addprefix -I, $(INC_DIRS))
+
+%.o: $(SRCDIR)/%.F
+	$(F90) $(F90FLAGS) -c -o $@ $< $(addprefix -I, $(INC_DIRS))

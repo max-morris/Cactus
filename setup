@@ -1,4 +1,4 @@
-#! /usr/bin/perl
+#! /usr/bin/perl -s
 #/*@@
 #  @file      setup
 #  @date      Fri Jan  8 13:48:48 1999
@@ -6,13 +6,14 @@
 #  @desc 
 #  Prototype setup file for the CCTK
 #  @enddesc 
+#  @version $Id$
 #@@*/
 
 $top = `pwd`;
 
 chop $top;
 
-$configure = "$top/lib/sbin/configure.pl";
+$configure = "$top/lib/make/configure";
 
 $uname = `uname`;
 
@@ -29,6 +30,7 @@ else
   $config = $uname;
 }
 
+# The build directory doesn't exist.
 if (! -d "build" && ! -l "build")
 {
   print "Completely new cactus build.  Creating config database\n";
@@ -39,6 +41,7 @@ if (! -d "build" && ! -l "build")
 
 chdir build;
 
+# The specified configuration doesn't exist
 if (! -d "$config" && ! -l "$config")
 {
   print "Creating new configuration $config.\n";
@@ -47,13 +50,32 @@ if (! -d "$config" && ! -l "$config")
 
   chdir "$config";
 
-  mkdir("toolkits",0755);
-  mkdir("flesh",0755);
+  mkdir("build",0755);
+  mkdir("lib",0755);
   mkdir("config-data",0755);
   mkdir("libraries",0755);
-  
-  system("perl $configure config-data");
+
+  chdir "config-data";
+
+  $ENV{"EXE"} = "cctk";
+
+  system("$configure");
+  chdir "..";
   chdir "..";
 }
 
+# Rerun the configure script
+if($reconfig)
+{
+  print "Reconfiguring $config.\n";
 
+  chdir "$config";
+
+  chdir "config-data";
+
+  $ENV{"EXE"} = "cctk";
+
+  system("$configure");
+  chdir "..";
+  chdir "..";
+}
