@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.104 2000-12-13 12:22:18 goodale Exp $
+#   @version $Id: Makefile,v 1.105 2000-12-15 16:50:09 goodale Exp $
 # @@*/
 
 ##################################################################################
@@ -758,6 +758,11 @@ $(addsuffix -sysinfo,$(CONFIGURATIONS)):
 	$(PERL) ./lib/sbin/SystemInfo.pl $(@:%-sysinfo=%) 
 endif
 
+%-sysinfo:
+	@echo $(DIVIDER)
+	@echo Configuration $(@:%-sysinfo=%) does not exist.
+	@echo Getting system info aborted.
+
 
 # Create bugreport
 
@@ -773,6 +778,11 @@ ifneq ($strip($(CONFIGURATIONS)),)
 $(addsuffix -bugreport,$(CONFIGURATIONS)):
 	$(SHELL) ./lib/sbin/cctkbug -c $(CONFIGS_DIR)/$(@:%-bugreport=%) 
 endif
+
+%-bugreport:
+	@echo $(DIVIDER)
+	@echo Configuration $(@:%-bugreport=%) does not exist.
+	@echo Bugreport creation aborted.
 
 # Make the users manuals
 
