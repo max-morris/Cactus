@@ -11,6 +11,7 @@
 #ifndef _CGH_H_
 #define _CGH_H_
 
+#include "cctk.h"
 
 typedef struct
 {
@@ -41,6 +42,9 @@ typedef struct
 
   /* The number of ghostzones in each direction */
   int nghostzones;
+
+  /* The coordinate time */
+  Double time;
 
   /* data[var_num][xyz]*/
   void ***data;
