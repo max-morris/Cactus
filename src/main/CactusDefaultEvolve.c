@@ -23,13 +23,13 @@ CCTK_FILEVERSION(main_CactusDefaultEvolve_c)
 
 /* Define some macros for convenience. */
 
-#define ForallConvLevels(iteration, conv_level)  {                     \
+#define ForallConvLevels(iteration, conv_level)  {          \
                                         int factor = 1;                \
                                         for(conv_level = 0 ;           \
                                             conv_level < config->nGHs; \
                                             conv_level++)              \
                                         {                              \
-                                          if(iteration%factor == 0)    \
+                                          if(iteration%factor == 0)\
                                           {
                             
 #define EndForallConvLevels                                            \
@@ -48,46 +48,6 @@ static int cactus_terminate_global = 0;
 static int DoneMainLoop (CCTK_REAL cctk_time, int iteration);
 static int StepGH(cGH *GH);
  
-/* the iteration counter used in the evolution loop */
-static int iteration = 0;
-
-
- /*@@
-   @routine    CCTK_SetMainLoopIndex
-   @date       Sep 22 1999
-   @author     Thomas Radke
-   @desc 
-               Sets the iteration counter variable of the evolution loop.
-               This is used for recovery.
-   @enddesc 
-   @calls     
-   @calledby   
-
-@@*/
-int CCTK_SetMainLoopIndex (int main_loop_index)
-{
-  iteration = main_loop_index;
-  return iteration;
-}
-
-
- /*@@
-   @routine    CCTK_MainLoopIndex
-   @date       Sep 22 1999
-   @author     Thomas Radke
-   @desc 
-               Returns the iteration counter variable of the evolution loop.
-               This is used for checkpointing.
-   @enddesc 
-   @calls     
-   @calledby   
-
-@@*/
-int CCTK_MainLoopIndex (void)
-{
-  return (iteration);
-}
-
 
  /*@@
    @routine    CactusDefaultEvolve
@@ -107,6 +67,9 @@ int CCTK_MainLoopIndex (void)
 int CactusDefaultEvolve(tFleshConfig *config)
 {
   int convergence_level;
+  int iteration;
+
+  iteration = CCTK_MainLoopIndex();
 
 #ifdef DEBUG_CCTK
   CCTK_PRINTSEPARATOR
@@ -145,17 +108,18 @@ int CactusDefaultEvolve(tFleshConfig *config)
 #ifdef DEBUG_CCTK
     CCTK_PRINTSEPARATOR
     printf("In CactusDefaultEvolve\n----------------------\n");
-    printf("  Advancing iteration %d = %d + 1\n",iteration+1,
+    printf("  Advancing iteration %d = %d + 1\n",CCTK_MainLoopIndex+1,
          iteration); 
     CCTK_PRINTSEPARATOR
 #endif
 
     iteration++;
+    CCTK_SetMainLoopIndex(iteration);
 
     /* Step each convergence level */
 
 
-    ForallConvLevels(iteration, convergence_level)
+    ForallConvLevels(CCTK_MainLoopIndex(iteration), convergence_level)
     {
 
       StepGH(config->GH[convergence_level]);
