@@ -9,10 +9,10 @@
 #  @version $Header$
 #@@*/
 
-$cvs_ops="-z6 -q";
-$cvs_update_ops="-d -P";
+my $cvs_ops="-z6 -q";
+my $cvs_update_ops="-d -P";
 # Set this to eg -r TAGNAME checkout from a TAG
-$cvs_symbolic_name="";
+my $cvs_symbolic_name="";
 
 require "lib/sbin/MakeUtils.pl";
 
@@ -23,7 +23,7 @@ if ($debug)
 }
 
 print("\nUpdating Flesh\n");
-$command = "cvs $cvs_ops update $cvs_update_ops $cvs_symbolic_name CONTRIBUTORS COPYRIGHT Makefile lib doc src";
+$command = "cvs $cvs_ops update $cvs_update_ops $cvs_symbolic_name CONTRIBUTORS COPYRIGHT Makefile lib doc src arrangements/README";
 if ($debug)
 {
   $this_dir = `pwd`;
