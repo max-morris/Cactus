@@ -8,9 +8,13 @@
 #@@*/
 # /usr/bin/perl -s
 
+# Set debug to 1 for off line checking
+$debug = 0;
+
 $sbin_dir = "lib/sbin";
 
 require "$sbin_dir/MakeUtils.pl";
+require "$sbin_dir/CheckoutUtils.pl";
 
 # First check that CVS works
 die "cvs not found\n" if (!&CVSFound);
@@ -22,22 +26,21 @@ $| = 1;
 # Print info
 &PrintInfo;
 
-# Choose CVS repository
-$login = getlogin || getpwuid($<);
-while (!$repository)
-{    
-  $repository = &choose_repository($login);
-}
-
 # Check can see repository
-die "Repository not found\n" if (!&RepositoryExists($repository));
+#die "Repository not found\n" if (!debug && !&RepositoryExists($repository));
 
-$finish = 0;
+# Parse CVS password file .cvspass
+@rep = &ParseCVSPasswordFile;
+$rep = join(" ",@rep);
+
+# Add all anonymous Cactus repositories
+&AddCVSPasswordFile($rep);
+
 while (!$finish)
 {   
     
-  print "\nCheckout applications, arrangements or individual thorns.\n ";
-  print "app)lications, arr)angements, t)horns, q)uit, h)elp : [arr] ";
+  print "Checkout thornlist, arrangements or individual thorns.\n ";
+  print "tl)thornlist, arr)angements, t)horns, q)uit, h)elp : [arr] ";
     
   $which = <STDIN>;
 
@@ -49,22 +52,22 @@ while (!$finish)
   {
     &print_help();
   }
+  elsif ($which =~ /^tl/i)
+  {
+    &get_thornlist();
+  }
   elsif ($which =~ /^t/i)
   {
-    &get_thorns($repository);
-  }
-  elsif ($which =~ /^ap/i)
-  {
-    &get_applications($repository);
+    &get_thorns();
   }
   else
   { 
-    &get_arrangements($repository);
+    &get_arrangements();
   }
 
 }
 
-print "\nAll done!\n\n";
+print "\n All done!\n\n";
 exit;
 
 
@@ -84,10 +87,9 @@ exit;
 #@@*/
 sub get_arrangements
 {   
-    my($repository) = @_;
     my(%info);
     my($arrangement);
-    print "\nYou already have arrangements: \n\n";
+    print "\n You already have arrangements: \n\n";
 
     %info = &buildthorns("arrangements/","arrangements");
     
@@ -96,10 +98,9 @@ sub get_arrangements
       print "$arrangement ";
     }
 
-    print "\n\nRepository: $repository\n";
-    print "Arrangements listed in modules file: \n";
+    print "\n\n Arrangements listed in modules file: \n";
 
-    open(MODULES,"cvs -d $repository co -s | ");
+    open(MODULES,"cvs co -s | ");
     
     $count = 0;
     while(<MODULES>)
@@ -144,7 +145,7 @@ sub get_arrangements
     {
       print "Arrangement required: ";
       $arrname = <STDIN>;
-      &CheckOut($arrname,$repository);
+      &CheckOut($arrname);
     }
     elsif ($range =~ /^\s*$/)
     {
@@ -163,7 +164,7 @@ sub get_arrangements
 
 	for ($i=$first; $i<$last+1; $i++)
 	{
-	  &CheckOut($name{$i},$repository);
+	  &CheckOut($name{$i});
 	}	
     }
 
@@ -189,7 +190,6 @@ sub get_arrangements
 #@@*/
 sub get_thorns
 {
-    my($repository) = @_;
     my(%info);
     my($thorn);
 
@@ -216,9 +216,9 @@ sub get_thorns
       $last_arr = $this_arr;
     }
 
-    print "\n\nThorns listed in the modules file for $repository: \n";
+    print "\n\nThorns listed in the modules file: \n";
 
-    open(MODULES,"cvs -d $repository -q co -s | ");
+    open(MODULES,"cvs -q co -s | ");
     
     $count = 0;
     while(<MODULES>)
@@ -265,7 +265,7 @@ sub get_thorns
     {
       print "Arrangement/Thorn required: ";
       $thornname = <STDIN>;
-      &CheckOut($thornname,$repository);
+      &CheckOut($thornname);
     }
     elsif ($range =~ /^\s*$/)
     {
@@ -284,7 +284,7 @@ sub get_thorns
       
       for ($i=$first; $i<$last+1; $i++)
 	{
-	  &CheckOut($name{$i},$repository);
+	  &CheckOut($name{$i});
 	}
     }
 
@@ -295,8 +295,8 @@ sub get_thorns
 
 
 #/*@@
-#  @routine    get_applications
-#  @date       Sat Jul  3 16:38:52 1999
+#  @routine    get_thornlist
+#  @date       Sat Jul  13 16:38:52 2000
 #  @author     Gabrielle Allen
 #  @desc 
 #  
@@ -308,151 +308,37 @@ sub get_thorns
 #  @endhistory 
 #
 #@@*/
-sub get_applications
+sub get_thornlist
 {
-  my($repository) = @_;
-
-  print "\nAvailable applications: \n";
-  print "  [1] Example F90 wave equation evolver\n";
-  print "  [2] Example F77 wave equation evolver\n";
-  print "  [3] Example C   wave equation evolver\n";
-  print "  [4] Example C++ wave equation evolver\n";
-  print "  [5] Example free form F90 wave equation evolver\n";
-  print "  [6] Benchmark (ADM)\n";
-  print "\n";
+  if (!-d "thornlists")
+  {
+    print "\nThorn List directory not found\n";
+    return;
+  } 
+  else
+  {
+    $thornlist = 0;
+    while (!$thornlist)
+    {
+      print "\nLists in thornlist directory: \n";
+      open(LISTS, "ls thornlists |");
     
-  # Put number of applications here
-  $count = 6;
-
-  print "Checkout applications h)elp, q)uit, range [1-$count] : ";
-
-  # Goto target arrangement directory 
-  chdir arrangements || die "Could not find arrangements directory\n";
-
-    $range = <STDIN>;
-    if ($range =~ /^h/i)
-    {
-	&print_help();
+      while(<LISTS>)
+      {
+	print "  $_";
+      }
+      close LISTS;
+      print "\n Choose ThornList : ";
+      
+      $thornlist = <>;
+      chomp($thornlist);
+      if (!-e "thornlists/$thornlist")
+      {
+	$thornlist = 0;
+      }
     }
-    elsif ($range =~ /^q/i)
-    {
-      print "\n\n";
-      exit(0);
-    }
-    elsif ($range =~ /^\s*$/)
-    {
-	$range = "1-$count";
-    }
-
-    while ($range =~/^([0-9]+(?:-[0-9]+)?),?/)
-    {
-	$range = $';
-	$1 =~ /^([0-9]*)(-[0-9]*)?$/;
-	$first = $1;
-	if (!$2) 
-	{$last=$1}
-	else
-        {$2=~/-([0-9]*)/; $last=$1}
-	
-	 
-	for ($i=$first; $i<$last+1; $i++)
-	{
-	  if ($i == 1)
-	  {
-	    # Checkout F90 WaveToy
-	    print("\n");
-	    &CheckOut("CactusWave/WaveToyF90",$repository);
-	    &CheckOut("CactusWave/IDScalarWave",$repository);
-	    &CheckOut("CactusBase/Boundary",$repository);
-	    &CheckOut("CactusBase/CartGrid3D",$repository);
-	    &CheckOut("CactusBase/IOUtil",$repository);
-	    &CheckOut("CactusBase/IOBasic",$repository);
-	    &CheckOut("CactusBase/Time",$repository);
-	    &CheckOut("CactusPUGHIO/IOASCII",$repository);
-	    &CheckOut("CactusPUGH/PUGH",$repository);
-	    print("Completed checkout of application Wave F90\n");
-	  }
-	  elsif ($i == 2)
-	  {
-	    # Checkout F77 WaveToy
-	    print("\n");
-	    &CheckOut("CactusWave/WaveToyF77",$repository);
-	    &CheckOut("CactusWave/IDScalarWave",$repository);
-	    &CheckOut("CactusBase/Boundary",$repository);
-	    &CheckOut("CactusBase/CartGrid3D",$repository);
-	    &CheckOut("CactusBase/IOUtil",$repository);
-	    &CheckOut("CactusBase/IOBasic",$repository);
-	    &CheckOut("CactusBase/Time",$repository);
-	    &CheckOut("CactusPUGHIO/IOASCII",$repository);
-	    &CheckOut("CactusPUGH/PUGH",$repository);
-	    print("Completed checkout of application Wave F77\n");
-	  }	  
-	  elsif ($i == 3)
-	  {
-	    # Checkout C WaveToy
-	    print("\n");
-	    &CheckOut("CactusWave/WaveToyC",$repository);
-	    &CheckOut("CactusWave/IDScalarWaveC",$repository);
-	    &CheckOut("CactusBase/Boundary",$repository);
-	    &CheckOut("CactusBase/CartGrid3D",$repository);
-	    &CheckOut("CactusBase/IOUtil",$repository);
-	    &CheckOut("CactusBase/IOBasic",$repository);
-	    &CheckOut("CactusBase/Time",$repository);
-	    &CheckOut("CactusPUGHIO/IOASCII",$repository);
-	    &CheckOut("CactusPUGH/PUGH",$repository);
-	    print("Completed checkout of application Wave C\n");
-	  }	  
-	  elsif ($i == 4)
-	  {
-	    # Checkout C++ WaveToy
-	    print("\n");
-	    &CheckOut("CactusWave/WaveToyCXX",$repository);
-	    &CheckOut("CactusWave/IDScalarWaveCXX",$repository);
-	    &CheckOut("CactusBase/Boundary",$repository);
-	    &CheckOut("CactusBase/CartGrid3D",$repository);
-	    &CheckOut("CactusBase/IOUtil",$repository);
-	    &CheckOut("CactusBase/IOBasic",$repository);
-	    &CheckOut("CactusBase/Time",$repository);
-	    &CheckOut("CactusPUGHIO/IOASCII",$repository);
-	    &CheckOut("CactusPUGH/PUGH",$repository);
-	    print("Completed checkout of application Wave C++\n");
-	  }	  
-	  elsif ($i == 5)
-	  {
-	    # Checkout Free Form F90 WaveToy
-	    print("\n");
-	    &CheckOut("CactusWave/WaveToyFreeF90",$repository);
-	    &CheckOut("CactusWave/IDScalarWave",$repository);
-	    &CheckOut("CactusBase/Boundary",$repository);
-	    &CheckOut("CactusBase/CartGrid3D",$repository);
-	    &CheckOut("CactusBase/IOUtil",$repository);
-	    &CheckOut("CactusBase/IOBasic",$repository);
-	    &CheckOut("CactusBase/Time",$repository);
-	    &CheckOut("CactusPUGHIO/IOASCII",$repository);
-	    &CheckOut("CactusPUGH/PUGH",$repository);
-	    print("Completed checkout of application Wave FreeF90\n");
-	  }	  
-          elsif ($i == 6)
-          {
-            # Checkout ADM Benchmark
-	    print("\n");
-	    &CheckOut("CactusBench/BenchADM",$repository);
-	    &CheckOut("CactusEinstein/Einstein",$repository);
-	    &CheckOut("CactusEinstein/ADMConstraints",$repository);
-	    &CheckOut("CactusEinstein/IDAnalyticBH",$repository);
-	    &CheckOut("CactusBase/Boundary",$repository);
-	    &CheckOut("CactusBase/Time",$repository);
-	    &CheckOut("CactusBase/CartGrid3D",$repository);
-	    &CheckOut("CactusBase/IOUtil",$repository);
-	    &CheckOut("CactusBase/IOBasic",$repository);
-	    &CheckOut("CactusPUGHIO/IOASCII",$repository);
-	    &CheckOut("CactusPUGH/PUGH",$repository);
-	    print("Completed checkout of application Benchmark (ADM)\n");
-          }     
-	}
-    }
-
-    chdir ("..") || die "Could not return to Cactus home directory\n";
+    &CheckoutThornList("thornlists/$thornlist");
+  }
 }
 
 #/*@@
@@ -495,11 +381,11 @@ sub print_help
 #@@*/
 sub CheckOut
 {
-  my($file,$repository) = @_;
+  my($file) = @_;
 
   print("Checking out $file\n");
 
-  open(MODULES,"cvs -z9 -q -d $repository checkout $file |");
+  open(MODULES,"cvs -z9 -q checkout $file |");
 #  @dummy = <MODULES>;
   while(<MODULES>)
   {
@@ -508,117 +394,6 @@ sub CheckOut
   print "\n";
   close(MODULES);
 
-}
-
-
-
-#/*@@
-#  @routine    choos_repository
-#  @date       Sat Jul  3 16:38:52 1999
-#  @author     Gabrielle Allen
-#  @desc 
-#  
-#  @enddesc 
-#  @calls     
-#  @calledby   
-#  @history 
-#
-#  @endhistory 
-#
-#@@*/
-sub choose_repository
-{
-  my($login) = @_;
-  my $repository,$dowhat;
-  my $home;
-
-  open(IN,"<CVS/Root") || die "No file CVS/Root";
-  $rep[1] = <IN>;
-  chop($rep[1]);
-  close IN;
-  $rep[2]  = "Custom repository";
-  
-  # Get home directory from password file
-  $home = $ENV{"HOME"};
-  if ($home =~ /^$/)
-  {
-    print " Set \$HOME environment variable to home directory\n";
-    die;
-  }
-  if (open(CVSPASS,"<$home/.cvspass"))
-  {
-    $numinpass = 2;
-    while (<CVSPASS>)
-    {
-      $numinpass++;
-      /^([^\s]*)\s[^\s]*/;
-      $rep[$numinpass] = $1;
-    }
-  }
-  else 
-  {
-    print "Could not find $file/.cvspass containing CVS logins\n";
-    print "Perhaps you need to login on this machine? Type \"help\"\n";
-    print "at next prompt for details\n\n";
-  }
-
-  print "Choose CVS repository ? \n";
-  print "  [1] This flesh repository $rep[1]\n";
-  print "  [2] $rep[2]\n";
-  for ($i=3;$i<=$numinpass;$i++)
-  {
-    print "  [$i] $rep[$i]\n";
-  }
-  
-  print "\nRepository choice 1-$numinpass, h)elp, q)uit : [1] ";
-  
-  $dowhat = <STDIN>;
-  
-  if ($dowhat =~ /^$/) 
-  {
-    $dowhat = 1;
-  } 
-  elsif ($dowhat =~ /^q/i)
-  {
-    print "\n\n";
-    exit(0);
-  }
-  elsif ($dowhat =~ /^h/i)
-  {
-
-    print "\nThe list of repositories includes all those repositories\n";
-    print "into which you have logged in from this machine.\n\n";
-    print "There are two official Cactus repositories on our server\n";
-    print "at cvs.cactuscode.org, the latest stable release of the Cactus\n";
-    print "flesh and arrangements is at\n\n";
-    print "    /cactus\n\n";
-    print "and the developmental version is at\n\n";
-    print "    /cactusdevcvs\n\n";
-    print "Checking out from the developmental version will give you all\n";
-    print "the current bug fixes and new features, but is more unstable.\n\n";
-    print "Both repositories can either be logged into anonymously, using\n\n";
-    print "    cvs -d :pserver:cvs_anon\@cvs.cactuscode.org:/cactus[devcvs]\n\n";
-    print "and the password \"anon\". Alternatively, if you have a login\n";
-    print "at our repositories, using\n\n"; 
-    print "    cvs -d :pserver:<name>\@cvs.cactuscode.org:/cactus[devcvs]\n\n";
-    print "and your personal password will allow you to access or commit to\n";
-    print "those modules to which you have privileges\n";
-    print "\nReturn to continue\n";
-    <STDIN>;
-    
-  }      
-  if ($dowhat == 1)
-  {
-  }
-  elsif ($dowhat == 2)
-  {
-    print "Custom repository : ";
-    $rep[2] = <STDIN>;
-    chop($rep[2]);
-  }
-
-  return $rep[$dowhat];
-  
 }
 
 #/*@@
