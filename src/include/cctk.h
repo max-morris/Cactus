@@ -56,6 +56,24 @@
 #define CCTK_PRINTSEPARATOR \
   printf("----------------------------------------------------------------\n");
 
+#define _DECLARE_CCTK_CARGUMENTS \
+            int cctk_dim=cctkGH->cctk_dim;\
+            int *cctk_gsh=cctkGH->cctk_gsh;\
+            int *cctk_lsh=cctkGH->cctk_lsh;\
+            int *cctk_lbnd=cctkGH->cctk_lbnd;\
+            int *cctk_ubnd=cctkGH->cctk_ubnd;\
+            int *cctk_from=cctkGH->cctk_from;\
+            int *cctk_to=cctkGH->cctk_to;\
+            int *cctk_bbox=cctkGH->cctk_bbox;\
+            CCTK_REAL cctk_delta_time=cctkGH->cctk_delta_time;\
+            CCTK_REAL cctk_time=cctkGH->cctk_time;\
+            CCTK_REAL *cctk_delta_space=cctkGH->cctk_delta_space;\
+            int *cctk_levfac=cctkGH->cctk_levfac;\
+            int cctk_convlevel=cctkGH->cctk_convlevel;\
+            int *cctk_nghostzones=cctkGH->cctk_nghostzones;\
+            int cctk_iteration=cctkGH->cctk_iteration;
+
+
 #define _INITIALISE_CCTK_C2F
 #define _DECLARE_CCTK_C2F 
 #define _PASS_CCTK_C2F(xGH) &((xGH)->cctk_dim),\
