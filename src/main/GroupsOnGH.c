@@ -734,8 +734,9 @@ int CCTK_GroupubndGI(cGH *cctkGH,
         retval = -1;
         usedim = (data.dim < dim) ? data.dim : dim;
         CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
-                   "CCTK_GroupubndGI: Incorrect dimension %d supplied, group %s has dimension %d, copying %d integers",
-                   dim,data.dim,usedim);
+                   "CCTK_GroupubndGI: Incorrect dimension %d supplied, "
+		   "group %s has dimension %d, copying %d integers",
+                   dim,CCTK_GroupName(groupindex),data.dim,usedim);
       }
       memcpy(ubnd,(const int *)data.ubnd,usedim*sizeof(int));
     }
@@ -915,8 +916,9 @@ int CCTK_GrouplshGI(cGH *cctkGH,
         retval = -1;
         usedim = (data.dim < dim) ? data.dim : dim;
         CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
-                   "CCTK_GrouplshGI: Incorrect dimension %d supplied, group %s has dimension %d, copying %d integers",
-                   dim,data.dim,usedim);
+                   "CCTK_GrouplshGI: Incorrect dimension %d supplied, "
+		   "group %s has dimension %d, copying %d integers",
+                   dim,CCTK_GroupName(groupindex),data.dim,usedim);
       }
       memcpy(lsh,(const int *)data.lsh,usedim*sizeof(int));
     }
@@ -1096,8 +1098,9 @@ int CCTK_GroupgshGI(cGH *cctkGH,
         retval = -1;
         usedim = (data.dim < dim) ? data.dim : dim;
         CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
-                   "CCTK_GroupgshGI: Incorrect dimension %d supplied, group %s has dimension %d, copying %d integers",
-                   dim,data.dim,usedim);
+                   "CCTK_GroupgshGI: Incorrect dimension %d supplied, "
+		   "group %s has dimension %d, copying %d integers",
+                   dim,CCTK_GroupName(groupindex),data.dim,usedim);
       }
       memcpy(gsh,(const int *)data.gsh,usedim*sizeof(int));
     }
@@ -1263,7 +1266,8 @@ int CCTK_GroupnghostzonesGI(cGH *cctkGH,
   {
     retval = -3;
     CCTK_VWarn(2,__LINE__,__FILE__,"Cactus",
-               "CCTK_GroupnghostzonesGI: Grid information called for scalar group %s",
+               "CCTK_GroupnghostzonesGI: Grid information called "
+	       "for scalar group %s",
                CCTK_GroupName(groupindex));
   }
   else
@@ -1277,8 +1281,9 @@ int CCTK_GroupnghostzonesGI(cGH *cctkGH,
         retval = -1;
         usedim = (data.dim < dim) ? data.dim : dim;
         CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
-                   "CCTK_GroupnghostzonesGI: Incorrect dimension %d supplied, group %s has dimension %d, copying %d integers",
-                   dim,data.dim,usedim);
+                   "CCTK_GroupnghostzonesGI: Incorrect dimension %d supplied, "
+		   "group %s has dimension %d, copying %d integers",
+                   dim,CCTK_GroupName(groupindex),data.dim,usedim);
       }
       memcpy(nghostzones,(const int *)data.nghostzones,usedim*sizeof(int));
     }
