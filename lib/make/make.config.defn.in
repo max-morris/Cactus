@@ -98,6 +98,10 @@ F77_DEPEND_OUT = @F77_DEPEND_OUT@
 
 CXX_WORKING_NAME = @CXX_WORKING_NAME@
 
+# Some compilers are very picky about the suffix for fortran files
+
+F90_SUFFIX = @F90_SUFFIX@
+
 # How to postprocess object files
 C_POSTPROCESSING   = @C_POSTPROCESSING@
 CXX_POSTPROCESSING = @CXX_POSTPROCESSING@

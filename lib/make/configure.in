@@ -1045,6 +1045,12 @@ AC_SUBST(CXX_WORKING_NAME)
 
 : ${CXX_WORKING_NAME='$(notdir $<)'}
 
+# What is the suffix for freeformat f90 names (some compilers are very picky).
+
+AC_SUBST(F90_SUFFIX)
+
+: ${F90_SUFFIX='f90'}
+
 # How to get the current working directory when in the shell
 AC_SUBST(GET_WD)
 : ${GET_WD="pwd"}

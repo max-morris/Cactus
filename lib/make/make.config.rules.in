@@ -116,11 +116,11 @@ endef
 
 # Define how to do a free-format F90 compilation
 define PREPROCESS_F90
-cat $< | sed 's.//.AUTOMATICALLY_GENERATED_CONCATONATION_PROTECTION_STRING.g' | $(CPP) $(CPPFLAGS) $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DFCODE - |  $(PERL) -p -e 's/__FORTRANFILE__/\"$(basename $(notdir $<)).F90\"/g; s.AUTOMATICALLY_GENERATED_CONCATONATION_PROTECTION_STRING.//.g' - | $(PERL) -s $(F_FILE_PROCESSOR) -free_format > $(basename $(notdir $<)).f90
+cat $< | sed 's.//.AUTOMATICALLY_GENERATED_CONCATONATION_PROTECTION_STRING.g' | $(CPP) $(CPPFLAGS) $(INC_DIRS:%=-I%) $(EXTRA_DEFINES:%=-D%) -DFCODE - |  $(PERL) -p -e 's/__FORTRANFILE__/\"$(basename $(notdir $<)).F90\"/g; s.AUTOMATICALLY_GENERATED_CONCATONATION_PROTECTION_STRING.//.g' - | $(PERL) -s $(F_FILE_PROCESSOR) -free_format > $(basename $(notdir $<)).$(F90_SUFFIX)
 endef
 
 define COMPILE_F90
-current_wd=`$(GET_WD)` ; cd $(SCRATCH_BUILD) ; $(F90) $(F90FLAGS) $(FCOMPILEONLY)$(OPTIONSEP)$$current_wd$(DIRSEP)$@ $$current_wd$(DIRSEP)$(basename $(notdir $<)).f90  
+current_wd=`$(GET_WD)` ; cd $(SCRATCH_BUILD) ; $(F90) $(F90FLAGS) $(FCOMPILEONLY)$(OPTIONSEP)$$current_wd$(DIRSEP)$@ $$current_wd$(DIRSEP)$(basename $(notdir $<)).$(F90_SUFFIX)  
 endef
 
 define POSTPROCESS_F90
