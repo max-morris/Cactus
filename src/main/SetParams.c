@@ -90,8 +90,9 @@ int CCTKi_SetParameter (const char *parameter, const char *value, int lineno)
   {
     if (CCTKi_ActivateThorns (value))
     {
-      CCTK_Warn (0, __LINE__, __FILE__, "Cactus",
-                 "CCTKi_SetParameter: Errors while activating thorns\n");
+      CCTK_VWarn (0, __LINE__, __FILE__, "Cactus",
+                 "CCTKi_SetParameter: Error at line %d in parameter file %s "
+		 "while activating thorns",lineno,parfile);
     }
     retval = 0;
   }
