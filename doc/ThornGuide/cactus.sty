@@ -1,0 +1,44 @@
+\newif\ifpdf
+\ifx\pdfoutput\undefined
+   \pdffalse % we are not running PDFLaTeX
+\else
+   \pdfoutput=1 % we are running PDFLaTeX
+   \pdftrue
+\fi
+
+\ifpdf
+\usepackage[pdftex]{graphicx}
+\else
+\usepackage{graphicx}
+\fi
+
+\usepackage{latexsym}
+\usepackage{ifthen}
+\usepackage{calc}
+
+\parskip = 2 pt
+\oddsidemargin = 0 cm
+\textwidth = 16 cm
+\topmargin = -1 cm
+\textheight = 24 cm
+
+% MANPAGE like description setting for options, use as % \begin{Lentry}
+%\item[text] text \end{Lentry} \usepackage{ifthen,calc}
+\newcommand{\entrylabel}[1]{\mbox{\textsf{#1}}\hfil}
+\newenvironment{entry}
+  {\begin{list}{}
+    {\renewcommand{\makelabel}{\entrylabel}
+      \setlength{\labelwidth}{90pt}
+      \setlength{\leftmargin}{\labelwidth+\labelsep}
+    }
+  }
+  {\end{list}} \newlength{\Mylen} \newcommand{\Lentrylabel}[1]{%
+  \settowidth{\Mylen}{\textsf{#1}}%
+  \ifthenelse{\lengthtest{\Mylen > \labelwidth}}%
+    {\parbox[b]{\labelwidth} % term > labelwidth
+      {\makebox[0pt][l]{\textsf{#1}}\\}} %
+    {\textsf{#1}} %
+  \hfil\relax} \newenvironment{Lentry}
+  {\renewcommand{\entrylabel}{\Lentrylabel}
+   \begin{entry}}
+  {\end{entry}}
