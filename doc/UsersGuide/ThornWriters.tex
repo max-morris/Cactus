@@ -322,7 +322,7 @@ A boolean type which can take values 1, `t', `true', `yes' or
 \item the parameter name
 
 \item an optional size (in square brackets) -- if this is present the
-  parameter is a ``parameter array'', i.e. will actually be an array
+  parameter is a ``parameter array'', i.e.\ will actually be an array
   of parameters each of which has the same properties but a different
   value.  Such arrays appear as normal arrays in C or Fortran, 0-based
   in C and 1-based in Fortran.  In the parameter file the value of
@@ -346,7 +346,7 @@ This must be one of the allowed values.
 For the numeric types {\tt INT} and {\tt REAL}, a range consists
 of a string of the
 forms lower-bound:upper-bound:step where a missing number or a * denotes
-anything (i.e. infinite bounds or an infinitesimal step).
+anything (i.e.\ infinite bounds or an infinitesimal step).
 
 For example
 \begin{verbatim}
@@ -899,7 +899,7 @@ point ($t+\Delta t$, $x$) we need data from the four points ($t$,
 $x$), ($t-\Delta t$, $x$), ($t$, $x+\Delta x$) and ($t$, $x-\Delta x$)
 only.  Ignoring the points at $x$, which are obviously always
 available on a given processor, you can see that the algorithm
-requires a point on either side of the point $x$, i.e. this algorithm
+requires a point on either side of the point $x$, i.e.\ this algorithm
 has {\tt stencil size} 1.  Similarly algorithms requiring two points
 on either side have stencil size 2, etc.
 
@@ -924,7 +924,7 @@ boundaries the data has to be copied from the adjacent processor.  It
 would be inefficient to copy each point individually, so instead, a
 number of {\bf ghostzones} are created at the internal boundaries.  A
 ghostzone consists of a copy of the whole plane (in 3d, line in 2d,
-point in 1d) of the data from the adjacent processor.  I.e. the array
+point in 1d) of the data from the adjacent processor.  That is, the array
 on each processor is augmented with copies of points from the adjacent
 processors, thus allowing the algorithm to proceed {\bf on the points
 owned by this processor} without having to worry about copying data.
@@ -1009,6 +1009,48 @@ index. The staggered gridpoints and the corresponding unstaggered
 points (arrows) are accessed by the same indices.}
 \label{fig:stagger1}
 \end{figure}
+
+\section{Information about Grid Variables}
+
+The Flesh holds a database with information related to grid variables, and 
+provides a set of querying APIs.
+
+\subsection{Group Information}
+
+Fundamental information about grid functions (e.g.\ local grid size and location, number of ghostzones) is passed through the argument list of scheduled routines (see~\ref{sec:cava2}). To obtain similar information from non-scheduled routins, or for general grid variables, a set of functions are provided, the last two letters of which specify whether the information is requested using a group name ({\tt GN}) or index ({\tt GI}), or a variable name ({\tt VN}) or index ({\tt VI}). 
+
+\begin{itemize}
+
+\item {\tt CCTK\_Grouplsh[GN|GI|VN|VI]}    An array of integers
+      with the local grid size on this processor.
+
+\item {\tt CCTK\_Groupgsh[GN|GI|VN|VI]}    An array of integers
+      with the global grid size.
+
+\item {\tt CCTK\_Groupbbox[GN|GI|VN|VI]}      An array of  integers 
+      which indicate whether the boundaries are internal boundaries
+      (e.g.\ between processors), or physical boundaries. 
+	A value of 1 indicates
+      a physical (outer) boundary at the edge of the computational grid,
+      and 0 indicates an internal boundary.  
+
+\item {\tt CCTK\_Groupnghostzones[GN|GI|VN|VI]}    
+An array of integers with
+         the number of ghostzones used in each direction.
+
+\item {\tt CCTK\_Grouplbnd[GN|GI|VN|VI]}       An array of integers
+      containing the lowest index (in each direction)
+      of the local grid, as seen on the global grid. Note that these indices
+      start from zero, so you need to add one when using them in
+      Fortran thorns.
+
+\item {\tt CCTK\_Groupubnd[GN|GI|VN|VI]}       An array of integers
+      containing the largest index (in each direction)
+      of the local grid, as seen on the global grid. Note that these indices
+      start from zero, so you need to add one when using them in
+      Fortran thorns.
+
+\end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1124,16 +1166,23 @@ it.
 \label{chap:scheduling}
 
 Cactus contains a rule-based scheduling system, which determines which
-routines from which thorn are run in which order.  The scheduler
+routines from which thorns are run in which order.  The scheduler
 determines if the specifications are inconsistent, but does allow the
 user to schedule a routine with respect to another routine which may not
 exist.
 For a detailed discussion of the {\t schedule.ccl} syntax see
-Appendix \ref{sec:sc}.
+Appendix~\ref{sec:sc}.
+
+A usual simple specification for a schedule declaration is 
+\begin{verbatim}schedule <function name> AT <schedule bin> 
+{
+  LANG: <language>
+  [STORAGE:       <group>,<group>...]
+} "Description of function"
+\end{verbatim}
 
 The full specification for a schedule declaration is
-\begin{verbatim}
-schedule [GROUP] <function|schedule group name> AT|IN <time|schedule group name> \
+\begin{verbatim}schedule [GROUP] <function|schedule group name> AT|IN <schedule bin|group name> \
                  [BEFORE|AFTER <item>] [WHILE <variable>] [AS <alias>]
 {
   LANG: <language>
@@ -1141,11 +1190,12 @@ schedule [GROUP] <function|schedule group name> AT|IN <time|schedule group name>
   [TRIGGER:       <group>,<group>...]
   [SYNC:          <group>,<group>...]
   [OPTIONS:       <option>,<option>...]
-} "Description of function| schedule group"
+} "Description of function or schedule group"
 \end{verbatim}
 
-This consists of a mandatory part, a set of options, and the main
-body, referred to as the {\tt schedule block}.
+This full schedule specification consists of a mandatory part, a set
+of options, and the main body limited by braces, referred to as the {\tt schedule
+block}.
 
 Each schedule item is scheduled either {\em AT} a particular {\em
 scheduling bin}, or {\em IN} a schedule {\em group}.
@@ -1155,8 +1205,18 @@ scheduling bin}, or {\em IN} a schedule {\em group}.
 \section{Schedule Bins}
 \label{scheduling:schedule_bins}
 
-These are the main points at which scheduled functions are run.
-These are listed in \ref{subsec:schedule_ccl}.
+These are the main times at which scheduled functions are run, from
+fixed points in the Flesh and Driver thorn (schedule bins can easily
+be traversed from any thorn, although this is not usual).  When a
+schedule bin is {\it traversed}, all the functions scheduled in that
+particular are called, in the manner described in
+\ref{scheduling:calling_scheduled_functions} and respecting the
+requested ordering of functions~\ref{scheduling:schedule_options}. In the absence of any ordering, functions in a particular schedule bin will be called in 
+an undetermined order. 
+
+The schedule bins are described in \ref{subsec:schedule_ccl}. Note that
+the preceeding {\tt CCTK\_} is optional for the use of the bin names 
+in the {\tt schedule.ccl} file.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -1167,7 +1227,7 @@ If the optional {\tt GROUP} specifier is used, the item is a schedule
 group rather than a normal function.  Schedule groups are effectively
 new, user-defined, schedule bins.  Functions or groups may be
 scheduled {\em IN} these in the same way as they are scheduled {\em
-AT} the main schedule bins.  (I.e. groups may be nested.)
+AT} the main schedule bins.  (That is, groups may be nested.)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -1180,10 +1240,10 @@ The options define various charactertics of the schedule item.
 These specify a function or group before or after which this item will
 be scheduled.
 \item[{\tt WHILE}]
-This specifies a {\em CCTK\_INT} grid scalar which is used to control
+This specifies a {\tt CCTK\_INT} grid scalar which is used to control
 the execution of this item.  If the grid scalar has a non-zero value
 the schedule item will be executed, otherwise the item will be
-ignored.  This allows iteration within the scheduler.
+ignored.  This allows some dynamic behaviour with scheduling.
 \item[{\tt AS}]
 This assigns a new name to a function for scheduling purposes.  This
 is used, for instance, to allow a thorn to schedule something before
@@ -1203,7 +1263,8 @@ or group.
 \begin{Lentry}
 \item[\texttt{LANG}]
 This specifies the language of the routine.  Currently this is either
-C or Fortran.
+C or Fortran. C++ routines should be defined as {\tt extern ``C''} 
+and registered as {\tt LANG: C}.
 \item[\texttt{STORAGE}] The {\tt STORAGE} keyword specifies groups for
 which memory should be allocated for the duration of the routine or
 schedule group.  The storage status reverts to its previous status
