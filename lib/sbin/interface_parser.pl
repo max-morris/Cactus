@@ -233,8 +233,9 @@ sub get_implementation_ancestors
       $ancestors{"\U$ancestor\E"} = 1;
       if(! $interface_data{"IMPLEMENTATION \U$ancestor\E THORNS"})
       {
-	print "$implementation inherits from $ancestor - non-existent implementation\n";
-	$CST_errors++;
+	$message = "$implementation (thorn $thorn) inherits from $ancestor - non-existent implementation. Remove $thorn or add a thorn implementing $ancestor";
+	&CST_error(0,$message,__LINE,__FILE__);
+
 	next;
       }
       %ancestors = &get_implementation_ancestors($ancestor, scalar(keys %ancestors), %ancestors,%interface_data);
