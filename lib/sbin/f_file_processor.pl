@@ -197,6 +197,9 @@ sub free_format_splitline
   while ($LINE =~ s/,\s*,/,/) {};
   $LINE =~ s/,\s*\)/\)/;
 
+  # Remove trailing spaces
+  $LINE =~ s/\s*$//;
+
   # Some preprocessors put extraneous spaces in 8-(
   $LINE =~ s:\. ([a-zA-Z]+) \.:\.$1\.:ig;
 
