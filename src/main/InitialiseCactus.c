@@ -57,6 +57,8 @@ static char *rcsid = "$Header$";
 int InitialiseCactus(int *argc, char ***argv, tFleshConfig *ConfigData)
 {
 
+  CactusBanner();
+
   InitialiseSubsystemDefaults();
 
   ProcessEnvironment(argc, argv, ConfigData);
@@ -70,6 +72,9 @@ int InitialiseCactus(int *argc, char ***argv, tFleshConfig *ConfigData)
   InitialiseScheduler(ConfigData);
 
   CallStartupFunctions(ConfigData);
+
+  CCTK_PrintBanners();
+
 
   return 0;
 }
