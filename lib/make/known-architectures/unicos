@@ -6,7 +6,7 @@
 #   @desc 
 #   
 #   @enddesc 
-#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/unicos,v 1.8 2000-02-16 18:48:54 goodale Exp $
+#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/unicos,v 1.9 2000-02-26 15:37:52 allen Exp $
 # @@*/
 
 if test "$CCTK_CONFIG_STAGE" = "preferred-compilers" ; then
@@ -15,13 +15,17 @@ if test "$CCTK_CONFIG_STAGE" = "preferred-compilers" ; then
 
 else
 
-  CFLAGS="-O3"
-  CXXFLAGS="-O3"
+  CFLAGS=""
+  CXXFLAGS=""
+  C_OPTIMISE_FLAGS="-O3"
+  CXX_OPTIMISE_FLAGS="-O3"
+  F90_OPTIMISE_FLAGS="-O scalar3,noieeeconform,unroll2,inline3"
+  F77_OPTIMISE_FLAGS="-O scalar3,noieeeconform,unroll2,inline3"
   # The T3E F90 compiler uses -b if you want to supply a name for a .o file.
   : ${FCOMPILEONLY="-b"}
 
   # The T3E fortran compiler puts module info in .o files by default.
-  : ${F90FLAGS="-O scalar3,noieeeconform,unroll2,inline3 -dp -em"}
+  : ${F90FLAGS="-dp -em"}
 
   : ${LIBS="_ereg _perf_mjp _util _vect"}
 
