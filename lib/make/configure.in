@@ -390,6 +390,9 @@ CCTK_CHECK_HEADERS(netinet/in.h,[#ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
 #endif])
 CCTK_CHECK_HEADERS(winsock2.h)
+CCTK_CHECK_HEADERS(crypt.h,[#ifdef HAVE_UNISTD_H 
+#include <unistd.h>
+#endif])
 
 AC_HEADER_TIME
 
