@@ -3,7 +3,7 @@
 #  @date      Sun Jan 17 22:15:23 1999
 #  @author    Tom Goodale
 #  @desc 
-#  Makes the CCTK executable for a particulare configuration
+#  Makes the CCTK executable for a particular configuration
 #  @enddesc 
 #  @version $Id$
 # @@*/
@@ -14,13 +14,22 @@
 # Some configuration variables
 CONFIG = $(TOP)/config-data
 BINDINGS_DIR = $(TOP)/bindings
+FLESH_DIR = $(CCTK_HOME)/src
 
 # Scratch build area - need this to make sure F90 module files end up all
 # in one directory.
 export SCRATCH_BUILD=$(TOP)/scratch
 
 DATESTAMP = $(CCTK_HOME)/src/datestamp.c
+
+FLESHLIB = Cactus
+BINDINGSLIB= CactusBindings
+
+CACTUSLIBS = $(FLESHLIB) $(BINDINGSLIB)
+
 export MAKE_DIR  = $(CCTK_HOME)/lib/make
+
+ALLCACTUSLIBS = $(notdir $(CACTUSLIBS) $(THORNS) $(THORNS) $(CACTUSLIBS))
 
 # Dividers to make the screen output slightly nicer
 DIVEL   =  __________________
@@ -33,7 +42,7 @@ include $(CONFIG)/make.config.defn
 # (Use -include to prevent warnings messages, as the file will be built if
 # it is missing .)
 # We don't want to include this file if doing something like a make clean
-# as if the file didn't exist it would first be made, which would be
+# as, if the file didn't exist, it would first be made, which would be
 # pretty confusing during a make clean !
 
 ifeq ($(strip $(MAKECMDGOALS)),)
@@ -46,11 +55,11 @@ ifneq ($(strip $(THORNS)),)
 endif
 
 # Build the executable
-$(EXE): $(CONFIG)/make.thornlist $(patsubst %,$(CCTK_LIBDIR)/lib%.a,$(notdir $(THORNS))) $(CCTK_LIBDIR)/libCactus.a $(CCTK_LIBDIR)/libCactusBindings.a
+$(EXE): $(CONFIG)/make.thornlist $(patsubst %,$(CCTK_LIBDIR)/lib%.a,$(notdir $(THORNS) $(CACTUSLIBS)))
 	@echo $(DIVIDER)
 	@echo Creating $(EXE) from $(THORNS)
 	$(CC) $(CFLAGS) $(CCOMPILEONLY)$(OPTIONSEP)$(TOP)$(DIRSEP)datestamp.o $(DATESTAMP)
-	$(LD) $(CREATEEXE)$(OPTIONSEP)$(subst /,$(DIRSEP),$@) $(LDFLAGS) $(EXTRAFLAGS) $(subst /,$(DIRSEP), $(TOP)/datestamp.o) -L$(CCTK_LIBDIR) -lCactus -lCactusBindings  $(addprefix -l,$(notdir $(THORNS))) $(addprefix -l,$(notdir $(THORNS))) -lCactus $(LIBDIRS:%=-L%) $(LIBS:%=-l%)
+	$(LD) $(CREATEEXE)$(OPTIONSEP)$(subst /,$(DIRSEP),$@) $(LDFLAGS) $(EXTRAFLAGS) $(subst /,$(DIRSEP), $(TOP)/datestamp.o) $(CACTUSLIBLINKLINE) $(LIBDIRS:%=-L%) $(LIBS:%=-l%)
 	@echo $(DIVIDER)
 	@echo All done !
 	@echo $(DIVIDER)

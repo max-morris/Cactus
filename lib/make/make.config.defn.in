@@ -44,8 +44,14 @@ CREATEEXE = @CREATEEXE@
 # On Unix a / 
 DIRSEP = @DIRSEP@
 
+EMPTY_VAR = # Nothing.  Leading space is removed.
+
 # Mostly a single space, sometimes nothing at all
 OPTIONSEP = @OPTIONSEP@
+
+# Some architectures need to do something special for linking in libraries
+
+CACTUSLIBLINKLINE= @CACTUSLIBLINKLINE@
 
 C_DEPEND = @C_DEPEND@
 CXX_DEPEND = @CXX_DEPEND@
