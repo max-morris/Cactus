@@ -125,29 +125,29 @@ int Cactus_InitialiseGH(cGH *GH)
   CCTK_BindingsScheduleRegister("RFRINIT", (void *)GH);
 
 
-  /* Traverse all the extensions. */
-  CCTK_TraverseGHExtensions(GH, "INITIALISE");
+  /* Initialise all the extensions. */
+  CCTK_InitGHExtensions(GH);
 
 
   /* Do various rfr traversals.  Will tidy up later. */
 
-  rfrTraverse(GH->rfr_top,GH, CACTUS_BASEGRID); 
-  rfrTraverse(GH->rfr_top,GH,CACTUS_INITIAL0);
+  CCTK_rfrTraverse(GH, CACTUS_BASEGRID); 
+  CCTK_rfrTraverse(GH,CACTUS_INITIAL0);
 
   /* Loops like this should go eventually... */
   for (Rstep = CACTUS_INITIAL; Rstep <= CACTUS_INITIAL9; Rstep++)
   {
-    rfrTraverse(GH->rfr_top,GH,Rstep);
+    CCTK_rfrTraverse(GH,Rstep);
   }
 
   /* Ignore checkpointing for now.
-   * rfrTraverse(GH->rfr_top,GH,CACTUS_RECOVER);
-   * rfrTraverse(GH->rfr_top,GH,CACTUS_CPINITIAL);
+   * CCTK_rfrTraverse(GH,CACTUS_RECOVER);
+   * CCTK_rfrTraverse(GH,CACTUS_CPINITIAL);
    */
 
   for (Rstep = CACTUS_POSTSTEP; Rstep <= CACTUS_POSTSTEP10; Rstep++)
   {
-    rfrTraverse(GH->rfr_top,GH,Rstep);
+    CCTK_rfrTraverse(GH,Rstep);
   }
 
 }
