@@ -10,11 +10,14 @@
 /*#define DEBUG_MISC*/
 
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 #include <ctype.h>
 #include <stdarg.h>
 #include <assert.h>
+
 #include "gnu_regex.h"
+
 
 #include "Misc.h"
 #include "FortranString.h"
@@ -702,15 +705,21 @@ int CCTK_SetLogical(int *data, const char *value)
    @endhistory 
 
 @@*/
+
+/* Joan had to change this for gcc under cygnus.... FUCK */
+#ifdef THISWASUNDERCYG
 int CCTK_RegexMatch(const char *string, 
 		    const char *pattern, 
-		    const int nmatch, 
-		    regmatch_t *pmatch) 
+		    const int nmatch,
+		    regexp *pmatch) 
+		  /*  regmatch_t *pmatch) */
 {
   int status;
-  regex_t re;
+  /* regex_t re; */
+  regexp re;
   
-  if (regcomp(&re, pattern, REG_EXTENDED) != 0)
+/*  if (regcomp(&re, pattern, REG_EXTENDED) != 0) */
+  if (regcomp(&re, pattern, (char *)0) != 0)
   {
     return(0);      /* report error */
   }
@@ -722,3 +731,12 @@ int CCTK_RegexMatch(const char *string,
   }
   return(1);
 }
+#endif
+int CCTK_RegexMatch(const char *string, 
+		    const char *pattern, 
+		    const int nmatch,
+		    char* *pmatch) 
+		
+{
+  return(1);
+ }

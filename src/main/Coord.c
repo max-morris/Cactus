@@ -9,6 +9,7 @@
 
 /*#define DEBUG_COORD*/
 
+#include <stdlib.h>
 #include <stdio.h>
 
 #include "cctk.h"

@@ -7,7 +7,9 @@
    @enddesc 
  @@*/
 
+
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "Misc.h"
 #include "WarnLevel.h"

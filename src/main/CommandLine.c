@@ -7,6 +7,8 @@
    @enddesc 
  @@*/
 
+/* Joan */
+#include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -46,13 +48,12 @@ void CCTK_CommandLineTestThornActive(const char *optarg)
   if(CCTK_IsThornActive(optarg))
   {
     printf("Thorn '%s' available.\n", optarg);
-    exit();
   }
   else
   {
     printf("Thorn '%s' unavailable.\n", optarg);
-    exit();
   }
+  exit(1);
 }
 
 void CCTK_CommandLineDescribeAllParameters(void)
@@ -63,7 +64,7 @@ void CCTK_CommandLineDescribeAllParameters(void)
 void CCTK_CommandLineDescribeParameter(const char *optarg)
 {
   CCTK_BindingsParameterHelp(optarg,NULL,NULL);
-  exit();
+  exit(1);
 }
 
 void CCTK_CommandLineTestParameters(const char *optarg)
@@ -142,7 +143,7 @@ void CCTK_CommandLineListActiveThorns(void)
     fprintf(stdout, "%s\n", thorn_name[i]);
   }
   printf ("-------------------------------------------\n\n");
-  exit();
+  exit(1);
 }
 
 void CCTK_CommandLineVersion(void)

@@ -14,6 +14,7 @@
 #include "IOMethods.h"
 #include "Groups.h"
 #include "StoreHandledData.h"
+#include "IO.h"
 
 static char *rcsid = "$Header$";
 

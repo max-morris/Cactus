@@ -11,6 +11,12 @@
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    GNU General Public License for more details.  */
 
+/* Joan */
+#define HAVE_CONFIG_H 1
+
+#define HAVE_STRING_H 1
+
+
 #ifndef _GETOPT_H
 #define _GETOPT_H 1
 

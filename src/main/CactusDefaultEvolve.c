@@ -151,6 +151,7 @@ int CactusDefaultEvolve(tFleshConfig *config)
       
     CactusStopTimer(config->timer[OUTPUT]);
 
+
 #if 0
     ConvergenceReport(config->GH, iteration);
 
@@ -338,7 +339,9 @@ void TerminationStepper(cGH *GH) {
   int cactus_terminate_global; 
   
   cactus_terminate_global=cactus_terminate;
+
 #if 0
+
 #ifdef MPI
   MPI_Allreduce(&cactus_terminate,&cactus_terminate_global,1,
 		MPI_INT,MPI_LOR,GH->PUGH_COMM_WORLD);

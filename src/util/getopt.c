@@ -22,6 +22,12 @@
 #define _NO_PROTO
 #endif
 
+/*Joan */
+#include <stdio.h>
+
+/* from stdlib.h */
+_CRTIMP char * __cdecl getenv(const char *);
+
 #ifdef HAVE_CONFIG_H
 #if defined (emacs) || defined (CONFIG_BROKETS)
 /* We use <config.h> instead of "config.h" so that a compilation
@@ -41,11 +47,11 @@
 #endif
 #endif
 
-#include <stdio.h>
 
-#ifdef HAVE_STRING_H
+/* Joan 
+#ifdef HAVE_STRING_H */
 #include <string.h>
-#endif
+/* #endif */
 
 /* Comment out all this code if we are using the GNU C Library, and are not
    actually compiling the library itself.  This code is part of the GNU C
@@ -174,7 +180,7 @@ static char *posixly_correct;
 /* Avoid depending on library functions or files
    whose names are inconsistent.  */
 
-char *getenv ();
+
 
 static char *
 my_index (str, chr)

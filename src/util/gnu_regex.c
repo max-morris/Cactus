@@ -60,9 +60,13 @@ static char *rcsid = "$Id$";
 
 #else  /* not emacs */
 
+
+/* joan */
+#define HAVE_STRING_H
+
 /* We used to test for `BSTRING' here, but only GCC and Emacs define
    `BSTRING', as far as I know, and neither of them use this code.  */
-#if HAVE_STRING_H || STDC_HEADERS
+#if defined(HAVE_STRING_H) || defined(STDC_HEADERS)
 #include <string.h>
 #ifndef bcmp
 #define bcmp(s1, s2, n)	memcmp ((s1), (s2), (n))

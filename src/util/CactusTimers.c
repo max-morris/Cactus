@@ -8,6 +8,8 @@
  @@*/
 
 #include "CactusTimers.h"
+/* Joan */
+#include <stdlib.h>
 
 
 static char *rcsid = "$Header$";
