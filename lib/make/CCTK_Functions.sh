@@ -26,7 +26,7 @@
 #
 #@@*/
 
-function CCTK_Search()
+function CCTK_Search
 {
   eval  $1=""
   if test -z $4 ; then
