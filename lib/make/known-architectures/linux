@@ -175,6 +175,12 @@ else
        fi       
        ;;
      SGI)
+       : ${F77_WARN_FLAGS='-fullwarn'}
+       : ${F90_WARN_FLAGS='-fullwarn'}
+       : ${F77_DEBUG_FLAGS='-g3'}
+       : ${F90_DEBUG_FLAGS='-g3'}
+       : ${F77_OPTIMISE_FLAGS='-O3'}
+       : ${F90_OPTIMISE_FLAGS='-O3'}
        : ${LIBS="fortran ffio m"} 
        ;;
      Intel)
@@ -215,10 +221,14 @@ else
     [ei]cc)
       : ${C_OPTIMISE_FLAGS='-O3'}
       : ${C_DEPEND='$(CC) -M $(CPPFLAGS)'}
-      : ${C_WARN_FLAGS="-w2"}
+      : ${C_WARN_FLAGS='-w2'}
+      ;;
+    sgicc)
+      : ${C_OPTIMISE_FLAGS='-O3 -Ofast'}
+      : ${C_DEBUG_FLAGS='-g3'}
       ;;
     pgcc)
-      : ${C_OPTIMISE_FLAGS="-fast"}
+      : ${C_OPTIMISE_FLAGS='-fast'}
       ;;
       *)
       ;;
@@ -229,6 +239,9 @@ else
       : ${CXX_OPTIMISE_FLAGS='-O3'}
       : ${CXX_DEPEND='$(CXX) -M $(CPPFLAGS)'}
       ;;
+    sgiCC)
+      : ${CXX_OPTIMISE_FLAGS='-O3 -Ofast'}
+      : ${CXX_DEBUG_FLAGS='-g3'}
   esac
 
   : ${C_DEBUG_FLAGS="-g"}
