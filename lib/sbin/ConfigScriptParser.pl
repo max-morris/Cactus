@@ -87,6 +87,8 @@ sub ParseConfigScript
       $line_number++;
       $line = $data[$line_number];
       chomp $line;
+      $cfg->{"\U$thorn $provides\E MAKE_DEFINITION"} .= "\n"
+        if defined $cfg->{"\U$thorn $provides\E MAKE_DEFINITION"};
       while($line !~ m/^\s*END\s+MAKE_DEFINITION\s*/i)
       {
         $cfg->{"\U$thorn $provides\E MAKE_DEFINITION"} .= $line;
