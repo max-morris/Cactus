@@ -29,10 +29,10 @@ if (! -e "$fortran_name_file" )
 
 require "$fortran_name_file";
 
-if($source_file_name)
-{
-  print "# 1 $source_file_name\n";
-}
+#if($source_file_name)
+#{
+#  print "# 1 $source_file_name\n";
+#}
 
 $checkfor1 = "DECLARE_CCTK_PARAMETERS";
 $addmacro1 = "USE_CCTK_PARAMETERS";
