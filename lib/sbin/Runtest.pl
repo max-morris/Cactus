@@ -340,6 +340,10 @@ sub runtest {
         while ($oline = <INORIG>) {
             $nline = <INNEW>;
             # Now lets see if they differ.
+	    if ($nline =~ /nan/i)
+	    {
+	      print "****CAUGHT NAN in $newfile****\n";
+	    }
             if (!($nline eq $oline)) {
 
 # This is the new comparison (subtract last two numbers)
