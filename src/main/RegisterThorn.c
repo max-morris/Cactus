@@ -11,6 +11,7 @@
 #include <stdlib.h>
 
 #include "flesh.h"
+#include "Implementations.h"
 
 #include "StoreNamedData.h"
 

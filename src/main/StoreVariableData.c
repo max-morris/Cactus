@@ -13,6 +13,9 @@
 #include "flesh.h"
 #include "StoreNamedData.h"
 
+static char *rcsid = "$Id$";
+
+
 static n_groups = 0;
 static cGroupDefinition *groups = NULL;
 
@@ -161,4 +164,21 @@ int CCTK_GetVariableNumber(const char *implementation,
   }
 
   return retval;
+}
+
+
+int CCTK_GetMaxDim(void)
+{
+  return 3;
+}
+
+
+int CCTK_GetNVariables(void)
+{
+  return total_variables;
+}
+
+int CCTK_GetNGroups(void)
+{
+  return n_groups;
 }

@@ -21,12 +21,12 @@ int SetupGF(cGH *, cGF *);
 
 int SyncAllFuncs(cGH *);
 int SyncGroupFuncs(cGH *, const char *group);
-int SyncOneFunc(cGH *, cGF *);
+int SyncOneFunc(cGH *, int GF);
 
 int ParallelInit(tFleshConfig *);
 int ParallelFinalise(tFleshConfig *);
 
-int Reduce(cGH *, cGF *, int operation, void *result);
+int Reduce(cGH *, int GF, int operation, void *result);
 
 #ifdef _cplusplus
 	   }

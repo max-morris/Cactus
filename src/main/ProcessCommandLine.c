@@ -15,7 +15,7 @@ static char *rcsid = "$Id$";
 
 static int *argc;
 
-static char **argv;
+static char ***argv;
 
 
  /*@@
@@ -32,7 +32,7 @@ static char **argv;
    @endhistory 
 
 @@*/
-int ProcessCommandLine(int *inargc, char *inargv[], tFleshConfig *ConfigData)
+int ProcessCommandLine(int *inargc, char ***inargv, tFleshConfig *ConfigData)
 {
   argc = inargc;
 
@@ -40,11 +40,11 @@ int ProcessCommandLine(int *inargc, char *inargv[], tFleshConfig *ConfigData)
 
   if(*argc>1)
   {
-    ConfigData->parameter_file_name = argv[1];
+    ConfigData->parameter_file_name = (*argv)[1];
   }
   else
   {
-    printf("Usage: %s <parameter_file_name>\n", argv[0]);
+    printf("Usage: %s <parameter_file_name>\n", (*argv)[0]);
 
     exit(1);
   }

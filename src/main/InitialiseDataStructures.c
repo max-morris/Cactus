@@ -8,9 +8,15 @@
  @@*/
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include "flesh.h"
 
+#include "Implementations.h"
+#include "StoreVariableData.h"
+
+static char *rcsid = "$Id$";
 
 #define TEST_THORNREGISTRATION
 #ifdef TEST_THORNREGISTRATION
@@ -35,11 +41,13 @@ static int n_thorns=1;
 
 #endif
 
-static char *rcsid = "$Id$";
 
 int InitialiseDataStructures(tFleshConfig *ConfigData)
 {
   int i;
+
+  ConfigData->nGHs = 0;
+  ConfigData->GH = NULL;
 
   for(i=0; i < n_thorns; i++)
   {

@@ -13,6 +13,7 @@
 
 #include "flesh.h"
 #include "CactusMainDefaults.h"
+#include "CactusCommFunctions.h"
 #include "parameters.h"
 
 static char *rcsid = "$Id$";
@@ -30,10 +31,10 @@ int CactusDefaultInitialise(tFleshConfig *config)
   convergence_level = 0;
   while((GH = SetupGH(config, convergence_level)))
   {
+    CCTK_AddGH(config, convergence_level, GH);
 #ifdef 0
-    CactusAddGH(config, GH, convergence_level);
     Initialise(GH);
-#endif
+#endif 
     convergence_level++;
   };
 

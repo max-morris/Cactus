@@ -49,7 +49,7 @@ static char *rcsid = "$Id$";
    @endvar 
 
 @@*/
-int InitialiseCactus(int *argc, char **argv, tFleshConfig *ConfigData)
+int InitialiseCactus(int *argc, char ***argv, tFleshConfig *ConfigData)
 {
 
   ProcessCommandLine(argc, argv, ConfigData);

@@ -12,6 +12,7 @@
 #include <string.h>
 
 #include "flesh.h"
+#include "Implementations.h"
 
 static char *rcsid = "$Id$";
 

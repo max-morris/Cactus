@@ -11,7 +11,12 @@
 
 #include "flesh.h"
 
+#include "ParameterData.h"
+
 static char *rcsid = "$Id$";
+
+int ParseFile(FILE *ifp, 
+	      int (*set_function)(const char *, const char *));
 
 
  /*@@

@@ -49,7 +49,7 @@ int main(int argc, char **argv)
 
   /* Initialise any cactus specific stuff.
    */
-  InitialiseCactus(&argc, argv, &ConfigData);
+  InitialiseCactus(&argc, &argv, &ConfigData);
 
   /* This is a (c-linkage) routine which has been registered by a thorn.
    */

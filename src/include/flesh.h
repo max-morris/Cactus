@@ -110,7 +110,7 @@ typedef struct
 extern "C" {
 #endif
 
-int InitialiseCactus(int *, char **, tFleshConfig *);
+int InitialiseCactus(int *, char ***, tFleshConfig *);
 
 int CCTK_SetParameter(const char *parameter, const char *value);
 
@@ -121,6 +121,26 @@ extern int (*Evolve)(tFleshConfig *);
 extern int (*Shutdown)(tFleshConfig *);
 
 int ShutdownCactus(tFleshConfig *);
+
+int ProcessCommandLine(int *argc, char ***argv, tFleshConfig *ConfigData);
+
+int InitialiseDataStructures(tFleshConfig *ConfigData);
+
+int ProcessParameterDatabase(tFleshConfig *ConfigData);
+
+int CallStartupFunctions(tFleshConfig *ConfigData);
+
+int CCTK_AddGH(tFleshConfig *config, int convergence_level, cGH *GH);
+
+int CCTK_GetMaxDim(void);
+
+int CCTK_GetNVariables(void);
+
+int CCTK_GetNGroups(void);
+
+int CCTK_VTypeNumber(const char *type);
+
+int CCTK_GTypeNumber(const char *type);
 
 #ifdef __cplusplus
 	   }

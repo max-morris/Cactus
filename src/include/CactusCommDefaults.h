@@ -22,12 +22,12 @@ int CactusDefaultSetupGF(cGH *, cGF *);
 
 int CactusDefaultSyncAllFuncs(cGH *);
 int CactusDefaultSyncGroupFuncs(cGH *, const char *group);
-int CactusDefaultSyncOneFunc(cGH *, cGF *);
+int CactusDefaultSyncOneFunc(cGH *, int );
 
 int CactusDefaultParallelInit(tFleshConfig *);
 int CactusDefaultParallelFinalise(tFleshConfig *);
 
-int CactusDefaultReduce(cGH *, cGF *, int operation, void *result);
+int CactusDefaultReduce(cGH *, int , int operation, void *result);
 
 #ifdef _cplusplus
 	   }

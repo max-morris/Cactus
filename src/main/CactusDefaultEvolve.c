@@ -61,7 +61,7 @@ int CactusDefaultEvolve(tFleshConfig *config)
 
 #ifdef 0
   InfoHeader(config);
- #endif
+#endif
 
   while (iteration<itlast) 
   {
