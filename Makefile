@@ -19,7 +19,7 @@
 #
 #
 #   @enddesc
-#   @version $Id: Makefile,v 1.162 2004-11-03 00:21:16 goodale Exp $
+#   @version $Id: Makefile,v 1.163 2004-11-04 15:23:08 jthorn Exp $
 # @@*/
 
 ##################################################################################
@@ -27,7 +27,7 @@
 ##################################################################################
 CCTK_VERSION_MAJOR = 4
 CCTK_VERSION_MINOR = 0
-CCTK_VERSION_OTHER = b16
+CCTK_VERSION_OTHER = b15
 ##################################################################################
 CCTK_VERSION=$(CCTK_VERSION_MAJOR).$(CCTK_VERSION_MINOR).$(CCTK_VERSION_OTHER)
 ##################################################################################
@@ -260,9 +260,8 @@ $(CONFIGURATIONS):
 	  echo "Error: Configuration $@ is out of date.";\
 	  echo "  Please reconfigure your configuration by running the command"; \
           echo ;\
-          echo "    $(MAKE) $@-config"; \
+          echo "    $(MAKE) $@-reconfig"; \
           echo ;\
-          echo "  with the appropriate configuration options !";\
 	  echo "  (It is likely that recent changes to the flesh require this.)";\
 	  echo $(DIVIDER);\
 	  exit 1;\
@@ -354,23 +353,24 @@ else
 	@echo Valid options are
 	@echo "  -build         : to build individual thorns of a configuration."
 	@echo "  -clean         : to clean a configuration."
-	@echo "                  (deletes all object and dependency files in "
+	@echo "                  (deletes all object and dependency files in"
 	@echo "                   the configuration)."
 	@echo "  -cleandeps     : to clean a configuration's dependency files."
 	@echo "  -cleanobjs     : to clean a configuration's object files."
-	@echo "  -config        : to (re)configure a configuration. "
-	@echo "                  (runs or reruns the configuration scripts)."
+	@echo "  -config        : to configure a configuration."
 	@echo "  -delete        : to delete a configuration."
-	@echo "  -editthorns    : edits the ThornList file. "
+	@echo "  -editthorns    : edits the ThornList file."
 	@echo "  -realclean     : to restore a configuration to almost a new state."
-	@echo "                  (deletes all but the config-data directory "
+	@echo "                  (deletes all but the config-data directory"
 	@echo "                   and the ThornList file)."
 	@echo "  -rebuild       : to rebuild a configuration."
 	@echo "                  (forces the CST to be rerun)."
+	@echo "  -reconfig      : to reconfigure an existing configuration"
+	@echo "                   using the same configuration options."
 	@echo "  -utils         : to build a configuration's utility programs."
 	@echo "  -testsuite     : run the test program."
-	@echo "  -thornlist     : regenerates the ThornList file. "
-	@echo "  -ThornGuide    : creates the thorn manual for a specific configuration. "
+	@echo "  -thornlist     : regenerates the ThornList file."
+	@echo "  -ThornGuide    : creates the thorn manual for a specific configuration."
 	@echo "  -cvsupdate     : updates the files for a specific configuration."
 	@echo "  -examples      : copies thorn parameter files to examples directory."
 endif
@@ -763,6 +763,57 @@ endif
 	  fi ; \
 	fi
 	@echo $(DIVIDER)
+
+
+################################################################
+# Reconfigure an existing configuration (using the same options)
+################################################################
+.PHONY: reconfig
+
+reconfig: int_version
+	@echo Please specify a configuration to reconfigure.
+	@echo $(DIVIDER)
+
+ifneq ($strip($(CONFIGURATIONS)),)
+.PHONY: $(addsuffix -reconfig,$(CONFIGURATIONS))
+
+$(addsuffix -reconfig,$(CONFIGURATIONS)): int_version
+	if test ! -r "$(CONFIGS_DIR)/$(@:%-reconfig=%)/config-info"; then \
+	  echo ""; \
+	  echo "Error reconfiguring '$(@:%-reconfig=%)': configuration is incomplete."; \
+	  echo "Use '$(MAKE) $(@:%-config=%)' to configure the configuration."; \
+	  exit 2; \
+	elif ! head -n 1 $(CONFIGS_DIR)/$(@:%-reconfig=%)/config-info | grep -q '# CONFIGURATION'; then \
+	  echo "Error reconfiguring '$(@:%-reconfig=%)': unrecognized config-info file format" ; \
+	  echo "This probably means that the Cactus config-info file format has changed"; \
+	  echo "since this configuration was last configured.  You will have to freshly"; \
+	  echo "configure the configuration with"; \
+	  echo "  $(MAKE) $(@:%-reconfig=%-config) OPTION1=VALUE1 OPTION2=VALUE2 ..."; \
+	  echo "Note that this will overwrite all of this configuration's current"; \
+	  echo "configuration options.  See the config-info file"; \
+	  echo "  $(CONFIGS_DIR)/$(@:%-reconfig=%)/config-info"; \
+	  echo "to see what these are."; \
+	  exit 2; \
+	fi; \
+	if ($(SETUP_ENV) $(PERL) -s $(SETUP) -config_file=$(CONFIGS_DIR)/$(@:%-reconfig=%)/config-info $(@:%-reconfig=%)) ; then : ; else \
+          echo "" ;                                                      \
+          echo "Error reconfiguring $@" ;                                \
+          rm -f "$(CONFIGS_DIR)/$(@:%-reconfig=%)/config-data/cctk_Config.h";\
+          exit 2                                 ;                       \
+        fi ;                                                             \
+	echo $(DIVIDER) ; \
+	if test "x$(PROMPT)" = "xno" ; then \
+	  $(MAKE) $(@:%-reconfig=%) WARN=$(WARN); \
+	else \
+	  echo Use '$(MAKE) $(@:%-reconfig=%)' to build the configuration. ; \
+	fi
+	@echo $(DIVIDER)
+endif
+
+%-reconfig:
+	@echo $(DIVIDER)
+	@echo Configuration $(@:%-reconfig=%) does not exist.;
+	@echo Reconfiguration aborted.
 
 
 #####################
