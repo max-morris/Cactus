@@ -19,7 +19,7 @@ require "$sbin_dir/CSTUtils.pl";
 sub BuildHeaders
 {
   my($cctk_home,$bindings_dir,%database) = @_;
-  my($start_dir,$thorn,$inc_file,$inc_file1,$inc_file2);
+  my($start_dir,$thorn,$inc_file,$inc_file1,$inc_file2,$tmpline);
 
   $start_dir = `pwd`;
   chdir $bindings_dir;
@@ -85,19 +85,30 @@ sub BuildHeaders
 	# Now have to find the include file and copy it
 	if (-e "$cctk_home/arrangements/$arrangement/$thorn/src/$inc_file1")
 	{
-          $data{"$inc_file2"} .= "if (CCTK_IsThornActive(\"$thorn\")){\n";
-	  $data{"$inc_file2"} .= "#include \"$arrangement/$thorn/src/$inc_file1\"\n}\n";
+	  $tmpline = "#include \"$arrangement/$thorn/src/$inc_file1\"\n";
 	}
 	elsif (-e "$cctk_home/arrangements/$arrangement/$thorn/src/include/$inc_file1")
 	{
-          $data{"$inc_file2"} .= "if (CCTK_IsThornActive(\"$thorn\")){\n";
-	  $data{"$inc_file2"} .= "#include \"$arrangement/$thorn/src/include/$inc_file1\"\n}\n";
+	  $tmpline = "#include \"$arrangement/$thorn/src/include/$inc_file1\"\n}\n";
 	}
 	else
 	{
 	  $message = "Include file $inc_file1 not found in $arrangement/$thorn\n";
 	  &CST_error(0,$message,__LINE__,__FILE__);
 	}
+         
+	$data{"$inc_file2"} .= "#ifdef FCODE\n";
+#	$data{"$inc_file2"} .= "      if (CCTK_IsThornActive(\"$thorn\").eq.1) then\n";
+	$data{"$inc_file2"} .= "#else\n"; 
+	$data{"$inc_file2"} .= "if (CCTK_IsThornActive(\"$thorn\")){\n";
+	$data{"$inc_file2"} .= "#endif\n";           
+	$data{"$inc_file2"} .= "$tmpline\n";
+	$data{"$inc_file2"} .= "#ifdef FCODE\n";
+#	$data{"$inc_file2"} .= "      end if\n";
+	$data{"$inc_file2"} .= "#else\n"; 
+	$data{"$inc_file2"} .= "\n}\n";
+	$data{"$inc_file2"} .= "#endif\n";           
+
 	$data{"$inc_file2"} .= "/* End of include source file $inc_file1 from $thorn */\n";
       }
     }
