@@ -25,6 +25,8 @@ CCTK_FILEVERSION(main_CactusDefaultEvolve_c)
 
 /* Define some macros for convenience. */
 
+#define TERMINATION_RAISED_BRDCAST 4
+
 #define ForallConvLevels(iteration, conv_level)  {          \
                                         int factor = 1;                \
                                         for(conv_level = 0 ;           \
@@ -42,14 +44,35 @@ CCTK_FILEVERSION(main_CactusDefaultEvolve_c)
 
 int cactus_terminate;
 
+
+/********************************************************************
+ *********************     Local Data Types   ***********************
+ ********************************************************************/
+
+/********************************************************************
+ *********************     Local Data   *****************************
+ ********************************************************************/
+
+
 static int cactus_terminate_global = 0;
 
-#define TERMINATION_RAISED_BRDCAST 4
+/********************************************************************
+ ********************* Local Routine Prototypes *********************
+ ********************************************************************/
 
-/* Local function prototypes. */
 static int DoneMainLoop (CCTK_REAL cctk_time, int iteration);
 static int StepGH(cGH *GH);
+int CactusDefaultEvolve(tFleshConfig *config);
+void TerminationStepper(cGH *GH) ;
  
+
+/********************************************************************
+ *********************     External Routines   **********************
+ ********************************************************************/
+
+/********************************************************************
+ *********************     Local Routines   *************************
+ ********************************************************************/
 
  /*@@
    @routine    CactusDefaultEvolve
@@ -68,8 +91,8 @@ static int StepGH(cGH *GH);
 @@*/
 int CactusDefaultEvolve(tFleshConfig *config)
 {
-  int convergence_level;
-  int iteration;
+  unsigned int convergence_level;
+  unsigned int iteration;
 
   iteration = CCTK_MainLoopIndex();
 
