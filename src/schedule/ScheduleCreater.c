@@ -11,8 +11,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "cctki_Schedule.h"
+#include "cctk_Flesh.h"
 
+#include "cctki_Schedule.h"
 #include "StoreHandledData.h"
 #include "Schedule.h"
 
@@ -42,6 +43,8 @@ static char *rcsid="$Header$";
 
 static int n_schedule_groups = 0;
 static cHandledData *schedule_groups = NULL;
+
+CCTK_FILEVERSION(schedule_ScheduleCreater_c)
 
 /********************************************************************
  ********************    External Routines   ************************

@@ -10,9 +10,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "cctk_Flesh.h"
 #include "Schedule.h"
 
 static char *rcsid = "$Header$";
+
+CCTK_FILEVERSION(schedule_ScheduleSorter_c)
 
 static void ScheduleSwap(int size, signed char **array, int *order, int row, int column);
 

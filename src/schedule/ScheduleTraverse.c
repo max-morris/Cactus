@@ -10,12 +10,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "cctki_Schedule.h"
+#include "cctk_Flesh.h"
 
+#include "cctki_Schedule.h"
 #include "StoreHandledData.h"
 #include "Schedule.h"
 
 static char *rcsid = "$Header$";
+
+CCTK_FILEVERSION(schedule_ScheduleTraverse_c)
+
 
 /* Local routine prototypes */
 static int ScheduleTraverseGroup(cHandledData *schedule_groups, 
