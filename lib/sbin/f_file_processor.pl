@@ -6,6 +6,7 @@
 #
 # Reads STDIN, writes to STDOUT.
 #
+# removes all comments
 # replaces && with newline and tab to col 7
 # replaces &! with newline at col 0
 # Breaks lines greater than 72 cols
@@ -15,7 +16,7 @@
 # Joan, Apr 21 1997: get rid of cC comments and handle ! comments properly
 #                    and fix it so now it is really 72 and we do not get
 #                    shitty breaks in the middle of fortran strings!
-#
+
 $* = 1;				# Multi-line is on!
 
 while (<>) {
@@ -31,16 +32,17 @@ while (<>) {
     # Get rid of any tabs
     s/\t/        /g;
     
-    # OK, now put in the line breaks:
-    s/\&\&\s*/\n      /g;
-    s/\&\!\s*/\n/g;
-
     # Get rid of standard c C, or even ! comments
     s/^[cC!].*$/\n/g;
     
     # Get rid of ! comments : a bit tricky as ! may appear inside strings
     s/(.)![^'"]*$/\1\n/g;
 
+    # OK, now put in the line breaks (&& or &!)
+    s/\&\&\s*/\n      /g;
+    s/\&\!\s*/\n/g;
+
+    # Get rid of lonesome semicolons
     s/\s*\;\s*$//;
 
     # And now we can fix the lines.  This is actually a little complicated.
