@@ -145,15 +145,23 @@ int CCTK_InterpLocalUniform(int N_dims,
  */
 
 /* the grid is too small for the selected interpolation molecule */
-#define CCTK_ERROR_INTERP_GRID_TOO_TINY (-1000)
+#define CCTK_ERROR_INTERP_GRID_TOO_SMALL (-1000)
+/* ... old code for backwards compatability */
+#define CCTK_ERROR_INTERP_GRID_TOO_TINY  CCTK_ERROR_INTERP_GRID_TOO_SMALL
+
+/*
+ * the (multiprocessor) grid's ghostzone size is too small for the selected
+ * interpolation molecule (or this processor's chunk of the grid is too small)
+ */
+#define CCTK_ERROR_INTERP_GHOST_SIZE_TOO_SMALL (-1001)
 
 /* an interpolation point is outside the input grid */
-#define CCTK_ERROR_INTERP_POINT_OUTSIDE (-1001)
+#define CCTK_ERROR_INTERP_POINT_OUTSIDE (-1002)
 /* ... old code for backwards compatability */
-#define CCTK_ERROR_INTERP_POINT_X_RANGE (-1001)
+#define CCTK_ERROR_INTERP_POINT_X_RANGE CCTK_ERROR_INTERP_POINT_OUTSIDE
 
 /* an interpolation point is in an excised region */
-#define CCTK_ERROR_INTERP_POINT_EXCISED (-1002)
+#define CCTK_ERROR_INTERP_POINT_EXCISED (-1003)
 
 #ifdef __cplusplus
 }
