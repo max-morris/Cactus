@@ -3411,6 +3411,7 @@ For details on running the test suites, see Section~\ref{sec:testing}.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Using Cactus Timers}
+\label{sec:timers}
 
 \subsection{What are timers?}
 
@@ -3422,10 +3423,8 @@ timing different sections of your thorns using various clocks which
 have been registered with the Flesh.  By default, the Flesh provides a
 set of clocks (if they are available), measuring for
 example wall clock time and CPU time. Additional clocks can be
-implemented by thorns and registered with the Flesh
-%(see
-%Section~\ref{????} [FIXME: clock registration to be added]
-%on how to write and register your own clock).
+implemented by thorns and registered with the Flesh (see Chapter
+\ref{chap:clocks}).
 
 You can add any number of timers to your thorn source code, providing
 each with a chosen name, for example {\tt TimeMyRoutine}, {\tt TimeNextCalculation}, and then use Cactus functions to switch on the
@@ -3483,6 +3482,7 @@ Provide the name of the timer for a given timer index
 \end{Lentry}
 
 \subsection{The {\tt cTimerData} Structure}
+\label{subsec:cTimerData}
 
 The structure holding the timing data, {\tt cTimerData}, contains
 the number of collected times (one measurement for each registered clock),

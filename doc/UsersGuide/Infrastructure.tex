@@ -576,26 +576,51 @@ provides distinct timebins for recovery routines to be scheduled at:
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{Adding a timer}
+\chapter{Adding a timer clock}
+\label{chap:clocks}
 
-To add a Cactus timer you need to write several functions to provide the
-timer functionality, and then register these functions with the Flesh, with a name for the timer using {\t CCTK\_TimerRegister}.
+To add a Cactus timer clock you need to write several functions to provide the
+clock functionality (see Section \ref{sec:timers}), and then register these
+functions with the Flesh as a named clock.
 
-The functions are registered using a structure {\t cTimerFuncs} which
-contains the function pointers. The required functions are:
+The function pointers are placed in function pointer fields of a 
+\texttt{cClockFuncs} sturcture.  The fields of this structure are are:
 
 \begin{Lentry}
 
-\item[{\t info.n\_vals}]
-\item[{\t create}] {\t void *(*create)(int);}
+\item[{\t create}] {\t void *(*create)(int)}
 \item[{\t destroy}] {\t void (*destroy)(int, void *)}
 \item[{\t start}] {\t void (*start)(int, void *)}
 \item[{\t stop}] {\t void (*stop)(int, void *)}
 \item[{\t reset}] {\t void (*reset)(int, void *)}
 \item[{\t get}] {\t void (*get)(int, void *, cTimerVal *)}
 \item[{\t set}] {\t void (*set)(int, void *, cTimerVal *)}
+\item[{\t n\_vals}] {\t int}
 
 \end{Lentry}
+
+The first \texttt{int} argument of the functions may be used in any way
+you see fit.
+
+The return value of the \texttt{create} function will be a pointer to
+a new structure representing your clock.
+
+The second \texttt{void*} argument of all the other functions will be the
+pointer returned from the \texttt{create} function.
+
+The \texttt{cTimerVal*} argument of the \texttt{get} and \texttt{set}
+functions is as described in Section \ref{subsec:cTimerData}.
+
+The \texttt{n\_vals} field holds the number of elements in the 
+\texttt{vals} array field of the \texttt{cTimerVal} structure 
+used by your timer.
+
+To name and register the clock with the Flesh, call the function
+\begin{verbatim}
+	CCTK_ClockRegister( "my_clock_name", &clock_func ).
+\end{verbatim}
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
