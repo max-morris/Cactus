@@ -13,6 +13,7 @@
 
 # Some configuration variables
 CONFIG = $(TOP)/config-data
+BINDINGS_DIR = $(TOP)/bindings
 
 
 DATESTAMP = $(CCTK_HOME)/src/datestamp.c
@@ -31,7 +32,7 @@ include $(CONFIG)/make.config.defn
 -include $(CONFIG)/make.thornlist
 
 # Build the executable
-$(EXE): $(CONFIG)/make.thornlist $(patsubst %,$(CCTK_LIBDIR)/lib%.a,$(notdir $(THORNS))) $(CCTK_LIBDIR)/libCactus.a
+$(EXE): $(CONFIG)/make.thornlist $(patsubst %,$(CCTK_LIBDIR)/lib%.a,$(notdir $(THORNS))) $(CCTK_LIBDIR)/libCactus.a $(CCTK_LIBDIR)/libCactusBindings.a
 	@echo $(DIVIDER)
 	@echo Creating $(EXE) from $(THORNS)
 	$(CC) -c $(DATESTAMP) -o $(TOP)/datestamp.o
@@ -57,7 +58,8 @@ $(CCTK_LIBDIR)/lib%.a: update
 	if [ ! -d $(BUILD_DIR) ]; then $(MKDIR) $(BUILD_DIR) ; fi
 	thorn_name=$(@:$(CCTK_LIBDIR)/lib%.a=%); \
 	if [ "$$thorn_name" = "Cactus" ] ; then src_dir=$(CCTK_HOME)/src ; \
-	else src_dir=$(TOOLKIT_DIR)/$(@:$(CCTK_LIBDIR)/lib%.a=$(filter %/$(@:$(CCTK_LIBDIR)/lib%.a=%), $(THORNS)))/src ; fi ; \
+	else if [ "$$thorn_name" = "CactusBindings" ] ; then src_dir=$(BINDINGS_DIR) ; \
+	else src_dir=$(TOOLKIT_DIR)/$(@:$(CCTK_LIBDIR)/lib%.a=$(filter %/$(@:$(CCTK_LIBDIR)/lib%.a=%), $(THORNS)))/src ; fi ; fi ;\
 	if [ ! -d $(BUILD_DIR)/$$thorn_name ]; then $(MKDIR) $(BUILD_DIR)/$$thorn_name ; fi ; \
 	cd $(BUILD_DIR)/$$thorn_name ; \
 	if [ -r "$$src_dir/Makefile" ] ; then  make_file=$$src_dir/Makefile ; \

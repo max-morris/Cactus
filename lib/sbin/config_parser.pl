@@ -26,49 +26,34 @@ if(! $cctk_home)
   $cachome =~ s:/$::g;
 }
 
+if(! $bindings_dir)
+{
+  $bindings_dir = "$top/bindings";
+}
+
 $activethorns = shift(@ARGV);
 
 if (! $activethorns) 
 {
-    printf "Usage: config_parser [-top=<TOP>] [-config_dir=<config directory>] [-cctk_home=<CCTK home dir>] ActiveThornList";
+    printf "Usage: config_parser [-top=<TOP>] [-config_dir=<config directory>] [-cctk_home=<CCTK home dir>] -bindings_dir=<CCTK bindings directory> ActiveThornList";
     exit;
 }
 
+$sbin_dir = "$cctk_home/lib/sbin";
 
-#if (!-e "$cctk_home/lib/perl/thorn_utils.pl" ) {
-#    print <<EOE;
-#
-#ERROR: Cannot find the cactus perl libraries!
-#---------------------------------------------
-#This error usually means that either CACTUS_HOME is
-#set incorrectly, or that your distribution is not
-#in ~/cactus. Remeber that CACTUS_HOME has
-#to point to the directory above cactus. 
-#
-#I was looking in
-#
-#    $cachome/lib/perl
-#  
-#when I failed.
-#
-#
-#EOE
-#    exit;
-#}
+if (!-e "$sbin_dir/parameter_parser.pl" ) 
+{
+  die "Unable to find CCTK sbin directory - tried $sbin_dir\n";
+}
 
-require "$cctk_home/lib/sbin/parameter_parser.pl";
-require "$cctk_home/lib/sbin/interface_parser.pl";
-require "$cctk_home/lib/sbin/create_c_stuff.pl";
-require "$cctk_home/lib/sbin/create_fortran_stuff.pl";
-require "$cctk_home/lib/sbin/GridFuncStuff.pl";
-require "$cctk_home/lib/sbin/output_config.pl";
+require "$sbin_dir/parameter_parser.pl";
+require "$sbin_dir/interface_parser.pl";
+require "$sbin_dir/create_c_stuff.pl";
+require "$sbin_dir/create_fortran_stuff.pl";
+require "$sbin_dir/GridFuncStuff.pl";
+require "$sbin_dir/output_config.pl";
 
 %thorns = &create_thorn_list($cctk_home, $activethorns);
-
-foreach $thorn (keys %thorns)
-{
-  print "$thorn in dir $thorns{$thorn}\n";
-}
 
 %interface_database = &create_interface_database(%thorns);
 
@@ -78,14 +63,6 @@ foreach $thorn (keys %thorns)
 
 #&print_interface_database(%interface_database);
 
-@implementations = (keys %thorns);
-
-@fortran_module_file = &create_fortran_module_file(scalar(@implementations),@implementations,%parameter_database);
-
-#foreach $line (@fortran_module_file)
-#{
-#  print "$line\n";
-#}
 
 #%public_parameters = &get_public_parameters(%parameter_database);
 
@@ -94,7 +71,7 @@ foreach $thorn (keys %thorns)
 #  print "param $param from " . $public_parameters{"$param"}. "\n";
 #}
 
-@c_structures = &create_c_parameter_structures(scalar(@implementations),@implementations,%parameter_database);
+#@c_structures = &create_c_parameter_structures(scalar(@implementations),@implementations,%parameter_database);
 
 #foreach $line (@c_structures)
 #{
@@ -118,15 +95,13 @@ foreach $thorn (keys %thorns)
 #  print "$line\n";
 #}
 
+
+&CreateBindings($bindings_dir, scalar(%parameter_database), %parameter_database, %interface_database);
+
 @make_thornlist = &CreateMakeThornlist(%thorns);
 
-foreach $line (@make_thornlist)
-{
-  print "$line\n";
-}
+&OutputFile($config_dir, "make.thornlist", @make_thornlist);
 
-OutputFile($config_dir, "make.thornlist", @make_thornlist);
-      
 sub create_thorn_list
 {
   local($cctk_home, $activethorns) = @_;
@@ -216,7 +191,175 @@ sub CreateMakeThornlist
   return ("$thornlist", "");
 }
   
-  
+sub CreateBindings
+{
+  local($bindings_dir, $n_param_database, @rest) = @_;
+  local(%parameter_database);
+  local(%interface_database);
+  local($start_dir);
 
+  %parameter_database = @rest[0..$n_param_database-1];
+  %interface_database = @rest[$n_param_database..$#rest];
+
+  if(! -d $bindings_dir)
+  {
+    mkdir("$bindings_dir", 0755) || die "Unable to create $bindings_dir";
+  }
+  $start_dir = `pwd`;
+
+  &CreateParameterBindings($bindings_dir, $n_param_database, @rest);
+  &CreateVariableBindings($bindings_dir, %interface_database);
+  &CreateScheduleBindings($bindings_dir);
+
+  chdir $bindings_dir;
+
+  open (OUT, ">make.code.defn") || die "Cannot open make.code.defn";
+
+  print OUT "SRCS = \n";
+  print OUT "SUBDIRS = Parameters Variables Schedule\n";
+
+  close OUT;
     
+  chdir $start_dir;
   
+}
+
+sub CreateParameterBindings
+{
+  local($bindings_dir, $n_param_database, @rest) = @_;
+  local(%parameter_database);
+  local(%interface_database);
+  local($start_dir);
+
+  %parameter_database = @rest[0..$n_param_database-1];
+  %interface_database = @rest[$n_param_database..$#rest];
+
+  if(! -d $bindings_dir)
+  {
+    mkdir("$bindings_dir", 0755) || die "Unable to create $bindings_dir";
+  }
+  $start_dir = `pwd`;
+
+  chdir $bindings_dir;
+
+  if(! -d "Parameters")
+  {
+    mkdir("Parameters", 0755) || die "Unable to create Parameters directory";
+  }
+  chdir "Parameters";
+
+  open (OUT, ">Bindings.c") || die "Cannot open Bindings.c";
+
+  print OUT  <<EOT;
+ 
+  int CCTK_BindingsParametersInitialise(void)
+  {
+    return 0;
+  }
+ 
+  int CCTK_BindingsParameterSet(const char *identifier, const char *value)
+  {
+    return 1;
+  }
+ 
+  int CCTK_BindingsParameterGet(const char *identifier, void **value)
+  {
+    return -1;
+  }
+ 
+EOT
+
+  close OUT;
+
+  open (OUT, ">make.code.defn") || die "Cannot open ake.code.defn";
+
+  print OUT "SRCS = Bindings.c\n";
+
+  close OUT;
+    
+  chdir $start_dir;
+}
+
+
+sub CreateVariableBindings
+{
+  local($bindings_dir, %inteface_database) = @_;
+
+  if(! -d $bindings_dir)
+  {
+    mkdir("$bindings_dir", 0755) || die "Unable to create $bindings_dir";
+  }
+  $start_dir = `pwd`;
+  chdir $bindings_dir;
+
+  if(! -d "Variables")
+  {
+    mkdir("Variables", 0755) || die "Unable to create Variables directory";
+  }
+  chdir "Variables";
+
+  open (OUT, ">Bindings.c") || die "Cannot open Bindings.c";
+
+  print OUT  <<EOT;
+ 
+  int CCTK_BindingsVariablesInitialise(void)
+  {
+    return 0;
+  }
+ 
+EOT
+
+  close OUT;
+
+  open (OUT, ">make.code.defn") || die "Cannot open make.code.defn";
+
+  print OUT "SRCS = Bindings.c\n";
+
+  close OUT;
+
+  chdir $start_dir;
+}
+
+sub CreateScheduleBindings
+{
+  local($bindings_dir) = @_;
+
+  if(! -d $bindings_dir)
+  {
+    mkdir("$bindings_dir", 0755) || die "Unable to create $bindings_dir";
+  }
+  $start_dir = `pwd`;
+  chdir $bindings_dir;
+
+  if(! -d "Schedule")
+  {
+    mkdir("Schedule", 0755) || die "Unable to create Schedule directory";
+  }
+  chdir "Schedule";
+
+  open (OUT, ">Bindings.c") || die "Cannot open Bindings.c";
+
+  print OUT  <<EOT;
+ 
+  int CCTK_BindingsScheduleInitialise(void)
+  {
+    return 0;
+  }
+
+  int CCTK_BindingsScheduleRegister(const char *type)
+  {
+    return 0;
+  }
+ 
+EOT
+
+  close OUT;
+
+  open (OUT, ">make.code.defn") || die "Cannot open make.code.defn";
+
+  print OUT "SRCS = Bindings.c\n";
+
+  close OUT;
+
+  chdir $start_dir;
+}
