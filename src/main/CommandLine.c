@@ -18,6 +18,7 @@
 
 #include "cctk_Version.h"
 #include "cctk_ActiveThorns.h"
+#include "cctk_CommandLine.h"
 #include "cctk_Comm.h"
 #include "cctk_Misc.h"
 #include "cctk_ParamCheck.h"
@@ -39,38 +40,30 @@ CCTK_FILEVERSION(main_CommandLine_c)
 /********************************************************************
  ********************* Local Routine Prototypes *********************
  ********************************************************************/
-
 static void CommandLinePrintParameter (const cParamData *properties);
 
-/********************************************************************
- ********************* Other Routine Prototypes *********************
- ********************************************************************/
-
-/* FIXME: these should be put in a header somewhere */
-
-int CCTK_CommandLine (char ***outargv);
 
 /********************************************************************
  *********************     Local Data   *****************************
  ********************************************************************/
-
-static int redirectsubs = 0;
+static int already_redirected = 0;
 static int paramchecking = 0;
+
 
 /********************************************************************
  *********************     Global Data   *****************************
  ********************************************************************/
-
 int cctki_paramchecking;
 int cctki_paramcheck_nprocs;
+
 
 /********************************************************************
  *********************        Defines          **********************
  ********************************************************************/
-
 #define CACTUS_COMMANDLINE_OPTIONS                                            \
         "[-h] [-O] [-o paramname] [-x [nprocs]] [-W n] [-E n] [-r] [-T] "     \
         "[-t name] [-parameter-level <level>] [-v] <parameter_file_name>"
+
 
 /********************************************************************
  *********************     External Routines   **********************
@@ -383,13 +376,23 @@ void CCTKi_CommandLineParameterLevel (const char *argument)
    @date       Fri Jul 23 11:32:46 1999
    @author     Tom Goodale
    @desc
-               Sets the redirection flag for stdout.
+               Redirect standard output on non-root processors into a file
    @enddesc
 @@*/
 void CCTKi_CommandLineRedirectStdout (void)
 {
-  /* Set the flag to say we need to redirect the stdout. */
-  redirectsubs = 1;
+  int myproc;
+  char fname[32];
+
+
+  myproc = CCTK_MyProc (NULL);
+  if (myproc)
+  {
+    sprintf (fname, "CCTK_Proc%d.out", myproc);
+    freopen (fname, "w", stdout);
+  }
+
+  already_redirected = 1;
 }
 
 
@@ -527,29 +530,17 @@ void CCTKi_CommandLineUsage (void)
 @@*/
 void CCTKi_CommandLineFinished (void)
 {
-  int myproc;
-  char fname[256];
-
-
   /* Are we in a paramcheck run ? */
   if (! paramchecking)
   {
     cctki_paramchecking = 0;
   }
 
-  /* Redirect output from sub-processors ... */
-  myproc = CCTK_MyProc (NULL);
-  if (myproc)
+  /* if no redirect was requested on the command line
+     send stdout messages on non-root processors to /dev/null */
+  if (! already_redirected && CCTK_MyProc (NULL) != 0)
   {
-    if (redirectsubs)
-    {
-      sprintf (fname, "CCTK_Proc%d.out", myproc);
-    }
-    else
-    {
-      sprintf (fname, NULL_DEVICE);
-    }
-    freopen (fname, "w", stdout);
+    freopen (NULL_DEVICE, "w", stdout);
   }
 }
 
