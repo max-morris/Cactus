@@ -89,7 +89,7 @@ int CCTKi_rfrPrintTree(cGH *GH,void *rfr_top)
 
     showed_tree = 1;
 
-    printf ("-------------------------------------------------------------------------------------\n");
+    CCTK_PRINTSEPARATOR
     printf ("Evolution tree from the RFR\n");
 
     rfrPrintDescs(rfr_top,GH,CCTK_BASEGRID,"CCTK_BASEGRID","");
@@ -108,7 +108,7 @@ int CCTKi_rfrPrintTree(cGH *GH,void *rfr_top)
     rfrPrintDescs(rfr_top,GH,CCTK_ANALYSIS,"CCTK_ANALYSIS","      ");
     printf ("     endif\n");
     printf ("   enddo\n");
-    printf ("-------------------------------------------------------------------------------------\n");
+    CCTK_PRINTSEPARATOR
 
   }
 

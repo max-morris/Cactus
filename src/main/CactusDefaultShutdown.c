@@ -69,7 +69,7 @@ int CactusDefaultShutdown(tFleshConfig *config)
   if(myproc == 0)
   {
     /* printf("Goodbye! Adeu! Adios! Tchuess! Au Revoir! Ciao! Math sin leat!\n"); */
-    printf("-------------------------------------------------------------------------------------\n");
+    printf("--------------------------------------------------------------------------------\n");
     printf("Done.\n");
   }
 
