@@ -1,6 +1,7 @@
 SRCS=\
 BinaryTree.c\
 CactusTimers.c\
+File.c\
 ParseFile.c\
 RegisterKeyedFunction.c\
 StoreKeyedData.c\
