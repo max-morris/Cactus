@@ -760,7 +760,7 @@ sub CreateCArgumentList
   {
     if($arguments{$argument} =~ m:STORAGESIZE\(([^,]*),\s*(\d+):)
     {
-      $arglist .= "$sep"."(int *)(CCTK_STORAGESIZE(xGH, \"$1\",$2))";
+      $arglist .= "$sep"."(int *)(CCTK_STORAGESIZE(xGH, $2, \"$1\"))";
       $sep = ",";
     }
   }
