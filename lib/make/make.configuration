@@ -55,14 +55,24 @@ ifneq ($(strip $(THORNS)),)
 endif
 
 # Build the executable
-$(EXE): $(CONFIG)/make.thornlist $(patsubst %,$(CCTK_LIBDIR)/lib%.a,$(notdir $(THORNS) $(CACTUSLIBS)))
+$(EXE): $(CONFIG)/make.thornlist $(CONFIG)/cctk_version.h $(patsubst %,$(CCTK_LIBDIR)/lib%.a,$(notdir $(THORNS) $(CACTUSLIBS))) 
 	@echo $(DIVIDER)
 	@echo Creating $(EXE) from $(THORNS)
-	$(CC) $(CFLAGS) $(CCOMPILEONLY)$(OPTIONSEP)$(TOP)$(DIRSEP)datestamp.o $(subst /,$(DIRSEP),$(DATESTAMP))
+	$(CC) $(CFLAGS) $(CCOMPILEONLY)$(OPTIONSEP)$(TOP)$(DIRSEP)datestamp.o -I$(CONFIG) $(subst /,$(DIRSEP),$(DATESTAMP))
 	$(LD) $(CREATEEXE)$(OPTIONSEP)$(subst /,$(DIRSEP),$@) $(LDFLAGS) $(EXTRAFLAGS) $(subst /,$(DIRSEP), $(TOP)/datestamp.o) $(CACTUSLIBLINKLINE) $(LIBDIRS:%=-L%) $(LIBS:%=-l%)
 	@echo $(DIVIDER)
 	@echo All done !
 	@echo $(DIVIDER)
+
+# Version file
+$(CONFIG)/cctk_version.h: $(CCTK_HOME)/Makefile
+	echo "#ifndef _CCTK_VERSION_H_" > $@
+	echo "#define _CCTK_VERSION_H_" >> $@
+	echo "#define CCTK_VERSION_MAJOR $(CCTK_VERSION_MAJOR)" >> $@
+	echo "#define CCTK_VERSION_MINOR $(CCTK_VERSION_MINOR)" >> $@
+	echo "#define CCTK_VERSION_OTHER $(CCTK_VERSION_OTHER)" >> $@
+	echo "#define CCTK_VERSION       $(CCTK_VERSION)" >> $@
+	echo "#endif /* _CCTK_VERSION_H_*/" >> $@
 
 # Build a thorn library
 # Libraries go into the appropriate library directory

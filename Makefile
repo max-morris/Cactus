@@ -16,8 +16,20 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.40 1999-07-20 23:10:02 goodale Exp $
+#   @version $Id: Makefile,v 1.41 1999-07-23 12:52:47 goodale Exp $
 # @@*/
+
+##################################################################################
+# Version number
+##################################################################################
+CCTK_VERSION_MAJOR = 4
+CCTK_VERSION_MINOR = 0
+CCTK_VERSION_OTHER = ib1
+##################################################################################
+CCTK_VERSION=$(CCTK_VERSION_MAJOR).$(CCTK_VERSION_MINOR).$(CCTK_VERSION_OTHER)
+##################################################################################
+export CCTK_VERSION_MAJOR CCTK_VERSION_MINOR CCTK_VERSION_OTHER CCTK_VERSION
+##################################################################################
 
 # Make quietly unless told not to
 ifneq ($(strip $(SILENT)),no)
