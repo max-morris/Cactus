@@ -8,7 +8,6 @@
 #  @enddesc 
 #@@*/
 
-
 #/*@@
 #  @routine    TestOrderList
 #  @date       Sun Feb 21 08:22:42 1999
@@ -153,6 +152,11 @@ sub OrderList
 
   # Finally, sort the strings.
   @thing_list = &SortThings("ALLBEFORE", "ALLAFTER", scalar(@things), @things, %database);
+
+#  foreach $thing (@thing_list)
+#  {
+#    print "thing is $thing\n";
+#  }
 
   return @thing_list;
 }
