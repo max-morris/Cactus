@@ -267,7 +267,7 @@ sub parse_schedule_ccl
       $out .= "$out_block";
       $compile_files .= " $wrapper_file";
 
-      if(@options)
+      if(@options && $options[0] !~ m:STARTUP:i)
       {
 	$schedule_ordering{"\U$thorn"} .= " $routine";
 
