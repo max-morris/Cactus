@@ -907,14 +907,14 @@ sub parse_interface_ccl
         $interface_db{"\U$thorn GROUP $current_group\E GTYPE"} = "SCALAR";
       }
 
-      if($interface_db{"\U$thorn GROUP $current_group\E GTYPE"} eq "SCALAR")
-      {
-        $interface_db{"\U$thorn GROUP $current_group\E DIM"} = 1;
-      }
-
       if(! $interface_db{"\U$thorn GROUP $current_group\E DIM"})
       {
         $interface_db{"\U$thorn GROUP $current_group\E DIM"} = 3;
+      }
+
+      if($interface_db{"\U$thorn GROUP $current_group\E GTYPE"} eq "SCALAR")
+      {
+        $interface_db{"\U$thorn GROUP $current_group\E DIM"} = 0;
       }
 
       if(! $interface_db{"\U$thorn GROUP $current_group\E TIMELEVELS"})
