@@ -93,13 +93,13 @@ int CactusDefaultInitialise(tFleshConfig *config)
 int CactusInitialiseGH(cGH *GH)
 {
   int param_type;
-  CCTK_REAL cctk_initial_time;
+  const CCTK_REAL *cctk_initial_time;
 
-  cctk_initial_time = (*(CCTK_REAL *)CCTK_ParameterGet("cctk_initial_time",
-						       "Cactus",&param_type));
+  cctk_initial_time = (const CCTK_REAL *) CCTK_ParameterGet("cctk_initial_time",
+                                                       "Cactus", &param_type);
 
   /* Initialise time */
-  GH->cctk_time = cctk_initial_time;
+  GH->cctk_time = *cctk_initial_time;
 
   /* Initialise iteration number */
   GH->cctk_iteration = 0;

@@ -2,10 +2,10 @@
    @file      MemAllocate.c
    @date      Tue Mar  7 11:58:03 2000
    @author    Gerd lanfermann
-   @desc 
+   @desc
       Cactus memory allocation routines to monitor memory consumption
       by C routines. No fortran support.
-   @enddesc 
+   @enddesc
    @version $Header$
  @@*/
 
@@ -17,6 +17,7 @@
 #include "cctk_Flesh.h"
 #include "cctk_Malloc.h"
 #include "cctk_WarnLevel.h"
+#include "cctki_Malloc.h"
 
 #include "StoreHandledData.h"
 
@@ -60,11 +61,11 @@ typedef struct
 } t_memhash;
 
 
-/* Database structure (d), is kept at the beginning of 
+/* Database structure (d), is kept at the beginning of
    the allocated memory chunk (m):   ddddmmmmmmm
    pointer points to beginning of m:     |_pointer
 */
-typedef struct            
+typedef struct
 {
   unsigned long int ok;      /* magic number */
   unsigned long int size;    /* requested size */
@@ -113,14 +114,14 @@ int CCTKi_UpdateMemByFile(int size, int line, const char *file);
    @routine    CCTKi_Malloc
    @date       Wed Mar  8 12:46:06 2000
    @author     Gerd Lanfermann
-   @desc 
+   @desc
       Allocates memory, updates the total memory variable (static)
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   @enddesc
+   @calls
+   @calledby
+   @history
+
+   @endhistory
 
 @@*/
 
@@ -130,7 +131,7 @@ void *CCTKi_Malloc(size_t size, int line, const char *file)
   char *data;
 
   data = (char*)malloc(size+sizeof(t_mallocinfo));
-  if(!data) 
+  if(!data)
   {
     fprintf(stderr, "Allocation error! ");
   }
@@ -145,7 +146,7 @@ void *CCTKi_Malloc(size_t size, int line, const char *file)
   totmem += size;
 
   /*$retval = CCTKi_UpdateMemByFile(info->size, line, file);
-  if (retval<0) 
+  if (retval<0)
   {
     CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
                "CCTKi_UpdateMemByFile failed for malloc in %s, line %d",
@@ -162,18 +163,19 @@ void *CCTKi_Malloc(size_t size, int line, const char *file)
 }
 
 
+#ifdef CCTK_DEBUG_DEBUG
 /*@@
    @routine    CCTKi_Realloc
    @date       Wed Mar  8 12:46:06 2000
    @author     Gerd Lanfermann
-   @desc 
+   @desc
       ReAllocates memory, updates the total memory variable (static)
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   @enddesc
+   @calls
+   @calledby
+   @history
+
+   @endhistory
 
 @@*/
 
@@ -181,34 +183,34 @@ void *CCTKi_Realloc(void *pointer, size_t size, int line, const char *file)
 {
   t_mallocinfo *info;
   char *data=NULL;
- 
+
   /* Realloc called with NULL equiv. to malloc */
   if (pointer==NULL)
   {
     return(CCTKi_Malloc(size, line, file));
   }
 
-  if (size==0) 
+  if (size==0)
   {
     CCTKi_Free(pointer, line, file);
     return(NULL);
   }
- 
+
   /* get the info section */
   info = (t_mallocinfo *)((char*)pointer-sizeof(t_mallocinfo));
 
   /* make a sanity check: memory could have be allocated with standard malloc */
-  if (info->ok!=OK_INTEGRITY)  
+  if (info->ok!=OK_INTEGRITY)
   {
     CCTK_VWarn(0,__LINE__,__FILE__,"Cactus",
-	       "CCTKi_Realloc: Malloc database corrupted, "
-	       "Reallocation called from %s, line %d.\n%s", 
-	       file,line,
-	       "Was this memory allocated with CCTK_[RE/C/M]ALLOC ?\n");
+               "CCTKi_Realloc: Malloc database corrupted, "
+               "Reallocation called from %s, line %d.\n%s",
+               file,line,
+               "Was this memory allocated with CCTK_[RE/C/M]ALLOC ?\n");
     /*$CCTK_Abort(NULL);$*/
     return(NULL);
   }
-  else 
+  else
   {
     /* update some static variables */
     /* must be done before reallocation since the info pointer
@@ -221,8 +223,8 @@ void *CCTKi_Realloc(void *pointer, size_t size, int line, const char *file)
     if (!data)
     {
       CCTK_VWarn(0,__LINE__,__FILE__,"Cactus",
-		 "CCTKi_Realloc: Could not reallocate memory.  "
-		 "Reallocation called from %s, line %d. \n",file,line);
+                 "CCTKi_Realloc: Could not reallocate memory.  "
+                 "Reallocation called from %s, line %d. \n",file,line);
       /*$CCTK_Abort(NULL);$*/
     }
 
@@ -230,14 +232,14 @@ void *CCTKi_Realloc(void *pointer, size_t size, int line, const char *file)
     info = (t_mallocinfo*) data;
     info->size = size;
     info->tsize= size+sizeof(t_mallocinfo);
-    
+
 
     /*$CCTKi_UpdateMemByFile(info->size, line, file);$*/
 
-   
+
 #ifdef MEMDEBUG
     printf("ReAllocating %lu - by %s in line %d TOTAL: %lu\n",
-	   info->size, info->file, info->line, CCTK_TotalMemory());  
+           info->size, info->file, info->line, CCTK_TotalMemory());
 #endif
 
     /* return the pointer starting at the datasection, behind the info section */
@@ -249,20 +251,20 @@ void *CCTKi_Realloc(void *pointer, size_t size, int line, const char *file)
    @routine    CCTKi_cMalloc
    @date       Wed Mar  8 12:46:06 2000
    @author     Gerd Lanfermann
-   @desc 
+   @desc
       Allocates memory, updates the total memory variable (static)
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   @enddesc
+   @calls
+   @calledby
+   @history
+
+   @endhistory
 
 @@*/
 
 void *CCTKi_Calloc(size_t nmemb, size_t size, int line, const char *file)
 {
- 
+
   /* instead of a cmalloc(nmem,size) , we do a malloc(nmem*size) */
   return(CCTKi_Malloc(nmemb*size, line,file));
 }
@@ -273,14 +275,14 @@ void *CCTKi_Calloc(size_t nmemb, size_t size, int line, const char *file)
    @routine    CCTKi_Free
    @date       Wed Mar  8 12:46:55 2000
    @author     Gerd Lanfermann
-   @desc 
+   @desc
      Frees  memory, updates the total memory variable (static)
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   @enddesc
+   @calls
+   @calledby
+   @history
+
+   @endhistory
 
 @@*/
 
@@ -295,23 +297,23 @@ void CCTKi_Free(void *pointer, int line, const char *file)
 
   info = (t_mallocinfo *)((char*)pointer-sizeof(t_mallocinfo));
 
-  if (info->ok!=OK_INTEGRITY)  
-  { 
+  if (info->ok!=OK_INTEGRITY)
+  {
     CCTK_VWarn(0,__LINE__,__FILE__,"Cactus",
-	       "CCTKi_Free: Malloc database corrupted. "
-	       "Free called from:\n %s, line %d.%s\n",
-	       file,line,
-	       "Was this memory allocated with CCTK_[RE/C/M]ALLOC ?!\n");
+               "CCTKi_Free: Malloc database corrupted. "
+               "Free called from:\n %s, line %d.%s\n",
+               file,line,
+               "Was this memory allocated with CCTK_[RE/C/M]ALLOC ?!\n");
     CCTK_Abort(NULL,0);
   }
-  else 
+  else
   {
       pastmem  = totmem;
       totmem  -= info->size;
-        
+
 #ifdef MEMDEBUG
       printf("Freeing %lu - allocated by %s in line %d TOTAL: %lu\n",
-	     info->size, info->file, info->line, CCTK_TotalMemory());  
+             info->size, info->file, info->line, CCTK_TotalMemory());
 #endif
 
       /* invalidate the magic number so that we catch things
@@ -320,20 +322,21 @@ void CCTKi_Free(void *pointer, int line, const char *file)
       info->ok = 0;
       free(info);
   }
-} 
+}
+#endif /* CCTK_DEBUG_DEBUG */
 
 /*@@
    @routine    CCTKi_UpdateMemByFile
    @date       Wed Mar  8 12:46:06 2000
    @author     Gerd Lanfermann
-   @desc 
+   @desc
       Keeps track of the allocated memory on a per file bases.
-    @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+    @enddesc
+   @calls
+   @calledby
+   @history
+
+   @endhistory
 
 @@*/
 
@@ -341,8 +344,12 @@ int CCTKi_UpdateMemByFile(int size, int line, const char *file)
 {
   t_memhash *memfile;
   int handle, retval=-1;
-  
-  if ((handle=Util_GetHandle(memfileDB, file, (void**)&memfile)) > -1) 
+
+
+  /* avoid compiler warning about unused parameter */
+  line = line;
+
+  if ((handle=Util_GetHandle(memfileDB, file, (void**)&memfile)) > -1)
   {
     memfile = (t_memhash*) Util_GetHandledData(memfileDB, handle);
 
@@ -353,7 +360,7 @@ int CCTKi_UpdateMemByFile(int size, int line, const char *file)
       memfile->tsize+=size;
       retval = 0;
     }
-    else 
+    else
     {
       retval = -3;
     }
@@ -381,22 +388,22 @@ int CCTKi_UpdateMemByFile(int size, int line, const char *file)
    @routine    CCTK_MemTicketRequest
    @date       Sun Mar 12 17:22:08 2000
    @author     Gerd Lanfermann
-   @desc 
+   @desc
      Request a ticket: save the current total memory to a database.
-     Return an integer (ticket). Use the ticket to calculate the 
-     difference in memory allocation between the two instances in 
+     Return an integer (ticket). Use the ticket to calculate the
+     difference in memory allocation between the two instances in
      CCTK_MemTicketCash.
 
-     This only tracks the real data memory, which is the same as in 
-     undebug mode. It does not keep track of the internal allocations 
-     done to provide the database, bc. this is not allocated either if 
+     This only tracks the real data memory, which is the same as in
+     undebug mode. It does not keep track of the internal allocations
+     done to provide the database, bc. this is not allocated either if
      you compile undebugged.
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   @enddesc
+   @calls
+   @calledby
+   @history
+
+   @endhistory
 
 @@*/
 
@@ -412,19 +419,19 @@ int CCTK_MemTicketRequest(void)
   {
     this_ticket=-3;
   }
-  else  
+  else
   {
     tmem =(t_memticket*) malloc(sizeof(t_memticket));
 
-    if (tmem) 
+    if (tmem)
     {
       tmem->size  = CCTK_TotalMemory();
       this_ticket = Util_NewHandle(&ticketDB, tname, tmem);
     }
-    else 
+    else
     {
       this_ticket = -2;
-    } 
+    }
   }
   return(this_ticket);
 }
@@ -433,16 +440,16 @@ int CCTK_MemTicketRequest(void)
    @routine    CCTK_MemTicketCash
    @date       Sun Mar 12 17:22:08 2000
    @author     Gerd Lanfermann
-   @desc 
-     Cash in your ticket: return the memory difference between now and the 
+   @desc
+     Cash in your ticket: return the memory difference between now and the
      time the ticket was requested. Returns 666 on error, since it cannot
      return error integers. Look out.
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   @enddesc
+   @calls
+   @calledby
+   @history
+
+   @endhistory
 
 @@*/
 
@@ -451,7 +458,7 @@ long int CCTK_MemTicketCash(int this_ticket)
   long int tdiff;
   unsigned long int tsize;
   t_memticket *tmem;
-  
+
   tmem = (t_memticket*) Util_GetHandledData(ticketDB, this_ticket);
 
   if (tmem)
@@ -459,10 +466,10 @@ long int CCTK_MemTicketCash(int this_ticket)
     tsize = tmem->size;
     tdiff = CCTK_TotalMemory() - tsize;
   }
-  else 
+  else
   {
     CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
-	       "CCTK_MemTicketCash: Cannot find ticket %d \n",this_ticket);
+               "CCTK_MemTicketCash: Cannot find ticket %d \n",this_ticket);
     tdiff = 666;
   }
   return(tdiff);
@@ -472,16 +479,16 @@ long int CCTK_MemTicketCash(int this_ticket)
    @routine    CCTK_MemTicketDelete
    @date       Sun Mar 12 17:22:08 2000
    @author     Gerd Lanfermann
-   @desc 
+   @desc
       Delete the memory ticket. The ticket-id will not be reused, since
       it's incremented with every ticket request, but the memory
       is freed.
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   @enddesc
+   @calls
+   @calledby
+   @history
+
+   @endhistory
 
 @@*/
 
@@ -494,54 +501,52 @@ int CCTK_MemTicketDelete(int this_ticket)
 
   if (tmem)
   {
-    Util_DeleteHandle(ticketDB, this_ticket); 
+    Util_DeleteHandle(ticketDB, this_ticket);
     ret_val = 0;
   }
   else
-  {  
+  {
     ret_val = -1;
   }
   return(ret_val);
 }
-  
+
 
  /*@@
    @routine    CCTK_MemStat
    @date       Wed Mar  8 12:47:23 2000
    @author     Gerd Lanfermann
-   @desc 
+   @desc
      prints a info string, statign current, past total memory
      and difference.
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   @enddesc
+   @calls
+   @calledby
+   @history
+
+   @endhistory
 
 @@*/
 
-void CCTK_MemStat(void) 
+void CCTK_MemStat(void)
 {
-  char mess[1024];
-  sprintf(mess,"total: %lu  past: %lu  diff %+ld \n",
-	  totmem, pastmem, totmem-pastmem);
-  printf("CCTK_Memstat: %s ",mess);
+  printf("CCTK_Memstat: total: %lu  past: %lu  diff %+ld \n",
+          totmem, pastmem, totmem-pastmem);
 }
 
  /*@@
    @routine    CCTK_MemStat
    @date       Wed Mar  8 12:47:23 2000
    @author     Gerd Lanfermann
-   @desc 
-     returns total memory allocated by C routines 
+   @desc
+     returns total memory allocated by C routines
      (which use CCTK_MALLOC)
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   @enddesc
+   @calls
+   @calledby
+   @history
+
+   @endhistory
 
 @@*/
 unsigned long int CCTK_TotalMemory(void)
@@ -555,17 +560,17 @@ unsigned long int CCTK_TotalMemory(void)
    @routine    testmalloc
    @date       Sun Mar 12 17:31:44 2000
    @author     Gerd Lanfermann
-   @desc 
-      test routine 
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   @desc
+      test routine
+   @enddesc
+   @calls
+   @calledby
+   @history
+
+   @endhistory
 
 @@*/
-    
+
 #ifdef TESTMALLOC
 
 int main(int argc, char *argv[])
@@ -574,9 +579,9 @@ int main(int argc, char *argv[])
   int i,n,ticket[3];
   double *mydouble;
   char   *mychar;
-     
+
   n = 10;
-  
+
   printf("### Start Allocating ...\n");
   ticket[0]=CCTKi_MemTicketRequest();
   myint   = (int*)   CCTKi_Malloc(n*sizeof(int),42,"My int");
@@ -611,7 +616,7 @@ int main(int argc, char *argv[])
   printf("check Ticket3:  %d\n",CCTK_MemTicketCash(ticket[2]));
 
   printf("Total Memory allocated: %d ", CCTK_TotalMemory);
-  
+
   CCTK_MemTicketDelete(ticket[0]);
   CCTK_MemTicketDelete(ticket[1]);
   CCTK_MemTicketDelete(ticket[2]);

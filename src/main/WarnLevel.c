@@ -288,7 +288,7 @@ int CCTK_VWarn (int level,
                 const char *format,
                 ...)
 {
-  CCTK_INT *cctk_full_warnings;
+  const CCTK_INT *cctk_full_warnings;
   int param_type;
   int myproc;
   va_list ap;
@@ -297,9 +297,9 @@ int CCTK_VWarn (int level,
   {
     myproc = CCTK_MyProc(NULL);
 
-    cctk_full_warnings = (CCTK_INT *) CCTK_ParameterGet ("cctk_full_warnings",
-                                                         "Cactus",
-                                                         &param_type);
+    cctk_full_warnings = (const CCTK_INT *)
+                         CCTK_ParameterGet ("cctk_full_warnings", "Cactus",
+                                            &param_type);
     if ((level <= error_level) || (*cctk_full_warnings && cctk_full_warnings))
     {
       fprintf (stderr, "WARNING level %d in thorn %s processor %d\n"
@@ -391,15 +391,15 @@ int CCTK_ParameterLevel (void)
 @@*/
 int CCTK_ParamWarn (const char *thorn, const char *message)
 {
-  int cctk_strong_param_check;
+  const CCTK_INT *cctk_strong_param_check;
   int param_type;
 
 
-  cctk_strong_param_check = *((CCTK_INT *)
+  cctk_strong_param_check = (const CCTK_INT *)
                               CCTK_ParameterGet ("cctk_strong_param_check",
-                                                 "Cactus", &param_type));
+                                                 "Cactus", &param_type);
   fprintf (stderr, "PARAM %s (%s): %s\n",
-           cctk_strong_param_check ? "ERROR" : "WARNING", thorn, message);
+           *cctk_strong_param_check ? "ERROR" : "WARNING", thorn, message);
   fflush (stderr);
   param_errors++;
 
@@ -765,15 +765,15 @@ void CCTK_FCALL CCTK_FNAME (CCTKi_ExpectOK)
 void CCTKi_FinaliseParamWarn (void)
 {
   int param_type;
-  int cctk_strong_param_check;
+  const CCTK_INT *cctk_strong_param_check;
 
 
   if (param_errors)
   {
-    cctk_strong_param_check = *((CCTK_INT *)
+    cctk_strong_param_check = (const CCTK_INT *)
                                 CCTK_ParameterGet ("cctk_strong_param_check",
-                                                   "Cactus", &param_type));
-    if (cctk_strong_param_check)
+                                                   "Cactus", &param_type);
+    if (*cctk_strong_param_check)
     {
       fprintf (stderr, "\nFailed parameter check (%d errors)\n\n", param_errors);
       fflush (stderr);

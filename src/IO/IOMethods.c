@@ -13,13 +13,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "cGH.h"
 #include "cctk_Flesh.h"
 #include "cctk_ActiveThorns.h"
 #include "cctk_IOMethods.h"
 #include "cctk_Groups.h"
 #include "StoreHandledData.h"
 #include "cctk_FortranString.h"
+#include "cctk_WarnLevel.h"
 #include "cctk_IO.h"
 
 static const char *rcsid = "$Header$";
