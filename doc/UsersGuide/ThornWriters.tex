@@ -2421,7 +2421,7 @@ those simpler interfaces.
 
 To reduce any CCTK variable, use
 \begin{verbatim}
-int CCTK_Reduce(  cGH *GH,
+int CCTK_Reduce(  const cGH *GH,
                   int processor,
                   int operation_handle,
                   int num_out_vals,
@@ -2431,7 +2431,7 @@ int CCTK_Reduce(  cGH *GH,
                   ...);
 
 call CCTK_Reduce( integer returnvalue,
-                  CCTK_POINTER cctkGH,
+                  CCTK_POINTER_TO_CONST cctkGH,
                   integer processor,
                   integer operation_handle,
                   integer num_out_vals,
@@ -2443,7 +2443,7 @@ call CCTK_Reduce( integer returnvalue,
 (for C or Fortran respectively).
 To reduce any non-CCTK (local) variable, use
 \begin{verbatim}
-int CCTK_ReduceArray(  cGH *GH,
+int CCTK_ReduceArray(  const cGH *GH,
                        int processor,
                        int operation_handle,
                        int num_out_vals,
@@ -2455,7 +2455,7 @@ int CCTK_ReduceArray(  cGH *GH,
                        ... )
 
 call CCTK_ReduceArray( integer returnvalue,
-                       CCTK_POINTER cctkGH,
+                       CCTK_POINTER_TO_CONST cctkGH,
                        integer processor,
                        integer operation_handle,
                        integer num_out_vals,
@@ -2540,15 +2540,15 @@ processors.
 
 {\t
 \begin{verbatim}
-int CCTK_ReduceLocScalar (cGH *GH,
+int CCTK_ReduceLocScalar (const cGH *GH,
                           int processor,
                           int operation_handle,
-                          void *in_scalar,
+                          const void *in_scalar,
                           void *out_scalar,
                           int data_type)
 
 call CCTK_ReduceLocScalar(integer returnvalue,
-                          CCTK_POINTER cctkGH,
+                          CCTK_POINTER_TO_CONST cctkGH,
                           integer processor,
                           integer operation_handle,
                           in_scalar,
@@ -2587,16 +2587,16 @@ out element by element. The arrays need to have the same size on all
 processors.
 {\t
 \begin{verbatim}
-int CCTK_ReduceLocArrayToArray1D( cGH *GH,
+int CCTK_ReduceLocArrayToArray1D( const cGH *GH,
                                   int processor,
                                   int operation_handle,
-                                  void *in_array1d,
+                                  const void *in_array1d,
                                   void *out_array1d,
                                   int xsize)
                                   int data_type)
 
 call CCTK_ReduceLocArrayToArray1D( integer returnvalue
-                                  CCTK_POINTER cctkGH,
+                                  CCTK_POINTER_TO_CONST cctkGH,
                                   integer processor,
                                   integer operation_handle,
                                   in_array1d,
@@ -2634,18 +2634,18 @@ communicating. Use the values as specified in \ref{sec:datyansi}.
 processors.
 {\t
 \begin{verbatim}
-int CCTK_ReduceLocArrayToArray2D( cGH *GH,
+int CCTK_ReduceLocArrayToArray2D( const cGH *GH,
                                  int processor,
                                  int opertaion_handle,
-                                 in_array_2d,
-                                 out_array2d,
+                                 const void *in_array_2d,
+                                 void *out_array2d,
                                  int xsize,
                                  int ysize,
                                  int data_type)
 
 
 call CCTK_ReduceLocArrayToArray2D( integer returnvalue
-                                   CCTK_POINTER cctkGH,
+                                   CCTK_POINTER_TO_CONST cctkGH,
                                    integer processor,
                                    integer operation_handle,
                                    in_array2d,
@@ -2686,18 +2686,18 @@ communicating. Use the values as specified in \ref{sec:datyansi}.
 processors.
 {\t
 \begin{verbatim}
-int CCTK_ReduceLocArrayToArray3D(cGH *GH,
+int CCTK_ReduceLocArrayToArray3D(const cGH *GH,
                                  int processor,
                                  int opertaion_handle,
-                                 in_array_3d,
-                                 out_array3d,
+                                 const void *in_array_3d,
+                                 void *out_array3d,
                                  int xsize,
                                  int ysize,
                                  int zsize,
                                  int data_type)
 
 call CCTK_ReduceLocArrayToArray3D(integer returnvalue
-                                 CCTK_POINTER cctkGH,
+                                 CCTK_POINTER_TO_CONST cctkGH,
                                  integer processor,
                                  integer operation_handle,
                                  in_array3d,
