@@ -111,7 +111,7 @@ int CCTK_Equals(const char *string1, const char *string2)
     {
       message = (char *)malloc((100+sizeof(string2))*sizeof(char));
       sprintf(message,"First string null in CCTK_Equals (2nd is %s)",string2); 
-      CCTK_WARN(0,"CCTK",message);
+      CCTK_Warn(0,"CCTK",message);
     }
     else if (string1 && !string2)
     { 
