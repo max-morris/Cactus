@@ -9,6 +9,8 @@
 
 static char *rcsid = "$Header$";
 
+#include <math.h>
+
 #include "cctk.h"
 #include "cctk_complex.h"
 
