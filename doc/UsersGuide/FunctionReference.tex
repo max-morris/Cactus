@@ -123,6 +123,14 @@ available from C, not all are currently available from Fortran.
   [\pageref{CoordDim}] 
   Provides the dimension of a given coordinate system
 
+\item[CCTK\_CoordSystemHandle] 
+  [\pageref{CoordSystemHandle}] 
+  Get the handle associated with a registered coordinate system
+
+\item[CCTK\_CoordSystemName] 
+  [\pageref{CoordSystemName}] 
+  Provides the name of the coordinate system identified by its handle
+
 \item[CCTK\_CreateDirectory]   
   [\pageref{CreateDirectory}] 
   Creates a directory
@@ -175,6 +183,10 @@ available from C, not all are currently available from Fortran.
   [\pageref{GroupData}] 
   Given a group index, returns information about the variables held in the group
 
+\item[CCTK\_GHExtension]   
+  [\pageref{GHExtension}] 
+  Get the pointer to a registered extension to the Cactus GH structure
+
 \item[CCTK\_GHExtensionHandle]   
   [\pageref{GHExtensionHandle}] 
   Get the handle associated with a extension to the Cactus GH structure
@@ -203,18 +215,38 @@ available from C, not all are currently available from Fortran.
   [\pageref{GroupTypeFromVarI}] 
   Provides group type index from the group index
 
-\item[CCTK\_ImpFromVarI]   
+\item[CCTK\_ImpFromVarI]
   [\pageref{ImpFromVarI}] 
   Given a variable index, returns the implementation name
 
-\item[CCTK\_INFO]   
-  [\pageref{INFO}] 
+\item[CCTK\_INFO]
+  [\pageref{INFO}]
   Prints an information message
-         
+
+\item[CCTK\_InterpGV]
+  [\pageref{InterpGV}]
+  Performs an interpolation on a list of distributed CCTK grid variables, using a chosen interpolation operator
+
+\item[CCTK\_InterpHandle]
+  [\pageref{InterpHandle}]
+  Returns the handle for a given interpolation operator
+
+\item[CCTK\_InterpLocal]   
+  [\pageref{InterpLocal}] 
+  Performs an interpolation on a list of processor-local arrays, using a chosen interpolation operator
+
+\item[CCTK\_InterpRegisterOperatorGV]
+  [\pageref{InterpRegisterOperatorGV}]
+  Registers a routine as an interpolation operator for distributed CCTK grid variables
+
+\item[CCTK\_InterpRegisterOperatorLocal]
+  [\pageref{InterpRegisterOperatorLocal}]
+  Registers a routine as an interpolation operator for processor-local arrays
+
 \item[CCTK\_IsThornActive]   
   [\pageref{IsThornActive}] 
   Reports whether a thorn was activated in a parameter file
-         
+
 \item[CCTK\_MaxDim]   
   [\pageref{MaxDim}] 
   Get the maximum dimension of any grid variable 
@@ -1055,6 +1087,60 @@ a chosen name and dimension}
 \end{errorcodes}
 \end{CCTKFunc}
 
+% Coord.c
+\begin{CCTKFunc}{CCTK\_CoordSystemHandle}{Returns the handle associated with a registered coordinate system}
+\label{CoordSystemHandle}
+\subroutine{int}{integer}{handle}
+\argument{const char *}{character*(*)}{systemname}
+\showargs
+\begin{params}
+\parameter{handle}{The coordinate system handle}
+\parameter{systemname}{Name of the coordinate system}
+\end{params}
+\begin{discussion}
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\hfill {\bf C} && {\t handle =  CCTK\_CoordSystemHandle("my coordinate system");}
+\\
+\hfill {\bf Fortran} && {\t call CCTK\_CoordSystemHandle(handle,"my coordinate system")}
+\\
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\begin{tabular}{l}
+A negative return code indicates an invalid coordinate system name.
+\end{tabular}
+\end{errorcodes}
+\end{CCTKFunc}
+
+% Coord.c
+\begin{CCTKFunc}{CCTK\_CoordSystemName}{Returns the name of a registered coordinate system}
+\label{CoordSystemName}
+\subroutine{const char *}{integer}{systemname}
+\argument{int}{integer}{handle}
+\showcargs
+\begin{params}
+\parameter{handle}{The coordinate system handle}
+\parameter{systemname}{The coordinate system name}
+\end{params}
+\begin{discussion}
+No Fortran routine exists at the moment.
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\hfill {\bf C} && {\t systemname = CCTK\_CoordSystemName(handle);}
+\\
+\hfill         && {\t handle =  CCTK\_CoordSystemHandle(systemname);}
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\begin{tabular}{l}
+A NULL pointer is returned if an invalid handle was given.
+\end{tabular}
+\end{errorcodes}
+\end{CCTKFunc}
+
 
 % Coord.c
 \begin{CCTKFunc}{CCTK\_CreateDirectory}{Create a directory with required permissions}
@@ -1394,6 +1480,32 @@ the form {\t <implementation>::<variable>}
 %%%%%
 
 % cctk_GHExtensions.h
+\begin{CCTKFunc}{CCTK\_GHExtension}{Get the pointer to a registered extension to the Cactus GH structure}
+\label{GHExtension}
+\subroutine{int}{integer}{extension}
+\argument{GH *}{CCTK\_POINTER}{cctkGH}
+\showcargs
+\begin{params}
+\parameter{extension}{The pointer to the GH extension}
+\parameter{cctkGH}{The pointer to the CCTK grid hierarchy}
+\parameter{name}{The name of the GH extension}
+\end{params}
+\begin{discussion}
+No Fortran routine exists at the moment.
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\hfill {\bf C} && {\t extension = CCTK\_GHExtension("myExtension");}
+\\
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+A NULL pointer is returned if an invalid extension name was given.
+\end{errorcodes}
+\end{CCTKFunc}
+
+
+% cctk_GHExtensions.h
 \begin{CCTKFunc}{CCTK\_GHExtensionHandle}{Get the handle associated with a extension to the Cactus GH structure}
 \label{GHExtensionHandle}
 \subroutine{int}{integer}{handle}
@@ -1650,8 +1762,8 @@ No Fortran routine exists at the moment
 \end{discussion}
 \begin{examples}
 \begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t index = CCTK\_VarIndex("evolve::phi")}\\
-               &&{\t implementation = CCTK\_ImpFromVarI(index) ;}
+\hfill {\bf C} && {\t index = CCTK\_VarIndex("evolve::phi");}\\
+               &&{\t implementation = CCTK\_ImpFromVarI(index);}
 \\
 \end{tabular}
 \end{examples}
@@ -1688,75 +1800,326 @@ No Fortran routine exists at the moment
 
 
 
-% cctk_Interp.h
-\begin{CCTKFunc}{CCTK\_Interp}{Perform an interpolatation, using a chosen method}
-\label{Interp}
-\subroutine{int}{integer}{num}
+% Interp.c
+\begin{CCTKFunc}{CCTK\_InterpGV}{Perform an interpolation on a list of
+distributed CCTK grid variables, using a chosen interpolation operator}
+\label{InterpGV}
+\subroutine{int}{integer}{ierr}
 \argument{cGH *}{CCTK\_POINTER}{cctkGH}
-\argument{int}{integer}{handle}
-\argument{int}{integer}{nPoints}
-\argument{int}{integer}{nDims}
-\argument{int}{integer}{nInFields}
-\argument{int}{integer}{nOutFields}
+\argument{int}{integer}{operator\_handle}
+\argument{int}{integer}{coord\_system\_handle}
+\argument{int}{integer}{num\_points}
+\argument{int}{integer}{num\_in\_array\_indices}
+\argument{int}{integer}{num\_out\_arrays}
 \argument{...}{...}{}
+\argument{{\it num\_dims} * void *}{{\it num\_dims} * CCTK\_POINTER}{interp\_coord\_arrays}
+\argument{{\it num\_dims} * int}{{\it num\_dims} * integer}{interp\_coord\_array\_types}
+\argument{{\it num\_array\_indices} * int}{{\it num\_array\_indices} * integer}{in\_array\_indices}
+\argument{{\it num\_out\_arrays} * void *}{{\it num\_out\_arrays} * CCTK\_POINTER}{out\_arrays}
+\argument{{\it num\_out\_arrays} * int}{{\it num\_out\_arrays} * integer}{out\_array\_types}
 \showargs
 \begin{params}
-\parameter{cctkGH}{pointer to CCTK grid hierarchy}
-\parameter{handle}{handle for interpolation method}
-\parameter{nPoints}{number of points to be interpolated on this processor}
-\parameter{nDims}{number of passed coordinate fields}
-\parameter{nInFields}{number of passed input fields}
-\parameter{nOutFields}{number of passed output fields}
-\parameter{...}{variable argument list containing coordinate details andvariable indices, described below}
+\parameter{cctkGH}{Pointer to the CCTK grid hierarchy}
+\parameter{operator\_handle}{Handle for the interpolation operator}
+\parameter{coord\_system\_handle}{Handle for the coordinate system.\newline
+This handle denotes the coordinate system to use for locating the points to
+interpolate at.}
+\parameter{num\_points}{Number of points to be interpolated on this processor}
+\parameter{num\_in\_array\_indices}{Number of passed input array indices}
+\parameter{num\_out\_arrays}{Number of passed output arrays}
+\parameter{...}{Variable argument list, with arguments as following}
+\parameter{interp\_coord\_arrays}{List of coordinate arrays for points to interpolate at ({\it num\_dims} is the number of dimensions of the coordinate system)}
+\parameter{interp\_coord\_array\_types}{List of CCTK datatypes for coordinate arrays}
+\parameter{in\_array\_indices}{List of CCTK grid variables to interpolate (given by their indices)}
+\parameter{out\_arrays}{List of output arrays}
+\parameter{out\_array\_types}{List of CCTK datatypes for output arrays}
 \end{params}
 \begin{discussion}
-The handle for a given interpolation method can be found using
-{\t CCTK\_InterpHandle}. The variable argument list contains
-information in the order:
-\begin{itemize}
-\item{} nDim integers containing ??
-\item{} nDim coordinate grid indices
-\item{} nDim coordinate variable types
-\item{} nDim coordinate origins
-\item{} nDim grid spacings
-\item{} nInFields indices for the fields to be interpolated from
-\item{} nInFields variable types for the fields to be interpolated from
-\item{} nOutFields indices for the fields to be interpolated to
-\item{} nOutFields variable types for the fields to be interpolated to
-\end{itemize}
-
 \end{discussion}
 \begin{examples}
 \begin{tabular}{@{}p{3cm}cp{11cm}}
+\hfill {\bf C} && {\t
+int interp\_handle, coord\_system\_handle;
+CCTK\_REAL coord\_x[NUM\_POINTS], coord\_y[NUM\_POINTS];
+int my\_grid\_fn1,  my\_grid\_fn2;
+CCTK\_REAL my\_out\_array1[NUM\_POINTS];
+CCTK\_COMPLEX  my\_out\_array2[NUM\_POINTS];\linebreak
+interp\_handle =\vfill
+\hspace{2ex} CCTK\_InterpHandle("my interpolation operator");
+coord\_system\_handle =\vfill
+\hspace{2ex} CCTK\_CoordSystemHandle("my 2D coordinate system");
+my\_grid\_fn1 = CCTK\_VarIndex("myThorn::myGF1");
+my\_grid\_fn2 = CCTK\_VarIndex("myThorn::myGF2");\linebreak
+ierr = CCTK\_InterpGV(cctkGH,\vfill
+\hspace{2ex} interp\_handle, coord\_system\_handle,\vfill
+\hspace{2ex} NUM\_POINTS, 2, 2,\vfill
+\hspace{2ex} coord\_x, coord\_y,\vfill
+\hspace{2ex} CCTK\_VARIABLE\_REAL, CCTK\_VARIABLE\_REAL,\vfill
+\hspace{2ex} my\_grid\_fn1,  my\_grid\_fn2,\vfill
+\hspace{2ex} my\_out\_array1, my\_out\_array2,\vfill
+\hspace{2ex} CCTK\_VARIABLE\_REAL, CCTK\_VARIABLE\_COMPLEX);
+}
+\\
+\hfill {\bf Fortran} && {\t
+integer interp\_handle, coord\_system\_handle
+CCTK\_REAL coord(NUM\_POINTS)
+integer my\_grid\_fn1,  my\_grid\_fn2, my\_grid\_fn3
+CCTK\_REAL my\_out\_array1(NUM\_POINTS)
+CCTK\_COMPLEX  my\_out\_array2(NUM\_POINTS)
+CCTK\_INT my\_out\_array3(NUM\_POINTS)\linebreak
+call CCTK\_InterpHandle(interp\_handle,\vfill\hspace{2ex}"my interpolation operator")
+call CCTK\_CoordSystemHandle(coord\_system\_handle,\vfill\hspace{2ex}"my 1D coordinate system")
+call CCTK\_VarIndex(my\_grid\_fn1, "myThorn::myGF1")
+call CCTK\_VarIndex(my\_grid\_fn2, "myThorn::myGF2")
+call CCTK\_VarIndex(my\_grid\_fn2, "myThorn::myGF3")\linebreak
+call CCTK\_InterpGV(ierr, cctkGH,\vfill
+\hspace{2ex} interp\_handle, coord\_system\_handle,\vfill
+\hspace{2ex} NUM\_POINTS, 3, 3,\vfill
+\hspace{2ex} coord,\vfill
+\hspace{2ex} CCTK\_VARIABLE\_REAL,\vfill
+\hspace{2ex} my\_grid\_fn1,  my\_grid\_fn2, my\_grid\_fn3,\vfill
+\hspace{2ex} my\_out\_array1, my\_out\_array2, my\_out\_array3,\vfill
+\hspace{2ex} CCTK\_VARIABLE\_REAL, CCTK\_VARIABLE\_COMPLEX, CCTK\_VARIABLE\_INT)
+}
+\\
 \end{tabular}
 \end{examples}
 \begin{errorcodes}
+\begin{tabular}{l}
+A negative return code indicates an error condition:
+\end{tabular}
+\begin{tabular}{ll}
+-1 & Invalid interpolation operator handle passed\\
+-2 & Invalid coordinate system handle passed\\
+\end{tabular}
 \end{errorcodes}
 \end{CCTKFunc} 
 
 
-
-
-
-% Groups.c
+% Interp.c
 \begin{CCTKFunc}{CCTK\_InterpHandle}{Return the handle for a given interpolation operator}
 \label{InterpHandle}
 \subroutine{int}{integer}{handle}
 \argument{const char *}{character*(*)}{operator}
 \showargs
 \begin{params}
-\parameter{hnadle}{Handle for the interpolation operator}
+\parameter{handle}{Handle for the interpolation operator}
 \parameter{operator}{Name of interpolation operator}
 \end{params}
 \begin{discussion}
 \end{discussion}
 \begin{examples}
 \begin{tabular}{@{}p{3cm}cp{11cm}}
+\hfill {\bf C} && {\t handle =  CCTK\_InterpHandle("my interpolation operator");}
+\\
+\hfill {\bf Fortran} && {\t call CCTK\_InterpHandle(handle,"my interpolation operator")}
+\\
 \end{tabular}
 \end{examples}
 \begin{errorcodes}
+\begin{tabular}{l}
+A negative value is returned for invalid/unregistered interpolation operator names.
+\end{tabular}
 \end{errorcodes}
 \end{CCTKFunc} 
+
+
+% Interp.c
+\begin{CCTKFunc}{CCTK\_InterpLocal}{Perform an interpolation on a list of
+processor-local arrays, using a chosen interpolation operator}
+\label{InterpLocal}
+\subroutine{int}{integer}{ierr}
+\argument{cGH *}{CCTK\_POINTER}{cctkGH}
+\argument{int}{integer}{operator\_handle}
+\argument{int}{integer}{num\_points}
+\argument{int}{integer}{num\_dims}
+\argument{int}{integer}{num\_in\_arrays}
+\argument{int}{integer}{num\_out\_arrays}
+\argument{...}{...}{}
+\argument{{\it num\_dims} * int}{{\it num\_dims} * integer}{dims}
+\argument{{\it num\_dims} * void *}{{\it num\_dims} * CCTK\_POINTER}{coord\_arrays}
+\argument{{\it num\_dims} * int}{{\it num\_dims} * integer}{coord\_array\_types}
+\argument{{\it num\_dims} * void *}{{\it num\_dims} * CCTK\_POINTER}{interp\_coord\_arrays}
+\argument{{\it num\_dims} * int}{{\it num\_dims} * integer}{interp\_coord\_array\_types}
+\argument{{\it num\_in\_arrays} * void *}{{\it num\_in\_arrays} * CCTK\_POINTER}{in\_arrays}
+\argument{{\it num\_in\_arrays} * int}{{\it num\_in\_arrays} * integer}{in\_array\_types}
+\argument{{\it num\_out\_arrays} * void *}{{\it num\_out\_arrays} * CCTK\_POINTER}{out\_arrays}
+\argument{{\it num\_out\_arrays} * int}{{\it num\_out\_arrays} * integer}{out\_array\_types}
+\showargs
+\begin{params}
+\parameter{cctkGH}{Pointer to the CCTK grid hierarchy}
+\parameter{operator\_handle}{Handle for the interpolation operator}
+\parameter{num\_points}{Number of points to be interpolated on this processor}
+\parameter{num\_dims}{Number of dimensions of the coordinate system}
+\parameter{num\_in\_arrays}{Number of passed input arrays}
+\parameter{num\_out\_arrays}{Number of passed output arrays}
+\parameter{...}{Variable argument list, with arguments as following}
+\parameter{dims}{Dimensions of the underlying coordinate system}
+\parameter{coord\_arrays}{List of coordinate arrays describing the coordinate system}
+\parameter{coord\_array\_types}{List of CCTK datatypes for coordinate arrays}
+\parameter{interp\_coord\_arrays}{List of interpolation coordinate arrays}
+\parameter{interp\_coord\_array\_types}{List of CCTK datatypes for interpolation coordinate arrays}
+\parameter{in\_arrays}{List of input arrays to interpolate}
+\parameter{in\_array\_types}{List of CCTK datatypes for input arrays}
+\parameter{out\_arrays}{List of output arrays}
+\parameter{out\_array\_types}{List of CCTK datatypes for output arrays}
+\end{params}
+\begin{discussion}
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\hfill {\bf C} && {\t
+int interp\_handle;
+CCTK\_REAL coord\_x[XDIM], coord\_y[YDIM];
+CCTK\_REAL interp\_coord\_x[NUM\_POINTS], interp\_coord\_y[NUM\_POINTS];
+CCTK\_REAL my\_in\_array1[NUM\_POINTS];
+CCTK\_COMPLEX  my\_in\_array2[NUM\_POINTS];
+CCTK\_REAL my\_out\_array1[NUM\_POINTS];
+CCTK\_COMPLEX  my\_out\_array2[NUM\_POINTS];\linebreak
+interp\_handle =\vfill
+\hspace{2ex} CCTK\_InterpHandle("my interpolation operator");
+ierr = CCTK\_InterpLocal(cctkGH,\vfill
+\hspace{2ex} interp\_handle, NUM\_POINTS, 2, 2, 2,\vfill
+\hspace{2ex} XDIM, YDIM, coord\_x, coord\_y,\vfill
+\hspace{2ex} CCTK\_VARIABLE\_REAL, CCTK\_VARIABLE\_REAL,\vfill
+\hspace{2ex} interp\_coord\_x, interp\_coord\_y,\vfill
+\hspace{2ex} CCTK\_VARIABLE\_REAL, CCTK\_VARIABLE\_REAL,\vfill
+\hspace{2ex} my\_in\_array1, my\_in\_array2,\vfill
+\hspace{2ex} CCTK\_VARIABLE\_REAL, CCTK\_VARIABLE\_COMPLEX);
+\hspace{2ex} my\_out\_array1, my\_out\_array2,\vfill
+\hspace{2ex} CCTK\_VARIABLE\_REAL, CCTK\_VARIABLE\_COMPLEX);
+}
+\\
+\hfill {\bf Fortran} && {\t
+integer interp\_handle
+CCTK\_REAL coord(XDIM)
+CCTK\_REAL interp\_coord(NUM\_POINTS)
+CCTK\_REAL my\_in\_array1(NUM\_POINTS), my\_out\_array1(NUM\_POINTS)
+CCTK\_COMPLEX my\_in\_array2(NUM\_POINTS), my\_out\_array2(NUM\_POINTS)
+CCTK\_INT my\_in\_array3(NUM\_POINTS), my\_out\_array3(NUM\_POINTS)\linebreak
+call CCTK\_InterpHandle(interp\_handle,\vfill\hspace{2ex}"my interpolation operator")
+call CCTK\_InterpLocal(ierr, cctkGH,\vfill
+\hspace{2ex} interp\_handle, NUM\_POINTS, 1, 3, 3,\vfill
+\hspace{2ex} XDIM, coord,\vfill
+\hspace{2ex} CCTK\_VARIABLE\_REAL,\vfill
+\hspace{2ex} interp\_coord,\vfill
+\hspace{2ex} CCTK\_VARIABLE\_REAL,\vfill
+\hspace{2ex} my\_in\_array1, my\_in\_array2, my\_in\_array3,\vfill
+\hspace{2ex} CCTK\_VARIABLE\_REAL, CCTK\_VARIABLE\_COMPLEX,\vfill
+\hspace{2ex} CCTK\_VARIABLE\_INT,\vfill
+\hspace{2ex} my\_out\_array1, my\_out\_array2, my\_out\_array3,\vfill
+\hspace{2ex} CCTK\_VARIABLE\_REAL, CCTK\_VARIABLE\_COMPLEX,\vfill
+\hspace{2ex} CCTK\_VARIABLE\_INT)
+}
+\\
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\begin{tabular}{l}
+A negative return code indicates an error condition:
+\end{tabular}
+\begin{tabular}{ll}
+-1 & Invalid interpolation operator handle passed\\
+\end{tabular}
+\end{errorcodes}
+\end{CCTKFunc} 
+
+
+% Interp.c
+\begin{CCTKFunc}{CCTK\_InterpRegisterOperatorGV}{Register a routine as an
+interpolation operator for distributed CCTK grid variables}
+\label{InterpRegisterOperatorGV}
+\subroutine{int}{}{ierr}
+\argument{cInterpOperatorGV}{}{operator}
+\argument{const char *}{}{name}
+\showcargs
+\begin{params}
+\parameter{operator}{Routine to be registered as the interpolation operator}
+\parameter{name}{Name of interpolation operator}
+\end{params}
+\begin{discussion}
+Only C routines can be registered as interpolation operators.
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\hfill {\bf C} && {\t
+extern int my\_operator (cGH *GH,\vfill
+\hspace{29ex}const char *coord\_system,\vfill
+\hspace{29ex}int num\_points,\vfill
+\hspace{29ex}int num\_in\_array\_indices,\vfill
+\hspace{29ex}int num\_out\_arrays,\vfill
+\hspace{29ex}void *interp\_coord\_arrays[],\vfill
+\hspace{29ex}int interp\_coord\_array\_types[],\vfill
+\hspace{29ex}int in\_array\_indices[],\vfill
+\hspace{29ex}void *out\_arrays[],\vfill
+\hspace{29ex}int out\_array\_types[]);\linebreak
+ierr = CCTK\_InterpRegisterOperatorGV(my\_operator,\vfill
+\hspace{2ex}"my interpolation operator");}
+\\
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\begin{tabular}{l}
+A negative return code indicates an error condition:
+\end{tabular}
+\begin{tabular}{ll}
+-1 & NULL pointer was passed as interpolation operator routine\\
+-2 & interpolation handle could not be allocated\\
+-3 & Interpolation operator with this name already exists\\
+\end{tabular}
+\end{errorcodes}
+\end{CCTKFunc} 
+
+
+% Interp.c
+\begin{CCTKFunc}{CCTK\_InterpRegisterOperatorLocal}{Register a routine as an
+interpolation operator for processor-local arrays}
+\label{InterpRegisterOperatorLocal}
+\subroutine{int}{}{ierr}
+\argument{cInterpOperatorLocal}{}{operator}
+\argument{const char *}{}{name}
+\showcargs
+\begin{params}
+\parameter{operator}{Routine to be registered as the interpolation operator}
+\parameter{name}{Name of interpolation operator}
+\end{params}
+\begin{discussion}
+Only C routines can be registered as interpolation operators.
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\hfill {\bf C} && {\t
+extern int my\_operator (cGH *GH,\vfill
+\hspace{29ex}int num\_points,\vfill
+\hspace{29ex}int num\_dims,\vfill
+\hspace{29ex}int num\_in\_arrays,\vfill
+\hspace{29ex}int num\_out\_arrays,\vfill
+\hspace{29ex}int coord\_dims[],\vfill
+\hspace{29ex}void *coord\_arrays[],\vfill
+\hspace{29ex}int coord\_array\_types[],\vfill
+\hspace{29ex}void *interp\_coord\_arrays[],\vfill
+\hspace{29ex}int interp\_coord\_array\_types[],\vfill
+\hspace{29ex}void *in\_arrays[],\vfill
+\hspace{29ex}int in\_array\_types[],\vfill
+\hspace{29ex}void *out\_arrays[],\vfill
+\hspace{29ex}int out\_array\_types[]);\linebreak
+ierr = CCTK\_InterpRegisterOperatorLocal(my\_operator,\vfill
+\hspace{2ex}"my interpolation operator");}
+\\
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\begin{tabular}{l}
+A negative return code indicates an error condition:
+\end{tabular}
+\begin{tabular}{ll}
+-1 & NULL pointer was passed as interpolation operator routine\\
+-2 & interpolation handle could not be allocated\\
+-3 & Interpolation operator with this name already exists\\
+\end{tabular}
+\end{errorcodes}
+\end{CCTKFunc} 
+
 
 %%%%%
 % JJJ
@@ -2570,60 +2933,6 @@ IO methods should be registered at {\t CCTK\_STARTUP}.
 \end{errorcodes}
 \end{CCTKFunc}
 
-
-
-% cctk_Interp.h
-\begin{CCTKFunc}{CCTK\_RegisterInterpOperator}{Register a function
-  which will provide an interpolation operator}
-\label{RegisterInterpOperator}
-\subroutine{int}{}{handle}
-\argument{int}{}{(*function)(REGISTER\_INTERP\_ARGLIST)}
-\argument{const char *}{}{name}
-\showcargs
-\begin{params}
-\parameter{handle}{Handle from the registration}
-\parameter{function}{Routine containing interpolation operator}
-\parameter{name}{Name of interpolation operator}
-\end{params}
-\begin{discussion}
-The argument list {\t REGISTER\_INTERP\_ARGLIST} 
- for the interpolation operator routine is
-\begin{description}
-\item[cGH *GH]
-        Pointer to CCTK grid hierachy (in)
-\item[int nPoints]
-        Number of points to be interpolated on this processor (in)
-\item[int nDims]
-        Number of coordinate dimensions for each point (in)
-\item[int nInFields]
-        Number of input fields to interpolate from (in)
-\item[int nOutFields]
-        Number of output fields to interpolate to (in)
-\item[int *dims]
-        Size nDims array with dimensions of the underlying grid (in)
-\item[void **coords]
-        Void *array of size nDims with coordinates of points to interpolate at (in)
-\item[int *coordTypes]
-        size ndims array with variable type of coordinate fields (in)
-\item[void *origin]
-        size ndims array with origin of the underlying grid (in)
-\item[void *delta]
-        size ndims array with gridspacing of the underlying grid (in)
-\item[void **inFields]
-        size nInFields *array of input fields to interpolate on (in)
-\item[int *inTypes]
-        size ndims array with variable types of input fields (in)
-\item[void **outFields]
-        size nOutFields *array of output fields to interpolate to (out)
-\item[int *outTypes]
-        size ndims array with variable types of output fields (in)
-\end{description}
-\end{discussion}
-\begin{examples}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
 
 
 % Coord.c
