@@ -4,7 +4,7 @@
  
 private:
 
-STRING cctk_run_title "Description of this simulation"
+STRING cctk_run_title "Description of this simulation" 
 {
   ".*" :: "Any string"
 } ""
@@ -15,7 +15,7 @@ KEYWORD cctk_timer_output  "Provide output from timers"
  "full" :: "Detailed timer output"
 } "off"
 
-BOOLEAN cctk_full_warnings "Give detailed information for each warning statement"
+BOOLEAN cctk_full_warnings "Give detailed information for each warning statement" STEERABLE=ALWAYS
 {
 } "yes"
 
@@ -56,7 +56,7 @@ REAL cctk_initial_time "Initial time for evolution"
  : :: "Anything"
 } 0.0
  
-REAL cctk_final_time "Final time for evolution"
+REAL cctk_final_time "Final time for evolution" STEERABLE=ALWAYS
 {
  : :: "Anything"
 } -1.0
