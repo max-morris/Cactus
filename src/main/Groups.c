@@ -697,11 +697,11 @@ char *CCTK_GetVarName(int varnum)
 
 
  /*@@
-   @routine    CCTK_DecomposeGroupName
+   @routine    CCTK_DecomposeName
    @date       Tue Feb  9 15:39:14 1999
    @author     Tom Goodale
    @desc 
-   Decomposes a group name of the form imp::group
+   Decomposes a group name of the form imp::name
    @enddesc 
    @calls     
    @calledby   
@@ -710,7 +710,7 @@ char *CCTK_GetVarName(int varnum)
    @endhistory 
 
 @@*/
-int CCTK_DecomposeGroupName(const char *fullname, char **implementation, char **name)
+int CCTK_DecomposeName(const char *fullname, char **implementation, char **name)
 {
   return CCTK_SplitString(implementation, name, fullname, "::");
 }
