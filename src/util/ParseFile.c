@@ -17,6 +17,7 @@
 #include <stdlib.h>
 
 #include "cctk_Flesh.h"
+#include "util_String.h"
 
 #ifdef HAVE_ASSERT_H
 #include <assert.h>
@@ -40,6 +41,10 @@ static void removeSpaces(char *stripMe);
 /********************************************************************
  ********************* Other Routine Prototypes *********************
  ********************************************************************/
+
+int ParseFile(FILE *ifp, 
+              int (*set_function)(const char *, const char *), 
+	      tFleshConfig *ConfigData);
 
 /********************************************************************
  *********************     Local Data   *****************************
@@ -328,11 +333,11 @@ int ParseFile(FILE *ifp,
           {
             /* Harder case of multiple tokens */
             int ncommas = 0;
-            int p=0, i;
+            int pp=0, i;
             char subtoken[BUF_SZ], subvalue[BUF_SZ];
             int pt, pv;
 
-            value[p++] = c;
+            value[pp++] = c;
             /* OK, since we only have numbers in the
                old input stream, we can go along getting
                ntokens-1 commas, stripping spaces, and
@@ -346,8 +351,8 @@ int ParseFile(FILE *ifp,
             {
               if (!(c == ' ' || c == '\t' || c == '\n')) 
               {
-                value[p++] = c;
-                CheckBuf(p,lineno);
+                value[pp++] = c;
+                CheckBuf(pp,lineno);
               }
               if (c == ',') ncommas ++;
               c = fgetc(ifp);
@@ -374,7 +379,7 @@ int ParseFile(FILE *ifp,
             }
             
             /* And tack the rest on */
-            value[p++] = c;
+            value[pp++] = c;
             CheckBuf(p,lineno);
 
             c = fgetc(ifp);
@@ -383,14 +388,14 @@ int ParseFile(FILE *ifp,
 #endif
             while (c != ' ' && c != '\t' && c != '\n' && c != EOF) 
             {
-              value[p++] = c;
-              CheckBuf(p,lineno);
+              value[pp++] = c;
+              CheckBuf(pp,lineno);
               c = fgetc(ifp);
 #ifdef DEBUG
 	      printf("%c",c);
 #endif
             }
-            value[p] = '\0';
+            value[pp] = '\0';
 #ifdef DEBUG
             printf("Comma list: %s -> %s\n",
                    tokens,value);
@@ -400,20 +405,20 @@ int ParseFile(FILE *ifp,
             pv = 0;
             for (i=0;i<ncommas;i++) 
             {
-              p = 0;
+              pp = 0;
               while (tokens[pt] != ',') 
               {
-                subtoken[p++] = tokens[pt++];
+                subtoken[pp++] = tokens[pt++];
                 CheckBuf(p,lineno);
               }
-              subtoken[p] = '\0';
-              p = 0;
+              subtoken[pp] = '\0';
+              pp = 0;
               while (value[pv] != ',') 
               {
-                subvalue[p++] = value[pv++];
-                CheckBuf(p,lineno);
+                subvalue[pp++] = value[pv++];
+                CheckBuf(pp,lineno);
               }
-              subvalue[p] = '\0';
+              subvalue[pp] = '\0';
 
               set_function(subtoken,subvalue);
 #ifdef DEBUG
@@ -428,20 +433,20 @@ int ParseFile(FILE *ifp,
             /* And OK, so now we have one parameter left
              * so lets handle that 
              */ 
-            p = 0;
+            pp = 0;
             while (tokens[pt] != '\0') 
             {
-              subtoken[p++] = tokens[pt++];
-              CheckBuf(p,lineno);
+              subtoken[pp++] = tokens[pt++];
+              CheckBuf(pp,lineno);
             }
-            subtoken[p] = '\0';
-            p = 0;
+            subtoken[pp] = '\0';
+            pp = 0;
             while (value[pv] != '\0') 
             {
-              subvalue[p++] = value[pv++];
-              CheckBuf(p,lineno);
+              subvalue[pp++] = value[pv++];
+              CheckBuf(pp,lineno);
             }
-            subvalue[p] = '\0';
+            subvalue[pp] = '\0';
 
             set_function(subtoken,subvalue);
           }
