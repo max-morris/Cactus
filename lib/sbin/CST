@@ -6,7 +6,7 @@
 #  @desc
 #             Parses the the configuration files for thorns.
 #  @enddesc
-#  @version   $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.55 2003-09-08 08:56:29 tradke Exp $
+#  @version   $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.56 2003-09-12 13:34:39 tradke Exp $
 #@@*/
 
 # Global parameter to track the number of errors from the CST
@@ -343,11 +343,11 @@ sub CreateThornLinkList
   my($thorns, $interface_database) = @_;
   my($thorn);
   my($implementation);
-  my($lib, $liblist, $i, $j);
+  my($imp, $liblist, $i, $j);
   my($cross_inherits);
-  my(@anchestors, @libs, @liblist);
+  my(@anchestors, @implist, @liblist);
 
-  @libs = ();
+  @implist = ();
   $cross_inherits = 0;
   foreach $thorn (keys %$thorns)
   {
@@ -358,25 +358,21 @@ sub CreateThornLinkList
     @anchestors = split (' ', $interface_database->{"IMPLEMENTATION \U$implementation\E ANCESTORS"});
     if (@anchestors)
     {
-      for ($i = $j = 0; $i <= $#libs; $i++)
+      for ($i = $j = 0; $i <= $#implist; $i++)
       {
-        if ($libs[$i] =~ /^$implementation$/i)
+        if ($implist[$i] =~ /^$implementation$/i)
         {
-          splice (@libs, $i, 1, @anchestors, $implementation);
+          splice (@implist, $i, 1, @anchestors, $implementation);
           $j = 1;
           last;
         }
       }
-      push (@libs, @anchestors, $implementation) if (! $j);
+      push (@implist, @anchestors, $implementation) if (! $j);
     }
     else
     {
-      unshift (@libs, $implementation);
+      unshift (@implist, $implementation);
     }
-
-    # add any thorns which this thorn requires to be compiled
-    @requires = split (' ', $configuration_database->{"\U$thorn\E REQUIRES THORNS"});
-    unshift (@libs, @requires) if (@requires);
 
     $cross_inherits++
       if ($interface_database->{"IMPLEMENTATION \U$implementation\E FRIENDS"});
@@ -384,12 +380,16 @@ sub CreateThornLinkList
 
   # build the thorn liblist from the implementation list
   @liblist = ();
-  foreach $lib (@libs)
+  foreach $imp (@implist)
   {
-    push (@liblist, split (/\s/, $interface_database->{"IMPLEMENTATION \U$lib\E THORNS"}));
+    foreach $thorn (split (' ', $interface_database->{"IMPLEMENTATION \U$imp\E THORNS"}))
+    {
+      # also add any thorns which this thorn requires
+      push (@liblist, split (' ', $configuration_database->{"\U$thorn\E REQUIRES THORNS"}), $thorn);
+    }
   }
 
-  # remove duplicate thornlibs in the list, keeping the rightmost instance
+  # remove duplicate thorn instances from the list, only keeping the rightmost
   for ($i = 0; $i <= $#liblist; $i++)
   {
     for ($j = $i + 1; $j <= $#liblist; )
