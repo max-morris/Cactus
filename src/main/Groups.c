@@ -63,7 +63,6 @@ int CCTK_GetGroupIndex(const char *fullgroupname)
 {
   int group_num;
   int retval=-1;
-  int ierr;
   char *imp1         = NULL;
   char *group1       = NULL;
   const char *imp2   = NULL;
@@ -137,13 +136,14 @@ int CCTK_GetGroupIndex(const char *fullgroupname)
 int CCTK_CreateGroup(const char *gname, const char *thorn, const char *imp,
 		     const char *gtype,
 		     const char *vtype,
+		     const char *gscope,
 		     int dimension,
 		     int ntimelevels,
 		     int n_variables,
 		     ...)
 {
   int retval;
-
+  int groupscope;
   va_list ap;
   char *variable_name;
 
@@ -153,12 +153,28 @@ int CCTK_CreateGroup(const char *gname, const char *thorn, const char *imp,
 
   retval = 0;
 
+  /* Allocate storage for the group */
+  groupscope = CCTK_GScopeNumber(gscope);
+  if (groupscope == GROUP_PUBLIC || groupscope == GROUP_PROTECTED)
+  {
+    group = CCTK_SetupGroup(imp, gname, n_variables);
+  }
+  else if (groupscope == GROUP_PRIVATE)
+  {
+    group = CCTK_SetupGroup(thorn, gname, n_variables);
+  }
+  else
+  {
+    CCTK_Warn(1,"CCTK","Unrecognised group scope in CCTK_CreateGroup");
+  }
+
   /* Allocate storage for the group and setup some stuff. */
-  if((group = CCTK_SetupGroup(imp, gname, n_variables)))
+  if(group)
   {
     group->dim = dimension;
     group->gtype = CCTK_GTypeNumber(gtype);
     group->vtype = CCTK_VTypeNumber(vtype);
+    group->gscope = groupscope;
 
     group->n_timelevels = ntimelevels;
     
@@ -682,6 +698,43 @@ int CCTK_VTypeNumber(const char *type)
 
   return retval;
 }
+
+ /*@@
+   @routine    CCTK_GScopeNumber
+   @date       Tuesday June 22 1999
+   @author     Gabrielle Allen
+   @desc 
+   Gets the scope number associated with a group.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+int CCTK_GScopeNumber(const char *type)
+{
+  int retval;
+
+  if(!strcmp(type, "PRIVATE"))
+  {
+    retval = GROUP_PRIVATE;
+  }
+
+  if(!strcmp(type, "PROTECTED"))
+  {
+    retval = GROUP_PROTECTED;
+  }
+
+  if(!strcmp(type, "PUBLIC"))
+  {
+    retval = GROUP_PUBLIC;
+  }
+
+  return retval;
+}
+
 
 
  /*@@
