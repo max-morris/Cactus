@@ -47,6 +47,7 @@ FFTW_INC_DIRS='$(FFTW_DIR)/include'
 # Write the data out to the header and make files.
 CCTK_WriteLine cctk_Extradefs.h "#define CCTK_FFTW 1"
 
+CCTK_WriteLine make.extra.defn "HAVE_FFTW     = 1"
 CCTK_WriteLine make.extra.defn "FFTW_DIR      = $FFTW_DIR"
 CCTK_WriteLine make.extra.defn "FFTW_LIBS     = $FFTW_LIBS"
 CCTK_WriteLine make.extra.defn "FFTW_LIB_DIRS = $FFTW_LIB_DIRS"
