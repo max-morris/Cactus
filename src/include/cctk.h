@@ -63,7 +63,10 @@
 
 #define CCTK_CoordRegisterSystem(a,b,c) CCTKi_CoordRegisterSystem(a,b,CCTK_THORNSTRING,c)
 
-#define CCTK_EQUALS(a,b) (CCTK_Equals(a,b) .eq. 1)
+/* John Shalf says that the operator .ne. needs to be enclosed by
+   spaces, because ANSI C preprocessors otherwise interpret the
+   character sequence ".0" as preprocessor token */
+#define CCTK_EQUALS(a,b) (CCTK_Equals(a,b) .ne. 0)
 
 #define CCTK_PASS_FTOF CCTK_FARGUMENTS
 
