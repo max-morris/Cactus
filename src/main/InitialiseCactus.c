@@ -105,8 +105,8 @@ int CCTKi_InitialiseScheduler(tFleshConfig *ConfigData)
 
   CCTKi_SetParameterSetMask(PARAMETER_RECOVERY_IN);
 
-  if(CCTKi_BindingsParameterRecoveryInitialise() != 0)
-    CCTK_WARN(1, "Failed to recover parameters");
+  if(CCTKi_BindingsParameterRecoveryInitialise() < 0)
+    CCTK_WARN(0, "Failed to recover parameters");
 
   CCTKi_SetParameterSetMask(PARAMETER_RECOVERY_POST);
 
