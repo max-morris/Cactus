@@ -1,5 +1,5 @@
 /*@@
-  @file       Groups.c
+   @file      Groups.c
    @date      Mon Feb  1 12:16:28 1999
    @author    Tom Goodale
    @desc
@@ -1167,7 +1167,7 @@ int CCTK_GroupTypeFromVarI (int var)
 @@*/
 int CCTK_GroupTypeI (int group)
 {
-  return groups[group].gtype;
+  return ((0 <= group && group < n_groups) ? groups[group].gtype : -1);
 }
 
 
@@ -1528,10 +1528,14 @@ int CCTK_TraverseString (const char *parsestring,
   int retval;
   char *before;
   char *after;
-  char *splitstring;
   char *optstring;
   int idx, first, last;
   int selected_all;
+  union
+  {
+    char *string;
+    const char *const_string;
+  } splitstring;
 
 
   if (callback == NULL)
@@ -1542,15 +1546,17 @@ int CCTK_TraverseString (const char *parsestring,
 
   retval = 0;
 
-  splitstring = (char *) parsestring;
+  /* avoid the compiler warning "cast discards `const' from pointer
+     target type" */
+  splitstring.const_string = parsestring;
   after = NULL;
 
-  while (splitstring && *splitstring)
+  while (splitstring.string && *splitstring.string)
   {
 
-    if (Util_SplitString (&before, &after, splitstring, " "))
+    if (Util_SplitString (&before, &after, splitstring.string, " "))
     {
-      before = splitstring;
+      before = splitstring.string;
       if (after)
       {
         free (after);
@@ -1559,7 +1565,7 @@ int CCTK_TraverseString (const char *parsestring,
     }
 
 #ifdef DEBUG_GROUPS
-    printf ("   String is '%s'\n", splitstring);
+    printf ("   String is '%s'\n", splitstring.string);
     printf ("   Split is '%s' and '%s'\n", before, after);
 #endif
 
@@ -1641,15 +1647,15 @@ int CCTK_TraverseString (const char *parsestring,
       }
     }
 
-    if (before != splitstring)
+    if (before != splitstring.string)
     {
       free (before);
     }
-    if (splitstring != parsestring)
+    if (splitstring.string != parsestring)
     {
-      free (splitstring);
+      free (splitstring.string);
     }
-    splitstring = after;
+    splitstring.string = after;
   }
 
   if (after)
