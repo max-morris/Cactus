@@ -280,7 +280,7 @@ case $basic_machine in
 	      | mips64vr4100-* | mips64vr4100el-* | mips64vr4300-* | mips64vr4300el-* \
 	      | mipstx39-* | mipstx39el-* | mcore-* \
 	      | f30[01]-* | f700-*  | 5000-* | s390-* | s390x-* | sv1-* | t3e-* \
-	      | [cjt]90-* \
+	      | [cjt]90-* | x1-* \
 	      | m88110-* | m680[01234]0-* | m683?2-* | m68360-* | z8k-* | d10v-* \
 	      | thumb-* | v850-* | d30v-* | tic30-* | c30-* | fr30-* \
 	      | bs2000-* | tic54x-* | c54x-* | x86_64-*)
@@ -814,6 +814,10 @@ case $basic_machine in
 		;;
 	sun386 | sun386i | roadrunner)
 		basic_machine=i386-sun
+		;;
+	x1)
+		basic_machine=x1-cray
+		os=-unicos
 		;;
 	sv1)
 		basic_machine=sv1-cray
