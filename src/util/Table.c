@@ -88,7 +88,10 @@
 /* FIXME: C99 defines <stdbool.h>, we should include that or a fake version */
 typedef enum { false = 0, true = 1 } bool;
 
+#ifndef CCODE
 #define CCODE   /* signal Cactus header files that we're C, not Fortran */
+#endif
+
 #include "cctk_Types.h"
 #include "cctk_Constants.h"
 #include "cctk_Groups.h"
