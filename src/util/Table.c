@@ -4993,6 +4993,12 @@ static
   #endif
     {
   void *const buffer = malloc(sizeof_value);
+  /*
+   * A 0-sized array is (or should be) legal for the table routines.
+   * Alas, on some systems malloc(0) returns a NULL pointer, so we must
+   * specially check for a 0-sized array in this next test to avoid
+   * falsely seeing this as "malloc failed -- we're out of memory".
+   */
   if (sizeof_value != 0 && buffer == NULL)
   {
     free(tep->key);
