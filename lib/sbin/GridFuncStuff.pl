@@ -62,6 +62,15 @@ sub CreateVariableBindings
   }
 
   $dataout = "";
+  $dataout .= "#ifdef CCODE\n";
+  $dataout .= "#define CCTK_ARGUMENTS CCTK_CARGUMENTS\n";
+  $dataout .= "#define DECLARE_CCTK_ARGUMENTS DECLARE_CCTK_CARGUMENTS\n";
+  $dataout .= "#endif\n\n";
+  $dataout .= "#ifdef FCODE\n";
+  $dataout .= "#define CCTK_ARGUMENTS CCTK_FARGUMENTS\n";
+  $dataout .= "#define DECLARE_CCTK_ARGUMENTS DECLARE_CCTK_FARGUMENTS\n";
+  $dataout .= "#endif\n\n";
+
   foreach $thorn (split(" ",$rhinterface_db->{"THORNS"}))
   {
     $dataout .= "#ifdef THORN_IS_$thorn\n";
