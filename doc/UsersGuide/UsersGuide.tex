@@ -10,6 +10,7 @@
 
 \documentclass{report}
 \usepackage{fancyhdr,ifthen,calc}
+\usepackage{graphicx}
 
 \makeatletter
 \@addtoreset{chapter}{part}
@@ -203,6 +204,10 @@
 \rule{\linewidth}{1mm}
 \vspace*{\stretch{2}}
 \begin{center}
+\includegraphics[angle=0,width=5cm]{bincactus.eps}
+\end{center}
+\vspace*{\stretch{2}}
+\begin{center}
    \Large #3 \\[3mm]
           #4
 \end{center}
@@ -273,8 +278,6 @@
 \pagestyle{fancy}
 
 \newpage
-
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
