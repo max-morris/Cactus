@@ -39,6 +39,7 @@ require "lib/sbin/parameter_parser.pl";
 require "lib/sbin/interface_parser.pl";
 require "lib/sbin/create_c_stuff.pl";
 require "lib/sbin/create_fortran_stuff.pl";
+require "lib/sbin/GridFuncStuff.pl";
 
 %thorns = &create_thorn_list;
 
@@ -48,7 +49,7 @@ require "lib/sbin/create_fortran_stuff.pl";
 
 #&print_parameter_database(%parameter_database);
 
-&print_interface_database(%interface_database);
+#&print_interface_database(%interface_database);
 
 @implementations = (keys %thorns);
 
@@ -78,7 +79,14 @@ require "lib/sbin/create_fortran_stuff.pl";
 
 
 
-foreach $line (@subroutine)
+#foreach $line (@subroutine)
+#{
+#  print "$line\n";
+#}
+
+@GFstuff = &CreateGroups(%interface_database);
+
+foreach $line (@GFstuff)
 {
   print "$line\n";
 }
