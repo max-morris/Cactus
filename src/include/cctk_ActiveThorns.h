@@ -31,8 +31,8 @@ const char *CCTK_ImplementationThorn(const char *name);
 
 int CCTK_NumCompiledThorns(void);
 int CCTK_NumCompiledImplementations(void);
-const char *CCTK_CompiledThorn(int index);
-const char *CCTK_CompiledImplementation(int index);
+const char *CCTK_CompiledThorn(int thorn_index);
+const char *CCTK_CompiledImplementation(int impl_index);
 
 #ifdef __cplusplus 
 }

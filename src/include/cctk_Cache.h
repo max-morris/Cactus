@@ -16,7 +16,7 @@ extern "C"
 {
 #endif
 
-void *Util_CacheMalloc(unsigned index, 
+void *Util_CacheMalloc(unsigned _index, 
                        unsigned long size, 
                        void **realstart);
 
