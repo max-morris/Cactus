@@ -201,6 +201,7 @@ sub GetThornArguments
     {
       $vtype = $interface_database{"\U$thorn GROUP $group VTYPE\E"};
       $gtype = $interface_database{"\U$thorn GROUP $group GTYPE\E"};
+      $ntimelevels = $interface_database{"\U$thorn GROUP $group TIMELEVELS\E"};
 
       $type = "$vtype";
 
@@ -232,6 +233,8 @@ sub GetThornArguments
       {
 	$type .= "!$imp\::$group";
       }
+
+      $type .="!$ntimelevels";
 
 #      print "Group is $group, resulting type is $type\n";
 
@@ -266,6 +269,7 @@ sub CreateFortranArgumentDeclarations
   local(%arguments) = @_;
   local($argument);
   local(@declarations) = ();
+  local($suffix);
 
   # Put all storage arguments first.
   foreach $argument (sort keys %arguments)
@@ -279,29 +283,53 @@ sub CreateFortranArgumentDeclarations
   # Now deal with the rest of the arguments
   foreach $argument (sort keys %arguments)
   {
+    $suffix = "";
     if($arguments{$argument} !~ m:STORAGESIZE:)
     {
-      $arguments{$argument} =~ m:([^ ]*) ?(.*)?!(.*):;
+      $arguments{$argument} =~ m:([^ ]*) ?(.*)?!(.*)!(.*):;
 
-      if($1 eq "CHAR")
+      $ntimelevels = $4;
+
+      for($level = $ntimelevels; $level > 0; $level--)
       {
-	push(@declarations, "CHARACTER $argument$2");
-      }
-      elsif ($1 eq REAL)
-      {
-	push(@declarations, "REAL $argument$2");
-      }
-      elsif ($1 eq COMPLEX)
-      {
-	push(@declarations, "COMPLEX $argument$2");
-      }
-      elsif ($1 eq INTEGER)
-      {
-	push(@declarations, "INTEGER $argument$2");
-      }
-      else
-      {
-	print STDERR "Unknown argument type $1\n";
+	# Modify the name for the time level 
+	if($ntimelevels == 1)
+	{
+	  $suffix = "";
+	}
+	elsif($level == $ntimelevels)
+	{
+	  $suffix = "_n";
+	}
+	elsif($level == $ntimelevels-1)
+	{
+	  $suffix = "";
+	}
+	else
+	{
+	  $suffix .= "_p";
+	}
+
+	if($1 eq "CHAR")
+	{
+	  push(@declarations, "CHARACTER $argument$suffix$2");
+	}
+	elsif ($1 eq REAL)
+	{
+	  push(@declarations, "REAL $argument$suffix$2");
+	}
+	elsif ($1 eq COMPLEX)
+	{
+	  push(@declarations, "COMPLEX $argument$suffix$2");
+	}
+	elsif ($1 eq INTEGER)
+	{
+	  push(@declarations, "INTEGER $argument$suffix$2");
+	}
+	else
+	{
+	  print STDERR "Unknown argument type $1\n";
+	}
       }
     }
   }
@@ -348,11 +376,39 @@ sub CreateFortranArgumentList
   {
     if($arguments{$argument} !~ m:STORAGESIZE:)
     {
-      $argumentlist .= "$sep$argument";
-      $sep = ",";
+      $suffix = "";
+      if($arguments{$argument} !~ m:STORAGESIZE:)
+      {
+	$arguments{$argument} =~ m:([^ ]*) ?(.*)?!(.*)!(.*):;
+	
+	$ntimelevels = $4;
+	
+	for($level = $ntimelevels; $level > 0; $level--)
+	{
+	  # Modify the name for the time level 
+	  if($ntimelevels == 1)
+	  {
+	    $suffix = "";
+	  }
+	  elsif($level == $ntimelevels)
+	  {
+	    $suffix = "_n";
+	  }
+	  elsif($level == $ntimelevels-1)
+	  {
+	    $suffix = "";
+	  }
+	  else
+	  {
+	    $suffix .= "_p";
+	  }
+	  
+	  $argumentlist .= "$sep$argument$suffix";
+	  $sep = ",";
+	}
+      }
     }
   }
-
   return $argumentlist;
 }
 
@@ -415,7 +471,7 @@ sub CreateCArgumentInitialisers
   {
     if($arguments{$argument} !~ m:STORAGESIZE:)
     {
-      $arguments{$argument} =~ m,([^ ]*) ?(.*)?!(.*)\::(.*),;
+      $arguments{$argument} =~ m,([^ ]*) ?(.*)?!(.*)\::(.*)!(.*),;
 
       push(@initialisers, "if(CCTKARGNUM_$argument == -1) CCTKARGNUM_$argument = CCTK_GetVarNum(\"$3\", \"$4\",\"$argument\")");
     }
@@ -461,37 +517,48 @@ sub CreateCArgumentPrototype
   # Now deal with the rest of the arguments
   foreach $argument (sort keys %arguments)
   {
+
     if($arguments{$argument} !~ m:STORAGESIZE:)
     {
       $arguments{$argument} =~ m:([^ ]*) ?(.*)?!(.*):;
 
-      if($1 eq "CHAR")
+      $suffix = "";
+      if($arguments{$argument} !~ m:STORAGESIZE:)
       {
-	$prototype .="$sep". "char *";
-	$sep = ",";
-      }
-      elsif ($1 eq REAL)
-      {
-	$prototype .="$sep". "Double *";
-	$sep = ",";	
-      }
-      elsif ($1 eq COMPLEX)
-      {
-	$prototype .="$sep". "Complex *";
-	$sep = ",";
-      }
-      elsif ($1 eq INTEGER)
-      {
-	$prototype .="$sep". "int *";
-	$sep = ",";
-      }
-      else
-      {
-	print STDERR "Unknown argument type $1\n";
+	$arguments{$argument} =~ m:([^ ]*) ?(.*)?!(.*)!(.*):;
+	
+	$ntimelevels = $4;
+	
+	for($level = $ntimelevels; $level > 0; $level--)
+	{
+	  if($1 eq "CHAR")
+	  {
+	    $prototype .="$sep". "char *";
+	    $sep = ",";
+	  }
+	  elsif ($1 eq REAL)
+	  {
+	    $prototype .="$sep". "Double *";
+	    $sep = ",";	
+	  }
+	  elsif ($1 eq COMPLEX)
+	  {
+	    $prototype .="$sep". "Complex *";
+	    $sep = ",";
+	  }
+	  elsif ($1 eq INTEGER)
+	  {
+	    $prototype .="$sep". "int *";
+	    $sep = ",";
+	  }
+	  else
+	  {
+	    print STDERR "Unknown argument type $1\n";
+	  }
+	}
       }
     }
   }
-
   return $prototype;
 }
 
@@ -538,35 +605,44 @@ sub CreateCArgumentList
     {
       $arguments{$argument} =~ m:([^ ]*) ?(.*)?!(.*):;
 
-      if($1 eq "CHAR")
+      $suffix = "";
+      if($arguments{$argument} !~ m:STORAGESIZE:)
       {
-	$arglist .= "$sep"."(char *)((xGH)->data[CCTKARGNUM_$argument])";
-	$sep = ",";
-      }
-      elsif ($1 eq REAL)
-      {
-	$arglist .= "$sep"."(Double *)((xGH)->data[CCTKARGNUM_$argument])";
-	$sep = ",";
-      }
-      elsif ($1 eq COMPLEX)
-      {
-	$arglist .= "$sep"."(Complex *)((xGH)->data[CCTKARGNUM_$argument])";
-	$sep = ",";
-      }
-      elsif ($1 eq INTEGER)
-      {
-	$arglist .= "$sep"."(int *)((xGH)->data[CCTKARGNUM_$argument])";
-	$sep = ",";
-      }
-      else
-      {
-	print STDERR "Unknown argument type $1\n";
+	$arguments{$argument} =~ m:([^ ]*) ?(.*)?!(.*)!(.*):;
+	
+	$ntimelevels = $4;
+	
+	for($level = $ntimelevels; $level > 0; $level--)
+	{
+	  if($1 eq "CHAR")
+	  {
+	    $arglist .= "$sep"."(char *)((xGH)->data[CCTKARGNUM_$argument][$level-1])";
+	    $sep = ",";
+	  }
+	  elsif ($1 eq REAL)
+	  {
+	    $arglist .= "$sep"."(Double *)((xGH)->data[CCTKARGNUM_$argument][$level-1])";
+	    $sep = ",";
+	  }
+	  elsif ($1 eq COMPLEX)
+	  {
+	    $arglist .= "$sep"."(Complex *)((xGH)->data[CCTKARGNUM_$argument][$level-1])";
+	    $sep = ",";
+	  }
+	  elsif ($1 eq INTEGER)
+	  {
+	    $arglist .= "$sep"."(int *)((xGH)->data[CCTKARGNUM_$argument][$level-1])";
+	    $sep = ",";
+	  }
+	  else
+	  {
+	    print STDERR "Unknown argument type $1\n";
+	  }
+	}
       }
     }
   }
-
   return $arglist;
-
 }  
 
 #/*@@

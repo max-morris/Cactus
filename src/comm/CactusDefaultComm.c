@@ -12,6 +12,7 @@
 #include <stdlib.h>
 
 #include "flesh.h"
+#include "Groups.h"
 #include "CactusMainDefaults.h"
 #include "GHExtensions.h"
 
@@ -41,6 +42,8 @@ cGH *CactusDefaultSetupGH(tFleshConfig *config, int convergence_level)
   int n_groups;
   int n_variables;
   int variable;
+  int ntimelevels;
+  int level;
 
   retval = NULL;
 
@@ -75,13 +78,26 @@ cGH *CactusDefaultSetupGH(tFleshConfig *config, int convergence_level)
     /* Allocate memory for the variable data pointers.
      * Note we want at least one to prevent memory allocattion from failing !
      */
-    thisGH->data = (void **)malloc((n_variables ? n_variables:1)*sizeof(void *));
+    thisGH->data = (void ***)malloc((n_variables ? n_variables:1)*sizeof(void **));
 
     if(thisGH->data)
     {
       for(variable = 0; variable < n_variables; variable++)
       {
-	thisGH->data[variable] = NULL;
+	ntimelevels = CCTK_GetNumTimeLevels(variable);
+
+	thisGH->data[variable] = (void **)malloc(ntimelevels*sizeof(void *));
+	if(thisGH->data[variable])
+	{
+	  for(level = 0; level < ntimelevels; level++)
+	  {
+	    thisGH->data[variable][level] = NULL;
+	  }
+	}
+	else
+	{
+	  break;
+	}
       }
     }
 
@@ -102,6 +118,7 @@ cGH *CactusDefaultSetupGH(tFleshConfig *config, int convergence_level)
      thisGH->upper_bound &&
      thisGH->bbox &&
      thisGH->data &&
+     variable == n_variables &&
      thisGH->GroupData)
   {
     /* Traverse list of GH setup routines. */
@@ -112,5 +129,3 @@ cGH *CactusDefaultSetupGH(tFleshConfig *config, int convergence_level)
 
   return retval;
 }
-
-

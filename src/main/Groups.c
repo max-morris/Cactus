@@ -402,7 +402,7 @@ int *CCTK_ArrayGroupSize(cGH *GH, const char *group, int dim)
 }
 
  /*@@
-   @routine    CCTK_
+   @routine    CCTK_QueryGroupStorage
    @date       
    @author     Tom Goodale
    @desc 
@@ -515,7 +515,12 @@ int CCTK_VTypeNumber(const char *type)
    @endhistory 
 
 @@*/
-int CCTK_GetGroupData(int group, int *gtype, int *vtype, int *dim, int *n_variables)
+int CCTK_GetGroupData(int group, 
+		      int *gtype, 
+		      int *vtype, 
+		      int *dim, 
+		      int *n_variables,
+		      int *n_timelevels)
 {
   int return_code;
 
@@ -525,6 +530,7 @@ int CCTK_GetGroupData(int group, int *gtype, int *vtype, int *dim, int *n_variab
     *vtype = groups[group].vtype;
     *dim   = groups[group].dim;
     *n_variables = groups[group].n_variables;
+    *n_timelevels = groups[group].n_timelevels;
 
     return_code = 1;
   }

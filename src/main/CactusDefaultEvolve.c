@@ -36,7 +36,7 @@ static char *rcsid="$Id$";
 #define OUTPUT    2
 int cactus_terminate;
 int cctk_itfirst = 0;
-int cctk_itlast = 5;
+int cctk_itlast = 50;
 static int cactus_terminate_global = 0;
 #define TERMINATION_RAISED_BRDCAST 4
  

@@ -5,14 +5,15 @@
    @desc 
    Header file for flesh functions.
    @enddesc 
+   @version $Header$
  @@*/
-
-/* $Id$ */
 
 #include "CactusTimers.h"
 
 #ifndef _FLESH_H_
 #define _FLESH_H_
+
+#include "cGH.h"
 
 /*  Typedefs */
 
@@ -21,50 +22,6 @@ typedef struct
   int dummy;
   char *name;
 } cGF;
-
-typedef struct
-{
-  char storage;
-  char comm;
-} cGHGroupData;
-
-typedef struct
-{
-  int dim;
-  unsigned long int iteration;
-
-  /* ...[dim]*/
-  int *global_shape;
-  int *local_shape;
-  int *lower_bound;
-  int *upper_bound;
-
-  /* The bounding box - 1 => a real boundary, 0 => a local grid boundary. */
-  /* bbox[2*dim] */
-  int *bbox;
-
-  /* The refinement factor over the top level (coarsest) grid. */
-  int levfac;
-
-  /* The convergence level */
-  int convlevel;
-
-  /* The number of ghostzones in each direction */
-  int nghostzones;
-
-  /* data[var_num][xyz]*/
-  void **data;
-
-  /* The extension array */
-  void **extensions;
-
-  /* All the group data for this GH (storage, comm, etc. */
-  cGHGroupData *GroupData;
-
-  /* Rfr tree for this GH. */
-  void *rfr_top;
-
-} cGH;
 
 typedef struct 
 {
