@@ -11,11 +11,13 @@
 #  removes all comments
 #  replaces && with newline and tab to col 7
 #  replaces &! with newline at col 0
+#  replaces \ at end of line with proper Fortran continuation lines
+#      (depending on -free_format)
 #  Breaks lines greater than 72 cols
 #  Does this using multi-line matching!
 #  
 #  If run with -free_format, chooses free-format 
-#  line spleeting.
+#  line splitting.
 #  
 #  @enddesc 
 #  @history 
@@ -46,13 +48,20 @@ else
 # Loop over all lines.
 while (<>) 
 {
-  next if (/^\s*$/);            # Blanks slow down compilation, and cpp makes
-                                # lots and lots of them!
-
-  next if (/^\#/);              # Remove any remaining # directives (e.g. line directives).
-
   # Get rid of final \n
   chomp;
+
+  # concatenate lines if \ at end-of-line
+  while (/\\$/)
+  {
+    chop;                       # drop the backslash
+    chomp($_ .= <STDIN>);	# concatenate the following line (sans \n)
+  }
+
+  next if (/^\s*$/);            # Blank lines slow down compilation,
+				# and on some systems cpp makes ++lots of them
+
+  next if (/^\#/);              # Remove any remaining # directives (e.g. line directives).
 
   # Get rid of any tabs
   s/\t/        /g;
