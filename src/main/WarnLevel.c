@@ -15,13 +15,16 @@
 
 static char *rcsid = "$Header$";
 
-/* Store the warning level.  Default to 1 */
+/* Store the warning level - warnings of this severity or worse will
+ * be reported
+ */
 
 static int warning_level = 1;
 
 /* Store the error level - warnings of this severity or worse will stop
  * the code. 
  */
+
 static int error_level    = 0;
 
  /*@@
@@ -51,27 +54,28 @@ int CCTK_SetWarnLevel(int level)
   if(level > old_level)
   {
     sprintf(warning_message, "Increasing warning level from %d to %d\n", old_level, level);
-    CCTK_Warn(1, warning_message);
+    CCTK_Warn(1,"CCTK", warning_message);
     retval = 1;
   }
   else if(level == old_level)
   {
     sprintf(warning_message, "Warning level is already %d\n", level);
-    CCTK_Warn(1, warning_message);
+    CCTK_Warn(1,"CCTK", warning_message);
     retval = 0;
   }
   else
   {
     sprintf(warning_message, "Decreasing warning level from %d to %d\n", old_level, level);
-    CCTK_Warn(1, warning_message);
+    CCTK_Warn(1,"CCTK", warning_message);
     retval = -1;
   }
 
+  /* FIXME Is this right? Gab. */
   if(warning_level < error_level)
   {
     error_level = warning_level;
     sprintf(warning_message, "Decreasing error level to warning_level\n");
-    CCTK_Warn(2, warning_message);
+    CCTK_Warn(2, "CCTK", warning_message);
   }
   return retval;
 }
@@ -90,13 +94,13 @@ int CCTK_SetWarnLevel(int level)
    @endhistory 
 
 @@*/
-int CCTK_Warn(int level, const char *message)
+int CCTK_Warn(int level, const char *thorn, const char *message)
 {
   int retval;
 
   if(level <= warning_level)
   {
-    fprintf(stderr, "WARNING: %s\n", message);
+    fprintf(stderr, "WARNING (%s): %s\n", thorn, message);
     retval = 1;
   }
   else
@@ -112,11 +116,12 @@ int CCTK_Warn(int level, const char *message)
   return retval;
 }
 
-int FORTRAN_NAME(CCTK_Warn)(int *level, ONE_FORTSTRING_ARG)
+int FORTRAN_NAME(CCTK_Warn)(int *level, TWO_FORTSTRINGS_ARGS)
 {
-  ONE_FORTSTRING_CREATE(message)
+  TWO_FORTSTRINGS_CREATE(thorn,message)
   int retval;
-  retval = CCTK_Warn(*level,message);
+  retval = CCTK_Warn(*level,thorn,message);
+  free(thorn);
   free(message); 
   return(retval);
 }
@@ -185,26 +190,26 @@ int CCTK_SetErrorLevel(int level)
     if(level > old_level)
     {
       sprintf(warning_message, "Increasing error level from %d to %d\n", old_level, level);
-      CCTK_Warn(1, warning_message);
+      CCTK_Warn(1,"CCTK", warning_message);
       retval = 1;
     }
     else if(level == old_level)
     {
       sprintf(warning_message, "Error level is already %d\n", level);
-      CCTK_Warn(3, warning_message);
+      CCTK_Warn(3, "CCTK", warning_message);
       retval = 0;
     }
     else
     {
       sprintf(warning_message, "Decreasing error level from %d to %d\n", old_level, level);
-      CCTK_Warn(1, warning_message);
+      CCTK_Warn(1, "CCTK", warning_message);
       retval = -1;
     }
   }
   else
   {
     sprintf(warning_message, "Error level cannot be higher than warning level\n");
-    CCTK_Warn(1, warning_message);
+    CCTK_Warn(1, "CCTK", warning_message);
     retval = 0;
   }
 
