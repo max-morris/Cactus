@@ -36,7 +36,7 @@
                           cctk_delta_time, cctk_time, cctk_delta_space,\
                           cctk_origin_space, cctk_levfac, \
                           cctk_levoff, cctk_levoffdenom, cctk_timefac, \
-                          cctk_convlevel,\
+                          cctk_convlevel, cctk_convfac, \
                           cctk_nghostzones, cctk_iteration, cctkGH
 
 #define _DECLARE_CCTK_ARGUMENTS _DECLARE_CCTK_FARGUMENTS
@@ -54,6 +54,7 @@
                            INTEGER cctk_levoffdenom(cctk_dim)&&\
                            INTEGER cctk_timefac&&\
                            INTEGER cctk_convlevel&&\
+                           INTEGER cctk_convfac&&\
                            INTEGER cctk_nghostzones(cctk_dim)&&\
                            INTEGER cctk_iteration&&\
                            CCTK_POINTER cctkGH&&\
@@ -232,6 +233,7 @@ static inline int CCTK_GFINDEX4D (const cGH *GH, int i, int j, int k, int l)
             int        *cctk_levoffdenom = cctkGH->cctk_levoffdenom;\
             int         cctk_timefac = cctkGH->cctk_timefac;\
             int         cctk_convlevel = cctkGH->cctk_convlevel;\
+            int         cctk_convfac = cctkGH->cctk_convfac;\
             int        *cctk_nghostzones = cctkGH->cctk_nghostzones;\
             int         cctk_iteration = cctkGH->cctk_iteration;
 
@@ -255,6 +257,7 @@ static inline int CCTK_GFINDEX4D (const cGH *GH, int i, int j, int k, int l)
             (void) (cctk_levoffdenom + 0);\
             (void) (cctk_timefac + 0);\
             (void) (cctk_convlevel + 0);\
+            (void) (cctk_convfac + 0);\
             (void) (cctk_nghostzones + 0);\
             (void) (cctk_iteration + 0);
 
@@ -274,6 +277,7 @@ static inline int CCTK_GFINDEX4D (const cGH *GH, int i, int j, int k, int l)
                             (xGH)->cctk_levoffdenom,\
                             &((xGH)->cctk_timefac),\
                             &((xGH)->cctk_convlevel),\
+                            &((xGH)->cctk_convfac),\
                             (xGH)->cctk_nghostzones,\
                             &((xGH)->cctk_iteration),\
                             &(xGH)
@@ -282,6 +286,7 @@ static inline int CCTK_GFINDEX4D (const cGH *GH, int i, int j, int k, int l)
                             int *,int *, int *, int *, int *,int *,int *,\
                             CCTK_REAL *, CCTK_REAL *, CCTK_REAL *,\
                             CCTK_REAL *,\
+                            int *,\
                             int *,\
                             int *,\
                             int *,\
