@@ -814,10 +814,10 @@ int CCTKi_ScheduleGHInit(void *GH)
   if (n_scheduled_storage_groups>0)
   {
     CCTK_GroupStorageIncrease(GH,
-			      n_scheduled_storage_groups,
-			      scheduled_storage_groups,
-			      scheduled_storage_groups_timelevels,
-			      NULL);
+                              n_scheduled_storage_groups,
+                              scheduled_storage_groups,
+                              scheduled_storage_groups_timelevels,
+                              NULL);
   }
 
   for(i = 0; i < n_scheduled_comm_groups; i++)
@@ -1632,6 +1632,10 @@ static int ParseOption(t_attribute *attribute,
   else if(CCTK_Equals(option, "SINGLEMAP"))
   {
     attribute->FunctionData.singlemap = 1;
+  }
+  else if(CCTK_Equals(option, "LOCAL"))
+  {
+    attribute->FunctionData.local = 1;
   }
   else
   {

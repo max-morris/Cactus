@@ -1,10 +1,10 @@
  /*@@
-   @header    cctk_schedule.h
-   @date      Thu Sep 16 19:05:27 1999
-   @author    Tom Goodale
-   @desc 
-   Routines for creating schedule stuff.
-   @enddesc 
+   @header  cctk_schedule.h
+   @date    Thu Sep 16 19:05:27 1999
+   @author  Tom Goodale
+   @desc
+            Routines for creating schedule stuff.
+   @enddesc
    @version $Header$
  @@*/
 
@@ -18,7 +18,7 @@ typedef enum {FunctionNoArgs, FunctionOneArg, FunctionStandard} cFunctionType;
 typedef struct
 {
   cLanguage language;
-  
+
   int (*FortranCaller)(cGH *, void *);
 
   cFunctionType type;
@@ -32,10 +32,10 @@ typedef struct
   int meta;
   int global;
   int level;
+  int local;
   int singlemap;
 
-  /* The last items should be considered volatile and may
-     not stay here */
+  /* The last items should be considered volatile and may not stay here */
 
   int n_TriggerGroups;
   int *TriggerGroups;
@@ -46,24 +46,25 @@ typedef struct
 } cFunctionData;
 
 #ifdef __cplusplus
-extern "C" 
+extern "C"
 {
 #endif
 
-int CCTK_CallFunction(void *function, 
-                      cFunctionData *fdata, 
+int CCTK_CallFunction(void *function,
+                      cFunctionData *fdata,
                       void *data);
 
-int CCTK_ScheduleTraverse(const char *where, 
-                           void *GH,   
-                           int (*CallFunction)(void *, cFunctionData *, void *));
+int CCTK_ScheduleTraverse(const char *where,
+                          void *GH,
+                          int (*CallFunction)(void *, cFunctionData *, void *));
 
 int CCTK_SchedulePrint(const char *where);
 int CCTK_SchedulePrintTimes(const char *where);
 
 cLanguage CCTK_TranslateLanguage(const char *sval);
 
-  /*int CCTK_ScheduleFunction(void *function,
+#if 0
+int CCTK_ScheduleFunction(void *function,
                           const char *name,
                           const char *thorn,
                           const char *implementation,
@@ -95,12 +96,12 @@ int CCTK_ScheduleGroupStorage(const char *group);
 
 int CCTK_ScheduleGroupComm(const char *group);
 
-int CCTK_ScheduleTraverse(const char *where, 
-                          void *GH,   
+int CCTK_ScheduleTraverse(const char *where,
+                          void *GH,
                           int (*calling_function)(void *, void *, void *));
 
 int CCTK_ScheduleGHInit(void *GH);
-  */
+#endif
 
 
 #ifdef __cplusplus
