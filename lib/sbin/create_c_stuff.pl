@@ -31,7 +31,6 @@ sub CreateParameterBindingFile
   my($line,@data);
   my(%parameters);
   my($type, $type_string);
-  my(@data);
 
   # Header Data
   $line = "\#include <stdio.h>";
@@ -192,7 +191,6 @@ sub CreateCStructureParameterHeader
   my($line,@data);
   my(%parameters);
   my($type, $type_string);
-  my(@data);
   my(@definition);
 
   # Create the structure

@@ -387,7 +387,7 @@ sub NewParamStuff
   my(%routines);
   my($structure, %structures);
   my(%header_files);
-  my($thorn, $block); 
+  my($block); 
   my($filelist);
   my(@creationdata);
   my(@extensiondata);

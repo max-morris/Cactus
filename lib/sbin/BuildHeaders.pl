@@ -1,4 +1,4 @@
-#! /usr/bin/perl -s
+ #! /usr/bin/perl -s
 
 #/*@@
 #  @routine BuildHeaders
@@ -23,7 +23,7 @@ sub BuildHeaders
 
   $start_dir = `pwd`;
   chdir $bindings_dir;
-  chdir include;
+  chdir "include";
 
 # First set all data strings 
   foreach $thorn (split(" ",$interface_database{"THORNS"}))

@@ -77,7 +77,7 @@ sub parse_schedule_ccl
   my($name, $type, $description, $where, $language, 
        $mem_groups, $comm_groups, $trigger_groups,
        $before_list, $after_list, $while_list);
-  my($type, $groups);
+  my($groups);
 
   $buffer       = "";
   $n_blocks     = 0;
@@ -158,7 +158,8 @@ sub ParseScheduleBlock
   my(@trigger_groups) = ();
   my($keyword) = "";
   my(@current_sched_list) = ();
-  my($where) = "";
+
+  $where = "";
 
   #Parse the first line of the schedule block
 

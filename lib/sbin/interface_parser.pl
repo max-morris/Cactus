@@ -609,7 +609,7 @@ sub parse_interface_ccl
       {
 	$message = "Duplicate group $3 in thorn $thorn";
 	&CST_error(0,$message,__LINE__,__FILE__);
-	if($data[line_number+1] =~ m:\{:)
+	if($data[$line_number+1] =~ m:\{:)
 	{
 	    $message = "Skipping interface block";
 	    &CST_error(1,$message,__LINE__,__FILE__);
@@ -688,7 +688,7 @@ sub parse_interface_ccl
 	  $interface_db{"\U$thorn GROUP $current_group\E GTYPE"} .
 	    " for group $current_group of thorn $thorn";
 	  &CST_error(0,$message,__LINE,__FILE__);
-	  if($data[line_number+1] =~ m:\{:)
+	  if($data[$line_number+1] =~ m:\{:)
 	  {
 	      $message = "Skipping interface block in $thorn";
 	      &CST_error(1,$message,__LINE__,__FILE__);

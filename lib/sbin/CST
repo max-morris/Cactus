@@ -6,7 +6,7 @@
 #  @desc 
 #  Parses the the configuration files for thorns.
 #  @enddesc 
-#  @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.32 1999-10-24 22:55:48 goodale Exp $
+#  @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.33 1999-10-25 09:09:26 goodale Exp $
 #@@*/
 
 # Global parameter to track the number of errors from the CST
@@ -279,11 +279,11 @@ sub CreateThornList
 
 sub get_global_parameters
 {
-  my(%parameter_database) = @_;
+  my($rhparameter_db) = @_;
   my(%global_parameters);
   my($param);
 
-  foreach $param (split(/ /,$parameter_database{"GLOBAL PARAMETERS"}))
+  foreach $param (split(/ /,$rhparameter_db->{"GLOBAL PARAMETERS"}))
   {
     if($param =~ m/(.*)::(.*)/)
     {

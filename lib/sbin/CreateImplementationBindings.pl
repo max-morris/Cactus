@@ -61,7 +61,7 @@ sub CreateImplementationBindings
   &WriteFile("make.code.defn",\$dataout);
 
 
-  chdir $_start_dir;
+  chdir $start_dir;
 }
 
 1;
