@@ -19,7 +19,10 @@ DIVIDER =  $(DIVEL)$(DIVEL)$(DIVEL)$(DIVEL)
 include $(CONFIG)/make.config.defn
 
 # Add appropriate include lines
-INC_DIRS += $(SRCDIR) $(SRCDIR)/include $(CONFIG) $(TOP)/bindings/include $(CCTK_HOME)/src/include
+INC_DIRS = $(SYS_INC_DIRS) $(SRCDIR) $(SRCDIR)/include $(CONFIG) $(TOP)/bindings/include $(CCTK_HOME)/src/include
+
+# Allow subdirectories to inherit these include directories
+export INC_DIRS
 
 EXTRA_DEFINES += THORN_IS_$(THORN) 
 

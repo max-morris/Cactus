@@ -15,11 +15,11 @@
 include $(CONFIG)/make.config.defn
 
 # Add appropriate include lines
-INC_DIRS += $(SRCDIR) $(SRCDIR)/include $(CONFIG) $(TOP)/bindings/include $(CCTK_HOME)/src/include
+INC_DIRS += $(SRCDIR) $(SRCDIR)/include 
 
 EXTRA_DEFINES += THORN_IS_$(THORN) 
 
-# Include the subdirectories local include data
+# Include the subdirectory's local include data
 include $(SRCDIR)/make.code.defn
 
 # Turn source file names into object file names
