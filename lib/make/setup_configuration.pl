@@ -94,21 +94,9 @@ else
 
 chdir "$config" || die "Internal error - could't enter $configs_dir/$config";
 
-open(INFO, ">config-info") || die "Internal error - couldn't create $configs_dir/$config/config-info";
-
-print INFO "CONFIG        : $config\n";
-print INFO "CONFIG-FLAGS  : " . $ENV{"MAKEFLAGS"} . "\n";
-print INFO "CONFIG-DATE   : " . gmtime(time()) . "\n"; 
-
-$host = `hostname`;
-
-chop $host;
-
-print INFO "CONFIG-HOST   : " . $host . "\n";
-
 chdir "config-data" || die "Internal error - could't enter $configs_dir/$config/config-data";
 
-&SetConfigureEnv();
+%CONFIGURED = &SetConfigureEnv();
 
 $configure_command = &DetermineConfigureCommand($configure, %ENV);
 
@@ -118,7 +106,24 @@ $retcode = $? >> 8;
 
 chdir "..";
 
-print INFO "CONFIG-STATUS : $retcode\n";
+open(INFO, ">config-info") || die "Internal error - couldn't create $configs_dir/$config/config-info";
+
+print INFO "CONFIG        : $config\n";
+print INFO "CONFIG-FLAGS  : ";
+foreach $setting (keys %CONFIGURED)
+{
+  print INFO "$setting=$CONFIGURED{\"$setting\"} ";
+}
+print INFO "\n";
+print INFO "CONFIG-DATE   : " . gmtime(time()) . "\n"; 
+
+$host = `hostname`;
+
+chop $host;
+
+print INFO "CONFIG-HOST   : " . $host . "\n";
+
+print INFO "CONFIG-STATUS : $retcode\n\n";
 
 close(INFO);
 
@@ -178,6 +183,8 @@ sub SetConfigureEnv
       {
 	print "Setting $1 to '$3'\n";
 	$ENV{"$1"} = $3;
+	# Remember it for writing to config-info
+	$CONFIGURED{"$1"} = $3;
       }
       else
       {
@@ -185,6 +192,7 @@ sub SetConfigureEnv
       }
     }
     print "End of options from user defaults.\n";
+
     
     close(INFILE);
   }
@@ -227,6 +235,8 @@ sub SetConfigureEnv
       {
 	print "Setting $1 to '$3'\n";
 	$ENV{"$1"} = $3;
+	# Remember it for writing to config-info
+	$CONFIGURED{"$1"} = $3;
       }
       else
       {
@@ -238,6 +248,33 @@ sub SetConfigureEnv
     
     close(INFILE);
   }
+
+  $commandline = $ENV{"MAKEFLAGS"};
+  $used_commandline = 0;
+  while ($commandline =~ /^(.*)\s+(\w*)\s*=\s*([\w\\\s]*)\s*$/)
+  {
+    if ($2 ne "options")
+    {
+      if (!$used_commandline)
+      {
+	print "Using configuration options from configure line\n";
+      }
+      $used_commandline = 1;
+      $ENV{"$2"} = $3;
+      # Remember it for writing to config-info
+      $CONFIGURED{"$2"} = $3;
+
+      print "Setting $2 to $3\n";
+    }
+    $commandline=$1;
+    #  print "New commandline = <$commandline>\n";
+  }
+  if ($used_commandline)
+  {
+    print "End of options from configure line\n";
+  }
+
+  return %CONFIGURED;
 
 }
 
