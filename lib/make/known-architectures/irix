@@ -6,49 +6,77 @@
 #    @desc 
 #   
 #    @enddesc 
-#    @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/irix,v 1.2 1999-03-17 17:13:37 goodale Exp $
+#    @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/irix,v 1.3 1999-04-10 22:31:21 goodale Exp $
 #  @@*/
 
 IRIX_CPU="`hinv | grep CPU | sed 's/^[^R]*R\([01-9]*\).*$/\1/`"
 
-case "$IRIX_CPU:$CC" in
-    10000:gcc)
-    CFLAGS="$CFLAGS -mips3" 
+case $IRIX_CPU in
+    10000)
+    IRIX_BITS=64 
     ;;
-    10000:cc)
+    *)
+    IRIX_BITS=32
+    ;;
+esac
+
+
+case "$IRIX_BITS:$CC" in
+    64:gcc)
+    echo gcc can\'t compile 64 bit, changing to cc
+    CC=cc
+    CXX=CC
+    ;;
+esac
+
+case "$IRIX_BITS:$CC" in
+    64:cc)
     CFLAGS="$CFLAGS -O3 -64 -mips4 -r10000"
     CXXFLAGS="$CFLAGS -O2 -64 -mips4 -r10000"
     ;;
-    *)
-    ;;
-esac
-
-case "$IRIX_CPU:$CXX" in
-    10000:c++)
-    CXXFLAGS="$CXXFLAGS -mips3" 
+    32:cc)
+    CFLAGS="$CFLAGS -O3 -n32 -mips3"
+    CXXFLAGS="$CFLAGS -O2 -n32 -mips3"
     ;;
     *)
     ;;
 esac
 
-case "$IRIX_CPU" in
-    10000)
+case "$IRIX_BITS" in
+    64)
     F90FLAGS="$F90FLAGS -O3  \
 	-OPT:roundoff=3:IEEE_arithmetic=3:const_copy_limit=100000 \
 	-r10000 -TARG:proc=r10000 \
 	-64 -mips4"
     F77FLAGS="$F90FLAGS" 
     ;;
+    32)
+    F90FLAGS="-O3  \
+	    -OPT:roundoff=3:IEEE_arithmetic=3:fold_arith_limit=10000:const_copy_limit=100000 \
+	    -n32 -mips3"
+    F77FLAGS="$F90FLAGS" 
+    ;;
     *)
     ;;
 esac
 
-case "$IRIX_CPU:$LD" in
-    10000:c++)
-    LDFLAGS="$LDFLAGS -mips3"
-    ;;
-    10000:CC)
+case "$IRIX_BITS:$LD" in
+    64:CC)
     LDFLAGS="$LDFLAGS -64 -Wl,\"-woff 84\",\"-woff 85\""
+    ;;
+    32:CC)
+    LDFLAGS="$LDFLAGS -n32 -Wl,\"-woff 84\",\"-woff 85\""
+    ;;
+    *)
+    ;;
+esac
+
+case $IRIX_BITS in
+    64)
+    LIBS="LIBS malloc perfex fpe fortran ftn ftn90 m"
+    ;;
+    32)
+    LIBS="$LIBS malloc fpe ftn ftn90 m"
     ;;
     *)
     ;;
