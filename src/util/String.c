@@ -17,8 +17,10 @@
 
 static const char *rcsid = "$Header$";
 
-#if defined(TEST_UTIL_STRSEP) \
-    || defined(TEST_UTIL_STRLCPY) || defined(TEST_UTIL_STRLCAT)
+#if defined(STANDALONE_TEST) \
+    || defined(TEST_UTIL_STRSEP) \
+    || defined(TEST_UTIL_STRLCPY) \
+    || defined(TEST_UTIL_STRLCAT)
   /*
    * we're just compiling a standalone test driver
    * ==> we don't need CCTK_FILEVERSION()
