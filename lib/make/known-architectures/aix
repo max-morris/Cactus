@@ -92,9 +92,14 @@ else
     fi
   fi
 
-  # allow each process to use up to 2 GB of virtual memory (default is 256 MB)
+  # in 32-bit mode: allow each process to use up to 2 GB of virtual memory
+  # (default is only 256 MB)
   if test "$LD" != 'g++' -a "$LD" != 'c++'; then
-    : ${LDFLAGS="-q$AIX_BITS -bmaxdata:0x80000000"}
+    if test "$AIX_BITS" = 32; then
+      : ${LDFLAGS="-q$AIX_BITS -bmaxdata:0x80000000"}
+    else
+      : ${LDFLAGS="-q$AIX_BITS"}
+    fi
   fi
 
   # MPI stuff
