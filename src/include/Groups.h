@@ -26,55 +26,55 @@ int CCTK_CreateGroup(const char *gname, const char *thorn, const char *imp,
 		     int n_variables,
 		     ...);
 
-int CCTK_GetGroupIndex(const char *groupname);
+int CCTK_GroupIndex(const char *groupname);
 
-int CCTK_GetVarIndex(const char *variablename);
+int CCTK_VarIndex(const char *variablename);
 
-char *CCTK_GetGroupNameFromVar_ByIndex(int var);
+char *CCTK_GroupNameFromVarI(int var);
 
-int CCTK_GetGroupIndexFromVar_ByIndex(int var);
+int CCTK_GroupIndexFromVarI(int var);
 
-char *CCTK_GetFullName(int var);
+char *CCTK_FullName(int var);
 
-char *CCTK_GetImplementationFromVar(int var);
+char *CCTK_ImpFromVarI(int var);
 
-int CCTK_GetMaxDim(void);
+int CCTK_MaxDim(void);
 
-int CCTK_GetNumVars(void);
+int CCTK_NumVars(void);
 
-int CCTK_GetNumGroups(void);
+int CCTK_NumGroups(void);
 
-int CCTK_GTypeNumber(const char *type);
+int CCTK_GroupTypeNumber(const char *type);
 
-int CCTK_VTypeNumber(const char *type);
+int CCTK_VarTypeNumber(const char *type);
 
-int CCTK_GScopeNumber(const char *type);
+int CCTK_GroupScopeNumber(const char *type);
 
-int CCTK_GetGroupData(int group, 
+int CCTK_GroupData(int group, 
 		      int *gtype, 
 		      int *vtype, 
 		      int *dim, 
 		      int *n_variables,
 		      int *n_timelevels);
 
-char *CCTK_GetVarName(int varnum);
+char *CCTK_VarName(int varnum);
 
 int CCTK_DecomposeName(const char *fullname, char **implementation, char **name);
 
-char *CCTK_GetGroupName(int varnum);
+char *CCTK_GroupName(int varnum);
 
-int CCTK_GetVarGType(int var);
+int CCTK_GroupTypeFromVar(int var);
 
-int CCTK_GetVarVType(int var);
+int CCTK_VarType(int var);
 
-int CCTK_GetNumTimeLevels(const char *var);
-int CCTK_GetNumTimeLevels_ByIndex(int var);
+int CCTK_NumTimeLevelsFromVar(const char *var);
+int CCTK_NumTimeLevelsFromVarI(int var);
 
-int CCTK_GetFirstVarIndex(const char *group);
-int CCTK_GetFirstVarIndex_ByIndex(int group);
+int CCTK_FirstVarIndex(const char *group);
+int CCTK_FirstVarIndexI(int group);
 
-int CCTK_GetNumVarsInGroup(const char *group);
-int CCTK_GetNumVarsInGroup_ByIndex(int group);
+int CCTK_NumVarsInGroup(const char *group);
+int CCTK_NumVarsInGroupI(int group);
 
 #ifdef __cplusplus 
 }

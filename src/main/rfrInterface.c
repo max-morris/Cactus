@@ -157,7 +157,7 @@ int CCTK_rfrStorageOn(void *GH, int group)
   int retcode;
   char *group_name;
 
-  group_name = CCTK_GetGroupName(group);
+  group_name = CCTK_GroupName(group);
 
   if(group_name)
   {
@@ -194,7 +194,7 @@ int CCTK_rfrStorageOff(void *GH, int group)
   int retcode;
   char *group_name;
 
-  group_name = CCTK_GetGroupName(group);
+  group_name = CCTK_GroupName(group);
   if(group_name)
   {
 #ifdef RFRDEBUG
@@ -231,7 +231,7 @@ int CCTK_rfrCommunicationOn(void *GH, int group)
   int retcode;
   char *group_name;
 
-  group_name = CCTK_GetGroupName(group);
+  group_name = CCTK_GroupName(group);
   if(group_name)
   {
 #ifdef RFRDEBUG
@@ -268,7 +268,7 @@ int CCTK_rfrCommunicationOff(void *GH, int group)
   int retcode;
   char *group_name;
 
-  group_name = CCTK_GetGroupName(group);
+  group_name = CCTK_GroupName(group);
   if(group_name)
   {
 #ifdef RFRDEBUG

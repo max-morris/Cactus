@@ -94,15 +94,15 @@ int CallStartupFunctions(tFleshConfig *ConfigData);
 
 int CCTK_AddGH(tFleshConfig *config, int convergence_level, cGH *GH);
 
-int CCTK_GetMaxDim(void);
+int CCTK_MaxDim(void);
 
-int CCTK_GetNVariables(void);
+int CCTK_NumVars(void);
 
-int CCTK_GetNGroups(void);
+int CCTK_NumGroups(void);
 
-int CCTK_VTypeNumber(const char *type);
+int CCTK_VarTypeNumber(const char *type);
 
-int CCTK_GTypeNumber(const char *type);
+int CCTK_GroupTypeNumber(const char *type);
 
 int CCTK_BindingsImplementationsInitialise(void);
 

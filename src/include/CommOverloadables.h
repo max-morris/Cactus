@@ -30,8 +30,8 @@ OVERLOADABLE(DisableGroupComm)
 #undef ARGUMENTS
 #define ARGUMENTS cGH *GH
 OVERLOADABLE(Barrier)
-OVERLOADABLE(GetMyProc)
-OVERLOADABLE(GetnProcs)
+OVERLOADABLE(MyProc)
+OVERLOADABLE(nProcs)
 
 #undef ARGUMENTS
 
@@ -62,13 +62,13 @@ OVERLOADABLE(SetupGH)
 #define ARGUMENTS cGH *GH, int group, const char *groupname, int dir
 #undef RETURN_TYPE 
 #define RETURN_TYPE int *
-OVERLOADABLE(ArrayGroupSize_ByBoth)
+OVERLOADABLE(ArrayGroupSizeB)
 
 #undef ARGUMENTS
 #define ARGUMENTS cGH *GH, int group, const char *groupname
 #undef RETURN_TYPE
 #define RETURN_TYPE int
-OVERLOADABLE(QueryGroupStorage_ByBoth)
+OVERLOADABLE(QueryGroupStorageB)
 
 #undef ARGUMENTS
 #undef RETURN_TYPE

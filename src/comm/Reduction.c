@@ -88,7 +88,7 @@ int CCTK_RegisterReductionOperator(void (*function)(REGISTER_ARGLIST),
 
 
  /*@@
-   @routine    CCTK_GetReductionHandle
+   @routine    CCTK_ReductionHandle
    @date       April 28 1999
    @author     Gabrielle Allen
    @desc 
@@ -102,7 +102,7 @@ int CCTK_RegisterReductionOperator(void (*function)(REGISTER_ARGLIST),
    @endvar 
 @@*/
 
-int CCTK_GetReductionHandle(const char *reduction)
+int CCTK_ReductionHandle(const char *reduction)
 {
 
   int handle;
@@ -112,8 +112,8 @@ int CCTK_GetReductionHandle(const char *reduction)
 
 #ifdef DEBUG_REDUCTION
   CCTK_PRINTSEPARATOR
-  printf("In CCTK_GetReductionHandle\n");
-  printf("--------------------------\n");
+  printf("In CCTK_ReductionHandle\n");
+  printf("-----------------------\n");
   printf("  Got handle %d for %s\n",handle,reduction);
   CCTK_PRINTSEPARATOR
 #endif
@@ -125,10 +125,10 @@ int CCTK_GetReductionHandle(const char *reduction)
 
 }  
 
-void FMODIFIER FORTRAN_NAME(CCTK_GetReductionHandle)(int *handle, ONE_FORTSTRING_ARG)
+void FMODIFIER FORTRAN_NAME(CCTK_ReductionHandle)(int *handle, ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_CREATE(reduction)
-  *handle = CCTK_GetReductionHandle(reduction);
+  *handle = CCTK_ReductionHandle(reduction);
   free(reduction);
 }
 

@@ -433,7 +433,7 @@ static int CheckAllExtensionsSetup(void)
  ************************************************************************/
 
  /*@@
-   @routine    CCTK_GetGHExtensionHandle
+   @routine    CCTK_GHExtensionHandle
    @date       Tue Feb  9 18:23:41 1999
    @author     Tom Goodale
    @desc 
@@ -446,7 +446,7 @@ static int CheckAllExtensionsSetup(void)
    @endhistory 
 
 @@*/
-int CCTK_GetGHExtensionHandle(const char *name)
+int CCTK_GHExtensionHandle(const char *name)
 {
   return CCTK_GetHandle(GHExtensions, name, NULL);
 }

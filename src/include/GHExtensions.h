@@ -32,7 +32,7 @@ int CCTK_InitGHExtensions(cGH *GH);
 
 int CCTK_rfrTraverseGHExtensions(cGH *GH, int rfrpoint);
 
-int CCTK_GetGHExtensionHandle(const char *name);
+int CCTK_GHExtensionHandle(const char *name);
 
 
 #ifdef __cplusplus

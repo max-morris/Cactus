@@ -128,7 +128,7 @@ int CCTK_RegisterCoord_ByIndex(const char *name, int index, int dir)
                Register a GF as a coordinate with a name and
                a direction.
    @enddesc 
-   @calls      CCTK_RegisterCoord_ByIndex, CCTK_GetVarIndex
+   @calls      CCTK_RegisterCoord_ByIndex, CCTK_VarIndex
 
    @var        name        
    @vdesc      Name coordinate is registered as
@@ -169,7 +169,7 @@ int CCTK_RegisterCoord(const char *coordname,
   int retval;
   int index;
 
-  index = CCTK_GetVarIndex(gfname);
+  index = CCTK_VarIndex(gfname);
 
   if (index >= 0)
   { 

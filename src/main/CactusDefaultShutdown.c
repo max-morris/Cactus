@@ -57,7 +57,7 @@ int CactusDefaultShutdown(tFleshConfig *config)
 {
   int myproc;
 
-  myproc = CCTK_GetMyProc(config->GH[0]);
+  myproc = CCTK_MyProc(config->GH[0]);
 
 #ifdef MPI
   if(MPI_Active)

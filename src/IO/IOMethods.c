@@ -726,8 +726,8 @@ int CCTK_rfrTriggerSaysGo(cGH *GH, int variable)
                time to output the trigger
    @enddesc 
    @calls      CCTK_GetHandledData
-               CCTK_GetFullName
-	       CCTK_GetVarName
+               CCTK_FullName
+	       CCTK_VarName
                IOMethod->TimeToOutput
 	       IOMethod->OutputVarAs
    @history  
@@ -767,8 +767,8 @@ int CCTK_rfrTriggerAction(void *GH, int variable)
   int nmethods;
   struct IOMethod *method;
 
-  fullvarname = CCTK_GetFullName(variable);
-  varname = CCTK_GetVarName(variable);
+  fullvarname = CCTK_FullName(variable);
+  varname = CCTK_VarName(variable);
 
   /* Count the number of methods used */
   nmethods = 0;
@@ -792,7 +792,7 @@ int CCTK_rfrTriggerAction(void *GH, int variable)
     {
       /* There are no methods left */
 
-      /* This was assigned by CCTK_GetFullName */
+      /* This was assigned by CCTK_FullName */
       free(fullvarname);
 
       return nmethods;

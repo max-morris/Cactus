@@ -24,7 +24,7 @@ static char *rcsid = "$Header$";
 
 
  /*@@
-   @routine    CCTK_GetVarDataPtr_ByName
+   @routine    CCTK_VarDataPtr
    @date       Tue 6th April 1999
    @author     Gabrielle Allen
    @desc 
@@ -64,22 +64,22 @@ static char *rcsid = "$Header$";
 
 @@*/
 
-void *CCTK_GetVarDataPtr_ByName(cGH *GH, int timelevel, char *fullvarname)
+void *CCTK_VarDataPtr(cGH *GH, int timelevel, char *fullvarname)
 {
   int index;
   void *retval=NULL;
 
-  index = CCTK_GetVarIndex(fullvarname);
+  index = CCTK_VarIndex(fullvarname);
   if (index >= 0)
   {
      retval = GH->data[index][timelevel];
   }
   else
-     CCTK_WARN(1,"Invalid index in CCTK_GetVarDataPtr_ByName");
+     CCTK_WARN(1,"Invalid index in CCTK_VarDataPtr");
 
 #ifdef DEBUG_GROUPS
   CCTK_PRINTSEPARATOR
-  printf("In CCTK_GetVarDataPtr_ByName\n----------------------------\n");
+  printf("In CCTK_VarDataPtr\n----------------------------\n");
   printf("  Data pointer for %s (%d) is %x\n",fullvarname,index,retval);
   CCTK_PRINTSEPARATOR
 #endif
@@ -89,7 +89,7 @@ void *CCTK_GetVarDataPtr_ByName(cGH *GH, int timelevel, char *fullvarname)
 }
 
  /*@@
-   @routine    CCTK_GetVarDataPtr_ByIndex
+   @routine    CCTK_VarDataPtrI
    @date       Tue 6th April 1999
    @author     Gabrielle Allen
    @desc 
@@ -129,13 +129,13 @@ void *CCTK_GetVarDataPtr_ByName(cGH *GH, int timelevel, char *fullvarname)
 
 @@*/
 
-void *CCTK_GetVarDataPtr_ByIndex(cGH *GH, int timelevel, int varindex)
+void *CCTK_VarDataPtrI(cGH *GH, int timelevel, int varindex)
 {
   return GH->data[varindex][timelevel];
 }
 
  /*@@
-   @routine    CCTK_GetVarDataPtr
+   @routine    CCTK_VarDataPtrB
    @date       Tue 6th April 1999
    @author     Gabrielle Allen
    @desc 
@@ -181,15 +181,15 @@ void *CCTK_GetVarDataPtr_ByIndex(cGH *GH, int timelevel, int varindex)
    @version    $Header$
 
 @@*/
-void *CCTK_GetVarDataPtr(cGH *GH, int timelevel, int varindex, char *fullvarname)
+void *CCTK_VarDataPtrB(cGH *GH, int timelevel, int varindex, char *fullvarname)
 {
   if (fullvarname) 
   {
-    return CCTK_GetVarDataPtr_ByName(GH, timelevel, fullvarname);
+    return CCTK_VarDataPtr(GH, timelevel, fullvarname);
   }
   else
   {
-    return CCTK_GetVarDataPtr_ByIndex(GH, timelevel, varindex);
+    return CCTK_VarDataPtrI(GH, timelevel, varindex);
   }
 }
 

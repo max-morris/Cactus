@@ -31,9 +31,9 @@ extern "C" {
 #undef OVERLOADABLE
 
 int CCTK_QueryGroupStorage(cGH *,const char *);
-int CCTK_QueryGroupStorage_ByIndex(cGH *,int);
+int CCTK_QueryGroupStorageI(cGH *,int);
 int *CCTK_ArrayGroupSize(cGH *,const char *,int);
-int *CCTK_ArrayGroupSize_ByIndex(cGH *,int,int);
+int *CCTK_ArrayGroupSizeI(cGH *,int,int);
 
 #ifdef __cplusplus
 }

@@ -81,7 +81,7 @@ cGH *CactusDefaultSetupGH(tFleshConfig *config, int convergence_level)
 
   if(thisGH)
   {
-    thisGH->cctk_dim = CCTK_GetMaxDim();
+    thisGH->cctk_dim = CCTK_MaxDim();
 
     /* Need this to be at least one otherwise the memory allocation will fail. */
     if(thisGH->cctk_dim == 0) thisGH->cctk_dim = 1;
@@ -102,7 +102,7 @@ cGH *CactusDefaultSetupGH(tFleshConfig *config, int convergence_level)
     thisGH->cctk_delta_time = 1;
     thisGH->cctk_convlevel = 1;
 
-    n_variables = CCTK_GetNumVars();
+    n_variables = CCTK_NumVars();
 
     /* Allocate memory for the variable data pointers.
      * Note we want at least one to prevent memory allocattion from failing !
@@ -113,7 +113,7 @@ cGH *CactusDefaultSetupGH(tFleshConfig *config, int convergence_level)
     {
       for(variable = 0; variable < n_variables; variable++)
       {
-	ntimelevels = CCTK_GetNumTimeLevels_ByIndex(variable);
+	ntimelevels = CCTK_NumTimeLevelsFromVarI(variable);
 
 	thisGH->data[variable] = (void **)malloc(ntimelevels*sizeof(void *));
 	if(thisGH->data[variable])
@@ -135,7 +135,7 @@ cGH *CactusDefaultSetupGH(tFleshConfig *config, int convergence_level)
     /* Allocate memory for the group data pointers.
      * Note we want at least one to prevent memory allocattion from failing !
      */
-    n_groups = CCTK_GetNumGroups();
+    n_groups = CCTK_NumGroups();
     thisGH->GroupData = (cGHGroupData *)malloc((n_groups ? n_groups:1)*sizeof(cGHGroupData));
 
   }
@@ -166,11 +166,11 @@ cGH *CactusDefaultSetupGH(tFleshConfig *config, int convergence_level)
 }
 
  /*@@
-   @routine    CactusDefaultGetMyProc
+   @routine    CactusDefaultMyProc
    @date       Tue Jan 23 1999
    @author     Gabrielle Allen
    @desc 
-   Default cactus GetMyProc routine.
+   Default cactus MyProc routine.
    @enddesc 
    @calls     
    @calledby   
@@ -180,7 +180,7 @@ cGH *CactusDefaultSetupGH(tFleshConfig *config, int convergence_level)
 
 @@*/
 
-int CactusDefaultGetMyProc(cGH *GH)
+int CactusDefaultMyProc(cGH *GH)
 {
   int myproc;
 
@@ -197,11 +197,11 @@ int CactusDefaultGetMyProc(cGH *GH)
 }
 
  /*@@
-   @routine    CactusDefaultGetnProcs
+   @routine    CactusDefaultnProcs
    @date       Tue Jan 23 1999
    @author     Gabrielle Allen
    @desc 
-   Default cactus GetnProcs routine.
+   Default cactus nProcs routine.
    @enddesc 
    @calls     
    @calledby   
@@ -211,7 +211,7 @@ int CactusDefaultGetMyProc(cGH *GH)
 
 @@*/
 
-int CactusDefaultGetnProcs(cGH *GH)
+int CactusDefaultnProcs(cGH *GH)
 {
   int nprocs;
 

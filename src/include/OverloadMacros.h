@@ -37,9 +37,12 @@ int CCTK_Overload##name(RETURN_TYPE (*func)(ARGUMENTS))           \
   }                                                               \
   else                                                            \
   {                                                               \
-     fprintf(stderr,                                              \
+     char *message = malloc( (200+strlen(#name))*sizeof(char) );  \
+     sprintf(message,                                             \
 	     "Warning: Attempted to overload function %s twice\n",\
              #name);                                              \
+     CCTK_Warn(1,__LINE__,__FILE__,"Cactus",message);             \
+     free(message);                                               \
      return_code = 0;                                             \
   }                                                               \
                                                                   \

@@ -34,7 +34,7 @@ int CCTK_Reduce(cGH *GH,
 		void *out_vals,
 		int num_in_fields, ...);
 
-int CCTK_GetReductionHandle(const char *reduction);
+int CCTK_ReductionHandle(const char *reduction);
 
 int CCTK_RegisterReductionOperator(void (*function)(REGISTER_ARGLIST),
 				   const char *name);
