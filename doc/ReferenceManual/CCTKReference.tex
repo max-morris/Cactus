@@ -381,6 +381,10 @@ from Fortran.
 %notyet   Registers a routine as a \code{CCTK\_InterpLocalWarped}
 %notyet   interpolation operator
 
+\item[\code{CCTK\_IsFunctionAliased}]
+  [\pageref{CCTK-IsFunctionAliased}]
+  Reports whether an aliased function has been provided
+
 \item[\code{CCTK\_IsImplementationActive}]
   [\pageref{CCTK-IsImplementationActive}]
   Reports whether an implementation was activated in a parameter file
@@ -4001,13 +4005,13 @@ A negative return code indicates an error condition:
 %notyet \end{SeeAlsoSection}
 %notyet
 %notyet \begin{ErrorSection}
-%notyet	\begin{Error}{}
-%notyet	To find the numerical
-%notyet	values of the error codes (or more commonly, to find which error code
-%notyet	corresponds to a given numerical value), look in the files
-%notyet	\code{cctk\_Interp.h}, \code{util\_ErrorCodes.h}, and/or \code{util\_Table.h}
+%notyet \begin{Error}{}
+%notyet To find the numerical
+%notyet values of the error codes (or more commonly, to find which error code
+%notyet corresponds to a given numerical value), look in the files
+%notyet \code{cctk\_Interp.h}, \code{util\_ErrorCodes.h}, and/or \code{util\_Table.h}
 in the \code{src/include/} directory in the Cactus flesh.
-%notyet	\end{Error}
+%notyet \end{Error}
 %notyet \begin{Error}{CCTK\_ERROR\_INTERP\_POINT\_OUTSIDE}
 %notyet one or more of the interpolation points is out of range
 %notyet (in this case additional information about the out-of-range point
@@ -4633,13 +4637,13 @@ if (CCTK_InterpLocalUniform(N_DIMS,
 %notyet \end{SeeAlsoSection}
 %notyet
 %notyet \begin{ErrorSection}
-%notyet	\begin{Error}{}
-%notyet	To find the numerical
-%notyet	values of the error codes (or more commonly, to find which error code
-%notyet	corresponds to a given numerical value), look in the files
-%notyet	\code{cctk\_Interp.h}, \code{util\_ErrorCodes.h}, and/or \code{util\_Table.h}
+%notyet \begin{Error}{}
+%notyet To find the numerical
+%notyet values of the error codes (or more commonly, to find which error code
+%notyet corresponds to a given numerical value), look in the files
+%notyet \code{cctk\_Interp.h}, \code{util\_ErrorCodes.h}, and/or \code{util\_Table.h}
 in the \code{src/include/} directory in the Cactus flesh.
-%notyet	\end{Error}
+%notyet \end{Error}
 %notyet \begin{Error}{CCTK\_ERROR\_INTERP\_POINT\_OUTSIDE}
 %notyet one or more of the interpolation points is out of range
 %notyet (in this case additional information about the out-of-range point
@@ -4941,6 +4945,23 @@ CCTK_InterpRegisterOpLocalUniform(AEILocalInterp_InterpLocalUniform,
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % CCTK\_InterpRegisterOpLocalWarped here
+
+% lib/sbin/CreateFunctionBindings.pl
+\begin{CCTKFunc}{CCTK\_IsFunctionAliased}{Reports whether an aliased function has been provided}
+\label{CCTK-IsFunctionAliased}
+\function{int}{integer}{istat}
+\argument{const char *}{character*(*)}{functionname}
+\showargs
+\begin{params}
+\parameter{istat}{the return status}
+\parameter{functionname}{the name of the function to check}
+\end{params}
+\begin{discussion}
+This function returns a non-zero value if the function given by
+\code{functionname} is provided by any active thorn, and zero
+otherwise.
+\end{discussion}
+\end{CCTKFunc}
 
 % ActiveThorns.c
 \begin{CCTKFunc}{CCTK\_IsImplementationActive}{Reports whether an implementation was activated in a parameter file}

@@ -1021,7 +1021,7 @@ Fundamental information about grid functions (e.g.\ local grid size and location
 \item {\tt CCTK\_Groupbbox[GN|GI|VN|VI]}      An array of  integers 
       which indicate whether the boundaries are internal boundaries
       (e.g.\ between processors), or physical boundaries. 
-	A value of 1 indicates
+        A value of 1 indicates
       a physical (outer) boundary at the edge of the computational grid,
       and 0 indicates an internal boundary.  
 
@@ -3784,7 +3784,7 @@ To use an aliased function you must first declare it in your {\tt
 interface.ccl} file. Declare the prototype as, for example,
 
 {\tt
-CCTK\_REAL FUNCTION SumStuff(CCTK\_REAL x, CCTK\_REAL y)
+CCTK\_REAL FUNCTION SumStuff(CCTK\_REAL IN x, CCTK\_REAL IN y)
 }
 
 \noindent and that this function will be used in your thorn by
@@ -3797,7 +3797,12 @@ A prototype of this function will be available to any C routine that
 includes the {\tt cctk.h} header file. However, in a Fortran file that
 uses the {\tt implicit none} declaration the function will have to be
 explicitly declared; a definition will not be included in the {\tt
-DECLARE\_CCTK\_FUNCTIONS} macro.
+  DECLARE\_CCTK\_FUNCTIONS} macro. The keywords {\tt IN} and {\tt OUT}
+work in the same fashion as {\tt INTENT} statements in Fortran 90.
+That is, the C prototype will expect an argument with intent {\tt IN}
+to be a value and one with intent {\tt OUT} to be a pointer. There
+also exists the {\tt ARRAY} keyword for passing arrays of any
+dimension.
 
 
 \subsection{Providing a function}
@@ -3807,7 +3812,7 @@ your {\tt interface.ccl} file. A statement containing the name of the
 providing function and the language it is provided in must also be
 given. For example,
 \begin{verbatim}
-CCTK_REAL FUNCTION SumStuff(CCTK_REAL x, CCTK_REAL y) 
+CCTK_REAL FUNCTION SumStuff(CCTK_REAL IN x, CCTK_REAL IN y) 
 PROVIDES FUNCTION SumStuff WITH AddItUp LANGUAGE C
 \end{verbatim}
 The appropriate function must then be provided somewhere in this
@@ -3827,29 +3832,27 @@ work. These are
     CCTK\_REAL}. Standard types such as {\tt int} are not allowed.
 \item The type of an argument must be one of scalar types {\tt
     CCTK\_INT, CCTK\_REAL, CCTK\_STRING, CCTK\_POINTER,
-    CCTK\_FPOINTER}, or an array or pointer type {\tt CCTK\_INT:ARRAY,
-    CCTK\_REAL:ARRAY}. The scalar types are assumed to be not
+    CCTK\_FPOINTER}, or an array or pointer type {\tt CCTK\_INT ARRAY,
+    CCTK\_REAL ARRAY}. The scalar types are assumed to be not
   modifiable. Any changes made to a scalar argument by a providing
   function may be silently lost, or may not; it is dependent on the
   language of the providing and calling function. If you wish to
-  modify an argument then it must have the {\tt ARRAY} suffix (and
-  hence must be either a {\tt CCTK\_INT} or {\tt CCTK\_REAL}).
+  modify an argument then it must have intent {\tt OUT} (and hence
+  must be either a {\tt CCTK\_INT} or {\tt CCTK\_REAL}).
 \item The name of both the aliased and providing function are
   restricted. They must follow the standard C semantics (start with a
   letter, contain only letters, numbers or underscores). Additionally,
   they must be mixed case (that is, contain at least one uppercase and
-  one lowercase letter) and be less than 21 characters long. The names
-  of the aliased and providing functions must be distinct.
+  one lowercase letter). The names of the aliased and providing
+  functions must be distinct.
 \item If an argument is a function pointer then the syntax looks like 
 \begin{verbatim}
-CCTK_REAL Integrate(CCTK_REAL CCTK_FPOINTER  func(CCTK_REAL x), \
-                    CCTK_REAL xmin, CCTK_REAL xmax)
+CCTK_REAL Integrate(CCTK_REAL CCTK_FPOINTER  func(CCTK_REAL IN x), \
+                    CCTK_REAL IN xmin, CCTK_REAL IN xmax)
 \end{verbatim}
-  It is assumed that the function pointer argument has the
-  same language as the calling function. The name of the function
-  pointer argument should be short, as the total length of the providing
-  function name and the function pointer argument must be less than 21
-  characters.  Function pointer arguments may not be nested.
+  It is assumed that the function pointer argument has the same
+  language as the calling function. Function pointer arguments may not
+  be nested.
 \item {\tt CCTK\_STRING} arguments follow the same conventions as in
   the previous section. That is, they must appear at the end of the
   argument list, there must be at most three, and a function with a
@@ -3864,7 +3867,7 @@ CCTK_REAL Integrate(CCTK_REAL CCTK_FPOINTER  func(CCTK_REAL x), \
 \item A C function is provided that adds together two real numbers. The {\tt
     interface.ccl} should read
 \begin{verbatim}
-    CCTK_REAL FUNCTION SumStuff(CCTK_REAL x, CCTK_REAL y)
+    CCTK_REAL FUNCTION SumStuff(CCTK_REAL IN x, CCTK_REAL IN y)
     PROVIDES FUNCTION SumStuff WITH AddItUp LANGUAGE C 
     USES FUNCTION SumStuff
 \end{verbatim}
@@ -3872,21 +3875,32 @@ CCTK_REAL Integrate(CCTK_REAL CCTK_FPOINTER  func(CCTK_REAL x), \
 \item A Fortran function is provided that inverts a real number. The {\tt
     interface.ccl} should read
 \begin{verbatim}
-    void FUNCTION Invert(CCTK_REAL:ARRAY x)
+    SUBROUTINE Invert(CCTK_REAL OUT x)
     PROVIDES FUNCTION Invert WITH FindInverse LANGUAGE Fortran 
     USES FUNCTION Invert
 \end{verbatim}
+\noindent Note that {\tt SUBROUTINE} has the same meaning as {\tt void
+  FUNCTION}. 
 
 \item A Fortran function is provided that integrates any function over
   an interval. The {\tt interface.ccl} should read
 \begin{verbatim}
-    CCTK_REAL Integrate(CCTK_REAL CCTK_FPOINTER  func(CCTK_REAL x), \ 
-                        CCTK_REAL xmin, CCTK_REAL xmax)
+    CCTK_REAL Integrate(CCTK_REAL CCTK_FPOINTER  func(CCTK_REAL IN x), \ 
+                        CCTK_REAL IN xmin, CCTK_REAL IN xmax)
     PROVIDES FUNCTION Integrate WITH SimpsonsRule LANGUAGE Fortran 
     USES FUNCTION Integrate
 \end{verbatim}
 
 \end{itemize}
+
+\subsection{Testing aliased functions}
+
+The calling thorn does not know if an aliased function is even
+provided by another thorn. Calling an aliased function that has not
+been provided will lead to a level 0 warning message, stopping the
+code. In order to check if a function has been provided by some thorn,
+use the {\tt CCTK\_IsFunctionAliased} function described in the
+function reference section.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
