@@ -16,7 +16,7 @@
 #
 #
 #   @enddesc
-#   @version $Id: Makefile,v 1.154 2004-05-19 09:53:23 goodale Exp $
+#   @version $Id: Makefile,v 1.155 2004-06-01 09:58:48 tradke Exp $
 # @@*/
 
 ##################################################################################
@@ -235,12 +235,21 @@ $(CONFIGURATIONS):
 	if test ! -f "$(CONFIGS_DIR)/$@/config-data/cctk_Config.h" ; then \
 	  echo $(DIVIDER);\
 	  echo "Cactus - version: $(CCTK_VERSION)";\
-	  echo "Error: Configuration $@ is incomplete.";\
-	  echo "Please check the files in $(CONFIGS_DIR)/$@/config-data for error messages.";\
-	  echo "You can try again to configure using $(MAKE) $@-config";\
-	  echo "or delete this configuration with $(MAKE) $@-delete.";\
-	  echo $(DIVIDER);\
-	  exit 1; \
+          if test "x$(PROMPT)" = 'xno'; then\
+            if (! $(SETUP_ENV) $(PERL) -s $(SETUP) $(SETUP_OPTIONS) $@) ; then \
+              echo "" ;                                                        \
+              echo "Error reconfiguring configuration $@" ;                    \
+              rm -f "$(CONFIGS_DIR)/$@/config-data/cctk_Config.h" ;            \
+              exit 2 ;                                                         \
+            fi                                                                 \
+          else                                                                 \
+	    echo "Error: Configuration $@ is incomplete.";\
+	    echo "Please check the files in $(CONFIGS_DIR)/$@/config-data for error messages.";\
+	    echo "You can try again to configure using $(MAKE) $@-config";\
+	    echo "or delete this configuration with $(MAKE) $@-delete.";\
+	    echo $(DIVIDER);\
+	    exit 1; \
+          fi                                                                 \
 	fi
 	if test -z "FIXME"  ; then \
 	  echo $(DIVIDER);\
@@ -685,6 +694,7 @@ $(addsuffix -config,$(CONFIGURATIONS)): int_version
 	  if ($(SETUP_ENV) $(PERL) -s $(SETUP) $(SETUP_OPTIONS) $(@:%-config=%)) ; then : ; else \
             echo "" ;                                                      \
             echo "Error reconfiguring $@" ;                                \
+            rm -f "$(CONFIGS_DIR)/$(@:%-config=%)/config-data/cctk_Config.h";\
             exit 2                                 ;                       \
           fi ;                                                             \
 	  if test -n "$(THORNLIST)" ; \
@@ -722,7 +732,7 @@ endif
 	  then \
 	    if ($(SETUP_ENV) $(PERL) -s $(SETUP) $(SETUP_OPTIONS) $(@:%-config=%)) ; then : ; else \
               echo "" ;                                                      \
-              echo "Error creating configuration $(@;%-config=%)" ;                       \
+              echo "Error creating configuration $(@:%-config=%)" ;                       \
               exit 2                                 ;                       \
             fi ;                                                             \
 	    if test -n "$(THORNLIST)"; \
@@ -1151,6 +1161,7 @@ downsize:
 	  if ($(SETUP_ENV) $(PERL) -s $(SETUP) $(SETUP_OPTIONS) $@) ; then : ; else\
             echo "" ;                                                      \
             echo "Error creating configuration $@" ;                       \
+            rm -f "$(CONFIGS_DIR)/$@/config-data/cctk_Config.h";           \
             exit 2                                 ;                       \
           fi ;                                                             \
 	  if test -n "$(THORNLIST)" ; \
