@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.73 2000-03-05 20:02:10 allen Exp $
+#   @version $Id: Makefile,v 1.74 2000-03-06 12:21:32 allen Exp $
 # @@*/
 
 ##################################################################################
@@ -237,7 +237,7 @@ TAGS:
           -exec etags -a {} \;
 #	find src arrangements \( -name '*.[cChF]' -o -name '*.F77' -o -name '*.cc'\) \
 #          -exec etags --append --regex '/[a-z A-Z \t]*FORTRAN_NAME[^)]*/' {} \;
-	perl -pi -e 's/(subroutine\s*)([a-zA-Z0-9_]+)/\1\L\2/g;' TAGS
+	$(PERL) -pi -e 's/(subroutine\s*)([a-zA-Z0-9_]+)/\1\L\2/g;' TAGS
 	@echo $(DIVIDER)
 
 tags:
@@ -246,7 +246,7 @@ tags:
 	rm -f tags ; touch tags 
 	find src arrangements \( -name '*.[cChF]' -o -name '*.F77' -o -name '*.cc' -o -name '*.[ch]pp' \) \
           -exec ctags -a {} \;
-	perl -pi -e 's/(subroutine\s*)([a-zA-Z0-9_]+)/\1\L\2/g;' tags
+	$(PERL) -pi -e 's/(subroutine\s*)([a-zA-Z0-9_]+)/\1\L\2/g;' tags
 	sort tags > sortedtags ; mv sortedtags tags
 	@echo $(DIVIDER)
 
@@ -695,6 +695,15 @@ thorninfo:
 	$(PERL) -s $(BUILD_ACTIVETHORNS) $(CCTK_HOME)/arrangements | cat;
 	@echo $(DIVIDER)
 
+# Processed CVS information
+
+.PHONY: 
+cvsstatus:
+	$(PERL) -s $(CCTK_HOME)/lib/sbin/CVSStatus.pl     
+
+.PHONY: 
+cvsdiff:
+	$(PERL) -s $(CCTK_HOME)/lib/sbin/CVSStatus.pl -case=diff
 
 # Remove non-essential files
 
