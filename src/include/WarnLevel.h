@@ -17,6 +17,7 @@ extern "C" {
 int CCTK_SetWarnLevel(int level);
 int CCTK_Warn(int level, const char *thorn, const char *message);
 int CCTK_SetErrorLevel(int level);
+int CCTK_Info(const char *message);
 
 #ifdef __cplusplus 
 }
