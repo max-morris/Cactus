@@ -16,7 +16,7 @@
 #
 #
 #   @enddesc
-#   @version $Id: Makefile,v 1.158 2004-06-20 12:18:48 tradke Exp $
+#   @version $Id: Makefile,v 1.159 2004-06-20 12:22:20 tradke Exp $
 # @@*/
 
 ##################################################################################
@@ -582,14 +582,10 @@ $(addsuffix -delete,$(CONFIGURATIONS)):
 	@echo $(DIVIDER)
 	if test "x$(DELETE_CONFIRMATION)" = "xyes" ; then          \
 	  echo "Really delete configuration $(@:%-delete=%) (no)?";\
-          if ( ! read yesno rest ); then                           \
-            yesno='no';                                            \
-          fi;                                                      \
-	  if test "x$$yesno" = "xyes" ; then                       \
-	    confirm=yes ;                                          \
-	  else                                                     \
-	    confirm=no ;                                           \
-	  fi ;                                                     \
+	  read confirm rest;                                       \ 
+	  if test $$? -ne 0 ; then                                 \
+	    confirm='no';                                          \
+	  fi;                                                      \
 	else                                                       \
 	  confirm=yes ;                                            \
 	fi ;                                                       \
@@ -728,9 +724,10 @@ endif
 	@echo Configuration $(@:%-config=%) does not exist.;
 	if test "x$(PROMPT)" = "xyes" ; then \
 	  echo Setup configuration $(@:%-config=%) \(yes\)?; \
-          if ( ! read yesno rest ); then \
-            yesno='no'; \
-          fi; \
+	  read yesno rest; \  
+	  if test $$? -ne 0 ; then \
+	    yesno='no'; \
+	  fi; \
 	fi; \
 	if [ "x$$yesno" = "xno" -o "x$$yesno" = "xn" -o "x$$yesno" = "xNO" -o "x$$yesno" = "xN" ] ;\
 	then \
@@ -1131,7 +1128,8 @@ cvsdiff:
 downsize:
 	@echo $(DIVIDER)
 	@echo Remove flesh and thorn documentation \(\no\)?
-	if ( ! read yesno rest ); then \
+	read yesno rest; \  
+	if test $$? -ne 0 ; then \
 	  yesno='no'; \
 	fi; \
 	if [ "x$$yesno" = "xyes" -o "x$$yesno" = "xy" -o "x$$yesno" = "xYES" -o "x$$yesno" = "xY" ] ;\
@@ -1140,7 +1138,8 @@ downsize:
 	echo $(DIVIDER)   ;  \
 	fi
 	@echo Remove thorn testsuites \(\no\)?
-	if ( ! read yesno rest ); then \
+	read yesno rest; \  
+	if test $$? -ne 0 ; then \
 	  yesno='no'; \
 	fi; \
 	if [ "x$$yesno" = "xyes" -o "x$$yesno" = "xy" -o "x$$yesno" = "xYES" -o "x$$yesno" = "xY" ] ;\
@@ -1149,7 +1148,8 @@ downsize:
 	echo $(DIVIDER)   ;  \
 	fi
 	@echo Remove all configurations \(\no\)?
-	if ( ! read yesno rest ); then \
+	read yesno rest; \  
+	if test $$? -ne 0 ; then \
 	  yesno='no'; \
 	fi; \
 	if [ "x$$yesno" = "xyes" -o "x$$yesno" = "xy" -o "x$$yesno" = "xYES" -o "x$$yesno" = "xY" ] ;\
@@ -1165,9 +1165,10 @@ downsize:
 	@echo "Cactus - version: $(CCTK_VERSION)"
 	if test "x$(PROMPT)" = "xyes" ; then \
 	  echo Setup configuration $@ \(yes\)?; \
-          if ( ! read yesno rest ); then \
-            yesno='no'; \
-          fi; \
+	  read yesno rest; \  
+	  if test $$? -ne 0 ; then \
+	    yesno='no'; \
+	  fi; \
 	fi; \
 	if [ "x$$yesno" = "xno" -o "x$$yesno" = "xn" -o "x$$yesno" = "xNO" -o "x$$yesno" = "xN" ] ; \
 	then  \
