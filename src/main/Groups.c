@@ -927,7 +927,7 @@ char *CCTK_VarName(int varnum)
 
 int CCTK_DecomposeName(const char *fullname, char **implementation, char **name)
 {
-  return CCTK_SplitString(implementation, name, fullname, "::");
+  return Util_SplitString(implementation, name, fullname, "::");
 }
 
 

@@ -237,7 +237,7 @@ int CCTK_BindingsParameterSet(const char *identifier, const char *value)
   char *implementation = NULL;
   char *param_name = NULL;
 
-  CCTK_SplitString(&implementation, &param_name, identifier, "::");
+  Util_SplitString(&implementation, &param_name, identifier, "::");
 
   if(!implementation)
   {
@@ -295,7 +295,7 @@ int CCTK_BindingsParameterGet(const char *identifier, void **value)
   char *implementation = NULL;
   char *param_name = NULL;
 
-  CCTK_SplitString(&implementation, &param_name, identifier, "::");
+  Util_SplitString(&implementation, &param_name, identifier, "::");
 
   if(!implementation)
   {
@@ -342,7 +342,7 @@ int CCTKi_BindingsParameterHelp(const char *identifier, const char *format, FILE
 
   if(! identifier )  return;
 
-  CCTK_SplitString(&implementation, &param_name, identifier, "::");
+  Util_SplitString(&implementation, &param_name, identifier, "::");
 
   if(!implementation)
   {

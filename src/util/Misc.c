@@ -26,7 +26,7 @@
 #include "WarnLevel.h"
 
  /*@@
-   @routine    CCTK_SplitString
+   @routine    Util_SplitString
    @date       Wed Jan 20 10:14:00 1999
    @author     Tom Goodale
    @desc 
@@ -41,7 +41,7 @@
    @endhistory 
 
 @@*/
-int CCTK_SplitString(char **before, char **after, const char *string, const char *sep)
+int Util_SplitString(char **before, char **after, const char *string, const char *sep)
 {
   int retval;
   char *position;

@@ -22,16 +22,16 @@ static char *rcsid="$Header$";
 #define OVERLOADABLE(name) OVERLOADABLE_DUMMYPROTOTYPE(name)
 
   /* Deal seperately with the SetupGH routine */
-#define CCTK_DummySetupGH  CactusDefaultSetupGH
-#define CCTK_DummyMyProc  CactusDefaultMyProc
-#define CCTK_DummynProcs  CactusDefaultnProcs
+#define CCTKi_DummySetupGH  CactusDefaultSetupGH
+#define CCTKi_DummyMyProc  CactusDefaultMyProc
+#define CCTKi_DummynProcs  CactusDefaultnProcs
 
 #include "CommOverloadables.h"
 
   /* Reset the #define to prevent complications. */
-#undef CCTK_DummySetupGH  
-#undef CCTK_DummyMyProc  
-#undef CCTK_DummynProcs
+#undef CCTKi_DummySetupGH  
+#undef CCTKi_DummyMyProc  
+#undef CCTKi_DummynProcs
 
 #undef OVERLOADABLE
 
@@ -65,16 +65,16 @@ int SetupCommFunctions(void)
 #define OVERLOADABLE(name) OVERLOADABLE_CHECK(name)
 
   /* Deal seperately with the SetupGH routine */
-#define CCTK_DummySetupGH  CactusDefaultSetupGH
-#define CCTK_DummyMyProc  CactusDefaultMyProc
-#define CCTK_DummynProcs  CactusDefaultnProcs
+#define CCTKi_DummySetupGH  CactusDefaultSetupGH
+#define CCTKi_DummyMyProc  CactusDefaultMyProc
+#define CCTKi_DummynProcs  CactusDefaultnProcs
 
 #include "CommOverloadables.h"
 
   /* Reset the #define to prevent complications. */
-#undef CCTK_DummySetupGH  
-#undef CCTK_DummyMyProc  
-#undef CCTK_DummynProcs
+#undef CCTKi_DummySetupGH  
+#undef CCTKi_DummyMyProc  
+#undef CCTKi_DummynProcs
 
 #undef OVERLOADABLE
 

@@ -15,7 +15,7 @@
 extern "C" {
 #endif
 
-int CCTK_SplitString(char **before, char **after, const char *string, const char *sep);
+int Util_SplitString(char **before, char **after, const char *string, const char *sep);
 
 int CCTK_Equals(const char *string1, const char *string2);
 

@@ -21,16 +21,16 @@ static char *rcsid="$Header$";
 #define OVERLOADABLE(name) OVERLOADABLE_DUMMYPROTOTYPE(name)
 
   /* These ones actually have defaults. */
-#define CCTK_DummyInitialise  CactusDefaultInitialise
-#define CCTK_DummyEvolve      CactusDefaultEvolve
-#define CCTK_DummyShutdown    CactusDefaultShutdown
+#define CCTKi_DummyInitialise  CactusDefaultInitialise
+#define CCTKi_DummyEvolve      CactusDefaultEvolve
+#define CCTKi_DummyShutdown    CactusDefaultShutdown
 
 #include "MainOverloadables.h"
 
   /* Reset the #define to prevent complications. */
-#undef CCTK_DummyInitialise 
-#undef CCTK_DummyEvolve     
-#undef CCTK_DummyShutdown   
+#undef CCTKi_DummyInitialise 
+#undef CCTKi_DummyEvolve     
+#undef CCTKi_DummyShutdown   
 
 #undef OVERLOADABLE
 
@@ -64,16 +64,16 @@ int SetupMainFunctions(void)
 #define OVERLOADABLE(name) OVERLOADABLE_CHECK(name)
 
   /* These ones actually have defaults. */
-#define CCTK_DummyInitialise  CactusDefaultInitialise
-#define CCTK_DummyEvolve      CactusDefaultEvolve
-#define CCTK_DummyShutdown    CactusDefaultShutdown
+#define CCTKi_DummyInitialise  CactusDefaultInitialise
+#define CCTKi_DummyEvolve      CactusDefaultEvolve
+#define CCTKi_DummyShutdown    CactusDefaultShutdown
 
 #include "MainOverloadables.h"
 
   /* Reset the #define to prevent complications. */
-#undef CCTK_DummyInitialise 
-#undef CCTK_DummyEvolve     
-#undef CCTK_DummyShutdown   
+#undef CCTKi_DummyInitialise 
+#undef CCTKi_DummyEvolve     
+#undef CCTKi_DummyShutdown   
 
 #undef OVERLOADABLE
 

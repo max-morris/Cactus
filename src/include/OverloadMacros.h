@@ -59,7 +59,7 @@ extern RETURN_TYPE (*CCTK_##name)(ARGUMENTS);
 
 /* This macro defines a dummy function */
 #define OVERLOADABLE_DUMMY(name)                                  \
-RETURN_TYPE CCTK_Dummy##name(ARGUMENTS)                           \
+RETURN_TYPE CCTKi_Dummy##name(ARGUMENTS)                           \
 {                                                                 \
   fprintf(stderr, "Dummy %s called.\n", #name);                   \
   return 0;                                                       \
@@ -67,13 +67,13 @@ RETURN_TYPE CCTK_Dummy##name(ARGUMENTS)                           \
 
 /* This macro defines the prototype for a dummy function. */
 #define OVERLOADABLE_DUMMYPROTOTYPE(name)                         \
-RETURN_TYPE CCTK_Dummy##name(ARGUMENTS);
+RETURN_TYPE CCTKi_Dummy##name(ARGUMENTS);
 
 /* This macro defines a check line which will set the overloadable
  * function to be the dummy if it hasn't been set.
  */
 #define OVERLOADABLE_CHECK(name)                                  \
-  if(!CCTK_##name) CCTK_##name = CCTK_Dummy##name;
+  if(!CCTK_##name) CCTK_##name = CCTKi_Dummy##name;
 
 
 /* This macro defines the prototype for the overloading function itself */
