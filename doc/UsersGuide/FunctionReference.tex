@@ -315,9 +315,9 @@ available from C, not all are currently available from Fortran.
   [\pageref{RegisterGHExtensionSetupGH}] 
   Register a routine for setting up an extension to the Cactus GH
 
-\item[CCTK\_RegisterGHExtensionrfrTraverseGH] 
-  [\pageref{RegisterGHExtensionrfrTraverseGH}] 
-  Register a routine for an extension to the Cactus GH which is run before any RFR traverse
+\item[CCTK\_RegisterGHExtensionScheduleTraverseGH] 
+  [\pageref{RegisterGHExtensionScheduleTraverseGH}] 
+  Register a GH extension schedule traversal routine
 
 \item[CCTK\_RegisterIOMethod] 
   [\pageref{RegisterIOMethod}] 
@@ -2270,7 +2270,7 @@ This routine is for debugging purposes for Fortran programmers.
 \parameter{message}{The warning message}
 \end{params}
 \begin{discussion}
-The call should be used in routines registered at the RFR point {\t CCTK\_PARAMCHECK}
+The call should be used in routines registered at the schedule point {\t CCTK\_PARAMCHECK}
 to indicate that there is parameter error or conflict and the code should 
 terminate. The code will terminate only after all the parameters have been 
 checked.
@@ -2552,11 +2552,11 @@ IO methods should be registered at {\t CCTK\_STARTUP}.
 \end{CCTKFunc}
 
 % cctk_GHExtensions.h
-\begin{CCTKFunc}{CCTK\_RegisterGHExtensionrfrTraverseGH}{Register a routine which will be called to fill out an extension to a Cactus GH before a traverse of the RFR tree.}
+\begin{CCTKFunc}{CCTK\_RegisterGHExtensionScheuldeTraverseGH}{Register a GH extension schedule traversal routine}
 \label{RegisterGHExtensionrfrTraverseGH}
 \function{int}{}{istat}
 \argument{int}{}{handle}
-\argument{void *}{}{(*func)(cGH *,int)}
+\argument{int}{}{(*func)(cGH *,const char *)}
 \showcargs
 \begin{params}
 \end{params}
@@ -2905,8 +2905,47 @@ If the name if {\t NULL} the index will be used, if the index is negative the na
 \parameter{warning}{The warning message}
 \end{params}
 \begin{discussion}
-By default Cactus stops on a level 0 warning, and prints any level 1 warnings.
-This behavious can be changed on the command line.
+By default Cactus stops on a level 0 warning, and prints any level 1 warnings
+to standard error. This behaviour can be changed on the command line using
+the flags -W and -E (see \ref{sec:coliop} for full details). Note that
+{\tt CCTK\_WARN} is in fact a macro for the underlying function {\tt 
+CCTK\_Warn}, the macro automatically including details about the origin
+of the warning, for example the thorn name, and the source code file
+name and line number. For this reason it is important that the function
+is called with capitalised letters, otherwise the macro will not be invoked
+and the function call will contain the wrong number of arguments. A call to
+{\tt CCTK\_WARN(level,message)} actually expands internally to 
+{\tt
+\begin{verbatim}
+CCTK_Warn(level,__LINE__,__FILE__,CCTK_THORNNAME,message)
+\end{verbatim}
+}
+it is recommended that the macro version {\tt CCTK\_WARN} is used rather
+than {\tt CCTK\_VWarn}.
+The flesh parameter {\tt cctk\_full\_warnings} 
+determines whether all the details about the warning origin are shown.
+To include variables in warning messages is more troublesome. From C, the
+variable argument list
+function {\tt CCTK\_VWarn} can be used to include variables using standard printf format strings. Unfortunately, a macro can no
+longer be provided to automatically include the origin details of the warning,
+and the syntax is for example,
+{\tt
+\begin{verbatim}
+CCTK_VWarn(1,__LINE__,__FILE__,CCTK_THORNNAME,
+  "Your warning message, including %f and %d",
+  myreal,myint);
+\end{verbatim}
+}
+To include variables from Fortran, a string must be constructed and passed
+to the standard function {\tt CCTK\_WARN}, for example
+{\tt
+\begin{verbatim}
+ character*200 warnline
+ write(warnline,'(A32,G12.7,A5,I8)') 
+&  'Your warning message, including ',myreal,' and ',myint
+ call CCTK_WARN(1,warnline)
+\end{verbatim}
+}
 \end{discussion}
 \begin{examples}
 \begin{tabular}{@{}p{3cm}cp{11cm}}

@@ -1770,6 +1770,51 @@ and will report level 1 and severer warnings to screen.
 This behaviour can be amended using command line arguments,
 as described in Section~\ref{sec:coliop}.
 
+For example, to provide a warning which will be printed to standard
+output but which will not terminate the code for a run with default
+options, a level 1 warning should be used. The syntax from Fortran is
+{\tt
+\begin{verbatim}
+call CCTK_WARN(1,"Your warning message")
+\end{verbatim}
+}
+or from C,
+{\tt
+\begin{verbatim}
+CCTK_WARN(1,"Your warning message");
+\end{verbatim}
+}
+
+Note that {\tt CCTK\_WARN} is actually a macro which automatically 
+expands to include the name of the thorn, the source file name and line 
+number of the error. (For this reason it is important that capital letters are
+always used for the function). If the flesh parameter {\tt cctk\_full\_warnings} is
+set to true, then the source file name and line number will be printed to
+standard output along with the thorn name and warning.
+
+To include variables in warning messages is more troublesome. From C, the
+variable argument list
+function {\tt CCTK\_VWarn} can be used to include variables using standard printf format strings. Unfortunately, a macro can no
+longer be provided to automatically include the origin details of the warning,
+and the syntax is for example,
+{\tt
+\begin{verbatim}
+CCTK_VWarn(1,__LINE__,__FILE__,CCTK_THORNNAME,
+  "Your warning message, including %f and %d",
+  myreal,myint);
+\end{verbatim}
+}
+To include variables from Fortran, a string must be constructed and passed
+to the standard function {\tt CCTK\_WARN}, for example
+{\tt
+\begin{verbatim}
+ character*200 warnline
+ write(warnline,'(A32,G12.7,A5,I8)') 
+&  'Your warning message, including ',myreal,' and ',myint
+ call CCTK_WARN(1,warnline)
+\end{verbatim}
+}
+
 The flesh will be implementing standard error return codes
 which can be used by the thorns, although this is not 
 yet ready. In general, thorns should attempt to handle errors
