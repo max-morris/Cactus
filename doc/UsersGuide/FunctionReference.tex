@@ -963,30 +963,29 @@ No Fortran routine exists at the moment.
 % Groups.c
 \begin{CCTKFunc}{CCTK\_GroupData}{Given a group index, returns information about the variables held in the group.}
 \label{GroupData}
-\subroutine{int}{integer}{istat}
+\subroutine{cGroup}{}{pgroup}
 \argument{int}{integer}{group}
-\argument{int *}{integer}{gtype}
-\argument{int *}{integer}{vtype}
-\argument{int *}{integer}{dim}
-\argument{int *}{integer}{nvars}
-\argument{int *}{integer}{ntimelevels}
 \showcargs
 \begin{params}
-\parameter{istat}{Returns one if a group with the given index was found, and zero otherwise}
-\parameter{group}{The group index}
-\parameter{gtype}{The group type}
-\parameter{vtype}{The type of variables in the group}
-\parameter{dim}{The dimension of variables in the group}
-\parameter{nvars}{The number of variables in the group}
-\parameter{ntimelevels}{The number of timelevels for variables in the group}
+\parameter{pgroup}{Returns a pointer to a structure containing group information}
 \end{params}
 \begin{discussion}
+The cGroup structure contains the information
+\begin{itemize}
+\item grouptype: The group type
+\item variabletype: The type of variables in the group
+\item staggertype: The type of grid staggering for arrays
+\item dim: The dimension of variables in the group
+\item numvariables: The number of variables in the group
+\item ntimelevels: The number of timelevels for variables in the group
+\end{itemize}
 No Fortran routine exists at the moment. 
 \end{discussion}
 \begin{examples}
 \begin{tabular}{@{}p{3cm}cp{11cm}}
 \hfill {\bf C} && {\t index = CCTK\_GroupIndex(`evolve::scalars')}\\
-               &&{\t istat = CCTK\_GroupData(index,gtype,vtype,dim,nvars,ntimelevels);}
+               &&{\t pgroup = CCTK\_GroupData(index);}\\
+               && {\t vtype = pgroup->variabletype}
 \\
 \end{tabular}
 \end{examples}
@@ -1607,9 +1606,9 @@ from Fortran.
 \end{discussion}
 \begin{examples}
 \begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t CCTK\_PrintString(string_param) ;}
+\hfill {\bf C} && {\t CCTK\_PrintString(string\_param) ;}
 \\
-\hfill {\bf Fortran} && {\t call CCTK\_PRINTGROUP(string_param)}\\
+\hfill {\bf Fortran} && {\t call CCTK\_PRINTSTRING(string\_param)}\\
 \\
 \end{tabular}
 \end{examples}
