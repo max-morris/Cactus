@@ -61,21 +61,21 @@ mkdir("test", 0755);
 open(OUT, ">interface.ccl") || die "Cannot create interface.ccl";
 
 print OUT "# Interface definition for thorn $thorn_name\n";
-print OUT "# $Header$\n";
+print OUT "# \$Header\$\n";
 
 close OUT;
 
 open(OUT, ">param.ccl") || die "Cannot create param.ccl";
 
 print OUT "# Parameter definitions for thorn $thorn_name\n";
-print OUT "# $Header$\n";
+print OUT "# \$Header\$\n";
 
 close OUT;
 
 open(OUT, ">schedule.ccl") || die "Cannot create schedule.ccl";
 
 print OUT "# Schedule definitions for thorn $thorn_name\n";
-print OUT "# $Header$\n";
+print OUT "# \$Header\$\n";
 
 close OUT;
 
@@ -85,7 +85,7 @@ print OUT "Cactus Code Thorn $thorn_name\n";
 print OUT "Authors    : ...\n";
 print OUT "Managed by : ... <...\@...........>\n";
 print OUT "Version    : ...  \n";
-print OUT "CVS info   : $Header$\n";
+print OUT "CVS info   : \$Header\$\n";
 print OUT "--------------------------------------------------------------------------\n";
 print OUT "\n";
 print OUT "1. Purpose of the thorn\n";
@@ -109,7 +109,7 @@ chdir("src");
 open(OUT, ">make.code.defn") || die "Cannot create make.code.defn";
 
 print OUT "# Main make.code.defn file for thorn $thorn_name\n";
-print OUT "# $Header$\n";
+print OUT "# \$Header\$\n";
 print OUT "\n";
 print OUT "# Source files in this directory\n";
 print OUT "SRCS = \n";
