@@ -12,7 +12,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "cctk.h"
 #include "cctk_Flesh.h"
 #include "cctk_FortranString.h"
 #include "cctk_GHExtensions.h"
@@ -280,6 +279,9 @@ int CCTKi_SetupGHExtensions(tFleshConfig *config,
         GH->extensions[handle] = extension->SetupGH(config, 
                                                     convergence_level, 
                                                     GH);
+#ifdef DEBUG
+	printf("CCTKi_SetupGHExtensions: Set up extension for handle %d\n",handle);
+#endif
       }
       return_code = 0;
     }
@@ -330,7 +332,7 @@ int CCTKi_InitGHExtensions(cGH *GH)
 
 
  /*@@
-   @routine    CCTK_rfrTraverseGHExtensions
+   @routine    CCTKi_rfrTraverseGHExtensions
    @date       Wed Feb  3 14:16:17 1999
    @author     Tom Goodale
    @desc 
@@ -343,7 +345,7 @@ int CCTKi_InitGHExtensions(cGH *GH)
    @endhistory 
 
 @@*/
-int CCTK_rfrTraverseGHExtensions(cGH *GH, int rfrpoint)
+int CCTKi_rfrTraverseGHExtensions(cGH *GH, int rfrpoint)
 {
   int handle;
   struct GHExtension *extension;
@@ -402,7 +404,7 @@ static int CheckAllExtensionsSetup(void)
       const char *handlename = Util_GetHandleName(GHExtensions, handle);
       char *message = (char *)malloc(300*sizeof(char));
       sprintf(message,"GH Extension '%s' has not registered a SetupGH routine",handlename);
-      CCTK_Warn(4,__LINE__,CCTK_THORNSTRING,message,__FILE__) ;
+      CCTK_Warn(4,__LINE__,__FILE__,"Cactus",message) ;
       free(message);
       extension->SetupGH=DummySetupGH;
     }
@@ -413,7 +415,7 @@ static int CheckAllExtensionsSetup(void)
       const char *handlename = Util_GetHandleName(GHExtensions, handle);
       char *message = (char *)malloc(300*sizeof(char));
       sprintf(message,"GH Extension '%s' has not registered a InitGH routine",handlename);
-      CCTK_Warn(4,__LINE__,CCTK_THORNSTRING,message,__FILE__) ;
+      CCTK_Warn(4,__LINE__,__FILE__,"Cactus",message) ;
       free(message);
       extension->InitGH=DummyInitGH;
     }
@@ -424,7 +426,7 @@ static int CheckAllExtensionsSetup(void)
       const char *handlename = Util_GetHandleName(GHExtensions, handle);
       char *message = (char *)malloc(300*sizeof(char));
       sprintf(message,"GH Extension '%s' has not registered a rfrTraverse routine",handlename);
-      CCTK_Warn(4,__LINE__,CCTK_THORNSTRING,message,__FILE__) ;
+      CCTK_Warn(4,__LINE__,__FILE__,"Cactus",message) ;
       free(message);
       extension->rfrTraverseGH=DummyrfrTraverseGH;
     }
