@@ -10,25 +10,21 @@ BOOLEAN cctk_full_warnings "Give detailed information for each warning statement
 
 BOOLEAN cctk_strong_param_check "Die on parameter errors in CCTK_PARAMCHECK"
 {
- : ::
 } "yes"
 
-BOOLEAN cctk_show_rfr_tree "Show the order of the calling tree for the RFR"
+BOOLEAN cctk_show_schedule "Print the scheduling tree to standard output"
 {
- : :: 
 } "yes"
 
 BOOLEAN cctk_show_banners "Show any registered banners for the different thorns"
 {
- : :: 
 } "yes"
  
 BOOLEAN cctk_brief_output "Give only brief output"
 {
- : :: 
 } "no"
 
-global:
+restricted:
 
 REAL cctk_initial_time "Initial time for evolution"
 {
