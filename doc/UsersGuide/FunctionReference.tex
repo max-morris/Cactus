@@ -402,6 +402,10 @@ variable in each dimension
   [\pageref{CCTK-PARAMWARN}]
   Prints a warning from parameter checking, and possibly stops the code
 
+\item[CCTK\_PointerTo]
+  [\pageref{CCTK-PointerTo}]
+  Returns the address of a variable passed in by reference from a fortran routine
+
 \item[CCTK\_PrintGroup]
   [\pageref{CCTK-PrintGroup}]
   Prints a group name from its index
@@ -4546,6 +4550,85 @@ checked.
 \end{CCTKFunc}
 
 
+% util/Misc.c
+\begin{FunctionDescription}{CCTK\_PointerTo}%%%
+\label{CCTK-PointerTo}
+Returns the address of a variable passed in by reference from a fortran routine.
+
+\begin{SynopsisSection}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}
+#include "cctk.h"
+
+CCTK_POINTER addr, var
+
+addr = CCTK_PointerTo(var)
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ResultSection}
+\begin{Result}{addr}
+the address of variable {\it var}
+\end{Result}
+\end{ResultSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{var}
+variable in the fortran context from which to take the address
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{Discussion}
+Fortran doesn't know the concept of pointers so problems arise when a C function
+is to be called which expects a pointer as one (or more) of it(s) argument(s).
+
+To obtain the pointer to a variable in fortran, one can use {\t CCTK\_PointerTo()} which takes the variable itself as a single argument and returns the
+pointer to it.
+
+Note that there is only a fortran wrapper available for {\t CCTK\_PointerTo()}.
+\end{Discussion}
+
+\begin{ExampleSection}
+\begin{Example}{Fortran}
+\begin{verbatim}
+#include "cctk.h"
+
+integer      ierror, table_handle
+CCTK_POINTER addr, var
+
+addr = CCTK_PointerTo(var)
+
+call Util_TableCreate(table_handle, 0)
+call Util_TableSetPointer(ierror, table_handle, addr, "variable")
+\end{verbatim}
+\end{Example}
+\end{ExampleSection}
+\end{FunctionDescription}
+
+
+% util/Misc.c
+\begin{CCTKFunc}{CCTK\_PointerTo}%%%
+{Returns the address of a variable passed in by reference from a fortran routine}
+\label{CCTK-PointerTo}
+\function{}{CCTK\_POINTER}{addr}
+\argument{}{CCTK\_POINTER}{var}
+\showargs
+\begin{params}
+\parameter{var}{Routine to be registered as the interpolation operator}
+\end{params}
+\begin{discussion}
+Only C routines can be registered as interpolation operators.
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\hfill {\bf Fortran} && {\t addr = CCTK\_POINTERTO(var)}\\
+\\
+\end{tabular}
+\end{examples}
+\end{CCTKFunc}
+
+
 % Groups.c
 \begin{CCTKFunc}{CCTK\_PrintGroup}{Prints a group name from its index}
 \label{CCTK-PrintGroup}
@@ -6009,6 +6092,14 @@ values in it based on a string argument (interpreted with
 int handle = Util_TableCreateFromString(const char *string);
 \end{verbatim}
 \end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}
+call Util_TableCreateFromString(handle, string)
+
+integer       handle
+character*(*) string
+\end{verbatim}
+\end{Synopsis}
 \end{SynopsisSection}
 
 \begin{ResultSection}
@@ -6152,6 +6243,13 @@ Destroys a table
 #include "util_ErrorCodes.h"
 #include "util_Table.h"
 int status = Util_TableDestroy(int handle);
+\end{verbatim}
+\end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}
+call Util_TableDestroy(status, handle)
+
+integer status, handle
 \end{verbatim}
 \end{Synopsis}
 \end{SynopsisSection}
