@@ -68,12 +68,13 @@ fi
 # Set the PETSc libs, libdirs and includedirs
 PETSC_LIB_DIRS='$(PETSC_DIR)/lib/libO/$(PETSC_ARCH)'
 PETSC_INC_DIRS='$(PETSC_DIR)/include $(PETSC_DIR)/bmake/$(PETSC_ARCH)'
-PETSC_LIBS="petscts petscsnes petscsles petscdm petscmat petscvec petsc $PETSC_ARCH_LIBS"
+PETSC_LIBS="petscts petscsnes petscsles petscdm petscmat petscvec petsc   $PETSC_ARCH_LIBS"
 
 
 # Write the data out to the header and make files.
 CCTK_WriteLine cctk_Extradefs.h "#define CCTK_PETSC 1"
 
+CCTK_WriteLine make.extra.defn "HAVE_PETSC     = 1"
 CCTK_WriteLine make.extra.defn "PETSC_DIR      = $PETSC_DIR"
 CCTK_WriteLine make.extra.defn "PETSC_ARCH     = $PETSC_ARCH"
 CCTK_WriteLine make.extra.defn "PETSC_LIBS     = $PETSC_LIBS"
