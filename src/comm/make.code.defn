@@ -3,5 +3,6 @@ CactusComm.c\
 CactusDefaultComm.c\
 OverloadComm.c\
 FortranBindings.c\
+Interp.c\
 Reduction.c
 
