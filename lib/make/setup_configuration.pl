@@ -184,7 +184,8 @@ sub SetConfigureEnv
 	print "Setting $1 to '$3'\n";
 	$ENV{"$1"} = $3;
 	# Remember it for writing to config-info
-	$CONFIGURED{"$1"} = $3;
+	$option = AddQuotes($3);
+	$CONFIGURED{"$1"} = $option;
       }
       else
       {
@@ -236,7 +237,8 @@ sub SetConfigureEnv
 	print "Setting $1 to '$3'\n";
 	$ENV{"$1"} = $3;
 	# Remember it for writing to config-info
-	$CONFIGURED{"$1"} = $3;
+	$option = AddQuotes($3);
+	$CONFIGURED{"$1"} = $option;
       }
       else
       {
@@ -251,7 +253,7 @@ sub SetConfigureEnv
 
   $commandline = $ENV{"MAKEFLAGS"};
   $used_commandline = 0;
-  while ($commandline =~ /^(.*)\s+(\w*)\s*=\s*([\w\\\/\s]*)\s*$/)
+  while ($commandline =~ /^(.*)\s+(\w*)\s*=\s*([_\-\.\w\\\/\s]*)\s*$/)
   {
     if ($2 ne "options")
     {
@@ -262,9 +264,10 @@ sub SetConfigureEnv
       $used_commandline = 1;
       $ENV{"$2"} = $3;
       # Remember it for writing to config-info
-      $CONFIGURED{"$2"} = $3;
+      $option = AddQuotes($3);
+      $CONFIGURED{"$2"} = $option;
 
-      print "Setting $2 to $3\n";
+      print "Setting $2 to $option\n";
     }
     $commandline=$1;
     #  print "New commandline = <$commandline>\n";
@@ -303,3 +306,15 @@ sub DetermineConfigureCommand
   return $configure_command;
 }
 
+sub AddQuotes
+{
+  local($arg) = @_;
+
+  if ($arg =~ /\\/)
+  {
+    $arg =~ s:\\::g;
+    $arg = "\"$arg\"";
+  }
+
+  return $arg;
+}
