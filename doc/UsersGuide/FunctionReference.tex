@@ -2357,8 +2357,8 @@ coefficients can be used for all the arrays.
 int status
    = CCTK_InterpGridArrays(const cGH *GH,
                            int N_dims,
-                           int param_table_handle,
                            int local_interp_handle,
+                           int param_table_handle,
                            int coord_system_handle,
                            int N_interp_points,
                              const int interp_coords_type_code,
@@ -2368,6 +2368,26 @@ int status
                            int N_output_arrays,
                              const CCTK_INT output_array_type_codes[],
                              void *const output_arrays[]);
+\end{verbatim}
+\end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}
+call CCTK_InterpGridArrays(status,
+.                          GH, N_dims, local_interp_handle, param_table_handle,
+.                          coord_system_handle,
+.                          N_interp_points, interp_coords_type_code,
+.                          interp_coords,
+.                          N_input_arrays, input_array_variable_indices,
+.                          N_output_arrays, output_array_type_codes,
+.                          output_arrays)
+
+integer         status
+CCTK_POINTER    GH
+integer         local_interp_handle, param_table_handle, coord_system_handle
+integer         N_dims, N_interp_points, N_input_arrays, N_output_arrays
+integer         interp_coords_type_code
+integer(*)      input_array_variable_indices, output_array_type_codes
+CCTK_POINTER(*) interp_coords, output_arrays
 \end{verbatim}
 \end{Synopsis}
 \end{SynopsisSection}
@@ -2389,6 +2409,11 @@ by \verb|coord_system_handle|.  The default case is that it's $=$; see
 the discussion of the \verb|interpolation_hyperslab_handle| parameter-table
 entry for the $<$ case.
 \end{Parameter}
+\begin{Parameter}{local\_interp\_handle ($\ge 0$)}
+\hbox{}
+Handle to the local interpolation operator as returned by
+\verb|CCTK_InterpHandle()|.
+\end{Parameter}
 \begin{Parameter}{param\_table\_handle ($\ge 0$)}
 Handle to a key-value table containing additional parameters for the
 interpolation operation.  For example, this could be used to specify
@@ -2397,16 +2422,6 @@ that the local interpolator should take derivatives, by specifying
 const CCTK_INT operand_indices[N_output_arrays];
 const CCTK_INT operation_codes[N_output_arrays];
 \end{verbatim}
-\end{Parameter}
-\begin{Parameter}{local\_interp\_handle ($\ge 0$)}
-\hbox{}
-Handle to the local interpolation operator as returned by
-\verb|CCTK_InterpHandle()|.
-\end{Parameter}
-\begin{Parameter}{param\_table\_handle ($\ge 0$)}
-\hbox{}
-Handle to a key-value table containing additional parameters for
-the interpolator.
 \end{Parameter}
 \begin{Parameter}{coord\_system\_handle ($\ge 0$)}
 \hbox{}
