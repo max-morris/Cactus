@@ -1,4 +1,4 @@
-# /*@@
+# /*@@  
 #   @file      Makefile
 #   @date      Sun Jan 17 22:26:05 1999
 #   @author    Tom Goodale
@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.47 1999-07-30 19:23:36 allen Exp $
+#   @version $Id: Makefile,v 1.48 1999-07-31 00:29:27 allen Exp $
 # @@*/
 
 ##################################################################################
@@ -58,6 +58,7 @@ SETUP_OPTIONS = -config_file=$(options)
 else
 SETUP_OPTIONS = 
 endif
+
 
 # Allow various options to be passed to the configure script
 
