@@ -1418,7 +1418,7 @@ To create a directory readable by everyone, but writeable only by the user runnn
 \begin{CCTKFunc}{CCTK\_DecomposeName}{Given the full name of a variable/group, separates the name returning both the implementation and the variable/group}
 \label{CCTK-DecomposeName}
 \subroutine{int}{integer}{istat}
-\argument{char *}{}{fullname}
+\argument{const char *}{}{fullname}
 \argument{char **}{}{imp}
 \argument{char **}{}{name}
 \showcargs
@@ -1429,6 +1429,9 @@ To create a directory readable by everyone, but writeable only by the user runnn
 \parameter{name}{The group/variable name}
 \end{params}
 \begin{discussion}
+\fbox{The implementation name and the group/variable name must be
+explicitly freed after they have been used.}
+
 No Fortran routine exists at the moment.
 \end{discussion}
 \begin{examples}
@@ -1673,13 +1676,17 @@ strings. This routine allows a Fortran string to be created from such a C string
 \parameter{index}{The variable index}
 \end{params}
 \begin{discussion}
+\fbox{The full variable name must be explicitly freed after it has been used.}
+
 No Fortran routine exists at the moment. The full variable name is in
 the form {\t <implementation>::<variable>}
 \end{discussion}
 \begin{examples}
 \begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t index = CCTK\_VarIndex("evolve::phi")}\\
-               &&{\t fullname = CCTK\_FullName(index) ;}
+\hfill {\bf C} && {\t index = CCTK\_VarIndex("evolve::phi");}\\
+               && {\t name = CCTK\_FullName(index);}\\
+               && {\t printf ("Variable name: \%s", name);}\\
+               && {\t free (name);}
 \\
 \end{tabular}
 \end{examples}
@@ -2485,12 +2492,16 @@ Returns the local size for a given group.
 \parameter{index}{The group index}
 \end{params}
 \begin{discussion}
+\fbox{The group name must be explicitly freed after it has been used.}
+
 No Fortran routine exists at the moment.
 \end{discussion}
 \begin{examples}
 \begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t index = CCTK\_GroupIndex("evolve::scalars")}\\
-               &&{\t name = CCTK\_GroupName(index) ;}
+\hfill {\bf C} && {\t index = CCTK\_GroupIndex("evolve::scalars");}\\
+               && {\t name = CCTK\_GroupName(index);}\\
+               && {\t printf ("Group name: \%s", name);}\\
+               && {\t free (name);}
 \\
 \end{tabular}
 \end{examples}
@@ -6171,7 +6182,7 @@ call CCTK_VarIndex(index,"evolve::phi")
 % Groups.c
 \begin{CCTKFunc}{CCTK\_VarName}{Given a variable index, returns the variable name}
 \label{CCTK-VarName}
-\subroutine{char *}{integer}{name}
+\subroutine{const char *}{integer}{name}
 \argument{int}{integer}{index}
 \showcargs
 \begin{params}
@@ -6183,8 +6194,8 @@ No Fortran routine exists at the moment.
 \end{discussion}
 \begin{examples}
 \begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t index = CCTK\_VarIndex("evolve::phi")}\\
-               &&{\t name = CCTK\_VarName(index) ;}
+\hfill {\bf C} && {\t index = CCTK\_VarIndex("evolve::phi");}\\
+               && {\t name = CCTK\_VarName(index);}
 \\
 \end{tabular}
 \end{examples}
