@@ -896,7 +896,7 @@ each edge (see figure \ref{fig:noghost}).
 \begin{center}
 \ifpdf
 \else
-\includegraphics[angle=0,width=12cm]{1dnoghost.eps}
+\includegraphics[angle=0,width=8cm]{1dnoghost}
 \fi
 \end{center}
 \caption{Distributed wave equation with no ghostzones}
@@ -923,7 +923,7 @@ ghostzones as your stencil-size requires.
 \begin{center}
 \ifpdf
 \else
-\includegraphics[angle=0,width=12cm]{withghost.eps}
+\includegraphics[angle=0,width=8cm]{withghost}
 \fi
 \end{center}
 \caption{Distributed wave equation with ghostzones}
@@ -983,9 +983,9 @@ rather unusual; it is included here for completeness.
 \begin{center}
 \ifpdf
 \else
-\includegraphics[angle=0,width=8cm]{staggering1.eps}
-\fi
+\includegraphics[angle=0,width=8cm]{staggering1}
 %  \centerline{\epsfbox{./staggering1.eps}}
+\fi
 \end{center}
 \caption[]{\small {\bf Staggered gridpoints in 2D} for several
 staggerings. (a) : {\tt MC}, (b): {\tt CM}, (c): {\tt CC}, (d): {\tt
@@ -1736,9 +1736,8 @@ y-direction: {\em directional staggerindex} = CCTK\_STAGGER\_C (value 1).
 \begin{center}
 \ifpdf
 \else
-\includegraphics[angle=0,width=10cm]{staggering2.eps}
+\includegraphics[angle=0,width=10cm]{staggering2}
 \fi
-%  \centerline{\epsfbox{./staggering2.eps}}
 \end{center}
 \caption[]{\small {\bf Unstaggered and center-staggered gridpoints} with
 ghostzone size of one (above) and two (below). The points are
@@ -2825,8 +2824,17 @@ But in Fortran you have to do the following:
   integer       myint
   character*200 message
 
-  write(infoline, '(A, 1X, I)') 'The integer is ', myint
-  call CCTK_INFO(message)
+  write (message, '("The integer is ",i4)') myint
+  call CCTK_INFO (message(1:len_trim(message)))
+\end{verbatim}
+
+In Fortran 90, you can also do:
+\begin{verbatim}
+  integer        myint
+  character(200) message
+  
+  write (message, '("The integer is ",i4)') myint
+  call CCTK_INFO (trim(message))
 \end{verbatim}
 
 Note that:
@@ -2906,9 +2914,18 @@ But in Fortran you have to do the following:
   real          myreal
   character*200 message
 
-  write(message, '(A32, G12.7, A5, I8)')'
-  &     'Your warning message, including ', myreal, ' and ', myint
-  call CCTK_WARN(message)
+  write (message, '("Your warning message, including ",g12.7," and ",i8)') myreal, myint
+  call CCTK_WARN (1, message(1:len_trim(message)))
+\end{verbatim}
+
+In Fortran 90, you can also do:
+\begin{verbatim}
+  integer myint
+  real myreal
+  character(200) message
+  
+  write (message, '("Your warning message, including ",g12.7," and ",i8)') myreal, myint
+  call CCTK_WARN (1, trim(message))
 \end{verbatim}
 
 The flesh will be implementing standard error return codes
