@@ -1,7 +1,7 @@
 
 Cactus Code Frequently Asked Questions
 
-$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.32 2002-05-09 11:41:24 allen Exp $
+$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.33 2002-05-29 23:16:46 allen Exp $
 
 Also available at http://www.cactuscode.org/Documentation/FAQ
 
@@ -491,3 +491,19 @@ Also available at http://www.cactuscode.org/Documentation/FAQ
     gmake origin SILENT=no
   
     and add the missing library to the end of the link line. 
+
+-------------------------------------------------------------------------------
+
+35. When running GetCactus it tells me it is refusing to update my thorn
+    because it is installed from a different repository.
+
+    What GetCactus does is look in the thorn's CVS/Root to get the repository
+    that it was originally installed from.  If the repository specified in
+    your thornlist (using the !REPOSITORY_LOCATION directive) is not the same, 
+    then GetCactus will refuse to update your thorn.
+
+    This problem commonly occurs when people interchange repository locations
+    that actually point to the same place.  For example, using cvs.aei.mpg.de
+    for the initial checkout, and then using cvs.cactuscode.org for an update.
+
+    To fix this problem, simply be consistent with repository locations.
