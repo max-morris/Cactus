@@ -1688,7 +1688,13 @@ sub ThornMasterIncludes
   push(@data, '');
 
   push(@data, '#ifdef CCODE');
-  push(@data, 'CCTK_INT CCTK_IsFunctionAliased(const char *function);');
+  push(@data, '#ifdef __cplusplus');
+  push(@data, 'extern "C" {');
+  push(@data, '#endif');
+  push(@data, '  CCTK_INT CCTK_IsFunctionAliased(const char *function);');
+  push(@data, '#ifdef __cplusplus');
+  push(@data, '}');
+  push(@data, '#endif');
   push(@data, '#endif');
   push(@data, '');
 
