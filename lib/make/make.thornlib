@@ -80,7 +80,7 @@ $(addsuffix .check, $(SUBDIRS)) :
 
 # This one puts a file containing identity info into the build subdirectory
 $(addsuffix /make.identity, $(SUBDIRS)):
-	if [ ! -d $(dir $@) ] ; then mkdir $(dir $@) ; fi
+	if [ ! -d $(dir $@) ] ; then $(MKDIR) $(dir $@) ; fi
 	echo CCTK_THIS_SUBDIR := $(dir $@) > $@
 
 # Dependency stuff
