@@ -1,11 +1,12 @@
+#! /usr/bin/perl
 #/*@@
 #  @file      cpp.pl
 #  @date      Wed Sep 15 14:21:53 1999
 #  @author    Tom Goodale
-#  @desc 
-#  Replacement C pre-processor
-#  @enddesc 
-#  @version $Header$
+#  @desc
+#             Replacement C pre-processor
+#  @enddesc
+#  @version   $Header$
 #@@*/
 
 #$debug=1;
@@ -93,7 +94,7 @@ if($do_deps)
   foreach $file (sort keys %complete_file_list)
   {
     # Ignore any empry entries
-    next if($file =~ m/^\s*$/);    
+    next if($file =~ m/^\s*$/);
     # The source file depends upon this file
     print OUTSTREAM "$depend_target : $file\n";
   }
@@ -118,14 +119,14 @@ exit;
 #  @routine    ParseCommandLine
 #  @date       Wed Sep 15 14:22:28 1999
 #  @author     Tom Goodale
-#  @desc 
-#  Checks the command line for options  
-#  @enddesc 
-#  @calls     
-#  @calledby   
-#  @history 
+#  @desc
+#  Checks the command line for options
+#  @enddesc
+#  @calls
+#  @calledby
+#  @history
 #
-#  @endhistory 
+#  @endhistory
 #
 #@@*/
 sub ParseCommandLine
@@ -164,7 +165,7 @@ sub ParseCommandLine
       $source_file = $arg;
     }
   }
-  
+
   return ($source_file, $output_file, $do_deps, @include_path);
 }
 
@@ -174,14 +175,14 @@ sub ParseCommandLine
 #  @routine    ProcessFile
 #  @date       Mon Nov 19 23:51:03 2001
 #  @author     Tom Goodale
-#  @desc 
+#  @desc
 #  Open a file and parse its contents.
-#  @enddesc 
-#  @calls     
-#  @calledby   
-#  @history 
+#  @enddesc
+#  @calls
+#  @calledby
+#  @history
 #
-#  @endhistory 
+#  @endhistory
 #
 #@@*/
 sub ProcessFile
@@ -245,14 +246,14 @@ sub ProcessFile
 #  @routine    FindFile
 #  @date       Mon Nov 19 23:51:03 2001
 #  @author     Tom Goodale
-#  @desc 
+#  @desc
 #  Finds a file and works out its full name and the directory its in.
-#  @enddesc 
-#  @calls     
-#  @calledby   
-#  @history 
+#  @enddesc
+#  @calls
+#  @calledby
+#  @history
 #
-#  @endhistory 
+#  @endhistory
 #
 #@@*/
 sub FindFile
@@ -295,21 +296,21 @@ sub FindFile
   $fullpath =~ s,^./,,;
   return ($new_current_wd, $fullpath);
 }
-  
+
 ###############################################################################
 
 #/*@@
 #  @routine    ParseFile
 #  @date       Mon Nov 19 23:51:03 2001
 #  @author     Tom Goodale
-#  @desc 
+#  @desc
 #  Parse part or all of a file.
-#  @enddesc 
-#  @calls     
-#  @calledby   
-#  @history 
+#  @enddesc
+#  @calls
+#  @calledby
+#  @history
 #
-#  @endhistory 
+#  @endhistory
 #
 #@@*/
 sub ParseFile
@@ -345,7 +346,7 @@ sub ParseFile
 
     # Exit loop if file is finished
     last if(! defined($line));
-    
+
     # If it isn't a preprocessor command, just process it
     if($line !~ m/^\#/)
     {
@@ -435,7 +436,7 @@ sub ParseFile
           {
             $newactive = 0;
           }
-          
+
           $foundelse = 1;
         }
         else
@@ -461,7 +462,7 @@ sub ParseFile
       }
       else
       {
-        # Otherwise there's an extra one here 
+        # Otherwise there's an extra one here
         die "Unexpected #elif/#else/#endif at $filename:$linenumber";
       }
     }
@@ -486,7 +487,7 @@ sub ParseFile
           {
             # Allow people to use macros to define name of include file
             ($argument,undef) = &ParseAndExpand($argument,$filename,$linenumber);
-            
+
             if($argument !~ m/\s*\"(.+)\"\s*$/)
             {
               print STDERR "Invalid filename $argument in #include directive at $filename:$linenumber\n";
@@ -496,10 +497,10 @@ sub ParseFile
               # Process the new file.  Don't need to pass $active since wouldn't be here if inactive.
               &ProcessFile($1,$filename,$linenumber,$printline);
 
-	      if($printline && $active)
-	      {
-		print "# $linenumber \"$filename\"\n";
-	      }
+              if($printline && $active)
+              {
+                print "# $linenumber \"$filename\"\n";
+              }
             }
           }
         }
@@ -525,15 +526,15 @@ sub ParseFile
 #  @routine    ReadLine
 #  @date       Mon Nov 19 23:51:03 2001
 #  @author     Tom Goodale
-#  @desc 
+#  @desc
 #  Read a line from the current file descriptor.
 #  Deals with comments and continuation lines
-#  @enddesc 
-#  @calls     
-#  @calledby   
-#  @history 
+#  @enddesc
+#  @calls
+#  @calledby
+#  @history
 #
-#  @endhistory 
+#  @endhistory
 #
 #@@*/
 sub ReadLine
@@ -592,15 +593,15 @@ sub ReadLine
 #  @routine    Get next line
 #  @date       Mon Nov 19 23:51:03 2001
 #  @author     Tom Goodale
-#  @desc 
+#  @desc
 #  Read a line from the current file descriptor.
 #  Dealing with continuation lines.
-#  @enddesc 
-#  @calls     
-#  @calledby   
-#  @history 
+#  @enddesc
+#  @calls
+#  @calledby
+#  @history
 #
-#  @endhistory 
+#  @endhistory
 #
 #@@*/
 sub GetNextLine
@@ -629,14 +630,14 @@ sub GetNextLine
 #  @routine    ProcessIf
 #  @date       Mon Nov 19 23:51:03 2001
 #  @author     Tom Goodale
-#  @desc 
+#  @desc
 #  Parse an #if statement and return true or false.
-#  @enddesc 
-#  @calls     
-#  @calledby   
-#  @history 
+#  @enddesc
+#  @calls
+#  @calledby
+#  @history
 #
-#  @endhistory 
+#  @endhistory
 #
 #@@*/
 sub ProcessIf
@@ -672,7 +673,7 @@ sub ProcessIf
     else
     {
       print STDERR "#if <constant> called on non-digit and non-define $val at $filename\::$linenumber !\n";
-    }      
+    }
   }
   else
   {
@@ -694,14 +695,14 @@ sub ProcessIf
 #  @routine    Define
 #  @date       Mon Nov 19 23:51:03 2001
 #  @author     Tom Goodale
-#  @desc 
+#  @desc
 #  Define a macro.
-#  @enddesc 
-#  @calls     
-#  @calledby   
-#  @history 
+#  @enddesc
+#  @calls
+#  @calledby
+#  @history
 #
-#  @endhistory 
+#  @endhistory
 #
 #@@*/
 sub Define
@@ -709,7 +710,7 @@ sub Define
   my ($arg1,$arg2,$filename,$linenumber) = @_;
 
   $arg1 =~ m:^([a-zA-Z_][a-zA-Z0-9_]*)(\(([a-zA-Z0-9_,]+)\))?$:;
-  
+
   my $defname = $1;
   my $defargs = $3;
 
@@ -745,14 +746,14 @@ sub Define
 #  @routine    Undefine
 #  @date       Mon Nov 19 23:51:03 2001
 #  @author     Tom Goodale
-#  @desc 
+#  @desc
 #  Undefine a macro.
-#  @enddesc 
-#  @calls     
-#  @calledby   
-#  @history 
+#  @enddesc
+#  @calls
+#  @calledby
+#  @history
 #
-#  @endhistory 
+#  @endhistory
 #
 #@@*/
 sub UnDefine
@@ -768,20 +769,20 @@ sub UnDefine
 #  @routine    ExpandMacro
 #  @date       Mon Nov 19 23:51:03 2001
 #  @author     Tom Goodale
-#  @desc 
+#  @desc
 #  Expand a macro recursively.
-#  @enddesc 
-#  @calls     
-#  @calledby   
-#  @history 
+#  @enddesc
+#  @calls
+#  @calledby
+#  @history
 #
-#  @endhistory 
+#  @endhistory
 #
 #@@*/
 sub ExpandMacro
 {
   my ($macro, $args, $filename, $linenumber) = @_;
-  
+
   my $retcode = 0;
   my @arguments = &SplitArgs($args);
 
@@ -829,7 +830,7 @@ sub ExpandMacro
 
       my $tobesubsted = quotemeta($defines{$macro}{"ARGS"}[$arg]);
 
-      # Concatenation takes non-prescanned argument 
+      # Concatenation takes non-prescanned argument
       $outstring =~ s/##\s*$tobesubsted\b/##$arguments[$arg]/g;
 
       # Stringification takes non-prescanned argument and stringifies it
@@ -862,14 +863,14 @@ sub ExpandMacro
 #  @routine    SplitArgs
 #  @date       Mon Nov 19 23:51:03 2001
 #  @author     Tom Goodale
-#  @desc 
+#  @desc
 #  Split the arguments given to a macro into an array.
-#  @enddesc 
-#  @calls     
-#  @calledby   
-#  @history 
+#  @enddesc
+#  @calls
+#  @calledby
+#  @history
 #
-#  @endhistory 
+#  @endhistory
 #
 #@@*/
 sub SplitArgs
@@ -881,7 +882,7 @@ sub SplitArgs
   my @splitargs = split(//, $args);
 
   my $nestlevel = 0;
-  
+
   my @thistoken = ();
 
   my $insstring = 0;
@@ -889,7 +890,7 @@ sub SplitArgs
 
   for(my $pos = 0; $pos < @splitargs; $pos++)
   {
-    if($splitargs[$pos] eq '\'' || $splitargs[$pos] eq '"' || 
+    if($splitargs[$pos] eq '\'' || $splitargs[$pos] eq '"' ||
        $insstring == 1 || $indstring == 1)
     {
       # Just pass the token through if in a string.
@@ -943,14 +944,14 @@ sub SplitArgs
 #  @routine    ParseAndExpand
 #  @date       Mon Nov 19 23:51:03 2001
 #  @author     Tom Goodale
-#  @desc 
+#  @desc
 #  Parse a string and expand any macros in it.
-#  @enddesc 
-#  @calls     
-#  @calledby   
-#  @history 
+#  @enddesc
+#  @calls
+#  @calledby
+#  @history
 #
-#  @endhistory 
+#  @endhistory
 #
 #@@*/
 sub ParseAndExpand
@@ -988,11 +989,11 @@ sub ParseAndExpand
       push(@outline, $splitline[$pos]);
       next;
     }
-    
+
     # Ok, should be at the beginning of a token
 
     my $token = $splitline[$pos];
-    
+
     while($pos+1 < @splitline && $splitline[$pos+1] =~ m:[A-Za-z0-9_]:)
     {
       $pos++;
@@ -1005,20 +1006,20 @@ sub ParseAndExpand
       my $arg = "";
       if($pos+1 < @splitline)
       {
-	# Eat up whitepace between token and arguments
-	for(my $newpos=$pos+1; $newpos < @splitline; $newpos++)
-	{
-	  next if($splitline[$newpos] =~ m/\s/);
-	  if($splitline[$newpos] eq "(")
-	  {
-	    $pos = $newpos-1;
-	    last;
-	  }
-	  else
-	  {
-	    last;
-	  }
-	}
+        # Eat up whitepace between token and arguments
+        for(my $newpos=$pos+1; $newpos < @splitline; $newpos++)
+        {
+          next if($splitline[$newpos] =~ m/\s/);
+          if($splitline[$newpos] eq "(")
+          {
+            $pos = $newpos-1;
+            last;
+          }
+          else
+          {
+            last;
+          }
+        }
         # Find any arguments
         if($splitline[$pos+1] eq "(")
         {
@@ -1082,14 +1083,14 @@ sub ParseAndExpand
 #  @routine    ArgumentSubstitute
 #  @date       Mon Nov 19 23:51:03 2001
 #  @author     Tom Goodale
-#  @desc 
+#  @desc
 #  Substitute all non-string-enclosed arguments with replacement values.
-#  @enddesc 
-#  @calls     
-#  @calledby   
-#  @history 
+#  @enddesc
+#  @calls
+#  @calledby
+#  @history
 #
-#  @endhistory 
+#  @endhistory
 #
 #@@*/
 sub ArgumentSubstitute
@@ -1104,7 +1105,7 @@ sub ArgumentSubstitute
 
   for(my $pos = 0 ; $pos < @splitbody; $pos++)
   {
-    
+
     # Just pass through all non-tokens and all tokens in a string.
     if($splitbody[$pos] !~ m/[A-Za-z_]/ || $insstring == 1 || $indstring == 1)
     {
@@ -1125,17 +1126,17 @@ sub ArgumentSubstitute
       push(@outbody, $splitbody[$pos]);
       next;
     }
-    
+
     # Ok, should be at the beginning of a token
 
     my $token = $splitbody[$pos];
-    
+
     while($pos+1 < @splitbody && $splitbody[$pos+1] =~ m:[A-Za-z0-9_]:)
     {
       $pos++;
       $token .= $splitbody[$pos];
     }
-    
+
     if($debug)
     {
       print "Token is '$token'\n";
@@ -1162,14 +1163,14 @@ sub ArgumentSubstitute
 #  @routine    Print Defines
 #  @date       Mon Nov 19 23:51:03 2001
 #  @author     Tom Goodale
-#  @desc 
+#  @desc
 #  Print all the macros in the symbol table.
-#  @enddesc 
-#  @calls     
-#  @calledby   
-#  @history 
+#  @enddesc
+#  @calls
+#  @calledby
+#  @history
 #
-#  @endhistory 
+#  @endhistory
 #
 #@@*/
 sub PrintDefines
