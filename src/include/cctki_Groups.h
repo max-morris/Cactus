@@ -28,6 +28,11 @@ int CCTKi_CreateGroup(const char *gname, const char *thorn, const char *imp,
                       int n_variables,
                       ...);
 
+int CCTKi_ParseStaggerString(int dim,  
+			     const char *imp, 
+			     const char *gname,  
+			     const char *stype); 
+
 #ifdef __cplusplus 
 }
 #endif
