@@ -742,6 +742,11 @@ through them.
         Used by thorns with relevant IO methods as the point 
         to read parameters when recovering from checkpoint files.
 
+\item[{\tt CCTK\_WRAGH}]
+        This timebin is executed when all parameters are known, but
+        before the driver thorn constructs the grid.  It should only
+        be used to set up information that is needed by the driver.
+
 \item[{\tt CCTK\_PARAMCHECK}] 
         This timebin is for thorns to check the validity of
         parameter combinations. This bin is also executed before the
@@ -749,15 +754,18 @@ through them.
         have access to the global grid size and the parameters.
 
 \item[{\tt CCTK\_BASEGRID}]
-        The first timebin to be executed after a driver thorn constructs
-        grid, this bin should only be used to set up coordinate systems
-        on the newly created grids.     
+        This timebin is executed very early after a driver thorn
+        constructs grid; this bin should only be used to set up
+        coordinate systems on the newly created grids.
 
 \item[{\tt CCTK\_INITIAL}] 
         This is the place to set up any required initial data. This timebin
         is not run when recovering from a checkpoint file.
 
 \item[{\tt CCTK\_POSTINITIAL}]
+        This is the place to modify initial data, or to calculate data
+        that depend on the initial data.  This timebin is also not run
+        when recovering from a checkpoint file.
 
 \item[{\tt CCTK\_RECOVER\_VARIABLES}]
         Used by thorns with relevant IO methods as the point 
