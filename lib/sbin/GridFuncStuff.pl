@@ -964,31 +964,26 @@ sub CreateThornGroupInitialisers
     $type = $rhinterface_db->{"\U$thorn GROUP $group\E GTYPE"};
 
     # Check consistency for arrays
-    if ($type eq "ARRAY")
+    if ($type eq 'ARRAY')
     {
-      $dim = $rhinterface_db->{"\U$thorn GROUP $group\E DIM"};
       $string = $rhinterface_db->{"\U$thorn GROUP $group\E SIZE"};
       &CheckArraySizes($string,$thorn,$rhparameter_db,$rhinterface_db);
-      if ($string =~ /^\s*$/)
-      {
-	$numsize = 0;
-      }
-      else
-      {
-	$numsize = ($string =~ s/,//g)+1;
-      }
+      $dim = $rhinterface_db->{"\U$thorn GROUP $group\E DIM"};
+      $numsize = split (',', $string);
       if ($dim != $numsize)
       {
-	if ($numsize == 0)
-	{
-	  $message = "Array sizes not provided for group $group in $thorn";
-	}
-	else
-	{
-	  $message = "Array dimension $dim doesn't match the $numsize array sizes ";
-        $message .= "\n     ($rhinterface_db->{\"\U$thorn GROUP $group\E SIZE\"}) for $group in $thorn";
-	}
-        $hint = "Array sizes must be comma separated list of $dim parameters";
+        if ($numsize == 0)
+        {
+          $message = "Array sizes not provided for group $group in $thorn";
+        }
+        else
+        {
+          $message = "Array dimension $dim doesn't match the $numsize ".
+                     "array sizes\n     (" .
+                     $rhinterface_db->{"\U$thorn GROUP $group\E SIZE"} .
+                     ") for $group in $thorn";
+        }
+        $hint = "Array sizes must be comma separated list of $dim constants or parameters";
         &CST_error(0,$message,$hint,__LINE__,__FILE__);
       }
     }
@@ -1127,6 +1122,8 @@ sub CheckArraySizes
   my($size,$thornname,$rhparameter_db,$rhinterface_db) = @_;
   my($par,$thorn,$base);
 
+  # append a dummy space character to catch expressions with trailing commas
+  $size .= ' ';
   foreach $par (split(",",$size))
   {
 
@@ -1183,6 +1180,9 @@ sub VerifyParameterExpression
 {
   my($expression,$thornname,$rhparameter_db,$rh_interface_db) = @_;
   my($i,$count,@fields);
+  my $msg = "Array size in '$thornname' is an invalid arithmetic expression\n"
+            . '          ';
+
 
   # Eliminate white space in expression
   $expression =~ s/\s+//g;
@@ -1190,8 +1190,8 @@ sub VerifyParameterExpression
   # First do some global checks
   if($expression !~ m%^[-+*/a-zA-Z0-9_():\[\]]+$%)
   {
-    &CST_error(0, "Array size in $thornname is an invalid arithmetic expression \n"
-               .  "      '$expression' contains invalid characters");
+    &CST_error(0, $msg . "'$expression' contains invalid characters",
+               '',__LINE__,__FILE__);
   }
 
   $count = 0;
@@ -1203,25 +1203,22 @@ sub VerifyParameterExpression
 
     if($count < 0)
     {
-      &CST_error(0, "Array size in $thornname is an invalid arithmetic expression \n"
-                 .  "        '$expression' has too many closing parentheses",
-                "",__LINE__,__FILE__);
+      &CST_error(0, $msg . "'$expression' has too many closing parentheses",
+                 '',__LINE__,__FILE__);
     }
   }
 
-    if($count > 0)
-    {
-      &CST_error(0, "Array size in $thornname is an invalid arithmetic expression \n"
-                 .  "        '$expression' has unmatched parentheses",
-                 "",__LINE__,__FILE__);
-    }
+  if($count > 0)
+  {
+    &CST_error(0, $msg . "'$expression' has unmatched parentheses",
+               '',__LINE__,__FILE__);
+  }
 
 
   if($expression =~ m:[-+*/]$:)
   {
-    &CST_error(0, "Array size in $thornname is an invalid arithmetic expression \n"
-               .  "          '$expression' ends with an operator",
-               "",__LINE__,__FILE__);
+    &CST_error(0, $msg . "'$expression' ends with an operator",
+               '',__LINE__,__FILE__);
 
   }
 
@@ -1263,8 +1260,8 @@ sub VerifyParameterExpression
             $rhparameter_db->{"\U$thorn Global\E variables"} !~ m:$base:i &&
             $rhparameter_db->{"\U$thorn Restricted\E variables"} !~ m:$base:i)
         {
-          &CST_error(0,"Array size \'$expression\' in $thornname contains a constant which isn\'t a parameter",
-                     "",__LINE__,__FILE__);
+          &CST_error(0,"Array size '$expression' in '$thornname' contains a constant which isn\'t a parameter",
+                     '',__LINE__,__FILE__);
         }
       }
       else
@@ -1273,63 +1270,58 @@ sub VerifyParameterExpression
 
         my $implementation = $thorn;
 
-	# Is it a global parameter?
-	if ($rhparameter_db->{"GLOBAL PARAMETERS"} =~ m/$i/i)
-	{
-	  # It is a global parameter, all is o.k.
-	}
-	elsif($rhparameter_db->{"\U$thornname SHARES\E implementations"} =~ m/\b$implementation\b/i)
+        # Is it a global parameter?
+        if ($rhparameter_db->{"GLOBAL PARAMETERS"} =~ m/$i/i)
+        {
+          # It is a global parameter, all is o.k.
+        }
+        elsif($rhparameter_db->{"\U$thornname SHARES\E implementations"} =~ m/\b$implementation\b/i)
         {
           # Ok, so it does share from this implementation
           if($rhparameter_db->{"\U$thornname SHARES $implementation\E variables"} !~ m/\b$base\b/i)
           {
-            &CST_error(0,"Array size \'$expression\' in $thornname contains a reference to a parameter from $implementation" .
+            &CST_error(0,"Array size '$expression' in '$thornname' contains a reference to a parameter from $implementation" .
                        " which is neither USED nor EXTENDED",
-                       "",__LINE__,__FILE__);
+                       '',__LINE__,__FILE__);
           }
         }
         else
         {
-          &CST_error(0,"Array size \'$expression\' in $thornname contains a reference to a parameter from $implementation" .
+          &CST_error(0,"Array size '$expression' in '$thornname' contains a reference to a parameter from $implementation" .
                      " which is not global nor shared",
-                     "",__LINE__,__FILE__);
+                     '',__LINE__,__FILE__);
         }
       }
     }
     elsif($i =~ m:^\(\)$:)
     {
       # Empty parenthesis - bad
-      &CST_error(0, "Array size in $thornname is an invalid arithmetic expression \n"
-               .  "          '$expression' contains empty parentheses",
-               "",__LINE__,__FILE__);
+      &CST_error(0, $msg . "'$expression' contains empty parentheses",
+                 '',__LINE__,__FILE__);
     }
     elsif($i =~ m:[-+/*]{2,}:)
     {
       # Two operators in a row - bad
-      &CST_error(0, "Array size in $thornname is an invalid arithmetic expression \n"
-               .  "          '$expression' contains two operators in a row",
-               "",__LINE__,__FILE__);
+      &CST_error(0, $msg . "'$expression' contains two operators in a row",
+                 '',__LINE__,__FILE__);
     }
     elsif($i =~ m:[-+/*]\):)
     {
       # Operator followed by closing parenthesis - bad
-      &CST_error(0, "Array size in $thornname is an invalid arithmetic expression \n"
-               .  "          '$expression' has a missing operand",
-               "",__LINE__,__FILE__);
+      &CST_error(0, $msg . "'$expression' has a missing operand",
+                 '',__LINE__,__FILE__);
     }
     elsif($i =~ m:\([-+/*]:)
     {
       # Opening parenthesis followed by operator - bad
-      &CST_error(0, "Array size in $thornname is an invalid arithmetic expression \n"
-               .  "          '$expression' has a missing operand",
-               "",__LINE__,__FILE__);
+      &CST_error(0, $msg . "'$expression' has a missing operand",
+                 '',__LINE__,__FILE__);
     }
     else
     {
       # I've run out of imagination
-      &CST_error(0, "Array size in $thornname is an invalid arithmetic expression \n"
-               .  "          '$expression' contains unrecognised token '$i'",
-               "",__LINE__,__FILE__);
+      &CST_error(0, $msg . "'$expression' contains unrecognised token '$i'",
+                 '',__LINE__,__FILE__);
     }
   }
 
