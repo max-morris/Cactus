@@ -82,8 +82,9 @@ void CCTK_FCALL CCTK_FNAME (CCTK_InterpLocal)
 /* structure holding the routines for a registered interpolation operator */
 struct  interp_info
         {
-        const char *implementation;
-        const char *name;
+        const char *thorn_name;
+        const char *implementation_name;
+        const char *operator_name;
         cInterpOperatorGV     interp_operator_GV;
         cInterpOperatorLocal  interp_operator_local;
         cInterpOpLocalUniform interp_op_local_uniform;
@@ -103,9 +104,9 @@ static int num_interp_operators = 0;
  ******************************************************************************/
 
 static
-  int get_interp_info(const char *thorn_name,
-                      const char *operator_name,
-                      struct interp_info **pp_interp_info);
+  int GetOrSetupInterpInfo(const char *thorn_name,
+                           const char *operator_name,
+                           struct interp_info **pp_interp_info);
 
 /******************************************************************************
  *************************    Macro Definitions   *****************************
@@ -173,7 +174,7 @@ const char *CCTK_InterpOperatorImplementation(int handle)
 
   if (operator)
   {
-    imp = operator->implementation;
+    imp = operator->implementation_name;
   }
 
   return imp;
@@ -243,7 +244,7 @@ const char *CCTK_InterpOperatorImplementation(int handle)
   @date       Thu Feb 21 16:03:25 CET 2002
   @author     Jonathan Thornburg <jthorn@aei.mpg.de>
   @hdesc      * move common logic in all interpolator-registration
-                functions into new  get_interp_info()  function
+                functions into new  GetOrSetupInterpInfo()  function
               * convert remaining boilerplate which differs from one
                 registration function to another, into this macro
   @endhistory
@@ -260,16 +261,19 @@ const char *CCTK_InterpOperatorImplementation(int handle)
   if (operator_ptr_fnarg == NULL)                                       \
   {                                                                     \
     CCTK_VWarn(1, __LINE__, __FILE__, "Cactus",                         \
-               function_name_string ": NULL function pointer\n"         \
-               "   passed for interpolation operator \"%s\"!"           \
+               function_name_string ":\n"                               \
+               "   (called from thorn %s)\n"                            \
+               "   NULL function pointer passed\n"                      \
+               "   for interpolation operator \"%s\"!"                  \
                ,                                                        \
+               thorn_name_fnarg,                                        \
                operator_name_fnarg);                                    \
     return -1;                                  /*** ERROR RETURN ***/  \
   }                                                                     \
                                                                         \
-  handle = get_interp_info(thorn_name_fnarg,                            \
-                           operator_name_fnarg,                         \
-                           &p_interp_info);                             \
+  handle = GetOrSetupInterpInfo(thorn_name_fnarg,                       \
+                                operator_name_fnarg,                    \
+                                &p_interp_info);                        \
   if (handle < 0)                                                       \
   {                                                                     \
     return handle;                              /*** ERROR RETURN ***/  \
@@ -280,9 +284,13 @@ const char *CCTK_InterpOperatorImplementation(int handle)
   {                                                                     \
     CCTK_VWarn(1, __LINE__, __FILE__, "Cactus",                         \
                function_name_string ":\n"                               \
-               "   Operator \"%s\" already exists!"                     \
+               "   (called from thorn %s)\n"                            \
+               "   Ignoring attempt to register operator \"%s\"\n"      \
+               "   because it has already been registered by thorn %s"  \
                ,                                                        \
-               operator_name_fnarg);                                    \
+               thorn_name_fnarg,                                        \
+               operator_name_fnarg,                                     \
+               p_interp_info->thorn_name);                              \
     return -3;                                  /*** ERROR RETURN ***/  \
   }                                                                     \
                                                                         \
@@ -341,7 +349,7 @@ const char *CCTK_InterpOperatorImplementation(int handle)
   @date       Thu Feb 21 16:03:25 CET 2002
   @author     Jonathan Thornburg <jthorn@aei.mpg.de>
   @hdesc      * move common logic in all interpolator-registration
-                functions into new  get_interp_info()  function
+                functions into new  GetOrSetupInterpInfo()  function
               * convert remaining boilerplate which differs from one
                 registration function to another, into this macro
   @endhistory
@@ -389,7 +397,7 @@ CCTK_INTERP_REGISTER_FN_BODY(operator_ptr,
 /******************************************************************************/
 
 /*@@
-  @routine      get_interp_info
+  @routine      GetOrSetupInterpInfo
   @date         Thu Feb 21 14:41:35 CET 2002
   @author       Jonathan Thornburg <jthorn@aei.mpg.de>
   @desc         This is an internal worker routine used as part of the
@@ -400,9 +408,9 @@ CCTK_INTERP_REGISTER_FN_BODY(operator_ptr,
                 If some interpolation operator is already registered
                 under the specified operator name, we use the existing
                  struct interp_info .  Otherwise, we allocate a new
-                 struct interp_info  and initialize it (implementation
-                and name assigned from this function's arguments, all
-                operator pointers set to NULL), use it.
+                 struct interp_info  and set it up (thorn, implementation,
+                and operator names assigned from this function's arguments,
+                all operator pointers set to NULL), then use it.
   @enddesc
 
   @var          thorn_name
@@ -432,9 +440,9 @@ CCTK_INTERP_REGISTER_FN_BODY(operator_ptr,
   @endreturndesc
   @@*/
 static
-  int get_interp_info(const char *thorn_name,
-                      const char *operator_name,
-                      struct interp_info **pp_interp_info)
+  int GetOrSetupInterpInfo(const char *thorn_name,
+                           const char *operator_name,
+                           struct interp_info **pp_interp_info)
 {
   /* has some operator already been registered under this operator name? */
   int handle = Util_GetHandle(interp_operators,
@@ -453,8 +461,9 @@ static
     return -2;                                          /*** ERROR RETURN ***/
   }
 
-  (*pp_interp_info)->implementation = CCTK_ThornImplementation(thorn_name);
-  (*pp_interp_info)->name = operator_name;
+  (*pp_interp_info)->thorn_name = thorn_name;
+  (*pp_interp_info)->implementation_name = CCTK_ThornImplementation(thorn_name);
+  (*pp_interp_info)->operator_name = operator_name;
   (*pp_interp_info)->interp_operator_GV      = NULL;
   (*pp_interp_info)->interp_operator_local   = NULL;
   (*pp_interp_info)->interp_op_local_uniform = NULL;
@@ -561,7 +570,7 @@ const char *CCTK_InterpOperator (int handle)
                                                           handle);
     if (operator)
     {
-      name = operator->name;
+      name = operator->operator_name;
     }
     else
     {
