@@ -3036,7 +3036,7 @@ ac_link='${CC-cc} -o conftest${ac_exeext} $CFLAGS $CPPFLAGS $LDFLAGS conftest.$a
 cross_compiling=$ac_cv_prog_cc_cross
 
 
-ac_save_LIBS="$LIBS"
+my_LIBS="$LIBS"
 echo $ac_n "checking for main in -lsocket""... $ac_c" 1>&6
 echo "configure:3042: checking for main in -lsocket" >&5
 ac_lib_var=`echo socket'_'main | sed 'y%./+-%__p_%'`
@@ -3304,7 +3304,7 @@ EOF
 
 echo checking third arg to getsockname: is pointer to $try
 rm socketHdrs.h
-LIBS="$ac_save_LIBS"
+LIBS="$my_LIBS"
 ac_ext=c
 # CFLAGS is not in ac_cpp because -g, -O, etc. are not valid cpp options.
 ac_cpp='$CPP $CPPFLAGS'

@@ -201,7 +201,7 @@ AC_LANG_C
 
 dnl Save old libs
 dnl Add the socket and nsl libs if they exist (sun)
-ac_save_LIBS="$LIBS"
+my_LIBS="$LIBS"
 AC_CHECK_LIB(socket,main)
 AC_CHECK_LIB(nsl,main)
 
@@ -235,7 +235,7 @@ try="int"
 AC_DEFINE_UNQUOTED(CCTK_SOCKLEN_T, $try)
 echo checking third arg to getsockname: is pointer to $try
 rm socketHdrs.h
-LIBS="$ac_save_LIBS"
+LIBS="$my_LIBS"
 AC_LANG_RESTORE
 ])
 
