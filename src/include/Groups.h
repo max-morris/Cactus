@@ -81,11 +81,4 @@ int CCTK_GetNumVarsInGroup_ByIndex(int group);
 #define GROUP_GF     2
 #define GROUP_ARRAY  3
 
-/* Variable Types */
-
-#define VARIABLE_CHAR     1
-#define VARIABLE_INTEGER  2
-#define VARIABLE_REAL     3
-#define VARIABLE_COMPLEX  4
-
 #endif

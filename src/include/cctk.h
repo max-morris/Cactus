@@ -36,13 +36,13 @@
 #define _DECLARE_CCTK_FARGUMENTS INTEGER dim&&\
                            INTEGER global_sh(dim)&&\
                            INTEGER sh(dim), lb(dim), ub(dim), bbox(2*dim)&&\
-                           REAL delta_time, time, delta_space(dim)&&\
-			   REAL origin_space(dim)&&\
+                           CCTK_REAL delta_time, time, delta_space(dim)&&\
+			   CCTK_REAL origin_space(dim)&&\
                            INTEGER levfac&&\
                            INTEGER convlevel&&\
                            INTEGER nghostzones&&\
                            INTEGER iteration&&\
-                           POINTER GH&&\
+                           CCTK_POINTER GH&&\
 
 #endif /*FCODE*/
 
@@ -68,12 +68,12 @@
 #define _CCTK_C2F_PROTO     int *,\
                             int *,\
                             int *,int *, int *, int *,\
-                            Double *, Double *, Double *,\
-			    Double *,\
+                            CCTK_REAL *, CCTK_REAL *, CCTK_REAL *,\
+			    CCTK_REAL *,\
                             int *,\
                             int *,\
                             int *,\
-                            unsigned long *,\
+                            int *,\
                             cGH *
 
 #define CCTK_STORAGESIZE(xGH, group, dim) (CCTK_QueryGroupStorage(xGH,group) ?\
@@ -81,15 +81,18 @@
 
 typedef struct
 {
-  Double Re;
-  Double Im;
+  CCTK_REAL Re;
+  CCTK_REAL Im;
 } Complex;
 
 extern int _cctk_one;
 
 #endif /*CCODE*/
 
-#define CCTK_REAL 3
+#define CCTK_VARIABLE_CHAR    1
+#define CCTK_VARIABLE_INTEGER 2
+#define CCTK_VARIABLE_REAL    3
+#define CCTK_VARIABLE_COMPLEX 4
 
 /*#define CCTK_MAKESTRING(x) CCTK_REALSTRING(x)
 #define CCTK_REALSTRING(x) #x

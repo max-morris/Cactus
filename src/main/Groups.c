@@ -662,22 +662,22 @@ int CCTK_VTypeNumber(const char *type)
 
   if(!strcmp(type, "INTEGER"))
   {
-    retval = VARIABLE_INTEGER;
+    retval = CCTK_VARIABLE_INTEGER;
   }
 
   if(!strcmp(type, "REAL"))
   {
-    retval = VARIABLE_REAL;
+    retval = CCTK_VARIABLE_REAL;
   }
 
   if(!strcmp(type, "COMPLEX"))
   {
-    retval = VARIABLE_COMPLEX;
+    retval = CCTK_VARIABLE_COMPLEX;
   }
 
   if(!strcmp(type, "CHAR"))
   {
-    retval = VARIABLE_CHAR;
+    retval = CCTK_VARIABLE_CHAR;
   }
 
   return retval;

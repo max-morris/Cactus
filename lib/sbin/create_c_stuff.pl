@@ -337,7 +337,7 @@ sub get_c_type_string
   }
   elsif($type eq "REAL")
   {
-    $type_string = "Double ";
+    $type_string = "CCTK_REAL ";
   }
   else
   {

@@ -22,7 +22,7 @@ typedef struct
 typedef struct
 {
   int dim;
-  unsigned long int iteration;
+  int iteration;
 
   /* ...[dim]*/
   int *global_shape;
@@ -31,11 +31,11 @@ typedef struct
   int *upper_bound;
 
   /* The grid spacings */
-  Double delta_time;
-  Double *delta_space;
+  CCTK_REAL delta_time;
+  CCTK_REAL *delta_space;
 
   /* FIXME we want coordinate registration instead of this */
-  Double *origin_space;
+  CCTK_REAL *origin_space;
 
   /* The bounding box - 1 => a real boundary, 0 => a local grid boundary. */
   /* bbox[2*dim] */
@@ -51,7 +51,7 @@ typedef struct
   int nghostzones;
 
   /* The coordinate time */
-  Double time;
+  CCTK_REAL time;
 
   /* data[var_num][TIMELEVEL][xyz]*/
   /* TIMELEVEL  I believe, xyz is linear */

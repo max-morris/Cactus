@@ -11,6 +11,7 @@
 /*#define DEBUG_REDUCTION*/
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <malloc.h>
 #include <stdarg.h>
@@ -143,9 +144,10 @@ int CCTK_Reduce(cGH *GH, int retvartype, int retvarnum, void *retval,
 
 
   /* Call the function providing the reduction, if it exists */
+  /* FIX ME : Generalise (GAB) */
   if (function)
   {
-    function(GH,-1,VARIABLE_REAL,retvarnum,retval,invarnum,index_array);
+    function(GH,-1,CCTK_VARIABLE_REAL,retvarnum,retval,invarnum,index_array);
   }
   else
     CCTK_Warn(1,"CCTK","Reduction operation is not registered and cannot be called");

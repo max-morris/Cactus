@@ -12,4 +12,4 @@
 
 #define CCTK_STRING POINTER
 
-#define Double double
+#define CCTK_REAL double

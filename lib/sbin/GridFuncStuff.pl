@@ -316,7 +316,7 @@ sub CreateFortranArgumentDeclarations
 	}
 	elsif ($1 eq REAL)
 	{
-	  push(@declarations, "REAL $argument$suffix$2");
+	  push(@declarations, "CCTK_REAL $argument$suffix$2");
 	}
 	elsif ($1 eq COMPLEX)
 	{
@@ -538,7 +538,7 @@ sub CreateCArgumentPrototype
 	  }
 	  elsif ($1 eq REAL)
 	  {
-	    $prototype .="$sep". "Double *";
+	    $prototype .="$sep". "CCTK_REAL *";
 	    $sep = ",";	
 	  }
 	  elsif ($1 eq COMPLEX)
@@ -621,7 +621,7 @@ sub CreateCArgumentList
 	  }
 	  elsif ($1 eq REAL)
 	  {
-	    $arglist .= "$sep"."(Double *)((xGH)->data[CCTKARGNUM_$argument][$level-1])";
+	    $arglist .= "$sep"."(CCTK_REAL *)((xGH)->data[CCTKARGNUM_$argument][$level-1])";
 	    $sep = ",";
 	  }
 	  elsif ($1 eq COMPLEX)

@@ -186,7 +186,7 @@ sub get_fortran_type_string
      $type eq "SENTENCE")
   {
     $type_string = "CCTK_STRING ";
-  }
+  } 
   elsif($type eq "LOGICAL" ||
 	$type eq "INTEGER")
   {
@@ -194,7 +194,7 @@ sub get_fortran_type_string
   }
   elsif($type eq "REAL")
   {
-    $type_string = "REAL ";
+    $type_string = "CCTK_REAL ";
   }
   else
   {

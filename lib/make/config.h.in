@@ -30,17 +30,17 @@
 
 typedef INTEGER4 Int;
 
-#define Double double
+#define CCTK_REAL double
 
 #endif
 
 #ifdef FCODE
 
-#define POINTER integer*SIZEOF_CHAR_P
+#define CCTK_POINTER integer*SIZEOF_CHAR_P
 
-#define CCTK_STRING POINTER
+#define CCTK_STRING CCTK_POINTER
 
-#define REAL double precision
+#define CCTK_REAL double precision
 
 #endif
 

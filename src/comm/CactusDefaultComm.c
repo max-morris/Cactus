@@ -91,9 +91,9 @@ cGH *CactusDefaultSetupGH(tFleshConfig *config, int convergence_level)
     thisGH->lower_bound = (int *)malloc(thisGH->dim*sizeof(int));
     thisGH->upper_bound = (int *)malloc(thisGH->dim*sizeof(int));
     thisGH->bbox        = (int *)malloc(2*thisGH->dim*sizeof(int));
-    thisGH->delta_space = (Double *)malloc(thisGH->dim*sizeof(Double));
+    thisGH->delta_space = (CCTK_REAL *)malloc(thisGH->dim*sizeof(CCTK_REAL));
     /* FIXME : Next line goes when coords are done properly */
-    thisGH->origin_space = (Double *)malloc(thisGH->dim*sizeof(Double));
+    thisGH->origin_space = (CCTK_REAL *)malloc(thisGH->dim*sizeof(CCTK_REAL));
 
     thisGH->delta_time = 1;
     thisGH->levfac = 1;
