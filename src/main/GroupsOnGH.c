@@ -179,16 +179,11 @@ void CCTK_FCALL CCTK_FNAME (CCTK_GroupbboxVN)
    @desc
    Passes back a variable data pointer, given a full name and timelevel
    @enddesc
-   @calls
-   @history
-
-   @endhistory
 
    @var        GH
    @vdesc      Pointer to Grid Hierachy
    @vtype      const cGH *
    @vio        in
-   @vcomment
    @endvar
 
    @var        varname
@@ -202,7 +197,6 @@ void CCTK_FCALL CCTK_FNAME (CCTK_GroupbboxVN)
    @vdesc      Index of timelevel on which data is required
    @vtype      int
    @vio        in
-   @vcomment
    @endvar
 
    @returntype void *
@@ -218,7 +212,17 @@ void *CCTK_VarDataPtr(const cGH *GH, int timelevel, const char *varname)
   vindex = CCTK_VarIndex(varname);
   if (vindex >= 0)
   {
-    retval = GH->data[vindex][timelevel];
+    if (timelevel >= 0 && timelevel < CCTK_NumTimeLevelsFromVarI (vindex))
+    {
+      retval = GH->data[vindex][timelevel];
+    }
+    else
+    {
+      CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
+                 "Invalid timelevel %d for variable '%s' in CCTK_VarDataPtr",
+                 timelevel, varname);
+      retval = NULL;
+    }
   }
   else
   {
@@ -242,7 +246,6 @@ void *CCTK_VarDataPtr(const cGH *GH, int timelevel, const char *varname)
    @desc
    Passes back a variable data pointer, given a variable index and timelevel
    @enddesc
-   @calls
    @history
       A check for a valid index (i>=0) included by Gerd Lanfermann
    @endhistory
@@ -251,7 +254,6 @@ void *CCTK_VarDataPtr(const cGH *GH, int timelevel, const char *varname)
    @vdesc      Pointer to Grid Hierachy
    @vtype      const cGH *
    @vio        in
-   @vcomment
    @endvar
 
    @var        vari
@@ -265,30 +267,35 @@ void *CCTK_VarDataPtr(const cGH *GH, int timelevel, const char *varname)
    @vdesc      Index of timelevel on which data is required
    @vtype      int
    @vio        in
-   @vcomment
    @endvar
 
    @returntype void *
    @returndesc Pointer to the required data, should be cast to required type
    @endreturndesc
-
-   @version    $Header$
-
 @@*/
-
-void *CCTK_VarDataPtrI(const cGH *GH, int timelevel, int vari)
+void *CCTK_VarDataPtrI(const cGH *GH, int timelevel, int vindex)
 {
   void *retval;
 
-  if (vari < 0)
+
+  retval = NULL;
+  if (vindex >= 0)
   {
-    CCTK_Warn(1,__LINE__,__FILE__,"Cactus",
-              "CCTK_VarPtrDataI: Calling CCTK_VarDataPtrI with negative index");
-    retval = NULL;
+    if (timelevel >= 0 && timelevel < CCTK_NumTimeLevelsFromVarI (vindex))
+    {
+      retval = GH->data[vindex][timelevel];
+    }
+    else
+    {
+      CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
+                 "Invalid timelevel %d for variable '%s' in CCTK_VarDataPtrI",
+                 timelevel, CCTK_VarName (vindex));
+    }
   }
   else
   {
-    retval = GH->data[vari][timelevel];
+    CCTK_Warn(1,__LINE__,__FILE__,"Cactus",
+              "CCTK_VarPtrDataI: Calling CCTK_VarDataPtrI with negative index");
   }
 
   return retval;
@@ -302,15 +309,11 @@ void *CCTK_VarDataPtrI(const cGH *GH, int timelevel, int vari)
    Passes back a variable data pointer, given either a  variable index
    or a full name and timelevel
    @enddesc
-   @calls
-   @history
 
-   @endhistory
    @var        GH
    @vdesc      Pointer to Grid Hierachy
    @vtype      const cGH *
    @vio        in
-   @vcomment
    @endvar
 
    @var        vari
@@ -331,26 +334,21 @@ void *CCTK_VarDataPtrI(const cGH *GH, int timelevel, int vari)
    @vdesc      Index of timelevel on which data is required
    @vtype      int
    @vio        in
-   @vcomment
    @endvar
 
    @returntype void *
    @returndesc Pointer to the required data, should be cast to required type
    @endreturndesc
-
-   @version    $Header$
-
 @@*/
-void *CCTK_VarDataPtrB(const cGH *GH, int timelevel, int vari, char *varn)
+void *CCTK_VarDataPtrB(const cGH *GH, int timelevel, int vindex, char *varname)
 {
-  if (varn)
-  {
-    return CCTK_VarDataPtr(GH, timelevel, varn);
-  }
-  else
-  {
-    return CCTK_VarDataPtrI(GH, timelevel, vari);
-  }
+  void *result;
+
+
+  result = varname ? CCTK_VarDataPtr(GH, timelevel, varname)
+                   : CCTK_VarDataPtrI(GH, timelevel, vindex);
+
+  return (result);
 }
 
  /*@@
@@ -360,12 +358,6 @@ void *CCTK_VarDataPtrB(const cGH *GH, int timelevel, int vari, char *varn)
    @desc
    Enables communication for a group based upon its name.
    @enddesc
-   @calls
-   @calledby
-   @history
-
-   @endhistory
-
 @@*/
 int CCTK_EnableGroupCommI(cGH *GH, int group)
 {
@@ -394,12 +386,6 @@ int CCTK_EnableGroupCommI(cGH *GH, int group)
    @desc
    Enables storage for a group based upon its name.
    @enddesc
-   @calls
-   @calledby
-   @history
-
-   @endhistory
-
 @@*/
 int CCTK_EnableGroupStorageI(cGH *GH, int group)
 {
@@ -431,12 +417,6 @@ int CCTK_EnableGroupStorageI(cGH *GH, int group)
    @desc
    Routine to switch communication off for a group based upon its index
    @enddesc
-   @calls
-   @calledby
-   @history
-
-   @endhistory
-
 @@*/
 int CCTK_DisableGroupCommI(cGH *GH, int group)
 {
@@ -468,12 +448,6 @@ int CCTK_DisableGroupCommI(cGH *GH, int group)
    @desc
    Routine to switch storage off for a group based upon its index
    @enddesc
-   @calls
-   @calledby
-   @history
-
-   @endhistory
-
 @@*/
 int CCTK_DisableGroupStorageI(cGH *GH, int group)
 {
@@ -527,14 +501,7 @@ int CCTK_QueryGroupStorage(const cGH *GH, const char *groupn)
    @desc
    Returns the lower bound for a variable group
    @enddesc
-   @calls
-   @calledby
-   @history
-
-   @endhistory
-
 @@*/
-
 int CCTK_GrouplbndGI(const cGH *cctkGH,
                      int dim,
                      int *lbnd,
@@ -712,14 +679,7 @@ void CCTK_FCALL CCTK_FNAME (CCTK_GrouplbndVN)
    @desc
    Returns the upper bound for a variable group
    @enddesc
-   @calls
-   @calledby
-   @history
-
-   @endhistory
-
 @@*/
-
 int CCTK_GroupubndGI(const cGH *cctkGH,
                      int dim,
                      int *ubnd,
@@ -894,14 +854,7 @@ void CCTK_FCALL CCTK_FNAME (CCTK_GroupubndVN)
    @desc
    Returns the local shape for a variable group
    @enddesc
-   @calls
-   @calledby
-   @history
-
-   @endhistory
-
 @@*/
-
 int CCTK_GrouplshGI(const cGH *cctkGH,
                     int dim,
                     int *lsh,
@@ -1076,14 +1029,7 @@ void CCTK_FCALL CCTK_FNAME (CCTK_GrouplshVN)
    @desc
    Returns the global shape for a variable group
    @enddesc
-   @calls
-   @calledby
-   @history
-
-   @endhistory
-
 @@*/
-
 int CCTK_GroupgshGI(const cGH *cctkGH,
                     int dim,
                     int *gsh,
@@ -1258,14 +1204,7 @@ void CCTK_FCALL CCTK_FNAME (CCTK_GroupgshVN)
    @desc
    Returns the ghostzone size for a variable group
    @enddesc
-   @calls
-   @calledby
-   @history
-
-   @endhistory
-
 @@*/
-
 int CCTK_GroupnghostzonesGI(const cGH *cctkGH,
                             int dim,
                             int *nghostzones,
@@ -1440,14 +1379,7 @@ void CCTK_FCALL CCTK_FNAME (CCTK_GroupnghostzonesVN)
    @desc
    Returns the bbox array for a variable group
    @enddesc
-   @calls
-   @calledby
-   @history
-
-   @endhistory
-
 @@*/
-
 int CCTK_GroupbboxGI(const cGH *cctkGH,
                      int size,
                      int *bbox,
