@@ -95,7 +95,7 @@ if [ $test_szlib -eq 0 ]; then
 
   if [ -z "$LIBSZ_DIR" -a ! -r /usr/lib/$libsz ]; then
     echo "  HDF5 library was built with external szlib I/O filter, searching for library $libsz ..."
-    CCTK_Search LIBSZ_DIR '/usr/local/lib c:/packages/libsz/lib c:/packages/hdf5/lib' $libsz
+    CCTK_Search LIBSZ_DIR "$HDF5_LIB_DIRS /usr/local/lib c:/packages/libsz/lib c:/packages/hdf5/lib" $libsz
     if [ -z "$LIBSZ_DIR" ]; then
       echo "  Unable to locate the library $libsz - please set LIBSZ_DIR"
       exit 2
@@ -107,7 +107,9 @@ if [ $test_szlib -eq 0 ]; then
   else
     HDF5_LIBS="$HDF5_LIBS szlib"
   fi
-  HDF5_LIB_DIRS="$HDF5_LIB_DIRS $LIBSZ_DIR"
+  if [ ! -z "$LIBSZ_DIR" -a "$LIBSZ_DIR" != "$HDF5_LIB_DIRS" ]; then
+    HDF5_LIB_DIRS="$HDF5_LIB_DIRS $LIBSZ_DIR"
+  fi
 fi
 
 
