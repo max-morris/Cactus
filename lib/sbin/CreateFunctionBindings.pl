@@ -190,6 +190,10 @@ sub IsOverloadedBindings
   push(@data, $line);
   $line = "  int retval=0;\n\n";
   push(@data, $line);
+  $line = "  const char *cctk_dummy_string; /* avoid warnings */\n\n";  
+  push(@data, $line);
+  $line = "  cctk_dummy_string=function; /* avoid warnings */\n\n";  
+  push(@data, $line);
 
   foreach $function (split(" ",$function_db->{"FUNCTIONS"}))
   {
