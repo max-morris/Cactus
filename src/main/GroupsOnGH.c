@@ -209,6 +209,8 @@ void *CCTK_VarDataPtr(const cGH *GH, int timelevel, const char *varname)
   int vindex;
   void *retval;
 
+
+  retval = NULL;
   vindex = CCTK_VarIndex(varname);
   if (vindex >= 0)
   {
@@ -221,14 +223,12 @@ void *CCTK_VarDataPtr(const cGH *GH, int timelevel, const char *varname)
       CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
                  "Invalid timelevel %d for variable '%s' in CCTK_VarDataPtr",
                  timelevel, varname);
-      retval = NULL;
     }
   }
   else
   {
     CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
                "Invalid variable name '%s' in CCTK_VarDataPtr", varname);
-    retval = NULL;
   }
 
 #ifdef DEBUG_GROUPS
@@ -256,11 +256,10 @@ void *CCTK_VarDataPtr(const cGH *GH, int timelevel, const char *varname)
    @vio        in
    @endvar
 
-   @var        vari
+   @var        vindex
    @vdesc      Index of grid variable
    @vtype      int
    @vio        in
-   @vcomment   Assumed to be in correct range
    @endvar
 
    @var        timelevel
@@ -275,27 +274,29 @@ void *CCTK_VarDataPtr(const cGH *GH, int timelevel, const char *varname)
 @@*/
 void *CCTK_VarDataPtrI(const cGH *GH, int timelevel, int vindex)
 {
+  int numtimelevels;
   void *retval;
 
 
   retval = NULL;
-  if (vindex >= 0)
+  numtimelevels = CCTK_NumTimeLevelsFromVarI (vindex);
+  if (numtimelevels > 0)
   {
-    if (timelevel >= 0 && timelevel < CCTK_NumTimeLevelsFromVarI (vindex))
+    if (timelevel >= 0 && timelevel < numtimelevels)
     {
       retval = GH->data[vindex][timelevel];
     }
     else
     {
       CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
-                 "Invalid timelevel %d for variable '%s' in CCTK_VarDataPtrI",
+                 "CCTK_VarDataPtrI: Invalid timelevel %d for variable '%s'",
                  timelevel, CCTK_VarName (vindex));
     }
   }
   else
   {
-    CCTK_Warn(1,__LINE__,__FILE__,"Cactus",
-              "CCTK_VarPtrDataI: Calling CCTK_VarDataPtrI with negative index");
+    CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
+               "CCTK_VarPtrDataI: Invalid index %d given", vindex);
   }
 
   return retval;
@@ -364,16 +365,12 @@ int CCTK_EnableGroupCommI(const cGH *GH, int group)
   int retcode;
   char *group_name;
 
+  retcode = 0;
   group_name = CCTK_GroupName(group);
   if(group_name)
   {
     retcode = CCTK_EnableGroupComm(GH, group_name);
-
     free(group_name);
-  }
-  else
-  {
-    retcode = 0;
   }
 
   return retcode;
@@ -392,6 +389,7 @@ int CCTK_EnableGroupStorageI(const cGH *GH, int group)
   int retcode;
   char *group_name;
 
+  retcode = 0;
   group_name = CCTK_GroupName(group);
   if(group_name)
   {
@@ -401,10 +399,6 @@ int CCTK_EnableGroupStorageI(const cGH *GH, int group)
     retcode = CCTK_EnableGroupStorage(GH, group_name);
 
     free(group_name);
-  }
-  else
-  {
-    retcode = 0;
   }
 
   return retcode;
@@ -423,6 +417,7 @@ int CCTK_DisableGroupCommI(const cGH *GH, int group)
   int retcode;
   char *group_name;
 
+  retcode = 0;
   group_name = CCTK_GroupName(group);
   if(group_name)
   {
@@ -432,10 +427,6 @@ int CCTK_DisableGroupCommI(const cGH *GH, int group)
     retcode = CCTK_DisableGroupComm(GH, group_name);
 
     free(group_name);
-  }
-  else
-  {
-    retcode = 0;
   }
 
   return retcode;
@@ -454,16 +445,13 @@ int CCTK_DisableGroupStorageI(const cGH *GH, int group)
   int retcode;
   char *group_name;
 
+  retcode = 0;
   group_name = CCTK_GroupName(group);
   if(group_name)
   {
     retcode = CCTK_DisableGroupStorage(GH, group_name);
 
     free(group_name);
-  }
-  else
-  {
-    retcode = 0;
   }
 
   return retcode;
