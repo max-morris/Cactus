@@ -118,8 +118,10 @@ int CactusDefaultEvolve(tFleshConfig *config)
   CCTK_PRINTSEPARATOR
 #endif
 
-
+#if 0
   CactusStartTimer(config->timer[OUTPUT]);
+#endif
+
   /*** Call OUTPUT for this GH (this routine    ***/
   /*** checks if output is necessary) and makes ***/
   /*** an rfrTraverse with CCTK_ANALYSIS      ***/
@@ -129,13 +131,12 @@ int CactusDefaultEvolve(tFleshConfig *config)
       CCTK_OutputGH(config->GH[convergence_level]);
   }
   EndForallConvLevels;
-      
+
+#if 0      
   CactusStopTimer(config->timer[OUTPUT]);
 
-
-
   CactusStartTimer(config->timer[EVOLUTION]);
-
+#endif
   /*
   CCTK_InfoHeader(config);
   */
@@ -175,7 +176,9 @@ int CactusDefaultEvolve(tFleshConfig *config)
     EndForallConvLevels;
 
     /* Output perhaps */
+#if 0
     CactusStartTimer(config->timer[OUTPUT]);
+#endif
     /*** Call OUTPUT for this GH (this routine    ***/
     /*** checks if output is necessary) and makes ***/
     /*** an rfrTraverse with CCTK_ANALYSIS      ***/
@@ -186,8 +189,9 @@ int CactusDefaultEvolve(tFleshConfig *config)
     }
     EndForallConvLevels;
       
+#if 0
     CactusStopTimer(config->timer[OUTPUT]);
-
+#endif
 
 #if 0
     ConvergenceReport(config->GH, iteration);
@@ -200,7 +204,9 @@ int CactusDefaultEvolve(tFleshConfig *config)
 
   } /*** END OF MAIN ITERATION LOOP ***/
 
+#if 0
   CactusStopTimer(config->timer[EVOLUTION]);
+#endif
 
   return 0;
 }

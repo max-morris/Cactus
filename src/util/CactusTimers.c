@@ -17,36 +17,16 @@
 
 static char *rcsid = "$Header$";
 
-
-
-cTimer *CactusNewTimer(void)
-{
-  cTimer *timer;
-
-  timer = (cTimer*) malloc(sizeof(cTimer));
-
-  return timer;
-}
-
-  
-
-void CactusStartTimer(cTimer *timer)
-{
-}
-
-void CactusStopTimer(cTimer *timer)
-{
-}
-
-void CactusResetTimer(cTimer *timer)
-{
-}
-
 typedef struct
 {
   void **data;
 } t_Timer;
 
+static void CCTKi_TimerDestroy(int this_timer, t_Timer *timer);
+static void CCTKi_TimerStart(int this_timer, t_Timer *timer);
+static void CCTKi_TimerStop(int this_timer, t_Timer *timer);
+static void CCTKi_TimerReset(int this_timer, t_Timer *timer);
+static char *CCTKi_TimerGet(int this_timer, t_Timer *timer);
 
 static int n_timertypes = 0;
 static cHandledData *handles = NULL;
@@ -173,24 +153,69 @@ void CCTK_TimerDestroy(const char *name)
 
   if(this_timer = Util_GetHandle(timers, name, (void **)&timer))
   {
-    if(timer)
-    {
-      if(timer->data)
-      {
-	/* Destroy the timer info for this timer */
-	for(handle = 0; handle < n_timertypes; handle++)
-	{
-	  funcs = (t_TimerFuncs *)Util_GetHandledData(handles, handle);
-	  funcs->destroy(this_timer, timer->data[handle]);
-	}
-	free(timer->data);
-	free(timer);
-	Util_DeleteHandle(timers, this_timer);
-      }
-    }
+    CCTKi_TimerDestroy(this_timer, timer);
   }
 }
 
+ /*@@
+   @routine    CCTK_TimerDestroyI
+   @date       Thu Oct 21 14:12:51 1999
+   @author     Tom Goodale
+   @desc 
+   Destroys a timer by its handle index
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+void CCTK_TimerDestroyI(int this_timer)
+{
+  t_Timer *timer;
+
+  if(timer = Util_GetHandledData(timers, this_timer))
+  {
+    CCTKi_TimerDestroy(this_timer, timer);
+  }
+}
+      
+ /*@@
+   @routine    CCTKi_TimerDestroy
+   @date       Thu Oct 21 14:14:58 1999
+   @author     Tom Goodale
+   @desc 
+   Internal function which destroys a timer.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+static void CCTKi_TimerDestroy(int this_timer, t_Timer *timer)
+{
+  t_TimerFuncs *funcs;
+  int handle;
+
+  if(timer)
+  {
+    if(timer->data)
+    {
+      /* Destroy the timer info for this timer */
+      for(handle = 0; handle < n_timertypes; handle++)
+      {
+        funcs = (t_TimerFuncs *)Util_GetHandledData(handles, handle);
+        funcs->destroy(this_timer, timer->data[handle]);
+      }
+      free(timer->data);
+      free(timer);
+      Util_DeleteHandle(timers, this_timer);
+    }
+  }
+}
 
  /*@@
    @routine    CCTK_TimerStart
@@ -209,22 +234,38 @@ void CCTK_TimerDestroy(const char *name)
 void CCTK_TimerStart(const char *name)
 {
   t_Timer *timer;
-  t_TimerFuncs *funcs;
   int this_timer;
-  int handle;
 
   if(this_timer = Util_GetHandle(timers, name, (void **)&timer))
   {
-    if(timer)
+    CCTKi_TimerStart(this_timer, timer);
+  }
+}
+
+void CCTK_TimerStartI(int this_timer)
+{
+  t_Timer *timer;
+
+  if(timer = Util_GetHandledData(timers, this_timer))
+  {
+    CCTKi_TimerStart(this_timer, timer);
+  }
+}
+
+static void CCTKi_TimerStart(int this_timer, t_Timer *timer)
+{
+  t_TimerFuncs *funcs;
+  int handle;
+
+  if(timer)
+  {
+    if(timer->data)
     {
-      if(timer->data)
+      /* Start the timer info for this timer */
+      for(handle = 0; handle < n_timertypes; handle++)
       {
-	/* Start the timer info for this timer */
-	for(handle = 0; handle < n_timertypes; handle++)
-	{
-	  funcs = (t_TimerFuncs *)Util_GetHandledData(handles, handle);
-	  funcs->start(this_timer, timer->data[handle]);
-	}
+        funcs = (t_TimerFuncs *)Util_GetHandledData(handles, handle);
+        funcs->start(this_timer, timer->data[handle]);
       }
     }
   }
@@ -247,22 +288,38 @@ void CCTK_TimerStart(const char *name)
 void CCTK_TimerStop(const char *name)
 {
   t_Timer *timer;
-  t_TimerFuncs *funcs;
   int this_timer;
-  int handle;
 
   if(this_timer = Util_GetHandle(timers, name, (void **)&timer))
   {
-    if(timer)
+    CCTKi_TimerStop(this_timer, timer);
+  }
+}
+
+void CCTK_TimerStopI(int this_timer)
+{
+  t_Timer *timer;
+
+  if(timer = Util_GetHandledData(timers, this_timer))
+  {
+    CCTKi_TimerStop(this_timer, timer);
+  }
+}
+
+static void CCTKi_TimerStop(int this_timer, t_Timer *timer)
+{
+  t_TimerFuncs *funcs;
+  int handle;
+
+  if(timer)
+  {
+    if(timer->data)
     {
-      if(timer->data)
+      /* Start the timer info for this timer */
+      for(handle = 0; handle < n_timertypes; handle++)
       {
-	/* Stop the timer info for this timer */
-	for(handle = 0; handle < n_timertypes; handle++)
-	{
-	  funcs = (t_TimerFuncs *)Util_GetHandledData(handles, handle);
-	  funcs->stop(this_timer, timer->data[handle]);
-	}
+        funcs = (t_TimerFuncs *)Util_GetHandledData(handles, handle);
+        funcs->stop(this_timer, timer->data[handle]);
       }
     }
   }
@@ -285,22 +342,38 @@ void CCTK_TimerStop(const char *name)
 void CCTK_TimerReset(const char *name)
 {
   t_Timer *timer;
-  t_TimerFuncs *funcs;
   int this_timer;
-  int handle;
 
   if(this_timer = Util_GetHandle(timers, name, (void **)&timer))
   {
-    if(timer)
+    CCTKi_TimerReset(this_timer, timer);
+  }
+}
+
+void CCTK_TimerResetI(int this_timer)
+{
+  t_Timer *timer;
+
+  if(timer = Util_GetHandledData(timers, this_timer))
+  {
+    CCTKi_TimerReset(this_timer, timer);
+  }
+}
+
+static void CCTKi_TimerReset(int this_timer, t_Timer *timer)
+{
+  t_TimerFuncs *funcs;
+  int handle;
+
+  if(timer)
+  {
+    if(timer->data)
     {
-      if(timer->data)
+      /* Start the timer info for this timer */
+      for(handle = 0; handle < n_timertypes; handle++)
       {
-	/* Start the timer info for this timer */
-	for(handle = 0; handle < n_timertypes; handle++)
-	{
-	  funcs = (t_TimerFuncs *)Util_GetHandledData(handles, handle);
-	  funcs->reset(this_timer, timer->data[handle]);
-	}
+        funcs = (t_TimerFuncs *)Util_GetHandledData(handles, handle);
+        funcs->reset(this_timer, timer->data[handle]);
       }
     }
   }
@@ -323,45 +396,76 @@ void CCTK_TimerReset(const char *name)
 char *CCTK_TimerGet(const char *name)
 {
   t_Timer *timer;
-  t_TimerFuncs *funcs;
   int this_timer;
+  char *retval;
+
+  if(this_timer = Util_GetHandle(timers, name, (void **)&timer))
+  {
+    retval = CCTKi_TimerGet(this_timer, timer);
+  }
+  else
+  {
+    retval = NULL;
+  }
+
+  return retval;
+
+}
+
+char *CCTK_TimerGetI(int this_timer)
+{
+  t_Timer *timer;
+  char *retval;
+
+  if(timer = Util_GetHandledData(timers, this_timer))
+  {
+    retval = CCTKi_TimerGet(this_timer, timer);
+  }
+  else
+  {
+    retval = NULL;
+  }
+  
+  return retval;
+}
+
+static char *CCTKi_TimerGet(int this_timer, t_Timer *timer)
+{
+  t_TimerFuncs *funcs;
   int handle;
   char this_val[100];
   char *retval;
   char *temp;
   int retlength;
 
+  retlength = 0;
   retval = NULL;
   
-  if(this_timer = Util_GetHandle(timers, name, (void **)&timer))
+  if(timer)
   {
-    if(timer)
+    if(timer->data)
     {
-      if(timer->data)
+      /* Start the timer info for this timer */
+      for(handle = 0; handle < n_timertypes; handle++)
       {
-	/* Start the timer info for this timer */
-	for(handle = 0; handle < n_timertypes; handle++)
-	{
-	  funcs = (t_TimerFuncs *)Util_GetHandledData(handles, handle);
-	  sprintf(this_val, "%lf", funcs->get(this_timer, timer->data[handle]));
-	  retlength += 2+strlen(this_val);
-	  temp = realloc(retval, retlength);
-	  if(temp)
-	  { 
-	    retval = temp;
-	    
-	    /* If this isn't the first one, add a couple of spaces. */
-	    if(retlength > 2+strlen(this_val)) strcat(retval, "  ");
-	    
-	    strcat(retval, this_val);
-	  }
-	}
+        funcs = (t_TimerFuncs *)Util_GetHandledData(handles, handle);
+        sprintf(this_val, "%lf", funcs->get(this_timer, timer->data[handle]));
+        retlength += 2+strlen(this_val);
+        temp = realloc(retval, retlength);
+        if(temp)
+        { 
+          retval = temp;
+          
+          /* If this isn't the first one, add a couple of spaces. */
+          if(retlength > 2+strlen(this_val)) strcat(retval, "  ");
+          
+          strcat(retval, this_val);
+        }
       }
     }
   }
 
   return retval;
-
 }
 
 

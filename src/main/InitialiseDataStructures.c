@@ -44,10 +44,11 @@ int InitialiseDataStructures(tFleshConfig *ConfigData)
   ConfigData->nGHs = 0;
   ConfigData->GH = NULL;
 
+#if 0
   ConfigData->timer[INITIALISATION] = CactusNewTimer();
   ConfigData->timer[EVOLUTION] = CactusNewTimer();
   ConfigData->timer[ELLIPTIC] = CactusNewTimer();
-
+#endif
 
 
   /* Initialise appropriate subsystems. */

@@ -17,17 +17,6 @@
 
 typedef struct
 {
-  double basic[4];
-} cInternalTimer;
-  
-typedef struct
-{
-  cInternalTimer total;
-  cInternalTimer last;  
-} cTimer;
-
-typedef struct
-{
   void *(*create)(int);
   void (*destroy)(int, void *);
   void (*start)(int, void *);
@@ -44,13 +33,17 @@ typedef struct
 extern "C" {
 #endif
 
-cTimer *CactusNewTimer(void);
-
-void CactusStartTimer(cTimer *timer);
-void CactusStopTimer(cTimer *timer);
-void CactusResetTimer(cTimer *timer);
-
 int CCTK_TimerRegister(const char *name, t_TimerFuncs *functions);
+void CCTK_TimerDestroy(const char *name);
+void CCTK_TimerDestroyI(int this_timer);
+void CCTK_TimerStart(const char *name);
+void CCTK_TimerStartI(int this_timer);
+void CCTK_TimerStop(const char *name);
+void CCTK_TimerStopI(int this_timer);
+void CCTK_TimerReset(const char *name);
+void CCTK_TimerResetI(int this_timer);
+char *CCTK_TimerGet(const char *name);
+char *CCTK_TimerGetI(int this_timer);
 
 #ifdef __cplusplus
 	   }

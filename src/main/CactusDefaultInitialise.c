@@ -48,11 +48,13 @@ int CactusDefaultInitialise(tFleshConfig *config)
   cGH *GH;
   int convergence_level;
 
+#if 0
   CactusResetTimer(config->timer[INITIALISATION]);
   CactusResetTimer(config->timer[EVOLUTION]);
   CactusResetTimer(config->timer[ELLIPTIC]);
 
   CactusStartTimer(config->timer[INITIALISATION]);
+#endif
 
   convergence_level = 0;
   while((GH = CCTK_SetupGH(config, convergence_level)))
@@ -64,8 +66,10 @@ int CactusDefaultInitialise(tFleshConfig *config)
     convergence_level++;
   };
 
+#if 0
   CactusStopTimer(config->timer[INITIALISATION]);
-  
+#endif
+
   return 0;
 }
 
