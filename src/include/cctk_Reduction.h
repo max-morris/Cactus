@@ -17,25 +17,25 @@ extern "C"
 #endif
 
 #define REDUCTION_OPERATOR_REGISTER_ARGLIST  \
-          cGH *GH, \
-          int proc, \
-          int num_outvals, \
-          int outtype, \
-          void *outvals, \
-          int num_invars, \
-          int varlist []
+          cGH *arg_GH, \
+          int arg_proc, \
+          int arg_num_outvals, \
+          int arg_outtype, \
+          void *arg_outvals, \
+          int arg_num_invars, \
+          int arg_varlist []
 
 #define REDUCTION_ARRAY_OPERATOR_REGISTER_ARGLIST \
-  cGH *GH, \
-  int proc, \
-  int nDims, \
-  int dims [], \
-  int nArrays, \
-  void *inArrays [], \
-  int inType, \
-  int nOutVals, \
-  void *outVals, \
-  int outType
+  cGH *arg_GH, \
+  int arg_proc, \
+  int arg_nDims, \
+  int arg_dims [], \
+  int arg_nArrays, \
+  void *arg_inArrays [], \
+  int arg_inType, \
+  int arg_nOutVals, \
+  void *arg_outVals, \
+  int arg_outType
 
 int CCTK_Reduce(cGH *GH,
                 int proc,
