@@ -4612,29 +4612,6 @@ call Util_TableSetPointer(ierror, table_handle, addr, "variable")
 \end{ExampleSection}
 \end{FunctionDescription}
 
-
-% util/Misc.c
-\begin{CCTKFunc}{CCTK\_PointerTo}%%%
-{Returns the address of a variable passed in by reference from a fortran routine}
-\label{CCTK-PointerTo}
-\function{}{CCTK\_POINTER}{addr}
-\argument{}{CCTK\_POINTER}{var}
-\showargs
-\begin{params}
-\parameter{var}{Routine to be registered as the interpolation operator}
-\end{params}
-\begin{discussion}
-Only C routines can be registered as interpolation operators.
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf Fortran} && {\t addr = CCTK\_POINTERTO(var)}\\
-\\
-\end{tabular}
-\end{examples}
-\end{CCTKFunc}
-
-
 % Groups.c
 \begin{CCTKFunc}{CCTK\_PrintGroup}{Prints a group name from its index}
 \label{CCTK-PrintGroup}
