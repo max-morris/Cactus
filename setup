@@ -30,6 +30,9 @@ else
   $config = $uname;
 }
 
+# Replace slashes with underscores.
+$config =~ s:[/\\]:_:g;
+
 # The build directory doesn't exist.
 if (! -d "build" && ! -l "build")
 {
