@@ -1,12 +1,12 @@
 
 Cactus Code Frequently Asked Questions
 
-$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.8 2000-07-11 10:54:36 lanfer Exp $
+$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.9 2000-10-05 08:53:51 allen Exp $
 
-The latest version of this FAQ is always available from the main Cactus Code web
-site at <http://www.cactuscode.org/Documentation/FAQ
+The latest version of this FAQ is always available from the main Cactus Code 
+web site at <http://www.cactuscode.org/Documentation/FAQ
 
--------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
 
 1) The make system says "Checking status of libXXX.a" and then just 
    sits there.  What can I do ?
@@ -20,7 +20,7 @@ site at <http://www.cactuscode.org/Documentation/FAQ
    newly made dependency files will still be `older' than the file you edited, 
    and the system will loop until this situation changes.
 
--------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
 
 2) Compilation of Cactus fails with the error:
 	 identifier "DECLARE_CCTK_PARAMETERS" is undefined?
@@ -28,26 +28,27 @@ site at <http://www.cactuscode.org/Documentation/FAQ
    You have to include the header: 
 	#include "cctk_Parameters.h"
 
--------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
 
 3) I get 'g77: cannot specify -o with -c or -S and multiple compilations' when 
    compiling with the Pacific VAST90 compiler.
 
-   If the libvast90.a library is in the same directory as your F90 script, F90 passes 
-   -lvast90 to the underlying G77 compile, which is of course only a valid switch 
-   when linking.  The solution is to seperate these files, e.g. into bin and lib 
-   directories.
+   If the libvast90.a library is in the same directory as your F90 script, 
+   F90 passes -lvast90 to the underlying G77 compile, which is of course only 
+   a valid switch when linking.  The solution is to seperate these files, 
+   e.g. into bin and lib directories.
 
--------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
 
-4) Why do I have to use e.g. "mpirun -np 1 ./exe/cactus_myconfig -O" to see the 
-   compiled parameters, can't the parameters be output before MPI is initialised?
+4) Why do I have to use e.g. "mpirun -np 1 ./exe/cactus_myconfig -O" to see 
+   the compiled parameters, can't the parameters be output before MPI is 
+   initialised?
 
-   Alas some MPIs add their own command-line options, so we need to do MPI_Init 
-   before parsing the command line, or parse it twice, once before the MPI_Init and 
-   once after, to detect invalid options.
+   Alas some MPIs add their own command-line options, so we need to do 
+   MPI_Init before parsing the command line, or parse it twice, once before 
+   the MPI_Init and once after, to detect invalid options.
 
--------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
 
 5) Parallel make sometimes fails.
 
@@ -55,45 +56,46 @@ site at <http://www.cactuscode.org/Documentation/FAQ
    Just doing gmake <config> again will let it continue.  You should be able
    to continue with another parallel make afterwards.
 
--------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
 
 6) When doing a cvs update I get 'not enough slashes in ...' .
 
-   It seems that CVS sometimes gets confused with multiple modules.  Check that you 
-   are using the latest version of CVS, otherwise moving into the arrangements 
-   directory and performing another 'cvs update', followed by a final one in the 
-   toplevel directory should complete your update.
+   It seems that CVS sometimes gets confused with multiple repositories.  
+   Check that you are using the latest version of CVS, otherwise moving into 
+   the arrangements directory and performing another 'cvs update', followed 
+   by a final one in the toplevel directory should complete your update.
 
--------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
 
 7) How do I compile with MPI? Why isn't it automatic like in Cactus 3?
               
-   The standard MPI driver (PUGH) is in a thorn now (CactusPUGH/PUGH), so there is 
-   now the possibility to add other parallel drivers using alternative message passing 
-   schemes as separate thorns. To compile with MPI, when you make a configuration, 
-   use
+   The standard MPI driver (PUGH) is in a thorn now (CactusPUGH/PUGH), so 
+   there is now the possibility to add other parallel drivers using 
+   alternative message passing schemes as separate thorns. To compile with 
+   MPI, when you make a configuration, use
 
    gmake <configuration>-config MPI=<MPI_TYPE> 
 
-   where the allowed values of MPI_TYPE are discussed in the documentation. For 
-   machines where Cactus 3 used to use MPI by default, the correct option is 
-   probably MPI=NATIVE 
+   where the allowed values of MPI_TYPE are discussed in the documentation. 
+   For machines where Cactus 3 used to use MPI by default, the correct option 
+   is probably MPI=NATIVE 
 
--------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
 
 8) I can't compile because the compiler complains that a routine name has been 
    previously defined ... but I can't find it repeated?
 
-   If it is a C routine, whose name is either all in capitals or all in lowercase, 
-   and the routine has a Fortran wrapper, then it could be that the compiler doesn't
-   attach underscores to the Fortran name and there is a conflict. To remove this
-   possibility always use mixed case names for C routines with Fortran wrappers.
+   If it is a C routine, whose name is either all in capitals or all in 
+   lowercase, and the routine has a Fortran wrapper, then it could be that 
+   the compiler doesn't attach underscores to the Fortran name and there is a 
+   conflict. To remove this possibility always use mixed case names for C 
+   routines with Fortran wrappers.
    
--------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
 
-9) How can I make sure that one thorn is compiled before another? For example to 
-   make sure that F90 module files from  ArrangementA/ThornA are available for 
-   ArrangementB/ThornB.
+9) How can I make sure that one thorn is compiled before another? For example 
+   to make sure that F90 module files from  ArrangementA/ThornA are available 
+   for ArrangementB/ThornB.
 
    Add a dependency to a ThornB's make.configuration.deps file, for example
 
@@ -103,13 +105,20 @@ site at <http://www.cactuscode.org/Documentation/FAQ
 
    we will try to modify the make system to make more automatic in the future.
 
--------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
 
-10)On my SUN I start a configuration process with gmake, but on the second 
-   gmake it wants to set up the configuration again and a again .... Why is this ?
+10) On my SUN I start a configuration process with gmake, but on the second 
+    gmake it wants to set up the configuration again and again .... 
+    Why is this ?
 
-   You are using a version of gmake which is too outdated (even though
-   this version may pefectly work on other architectures). We found
-   that GNU Make version 3.79 works fine.
+    You are using a version of gmake which is too outdated (even though
+    this version may pefectly work on other architectures). We found
+    that GNU Make version 3.79 works fine.
 
--------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
+
+11) How do I compile Cactus in 32 bit mode on a 64 bit irix machine?
+
+    gmake <config>-config IRIX_BITS=32
+
+-------------------------------------------------------------------------------
