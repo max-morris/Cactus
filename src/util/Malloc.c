@@ -332,7 +332,7 @@ int CCTK_MemTicketDelete(int this_ticket)
 
 void CCTK_MemStat(void) 
 {
-  char mess[138];
+  char mess[1024];
   sprintf(mess,"total: %ld  past: %ld  diff %+ld \n",
 	  totmem, pastmem, totmem-pastmem);
   printf("CCTK_Memstat: %s ",mess);
