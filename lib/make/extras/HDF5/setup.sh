@@ -158,7 +158,7 @@ fi
 
 # Write the data out to the header and make files.
 
-CCTK_WriteLine cctk_Extradefs.h "#define HDF5"
+CCTK_WriteLine cctk_Extradefs.h "#define CCTK_HDF5"
 CCTK_WriteLine make.extra.defn "HAVE_HDF5     = 1"
 CCTK_WriteLine make.extra.defn "HDF5_LIBS     = $HDF5_LIBS"
 CCTK_WriteLine make.extra.defn "HDF5_LIB_DIRS = $HDF5_LIB_DIRS"
