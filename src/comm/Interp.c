@@ -376,11 +376,8 @@ int CCTKi_InterpRegisterOperatorGV(cInterpOperatorGV operator_ptr,
                                    const char *operator_name,
                                    const char *thorn_name)
 {
-CCTK_INTERP_REGISTER_FN_BODY(operator_ptr,
-                             operator_name,
-                             thorn_name,
-                             "CCTKi_InterpRegisterOperatorGV",
-                             interp_operator_GV) /* no semicolon here! */
+/* One line for cpp.pl (Beta 13) */
+CCTK_INTERP_REGISTER_FN_BODY(operator_ptr,operator_name,thorn_name,"CCTKi_InterpRegisterOperatorGV",interp_operator_GV) /* no semicolon here! */
 }
 
 /**************************************/
@@ -389,11 +386,8 @@ int CCTKi_InterpRegisterOperatorLocal(cInterpOperatorLocal operator_ptr,
                                       const char *operator_name,
                                       const char *thorn_name)
 {
-CCTK_INTERP_REGISTER_FN_BODY(operator_ptr,
-                             operator_name,
-                             thorn_name,
-                             "CCTKi_InterpRegisterOperatorLocal",
-                             interp_operator_local) /* no semicolon here! */
+/* One line for cpp.pl (beta 13) */
+CCTK_INTERP_REGISTER_FN_BODY(operator_ptr,operator_name,thorn_name,"CCTKi_InterRegisterOperatorLocal",interp_operator_local) /* no semicolon here */
 }
 
 /**************************************/
@@ -402,11 +396,7 @@ int CCTK_InterpRegisterOpLocalUniform(cInterpOpLocalUniform operator_ptr,
                                       const char *operator_name,
                                       const char *thorn_name)
 {
-CCTK_INTERP_REGISTER_FN_BODY(operator_ptr,
-                             operator_name,
-                             thorn_name,
-                             "CCTK_InterpRegisterOpLocalUniform",
-                             interp_op_local_uniform) /* no semicolon here! */
+CCTK_INTERP_REGISTER_FN_BODY(operator_ptr,operator_name,thorn_name,"CCTK_InterpRegisterOpLocalUniform",interp_op_local_uniform) /* no semicolon here! */
 }
 
 /******************************************************************************/
@@ -730,8 +720,7 @@ int CCTK_InterpGV (cGH *GH,
     va_start (indices, num_out_arrays);
     VARARGS_TO_ARRAY (interp_coord_arrays, void *, NOTHING, num_dims, indices);
     VARARGS_TO_ARRAY (interp_coord_array_types, int, NOTHING, num_dims,indices);
-    VARARGS_TO_ARRAY (in_array_indices, int, NOTHING, num_in_array_indices,
-                      indices);
+    VARARGS_TO_ARRAY (in_array_indices, int, NOTHING, num_in_array_indices,indices);
     VARARGS_TO_ARRAY (out_arrays, void *, NOTHING, num_out_arrays, indices);
     VARARGS_TO_ARRAY (out_array_types, int, NOTHING, num_out_arrays, indices);
     va_end (indices);
