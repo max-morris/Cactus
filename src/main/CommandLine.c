@@ -187,36 +187,49 @@ void CCTKi_CommandLineDescribeAllParameters (const char *argument)
 @@*/
 void CCTKi_CommandLineDescribeParameter (const char *argument)
 {
+  int retcode;
   char *thorn, *param;
   const char *cthorn;
   const cParamData *properties;
 
 
-  if (CCTK_MyProc (NULL) == 0)
+  Util_SplitString (&thorn, &param, argument, "::");
+
+  if (! param)
   {
-    Util_SplitString (&thorn, &param, argument, "::");
-
-    if (! param)
-    {
-      properties = CCTK_ParameterData (argument, NULL);
-    }
-    else
-    {
-      properties = CCTK_ParameterData (param, thorn);
-      if (! properties)
-      {
-        cthorn = CCTK_ImplementationThorn (thorn);
-        properties = CCTK_ParameterData (param, cthorn);
-      }
-
-      free (thorn);
-      free (param);
-    }
-
-    CommandLinePrintParameter (properties);
+    properties = CCTK_ParameterData (argument, NULL);
   }
-
-  CCTK_Exit (NULL, 0);
+  else
+  {
+    properties = CCTK_ParameterData (param, thorn);
+    if (! properties)
+    {
+      cthorn = CCTK_ImplementationThorn (thorn);
+      properties = CCTK_ParameterData (param, cthorn);
+    }
+    
+    free (thorn);
+    free (param);
+  }
+  
+  if(properties)
+  {    
+    if (CCTK_MyProc (NULL) == 0)
+    {
+      CommandLinePrintParameter (properties);
+    }
+    retcode = 0;
+  }
+  else
+  {
+    if (CCTK_MyProc (NULL) == 0)
+    {
+      fprintf(stderr, "No such parameter\n");
+    }
+    retcode = 1;
+  }
+  
+  CCTK_Exit (NULL, retcode);
 }
 
 
