@@ -88,6 +88,7 @@ int CCTKi_ScheduleSort(int size, signed char **array, int *order)
   int retval;
 
   retval = 0;
+  column = 0; /* avoid compiler warning about uninitialized variable */
 
   for(iter=0; iter < size*(size-1)/2; iter++)
   {
