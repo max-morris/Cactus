@@ -3324,7 +3324,7 @@ functions are applied to the chosen timer using all the registered clocks.
 \begin{verbatim}
 #include "cctk_Timers.h"
 ierr = CCTK_TimerStart(`TimeMyStuff`);
-\* Piece of code to time *\
+/* Piece of code to time */
 y = CalculateNewValue(y);
 ierr = CCTK_TimerStop(`TimeMyStuff`);
 \end{verbatim}
