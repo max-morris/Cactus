@@ -6,7 +6,7 @@
 #   @desc 
 #   Known architecture stuff for the SX-5
 #   @enddesc 
-#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/superux,v 1.6 2000-03-07 16:25:10 goodale Exp $
+#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/superux,v 1.7 2000-05-16 10:25:12 goodale Exp $
 # @@*/
 
 if test "$CCTK_CONFIG_STAGE" = "preferred-compilers" ; then
@@ -15,8 +15,7 @@ if test "$CCTK_CONFIG_STAGE" = "preferred-compilers" ; then
 
 else
 
-  : ${LIBS="m"}
-#  : ${LIBDIRS="/opt/fortran90/lib/"}
+  : ${LIBS="i90sx f90sxe v90sxe_sv i90sxe m"}
   : ${C_DEPEND='$(CPP) -H$@ $(CPPFLAGS)'}
   : ${CXX_DEPEND='$(CPP) -H$@ $(CPPFLAGS)'}
   : ${F77_DEPEND='$(CPP) -H$@ $(CPPFLAGS)'}
