@@ -9,7 +9,7 @@
 # @@*/
 
 # Silence all but designated output
-#.SILENT:
+.SILENT:
 
 # Some configuration variables
 CONFIG = $(TOP)/config-data
@@ -87,8 +87,22 @@ $(CONFIG)/make.thornlist: $(TOP)/ActiveThorns
 # Rule to build ActiveThorns
 
 $(TOP)/ActiveThorns:
-	@echo Currently $@ must be created by hand and has no effect !
-	if [ ! -r $@ ] ; then echo This file doesn\'t do anything yet > $@ ; fi
+	@echo $(DIVIDER)
+	@echo Creating ActiveThorn list containing all thorns in the toolkits directory
+	$(PERL) -s $(CCTK_HOME)/lib/sbin/BuildActiveThorns.pl $(CCTK_HOME)/toolkits > $@
+	action="yes"; if [ "x$$EDITOR" = "x" ] ; then EDITOR=vi ; fi; \
+	while [ "x$$action" = "xyes" -o "x$$action" = "xy" -o "x$$action" = "xYES" -o "x$$action" = "xY" ] ; \
+	do \
+	echo The thorn list is ; \
+	echo $(DIVIDER) ; \
+	cat $@ ; \
+	echo $(DIVIDER) ; \
+	echo Edit this list \(no\) ? ; \
+	read action rest ; \
+	if [ "x$$action" = "xyes" -o "x$$action" = "xy" -o "x$$action" = "xYES" -o "x$$action" = "xY" ] ; \
+	then $$EDITOR $@ ; fi ; \
+	done
+	@echo $(DIVIDER)
 
 # Phony targets.
 
