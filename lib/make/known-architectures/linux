@@ -121,7 +121,7 @@ else
        F90FLAGS="$F90FLAGS -N140" 
        ;;
      portland)
-       : ${LIBS="pgf90 pgf90_rpm1 pghpf2 pgf90rtl pgc m"}
+       : ${LIBS="pgf90rtl pgf90 pgf90_rpm1 pghpf2 pgc m"}
        : ${LIBDIRS='$(PGI)/linux86/lib'} 
        : ${F77_DEBUG_FLAGS="-g"}
        : ${F90_DEBUG_FLAGS="-g"}
