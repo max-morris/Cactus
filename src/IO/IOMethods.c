@@ -17,7 +17,7 @@
 #include "Groups.h"
 #include "StoreHandledData.h"
 #include "FortranString.h"
-#include "IO.h"
+#include "cctk_IO.h"
 
 static char *rcsid = "$Header$";
 
