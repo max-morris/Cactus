@@ -66,6 +66,46 @@ if ($thornlist =~ /^$/) {
 
 foreach $thorn (sort keys %info)
 {
+  $arrangement = $thorn;
+  $arrangement =~ s/[\/]+[a-zA-Z0-9_]*//;
+  
+  if ( ! $visited_arrangements{"\U$arrangement\E"})
+  {
+    $visited_arrangements{"\U$arrangement\E"} = 1;
+    if( -d "$arrangement_dir/$arrangement/doc" && -d "$arrangement_dir/$arrangement/doc/CVS")
+    {
+      chdir ("$arrangement_dir/$arrangement/doc") ||
+        die "Cannot change to arrangement directory '$arrangement_dir/$arrangement'\n";
+      print("\nUpdating $arrangement\n");
+      $command = "cvs $cvs_ops update $cvs_update_ops $cvs_symbolic_name";
+      if($debug)
+      {
+        $this_dir = `pwd`;
+        chop($this_dir);
+        print "In directory $this_dir\n";
+        print "Issuing command\n  $command\n";
+        foreach $file (`ls CVS`)
+        {
+          chop($file);
+          print "Contents of $file\n";
+          open (FILE, "<CVS/$file") || die "Could not open CVS file";
+          while (<FILE>)
+          {
+            print;
+          }
+        }
+      }
+      if (!$debug)
+      {
+        open (CS, "$command |");
+        while (<CS>)
+        {
+          print ;
+        }
+      }    
+    }
+  }
+
   if( ! -d "$arrangement_dir/$thorn/CVS")
   {
     print "Ignoring $thorn - no CVS directory\n";
