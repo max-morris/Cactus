@@ -204,7 +204,7 @@ void CCTK_Info(const char *thorn, const char *message)
   fprintf(stdout, "INFO (%s): %s\n", thorn, message);
 }
 
-int FMODIFIER FORTRAN_NAME(CCTK_Info)(TWO_FORTSTRINGS_ARGS)
+void FMODIFIER FORTRAN_NAME(CCTK_Info)(TWO_FORTSTRINGS_ARGS)
 {
   TWO_FORTSTRINGS_CREATE(thorn,message)
   CCTK_Info(thorn,message);
@@ -309,7 +309,7 @@ void CCTKi_FinaliseParamWarn(void)
 }
 
  /*@@
-   @routine    CCTK_NotYetImplemented
+   @routine    CCTKi_NotYetImplemented
    @date       July 1999
    @author     Gabrielle Allen
    @desc 
@@ -323,11 +323,19 @@ void CCTKi_FinaliseParamWarn(void)
 
 @@*/
 
-void CCTK_NotYetImplemented(void)
+void CCTKi_NotYetImplemented(const char *message)
 {
 
-printf("\n\n This planned feature is not yet implemented in the code.\n If you need this feature please contact the Cactus maintainers.\n");
+  char *out = malloc((300+strlen(message))*sizeof(char));
+  sprintf(out,"\n\n This planned feature is not yet implemented in the code.\n If you need this feature please contact the Cactus maintainers.\n %s",message);
+  CCTK_Warn(0,__LINE__,__FILE__,"Cactus","Feature not implemented");
+  free(out);
 
-CCTK_Warn(0,__LINE__,__FILE__,"Cactus","Feature not implemented");
+}
 
+void FMODIFIER FORTRAN_NAME(CCTKi_NotYetImplemented)(ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE(message)
+  CCTKi_NotYetImplemented(message);
+  free(message); 
 }
