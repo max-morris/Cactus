@@ -394,7 +394,6 @@ int CCTK_ParamWarn (const char *thorn, const char *message)
   const CCTK_INT *cctk_strong_param_check;
   int param_type;
 
-
   cctk_strong_param_check = (const CCTK_INT *)
                               CCTK_ParameterGet ("cctk_strong_param_check",
                                                  "Cactus", &param_type);
@@ -413,6 +412,64 @@ void CCTK_FCALL CCTK_FNAME (CCTK_ParamWarn)
   CCTK_ParamWarn (thorn, message);
   free (thorn);
   free (message);
+}
+
+
+/*@@
+   @routine    CCTK_VParamWarn
+   @date       Mon May 20 2002
+   @author     Gabrielle Allen
+   @desc
+               Warn the user if a parameter error is found using a variable
+	       argument list (extends CCTK_ParamWarn)
+   @enddesc
+   @calls      CCTK_ParameterGet
+
+   @var        thorn
+   @vdesc      Name of originating thorn
+   @vtype      const char *
+   @vio        in
+   @endvar
+   @var        format
+   @vdesc      Format for variable argument list
+   @vtype      const char *
+   @vio        in
+   @endvar
+   @var        ...
+   @vdesc      Variable argument list
+   @vtype      
+   @vio        
+   @endvar
+
+   @returntype int
+   @returndesc
+               0  - success
+   @endreturndesc
+@@*/
+int CCTK_VParamWarn (const char *thorn, 
+		     const char *format, 
+		     ...)
+{
+  va_list ap;
+  const CCTK_INT *cctk_strong_param_check;
+  int param_type;
+
+  cctk_strong_param_check = (const CCTK_INT *)
+                              CCTK_ParameterGet ("cctk_strong_param_check",
+                                                 "Cactus", &param_type);
+  fprintf (stderr, "PARAM %s (%s): ",
+           *cctk_strong_param_check ? "ERROR" : "WARNING", thorn);
+
+  va_start (ap, format);
+  vfprintf (stderr, format, ap);
+  fprintf (stderr, "\n");
+  fflush (stderr);
+  va_end (ap);
+
+  fflush (stderr);
+  param_errors++;
+
+  return (0);
 }
 
 
