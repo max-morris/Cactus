@@ -1,7 +1,7 @@
 
 Cactus Code Frequently Asked Questions
 
-$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.50 2002-10-08 20:15:04 allen Exp $
+$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.51 2002-11-04 18:31:34 allen Exp $
 
 Also available at http://www.cactuscode.org/Documentation/FAQ
 
@@ -133,6 +133,8 @@ C28 On linking I get an "unresolved text symbol" for a scheduled function
 C29 (Linux) Using the Intel Fortran compiler I get the error "/usr/bin/ld
     cannot find -lintrins" on linking.
 
+C30 Why can't I use different F90 and F77 compilers with Cactus? 
+
 
 ------------------------------------------------------------------------------
 Running:
@@ -198,6 +200,11 @@ E7  If I have two grid array groups with identical sizes (and ghost zones,
 
 E8  Is there anyway to only compile certain lines of source code if a 
     particular thorn is in the compiled ThornList?
+
+E9  How can I find out in make.configuration.defn, whether MPI is being
+    used or not?
+
+E10 How can I see in source code whether MPI is being used?
 
 
 ------------------------------------------------------------------------------
@@ -1038,6 +1045,33 @@ E8  Is there anyway to only compile certain lines of source code if a
 
     Add a comment to your README/Documentation.tex to remind yourself, and
     others of what you have done.
+
+E9  How can I find out in make.configuration.defn, whether MPI is being
+    used or not?  The thorn EllPETSc checks whether the makefile variable 
+    MPI_LIBS is empty.  This doesn't work on systems where using MPI does 
+    not require any explicitely specified libraries, such as when using the 
+    mpicc script to compile.  Is there a better way?
+
+    You can grep for MPI in the file
+
+        configs/<your_config>/config-data/cctk_Extradefs.h
+
+    see for example CactusPUGHIO/IOPanda/src/make.configuration.deps 
+      
+       if test -z "`grep CCTK_MPI $(CONFIG)/cctk_Extradefs.h`" ; then
+          echo "IOPanda requires MPI";   \
+          exit 2;                        \
+       fi
+
+E10 How can I see in source code whether MPI is being used?
+
+    Check whether the preprocessor macro CCTK_MPI exists, for example,
+
+    #ifdef CCTK_MPI
+	/* Only included if MPI is being used */
+    #else
+        /* Only included if MPI is *not* being used */
+    #endif
 
 
 ------------------------------------------------------------------------------
