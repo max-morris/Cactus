@@ -16,7 +16,7 @@
 #
 #
 #   @enddesc
-#   @version $Id: Makefile,v 1.157 2004-06-11 11:05:19 tradke Exp $
+#   @version $Id: Makefile,v 1.158 2004-06-20 12:18:48 tradke Exp $
 # @@*/
 
 ##################################################################################
@@ -251,12 +251,16 @@ $(CONFIGURATIONS):
 	    exit 1; \
           fi                                                                 \
 	fi
-	if test -z "FIXME"  ; then \
+	if ($(PERL) -e 'exit ((stat shift)[9] > (stat shift)[9])' $(CONFIGS_DIR)/$@/config-info $(CCTK_HOME)/lib/make/force-reconfigure); then    \
 	  echo $(DIVIDER);\
 	  echo "Cactus - version: $(CCTK_VERSION)";\
 	  echo "Error: Configuration $@ is out of date.";\
-	  echo "Re-run your '$(MAKE) $@-config' command with the appropriate options.";\
-	  echo "(It is likely that recent changes to the flesh that require this.)";\
+	  echo "  Please reconfigure your configuration by running the command"; \
+          echo ;\
+          echo "    $(MAKE) $@-config"; \
+          echo ;\
+          echo "  with the appropriate configuration options !";\
+	  echo "  (It is likely that recent changes to the flesh require this.)";\
 	  echo $(DIVIDER);\
 	  exit 1;\
 	fi
