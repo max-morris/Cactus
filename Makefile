@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.11 1999-02-03 14:48:07 goodale Exp $
+#   @version $Id: Makefile,v 1.12 1999-02-03 17:00:49 goodale Exp $
 # @@*/
 
 # Comment this out if you want to see what's going on.
@@ -24,7 +24,8 @@
 
 # Various auxilary programs
 PERL = perl
-SETUP = lib/make/setup_configuration.pl
+SETUP    = lib/make/setup_configuration.pl
+NEWTHORN = lib/make/new_thorn.pl
 
 # Dividers to make the screen output slightly nicer
 DIVEL   =  __________________
@@ -135,6 +136,7 @@ endif
 	@echo       TAGS      - creates an Emacs TAGS file
 	@echo       tags      - creates a Vi TAGS file
 	@echo       config    - creates a new configuration
+	@echo       newthorn  - creates a new thorn
 	@echo       distclean - deletes all existing configurations
 	@echo       \<anything else\> prompts to create such a configuration.
 	@echo $(DIVIDER)
@@ -165,6 +167,15 @@ $(addsuffix -delete,$(CONFIGURATIONS)):
 	@echo $(DIVIDER)
 	@echo Configuration $(@:%-delete=%) does not exist.
 	@echo Deletion aborted.
+
+# Make a new thorn
+
+.PHONY: newthorn
+newthorn:
+	@echo $(DIVIDER)
+	@echo Creating a new thorn
+	$(PERL) $(NEWTHORN);
+	@echo $(DIVIDER)
 
 # Last resort rule.  Assume it is the name of a configuration
 
