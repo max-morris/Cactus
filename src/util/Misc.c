@@ -970,8 +970,9 @@ int CCTK_RegexMatch(const char *string,
 void FORTRAN_NAME(CCTK_FortranString)(int *nchar, char **cstring,ONE_FORTSTRING_ARG)
 {
 
-  ONE_FORTSTRING_CREATE(fstring)
   int i;
+  ONE_FORTSTRING_CREATE(fstring)
+  ONE_FORTSTRING_PTR(fptr)
 
   if (strlen(*cstring) > cctk_strlen1) 
   {
@@ -986,15 +987,15 @@ void FORTRAN_NAME(CCTK_FortranString)(int *nchar, char **cstring,ONE_FORTSTRING_
 
   for (i=0;i<strlen(*cstring);i++) 
   {
-    cctk_str1[i] = (*cstring)[i];
+    fptr[i] = (*cstring)[i];
   }
 
   for (i=strlen(*cstring);i<cctk_strlen1;i++)
   {
-    cctk_str1[i] = ' ';
+    fptr[i] = ' ';
   }
 
-  cctk_str1[strlen(*cstring)] = '\0';
+  fptr[strlen(*cstring)] = '\0';
 
   *nchar = strlen(*cstring);
 
