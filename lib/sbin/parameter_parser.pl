@@ -142,7 +142,7 @@ sub read_file
 sub parse_param_ccl
 {
   local($thorn, @data) = @_;
-  local($line_number, $line, $block, $type, $variable, $description, $nerrors);
+  local($line_number, $line, $block, $type, $variable, $description);
   local($current_friend, $new_ranges, $new_desc);
   local($data, %parameter_db);
   local(%friends);
@@ -194,14 +194,14 @@ sub parse_param_ccl
       {
 	print STDERR "Duplicate parameter $variable in thorn $thorn\n";
 	print STDERR "Ignoring second definition.\n";
-	$nerrors++;
+	$CST_errors++;
 	$line_number++ until ($data[$line_number] =~ m:\}:);
       }
       elsif($1 && $1 =~ m:EXTENDS:i && $block !~ m:FRIEND\s*\S:)
       {
 	# Can only extend a friend variable.
 	print STDERR "Parse error at line $line_number\n";
-	$nerrors++;
+	$CST_errors++;
 	$line_number++ until ($data[$line_number] =~ m:\}:);
       }
       elsif(! $data[$line_number+1] =~ m:^\s*\{\s*$:)
@@ -209,7 +209,7 @@ sub parse_param_ccl
 	# Since the data should have no blank lines, the next
 	# line should have { on it.
 	print STDERR "Parse error at line $line_number\n";
-	$nerrors++;
+	$CST_errors++;
 	# Move past the end of this block.
 	$line_number++ until ($data[$line_number] =~ m:\}:);
       }
@@ -232,9 +232,10 @@ sub parse_param_ccl
 	while($data[$line_number] !~ m:\s*\}:)
 	{
 	  ($new_ranges, $delim, $new_desc) = $data[$line_number] =~ m/(.*)(::)(.*)/;
+          # Increment the number of ranges found (ranges)
 	  $parameter_db{"\U$thorn $variable\E ranges"}++;
 	  # Strip out any spaces in the range for a numeric parameter.
-	  if($type =~ m:INTEGER|REAL:g)
+	  if($type =~ m:INTEGER|REAL:)
 	  {
 	    $new_ranges =~ s/[ \t]+/ /g;
 	  }
@@ -247,16 +248,29 @@ sub parse_param_ccl
 	  $parameter_db{"\U$thorn $variable\E range $parameter_db{\"\U$thorn $variable\E ranges\"} description"} = $new_desc;
 	  $line_number++;
 	}
+        # Give a warning if no range was given and it was needed
+        if ($parameter_db{"\U$thorn $variable\E ranges"}==0 && $type =~ m:INTEGER|REAL:)
+        {
+	    print STDERR "No range given for $variable in $thorn\n";
+            $CST_errors++;
+        }
 	if($block !~ m:FRIEND:)
 	{
 	  if($data[$line_number] =~ m:\s*\}\s*(.+):)
 	  {
-	    $parameter_db{"\U$thorn $variable\E default"} = $1;
+	      $default = $1;
+#	      print "type is $type, default is $default\n";
+	      if ($type =~ m:INTEGER|REAL: && $default =~ m:":)
+	      {
+		  print STDERR "String default given for $type $variable in $thorn\n";
+		  $CST_errors++;
+	      }
+	      $parameter_db{"\U$thorn $variable\E default"} = $default;
 	  }
 	  else
 	  {
 	    print STDERR "Unable to find default for $variable\n";
-	    $nerrors++;
+	    $CST_errors++;
 	  }		
 	}
       }
