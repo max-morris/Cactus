@@ -72,18 +72,21 @@ else
      : ${F90_LIBS="dfor dfconsol dfport"} 
      : ${FCOMPILEONLY="/compile_only /object:"}
      : ${F90FLAGS="/fast /iface:cref"}
+     : ${F77FLAGS="/fast /iface:cref"}
      CCTK_WriteLine cctk_Archdefs.h '#define WIN32_DIGITAL_FORTRAN'
      ;;
      compaq)
      : ${F90_LIBS="dfor dfconsol dfport"} 
      : ${FCOMPILEONLY="/compile_only /object:"}
      : ${F90FLAGS="/fast /iface:cref"}
+     : ${F77FLAGS="/fast /iface:cref"}
      CCTK_WriteLine cctk_Archdefs.h "#define WIN32_DIGITAL_FORTRAN"
      ;;
      intel)
      : ${F90_LIBS=""} 
      : ${FCOMPILEONLY="/c /Fo"}
      : ${F90FLAGS="/nologo"}
+     : ${F77FLAGS="/nologo"}
      ;;
      *)
      :
