@@ -474,6 +474,34 @@ from Fortran.
 \item[\code{CCTK\_ParallelInit}] [\pageref{CCTK-ParallelInit}]
   Initializes the parallel subsystem
 
+\item[\code{CCTK\_ParameterData}]
+  [\pageref{CCTK-ParameterData}]
+  Get parameter properties for given parameter/thorn pair
+
+\item[\code{CCTK\_ParameterGet}]
+  [\pageref{CCTK-ParameterGet}]
+  Get the data pointer to and type of a parameter's value
+
+\item[\code{CCTK\_ParameterLevel}]
+  [\pageref{CCTK-ParameterLevel}]
+  Return the parameter checking level
+
+\item[\code{CCTK\_ParameterQueryTimesSet}]
+  [\pageref{CCTK-ParameterQueryTimesSet}]
+  Return number of times a parameter has been set
+
+\item[\code{CCTK\_ParameterSet}]
+  [\pageref{CCTK-ParameterSet}]
+  Sets the value of a parameter
+
+\item[\code{CCTK\_ParameterValString}]
+  [\pageref{CCTK-ParameterValString}]
+  Get the string representation of a parameter's value
+
+\item[\code{CCTK\_ParameterWalk}]
+  [\pageref{CCTK-ParameterWalk}]
+  Walk through the list of parameters
+
 \item[\code{CCTK\_PARAMWARN}] [\pageref{CCTK-PARAMWARN}]
   Prints a warning from parameter checking, and possibly stops the code
 
@@ -5798,6 +5826,488 @@ file is created.
 Initializes the parallel subsystem.
 \end{discussion}
 \end{CCTKFunc}
+
+
+% Parameters.c
+\begin{FunctionDescription}{CCTK\_ParameterData}
+\label{CCTK-ParameterData}
+Get parameter properties for given parameter/thorn pair.
+
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+#include "cctk.h"
+
+const cParamData *paramdata = CCTK_ParameterData (const char *name, 
+                                                  const char *thorn);
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ResultSection}
+\begin{Result}{paramdata}
+Pointer to parameter data structure
+\end{Result}
+\end{ResultSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{name}
+Parameter name
+\end{Parameter}
+\begin{Parameter}{thorn}
+Thorn name (for private parameters) or implementation name (for
+restricted parameters)
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{Discussion}
+The thorn or implementation name must be the name of the place where
+the parameter is originally defined.  It is not possible to pass the
+thorn or implementation name of a thorn that merely declares the
+parameter as used.
+\end{Discussion}
+
+\begin{SeeAlsoSection}
+\begin{SeeAlso2}{CCTK\_ParameterGet}{CCTK-ParameterGet}
+  Get the data pointer to and type of a parameter's value
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_ParameterLevel}{CCTK-ParameterLevel}
+  Return the parameter checking level
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_ParameterQueryTimesSet}{CCTK-ParameterQueryTimesSet}
+  Return number of times a parameter has been set
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_ParameterValString}{CCTK-ParameterValString}
+  Get the string representation of a parameter's value
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_ParameterWalk}{CCTK-ParameterWalk}
+  Walk through list of parameters
+\end{SeeAlso2}
+\end{SeeAlsoSection}
+
+\begin{ErrorSection}
+\begin{Error}{NULL}
+No parameter with that name was found.
+\end{Error}
+\end{ErrorSection}
+\end{FunctionDescription}
+
+
+% Parameters.c
+\begin{FunctionDescription}{CCTK\_ParameterGet}
+\label{CCTK-ParameterGet}
+Get the data pointer to and type of a parameter's value.
+
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+#include "cctk.h"
+
+const void *paramval = CCTK_ParameterGet (const char *name, 
+                                          const char *thorn,
+                                          int *type);
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ResultSection}
+\begin{Result}{paramval}
+Pointer to the parameter value
+\end{Result}
+\end{ResultSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{name}
+Parameter name
+\end{Parameter}
+\begin{Parameter}{thorn}
+Thorn name (for private parameters) or implementation name (for
+restricted parameters)
+\end{Parameter}
+\begin{Parameter}{type}
+If not NULL, a pointer to an integer which will hold the type of the
+parameter
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{Discussion}
+The thorn or implementation name must be the name of the place where
+the parameter is originally defined.  It is not possible to pass the
+thorn or implementation name of a thorn that merely declares the
+parameter as used.
+\end{Discussion}
+
+\begin{SeeAlsoSection}
+\begin{SeeAlso2}{CCTK\_ParameterData}{CCTK-ParameterData}
+  Get parameter properties for given parameter/thorn pair
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_ParameterLevel}{CCTK-ParameterLevel}
+  Return the parameter checking level
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_ParameterQueryTimesSet}{CCTK-ParameterQueryTimesSet}
+  Return number of times a parameter has been set
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_ParameterValString}{CCTK-ParameterValString}
+  Get the string representation of a parameter's value
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_ParameterWalk}{CCTK-ParameterWalk}
+  Walk through list of parameters
+\end{SeeAlso2}
+\end{SeeAlsoSection}
+
+\begin{ErrorSection}
+\begin{Error}{NULL}
+No parameter with that name was found.
+\end{Error}
+\end{ErrorSection}
+\end{FunctionDescription}
+
+
+% WaveLevel.c
+\begin{FunctionDescription}{CCTK\_ParameterLevel}
+\label{CCTK-ParameterLevel}
+Return the parameter checking level.
+
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+#include "cctk.h"
+
+int level = CCTK_ParameterLevel (void);
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ResultSection}
+\begin{Result}{level}
+Parameter checking level now being used.
+\end{Result}
+\end{ResultSection}
+
+\begin{SeeAlsoSection}
+\begin{SeeAlso2}{CCTK\_ParameterData}{CCTK-ParameterData}
+  Get parameter properties for given parameter/thorn pair
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_ParameterGet}{CCTK-ParameterGet}
+  Get the data pointer to and type of a parameter's value
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_ParameterQueryTimesSet}{CCTK-ParameterQueryTimesSet}
+  Return number of times a parameter has been set
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_ParameterValString}{CCTK-ParameterValString}
+  Get the string representation of a parameter's value
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_ParameterWalk}{CCTK-ParameterWalk}
+  Walk through list of parameters
+\end{SeeAlso2}
+\end{SeeAlsoSection}
+\end{FunctionDescription}
+
+
+% Parameters.c
+\begin{FunctionDescription}{CCTK\_ParameterQueryTimesSet}
+\label{CCTK-ParameterQueryTimesSet}
+Return number of times a parameter has been set.
+
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+#include "cctk.h"
+
+int nset = CCTK_ParameterQueryTimesSet (const char *name, 
+                                        const char *thorn);
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ResultSection}
+\begin{Result}{nset}
+Number of times the parameter has been set.
+\end{Result}
+\end{ResultSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{name}
+Parameter name
+\end{Parameter}
+\begin{Parameter}{thorn}
+Thorn name (for private parameters) or implementation name (for
+restricted parameters)
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{Discussion}
+The number of times that a parameter has been set is 0 if the
+parameter was not set in a parameter file.  The number increases when
+\code{CCTK\_ParameterSet} is called.
+
+The thorn or implementation name must be the name of the place where
+the parameter is originally defined.  It is not possible to pass the
+thorn or implementation name of a thorn that merely declares the
+parameter as used.
+\end{Discussion}
+
+\begin{SeeAlsoSection}
+\begin{SeeAlso2}{CCTK\_ParameterData}{CCTK-ParameterData}
+  Get parameter properties for given parameter/thorn pair
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_ParameterGet}{CCTK-ParameterGet}
+  Get the data pointer to and type of a parameter's value
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_ParameterLevel}{CCTK-ParameterLevel}
+  Return the parameter checking level
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_ParameterValString}{CCTK-ParameterValString}
+  Get the string representation of a parameter's value
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_ParameterWalk}{CCTK-ParameterWalk}
+  Walk through list of parameters
+\end{SeeAlso2}
+\end{SeeAlsoSection}
+
+\begin{ErrorSection}
+\begin{Error}{$-1$}
+No parameter with that name exists.
+\end{Error}
+\end{ErrorSection}
+\end{FunctionDescription}
+
+
+% Parameters.c
+\begin{FunctionDescription}{CCTK\_ParameterSet}
+\label{CCTK-ParameterSet}
+Sets the value of a parameter.
+
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+#include "cctk.h"
+
+int ierr = CCTK_ParameterSet (const char *name, 
+                              const char *thorn,
+                              const char *value);
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ResultSection}
+\begin{Result}{ierr}
+Error code
+\end{Result}
+\end{ResultSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{name}
+Parameter name
+\end{Parameter}
+\begin{Parameter}{thorn}
+Thorn name (for private parameters) or implementation name (for
+restricted parameters)
+\end{Parameter}
+\begin{Parameter}{type}
+If not NULL, a pointer to an integer which will hold the type of the
+parameter
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{Discussion}
+The thorn or implementation name must be the name of the place where
+the parameter is originally defined.  It is not possible to pass the
+thorn or implementation name of a thorn that merely declares the
+parameter as used.
+\end{Discussion}
+
+\begin{SeeAlsoSection}
+\begin{SeeAlso2}{CCTK\_ParameterData}{CCTK-ParameterData}
+  Get parameter properties for given parameter/thorn pair
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_ParameterLevel}{CCTK-ParameterLevel}
+  Return the parameter checking level
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_ParameterQueryTimesSet}{CCTK-ParameterQueryTimesSet}
+  Return number of times a parameter has been set
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_ParameterValString}{CCTK-ParameterValString}
+  Get the string representation of a parameter's value
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_ParameterWalk}{CCTK-ParameterWalk}
+  Walk through list of parameters
+\end{SeeAlso2}
+\end{SeeAlsoSection}
+
+\begin{ErrorSection}
+\begin{Error}{ierr}
+\begin{description}
+\item[$0$] success
+\item[$-1$] parameter is out of range
+\item[$-2$] parameter was not found
+\item[$-3$] trying to steer a non-steerable parameter
+\item[$-6$] not a valid integer or float
+\item[$-7$] tried to set an accumulator parameter directly
+\item[$-8$] tried to set an accumulator parameter directly
+\item[$-9$] final value of accumulator out of range
+\end{description}
+\end{Error}
+\end{ErrorSection}
+\end{FunctionDescription}
+
+
+% Parameters.c
+\begin{FunctionDescription}{CCTK\_ParameterValString}
+\label{CCTK-ParameterValString}
+Get the string representation of a parameter's value.
+
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+#include "cctk.h"
+
+char *valstring = CCTK_ParameterValString (const char *name, 
+                                           const char *thorn);
+\end{verbatim}
+\end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}
+subroutine CCTK_ParameterValString (nchars, name, thorn, value)
+   integer       nchars
+   character*(*) name
+   character*(*) thorn
+   character*(*) value
+end subroutine
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ResultSection}
+\begin{Result}{valstring}
+Pointer to parameter value as string.  This string must be freed after
+it has been used.
+\end{Result}
+\end{ResultSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{name}
+Parameter name
+\end{Parameter}
+\begin{Parameter}{thorn}
+Thorn name (for private parameters) or implementation name (for
+restricted parameters)
+\end{Parameter}
+\begin{Parameter}{nchars}
+On exit, the number of characters in the stringified parameter value,
+or $-1$ if the parameter doesn't exist
+\end{Parameter}
+\begin{Parameter}{value}
+As many characters as fit into the Fortran string.  You should check
+for truncation by comparing \code{nchars} against the length of your
+Fortran string.
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{Discussion}
+\fbox{The string \code{valstring} must be freed afterwards.}
+
+The thorn or implementation name must be the name of the place where
+the parameter is originally defined.  It is not possible to pass the
+thorn or implementation name of a thorn that merely declares the
+parameter as used.
+\end{Discussion}
+
+\begin{SeeAlsoSection}
+\begin{SeeAlso2}{CCTK\_ParameterData}{CCTK-ParameterData}
+  Get parameter properties for given parameter/thorn pair
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_ParameterGet}{CCTK-ParameterGet}
+  Get the data pointer to and type of a parameter's value
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_ParameterLevel}{CCTK-ParameterLevel}
+  Return the parameter checking level
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_ParameterQueryTimesSet}{CCTK-ParameterQueryTimesSet}
+  Return number of times a parameter has been set
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_ParameterWalk}{CCTK-ParameterWalk}
+  Walk through list of parameters
+\end{SeeAlso2}
+\end{SeeAlsoSection}
+
+\begin{ErrorSection}
+\begin{Error}{NULL}
+No parameter with that name was found.
+\end{Error}
+\end{ErrorSection}
+\end{FunctionDescription}
+
+
+% Parameters.c
+\begin{FunctionDescription}{CCTK\_ParameterWalk}
+\label{CCTK-ParameterWalk}
+Walk through the list of parameters.
+
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+#include "cctk.h"
+
+int istat = CCTK_ParameterWalk (int first,
+                                const char *origin,
+                                char **fullname,
+                                const cParamData **paramdata);
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ResultSection}
+\begin{Result}{istat}
+Zero for success, positive if parameter was not found, negative if
+initial startpoint was not set.
+\end{Result}
+\end{ResultSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{origin}
+Thorn name, or \code{NULL} for all thorns.
+\end{Parameter}
+\begin{Parameter}{fullname}
+Address of a pointer that will point to the full parameter name.  This
+name must be freed after use.
+\end{Parameter}
+\begin{Parameter}{paramdata}
+Address of a pointer that will point to the parameter data structure.
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{Discussion}
+Gets parameters in order, restricted to ones from \code{origin}, or
+all if \code{origin} is \code{NULL}.  Starts with the first parameter
+if \code{first} is true, otherwise gets the next one.  Can be used for
+generating full help file, or for walking the list and checkpointing.
+\end{Discussion}
+
+\begin{SeeAlsoSection}
+\begin{SeeAlso2}{CCTK\_ParameterData}{CCTK-ParameterData}
+  Get parameter properties for given parameter/thorn pair
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_ParameterGet}{CCTK-ParameterGet}
+  Get the data pointer to and type of a parameter's value
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_ParameterLevel}{CCTK-ParameterLevel}
+  Return the parameter checking level
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_ParameterQueryTimesSet}{CCTK-ParameterQueryTimesSet}
+  Return number of times a parameter has been set
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_ParameterValString}{CCTK-ParameterValString}
+  Get the string representation of a parameter's value
+\end{SeeAlso2}
+\end{SeeAlsoSection}
+
+\begin{ErrorSection}
+\begin{Error}{negative}
+The initial startpoint was not set.
+\end{Error}
+\end{ErrorSection}
+\end{FunctionDescription}
 
 
 % WarnLevel.c
