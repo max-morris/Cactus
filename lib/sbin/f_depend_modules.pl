@@ -1,7 +1,16 @@
 #!/usr/bin/perl -w
-# $Header$
 
-# Create dependencies for Fortran 90 "use" and "include" statements
+#/*@@
+#  @file    $RCSfile$
+#  @author  $Author$
+#  @date    $Date$
+#  @desc
+#           Create dependencies for Fortran 90 "use" and "include" statements
+#  @enddesc
+#  @version $Header$
+# @@*/
+
+
 
 use strict;
 
