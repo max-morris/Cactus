@@ -1214,12 +1214,14 @@ int CCTK_GroupTagsTableI(int group)
    @returndesc
                the index of the first variable in the given group, or
                -1 if given group index is invalid
+               -2 if given group has no members
    @endreturndesc
 @@*/
 int CCTK_FirstVarIndexI (int group)
 {
-  return ((0 <= group && group < n_groups) ?
-          groups[group].variables[0].number : -1);
+  if (! (0 <= group && group < n_groups)) return -1;
+  if (groups[group].n_variables == 0) return -2;
+  return groups[group].variables[0].number;
 }
 
 void CCTK_FCALL CCTK_FNAME (CCTK_FirstVarIndexI)
@@ -2178,10 +2180,10 @@ int CCTKi_CreateGroup (const char *gname,
 
     n_variables = CCTKi_ParamExpressionToInt(vararraysize,thorn);
 
-    if(n_variables < 1)
+    if(n_variables < 0)
     {
       CCTK_VWarn (0, __LINE__, __FILE__, "Cactus",
-                  "CCTKi_CreateGroup: length of group %s less than 1 !",
+                  "CCTKi_CreateGroup: length of group %s less than 0 !",
                   gname);
     }
   }
@@ -2582,7 +2584,7 @@ const int *CCTKi_GroupLengthAsPointer(const char *fullgroupname)
     if (retval == NULL)
     {
       CCTK_VWarn (6, __LINE__, __FILE__, "Cactus",
-                  "CCTK_GroupIndex: No group named '%s' found",
+                  "CCTKi_GroupLengthAsPointer: No group named '%s' found",
                   fullgroupname);
     }
   }
