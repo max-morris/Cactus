@@ -21,7 +21,7 @@
 %   @endhistory
 % @@*/
 
-\begin{cactuspart}{{\tt CCTK\_*} Functions Reference}{$RCSfile$}{$Revision$}
+\begin{cactuspart}{\code{CCTK\_*} Functions Reference}{$RCSfile$}{$Revision$}
 \label{part:CCTKReference}
 \renewcommand{\thepage}{\Alph{part}\arabic{page}}
 
@@ -768,8 +768,8 @@ Index of a variable in the group.
 \begin{Discussion}
 This function returns the number of timelevels for which storage has
 been activated, which is always equal to or less than the maximum
-number of timelevels which may have storage provided by {\tt
-CCTK\_MaxTimeLevels}.
+number of timelevels which may have storage provided by
+\code{CCTK\_MaxTimeLevels}.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
@@ -777,7 +777,7 @@ CCTK\_MaxTimeLevels}.
 Return the maximum number of active timelevels.
 \end{SeeAlso2}
 \begin{SeeAlso2}{CCTK\_NumTimeLevels}{CCTK-NumTimeLevels}
-Deprecated; same as {\tt CCTK\_ActiveTimeLevels}.
+Deprecated; same as \code{CCTK\_ActiveTimeLevels}.
 \end{SeeAlso2}
 \begin{SeeAlso2}{CCTK\_GroupStorageDecrease}{CCTK-GroupStorageDecrease}
 Base function, overloaded by the driver, which decreases the number of
@@ -843,7 +843,7 @@ dimension).
 
 This function returns a pointer to the result for technical reasons;
 so that it will efficiently interface with Fortran.  This may change
-in the future.  Consider using \texttt{CCTK\_GroupgshGN} instead.
+in the future.  Consider using \code{CCTK\_GroupgshGN} instead.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
@@ -904,7 +904,7 @@ dimension).
 
 This function returns a pointer to the result for technical reasons;
 so that it will efficiently interface with Fortran.  This may change
-in the future.  Consider using \texttt{CCTK\_GroupgshGI} instead.
+in the future.  Consider using \code{CCTK\_GroupgshGI} instead.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
@@ -941,7 +941,7 @@ but many are not yet documented.
 \end{discussion}
 This routine synchronizes all processors in a parallel job at a given point of
 execution. No processor will continue execution until all other processors
-have called {\t CCTK\_Barrier()}. Note that this is a collective operation --
+have called \code{CCTK\_Barrier}. Note that this is a collective operation --
 it must be called by all processors otherwise the code will hang.
 \end{CCTKFunc}
 
@@ -1340,7 +1340,7 @@ will be used if the coordinate direction is given as less than or equal to zero,
 \end{params}
 \begin{discussion}
 The coordinate name is independent of the grid function name.
-The coordinate range is registered by {\t CCTK\_CoordRegisterRange}.
+The coordinate range is registered by \code{CCTK\_CoordRegisterRange}.
 To find the range, the coordinate system name must be given, and either
 the coordinate direction or the coordinate name. The coordinate direction
 will be used if is given as a positive value, otherwise the coordinate
@@ -1377,7 +1377,7 @@ system.}
 \end{params}
 \begin{discussion}
 There must already be a coordinate system registered,
-using {\tt CCTK\_CoordRegisterSystem}.
+using \code{CCTK\_CoordRegisterSystem}.
 \end{discussion}
 \begin{examples}
 \begin{tabular}{@{}p{3cm}cp{11cm}}
@@ -1416,9 +1416,10 @@ values of a coordinate on a given grid hierachy}
 \end{params}
 \begin{discussion}
 There must already
-be a coordinate registered with the given name, with {\t CCTK\_CoordRegisterData}.
+be a coordinate registered with the given name, with
+\code{CCTK\_CoordRegisterData}.
 The coordinate range
-can be accessed by {\t CCTK\_CoordRange}.
+can be accessed by \code{CCTK\_CoordRange}.
 \end{discussion}
 \begin{examples}
 \begin{tabular}{@{}p{3cm}cp{11cm}}
@@ -1626,7 +1627,7 @@ No Fortran routine exists at the moment.
 \end{params}
 \begin{discussion}
 Turning off communications means that ghost zones will not be
-communicated during a call to {\tt CCTK\_SyncGroup}. By default
+communicated during a call to \code{CCTK\_SyncGroup}. By default
 communications are all off.
 \end{discussion}
 \begin{examples}
@@ -1674,8 +1675,8 @@ communications are all off.
 \end{params}
 \begin{discussion}
 Grid variables with communication enabled will have their ghost zones communicated during a call
-to {\tt CCTK\_SyncGroup}. In general, this function does not need to be used, since communication
-is automatically enabled for grid variables who have assigned storage via the {\tt schedule.ccl}
+to \code{CCTK\_SyncGroup}. In general, this function does not need to be used, since communication
+is automatically enabled for grid variables who have assigned storage via the \code{schedule.ccl}
 file.
 \end{discussion}
 \begin{examples}
@@ -1698,7 +1699,7 @@ file.
 \end{params}
 \begin{discussion}
 In general this function does not need to be used, since storage assignment is best handled by
-the Cactus scheduler via a thorn's {\tt schedule.ccl} file.
+the Cactus scheduler via a thorn's \code{schedule.ccl} file.
 \end{discussion}
 \begin{examples}
 \begin{tabular}{@{}p{3cm}cp{11cm}}
@@ -1726,7 +1727,7 @@ given string value. The comparison is performed case-independent,
 returning a non-zero value if the strings are the same, and zero if they differ.
 
 Note that in Fortran code, STRING or KEYWORD parameters are passed as C pointers,
-and can not be treated as normal Fortran strings. Thus {\t CCTK\_Equals()}
+and can not be treated as normal Fortran strings. Thus \code{CCTK\_Equals}
 should be used to check the value of such a parameter.
 \end{discussion}
 \end{CCTKFunc}
@@ -1849,7 +1850,7 @@ strings. This routine allows a Fortran string to be created from such a C string
 \fbox{The full variable name must be explicitly freed after it has been used.}
 
 No Fortran routine exists at the moment. The full variable name is in
-the form {\t <implementation>::<variable>}
+the form \code{<implementation>::<variable>}
 \end{discussion}
 \begin{examples}
 \begin{tabular}{@{}p{3cm}cp{11cm}}
@@ -2291,7 +2292,7 @@ Returns the local size for a given variable.
 \parameter{groupname}{The name of the group}
 \end{params}
 \begin{discussion}
-The group name should be the given in its fully qualified form, that is {\t <implementation>::<group>} for a public or protected group, and {\t <thornname>::<group>} for a private group.
+The group name should be the given in its fully qualified form, that is \code{<implementation>::<group>} for a public or protected group, and \code{<thornname>::<group>} for a private group.
 \end{discussion}
 \begin{examples}
 \begin{tabular}{@{}p{3cm}cp{11cm}}
@@ -2318,7 +2319,7 @@ The group name should be the given in its fully qualified form, that is {\t <imp
 \parameter{name}{The full name of the variable}
 \end{params}
 \begin{discussion}
-The variable name should be in the form {\t <implementation>::<variable>}
+The variable name should be in the form \code{<implementation>::<variable>}
 \end{discussion}
 \begin{examples}
 \begin{tabular}{@{}p{3cm}cp{11cm}}
@@ -2850,7 +2851,8 @@ Returns the number of ghostzones for a given group.
 \begin{discussion}
 The group's group type index indicates the type of variables in the group.
 Either scalars, grid functions or arrays. The group type can be checked
-with the Cactus provided macros for {\t CCTK\_SCALAR}, {\t CCTK\_GF}, {\t CCTK\_ARRAY}.
+with the Cactus provided macros for \code{CCTK\_SCALAR},
+\code{CCTK\_GF}, \code{CCTK\_ARRAY}.
 \end{discussion}
 \begin{examples}
 \begin{tabular}{@{}p{3cm}cp{11cm}}
@@ -2893,7 +2895,7 @@ Group index.
 A group's group type index indicates the type of variables in the
 group.  The three group types are scalars, grid functions, and grid
 arrays. The group type can be checked with the Cactus provided macros
-for {\t CCTK\_SCALAR}, {\t CCTK\_GF}, {\t CCTK\_ARRAY}.
+for \code{CCTK\_SCALAR}, \code{CCTK\_GF}, \code{CCTK\_ARRAY}.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
@@ -3125,21 +3127,21 @@ The string to print as an info message
 This macro can be used by thorns to print a single string as an info message
 to screen.
 
-{\tt CCTK\_INFO(level, message)} expands to a call to the underlying function
-{\tt CCTK\_Info()}:
+The macro \code{CCTK\_INFO(message)} expands to a call to the
+underlying function \code{CCTK\_Info}:
 
 \begin{verbatim}
 CCTK_Info(CCTK_THORNSTRING, message)
 \end{verbatim}
 
 So the macro automatically includes the name of the originating thorn in the
-info message. It is recommended that the macro {\tt CCTK\_INFO} is used
-to print a message rather than calling {\tt CCTK\_Info()} directly.
+info message. It is recommended that the macro \code{CCTK\_INFO} is used
+to print a message rather than calling \code{CCTK\_Info} directly.
 
 To include variables in an info message from C, you can use the routine
-{\tt CCTK\_VInfo()} which accepts a variable argument list.
+\code{CCTK\_VInfo} which accepts a variable argument list.
 To include variables from Fortran, a string must be constructed and passed
-in a {\tt CCTK\_INFO} macro.
+in a \code{CCTK\_INFO} macro.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
@@ -3279,7 +3281,7 @@ These coordinates are with respect to the coordinate system defined by
 \end{Parameter}
 \begin{Parameter}{N\_input\_arrays ($\ge 0$)}
 The number of input arrays to be interpolated.
-If {\tt N\_input\_arrays} is zero then no interpolation is done; such a call
+If \code{N\_input\_arrays} is zero then no interpolation is done; such a call
 may be useful for setup, interpolator querying, etc.
 Note that if the parameter table entry \code{operand\_indices} is used to specify
 a nontrivial (e.g.\ one-to-many) mapping of input arrays to output arrays,
@@ -3295,13 +3297,13 @@ purpose of the call is e.g.\ to do some query or setup computation.
 \end{Parameter}
 \begin{Parameter}{N\_output\_arrays ($\ge 0$)}
 The number of output arrays to be returned from the interpolation.
-If {\tt N\_output\_arrays} is zero then no interpolation is done; such a call
+If \code{N\_output\_arrays} is zero then no interpolation is done; such a call
 may be useful for setup, interpolator querying, etc.
-Note that {\tt N\_output\_arrays} may differ from {\tt N\_input\_arrays}, e.g.\
-if the {\tt operand\_indices} parameter-table entry is used to specify a
-nontrivial (e.g.\ many-to-1) mapping of input arrays to output arrays.
+Note that \code{N\_output\_arrays} may differ from \code{N\_input\_arrays}, e.g.\
+if the \code{operand\_indices} parameter-table entry is used to specify a
+nontrivial (e.g.\ many-to-one) mapping of input arrays to output arrays.
 If such a mapping is specified, only the unique set of output arrays
-should be given in the {\tt output\_arrays} argument.
+should be given in the \code{output\_arrays} argument.
 \end{Parameter}
 \begin{Parameter}{output\_array\_type\_codes ($\ne$ NULL)}
 (Pointer to) an array of \code{N_output_arrays} \code{CCTK_VARIABLE\_*}
@@ -3311,7 +3313,7 @@ type codes giving the data types of the 1-D output arrays pointed to by
 \begin{Parameter}{output\_arrays ($\ne$ NULL)}
 (Pointer to) an array of \code{N_output\_arrays} pointers to the
 (user-supplied) 1-D output arrays for the interpolation.
-If any of the pointers in the {\tt output\_arrays} array is NULL, then that
+If any of the pointers in the \code{output\_arrays} array is NULL, then that
 interpolation is skipped. This may be useful if the main purpose of the call
 is e.g.\ to do some query or setup computation.
 \end{Parameter}
@@ -3325,14 +3327,14 @@ coordinate system.
 The interpolation points may be anywhere in the global Cactus grid.
 In a multiprocessor run they may vary from processor to processor;
 each processor will get whatever interpolated data it asks for.
-The routine {\tt CCTK\_InterpGridArrays()} does not do the actual interpolation
+The routine \code{CCTK\_InterpGridArrays} does not do the actual interpolation
 itself but rather takes care of whatever interprocessor communication may be
 necessary, and -- for each processor's local patch of the domain-decomposed grid
-arrays -- calls {\tt CCTK\_InterpLocalUniform()} to invoke an external
+arrays -- calls \code{CCTK\_InterpLocalUniform} to invoke an external
 local interpolation operator (as identified by an interpolation handle).
 
 Additional parameters for the interpolation operation of both
-{\tt CCTK\_InterpGridArrays()} and {\tt CCTK\_InterpLocalUniform()} can be
+\code{CCTK\_InterpGridArrays} and \code{CCTK\_InterpLocalUniform} can be
 passed in via a handle to a key/value options table.
 All interpolation operators should check for a parameter table entry with the
 key \code{suppress\_warnings} which -- if present -- indicates that the
@@ -3352,8 +3354,8 @@ Also, the global interpolator will typically need to specify some options
 of its own for the local interpolator.\footnote{
 It is the caller's responsibility to ensure that the specified local
 interpolator supports any optional parameter-table entries that
-{\tt CCTK\_InterpGridArrays()} passes to it. Each thorn providing a
-{\tt CCTK\_InterpLocalUniform()} interpolator should document what options it
+\code{CCTK\_InterpGridArrays} passes to it. Each thorn providing a
+\code{CCTK\_InterpLocalUniform} interpolator should document what options it
 requires from the global interpolator.
 }
 These will overwrite any entries
@@ -3362,7 +3364,7 @@ Finally, the parameter table can be used to pass back arbitrary information by t
 and/or global interpolation routine(s) by adding/modifying appropriate
 key/value pairs.
 
-Note that {\tt CCTK\_InterpGridArrays()} is a collective operation, so in the
+Note that \code{CCTK\_InterpGridArrays} is a collective operation, so in the
 multiprocessor case you {\em must\/} call this function in parallel on
 {\em each\/} processor, passing identical arguments except for the number of
 interpolation points, the interpolation coordinates, and the output array pointers.
@@ -3374,23 +3376,23 @@ interprocessor-communication issues), though it may be more efficient
 to have most or all of the interpolation points ``owned'' by the
 current processor.
 
-The semantics of {\tt CCTK\_InterpGridArrays()} are mostly independent of
+The semantics of \code{CCTK\_InterpGridArrays} are mostly independent of
 which Cactus driver is being used, but an implementation will most likely depend
 on, and make use of, driver-specific internals. For that reason,
-{\tt CCTK\_InterpGridArrays()} is made an overloadable function. The Cactus
+\code{CCTK\_InterpGridArrays} is made an overloadable function. The Cactus
 flesh will supply only a dummy routine for it which -- if called -- does nothing
 but print a warning message saying that it wasn't overloaded by another thorn,
 and stop the code. So one will always need to compile in and activate
 a driver-specific thorn which provides an interpolation routine for CCTK grid
-arrays and properly overloads {\tt CCTK\_InterpGridArrays()} with it at startup.
+arrays and properly overloads \code{CCTK\_InterpGridArrays} with it at startup.
 
 Details of the operation performed, and what (if any) inputs and/or
 outputs are specified in the parameter table, depend on which driver-specific
 interpolation thorn and interpolation operator (provided by a local
 interpolation thorn) you use.  See the documentation on individual interpolator
-thorns (e.g.\ {\tt PUGHInterp} in the {\tt CactusPUGH} arrangement,
-{\tt LocalInterp} in the {\tt CactusBase} arrangement, and/or
-{\tt AEILocalInterp} in the {\tt AEIThorns} arrangement) for details.
+thorns (e.g.\ \code{PUGHInterp} in the \code{CactusPUGH} arrangement,
+\code{LocalInterp} in the \code{CactusBase} arrangement, and/or
+\code{AEILocalInterp} in the \code{AEIThorns} arrangement) for details.
 
 Note that in a multiprocessor Cactus run, it's the user's responsibility
 to choose the interprocessor ghost-zone size (\code{driver::ghost\_size})
@@ -3548,7 +3550,7 @@ if (CCTK_InterpGridArrays(GH, N_DIMS,
 using a chosen interpolation operator
 \\[\baselineskip]
 This function is being phased out; it will eventually be replaced by
-{\t CCTK\_InterpGridArrays()}.}
+\code{CCTK\_InterpGridArrays}.}
 \label{CCTK-InterpGV}
 \subroutine{int}{integer}{ierr}
 \argument{cGH *}{CCTK\_POINTER}{cctkGH}
@@ -3678,7 +3680,7 @@ A negative value is returned for invalid/unregistered interpolation operator nam
 using a chosen interpolation operator
 \\[\baselineskip]
 This function is being phased out; it will eventually be replaced by
-{\t CCTK\_InterpLocalUniform()} et al.}
+\code{CCTK\_InterpLocalUniform} et al.}
 \label{CCTK-InterpLocal}
 \subroutine{int}{integer}{ierr}
 \argument{cGH *}{CCTK\_POINTER}{cctkGH}
@@ -4724,7 +4726,7 @@ in the \code{src/include/} directory in the Cactus flesh.
 
 % Interp.c
 \begin{CCTKFunc}{CCTK\_InterpRegisterOperatorGV}%%%
-{Register a routine as a {\tt CCTK\_InterpGV()} interpolation operator}
+{Register a routine as a \codeCCTK\_InterpGV} interpolation operator}
 \label{CCTK-InterpRegisterOperatorGV}
 \subroutine{int}{}{ierr}
 \argument{cInterpOperatorGV}{}{operator}
@@ -4771,7 +4773,7 @@ A negative return code indicates an error condition:
 
 % Interp.c
 \begin{CCTKFunc}{CCTK\_InterpRegisterOperatorLocal}%%%
-{Register a routine as a {\tt CCTK\_InterpLocal()} interpolation operator}
+{Register a routine as a \code{CCTK\_InterpLocal} interpolation operator}
 \label{CCTK-InterpRegisterOperatorLocal}
 \subroutine{int}{}{ierr}
 \argument{cInterpOperatorLocal}{}{operator}
@@ -4938,7 +4940,7 @@ CCTK_InterpRegisterOpLocalUniform(AEILocalInterp_InterpLocalUniform,
 \end{params}
 \begin{discussion}
 This function returns a non-zero value if the implementation given by
-{\tt implementationname} was activated in a parameter file, and zero
+\code{implementationname} was activated in a parameter file, and zero
 otherwise.
 \end{discussion}
 \end{CCTKFunc}
@@ -4956,7 +4958,7 @@ implementation was compiled into the configuration}
 \end{params}
 \begin{discussion}
 This function returns a non-zero value if the implementation given by
-{\tt implementationname} was compiled into the configuration, and zero
+\code{implementationname} was compiled into the configuration, and zero
 otherwise.
 \end{discussion}
 \end{CCTKFunc}
@@ -4972,7 +4974,7 @@ otherwise.
 \parameter{thorname}{the name of the thorn to check}
 \end{params}
 \begin{discussion}
-This function returns a non-zero value if the thorn given by {\tt thornname}
+This function returns a non-zero value if the thorn given by \code{thornname}
 was activated in a parameter file, and zero otherwise.
 \end{discussion}
 \end{CCTKFunc}
@@ -4989,7 +4991,7 @@ was activated in a parameter file, and zero otherwise.
 \end{params}
 \begin{discussion}
 This function returns a non-zero value if the implementation given by
-{\tt thornname} was compiled into the configuration, and zero
+\code{thornname} was compiled into the configuration, and zero
 otherwise.
 \end{discussion}
 \end{CCTKFunc}
@@ -5047,7 +5049,7 @@ and not the active thorn list.
 \end{params}
 \begin{discussion}
 For a single processor run this call will return zero. For multiprocessor
-runs, this call will return $0\leq myproc < {\t CCTK\_nProcs(cctkGH)}$.
+runs, this call will return 0 $\leq$ myproc $<$ \code{CCTK\_nProcs(cctkGH)}.
 \end{discussion}
 \begin{examples}
 \begin{tabular}{@{}p{3cm}cp{11cm}}
@@ -5069,7 +5071,7 @@ runs, this call will return $0\leq myproc < {\t CCTK\_nProcs(cctkGH)}$.
 \parameter{numlevels}{The number of timelevels}
 \end{params}
 \begin{discussion}
-The group name should be in the form {\t <implementation>::<group>}
+The group name should be in the form \code{<implementation>::<group>}
 \end{discussion}
 \begin{examples}
 \begin{tabular}{@{}p{3cm}cp{11cm}}
@@ -5093,7 +5095,7 @@ The group name should be in the form {\t <implementation>::<group>}
 \parameter{numlevels}{The number of timelevels}
 \end{params}
 \begin{discussion}
-The variable name should be in the form {\t <implementation>::<variable>}
+The variable name should be in the form \code{<implementation>::<variable>}
 \end{discussion}
 \begin{examples}
 \begin{tabular}{@{}p{3cm}cp{11cm}}
@@ -5215,9 +5217,9 @@ a CCTK\_POINTER type variable which is initialized with a C-style NULL pointer
 Fortran doesn't know the concept of pointers so problems arise when a C function
 is to be called which expects a pointer as one (or more) of it(s) argument(s).
 
-In order to pass a NULL pointer from fortran to C, a local CCTK\_POINTER variable should be used which has been initialized before with {\t CCTK\_NullPointer()}.
+In order to pass a NULL pointer from fortran to C, a local CCTK\_POINTER variable should be used which has been initialized before with \code{CCTK\_NullPointer}.
 
-Note that there is only a fortran wrapper available for {\t CCTK\_NullPointer()}.
+Note that there is only a fortran wrapper available for \code{CCTK\_NullPointer}.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
@@ -5250,7 +5252,7 @@ call Util_TableSetPointer(ierror, table_handle, pointer_var, "NULL pointer")
 \subroutine{int}{integer}{number}
 \showargs
 \begin{params}
-\parameter{number}{The number of groups compiled from the thorns {\t interface.ccl} files}
+\parameter{number}{The number of groups compiled from the thorns \code{interface.ccl} files}
 \end{params}
 \begin{discussion}
 \end{discussion}
@@ -5389,16 +5391,16 @@ Index of a variable in the group.
 \begin{Discussion}
 This function returns the number of timelevels for which storage has
 been activated, which is always equal to or less than the maximum
-number of timelevels which may have storage provided by {\tt
-CCTK\_MaxTimeLevels}.
+number of timelevels which may have storage provided by
+\code{CCTK\_MaxTimeLevels}.
 
-This function has been superceded by {\tt CCTK\_ActiveTimeLevels} and
+This function has been superceded by \code{CCTK\_ActiveTimeLevels} and
 should not be used any more.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
 \begin{SeeAlso2}{CCTK\_ActiveTimeLevels}{CCTK-ActiveTimeLevels}
-Same as {\tt CCTK\_ActiveTimeLevels} (deprecated).
+Returns the number of active time levels for a group.
 \end{SeeAlso2}
 \begin{SeeAlso2}{CCTK\_MaxTimeLevels}{CCTK-MaxTimeLevels}
 Return the maximum number of active timelevels.
@@ -5414,7 +5416,7 @@ active timelevels, and also returns the number of active timelevels.
 \end{SeeAlsoSection}
 
 \begin{ErrorSection}
-\begin{Error}{timelevels \textasciiless\ 0}
+\begin{Error}{timelevels $<$ 0}
 Illegal arguments given.
 \end{Error}
 \end{ErrorSection}
@@ -5431,7 +5433,7 @@ Illegal arguments given.
 \subroutine{int}{integer}{number}
 \showargs
 \begin{params}
-\parameter{number}{The number of grid variables compiled from the thorn's {\t interface.ccl} files}
+\parameter{number}{The number of grid variables compiled from the thorn's \cite{interface.ccl} files}
 \end{params}
 \begin{discussion}
 \end{discussion}
@@ -5461,7 +5463,7 @@ Illegal arguments given.
 \parameter{group}{The full group name}
 \end{params}
 \begin{discussion}
-The group name should be given in the form {\t <implementation>::<group>}
+The group name should be given in the form \code{<implementation>::<group>}
 \end{discussion}
 \begin{examples}
 \begin{tabular}{@{}p{3cm}cp{11cm}}
@@ -5638,12 +5640,12 @@ character*(*) alias
 \begin{Discussion}
 The output should take place if at all possible.
 If the appropriate file exists the data is appended, otherwise a new
-file is created. Uses {\t alias} as the name of the variable for the purpose
+file is created. Uses \code{alias} as the name of the variable for the purpose
 of constructing a filename.
 \end{Discussion}
 
 \begin{ErrorSection}
-\begin{Error}{positive}the number of IO methods which did output of {\t variable}\end{Error}
+\begin{Error}{positive}the number of IO methods which did output of \code{variable}\end{Error}
 \begin{Error}{\rm 0}for success\end{Error}
 \begin{Error}{negative}if no IO methods were registered\end{Error}
 \end{ErrorSection}
@@ -5685,8 +5687,8 @@ character*(*) alias
 \end{ParameterSection}
 
 \begin{Discussion}
-Output a variable {\t variable} using the method {\t method} if it is
-registered. Uses {\t alias} as the name of the variable for the purpose
+Output a variable \code{variable} using the method \code{method} if it is
+registered. Uses \code{alias} as the name of the variable for the purpose
 of constructing a filename. The output should take place if at all possible.
 If the appropriate file exists the data is appended, otherwise a new
 file is created.
@@ -5730,7 +5732,7 @@ character*(*) method
 \end{ParameterSection}
 
 \begin{Discussion}
-Output a variable {\t variable} using the IO method {\t method} if it is
+Output a variable \code{variable} using the IO method \code{method} if it is
 registered. The output should take place if at all possible.
 if the appropriate file exists the data is appended, otherwise a new
 file is created.
@@ -5773,7 +5775,7 @@ Initializes the parallel subsystem.
 \parameter{message}{The warning message}
 \end{params}
 \begin{discussion}
-The call should be used in routines registered at the schedule point {\t CCTK\_PARAMCHECK}
+The call should be used in routines registered at the schedule point \code{CCTK\_PARAMCHECK}
 to indicate that there is parameter error or conflict and the code should
 terminate. The code will terminate only after all the parameters have been
 checked.
@@ -5824,10 +5826,10 @@ variable in the fortran context from which to take the address
 Fortran doesn't know the concept of pointers so problems arise when a C function
 is to be called which expects a pointer as one (or more) of it(s) argument(s).
 
-To obtain the pointer to a variable in fortran, one can use {\t CCTK\_PointerTo()} which takes the variable itself as a single argument and returns the
+To obtain the pointer to a variable in fortran, one can use \code{CCTK\_PointerTo()} which takes the variable itself as a single argument and returns the
 pointer to it.
 
-Note that there is only a fortran wrapper available for {\t CCTK\_PointerTo()}.
+Note that there is only a fortran wrapper available for \code{CCTK\_PointerTo}.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
@@ -5980,9 +5982,9 @@ A negative error code is returned for an invalid group name.
 This routine queries whether the variables in a group have storage assigned.
 If so it returns true (a non-zero value), otherwise false (zero).
 
-The group can be specified either through the group index {\tt
-groupindex}, or through the group name {\tt groupname}.  The groupname
-takes precedence; only if it is passed as {\tt NULL}, the group index
+The group can be specified either through the group index
+\code{groupindex}, or through the group name \code{groupname}.  The groupname
+takes precedence; only if it is passed as \code{NULL}, the group index
 is used.
 \end{discussion}
 \begin{errorcodes}
@@ -6036,8 +6038,8 @@ A negative error code is returned for an invalid group name.
 \parameter{name}{name of the reduction method required}
 \end{params}
 \begin{discussion}
-Reduction methods should be registered at {\t CCTK\_STARTUP}. Note that
-integer reduction handles are used to call {\t CCTK\_Reduce} to avoid
+Reduction methods should be registered at \code{CCTK\_STARTUP}. Note that
+integer reduction handles are used to call \code{CCTK\_Reduce} to avoid
 problems with passing Fortran strings. Note that the name of the reduction
 operator is case dependent.
 \end{discussion}
@@ -6063,7 +6065,7 @@ operator is case dependent.
 \parameter{message}{String which will be displayed as a banner}
 \end{params}
 \begin{discussion}
-The banner must be registered during {\t CCTK\_STARTUP}. The banners are
+The banner must be registered during \code{CCTK\_STARTUP}. The banners are
 displayed in the order in which they are registered.
 \end{discussion}
 \begin{examples}
@@ -6163,7 +6165,7 @@ displayed in the order in which they are registered.
 \parameter{name}{name of the I/O method}
 \end{params}
 \begin{discussion}
-IO methods should be registered at {\t CCTK\_STARTUP}.
+IO methods should be registered at \code{CCTK\_STARTUP}.
 \end{discussion}
 \begin{examples}
 \begin{tabular}{@{}p{3cm}cp{11cm}}
@@ -6175,7 +6177,7 @@ IO methods should be registered at {\t CCTK\_STARTUP}.
 
 
 % cctk_IOMethods.h
-\begin{CCTKFunc}{CCTK\_RegisterIOMethodOutputGH}{Register a routine for an I/O method which will be called from {\tt CCTK\_OutputGH}.}
+\begin{CCTKFunc}{CCTK\_RegisterIOMethodOutputGH}{Register a routine for an I/O method which will be called from \code{CCTK\_OutputGH}.}
 \label{CCTK-RegisterIOMethodOutputGH}
 \function{int}{integer}{istat}
 \argument{int}{}{handle}
@@ -6311,11 +6313,11 @@ IO methods should be registered at {\t CCTK\_STARTUP}.
 Only those grid variables which have communication enabled
 will be synchronised. This is usually equivalent to the variables
 which have storage assigned, unless communication has been explicitly
-turned off with a call to {\tt CCTK\_DisableGroupComm}.
+turned off with a call to \code{CCTK\_DisableGroupComm}.
 
-Note that an alternative to calling {\tt CCTK\_SyncGroup} explicitly
-from within a thorn, is to use the {\tt SYNC} keyword in a thorns
-{\tt schedule.ccl} file to indicate which groups of variables need
+Note that an alternative to calling \code{CCTK\_SyncGroup} explicitly
+from within a thorn, is to use the \code{SYNC} keyword in a thorns
+\code{schedule.ccl} file to indicate which groups of variables need
 to be synchronised on exit from the routine. This latter method is
 the preferred method from synchronising variables.
 \end{discussion}
@@ -6354,7 +6356,7 @@ the preferred method from synchronising variables.
 \parameter{name}{The full name of the variable}
 \end{params}
 \begin{discussion}
-The variable name should be in the form {\t <implementation>::<variable>}.
+The variable name should be in the form \code{<implementation>::<variable>}.
 \end{discussion}
 \begin{examples}
 \begin{tabular}{@{}p{3cm}cp{11cm}}
@@ -6382,7 +6384,7 @@ The variable name should be in the form {\t <implementation>::<variable>}.
 \parameter{name}{The full name of the variable}
 \end{params}
 \begin{discussion}
-If the name if {\t NULL} the index will be used, if the index is negative the name will be used.
+If the name if \code{NULL} the index will be used, if the index is negative the name will be used.
 \end{discussion}
 \begin{examples}
 \begin{tabular}{@{}p{3cm}cp{11cm}}
@@ -6448,8 +6450,8 @@ The name of the variable.
 
 \begin{Discussion}
 The variable name should be the given in its fully qualified form,
-that is\\ {\t <implementation>::<variable>} for a public or protected
-variable, and\\ {\t <thornname>::<variable>} for a private variable.
+that is \code{<implementation>::<variable>} for a public or protected
+variable, and \code{<thornname>::<variable>} for a private variable.
 \end{Discussion}
 
 %\begin{SeeAlsoSection}
@@ -6459,7 +6461,7 @@ variable, and\\ {\t <thornname>::<variable>} for a private variable.
 no variable of this name exists
 \end{Error}
 \begin{Error}{-2}
-failed to catch error code from \texttt{Util\_SplitString}
+failed to catch error code from \code{Util\_SplitString}
 \end{Error}
 \begin{Error}{-3}
 given full name is in wrong format
@@ -6521,7 +6523,7 @@ No Fortran routine exists at the moment.
 \begin{discussion}
 The variable type index indicates the type of the variable.
 Either character, int, complex or real. The group type can be checked
-with the Cactus provided macros for {\t CCTK\_VARIABLE\_INT}, {\t CCTK\_VARIABLE\_REAL}, {\t CCTK\_VARIABLE\_COMPLEX} or {\t CCTK\_VARIABLE\_CHAR}.
+with the Cactus provided macros for \code{CCTK\_VARIABLE\_INT}, \code{CCTK\_VARIABLE\_REAL}, \code{CCTK\_VARIABLE\_COMPLEX} or \code{CCTK\_VARIABLE\_CHAR}.
 \end{discussion}
 \begin{examples}
 \begin{tabular}{@{}p{3cm}cp{11cm}}
@@ -6558,7 +6560,7 @@ Variable type index.
 
 \begin{Discussion}
 This function returns the size in bytes of any of the Cactus variable
-types {\t CCTK\_INT}, {\t CCTK\_REAL}, {\t CCTK\_COMPLEX}, etc.
+types \code{CCTK\_INT}, \code{CCTK\_REAL}, \code{CCTK\_COMPLEX}, etc.
 \end{Discussion}
 
 %\begin{SeeAlsoSection}
@@ -6596,10 +6598,10 @@ int status = CCTK_VInfo(const char *thorn,
 \begin{ParameterSection}
 \begin{Parameter}{thorn}
 The name of the thorn printing this info message. You can use the
-{\t CCTK\_THORNSTRING} macro here (defined in {\t cctk.h}).
+\code{CCTK\_THORNSTRING} macro here (defined in \code{cctk.h}).
 \end{Parameter}
 \begin{Parameter}{format}
-The {\t fprintf(3)}-like format string to use for printing the info message.
+The \code{printf}-like format string to use for printing the info message.
 \end{Parameter}
 \begin{Parameter}{...}
 The variable argument list.
@@ -6610,7 +6612,7 @@ The variable argument list.
 This routine can be used by thorns to print a formatted string with a variable
 argument list as an info message to screen.
 The message will include the name of the originating thorn, otherwise its
-semantics is equivalent to {\t fprintf(3)}.
+semantics is equivalent to \code{printf}.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
@@ -6665,18 +6667,18 @@ The warning level for the message to print, with level 0 being the severest
 level.
 \end{Parameter}
 \begin{Parameter}{line}
-The line number in the originating source file where the {\t CCTK\_VWarn()} call
-occured. You can use the standardized {\t \_\_LINE\_\_} preprocessor macro here.
+The line number in the originating source file where the \code{CCTK\_VWarn} call
+occured. You can use the standardized \code{\_\_LINE\_\_} preprocessor macro here.
 \end{Parameter}
 \begin{Parameter}{file}
-The file name of the originating source file where the {\t CCTK\_VWarn()} call
-occured. You can use the standardized {\t \_\_FILE\_\_} preprocessor macro here.
+The file name of the originating source file where the \code{CCTK\_VWarn} call
+occured. You can use the standardized \code{\_\_FILE\_\_} preprocessor macro here.
 \end{Parameter}
 \begin{Parameter}{thorn}
-The thorn name of the originating source file where the {\t CCTK\_VWarn()} call occured. You can use the {\t CCTK\_THORNSTRING} macro here (defined in {\t cctk.h}).
+The thorn name of the originating source file where the \code{CCTK\_VWarn} call occured. You can use the \code{CCTK\_THORNSTRING} macro here (defined in \code{cctk.h}).
 \end{Parameter}
 \begin{Parameter}{format}
-The {\t fprintf(3)}-like format string to use for printing the warning message.
+The \code{printf}-like format string to use for printing the warning message.
 \end{Parameter}
 \begin{Parameter}{...}
 The variable argument list.
@@ -6685,14 +6687,14 @@ The variable argument list.
 
 \begin{Discussion}
 This routine can be used by thorns to print a formatted string followed by
-a variable argument list as a warning message to {\t stderr}.
+a variable argument list as a warning message to \code{stderr}.
 
 By default Cactus prints any warning with warning levels $\le 1$ to standard
 error, and would stop the code on a level 0 warning.
 This behaviour can be changed on the command line using
-the flags {\t -W} and {\t -E} (see the Users' Guide for full details).
+the flags \code{-W} and \code{-E} (see the Users' Guide for full details).
 
-The boolean flesh parameter {\tt cctk\_full\_warnings} determines whether all
+The boolean flesh parameter \code{cctk\_full\_warnings} determines whether all
 the details about the warning origin (processor ID, line number, source file,
 source thorn) are shown. The default is to omit the line number and name of the
 source file.
@@ -6764,10 +6766,10 @@ The warning message to print
 
 \begin{Discussion}
 This macro can be used by thorns to print a single string as a warning message
-to {\t stderr}.
+to \code{stderr}.
 
-{\tt CCTK\_WARN(level, message)} expands to a call to the underlying function
-{\tt CCTK\_Warn()}:
+\code{CCTK\_WARN(level, message)} expands to a call to the underlying function
+\code{CCTK\_Warn}:
 
 \begin{verbatim}
 CCTK_Warn(level, __LINE__, __FILE__, CCTK_THORNSTRING, message)
@@ -6775,13 +6777,13 @@ CCTK_Warn(level, __LINE__, __FILE__, CCTK_THORNSTRING, message)
 
 So the macro automatically includes details about the origin of the warning
 (the thorn name, the source code file name and the line number where the macro
-occurs). It is recommended that the macro {\tt CCTK\_WARN} is used
-to print a warning message rather than calling {\tt CCTK\_Warn()} directly.
+occurs). It is recommended that the macro \code{CCTK\_WARN} is used
+to print a warning message rather than calling \code{CCTK\_Warn} directly.
 
 To include variables in a warning message from C, you can use the routine
-{\tt CCTK\_VWarn()} which accepts a variable argument list.
+\code{CCTK\_VWarn} which accepts a variable argument list.
 To include variables from Fortran, a string must be constructed and passed
-in a {\tt CCTK\_WARN} macro.
+in a \code{CCTK\_WARN} macro.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
