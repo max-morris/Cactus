@@ -18,6 +18,7 @@
 
 #include "cctk.h"
 #include "flesh.h"
+#include "FortranString.h"
 #include "Groups.h"
 #include "StoreHandledData.h"
 #include "Reduction.h"
@@ -86,6 +87,20 @@ int CCTK_RegisterReductionOperator(void (*function)(REGISTER_ARGLIST),
 }
 
 
+ /*@@
+   @routine    CCTK_GetReductionHandle
+   @date       April 28 1999
+   @author     Gabrielle Allen
+   @desc 
+   Returns the handle of a given reduction operator
+   @enddesc 
+   @var     reduction
+   @vdesc   String containing name of reduction operator
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+   @endvar 
+@@*/
 
 int CCTK_GetReductionHandle(const char *reduction)
 {
@@ -96,11 +111,11 @@ int CCTK_GetReductionHandle(const char *reduction)
   handle = CCTK_GetHandle(ReductionOperators, reduction, data);
 
 #ifdef DEBUG_REDUCTION
-  printf("----------------------------------------------------------------\n");
+  CCTK_PRINTSEPARATOR
   printf("In CCTK_GetReductionHandle\n");
   printf("--------------------------\n");
   printf("  Got handle %d for %s\n",handle,reduction);
-  printf("----------------------------------------------------------------\n");
+  CCTK_PRINTSEPARATOR
 #endif
 
   if (handle < 0)
@@ -109,6 +124,15 @@ int CCTK_GetReductionHandle(const char *reduction)
   return handle;
 
 }  
+
+void FMODIFIER FORTRAN_NAME(CCTK_GetReductionHandle)(int *handle, ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE(reduction)
+  *handle = CCTK_GetReductionHandle(reduction);
+  free(reduction);
+}
+
+
 
 
 int CCTK_Reduce(  cGH *GH, 
@@ -160,6 +184,22 @@ int CCTK_Reduce(  cGH *GH,
 
 }
 
+void FMODIFIER FORTRAN_NAME(CCTK_Reduce)(cGH *GH, 
+                  int *fortranreturn,
+		  int *proc,
+		  int *operation_handle,
+                  int *num_out_vals,
+		  int *type_out_vals,
+		  void *out_vals,
+		  int *num_in_fields,
+		  int *index )
+{ 
+  int retval;
+  retval = CCTK_Reduce(GH,*proc,*operation_handle,
+			      *num_out_vals,*type_out_vals,
+			      out_vals,*num_in_fields,*index);
+  fortranreturn = &retval;
+}
 
 
 
