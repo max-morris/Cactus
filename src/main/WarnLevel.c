@@ -421,7 +421,7 @@ void CCTK_FCALL CCTK_FNAME (CCTK_ParamWarn)
    @author     Gabrielle Allen
    @desc
                Warn the user if a parameter error is found using a variable
-	       argument list (extends CCTK_ParamWarn)
+               argument list (extends CCTK_ParamWarn)
    @enddesc
    @calls      CCTK_ParameterGet
 
@@ -437,8 +437,8 @@ void CCTK_FCALL CCTK_FNAME (CCTK_ParamWarn)
    @endvar
    @var        ...
    @vdesc      Variable argument list
-   @vtype      
-   @vio        
+   @vtype
+   @vio
    @endvar
 
    @returntype int
@@ -446,9 +446,9 @@ void CCTK_FCALL CCTK_FNAME (CCTK_ParamWarn)
                0  - success
    @endreturndesc
 @@*/
-int CCTK_VParamWarn (const char *thorn, 
-		     const char *format, 
-		     ...)
+int CCTK_VParamWarn (const char *thorn,
+                     const char *format,
+                     ...)
 {
   va_list ap;
   const CCTK_INT *cctk_strong_param_check;
@@ -593,7 +593,7 @@ int CCTKi_SetWarnLevel (int level)
   {
     error_level = warning_level;
     CCTK_VWarn (2, __LINE__, __FILE__, "Cactus",
-                "Decreasing error level to new warning level", warning_level);
+                "Decreasing error level to new warning level %d",warning_level);
   }
 
   return (retval);
@@ -607,7 +607,7 @@ int CCTKi_SetWarnLevel (int level)
    @desc
                Sets the error level
    @enddesc
-   @calls      CCTK_VWarn               
+   @calls      CCTK_VWarn
                CCTK_VInfo
 
    @var        level

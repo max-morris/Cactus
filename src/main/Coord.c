@@ -456,7 +456,8 @@ int CCTK_CoordRegisterRange (cGH *GH,
       if (coord_system->coords[vindex].listcomp)
       {
         CCTK_VWarn (3, __LINE__, __FILE__, "Cactus",
-                    "CCTK_CoordRange: Range already registered", systemname);
+                    "CCTK_CoordRange: Range already registered for system '%s'",
+                    systemname);
         coord_system->coords[vindex].listcomp->lower = min;
         coord_system->coords[vindex].listcomp->upper = max;
       }
@@ -629,7 +630,7 @@ int CCTK_CoordRegisterRangePhysIndex (cGH *GH,
       {
         CCTK_VWarn (3, __LINE__, __FILE__, "Cactus",
                     "CCTK_CoordRegisterRangePhysIndex: "
-                    "Range already registered", systemname);
+                    "Range already registered for system '%s'", systemname);
         coord_system->coords[vindex].listphysi->lower = min;
         coord_system->coords[vindex].listphysi->upper = max;
       }

@@ -314,6 +314,7 @@ int CCTKi_ParameterCreate (const char *name,
 
     if(array)
     {     
+      retval = 0;
       for(i = 0; i < array; i++)
       {
         /* Setup ranges on the array element */
