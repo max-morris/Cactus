@@ -652,12 +652,13 @@ void  CCTK_FCALL CCTK_FNAME(CCTK_GHExtensionHandle)
  
    @endvar 
 
-   @returntype const void *
+   @returntype void *
    @returndesc 
-   The GH extension
+            The GH extension,
+            or NULL if no extension was registered under "name"
    @endreturndesc
 @@*/
-const void *CCTK_GHExtension(cGH *GH, const char *name)
+void *CCTK_GHExtension(cGH *GH, const char *name)
 {
   int handle;
 
