@@ -9,7 +9,6 @@
 
 
 #include "flesh.h"
-#include "CactusIODefaults.h"
 
 static char *rcsid = "$Header:";
 
