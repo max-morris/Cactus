@@ -125,7 +125,7 @@ foreach $t (@testfiles)
     }
     if ($line =~ /^\s*ActiveThorns\s*=\s*\"(.*)\"/i)
     {
-      @activethorns = (@activethorns,$1);
+      $activethorns[$ntests-1] = $1;
     }
   }
   close IN;
@@ -154,7 +154,7 @@ if ($tests =~ /All/) {
       foreach $tthorn  (@allthorns)
       {
         $tthorn =~ m:.*/(.*)$:;
-	$thornpart = "\U$1"; 
+	$thornpart = "\U$1";
 	if ($thornpart eq $th)
 	{
 	  $foundit = 1;
