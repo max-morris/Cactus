@@ -6,7 +6,7 @@
 #   @desc 
 #   
 #   @enddesc 
-#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/unicos,v 1.14 2003-04-30 14:20:24 allen Exp $
+#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/unicos,v 1.15 2003-05-25 09:31:04 allen Exp $
 # @@*/
 
 if test "$CCTK_CONFIG_STAGE" = "preferred-compilers" ; then
@@ -34,7 +34,7 @@ else
   : ${FCOMPILEONLY="-b"}
 
   # The T3E fortran compiler puts module info in .o files by default.
-  : ${F90FLAGS="-dp -em"}
+  : ${F90FLAGS="-dp -em"} 
 
   CCTK_WriteLine cctk_Archdefs.h '/* T3E stuff */'
   CCTK_WriteLine cctk_Archdefs.h "#define T3E 1"
