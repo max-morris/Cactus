@@ -1,6 +1,13 @@
-! $Header$
+/*@@
+  @file   $RCSfile$
+  @author $Author$
+  @date   $Date$
+  @desc
+          Fortran 90 interface declarations for the flesh routines
+  @enddesc
+@@*/
 
-! Fortran 90 interface declarations for the flesh routines
+! $Header$
 
 #include "cctk.h"
 

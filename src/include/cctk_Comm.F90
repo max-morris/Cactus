@@ -1,7 +1,14 @@
-! $Header$
+/*@@
+  @file   $RCSfile$
+  @author $Author$
+  @date   $Date$
+  @desc
+          Fortran 90 interface declarations for the routines
+          which have their C declarations in cctk_Comm.h
+  @enddesc
+@@*/
 
-! Fortran 90 interface declarations for the routines
-! which have their C declarations in cctk_Comm.h
+! $Header$
 
 #include "cctk.h"
 
