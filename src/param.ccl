@@ -53,6 +53,13 @@ BOOLEAN allow_mixeddim_gfs "Allow use of GFs from different dimensions"
 {
 } "no"
 
+KEYWORD recovery_mode "How to behave when recovering from a checkpoint" STEERABLE=RECOVER
+{
+  "strict"  :: "All CCTK variables must be recovered successfully, no INITIAL timebins will be scheduled"
+  "relaxed" :: "Recover variables if possible, schedule INITIAL timebins afterwards"
+} "strict"
+
+
 restricted:
 
 BOOLEAN terminate_next "Terminate on next iteration?" STEERABLE=ALWAYS
@@ -82,4 +89,3 @@ INT cctk_itlast "Final iteration number" STEERABLE = ALWAYS
 {
 : :: "Any integer"
 } 10
-
