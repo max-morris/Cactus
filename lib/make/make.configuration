@@ -16,6 +16,11 @@ CONFIG = $(TOP)/config-data
 BINDINGS_DIR = $(TOP)/bindings
 FLESH_DIR = $(CCTK_HOME)/src
 
+# Some empty strings yye00 fills from configuration.ccl files
+#ConfigInc =
+#ConfigLibdir = 
+#ConfigLib =  
+
 # Scratch build area - need this to make sure F90 module files end up all
 # in one directory.
 export SCRATCH_BUILD=$(TOP)/scratch
@@ -63,7 +68,7 @@ endif
 # pretty confusing during a make clean !
 
 ifeq ($(strip $(MAKECMDGOALS)),)
--include $(CONFIG)/make.thornlist
+-include $(CONFIG)/make.thornlist 
 endif
 
 ifeq ($(strip $(MAKECMDGOALS)), utils)
@@ -76,7 +81,7 @@ endif
 
 # Allow each thorn to include some global definitions
 ifneq ($(strip $(THORNS)),)
--include $(THORNS:%=$(PACKAGE_DIR)/%/src/make.configuration.defn)
+-include $(THORNS:%=$(PACKAGE_DIR)/%/src/make.configuration.defn) 
 endif
 
 ifeq ($(strip $(UTILS)),)
@@ -89,9 +94,10 @@ UTIL_DIR=$(EXEDIR)$(DIRSEP)$(CONFIG_NAME)
 # Build the list of all libraries
 ALLCACTUSLIBS = $(notdir $(CACTUSLIBS) $(THORN_LINKLIST) $(CACTUSLIBS))
 
+# Include all required external libraries from configuration
+-include $(TOP)/bindings/Configuration/make.link
 
 # Build the executable
-
 $(EXEDIR)$(DIRSEP)$(EXE): $(CONFIG)/make.thornlist $(CONFIG)/cctki_version.h $(patsubst %,$(CCTK_LIBDIR)/$(LIBNAME_PREFIX)%$(LIBNAME_SUFFIX),$(notdir $(THORNS) $(CACTUSLIBS)))
 	@echo Creating $(EXE) in $(EXEDIR) from $(THORNS)
 	$(CC) $(OPTIMISE_C) $(DEBUG_C) $(CFLAGS) $(CCOMPILEONLY)$(OPTIONSEP)$(TOP)$(DIRSEP)datestamp.o -I$(subst /,$(DIRSEP),$(CCTK_HOME)/src/include) -I$(CONFIG) $(subst /,$(DIRSEP),$(DATESTAMP))
@@ -203,7 +209,7 @@ $(TOP)/ThornList:
 
 # Allow each thorn to include some global dependencies
 ifneq ($(strip $(THORNS)),)
--include $(THORNS:%=$(PACKAGE_DIR)/%/src/make.configuration.deps)
+-include $(THORNS:%=$(PACKAGE_DIR)/%/src/make.configuration.deps) $(THORNS:%=$(BINDINGS_DIR)/Configuration/%/src/make.configuration.deps)
 endif
 
 # Catch the special case of a thorn being removed from the disk entirely.

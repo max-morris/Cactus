@@ -6,7 +6,7 @@
 #  @desc
 #             Parses the the configuration files for thorns.
 #  @enddesc
-#  @version   $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.61 2004-01-19 20:52:40 schnetter Exp $
+#  @version   $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.62 2004-03-26 00:18:00 goodale Exp $
 #@@*/
 
 # Global parameter to track the number of errors from the CST
@@ -69,6 +69,8 @@ require "$sbin_dir/CreateImplementationBindings.pl";
 require "$sbin_dir/CreateScheduleBindings.pl";
 require "$sbin_dir/CreateFunctionBindings.pl";
 require "$sbin_dir/BuildHeaders.pl";
+require "$sbin_dir/CreateConfigurationBindings.pl";
+require "$sbin_dir/ConfigScriptParser.pl";
 
 #######################################################################
 #
@@ -82,7 +84,10 @@ print "Reading ThornList...\n";
 
 # Parse the interface.ccl files
 print "Parsing configuration files...\n";
-$configuration_database = &CreateConfigurationDatabase(%thorns);
+$configuration_database = &CreateConfigurationDatabase($config_dir, %thorns);
+
+#$debug_configuration = 1;
+&print_configuration_database($configuration_database) if($debug_configuration);
 
 # Restrict the rest of this to thorns with source
 
@@ -159,6 +164,7 @@ else
 }
 
 &WriteFile("$config_dir/make.thornlist", \$make_thornlist);
+&CreateConfigurationBindings($bindings_dir, $configuration_database,\%thorns);
 
 print "CST finished.\n";
 exit;
@@ -326,9 +332,8 @@ sub CreateMakeThornlist
   }
 
   $thorn_linklist .= ' ' . &CreateThornLinkList($thorns, $config);
-
+  print "\n\n$thorn_linklist\n";
   $thorn_dependencies = join ("\n", &CreateThornDependencyList($thorns, $config));
-
   return ($thornlist . "\n" . $thorn_linklist . "\n" . $config_thornlist . "\n" . $thorn_dependencies . "\n");
 }
 
@@ -351,7 +356,7 @@ sub CreateThornLinkList
   foreach $thorn (sort keys %$thorns)
   {
     next if ($config->{"\U$thorn OPTIONS\E"} eq 'NO_SOURCE' ||
-             $thorn eq 'Cactus');
+             "\U$thorn\E" eq "\UCactus\E");
 
     # add this thorn to the thorn liblist
     # as well as any other thorns it requires (directly or indirectly)
@@ -359,7 +364,7 @@ sub CreateThornLinkList
   }
 
   # remove duplicate entries from the list, only keeping the rightmost
-  for ($i = 0; $i <= $#liblist; $i++)
+  for ($i = 0; $i <= $#liblist; $i++) 
   {
     for ($j = 0; $j < $i; $j++)
     {
@@ -390,12 +395,12 @@ sub CreateThornDependencyList
   # Find list of all thorns
   foreach my $thorn (sort keys %thorns) {
     next if ($configuration_database->{"\U$thorn OPTIONS\E"} eq 'NO_SOURCE'
-             || $thorn eq 'Cactus');
+             || "\U$thorn\E" eq "\UCactus\E");
     # Add the thorn and the thorn's requirements
-    my $line = "USESTHORNS_$thorn =";
+    my $line = "USESTHORNS_\U$thorn\E = Cactus CactusBindings";
     foreach my $dep (sort (split (' ', $configuration_database->{"\U$thorn\E REQUIRES THORNS"}),
-                           split (' ', $configuration_database->{"\U$thorn\E USES THORNS"})),
-                     "Cactus", "CactusBindings") {
+                           split (' ', $configuration_database->{"\U$thorn\E USES THORNS"})))
+    {
       $line .= " $dep";
     }
     push (@varlist, $line);
@@ -426,10 +431,9 @@ sub RequiredThorns
   my($i);
   my(@requires, @result);
 
-
   @result = ();
-  foreach $i (split (' ', $config->{"\U$thorn\E REQUIRES THORNS"}))
-  {
+  foreach $i (split (' ', $config->{"\U$thorn\E USES THORNS"}) )
+  { 
     if ($i eq $top)
     {
       CST_error (0, "Cross dependency detected between thorns '$thorn' and " .

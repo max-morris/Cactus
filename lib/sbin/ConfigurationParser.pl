@@ -10,6 +10,7 @@
 #  @version  $Header$
 #@@*/
 
+
 #/*@@
 #  @routine    CreateConfigurationDatabase
 #  @date       Tue Feb  8 17:47:26 2000
@@ -21,10 +22,11 @@
 #@@*/
 sub CreateConfigurationDatabase
 {
-  my(%thorns) = @_;
-  my(%cfg) = ();
-  my($thorn, $required, @missing, $filename);
+  
 
+  my($config_dir, %thorns) = @_;
+  my(%cfg) = ();
+  my($thorn, $required, @missing, @foundlist, $founderrlist, $filename, %thorncap, $foundcap, $temp,$cap);
 
   # Loop through each thorn's configuration file.
   foreach $thorn (sort keys %thorns)
@@ -33,23 +35,24 @@ sub CreateConfigurationDatabase
     next if (! -r $filename);
 
     # Get the configuration data from it
-    &ParseConfigurationCCL($thorn, \%cfg, $filename);
+    &ParseConfigurationCCL($config_dir, $thorn, \%cfg, \%thorns, $filename);
 
-    print "   $thorn\n";
-    print "           Provides: ", $cfg{"\U$thorn\E PROVIDES"}, "\n"
-      if ($cfg{"\U$thorn\E PROVIDES"});
-    print "           Requires: ", $cfg{"\U$thorn\E REQUIRES"}, "\n"
-      if ($cfg{"\U$thorn\E REQUIRES"});
+    if($debug)
+    {
+      print "   $thorn\n";
+      print "           Provides: ", $cfg{"\U$thorn\E PROVIDES"}, "\n"
+        if ($cfg{"\U$thorn\E PROVIDES"});
+      print "           Requires: ", $cfg{"\U$thorn\E REQUIRES"}, "\n"
+        if ($cfg{"\U$thorn\E REQUIRES"});
+    }
 
     # verify that all required thorns are there in the ThornList
     if ($cfg{"\U$thorn\E REQUIRES THORNS"})
     {
-      print "           Requires thorns: ", $cfg{"\U$thorn\E REQUIRES THORNS"}, "\n";
-
       @missing = ();
       foreach $required (split (' ', $cfg{"\U$thorn\E REQUIRES THORNS"}))
       {
-        if (! $thorns{"$required"})
+        if ((! $thorns{"$required"}) && (! $thorns{"\U$required\E"}))
         {
           push (@missing, $required);
         }
@@ -69,15 +72,63 @@ sub CreateConfigurationDatabase
                          "remove $thorn from it !");
         }
       }
+      else
+      {
+        $cfg{"\U$thorn\E USES THORNS"} .= $cfg{"\U$thorn\E REQUIRES THORNS"} . " ";
+      }
+    }
+  }
+ 
+  foreach $thorn (sort keys %thorns)
+  {
+    # verify that all required capabilities are there in the ThornList
+    if ( $cfg{"\U$thorn\E REQUIRES"})
+    {
+      foreach $requiredcap (split (' ', $cfg{"\U$thorn\E REQUIRES"}))
+      {
+        $foundcap = 0;
+        @foundlist = ();
+
+        foreach $thorncap (sort keys %thorns)
+        {
+          foreach $cap (split (' ', $cfg{"\U$thorncap\E PROVIDES"}))
+          {
+            if ( "\U$cap\E" eq "\U$requiredcap\E" )
+            {
+              @foundlist[$foundcap] = $cap;
+              $foundthorn = $thorncap;
+              $foundcap = $foundcap + 1;
+            }
+          }
+        }
+        if ($foundcap == 0)
+        {
+            &CST_error (0, "Thorn $thorn requires the capability $requiredcap. " .
+                           "Please add a thorn that provides $requiredcap " .
+                           "to your ThornList or remove ".
+                           "$thorn from it !");
+        }
+        if ($foundcap > 1)
+        {
+           foreach $thorncap (@foundlist)
+           {
+             $founderrlist .= "$thorncap ";     
+           } 
+            &CST_error (0, "More than one thorn provides the capability $requiredcap. " .
+                           "These thorns are: $founderrlist. \nPlease use only one.\n" );
+        }
+        $cfg{"\U$thorn\E USES THORNS"} .= $foundthorn, " ";
+      }
     }
   }
 
-  # Print configuration database
-  # my($field);
-  # foreach $field ( sort keys %cfg)
-  # {
-  #   print "$field has value ", $cfg{$field}, "\n";
-  # }
+  #  # Print configuration database
+#     my($field);
+#     foreach $field ( sort keys %cfg)
+#     {
+#       print "$field has value ", $cfg{$field}, "\n";
+#     }
+    
 
   return \%cfg;
 }
@@ -93,7 +144,7 @@ sub CreateConfigurationDatabase
 #@@*/
 sub ParseConfigurationCCL
 {
-  my($thorn, $cfg, $filename) = @_;
+  my($config_dir, $thorn, $cfg, $thorns, $filename) = @_;
   my(@data);
   my($line_number, $line);
   my($provides, $script, $lang);
@@ -106,6 +157,7 @@ sub ParseConfigurationCCL
   $cfg->{"\U$thorn REQUIRES THORNS\E"} = '';
   $cfg->{"\U$thorn OPTIONAL\E"} = '';
   $cfg->{"\U$thorn OPTIONS\E"}  = '';
+  $cfg->{"\U$thorn\E USES THORNS"} = '';
 
   # Read the data
   @data = &read_file($filename);
@@ -113,29 +165,35 @@ sub ParseConfigurationCCL
   for($line_number = 0; $line_number < @data; $line_number++)
   {
     $line = $data[$line_number];
-
     # Parse the line
     if($line =~ m/^\s*PROVIDES\s*/i)
     {
       ($provides, $script, $lang, $line_number) = &ParseProvidesBlock($line_number, \@data);
-      $cfg->{"\U$thorn\E PROVIDES"} .= "$provides";
+      $cfg->{"\U$thorn\E PROVIDES"} .= "$provides ";
       $cfg->{"\U$thorn\E PROVIDES \U$provides\E SCRIPT"} = "$script";
       $cfg->{"\U$thorn\E PROVIDES \U$provides\E LANG"} = "$lang";
+      
+      $cfg = &ParseConfigScript($config_dir, $provides, $lang, $script ,$thorn, $cfg, $thorns, $filename);
+
       next;
     }
     elsif($line =~ m/^\s*REQUIRES\s+THORNS\s*:\s*(.*)/i)
     {
       $cfg->{"\U$thorn\E REQUIRES THORNS"} .= "$1";
+      if ($cfg->{"\U$thorn\E REQUIRES THORNS"})
+      {
+        &CST_error (3, 'This feature will not be supported in release beta-14' . 
+        "\n Please make sure you adjust thorn \U$thorn\E accordingly  ");
+      }
     }
-    elsif($line =~ m/^\s*REQUIRES\s*(.*)/i)
+    elsif($line =~ m/^\s*REQUIRES\s*(.*)/i) 
     {
-      $cfg->{"\U$thorn\E REQUIRES"} .= "$1";
+      $cfg->{"\U$thorn\E REQUIRES"} .= "$1 ";
     }
     elsif($line =~ m/^\s*OPTIONAL\s*/i)
     {
       ($optional, $define, $line_number) = &ParseOptionalBlock($line_number, \@data);
-      $cfg->{"\U$thorn\E OPTIONAL"} .= "$provides";
-      $cfg->{"\U$thorn\E OPTIONAL \U$optional\E DEFINE"} = "$define";
+      $cfg->{"\U$thorn\E OPTIONAL"} .= "$optional ";
     }
     elsif($line =~ m/^\s*NO_SOURCE\s*/i)
     {
@@ -209,7 +267,7 @@ sub ParseProvidesBlock
 
 
 #/*@@
-#  @routine    ParseProvidesBlock
+#  @routine    ParseOptionalBlock
 #  @date       Mon May  8 15:52:40 2000
 #  @author     Tom Goodale
 #  @desc
@@ -264,6 +322,17 @@ sub ParseOptionalBlock
   }
 
   return ($optional, $define, $line_number);
+}
+
+sub print_configuration_database
+{
+  my($database) = @_;
+  my($field);
+
+  foreach $field ( sort keys %$database )
+  {
+    print "$field has value $database->{$field}\n";
+  }
 }
 
 1;
