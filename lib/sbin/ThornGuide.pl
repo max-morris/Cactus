@@ -485,6 +485,7 @@ print OUT  <<EOC;
 
 \\usepackage{minitoc}
 \\usepackage{latexsym}
+\\usepackage{amssymb}
 \\usepackage{ifthen}
 \\usepackage{calc}
 \\usepackage{graphicx}
