@@ -19,7 +19,7 @@ if test "$CCTK_CONFIG_STAGE" = "preferred-compilers" ; then
 
   if test -z "$CXX"; then
     echo Setting C++ compiler to cl
-    CXX="cl"
+    CXX="cl /TP"
   fi
 
   if test -z "$LD"; then
@@ -36,7 +36,7 @@ else
   fi
 
   if test -z "$CXXFLAGS" ; then 
-    CXXFLAGS="/nologo /TP /Oxy- /Gd"
+    CXXFLAGS="/nologo /Oxy- /Gd"
   fi
 
   if test -z "$F90FLAGS" ; then 
