@@ -6,7 +6,7 @@
 #   @desc 
 #   
 #   @enddesc
-#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/extras/MPI/MPICH,v 1.9 2000-06-15 13:57:22 tradke Exp $
+#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/extras/MPI/MPICH,v 1.10 2000-06-27 17:08:26 tradke Exp $
 # @@*/
 
 
@@ -78,26 +78,32 @@ fi
 # Select the device and any special options for it.
 
 case "$MPICH_DEVICE" in
+
   globus)
+############################# Globus device ##################################
+# We use the Makefile.mpich to obtain the library paths and libs for Globus.
+# These are already prefixed by -L and -l resp. so we have to get rid of these.
+# The Cactus makefile will add them later again.
    if test -z "$GLOBUS_LIB_DIR" ; then
-      echo "GLOBUS selected, but GLOBUS_LIB_DIR not set !"
+     echo "GLOBUS selected, but GLOBUS_LIB_DIR not set !"
      exit 2
    fi
-   MPICH_DEVICE_LIB_DIR="$GLOBUS_LIB_DIR"
-   MPICH_DEVICE_LIBS="globus_duroc_bootstrap globus_duroc_control \
-                      globus_duroc_runtime globus_duct_control \
-                      globus_duct_runtime globus_gass_cache globus_gass_client \
-                      globus_gass_file globus_gass_server \
-                      globus_gass_server_ez globus_gram_client \
-                      globus_gram_myjob globus_gss globus_gss_assist \
-                      globus_hbm_client globus_hbm_datacollector globus_mp \
-                      globus_nexus globus_rsl globus_utp globus_dc \
-                      globus_common lber ldap ldif netperf"
-   if test -n "`echo $GLOBUS_LIB_DIR | grep -i pthreads`" ; then
-      MPICH_DEVICE_LIBS="$MPICH_DEVICE_LIBS pthread"
+   if ! test -r "$GLOBUS_LIB_DIR/../etc/Makefile.mpich" ; then
+     echo "No Makefile.mpich found in \$GLOBUS_LIB_DIR/../etc/ !"
+     echo "Did you set GLOBUS_LIB_DIR correctly ?"
+     exit 2
    fi
+
+   GLOBUS_LIB_DIRS=`${MAKE-make} -s -f $GLOBUS_LIB_DIR/../etc/Makefile.mpich userlibpath`
+   MPICH_DEVICE_LIB_DIR=`echo " $GLOBUS_LIB_DIRS" | sed -e 's/ -L/ /g'`
+
+   GLOBUS_LIBS=`${MAKE-make} -s -f $GLOBUS_LIB_DIR/../etc/Makefile.mpich userlib`
+   MPICH_DEVICE_LIBS=`echo " $GLOBUS_LIBS" | sed -e 's/ -l/ /g'`
    ;;
+
  ch_gm)
+############################# Myrinet device ##################################
+#
    if test -z "$MYRINET_DIR" ; then
       echo "Myrinet device selected but no MYRINET_DIR set... Checking some places"
       CCTK_Search MYRINET_DIR "/usr /usr/local /usr/local/myrinet /usr/local/packages/myrinet /usr/local/apps/myrinet" lib/libgm.a
@@ -109,7 +115,10 @@ case "$MPICH_DEVICE" in
    MPICH_DEVICE_LIB_DIR="$MYRINET_DIR/lib"
    MPICH_DEVICE_LIBS="gm"
    ;;
+
  *)
+############################# other devices ##################################
+#
    MPICH_DEVICE_LIB_DIR=""
    MPICH_DEVICE_LIBS=""
    ;;
