@@ -1,0 +1,119 @@
+ /*@@
+   @file      RegisterKeyedFunction.c
+   @date      Tue Sep 29 09:39:55 1998
+   @author    Tom Goodale
+   @desc 
+   Routines to register keyed functions.
+   @enddesc 
+ @@*/
+#include <stdio.h>
+#include <stdlib.h>
+#include "RegisterKeyedFunction.h"
+
+static char *rcsid = "$Id$";
+
+ /*@@
+   @routine    RegisterKeyedFunction
+   @date       Tue Sep 29 09:41:08 1998
+   @author     Tom Goodale
+   @desc 
+   Registers a function with a key between the minimum and maximum (inclusive).
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+int RegisterKeyedFunction(void (*array[])(), 
+			  int min, int max, 
+			  int key, void (*func)())
+{
+  int return_code;
+
+  if(key >= min && key <= max)
+  {
+    if(array[key] == NULL)
+    {
+      array[key] = func;
+      return_code = REG_KEYED_FUNCTION_SUCCESS;
+    }
+    else
+    {
+      return_code = REG_KEYED_FUNCTION_ALREADY_ASSIGNED;
+    };
+  }
+  else
+  { 
+    return_code = REG_KEYED_FUNCTION_RANGE_ERROR;
+  };
+
+  return return_code;
+}
+
+
+#ifdef TEST_KEYED_FUNCTIONS
+
+static void (*functions[])() = {NULL, NULL, NULL};
+
+void RegisterTestFunction(int key, void (*func)())
+{
+  int retcode;
+  if((retcode = RegisterKeyedFunction(functions, 0, 2, key, func)) == 1)
+  {
+    fprintf(stderr, "Test function %d already registered.\n", key);
+  }
+  else if(retcode == 2)
+  {
+    fprintf(stderr, "Unknown test function %d\n", key);
+  }
+}
+
+#define CREATE_FUNC(x)  void function ## _ ## x (void) { printf("I'm function %d\n", x); }
+
+CREATE_FUNC(0)
+CREATE_FUNC(1)
+CREATE_FUNC(2)
+CREATE_FUNC(3)
+CREATE_FUNC(4)
+ 
+#define FUNC(x) function ## _ ## x
+
+#define REGTEST(x) RegisterTestFunction(x, FUNC(x))
+
+int main(int argc, char *argv[])
+{
+  int i;
+  void (*test)();
+
+  REGTEST(0);
+  REGTEST(1);
+  REGTEST(2);
+  REGTEST(3);
+  REGTEST(4);
+
+  REGTEST(0);
+  REGTEST(1);
+  REGTEST(2);
+  REGTEST(3);
+  REGTEST(4);
+
+  for(i = 0; i < 3; i++)
+  {
+    test = functions[i];
+
+    if(test)
+    {
+      test();
+    }
+    else
+    {
+      printf("Error test function %d is null !!!\n", i);
+    };
+
+  };
+
+}
+
+#endif
