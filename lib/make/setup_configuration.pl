@@ -32,6 +32,23 @@ else
   $config = $uname;
 }
 
+# Work out if there is a user default file
+
+if($ENV{"CACTUSRC_DIR"})
+{
+  if (-e $ENV{"CACTUSRC_DIR"}."/.cactus/config")
+  {
+    $default_file = $ENV{"CACTUSRC_DIR"}."/.cactus/config";
+  }
+}
+elsif (-e $ENV{"HOME"}."/.cactus/config")
+{
+  if (-e $ENV{"HOME"}."/.cactus/config")
+  {
+    $default_file = $ENV{"HOME"}."/.cactus/config";
+  }
+}
+
 # Work out where the config directory is
 
 if($ENV{"CONFIGS_DIR"})
@@ -124,9 +141,54 @@ exit $retcode;
 #@@*/
 sub SetConfigureEnv
 {
-  local($line_number) = 0;
+  local($line_number);
   # Set a default name for the configuration
   $ENV{"EXE"} = "cactus_$config";
+
+  # Set variables from user default file first
+  if ($default_file)
+  {
+    print "Using configuration options from user defaults...\n";
+    
+    open(INFILE, "<$default_file") || die "Cannot open configuration file $config_file";
+    
+    $line_number;
+
+    while(<INFILE>)
+    {
+      $line_number++;
+
+      #Ignore comments.
+      s/\#(.*)$//g;
+      
+      #Remove spaces at end of lines
+      s/\s*$//;
+
+      s/\n//g;		# Different from chop...
+
+      #Ignore blank lines
+      next if (m:^\s*$:);
+
+      # Match lines of the form 
+      #     keyword value
+      # or  keyword = value
+      m/\s*([^\s=]*)([\s]*=?\s*)(.*)\s*/;
+      
+      if($1 && $2)
+      {
+	print "Setting $1 to '$3'\n";
+	$ENV{"$1"} = $3;
+      }
+      else
+      {
+	print "Could not parse configuration line $line_number...\n'$_'\n";
+      }
+    }
+    print "End of options from user defaults.\n";
+    
+    close(INFILE);
+  }
+
 
   if($config_file)
   {
@@ -139,6 +201,8 @@ sub SetConfigureEnv
     }
     open(INFILE, "<$config_file") || die "Cannot open configuration file $config_file";
     
+    $line_number = 0;
+
     while(<INFILE>)
     {
       $line_number++;
