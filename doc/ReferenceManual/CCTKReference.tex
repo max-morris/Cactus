@@ -319,6 +319,10 @@ from Fortran.
 \item[\code{CCTK\_ImpFromVarI}] [\pageref{CCTK-ImpFromVarI}]
   Given a variable index, returns the implementation name
 
+\item[\code{CCTK\_ImplementationThorn}]
+  [\pageref{CCTK-ImplementationThorn}]
+  Returns the name of one thorn providing an implementation.
+
 \item[\code{CCTK\_INFO}] [\pageref{CCTK-INFO}]
   Macro to print a single string as an information message to screen
 
@@ -584,6 +588,10 @@ from Fortran.
 
 \item[\code{CCTK\_SyncGroup}] [\pageref{CCTK-SyncGroup}]
   Synchronize the ghost zones for a group of variables
+
+\item[\code{CCTK\_ThornImplementation}]
+  [\pageref{CCTK-ThornImplementation}]
+  Returns the implementation provided by the thorn.
 
 \item[\code{CCTK\_VarDataPtr}] [\pageref{CCTK-VarDataPtr}]
   Returns the data pointer for a grid variable
@@ -5875,6 +5883,9 @@ parameter as used.
 \begin{SeeAlso2}{CCTK\_ParameterQueryTimesSet}{CCTK-ParameterQueryTimesSet}
   Return number of times a parameter has been set
 \end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_ParameterSet}{CCTK-ParameterSet}
+  Sets the value of a parameter
+\end{SeeAlso2}
 \begin{SeeAlso2}{CCTK\_ParameterValString}{CCTK-ParameterValString}
   Get the string representation of a parameter's value
 \end{SeeAlso2}
@@ -5945,6 +5956,9 @@ parameter as used.
 \begin{SeeAlso2}{CCTK\_ParameterQueryTimesSet}{CCTK-ParameterQueryTimesSet}
   Return number of times a parameter has been set
 \end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_ParameterSet}{CCTK-ParameterSet}
+  Sets the value of a parameter
+\end{SeeAlso2}
 \begin{SeeAlso2}{CCTK\_ParameterValString}{CCTK-ParameterValString}
   Get the string representation of a parameter's value
 \end{SeeAlso2}
@@ -5991,6 +6005,9 @@ Parameter checking level now being used.
 \end{SeeAlso2}
 \begin{SeeAlso2}{CCTK\_ParameterQueryTimesSet}{CCTK-ParameterQueryTimesSet}
   Return number of times a parameter has been set
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_ParameterSet}{CCTK-ParameterSet}
+  Sets the value of a parameter
 \end{SeeAlso2}
 \begin{SeeAlso2}{CCTK\_ParameterValString}{CCTK-ParameterValString}
   Get the string representation of a parameter's value
@@ -6054,6 +6071,9 @@ parameter as used.
 \end{SeeAlso2}
 \begin{SeeAlso2}{CCTK\_ParameterLevel}{CCTK-ParameterLevel}
   Return the parameter checking level
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_ParameterSet}{CCTK-ParameterSet}
+  Sets the value of a parameter
 \end{SeeAlso2}
 \begin{SeeAlso2}{CCTK\_ParameterValString}{CCTK-ParameterValString}
   Get the string representation of a parameter's value
@@ -6224,6 +6244,9 @@ parameter as used.
 \begin{SeeAlso2}{CCTK\_ParameterQueryTimesSet}{CCTK-ParameterQueryTimesSet}
   Return number of times a parameter has been set
 \end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_ParameterSet}{CCTK-ParameterSet}
+  Sets the value of a parameter
+\end{SeeAlso2}
 \begin{SeeAlso2}{CCTK\_ParameterWalk}{CCTK-ParameterWalk}
   Walk through list of parameters
 \end{SeeAlso2}
@@ -6294,6 +6317,9 @@ generating full help file, or for walking the list and checkpointing.
 \end{SeeAlso2}
 \begin{SeeAlso2}{CCTK\_ParameterQueryTimesSet}{CCTK-ParameterQueryTimesSet}
   Return number of times a parameter has been set
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_ParameterSet}{CCTK-ParameterSet}
+  Sets the value of a parameter
 \end{SeeAlso2}
 \begin{SeeAlso2}{CCTK\_ParameterValString}{CCTK-ParameterValString}
   Get the string representation of a parameter's value
