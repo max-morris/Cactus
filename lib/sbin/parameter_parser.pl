@@ -150,15 +150,15 @@ sub parse_param_ccl
       # This is a parameter definition.
       $type = "\U$2\E";
 
-      # Logical is depricated
-      if ($type =~ /LOGICAL/)
-      {
-	$type = "BOOLEAN";
-      }
-
       $variable = $3;
       $description = $4;
-      
+
+      # Logical is depricated
+      if ($type =~ /LOGICAL/i)
+      {
+	$type =~ s/LOGICAL/BOOLEAN/gi;
+      }
+
       if($defined_parameters{"\U$variable\E"})
       {
 
