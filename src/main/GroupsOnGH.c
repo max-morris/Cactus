@@ -15,9 +15,10 @@
 #include "flesh.h"
 #include "Misc.h"
 #include "Groups.h"
+#include "WarnLevel.h"
 #include "GroupsOnGH.h"
 
-/*#define GROUPSDEBUG*/
+/*#define DEBUG_GROUPS*/
 
 static char *rcsid = "$Header$";
 
@@ -34,17 +35,57 @@ static char *rcsid = "$Header$";
  
    @endhistory 
 
+   @var        GH 
+   @vdesc      Pointer to Grid Hierachy
+   @vtype      cGH *
+   @vio        in
+   @vcomment 
+   @endvar 
+
+   @var        fullvarname
+   @vdesc      Full name of the grid variable
+   @vtype      char *
+   @vio        in
+   @vcomment   Format <implementation>::<variable>
+   @endvar 
+
+   @var        timelevel
+   @vdesc      Index of timelevel on which data is required
+   @vtype      int
+   @vio        in
+   @vcomment 
+   @endvar 
+
+   @returntype void *
+   @returndesc Pointer to the required data, should be cast to required type
+   @endreturndesc
+
+   @version    $Header$
+
 @@*/
-void *CCTK_GetVarDataPtr_ByName(cGH *GH, char *fullvarname, int timelevel)
+
+void *CCTK_GetVarDataPtr_ByName(cGH *GH, int timelevel, char *fullvarname)
 {
-   int index;
-   void *retval=NULL;
+  int index;
+  void *retval=NULL;
 
   index = CCTK_GetVarIndex(fullvarname);
   if (index >= 0)
   {
      retval = GH->data[index][timelevel];
-  }  
+  }
+  else
+     CCTK_Warn(1,"CCTK","Invalid index in CCTK_GetVarDataPtr_ByName");
+
+#ifdef DEBUG_GROUPS
+  CCTK_PRINTSEPARATOR
+  printf("In CCTK_GetVarDataPtr_ByName\n----------------------------\n");
+  printf("  Data pointer for %s (%d) is %x\n",fullvarname,index,retval);
+  CCTK_PRINTSEPARATOR
+#endif
+
+  return retval;
+
 }
 
  /*@@
@@ -59,8 +100,36 @@ void *CCTK_GetVarDataPtr_ByName(cGH *GH, char *fullvarname, int timelevel)
  
    @endhistory 
 
+   @var        GH 
+   @vdesc      Pointer to Grid Hierachy
+   @vtype      cGH *
+   @vio        in
+   @vcomment 
+   @endvar 
+
+   @var        varindex
+   @vdesc      Index of grid variable
+   @vtype      int
+   @vio        in
+   @vcomment   Assumed to be in correct range
+   @endvar 
+
+   @var        timelevel
+   @vdesc      Index of timelevel on which data is required
+   @vtype      int
+   @vio        in
+   @vcomment 
+   @endvar 
+
+   @returntype void *
+   @returndesc Pointer to the required data, should be cast to required type
+   @endreturndesc
+
+   @version    $Header$
+
 @@*/
-void *CCTK_GetVarDataPtr_ByIndex(cGH *GH, int varindex, int timelevel)
+
+void *CCTK_GetVarDataPtr_ByIndex(cGH *GH, int timelevel, int varindex)
 {
   return GH->data[varindex][timelevel];
 }
@@ -77,17 +146,50 @@ void *CCTK_GetVarDataPtr_ByIndex(cGH *GH, int varindex, int timelevel)
    @history 
  
    @endhistory 
+   @var        GH 
+   @vdesc      Pointer to Grid Hierachy
+   @vtype      cGH *
+   @vio        in
+   @vcomment 
+   @endvar 
+
+   @var        varindex
+   @vdesc      Index of grid variable
+   @vtype      int
+   @vio        in
+   @vcomment   Assumed to be in correct range
+   @endvar 
+
+   @var        fullvarname
+   @vdesc      Full name of the grid variable
+   @vtype      char *
+   @vio        in
+   @vcomment   Format <implementation>::<variable>
+   @endvar 
+
+   @var        timelevel
+   @vdesc      Index of timelevel on which data is required
+   @vtype      int
+   @vio        in
+   @vcomment 
+   @endvar 
+
+   @returntype void *
+   @returndesc Pointer to the required data, should be cast to required type
+   @endreturndesc
+
+   @version    $Header$
 
 @@*/
-void *CCTK_GetVarDataPtr(cGH *GH, int varindex, char *fullvarname, int timelevel)
+void *CCTK_GetVarDataPtr(cGH *GH, int timelevel, int varindex, char *fullvarname)
 {
   if (fullvarname) 
   {
-    return CCTK_GetVarDataPtr_ByName(GH, fullvarname, timelevel);
+    return CCTK_GetVarDataPtr_ByName(GH, timelevel, fullvarname);
   }
   else
   {
-    return CCTK_GetVarDataPtr_ByIndex(GH, varindex, timelevel);
+    return CCTK_GetVarDataPtr_ByIndex(GH, timelevel, varindex);
   }
 }
 
