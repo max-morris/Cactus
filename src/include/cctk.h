@@ -15,7 +15,6 @@
 
 #include "config.h"
 
-
 /* The thorn definitions #define <PACKAGE>_<THORN> */
 
 #include "definethorn.h"
@@ -31,7 +30,12 @@
 #define CCTK_PRINTSEPARATOR\
   print *,"-----------------------------------------------------------"
 
-#define _CCTK_FARGUMENTS  cctk_dim, cctk_gsh, cctk_lsh, cctk_lbnd, cctk_ubnd, cctk_from, cctk_to, cctk_bbox, cctk_delta_time, cctk_time, cctk_delta_space, cctk_origin_space, cctk_levfac, cctk_convlevel, cctk_nghostzones, cctk_iteration, cctkGH
+#define _CCTK_FARGUMENTS  cctk_dim, cctk_gsh, cctk_lsh, cctk_lbnd,        \
+                          cctk_ubnd, cctk_from, cctk_to, cctk_bbox,       \
+                          cctk_delta_time, cctk_time, cctk_delta_space,   \
+                          cctk_origin_space, cctk_levfac, cctk_convlevel, \
+                          cctk_nghostzones, cctk_iteration, cctkGH
+
 #define _DECLARE_CCTK_FARGUMENTS INTEGER cctk_dim&&\
                            INTEGER cctk_gsh(cctk_dim),cctk_lsh(cctk_dim)&&\
                            INTEGER cctk_lbnd(cctk_dim),cctk_ubnd(cctk_dim)&&\
@@ -54,15 +58,20 @@
 #define CCTK_DELTA_SPACE(x) cctk_delta_space(x)/cctk_levfac(x)
 #define CCTK_DELTA_TIME cctk_delta_time
 
+#define CCTK_DECLARE_FUNCTIONS integer CCTK_Equals, CCTK_MyProc, CCTK_nProcs
+
 #endif /*FCODE*/
 
 #ifdef CCODE
 
 #include "cGH.h"
+/*#include "cctk_Flesh.h"
+#include "cctk_Comm.h"
+#include "cctk_IO.h"*/
 
 #define CCTK_GFINDEX3D(GH,i,j,k) ((i) + GH->cctk_lsh[0]*((j)+GH->cctk_lsh[1]*(k)))
 #define CCTK_GFINDEX2D(GH,i,j)   ((i) + GH->cctk_lsh[0]*((j)))
-#define CCTK_GFINDEX1D(GH,i)     (i)
+#define CCTK_GFINDEX1D(GH,i)      (i)
 
 
 #define CCTK_PRINTSEPARATOR \
