@@ -13,10 +13,14 @@
 
 echo Setting compiler to cl
 CC="cl"
+CXX="cl"
+
+echo Setting linker to f90
+LD="f90"
 
 # /Gd means use __cdecl, it's /Gz for __stdcall
 CFLAGS="/nologo /Oxy- /Gd"
-CXXFLAGS="/nologo /Oxy- /Gd"
+CXXFLAGS="/nologo /TP /Oxy- /Gd"
 
 # Fortran routines called from C, and C routines called from Fortran
 #  need __stdcall
@@ -29,7 +33,18 @@ FCOMPILEONLY="/compile_only /object:"
 
 CREATEEXE="-exe:"
 
-SYS_INC_DIRS="\"/Archivos de programa/Microsoft Visual Studio/VC98/INCLUDE/\""
+SYS_INC_DIRS="\"PROGRA~1\MICROS~1\VC98/INCLUDE\""
 
-DIRSEP="\\"
+DIRSEP="\\\\"
+
+OPTIONSEP="# not even a single a single space under cygwin"
+
+# Convert //a to a: 
+GET_WD="pwd | sed 's,^//\(.\)/,\1:/,'"
+
+C_DEPEND='$(CPP) -E -M $(CPPFLAGS) '
+
+CXX_DEPEND='$(CPP) -E -M $(CPPFLAGS) '
+
+MKDIR="mkdir -p"
 
