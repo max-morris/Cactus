@@ -444,6 +444,7 @@ sub Output_Bottom
       #$bibliography = "\\addcontentsline\{toc\}\{chapter\}\{Bibliography\}\n\\begin\{thebibliography\}\{9\}\n$bibliography\n\\end\{thebibliography\}";
       &Start_Arr("References", $counter);
       $bibliography = "\\begin\{thebibliography\}\{9\}\n$bibliography\n\\end\{thebibliography\}";
+      &End_Arr;
    }
 
 print OUT <<EOC;
