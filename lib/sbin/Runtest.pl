@@ -413,11 +413,7 @@ sub runtest
 
   print "Running $tp: $testnames[$num]\n";
 
-  # clear out test directory
-  opendir (DIR, "$tsttop${sep}$tp");
-  unlink (grep (/.+\..+/, readdir (DIR)));
-  closedir (DIR);
-
+  # check that the executable is there
   if (! (-e "$current_directory$sep$executable"))
   {
     if (-e "$current_directory$sep${executable}.exe")
@@ -430,9 +426,14 @@ sub runtest
     }
   }
 
-  $cmd = "($command $current_directory$sep$executable $current_directory$sep$inpf)";
+  # clear out test directory
+  chdir ("$tsttop${sep}$tp");
+  opendir (DIR, ".");
+  unlink (grep (/.+\..+/, readdir (DIR)));
+  closedir (DIR);
+  chdir ('..');
 
-  chdir ($tsttop);
+  $cmd = "($command $current_directory$sep$executable $current_directory$sep$inpf)";
 
   printf "Issuing $cmd\n";
   $retcode = 0;
