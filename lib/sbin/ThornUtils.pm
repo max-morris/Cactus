@@ -1,5 +1,9 @@
 package ThornUtils;
 
+
+my $parskip_set     = "0pt";
+my $parskip_restore = "10pt";
+
 #/*@@
 #  @file      ThornUtils.pm
 #  @date      Sun Mar  3 19:05:41 CET 2002
@@ -298,6 +302,7 @@ sub StartDocument
    } elsif ($docType eq 'section') {
       print "\n\\section{$sectionName} \n\n";
    }
+   print "\n\\parskip = $parskip_set\n";
 
    return $oldfilehandle;
 }
@@ -321,6 +326,8 @@ sub StartDocument
 sub EndDocument 
 {
    my ($oldfilehandle, $docType) = @_;
+
+   print "\\parskip = $parskip_restore \n";
 
    if ($docType eq 'document') {
       print "\\end\{document\} \n";
