@@ -26,8 +26,16 @@ sub buildthorns
   my(%info);
   my($home);
 
+if ($ENV{'CCTK_HOME'})
+{
+  $home = $ENV{'CCTK_HOME'}
+}
+else
+{
   $home = `pwd`;
   chomp ($home);
+}
+
   chdir $arrangement_dir || die "Can't change directory to $arrangement_dir\n";
 
   open(ARRANGEMENTS, "ls|");
