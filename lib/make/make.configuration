@@ -55,11 +55,12 @@ ifneq ($(strip $(THORNS)),)
 endif
 
 # Build the executable
-$(EXE): $(CONFIG)/make.thornlist $(CONFIG)/cctk_version.h $(patsubst %,$(CCTK_LIBDIR)/lib%.a,$(notdir $(THORNS) $(CACTUSLIBS))) 
+$(EXEDIR)$(DIRSEP)$(EXE): $(CONFIG)/make.thornlist $(CONFIG)/cctk_version.h $(patsubst %,$(CCTK_LIBDIR)/lib%.a,$(notdir $(THORNS) $(CACTUSLIBS))) 
 	@echo $(DIVIDER)
-	@echo Creating $(EXE) from $(THORNS)
+	@echo Creating $(EXE) in $(EXEDIR) from $(THORNS)
 	$(CC) $(CFLAGS) $(CCOMPILEONLY)$(OPTIONSEP)$(TOP)$(DIRSEP)datestamp.o -I$(CONFIG) $(subst /,$(DIRSEP),$(DATESTAMP))
-	$(LD) $(CREATEEXE)$(OPTIONSEP)$(subst /,$(DIRSEP),$@) $(LDFLAGS) $(EXTRAFLAGS) $(subst /,$(DIRSEP), $(TOP)/datestamp.o) $(CACTUSLIBLINKLINE) $(LIBDIRS:%=-L%) $(LIBS:%=-l%)
+	if [ ! -d $(EXEDIR) ]; then $(MKDIR) $(EXEDIR) ; fi
+	$(LD) $(CREATEEXE)$(OPTIONSEP)$(subst /,$(DIRSEP),$@) $(LDFLAGS) $(EXTRAFLAGS) $(subst /,$(DIRSEP), $(TOP)/datestamp.o) $(CACTUSLIBLINKLINE) $(LIBDIRS:%=-L%) $(LIBS:%=-l%) 
 	@echo $(DIVIDER)
 	@echo All done !
 	@echo $(DIVIDER)
