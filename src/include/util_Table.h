@@ -117,6 +117,7 @@ extern "C"
 
 /* create/destroy */
 int Util_TableCreate(int flags);
+int Util_TableClone(int handle);
 int Util_TableDestroy(int handle);
 
 /* query */
@@ -141,6 +142,20 @@ int Util_TableSetString(int handle,
 int Util_TableGetString(int handle,
                         int buffer_length, char buffer[],
                         const char *key);
+
+/* set/get generic types described by CCTK_VARIABLE_* type codes */
+int Util_TableSetGeneric(int handle,
+			 int type_code, const void *value_ptr,
+			 const char *key);
+int Util_TableSetGenericArray(int handle,
+			      int type_code, int N_elements, const void *array,
+			      const char *key);
+int Util_TableGetGeneric(int handle,
+			 int type_code, void *value_ptr,
+			 const char *key);
+int Util_TableGetGenericArray(int handle,
+			      int type_code, int N_elements, void *array,
+			      const char *key);
 
 /**************************************/
 
@@ -398,6 +413,7 @@ int Util_TableGetComplex32Array(int handle,
 
 /* create/destroy */
 int Util_TableItCreate(int handle);
+int Util_TableItClone(int ihandle);
 int Util_TableItDestroy(int ihandle);
 
 /* test for "null-pointer" state */
