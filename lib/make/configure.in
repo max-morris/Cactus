@@ -898,7 +898,10 @@ AC_SUBST(LIBNAME_SUFFIX)
 # How to link the cactus libraries
 AC_SUBST(CACTUSLIBLINKLINE)
 
-: ${CACTUSLIBLINKLINE='-L$(CCTK_LIBDIR) $(addprefix -l, $(ALLCACTUSLIBS))'}
+# Currently (2003-10-07) the dependencies from the configure.ccl file are
+# not handled correctly.  As a temporary work-around, we re-enable the
+# old behaviour.
+: ${CACTUSLIBLINKLINE='-L$(CCTK_LIBDIR) $(addprefix -l, $(ALLCACTUSLIBS) $(ALLCACTUSLIBS))'}
 
 # How to generate C dependency info
 AC_SUBST(C_DEPEND)
