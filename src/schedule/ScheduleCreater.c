@@ -20,7 +20,7 @@
 
 static const char *rcsid="$Header$";
 
-CCTK_FILEVERSION(schedule_ScheduleCreater_c)
+CCTK_FILEVERSION(schedule_ScheduleCreater_c);
 
 /********************************************************************
  *********************     Local Data Types   ***********************

@@ -16,7 +16,7 @@
 
 static const char *rcsid = "$Header$";
 
-CCTK_FILEVERSION(schedule_ScheduleSorter_c)
+CCTK_FILEVERSION(schedule_ScheduleSorter_c);
 
 
 /********************************************************************
