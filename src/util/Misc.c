@@ -292,3 +292,253 @@ int CCTK_DoubleInRangeList(double inval, int n_elements, ...)
 
 }
 
+
+ /*@@
+   @routine    CCTK_SetDoubleInRangeList
+   @date       Thu Jan 21 09:41:21 1999
+   @author     Tom Goodale
+   @desc 
+   Sets the value of a double if the desired value is in one of
+   the specified ranges.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+int CCTK_SetDoubleInRangeList(double *data, const char *value, 
+			      int n_elements, ...)
+{
+  int retval;
+  char temp[1001];
+  int p;
+  int arg;
+  va_list ap;
+
+  char *element;
+
+  double inval;
+
+  retval = 1;
+
+  /* Convert the value string to a double.
+   * Allow various formats.
+   */
+  strncpy(temp, value, 1000);
+  
+  for (p=0;p<strlen(temp);p++) 
+  {
+    if (temp[p] == 'E' || 
+	temp[p] == 'd' || 
+	temp[p] == 'D') 
+    {
+      temp[p] = 'e';
+      break;
+    }
+  }
+    
+  inval = atof(temp);
+
+  /* Walk through the element list. */
+  va_start(ap, n_elements);
+  
+  for(arg = 0; arg < n_elements; arg++)
+  {    
+    element = va_arg(ap, char *);
+
+    if(CCTK_DoubleInRange(inval, element))
+    {
+      retval = 0;
+      *data = inval;
+      break;
+    }
+  }
+  
+  va_end(ap);
+
+  return retval;
+}
+
+ /*@@
+   @routine    CCTK_SetIntInRangeList
+   @date       Thu Jan 21 10:27:26 1999
+   @author     Tom Goodale
+   @desc 
+   Sets the value of a integer if the desired value is in one of
+   the specified ranges.   
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+int CCTK_SetIntInRangeList(int *data, const char *value, 
+			   int n_elements, ...)
+{
+  int retval;
+  int arg;
+  va_list ap;
+
+  char *element;
+
+  int inval;
+
+  retval = 1;
+
+  /* Convert the value string to an int.*/
+    
+  inval = atoi(value);
+
+  /* Walk through the element list. */
+  va_start(ap, n_elements);
+  
+  for(arg = 0; arg < n_elements; arg++)
+  {    
+    element = va_arg(ap, char *);
+
+    if(CCTK_IntInRange(inval, element))
+    {
+      retval = 0;
+      *data = inval;
+      break;
+    }
+  }
+  
+  va_end(ap);
+
+  return retval;
+}
+
+ /*@@
+   @routine    CCTK_SetKeywordInRangeList
+   @date       Thu Jan 21 10:28:00 1999
+   @author     Tom Goodale
+   @desc 
+   Sets the value of a keyword if the desired value is in one of
+   the specified ranges.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+int CCTK_SetKeywordInRangeList(char **data, const char *value, 
+			       int n_elements, ...)
+{
+  int retval;
+  int arg;
+  va_list ap;
+
+  char *element;
+
+  int inval;
+
+  retval = 1;
+
+  /* Walk through the element list. */
+  va_start(ap, n_elements);
+  
+  for(arg = 0; arg < n_elements; arg++)
+  {    
+    element = va_arg(ap, char *);
+
+    if(CCTK_Equals(value, element))
+    {
+      if(*data) free(*data);
+      *data = (char *)malloc((strlen(value)+1)*sizeof(char));
+      if(*data)
+      {
+	strcpy(*data, value);
+	retval = 0;
+      }
+      else
+      {
+	retval =-1;
+      }
+      break;
+    }
+  }
+  
+  va_end(ap);
+
+  return retval;
+}
+
+
+ /*@@
+   @routine    CCTK_SetString
+   @date       Thu Jan 21 10:28:27 1999
+   @author     Tom Goodale
+   @desc 
+   Sets the value of a string
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+int CCTK_SetString(char **data, const char *value)
+{
+  int retval;
+
+  retval = 1;
+
+  if(*data) free(*data);
+  *data = (char *)malloc((strlen(value)+1)*sizeof(char));
+  if(*data)
+  {
+    strcpy(*data, value);
+    retval = 0;
+  }
+  else
+  {
+    retval = -1;
+  }
+
+  return retval;
+}
+
+ /*@@
+   @routine    CCTK_SetLogical
+   @date       Thu Jan 21 10:35:11 1999
+   @author     Tom Goodale
+   @desc 
+   Sets the value of a logical to true or false according to
+   the value of the value string.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+int CCTK_SetLogical(int *data, const char *value)
+{
+  int retval = 1;
+
+  if(CCTK_InList(value, 5, "true", "t", "yes", "y", "1"))
+  {
+    *data = 1;
+    retval = 0;
+  }
+  else if(CCTK_InList(value, 5, "false", "f", "no", "n", "0"))
+  {
+    *data = 0;
+    retval = 0;
+  }
+  else
+  {
+    retval = -1;
+  }
+
+  return retval;
+}
