@@ -462,7 +462,7 @@ sub Start_Arr
    $arr = ThornUtils::CleanForLatex($arr);
 print OUT <<EOC;
 
-\\begin{cactuspart}{$partnum}{$arr}{}{}
+\\begin{cactuspart}{$arr}{}{}
 EOC
 }  
 
