@@ -554,8 +554,31 @@ names ? }
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\section{Naming Conventions for Source Files}
+
+The make system uses file extensions
+to designate coding language. The following extensions are
+can be handled:
+
+\begin{center}
+\begin{tabular}{|c|c|}
+\hline
+Extension & Coding Language \\
+\hline
+{\t .F} & Fortran90 fixed form \\
+{\t .f} & (no preprocessing) Fortran90 fixed form [FIXME: To be implemented]\\
+{\t .F90} & Fortran90 free form form [FIXME: To be implemented]\\
+{\t .f90} & (no preprocessing) Fortran90 free form [FIXME: To be implemented]\\
+{\t .F77} & Fortran77 \\
+{\t .f77} & (no preprocessing) Fortran77  [FIXME: To be implemented]\\
+{\t .c} & C \\
+{\t .cc} or {\t .C} & C++ \\
+\hline
+\end{tabular}
+\end{center} 
 
 \section{Adding source files}
+
 
 By default the CCTK looks in the {\tt src} directory of the thorn for source
 files.
