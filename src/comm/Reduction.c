@@ -197,43 +197,41 @@ int CCTK_Reduce(  cGH *GH,
                   int num_in_fields,
                   ... )
 {
- 
   va_list indices;
   int i;
-  int *in_fields = malloc(num_in_fields*sizeof(int));
-  void (*function)(REDUCTION_OPERATOR_REGISTER_ARGLIST)=NULL; 
+  int *in_fields;
+  void (*function)(REDUCTION_OPERATOR_REGISTER_ARGLIST); 
+
 
   /* Get the pointer to the reduction operator */
-
   if (operation_handle < 0)
-
-    CCTK_WARN(3,"Invalid handle passed to CCTK_Reduce");
-
-  else
   {
-    function = (void (*)(REDUCTION_OPERATOR_REGISTER_ARGLIST))
-      Util_GetHandledData(ReductionOperators,operation_handle);
-    
-    if (function)
-      {
-        
-        /* Fill in the array of variable indices from the variable argument list */
-        va_start(indices, num_in_fields);
-        for (i=0; i<num_in_fields; i++)
-          in_fields[i] = va_arg(indices,int);
-        va_end(indices);
-        
-        function(GH,proc,num_out_vals,type_out_vals,out_vals,num_in_fields,in_fields);
-        
-        if (in_fields) free(in_fields);
-        
-      }
-    else
-      CCTK_WARN(3,"Reduction operation is not registered and cannot be called");
+    CCTK_WARN(3,"Invalid handle passed to CCTK_Reduce");
+    return (-1);
   }
 
-  return 1;
-
+  function = (void (*)(REDUCTION_OPERATOR_REGISTER_ARGLIST))
+      Util_GetHandledData(ReductionOperators,operation_handle);
+    
+  if (! function)
+  {
+    CCTK_WARN(3,"Reduction operation is not registered and cannot be called");
+    return (-1);
+  }
+        
+  /* Fill in the array of variable indices from the variable argument list */
+  in_fields = malloc(num_in_fields*sizeof(int));
+  va_start(indices, num_in_fields);
+  for (i=0; i<num_in_fields; i++)
+    in_fields[i] = va_arg(indices,int);
+  va_end(indices);
+  
+  function (GH, proc, num_out_vals, type_out_vals, out_vals,
+            num_in_fields, in_fields);
+  
+  free(in_fields);
+  
+  return (0);
 }
 
 void FMODIFIER FORTRAN_NAME(CCTK_Reduce)(int *fortranreturn,
@@ -248,41 +246,42 @@ void FMODIFIER FORTRAN_NAME(CCTK_Reduce)(int *fortranreturn,
 { 
   va_list indices;
   int i;
-  int *in_fields = malloc(*num_in_fields*sizeof(int));
-  void (*function)(REDUCTION_OPERATOR_REGISTER_ARGLIST)=NULL; 
+  int *in_fields;
+  void (*function)(REDUCTION_OPERATOR_REGISTER_ARGLIST); 
 
-  /* Get the pointer to the reduction operator */
 
+  /* initialize return code to indicate an error */
+  *fortranreturn = -1;
 
   if (*operation_handle < 0)
-
-    CCTK_WARN(3,"Invalid handle passed to CCTK_Reduce");
-
-  else
   {
-    function = (void (*)(REDUCTION_OPERATOR_REGISTER_ARGLIST))
-      Util_GetHandledData(ReductionOperators,*operation_handle);
-    
-    if (function)
-      {
-        
-        /* Fill in the array of variable indices from the variable argument list */
-        va_start(indices, num_in_fields);
-        for (i=0; i<*num_in_fields; i++)
-          in_fields[i] = *va_arg(indices,int *);
-        va_end(indices);
-        
-        function(GH,*proc,*num_out_vals,*type_out_vals,out_vals,*num_in_fields,in_fields);
-        
-        if (in_fields) free(in_fields);
-        
-      }
-    else
-      CCTK_WARN(3,"Reduction operation is not registered and cannot be called");
+    CCTK_WARN(3,"Invalid handle passed to CCTK_Reduce");
+    return;
   }
 
-  *fortranreturn= 1;
+  /* Get the pointer to the reduction operator */
+  function = (void (*)(REDUCTION_OPERATOR_REGISTER_ARGLIST))
+      Util_GetHandledData(ReductionOperators,*operation_handle);
+    
+  if (! function)
+  {
+    CCTK_WARN(3,"Reduction operation is not registered and cannot be called");
+    return;
+  }
+      
+  /* Fill in the array of variable indices from the variable argument list */
+  in_fields = malloc (*num_in_fields * sizeof (int));
+  va_start(indices, num_in_fields);
+  for (i=0; i<*num_in_fields; i++)
+    in_fields[i] = *va_arg(indices,int *);
+  va_end(indices);
+  
+  function (GH, *proc, *num_out_vals, *type_out_vals, out_vals,
+            *num_in_fields,in_fields);
+  
+  free(in_fields);
 
+  *fortranreturn = 0;
 }
 
 
@@ -480,7 +479,7 @@ int CCTK_ReduceArray(  cGH *GH,
   if (operation_handle < 0)
   {
     CCTK_WARN(3,"Invalid handle passed to CCTK_ReduceArray");
-    return (1);
+    return (-1);
   }
 
   function = (void (*)(REDUCTION_ARRAY_OPERATOR_REGISTER_ARGLIST))
@@ -490,7 +489,7 @@ int CCTK_ReduceArray(  cGH *GH,
   {
     CCTK_WARN(3, "Array reduction operation is not registered "
                  "and cannot be called");
-    return (1);
+    return (-1);
   }
 
   /* allocate memory for dims and input array pointers */
@@ -509,13 +508,14 @@ int CCTK_ReduceArray(  cGH *GH,
 
   va_end(indices);
         
-  function (GH, proc, num_dims, dims, num_in_arrays, in_arrays, type_in_arrays,
+  function (GH, proc, num_dims, dims,
+            num_in_arrays, in_arrays, type_in_arrays,
             num_out_vals, out_vals, type_out_vals);
         
   free (in_arrays);
   free (dims);
         
-  return 0;
+  return (0);
 }
 
 void FMODIFIER FORTRAN_NAME(CCTK_ReduceArray)(int *fortran_return,
@@ -535,10 +535,11 @@ void FMODIFIER FORTRAN_NAME(CCTK_ReduceArray)(int *fortran_return,
   int i;
   int *dims;
   void **in_arrays;
-  void (*function)(REDUCTION_ARRAY_OPERATOR_REGISTER_ARGLIST)=NULL; 
+  void (*function)(REDUCTION_ARRAY_OPERATOR_REGISTER_ARGLIST); 
 
 
-  *fortran_return = 1;
+  /* initialize return code to indicate an error */
+  *fortran_return = -1;
 
   /* Get the pointer to the reduction operator */
   if (*operation_handle < 0)
@@ -573,12 +574,13 @@ void FMODIFIER FORTRAN_NAME(CCTK_ReduceArray)(int *fortran_return,
 
   va_end (varargs);
         
-  function (GH, *proc, *num_dims, dims, *num_in_arrays, in_arrays,
-            *type_in_arrays, *num_out_vals, out_vals, *type_out_vals);
+  function (GH, *proc, *num_dims, dims,
+            *num_in_arrays, in_arrays, *type_in_arrays,
+            *num_out_vals, out_vals, *type_out_vals);
         
   free (in_arrays);
   free (dims);
-        
+
   *fortran_return = 0;
 }
 
