@@ -5,6 +5,7 @@
    @desc 
    Stuff to deal with staggering.
    @enddesc 
+   @version $Header$
  @@*/
 
 #include <stdio.h>
@@ -18,7 +19,19 @@
 #include "cctk_WarnLevel.h"
 #include "cctki_Stagger.h"
 
+static char *rcsid = "$Header$";
+
+
+/********************************************************************
+ *********************     Local Data   *****************************
+ ********************************************************************/
+
 static int staggered = 0;
+
+
+/********************************************************************
+ *********************     External Routines   **********************
+ ********************************************************************/
 
  /*@@
    @routine    CCTK_StaggerVars
@@ -270,7 +283,7 @@ void FMODIFIER FORTRAN_NAME(CCTK_GroupStaggerDirArray)
    @author     Gerd Lanfermann
    @desc       returns the stagger index for all direction in 
                an array <dindex> of size <dim> when given the group
-	       index <gi>
+               index <gi>
 
    @enddesc 
    @calls     
@@ -359,8 +372,8 @@ void FMODIFIER FORTRAN_NAME(CCTK_StaggerDirName)
    @author     Gerd Lanfermann
    @desc       returns the stagger index for a string. Similar routines 
                as CCTK_StaggerIndexName, but does more error checking since 
-	       it is called during Group setup and if things go wrong, the used
-	       has a better idea where he specified wrong settings.
+               it is called during Group setup and if things go wrong, the used
+               has a better idea where he specified wrong settings.
 
    @enddesc 
    @calls     

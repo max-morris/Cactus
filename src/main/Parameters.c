@@ -3,11 +3,10 @@
    @date      Mon Jun 28 21:44:17 1999
    @author    Tom Goodale
    @desc 
-   
+   Routines to deal with the parameters.
    @enddesc 
+   @version $Header$
  @@*/
-
-const char *rcsid="$Header$";
 
 #include "cctk_Config.h"
 
@@ -27,19 +26,11 @@ const char *rcsid="$Header$";
 
 #include "cctk_GNU.h"
 
-int CCTK_RegexMatch(const char *string, 
-                    const char *pattern, 
-                    const int nmatch,
-                    regmatch_t *pmatch);
+static char *rcsid="$Header$";
 
-
-int STR_cmpi(const char *string1, const char *string2);
-
-#define STR_CMP(a,b) STR_cmpi(a,b)
-
-/*************************/
-/* Structure Definitions */
-/*************************/
+/********************************************************************
+ *********************     Local Data Types   ***********************
+ ********************************************************************/
 
 /* what is a parameter:
  * - properties
@@ -78,6 +69,10 @@ typedef struct PARAMTREENODE
     t_paramlist*        paramlist;
     
 } t_paramtreenode;
+
+/********************************************************************
+ ********************* Local Routine Prototypes *********************
+ ********************************************************************/
 
 static t_param *ParameterFind(const char *name, 
                               const char *thorn, 
@@ -139,7 +134,30 @@ static int ParameterSetInteger  (t_param *param, const char *value);
 static int ParameterSetReal     (t_param *param, const char *value);
 static int ParameterSetBoolean  (t_param *param, const char *value);
 
+/********************************************************************
+ ********************* Other Routine Prototypes *********************
+ ********************************************************************/
+
+int CCTK_RegexMatch(const char *string, 
+                    const char *pattern, 
+                    const int nmatch,
+                    regmatch_t *pmatch);
+
+
+int STR_cmpi(const char *string1, const char *string2);
+
+#define STR_CMP(a,b) STR_cmpi(a,b)
+
+/********************************************************************
+ *********************     Local Data   *****************************
+ ********************************************************************/
+
 static t_sktree *paramtree=NULL;
+
+/********************************************************************
+ *********************     External Routines   **********************
+ ********************************************************************/
+
 
 /*@@
    @routine    CCTKi_ParameterCreate
@@ -365,7 +383,7 @@ int CCTKi_ParameterAddRange(const char *implementation,
 }
 
 /*@@
-   @routine    ParameterSet
+   @routine    CCTK_ParameterSet
    @date       Tue Jun 29 10:22:22 1999
    @author     Tom Goodale
    @desc 
@@ -436,6 +454,7 @@ int CCTK_ParameterSet(const char *name,
 
   return retval;
 }
+
 
 /*@@
    @routine    ParameterPrintDescription
@@ -517,6 +536,7 @@ int ParameterPrintDescription(const char *name,
 
   return retval;
 }
+
 
 /*@@
    @routine    CCTK_ParameterGet
@@ -964,7 +984,7 @@ int CCTK_ParameterList (const char *thorn, char ***paramlist, int *n_param)
 
   @@*/
 cParamData *CCTK_ParameterData (const char *name, 
-				const char *thorn) 
+                                const char *thorn) 
 {
   cParamData *retval;
 
@@ -984,6 +1004,10 @@ cParamData *CCTK_ParameterData (const char *name,
   return retval;
 }
 
+
+/********************************************************************
+ *********************     Local Routines   *************************
+ ********************************************************************/
 
  /*@@
    @routine    ParameterFind
