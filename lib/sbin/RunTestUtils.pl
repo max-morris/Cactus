@@ -168,7 +168,7 @@ sub FindAllTests
         $filedir = $1;
         if (-d $filedir)
         {
-          $testdata->{"$thorn $filedir DATAFILES"} .= &FindFiles($filedir);
+          ($testdata->{"$thorn $filedir UNKNOWNFILES"},$testdata->{"$thorn $filedir DATAFILES"}) = &FindFiles($filedir);
           $testdata->{"$thorn $filedir NDATAFILES"} = scalar(split(" ",$testdata->{"$thorn $filedir DATAFILES"}));
           $testdata->{"$thorn TESTS"} .= "$filedir ";
           $testdata->{"$thorn NTESTS"}++;
@@ -418,23 +418,31 @@ EOT
 sub FindFiles
 {
   my ($dir) = @_;
-  my ($files, @tmp);
+  my ($unrecognizedfiles,$recognizedfiles, @tmp);
 
-  $files="";
-
+  $recognizedfiles="";
+  $unrecognizedfiles="";
+  
   opendir (DIR, $dir);
   @tmp = readdir (DIR);
   closedir (DIR);
 
   foreach $f (@tmp) 
   {
-    if ($f =~ /[xl|yl|zl|dl|tl|gnuplot|asc]$/)
+    if ($f =~ /(xl|yl|zl|dl|tl|gnuplot|asc)$/)
     {
-      $files .= " $f";
+      $recognizedfiles .= " $f";
+    }
+    else
+    {
+      if ($f !~ /^(\.|\.\.|.*\.par|CVS|.*~)$/)
+      {
+	$unrecognizedfiles .= " $f";
+      }
     }
   }
- 
-  return $files;
+
+  return ($unrecognizedfiles,$recognizedfiles);
 }
 
 sub PrintDataBase
@@ -549,6 +557,33 @@ sub WriteFullResults
   {
     print "  Thorns with no valid testsuite parameter files:\n";
     print "$nottested\n\n";
+  }
+
+  $unknown = 0;
+  foreach $thorn (split(" ",$testdata->{"RUNNABLETHORNS"}))
+  {
+    if ($testdata->{"$thorn RUNNABLE"} !~ m:^\s*$:)
+    {
+      foreach $test (split(" ",$testdata->{"$thorn RUNNABLE"}))
+      {
+	$gotthorn = 0;
+	if ($testdata->{"$thorn $test UNKNOWNFILES"})
+	{
+	  if (!$unknown)
+	  {
+	    print "  Thorns with unrecognized test output files:\n";
+	    $unknown = 1;
+	  }
+	  
+	  if (!$gotthorn)
+	  {
+	    print "    $thorn\n";
+	    $gotthorn = 1;
+	  }
+	  print "       $test: $testdata->{\"$thorn $test UNKNOWNFILES\"}\n";
+	}
+      }
+    }
   }
 
   print $separator2;
@@ -759,7 +794,7 @@ sub CompareTestFiles
   $test_dir = $testdata->{"$inthorn $test TESTOUTPUTDIR"};
   
   # Add output files to database
-  $rundata->{"$inthorn $test TESTFILES"} = &FindFiles("$test_dir");
+  ($rundata->{"$inthorn $test UNKNOWNFILES"},$rundata->{"$inthorn $test TESTFILES"}) = &FindFiles("$test_dir");
 
   $rundata->{"$inthorn $test NFAILWEAK"}=0;
   $rundata->{"$inthorn $test NFAILSTRONG"}=0;
