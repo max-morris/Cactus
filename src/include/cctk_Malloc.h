@@ -1,5 +1,5 @@
  /*@@
-   @header    cctk_MemAlloc.h
+   @header    cctk_Malloc.h
    @date      Thu Jan 20 2000
    @author    Gerd Lanfermann
    @desc
@@ -8,8 +8,8 @@
    @version $Header$
  @@*/
 
-#ifndef _CCTK_STAGGER_H_
-#define _CCTK_STAGGER_H_
+#ifndef _CCTK_MALLOC_H_
+#define _CCTK_MALLOC_H_
 
 #ifdef __cplusplus
 extern "C" {
