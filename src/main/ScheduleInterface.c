@@ -1,3 +1,4 @@
+#define DEBUG
  /*@@
    @file      ScheduleInterface.c
    @date      Thu Sep 16 14:06:21 1999
@@ -21,6 +22,11 @@ static char *rcsid = "$Header$";
 #include "cctk_Comm.h"
 
 #include "cctk_Groups.h"
+#include "cctk_GroupsOnGH.h"
+
+#include "rfrInterface.h"
+
+#include "cctk_FortranWrappers.h"
 
 /********************************************************************
  *********************     Local Data Types   ***********************
@@ -32,6 +38,7 @@ typedef enum {schedpoint_misc, schedpoint_analysis} t_schedpoint;
 
 typedef struct 
 {
+  /* Static data */
   char *description;
 
   char *thorn;
@@ -39,7 +46,9 @@ typedef struct
 
   t_sched_type type;
   t_lang_type language;
-  
+
+  int (*fortran_caller)(cGH *, void *);
+
   int n_mem_groups;
   int *mem_groups;
 
@@ -48,6 +57,12 @@ typedef struct
 
   int n_trigger_groups;
   int *trigger_groups;
+
+  /* Dynamic data */
+  int *CommOnEntry;
+  int *StorageOnEntry;
+
+  int done_entry;
 
 } t_attribute;
 
@@ -81,6 +96,8 @@ static t_sched_modifier *CreateTypedModifier(t_sched_modifier *modifier,
                                              int n_items,
                                              va_list *ap);
 static t_lang_type TranslateLanguage(const char *sval);
+
+static int SchedulePrint(const char *where);
 
 static int CCTKi_SchedulePrintEntry(t_attribute *attribute, t_sched_data *data);
 static int CCTKi_SchedulePrintExit(t_attribute *attribute, t_sched_data *data);
@@ -157,9 +174,15 @@ int CCTK_ScheduleFunction(void *function,
   if(attribute && (modifier || (n_before == 0 && n_after == 0 && n_while == 0)))
   {
     retcode = CCTKi_ScheduleFunction(where, name, function, modifier, (void *)attribute);
+#ifdef DEBUG
+    fprintf(stderr, "Scheduled %s at %s\n", name, where);
+#endif
   }
   else
   {
+#ifdef DEBUG
+    fprintf(stderr, "Failed to schedule %s at %s!!!\n", name, where);
+#endif
     retcode = -1;
   }
 
@@ -209,9 +232,15 @@ int CCTK_ScheduleGroup(const char *name,
   if(attribute && modifier)
   {
     retcode = CCTKi_ScheduleGroup(where, name, modifier, (void *)attribute);
+#ifdef DEBUG
+    fprintf(stderr, "Scheduled %s at %s\n", name, where);
+#endif
   }
   else
   {
+#ifdef DEBUG
+    fprintf(stderr, "Failed to schedule %s at %s!!!\n", name, where);
+#endif
     retcode = -1;
   }
 
@@ -367,16 +396,72 @@ int CCTK_ScheduleGHInit(void *GH)
 {
   int i;
 
-  /* FIXME - there really should be an enable storage, etc from group index ! */
   for(i = 0; i < n_scheduled_storage_groups; i++)
   {
-    CCTK_EnableGroupStorage(GH,CCTK_GroupName(scheduled_storage_groups[i]));
+    CCTK_EnableGroupStorageI(GH,scheduled_storage_groups[i]);
   }
 
   for(i = 0; i < n_scheduled_comm_groups; i++)
   {
-    CCTK_EnableGroupComm(GH,CCTK_GroupName(scheduled_comm_groups[i]));
+    CCTK_EnableGroupCommI(GH,scheduled_comm_groups[i]);
   }
+
+  return 0;
+}
+
+ /*@@
+   @routine    CCTK_SchedulePrint
+   @date       Fri Sep 17 21:52:44 1999
+   @author     Tom Goodale
+   @desc 
+   Prints out the schedule info.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+int CCTK_SchedulePrint(const char *where)
+{
+  t_sched_data data;
+
+  data.GH = NULL;
+  data.schedpoint = schedpoint_misc;
+
+  if(!where)
+  {
+    printf ("startup routines\n");
+    SchedulePrint("CCTK_STARTUP");
+    printf("\n");
+    printf ("Parameter checking routines\n");
+    SchedulePrint("CCTK_PARAMCHECK");
+    printf("\n");
+    printf("Initialisation\n");
+    SchedulePrint("CCTK_INITIAL");
+    SchedulePrint("CCTK_POSTINITIAL");
+    SchedulePrint("CCTK_POSTSTEP");
+    printf("\n");
+    printf ("do loop over timesteps\n");
+    SchedulePrint("CCTK_PRESTEP");
+    SchedulePrint("CCTK_EVOL");
+    SchedulePrint("CCTK_BOUND");
+    printf ("  t = t+dt\n");
+    SchedulePrint("CCTK_POSTSTEP");
+    printf ("  if (analysis)\n");
+    indent_level +=2;
+    SchedulePrint("CCTK_ANALYSIS");
+    indent_level -=2;
+    printf ("  endif\n");
+    printf ("enddo\n");
+  }
+  else
+  {
+    SchedulePrint(where);
+  }
+
+  return 0;
 }
 
 /********************************************************************
@@ -418,6 +503,8 @@ static t_attribute *CreateAttribute(const char *description,
     this->mem_groups     = (int *)malloc(n_mem_groups*sizeof(int));
     this->comm_groups    = (int *)malloc(n_comm_groups*sizeof(int));
     this->trigger_groups = (int *)malloc(n_trigger_groups*sizeof(int));
+    this->StorageOnEntry = (int *)malloc(n_mem_groups*sizeof(int));
+    this->CommOnEntry    = (int *)malloc(n_comm_groups*sizeof(int));
 
     if(this->description     && 
        this->thorn           &&
@@ -434,6 +521,7 @@ static t_attribute *CreateAttribute(const char *description,
       {
         this->type = sched_function;
         this->language = TranslateLanguage(language);
+        this->fortran_caller = (int (*)(cGH *,void *))CCTK_FortranWrapper(thorn);
       }
       else
       {
@@ -441,6 +529,7 @@ static t_attribute *CreateAttribute(const char *description,
         this->language = lang_none;
       }
       
+      /* Create the lists of indices of groups we're interested in. */
       CreateGroupIndexList(n_mem_groups,     this->mem_groups, ap);
       CreateGroupIndexList(n_comm_groups,    this->comm_groups, ap);
       CreateGroupIndexList(n_trigger_groups, this->trigger_groups, ap);
@@ -485,8 +574,8 @@ static t_sched_modifier *CreateModifiers(int n_before,
   t_sched_modifier *modifier;
 
   modifier = CreateTypedModifier(NULL, "before", n_before, ap);
-  modifier = CreateTypedModifier(modifier, "after", n_before, ap);
-  modifier = CreateTypedModifier(modifier, "while", n_before, ap);
+  modifier = CreateTypedModifier(modifier, "after", n_after, ap);
+  modifier = CreateTypedModifier(modifier, "while", n_while, ap);
 
   return modifier;
 }
@@ -551,7 +640,7 @@ static t_sched_modifier *CreateTypedModifier(t_sched_modifier *modifier,
     modifier = CCTKi_ScheduleAddModifier(modifier, type, item);
   }
 
-  return 0;  
+  return modifier;  
 }
  /*@@
    @routine    TranslateLanguage
@@ -583,6 +672,31 @@ static t_lang_type TranslateLanguage(const char *sval)
   {
     fprintf(stderr, "Unknown language %s\n", sval);
     retcode = lang_none;
+  }
+
+  return retcode;
+}
+
+static int SchedulePrint(const char *where)
+{
+  int retcode;
+  t_sched_data data;
+
+  data.GH = NULL;
+  data.schedpoint = schedpoint_misc;
+
+  if(where)
+  {
+    retcode = CCTKi_ScheduleTraverse(where,
+                                     (int (*)(void *, void *))               CCTKi_SchedulePrintEntry, 
+                                     (int (*)(void *, void *))               CCTKi_SchedulePrintExit, 
+                                     (int  (*)(int, char **, void *, void *))CCTKi_SchedulePrintWhile, 
+                                     (int (*)(void *, void *, void *))       CCTKi_SchedulePrintFunction, 
+                                     (void *)&data);
+  }
+  else
+  {
+    retcode = 0;
   }
 
   return retcode;
@@ -636,12 +750,90 @@ static int CCTKi_SchedulePrintFunction(void *function,
 static int CCTKi_ScheduleCallEntry(t_attribute *attribute, 
                                    t_sched_data *data)
 {
-  return 1;
+  int i;
+  int index; 
+  int last;
+  int go;
+
+  if(attribute)
+  {
+    go = 0;
+
+    if(data->schedpoint == schedpoint_analysis)
+    {
+      for (i = 0; i < attribute->n_trigger_groups ; i++) 
+      { 
+        index = CCTK_FirstVarIndexI(attribute->trigger_groups[i]);
+        last  = index + CCTK_NumVarsInGroupI(attribute->trigger_groups[i]) - 1;
+        for(; index < last ; index++)
+        {
+          go = go || CCTKi_rfrTriggerSaysGo(data->GH, index);
+        }
+      }
+    }
+    else
+    {
+      go = 1;
+    }
+
+    if(go)
+    {
+      for(i = 0; i < attribute->n_mem_groups; i++)
+      {
+        attribute->StorageOnEntry[i] = CCTK_EnableGroupStorageI(data->GH,attribute->mem_groups[i]);
+      }
+
+      for(i = 0; i < attribute->n_comm_groups; i++)
+      {
+        attribute->CommOnEntry[i] = CCTK_EnableGroupCommI(data->GH,attribute->comm_groups[i]);
+      }
+    }
+
+    attribute->done_entry = go;
+  }
+  else
+  {
+    go = 1;
+  }
+
+  return go;
 }
 
 static int CCTKi_ScheduleCallExit(t_attribute *attribute, 
                                   t_sched_data *data)
 {
+  int i;
+  int index;
+  int last;
+
+  if(attribute && attribute->done_entry)
+  {
+
+    if(data->schedpoint == schedpoint_analysis)
+    {
+      for (i = 0; i < attribute->n_trigger_groups ; i++) 
+      { 
+        index = CCTK_FirstVarIndexI(attribute->trigger_groups[i]);
+        last  = index + CCTK_NumVarsInGroupI(attribute->trigger_groups[i]) - 1;
+        for(; index < last ; index++)
+        {
+          CCTKi_rfrTriggerAction(data->GH, index);
+        }
+      }
+    }
+
+
+    for(i = 0; i < attribute->n_mem_groups; i++)
+    {
+      if(!attribute->StorageOnEntry[i]) CCTK_DisableGroupStorageI(data->GH,attribute->mem_groups[i]);
+    }
+
+    for(i = 0; i < attribute->n_comm_groups; i++)
+    {
+      if(!attribute->CommOnEntry[i]) CCTK_DisableGroupCommI(data->GH,attribute->comm_groups[i]);
+    }
+  }
+
   return 1;
 }
 
@@ -660,11 +852,19 @@ static int CCTKi_ScheduleCallFunction(void *function,
 
   void (*calledfunc)(void *);
 
-  calledfunc = (void (*)(void *))function;
+  if(attribute->language == lang_fortran)
+  {
+    /* Call the fortran wrapper. */
+    attribute->fortran_caller(data->GH, function);
+  }
+  else
+  {
+    calledfunc = (void (*)(void *))function;
 
-  /* Call the function. */
+    /* Call the function. */
   
-  calledfunc(data->GH);
+    calledfunc(data->GH);
+  }
 
   return 1;
 }
