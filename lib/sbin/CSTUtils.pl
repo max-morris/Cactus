@@ -107,11 +107,15 @@ sub read_file
 
   while(<IN>)
   {
+    chomp;
+
+    # Remove comments.
     $_ =~ s/\#.*//;
     
-    next if(m/^\s+$/);
+    # Ignore empty lines.
+    next if(m/^\s*$/);
  
-    &chompme($_);
+    #&chompme($_);
 
     # Add to the currently processed line.
     $line .= $_;
@@ -136,38 +140,6 @@ sub read_file
   close IN;
   
   return @indata;
-}
-
-
-#/*@@
-#  @routine    chompme
-#  @date       Mon 26th April 1999
-#  @author     Gabrielle Allen
-#  @desc 
-#  Implements a version of the perl5 chomp function,
-#  returning the string passed in with the last character
-#  removed unless it is a newline
-#  @enddesc 
-#  @calls     
-#  @calledby   
-#  @history 
-# 
-#  @endhistory 
-#@@*/
-
-sub chompme
-{
-    my($in) = @_;
-
-    $lastchar = chop($in);
-    if ($lastchar eq "\n")
-    {
-        return $_;
-    }
-    else
-    {
-        return $in;
-    }
 }
 
 #/*@@

@@ -1111,12 +1111,12 @@ sub PrintInterfaceStatistics
 
   if($interface_database{"\U$thorn INHERITS"} ne "")
   {
-    print "           Inherits:  " . $interface_database{"\U$thorn INHERITS"} . "";
+    print "           Inherits:  " . $interface_database{"\U$thorn INHERITS"} . "\n";
   }
 
   if($interface_database{"\U$thorn FRIEND"} ne "")
   {
-    print "           Friend of: " . $interface_database{"\U$thorn FRIEND"} . "";
+    print "           Friend of: " . $interface_database{"\U$thorn FRIEND"} . "\n";
   }
 
   $sep = "           ";
