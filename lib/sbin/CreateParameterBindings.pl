@@ -442,7 +442,8 @@ sub CreateParameterBindings
   }
   &WriteFile("FParameters.h",\$dataout);
 
-  $dataout = "";
+  $dataout  = "/* get the CCTK datatype definitions */\n";
+  $dataout .= "#include \"cctk_Types.h\"\n\n";
   $dataout .= "#ifdef CCODE\n";
   $dataout .= "#include \"CParameters.h\"\n";
   $dataout .= "#endif\n\n";

@@ -61,7 +61,8 @@ sub CreateVariableBindings
     &WriteFile("$thorn\_arguments.h",\$dataout);
   }
 
-  $dataout = "";
+  $dataout  = "/* get the CCTK datatype definitions */\n";
+  $dataout .= "#include \"cctk_Types.h\"\n\n";
   $dataout .= "#ifdef CCODE\n";
   $dataout .= "#define CCTK_ARGUMENTS CCTK_CARGUMENTS\n";
   $dataout .= "#define DECLARE_CCTK_ARGUMENTS DECLARE_CCTK_CARGUMENTS\n";
