@@ -15,7 +15,6 @@
 #  @desc
 #              Creates the schedule bindings.
 #  @enddesc
-#  @calls
 #@@*/
 sub CreateScheduleBindings
 {
@@ -214,7 +213,6 @@ sub ScheduleCreateFile
 #  Creates a string containing all the data which should go into the master
 #  schedule bindings file.
 #  @enddesc
-#  @calls
 #@@*/
 sub ScheduleCreateBindings
 {
@@ -329,7 +327,6 @@ sub ParameterRecoveryCreateBindings
 #  @desc
 #  Creates the code for a given schedule block
 #  @enddesc
-#  @calls
 #@@*/
 sub ScheduleBlock
 {
@@ -457,6 +454,17 @@ sub ScheduleBlock
   $buffer .= $indent . scalar(@$mem_groups) . ",  /* Number of STORAGE  groups   */\n";
   $buffer .= $indent . scalar(@$comm_groups) . ",  /* Number of COMM     groups   */\n";
   $buffer .= $indent . scalar(@$trigger_groups) . ",  /* Number of TRIGGERS groups   */\n";
+### TR 22 Jan 2004: disabled the check for triggers of ANALYSIS routines
+###                 as the absence of triggers now means to schedule
+###                 such routines unconditionally
+#  if (!scalar(@$trigger_groups) && $rhschedule_db->{"\U$thorn\E BLOCK_$block WHERE"} eq "CCTK_ANALYSIS")
+#  {
+#    $mess = "Schedule error: Scheduling at ANALYSIS in $thorn with no TRIGGERS\n";
+#    $help = 'Functions or function groups scheduled in the ANALYSIS bin require TRIGGERS to be set.';
+#    $help .= 'Triggers are grid variables or grid variable group names which are examined by ';
+#    $help .= 'IO methods to decide whether of not execution should happen.';
+#    &CST_error(0,$mess,$help,__LINE__,__FILE__);
+#  }
   $buffer .= $indent . scalar(@$sync_groups) . ",  /* Number of SYNC     groups   */\n";
   $buffer .= $indent . scalar(@options) . ",  /* Number of Options           */\n";
   $buffer .= $indent . scalar(@before_list) . ",  /* Number of BEFORE  routines  */\n";
@@ -485,7 +493,6 @@ sub ScheduleBlock
 #  @desc
 #  Creates the code for a given schedule statement
 #  @enddesc
-#  @calls
 #@@*/
 sub ScheduleStatement
 {
@@ -541,7 +548,6 @@ sub ScheduleStatement
 #  @desc
 #  Parses a list of variable groups and selects valid ones.
 #  @enddesc
-#  @calls
 #@@*/
 sub ScheduleSelectGroups
 {
@@ -698,7 +704,6 @@ sub ScheduleSelectGroups
 #  Parses a list of schedule routines/groups.
 #  FIXME - should validate
 #  @enddesc
-#  @calls
 #@@*/
 sub ScheduleSelectRoutines
 {
@@ -728,7 +733,6 @@ sub ScheduleSelectRoutines
 #  Parses a list of variables
 #  FIXME - should validate
 #  @enddesc
-#  @calls
 #@@*/
 sub ScheduleSelectVars
 {
@@ -756,7 +760,6 @@ sub ScheduleSelectVars
 #  @desc
 #  Validate the timelevel specifiers for a group list.
 #  @enddesc
-#  @calls
 #@@*/
 sub ScheduleValidateTimeLevels
 {
