@@ -3531,43 +3531,6 @@ from the {\t cTimerVal} pointer argument.
 
 \end{Lentry}
 
-%\subsection{The {\tt cTimerData} Structure}
-%\label{subsec:cTimerData}
-%
-%The structure holding the timing data, {\tt cTimerData}, contains
-%the number of collected times (one measurement for each registered clock),
-%and the measured time for each clock. The measured time is held in
-%a structure of type {\tt cTimerVal} which contains the data type
-%of the measured value, a description of the clock, and the units used
-%for the measurements. Hopefully additional interfaces will soon be added
-%to avoid detailed knowledge of these structures, but for now here are
-%the gory details:
-%
-%{\tt
-%\begin{verbatim}
-%typedef enum {val_none, val_int, val_long, val_double} cTimerValType;
-%
-%typedef struct
-%{
-%  cTimerValType type;
-%  const char *heading;
-%  const char *units;
-%%  union
-  {
-%    int        i;
-%    long int   l;
-%    double     d;
-%  } val;
-%} cTimerVal;
-%
-%typedef struct
-%{
-%  int n_vals;
-%  cTimerVal *vals;
-%} cTimerData;
-%\end{verbatim}
-%}
-
 \subsection{How to insert timers in your code}
 
 The function prototypes and structure definitions are contained in the
@@ -3613,7 +3576,7 @@ this structure.  After using the structure, you should destroy it.
 
 \begin{verbatim}
   cTimerData *info = CCTK_TimerCreateData();
-  ing ierr = CCTK_Timer("TimeMyStuff",info);
+  int ierr = CCTK_Timer("TimeMyStuff",info);
 
   /*  You can refer to a particular clock by name.  */
   const cTimerVal   *clock = CCTK_GetClockValue( "gettimeofday", info );
