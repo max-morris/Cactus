@@ -2052,7 +2052,8 @@ void CCTK_FCALL CCTK_FNAME (CCTK_GroupDimFromVarI)
                -1 no callback routine was given<BR>
                -2 option string is not associated with a group or variable<BR>
                -3 unterminated option string<BR>
-               -4 garbage found at end of option string
+               -4 garbage found at end of option string<BR>
+               -5 invalid token in traversed string found
    @endreturndesc
 @@*/
 int CCTK_TraverseString (const char *traverse_string,
@@ -2070,7 +2071,7 @@ int CCTK_TraverseString (const char *traverse_string,
 
   if (callback == NULL)
   {
-    CCTK_VWarn (5, __LINE__, __FILE__, "Cactus",
+    CCTK_VWarn (2, __LINE__, __FILE__, "Cactus",
                 "CCTK_TraverseString: No callback given");
     return (-1);
   }
@@ -2160,25 +2161,26 @@ int CCTK_TraverseString (const char *traverse_string,
       *string = 0;
       if (option_string == group_var_string + 1)
       {
-        CCTK_VWarn (5, __LINE__, __FILE__, "Cactus",
-                    "CCTK_TraverseString: option string '%s' not associated "
-                    "with a group or variable name", option_string);
+        CCTK_VWarn (2, __LINE__, __FILE__, "Cactus",
+                    "CCTK_TraverseString: option string '%s' in traversed "
+                    "string '%s' is not associated with a group or variable "
+                    "name", option_string, traverse_string);
         retval = -2;
         break;
       }
       else if (! (delimiter == options_end && nesting == 0))
       {
-        CCTK_VWarn (5, __LINE__, __FILE__, "Cactus",
-                    "CCTK_TraverseString: unterminated option string '%s'",
-                    option_string);
+        CCTK_VWarn (2, __LINE__, __FILE__, "Cactus",
+                    "CCTK_TraverseString: unterminated option string '%s' "
+                    "in traversed string '%s'", option_string, traverse_string);
         retval = -3;
         break;
       }
       else if (! (string[1] == 0 || isspace (string[1])))
       {
-        CCTK_VWarn (5, __LINE__, __FILE__, "Cactus",
-                    "CCTK_TraverseString: garbage at end of option string '%s'",
-                    option_string);
+        CCTK_VWarn (2, __LINE__, __FILE__, "Cactus",
+                    "CCTK_TraverseString: garbage at end of option string '%s' "
+                    "in traversed string '%s'", option_string, traverse_string);
         retval = -4;
         break;
       }
@@ -2258,8 +2260,9 @@ int CCTK_TraverseString (const char *traverse_string,
     else
     {
       CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
-                  "CCTK_TraverseString: Ignoring '%s' in string "
-                  "(invalid token)", group_var_string);
+                  "CCTK_TraverseString: invalid group/variable name '%s' in "
+                  "traversed string '%s'", group_var_string, traverse_string);
+      retval = -5;
     }
 
     /* advance the parse string pointer */
