@@ -53,6 +53,8 @@ extern "C" {
 
 int InitialiseCactus(int *, char **, tFleshConfig *);
 
+int CCTK_SetParameter(const char *parameter, const char *value);
+
 extern int (*Initialise)(tFleshConfig *);
 
 extern int (*Evolve)(tFleshConfig *);

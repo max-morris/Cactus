@@ -7,6 +7,7 @@
    @enddesc 
  @@*/
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "flesh.h"
 
@@ -36,6 +37,17 @@ int ProcessCommandLine(int *inargc, char *inargv[], tFleshConfig *ConfigData)
   argc = inargc;
 
   argv = inargv;
+
+  if(*argc>1)
+  {
+    ConfigData->parameter_file_name = argv[1];
+  }
+  else
+  {
+    printf("Usage: %s <parameter_file_name>\n", argv[0]);
+
+    exit(1);
+  }
 
   return 0;
 }

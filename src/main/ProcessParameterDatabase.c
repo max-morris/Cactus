@@ -30,11 +30,28 @@ static char *rcsid = "$Id$";
 @@*/
 int ProcessParameterDatabase(tFleshConfig *ConfigData)
 {
+  int retval;
+  FILE *parameter_file;
 
+  CCTK_InitialiseParameters(ConfigData);
+
+  if((parameter_file = fopen(ConfigData->parameter_file_name, "r")))
+  {
+    ParseFile(parameter_file, CCTK_SetParameter);
+    fclose(parameter_file);
+    retval = 0;
+  }
+  else
+  {
+    fprintf(stderr, "Unable to open parameter file '%s'\n", 
+	            ConfigData->parameter_file_name);
+    retval = 1;
+  }
+      
   return 0;
 }
 
-
-
-
-
+int CCTK_InitialiseParameters(tFleshConfig *ConfigData)
+{
+  return 1;
+}
