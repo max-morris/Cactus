@@ -8,11 +8,14 @@
 #  @version $Id$
 # @@*/
 
+# Silence all but designated output
+#.SILENT:
+
 # Some configuration variables
 CONFIG = $(TOP)/config-data
 
 DATESTAMP = $(CCTK_HOME)/src/datestamp.c
-MAKE_DIR  = $(CCTK_HOME)/lib/make
+export MAKE_DIR  = $(CCTK_HOME)/lib/make
 
 # Dividers to make the screen output slightly nicer
 DIVEL   =  __________________
@@ -23,9 +26,6 @@ include $(CONFIG)/make.config.defn
 
 # Include the list of thorns to be built
 include $(CONFIG)/make.thornlist
-
-# Silence all but designated output
-.SILENT:
 
 # Build the executable
 $(EXE): $(CONFIG)/make.thornlist $(patsubst %,$(CCTK_LIBDIR)/lib%.a,$(notdir $(THORNS))) $(CCTK_LIBDIR)/libCCTK.a

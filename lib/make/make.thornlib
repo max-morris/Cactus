@@ -17,14 +17,32 @@ include $(CONFIG)/make.config.defn
 # Add appropriate include lines
 INC_DIRS += $(SRCDIR) $(SRCDIR)/include $(CONFIG) $(CCTK_HOME)/src/include
 
+# Define some make variables
+PRE_WRAPPER = make.pre
+POST_WRAPPER = make.post
+
+CCTK_SRCS :=
+
 # Include the thorn's local include data
 include $(SRCDIR)/make.code.defn
+
+# Some extra stuff to allow make to recurse into subdirectories
+CCTK_SRCS += $(SRCS)
+
+# Include all the make.code.defn files for the subdirectories
+# These have to be wrapped to allow us to concatanate all the
+# SRCS definitions, complete with subdirectory names.
+ifneq ($(strip $(SUBDIRS)),)
+include $(foreach DIR,$(SUBDIRS), $(DIR)/make.identity $(MAKE_DIR)/$(PRE_WRAPPER) $(SRCDIR)/$(DIR)/make.code.defn $(MAKE_DIR)/$(POST_WRAPPER))
+endif
+
+SRCS = $(CCTK_SRCS)
 
 # Turn source file names into object file names
 OBJS = $(patsubst %,%.o,$(basename $(SRCS)))
 
-$(NAME): $(OBJS)
-	echo Creating or updating $(NAME)
+$(NAME): $(addsuffix .check, $(SUBDIRS)) $(OBJS) $(SRCDIR)/make.code.defn $(foreach DIR,$(SUBDIRS), $(SRCDIR)/$(DIR)/make.code.defn)
+	@echo Creating or updating $(NAME)
 	$(AR) $(ARFLAGS) $@ $(OBJS)
 #	$(RANLIB) $@
 
@@ -33,3 +51,17 @@ include $(CONFIG)/make.config.rules
 
 # Extra thorn-specific dependencies
 include $(SRCDIR)/make.code.deps
+
+# Extra stuff for allowing make to recurse into directories
+
+# This one makes the object files in the subdirectory
+.PHONY: $(addsuffix .check, $(SUBDIRS))
+
+$(addsuffix .check, $(SUBDIRS)) :
+	if [ ! -d $(basename $@) ] ; then $(MKDIR) $(basename $@) ; fi
+	cd $(basename $@) ; $(MAKE) TOP=$(TOP) CONFIG=$(CONFIG) SRCDIR=$(SRCDIR)/$(basename $@) -f $(MAKE_DIR)/make.subdir
+
+# This one puts a file containing identity info into the build subdirectory
+$(addsuffix /make.identity, $(SUBDIRS)):
+	if [ ! -d $(dir $@) ] ; then mkdir $(dir $@) ; fi
+	echo CCTK_THIS_SUBDIR := $(dir $@) > $@
