@@ -432,7 +432,7 @@ int CCTK_SchedulePrint(const char *where)
 
   if(!where)
   {
-    printf ("startup routines\n");
+    printf ("Startup routines\n");
     SchedulePrint("CCTK_STARTUP");
     printf("\n");
     printf ("Parameter checking routines\n");
@@ -736,7 +736,7 @@ static int CCTKi_SchedulePrintFunction(void *function,
   int i;
   for(i=0; i < indent_level; i++) printf(" ");
 
-  printf("%s\n", attribute->description);
+  printf("%s: %s\n", attribute->thorn, attribute->description);
 
   return 1;  
 }
@@ -764,8 +764,8 @@ static int CCTKi_ScheduleCallEntry(t_attribute *attribute,
       for (i = 0; i < attribute->n_trigger_groups ; i++) 
       { 
         index = CCTK_FirstVarIndexI(attribute->trigger_groups[i]);
-        last  = index + CCTK_NumVarsInGroupI(attribute->trigger_groups[i]) - 1;
-        for(; index < last ; index++)
+        last  = index + CCTK_NumVarsInGroupI(attribute->trigger_groups[i]) -1;
+        for(; index <= last ; index++)
         {
           go = go || CCTKi_rfrTriggerSaysGo(data->GH, index);
         }
@@ -815,7 +815,7 @@ static int CCTKi_ScheduleCallExit(t_attribute *attribute,
       { 
         index = CCTK_FirstVarIndexI(attribute->trigger_groups[i]);
         last  = index + CCTK_NumVarsInGroupI(attribute->trigger_groups[i]) - 1;
-        for(; index < last ; index++)
+        for(; index <= last ; index++)
         {
           CCTKi_rfrTriggerAction(data->GH, index);
         }
