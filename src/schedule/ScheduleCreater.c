@@ -5,6 +5,7 @@
    @desc 
    
    @enddesc 
+   @version $Header$
  @@*/
 
 #include <stdio.h>
@@ -17,7 +18,17 @@
 #include "StoreHandledData.h"
 #include "Schedule.h"
 
-/* Internal routine prototypes */
+static char *rcsid="$Header$";
+
+CCTK_FILEVERSION(schedule_ScheduleCreater_c)
+
+/********************************************************************
+ *********************     Local Data Types   ***********************
+ ********************************************************************/
+
+/********************************************************************
+ ********************* Local Routine Prototypes *********************
+ ********************************************************************/
 
 static int ScheduleCreateGroup(const char *name);
 
@@ -37,14 +48,17 @@ static int ScheduleItemNumber(t_sched_group *group,
 
 static int ScheduleSetupWhiles(t_sched_item *item);
 
-/* Local variables. */
+/********************************************************************
+ ********************* Other Routine Prototypes *********************
+ ********************************************************************/
 
-static char *rcsid="$Header$";
+/********************************************************************
+ *********************     Local Data   *****************************
+ ********************************************************************/
 
 static int n_schedule_groups = 0;
 static cHandledData *schedule_groups = NULL;
 
-CCTK_FILEVERSION(schedule_ScheduleCreater_c)
 
 /********************************************************************
  ********************    External Routines   ************************
@@ -62,7 +76,30 @@ CCTK_FILEVERSION(schedule_ScheduleCreater_c)
    @history 
  
    @endhistory 
-
+   @var     orig
+   @vdesc   original schedule modifier list
+   @vtype   t_sched_modifier *
+   @vio     inout
+   @vcomment 
+ 
+   @endvar 
+   @var     modifier
+   @vdesc   new modifier
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     argument
+   @vdesc   modifier argument
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @returntype t_sched_modifier *
+   @returndesc
+   New schedule modifier list or NULL
+   @endreturndesc
 @@*/
 t_sched_modifier *CCTKi_ScheduleAddModifier(t_sched_modifier *orig, 
                                             const char *modifier, 
@@ -105,13 +142,49 @@ t_sched_modifier *CCTKi_ScheduleAddModifier(t_sched_modifier *orig,
    @history 
  
    @endhistory 
+   @var     gname
+   @vdesc   name of group to schedule function in
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+   @var     fname
+   @vdesc   name of function to be scheduled
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+   @var     function
+   @vdesc   function to be scheduled
+   @vtype   void *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     modifiers
+   @vdesc   moodifier list
+   @vtype   t_sched_modifier *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     attributes
+   @vdesc   function attributes
+   @vtype   void *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
 
+   @returntype int
+   @returndesc 
+    0 - success
+   -1 - failure
+   @endreturndesc
 @@*/
 int CCTKi_DoScheduleFunction(const char *gname, 
-                           const char *fname, 
-                           void *func, 
-                           t_sched_modifier *modifiers, 
-                           void *attributes)
+                             const char *fname, 
+                             void *func, 
+                             t_sched_modifier *modifiers, 
+                             void *attributes)
 {
   int retcode;
   int handle;
@@ -160,12 +233,41 @@ int CCTKi_DoScheduleFunction(const char *gname,
    @history 
  
    @endhistory 
+   @var     gname
+   @vdesc   name of group to schedule group in
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+   @var     thisname
+   @vdesc   name of group to be scheduled
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+   @var     modifiers
+   @vdesc   moodifier list
+   @vtype   t_sched_modifier *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     attributes
+   @vdesc   function attributes
+   @vtype   void *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
 
+   @returntype int
+   @returndesc 
+    0 - success
+   -1 - failure
+   @endreturndesc
 @@*/
 int CCTKi_DoScheduleGroup(const char *gname, 
-                        const char *thisname, 
-                        t_sched_modifier *modifiers, 
-                        void *attributes)
+                          const char *thisname, 
+                          t_sched_modifier *modifiers, 
+                          void *attributes)
 {
   int retcode;
   int handle;
@@ -219,12 +321,17 @@ int CCTKi_DoScheduleGroup(const char *gname,
    @desc 
    Sorts all the schedule groups.
    @enddesc 
-   @calls     
+   @calls   ScheduleSortGroups  
    @calledby   
    @history 
  
    @endhistory 
 
+   @returntype int
+   @returndesc 
+    0  - success
+   -ve - -1* number of errors
+   @endreturndesc
 @@*/
 int CCTKi_DoScheduleSortAllGroups(void)
 {
@@ -256,6 +363,24 @@ int CCTKi_DoScheduleSortAllGroups(void)
   return -n_errors;
 }
 
+ /*@@
+   @routine    CCTKi_DoScheduleGetGroups
+   @date       Wed Sep 15 22:37:49 1999
+   @author     Tom Goodale
+   @desc 
+   Gets the schedule groups
+   @enddesc 
+   @calls   ScheduleSortGroups  
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+   @returntype cHandledData
+   @returndesc 
+   The scheduled groups.
+   @endreturndesc
+@@*/
 cHandledData *CCTKi_DoScheduleGetGroups(void)
 {
   return schedule_groups;
@@ -272,12 +397,25 @@ cHandledData *CCTKi_DoScheduleGetGroups(void)
    @desc 
    Creates a schedule group.
    @enddesc 
-   @calls     
+   @calls     Util_GetHandle
    @calledby   
    @history 
  
    @endhistory 
+   @var     name
+   @vdesc   name of the group
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
 
+   @returntype int
+   @returndesc 
+    0 - success
+   -1 - group already exists
+   -2 - memory failure
+   @endreturndesc
 @@*/
 static int ScheduleCreateGroup(const char *name)
 {
@@ -339,7 +477,32 @@ static int ScheduleCreateGroup(const char *name)
    @history 
  
    @endhistory 
+   @var     name
+   @vdesc   name of item
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     modifiers
+   @vdesc   modifier list
+   @vtype   t_sched_modifier *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     attributes
+   @vdesc   item attributes
+   @vtype   void *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
 
+   @returntype t_sched_item *
+   @returndesc 
+   The new schedule item or NULL.
+   @endreturndesc
 @@*/
 static t_sched_item *ScheduleCreateItem(const char *name, t_sched_modifier *modifiers, void *attributes)
 {
@@ -394,7 +557,26 @@ static t_sched_item *ScheduleCreateItem(const char *name, t_sched_modifier *modi
    @history 
  
    @endhistory 
+   @var     ghandle
+   @vdesc   The handle of the group
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     item
+   @vdesc   The schedule item
+   @vtype   t_sched_item *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
 
+   @returntype int
+   @returndesc 
+    0 - success
+   -1 - memory failure
+   @endreturndesc
 @@*/
 static int ScheduleAddItem(int ghandle, t_sched_item *item)
 {
@@ -444,7 +626,18 @@ static int ScheduleAddItem(int ghandle, t_sched_item *item)
    @history 
  
    @endhistory 
+   @var     modifier
+   @vdesc   The modifier string
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
 
+   @returntype t_sched_modifier_type
+   @returndesc 
+   The enumerated schedule modifier type.
+   @endreturndesc
 @@*/
 static t_sched_modifier_type ScheduleTranslateModifierType(const char *modifier)
 {
@@ -481,12 +674,27 @@ static t_sched_modifier_type ScheduleTranslateModifierType(const char *modifier)
    @desc 
    Sorts the routines in a group.
    @enddesc 
-   @calls     
+   @calls     CCTKi_ScheduleCreateArray CCTKi_ScheduleCreateIVec
+              ScheduleItemNumber CCTKi_ScheduleAddRow
+              CCTKi_ScheduleSort
+              CCTKi_ScheduleDestroyArray CCTKi_ScheduleDestroyIVec
    @calledby   
    @history 
  
    @endhistory 
+   @var     group
+   @vdesc   The schedule group
+   @vtype   t_sched_group *
+   @vio     inout
+   @vcomment 
+ 
+   @endvar 
 
+   @returntype int
+   @returndesc 
+    0 - success
+    Or number of scheduling errors
+   @endreturndesc
 @@*/
 static int ScheduleSortGroup(t_sched_group *group)
 {
@@ -630,7 +838,25 @@ static int ScheduleSortGroup(t_sched_group *group)
    @history 
  
    @endhistory 
+   @var     group
+   @vdesc   schedule group
+   @vtype   t_sched_group *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     name
+   @vdesc   name of schedule item
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
 
+   @returntype int
+   @returndesc 
+   The number of the schedule item in the group
+   @endreturndesc
 @@*/
 static int ScheduleItemNumber(t_sched_group *group, const char *name)
 {
@@ -666,7 +892,17 @@ static int ScheduleItemNumber(t_sched_group *group, const char *name)
    @history 
  
    @endhistory 
-
+   @var     item
+   @vdesc   The schedule item to work on
+   @vtype   t_sched_item *
+   @vio     inout
+   @vcomment 
+ 
+   @endvar 
+   @returntype int
+   @returndesc 
+   Number of whiles
+   @endreturndesc
 @@*/
 static int ScheduleSetupWhiles(t_sched_item *item)
 {

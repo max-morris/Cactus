@@ -5,6 +5,7 @@
    @desc 
    Sorter for scheduled routines.
    @enddesc 
+   @version $Header$
  @@*/
 
 #include <stdio.h>
@@ -17,7 +18,29 @@ static char *rcsid = "$Header$";
 
 CCTK_FILEVERSION(schedule_ScheduleSorter_c)
 
+
+/********************************************************************
+ *********************     Local Data Types   ***********************
+ ********************************************************************/
+
+/********************************************************************
+ ********************* Local Routine Prototypes *********************
+ ********************************************************************/
+
 static void ScheduleSwap(int size, signed char **array, int *order, int row, int column);
+
+/********************************************************************
+ ********************* Other Routine Prototypes *********************
+ ********************************************************************/
+
+/********************************************************************
+ *********************     Local Data   *****************************
+ ********************************************************************/
+
+/********************************************************************
+ *********************     External Routines   **********************
+ ********************************************************************/
+
 
  /*@@
    @routine    CCTKi_ScheduleSort
@@ -26,12 +49,36 @@ static void ScheduleSwap(int size, signed char **array, int *order, int row, int
    @desc 
    Sorts the array into sort order
    @enddesc 
-   @calls     
+   @calls     ScheduleSwap
    @calledby   
    @history 
  
    @endhistory 
-
+   @var     size
+   @vdesc   size of array
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     array
+   @vdesc   The schedule array
+   @vtype   signed char **
+   @vio     inout
+   @vcomment 
+ 
+   @endvar 
+   @var     order
+   @vdesc   the sort order
+   @vtype   int *
+   @vio     inout
+   @vcomment 
+ 
+   @endvar 
+   @returntype int
+   @returndesc 
+   0 - success
+   @endreturndesc
 @@*/
 
 int CCTKi_ScheduleSort(int size, signed char **array, int *order)
@@ -39,6 +86,8 @@ int CCTKi_ScheduleSort(int size, signed char **array, int *order)
   int iter;
   int row, column;
   int retval;
+
+  retval = 0;
 
   for(iter=0; iter < size*(size-1)/2; iter++)
   {
@@ -60,8 +109,6 @@ int CCTKi_ScheduleSort(int size, signed char **array, int *order)
     ScheduleSwap(size, array, order, row, column);
 
   }
-
-  retval = 0;
 
   /* Search for +ve entries in the matrix */
   for(row = 0; row < size; row++)
@@ -87,7 +134,39 @@ int CCTKi_ScheduleSort(int size, signed char **array, int *order)
    @history 
  
    @endhistory 
+   @var     size
+   @vdesc   size of array
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     array
+   @vdesc   schedule array
+   @vtype   signed char **
+   @vio     inout
+   @vcomment 
+ 
+   @endvar 
+   @var     item
+   @vdesc   location in array
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     thisorders
+   @vdesc   the relative sort order list of this item
+   @vtype   int *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
 
+   @returntype int
+   @returndesc 
+   0 - success
+   @endreturndesc
 @@*/
 int CCTKi_ScheduleAddRow(int size, 
                          signed char **array, 
@@ -131,7 +210,18 @@ int CCTKi_ScheduleAddRow(int size,
    @history 
  
    @endhistory 
+   @var     size
+   @vdesc   the size of the array to be created
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
 
+   @returntype signed char **
+   @returndesc 
+   the new schedule array or NULL on memory failure
+   @endreturndesc
 @@*/
 signed char **CCTKi_ScheduleCreateArray(int size)
 {
@@ -188,6 +278,20 @@ signed char **CCTKi_ScheduleCreateArray(int size)
    @history 
  
    @endhistory 
+   @var     size
+   @vdesc   the size of the array
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     array
+   @vdesc   the schedule array
+   @vtype   signed char **
+   @vio     inout
+   @vcomment 
+ 
+   @endvar 
 
 @@*/
 void CCTKi_ScheduleDestroyArray(int size, signed char **array)
@@ -216,7 +320,18 @@ void CCTKi_ScheduleDestroyArray(int size, signed char **array)
    @history 
  
    @endhistory 
+   @var     size
+   @vdesc   Size of vector
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
 
+   @returntype int *
+   @returndesc 
+   the new integer vector or NULL on memory failure
+   @endreturndesc
 @@*/
 int *CCTKi_ScheduleCreateIVec(int size)
 {
@@ -248,6 +363,20 @@ int *CCTKi_ScheduleCreateIVec(int size)
    @history 
  
    @endhistory 
+   @var     size
+   @vdesc   size of the vector
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     vector
+   @vdesc   the vector
+   @vtype   int *
+   @vio     inout
+   @vcomment 
+ 
+   @endvar 
 
 @@*/
 void CCTKi_ScheduleDestroyIVec(int size, int *vector)
@@ -267,6 +396,41 @@ void CCTKi_ScheduleDestroyIVec(int size, int *vector)
    @history 
  
    @endhistory 
+   @var     size
+   @vdesc   The size of the problem
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     array
+   @vdesc   the sort array
+   @vtype   signed char **
+   @vio     inout
+   @vcomment 
+ 
+   @endvar 
+   @var     order
+   @vdesc   the order of routines
+   @vtype   int *
+   @vio     inout
+   @vcomment 
+ 
+   @endvar 
+   @var     row
+   @vdesc   the row to swap
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     column
+   @vdesc   the column to swap
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
 
 @@*/
 static void ScheduleSwap(int size, signed char **array, int *order, int row, int column)
@@ -295,6 +459,10 @@ static void ScheduleSwap(int size, signed char **array, int *order, int row, int
   order[row] = tmp_int;
 
 }
+
+/********************************************************************
+ *********************     Local Routines   *************************
+ ********************************************************************/
 
 /********************************************************************
  ********************************************************************

@@ -5,6 +5,7 @@
    @desc 
    Routins to traverse schedule groups.
    @enddesc 
+   @version $Header$
  @@*/
 
 #include <stdio.h>
@@ -20,8 +21,14 @@ static char *rcsid = "$Header$";
 
 CCTK_FILEVERSION(schedule_ScheduleTraverse_c)
 
+/********************************************************************
+ *********************     Local Data Types   ***********************
+ ********************************************************************/
 
-/* Local routine prototypes */
+/********************************************************************
+ ********************* Local Routine Prototypes *********************
+ ********************************************************************/
+
 static int ScheduleTraverseGroup(cHandledData *schedule_groups, 
                                  t_sched_group *group,
                                  void *attributes,
@@ -44,6 +51,14 @@ static int ScheduleTraverseFunction(void *function,
                                     void *data);
 
 /********************************************************************
+ ********************* Other Routine Prototypes *********************
+ ********************************************************************/
+
+/********************************************************************
+ *********************     Local Data   *****************************
+ ********************************************************************/
+
+/********************************************************************
  ********************    External Routines   ************************
  ********************************************************************/
 
@@ -59,14 +74,61 @@ static int ScheduleTraverseFunction(void *function,
    @history 
  
    @endhistory 
+   @var     group_name
+   @vdesc   group to traverse
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     item_entry
+   @vdesc   function to be called on entry to an item
+   @vtype   int (*)(void *, void *)
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     item_exit
+   @vdesc   function to be called on exit from an item
+   @vtype   int (*)(void *, void *)
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     while_check
+   @vdesc   function to be called to check a while statement
+   @vtype   int (*)(int, char **, void *, void *)
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     function_process
+   @vdesc   function to be called on any function
+   @vtype   int (*)(void *, void *, void *)
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     data
+   @vdesc   data to be passed to the functions
+   @vtype   void *
+   @vio     inout
+   @vcomment 
+ 
+   @endvar 
 
+   @returntype int
+   @returndesc 
+   Return code of @seeroutine ScheduleTraverseGroup or return value of 
+   @seeroutine Util_GetHandle if that fails.
+   @endreturndesc
 @@*/
 int CCTKi_DoScheduleTraverse(const char *group_name,
-                           int (*item_entry)(void *, void *),
-                           int (*item_exit)(void *, void *),
-                           int  (*while_check)(int, char **, void *, void *),
-                           int (*function_process)(void *, void *, void *),
-                           void *data)
+                             int (*item_entry)(void *, void *),
+                             int (*item_exit)(void *, void *),
+                             int  (*while_check)(int, char **, void *, void *),
+                             int (*function_process)(void *, void *, void *),
+                             void *data)
 {
   cHandledData *schedule_groups;
   t_sched_group *group;
@@ -114,7 +176,81 @@ int CCTKi_DoScheduleTraverse(const char *group_name,
    @history 
  
    @endhistory 
+   @var     schedule_groups
+   @vdesc   the schedule groups
+   @vtype   cHandledData
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     group
+   @vdesc   the group to traverse
+   @vtype   t_sched_group
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     attributes
+   @vdesc   group attributes
+   @vtype   void *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     n_whiles
+   @vdesc   number of whiles
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     whiles
+   @vdesc   array of while strings
+   @vtype   char **
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     item_entry
+   @vdesc   function to be called on entry to an item
+   @vtype   int (*)(void *, void *)
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     item_exit
+   @vdesc   function to be called on exit from an item
+   @vtype   int (*)(void *, void *)
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     while_check
+   @vdesc   function to be called to check a while statement
+   @vtype   int (*)(int, char **, void *, void *)
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     function_process
+   @vdesc   function to be called on any function
+   @vtype   int (*)(void *, void *, void *)
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     data
+   @vdesc   data to be passed to the functions
+   @vtype   void *
+   @vio     inout
+   @vcomment 
+ 
+   @endvar 
 
+   @returntype int
+   @returndesc 
+   0 - success
+   @endreturndesc
 @@*/
 static int ScheduleTraverseGroup(cHandledData *schedule_groups, 
                                  t_sched_group *group,
@@ -234,7 +370,74 @@ static int ScheduleTraverseGroup(cHandledData *schedule_groups,
    @history 
  
    @endhistory 
+   @var     function
+   @vdesc   the function to be called
+   @vtype   void *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     attributes
+   @vdesc   function attributes
+   @vtype   void *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     n_whiles
+   @vdesc   number of whiles
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     whiles
+   @vdesc   array of while strings
+   @vtype   char **
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     item_entry
+   @vdesc   function to be called on entry to an item
+   @vtype   int (*)(void *, void *)
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     item_exit
+   @vdesc   function to be called on exit from an item
+   @vtype   int (*)(void *, void *)
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     while_check
+   @vdesc   function to be called to check a while statement
+   @vtype   int (*)(int, char **, void *, void *)
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     function_process
+   @vdesc   function to be called on any function
+   @vtype   int (*)(void *, void *, void *)
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     data
+   @vdesc   data to be passed to the functions
+   @vtype   void *
+   @vio     inout
+   @vcomment 
+ 
+   @endvar 
 
+   @returntype int
+   @returndesc 
+   0 - success
+   @endreturndesc
 @@*/
 static int ScheduleTraverseFunction(void *function,
                                     void *attributes,
