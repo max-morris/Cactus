@@ -887,15 +887,15 @@ sub parse_interface_ccl
 	
       }
     }
-    elsif ($line =~ m/^\s*(USES\s*INCLUDE)S?\s*(SOURCE)S?\s*:\s*(.*)\s*$/)
+    elsif ($line =~ m/^\s*(USES\s*INCLUDE)S?\s*(SOURCE)S?\s*:\s*(.*)\s*$/i)
     {
       $interface_db{"\U$thorn USES SOURCE\E"} .= " $3";      
     }
-    elsif ($line =~ m/^\s*(USES\s*INCLUDE)S?\s*(HEADER)?S?\s*:\s*(.*)\s*$/)
+    elsif ($line =~ m/^\s*(USES\s*INCLUDE)S?\s*(HEADER)?S?\s*:\s*(.*)\s*$/i)
     {
       $interface_db{"\U$thorn USES HEADER\E"} .= " $3";      
     }
-    elsif ($line =~ m/^\s*(INCLUDE)S?\s*(SOURCE)S?\s*:\s*(.*)\s+in\s+(.*)\s*$/)
+    elsif ($line =~ m/^\s*(INCLUDE)S?\s*(SOURCE)S?\s*:\s*(.*)\s+IN\s+(.*)\s*$/i)
     {
       $header = $3;
       $header =~ s/ //g;
@@ -903,7 +903,7 @@ sub parse_interface_ccl
 #      print "Adding $header to $4\n";
       $interface_db{"\U$thorn ADD SOURCE $header TO\E"} = $4;      
     }
-    elsif ($line =~ m/^\s*(INCLUDE)S?\s*(HEADER)?S?\s*:\s*(.*)\s+in\s+(.*)\s*$/)
+    elsif ($line =~ m/^\s*(INCLUDE)S?\s*(HEADER)?S?\s*:\s*(.*)\s+IN\s+(.*)\s*$/i)
     {
       $header = $3;
       $header =~ s/ //g;
@@ -937,7 +937,8 @@ sub print_interface_database
   my(%database) = @_;
   my($field);
   
-  foreach $field ( sort keys %database ){
+  foreach $field ( sort keys %database )
+  {
     print "$field has value $database{$field}\n";
   }
 }
