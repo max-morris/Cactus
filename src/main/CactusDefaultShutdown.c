@@ -47,7 +47,7 @@ extern char MPI_Active;
    @date       Tue Sep 29 12:45:04 1998
    @author     Tom Goodale 
    @desc 
-   DEfault shutdown routine.
+   Default shutdown routine.
    @enddesc 
    @calls     
    @calledby   
@@ -83,7 +83,6 @@ int CactusDefaultShutdown(tFleshConfig *config)
 
   if(myproc == 0)
   {
-    /* printf("Goodbye! Adeu! Adios! Tchuess! Au Revoir! Ciao! Math sin leat! Holt di fluegge \n"); */
     printf("--------------------------------------------------------------------------------\n"); 
     printf("Done.\n");
   }
