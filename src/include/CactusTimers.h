@@ -32,6 +32,8 @@ typedef struct
 extern "C" {
 #endif
 
+cTimer *CactusNewTimer(void);
+
 void CactusStartTimer(cTimer *timer);
 void CactusStopTimer(cTimer *timer);
 void CactusResetTimer(cTimer *timer);

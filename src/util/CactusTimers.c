@@ -9,6 +9,19 @@
 
 #include "CactusTimers.h"
 
+
+static char *rcsid = "$Header$";
+
+cTimer *CactusNewTimer(void)
+{
+  cTimer *timer;
+
+  timer = (cTimer*) malloc(sizeof(cTimer));
+
+  return timer;
+}
+
+
 void CactusStartTimer(cTimer *timer)
 {
 }
