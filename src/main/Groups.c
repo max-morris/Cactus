@@ -1470,7 +1470,7 @@ int CCTK_VarTypeSize (int vtype)
 #endif
 
     default:
-      CCTK_VWarn (0, __LINE__, __FILE__, "Cactus",
+      CCTK_VWarn (4, __LINE__, __FILE__, "Cactus",
                   "CCTK_VarTypeSize: Unknown variable type (%d)", vtype);
       var_size = -1;
   }
