@@ -217,12 +217,13 @@ int* ptr = i;     /* ptr is NOT guaranteed to be a NULL pointer! */
 \section{General Concepts}
 \label{sec:geco}
 
-Each thorn is configured by three compulsory files in the top level thorn
-directory:
+Each thorn is configured by three compulsory and one optional files in the
+top level thorn directory:
 \begin{itemize}
 \item{} {\tt interface.ccl}
 \item{} {\tt param.ccl}
 \item{} {\tt schedule.ccl}
+\item{} {\tt configuration.ccl} (optional)
 \end{itemize}
 These files are written in the {\it Cactus Configuration Language} which is
 case insensitive.
@@ -698,6 +699,21 @@ to pick between different static schedule options.  For dynamic
 scheduling the SCHEDULE WHILE construction should be used.
 
 Conditional constructs cannot be used inside a schedule block.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{configuration.ccl}
+\label{sec:co}
+
+A configuration options file has the form:
+
+\begin{verbatim}
+Requires Thorns: <list of thorns>
+\end{verbatim}
+
+The \verb|Requires Thorns| configuration option has as its argument a case-%
+sensitive, space-separated list of thorn names (without the name of the
+arrangement there are located in).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

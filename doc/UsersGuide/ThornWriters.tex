@@ -120,8 +120,8 @@ the other thorns.
 \section{Thorns}
 \label{sec:th}
 
-A thorn consists of a subdirectory of an arrangement containing three
-administrative files
+A thorn consists of a subdirectory of an arrangement containing four
+administrative files:
 
 \begin{Lentry}
 \item[{\tt interface.ccl}] the cactus interface, which defines the grid
@@ -130,6 +130,8 @@ functions, variables, etc. See \ref{sec:in}.
 parameters needed from other thorns. See
 \ref{sec:pa}.
 \item[{\tt schedule.ccl}] scheduling information for routines called by
+\item[{\tt configuration.ccl}] configuration options for the thorn. See
+\ref{sec:co}.
 the flesh. See \ref{sec:sc}.
 \end{Lentry}
 
@@ -183,6 +185,9 @@ with their visibility to other implementations.
 \item [{\tt schedule.ccl}]
 This defines which functions from the thorn are called and when they are
 called. It also handles memory and communication assignment for grid variables.
+
+\item [{\tt configuration.ccl}]
+This file is optional for a thorn. If it exists it contains configuration options of this thorn such as what other thorns it requires to be compiled and activated.
 
 \end{Lentry}
 
@@ -610,6 +615,26 @@ this way at the start, a thorn could explicitly switch the storage off
 statement in schedule blocks, each group must also specify how many
 timelevels to activate storage for.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{The {\tt configuration.ccl}}
+\label{subsec:configuration_ccl}
+The {\tt configuration.ccl} file is optional. If it exists Cactus will obtain
+from it specific configuration options for a thorn as well as what capabilities
+it provides to or requires from other thorns.
+
+Currently there is only one option evaluated from a thorn's {\tt configuration.ccl} file:
+
+\begin{verbatim}
+Requires Thorns: <list of thorns>
+\end{verbatim}
+
+where {\tt <list of thorns>} is a space-separated list of thorns which this
+thorn requires in order to be compiled and to be activated at runtime.
+Thorns must be given by their exact names, without the arrangement name.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Naming Conventions for Source Files}
