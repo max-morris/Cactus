@@ -101,11 +101,17 @@ void CCTKi_CommandLineTestThornCompiled(const char *optarg)
 
   if((retval = CCTK_IsThornCompiled(optarg)))
   {
-    printf("Thorn '%s' available.\n", optarg);
+    if (CCTK_MyProc(NULL) == 0)
+    {
+      printf("Thorn '%s' available.\n", optarg);
+    }
   }
   else
   {
-    printf("Thorn '%s' unavailable.\n", optarg);
+    if (CCTK_MyProc(NULL) == 0)
+    {
+      printf("Thorn '%s' unavailable.\n", optarg);
+    }
   }
 
   CCTK_Exit(NULL,retval);
@@ -142,36 +148,39 @@ void CCTKi_CommandLineDescribeAllParameters(const char *optarg)
   char *param;
   const cParamData *properties;
 
-  n_thorns = CCTK_NumCompiledThorns ();
-
-  for(thorn = 0; thorn < n_thorns; thorn++)
+  if (CCTK_MyProc(NULL) == 0)
   {
-    thornname = CCTK_CompiledThorn (thorn);
-    printf("\nParameters of thorn '%s' providing implementation '%s':\n",
-           thornname, CCTK_ThornImplementation(thornname));
+    n_thorns = CCTK_NumCompiledThorns ();
 
-    first = 1;
-    while (CCTK_ParameterWalk (first, thornname, &param, &properties) == 0)
+    for(thorn = 0; thorn < n_thorns; thorn++)
     {
-      if(optarg)
+      thornname = CCTK_CompiledThorn (thorn);
+      printf("\nParameters of thorn '%s' providing implementation '%s':\n",
+             thornname, CCTK_ThornImplementation(thornname));
+      
+      first = 1;
+      while (CCTK_ParameterWalk (first, thornname, &param, &properties) == 0)
       {
-        switch(*optarg)
+        if(optarg)
         {
-          case 'v':
-            CommandLinePrintParameter(properties);
-            break;
-          default :
-            fprintf(stderr, "Unknown verbosity option %s\n", optarg);
-            CCTK_Exit(NULL,2);
+          switch(*optarg)
+          {
+            case 'v':
+              CommandLinePrintParameter(properties);
+              break;
+            default :
+              fprintf(stderr, "Unknown verbosity option %s\n", optarg);
+              CCTK_Exit(NULL,2);
+          }
         }
-      }
-      else
-      {
-        printf("%s\n", param);
-      }
+        else
+        {
+          printf("%s\n", param);
+        }
 
-      free(param);
-      first = 0;
+        free(param);
+        first = 0;
+      }
     }
   }
 
@@ -206,28 +215,31 @@ void CCTKi_CommandLineDescribeParameter(const char *optarg)
   const cParamData *properties;
   const char *cthorn;
 
-  Util_SplitString(&thorn, &param, optarg, "::");
-
-  if(!param)
+  if (CCTK_MyProc(NULL) == 0)
   {
-    properties = CCTK_ParameterData(optarg, NULL);
-  }
-  else
-  {
-    properties = CCTK_ParameterData(param, thorn);
+    Util_SplitString(&thorn, &param, optarg, "::");
 
-    if(!properties)
+    if(!param)
     {
-      cthorn = CCTK_ImplementationThorn(thorn);
-      properties = CCTK_ParameterData(param, cthorn);
+      properties = CCTK_ParameterData(optarg, NULL);
+    }
+    else
+    {
+      properties = CCTK_ParameterData(param, thorn);
+      
+      if(!properties)
+      {
+        cthorn = CCTK_ImplementationThorn(thorn);
+        properties = CCTK_ParameterData(param, cthorn);
+      }
+      
+      free(thorn);
+      free(param);
     }
 
-    free(thorn);
-    free(param);
+    CommandLinePrintParameter(properties);
   }
 
-  CommandLinePrintParameter(properties);
-    
   CCTK_Exit(NULL,0);
 }
 
@@ -372,9 +384,14 @@ void CCTKi_CommandLineRedirectStdout(void)
 @@*/
 void CCTKi_CommandLineListThorns(void)
 {
-  printf ("\n---------------Compiled Thorns-------------\n");
-  CCTKi_PrintThorns(stdout, "  %s\n", 0);
-  printf ("-------------------------------------------\n\n");
+
+  if (CCTK_MyProc(NULL) == 0)
+  {
+    printf ("\n---------------Compiled Thorns-------------\n");
+    CCTKi_PrintThorns(stdout, "  %s\n", 0);
+    printf ("-------------------------------------------\n\n");
+  }
+
   CCTK_Exit(NULL,1);
 }
 
@@ -398,12 +415,16 @@ void CCTKi_CommandLineVersion(void)
 
   const char *version=NULL;
 
-  CCTK_CommandLine(&argv);
+  if (CCTK_MyProc(NULL) == 0)
+  {
+    CCTK_CommandLine(&argv);
 
-  version = (const char *)CCTK_FullVersion();
+    version = (const char *)CCTK_FullVersion();
 
-  printf("%s: Version %s.  Compiled on %s at %s\n", argv[0], version, 
-          compileDate(), compileTime());
+    printf("%s: Version %s.  Compiled on %s at %s\n", argv[0], version, 
+           compileDate(), compileTime());
+
+  }
 
   CCTK_Exit(NULL,1);
 }
@@ -426,25 +447,28 @@ void CCTKi_CommandLineHelp(void)
 {
   char **argv;
 
-  CCTK_CommandLine(&argv);
+  if (CCTK_MyProc(NULL) == 0)
+  {
+    CCTK_CommandLine(&argv);
 
-  printf("%s, compiled on %s at %s\n", argv[0], compileDate(), compileTime());
-  printf("Usage: %s [-h] [-O] [-o paramname] [-x [nprocs]] [-W n] [-E n] [-r] [-T] [-t name] [-v] <parameter_file_name>\n", argv[0]);
+    printf("%s, compiled on %s at %s\n", argv[0], compileDate(), compileTime());
+    printf("Usage: %s [-h] [-O] [-o paramname] [-x [nprocs]] [-W n] [-E n] [-r] [-T] [-t name] [-v] <parameter_file_name>\n", argv[0]);
 
-  printf("\n");
-  printf("Valid options:\n");
-  printf("-h, -help                           : gets this help.\n");
-  printf("-O, -describe-all-parameters        : describes all the parameters.\n");
-  printf("-o, -describe-parameter <paramname> : describe the given parameter.\n");
-  printf("-x, -test-parameters [nprocs]       : does a quick test of the parameter file\n"
-         "                                      pretending to be on nprocs processors, \n"
-         "                                      or 1 if not given.\n");
-  printf("-W, -warning-level <n>              : Sets the warning level to n.\n");
-  printf("-E, -error-level <n>                : Sets the error level to n.\n");
-  printf("-r, -redirect-stdout                : Redirects standard output to files.\n");
-  printf("-T, -list-thorns                    : Lists the compiled-in thorns.\n");
-  printf("-t, -test-thorn-compiled <name>     : Tests for the presence of thorn <name>.\n");
-  printf("-v, -version                        : Prints the version.\n");
+    printf("\n");
+    printf("Valid options:\n");
+    printf("-h, -help                           : gets this help.\n");
+    printf("-O, -describe-all-parameters        : describes all the parameters.\n");
+    printf("-o, -describe-parameter <paramname> : describe the given parameter.\n");
+    printf("-x, -test-parameters [nprocs]       : does a quick test of the parameter file\n"
+           "                                      pretending to be on nprocs processors, \n"
+           "                                      or 1 if not given.\n");
+    printf("-W, -warning-level <n>              : Sets the warning level to n.\n");
+    printf("-E, -error-level <n>                : Sets the error level to n.\n");
+    printf("-r, -redirect-stdout                : Redirects standard output to files.\n");
+    printf("-T, -list-thorns                    : Lists the compiled-in thorns.\n");
+    printf("-t, -test-thorn-compiled <name>     : Tests for the presence of thorn <name>.\n");
+    printf("-v, -version                        : Prints the version.\n");
+  }
 
   CCTK_Exit(NULL,1);
 }
@@ -467,9 +491,13 @@ void CCTKi_CommandLineUsage(void)
 {
   char **argv;
 
-  CCTK_CommandLine(&argv);
+  if (CCTK_MyProc(NULL) == 0)
+  {
+    CCTK_CommandLine(&argv);
 
-  printf("Usage: %s [-h] [-O] [-o paramname] [-x [nprocs]] [-W n] [-E n] [-r] [-T] [-t name] [-v] <parameter_file_name>\n", argv[0]);
+    printf("Usage: %s [-h] [-O] [-o paramname] [-x [nprocs]] [-W n] [-E n] [-r] [-T] [-t name] [-v] <parameter_file_name>\n", argv[0]);
+  }
+
   CCTK_Exit(NULL,1);
 }  
 
