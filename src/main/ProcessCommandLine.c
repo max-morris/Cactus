@@ -90,11 +90,14 @@ int CCTKi_ProcessCommandLine(int *inargc, char ***inargv, tFleshConfig *ConfigDa
 
   int option_index = 0;
   int c;
+  int ignore;
 
   /* Store the command line */
   argc = *inargc;
 
   argv = *inargv;
+
+  ignore = 0;
 
   /* Process the command line - needs some work !*/
 
@@ -113,31 +116,41 @@ int CCTKi_ProcessCommandLine(int *inargc, char ***inargv, tFleshConfig *ConfigDa
         {"redirect-stdout",         no_argument,       NULL, 'r'},
         {"list-thorns",             no_argument,       NULL, 'T'},
         {"test-thorn-compiled",     required_argument, NULL, 't'},
-        {"version", no_argument, NULL, 'v'},
+        {"version",                 no_argument,       NULL, 'v'},
+        {"ignore-next",             no_argument,       NULL, 'i'},
         {0, 0, 0, 0}
       };
       
-      c = getopt_long_only (argc, argv, "hO::o:x::W:E:rTt:v",
+      c = getopt_long_only (argc, argv, "hO::o:x::W:E:rTt:vi",
                             long_options, &option_index);
       if (c == -1)
         break;
   
-      switch (c)
+      if(!ignore)
       {
-        case 't': CCTKi_CommandLineTestThornCompiled(optarg); break;
-        case 'O': CCTKi_CommandLineDescribeAllParameters(optarg); break;
-        case 'o': CCTKi_CommandLineDescribeParameter(optarg); break;
-        case 'x': CCTKi_CommandLineTestParameters(optarg); break;
-        case 'W': CCTKi_CommandLineWarningLevel(optarg); break;
-        case 'E': CCTKi_CommandLineErrorLevel(optarg); break;
-        case 'r': CCTKi_CommandLineRedirectStdout(); break;
-        case 'T': CCTKi_CommandLineListThorns(); break;
-        case 'v': CCTKi_CommandLineVersion(); break;
-        case 'h': 
-        case '?':
-          CCTKi_CommandLineHelp(); break;
-        default:
-          printf ("?? getopt returned character code 0%o ??\n", c);
+        switch (c)
+        {
+          case 't': CCTKi_CommandLineTestThornCompiled(optarg); break;
+          case 'O': CCTKi_CommandLineDescribeAllParameters(optarg); break;
+          case 'o': CCTKi_CommandLineDescribeParameter(optarg); break;
+          case 'x': CCTKi_CommandLineTestParameters(optarg); break;
+          case 'W': CCTKi_CommandLineWarningLevel(optarg); break;
+          case 'E': CCTKi_CommandLineErrorLevel(optarg); break;
+          case 'r': CCTKi_CommandLineRedirectStdout(); break;
+          case 'T': CCTKi_CommandLineListThorns(); break;
+          case 'v': CCTKi_CommandLineVersion(); break;
+          case 'i': ignore = 1; break;
+          case 'h': 
+          case '?':
+            CCTKi_CommandLineHelp(); break;
+          default:
+            printf ("?? getopt returned character code 0%o ??\n", c);
+        }
+      }
+      else
+      {
+        printf("Ignoring option\n");
+        ignore = 0;
       }
     }
 
