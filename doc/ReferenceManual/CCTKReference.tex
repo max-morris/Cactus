@@ -9274,7 +9274,15 @@ Provides variable type size in bytes from the variable type index
 \begin{verbatim}
 #include "cctk.h"
 
-int CCTK_VarTypeSize (int vtype);
+int CCTK_VarTypeSize(int vtype);
+\end{verbatim}
+\end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}
+#include "cctk.h"
+
+CCTK_INT size, vtype
+call CCTK_VarTypeSize(size, vtype);
 \end{verbatim}
 \end{Synopsis}
 \end{SynopsisSection}
@@ -9286,17 +9294,17 @@ Variable type index.
 \end{ParameterSection}
 
 \begin{Discussion}
-This function returns the size in bytes of any of the Cactus variable
-types \code{CCTK\_INT}, \code{CCTK\_REAL}, \code{CCTK\_COMPLEX}, etc.
+Given a \verb|CCTK_VARIABLE_*| type code (e.g.~\verb|CCTK_VARIABLE_INT|,
+\verb|CCTK_VARIABLE_REAL|, \verb|CCTK_VARIABLE_COMPLEX|, etc.), this
+function returns the size in bytes of the corresponding data type
+(\code{CCTK\_INT}, \code{CCTK\_REAL}, \code{CCTK\_COMPLEX}, etc.).
 \end{Discussion}
 
-%\begin{SeeAlsoSection}
-%\end{SeeAlsoSection}
-
-%\begin{ExampleSection}
-%\begin{Example}{C}
-%\end{Example}
-%\end{ExampleSection}
+\begin{ErrorSection}
+\begin{Error}{-1}
+\verb|vtype| is not one of the \verb|CCTK_VARIABLE_*| values.
+\end{Error}
+\end{ErrorSection}
 \end{FunctionDescription}
 
 
