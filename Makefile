@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.21 1999-03-25 00:23:44 goodale Exp $
+#   @version $Id: Makefile,v 1.22 1999-04-07 14:20:11 allen Exp $
 # @@*/
 
 # Make quietly unless told not to
@@ -269,6 +269,23 @@ endif
 	@echo $(DIVIDER)
 	@echo Configuration $(@:%-rebuild=%) does not exist.
 	@echo Rebuild aborted.
+
+# Regenerate the active thorns list
+
+ifneq ($strip($(CONFIGURATIONS)),) 
+.PHONY $(addsuffix -activethorns,$(CONFIGURATIONS)):
+
+$(addsuffix -activethorns,$(CONFIGURATIONS)):
+	@echo $(DIVIDER)
+	@echo Regenerating ActiveThorn list $(@:%-activethorns=%)
+	if [ -r configs/$(@:%-activethorns=%)/ActiveThorns ] ; then rm configs/$(@:%-activethorns=%)/ActiveThorns ; fi
+	$(MAKE) $(@:%-activethorns=%)
+endif
+
+%-activethorns:
+	@echo $(DIVIDER)
+	@echo Configuration $(@:%-activethorns=%) does not exist.
+	@echo Regeneration of ActiveThorns aborted.
 
 # Rerun the configuration script
 
