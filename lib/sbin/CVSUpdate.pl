@@ -19,7 +19,7 @@ if (!$network)
 $debug = 0;
 
 print("\nUpdating Flesh\n");
-$command = "cvs -z 9 -q update -d CONTRIBUTORS COPYRIGHT Makefile lib doc src";
+$command = "cvs -z 3 -q update -d -P CONTRIBUTORS COPYRIGHT Makefile lib doc src";
 if ($debug)
 {
   $this_dir = `pwd`;
@@ -57,7 +57,7 @@ foreach $thorn (sort keys %info)
 {
   chdir $thorn;
   print("\nUpdating $thorn\n");
-  $command = "cvs -z 9 -q update -d";
+  $command = "cvs -z 3 -q update -d -P";
   if($debug)
   {
     $this_dir = `pwd`;
