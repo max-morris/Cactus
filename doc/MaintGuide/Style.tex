@@ -125,9 +125,11 @@ information relevant for thorn programmers.
 Source files should have as their first line under the 
 grdoc header a line containing
 
-\begin{verbatim}
-static char *rcsid = "$Header$"
-\end{verbatim}
+%\begin{verbatim}
+\vskip .3cm
+{\bf static char \*rcsid = "\$Header\$"; }
+%\end{verbatim}
+\vskip .3cm
 or the expanded rcs version of this.
 
 Globally visable functions should appear before local
@@ -140,10 +142,10 @@ src/main/ScheduleInterface.c )
 \section{Naming Conventions}
 
 All functions which may be used by thorns should have names beginning
-with {\tt CCTK\_}.
+with {\tt CCTK\_} and then capitalised words with no underscores.
 
 All functions used internally by the flesh should have names beginning with
-{\tt CCTKi\_}.
+{\tt CCTKi\_} and then capitalised words with no underscores.
 
 Header files to be included by thorns should have names beginning with
 {\tt cctk\_}.
