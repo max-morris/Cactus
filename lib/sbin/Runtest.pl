@@ -3,7 +3,6 @@
 # Test Suite tool
 # Version: $Header$
 
-
 $sep = "/";
 
 $prompt = shift;
@@ -226,8 +225,7 @@ foreach $t (@testfiles)
     $havethorns{"$t"} = 0;
     $number_missing++;
   }
-  $ntests++;
-  
+  $ntests++;  
 }
 
 if ($tests =~ /All/) 
@@ -235,6 +233,7 @@ if ($tests =~ /All/)
   
   # Run all parameter files
   $number_failed=0;
+  $number_extra=0;
   $number_zerofiles=0;
   $number_passed1=0;
   $number_passed2=0;
@@ -243,7 +242,7 @@ if ($tests =~ /All/)
   foreach $t (@testfiles) 
   {
     $thorn = $testthorns[$ntested];        
-    
+  
     if ($havethorns{"$t"})
     {
       push(@actually_tested, $testnames[$ntested]);
@@ -294,21 +293,38 @@ if ($tests =~ /All/)
       print "    ". $which_failed[$i]." (from ". $thorn_failed[$i].")\n";
     }
   }
+
   if ($number_zerofiles > 0)
   {
     print "  Number with no output files -> $number_zerofiles\n";
   }
   
+  print "=======================================================\n\n";
+
+  printf("  $ansibold Warnings:  $ansinormal \n\n");
+
   if ($number_missing>0)
   {
-    print "\n  Tests Missed for lack of thorns:\n";
+    print "  Tests Missed for lack of thorns:\n";
     for ($i=0; $i<$number_missing;$i++)
     {
       print "    ". $not_tested[$i]." (from ". $not_tested_thorns[$i].")\n";
     }
+    print "\n";
   }
   
-  print "==================================================\n\n";
+  if ($number_extra>0)
+  {
+    print "  Tests with different numbers of output files:\n";
+    for ($i=0; $i<$number_extra;$i++)
+    {
+      print "    ". $which_extra[$i]." (from ". $thorn_extra[$i].")\n";
+    }
+    print "\n";
+  }
+
+  print "=======================================================\n\n";
+
 } 
 
 else 
@@ -452,6 +468,9 @@ sub runtest
   $reallyblewit = 0;
   $nfiles = 0;
 
+  # Count number of files in test directory
+  @newout = <"$tsttop$sep$tp${sep}"*.*l>;
+  
   foreach $file (@oldout) 
   {
     $nfiles ++;
@@ -460,84 +479,124 @@ sub runtest
     $newfile = "$tsttop$sep$tp$sep$newfile"; 
     #       print "Comparing $file with $newfile\n";
 
-    open (INORIG, "<$file");
-    open (INNEW,  "<$newfile");
-    $nblow = 0;
-    $nrealblow = 0;
-    while ($oline = <INORIG>) 
+    if ( -e $newfile)
     {
-      $nline = <INNEW>;
-      # Now lets see if they differ.
-      if (!($nline eq $oline)) 
+      open (INORIG, "<$file");
+      open (INNEW,  "<$newfile");
+      $nblow = 0;
+      $nrealblow = 0;
+      while ($oline = <INORIG>) 
       {
+	$nline = <INNEW>;
+	# Now lets see if they differ.
+	if (!($nline eq $oline)) 
+	{
+	  
+	  # Check against nans
+	  if ($nline =~ /nan/i)
+	  {
+	    print "****CAUGHT NAN in $newfile****\n";
+	    $nblow ++;
+	    $nrealblow ++;
+	  }
+	  # Check against inf
+	  elsif ($nline =~ /inf/i)
+	  {
+	    print "****CAUGHT INF in $newfile****\n";
+	    $nblow ++;
+	    $nrealblow ++;
+	  }
+	  else
+	  {
+	    # This is the new comparison (subtract last two numbers)
+	    ($t1,$v1) = split(' ', $nline);
+	    ($t2,$v2) = split(' ', $oline);
+	    # Make sure that floating point numbers have 'e' if exponential.
+	    $v1 =~ s/[dD]/e/; 
+	    $v2 =~ s/[dD]/e/; 
+	    
+	    $vdiff = abs($v1 - $v2);
+	    if ($vdiff > 0) 
+	    {
+	      
+	      # They diff. But do they differ strongly?
+	      $nblow ++;
+	      
+	      $exp = sprintf("%e",$vdiff);
+	      $exp =~ s/^.*e-(\d+)/$1/;
+	      unless ($exp >= $tolerance) 
+	      {
+		$nrealblow++;
+	      }
+	    }
+	  }
+	} # if
+      } #while
+      if ($nblow != 0) 
+      {
+	$blewit ++;
+	$stripfile = $newfile;
+	$stripfile =~ s:^.*${sep}(.*)$:$1:;
+        if ($nrealblow == 0) 
+        {
+	  print "     $stripfile differs at machine precision (which is OK!)\n";
+	}
+        else 
+	{
+	  $reallyblewit ++;
+	  print "Substantial differences detected in $stripfile\n";
+	  print "     $newfile $file\n";
+	  print "     Differ on $nblow lines!\n";
+	}
+      }
+    }
+    else
+    {
+      print "     $newfile not there for comparison\n";
+      $reallyblewit++;
+      $blewit++;
+    }
+  }
 
-        # Check against nans
-        if ($nline =~ /nan/i)
-        {
-          print "****CAUGHT NAN in $newfile****\n";
-          $nblow ++;
-          $nrealblow ++;
-        }
-        # Check against inf
-        elsif ($nline =~ /inf/i)
-        {
-          print "****CAUGHT INF in $newfile****\n";
-          $nblow ++;
-          $nrealblow ++;
-        }
-        else
-        {
-          # This is the new comparison (subtract last two numbers)
-          ($t1,$v1) = split(' ', $nline);
-          ($t2,$v2) = split(' ', $oline);
-          # Make sure that floating point numbers have 'e' if exponential.
-          $v1 =~ s/[dD]/e/; 
-          $v2 =~ s/[dD]/e/; 
-      
-          $vdiff = abs($v1 - $v2);
-          if ($vdiff > 0) 
-          {
-   
-            # They diff. But do they differ strongly?
-            $nblow ++;
-            
-            $exp = sprintf("%e",$vdiff);
-            $exp =~ s/^.*e-(\d+)/$1/;
-            unless ($exp >= $tolerance) 
-            {
-              $nrealblow++;
-            }
-          }
-        }
-      }
-    }
-    if ($nblow != 0) 
+  # Give a warning if there were different numbers of files
+  if (scalar(@oldout) != scalar(@newout))
+  {
+    printf("\n  $ansibold WARNING: Comparing different numbers of output files ! $ansinormal \n");
+    print "            ","Counted ",scalar(@oldout)," in thorn and ";
+    print scalar(@newout)," from test\n";
+    foreach $file (@newout) 
     {
-      $blewit ++;
-      $stripfile = $newfile;
-      $stripfile =~ s:^.*${sep}(.*)$:$1:;
-      if ($nrealblow == 0) 
+      $oldfile = $file;
+      $oldfile =~ s:^.*${sep}([^${sep}]+)$:$1:;
+      $oldfile = "$indir${sep}$oldfile";
+      if (!-e $oldfile)
       {
-        print "     $stripfile differs at machine precision (which is OK!)\n";
-      }
-      else 
-      {
-        $reallyblewit ++;
-        print "Substantial differences detected in $stripfile\n";
-        print "     $newfile $file\n";
-        print "     Differ on $nblow lines!\n";
+        print "            $oldfile not in thorn archive\n";
       }
     }
+    foreach $file (@oldout) 
+    {
+      $newfile = $file;
+      $newfile =~ s:^.*${sep}([^${sep}]+)$:$1:;
+      $newfile = "$tsttop$sep$tp$sep$newfile"; 
+      if (!-e $newfile)
+      {
+        print "            $newfile not created in test\n";
+      }
+    }
+    $number_extra++;
+    @which_extra = (@which_extra,$tp);
+    @thorn_extra = (@thorn_extra,$inthorn);
   }
 
   if ($nfiles == 0) 
   {
-    printf("  $ansibold WARNING: ZERO files compared ! $ansinormal \n");
+    printf("\n  $ansibold WARNING: ZERO files compared ! $ansinormal \n");
     $number_zerofiles++;
   }
   elsif ($blewit == 0) 
   {
-    printf("  $ansibold Test succeeded!$ansinormal $nfiles files identical\n");
+    printf("\n  $ansibold Test succeeded!$ansinormal $nfiles files identical\n");
     $number_passed1++;
   } 
   else 
