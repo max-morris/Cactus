@@ -76,6 +76,20 @@ void CCTK_FCALL CCTK_FNAME(CCTK_ReduceLocalArrays)
       const CCTK_INT output_number_type_codes[],
       void *const output_numbers[]);
 
+/* new gridarray reduction API */
+void CCTK_FCALL CCTK_FNAME(CCTK_GridArrayReductionParameterHandle)
+     (int *parameter_handle, ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME(CCTK_ReduceGridArrays)
+     (int *fortran_return,
+      const cGH *GH,
+      int local_reduce_handle,
+      int param_table_handle,
+      int N_input_arrays,
+      const CCTK_INT input_array_variable_indices[],
+      int M_output_values,
+      const CCTK_INT output_value_type_codes[],
+      void* const output_values[]);
+
 /* FIXME: OLD INTERFACE */
 void CCTK_FCALL CCTK_FNAME(CCTK_ReduceLocalScalar)
      (int *fortran_return,
@@ -160,6 +174,19 @@ typedef struct
   int (*function) (REDUCTION_LOCAL_ARRAY_OPERATOR_REGISTER_ARGLIST);
 } t_reduction_local_array_op;
 
+/* structure holding the routines for a registered grid array reduction operator */
+typedef struct
+{
+  const char *implementation;
+  cGridArrayReduceOperator reduce_operator;
+} t_grid_array_reduce_operator;
+
+/* structure holding a function pointer to a GA reduction operator */
+typedef struct
+{
+  int (*function) (REDUCTION_GRID_ARRAY_OPERATOR_REGISTER_ARGLIST);
+} t_reduction_grid_array_op;
+
 /********************************************************************
  ********************    Static Variables   *************************
  ********************************************************************/
@@ -167,10 +194,18 @@ static cHandledData *ReductionOperators = NULL;
 static int num_reductions = 0;
 static cHandledData *ReductionArrayOperators = NULL;
 static int num_reductions_array = 0;
+
 static cHandledData *LocalArrayReductionOperators = NULL;
 static int num_local_array_reductions = 0;
 static cHandledData *LocalArrayReductionParameters = NULL;
 static int num_local_array_reduction_parameters = 0;
+
+static cHandledData *GridArrayReductionOperators = NULL;
+static int num_GA_reductions = 0;
+static cHandledData *GridArrayReductionParameters = NULL;
+static int num_GA_reduction_parameters = 0;
+static cGridArrayReduceOperator GA_reduc = NULL;
+static char global[] ="c";
 
  /*@@
    @routine    CCTKi_RegisterReductionOperator
@@ -471,7 +506,6 @@ int CCTK_RegisterReductionArrayOperator
     /* Remember how many reduction operators there are */
     num_reductions_array++;
 
-    /* printf ("\n registering handle %s with handle %d \n", name, handle); */
   }
   else
   {
@@ -1016,7 +1050,6 @@ int CCTKi_RegisterLocalArrayReductionOperator(const char *thorn,
 
       /* Remember how many reduction operators there are */
       num_local_array_reductions++;
-      printf("/nregistered name: %s with handle: %d \n", name, handle);
     }
   }
   else
@@ -1378,4 +1411,224 @@ const char *CCTK_LocalArrayReduceOperator (int handle)
   }
 
   return name;
+}
+
+/*@@
+   @routine    CCTKi_RegisterGridArrayReductionOperator
+   @date       Mon Aug 30 11:27:43 2004
+   @author     Gabrielle Allen, Yaakoub El Khamra
+   @desc
+   Registers "function" as a reduction operator called "name"
+   @enddesc
+   @var     function
+   @vdesc   Routine containing reduction operator
+   @vtype   (void (*))
+   @vio
+   @endvar
+   @var     name
+   @vdesc   String containing name of reduction operator
+   @vtype   const char *
+   @vio     in
+   @endvar
+@@*/
+int CCTKi_RegisterGridArrayReductionOperator(const char *thorn, 
+                                             cGridArrayReduceOperator  operator)
+{
+  int handle;
+  t_grid_array_reduce_operator *reduce_operator;
+  CCTK_Info("what",thorn);
+
+  /* Check that there is no other registered GA reduction */
+  if(num_GA_reductions == 0)
+  {
+    reduce_operator = (t_grid_array_reduce_operator *)malloc (sizeof (t_grid_array_reduce_operator));
+    reduce_operator->implementation = CCTK_ThornImplementation(thorn);
+    reduce_operator->reduce_operator = operator;
+    GA_reduc = operator;
+    handle = Util_NewHandle(&GridArrayReductionOperators, global, reduce_operator);
+    /* Remember how many reduction operators there are */
+    num_GA_reductions++;
+  }
+  else
+  {
+    /* Reduction operator with this name already exists. */
+    CCTK_Warn(1,__LINE__,__FILE__,"Cactus",
+              "CCTK_RegisterGridArrayReductionOperator: Reduction operator "
+              "already exists");
+    handle = -1;
+  }
+  return handle;
+}
+
+ /*@@
+   @routine    CCTK_ReduceGridArrays
+   @date       Mon Aug 30 11:27:43 2004
+   @author     Gabrielle Allen, Yaakoub El Khamra
+   @desc
+               Generic routine for doing a reduction operation on a set of
+               Cactus variables.
+   @enddesc
+   @var     GH
+   @vdesc   pointer to the grid hierarchy
+   @vtype   cGH *
+   @vio     in
+   @endvar
+   @var     local_reduce_handle
+   @vdesc   the handle specifying the reduction operator
+   @vtype   int
+   @vio     in
+   @endvar
+   @var     param_reduce_handle
+   @vdesc   the parameter table handle
+   @vtype   int
+   @vio     in
+   @endvar
+   @var     N_input_arrays
+   @vdesc   number of elements in the reduction input
+   @vtype   int
+   @vio     in
+   @endvar
+   @var     input_array_variable_indices
+   @vdesc   input arrays
+   @vtype   const CCTK_INT
+   @vio     in
+   @endvar
+   @var     M_output_values
+   @vdesc   number of output values
+   @vtype   int
+   @vio     in
+   @endvar
+   @var     output_value_type_codes
+   @vdesc   array containing output value type codes
+   @vtype   const CCTK_IN
+   @vio     in
+   @endvar
+   @var     output_values
+   @vdesc   array of output values
+   @vtype   void * const
+   @vio     in
+   @endvar
+@@*/
+int CCTK_ReduceGridArrays(const cGH *GH,
+                          int local_reduce_handle,
+                          int param_table_handle,
+                          int N_input_arrays,
+                          const CCTK_INT input_array_variable_indices[],
+                          int M_output_values,
+                          const CCTK_INT output_value_type_codes[],
+                          void* const output_values[])
+{
+  int retval;
+  t_grid_array_reduce_operator *operator;
+  /* Get the pointer to the reduction operator */
+  if (num_GA_reductions == 0)
+  {
+    CCTK_Warn(3,__LINE__,__FILE__,"Cactus",
+              "CCTK_ReduceGridArrays: no grid array reduction registered");
+    retval = -1;
+  }
+  else
+  {
+    retval = GA_reduc (GH,
+                       local_reduce_handle, param_table_handle,
+                       N_input_arrays, input_array_variable_indices,
+                       M_output_values, output_value_type_codes,
+                       output_values);
+  }
+  return retval;
+}
+
+void CCTK_FCALL CCTK_FNAME(CCTK_ReduceGridArrays)
+     (int *fortranreturn,
+      const cGH *GH,
+      int local_reduce_handle,
+      int param_table_handle,
+      int N_input_arrays,
+      const CCTK_INT input_array_variable_indices[],
+      int M_output_values,
+      const CCTK_INT output_value_type_codes[],
+      void* const output_values[])
+{
+  int retval;
+  t_grid_array_reduce_operator *operator;
+  /* Get the pointer to the reduction operator */
+  if (num_GA_reductions == 0)
+  {
+    CCTK_Warn(3,__LINE__,__FILE__,"Cactus",
+              "CCTK_ReduceGridArrays: no grid array reduction registered");
+    retval = -1;
+  }
+  else
+  {
+    retval = GA_reduc (GH,
+                       local_reduce_handle, param_table_handle,
+                       N_input_arrays, input_array_variable_indices,
+                       M_output_values, output_value_type_codes,
+                       output_values);
+  }
+  *fortranreturn = retval;
+}
+
+ /*@@
+   @routine    CCTK_NumGridArrayReductionOperators
+   @date       Mon Aug 30 11:27:43 2004
+   @author     Gabrielle Allen, Yaakoub El Khamra
+   @desc
+               The number of reduction operators registered
+   @enddesc
+   @returntype int
+   @returndesc
+               number of reduction operators
+   @endreturndesc
+@@*/
+
+int CCTK_NumGridArrayReductionOperators()
+{
+  return num_GA_reductions;
+}
+
+ /*@@
+   @routine    CCTK_GAReductionOperator
+   @date       Mon Aug 30 11:27:43 2004
+   @author     Gabrielle Allen, Yaakoub El Khamra
+   @desc
+               Returns the name of the reduction operator
+   @enddesc
+   @var        handle
+   @vdesc      Handle for reduction operator
+   @vtype      int
+   @vio        in
+   @endvar
+
+   @returntype const char *
+   @returndesc
+   The name of the reduction operator, or NULL if the handle
+   is invalid
+   @endreturndesc
+@@*/
+const char *CCTK_GridArrayReductionOperator (void)
+{
+  const char *thorn=NULL;
+  t_grid_array_reduce_operator *operator;
+
+  if (num_GA_reductions == 0)
+  {
+    CCTK_VWarn (6, __LINE__, __FILE__, "Cactus",
+                "CCTK_GAReductionOperator: no GA reduction operator");
+  }
+  else
+  {
+    Util_GetHandle (GridArrayReductionOperators, global, (void **)&operator);
+    if (operator)
+    {
+      thorn = operator->implementation;
+    }
+    else
+    {
+      CCTK_VWarn (6, __LINE__, __FILE__, "Cactus",
+                  "CCTK_GAReductionOperator: no GA reduction operator");
+    }
+  }
+
+  return thorn;
 }

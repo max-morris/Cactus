@@ -45,6 +45,16 @@
   const CCTK_INT output_number_type_codes[], \
   void *const output_numbers[]
 
+#define REDUCTION_GRID_ARRAY_OPERATOR_REGISTER_ARGLIST \
+  const cGH *GH,  \
+  int local_reduce_handle, \
+  int param_table_handle,  \
+  int N_input_arrays,  \
+  const CCTK_INT input_array_variable_indices[],  \
+  int M_output_values,  \
+  const CCTK_INT output_value_type_codes[],  \
+  void* const output_values[]
+
 #ifdef __cplusplus
 extern "C"
 {
@@ -68,6 +78,16 @@ typedef int (*cLocalArrayReduceOperator) (int N_dims, int operator_handle,
                           int M_output_numbers,
                           const CCTK_INT output_number_type_codes[],
                           void *const output_numbers[]);
+
+/* prototype for GA reduction operator routine */
+typedef int (*cGridArrayReduceOperator) (const cGH *GH,
+                                         int local_reduce_handle,
+                                         int param_table_handle,
+                                         int N_input_arrays,
+                                         const CCTK_INT input_array_variable_indices[],
+                                         int M_output_values,
+                                         const CCTK_INT output_value_type_codes[],
+                                         void* const output_values[]);
 
 int CCTK_Reduce(const cGH *GH,
                 int proc,
@@ -127,6 +147,23 @@ const char *CCTK_LocalArrayReduceOperatorImplementation(int handle);
 
 const char *CCTK_LocalArrayReduceOperator (int handle);
 
+/* new GA reduction API */
+int CCTK_ReduceGridArrays(const cGH *GH,
+                          int local_reduce_handle,
+                          int param_table_handle,
+                          int N_input_arrays,
+                          const CCTK_INT input_array_variable_indices[],
+                          int M_output_values,
+                          const CCTK_INT output_value_type_codes[],
+                          void* const output_values[]);
+
+#define CCTK_RegisterGridArrayReductionOperator(a) \
+        CCTKi_RegisterGridArrayReductionOperator(CCTK_THORNSTRING,a)
+
+int CCTKi_RegisterGridArrayReductionOperator(const char *thorn, cGridArrayReduceOperator 
+        operatorGV);
+
+const char *CCTK_GridArrayReductionOperator(void);
 
 /* FIXME: old interface - should go */
 int CCTK_ReduceLocalScalar (const cGH *GH, int proc, int operation_handle,
