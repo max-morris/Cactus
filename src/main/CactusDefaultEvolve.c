@@ -6,6 +6,9 @@
    Default cactus evolution stuff.
    @enddesc 
  @@*/
+
+#define DEBUG
+
 #include <stdio.h>
 
 #include "flesh.h"
@@ -73,9 +76,13 @@ int CactusDefaultEvolve(tFleshConfig *config)
 
   iteration = cctk_itfirst;
 
-  while (iteration<=cctk_itlast) 
+  while (iteration<cctk_itlast) 
   {
     iteration++;
+
+#ifdef DEBUG
+    printf("Starting iteration number ... %d\n",iteration);
+#endif
 
     /* Step each convergence level */
 
