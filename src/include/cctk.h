@@ -156,7 +156,16 @@
  * For CCTK_DEBUG these are external C routines defined in DebugDefines.c.
  */
 
-#if defined(__cplusplus) || !defined(inline)
+#ifdef __cplusplus
+#define HAVE_INLINE
+#else
+#ifndef inline
+#define HAVE_INLINE
+#endif
+#endif
+
+#ifdef HAVE_INLINE
+
 /* The "inline" keyword is supported */
 
 static inline int CCTK_GFINDEX1D (const cGH *GH, int i);
