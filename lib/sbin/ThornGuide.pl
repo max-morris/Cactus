@@ -118,7 +118,7 @@ foreach my $arrangement (sort keys %arrangements)
 
    &Start_Arr($arrangement, $counter);
 
-   print OUT &Read_Thorn_Doc($arrangements_dir, $arrangement);
+   print OUT &Read_Thorn_Doc($arrangements_dir, $arrangement, "donotshowwarnings");
    # now each thorn in the given arrangement
    foreach my $thorn (@{$arrangements{$arrangement}})
    {
@@ -173,6 +173,7 @@ sub Read_Thorn_Doc
    my $title = "";
    my $author = "";
    my $date = "";
+   my $cnts = "";
 
    open (DOC, "<$pathandfile") || print STDERR "\nCould not find documentation in $path";
 
@@ -211,6 +212,7 @@ sub Read_Thorn_Doc
 
    # if it never started reading, then we print some error message
    if (! $start) {
+      if ($thorn ne "donotshowwarnings") {
       my $tmp = ThornUtils::CleanForLatex("$arrangement/$thorn");  
 
       if (-e $pathandfile) {
@@ -221,11 +223,10 @@ sub Read_Thorn_Doc
       $contents .= "\n\n\\include{${arrangement}\_${thorn}\_param}\n";
       $contents .= "\n\\include{" . ThornUtils::ToLower("${arrangement}_${thorn}_inter") . "\}\n";
       $contents .= "\n\\include{${arrangement}\_${thorn}\_schedule}\n";
+      }
    }
    
-   close DOC;
-
-   my $cnts = "";
+   else {
    $cnts .= "\n\{\\Large\n";
    $cnts .= "\n\\begin\{tabbing\}\n";
    $cnts .= "\n\{\\bf Author(s):\} \\= \\kill \\\\\n";
@@ -235,6 +236,8 @@ sub Read_Thorn_Doc
    $cnts .= "\n\\end\{tabbing\}\n";
    $cnts .= "\n\}\n";
    $cnts .= "\n\\minitoc";
+   }
+   close DOC;
 
    return "$cnts\n$contents";
 }
