@@ -19,41 +19,41 @@
    @enddesc 
  @@*/
 
-void CCTK_SyncGroupI(cGH *GH, int gi) {
-  char *groupname = CCTK_GroupName(gi);
+void CCTK_SyncGroupI(cGH *GH, int groupi) {
+  char *groupname = CCTK_GroupName(groupi);
 
   CCTK_SyncGroup(GH,groupname);
   free(groupname);
 }
 
-void FMODIFIER FORTRAN_NAME(CCTK_SyncGroupI)(cGH *GH, int *gi) {
-  CCTK_SyncGroupI(GH, *gi);
+void FMODIFIER FORTRAN_NAME(CCTK_SyncGroupI)(cGH *GH, int *groupi) {
+  CCTK_SyncGroupI(GH, *groupi);
 }
 
 
 
-void CCTK_SyncGroupWithVar(cGH *GH, const char *impvarname) {
-  int gi;
-  gi = CCTK_GroupIndexFromVarI(CCTK_VarIndex(impvarname));
-  CCTK_SyncGroupI(GH,gi);
+void CCTK_SyncGroupWithVar(cGH *GH, const char *varn) {
+  int groupi;
+  groupi = CCTK_GroupIndexFromVarI(CCTK_VarIndex(varn));
+  CCTK_SyncGroupI(GH,groupi);
 }
 
 void FMODIFIER FORTRAN_NAME(CCTK_SyncGroupWithVar)(cGH *GH, ONE_FORTSTRING_ARG) {
-  ONE_FORTSTRING_CREATE(impvarname);
-  CCTK_SyncGroupWithVar(GH,impvarname);
-  free(impvarname);
+  ONE_FORTSTRING_CREATE(varn);
+  CCTK_SyncGroupWithVar(GH,varn);
+  free(varn);
 }
 
 
 
-void CCTK_SyncGroupWithVarI(cGH *GH, int vi) {
-  int gi;
-  gi = CCTK_GroupIndexFromVarI(vi);
-  CCTK_SyncGroupI(GH,gi);
+void CCTK_SyncGroupWithVarI(cGH *GH, int vari) {
+  int groupi;
+  groupi = CCTK_GroupIndexFromVarI(vari);
+  CCTK_SyncGroupI(GH,groupi);
 }
 
-void FMODIFIER FORTRAN_NAME(CCTK_SyncGroupWithVarI)(cGH *GH, int *vi) {
-  CCTK_SyncGroupWithVarI(GH,*vi);
+void FMODIFIER FORTRAN_NAME(CCTK_SyncGroupWithVarI)(cGH *GH, int *vari) {
+  CCTK_SyncGroupWithVarI(GH,*vari);
 }
 
 

@@ -14,6 +14,7 @@
 #include <stdarg.h>
 
 #include "cctk_Flesh.h"
+#include "cctk_FortranString.h"
 #include "OverloadMacros.h"
 #include "cctk_WarnLevel.h"
 
@@ -47,7 +48,7 @@ static char *rcsid="$Header$";
 
 
  /*@@
-   @routine    SetupCommFunctions(void)
+   @routine    CCTKi_SetupCommFunctions
    @date       Thu Feb  4 08:21:26 1999
    @author     Tom Goodale
    @desc 
@@ -60,7 +61,7 @@ static char *rcsid="$Header$";
    @endhistory 
 
 @@*/
-int SetupCommFunctions(void)
+int CCTKi_SetupCommFunctions(void)
 {
 
 #define OVERLOADABLE(name) OVERLOADABLE_CHECK(name)
@@ -89,3 +90,45 @@ int SetupCommFunctions(void)
 
 #undef OVERLOADABLE
 
+
+
+/*    Fortran bindings for the comm functions */
+
+
+
+int FMODIFIER FORTRAN_NAME(CCTK_Exit)(cGH *GH)
+{
+  CCTK_Exit(GH);
+  return 0;
+}
+
+int FMODIFIER FORTRAN_NAME(CCTK_ParallelInit)(cGH *GH)
+{
+  CCTK_ParallelInit(GH);
+  return 0;
+}
+
+int FMODIFIER FORTRAN_NAME(CCTK_Abort)(cGH *GH)
+{
+  CCTK_Abort(GH);
+  return 0;
+}
+
+int FMODIFIER FORTRAN_NAME(CCTK_SyncGroup)(cGH *GH, ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE(group_name)
+  CCTK_SyncGroup(GH,group_name);
+  free(group_name); 
+  return 0;
+}
+
+int FMODIFIER FORTRAN_NAME(CCTK_nProcs)(cGH *GH)
+{
+  return CCTK_nProcs(GH);
+}
+ 
+int FMODIFIER FORTRAN_NAME(CCTK_MyProc)(cGH *GH)
+{
+  return CCTK_MyProc(GH);
+}
+ 
