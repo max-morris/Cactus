@@ -664,7 +664,8 @@ void *CCTK_GHExtension(cGH *GH, const char *name)
 
   handle = Util_GetHandle(GHExtensions, name, NULL);
 
-  return (handle >= 0 ? GH->extensions[handle] : NULL);
+  return ( (handle >= 0 && GH->extensions) 
+	   ? GH->extensions[handle] : NULL);
 }
 
 /********************************************************************
