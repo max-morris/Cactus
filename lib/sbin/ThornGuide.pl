@@ -9,14 +9,14 @@ use vars qw($h $help $cctk_home $thornlist $directory $outdir $verbose $debug $o
 #  @date      Sun Mar  3 19:05:41 CET 2002
 #  @author    Ian Kelley
 #  @desc 
-#     Create cactus documentation based upon documenation provided by thorns 
-#     in the current checkout being examined. (documentation.tex files)                               
-#                                                                        
-#     It will create a "manual" for this particular checkout, with an index  
-#     and everything.  Note that the documentation provided by thorns may    
-#     not use macros, etc. (except of course, the ones we provide globally)  
+#     Create cactus documentation based upon documenation provided by thorns
+#     in the current checkout being examined. (documentation.tex files)
 #
-#     It attempts to include the output of InterLatex.pl, ParamLatex.pl and 
+#     It will create a "manual" for this particular checkout, with an index
+#     and everything.  Note that the documentation provided by thorns may
+#     not use macros, etc. (except of course, the ones we provide globally)
+#
+#     It attempts to include the output of InterLatex.pl, ParamLatex.pl and
 #     SchedLatex.pl, which if run before this program, will create output from
 #     parsing the interface.ccl, param.ccl, and schedule.ccl files.
 #  @enddesc 
@@ -463,7 +463,7 @@ sub Start_Arr
 print OUT <<EOC;
 
 \\begin{cactuspart}{$partnum}{$arr}{}{}
-\\renewcommand{\\thepage}{\\Alph{part}\\arabic{page}}
+\\renewcommand{\\thepage}{\\arabic{part}:\\arabic{page}}
 EOC
 }  
 
@@ -511,7 +511,6 @@ print OUT  <<EOC;
 
 \\usepackage{$cactus_style_file}
 
-\\usepackage{fancyhdr}
 \\usepackage{minitoc}
 
 
@@ -525,89 +524,12 @@ print OUT  <<EOC;
 \\makeatother
 
 \\usepackage{tocloft}
-\\addtolength{\\cftchapnumwidth}{0.5em}
-\\addtolength{\\cftsecnumwidth}{0.5em}
-\\addtolength{\\cftsubsecnumwidth}{0.5em}
-\\addtolength{\\cftsubsubsecnumwidth}{0.5em}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Takes three arguments - the name of the document, the revision, and
-% the date.
-% Additionally ther eis an optional first argument with the version number
-
-\\newcommand{\\cactustitlepage}[4][4.0]
-{
-\\thispagestyle{empty}
-\\setlength{\\parindent}{0mm}
-\\setlength{\\parskip}{0mm}
-\\vspace*{\\stretch{1}}
-\\rule{\\linewidth}{1mm}
-\\begin{flushright}
-  \\Huge Cactus #1\\\\[5mm]
-        #2
-\\end{flushright}
-\\rule{\\linewidth}{1mm}
-\\vspace*{\\stretch{2}}
-\\begin{center}
-\\includegraphics[angle=0,width=5cm]{bincactus}
-\\end{center}
-\\vspace*{\\stretch{2}}
-\\begin{center}
-   \\Large #3 \\\\[3mm]
-          #4
-\\end{center}
-\\newpage
-}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\\newenvironment{cactuspart}[4]
-{
-  \\clearpage
-  \\renewcommand{\\thepage}{\\Alph{part}\\arabic{page}}
-  % Redefine the plain style
-  \\fancypagestyle{plain}
-  {
-    \\fancyhf{} % Clear all header and footer fields
-    \\lfoot{#3}
-    \\cfoot{#4}
-    %  \\rfoot{\\thepage/\\pageref{lastpage:\\thepart}}
-    \\rfoot{\\thepage}
-    \\renewcommand{\\headrulewidth}{0.0pt}  
-    \\renewcommand{\\footrulewidth}{0.4pt}  
-    \\renewcommand{\\thepage}{\\Alph{part}\\arabic{page}}
-  }
-
-  % Make sure it's arabic numbering
-  \\pagenumbering{arabic}
-  % Start the page counter at 1
-  \\setcounter{page}{1}
-  % Start a new part
-  \\renewcommand{\\thepage}{\\Alph{part}\\arabic{page}}
-  \\part{#2}
-  \\setcounter{part}{#1}
-  % Redefine the page
-  % Set up fancy headings.
-  \\lfoot{#3}
-  \\cfoot{#4}
-   % \\rfoot{\\thepage/\\pageref{lastpage:\\thepart}}
-  \\rfoot{\\thepage}
-  \\renewcommand{\\headrulewidth}{0.4pt}
-  \\renewcommand{\\footrulewidth}{0.4pt}
-}
-{
-  % Remember the last page of the part
-  \\label{lastpage:\\thepart}
-  \\clearpage
-}
+\\addtolength{\\cftchapnumwidth}{1.5em}
+\\addtolength{\\cftsecnumwidth}{1.5em}
+\\addtolength{\\cftsubsecnumwidth}{1.5em}
+\\addtolength{\\cftsubsubsecnumwidth}{1.5em}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\\def\\nhat{{\\hat n}} 
-\\def\\vone{{v_{{}_{(1)}}}} 
-\\def\\vtwo{{v_{{}_{(2)}}}}
-\\def\\vthree{{v_{{}_{(3)}}}} 
-\\def\\eref#1{(\\ref{#1})}
-
 
 \\begin{document}
 \\cactustitlepage{Thorn Guide$configname}{Date of Creation:}{$TODAYS_DATE}
@@ -623,9 +545,9 @@ print OUT  <<EOC;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\\renewcommand{\\thepart}{\\Alph{part}}
-\\renewcommand{\\thechapter}{\\Alph{part}\\arabic{chapter}}
-\\renewcommand{\\thepage}{\\Alph{part}\\arabic{page}}
+\\renewcommand{\\thepart}{\\arabic{part}}
+\\renewcommand{\\thechapter}{\\arabic{part}:\\arabic{chapter}}
+\\renewcommand{\\thepage}{\\arabic{part}:\\arabic{page}}
 \\pagestyle{fancy}
 \\parskip = 10pt
 \\parindent = 0pt
