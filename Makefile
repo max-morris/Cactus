@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.24 1999-04-26 09:58:16 allen Exp $
+#   @version $Id: Makefile,v 1.25 1999-04-26 10:16:33 allen Exp $
 # @@*/
 
 # Make quietly unless told not to
@@ -170,6 +170,8 @@ endif
 	@echo       config    - creates a new configuration
 	@echo       newthorn  - creates a new thorn
 	@echo       distclean - deletes all existing configurations
+	@echo       testsuite - run the test program
+	@echo       downsize  - remove non-essential files
 	@echo       \<anything else\> prompts to create such a configuration.
 	@echo $(DIVIDER)
 
@@ -335,6 +337,33 @@ testsuite:
 	@echo Running testsuite
 	$(PERL) lib/sbin/Runtest.pl
 	@echo $(DIVIDER)
+
+# Remove non-essential files
+
+.PHONY: downsize
+downsize:
+	@echo $(DIVIDER)
+	@echo Remove flesh and thorn documentation \(\no\)?
+	read yesno rest ;\
+	if [ "x$$yesno" = "xyes" -o "x$$yesno" = "xy" -o "x$$yesno" = "xYES" -o "x$$yesno" = "xY" ] ;\
+	then  \
+	rm -rf doc; rm -rf packages/*/*/doc; \
+	echo $(DIVIDER)   ;  \
+	fi 
+	@echo Remove thorn testsuites \(\no\)?
+	read yesno rest ;\
+	if [ "x$$yesno" = "xyes" -o "x$$yesno" = "xy" -o "x$$yesno" = "xYES" -o "x$$yesno" = "xY" ] ;\
+	then  \
+	rm -rf packages/*/*/test; \
+	echo $(DIVIDER)   ;  \
+	fi 
+	@echo Remove all configurations \(\no\)?
+	read yesno rest ;\
+	if [ "x$$yesno" = "xyes" -o "x$$yesno" = "xy" -o "x$$yesno" = "xYES" -o "x$$yesno" = "xY" ] ;\
+	then  \
+	gmake distclean; \
+	echo $(DIVIDER)   ;  \
+	fi 
 
 # Last resort rule.  Assume it is the name of a configuration
 
