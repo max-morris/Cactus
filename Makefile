@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.7 1999-01-19 12:44:28 goodale Exp $
+#   @version $Id: Makefile,v 1.8 1999-01-19 12:46:12 goodale Exp $
 # @@*/
 
 # Comment this out if you want to see what's going on.
@@ -121,9 +121,9 @@ ifeq ($(strip $(CONFIGURATIONS)),)
 else
 	@echo The following configurations are currently specified
 	@echo $(CONFIGURATIONS)
-	@echo To build a configuration run $(make) followed by the name of a configuration.
-	@echo To clean a configuration run $(make) followed by the name of a configuration suffixed by -clean e.g. Linux-clean.
-	@echo To delete a configuration run $(make) followed by the name of a configuration suffixed by -delete e.g. Linux-delete.
+	@echo To build a configuration run $(MAKE) followed by the name of a configuration.
+	@echo To clean a configuration run $(MAKE) followed by the name of a configuration suffixed by -clean e.g. Linux-clean.
+	@echo To delete a configuration run $(MAKE) followed by the name of a configuration suffixed by -delete e.g. Linux-delete.
 endif
 	@echo $(DIVIDER)
 	@echo $(MAKE) also knows the following targets
