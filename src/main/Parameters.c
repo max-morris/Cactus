@@ -14,6 +14,8 @@
 #include <string.h>
 #include <stdarg.h>
 
+#include "cctk.h"
+
 #include "SKBinTree.h"
 
 #include "cctk_ActiveThorns.h"
@@ -417,6 +419,7 @@ int ParameterSet(const char *name,
 
     /* register another set operation */
     param->props->n_set++;
+
   }
   else
   {
@@ -622,6 +625,89 @@ void *ParameterGet(const char *name,
 const char *ParameterWalk(int first,
                           const char *origin)
 {
+  int             return_found;
+  t_sktree        *tnode;
+  t_paramtreenode *node;
+  t_paramlist     *paramlist;
+  t_param         *startpoint;
+  static t_param  *prev_startpoint_all = NULL;
+  static t_param  *prev_startpoint_thorn = NULL;
+
+
+  /* determine the startpoint for search */
+  if (! first)
+  {
+    startpoint = origin ? prev_startpoint_thorn : prev_startpoint_all;
+
+    if (startpoint == NULL)
+    {
+      CCTK_WARN (2, "ParameterWalk: Cannot walk through parameter list without "
+                    "setting a startpoint at first");
+      return NULL;
+    }
+  }
+  else
+  {
+    startpoint = NULL;
+  }
+ 
+  /* say whether the startpoint should be returned (if found)
+     or the next matching parameter */
+  return_found = startpoint == NULL;
+
+
+  /* begin the search */
+  tnode = SKTreeFindFirst (paramtree);
+
+  /* iterate over nodes */
+  for ( ; tnode ; tnode = tnode->next) 
+  {  
+    /* get data and parameter paramlist */
+    node  = (t_paramtreenode *) tnode->data;
+    paramlist = node->paramlist;
+
+    /* if startpoint is still unassigned set it to first parameter in list */
+    if (paramlist && startpoint == NULL)
+    {
+      if (! origin || CCTK_Equals (origin, paramlist->param->props->thorn))
+        startpoint = paramlist->param;
+    }
+
+    /* iterate over parameters in list */
+    for ( ; paramlist; paramlist = paramlist->next)
+    {
+
+      /* Hey, we've found the startpoint ! */
+      if (startpoint == paramlist->param)
+      {
+
+        /* Do we have to return this one ? 
+           If not prepare finding the next matching param. */
+        if (return_found)
+        {
+          char *retval;
+          const char *implementation;
+
+          implementation = CCTK_ThornImplementation (startpoint->props->thorn);
+          retval = (char *) malloc (strlen (implementation) +
+                                    strlen (startpoint->props->name) + 3);
+          sprintf (retval, "%s::%s", implementation, startpoint->props->name);
+
+          /* save the last startpoint */
+          prev_startpoint_all = prev_startpoint_thorn = startpoint;
+
+          return (const char *) retval;
+
+        }
+        else
+        {
+          startpoint = NULL;
+          return_found = 1;
+        }
+      }
+    } /* end looping over parameter list */
+  } /* end looping over all nodes */
+
   return NULL;
 }
 
