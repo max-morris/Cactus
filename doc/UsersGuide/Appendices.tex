@@ -456,9 +456,9 @@ thorn, without declaring additional values, use {\t USES}
 instead.
 \item{} {\tt [integer]}, if present, specifies that this is an {\bf
          array} parameter. (Note that the notation used above for the 
-	parameter specification breaks down here, there must be 
-	square brackets around the given integer).
-	 The parameter is then a one-dimensional
+        parameter specification breaks down here, there must be 
+        square brackets around the given integer).
+         The parameter is then a one-dimensional
          array of values of the specified type.
 \item{} {\t alias} allows a parameter to appear as a different name in
          this thorn than its original name in another thorn.  The name
@@ -612,6 +612,11 @@ analysis routines which use global reduction or interpolation routines
 rather than the local subgrid passed to them, and hence should only be
 called once.
 
+\item[{\tt LEVEL}]
+This routine will only be called once on any ``level'' of grid
+hierarchy.  I.e. it will only be called once for any set of sub-grids
+which have the same cctk_levfac numbers.
+
 \end{Lentry}
 
 
@@ -643,86 +648,86 @@ through them.
 \begin{Lentry}
 
 \item[{\tt CCTK\_STARTUP}] 
-	Run before any grids are constructed, this is 
-	the timebin for example where grid independent information 
- 	(e.g. output methods, reduction operators) is registered. 
-	Note that since no grids are setup at this point, grid 
-	variables cannot be used in routines scheduled here.
-	
+        Run before any grids are constructed, this is 
+        the timebin for example where grid independent information 
+        (e.g. output methods, reduction operators) is registered. 
+        Note that since no grids are setup at this point, grid 
+        variables cannot be used in routines scheduled here.
+        
 \item[{\tt CCTK\_RECOVER\_PARAMETERS}]
-	Used by thorns with relevent IO methods as the point 
-	to read parameters when recovering from checkpoint files.
+        Used by thorns with relevent IO methods as the point 
+        to read parameters when recovering from checkpoint files.
 
 \item[{\tt CCTK\_PARAMCHECK}] 
-	This timebin is for thorns to check the validity of
-	parameter combinations. This bin is also executed before the
-	grid hierachy is made, so that routines scheduled here only
-	have access to the global grid size and the parameters.
+        This timebin is for thorns to check the validity of
+        parameter combinations. This bin is also executed before the
+        grid hierachy is made, so that routines scheduled here only
+        have access to the global grid size and the parameters.
 
 \item[{\tt CCTK\_BASEGRID}]
-	The first timebin to be executed after a driver thorn constructs
-	grid, this bin should only be used to set up coordinate systems
-	on the newly created grids.	
+        The first timebin to be executed after a driver thorn constructs
+        grid, this bin should only be used to set up coordinate systems
+        on the newly created grids.     
 
 \item[{\tt CCTK\_INITIAL}] 
-	This is the place to set up any required initial data. This timebin
-	is not run when recovering from a checkpoint file.
+        This is the place to set up any required initial data. This timebin
+        is not run when recovering from a checkpoint file.
 
 \item[{\tt CCTK\_POSTINITIAL}]
 
 \item[{\tt CCTK\_RECOVER\_VARIABLES}]
-	Used by thorns with relevent IO methods as the point 
-	to read in all the grid variables when recovering from 
-	checkpoint files.
-	
+        Used by thorns with relevent IO methods as the point 
+        to read in all the grid variables when recovering from 
+        checkpoint files.
+        
 \item[{\tt CCTK\_POST\_RECOVER\_VARIABLES}]
-	This timebin exists for scheduling any functions which need 
-	to modify grid variables after recovery.
+        This timebin exists for scheduling any functions which need 
+        to modify grid variables after recovery.
 
 \item[{\tt CCTK\_CPINITIAL}]
-	Used by thorns with relevent IO methods as the point to checkpoint
-	initial data if required.
+        Used by thorns with relevent IO methods as the point to checkpoint
+        initial data if required.
 
 \item[{\tt CCTK\_CHECKPOINT}]
-	Used by thorns with relevent IO methods as the point to checkpoint
-	data during the iterative loop when required.
-		
+        Used by thorns with relevent IO methods as the point to checkpoint
+        data during the iterative loop when required.
+                
 \item[{\tt CCTK\_PRESTEP}]
-	The timebin for scheduling any routines which need to be 
-	executed before any routines in the main evolution step. This 
-	timebin exists for thorn writers convenience, the {\tt BEFORE}, 
-	{\tt AFTER} etc. functionality of the {\tt schedule.ccl} file
-	should allow all functions to be scheduled in the main {\tt CCTK\_EVOL}
-	timebin.
-	
+        The timebin for scheduling any routines which need to be 
+        executed before any routines in the main evolution step. This 
+        timebin exists for thorn writers convenience, the {\tt BEFORE}, 
+        {\tt AFTER} etc. functionality of the {\tt schedule.ccl} file
+        should allow all functions to be scheduled in the main {\tt CCTK\_EVOL}
+        timebin.
+        
 \item[{\tt CCTK\_EVOL}]
-	The timebin for the main evolution step.
+        The timebin for the main evolution step.
 
 \item[{\tt CCTK\_POSTSTEP}]
-	The timebin for scheduling any routines which need to be 
-	executed after all the routines in the main evolution step. This 
-	timebin exists for thorn writers convenience, the {\tt BEFORE}, 
-	{\tt AFTER} etc. functionality of the {\tt schedule.ccl} file
-	should allow all functions to be scheduled in the main {\tt CCTK\_EVOL}
-	timebin.
+        The timebin for scheduling any routines which need to be 
+        executed after all the routines in the main evolution step. This 
+        timebin exists for thorn writers convenience, the {\tt BEFORE}, 
+        {\tt AFTER} etc. functionality of the {\tt schedule.ccl} file
+        should allow all functions to be scheduled in the main {\tt CCTK\_EVOL}
+        timebin.
 
 \item[{\tt CCTK\_ANALYSIS}]
-	The analysis timebin is special, in that it is closely coupled 
-	with output, and routines which are scheduled here are typically
-	only executed if output of analysis variables is required. 
-	Routines which perform analysis should be independent of the main 
-	evolution loop (that is, it should not matter for the results
-	of a simulation whether routines in this timebin are executed or 
-	not). 
+        The analysis timebin is special, in that it is closely coupled 
+        with output, and routines which are scheduled here are typically
+        only executed if output of analysis variables is required. 
+        Routines which perform analysis should be independent of the main 
+        evolution loop (that is, it should not matter for the results
+        of a simulation whether routines in this timebin are executed or 
+        not). 
 
 \item[{\tt CCTK\_TERMINATE}]
-	Called after the main iteration loop when Cactus terminates. 
-	Note that sometime in this timebin a driver thorn should be 
-	destroying the grid hierachy and removing grid variables. 
+        Called after the main iteration loop when Cactus terminates. 
+        Note that sometime in this timebin a driver thorn should be 
+        destroying the grid hierachy and removing grid variables. 
 
 \item[{\tt CCTK\_SHUTDOWN}]
          Cactus final shutdown routines, after the grid hierachy has been 
-	destroyed. Grid variables are no longer available.
+        destroyed. Grid variables are no longer available.
 
 \end{Lentry}
 

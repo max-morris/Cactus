@@ -30,6 +30,7 @@ typedef struct
   /* Option Flags */
 
   int global;
+  int level;
 
   /* The last items should be considered volatile and may
      not stay here */

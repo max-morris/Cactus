@@ -1542,6 +1542,7 @@ static int ParseOptionList(int n_items,
 @@*/
 static int InitialiseOptionList(t_attribute *attribute)
 {
+  attribute->FunctionData.level = 0;
   attribute->FunctionData.global = 0;
 
   return 0;
@@ -1578,6 +1579,10 @@ static int ParseOption(t_attribute *attribute,
   if(CCTK_Equals(option, "GLOBAL"))
   {
     attribute->FunctionData.global = 1;
+  }
+  else if(CCTK_Equals(option, "LEVEL"))
+  {
+    attribute->FunctionData.level = 1;
   }
   else
   {
