@@ -16,7 +16,7 @@
 #
 #
 #   @enddesc
-#   @version $Id: Makefile,v 1.129 2002-03-15 13:01:14 tradke Exp $
+#   @version $Id: Makefile,v 1.130 2002-03-25 16:01:12 tradke Exp $
 # @@*/
 
 ##################################################################################
@@ -166,6 +166,9 @@ endif
 
 # Warning options
 ifdef WARN
+ifneq (, $(filter-out yes no, $(WARN)))
+$(error Didn't recognize setting of WARN="$(WARN)" (should be either "yes" or "no"))
+endif
 CCTK_WARN_MODE=$(WARN)
 else
 CCTK_WARN_MODE=no
