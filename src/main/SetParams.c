@@ -37,6 +37,8 @@ int CCTK_SetParameter(const char *parameter, const char *value)
   int length;
   int n_errors;
 
+  retval = 0;
+
   if(CCTK_Equals(parameter, "ActiveThorns"))
   {
     n_errors = 0;
