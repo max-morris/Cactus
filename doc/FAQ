@@ -1,7 +1,7 @@
 
 Cactus Code Frequently Asked Questions
 
-$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.73 2003-12-02 02:54:59 allen Exp $
+$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.74 2003-12-23 06:01:09 allen Exp $
 
 Also available at http://www.cactuscode.org/Documentation/FAQ
 
@@ -258,6 +258,15 @@ E17 Why is it that when I schedule more than one routine in the same thorn
     ignored?
 
 E18 Is there a way to synchronize individual grid variables in a group?
+
+E19 Is there a way to synchronize just one time level of a grid variable?
+
+    Right now only one time level is sychronized, that is the "current" level.
+    Other time levels cannot be synchronized and are assumed to be fixed
+    or read only.
+
+E20 I'm using the CCTK_ParameterSet function to change a parameter, but
+    after calling it the parameters value doesn't change?
 
 
 ------------------------------------------------------------------------------
@@ -1456,6 +1465,20 @@ E19 Is there a way to synchronize just one time level of a grid variable?
     Right now only one time level is sychronized, that is the "current" level.
     Other time levels cannot be synchronized and are assumed to be fixed
     or read only.
+
+E20 I'm using the CCTK_ParameterSet function to change a parameter, but
+    after calling it the parameters value doesn't change?
+
+    First make sure that you really want to change a parameters value and
+    that you really know what you are doing. In general parameters are 
+    fixed thoughout a run, and should only be changed by steering thorns.
+
+    If you change a parameter with CCTK_ParameterSet it won't change in 
+    the routine you call it from, because the DECLARE_CCTK_PARAMETERS
+    macro currently expands to define all a thorns parameters as local
+    variables with a const qualifier (in C) and sets them to the current
+    values of the parameters. Thus calling CCTK_ParameterSet will not 
+    affect the value of the local copy.
 
 
 ------------------------------------------------------------------------------
