@@ -129,7 +129,10 @@ int Util_TableQueryValueInfo(int handle,
 
 /* misc stuff */
 int Util_TableDeleteKey(int handle, const char *key);
+
+/* convenience routines to create and/or set from a "parameter-file" string */
 int Util_TableCreateFromString(const char string[]);
+int Util_TableSetFromString(int handle, const char string[]);
 
 /* set/get a C-style null-terminated character string */
 int Util_TableSetString(int handle,
