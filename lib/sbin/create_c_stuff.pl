@@ -48,6 +48,8 @@ sub CreateParameterBindingFile
   push(@data, $line);
   $line = "\#include \"config.h\"";
   push(@data, $line);
+  $line = "\#include \"CParameterStructNames.h\"";
+  push(@data, $line);
   $line = "\#include \"Misc.h\"";
   push(@data, $line);
   push(@data, "");
