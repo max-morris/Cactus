@@ -34,6 +34,8 @@ int CCTK_GetVarNum(const char *implementation,
 
 char *CCTK_GetGroupFromVar(int var);
 
+char *CCTK_GetFullName(int var);
+
 char *CCTK_GetImplementationFromVar(int var);
 
 int CCTK_GetMaxDim(void);
