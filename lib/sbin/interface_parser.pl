@@ -150,7 +150,6 @@ sub get_friends_of_me
   @implementations = @indata[0..$n_implementations-1];
   %interface_data = @indata[$n_implementations..$#indata];
 
-  # Initialise to stop perl -w from complaining.
   $friends = "";
 
   foreach $other_implementation (@implementations)
@@ -164,7 +163,7 @@ sub get_friends_of_me
     {
       if($friend =~ m:$implementation:i)
       {
-          $friends .= "$other_implementation ";
+        $friends .= "$other_implementation ";
       }
     }
   }
