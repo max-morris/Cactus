@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.34 1999-07-03 16:31:51 allen Exp $
+#   @version $Id: Makefile,v 1.35 1999-07-04 14:21:25 allen Exp $
 # @@*/
 
 # Make quietly unless told not to
@@ -228,7 +228,7 @@ else
 	@echo "  -cleanobjs   : to clean a configuration\'s object files."
 	@echo "  -realclean   : to restore a configuration to almost a new state. "
 	@echo "                 (deletes all but the config-data directory "
-	@echo "                  and the ActiveThorns file)."
+	@echo "                  and the ThornList file)."
 	@echo "  -delete      : to delete a configuration." 
 	@echo "  -rebuild     : to rebuild a configuration." 
 	@echo "                 (forces the CST to be rerun)."
@@ -309,7 +309,7 @@ endif
 	@echo Cleaning object files aborted.
 
 
-# Clean away all produced files (doesn't delete ActiveThorns)
+# Clean away all produced files (doesn't delete ThornList)
 
 ifneq ($strip($(CONFIGURATIONS)),)
 .PHONY $(addsuffix -realclean,$(CONFIGURATIONS)):
@@ -363,22 +363,22 @@ endif
 	@echo Configuration $(@:%-rebuild=%) does not exist.
 	@echo Rebuild aborted.
 
-# Regenerate the active thorns list
+# Regenerate the compiled thorns list
 
 ifneq ($strip($(CONFIGURATIONS)),) 
-.PHONY $(addsuffix -activethorns,$(CONFIGURATIONS)):
+.PHONY $(addsuffix -thornlist,$(CONFIGURATIONS)):
 
-$(addsuffix -activethorns,$(CONFIGURATIONS)):
+$(addsuffix -thornlist,$(CONFIGURATIONS)):
 	@echo $(DIVIDER)
-	@echo Regenerating ActiveThorn list $(@:%-activethorns=%)
-	if [ -r configs/$(@:%-activethorns=%)/ActiveThorns ] ; then rm configs/$(@:%-activethorns=%)/ActiveThorns ; fi
-	$(MAKE) $(@:%-activethorns=%)
+	@echo Regenerating compiled ThornList $(@:%-thornlist=%)
+	if [ -r configs/$(@:%-thornlist=%)/ThornList ] ; then rm configs/$(@:%-thornlist=%)/ThornList ; fi
+	$(MAKE) $(@:%-thornlist=%)
 endif
 
-%-activethorns:
+%-thornlist:
 	@echo $(DIVIDER)
-	@echo Configuration $(@:%-activethorns=%) does not exist.
-	@echo Regeneration of ActiveThorns aborted.
+	@echo Configuration $(@:%-thornlist=%) does not exist.
+	@echo Regeneration of compiled ThornList aborted.
 
 # Rerun the configuration script
 
@@ -412,8 +412,8 @@ ifneq ($strip($(CONFIGURATIONS)),)
 
 $(addsuffix -testsuite,$(CONFIGURATIONS)):
 	@echo $(DIVIDER)
-	@echo Running test suite $(@:%-activethorns=%)
-	if [ -r configs/$(@:%-testsuite=%)/ActiveThorns ] ; then $(PERL) lib/sbin/Runtest.pl $(@:%-testsuite=%) ; fi
+	@echo Running test suite $(@:%-thornlist=%)
+	if [ -r configs/$(@:%-testsuite=%)/ThornList ] ; then $(PERL) lib/sbin/Runtest.pl $(@:%-testsuite=%) ; fi
 endif
 
 %-testsuite:
