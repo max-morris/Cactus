@@ -1,0 +1,42 @@
+#! /bin/sh
+# /*@@
+#   @file      PARALLEL
+#   @date      Thu Sep 09 1999
+#   @author    Thomas Radke
+#   @desc 
+#              Sets up parallel HDF5 includes and libs
+#   @enddesc
+#   @version $Header:
+# @@*/
+
+echo "PARALLEL selected"
+
+if test -z "$MPI" ; then
+   echo "Parallel HDF5 selected without MPI - please configure with MPI"
+   exit 2
+fi
+
+if test -z "$HDF5_DIR" ; then
+   echo "HDF5 selected but no HDF5_DIR set... Checking some places"
+   CCTK_Search HDF5_DIR "/usr /usr/local /usr/local/hdf5-parallel /usr/local/packages/hdf5-parallel /usr/local/apps/hdf5-parallel c:/packages/hdf5-parallel" include/hdf5.h
+   if test -z "$HDF5_DIR" ; then
+       echo "Unable to locate the HDF5 directory - please set HDF5_DIR"
+       exit 2
+   fi
+fi
+
+grep -e '#define HAVE_PARALLEL 1' ${HDF5_DIR}/include/H5config.h > /dev/null
+bla="bla$?"
+
+if test $bla != "bla0" ; then
+    echo "The installed HDF5 library found in ${HDF5_DIR} seems to be a serial version."
+    echo "Please set HDF5_DIR to refer to an installed parallel HDF5 version."
+    exit 2
+fi
+
+HDF5_LIBS=hdf5
+if test `uname` = "Linux" ; then
+  HDF5_LIBS="hdf5 z"
+fi
+HDF5_LIB_DIRS="$HDF5_DIR/lib"
+HDF5_INC_DIRS="$HDF5_DIR/include"
