@@ -127,12 +127,12 @@ typedef int bool;
 
 #ifdef UTIL_TABLE_TEST
   /* we build a standalone test driver */
-  #undef  UTIL_TABLE_FORTRAN_WRAPPERS	/* omit Fortran wrappers */
-					/* since the standalone test stuff */
-					/* doesn't grok CCTK_{FNAME,FCALL} */
+  #undef  UTIL_TABLE_FORTRAN_WRAPPERS   /* omit Fortran wrappers */
+                                        /* since the standalone test stuff */
+                                        /* doesn't grok CCTK_{FNAME,FCALL} */
 #else
   /* this is a normal compile as part of Cactus */
-  #define UTIL_TABLE_FORTRAN_WRAPPERS	/* define Fortran wrappers */
+  #define UTIL_TABLE_FORTRAN_WRAPPERS   /* define Fortran wrappers */
 
   static const char *rcsid = "$Header$";
   CCTK_FILEVERSION(util_Table_c);
@@ -552,7 +552,7 @@ void CCTK_FCALL CCTK_FNAME(Util_TableCreate)
 {
   *retval = Util_TableCreate(*flags);
 }
-#endif	/* UTIL_TABLE_FORTRAN_WRAPPERS */
+#endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
 
 /******************************************************************************/
 
@@ -636,7 +636,7 @@ void CCTK_FCALL CCTK_FNAME(Util_TableClone)
 {
   *retval = Util_TableClone(*handle);
 }
-#endif	/* UTIL_TABLE_FORTRAN_WRAPPERS */
+#endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
 
 /******************************************************************************/
 
@@ -694,7 +694,7 @@ void CCTK_FCALL CCTK_FNAME(Util_TableDestroy)
 {
   *retval = Util_TableDestroy(*handle);
 }
-#endif	/* UTIL_TABLE_FORTRAN_WRAPPERS */
+#endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
 
 /******************************************************************************/
 
@@ -737,7 +737,7 @@ void CCTK_FCALL CCTK_FNAME(Util_TableQueryFlags)
 {
   *retval = Util_TableQueryFlags(*handle);
 }
-#endif	/* UTIL_TABLE_FORTRAN_WRAPPERS */
+#endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
 
 /******************************************************************************/
 
@@ -790,7 +790,7 @@ void CCTK_FCALL CCTK_FNAME(Util_TableQueryNKeys)
 {
   *retval = Util_TableQueryNKeys(*handle);
 }
-#endif	/* UTIL_TABLE_FORTRAN_WRAPPERS */
+#endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
 
 /******************************************************************************/
 
@@ -846,7 +846,7 @@ void CCTK_FCALL CCTK_FNAME(Util_TableQueryMaxKeyLength)
 {
   *retval = Util_TableQueryMaxKeyLength(*handle);
 }
-#endif	/* UTIL_TABLE_FORTRAN_WRAPPERS */
+#endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
 
 /******************************************************************************/
 
@@ -956,7 +956,7 @@ void CCTK_FCALL CCTK_FNAME(Util_TableQueryValueInfo)
   *retval = Util_TableQueryValueInfo(*handle, type_code, N_elements, key);
   free(key);
 }
-#endif	/* UTIL_TABLE_FORTRAN_WRAPPERS */
+#endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
 
 /******************************************************************************/
 
@@ -1017,7 +1017,7 @@ void CCTK_FCALL CCTK_FNAME(Util_TableDeleteKey)
   *retval = Util_TableDeleteKey(*handle, key);
   free(key);
 }
-#endif	/* UTIL_TABLE_FORTRAN_WRAPPERS */
+#endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
 
 /******************************************************************************/
 
@@ -1085,7 +1085,7 @@ void CCTK_FCALL CCTK_FNAME(Util_TableCreateFromString)
   *retval = Util_TableCreateFromString(string);
   free(string);
 }
-#endif	/* UTIL_TABLE_FORTRAN_WRAPPERS */
+#endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
 
 /******************************************************************************/
 
@@ -1481,7 +1481,7 @@ void CCTK_FCALL CCTK_FNAME(Util_TableSetFromString)
   *retval = Util_TableSetFromString(*handle, string);
   free(string);
 }
-#endif	/* UTIL_TABLE_FORTRAN_WRAPPERS */
+#endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
 
 /******************************************************************************/
 
@@ -1556,7 +1556,7 @@ void CCTK_FCALL CCTK_FNAME(Util_TableSetString)
   *retval = Util_TableSetString(*handle, string, key);
   free(string); free(key);
 }
-#endif	/* UTIL_TABLE_FORTRAN_WRAPPERS */
+#endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
 
 /******************************************************************************/
 
@@ -1663,7 +1663,7 @@ int Util_TableGetString(int handle,
 
 #ifdef UTIL_TABLE_FORTRAN_WRAPPERS
 /*** FIXME: no fortran wrapper yet ***/
-#endif	/* UTIL_TABLE_FORTRAN_WRAPPERS */
+#endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
 
 /******************************************************************************/
 
@@ -1735,7 +1735,7 @@ void CCTK_FCALL CCTK_FNAME(Util_TableSetGeneric)
   *retval = Util_TableSetGeneric(*handle, *type_code, value, key);
   free(key);
 }
-#endif	/* UTIL_TABLE_FORTRAN_WRAPPERS */
+#endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
 
 /******************************************************************************/
 
@@ -1817,7 +1817,7 @@ void CCTK_FCALL CCTK_FNAME(Util_TableSetGenericArray)
                                       array, key);
   free(key);
 }
-#endif	/* UTIL_TABLE_FORTRAN_WRAPPERS */
+#endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
 
 /******************************************************************************/
 
@@ -1909,7 +1909,7 @@ void CCTK_FCALL CCTK_FNAME(Util_TableGetGeneric)
   *retval = Util_TableGetGeneric(*handle, *type_code, value, key);
   free(key);
 }
-#endif	/* UTIL_TABLE_FORTRAN_WRAPPERS */
+#endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
 
 /******************************************************************************/
 
@@ -2010,7 +2010,7 @@ void CCTK_FCALL CCTK_FNAME(Util_TableGetGenericArray)
                                       array, key);
   free(key);
 }
-#endif	/* UTIL_TABLE_FORTRAN_WRAPPERS */
+#endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
 
 /******************************************************************************/
 
@@ -2078,14 +2078,14 @@ void CCTK_FCALL CCTK_FNAME(Util_TableSetPointer)
                            const CCTK_POINTER *value, ONE_FORTSTRING_ARG);
 void CCTK_FCALL CCTK_FNAME(Util_TableSetPointer)
                           (int *retval,
-			   const int *handle, const CCTK_POINTER *value,
+                           const int *handle, const CCTK_POINTER *value,
                            ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_CREATE(key)
   *retval = Util_TableSetPointer(*handle, *value, key);
   free(key);
 }
-#endif	/* UTIL_TABLE_FORTRAN_WRAPPERS */
+#endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
 
 /**************************************/
 
@@ -2106,7 +2106,7 @@ void CCTK_FCALL CCTK_FNAME(Util_TableSetFPointer)
   *retval = Util_TableSetFPointer(*handle, *value, key);
   free(key);
 }
-#endif	/* UTIL_TABLE_FORTRAN_WRAPPERS */
+#endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
 
 /**************************************/
 
@@ -2131,7 +2131,7 @@ void CCTK_FCALL CCTK_FNAME(Util_TableSetFnPointer)
   *retval = Util_TableSetFPointer(*handle, *value, key);
   free(key);
 }
-#endif	/* UTIL_TABLE_FORTRAN_WRAPPERS */
+#endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
 
 /**********************************************************/
 
@@ -2146,7 +2146,7 @@ int Util_TableSetChar(int handle, CCTK_CHAR value, const char *key)
 
 #ifdef UTIL_TABLE_FORTRAN_WRAPPERS
 /*** FIXME: no fortran wrapper yet ***/
-#endif	/* UTIL_TABLE_FORTRAN_WRAPPERS */
+#endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
 
 /**********************************************************/
 
@@ -2171,7 +2171,7 @@ void CCTK_FCALL CCTK_FNAME(Util_TableSetByte)
   *retval = Util_TableSetByte(*handle, *value, key);
   free(key);
 }
-#endif	/* UTIL_TABLE_FORTRAN_WRAPPERS */
+#endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
 
 /**************************************/
 
@@ -2192,7 +2192,7 @@ void CCTK_FCALL CCTK_FNAME(Util_TableSetInt)
   *retval = Util_TableSetInt(*handle, *value, key);
   free(key);
 }
-#endif	/* UTIL_TABLE_FORTRAN_WRAPPERS */
+#endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
 
 /**************************************/
 
@@ -2214,7 +2214,7 @@ void CCTK_FCALL CCTK_FNAME(Util_TableSetInt1)
   *retval = Util_TableSetInt1(*handle, *value, key);
   free(key);
 }
-#endif	/* UTIL_TABLE_FORTRAN_WRAPPERS */
+#endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
 #endif
 
 /**************************************/
@@ -2237,8 +2237,8 @@ void CCTK_FCALL CCTK_FNAME(Util_TableSetInt2)
   *retval = Util_TableSetInt2(*handle, *value, key);
   free(key);
 }
-#endif	/* UTIL_TABLE_FORTRAN_WRAPPERS */
-#endif	/* CCTK_INT2 */
+#endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
+#endif  /* CCTK_INT2 */
 
 /**************************************/
 
@@ -2260,8 +2260,8 @@ void CCTK_FCALL CCTK_FNAME(Util_TableSetInt4)
   *retval = Util_TableSetInt4(*handle, *value, key);
   free(key);
 }
-#endif	/* UTIL_TABLE_FORTRAN_WRAPPERS */
-#endif	/* CCTK_INT4 */
+#endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
+#endif  /* CCTK_INT4 */
 
 /**************************************/
 
@@ -2283,8 +2283,8 @@ void CCTK_FCALL CCTK_FNAME (Util_TableSetInt8)
   *retval = Util_TableSetInt8(*handle, *value, key);
   free(key);
 }
-#endif	/* UTIL_TABLE_FORTRAN_WRAPPERS */
-#endif	/* CCTK_INT8 */
+#endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
+#endif  /* CCTK_INT8 */
 
 /**********************************************************/
 
@@ -2309,7 +2309,7 @@ void CCTK_FCALL CCTK_FNAME(Util_TableSetReal)
   *retval = Util_TableSetReal(*handle, *value, key);
   free(key);
 }
-#endif	/* UTIL_TABLE_FORTRAN_WRAPPERS */
+#endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
 
 /**************************************/
 
@@ -2331,8 +2331,8 @@ void CCTK_FCALL CCTK_FNAME(Util_TableSetReal4)
   *retval = Util_TableSetReal4(*handle, *value, key);
   free(key);
 }
-#endif	/* UTIL_TABLE_FORTRAN_WRAPPERS */
-#endif	/* CCTK_REAL4 */
+#endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
+#endif  /* CCTK_REAL4 */
 
 /**************************************/
 
@@ -2354,8 +2354,8 @@ void CCTK_FCALL CCTK_FNAME(Util_TableSetReal8)
   *retval = Util_TableSetReal8(*handle, *value, key);
   free(key);
 }
-#endif	/* UTIL_TABLE_FORTRAN_WRAPPERS */
-#endif	/* CCTK_REAL8 */
+#endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
+#endif  /* CCTK_REAL8 */
 
 /**************************************/
 
@@ -2377,8 +2377,8 @@ void CCTK_FCALL CCTK_FNAME(Util_TableSetReal16)
   *retval = Util_TableSetReal16(*handle, *value, key);
   free(key);
 }
-#endif	/* UTIL_TABLE_FORTRAN_WRAPPERS */
-#endif	/* CCTK_REAL16 */
+#endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
+#endif  /* CCTK_REAL16 */
 
 /**********************************************************/
 
@@ -2403,7 +2403,7 @@ void CCTK_FCALL CCTK_FNAME(Util_TableSetComplex)
   *retval = Util_TableSetComplex(*handle, *value, key);
   free(key);
 }
-#endif	/* UTIL_TABLE_FORTRAN_WRAPPERS */
+#endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
 
 /**************************************/
 
@@ -2425,8 +2425,8 @@ void CCTK_FCALL CCTK_FNAME(Util_TableSetComplex8)
   *retval = Util_TableSetComplex8(*handle, *value, key);
   free(key);
 }
-#endif	/* UTIL_TABLE_FORTRAN_WRAPPERS */
-#endif	/* CCTK_REAL4 */
+#endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
+#endif  /* CCTK_REAL4 */
 
 /**************************************/
 
@@ -2448,8 +2448,8 @@ void CCTK_FCALL CCTK_FNAME(Util_TableSetComplex16)
   *retval = Util_TableSetComplex16(*handle, *value, key);
   free(key);
 }
-#endif	/* UTIL_TABLE_FORTRAN_WRAPPERS */
-#endif	/* CCTK_REAL8 */
+#endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
+#endif  /* CCTK_REAL8 */
 
 /**************************************/
 
@@ -2471,8 +2471,8 @@ void CCTK_FCALL CCTK_FNAME(Util_TableSetComplex32)
   *retval = Util_TableSetComplex32(*handle, *value, key);
   free(key);
 }
-#endif	/* UTIL_TABLE_FORTRAN_WRAPPERS */
-#endif	/* CCTK_REAL16 */
+#endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
+#endif  /* CCTK_REAL16 */
 
 /******************************************************************************/
 
@@ -2559,7 +2559,7 @@ void CCTK_FCALL CCTK_FNAME(Util_TableSetPointerArray)
   *retval = Util_TableSetPointerArray(*handle, *N_elements, array, key);
   free(key);
 }
-#endif	/* UTIL_TABLE_FORTRAN_WRAPPERS */
+#endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
 
 /**************************************/
 
@@ -2587,7 +2587,7 @@ void CCTK_FCALL CCTK_FNAME(Util_TableSetFPointerArray)
   *retval = Util_TableSetFPointerArray(*handle, *N_elements, array, key);
   free(key);
 }
-#endif	/* UTIL_TABLE_FORTRAN_WRAPPERS */
+#endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
 
 /**************************************/
 
@@ -2619,7 +2619,7 @@ void CCTK_FCALL CCTK_FNAME(Util_TableSetFnPointerArray)
   *retval = Util_TableSetFPointerArray(*handle, *N_elements, array, key);
   free(key);
 }
-#endif	/* UTIL_TABLE_FORTRAN_WRAPPERS */
+#endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
 
 /**********************************************************/
 
@@ -2650,7 +2650,7 @@ void CCTK_FCALL CCTK_FNAME(Util_TableSetCharArray)
   *retval = Util_TableSetCharArray(*handle, *N_elements, array, key);
   free(key);
 }
-#endif	/* UTIL_TABLE_FORTRAN_WRAPPERS */
+#endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
 
 /**********************************************************/
 
@@ -2681,7 +2681,7 @@ void CCTK_FCALL CCTK_FNAME(Util_TableSetByteArray)
   *retval = Util_TableSetByteArray(*handle, *N_elements, array, key);
   free(key);
 }
-#endif	/* UTIL_TABLE_FORTRAN_WRAPPERS */
+#endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
 
 /**************************************/
 
@@ -2708,7 +2708,7 @@ void CCTK_FCALL CCTK_FNAME(Util_TableSetIntArray)
   *retval = Util_TableSetIntArray(*handle, *N_elements, array, key);
   free(key);
 }
-#endif	/* UTIL_TABLE_FORTRAN_WRAPPERS */
+#endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
 
 /**************************************/
 
@@ -2736,8 +2736,8 @@ void CCTK_FCALL CCTK_FNAME (Util_TableSetInt1Array)
   *retval = Util_TableSetInt1Array (*handle, *N_elements, array, key);
   free (key);
 }
-#endif	/* UTIL_TABLE_FORTRAN_WRAPPERS */
-#endif	/* CCTK_INT1 */
+#endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
+#endif  /* CCTK_INT1 */
 
 /**************************************/
 
@@ -2765,8 +2765,8 @@ void CCTK_FCALL CCTK_FNAME(Util_TableSetInt2Array)
   *retval = Util_TableSetInt2Array(*handle, *N_elements, array, key);
   free(key);
 }
-#endif	/* UTIL_TABLE_FORTRAN_WRAPPERS */
-#endif	/* CCTK_INT2 */
+#endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
+#endif  /* CCTK_INT2 */
 
 /**************************************/
 
@@ -2794,8 +2794,8 @@ void CCTK_FCALL CCTK_FNAME(Util_TableSetInt4Array)
   *retval = Util_TableSetInt4Array(*handle, *N_elements, array, key);
   free(key);
 }
-#endif	/* UTIL_TABLE_FORTRAN_WRAPPERS */
-#endif	/* CCTK_INT4 */
+#endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
+#endif  /* CCTK_INT4 */
 
 /**************************************/
 
@@ -2823,8 +2823,8 @@ void CCTK_FCALL CCTK_FNAME(Util_TableSetInt8Array)
   *retval = Util_TableSetInt8Array(*handle, *N_elements, array, key);
   free(key);
 }
-#endif	/* UTIL_TABLE_FORTRAN_WRAPPERS */
-#endif	/* CCTK_INT8 */
+#endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
+#endif  /* CCTK_INT8 */
 
 /**********************************************************/
 
@@ -2856,7 +2856,7 @@ void CCTK_FCALL CCTK_FNAME(Util_TableSetRealArray)
   *retval = Util_TableSetRealArray(*handle, *N_elements, array, key);
   free(key);
 }
-#endif	/* UTIL_TABLE_FORTRAN_WRAPPERS */
+#endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
 
 /**************************************/
 
@@ -2884,8 +2884,8 @@ void CCTK_FCALL CCTK_FNAME(Util_TableSetReal4Array)
   *retval = Util_TableSetReal4Array(*handle, *N_elements, array, key);
   free(key);
 }
-#endif	/* UTIL_TABLE_FORTRAN_WRAPPERS */
-#endif	/* CCTK_REAL4 */
+#endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
+#endif  /* CCTK_REAL4 */
 
 /**************************************/
 
@@ -2913,8 +2913,8 @@ void CCTK_FCALL CCTK_FNAME(Util_TableSetReal8Array)
   *retval = Util_TableSetReal8Array(*handle, *N_elements, array, key);
   free(key);
 }
-#endif	/* UTIL_TABLE_FORTRAN_WRAPPERS */
-#endif	/* CCTK_REAL8 */
+#endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
+#endif  /* CCTK_REAL8 */
 
 /**************************************/
 
@@ -2942,8 +2942,8 @@ void CCTK_FCALL CCTK_FNAME(Util_TableSetReal16Array)
   *retval = Util_TableSetReal16Array(*handle, *N_elements, array, key);
   free(key);
 }
-#endif	/* UTIL_TABLE_FORTRAN_WRAPPERS */
-#endif	/* CCTK_REAL16 */
+#endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
+#endif  /* CCTK_REAL16 */
 
 /**********************************************************/
 
@@ -2974,7 +2974,7 @@ void CCTK_FCALL CCTK_FNAME(Util_TableSetComplexArray)
   *retval = Util_TableSetComplexArray(*handle, *N_elements, array, key);
   free(key);
 }
-#endif	/* UTIL_TABLE_FORTRAN_WRAPPERS */
+#endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
 
 /**************************************/
 
@@ -3002,8 +3002,8 @@ void CCTK_FCALL CCTK_FNAME (Util_TableSetComplex8Array)
   *retval = Util_TableSetComplex8Array(*handle, *N_elements, array, key);
   free(key);
 }
-#endif	/* UTIL_TABLE_FORTRAN_WRAPPERS */
-#endif	/* CCTK_REAL4 */
+#endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
+#endif  /* CCTK_REAL4 */
 
 /**************************************/
 
@@ -3031,8 +3031,8 @@ void CCTK_FCALL CCTK_FNAME(Util_TableSetComplex16Array)
   *retval = Util_TableSetComplex16Array(*handle, *N_elements, array, key);
   free(key);
 }
-#endif	/* UTIL_TABLE_FORTRAN_WRAPPERS */
-#endif	/* CCTK_REAL8 */
+#endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
+#endif  /* CCTK_REAL8 */
 
 /**************************************/
 
@@ -3060,8 +3060,8 @@ void CCTK_FCALL CCTK_FNAME(Util_TableSetComplex32Array)
   *retval = Util_TableSetComplex32Array(*handle, *N_elements, array, key);
   free(key);
 }
-#endif	/* UTIL_TABLE_FORTRAN_WRAPPERS */
-#endif	/* CCTK_REAL16 */
+#endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
+#endif  /* CCTK_REAL16 */
 
 /******************************************************************************/
 
@@ -3153,7 +3153,7 @@ void CCTK_FCALL CCTK_FNAME (Util_TableGetPointer)
   *retval = Util_TableGetPointer (*handle, value, key);
   free (key);
 }
-#endif	/* UTIL_TABLE_FORTRAN_WRAPPERS */
+#endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
 
 /**************************************/
 
@@ -3177,7 +3177,7 @@ void CCTK_FCALL CCTK_FNAME (Util_TableGetFPointer)
   *retval = Util_TableGetFPointer (*handle, value, key);
   free (key);
 }
-#endif	/* UTIL_TABLE_FORTRAN_WRAPPERS */
+#endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
 
 /**************************************/
 
@@ -3205,7 +3205,7 @@ void CCTK_FCALL CCTK_FNAME (Util_TableGetFnPointer)
   *retval = Util_TableGetFPointer (*handle, value, key);
   free (key);
 }
-#endif	/* UTIL_TABLE_FORTRAN_WRAPPERS */
+#endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
 
 /**********************************************************/
 
@@ -3223,7 +3223,7 @@ int Util_TableGetChar(int handle, CCTK_CHAR *value, const char *key)
 
 #ifdef UTIL_TABLE_FORTRAN_WRAPPERS
 /*** FIXME: no fortran wrapper yet ***/
-#endif	/* UTIL_TABLE_FORTRAN_WRAPPERS */
+#endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
 
 /**********************************************************/
 
@@ -3251,7 +3251,7 @@ void CCTK_FCALL CCTK_FNAME (Util_TableGetByte)
   *retval = Util_TableGetByte (*handle, value, key);
   free (key);
 }
-#endif	/* UTIL_TABLE_FORTRAN_WRAPPERS */
+#endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
 
 /**************************************/
 
@@ -3275,7 +3275,7 @@ void CCTK_FCALL CCTK_FNAME (Util_TableGetInt)
   *retval = Util_TableGetInt (*handle, value, key);
   free (key);
 }
-#endif	/* UTIL_TABLE_FORTRAN_WRAPPERS */
+#endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
 
 /**************************************/
 
@@ -3300,8 +3300,8 @@ void CCTK_FCALL CCTK_FNAME (Util_TableGetInt1)
   *retval = Util_TableGetInt1 (*handle, value, key);
   free (key);
 }
-#endif	/* UTIL_TABLE_FORTRAN_WRAPPERS */
-#endif	/* CCTK_INT1 */
+#endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
+#endif  /* CCTK_INT1 */
 
 /**************************************/
 
@@ -3326,8 +3326,8 @@ void CCTK_FCALL CCTK_FNAME (Util_TableGetInt2)
   *retval = Util_TableGetInt2 (*handle, value, key);
   free (key);
 }
-#endif	/* UTIL_TABLE_FORTRAN_WRAPPERS */
-#endif	/* CCTK_INT2 */
+#endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
+#endif  /* CCTK_INT2 */
 
 /**************************************/
 
@@ -3352,8 +3352,8 @@ void CCTK_FCALL CCTK_FNAME (Util_TableGetInt4)
   *retval = Util_TableGetInt4 (*handle, value, key);
   free (key);
 }
-#endif	/* UTIL_TABLE_FORTRAN_WRAPPERS */
-#endif	/* CCTK_INT4 */
+#endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
+#endif  /* CCTK_INT4 */
 
 /**************************************/
 
@@ -3378,8 +3378,8 @@ void CCTK_FCALL CCTK_FNAME (Util_TableGetInt8)
   *retval = Util_TableGetInt8 (*handle, value, key);
   free (key);
 }
-#endif	/* UTIL_TABLE_FORTRAN_WRAPPERS */
-#endif	/* CCTK_INT8 */
+#endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
+#endif  /* CCTK_INT8 */
 
 /**********************************************************/
 
@@ -3407,7 +3407,7 @@ void CCTK_FCALL CCTK_FNAME (Util_TableGetReal)
   *retval = Util_TableGetReal (*handle, value, key);
   free (key);
 }
-#endif	/* UTIL_TABLE_FORTRAN_WRAPPERS */
+#endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
 
 /**************************************/
 
@@ -3432,8 +3432,8 @@ void CCTK_FCALL CCTK_FNAME (Util_TableGetReal4)
   *retval = Util_TableGetReal4 (*handle, value, key);
   free (key);
 }
-#endif	/* UTIL_TABLE_FORTRAN_WRAPPERS */
-#endif	/* CCTK_REAL4 */
+#endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
+#endif  /* CCTK_REAL4 */
 
 /**************************************/
 
@@ -3458,8 +3458,8 @@ void CCTK_FCALL CCTK_FNAME (Util_TableGetReal8)
   *retval = Util_TableGetReal8 (*handle, value, key);
   free (key);
 }
-#endif	/* UTIL_TABLE_FORTRAN_WRAPPERS */
-#endif	/* CCTK_REAL8 */
+#endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
+#endif  /* CCTK_REAL8 */
 
 /**************************************/
 
@@ -3484,8 +3484,8 @@ void CCTK_FCALL CCTK_FNAME (Util_TableGetReal16)
   *retval = Util_TableGetReal16 (*handle, value, key);
   free (key);
 }
-#endif	/* UTIL_TABLE_FORTRAN_WRAPPERS */
-#endif	/* CCTK_REAL16 */
+#endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
+#endif  /* CCTK_REAL16 */
 
 /**********************************************************/
 
@@ -3513,7 +3513,7 @@ void CCTK_FCALL CCTK_FNAME (Util_TableGetComplex)
   *retval = Util_TableGetComplex (*handle, value, key);
   free (key);
 }
-#endif	/* UTIL_TABLE_FORTRAN_WRAPPERS */
+#endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
 
 /**************************************/
 
@@ -3538,8 +3538,8 @@ void CCTK_FCALL CCTK_FNAME (Util_TableGetComplex8)
   *retval = Util_TableGetComplex8 (*handle, value, key);
   free (key);
 }
-#endif	/* UTIL_TABLE_FORTRAN_WRAPPERS */
-#endif	/* CCTK_REAL4 */
+#endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
+#endif  /* CCTK_REAL4 */
 
 /**************************************/
 
@@ -3564,8 +3564,8 @@ void CCTK_FCALL CCTK_FNAME (Util_TableGetComplex16)
   *retval = Util_TableGetComplex16 (*handle, value, key);
   free (key);
 }
-#endif	/* UTIL_TABLE_FORTRAN_WRAPPERS */
-#endif	/* CCTK_REAL8 */
+#endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
+#endif  /* CCTK_REAL8 */
 
 /**************************************/
 
@@ -3590,8 +3590,8 @@ void CCTK_FCALL CCTK_FNAME (Util_TableGetComplex32)
   *retval = Util_TableGetComplex32 (*handle, value, key);
   free (key);
 }
-#endif	/* UTIL_TABLE_FORTRAN_WRAPPERS */
-#endif	/* CCTK_REAL16 */
+#endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
+#endif  /* CCTK_REAL16 */
 
 /******************************************************************************/
 
@@ -3696,7 +3696,7 @@ void CCTK_FCALL CCTK_FNAME (Util_TableGetPointerArray)
   *retval = Util_TableGetPointerArray (*handle, *N_elements, array, key);
   free (key);
 }
-#endif	/* !UTIL_TABLE_TEST */
+#endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
 
 /**************************************/
 
@@ -3723,7 +3723,7 @@ void CCTK_FCALL CCTK_FNAME (Util_TableGetFPointerArray)
   *retval = Util_TableGetFPointerArray (*handle, *N_elements, array, key);
   free (key);
 }
-#endif	/* UTIL_TABLE_FORTRAN_WRAPPERS */
+#endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
 
 /**************************************/
 
@@ -3754,7 +3754,7 @@ void CCTK_FCALL CCTK_FNAME (Util_TableGetFnPointerArray)
   *retval = Util_TableGetFPointerArray (*handle, *N_elements, array, key);
   free (key);
 }
-#endif	/* UTIL_TABLE_FORTRAN_WRAPPERS */
+#endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
 
 /**********************************************************/
 
@@ -3785,7 +3785,7 @@ void CCTK_FCALL CCTK_FNAME (Util_TableGetCharArray)
   *retval = Util_TableGetCharArray (*handle, *N_elements, array, key);
   free (key);
 }
-#endif	/* UTIL_TABLE_FORTRAN_WRAPPERS */
+#endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
 
 /**********************************************************/
 
@@ -3816,7 +3816,7 @@ void CCTK_FCALL CCTK_FNAME (Util_TableGetByteArray)
   *retval = Util_TableGetByteArray (*handle, *N_elements, array, key);
   free (key);
 }
-#endif	/* UTIL_TABLE_FORTRAN_WRAPPERS */
+#endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
 
 /**************************************/
 
@@ -3843,7 +3843,7 @@ void CCTK_FCALL CCTK_FNAME (Util_TableGetIntArray)
   *retval = Util_TableGetIntArray (*handle, *N_elements, array, key);
   free (key);
 }
-#endif	/* UTIL_TABLE_FORTRAN_WRAPPERS */
+#endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
 
 /**************************************/
 
@@ -3871,8 +3871,8 @@ void CCTK_FCALL CCTK_FNAME (Util_TableGetInt1Array)
   *retval = Util_TableGetInt1Array (*handle, *N_elements, array, key);
   free (key);
 }
-#endif	/* UTIL_TABLE_FORTRAN_WRAPPERS */
-#endif	/* CCTK_INT1 */
+#endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
+#endif  /* CCTK_INT1 */
 
 /**************************************/
 
@@ -3900,8 +3900,8 @@ void CCTK_FCALL CCTK_FNAME (Util_TableGetInt2Array)
   *retval = Util_TableGetInt2Array (*handle, *N_elements, array, key);
   free (key);
 }
-#endif	/* UTIL_TABLE_FORTRAN_WRAPPERS */
-#endif	/* CCTK_INT2 */
+#endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
+#endif  /* CCTK_INT2 */
 
 /**************************************/
 
@@ -3929,8 +3929,8 @@ void CCTK_FCALL CCTK_FNAME (Util_TableGetInt4Array)
   *retval = Util_TableGetInt4Array (*handle, *N_elements, array, key);
   free (key);
 }
-#endif	/* UTIL_TABLE_FORTRAN_WRAPPERS */
-#endif	/* CCTK_INT4 */
+#endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
+#endif  /* CCTK_INT4 */
 
 /**************************************/
 
@@ -3958,8 +3958,8 @@ void CCTK_FCALL CCTK_FNAME (Util_TableGetInt8Array)
   *retval = Util_TableGetInt8Array (*handle, *N_elements, array, key);
   free (key);
 }
-#endif	/* UTIL_TABLE_FORTRAN_WRAPPERS */
-#endif	/* CCTK_INT8 */
+#endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
+#endif  /* CCTK_INT8 */
 
 /**********************************************************/
 
@@ -3990,7 +3990,7 @@ void CCTK_FCALL CCTK_FNAME (Util_TableGetRealArray)
   *retval = Util_TableGetRealArray (*handle, *N_elements, array, key);
   free (key);
 }
-#endif	/* UTIL_TABLE_FORTRAN_WRAPPERS */
+#endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
 
 /**************************************/
 
@@ -4018,8 +4018,8 @@ void CCTK_FCALL CCTK_FNAME (Util_TableGetReal4Array)
   *retval = Util_TableGetReal4Array (*handle, *N_elements, array, key);
   free (key);
 }
-#endif	/* UTIL_TABLE_FORTRAN_WRAPPERS */
-#endif	/* CCTK_REAL4 */
+#endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
+#endif  /* CCTK_REAL4 */
 
 /**************************************/
 
@@ -4047,8 +4047,8 @@ void CCTK_FCALL CCTK_FNAME (Util_TableGetReal8Array)
   *retval = Util_TableGetReal8Array (*handle, *N_elements, array, key);
   free (key);
 }
-#endif	/* UTIL_TABLE_FORTRAN_WRAPPERS */
-#endif	/* CCTK_REAL8 */
+#endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
+#endif  /* CCTK_REAL8 */
 
 /**************************************/
 
@@ -4076,8 +4076,8 @@ void CCTK_FCALL CCTK_FNAME (Util_TableGetReal16Array)
   *retval = Util_TableGetReal16Array (*handle, *N_elements, array, key);
   free (key);
 }
-#endif	/* UTIL_TABLE_FORTRAN_WRAPPERS */
-#endif	/* CCTK_REAL16 */
+#endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
+#endif  /* CCTK_REAL16 */
 
 /**********************************************************/
 
@@ -4108,7 +4108,7 @@ void CCTK_FCALL CCTK_FNAME (Util_TableGetComplexArray)
   *retval = Util_TableGetComplexArray (*handle, *N_elements, array, key);
   free (key);
 }
-#endif	/* UTIL_TABLE_FORTRAN_WRAPPERS */
+#endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
 
 /**************************************/
 
@@ -4136,8 +4136,8 @@ void CCTK_FCALL CCTK_FNAME (Util_TableGetComplex8Array)
   *retval = Util_TableGetComplex8Array (*handle, *N_elements, array, key);
   free (key);
 }
-#endif	/* UTIL_TABLE_FORTRAN_WRAPPERS */
-#endif	/* CCTK_REAL4 */
+#endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
+#endif  /* CCTK_REAL4 */
 
 /**************************************/
 
@@ -4165,8 +4165,8 @@ void CCTK_FCALL CCTK_FNAME (Util_TableGetComplex16Array)
   *retval = Util_TableGetComplex16Array (*handle, *N_elements, array, key);
   free (key);
 }
-#endif	/* UTIL_TABLE_FORTRAN_WRAPPERS */
-#endif	/* CCTK_REAL8 */
+#endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
+#endif  /* CCTK_REAL8 */
 
 /**************************************/
 
@@ -4194,8 +4194,8 @@ void CCTK_FCALL CCTK_FNAME (Util_TableGetComplex32Array)
   *retval = Util_TableGetComplex32Array (*handle, *N_elements, array, key);
   free (key);
 }
-#endif	/* UTIL_TABLE_FORTRAN_WRAPPERS */
-#endif	/* CCTK_REAL16 */
+#endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
+#endif  /* CCTK_REAL16 */
 
 /******************************************************************************/
 /***** Table Iterator API *****************************************************/
@@ -5485,7 +5485,7 @@ static
         case CCTK_VARIABLE_BYTE:
           printf("\t[byte]");
             {
-          const CCTK_BYTE *const value_ptr_byte = (const CCTK_BYTE *) tep->value;
+          const CCTK_BYTE* const value_ptr_byte = (const CCTK_BYTE*) tep->value;
           for (i = 0 ; i < tep->N_elements ; ++i)
           {
             printf("\t%d", (int) value_ptr_byte[i]);
@@ -5495,7 +5495,7 @@ static
         case CCTK_VARIABLE_INT:
           printf("\t[int]");
             {
-          const CCTK_INT *const value_ptr_int = (const CCTK_INT *) tep->value;
+          const CCTK_INT* const value_ptr_int = (const CCTK_INT*) tep->value;
           for (i = 0 ; i < tep->N_elements ; ++i)
           {
             printf("\t%d", (int) value_ptr_int[i]);
@@ -5505,8 +5505,7 @@ static
         case CCTK_VARIABLE_REAL:
           printf("\t[real]");
             {
-          const CCTK_REAL *const value_ptr_real
-                  = (const CCTK_REAL *) tep->value;
+          const CCTK_REAL* const value_ptr_real = (const CCTK_REAL*) tep->value;
           for (i = 0 ; i < tep->N_elements ; ++i)
           {
             printf("\t%g", (double) value_ptr_real[i]);
@@ -5516,7 +5515,7 @@ static
         case CCTK_VARIABLE_COMPLEX:
           printf("\t[complex]");
             {
-          const CCTK_COMPLEX *const value_ptr_complex
+          const CCTK_COMPLEX* const value_ptr_complex
                   = (const CCTK_COMPLEX *) tep->value;
           for (i = 0 ; i < tep->N_elements ; ++i)
           {
@@ -5582,10 +5581,22 @@ static
                           set_fn, get_fn)                               \
     {                                                                   \
   type x = 42;                                                          \
+                                                                        \
+  printf(                                                               \
+    "CHECK_GET_SET_INT(handle=%d, type=%s,\n"                           \
+    "                  key_already_exists=%d, case_insensitive=%d,\n"   \
+    "                  set_fn=%s, get_fn=%s)\n",                        \
+         handle, #type,                                                 \
+         key_already_exists, case_insensitive,                          \
+         #set_fn, #get_fn);                                             \
+  fflush(stdout);                                                       \
+                                                                        \
   assert( set_fn(handle, x, "int_x") == key_already_exists );           \
+                                                                        \
   x = 1;                                                                \
   assert( get_fn(handle, &x, "int_x") == 1 );                           \
   assert( x == 42 );                                                    \
+                                                                        \
   if (case_insensitive)                                                 \
   {                                                                     \
     x = 2;                                                              \
@@ -5605,14 +5616,24 @@ static
                                   key_already_exists, case_insensitive) \
     {                                                                   \
   type gx = 42;                                                         \
+                                                                        \
+  printf(                                                               \
+    "CHECK_SET_GET_GENERIC_INT(handle=%d, type_code=%d, type=%s,\n"     \
+    "                          key_already_exists=%d, case_insensitive=%d)\n", \
+         handle, type_code, #type,                                      \
+         key_already_exists, case_insensitive);                         \
+  fflush(stdout);                                                       \
+                                                                        \
   assert( Util_TableSetGeneric(handle,                                  \
                                type_code, (const void *) &gx,           \
                                "gint_x") == key_already_exists );       \
+                                                                        \
   gx = 1;                                                               \
   assert( Util_TableGetGeneric(handle,                                  \
                                type_code, (void *) &gx,                 \
                                "gint_x") == 1 );                        \
   assert( gx == 42 );                                                   \
+                                                                        \
   if (case_insensitive)                                                 \
   {                                                                     \
     gx = 2;                                                             \
@@ -5637,10 +5658,22 @@ static
                            set_fn, get_fn)                              \
     {                                                                   \
   type y = 42.25;                                                       \
+                                                                        \
+  printf(                                                               \
+    "CHECK_SET_GET_REAL(handle=%d, type=%s,\n"                          \
+    "                   key_already_exists=%d, case_insensitive=%d,\n"  \
+    "                   set_fn=%s, get_fn=%s)\n",                       \
+         handle, #type,                                                 \
+         key_already_exists, case_insensitive,                          \
+         #set_fn, #get_fn);                                             \
+  fflush(stdout);                                                       \
+                                                                        \
   assert( set_fn(handle, y, "REAL_y") == key_already_exists );          \
+                                                                        \
   y = 1.25;                                                             \
   assert( get_fn(handle, &y, "REAL_y") == 1 );                          \
   assert( y == 42.25 );                                                 \
+                                                                        \
   if (case_insensitive)                                                 \
   {                                                                     \
     y = 1.5;                                                            \
@@ -5661,11 +5694,23 @@ static
                               set_fn, get_fn)                           \
     {                                                                   \
   static type z = { 42.25, 105.5 };                                     \
+                                                                        \
+  printf(                                                               \
+    "CHECK_SET_GET_COMPLEX(handle=%d, type=%s,\n"                       \
+    "                      key_already_exists=%d, case_insensitive=%d,\n" \
+    "                      set_fn=%s, get_fn=%s)\n",                    \
+         handle, #type,                                                 \
+         key_already_exists, case_insensitive,                          \
+         #set_fn, #get_fn);                                             \
+  fflush(stdout);                                                       \
+                                                                        \
   assert( set_fn(handle, z, "COMPlex_Z") == key_already_exists );       \
+                                                                        \
   z.Re = 1.25;            z.Im = -2.78;                                 \
   assert( get_fn(handle, &z, "COMPlex_Z") == 1 );                       \
   assert( z.Re == 42.25 );                                              \
   assert( z.Im == 105.5 );                                              \
+                                                                        \
   if (case_insensitive)                                                 \
   {                                                                     \
     z.Re = 1.5;             z.Im = -2.83;                               \
@@ -5686,13 +5731,26 @@ static
  * low-level macros to test set/get of arrays of various types
  */
 
-#define CHECK_SET_GET_INT_ARRAY(handle, type, key_already_exists,       \
+#define CHECK_SET_GET_INT_ARRAY(handle, type,                           \
+                                key_already_exists,                     \
                                 set_fn, get_fn)                         \
     {                                                                   \
   static type xx[5] = { 41, 42, 48, 45, 47 };                           \
+                                                                        \
+  printf(                                                               \
+    "CHECK_SET_GET_INT_ARRAY(handle=%d, type=%s,\n"                     \
+    "                        key_already_exists=%d,\n"                  \
+    "                        set_fn=%s, get_fn=%s)\n",                  \
+         handle, #type,                                                 \
+         key_already_exists,                                            \
+         #set_fn, #get_fn);                                             \
+  fflush(stdout);                                                       \
+                                                                        \
   assert( set_fn(handle, 3, xx, "xx") == key_already_exists );          \
+                                                                        \
   xx[0] = 14;  xx[1] = 15;  xx[2] = 16;  xx[3] = 17;  xx[4] = 19;       \
-  /* try to get 4 values, but only 3 were stored ==> only get 3 */      \
+                                                                        \
+  /* try to get 4 values, but only 3 were stored ==> should only get 3 */ \
   assert( get_fn(handle, 4, xx, "xx") == 3 );                           \
   assert( xx[0] == 41 );                                                \
   assert( xx[1] == 42 );                                                \
@@ -5703,13 +5761,26 @@ static
 
 /**************************************/
 
-#define CHECK_SET_GET_REAL_ARRAY(handle, type, key_already_exists,      \
+#define CHECK_SET_GET_REAL_ARRAY(handle, type,                          \
+                                 key_already_exists,                    \
                                  set_fn, get_fn)                        \
     {                                                                   \
   static type yy[5] = { 41.25, 42.5, 48.0, 45.75, 47.125 };             \
+                                                                        \
+  printf(                                                               \
+    "CHECK_SET_GET_REAL_ARRAY(handle=%d, type=%s,\n"                    \
+    "                         key_already_exists=%d,\n"                 \
+    "                         set_fn=%s, get_fn=%s)\n",                 \
+         handle, #type,                                                 \
+         key_already_exists,                                            \
+         #set_fn, #get_fn);                                             \
+  fflush(stdout);                                                       \
+                                                                        \
   assert( set_fn(handle, 4, yy, "yy") == key_already_exists );          \
+                                                                        \
   yy[0] = 14.0;  yy[1] = 15.5;  yy[2] = 16.0;                           \
   yy[3] = 17.5;  yy[4] = 19.5;                                          \
+                                                                        \
   /* only get 3 of 4 stored values */                                   \
   assert( get_fn(handle, 3, yy, "yy") == 4 );                           \
   assert( yy[0] == 41.25 );                                             \
@@ -5725,11 +5796,21 @@ static
                                          key_already_exists)            \
     {                                                                   \
   static type gyy[5] = { 41.25, 42.5, 48.0, 45.75, 47.125 };            \
+                                                                        \
+  printf(                                                               \
+    "CHECK_SET_GET_GENERIC_REAL_ARRAY(handle=%d, type_code=%d, type=%s,\n" \
+    "                                 key_already_exists=%d)\n",        \
+         handle, type_code, #type,                                      \
+         key_already_exists);                                           \
+  fflush(stdout);                                                       \
+                                                                        \
   assert( Util_TableSetGenericArray(handle,                             \
                                     type_code, 4, (const void *) gyy,   \
                                     "gyy") == key_already_exists );     \
+                                                                        \
   gyy[0] = 14.0;  gyy[1] = 15.5;  gyy[2] = 16.0;                        \
   gyy[3] = 17.5;  gyy[4] = 19.5;                                        \
+                                                                        \
   /* only get 3 of 4 stored values */                                   \
   assert( Util_TableGetGenericArray(handle,                             \
                                     type_code, 3, gyy,                  \
@@ -5743,17 +5824,30 @@ static
 
 /**************************************/
 
-#define CHECK_SET_GET_COMPLEX_ARRAY(handle, type, key_already_exists,   \
+#define CHECK_SET_GET_COMPLEX_ARRAY(handle, type,                       \
+                                    key_already_exists,                 \
                                     set_fn, get_fn)                     \
     {                                                                   \
   static type zz[5]                                                     \
           = { {3.5,1.25}, {9.5,4.5}, {0.5,8.0}, {5.0,5.5}, {4.5,7.25} };\
+                                                                        \
+  printf(                                                               \
+    "CHECK_SET_GET_COMPLEX_ARRAY(handle=%d, type=%s,\n"                 \
+    "                            key_already_exists=%d,\n"              \
+    "                            set_fn=%s, get_fn=%s)\n",              \
+         handle, #type,                                                 \
+         key_already_exists,                                            \
+         #set_fn, #get_fn);                                             \
+  fflush(stdout);                                                       \
+                                                                        \
   assert( set_fn(handle, 4, zz, "zz") == key_already_exists );          \
+                                                                        \
   zz[0].Re = 10.25;       zz[0].Im = 11.75;                             \
   zz[1].Re = -2.5;        zz[1].Im = 3.5;                               \
   zz[2].Re = 14.0;        zz[2].Im = -8.5;                              \
   zz[3].Re = 0.25;        zz[3].Im = 8.875;                             \
   zz[4].Re = -0.25;       zz[4].Im = -0.75;                             \
+                                                                        \
   /* only get 3 of 4 stored values */                                   \
   assert( get_fn(handle, 3, zz, "zz") == 4 );                           \
   assert( zz[0].Re == 3.5 );      assert( zz[0].Im == 1.25 );           \
@@ -6083,8 +6177,6 @@ static
   /* integers */
   CHECK_SET_GET_INT_ARRAY(handle, CCTK_CHAR, 0,
                           Util_TableSetCharArray, Util_TableGetCharArray);
-  CHECK_SET_GET_BYTE_ARRAY(handle, CCTK_BYTE, 1,
-                           Util_TableSetByteArray, Util_TableGetByteArray);
   CHECK_SET_GET_INT_ARRAY(handle, CCTK_INT, 1,
                           Util_TableSetIntArray, Util_TableGetIntArray);
   #ifdef CCTK_INT1
@@ -6647,8 +6739,8 @@ static
 #ifdef UTIL_TABLE_TEST
 /*
  * This function tests
- *	Util_Table{Set,Get}Pointer()
- *	Util_Table{Set,Get}PointerArray()
+ *      Util_Table{Set,Get}Pointer()
+ *      Util_Table{Set,Get}PointerArray()
  */
 static
   void test_set_get_pointers(int handle)
@@ -6679,15 +6771,15 @@ static
     }
     }
 }
-#endif	/* UTIL_TABLE_TEST */
+#endif  /* UTIL_TABLE_TEST */
 
 /******************************************************************************/
 
 #ifdef UTIL_TABLE_TEST
 /*
  * This function tests
- *	Util_Table{Set,Get}FPointer()
- *	Util_Table{Set,Get}FPointerArray()
+ *      Util_Table{Set,Get}FPointer()
+ *      Util_Table{Set,Get}FPointerArray()
  */
 static
   void test_set_get_fpointers(int handle)
@@ -6719,7 +6811,7 @@ static
     }
     }
 }
-#endif	/* UTIL_TABLE_TEST */
+#endif  /* UTIL_TABLE_TEST */
 
 /******************************************************************************/
 
