@@ -713,9 +713,23 @@ A configuration options file has the form:
 Requires Thorns: <list of thorns>
 \end{verbatim}
 
-The \verb|Requires Thorns| configuration option has as its argument a case 
-sensitive, space-separated list of thorn names (without the name of the
-arrangement they are located in).
+The \verb|Requires Thorns| configuration option has as its argument a
+case sensitive, space-separated list of thorn names (without the name
+of the arrangement they are located in).  This option allows this
+thorn to access global variables or call routines from the listed
+thorns.
+
+This option has the following results: The listed thorns must be
+present in the \verb|ThornList| when the thorn is compiled, and they
+must be activated whenever the requiring thorn is activated.  They are
+also guaranteed to be listed after this thorn when the linker is
+called, so that variable references and function calls can be
+resolved.
+
+Note: This option is reserved for special cases, such as when a third
+party library is incorporated into Cactus.  In order to share
+variables, you should rather declare corresponding grid variables, and
+in order to call routines, you should use rather function aliasing.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
