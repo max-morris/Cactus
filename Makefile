@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.98 2000-09-17 09:46:58 allen Exp $
+#   @version $Id: Makefile,v 1.99 2000-11-21 16:25:04 allen Exp $
 # @@*/
 
 ##################################################################################
@@ -325,6 +325,7 @@ endif
 	@echo "	                    version in CVS repository."
 	@echo "  cvsstatus        - reports on status of Cactus when installed"
 	@echo "	                    from CVS."
+	@echo "  cvsupdate        - update flesh and arrangements from CVS"
 	@echo "  default          - creates a new configuration with "
 	@echo "			    a default name."
 	@echo "  distclean        - deletes all existing configurations."
@@ -796,6 +797,10 @@ thorninfo:
 .PHONY: 
 cvsstatus:
 	$(PERL) -s $(CCTK_HOME)/lib/sbin/CVSStatus.pl     
+
+.PHONY: 
+cvsupdate:
+	$(PERL) -s $(CCTK_HOME)/lib/sbin/CVSUpdate.pl arrangements     
 
 .PHONY: 
 cvsdiff:
