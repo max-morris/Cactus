@@ -8174,8 +8174,7 @@ c output numbers:
                  output_numbers_type_codes, output_numbers)
 
         if (status .lt. 0) then
-                call CCTK_WARN(status, "Error return from reducer!")
-                call CCTK_Exit(dummy, Util_NullPointer(), status)
+                call CCTK_WARN(CCTK_WARN_ABORT, "Error return from reducer!")
         end if
 
 \end{verbatim}
