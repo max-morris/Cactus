@@ -84,6 +84,7 @@ typedef struct
   cTimerData *total_time;
   int print_headers;
   int synchronised;
+  int trigger_level;
 
   /* Stuff passed in in user calls */
 
@@ -1119,6 +1120,7 @@ static int ScheduleTraverse(const char *where,
   data.CallFunction = CallFunction ? CallFunction : CCTK_CallFunction;
   data.schedpoint = CCTK_Equals(where, "CCTK_ANALYSIS") ?
                     schedpoint_analysis : schedpoint_misc;
+  data.trigger_level = 0;
   calling_function = CCTKi_ScheduleCallFunction;
 
   CCTKi_DoScheduleTraverse(where,
@@ -2073,13 +2075,29 @@ static int CCTKi_ScheduleCallEntry(t_attribute *attribute,
     if(data->schedpoint == schedpoint_analysis)
     {
       /* In analysis, so check triggers */
-      for (i = 0; i < attribute->FunctionData.n_TriggerGroups ; i++)
+      if(data->trigger_level && attribute->FunctionData.n_TriggerGroups == 0)
       {
-        indx = CCTK_FirstVarIndexI(attribute->FunctionData.TriggerGroups[i]);
-        last  = indx + CCTK_NumVarsInGroupI(attribute->FunctionData.TriggerGroups[i]) -1;
-        for(; indx <= last ; indx++)
+        /* Has already been triggered by a higher level group
+         * and there are no triggers on this group.
+         */
+        data->trigger_level++;
+        go = 1;
+      }
+      else
+      {
+        /* Check if it is now being triggered */
+        for (i = 0; i < attribute->FunctionData.n_TriggerGroups ; i++)
         {
-          go = go || CCTKi_TriggerSaysGo(data->GH, indx);
+          indx = CCTK_FirstVarIndexI(attribute->FunctionData.TriggerGroups[i]);
+          last  = indx + CCTK_NumVarsInGroupI(attribute->FunctionData.TriggerGroups[i]) -1;
+          for(; indx <= last ; indx++)
+          {
+            go = go || CCTKi_TriggerSaysGo(data->GH, indx);
+          }
+        }
+        if(go)
+        {
+          data->trigger_level = 1;
         }
       }
     }
@@ -2183,6 +2201,7 @@ static int CCTKi_ScheduleCallExit(t_attribute *attribute,
           CCTKi_TriggerAction(data->GH, vindex);
         }
       }
+      data->trigger_level--;
     }
 
     /* Switch off communication if it was done in entry. */
