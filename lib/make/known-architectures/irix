@@ -6,7 +6,7 @@
 #    @desc
 #               Known architectures file for SGI Irix systems
 #    @enddesc
-#    @version   $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/irix,v 1.33 2002-05-29 12:35:39 tradke Exp $
+#    @version   $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/irix,v 1.34 2002-08-19 11:03:35 tradke Exp $
 #  @@*/
 
 if test "$CCTK_CONFIG_STAGE" = 'preferred-compilers' ; then
@@ -145,7 +145,11 @@ else
 
   # MPI stuff
   if test -n "$MPI" ; then
-    NATIVE_MPI_LIBS='mpi'
+    if test -e "/usr/lib${IRIX_BITS}/libmpi++.so" ; then
+      NATIVE_MPI_LIBS='mpi mpi++'
+    else
+      NATIVE_MPI_LIBS='mpi'
+    fi
   fi
 
 fi
