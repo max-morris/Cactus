@@ -76,7 +76,6 @@ int CCTK_SetWarnLevel(int level)
   return retval;
 }
 
-
  /*@@
    @routine    CCTK_Warn
    @date       Wed Feb 17 00:45:07 1999
@@ -121,6 +120,41 @@ int FORTRAN_NAME(CCTK_Warn)(int *level, ONE_FORTSTRING_ARG)
   free(message); 
   return(retval);
 }
+
+
+ /*@@
+   @routine    CCTK_Info
+   @date       Tue Mar 30 1999
+   @author     Gabrielle Allen
+   @desc 
+   Print information
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+int CCTK_Info(const char *message)
+{
+  int retval;
+
+  fprintf(stderr, "INFO: %s\n", message);
+  retval = 1;
+
+  return retval;
+}
+
+int FORTRAN_NAME(CCTK_Info)(ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE(message)
+  int retval;
+  retval = CCTK_Info(message);
+  free(message); 
+  return(retval);
+}
+
 
  /*@@
    @routine    CCTK_SetErrorLevel
