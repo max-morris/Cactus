@@ -22,8 +22,6 @@ int CCTKi_SetupGHExtensions(tFleshConfig *config,
 
 int CCTKi_InitGHExtensions(cGH *GH);
 
-int CCTKi_rfrTraverseGHExtensions(cGH *GH, int rfrpoint);
-
 int CCTKi_ScheduleTraverseGHExtensions(cGH *GH, const char *where);
 
 #ifdef __cplusplus

@@ -42,7 +42,6 @@ struct GHExtension
 {
   void *(*SetupGH)(tFleshConfig *, int, cGH *);
   int    (*InitGH)(cGH *);
-  int    (*rfrTraverseGH)(cGH *, int);
   int    (*ScheduleTraverseGH)(cGH *, const char *);
 };
 
@@ -58,8 +57,6 @@ static void *DummySetupGH(tFleshConfig *config,
                           int convergence_level, 
                           cGH *GH);
 static int DummyInitGH(cGH *GH);
-static int DummyrfrTraverseGH(cGH *GH, 
-                              int rfrpoint);
 static int DummyScheduleTraverseGH(cGH *GH, 
                                    const char *where);
 
@@ -110,7 +107,6 @@ int CCTK_RegisterGHExtension(const char *name)
       /* Initialise the extension structure. */
       new_extension->InitGH = NULL;
       new_extension->SetupGH = NULL;
-      new_extension->rfrTraverseGH = NULL;
       new_extension->ScheduleTraverseGH = NULL;
       
       /* Remember how many extensions there are */
@@ -199,42 +195,6 @@ int CCTK_RegisterGHExtensionInitGH(int handle,
   if(extension)
   {
     extension->InitGH = func;
-    return_code = 1;
-  }
-  else
-  {
-    return_code = 0;
-  }
-
-  return return_code;
-}
-
- /*@@
-   @routine    CCTK_RegisterGHExtensionrfrTraverseGH
-   @date       Wed Feb  3 14:31:20 1999
-   @author     Tom Goodale
-   @desc 
-   Registers a GH extension rfr traversal routine routine.   
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
-
-@@*/
-int CCTK_RegisterGHExtensionrfrTraverseGH(int handle, 
-                                          int (*func)(cGH *, int))
-{
-  int return_code;
-  struct GHExtension *extension;
-
-  /* Get the extension. */
-  extension = Util_GetHandledData(GHExtensions, handle);
-
-  if(extension)
-  {
-    extension->rfrTraverseGH = func;
     return_code = 1;
   }
   else
@@ -375,36 +335,6 @@ int CCTKi_InitGHExtensions(cGH *GH)
   return 0;
 }
 
-
- /*@@
-   @routine    CCTKi_rfrTraverseGHExtensions
-   @date       Wed Feb  3 14:16:17 1999
-   @author     Tom Goodale
-   @desc 
-   Calls the routines which an extension needs called at an rfr traversal.
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
-
-@@*/
-int CCTKi_rfrTraverseGHExtensions(cGH *GH, 
-                                  int rfrpoint)
-{
-  int handle;
-  struct GHExtension *extension;
-
-  for(handle = 0; handle < num_extensions; handle++)
-  {
-    extension =  (struct GHExtension *)Util_GetHandledData(GHExtensions, handle);
-    extension->rfrTraverseGH(GH, rfrpoint);
-  }
-
-  return 0;
-}
-
  /*@@
    @routine    CCTKi_ScheduleTraverseGHExtensions
    @date       Thu Jan 27 14:47:06 2000
@@ -492,17 +422,6 @@ static int CheckAllExtensionsSetup(void)
       CCTK_Warn(4,__LINE__,__FILE__,"Cactus",message) ;
       free(message);
       extension->InitGH=DummyInitGH;
-    }
-
-    /* rfrTraverse */
-    if(!extension->rfrTraverseGH)
-    {
-      const char *handlename = Util_GetHandleName(GHExtensions, handle);
-      char *message = (char *)malloc(300*sizeof(char));
-      sprintf(message,"GH Extension '%s' has not registered a rfrTraverse routine",handlename);
-      CCTK_Warn(4,__LINE__,__FILE__,"Cactus",message) ;
-      free(message);
-      extension->rfrTraverseGH=DummyrfrTraverseGH;
     }
 
     /* ScheduleTraverse */
@@ -603,26 +522,6 @@ static int DummyInitGH(cGH *GH)
   return 0;
 }
 
-
- /*@@
-   @routine    DummyrfrTraverseGH
-   @date       Wed Feb  3 14:17:57 1999
-   @author     Tom Goodale
-   @desc 
-   Dummy for rfrTraverseGH functions.
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
-
-@@*/
-static int DummyrfrTraverseGH(cGH *GH, 
-                              int rfrpoint)
-{
-  return 0;
-}
 
  /*@@
    @routine    DummyScheduleTraverseGH

@@ -24,9 +24,6 @@ int CCTK_RegisterGHExtensionSetupGH(int handle,
 int CCTK_RegisterGHExtensionInitGH(int handle, 
                                    int (*func)(cGH *));
 
-int CCTK_RegisterGHExtensionrfrTraverseGH(int handle, 
-                                          int (*func)(cGH *, int));
-
 int CCTK_RegisterGHExtensionScheduleTraverseGH(int handle, 
                                                int (*func)(cGH *, const char *));
 
