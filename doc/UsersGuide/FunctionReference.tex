@@ -3081,8 +3081,7 @@ interpolation results are independent of the interprocessor decomposition,
 at least up to floating-point roundoff errors.)
 If the ghost-zone size is too small, the interpolator should return
 some error code, possibly
-\verb|CCTK_ERROR_INTERP_POINT_OUTSIDE| and/or
-\verb|CCTK_ERROR_INTEPR_GRID_TOO_TINY|.
+\verb|CCTK_ERROR_INTERP_GHOST_SIZE_TOO_SMALL|.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
@@ -3123,10 +3122,16 @@ may be reported through the parameter table; see the Thorn Guide for
 whatever thorn provides the local interpolation operator for further
 details)
 \end{Error}
-\begin{Error}{CCTK\_ERROR\_INTERP\_GRID\_TOO\_TINY}
+\begin{Error}{CCTK\_ERROR\_INTERP\_GRID\_TOO\_SMALL}
 one or more of the dimensions of the input arrays is/are smaller than
 the molecule size chosen by the interpolator (based on the parameter-table
 options, e.g.\hbox{} the interpolation order)
+\end{Error}
+\begin{Error}{CCTK\_ERROR\_INTERP\_GHOST\_SIZE\_TOO\_SMALL}
+for a multi-processor run, the size of the interprocessor boundaries (the {\em ghostzone} size) is smaller than the molecule size chosen by the interpolator
+(based on the parameter-table options, e.g. the interpolation order).\\
+This error code is also returned if a processor's chunk of the global grid
+is smaller than the actual molecule size.
 \end{Error}
 \begin{Error}{UTIL\_ERROR\_BAD\_INPUT}
 one or more of the input arguments is invalid (eg.~\verb|NULL| pointer)
@@ -3954,7 +3959,7 @@ one or more of the interpolation points is out of range
 may be reported through the parameter table; see the Thorn Guide for
 the LocalInterp thorn for further details)
 \end{Error}
-\begin{Error}{CCTK\_ERROR\_INTERP\_GRID\_TOO\_TINY}
+\begin{Error}{CCTK\_ERROR\_INTERP\_GRID\_TOO\_SMALL}
 one or more of the dimensions of the input arrays is/are smaller than
 the molecule size chosen by the interpolator (based on the parameter-table
 options, e.g.\hbox{} the interpolation order)
