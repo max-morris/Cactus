@@ -6,7 +6,7 @@
 #  @desc
 #             Parses the the configuration files for thorns.
 #  @enddesc
-#  @version   $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.70 2004-05-17 11:20:51 tradke Exp $
+#  @version   $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.71 2004-08-17 18:38:32 goodale Exp $
 #@@*/
 
 # Global parameter to track the number of errors from the CST
@@ -114,10 +114,13 @@ print "Checking consistency...\n";
 
 %parameter_database = &CheckImpParamConsistency(scalar(keys %interface_database), %interface_database, %parameter_database);
 
-&print_parameter_database(%parameter_database) if($debug_parameters);
+$err_msg = &CheckCrossConsistency(\%interface_database,\%parameter_database);
 
 #$debug_interface = 1;
 &print_interface_database(%interface_database) if($debug_interface);
+
+#$debug_parameters=1;
+&print_parameter_database(%parameter_database ) if($debug_parameters);
 
 #$debug_schedule = 1;
 &print_schedule_database(%schedule_database) if($debug_schedule);
@@ -602,3 +605,43 @@ sub TopoSort
 
   return $data;
 }
+
+
+#/*@@
+#  @routine    CheckCrossConsistency
+#  @date       
+#  @author     Yaakoub Y El Khamra
+#  @desc
+#  Check for consistency of restricted parameters of thorns providing 
+#  the same implementation
+#  @enddesc
+#@@*/
+sub  CheckCrossConsistency
+{
+  my($interfaceDB, $parameterDB) = @_;
+  my($implementation, $thorn, $flag, $restricted, $temp);
+
+  foreach $implementation  (split(' ', $interfaceDB->{'IMPLEMENTATIONS'}))
+  {
+    $flag = 0;
+    foreach $thorn (split(' ', $interfaceDB->{"IMPLEMENTATION \U$implementation\E THORNS"}))
+    {
+      if ( $flag==0 )
+      {
+        $restricted = join(' ',sort(split(' ', $parameterDB->{"\U$thorn\E RESTRICTED variables"})));
+        $flag =1;
+      }
+
+      if ( $flag==1 )
+      {
+        $temp = join(' ',sort(split(' ', $parameterDB->{"\U$thorn\E RESTRICTED variables"})));
+        if ( $temp ne $restricted )
+        {
+          CST_error (0, "Thorns: " . $interfaceDB->{"IMPLEMENTATION \U$implementation\E THORNS"} . "provide the same implementation but have different restricted parameters" );          
+        }
+      }
+    }
+  }
+  return "";
+}
+ 
