@@ -60,10 +60,6 @@
 
 #define CCTK_CoordRegisterSystem(a,b,c) CCTKi_CoordRegisterSystem(a,b,CCTK_THORNSTRING,c)
 
-#define CCTKi_EXPECTERR(in,err,warnonerr,message) CCTKi_ExpectError(in,err,warnonerr,__LINE__,__FORTRANFILE__,CCTK_THORNSTRING,message)
-
-#define CCTKi_EXPECTOK(in,ok,warnonerr,message)  CCTKi_ExpectOK(in,ok,warnonerr,__LINE__,__FORTRANFILE__,CCTK_THORNSTRING,message)
-
 #define CCTK_EQUALS(a,b) (CCTK_Equals(a,b).eq.1)
 
 #define CCTK_PASS_FTOF CCTK_FARGUMENTS
@@ -260,7 +256,7 @@ inline int CCTK_GFINDEX4D (const cGH *GH, int i, int j, int k, int l)
                             int *,\
                             cGH *
 
-#define CCTK_EQUALS(a,b) (CCTK_Equals((a),(b))==1)
+#define CCTK_EQUALS(a,b) (CCTK_Equals((a),(b)))
 
 #define CCTK_PASS_CTOC cctkGH
 
@@ -274,10 +270,6 @@ inline int CCTK_GFINDEX4D (const cGH *GH, int i, int j, int k, int l)
 
 #define CCTK_MALLOC(s) CCTKi_Malloc(s,__LINE__,__FILE__)
 #define CCTK_FREE(p) CCTKi_Free(p)
-
-#define CCTKi_EXPCTERR(in,err,warnonerr,message) CCTKi_ExpectError(in,err,warnonerr,__LINE__,__FORTRANFILE__,CCTK_THORNSTRING,message)
-
-#define CCTKi_EXPCTOK(in,ok,onerr,message) CCTKi_ExpectOK(in,ok,warnonerr,__LINE__,__FORTRANFILE__,CCTK_THORNSTRING,message)
 
 #endif /*CCODE*/
 
