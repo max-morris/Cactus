@@ -8,8 +8,8 @@
    @version $Header$
  @@*/
 
-#ifndef _GROUPS_H_
-#define _GROUPS_H_
+#ifndef _CCTK_GROUPS_H_
+#define _CCTK_GROUPS_H_
 
 /* Prototypes */
 
