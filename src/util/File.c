@@ -243,7 +243,7 @@ int CCTK_CreateDirectory(int mode, const char *pathname)
 void CCTK_FCALL CCTK_FNAME(CCTK_CreateDirectory)
      (int *ierr, int *mode, ONE_FORTSTRING_ARG)
 {
-  ONE_FORTSTRINGS_CREATE(arg1)
-  *ierr = CCTK_CreateDirectory(mode,arg1);
+  ONE_FORTSTRING_CREATE(arg1)
+  *ierr = CCTK_CreateDirectory(*mode,arg1);
   free(arg1); 
 }
