@@ -8,6 +8,7 @@
 #  @enddesc 
 #@@*/
 
+$BindingsAliasNum = 0;
 
 sub CreateFortranThornParameterBindings
 {
@@ -88,7 +89,8 @@ sub CreateFortranThornParameterBindings
       }
       else
       {
-	$alias_names{$parameter} = "CCTKH".scalar(@alias_names);
+	$alias_names{$parameter} = "CCTKH".$BindingAliasNum;
+	$BindingAliasNum++;
       }
     }
      
@@ -136,7 +138,7 @@ sub CreateFortranCommonDeclaration
 
   $sepchar = "";
 
-  foreach $parameter (order_params(scalar(keys %parameters), %parameters,%parameter_database))
+  foreach $parameter (&order_params(scalar(keys %parameters), %parameters,%parameter_database))
   {
     $type = $parameter_database{"\U$parameters{$parameter} $parameter\E type"};
       
