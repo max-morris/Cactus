@@ -297,7 +297,7 @@ else
 #      : ${F90_OPTIMISE_FLAGS='-Ofast'}
       : ${F77_WARN_FLAGS='-fullwarn'}
       : ${F90_WARN_FLAGS='-fullwarn'}
-      : ${LIBS='pathfortran'}
+      : ${LIBS='pathfortran mv'}
       ;;
     none)
       : ${LIBS='m'}
