@@ -8,6 +8,7 @@
  @@*/
 
 #include <stdio.h>
+#include <time.h>
 
 #include "cctk_Flesh.h"
 #include "cctk_Parameter.h"
@@ -33,6 +34,8 @@ CCTK_FILEVERSION(main_InitialiseCactus_c)
 int ProcessCommandLine(int *inargc, char ***inargv, tFleshConfig *ConfigData);
 int ProcessEnvironment(int *argc, char ***argv,tFleshConfig *ConfigData);
 
+static time_t startuptime;
+  
 
  /*@@
    @routine    CCTKi_InitialiseCactus
@@ -71,6 +74,7 @@ int ProcessEnvironment(int *argc, char ***argv,tFleshConfig *ConfigData);
 @@*/
 int CCTKi_InitialiseCactus(int *argc, char ***argv, tFleshConfig *ConfigData)
 {
+  startuptime = time(NULL);
 
   CCTKi_InitialiseSubsystemDefaults();
 
@@ -132,6 +136,35 @@ int CCTKi_InitialiseScheduler(tFleshConfig *ConfigData)
   CCTK_PRINTSEPARATOR
 
   return retcode;
+}
+
+
+
+ /*@@
+   @routine    CCTK_RunTime
+   @date       Tue Oct 3 2000
+   @author     Gabrielle Allen
+   @desc 
+   Seconds since startup
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+
+int CCTK_RunTime()
+{
+  int retval;
+  time_t currenttime;
+
+  currenttime = time(NULL);
+  
+  retval = (int)(currenttime-startuptime);
+
+  return retval;
 }
 
 
