@@ -5,14 +5,13 @@
    @desc
               Complex variable stuff
    @enddesc
-   @version $Header$
+   @version   $Id$
  @@*/
 
 #include <math.h>
 
 #include "cctk_Flesh.h"
 #include "cctk_Complex.h"
-#include "cctk_WarnLevel.h"
 
 static const char *rcsid = "$Header$";
 
@@ -66,13 +65,13 @@ CCTK_FILEVERSION(main_Complex_c)
 #define DEFINE_CCTK_CMPLX(CCTK_Cmplx, cctk_real, cctk_complex)                \
 cctk_complex CCTK_Cmplx (cctk_real Re, cctk_real Im)                          \
 {                                                                             \
-  cctk_complex complex_number;                                                \
+  cctk_complex result;                                                        \
                                                                               \
                                                                               \
-  complex_number.Re = Re;                                                     \
-  complex_number.Im = Im;                                                     \
+  result.Re = Re;                                                             \
+  result.Im = Im;                                                             \
                                                                               \
-  return (complex_number);                                                    \
+  return (result);                                                            \
 }
 
 
@@ -150,12 +149,12 @@ cctk_real CCTK_Cmplx##Imag (cctk_complex complex_number)                      \
 #define DEFINE_CCTK_CMPLX_CONJG(CCTK_Cmplx, cctk_real, cctk_complex)          \
 cctk_complex CCTK_Cmplx##Conjg (cctk_complex complex_number)                  \
 {                                                                             \
-  cctk_complex conjg;                                                         \
+  cctk_complex result;                                                        \
                                                                               \
                                                                               \
-  conjg.Re =  complex_number.Re;                                              \
-  conjg.Im = -complex_number.Im;                                              \
-  return (conjg);                                                             \
+  result.Re =  complex_number.Re;                                             \
+  result.Im = -complex_number.Im;                                             \
+  return (result);                                                            \
 }
 
 
@@ -181,8 +180,7 @@ cctk_complex CCTK_Cmplx##Conjg (cctk_complex complex_number)                  \
 #define DEFINE_CCTK_CMPLX_ABS(CCTK_Cmplx, cctk_real, cctk_complex)            \
 cctk_real CCTK_Cmplx##Abs (cctk_complex complex_number)                       \
 {                                                                             \
-  return (sqrt (complex_number.Re*complex_number.Re +                         \
-                complex_number.Im*complex_number.Im));                        \
+  return (hypot (complex_number.Re, complex_number.Im));                      \
 }
 
 
@@ -213,12 +211,12 @@ cctk_real CCTK_Cmplx##Abs (cctk_complex complex_number)                       \
 #define DEFINE_CCTK_CMPLX_ADD(CCTK_Cmplx, cctk_real, cctk_complex)            \
 cctk_complex CCTK_Cmplx##Add (cctk_complex a, cctk_complex b)                 \
 {                                                                             \
-  cctk_complex sum;                                                           \
+  cctk_complex result;                                                        \
                                                                               \
                                                                               \
-  sum.Re = a.Re + b.Re;                                                       \
-  sum.Im = a.Im + b.Im;                                                       \
-  return (sum);                                                               \
+  result.Re = a.Re + b.Re;                                                    \
+  result.Im = a.Im + b.Im;                                                    \
+  return (result);                                                            \
 }
 
 
@@ -249,12 +247,12 @@ cctk_complex CCTK_Cmplx##Add (cctk_complex a, cctk_complex b)                 \
 #define DEFINE_CCTK_CMPLX_SUB(CCTK_Cmplx, cctk_real, cctk_complex)            \
 cctk_complex CCTK_Cmplx##Sub (cctk_complex a, cctk_complex b)                 \
 {                                                                             \
-  cctk_complex diff;                                                          \
+  cctk_complex result;                                                        \
                                                                               \
                                                                               \
-  diff.Re = a.Re - b.Re;                                                      \
-  diff.Im = a.Im - b.Im;                                                      \
-  return (diff);                                                              \
+  result.Re = a.Re - b.Re;                                                    \
+  result.Im = a.Im - b.Im;                                                    \
+  return (result);                                                            \
 }
 
 
@@ -285,12 +283,12 @@ cctk_complex CCTK_Cmplx##Sub (cctk_complex a, cctk_complex b)                 \
 #define DEFINE_CCTK_CMPLX_MUL(CCTK_Cmplx, cctk_real, cctk_complex)            \
 cctk_complex CCTK_Cmplx##Mul (cctk_complex a, cctk_complex b)                 \
 {                                                                             \
-  cctk_complex mult;                                                          \
+  cctk_complex result;                                                        \
                                                                               \
                                                                               \
-  mult.Re = a.Re*b.Re - a.Im*b.Im;                                            \
-  mult.Im = a.Im*b.Re + a.Re*b.Im;                                            \
-  return (mult);                                                              \
+  result.Re = a.Re*b.Re - a.Im*b.Im;                                          \
+  result.Im = a.Im*b.Re + a.Re*b.Im;                                          \
+  return (result);                                                            \
 }
 
 
@@ -322,34 +320,192 @@ cctk_complex CCTK_Cmplx##Mul (cctk_complex a, cctk_complex b)                 \
 cctk_complex CCTK_Cmplx##Div (cctk_complex a, cctk_complex b)                 \
 {                                                                             \
   cctk_real factor;                                                           \
-  cctk_complex quot;                                                          \
+  cctk_complex result;                                                        \
                                                                               \
                                                                               \
   factor = b.Re*b.Re + b.Im*b.Im;                                             \
-  if (factor != 0)                                                            \
-  {                                                                           \
-    quot.Re = (a.Re*b.Re + a.Im*b.Im) / factor;                               \
-    quot.Im = (a.Im*b.Re - a.Re*b.Im) / factor;                               \
-  }                                                                           \
-  else                                                                        \
-  {                                                                           \
-    CCTK_Warn (0, __LINE__, __FILE__, "Cactus",                               \
-                         "Divide by zero in CCTK_CmplxDiv");                  \
-    quot.Re = quot.Im = 0;                                                    \
-  }                                                                           \
-  return (quot);                                                              \
+  result.Re = (a.Re*b.Re + a.Im*b.Im) / factor;                               \
+  result.Im = (a.Im*b.Re - a.Re*b.Im) / factor;                               \
+                                                                              \
+  return (result);                                                            \
 }
 
 
-/* Routines to be added */
+ /*@@
+   @routine    CCTK_CmplxSin
+   @date       Wed 12 Dec 2001
+   @author     Thomas Radke
+   @desc
+               Returns the sine of a complex number.
+   @enddesc
+ 
+   @var        complex_number
+   @vdesc      The complex number
+   @vtype      CCTK_COMPLEX
+   @vio        in
+   @endvar
 
-/*
-CCTK_CmplxSqrt
-CCTK_CmplxSin
-CCTK_CmplxCos
-CCTK_CmplxLog
-CCTK_CmplxExp
-*/
+   @returntype CCTK_COMPLEX
+   @returndesc
+               The sine
+   @endreturndesc
+@@*/
+#define DEFINE_CCTK_CMPLX_SIN(CCTK_Cmplx, cctk_real, cctk_complex)            \
+cctk_complex CCTK_Cmplx##Sin (cctk_complex complex_number)                    \
+{                                                                             \
+  cctk_complex result;                                                        \
+                                                                              \
+                                                                              \
+  if (complex_number.Im == 0.0)                                               \
+  {                                                                           \
+    result.Re = sin (complex_number.Re);                                      \
+    result.Im = 0.0;                                                          \
+  }                                                                           \
+  else                                                                        \
+  {                                                                           \
+    result.Re = sin (complex_number.Re) * cosh (complex_number.Im);           \
+    result.Im = cos (complex_number.Re) * sinh (complex_number.Im);           \
+  }                                                                           \
+                                                                              \
+  return (result);                                                            \
+}
+
+
+ /*@@
+   @routine    CCTK_CmplxCos
+   @date       Wed 12 Dec 2001
+   @author     Thomas Radke
+   @desc
+               Returns the cosine of a complex number.
+   @enddesc
+ 
+   @var        complex_number
+   @vdesc      The complex number
+   @vtype      CCTK_COMPLEX
+   @vio        in
+   @endvar
+
+   @returntype CCTK_COMPLEX
+   @returndesc
+               The cosine
+   @endreturndesc
+@@*/
+#define DEFINE_CCTK_CMPLX_COS(CCTK_Cmplx, cctk_real, cctk_complex)            \
+cctk_complex CCTK_Cmplx##Cos (cctk_complex complex_number)                    \
+{                                                                             \
+  cctk_complex result;                                                        \
+                                                                              \
+                                                                              \
+  if (complex_number.Im == 0.0)                                               \
+  {                                                                           \
+    result.Re = cos (complex_number.Re);                                      \
+    result.Im = 0.0;                                                          \
+  }                                                                           \
+  else                                                                        \
+  {                                                                           \
+    result.Re = cos (complex_number.Re) * cosh (complex_number.Im);           \
+    result.Im = sin (complex_number.Re) * sinh (complex_number.Im);           \
+  }                                                                           \
+                                                                              \
+  return (result);                                                            \
+}
+
+
+ /*@@
+   @routine    CCTK_CmplxExp
+   @date       Wed 12 Dec 2001
+   @author     Thomas Radke
+   @desc
+               Returns the exponential of a complex number.
+   @enddesc
+ 
+   @var        complex_number
+   @vdesc      The complex number
+   @vtype      CCTK_COMPLEX
+   @vio        in
+   @endvar
+
+   @returntype CCTK_COMPLEX
+   @returndesc
+               The exponential
+   @endreturndesc
+@@*/
+#define DEFINE_CCTK_CMPLX_EXP(CCTK_Cmplx, cctk_real, cctk_complex)            \
+cctk_complex CCTK_Cmplx##Exp (cctk_complex complex_number)                    \
+{                                                                             \
+  cctk_real rho, theta;                                                       \
+  cctk_complex result;                                                        \
+                                                                              \
+                                                                              \
+  rho = exp (complex_number.Re);                                              \
+  theta = complex_number.Im;                                                  \
+  result.Re = rho * cos (theta);                                              \
+  result.Im = rho * sin (theta);                                              \
+                                                                              \
+  return (result);                                                            \
+}
+
+
+ /*@@
+   @routine    CCTK_CmplxSqrt
+   @date       Wed 12 Dec 2001
+   @author     Thomas Radke
+   @desc
+               Returns the square root of a complex number.
+   @enddesc
+ 
+   @var        complex_number
+   @vdesc      The complex number
+   @vtype      CCTK_COMPLEX
+   @vio        in
+   @endvar
+
+   @returntype CCTK_COMPLEX
+   @returndesc
+               The square root
+   @endreturndesc
+@@*/
+#define DEFINE_CCTK_CMPLX_SQRT(CCTK_Cmplx, cctk_real, cctk_complex)           \
+cctk_complex CCTK_Cmplx##Sqrt (cctk_complex complex_number)                   \
+{                                                                             \
+  cctk_real x, y, w, t;                                                       \
+  cctk_complex result;                                                        \
+                                                                              \
+                                                                              \
+  if (complex_number.Re == 0.0 && complex_number.Im == 0.0)                   \
+  {                                                                           \
+    result.Re = result.Im = 0.0;                                              \
+  }                                                                           \
+  else                                                                        \
+  {                                                                           \
+    x = fabs (complex_number.Re);                                             \
+    y = fabs (complex_number.Im);                                             \
+    if (x >= y)                                                               \
+	{                                                                         \
+      t = y / x;                                                              \
+      w = sqrt (x) * sqrt (0.5 * (1.0 + sqrt (1.0 * t * t)));                 \
+    }                                                                         \
+    else                                                                      \
+    {                                                                         \
+      t = x / y;                                                              \
+      w = sqrt (y) * sqrt (0.5 * (t + sqrt (1.0 * t * t)));                   \
+    }                                                                         \
+	                                                                          \
+    if (complex_number.Re >= 0.0)                                             \
+	{                                                                         \
+      result.Re = w;                                                          \
+      result.Im = complex_number.Im / (2.0 * w);                              \
+    }                                                                         \
+    else                                                                      \
+    {                                                                         \
+      x = complex_number.Im >= 0 ? w : -w;                                    \
+      result.Re = complex_number.Im / (2.0 * x);                              \
+      result.Im = x;                                                          \
+    }                                                                         \
+  }                                                                           \
+                                                                              \
+  return (result);                                                            \
+}
 
 
 /* macro to define a set of complex functions for a given precision */
@@ -362,7 +518,11 @@ CCTK_CmplxExp
           DEFINE_CCTK_CMPLX_ADD   (CCTK_Cmplx, cctk_real, cctk_complex)       \
           DEFINE_CCTK_CMPLX_SUB   (CCTK_Cmplx, cctk_real, cctk_complex)       \
           DEFINE_CCTK_CMPLX_MUL   (CCTK_Cmplx, cctk_real, cctk_complex)       \
-          DEFINE_CCTK_CMPLX_DIV   (CCTK_Cmplx, cctk_real, cctk_complex)
+          DEFINE_CCTK_CMPLX_DIV   (CCTK_Cmplx, cctk_real, cctk_complex)       \
+          DEFINE_CCTK_CMPLX_SIN   (CCTK_Cmplx, cctk_real, cctk_complex)       \
+          DEFINE_CCTK_CMPLX_COS   (CCTK_Cmplx, cctk_real, cctk_complex)       \
+          DEFINE_CCTK_CMPLX_EXP   (CCTK_Cmplx, cctk_real, cctk_complex)       \
+          DEFINE_CCTK_CMPLX_SQRT  (CCTK_Cmplx, cctk_real, cctk_complex)
 
 /* define complex functions for all available precisions */
 #ifdef CCTK_REAL4

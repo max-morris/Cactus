@@ -33,7 +33,11 @@ cctk_real    CCTK_Cmplx##Abs   (cctk_complex complex_number);                 \
 cctk_complex CCTK_Cmplx##Add   (cctk_complex a, cctk_complex b);              \
 cctk_complex CCTK_Cmplx##Sub   (cctk_complex a, cctk_complex b);              \
 cctk_complex CCTK_Cmplx##Mul   (cctk_complex a, cctk_complex b);              \
-cctk_complex CCTK_Cmplx##Div   (cctk_complex a, cctk_complex b);
+cctk_complex CCTK_Cmplx##Div   (cctk_complex a, cctk_complex b);              \
+cctk_complex CCTK_Cmplx##Sin   (cctk_complex complex_number);                 \
+cctk_complex CCTK_Cmplx##Cos   (cctk_complex complex_number);                 \
+cctk_complex CCTK_Cmplx##Exp   (cctk_complex complex_number);                 \
+cctk_complex CCTK_Cmplx##Sqrt  (cctk_complex complex_number);
 
 
 /* declare complex functions for all available precisions */
