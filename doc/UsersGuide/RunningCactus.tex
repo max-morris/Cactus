@@ -1,4 +1,4 @@
-\part{Introduction}
+\part{Installation and Running}
 
 \chapter{Overview of documentation}
 
@@ -42,7 +42,10 @@ Other topics will be discussed in separate documents:
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\chapter{A Cactus history}
+\chapter{About Cactus}
+
+\section{A Cactus history}
+\label{sec:acahi}
 
 To begin with a one-phrase summary: Cactus is a numerical
 infrastructure for solving partial differential equations (typically
@@ -107,7 +110,8 @@ intended not to change again. {\q Can we realistically say any more?}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\chapter{Cactus concepts} 
+\section{Cactus concepts} 
+\label{sec:caco}
 
 Cactus is designed to solve time evolution problems in three space
 dimensions by finite differencing on a Cartesian grid. This typically
@@ -171,54 +175,72 @@ user access to all earlier versions.)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \chapter{Installation} 
+\label{sec:in}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Required software}
+\label{sec:reqo}
 
 In general, Cactus {\em requires} the following set of software to function
 in a single processor mode. Please refer to the architecture section
-\ref{sec:architecture} for architecture specific items.
+\ref{sec:suar} for architecture specific items.
 \begin{itemize}
-\item{\tt Perl5.0} Perl is used extensively during the CCTK
-  configuration phase. Perl is available for nearly all
+\item{\tt Perl4.0} Perl is used extensively during the CCTK
+  thorn configuration phase. Perl is available for nearly all
   operating systems known to man and can be obtained at
   http://www.perl.org
-\item{\tt gmake} The GNU make utility has to be installed. The make
-  process will not work with anything else the GNU.
+\item{\tt gmake} The make
+  process works with the GNU gmake utility. While other make utilities
+  may also work, this is not guaranteed.
   Gmake can be obtained from your favorite GNU site.
-\item{\tt C/C++} A C/C++ compiler. These can be the GNU compilers as
-  well, but don't have to.
+\item{\tt C/C++} A C and C++ compiler. For example, the GNU compilers. These
+ are available for all supported platforms {\bf (QUERY: Is this right:? Gab)}.
+ Platform specific compilers should also work.
 \item{\tt CVS} The {\em ``Concurrent Versioning System''} is not needed
   to run/compile the CCTK, but you are strongly encourage to install
   this software to take advantage of the update procedures. It can be
-  downloaded from your favorite GNU site.
+  downloaded from your favorite GNU site. {(FIXME: This may need to be
+  changed when we sort out the distribution policy)}
 \end{itemize}
 
 \noindent
-The following software is {\em optional} and not needed to get the
-basic CCTK installation on track. Its listed in the order of importance.
+To use the CCTK, with the default driver (CactusBase/PUGH) on multiple
+processes you also need:
 \begin{itemize}
-\item{\tt Fortran 90} CCTK requires a F90 compiler to run modules
-  written in F77 or F90. There is no
-  GNU F90 and just a very limited set of free F90 compilers for
-  various architectures.
-\item{\tt MPI} Currently the communication layer of the CCTK uses the
-  {\em Message Passing Interface (MPI)} provide inter process
-  communication. Supercomputers very often supply a native MPI
-  implementation at their site. CCTK is very likely to work with
-  them. For local area networks we suggest installing the {\tt MPICH}
-  version, which can be obtained for various architectures and
-  operating systems at {\tt http://www-unix.mcs.anl.gov/mpi/}.
+\item{\tt MPI} PUGH uses the {\it Message Passing Interface (MPI)} to 
+provide inter-processor communication. {\it (QUERY: Version Number? Gab)} 
+Supercomputering sites often supply a native MPI implementation with
+which the CCTK is very likely to be compatible. Otherwise the {\tt MPICH}
+version of MPI is available for various architectures and operating
+systems at {\tt http://www-unix.mcs.anl.gov/mpi/}. 
+\end{itemize}
+
+\noindent
+If you are using any thorns containing routines 
+written in {\tt FORTRAN} you also need
+\begin{itemize}
+\item{\tt F90/F77} For routines written in F77, either an F90 or an F77
+ compiler can be used. For routines written in F90 an F90 compiler is
+ required. There is a very limited set of free F90 compilers available
+ for the different architectures.
+\end{itemize}
+
+\noindent
+While not required for compiling or running the CCTK, for thorn development
+it is useful to install
+\begin{itemize}
 \item{\tt TAGS}: Tags enables you browse through the calling structure
   of a program by help of function call database. Navigating the CCTK and
   packages becomes very easy. Emacs and vi both support this database. See
-  \ref{sec:tags} how to install ``tags''.
+  \ref{sec:usta} for a short guide to ``tags''.
 \end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Supported architectures}
+\label{suar}
+
 Cactus runs on many machines, under a large number of Unix operating
 systems. Here we list all the machines we have compiled and verified
 Cactus on, including some architecture specific notes. 
@@ -243,34 +265,31 @@ Cactus on, including some architecture specific notes.
   \end{itemize}
 \item{\bf Solaris } {\q What is the status on this ??}
 \end{itemize}
-If you did not find you architecture/operating system of
-choice, see section sec\ref{sec:how_to_port} on how to port to an
-unsupported architecture.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Checkout procedure}
+\label{sec:chpr}
 
-Cactus is distributed, added to, and updated through the free CVS
+The CCTK is distributed, extended, and maintained using the free CVS
 software. CVS ({\em ``Concurrent Versioning System''}) allows many
 people to work on a large software project together without getting
-into a tangle by keeping track of changes made by the different
-users. For the beginner, we summarize the basics in appendix
-\ref{sec:CVS}, please refer to this section for small description of
+into a tangle. For the beginner, we summarize the basics in appendix
+\ref{sec:uscv}, please refer to this section for a short description of
 the CVS syntax.
 
-The installation requires about {\q HOW MANY MEGS ? }. See section
-\ref{sec:downsize_CCTK} on how to downsize CCTK installation if space is tight.
-{\q gmake small ??}
+The space required for an installation depends on the packages and
+thorns used. The flesh on its own requires less than 1 MB.
 
 \begin{itemize}
-\item{\bf Login}: Prior to any CVS operation, you need to log into the central
+\item{\bf Login}: Prior to any CVS operation, you need to log into the CCTK
   repository. For an anonymous checkout, type:\\
   {\tt
     cvs -d :pserver:cvs\_anon@hod.aei-potsdam.mpg.de:/usr/users/cactus login
     }
   You will be prompted for a password which is {\tt anon}. 
-\item{\bf Checkout}: To obtain a fresh CCTK checkout, type
+\item{\bf Checkout}: To obtain a fresh copy of the CCTK, move to a directory
+  which does not contain a previously checked out version, and type
   {\t
     cvs -d :pserver:cvs\_anon@hod.aei-potsdam.mpg.de:/usr/users/cactus checkout CCTK
     }
@@ -278,28 +297,33 @@ The installation requires about {\q HOW MANY MEGS ? }. See section
     ./CCTK} and install the CCTK inside this directory.  From now on we
   will reference all directory names relative to {\tt ./CCTK}. 
 
+\noindent
   If you want to compile the CCTK with thorns, you now need to checkout separately 
-  the required thorn packages. These should be checked out in the
-  ./CCTK/packages directory. {\bf QUERY: Should we list packages here or refer 
-  to a web page or what? The two packages currently available are CactusBase and 
-  CactusEinstein}
+  the required packages. These must be checked out in the
+  ./CCTK/packages directory. For a list of available packages check the
+web pages at http://cactus.aei-potsdam.mpg.de . The default package which 
+contains various infrastructure thorns is {\tt CactusBase}, to obtain this
+{\t
+  cd packages
+  cvs checkout CactusBase
+}
   
 \item{\bf Update}: To update an existing CCTK checkout (to patch in
   possible changes, etc.), do the following {\em within} the {\tt ./CCTK} directory.
   {\t
-    cvs -d :pserver:cvs\_anon@hod.aei-potsdam.mpg.de:/usr/users/cactus update
+    cvs update
     }
-  The update process will operate downwards relative to you current position
+  The update process will operate downwards relative to your current position
   within the CCTK tree. To update only certain directories, change
   into these directories and issue the update command.
 \item{\bf CVS status}: to obtain a status report on the ``age'' of your
   CCTK or package routines (from your current directory position
   downward), type
   {\t
-    cvs -d :pserver:cvs\_anon@hod.aei-potsdam.mpg.de:/usr/users/cactus status
+    cvs status
     }
 \item{\bf non-anonymous CVS}: if you have an account at the central
-  repository and you would like to perform any of the operation above
+  repository and would like to perform any of the operation above
   {\em non-anonymously}, replace {\tt cvs\_anon} by your login name
   and provide the appropriate password during the CVS login
   process. Depending on your permissions, you may then make commits to the CCTK
@@ -307,12 +331,14 @@ The installation requires about {\q HOW MANY MEGS ? }. See section
 \item{\bf Commits}: you need to perform a personalized login and have
   proper permissions to commit code to the repository. 
 \end{itemize}
-For more CVS commands on how to add files, etc. please refer to appendix \ref{sec:CVS}.
+For more CVS commands on how to add files, etc. please refer to appendix 
+\ref{sec:uscv}.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Directory structure}
+\label{sec:dist}
 
 A fresh CCTK checkout creates a directory {\tt ./CCTK} with the
 following files substructure:
@@ -402,8 +428,9 @@ what is in libraries.}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Getting help}
+\label{sec:gehe}
 
-Cactus Maint and GNATS
+{\bf FIXME: This is for Gerd to fill in} GNATS
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -432,6 +459,7 @@ system.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Compilation and configuartions of the CCTK and its Packages}
+\label{sec:coancoof}
 
 Building the code with GNU make is easy. Use gmake with the following syntax:
 {\t gmake [configuration options] <CONF>}
@@ -501,6 +529,7 @@ structure is
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{gmake targets}
+\label{sec:gmta}
 
 A target for {\tt gmake} can be naively thought of as an argument
 that tells it which of several things listed in the {\tt Makefile} it
@@ -536,10 +565,10 @@ is to do.
 \item {\tt gmake help} lists all make options
 
 \item {\tt gmake tags} creates a {\tt vi} style tags file. See section
-  \ref{sec:TAGS} for using TAGS within Cactus.
+  \ref{sec:usta} for using TAGS within Cactus.
 
 \item {\tt gmake TAGS} creates an Emacs style TAGS file. See section
-  \ref{sec:TAGS} for using TAGS within Cactus.
+  \ref{sec:usta} for using TAGS within Cactus.
 
 \item {\tt gmake distclean} nukes your configs directory.
 
@@ -551,6 +580,7 @@ is to do.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Compiling in thorns}
+\label{sec:cointh}
 
 {\q This is way to specific for the section ``Compile'' in my opinion.
 This shoudl go with the thorn writing.}
@@ -616,6 +646,7 @@ files should end up if they need to be seen by other thorns.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Testing} 
+\label{sec:te}
 
 simple make and test suite
 
@@ -650,6 +681,7 @@ simple make and test suite
       h) Environment variables
 
 \section{Command Line Options}
+\label{sec:coliop}
 
 \begin{tabular}{ll}
 {\t -O, -describe-all-parameters} &List all parameters and their descriptions\\

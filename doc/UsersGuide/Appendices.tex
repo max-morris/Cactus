@@ -3,8 +3,10 @@
 \appendix
 
 \chapter{Configuration file syntax}
-    
+\label{sec:cofisy}    
+
 \section{General Concepts}
+\label{sec:geco}
 
 Each thorn is configured by three compulsory files in the top level thorn
 directory:
@@ -17,6 +19,7 @@ These files are written in the {\it Cactus Configuration Language} which is
 case insensitive.
 
 \section{interface.ccl}
+\label{sec:in}
 
 The interface configuration file consists of a header block giving details 
 of the thorns relationship with other thorns, and then a series of blocks 
@@ -89,6 +92,7 @@ The default value is {\t DIM=3}.
 \end{itemize} 
 
 \section{param.ccl}
+\label{sec:pa}
 
 The parameter configuration file consists of a list of 
 {\it parameter object specification items} (OSIs) giving the type and
@@ -119,6 +123,7 @@ protection or scoping class. {\t access} can take the values:
 
 
 \subsection{Parameter Object Specification Items}
+\label{sec:paobspit}
 
 {\t
 \begin{verbatim}
@@ -171,6 +176,7 @@ this number is the only acceptable value.
 
 
 \section{schedule.ccl}
+\label{sec:sc}
 
 The schedule configuration files consists of 
 \begin{itemize}
@@ -224,19 +230,24 @@ Conditional constructs cannot be used inside of a schedule block.
 
 
 \chapter{CCTK Parameters}
-
+\label{sec:ccpa}
 
 \chapter{Using GNATS}
+\label{sec:usgn}
 
 \chapter{Using CVS}
+\label{sec:uscv}
 
 \chapter{Using TAGS}
+\label{sec:usta}
 Finding your way around in the Cactus structure can be pretty
 difficult to handle. To make life easier there is support for TAGS,
 which lets you browse the code easily from within Emacs/XEmacs or vi. 
 A TAGS database can be generated with by gmake:
 
- \section{TAGS with emacs}
+\section{TAGS with emacs}
+\label{sec:tawiem}
+
 {\tt gmake TAGS} will create a database for a routine reference
 table to be used within Emacs. This database can be accessed within
 emacs if you add either of the following lines to your {\tt .emacs} file:\\
@@ -274,10 +285,10 @@ The Key strokes to use when you want to browse in read-only mode are:
 \end{enumerate}
 
 \section{TAGS with vi}
-
+\label{sec:tawivi}
 
 \chapter{Thorn-Flesh Interface}
-
+\label{sec:thflin}
 
 
 

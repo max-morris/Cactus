@@ -48,7 +48,7 @@ Cactus creates the following files in {\tt ./package/<package\_name>/<thorn\_nam
 \begin{itemize}
 \item{\tt README}: please fill out 
 \item{\tt interface.ccl}: the cactus interface, which defined the grid 
-fucntions, variables, etc. See \ref{inteface.ccl}.
+fucntions, variables, etc. See \ref{sec:in}.
 \item{\tt param.ccl}: the parameter introduced by your thorn. See
 \ref{param.ccl}.
 \item{\tt schedule.ccl}: schedules the routines provided by your thorn 
@@ -90,7 +90,7 @@ the parameter's default value ?
 \end{enumerate}
 The {\em cactus computational language} lets you specify these
 information in a straight forward manner. (For the actual syntax of the 
-{\tt param.ccl} see \ref{syntax_param.ccl}.)
+{\tt param.ccl} see \ref{sec:pa}.)
 The parameters you define can be grouped in four classes: {\tt
 private}, {\tt public},  {\tt protected} and {\tt friend}:{\em
 thorn\_name}.  We'll go over them one by one: 
@@ -221,7 +221,7 @@ just used at a certain instance, for example for analysis.}
 \end{enumerate}
 
 The {\tt interface.ccl} defines all these specific information. The
-syntax is described in appendix \ref{syntax_interface.ccl}, please see 
+syntax is described in appendix \ref{sec:in}, please see 
 there for all possible options. Here we will introduce the general
 idea behind the interface.ccl.
 
@@ -323,9 +323,9 @@ in the example above.
 \item{}All-time memory can turned on depending on parameter
 settings. This can be done in the same way, the parameters are acessed 
 within a C or Fortran code: by explicit use of the parameter variables 
-in the case of integer/real/logical (see \ref{sec:parameter_types}) or
+in the case of integer/real/logical (see \ref{????}) or
 by use of the {\tt CCTK\_Equals()} function (see
-\ref{sec:CCTK_Equals}). For example:
+\ref{????}). For example:
 \begin{verbatim}
 # reserve memory for the group ``shift'' if parameter 
 # shift NOT set to ``none'' 
@@ -412,7 +412,7 @@ between system keywords and user keywords  ? better yes}
 
 The scheduling together with the storage options in {\tt schedule.ccl}
 is described here in examples (please the ccl-syntax
-\ref{syntax_schedule.ccl} for all possible options).
+\ref{sec:sc} for all possible options).
 \begin{verbatim}
 
 schedule initial at CACTUS_INITIAL
