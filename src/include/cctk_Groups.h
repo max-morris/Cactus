@@ -31,6 +31,8 @@ extern "C"
 
 #include "cctk_Types.h"
 
+int        CCTK_StaggerVars(void);
+
 int        CCTK_DecomposeName(const char *fullname, 
                               char **implementation, 
                               char **name);

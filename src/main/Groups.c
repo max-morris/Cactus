@@ -103,6 +103,28 @@ static cGroupDefinition *CCTKi_SetupGroup(const char *implementation,
 
 static CCTK_INT **CCTKi_ExtractSize(int dimension, const char *thorn, const char *sizestring);
 
+ /*@@
+   @routine    CCTK_StaggerVars
+   @date       
+   @author     Gerd Lanfermann
+   @desc 
+
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+
+int CCTK_StaggerVars(void) 
+{
+  return(staggered);
+}
+
+
+
 
  /*@@
    @routine    CCTK_GroupIndex

@@ -15,7 +15,6 @@
 extern "C" {
 #endif
 
-int CCTK_StaggerVars(void);
 int CCTK_GroupStaggerIndexGI(int gindex);
 int CCTK_GroupStaggerIndexGN(const char *gname);
 int CCTK_StaggerIndex(const char *stype);

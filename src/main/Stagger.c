@@ -28,32 +28,12 @@ CCTK_FILEVERSION(main_Stagger_c)
  *********************     Local Data   *****************************
  ********************************************************************/
 
-static int staggered = 0;
+ /* none */
 
 
 /********************************************************************
  *********************     External Routines   **********************
  ********************************************************************/
-
- /*@@
-   @routine    CCTK_StaggerVars
-   @date       
-   @author     Gerd Lanfermann
-   @desc 
-
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
-
-@@*/
-
-int CCTK_StaggerVars(void) 
-{
-  return(staggered);
-}
 
 
  /*@@
