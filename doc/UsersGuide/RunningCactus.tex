@@ -765,6 +765,8 @@ is to do. The command {\tt gmake help} lists all gmake targets:
 
 \item [{\tt gmake <config>-config}] creates a new configuration or reconfigures an old one.
 
+\item [{\tt gmake <config>-cvsupdate}] update the Flesh and Thorns for a configuration using CVS
+
 \item [{\tt gmake <config>-delete}] deletes a configuration ({\tt rm -r configs/<config>}).
 
 \item [{\tt gmake <config>-editthorns}] edits the ThornList.
@@ -874,7 +876,7 @@ Note that with more modern versions of gmake, it is sufficient to pass the norma
 
 \item [{\tt gmake cvsstatus}] status of checked out version of Cactus, reporting which files have been modified or need updating.
 
-\item [{\tt gmake cvsupdate}] update Flesh and Thorns from CVS repositories.
+\item [{\tt gmake cvsupdate}] update Flesh and all Thorns from CVS repositories.
 
 \item [{\tt gmake default}] creates a new configuration with a default name.
 
@@ -893,11 +895,10 @@ Note that with more modern versions of gmake, it is sufficient to pass the norma
   \ref{sec:usta} for using TAGS within Cactus.
 
 \item [{\tt gmake UsersGuide}] runs LaTeX to produce a copy of the Users' Guide.
+
 \item [{\tt gmake ThornGuide}] runs LaTeX to produce a copy of the Thorn Guide, for all the thorns in the arrangements directory.
 
 \item [{\tt gmake MaintGuide}] runs LaTeX to produce a copy of the Maintainers' Guide.
-
-\item [{\tt gmake ThornGuide}] runs LaTeX to produce a copy of the Thorn Guide, which is the documentation from each thorn gathered together.
 
 \end{Lentry}
 
