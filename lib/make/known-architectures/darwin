@@ -6,7 +6,7 @@
 #   @desc
 #            Known architecture stuff for MacOS X (Darwin)
 #   @enddesc
-#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/darwin,v 1.4 2002-05-07 09:40:03 tradke Exp $
+#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/darwin,v 1.5 2002-05-10 17:19:26 tradke Exp $
 # @@*/
 
 if test "$CCTK_CONFIG_STAGE" = 'preferred-compilers' ; then
@@ -16,8 +16,8 @@ if test "$CCTK_CONFIG_STAGE" = 'preferred-compilers' ; then
 else
 
   # this fixes some darwin-specific preprocessor bugs (?)
-  CFLAGS='-o-cpp-precomp'
-  C_DEPEND='$(CC) -E -M $(CFLAGS) $(CPPFLAGS)'
+#  CFLAGS='-o-cpp-precomp'
+#  C_DEPEND='$(CC) -E -M $(CFLAGS) $(CPPFLAGS)'
 
   # Determine which Fortran 90 compiler is in use
   MAC_F90_COMP=none
@@ -39,7 +39,7 @@ else
   #Set the appropriate flags
   case "$MAC_F90_COMP" in
      absoft)
-       : ${F90FLAGS='-N11'}
+#       : ${F90FLAGS='-N11'}
        : ${LIBS='f90math fio f77math m'} 
        : ${F90_OPTIMISE_FLAGS='-s -O'}
        : ${F77_OPTIMISE_FLAGS='-s -O'}
