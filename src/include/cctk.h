@@ -201,8 +201,8 @@ extern int _cctk_one;
 
 #define CCTK_WARN(a,b) CCTK_Warn(a,__LINE__,__FILE__,CCTK_THORNSTRING,b)
 
-#define CCTK_MALLOC(s) CCTKi_malloc(s,__LINE__,__FILE__)
-#define CCTK_FREE(p) CCTKi_free(p)
+#define CCTK_MALLOC(s) CCTKi_Malloc(s,__LINE__,__FILE__)
+#define CCTK_FREE(p) CCTKi_Free(p)
 
 #define CCTKi_EXPCTERR(in,err,warnonerr,message) CCTKi_ExpectError(in,err,warnonerr,__LINE__,__FORTRANFILE__,CCTK_THORNSTRING,message)
 
