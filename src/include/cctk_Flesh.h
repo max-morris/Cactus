@@ -28,6 +28,15 @@ typedef struct
   /*  cTimer *timer[3];*/
 } tFleshConfig;
 
+#ifdef __cplusplus
+
+#define CCTK_FILEVERSION(file) extern "C" const char *CCTKi_version_##file(void) { return rcsid; }
+
+#else
+
+#define CCTK_FILEVERSION(file) extern "C" const char *CCTKi_version_##file(void) { return rcsid; }
+
+#endif
 
 /* Function prototypes */
 
