@@ -138,12 +138,12 @@ foreach $t (@testfiles)
     {
       if($line =~ m/(.*)\"/)
       {
-	$activethorns[$ntests] .= $1;
-	$processing_active = 0;
+        $activethorns[$ntests] .= $1;
+        $processing_active = 0;
       }
       else
       {
-	$activethorns[$ntests] .= $line;
+        $activethorns[$ntests] .= $line;
       }
     }
     elsif ($line =~ m/^\s*\!\s*DESC(RIPTION)?\s*\"(.*)\"\s*$/i)
@@ -183,7 +183,7 @@ foreach $t (@testfiles)
       $thornpart = "\U$1";
       if ($thornpart eq $th)
       {
-	$foundit = 1;
+        $foundit = 1;
       }
     }      
     if (!$foundit)
@@ -310,11 +310,11 @@ else
     {
       if($havethorns{$inp{$testnum[$i]}})
       {
-	$number = $i+1;
+        $number = $i+1;
       }
       else
       {
-	$number = "x";
+        $number = "x";
       }
       print "[$number] $testthorns[$i] $testnum[$i]: \n      \"$testnames[$i]\"\n";
     }
@@ -329,14 +329,14 @@ else
     {
       if($choice > 0 && $choice <= $ntests)
       {
-	if($havethorns{$ip})
-	{
-	  &runtest($ip,$thorn,$choice-1);
-	}
-	else
-	{
-	  print "This test cannot be run - missing thorns\n";
-	}
+        if($havethorns{$ip})
+        {
+          &runtest($ip,$thorn,$choice-1);
+        }
+        else
+        {
+          print "This test cannot be run - missing thorns\n";
+        }
       }
     }
     if (!($choice =~ m/^q/i))
