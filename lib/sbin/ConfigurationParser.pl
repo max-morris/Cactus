@@ -202,7 +202,8 @@ sub ParseConfigurationCCL
     }
     else
     {
-      &CST_error (0, "Unrecognised line in configure.ccl '$line'");
+      chomp($line);
+      &CST_error (0, "Unrecognised line '$line' in configure.ccl of thorn '$thorn'");
     }
   }
 }
