@@ -262,8 +262,7 @@ Cactus on, including some architecture specific notes.
         11.00.7022 for 80x86}
   \item{Cygnus Unix suite version 1.19}
   \end{itemize}
-\item{\bf Solaris } {\q What is the status on this ??}
-\item{\bf HP Exemplar}
+\item{\bf HP Exemplar} (Soon)
 \end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -712,29 +711,25 @@ configuration, and preprocessed source files.
 
 \end{itemize}
 
-\subsection{Notes and Caveats}
-\begin{itemize}
-\item{} Instead of using the editor to specify the thorns you want to
-  have compiled, you can {\em edit} the {\em ThornList} outside
-  the make process. It is located in {\tt configs/CONF/ThornList},
-  wher {\tt CONF} refers to the name of your configuration.
-  For a completely new configuration, this directory exists {\em
-    after} the first  make phase. 
-\item{} If you see the error during the build ``{\tt missing
-    seperator}'' you are probably not using GNU make. 
-\item{} {\em The EDITOR environment variable}. You may not be aware of
-  this, but this thing very often exists and may be set  by default to
-  something scary like vi. If you don't know how to use vi or wish to
-  use your favorite editor instead, reset this environment variable.
-\end{itemize}
+
+\section{Building and Administering a configuration}
+\label{sec:buanadaco}
+
+One you have created a new configuration, the command
+
+{\tt gmake <configuration name>}
+
+will build an executable, prompting you along the way for the 
+thorns which should be included. There are a range of  gmake 
+targets and options which are detailed in the following sections.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{gmake targets}
+\subsection{gmake targets for building and adminstering configurations}
 \label{sec:gmta}
 
 A target for {\tt gmake} can be naively thought of as an argument
 that tells it which of several things listed in the {\tt Makefile} it
-is to do.
+is to do. The command {\tt gmake help} lists all gmake targets.
 
 \begin{itemize}
 
@@ -766,24 +761,7 @@ is to do.
 
 \item {\tt gmake <CONF>-activethorns} regenerates the ThornList for a configuration
 
-\item {\tt gmake help} lists all make options
-
-\item {\tt gmake tags} creates a {\tt vi} style tags file. See section
-  \ref{sec:usta} for using TAGS within Cactus.
-
-\item {\tt gmake TAGS} creates an Emacs style TAGS file. See section
-  \ref{sec:usta} for using TAGS within Cactus.
-
-\item {\tt gmake doc} places a postscript version of the Users Guide documentation in your Cactus home directory.
-
-\item {\tt gmake checkout} allows you to easily checkout Cactus packages and thorns.
-
-\item {\tt gmake distclean} nukes your configs directory.
-
-\item {\tt gmake downsize} removes non essential files as documents
-  and testsuites to allow for minimal installation size.
-
-\item {\tt gmake testsuite} runs the test programs associated with
+\item {\tt gmake <CONF>-testsuite} runs the test programs associated with
  each thorn. See section \ref{sec:????} for information about the 
  test suite mechanism.
 
@@ -791,7 +769,34 @@ is to do.
 
 
 
-\subsection{gmake options}
+\subsection{Compiling in thorns}
+\label{sec:cointh}
+
+Cactus compiles in all thorns listed in {\tt configs/CONF/ThornList}, 
+if they have been checked out.
+
+The {\tt ThornList} file is simply a list of the form
+{\t <package>/<thorn>}.  All text on appearing on a line after a \# sign
+is ignored, so comments can be included.
+
+Instead of using the editor to specify the thorns you want to
+  have compiled, you can {\em edit} the {\em ThornList} outside
+  the make process. It is located in {\tt configs/CONF/ThornList},
+  wher {\tt CONF} refers to the name of your configuration.
+  For a completely new configuration, this directory exists {\em
+    after} the first  make phase.
+
+\subsection{Notes and Caveats}
+\begin{itemize}
+\item{} If during the build you see the error ``{\tt missing
+    seperator}'' you are probably not using GNU make. 
+\item{} {\em The EDITOR environment variable}. You may not be aware of
+  this, but this thing very often exists and may be set  by default to
+  something scary like vi. If you don't know how to use vi or wish to
+  use your favorite editor instead, reset this environment variable.
+\end{itemize}
+
+\subsection{gmake options for building configurations}
 \label{sec:gmta}
 
 An {\it option} for gmake can be thought of as an arguement which tells
@@ -810,18 +815,33 @@ the same.
 
 
 
-\section{Compiling in thorns}
-\label{sec:cointh}
-
-Cactus compiles in all thorns listed in {\tt configs/CONF/ThornList}, 
-if they have been checked out.
-
-The {\tt ThornList} file is simply a list of the form
-<package>/<thorn>.  All text on appearing on a line after a \# sign
-is ignored, so comments can be included.
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Other gmake targets}
+
+\begin{itemize}
+
+
+\item {\tt gmake help} lists all make options
+
+\item {\tt gmake tags} creates a {\tt vi} style tags file. See section
+  \ref{sec:usta} for using TAGS within Cactus.
+
+\item {\tt gmake TAGS} creates an Emacs style TAGS file. See section
+  \ref{sec:usta} for using TAGS within Cactus.
+
+\item {\tt gmake doc} places a postscript version of the Users Guide documentation in your Cactus home directory.
+
+\item {\tt gmake checkout} allows you to easily checkout Cactus packages and thorns.
+
+\item {\tt gmake distclean} nukes your configs directory.
+
+\item {\tt gmake downsize} removes non essential files as documents
+  and testsuites to allow for minimal installation size.
+
+\end{itemize}
+
 
 \section{Testing} 
 \label{sec:te}
