@@ -18,13 +18,35 @@
 #include "cctk_Flesh.h"
 #include "StoreHandledData.h"
 
+/*$#define MEMDEBUG$*/
+
+/* Undefine malloc */
+#if defined(malloc)
+#undef malloc
+#define malloc malloc
+#endif
+
+#if defined(realloc)
+#undef realloc
+#define realloc realloc
+#endif
+
+#if defined(calloc)
+#undef calloc
+#define calloc calloc
+#endif
+
+#if defined(free)
+#undef free
+#define free free
+#endif
+
 static char *rcsid = "$Header$";
 
 CCTK_FILEVERSION(util_Malloc_c)
 
 int CCTK_Abort(void *GH);
 
-/*$#define MEMDEBUG$*/ 
 
 /********************************************************************
  *********************     Local Data Types   ***********************
@@ -123,7 +145,10 @@ void *CCTKi_Malloc(size_t size, int line, const char *file)
   pastmem = totmem;
   totmem += size;
 
-  retval = CCTKi_UpdateMemByFile(info->size, line, file);
+  /*$retval = CCTKi_UpdateMemByFile(info->size, line, file);
+  if (retval<0) CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
+			   "CCTKi_UpdateMemByFile failed for malloc in %s, line %d",
+			   file,line);$*/
 
 #ifdef MEMDEBUG
   printf("Allocating %lu - by %s in line %d TOTAL: %lu\n",
@@ -153,20 +178,17 @@ void *CCTKi_Malloc(size_t size, int line, const char *file)
 void *CCTKi_Realloc(void *pointer, size_t size, int line, const char *file)
 {
   t_mallocinfo *info;
-  char *data;
+  char *data=NULL;
   char mess[256];
  
   /* Realloc called with NULL equiv. to malloc */
   if (pointer==NULL)
     return(CCTKi_Malloc(size, line, file));
 
-  /* Realloc called with size zero equiv. to free */
   if (size==0) {
     CCTKi_Free(pointer, line, file);
     return(NULL);
   }
-
-  /* Realloc failure */
  
   /* get the info section */
   info = (t_mallocinfo *)((char*)pointer-sizeof(t_mallocinfo));
@@ -174,36 +196,47 @@ void *CCTKi_Realloc(void *pointer, size_t size, int line, const char *file)
   /* make a sanity check: memory could have be allocated with standard malloc */
   if (info->ok!=OK_INTEGRITY)  
   {
-    sprintf(mess,"Malloc database corrupted. \n     Reallocation called from %s, line %d. \n     Was this memory allocated with CCTK_MALLOC \n?!",file,line);
-    CCTK_Warn(1,__LINE__,__FILE__,",routine: CCTKi_Realloc",mess);
-    CCTK_Abort(NULL);
+    CCTK_VWarn(0,__LINE__,__FILE__,"Cactus",
+	       "Malloc database corrupted, Reallocation called from %s, line %d.\n%s", 
+	       file,line,
+	       "Was this memory allocated with CCTK_[RE/C/M]ALLOC ?\n");
+    /*$CCTK_Abort(NULL);$*/
+    return(NULL);
   }
-  
-  /* reallocate starting at info pointer */
-  data = (char*)realloc(info, size+sizeof(t_mallocinfo));
-  if (!data)
+  else 
   {
-     printf(mess,"Could not reallocate memory.  Reallocation called from %s, line %d. \n", file,line);
-    CCTK_Warn(0,__LINE__,__FILE__,",routine: CCTKi_Realloc",mess);
-  }
+   
+    /* reallocate starting at info pointer */
+    data = (char*)realloc(info, size+sizeof(t_mallocinfo));
+    if (!data)
+      {
+	CCTK_VWarn(0,__LINE__,__FILE__,"Cactus",
+		   "Could not reallocate memory.  Reallocation called from %s, line %d. \n",
+		   file,line);
+	/*$CCTK_Abort(NULL);$*/
+      }
 
-  /* get the info section again and update */
-  info = (t_mallocinfo*) data;
-  info->size = size;
-  info->tsize= size+sizeof(t_mallocinfo);
+    /* update some static variables */
+    pastmem = totmem;
+    totmem  = totmem - info->size + size;
 
-  /* update some static variables */
-  pastmem = totmem;
-  totmem += size;
-  CCTKi_UpdateMemByFile(info->size, line, file);
- 
+    /* and update */
+    info = (t_mallocinfo*) data;
+    info->size = size;
+    info->tsize= size+sizeof(t_mallocinfo);
+    
+
+    /*$CCTKi_UpdateMemByFile(info->size, line, file);$*/
+
+   
 #ifdef MEMDEBUG
-  printf("ReAllocating %lu - by %s in line %d TOTAL: %lu\n",
-         info->size, info->file, info->line, CCTK_TotalMemory());  
+    printf("ReAllocating %lu - by %s in line %d TOTAL: %lu\n",
+	   info->size, info->file, info->line, CCTK_TotalMemory());  
 #endif
 
-  /* return the pointer starting at the datasection, behind the info section */
-  return((void*)(data+sizeof(t_mallocinfo)));
+    /* return the pointer starting at the datasection, behind the info section */
+    return((void*)(data+sizeof(t_mallocinfo)));
+  }
 }
 
 /*@@
@@ -223,36 +256,9 @@ void *CCTKi_Realloc(void *pointer, size_t size, int line, const char *file)
 
 void *CCTKi_Calloc(size_t nmemb, size_t size, int line, const char *file)
 {
-  t_mallocinfo *info;
-  size_t nsize;
-  char *data;
-  int retval;
-
+ 
   /* instead of a cmalloc(nmem,size) , we do a malloc(nmem*size) */
-  nsize = nmemb*size;
-  data  = (char*)malloc(nsize+sizeof(t_mallocinfo));
-  if(!data) 
-  {
-    fprintf(stderr, "Allocation error! ");
-  }
-  info = (t_mallocinfo*) data;
-  info->size = OK_INTEGRITY;
-  info->size = nsize;
-  info->tsize= nsize+sizeof(t_mallocinfo);
-  info->line = line;
-  info->file = file;
-
-  pastmem = totmem;
-  totmem += nsize;
-
-  retval = CCTKi_UpdateMemByFile(info->size, line, file);
-
-#ifdef MEMDEBUG
-  printf("Allocating %lu - by %s in line %d TOTAL: %lu\n",
-         info->size, info->file, info->line, CCTK_TotalMemory());
-#endif
-
-  return((void*)(data+sizeof(t_mallocinfo)));
+  return(CCTKi_Malloc(nmemb*size, line,file));
 }
 
 
@@ -277,24 +283,32 @@ void CCTKi_Free(void *pointer, int line, const char *file)
   t_mallocinfo *info;
   char mess[256];
 
+  if (pointer==NULL)
+    return;
+
   info = (t_mallocinfo *)((char*)pointer-sizeof(t_mallocinfo));
 
   if (info->ok!=OK_INTEGRITY)  
-  {    
-    sprintf(mess,"Malloc database corrupted. \n     Reallocation called from %s, line %d.\n     Was this memory allocated with CCTK_[RE]MALLOC ?!",file,line);
-    CCTK_Warn(1,__LINE__,__FILE__,",routine CCTKi_Free",mess);
+  { 
+    CCTK_VWarn(0,__LINE__,__FILE__,"Cactus",
+	       "Malloc database corrupted. Free called from:\n %s, line %d.%s\n",
+	       file,line,
+	       "Was this memory allocated with CCTK_[RE/C/M]ALLOC ?!\n");
     CCTK_Abort(NULL);
   }
+  else 
+  {
 
+      pastmem  = totmem;
+      totmem  -= info->size;
+        
 #ifdef MEMDEBUG
-  printf("Freeing %lu - allocated by %s in line %d TOTAL: %lu\n",
-         info->size, info->file, info->line, CCTK_TotalMemory());  
+      printf("Freeing %lu - allocated by %s in line %d TOTAL: %lu\n",
+	     info->size, info->file, info->line, CCTK_TotalMemory());  
 #endif
 
-  pastmem  = totmem;
-  totmem  -= info->size;
-  
-  free(info);
+      free(info);
+  }
 } 
 
 /*@@
@@ -407,7 +421,8 @@ int CCTK_MemTicketRequest(void)
    @author     Gerd Lanfermann
    @desc 
      Cash in your ticket: return the memory difference between now and the 
-     time the ticket was requested.
+     time the ticket was requested. Returns 666 on error, since it cannot
+     return error integers. Look out.
    @enddesc 
    @calls     
    @calledby   
@@ -432,8 +447,9 @@ long int CCTK_MemTicketCash(int this_ticket)
   }
   else 
   {
-    printf("CCTK_MemTicketCash: Cannot find ticket %d \n", this_ticket);
-    tdiff = 42;
+    CCTK_VWarn(1,__LINE__,__FILE__,"Cactus","CCTK_MemTicketCash: Cannot find ticket %d \n",
+	       this_ticket);
+    tdiff = 666;
   }
   return(tdiff);
 }
@@ -494,7 +510,7 @@ int CCTK_MemTicketDelete(int this_ticket)
 void CCTK_MemStat(void) 
 {
   char mess[1024];
-  sprintf(mess,"total: %ld  past: %ld  diff %+ld \n",
+  sprintf(mess,"total: %lu  past: %lu  diff %+ld \n",
 	  totmem, pastmem, totmem-pastmem);
   printf("CCTK_Memstat: %s ",mess);
 }
