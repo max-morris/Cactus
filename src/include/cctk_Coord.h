@@ -2,31 +2,29 @@
    @header    cctk_Coord.h
    @date      Mon April 12 1999
    @author    Gabrielle Allen
-   @desc 
-   Prototypes and constants for coordinate functions
-   @enddesc 
-   @version $Header$
+   @desc
+              Prototypes and constants for coordinate functions
+   @enddesc
+   @version   $Header$
  @@*/
 
 #ifndef _CCTK_COORD_H_
 #define _CCTK_COORD_H_
 
-#ifdef __cplusplus 
-extern "C" 
+#ifdef __cplusplus
+extern "C"
 {
 #endif
 
 int CCTK_CoordRegisterSystem(int dim, const char *systemname);
 
-int CCTK_CoordRegisterData(int dir, 
-                           const char *gv, 
+int CCTK_CoordRegisterData(int dir,
+                           const char *gv,
                            const char *name,
                            const char *systemname);
 
-int CCTK_CoordSystemHandle (const char *systemname);
-
-int CCTK_CoordIndex(int dir, 
-                    const char *name, 
+int CCTK_CoordIndex(int dir,
+                    const char *name,
                     const char *systemname);
 
 int CCTK_CoordDir(const char *name,
@@ -38,42 +36,42 @@ int CCTK_CoordSystemHande(const char *systemname);
 
 const char *CCTK_CoordSystemName(int handle);
 
-int CCTK_CoordRange(cGH        *GH, 
-                    CCTK_REAL  *coord_lower, 
-                    CCTK_REAL  *coord_upper, 
+int CCTK_CoordRange(cGH        *GH,
+                    CCTK_REAL  *coord_lower,
+                    CCTK_REAL  *coord_upper,
                     int         coord_dir,
                     const char *coord_name,
                     const char *system_name);
 
 int CCTK_CoordRangePhysIndex (cGH *GH,
-			      int *lower,
-			      int *upper,
-			      int coorddir,
-			      const char *coordname,
-			      const char *systemname);
+                              int *lower,
+                              int *upper,
+                              int coorddir,
+                              const char *coordname,
+                              const char *systemname);
 
-int CCTK_CoordLocalRange(cGH        *GH, 
-                         CCTK_REAL  *lower, 
-                         CCTK_REAL  *upper, 
+int CCTK_CoordLocalRange(cGH        *GH,
+                         CCTK_REAL  *lower,
+                         CCTK_REAL  *upper,
                          int         coord_dir,
                          const char *coord_name,
                          const char *system_name);
 
-int CCTK_CoordRegisterRange(cGH        *GH, 
-                            CCTK_REAL   coord_min, 
-                            CCTK_REAL   coord_max, 
+int CCTK_CoordRegisterRange(cGH        *GH,
+                            CCTK_REAL   coord_min,
+                            CCTK_REAL   coord_max,
                             int         coord_dir,
                             const char *coord_name,
                             const char *system_name);
 
-int CCTK_CoordRegisterRangePhysIndex(cGH        *GH, 
-				     int         coord_min, 
-				     int         coord_max, 
-				     int         coord_dir,
-				     const char *coord_name,
-				     const char *system_name);
+int CCTK_CoordRegisterRangePhysIndex(cGH        *GH,
+                                     int         coord_min,
+                                     int         coord_max,
+                                     int         coord_dir,
+                                     const char *coord_name,
+                                     const char *system_name);
 
-#ifdef __cplusplus 
+#ifdef __cplusplus
 }
 #endif
 
