@@ -16,6 +16,10 @@
 #include "config.h"
 
 
+/* The thorn definitions #define <PACKAGE>_<THORN>
+
+#include "definethorn.h"
+
 /* Define some stuff */
 
 #ifdef FCODE
