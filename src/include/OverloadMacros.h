@@ -42,25 +42,31 @@
 
 #define __OVERLOADABLE_FUNCTION(call, prefix, dummy_prefix, name)   \
 RETURN_TYPE (*prefix##name)(ARGUMENTS) = NULL;                      \
+int call##Overload##name(RETURN_TYPE (*func)(ARGUMENTS));           \
 int call##Overload##name(RETURN_TYPE (*func)(ARGUMENTS))            \
 {                                                                   \
   int return_code;                                                  \
   static int overloaded = 0;                                        \
-  if(overloaded < 2)                                                \
+  if (func)                                                         \
   {                                                                 \
-     prefix##name = func;                                           \
-     overloaded++;                                                  \
-     return_code = overloaded;                                      \
+    if(overloaded < 2)                                              \
+    {                                                               \
+       printf("Overloading %s%s\n",#prefix,#name);                  \
+       prefix##name = func;                                         \
+       overloaded++;                                                \
+       return_code = overloaded;                                    \
+    }                                                               \
+    else                                                            \
+    {                                                               \
+       CCTK_VWarn(1,__LINE__,__FILE__,"Cactus","Overload Macros: "  \
+                  "Attempted to overload function %s%s twice",      \
+                  #prefix, #name);                                  \
+       return_code = 0;                                             \
+    }                                                               \
   }                                                                 \
   else                                                              \
   {                                                                 \
-     char *message = malloc( (200+strlen(#name))*sizeof(char) );    \
-     sprintf(message,                                               \
-             "Warning: Attempted to overload function %s%s twice\n",\
-             #prefix, #name);                                       \
-     CCTK_Warn(1,__LINE__,__FILE__,"Cactus",message);               \
-     free(message);                                                 \
-     return_code = 0;                                               \
+    return_code = overloaded;                                       \
   }                                                                 \
                                                                     \
   return return_code;                                               \
@@ -92,15 +98,32 @@ RETURN_TYPE dummy_prefix##name(ARGUMENTS)                       \
 #define __OVERLOADABLE_DUMMYPROTOTYPE(prefix, dummy_prefix, name)        \
 RETURN_TYPE dummy_prefix##name(ARGUMENTS);
 
-/* This macro defines a check line which will set the overloadable
- * function to be the dummy if it hasn't been set.
+
+/* This macro initialises the function to the dummy if it
+   hasn't already been set.
  */
 
-#define OVERLOADABLE_CHECK(name)   _OVERLOADABLE_CHECK(OVERLOADABLE_PREFIX, OVERLOADABLE_DUMMY_PREFIX, name)
-#define _OVERLOADABLE_CHECK(prefix, dummy_prefix, name)   __OVERLOADABLE_CHECK(prefix, dummy_prefix, name)
+#define OVERLOADABLE_INITIALISE(name)   _OVERLOADABLE_INITIALISE(OVERLOADABLE_CALL, OVERLOADABLE_DUMMY_PREFIX, name)
+#define _OVERLOADABLE_INITIALISE(call, dummy_prefix, name)   __OVERLOADABLE_INITIALISE(call, dummy_prefix, name)
 
-#define __OVERLOADABLE_CHECK(prefix, dummy_prefix, name)        \
-  if(!prefix##name) prefix##name = dummy_prefix##name;
+#define __OVERLOADABLE_INITIALISE(call, dummy_prefix, name)        \
+  /*printf("Initialising overloadable function %s with %s%s\n",#name,#dummy_prefix,#name);*/ \
+  call##Overload##name(dummy_prefix##name);
+
+
+
+/* This macro defines a test for how many times a function has been 
+   overloaded
+ */
+
+#define OVERLOADABLE_TEST(name)   _OVERLOADABLE_TEST(OVERLOADABLE_PREFIX, name)
+#define _OVERLOADABLE_TEST(prefix, name)   __OVERLOADABLE_TEST(prefix, name)
+
+#define __OVERLOADABLE_TEST(prefix, name)                           \
+int call##Overload##name(NULL)                                      \
+{                                                                   \
+  int return_code;                                                  \
+}
 
 
 /* This macro defines the prototype for the overloading function itself */
