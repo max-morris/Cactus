@@ -44,7 +44,7 @@ if (! defined $thornlist)
       @thorns = &FindDirectories("$arrangements_dir$arrangement");
 
       foreach $thorn (@thorns) {
-         print "\n$arrangement/$thorn";
+         print "\n$arrangement/$thorn" if ($thorn ne "doc");
       }
    }
 } 
