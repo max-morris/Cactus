@@ -248,11 +248,11 @@ sub GetThornArguments
 	  $sep = ",";
 	  if($block eq "PRIVATE")
 	  {
-	    $arguments{"$group$dim"} = "STORAGESIZE($thorn\::$group, $dim)";
+	    $arguments{"$group$dim"} = "(STORAGESIZE($thorn\::$group, $dim))";
 	  }
-	  else
+	  else 
 	  {
-	    $arguments{"$group$dim"} = "STORAGESIZE($imp\::$group, $dim)";
+	    $arguments{"$group$dim"} = "(STORAGESIZE($imp\::$group, $dim))";
 	  }
 	}
 	$type .= ")";
@@ -666,12 +666,21 @@ sub CreateCArgumentStatics
   my(%arguments) = @_;
   my($argument);
   my(@declarations) = ();
+  my($allgroups) = "";
+  my($group);
 
   foreach $argument (sort keys %arguments)
   {
     if($arguments{$argument} !~ m:STORAGESIZE:)
     {
       push(@declarations, "static int CCTKARGNUM_$argument = -1");
+      $arguments{$argument} =~ /::(.*)![0-9]*$/;
+      $group = $1;
+      if ($allgroups !~ / $group /)
+      {
+	$allgroups .= " $group ";
+	push(@declarations, "static int CCTKGROUPNUM_$group = -1");
+      }
     }
   }
 
@@ -699,14 +708,24 @@ sub CreateCArgumentInitialisers
   my(%arguments) = @_;
   my($argument);
   my(@initialisers) = ();
+  my($allgroups) = "";
+  my($group);
+  my($qualifier);
 
   foreach $argument (sort keys %arguments)
   {
     if($arguments{$argument} !~ m:STORAGESIZE:)
     {
       $arguments{$argument} =~ m,([^ ]*) ?(.*)?!(.*)\::(.*)!(.*),;
-
-      push(@initialisers, "if(CCTKARGNUM_$argument == -1) CCTKARGNUM_$argument = CCTK_VarIndex(\"$3::$argument\")");
+      $qualifier = $3;
+      push(@initialisers, "if(CCTKARGNUM_$argument == -1) CCTKARGNUM_$argument = CCTK_VarIndex(\"$qualifier\::$argument\")");
+      $arguments{$argument} =~ /::(.*)![0-9]*$/;
+      $group = $1;
+      if ($allgroups !~ / $group /)
+      {
+	$allgroups .= " $group ";
+	push(@initialisers, "if(CCTKGROUPNUM_$group == -1) CCTKGROUPNUM_$group = CCTK_GroupIndex(\"$qualifier\::$group\")");
+      }
     }
   }
 
@@ -855,9 +874,9 @@ sub CreateCArgumentList
   # Put all storage arguments first.
   foreach $argument (sort keys %arguments)
   {
-    if($arguments{$argument} =~ m:STORAGESIZE\(([^,]*),\s*(\d+):)
+    if($arguments{$argument} =~ m/STORAGESIZE\(([^,]*)::([^,]*),\s*(\d+)/)
     {
-      $arglist .= "$sep"."(const int *)(CCTK_STORAGESIZE(xGH, $2, \"$1\"))";
+      $arglist .= "$sep"."(const int *)(CCTKGROUPNUM_$2<0 ? &(_cctk_one) : (CCTK_STORAGESIZE(xGH, $3, \"$1::$2\")))";
       $sep = ",";
     }
   }
@@ -880,57 +899,57 @@ sub CreateCArgumentList
 	{
 	  if($1 eq "CHAR")
 	  {
-	    $arglist .= "$sep"."(CCTK_CHAR *)((xGH)->data[CCTKARGNUM_$argument][$level-1])";
+	    $arglist .= "$sep"."(CCTK_CHAR *)(CCTKARGNUM_$argument<0 ? NULL : (xGH)->data[CCTKARGNUM_$argument][$level-1])";
 	    $sep = ",";
 	  }
 	  elsif ($1 eq REAL)
 	  {
-	    $arglist .= "$sep"."(CCTK_REAL *)((xGH)->data[CCTKARGNUM_$argument][$level-1])";
+	    $arglist .= "$sep"."(CCTK_REAL *)(CCTKARGNUM_$argument<0 ? NULL : (xGH)->data[CCTKARGNUM_$argument][$level-1])";
 	    $sep = ",";
 	  }
 	  elsif ($1 eq REAL)
 	  {
-	    $arglist .= "$sep"."(CCTK_REAL *)((xGH)->data[CCTKARGNUM_$argument][$level-1])";
+	    $arglist .= "$sep"."(CCTK_REAL *)(CCTKARGNUM_$argument<0 ? NULL : (xGH)->data[CCTKARGNUM_$argument][$level-1])";
 	    $sep = ",";
 	  }
 	  elsif ($1 eq REAL4)
 	  {
-	    $arglist .= "$sep"."(CCTK_REAL4 *)((xGH)->data[CCTKARGNUM_$argument][$level-1])";
+	    $arglist .= "$sep"."(CCTK_REAL4 *)(CCTKARGNUM_$argument<0 ? NULL : (xGH)->data[CCTKARGNUM_$argument][$level-1])";
 	    $sep = ",";
 	  }
 	  elsif ($1 eq REAL8)
 	  {
-	    $arglist .= "$sep"."(CCTK_REAL8 *)((xGH)->data[CCTKARGNUM_$argument][$level-1])";
+	    $arglist .= "$sep"."(CCTK_REAL8 *)(CCTKARGNUM_$argument<0 ? NULL : (xGH)->data[CCTKARGNUM_$argument][$level-1])";
 	    $sep = ",";
 	  }
 	  elsif ($1 eq REAL16)
 	  {
-	    $arglist .= "$sep"."(CCTK_REAL16 *)((xGH)->data[CCTKARGNUM_$argument][$level-1])";
+	    $arglist .= "$sep"."(CCTK_REAL16 *)(CCTKARGNUM_$argument<0 ? NULL : (xGH)->data[CCTKARGNUM_$argument][$level-1])";
 	    $sep = ",";
 	  }
 	  elsif ($1 eq COMPLEX)
 	  {
-	    $arglist .= "$sep"."(CCTK_COMPLEX *)((xGH)->data[CCTKARGNUM_$argument][$level-1])";
+	    $arglist .= "$sep"."(CCTK_COMPLEX *)(CCTKARGNUM_$argument<0 ? NULL : (xGH)->data[CCTKARGNUM_$argument][$level-1])";
 	    $sep = ",";
 	  }
 	  elsif ($1 eq INT)
 	  {
-	    $arglist .= "$sep"."(CCTK_INT *)((xGH)->data[CCTKARGNUM_$argument][$level-1])";
+	    $arglist .= "$sep"."(CCTK_INT *)(CCTKARGNUM_$argument<0 ? NULL : (xGH)->data[CCTKARGNUM_$argument][$level-1])";
 	    $sep = ",";
 	  }
 	  elsif ($1 eq INT2)
 	  {
-	    $arglist .= "$sep"."(CCTK_INT2 *)((xGH)->data[CCTKARGNUM_$argument][$level-1])";
+	    $arglist .= "$sep"."(CCTK_INT2 *)(CCTKARGNUM_$argument<0 ? NULL : (xGH)->data[CCTKARGNUM_$argument][$level-1])";
 	    $sep = ",";
 	  }
 	  elsif ($1 eq INT4)
 	  {
-	    $arglist .= "$sep"."(CCTK_INT4 *)((xGH)->data[CCTKARGNUM_$argument][$level-1])";
+	    $arglist .= "$sep"."(CCTK_INT4 *)(CCTKARGNUM_$argument<0 ? NULL : (xGH)->data[CCTKARGNUM_$argument][$level-1])";
 	    $sep = ",";
 	  }
 	  elsif ($1 eq INT8)
 	  {
-	    $arglist .= "$sep"."(CCTK_INT8 *)((xGH)->data[CCTKARGNUM_$argument][$level-1])";
+	    $arglist .= "$sep"."(CCTK_INT8 *)(CCTKARGNUM_$argument<0 ? NULL : (xGH)->data[CCTKARGNUM_$argument][$level-1])";
 	    $sep = ",";
 	  }
 	  else
