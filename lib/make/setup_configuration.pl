@@ -89,17 +89,16 @@ chdir '..';
 open(INFO, ">config-info") ||
   die "Internal error - couldn't create '$configs_dir/$config/config-info'\n";
 
-print INFO "CONFIG        : $config\n";
-print INFO 'CONFIG-FLAGS  : ';
-foreach $setting (keys %CONFIGURED)
-{
-  print INFO "$setting=$CONFIGURED{$setting} ";
-}
-print INFO "\n";
-print INFO "CONFIG-DATE   : " . gmtime(time()) . "\n";
+print INFO "# CONFIGURATION  : $config\n";
+print INFO "# CONFIG-DATE    : " . gmtime(time()) . " (GMT)\n";
 chop ($hostname = `hostname`);
-print INFO "CONFIG-HOST   : $hostname\n";
-print INFO "CONFIG-STATUS : $retcode\n\n";
+print INFO "# CONFIG-HOST    : $hostname\n";
+print INFO "# CONFIG-STATUS  : $retcode\n";
+print INFO "# CONFIG-OPTIONS :\n";
+foreach $setting (sort keys %CONFIGURED)
+{
+  print INFO "$setting=$CONFIGURED{$setting}\n";
+}
 
 close(INFO);
 
