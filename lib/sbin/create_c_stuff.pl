@@ -569,7 +569,7 @@ sub help_parameter_code
 
   $type = $parameter_database{"\U$implementation $parameter\E type"};
 
-  push(@lines,("  if(CCTK_Equals(param, \"$parameter\"))", "  {"));
+  push(@lines,("  if(param == NULL || CCTK_Equals(param, \"$parameter\"))", "  {"));
 
   push(@lines, "    printf(\"Help asked for parameter: $implementation\::$parameter.\\n\");");
   push(@lines, ($line, "  }"));

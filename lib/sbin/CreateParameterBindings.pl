@@ -340,7 +340,30 @@ int CCTKi_BindingsParameterHelp(const char *identifier, const char *format, FILE
   char *implementation = NULL;
   char *param_name = NULL;
 
-  if(! identifier )  return;
+  if(! identifier )
+  {
+    retval = CCTK_BindingsParametersGlobalHelp(identifier, format, file);
+
+EOT
+
+  foreach $routine (keys %routines, "CCTK_BindingsParametersGlobal")
+  {
+
+    print OUT "      temp_retval =  $routine"."Help(param_name, format, file);";
+
+    print OUT <<EOT;
+ 
+    if(!temp_retval) 
+    {
+      retval = 0;
+    }
+EOT
+  }
+ 
+  print OUT <<EOT;
+
+    return retval;
+  }
 
   Util_SplitString(&implementation, &param_name, identifier, "::");
 
