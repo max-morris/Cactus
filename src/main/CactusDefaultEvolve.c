@@ -40,8 +40,6 @@ static char *rcsid="$Id$";
 #define EVOLUTION 1
 #define OUTPUT    2
 int cactus_terminate;
-/*int cctk_itfirst = 0;
-  int cctk_itlast = 50;*/
 static int cactus_terminate_global = 0;
 #define TERMINATION_RAISED_BRDCAST 4
  
@@ -68,27 +66,46 @@ int CactusDefaultEvolve(tFleshConfig *config)
   int iteration;
   int convergence_level;
 
+  iteration = 0;
+
+
+  CactusStartTimer(config->timer[OUTPUT]);
+  /*** Call OUTPUT for this GH (this routine    ***/
+  /*** checks if output is necessary) and makes ***/
+  /*** an rfrTraverse with CACTUS_ANALYSIS      ***/
+  ForallConvLevels(iteration, convergence_level)
+  {
+      CCTK_rfrTraverse(config->GH[convergence_level],CACTUS_ANALYSIS);
+      CCTK_OutputGH(config->GH[convergence_level]);
+  }
+  EndForallConvLevels;
+      
+  CactusStopTimer(config->timer[OUTPUT]);
+
+
+
   CactusStartTimer(config->timer[EVOLUTION]);
 
   /*
   CCTK_InfoHeader(config);
   */
 
-  iteration = cctk_itfirst;
 
-  while (iteration<cctk_itlast) 
+  while (iteration<cctk_itlast && (cctk_final_time>cctk_initial_time?config->GH[0]->time<cctk_final_time:1)) 
   {
-    iteration++;
 
-#ifdef DEBUG
-    printf("Starting iteration number ... %d\n",iteration);
-#endif
+    iteration++;
 
     /* Step each convergence level */
 
 
     ForallConvLevels(iteration, convergence_level)
     {
+
+#ifdef DEBUG
+    printf("Iteration number ... %d (t=%f)\n",iteration,config->GH[convergence_level]->time);
+#endif
+
       CCTK_StepGH(config->GH[convergence_level]);
       /*
       CCTK_InfoOutput(config->GH[convergence_level], convergence_level);
@@ -109,10 +126,10 @@ int CactusDefaultEvolve(tFleshConfig *config)
     /*** checks if output is necessary) and makes ***/
     /*** an rfrTraverse with CACTUS_ANALYSIS      ***/
     ForallConvLevels(iteration, convergence_level)
-      {
+    {
         CCTK_rfrTraverse(config->GH[convergence_level],CACTUS_ANALYSIS);
 	CCTK_OutputGH(config->GH[convergence_level]);
-      }
+    }
     EndForallConvLevels;
       
     CactusStopTimer(config->timer[OUTPUT]);
@@ -165,6 +182,7 @@ int CCTK_StepGH(cGH *GH) {
   PostStepper(GH);
 
   GH->time = GH->time + GH->delta_time;
+  GH->iteration++;
 
   return 0;
 }
@@ -201,8 +219,7 @@ void PreStepper(cGH *GH) {
    @calls     
    @calledby   
    @history
-   @hauthor Gabrielle Allen
-   @hdate Sep 98 @hdesc Advance GHiteration
+
    @endhistory
 @@*/
 
@@ -210,15 +227,6 @@ void EvolStepper(cGH *GH) {
   /* Call the rfr with Evolution */
   CCTK_rfrTraverse(GH, CACTUS_EVOL);
   /* after Evolution check for NANs */
-
-#ifdef 0
-  /* Increment physical time now */
-  GH->phys_time = GH->phys_time + GH->dt0;
-#endif
-
-  GH->iteration++;
-
-
 }
  /*@@
    @routine    BoundStepper
