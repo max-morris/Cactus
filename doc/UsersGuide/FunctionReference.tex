@@ -3080,8 +3080,7 @@ its molecules near interprocessor boundaries.  (This ensures that the
 interpolation results are independent of the interprocessor decomposition,
 at least up to floating-point roundoff errors.)
 If the ghost-zone size is too small, the interpolator should return
-some error code, possibly
-\verb|CCTK_ERROR_INTERP_GHOST_SIZE_TOO_SMALL|.
+the \verb|CCTK_ERROR_INTERP_GHOST_SIZE_TOO_SMALL| error code.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
