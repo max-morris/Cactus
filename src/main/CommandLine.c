@@ -12,6 +12,9 @@
 #include <string.h>
 
 #include "CommandLine.h"
+#include "flesh.h"
+#include "cGH.h"
+#include "Comm.h"
 #include "WarnLevel.h"
 #include "CCTK_Bindings.h"
 
@@ -25,6 +28,8 @@ static char *rcsid = "$Header$";
 char *compileTime(void);
 char *compileDate(void);
 int CCTK_GetCommandLine(char ***outargv);
+
+static int redirectsubs;
 
 /* FIXME. This shouldn't be in this file */
 int CCTK_IsThornCompiled(const char *thorn) ;
@@ -137,10 +142,28 @@ void CCTK_CommandLineErrorLevel(const char *optarg)
 
 }
 
-void CCTK_CommandLineRedirectStderr(void)
+ /*@@
+   @routine    CCTK_CommandLineRedirectStdout
+   @date       Fri Jul 23 11:32:46 1999
+   @author     Tom Goodale
+   @desc 
+   
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+void CCTK_CommandLineRedirectStdout(void)
 {
+  /* Set the flag to say we need to redirect the stdout. */
+
+  redirectsubs = 1;
 
 }
+
 void CCTK_CommandLineListThorns(void)
 {
   int i;
@@ -153,6 +176,20 @@ void CCTK_CommandLineListThorns(void)
   exit(1);
 }
 
+ /*@@
+   @routine    CCTK_CommandLineVersion
+   @date       Fri Jul 23 12:57:45 1999
+   @author     Tom Goodale
+   @desc 
+   Prints version info
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
 void CCTK_CommandLineVersion(void)
 {
   int argc;
@@ -165,6 +202,20 @@ void CCTK_CommandLineVersion(void)
   exit(1);
 }
 
+ /*@@
+   @routine    CCTK_CommandLineHelp
+   @date       Fri Jul 23 12:57:23 1999
+   @author     Tom Goodale
+   @desc 
+   Prints a help message
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
 void CCTK_CommandLineHelp(void)
 {
   int argc;
@@ -193,6 +244,20 @@ void CCTK_CommandLineHelp(void)
   exit(1);
 }
 
+ /*@@
+   @routine    CCTK_CommandLineUsage
+   @date       Fri Jul 23 12:57:04 1999
+   @author     Tom Goodale
+   @desc 
+   Prints a usage message.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
 void CCTK_CommandLineUsage(void)
 {
   int argc;
@@ -204,6 +269,42 @@ void CCTK_CommandLineUsage(void)
   exit(1);
 }  
 
+ /*@@
+   @routine    CCTK_CommandLineFinished
+   @date       Fri Jul 23 12:55:39 1999
+   @author     Tom Goodale
+   @desc 
+   Subroutine to do anything which has to be done based upon the 
+   commandline, but needs to be have a default.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+void CCTK_CommandLineFinished(void)
+{
+  int myproc;
+
+    /* Redirect output from sub-processors ... */
+
+  if ((myproc = CCTK_MyProc(NULL)) != 0) 
+  {
+    char fname[256];
+    if (redirectsubs)
+    {
+      sprintf(fname,"CCTK_Proc%d.out",myproc);
+    }
+    else
+    {
+      sprintf(fname,"/dev/null");
+    }
+
+    freopen(fname,"w",stdout);
+  }
+}
 
 
 
@@ -237,4 +338,6 @@ int CCTK_IsThornCompiled(const char *thorn)
   
   return 0;
 }
+
+
 

@@ -34,25 +34,15 @@ int dummy(tFleshConfig *);
 int CallStartupFunctions(tFleshConfig *ConfigData)
 {
 
+
   CCTK_BindingsScheduleRegister("STARTUP", NULL);
 
-  /*
-  RegisterMainFunction(0, dummy);
-  RegisterMainFunction(1, dummy);
-  RegisterMainFunction(2, dummy);
-
-  */
-  SetupMainFunctions();
-  SetupCommFunctions();
-  SetupIOFunctions();
+  /*  These used to be here to set the defaults afterwards.  Now set the default before. 
+   *   SetupMainFunctions();
+   *   SetupCommFunctions();
+   *   SetupIOFunctions();
+   */
 
   return 0;
 }
   
-
-int dummy(tFleshConfig *foo)
-{
-  printf("I'm in dummy\n");
-
-  return 0;
-}

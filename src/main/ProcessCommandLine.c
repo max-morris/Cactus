@@ -18,7 +18,6 @@ static int argc;
 
 static char **argv;
 
-
  /*@@
    @routine    ProcessCommandLine
    @date       Thu Sep 24 10:33:31 1998
@@ -79,7 +78,7 @@ int ProcessCommandLine(int *inargc, char ***inargv, tFleshConfig *ConfigData)
 	case 'x': CCTK_CommandLineTestParameters(optarg); break;
 	case 'W': CCTK_CommandLineWarningLevel(optarg); break;
 	case 'E': CCTK_CommandLineErrorLevel(optarg); break;
-	case 'r': CCTK_CommandLineRedirectStderr(); break;
+	case 'r': CCTK_CommandLineRedirectStdout(); break;
 	case 'T': CCTK_CommandLineListThorns(); break;
 	case 'v': CCTK_CommandLineVersion(); break;
 	case 'h': 
@@ -103,6 +102,8 @@ int ProcessCommandLine(int *inargc, char ***inargv, tFleshConfig *ConfigData)
   {
     CCTK_CommandLineUsage();
   }
+
+  CCTK_CommandLineFinished();
 
   return 0;
 }

@@ -24,16 +24,20 @@
 
 /* This macro defines a global variable with the name of the function
  * and a function which allows people to set its value.
+ *
+ * The function can only be called twice - to set the default, and to overload it.
  */
 #define OVERLOADABLE_FUNCTION(name)                               \
 RETURN_TYPE (*CCTK_##name)(ARGUMENTS) = NULL;                     \
 int CCTK_Overload##name(RETURN_TYPE (*func)(ARGUMENTS))           \
 {                                                                 \
   int return_code;                                                \
-  if(! CCTK_##name)                                               \
+  static int overloaded = 0;                                      \
+  if(overloaded < 2)                                              \
   {                                                               \
      CCTK_##name = func;                                          \
-     return_code = 1;                                             \
+     overloaded++;                                                \
+     return_code = overloaded;                                    \
   }                                                               \
   else                                                            \
   {                                                               \

@@ -55,6 +55,8 @@ static char *rcsid = "$Header$";
 int InitialiseCactus(int *argc, char ***argv, tFleshConfig *ConfigData)
 {
 
+  InitialiseSubsystemDefaults();
+
   ProcessEnvironment(argc, argv, ConfigData);
 
   ProcessCommandLine(argc, argv, ConfigData);

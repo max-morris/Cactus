@@ -28,4 +28,8 @@ OverloadMain.c\
 CommandLine.c\
 GHExtensions.c\
 WarnLevel.c\
-ActiveThorns.c
+ActiveThorns.c\
+Parameters.c\
+Subsystems.c
+
+
