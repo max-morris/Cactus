@@ -126,13 +126,19 @@ test-suites run on all suppported architectures.  Problems found
 should be fixed or noted in the release notes.  This is an iterative
 procedure, as any commits made to fix problems need to be checked on
 all other architectures.
+\item[{\em Check example parameter files}]
+The example parameter files in thorn {\em par} directories should be
+run and updated for any additional or changed thorns or parameters.
+\item[{\em Update ReleaseNotes}]
+The release notes should be added to the \verb|doc/ReleaseNotes| file.
 \item[{\em Tag the code}]
 Tag the code with the latest release tag and update the {\tt LATEST}
 and {\tt STABLE} tags.  The easiest way to do this is from a clean
 checkout.
 \begin{verbatim}
+cvs -d:pserver:<...>@cvs.cactuscode.org:/cactusdevcvs co Cactus
 cd /Cactus
-cvs -q update -d  # To check for any missing/not up-to-date files.
+make checkout
 cvs tag Cactus_4_0_Beta_X
 cvs tag -F LATEST
 cvs tag -F STABLE
@@ -148,8 +154,8 @@ command is of the form
 
 \begin{verbatim}
 cd /cactus
-mkdir betaX
-mv Cactus{,Base,Connect,Einstein,X,X,X} betaX
+mkdir 4.0/betaX
+mv Cactus{,Base,Bench,Connect,Einstein,Elliptic,Examples,...} betaX
 \end{verbatim}
 
 \item[{\em Copy new module files}]
@@ -160,6 +166,7 @@ cp -r /cactusdevcvs/Cactus{,Base,Connect,Einstein,X,X,X} .
 \item[{\em Fix permissions on new module files}]
 \begin{verbatim}
 find Cactus{,Base,Connect,Einstein,X,X,X} -type d -exec chmod 777 {} \;
+export CVSROOT=/cactus
 Setperms.pl public Cactus{,Base,Connect,Einstein,X,X,X}
 \end{verbatim}
 \item[{\em Update CVS {\tt modules} file for new modules}]
@@ -192,3 +199,8 @@ state should be marked as {\tt closed}.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \end{cactuspart}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "MaintGuide"
+%%% End: 
