@@ -317,11 +317,12 @@ sub get_applications
   print "  [2] Example F77 wave equation evolver\n";
   print "  [3] Example C   wave equation evolver\n";
   print "  [4] Example C++ wave equation evolver\n";
-  print "  [5] Benchmark (ADM)\n";
+  print "  [5] Example free form F90 wave equation evolver\n";
+  print "  [6] Benchmark (ADM)\n";
   print "\n";
     
   # Put number of applications here
-  $count = 5;
+  $count = 6;
 
   print "Checkout applications h)elp, q)uit, range [1-$count] : ";
 
@@ -416,12 +417,29 @@ sub get_applications
 	    &CheckOut("CactusPUGH/PUGH",$repository);
 	    print("Completed checkout of application Wave C++\n");
 	  }	  
-          elsif ($i == 5)
+	  elsif ($i == 5)
+	  {
+	    # Checkout Free Form F90 WaveToy
+	    print("\n");
+	    &CheckOut("CactusWave/WaveToyFreeF90",$repository);
+	    &CheckOut("CactusWave/IDScalarWave",$repository);
+	    &CheckOut("CactusBase/Boundary",$repository);
+	    &CheckOut("CactusBase/CartGrid3D",$repository);
+	    &CheckOut("CactusBase/IOUtil",$repository);
+	    &CheckOut("CactusBase/IOBasic",$repository);
+	    &CheckOut("CactusBase/Time",$repository);
+	    &CheckOut("CactusPUGHIO/IOASCII",$repository);
+	    &CheckOut("CactusPUGH/PUGH",$repository);
+	    print("Completed checkout of application Wave FreeF90\n");
+	  }	  
+          elsif ($i == 6)
           {
             # Checkout ADM Benchmark
 	    print("\n");
-	    &CheckOut("CactusEinstein/ADM",$repository);
+	    &CheckOut("CactusBench/BenchADM",$repository);
 	    &CheckOut("CactusEinstein/Einstein",$repository);
+	    &CheckOut("CactusEinstein/ADMConstraints",$repository);
+	    &CheckOut("CactusEinstein/IDAnalyticBH",$repository);
 	    &CheckOut("CactusBase/Boundary",$repository);
 	    &CheckOut("CactusBase/Time",$repository);
 	    &CheckOut("CactusBase/CartGrid3D",$repository);
