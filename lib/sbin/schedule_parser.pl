@@ -77,6 +77,18 @@ sub create_schedule_code
 
   %schedule_ordering = @schedule_data;
 
+  $schedule_ordering{":THORNS:"} = join(" ", keys %thorns);
+
+  $schedule_ordering{":ROUTINES:"} = "";
+
+  foreach $thorn (keys %thorns)
+  {
+    foreach $routine (split(" ", $schedule_ordering{"\U$thorn"}))
+    {
+      $schedule_ordering{":ROUTINES:"} .= "$routine ";
+    }
+  }
+
   return  ($wrapper_files,$rfr_files,$startup_files, %schedule_ordering);
 
 }
@@ -131,23 +143,59 @@ sub write_startup_header {
 sub create_RegisterRFR
 {
   
-  local ($dir,@rfr_routines) = @_;
-  local ($rfr_calls,$file,$outfile);
+  local ($dir,$n_rfrfiles, @rest) = @_;
+  local ($rfr_calls, $rfr_order_calls, $rfr_order_prototypes, $outfile);
+  local(@sorted_routines);
+  local($routine);
+  local($order, %order);
+
+  if($n_rfrfiles == 0)
+  {
+    @rfr_files = ();
+    %schedule_data = @rest;
+  }
+  else
+  {
+    @rfr_files = @rest[0..$n_rfrfiles-1];
+    %schedule_data = @rest[$n_rfrfiles..$#rest];
+  }
 
   $outfile = "$dir/Schedule/Cactus_RegisterRFR.c";
   open (OUT, ">$outfile") || die "Cannot open $outfile";
 
   $rfr_calls = "";
-  foreach $file (@rfr_routines) {
+  $rfr_order_calls = "";
+  $rfr_order_prototypes = "";
+
+  # Sort the rfr routines
+  @sorted_routines = &OrderList("Scheduling error", ":ROUTINES:", %schedule_data);
+  $order = 1;
+
+  foreach $routine (@sorted_routines)
+  {
+    if($routine)
+    {
+      $rfr_order_prototypes .= "void $routine(cGH *);\n";
+      $rfr_order_calls .= "  rfrRegisterOrderNumber($routine, $order);\n";
+      $order++;
+    }
+  }
+
+  foreach $file (@rfr_files) 
+  {
     $rfr_calls = "$rfr_calls ".$file."(data);\n";
   }
 
   print OUT <<EOT;
 
-  Cactus_RegisterRFR(void *data)
-  {
-   $rfr_calls
-  }
+#include "flesh.h"
+
+$rfr_order_prototypes
+void Cactus_RegisterRFR(void *data)
+{
+$rfr_order_calls
+$rfr_calls
+}
 EOT
 
   return;
@@ -202,36 +250,41 @@ sub parse_schedule_ccl
   local($thorn,$implementation,$type,@data) = @_;
   local($proto,$out,$line,$line_number,@compile_files);
   local(%schedule_ordering);
+  local($routine);
 
 # Parse the data from the thorns schedule.ccl file
   for ($line_number=0; $line_number<@data; $line_number++)
   {
     $line = @data[$line_number];
 
+    @options = ();
+
     # Parse the entire schedule block
     if ($line =~ m/\s*schedule\s*(.*)\s*at\s*(.*)/i)
     {
-      ($wrapper_file,$proto_block,$out_block) = &parse_schedule_block($thorn,$implementation,$type,@data);
+      $routine = $1;
+      @options = split(" ", $2);
+
+      ($wrapper_file,$proto_block,$out_block, $routine) = &parse_schedule_block($thorn,$implementation,$type,@data);
+
       $proto .= "$proto_block"; 
       $out .= "$out_block";
       $compile_files .= " $wrapper_file";
 
-      $routine = $1;
-      if($2)
+      if(@options)
       {
 	$schedule_ordering{"\U$thorn"} .= " $routine";
 
-	@options = split(" ", $2);
 	for($option = 0; $option < $#options; $option++)
 	{
 	  if($options[$option] =~ m:\bBEFORE\b:i)
 	  {
-	    $schedule_ordering{"\U%thorn BEFORE"} .= " $options[$option+1]";
+	    $schedule_ordering{"\U$routine BEFORE"} .= " $options[$option+1]";
 	    $option++;
 	  }
 	  elsif($options[$option] =~ m:\bAFTER\b:i)
 	  {
-	    $schedule_ordering{"\U%thorn \U$routine AFTER"} .= " $options[$option+1]";
+	    $schedule_ordering{"\U$routine AFTER"} .= " $options[$option+1]";
 	    $option++;
 	  }
 	}
@@ -337,7 +390,7 @@ sub find_schedule_block
       else
       {
 	print STDERR "No description listed for routine '$routine' registered at '$rfr_entry'\n";
-	$desc = "Please write a description of what this routine does.";
+	$desc = "\"Please write a description of what this routine does.\"";
       }
       return ($routine,$rfr_entry,$desc,@block);
     }
@@ -377,12 +430,12 @@ sub parse_schedule_block
 
   # At the moment can schedule at RFR entry points of at STARTUP
   if ($type eq "startup" && $when =~ /\s*STARTUP\s*/i) {
-    ($wrapper_file, $proto, $out) = &parse_schedule_at_STARTUP($thorn,$implementation,$routine,$desc,@block);
+    ($wrapper_file, $proto, $out, $routine) = &parse_schedule_at_STARTUP($thorn,$implementation,$routine,$desc,@block);
   } elsif ($type eq "rfr" && $when !~ /\s*STARTUP\s*/i) {
-    ($wrapper_file,$proto,$out) = &parse_schedule_at_RFR($thorn,$implementation,$routine,$when,$desc,@block);
+    ($wrapper_file,$proto,$out, $routine) = &parse_schedule_at_RFR($thorn,$implementation,$routine,$when,$desc,@block);
   }
 
-  return ($wrapper_file,$proto,$out);
+  return ($wrapper_file,$proto,$out, $routine);
 
 }
 
@@ -393,7 +446,7 @@ sub parse_schedule_at_STARTUP {
 
   $out .= "  $routine();\n";
 
-  return ("", "", $out);
+  return ("", "", $out, $routine);
 
 }
 
@@ -413,7 +466,6 @@ sub parse_schedule_at_RFR {
     $line = @block[$i];
     if ($line =~ m/\s*LANG\s*:\s*FORTRAN\s*$/i)
     {
-      $out .= "  rfrRegisterFunction(GH->rfr_top,GH,".$routine."_wrapper,$when,$desc);\n";
       $got_it++;
 
       # Write the rfr called fortran wrapper routine
@@ -432,6 +484,8 @@ sub parse_schedule_at_RFR {
   {
     print "Error in LANG in schedule.ccl $got_it\n";
   }
+
+  $out .= "  rfrRegisterFunction(GH->rfr_top,GH,$routine,$when,$desc);\n";
  
 # Look for Storage
   for ($i=0; $i<@block; $i++) 
@@ -501,7 +555,7 @@ sub parse_schedule_at_RFR {
     }
   }
 
-  return ($wrapper_file,$proto,$out);
+  return ($wrapper_file,$proto,$out, $routine);
 
 }
 

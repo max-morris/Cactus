@@ -51,6 +51,7 @@ sub CreateParameterBindingFile
   $line = "\#include \"CParameterStructNames.h\"";
   push(@data, $line);
   $line = "\#include \"Misc.h\"";
+  $line = "\#include \"ParameterBindings.h\"";
   push(@data, $line);
   push(@data, "");
 
@@ -117,6 +118,45 @@ sub CreateParameterBindingFile
 
   push(@data, "");
 
+  # Getting subroutine
+
+  push(@data, ("int $prefix"."Get(const char *param, void **value)", "{"));
+  push(@data, ("  int retval;", "  retval = 1;", ""));
+
+
+  foreach $parameter (keys %parameters)
+  {
+    push(@data, &get_parameter_code($structure,$parameters{$parameter}, 
+				       $parameter, %parameter_database));
+    push(@data, "");
+
+  }    
+
+  push(@data, "  return retval;");
+
+  push(@data, "}");
+
+  push(@data, "");
+
+  # Help subroutine
+
+  push(@data, ("int $prefix"."Help(const char *param, const char *format, FILE *file)", "{"));
+  push(@data, ("  int retval;", "  retval = 1;", ""));
+
+
+  foreach $parameter (keys %parameters)
+  {
+    push(@data, &help_parameter_code($structure,$parameters{$parameter}, 
+				       $parameter, %parameter_database));
+    push(@data, "");
+
+  }    
+
+  push(@data, "  return retval;");
+
+  push(@data, "}");
+
+  push(@data, "");
 
   return @data;
 }
@@ -432,6 +472,76 @@ sub order_params
   }
   
   return (@float_params, @string_params, @int_params);
+}
+
+sub get_parameter_code
+{
+  local($structure, $implementation,$parameter, %parameter_database) = @_;
+  local($type, $type_string);
+  local($line, @lines);
+  local($range);
+  local($quoted_range);
+
+  $type = $parameter_database{"\U$implementation $parameter\E type"};
+
+  push(@lines,("  if(CCTK_Equals(param, \"$parameter\"))", "  {"));
+
+  if( $type eq "KEYWORD")
+  {
+    $line  = "    *value = $structure.$parameter;\n" ;
+    $line .= "    retval = PARAMETER_KEYWORD;" ;
+  }
+  elsif( $type eq "STRING")
+  {
+    $line  = "    *value = $structure.$parameter;\n" ;
+    $line .= "    retval = PARAMETER_STRING;" ;
+  }
+  elsif( $type eq "SENTENCE")
+  {
+    $line  = "    *value = $structure.$parameter;\n" ;
+    $line .= "    retval = PARAMETER_SENTENCE;" ;
+  }
+  elsif($type eq "INTEGER")
+  {
+    $line  = "    *value = \&($structure.$parameter);\n" ;
+    $line .= "    retval = PARAMETER_INTEGER;" ;
+  }
+  elsif($type eq "REAL")
+  {
+    $line  = "    *value = \&($structure.$parameter);\n" ;
+    $line .= "    retval = PARAMETER_REAL;" ;
+  }
+  elsif($type eq "LOGICAL")
+  {
+    $line  = "    *value = \&($structure.$parameter);\n" ;
+    $line .= "    retval = PARAMETER_LOGICAL;" ;
+  }
+  else
+  {
+    print "Unknown parameter type $type\n";
+  }
+
+  push(@lines, ($line, "  }"));
+    
+  return @lines;
+}
+
+sub help_parameter_code
+{
+  local($structure, $implementation,$parameter, %parameter_database) = @_;
+  local($type, $type_string);
+  local($line, @lines);
+  local($range);
+  local($quoted_range);
+
+  $type = $parameter_database{"\U$implementation $parameter\E type"};
+
+  push(@lines,("  if(CCTK_Equals(param, \"$parameter\"))", "  {"));
+
+  push(@lines, "    printf(\"Help asked for parameter: $implementation\::$parameter.\\n\");");
+  push(@lines, ($line, "  }"));
+    
+  return @lines;
 }
   
 1;
