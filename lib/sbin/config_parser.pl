@@ -231,6 +231,7 @@ sub CreateParameterBindings
   local(%interface_database);
   local($start_dir);
   local($line);
+  local(%these_parameters);
   
   %parameter_database = @rest[0..(2*$n_param_database)-1];
   %interface_database = @rest[2*$n_param_database..$#rest];
@@ -249,7 +250,10 @@ sub CreateParameterBindings
   }
   chdir "Parameters";
 
-  @data = &CreatePublicParamBindings("CCTK_BindingsParametersPublic", $n_param_database, @rest);
+
+  %these_parameters = &get_public_parameters(%parameter_database);
+
+  @data = &CreateParameterBindingFile("CCTK_BindingsParametersPublic", "PUBLIC_PARAMETER_STRUCT", scalar(keys %these_parameters), %these_parameters, %parameter_database);
 
   open (OUT, ">Public.c") || die "Cannot open Public.c";
 
@@ -378,20 +382,17 @@ EOT
 
 
 
-sub CreatePublicParamBindings
+sub CreateParameterBindingFile
 {
-  local($prefix, $n_param_database, @rest) = @_;
+  local($prefix, $structure, $n_parameters, @rest) = @_;
   local(%parameter_database);
-  local(%interface_database);
   local($line,@data);
-  local(%public_parameters);
+  local(%parameters);
   local($type, $type_string);
   local(@data);
 
-  %parameter_database = @rest[0..2*$n_param_database-1];
-  %interface_database = @rest[2*$n_param_database..$#rest];
-
-  %public_parameters = &get_public_parameters(%parameter_database);
+  %parameters = @rest[0..2*$n_parameters-1];
+  %parameter_database = @rest[2*$n_parameters..$#rest];
 
   # Header Data
   $line = "\#include <stdio.h>";
@@ -410,28 +411,28 @@ sub CreatePublicParamBindings
 
   push(@data,( "struct ", "{"));
 
-  foreach $parameter (keys %public_parameters)
+  foreach $parameter (keys %parameters)
   {
-    $type = $parameter_database{"\U$public_parameters{$parameter} $parameter\E type"};
+    $type = $parameter_database{"\U$parameters{$parameter} $parameter\E type"};
       
     $type_string = &get_c_type_string($type);
-    
+
     $line = $type_string ." " .$parameter . ";";
 
     push(@data, $line);
   }
 
-  push(@data, "} PUBLIC_PARAM_STRUCT;");
+  push(@data, "} $structure;");
 
   push(@data, "");
 
   # Initialisation subroutine
   push(@data, ("int $prefix"."Initialise(void)", "{"));
 
-  foreach $parameter (keys %public_parameters)
+  foreach $parameter (keys %parameters)
   {
 
-    push(@data, &set_parameter_default("PUBLIC_PARAM_STRUCT",$public_parameters{$parameter}, 
+    push(@data, &set_parameter_default($structure,$parameters{$parameter}, 
 				       $parameter, %parameter_database));
     
     push(@data, "");
@@ -450,9 +451,9 @@ sub CreatePublicParamBindings
   push(@data, ("  int retval;", "  retval = 1;", ""));
 
 
-  foreach $parameter (keys %public_parameters)
+  foreach $parameter (keys %parameters)
   {
-    push(@data, &set_parameter_code("PUBLIC_PARAM_STRUCT",$public_parameters{$parameter}, 
+    push(@data, &set_parameter_code($structure,$parameters{$parameter}, 
 				       $parameter, %parameter_database));
     push(@data, "");
 
@@ -597,6 +598,8 @@ sub set_parameter_default
 
   $default = $parameter_database{"\U$implementation $parameter\E default"};
   $type = $parameter_database{"\U$implementation $parameter\E type"};
+
+    print "Getting type of $parameter from thorn $parameters{$parameter} - type is ..$type...  in defaults\n";
 
   $type_string = &get_c_type_string($type);
 
