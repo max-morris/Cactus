@@ -3,10 +3,10 @@
 #  @file      CST
 #  @date      Sep 1998
 #  @author    Tom Goodale
-#  @desc 
-#  Parses the the configuration files for thorns.
-#  @enddesc 
-#  @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.51 2003-01-28 16:15:44 tradke Exp $
+#  @desc
+#             Parses the the configuration files for thorns.
+#  @enddesc
+#  @version   $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.52 2003-07-22 11:02:19 tradke Exp $
 #@@*/
 
 # Global parameter to track the number of errors from the CST
@@ -14,7 +14,7 @@
 # is zero.
 
 $CST_errors = 0;
-$error_string = "";
+$error_string = '';
 
 
 ##########################################################################
@@ -22,9 +22,9 @@ $error_string = "";
 
 $activethorns = shift(@ARGV);
 
-if (! $activethorns) 
+if (! $activethorns)
 {
-    printf "Usage: CST [-top=<TOP>] [-config_dir=<config directory>] [-cctk_home=<CCTK home dir>] -bindings_dir=<CCTK bindings directory> ActiveThornList";
+    printf 'Usage: CST [-top=<TOP>] [-config_dir=<config directory>] [-cctk_home=<CCTK home dir>] -bindings_dir=<CCTK bindings directory> ActiveThornList';
     exit;
 }
 
@@ -61,7 +61,7 @@ $system_database{"BINDINGS_DIR"} = $bindings_dir;
 
 $sbin_dir = "$cctk_home/lib/sbin";
 
-if (!-e "$sbin_dir/parameter_parser.pl" ) 
+if (!-e "$sbin_dir/parameter_parser.pl" )
 {
   die "Unable to find CCTK sbin directory - tried $sbin_dir\n";
 }
@@ -157,12 +157,12 @@ $make_thornlist = &CreateMakeThornlist(\%thorns, \%interface_database);
 # Stop the make process if there were any errors
 if ($CST_errors)
 {
-    if ($CST_errors == 1) 
+    if ($CST_errors == 1)
     {
       $comment1 = "was 1 error";
       $comment2 = "This";
     }
-    else 
+    else
     {
       $comment1 = "were $CST_errors errors";
       $comment2 = "These";
@@ -195,15 +195,9 @@ exit;
 #  @routine    CreateThornList
 #  @date       Thu Jan 28 15:18:45 1999
 #  @author     Tom Goodale
-#  @desc 
+#  @desc
 #  Parses the ActiveThorns file and extracts the thorn names.
-#  @enddesc 
-#  @calls     
-#  @calledby   
-#  @history 
-#
-#  @endhistory 
-#
+#  @enddesc
 #@@*/
 
 sub CreateThornList
@@ -226,7 +220,7 @@ sub CreateThornList
     s/\#(.*)$//g;
     s/!(.*)$//g;
 
-    s/\n//g;		# Different from chop...
+    s/\n//g;                # Different from chop...
 
     #Ignore blank lines
     next if (m:^\s*$:);
@@ -237,54 +231,54 @@ sub CreateThornList
 
       $package = $1;
       $thorn_name = $2;
-      
+
       # Check valid thornname
-      
+
       if (!TestName(1,$thorn_name))
       {
-	$message = "Thorn name $thorn_name is not valid";
-	$hint = "Thorn names must begin with a letter, can only contain letters, numbers and underscores, and must contain 27 or less\n";
-	&CST_error(0,$message,$hint,__LINE__,__FILE__);
+        $message = "Thorn name $thorn_name is not valid";
+        $hint = "Thorn names must begin with a letter, can only contain letters, numbers and underscores, and must contain 27 or less\n";
+        &CST_error(0,$message,$hint,__LINE__,__FILE__);
       }
 
       # No longer strip thorn_ off the beginning of a thorn name.
       #      $thorn_name =~ s/thorn_//;
 
       if( -d "$cctk_home/arrangements/$thorn")
-      {      
+      {
         if( -r "$cctk_home/arrangements/$thorn/param.ccl" &&
-	    -r "$cctk_home/arrangements/$thorn/interface.ccl" &&
-	    -r "$cctk_home/arrangements/$thorn/schedule.ccl")
-	{ 
-	  if( $thornlist{"$thorn_name"} )
-	  {
-	    $thornlist{"$thorn_name"} =~ m:.*/(.*)/[^/]*$:;
-	    if ($package ne $1)
-	    {
-	      $message = "Duplicate thornname $thorn_name in $1 and $package";
-	      &CST_error(0,$message,"",__LINE__,__FILE__);
-	    }
-	    else
-	    {
-	      $message = "Ignoring duplicate thorn $package/$thorn_name";
-	      &CST_error(1,$message,"",__LINE__,__FILE__);	     
-	    } 
-	  }
-	  else
-	  {
-	    $thornlist{"$thorn_name"} = "$cctk_home/arrangements/$thorn";
-	  }
+            -r "$cctk_home/arrangements/$thorn/interface.ccl" &&
+            -r "$cctk_home/arrangements/$thorn/schedule.ccl")
+        {
+          if( $thornlist{"$thorn_name"} )
+          {
+            $thornlist{"$thorn_name"} =~ m:.*/(.*)/[^/]*$:;
+            if ($package ne $1)
+            {
+              $message = "Duplicate thornname $thorn_name in $1 and $package";
+              &CST_error(0,$message,"",__LINE__,__FILE__);
+            }
+            else
+            {
+              $message = "Ignoring duplicate thorn $package/$thorn_name";
+              &CST_error(1,$message,"",__LINE__,__FILE__);
+            }
+          }
+          else
+          {
+            $thornlist{"$thorn_name"} = "$cctk_home/arrangements/$thorn";
+          }
         }
-	else
-	{
-	  $message = "$thorn - missing ccl file(s)";
-	  &CST_error(0,$message,"",__LINE__,__FILE__);
-	  next;
+        else
+        {
+          $message = "$thorn - missing ccl file(s)";
+          &CST_error(0,$message,"",__LINE__,__FILE__);
+          next;
         }
       }
       else
       {
-	 $message = "Missing thorn $thorn";
+         $message = "Missing thorn $thorn";
          &CST_error(0,$message,"",__LINE__,__FILE__);
       }
     }
@@ -300,15 +294,9 @@ sub CreateThornList
 #  @routine    get_global_parameters
 #  @date       Thu Jan 28 15:21:52 1999
 #  @author     Tom Goodale
-#  @desc 
+#  @desc
 #  Gets a list of all global parameters and the thorns they are in.
-#  @enddesc 
-#  @calls     
-#  @calledby   
-#  @history 
-#
-#  @endhistory 
-#
+#  @enddesc
 #@@*/
 
 sub get_global_parameters
@@ -328,21 +316,15 @@ sub get_global_parameters
   return %global_parameters;
 }
 
-    
+
 
 #/*@@
 #  @routine    CreateMakeThornlist
 #  @date       Thu Jan 28 15:22:31 1999
 #  @author     Tom Goodale
-#  @desc 
+#  @desc
 #  Creates the lines which should be placed in the make.thornlist file.
-#  @enddesc 
-#  @calls     
-#  @calledby   
-#  @history 
-#
-#  @endhistory 
-#
+#  @enddesc
 #@@*/
 
 sub CreateMakeThornlist
@@ -374,7 +356,6 @@ sub CreateMakeThornlist
       # Only place arrangement_name/thorn_name in the file.
       $config_thornlist .= " $2/$3";
     }
-
   }
 
   $thorn_linklist .= ' ' . &CreateThornLinkList($thorns, $interface_database);
@@ -440,32 +421,29 @@ sub CreateThornLinkList
     push (@liblist, split (/\s/, $interface_database->{"IMPLEMENTATION \U$lib\E THORNS"}));
   }
 
-  if ($cross_inherits == 0)
+  # remove duplicate thornlibs in the list, keeping the rightmost instance
+  for ($i = 0; $i <= $#liblist; $i++)
   {
-    # remove duplicate thornlibs in the list, keeping the rightmost instance
-    for ($i = 0; $i <= $#liblist; $i++)
+    for ($j = $i + 1; $j <= $#liblist; )
     {
-      for ($j = $i + 1; $j <= $#liblist; )
+      if ($liblist[$i] eq $liblist[$j])
       {
-        if ($liblist[$i] eq $liblist[$j])
-        {
-          splice (@liblist, $j, 1);
-        }
-        else
-        {
-          $j++;
-        }
+        splice (@liblist, $j, 1);
+      }
+      else
+      {
+        $j++;
       }
     }
-    $liblist = join (' ', reverse @liblist);
   }
-  else
+  $liblist = join (' ', reverse @liblist);
+
+  if ($cross_inherits)
   {
     # FIXME: Don't know how to handle cross-dependent thornlibs.
     #        For now we just repeat them twice on the linker line
     #        hoping that this will resolve all external symbols.
-    $liblist = join (' ', @liblist);
-    $liblist .= " ".$liblist;
+    $liblist .= ' ' . $liblist;
   }
 
   return ($liblist);
@@ -475,15 +453,9 @@ sub CreateThornLinkList
 #  @routine    CreateActiveThornsHeader
 #  @date       Wed Feb 17 16:06:20 1999
 #  @author     Gabrielle Allen
-#  @desc 
+#  @desc
 #  Creates the lines which should be placed in the thornlist.h
-#  @enddesc 
-#  @calls     
-#  @calledby   
-#  @history 
-#
-#  @endhistory 
-#
+#  @enddesc
 #@@*/
 
 sub CreateActiveThornsHeader
@@ -505,13 +477,13 @@ sub CreateActiveThornsHeader
     $nthorns++;
 
     # Only place package_name/thorn_name in the file.
-    $header .= "\"$2/$3\",\n"; 
+    $header .= "\"$2/$3\",\n";
   }
 
   $header .= "\"\"};\n\n";
   $header .= "static int nthorns = $nthorns;\n\n";
 
-  return ($header); 
+  return ($header);
 }
 
 
@@ -519,16 +491,10 @@ sub CreateActiveThornsHeader
 #  @routine    CreateDefineThornsHeader
 #  @date       Wed April 6 16:06:20 1999
 #  @author     Gabrielle Allen
-#  @desc 
+#  @desc
 #  Creates the lines which should be placed in the definethorn.h
 #  which contains a #define <THORNNAME> for each thorn.
-#  @enddesc 
-#  @calls     
-#  @calledby   
-#  @history 
-#
-#  @endhistory 
-#
+#  @enddesc
 #@@*/
 
 sub CreateDefineThornsHeader
@@ -549,10 +515,10 @@ sub CreateDefineThornsHeader
     $nthorns++;
 
     # Only place package_name/thorn_name in the file.
-    $header .= "#define \U$2"."_"."\U$3\E\n"; 
+    $header .= "#define \U$2"."_"."\U$3\E\n";
   }
 
-  return ($header); 
+  return ($header);
 }
 
 
@@ -560,17 +526,11 @@ sub CreateDefineThornsHeader
 #  @routine    CreateDefineThisThornHeader
 #  @date       Thu April 22nd 1999
 #  @author     Gabrielle Allen
-#  @desc 
+#  @desc
 #  Creates the lines which should be placed in the definethisthorn.h
-#  which contains a #define CCTK_THORN <THORNNAME> and a 
+#  which contains a #define CCTK_THORN <THORNNAME> and a
 #  #define CCTK_ARRANGEMENT <ARRANGEMENTNAME> for each thorn.
-#  @enddesc 
-#  @calls     
-#  @calledby   
-#  @history 
-#
-#  @endhistory 
-#
+#  @enddesc
 #@@*/
 
 sub CreateDefineThisThornHeader
@@ -589,14 +549,14 @@ sub CreateDefineThisThornHeader
 
     # Only place package_name/thorn_name in the file.
     $header .= "#ifdef THORN_IS_$thorn\n";
-    $header .= "#define CCTK_THORN   $3\n"; 
+    $header .= "#define CCTK_THORN   $3\n";
     $header .= "#define CCTK_THORNSTRING \"$3\"\n";
     $header .= "#define CCTK_ARRANGEMENT $2\n";
     $header .= "#define CCTK_ARRANGEMENTSTRING \"$2\"\n";
     $header .= "#endif\n\n";
   }
 
-  return ($header); 
+  return ($header);
 }
 
 
@@ -604,15 +564,9 @@ sub CreateDefineThisThornHeader
 #  @routine    CreateBindings
 #  @date       Thu Jan 28 15:24:53 1999
 #  @author     Tom Goodale
-#  @desc 
+#  @desc
 #  All the perl generated stuff is finally placed into the bindings 'thorn'.
-#  @enddesc 
-#  @calls     
-#  @calledby   
-#  @history 
-#
-#  @endhistory 
-#
+#  @enddesc
 #@@*/
 
 sub CreateBindings
