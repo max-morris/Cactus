@@ -21,7 +21,7 @@ $uname =~ s/(sn\d\d\d\d|jsimpson)/UNICOS\/mk/;
 
 chop $uname;
 
-if($#ARGV > 0)
+if($#ARGV > -1)
 {
   $config = shift(@ARGV);
 }
