@@ -1,7 +1,7 @@
 
 Cactus Code Frequently Asked Questions
 
-$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.75 2003-12-31 03:14:25 allen Exp $
+$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.76 2004-01-16 12:32:07 schnetter Exp $
 
 Also available at http://www.cactuscode.org/Documentation/FAQ
 
@@ -106,7 +106,7 @@ C18 (Linux) When I compile Fortran I get errors because characters
 C19 (Linux) I get internal errors using the Pacific-Sierra Fortran 90 compiler
 
 C20 (Linux) I get the linking error "/usr/bin/ld: cannot find -lIEPCF90"
-    with the Intel fortran compiler.
+    with the Intel Fortran compiler.
 
 C21 (Solaris) Building PUGHReduce under Solaris 2.8 gives several errors
     with macro recursion.
@@ -172,8 +172,9 @@ D1  I'm trying to run Cactus with MPI using "mpirun", but I just get an error
 D2  I'm running Cactus on a parallel system with missing C++ libraries on some
     nodes. Cactus compiles but it won't run?
 
-D3  I can build a Cactus configuration using some external libraries (eg HDF5,
-    PETSc) but get errors with shared libraries on running the executable.
+D3  I can build a Cactus configuration using some external libraries (e.g.
+    HDF5, PETSc) but get errors with shared libraries on running the
+    executable.
 
 D4  I can run my non-MPI executable using shared libraries without problems now
     but still get the same error as in FAQ D3 for MPI jobs started with mpirun.
@@ -239,7 +240,7 @@ E11 The functions CCTK_Exit and CCTK_Abort require cctkGH as an argument.
     How can I call these functions deep inside my thorns where this pointer
     is not available?
 
-E12 I'm getting wierd syntax errors in Fortran code, with an extra
+E12 I'm getting weird syntax errors in Fortran code, with an extra
     garbage character (often $ or &) stuck in the middle of a CCTK_INFO()
     or CCTK_WARN() or CCTK_EQUALS() call after it has been processed.  
 
@@ -261,7 +262,7 @@ E18 Is there a way to synchronize individual grid variables in a group?
 
 E19 Is there a way to synchronize just one time level of a grid variable?
 
-    Right now only one time level is sychronized, that is the "current" level.
+    Right now only one time level is synchronized, that is the "current" level.
     Other time levels cannot be synchronized and are assumed to be fixed
     or read only.
 
@@ -341,7 +342,7 @@ Background:
 A1  How did Cactus start?
 
     Cactus originated in the Numerical Relativity community to realise
-    the largescale computing needs and collaborative working practises
+    the large scale computing needs and collaborative working practices
     required to model objects such as black holes, neutron stars and
     and gravitational waves using Einsteins Theory of General Relativity.
 
@@ -384,7 +385,7 @@ B1  When doing a cvs update I get 'not enough slashes in ...' .
     It seems that CVS sometimes gets confused with multiple repositories.
     Check that you are using the latest version of CVS, otherwise moving into
     the arrangements directory and performing another 'cvs update', followed
-    by a final one in the toplevel directory should complete your update.
+    by a final one in the top-level directory should complete your update.
 
     There is now a Cactus make target "gmake cvsupdate" which avoids this
     problem by updating the flesh and checked out thorns explicitly.
@@ -488,7 +489,7 @@ C3  (Linux) I get 'g77: cannot specify -o with -c or -S and multiple
 
     If the libvast90.a library is in the same directory as your F90 script,
     F90 passes -lvast90 to the underlying G77 compile, which is of course only
-    a valid switch when linking.  The solution is to seperate these files,
+    a valid switch when linking.  The solution is to separate these files,
     e.g. into bin and lib directories.
 
 
@@ -772,7 +773,7 @@ C18 (Linux) When I compile Fortran I get errors because characters
 C19 (Linux) I get internal errors using the Pacific-Sierra Fortran 90 compiler
 
     The free version of the Pacific Sierra compiler can generate
-    incompilable code, this is a problem with the translator. The
+    uncompilable code, this is a problem with the translator. The
     error messages look something like:
 
     Compiling
@@ -794,7 +795,7 @@ C19 (Linux) I get internal errors using the Pacific-Sierra Fortran 90 compiler
 
 
 C20 (Linux) I get the linking error "/usr/bin/ld: cannot find -lIEPCF90"
-    with the Intel fortran compiler.
+    with the Intel Fortran compiler.
 
     If you get the linking error
 
@@ -1169,7 +1170,7 @@ D8  (Linux) The testsuites for CactusEinstein/AHFinder and
     CactusBench/BenchADM fail for me, but the release notices say that they
     pass.
 
-    The Absoft fortran compiler (Version 6) produces the wrong answers
+    The Absoft Fortran compiler (Version 6) produces the wrong answers
     for CactusEinstein/AHFinder and CactusBench/BenchADM if
     optimisation is not used.
 
@@ -1187,7 +1188,7 @@ D10 Output to screen using the Info IO method of IOBasic doesn't work.
     IOBasic::outInfo_every = 10
     IOBasic::outInfo_vars  = "wavetoy::phi"
 
-    to my parameterfile. Thorn IOBasic is active, but I only get the
+    to my parameter file. Thorn IOBasic is active, but I only get the
     iteration number and coordinate time printed to screen.
 
     You need to activate a thorn which implements the min/max reductions,
@@ -1261,7 +1262,7 @@ E4  Why shouldn't I make direct calls to MPI from my thorns? Your default
     using PVM or some other communication layer.
 
     Also, since not all underlying MPI implementations provide the same
-    fortran bindings it is best to use a C wrapper for making MPI calls,
+    Fortran bindings it is best to use a C wrapper for making MPI calls,
     and this is automatically done for you if you use the Cactus APIs.
 
 
@@ -1273,7 +1274,7 @@ E5  I am writing a thorn, what is the difference between using
     necessary eg. in routines which initialize a cGH.
 
     'const cGH *' is a pointer to a cGH structure which is marked as
-    constant (ie. read-only). The code is not allowed to change the cGH
+    constant (i.e. read-only). The code is not allowed to change the cGH
     using such a pointer. The compiler should refuse to compile it otherwise,
     or at least print a warning.
 
@@ -1668,3 +1669,5 @@ I1  The size of array parameters is specified by a integer number in the
 
     The size of the array has to be fixed at compile time to accomodate
     the use of parameters in Fortran thorns.
+
+ LocalWords:  Absoft fixups endif snprintf libCactusBindings lintrins cpp
