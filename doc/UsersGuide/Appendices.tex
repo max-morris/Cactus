@@ -131,7 +131,7 @@ The thorn's variables are defined by:
 \begin{verbatim}
 [<access>:]
 
-<data_type> <group_name> [TYPE=<group_type>] [DIM=<dim>] [TIMELEVELS=<num>] [SIZE=<size in each direction>] [DISTRIB=<distribution_type>]
+<data_type> <group_name> [TYPE=<group_type>] [DIM=<dim>] [TIMELEVELS=<num>] [SIZE=<size in each direction>] [DISTRIB=<distribution_type>] [GHOSTSIZE=<ghostsize>] [STAGGER=<stagger-specification>]
 [{
    <variable_name>[,]<variable_name>
    <variable_name>
@@ -155,6 +155,20 @@ optional, with the default variable type being {\t SCALAR}.
 	of type {\t ARRAY} or {\t GF}, and can take the value 
 	{\t 1}, {\t 2}, or {\t 3}.
 The default value is {\t DIM=3}.
+\item{} {\t TIMELEVELS} defines the number of timelevels a group has if
+        the group is of type {\t ARRAY} or {\t GF}, and can take any positive
+        value.
+\item{} {\t SIZE} defines the number grid-points an {\tt ARRAY} has in each direction.
+        This should be a comma-seperated list of parameter names.
+\item{} {\t DISTRIB} defines the processor decomposition of an {\tt ARRAY}. 
+        {\tt DISTRIB=CONSTANT} implies that {\tt SIZE} grid-points should
+        be allocated on each processor.
+\item{} {\t GHOSTSIZE} defines number of ghost-zones in each dimension of an {\tt ARRAY}. 
+\item{} {\t STAGGER} defines position of grid-points of a {\tt GF} with respect to
+        the underlying grid.  It consists of a string made up of a combination {\tt DIM} 
+        of the letters {\tt M}, {\tt C}, {\tt P} depending on whether the layout in
+        that direction is on the {\tt M}inus face, {\tt C}entre, or {\tt P}lus face
+        of the cell in that dimension.
 \item{} The block following the group declaration line contains a list of
         variables contained in the group. All variables in a group have 
         the same data type, variable type and dimension. The list can be 
@@ -192,7 +206,7 @@ protection or scoping class. {\t access} can take the values:
                            parameters if they specifically request
                            it in their own param.ccl
 \item[{\t private}] only your thorn has access to private parameters
-\item[{\t uses}] in this case an {\t implementation} name must follow
+\item[{\t shares}] in this case an {\t implementation} name must follow
                         the colon. It declare that all the parameters in 
                         the following scoping block are restricted variables
                         from the specified {\t implementation}.
