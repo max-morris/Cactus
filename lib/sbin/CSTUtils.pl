@@ -11,7 +11,8 @@
 
 sub CST_error
 {
-    my($level,$mess,$help,$line,$file,$error) = @_;
+    my($level,$mess,$help,$line,$file) = @_;
+    my($help,$error,$error_string);
 
     if ($help ne /$\s*^/)
     {
