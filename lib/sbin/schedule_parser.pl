@@ -71,20 +71,20 @@ sub write_rfr_header {
 
   local($thorn,$routine,$out) = @_;
 
-# The header for the thorn RFR routine
-    print $out <<EOT;
-\#define THORN_IS_$thorn
-\#include \"cctk.h\"
-\#include \"flesh.h\"
-\#include \"rfr_constants.h\"
-\#include \"declare_parameters.h\"
-\#include \"prototypes_$thorn.h\"
+  # The header for the thorn RFR routine
 
-$routine (void *Cactus_data)
-{
-DECLARE_PARAMETERS
+  print OUTRFR "#define THORN_IS_$thorn\n";
+  print OUTRFR "#include \"cctk.h\"\n";
+  print OUTRFR "#include \"flesh.h\"\n";
+  print OUTRFR "#include \"rfr_constants.h\"\n";
+  print OUTRFR "#include \"declare_parameters.h\"\n";
+  print OUTRFR "#include \"prototypes_$thorn.h\"\n";
+  print OUTRFR "\n";
+  print OUTRFR "$routine (void *Cactus_data)\n";
+  print OUTRFR "{\n";
+  print OUTRFR "  DECLARE_PARAMETERS\n";
+  print OUTRFR "\n";
 
-EOT
 }
 
 sub write_startup_header {
@@ -92,19 +92,19 @@ sub write_startup_header {
   local($thorn,$routine,$out) = @_;
 
 # The header for the thorn RFR routine
-    print $out <<EOT;
-\#define THORN_IS_$thorn
-\#include \"cctk.h\"
-\#include \"flesh.h\"
-\#include \"rfr_constants.h\"
-\#include \"declare_parameters.h\"
 
-$routine (void *data)
-{
+  print OUTSTART "#define THORN_IS_$thorn\n";
+  print OUTSTART "#include \"cctk.h\"\n";
+  print OUTSTART "#include \"flesh.h\"\n";
+  print OUTSTART "#include \"rfr_constants.h\"\n";
+  print OUTSTART "#include \"declare_parameters.h\"\n";
+  print OUTSTART "\n";
+  print OUTSTART "$routine (void *data)\n";
+  print OUTSTART "{\n";
+  print OUTSTART "  DECLARE_PARAMETERS\n";
+  print OUTSTART "\n";
 
-DECLARE_PARAMETERS
 
-EOT
 }
 
 
