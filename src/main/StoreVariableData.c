@@ -25,7 +25,7 @@ int _cctk_one = 1;
 static char *rcsid = "$Id$";
 
 
-static n_groups = 0;
+static int n_groups = 0;
 static cGroupDefinition *groups = NULL;
 
 static int total_variables;
@@ -62,11 +62,13 @@ cGroupDefinition *CCTK_SetupGroup(const char *implementation,
 
     /* Allocate memory to various fields */
     groups[n_groups].implementation = (char *)malloc((strlen(implementation)+1)*sizeof(char));
+
     groups[n_groups].name = (char *)malloc((strlen(name)+1)*sizeof(char));
 
     groups[n_groups].variables = (cVariableDefinition *)malloc(n_variables*sizeof(cVariableDefinition));
 
     /* Resize the array holding correspondence between variables and groups. */
+
     temp_int = (int *)realloc(group_of_variable, (total_variables+n_variables)*sizeof(int));
 
     if(groups[n_groups].implementation && 

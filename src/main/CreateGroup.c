@@ -32,7 +32,7 @@ cGroupDefinition *CCTK_SetupGroup(const char *implementation, const char *group_
    @endhistory 
 
 @@*/
-int CCTK_CreateGroup(const char *fullname,
+int CCTK_CreateGroup(const char *gname, const char *thorn, const char *imp,
 		     const char *gtype,
 		     const char *vtype,
 		     int dimension,
@@ -43,8 +43,6 @@ int CCTK_CreateGroup(const char *fullname,
 
   va_list ap;
   char *position;
-  char *implementation;
-  char *group_name;
 
   char *variable_name;
 
@@ -52,52 +50,44 @@ int CCTK_CreateGroup(const char *fullname,
 
   int variable;
 
-  /* Find the name of the implementation and of the group. */
-  CCTK_SplitString(&implementation, &group_name, fullname, "::");
+  retval = 0;
 
-  if(implementation)
+  /* Allocate storage for the group and setup some stuff. */
+  if((group = CCTK_SetupGroup(imp, gname, n_variables)))
   {
-    /* Allocate storage for the group and setup some stuff. */
-    if((group = CCTK_SetupGroup(implementation, group_name, n_variables)))
+    group->dim = dimension;
+    group->gtype = CCTK_GTypeNumber(gtype);
+    group->vtype = CCTK_VTypeNumber(vtype);
+    
+    /* Extract the variable names from the argument list. */
+    va_start(ap, n_variables);
+
+    for(variable = 0; variable < n_variables; variable++)
     {
-      group->dim = dimension;
-      group->gtype = CCTK_GTypeNumber(gtype);
-      group->vtype = CCTK_VTypeNumber(vtype);
+      variable_name = va_arg(ap, char *);
 
-      /* Extract the variable names from the argument list. */
-      va_start(ap, n_variables);
-
-      for(variable = 0; variable < n_variables; variable++)
+      group->variables[variable].name = (char *)malloc((strlen(variable_name)+1*sizeof(char)));
+      
+      if(group->variables[variable].name)
       {
-	variable_name = va_arg(ap, char *);
-
-	group->variables[variable].name = (char *)malloc((strlen(variable_name)+1*sizeof(char)));
-	
-	if(group->variables[variable].name)
-	{
-	  strcpy(group->variables[variable].name, variable_name);
-	}
-	else
-	{
-	  break;
-	}
+	strcpy(group->variables[variable].name, variable_name);
       }
-
-      va_end(ap);
-
-      if(variable < n_variables)
+      else
       {
-	retval = 3;
-      };
+	break;
+      }
     }
-    else
+
+    va_end(ap);
+
+    if(variable < n_variables)
     {
-      retval = 2;
-    }
+      retval = 3;
+    };
   }
   else
   {
-    retval = 1;
+    retval = 2;
   }
 
   if(retval)
