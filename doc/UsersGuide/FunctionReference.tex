@@ -2249,7 +2249,16 @@ displayed in the order in which they are registered.
 \parameter{cctkGH}{pointer to CCTK grid hierarchy}
 \end{params}
 \begin{discussion}
-Only those grid variables who have communication enabled will be synchronised.
+Only those grid variables which have communication enabled 
+will be synchronised. This is usually equivalent to the variables 
+which have storage assigned, unless communication has been explicitly
+turned off with a call to {\tt CCTK\_DisableGroupComm}.
+
+Note that an alternative to calling {\tt CCTK\_SyncGroup} explicitly 
+from within a thorn, is to use the {\tt SYNC} keyword in a thorns
+{\tt schedule.ccl} file to indicate which groups of variables need 
+to be synchronised on exit from the routine. This latter method is 
+the preferred method from synchronising variables.
 \end{discussion}
 \begin{examples}
 \begin{tabular}{@{}p{3cm}cp{11cm}}

@@ -467,13 +467,15 @@ schedule <name> at <time bin> [other options]
 {
   LANG:     <FORTRAN|C>
   STORAGE:  [group list]
-  COMM:     [group list]
   TRIGGERS: [group list]
+  SYNC:     [group list]
 } "A description"
-
 \end{verbatim}
+where {\tt <name>} is the name of the routine, and 
 
-where {\tt <name>} is the name of the routine, and {\tt <time bin>} is one of
+\begin{Lentry}
+
+\item[{\tt <time bin>}] is one of
 (in the following the initial {\tt CCTK\_} is optional):
 
 \begin{Lentry}
@@ -531,27 +533,43 @@ Convergence stuff.
 These time bins can be given in the {\tt schedule.ccl} file with
 or without the initial {\tt CCTK\_}, and in any case.
 
-The {\tt STORAGE} and {\tt COMM} keywords specify any groups for 
+\item[{\tt STORAGE}] The {\tt STORAGE} keyword specifies any groups for 
 which  memory should be
-allocated or communication enabled for the duration of the routine.
-The storage or communication status reverts to its previous status after the 
+allocated for the duration of the routine.
+The storage status reverts to its previous status after the 
 routine returns.
 
-{\tt TRIGGERS} is used when the routine is registered at {\tt ANALYSIS} --- 
+\item[{\tt TRIGGERS}] {\tt TRIGGERS} is used when the routine is registered at {\tt ANALYSIS} --- 
 this is a 
 special time bin, a routine registered here will only be called if one of
 the variables from a group in {\tt TRIGGERS} is due for output.
 
+\item[{\tt SYNC}] 
+The keyword {\tt SYNC} specifies groups of variables which should be
+synchronised (that is, their ghostzones should be exchanged between 
+processors) on exit from the routine. Specifying synchonisation of 
+grid variables in {\tt schedule.ccl} is an alternative to calling the
+function {\tt CCTK\_SyncGroup} from inside a routine. Using the {\tt SYNC}
+keyword in the {\tt schedule.ccl} is the preferred method, since it 
+provides the Flesh with more information about the behaviour of your code,
+and in particular is a requirement for using a driver with adaptive mesh
+refinement.
+
+\item[{\tt other options}]
 The `other options' allow finer grained control of the scheduling.  It is
 possible to state that the routine must run {\tt BEFORE} or {\tt AFTER} 
 another routine. It is also possible to schedule the routine under an
 alias name by using {\tt AS <alias\_name>}.
 
+\end{Lentry}
+
 As well as schedule blocks it's possible to embed C style {\tt if/else} 
 statements in the schedule.ccl.
 These can be used to schedule things based upon the value of a parameter.
 
+\vskip .5cm
 {\bf Example I:}\\
+
 The routine {\tt hydro\_predictor} is scheduled at {\em evolution}, after the 
 routine {\tt metric\_predictor} and before {\tt metric\_corrector}, if
 the parameter {\tt evolve\_hydro} has been set.
@@ -563,12 +581,13 @@ if(CCTK_Equals(evolve_hydro,''yes''))
   {
     LANG:     FORTRAN
     STORAGE:  hydro_variables
-    COMM:     hydro_variables
   } "Do a predictor step on the hydro variables"
 }
 \end{verbatim}
 
+\vskip .5cm
 {\bf Example II:}\\
+
 The thorns {\tt WaveToy77} and {\tt WaveToyC} each provide an
 routine to evolve the 3D wave equation: {\tt WaveToyF77\_Evolution} and
 {\tt WaveToyC\_Evolution}. The routine names have to be different, so
@@ -582,11 +601,15 @@ WaveToy\_Evolution} to allow relative scheduling ({\tt
 BEFORE/AFTER}) independent of the actual routine name (which may
 change depending on the activation in the parameter file).
 
+In both cases the group of variables {\tt scalarfield} are synchronised
+across processes when the routine is exited.
+
 \begin{verbatim}
 schedule WaveToyF77_Evolution AS WaveToy_Evolution AT evol
 {
   LANG: Fortran
   STORAGE: scalartmps
+  SYNC: scalarfield
 } "Evolution of 3D wave equation"
 \end{verbatim}
 
@@ -595,6 +618,7 @@ schedule WaveToyC_Evolution AS WaveToy_Evolution AT evol
 {
   LANG: C
   STORAGE: scalartmps
+  SYNC: scalarfield
 } "Evolution of 3D wave equation"
 \end{verbatim}
 
@@ -610,12 +634,12 @@ schedule WaveBinary AT evol AFTER WaveToy_Evolution
 } "Provide binary source during evolution" 
 \end{verbatim}
 
-\subsubsection{Storage and Communication Outside of Schedule Blocks}
+\subsubsection{Storage Outside of Schedule Blocks}
 
-The keywords {\tt STORAGE} and {\tt COMM} can also be used outside
-of the schedule blocks to indicate that storage/communication for these
+The keyword {\tt STORAGE} can also be used outside
+of the schedule blocks to indicate that storage for these
 groups should be switched on at the start of the run. Note that
-the storage/communication is only allocated in this way at the start,
+the storage is only allocated in this way at the start,
 a thorn could explicitly switch the storage off.
 
 
@@ -740,7 +764,7 @@ the same attributes, and most cactus operations act on a group as a whole.
 
 Cactus variables are used instead of local variables for two purposes.  Firstly
 these variables can be made visable to other thorns, thus allowing thorns to
-communicate and chare data, secondly these variables can be communicated and
+communicate and share data, secondly these variables can be communicated and
 shared between processors, thus allowing parallel computation.
 
 The full specification for a group declaration is
@@ -1006,7 +1030,7 @@ schedule [GROUP] <function name> AT|IN <time> [BEFORE|AFTER <group>] [WHILE <var
   LANG: <language>
   [STORAGE:       <group>,<group>...]
   [TRIGGER:       <group>,<group>...]
-  [SYNCHRONISE:   <group>,<group>...]
+  [SYNC:          <group>,<group>...]
   [OPTIONS:       <option>,<option>...]
 } "Description of function"
 \end{verbatim}
