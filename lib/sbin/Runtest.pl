@@ -6,7 +6,8 @@
 
 $sep = "/";
 
-$config = $ARGV[0];
+$prompt = shift;
+$config = shift;;
 
 $tolerance = 13;
 
@@ -243,7 +244,7 @@ else
       print "[$i] ".$testthorns[$i-1]." $testnum{$i}: \n      \"$testnames{$i}\"\n";
     }
     print "\n  Enter number of test to run (quit to end) : ";
-    $choice = <STDIN>;
+    $choice = <STDIN> if ($prompt eq "yes");
     $choice =~ s/\n//;
     $choice =~ s/\s//;
     print "\n";
@@ -256,7 +257,7 @@ else
     if (!($choice =~ m/^q/i))
     {
       print "  Hit return to continue ";
-      $continue = <STDIN>;
+      $continue = <STDIN> if ($prompt eq "yes");
     }
   }
 
@@ -412,7 +413,7 @@ sub defprompt {
     my ($res);
     print "$pr [$de] \n";
     print "   --> ";
-    $res = <STDIN>;
+    $res = <STDIN> if ($prompt eq "yes");
     if ($res =~ m/^\s*$/) {
         $res = $de;
     }
