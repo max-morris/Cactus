@@ -817,7 +817,7 @@ case $basic_machine in
 		;;
 	x1)
 		basic_machine=x1-cray
-		os=-unicos
+		os=-unicosmp
 		;;
 	sv1)
 		basic_machine=sv1-cray
