@@ -12,13 +12,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "cctk_Bindings.h"
 #include "cctk_Flesh.h"
 #include "cctk_GHExtensions.h"
 #include "cctk_Parameter.h"
 
-#include "cctki_ScheduleBindings.h"
+#include "cctki_Bindings.h"
 #include "cctki_GHExtensions.h"
+#include "cctki_ScheduleBindings.h"
 #include "cctki_WarnLevel.h"
 
 #include "CactusMainDefaults.h"

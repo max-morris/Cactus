@@ -15,15 +15,16 @@
 #include "cctk_Flesh.h"
 #include "cGH.h"
 
-#include "cctk_Comm.h"
-#include "cctk_WarnLevel.h"
-#include "cctk_Bindings.h"
-#include "cctk_Misc.h"
-#include "cctki_ActiveThorns.h"
 #include "cctk_ActiveThorns.h"
+#include "cctk_Comm.h"
+#include "cctk_Misc.h"
+#include "cctk_ParamCheck.h"
+#include "cctk_WarnLevel.h"
+
+#include "cctki_ActiveThorns.h"
+#include "cctki_Bindings.h"
 #include "cctki_WarnLevel.h"
 
-#include "cctk_ParamCheck.h"
 
 #define NEED_PARAMETER_SCOPE_STRINGS
 #define NEED_PARAMETER_TYPE_STRINGS
