@@ -91,6 +91,7 @@
 #undef HAVE_TIME_H
 #undef HAVE_SYS_TIME_H
 #undef HAVE_SYS_TYPES_H
+#undef HAVE_SYS_FILIO_H
 #undef HAVE_UNISTD_H
 #undef HAVE_STRING_H
 #undef HAVE_ASSERT_H
@@ -128,7 +129,7 @@
 
 #undef NULL_DEVICE
 
-/* The TYPE of socklen_t if it does not exist */ 
+/* The TYPE of socklen_t if it does not exist */
 
 #ifdef HAVE_SOCKLEN_T
 #define CCTK_SOCKLEN_T socklen_t

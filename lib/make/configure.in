@@ -2,16 +2,16 @@ dnl @@
 dnl    @file      configure.in
 dnl    @date      Sun Jan 17 15:54:23 1999
 dnl    @author    Tom Goodale
-dnl    @desc 
+dnl    @desc
 dnl               Cactus autoconf script
-dnl    @enddesc 
+dnl    @enddesc
 dnl    @version   $Id$
 dnl  @@
 dnl Process this file with autoconf to produce a configure script.
 
 AC_REVISION($Header$)
 
-dnl It looks like older versions of Autoconf don't quite work properly under 
+dnl It looks like older versions of Autoconf don't quite work properly under
 dnl cygwin.
 AC_PREREQ(2.13)
 
@@ -161,7 +161,7 @@ CCTK_WriteLine cctk_Archdefs.h '#endif /* _CCTK_ARCHDEFS_H_ */'
 # Deal with the Fortran compiler issues.
 # If there's a Fortran 90 compiler use that for all the Fortran.
 if test "x$F90" != "x" -a "x$F90" != "xnone" -a "x$F77" != "xnone" ; then
-  F77=$F90 
+  F77=$F90
   : {F77FLAGS=$F90FLAGS}
 fi
 
@@ -196,7 +196,7 @@ else
     if test "$ENDIAN" = "big" ; then
       AC_DEFINE(WORDS_BIGENDIAN)
     fi
-  else    
+  else
     AC_MSG_ERROR(Cross-compiling - no value set for endian-ness please set ENDIAN)
   fi
 fi
@@ -271,7 +271,7 @@ fi
 
 AC_CHECK_SIZEOF(float, $SIZEOF_FLOAT)
 
-# Check for sizes of pointers.  
+# Check for sizes of pointers.
 
 if test "x$cross_compiling" = "xyes" -a -z "$SIZEOF_POINTER" ; then
    AC_MSG_ERROR(Cross-compiling - no value set for sizeof(char *) please set SIZEOF_POINTER)
@@ -335,7 +335,7 @@ CCTK_CHECK_FUNCS(gethostbyname,
                                 AC_DEFINE(HAVE_GETHOSTBYNAME))
 )
 
-# Check if we have mode_t available 
+# Check if we have mode_t available
 AC_MSG_CHECKING([if mode_t is defined])
 AC_CACHE_VAL(cctk_cv_have_mode_t,
 [AC_TRY_COMPILE([#include <stdio.h>
@@ -371,20 +371,23 @@ CCTK_CHECK_HEADERS(sys/stat.h)
 CCTK_CHECK_HEADERS(getopt.h)
 CCTK_CHECK_HEADERS(dirent.h)
 CCTK_HEADER_REGEX
-CCTK_CHECK_HEADERS(sys/socket.h,[#ifdef HAVE_SYS_TYPES_H 
+CCTK_CHECK_HEADERS(sys/socket.h,[#ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
 #endif])
-CCTK_CHECK_HEADERS(netinet/in.h,[#ifdef HAVE_SYS_TYPES_H 
+CCTK_CHECK_HEADERS(sys/filio.h,[#ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
 #endif])
-CCTK_CHECK_HEADERS(netdb.h,[#ifdef HAVE_SYS_TYPES_H 
+CCTK_CHECK_HEADERS(netinet/in.h,[#ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
 #endif])
-CCTK_CHECK_HEADERS(arpa/inet.h,[#ifdef HAVE_SYS_TYPES_H 
+CCTK_CHECK_HEADERS(netdb.h,[#ifdef HAVE_SYS_TYPES_H
+#include <sys/types.h>
+#endif])
+CCTK_CHECK_HEADERS(arpa/inet.h,[#ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
 #endif])
 CCTK_CHECK_HEADERS(winsock2.h)
-CCTK_CHECK_HEADERS(crypt.h,[#ifdef HAVE_UNISTD_H 
+CCTK_CHECK_HEADERS(crypt.h,[#ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif])
 
@@ -392,7 +395,7 @@ AC_HEADER_TIME
 
 #Check type of socklen
 
-# Check if we have socklen_t available 
+# Check if we have socklen_t available
 AC_MSG_CHECKING([if socklen_t is defined])
 AC_CACHE_VAL(cctk_cv_have_socklen_t,
 [AC_TRY_COMPILE([#include <stdio.h>
@@ -419,7 +422,7 @@ else
   AC_MSG_RESULT(no)
 fi
 
-# Check if someone has defined SOCKET 
+# Check if someone has defined SOCKET
 AC_MSG_CHECKING([if SOCKET is defined])
 AC_CACHE_VAL(cctk_cv_have_SOCKET,
 [AC_TRY_COMPILE([#include <stdio.h>
@@ -446,7 +449,7 @@ else
   AC_MSG_RESULT(no)
 fi
 
-# Check if we have __int64 
+# Check if we have __int64
 AC_MSG_CHECKING([if __int64 is defined])
 AC_CACHE_VAL(cctk_cv_have___int64,
 [AC_TRY_COMPILE(,
@@ -661,18 +664,18 @@ esac
 
 : ${CCTK_FCALL=""}
 
-AC_DEFINE_UNQUOTED(CCTK_FCALL, $CCTK_FCALL) 
+AC_DEFINE_UNQUOTED(CCTK_FCALL, $CCTK_FCALL)
 
 
 # Define how to make a directory in the config.h file
 
-AC_DEFINE_UNQUOTED(MKDIR, "$MKDIR") 
+AC_DEFINE_UNQUOTED(MKDIR, "$MKDIR")
 
 AC_SUBST(MKDIRFLAGS)
 
 : ${MKDIRFLAGS="-p"}
 
-AC_DEFINE_UNQUOTED(MKDIRFLAGS, " $MKDIRFLAGS ") 
+AC_DEFINE_UNQUOTED(MKDIRFLAGS, " $MKDIRFLAGS ")
 
 
 # The perl scripts run by the make system need to have their names
@@ -714,7 +717,7 @@ AC_SUBST(FCOMPILEONLY)
 
 if test -n "$DEBUG" -a "x$DEBUG" != 'xno' ; then
   case "$DEBUG" in
-     MEMORY) 
+     MEMORY)
        AC_DEFINE(CCTK_TRACEMEMORY)
        ;;
      FLAGS|yes)
@@ -747,28 +750,28 @@ AC_SUBST(C_DEBUG_FLAGS)
 
 if test -z "$C_DEBUG_FLAGS" ; then
 # This should be a reasonable default.
-  C_DEBUG_FLAGS="-g"      
+  C_DEBUG_FLAGS="-g"
 fi
 
 AC_SUBST(CXX_DEBUG_FLAGS)
 
 if test -z "$CXX_DEBUG_FLAGS" ; then
 # This should be a reasonable default.
-  CXX_DEBUG_FLAGS="-g"      
+  CXX_DEBUG_FLAGS="-g"
 fi
 
 AC_SUBST(F77_DEBUG_FLAGS)
 
 if test -z "$F77_DEBUG_FLAGS" ; then
 # This should be a reasonable default.
-  F77_DEBUG_FLAGS="-g"      
+  F77_DEBUG_FLAGS="-g"
 fi
 
-AC_SUBST(F90_DEBUG_FLAGS) 
+AC_SUBST(F90_DEBUG_FLAGS)
 
 if test -z "$F90_DEBUG_FLAGS" ; then
 # This should be a reasonable default.
-  F90_DEBUG_FLAGS="-g"      
+  F90_DEBUG_FLAGS="-g"
 fi
 
 # Set the optimization flags if they've not been set by now
@@ -793,35 +796,35 @@ AC_SUBST(C_OPTIMISE_FLAGS)
 
 if test -z "$C_OPTIMISE_FLAGS" ; then
 # This should be a reasonable default.
-  C_OPTIMISE_FLAGS="-O2"      
+  C_OPTIMISE_FLAGS="-O2"
 fi
 
 AC_SUBST(CXX_OPTIMISE_FLAGS)
 
 if test -z "$CXX_OPTIMISE_FLAGS" ; then
 # This should be a reasonable default.
-  CXX_OPTIMISE_FLAGS="-O2"      
+  CXX_OPTIMISE_FLAGS="-O2"
 fi
 
 AC_SUBST(F77_OPTIMISE_FLAGS)
 
 if test -z "$F77_OPTIMISE_FLAGS" ; then
   case "$F77" in
-    g77) 
+    g77)
       F77_OPTIMISE_FLAGS="-O"
       ;;
     *)
 #     Don't know a reasonable default.
-      F77_OPTIMISE_FLAGS=""      
+      F77_OPTIMISE_FLAGS=""
       ;;
    esac
 fi
 
-AC_SUBST(F90_OPTIMISE_FLAGS) 
+AC_SUBST(F90_OPTIMISE_FLAGS)
 
 if test -z "$F90_OPTIMISE_FLAGS" ; then
 # Don't know a reasonable default.
-  F90_OPTIMISE_FLAGS=""      
+  F90_OPTIMISE_FLAGS=""
 fi
 
 # Set the warning flags if they've not been set by now
@@ -830,21 +833,21 @@ AC_SUBST(C_WARN_FLAGS)
 
 if test -z "$C_WARN_FLAGS" ; then
   case "$CC" in
-    gcc) 
+    gcc)
       C_WARN_FLAGS="-Wall -W -Wshadow -Wpointer-arith -Wbad-function-cast -Wcast-qual -Wcast-align -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Winline"
       ;;
     *)
 #     Not sure what should be a reasonable default.
-      C_WARN_FLAGS=""      
+      C_WARN_FLAGS=""
       ;;
    esac
 fi
 
-AC_SUBST(CXX_WARN_FLAGS) 
+AC_SUBST(CXX_WARN_FLAGS)
 
 if test -z "$CXX_WARN_FLAGS" ; then
   case "$CXX" in
-    c++ | g++) 
+    c++ | g++)
       if test "$CC" = "gcc"; then
         CXX_WARN_FLAGS="\$(C_WARN_FLAGS) -Woverloaded-virtual"
       else
@@ -853,30 +856,30 @@ if test -z "$CXX_WARN_FLAGS" ; then
       ;;
     *)
 #     Not sure what should be a reasonable default.
-      CXX_WARN_FLAGS=""      
+      CXX_WARN_FLAGS=""
       ;;
    esac
 fi
 
-AC_SUBST(F77_WARN_FLAGS) 
+AC_SUBST(F77_WARN_FLAGS)
 
 if test -z "$F77_WARN_FLAGS" ; then
   case "$F77" in
-    g77) 
+    g77)
       F77_WARN_FLAGS="-Wall"
       ;;
     *)
 #     Not sure what should be a reasonable default.
-      F77_WARN_FLAGS=""      
+      F77_WARN_FLAGS=""
       ;;
    esac
 fi
 
-AC_SUBST(F90_WARN_FLAGS) 
+AC_SUBST(F90_WARN_FLAGS)
 
 if test -z "$F90_WARN_FLAGS" ; then
 # Not sure what should be a reasonable default.
-  F90_WARN_FLAGS=""      
+  F90_WARN_FLAGS=""
 fi
 
 
@@ -995,14 +998,14 @@ AC_SUBST(PERL_BACKUP_NECESSARY)
 
 : ${PERL_BACKUP_NECESSARY=""}
 
-# Cache stuff - this will probably change 
+# Cache stuff - this will probably change
 
 # L2 Cache
 : ${L2_CACHELINE_BYTES="0"}
 : ${L2_CACHE_SIZE="0"}
 
-AC_DEFINE_UNQUOTED(CCTK_L2_CACHELINE_BYTES, $L2_CACHELINE_BYTES) 
-AC_DEFINE_UNQUOTED(CCTK_L2_CACHE_SIZE, $L2_CACHE_SIZE) 
+AC_DEFINE_UNQUOTED(CCTK_L2_CACHELINE_BYTES, $L2_CACHELINE_BYTES)
+AC_DEFINE_UNQUOTED(CCTK_L2_CACHE_SIZE, $L2_CACHE_SIZE)
 
 #########################################################################
 #Check for extra stuff
@@ -1036,7 +1039,7 @@ CCTK_WriteLine cctk_Extradefs.h '#endif /*_CCTK_EXTRADEFS_H*/'
 
 dnl Run any other scripts necessary
 
-AC_OUTPUT_COMMANDS(,$PERL -s $PERL_CONFIGURE_SCRIPT -compiler_f77="$F77" -opts_f77="$F77FLAGS" -compiler_f90="$F90" -opts_f90="$F90FLAGS" .) 
+AC_OUTPUT_COMMANDS(,$PERL -s $PERL_CONFIGURE_SCRIPT -compiler_f77="$F77" -opts_f77="$F77FLAGS" -compiler_f90="$F90" -opts_f90="$F90FLAGS" .)
 
 # Set default Fortran compilers
 AC_SUBST(F90)
