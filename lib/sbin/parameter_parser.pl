@@ -672,7 +672,7 @@ sub CheckParameterDefault
       $range =~ s/^\s*//;
       $range =~ s/\s*$//;
       $range =~ s/^"(.*)"$/$1/;
-      $range =~ /^([\s\*0-9\.]*):([\s\*0-9\.]*)/;
+      $range =~ /^([\s\*0-9\.eE+-]*):([\s\*0-9\.eE+-]*)/;
       $min = $1;
       $max = $2;
       if ($min =~ /^\s*[\*\s]*\s*$/)
