@@ -315,6 +315,7 @@ int CCTK_GetVarNum(const char *implementation,
     }
   } 
   else
+
   {
     group_num = CCTK_GetGroupNum(implementation, group_name);
     
@@ -343,7 +344,7 @@ int CCTK_GetVarNum(const char *implementation,
    @date       Mon Feb  8 12:04:01 1999
    @author     Tom Goodale
    @desc 
-   Gets the maximum dimesion of all groups.
+   Gets the maximum dimension of all groups.
    @enddesc 
    @calls     
    @calledby   
@@ -415,8 +416,15 @@ char *CCTK_GetGroupFromVar(int var)
   char *retval;
   int group_num;
 
-  group_num = group_of_variable[var];
-  retval = groups[group_num].name;
+  if (var<0 || var>total_variables-1)
+  {
+    retval = NULL;
+  }
+  else
+  {  
+    group_num = group_of_variable[var];
+    retval = groups[group_num].name;
+  } 
 
   return retval;
 }
@@ -440,8 +448,15 @@ char *CCTK_GetImplementationFromVar(int var)
   char *retval;
   int group_num;
 
-  group_num = group_of_variable[var];
-  retval = groups[group_num].implementation;
+  if (var<0 || var>total_variables-1)
+  {
+    retval = NULL;
+  }
+  else
+  {
+    group_num = group_of_variable[var];
+    retval = groups[group_num].implementation;
+  }
 
   return retval;
 }
@@ -466,14 +481,22 @@ char *CCTK_GetFullName(int var)
   char *impname;
   char *varname;
   int group_num;
-  char *fullname;
+  char *fullname=NULL;
 
   varname = CCTK_GetVarName(var);
-  group_num = group_of_variable[var];
-  impname = groups[group_num].implementation;
+  if (varname)
+  {
+    group_num = group_of_variable[var];
+    impname = groups[group_num].implementation;
 
-  fullname = malloc((strlen(varname)+strlen(impname)+3)*sizeof(char));
-  sprintf(fullname,"%s::%s",impname,varname);
+    fullname = malloc((strlen(varname)+strlen(impname)+3)*sizeof(char));
+    if (fullname)
+      sprintf(fullname,"%s::%s",impname,varname);
+  }
+  else
+  {  
+    fullname = NULL;
+  }
 
   return fullname;
 }
@@ -493,10 +516,10 @@ char *CCTK_GetFullName(int var)
    @endhistory 
 
 @@*/
-int *CCTK_ArrayGroupSize(cGH *GH, const char *group, int dim)
+int *CCTK_ArrayGroupSize(cGH *GH, const char *group, int dir)
 {
   /* Quick fudge */
-  return &(GH->local_shape[dim]);
+  return &(GH->local_shape[dir]);
 }
 
  /*@@
@@ -692,19 +715,41 @@ int CCTK_DecomposeGroupName(const char *fullname, char **implementation, char **
   return CCTK_SplitString(implementation, name, fullname, "::");
 }
 
+
+
 char *CCTK_GetGroupName(int group)
 {
   char *name;
 
-  name = malloc((strlen(groups[group].implementation)+strlen(groups[group].name)+3)*sizeof(char));
-  sprintf(name, "%s::%s",groups[group].implementation, groups[group].name);
-
+  if (group < 0 || group >= n_groups) 
+  {
+    name = NULL;
+  }
+  else
+  {
+    name = malloc((strlen(groups[group].implementation)+strlen(groups[group].name)+3)*sizeof(char));
+    if (name)
+    {
+      sprintf(name, "%s::%s",groups[group].implementation, groups[group].name);
+    }
+    else
+    {
+      name = NULL;
+    }
+  }
   return name;
 }
 
 int CCTK_GetFirstVarNum(int group)
 {
-  return groups[group].variables[0].number;
+  if (0 <= group && group<n_groups)
+  {
+    return groups[group].variables[0].number;
+  }
+  else
+  {
+    return -1;
+  }
 }
 
 int CCTK_GetVarGType(int var)
