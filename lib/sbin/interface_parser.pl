@@ -24,11 +24,16 @@ sub create_interface_database
   #  Loop through each  thorn's interface file.
   foreach $thorn (keys %thorns)
   {
+
+    #       Get the arrangement name for the thorn
+    $thorns{$thorn} =~ m:.*/arrangements/([^/]*)/[^/]*:;
+    $arrangement = $1;
+
     #       Read the data
     @indata = &read_file("$thorns{$thorn}/interface.ccl");
     
     #       Get the interface data from it
-    @new_interface_data = &parse_interface_ccl($thorn, @indata);
+    @new_interface_data = &parse_interface_ccl($arrangement,$thorn, @indata);
     
     #       Add the interface to the master interface database
     push (@interface_data, @new_interface_data);
@@ -511,7 +516,7 @@ sub check_interface_consistency
 
 sub parse_interface_ccl
 {
-  local($thorn, @data) = @_;
+  local($arrangement, $thorn, @data) = @_;
   local($line_number, $line, $block, $type, $variable, $description);
   local($data, %interface_db);
   local($implementation);
@@ -527,7 +532,9 @@ sub parse_interface_ccl
   $interface_db{"\U$thorn PUBLIC GROUPS\E"} = "";
   $interface_db{"\U$thorn PROTECTED GROUPS\E"} = "";
   $interface_db{"\U$thorn PRIVATE GROUPS\E"} = "";
-
+  $interface_db{"\U$thorn USES HEADER\E"} = "";
+  $interface_db{"\U$thorn ARRANGEMENT\E"} = "$arrangement";
+  
   #   The default block is private.
   $block = "PRIVATE";
   
@@ -699,6 +706,18 @@ sub parse_interface_ccl
 	$line_number--;
 	
       }
+    }
+    elsif ($line =~ m/^\s*(USES\s*INCLUDE)S?\s*:\s*(.*)\s*$/)
+    {
+      $interface_db{"\U$thorn USES HEADER\E"} .= " $2";      
+    }
+    elsif ($line =~ m/^\s*(INCLUDES)\s*:\s*(.*)\s+in\s+(.*)\s*$/)
+    {
+      $header = $2;
+      $header =~ s/ //g;
+      $interface_db{"\U$thorn ADD HEADER\E"} .= " $header";      
+#      print "Adding $header to $3\n";
+      $interface_db{"\U$thorn ADD HEADER $header TO\E"} = $3;      
     }
     else
     {
