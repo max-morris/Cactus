@@ -598,7 +598,7 @@ if test -n "$OPTIMISE" ; then
   OPTIMISE=`echo $OPTIMISE | tr '[:upper:]' '[:lower:]'`
   OPTIMIZE=`echo $OPTIMIZE | tr '[:upper:]' '[:lower:]'`
   
-  if test "$OPTIMISE" != "$OPTIMIZE" ; then
+  if test -n "$OPTIMIZE" -a "$OPTIMISE" != "$OPTIMIZE" ; then
     { echo "configure: error: OPTIMISE=\"$OPTIMISE\" is inconsistent with OPTIMIZE=\"$OPTIMIZE\"!" 1>&2; exit 1; }
   fi
   if test "$OPTIMISE" != 'yes' -a "$OPTIMISE" != 'no' ; then
