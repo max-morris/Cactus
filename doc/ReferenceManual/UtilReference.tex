@@ -11,7 +11,7 @@
 %   @version $Header$
 % @@*/
 
-\begin{cactuspart}{{\tt Util\_*} Functions Reference}{$RCSfile$}{$Revision$}
+\begin{cactuspart}{\code{Util\_*} Functions Reference}{$RCSfile$}{$Revision$}
 \label{part:UtilReference}
 \renewcommand{\thepage}{\Alph{part}\arabic{page}}
 
@@ -19,7 +19,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-In this chapter all \hbox{{\tt Util\_}*} Cactus utility functions are
+In this chapter all \code{Util\_*} Cactus utility functions are
 described.  These are low-level functions mainly for more complicated
 programming, which are used by the rest of Cactus, but don't depend
 heavily on it.  Some of them are callable from Fortran or C, but
@@ -158,7 +158,7 @@ Compare two strings, ignoring upper/lower case.
 \item[Util\_Strdup]
      [\pageref{Util-Strdup}]
 ``Duplicate'' a string,
-\ie{} copy it to a newly--\verb|malloc|ed buffer.
+i.e.\ copy it to a newly--\code{malloc}ed buffer.
 
 \item[Util\_Strlcat]
      [\pageref{Util-Strlcat}]
@@ -350,11 +350,11 @@ int cmp = Util_StrCmpi(const char *str1, const char *str2);
 \begin{Result}{cmp}
 An integer which is:\\
 \begin{tabular}{@{}rl}
-$<0$	& if $\verb|str1| < \verb|str2|$ in lexicographic order
+$<0$	& if $\code{str1} < \code{str2}$ in lexicographic order
 	  ignoring upper/lower case distinctions			\\
-$0$	& if $\verb|str1| = \verb|str2|$
+$0$	& if $\code{str1} = \code{str2}$
 	  ignoring upper/lower case distinctions			\\
-$>0$	& if $\verb|str1| > \verb|str2|$ in lexicographic order
+$>0$	& if $\code{str1} > \code{str2}$ in lexicographic order
 	  ignoring upper/lower case distinctions			%%%\\
 \end{tabular}
 \end{Result}
@@ -370,17 +370,17 @@ A non-NULL pointer to a (C-style NUL-terminated) string to be compared.
 \end{ParameterSection}
 
 \begin{Discussion}
-The standard C library \verb|strcmp()| function does a {\em case-sensitive\/}
-string comparison, \ie{} \verb|strcmp("cactus", "Cactus")| will find the
+The standard C library \code{strcmp} function does a {\em case-sensitive\/}
+string comparison, i.e.\ \code{strcmp("cactus", "Cactus")} will find the
 two strings not equal.  Sometimes it's useful to do {\em case-insensitive\/}
 string comparison, where upper/lower case distinctions are ignored.
-Many systems provide a \verb|strcasecmp()| or \verb|strcmpi()|
+Many systems provide a \code{strcasecmp} or \code{strcmpi}
 function to do this, but some systems don't, and even on those that do,
 the name isn't standardised.  So, Cactus provides its own version,
-\verb|Util_StrCmpi()|.
+\code{Util\_StrCmpi}.
 
-Notice that the return value of \verb|Util_StrCmpi()|, like that of
-\verb|strcmp()|, is zero (logical ``false'' in C) for equal strings,
+Notice that the return value of \code{Util\_StrCmpi}, like that of
+\code{strcmp}, is zero (logical ``false'' in C) for equal strings,
 and nonzero (logcla ``true'' in C) for non-equal strings.
 Code of the form
 \begin{verbatim}
@@ -445,8 +445,8 @@ context-dependent, many-to-one, and/or time-dependent.%%%
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{strcmp()}
-Standard C library function (prototype in \verb|<string.h>|)
+\begin{SeeAlso}{strcmp}
+Standard C library function (prototype in \code{<string.h>})
 to compare two strings.
 \end{SeeAlso}
 \end{SeeAlsoSection}
@@ -471,7 +471,7 @@ else
 
 \begin{FunctionDescription}{Util\_Strdup}
 \label{Util-Strdup}
-``Duplicate'' a string, \ie{} copy it to a newly--\verb|malloc|ed buffer.
+``Duplicate'' a string, i.e.\ copy it to a newly--\code{malloc}ed buffer.
 
 \begin{SynopsisSection}
 \begin{Synopsis}{C}
@@ -484,9 +484,9 @@ char* copy = Util_Strdup(const char *str);
 
 \begin{ResultSection}
 \begin{Result}{copy}
-A pointer to a buffer obtained from \verb|malloc()|,
+A pointer to a buffer obtained from \code{malloc},
 which this function sets to a copy of the (C-style NUL-terminated)
-string \verb|str|.  This buffer should be freed with \verb|free()|
+string \code{str}.  This buffer should be freed with \code{free}
 when it's not needed any more.
 \end{Result}
 \end{ResultSection}
@@ -498,32 +498,32 @@ A non-NULL pointer to a (C-style NUL-terminated) string.
 \end{ParameterSection}
 
 \begin{Discussion}
-Many systems have a C library function \verb|strdup|, which
-\verb|malloc|s sufficient memory for a copy of its argument string,
+Many systems have a C library function \code{strdup}, which
+\code{malloc}s sufficient memory for a copy of its argument string,
 does the copy, and returns a pointer to the copy.  However, some
 systems lack this function, so Cactus provides its own version,
-\verb|Util_Strdup()|.
+\code{Util\_Strdup}.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
 \begin{SeeAlso}{<stdlib.h>}
 System header file containing prototypes for
-\verb|malloc()| and \verb|free()|.
+\code{malloc} and \code{free}.
 \end{SeeAlso}
-\begin{SeeAlso}{strcpy()}
-Standard C library function (prototype in \verb|<string.h>|)
+\begin{SeeAlso}{strcpy}
+Standard C library function (prototype in \code{<string.h>})
 to copy a string to a buffer.
 {\em This does not check that the buffer is big enough to hold the string,
-and is thus very dangerous.  Use \verb|Util_Strlcpy()| instead!}
+and is thus very dangerous.  Use \code{Util\_Strlcpy} instead!}
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_Strlcpy()}
+\begin{SeeAlso}{Util\_Strlcpy}
 Safely copy a string.
 \end{SeeAlso}
 \end{SeeAlsoSection}
 
 \begin{ErrorSection}
 \begin{Error}{NULL}
-\verb|malloc()| was unable to allocate memory for the buffer.
+\code{malloc} was unable to allocate memory for the buffer.
 \end{Error}
 \end{ErrorSection}
 
@@ -578,7 +578,7 @@ size_t result_len = Util_Strlcat(char *dst, const char *src, size_t size);
 \begin{ResultSection}
 \begin{Result}{result\_len}
 The size of the string the function tried to create, i.e.\
-the initial \verb|strlen(dst)| plus \verb|strlen(src)|.
+the initial \code{strlen(dst)} plus \code{strlen(src)}.
 \end{Result}
 \end{ResultSection}
 
@@ -595,45 +595,45 @@ The size of the destination buffer.
 \end{ParameterSection}
 
 \begin{Discussion}
-The standard \verb|strcat()| and \verb|strcpy()| functions provide
+The standard \code{strcat} and \code{strcpy} functions provide
 no way to specify the size of the destination buffer, so code using
 these functions is often vulnerable to buffer overflows.  The standard
-\verb|strncat()| and \verb|strncpy()| functions can be used to write
+\code{strncat} and \code{strncpy} functions can be used to write
 safe code, but their API is cumbersome, error-prone, and sometimes
 surprisingly inefficient:
 \begin{itemize}
-\item	Their \verb|size| arguments are the number of characters
+\item	Their \code{size} arguments are the number of characters
 	{\em remaining\/} in the destination buffer, which must
 	often be calculated at run-time, and is prone to off-by-one
 	errors.
-\item	\verb|strncpy()| doesn't always NUL-terminate the destination string.
-\item	\verb|strncpy()| NUL-fills the remainder of the buffer not
+\item	\code{strncpy} doesn't always NUL-terminate the destination string.
+\item	\code{strncpy} NUL-fills the remainder of the buffer not
 	used for the source string; this NUL-filling can be {\em very\/}
 	expensive.
 \end{itemize}
 
 To solve these problems, the OpenBSD project developed the
-\verb|strlcat()| and \verb|strlcpy()| functions.  See
-\verb|http://www.openbsd.org/papers/strlcpy-paper.ps|
+\code{strlcat} and \code{strlcpy} functions.  See
+\code{http://www.openbsd.org/papers/strlcpy-paper.ps}
 for a history and general discussion of these functions.
 Some other Unix systems (notably Solaris) now provide these,
 but many don't, so Cactus provides its own versions,
-\verb|Util_Strlcat()| and \verb|Util_Strlcpy()|.
+\code{Util\_Strlcat} and \code{Util\_Strlcpy}.
 
-\verb|Util_Strlcat()| appends the NUL-terminated string \verb|src| to the
-end of the NUL-terminated string \verb|dst|.  It will append at most
-\verb|size - strlen(dst) - 1| characters (hence it never overflows the
-destination buffer), and it always leaves \verb|dst| string NUL-terminated.
+\code{Util\_Strlcat} appends the NUL-terminated string \code{src} to the
+end of the NUL-terminated string \code{dst}.  It will append at most
+\code{size - strlen(dst) - 1} characters (hence it never overflows the
+destination buffer), and it always leaves \code{dst} string NUL-terminated.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{strcat()}
-Standard C library function (prototype in \verb|<string.h>|)
+\begin{SeeAlso}{strcat}
+Standard C library function (prototype in \code{<string.h>})
 to concatenate two strings.
 {\em This does not check that the buffer is big enough to hold the result,
-and is thus very dangerous.  Use \verb|Util_Strlcat()| instead!}
+and is thus very dangerous.  Use \code{Util\_Strlcat} instead!}
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_Strlcpy()}
+\begin{SeeAlso}{Util\_Strlcpy}
 Safely copy a string.
 \end{SeeAlso}
 \end{SeeAlsoSection}
@@ -710,7 +710,7 @@ size_t result_len = Util_Strlcpy(char *dst, const char *src, size_t size);
 \begin{ResultSection}
 \begin{Result}{result\_len}
 The size of the string the function tried to create, i.e.\
-\verb|strlen(src)|.
+\code{strlen(src)}.
 \end{Result}
 \end{ResultSection}
 
@@ -727,49 +727,49 @@ The size of the destination buffer.
 \end{ParameterSection}
 
 \begin{Discussion}
-The standard \verb|strcat()| and \verb|strcpy()| functions provide
+The standard \code{strcat} and \code{strcpy} functions provide
 no way to specify the size of the destination buffer, so code using
 these functions is often vulnerable to buffer overflows.  The standard
-\verb|strncat()| and \verb|strncpy()| functions can be used to write
+\code{strncat} and \code{strncpy} functions can be used to write
 safe code, but their API is cumbersome, error-prone, and sometimes
 surprisingly inefficient:
 \begin{itemize}
-\item	Their \verb|size| arguments are the number of characters
+\item	Their \code{size} arguments are the number of characters
 	{\em remaining\/} in the destination buffer, which must
 	often be calculated at run-time, and is prone to off-by-one
 	errors.
-\item	\verb|strncpy()| doesn't always NUL-terminate the destination string.
-\item	\verb|strncpy()| NUL-fills the remainder of the buffer not
+\item	\code{strncpy} doesn't always NUL-terminate the destination string.
+\item	\code{strncpy} NUL-fills the remainder of the buffer not
 	used for the source string; this NUL-filling can be {\em very\/}
 	expensive.
 \end{itemize}
 
 To solve these problems, the OpenBSD project developed the
-\verb|strlcat()| and \verb|strlcpy()| functions.  See
-\verb|http://www.openbsd.org/papers/strlcpy-paper.ps|
+\code{strlcat} and \code{strlcpy} functions.  See
+\code{http://www.openbsd.org/papers/strlcpy-paper.ps}
 for a history and general discussion of these functions.
 Some other Unix systems (notably Solaris) now provide these,
 but many don't, so Cactus provides its own versions,
-\verb|Util_Strlcat()| and \verb|Util_Strlcpy()|.
+\code{Util\_Strlcat} and \code{Util\_Strlcpy}.
 
-\verb|Util_Strlcpy()| copies up to \verb|size-1| characters from the
+\code{Util\_Strlcpy} copies up to \code{size-1} characters from the
 source string to the destination string, followed by a NUL character
-(so \verb|dst| is always NUL-terminated).  Unlike \verb|strncpy()|,
-\verb|Util_Strlcpy()| does {\em not\/} fill any left-over space at
+(so \code{dst} is always NUL-terminated).  Unlike \code{strncpy},
+\code{Util\_Strlcpy} does {\em not\/} fill any left-over space at
 the end of the destination buffer with NUL characters.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{strcpy()}
-Standard C library function (prototype in \verb|<string.h>|)
+\begin{SeeAlso}{strcpy}
+Standard C library function (prototype in \code{<string.h>})
 to copy a string to a buffer.
 {\em This does not check that the buffer is big enough to hold the string,
-and is thus very dangerous.  Use \verb|Util_Strlcpy()| instead!}
+and is thus very dangerous.  Use \code{Util\_Strlcpy} instead!}
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_Strdup()}
-``Duplicate'' a string, \ie{} copy it to a newly-\verb|malloc|ed buffer.
+\begin{SeeAlso}{Util\_Strdup}
+``Duplicate'' a string, i.e.\ copy it to a newly-\code{malloc}ed buffer.
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_Strlcat()}
+\begin{SeeAlso}{Util\_Strlcat}
 Safely concatenates two strings.
 \end{SeeAlso}
 \end{SeeAlsoSection}
@@ -871,16 +871,16 @@ Handle to the table to be cloned
 Viewing a table as a set of key/value pairs, this function creates
 a new table (with the same flags word as the original) containing
 copies of all the original table's key/value pairs.  The two tables
-are completely independent, \ie{} future changes to one won't affect
+are completely independent, i.e.\ future changes to one won't affect
 the other.
 
-Note that if there are any \verb|CCTK_POINTER| and/or \verb|CCTK_FPOINTER|
-values in the table, they are ``shallow copied'', \ie{} the (pointer)
+Note that if there are any \code{CCTK\_POINTER} and/or \code{CCTK\_FPOINTER}
+values in the table, they are ``shallow copied'', i.e.\ the (pointer)
 values in the table are copied.  This results in the clone table's
 pointer values pointing to the same places as the original table's
 pointer values.  Be careful with this!  In particular,
 if you're using pointer values in the table to keep track of
-\verb|malloc()| memory, be careful not to \verb|free()|
+\code{malloc} memory, be careful not to \code{free}
 the same block of memory twice!
 
 Note that table iterators are {\em not\/} guaranteed to sequence
@@ -892,14 +892,14 @@ tables with identical key/value contents.)
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{Util\_TableCreate()}
+\begin{SeeAlso}{Util\_TableCreate}
 create a table
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableCreateFromString()}
+\begin{SeeAlso}{Util\_TableCreateFromString}
 convenience routine to create a table and set key/value entries
 in it based on a parameter-file--like character string
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableDestroy()}
+\begin{SeeAlso}{Util\_TableDestroy}
 destroy a table
 \end{SeeAlso}
 \end{SeeAlsoSection}
@@ -989,8 +989,8 @@ A handle to the newly-created table
 \begin{ParameterSection}
 \begin{Parameter}{flags ($\ge 0$)}
 A flags word for the table.  This should be the inclusive-or of zero
-or more of the \verb|UTIL_TABLE_FLAGS_|* bit masks (defined in
-\verb|"util_Table.h"|).  For Fortran users, note that inclusive-or
+or more of the \code{UTIL\_TABLE\_FLAGS\_*} bit masks (defined in
+\code{"util\_Table.h"}).  For Fortran users, note that inclusive-or
 is the same as sum here, since the bit masks are all disjoint.
 \end{Parameter}
 \end{ParameterSection}
@@ -1000,41 +1000,41 @@ We require the flags word to be non-negative so that other
 functions can distinguish flags from (negative) error codes.
 
 Any User-defined flag words should use only bit positions at or above\\
-\verb|UTIL_TABLE_FLAGS_USER_DEFINED_BASE|, i.e.\ all bit positions
+\code{UTIL\_TABLE\_FLAGS\_USER\_DEFINED\_BASE}, i.e.\ all bit positions
 below this are reserved for present of future Cactus use.
 
 At present there is only a single flags-word bit mask defined
-in \verb|"util_Table.h"|:
+in \code{"util\_Table.h"}:
 \begin{description}
-\item[{\t UTIL\_TABLE\_FLAGS\_CASE\_INSENSITIVE}]\mbox{}\\
+\item[\code{UTIL\_TABLE\_FLAGS\_CASE\_INSENSITIVE}]\mbox{}\\
         By default keys are treated as C-style character strings,
         and the table functions compare them with the standard C
-        \verb|strcmp()| function.
+        \code{strcmp} function.
         However, by setting the\\
-        \verb|UTIL_TABLE_FLAGS_CASE_INSENSITIVE|
+        \code{UTIL\_TABLE\_FLAGS\_CASE\_INSENSITIVE}
         bit in the flags word, this table's keys may be made
-        case-insensitive, \ie{} the table routines then compare
-        this table's keys with \verb|Util_StrCmpi()|.%%%
+        case-insensitive, i.e.\ the table routines then compare
+        this table's keys with \code{Util\_StrCmpi}.%%%
         Note that keys are still {\em stored\/} exactly as
-        the caller specifies them (\ie{} they are {\em not\/}
+        the caller specifies them (i.e.\ they are {\em not\/}
         forced into a canonical case); it's only their
         {\em comparison\/} that's affected by this flag.
 \end{description}
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{Util\_StrCmpi()}
+\begin{SeeAlso}{Util\_StrCmpi}
 compare two strings, ignoring upper/lower case
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableClone()}
+\begin{SeeAlso}{Util\_TableClone}
 create a new table which is a ``clone'' (exact copy) of an existing
 table
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableCreateFromString()}
+\begin{SeeAlso}{Util\_TableCreateFromString}
 convenience routine to create a table and set key/value entries
 in it based on a parameter-file--like character string
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableDestroy()}
+\begin{SeeAlso}{Util\_TableDestroy}
 destroy a table
 \end{SeeAlso}
 \end{SeeAlsoSection}
@@ -1098,27 +1098,27 @@ a handle to the newly-created table
 \begin{ParameterSection}
 \begin{Parameter}{string}
 a pointer to a C-style null-terminated string specifying the table
-contents; see the description for \verb|Util_TableSetFromString()|
+contents; see the description for \code{Util\_TableSetFromString}
 for a full description of the syntax and semantics of this string
 \end{Parameter}
 \end{ParameterSection}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{Util\_TableClone()}
+\begin{SeeAlso}{Util\_TableClone}
 Create a new table which is a ``clone'' (exact copy) of an existing
 table
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableCreate()}
+\begin{SeeAlso}{Util\_TableCreate}
 create a table
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetFromString()}
+\begin{SeeAlso}{Util\_TableSetFromString}
 sets values in a table based on a string argument
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetInt()}
-store a \verb|CCTK_INT| value in a table
+\begin{SeeAlso}{Util\_TableSetInt}
+store a \code{CCTK\_INT} value in a table
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetReal()}
-store a \verb|CCTK_REAL| value in a table
+\begin{SeeAlso}{Util\_TableSetReal}
+store a \code{CCTK\_REAL} value in a table
 \end{SeeAlso}
 \end{SeeAlsoSection}
 
@@ -1134,7 +1134,7 @@ invalid input: can't parse input string
 \end{Error}
 \begin{Error}{\rm other error codes}
 this function may also return any error codes returned by
-\verb|Util_TableCreate()| or \verb|Util_TableSetFromString()|
+\code{Util\_TableCreate} or \code{Util\_TableSetFromString}
 \end{Error}
 \end{ErrorSection}
 
@@ -1264,14 +1264,14 @@ Of course, this function invalidates any and all iterators for the table. :)
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{Util\_TableClone()}
+\begin{SeeAlso}{Util\_TableClone}
 Create a new table which is a ``clone'' (exact copy) of an existing
 table
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableCreate()}
+\begin{SeeAlso}{Util\_TableCreate}
 create a table
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableCreateFromString()}
+\begin{SeeAlso}{Util\_TableCreateFromString}
 convenience routine to create a table and set key/value entries
 in it based on a parameter-file--like character string
 \end{SeeAlso}
@@ -1322,19 +1322,19 @@ int N_elements = Util_TableGetXxx(int handle,
                                   CCTK_XXX *value,
                                   const char *key);
 \end{verbatim}
-where \verb|XXX| is one of
-   \verb|POINTER|, \verb|FPOINTER|%%%
+where \code{XXX} is one of
+   \code{POINTER}, \code{FPOINTER}%%%
 \footnote{%%%
 	 For backwards compatability the function
-	 {\tt Util\_TableGetFnPointer()} is also provided
-	 as an alias for {\tt Util\_TableGetFPointer()}.
+	 \code{Util\_TableGetFnPointer} is also provided
+	 as an alias for \code{Util\_TableGetFPointer}.
 	 This is deprecated as of Cactus 4.0 beta 13.
 	 }%%%
 ,
-   \verb|CHAR|,
-   \verb|INT|, \verb|INT2|, \verb|INT4|, \verb|INT8|,
-   \verb|REAL|, \verb|REAL4|, \verb|REAL8|, \verb|REAL16|,
-   \verb|COMPLEX|, \verb|COMPLEX8|, \verb|COMPLEX16|, \verb|COMPLEX32|
+   \code{CHAR},
+   \code{INT}, \code{INT2}, \code{INT4}, \code{INT8},
+   \code{REAL}, \code{REAL4}, \code{REAL8}, \code{REAL16},
+   \code{COMPLEX}, \code{COMPLEX8}, \code{COMPLEX16}, \code{COMPLEX32}
 (not all of these may be supported on any given system)
 \end{Synopsis}
 \begin{Synopsis}{Fortran}
@@ -1381,40 +1381,40 @@ empty (0-length) array, because then there is no ``first array element''
 to get.
 
 It is also an error for the value to actually have a different type
-than \verb|CCTK_XXX|.
+than \code{CCTK\_XXX}.
 
 If any error code is returned, the user's value buffer
-(pointed to by \verb|value| if this is non-NULL) is unchanged.
+(pointed to by \code{value} if this is non-NULL) is unchanged.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{Util\_TableCreateFromString()}
+\begin{SeeAlso}{Util\_TableCreateFromString}
 convenience routine to create a table and set key/value entries
 in it based on a parameter-file--like character string
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGet*Array()}
+\begin{SeeAlso}{Util\_TableGet*Array}
 get an array value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGet*String()}
+\begin{SeeAlso}{Util\_TableGet*String}
 get a character-string value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSet*()}
+\begin{SeeAlso}{Util\_TableSet*}
 set a single (1-element array) value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSet*Array()}
+\begin{SeeAlso}{Util\_TableSet*Array}
 set an array value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetGeneric()}
+\begin{SeeAlso}{Util\_TableSetGeneric}
 set a single (1-element array) value with generic data type
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetGenericArray()}
+\begin{SeeAlso}{Util\_TableSetGenericArray}
 set an array value with generic data type
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetFromString()}
+\begin{SeeAlso}{Util\_TableSetFromString}
 convenience routine to set key/value entries in a table based on a
 parameter-file--like character string
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetString()}
+\begin{SeeAlso}{Util\_TableSetString}
 set a character-string value
 \end{SeeAlso}
 \end{SeeAlsoSection}
@@ -1430,7 +1430,7 @@ key contains '/' character
 no such key in table
 \end{Error}
 \begin{Error}{UTIL\_ERROR\_TABLE\_WRONG\_DATA\_TYPE}
-value has data type other than \verb|CCTK_TYPE|
+value has data type other than \code{CCTK\_TYPE}
 \end{Error}
 \begin{Error}{UTIL\_ERROR\_TABLE\_VALUE\_IS\_EMPTY}
 value is an empty (0-element) array
@@ -1480,19 +1480,19 @@ int N_elements = Util_TableGetXxxArray(int handle,
                                        int N_array, CCTK_XXX array[],
                                        const char *key);
 \end{verbatim}
-where \verb|XXX| is one of
-   \verb|POINTER|, \verb|FPOINTER|%%%
+where \code{XXX} is one of
+   \code{POINTER}, \code{FPOINTER}%%%
 \footnote{%%%
 	 For backwards compatability the function
-	 {\tt Util\_TableGetFnPointerArray()} is also provided
-	 as an alias for {\tt Util\_TableGetFPointerArray()}.
+	 \code{Util\_TableGetFnPointerArray} is also provided
+	 as an alias for \code{Util\_TableGetFPointerArray}.
 	 This is deprecated as of Cactus 4.0 beta 13.
 	 }%%%
 ,
-   \verb|CHAR|,
-   \verb|INT|, \verb|INT2|, \verb|INT4|, \verb|INT8|,
-   \verb|REAL|, \verb|REAL4|, \verb|REAL8|, \verb|REAL16|,
-   \verb|COMPLEX|, \verb|COMPLEX8|, \verb|COMPLEX16|, \verb|COMPLEX32|
+   \code{CHAR},
+   \code{INT}, \code{INT2}, \code{INT4}, \code{INT8},
+   \code{REAL}, \code{REAL4}, \code{REAL8}, \code{REAL16},
+   \code{COMPLEX}, \code{COMPLEX8}, \code{COMPLEX16}, \code{COMPLEX32}
 (not all of these may be supported on any given system)
 \end{Synopsis}
 \begin{Synopsis}{Fortran}
@@ -1516,11 +1516,11 @@ the number of array elements in the value
 handle to the table
 \end{Parameter}
 \begin{Parameter}{N\_array}
-the number of array elements in \verb|array[]|
-(must be $\ge 0$ if \verb|array != NULL|)
+the number of array elements in \code{array[]}
+(must be $\ge 0$ if \code{array != NULL})
 \end{Parameter}
 \begin{Parameter}{array}
-a pointer to where this function should store (up to \verb|N_array|
+a pointer to where this function should store (up to \code{N\_array}
 elements of) a copy of the value associated with the specified key,
 or NULL pointer to skip storing this
 \end{Parameter}
@@ -1531,60 +1531,60 @@ a pointer to the key (a C-style null-terminated string)
 
 \begin{Discussion}
 Note that it is {\em not\/} an error for the value to actually have
-$> \verb|N_array|$ array elements; in this case only the first \verb|N_array|
+$> \code{N\_array}$ array elements; in this case only the first \code{N\_array}
 elements are stored.  The caller can detect this by comparing the
-return value with \verb|N_array|.
+return value with \code{N\_array}.
 The rationale for this design is that the caller may know or suspect
 that the value is a large array, but may only want the first few array
 elements; in this case this design avoids the caller having to allocate
 a large buffer unnecessarily.
 
 It is also {\em not\/} an error for the value to actually have
-$< \verb|N_array|$ array elements; again the caller can detect this by
-comparing the return value with \verb|N_array|.
+$< \code{N\_array}$ array elements; again the caller can detect this by
+comparing the return value with \code{N\_array}.
 
 It {\em is\/} an error for the value to actually have a different type
-than \verb|CCTK_XXX|.
+than \code{CCTK\_XXX}.
 
 If any error code is returned, the user's value buffer
-(pointed to by \verb|array| if this is non-NULL) is unchanged.
+(pointed to by \code{array} if this is non-NULL) is unchanged.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{Util\_TableCreateFromString()}
+\begin{SeeAlso}{Util\_TableCreateFromString}
 convenience routine to create a table and set key/value entries
 in it based on a parameter-file--like character string
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGet*()}
+\begin{SeeAlso}{Util\_TableGet*}
 get a single (1-element array) value,
 or more generally the first array element of an array value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGetGeneric()}
+\begin{SeeAlso}{Util\_TableGetGeneric}
 get a single (1-element array) value with generic data type
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGetGenericArray()}
+\begin{SeeAlso}{Util\_TableGetGenericArray}
 get an array value with generic data type
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGet*String()}
+\begin{SeeAlso}{Util\_TableGet*String}
 get a character-string value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSet*()}
+\begin{SeeAlso}{Util\_TableSet*}
 set a single (1-element array) value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSet*Array()}
+\begin{SeeAlso}{Util\_TableSet*Array}
 set an array value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetGeneric()}
+\begin{SeeAlso}{Util\_TableSetGeneric}
 set a single (1-element array) value with generic data type
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetGenericArray()}
+\begin{SeeAlso}{Util\_TableSetGenericArray}
 set an array value with generic data type
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetFromString()}
+\begin{SeeAlso}{Util\_TableSetFromString}
 convenience routine to set key/value entries in a table based on a
 parameter-file--like character string
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetString()}
+\begin{SeeAlso}{Util\_TableSetString}
 set a character-string value
 \end{SeeAlso}
 \end{SeeAlsoSection}
@@ -1597,13 +1597,13 @@ handle is invalid
 key contains '/' character
 \end{Error}
 \begin{Error}{UTIL\_ERROR\_BAD\_INPUT}
-\verb|array != NULL| and \verb|N_array| $< 0$
+\code{array != NULL} and \code{N\_array} $< 0$
 \end{Error}
 \begin{Error}{UTIL\_ERROR\_TABLE\_NO\_SUCH\_KEY}
 no such key in table
 \end{Error}
 \begin{Error}{UTIL\_ERROR\_TABLE\_WRONG\_DATA\_TYPE}
-value has data type other than \verb|CCTK_TYPE|
+value has data type other than \code{CCTK\_TYPE}
 \end{Error}
 \end{ErrorSection}
 
@@ -1638,8 +1638,8 @@ N = Util_TableGetRealArray(handle, N_OUTPUT, output, "blah blah blah");
 Get the single (1-element array) value, or more generally the
 first array element of the value, associated with a specified key
 in a key/value table; the value's data type is generic.  That
-is, the value is specified by a \verb|CCTK_VARIABLE_|* type code
-and a \verb|void *| pointer.
+is, the value is specified by a \code{CCTK\_VARIABLE\_*} type code
+and a \code{void *} pointer.
 
 \begin{SynopsisSection}
 \begin{Synopsis}{C}
@@ -1674,7 +1674,7 @@ handle to the table
 \end{Parameter}
 \begin{Parameter}{type\_code}
 the value's type code
-(one of the \verb|CCTK_VARIABLE_|* constants from \verb|"cctk_Constants.h"|)
+(one of the \code{CCTK\_VARIABLE\_*} constants from \code{"cctk\_Constants.h"})
 \end{Parameter}
 \begin{Parameter}{value}
 a pointer to where this function should store a copy of the value
@@ -1700,51 +1700,51 @@ empty (0-length) array, because then there is no ``first array element''
 to get.
 
 It is also an error for the value to actually have a different type
-than that specified by \verb|type_code|.
+than that specified by \code{type\_code}.
 
 If any error code is returned, the user's value buffer
-(pointed to by \verb|value| if this is non-NULL) is unchanged.
+(pointed to by \code{value} if this is non-NULL) is unchanged.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{Util\_TableCreateFromString()}
+\begin{SeeAlso}{Util\_TableCreateFromString}
 convenience routine to create a table and set key/value entries
 in it based on a parameter-file--like character string
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGet*()}
+\begin{SeeAlso}{Util\_TableGet*}
 get a single (1-element array) value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGet*Array()}
+\begin{SeeAlso}{Util\_TableGet*Array}
 get an array value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGet*String()}
+\begin{SeeAlso}{Util\_TableGet*String}
 get a character-string value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableItQueryValueInfo()}
+\begin{SeeAlso}{Util\_TableItQueryValueInfo}
 query key present/absent in table, and optionally type and/or number
 of elements, using an iterator
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableQueryValueInfo()}
+\begin{SeeAlso}{Util\_TableQueryValueInfo}
 query key present/absent in table, and optionally type and/or number
 of elements
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSet*()}
+\begin{SeeAlso}{Util\_TableSet*}
 set a single (1-element array) value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSet*Array()}
+\begin{SeeAlso}{Util\_TableSet*Array}
 set an array value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetGeneric()}
+\begin{SeeAlso}{Util\_TableSetGeneric}
 set a single (1-element array) value with generic data type
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetGenericArray()}
+\begin{SeeAlso}{Util\_TableSetGenericArray}
 set an array value with generic data type
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetFromString()}
+\begin{SeeAlso}{Util\_TableSetFromString}
 convenience routine to set key/value entries in a table based on a
 parameter-file--like character string
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetString()}
+\begin{SeeAlso}{Util\_TableSetString}
 set a character-string value
 \end{SeeAlso}
 \end{SeeAlsoSection}
@@ -1760,7 +1760,7 @@ key contains '/' character
 no such key in table
 \end{Error}
 \begin{Error}{UTIL\_ERROR\_TABLE\_WRONG\_DATA\_TYPE}
-value has data type other than \verb|CCTK_TYPE|
+value has data type other than \code{CCTK\_TYPE}
 \end{Error}
 \begin{Error}{UTIL\_ERROR\_TABLE\_VALUE\_IS\_EMPTY}
 value is an empty (0-element) array
@@ -1802,8 +1802,8 @@ N = Util_TableGetGeneric(handle, CCTK_VARIABLE_INT, &x, "empty array");
 Get a copy of the value associated with a specified key, and store
 it (more accurately, as much of it as will fit) in a specified array;
 the array's data type is generic.  That is the array is specified by
-a \verb|CCTK_VARIABLE_|* type code, a count of the number of array
-elements, and a \verb|void *| pointer.
+a \code{CCTK\_VARIABLE\_*} type code, a count of the number of array
+elements, and a \code{void *} pointer.
 
 \begin{SynopsisSection}
 \begin{Synopsis}{C}
@@ -1842,14 +1842,14 @@ handle to the table
 \end{Parameter}
 \begin{Parameter}{type\_code}
 the value's type code
-(one of the \verb|CCTK_VARIABLE_|* constants from \verb|"cctk_Constants.h"|)
+(one of the \code{CCTK\_VARIABLE\_*} constants from \code{"cctk\_Constants.h"})
 \end{Parameter}
 \begin{Parameter}{N\_array}
-the number of array elements in \verb|array[]|
-(must be $\ge 0$ if \verb|array != NULL|)
+the number of array elements in \code{array[]}
+(must be $\ge 0$ if \code{array != NULL})
 \end{Parameter}
 \begin{Parameter}{array}
-a pointer to where this function should store (up to \verb|N_array|
+a pointer to where this function should store (up to \code{N\_array}
 elements of) a copy of the value associated with the specified key,
 or NULL pointer to skip storing this
 \end{Parameter}
@@ -1860,68 +1860,68 @@ a pointer to the key (a C-style null-terminated string)
 
 \begin{Discussion}
 Note that it is {\em not\/} an error for the value to actually have
-$> \verb|N_array|$ array elements; in this case only the first \verb|N_array|
+$> \code{N\_array}$ array elements; in this case only the first \code{N\_array}
 elements are stored.  The caller can detect this by comparing the
-return value with \verb|N_array|.
+return value with \code{N\_array}.
 The rationale for this design is that the caller may know or suspect
 that the value is a large array, but may only want the first few array
 elements; in this case this design avoids the caller having to allocate
 a large buffer unnecessarily.
 
 It is also {\em not\/} an error for the value to actually have
-$< \verb|N_array|$ array elements; again the caller can detect this by
-comparing the return value with \verb|N_array|.
+$< \code{N\_array}$ array elements; again the caller can detect this by
+comparing the return value with \code{N\_array}.
 
 It {\em is\/} an error for the value to actually have a different type
-than that specified by \verb|type_code|.
+than that specified by \code{type\_code}.
 
 If any error code is returned, the user's value buffer
-(pointed to by \verb|array| if this is non-NULL) is unchanged.
+(pointed to by \code{array} if this is non-NULL) is unchanged.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{Util\_TableCreateFromString()}
+\begin{SeeAlso}{Util\_TableCreateFromString}
 convenience routine to create a table and set key/value entries
 in it based on a parameter-file--like character string
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGet*()}
+\begin{SeeAlso}{Util\_TableGet*}
 get a single (1-element array) value,
 or more generally the first array element of an array value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGetGeneric()}
+\begin{SeeAlso}{Util\_TableGetGeneric}
 get a single (1-element array) value with generic data type
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGetGenericArray()}
+\begin{SeeAlso}{Util\_TableGetGenericArray}
 get an array value with generic data type
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGet*String()}
+\begin{SeeAlso}{Util\_TableGet*String}
 get a character-string value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableItQueryValueInfo()}
+\begin{SeeAlso}{Util\_TableItQueryValueInfo}
 query key present/absent in table, and optionally type and/or number
 of elements, using an iterator
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableQueryValueInfo()}
+\begin{SeeAlso}{Util\_TableQueryValueInfo}
 query key present/absent in table, and optionally type and/or number
 of elements
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSet*()}
+\begin{SeeAlso}{Util\_TableSet*}
 set a single (1-element array) value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSet*Array()}
+\begin{SeeAlso}{Util\_TableSet*Array}
 set an array value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetGeneric()}
+\begin{SeeAlso}{Util\_TableSetGeneric}
 set a single (1-element array) value with generic data type
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetGenericArray()}
+\begin{SeeAlso}{Util\_TableSetGenericArray}
 set an array value with generic data type
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetFromString()}
+\begin{SeeAlso}{Util\_TableSetFromString}
 convenience routine to set key/value entries in a table based on a
 parameter-file--like character string
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetString()}
+\begin{SeeAlso}{Util\_TableSetString}
 set a character-string value
 \end{SeeAlso}
 \end{SeeAlsoSection}
@@ -1934,13 +1934,13 @@ handle is invalid
 key contains '/' character
 \end{Error}
 \begin{Error}{UTIL\_ERROR\_BAD\_INPUT}
-\verb|array != NULL| and \verb|N_array| $< 0$
+\code{array != NULL} and \code{N\_array} $< 0$
 \end{Error}
 \begin{Error}{UTIL\_ERROR\_TABLE\_NO\_SUCH\_KEY}
 no such key in table
 \end{Error}
 \begin{Error}{UTIL\_ERROR\_TABLE\_WRONG\_DATA\_TYPE}
-value has data type other than \verb|CCTK_TYPE|
+value has data type other than \code{CCTK\_TYPE}
 \end{Error}
 \end{ErrorSection}
 
@@ -1998,11 +1998,11 @@ int length = Util_TableGetString(int handle,
 
 \begin{ResultSection}
 \begin{ResultNote}
-Results are the same as all the other \verb|Util_TableGet|* functions:
+Results are the same as all the other \code{Util\_TableGet*} functions:
 \end{ResultNote}
 \begin{Result}{length}
 the length of the string
-(C \verb|strlen()| semantics, \ie{} {\em not\/} including
+(C \code{strlen} semantics, i.e.\ {\em not\/} including
 the terminating null character)
 \end{Result}
 \end{ResultSection}
@@ -2012,12 +2012,12 @@ the terminating null character)
 handle to the table
 \end{Parameter}
 \begin{Parameter}{buffer\_length}
-the length (\verb|sizeof()|) of \verb|buffer[]|
-(must be $\ge 1$ if \verb|buffer != NULL|)
+the length (\code{sizeof}) of \code{buffer[]}
+(must be $\ge 1$ if \code{buffer != NULL})
 \end{Parameter}
 \begin{Parameter}{buffer}
 a pointer to a buffer into which this function should store
-(at most \verb|buffer_length-1|  characters of) the value,
+(at most \code{buffer\_length-1}  characters of) the value,
 terminated by a null character as usual for C strings,
 or NULL pointer to skip storing this
 \end{Parameter}
@@ -2028,69 +2028,69 @@ a pointer to the key (a C-style null-terminated string)
 
 \begin{Discussion}
 This function assumes that the string is stored as an array of
-\verb|CCTK_CHAR|s, {\em not\/} including a terminating null character.
+\code{CCTK\_CHAR}s, {\em not\/} including a terminating null character.
 
-This function differs from \verb|Util_TableGetCharArray()| in two ways:
+This function differs from \code{Util\_TableGetCharArray} in two ways:
 It explicitly provides a terminating null character for C-style strings,
 and it explicitly checks for the string being too long to fit in the buffer
-(in which case it returns \verb|UTIL_ERROR_TABLE_STRING_TRUNCATED|).
+(in which case it returns \code{UTIL\_ERROR\_TABLE\_STRING\_TRUNCATED}).
 
-If the error code \verb|UTIL_ERROR_TABLE_STRING_TRUNCATED| is returned,
-then the first \verb|buffer_length-1| characters of the string are
-returned in the user's buffer (assuming \verb|buffer| is non-NULL),
+If the error code \code{UTIL\_ERROR\_TABLE\_STRING\_TRUNCATED} is returned,
+then the first \code{buffer\_length-1} characters of the string are
+returned in the user's buffer (assuming \code{buffer} is non-NULL),
 followed by a null character to properly terminate the string in the
 buffer.  If any other error code is returned, the user's value buffer
-(pointed to by \verb|buffer| if this is non-NULL) is unchanged.
+(pointed to by \code{buffer} if this is non-NULL) is unchanged.
 
 To find out how long the string is (and thus how big of a buffer you
 need to allocate to avoid having the string truncated), you can call
-this function with $\verb|buffer_length| = 0$ and $\verb|buffer| = \verb|NULL|$
+this function with $\code{buffer\_length} = 0$ and $\code{buffer} = \code{NULL}$
 (or actually anything you want); the return result will give the
 string length.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{Util\_TableCreateFromString()}
+\begin{SeeAlso}{Util\_TableCreateFromString}
 convenience routine to create a table and set key/value entries
 in it based on a parameter-file--like character string
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGet*()}
+\begin{SeeAlso}{Util\_TableGet*}
 get a single (1-element array) value,
 or more generally the first array element of an array value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGet*Array()}
+\begin{SeeAlso}{Util\_TableGet*Array}
 get an array value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGetCharArray()}
-get an array-of-\verb|CCTK_CHAR| value
+\begin{SeeAlso}{Util\_TableGetCharArray}
+get an array-of-\code{CCTK\_CHAR} value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGetGeneric()}
+\begin{SeeAlso}{Util\_TableGetGeneric}
 get a single (1-element array) value with generic data type
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGetGenericArray()}
+\begin{SeeAlso}{Util\_TableGetGenericArray}
 get an array value with generic data type
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSet*()}
+\begin{SeeAlso}{Util\_TableSet*}
 set a single (1-element array) value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSet*Array()}
+\begin{SeeAlso}{Util\_TableSet*Array}
 set an array value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetGeneric()}
+\begin{SeeAlso}{Util\_TableSetGeneric}
 set a single (1-element array) value with generic data type
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetGenericArray()}
+\begin{SeeAlso}{Util\_TableSetGenericArray}
 set an array value with generic data type
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetString()}
+\begin{SeeAlso}{Util\_TableSetString}
 set a character-string value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetFromString()}
+\begin{SeeAlso}{Util\_TableSetFromString}
 convenience routine to set key/value entries in a table based on a
 parameter-file--like character string
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetCharArray()}
-set an array-of-\verb|CCTK_CHAR| value
+\begin{SeeAlso}{Util\_TableSetCharArray}
+set an array-of-\code{CCTK\_CHAR} value
 \end{SeeAlso}
 \end{SeeAlsoSection}
 
@@ -2102,17 +2102,17 @@ handle is invalid
 key contains '/' character
 \end{Error}
 \begin{Error}{UTIL\_ERROR\_BAD\_INPUT}
-\verb|buffer != NULL| and \verb|buffer_length| $\le 0$
+\code{buffer != NULL} and \code{buffer\_length} $\le 0$
 \end{Error}
 \begin{Error}{UTIL\_ERROR\_TABLE\_NO\_SUCH\_KEY}
 no such key in table
 \end{Error}
 \begin{Error}{UTIL\_ERROR\_TABLE\_WRONG\_DATA\_TYPE}
-value has data type other than \verb|CCTK_CHAR|
+value has data type other than \code{CCTK\_CHAR}
 \end{Error}
 \begin{Error}{UTIL\_ERROR\_TABLE\_STRING\_TRUNCATED}
 \quad
-\verb|buffer != NULL| and value was truncated to fit in \verb|buffer[]|
+\code{buffer != NULL} and value was truncated to fit in \code{buffer[]}
 \end{Error}
 \end{ErrorSection}
 
@@ -2172,7 +2172,7 @@ handle to the iterator
 
 \begin{Discussion}
 If we view an iterator as an abstraction of a pointer into the table,
-then this function is the abstraction of the C \verb|++| operation applied
+then this function is the abstraction of the \Cplusplus\ operation applied
 to the pointer, except that this function automagically sets the iterator
 to the "null-pointer" state when it advances past the last table entry.
 
@@ -2246,14 +2246,14 @@ by a change in the table's contents.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{Util\_TableClone()}
+\begin{SeeAlso}{Util\_TableClone}
 create a new table which is a ``clone'' (exact copy) of an existing
 table
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableItCreate()}
+\begin{SeeAlso}{Util\_TableItCreate}
 create a table iterator
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableItDestroy()}
+\begin{SeeAlso}{Util\_TableItDestroy}
 destroy a table iterator
 \end{SeeAlso}
 \end{SeeAlsoSection}
@@ -2365,7 +2365,7 @@ points at the starting table entry.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{Util\_TableItDestroy()}
+\begin{SeeAlso}{Util\_TableItDestroy}
 destroy a table iterator
 \end{SeeAlso}
 \end{SeeAlsoSection}
@@ -2430,7 +2430,7 @@ handle to the iterator
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{Util\_TableItCreate()}
+\begin{SeeAlso}{Util\_TableItCreate}
 create a table iterator
 \end{SeeAlso}
 \end{SeeAlsoSection}
@@ -2482,7 +2482,7 @@ int status = Util_TableItQueryIsNonNull(int ihandle);
 \begin{ResultSection}
 \begin{Result}{\rm 1}
 iterator is {\em not\/} in the ``null-pointer'' state,
-\ie{} iterator points to some table entry
+i.e.\ iterator points to some table entry
 \end{Result}
 \begin{Result}{\rm 0}
 iterator is in the ``null-pointer'' state
@@ -2497,9 +2497,9 @@ handle to the iterator
 
 \begin{Discussion}
 If no errors occur,
-\verb|Util_TableItQueryIsNonNull(ihandle)|
+\code{Util\_TableItQueryIsNonNull(ihandle)}
 is the same as\\
-\verb|1 - Util_TableItQueryIsNull(ihandle)|.
+\code{1 - Util\_TableItQueryIsNull(ihandle)}.
 
 Note that bad things (garbage results, core dumps) may happen if
 you call this function on an iterator which has been invalidated
@@ -2507,7 +2507,7 @@ by a change in the table's contents.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{Util\_TableItQueryIsNull()}
+\begin{SeeAlso}{Util\_TableItQueryIsNull}
 query whether a table iterator is in the ``null-pointer'' state
 \end{SeeAlso}
 \end{SeeAlsoSection}
@@ -2559,7 +2559,7 @@ iterator is in the ``null-pointer'' state
 \end{Result}
 \begin{Result}{\rm 0}
 iterator is {\em not\/} in the ``null-pointer'' state,
-\ie{} iterator points to some table entry
+i.e.\ iterator points to some table entry
 \end{Result}
 \end{ResultSection}
 
@@ -2571,9 +2571,9 @@ handle to the iterator
 
 \begin{Discussion}
 If no errors occur,
-\verb|Util_TableItQueryIsNull(ihandle)|
+\code{Util\_TableItQueryIsNull(ihandle)}
 is the same as
-\verb|1 - Util_TableItQueryIsNonNull(ihandle)|.
+\code{1 - Util\_TableItQueryIsNonNull(ihandle)}.
 
 Note that bad things (garbage results, core dumps) may happen if
 you call this function on an iterator which has been invalidated
@@ -2581,9 +2581,9 @@ by a change in the table's contents.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{Util\_TableItQueryIsNonNull()}
+\begin{SeeAlso}{Util\_TableItQueryIsNonNull}
 query whether a table iterator is {\em not\/} in the ``null-pointer'' state,
-\ie{} whether the iterator points to some table entry
+i.e.\ whether the iterator points to some table entry
 \end{SeeAlso}
 \end{SeeAlsoSection}
 
@@ -2635,7 +2635,7 @@ int key_length =
 \begin{ResultSection}
 \begin{Result}{key\_length}
 The string length of the key
-(this has C {\t strlen()} semantics, \ie{} it does {\em not\/}
+(this has C \code{strlen} semantics, i.e.\ it does {\em not\/}
 include a terminating null character)
 \end{Result}
 \end{ResultSection}
@@ -2646,18 +2646,18 @@ handle to the table iterator
 \end{Parameter}
 \begin{Parameter}{key\_buffer\_length}
 \quad
-the length (\verb|sizeof()|) of \verb|key_buffer[]|
-(must be $\ge 1$ if \verb|key_buffer != NULL|)
+the length (\code{sizeof}) of \code{key\_buffer[]}
+(must be $\ge 1$ if \code{key\_buffer != NULL})
 \end{Parameter}
 \begin{Parameter}{key\_buffer}
 a pointer to a buffer into which this function should store
-(at most \verb|key_buffer_length-1| characters of) the key,
+(at most \code{key\_buffer\_length-1} characters of) the key,
 terminated by a null character as usual for C strings,
 or NULL pointer to skip storing this
 \end{Parameter}
 \begin{Parameter}{type\_code}
 a pointer to where this function should store the value's type code
-(one of the \verb|CCTK_VARIABLE_|* constants from \verb|"cctk_Constants.h"|),
+(one of the \code{CCTK\_VARIABLE\_*} constants from \code{"cctk\_Constants.h"}),
 or a NULL pointer to skip storing this.
 \end{Parameter}
 \begin{Parameter}{N\_elements}
@@ -2676,16 +2676,16 @@ Note that bad things (garbage results, core dumps) may happen if
 you call this function on an iterator which has been invalidated
 by a change in the table's contents.
 
-If the error code \verb|UTIL_ERROR_TABLE_STRING_TRUNCATED| is returned,
-then the first \verb|key_buffer_length-1| characters of the key are
-returned in the user's key buffer (assuming \verb|key_buffer| is non-NULL),
+If the error code \code{UTIL\_ERROR\_TABLE\_STRING\_TRUNCATED} is returned,
+then the first \code{key\_buffer\_length-1} characters of the key are
+returned in the user's key buffer (assuming \code{key\_buffer} is non-NULL),
 followed by a null character to properly terminate the string in the
 buffer.  If any other error code is returned, the user's key buffer
-(pointed to by \verb|key_buffer| if this is non-NULL) is unchanged.
+(pointed to by \code{key\_buffer} if this is non-NULL) is unchanged.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{Util\_TableQueryValueInfo()}
+\begin{SeeAlso}{Util\_TableQueryValueInfo}
 query key present/absent in table, and optionally type and/or number
 of elements, but using the key instead of an iterator
 \end{SeeAlso}
@@ -2701,7 +2701,7 @@ iterator is in "null-pointer" state
 \end{Error}
 \begin{Error}{UTIL\_ERROR\_TABLE\_STRING\_TRUNCATED}
 \quad
-\verb|key_buffer != NULL| and key was truncated to fit in \verb|key_buffer|
+\code{key\_buffer != NULL} and key was truncated to fit in \code{key\_buffer}
 \end{Error}
 \end{ErrorSection}
 
@@ -2808,7 +2808,7 @@ invalidated by a change in the table's contents.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{Util\_TableItCreate()}
+\begin{SeeAlso}{Util\_TableItCreate}
 create an iterator (which iterates over a specified table)
 \end{SeeAlso}
 \end{SeeAlsoSection}
@@ -2838,12 +2838,12 @@ int status = Util_TableItResetToStart(int ihandle);
 
 \begin{ResultSection}
 \begin{ResultNote}
-Results are the same as calling \verb|Util_TableItQueryIsNonNull()|
+Results are the same as calling \code{Util\_TableItQueryIsNonNull}
 on the iterator after the reset:
 \end{ResultNote}
 \begin{Result}{\rm 1}
 iterator is {\em not\/} in the ``null-pointer'' state,
-\ie{} iterator points to some table entry
+i.e.\ iterator points to some table entry
 \end{Result}
 \begin{Result}{\rm 0}
 iterator is in the ``null-pointer'' state
@@ -2866,10 +2866,10 @@ invalidated by a change in the table's contents.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{Util\_TableItSetToNull()}
+\begin{SeeAlso}{Util\_TableItSetToNull}
 set an iterator to the ``null-pointer'' state
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableItSetToKey()}
+\begin{SeeAlso}{Util\_TableItSetToKey}
 set an iterator to point to a specified table entry
 \end{SeeAlso}
 \end{SeeAlsoSection}
@@ -2910,8 +2910,8 @@ handle to the iterator
 \end{ParameterSection}
 
 \begin{Discussion}
-This function has the same effect as calling \verb|Util_TableItResetToStart()|
-followed by calling \verb|Util_TableItAdvance()| zero or more times
+This function has the same effect as calling \code{Util\_TableItResetToStart}
+followed by calling \code{Util\_TableItAdvance} zero or more times
 to make the iterator point to the desired table entry.  However, this
 function will typically be (much) more efficient than that sequence.
 
@@ -2923,10 +2923,10 @@ invalidated by a change in the table's contents.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{Util\_TableItResetToStart()}
+\begin{SeeAlso}{Util\_TableItResetToStart}
 reset an iterator to point to the starting table entry
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableItSetToNull()}
+\begin{SeeAlso}{Util\_TableItSetToNull}
 set a table iterator to the "null-pointer" state
 \end{SeeAlso}
 \end{SeeAlsoSection}
@@ -2981,10 +2981,10 @@ invalidated by a change in the table's contents.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{Util\_TableItResetToStart()}
+\begin{SeeAlso}{Util\_TableItResetToStart}
 reset an iterator to point to the starting table entry
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableItSetToKey()}
+\begin{SeeAlso}{Util\_TableItSetToKey}
 set an iterator to point to a specified table entry
 \end{SeeAlso}
 \end{SeeAlsoSection}
@@ -3031,19 +3031,19 @@ handle to the table
 \end{ParameterSection}
 
 \begin{Discussion}
-See \verb|Util_TableCreate()| for further discussion of the semantics
+See \code{Util\_TableCreate} for further discussion of the semantics
 of flag words.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{Util\_TableClone()}
+\begin{SeeAlso}{Util\_TableClone}
 create a new table which is a ``clone'' (exact copy) of an existing
 table
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableCreate()}
+\begin{SeeAlso}{Util\_TableCreate}
 create a table (flags word specified explicitly)
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableCreateFromString()}
+\begin{SeeAlso}{Util\_TableCreateFromString}
 convenience routine to create a table (with certain default flags)
 and set key/value entries in it based on a parameter-file--like
 character string
@@ -3115,7 +3115,7 @@ ok (key is in table)
 \end{Result}
 \begin{Result}{\rm 0}
 ok (no such key in table)\\
-(in this case nothing is stored in \verb|*type_code| and \verb|*N_elements|)
+(in this case nothing is stored in \code{*type\_code} and \code{*N\_elements})
 \end{Result}
 \end{ResultSection}
 
@@ -3125,7 +3125,7 @@ handle to the table
 \end{Parameter}
 \begin{Parameter}{type\_code}
 a pointer to where this function should store the value's type code
-(one of the \verb|CCTK_VARIABLE_|* constants from \verb|"cctk_Constants.h"|),
+(one of the \code{CCTK\_VARIABLE\_*} constants from \code{"cctk\_Constants.h"}),
 or a NULL pointer to skip storing this.
 \end{Parameter}
 \begin{Parameter}{N\_elements}
@@ -3141,16 +3141,16 @@ a pointer to the key (a C-style null-terminated string)
 \begin{Discussion}
 Unlike all the other table query functions, this function returns
 0 for ``no such key in table''.  The rationale for this design is that
-by passing NULL pointers for \verb|type_code| and \verb|N_elements|, this
+by passing NULL pointers for \code{type\_code} and \code{N\_elements}, this
 function is then a Boolean ``is key in table?'' predicate.
 
 If any error code is returned, the user's buffers (pointed to by
-\verb|type_code| and \verb|N_elements| if these are non-NULL) are
+\code{type\_code} and \code{N\_elements} if these are non-NULL) are
 unchanged.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{Util\_TableItQueryKeyValueInfo()}
+\begin{SeeAlso}{Util\_TableItQueryKeyValueInfo}
 query key present/absent in table, and optionally type and/or number
 of elements, but using an iterator instead of the key
 \end{SeeAlso}
@@ -3226,7 +3226,7 @@ integer  max_key_length, handle
 \begin{ResultSection}
 \begin{Result}{max\_key\_length ($\ge 0$)}
 The string length of the longest key in the table
-(this has C {\t strlen()} semantics, \ie{} it does {\em not\/}
+(this has C \code{strlen} semantics, i.e.\ it does {\em not\/}
 include a terminating null character)
 \end{Result}
 \end{ResultSection}
@@ -3332,19 +3332,19 @@ int status = Util_TableSetXxx(int handle,
                               CCTK_XXX value,
                               const char *key);
 \end{verbatim}
-where \verb|XXX| is one of
-   \verb|POINTER|, \verb|FPOINTER|%%%
+where \code{XXX} is one of
+   \code{POINTER}, \code{FPOINTER}%%%
 \footnote{%%%
 	 For backwards compatability the function
-	 {\tt Util\_TableSetFnPointer()} is also provided
-	 as an alias for {\tt Util\_TableSetFPointer()}.
+	 \code{Util\_TableSetFnPointer} is also provided
+	 as an alias for \code{Util\_TableSetFPointer}.
 	 This is deprecated as of Cactus 4.0 beta 13.
 	 }%%%
 ,
-   \verb|CHAR|,
-   \verb|INT|, \verb|INT2|, \verb|INT4|, \verb|INT8|,
-   \verb|REAL|, \verb|REAL4|, \verb|REAL8|, \verb|REAL16|,
-   \verb|COMPLEX|, \verb|COMPLEX8|, \verb|COMPLEX16|, \verb|COMPLEX32|
+   \code{CHAR},
+   \code{INT}, \code{INT2}, \code{INT4}, \code{INT8},
+   \code{REAL}, \code{REAL4}, \code{REAL8}, \code{REAL16},
+   \code{COMPLEX}, \code{COMPLEX8}, \code{COMPLEX16}, \code{COMPLEX32}
 (not all of these may be supported on any given system)
 \end{Synopsis}
 \begin{Synopsis}{Fortran}
@@ -3360,8 +3360,8 @@ character*(*)  key
 \begin{ResultSection}
 \begin{Result}{\rm 1}
 ok (key was already in table before this call, old value was replaced)\\
-   (it doesn't matter what the old value's \verb|type_code| and
-    \verb|N_elements| were, \ie{} these do {\em not\/} have to match
+   (it doesn't matter what the old value's \code{type\_code} and
+    \code{N\_elements} were, i.e.\ these do {\em not\/} have to match
     the new value)
 \end{Result}
 \begin{Result}{\rm 0}
@@ -3383,7 +3383,7 @@ a pointer to the key (a C-style null-terminated string)
 
 \begin{Discussion}
 The key may be any C character string which does not contain a slash
-character (\verb|'/'|).
+character (\code{'/'}).
 
 The value is stored as a 1-element array.
 
@@ -3392,40 +3392,40 @@ not in the ``null-pointer'' state.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{Util\_TableCreateFromString()}
+\begin{SeeAlso}{Util\_TableCreateFromString}
 convenience routine to create a table and set key/value entries
 in it based on a parameter-file--like character string
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGet*()}
+\begin{SeeAlso}{Util\_TableGet*}
 get a single (1-element array) value,
 or more generally the first array element of an array value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGet*Array()}
+\begin{SeeAlso}{Util\_TableGet*Array}
 get an array value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGetGeneric()}
+\begin{SeeAlso}{Util\_TableGetGeneric}
 get a single (1-element array) value with generic data type
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGetGenericArray()}
+\begin{SeeAlso}{Util\_TableGetGenericArray}
 get an array value with generic data type
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGet*String()}
+\begin{SeeAlso}{Util\_TableGet*String}
 get a character-string value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSet*Array()}
+\begin{SeeAlso}{Util\_TableSet*Array}
 set an array value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetGeneric()}
+\begin{SeeAlso}{Util\_TableSetGeneric}
 set a single (1-element array) value with generic data type
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetGenericArray()}
+\begin{SeeAlso}{Util\_TableSetGenericArray}
 set an array value with generic data type
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetFromString()}
+\begin{SeeAlso}{Util\_TableSetFromString}
 convenience routine to set key/value entries in a table based on a
 parameter-file--like character string
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetString()}
+\begin{SeeAlso}{Util\_TableSetString}
 set a character-string value
 \end{SeeAlso}
 \end{SeeAlsoSection}
@@ -3480,19 +3480,19 @@ int status = Util_TableSetXxxArray(int handle,
                                    const CCTK_XXX array[],
                                    const char *key);
 \end{verbatim}
-where \verb|XXX| is one of
-   \verb|POINTER|, \verb|FPOINTER|%%%
+where \code{XXX} is one of
+   \code{POINTER}, \code{FPOINTER}%%%
 \footnote{%%%
 	 For backwards compatability the function
-	 {\tt Util\_TableSetFnPointerArray()} is also provided
-	 as an alias for {\tt Util\_TableSetFPointerArray()}.
+	 \code{Util\_TableSetFnPointerArray} is also provided
+	 as an alias for \code{Util\_TableSetFPointerArray}.
 	 This is deprecated as of Cactus 4.0 beta 13.
 	 }%%%
 ,
-   \verb|CHAR|,
-   \verb|INT|, \verb|INT2|, \verb|INT4|, \verb|INT8|,
-   \verb|REAL|, \verb|REAL4|, \verb|REAL8|, \verb|REAL16|,
-   \verb|COMPLEX|, \verb|COMPLEX8|, \verb|COMPLEX16|, \verb|COMPLEX32|
+   \code{CHAR},
+   \code{INT}, \code{INT2}, \code{INT4}, \code{INT8},
+   \code{REAL}, \code{REAL4}, \code{REAL8}, \code{REAL16},
+   \code{COMPLEX}, \code{COMPLEX8}, \code{COMPLEX16}, \code{COMPLEX32}
 (not all of these may be supported on any given system)
 \end{Synopsis}
 \begin{Synopsis}{Fortran}
@@ -3508,8 +3508,8 @@ character*(*)  key
 \begin{ResultSection}
 \begin{Result}{\rm 1}
 ok (key was already in table before this call, old value was replaced)\\
-   (it doesn't matter what the old value's \verb|type_code| and
-    \verb|N_elements| were, \ie{} these do {\em not\/} have to match
+   (it doesn't matter what the old value's \code{type\_code} and
+    \code{N\_elements} were, i.e.\ these do {\em not\/} have to match
     the new value)
 \end{Result}
 \begin{Result}{\rm 0}
@@ -3522,7 +3522,7 @@ ok (key was not in table before this call)
 handle to the table
 \end{Parameter}
 \begin{Parameter}{N\_elements ($\ge 0$)}
-the number of array elements in \verb|array[]|
+the number of array elements in \code{array[]}
 \end{Parameter}
 \begin{Parameter}{array}
 a pointer to the array (a copy of which) is to be associated with the key
@@ -3534,7 +3534,7 @@ a pointer to the key (a C-style null-terminated string)
 
 \begin{Discussion}
 The key may be any C character string which does not contain a slash
-character (\verb|'/'|).
+character (\code{'/'}).
 
 Note that empty (0-element) arrays are ok.
 
@@ -3543,40 +3543,40 @@ not in the ``null-pointer'' state.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{Util\_TableCreateFromString()}
+\begin{SeeAlso}{Util\_TableCreateFromString}
 convenience routine to create a table and set key/value entries
 in it based on a parameter-file--like character string
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGet*()}
+\begin{SeeAlso}{Util\_TableGet*}
 get a single (1-element array) value,
 or more generally the first array element of an array value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGet*Array()}
+\begin{SeeAlso}{Util\_TableGet*Array}
 get an array value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGetGeneric()}
+\begin{SeeAlso}{Util\_TableGetGeneric}
 get a single (1-element array) value with generic data type
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGetGenericArray()}
+\begin{SeeAlso}{Util\_TableGetGenericArray}
 get an array value with generic data type
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGet*String()}
+\begin{SeeAlso}{Util\_TableGet*String}
 get a character-string value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSet*()}
+\begin{SeeAlso}{Util\_TableSet*}
 set a single (1-element array) value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetGeneric()}
+\begin{SeeAlso}{Util\_TableSetGeneric}
 set a single (1-element array) value with generic data type
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetGenericArray()}
+\begin{SeeAlso}{Util\_TableSetGenericArray}
 set an array value with generic data type
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetFromString()}
+\begin{SeeAlso}{Util\_TableSetFromString}
 convenience routine to set key/value entries in a table based on a
 parameter-file--like character string
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetString()}
+\begin{SeeAlso}{Util\_TableSetString}
 set a character-string value
 \end{SeeAlso}
 \end{SeeAlsoSection}
@@ -3589,7 +3589,7 @@ handle is invalid
 key contains '/' character
 \end{Error}
 \begin{Error}{UTIL\_ERROR\_BAD\_INPUT}
-\verb|N_elements| $< 0$
+\code{N\_elements} $< 0$
 \end{Error}
 \begin{Error}{UTIL\_ERROR\_NO\_MEMORY}
 unable to allocate memory
@@ -3650,7 +3650,7 @@ entries to be set (see below for details on the string contents)
 \end{ParameterSection}
 
 \begin{Discussion}
-The string should contain a sequence of zero or more \verb|key=value|
+The string should contain a sequence of zero or more \code{key=value}
 ``assignments'', separated by whitespace.  This function processes
 these assignments in left-to-right order, setting corresponding key/value
 entries in the table.
@@ -3663,7 +3663,7 @@ To be precise, the string must match the following BNF:\\
 string  & assign*                                                       \\
 assign  & whitespace*                                                   \\
 assign  & whitespace* key whitespace* = whitespace* value delimiter     \\
-key     & any string not containing \verb|'/'| or \verb|'='| or whitespace\\
+key     & any string not containing \code{'/'} or \code{'='} or whitespace\\
 value   & array $\big|$ int\_value $\big|$ real\_value $\big|$ string\_value\\
 array   & \{ int\_value* \} $\big|$ \{ real\_value \}                   \\
 int\_value      & anything recognized as a valid integer by strdol(3)
@@ -3671,30 +3671,35 @@ int\_value      & anything recognized as a valid integer by strdol(3)
 real\_value     & anything not recognized as a valid integer by strtol(3)
                   but recognized as valid by strdod(3)                  \\
 string\_value   & a C-style string enclosed in "double quotes"
-                  (C-style character escape codes are allowed
-                  ie. bell~(\verb|'\a'|), backspace~(\verb|'\b'|),
-                  form-feed~(\verb|'\f'|), newline~(\verb|'\n'|),
-                  carriage-return~(\verb|'\r'|), tab~(\verb|'\t'|),
-                  vertical-tab~(\verb|'\v'|), backslash~(\verb|'\\'|),
-                  single-quote~(\verb|'\''|), double-quote~(\verb|'\"'|),
-                  question-mark~(\verb|'\?'|))                          \\
+                  (C-style character escape codes are allowed,
+                  i.e.\ bell~(\code{'\textbackslash a'}),
+                  backspace~(\code{'\textbackslash b'}),
+                  form-feed~(\code{'\textbackslash f'}),
+                  newline~(\code{'\textbackslash n'}),
+                  carriage-return~(\code{'\textbackslash r'}),
+                  tab~(\code{'\textbackslash t'}),
+                  vertical-tab~(\code{'\textbackslash v'}),
+                  backslash~(\code{'\textbackslash \textbackslash'}),
+                  single-quote~(\code{'\textbackslash ''}),
+                  double-quote~(\code{'\textbackslash "'}),
+                  question-mark~(\code{'\textbackslash ?'}))            \\
 string\_value   & a C-style string enclosed in 'single quotes'
                   (C-style character escape codes are {\bf not} allowed,
-                  ie. every character within the string is interpreted
+                  i.e.\ every character within the string is interpreted
                   literally)                                            \\
 delimiter       & end-of-string $\big|$ whitespace                      \\
-whitespace      & blank~(\verb|' '|)
-                  $\big|$ tab~(\verb|'\t'|)
-                  $\big|$ newline~(\verb|'\n'|)
-                  $\big|$ carriage-return~(\verb|'\r'|)
-                  $\big|$ form-feed~(\verb|'\f'|)
-                  $\big|$ vertical-tab~(\verb|'\v'|)                    %%%\\
+whitespace      & blank~(\code{' '})
+                  $\big|$ tab~(\code{'\textbackslash t'})
+                  $\big|$ newline~(\code{'\textbackslash n'})
+                  $\big|$ carriage-return~(\code{'\textbackslash r'})
+                  $\big|$ form-feed~(\code{'\textbackslash f'})
+                  $\big|$ vertical-tab~(\code{'\textbackslash v'})                    %%%\\
 \end{tabular}\\
 where * denotes 0 or more repetitions and $\big|$ denotes logical or.
 
 Notice also that the keys allowed by this function are somewhat more
-restricted than those allowed by the other \verb|Util_TableSet*()|
-functions, in that this function disallows keys containing \verb|'='|
+restricted than those allowed by the other \code{Util\_TableSet*}
+functions, in that this function disallows keys containing \code{'='}
 and/or whitespace.
 
 If any error code is returned, assignments lexicographically earlier
@@ -3704,39 +3709,39 @@ find out where the error was detected. :(
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{Util\_TableCreateFromString()}
+\begin{SeeAlso}{Util\_TableCreateFromString}
 convenience routine to create a table and set key/value entries
 in it based on a parameter-file--like character string
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGet*()}
+\begin{SeeAlso}{Util\_TableGet*}
 get a single (1-element array) value,
 or more generally the first array element of an array value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGet*Array()}
+\begin{SeeAlso}{Util\_TableGet*Array}
 get an array value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGetGeneric()}
+\begin{SeeAlso}{Util\_TableGetGeneric}
 get a single (1-element array) value with generic data type
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGetGenericArray()}
+\begin{SeeAlso}{Util\_TableGetGenericArray}
 get an array value with generic data type
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGet*String()}
+\begin{SeeAlso}{Util\_TableGet*String}
 get a character-string value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSet*()}
+\begin{SeeAlso}{Util\_TableSet*}
 set a single (1-element array) value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSet*Array()}
+\begin{SeeAlso}{Util\_TableSet*Array}
 set an array value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetGeneric()}
+\begin{SeeAlso}{Util\_TableSetGeneric}
 set a single (1-element array) value with generic data type
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetGenericArray()}
+\begin{SeeAlso}{Util\_TableSetGenericArray}
 set an array value with generic data type
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetString()}
+\begin{SeeAlso}{Util\_TableSetString}
 set a character-string value
 \end{SeeAlso}
 \end{SeeAlsoSection}
@@ -3756,9 +3761,9 @@ invalid input: different array values have different datatypes
 \end{Error}
 \begin{Error}{\rm other error codes}
 this function may also return any error codes returned by
-\verb|Util_TableSetString()|, \verb|Util_TableSetInt()|,
-\verb|Util_TableSetReal()|, \verb|Util_TableSetIntArray()|,
-or \verb|Util_TableSetRealArray()|.
+\code{Util\_TableSetString}, \code{Util\_TableSetInt},
+\code{Util\_TableSetReal}, \code{Util\_TableSetIntArray},
+or \code{Util\_TableSetRealArray}.
 \end{Error}
 \end{ErrorSection}
 
@@ -3797,8 +3802,8 @@ Util_TableSetIntArray(handle, 3, array, "array");
 \label{Util-TableSetGeneric}
 Set the value associated with a specified key to be a specified
 single (1-element array) value, whose data type is generic.  That
-is, the value is specified by a \verb|CCTK_VARIABLE_|* type code
-and a \verb|void *| pointer.
+is, the value is specified by a \code{CCTK\_VARIABLE\_*} type code
+and a \code{void *} pointer.
 
 \begin{SynopsisSection}
 \begin{Synopsis}{C}
@@ -3823,8 +3828,8 @@ character*(*)  key
 \begin{ResultSection}
 \begin{Result}{\rm 1}
 ok (key was already in table before this call, old value was replaced)\\
-   (it doesn't matter what the old value's \verb|type_code| and
-    \verb|N_elements| were, \ie{} these do {\em not\/} have to match
+   (it doesn't matter what the old value's \code{type\_code} and
+    \code{N\_elements} were, i.e.\ these do {\em not\/} have to match
     the new value)
 \end{Result}
 \begin{Result}{\rm 0}
@@ -3838,7 +3843,7 @@ handle to the table
 \end{Parameter}
 \begin{Parameter}{type\_code}
 the array elements' type code
-(one of the \verb|CCTK_VARIABLE_|* constants from \verb|"cctk_Constants.h"|)
+(one of the \code{CCTK\_VARIABLE\_*} constants from \code{"cctk\_Constants.h"})
 \end{Parameter}
 \begin{Parameter}{value\_ptr}
 a pointer to the value to be associated with the key
@@ -3850,7 +3855,7 @@ a pointer to the key (a C-style null-terminated string)
 
 \begin{Discussion}
 The key may be any C character string which does not contain a slash
-character (\verb|'/'|).
+character (\code{'/'}).
 
 The value is stored as a 1-element array.
 
@@ -3859,43 +3864,43 @@ not in the ``null-pointer'' state.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{Util\_TableCreateFromString()}
+\begin{SeeAlso}{Util\_TableCreateFromString}
 convenience routine to create a table and set key/value entries
 in it based on a parameter-file--like character string
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGet*()}
+\begin{SeeAlso}{Util\_TableGet*}
 get a single (1-element array) value,
 or more generally the first array element of an array value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGet*Array()}
+\begin{SeeAlso}{Util\_TableGet*Array}
 get an array value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGetGeneric()}
+\begin{SeeAlso}{Util\_TableGetGeneric}
 get a single (1-element array) value with generic data type
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGetGenericArray()}
+\begin{SeeAlso}{Util\_TableGetGenericArray}
 get an array value with generic data type
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGet*String()}
+\begin{SeeAlso}{Util\_TableGet*String}
 get a character-string value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSet*()}
+\begin{SeeAlso}{Util\_TableSet*}
 set a single (1-element array) value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSet*Array()}
+\begin{SeeAlso}{Util\_TableSet*Array}
 set an array value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetGeneric()}
+\begin{SeeAlso}{Util\_TableSetGeneric}
 set a single (1-element array) value with generic data type
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetGenericArray()}
+\begin{SeeAlso}{Util\_TableSetGenericArray}
 set an array value with generic data type
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetFromString()}
+\begin{SeeAlso}{Util\_TableSetFromString}
 convenience routine to set key/value entries in a table based on a
 parameter-file--like character string
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetString()}
+\begin{SeeAlso}{Util\_TableSetString}
 set a character-string value
 \end{SeeAlso}
 \end{SeeAlsoSection}
@@ -3947,8 +3952,8 @@ Util_TableGetReal(handle, &xcopy, "speed of light");
 \label{Util-TableSetGenericArray}
 Set the value associated with a specified key to be a copy of a
 specified array, whose data type is generic.  That is, the array
-is specified by a \verb|CCTK_VARIABLE_|* type code, a count of
-the number of array elements, and a \verb|void *| pointer.
+is specified by a \code{CCTK\_VARIABLE\_*} type code, a count of
+the number of array elements, and a \code{void *} pointer.
 
 \begin{SynopsisSection}
 \begin{Synopsis}{C}
@@ -3978,8 +3983,8 @@ character*(*)     key
 \begin{ResultSection}
 \begin{Result}{\rm 1}
 ok (key was already in table before this call, old value was replaced)\\
-   (it doesn't matter what the old value's \verb|type_code| and
-    \verb|N_elements| were, \ie{} these do {\em not\/} have to match
+   (it doesn't matter what the old value's \code{type\_code} and
+    \code{N\_elements} were, i.e.\ these do {\em not\/} have to match
     the new value)
 \end{Result}
 \begin{Result}{\rm 0}
@@ -3993,10 +3998,10 @@ handle to the table
 \end{Parameter}
 \begin{Parameter}{type\_code}
 the array elements' type code
-(one of the \verb|CCTK_VARIABLE_|* constants from \verb|"cctk_Constants.h"|)
+(one of the \code{CCTK\_VARIABLE\_*} constants from \code{"cctk\_Constants.h"})
 \end{Parameter}
 \begin{Parameter}{N\_elements ($\ge 0$)}
-the number of array elements in \verb|array[]|
+the number of array elements in \code{array[]}
 \end{Parameter}
 \begin{Parameter}{value\_ptr}
 a pointer to the value to be associated with the key
@@ -4008,7 +4013,7 @@ a pointer to the key (a C-style null-terminated string)
 
 \begin{Discussion}
 The key may be any C character string which does not contain a slash
-character (\verb|'/'|).
+character (\code{'/'}).
 
 The value is stored as a 1-element array.
 
@@ -4017,40 +4022,40 @@ not in the ``null-pointer'' state.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{Util\_TableCreateFromString()}
+\begin{SeeAlso}{Util\_TableCreateFromString}
 convenience routine to create a table and set key/value entries
 in it based on a parameter-file--like character string
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGet*()}
+\begin{SeeAlso}{Util\_TableGet*}
 get a single (1-element array) value,
 or more generally the first array element of an array value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGet*Array()}
+\begin{SeeAlso}{Util\_TableGet*Array}
 get an array value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGetGeneric()}
+\begin{SeeAlso}{Util\_TableGetGeneric}
 get a single (1-element array) value with generic data type
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGetGenericArray()}
+\begin{SeeAlso}{Util\_TableGetGenericArray}
 get an array value with generic data type
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGet*String()}
+\begin{SeeAlso}{Util\_TableGet*String}
 get a character-string value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSet*()}
+\begin{SeeAlso}{Util\_TableSet*}
 set a single (1-element array) value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSet*Array()}
+\begin{SeeAlso}{Util\_TableSet*Array}
 set an array value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetGeneric()}
+\begin{SeeAlso}{Util\_TableSetGeneric}
 set a single (1-element array) value with generic data type
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetFromString()}
+\begin{SeeAlso}{Util\_TableSetFromString}
 convenience routine to set key/value entries in a table based on a
 parameter-file--like character string
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetString()}
+\begin{SeeAlso}{Util\_TableSetString}
 set a character-string value
 \end{SeeAlso}
 \end{SeeAlsoSection}
@@ -4132,12 +4137,12 @@ character*(*)     string, key
 
 \begin{ResultSection}
 \begin{ResultNote}
-Results are the same as all the other \verb|Util_TableSet|* functions:
+Results are the same as all the other \code{Util\_TableSet*} functions:
 \end{ResultNote}
 \begin{Result}{\rm 1}
 ok (key was already in table before this call, old value was replaced)\\
-   (it doesn't matter what the old value's \verb|type_code| and
-    \verb|N_elements| were, \ie{} these do {\em not\/} have to match
+   (it doesn't matter what the old value's \code{type\_code} and
+    \code{N\_elements} were, i.e.\ these do {\em not\/} have to match
     the new value)
 \end{Result}
 \begin{Result}{\rm 0}
@@ -4159,56 +4164,56 @@ a pointer to the key (a C-style null-terminated string)
 
 \begin{Discussion}
 The key may be any C character string which does not contain a slash
-character (\verb|'/'|).
+character (\code{'/'}).
 
-The string is stored as an array of \verb|strlen(string)|
-\verb|CCTK_CHAR|s.  It does {\em not\/} include a terminating
+The string is stored as an array of \code{strlen(string)}
+\code{CCTK\_CHAR}s.  It does {\em not\/} include a terminating
 null character.
 
-This function is very similar to \verb|Util_TableSetCharArray()|.
+This function is very similar to \code{Util\_TableSetCharArray}.
 
 This function invalidates any iterators for the table which are
 not in the ``null-pointer'' state.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{Util\_TableCreateFromString()}
+\begin{SeeAlso}{Util\_TableCreateFromString}
 convenience routine to create a table and set key/value entries
 in it based on a parameter-file--like character string
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGet*()}
+\begin{SeeAlso}{Util\_TableGet*}
 get a single (1-element array) value,
 or more generally the first array element of an array value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGet*Array()}
+\begin{SeeAlso}{Util\_TableGet*Array}
 get an array value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGetGeneric()}
+\begin{SeeAlso}{Util\_TableGetGeneric}
 get a single (1-element array) value with generic data type
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGetGenericArray()}
+\begin{SeeAlso}{Util\_TableGetGenericArray}
 get an array value with generic data type
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGet*String()}
+\begin{SeeAlso}{Util\_TableGet*String}
 get a character-string value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetCharArray()}
-get an array-of-\verb|CCTK_CHAR| value
+\begin{SeeAlso}{Util\_TableSetCharArray}
+get an array-of-\code{CCTK\_CHAR} value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSet*()}
+\begin{SeeAlso}{Util\_TableSet*}
 set a single (1-element array) value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSet*Array()}
+\begin{SeeAlso}{Util\_TableSet*Array}
 set an array value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetGeneric()}
+\begin{SeeAlso}{Util\_TableSetGeneric}
 set a single (1-element array) value with generic data type
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetGenericArray()}
+\begin{SeeAlso}{Util\_TableSetGenericArray}
 set an array value with generic data type
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetCharArray()}
-set an array-of-\verb|CCTK_CHAR| value
+\begin{SeeAlso}{Util\_TableSetCharArray}
+set an array-of-\code{CCTK\_CHAR} value
 \end{SeeAlso}
 \end{SeeAlsoSection}
 
