@@ -118,7 +118,7 @@ extern int _cctk_one;
 #define CCTK_WARN(a,b) CCTK_Warn(a,__LINE__,__FILE__,CCTK_THORNSTRING,b)
 #define CCTK_EQUALS(a,b) (CCTK_Equals(a,b)==1)
 
-#define CCTK_PASS_CTOC cGH *cctkGH
+#define CCTK_PASS_CTOC cctkGH
 
 #endif /*CCODE*/
 
