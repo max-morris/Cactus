@@ -81,6 +81,12 @@ if test -z "$CPP" ; then
   AC_PATH_PROGS(CPP, cpp, echo, /lib:/usr/lib:/usr/local/lib:$PATH)
 fi
 
+AC_SUBST(FPPFLAGS)
+
+if test -z "$FPP" ; then
+  AC_PATH_PROGS(FPP, cpp, echo, /lib:/usr/lib:/usr/local/lib:$PATH)
+fi
+
 if test -z "$PERL" ; then
   AC_CHECK_PROGS(PERL, perl)
 fi
@@ -688,7 +694,7 @@ AC_SUBST(BUILD_ACTIVETHORNS)
 BUILD_ACTIVETHORNS='$(CCTK_HOME)/lib/sbin/BuildActiveThorns.pl'
 
 AC_SUBST(CST)
-CST='$(CCTK_HOME)/lib//sbin/CST'
+CST='$(CCTK_HOME)/lib/sbin/CST'
 
 AC_SUBST(F_FILE_PROCESSOR)
 F_FILE_PROCESSOR='$(CCTK_HOME)/lib/sbin/f_file_processor.pl'
@@ -939,7 +945,7 @@ AC_SUBST(CXX_DEPEND_OUT)
 # How to generate F77 dependency info
 AC_SUBST(F77_DEPEND)
 
-: ${F77_DEPEND='$(CPP) -M $(CPPFLAGS)'}
+: ${F77_DEPEND='$(FPP) -M $(FPPFLAGS)'}
 
 AC_SUBST(F77_DEPEND_OUT)
 
@@ -948,7 +954,7 @@ AC_SUBST(F77_DEPEND_OUT)
 # How to generate F90 dependency info
 AC_SUBST(F_DEPEND)
 
-: ${F_DEPEND='$(CPP) -M $(CPPFLAGS)'}
+: ${F_DEPEND='$(FPP) -M $(FPPFLAGS)'}
 
 AC_SUBST(F_DEPEND_OUT)
 

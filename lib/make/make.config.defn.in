@@ -23,6 +23,7 @@ CXX         = @CXX@
 F90         = @F90@
 F77         = @F77@
 CPP         = @CPP@
+FPP         = @FPP@
 LD          = @LD@
 AR          = @AR@
 RANLIB      = @RANLIB@
@@ -32,6 +33,8 @@ CFLAGS      = @CFLAGS@
 CXXFLAGS    = @CXXFLAGS@
 F90FLAGS    = @F90FLAGS@
 F77FLAGS    = @F77FLAGS@
+CPPFLAGS    = @CPPFLAGS@
+FPPFLAGS    = @FPPFLAGS@
 
 MKDIRFLAGS  = @MKDIRFLAGS@
 
