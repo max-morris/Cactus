@@ -28,7 +28,7 @@
 #define CCTK_VARIABLE_STRING    14
 
 /* DEPRECATED IN BETA 10 */
-#define CCTK_VARIABLE_CHAR       15
+#define CCTK_VARIABLE_CHAR       1
 
 
 /* steerable status of parameters */
