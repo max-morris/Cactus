@@ -1785,7 +1785,7 @@ static int CCTKi_SchedulePrintEntry(t_attribute *attribute,
 
   if (attribute && attribute->type == sched_group)
   {
-    printf("%*s %s\n", indent_level + 11, "begin group",
+    printf("%*s %s\n", indent_level + 6, "GROUP:",
            attribute->FunctionData.routine);
   }
 
@@ -1821,13 +1821,8 @@ static int CCTKi_SchedulePrintExit(t_attribute *attribute,
                                    t_sched_data *data)
 {
   /* prevent compiler warnings about unused parameters */
-  data = data;
-
-  if (attribute && attribute->type == sched_group)
-  {
-    printf("%*s %s\n", indent_level + 2 + 9, "end group",
-           attribute->FunctionData.routine);
-  }
+  data       = data;
+  attribute  = attribute;
 
   indent_level -= 2;
 
