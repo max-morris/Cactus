@@ -36,6 +36,7 @@
                           cctk_origin_space, cctk_levfac, cctk_convlevel,\
                           cctk_nghostzones, cctk_iteration, cctkGH
 
+#define _DECLARE_CCTK_ARGUMENTS _DECLARE_CCTK_FARGUMENTS
 #define _DECLARE_CCTK_FARGUMENTS INTEGER cctk_dim&&\
                            INTEGER cctk_gsh(cctk_dim),cctk_lsh(cctk_dim)&&\
                            INTEGER cctk_lbnd(cctk_dim),cctk_ubnd(cctk_dim)&&\
@@ -111,6 +112,7 @@
 #define CCTK_PRINTSEPARATOR \
   printf("--------------------------------------------------------------------------------\n");
 
+#define _DECLARE_CCTK_ARGUMENTS _DECLARE_CCTK_CARGUMENTS
 #define _DECLARE_CCTK_CARGUMENTS \
             void      *cctk_dummy_pointer;\
             CCTK_INT   cctk_dummy_int;\
