@@ -66,7 +66,12 @@ else
   : ${F_DEPEND_OUT=' > /dev/null ; mv $(basename $(basename $@)).u $@'}
   : ${F77_DEPEND_OUT=' > /dev/null ; mv $(basename $(basename $@)).u $@'}
 
-  : ${LIBS="xlf90"}
+  if test -z "$LIBS" -a "$LD" != "xlf90" ; then
+    LIBS="xlf90"
+    if test -r /usr/lib/libxlopt.a ; then
+      LIBS="$LIBS xlopt"
+    fi
+  fi
 
 
   # MPI stuff
