@@ -54,7 +54,7 @@ static char **argv = NULL;
    @desc 
    Processes the command line arguments.
    @enddesc 
-   @calls    CCTKi_CommandLineTestThornCompiled CCTKi_CommandLineDescribeAllParameters CCTKi_CommandLineDescribeParameter CCTKi_CommandLineTestParameters CCTKi_CommandLineWarningLevel CCTKi_CommandLineErrorLevel CCTKi_CommandLineRedirectStdout CCTKi_CommandLineListThorns() CCTKi_CommandLineVersion() CCTKi_CommandLineHelp
+   @calls    CCTKi_CommandLineTestThornCompiled CCTKi_CommandLineDescribeAllParameters CCTKi_CommandLineDescribeParameter CCTKi_CommandLineTestParameters CCTKi_CommandLineWarningLevel CCTKi_CommandLineErrorLevel CCTKi_CommandLineParameterLevel CCTKi_CommandLineRedirectStdout CCTKi_CommandLineListThorns() CCTKi_CommandLineVersion() CCTKi_CommandLineHelp
    @calledby   
    @history 
  
@@ -115,6 +115,7 @@ int CCTKi_ProcessCommandLine(int *inargc, char ***inargv, tFleshConfig *ConfigDa
         {"test-parameters",         optional_argument, NULL, 'x'},
         {"warning-level",           required_argument, NULL, 'W'},
         {"error-level",             required_argument, NULL, 'E'},
+        {"parameter-level",         required_argument, NULL, 256},
         {"redirect-stdout",         no_argument,       NULL, 'r'},
         {"list-thorns",             no_argument,       NULL, 'T'},
         {"test-thorn-compiled",     required_argument, NULL, 't'},
@@ -138,6 +139,7 @@ int CCTKi_ProcessCommandLine(int *inargc, char ***inargv, tFleshConfig *ConfigDa
           case 'x': CCTKi_CommandLineTestParameters(optarg); break;
           case 'W': CCTKi_CommandLineWarningLevel(optarg); break;
           case 'E': CCTKi_CommandLineErrorLevel(optarg); break;
+          case 256: CCTKi_CommandLineParameterLevel(optarg); break;
           case 'r': CCTKi_CommandLineRedirectStdout(); break;
           case 'T': CCTKi_CommandLineListThorns(); break;
           case 'v': CCTKi_CommandLineVersion(); break;

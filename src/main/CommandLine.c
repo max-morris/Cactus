@@ -345,6 +345,55 @@ void CCTKi_CommandLineErrorLevel(const char *argument)
 }
 
  /*@@
+   @routine    CCTKi_CommandLineParameterLevel
+   @date       Wed Feb 21 2001
+   @author     Gabrielle Allen
+   @desc 
+   Sets the parameter checking level from a command line argument. 
+   @enddesc 
+   @calls     CCTKi_SetParameterLevel
+   @calledby   
+   @history 
+ 
+   @endhistory 
+   @var     argument
+   @vdesc   option argument
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+
+@@*/
+void CCTKi_CommandLineParameterLevel(const char *argument)
+{
+  int parameterlevel;
+
+  if (CCTK_Equals(argument,"strict"))
+  {
+    parameterlevel = CCTK_PARAMETER_STRICT;
+  }
+  else if (CCTK_Equals(argument,"normal"))
+  {
+    parameterlevel = CCTK_PARAMETER_NORMAL;
+  }
+  else if (CCTK_Equals(argument,"relaxed"))
+  {
+    parameterlevel = CCTK_PARAMETER_RELAXED;
+  }
+  else
+  {
+    CCTK_VWarn(1,__LINE__,__FILE__,"Cactus","CCTKi_CommandLineParameterLevel:"
+	       " Parameter checking level %s not recognized, defaulting to "
+	       "normal",argument);
+    parameterlevel = CCTK_PARAMETER_NORMAL;
+  }    
+
+  CCTKi_SetParameterLevel(parameterlevel);
+
+}
+
+ /*@@
    @routine    CCTKi_CommandLineRedirectStdout
    @date       Fri Jul 23 11:32:46 1999
    @author     Tom Goodale
@@ -449,7 +498,7 @@ void CCTKi_CommandLineHelp(void)
     CCTK_CommandLine(&argv);
 
     printf("%s, compiled on %s at %s\n", argv[0], CCTK_CompileDate(), CCTK_CompileTime());
-    printf("Usage: %s [-h] [-O] [-o paramname] [-x [nprocs]] [-W n] [-E n] [-r] [-T] [-t name] [-v] <parameter_file_name>\n", argv[0]);
+    printf("Usage: %s [-h] [-O] [-o paramname] [-x [nprocs]] [-W n] [-E n] [-r] [-T] [-t name] [-parameter-level <level>] [-v] <parameter_file_name>\n", argv[0]);
 
     printf("\n");
     printf("Valid options:\n");
@@ -464,6 +513,8 @@ void CCTKi_CommandLineHelp(void)
     printf("-r, -redirect-stdout                : Redirects standard output to files.\n");
     printf("-T, -list-thorns                    : Lists the compiled-in thorns.\n");
     printf("-t, -test-thorn-compiled <name>     : Tests for the presence of thorn <name>.\n");
+    printf("    -parameter-level <level>        : Sets the amount of parameter checking, \n"
+           "                                      level can be script, normal, relaxed.\n");
     printf("-v, -version                        : Prints the version.\n");
     printf("-i, -ignore-next                    : Ignores the next argument.\n");
   }
