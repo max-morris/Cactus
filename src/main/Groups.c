@@ -777,6 +777,18 @@ const char *CCTK_VarTypeName (int vtype)
       retval = "CCTK_VARIABLE_COMPLEX";
       break;
 
+    case CCTK_VARIABLE_COMPLEX8:
+      retval = "CCTK_VARIABLE_COMPLEX8";
+      break;
+
+    case CCTK_VARIABLE_COMPLEX16:
+      retval = "CCTK_VARIABLE_COMPLEX16";
+      break;
+
+    case CCTK_VARIABLE_COMPLEX32:
+      retval = "CCTK_VARIABLE_COMPLEX32";
+      break;
+
     case CCTK_VARIABLE_CHAR:
       retval = "CCTK_VARIABLE_CHAR";
       break;
