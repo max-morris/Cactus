@@ -162,44 +162,6 @@ cat >> cctk_Archdefs.h <<EOF
 EOF
 
 
-#########################################################################
-#Check for extra stuff
-#########################################################################
-cat > cctk_Extradefs.h <<EOF
-/* Stuff from extra packages */
-#ifndef _CCTK_EXTRADEFS_H_
-#define _CCTK_EXTRADEFS_H_
-EOF
-
-cat > make.extra.defn <<EOF
-# Stuff from extra packages 
-EOF
-
-for extra in `ls $srcdir/extras`
-do
-  if test -d $srcdir/extras/$extra ; then
-    if test -x $srcdir/extras/$extra/setup.sh ; then
-        # Put some comment lines in the files.
-        CCTK_WriteLine cctk_Extradefs.h ""
-        CCTK_WriteLine cctk_Extradefs.h "/*$extra definitions*/"
-        CCTK_WriteLine make.extra.defn ""
-        CCTK_WriteLine make.extra.defn "# $extra definitions"
-        # Call the setup script
-        . $srcdir/extras/$extra/setup.sh
-        # Put some more comments in
-        CCTK_WriteLine make.extra.defn "#End of $extra definitions"
-        CCTK_WriteLine make.extra.defn ""
-    fi
-  fi
-done
-
-# Finish the cctk_Extradefs.h file
-cat >> cctk_Extradefs.h <<EOF
-#endif /*_CCTK_EXTRADEFS_H_*/
-EOF
-
-
-
 ##########################################################################
 #########################################################################
 
@@ -360,10 +322,8 @@ AC_SUBST(F77FLAGS)
 #: ${F90FLAGS="$CFLAGS"}
 #: ${F77FLAGS="$CFLAGS"}
 
-dnl Checks for library functions.
 
-# Do we have mkdir(2) ?
-CCTK_CHECK_FUNCS(mkdir)
+dnl Checks for library functions.
 
 # Do we have scandir(3) ?
 # For Solaris we should search in /usr/ucblib/libucb.a
@@ -552,6 +512,22 @@ dnl Do we have crypt(3)
 
 CCTK_CHECK_FUNC(crypt, ,
 CCTK_CHECK_LIB_FUNC(crypt, crypt))
+
+
+dnl Checks for availability of pthreads library.
+
+if test "X$PTHREADS" = "Xyes"; then
+  PTHREAD_LIBS=
+  CCTK_CHECK_LIB(c_r, main,[PTHREAD_LIBS="c_r" LIBS="$LIBS c_r"],,)
+  CCTK_CHECK_LIB(pthread,
+                 main,
+                 PTHREAD_LIBS="pthread $PTHREAD_LIBS",
+                 CCTK_CHECK_LIB(pthreads,
+                                main,
+                                PTHREAD_LIBS="pthreads $PTHREAD_LIBS",
+                                ,)
+                 ,)
+fi
 
 
 AC_SUBST(LIBDIRS)
@@ -1081,6 +1057,44 @@ AC_SUBST(PERL_BACKUP_NECESSARY)
 
 AC_DEFINE_UNQUOTED(CCTK_L2_CACHELINE_BYTES, $L2_CACHELINE_BYTES) 
 AC_DEFINE_UNQUOTED(CCTK_L2_CACHE_SIZE, $L2_CACHE_SIZE) 
+
+#########################################################################
+#Check for extra stuff
+#########################################################################
+cat > cctk_Extradefs.h <<EOF
+/* Stuff from extra packages */
+#ifndef _CCTK_EXTRADEFS_H_
+#define _CCTK_EXTRADEFS_H_
+EOF
+
+cat > make.extra.defn <<EOF
+# Stuff from extra packages 
+EOF
+
+for extra in `ls $srcdir/extras`
+do
+  if test -d $srcdir/extras/$extra ; then
+    if test -x $srcdir/extras/$extra/setup.sh ; then
+        # Put some comment lines in the files.
+        CCTK_WriteLine cctk_Extradefs.h ""
+        CCTK_WriteLine cctk_Extradefs.h "/*$extra definitions*/"
+        CCTK_WriteLine make.extra.defn ""
+        CCTK_WriteLine make.extra.defn "# $extra definitions"
+        # Call the setup script
+        . $srcdir/extras/$extra/setup.sh
+        # Put some more comments in
+        CCTK_WriteLine make.extra.defn "#End of $extra definitions"
+        CCTK_WriteLine make.extra.defn ""
+    fi
+  fi
+done
+
+# Finish the cctk_Extradefs.h file
+cat >> cctk_Extradefs.h <<EOF
+#endif /*_CCTK_EXTRADEFS_H_*/
+EOF
+
+
 
 dnl Run any other scripts necessary
 
