@@ -355,8 +355,11 @@ else
       : ${CXX_DEBUG_FLAGS='-g3'}
       ;;
     pgCC)
-      : ${CXXFLAGS='--no_using_std -tused -Wl,--allow-multiple-definition'}
+      : ${CXXFLAGS='--no_using_std --instantiate=used'}
       : ${CXX_OPTIMISE_FLAGS='-fast -O3 -Minfo -Mneginfo -Mvect=assoc'}
+      if test `basename $LD` = 'pgCC'; then
+        : ${LDFLAGS='-Wl,--allow-multiple-definition'}
+      fi
       ;;
   esac
 
