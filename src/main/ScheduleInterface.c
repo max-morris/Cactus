@@ -58,6 +58,7 @@ typedef struct
 
   int n_mem_groups;
   int *mem_groups;
+  int *timelevels;
 
   int n_comm_groups;
   int *comm_groups;
@@ -69,7 +70,7 @@ typedef struct
   /* Dynamic data */
   int *CommOnEntry;
   int *StorageOnEntry;
-
+  
   int done_entry;
 
 } t_attribute;
@@ -1165,6 +1166,7 @@ static t_attribute *CreateAttribute(const char *where,
 {
   char *timername;
   t_attribute *this;
+  int i;
 
   this = (t_attribute *)malloc(sizeof(t_attribute));
 
@@ -1178,6 +1180,7 @@ static t_attribute *CreateAttribute(const char *where,
     this->implementation = 
       (char *)malloc((strlen(implementation)+1)*sizeof(char));
     this->mem_groups     = (int *)malloc(n_mem_groups*sizeof(int));
+    this->timelevels     = (int *)malloc(n_mem_groups*sizeof(int));
     this->comm_groups    = (int *)malloc(n_comm_groups*sizeof(int));
     this->FunctionData.TriggerGroups = 
       (int *)malloc(n_trigger_groups*sizeof(int));
@@ -1191,6 +1194,7 @@ static t_attribute *CreateAttribute(const char *where,
        this->FunctionData.thorn  &&
        this->implementation  &&
        (this->mem_groups || n_mem_groups==0)         &&
+       (this->timelevels || n_mem_groups==0)         &&
        (this->comm_groups || n_comm_groups==0)       &&
        (this->FunctionData.TriggerGroups || n_trigger_groups==0) &&
        (this->FunctionData.SyncGroups || n_sync_groups==0))
@@ -1217,6 +1221,12 @@ static t_attribute *CreateAttribute(const char *where,
       CreateGroupIndexList(n_comm_groups,    this->comm_groups, ap);
       CreateGroupIndexList(n_trigger_groups, this->FunctionData.TriggerGroups, ap);
       CreateGroupIndexList(n_sync_groups,    this->FunctionData.SyncGroups, ap);
+
+      /* FIXME: this is a temporary hack until we read the timelevel data in */
+      for(i=0; i< n_mem_groups; i++)
+      {
+        this->timelevels[i] = -1;
+      }
 
       /* Check the miscellaneous options */
 
@@ -2019,9 +2029,18 @@ static int CCTKi_ScheduleCallEntry(t_attribute *attribute,
     if(go)
     {
       /* Switch on storage for groups */
-      for(i = 0; i < attribute->n_mem_groups; i++)
+/*       for(i = 0; i < attribute->n_mem_groups; i++) */
+/*       { */
+/*         attribute->StorageOnEntry[i] = CCTK_EnableGroupStorageI(data->GH,attribute->mem_groups[i]); */
+/*       } */
+
+      if(attribute->n_mem_groups > 0)
       {
-        attribute->StorageOnEntry[i] = CCTK_EnableGroupStorageI(data->GH,attribute->mem_groups[i]);
+        CCTK_GroupStorageIncrease(data->GH,
+                                  attribute->n_mem_groups,
+                                  attribute->mem_groups, 
+                                  attribute->timelevels,
+                                  attribute->StorageOnEntry);
       }
 
       /* Switch on communication for groups. */
@@ -2114,14 +2133,22 @@ static int CCTKi_ScheduleCallExit(t_attribute *attribute,
     }
 
     /* Switch off storage if it was switched on in entry. */
-    for(i = 0; i < attribute->n_mem_groups; i++)
-    {
-      if(!attribute->StorageOnEntry[i])
-      {
-        CCTK_DisableGroupStorageI(data->GH,attribute->mem_groups[i]);
-      }
-    }
+/*     for(i = 0; i < attribute->n_mem_groups; i++) */
+/*     { */
+/*       if(!attribute->StorageOnEntry[i]) */
+/*       { */
+/*         CCTK_DisableGroupStorageI(data->GH,attribute->mem_groups[i]); */
+/*       } */
+/*     } */
 
+    if(attribute->n_mem_groups > 0)
+    {
+      CCTK_GroupStorageDecrease(data->GH,
+                                attribute->n_mem_groups,
+                                attribute->mem_groups, 
+                                attribute->StorageOnEntry,
+                                NULL);
+    }
   }
 
   return 1;
