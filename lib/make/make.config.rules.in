@@ -14,6 +14,7 @@
 #   all module files end up there.  
 #   
 #   @enddesc 
+#   @version $Header$
 # @@*/
 
 # Dividers to make the screen output slightly nicer
@@ -102,7 +103,7 @@ endef
 
 # Build rules for C
 
-%.o: $(SRCDIR)/%.c
+%.c.o: $(SRCDIR)/%.c
 	@echo $(DIVIDER)
 	@echo Preprocessing $<
 	$(PREPROCESS_C)
@@ -112,12 +113,12 @@ endef
 	$(POSTPROCESS_C)
 
 
-%.d: $(SRCDIR)/%.c
+%.c.d: $(SRCDIR)/%.c
 	$(C_DEPENDENCIES)
 
 # Build rules for C++
 
-%.o: $(SRCDIR)/%.cc 
+%.cc.o: $(SRCDIR)/%.cc 
 	@echo $(DIVIDER)
 	@echo Preprocessing $<
 	$(PREPROCESS_CXX)
@@ -126,7 +127,7 @@ endef
 	@echo Postprocessing $<
 	$(POSTPROCESS_CXX)
 
-%.o: $(SRCDIR)/%.C 
+%.C.o: $(SRCDIR)/%.C 
 	@echo $(DIVIDER)
 	@echo Preprocessing $<
 	$(PREPROCESS_CXX)
@@ -135,15 +136,15 @@ endef
 	@echo Postprocessing $<
 	$(POSTPROCESS_CXX)
 
-%.d: $(SRCDIR)/%.cc
+%.cc.d: $(SRCDIR)/%.cc
 	$(CXX_DEPENDENCIES)
 
-%.d: $(SRCDIR)/%.C
+%.C.d: $(SRCDIR)/%.C
 	$(CXX_DEPENDENCIES)
 
 # Build rules for F77
 
-%.o: $(SRCDIR)/%.F77
+%.F77.o: $(SRCDIR)/%.F77
 	@echo $(DIVIDER)
 	@echo Preprocessing $<
 	$(PREPROCESS_F77)
@@ -152,7 +153,7 @@ endef
 	@echo Postprocessing $<
 	$(POSTPROCESS_F77)
 
-%.o: $(SRCDIR)/%.f77
+%.f77.o: $(SRCDIR)/%.f77
 	@echo $(DIVIDER)
 	@echo Copying $<
 	$(PREPROCESS_f77)
@@ -161,16 +162,16 @@ endef
 	@echo Postprocessing $<
 	$(POSTPROCESS_F77)
 
-%.d: $(SRCDIR)/%.F77
+%.F77.d: $(SRCDIR)/%.F77
 	$(F77_DEPENDENCIES)
 
-%.d: $(SRCDIR)/%.f77
+%.f77.d: $(SRCDIR)/%.f77
 	$(F77_DEPENDENCIES)
 
 
 # Build rules for F90
 
-%.o: $(SRCDIR)/%.F
+%.F.o: $(SRCDIR)/%.F
 	@echo $(DIVIDER)
 	@echo Preprocessing $<
 	$(PREPROCESS_F90)
@@ -179,7 +180,7 @@ endef
 	@echo Postprocessing $<
 	$(POSTPROCESS_F90)
 
-%.o: $(SRCDIR)/%.f
+%.f.o: $(SRCDIR)/%.f
 	@echo $(DIVIDER)
 	@echo Copying $<
 	$(PREPROCESS_f)
@@ -188,9 +189,9 @@ endef
 	@echo Postprocessing $<
 	$(POSTPROCESS_F90)
 
-%.d: $(SRCDIR)/%.F
+%.F.d: $(SRCDIR)/%.F
 	$(F_DEPENDENCIES)
 
-%.d: $(SRCDIR)/%.f
+%.f.d: $(SRCDIR)/%.f
 	$(F_DEPENDENCIES)
 

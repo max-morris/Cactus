@@ -56,7 +56,7 @@ SRCS = $(CCTK_SRCS)
 SUBDIRS = $(LOCAL_SUBDIRS)
 
 # Turn source file names into object file names
-OBJS = $(patsubst %,%.o,$(basename $(SRCS)))
+OBJS = $(SRCS:%=%.o)
 
 $(NAME): $(addsuffix .check, $(SUBDIRS)) $(OBJS) $(SRCDIR)/make.code.defn $(foreach DIR,$(SUBDIRS), $(SRCDIR)/$(DIR)/make.code.defn)
 	@echo $(DIVIDER)
@@ -90,5 +90,5 @@ $(addsuffix /make.identity, $(SUBDIRS)):
 # Dependency stuff
 
 ifneq ($(strip $(LOCAL_SRCS)),)
--include $(patsubst %,%.d,$(basename $(LOCAL_SRCS)))
+-include $(LOCAL_SRCS:%=%.d)
 endif

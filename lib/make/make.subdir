@@ -23,7 +23,7 @@ EXTRA_DEFINES += THORN_IS_$(THORN)
 include $(SRCDIR)/make.code.defn
 
 # Turn source file names into object file names
-OBJS = $(patsubst %,%.o,$(basename $(SRCS)))
+OBJS = $(SRCS:%=%.o)
 
 # Build all the object files
 .PHONY:all
@@ -41,5 +41,5 @@ include $(CONFIG)/make.config.rules
 # Dependency stuff
 
 ifneq ($(strip $(SRCS)),)
--include $(patsubst %,%.d,$(basename $(SRCS)))
+-include $(SRCS:%=%.d)
 endif
