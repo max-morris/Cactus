@@ -143,7 +143,7 @@ include $(CONFIG)/make.config.deps
 
 # Rule to build the make.thornlist file from the ThornList file
 
-$(CONFIG)/make.thornlist: $(TOP)/ThornList $(foreach lib, $(CCTK_HOME)/src $(THORNS:%=$(PACKAGE_DIR)/%), $(lib)/param.ccl $(lib)/interface.ccl $(lib)/schedule.ccl) $(CONFIG_THORNS:%=$(PACKAGE_DIR)/%/configuration.ccl)
+$(CONFIG)/make.thornlist: $(TOP)/ThornList $(foreach lib, $(CCTK_HOME)/src $(THORNS:%=$(PACKAGE_DIR)/%), $(lib)/param.ccl $(lib)/interface.ccl $(lib)/schedule.ccl) $(CONFIG_THORNS:%=$(PACKAGE_DIR)/%/configuration.ccl) $(CCTK_HOME)/lib/make/force-rebuild
 	if [ -r $@ ] ; then echo Reconfiguring thorns ; rm $@ ;\
 	else echo Processing CCL files ; fi
 	$(PERL) -s $(CST) -config_dir=$(CONFIG) -cctk_home=$(CCTK_HOME) -top=$(TOP) $<
