@@ -3,11 +3,11 @@
 #  @file      configure.pl
 #  @date      Fri Jan  8 15:06:22 1999
 #  @author    Tom Goodale
-#  @desc 
+#  @desc
 #  Perl configuration script for the CCTK.
 #  Does extra work it would be awkward to do from within the normal
 #  autoconf stuff (or at least that I'm too lazy to do 8-)
-#  @enddesc 
+#  @enddesc
 #@@*/
 
 $tmphome = shift(@ARGV);
@@ -15,10 +15,10 @@ $tmphome = shift(@ARGV);
 print "Determining number of fortran underscores...\n";
 
 ($retcode,$data) = test_fortran_name();
-push(@routines, $data); 
+push(@routines, $data);
 # Some compilers do something really strange with common blocks.
 ($retcode,$data) = test_fortran_common_name();
-push(@routines, $data); 
+push(@routines, $data);
 push(@routines, "1;");
 
 # Create the perl module to map the fortran names.
@@ -50,7 +50,7 @@ sub test_fortran_name
   if($compiler_f77 && $compiler_f77 ne "" && $compiler_f77 !~ /none/)
   {
     ($retcode,$case, $n_underscores) = &compile_fortran_name($compiler_f77,$opts_f77);
-    if ($retcode <= 0) 
+    if ($retcode <= 0)
     {
       $use_f77 = 1
     };
@@ -58,12 +58,12 @@ sub test_fortran_name
   elsif ($compiler_f90 && $compiler_f90 ne "" && $compiler_f90 !~ /none/)
   {
     ($retcode,$case, $n_underscores) = &compile_fortran_name($compiler_f90,$opts_f90);
-    if ($retcode <= 0) 
+    if ($retcode <= 0)
     {
       $use_f90 = 1
     };
   }
-  
+
   if($use_f90 || $use_f77)
   {
     # Determine the case and number of underscores
@@ -76,8 +76,8 @@ sub fortran_name
   local(\$new_name);
 
   \$new_name = \"$case_prefix\$old_name\\E\";
-  
-  if(\$new_name =~ m:_: ) 
+
+  if(\$new_name =~ m:_: )
   {
     \$new_name = \$new_name.\"$underscore_suffix\";
   }
@@ -88,7 +88,6 @@ sub fortran_name
 
   return \$new_name;
 }
-
 ";
   }
   else
@@ -136,7 +135,7 @@ sub test_fortran_common_name
     ($retcode,$case, $n_underscores) = &compile_fortran_common_name($compiler_f90,$opts_f90);
     if ($retcode<=0) {$use_f90 = 1};
   }
-  
+
   if($use_f90 || $use_f77)
   {
     # Determine the case and number of underscores
@@ -145,23 +144,22 @@ sub test_fortran_common_name
     $data =  "
 sub fortran_common_name
 {
-    local(\$old_name) = \@_;
-    local(\$new_name);
+  local(\$old_name) = \@_;
+  local(\$new_name);
 
-    \$new_name = \"$case_prefix\$old_name\\E\";
+  \$new_name = \"$case_prefix\$old_name\\E\";
 
-    if(\$new_name =~ m:_: ) 
-    {
-	\$new_name = \$new_name.\"$underscore_suffix\";
-    }
-    else
-    {
-	\$new_name = \$new_name.\"$normal_suffix\";
-    }
+  if(\$new_name =~ m:_: )
+  {
+      \$new_name = \$new_name.\"$underscore_suffix\";
+  }
+  else
+  {
+      \$new_name = \$new_name.\"$normal_suffix\";
+  }
 
-    return \"$prefix\".\$new_name;
+  return \"$prefix\".\$new_name;
 }
-
 ";
 
   }
@@ -250,19 +248,19 @@ EOT
   # Compile the test file
   print "Compiling test file with $compiler $opts ...\n";
   system("$compiler $opts -c fname_test.f");
-  
+
   $retcode = $? >> 8;
-  
+
   if($retcode > 0)
   {
     print "Failed to compile fname_test.f\n";
   }
   else
   {
-  
+
     # Search the object file for the appropriate symbols
     open(IN, "<fname_test.o") || open(IN, "<fname_test.obj") || die "Cannot open fname_test.o\n";
-    
+
     while(<IN>)
     {
       $line = $_;
@@ -271,10 +269,10 @@ EOT
 	$prefix = $1;
 	$name = $2;
 	$underscores = $3;
-      
+
 	# This is a pain.  If all symbols have underscores, need to remove
 	# the first one here.
-      
+
 	if($symbols_preceeded_by_underscores)
 	{
 	  if($prefix =~ m:^_(.*):)
@@ -312,9 +310,9 @@ EOT
 	last;
       }
     }
-    
+
     close IN;
-  }    
+  }
   # Delete the temporary files
   unlink <fname_test.*>;
 
@@ -341,25 +339,25 @@ sub compile_fortran_name
       end
 
 EOT
-  
+
   close OUT;
-  
+
   # Compile the test file
   print "Compiling test file with $compiler_f77 $opts_f77 ...\n";
   system("$compiler_f77 $opts_f77 -c fname_test.f");
-  
+
   $retcode = $? >> 8;
-  
+
   if($retcode > 0)
   {
     print "Failed to compile fname_test.f\n";
   }
   else
-  {  
-  
+  {
+
     # Search the object file for the appropriate symbols
     open(IN, "<fname_test.o") || open(IN, "<fname_test.obj") || die "Cannot open fname_test.o\n";
-    
+
     while(<IN>)
     {
       $line = $_;
@@ -410,7 +408,7 @@ EOT
 	last;
       }
     }
-    
+
     close IN;
 
   }
