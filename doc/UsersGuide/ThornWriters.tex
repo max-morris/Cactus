@@ -4217,14 +4217,13 @@ Data Type & Size (bytes) & Variable Type & Fortran Equivalent\\
 {\t CCTK\_COMPLEX8}  & 8  & {\t CCTK\_VARIABLE\_COMPLEX8}  & {\t complex*8}\\
 {\t CCTK\_COMPLEX16} & 16 & {\t CCTK\_VARIABLE\_COMPLEX16} & {\t complex*16}\\
 {\t CCTK\_COMPLEX32} & 32 & {\t CCTK\_VARIABLE\_COMPLEX32} & {\t complex*32}\\
-{\t CCTK\_CHAR}      & 1  & {\t CCTK\_VARIABLE\_CHAR}      & {\t character} \\ \hline
 \end{tabular}
 \end{center}
 
 The availability of these types, and the corresponding
 C data types are platform-dependent. For each fixed-size data type there exists
 a corresponding preprocessor macro {\t HAVE\_<data type>} which should be used
-to check whether the given CCTK data type is supported, eg.
+to check whether the given CCTK data type is supported, e.g.
 
 \begin{verbatim}
   /* declare variable with extended-precision complex data type if available
