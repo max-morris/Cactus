@@ -46,7 +46,7 @@ void datestamp(void) {
    @endhistory 
 
 @@*/
-char *compileTime(void) {
+const char *compileTime(void) {
   return (__TIME__);
 }
 
@@ -64,7 +64,7 @@ char *compileTime(void) {
    @endhistory 
 
 @@*/
-char *compileDate(void) {
+const char *compileDate(void) {
   return (__DATE__);
 }
 
@@ -76,22 +76,22 @@ char *compileDate(void) {
 #define REALSTRINGIFY(a) #a
 
 
-char *CCTK_FullVersion(void)
+const char *CCTK_FullVersion(void)
 {
   return (STRINGIFY(CCTK_VERSION));
 }
 
-char *CCTK_MajorVersion(void)
+const char *CCTK_MajorVersion(void)
 {
   return (STRINGIFY(CCTK_VERSION_MAJOR));
 }
 
-char *CCTK_MinorVersion(void)
+const char *CCTK_MinorVersion(void)
 {
   return (STRINGIFY(CCTK_VERSION_MINOR));
 }
 
-char *CCTK_OtherVersion(void)
+const char *CCTK_OtherVersion(void)
 {
   return (STRINGIFY(CCTK_VERSION_OTHER));
 }
