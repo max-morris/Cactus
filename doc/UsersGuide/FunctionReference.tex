@@ -2787,7 +2787,8 @@ pointed to by \verb|input_arrays[]|.
 \begin{Parameter}{input\_arrays ($\ne$ NULL)}
 \hbox{}
 (Pointer to) an array of \verb|N_input_arrays| pointers to the
-\verb|N_dims|-D input arrays for the interpolation.
+\verb|N_dims|-D input arrays for the interpolation.  If any
+\verb|input_arrays[in]| pointer is NULL, that interpolation is skipped.
 \end{Parameter}
 \begin{Parameter}{N\_output\_arrays ($\ge 0$)}
 \hbox{}
@@ -2802,7 +2803,8 @@ type codes giving the data types of the 1-D output arrays pointed to by
 \begin{Parameter}{output\_arrays ($\ne$ NULL)}
 \hbox{}
 (Pointer to) an array of \verb|N_output_arrays| pointers to the
-(user-supplied) 1-D output arrays for the interpolation.
+(user-supplied) 1-D output arrays for the interpolation.  If any
+\verb|output_arrays[out]| pointer is NULL, that interpolation is skipped.
 \end{Parameter}
 \end{ParameterSection}
 
