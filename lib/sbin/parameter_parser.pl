@@ -31,7 +31,7 @@ sub create_parameter_database
     foreach $imp (keys %implementations)
     {
 #       Read the data
-	@indata = read_file("$implementations{$imp}/param.ccl");
+	@indata = &read_file("$implementations{$imp}/param.ccl");
 	
 #       Get the parameters from it
 	@new_parameter_data = &parse_param_ccl($imp, @indata);

@@ -42,13 +42,13 @@ require "lib/sbin/create_fortran_stuff.pl";
 
 %thorns = &create_thorn_list;
 
-%interface_database = create_interface_database(%thorns);
+%interface_database = &create_interface_database(%thorns);
 
-%parameter_database = create_parameter_database(%thorns);
+%parameter_database = &create_parameter_database(%thorns);
 
 #&print_parameter_database(%parameter_database);
 
-#&print_interface_database(%interface_database);
+&print_interface_database(%interface_database);
 
 @implementations = (keys %thorns);
 
@@ -68,12 +68,15 @@ require "lib/sbin/create_fortran_stuff.pl";
 
 @c_structures = &create_c_parameter_structures(scalar(@implementations),@implementations,%parameter_database);
 
-foreach $line (@c_structures)
-{
-  print "$line\n";
-}
+#foreach $line (@c_structures)
+#{
+#  print "$line\n";
+#}
 
 @subroutine = &create_c_param_init_subroutine("test2", %parameter_database);
+
+
+
 
 foreach $line (@subroutine)
 {
@@ -85,7 +88,8 @@ sub create_thorn_list
 {
   return ("flesh", "toolkits/test/flesh", 
 	   "test1", "toolkits/test/test1", 
-	   "test2", "toolkits/test/test2");
+	   "test2", "toolkits/test/test2",
+	   "test3", "toolkits/test/test3");
 }
 
 
