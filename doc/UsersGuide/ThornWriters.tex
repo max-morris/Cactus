@@ -219,6 +219,15 @@ This is an array of any size.
 This is the dimension of the arrays in a group.  (Meaningless for scalars.)
 This defaults to 3
 
+\item [{\tt Size}]
+This is the grid size of the arrays in a group, which must be a 
+comma-separated list
+of {\tt Dim} parameters. The grid size cannot be specified for grid functions, which take the default grid size.
+
+\item [{\tt Ghostsize}]
+This is the number of ghostzones used for the arrays in a group, which must 
+be a comma-separated list of {\tt Dim{ parameters. The ghostsize cannot be specified for grid functions, whose ghostsize is specified by a driver thorn.
+
 \item [{TimeLevels}]
 This is the number of timelevels the group has. This defaults to 1.
 \end{Lentry}
