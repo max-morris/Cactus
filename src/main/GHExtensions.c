@@ -13,7 +13,7 @@
 #include "flesh.h"
 #include "GHExtensions.h"
 #include "StoreHandledData.h"
-
+#include "WarnLevel.h"
 
 static char *rcsid = "$Id$";
 
@@ -391,27 +391,33 @@ static int CheckAllExtensionsSetup(void)
     /* SetupGH */
     if(!extension->SetupGH)
     {
-      fprintf(stderr, 
-	      "Warning: GH Extension '%s' has not registered a SetupGH routine.\n",
-	      CCTK_GetHandleName(GHExtensions, handle));
+      const char *handlename = CCTK_GetHandleName(GHExtensions, handle);
+      char *message = (char *)malloc(300*sizeof(char));
+      sprintf(message,"GH Extension '%s' has not registered a SetupGH routine",handlename);
+      CCTK_Warn(4,__LINE__,CCTK_THORNSTRING,message,__FILE__) ;
+      free(message);
       extension->SetupGH=DummySetupGH;
     }
 
     /*  InitGH */
     if(!extension->InitGH)
-    {
-      fprintf(stderr, 
-	      "Warning: GH Extension '%s' has not registered an InitGH routine.\n",
-	      CCTK_GetHandleName(GHExtensions, handle));
+    {   
+      const char *handlename = CCTK_GetHandleName(GHExtensions, handle);
+      char *message = (char *)malloc(300*sizeof(char));
+      sprintf(message,"GH Extension '%s' has not registered a InitGH routine",handlename);
+      CCTK_Warn(4,__LINE__,CCTK_THORNSTRING,message,__FILE__) ;
+      free(message);
       extension->InitGH=DummyInitGH;
     }
 
     /* rfrTraverse */
     if(!extension->rfrTraverseGH)
     {
-      fprintf(stderr, 
-	      "Warning: GH Extension '%s' has not registered an rfrTraverseGH routine.\n",
-	      CCTK_GetHandleName(GHExtensions, handle));
+      const char *handlename = CCTK_GetHandleName(GHExtensions, handle);
+      char *message = (char *)malloc(300*sizeof(char));
+      sprintf(message,"GH Extension '%s' has not registered a rfrTraverse routine",handlename);
+      CCTK_Warn(4,__LINE__,CCTK_THORNSTRING,message,__FILE__) ;
+      free(message);
       extension->rfrTraverseGH=DummyrfrTraverseGH;
     }
 
