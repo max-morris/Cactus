@@ -45,6 +45,13 @@ int CCTK_CoordRange(cGH        *GH,
                     const char *coord_name,
                     const char *system_name);
 
+int CCTK_CoordRangePhysIndex (cGH *GH,
+			      int *lower,
+			      int *upper,
+			      int coorddir,
+			      const char *coordname,
+			      const char *systemname);
+
 int CCTK_CoordLocalRange(cGH        *GH, 
                          CCTK_REAL  *lower, 
                          CCTK_REAL  *upper, 
@@ -58,6 +65,13 @@ int CCTK_CoordRegisterRange(cGH        *GH,
                             int         coord_dir,
                             const char *coord_name,
                             const char *system_name);
+
+int CCTK_CoordRegisterRangePhysIndex(cGH        *GH, 
+				     int         coord_min, 
+				     int         coord_max, 
+				     int         coord_dir,
+				     const char *coord_name,
+				     const char *system_name);
 
 #ifdef __cplusplus 
 }
