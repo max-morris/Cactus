@@ -11,9 +11,15 @@
 
 \begin{document}
 
-\title{Cactus 4.0 Documentation}
+\date{\verb$Date$}
+
+\title{Cactus 4.0 Documentation\\
+\small{Version: \verb$Revision$}
+}
 
 \maketitle
+
+
 
 \tableofcontents
 
@@ -72,13 +78,13 @@ The aim of this radicalism is to allow for future growth. We now
 distinguish informally between physics thorns and infrastructure
 thorns. The main infrastructure project for now is adding different
 flavors of adaptive mesh refinement -- while the user writing a
-physics thorn can still large she is working a single-processor,
+physics thorn can still largely pretend she is working a single-processor,
 unigrid code. Similarly, an infrastructure thorn could be replaced by
 one that does the same job, but simply better. Even the flesh could be
 rewritten in the future, but the interface between the flesh and
 thorns is to remain unchanged.
 
-Cactus thorns can be written in F90, F77 and C (or a mixture). The
+Cactus thorns can be written in F90, F77, C, C++ (or a mixture). The
 decision to support Fortran was made for the pragmatic reason that
 many people like it, or don't write C. This decision does make the
 flesh more complex. The flesh is written in C, and in perl that
@@ -199,20 +205,23 @@ and check that it works)
 
 \section{Required software}
 
-Cactus tries to use free software. Any cactus installation requires
-the gnu C compiler (gcc) {\q right?}, and the gnu make program
-(gmake). Most thorns will also require F90 and F77 compilers. Some
-machines and operating system provide their own, while for others,
-notably for linux, you may have to buy one. For checking cactus out,
-you need the free CVS software {\q Where does one get it?}.
+To check out cactus you will require CVS, and to build it you will 
+require Gnu Make, and perl.  All these are freely available and
+may be downloaded from...{\q fill these in}.
+
+You will also need a C compiler to build the flesh, and most thorns
+require FORTRAN77 or Fortran 90 compilers.
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Supported architectures}
 
 Cactus runs on many machines, under a large number of Unix operating
-systems. {\q How about non-unix?} {\q Elsewhere} we discuss how to port
-cactus to a new operating system or hardware.
+systems, and also under Windows NT.  The flesh is written in ANSI
+standard C, and so should compile on any machine with a compiler
+supporting this. {\q Elsewhere} we discuss how to port cactus to a new 
+operating system or hardware platform.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -242,7 +251,7 @@ prompt you for a password, which is {\tt anon}.
 discuss in the section on writing thorns. Then {\tt cvs\_anon} will be
 replaced by your user name, and the password will be different.)
 
-In order to update your checkout later (because someone else) has
+In order to update your checkout later (because someone else has
 changed the repository version), go to the directory you want to
 update (eg {\tt cactus}) and do {\tt cvs update}. To find out if you
 are up to date, do {\tt cvs status}. Note the {\tt CVS/} directories
@@ -264,7 +273,7 @@ Cactus. {\tt cactus/} also contains these directories:
 
 \item {\tt doc/} contains documentation. 
 
-\item {\tt lib/} contains libraries.
+\item {\tt lib/} contains libraries and support tools for building the code.
 
 \item {\tt src/} contains the source code for the flesh. (If you
 are familiar with unix, all this will be obvious to you.) 
@@ -318,7 +327,7 @@ are called from C)
 
 \item {\tt make.config.deps}
 
-\item {\tt make.config.rule} (rules to generate object files from source files)
+\item {\tt make.config.rule} (rules to generate object files and their dependencies from source files)
 \end{itemize}
 
 \item {\tt lib} : contains the libraries built from the object files,
@@ -327,16 +336,16 @@ are called from C)
 
 \item {\tt libCactus.a} for the flesh
 
-\item{\tt llibCactusBinding.a} for the Bindings 
+\item{\tt libCactusBindings.a} for the bindings between the flesh and the thorns
 
-\item {\tt llib***.a} for each thorn
+\item {\tt lib***.a} for each thorn
 
 \end{itemize}
 
 {\q It might be useful to give a couple of commands like nm for seeing
 what is in libraries.}
 
-\item {\tt scratch}: empty at the end.
+\item {\tt scratch}: contains any F90 module files produced by the compiler.
 
 \end{itemize}
 
@@ -372,7 +381,8 @@ different compilers or optimization settings on the same machine, and
 compare one against the other. As a third example, you may want to
 compile with different sets of thorns.  As a final example, you might
 want to build cactus using different multi-processor communication
-protocols, such as MPI (currently the cactus standard) or GLOBUS.
+protocols, such as different implementations of MPI 
+(currently the cactus standard), PVM, or shared memory.
 
 Building the code should be easy. Just type
 
@@ -433,10 +443,12 @@ and each subdirectory mentioned should also contain a {\tt
 make.code.defn} file with a {\tt SRCS} line ({\tt SUBDIRS} in a
 subdirectory {\tt make.code.defn} file will be ignored).
 
-The {\tt make.code.defn} file in a directory is included at the top of
-the makefile {\q where does it sit?}  used to build the sources. If a
-file {\tt make.code.deps} exists in the directory {\q where?} it is
-included at the bottom.
+The {\tt make.code.defn} file in a source directory is included at the top of
+the makefile used to build the sources, and thus can be used to change
+compiler flags on a per-directory basis. If a file {\tt make.code.deps} 
+exists in a source directory it is similarly included at the bottom;  this
+can be used to add dependencies or customised build rules for particular
+files.
 
 The standard make system may be overridden by placing a makefile
 called {\tt Makefile} in the {\tt src/} directory.  This can do
@@ -444,8 +456,7 @@ whatever it likes, but must create a library called
 
 {\tt \$(NAME)}
 
-(which is actually {\tt \$(CCTK\_LIBDIR)/lib<thorn>.a }). {\q We need more detail here. What does ``is
-actually'' mean?}
+(which is actually {\tt CONF/lib/lib<thorn>.a }).
 
 {\q Watch for CCTK here and elsewhere. Don't remove this query before
 CCTK is gone.}
@@ -494,9 +505,9 @@ is to do.)
 
 \item {\tt gmake tags} creates a {\tt vi} style tags file
 
-\item {\tt gmake TAGS} creates an Emacs style TAGS file
+\item {\tt gmake TAGS} creates an {\tt Emacs} style TAGS file
 
-\item {\tt gmake distclean} nukes your build directory.
+\item {\tt gmake distclean} deletes your whole build directory.
 
 \end{itemize}
 
@@ -514,7 +525,6 @@ is to do.)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \chapter{Running Cactus}
-
       a) Command line options
       b) Simple parameter file syntax (will be explained fully in thorn
          writers part)
@@ -594,6 +604,8 @@ thorn into it.
       j) Sharing your thorn with the world.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\part*{Appendices}
 
 \appendix{Appendix}
 
