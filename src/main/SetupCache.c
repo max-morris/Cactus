@@ -2,9 +2,9 @@
    @file      SetupCache.c
    @date      Tue Nov 30 10:30:09 1999
    @author    Tom Goodale
-   @desc 
+   @desc
               Sets up cache stuff for the CCTK
-   @enddesc 
+   @enddesc
    @version   $Id$
  @@*/
 
@@ -18,17 +18,14 @@ static const char *rcsid = "$Header$";
 
 CCTK_FILEVERSION(main_SetupCache_c);
 
-/********************************************************************
- *********************   CCTK Local Routines   **********************
- ********************************************************************/
 
  /*@@
    @routine    CCTKi_SetupCache
    @date       Tue Nov 30 10:50:02 1999
    @author     Tom Goodale
-   @desc 
+   @desc
                Sets the cache information.
-   @enddesc 
+   @enddesc
    @calls      Utili_CacheDataSet
 
    @returntype int
@@ -38,28 +35,17 @@ CCTK_FILEVERSION(main_SetupCache_c);
 @@*/
 int CCTKi_SetupCache (void)
 {
-  unsigned long cache_size;
-  unsigned long cacheline_bytes;
   DECLARE_CCTK_PARAMETERS
 
 
   if (manual_cache_setup)
   {
-    cache_size      = manual_cache_size;
-    cacheline_bytes = manual_cacheline_bytes;
-  } 
+    Utili_CacheDataSet (manual_cacheline_bytes, manual_cache_size);
+  }
   else
   {
-#ifdef CCTK_CACHE_SIZE
-    cache_size      = CCTK_CACHE_SIZE;
-    cacheline_bytes = CCTK_CACHELINE_BYTES;
-#else
-    cache_size      = CCTK_L2_CACHE_SIZE;
-    cacheline_bytes = CCTK_L2_CACHELINE_BYTES;
-#endif
+    Utili_CacheDataSet (CCTK_CACHELINE_BYTES, CCTK_CACHE_SIZE);
   }
-
-  Utili_CacheDataSet (cacheline_bytes, cache_size);
 
   return (0);
 }
