@@ -6,7 +6,7 @@
 #    @desc 
 #   
 #    @enddesc 
-#    @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/irix,v 1.21 2000-09-03 10:35:40 allen Exp $
+#    @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/irix,v 1.22 2000-09-07 14:50:12 goodale Exp $
 #  @@*/
 
 if test "$CCTK_CONFIG_STAGE" = "preferred-compilers" ; then
@@ -15,10 +15,12 @@ if test "$CCTK_CONFIG_STAGE" = "preferred-compilers" ; then
 # (assumes all processors are of equal type :-)
   IRIX_CPU="`hinv -t cpu | tail -1 | sed 's/^[^R]*R\([01-9]*\).*$/\1/'`"
 
-  if test -n "`uname | grep 64`" ; then
-     IRIX_BITS=64
-  else
-     IRIX_BITS=32
+  if test -z "$IRIX_BITS" ; then
+    if test -n "`uname | grep 64`" ; then
+       IRIX_BITS=64
+    else
+       IRIX_BITS=32
+    fi
   fi
 
 #case "$IRIX_BITS:$CC" in
