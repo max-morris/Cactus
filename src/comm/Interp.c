@@ -3,9 +3,8 @@
    @date      July 07 1999
    @author    Thomas Radke
    @desc
-              This file contains routines to deal with registering and 
-              using functions providing interpolation operations.
-   @enddesc 
+              Registration and invocation routines for interpolation operators.
+   @enddesc
    @history
    @date      July 07 1999
    @author    Thomas Radke
@@ -36,6 +35,37 @@ static const char *rcsid = "$Header$";
 CCTK_FILEVERSION(comm_Interp_c)
 
 
+/********************************************************************
+ ********************    External Routines   ************************
+ ********************************************************************/
+/* prototypes for external C routines are declared in header cctk_Groups.h
+   here only follow the fortran wrapper prototypes */
+void CCTK_FCALL CCTK_FNAME (CCTK_InterpHandle)
+                           (int *handle,
+                            ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (CCTK_InterpGV)
+                           (int *fortranreturn,
+                            cGH *GH,
+                            const int *operator_handle,
+                            const int *coord_system_handle,
+                            const int *num_points,
+                            const int *num_in_array_indices,
+                            const int *num_out_arrays,
+                            ...);
+void CCTK_FCALL CCTK_FNAME (CCTK_InterpLocal)
+                           (int *fortranreturn,
+                            cGH *GH,
+                            const int *operator_handle,
+                            const int *num_points,
+                            const int *num_dims,
+                            const int *num_in_arrays,
+                            const int *num_out_arrays,
+                            ...);
+
+
+/********************************************************************
+ ********************    Macro Definitions   ************************
+ ********************************************************************/
 /* macro to read a list of items from a variable argument list into an array */
 #define VARARGS_TO_ARRAY(array, type, modifier, count, varargs_list)          \
           {                                                                   \
@@ -53,6 +83,9 @@ CCTK_FILEVERSION(comm_Interp_c)
 #define NOTHING
 
 
+/********************************************************************
+ ********************    Internal Typedefs   ************************
+ ********************************************************************/
 /* structure holding the routines for a registered interpolation operator */
 typedef struct
 {
@@ -61,29 +94,9 @@ typedef struct
 } t_interp_operator;
 
 
-/* prototypes of Fortran wrappers for interpolation routines */
-void CCTK_FCALL CCTK_FNAME (CCTK_InterpHandle)
-                           (int *handle,
-                            ONE_FORTSTRING_ARG);
-void CCTK_FCALL CCTK_FNAME (CCTK_InterpGV)
-                           (int *fortranreturn,
-                            cGH *GH,
-                            int *operator_handle,
-                            int *coord_system_handle,
-                            int *num_points,
-                            int *num_in_array_indices,
-                            int *num_out_arrays,
-                            ...);
-void CCTK_FCALL CCTK_FNAME (CCTK_InterpLocal)
-                           (int *fortranreturn,
-                            cGH *GH,
-                            int *operator_handle,
-                            int *num_points,
-                            int *num_dims,
-                            int *num_in_arrays,
-                            int *num_out_arrays,
-                            ...);
-
+/********************************************************************
+ ********************    Static Variables   *************************
+ ********************************************************************/
 /* static data: interpolation operator database and counter for registered
                 operators */
 static cHandledData *interp_operators = NULL;
@@ -112,8 +125,10 @@ static int num_interp_operators = 0;
 
    @returntype int
    @returndesc
-               the handle for the newly registered operator
-               or negative otherwise
+               the handle for the newly registered operator, or<p>
+               -1 NULL pointer was passed as interpolation operator routine<p>
+               -2 failed to allocate memory<p>
+               -3 interpolation operator by given name already exists
    @endreturndesc
 @@*/
 int CCTK_InterpRegisterOperatorGV (cInterpOperatorGV operator_GV,
@@ -195,8 +210,10 @@ int CCTK_InterpRegisterOperatorGV (cInterpOperatorGV operator_GV,
 
    @returntype int
    @returndesc
-               the handle for the newly registered operator
-               or negative otherwise
+               the handle for the newly registered operator, or<p>
+               -1 NULL pointer was passed as interpolation operator routine<p>
+               -2 failed to allocate memory<p>
+               -3 interpolation operator by given name already exists
    @endreturndesc
 @@*/
 int CCTK_InterpRegisterOperatorLocal (cInterpOperatorLocal operator_local,
@@ -260,40 +277,39 @@ int CCTK_InterpRegisterOperatorLocal (cInterpOperatorLocal operator_local,
    @routine    CCTK_InterpHandle
    @date       July 07 1999
    @author     Thomas Radke
-   @desc 
+   @desc
                Returns the handle of a given interpolation operator
-   @enddesc 
-   @var        interp
+   @enddesc
+   @var        name
    @vdesc      String containing name of interpolation operator
    @vtype      const char *
    @vio        in
    @vcomment
-   @endvar 
+   @endvar
 
    @returntype int
    @returndesc
-               the handle for the newly registered operator
+               the handle for the operator registered by this name
                or negative otherwise
    @endreturndesc
 @@*/
-
-int CCTK_InterpHandle (const char *interp)
+int CCTK_InterpHandle (const char *name)
 {
   int handle;
 
 
-  handle = Util_GetHandle (interp_operators, interp, NULL);
+  handle = Util_GetHandle (interp_operators, name, NULL);
 
 #ifdef DEBUG_INTERP
   printf("In CCTK_InterpHandle\n");
   printf("--------------------------\n");
-  printf("  Got handle %d for %s\n",handle,interp);
+  printf("  Got handle %d for %s\n",handle,name);
 #endif
 
   if (handle < 0)
   {
     CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
-                "No handle found for interpolation operator '%s'", interp);
+                "No handle found for interpolation operator '%s'", name);
   }
 
   return (handle);
@@ -303,9 +319,9 @@ int CCTK_InterpHandle (const char *interp)
 void CCTK_FCALL CCTK_FNAME (CCTK_InterpHandle)
                            (int *handle, ONE_FORTSTRING_ARG)
 {
-  ONE_FORTSTRING_CREATE (interp)
-  *handle = CCTK_InterpHandle (interp);
-  free (interp);
+  ONE_FORTSTRING_CREATE (name)
+  *handle = CCTK_InterpHandle (name);
+  free (name);
 }
 
 
@@ -394,9 +410,9 @@ int CCTK_InterpGV (cGH *GH,
   va_list indices;
   int num_dims, retcode;
   const char *coord_system;
-  int *in_array_indices;
-  void **interp_coord_arrays, **out_arrays;
-  int *interp_coord_array_types, *out_array_types;
+  int *in_array_indices, *interp_coord_array_types, *out_array_types;
+  const void **interp_coord_arrays;
+  void **out_arrays;
   t_interp_operator *operator;
 
 
@@ -421,7 +437,7 @@ int CCTK_InterpGV (cGH *GH,
   {
     num_dims = CCTK_CoordSystemDim (coord_system);
 
-    interp_coord_arrays = (void **) malloc (num_dims * sizeof (void *));
+    interp_coord_arrays = (const void **) malloc (num_dims * sizeof (void *));
     interp_coord_array_types = (int *) malloc (num_dims * sizeof (int));
     in_array_indices    = (int *) malloc (num_in_array_indices * sizeof (int));
     out_arrays          = (void **) malloc (num_out_arrays * sizeof (void *));
@@ -457,19 +473,19 @@ int CCTK_InterpGV (cGH *GH,
 void CCTK_FCALL CCTK_FNAME (CCTK_InterpGV)
                            (int *fortranreturn,
                             cGH *GH,
-                            int *operator_handle,
-                            int *coord_system_handle,
-                            int *num_points,
-                            int *num_in_array_indices,
-                            int *num_out_arrays,
+                            const int *operator_handle,
+                            const int *coord_system_handle,
+                            const int *num_points,
+                            const int *num_in_array_indices,
+                            const int *num_out_arrays,
                             ...)
 {
   va_list indices;
   int num_dims, retcode;
-  int *in_array_indices;
   const char *coord_system;
-  void **interp_coord_arrays, **out_arrays;
-  int *interp_coord_array_types, *out_array_types;
+  int *in_array_indices, *interp_coord_array_types, *out_array_types;
+  const void **interp_coord_arrays;
+  void **out_arrays;
   t_interp_operator *operator;
 
 
@@ -493,7 +509,7 @@ void CCTK_FCALL CCTK_FNAME (CCTK_InterpGV)
   else
   {
     num_dims = CCTK_CoordSystemDim (coord_system);
-    interp_coord_arrays = (void **) malloc (num_dims * sizeof (void *));
+    interp_coord_arrays = (const void **) malloc (num_dims * sizeof (void *));
     interp_coord_array_types = (int *) malloc (num_dims * sizeof (int));
     in_array_indices    = (int *) malloc (*num_in_array_indices * sizeof (int));
     out_arrays          = (void **) malloc (*num_out_arrays * sizeof (void *));
@@ -634,8 +650,8 @@ int CCTK_InterpLocal (cGH *GH,
   int *coord_dims;
   int *coord_array_types, *interp_coord_array_types;
   int *in_array_types, *out_array_types;
-  void **coord_arrays, **interp_coord_arrays;
-  void **in_arrays, **out_arrays;
+  const void **coord_arrays, **interp_coord_arrays, **in_arrays;
+  void **out_arrays;
   t_interp_operator *operator;
 
 
@@ -652,11 +668,11 @@ int CCTK_InterpLocal (cGH *GH,
   else
   {
     coord_dims = (int *) malloc (num_dims * sizeof (int));
-    coord_arrays = (void **) malloc (num_dims * sizeof (void *));
+    coord_arrays = (const void **) malloc (num_dims * sizeof (void *));
     coord_array_types = (int *) malloc (num_dims * sizeof (int));
-    interp_coord_arrays = (void **) malloc (num_dims * sizeof (void *));
+    interp_coord_arrays = (const void **) malloc (num_dims * sizeof (void *));
     interp_coord_array_types = (int *) malloc (num_dims * sizeof (int));
-    in_arrays = (void **) malloc (num_in_arrays * sizeof (void *));
+    in_arrays = (const void **) malloc (num_in_arrays * sizeof (void *));
     in_array_types = (int *) malloc (num_in_arrays * sizeof (int));
     out_arrays = (void **) malloc (num_out_arrays * sizeof (void *));
     out_array_types = (int *) malloc (num_out_arrays * sizeof (int));
@@ -701,11 +717,11 @@ int CCTK_InterpLocal (cGH *GH,
 void CCTK_FCALL CCTK_FNAME (CCTK_InterpLocal)
                            (int *fortranreturn,
                             cGH *GH,
-                            int *operator_handle,
-                            int *num_points,
-                            int *num_dims,
-                            int *num_in_arrays,
-                            int *num_out_arrays,
+                            const int *operator_handle,
+                            const int *num_points,
+                            const int *num_dims,
+                            const int *num_in_arrays,
+                            const int *num_out_arrays,
                             ...)
 {
   va_list indices;
@@ -713,8 +729,8 @@ void CCTK_FCALL CCTK_FNAME (CCTK_InterpLocal)
   int *coord_dims;
   int *coord_array_types, *interp_coord_array_types;
   int *in_array_types, *out_array_types;
-  void **coord_arrays, **interp_coord_arrays;
-  void **in_arrays, **out_arrays;
+  const void **coord_arrays, **interp_coord_arrays, **in_arrays;
+  void **out_arrays;
   t_interp_operator *operator;
 
 
@@ -731,11 +747,11 @@ void CCTK_FCALL CCTK_FNAME (CCTK_InterpLocal)
   else
   {
     coord_dims = (int *) malloc (*num_dims * sizeof (int));
-    coord_arrays = (void **) malloc (*num_dims * sizeof (void *));
+    coord_arrays = (const void **) malloc (*num_dims * sizeof (void *));
     coord_array_types = (int *) malloc (*num_dims * sizeof (int));
-    interp_coord_arrays = (void **) malloc (*num_dims * sizeof (void *));
+    interp_coord_arrays = (const void **) malloc (*num_dims * sizeof (void *));
     interp_coord_array_types = (int *) malloc (*num_dims * sizeof (int));
-    in_arrays = (void **) malloc (*num_in_arrays * sizeof (void *));
+    in_arrays = (const void **) malloc (*num_in_arrays * sizeof (void *));
     in_array_types = (int *) malloc (*num_in_arrays * sizeof (int));
     out_arrays = (void **) malloc (*num_out_arrays * sizeof (void *));
     out_array_types = (int *) malloc (*num_out_arrays * sizeof (int));
@@ -775,795 +791,3 @@ void CCTK_FCALL CCTK_FNAME (CCTK_InterpLocal)
 
   *fortranreturn = retcode;
 }
-
-
-/****************************************************************************/
-/********************* Depricated interpolation routines ********************/
-/****************************************************************************/
-
- /*@@
-   @routine    CCTK_InterpRegisterOperator
-   @date       July 07 1999
-   @author     Thomas Radke
-   @desc 
-   Registers "function" as an interpolation operator called "name"
-   @enddesc 
-   @var     function
-   @vdesc   Routine containing interpolation operator
-   @vtype   (int (*))
-   @vio     
-   @vcomment 
-   @endvar 
-   @var     name
-   @vdesc   String containing name of interpolation operator
-   @vtype   const char *
-   @vio     in
-   @vcomment 
-   @endvar 
-@@*/
- 
-int CCTK_InterpRegisterOperator (int (*function)(INTERP_REGISTER_ARGLIST),
-                                 const char *name)
-{
-  int handle;
-
-
-  CCTK_Warn (1, __LINE__, __FILE__, "Cactus",
-             "CCTK_InterpRegisterOperator: This routine is depricated and will "
-             "be removed in Cactus version 4.0 b11. "
-             "Please use the new interpolation interpface !");
-
-  /* Check that the method hasn't already been registered */
-  handle = Util_GetHandle(interp_operators, name, NULL);
-
-  if(handle < 0)
-  {
-    /* Get a handle for it. */
-    handle = Util_NewHandle(&interp_operators, name, (void *)function);
-    
-    /* Remember how many interpolation operators there are */
-    num_interp_operators++;
-   }
-  else
-  {
-    /* Interpolation operator with this name already exists. */
-    CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
-              "Interpolation operator %s already exists",
-               name);
-    handle = -1;
-  }
-
-#ifdef DEBUG_INTERP
-  printf("In CCTK_InterpRegisterOperator\n");
-  printf("---------------------------------\n");
-  printf("  Registering %s with handle %d\n",name,handle);
-#endif
-    
-  return (handle);
-}
-
-
- /*@@
-   @routine    CCTK_InterpGF
-   @date       July 07 1999
-   @author     Thomas Radke
-   @desc 
-               The CCTK interpolation routine
-               Just puts the arguments from the variable argument list
-               into arrays and calls the appropriate interpolation operator.
-   @enddesc 
-   @var        GH
-   @vdesc      pointer to CCTK grid hierarchy
-   @vtype      cGH *
-   @vio        in
-   @endvar 
-   @var        operation_handle
-   @vdesc      handle for the interpolation operator
-   @vtype      int
-   @vio        in
-   @endvar 
-   @var        nPoints
-   @vdesc      number of points to interpolate at
-   @vtype      int
-   @vio        in
-   @endvar 
-   @var        nDims
-   @vdesc      number of passed coordinate fields
-   @vtype      int
-   @vio        in
-   @endvar 
-   @var        nInFields
-   @vdesc      number of passed input fields
-   @vtype      int
-   @vio        in
-   @endvar 
-   @var        nOutFields
-   @vdesc      number of passed output fields
-   @vtype      int
-   @vio        in
-   @vcomment   end of fixed argument list
-   @endvar 
-
-   @var        coords
-   @vdesc      coordinates of points to interpolate at
-   @vtype      void * [nDims]
-   @vio        in
-   @endvar 
-   @var        coordTypes
-   @vdesc      types of passed coordinate fields
-   @vtype      int [nDims]
-   @vio        in
-   @endvar 
-   @var        inFieldIndices
-   @vdesc      indices of GF to interpolate from
-   @vtype      int [nInfields]
-   @vio        in
-   @endvar 
-   @var        outFields
-   @vdesc      pointer to arrays to hold the interpolation results
-   @vtype      void * [nOutfields]
-   @vio        in
-   @endvar 
-   @var        outFieldTypes
-   @vdesc      types of arrays to hold the interpolation results
-   @vtype      int [nOutfields]
-   @vio        in
-   @endvar 
-@@*/
-
-int CCTK_InterpGF (cGH *GH,
-                   int operation_handle,
-                   int nPoints,
-                   int nDims,
-                   int nInFields,
-                   int nOutFields,
-                   ...)
-{
-  va_list indices;
-  int i, retcode;
-  int vindex, timelevel;
-  void **coords;
-  int *coordTypes;
-  int *inFieldTypes, *outFieldTypes;
-  void **inFields, **outFields;
-  CCTK_REAL *origin;
-  int (*function)(INTERP_REGISTER_ARGLIST)=NULL; 
-
-  CCTK_Warn (1, __LINE__, __FILE__, "Cactus",
-             "CCTK_InterpGF: This routine is depricated and will "
-             "be removed in Cactus version 4.0 b11. "
-             "Please use the new interpolation interpface !");
-
-  retcode = -1;
-
-  /* Get the pointer to the interpolation operator */
-  if (operation_handle < 0)
-  {
-    CCTK_Warn(3,__LINE__,__FILE__,
-	      "Cactus","Invalid handle passed to CCTK_Interp");
-  }
-  else
-  {
-    function = (int (*)(INTERP_REGISTER_ARGLIST))
-      Util_GetHandledData(interp_operators,operation_handle);
-    
-    if (function)
-    {
-
-      coords = (void **) malloc (nDims * sizeof (void *));
-      coordTypes = (int *) malloc (nDims * sizeof (int));
-      inFields = (void **) malloc (nInFields * sizeof (void *));
-      inFieldTypes = (int *) malloc (nInFields * sizeof (int));
-      outFields = (void **) malloc (nOutFields * sizeof (void *));
-      outFieldTypes = (int *) malloc (nOutFields * sizeof (int));
-      origin = (CCTK_REAL *) malloc (nDims * sizeof (CCTK_REAL));
-
-      /* Fill in the arrays from the variable argument list */
-      va_start (indices, nOutFields);
-      for (i = 0; i < nDims; i++)
-      {
-        coords [i] = va_arg (indices, void *);
-      }
-      for (i = 0; i < nDims; i++)
-      {
-        coordTypes [i] = va_arg (indices, int);
-      }
-      for (i = 0; i < nInFields; i++) 
-      {
-        vindex = va_arg (indices, int);
-        timelevel = CCTK_NumTimeLevelsFromVarI (vindex);
-        retcode = 0;
-        if (timelevel < 0) 
-	{
-          CCTK_Warn (1, __LINE__,__FILE__,
-		     "Cactus","Invalid variable index in CCTK_InterpGF()");
-          retcode = -1;
-        } 
-	else 
-	{
-          if (--timelevel > 0)
-	  {
-             --timelevel;
-	  }
-          inFields [i] = CCTK_VarDataPtrI (GH, timelevel, vindex);
-          inFieldTypes [i] = CCTK_VarTypeI (vindex);
-        }
-      }
-      for (i = 0; i < nOutFields; i++)
-      {
-        outFields [i] = va_arg (indices, void *);
-      }
-      for (i = 0; i < nOutFields; i++)
-      {
-        outFieldTypes [i] = va_arg (indices, int);
-      }
-      va_end (indices);
-
-      /* compute processor-local origin */
-      for (i = 0; i < nDims; i++)
-      {
-        origin [i] = GH->cctk_origin_space [i] +
-                     GH->cctk_lbnd [i] * GH->cctk_delta_space [i];
-      }
-
-      if (! retcode)
-      {
-        retcode = function(GH, nPoints, nDims, nInFields, nOutFields,
-                           GH->cctk_lsh, coords, coordTypes,
-                           origin, GH->cctk_delta_space,
-                           inFields, inFieldTypes, outFields, outFieldTypes);
-      }
-
-      free (origin);
-      free (outFieldTypes);
-      free (outFields);
-      free (inFieldTypes);
-      free (inFields);
-      free (coordTypes);
-      free (coords);
-      
-    }
-    else
-      CCTK_Warn(3,__LINE__,__FILE__,"Cactus",
-		"Interpolation operation not registered and cannot be called");
-  }
-
-  return retcode;
-
-}
-
-void CCTK_FCALL CCTK_FNAME(CCTK_InterpGF)
-     (int *fortranreturn,
-      cGH *GH,
-      int *operation_handle,
-      int *nPoints,
-      int *nDims,
-      int *nInFields,
-      int *nOutFields,
-      ...)
-{ 
-  va_list indices;
-  int i, retcode;
-  int vindex, timelevel;
-  void **coords;
-  int *coordTypes;
-  void **inFields, **outFields;
-  int *inFieldTypes, *outFieldTypes;
-  CCTK_REAL *origin;
-  int (*function)(INTERP_REGISTER_ARGLIST)=NULL; 
-
-  CCTK_Warn (1, __LINE__, __FILE__, "Cactus",
-             "CCTK_InterpGF: This routine is depricated and will "
-             "be removed in Cactus version 4.0 b11. "
-             "Please use the new interpolation interpface !");
-
-  retcode = -1;
-
-  /* Get the pointer to the interpolation operator */
-
-  if (*operation_handle < 0)
-
-    CCTK_Warn(3,__LINE__,__FILE__,"Cactus",
-	      "Invalid handle passed to CCTK_Interp");
-
-  else
-  {
-    function = (int (*)(INTERP_REGISTER_ARGLIST))
-      Util_GetHandledData(interp_operators,*operation_handle);
-    
-    if (function)
-    {
-      
-      coords = (void **) malloc (*nDims * sizeof (void *));
-      coordTypes = (int *) malloc (*nDims * sizeof (int));
-      inFields = (void **) malloc (*nInFields * sizeof (void *));
-      inFieldTypes = (int *) malloc (*nInFields * sizeof (int));
-      outFields = (void **) malloc (*nOutFields * sizeof (void *));
-      outFieldTypes = (int *) malloc (*nOutFields * sizeof (int));
-      origin = (CCTK_REAL *) malloc (*nDims * sizeof (CCTK_REAL));
-
-      /* Fill in the arrays from the variable argument list */
-      va_start (indices, nOutFields);
-      for (i = 0; i < *nDims; i++)
-        coords [i] = va_arg (indices, void *);
-      for (i = 0; i < *nDims; i++)
-        coordTypes [i] = *va_arg (indices, int *);
-      for (i = 0; i < *nInFields; i++) {
-        vindex = *va_arg (indices, int *);
-        timelevel = CCTK_NumTimeLevelsFromVarI (vindex);
-        retcode = 0;
-        if (timelevel < 0) {
-          CCTK_Warn (1,__LINE__,__FILE__,"Cactus", 
-		     "Invalid variable index in CCTK_InterpGF()");
-          retcode = -1;
-        } else {
-          if (--timelevel > 0)
-             --timelevel;
-          inFields [i] = CCTK_VarDataPtrI (GH, timelevel, vindex);
-          inFieldTypes [i] = CCTK_VarTypeI (vindex);
-        }
-      }
-      for (i = 0; i < *nOutFields; i++)
-        outFields [i] = va_arg (indices, void *);
-      for (i = 0; i < *nOutFields; i++)
-        outFieldTypes [i] = *va_arg (indices, int *);
-      va_end (indices);
-
-      /* compute processor-local origin */
-      for (i = 0; i < *nDims; i++)
-        origin [i] = GH->cctk_origin_space [i] +
-                     GH->cctk_lbnd [i] * GH->cctk_delta_space [i];
-
-      if (! retcode)
-        retcode = function(GH, *nPoints, *nDims, *nInFields, *nOutFields,
-                           GH->cctk_lsh, coords, coordTypes,
-                           origin, GH->cctk_delta_space,
-                           inFields, inFieldTypes, outFields, outFieldTypes);
-      
-      free (origin);
-      free (outFieldTypes);
-      free (outFields);
-      free (inFieldTypes);
-      free (inFields);
-      free (coordTypes);
-      free (coords);
-
-    }
-    else
-      CCTK_Warn(3,__LINE__,__FILE__,"Cactus",
-		"Interpolation operation not registered and cannot be called");
-  }
-
-  *fortranreturn = retcode;
-}
-
-
- /*@@
-   @routine    CCTK_Interp
-   @date       July 07 1999
-   @author     Thomas Radke
-   @desc 
-               The CCTK interpolation routine
-               Just puts the arguments from the variable argument list
-               into arrays and calls the appropriate interpolation operator.
-   @enddesc 
-   @var        GH
-   @vdesc      pointer to CCTK grid hierarchy
-   @vtype      cGH *
-   @vio        in
-   @endvar 
-   @var        operator_handle
-   @vdesc      handle for the interpolation operator
-   @vtype      int
-   @vio        in
-   @endvar 
-   @var        nPoints
-   @vdesc      number of points to interpolate at
-   @vtype      int
-   @vio        in
-   @endvar 
-   @var        nDims
-   @vdesc      number of passed coordinate fields
-   @vtype      int
-   @vio        in
-   @endvar 
-   @var        nInFields
-   @vdesc      number of passed input fields
-   @vtype      int
-   @vio        in
-   @endvar 
-   @var        nOutFields
-   @vdesc      number of passed output fields
-   @vtype      int
-   @vio        in
-   @vcomment   end of fixed argument list
-   @endvar 
-
-   @var        dims
-   @vdesc      coordinate dimensions of the underlying grid
-   @vtype      int [nDims]
-   @vio        in
-   @endvar 
-   @var        coords
-   @vdesc      coordinates of points to interpolate at
-   @vtype      void * [nDims]
-   @vio        in
-   @endvar 
-   @var        coordTypes
-   @vdesc      types of passed coordinate fields
-   @vtype      int [nDims]
-   @vio        in
-   @endvar 
-   @var        origin
-   @vdesc      origin of the underlying grid
-   @vtype      <type of coordinate fields> [nDims]
-   @vio        in
-   @endvar 
-   @var        delta
-   @vdesc      deltas between 2 neighboring points of the underlying grid
-   @vtype      <type of coordinate fields> [nDims]
-   @vio        in
-   @endvar 
-   @var        inFields
-   @vdesc      pointer to input fields to interpolate from
-   @vtype      void * [nInfields]
-   @vio        in
-   @endvar 
-   @var        inFieldTypes
-   @vdesc      variable types of input fields to interpolate from
-   @vtype      int [nInfields]
-   @vio        in
-   @endvar 
-   @var        outFields
-   @vdesc      pointer to fields to hold the interpolation results
-   @vtype      void * [nOutfields]
-   @vio        out
-   @endvar 
-   @var        outFieldTypes
-   @vdesc      types of fields to hold the interpolation results
-   @vtype      int [nOutfields]
-   @vio        in
-   @endvar 
-@@*/
-
-int CCTK_Interp (cGH *GH,
-                 int operator_handle,
-                 int nPoints,
-                 int nDims,
-                 int nInFields,
-                 int nOutFields,
-                 ...)
-{
-  va_list indices;
-  int i, retcode;
-  int *dims;
-  void **coords;
-  int *coordTypes;
-  void *origin=NULL, *delta=NULL;
-  void **inFields, **outFields;
-  int *inFieldTypes, *outFieldTypes;
-  int (*function)(INTERP_REGISTER_ARGLIST)=NULL; 
-
-  CCTK_Warn (1, __LINE__, __FILE__, "Cactus",
-             "CCTK_Interp: This routine is depricated and will "
-             "be removed in Cactus version 4.0 b11. "
-             "Please use the new interpolation interpface !");
-
-  retcode = -1;
-
-  /* Get the pointer to the interpolation operator */
-  if (operator_handle < 0)
-  {
-    CCTK_Warn(3,__LINE__,__FILE__,"Cactus",
-              "Invalid handle passed to CCTK_Interp");
-  }
-  else
-  {
-
-    function = (int (*)(INTERP_REGISTER_ARGLIST))
-      Util_GetHandledData(interp_operators,operator_handle);
-    
-    if (function)
-    {
-
-      dims = (int *) malloc (nDims * sizeof (int));
-      coords = (void **) malloc (nDims * sizeof (void *));
-      coordTypes = (int *) malloc (nDims * sizeof (int));
-      inFields = (void **) malloc (nInFields * sizeof (void *));
-      inFieldTypes = (int *) malloc (nInFields * sizeof (int));
-      outFields = (void **) malloc (nOutFields * sizeof (void *));
-      outFieldTypes = (int *) malloc (nOutFields * sizeof (int));
-      retcode = 0;
-
-      /* Fill in the arrays from the variable argument list */
-      va_start (indices, nOutFields);
-      for (i = 0; i < nDims; i++)
-      {
-        dims [i] = va_arg (indices, int);
-      }
-      for (i = 0; i < nDims; i++)
-      {
-        coords [i] = va_arg (indices, void *);
-      }
-      for (i = 0; i < nDims; i++)
-      {
-        coordTypes [i] = va_arg (indices, int);
-      }
-
-      for (i = 0; i < nDims; i++)
-      {
-        switch (coordTypes [i]) {
-          case CCTK_VARIABLE_BYTE:
-            if (i == 0)
-              origin = malloc (nDims * sizeof (int));
-            ((int *) origin) [i] = va_arg (indices, int);
-            break;
-
-          case CCTK_VARIABLE_INT:
-            if (i == 0)
-              origin = malloc (nDims * sizeof (CCTK_INT));
-            ((CCTK_INT *) origin) [i] = va_arg (indices, CCTK_INT);
-            break;
-
-          case CCTK_VARIABLE_REAL:
-            if (i == 0)
-              origin = malloc (nDims * sizeof (CCTK_REAL));
-            ((CCTK_REAL *) origin) [i] = va_arg (indices, CCTK_REAL);
-            break;
-
-          case CCTK_VARIABLE_COMPLEX:
-            if (i == 0)
-              origin = malloc (nDims * sizeof (CCTK_COMPLEX));
-            ((CCTK_COMPLEX *) origin) [i] = va_arg (indices, CCTK_COMPLEX);
-            break;
-
-          default:
-            CCTK_Warn(1,__LINE__,__FILE__,"Cactus", 
-                      "Invalid variable type for coordinates");
-            retcode = -1;
-            break;
-        }
-      }
-
-      printf("retcode is %d\n",retcode);
-      for (i = 0; i < nDims; i++)
-      {
-        switch (coordTypes [i]) {
-          case CCTK_VARIABLE_BYTE:
-            if (i == 0)
-              delta = malloc (nDims * sizeof (int));
-            ((int *) delta) [i] = va_arg (indices, int);
-            break;
-
-          case CCTK_VARIABLE_INT:
-            if (i == 0)
-              delta = malloc (nDims * sizeof (CCTK_INT));
-            ((CCTK_INT *) delta) [i] = va_arg (indices, CCTK_INT);
-            break;
-
-          case CCTK_VARIABLE_REAL:
-            if (i == 0)
-              delta = malloc (nDims * sizeof (CCTK_REAL));
-            ((CCTK_REAL *) delta) [i] = va_arg (indices, CCTK_REAL);
-            break;
-
-          case CCTK_VARIABLE_COMPLEX:
-            if (i == 0)
-              delta = malloc (nDims * sizeof (CCTK_COMPLEX));
-            ((CCTK_COMPLEX *) delta) [i] = va_arg (indices, CCTK_COMPLEX);
-            break;
-
-          default:
-            CCTK_Warn (1,__LINE__,__FILE__,"Cactus", 
-                       "Invalid variable type for coordinates");
-            retcode = -1;
-            break;
-        }
-      }
-
-      for (i = 0; i < nInFields; i++)
-      {
-        inFields [i] = va_arg (indices, void *);
-      }
-      for (i = 0; i < nInFields; i++)
-      {
-        inFieldTypes [i] = va_arg (indices, int);
-      }
-      for (i = 0; i < nOutFields; i++)
-      {
-        outFields [i] = va_arg (indices, void *);
-      }
-      for (i = 0; i < nOutFields; i++)
-      {
-        outFieldTypes [i] = va_arg (indices, int);
-      }
-      va_end (indices);
-
-      if (! retcode)
-      {
-        retcode = function(GH, nPoints, nDims, nInFields, nOutFields,
-                           dims, coords, coordTypes, origin, delta,
-                           inFields, inFieldTypes, outFields, outFieldTypes);
-      }
-
-      free (outFieldTypes);
-      free (outFields);
-      free (inFieldTypes);
-      free (inFields);
-      free (delta);
-      free (origin);
-      free (coordTypes);
-      free (coords);
-      free (dims);
-      
-    }
-    else
-    {
-      CCTK_Warn(3,__LINE__,__FILE__,"Cactus",
-                "Interpolation operation not registered and cannot be called");
-    }
-  }
-
-  return retcode;
-
-}
-
-void CCTK_FCALL CCTK_FNAME(CCTK_Interp)
-     (int *fortranreturn,
-      cGH *GH,
-      int *operator_handle,
-      int *nPoints,
-      int *nDims,
-      int *nInFields,
-      int *nOutFields,
-      ...)
-{ 
-  va_list indices;
-  int i, retcode;
-  int *dims;
-  void **coords;
-  int *coordTypes;
-  void *origin=NULL, *delta=NULL;
-  void **inFields, **outFields;
-  int *inFieldTypes, *outFieldTypes;
-  int (*function)(INTERP_REGISTER_ARGLIST)=NULL; 
-
-  CCTK_Warn (1, __LINE__, __FILE__, "Cactus",
-             "CCTK_Interp: This routine is depricated and will "
-             "be removed in Cactus version 4.0 b11. "
-             "Please use the new interpolation interpface !");
-
-  retcode = -1;
-
-  /* Get the pointer to the interpolation operator */
-
-  if (*operator_handle < 0)
-
-    CCTK_Warn(3,__LINE__,__FILE__,"Cactus",
-              "Invalid handle passed to CCTK_Interp");
-
-  else
-  {
-    function = (int (*)(INTERP_REGISTER_ARGLIST))
-      Util_GetHandledData(interp_operators,*operator_handle);
-    
-    if (function)
-    {
-      
-      dims = (int *) malloc (*nDims * sizeof (CCTK_INT));
-      coords = (void **) malloc (*nDims * sizeof (void *));
-      coordTypes = (int *) malloc (*nDims * sizeof (int));
-      inFields = (void **) malloc (*nInFields * sizeof (void *));
-      inFieldTypes = (int *) malloc (*nInFields * sizeof (int));
-      outFields = (void **) malloc (*nOutFields * sizeof (void *));
-      outFieldTypes = (int *) malloc (*nOutFields * sizeof (int));
-      retcode = 0;
-
-      /* Fill in the arrays from the variable argument list */
-      va_start (indices, nOutFields);
-      for (i = 0; i < *nDims; i++)
-        dims [i] = *va_arg (indices, int *);
-      for (i = 0; i < *nDims; i++)
-        coords [i] = va_arg (indices, void *);
-      for (i = 0; i < *nDims; i++)
-        coordTypes [i] = *va_arg (indices, int *);
-
-      for (i = 0; i < *nDims; i++)
-        switch (coordTypes [i]) {
-          case CCTK_VARIABLE_BYTE:
-            if (i == 0)
-              origin = malloc (*nDims * sizeof (int));
-            ((int *) origin) [i] = *va_arg (indices, int *);
-            break;
-
-          case CCTK_VARIABLE_INT:
-            if (i == 0)
-              origin = malloc (*nDims * sizeof (CCTK_INT));
-            ((CCTK_INT *) origin) [i] = *va_arg (indices, CCTK_INT *);
-            break;
-
-          case CCTK_VARIABLE_REAL:
-            if (i == 0)
-              origin = malloc (*nDims * sizeof (CCTK_REAL));
-            ((CCTK_REAL *) origin) [i] = *va_arg (indices, CCTK_REAL *);
-            break;
-
-          case CCTK_VARIABLE_COMPLEX:
-            if (i == 0)
-              origin = malloc (*nDims * sizeof (CCTK_COMPLEX));
-            ((CCTK_COMPLEX *) origin) [i] = *va_arg (indices, CCTK_COMPLEX *);
-            break;
-
-          default:
-            CCTK_Warn (1,__LINE__,__FILE__,"Cactus",
-                       "Invalid variable type for coordinates");
-            retcode = -1;
-            break;
-        }
-
-      for (i = 0; i < *nDims; i++)
-        switch (coordTypes [i]) {
-          case CCTK_VARIABLE_BYTE:
-            if (i == 0)
-              delta = malloc (*nDims * sizeof (int));
-            ((int *) delta) [i] = *va_arg (indices, int *);
-            break;
-
-          case CCTK_VARIABLE_INT:
-            if (i == 0)
-              delta = malloc (*nDims * sizeof (CCTK_INT));
-            ((CCTK_INT *) delta) [i] = *va_arg (indices, CCTK_INT *);
-            break;
-
-          case CCTK_VARIABLE_REAL:
-            if (i == 0)
-              delta = malloc (*nDims * sizeof (CCTK_REAL));
-            ((CCTK_REAL *) delta) [i] = *va_arg (indices, CCTK_REAL *);
-            break;
-
-          case CCTK_VARIABLE_COMPLEX:
-            if (i == 0)
-              delta = malloc (*nDims * sizeof (CCTK_COMPLEX));
-            ((CCTK_COMPLEX *) delta) [i] = *va_arg (indices, CCTK_COMPLEX *);
-            break;
-
-          default:
-            CCTK_Warn (1,__LINE__,__FILE__,"Cactus", 
-                       "Invalid variable type for coordinates");
-            retcode = -1;
-            break;
-        }
-
-      for (i = 0; i < *nInFields; i++)
-        inFields [i] = va_arg (indices, void *);
-      for (i = 0; i < *nInFields; i++)
-        inFieldTypes [i] = *va_arg (indices, int *);
-      for (i = 0; i < *nOutFields; i++)
-        outFields [i] = va_arg (indices, void *);
-      for (i = 0; i < *nOutFields; i++)
-        outFieldTypes [i] = *va_arg (indices, int *);
-      va_end (indices);
-
-      if (! retcode)
-        retcode = function(GH, *nPoints, *nDims, *nInFields, *nOutFields,
-                           dims, coords, coordTypes, origin, delta,
-                           inFields, inFieldTypes, outFields, outFieldTypes);
-      
-      free (outFieldTypes);
-      free (outFields);
-      free (inFieldTypes);
-      free (inFields);
-      free (delta);
-      free (origin);
-      free (coordTypes);
-      free (coords);
-      free (dims);
-    }
-    else
-      CCTK_Warn(3,__LINE__,__FILE__,"Cactus",
-                "Interpolation operation not registered and cannot be called");
-  }
-
-  *fortranreturn = retcode;
-}
-
