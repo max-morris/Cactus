@@ -89,9 +89,9 @@ if ($tests =~ /All/) {
     print "\n--- Menu ---\n";
     $sp = "     ";
     for ($i=1;$i<$ntests+1;$i++) {
-      print "[$i] $testnum{$num}: $testnames{$i}\n";
+      print "[$i] $testnum{$i}: $testnames{$i}\n";
     }
-    print "\n  Enter Choice, eg test01 (quit to end) : ";
+    print "\n  Enter number of test to run (quit to end) : ";
     $choice = <STDIN>;
     $choice =~ s/\n//;
     $choice =~ s/\s//;
