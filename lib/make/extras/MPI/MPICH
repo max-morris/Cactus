@@ -6,7 +6,7 @@
 #   @desc 
 #   
 #   @enddesc
-#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/extras/MPI/MPICH,v 1.4 1999-09-28 14:09:08 goodale Exp $ 
+#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/extras/MPI/MPICH,v 1.5 1999-10-24 13:16:39 lanfer Exp $ 
 # @@*/
 
 
@@ -26,12 +26,14 @@ fi
 
 # Find the MPICH architecture
 
-if test -x "$MPICH_DIR/bin/tarch" ; then
-  MPICH_ARCH=`$MPICH_DIR/bin/tarch`
-  echo "MPICH architecture is $MPICH_ARCH"
-else
-  echo "Cannot execute $MPICH_DIR/bin/tarch"
-  exit 2
+if test -z "$MPICH_ARCH" ; then 
+  if test -x "$MPICH_DIR/bin/tarch" ; then
+    MPICH_ARCH=`$MPICH_DIR/bin/tarch`
+    echo "MPICH architecture is $MPICH_ARCH"
+  else
+    echo "Cannot execute $MPICH_DIR/bin/tarch"
+    exit 2
+  fi
 fi
 
 # Find the MPICH device
