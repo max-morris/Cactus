@@ -35,15 +35,15 @@ cctk_complex CCTK_Cmplx##Sqrt  (cctk_complex complex_number);
 
 
 /* declare complex functions for all available precisions */
-#if HAVE_CCTK_REAL4
+#if CCTK_HAVE_REAL4
 DECLARE_CMPLX_FUNCTIONS (CCTK_Cmplx8, CCTK_REAL4, CCTK_COMPLEX8)
 #endif
 
-#if HAVE_CCTK_REAL8
+#if CCTK_HAVE_REAL8
 DECLARE_CMPLX_FUNCTIONS (CCTK_Cmplx16, CCTK_REAL8, CCTK_COMPLEX16)
 #endif
 
-#if HAVE_CCTK_REAL16
+#if CCTK_HAVE_REAL16
 DECLARE_CMPLX_FUNCTIONS (CCTK_Cmplx32, CCTK_REAL16, CCTK_COMPLEX32)
 #endif
 
