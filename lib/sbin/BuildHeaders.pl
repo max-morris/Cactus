@@ -38,10 +38,31 @@ sub BuildHeaders
     }
   }
 
+
+  # Check consistency
+  foreach $addingthorn (split(" ",$interface_database{"THORNS"}))
+  {
+    print "Adding thorn $addingthorn\n";
+    foreach $inc_file1 (split(" ",$interface_database{"\U$addingthorn ADD HEADER"}))
+    {
+      print "  Adding headers $inc_file1\n";
+      foreach $usingthorn (split(" ",$interface_database{"THORNS"}))
+      {
+	print "    Using thorn $usingthorn\n";
+	if ($interface_database{"\U$usingthorn USES SOURCE"} =~ $interface_database{"\U$addingthorn ADD HEADER $inc_file1 TO"})
+	{
+	  print "      PROBLEM adding $interface_database{\"\U$addingthorn ADD HEADER $inc_file1 TO\"}\n";
+	  print "      PROBLEM using $interface_database{\"\U$usingthorn USES SOURCE\"}\n";
+	  &CST_error(1,"$inc_file1 was added in $addingthorn as a header include but is being used as $interface_database{\"\U$addingthorn ADD HEADER $inc_file1 TO\"}  in $usingthorn as a source code include",'',__LINE__,__FILE__);
+	}
+      }
+    }
+  }
+
+
 # Add the headers from thorns
   foreach $thorn (split(" ",$interface_database{"THORNS"}))
   {
-
     $arrangement = $interface_database{"\U$thorn ARRANGEMENT"};
 
     foreach $inc_file1 (split(" ",$interface_database{"\U$thorn ADD HEADER"}))
@@ -50,7 +71,7 @@ sub BuildHeaders
       {
         $inc_file1 =~ s/ //g;
         $inc_file2 = $interface_database{"\U$thorn ADD HEADER $inc_file1 TO"};
-
+	
         # Write information to the global include file
         $data{"$inc_file2"} .= "/* Including header file $inc_file1 from $thorn */\n";
         
