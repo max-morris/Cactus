@@ -328,9 +328,9 @@ int Util_GetHandle(cHandledData *storage, const char *name, void **data)
    @endhistory 
 
 @@*/
-char *Util_GetHandleName(cHandledData *storage, int handle)
+const char *Util_GetHandleName(cHandledData *storage, int handle)
 {
-  char *name;
+  const char *name;
 
   if(storage)
   {

@@ -38,7 +38,7 @@ int Util_NewHandle(cHandledData **storage, const char *name, void *data);
 int Util_DeleteHandle(cHandledData *storage, int handle);
 void *Util_GetHandledData(cHandledData *storage, int handle);
 int Util_GetHandle(cHandledData *storage, const char *name, void **data);
-char *Util_GetHandleName(cHandledData *storage, int handle);
+const char *Util_GetHandleName(cHandledData *storage, int handle);
 
 #ifdef __cplusplus 
 }
