@@ -11,6 +11,8 @@
 
 $cvs_ops="-z6 -q";
 $cvs_update_ops="-d -P";
+# Set this to eg -r TAGNAME checkout from a TAG
+$cvs_symbolic_name="";
 
 require "lib/sbin/MakeUtils.pl";
 
@@ -21,7 +23,7 @@ if ($debug)
 }
 
 print("\nUpdating Flesh\n");
-$command = "cvs $cvs_ops update $cvs_update_ops CONTRIBUTORS COPYRIGHT Makefile lib doc src";
+$command = "cvs $cvs_ops update $cvs_update_ops $cvs_symbolic_name CONTRIBUTORS COPYRIGHT Makefile lib doc src";
 if ($debug)
 {
   $this_dir = `pwd`;
@@ -69,7 +71,7 @@ foreach $thorn (sort keys %info)
   }
   chdir $thorn;
   print("\nUpdating $thorn\n");
-  $command = "cvs $cvs_ops update $cvs_update_ops";
+  $command = "cvs $cvs_ops update $cvs_update_ops $cvs_symbolic_name";
   if($debug)
   {
     $this_dir = `pwd`;
