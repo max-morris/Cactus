@@ -57,7 +57,7 @@ CCTK_COMPLEX CCTK_Cmplx(CCTK_REAL Re, CCTK_REAL Im)
 @@*/
 CCTK_REAL CCTK_CmplxReal(CCTK_COMPLEX complex_number)
 {
-  return complex_number.Im;
+  return complex_number.Re;
 }
 
  /*@@
