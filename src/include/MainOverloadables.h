@@ -24,5 +24,19 @@ OVERLOADABLE(Initialise)
 OVERLOADABLE(Evolve)
 OVERLOADABLE(Shutdown)
 
+#undef RETURN_TYPE
+#define RETURN_TYPE int
+#undef ARGUMENTS
+#define ARGUMENTS void
+
+OVERLOADABLE(MainLoopIndex)
+
+#undef RETURN_TYPE
+#define RETURN_TYPE int
+#undef ARGUMENTS
+#define ARGUMENTS int main_loop_index
+
+OVERLOADABLE(SetMainLoopIndex)
+
 #undef ARGUMENTS
 #undef RETURN_TYPE
