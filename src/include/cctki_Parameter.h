@@ -17,6 +17,7 @@ extern "C"
 #endif
 
 int CCTKi_SetParameter(const char *parameter, const char *value);
+int CCTKi_NumParameterFileErrors(int level);
 
 #ifdef __cplusplus
 }

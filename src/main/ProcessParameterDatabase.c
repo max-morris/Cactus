@@ -75,7 +75,10 @@ void CCTKi_SetParameterSetMask(int mask);
 int CCTKi_ProcessParameterDatabase(tFleshConfig *ConfigData)
 {
   int retval;
+  int parse_errors;
   FILE *parameter_file;
+
+  parse_errors = 0;
 
   CCTKi_SetParameterSetMask(PARAMETER_RECOVERY_PRE);
 
@@ -90,12 +93,34 @@ int CCTKi_ProcessParameterDatabase(tFleshConfig *ConfigData)
 
   if(parameter_file)
   {
-    ParseFile(parameter_file, CCTKi_SetParameter, ConfigData);
+    parse_errors = ParseFile(parameter_file, CCTKi_SetParameter, ConfigData);
 
     if(strcmp(ConfigData->parameter_file_name,"-"))
     {
       fclose(parameter_file);
     }
+
+    if (parse_errors)
+    {
+	CCTK_VWarn(0,__LINE__,__FILE__,"Cactus",
+		   "CCTKi_SetParameterSetMask: %d parsing errors in "
+		   "parameter file",parse_errors);
+    }      
+
+    if (CCTKi_NumParameterFileErrors(1))
+    {
+	CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
+		   "CCTKi_SetParameterSetMask: %d level 1 errors in "
+		   "parameter file",CCTKi_NumParameterFileErrors(1));
+    }
+
+    if (CCTKi_NumParameterFileErrors(0))
+    {
+      CCTK_VWarn(0,__LINE__,__FILE__,"Cactus",
+		"CCTKi_SetParameterSetMask: %d level 0 errors in "
+		 "parameter file",CCTKi_NumParameterFileErrors(0));
+    }
+
     retval = 0;
   }
   else

@@ -134,7 +134,9 @@ int ParseFile(FILE *ifp,
      EOF. See man 3 fgetc
    */
   int c;
+  int num_errors; /* number of errors in file parsing */
 
+  num_errors = 0;
 
   /* avoid compiler warning about unused parameter */
   ConfigData = ConfigData;
@@ -174,6 +176,7 @@ int ParseFile(FILE *ifp,
       if(intoken)
       {
         fprintf(stderr, "Parse error at line %d.  No value supplied.\n", lineno);
+	num_errors++;
         intoken = 0;
       }
 
@@ -367,7 +370,7 @@ int ParseFile(FILE *ifp,
               {
                 value[pp++] = c;
                 CheckBuf(pp,lineno);
-              }
+	      }
               if (c == ',') ncommas ++;
               c = fgetc(ifp);
 #ifdef DEBUG
@@ -477,7 +480,7 @@ int ParseFile(FILE *ifp,
   /* deallocate parse buffers */
   free (tokens);
 
-  return 0;
+  return num_errors;
 }
 
 /********************************************************************

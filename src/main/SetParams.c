@@ -49,6 +49,9 @@ static int ReallySetParameter(const char *parameter,
  *********************     Local Data   *****************************
  ********************************************************************/
 
+static int num_0errors=0; /* number of level 0 errors in parameter file */
+static int num_1errors=0; /* number of level 1 errors in parameter file */
+
 /********************************************************************
  *********************     External Routines   **********************
  ********************************************************************/
@@ -144,24 +147,21 @@ int CCTKi_SetParameter(const char *parameter, const char *value)
 
   if (retval == -1)
   {
-    CCTK_VWarn(0,__LINE__,__FILE__,"Cactus",
-	       "CCTKi_SetParameter: Range error setting parameter %s to %s\n",
-	       parameter,value);
+    fprintf(stderr,"Range error setting parameter %s to %s\n",parameter,value);
+    num_0errors++;
   }
   else if (retval == -2)
   {
     /* Parameter not defined in thorn */
     if (parameter_check==CCTK_PARAMETER_RELAXED)
     {
-      CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
-		 "CCTKi_SetParameter: Parameter %s not found",
-		 parameter);
+      fprintf(stderr,"Parameter %s not found\n",parameter);
+      num_1errors++;
     }
     else 
     {
-      CCTK_VWarn(0,__LINE__,__FILE__,"Cactus",
-		 "CCTKi_SetParameter: Parameter %s not found",
-		 parameter);
+      fprintf(stderr,"Parameter %s not found\n",parameter);
+      num_0errors++;
     }
   }
   else if (retval == -4)
@@ -169,17 +169,13 @@ int CCTKi_SetParameter(const char *parameter, const char *value)
     /* Setting parameter twice */
     if (parameter_check==CCTK_PARAMETER_RELAXED)
     {
-      CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
-		 "CCTKi_SetParameter: Parameter %s "
-		 "set in two different thorns",
-		 parameter);
+      fprintf(stderr,"Parameter %s set in two different thorns\n",parameter);
+      num_1errors++;
     }
     else 
     {
-      CCTK_VWarn(0,__LINE__,__FILE__,"Cactus",
-		 "CCTKi_SetParameter: Parameter %s "
-		 "set in two different thorns",
-		 parameter);
+      fprintf(stderr,"Parameter %s set in two different thorns\n",parameter);
+      num_0errors++;
     }
   }
   else if (retval == -5)
@@ -187,17 +183,15 @@ int CCTKi_SetParameter(const char *parameter, const char *value)
     /* Parameter not defined by any active thorn */
     if (parameter_check==CCTK_PARAMETER_STRICT)
     {
-      CCTK_VWarn(0,__LINE__,__FILE__,"Cactus",
-		 "CCTKi_SetParameter: Parameter %s "
-		 "is not associated with an active thorn",
-		 parameter);
+      fprintf(stderr,"Parameter %s is not associated with an active thorn\n",
+	      parameter);
+      num_0errors++;
     }
     else if (parameter_check==CCTK_PARAMETER_NORMAL)
     {
-      CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
-		 "CCTKi_SetParameter: Parameter %s "
-		 "is not associated with an active thorn",
-		 parameter);
+      fprintf(stderr,"Parameter %s is not associated with an active thorn\n",
+	      parameter);
+      num_1errors++;
     }
   }
 
@@ -215,6 +209,61 @@ int CCTKi_SetParameter(const char *parameter, const char *value)
 
   return retval;
 }
+
+ /*@@
+   @routine    CCTKi_NumParameterFileErrors
+   @date       Mon Dec 3 2001
+   @author     Gabrielle Allen
+   @desc 
+   Returns the number of errors in the parameter file with a 
+   given level
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+   @var     level
+   @vdesc   Level of errors to report
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     value
+   @vdesc   Value of the parameter
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+
+   @returntype int
+   @returndesc
+   number of errors in parameter file with this level
+   @endreturndesc
+@@*/
+
+int CCTKi_NumParameterFileErrors(int level)
+{
+  int retval;
+
+  switch (level)
+  {
+  case 0:
+    retval = num_0errors;
+    break;
+  case 1:
+    retval = num_1errors;
+    break;
+  default:
+    retval = 0;
+  }
+
+  return retval;
+
+}
+
 
 /********************************************************************
  *********************     Local Routines   *************************
