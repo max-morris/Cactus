@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.124 2001-10-10 07:37:29 goodale Exp $
+#   @version $Id: Makefile,v 1.125 2001-10-11 07:37:38 allen Exp $
 # @@*/
 
 ##################################################################################
@@ -949,7 +949,7 @@ cvsstatus:
 
 # run cvsudpate on a configuration
 
-.PHONY cvsupdate:
+.PHONY: cvsupdate
 
 cvsupdate:
 	$(PERL) -s $(CCTK_HOME)/lib/sbin/CVSUpdate.pl arrangements
