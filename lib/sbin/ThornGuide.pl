@@ -1,5 +1,7 @@
 #!/usr/local/bin/perl 
 
+#######################
+# -> ThornGuide.pl <- #
 ##########################################################################
 # Create cactus documentation based upon documenation provided by thorns #
 # in the current checkout being examined.                                #
@@ -17,9 +19,13 @@ $mydir = `pwd`;
 chomp($mydir);
 $mydir =~ s/\/lib\/sbin\/$//;
 
-########
-# HELP #
-########
+
+$TODAYS_DATE = `date +%B%d%Y`;
+$TODAYS_DATE =~ s/(.*?)(\d{2})(\d{4})/$1 $2, $3/;
+
+#################
+# HELP FUNCTION #
+#################
 if ($help || $h) {
    print "--> ThornGuide.pl <--\n";
    print "Options:\n";
@@ -35,7 +41,6 @@ if ($help || $h) {
    exit 0;  
 }
 
-############################
 # get directory to process #
 if (! $directory) 
 { 
@@ -48,14 +53,13 @@ if (! $directory)
     $directory = "$mydir/$directory";  
 }
 
-if (! ($directory =~ /\/$/) ) {
-   $directory .= '/';
-}
+$directory .= '/' if ($directory !~ /\/$/);
 
 print STDERR "\nProcessing: $directory" if ($verbose);
 
 # what are we going to process, if we are processing a directory?
-if (defined $directory) {
+if (defined $directory) 
+{
    if ($directory =~ /arrangements\/(.*?)\//) { 
       $arrangement = $1;
       print "\nProcessing one arrangement" if ($verbose);
@@ -87,31 +91,23 @@ if (! $outdir) {
          print STDERR "\nCreating directory: $start_directory/$outdir" if ($verbose);
       }
    }
-   if (! ($outdir =~ /\/$/)) {
-      $outdir .= "/";
-   }
+   $outdir .= '/' if ($outdir !~ /\/$/);
 }
 
-###################
 # specify outfile #
-if (! $outfile) {
-   $outfile = "ThornGuide.tex";
-}
+$outfile = "ThornGuide.tex" if (! $outfile);
 
-############################
 # open the file for output #
-open (OUT, ">$outdir$outfile") || die "\ncannot open $outdir$outfile: $!";
+open (OUT, ">$outdir$outfile") || die "\nCannot open $outdir$outfile for output: $!";
 
-###########
 ## START ##
-###########
 &Output_Top;
 
-
+# process a directory or a thornlist
 if (! $thornlist) {
-   &Recur($directory);   # if we are processing a directory
+   &Recur($directory); 
 } else {
-   @foundfiles = &Read_ThornList($thornlist, $directory); # thornlist
+   @foundfiles = &Read_ThornList($thornlist, $directory); 
 }
 
 #############################################################
@@ -121,18 +117,13 @@ foreach (@foundfiles)
    s/^$directory//;
    /(.*?)\/(.*?)\//;
 
-   $arr = $1;          # get arrangements and thorn names
-   $thorn =$2;
+   ($arr, $thorn) = ($1, $2);
 
-   if (! defined $arrangements{$arr}) {     # hash of arrangements
-      $arrangements{$arr} = $1;
-   } 
-   push @$arr, $thorn;                      # hash of arrangements & thorns
- #  print STDERR "\nFound: $_"  if ($verbose);
+   # hash of arrangements
+   $arrangements{$arr} = $1 if (! defined $arrangements{$arr});
+
+   push @$arr, $thorn;  
 }
-#                                                            #
-##############################################################
-
 
 ##############################################################
 # Iterates through our known arrangements, then its thorns,  #
@@ -141,7 +132,7 @@ foreach (@foundfiles)
 #########################################
 # if we are processing all arrangements #
 if ($level eq "all_arr") {
-   $i=1;                                           # $i = "cactuspart" counter
+   $i = 1;                                           # $i = "cactuspart" counter
    foreach $arrangement (sort keys %arrangements) 
    {
       &Start_Arr($arrangement,$i);                 # begins a "cactuspart"
@@ -168,13 +159,10 @@ if ($level eq "all_arr") {
 
 &Output_Bottom;
 print STDERR "\nFinished\n" if ($verbose);
-#print "\n";
+
 #######################
 ## END OF MAIN STUFF ##
 #######################
-
-
-
 
 ####################################################################
 #                    BEGINNING OF SUB-ROUTINES                     #
@@ -190,9 +178,9 @@ print STDERR "\nFinished\n" if ($verbose);
 ####################################################################
 sub Read_Thorn_Doc 
 {
-   my ($path) = shift;
-   my ($contents) = "";
-   my ($pathandfile);
+   my ($path)        = shift;
+   my ($contents)    = "";
+   my ($pathandfile) = "";
 
    my ($start) = 0;
    my ($stop)  = 0;
@@ -206,17 +194,23 @@ sub Read_Thorn_Doc
    {
       if (/\\end\{document\}/) {            # stop reading
          $stop = 1;
-         $contents .= "\n\\include{${arrangement}_${thorn}_par}\n";
+         $contents .= "\n\\include{${arrangement}_${thorn}_param}\n";
+         $contents .= "\n\\include{${arrangement}_${thorn}_inter}\n";
+         $contents .= "\n\\include{${arrangement}_${thorn}_schedule}\n";
       }
 
       if ($start && ! $stop) {              # add to $contents
          s/(\\includegraphics.*?\{)\s*?(.*\.eps\s*?\})/$1$path\/$2/g;
          $contents .= $_;
       } elsif (/\\begin\{document\}/) {     # don't begin yet.... 1st flag
-         $temp = 1;
+         $temp = 1; 
       }
 
-      if (($temp) && ( /\\section\{/ )) {   # start reading
+      if (($temp) && ( /\\section\{/ ) ) {
+      #if (($temp) && (( /\\section\{/ ) || (/\\abstract\{/)) ) {   # start reading
+      #    if (/\\abstract\{/) {
+      #       s/\\abstract\{/\\section\{Abstract\}\\begin\{paragraph\}\{/;
+      #    }
           $start = 1;
           $contents = $_;
           $temp = 0;
@@ -225,14 +219,18 @@ sub Read_Thorn_Doc
 
    # if it never started reading, then we print some error message
    if (! $start) {
+      $tmp2 = $arrangement;
+      $tmp2 =~ s/\_/\\\_/g;
       $tmp = $thorn;
       $tmp=~ s/\_/\\\_/g;
       if (-e $pathandfile) {
-         $contents = "Could not parse latex documentation for $arrangement/$tmp($file)";
+         $contents = "Could not parse latex documentation for $tmp2/$tmp($file)";
       } else {
-         $contents = "Could not find latex documentation for $arrangement/$tmp ($file)";
+         $contents = "Could not find latex documentation for $tmp2/$tmp ($file)";
       }
-      $contents .= "\n\n\\include{${arrangement}\_${thorn}\_par}\n";
+      $contents .= "\n\n\\include{${arrangement}\_${thorn}\_param}\n";
+      $contents .= "\n\\include{${arrangement}\_${thorn}\_inter}\n";
+      $contents .= "\n\\include{${arrangement}\_${thorn}\_schedule}\n";
    }
    
    close DOC;
@@ -279,6 +277,7 @@ sub Start_Arr
    my ($arr) = shift;
    my ($partnum) = shift;
 
+   $arr =~ s/\_/\\\_/g;
 print OUT <<EOC;
 
 \\begin{cactuspart}{$partnum}{$arr}{}{}
@@ -305,31 +304,22 @@ sub Read_ThornList
 {
    my ($thornlist) = shift;
    my ($directory) = shift;
-   my (@temp);
    my (@tl);
 
    chomp($directory);
 
    open (TL, "$thornlist") 
-      || die "cannot open thornlist ($thornlist) for reading: $!";
+      || die "\nCannot open thornlist ($thornlist) for reading: $!";
 
    while (<TL>) 
    {
+      next if /\s*?\!/;
       s/(.*?)#.*/\1/;            # read up to the first "#"
       s/\s+//g;                  # replace any spaces with nothing
       if (/\w+/) {               
-         push @temp, $_;         # add to array if something is left
+         push @tl, "$directory$_/doc/$file";
       }
    }     
-
-   foreach $tempvar (@temp)      # see if docs exist for these thorns
-   {
-#      if (-e "$directory$tempvar/doc/$file") {
-         push @tl, "$directory$tempvar/doc/$file";
-#      } else {
-#         print "\nCannot find: $tempvar/doc/$file" if ($verbose);
-#      }
-   }
 
     return @tl;
 }
@@ -365,9 +355,11 @@ sub Recur
         #print STDERR "\n$dir\t\tNo $file, no param.ccl" if ($verbose);
       }
    }
+
    foreach (@dirs) {                    # look in sub directories
       &Recur("$dir$_");
    }
+
    return;
 }
 
@@ -378,6 +370,14 @@ sub Output_Top
 {
 
 print OUT  <<EOC;
+\\newif\\ifpdf
+\\ifx\\pdfoutput\\undefined
+   \\pdffalse % we are not running PDFLaTeX
+\\else
+   \\pdfoutput=1 % we are running PDFLaTeX
+   \\pdftrue
+\\fi
+
 \\documentclass{report}
 \\usepackage{fancyhdr}
 
@@ -515,7 +515,7 @@ print OUT  <<EOC;
 
 
 \\begin{document}
-\\cactustitlepage{Thorn Guide}{Revision: }{Date: 2000/12/07}
+\\cactustitlepage{Thorn Guide}{Date of Creation:}{$TODAYS_DATE}
 \\dominitoc
 
 \\setcounter{page}{1}
@@ -531,6 +531,11 @@ print OUT  <<EOC;
 \\renewcommand{\\thechapter}{\\Alph{part}\\arabic{chapter}}
 \\renewcommand{\\thepage}{\\Alph{part}\\arabic{page}}
 \\pagestyle{fancy}
+
+\\newlength{\\tableWidth}
+\\newlength{\\maxVarWidth}
+\\newlength{\\paraWidth}
+\\newlength{\\descWidth}
 
 \\newpage
 %%%%%%%%%%%%%%%%%%%%%%%
