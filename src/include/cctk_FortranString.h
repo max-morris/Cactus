@@ -21,82 +21,75 @@
 
 #include <fortran.h>
 #define ONE_FORTSTRING_ARG\
-    _fcd fcdarg
+    _fcd cctk_str1
 #define TWO_FORTSTRINGS_ARGS\
-    _fcd fcd_n, _fcd fcd_w
+    _fcd cctk_str1, _fcd cctk_str2
 #define THREE_FORTSTRINGS_ARGS\
-    _fcd fcd_arg1, _fcd fcd_arg2, _fcd fcd_arg3
-#define ONE_FORTSTRING_CREATE(argn)\
-       int len = _fcdlen(fcdarg); \
-       char *argn    = Util_NullTerminateString(_fcdtocp(fcdarg),len);;
-#define TWO_FORTSTRINGS_CREATE(argn,argw)\
-       int  nl    = _fcdlen(fcd_n);\
-       int  wl    = _fcdlen(fcd_w);\
-       char *argn = Util_NullTerminateString(_fcdtocp(fcd_n),nl);\
-       char *argw = Util_NullTerminateString(_fcdtocp(fcd_w),wl);
-#define THREE_FORTSTRINGS_CREATE(arg1,arg2,arg3)\
-       int  narg1    = _fcdlen(fcd_arg1);\
-       int  narg2    = _fcdlen(fcd_arg2);\
-       int  narg3    = _fcdlen(fcd_arg3);\
-       char *arg1 = Util_NullTerminateString(_fcdtocp(fcd_arg1),narg1);\
-       char *arg2 = Util_NullTerminateString(_fcdtocp(fcd_arg2),narg2);\
-       char *arg3 = Util_NullTerminateString(_fcdtocp(fcd_arg3),narg3);
+    _fcd cctk_str1, _fcd cctk_str2, _fcd cctk_str3
+#define ONE_FORTSTRING_CREATE(arg1)\
+       int cctk_strlen1 = _fcdlen(arg1); \
+       char *arg1 = Util_NullTerminateString(_fcdtocp(cctk_str1),cctk_strlen1);;
+#define TWO_FORTSTRINGS_CREATE(arg1,arg2)\
+       int  cctk_strlen1    = _fcdlen(arg1);\
+       int  cctk_strlen2    = _fcdlen(arg2);\
+       char *arg1 = Util_NullTerminateString(_fcdtocp(cctk_arg1),cctk_strlen1);\
+       char *arg2 = Util_NullTerminateString(_fcdtocp(cctk_arg2),cctk_strlen2);
+#define THREE_FORTSTRINGS_CREATE(cctk_str1,cctk_str2,cctk_str3)\
+       int  cctk_strlen1    = _fcdlen(fcd_arg1);\
+       int  cctk_strlen2    = _fcdlen(fcd_arg2);\
+       int  cctk_strlen3    = _fcdlen(fcd_arg3);\
+       char *arg1 = Util_NullTerminateString(_fcdtocp(cctk_str1),cctk_strlen1);\
+       char *arg2 = Util_NullTerminateString(_fcdtocp(cctk_str2),cctk_strlen2);\
+       char *arg3 = Util_NullTerminateString(_fcdtocp(cctk_str3),cctk_strlen3);
 
 #elif defined WIN32
 
 #define ONE_FORTSTRING_ARG\
-   char *n, unsigned int nl
+   char *n, unsigned int cctk_strlen1
 #define TWO_FORTSTRINGS_ARGS\
-   char *n, int nl, char *w, int wl
+   char *n, int cctk_strlen1, char *w, int cctk_strlen2
 #define THREE_FORTSTRINGS_ARGS\
-   const char *CCTK_str1,\
-   const char *CCTK_str2,\
-   const char *CCTK_str3,\
-   unsigned int CCTK_len1,\
-   unsigned int CCTK_len2,\
-   unsigned int CCTK_len3
-#define ONE_FORTSTRING_CREATE(argn)\
-        char *argn = Util_NullTerminateString(n,nl);
-#define TWO_FORTSTRINGS_CREATE(argn,argw)\
-    char *argn = Util_NullTerminateString(n,nl);\
-    char *argw = Util_NullTerminateString(w,wl);
+   char *cctk_str1,\
+   char *cctk_str2,\
+   char *cctk_str3,\
+   unsigned int cctk_strlen1,\
+   unsigned int cctk_strlen2,\
+   unsigned int cctk_strlen3
+#define ONE_FORTSTRING_CREATE(arg1)\
+        char *arg1 = Util_NullTerminateString(cctk_str1,cctk_strlen1);
+#define TWO_FORTSTRINGS_CREATE(arg1,arg2)\
+    char *arg1 = Util_NullTerminateString(cctk_str1,cctk_strlen1);\
+    char *arg2 = Util_NullTerminateString(cctk_str2,cctk_strlen2);
 #define THREE_FORTSTRINGS_CREATE(arg1,arg2,arg3)\
-   char *arg1 = Util_NullTerminateString(CCTK_str1,CCTK_len1);\
-   char *arg2 = Util_NullTerminateString(CCTK_str2,CCTK_len2);\
-   char *arg3 = Util_NullTerminateString(CCTK_str3,CCTK_len3);
+   char *arg1 = Util_NullTerminateString(cctk_str1,cctk_strlen1);\
+   char *arg2 = Util_NullTerminateString(cctk_str2,cctk_strlen2);\
+   char *arg3 = Util_NullTerminateString(cctk_str3,cctk_strlen3);
 
 #else
 
 #define ONE_FORTSTRING_ARG\
-   const char *CCTK_str1,\
-   unsigned int CCTK_len1
+   char *cctk_str1,\
+   unsigned int cctk_strlen1
 #define TWO_FORTSTRINGS_ARGS\
-   const char *CCTK_str1,\
-   const char *CCTK_str2,\
-   unsigned int CCTK_len1,\
-   unsigned int CCTK_len2
+   char *cctk_str1,\
+   char *cctk_str2,\
+   unsigned int cctk_strlen1,\
+   unsigned int cctk_strlen2
 #define THREE_FORTSTRINGS_ARGS\
-   const char *CCTK_str1,\
-   const char *CCTK_str2,\
-   const char *CCTK_str3,\
-   unsigned int CCTK_len1,\
-   unsigned int CCTK_len2,\
-   unsigned int CCTK_len3
+   char *cctk_str1,\
+   char *cctk_str2,\
+   char *cctk_str3,\
+   unsigned int cctk_strlen1,\
+   unsigned int cctk_strlen2,\
+   unsigned int cctk_strlen3
 #define ONE_FORTSTRING_CREATE(arg1)\
-   char *arg1 = Util_NullTerminateString(CCTK_str1,CCTK_len1);
+   char *arg1 = Util_NullTerminateString(cctk_str1,cctk_strlen1);
 #define TWO_FORTSTRINGS_CREATE(arg1,arg2)\
-   char *arg1 = Util_NullTerminateString(CCTK_str1,CCTK_len1);\
-   char *arg2 = Util_NullTerminateString(CCTK_str2,CCTK_len2);
+   char *arg1 = Util_NullTerminateString(cctk_str1,cctk_strlen1);\
+   char *arg2 = Util_NullTerminateString(cctk_str2,cctk_strlen2);
 #define THREE_FORTSTRINGS_CREATE(arg1,arg2,arg3)\
-   char *arg1 = Util_NullTerminateString(CCTK_str1,CCTK_len1);\
-   char *arg2 = Util_NullTerminateString(CCTK_str2,CCTK_len2);\
-   char *arg3 = Util_NullTerminateString(CCTK_str3,CCTK_len3);
+   char *arg1 = Util_NullTerminateString(cctk_str1,cctk_strlen1);\
+   char *arg2 = Util_NullTerminateString(cctk_str2,cctk_strlen2);\
+   char *arg3 = Util_NullTerminateString(cctk_str3,cctk_strlen3);
 
 #endif
-
-
-
-
-
-
-
