@@ -16,7 +16,7 @@
 #
 #
 #   @enddesc
-#   @version $Id: Makefile,v 1.128 2002-01-28 23:15:02 allen Exp $
+#   @version $Id: Makefile,v 1.129 2002-03-15 13:01:14 tradke Exp $
 # @@*/
 
 ##################################################################################
@@ -904,7 +904,7 @@ UsersGuide:
 	latex  -interaction=nonstopmode UsersGuide.tex > LATEX_MESSAGES 2>&1; \
 	latex  -interaction=nonstopmode UsersGuide.tex > LATEX_MESSAGES 2>&1; \
 	echo "  Running dvips....";                 \
-	dvips ./UsersGuide.dvi -o $(CCTK_HOME)/UsersGuide.ps > DVIPS_MESSAGES 2>&1
+	dvips -f ./UsersGuide.dvi 2> DVIPS_MESSAGES | $(CCTK_HOME)/lib/sbin/FixPageNumbersInPostscript.pl > $(CCTK_HOME)/UsersGuide.ps
 	@echo "  Done."
 	@echo $(DIVIDER)
 
@@ -923,7 +923,7 @@ MaintGuide:
 	latex MaintGuide.tex > LATEX_MESSAGES 2>&1; \
 	latex MaintGuide.tex > LATEX_MESSAGES 2>&1; \
 	echo "  Running dvips....";                 \
-	dvips ./MaintGuide.dvi -o $(CCTK_HOME)/MaintGuide.ps > DVIPS_MESSAGES 2>&1
+	dvips -f ./MaintGuide.dvi 2> DVIPS_MESSAGES | $(CCTK_HOME)/lib/sbin/FixPageNumbersInPostscript.pl > $(CCTK_HOME)/MaintGuide.ps
 	@echo "  Done."
 	@echo $(DIVIDER)
 
@@ -946,7 +946,7 @@ ThornGuide:
 	latex -interaction=nonstopmode ThornGuide.tex > LATEX_MESSAGES 2>&1; \
 	latex -interaction=nonstopmode ThornGuide.tex > LATEX_MESSAGES 2>&1; \
 	echo "  Running dvips....";                                          \
-	dvips ./ThornGuide.dvi -o $(CCTK_HOME)/ThornGuide.ps > DVIPS_MESSAGES 2>&1
+	dvips -f ./ThornGuide.dvi 2> DVIPS_MESSAGES | $(CCTK_HOME)/lib/sbin/FixPageNumbersInPostscript.pl > $(CCTK_HOME)/ThornGuide.ps
 	@echo "  Done."
 	@echo $(DIVIDER)
 
