@@ -273,17 +273,12 @@ else
          : ${F90FLAGS='-align -w95'}
        fi
 
-       # check if the processor is a Pentium4 (ie. supports SSE2 instructions)
-       default_intel_fopt_flags='-O3 -ip'
-       if test "`grep -w flags /proc/cpuinfo 2>&1 | grep -w sse2`"; then
-         default_intel_fopt_flags='-O2 -xN -ip'
-       fi
-       : ${F77_OPTIMISE_FLAGS="$default_intel_fopt_flags"}
-       : ${F90_OPTIMISE_FLAGS="$default_intel_fopt_flags"}
+       : ${F77_OPTIMISE_FLAGS='-O2 -ip'}
+       : ${F90_OPTIMISE_FLAGS='-O2 -ip'}
 
        # add the necessary libraries according to the compiler version
        if test "`$F90 -V 2>&1 | grep Version | sed 's/.*Version //' | sed 's/\..*//'`" -ge 8; then
-         : ${LIBS='ifcore imf svml m cxa cprts cxa irc unwind'}
+         : ${LIBS='ifcore dl imf m cxa cprts cxa irc unwind'}
        else
          : ${LIBS='intrins IEPCF90 F90 imf m irc cxa cprts cxa'}
        fi
@@ -329,7 +324,11 @@ else
       else
         : ${CFLAGS='-restrict'}
       fi
-      : ${C_OPTIMISE_FLAGS='-O3 -ip'}
+      if test "$host_cpu" = 'ia64'; then
+        : ${C_OPTIMISE_FLAGS='-O2 -ip'}
+      else
+        : ${C_OPTIMISE_FLAGS='-O3 -ip'}
+      fi
       : ${C_DEPEND='$(CC) -M $(CPPFLAGS)'}
       : ${C_WARN_FLAGS='-w2'}
       ;;
@@ -355,7 +354,11 @@ else
       else
         : ${CXXFLAGS='-restrict'}
       fi
-      : ${CXX_OPTIMISE_FLAGS='-O3 -ip'}
+      if test "$host_cpu" = 'ia64'; then
+        : ${CXX_OPTIMISE_FLAGS='-O2 -ip'}
+      else
+        : ${CXX_OPTIMISE_FLAGS='-O3 -ip'}
+      fi
       : ${CXX_DEPEND='$(CXX) -M $(CPPFLAGS)'}
       ;;
     sgiCC)
