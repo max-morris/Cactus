@@ -681,8 +681,8 @@ sub ScheduleSelectGroups
       {
         $mess = "Schedule error: Thorn $thorn - group $group doesn't exist.";
         $help = "Check $group really is in thorn $thorn. Groups from other thorns ";
-        $help .= "need to be specified using $implementation\:\:$group and ";
-        $help .= "$implementation must be inheritied by your thorn.";
+        $help .= "need to be specified using <implementation>\:\:$group and ";
+        $help .= "<implementation> must be inherited by your thorn.";
         &CST_error(0,$mess,$help,__LINE__,__FILE__);
 
       }
