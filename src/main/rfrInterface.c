@@ -69,7 +69,7 @@ void rfrTraverse(void *rfr_top, void *data, int when)
     SCHEDULE(TERMINATE);
     SCHEDULE(CONVERGENCE);
     default :
-      CCTK_WARN(0, "Unknown scheduling point"); 
+      CCTK_Warn(0,__LINE__,__FILE__,"Cactus","Unknown scheduling point"); 
   }
 
   return;

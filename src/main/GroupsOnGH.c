@@ -76,7 +76,7 @@ void *CCTK_VarDataPtr(cGH *GH, int timelevel, char *fullvarname)
      retval = GH->data[index][timelevel];
   }
   else
-     CCTK_WARN(1,"Invalid index in CCTK_VarDataPtr");
+     CCTK_Warn(1,__LINE__,__FILE__,"Cactus","Invalid index in CCTK_VarDataPtr");
 
 #ifdef DEBUG_GROUPS
   CCTK_PRINTSEPARATOR
@@ -133,7 +133,8 @@ void *CCTK_VarDataPtr(cGH *GH, int timelevel, char *fullvarname)
 void *CCTK_VarDataPtrI(cGH *GH, int timelevel, int varindex)
 { 
   if (varindex < 0) 
-    CCTK_WARN(1,"WARNING: calling CCTK_VarDataPtrI with negative index! Prob. Fatal");
+    CCTK_Warn(1,__LINE__,__FILE__,"Cactus",
+	      "WARNING: calling CCTK_VarDataPtrI with negative index");
   return GH->data[varindex][timelevel];
 }
 

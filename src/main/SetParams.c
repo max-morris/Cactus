@@ -10,16 +10,16 @@
 #include <stdio.h>
 #include <malloc.h>
 
-#include "cctk.h"
-
 /* FIXME - remove this when ActiveThorns doesn't need it */
 #include "SKBinTree.h"
 
+#include "cctk_Types.h"
 #include "cctk_ActiveThorns.h"
-#include "ParameterBindings.h"
-
 #include "cctk_WarnLevel.h"
 #include "cctk_Misc.h"
+
+#include "ParameterBindings.h"
+
 
 int CCTKi_ReallySetParameter(const char *parameter, const char *value);
 int ParameterSet(const char *name,
@@ -78,7 +78,8 @@ int CCTKi_SetParameter(const char *parameter, const char *value)
     
     if(n_errors)
     {
-      CCTK_WARN(0, "Errors while activating thorns\n");
+      CCTK_Warn(0,__LINE__,__FILE__,"Cactus",
+		"Errors while activating thorns\n");
     }
   }
   else
