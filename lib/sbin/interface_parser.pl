@@ -571,13 +571,13 @@ sub parse_interface_ccl
     {
       $block = "\U$1\E";
     }
-    elsif ($line =~ m/^\s*(?:CCTK_)?(INT|INT2|INT4|INT8|REAL|REAL4|REAL8|REAL16|CHAR|COMPLEX)\s*([a-zA-Z]+[a-zA-Z_0-9]*)\s*(.*)\s*$/i)
+    elsif ($line =~ m/^\s*(CCTK_)?(INT|INT2|INT4|INT8|REAL|REAL4|REAL8|REAL16|CHAR|COMPLEX)\s*([a-zA-Z]+[a-zA-Z_0-9]*)\s*(.*)\s*$/i)
     {
-      $current_group = "$2";
+      $current_group = "$3";
       
       if($known_groups{"\U$current_group\E"})
       {
-	$message = "Duplicate group $2 in thorn $thorn";
+	$message = "Duplicate group $3 in thorn $thorn";
 	&CST_error(0,$message,__LINE__,__FILE__);
 	if($data[line_number+1] =~ m:\{:)
 	{
@@ -595,9 +595,9 @@ sub parse_interface_ccl
 	$interface_db{"\U$thorn GROUP $current_group\E"} = "";
       }
       
-      $interface_db{"\U$thorn $block GROUPS\E"} .= " $2";
-      $interface_db{"\U$thorn GROUP $current_group\E VTYPE"} = "\U$1\E";
-      %options = split(/\s*=\s*|\s+/, $3);
+      $interface_db{"\U$thorn $block GROUPS\E"} .= " $3";
+      $interface_db{"\U$thorn GROUP $current_group\E VTYPE"} = "\U$2\E";
+      %options = split(/\s*=\s*|\s+/, $4);
       
       # Parse the options
       foreach $option (keys %options)
