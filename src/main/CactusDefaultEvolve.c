@@ -210,14 +210,19 @@ int CactusDefaultEvolve(tFleshConfig *config)
    @endhistory
 
 @@*/
-static int DoneMainLoop (cGH *GH, CCTK_REAL cctk_time, int iteration)
+static int DoneMainLoop (cGH *GH, CCTK_REAL time, int iteration)
 {
   int param_type;
   CCTK_INT  cctk_itlast;
   CCTK_REAL cctk_initial_time;
   CCTK_REAL cctk_final_time;
   CCTK_INT  terminate_next;
+  char *terminate;
+  int retval;
+  int con;
 
+  terminate         = CCTK_ParameterGet("terminate",
+						       "Cactus",&param_type);
   cctk_initial_time = (*(CCTK_REAL *)CCTK_ParameterGet("cctk_initial_time",
 						       "Cactus",&param_type));
   cctk_final_time   = (*(CCTK_REAL *)CCTK_ParameterGet("cctk_final_time",
@@ -227,10 +232,61 @@ static int DoneMainLoop (cGH *GH, CCTK_REAL cctk_time, int iteration)
   terminate_next    = (*(CCTK_INT *)CCTK_ParameterGet("terminate_next",
 						      "Cactus",&param_type));
 
-  return (terminate_next || CCTK_TerminationReached(GH) || 
-	  ! ( iteration < cctk_itlast ||
-	     (cctk_final_time > cctk_initial_time ?
-	      cctk_time < cctk_final_time : 0)));
+  if (terminate_next || CCTK_TerminationReached(GH))
+  {
+    retval = 1;
+  }
+  else
+  {
+    if (CCTK_Equals(terminate,"never"))
+    {
+      retval = 0;
+    }
+    else if (CCTK_Equals(terminate,"iteration"))
+    {
+      retval = iteration < cctk_itlast ? 0 : 1;
+    }
+    else if (CCTK_Equals(terminate,"time"))
+    {
+      if (cctk_initial_time < cctk_final_time)
+      {
+	retval = (time  >= cctk_final_time) ? 1 : 0;
+      }
+      else
+      {
+	retval = (time <= cctk_final_time) ? 1 : 0;
+      }
+    }
+    else if (CCTK_Equals(terminate,"either"))
+    {
+      if (cctk_initial_time < cctk_final_time)
+      {
+	con = (time  >= cctk_final_time) ? 1 : 0;
+      }
+      else
+      {
+	con = (time <= cctk_final_time) ? 1 : 0;
+      }
+      
+      retval = (!con && iteration < cctk_itlast) ? 0 : 1;
+    }
+    else if (CCTK_Equals(terminate,"both"))
+    {
+      if (cctk_initial_time < cctk_final_time)
+      {
+	con = (time  >= cctk_final_time) ? 1 : 0;
+      }
+      else
+      {
+	con = (time <= cctk_final_time) ? 1 : 0;
+      }
+
+      retval = (!con || iteration < cctk_itlast) ? 0 : 1;
+    }
+  }
+      
+  return retval;
+
 }
 
 

@@ -59,6 +59,15 @@ BOOLEAN terminate_next "Terminate on next iteration?" STEERABLE=ALWAYS
 {
 } "no"
 
+KEYWORD terminate "Condition on which to terminate evolution loop" STEERABLE=ALWAYS
+{
+  "never" :: "Never terminate"
+  "iteration" :: "Take termination condition from iteration number"
+  "time" :: "Take termination condition from coordinate time"
+  "either" :: "Take termination condition from either iteration number or coordinate time"
+  "both" :: "Take termination condition from both iteration number and coordinate time"
+} "iteration"
+
 REAL cctk_initial_time "Initial time for evolution"
 {
  : :: "Anything"
