@@ -37,7 +37,7 @@ static char *rcsid = "$Header$";
 @@*/
 void *CCTK_GetVarDataPtr_ByName(cGH *GH, char *fullvarname, int timelevel)
 {
-  return (GH->data[CCTK_VarIndex(fullvarname)][timelevel]);
+  return (GH->data[CCTK_GetVarNum(NULL,NULL,fullvarname)][timelevel]);
 }
 
  /*@@
