@@ -399,22 +399,22 @@ For example
 
 REAL Coeff "Important coefficient"
 {
-0:3.14 :: ``Range has to be from zero to Pi, default is zero''
+0:3.14 :: "Range has to be from zero to Pi, default is zero"
 } 0.0
 
 #No need to define a range for LOGICAL
-LOGICAL nice ``Nice weather ?''
+LOGICAL nice "Nice weather ?"
 {
-}``yes''
+}"yes"
 
 # A example for a set of keywords and its default (which has to be
 # defined in the body)
-KEYWORD confused "Are we getting confused ?''
+KEYWORD confused "Are we getting confused ?"
 {
-  "yes''    :: ``absolutley positively''
-  "perhaps" :: "we are not sure''
-  "never"   :: "never''
-} "never''
+  "yes"    :: "absolutley positively"
+  "perhaps" :: "we are not sure"
+  "never"   :: "never"
+} "never"
 \end{verbatim}
 
 defines a REAL parameter, a LOGICAL parameter, and a KEYWORD.
@@ -448,66 +448,30 @@ KEYWORD initial_data ""
 
 \end{verbatim}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \subsection{The {\tt schedule.ccl}}
-The {\tt schedule.ccl} is used to register the routines of your thorn
-with the CCTK and defines the storage characteristics of a group. 
 
-We will first describe the storage concepts. There is no good reason
-to keep memory allocated for variables which are only used
-intermittendly in the course of the simulation, eg. during output or
-analysis, or are not used at all depending on parameter settings. The
-CCTK allows for a flexible memory allocation:  
-\begin{enumerate}
-\item{} Variable memory can be turned on at all times, for example by
+By default no routine of a thorn will be run.  The schedule.ccl file
+defines those that should be run and when they should be run.
+
+The specification of this is via a schudule block which consists of
+a line of the form
+
 \begin{verbatim}
-STORAGE: metric
-\end{varbatim}, which would turn on storage for the group we defined
-in the example above. 
-\item{}All-time memory can turned on depending on parameter
-settings. This can be done in the same way, the parameters are acessed 
-within a C or Fortran code: by explicit use of the parameter variables 
-in the case of integer/real/logical (see \ref{????}) or
-by use of the {\tt CCTK\_Equals()} function (see
-\ref{????}). For example:
-\begin{verbatim}
-# reserve memory for the group ``shift'' if parameter 
-# shift NOT set to ``none'' 
-if (!CCTK_Equals(shift,"none"))
+
+schedule <name> at <time bin> [other options] 
 {
-  STORAGE: shift 
-}
+  LANG:     <FORTRAN|C>
+  STORAGE:  [group list]
+  COMM:     [group list]
+  TRIGGERS: [group or variable list]
+} "A description"
 
-# allocate memory for the groups ``confac'',...
-# if the LOGICAL parameter ``use_conformal'' was set to ``yes''
-if (use_conformal) {
-  STORAGE: confac,confac_1derivs,confac_2derivs
-}
 \end{verbatim}
-\item{} The third options lets you associate the memory allocation
-with a routine call: storage is allocated when the routine is called
-by the CCTK. This options is explained in connection with the {\em
-RFR} below.
-\item{} A modification of \#3 is the options to have storage enabled,
-when a certain variable is computed for output.  This options is
-explained in connection with the {\em RFR} below.
-\end{enumerate}
 
-
-The {\em runtime function registry (RFR)} registers the different routines a 
-a thorn provides with the CCTK depending on the timing keyword
-chosen. You can assign timing keywords to your routines out of a 
-set of ordered keywords and register your routine with the
-CCTK. During the evolution the CCTK will loop through this ordered
-set of keywords and execute the registered thorn routines. This way,
-you can hook your thorns at well defined locations into the main
-iteration loop without having 
-to modify anybody's code. The CCTK currently features a fixed {\em
-skeleton} of timing keywords, which mean that you cannot currently
-register relative to a different thorn.
-
-The current order of timing keywords is:
-
-{\q Check order, let's review this }
+where <name> is the name of the routine, and <time bin> is one of
 
 \begin{itemize}
 
@@ -551,58 +515,36 @@ Called when cactus teminates.
 Convergence stuff.
 
 \end{itemize}
-{\q are going to name them CCTK ? Are we going to make a difference
-between system keywords and user keywords  ? better yes}
 
-The scheduling together with the storage options in {\tt schedule.ccl}
-is described here in examples (please the ccl-syntax
-\ref{sec:sc} for all possible options).
+The STORAGE and COMM keywords specify any groups which must have memory 
+allocated for them or communication enabled for the duration of that routine.
+The storage or communication status reverts to its previous status after the 
+routine returns.
+
+TRIGGERS is used when the routine is registered at ANALYSIS --- this is a 
+special time bin, a routine registered here will only be called if one of
+the variables mentioned in TRIGGERS is due for output.
+
+The `other options' allow finer grained control of the scheduling.  It is
+possible to state that the routine must run BEFORE or AFTER another routine.
+
+As well as schedule blocks it's possible to embed C code in the schedule.ccl.
+This can be used to schedule things based upon the value of a parameter.
+
+E.g.
+
 \begin{verbatim}
 
-schedule initial at CACTUS_INITIAL
+if(evolve_hydro)
 {
-  LANG: Fortran
-} "Initialisation for Einstein methods"
-
-
-schedule metric_carttosphere at CACTUS_ANALYSIS
-{
-  STORAGE: spherical_metric
-  LANG: Fortran
-} "Calculate the spherical metric in r,theta(q), phi(p)"
-
-schedule evaltrK at CACTUS_ANALYSIS
-{
-  STORAGE: trace_of_K,detofg
-  LANG: Fortran
-  TRIGGERS: trK,detg
-} "Compute the trace of the extrinsic curvature"
-
+  SCHEDULE hydro_predictor AT evolve AFTER metric_predictor BEFORE metric_corrector 
+  {
+    LANG:     FORTRAN
+    STORAGE:  hydro_variables
+    COMM:     hydro_variables
+  } "Do a predictor step on the hydro variables"
+}
 \end{verbatim}
-In the first example, the initialization routine {\tt initial}  is
-schedules at instance {\tt CACTUS\_INITIAL}. The body of the 
-declaration specifies the language used for this routine: options are
-{\tt C} or {\tt FORTRAN}. This routines has no impact 
-on storage behavior.
-
-The second example registers the routine {\tt metric\_carttosphere} is
-scheduled at {\tt CACTUS\_ANALYSIS}. (This routine converts the
-cartesian metric to a spherical metric). The routine requests storage
-when it is executed by the RFR. Memory is freed after the calculation.
-
-The third example demonstrates yet another way qualifying execution
-behavior: while CACTUS\_ANALYSIS registered routines are called on
-every iteration, you wish to calculate certain variables only when
-they are output. And this may not be needed on every iteration. By
-placing the {\tt TRIGGER} keyword in the schedule-declaration, you
-only excute this routine at CACTUS\_ANALYSIS, if there will be actually 
-output: that is, when the current iteration number matches the
-parameters {\tt itout1}, ...
-{\bf in EINSTEIN: TRIGGERS: trK,detg. Why don't we use the actual GF
-names ? }
-
-
-{\bf FIXME: talk about before/after. }
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -634,11 +576,12 @@ Extension & Coding Language \\
 The following restrictions apply to file names:
 \begin{itemize}
 \item Rootnames within each directory must be unique. For example, it is not possible 
-      to have the files {\tt InitialData.c} and {\tt InitialData.F} in the same directory. 
+      to have the files {\tt InitialData.c} and {\tt InitialData.F} in the same directory.
+\item Currently all files within a thorn must have distinct names.  We hope
+to relax this in future.  Different thorns can have files with the same names. 
 \end{itemize}
 
 \section{Adding source files}
-
 
 By default the CCTK looks in the {\tt src} directory of the thorn for source
 files.
@@ -699,59 +642,58 @@ files should end up if they need to be seen by other thorns.
 
 \end{itemize}
 
-and has a working directory of of <config>/build/<thorn\_name> .
+and has a working directory of <config>/build/<thorn\_name> .
+
+\subsection{Other makefile variables}
+
+\begin{itemize}
+\item CC
+\item CXX
+\item F90
+\item F77
+\item CFLAGS
+\item CXXFLAGS
+\item F90FLAGS
+\item F77FLAGS
+\item LD
+\item \ldots FIXME
+\end{itemize}
+
 
 \chapter{Putting code into your thorn}
 
 \section{What the Flesh provides}
 
-Header files, macros ...
+The flesh provides various things to thorns.
+\begin{itemize}
+\item {\tt Variables}
+\item {\tt Parameters}
+\item {\tt IO functions}
+\item {\tt Information functions}
+\item {\tt Reduction}
+\item {\tt Interpolation}
+\end{itemize}
 
-\subsection{Reduction Operators}
-\label{sec:reop}
+\subsection{Variables}
 
-Reduction operators are operators which process grid functions
-and return, either on just one processor or on each processor,
-a 1-Dimensional array of scalars. Examples of reduction operators
-could include simple operations such as the maximum value of a 
-grid function across the grid, or complex operations such as
-{\bf FIXME: Think of a good example, Gab}.
+\begin{itemize}
+\item {\tt Headers}
+\item {\tt Core things from the GH }
+\item {\tt Grid variables}
+\end{itemize}
 
-The flesh itself does not provide any reduction operators,
-instead providing a mechanism for thorns to register their
-own routines as reduction operators, labelled by a given name.
-For details of writing reduction operators see ????. Application
-thorns can interact with the different registered reduction 
-operators through the following function calls:
+\subsection{Parameters}
 
-{\t
-\begin{verbatim}
+All parameters defined in a thorn's {\tt param.ccl} and all {\tt global} 
+parameters appear as local variables in a thorn.  These variables are 
+{\tt read only} and changes should not be made to them.  The effect of
+changing a parameter is undefined.
 
-#include ``Reduction.h''
-int CCTK_GetReductionHandle(const char *reduction);
-
-\end{verbatim}
-}
-\vskip .25cm
-
-Get a integer handle corresponding to a given reduction operator. 
-(Note that although it would appear to be far more convenient to 
-pass the name of the reduction operator directly to the following
-function call to {\t CCTK\_Reduce} this causes problems with the
-translation of strings from {\t FORTRAN} to {\t C} with variable
-argument lists).
-
-{\t
-\begin{verbatim}
-
-#include ``Reduction.h''
-int CCTK_Reduce(cGH *GH, int retvaltype, int retvalnum, void *retval, int handle, int index, ...);
-
-\end{verbatim}
-}
-\vskip .25cm
-Note that the memory for {\t retval} must be assigned before the reduction
-call is made.
+\begin{itemize}
+\item {\tt Headers}
+\item {\tt Appearence of parameters}
+\item {\tt String valued parameters}
+\end{itemize}
 
 \subsection{IO}
 \label{sec:io}
@@ -865,10 +807,54 @@ The output should take place if at all possible,
 if the appropriate file exists the data is appended, otherwise a new
 file is created.
 
+\subsection{Reduction Operators}
+\label{sec:reop}
 
+Reduction operators are operators which process grid functions
+and return, either on just one processor or on each processor,
+a 1-Dimensional array of scalars. Examples of reduction operators
+could include simple operations such as the maximum value of a 
+grid function across the grid, or complex operations such as
+{\bf FIXME: Think of a good example, Gab}.
 
-\section{Argument lists and parameters}
-\label{sec:arlianpa}
+The flesh itself does not provide any reduction operators,
+instead providing a mechanism for thorns to register their
+own routines as reduction operators, labelled by a given name.
+For details of writing reduction operators see ????. Application
+thorns can interact with the different registered reduction 
+operators through the following function calls:
+
+{\t
+\begin{verbatim}
+
+#include ``Reduction.h''
+int CCTK_GetReductionHandle(const char *reduction);
+
+\end{verbatim}
+}
+\vskip .25cm
+
+Get a integer handle corresponding to a given reduction operator. 
+(Note that although it would appear to be far more convenient to 
+pass the name of the reduction operator directly to the following
+function call to {\t CCTK\_Reduce} this causes problems with the
+translation of strings from {\t FORTRAN} to {\t C} with variable
+argument lists).
+
+{\t
+\begin{verbatim}
+
+#include ``Reduction.h''
+int CCTK_Reduce(cGH *GH, int retvaltype, int retvalnum, void *retval, int handle, int index, ...);
+
+\end{verbatim}
+}
+\vskip .25cm
+Note that the memory for {\t retval} must be assigned before the reduction
+call is made.
+
+\subsection{Interpolation}
+
 
 \section{A First Example (Baloney)}
 
@@ -914,7 +900,7 @@ To call a utility Fortran routine from C use
 
 {\tt
 
-void FORTRAN\_NAME(<Fortran routine name>)(<argument list>)
+void FMODIFIER FORTRAN\_NAME(<Fortran routine name>)(<argument list>)
 }
 
 \section{Programming Style Guidelines and Recommendations}
