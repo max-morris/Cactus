@@ -12,11 +12,9 @@
 #include <string.h>
 #include <ctype.h>
 
-#include "cctk.h"
 #include "cctk_Groups.h"
 #include "cctk_Types.h"
 #include "cctk_FortranString.h"
-#include "cctk_ParameterFunctions.h"
 #include "cctk_WarnLevel.h"
 
 static int staggered = 0;
@@ -291,11 +289,11 @@ int CCTKi_ParseStaggerString(int dim,
   char hs[7]="MMMMMM", *info;
 
   /* change possible SHORTCUTS into the official notation, allow for dim=6 */
-  if (CCTK_EQUALS(stype,"NONE"))
+  if (CCTK_Equals(stype,"NONE"))
   {
     strncpy(hs,"MMMMMM",dim);
   }
-  else if (CCTK_EQUALS(stype,"CELL")==0) 
+  else if (CCTK_Equals(stype,"CELL")==0) 
   {
     strncpy(hs,"CCCCCC",dim);
   }
