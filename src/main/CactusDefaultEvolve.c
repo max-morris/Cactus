@@ -60,7 +60,7 @@ static int cactus_terminate_global = 0;
  ********************* Local Routine Prototypes *********************
  ********************************************************************/
 
-static int DoneMainLoop (CCTK_REAL cctk_time, int iteration);
+static int DoneMainLoop (cGH *GH, CCTK_REAL cctk_time, int iteration);
 static int StepGH(cGH *GH);
 int CactusDefaultEvolve(tFleshConfig *config);
 void TerminationStepper(cGH *GH) ;
@@ -127,7 +127,7 @@ int CactusDefaultEvolve(tFleshConfig *config)
   */
 
 
-  while (! DoneMainLoop (config->GH[0]->cctk_time, iteration))
+  while (! DoneMainLoop (config->GH[0],config->GH[0]->cctk_time, iteration))
   {
 
 #ifdef DEBUG_CCTK
@@ -211,12 +211,13 @@ int CactusDefaultEvolve(tFleshConfig *config)
    @endhistory
 
 @@*/
-static int DoneMainLoop (CCTK_REAL cctk_time, int iteration)
+static int DoneMainLoop (cGH *GH, CCTK_REAL cctk_time, int iteration)
 {
   int param_type;
   CCTK_INT  cctk_itlast;
   CCTK_REAL cctk_initial_time;
   CCTK_REAL cctk_final_time;
+  CCTK_INT  terminate_next;
 
   cctk_initial_time = (*(CCTK_REAL *)CCTK_ParameterGet("cctk_initial_time",
 						       "Cactus",&param_type));
@@ -224,10 +225,13 @@ static int DoneMainLoop (CCTK_REAL cctk_time, int iteration)
 						       "Cactus",&param_type));
   cctk_itlast       = (*(CCTK_INT *)CCTK_ParameterGet("cctk_itlast",
 						      "Cactus",&param_type));
+  terminate_next    = (*(CCTK_INT *)CCTK_ParameterGet("terminate_next",
+						      "Cactus",&param_type));
 
-  return (! (iteration < cctk_itlast ||
-            (cctk_final_time > cctk_initial_time ?
-             cctk_time < cctk_final_time : 0)));
+  return (terminate_next || CCTK_TerminationReached(GH) || 
+	  ! ( iteration < cctk_itlast ||
+	     (cctk_final_time > cctk_initial_time ?
+	      cctk_time < cctk_final_time : 0)));
 }
 
 
