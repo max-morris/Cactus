@@ -108,7 +108,7 @@ void *CCTK_ParameterGet (const char *name,    /* The name of the parameter  */
 
 /* get the string representation of a parameter's value
    (string should be freed afterwards) */
-char *ParameterValString (const char *name,   /* The name of the parameter  */
+char *CCTK_ParameterValString (const char *name,   /* The name of the parameter  */
                           const char *thorn); /* The originating thorn      */
 
 /* walk through list of parameters */
