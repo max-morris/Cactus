@@ -1,20 +1,28 @@
-#define CCTK_DEBUG_DEBUG
+/*#define CCTK_DEBUG_DEBUG*/
 
 #if defined(CCTK_DEBUG_DEBUG)
 
 #include <stdlib.h>
 
+#ifdef malloc
 #undef malloc
-#define malloc(x) CCTKi_Malloc(x,__LINE__,__FILE__)
+#endif
+#define malloc(x) CCTKi_Malloc((x),__LINE__,__FILE__)
 
+#ifdef free
 #undef free
-#define free(x) CCTKi_Free(x,__LINE__,__FILE__)
+#endif
+#define free(x) CCTKi_Free((x),__LINE__,__FILE__)
 
+#ifdef calloc
 #undef calloc
-#define calloc(x,y) CCTKi_Calloc(x, y,__LINE__,__FILE__) 
+#endif
+#define calloc(x,y) CCTKi_Calloc((x), (y),__LINE__,__FILE__) 
 
+#ifdef realloc
 #undef realloc
-#define realloc(x,y) CCTKi_Realloc(x, y,__LINE__,__FILE__)
+#endif
+#define realloc(x,y) CCTKi_Realloc((x), (y),__LINE__,__FILE__)
 
 void *CCTKi_Malloc(size_t size, int line, const char *file);
 void  CCTKi_Free(void *pointer, int line, const char *file);
