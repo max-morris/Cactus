@@ -107,7 +107,7 @@ sub parse_schedule_ccl
       $buffer .= "\@BLOCK\@$n_blocks\n";
       $n_blocks++;
     }
-    elsif($data[$line_number] =~ m/^\s*(STORAGE|COMM(UNICATION)):\s*/i)
+    elsif($data[$line_number] =~ m/^\s*(STOR|COMM)[^:]*:\s*/i)
     {
       ($line_number, $type, $groups) = &ParseScheduleStatement($line_number, @data);
       $schedule_db{"\U$thorn\E STATEMENT_$n_statements TYPE"}        = $type;
@@ -345,19 +345,19 @@ sub ParseScheduleBlock
     while($data[$line_number] !~ m:\s*\}\s*:)
     {
       $line_number++;
-      if($data[$line_number] =~ m/^\s*STORAGE\s*:\s*(.*)$/i)
+      if($data[$line_number] =~ m/^\s*STOR[^:]*:\s*(.*)$/i)
       {
 	push(@mem_groups, split(/\s,/, $1));
       }
-      elsif($data[$line_number] =~ m/^\s*COMM(UNICATION)?\s*:\s*(.*)$/i)
+      elsif($data[$line_number] =~ m/^\s*COMM[^:]*:(.*)$/i)
       {
-	push(@comm_groups, split(/\s,/, $2));
+	push(@comm_groups, split(/\s,/, $1));
       }
-      elsif($data[$line_number] =~ m/^\s*TRIGGER(S)?\s*:\s*(.*)$/i)
+      elsif($data[$line_number] =~ m/^\s*TRIG[^:]*\s*:\s*(.*)$/i)
       {
-	push(@trigger_groups, split(/\s,/, $2));
+	push(@trigger_groups, split(/\s,/, $1));
       }
-      elsif($data[$line_number] =~ m/^\s*LANG(UAGE)?\s*:\s*(.*)$/i)
+      elsif($data[$line_number] =~ m/^\s*LANG[^:]*:\s*(.*)$/i)
       {
 	if($language ne "")
 	{
@@ -366,7 +366,7 @@ sub ParseScheduleBlock
 	}
 	else
 	{
-	  $language= $2; 
+	  $language= $1; 
 	}
       }
       elsif($data[$line_number] =~ m:\s*\}\s*:)
@@ -426,10 +426,18 @@ sub ParseScheduleStatement
   local($line_number, @data) = @_;
   local($type, $groups);
 
-  $data[$line_number] =~ m/^\s*(STORAGE|COMM(UNICATION)):\s*([\w\s\,]*)/i;
+  $data[$line_number] =~ m/^\s*(STOR|COMM)[^:]*:\s*([\w\s\,]*)/i;
+  if ($1 =~ /STOR/)
+  {
+    $statement_type = STORAGE;
+  }
+  elsif ($1 =~ /COMM/)
+  {
+    $statement_type = COMMUNICATION;
+  }
 
-  $type = "\U$1\E";
-  $groups = $3;
+  $type = "\U$statement_type\E";
+  $groups = $2;
   
   return ($line_number, $type, $groups);
 }
