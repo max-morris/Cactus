@@ -142,10 +142,24 @@ void CCTK_FCALL CCTK_FNAME(CCTK_EnableGroupComm)(int *ierr, cGH *GH, ONE_FORTSTR
   free(group_name);
 }
 
+void CCTK_FCALL CCTK_FNAME(CCTK_DisableGroupComm)(int *ierr, cGH *GH, ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE(group_name)
+  *ierr = CCTK_DisableGroupComm(GH, group_name); 
+  free(group_name);
+}
+
 void CCTK_FCALL CCTK_FNAME(CCTK_EnableGroupStorage)(int *ierr, cGH *GH, ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_CREATE(group_name)
   *ierr = CCTK_EnableGroupStorage(GH, group_name);
+  free(group_name);
+}
+
+void CCTK_FCALL CCTK_FNAME(CCTK_DisableGroupStorage)(int *ierr, cGH *GH, ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE(group_name)
+  *ierr = CCTK_DisableGroupStorage(GH, group_name);
   free(group_name);
 }
 
