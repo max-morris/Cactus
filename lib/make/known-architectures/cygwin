@@ -1,0 +1,30 @@
+#! /bin/sh
+# /*@@
+#   @file      cygwin
+#   @date      Thu Jun 24 22:56:51 1999
+#   @author    Tom Goodale
+#   @desc 
+#   First stab at a know architecture file for cygwin from
+#   examination of Joan's changes.
+#   @enddesc 
+#   @version $Header$
+# @@*/
+
+
+echo Setting compiler to cl
+CC="cl"
+
+CFLAGS="/nologo /Oxy- /Gz"
+CXXFLAGS="/nologo /Oxy- /Gz"
+
+F90FLAGS="/fast"
+
+CCOMPILEONLY="/c /Fo"
+FCOMPILEONLY="/compile_only /object:"
+
+CREATEEXE="-exe:"
+
+SYS_INC_DIRS="\"/Archivos de programa/Microsoft Visual Studio/VC98/INCLUDE/\""
+
+DIRSEP="\\"
+
