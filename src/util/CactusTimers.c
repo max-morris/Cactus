@@ -310,7 +310,7 @@ int CCTK_TimerDestroy(const char *name)
   else
   {
     CCTK_VWarn(8,__LINE__,__FILE__,"Cactus",
-	           "CCTK_TimerDestroy: Timer %s not found",name);
+                   "CCTK_TimerDestroy: Timer %s not found",name);
     retval = -1;
   }
   return retval;
@@ -348,7 +348,7 @@ int CCTK_TimerDestroyI(int this_timer)
   else
   {
     CCTK_VWarn(8,__LINE__,__FILE__,"Cactus",
-	       "CCTK_TimerDestroyI: Timer %d not found",this_timer);
+               "CCTK_TimerDestroyI: Timer %d not found",this_timer);
     retval = -1;
   }
   return retval;
@@ -422,7 +422,7 @@ int CCTK_TimerStart(const char *name)
   else
   {
     CCTK_VWarn(8,__LINE__,__FILE__,"Cactus",
-	       "CCTK_TimerStart: Timer %s not found",name);
+               "CCTK_TimerStart: Timer %s not found",name);
     retval = -1;
   }
   return retval;
@@ -447,7 +447,7 @@ int CCTK_TimerStartI(int this_timer)
   else
   {
     CCTK_VWarn(8,__LINE__,__FILE__,"Cactus",
-	       "CCTK_TimerStartI: Timer %d not found",this_timer);
+               "CCTK_TimerStartI: Timer %d not found",this_timer);
     retval = -1;
   }
   return retval;
@@ -503,7 +503,7 @@ int CCTK_TimerStop(const char *name)
   else
   {
     CCTK_VWarn(8,__LINE__,__FILE__,"Cactus",
-	       "CCTK_TimerStop: Timer %s not found",name);
+               "CCTK_TimerStop: Timer %s not found",name);
     retval = -1;
   }
   return retval;
@@ -527,7 +527,7 @@ int CCTK_TimerStopI(int this_timer)
   else
   {
     CCTK_VWarn(8,__LINE__,__FILE__,"Cactus",
-	       "CCTK_TimerStopI: Timer %d not found",this_timer);
+               "CCTK_TimerStopI: Timer %d not found",this_timer);
     retval = -1;
   }
   return retval;
@@ -583,7 +583,7 @@ int CCTK_TimerReset(const char *name)
   else
   {
     CCTK_VWarn(8,__LINE__,__FILE__,"Cactus",
-	       "CCTK_TimerReset: Timer %s not found",name);
+               "CCTK_TimerReset: Timer %s not found",name);
     retval = -1;
   }
   return retval;
@@ -607,7 +607,7 @@ int CCTK_TimerResetI(int this_timer)
   else
   {
     CCTK_VWarn(8,__LINE__,__FILE__,"Cactus",
-	       "CCTK_TimerResetI: Timer %d not found",this_timer);
+               "CCTK_TimerResetI: Timer %d not found",this_timer);
     retval = -1;
   }
   return retval;
@@ -757,30 +757,31 @@ int CCTK_DisplayTimerDataI(int this_timer) {
     for (i = 0; i < info->n_vals; i++) {
       switch (info->vals[i].type) {
       case val_int:
-	printf("\t%s: %d %s\n", info->vals[i].heading,info->vals[i].val.i, 
-	       info->vals[i].units);
-	break;
-	
+        printf("\t%s: %d %s\n", info->vals[i].heading,info->vals[i].val.i, 
+               info->vals[i].units);
+        break;
+        
       case val_long:
-	printf("\t%s: %d %s\n", info->vals[i].heading,(int) info->vals[i].val.l, 
-	       info->vals[i].units);
-	break;
-	
+        printf("\t%s: %d %s\n", info->vals[i].heading,(int) info->vals[i].val.l, 
+               info->vals[i].units);
+        break;
+        
       case val_double:
-	printf("\t%s: %.3f %s\n", info->vals[i].heading,info->vals[i].val.d, 
-	       info->vals[i].units);
-	break;
-	
+        printf("\t%s: %.3f %s\n", info->vals[i].heading,info->vals[i].val.d, 
+               info->vals[i].units);
+        break;
+        
       default:
-	CCTK_WARN(1, "\tUnknown data type for timer info");
-	break;
+        CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
+               "CCTK_DisplayTimerDataI: Unknown data type for timer info");
+        break;
       }
     }
     CCTK_TimerDestroyData(info);
     return 0;
   } else {
     CCTK_VWarn(8,__LINE__,__FILE__,"Cactus",
-	       "CCTK_DisplayTimerDataI: Timer %d not found",this_timer);
+               "CCTK_DisplayTimerDataI: Timer %d not found",this_timer);
     return -1;
   }
 }
@@ -796,7 +797,7 @@ int CCTK_DisplayTimerData(const char *name) {
     return CCTK_DisplayTimerDataI(this_timer);
   else {
     CCTK_VWarn(8,__LINE__,__FILE__,"Cactus",
-	       "CCTK_DisplayTimerData: Timer %s not found",name);
+               "CCTK_DisplayTimerData: Timer %s not found",name);
     return -1;
   }
 }
