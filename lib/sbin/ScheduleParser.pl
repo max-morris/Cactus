@@ -470,7 +470,7 @@ sub ParseScheduleStatement
   my($line_number, @data) = @_;
   my($type, $groups);
 
-  $data[$line_number] =~ m/^\s*(STOR|COMM)[^:]*:\s*([\w\s\,]*)/i;
+  $data[$line_number] =~ m/^\s*(STOR|COMM)[^:]*:\s*(.*)/i;
 
   $type = "\U$1\E";
 

@@ -459,39 +459,43 @@ sub ScheduleBlock
 
   my($buffer, $prototype);
   my($indent, $language, $function);
-  my(@mem_groups);
-  my(@comm_groups);
-  my(@trigger_groups);
-  my(@sync_groups);
+  my($mem_groups);
+  my($tlist);
+  my($comm_groups);
+  my($unused_comm_groups);
+  my($trigger_groups);
+  my($sync_groups);
   my(@options);
   my(@before_list);
   my(@after_list);
   my(@while_list);
 
   # Extract group and routine information from the databases
-  @mem_groups = &ScheduleSelectGroups($thorn, $implementation, 
-                                      $rhschedule_db->{"\U$thorn\E BLOCK_$block STOR"},
-                                      $rhinterface_db);
+  ($mem_groups, $tlist) = &ScheduleSelectGroups($thorn, $implementation, 
+                                                $rhschedule_db->{"\U$thorn\E BLOCK_$block STOR"},
+                                                $rhinterface_db);
 
+  &ScheduleValidateTimeLevels($thorn, $implementation, $mem_groups,$tlist, $rhinterface_db);
+  
 
-  @unused_comm_groups = &ScheduleSelectGroups($thorn, $implementation, 
-                                              $rhschedule_db->{"\U$thorn\E BLOCK_$block COMM"},
-                                              $rhinterface_db);
-  if (@unused_comm_groups)
+  ($unused_comm_groups) = &ScheduleSelectGroups($thorn, $implementation, 
+                                                $rhschedule_db->{"\U$thorn\E BLOCK_$block COMM"},
+                                                $rhinterface_db);
+  if (@$unused_comm_groups)
   {
     print "No need to switch on Communication in $thorn\n";
     print "Communication automatically assigned for variables with storage\n";
   }
 
-  @comm_groups = @mem_groups; # Switch on storage for groups with comm
+  $comm_groups = [];
 
-  @trigger_groups = &ScheduleSelectGroups($thorn, $implementation, 
-                                          $rhschedule_db->{"\U$thorn\E BLOCK_$block TRIG"},
-                                          $rhinterface_db);
+  ($trigger_groups) = &ScheduleSelectGroups($thorn, $implementation, 
+                                            $rhschedule_db->{"\U$thorn\E BLOCK_$block TRIG"},
+                                            $rhinterface_db);
                 
-  @sync_groups = &ScheduleSelectGroups($thorn, $implementation, 
-                                          $rhschedule_db->{"\U$thorn\E BLOCK_$block SYNC"},
-                                          $rhinterface_db);
+  ($sync_groups) = &ScheduleSelectGroups($thorn, $implementation, 
+                                         $rhschedule_db->{"\U$thorn\E BLOCK_$block SYNC"},
+                                         $rhinterface_db);
 
   @options = split(/,/, $rhschedule_db->{"\U$thorn\E BLOCK_$block OPTIONS"});
 
@@ -556,10 +560,10 @@ sub ScheduleBlock
     $buffer .= $indent . "\"" . $language . "\"" . ",\n";
   }
 
-  $buffer .= $indent . scalar(@mem_groups) . ",                       /* Number of STORAGE  groups   */\n";
-  $buffer .= $indent . scalar(@comm_groups) . ",                      /* Number of COMM     groups   */\n";
-  $buffer .= $indent . scalar(@trigger_groups) . ",                   /* Number of TRIGGERS groups   */\n";
-  if (!scalar(@trigger_groups) && $rhschedule_db->{"\U$thorn\E BLOCK_$block WHERE"} eq "CCTK_ANALYSIS")
+  $buffer .= $indent . scalar(@$mem_groups) . ",                       /* Number of STORAGE  groups   */\n";
+  $buffer .= $indent . scalar(@$comm_groups) . ",                      /* Number of COMM     groups   */\n";
+  $buffer .= $indent . scalar(@$trigger_groups) . ",                   /* Number of TRIGGERS groups   */\n";
+  if (!scalar(@$trigger_groups) && $rhschedule_db->{"\U$thorn\E BLOCK_$block WHERE"} eq "CCTK_ANALYSIS")
   {
     $mess = "Schedule error: Scheduling at ANALYSIS in $thorn with no TRIGGERS\n";
     $help = "Functions or function groups scheduled in the ANALYSIS bin require TRIGGERS to be set.";
@@ -567,13 +571,13 @@ sub ScheduleBlock
     $help .= "IO methods to decide whether of not execution should happen.";
     &CST_error(0,$mess,$help,__LINE__,__FILE__);
   }
-  $buffer .= $indent . scalar(@sync_groups) . ",                      /* Number of SYNC     groups   */\n";
+  $buffer .= $indent . scalar(@$sync_groups) . ",                      /* Number of SYNC     groups   */\n";
   $buffer .= $indent . scalar(@options) . ",                          /* Number of Options           */\n";
   $buffer .= $indent . scalar(@before_list) . ",                      /* Number of BEFORE  routines  */\n";
   $buffer .= $indent . scalar(@after_list) . ",                       /* Number of AFTER   routines  */\n";
   $buffer .= $indent . scalar(@while_list) . "                        /* Number of WHILE   variables */";
   
-  foreach $item (@mem_groups, @comm_groups, @trigger_groups, @sync_groups, 
+  foreach $item (@$mem_groups, @$comm_groups, @$trigger_groups, @$sync_groups, 
                  @options, @before_list, @after_list, @while_list)
   {
     $buffer .= ",\n" . $indent . "\"" . $item . "\"" ;
@@ -603,20 +607,23 @@ sub ScheduleStatement
   my($thorn, $implementation, $statement, $rhinterface_db, $rhschedule_db) = @_;
 
   my($buffer, $prototype);
-  my(@groups);
+  my($groups);
+  my($misc);
   my($group);
 
   # Extract the groups.
-  @groups = &ScheduleSelectGroups($thorn, $implementation, 
-                                  $rhschedule_db->{"\U$thorn\E STATEMENT_$statement GROUPS"},
-                                  $rhinterface_db);
+  ($groups,$misc) = &ScheduleSelectGroups($thorn, $implementation, 
+                                          $rhschedule_db->{"\U$thorn\E STATEMENT_$statement GROUPS"},
+                                          $rhinterface_db);
+
 
   if($rhschedule_db->{"\U$thorn\E STATEMENT_$statement TYPE"} eq "STOR")
   {
+    &ScheduleValidateTimeLevels($thorn, $implementation, $groups,$misc, $rhinterface_db);
     $function = "CCTKi_ScheduleGroupStorage(";
     $prototype = "";
 
-    foreach $group (@groups)
+    foreach $group (@$groups)
     {
       $buffer .= "  $function " . "\"" . $group . "\"" . ");\n"
     }
@@ -624,7 +631,7 @@ sub ScheduleStatement
     $function = "CCTKi_ScheduleGroupComm(";
     $prototype = "";
 
-    foreach $group (@groups)
+    foreach $group (@$groups)
     {
       $buffer .= "  $function " . "\"" . $group . "\"" . ");\n"
     }
@@ -667,6 +674,7 @@ sub ScheduleSelectGroups
   my(@temp_list);
   my($group);
   my($other_imp, $other_thorn, $foundit, $block);
+  my($misc,@misc_list);
 
   @temp_list = split(/[,\s\n]+/, $group_list);
 
@@ -676,12 +684,30 @@ sub ScheduleSelectGroups
 
     $other_imp = "";
 
-    if($group =~ m/(.+)::(.+)/)
+#    print "DEBUG: $thorn,$implementation - group was $group ";
+
+    # Strip off extra miscellaneous info on group- i.e [...] bit
+    $group =~ m/^([^[]+)(\[([^]]*)\])?$/;
+
+    $group = $1;
+    
+    my $misc = $3;
+
+    if(! defined $misc)
+    {
+      $misc = "";
+    }
+
+#    print ", group now is $group with misc '$misc'\n"; #DEBUG
+
+    if($group =~ m/^(.+)::(.+)$/)
     {
       $other_imp=$1;
       $group = $2;
 
-      if(($1 !~ m:^\s*$thorn\s*$:i) && ($1 !~ m:^\s*$implementation\s*$:i))
+#      print "DEBUG: $thorn, $other_imp, $group, $misc\n";
+
+      if(($other_imp !~ m:^\s*$thorn\s*$:i) && ($other_imp !~ m:^\s*$implementation\s*$:i))
       {
         # The name has been given completely specified but it isn't this thorn.
       
@@ -707,6 +733,7 @@ sub ScheduleSelectGroups
         if($rhinterface_db->{"\U$other_thorn\E $block GROUPS"} =~ m:\b$group\b:i)
         {
           push(@groups, "$other_imp\::$group");
+          push(@misc_list, $misc);
           next;
         }
         else
@@ -721,14 +748,17 @@ sub ScheduleSelectGroups
     if($rhinterface_db->{"\U$thorn\E PRIVATE GROUPS"} =~ m:\b$group\b:i)
     {
       push(@groups, "$thorn\::$group");
+      push(@misc_list, $misc);
     }
     elsif($rhinterface_db->{"\U$thorn\E PROTECTED GROUPS"} =~ m:\b$group\b:i)
     {
       push(@groups, "$implementation\::$group");
+      push(@misc_list, $misc);
     }
     elsif($rhinterface_db->{"\U$thorn\E PUBLIC GROUPS"} =~ m:\b$group\b:i)
     {
       push(@groups, "$implementation\::$group");
+      push(@misc_list, $misc);
     }
     elsif($other_imp eq "")
     {
@@ -742,6 +772,7 @@ sub ScheduleSelectGroups
         if($rhinterface_db->{"\U$other_thorn\E PUBLIC GROUPS"} =~ m:\b$group\b:i)
         {
           push(@groups, "$other_imp\::$group");
+          push(@misc_list, $misc);
           $foundit = 1;
           last;
         }
@@ -756,6 +787,7 @@ sub ScheduleSelectGroups
           if($rhinterface_db->{"\U$other_thorn\E PROTECTED GROUPS"} =~ m:\b$group\b:i)
           {
             push(@groups, "$other_imp\::$group");
+            push(@misc_list, $misc);
             $foundit = 1;
             last;
           }
@@ -779,7 +811,7 @@ sub ScheduleSelectGroups
     }
   }
 
-  return @groups;
+  return (\@groups,\@misc_list);
 }
 
 #/*@@
@@ -849,6 +881,83 @@ sub ScheduleSelectVars
   }
 
   return @vars;
+}
+
+sub ScheduleValidateTimeLevels
+{
+  my($thorn, $implementation, $groups,$timelevels_list, $rhinterface_db) = @_;
+  
+  my $i;
+
+  my $return_code;
+
+  $return_code = 0;
+
+  for($i = 0; $i < @$groups; $i++)
+  {
+    my $group = $$groups[$i];
+    my $timelevels = $$timelevels_list[$i];
+
+#    print "DEBUG: validate $thorn,$implementation,$group,$timelevels\n";
+
+    if($timelevels !~ /^\d*$/)
+    {
+      &CST_error(0,"Invalid timelevel specifier '$timelevels' in schedule.ccl of thorn '$thorn'","",__LINE__,__FILE__);
+      $return_code++;
+      next;
+    }
+    
+    $group =~ m/^(.+)::(.+)$/;
+   
+    my $imp = $1;
+    my $groupname = $2;
+
+    my $allowed_timelevels;
+
+    if($1 =~ /^$thorn$/i)
+    {
+      $allowed_timelevels =  $rhinterface_db->{"\U$thorn GROUP $groupname TIMELEVELS\E"};
+    }
+    else
+    {
+      @thornlist = split(" ",$rhinterface_db->{"IMPLEMENTATION \U$imp\E THORNS"});
+
+      $allowed_timelevels =  $rhinterface_db->{"\U$thornlist[0] GROUP $groupname TIMELEVELS\E"};
+    }
+
+    # If the maximum number of timelevels is 1, the timelevel specification can be empty. 
+    if($timelevels eq "" && $allowed_timelevels == 1)
+    {
+      $$timelevels_list[$i] = 1;
+      next;
+    }
+    elsif($timelevels eq "")
+    {
+      &CST_error(0,"Timelevel specifier missed for group '$group' in schedule.ccl of thorn '$thorn'\n".
+                   "This group has more than one timelevel, so a timelevel specifier is mandatory.\n" .
+                   "You may specify a maximum of $allowed_timelevels timelevels\n" .
+                   "e.g. try $group\[$allowed_timelevels]\n" .
+                   "Note that you should only activate the number of timelevels necesary for your scheme, which may be less than this maximum."
+                 ,"",__LINE__,__FILE__);
+      $return_code++;
+    }      
+    elsif($timelevels  <= $allowed_timelevels)
+    {
+      next;
+    }
+    elsif($timelevels  > 0)
+    {
+      next;
+    }
+    else
+    {
+      &CST_error(0,"Tried to schedule $timelevels timelevels for group '$group' in schedule.ccl of thorn '$thorn'\n" .
+                   "Value must be between 1 and $allowed_timelevels (inclusive)","",__LINE__,__FILE__);
+      $return_code++;
+    }
+  }
+
+  return $return_code;
 }
 
 1;
