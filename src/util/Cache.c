@@ -2,9 +2,9 @@
    @file      Cache.c
    @date      Tue Nov 30 08:07:12 1999
    @author    Tom Goodale
-   @desc 
+   @desc
    Routines dealing with cache alignment.
-   @enddesc 
+   @enddesc
    @version $Header$
  @@*/
 
@@ -40,36 +40,31 @@ static int cache_set = 0;
    @routine    Util_CacheMalloc
    @date       Tue Nov 30 08:13:03 1999
    @author     Tom Goodale
-   @desc 
+   @desc
    Allocates memory aligned on the 'index'ed cache line.
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   @enddesc
 
    @var     index
    @vdesc   cache line index
    @vtype   int
    @vio     in
-   @vcomment 
+   @vcomment
    The cache line to align on
-   @endvar 
+   @endvar
    @var     size
    @vdesc   the amount of memory to allocate
    @vtype   unsigned long
    @vio     in
-   @vcomment 
+   @vcomment
    This is the size (in bytes) of memory to allocate.
-   @endvar 
+   @endvar
    @var     realstart
    @vdesc   The real starting address of the memory
    @vtype   void **
    @vio     out
-   @vcomment 
+   @vcomment
    On return holds the actual starting address of the memory.
-   @endvar 
+   @endvar
 
    @returntype void *
    @returndesc
@@ -77,8 +72,8 @@ static int cache_set = 0;
    @endreturndesc
 
 @@*/
-void *Util_CacheMalloc(unsigned index, 
-                       unsigned long size, 
+void *Util_CacheMalloc(unsigned index,
+                       unsigned long size,
                        void **realstart)
 {
   char *retval;
@@ -91,33 +86,26 @@ void *Util_CacheMalloc(unsigned index,
 
   if(Utili_CacheDataGet(&cacheline_bytes, &cache_size))
   {
-    cacheline_bytes = 0;
-    cache_size = 0;
+    cacheline_bytes = cache_size = 0;
   }
 
-  data = (char *)malloc((size_t)(size+cache_size));
+  retval = NULL;
 
+  data = malloc((size_t)(size+cache_size));
   if(data)
   {
-    if(cache_size)
+    pad = 0;
+    if(cache_size && cacheline_bytes)
     {
       /* Find how far this memory is into a cache line */
       offset = ((unsigned long)data%cache_size)%cacheline_bytes;
       /* Find which cache line in the cache it is in */
       initial_index = ((unsigned long)data%cache_size)/cacheline_bytes;
-      
+
       pad = ((index-initial_index)*cacheline_bytes + cacheline_bytes - offset)%cache_size;
-    }
-    else
-    {
-      pad = 0;
     }
 
     retval = data + pad;
-  }
-  else
-  {
-    retval = NULL;
   }
 
   *realstart = (void *)data;
@@ -133,29 +121,24 @@ void *Util_CacheMalloc(unsigned index,
    @routine    Utili_CacheDataSet
    @date       Tue Nov 30 08:12:05 1999
    @author     Tom Goodale
-   @desc 
+   @desc
    Stores the sizes of the cache.
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   @enddesc
 
    @var     cacheline_bytes
    @vdesc   The size of a cacheline
    @vtype   unsigned long
    @vio     in
-   @vcomment 
+   @vcomment
    Number of bytes in a cache line.
-   @endvar 
+   @endvar
    @var     cache_size
    @vdesc   Size of the cache
    @vtype   unsigned long
    @vio     in
-   @vcomment 
+   @vcomment
    The size (in bytes) of the cache.
-   @endvar 
+   @endvar
 
    @returntype int
    @returndesc
@@ -178,29 +161,24 @@ int Utili_CacheDataSet(unsigned long cacheline_bytes,
    @routine    Utili_CacheDataGet
    @date       Tue Nov 30 08:12:41 1999
    @author     Tom Goodale
-   @desc 
+   @desc
    Gets the sizes of the cache.
-   @enddesc 
-   @calls     
-   @calledby   
-   @history 
- 
-   @endhistory 
+   @enddesc
 
    @var     cacheline_bytes
    @vdesc   The size of a cacheline
    @vtype   unsigned long *
    @vio     out
-   @vcomment 
+   @vcomment
    Number of bytes in a cache line.
-   @endvar 
+   @endvar
    @var     cache_size
    @vdesc   Size of the cache
    @vtype   unsigned long *
    @vio     out
-   @vcomment 
+   @vcomment
    The size (in bytes) of the cache.
-   @endvar 
+   @endvar
 
    @returntype int
    @returndesc
@@ -212,19 +190,12 @@ int Utili_CacheDataSet(unsigned long cacheline_bytes,
 int Utili_CacheDataGet(unsigned long *cacheline_bytes,
                        unsigned long *cache_size)
 {
-  int retcode;
-
   if(cache_set)
   {
     *cacheline_bytes = cache_data.cacheline_bytes;
     *cache_size      = cache_data.cache_size;
-    retcode = 0;
-  }
-  else
-  {
-    retcode = -1;
   }
 
-  return retcode; 
+  return (cache_set ? 0 : -1);
 }
 
