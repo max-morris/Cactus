@@ -40,7 +40,7 @@ DIRSEP="\\\\"
 OPTIONSEP="# not even a single a single space under cygwin"
 
 # Convert //a to a: 
-GET_WD="pwd | sed 's,^//\(.\)/,\1:/,'"
+GET_WD="pwd | sed 's,^//\(.\)/,\1:/,' | sed 's,/,\\\,g' "
 
 C_DEPEND='$(CPP) -E -M $(CPPFLAGS) '
 
