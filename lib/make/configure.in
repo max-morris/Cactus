@@ -86,11 +86,11 @@ if test -z "$PERL" ; then
 fi
 
 if test -z "$F90" ; then
-  AC_CHECK_PROGS(F90, f90 pgf90 xlf90)
+  AC_CHECK_PROGS(F90, f90 pgf90 xlf90 ifort)
 fi
 
 if test -z "$F77" ; then
-  AC_CHECK_PROGS(F77, f77 pgf77 g77 f90 pgf90 xlf90)
+  AC_CHECK_PROGS(F77, f77 pgf77 g77 f90 pgf90 xlf90 ifort)
 fi
 
 if test -z "$AR" ; then
