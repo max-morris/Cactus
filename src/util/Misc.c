@@ -9,6 +9,8 @@
 
 /*#define DEBUG_MISC*/
 
+#include "config.h"
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -148,7 +150,7 @@ int CCTK_Equals(const char *string1, const char *string2)
   return retval;
 }
 
-int FORTRAN_NAME(CCTK_Equals)(const char **arg1,ONE_FORTSTRING_ARG)
+int FMODIFIER FORTRAN_NAME(CCTK_Equals)(const char **arg1,ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_CREATE(arg2)
   int retval;
@@ -644,7 +646,7 @@ void CCTK_PrintString(char *data)
   printf("%s",data);
 }
 
-void FORTRAN_NAME(CCTK_PrintString)(char **arg1)
+void FMODIFIER FORTRAN_NAME(CCTK_PrintString)(char **arg1)
 {
   CCTK_PrintString(*arg1);
 }

@@ -8,6 +8,8 @@
  @@*/
 
 
+#include "config.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -118,7 +120,7 @@ int CCTK_Warn(int level, const char *thorn, const char *message)
   return retval;
 }
 
-int FORTRAN_NAME(CCTK_Warn)(int *level, TWO_FORTSTRINGS_ARGS)
+int FMODIFIER FORTRAN_NAME(CCTK_Warn)(int *level, TWO_FORTSTRINGS_ARGS)
 {
   TWO_FORTSTRINGS_CREATE(thorn,message)
   int retval;
@@ -153,7 +155,7 @@ int CCTK_Info(const char *message)
   return retval;
 }
 
-int FORTRAN_NAME(CCTK_Info)(ONE_FORTSTRING_ARG)
+int FMODIFIER FORTRAN_NAME(CCTK_Info)(ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_CREATE(message)
   int retval;

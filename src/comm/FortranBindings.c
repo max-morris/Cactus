@@ -12,25 +12,25 @@
 #include "FortranString.h"
 #include "Comm.h"
 
-int FORTRAN_NAME(CCTK_Exit)(cGH *GH)
+int FMODIFIER FORTRAN_NAME(CCTK_Exit)(cGH *GH)
 {
   CCTK_Exit(GH);
   return 0;
 }
 
-int FORTRAN_NAME(CCTK_ParallelInit)(cGH *GH)
+int FMODIFIER FORTRAN_NAME(CCTK_ParallelInit)(cGH *GH)
 {
   CCTK_ParallelInit(GH);
   return 0;
 }
 
-int FORTRAN_NAME(CCTK_Abort)(cGH *GH)
+int FMODIFIER FORTRAN_NAME(CCTK_Abort)(cGH *GH)
 {
   CCTK_Abort(GH);
   return 0;
 }
 
-int FORTRAN_NAME(CCTK_SyncGroup)(cGH *GH, ONE_FORTSTRING_ARG)
+int FMODIFIER FORTRAN_NAME(CCTK_SyncGroup)(cGH *GH, ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_CREATE(group_name)
   CCTK_SyncGroup(GH,group_name);
