@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.20 1999-03-09 14:56:28 goodale Exp $
+#   @version $Id: Makefile,v 1.21 1999-03-25 00:23:44 goodale Exp $
 # @@*/
 
 # Make quietly unless told not to
@@ -101,9 +101,9 @@ distclean:
 TAGS:
 	@echo $(DIVIDER)
 	@echo Updating the Emacs TAGS file
-	find src packages \( -name '*.[chF]' -o -name '*.F77' \) \
+	find src packages \( -name '*.[chCF]' -o -name '*.F77' -o -name '*.cc' \) \
           -exec etags --append {} \;
-#	find src packages \( -name '*.[chF]' -o -name '*.F77' \) \
+#	find src packages \( -name '*.[cChF]' -o -name '*.F77' -o -name '*.cc'\) \
 #          -exec etags --append --regex '/[a-z A-Z \t]*FORTRAN_NAME[^)]*/' {} \;
 	perl -pi -e 's/(subroutine\s*)([a-zA-Z0-9_]+)/\1\L\2/g;' TAGS
 	@echo $(DIVIDER)
@@ -111,7 +111,7 @@ TAGS:
 tags:
 	@echo $(DIVIDER)
 	@echo Updating the vi tags file
-	find src packages \( -name '*.[chF]' -o -name '*.F77' \) \
+	find src packages \( -name '*.[cChF]' -o -name '*.F77' -o '*.cc'\) \
           -exec ctags --append {} \;
 	perl -pi -e 's/(subroutine\s*)([a-zA-Z0-9_]+)/\1\L\2/g;' tags
 	@echo $(DIVIDER)
