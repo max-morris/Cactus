@@ -860,7 +860,7 @@ int CCTK_SetString(char **data, const char *value)
 @@*/
 void CCTK_PrintString(char *data)
 {
-  printf("%s",data);
+  printf("%s\n",data);
 }
 
 void FMODIFIER FORTRAN_NAME(CCTK_PrintString)(char **arg1)
