@@ -40,11 +40,11 @@ from Fortran.
 
 \item[CCTK\_ArrayGroupSize]
   [\pageref{CCTK-ArrayGroupSize}]
-  Returns the local size for a group, given by its group name
+  Returns a pointer to the local size for a group, given by its group name
 
 \item[CCTK\_ArrayGroupSizeI]
   [\pageref{CCTK-ArrayGroupSizeI}]
-  Returns the local size for a group, given by its group index
+  Returns a pointer to the local size for a group, given by its group index
 
 \item[CCTK\_Barrier]
   [\pageref{CCTK-Barrier}]
@@ -198,6 +198,9 @@ from Fortran.
 \item[CCTK\_GHExtensionHandle]
   [\pageref{CCTK-GHExtensionHandle}]
   Get the handle associated with a extension to the Cactus GH structure
+
+\item[CCTK\_GroupgshGN] [\pageref{CCTK-GroupgshGN}]
+  Given a group name, return an array of the size of the group in each dimension
 
 \item[CCTK\_GroupData]
   [\pageref{CCTK-GroupData}]
@@ -1565,6 +1568,74 @@ A NULL pointer is returned if an invalid extension name was given.
 \begin{errorcodes}
 \end{errorcodes}
 \end{CCTKFunc}
+
+% GroupsOnGH.c
+\begin{FunctionDescription}{CCTK\_GroupgshGN}
+\label{CCTK-GroupgshGN}
+Given a group name, return an array of the size of the group in each dimension
+
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+#include "cctk.h"
+int status = CCTK_GroupgshGN(const cGH *cctkGH, 
+                             int dim,
+                             int *gsh,
+                             const char *groupname);
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+	
+\begin{ResultSection}
+\begin{Result}{\rm 0}
+success
+\end{Result}
+\begin{Result}{\rm -1}
+incorrect dimension supplied
+\end{Result}
+\begin{Result}{\rm -2}
+data not available from driver
+\end{Result}
+\begin{Result}{\rm -3}
+called on a scalar group
+\end{Result}
+\begin{Result}{\rm -4}
+invalid group name
+\end{Result}
+\end{ResultSection}
+	
+\begin{ParameterSection}
+\begin{Parameter}{GH ($\ne$ NULL)}
+Pointer to a valid Cactus grid hierarchy.
+\end{Parameter}
+\begin{Parameter}{dim ($\ge 1$)}
+Number of dimensions of group.
+\end{Parameter}
+\begin{Parameter}{gsh ($\ne$ NULL)}
+Pointer to array which will hold the return values.
+\end{Parameter}
+\begin{Parameter}{groupname}
+Name of the group.
+\end{Parameter}
+\end{ParameterSection}
+	
+\begin{Discussion}
+\end{Discussion}
+	
+\begin{SeeAlsoSection}
+\begin{SeeAlso}{...}
+There are many related functions with grab information from the GH,
+but they are not yet documented.
+\end{SeeAlso}
+\end{SeeAlsoSection}
+	
+%\begin{ErrorSection}
+%\end{ErrorSection}
+	
+%\begin{ExampleSection}
+%\end{ExampleSection}
+\end{FunctionDescription}
+
 
 % Groups.c
 \begin{CCTKFunc}{CCTK\_GroupData}{Given a group index, returns information about the variables held in the group.}
