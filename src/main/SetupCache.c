@@ -50,8 +50,13 @@ int CCTKi_SetupCache (void)
   } 
   else
   {
+#ifdef CCTK_CACHE_SIZE
+    cache_size      = CCTK_CACHE_SIZE;
+    cacheline_bytes = CCTK_CACHELINE_BYTES;
+#else
     cache_size      = CCTK_L2_CACHE_SIZE;
     cacheline_bytes = CCTK_L2_CACHELINE_BYTES;
+#endif
   }
 
   Utili_CacheDataSet (cacheline_bytes, cache_size);
