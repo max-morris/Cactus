@@ -53,19 +53,19 @@ int ProcessCommandLine(int *inargc, char ***inargv, tFleshConfig *ConfigData)
       struct option long_options[] =
       {
 	{"help", no_argument, NULL, 'h'},
-	{"describe-all-parameters", no_argument, NULL, 'O'},
-	{"describe-parameter", required_argument, NULL, 'o'},
-	{"test-parameters", optional_argument, NULL, 'x'},
-	{"warning-level", required_argument, NULL, 'W'},
-	{"error-level", required_argument, NULL, 'E'},
-	{"redirect-stdout", no_argument, NULL, 'r'},
-	{"list-thorns", no_argument, NULL, 'T'},
-	{"test-thorn-compiled", required_argument, NULL, 't'},
+	{"describe-all-parameters", optional_argument, NULL, 'O'},
+	{"describe-parameter",      required_argument, NULL, 'o'},
+	{"test-parameters",         optional_argument, NULL, 'x'},
+	{"warning-level",           required_argument, NULL, 'W'},
+	{"error-level",             required_argument, NULL, 'E'},
+	{"redirect-stdout",         no_argument,       NULL, 'r'},
+	{"list-thorns",             no_argument,       NULL, 'T'},
+	{"test-thorn-compiled",     required_argument, NULL, 't'},
 	{"version", no_argument, NULL, 'v'},
 	{0, 0, 0, 0}
       };
       
-      c = getopt_long_only (argc, argv, "hOo:x::W:E:rTt:v",
+      c = getopt_long_only (argc, argv, "hO::o:x::W:E:rTt:v",
 			    long_options, &option_index);
       if (c == -1)
 	break;
@@ -73,7 +73,7 @@ int ProcessCommandLine(int *inargc, char ***inargv, tFleshConfig *ConfigData)
       switch (c)
       {
 	case 't': CCTKi_CommandLineTestThornCompiled(optarg); break;
-	case 'O': CCTKi_CommandLineDescribeAllParameters(); break;
+	case 'O': CCTKi_CommandLineDescribeAllParameters(optarg); break;
 	case 'o': CCTKi_CommandLineDescribeParameter(optarg); break;
 	case 'x': CCTKi_CommandLineTestParameters(optarg); break;
 	case 'W': CCTKi_CommandLineWarningLevel(optarg); break;

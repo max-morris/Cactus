@@ -49,7 +49,7 @@ int InitialiseDataStructures(tFleshConfig *ConfigData)
 
   /* Initialise appropriate subsystems. */
 
-  CCTKi_BindingsImplementationsInitialise();
+  /*  CCTKi_BindingsImplementationsInitialise();*/
   /*  CCTKi_BindingsParametersInitialise();*/
   CCTKi_BindingsVariablesInitialise();
   /*CCTKi_BindingsScheduleInitialise();*/

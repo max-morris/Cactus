@@ -27,9 +27,9 @@
 #define SCOPE_NOT_GLOBAL    4 /* parameter is not visible everywhere         */
 #define SCOPE_ANY           5 /* parameter scope is undefined/arbitrary      */
 
+static char *cctk_parameter_scopes[] = {"GLOBAL", "RESTRICTED", "PRIVATE"};
 
-
-/* parameter types ***Tom: correct? *** */
+/* parameter types  */
 
 #define PARAMETER_KEYWORD   1 /* parameter is keyword  */
 #define PARAMETER_STRING    2 /* parameter is string   */
@@ -39,7 +39,12 @@
 #define PARAMETER_REAL      5 /* parameter is float    */
 #define PARAMETER_BOOLEAN   6 /* parameter is bool     */
 
-
+static const char *cctk_parameter_type_names[] = {"KEYWORD", 
+                                                  "STRING", 
+                                                  "SENTENCE", 
+                                                  "INTEGER", 
+                                                  "REAL", 
+                                                  "BOOLEAN"};
 
 /* what is a parameter range:
  * list of independent ranges, each with
@@ -49,12 +54,12 @@
  */
 typedef struct RANGE
 {
-    struct RANGE*	last;
-    struct RANGE*	next;
-    char*		range;
-    char*		origin;
-    int 		active;
-    char*		description;
+    struct RANGE *last;
+    struct RANGE *next;
+    char         *range;
+    char         *origin;
+    int 	  active;
+    char         *description;
 } t_range;
 
 
@@ -72,18 +77,18 @@ typedef struct RANGE
  */
 typedef struct PARAM_PROPS
 {
-    char*		name;
-    char*		thorn;
-    int 		scope;
+  char    *name;
+  char    *thorn;
+  int      scope;
+  
+  char    *description;
+  char    *defval;
 
-    char*		description;
-    char*		defval;
+  int      type;
+  t_range *range;
 
-    int 		type;
-    t_range*		range;
-
-    int 		n_set;
-    int 		steerable;
+  int      n_set;
+  int      steerable;
 
 } t_param_prop;
 
@@ -91,11 +96,11 @@ typedef struct PARAM_PROPS
 extern "C" {
 #endif
 /* get list of parameter names for given thorn */
-int CCTK_ParList (const char* thorn, char ***paramlist, int *n_param);
+int CCTK_ParameterList (const char* thorn, char ***paramlist, int *n_param);
 
 /* get parameter properties for gven parameter/thorn pair */
-t_param_prop* CCTK_ParInfo (const char*	name, 
-		  	    const char*	thorn);
+t_param_prop *CCTK_ParameterInfo (const char *name, 
+                                  const char *thorn);
 
 #ifdef __cplusplus
 }

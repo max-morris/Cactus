@@ -30,6 +30,7 @@ int InitialiseSubsystemDefaults(void)
   SetupCommFunctions();
   SetupIOFunctions();
 
+  CCTKi_BindingsImplementationsInitialise();
   CCTKi_BindingsParametersInitialise();
 
   return 0;

@@ -624,7 +624,7 @@ const char *ParameterWalk(int first,
 
 /**********************************************************************/ 
 /*@@
-  @routine    CCTK_ParList
+  @routine    CCTK_ParameterList
   @date       Mon Aug 30 17:16:58 MSZ 1999
   @author     Andre Merzky
   @desc 
@@ -662,25 +662,27 @@ const char *ParameterWalk(int first,
   @endreturndesc
 
   @@*/
-int CCTK_ParList (const char* thorn, char ***paramlist, int *n_param)
+int CCTK_ParameterList (const char *thorn, char ***paramlist, int *n_param)
 {
-  t_paramtreenode* node;
-  t_sktree*       tnode;
-  int         alloc_size = 0;
+  t_paramtreenode *node;
+  t_sktree        *tnode;
+  int              alloc_size;
     
-  t_paramlist* tmp_paramlist;
+  t_paramlist *tmp_paramlist;
     
   node    = NULL;
+
   *n_param = 0;
 
   /* FIXME */
 #define _MY_PARAM_JUNK_SIZE  100
     
-  alloc_size += _MY_PARAM_JUNK_SIZE;
+  alloc_size = _MY_PARAM_JUNK_SIZE;
   *paramlist = (char **) malloc (sizeof (char *) * alloc_size);
     
-  if (! (*paramlist)) {
-    fprintf (stderr, "Cannot malloc paramlist*\n");
+  if (! *paramlist) 
+  {
+    fprintf (stderr, "Cannot malloc paramlist* at line %d of %s\n", __LINE__, __FILE__);
     return (-1);
   }
     
@@ -698,16 +700,17 @@ int CCTK_ParList (const char* thorn, char ***paramlist, int *n_param)
     for ( ; tmp_paramlist ; tmp_paramlist = tmp_paramlist->next)
     {   
       /* is it a parameter of the given thorn? */
-      if (!strcmp (thorn, tmp_paramlist->param->props->thorn)) 
+      if (!STR_CMP (thorn, tmp_paramlist->param->props->thorn)) 
       {  
         /* list long enough? */
         if ((*n_param) >= alloc_size)
         {
           alloc_size += _MY_PARAM_JUNK_SIZE;
-          *paramlist = (char **) realloc ((*paramlist), alloc_size);
+          *paramlist = (char **) realloc (*paramlist, sizeof(char *)*alloc_size);
         
-          if (! (*paramlist)) {
-            fprintf (stderr, "Cannot realloc paramlist*\n");
+          if (! *paramlist) 
+          {
+            fprintf (stderr, "Cannot realloc paramlist* at line %d of %s\n", __LINE__, __FILE__);
             return (-1);
           }
         } 
@@ -719,8 +722,8 @@ int CCTK_ParList (const char* thorn, char ***paramlist, int *n_param)
         /* got memory? */    
         if (! (*paramlist)[(*n_param)]) 
         {
-          fprintf (stderr, "Cannot malloc paramlist*[%d]\n", 
-                   (*n_param));
+          fprintf (stderr, "Cannot malloc paramlist*[%d]at line %d of %s\n", 
+                   (*n_param), __LINE__, __FILE__);
           return (-1);
         }
     
@@ -736,11 +739,13 @@ int CCTK_ParList (const char* thorn, char ***paramlist, int *n_param)
   /* if necessary, shrink paramlist again. */
   if ((*n_param) < alloc_size)
   {
-    alloc_size += (*n_param);
-    *paramlist = (char **) realloc ((*paramlist), alloc_size);
+    alloc_size = (*n_param);
+    *paramlist = (char **) realloc ((*paramlist), sizeof(char *)*alloc_size);
 
-    if (! (*paramlist)) {
-      fprintf (stderr, "Cannot realloc paramlist*\n");
+    if (*n_param && ! (*paramlist)) 
+    {
+      fprintf (stderr, "Cannot realloc paramlist* at line %d of %s\n", __LINE__, __FILE__);
+      fprintf(stderr, "n_param is %d\n", *n_param);
       return (-1);
     }
   } 
@@ -752,7 +757,7 @@ int CCTK_ParList (const char* thorn, char ***paramlist, int *n_param)
 
 /**********************************************************************/ 
 /*@@
-  @routine    CCTK_ParInfo
+  @routine    CCTK_ParameterInfo
   @date       Tue Aug 31 18:10:46 MSZ 1999
   @author     Andre Merzky
   @desc 
@@ -790,22 +795,42 @@ int CCTK_ParList (const char* thorn, char ***paramlist, int *n_param)
   @endreturndesc
 
   @@*/
-t_param_prop* CCTK_ParInfo (const char*    name, 
-                            const char*    thorn) 
+t_param_prop *CCTK_ParameterInfo (const char *name, 
+                                  const char *thorn) 
 {
-  /* what the heck is scope supposed to be? */
-  t_param *param = ParameterFind (name, thorn, SCOPE_ANY);
-    
-  if (!param) {
-    return (0);
-  } else {
-    return (param->props);
+  t_param_prop *retval;
+
+  t_param *param;
+
+  param = ParameterFind (name, thorn, SCOPE_ANY);
+
+  if (!param) 
+  {
+    retval = NULL;
+  } 
+  else 
+  {
+    retval = param->props;
   }
-  
-  /* done */
+
+  return retval;
 }
 
 
+ /*@@
+   @routine    ParameterFind
+   @date       Sun Oct 17 16:20:48 1999
+   @author     Tom Goodale
+   @desc 
+   Finds a parameter.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
 static t_param *ParameterFind(const char *name, 
                               const char *thorn, 
                               int scope)
@@ -859,7 +884,7 @@ static t_param *ParameterFind(const char *name,
    @date       Mon Jul 26 10:59:42 1999
    @author     Tom Goodale
    @desc 
-   
+   Creates a new parameter
    @enddesc 
    @calls     
    @calledby   

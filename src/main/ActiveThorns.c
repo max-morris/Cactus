@@ -320,6 +320,121 @@ void FMODIFIER FORTRAN_NAME(CCTK_IsThornActive)(int *retval, ONE_FORTSTRING_ARG)
   free(name);
 }
 
+ /*@@
+   @routine    CCTK_ThornImplementation
+   @date       Sun Oct 17 21:10:19 1999
+   @author     Tom Goodale
+   @desc 
+   Returns the implementation provided by the thorn.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+const char *CCTK_ThornImplementation(const char *name)
+{
+  const char *retval;
+  t_sktree *node;
+  
+  struct THORN *thorn;
+
+  /* Find the thorn */
+  node = SKTreeFindNode(thornlist, name);
+
+  retval = NULL;
+
+  if(node)
+  {
+    thorn = (struct THORN *)(node->data);
+
+    retval = thorn->implementation;
+  }
+
+  return retval;
+}
+
+ /*@@
+   @routine    CCTK_ImplementationThorn
+   @date       Sun Oct 17 22:04:13 1999
+   @author     Tom Goodale
+   @desc 
+   Returns the name of one thorn providing an implementation.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+const char *CCTK_ImplementationThorn(const char *name)
+{
+  const char *retval;
+
+  t_sktree *node;
+  
+  struct IMPLEMENTATION *imp;
+
+  /* Find the implementation */
+  node = SKTreeFindNode(implist, name);
+
+  retval = NULL;
+
+  if(node)
+  {
+    imp = (struct IMPLEMENTATION *)(node->data);
+
+    retval = imp->thornlist->key;
+  }
+
+  return retval;
+}
+
+
+/*@@
+   @routine    CCTK_IsThornCompiled
+   @date       Sun Jul  4 17:46:56 1999
+   @author     Tom Goodale
+   @desc 
+   Checks if a thorn is compiled in.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+int CCTK_IsThornCompiled(const char *name)
+{
+  int retval;
+  t_sktree *node;
+  
+  struct THORN *thorn;
+
+  /* Find the thorn */
+  node = SKTreeFindNode(thornlist, name);
+
+  retval = 0;
+
+  if(node)
+  {
+    retval = 1;
+  }
+
+  return retval;
+}
+
+void FMODIFIER FORTRAN_NAME(CCTK_IsThornCompiled)(int *retval, ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE(name) 
+  *retval = CCTK_IsThornCompiled(name);
+  free(name);
+}
+
 
 /*@@
    @routine    CCTK_IsImplementationActive
@@ -448,9 +563,9 @@ int CCTKi_ListImplementations(FILE *file, const char *format, int active)
 }
 
  /*@@
-   @routine    CCTK_ImpList
+   @routine    CCTK_ImplementationList
    @date       Thu Oct 14 16:14:22 1999
-   @author     Tom Goodale
+   @author     Andre Merzky
    @desc 
    Returns the list of implementations.
    @enddesc 
@@ -461,7 +576,7 @@ int CCTKi_ListImplementations(FILE *file, const char *format, int active)
    @endhistory 
 
 @@*/
-int CCTK_ImpList(int active, char ***list, int *n_implementations)
+int CCTK_ImplementationList(int active, char ***list, int *n_implementations)
 {
   int retval;
   t_sktree *node;
@@ -491,9 +606,52 @@ int CCTK_ImpList(int active, char ***list, int *n_implementations)
 }
 
 
-
  /*@@
    @routine    CCTK_ThornList
+   @date       Sun Oct 17 17:49:23 1999
+   @author     Tom Goodale
+   @desc 
+   Returns the list of thorns.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+int CCTK_ThornList(int active, char ***list, int *n_items)
+{
+  int retval;
+  t_sktree *node;
+
+  struct THORN *thorn;
+
+  retval = 0;
+
+  *list = (char **)malloc(n_thorns*sizeof(char *));
+  
+  for(node= SKTreeFindFirst(thornlist),   
+      *n_items = 0;
+      node; 
+      node = node->next, retval++)
+  {
+    thorn = (struct THORN *)(node->data);
+
+    if(thorn->active || !active)
+    {
+      (*list)[*n_items] = (char *) malloc(strlen(node->key)+1);
+      strcpy((*list)[*n_items], node->key);
+      (*n_items)++;
+    }
+  }
+
+  return retval;
+}
+
+
+ /*@@
+   @routine    CCTK_ImplementationThornList
    @date       Thu Oct 14 16:04:59 1999
    @author     Andre Merzky
    @desc 
@@ -506,7 +664,7 @@ int CCTK_ImpList(int active, char ***list, int *n_implementations)
    @endhistory 
 
 @@*/
-int CCTK_ThornList (const char* imp, char ***list, int *n_thorns)
+int CCTK_ImplementationThornList (const char *imp, char ***list, int *n_items)
 {
   int       retval;
   t_sktree *node;
@@ -534,12 +692,13 @@ int CCTK_ThornList (const char* imp, char ***list, int *n_thorns)
       return (-1);
     }
     /* recourse thorn tree */
-    for (node = SKTreeFindFirst (thornlist), *n_thorns = 0;
+    for (node = SKTreeFindFirst (thornlist), 
+         *n_items = 0;
          node; 
          node = node->next, retval++)
     {
       /* list long enough? */
-      if ((*n_thorns) >= alloc_size)
+      if ((*n_items) >= alloc_size)
       {
         /* no: realloc! */
         alloc_size += _MY_THORN_JUNK_SIZE;
@@ -554,16 +713,16 @@ int CCTK_ThornList (const char* imp, char ***list, int *n_thorns)
       } 
 
       /* store thorn */
-      (*list)[*n_thorns] = (char *) malloc ((strlen (node->key) + 1) * sizeof (char));
-      strcpy ((*list)[*n_thorns], node->key);
-      (*n_thorns)++;
+      (*list)[*n_items] = (char *) malloc ((strlen (node->key) + 1) * sizeof (char));
+      strcpy ((*list)[*n_items], node->key);
+      (*n_items)++;
     }
   }
 
   /* if necessary, shrink paramlist again. */
-  if ((*n_thorns) < alloc_size)
+  if ((*n_items) < alloc_size)
   {
-    alloc_size += (*n_thorns);
+    alloc_size += (*n_items);
     *list = (char **) realloc ((*list), alloc_size);
     
     if (! (*list)) 
@@ -646,7 +805,6 @@ t_sktree *CCTK_ImpThornList(const char *name)
 
   /* Find the implementation */
   node = SKTreeFindNode(implist, name);
-
 
   if(node)
   {

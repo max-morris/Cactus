@@ -19,9 +19,8 @@
 #include "cctk_WarnLevel.h"
 #include "cctk_Bindings.h"
 #include "cctk_Misc.h"
-
-/* FIXME. This shouldn't be here !*/
-#include "thornlist.h"
+#include "cctk_ActiveThorns.h"
+#include "cctk_ParameterFunctions.h"
 
 static char *rcsid = "$Header$";
 
@@ -31,11 +30,9 @@ char *compileTime(void);
 char *compileDate(void);
 int CCTK_GetCommandLine(char ***outargv);
 
+static void CCTKi_CommandLinePrintParameter(t_param_prop *properties);
+
 static int redirectsubs;
-
-/* FIXME. This shouldn't be in this file */
-int CCTK_IsThornCompiled(const char *thorn) ;
-
 
 /* The functions used to deal with each option. */
 
@@ -58,7 +55,9 @@ int CCTK_IsThornCompiled(const char *thorn) ;
 
 void CCTKi_CommandLineTestThornCompiled(const char *optarg)
 {
-  if(CCTK_IsThornCompiled(optarg))
+  int retval;
+
+  if(retval = CCTK_IsThornCompiled(optarg))
   {
     printf("Thorn '%s' available.\n", optarg);
   }
@@ -66,44 +65,100 @@ void CCTKi_CommandLineTestThornCompiled(const char *optarg)
   {
     printf("Thorn '%s' unavailable.\n", optarg);
   }
-  exit(1);
+
+  exit(retval);
 }
 
-void CCTKi_CommandLineDescribeAllParameters(void)
+
+void CCTKi_CommandLineDescribeAllParameters(const char *optarg)
 {
-  CCTKi_BindingsParameterHelp(NULL,"%s",stdout);
-  exit(1);
+  int n_thorns;
+  char **thornlist;
+  int thorn;
+  int n_parameters;
+  char **parameterlist;
+  int parameter;
+  const char *implementation;
+  t_param_prop *properties;
+
+  CCTK_ThornList(0, &thornlist, &n_thorns);
+
+  for(thorn = 0; thorn < n_thorns; thorn++)
+  {
+    implementation = CCTK_ThornImplementation(thornlist[thorn]);
+    CCTK_ParameterList(thornlist[thorn], &parameterlist, &n_parameters);
+
+    for(parameter = 0 ; parameter < n_parameters; parameter++)
+    {
+      properties = CCTK_ParameterInfo(parameterlist[parameter], thornlist[thorn]);
+
+      if(optarg)
+      {
+        switch(*optarg)
+        {
+          case 'v':
+            CCTKi_CommandLinePrintParameter(properties);
+            break;
+          default :
+            fprintf(stderr, "Unknown verbosity option %s\n", optarg);
+            exit(2);
+        }
+      }
+      else
+      {
+        if(properties->scope == SCOPE_PRIVATE)
+        {
+          printf("%s::%s\n", thornlist[thorn], parameterlist[parameter]);
+        }
+        else
+        {
+          printf("%s::%s\n", implementation, parameterlist[parameter]);
+        }
+      }
+
+      free(parameterlist[parameter]);
+    }
+    free(parameterlist);
+    free(thornlist[thorn]);
+  }
+  free(thornlist);
+
+  /*  CCTKi_BindingsParameterHelp(NULL,"%s",stdout);*/
+ 
+  exit(0);
 }
 
 void CCTKi_CommandLineDescribeParameter(const char *optarg)
 {
   char *thorn;
   char *param;
+  t_param_prop *properties;
+  t_range *range;
+  const char *cthorn;
 
-  /*
-  CCTKi_BindingsParameterHelp(optarg,"%s",stdout);
-  */
- 
   Util_SplitString(&thorn, &param, optarg, "::");
 
   if(!param)
   {
-    ParameterPrintDescription(optarg,
-                              NULL, /*const char *thorn,*/
-                              "..%s..%s\n",/*  const char *format,*/
-                              stdout);
+    properties = CCTK_ParameterInfo(optarg, NULL);
   }
   else
   {
-    ParameterPrintDescription(param,
-                              thorn, /*const char *thorn,*/
-                              "..%s..%s\n",/*  const char *format,*/
-                              stdout);
-  free(thorn);
-  free(param);
+    properties = CCTK_ParameterInfo(param, thorn);
+
+    if(!properties)
+    {
+      cthorn = CCTK_ImplementationThorn(thorn);
+      properties = CCTK_ParameterInfo(param, cthorn);
+    }
+
+    free(thorn);
+    free(param);
   }
 
-  exit(1);
+  CCTKi_CommandLinePrintParameter(properties);
+    
+  exit(0);
 }
 
 void CCTKi_CommandLineTestParameters(const char *optarg)
@@ -193,12 +248,8 @@ void CCTKi_CommandLineRedirectStdout(void)
 
 void CCTKi_CommandLineListThorns(void)
 {
-  int i;
   printf ("\n---------------Compiled Thorns-------------\n");
-  for(i=0; i < nthorns; i++)
-  {
-    fprintf(stdout, "%s\n", thorn_name[i]);
-  }
+  CCTKi_ListThorns(stdout, "  %s\n", 0);
   printf ("-------------------------------------------\n\n");
   exit(1);
 }
@@ -344,37 +395,38 @@ void CCTKi_CommandLineFinished(void)
 }
 
 
-
-
  /*@@
-   @routine    CCTK_IsThornCompiled
-   @date       Sat May 16 14:47:14 1998
+   @routine    CCTKi_CommandLinePrintParameter
+   @date       Sun Oct 17 22:11:31 1999
    @author     Tom Goodale
    @desc 
-   Determines if a thorn was compiled into cactus.
-   Returns 1 if the thorn is available, 0 otherwise.
+   Prints a parameter.
    @enddesc 
    @calls     
    @calledby   
    @history 
+ 
    @endhistory 
 
 @@*/
-
-int CCTK_IsThornCompiled(const char *thorn) 
+static void CCTKi_CommandLinePrintParameter(t_param_prop *properties)
 {
-  int i;
-  char full_thorn_name[507];
+  t_range *range;
 
-  for(i=0; i < nthorns; i++)
+  if(properties)
   {
-    if(!strcmp(thorn_name[i], thorn)) return 1;
-    sprintf(full_thorn_name, "thorn_%s", thorn_name[i]);
-    if(!strcmp(full_thorn_name, thorn)) return 1;    
-  };
-  
-  return 0;
+    printf("Parameter:   %s::%s - \"%s\"\n", properties->thorn, properties->name, properties->description);
+    printf("Type:        %s\n", cctk_parameter_type_names[properties->type-1]);
+    printf("Default:     %s\n", properties->defval);
+    printf("Scope:       %s\n", cctk_parameter_scopes[properties->scope-1]);
+    
+    for(range=properties->range; range; range=range->next)
+    {
+      printf("  Range:     %s\n", range->range);
+      printf("    Origin:      %s\n", range->origin);
+      printf("    Description: %s\n", range->description);
+    }
+  }
+
+  return;
 }
-
-
-
