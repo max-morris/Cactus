@@ -529,7 +529,10 @@ which should be consulted for the full range of configuration options.
         {\tt CUSTOM}, {\tt NATIVE}, {\tt MPICH} or {\tt LAM}.
 
 \item [{\tt HDF5}]
-Supported values are {\it yes}.
+Supported values are {\it yes, no}. A blank value is taken as {\it no}.
+
+\item [{\tt LAPACK}]
+Supported values are {\it yes, no}. A blank value is taken as {\it no}.
 
 \item [{\tt PTHREADS}]
 Supported values are {\it yes}.
@@ -661,7 +664,7 @@ locations given in the files in {\tt lib/make/extras/MPI}.
 To compile with HDF5 ({\tt http://hdf.ncsa.uiuc.edu/whatishdf5.html}),
 the configure options are
 
-{\tt HDF5 = YES [HDF5\_DIR = <dir>] [LIBZ\_DIR = <dir>]}
+{\tt HDF5 = yes/no [HDF5\_DIR = <dir>] [LIBZ\_DIR = <dir>]}
 
 If HDF5\_DIR is not given the configuration process will search for an
 installed HDF5 package in some standard places (defined in
@@ -669,6 +672,33 @@ installed HDF5 package in some standard places (defined in
 libz.a, the configuration process also searches for that library and adds it
 to the linker flags. You may also point directly to an installation of libz.a
 by setting LIBZ\_DIR.\\
+
+
+\subsubsection{LAPACK: Linear Algebra PACKage}
+
+To compile with LAPACK ({\tt http://www.netlib.org/lapack/}),
+the configure options are
+
+\begin{verbatim}
+LAPACK = yes | no | <blank>
+[ LAPACK_DIR = <dir> | none ]
+[ LAPACK_EXTRA_LIBS_DIRS = <dir> ]
+[ LAPACK_LIBS = <libs> ]
+[ LAPACK_EXTRA_LIBS = <libs> ]
+\end{verbatim}
+
+If LAPACK\_DIR is not given the configuration process will search for a
+LAPACK library {\it liblapack.[\{a,so\}]} in some standard places (defined in
+{\tt lib/make/extras/LAPACK}). If {\t LAPACK\_DIR} is set to {\it none} the
+LAPACK library path is assumed to be installed in a standard system location
+(eg. {\i /usr/lib/}) and thus the library path will not be added to the linker's
+command line.
+
+Because LAPACK doesn't come as a standardized system installation, there are
+additional configuration variables to set the name of the lapack library
+({\t LAPACK\_LIBS}) as well as the name ({\t LAPACK\_EXTRA\_LIBS}) and location
+({\t LAPACK\_EXTRA\_LIBS\_DIRS}) of extra libraries that are required by
+LAPACK itself.
 
 
 \subsubsection{PTHREADS: POSIX threads}
