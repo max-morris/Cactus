@@ -35,11 +35,11 @@ else
     CFLAGS="/nologo /Oxy- /Gd"
   fi
 
-  if test -z "CXXFLAGS" ; then 
+  if test -z "$CXXFLAGS" ; then 
     CXXFLAGS="/nologo /TP /Oxy- /Gd"
   fi
 
-  if test -z "CXXFLAGS" ; then 
+  if test -z "$F90FLAGS" ; then 
     F90FLAGS="/fast /iface:cref"
   fi
 
@@ -70,6 +70,10 @@ else
 # So ignore the LIBDIRS variable and don't put flags on.
 
   GENERAL_LIBRARIES='$(LIBS)' 
+
+# The Windows file system requires perl backup files to be made when
+# doing inplace editing
+  PERL_BACKUP_NECESSARY='yes'
 
   cat >> cctk_archdefs.h <<EOF;
 
