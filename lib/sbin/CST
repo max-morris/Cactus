@@ -6,7 +6,7 @@
 #  @desc 
 #  Parses the the configuration files for thorns.
 #  @enddesc 
-#  @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.37 2000-06-08 10:19:31 allen Exp $
+#  @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.38 2000-08-31 14:03:00 goodale Exp $
 #@@*/
 
 # Global parameter to track the number of errors from the CST
@@ -65,6 +65,8 @@ if (!-e "$sbin_dir/parameter_parser.pl" )
 require "$sbin_dir/parameter_parser.pl";
 require "$sbin_dir/interface_parser.pl";
 require "$sbin_dir/ScheduleParser.pl";
+require "$sbin_dir/ConfigurationParser.pl";
+require "$sbin_dir/ProcessConfiguration.pl";
 require "$sbin_dir/create_c_stuff.pl";
 require "$sbin_dir/create_fortran_stuff.pl";
 require "$sbin_dir/GridFuncStuff.pl";
@@ -87,8 +89,22 @@ print "Reading ThornList...\n";
 %thorns = &CreateThornList($cctk_home, $activethorns);
 
 # Parse the interface.ccl files
+print "Parsing configuration files...\n";
+$configuration_database = &CreateConfigurationDatabase(%thorns);
+
+#$debug_configuration = 1;
+if($debug_configuration)
+{
+  &PrintConfigurationDatabase($configuration_database);
+}
+
+# Restrict the rest of this to thorns with source
+
+&SplitThorns($configuration_database, \%thorns, \%source_thorns, \%nosource_thorns);
+
+# Parse the interface.ccl files
 print "Parsing interface files...\n";
-%interface_database = &create_interface_database(%thorns);
+%interface_database = &create_interface_database(%source_thorns);
 
 #$debug_interface = 1;
 if($debug_interface)
@@ -98,11 +114,11 @@ if($debug_interface)
 
 # Parse the parameter.ccl files
 print "Parsing parameter files...\n";
-%parameter_database = &create_parameter_database(%thorns);
+%parameter_database = &create_parameter_database(%source_thorns);
 
 # Parse the schedule.ccl files
 print "Parsing schedule files...\n";
-%schedule_database = &create_schedule_database(%thorns);
+%schedule_database = &create_schedule_database(%source_thorns);
 
 print "Checking consistency...\n";
 %parameter_database = &CheckImpParamConsistency(scalar(keys %interface_database), %interface_database, %parameter_database);
@@ -129,22 +145,22 @@ print "Creating Thorn-Flesh bindings...\n";
 &CreateBindings($bindings_dir, \%parameter_database, \%interface_database, \%schedule_database);
 
 # Create header file of active thorns for the code
-@activethornsheader = &CreateActiveThornsHeader(%thorns);
+@activethornsheader = &CreateActiveThornsHeader(%source_thorns);
 &OutputFile("$bindings_dir/include/", "thornlist.h", @activethornsheader);
 
 # Create define file of active thorns
-@definethornsheader = &CreateDefineThornsHeader(%thorns);
+@definethornsheader = &CreateDefineThornsHeader(%source_thorns);
 &OutputFile("$bindings_dir/include/", "cctk_DefineThorn.h", @definethornsheader);
 
 # Create define file for this thorn
-@definethisthornheader = &CreateDefineThisThornHeader(%thorns);
+@definethisthornheader = &CreateDefineThisThornHeader(%source_thorns);
 &OutputFile("$bindings_dir/include/", "definethisthorn.h", @definethisthornheader);
 
 # Create the header files used by the thorns
 &BuildHeaders($cctk_home,$bindings_dir,%interface_database);
 
 # Finally (must be last), create the make.thornlist file.
-@make_thornlist = &CreateMakeThornlist(%thorns);
+@make_thornlist = &CreateMakeThornlist(\%thorns);
 
 # Stop the make process if there were any errors
 if ($CST_errors)
@@ -316,23 +332,34 @@ sub get_global_parameters
 
 sub CreateMakeThornlist
 {
-  my(%thorns) = @_;
+  my($thorns) = @_;
   my($thorn);
   my($thornlist);
+  my($config_thornlist);
 
-  $thornlist = "THORNS =";
-  foreach $thorn (keys %thorns)
+  $thornlist        = "THORNS        =";
+  $config_thornlist = "CONFIG_THORNS =";
+
+  foreach $thorn (keys %$thorns)
   {
-    # Ignore the main sources - they are dealt with separately
-    next if ($thorn =~ m:Cactus:);
+    if($configuration_database->{"\U$thorn OPTIONS\E"} !~ m/NO_SOURCE/i &&
+      $thorn ne "Cactus")
+    {
+      $thorns->{$thorn} =~ m:(.*)/(.*)/(.*):;
 
-    $thorns{$thorn} =~ m:(.*)/(.*)/(.*):;
+      # Only place arrangement_name/thorn_name in the file.
+      $thornlist .= " $2/$3";
+    }
 
-    # Only place package_name/thorn_name in the file.
-    $thornlist .= " $2/$3";
+    if( -r "$thorns->{$thorn}/configuration.ccl")
+    {
+      $thorns->{$thorn} =~ m:(.*)/(.*)/(.*):;
+      # Only place arrangement_name/thorn_name in the file.
+      $config_thornlist .= " $2/$3";
+    }
   }
 
-  return ("$thornlist", "");
+  return ("$thornlist", "", "$config_thornlist", "");
 }
 
 #/*@@
