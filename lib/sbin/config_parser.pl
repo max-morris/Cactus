@@ -1,19 +1,32 @@
-#! /usr/bin/perl
+#! /usr/bin/perl -s
 
-$in = shift(@ARGV);
-$tmphome = shift(@ARGV);
-
-if (!$in || !$tmphome) 
+if(! $top)
 {
-    printf "Usage: xxx indir tmpdir";
+  $top = `pwd`;
+}
+
+if(! $config_dir)
+{
+  $config_dir = "$top/config-data";
 }
 
 # Set up the CCTK home directory
-$cachome = $ENV{'CCTK_HOME'} || "$ENV{HOME}/CCTK";
-$cachome =~ s:/$::g;
+if(! $cctk_home)
+{
+  $cctk_home = $ENV{'CCTK_HOME'} || "$ENV{HOME}/CCTK";
+  $cachome =~ s:/$::g;
+}
 
-#
-#if (!-e "$cachome/lib/perl/thorn_utils.pl" ) {
+$activethorns = shift(@ARGV);
+
+if (! $activethorns) 
+{
+    printf "Usage: config_parser [-top=<TOP>] [-config_dir=<config directory>] [-cctk_home=<CCTK home dir>] ActiveThornList";
+    exit;
+}
+
+
+#if (!-e "$cctk_home/lib/perl/thorn_utils.pl" ) {
 #    print <<EOE;
 #
 #ERROR: Cannot find the cactus perl libraries!
@@ -34,14 +47,18 @@ $cachome =~ s:/$::g;
 #    exit;
 #}
 
+require "$cctk_home/lib/sbin/parameter_parser.pl";
+require "$cctk_home/lib/sbin/interface_parser.pl";
+require "$cctk_home/lib/sbin/create_c_stuff.pl";
+require "$cctk_home/lib/sbin/create_fortran_stuff.pl";
+require "$cctk_home/lib/sbin/GridFuncStuff.pl";
 
-require "lib/sbin/parameter_parser.pl";
-require "lib/sbin/interface_parser.pl";
-require "lib/sbin/create_c_stuff.pl";
-require "lib/sbin/create_fortran_stuff.pl";
-require "lib/sbin/GridFuncStuff.pl";
+%thorns = &create_thorn_list($activethorns);
 
-%thorns = &create_thorn_list;
+foreach $thorn (keys %thorns)
+{
+  print "$thorn in dir $thorns{$thorn}\n";
+}
 
 %interface_database = &create_interface_database(%thorns);
 
@@ -94,10 +111,41 @@ foreach $line (@GFstuff)
       
 sub create_thorn_list
 {
-  return ("flesh", "toolkits/test/flesh", 
-	   "test1", "toolkits/test/test1", 
-	   "test2", "toolkits/test/test2",
-	   "test3", "toolkits/test/test3");
+  local($activethorns) = @_;
+  local(%thornlist);
+  local($thorn, $toolkit, $thorn_name);
+
+  open(ACTIVE, "<$activethorns") || die "Cannot open ActiveThorns file $activethorns !";
+
+  while(<ACTIVE>)
+  {
+    s/thorn_//g;
+    s/\#(.*)$//g;
+    s/\n//g;		# Different from chop...
+    next if (m:^\s*$:);
+    foreach $thorn (split(' '))
+    {
+      $thorn =~ m:(.*)[/\\](.*):;
+
+      $toolkit = $1;
+      $thorn_name = $2;
+
+      if( -r "$cctk_home/toolkits/$thorn/param.ccl" &&
+	  -r "$cctk_home/toolkits/$thorn/interface.ccl" &&
+	  -r "$cctk_home/toolkits/$thorn/schedule.ccl")
+      {
+	$thornlist{"$thorn_name"} = "$cctk_home/toolkits/$thorn";
+      }
+      else
+      {
+	print "Ignoring $thorn - missing ccl file(s)\n";
+	next;
+      }
+    }
+  }
+  close ACTIVE;
+
+  return %thornlist;
 }
 
 
