@@ -16,6 +16,7 @@
 #include "IOMethods.h"
 #include "Groups.h"
 #include "StoreHandledData.h"
+#include "FortranString.h"
 #include "IO.h"
 
 static char *rcsid = "$Header$";
@@ -467,6 +468,9 @@ int CactusDefaultOutputGH(cGH *GH)
 
    @returntype int
    @returndesc
+              -1    = No such IO method found
+               0    = success
+   @endreturndesc
    @endreturndesc
 
    @version    $Header$
@@ -474,14 +478,34 @@ int CactusDefaultOutputGH(cGH *GH)
 @@*/
 
 int CactusDefaultOutputVarAsByMethod(cGH *GH, 
-                             const char *var,   
-                             const char *methodname, 
-                             const char *alias)
+                                     const char *var,   
+                                     const char *methodname, 
+                                     const char *alias)
 {
-  printf("In default method CactusDefaultOutputVarAsByMethod\n");
+  struct IOMethod *method = NULL;
+
+  CCTK_GetHandle (IOMethods, methodname, (void **) &method);
+  if (! method)
+  {
+    return -1;
+  }
+
+  method->OutputVarAs(GH, var, alias);
+
   return 0;
 }
 
+void FMODIFIER FORTRAN_NAME (CCTK_OutputVarAsByMethod)
+                            (cGH *GH, int *ierror, THREE_FORTSTRINGS_ARGS)
+{
+  THREE_FORTSTRINGS_CREATE(var, methodname, alias);
+
+  *ierror = CactusDefaultOutputVarAsByMethod (GH, var, methodname, alias);
+
+  free (var);
+  free (methodname);
+  free (alias);
+}
 
 
 /************************************************************************
