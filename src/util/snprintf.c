@@ -573,14 +573,14 @@ static LDOUBLE abs_val (LDOUBLE value)
   return result;
 }
 
-static LDOUBLE mypow10 (int exp)
+static LDOUBLE mypow10 (int exponent)
 {
   LDOUBLE result = 1;
 
-  while (exp)
+  while (exponent)
   {
     result *= 10;
-    exp--;
+    exponent--;
   }
   
   return result;
@@ -604,8 +604,8 @@ static int fmtfp (char *buffer, size_t *currlen, size_t maxlen,
   int signvalue = 0;
   LDOUBLE ufvalue;
   LDOUBLE logvalue;
-  long exponent;
-  char expsign;
+  long exponent = 0;
+  char expsign = 0;
   char iconvert[20];
   char fconvert[20];
   char econvert[20];
