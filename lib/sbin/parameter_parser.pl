@@ -151,12 +151,10 @@ sub parse_param_ccl
 
       $use_or_extend = $1;
       $type = "\U$2\E";
-
       $variable = $3;
       $description = $4;
-      $description =~ s:^\s*::;
-
       $options = $5;
+      $description =~ s:^\s*::;
 
       if($use_or_extend =~ m:USES:i)
       {
