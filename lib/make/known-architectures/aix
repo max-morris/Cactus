@@ -69,7 +69,7 @@ else
     if test "$MPI" = "NATIVE" ; then
       case "$CC:$CXX" in 
         "xlc:xlC"|"cc:xlC")
-          : ${LD=mpCC}
+          LD=mpCC
           ;;
          *)
         echo "NATIVE MPI requires xlc and xlC"
