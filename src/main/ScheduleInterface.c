@@ -30,7 +30,7 @@
 
 #include "cctki_FortranWrappers.h"
 
-#include "CactusTimers.h"
+#include "cctk_Timers.h"
 
 static const char *rcsid = "$Header$";
 
