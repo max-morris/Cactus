@@ -124,7 +124,7 @@ $(CCTK_LIBDIR)/$(LIBNAME_PREFIX)%$(LIBNAME_SUFFIX): update
 	@echo Checking status of $(notdir $@)
     # protect the following mkdir against parallel makes
 	if [ ! -d $(SCRATCH_BUILD) ]; then msg=`$(MKDIR) $(MKDIRFLAGS) $(SCRATCH_BUILD) 2>&1`; if [ -d $(SCRATCH_BUILD) ]; then exit 0; else echo "$$msg"; exit 1; fi; fi
-	if [ ! -d $(BUILD_DIR) ]; then $(MKDIR) $(MKDIRFLAGS) $(BUILD_DIR) ; fi
+	if [ ! -d $(BUILD_DIR) ]; then msg=`$(MKDIR) $(MKDIRFLAGS) $(BUILD_DIR) 2>&1`; if [ -d $(BUILD_DIR) ]; then exit 0; else echo "$$msg"; exit 1; fi; fi
 	thorn_name=$(@:$(CCTK_LIBDIR)/$(LIBNAME_PREFIX)%$(LIBNAME_SUFFIX)=%); \
 	if [ "$$thorn_name" = "Cactus" ] ; then src_dir=$(CCTK_HOME)/src ; \
 	else if [ "$$thorn_name" = "CactusBindings" ] ; then src_dir=$(BINDINGS_DIR) ; \
