@@ -60,3 +60,16 @@
 
 #define CACTUS_CONVERGENCE 100
 
+
+/* This shouldn't be here, but need it externally visable. */
+
+int rfrInitTree(void **rfr_top,   
+		int (*StorageOn)(void *, int),
+		int (*StorageOff)(void *, int),
+		int (*CommunicationOn)(void *, int),
+		int (*CommunicationOff)(void *, int),
+		int (*Triggerable)(int),
+		int (*TriggerSaysGo)(int),
+		int (*TriggerAction)(void *, int),
+		int (*CallFunc)(void *, int, void *));
+
