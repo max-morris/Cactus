@@ -965,7 +965,7 @@ of the ``grid lines''. It can be moved by half a grid spacing in
 any or all dimensions. In the latter case, it will be placed in
 the center of a cell.
 
-The staggering of grid function is a pure {\em physical} property:
+The staggering of a grid function is a pure {\em physical} property:
 the values will be calculated at a different position in physical
 space. Still the indexing (or bookeeping)  is kept the same for all
 types of staggerings: the indexing of the default unstaggered grids is
@@ -1711,7 +1711,7 @@ different architectures or configurations.
 \subsection{Staggering}
 \label{sec:st}
 
-{\bf Indexing, ghostzones, etc.}
+\subsubsection{Indexing, ghostzones, etc.}
 Note that staggering does not make any changes to the indexing of a
 gridfunction: the black solid circles in diagram \ref{fig:stagger2} and their
 associated staggered gridfunctions (connected by arrows) have the same index!
@@ -1731,7 +1731,7 @@ Note that the number of center staggered gridpoints (fat crosses)
 corresponds to the number of default gridpoints on all processors but
 the last one. (The same is true for full staggered gridpoints).
 
-{\bf Staggertypes}
+\subsubsection{Staggertypes}
 The string specifying the staggering is encoded in a number called
 the {\em staggerindex}. With the 3 supported staggerings, the string
 is converted into a base-3 number. Several routines exist, to extract the
