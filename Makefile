@@ -16,7 +16,7 @@
 #
 #   
 #   @enddesc 
-#   @version $Id: Makefile,v 1.83 2000-04-05 14:41:48 allen Exp $
+#   @version $Id: Makefile,v 1.84 2000-04-17 18:24:53 goodale Exp $
 # @@*/
 
 ##################################################################################
@@ -560,19 +560,23 @@ $(addsuffix -config,$(CONFIGURATIONS)):
 	echo $(DIVIDER)
 	if test -z "$(THORNLIST)" || (test -n "$(THORNLIST)" && test -e "$(THORNLIST_DIR)/$(THORNLIST)") ; \
 	then \
-	$(SETUP_ENV) $(PERL) -s $(SETUP) -reconfig=1 $(SETUP_OPTIONS) $(@:%-config=%) ; \
-	if test -n "$(THORNLIST)" ; \
-	then \
-	cp $(THORNLIST_DIR)/$(THORNLIST) $(CONFIGS_DIR)/$(@:%-config=%)/ThornList;\
-	fi ; \
-	echo $(DIVIDER) ; \
-	if test "x$(PROMPT)" = "xno" ; then \
-	gmake $(@:%-config=%); \
-	else \
-	echo Use $(MAKE) $(@:%-config=%) to build the configuration. ; \
-	fi; \
-	else \
-	echo "ThornList $(THORNLIST_DIR)/$(THORNLIST) does not exist" ; \
+	  if ! $(SETUP_ENV) $(PERL) -s $(SETUP) -reconfig=1 $(SETUP_OPTIONS) $(@:%-config=%) ; then \
+            echo "" ;                                                      \
+            echo "Error reconfiguring $@" ;                                \
+            exit 2                                 ;                       \
+          fi ;                                                             \
+	  if test -n "$(THORNLIST)" ; \
+	  then \
+	    cp $(THORNLIST_DIR)/$(THORNLIST) $(CONFIGS_DIR)/$(@:%-config=%)/ThornList;\
+	  fi ; \
+	  echo $(DIVIDER) ; \
+	  if test "x$(PROMPT)" = "xno" ; then \
+	    gmake $(@:%-config=%); \
+	  else \
+	    echo Use $(MAKE) $(@:%-config=%) to build the configuration. ; \
+	  fi; \
+	  else \
+	  echo "ThornList $(THORNLIST_DIR)/$(THORNLIST) does not exist" ; \
 	fi 
 	@echo $(DIVIDER)
 endif
@@ -581,30 +585,34 @@ endif
 	@echo $(DIVIDER)
 	@echo Configuration $(@:%-config=%) does not exist.; 
 	if test "x$(PROMPT)" = "xyes" ; then \
-	echo Setup configuration $(@:%-config=%) \(yes\)?; \
-	read yesno rest ; \
+	  echo Setup configuration $(@:%-config=%) \(yes\)?; \
+	  read yesno rest ; \
 	fi; \
 	if [ "x$$yesno" = "xno" -o "x$$yesno" = "xn" -o "x$$yesno" = "xNO" -o "x$$yesno" = "xN" ] ;\
 	then \
-	echo Setup cancelled ;     \
+	  echo Setup cancelled ;     \
 	else \
-	echo Setting up new configuration $(@:%-config=%); \
-	if test -z "$(THORNLIST)" || (test -n "$(THORNLIST)" && test -e "$(THORNLIST_DIR)/$(THORNLIST)") ; \
-	then \
-	$(SETUP_ENV) $(PERL) -s $(SETUP) $(SETUP_OPTIONS) $(@:%-config=%) ; \
-	if test -n "$(THORNLIST)"; \
-	then \
-	cp $(THORNLIST_DIR)/$(THORNLIST) $(CONFIGS_DIR)/$(@:%-config=%)/ThornList;\
-	fi ;\
-	echo $(DIVIDER)   ;  \
-	if test "x$(PROMPT)" = "xno" ; then \
-	gmake $(@:%-config=%); \
-	else \
-	echo Use $(MAKE) $(@:%-config=%) to build the configuration.; \
-	fi; \
-	else \
-	echo "ThornList $(THORNLIST_DIR)/$(THORNLIST) does not exist" ; \
-	fi ; \
+	  echo Setting up new configuration $(@:%-config=%); \
+	  if test -z "$(THORNLIST)" || (test -n "$(THORNLIST)" && test -e "$(THORNLIST_DIR)/$(THORNLIST)") ; \
+	  then \
+	    if ! $(SETUP_ENV) $(PERL) -s $(SETUP) $(SETUP_OPTIONS) $@ ; then \
+              echo "" ;                                                      \
+              echo "Error creating configuration $@" ;                       \
+              exit 2                                 ;                       \
+            fi ;                                                             \
+	    if test -n "$(THORNLIST)"; \
+	    then \
+	      cp $(THORNLIST_DIR)/$(THORNLIST) $(CONFIGS_DIR)/$(@:%-config=%)/ThornList;\
+	    fi ;\
+	    echo $(DIVIDER)   ;  \
+	    if test "x$(PROMPT)" = "xno" ; then \
+	      gmake $(@:%-config=%); \
+	    else \
+	      echo Use $(MAKE) $(@:%-config=%) to build the configuration.; \
+	    fi; \
+	  else \
+	    echo "ThornList $(THORNLIST_DIR)/$(THORNLIST) does not exist" ; \
+	  fi ; \
 	fi 
 	@echo $(DIVIDER)
 
@@ -762,31 +770,35 @@ downsize:
 %::
 	@echo $(DIVIDER)
 	if test "x$(PROMPT)" = "xyes" ; then \
-	echo Setup configuration $@ \(yes\)?; \
-	read yesno rest ; \
+	  echo Setup configuration $@ \(yes\)?; \
+	  read yesno rest ; \
 	fi; \
 	if [ "x$$yesno" = "xno" -o "x$$yesno" = "xn" -o "x$$yesno" = "xNO" -o "x$$yesno" = "xN" ] ; \
 	then  \
-	echo Setup cancelled ; \
+	  echo Setup cancelled ; \
 	else \
-	echo Setting up new configuration $@ ; \
-	if test -z "$(THORNLIST)" || (test -n "$(THORNLIST)" && test -e "$(THORNLIST_DIR)/$(THORNLIST)") ; \
-	then \
-	$(SETUP_ENV) $(PERL) -s $(SETUP) $(SETUP_OPTIONS) $@ ; \
-	if test -n "$(THORNLIST)" ; \
-	then \
-	echo Using ThornList $(THORNLIST_DIR)/$(THORNLIST) ; \
-	cp $(THORNLIST_DIR)/$(THORNLIST) $(CONFIGS_DIR)/$@/ThornList ; \
-	fi ; \
-	echo $(DIVIDER) ;  \
-	if test "x$(PROMPT)" = "xno" ; then \
-	gmake $(@:%-config=%); \
-	else \
-	echo Use $(MAKE) $@ to build the configuration. ; \
-	fi; \
-	else \
-	echo "ThornList $(THORNLIST_DIR)/$(THORNLIST) does not exist" ; \
-	fi ; \
+	  echo Setting up new configuration $@ ; \
+	  if test -z "$(THORNLIST)" || (test -n "$(THORNLIST)" && test -e "$(THORNLIST_DIR)/$(THORNLIST)") ; \
+	  then \
+	  if ! $(SETUP_ENV) $(PERL) -s $(SETUP) $(SETUP_OPTIONS) $@ ; then \
+            echo "" ;                                                      \
+            echo "Error creating configuretion $@" ;                       \
+            exit 2                                 ;                       \
+          fi ;                                                             \
+	  if test -n "$(THORNLIST)" ; \
+	  then \
+	    echo Using ThornList $(THORNLIST_DIR)/$(THORNLIST) ; \
+	    cp $(THORNLIST_DIR)/$(THORNLIST) $(CONFIGS_DIR)/$@/ThornList ; \
+	  fi ; \
+	  echo $(DIVIDER) ;  \
+	  if test "x$(PROMPT)" = "xno" ; then \
+	    gmake $(@:%-config=%); \
+	  else \
+	    echo Use $(MAKE) $@ to build the configuration. ; \
+	  fi; \
+	  else \
+	    echo "ThornList $(THORNLIST_DIR)/$(THORNLIST) does not exist" ; \
+	  fi ; \
 	fi 
 	@echo $(DIVIDER)
 
