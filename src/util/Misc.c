@@ -19,6 +19,7 @@
 #include <assert.h>
 #include <limits.h>
 #include <math.h>
+#include <float.h>
 
 #include "gnu_regex.h"
 
@@ -431,8 +432,8 @@ int Util_DoubleInRange(double inval, const char *range)
     }
     else
     {
-      /* No start range given, so use the smallest integer available. */
-      start = INT_MIN;
+      /* No start range given, so use the smallest float available. */
+      start = FLT_MIN;
     }
 
     /* Next find the end of the range */
@@ -444,7 +445,7 @@ int Util_DoubleInRange(double inval, const char *range)
     }
     else
     {
-      /* No end range given, so use the largest integer available. */
+      /* No end range given, so use the largest float available. */
       end = FLT_MAX;
     }
 
