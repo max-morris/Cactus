@@ -14,6 +14,7 @@
 # Some configuration variables
 CONFIG = $(TOP)/config-data
 
+
 DATESTAMP = $(CCTK_HOME)/src/datestamp.c
 export MAKE_DIR  = $(CCTK_HOME)/lib/make
 
@@ -30,11 +31,11 @@ include $(CONFIG)/make.config.defn
 -include $(CONFIG)/make.thornlist
 
 # Build the executable
-$(EXE): $(CONFIG)/make.thornlist $(patsubst %,$(CCTK_LIBDIR)/lib%.a,$(notdir $(THORNS))) $(CCTK_LIBDIR)/libCCTK.a
+$(EXE): $(CONFIG)/make.thornlist $(patsubst %,$(CCTK_LIBDIR)/lib%.a,$(notdir $(THORNS))) $(CCTK_LIBDIR)/libCactus.a
 	@echo $(DIVIDER)
 	@echo Creating $(EXE) from $(THORNS)
 	$(CC) -c $(DATESTAMP) -o $(TOP)/datestamp.o
-	$(CC) -o $@ $(LDFLAGS) $(TOP)/datestamp.o  -L$(CCTK_LIBDIR) $(addprefix -l,$(notdir $(THORNS))) -lCCTK $(LIBDIRS:%=-L%) $(LIBS:%=-l%)
+	$(CC) -o $@ $(LDFLAGS) $(TOP)/datestamp.o  -L$(CCTK_LIBDIR) $(addprefix -l,$(notdir $(THORNS))) -lCactus $(LIBDIRS:%=-L%) $(LIBS:%=-l%)
 	@echo $(DIVIDER)
 	@echo All done !
 	@echo $(DIVIDER)
@@ -46,31 +47,22 @@ $(EXE): $(CONFIG)/make.thornlist $(patsubst %,$(CCTK_LIBDIR)/lib%.a,$(notdir $(T
 # Also checks for the existance of Makefile in the thorn's
 # src directory, and calls that rather than the default makefile
 # used for making thorn libraries.
+#
+# Checks if the library is Cactus, in which case it uses the main source 
+# directoryory.
+
 $(CCTK_LIBDIR)/lib%.a: update
 	@echo $(DIVIDER)
 	@echo Checking status of $(notdir $@)
 	if [ ! -d $(BUILD_DIR) ]; then $(MKDIR) $(BUILD_DIR) ; fi
-	if [ ! -d $(@:$(CCTK_LIBDIR)/lib%.a=$(BUILD_DIR)/%) ]; then $(MKDIR) $(@:$(CCTK_LIBDIR)/lib%.a=$(BUILD_DIR)/%) ; fi
-	cd $(@:$(CCTK_LIBDIR)/lib%.a=$(BUILD_DIR)/%); \
-	if [ -e $(@:$(CCTK_LIBDIR)/lib%.a=$(TOOLKIT_DIR)/$(filter %$(@:$(CCTK_LIBDIR)/lib%.a=%),$(THORNS))/src)/Makefile ] ; \
-	then $(MAKE) TOP=$(TOP) SRCDIR=$(@:$(CCTK_LIBDIR)/lib%.a=$(TOOLKIT_DIR)/$(filter %$(@:$(CCTK_LIBDIR)/lib%.a=%),$(THORNS))/src) CONFIG=$(CONFIG) NAME=$@ -f $(@:$(CCTK_LIBDIR)/lib%.a=$(TOOLKIT_DIR)/$(filter %$(@:$(CCTK_LIBDIR)/lib%.a=%),$(THORNS))/src)/Makefile ; \
-	else $(MAKE) TOP=$(TOP) SRCDIR=$(@:$(CCTK_LIBDIR)/lib%.a=$(TOOLKIT_DIR)/$(filter %$(@:$(CCTK_LIBDIR)/lib%.a=%),$(THORNS))/src) CONFIG=$(CONFIG) NAME=$@ -f $(MAKE_DIR)/make.thornlib ; \
-	fi
-	@echo $(DIVIDER)
-
-
-# Slightly modified rule for the flesh.
-# Also makes sure all the subdirectories are made.
-$(CCTK_LIBDIR)/libCCTK.a: update
-	@echo $(DIVIDER)
-	@echo Checking status of the flesh
-	if [ ! -d $(BUILD_DIR) ]; then $(MKDIR) $(BUILD_DIR) ; fi
-	if [ ! -d $(@:$(CCTK_LIBDIR)/lib%.a=$(BUILD_DIR)/%) ]; then $(MKDIR) $(@:$(CCTK_LIBDIR)/lib%.a=$(BUILD_DIR)/%) ; \
-	for dir in IO comm main util rfr ; \
-	do if [ ! -d $(@:$(CCTK_LIBDIR)/lib%.a=$(BUILD_DIR)/%)/$$dir ] ; then $(MKDIR) $(@:$(CCTK_LIBDIR)/lib%.a=$(BUILD_DIR)/%)/$$dir ; fi ; \
-	done ; fi 
-	cd $(@:$(CCTK_LIBDIR)/lib%.a=$(BUILD_DIR)/%); \
-	$(MAKE) TOP=$(TOP) SRCDIR=$(CCTK_HOME)/src CONFIG=$(CONFIG) NAME=$@ -f $(MAKE_DIR)/make.thornlib
+	thorn_name=$(@:$(CCTK_LIBDIR)/lib%.a=%); \
+	if [ "$$thorn_name" = "Cactus" ] ; then src_dir=$(CCTK_HOME)/src ; \
+	else src_dir=$(TOOLKIT_DIR)/$(@:$(CCTK_LIBDIR)/lib%.a=$(filter %,$(@:$(CCTK_LIBDIR)/lib%.a=%)))/src ; fi ; \
+	if [ ! -d $(BUILD_DIR)/$$thorn_name ]; then $(MKDIR) $(BUILD_DIR)/$$thorn_name ; fi ; \
+	cd $(BUILD_DIR)/$$thorn_name ; \
+	if [ -r "$$src_dir/Makefile" ] ; then  make_file=$$src_dir/Makefile ; \
+	                  else make_file=$(MAKE_DIR)/make.thornlib ; fi ; \
+	$(MAKE) TOP=$(TOP) SRCDIR=$$src_dir CONFIG=$(CONFIG) NAME=$@ -f $$make_file
 	@echo $(DIVIDER)
 
 
