@@ -20,7 +20,7 @@
 #include "cctk_Misc.h"
 #include "cctk_WarnLevel.h"
 #include "cctk_FortranString.h"
-#include "cctk_Parameters.h"
+#include "cctk_Parameter.h"
 #include "cctk_Comm.h"
 #include "cctk_Flesh.h"
 
@@ -123,11 +123,13 @@ int CCTKi_SetWarnLevel(int level)
 @@*/
 int CCTK_Warn(int level, int line, const char *file, const char *thorn, const char *message)
 {
-
-  DECLARE_CCTK_PARAMETERS
+  int param_type;
+  int cctk_full_warnings;
 
   if(level <= warning_level)
   {
+    cctk_full_warnings = *((CCTK_INT *)CCTK_ParameterGet("cctk_full_warnings","Cactus",&param_type));
+
     if (cctk_full_warnings)
     {
       fprintf(stderr, "WARNING level %d in thorn %s \n  (line %d of %s): \n", 
@@ -256,8 +258,9 @@ void CCTK_FCALL CCTK_FNAME(CCTKi_ExpectOK)
 
 int CCTK_VWarn(int level, int line, const char *file, const char *thorn, const char *format, ...)
 {
-  DECLARE_CCTK_PARAMETERS
-    
+  int cctk_full_warnings;
+  int param_type;
+
   va_list ap;
 
   if(level <= warning_level)
@@ -265,6 +268,8 @@ int CCTK_VWarn(int level, int line, const char *file, const char *thorn, const c
 
     va_start(ap, format);
     
+    cctk_full_warnings = *((CCTK_INT *)CCTK_ParameterGet("cctk_full_warnings","Cactus",&param_type));
+
     if (cctk_full_warnings)
     {
       fprintf(stderr, "WARNING level %d in thorn %s \n  (line %d of %s): \n", 
@@ -310,8 +315,10 @@ int CCTK_VWarn(int level, int line, const char *file, const char *thorn, const c
 @@*/
 int CCTK_ParamWarn(const char *thorn, const char *message)
 {
+  int cctk_strong_param_check;
+  int param_type;
 
-  DECLARE_CCTK_PARAMETERS
+  cctk_strong_param_check = *((CCTK_INT *)CCTK_ParameterGet("cctk_strong_param_check","Cactus",&param_type));
 
   if(cctk_strong_param_check)
   {
@@ -480,10 +487,14 @@ int CCTKi_SetErrorLevel(int level)
 void CCTKi_FinaliseParamWarn(void)
 {
 
-  DECLARE_CCTK_PARAMETERS
+  int param_type;
+  int cctk_strong_param_check;
 
   if (param_errors)
   {
+
+    cctk_strong_param_check = *((CCTK_INT *)CCTK_ParameterGet("cctk_strong_param_check","Cactus",&param_type));
+
     if(cctk_strong_param_check)
     {
       fprintf(stderr,"\nFailed parameter check (%d errors)\n\n",param_errors);
