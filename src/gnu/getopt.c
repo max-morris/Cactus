@@ -27,6 +27,10 @@
 # define _NO_PROTO
 #endif
 
+/* CCTK: Added by Tom Goodale on 15 Feb 2000 */
+#include "cctk_Config.h"
+/* CCTK: End of addition. */
+
 #ifdef HAVE_CONFIG_H
 # include <config.h>
 #endif

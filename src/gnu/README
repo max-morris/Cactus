@@ -21,3 +21,9 @@ These files were taken from the source of the GNU C library
 version 2.1.2, and are licensed under the GNU Library GPL
 (see COPYING.LIB).
 
+Changes from original version:  All changes should be marked with
+/* CCTK: ... */
+
+15 Feb 2000:  getopt.c :  Added inclusion of cctk_Config.h : Tom Goodale
+15 Feb 2000:  regex.c  :  Added inclusion of cctk_Config.h : Tom Goodale
+15 Feb 2000:  regex.c  :  Added #define REGEX_MALLOC       : Tom Goodale

@@ -19,6 +19,10 @@
    write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
+/* CCTK: Added by Tom Goodale on 15 Feb 2000 */
+#define REGEX_MALLOC
+/* CCTK: End of addition. */
+
 /* AIX requires this to be the first thing in the file. */
 #if defined _AIX && !defined REGEX_MALLOC
   #pragma alloca
@@ -26,6 +30,10 @@
 
 #undef	_GNU_SOURCE
 #define _GNU_SOURCE
+
+/* CCTK: Added by Tom Goodale on 15 Feb 2000 */
+#include "cctk_Config.h"
+/* CCTK: End of addition. */
 
 #ifdef HAVE_CONFIG_H
 # include <config.h>
