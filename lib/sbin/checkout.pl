@@ -8,6 +8,8 @@
 #@@*/
 # /usr/bin/perl -s
 
+# These options are only local to this file, while they should be global to 
+# subroutines in CheckoutUtils.pl as well.  Please fix.
 $cvs_ops="-z6 -q";
 $cvs_checkout_ops="-P";
 
