@@ -152,7 +152,79 @@ void FMODIFIER FORTRAN_NAME(CCTK_Warn)(int *level, int *line, THREE_FORTSTRINGS_
   free(file);
 }
 
- /*@@
+
+/*@@
+   @routine    CCTKi_ExpectError
+   @date       Thanksgiving 99
+   @author     Gerd Lanfermann
+   @desc 
+      Used by CCTKi_EXPCTERR macro (src/include/cctk.h)
+      allows testing for error return value, will return a 
+      warnign statement if error is found.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+
+@@*/
+
+void CCTKi_ExpectError(int in, int err, int warnonerr, int line,
+		       const char *file, const char *thorn,
+		       const char *message) 
+{
+  if (in==err) CCTK_Warn(warnonerr, line, file, thorn, message);
+}
+
+
+void FMODIFIER FORTRAN_NAME(CCTKi_ExpectError)
+     (int *in, int *err, int *warnonerr, int *line, THREE_FORTSTRINGS_ARGS)
+{
+  THREE_FORTSTRINGS_CREATE(file,thorn,message)
+  CCTKi_ExpectError(*in, *err, *warnonerr, *line,
+		    file,thorn,message);
+  free(file);
+  free(thorn);
+  free(message);
+}
+/*@@
+   @routine    CCTKi_ExpectOK
+   @date       Thanksgiving 99
+   @author     Gerd Lanfermann
+   @desc 
+      Used by CCTKi_EXPCTOK macro (src/include/cctk.h)
+      allows testing for success return value, will return a 
+      warnign statement otherwise
+   @enddesc 
+   @calls     
+   @calledby   CCTKi_EXPCTOK
+   @history 
+ 
+   @endhistory 
+
+@@*/
+
+void CCTKi_ExpectOK(int in, int ok, int warnonerr, int line,
+		    const char *file, const char *thorn,
+		    const char *message) 
+{
+  if (in!=ok) CCTK_Warn(warnonerr, line, file, thorn, message);
+}
+
+
+void FMODIFIER FORTRAN_NAME(CCTKi_ExpectOK)
+     (int *in, int *ok, int *warnonerr, int *line, THREE_FORTSTRINGS_ARGS)
+{
+  THREE_FORTSTRINGS_CREATE(file,thorn,message)
+  CCTKi_ExpectOK(*in, *ok, *warnonerr, *line,
+		 file,thorn,message);
+  free(file);
+  free(thorn);
+  free(message);
+}
+
+/*@@
    @routine    CCTK_VWarn
    @date       Sun Nov 14 00:23:29 1999
    @author     Tom Goodale
@@ -166,6 +238,7 @@ void FMODIFIER FORTRAN_NAME(CCTK_Warn)(int *level, int *line, THREE_FORTSTRINGS_
    @endhistory 
 
 @@*/
+
 void CCTK_VWarn(int level, int line, const char *file, const char *thorn, const char *format, ...)
 {
   DECLARE_CCTK_PARAMETERS
@@ -179,7 +252,8 @@ void CCTK_VWarn(int level, int line, const char *file, const char *thorn, const 
     
     if (cctk_full_warnings)
     {
-      fprintf(stderr, "WARNING level %d in thorn %s (line %d of %s): \n", level, thorn, line, file);
+      fprintf(stderr, "WARNING level %d in thorn %s (line %d of %s): \n", 
+	      level, thorn, line, file);
       fprintf(stderr, "  -> ");
       vfprintf(stderr, format, ap);
       fprintf(stderr, "\n");
@@ -203,12 +277,12 @@ void CCTK_VWarn(int level, int line, const char *file, const char *thorn, const 
 }  
 
 
- /*@@
+/*@@
    @routine    CCTK_ParamWarn
    @date       Wed Feb 17 00:45:07 1999
    @author     Tom Goodale
    @desc 
-   Warn the user is a parameter error is found
+   Warn the user if a parameter error is found
    @enddesc 
    @calls     
    @calledby   
