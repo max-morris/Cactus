@@ -100,8 +100,9 @@ else
   GET_WD="pwd | sed 's,^/cygdrive/\(.\)/,\1:/,' | sed 's,^//\(.\)/,\1:/,' | sed 's,/,\\\\\\,g' "
 
   C_DEPEND='$(CPP) -E -MM -nostdinc $(CPPFLAGS) '
-
+  C_DEPEND_OUT='-I"$(strip $(subst ;," -I",$(INCLUDE)))" > $@'
   CXX_DEPEND='$(CPP) -E -MM -nostdinc $(CPPFLAGS) '
+  CXX_DEPEND_OUT='-I"$(strip $(subst ;," -I",$(INCLUDE)))" > $@'
 
   MKDIR="mkdir "
   MKDIRFLAGS=" -p "
