@@ -29,11 +29,9 @@ else
   # MPI stuff
  
   if test -n "$MPI" ; then
-      if test "$MPI" = "NATIVE" ; then
-         MPI_LIBS="mpi"
-         MPI_LIB_DIRS="/usr/lpp/ppe.poe/lib"
-         MPI_INC_DIRS="/usr/lpp/ppe.poe/include"
-      fi
+      NATIVE_MPI_LIBS="mpi"
+      NATIVE_MPI_LIB_DIRS="/usr/lpp/ppe.poe/lib"
+      NATIVE_MPI_INC_DIRS="/usr/lpp/ppe.poe/include"
   fi          
 
 fi

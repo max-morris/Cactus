@@ -6,7 +6,7 @@
 #   @desc 
 #   
 #   @enddesc 
-#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/unicos,v 1.10 2000-03-13 15:37:17 allen Exp $
+#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/unicos,v 1.11 2000-04-04 09:57:18 tradke Exp $
 # @@*/
 
 if test "$CCTK_CONFIG_STAGE" = "preferred-compilers" ; then
@@ -49,10 +49,10 @@ EOF
 # MPI stuff
 
   if test -n "$MPI" ; then
-    if test "$MPI" = "NATIVE" ; then
-#     Don't need to do anything for the T3E
-      : 
-    fi
+#   Don't need to set anything for compiling with native MPI on the T3E
+#   We just set NATIVE_MPI_LIBS to non-null so that it passes the
+#   check in lib/make/extras/MPI/NATIVE.
+    NATIVE_MPI_LIBS=" "
   fi
 
 fi

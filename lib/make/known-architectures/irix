@@ -6,7 +6,7 @@
 #    @desc 
 #   
 #    @enddesc 
-#    @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/irix,v 1.17 2000-03-06 22:14:18 goodale Exp $
+#    @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/irix,v 1.18 2000-04-04 09:57:17 tradke Exp $
 #  @@*/
 
 if test "$CCTK_CONFIG_STAGE" = "preferred-compilers" ; then
@@ -158,9 +158,7 @@ esac
 # MPI stuff
 
   if test -n "$MPI" ; then
-    if test "$MPI" = "NATIVE" ; then
-      MPI_LIBS="mpi"
-    fi
+    NATIVE_MPI_LIBS="mpi"
   fi
 
 fi

@@ -181,12 +181,8 @@ else
   fi
 
 # MPI stuff
-
-  if test -n "$MPI" ; then
-    if test "$MPI" = "NATIVE" ; then
-      echo "ERROR: NATIVE MPI selected, but linux has no native MPI"
-      exit 2
-    fi
-  fi
+#
+# Linux has no native MPI, so we don't set any NATIVE_MPI_XXX variables.
+# This is caught by lib/make/extras/MPI/NATIVE then.
 
 fi
