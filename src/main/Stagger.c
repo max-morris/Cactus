@@ -1,9 +1,18 @@
+ /*@@
+   @file      Stagger.c
+   @date      Thu Jan 27 15:32:28 2000
+   @author    Gerd Lanfermann
+   @desc 
+   Stuff to deal with staggering.
+   @enddesc 
+ @@*/
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdarg.h>
+#include <ctype.h>
 
+#include "cctk.h"
 #include "cctk_Groups.h"
 #include "cctk_Types.h"
 #include "cctk_FortranString.h"
@@ -34,7 +43,7 @@ int CCTK_StaggerVars(void)
 
 
  /*@@
-   @routine    
+   @routine    CCTK_StaggerCodeGrpIdx
    @date       
    @author     
    @desc 
@@ -64,7 +73,7 @@ void FMODIFIER FORTRAN_NAME(CCTK_StaggerCodeGrpIdx)
 }
 
  /*@@
-   @routine    
+   @routine    CCTK_StaggerCodeGrp
    @date       
    @author     Gerd Lanfermann
    @desc 
@@ -96,7 +105,7 @@ void FMODIFIER FORTRAN_NAME(CCTK_StaggerCodeGrp)(int *stagcode, ONE_FORTSTRING_A
   
 
  /*@@
-   @routine    
+   @routine    CCTK_StaggerCodeName
    @date       
    @author     Gerd Lanfermann
    @desc 
@@ -122,7 +131,7 @@ int CCTK_StaggerCodeName(const char *stype)
   for (i=0;i<dim;i++) 
   {
 
-    switch (stype[i])
+    switch (toupper(stype[i]))
     {
       case 'M':m=0; break;
       case 'C':m=1; break;
@@ -149,7 +158,7 @@ void FMODIFIER FORTRAN_NAME(CCTK_StaggerCodeName)(int *scode, ONE_FORTSTRING_ARG
 
 
  /*@@
-   @routine    
+   @routine    CCTK_DirStaggerCodeVal
    @date       
    @author     Gerd Lanfermann
    @desc 
@@ -200,7 +209,7 @@ void FMODIFIER FORTRAN_NAME(CCTK_DirStaggerCodeVal)
 
 
  /*@@
-   @routine    
+   @routine    CCTK_DirStaggerCodeName
    @date       
    @author     Gerd Lanfermann
    @desc 
@@ -214,7 +223,8 @@ void FMODIFIER FORTRAN_NAME(CCTK_DirStaggerCodeVal)
 
 @@*/
  
-int CCTK_DirStaggerCodeName(int dir, const char *stype) {
+int CCTK_DirStaggerCodeName(int dir, const char *stype) 
+{
   int scode;
   char hs[7]="MMMMMM",*info;
 
@@ -225,7 +235,7 @@ int CCTK_DirStaggerCodeName(int dir, const char *stype) {
     CCTK_Warn(1,__LINE__,__FILE__,"Cactus","Not enough letters in stagger code");
   }
 
-  switch (hs[dir])
+  switch (toupper(hs[dir]))
   {
     case 'M': scode = 0; break;
     case 'C': scode = 1; break;
@@ -256,7 +266,7 @@ void FMODIFIER FORTRAN_NAME(CCTK_DirStaggerCodeName)
 }
 
  /*@@
-   @routine    
+   @routine    CCTKi_ParseStaggerString
    @date       
    @author     Gerd Lanfermann
    @desc 
@@ -281,11 +291,11 @@ int CCTKi_ParseStaggerString(int dim,
   char hs[7]="MMMMMM", *info;
 
   /* change possible SHORTCUTS into the official notation, allow for dim=6 */
-  if (strcmp(stype,"NONE")==0)
+  if (CCTK_EQUALS(stype,"NONE"))
   {
     strncpy(hs,"MMMMMM",dim);
   }
-  else if (strcmp(stype,"CELL")==0) 
+  else if (CCTK_EQUALS(stype,"CELL")==0) 
   {
     strncpy(hs,"CCCCCC",dim);
   }
@@ -296,7 +306,7 @@ int CCTKi_ParseStaggerString(int dim,
 
   for (i=0;i<dim;i++) 
   {
-    switch (hs[i])
+    switch (toupper(hs[i]))
     {
       case 'M':m=0; break;
       case 'C':m=1; break;
