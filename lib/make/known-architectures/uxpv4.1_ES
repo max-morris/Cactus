@@ -30,7 +30,7 @@ else
   if test "$LD" = "CC" ; then
     # C++ compiler only takes static libs by default
     # but we also want socket lib
-    : ${LIBS="fj90fv fj90f fj90 fj90f}
+    : ${LIBS="fj90fv fj90f fj90 fj90f"}
     : ${LDFLAGS="-d y /usr/lib/libsocket.so /usr/lib/libvfl.so"}
   else
     : ${LIBS="fj90fv fj90f fj90 socket"}
@@ -44,3 +44,4 @@ else
   fi
 
 fi
+
