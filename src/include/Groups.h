@@ -67,7 +67,8 @@ int CCTK_GetVarGType(int var);
 
 int CCTK_GetVarVType(int var);
 
-int CCTK_GetNumTimeLevels(int var);
+int CCTK_GetNumTimeLevels(const char *var);
+int CCTK_GetNumTimeLevels_ByIndex(int var);
 
 int CCTK_GetFirstVarIndex(const char *group);
 int CCTK_GetFirstVarIndex_ByIndex(int group);
