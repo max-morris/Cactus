@@ -37,6 +37,7 @@
 #include "cctk_GroupsOnGH.h"
 #include "StoreHandledData.h"
 #include "cctk_Interp.h"
+#include "cctk_Comm.h"
 #include "cctk_WarnLevel.h"
 #include "cctk_Coord.h"
 #include "cctk_ActiveThorns.h"
@@ -50,7 +51,6 @@ CCTK_FILEVERSION(comm_Interp_c);
 /******************************************************************************
  *************************    External Routines   *****************************
  ******************************************************************************/
-
 /* prototypes for external C routines are declared in header cctk_Interp.h
    here only follow the fortran wrapper prototypes */
 void CCTK_FCALL CCTK_FNAME (CCTK_InterpHandle)
@@ -74,6 +74,22 @@ void CCTK_FCALL CCTK_FNAME (CCTK_InterpLocal)
                             const int *num_in_arrays,
                             const int *num_out_arrays,
                             ...);
+void CCTK_FCALL CCTK_FNAME (CCTK_InterpGridArrays)
+                           (int *ierror,
+                            const cGH *GH,
+                            const int *N_dims,
+                            const int *global_param_table_handle,
+                            const int *local_param_table_handle,
+                            const int *local_interp_handle,
+                            const int *coord_system_handle,
+                            const int *N_interp_points,
+                              const int *interp_coords_type,
+                              const void *const interp_coords[],
+                            const int *N_input_arrays,
+                              const CCTK_INT input_array_indices[],
+                            const int *N_output_arrays,
+                              const CCTK_INT output_array_types[],
+                              void *const output_arrays[]);
 
 /******************************************************************************
  *************************    Internal Data Structures ************************
@@ -1079,6 +1095,125 @@ void CCTK_FCALL CCTK_FNAME (CCTK_InterpLocal)
 
   *fortranreturn = retcode;
 }
+
+
+ /*@@
+   @routine    CCTK_InterpGridArrays
+   @date       Mon 16 Dec 2002
+   @author     Thomas Radke
+   @desc
+               The general CCTK interpolation routine for grid variables
+
+               Here only the fortran wrapper is defined which calls the
+               the C routine CCTK_InterpGridArrays(). This is an overloadable
+               routine defined in src/comm/OverloadComm.c.
+   @enddesc
+   @var        GH
+   @vdesc      pointer to CCTK grid hierarchy
+   @vtype      const cGH *
+   @vio        in
+   @endvar
+   @var        N_dims
+   @vdesc      (reference to) number of dimensions for the interpolation
+   @vtype      const int *
+   @vio        in
+   @endvar
+   @var        global_param_table_handle
+   @vdesc      (reference to) the parameter table handle for passing optional
+               parameters to the global interpolator routine
+   @vtype      const int *
+   @vio        in
+   @endvar
+   @var        local_param_table_handle
+   @vdesc      (reference to) the parameter table handle for passing optional
+               parameters to the local interpolator routine
+   @vtype      const int *
+   @vio        in
+   @endvar
+   @var        coord_system_handle
+   @vdesc      (reference to) the handle for the underlying coordinate system
+   @vtype      const int *
+   @vio        in
+   @endvar
+   @var        N_interp_points
+   @vdesc      (reference to) the number of points to interpolate at
+   @vtype      const int *
+   @vio        in
+   @endvar
+   @var        interp_coords_type
+   @vdesc      (reference to) the CCTK datatype of the coordinate arrays as
+               passed via <interp_coords> (common datatype for all arrays)
+   @vtype      const int *
+   @vio        in
+   @endvar
+   @var        interp_coords
+   @vdesc      list of <N_dims> arrays with coordinate for <N_interp_points>
+               points to interpolate at
+   @vtype      const void *const []
+   @vio        in
+   @endvar
+   @var        N_input_arrays
+   @vdesc      (reference to) the number of input arrays
+   @vtype      const int *
+   @vio        in
+   @endvar
+   @var        input_array_indices
+   @vdesc      list of <N_input_arrays> grid variables (given by their indices)
+               to interpolate
+   @vtype      const CCTK_INT []
+   @vio        in
+   @endvar
+   @var        N_output_arrays
+   @vdesc      (reference to) the number of output arrays
+   @vtype      const int *
+   @vio        in
+   @endvar
+   @var        out_array_types
+   @vdesc      list of <N_output_arrays> requested CCTK datatypes for the
+               output arrays
+   @vtype      const CCTK_INT []
+   @vio        in
+   @endvar
+   @var        output_arrays
+   @vdesc      list of <N_output_arrays> output arrays (given by their pointers)
+               which receive the interpolation results
+   @vtype      void *const []
+   @vio        out
+   @endvar
+
+   @returntype int
+   @returndesc
+               return code from routine which overloades CCTK_InterpGridArrays()
+               The return code is passed back in <ierror>.
+   @endreturndesc
+@@*/
+void CCTK_FCALL CCTK_FNAME (CCTK_InterpGridArrays)
+                           (int *ierror,
+                            const cGH *GH,
+                            const int *N_dims,
+                            const int *global_param_table_handle,
+                            const int *local_param_table_handle,
+                            const int *local_interp_handle,
+                            const int *coord_system_handle,
+                            const int *N_interp_points,
+                              const int *interp_coords_type,
+                              const void *const interp_coords[],
+                            const int *N_input_arrays,
+                              const CCTK_INT input_array_indices[],
+                            const int *N_output_arrays,
+                              const CCTK_INT output_array_types[],
+                              void *const output_arrays[])
+{
+  *ierror = CCTK_InterpGridArrays (GH, *N_dims, *global_param_table_handle,
+                                   *local_param_table_handle,
+                                   *local_interp_handle, *coord_system_handle,
+                                   *N_interp_points, *interp_coords_type,
+                                   interp_coords,
+                                   *N_input_arrays,input_array_indices,
+                                   *N_output_arrays, output_array_types,
+                                   output_arrays);
+}
+
 
 /******************************************************************************/
 
