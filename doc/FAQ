@@ -1,7 +1,7 @@
 
 Cactus Code Frequently Asked Questions
 
-$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.38 2002-08-14 08:33:24 allen Exp $
+$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.39 2002-08-19 10:04:32 allen Exp $
 
 Also available at http://www.cactuscode.org/Documentation/FAQ
 
@@ -340,6 +340,9 @@ Also available at http://www.cactuscode.org/Documentation/FAQ
 
     cvs -d :pserver:cvs_anon@cvs.cactuscode.org:/cactus checkout -r \
 		Cactus_4_0_Beta_10 Cactus
+
+    [to see a list of possible tags go to the Cactus home directory
+     and type "cvs status -v Makefile"]
 
     To checkout from a particular date, for example the 7th July 2000, use
 
