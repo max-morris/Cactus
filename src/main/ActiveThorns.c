@@ -8,6 +8,8 @@
    @version $Header$
  @@*/
 
+#define DEBUG_ACTIVATE
+
 #include "cctk_Config.h"
 
 #include <stdio.h>
@@ -1239,7 +1241,7 @@ int CCTKi_ActivateThorns(const char *activethornlist)
     /* Since the requested imps is a subset of the required imps, 
      * we may still have some required imps to go through.
      */
-    while((imp2=Util_StringListNext(required_imps,0)))
+    while((imp2))
     {
       printf("Error: required implementation %s not requested\n", imp2);
       printf("       Add a thorn providing this implementation to ActiveThorns parameter.\n");
@@ -1260,6 +1262,7 @@ int CCTKi_ActivateThorns(const char *activethornlist)
         printf("       This implementation is not provided by any "
                "compiled thorn\n");
       }
+      imp2=Util_StringListNext(required_imps,0);
     }    
   }
 
