@@ -1,7 +1,7 @@
 
 Cactus Code Frequently Asked Questions
 
-$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.69 2003-08-18 14:49:40 schnetter Exp $
+$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.70 2003-09-21 12:57:15 allen Exp $
 
 Also available at http://www.cactuscode.org/Documentation/FAQ
 
@@ -247,6 +247,8 @@ E16 I write my thorns with C, do you have any general advice?
 E17 Why is it that when I schedule more than one routine in the same thorn 
     at ANALYSIS only the first routine is executed and the second one is 
     ignored?
+
+E18 Is there a way to synchronize individual grid variables in a group?
 
 
 ------------------------------------------------------------------------------
@@ -1368,6 +1370,24 @@ E17 Why is it that when I schedule more than one routine in the same thorn
     not, it doesn't matter which thorns they come from, only the first 
     scheduled routine will be called. This is part of the special design of 
     the ANALYSIS bin.
+
+E18 Is there a way to synchronize individual grid variables in a group?
+
+    Not at the moment. This was a design decision partly to be able to 
+    support "compact" groups of variables in the future (that is, groups
+    where the group members at any grid point are stored contiguously in 
+    memory ... compared to the "normal" way we have now where each group
+    member is stored as a different array). With compact groups synchronizing
+    single members would be more computationally expensive. Currently 
+    the infrastructure is mainly built around the concept of groups of 
+    variables, and changing this would involve changes to the driver 
+    interface.
+
+E19 Is there a way to synchronize just one time level of a grid variable?
+
+    Right now only one time level is sychronized, that is the "current" level.
+    Other time levels cannot be synchronized and are assumed to be fixed
+    or read only.
 
 
 ------------------------------------------------------------------------------
