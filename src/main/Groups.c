@@ -1344,7 +1344,8 @@ CCTK_INT **CCTK_GroupSizesI (int group)
    @returntype CCTK_INT **
    @returndesc
                the pointer to the ghostsize array of the given group, or
-               -1 if invalid group index was given
+               NULL if invalid group index was given or the group exists
+               but has no ghostsize information
    @endreturndesc
 @@*/
 CCTK_INT **CCTK_GroupGhostsizesI (int group)
