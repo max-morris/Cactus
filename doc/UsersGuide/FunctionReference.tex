@@ -38,6 +38,26 @@ from Fortran.
   [\pageref{CCTK-Abort}]
   Causes abnormal Cactus termination
 
+\item[CCTK\_ActiveTimeLevels]
+  [\pageref{CCTK-ActiveTimeLevels}]
+  Returns the number of active timelevels from a group name
+
+\item[CCTK\_ActiveTimeLevelsGN]
+  [\pageref{CCTK-ActiveTimeLevels}]
+  Returns the number of active timelevels from a group name
+
+\item[CCTK\_ActiveTimeLevelsGI]
+  [\pageref{CCTK-ActiveTimeLevels}]
+  Returns the number of active timelevels from a group index
+
+\item[CCTK\_ActiveTimeLevelsVN]
+  [\pageref{CCTK-ActiveTimeLevels}]
+  Returns the number of active timelevels from a variable name
+
+\item[CCTK\_ActiveTimeLevelsVI]
+  [\pageref{CCTK-ActiveTimeLevels}]
+  Returns the number of active timelevels from a variable index
+
 \item[CCTK\_ArrayGroupSize]
   [\pageref{CCTK-ArrayGroupSize}]
   Returns a pointer to the local size for a group, given by its group name
@@ -649,6 +669,57 @@ This routine causes an immediate, abnormal Cactus termination.
 It never returns to the caller.
 \end{discussion}
 \end{CCTKFunc}
+
+
+% cctk_GroupsOnGH.h
+\begin{FunctionDescription}{CCTK\_ActiveTimeLevels}{}
+\label{CCTK-ActiveTimeLevels}
+Returns the number of active time levels for a group.
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+#include "cctk.h"
+int timelevels = CCTK_ActiveTimeLevels(const cGH *cctkGH,
+                                const char *groupname);
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ResultSection}
+\begin{Result}{NULL}
+The number of timelevels
+\end{Result}
+\end{ResultSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{GH ($\ne$ NULL)}
+Pointer to a valid Cactus grid hierarchy.
+\end{Parameter}
+\begin{Parameter}{groupname}
+Name of the group.
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{Discussion}
+This function returns the number of timelevels for which storage has been activated, which is always equal to or less than the maximum number of 
+timelevels which may have storage provided by {\tt CCTK\_MaxTimeLevels}.
+\end{Discussion}
+
+\begin{SeeAlsoSection}
+\begin{SeeAlso}{CCTK-MaxTimeLevels}
+Return the maximum number of timelevels
+\end{SeeAlso}
+\begin{SeeAlso}{CCTK-GroupStorageIncrease}
+Base function overloaded by driver which increase the number of timelevels 
+with storage and also returns the number of active timelevels.
+\end{SeeAlso}
+\end{SeeAlsoSection}
+%\begin{ErrorSection}
+%\end{ErrorSection}
+%\begin{ExampleSection}
+%\end{ExampleSection}
+\end{FunctionDescription}
+
 
 
 % cctk_Comm.h
