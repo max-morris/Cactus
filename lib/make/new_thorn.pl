@@ -9,6 +9,11 @@
 #  @version $Id$ 
 #@@*/
 
+my $cctk_home = `pwd`;
+chomp ($cctk_home);
+
+my $documentation_inputfile = "$cctk_home/doc/ThornGuide/template.tex";
+
 $package_dir = "arrangements";
 
 $thorn_name = shift(@ARGV);
@@ -110,7 +115,11 @@ print OUT "\n";
 
 close OUT;
 
-print "All done.  Please remember to fill out the README.\n";
+my $documentation_outputfile = "$cctk_home/$package_dir/$package/$thorn_name/doc/documentation.tex";
+
+system("cp $documentation_inputfile $documentation_outputfile");
+
+print "All done.  Please remember to fill out the README and doc/documenation.tex files.\n";
 
 exit;
 
@@ -188,6 +197,7 @@ sub GetToolkits
   local(@arrangements);
 
   $start_dir = `pwd`;
+  chomp($start_dir);
 
   chdir $package_dir;
 
