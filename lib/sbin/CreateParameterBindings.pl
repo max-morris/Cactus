@@ -299,6 +299,11 @@ sub CreateParameterBindings
 
     $dataout .= "#define DECLARE_CCTK_PARAMETERS \\\n";
 
+    $dataout .= "void      *cctk_pdummy_pointer;\\
+                 int        cctk_pdummy_int;\\
+                 CCTK_REAL  cctk_pdummy_real;\\\n";
+
+
     $decl =  "DECLARE_GLOBAL_PARAMETER_STRUCT_PARAMS";
     if($header_files{"GLOBAL"})
     {
@@ -325,6 +330,11 @@ sub CreateParameterBindings
     $dataout .= "\n";
 
     $dataout .= "#define USE_CCTK_PARAMETERS \\\n";
+    $dataout .= "cctk_pdummy_int=0;\\
+                 cctk_pdummy_int+=0;\\
+                 cctk_pdummy_real=0;\\
+                 cctk_pdummy_real+=0;\\
+                 cctk_pdummy_pointer=NULL;\\\n";
 
     $decl =  "USE_GLOBAL_PARAMETER_STRUCT_PARAMS";
     if($header_files{"GLOBAL"})
