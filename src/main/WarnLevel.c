@@ -105,14 +105,12 @@ static pKeyedData *formatlist = NULL;
 
    @returntype int
    @returndesc
-               0  - success
+               return code of @seeroutine CCTK_VInfo
    @endreturndesc
 @@*/
 int CCTK_Info (const char *thorn, const char *message)
 {
-  fprintf (stdout, "INFO (%s): %s\n", thorn, message);
-
-  return (0);
+  return (CCTK_VInfo (thorn, "%s", message));
 }
 
 void CCTK_FCALL CCTK_FNAME (CCTK_Info)
