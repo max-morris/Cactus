@@ -12,6 +12,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "cGH.h"
 #include "cctk_Flesh.h"
 #include "cctk_IOMethods.h"
 #include "cctk_Groups.h"

@@ -249,7 +249,6 @@ int CCTK_StepGH(cGH *GH)
   PreStepper(GH);
   EvolStepper(GH);
   BoundStepper(GH);
-  PostStepper(GH);
 
   /* Advance GH->time AFTER evolving */
 #ifdef DEBUG_CCTK
@@ -261,6 +260,9 @@ int CCTK_StepGH(cGH *GH)
 #endif
 
   GH->cctk_time = GH->cctk_time + GH->cctk_delta_time;
+
+  PostStepper(GH);
+
 
   return 0;
 }
@@ -315,7 +317,7 @@ void EvolStepper(cGH *GH)
    @date       Fri Aug 14 12:44:58 1998
    @author     Gerd Lanfermann
    @desc 
-     calls RFR-CCTK_BOUND applies boudnary conditions
+     calls RFR-CCTK_BOUND applies boundary conditions
    @enddesc 
    @calls     
    @calledby   
@@ -348,6 +350,7 @@ void PostStepper(cGH *GH) {
    /* Call the rfr with post step */
     CCTK_rfrTraverse(GH, CCTK_POSTSTEP); 
 }
+
  /*@@
    @routine    TerminationStepper
    @date       Fri Aug 14 13:07:11 1998
