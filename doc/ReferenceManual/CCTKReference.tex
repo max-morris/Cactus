@@ -2967,13 +2967,13 @@ int group_index, status;
 
 group_index = CCTK_GroupIndex("BSSN_MoL::ADM_BSSN_metric");
 if (group_index < 0)
-        CCTK_VWarn(0,
+        CCTK_VWarn(CCTK_WARN_ABORT,
 "error return %d trying to get BSSN metric's group index!",
                    group_index);                                /*NOTREACHED*/
 
 status = CCTK_GroupData(group_index, &group_info);
 if (status < 0)
-        CCTK_VWarn(0,
+        CCTK_VWarn(CCTK_WARN_ABORT,
 "error return %d trying to get BSSN metric's group information!",
                    status);                                     /*NOTREACHED*/
 
