@@ -1602,7 +1602,7 @@ sub ThornMasterIncludes
 
   my $thorn;
 
-  foreach $thorn (keys %function_db)
+  foreach $thorn (sort keys %function_db)
   {
     my $localfns = keys %{$function_db{$thorn}};
     if ($localfns)
