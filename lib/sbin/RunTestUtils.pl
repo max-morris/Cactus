@@ -1383,6 +1383,7 @@ sub ViewResults
 
       while ($myfile !~ /^[c]/i && $choice !~ /^[c]/i)
       {
+	print "  File $myfiles[$myfile] of test $test for thorn $thorn\n";
         $choice = &defprompt("  Choose action [l]ist, [d]iff, [g]raph, [c]ontinue","c");
 
         if ($choice =~ /^l/i)
