@@ -944,6 +944,14 @@ int CCTK_SchedulePrint(const char *where)
     puts ("  Shutdown routines");
     puts ("    [CCTK_SHUTDOWN]");
     SchedulePrint("CCTK_SHUTDOWN");
+    putchar ('\n');
+    puts ("  Routines run after restricting:");
+    puts ("    [CCTK_POSTRESTRICT]");
+    SchedulePrint("CCTK_POSTRESTRICT");
+    putchar ('\n');
+    puts ("  Routines run after changing the grid hierarchy:");
+    puts ("    [CCTK_POSTREGRID]");
+    SchedulePrint("CCTK_POSTREGRID");
   }
   else
   {
