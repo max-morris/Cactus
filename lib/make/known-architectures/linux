@@ -240,7 +240,7 @@ else
           # add the necessary libraries according to the compiler version
           if test "`$F90 -V 2>&1 | grep Version | sed 's/.*Version //' | sed 's/\..*//'`" -ge 8; then
             intel_p4_opt_flag='-xN'
-            : ${LIBS='ifcore imf svml m cxa cprts cxa irc unwind'}
+            : ${LIBS='ifcore imf svml m'}
           else
             intel_p4_opt_flag='-xW'
             : ${LIBS='intrins IEPCF90 F90 imf svml m irc cxa cprts cxa'}
@@ -264,7 +264,7 @@ else
 
           # add the necessary libraries according to the compiler version
           if test "`$F90 -V 2>&1 | grep Version | sed 's/.*Version //' | sed 's/\..*//'`" -ge 8; then
-            : ${LIBS='ifcore dl imf m cxa cprts cxa irc unwind'}
+            : ${LIBS='ifcore dl imf m'}
           else
             : ${LIBS='intrins IEPCF90 F90 imf m irc cxa cprts cxa'}
           fi
