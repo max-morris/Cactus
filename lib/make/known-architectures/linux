@@ -138,6 +138,7 @@ else
        : ${F90_WARN_FLAGS="--warn"}
        : ${F77_OPTIMISE_FLAGS="-O"}
        : ${F90_OPTIMISE_FLAGS="-O"}         
+       : ${LIBS="fj9i6 fj9e6 fj9f6"} 
        ;;
      none)
        : ${LIBS="m"} 
