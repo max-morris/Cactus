@@ -656,6 +656,10 @@ sub CreateParameterRegistrationStuff
       $quoted_range =~ s:^\s*::;
       $quoted_range =~ s:\s*$::;
 
+      # escape all backslashes so that they aren't treated
+      # as the beginning of an escape sequence in C strings
+      $quoted_range =~ s:\\:\\\\:g;
+
       $line .= ",\n                  \"".$quoted_range."\", $range_description";
 
     }
