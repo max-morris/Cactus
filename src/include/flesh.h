@@ -19,6 +19,21 @@ typedef struct
   char *parameter_file_name;
 } tFleshConfig;
 
+
+typedef struct
+{
+  int dummy;
+} cGF;
+
+
+typedef struct
+{
+  int dummy;
+} cGH;
+
+
+/* Function prototypes */
+
 #ifdef __cplusplus
 extern "C" {
 #endif
