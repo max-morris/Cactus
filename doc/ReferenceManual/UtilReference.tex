@@ -438,17 +438,17 @@ int len;
 char buffer[N_BUFFER];
 
 /* safely format the values into the buffer */
-snprintf(buffer, N_BUFFER,
-         "values are c='%c' i=%d d=%g s=\"%s\"",
-         c, i, d, s);
+Util_snprintf(buffer, N_BUFFER,
+              "values are c='%c' i=%d d=%g s=\"%s\"",
+              c, i, d, s);
 
 /*
  * same as above example, but now explicitly check for the output
  * being truncated due to the buffer being too small
  */
-const int len = snprintf(buffer, N_BUFFER,
-                         "values are c='%c' i=%d d=%g s=\"%s\"",
-                         c, i, d, s);
+const int len = Util_snprintf(buffer, N_BUFFER,
+                              "values are c='%c' i=%d d=%g s=\"%s\"",
+                              c, i, d, s);
 if (len >= N_BUFFER)
         {
         /*
