@@ -62,14 +62,22 @@ while (<STDIN>)
     if (! $found)
     {
       # reference to a module in this thorn?
-    loop: foreach my $suffix (@suffixes)
+      my $dirhdl;
+      if( opendir( $dirhdl, "$srcdir" ) )
       {
-        if (-e "$srcdir/$name$suffix")
+        while( defined( my $filename = readdir( $dirhdl ) ) )
         {
-          $found = 1;
-          print " \\\n  $name$suffix.o";
-          last loop;
+          loop: foreach my $suffix (@suffixes)
+          {
+            if( $filename eq "$name$suffix" )
+            {
+              $found = 1;
+              print " \\\n  $filename.o";
+              last loop;
+            }
+          }
         }
+        closedir $dirhdl;
       }
     }
     if (! $found)
@@ -80,14 +88,22 @@ while (<STDIN>)
         # note: we could also use the SUBDIRS from the make.code.defn here
         foreach my $subdir (".", "include")
         {
-          foreach my $suffix (@suffixes)
+          my $dirhdl;
+          if( opendir( $dirhdl, "$dir/$subdir" ) )
           {
-            if (-e "$dir/$subdir/$name$suffix.o")
+            while( defined( my $filename = readdir( $dirhdl ) ) )
             {
-              $found = 1;
-              print " \\\n  $dir/$subdir/$name$suffix.o";
-              last loop;
+              foreach my $suffix (@suffixes)
+              {
+                if( $filename eq "$name$suffix.o" )
+                {
+                  $found = 1;
+                  print " \\\n  $dir/$subdir/$filename";
+                  last loop;
+                }
+              }
             }
+            closedir $dirhdl;
           }
         }
       }
