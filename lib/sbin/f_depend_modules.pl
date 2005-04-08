@@ -1,9 +1,9 @@
 #!/usr/bin/perl -w
 
 #/*@@
-#  @file    $RCSfile$
-#  @author  $Author$
-#  @date    $Date$
+#  @file    f_depend_modules.pl
+#  @author  Erik Schnetter
+#  @date    19 January 2004
 #  @desc
 #           Create dependencies for Fortran 90 "use" and "include" statements
 #  @enddesc
