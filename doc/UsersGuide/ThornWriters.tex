@@ -4087,7 +4087,12 @@ work. These are
 \item The type of an argument must be one of scalar types {\tt
     CCTK\_INT, CCTK\_REAL, CCTK\_STRING, CCTK\_POINTER,
     CCTK\_FPOINTER}, or an array or pointer type \texttt{CCTK\_INT ARRAY,
-    CCTK\_REAL ARRAY}. The scalar types are assumed to be not
+    CCTK\_REAL ARRAY, \texttt{CCTK\_POINTER ARRAY}}.%%%
+\footnote{%%%
+	 Unfortunately, neither \texttt{CCTK\_FPOINTER ARRAY}
+	 nor \texttt{CCTK\_STRING ARRAY} will work.
+	 }%%%
+  {}  The scalar types are assumed to be not
   modifiable. Any changes made to a scalar argument by a providing
   function may be silently lost, or may not; it is dependent on the
   language of the providing and calling function. If you wish to
