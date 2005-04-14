@@ -258,7 +258,7 @@ else
             : ${LIBS='ifcore imf svml m'}
           else
             intel_p4_opt_flag='-xW'
-            : ${LIBS='intrins IEPCF90 F90 imf svml m irc cxa cprts cxa'}
+            : ${LIBS='intrins IEPCF90 F90 imf svml m irc cxa cprts cxa pthread'}
           fi
 
           # check if the processor is a Pentium4 (ie. supports SSE2 instructions)
