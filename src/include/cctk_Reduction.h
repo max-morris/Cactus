@@ -139,8 +139,6 @@ int CCTKi_RegisterLocalArrayReductionOperator(const char *thorn,
 		           cLocalArrayReduceOperator operatorGV,
 				              const char *name);
 
-int CCTK_LocalArrayReductionHandle(const char *reduction);
-
 int CCTK_RegisterReductionLocalArrayOperator(
          int (*function)(REDUCTION_LOCAL_ARRAY_OPERATOR_REGISTER_ARGLIST),
          const char *name);
