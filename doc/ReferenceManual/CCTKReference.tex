@@ -662,6 +662,9 @@ from Fortran.
 \item[\code{CCTK\_SyncGroup}] [\pageref{CCTK-SyncGroup}]
   Synchronize the ghost zones for a group of variables
 
+\item[\code{CCTK\_TerminateNext}] [\pageref{CCTK-TerminateNext}]
+  Flags a Cactus simulation to terminate after the next iteration
+
 \item[\code{CCTK\_ThornImplementation}]
   [\pageref{CCTK-ThornImplementation}]
   Returns the implementation provided by the thorn
@@ -8611,6 +8614,43 @@ the preferred method from synchronising variables.
 %%%%%
 % TTT
 %%%%%
+
+\begin{FunctionDescription}{CCTK\_TerminateNext}
+\label{CCTK-TerminateNext}
+Flags a Cactus simulation to terminate after the next iteration
+
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+#include "cctk.h"
+
+void CCTK_TerminateNext (const cGH *cctkGH)
+\end{verbatim}
+\end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}
+#include "cctk.h"
+
+call CCTK_TerminateNext (cctkGH)
+CCTK_POINTER_TO_CONST    cctkGH
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{cctkGH ($\ne$ NULL)}
+Pointer to a valid Cactus grid hierarchy.
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{Discussion}
+This function triggers unconditional termination of Cactus after the next iteration.
+It bypasses all other termination conditions specified in the
+{\t Cactus::terminate} keyword parameter.
+\end{Discussion}
+
+\end{FunctionDescription}
+
 
 % cctk_ActiveThorns.c
 \begin{FunctionDescription}{CCTK\_ThornImplementation}
