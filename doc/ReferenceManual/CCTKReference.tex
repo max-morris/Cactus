@@ -412,15 +412,6 @@ from Fortran.
   interpolation operator
 
 %notyet \item[\code{CCTK\_InterpRegisterOpLocalWarped}]
-\item[\code{CCTK\_LocalArrayReduceOperator}] [\pageref{CCTK-LocalArrayReduceOperator}]
-  Returns the name of a registered reduction operator
-
-\item[\code{CCTK\_LocalArrayReduceOperatorImplementation}] [\pageref{CCTK-LocalArrayReduceOperatorImplementation}]
-  Provide the implementation which provides an local array reduction operator
-
-\item[\code{CCTK\_LocalArrayReductionHandle}] [\pageref{CCTK-LocalArrayReductionHandle}]
-  Returns the handle of a given local array reduction operator
-
 %notyet   [\pageref{CCTK-InterpRegisterOpLocalWarped}]
 %notyet   Registers a routine as a \code{CCTK\_InterpLocalWarped}
 %notyet   interpolation operator
@@ -442,6 +433,15 @@ from Fortran.
 
 \item[\code{CCTK\_IsThornCompiled}] [\pageref{CCTK-IsThornCompiled}]
   Reports whether a thorn was compiled into a configuration
+
+\item[\code{CCTK\_LocalArrayReduceOperator}] [\pageref{CCTK-LocalArrayReduceOperator}]
+  Returns the name of a registered reduction operator
+
+\item[\code{CCTK\_LocalArrayReduceOperatorImplementation}] [\pageref{CCTK-LocalArrayReduceOperatorImplementation}]
+  Provide the implementation which provides an local array reduction operator
+
+\item[\code{CCTK\_LocalArrayReductionHandle}] [\pageref{CCTK-LocalArrayReductionHandle}]
+  Returns the handle of a given local array reduction operator
 
 \item[\code{CCTK\_MaxDim}] [\pageref{CCTK-MaxDim}]
   Get the maximum dimension of any grid variable
@@ -5535,175 +5535,6 @@ if (CCTK_InterpLocalUniform(N_DIMS,
 %notyet         = { (const void *) x_coords, (const void *) y_coords };
 %notyet
 
-% Reduction.c
-\begin{FunctionDescription}{CCTK\_LocalArrayReduceOperator}
-\label{CCTK-LocalArrayReduceOperator}
-Returns the name of a registered reduction operator
-
-\begin{SynopsisSection}
-\begin{Synopsis}{C}
-\begin{verbatim}
-#include "cctk.h"
-
-const char *name = CCTK_LocalArrayReduceOperator(int handle);
-\end{verbatim}
-\end{Synopsis}
-\end{SynopsisSection}
-
-\begin{ResultSection}
-\begin{Result}{name}
-Returns the name of a registered local reduction operator of handle \newline \code{handle}
-or NULL if the handle is invalid
-\end{Result}
-\end{ResultSection}
-
-\begin{ParameterSection}
-\begin{Parameter}{handle}
-The handle of a registered local reduction operator
-\end{Parameter}
-\end{ParameterSection}
-
-\begin{Discussion}
-This function returns the name of a registered reduction operator given
-its handle. NULL is returned if the handle is invalid
-\end{Discussion}
-
-\begin{SeeAlsoSection}
-\begin{SeeAlso}{CCTK\_ReduceLocalArrays()}
-Reduces a list of local arrays (new local array reduction API)
-\end{SeeAlso}
-
-\begin{SeeAlso}{CCTK\_LocalArrayReductionHandle()}
-Returns the handle of a given local array reduction operator
-\end{SeeAlso}
-
-\begin{SeeAlso}{CCTK\_RegisterLocalArrayReductionOperator()}
-Registers a function as a reduction operator of a certain name
-\end{SeeAlso}
-
-\begin{SeeAlso}{CCTK\_LocalArrayReduceOperatorImplementation()}
-Provide the implementation which provides an local array reduction operator
-\end{SeeAlso}
-
-\begin{SeeAlso}{CCTK\_NumLocalArrayReduceOperators()}
-The number of local reduction operators registered
-\end{SeeAlso}
-\end{SeeAlsoSection}
-\end{FunctionDescription}
-
-%Reduction.c
-\begin{FunctionDescription}{CCTK\_LocalArrayReduceOperatorImplementation}
-\label{CCTK-LocalArrayReduceOperatorImplementation}
-Provide the implementation which provides an local array reduction operator
-
-\begin{SynopsisSection}
-\begin{Synopsis}{C}
-\begin{verbatim}
-#include "cctk.h"
-
-const char *implementation = CCTK_LocalArrayReduceOperatorImplementation(
-                            int handle);
-\end{verbatim}
-\end{Synopsis}
-\end{SynopsisSection}
-
-\begin{ResultSection}
-\begin{Result}{implementation}
-The name of the implementation implementing the local reduction operator of handle \newline \code{handle}
-\end{Result}
-\end{ResultSection}
-
-\begin{ParameterSection}
-\begin{Parameter}{handle}
-The handle of a registered local reduction operator
-\end{Parameter}
-\end{ParameterSection}
-
-\begin{Discussion}
-This function returns the implementation name of a registered reduction operator given
-its handle or NULL if the handle is invalid
-\end{Discussion}
-
-\begin{SeeAlsoSection}
-\begin{SeeAlso}{CCTK\_ReduceLocalArrays()}
-Reduces a list of local arrays (new local array reduction API)
-\end{SeeAlso}
-
-\begin{SeeAlso}{CCTK\_LocalArrayReductionHandle()}
-Returns the handle of a given local array reduction operator
-\end{SeeAlso}
-
-\begin{SeeAlso}{CCTK\_RegisterLocalArrayReductionOperator()}
-Registers a function as a reduction operator of a certain name
-\end{SeeAlso}
-%notyet /* (x,y) coordinates of interpolation points */
-\begin{SeeAlso}{CCTK\_LocalArrayReduceOperator()}
-Returns the name of a registered reduction operator
-\end{SeeAlso}
-
-\begin{SeeAlso}{CCTK\_NumLocalArrayReduceOperators()}
-The number of local reduction operators registered
-\end{SeeAlso}
-\end{SeeAlsoSection}
-\end{FunctionDescription}
-
-%Reduction.c
-\begin{FunctionDescription}{CCTK\_LocalArrayReductionHandle}
-\label{CCTK-LocalArrayReductionHandle}
-Returns the handle of a given local array reduction operator
-
-\begin{SynopsisSection}
-\begin{Synopsis}{C}
-\begin{verbatim}
-#include "cctk.h"
-
-int handle = CCTK_ReduceLocalArrays(const char *operator);
-\end{verbatim}
-\end{Synopsis}
-\end{SynopsisSection}
-
-\begin{ResultSection}
-\begin{Result}{handle}
-The handle corresponding to the local reduction operator
-\end{Result}
-\end{ResultSection}
-
-\begin{ParameterSection}
-\begin{Parameter}{operator}
-The reduction operation to be performed. If no matching registered operator
-is found, a warning is issued and an error returned.
-\end{Parameter}
-\end{ParameterSection}
-
-\begin{Discussion}
-This function returns the handle of the local array reduction operator. The local
-reduction handle is also used in the grid array reduction.
-\end{Discussion}
-
-\begin{SeeAlsoSection}
-\begin{SeeAlso}{CCTK\_ReduceLocalArrays()}
-Reduces a list of local arrays (new local array reduction API)
-\end{SeeAlso}
-
-\begin{SeeAlso}{CCTK\_RegisterLocalArrayReductionOperator()}
-Registers a function as a reduction operator of a certain name
-\end{SeeAlso}
-
-\begin{SeeAlso}{CCTK\_LocalArrayReduceOperatorImplementation()}
-Provide the implementation which provides an local array reduction operator
-\end{SeeAlso}
-
-\begin{SeeAlso}{CCTK\_LocalArrayReduceOperator()}
-Returns the name of a registered reduction operator
-\end{SeeAlso}
-
-\begin{SeeAlso}{CCTK\_NumLocalArrayReduceOperators()}
-The number of local reduction operators registered
-\end{SeeAlso}
-\end{SeeAlsoSection}
-\end{FunctionDescription}
-
-
 %notyet const CCTK_REAL interp_x[N_INTERP_POINTS];
 %notyet const CCTK_REAL interp_y[N_INTERP_POINTS];
 %notyet const void *const interp_coords[N_DIMS]
@@ -5999,6 +5830,175 @@ otherwise.
 %%%%%
 % LLL
 %%%%%
+
+% Reduction.c
+
+\begin{FunctionDescription}{CCTK\_LocalArrayReduceOperator}
+\label{CCTK-LocalArrayReduceOperator}
+Returns the name of a registered reduction operator
+
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+#include "cctk.h"
+
+const char *name = CCTK_LocalArrayReduceOperator(int handle);
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ResultSection}
+\begin{Result}{name}
+Returns the name of a registered local reduction operator of handle \newline \code{handle}
+or NULL if the handle is invalid
+\end{Result}
+\end{ResultSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{handle}
+The handle of a registered local reduction operator
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{Discussion}
+This function returns the name of a registered reduction operator given
+its handle. NULL is returned if the handle is invalid
+\end{Discussion}
+
+\begin{SeeAlsoSection}
+\begin{SeeAlso}{CCTK\_ReduceLocalArrays()}
+Reduces a list of local arrays (new local array reduction API)
+\end{SeeAlso}
+
+\begin{SeeAlso}{CCTK\_LocalArrayReductionHandle()}
+Returns the handle of a given local array reduction operator
+\end{SeeAlso}
+
+\begin{SeeAlso}{CCTK\_RegisterLocalArrayReductionOperator()}
+Registers a function as a reduction operator of a certain name
+\end{SeeAlso}
+
+\begin{SeeAlso}{CCTK\_LocalArrayReduceOperatorImplementation()}
+Provide the implementation which provides an local array reduction operator
+\end{SeeAlso}
+
+\begin{SeeAlso}{CCTK\_NumLocalArrayReduceOperators()}
+The number of local reduction operators registered
+\end{SeeAlso}
+\end{SeeAlsoSection}
+\end{FunctionDescription}
+
+%Reduction.c
+\begin{FunctionDescription}{CCTK\_LocalArrayReduceOperatorImplementation}
+\label{CCTK-LocalArrayReduceOperatorImplementation}
+Provide the implementation which provides an local array reduction operator
+
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+#include "cctk.h"
+
+const char *implementation = CCTK_LocalArrayReduceOperatorImplementation(
+                            int handle);
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ResultSection}
+\begin{Result}{implementation}
+The name of the implementation implementing the local reduction operator of handle \newline \code{handle}
+\end{Result}
+\end{ResultSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{handle}
+The handle of a registered local reduction operator
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{Discussion}
+This function returns the implementation name of a registered reduction operator given
+its handle or NULL if the handle is invalid
+\end{Discussion}
+
+\begin{SeeAlsoSection}
+\begin{SeeAlso}{CCTK\_ReduceLocalArrays()}
+Reduces a list of local arrays (new local array reduction API)
+\end{SeeAlso}
+
+\begin{SeeAlso}{CCTK\_LocalArrayReductionHandle()}
+Returns the handle of a given local array reduction operator
+\end{SeeAlso}
+
+\begin{SeeAlso}{CCTK\_RegisterLocalArrayReductionOperator()}
+Registers a function as a reduction operator of a certain name
+\end{SeeAlso}
+%notyet /* (x,y) coordinates of interpolation points */
+\begin{SeeAlso}{CCTK\_LocalArrayReduceOperator()}
+Returns the name of a registered reduction operator
+\end{SeeAlso}
+
+\begin{SeeAlso}{CCTK\_NumLocalArrayReduceOperators()}
+The number of local reduction operators registered
+\end{SeeAlso}
+\end{SeeAlsoSection}
+\end{FunctionDescription}
+
+%Reduction.c
+\begin{FunctionDescription}{CCTK\_LocalArrayReductionHandle}
+\label{CCTK-LocalArrayReductionHandle}
+Returns the handle of a given local array reduction operator
+
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+#include "cctk.h"
+
+int handle = CCTK_ReduceLocalArrays(const char *operator);
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ResultSection}
+\begin{Result}{handle}
+The handle corresponding to the local reduction operator
+\end{Result}
+\end{ResultSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{operator}
+The reduction operation to be performed. If no matching registered operator
+is found, a warning is issued and an error returned.
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{Discussion}
+This function returns the handle of the local array reduction operator. The local
+reduction handle is also used in the grid array reduction.
+\end{Discussion}
+
+\begin{SeeAlsoSection}
+\begin{SeeAlso}{CCTK\_ReduceLocalArrays()}
+Reduces a list of local arrays (new local array reduction API)
+\end{SeeAlso}
+
+\begin{SeeAlso}{CCTK\_RegisterLocalArrayReductionOperator()}
+Registers a function as a reduction operator of a certain name
+\end{SeeAlso}
+
+\begin{SeeAlso}{CCTK\_LocalArrayReduceOperatorImplementation()}
+Provide the implementation which provides an local array reduction operator
+\end{SeeAlso}
+
+\begin{SeeAlso}{CCTK\_LocalArrayReduceOperator()}
+Returns the name of a registered reduction operator
+\end{SeeAlso}
+
+\begin{SeeAlso}{CCTK\_NumLocalArrayReduceOperators()}
+The number of local reduction operators registered
+\end{SeeAlso}
+\end{SeeAlsoSection}
+\end{FunctionDescription}
 
 %%%%%
 % MMM
