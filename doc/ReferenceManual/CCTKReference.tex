@@ -9263,6 +9263,9 @@ call CCTK_VarIndex(index,"evolve::phi")
 \parameter{index}{The variable index}
 \end{params}
 \begin{discussion}
+The pointer returned is part of a structure managed by Cactus
+and so must {\em not} be freed after use.
+
 No Fortran routine exists at the moment.
 \end{discussion}
 \begin{examples}
