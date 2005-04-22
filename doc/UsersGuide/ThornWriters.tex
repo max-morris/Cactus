@@ -494,7 +494,8 @@ For analysing data.
 
 The \var{other options} allow finer grained control of the scheduling.  It is
 possible to state that the routine must run \texttt{BEFORE} or \texttt{AFTER}
-another routine. It is also possible to schedule the routine under an
+another routine or set of routines.
+It is also possible to schedule the routine under an
 alias name by using \texttt{AS <\var{alias\_name}>}.
 
 \begin{Lentry}
@@ -1333,7 +1334,7 @@ A usual simple specification for a schedule declaration is
 
 The full specification for a schedule declaration is
 \begin{alltt}schedule [GROUP] <function|\var{schedule group name}> AT|IN <\var{schedule bin}|\var{group name}>
-         [BEFORE|AFTER <\var{item}>] [WHILE <\var{variable}>] [AS <\var{alias}>]
+         [BEFORE|AFTER <\var{item}>|(<\var{item}> <\var{item}> ...)] [WHILE <\var{variable}>] [AS <\var{alias}>]
 \{
   LANG: <\var{language}>
   [STORAGE:       <\var{group}>,<\var{group}>...]
@@ -1386,14 +1387,32 @@ AT} the main schedule bins.  (That is, groups may be nested.)
 The options define various characteristics of the schedule item.
 
 \begin{Lentry}
-\item[\texttt{BEFORE or AFTER}]
-These specify a function or group before or after which this item will
-be scheduled.
+\item[\texttt{BEFORE} or \texttt{AFTER}]
+These specify either
+\begin{itemize}
+\item	a function or group before or after which this item will be
+	scheduled, or
+\item	a list of functions and/or groups; this item will be scheduled
+	(once) before any of them or after all of them as appropriate.
+\end{itemize}
+Note that a single schedule item may have multiple \texttt{BEFORE}
+and/or \texttt{AFTER} options; the scheduler will honor all of these
+(or abort with a fatal error).  For example,
+\begin{alltt}
+schedule FOO BEFORE A BEFORE B BEFORE C ...
+\end{alltt}
+schedules \texttt{FOO} before any of \texttt{A}, \texttt{B}, or \texttt{C}.
+This can also be written
+\begin{alltt}
+schedule FOO BEFORE (A B C) ...
+\end{alltt}
+
 \item[\texttt{WHILE}]
 This specifies a \texttt{CCTK\_INT} grid scalar which is used to control
 the execution of this item.  If the grid scalar has a nonzero value
 the schedule item will be executed, otherwise the item will be
 ignored.  This allows some dynamic behaviour with scheduling.
+
 \item[\texttt{AS}]
 This assigns a new name to a function for scheduling purposes.  This
 is used, for instance, to allow a thorn to schedule something before
