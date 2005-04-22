@@ -753,7 +753,8 @@ Each \textit{schedule block} in the file {\t schedule.ccl} must have the syntax
 
 \begin{alltt}
 schedule [GROUP] <\var{function name}|\var{group name}> AT|IN <\var{time}> \verb|\|
-     [BEFORE|AFTER <\var{function name}>] [WHILE <\var{variable}>] [AS <\var{alias}>]
+     [BEFORE|AFTER <\var{function name}>|(<\var{function name}> <\var{function name}> ...)] \verb|\|
+     [WHILE <\var{variable}>] [AS <\var{alias}>]
 \{
   [LANG: <\var{language}>]
   [STORAGE:       <\var{group}>[\var{timelevels}],<\var{group}>[\var{timelevels}]...]
@@ -785,10 +786,13 @@ schedule [GROUP] <\var{function name}|\var{group name}> AT|IN <\var{time}> \verb
   \item[{\tt IN}] Schedules a function or schedule group to run in a
   schedule group rather than in a Cactus timebin.
 
-  \item[{\tt BEFORE/AFTER}] Takes either a function name, a function
-  alias, or a schedule group name.  If no function, alias or schedule
-  group with this name is provided by an active thorn this directive
-  is ignored.
+  \item[{\tt BEFORE/AFTER}] Takes a function name, a function alias,
+  a schedule group name, or a parentheses-enclosed whitespace-separated
+  list of these.  (Any names that are not provided by an active thorn
+  are ignored.)  Note that a single schedule block may have multiple
+  {\tt BEFORE/AFTER} clauses.  See section~\ref{chap:scheduling}
+  (``Scheduling'') in the Cactus Users' Guide for more information
+  about {\tt BEFORE/AFTER} clauses.
 
   \item[{\tt WHILE}] Executes a function or schedule group until the given
     variable (which must be a fully qualified integer grid scalar) has the value zero.
