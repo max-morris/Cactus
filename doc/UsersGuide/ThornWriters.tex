@@ -1393,7 +1393,7 @@ These specify either
 \item	a function or group before or after which this item will be
 	scheduled, or
 \item	a list of functions and/or groups; this item will be scheduled
-	(once) before any of them or after all of them as appropriate.
+	(once) before any of them or after all of them respectively.
 \end{itemize}
 Note that a single schedule item may have multiple \texttt{BEFORE}
 and/or \texttt{AFTER} options; the scheduler will honor all of these
@@ -1406,6 +1406,11 @@ This can also be written
 \begin{alltt}
 schedule FOO BEFORE (A B C) ...
 \end{alltt}
+
+Note that the set of all \texttt{BEFORE}/\texttt{AFTER} options in
+all active schedule blocks of all active thorns, \emph{must} specify
+a (directed) graph with no cycles; if there are any cycles then the
+scheduler will abort with a fatal error.
 
 \item[\texttt{WHILE}]
 This specifies a \texttt{CCTK\_INT} grid scalar which is used to control
