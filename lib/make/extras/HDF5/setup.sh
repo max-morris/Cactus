@@ -165,9 +165,9 @@ fi
 
 # Add MPI libraries for parallel HDF5
 if [ $test_phdf5 -eq 0 ]; then
-  HDF5_LIBS="$HDF5_LIBS \${MPI_LIBS}" 
-  HDF5_INC_DIRS="$HDF5_INC_DIRS \${MPI_INC_DIRS}"
-  HDF5_LIB_DIRS="$HDF5_LIB_DIRS \${MPI_LIB_DIRS}"
+  HDF5_LIBS="$HDF5_LIBS \$(MPI_LIBS)" 
+  HDF5_INC_DIRS="$HDF5_INC_DIRS \$(MPI_INC_DIRS)"
+  HDF5_LIB_DIRS="$HDF5_LIB_DIRS \$(MPI_LIB_DIRS)"
 fi
 
 # Finally, add the math lib which might not be linked against by default
