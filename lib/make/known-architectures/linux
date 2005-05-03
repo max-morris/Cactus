@@ -371,10 +371,17 @@ else
       else
         : ${CXXFLAGS='-restrict'}
       fi
-      if test "$host_cpu" = 'ia64' -o "$host_cpu" = 'x86_64'; then
-        : ${CXX_OPTIMISE_FLAGS='-O2 -ip'}
-      else
-        : ${CXX_OPTIMISE_FLAGS='-O3 -ip'}
+      if test -z ${CXX_OPTIMISE_FLAGS}; then
+        if test "$host_cpu" = 'ia64' -o "$host_cpu" = 'x86_64'; then
+          CXX_OPTIMISE_FLAGS='-O2'
+        else
+          CXX_OPTIMISE_FLAGS='-O3'
+        fi
+        # Intel 8.1 has a bug when using anonymous namespaces
+        # taking out '-ip' bypasses this optimization bug
+        if test "`$CXX -V 2>&1 | grep Version | sed 's/.*Version //' | cut -c1-3`" != '8.1'; then
+          CXX_OPTIMISE_FLAGS="$CXX_OPTIMISE_FLAGS -ip"
+        fi
       fi
       : ${CXX_DEPEND='$(CXX) -M $(CPPFLAGS)'}
       ;;
