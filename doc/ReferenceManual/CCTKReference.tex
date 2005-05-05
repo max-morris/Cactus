@@ -5773,33 +5773,62 @@ See also
 \end{CCTKFunc}
 
 % ActiveThorns.c
-\begin{CCTKFunc}{CCTK\_IsThornActive}{Reports whether a thorn was activated in a parameter file}
+\begin{FunctionDescription}{CCTK\_IsThornActive}
 \label{CCTK-IsThornActive}
-\function{int}{integer}{istat}
-\argument{const char *}{character*(*)}{thornname}
-\showargs
-\begin{params}
-\parameter{istat}{the return status}
-\parameter{thorname}{the name of the thorn to check}
-\end{params}
-\begin{discussion}
-This function returns a non-zero value if the thorn given by \code{thornname}
-was activated in a parameter file, and zero otherwise.
-See also
-\code{CCTK\_ActivatingThorn} [\pageref{CCTK-ActivatingThorn}],
-\code{CCTK\_CompiledImplementation} [\pageref{CCTK-CompiledImplementation}],
-\code{CCTK\_CompiledThorn} [\pageref{CCTK-CompiledThorn}],
-\code{CCTK\_ImplementationRequires} [\pageref{CCTK-ImplementationRequires}],
-\code{CCTK\_ImplementationThorn} [\pageref{CCTK-ImplementationThorn}],
-\code{CCTK\_ImpThornList} [\pageref{CCTK-ImpThornList}],
-\code{CCTK\_IsImplementationActive} [\pageref{CCTK-IsImplementationActive}],
-\code{CCTK\_IsImplementationCompiled} [\pageref{CCTK-IsImplementationCompiled}],
-\code{CCTK\_IsThornActive} [\pageref{CCTK-IsThornActive}],
-\code{CCTK\_NumCompiledImplementations} [\pageref{CCTK-NumCompiledImplementations}],
-\code{CCTK\_NumCompiledThorns} [\pageref{CCTK-NumCompiledThorns}],
-\code{CCTK\_ThornImplementation} [\pageref{CCTK-ThornImplementation}].
-\end{discussion}
-\end{CCTKFunc}
+Reports whether a thorn was activated in a parameter file
+
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+#include "cctk.h"
+
+int status = CCTK_IsThornActive(const char* thorn_name);
+\end{verbatim}
+\end{Synopsos}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}
+#include "cctk.h"
+
+integer status
+character *(*) thorn_name
+
+status = CCTK_IsThornActive(thorn_name)
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ResultSection}
+\begin{Result}{status}
+This function returns a non-zero value if thorn 
+\code{thorn\_name} was activated in a parameter file,
+and zero otherwise.
+\end{Result}
+\end{ResultSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{thorn\_name}
+The character-string name of the thorn, for example "SymBase".
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{Discussion}
+This function lets you find out at run-time whether or not a given
+thorn is active in the current Cactus run.
+\end{Discussion}
+
+%%\code{CCTK\_ActivatingThorn} [\pageref{CCTK-ActivatingThorn}],
+%%\code{CCTK\_CompiledImplementation} [\pageref{CCTK-CompiledImplementation}],
+%%\code{CCTK\_CompiledThorn} [\pageref{CCTK-CompiledThorn}],
+%%\code{CCTK\_ImplementationRequires} [\pageref{CCTK-ImplementationRequires}],
+%%\code{CCTK\_ImplementationThorn} [\pageref{CCTK-ImplementationThorn}],
+%%\code{CCTK\_ImpThornList} [\pageref{CCTK-ImpThornList}],
+%%\code{CCTK\_IsImplementationActive} [\pageref{CCTK-IsImplementationActive}],
+%%\code{CCTK\_IsImplementationCompiled} [\pageref{CCTK-IsImplementationCompiled}],
+%%\code{CCTK\_IsThornActive} [\pageref{CCTK-IsThornActive}],
+%%\code{CCTK\_NumCompiledImplementations} [\pageref{CCTK-NumCompiledImplementations}],
+%%\code{CCTK\_NumCompiledThorns} [\pageref{CCTK-NumCompiledThorns}],
+%%\code{CCTK\_ThornImplementation} [\pageref{CCTK-ThornImplementation}].
+\end{FunctionDescription}
 
 % ActiveThorns.c
 \begin{CCTKFunc}{CCTK\_IsThornCompiled}{Reports whether a thorn was activated in a parameter file}
