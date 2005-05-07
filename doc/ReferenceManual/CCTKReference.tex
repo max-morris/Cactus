@@ -199,7 +199,7 @@ from Fortran.
   Given a group index returns the first variable index in the group
 
 \item[\code{CCTK\_FortranString}] [\pageref{CCTK-FortranString}]
-  Copies the contents of a C string into a Fortran string variable
+  Copy the contents of a C string into a Fortran string variable
 
 \item[\code{CCTK\_FullName}] [\pageref{CCTK-FullName}]
   Given a variable index, returns the full name of the variable
@@ -2409,22 +2409,16 @@ Group has no members.
 
 \begin{FunctionDescription}{CCTK\_FortranString}
 \label{CCTK-FortranString}
-Copies the contents of a C string into a Fortran string variable
+Copy the contents of a C string into a Fortran string variable
 
 \begin{SynopsisSection}
 \begin{Synopsis}{Fortran}
 \begin{verbatim}
 #include "cctk.h"
-#include "cctk_Parameters.h"
-
         integer string_length
-        character*999 Fortran_string
-
-c declare all Cactus parameters as Fortran variables
-        DECLARE_CCTK_PARAMETERS
-
-c copy Cactus parameter  C_string  to  Fortran_string
-        call CCTK_FortranString(string_length, C_string, Fortran_string)
+        CCTK_POINTER_TO_CONST C_string
+        character*(*) Fortran_string
+        call CCTK_FortranString (string_length, C_string, Fortran_string)
 \end{verbatim}
 \end{Synopsis}
 \end{SynopsisSection}
@@ -2435,17 +2429,18 @@ c copy Cactus parameter  C_string  to  Fortran_string
 This function sets this variable to the number of characters in the
 C string (not counting the terminating NUL character).  If this is
 larger than the declared length of \code{Fortran\_string} then the
-string was truncated.
+string was truncated.  If this is negative, then an error occurred.
+\end{Parameter}
+\begin{Parameter}{C\_string}
+This is (a pointer to) a standard C-style (NUL-terminated) string.
+Typically this argument is the name of a Cactus keyword or string
+paramameter.
 \end{Parameter}
 \begin{Parameter}{Fortran\_string}
 [This is an output argument]
 A Fortran character variable into which this function copies
 the C string (or as much of it as will fit).
 \end{Parameter}
-\begin{Parameter}{C\_string}
-This is (a pointer to) a standard C-style (NUL-terminated) string.
-Typically this argument is the name of a Cactus keyword or string
-paramameter.
 \end{ParameterSection}
 
 \begin{Discussion}
@@ -2502,8 +2497,7 @@ c
         if (string_length .gt. max_string_length) then
            call CCTK_WARN(CCTK_WARN_ABORT, "'our_parameters' string too long!")
         end if
-        call Util_TableCreateFromString(table_handle,
-     $                                  our_parameters_fstring(1:string_length))
+        call Util_TableCreateFromString(table_handle, our_parameters_fstring)
 
 c
 c open a Fortran output file named via  output_file_name  parameter
