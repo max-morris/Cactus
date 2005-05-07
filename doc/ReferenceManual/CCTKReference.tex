@@ -2407,31 +2407,119 @@ Group has no members.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\begin{CCTKFunc}{CCTK\_FortranString}{Changes a C string into a Fortran string}
+\begin{FunctionDescription}{CCTK\_FortranString}
 \label{CCTK-FortranString}
-\subroutine{int}{integer}{nchar}
-\argument{const char *}{CCTK\_STRING}{c\_string\_in}
-\argument{const char *}{character*(*)}{fortran\_string\_out}
-\showargs
-\begin{params}
-\parameter{nchar}{The number of characters in the C string, not counting the null terminator}
-\parameter{c\_string\_in}{The (pointer to the) C string containing the null terminator}
-\parameter{fortran\_string\_out}{The Fortran string which on output contains the C string as the first nchar characters}
-\end{params}
-\begin{discussion}
-String or keyword parameters in Cactus are passed into Fortran routines as
-pointers to C strings. This means that they cannot be directly used as Fortran
-strings. This routine allows a Fortran string to be created from such a C string. Note that the Fortran string must be defined to have at least the same expected length as the C string. This routine is only callable from Fortran.
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf Fortran} && \\
-\\
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
+Copies the contents of a C string into a Fortran string variable
+
+\begin{SynopsisSection}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}
+#include "cctk.h"
+#include "cctk_Parameters.h"
+
+        integer string_length
+        character*999 Fortran_string
+
+c declare all Cactus parameters as Fortran variables
+        DECLARE_CCTK_PARAMETERS
+
+c copy Cactus parameter  C_string  to  Fortran_string
+        call CCTK_FortranString(string_length, C_string, Fortran_string)
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{string\_length}
+[This is an output argument]
+This function sets this variable to the number of characters in the
+C string (not counting the terminating NUL character).  If this is
+larger than the declared length of \code{Fortran\_string} then the
+string was truncated.
+\end{Parameter}
+\begin{Parameter}{Fortran\_string}
+[This is an output argument]
+A Fortran character variable into which this function copies
+the C string (or as much of it as will fit).
+\end{Parameter}
+\begin{Parameter}{C\_string}
+This is (a pointer to) a standard C-style (NUL-terminated) string.
+Typically this argument is the name of a Cactus keyword or string
+paramameter.
+\end{ParameterSection}
+
+\begin{Discussion}
+String or keyword parameters in Cactus are passed into Fortran routines
+as pointers to C strings, which can't be directly used by Fortran code.
+This subroutine copies such a C string into a Fortran character*N string
+variable, from where it can be used by Fortran code.
+\end{Discussion}
+
+\begin{ExampleSection}
+\begin{Example}{Fortran}
+\begin{verbatim}
+# *** this is param.ccl for some thorn ***
+
+# This example shows how we can use a Cactus string parameter to
+# specify the contents of a Cactus key/value table, or the name of
+# a Fortran output file
+
+string our_parameters "parameter string"
+{
+".*" :: "any string acceptable to Util_TableCreateFromString()"
+} "order=3"
+
+string output_file_name "name of our output file"
+{
+".*" :: "any valid file name"
+} "foo.dat"
+
+
+c *** this is sample Fortran code in this same thorn ***
+#include "util_Table.h"
+#include "cctk.h"
+#include "cctk_Arguments.h"
+#include "cctk_Parameters.h"
+
+        subroutine my_Fortran_subroutine(CCTK_ARGUMENTS)
+        DECLARE_CCTK_ARGUMENTS
+        DECLARE_CCTK_PARAMETERS
+
+        integer :: string_length
+        integer :: status
+        integer :: table_handle
+
+        integer, parameter:: max_string_length = 500
+        character*max_string_length :: our_parameters_fstring
+        character*max_string_length :: output_file_name_fstring
+
+c
+c create Cactus key/value table from  our_parameters  parameter
+c
+        call CCTK_FortranString(string_length,
+     $                          our_parameters,
+     $                          our_parameters_fstring)
+        if (string_length .gt. max_string_length) then
+           call CCTK_WARN(CCTK_WARN_ABORT, "'our_parameters' string too long!")
+        end if
+        call Util_TableCreateFromString(table_handle,
+     $                                  our_parameters_fstring(1:string_length))
+
+c
+c open a Fortran output file named via  output_file_name  parameter
+c
+        call CCTK_FortranString(string_length,
+     $                          output_file_name,
+     $                          output_file_name_fstring)
+        if (string_length .gt. max_string_length) then
+           call CCTK_WARN(CCTK_WARN_ABORT, "'output_file_name' string too long!")
+        end if
+        open (unit=9, iostat=status, status='replace',
+     $        file=output_file_name_fstring)
+\end{verbatim}
+\end{Example}
+\end{ExampleSection}
+\end{FunctionDescription}
 
 
 
