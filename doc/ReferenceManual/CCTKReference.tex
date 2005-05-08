@@ -2412,36 +2412,50 @@ Group has no members.
 Copy the contents of a C string into a Fortran string variable
 
 \begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+#include "cctk.h"
+int CCTK_FortranString (char const * c_string,
+                        char       * fortran_string,
+                        int          fortran_length);
+\end{verbatim}
+\end{Synopsis}
 \begin{Synopsis}{Fortran}
 \begin{verbatim}
 #include "cctk.h"
-        integer string_length
-        CCTK_POINTER_TO_CONST C_string
-        character*(*) Fortran_string
-        call CCTK_FortranString (string_length, C_string, Fortran_string)
+subroutine CCTK_FortranString (string_length, c_string, fortran_string)
+   integer               string_length
+   CCTK_POINTER_TO_CONST c_string
+   character*(*)         fortran_string
+end subroutine
 \end{verbatim}
 \end{Synopsis}
 \end{SynopsisSection}
 
 \begin{ParameterSection}
-\begin{Parameter}{string\_length}
-[This is an output argument]
-This function sets this variable to the number of characters in the
-C string (not counting the terminating NUL character).  If this is
-larger than the declared length of \code{Fortran\_string} then the
-string was truncated.  If this is negative, then an error occurred.
-\end{Parameter}
-\begin{Parameter}{C\_string}
+\begin{Parameter}{c\_string}
 This is (a pointer to) a standard C-style (NUL-terminated) string.
 Typically this argument is the name of a Cactus keyword or string
 paramameter.
 \end{Parameter}
-\begin{Parameter}{Fortran\_string}
+\begin{Parameter}{fortran\_string}
 [This is an output argument]
 A Fortran character variable into which this function copies
 the C string (or as much of it as will fit).
 \end{Parameter}
+\begin{Parameter}{fortran\_length}
+The length of the Fortran character variable.
+\end{Parameter}
 \end{ParameterSection}
+
+\begin{ResultSection}
+\begin{Result}{string\_length}
+This function sets this variable to the number of characters in the
+C string (not counting the terminating NUL character).  If this is
+larger than the declared length of \code{fortran\_string} then the
+string was truncated.  If this is negative, then an error occurred.
+\end{Result}
+\end{ResultSection}
 
 \begin{Discussion}
 String or keyword parameters in Cactus are passed into Fortran routines
@@ -2495,7 +2509,7 @@ c
      $                          our_parameters,
      $                          our_parameters_fstring)
         if (string_length .gt. max_string_length) then
-           call CCTK_WARN(CCTK_WARN_ABORT, "'our_parameters' string too long!")
+           call CCTK_WARN(CCTK_WARN_ALERT, "'our_parameters' string too long!")
         end if
         call Util_TableCreateFromString(table_handle, our_parameters_fstring)
 
@@ -2506,7 +2520,7 @@ c
      $                          output_file_name,
      $                          output_file_name_fstring)
         if (string_length .gt. max_string_length) then
-           call CCTK_WARN(CCTK_WARN_ABORT, "'output_file_name' string too long!")
+           call CCTK_WARN(CCTK_WARN_ALERT, "'output_file_name' string too long!")
         end if
         open (unit=9, iostat=status, status='replace',
      $        file=output_file_name_fstring)
