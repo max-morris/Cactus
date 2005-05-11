@@ -28,6 +28,7 @@
 
 #include "cctk_Faces.h"
 #include "cctk_Interp.h"
+#include "cctk_WarnLevel.h"
 
 #define CCTK_PRINTSEPARATOR\
   print '("--------------------------------------------------------------------------------")'

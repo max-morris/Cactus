@@ -11,6 +11,8 @@
 #ifndef _CCTK_WARNLEVEL_H_
 #define _CCTK_WARNLEVEL_H_
 
+#ifdef CCODE
+
 #ifdef __cplusplus 
 extern "C" 
 {
@@ -49,6 +51,8 @@ __attribute__ ((format (printf, 2, 3)))
 }
 #endif
 
+#endif	/* CCODE */
+
 /* suggested values for warning levels (courtesy of Steve, PR#1742) */
 #define CCTK_WARN_ABORT    0	/* abort the Cactus run */
 #define CCTK_WARN_ALERT    1	/* the results of this run will be wrong, */
@@ -63,4 +67,4 @@ __attribute__ ((format (printf, 2, 3)))
 #define CCTK_WARN_DEBUG    4	/* these messages are probably useful */
 				/* only for debugging purposes */
 
-#endif
+#endif	/* ! _CCTK_WARNLEVEL_H_ */
