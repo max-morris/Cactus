@@ -63,7 +63,7 @@ else
     cc|xlc|xlc_r)
      : ${C_DEPEND='$(CC) -E -M $(CPPFLAGS)'}
      : ${C_DEPEND_OUT=' > /dev/null ; mv $(basename $(basename $@)).u $@'}
-     : ${CFLAGS="-q$AIX_BITS -qspill=17000 -qmaxmem=-1"}
+     : ${CFLAGS="-q$AIX_BITS -qspill=17000 -qmaxmem=-1 -qlanglvl=stdc99"}
      ;;
     *)
      ;;
