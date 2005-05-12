@@ -620,7 +620,10 @@ sub CheckParameterDefault
       $range =~ s/\s*$//;
       $range =~ s/^"(.*)"$/$1/;
 
-      if ($default =~ m:$range:i)
+      # An empty regular expression should match everything.
+      # Instead, perl returns the result of the last match.
+      # Therefore, prevent using empty patterns.
+      if ($range=='' || $default =~ m:$range:i)
       {
         $foundit = 1;
       }
