@@ -276,7 +276,7 @@ int CCTK_RegisterIOMethodTriggerOutput (int handle,
     method->TriggerOutput = TriggerOutput;
   }
 
-  return (method != NULL);
+  return (method ? 0 : -1);
 }
 
 
