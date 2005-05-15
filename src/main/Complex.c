@@ -297,7 +297,11 @@ cctk_complex CCTK_Cmplx##Mul (cctk_complex a, cctk_complex b)                 \
    @date       Sat Dec 4 12:11:04 1999
    @author     Gabrielle Allen
    @desc
-               Divides two complex numbers
+               Divide two complex numbers.
+               Make sure that the intermediate values do not overflow.
+               See e.g. the C99 compliant implementation in libgcc
+               (which ships with gcc).
+               This implementation here does not handle nan and inf.
    @enddesc
  
    @var        a
@@ -319,13 +323,19 @@ cctk_complex CCTK_Cmplx##Mul (cctk_complex a, cctk_complex b)                 \
 #define DEFINE_CCTK_CMPLX_DIV(CCTK_Cmplx, cctk_real, cctk_complex)            \
 cctk_complex CCTK_Cmplx##Div (cctk_complex a, cctk_complex b)                 \
 {                                                                             \
-  cctk_real factor;                                                           \
+  cctk_real afact, bfact, factor;                                             \
   cctk_complex result;                                                        \
                                                                               \
                                                                               \
+  afact = fabs(a.Re) + fabs(a.Im);                                            \
+  a.Re /= afact;                                                              \
+  a.Im /= afact;                                                              \
+  bfact = fabs(b.Re) + fabs(b.Im);                                            \
+  b.Re /= bfact;                                                              \
+  b.Im /= bfact;                                                              \
   factor = b.Re*b.Re + b.Im*b.Im;                                             \
-  result.Re = (a.Re*b.Re + a.Im*b.Im) / factor;                               \
-  result.Im = (a.Im*b.Re - a.Re*b.Im) / factor;                               \
+  result.Re = afact / bfact * (a.Re*b.Re + a.Im*b.Im) / factor;               \
+  result.Im = afact / bfact * (a.Im*b.Re - a.Re*b.Im) / factor;               \
                                                                               \
   return (result);                                                            \
 }
