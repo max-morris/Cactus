@@ -19,7 +19,7 @@
 #
 #
 #   @enddesc
-#   @version $Id: Makefile,v 1.166 2005-01-21 15:54:41 goodale Exp $
+#   @version $Id: Makefile,v 1.167 2005-05-15 11:27:47 schnetter Exp $
 # @@*/
 
 ##################################################################################
@@ -339,7 +339,7 @@ help:
 	@echo "******************************"
 ifeq ($(strip $(CONFIGURATIONS)),)
 	@echo There are no configurations currently specified.
-	@echo \'$(MAKE) \<name\>\' will run a setup script to setup a configuration called \'\<name\>\'.
+	@echo \'$(MAKE) \<name\>\' will run a setup script to set up a configuration called \'\<name\>\'.
 else
 	@echo The following configurations are currently specified
 	@echo
@@ -351,62 +351,58 @@ else
 	@echo There is a range of options available to act on a configuration.
 	@echo These are activated by $(MAKE) \<conf-name\>-\<option\>
 	@echo Valid options are
-	@echo "  -build         : to build individual thorns of a configuration."
-	@echo "  -clean         : to clean a configuration."
-	@echo "                  (deletes all object and dependency files in"
-	@echo "                   the configuration)."
-	@echo "  -cleandeps     : to clean a configuration's dependency files."
-	@echo "  -cleanobjs     : to clean a configuration's object files."
-	@echo "  -config        : to create a new configuration or reconfigure an existing one"
+	@echo "  -build         : build individual thorns of a configuration."
+	@echo "  -clean         : clean a configuration"
+	@echo "                  (deletes all object and dependency files"
+	@echo "                   in the configuration)."
+	@echo "  -cleandeps     : clean a configuration's dependency files."
+	@echo "  -cleanobjs     : clean a configuration's object files."
+	@echo "  -config        : create a new configuration, or reconfigure an existing one"
 	@echo "                  (overwrites previous configuration options)."
-	@echo "  -configinfo    : to display the configuration options for a configuration."
-	@echo "  -delete        : to delete a configuration."
-	@echo "  -editthorns    : edits the ThornList file."
-	@echo "  -realclean     : to restore a configuration to almost a new state."
+	@echo "  -configinfo    : display the configuration options for a configuration."
+	@echo "  -delete        : delete a configuration."
+	@echo "  -editthorns    : edit the ThornList file."
+	@echo "  -realclean     : restore a configuration to almost a new state."
 	@echo "                  (deletes all but the config-data directory"
 	@echo "                   and the ThornList file)."
-	@echo "  -rebuild       : to rebuild a configuration."
-	@echo "                  (forces the CST to be rerun)."
-	@echo "  -reconfig      : to reconfigure an existing configuration"
+	@echo "  -rebuild       : rebuild a configuration (forces the CST to be rerun)."
+	@echo "  -reconfig      : reconfigure an existing configuration"
 	@echo "                   using its previous configuration options."
-	@echo "  -utils         : to build a configuration's utility programs."
-	@echo "  -testsuite     : run the test program."
-	@echo "  -thornlist     : regenerates the ThornList file."
-	@echo "  -ThornGuide    : creates the thorn manual for a specific configuration."
-	@echo "  -cvsupdate     : updates the files for a specific configuration."
-	@echo "  -examples      : copies thorn parameter files to examples directory."
+	@echo "  -utils         : build a configuration's utility programs."
+	@echo "  -testsuite     : run the test suites."
+	@echo "  -thornlist     : regenerate the ThornList file."
+	@echo "  -ThornGuide    : create the thorn manual for a specific configuration."
+	@echo "  -cvsupdate     : update the files for a specific configuration."
+	@echo "  -examples      : copy thorn parameter files to examples directory."
 endif
 	@echo $(DIVIDER)
 	@echo There are options available to act on thorns.
 	@echo These are activated by $(MAKE) \<thorn-name\>-\<option\>
 	@echo Valid options are
-	@echo "  -ThornDoc      : produces the documentation for the thorn."
+	@echo "  -ThornDoc      : produce the documentation for the thorn."
 	@echo $(DIVIDER)
 	@echo $(MAKE) also knows the following targets
 	@echo
 	@echo "  checkout         - checkout public arrangements/thorns."
-	@echo "  cvsdiff          - differences between installed Cactus and"
-	@echo "	                    version in CVS repository."
-	@echo "  cvsstatus        - reports on status of Cactus when installed"
-	@echo "	                    from CVS."
-	@echo "  cvsupdate        - update flesh and arrangements from CVS"
-	@echo "  default          - creates a new configuration with "
-	@echo "			    a default name."
-	@echo "  distclean        - deletes all existing configurations."
+	@echo "  cvsdiff          - show differences between installed Cactus and"
+	@echo "                     version in CVS repository."
+	@echo "  cvsstatus        - report on status of Cactus (when installed from CVS)."
+	@echo "  cvsupdate        - update flesh and arrangements from. CVS"
+	@echo "  default          - create a new configuration with a default name."
+	@echo "  distclean        - delete all existing configurations."
 	@echo "  downsize         - remove non-essential files."
-	@echo "  MaintGuide       - creates maintainers manual, MaintGuide.ps."
-	@echo "  newthorn         - creates a new thorn."
-	@echo "  TAGS             - creates an Emacs TAGS file."
-	@echo "  tags             - creates a Vi TAGS file."
-	@echo "  thorninfo        - give information about all available "
-	@echo "                     thorns."
-	@echo "  UsersGuide       - creates users manual doc/UsersGuide.ps."
-	@echo "  ReferenceManual  - creates reference manual doc/ReferenceManual.ps."
-	@echo "  ThornGuide       - creates the thorn manual doc/ThornGuide.ps"
-	@echo "  ThornDoc         - creates documentation for all thorns in doc/ThornDoc"
-	@echo "  ArrangementDoc   - creates documentation for all arrangements"
-	@echo "                     in doc/ArrangementDoc"
-	@echo "  <anything else>  - prompts to create such a configuration."
+	@echo "  MaintGuide       - create maintainers manual, MaintGuide.ps."
+	@echo "  newthorn         - create a new thorn."
+	@echo "  TAGS             - create an emacs TAGS file."
+	@echo "  tags             - create a vi TAGS file."
+	@echo "  thorninfo        - give information about all available thorns."
+	@echo "  UsersGuide       - create users manual doc/UsersGuide.ps."
+	@echo "  ReferenceManual  - create reference manual doc/ReferenceManual.ps."
+	@echo "  ThornGuide       - create the thorn manual doc/ThornGuide.ps."
+	@echo "  ThornDoc         - create documentation for all thorns in doc/ThornDoc."
+	@echo "  ArrangementDoc   - create documentation for all arrangements"
+	@echo "                     in doc/ArrangementDoc."
+	@echo "  <anything else>  - prompt to create a configuration with that name."
 	@echo $(DIVIDER)
 
 
