@@ -159,6 +159,8 @@ while (<IN>) {
       } else {
          print OUT $_;
       }
+   } elsif (/^\\title\{\s*?\}/) {
+     print OUT "\\title\{$thorn_name\}\n";
    } else {
       print OUT $_;
    }
