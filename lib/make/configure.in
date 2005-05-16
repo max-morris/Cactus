@@ -541,6 +541,22 @@ CCTK_CHECK_FUNCS(isnan, , CCTK_CHECK_LIB_FUNC(m, isnan))
 dnl Do we have mkstemp(3)
 CCTK_CHECK_FUNCS(mkstemp, , CCTK_CHECK_LIB_FUNC(c, mkstemp))
 
+dnl Do we have va_copy(3)
+AC_MSG_CHECKING([for va_copy])
+AC_CACHE_VAL(cctk_cv_have_va_copy,
+[AC_TRY_LINK(
+[#include <stdarg.h>],
+[va_list src, dest; va_copy(dest, src); return 0], eval "cctk_cv_have_va_copy=yes",
+eval "cctk_cv_have_va_copy=no")
+])
+if test "$cctk_cv_have_va_copy" = 'yes'; then
+  AC_DEFINE(HAVE_VA_COPY)
+  AC_MSG_RESULT(yes)
+else
+  AC_MSG_RESULT(no)
+fi
+
+
 dnl Checks for availability of pthreads library.
 if test "X$PTHREADS" = 'Xyes'; then
   PTHREAD_LIBS=

@@ -22,6 +22,7 @@
 #undef HAVE_FINITE
 #undef HAVE_ISNAN
 #undef HAVE_MKSTEMP
+#undef HAVE_VA_COPY
 
 /* Do we have mode_t ? */
 #undef HAVE_MODE_T

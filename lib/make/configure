@@ -4434,10 +4434,47 @@ done
 
 
 
+echo $ac_n "checking for va_copy""... $ac_c" 1>&6
+echo "configure:4439: checking for va_copy" >&5
+if eval "test \"`echo '$''{'cctk_cv_have_va_copy'+set}'`\" = set"; then
+  echo $ac_n "(cached) $ac_c" 1>&6
+else
+  cat > conftest.$ac_ext <<EOF
+#line 4444 "configure"
+#include "confdefs.h"
+#include <stdarg.h>
+int main() {
+va_list src, dest; va_copy(dest, src); return 0
+; return 0; }
+EOF
+if { (eval echo configure:4451: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+  rm -rf conftest*
+  eval "cctk_cv_have_va_copy=yes"
+else
+  echo "configure: failed program was:" >&5
+  cat conftest.$ac_ext >&5
+  rm -rf conftest*
+  eval "cctk_cv_have_va_copy=no"
+fi
+rm -f conftest*
+
+fi
+
+if test "$cctk_cv_have_va_copy" = 'yes'; then
+  cat >> confdefs.h <<\EOF
+#define HAVE_VA_COPY 1
+EOF
+
+  echo "$ac_t""yes" 1>&6
+else
+  echo "$ac_t""no" 1>&6
+fi
+
+
 if test "X$PTHREADS" = 'Xyes'; then
   PTHREAD_LIBS=
   echo $ac_n "checking for main in library c_r""... $ac_c" 1>&6
-echo "configure:4441: checking for main in library c_r" >&5
+echo "configure:4478: checking for main in library c_r" >&5
 ac_lib_var=`echo c_r'_'main | sed 'y%./+-%__p_%'`
 if eval "test \"`echo '$''{'ac_cv_lib_$ac_lib_var'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
@@ -4445,43 +4482,6 @@ else
   ac_link='${CC-cc} -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext `CCTK_Wrap "$LIBDIR_PREFIX" "$LIBDIR_SUFFIX" "$LIBDIRS"` `CCTK_Wrap "$LIBLINK_PREFIX" "$LIBLINK_SUFFIX" "$LIBS"` >&5'
 ac_save_LIBS="$LIBS"
 LIBS="c_r  $LIBS"
-cat > conftest.$ac_ext <<EOF
-#line 4450 "configure"
-#include "confdefs.h"
-
-int main() {
-main()
-; return 0; }
-EOF
-if { (eval echo configure:4457: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
-  rm -rf conftest*
-  eval "ac_cv_lib_$ac_lib_var=yes"
-else
-  echo "configure: failed program was:" >&5
-  cat conftest.$ac_ext >&5
-  rm -rf conftest*
-  eval "ac_cv_lib_$ac_lib_var=no"
-fi
-rm -f conftest*
-LIBS="$ac_save_LIBS"
-
-fi
-if eval "test \"`echo '$ac_cv_lib_'$ac_lib_var`\" = yes"; then
-  echo "$ac_t""yes" 1>&6
-  PTHREAD_LIBS="c_r" LIBS="$LIBS c_r"
-else
-  echo "$ac_t""no" 1>&6
-fi
-
-  echo $ac_n "checking for main in library pthread""... $ac_c" 1>&6
-echo "configure:4478: checking for main in library pthread" >&5
-ac_lib_var=`echo pthread'_'main | sed 'y%./+-%__p_%'`
-if eval "test \"`echo '$''{'ac_cv_lib_$ac_lib_var'+set}'`\" = set"; then
-  echo $ac_n "(cached) $ac_c" 1>&6
-else
-  ac_link='${CC-cc} -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext `CCTK_Wrap "$LIBDIR_PREFIX" "$LIBDIR_SUFFIX" "$LIBDIRS"` `CCTK_Wrap "$LIBLINK_PREFIX" "$LIBLINK_SUFFIX" "$LIBS"` >&5'
-ac_save_LIBS="$LIBS"
-LIBS="pthread  $LIBS"
 cat > conftest.$ac_ext <<EOF
 #line 4487 "configure"
 #include "confdefs.h"
@@ -4505,11 +4505,48 @@ LIBS="$ac_save_LIBS"
 fi
 if eval "test \"`echo '$ac_cv_lib_'$ac_lib_var`\" = yes"; then
   echo "$ac_t""yes" 1>&6
+  PTHREAD_LIBS="c_r" LIBS="$LIBS c_r"
+else
+  echo "$ac_t""no" 1>&6
+fi
+
+  echo $ac_n "checking for main in library pthread""... $ac_c" 1>&6
+echo "configure:4515: checking for main in library pthread" >&5
+ac_lib_var=`echo pthread'_'main | sed 'y%./+-%__p_%'`
+if eval "test \"`echo '$''{'ac_cv_lib_$ac_lib_var'+set}'`\" = set"; then
+  echo $ac_n "(cached) $ac_c" 1>&6
+else
+  ac_link='${CC-cc} -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext `CCTK_Wrap "$LIBDIR_PREFIX" "$LIBDIR_SUFFIX" "$LIBDIRS"` `CCTK_Wrap "$LIBLINK_PREFIX" "$LIBLINK_SUFFIX" "$LIBS"` >&5'
+ac_save_LIBS="$LIBS"
+LIBS="pthread  $LIBS"
+cat > conftest.$ac_ext <<EOF
+#line 4524 "configure"
+#include "confdefs.h"
+
+int main() {
+main()
+; return 0; }
+EOF
+if { (eval echo configure:4531: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+  rm -rf conftest*
+  eval "ac_cv_lib_$ac_lib_var=yes"
+else
+  echo "configure: failed program was:" >&5
+  cat conftest.$ac_ext >&5
+  rm -rf conftest*
+  eval "ac_cv_lib_$ac_lib_var=no"
+fi
+rm -f conftest*
+LIBS="$ac_save_LIBS"
+
+fi
+if eval "test \"`echo '$ac_cv_lib_'$ac_lib_var`\" = yes"; then
+  echo "$ac_t""yes" 1>&6
   PTHREAD_LIBS="pthread $PTHREAD_LIBS"
 else
   echo "$ac_t""no" 1>&6
 echo $ac_n "checking for main in library pthreads""... $ac_c" 1>&6
-echo "configure:4513: checking for main in library pthreads" >&5
+echo "configure:4550: checking for main in library pthreads" >&5
 ac_lib_var=`echo pthreads'_'main | sed 'y%./+-%__p_%'`
 if eval "test \"`echo '$''{'ac_cv_lib_$ac_lib_var'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
@@ -4518,14 +4555,14 @@ else
 ac_save_LIBS="$LIBS"
 LIBS="pthreads  $LIBS"
 cat > conftest.$ac_ext <<EOF
-#line 4522 "configure"
+#line 4559 "configure"
 #include "confdefs.h"
 
 int main() {
 main()
 ; return 0; }
 EOF
-if { (eval echo configure:4529: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+if { (eval echo configure:4566: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
   rm -rf conftest*
   eval "ac_cv_lib_$ac_lib_var=yes"
 else
