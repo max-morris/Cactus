@@ -617,8 +617,8 @@ sub CheckParameterDefault
       $range =~ /^([\s\*0-9]*):([\s\*0-9]*)/;
       $min = $1;
       $max = $2;
-      $foundit = 1 if ($min =~ /^\s*[\*\s]*\s*$/ && $default >= $min &&
-                       $max =~ /^\s*[\*\s]*\s*$/ && $default <= $max);
+      $foundit = 1 if (($min =~ /^\s*[\*\s]*\s*$/ || $default >= $min) &&
+                       ($max =~ /^\s*[\*\s]*\s*$/ || $default <= $max));
     }
     if ($nranges > 0 && $foundit == 0)
     {
@@ -638,8 +638,8 @@ sub CheckParameterDefault
       $range =~ /^([\s\*0-9\.eE+-]*):([\s\*0-9\.eE+-]*)/;
       $min = $1;
       $max = $2;
-      $foundit = 1 if ($min =~ /^\s*[\*\s]*\s*$/ && $default >= $min &&
-                       $max =~ /^\s*[\*\s]*\s*$/ && $default <= $max);
+      $foundit = 1 if (($min =~ /^\s*[\*\s]*\s*$/ || $default >= $min) &&
+                       ($max =~ /^\s*[\*\s]*\s*$/ || $default <= $max));
     }
     if ($nranges > 0 && $foundit == 0)
     {
