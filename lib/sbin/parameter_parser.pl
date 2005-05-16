@@ -623,7 +623,7 @@ sub CheckParameterDefault
       # An empty regular expression should match everything.
       # Instead, perl returns the result of the last match.
       # Therefore, prevent using empty patterns.
-      if ($range=='' || $default =~ m:$range:i)
+      if ($range eq '' || $default =~ m:$range:i)
       {
         $foundit = 1;
       }
