@@ -405,7 +405,11 @@ int CCTK_VWarn (int level,
       CCTK_ParameterGet ("highlight_warning_messages", "Cactus", &param_type);
 
     va_start (ap, format);
+#ifdef HAVE_VA_COPY
     va_copy (aq, ap);
+#else
+    memcpy (&aq, &ap, sizeof (ap));
+#endif
 
     /* print to stderr if necessary */
     if (level <= warning_level)
