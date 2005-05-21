@@ -2231,6 +2231,8 @@ int CCTK_TraverseString (const char *traverse_string,
       if (gindex >= 0)
       {
         /* We have a group so now need all the variables in the group */
+        /* Note: CCTK_FirstVarIndexI is negative if there are zero
+           variables in the group */
         first = CCTK_FirstVarIndexI (gindex);
         last = first + CCTK_NumVarsInGroupI (gindex) - 1;
       }
@@ -2261,7 +2263,10 @@ int CCTK_TraverseString (const char *traverse_string,
       }
       retval += last - first + 1;
     }
-    else
+    /* Only emit an error message if the name is really invalid.  If
+       it is a valid group name, but the group has zero variables,
+       then it will be first<0 and gindex>=0. */
+    else if (gindex < 0)
     {
       CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
                   "CCTK_TraverseString: invalid group/variable name '%s' in "
