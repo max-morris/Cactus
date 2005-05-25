@@ -72,6 +72,7 @@ typedef struct
   int *StorageOnEntry;
 
   int done_entry;
+  int synchronised;
 
 } t_attribute;
 
@@ -83,7 +84,6 @@ typedef struct
   cTimerData *info;
   cTimerData *total_time;
   int print_headers;
-  int synchronised;
 
   /* Stuff passed in in user calls */
 
@@ -2209,6 +2209,9 @@ static int CCTKi_ScheduleCallEntry(t_attribute *attribute,
       }
     }
 
+    /* Initialise the synchronised flag. */
+    attribute->synchronised = 0;
+
     /* Remember if we have switched on storage and comm or not. */
     attribute->done_entry = go;
   }
@@ -2216,9 +2219,6 @@ static int CCTKi_ScheduleCallEntry(t_attribute *attribute,
   {
     go = 1;
   }
-
-  /* Initialise then synchronised flag. */
-  data->synchronised = 0;
 
   return go;
 }
@@ -2260,12 +2260,12 @@ static int CCTKi_ScheduleCallExit(t_attribute *attribute,
   {
 
     /* Synchronise variable groups associated with this schedule group. */
-    if(attribute->FunctionData.n_SyncGroups > 0 && ! data->synchronised)
+    if(attribute->FunctionData.n_SyncGroups > 0 && ! attribute->synchronised)
     {
       CCTK_SyncGroupsI(data->GH,
                        attribute->FunctionData.n_SyncGroups,
                        attribute->FunctionData.SyncGroups);
-      data->synchronised = 0;
+      attribute->synchronised = 0;
     }
 
     if(data->schedpoint == schedpoint_analysis)
@@ -2420,7 +2420,7 @@ static int CCTKi_ScheduleCallFunction(void *function,
   /* Use whatever has been chosen as the calling function for this
    * function.
    */
-  data->synchronised = data->CallFunction(function, &(attribute->FunctionData), data->GH);
+  attribute->synchronised = data->CallFunction(function, &(attribute->FunctionData), data->GH);
 
   if (attribute->timer_handle >= 0)
   {
