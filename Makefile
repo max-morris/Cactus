@@ -19,7 +19,7 @@
 #
 #
 #   @enddesc
-#   @version $Id: Makefile,v 1.167 2005-05-15 11:27:47 schnetter Exp $
+#   @version $Id: Makefile,v 1.168 2005-05-26 15:43:20 swhite Exp $
 # @@*/
 
 ##################################################################################
@@ -1003,8 +1003,14 @@ UsersGuide:
 	latex  -interaction=nonstopmode UsersGuide.tex > LATEX_MESSAGES 2>&1; \
 	latex  -interaction=nonstopmode UsersGuide.tex > LATEX_MESSAGES 2>&1; \
 	latex  -interaction=nonstopmode UsersGuide.tex > LATEX_MESSAGES 2>&1; \
-	echo "  Running dvips....";                 \
-	dvips -f ./UsersGuide.dvi 2> DVIPS_MESSAGES | $(CCTK_HOME)/lib/sbin/FixPageNumbersInPostscript.pl > $(CCTK_HOME)/doc/UsersGuide.ps
+	if grep "^\! " "LATEX_MESSAGES"; then                            \
+	  echo "  Problem in $<.  See doc/UsersGuide/LATEX_MESSAGES.";      \
+	  exit 1;                                                           \
+	elif grep "^LaTeX Warning:" "LATEX_MESSAGES"; then                  \
+	  echo "  For more information see doc/UsersGuide/LATEX_MESSAGES."; \
+	fi;                                                                 \
+	echo "  Running dvips....";                                         \
+	dvips -f ./UsersGuide.dvi 2> DVIPS_MESSAGES | $(CCTK_HOME)/lib/sbin/FixPageNumbersInPostscript.pl > $(CCTK_HOME)/doc/UsersGuide.ps 
 	@echo "  UsersGuide.ps created in doc directory."
 	@echo "  Done."
 	@echo $(DIVIDER)
@@ -1018,11 +1024,17 @@ ReferenceManual.ps: ReferenceManual
 ReferenceManual:
 	@echo $(DIVIDER)
 	@echo Creating user reference manual ReferenceManual.ps
-	cd doc/ReferenceManual;                          \
+	cd doc/ReferenceManual;                     \
 	echo "  Running LaTeX....";                 \
 	latex  -interaction=nonstopmode ReferenceManual.tex > LATEX_MESSAGES 2>&1; \
 	latex  -interaction=nonstopmode ReferenceManual.tex > LATEX_MESSAGES 2>&1; \
 	latex  -interaction=nonstopmode ReferenceManual.tex > LATEX_MESSAGES 2>&1; \
+	if grep "^\! " "LATEX_MESSAGES"; then                            \
+	  echo "  Problem in $<.  See doc/ReferenceManual/LATEX_MESSAGES."; \
+	  exit 1;                                                           \
+	elif grep "^LaTeX Warning:" "LATEX_MESSAGES"; then    \
+	  echo "  For more information see doc/ReferenceManual/LATEX_MESSAGES."; \
+	fi;                                         \
 	echo "  Running dvips....";                 \
 	dvips -f ./ReferenceManual.dvi 2> DVIPS_MESSAGES | $(CCTK_HOME)/lib/sbin/FixPageNumbersInPostscript.pl > $(CCTK_HOME)/doc/ReferenceManual.ps
 	@echo "  ReferenceManual.ps created in doc directory."
@@ -1043,6 +1055,12 @@ MaintGuide:
 	latex MaintGuide.tex > LATEX_MESSAGES 2>&1; \
 	latex MaintGuide.tex > LATEX_MESSAGES 2>&1; \
 	latex MaintGuide.tex > LATEX_MESSAGES 2>&1; \
+	if grep "^\! " "LATEX_MESSAGES"; then                               \
+	  echo "  Problem in $<.  See doc/MaintGuide/LATEX_MESSAGES.";      \
+	  exit 1;                                                           \
+	elif grep "^LaTeX Warning:" "LATEX_MESSAGES"; then                  \
+	  echo "  For more information see doc/MaintGuide/LATEX_MESSAGES."; \
+	fi;                                                                 \
 	echo "  Running dvips....";                 \
 	dvips -f ./MaintGuide.dvi 2> DVIPS_MESSAGES | $(CCTK_HOME)/lib/sbin/FixPageNumbersInPostscript.pl > $(CCTK_HOME)/doc/MaintGuide.ps
 	@echo "  MaintGuide.ps created in doc directory."
@@ -1050,6 +1068,8 @@ MaintGuide:
 	@echo $(DIVIDER)
 
 # Make the ThornGuide
+DOCDIR		= $(CCTK_HOME)/doc
+THORNBUILD	= $(DOCDIR)/ThornGuide/build
 
 .PHONY: ThornGuide.ps
 ThornGuide.ps: ThornGuide
@@ -1058,48 +1078,61 @@ ThornGuide.ps: ThornGuide
 ThornGuide:
 	@echo $(DIVIDER)
 	@echo Creating thorn documentation ThornGuide.ps
-	rm -rf $(CCTK_HOME)/doc/ThornGuide/build;
-	mkdir $(CCTK_HOME)/doc/ThornGuide/build;
-	@echo "  Processing...."
-	cd $(CCTK_HOME)/doc/ThornGuide/build; \
-	$(MAKE) -f $(CCTK_HOME)/doc/ThornGuide/Makefile PERL=$(PERL) CCTK_HOME=$(CCTK_HOME) THORNS=$(THORNS) ARRANGEMENTS=$(ARRANGEMENTS) TOCDEPTH=$(TOCDEPTH); \
-	cp ThornGuide.ps $(CCTK_HOME)/doc/ThornGuide.ps
-	@echo "  ThornGuide.ps created in doc directory."
-	@echo "  Done."
+	rm -rf $(THORNBUILD);
+	mkdir $(THORNBUILD);
+	cd $(THORNBUILD); \
+	$(MAKE) -f $(DOCDIR)/ThornGuide/Makefile
+	if test -e "$(THORNBUILD)/ThornGuide.ps"; then \
+	  mv "$(THORNBUILD)/ThornGuide.ps" $(DOCDIR)/ThornGuide.ps; \
+	  echo "  ThornGuide.ps created in doc directory."; \
+	  echo "  Done."; \
+	fi
 	@echo $(DIVIDER)
 
 .PHONY: ThornGuide.pdf
 ThornGuide.pdf:
 	@echo $(DIVIDER)
 	@echo Creating thorn documentation ThornGuide.pdf
-	rm -rf $(CCTK_HOME)/doc/ThornGuide/build;
-	mkdir $(CCTK_HOME)/doc/ThornGuide/build;
-	@echo "  Processing...."
-	cd $(CCTK_HOME)/doc/ThornGuide/build; \
-	$(MAKE) -f $(CCTK_HOME)/doc/ThornGuide/Makefile ThornGuide.pdf PERL=$(PERL) CCTK_HOME=$(CCTK_HOME) THORNS=$(THORNS) ARRANGEMENTS=$(ARRANGEMENTS) TOCDEPTH=$(TOCDEPTH); \
-	cp ThornGuide.pdf $(CCTK_HOME)/doc/ThornGuide.pdf
-	@echo "  ThornGuide.pdf created in doc directory."
-	@echo "  Done."
+	rm -rf $(THORNBUILD);
+	mkdir $(THORNBUILD);
+	cd $(THORNBUILD); \
+	$(MAKE) -f $(DOCDIR)/ThornGuide/Makefile ThornGuide.pdf
+	if test -e "$(THORNBUILD)/ThornGuide.pdf"; then \
+	  mv "$(THORNBUILD)/ThornGuide.pdf" $(DOCDIR)/ThornGuide.pdf;  \
+	  echo "  ThornGuide.pdf created in doc directory."; \
+	  echo "  Done."; \
+	fi
 	@echo $(DIVIDER)
 
 # Run ThornGuide on a configuration
+
+CONFIGNAME	= $(@:%-ThornGuide=%)
+CONFIGDIR	= $(CONFIGS_DIR)/$(CONFIGNAME)
+CONFIGOCDIR	= $(CONFIGDIR)/doc
+CONFIGBUILDDIR	= $(CONFIGDIR)/doc/build
+GUIDENAME	= ThornGuide-$(CONFIGNAME)
 
 ifneq ($strip($(CONFIGURATIONS)),)
 .PHONY: $(addsuffix -ThornGuide,$(CONFIGURATIONS))
 
 $(addsuffix -ThornGuide,$(CONFIGURATIONS)):
 	@echo $(DIVIDER)
-	@echo Creating ThornGuide for $(@:%-ThornGuide=%)
-	if test ! -d $(CONFIGS_DIR)/$(@:%-ThornGuide=%)/doc ; then mkdir $(CONFIGS_DIR)/$(@:%-ThornGuide=%)/doc; fi
-	rm -rf  $(CONFIGS_DIR)/$(@:%-ThornGuide=%)/doc/build
-	mkdir $(CONFIGS_DIR)/$(@:%-ThornGuide=%)/doc/build
-	if test -r $(CONFIGS_DIR)/$(@:%-ThornGuide=%)/ThornList ; then \
-	  cd  $(CONFIGS_DIR)/$(@:%-ThornGuide=%)/doc/build; \
-	  $(MAKE) -f $(CCTK_HOME)/doc/ThornGuide/Makefile THORNLIST=$(CONFIGS_DIR)/$(@:%-ThornGuide=%)/ThornList CCTK_HOME=$(CCTK_HOME) PERL=$(PERL) MASTER_FILE=ThornGuide-$(@:%-ThornGuide=%) TOCDEPTH=$(TOCDEPTH); \
-	  cp ThornGuide-$(@:%-ThornGuide=%).ps $(CCTK_HOME)/doc/ThornGuide-$(@:%-ThornGuide=%).ps; \
+	@echo Creating ThornGuide for configuration $(CONFIGNAME)
+	cd $(CONFIGDIR); \
+	mkdir -p doc
+	rm -rf $(CONFIGBUILDDIR)
+	mkdir $(CONFIGBUILDDIR)
+	if test -r $(CONFIGDIR)/ThornList ; then \
+	  cd $(CONFIGBUILDDIR); \
+	  $(MAKE) -f $(DOCDIR)/ThornGuide/Makefile THORNLIST=$(CONFIGDIR)/ThornList MASTER_FILE=$(GUIDENAME); \
+	  if test -e "$(CONFIGBUILDDIR)/$(GUIDENAME).ps"; then \
+	    mv "$(CONFIGBUILDDIR)/$(GUIDENAME).ps" $(DOCDIR)/$(GUIDENAME).ps; \
+	    echo "  $(GUIDENAME).ps created in doc directory."; \
+	    echo "  Done."; \
+	  fi \
+        else \
+          echo "  Error: $(CONFIGDIR)/ThornList not found."; \
 	fi
-	@echo "  ThornGuide-$(@:%-ThornGuide=%).ps created in doc directory."
-	@echo "  Done."
 endif
 
 %-ThornGuide:

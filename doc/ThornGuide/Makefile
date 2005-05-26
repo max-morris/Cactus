@@ -43,38 +43,49 @@ IMAGE_FILE=$(CCTK_HOME)/doc/UsersGuide/bincactus2.eps
 default : $(MASTER_FILE).ps
 
 $(MASTER_FILE).ps: $(MASTER_FILE).dvi 
-	@echo "  Running dvips on $<...."
+	@echo "  Converting $< to PostScript ...."
 	dvips -f $< 2> LOG_DVIPS_MSGS | $(CCTK_HOME)/lib/sbin/FixPageNumbersInPostscript.pl > $@ 
-	if test -e "$@"; then                                  \
-	   echo "     $@ created.";                              \
-	else                                                   \
+	if ! test -e "$@"; then                                    \
 	   echo "  Cannot find $@, an error must have occured."; \
 	fi
 
 $(MASTER_FILE).dvi: $(MASTER_FILE).tex
-	@echo "  Latexing $<...."
-	latex $< < /dev/null > LOG_LATEX_FULL_MSGS 2>&1
-	latex $< < /dev/null > LOG_LATEX_FULL_MSGS 2>&1
-	latex $< < /dev/null 2>&1 | tee LOG_LATEX_FULL_MSGS | grep -v Underfull | grep -v Overfull | grep -v OT1 > LOG_LATEX_MSGS
-	if test -e "$@"; then                                  \
-	   echo "     $@ created.";                              \
-	else                                                   \
+	@echo "  LaTeXing $<...."
+	# Fall through any latex errors so as to print sensible error message
+	-latex --interaction errorstopmode $< < /dev/null 2>&1 > LOG_LATEX_FULL_MSGS
+	-latex $< < /dev/null 2>&1 > LOG_LATEX_FULL_MSGS
+	-latex $< < /dev/null 2>&1 | tee LOG_LATEX_FULL_MSGS | grep -v Underfull | grep -v Overfull | grep -v OT1 > LOG_LATEX_MSGS
+	if test -e "$@"; then                                    \
+	   if grep "^\! " "LOG_LATEX_FULL_MSGS"; then            \
+	     echo "  Problem in $<.  See doc/ThornGuide/build/LOG_LATEX_* .";  \
+	     exit 1;                                             \
+	   elif grep "^LaTeX Warning:" "LOG_LATEX_FULL_MSGS"; then         \
+	     echo "  Warnings in $<.  See doc/ThornGuide/build/LOG_LATEX_* ."; \
+	     exit 0;                                             \
+	   fi;                                                    \
+	else                                                     \
 	   echo "  Cannot find $@, an error must have occured."; \
 	fi
 
 $(MASTER_FILE).pdf: $(MASTER_FILE).tex
 	@echo "  Running pdflatex on $<...."
-	pdflatex $< < /dev/null > LOG_PDFLATEX_MSGS 2>&1
-	pdflatex $< < /dev/null > LOG_PDFLATEX_MSGS 2>&1
-	pdflatex $< < /dev/null 2>&1 | grep -v Underfull | grep -v Overfull | grep -v OT1 > LOG_PDFLATEX_MSGS
-	if test -e "$@"; then                                  \
-	   echo "     $@ created.";                              \
-	else                                                   \
+	-pdflatex $< < /dev/null 2>&1 > LOG_PDFLATEX_MSGS
+	-pdflatex $< < /dev/null 2>&1 > LOG_PDFLATEX_MSGS
+	-pdflatex $< < /dev/null 2>&1 | grep -v Underfull | grep -v Overfull | grep -v OT1 > LOG_PDFLATEX_MSGS
+	if test -e "$@"; then                                    \
+	   if grep "^\! " "LOG_PDFLATEX_MSGS"; then              \
+	     echo "  Problem in $<.  See doc/ThornGuide/build/LOG_PDFLATEX_MSGS .";  \
+	     exit 1;                                             \
+	   elif grep "^LaTeX Warning:" "LOG_LATEX_FULL_MSGS"; then         \
+	     echo "  Warnings in $<.  See doc/ThornGuide/build/LOG_LATEX_* ."; \
+	     exit 0;                                             \
+	   fi;                                                    \
+	else                                                     \
 	   echo "  Cannot find $@, an error must have occured."; \
 	fi
 
 $(MASTER_FILE).tex:  $(foreach thorn, $(THORN_DEPENDENCIES), $(thorn)/param.ccl $(thorn)/interface.ccl $(thorn)/schedule.ccl) $(THORNLIST)
-	@echo "  Creating thorn documentation $(MASTER_FILE).tex"
+	@echo "  Gathering documentation from thorn ccl files"
 	@echo "    Processing...."
 	@echo "       param.ccl...."
 	$(PERL) -s $(CCTK_HOME)/lib/sbin/ParamLatex.pl -cctk_home=$(CCTK_HOME) -directory=$(ARRANGEMENTS_DIR) -thornlist=$(THORNLIST) -outdir=./ -section -grouping=bythorn -sort=scope > LOG_PARAMLATEX_MSGS 2>&1
@@ -92,5 +103,5 @@ make.thornlist: $(THORNLIST)
 	THORN_DEPENDENCIES=`$(PERL) -s $(CCTK_HOME)/lib/sbin/ThornList.pl -arrangements_dir=$(ARRANGEMENTS_DIR) -thornlist=$(THORNLIST)`
 
 $(THORNLIST):
-	@echo "Creating $@...."
+	@echo "  Creating $@...."
 	$(PERL) -s $(CCTK_HOME)/lib/sbin/ThornList.pl -arrangements_dir=$(ARRANGEMENTS_DIR) -thorns=$(THORNS) -arrangements=$(ARRANGEMENTS)> $@ 
