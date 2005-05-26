@@ -67,21 +67,12 @@ $(MASTER_FILE).dvi: $(MASTER_FILE).tex
 	   echo "  Cannot find $@, an error must have occured."; \
 	fi
 
-$(MASTER_FILE).pdf: $(MASTER_FILE).tex
-	@echo "  Running pdflatex on $<...."
-	-pdflatex $< < /dev/null 2>&1 > LOG_PDFLATEX_MSGS
-	-pdflatex $< < /dev/null 2>&1 > LOG_PDFLATEX_MSGS
-	-pdflatex $< < /dev/null 2>&1 | grep -v Underfull | grep -v Overfull | grep -v OT1 > LOG_PDFLATEX_MSGS
-	if test -e "$@"; then                                    \
-	   if grep "^\! " "LOG_PDFLATEX_MSGS"; then              \
-	     echo "  Problem in $<.  See doc/ThornGuide/build/LOG_PDFLATEX_MSGS .";  \
-	     exit 1;                                             \
-	   elif grep "^LaTeX Warning:" "LOG_LATEX_FULL_MSGS"; then         \
-	     echo "  Warnings in $<.  See doc/ThornGuide/build/LOG_LATEX_* ."; \
-	     exit 0;                                             \
-	   fi;                                                    \
-	else                                                     \
-	   echo "  Cannot find $@, an error must have occured."; \
+$(MASTER_FILE).pdf: $(MASTER_FILE).dvi
+	@echo "  Running dvipdf on $<...."
+	-dvipdf $< < /dev/null 2>&1 > LOG_DVIPDF_MSGS
+	if test ! -e "$@"; then                                    \
+	  echo "  Problem in $<.  See doc/ThornGuide/build/LOG_DVIPDF_MSGS.";  \
+	  exit 1; \
 	fi
 
 $(MASTER_FILE).tex:  $(foreach thorn, $(THORN_DEPENDENCIES), $(thorn)/param.ccl $(thorn)/interface.ccl $(thorn)/schedule.ccl) $(THORNLIST)
