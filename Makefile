@@ -19,7 +19,7 @@
 #
 #
 #   @enddesc
-#   @version $Id: Makefile,v 1.168 2005-05-26 15:43:20 swhite Exp $
+#   @version $Id: Makefile,v 1.169 2005-05-27 14:13:48 schnetter Exp $
 # @@*/
 
 ##################################################################################
@@ -1052,9 +1052,9 @@ MaintGuide:
 	@echo Creating maintainers documentation MaintGuide.ps
 	cd doc/MaintGuide;                          \
 	echo "  Running LaTeX....";                 \
-	latex MaintGuide.tex > LATEX_MESSAGES 2>&1; \
-	latex MaintGuide.tex > LATEX_MESSAGES 2>&1; \
-	latex MaintGuide.tex > LATEX_MESSAGES 2>&1; \
+	latex  -interaction=nonstopmode MaintGuide.tex > LATEX_MESSAGES 2>&1; \
+	latex  -interaction=nonstopmode MaintGuide.tex > LATEX_MESSAGES 2>&1; \
+	latex  -interaction=nonstopmode MaintGuide.tex > LATEX_MESSAGES 2>&1; \
 	if grep "^\! " "LATEX_MESSAGES"; then                               \
 	  echo "  Problem in $<.  See doc/MaintGuide/LATEX_MESSAGES.";      \
 	  exit 1;                                                           \
