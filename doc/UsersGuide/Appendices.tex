@@ -657,13 +657,18 @@ carriage return.
     Each entry in the list of acceptable values for a keyword has the
     form
     \begin{alltt}
-      "<\var{keyword value}>", "<\var{keyword value}>" :: "<\var{description}>"
+      <\var{keyword value}>, <\var{keyword value}> :: "<\var{description}>"
     \end{alltt}
+    Keyword values may be enclosed in double quotes.  The double
+    quotes are mandatory if the keyword contains spaces.
 
   \item[{\t STRING}]
     Allowed values for strings should be specified using regular
     expressions. To allow any string, the regular expression {\tt ""}
     should be used.  (An empty regular expression matches anything.)
+    Regular expressions and string values should be enclosed in double
+    quotes.  The double quotes are mandatory if the regular expression
+    or the string value is empty or contains spaces.
 
   \item[{\t BOOLEAN}]
     No \var{PARAMETER\_VALUES} should be specified for a boolean
@@ -672,6 +677,7 @@ carriage return.
     \item True: {\t 1}, {\t yes}, {\t y}, {\t t}, {\t true}
     \item False: {\t 0}, {\t no}, {\t n}, {\t f}, {\t false}
     \end{itemize}
+    Boolean values may be enclosed in double quotes.
 
   \end{Lentry}
 
