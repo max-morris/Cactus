@@ -429,7 +429,7 @@ sub parse_param_ccl
                             "$thorn",
                          '', __LINE__, __FILE__);
             }
-            elsif ($type =~ m:STRING: && $default !~ m:".*":)
+            elsif ($type =~ m:STRING|KEYWORD: && $default !~ m:".*":)
             {
               &CST_error(0, "Default given for $type $variable in $thorn " .
                             "is not a string",
