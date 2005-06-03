@@ -7980,7 +7980,7 @@ Pointer to a valid Cactus grid hierarchy.
 \begin{Parameter}{dest\_processor}
 The destination processor. $-1$ will distribute the result to all processors.
 \end{Parameter}
-\begin{Parameter}{local\_reduce\_handle}
+\begin{Parameter}{local\_reduce\_handle ($\ge 0$)}
 Handle to the local reduction operator as returned by \newline
 \code{CCTK\_LocalArrayReductionHandle()}. It is the caller's responsibility
 to ensure that the specified reducer supports any optional
@@ -7988,7 +7988,7 @@ parameter-table entries that \newline \code{CCTK\_ReduceGridArrays()} passes to 
 Each thorn providing a \newline \code{CCTK\_ReduceGridArrays()} reducer should
 document what options it requires from the local reducer.
 \end{Parameter}
-\begin{Parameter}{param\_table\_handle}
+\begin{Parameter}{param\_table\_handle ($\ge 0$)}
 Handle to a key-value table containing zero or more additional parameters
 for the reduction operation. The table can be modified by the local
 and/or global reduction routine(s).
@@ -8080,11 +8080,14 @@ Here's a simple example to perform grid array reduction of two grids arrays of d
 \begin{verbatim}
 
 #include "cctk.h"
+#include "util_Table.h"
 
 #define N_INPUT_ARRAYS  2
 #define M_OUTPUT_VALUES 2
 const cGH *GH;                                                  /* input */
 
+/* create empty parameter table */
+const int param_table_handle = Util_CreateTable(UTIL_TABLE_FLAGS_CASE_INSENSITIVE);
 /* input arrays and output values */
 const CCTK_INT input_array_variable_indices[N_INPUT_ARRAYS]
         = { CCTK_VarIndex("my_thorn::real_array"),      /* no error checking */
@@ -8098,10 +8101,12 @@ void *const output_numbers[M_OUTPUT_values]
 const int status
   = CCTK_ReduceGridArrays(GH,
                           0,
+                          param_table_handle,
                           N_INPUT_ARRAYS, input_array_variable_indices,
                           M_OUTPUT_VALUES, output_value_type_codes,
                                            output_values);
 
+Util_TableDestroy(param_table_handle);
 \end{verbatim}
 \end{Example}
 \end{ExampleSection}
