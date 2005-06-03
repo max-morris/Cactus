@@ -26,6 +26,16 @@ if test "$CCTK_CONFIG_STAGE" = 'preferred-compilers' ; then
     CXX=xlC_r
   fi
 
+  if test -z "$F77"; then
+    echo Setting F77 compiler to xlf77
+    F77=xlf77
+  fi
+
+  if test -z "$F90"; then
+    echo Setting F90 compiler to xlf90
+    F90=xlf90
+  fi
+
   # use the Cactus preprocessor for Fortran
   if test -z "$FPP"; then
     FPP='$(PERL) $(CCTK_HOME)/lib/sbin/cpp.pl'
