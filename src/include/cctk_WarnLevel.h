@@ -59,7 +59,7 @@ __attribute__ ((format (printf, 2, 3)))
                                 /* and this will surprise the user, */
 				/* but we can still continue the run */
 #define CCTK_WARN_COMPLAIN 2	/* the user should know about this, */
-                                /* but the this problem is not terribly */
+                                /* but the problem is not terribly */
                                 /* surprising */
 #define CCTK_WARN_PICKY    3	/* this is for small problems that can */
 				/* probably be ignored, but that careful */
