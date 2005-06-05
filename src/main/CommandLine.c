@@ -442,13 +442,13 @@ void CCTKi_CommandLineRedirect (const char *argument)
   {
     if (!argument || strchr(argument,'o')) /* redirect stdout */
     {
-      sprintf (fname, "CCTK_Proc%d.out", myproc);
+      sprintf (fname, "CCTK_Proc%u.out", myproc);
       freopen (fname, "w", stdout);
       already_redirected_stdout = 1;
     }
     if (argument && strchr(argument,'e')) /* redirect stderr */
     {
-      sprintf (fname, "CCTK_Proc%d.err", myproc);
+      sprintf (fname, "CCTK_Proc%u.err", myproc);
       freopen (fname, "w", stderr);
     }
   }
