@@ -930,7 +930,7 @@ sub CreateThornArgumentHeaderFile
   push(@returndata, '#endif /* FCODE */');
   push(@returndata, '');
 
-  # Do the Fortran argument lists
+  # Do the C argument lists
   push(@returndata, '#ifdef CCODE');
   push(@returndata, $c_declarations);
   push(@returndata, '');
