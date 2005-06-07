@@ -589,7 +589,7 @@ int CCTK_ActiveTimeLevelsGI(const cGH *GH, int gindex)
   int increase=0;
   int timelevels;
 
-  if (gindex < 0 || gindex >= CCTK_NumGroups (GH))
+  if (gindex < 0 || gindex >= CCTK_NumGroups ())
   {
     CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
                 "CCTK_ActiveTimeLevelsGI: invalid group index %d given",
