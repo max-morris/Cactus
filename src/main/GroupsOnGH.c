@@ -529,6 +529,12 @@ int CCTK_ActiveTimeLevels(const cGH *GH, const char *groupname)
   int increase=0;
 
   gindex = CCTK_GroupIndex(groupname);
+  if (gindex < 0)
+  {
+    CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
+                "CCTK_ActiveTimeLevels: invalid group name '%s'", groupname);
+    return (-1);
+  }
 
   timelevels = CCTK_GroupStorageIncrease(GH, 1, &gindex, &increase, NULL);
 
@@ -583,6 +589,14 @@ int CCTK_ActiveTimeLevelsGI(const cGH *GH, int gindex)
   int increase=0;
   int timelevels;
 
+  if (gindex < 0 || gindex >= CCTK_NumGroups (GH))
+  {
+    CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
+                "CCTK_ActiveTimeLevelsGI: invalid group index %d given",
+                gindex);
+    return (-1);
+  }
+
   timelevels = CCTK_GroupStorageIncrease(GH, 1, &gindex, &increase, NULL);
 
   return timelevels;
@@ -610,7 +624,13 @@ int CCTK_ActiveTimeLevelsVN(const cGH *GH, const char *varname)
   int gindex;
 
   gindex = CCTK_GroupIndexFromVar(varname);
-  
+  if (gindex < 0)
+  {
+    CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
+                "CCTK_ActiveTimeLevelsVN: invalid variable name '%s'", varname);
+    return (-1);
+  }
+
   timelevels = CCTK_ActiveTimeLevelsGI(GH, gindex);
 
   return timelevels;
@@ -640,6 +660,13 @@ int CCTK_ActiveTimeLevelsVI(const cGH *GH, int vindex)
   int gindex;
 
   gindex = CCTK_GroupIndexFromVarI(vindex);
+  if (gindex < 0)
+  {
+    CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
+                "CCTK_ActiveTimeLevelsGI: invalid variable index %d", vindex);
+    return (-1);
+  }
+
   timelevels = CCTK_ActiveTimeLevelsGI(GH, gindex);
 
   return timelevels;
