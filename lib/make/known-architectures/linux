@@ -24,7 +24,9 @@ else
   LINUX_F90_COMP=none
 
   if test -n "$F90" && test "$F90" != 'none' ; then
-    if test "`$F90 -V 2>&1 | grep -i f90 | grep -i vast`" ; then
+    if test "`$F90 -V 2>&1 | grep -i intel`" ; then
+      LINUX_F90_COMP=Intel
+    elif test "`$F90 -V 2>&1 | grep -i f90 | grep -i vast`" ; then
       LINUX_F90_COMP=pacific
     elif test "`$F90 -V 2>&1 | grep -i f90 | grep -i absoft`" ; then
       LINUX_F90_COMP=absoft
@@ -38,20 +40,18 @@ else
       LINUX_F90_COMP=portland
     elif test "`$F90 -v 2>&1 | grep -i g77`" ; then
       LINUX_F90_COMP=gnu77
+    elif test "`$F90 -v 2>&1 | grep -i SGIcc`" ; then
+      LINUX_F90_COMP=SGI
+    elif test "`$F90 -v 2>&1 | grep -i compaq`" ; then
+      LINUX_F90_COMP=Compaq
+    elif test "`$F90 -v 2>&1 | grep PathScale`" ; then
+      LINUX_F90_COMP=PathScale
     elif test "`$F90 -dumpversion 2>&1 | grep 'GNU Fortran 95'`" ; then
       LINUX_F90_COMP=gnu95
     elif test "`$F90 -? 2>&1 | grep -i absoft`" ; then
       LINUX_F90_COMP=absoft77
     elif test "`$F90 --version 2>&1 | grep -i lahey/fujitsu`" ; then
       LINUX_F90_COMP=lahey
-    elif test "`$F90 -v 2>&1 | grep -i SGIcc`" ; then
-      LINUX_F90_COMP=SGI
-    elif test "`$F90 -V 2>&1 | grep -i intel`" ; then
-      LINUX_F90_COMP=Intel
-    elif test "`$F90 -v 2>&1 | grep -i compaq`" ; then
-      LINUX_F90_COMP=Compaq
-    elif test "`$F90 -v 2>&1 | grep PathScale`" ; then
-      LINUX_F90_COMP=PathScale
     else
       # Ok, those were the easy ones, now try more obscure things
       echo "      subroutine foo" > foo.f
@@ -70,19 +70,19 @@ else
     fi
   elif test -n "$F77" ; then
     if test "`$F77 -v 2>&1 | grep -i 'gcc version'`" ; then
-        LINUX_F90_COMP=gnu77
+      LINUX_F90_COMP=gnu77
     elif test "`$F77 -dumpversion 2>&1 | grep 'GNU Fortran 95'`" ; then
-        LINUX_F90_COMP=gnu95
+      LINUX_F90_COMP=gnu95
     elif test "`$F77 -? 2>&1 | grep -i absoft`" ; then
-        LINUX_F90_COMP=absoft77
+      LINUX_F90_COMP=absoft77
     elif test "`$F77 -V 2>&1 | grep NAGWare`" ; then
-        LINUX_F90_COMP=nag
+      LINUX_F90_COMP=nag
     elif test "`$F90 -V 2>&1 | grep -i intel`" ; then
-       LINUX_F90_COMP=Intel
+      LINUX_F90_COMP=Intel
     elif test "`$F90 -v 2>&1 | grep -i compaq`" ; then
-       LINUX_F90_COMP=Compaq
+      LINUX_F90_COMP=Compaq
     elif test "`$F90 -v 2>&1 | grep PathScale`" ; then
-       LINUX_F90_COMP=PathScale
+      LINUX_F90_COMP=PathScale
     else
       echo 'Unknown Linux f77 compiler.'
       echo 'Please add appropriate information to'
@@ -122,6 +122,8 @@ else
       : ${F90_DEBUG_FLAGS='-g'}
       : ${F77_WARN_FLAGS='-Wall'}
       : ${F90_WARN_FLAGS='-Wall'}
+      F77_VERSION="`$F77 -v 2>&1 | grep -i version | tail -n1`"
+      F90_VERSION="`$F90 -v 2>&1 | grep -i version | tail -n1`"
       ;;
     gnu95)
       : ${F77_DEBUG_FLAGS='-g'}
@@ -136,6 +138,8 @@ else
         : ${LIBS='gfortran'}
         : ${LIBDIRS="$gnu95_libdir"}
       fi
+      F77_VERSION="`$F77 -dumpversion 2>&1 | grep -i version | tail -n1`"
+      F90_VERSION="`$F90 -dumpversion 2>&1 | grep -i version | tail -n1`"
       ;;
     pacific)
       if test "$LINUX_G77_USES_LIBG2C" = 'yes' ; then
@@ -148,6 +152,7 @@ else
       : ${F90_DEBUG_FLAGS="-g"}
       : ${F77_WARN_FLAGS="-Wall"}
       : ${F90_WARN_FLAGS="-Wall"}
+      F90_VERSION="`$F90 -V 2>&1 | grep -i version | tail -n1`"
       ;;
     absoft)
       : ${LIBS='f90math fio f77math m'}
@@ -161,6 +166,7 @@ else
       : ${F90_DEBUG_FLAGS='-g'}
       : ${F77_WARN_FLAGS='-m0'}
       : ${F90_WARN_FLAGS='-m0'}
+      F90_VERSION="`$F90 -V 2>&1 | grep -i version | tail -n1`"
       ;;
     absoft77)
       : ${LIBS='fio f77math m'}
@@ -174,12 +180,15 @@ else
       : ${F90_DEBUG_FLAGS='-g'}
       : ${F77_WARN_FLAGS='-m0'}
       : ${F90_WARN_FLAGS='-m0'}
+      F77_VERSION="`$F77 -? 2>&1 | grep -i version | tail -n1`"
       ;;
     nag)
       : ${F77FLAGS='-maxcontin=100 -mismatch -w=x77 -w=uda -w=usy'}
       : ${F90FLAGS='-maxcontin=100 -mismatch -w=x77 -w=uda -w=usy'}
       : ${F77_OPTIMISE_FLAGS='-O4'}
       : ${F90_OPTIMISE_FLAGS='-O4'}
+      F77_VERSION="`$F77 -V 2>&1 | grep -i version | tail -n1`"
+      F90_VERSION="`$F90 -V 2>&1 | grep -i version | tail -n1`"
       ;;
     portland)
       : ${LIBS='pgf90 pgf90rtl pgftnrtl pgf90_rpm1 pghpf2 pgc m'}
@@ -193,9 +202,11 @@ else
       : ${F90_OPTIMISE_FLAGS='$(F77_OPTIMISE_FLAGS)'}
       : ${F77_DEBUG_FLAGS='-g'}
       : ${F90_DEBUG_FLAGS='-g'}
+      F90_VERSION="`$F90 -V 2>&1 | grep -i pgf90 | tail -n1`"
       ;;
     fujitsu)
       : ${LIBS='fj9i6 fj9e6 fj9f6'}
+      F90_VERSION="`$F90 -V 2>&1 | grep -i version | tail -n1`"
       ;;
     lahey)
       : ${F77_DEBUG_FLAGS='-g --chk'}
@@ -223,6 +234,7 @@ else
       else
         : ${LIBS='fj9i6 fj9e6 fj9f6'}
       fi
+      F90_VERSION="`$F90 --version 2>&1 | grep -i version | tail -n1`"
       ;;
     SGI)
       : ${F77_WARN_FLAGS='-fullwarn'}
@@ -232,6 +244,7 @@ else
       : ${F77_OPTIMISE_FLAGS='-O3'}
       : ${F90_OPTIMISE_FLAGS='-O3'}
       : ${LIBS='fortran ffio m'}
+      F90_VERSION="`$F90 -v 2>&1 | grep -i version | tail -n1`"
       ;;
    Intel)
       if test "$OPTIMISE" = 'no'; then
@@ -297,9 +310,13 @@ else
       esac
       : ${F77_OPTIMISE_FLAGS="$default_intel_fopt_flags"}
       : ${F90_OPTIMISE_FLAGS="$default_intel_fopt_flags"}
+      F77_VERSION="`$F77 -V 2>&1 | grep -i version | tail -n1`"
+      F90_VERSION="`$F90 -V 2>&1 | grep -i version | tail -n1`"
       ;;
     Compaq)
       : ${LIBS='for m'}
+      F77_VERSION="`$F77 -v 2>&1 | grep -i version | tail -n1`"
+      F90_VERSION="`$F90 -v 2>&1 | grep -i version | tail -n1`"
       ;;
     PathScale)
       : ${F77FLAGS='-fno-second-underscore'}
@@ -312,6 +329,8 @@ else
       : ${F77_WARN_FLAGS='-fullwarn'}
       : ${F90_WARN_FLAGS='-fullwarn'}
       : ${LIBS='pathfortran mv'}
+      F77_VERSION="`$F77 -v 2>&1 | grep -i version | tail -n1`"
+      F90_VERSION="`$F90 -v 2>&1 | grep -i version | tail -n1`"
       ;;
     none)
       : ${LIBS='m'}
@@ -332,6 +351,7 @@ else
     gcc | cc)
       : ${CFLAGS='-pipe'}
       : ${C_OPTIMISE_FLAGS='-O3'}
+      CC_VERSION="`$CC -v 2>&1 | grep -i version | tail -n1`"
       ;;
     [ei]cc)
       if test "$OPTIMISE" = 'no'; then
@@ -347,16 +367,20 @@ else
       : ${C_DEPEND='$(CC) -M $(CPPFLAGS)'}
       # switch on '-w2' to also display remarks
       # : ${C_WARN_FLAGS='-w2'}
+      CC_VERSION="`$CC -V 2>&1 | grep -i version | tail -n1`"
       ;;
     sgicc)
       : ${C_OPTIMISE_FLAGS='-O3'}
       : ${C_DEBUG_FLAGS='-g3'}
+      CC_VERSION="`$CC -v 2>&1 | grep -i version | tail -n1`"
       ;;
     pgcc)
       : ${C_OPTIMISE_FLAGS='-fast -O3 -Minfo -Mneginfo -Mvect=assoc'}
+      CC_VERSION="`$CC -V 2>&1 | grep -i pgcc | tail -n1`"
       ;;
     pathcc)
       : ${C_OPTIMISE_FLAGS='-Ofast'}
+      CC_VERSION="`$CC -v 2>&1 | grep -i version | tail -n1`"
       ;;
   esac
 
@@ -364,6 +388,7 @@ else
     gcc | [gc]++)
       : ${CXXFLAGS='-pipe'}
       : ${CXX_OPTIMISE_FLAGS='-O3'}
+      CXX_VERSION="`$CXX -v 2>&1 | grep -i version | tail -n1`"
       ;;
     [ei]cc | [ei]cpc)
       if test "$OPTIMISE" = 'no'; then
@@ -384,10 +409,12 @@ else
         fi
       fi
       : ${CXX_DEPEND='$(CXX) -M $(CPPFLAGS)'}
+      CXX_VERSION="`$CXX -V 2>&1 | grep -i version | tail -n1`"
       ;;
     sgiCC)
       : ${CXX_OPTIMISE_FLAGS='-O3'}
       : ${CXX_DEBUG_FLAGS='-g3'}
+      CXX_VERSION="`$CXX -v 2>&1 | grep -i version | tail -n1`"
       ;;
     pgCC)
       : ${CXXFLAGS='--no_using_std --instantiate=used'}
@@ -395,9 +422,11 @@ else
       if test `basename $LD` = 'pgCC'; then
         : ${LDFLAGS='-Wl,--allow-multiple-definition'}
       fi
+      CXX_VERSION="`$CXX -V 2>&1 | grep -i version | tail -n1`"
       ;;
     pathCC)
       : ${CXX_OPTIMISE_FLAGS='-Ofast'}
+      CXX_VERSION="`$CXX -v 2>&1 | grep -i version | tail -n1`"
       ;;
   esac
 
