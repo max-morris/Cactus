@@ -49,8 +49,7 @@ else
     exit 1
   fi
 
-  : ${ARFLAGS="-X$AIX_BITS -rucs"}
-
+  # Fortran compilers
   : ${F90FLAGS="-q$AIX_BITS -qmaxmem=-1 -qspill=10000"}
   : ${F77FLAGS="-q$AIX_BITS -qmaxmem=-1 -qfixed"}
   : ${F90_OPTIMISE_FLAGS='-O5'}
@@ -66,14 +65,23 @@ else
   CCTK_WriteLine make.arch.defn 'AIX_f_FLAGS = -qfixed'
   FPP='$(PERL) $(CCTK_HOME)/lib/sbin/cpp.pl'
 
+  : ${F_DEPEND='$(PERL) $(CCTK_HOME)/lib/sbin/cpp.pl -M $(CPPFLAGS)'}
+  : ${F77_DEPEND=$F_DEPEND}
+
+  F77_VERSION=`$F77 2>&1 | head -n1`
+  F90_VERSION=`$F90 2>&1 | head -n1`
+
+  # C/C++ compilers
   case "$CC" in
     gcc)
      : ${C_DEPEND_OUT=' > $@'}
+     CC_VERSION="`$CC -v 2>&1 | grep -i version | tail -n1`"
      ;;
     cc|xlc|xlc_r)
      : ${C_DEPEND='$(CC) -E -M $(CPPFLAGS)'}
      : ${C_DEPEND_OUT=' > /dev/null ; mv $(basename $(basename $@)).u $@'}
      : ${CFLAGS="-q$AIX_BITS -qspill=17000 -qmaxmem=-1 -qlanglvl=stdc99"}
+     CC_VERSION=`$CC 2>&1 | head -n1`
      ;;
     *)
      ;;
@@ -82,19 +90,20 @@ else
   case "$CXX" in
     'g++'|'c++')
      : ${CXX_DEPEND_OUT=' > $@'}
+     CXX_VERSION="`$CXX -v 2>&1 | grep -i version | tail -n1`"
      ;;
     xlC|xlC_r)
      : ${CXX_DEPEND='$(CXX) -E -M $(CPPFLAGS)'}
      : ${CXX_DEPEND_OUT=' > /dev/null ; mv $(basename $(basename $@)).u $@'}
      : ${CXXFLAGS="-q$AIX_BITS -qspill=10000 -qmaxmem=-1"}
+     CXX_VERSION=`$CXX 2>&1 | head -n1`
      ;;
     *)
      ;;
   esac
 
-  : ${F_DEPEND='$(PERL) $(CCTK_HOME)/lib/sbin/cpp.pl -M $(CPPFLAGS)'}
-  : ${F77_DEPEND=$F_DEPEND}
-
+  # Linker
+  : ${ARFLAGS="-X$AIX_BITS -rucs"}
   if test -z "$LIBS" -a "$LD" != 'xlf90' ; then
     LIBS=xlf90
     if test -r /usr/lib/libxlopt.a ; then
@@ -113,7 +122,6 @@ else
   fi
 
   # MPI stuff
-
   if test -n "$MPI" ; then
     # must not set linker flags for 64-bit configurations
     # (LD will figure these out)
