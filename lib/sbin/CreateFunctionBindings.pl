@@ -385,7 +385,7 @@ sub FunctionDatabase
 #          my $message = "An aliased function name must be less than 21 characters.\n The function ".$Function->{"Name"}." is not.";
 #          &CST_error(0,$message,'',__LINE__,__FILE__);
 #      }
-      $Function->{"Provided"} = $interface_db->{"\U$thorn\E PROVIDES FUNCTION"} =~ /$FunctionName/;
+      $Function->{"Provided"} = $interface_db->{"\U$thorn\E PROVIDES FUNCTION"} =~ / $FunctionName /;
       if ($Function->{"Provided"})
       {
         my $provider = $interface_db->{"\U$thorn PROVIDES FUNCTION\E $FunctionName WITH"};
@@ -396,11 +396,11 @@ sub FunctionDatabase
         $Function->{"Provider Language"}=$1;
         $ThornProvides++;
       }
-      if ($interface_db->{"\U$thorn\E USES FUNCTION"} =~ /$FunctionName/
-          || $interface_db->{"\U$thorn\E REQUIRES FUNCTION"} =~ /$FunctionName/
-          || $interface_db->{"\U$thorn\E PROVIDES FUNCTION"} =~ /$FunctionName/)
+      if (   $interface_db->{"\U$thorn\E USES FUNCTION"}     =~ / $FunctionName /
+          || $interface_db->{"\U$thorn\E REQUIRES FUNCTION"} =~ / $FunctionName /
+          || $interface_db->{"\U$thorn\E PROVIDES FUNCTION"} =~ / $FunctionName /)
       {
-        $Function->{"Used"} = $interface_db->{"\U$thorn\E REQUIRES FUNCTION"} =~ /$FunctionName/ ? 2 : 1;
+        $Function->{"Used"} = $interface_db->{"\U$thorn\E REQUIRES FUNCTION"} =~ / $FunctionName / ? 2 : 1;
         $ThornUses++;
       }
       else
@@ -1846,27 +1846,26 @@ sub UsesPrototypes
   push(@data, '#ifdef __cplusplus');
   push(@data, 'extern "C" {');
   push(@data, '#endif');
-
-  my $Function;
+  push(@data, '');
 
   $debug and print "UsesPrototypes: thorn is $thorn\n";
   foreach my $FunctionKey (sort keys %FunctionList)
   {
-    $Function = $FunctionList{$FunctionKey};
+    my $Function = $FunctionList{$FunctionKey};
     $debug and print "  Function is ", $Function->{"Name"},"\n";
-    if ($Function)
+    next if (! $Function);
+
+    if ($Function->{"Used"})
     {
-      if ($Function->{"Used"})
-      {
-        my @cargs = &printArgList("C",$Function->{"Arguments"});
-        push(@data, "$Function->{\"Return Type\"} $Function->{\"Name\"}(@cargs);");
-      }
-      if ($Function->{"Provided"})
-      {
-       my @cargs = &printArgList("C",$Function->{"Arguments"});
-       push(@data, "$Function->{\"Return Type\"} $Function->{\"Provider\"}(@cargs);");
-      }
+      my @cargs = &printArgList("C",$Function->{"Arguments"});
+      push(@data, "$Function->{\"Return Type\"} $Function->{\"Name\"}(@cargs);");
     }
+    if ($Function->{"Provided"})
+    {
+      my @cargs = &printArgList("C",$Function->{"Arguments"});
+      push(@data, "$Function->{\"Return Type\"} $Function->{\"Provider\"}(@cargs);");
+    }
+    push(@data, '');
   }
 
   push(@data, '#ifdef __cplusplus');
@@ -1883,97 +1882,88 @@ sub UsesPrototypes
 
   foreach my $FunctionKey (sort keys %FunctionList)
   {
-    $Function = $FunctionList{$FunctionKey};
-    if ($Function)
+    my $Function = $FunctionList{$FunctionKey};
+    next if (! $Function);
+
+    next if (! $Function->{"Used"});
+
+    my $args = $Function->{"Arguments"};
+    my $line;
+    push(@data, "  interface &&\\");
+    if ($Function->{"Return Type"} ne 'void')
     {
-      if ($Function->{"Used"})
+      $line = "     $Function->{\"Return Type\"} function $Function->{\"Name\"}";
+    }
+    else
+    {
+      $line = "     subroutine $Function->{\"Name\"}";
+    }
+    $line .= " (";
+    my $sep = '';
+    foreach my $arg (@$args)
+    {
+      $line .= $sep;
+      $sep = ', ';
+      my $isfunctionpointer = $arg->{"Function pointer"};
+      my $name = $isfunctionpointer ? $arg->{"Name"}->{"Name"} : $arg->{"Name"};
+      $line .= "$name";
+    }
+    $line .= ")";
+    $line .= " &&\\";
+    push(@data, $line);
+    push(@data, "       implicit none &&\\");
+    foreach my $arg (@$args)
+    {
+      my $isfunctionpointer = $arg->{"Function pointer"};
+      my $name = $isfunctionpointer ? $arg->{"Name"}->{"Name"} : $arg->{"Name"};
+      my $type = $arg->{"Type"};
+      my $isarray = $arg->{"Is Array"};
+      my $isstring = $arg->{"String"};
+      if ($isfunctionpointer)
       {
-        my $args = $Function->{"Arguments"};
-        my $line;
-        push(@data, "  interface &&\\");
-        if ($Function->{"Return Type"} ne 'void')
+        push(@data, "       external $name &&\\");
+        push(@data, "       $type $name &&\\") if ($name ne 'void');
+      }
+      elsif ($isstring)
+      {
+        push(@data, "       character(*) $name &&\\");
+      }
+      else
+      {
+        $line = "       $type $name";
+        if ($isarray)
         {
-          $line = "     $Function->{\"Return Type\"} function $Function->{\"Name\"}";
+          $line .= "(*)";
         }
-        else
-        {
-          $line = "     subroutine $Function->{\"Name\"}";
-        }
-        $line .= " (";
-        my $sep = '';
-        foreach my $arg (@$args)
-        {
-          $line .= $sep;
-          $sep = ', ';
-          my $isfunctionpointer = $arg->{"Function pointer"};
-          my $name = $isfunctionpointer ? $arg->{"Name"}->{"Name"} : $arg->{"Name"};
-          $line .= "$name";
-        }
-        $line .= ")";
         $line .= " &&\\";
         push(@data, $line);
-        push(@data, "       implicit none &&\\");
-        foreach my $arg (@$args)
-        {
-          my $isfunctionpointer = $arg->{"Function pointer"};
-          my $name = $isfunctionpointer ? $arg->{"Name"}->{"Name"} : $arg->{"Name"};
-          my $type = $arg->{"Type"};
-          my $isarray = $arg->{"Is Array"};
-          my $isstring = $arg->{"String"};
-          if ($isfunctionpointer)
-          {
-            push(@data, "       external $name &&\\");
-            if ($name ne 'void')
-            {
-              push(@data, "       $type $name &&\\");
-            }
-          }
-          elsif ($isstring)
-          {
-            push(@data, "       character(*) $name &&\\");
-          }
-          else
-          {
-            $line = "       $type $name";
-            if ($isarray)
-            {
-              $line .= "(*)";
-            }
-            $line .= " &&\\";
-            push(@data, $line);
-          }
-        }
-        if ($Function->{"Return Type"} ne 'void')
-        {
-          push(@data, "     end function $Function->{\"Name\"} &&\\");
-        }
-        else
-        {
-          push(@data, "     end subroutine $Function->{\"Name\"} &&\\");
-        }
-        push(@data, "  end interface &&\\");
       }
     }
+    if ($Function->{"Return Type"} ne 'void')
+    {
+      push(@data, "     end function $Function->{\"Name\"} &&\\");
+    }
+    else
+    {
+      push(@data, "     end subroutine $Function->{\"Name\"} &&\\");
+    }
+    push(@data, "  end interface &&\\");
   }
   push(@data, '');
-
   push(@data, '#else /* ! F90CODE */');
-
+  push(@data, '');
   push(@data, "#define DECLARE_\U$thorn\E_FUNCTIONS _DECLARE_CCTK_FUNCTIONS \\");
 
   foreach my $FunctionKey (sort keys %FunctionList)
   {
-    $Function = $FunctionList{$FunctionKey};
-    if ($Function)
-    {
-      if ($Function->{"Used"})
-      {
-        push(@data, "  external $Function->{\"Name\"} &&\\");
-        if ($Function->{"Return Type"} ne 'void') {
-          push(@data, "  $Function->{\"Return Type\"} $Function->{\"Name\"} &&\\");
-        }
-      }
-    }
+    my $Function = $FunctionList{$FunctionKey};
+    next if (! $Function);
+
+    next if (! $Function->{"Used"});
+
+    push(@data, "  external $Function->{\"Name\"} &&\\");
+    push(@data, "  $Function->{\"Return Type\"} $Function->{\"Name\"} &&\\")
+      if ($Function->{"Return Type"} ne 'void');
   }
   push(@data, '');
 

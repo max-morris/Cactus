@@ -691,9 +691,9 @@ sub parse_interface_ccl
   $interface_db{"\U$thorn PRIVATE GROUPS\E"} = "";
   $interface_db{"\U$thorn USES HEADER\E"} = "";
   $interface_db{"\U$thorn FUNCTIONS\E"} = "";
-  $interface_db{"\U$thorn PROVIDES FUNCTION\E"} = "";
-  $interface_db{"\U$thorn REQUIRES FUNCTION\E"} = "";
-  $interface_db{"\U$thorn USES FUNCTION\E"} = "";
+  $interface_db{"\U$thorn PROVIDES FUNCTION\E"} = " ";
+  $interface_db{"\U$thorn REQUIRES FUNCTION\E"} = " ";
+  $interface_db{"\U$thorn USES FUNCTION\E"} = " ";
   $interface_db{"\U$thorn ARRANGEMENT\E"} = "$arrangement";
 
   #   The default block is private.
