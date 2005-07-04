@@ -2225,27 +2225,117 @@ the Cactus scheduler via a thorn's \code{schedule.ccl} file.
 \end{CCTKFunc}
 
 % CommOverloadables.c
-\begin{CCTKFunc}{CCTK\_Equals}{Checks a STRING or KEYWORD parameter for equality with a given string}
+\begin{FunctionDescription}{CCTK\_Equals}
 \label{CCTK-Equals}
-\function{int}{integer}{istat}
-\argument{const char *}{CCTK\_POINTER}{param}
-\argument{const char *}{character*(*)}{value}
-\showargs
-\begin{params}
-\parameter{istat}{returns success or failure of equality}
-\parameter{param}{the STRING or KEYWORD parameter to check}
-\parameter{value}{the string value to compare against}
-\end{params}
-\begin{discussion}
-This function compares a Cactus parameter of type STRING or KEYWORD against a
-given string value. The comparison is performed case-independent,
-returning a non-zero value if the strings are the same, and zero if they differ.
+Checks a STRING or KEYWORD parameter for equality with a given string
 
-Note that in Fortran code, STRING or KEYWORD parameters are passed as C pointers,
-and can not be treated as normal Fortran strings. Thus \code{CCTK\_Equals}
-should be used to check the value of such a parameter.
-\end{discussion}
-\end{CCTKFunc}
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+#include "cctk.h"
+int status = CCTK_Equals(const char* parameter, const char* value)
+\end{verbatim}
+\end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}
+integer status
+CCTK_POINTER  parameter
+character*(*) value
+status = CCTK_Equals(parameter, value)
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ResultSection}
+\begin{Result}{1}
+if the parameter is (case-independent) equal to the specified value
+\end{Result}
+\begin{Result}{0}
+if the parameter is (case-independent) not equal to the specified value
+\end{Result}
+\end{ResultSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{parameter}
+The string or keyword parameter to compare; Cactus represents this
+as a \verb|CCTK_POINTER| pointing to the string value.
+\end{Parameter}
+\begin{Parameter}{value}
+The value against which to compare the string or keyword parameter.
+This is typically a string literal (see the examples below).
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{Discussion}
+This function compares a Cactus parameter of type STRING or KEYWORD against a
+given string value. The comparison is performed case-independently,
+returning a 1 if the strings are equal, and zero if they differ.
+
+Note that in Fortran code, STRING or KEYWORD parameters are passed as C
+pointers, and can not be treated as normal Fortran strings. Thus
+\verb|CCTK_Equals| should be used to check the value of such a parameter.
+See the examples below for typical usage.
+\end{Discussion}
+
+\begin{SeeAlsoSection}
+\begin{SeeAlso}{Util\_StrCmpi}
+compare two C-style strings case-independently
+\end{SeeAlso}
+\end{SeeAlsoSection}
+
+\begin{ErrorSection}
+\begin{Error}{null pointer}
+If either argument is passed as a null pointer, \verb|CCTK_Equals()|
+aborts the Cactus run with an error message.  Otherwise, there are no
+error returns from this function.
+\end{Error}
+\end{ErrorSection}
+
+\begin{ExampleSection}
+\begin{Example}{C}
+\begin{verbatim}
+#include "cctk.h"
+#include "cctk_Arguments.h"
+#include "cctk_Parameters.h"
+
+/*
+ * assume this thorn has a string or keyword parameter  my_parameter
+ */
+void MyThorn_some_function(CCTK_ARGUMENTS)
+{
+DECLARE_CCTK_PARAMETERS
+
+if (CCTK_Equals(my_parameter, "option A"))
+        {
+        CCTK_VInfo(CCTK_THORNSTRING, "using option A");
+        }
+}
+\end{verbatim}
+\end{Example}
+
+\begin{Example}{Fortran}
+\begin{verbatim}
+#include "cctk.h"
+#include "cctk_Arguments.h"
+#include "cctk_Parameters.h"
+
+c
+c assume this thorn has a string or keyword parameter  my_parameter
+c
+subroutine MyThorn_some_function(CCTK_ARGUMENTS)
+implicit none
+DECLARE_CCTK_PARAMETERS
+
+if (CCTK_Equals(my_parameter, "option A") .eq. 1) then
+        call CCTK_INFO("using option A");
+end if
+
+return
+end subroutine MyThorn_some_function
+\end{verbatim}
+\end{Example}
+\end{ExampleSection}
+\end{FunctionDescription}
 
 % CommOverloadables.c
 \begin{CCTKFunc}{CCTK\_Exit}{Exit the code cleanly}
