@@ -196,12 +196,12 @@ if (Util_TableGetReal(handle, &pi_value, "pi") < 0)
 As well as a single numbers (or characters or pointers), tables can
 also store 1-dimensional arrays of numbers (or characters or pointers).%%%
 \footnote{%%%
-	 The table makes (stores) a \emph{copy} of the array
-	 you pass in, so you probably shouldn't use tables to
-	 store really big arrays like grid functions.  But it's
-	 fine to store things like parameters and coefficients.
-	 If you do have a really big array, consider storing
-	 a pointer to it.%%%
+	 Note that the table makes (stores) a \emph{copy} of the array
+	 you pass in, so it's somewhat inefficient to store a large array
+	 (e.g.~a grid function) this way.  If this is a problem, consider
+	 storing a \texttt{CCTK\_POINTER} (pointing to the array) in the table
+	 instead.  (Of course, this requires that you ensure that the pointed-to
+	 data is still valid whenever that \texttt{CCTK\_POINTER} is used.)
 	 }%%%
 
 For example (continuing the previous example):
