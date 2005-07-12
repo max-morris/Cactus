@@ -3831,6 +3831,13 @@ Note that empty (0-element) arrays are ok.
 
 This function invalidates any iterators for the table which are
 not in the ``null-pointer'' state.
+
+Note that the table makes (stores) a \emph{copy} of the array
+you pass in, so it's somewhat inefficient to store a large array
+(e.g.~a grid function) this way.  If this is a problem, consider
+storing a \verb|CCTK_POINTER| (pointing to the array) in the table
+instead.  (Of course, this requires that you ensure that the pointed-to
+data is still valid whenever that \verb|CCTK_POINTER| is used.)
 \end{Discussion}
 
 \begin{SeeAlsoSection}
@@ -4313,6 +4320,13 @@ The value is stored as a 1-element array.
 
 This function invalidates any iterators for the table which are
 not in the ``null-pointer'' state.
+
+Note that the table makes (stores) a \emph{copy} of the array
+you pass in, so it's somewhat inefficient to store a large array
+(e.g.~a grid function) this way.  If this is a problem, consider
+storing a \verb|CCTK_POINTER| (pointing to the array) in the table
+instead.  (Of course, this requires that you ensure that the pointed-to
+data is still valid whenever that \verb|CCTK_POINTER| is used.)
 \end{Discussion}
 
 \begin{SeeAlsoSection}
