@@ -615,22 +615,24 @@ static pToken *Tokenise(const char *expression)
 @@*/
 
 #define RESIZE_STACK(stack)                                                                \
+{                                                                                          \
   (stack)->ntokens++;                                                                      \
   (stack)->tokens = (uExpressionToken *)realloc((stack)->tokens,                           \
                                                 (stack)->ntokens*sizeof(uExpressionToken));\
+} while(0)
 
 #define PUSHOP(stack, xtype, value) do                                                     \
 {                                                                                          \
-  RESIZE_STACK(stack)                                                                      \
+  RESIZE_STACK(stack);                                                                     \
   (stack)->tokens[(stack)->ntokens-1].type = xtype;                                        \
   (stack)->tokens[(stack)->ntokens-1].token.opcode = value;                                \
 } while(0)
 
 #define PUSHTOK(stack, xtype, value) do                                                    \
 {                                                                                          \
-  RESIZE_STACK(stack)                                                                      \
+  RESIZE_STACK(stack);                                                                     \
   (stack)->tokens[(stack)->ntokens-1].type = xtype;                                        \
-  (stack)->tokens[(stack)->ntokens-1].token.varnum = value;        break;                  \
+  (stack)->tokens[(stack)->ntokens-1].token.varnum = value;                                \
 } while(0)
 
 static int RPParse(pToken **current, uExpressionInternals *buffer)
