@@ -615,6 +615,7 @@ static pToken *Tokenise(const char *expression)
 @@*/
 
 #define RESIZE_STACK(stack)                                             \
+do                                                                      \
 {                                                                       \
   (stack)->ntokens++;                                                   \
   (stack)->tokens                                                       \
@@ -622,14 +623,16 @@ static pToken *Tokenise(const char *expression)
                                   (stack)->ntokens*sizeof(uExpressionToken)); \
 } while(0)
 
-#define PUSHOP(stack, xtype, value) do                          \
+#define PUSHOP(stack, xtype, value)                             \
+do                                                              \
 {                                                               \
   RESIZE_STACK(stack);                                          \
   (stack)->tokens[(stack)->ntokens-1].type = xtype;             \
   (stack)->tokens[(stack)->ntokens-1].token.opcode = value;     \
 } while(0)
 
-#define PUSHTOK(stack, xtype, value) do                         \
+#define PUSHTOK(stack, xtype, value)                            \
+do                                                              \
 {                                                               \
   RESIZE_STACK(stack);                                          \
   (stack)->tokens[(stack)->ntokens-1].type = xtype;             \
