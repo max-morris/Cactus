@@ -1867,7 +1867,7 @@ static int ParameterSetAccumulator(t_param *param)
 
   if (parsed_expression)
   {
-    free (parsed_expression);
+    Util_ExpressionFree (parsed_expression);
   }
 
   return retval;
