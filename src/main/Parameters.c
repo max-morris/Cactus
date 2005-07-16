@@ -1850,7 +1850,7 @@ static int ParameterSetAccumulator(t_param *param)
         sprintf(newval,"%d",value.value.ival);
         break;
       case rval:
-        sprintf(newval,"%f",value.value.rval);
+        sprintf(newval,"%.20g",value.value.rval);
         break;
       default :
         ;
