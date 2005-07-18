@@ -148,21 +148,24 @@ while (<IN>) {
          if ($i ne 0) {
             print OUT " \\\\ ";
          }
-         print OUT "$author_names[$i] \\textless $author_emails[$i]\\textgreater";
+         print OUT &CleanForLatex($author_names[$i])
+                 . " \\textless "
+                 . &CleanForLatex($author_emails[$i])
+                 . "\\textgreater";
       }
       print OUT "\}\n";
    } elsif (/^\\date\{\s*?\}/) {
       my $todays_date = `date "+%B %d %Y"`;
       chomp ($todays_date);
       if ($todays_date =~ /^\w+\s+\d+\s+\d+$/) {
-         print OUT "\\date\{$todays_date\}\n";
+         print OUT "\\date\{" . &CleanForLatex($todays_date) . "\}\n";
       } else {
-         print OUT $_;
+         print OUT &CleanForLatex($_);
       }
    } elsif (/^\\title\{\s*?\}/) {
-     print OUT "\\title\{$thorn_name\}\n";
+     print OUT "\\title\{" . &CleanForLatex($thorn_name) . "\}\n";
    } else {
-      print OUT $_;
+     print OUT $_;
    }
 }
 #system("cp $documentation_inputfile $documentation_outputfile");
@@ -307,4 +310,61 @@ sub TestName
   }
 
   return $valid;
+}
+
+#/*@@
+#  @routine    CleanForLatex
+#  @date       Sun Mar  3 19:05:41 CET 2002
+#  @author     Ian Kelley
+#  @desc
+#  Cleans up our values so that latex will not give us errors.
+#     $val = &CleanForLatex($val);
+#  Note: Do not call ToLower or ToUpper on the result; instead,
+#        transform before you clean for Latex.
+#  Note: This routine was copied from ThornUtils.pm.  It should probably
+#        be required instead.  Maybe this script should be moved into
+#        the sbin directory for that?
+#  @enddesc 
+#  @calls     
+#  @calledby   
+#  @history 
+#
+#  @endhistory 
+#
+#@@*/
+sub CleanForLatex
+{
+   my $val = shift;
+
+   # escape special characters
+   $val =~ s,\\,\{\\textbackslash\},g;
+   $val =~ s,~,\{\\textasciitilde\},g;
+   $val =~ s,<,\{\\textless\},g;
+   $val =~ s,>,\{\\textgreater\},g;
+
+   # at start of string, remove spaces before and after: "
+   $val =~ s,^\s*?\"\s*?,\",;
+
+   # at end of string, remove spaces before and after: "
+   $val =~ s,\s*?\"\s*?$,\",;
+
+   # escape _
+   $val =~ s,\_,\\\_,g;
+
+   # escape $
+   $val =~ s,\$,\\\$,g;
+
+   # escape ^
+   $val =~ s,\^,\\\^,g;
+
+   # escape *
+   $val =~ s,\*,\\\*,g;
+
+   # escape &
+   $val =~ s,\&,\\\&,g;
+
+   # escape %
+   $val =~ s,%,\\%,g;
+
+   return $val;
 }
