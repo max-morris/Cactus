@@ -396,7 +396,7 @@ else
       else
         : ${CXXFLAGS='-restrict'}
       fi
-      if test -z ${CXX_OPTIMISE_FLAGS}; then
+      if test -z "$CXX_OPTIMISE_FLAGS"; then
         if test "$host_cpu" = 'ia64' -o "$host_cpu" = 'x86_64'; then
           CXX_OPTIMISE_FLAGS='-O2'
         else
