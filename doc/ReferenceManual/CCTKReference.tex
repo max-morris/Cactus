@@ -4667,7 +4667,9 @@ current processor.
 In the multiprocessor case, the result returned by
 \code{CCTK\_InterpGridArrays} is guaranteed to be the same on all
 processors.  (All current implementations simply take the minimum
-of the per-processor results over all processors.)
+of the per-processor results over all processors; this gives a
+result which is 0 if all processors succeeded, or which is the most
+negative error code encountered by any processor otherwise.)
 
 The semantics of \code{CCTK\_InterpGridArrays} are mostly independent of
 which Cactus driver is being used, but an implementation will most likely
@@ -4685,6 +4687,7 @@ outputs are specified in the parameter table, depend on which driver-specific
 interpolation thorn and interpolation operator (provided by a local
 interpolation thorn) you use.  See the documentation on individual interpolator
 thorns (e.g.\ \code{PUGHInterp} in the \code{CactusPUGH} arrangement,
+\code{CarpetInterp} in the \code{Carpet} arrangement,
 \code{LocalInterp} in the \code{CactusBase} arrangement, and/or
 \code{AEILocalInterp} in the \code{AEIThorns} arrangement) for details.
 
