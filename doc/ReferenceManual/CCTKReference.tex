@@ -4648,15 +4648,15 @@ requires from the global interpolator.
 }
 These will overwrite any entries
 with the same keys in the \code{param\_table\_handle} table.
-Finally, the parameter table can be used to pass back arbitrary information by the local
-and/or global interpolation routine(s) by adding/modifying appropriate
-key/value pairs.
+Finally, the parameter table can be used to pass back arbitrary information
+by the local and/or global interpolation routine(s) by adding/modifying
+appropriate key/value pairs.
 
 Note that \code{CCTK\_InterpGridArrays} is a collective operation, so in the
 multiprocessor case you {\em must\/} call this function in parallel on
 {\em each\/} processor, passing identical arguments except for the number of
-interpolation points, the interpolation coordinates, and the output array pointers.
-You may (and typically will) specify a different set of
+interpolation points, the interpolation coordinates, and the output array
+pointers.  You may (and typically will) specify a different set of
 interpolation points on each processor's call -- you may even specify
 an empty set on some processors.  The interpolation points may be
 ``owned'' by any processors (this function takes care of all
@@ -4664,15 +4664,21 @@ interprocessor-communication issues), though it may be more efficient
 to have most or all of the interpolation points ``owned'' by the
 current processor.
 
+In the multiprocessor case, the result returned by
+\code{CCTK\_InterpGridArrays} is guaranteed to be the same on all
+processors.  (All current implementations simply take the minimum
+of the per-processor results over all processors.)
+
 The semantics of \code{CCTK\_InterpGridArrays} are mostly independent of
-which Cactus driver is being used, but an implementation will most likely depend
-on, and make use of, driver-specific internals. For that reason,
+which Cactus driver is being used, but an implementation will most likely
+depend on, and make use of, driver-specific internals. For that reason,
 \code{CCTK\_InterpGridArrays} is made an overloadable function. The Cactus
-flesh will supply only a dummy routine for it which -- if called -- does nothing
-but print a warning message saying that it wasn't overloaded by another thorn,
-and stop the code. So one will always need to compile in and activate
-a driver-specific thorn which provides an interpolation routine for CCTK grid
-arrays and properly overloads \code{CCTK\_InterpGridArrays} with it at startup.
+flesh will supply only a dummy routine for it which -- if called -- does
+nothing but print a warning message saying that it wasn't overloaded by
+another thorn, and stop the code. So one will always need to compile in
+and activate a driver-specific thorn which provides an interpolation routine
+for CCTK grid arrays and properly overloads \code{CCTK\_InterpGridArrays}
+with it at startup.
 
 Details of the operation performed, and what (if any) inputs and/or
 outputs are specified in the parameter table, depend on which driver-specific
