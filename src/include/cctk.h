@@ -251,7 +251,8 @@ static inline int CCTK_GFINDEX4D (const cGH *GH, int i, int j, int k, int l)
             int         cctk_convfac = cctkGH->cctk_convfac;\
             int        *cctk_nghostzones = cctkGH->cctk_nghostzones;\
             int         cctk_iteration = cctkGH->cctk_iteration;\
-            const void *cctki_use = (cctki_use = &cctk_dim,\
+            const void *cctki_use = (cctki_use = &cctki_dummy_int,\
+                                     cctki_use = &cctk_dim,\
                                      cctki_use = &cctk_gsh,\
                                      cctki_use = &cctk_lsh,\
                                      cctki_use = &cctk_lbnd,\
