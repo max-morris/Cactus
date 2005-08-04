@@ -51,14 +51,6 @@ int ParseFile(FILE *ifp,
  *********************     Local Data   *****************************
  ********************************************************************/
 
-#ifndef WIN32
-#define BOLDON   "\033[1m"
-#define BOLDOFF  "\033[0m"
-#else
-#define BOLDON   ""
-#define BOLDOFF  ""
-#endif
-
 /* parse buffer size */
 #define BUF_SZ   (8 * 1024)
 
@@ -268,8 +260,8 @@ int ParseFile(FILE *ifp,
             if (c != '\n') value[p++] = c;
             if (c == '\n')
             {
-              printf ("%sWarning:%s Quoted string contains newline for token %s\n",
-                      BOLDON, BOLDOFF, tokens);
+              printf ("Warning: Quoted string contains newline for token %s\n",
+                      tokens);
               printf ("This could indicated a parameter file error or missing quote\n");
 #ifdef DEBUG
               printf ("LINE %d\n",lineno);
