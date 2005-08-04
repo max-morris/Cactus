@@ -72,9 +72,9 @@ void CCTK_FCALL CCTK_FNAME(CCTK_ReduceLocalArrays)
       const CCTK_INT input_array_dims[], 
       const CCTK_INT input_array_type_codes[],
       const void *const input_arrays[],
-      int M_output_numbers,
+      int M_output_values,
       const CCTK_INT output_number_type_codes[],
-      void *const output_numbers[]);
+      void *const output_values[]);
 
 /* new gridarray reduction API */
 void CCTK_FCALL CCTK_FNAME(CCTK_GridArrayReductionParameterHandle)
@@ -1109,63 +1109,82 @@ void CCTK_FCALL CCTK_FNAME(CCTK_LocalArrayReductionHandle)(int *handle, ONE_FORT
                Generic routine for doing a reduction operation on a set of
                Cactus variables.
    @enddesc
-   @var     GH
-   @vdesc   pointer to the grid hierarchy
-   @vtype   cGH *
+   @var     output_values
+   @vdesc   array of output values
+   @vtype   void * const []
    @vio     in
    @endvar
-   @var     proc
-   @vdesc   processor that receives the result of the reduction operation
-            (a negative value means that all processors get the result)
+   @var     N_dims
+   @vdesc   dimension of the input arrays
    @vtype   int
    @vio     in
    @endvar
-   @var     operation_handle
-   @vdesc   the handle specifying the reduction operator
+   @var     local_reduce_handle
+   @vdesc   handle that identifies the reduction operator
    @vtype   int
    @vio     in
    @endvar
-   @var     num_out_vals
-   @vdesc   number of elements in the reduction output
+   @var     param_table_handle
+   @vdesc   handle for a table containing additional parameters
    @vtype   int
    @vio     in
    @endvar
-   @var     type_out_vals
-   @vdesc   datatype of the output values
+   @var     N_input_arrays
+   @vdesc   number of input arrays
    @vtype   int
    @vio     in
    @endvar
-   @var     out_vals
-   @vdesc   pointer to buffer holding the output values
-   @vtype   void *
+   @var     input_array_sizes
+   @vdesc   sizes of the input arrays
+   @vtype   const CCTK_INT []
    @vio     in
    @endvar
-   @var     num_in_fields
-   @vdesc   number of input fields passed in the variable argument list
+   @var     input_array_type_codes
+   @vdesc   types of the input arrays
+   @vtype   const CCTK_INT []
+   @vio     in
+   @endvar
+   @var     input_arrays
+   @vdesc   input arrays
+   @vtype   const void *const []
+   @vio     in
+   @endvar
+   @var     M_output_values
+   @vdesc   number of output values
    @vtype   int
    @vio     in
    @endvar
-   @var     <...>
-   @vdesc   list of variables indices of input fields
-   @vtype   int
+   @var     output_value_type_codes
+   @vdesc   types of the output values
+   @vtype   const CCTK_INT []
    @vio     in
    @endvar
+   @var     output_values
+   @vdesc   pointers to the output values
+   @vtype   void *const []
+   @vio     out
+   @endvar
+   @returntype int
+   @returndesc
+            negative for errors
+   @endreturndesc
 @@*/
-int CCTK_ReduceLocalArrays(int N_dims, int operation_handle, 
-                          int param_table_handle,   
-                          int N_input_arrays,
-                          const CCTK_INT input_array_dims[], 
-                          const CCTK_INT input_array_type_codes[],
-                          const void *const input_arrays[],
-                          int M_output_numbers,
-                          const CCTK_INT output_number_type_codes[],
-                          void *const output_numbers[])
+int CCTK_ReduceLocalArrays(int N_dims,
+                           int local_reduce_handle,
+                           int param_table_handle,
+                           int N_input_arrays,
+                           const CCTK_INT input_array_sizes[],
+                           const CCTK_INT input_array_type_codes[],
+                           const void *const input_arrays[],
+                           int M_output_values,
+                           const CCTK_INT output_value_type_codes[],
+                           void *const output_values[])
 {
   int retval;
   t_local_array_reduce_operator *operator;
 
   /* Get the pointer to the reduction operator */
-  if (operation_handle < 0)
+  if (local_reduce_handle < 0)
   {
     CCTK_Warn(3,__LINE__,__FILE__,"Cactus",
               "CCTK_LocalArraysReduce: Invalid handle passed to CCTK_LocalArraysReduce");
@@ -1173,7 +1192,8 @@ int CCTK_ReduceLocalArrays(int N_dims, int operation_handle,
   }
   else
   {
-    operator = Util_GetHandledData(LocalArrayReductionOperators,operation_handle);
+    operator = Util_GetHandledData(LocalArrayReductionOperators,
+                                   local_reduce_handle);
 
     if (!operator)
     {
@@ -1184,11 +1204,11 @@ int CCTK_ReduceLocalArrays(int N_dims, int operation_handle,
     }
     else
     {
-      retval = operator->reduce_operator (N_dims, operation_handle, 
+      retval = operator->reduce_operator (N_dims, local_reduce_handle, 
                           param_table_handle, N_input_arrays,
-                          input_array_dims, input_array_type_codes,
-                          input_arrays, M_output_numbers,
-                          output_number_type_codes, output_numbers);
+                          input_array_sizes, input_array_type_codes,
+                          input_arrays, M_output_values,
+                          output_value_type_codes, output_values);
     }
   }
   return retval;
@@ -1488,7 +1508,7 @@ int CCTKi_RegisterGridArrayReductionOperator(const char *thorn,
    @vtype   int
    @vio     in
    @endvar
-   @var     param_reduce_handle
+   @var     param_table_handle
    @vdesc   the parameter table handle
    @vtype   int
    @vio     in
@@ -1500,7 +1520,7 @@ int CCTKi_RegisterGridArrayReductionOperator(const char *thorn,
    @endvar
    @var     input_array_variable_indices
    @vdesc   input arrays
-   @vtype   const CCTK_INT
+   @vtype   const CCTK_INT []
    @vio     in
    @endvar
    @var     M_output_values
@@ -1510,14 +1530,18 @@ int CCTKi_RegisterGridArrayReductionOperator(const char *thorn,
    @endvar
    @var     output_value_type_codes
    @vdesc   array containing output value type codes
-   @vtype   const CCTK_IN
+   @vtype   const CCTK_IN []
    @vio     in
    @endvar
    @var     output_values
    @vdesc   array of output values
-   @vtype   void * const
+   @vtype   void * const []
    @vio     in
    @endvar
+   @returntype int
+   @returndesc
+            negative for errors
+   @endreturndesc
 @@*/
 int CCTK_ReduceGridArrays(const cGH *GH,
                           int dest_proc,
