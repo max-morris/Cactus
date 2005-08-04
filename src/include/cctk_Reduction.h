@@ -121,14 +121,16 @@ const char *CCTK_ReduceOperator (int handle);
 int CCTK_NumReduceOperators(void);
 
 /* new local array reduction API */
-int CCTK_ReduceLocalArrays(int N_dims, int operator_handle, 
-                          int param_table_handle,   int N_input_arrays,
-                          const CCTK_INT input_array_dims[], 
-                          const CCTK_INT input_array_type_codes[],
-                          const void *const input_arrays[],
-                          int M_output_numbers,
-                          const CCTK_INT output_number_type_codes[],
-                          void *const output_numbers[]);
+int CCTK_ReduceLocalArrays(int N_dims,
+                           int local_reduce_handle,
+                           int param_table_handle,
+                           int N_input_arrays,
+                           const CCTK_INT input_array_sizes[],
+                           const CCTK_INT input_array_type_codes[],
+                           const void *const input_arrays[],
+                           int M_output_values,
+                           const CCTK_INT output_value_type_codes[],
+                           void *const output_values[]);
 
 int CCTK_LocalArrayReductionHandle(const char *reduction);
 
