@@ -228,12 +228,13 @@ int CCTKi_RegisterReductionOperator(const char *thorn,
                                     const char *name)
 {
   int handle;
+  void *tmp;
   t_reduce_operator *reduce_operator;
 
 
   /* Check that the method hasn't already been registered */
-  handle = Util_GetHandle(ReductionOperators, name,
-                          (void **) &reduce_operator);
+  handle = Util_GetHandle(ReductionOperators, name, &tmp);
+  reduce_operator = tmp;
   if(handle < 0)
   {
     reduce_operator = malloc (sizeof (t_reduce_operator));
