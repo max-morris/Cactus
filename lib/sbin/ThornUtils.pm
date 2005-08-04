@@ -1,6 +1,5 @@
 package ThornUtils;
 
-
 my $parskip_set     = "0pt";
 my $parskip_restore = "10pt";
 
@@ -73,29 +72,27 @@ sub CreateThornlist
 #@@*/
 sub FindDirectories 
 {
-   my ($directory) = shift;
+   my $directory = shift;
 
-   my (@directories);
+   my @directories;
+   my $dirhdl;
 
-   chdir ($start_directory) || die "\nCannot change directory to $start_directory: $!";
+   opendir ($dirhdl, $directory)
+            or die "\nCannot open directory $directory\n";
 
-   chdir($directory) || die "\nCannot change directory to $directory: $!";
-
-   open(LS, "ls -F|");
-
-   while( chomp($name = <LS>))
+   while (defined (my $name = readdir($dirhdl)))
    {
-      next if ((! -d $name) || ($name eq "History/") || ($name eq "CVS/"));
-
-      $name =~ s/\/$//;
-      push(@directories, $name);
+      if ((-d "$directory/$name")
+              && ($name ne 'History') && ($name ne 'CVS')
+              && !($name =~ /^\./) )      # i.e. current, parent & hidden dirs
+      {
+        push(@directories, $name);
+      }
    }
 
-   close(LS);
+   closedir $dirhdl;
 
-   chdir ($start_directory) || die "\nCannot change directory to $start_directory: $!";
-
-   return (@directories);
+   return @directories;
 } 
 
 #/*@@

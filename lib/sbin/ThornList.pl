@@ -121,27 +121,24 @@ else
 
 sub FindDirectories 
 {
-   my (@good_directories);
-   my $name;
+   my $search_dir = shift;
+   my @good_directories;
+   my $dirhdl;
 
-   chdir ("$start_directory") || die "\nCannot chdir to $start_directory: $!";
+   opendir ($dirhdl, $search_dir)
+            or die "\nCannot open directory $search_dir\n";
 
-   chdir("$_[0]") || die "\nCannot change directory to $_[0] : $!";
-
-   open(LS, "ls -F|");
-
-   while(chomp($name = <LS>)) 
+   while (defined (my $name = readdir($dirhdl)))
    {
-      next if (! -d $name);
-      if (($name ne "History/") && ($name ne "CVS/"))  
+      next if (! -d "$search_dir/$name");
+
+      if (($name ne 'History') && ($name ne 'CVS')
+      && !($name =~ /^\./ ) )        # i.e. current, parent & hidden dirs 
       {
-         $name =~ s#/##;
          push(@good_directories, $name);
       }
    }
+   closedir $dirhdl;
 
-   close(LS);
-
-   chdir ($start_directory);
-   return (@good_directories);
+   return @good_directories;
 } ## END :Find_Directories:
