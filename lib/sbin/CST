@@ -6,7 +6,7 @@
 #  @desc
 #             Parses the the configuration files for thorns.
 #  @enddesc
-#  @version   $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.73 2004-11-30 23:22:00 goodale Exp $
+#  @version   $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.74 2005-08-16 17:25:52 yye00 Exp $
 #@@*/
 
 # Global parameter to track the number of errors from the CST
@@ -149,7 +149,7 @@ print "Creating Thorn-Flesh bindings...\n";
 &CreateLogFile($config_dir, $configuration_database,\%thorns);
 
 # Finally (must be last), create the make.thornlist file.
-$make_thornlist = &CreateMakeThornlist(\%thorns, $configuration_database);
+$make_thornlist = &CreateMakeThornlist(\%thorns, \%interface_database, $configuration_database);
 
 # Stop the make process if there were any errors
 if ($CST_errors)
@@ -316,7 +316,7 @@ sub get_global_parameters
 
 sub CreateMakeThornlist
 {
-  my($thorns, $config) = @_;
+  my($thorns ,$interface, $config) = @_;
   my($thorn);
   my($thornlist);
   my($thorn_linklist);
@@ -342,8 +342,7 @@ sub CreateMakeThornlist
       $config_thornlist .= " $1";
     }
   }
-
-  $thorn_linklist .= ' ' . &TopoSort(\%thorns, $config);
+  $thorn_linklist .= ' ' . &TopoSort($thorns, $interface, $config);
 
   $thorn_dependencies = join ("\n", &CreateThornDependencyList($thorns, $config));
   return ($thornlist . "\n" . $thorn_linklist . "\n" . $config_thornlist . "\n" . $thorn_dependencies . "\n");
@@ -564,7 +563,7 @@ sub CreateBindings
 #@@*/
 sub TopoSort
 {
-  my($thorns, $cfg)= @_;
+  my($thorns, $interface,  $cfg)= @_;
   my($data) = '';
   my($nouse) = '';
   my $thorn;
@@ -573,9 +572,13 @@ sub TopoSort
   foreach $thorn (sort keys %thorns)
   {
     next if ("\U$thorn\E" eq "CACTUS");
+    $thorn_ancestor{"\U$thorn\E"} = '';
+    foreach $ancestor_imp ( split(' ', $interface->{"\U$thorn INHERITS\E"}))
+    {
+      $thorn_ancestor{"\U$thorn\E"} .= $interface->{"IMPLEMENTATION \U$ancestor_imp\E THORNS"}. ' ';
+    }
 
-    my @uses_thorns = split (' ', $cfg->{"\U$thorn\E USES THORNS"});
-
+    my @uses_thorns = split (' ', $cfg->{"\U$thorn\E USES THORNS"} . ' ' . $thorn_ancestor{"\U$thorn\E"});
     my $uses_thorns = '';
     foreach (@uses_thorns)
     {
@@ -607,8 +610,8 @@ sub TopoSort
     $data =~ s/dummy//;
     $data =~ s/  / /;
   }
-
-  return $data;
+  
+return $data;
 }
 
 

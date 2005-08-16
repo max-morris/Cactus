@@ -24,7 +24,7 @@ sub CreateConfigurationDatabase
 {
   my($config_dir, %thorns) = @_;
   my(%cfg) = ();
-  my($thorn, $required, @missing, @foundlist, $founderrlist, $filename, %thorncap, $foundcap, $temp,$cap);
+  my($thorn, $required, @missing, @foundlist, $founderrlist, $filename, %thorncap, $foundcap, $temp,$cap,$message,$hint);
 
   # Loop through each thorn's configuration file.
   foreach $thorn (sort keys %thorns)
@@ -111,7 +111,26 @@ sub CreateConfigurationDatabase
     }
   }
 
-  #  # Print configuration database
+# Check for cyclic dependencies
+# create a hash with thorn-> used thorns (no prefix)
+  foreach $thorn (sort keys %thorns)
+  {
+    $thorn_dependencies{uc($thorn)}=$cfg{"\U$thorn\E USES THORNS"};
+  }
+
+  $message = &find_dep_cycles(%thorn_dependencies);
+  
+  if ("" ne  $message)
+  {
+   $message  =~ s/^\s*//g;
+   $message  =~ s/\s*$//g;
+   $message =~ s/\s+/->/g;
+   $message = "Found a cyclic dependency in configuration requirements:".$message."\n";
+   &CST_error(0,$message,$hint,__LINE__,__FILE__);
+  }
+
+
+#  # Print configuration database
 #     my($field);
 #     foreach $field ( sort keys %cfg)
 #     {
@@ -194,6 +213,7 @@ sub ParseConfigurationCCL
     {
       ($optional, $define, $line_number) = &ParseOptionalBlock($line_number, \@data);
       $cfg->{"\U$thorn\E OPTIONAL"} .= "$optional ";
+      $cfg->{"\U$thorn\E OPTIONAL \U$optional\E DEFINE"} = $define;
     }
     elsif($line =~ m/^\s*NO_SOURCE\s*/i)
     {

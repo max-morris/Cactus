@@ -69,6 +69,7 @@ sub cross_index_interface_data
   my($implementation);
   my(%ancestors);
   my(%friends);
+  my($thorn,$thorn_implements,$ancestor_imp,$thorn_ancestor,$message,$hint);
 
   @thorns = @indata[0..$n_thorns-1];
   %system_database = @indata[$n_thorns..$n_thorns+2*$n_system-1];
@@ -121,6 +122,28 @@ sub cross_index_interface_data
 
     $interface_data{"IMPLEMENTATION \U$implementation\E FRIENDS"} = &get_friends_of_me($implementation, scalar(keys %implementations), (sort keys %implementations),%interface_data);
 
+  }
+  
+  # Create Hash table with thorns as ancestors 
+  foreach $thorn (@thorns)
+  {
+    $thorn_implements = $interface_data{"\U$thorn\E IMPLEMENTS"};
+    foreach $ancestor_imp ( split(' ', $interface_data{"\U$thorn INHERITS\E"}))
+    {
+      next if($ancestor_imp eq '');
+      $thorn_ancestor{uc($thorn)} .= $interface_data{"IMPLEMENTATION \U$ancestor_imp\E THORNS"}. ' ';
+    }
+  }
+
+  # Call find_dep_cycles to find and report cycles
+  $message = &find_dep_cycles(%thorn_ancestor);
+  if ("" ne  $message)
+  {
+   $message  =~ s/^\s*//g;
+   $message  =~ s/\s*$//g;
+   $message =~ s/\s+/->/g;
+   $message = "Found a cyclic dependency in implementation inheritance: ".$message."\n";
+   &CST_error(0,$message,$hint,__LINE__,__FILE__);
   }
 
   foreach $thorn (@thorns)
@@ -618,8 +641,8 @@ sub check_interface_consistency
 {
   my($thorn, %interface_data) = @_;
   my($implementation);
-  my($private_group);
-  my($ancestor_imp,$ancestor_thorn);
+  my($group,$var1,$var2,$group1,$group2);
+  my($ancestor_imp,$ancestor_thorn,$ancestor2_imp,$ancestor2);
   my($message);
 
   # Find implementation
@@ -634,20 +657,59 @@ sub check_interface_consistency
     {
       $ancestor_thorn = $1;
     }
-    foreach $private_group (split " ",$interface_data{"\U$thorn\E PRIVATE GROUPS"})
+    foreach $group1 (split ' ', $interface_data{"\U$ancestor_thorn\E PUBLIC GROUPS"})
     {
-      if ($interface_data{"\U$ancestor_thorn\E PUBLIC GROUPS"} =~ m:(\b$private_group\b):)
+      foreach $var1 (split ' ', $interface_data{"\U$ancestor_thorn\E GROUP \U$group1\E"})
       {
-        $message = "Private group $private_group in thorn $thorn has same name as \n     public group in ancestor implementation $ancestor_imp (e.g. thorn $ancestor_thorn)";
+        foreach $ancestor2_imp (split " ",$interface_data{"IMPLEMENTATION \U$implementation\E ANCESTORS"})
+        {
+          $ancestor2 = $interface_data{"IMPLEMENTATION \U$ancestor2_imp\E THORNS"};
+          if ($ancestor2 =~ m:(\w+)[^\w]*:)
+          {
+            $ancestor2 = $1;
+          }
+          # skip the second ancestor if it is the first one
+          next if (uc($ancestor2) eq uc($ancestor_thorn));
+
+          foreach $group2 (split ' ', $interface_data{"\U$ancestor2\E PUBLIC GROUPS"})
+          { 
+            if (uc($group1) eq uc($group2))
+            {
+              $message = "Group $group1 from ancestor implementation $ancestor_imp in thorn $thorn has same name as \n     a public group: $group2 in ancestor implementation $ancestor2_imp (e.g. thorn $ancestor2)";
+              &CST_error(1,$message,"",__LINE__,__FILE__);
+            }
+            if (uc($var1) eq uc($group2))
+            {
+              $message = "Variable $var1 in group $group1 from ancestor implementation $ancestor_imp in thorn $thorn has same name as \n     a public group: $group2 in ancestor implementation $ancestor2_imp (e.g. thorn $ancestor2)";
+              &CST_error(1,$message,"",__LINE__,__FILE__); 
+            }
+            foreach $var2 (split ' ', $interface_data{"\U$ancestor2\E GROUP \U$group2\E"})
+            {
+              if (uc($var2) eq uc($var1))
+              {
+                $message = "Variable $var1 in group $group1 from ancestor $ancestor_imp in thorn $thorn has same name as \n     variable $var2 in public group: $group2 in ancestor implementation $ancestor2_imp (e.g. thorn $ancestor2)";
+                &CST_error(0,$message,"",__LINE__,__FILE__);
+              }
+            }
+          }    
+        }
+      }
+    }
+
+    foreach $group (split " ",$interface_data{"\U$thorn\E PRIVATE GROUPS"} . ' '. $interface_data{"\U$thorn\E PUBLIC GROUPS"} )
+    {
+      if ($interface_data{"\U$ancestor_thorn\E PUBLIC GROUPS"} =~ m:(\b$group\b):)
+      {
+        $message = "Group $group in thorn $thorn has same name as \n     public group in ancestor implementation $ancestor_imp (e.g. thorn $ancestor_thorn)";
         &CST_error(0,$message,"",__LINE__,__FILE__);
       }
-      foreach $var (split " ", $interface_data{"\U$thorn\E GROUP \U$private_group\E"})
+      foreach $var (split " ", $interface_data{"\U$thorn\E GROUP \U$group\E"})
       {
         foreach $pub_anc(split " ", $interface_data{"\U$ancestor_thorn\E PUBLIC GROUPS"})
         { 
           if ($interface_data{"\U$ancestor_thorn\E GROUP \U$pub_anc\E"} =~  m/\b$var\b/i)
           {
-            $message = "Private variable $var in group $private_group in thorn $thorn has same name as \n     a variable in public group: $pub_anc in ancestor implementation $ancestor_imp (e.g. thorn $ancestor_thorn)";
+            $message = "Variable $var in group $group in thorn $thorn has same name as \n     a variable in public group: $pub_anc in ancestor implementation $ancestor_imp (e.g. thorn $ancestor_thorn)";
             &CST_error(0,$message,"",__LINE__,__FILE__);  
           }
 

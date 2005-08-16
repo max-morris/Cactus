@@ -749,4 +749,93 @@ sub GetOptionsFromEnv
   return \%options;
 }
 
+#/*@@
+#  @routine find_dep_cycles
+#  @date    Fri Apr 15 20:47:00 2005
+#  @author  Josh Abadie
+#  @desc
+#           Iterates over all the thorns, and finds out if there are any cycles
+#           This function is the wrapper around the recursive one.
+#  @enddesc
+#@@*/
+sub find_dep_cycles
+{
+  my(%thorns) = @_;
+  my(%visited) = {};
+  my($stack,$keyu,$returned);
+  my $debug = 0;
+
+  foreach $key (keys %thorns)
+  {
+    $key = uc ($key);
+    #next if($visted{$key} && 1 == $visted{$key});
+    next if(1 == $visited{$key});
+    print "testing $key for deps\n" if (1 == $debug);
+    $stack = $key." ";
+    $returned = &recurse_deps($key, \%thorns, $stack, \%visited);
+    $visted{$key} = 1;
+    if("" ne $returned)
+    {
+      print "Found cycle while testing $key for deps.[$returned]\n" if (1 == $debug);
+      return $returned;
+    }
+  }
+  return "";
+}
+
+#/*@@
+#  @routine recurse_deps
+#  @date    Fri Apr 15 20:47:00 2005
+#  @author  Josh Abadie
+#  @desc
+#           Iterates over all the thorns, and finds out if there are any cycles
+#           
+#  @enddesc
+#@@*/
+sub recurse_deps
+{
+  my($key, $thornsTemp,$stack, $visitedTemp) = @_;
+  my %thorns = %$thornsTemp;
+  my %visited = %$visitedTemp;
+  my($depThorni,$loop,$returned,$temp); 
+  my (@arr)=();
+  my $debug = 0;
+        
+  # Iterates over all thorns this one depends on, and checks to see if any
+  # form a cycle.
+  foreach $depThorn (split(" ", uc($thorns{"\U$key\E"})))
+  {
+    $depThorn = uc($depThorn);
+             
+    if($stack =~ /\b$depThorn\b/i)
+    {
+      $stack =~ /.*\b($depThorn\b.*)$/i;
+      $loop = $1.$depThorn;
+      return $loop;
+    }
+    else
+    {
+      # We don't have a cycle yet, so let's recurse on this thorn's deps.
+      $stack = $stack.$depThorn. ' ';
+      print "Recursing into $depThorn.  Stack is [$stack]\n" if (1 == $debug);
+      $returned = &recurse_deps($depThorn, \%thorns, $stack, \%visited);
+      if("" ne $returned)
+      {
+        return $returned;
+      }
+      $visited{$depThorn} = 1;
+      $temp = $";
+      $" = " ";
+      $stack =~ s/^(.*)\s*$/$1/;
+      $stack =~ s/^\s*(.*)$/$1/;
+      @arr = split(" ", $stack);
+      pop(@arr);
+      $stack = "@arr ";
+      $" = $temp;
+    }
+  }
+  $visited{$key} = 1;
+  return "";
+}
+
 1;

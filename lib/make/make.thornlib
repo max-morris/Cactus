@@ -20,17 +20,17 @@ include $(CONFIG)/make.config.defn
  
 BINDINGS_DIR=$(TOP)/bindings
 
-# Include the configuration make.code.defn for the thorn
+# Include the configuration make.THORN_NAME.defn for the thorn
 # if it is not Cactus or CactusBindings
 INC_DIRS = 
 ifneq ($(THORN), CactusBindings)
 ifneq ($(THORN), Cactus)
--include $(BINDINGS_DIR)/Configuration/$(THORN)/make.configuration.defn
+-include $(BINDINGS_DIR)/Configuration/Thorns/make.$(THORN).defn
 endif
 endif
 
 # Add appropriate include lines
-INC_DIRS += $(SYS_INC_DIRS) $(SRCDIR) $(SRCDIR)/include $(CONFIG) $(BINDINGS_DIR)/include $(CCTK_HOME)/src/include $(CCTK_HOME)/arrangements
+INC_DIRS += $(SYS_INC_DIRS) $(SRCDIR) $(SRCDIR)/include $(CONFIG) $(BINDINGS_DIR)/include $(CCTK_HOME)/src/include $(CCTK_HOME)/arrangements $(BINDINGS_DIR)/Configuration/Thorns
 
 # Allow subdirectories to inherit these include directories
 export INC_DIRS
