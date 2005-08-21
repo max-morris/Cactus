@@ -1866,9 +1866,11 @@ CCTK\_REAL}s with the grid spacing in each direction.
 \item [\texttt{cctk\_origin\_space}] An array of \texttt{cctk\_dim} {\tt
       CCTK\_REAL}s with the spatial coordinates of the global origin
       of the grid.  The coordinates of the $i$th local grid point in
-      the $x$ direction can e.g.\ in C be calculated by \texttt{x =
-      CCTK\_ORIGIN\_SPACE(0) + (cctk\_lsh[0] + i) *
-      CCTK\_DELTA\_SPACE(0)}.
+      the $x$ direction can in C be calculated by \texttt{x =
+      CCTK\_ORIGIN\_SPACE(0) + (cctk\_lbnd[0] + i) *
+      CCTK\_DELTA\_SPACE(0)}, and in Fortran by \texttt{x =
+      CCTK\_ORIGIN\_SPACE(1) + (cctk\_lbnd(1) + i - 1) *
+      CCTK\_DELTA\_SPACE(1)}.
 \item [\texttt{cctk\_lssh}]  This is an internal array used to hold
 array extents for staggering.  One should use the macro CCTK\_LSSH(,)
 to access its elements.
