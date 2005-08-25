@@ -178,6 +178,9 @@ int Util_TableGetGenericArray(int handle,
 
 /* pointers */
 int Util_TableSetPointer(int handle, CCTK_POINTER value, const char *key);
+int Util_TableSetPointerToConst(int handle,
+                                CCTK_POINTER_TO_CONST value,
+                                const char *key);
 int Util_TableSetFPointer(int handle, CCTK_FPOINTER value, const char *key);
 /*
  * ... the following function (an alias for the previous one) is for
@@ -234,6 +237,10 @@ int Util_TableSetComplex32(int handle, CCTK_COMPLEX32 value, const char *key);
 int Util_TableSetPointerArray(int handle,
                               int N_elements, const CCTK_POINTER array[],
                               const char *key);
+int Util_TableSetPointerToConstArray(int handle,
+                                     int N_elements,
+                                     const CCTK_POINTER_TO_CONST array[],
+                                     const char *key);
 int Util_TableSetFPointerArray(int handle,
                                int N_elements, const CCTK_FPOINTER array[],
                                const char *key);
@@ -327,6 +334,10 @@ int Util_TableSetComplex32Array(int handle,
 
 /* pointers */
 int Util_TableGetPointer(int handle, CCTK_POINTER *value, const char *key);
+int Util_TableGetPointerToConst(int handle,
+                                CCTK_POINTER_TO_CONST *value,
+                                const char *key);
+
 int Util_TableGetFPointer(int handle, CCTK_FPOINTER *value, const char *key);
 /*
  * ... the following function (an alias for the previous one) is for
@@ -383,6 +394,11 @@ int Util_TableGetComplex32(int handle, CCTK_COMPLEX32 *value, const char *key);
 int Util_TableGetPointerArray(int handle,
                               int N_elements, CCTK_POINTER array[],
                               const char *key);
+int Util_TableGetPointerToConstArray(int handle,
+                                     int N_elements,
+                                     CCTK_POINTER_TO_CONST array[],
+                                     const char *key);
+
 int Util_TableGetFPointerArray(int handle,
                                int N_elements, CCTK_FPOINTER array[],
                                const char *key);

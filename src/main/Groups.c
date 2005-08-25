@@ -931,6 +931,10 @@ const char *CCTK_VarTypeName (int vtype)
       retval = "CCTK_VARIABLE_POINTER";
       break;
 
+    case CCTK_VARIABLE_POINTER_TO_CONST:
+      retval = "CCTK_VARIABLE_POINTER_TO_CONST";
+      break;
+
     case CCTK_VARIABLE_FPOINTER:
       retval = "CCTK_VARIABLE_FPOINTER";
       break;
@@ -1941,6 +1945,10 @@ int CCTK_VarTypeSize (int vtype)
 
     case CCTK_VARIABLE_POINTER:
       var_size = sizeof (CCTK_POINTER);
+      break;
+
+    case CCTK_VARIABLE_POINTER_TO_CONST:
+      var_size = sizeof (CCTK_POINTER_TO_CONST);
       break;
 
     case CCTK_VARIABLE_FPOINTER:

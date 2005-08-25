@@ -131,7 +131,7 @@ CCTK_FILEVERSION(util_Table_c);
  * iterators.  In both cases we use the same data structure:
  *
  *      int N_objects;          // actual number of tables/iterators
- *      int N_elements;            // actual size of growable array
+ *      int N_elements;         // actual size of growable array
  *      void *array;            // pointer to malloc-allocated growable array
  *                              // indexed by handle/ihandle
  *
@@ -1986,7 +1986,7 @@ void CCTK_FCALL CCTK_FNAME(Util_TableGetGenericArray)
 
   @var          value
   @vtype        one of
-                   CCTK_POINTER, CCTK_FPOINTER,
+                   CCTK_POINTER, CCTK_POINTER_TO_CONST, CCTK_FPOINTER,
                    CCTK_CHAR,
                    CCTK_BYTE,
                    CCTK_INT, CCTK_INT1, CCTK_INT2, CCTK_INT4, CCTK_INT8,
@@ -2038,6 +2038,32 @@ void CCTK_FCALL CCTK_FNAME(Util_TableSetPointer)
 {
   ONE_FORTSTRING_CREATE(key)
   *retval = Util_TableSetPointer(*handle, *value, key);
+  free(key);
+}
+#endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
+
+/**************************************/
+
+int Util_TableSetPointerToConst(int handle,
+                                CCTK_POINTER_TO_CONST value,
+                                const char *key)
+{
+  return Util_TableSetPointerToConstArray(handle, 1, &value, key);
+}
+
+#ifdef UTIL_TABLE_FORTRAN_WRAPPERS
+void CCTK_FCALL CCTK_FNAME(Util_TableSetPointerToConst)
+                          (int *retval, const int *handle,
+                           const CCTK_POINTER_TO_CONST *value,
+                           ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME(Util_TableSetPointerTOConst)
+                          (int *retval,
+                           const int *handle,
+                           const CCTK_POINTER_TO_CONST *value,
+                           ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE(key)
+  *retval = Util_TableSetPointerToConst(*handle, *value, key);
   free(key);
 }
 #endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
@@ -2453,7 +2479,7 @@ void CCTK_FCALL CCTK_FNAME(Util_TableSetComplex32)
 
   @var          array
   @vtype        const T[], where T is one of
-                   CCTK_POINTER, CCTK_FPOINTER,
+                   CCTK_POINTER, CCTK_POINTER_TO_CONST, CCTK_FPOINTER,
                    CCTK_CHAR,
                    CCTK_BYTE,
                    CCTK_INT, CCTK_INT1, CCTK_INT2, CCTK_INT4, CCTK_INT8,
@@ -2503,15 +2529,46 @@ int Util_TableSetPointerArray(int handle,
 #ifdef UTIL_TABLE_FORTRAN_WRAPPERS
 void CCTK_FCALL CCTK_FNAME(Util_TableSetPointerArray)
                           (int *retval, const int *handle,
-                           const int *N_elements,
-                           const CCTK_POINTER array[], ONE_FORTSTRING_ARG);
+                           const int *N_elements, const CCTK_POINTER array[],
+                           ONE_FORTSTRING_ARG);
 void CCTK_FCALL CCTK_FNAME(Util_TableSetPointerArray)
                           (int *retval, const int *handle,
-                           const int *N_elements,
-                           const CCTK_POINTER array[], ONE_FORTSTRING_ARG)
+                           const int *N_elements, const CCTK_POINTER array[],
+                           ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_CREATE(key)
   *retval = Util_TableSetPointerArray(*handle, *N_elements, array, key);
+  free(key);
+}
+#endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
+
+/**************************************/
+
+int Util_TableSetPointerToConstArray(int handle,
+                                     int N_elements,
+                                     const CCTK_POINTER_TO_CONST array[],
+                                     const char *key)
+{
+  return internal_set(handle,
+                      CCTK_VARIABLE_POINTER_TO_CONST,
+                      N_elements, (const void *) array,
+                      key);
+}
+
+#ifdef UTIL_TABLE_FORTRAN_WRAPPERS
+void CCTK_FCALL CCTK_FNAME(Util_TableSetPointerToConstArray)
+                          (int *retval, const int *handle,
+                           const int *N_elements,
+                           const CCTK_POINTER_TO_CONST array[],
+                           ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME(Util_TableSetPointerToConstArray)
+                          (int *retval, const int *handle,
+                           const int *N_elements,
+                           const CCTK_POINTER_TO_CONST array[],
+                           ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE(key)
+  *retval = Util_TableSetPointerToConstArray(*handle, *N_elements, array, key);
   free(key);
 }
 #endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
@@ -3036,7 +3093,7 @@ void CCTK_FCALL CCTK_FNAME(Util_TableSetComplex32Array)
 
   @var          value
   @vtype        T *, where T is one of
-                   CCTK_POINTER, CCTK_FPOINTER,
+                   CCTK_POINTER, CCTK_POINTER_TO_CONST, CCTK_FPOINTER,
                    CCTK_CHAR,
                    CCTK_BYTE,
                    CCTK_INT, CCTK_INT1, CCTK_INT2, CCTK_INT4, CCTK_INT8,
@@ -3106,6 +3163,32 @@ void CCTK_FCALL CCTK_FNAME (Util_TableGetPointer)
 {
   ONE_FORTSTRING_CREATE (key)
   *retval = Util_TableGetPointer (*handle, value, key);
+  free (key);
+}
+#endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
+
+/**************************************/
+
+int Util_TableGetPointerToConst(int handle,
+                                CCTK_POINTER_TO_CONST *value,
+                                const char *key)
+{
+  const int status = Util_TableGetPointerToConstArray(handle, 1, value, key);
+  return (status == 0)
+         ? UTIL_ERROR_TABLE_VALUE_IS_EMPTY
+         : status;
+}
+
+#ifdef UTIL_TABLE_FORTRAN_WRAPPERS
+void CCTK_FCALL CCTK_FNAME (Util_TableGetPointerToConst)
+                           (int *retval, const int *handle,
+                            CCTK_POINTER_TO_CONST *value, ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (Util_TableGetPointerToConst)
+                           (int *retval, const int *handle,
+                            CCTK_POINTER_TO_CONST *value, ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (key)
+  *retval = Util_TableGetPointerToConst (*handle, value, key);
   free (key);
 }
 #endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
@@ -3571,7 +3654,7 @@ void CCTK_FCALL CCTK_FNAME (Util_TableGetComplex32)
 
   @var          array
   @vtype        T[], where T is one of
-                   CCTK_POINTER, CCTK_FPOINTER,
+                   CCTK_POINTER, CCTK_POINTER_TO_CONST, CCTK_FPOINTER,
                    CCTK_CHAR,
                    CCTK_BYTE,
                    CCTK_INT, CCTK_INT1, CCTK_INT2, CCTK_INT4, CCTK_INT8,
@@ -3649,6 +3732,37 @@ void CCTK_FCALL CCTK_FNAME (Util_TableGetPointerArray)
 {
   ONE_FORTSTRING_CREATE (key)
   *retval = Util_TableGetPointerArray (*handle, *N_elements, array, key);
+  free (key);
+}
+#endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
+
+/**************************************/
+
+int Util_TableGetPointerToConstArray(int handle,
+                                     int N_elements,
+                                     CCTK_POINTER_TO_CONST array[],
+                                     const char *key)
+{
+  return internal_get(handle,
+                      CCTK_VARIABLE_POINTER_TO_CONST,
+                      N_elements, (void *) array,
+                      key);
+}
+
+#ifdef UTIL_TABLE_FORTRAN_WRAPPERS
+void CCTK_FCALL CCTK_FNAME (Util_TableGetPointerToConstArray)
+                           (int *retval, const int *handle,
+                            const int *N_elements,
+                            CCTK_POINTER_TO_CONST array[],
+                            ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (Util_TableGetPointerToConstArray)
+                           (int *retval, const int *handle,
+                            const int *N_elements,
+                            CCTK_POINTER_TO_CONST array[],
+                            ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (key)
+  *retval = Util_TableGetPointerToConstArray(*handle, *N_elements, array, key);
   free (key);
 }
 #endif  /* UTIL_TABLE_FORTRAN_WRAPPERS */
@@ -4798,7 +4912,7 @@ int Util_TableItSetToKey(int ihandle, const char *key)
 
   @var          array
   @vtype        const T[], where T is one of
-                   CCTK_POINTER, CCTK_FPOINTER,
+                   CCTK_POINTER, CCTK_POINTER_TO_CONST, CCTK_FPOINTER,
                    CCTK_CHAR,
                    CCTK_BYTE,
                    CCTK_INT, CCTK_INT1, CCTK_INT2, CCTK_INT4, CCTK_INT8,
@@ -4917,7 +5031,7 @@ static
 
   @var          value_buffer
   @vtype        T[], where T is one of
-                   CCTK_POINTER, CCTK_FPOINTER,
+                   CCTK_POINTER, CCTK_POINTER_TO_CONST, CCTK_FPOINTER,
                    CCTK_CHAR,
                    CCTK_BYTE,
                    CCTK_INT, CCTK_INT1, CCTK_INT2, CCTK_INT4, CCTK_INT8,
@@ -5145,7 +5259,7 @@ static
 
   @var          array
   @vtype        const T[], where T is one of
-                   CCTK_POINTER, CCTK_FPOINTER,
+                   CCTK_POINTER, CCTK_POINTER_TO_CONST, CCTK_FPOINTER,
                    CCTK_CHAR,
                    CCTK_BYTE,
                    CCTK_INT, CCTK_INT1, CCTK_INT2, CCTK_INT4, CCTK_INT8,
