@@ -123,8 +123,8 @@ sub cross_index_interface_data
     $interface_data{"IMPLEMENTATION \U$implementation\E FRIENDS"} = &get_friends_of_me($implementation, scalar(keys %implementations), (sort keys %implementations),%interface_data);
 
   }
-  
-  # Create Hash table with thorns as ancestors 
+
+  # Create Hash table with thorns as ancestors
   foreach $thorn (@thorns)
   {
     $thorn_implements = $interface_data{"\U$thorn\E IMPLEMENTS"};
@@ -672,7 +672,7 @@ sub check_interface_consistency
           next if (uc($ancestor2) eq uc($ancestor_thorn));
 
           foreach $group2 (split ' ', $interface_data{"\U$ancestor2\E PUBLIC GROUPS"})
-          { 
+          {
             if (uc($group1) eq uc($group2))
             {
               $message = "Group $group1 from ancestor implementation $ancestor_imp in thorn $thorn has same name as \n     a public group: $group2 in ancestor implementation $ancestor2_imp (e.g. thorn $ancestor2)";
@@ -681,7 +681,7 @@ sub check_interface_consistency
             if (uc($var1) eq uc($group2))
             {
               $message = "Variable $var1 in group $group1 from ancestor implementation $ancestor_imp in thorn $thorn has same name as \n     a public group: $group2 in ancestor implementation $ancestor2_imp (e.g. thorn $ancestor2)";
-              &CST_error(1,$message,"",__LINE__,__FILE__); 
+              &CST_error(1,$message,"",__LINE__,__FILE__);
             }
             foreach $var2 (split ' ', $interface_data{"\U$ancestor2\E GROUP \U$group2\E"})
             {
@@ -691,7 +691,7 @@ sub check_interface_consistency
                 &CST_error(0,$message,"",__LINE__,__FILE__);
               }
             }
-          }    
+          }
         }
       }
     }
@@ -706,16 +706,16 @@ sub check_interface_consistency
       foreach $var (split " ", $interface_data{"\U$thorn\E GROUP \U$group\E"})
       {
         foreach $pub_anc(split " ", $interface_data{"\U$ancestor_thorn\E PUBLIC GROUPS"})
-        { 
+        {
           if ($interface_data{"\U$ancestor_thorn\E GROUP \U$pub_anc\E"} =~  m/\b$var\b/i)
           {
             $message = "Variable $var in group $group in thorn $thorn has same name as \n     a variable in public group: $pub_anc in ancestor implementation $ancestor_imp (e.g. thorn $ancestor_thorn)";
-            &CST_error(0,$message,"",__LINE__,__FILE__);  
+            &CST_error(0,$message,"",__LINE__,__FILE__);
           }
 
         }
 
-        
+
       }
 
     }
@@ -1068,8 +1068,19 @@ sub parse_interface_ccl
             {
 	      if ($function eq $current_group)
               {
-                &CST_error(1,"Group and variable $function in thorn $thorn should be distinct",'',
-                           __LINE__,__FILE__);      
+                if ($#functions == 1)
+                {
+                  &CST_error(1,"Group and variable '$function' in thorn " .
+                             "'$thorn' should be distinct",'',
+                             __LINE__,__FILE__);
+                }
+                else
+                {
+                  &CST_error(0,"The names of all variables '@functions' must " .
+                             "be different from their group name " .
+                             "'$current_group' in thorn '$thorn'",'',
+                             __LINE__,__FILE__);
+                }
               }
               $function =~ s:\s*::g;
 
