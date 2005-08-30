@@ -122,8 +122,8 @@ else
       : ${F90_DEBUG_FLAGS='-g'}
       : ${F77_WARN_FLAGS='-Wall'}
       : ${F90_WARN_FLAGS='-Wall'}
-      F77_VERSION="`$F77 -v 2>&1 | grep -i version | tail -n1`"
-      F90_VERSION="`$F90 -v 2>&1 | grep -i version | tail -n1`"
+      F77_VERSION="`$F77 -v 2>&1 | grep -i version | head -n1`"
+      F90_VERSION="`$F90 -v 2>&1 | grep -i version | head -n1`"
       ;;
     gnu95)
       : ${F77_DEBUG_FLAGS='-g'}
@@ -138,8 +138,8 @@ else
         : ${LIBS='gfortran'}
         : ${LIBDIRS="$gnu95_libdir"}
       fi
-      F77_VERSION="`$F77 -dumpversion 2>&1 | grep -i version | tail -n1`"
-      F90_VERSION="`$F90 -dumpversion 2>&1 | grep -i version | tail -n1`"
+      F77_VERSION="`$F77 -dumpversion 2>&1 | grep -i version | head -n1`"
+      F90_VERSION="`$F90 -dumpversion 2>&1 | grep -i version | head -n1`"
       ;;
     pacific)
       if test "$LINUX_G77_USES_LIBG2C" = 'yes' ; then
@@ -152,7 +152,7 @@ else
       : ${F90_DEBUG_FLAGS="-g"}
       : ${F77_WARN_FLAGS="-Wall"}
       : ${F90_WARN_FLAGS="-Wall"}
-      F90_VERSION="`$F90 -V 2>&1 | grep -i version | tail -n1`"
+      F90_VERSION="`$F90 -V 2>&1 | grep -i version | head -n1`"
       ;;
     absoft)
       : ${LIBS='f90math fio f77math m'}
@@ -166,7 +166,7 @@ else
       : ${F90_DEBUG_FLAGS='-g'}
       : ${F77_WARN_FLAGS='-m0'}
       : ${F90_WARN_FLAGS='-m0'}
-      F90_VERSION="`$F90 -V 2>&1 | grep -i version | tail -n1`"
+      F90_VERSION="`$F90 -V 2>&1 | grep -i version | head -n1`"
       ;;
     absoft77)
       : ${LIBS='fio f77math m'}
@@ -180,15 +180,15 @@ else
       : ${F90_DEBUG_FLAGS='-g'}
       : ${F77_WARN_FLAGS='-m0'}
       : ${F90_WARN_FLAGS='-m0'}
-      F77_VERSION="`$F77 -? 2>&1 | grep -i version | tail -n1`"
+      F77_VERSION="`$F77 -? 2>&1 | grep -i version | head -n1`"
       ;;
     nag)
       : ${F77FLAGS='-maxcontin=100 -mismatch -w=x77 -w=uda -w=usy'}
       : ${F90FLAGS='-maxcontin=100 -mismatch -w=x77 -w=uda -w=usy'}
       : ${F77_OPTIMISE_FLAGS='-O4'}
       : ${F90_OPTIMISE_FLAGS='-O4'}
-      F77_VERSION="`$F77 -V 2>&1 | grep -i version | tail -n1`"
-      F90_VERSION="`$F90 -V 2>&1 | grep -i version | tail -n1`"
+      F77_VERSION="`$F77 -V 2>&1 | grep -i version | head -n1`"
+      F90_VERSION="`$F90 -V 2>&1 | grep -i version | head -n1`"
       ;;
     portland)
       : ${LIBS='pgf90 pgf90rtl pgftnrtl pgf90_rpm1 pghpf2 pgc m'}
@@ -202,11 +202,11 @@ else
       : ${F90_OPTIMISE_FLAGS='$(F77_OPTIMISE_FLAGS)'}
       : ${F77_DEBUG_FLAGS='-g'}
       : ${F90_DEBUG_FLAGS='-g'}
-      F90_VERSION="`$F90 -V 2>&1 | grep -i pgf90 | tail -n1`"
+      F90_VERSION="`$F90 -V 2>&1 | grep -i pgf90 | head -n1`"
       ;;
     fujitsu)
       : ${LIBS='fj9i6 fj9e6 fj9f6'}
-      F90_VERSION="`$F90 -V 2>&1 | grep -i version | tail -n1`"
+      F90_VERSION="`$F90 -V 2>&1 | grep -i version | head -n1`"
       ;;
     lahey)
       : ${F77_DEBUG_FLAGS='-g --chk'}
@@ -234,7 +234,7 @@ else
       else
         : ${LIBS='fj9i6 fj9e6 fj9f6'}
       fi
-      F90_VERSION="`$F90 --version 2>&1 | grep -i version | tail -n1`"
+      F90_VERSION="`$F90 --version 2>&1 | grep -i version | head -n1`"
       ;;
     SGI)
       : ${F77_WARN_FLAGS='-fullwarn'}
@@ -244,7 +244,7 @@ else
       : ${F77_OPTIMISE_FLAGS='-O3'}
       : ${F90_OPTIMISE_FLAGS='-O3'}
       : ${LIBS='fortran ffio m'}
-      F90_VERSION="`$F90 -v 2>&1 | grep -i version | tail -n1`"
+      F90_VERSION="`$F90 -v 2>&1 | grep -i version | head -n1`"
       ;;
    Intel)
       if test "$OPTIMISE" = 'no'; then
@@ -310,13 +310,13 @@ else
       esac
       : ${F77_OPTIMISE_FLAGS="$default_intel_fopt_flags"}
       : ${F90_OPTIMISE_FLAGS="$default_intel_fopt_flags"}
-      F77_VERSION="`$F77 -V 2>&1 | grep -i version | tail -n1`"
-      F90_VERSION="`$F90 -V 2>&1 | grep -i version | tail -n1`"
+      F77_VERSION="`$F77 -V 2>&1 | grep -i version | head -n1`"
+      F90_VERSION="`$F90 -V 2>&1 | grep -i version | head -n1`"
       ;;
     Compaq)
       : ${LIBS='for m'}
-      F77_VERSION="`$F77 -v 2>&1 | grep -i version | tail -n1`"
-      F90_VERSION="`$F90 -v 2>&1 | grep -i version | tail -n1`"
+      F77_VERSION="`$F77 -v 2>&1 | grep -i version | head -n1`"
+      F90_VERSION="`$F90 -v 2>&1 | grep -i version | head -n1`"
       ;;
     PathScale)
       : ${F77FLAGS='-fno-second-underscore'}
@@ -329,8 +329,8 @@ else
       : ${F77_WARN_FLAGS='-fullwarn'}
       : ${F90_WARN_FLAGS='-fullwarn'}
       : ${LIBS='pathfortran mv'}
-      F77_VERSION="`$F77 -v 2>&1 | grep -i version | tail -n1`"
-      F90_VERSION="`$F90 -v 2>&1 | grep -i version | tail -n1`"
+      F77_VERSION="`$F77 -v 2>&1 | grep -i version | head -n1`"
+      F90_VERSION="`$F90 -v 2>&1 | grep -i version | head -n1`"
       ;;
     none)
       : ${LIBS='m'}
@@ -351,7 +351,7 @@ else
     gcc | cc)
       : ${CFLAGS='-pipe'}
       : ${C_OPTIMISE_FLAGS='-O3'}
-      CC_VERSION="`$CC -v 2>&1 | grep -i version | tail -n1`"
+      CC_VERSION="`$CC -v 2>&1 | grep -i version | head -n1`"
       ;;
     [ei]cc)
       if test "$OPTIMISE" = 'no'; then
@@ -367,20 +367,20 @@ else
       : ${C_DEPEND='$(CC) -M $(CPPFLAGS)'}
       # switch on '-w2' to also display remarks
       # : ${C_WARN_FLAGS='-w2'}
-      CC_VERSION="`$CC -V 2>&1 | grep -i version | tail -n1`"
+      CC_VERSION="`$CC -V 2>&1 | grep -i version | head -n1`"
       ;;
     sgicc)
       : ${C_OPTIMISE_FLAGS='-O3'}
       : ${C_DEBUG_FLAGS='-g3'}
-      CC_VERSION="`$CC -v 2>&1 | grep -i version | tail -n1`"
+      CC_VERSION="`$CC -v 2>&1 | grep -i version | head -n1`"
       ;;
     pgcc)
       : ${C_OPTIMISE_FLAGS='-fast -O3 -Minfo -Mneginfo -Mvect=assoc'}
-      CC_VERSION="`$CC -V 2>&1 | grep -i pgcc | tail -n1`"
+      CC_VERSION="`$CC -V 2>&1 | grep -i pgcc | head -n1`"
       ;;
     pathcc)
       : ${C_OPTIMISE_FLAGS='-Ofast'}
-      CC_VERSION="`$CC -v 2>&1 | grep -i version | tail -n1`"
+      CC_VERSION="`$CC -v 2>&1 | grep -i version | head -n1`"
       ;;
   esac
 
@@ -388,7 +388,7 @@ else
     gcc | [gc]++)
       : ${CXXFLAGS='-pipe'}
       : ${CXX_OPTIMISE_FLAGS='-O3'}
-      CXX_VERSION="`$CXX -v 2>&1 | grep -i version | tail -n1`"
+      CXX_VERSION="`$CXX -v 2>&1 | grep -i version | head -n1`"
       ;;
     [ei]cc | [ei]cpc)
       if test "$OPTIMISE" = 'no'; then
@@ -410,12 +410,12 @@ else
         fi
       fi
       : ${CXX_DEPEND='$(CXX) -M $(CPPFLAGS)'}
-      CXX_VERSION="`$CXX -V 2>&1 | grep -i version | tail -n1`"
+      CXX_VERSION="`$CXX -V 2>&1 | grep -i version | head -n1`"
       ;;
     sgiCC)
       : ${CXX_OPTIMISE_FLAGS='-O3'}
       : ${CXX_DEBUG_FLAGS='-g3'}
-      CXX_VERSION="`$CXX -v 2>&1 | grep -i version | tail -n1`"
+      CXX_VERSION="`$CXX -v 2>&1 | grep -i version | head -n1`"
       ;;
     pgCC)
       : ${CXXFLAGS='--no_using_std --instantiate=used'}
@@ -423,11 +423,11 @@ else
       if test `basename $LD` = 'pgCC'; then
         : ${LDFLAGS='-Wl,--allow-multiple-definition'}
       fi
-      CXX_VERSION="`$CXX -V 2>&1 | grep -i version | tail -n1`"
+      CXX_VERSION="`$CXX -V 2>&1 | grep -i version | head -n1`"
       ;;
     pathCC)
       : ${CXX_OPTIMISE_FLAGS='-Ofast'}
-      CXX_VERSION="`$CXX -v 2>&1 | grep -i version | tail -n1`"
+      CXX_VERSION="`$CXX -v 2>&1 | grep -i version | head -n1`"
       ;;
   esac
 
