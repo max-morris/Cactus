@@ -973,28 +973,48 @@ sub CreateThornGroupInitialisers
   {
     $type = $rhinterface_db->{"\U$thorn GROUP $group\E GTYPE"};
 
-    # Check consistency for arrays
+    # Check consistency of SIZE and (optional) GHOSTSIZE options for arrays
     if ($type eq 'ARRAY')
     {
-      $string = $rhinterface_db->{"\U$thorn GROUP $group\E SIZE"};
-      &CheckArraySizes($string,$thorn,$rhparameter_db,$rhinterface_db,$group);
+      $size = $rhinterface_db->{"\U$thorn GROUP $group\E SIZE"};
+      &CheckArraySizes($size,$thorn,$rhparameter_db,$rhinterface_db,$group);
       $dim = $rhinterface_db->{"\U$thorn GROUP $group\E DIM"};
-      $numsize = split (',', $string);
+      $numsize = split (',', $size);
       if ($dim != $numsize)
       {
         if ($numsize == 0)
         {
-          $message = "Array sizes not provided for group $group in $thorn";
+          $message = "Array sizes not provided for group '$group' in '$thorn'";
         }
         else
         {
           $message = "Array dimension $dim doesn't match the $numsize ".
-                     "array sizes\n     (" .
-                     $rhinterface_db->{"\U$thorn GROUP $group\E SIZE"} .
-                     ") for $group in $thorn";
+                     "array sizes\n     ($size) for '$group' in '$thorn'";
         }
-        $hint = "Array sizes must be comma separated list of $dim constants or parameters";
+        $hint = "Array sizes must be comma separated list of $dim " .
+                "constants or parameters";
         &CST_error(0,$message,$hint,__LINE__,__FILE__);
+      }
+      $ghostsize = $rhinterface_db->{"\U$thorn GROUP $group\E GHOSTSIZE"};
+      if ($ghostsize)
+      {
+        &CheckArraySizes($ghostsize,$thorn,$rhparameter_db,$rhinterface_db,$group);
+        $numghostsize = split (',', $ghostsize);
+        if ($dim != $numghostsize)
+        {
+          if ($numghostsize == 0)
+          {
+            $message = "Array sizes not provided for group '$group' in '$thorn'";
+          }
+          else
+          {
+            $message = "Array dimension $dim doesn't match the $numghostsize ".
+                       "array ghossizes\n     ($size) for '$group' in '$thorn'";
+          }
+          $hint = "Array ghostsizes must be comma separated list of $dim " .
+                  "constants or parameters";
+          &CST_error(0,$message,$hint,__LINE__,__FILE__);
+        }
       }
     }
 
