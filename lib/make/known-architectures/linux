@@ -348,11 +348,13 @@ else
   # Set the appropriate dependency, warning, and debugging flags
   # Note that the defaults settings are for gcc/g++ and set by configure
   case `basename $CC` in
+    # GNU
     gcc | cc)
       : ${CFLAGS='-pipe'}
       : ${C_OPTIMISE_FLAGS='-O3'}
       CC_VERSION="`$CC -v 2>&1 | grep -i version | head -n1`"
       ;;
+    # Intel
     [ei]cc)
       if test "$OPTIMISE" = 'no'; then
         : ${CFLAGS='-O0 -restrict'}
@@ -365,8 +367,13 @@ else
         : ${C_OPTIMISE_FLAGS='-O3 -ip'}
       fi
       : ${C_DEPEND='$(CC) -M $(CPPFLAGS)'}
-      # switch on '-w2' to also display remarks
-      # : ${C_WARN_FLAGS='-w2'}
+      icc_version=`$CC -V 2>&1 | grep Version | sed 's/.*Version //' | cut -c1`
+      if test $icc_version -ge 8; then
+        c_warn_flags='-Wall -w1 -Wcheck'
+      else
+        c_warn_flags='-Wall -w1'
+      fi
+      : ${C_WARN_FLAGS="$c_warn_flags"}
       CC_VERSION="`$CC -V 2>&1 | grep -i version | head -n1`"
       ;;
     sgicc)
@@ -385,11 +392,13 @@ else
   esac
 
   case `basename $CXX` in
+    # GNU
     gcc | [gc]++)
       : ${CXXFLAGS='-pipe'}
       : ${CXX_OPTIMISE_FLAGS='-O3'}
       CXX_VERSION="`$CXX -v 2>&1 | grep -i version | head -n1`"
       ;;
+    # Intel
     [ei]cc | [ei]cpc)
       if test "$OPTIMISE" = 'no'; then
         : ${CXXFLAGS='-restrict -O0'}
@@ -404,11 +413,18 @@ else
         fi
         # Intel 8.1 and 9.0 have a bug when using anonymous namespaces
         # taking out '-ip' bypasses this optimization bug
-        icpc_version=`$CXX -V 2>&1 | grep Version | sed 's/.*Version //' | cut -c1-3`
-        if test "$icpc_version" != '8.1' -a "$icpc_version" != '9.0'; then
+        icpc_fullversion=`$CXX -V 2>&1 | grep Version | sed 's/.*Version //' | cut -c1-3`
+        if test "$icpc_fullversion" != '8.1' -a "$icpc_fullversion" != '9.0'; then
           CXX_OPTIMISE_FLAGS="$CXX_OPTIMISE_FLAGS -ip"
         fi
       fi
+      icpc_version=`$CXX -V 2>&1 | grep Version | sed 's/.*Version //' | cut -c1`
+      if test $icpc_version -ge 8; then
+        cxx_warn_flags='-Wall -w1 -Wcheck'
+      else
+        cxx_warn_flags='-Wall -w1'
+      fi
+      : ${CXX_WARN_FLAGS="$cxx_warn_flags"}
       : ${CXX_DEPEND='$(CXX) -M $(CPPFLAGS)'}
       CXX_VERSION="`$CXX -V 2>&1 | grep -i version | head -n1`"
       ;;
