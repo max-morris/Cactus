@@ -382,6 +382,15 @@ sub parse_param_ccl
             # Strip out double quotes enclosing a non-numeric parameter range
             $new_ranges =~ s/^"(.*)"$/$1/ if ($type !~ m:INT|REAL:);
 
+            # check integer parameter ranges
+            if ($type eq 'INT' && ! (
+                $new_ranges =~ /^[+-]?\d+$/ ||
+                $new_ranges =~ /^(\*|[(]?[+-]?\d+)?:(\*|[(]?[+-]?\d+)?(:\d+)?$/)) {
+              &CST_error(0, "Invalid range '$new_ranges' for integer " .
+                         "parameter '$variable' of thorn '$thorn'",
+                         '', __LINE__, __FILE__);
+            }
+
             $parameter_db{"\U$thorn $variable\E range $parameter_db{\"\U$thorn $variable\E ranges\"} range"} = $new_ranges;
 
             # Check description
@@ -423,6 +432,11 @@ sub parse_param_ccl
             $default =~ m:^(.*[^\s])\s*:;
             $default = $1;
 
+            if ($type eq 'INT' && $default !~ /^[+-]?\d+$/) {
+              &CST_error(0, "Default '$default' for integer parameter " .
+                         "'$variable' in thorn '$thorn' is not an integer",
+                         '', __LINE__, __FILE__);
+            }
             if ($type =~ m:INT|REAL: && $default =~ m:":)
             {
               &CST_error(0, "String default given for $type $variable in " .
