@@ -439,6 +439,11 @@ int Util_IntInRange(int inval, const char *range)
       /* No step given, so default to 1. */
       step = 1;
     }
+    if (step <= 0)
+    {
+      CCTK_Warn(1, __LINE__, __FILE__, "Flesh", "Invalid step");
+      step = 1;
+    }
 
     /* Finally work out if the range is closed at the upper end. */
     if(pmatch[5].rm_so != -1)
@@ -455,9 +460,12 @@ int Util_IntInRange(int inval, const char *range)
       end_closed = 1;
     }
 
+    /* Cast to unsigned int, because the subtraction (inval - start)
+       can overflow, and wrap-around is legal in C only for unsigned
+       types.  */
     if(inval >= start + !start_closed &&
        inval <= end   - !end_closed   &&
-       ! ((inval-start) % step))
+       ! (((unsigned int)inval-(unsigned int)start) % (unsigned int)step))
     {
       retval = 1;
     }
