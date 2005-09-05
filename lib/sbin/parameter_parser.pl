@@ -384,6 +384,7 @@ sub parse_param_ccl
 
             # check integer parameter ranges
             if ($type eq 'INT' && ! (
+                $new_ranges eq '*' ||
                 $new_ranges =~ /^[+-]?\d+$/ ||
                 $new_ranges =~ /^(\*|[(]?[+-]?\d+)?:(\*|[(]?[+-]?\d+)?(:\d+)?$/)) {
               &CST_error(0, "Invalid range '$new_ranges' for integer " .
