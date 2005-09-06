@@ -386,7 +386,7 @@ sub parse_param_ccl
             if ($type eq 'INT' && ! (
                 $new_ranges eq '*' ||
                 $new_ranges =~ /^[+-]?\d+$/ ||
-                $new_ranges =~ /^(\*|[(]?[+-]?\d+)?:(\*|[(]?[+-]?\d+)?(:\d+)?$/)) {
+                $new_ranges =~ /^(\*|\(?[+-]?\d+)?:(\*|[+-]?\d+\)?)?(:\d+)?$/)) {
               &CST_error(0, "Invalid range '$new_ranges' for integer " .
                          "parameter '$variable' of thorn '$thorn'",
                          '', __LINE__, __FILE__);
