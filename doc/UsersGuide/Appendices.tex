@@ -618,32 +618,54 @@ on this line.)
 \label{subsec:Appendix.param.specification_items}
 
 \begin{alltt}
-[EXTENDS|USES] <\var{parameter_type}> <\var{parameter name}>[[<\var{integer}>]] "<\var{parameter description}>" 
+[EXTENDS|USES] <\var{parameter type}> <\var{parameter name}>[[<\var{integer}>]] "<\var{parameter description}>" 
 [AS <\var{alias}>] [STEERABLE=<NEVER|ALWAYS|RECOVER>] 
-[ACCUMULATOR=<\var{expression}>] [ACCUMULATOR-BASE=<\var{parameter-name}>]
+[ACCUMULATOR=<\var{expression}>] [ACCUMULATOR-BASE=<\var{parameter name}>]
 \{
-  <\var{PARAMETER_VALUES}>
+  <\var{PARAMETER VALUES}>
 \} <\var{default value}>
 \end{alltt}
-where the options {\t AS}, {\t STEERABLE}, etc. following {\t <\var{parameter\_description}>}
+where the options {\t AS}, {\t STEERABLE}, etc. following {\t <\var{parameter description}>}
 must all appear on one line.
   Note that the beginning brace ({\t\{}) must
-sit on a line by itself; the ending brace ({\t\}}) must be preceded by a
-carriage return.
+sit on a line by itself; the ending brace ({\t\}}) must be at the
+beginning of a line followed by \var{<default value>} on that same line.
 \begin{itemize}
 \item
-  Allowed {\t \var{parameter\_type}}s are
+  Allowed {\t \var{parameter type}}s are
   \begin{Lentry}
   \item[{\t INT}]
-    The specification of \var{parameter\_value}s takes
-    the form of any number of comma-separated blocks of the form:
+    The specification of \var{parameter value}s takes the form of one
+    or more lines, each of the form
     \begin{alltt}
-      [<\var{low-range}>][:[<\var{high-range}>][:[<\var{step}>]]][::"<\var{range description}>"]
+      \var{<range description>} [::"\var{<comment describing this range>}"]
     \end{alltt}
-    where an empty field, or a {\t *} in the place of \var{low-range}
-    or \var{high-range} indicates $-\infty$ and $\infty$
-    respectively. The default value for \var{step} is 1. A number by
-    itself denotes that this number is the only acceptable value.
+    Here a \var{<range description>} specifies a set of integers,
+    and has one of the following forms:
+    \begin{alltt}
+      *                           \# means any integer
+      \var{<integer>}                   \# means only \var{<integer>}
+      \var{<lower bound>}:\var{<upper bound>} \# means all integers in the range
+                                  \# from \var{<lower bound>} to \var{<upper bound>}
+      \var{<lower bound>}:\var{<upper bound>}:\var{<positive integer>}
+                                  \# means all integers in the range
+                                  \# from \var{<lower bound>} to \var{<upper bound>}
+                                  \# in steps of \var{<positive integer>}
+    \end{alltt}
+    where \var{<lower bound>} has one of the forms
+    \begin{alltt}
+      \var{<empty field>}   \# means no lower limit
+      *               \# means no lower limit
+      \var{<integer>}       \# means a closed interval starting at \var{<integer>}
+      (\var{<integer>}      \# means an open interval starting at \var{<integer>}
+    \end{alltt}
+    and \var{<upper bound>} has one of the forms
+    \begin{alltt}
+      \var{<empty field>}   \# means no upper limit
+      *               \# means no upper limit
+      \var{<integer>}       \# means a closed interval ending at \var{<integer>}
+      \var{<integer>})      \# means an open interval ending at \var{<integer>}
+    \end{alltt}
 
   \item[{\t REAL}]
     The range specification is the same as integers, except that here,
@@ -671,7 +693,7 @@ carriage return.
     or the string value is empty or contains spaces.
 
   \item[{\t BOOLEAN}]
-    No \var{PARAMETER\_VALUES} should be specified for a boolean
+    No \var{PARAMETER VALUES} should be specified for a boolean
     parameter. The default value for a boolean can be
     \begin{itemize}
     \item True: {\t 1}, {\t yes}, {\t y}, {\t t}, {\t true}
