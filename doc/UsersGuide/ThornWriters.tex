@@ -1704,7 +1704,7 @@ For example, if a routine in \texttt{MyRoutine.F90} uses a module in {\tt
 MyModule.F90}, then add the line:
 %
 \begin{verbatim}
-$(SYS_OBJD)/MyRoutine.F90.o:         $(SYS_OBJD)/MyModule.F90.o
+MyRoutine.F90.o:         MyModule.F90.o
 \end{verbatim}
 
 \subsubsection{The \texttt{MOD} function}
