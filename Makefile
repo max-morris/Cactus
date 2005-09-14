@@ -19,7 +19,7 @@
 #
 #
 #   @enddesc
-#   @version $Id: Makefile,v 1.169 2005-05-27 14:13:48 schnetter Exp $
+#   @version $Id: Makefile,v 1.170 2005-09-14 15:02:17 tradke Exp $
 # @@*/
 
 ##################################################################################
@@ -706,7 +706,7 @@ $(addsuffix -config,$(CONFIGURATIONS)): int_version
 	  fi ; \
 	  if test -n "$(THORNS)" ; \
           then \
-            echo $(THORNS) >> $(CONFIGS_DIR)/$@/ThornList ; \
+            echo $(THORNS) >> $(CONFIGS_DIR)/$(@:%-config=%)/ThornList ; \
           fi ; \
 	  echo $(DIVIDER) ; \
 	  if test "x$(PROMPT)" = "xno" ; then \
@@ -747,7 +747,7 @@ endif
 	      cp $(THORNLIST_DIR)/$(THORNLIST) $(CONFIGS_DIR)/$(@:%-config=%)/ThornList;\
 	    fi ;\
 	    if test -n "$(THORNS)" ; then \
-	      echo $(THORNS) >> $(CONFIGS_DIR)/$@/ThornList ; \
+	      echo $(THORNS) >> $(CONFIGS_DIR)/$(@:%-config=%)/ThornList ; \
 	    fi ; \
 	    echo $(DIVIDER)   ;  \
 	    if test "x$(PROMPT)" = "xno" ; then \
