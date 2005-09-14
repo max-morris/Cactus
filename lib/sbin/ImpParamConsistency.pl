@@ -35,10 +35,7 @@ sub CheckImpParamConsistency
       # Check the other implementation exists.
       if($other_thorn =~ m:^\s*$:)
       {
-        print "$thorn SHARES from implementation $friend - no such implementation\n";
-        
-        $CST_errors++;
-        
+        &CST_error(0,"Thorn '$thorn' SHARES from non-existing implementation '$friend'",'',__LINE__,__FILE__);
         next;
       }
 
