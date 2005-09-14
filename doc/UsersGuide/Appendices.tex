@@ -418,14 +418,25 @@ where
 \item{} Inheriting from another implementation makes all that implementation's
         public variables available to your thorn. At least one thorn
         providing any inherited implementation must be present at compile time.
-        A thorn cannot inherit from itself. Inheritance is transitive, but not commutative.
+        A thorn cannot inherit from itself. Inheritance is transitive
+	(if $A$ inherits from $B$, and $B$ inherits from $C$, then
+	$A$ also implicitly inherits from $C$),
+	but not commutative.
+% FIXME: Jonathan and Thomas aren't sure if this is true!
+%	(if $A$ inherits from $B$, then $B$ can't inherit from $A$)
 \item{} Being a friend of another implementation makes all that
-        implementation's
-        protected variables available to your thorn. At least one thorn
-        providing an implementation for each friend must be present at
-        compile time. A thorn cannot be its own friend. Friendship is
-        associative and commutative. Note that your thorn is also a friend
-        of all your thorn's friends' friends.
+        implementation's protected variables available to your thorn.
+	At least one thorn providing an implementation for each friend
+	must be present at compile time.
+	A thorn cannot be its own friend.
+% FIXME: what does "associative" mean here???
+	Friendship is associative,
+	commutative
+% FIXME: Jonathan and Thomas aren't sure whether B *must* be declared this way
+%        or is *implicitly* declared this way
+%	(if $A$ is a friend of $B$, then $B$ is also a friend of $A$),
+	and transitive (i.e.~if $A$ is a friend of $B$
+	and $B$ is a friend of $C$, then $A$ is implicitly a friend of $C$).
 \end{itemize}
 
 \subsection{Include files}
