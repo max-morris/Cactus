@@ -570,10 +570,29 @@ of an {\tt ARRAY}.
         that direction is on the {\tt M}inus face, {\tt C}entre, or {\tt P}lus face
         of the cell in that dimension.
 \item{} {\t TAGS} defines an optional string which is used to create a
-	set of key-value pairs associated with the group.  The keys are case
+	set of key-value pairs associated with the group. The keys are case
 	independent.  The string (which must be deliminated by single or
 	double quotes) is interpreted by the function
-	Util\_TableSetFromString(), which is described in the ReferenceManual.
+	{\t Util\_TableSetFromString()}, which is described in the
+        ReferenceManual.\\
+        Currently the CST parser and the flesh do not evaluate any information
+        passed in an optional {\t TAGS} string. Thorns may do so by
+        querying the key/value table information for a group by using
+        {\t CCTK\_GroupTagsTable()} and the
+        appropriate {\t Util\_TableGet*()} utility functions
+        (see the ReferenceManual for detailed descriptions).\\
+        Example {\t TAGS} information include:
+        \begin{itemize}
+          \item {\t Checkpoint="yes|no"}\\
+            as used by I/O thorns which implement checkpointing/recovery
+            functionality to specify whether a group needs be saved
+            ({\t "yes"}, this is the default) or can be omitted ({\t "no"})
+            in the checkpoint
+            because it will be recalculated during recovery anyway.
+          \item {\t Prolongation="None|Copy|Lagrange|TVD|ENO"}\\
+            as used by a mesh refinement driver thorn (such as Carpet)
+            to specify the prolongation type for a group
+        \end{itemize}
 \item{} The (optional) block following the group declaration line
 contains a list of variables contained in the group. All variables in
 a group have the same data type, variable type, dimension and

@@ -538,7 +538,8 @@ state. Such information would include
 %
 \begin{itemize}
   \item the current settings of all parameters
-  \item the contents of all grid variables which have global storage assigned\\
+  \item the contents of all grid variables which have global storage assigned
+    and are not tagged with {\tt checkpoint="no"} (see also section \ref{subsec:Appendix.interface-variables} on page \pageref{subsec:Appendix.interface-variables} for a list of possible tags)\\
     Note that grid variables should be synced before writing them to disk.
   \item other relevant information such as the current iteration number and
     physical time, the number of processors, etc.
