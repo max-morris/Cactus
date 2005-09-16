@@ -19,7 +19,7 @@
 #
 #
 #   @enddesc
-#   @version $Id: Makefile,v 1.170 2005-09-14 15:02:17 tradke Exp $
+#   @version $Id: Makefile,v 1.171 2005-09-16 13:54:19 tradke Exp $
 # @@*/
 
 ##################################################################################
@@ -349,7 +349,7 @@ else
 	@echo "  run $(MAKE) followed by the name of a configuration."
 	@echo $(DIVIDER)
 	@echo There is a range of options available to act on a configuration.
-	@echo These are activated by $(MAKE) \<conf-name\>-\<option\>
+	@echo These are activated by '$(MAKE) \<conf-name\>-\<option\>'
 	@echo Valid options are
 	@echo "  -build         : build individual thorns of a configuration."
 	@echo "  -clean         : clean a configuration"
@@ -376,10 +376,14 @@ else
 	@echo "  -examples      : copy thorn parameter files to examples directory."
 endif
 	@echo $(DIVIDER)
-	@echo There are options available to act on thorns.
-	@echo These are activated by $(MAKE) \<thorn-name\>-\<option\>
+	@echo There are options available to act on thorns or arrangements.
+	@echo These are activated by \'$(MAKE) \<thorn-name\>-\<option\>\' or
+	@echo   \'$(MAKE) \<arrangement-name\>-\<option\>\' respectively.
 	@echo Valid options are
-	@echo "  -ThornDoc      : produce the documentation for the thorn."
+	@echo "  -ThornDoc        - produce the documentation for the thorn"
+	@echo "                     in doc/ThornDoc/<arrangement>/<thorn-name>/."
+	@echo "  -ArrangementDoc  - produce documentation for the arrangement"
+	@echo "                     in doc/ArrangementDoc/<arrangement-name>/."
 	@echo $(DIVIDER)
 	@echo $(MAKE) also knows the following targets
 	@echo
@@ -1150,6 +1154,10 @@ endif
 ThornDoc:
 	@echo "$(DIVIDER)"
 	@lib/sbin/ThornDoc
+	@echo $(DIVIDER)
+%-ArrangementDoc:
+	@echo "$(DIVIDER)"
+	@lib/sbin/ArrangementDoc $(@:%-ArrangementDoc=%)
 	@echo $(DIVIDER)
 ArrangementDoc:
 	@echo "$(DIVIDER)"
