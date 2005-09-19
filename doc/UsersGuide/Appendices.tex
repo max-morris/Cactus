@@ -581,18 +581,11 @@ of an {\tt ARRAY}.
         {\t CCTK\_GroupTagsTable()} and the
         appropriate {\t Util\_TableGet*()} utility functions
         (see the ReferenceManual for detailed descriptions).\\
-        Example {\t TAGS} information include:
-        \begin{itemize}
-          \item {\t Checkpoint="yes|no"}\\
-            as used by I/O thorns which implement checkpointing/recovery
-            functionality to specify whether a group needs be saved
-            ({\t "yes"}, this is the default) or can be omitted ({\t "no"})
-            in the checkpoint
-            because it will be recalculated during recovery anyway.
-          \item {\t Prolongation="None|Copy|Lagrange|TVD|ENO"}\\
-            as used by a mesh refinement driver thorn (such as Carpet)
-            to specify the prolongation type for a group
-        \end{itemize}
+        For a list of currently supported {\t TAGS} key-value table information
+        please refer to the corresponding chapter in the documentation of the
+        \verb|CactusDoc| arrangement (section \ref{sec:OtherGmakeTargetsDoc} on
+        page \pageref{sec:OtherGmakeTargetsDoc} explains how to build this
+        documentation).
 \item{} The (optional) block following the group declaration line
 contains a list of variables contained in the group. All variables in
 a group have the same data type, variable type, dimension and
