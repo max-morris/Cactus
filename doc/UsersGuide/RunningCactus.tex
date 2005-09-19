@@ -903,7 +903,7 @@ is to do. The command {\tt gmake help} lists all {\tt gmake} targets:
 
 \item [{\tt gmake <config>-configinfo}] displays the options used to configure a configuration ({\tt cat configs/<config>/config-info}).
 
-\item [{\tt gmake <config>-cvsupdate}] updates the Flesh and thorns for a configuration using CVS
+\item[{\tt gmake <config>-cvsupdate}] updates the Flesh and this configuration's thorns from the CVS repositories.
 
 \item [{\tt gmake <config>-delete}] deletes a configuration ({\tt rm -r configs/<config>}).
 
@@ -925,22 +925,13 @@ by configure and the {\tt ThornList} file remain.
  each thorn in the configuration. See section \ref{sec:testing} for information
  about the test suite mechanism.
 
+\item[{\tt gmake <config>-ThornGuide}] builds documentation for the thorns
+in this configuration
+  (see section \ref{sec:OtherGmakeTargetsDoc} on page \pageref{sec:OtherGmakeTargetsDoc} for other targets to build documentation for thorns).
+
 \item [{\tt gmake <config>-thornlist}] regenerates the {\tt ThornList} for a configuration.
 
 \item [{\tt gmake <config>-utils [UTILS$=$<list>]}] builds all utility programs provided by the thorns of a configuration. Individual utilities can be selected by giving their names in the {\tt UTILS} variable.
-
-\item[{\tt gmake <config>-ThornGuide}] builds documentation for the thorns
-in this configuration.
-
-\item[{\tt gmake <thorn>-ThornDoc}] builds the documentation for the thorn.
-
-\item[{\tt gmake ThornDoc}] builds the documentation for all thorns.
-
-\item[{\tt gmake ArrangementDoc}] builds the documentation for all arrangements.
-
-\item[{\tt gmake <config>-configinfo}] displays the options used to build the configuration.
-
-\item[{\tt gmake <config>-cvsupdate}] updates the Flesh and this configuration's thorns from the CVS repositories.
 
 \end{Lentry}
 
@@ -1033,6 +1024,9 @@ the Cactus root directory. % (usually \texttt{Cactus}).
 
 \item [{\tt gmake cvsupdate}] updates Flesh and all thorns from CVS repositories.
 
+\item [{\tt gmake configinfo}] prints configuration options for every
+configuration found in user's \texttt{configs} subdirectory.
+
 \item [{\tt gmake default}] creates a new configuration with a default name.
 
 \item [{\tt gmake distclean}] deletes your {\tt configs} directory and hence all your configurations.
@@ -1049,14 +1043,28 @@ the Cactus root directory. % (usually \texttt{Cactus}).
 \item [{\tt gmake tags}] creates a {\tt vi} style tags file. See section
   \ref{sec:Appendix.tags} for using tags within Cactus.
 
-\item [{\tt gmake UsersGuide}] runs LaTeX to produce a copy of the Users' Guide.
+\end{Lentry}
 
-\item [{\tt gmake ThornGuide}] runs LaTeX to produce a copy of the Thorn Guide, for all the thorns in the arrangements directory.
+{\bf Targets to generate Cactus documentation:}
+\label{sec:OtherGmakeTargetsDoc}
+
+\begin{Lentry}
+
+\item[{\tt gmake <arrangement>-ArrangementDoc}] builds the documentation for the arrangement.
+
+\item[{\tt gmake ArrangementDoc}] builds the documentation for all arrangements.
 
 \item [{\tt gmake MaintGuide}] runs LaTeX to produce a copy of the Maintainers' Guide.
 
-\item [{\tt gmake configinfo}] prints configuration options for every
-configuration found in user's \texttt{configs} subdirectory.
+\item [{\tt gmake ReferenceManual}] runs LaTeX to produce a copy of the Reference Manual.
+
+\item[{\tt gmake <thorn>-ThornDoc}] builds the documentation for the thorn.
+
+\item[{\tt gmake ThornDoc}] builds the documentation for all thorns.
+
+\item [{\tt gmake ThornGuide}] runs LaTeX to produce a copy of the Thorn Guide, for all the thorns in the arrangements directory.
+
+\item [{\tt gmake UsersGuide}] runs LaTeX to produce a copy of the Users' Guide.
 
 \end{Lentry}
 
