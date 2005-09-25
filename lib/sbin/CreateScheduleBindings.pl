@@ -824,7 +824,8 @@ sub ScheduleValidateTimeLevels
                    "This group has more than one timelevel, so a timelevel specifier is mandatory.\n" .
                    "You may specify a maximum of $allowed_timelevels timelevels\n" .
                    "e.g. try $group\[$allowed_timelevels]\n" .
-                   "Note that you should only activate the number of timelevels necesary for your scheme, which may be less than this maximum."
+                   "Note that you should only activate the number of timelevels necessary\n" .
+                   "for your scheme, which may be less than this maximum."
                  ,"",__LINE__,__FILE__);
       $return_code++;
     }
