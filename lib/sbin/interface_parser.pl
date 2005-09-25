@@ -579,7 +579,7 @@ sub check_implementation_consistency
         }
         else
         {
-          $attributes{"GHOSTSIZE"} = $interface_data{"\U$thorn GROUP $group\E GHOSTSIZE"};
+          $attributes{"DISTRIB"} = $interface_data{"\U$thorn GROUP $group\E DISTRIB"};
         }
 
         # Check the dimensions are consistant
