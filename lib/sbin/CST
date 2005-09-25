@@ -6,7 +6,7 @@
 #  @desc
 #             Parses the the configuration files for thorns.
 #  @enddesc
-#  @version   $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.75 2005-09-25 20:04:28 schnetter Exp $
+#  @version   $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.76 2005-09-25 20:05:31 schnetter Exp $
 #@@*/
 
 # Global parameter to track the number of errors from the CST
@@ -495,7 +495,7 @@ sub CreateThornsHeaders
     $thorns{$thorn} =~ m:.*/(.*)/(.*):;
 
     $header3 .= "#ifdef THORN_IS_$thorn\n" .
-                "#define CCTK_THORN   $2\n" .
+                "#define CCTK_THORN $2\n" .
                 "#define CCTK_THORNSTRING \"$2\"\n" .
                 "#define CCTK_ARRANGEMENT $1\n" .
                 "#define CCTK_ARRANGEMENTSTRING \"$1\"\n" .
