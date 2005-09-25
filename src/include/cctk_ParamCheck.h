@@ -11,7 +11,7 @@
 #ifndef _CCTK_PARAMCHECK_H_
 #define _CCTK_PARAMCHECK_H_ 1
 
-/* These are just here for speed at the mo.  Don't modify
+/* These are just here for speed at the moment.  Don't modify
  * directly outside the flesh.
  */
 
@@ -19,7 +19,7 @@ extern int cctki_paramchecking;
 extern int cctki_paramcheck_nprocs;
 
 /* Define these as macros for the moment, but give them an
- * interface like a function so they can can be chenged 
+ * interface like a function so they can can be changed 
  * to functions later if necessary.
  */
 
