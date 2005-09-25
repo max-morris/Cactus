@@ -6,7 +6,7 @@
 #  @desc
 #             Parses the the configuration files for thorns.
 #  @enddesc
-#  @version   $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.74 2005-08-16 17:25:52 yye00 Exp $
+#  @version   $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.75 2005-09-25 20:04:28 schnetter Exp $
 #@@*/
 
 # Global parameter to track the number of errors from the CST
@@ -230,8 +230,8 @@ sub CreateThornList
       {
         &CST_error(0, "Thorn name $thorn_name is not valid",
                    'Thorn names must begin with a letter, can only contain ' .
-                   'letters, numbers and underscores, and must contain 27 ' .
-                   'or less', __LINE__, __FILE__);
+                   'letters, numbers and underscores, and must contain at most 27 ' .
+                   'characters', __LINE__, __FILE__);
       }
 
       if( -d "$cctk_home/arrangements/$thorn")
