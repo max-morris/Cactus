@@ -19,7 +19,7 @@
 #
 #
 #   @enddesc
-#   @version $Id: Makefile,v 1.171 2005-09-16 13:54:19 tradke Exp $
+#   @version $Id: Makefile,v 1.172 2005-09-26 00:09:04 schnetter Exp $
 # @@*/
 
 ##################################################################################
@@ -406,6 +406,7 @@ endif
 	@echo "  ThornDoc         - create documentation for all thorns in doc/ThornDoc."
 	@echo "  ArrangementDoc   - create documentation for all arrangements"
 	@echo "                     in doc/ArrangementDoc."
+	@echo "  AllDoc           - build all documentation."
 	@echo "  <anything else>  - prompt to create a configuration with that name."
 	@echo $(DIVIDER)
 
@@ -992,6 +993,10 @@ endif
 ###############################################################################
 #                      Documentation targets
 ###############################################################################
+
+# Make all documentation
+.PHONY: AllDoc
+AllDoc: UsersGuide ReferenceManual MaintGuide ThornDoc ArrangementDoc
 
 # Make the Users Guide
 
