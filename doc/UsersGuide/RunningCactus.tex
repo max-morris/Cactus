@@ -447,6 +447,14 @@ created by Cactus.  The only options available are {\tt yes} and {\tt
 no}, the default is {\tt yes}.  Set this to {\tt no} if your compiler
 reports error messages about unrecognised \verb|#| directives.
 
+\item [{\tt DISABLE\_REAL16}] Disable support for the data type {\tt
+    CCTK\_REAL16}.  The only options available are {\tt yes} and {\tt
+    no}, the default is {\tt no}.  Cactus autodetects this data type
+  only for C.  If the C compiler supports it, but the Fortran compiler
+  does not, it may be necessary to disable {\tt CCTK\_REAL16}
+  altogether, since Cactus assumes that data types are fully supported
+  if they exist.
+
 \item [{\tt DEBUG}]
 * Specifies what type of debug mode should be used,
 the default is no debugging.
