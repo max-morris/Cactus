@@ -390,20 +390,20 @@ sub GetThornArguments
         for($dim =0; $dim < $rhinterface_db->{"\U$thorn GROUP $group DIM\E"}; $dim++)
         {
 # FIXME: quick hack to shorten argument names
-#          $type .= "${sep}cctkv$group$dim";
-          $type .= "${sep}X$group$dim";
+#          $type .= "${sep}cctkv$dim$group";
+          $type .= "${sep}X$dim$group";
           $sep = ',';
           if($block eq 'PRIVATE')
           {
 # FIXME: quick hack to shorten argument names
-#            $arguments{"cctkv$group$dim"} = "(STORAGESIZE($thorn\::$group, $dim))";
-            $arguments{"X$group$dim"} = "(STORAGESIZE($thorn\::$group, $dim))";
+#            $arguments{"cctkv$dim$group"} = "(STORAGESIZE($thorn\::$group, $dim))";
+            $arguments{"X$dim$group"} = "(STORAGESIZE($thorn\::$group, $dim))";
           }
           else
           {
 # FIXME: quick hack to shorten argument names
-#            $arguments{"cctkv$group$dim"} = "(STORAGESIZE($imp\::$group, $dim))";
-            $arguments{"X$group$dim"} = "(STORAGESIZE($imp\::$group, $dim))";
+#            $arguments{"cctkv$dim$group"} = "(STORAGESIZE($imp\::$group, $dim))";
+            $arguments{"X$dim$group"} = "(STORAGESIZE($imp\::$group, $dim))";
           }
         }
         if(defined($vararraysize) && $compactgroup == 0)
