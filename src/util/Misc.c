@@ -1151,22 +1151,31 @@ int CCTK_RegexMatch(const char *string,
   int status;
   regex_t re;
 
-  if (regcomp(&re, pattern, REG_EXTENDED) == 0)
+  /* BSD says: an empty string is not a legal regular expression.
+     Handle this case specially.  */
+  if (strcmp(pattern, "") == 0)
   {
-    status = regexec(&re, string, (size_t)nmatch, pmatch, 0);
-    regfree(&re);
-    if (status != 0)
-    {
-      retval = 0;      /* report error */
-    }
-    else
-    {
-      retval = 1;
-    }
+    retval = 1;			/* report success */
   }
   else
   {
-    retval = 0;
+    if (regcomp(&re, pattern, REG_EXTENDED) == 0)
+    {
+      status = regexec(&re, string, (size_t)nmatch, pmatch, 0);
+      regfree(&re);
+      if (status != 0)
+      {
+        retval = 0;      /* report error */
+      }
+      else
+      {
+        retval = 1;
+      }
+    }
+    else
+    {
+      retval = 0;
+    }
   }
 
   return retval;

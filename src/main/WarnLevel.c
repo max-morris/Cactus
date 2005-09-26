@@ -389,7 +389,8 @@ int CCTK_VWarn (int level,
                 const char *format,
                 ...)
 {
-  const CCTK_INT *cctk_full_warnings, *highlight_warning_messages;
+  const CCTK_INT *cctk_full_warnings_ptr, *highlight_warning_messages_ptr;
+  CCTK_INT cctk_full_warnings, highlight_warning_messages;
   int param_type;
   int myproc;
   va_list ap, aq;
@@ -399,10 +400,17 @@ int CCTK_VWarn (int level,
 
     myproc = CCTK_MyProc(NULL);
 
-    cctk_full_warnings =
+    cctk_full_warnings_ptr =
       CCTK_ParameterGet ("cctk_full_warnings", "Cactus", &param_type);
-    highlight_warning_messages =
+    // Default to yes
+    cctk_full_warnings =
+      cctk_full_warnings_ptr && *cctk_full_warnings_ptr;
+
+    highlight_warning_messages_ptr =
       CCTK_ParameterGet ("highlight_warning_messages", "Cactus", &param_type);
+    // Default to no
+    highlight_warning_messages =
+      ! highlight_warning_messages_ptr || *highlight_warning_messages_ptr;
 
     va_start (ap, format);
 #ifdef HAVE_VA_COPY
@@ -415,7 +423,7 @@ int CCTK_VWarn (int level,
     if (level <= warning_level)
     {
 
-      if (*highlight_warning_messages)
+      if (highlight_warning_messages)
       {
         fprintf (stderr, BOLD_ON);
       }
@@ -433,7 +441,7 @@ int CCTK_VWarn (int level,
                          level, myproc, thorn);
       }
 
-      if (*highlight_warning_messages)
+      if (highlight_warning_messages)
       {
         fprintf (stderr, BOLD_OFF);
       }
@@ -448,7 +456,7 @@ int CCTK_VWarn (int level,
     if (level <= logging_level || (myproc && level <= warning_level))
     {
 
-      if (*highlight_warning_messages)
+      if (highlight_warning_messages)
       {
         fprintf (stdout, BOLD_ON);
       }
@@ -466,7 +474,7 @@ int CCTK_VWarn (int level,
                          level, myproc, thorn);
       }
 
-      if (*highlight_warning_messages)
+      if (highlight_warning_messages)
       {
         fprintf (stdout, BOLD_OFF);
       }
@@ -537,22 +545,31 @@ int CCTK_ParameterLevel (void)
 @@*/
 int CCTK_ParamWarn (const char *thorn, const char *message)
 {
-  const CCTK_INT *cctk_strong_param_check, *highlight_warning_messages;
+  const CCTK_INT *cctk_strong_param_check_ptr, *highlight_warning_messages_ptr;
+  CCTK_INT cctk_strong_param_check, highlight_warning_messages;
   int param_type;
 
-  cctk_strong_param_check = CCTK_ParameterGet ("cctk_strong_param_check",
-                                               "Cactus", &param_type);
-  highlight_warning_messages = CCTK_ParameterGet ("highlight_warning_messages",
-                                                  "Cactus", &param_type);
-  if (*highlight_warning_messages)
+  cctk_strong_param_check_ptr =
+    CCTK_ParameterGet ("cctk_strong_param_check", "Cactus", &param_type);
+  // Default to yes
+  cctk_strong_param_check =
+    cctk_strong_param_check_ptr && *cctk_strong_param_check_ptr;
+
+  highlight_warning_messages_ptr =
+    CCTK_ParameterGet ("highlight_warning_messages", "Cactus", &param_type);
+  // Default to no
+  highlight_warning_messages =
+    ! highlight_warning_messages_ptr || *highlight_warning_messages_ptr;
+
+  if (highlight_warning_messages)
   {
     fprintf (stderr, BOLD_ON "PARAM %s (%s):" BOLD_OFF " %s\n",
-             *cctk_strong_param_check ? "ERROR" : "WARNING", thorn, message);
+             cctk_strong_param_check ? "ERROR" : "WARNING", thorn, message);
   }
   else
   {
     fprintf (stderr, "PARAM %s (%s): %s\n",
-             *cctk_strong_param_check ? "ERROR" : "WARNING", thorn, message);
+             cctk_strong_param_check ? "ERROR" : "WARNING", thorn, message);
   }
   param_errors++;
 
@@ -605,22 +622,31 @@ int CCTK_VParamWarn (const char *thorn,
                      ...)
 {
   va_list ap;
-  const CCTK_INT *cctk_strong_param_check, *highlight_warning_messages;
+  const CCTK_INT *cctk_strong_param_check_ptr, *highlight_warning_messages_ptr;
+  CCTK_INT cctk_strong_param_check, highlight_warning_messages;
   int param_type;
 
-  cctk_strong_param_check = CCTK_ParameterGet ("cctk_strong_param_check",
-                                               "Cactus", &param_type);
-  highlight_warning_messages = CCTK_ParameterGet ("highlight_warning_messages",
-                                                  "Cactus", &param_type);
-  if (*highlight_warning_messages)
+  cctk_strong_param_check_ptr =
+    CCTK_ParameterGet ("cctk_strong_param_check", "Cactus", &param_type);
+  // Default to yes
+  cctk_strong_param_check =
+    cctk_strong_param_check_ptr && *cctk_strong_param_check_ptr;
+
+  highlight_warning_messages_ptr =
+    CCTK_ParameterGet ("highlight_warning_messages", "Cactus", &param_type);
+  // Default to no
+  highlight_warning_messages =
+    ! highlight_warning_messages_ptr || *highlight_warning_messages_ptr;
+
+  if (highlight_warning_messages)
   {
     fprintf (stderr, BOLD_ON "PARAM %s (%s)" BOLD_OFF ": ",
-             *cctk_strong_param_check ? "ERROR" : "WARNING", thorn);
+             cctk_strong_param_check ? "ERROR" : "WARNING", thorn);
   }
   else
   {
     fprintf (stderr, "PARAM %s (%s): ",
-             *cctk_strong_param_check ? "ERROR" : "WARNING", thorn);
+             cctk_strong_param_check ? "ERROR" : "WARNING", thorn);
   }
 
   va_start (ap, format);
@@ -877,14 +903,19 @@ int CCTKi_SetErrorLevel (int level)
 void CCTKi_FinaliseParamWarn (void)
 {
   int param_type;
-  const CCTK_INT *cctk_strong_param_check;
+  const CCTK_INT *cctk_strong_param_check_ptr;
+  CCTK_INT cctk_strong_param_check;
 
 
   if (param_errors)
   {
-    cctk_strong_param_check = CCTK_ParameterGet ("cctk_strong_param_check",
-                                                 "Cactus", &param_type);
-    if (*cctk_strong_param_check)
+    cctk_strong_param_check_ptr =
+      CCTK_ParameterGet ("cctk_strong_param_check", "Cactus", &param_type);
+    // Default to yes
+    cctk_strong_param_check =
+      cctk_strong_param_check_ptr && *cctk_strong_param_check_ptr;
+
+    if (cctk_strong_param_check)
     {
       fprintf (stderr, "\nFailed parameter check (%d errors)\n\n", param_errors);
       CCTK_Abort (NULL, 99);
