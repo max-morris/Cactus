@@ -60,7 +60,7 @@ if (! -d "$config" && ! -l "$config")
 {
   print "Creating new configuration $config.\n";
 
-  for $dir ("$config", "$config/build", "$config/lib", "$config/config-data")
+  for $dir ("$config", "$config/build", "$config/lib", "$config/scratch", "$config/config-data")
   {
     mkdir("$dir",0755) || die "Internal error - couldn't create $dir";
   }
