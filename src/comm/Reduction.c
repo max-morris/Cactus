@@ -63,8 +63,6 @@ void CCTK_FCALL CCTK_FNAME(CCTK_ReduceArray)
 /* new local array reduction API */
 void CCTK_FCALL CCTK_FNAME(CCTK_LocalArrayReductionHandle)
      (int *handle, ONE_FORTSTRING_ARG);
-void CCTK_FCALL CCTK_FNAME(CCTK_LocalArrayReductionParameterHandle)
-     (int *parameter_handle, ONE_FORTSTRING_ARG);
 void CCTK_FCALL CCTK_FNAME(CCTK_ReduceLocalArrays)
      (int *fortran_return,
       int N_dims, int *operation_handle, 
@@ -77,8 +75,6 @@ void CCTK_FCALL CCTK_FNAME(CCTK_ReduceLocalArrays)
       void *const output_values[]);
 
 /* new gridarray reduction API */
-void CCTK_FCALL CCTK_FNAME(CCTK_GridArrayReductionParameterHandle)
-     (int *parameter_handle, ONE_FORTSTRING_ARG);
 void CCTK_FCALL CCTK_FNAME(CCTK_ReduceGridArrays)
      (int *fortranreturn,
       const cGH **GH,
