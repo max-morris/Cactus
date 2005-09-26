@@ -22,7 +22,7 @@ $version = "Cactus CPP 1.0";
 # Symbol table
 %defines = ();
 
-#Initial symbols
+# Initial symbols
 
 &Define("__FILE__", "\"replace-me\"", "<main>",__LINE__);
 &Define("__LINE__", "\"replace-me\"", "<main>",__LINE__);
@@ -371,7 +371,11 @@ sub ParseFile
       next;
     }
 
-    if($line=~m/^\s*#\s*define\s+([a-zA-Z_][a-zA-Z0-9_]*(?:\(.*?\))?)(\s+(.*))?/)
+    # Remove comments
+    my $linewithcomments = $line;
+    $line =~ s,\(__CCTK_COMMENT_PLACEHOLDER__\),,g;
+
+    if($linewithcomments=~m/^\s*#\s*define\s+([a-zA-Z_][a-zA-Z0-9_]*(?:\(.*?\))?)(\s+(.*))?/)
     {
       # Define a macro
       &Define($1,$3,$filename, $linenumber) if($active);
@@ -385,7 +389,7 @@ sub ParseFile
     }
     elsif($line =~ m/^\s*#\s*if(.+)/)
     {
-      #Deal with a #if clause - do it recursively
+      # Deal with a #if clause - do it recursively
       my $newactive;
 
       # Parse the if statement and see if the first clause is active
@@ -395,7 +399,7 @@ sub ParseFile
       }
       else
       {
-        #If not active before, still inactive
+        # If not active before, still inactive
         $newactive = 0;
       }
       my $beenactive = $newactive;
@@ -406,6 +410,10 @@ sub ParseFile
       {
         # Parse the clause
         ($currentline, $linenumber) = &ParseFile(*INFILE,$filename,$linenumber,$newactive && $active,$printline);
+	if ($currentline)
+        {
+	  $currentline =~ s,\(__CCTK_COMMENT_PLACEHOLDER__\),,g;
+	}
         if(! $currentline)
         {
           # Got EOF !
@@ -454,7 +462,7 @@ sub ParseFile
         {
           if($currentline =~ m/^\s*#\s*else/ || $currentline =~ m/^\s*#\s*elsif/)
           {
-            print STDERR "Extraneous #else of #elsif found at $filename:$linenumber\n";
+            print STDERR "Extraneous #else or #elsif found at $filename:$linenumber\n";
             $newactive = 0;
           }
           else
@@ -559,7 +567,7 @@ sub ReadLine
   # Deal with C-style comments
 
   # Deal with completely enclosed comments
-  $line =~ s,/\*.*\*/, ,g;
+  $line =~ s,/\*.*\*/,(__CCTK_COMMENT_PLACEHOLDER__),g;
 
   # Are we already processing a comment ?
   if($incomment)
@@ -567,14 +575,14 @@ sub ReadLine
     if($line =~ m,\*/,)
     {
       # Get rid of line up to end of comment
-      $line =~ s,^.*\*/, ,;
+      $line =~ s,^.*\*/,(__CCTK_COMMENT_PLACEHOLDER__),;
       # Line finished the comment
       $incomment = 0;
     }
     else
     {
       # Line doesn't finish the comment
-      $line = " ";
+      $line = "(__CCTK_COMMENT_PLACEHOLDER__)";
     }
   }
 
@@ -583,7 +591,7 @@ sub ReadLine
     if($line =~ m,/\*,)
     {
       # Get rid of line after beginning of comment
-      $line =~ s,/\*.*$, ,;
+      $line =~ s,/\*.*$,(__CCTK_COMMENT_PLACEHOLDER__),;
       # Line starts the comment
       $incomment = 1;
     }
@@ -592,7 +600,7 @@ sub ReadLine
   # Get rid of C++ comments too
   if(! $incomment)
   {
-    $line =~ s,//.*$, ,;
+    $line =~ s,//.*$,(__CCTK_COMMENT_PLACEHOLDER__),;
   }
 
   return ($line, $linenumber);
@@ -1103,7 +1111,11 @@ sub ParseAndExpand
     }
   }
 
-  return (join("",@outline),$retcode);
+  # Replace comments by nothing, allowing old-style token concatenation
+  my $output = join("",@outline);
+  $output =~ s,\(__CCTK_COMMENT_PLACEHOLDER__\),,g;
+
+  return ($output,$retcode);
 }
 
 ###############################################################################
