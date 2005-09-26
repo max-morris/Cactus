@@ -382,39 +382,52 @@ sub CleanFromC
 #@@*/
 sub CleanForLatex
 {
-   my $val = shift;
+   my $inval = shift;
+
+   # at start of string, remove spaces before: "
+   $inval =~ s,^\s*\",\",;
+
+   # at end of string, remove spaces after: "
+   $inval =~ s,\"\s*$,\",;
 
    # escape special characters
-   $val =~ s,\\,\{\\textbackslash\},g;
-   $val =~ s,~,\{\\textasciitilde\},g;
-   $val =~ s,<,\{\\textless\},g;
-   $val =~ s,>,\{\\textgreater\},g;
+   my $outval = "";
+   foreach my $i (0 .. length($inval)-1)
+   {
+     my $char = $inval[i];
+     if ($char eq '{' or
+         $char eq '}' or
+         $char eq '$' or
+         $char eq '_' or
+         $char eq '^' or
+         $char eq '&' or
+         $char eq '%')
+     {
+       $outval .= '\\' . $char;
+     }
+     elsif ($char eq '\\')
+     {
+       $outval .= '{\\textbackslash}';
+     }
+     elsif ($char eq '~')
+     {
+       $outval .= '{\\textasciitilde}';
+     }
+     elsif ($char eq '<')
+     {
+       $outval .= '{\\textless}';
+     }
+     elsif ($char eq '>')
+     {
+       $outval .= '{\\textgreater}';
+     }
+     else
+     {
+       $outval .= $char;
+     }
+   }
 
-   # at start of string, remove spaces before and after: "
-   $val =~ s,^\s*?\"\s*?,\",;
-
-   # at end of string, remove spaces before and after: "
-   $val =~ s,\s*?\"\s*?$,\",;
-
-   # escape _
-   $val =~ s,\_,\\\_,g;
-
-   # escape $
-   $val =~ s,\$,\\\$,g;
-
-   # escape ^
-   $val =~ s,\^,\\\^,g;
-
-   # escape *
-   $val =~ s,\*,\\\*,g;
-
-   # escape &
-   $val =~ s,\&,\\\&,g;
-
-   # escape %
-   $val =~ s,%,\\%,g;
-
-   return $val;
+   return $outval;
 }
 
 #/*@@
